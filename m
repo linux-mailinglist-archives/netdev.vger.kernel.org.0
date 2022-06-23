@@ -2,76 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AFEC6557A8E
-	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 14:43:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0137C557AAD
+	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 14:51:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231124AbiFWMnC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jun 2022 08:43:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53862 "EHLO
+        id S231357AbiFWMu0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jun 2022 08:50:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229647AbiFWMnA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 08:43:00 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 628E51183F;
-        Thu, 23 Jun 2022 05:42:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=fw13PT4f/o51mico3RM7ZZY+ckMOJ2/9wKDSKcOEvGc=; b=bg7OGbc5Idq+okMLUPctd/gpY1
-        MLQYHMUg+xVkIIgrdyBnPGu7zL1JAdDtTX5JbdYtmheZXj8OC+NKfR/FZg1nfyTbC39qO95/wQm1h
-        UU0TfGEPidi40zVTlkl7n+TsJiqNqa6/3ZgSiw/dSgCa9KQRMmY7Z3ZpChYVWj0xS4pI=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1o4MAg-007y6n-2b; Thu, 23 Jun 2022 14:42:54 +0200
-Date:   Thu, 23 Jun 2022 14:42:54 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Enguerrand de Ribaucourt 
-        <enguerrand.de-ribaucourt@savoirfairelinux.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux@armlinux.org.uk,
-        hkallweit1@gmail.com
-Subject: Re: [PATCH 1/2] net: dp83822: disable false carrier interrupt
-Message-ID: <YrRfzph6jyg2pUyO@lunn.ch>
-References: <YqzAKguRaxr74oXh@lunn.ch>
- <20220623085125.1426049-1-enguerrand.de-ribaucourt@savoirfairelinux.com>
+        with ESMTP id S229765AbiFWMuZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 08:50:25 -0400
+Received: from out30-132.freemail.mail.aliyun.com (out30-132.freemail.mail.aliyun.com [115.124.30.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43C691929D;
+        Thu, 23 Jun 2022 05:50:24 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R491e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0VHBaHk2_1655988615;
+Received: from 30.225.28.168(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0VHBaHk2_1655988615)
+          by smtp.aliyun-inc.com;
+          Thu, 23 Jun 2022 20:50:21 +0800
+Message-ID: <c6e21cd4-b756-e566-c267-37f997f53239@linux.alibaba.com>
+Date:   Thu, 23 Jun 2022 20:50:15 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220623085125.1426049-1-enguerrand.de-ribaucourt@savoirfairelinux.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.10.0
+Subject: Re: [RFC net-next] net/smc:introduce 1RTT to SMC
+Content-Language: en-US
+To:     Alexandra Winter <wintera@linux.ibm.com>,
+        Karsten Graul <kgraul@linux.ibm.com>,
+        Tony Lu <tonylu@linux.alibaba.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
+References: <1653375127-130233-1-git-send-email-alibuda@linux.alibaba.com>
+ <YoyOGlG2kVe4VA4m@TonyMac-Alibaba>
+ <64439f1c-9817-befd-c11b-fa64d22620a9@linux.ibm.com>
+ <7d57f299-115f-3d34-a45e-1c125a9a580a@linux.alibaba.com>
+ <61fbee55-245f-b912-95df-d9557849d08f@linux.alibaba.com>
+ <002050da-64a3-4648-6e8f-b3ae8ed3eece@linux.ibm.com>
+From:   "D. Wythe" <alibuda@linux.alibaba.com>
+In-Reply-To: <002050da-64a3-4648-6e8f-b3ae8ed3eece@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 10:51:25AM +0200, Enguerrand de Ribaucourt wrote:
-> When unplugging an Ethernet cable, false carrier events were produced by
-> the PHY at a very high rate. Once the false carrier counter full, an
-> interrupt was triggered every few clock cycles until the cable was
-> replugged. This resulted in approximately 10k/s interrupts.
+
+
+On 2022/6/23 下午7:59, Alexandra Winter wrote:
 > 
-> Since the false carrier counter (FCSCR) is never used, we can safely
-> disable this interrupt.
 > 
-> In addition to improving performance, this also solved MDIO read
-> timeouts I was randomly encountering with an i.MX8 fec MAC because of
-> the interrupt flood. The interrupt count and MDIO timeout fix were
-> tested on a v5.4.110 kernel.
+> On 16.06.22 15:49, D. Wythe wrote:
+>>
+>>
+>> On 2022/6/1 下午2:33, D. Wythe wrote:
+>>>
+>>> 在 2022/5/25 下午9:42, Alexandra Winter 写道:
+>>>
+>>>> We need to carefully evaluate them and make sure everything is compatible
+>>>> with the existing implementations of SMC-D and SMC-R v1 and v2. In the
+>>>> typical s390 environment ROCE LAG is propably not good enough, as the card
+>>>> is still a single point of failure. So your ideas need to be compatible
+>>>> with link redundancy. We also need to consider that the extension of the
+>>>> protocol does not block other desirable extensions.
+>>>>
+>>>> Your prototype is very helpful for the understanding. Before submitting any
+>>>> code patches to net-next, we should agree on the details of the protocol
+>>>> extension. Maybe you could formulate your proposal in plain text, so we can
+>>>> discuss it here?
+>>>>
+>>>> We also need to inform you that several public holidays are upcoming in the
+>>>> next weeks and several of our team will be out for summer vacation, so please
+>>>> allow for longer response times.
+>>>>
+>>>> Kind regards
+>>>> Alexandra Winter
+>>>>
+>>>
+>>> Hi alls,
+>>>
+>>> In order to achieve signle-link compatibility, we must
+>>> complete at least once negotiation. We wish to provide
+>>> higher scalability while meeting this feature. There are
+>>> few ways to reach this.
+>>>
+>>> 1. Use the available reserved bits. According to
+>>> the SMC v2 protocol, there are at least 28 reserved octets
+>>> in PROPOSAL MESSAGE and at least 10 reserved octets in
+>>> ACCEPT MESSAGE are available. We can define an area in which
+>>> as a feature area, works like bitmap. Considering the subsequent scalability, we MAY use at least 2 reserved ctets, which can support negotiation of at least 16 features.
+>>>
+>>> 2. Unify all the areas named extension in current
+>>> SMC v2 protocol spec without reinterpreting any existing field
+>>> and field offset changes, including 'PROPOSAL V1 IP Subnet Extension',
+>>> 'PROPOSAL V2 Extension', 'PROPOSAL SMC-DV2 EXTENSION' .etc. And provides
+>>> the ability to grow dynamically as needs expand. This scheme will use
+>>> at least 10 reserved octets in the PROPOSAL MESSAGE and at least 4 reserved octets in ACCEPT MESSAGE and CONFIRM MESSAGE. Fortunately, we only need to use reserved fields, and the current reserved fields are sufficient. And then we can easily add a new extension named SIGNLE LINK. Limited by space, the details will be elaborated after the scheme is finalized.
+>>>
+> [...]
+>>>
+>>>
+>>> Look forward to your advice and comments.
+>>>
+>>> Thanks.
+>>
+>> Hi all,
+>>
+>> On the basis of previous，If we can put the application data over the PROPOSAL message,
+>> we can achieve SMC 0-RTT. Its process should be similar to the following:
+>>
+> [...]
+> 
+> Thank you D. Wythe for the detailed proposal, I have forwarded it to the protocol owner
+> and we are currently reviewing it.
+> We may contact you and Tony Lu directly to discuss the details, if that is ok for you.
+> 
+> Kind regards
+> Alexandra Winter
+> 
+> 
+> 
+> 
 
-Since this is version 2, you should add v2 into the subject line. See
-the submitting patches document in the kernel documentation.
+Thanks a lot for your support, it seems good to us. We are totally okay with that.
 
-Also, with patch sets, please include a patch 0/X which describes the
-big picture.
+Best Wishes.
+D. Wythe
 
-This is also a bug fix, you are stopping an interrupt storm. So please
-include a Fixes: tag indicating where the issue was introduced.
-
-The code itself looks good, it is just getting the processes right.
-
-	Andrew
