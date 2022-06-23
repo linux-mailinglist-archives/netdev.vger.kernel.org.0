@@ -2,115 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A819557819
-	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 12:47:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 73CB655781E
+	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 12:48:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230512AbiFWKr2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jun 2022 06:47:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43586 "EHLO
+        id S230334AbiFWKso (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jun 2022 06:48:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230487AbiFWKr0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 06:47:26 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 335A34B1EB;
-        Thu, 23 Jun 2022 03:47:23 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id i8-20020a17090aee8800b001ecc929d14dso3430855pjz.0;
-        Thu, 23 Jun 2022 03:47:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=FyEUu15vvzH95LcwuWkWyhW3ebF5SK1T267BEuaWV3g=;
-        b=KESis4YxduSsCemtNPXlOa0SV4p4nwujQpil/zxARLDUiXNMcSc44QiCNu6hvEmVNh
-         aTlLI+uQBCqDhWoDUiDkp0HZLnH9SWcpJiPo9I8zpHdFm0lf8u79kuBUjOx8y0Snq5/V
-         KUJcbdhlMlEgpKyYjqyfoaPOND5flIPf60vEDIgMGwTWUh5IRqLOYornvqVtpjvCBWZb
-         uPYKbN8WLbyR2HaPM1JZ0WxMeKt7mloeOXYusMdKSBT3xmwBcCImkDEW2jKMKFPFjzOh
-         g94xvEt67d1H+Md6uUyW8PPBma9s1A8yDlugoVZSbxVWRvmQVsPJmqUhenL1kGTOL20C
-         Np9Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=FyEUu15vvzH95LcwuWkWyhW3ebF5SK1T267BEuaWV3g=;
-        b=WkdG1MEuSk4FURDxfVElVd0ueEhsZUqCGbT9xOVFPEMO8S/UQ17voaL82mJEgrd37U
-         AqUb7lBCU5D5wx6/rbPKHBMZcL21t8Ru5mrkf9O7/OkG7vDDgLIEYyh9v1xbeN6pAcvx
-         qM5P8eCMFWzzR84JqxhpHwIQ9/3FD5I7aDBC0st/yWPSngCDX7fmiTYuPJipbrgmvdMP
-         CGM4ODHprmZlqsr2/kUY8O6w1VDRf0Yqz/oy/9BgdjKG8t57kYyPB6RM4gUS+3Sw+fWF
-         COA93sCoJ7+QBleFUuEE8mA+cqrjyhpqlYL1OB+LK+CM/y8ea+FneALF8MLyFqRJWNyl
-         jhew==
-X-Gm-Message-State: AJIora8sGRapu9ICZbrGZmI3+dtKxtQDKnfgbOBiOyUJ8eq8RFBOCeFm
-        UZzN6ar56Bice75KMRH1was=
-X-Google-Smtp-Source: AGRyM1s4qcoH9Z6XWD2ITvm7Hnwb7mNlMppHGiV2QsaEIPLGPPJ+TN3hRoaWL7F/we0gctdiA/NZMg==
-X-Received: by 2002:a17:902:ea4b:b0:168:d5e9:68ec with SMTP id r11-20020a170902ea4b00b00168d5e968ecmr38343340plg.146.1655981243389;
-        Thu, 23 Jun 2022 03:47:23 -0700 (PDT)
-Received: from [192.168.50.247] ([103.84.139.165])
-        by smtp.gmail.com with ESMTPSA id f25-20020a637559000000b0040cf934a1a0sm5384193pgn.28.2022.06.23.03.47.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 23 Jun 2022 03:47:23 -0700 (PDT)
-Message-ID: <31fa8ce4-a132-03c6-3272-6f8448270830@gmail.com>
-Date:   Thu, 23 Jun 2022 18:47:19 +0800
+        with ESMTP id S231248AbiFWKsn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 06:48:43 -0400
+Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AEE2496B9;
+        Thu, 23 Jun 2022 03:48:42 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id EE98C20624;
+        Thu, 23 Jun 2022 12:48:39 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id czrVqp6l5LlV; Thu, 23 Jun 2022 12:48:39 +0200 (CEST)
+Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 4E40920606;
+        Thu, 23 Jun 2022 12:48:39 +0200 (CEST)
+Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
+        by mailout1.secunet.com (Postfix) with ESMTP id 452F180004A;
+        Thu, 23 Jun 2022 12:48:39 +0200 (CEST)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 23 Jun 2022 12:48:39 +0200
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 23 Jun
+ 2022 12:48:38 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id AD47E3182CD5; Thu, 23 Jun 2022 12:48:38 +0200 (CEST)
+Date:   Thu, 23 Jun 2022 12:48:38 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>
+CC:     Eyal Birger <eyal.birger@gmail.com>, <dsahern@kernel.org>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <yoshfuji@linux-ipv6.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <shmulik.ladkani@gmail.com>
+Subject: Re: [PATCH ipsec-next] xfrm: no need to set DST_NOPOLICY in IPv4
+Message-ID: <20220623104838.GC566407@gauss3.secunet.de>
+References: <20220520104845.2644470-1-eyal.birger@gmail.com>
+ <8557f7a3-9fc6-393d-14bd-d7bd26c4e7fc@6wind.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH] nfc: st21nfca: fix possible double free in
- st21nfca_im_recv_dep_res_cb()
-Content-Language: en-US
-To:     Paolo Abeni <pabeni@redhat.com>, krzysztof.kozlowski@linaro.org,
-        sameo@linux.intel.com, christophe.ricard@gmail.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220622065117.23210-1-hbh25y@gmail.com>
- <39279ba0ced207f484b664fe5364fa4ee6271cfb.camel@redhat.com>
-From:   Hangyu Hua <hbh25y@gmail.com>
-In-Reply-To: <39279ba0ced207f484b664fe5364fa4ee6271cfb.camel@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <8557f7a3-9fc6-393d-14bd-d7bd26c4e7fc@6wind.com>
+X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022/6/23 17:42, Paolo Abeni wrote:
-> On Wed, 2022-06-22 at 14:51 +0800, Hangyu Hua wrote:
->> nfc_tm_data_received will free skb internally when it fails. There is no
->> need to free skb in st21nfca_im_recv_dep_res_cb again.
->>
->> Fix this by setting skb to NULL when nfc_tm_data_received fails.
->>
->> Fixes: 1892bf844ea0 ("NFC: st21nfca: Adding P2P support to st21nfca in Initiator & Target mode")
->> Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
->> ---
->>   drivers/nfc/st21nfca/dep.c | 3 ++-
->>   1 file changed, 2 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/nfc/st21nfca/dep.c b/drivers/nfc/st21nfca/dep.c
->> index 1ec651e31064..07ac5688011c 100644
->> --- a/drivers/nfc/st21nfca/dep.c
->> +++ b/drivers/nfc/st21nfca/dep.c
->> @@ -594,7 +594,8 @@ static void st21nfca_im_recv_dep_res_cb(void *context, struct sk_buff *skb,
->>   			    ST21NFCA_NFC_DEP_PFB_PNI(dep_res->pfb + 1);
->>   			size++;
->>   			skb_pull(skb, size);
->> -			nfc_tm_data_received(info->hdev->ndev, skb);
->> +			if (nfc_tm_data_received(info->hdev->ndev, skb))
->> +				skb = NULL;
+On Fri, May 20, 2022 at 02:01:19PM +0200, Nicolas Dichtel wrote:
 > 
-> Note that 'skb' not used (nor freed) by this function after this point:
-> the next 'break' statement refears to the inner switch, and land to the
-> execution flow to the 'return' statement a few lines below.
-> kfree_skb(skb) is never reached.
-> 
-> Paolo
-> 
+> Le 20/05/2022 à 12:48, Eyal Birger a écrit :
+> > This is a cleanup patch following commit e6175a2ed1f1
+> > ("xfrm: fix "disable_policy" flag use when arriving from different devices")
+> > which made DST_NOPOLICY no longer be used for inbound policy checks.
+> > 
+> > On outbound the flag was set, but never used.
+> > 
+> > As such, avoid setting it altogether and remove the nopolicy argument
+> > from rt_dst_alloc().
+> > 
+> > Signed-off-by: Eyal Birger <eyal.birger@gmail.com>
+> Reviewed-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
 
-My fault. I messed up two switch statements. I will be more careful next 
-time.
-
-hangyu
-
-
+Now applied to ipsec-next, thanks everyone!
