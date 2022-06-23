@@ -2,69 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C41625572A3
-	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 07:42:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 04F415572DF
+	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 08:09:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229608AbiFWFmk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jun 2022 01:42:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58536 "EHLO
+        id S229575AbiFWGJ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jun 2022 02:09:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229576AbiFWFme (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 01:42:34 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D77133C4B9;
-        Wed, 22 Jun 2022 22:42:33 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id x1-20020a17090abc8100b001ec7f8a51f5so1532852pjr.0;
-        Wed, 22 Jun 2022 22:42:33 -0700 (PDT)
+        with ESMTP id S229441AbiFWGJz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 02:09:55 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9215519F;
+        Wed, 22 Jun 2022 23:09:54 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id eq6so19644551edb.6;
+        Wed, 22 Jun 2022 23:09:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=csQMNlHKEW+As1/6RYdVgr16BLm5VIjZDeqyZjFfTjM=;
-        b=i8exCuwEqrWoP439dwoNzzujK/PCcX9CScZ3KJA6H4h7zMDA395etdFGoGB+5jGJr3
-         ShmucnrZJg3PkqpL/mg+2ZZJneHfanmnQBp0SoFGT9LThd6mcCtoFKKlwhjvVeJlco+y
-         hv8qwD6n3CZnAD6Xs7G81s/QZ1g1dGyWtTlJ68EYbpKL2NybaBfRi7hnbM5rGbqvQaT7
-         iTICbxBpk7o+ZJLR8EE3BC9j99Uznu4EyA7VkFU6qEZXXE2aXoEwg67iTF8Omwsb7Abj
-         s9UXBHiGMSC51JJvIsqTHhgqwTeuuvtJACDoPkbzklKPiijjxOIw04uXlUU45lVjbaqd
-         c+vQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=OqGyQJ3vy7PFybuXdaUB9y/gte3aocvZWTw7e9ixzAM=;
+        b=lfk6qyQ2fHmok7eXGaiDcxvHYiLHGIceYW1LPAad5yb6Ay6jih9ZhoKkeGTZ40xkic
+         OgsbLla2SyPpwu4KFIjE9FOVcwQex/sr8vG4L7sk4MsLLMGKB2/fgenkEkHzT+a+kUTQ
+         X7lDtbiyR9z8BbBAwo/xTBitKPzbw++ToQr9P9S9tS4uBQNIUquj3tXF7rq36LK/ewTk
+         IiAwYpgj+njfWm4i7tVO9HbwL7bq0/KV2TsB8dVgpJXy2nDmbzDdRPtxbBM/bkepTui6
+         rSgnKd/NhSMrG6C8cSRVKO2qFvYaz4yz68wG4N+TckRnnpjScrXn/+mLX4cs1y71jVEl
+         AxQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=csQMNlHKEW+As1/6RYdVgr16BLm5VIjZDeqyZjFfTjM=;
-        b=PRKfpdlMqpL2liWkNmBABJzTjbcm2moards56pC0hsSNuyig6scYZfYMwibFfwm0g9
-         nW8BU49Msca+5vNPt14I1mgTPAzH+/t8hOTi9vNN6wxWN7Vw6swF0W0ve26NvV/1Azs1
-         qpVJr0sjd0nHIXW/Nn9KiEphXm69w+lNtATJO3UQQumF7sJTrEplV2doaE9DrEpbH4iB
-         0lVQCB2Tylm3n9FHEl0p+iiMXXJlHW6Xmsn4GtqE3Wyp8aVRu5G/V54YmspYyVvhtC3i
-         W0iq6yRU5JdfES6RImIycXBLuHICI2xpWFx4PCQKndTtTVYtJ2MV65AG3s+IMCevwk2M
-         hSqg==
-X-Gm-Message-State: AJIora8LAhIPis/f43VBf5kVMyfQ43lH8vUc7vFGVNMKIbHsMFdKM6Rk
-        ZwaZz+K9vlkSJCLC4XhaagI=
-X-Google-Smtp-Source: AGRyM1uT6X3Hs63rl+MIUBmZ9eQJiYEdk6cEl1dDO4eCENe7gvqxEWTKm9lp+CpPvg8RhP/hSyoYpA==
-X-Received: by 2002:a17:902:f687:b0:167:58bb:c43f with SMTP id l7-20020a170902f68700b0016758bbc43fmr37169283plg.136.1655962953192;
-        Wed, 22 Jun 2022 22:42:33 -0700 (PDT)
-Received: from localhost ([98.97.116.244])
-        by smtp.gmail.com with ESMTPSA id b4-20020a17090a5a0400b001ecb29de3e4sm801314pjd.49.2022.06.22.22.42.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jun 2022 22:42:32 -0700 (PDT)
-Date:   Wed, 22 Jun 2022 22:42:30 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Jakub Sitnicki <jakub@cloudflare.com>, netdev@vger.kernel.org
-Cc:     john.fastabend@gmail.com, jakub@cloudflare.com,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, kpsingh@kernel.org,
-        borisp@nvidia.com, cong.wang@bytedance.com, bpf@vger.kernel.org
-Message-ID: <62b3fd46af42c_70b1d2086a@john.notmuch>
-In-Reply-To: <20220622172407.411411-1-jakub@cloudflare.com>
-References: <20220620191353.1184629-2-kuba@kernel.org>
- <20220622172407.411411-1-jakub@cloudflare.com>
-Subject: RE: [PATCH net] selftests/bpf: Test sockmap update when socket has
- ULP
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=OqGyQJ3vy7PFybuXdaUB9y/gte3aocvZWTw7e9ixzAM=;
+        b=Bn/ea0dKagsVaMOZHcJNr9oac5TBRAELpmIko6d3CRKiywPqty1JYZHkw2FuY3P1EL
+         qfjVLIFKNLL1mjFoFSXdmKWLLJYnDEDXDxk9hGPvxP7XAzJq+zknbkD6asoPcAHob/x5
+         TjFZpAqWYUkOzZTgvSBoWULm5BQbr+K4UnvLfNpXs1JslwK+PMLHNc/zUj63UYppAEVE
+         AK/R5TosDLV1m1SJ9PwXSR1BPqVFCSGgJaDyC2rUHxNjCdmdAymFM8b9dUbtu6Qr8mjC
+         JS7FjY7H6vbUpUERZB7+ILIv/UovD4PxEuuxVm66hSrDPYBDX04DzpDESopeNJ/z50P+
+         U0ZA==
+X-Gm-Message-State: AJIora90wO38LBb5tzM+5rSxED3ht1rBoAlSULp/j/zP4vsoNe6M0aK+
+        Z13a9iUhgcvECHLX5pfRWHOsQjOpq6XHIceksNE=
+X-Google-Smtp-Source: AGRyM1tX7/C4TnqkwnjThVlTdE+GzhG4vp86mMRor/sZYWYPxI83UaXFp/FMuDnRrnE63mmfJGJ240OuBGkPpMXORCI=
+X-Received: by 2002:a05:6402:24a4:b0:434:e43e:2462 with SMTP id
+ q36-20020a05640224a400b00434e43e2462mr8577471eda.312.1655964593015; Wed, 22
+ Jun 2022 23:09:53 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220621073233.53776-1-nashuiliang@gmail.com> <62b3dfeae3f40_6a3b2208a3@john.notmuch>
+In-Reply-To: <62b3dfeae3f40_6a3b2208a3@john.notmuch>
+From:   Chuang W <nashuiliang@gmail.com>
+Date:   Thu, 23 Jun 2022 14:09:41 +0800
+Message-ID: <CACueBy5ia2VhgNiyQnjsrjY=b7kBUKuN4Lv38cXHymdWHYiuVQ@mail.gmail.com>
+Subject: Re: [PATCH v2] libbpf: Cleanup the kprobe_event on failed add_kprobe_event_legacy()
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Jingren Zhou <zhoujingren@didiglobal.com>
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -75,79 +72,85 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Sitnicki wrote:
-> Cover the scenario when we cannot insert a socket into the sockmap, because
-> it has it is using ULP. Failed insert should not have any effect on the ULP
-> state. This is a regression test.
-> 
-> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
-> ---
+Hi, John. Thanks, I will resubmit V3 soon, and supplement the commit
+information.
 
-Thanks, looks good. One small nit.
-
->  
-> +#include <netinet/tcp.h>
->  #include "test_progs.h"
->  
->  #define MAX_TEST_NAME 80
-> @@ -92,9 +93,78 @@ static void test_sockmap_ktls_disconnect_after_delete(int family, int map)
->  	close(srv);
->  }
->  
-> +static void test_sockmap_ktls_update_fails_when_sock_has_ulp(int family, int map)
-> +{
-> +	struct sockaddr_storage addr = {};
-> +	socklen_t len = sizeof(addr);
-> +	struct sockaddr_in6 *v6;
-> +	struct sockaddr_in *v4;
-> +	int err, s, zero = 0;
-> +
-> +	s = socket(family, SOCK_STREAM, 0);
-> +	if (!ASSERT_GE(s, 0, "socket"))
-> +		return;
-> +
-> +	switch (family) {
-> +	case AF_INET:
-> +		v4 = (struct sockaddr_in *)&addr;
-> +		v4->sin_family = AF_INET;
-> +		break;
-> +	case AF_INET6:
-> +		v6 = (struct sockaddr_in6 *)&addr;
-> +		v6->sin6_family = AF_INET6;
->k+		break;
-> +	default:
-> +		PRINT_FAIL("unsupported socket family %d", family);
-
-Probably want goto close here right?
-
-> +		return;
-> +	}
-> +
-> +	err = bind(s, (struct sockaddr *)&addr, len);
-> +	if (!ASSERT_OK(err, "bind"))
-> +		goto close;
-> +
-> +	err = getsockname(s, (struct sockaddr *)&addr, &len);
-> +	if (!ASSERT_OK(err, "getsockname"))
-> +		goto close;
-> +
-> +	err = connect(s, (struct sockaddr *)&addr, len);
-> +	if (!ASSERT_OK(err, "connect"))
-> +		goto close;
-> +
-> +	/* save sk->sk_prot and set it to tls_prots */
-> +	err = setsockopt(s, IPPROTO_TCP, TCP_ULP, "tls", strlen("tls"));
-> +	if (!ASSERT_OK(err, "setsockopt(TCP_ULP)"))
-> +		goto close;
-> +
-> +	/* sockmap update should not affect saved sk_prot */
-> +	err = bpf_map_update_elem(map, &zero, &s, BPF_ANY);
-> +	if (!ASSERT_ERR(err, "sockmap update elem"))
-> +		goto close;
-> +
-> +	/* call sk->sk_prot->setsockopt to dispatch to saved sk_prot */
-> +	err = setsockopt(s, IPPROTO_TCP, TCP_NODELAY, &zero, sizeof(zero));
-> +	ASSERT_OK(err, "setsockopt(TCP_NODELAY)");
-> +
-> +close:
-> +	close(s);
+On Thu, Jun 23, 2022 at 11:37 AM John Fastabend
+<john.fastabend@gmail.com> wrote:
+>
+> Chuang W wrote:
+> > Before the 0bc11ed5ab60 commit ("kprobes: Allow kprobes coexist with
+> > livepatch"), in a scenario where livepatch and kprobe coexist on the
+> > same function entry, the creation of kprobe_event using
+> > add_kprobe_event_legacy() will be successful, at the same time as a
+> > trace event (e.g. /debugfs/tracing/events/kprobe/XX) will exist, but
+> > perf_event_open() will return an error because both livepatch and kprobe
+> > use FTRACE_OPS_FL_IPMODIFY.
+> >
+> > With this patch, whenever an error is returned after
+> > add_kprobe_event_legacy(), this ensures that the created kprobe_event is
+> > cleaned.
+> >
+> > Signed-off-by: Chuang W <nashuiliang@gmail.com>
+> > Signed-off-by: Jingren Zhou <zhoujingren@didiglobal.com>
+> > ---
+> >  tools/lib/bpf/libbpf.c | 12 +++++++++---
+> >  1 file changed, 9 insertions(+), 3 deletions(-)
+>
+> I think we want to improve the commit message otherwise I'm sure we will
+> stumble on this in the future and from just above its tricky to follow.
+> I would suggest almost verbatim the description you gave in reply to
+> my question. Just cut'n'pasting your text together with minor edit
+> glue,
+>
+> "
+>  The legacy kprobe API (i.e. tracefs API) has two steps:
+>
+>  1) register_kprobe
+>
+>  $ echo 'p:mykprobe XXX' > /sys/kernel/debug/tracing/kprobe_events
+>
+>  This will create a trace event of mykprobe and register a disable
+>  kprobe that waits to be activated.
+>
+>  2) enable_kprobe
+>
+>  2.1) using syscall perf_event_open as the following code,
+>  perf_event_kprobe_open_legacy (file: tools/lib/bpf/libbpf.c):
+>  ---
+>  attr.type = PERF_TYPE_TRACEPOINT;
+>  pfd = syscall(__NR_perf_event_open, &attr,
+>                pid < 0 ? -1 : pid, /* pid */
+>                pid == -1 ? 0 : -1, /* cpu */
+>                -1 /* group_fd */,  PERF_FLAG_FD_CLOEXEC);
+>  ---
+>
+>  In the implementation code of perf_event_open, enable_kprobe() will be executed.
+>
+>  2.2) using shell
+>
+>  $ echo 1 > /sys/kernel/debug/tracing/events/kprobes/mykprobe/enable
+>
+>  As with perf_event_open, enable_kprobe() will also be executed.
+>
+>  When using the same function XXX, kprobe and livepatch cannot coexist,
+>  that is, step 2) will return an error (ref: arm_kprobe_ftrace()),
+>  however, step 1) is ok! The new kprobe API (i.e. perf kprobe API)
+>  aggregates register_kprobe and enable_kprobe, internally fixes the
+>  issue on failed enable_kprobe.
+>
+>  To fix: before the 0bc11ed5ab60 commit ("kprobes: Allow kprobes coexist with
+>  livepatch"), in a scenario where livepatch and kprobe coexist on the
+>  same function entry, the creation of kprobe_event using
+>  add_kprobe_event_legacy() will be successful, at the same time as a
+>  trace event (e.g. /debugfs/tracing/events/kprobe/XX) will exist, but
+>  perf_event_open() will return an error because both livepatch and kprobe
+>  use FTRACE_OPS_FL_IPMODIFY.
+>
+>  With this patch, whenever an error is returned after
+>  add_kprobe_event_legacy(), this ensures that the created kprobe_event is
+>  cleaned.
+> "
+>
+> Thanks,
+> John
