@@ -2,249 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 83776557665
-	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 11:13:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E9B99557674
+	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 11:18:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230020AbiFWJNt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jun 2022 05:13:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51570 "EHLO
+        id S230400AbiFWJSn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jun 2022 05:18:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229684AbiFWJNs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 05:13:48 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0B2B23EB9E
-        for <netdev@vger.kernel.org>; Thu, 23 Jun 2022 02:13:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655975626;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=UUQ0NEqqglgxwxJbdDc/0JUwCyiwUSo3CM6cNI7KLok=;
-        b=hXJvBgwjDB5L2KruDOaP+5reSl3cZrBZxZMWNPUU4RQlOr0ZEQzQJVIN4N3FDMOciMekhw
-        uzCCXy6lYlje+i7FdOr6GVXLs0zhcE5j8leBhcPld51PF087AjafBAzsTBB87i64ADMjjm
-        J/VCHOQrllJEUKyOGZTxCUQjwwIbNjA=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-193-WpngQ0AlObOxvhB-nSlOhQ-1; Thu, 23 Jun 2022 05:13:44 -0400
-X-MC-Unique: WpngQ0AlObOxvhB-nSlOhQ-1
-Received: by mail-wm1-f70.google.com with SMTP id k16-20020a7bc310000000b0038e6cf00439so1142473wmj.0
-        for <netdev@vger.kernel.org>; Thu, 23 Jun 2022 02:13:44 -0700 (PDT)
+        with ESMTP id S229547AbiFWJSl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 05:18:41 -0400
+Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB010192B2
+        for <netdev@vger.kernel.org>; Thu, 23 Jun 2022 02:18:38 -0700 (PDT)
+Received: by mail-lj1-x236.google.com with SMTP id a11so13753642ljb.5
+        for <netdev@vger.kernel.org>; Thu, 23 Jun 2022 02:18:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=XcQS1XCkl/vk/iiK9UlBRssI2Zu/U1XTYmHdI6QOmKg=;
+        b=NCukPQSVf9nm4WScxjlBsKJl1tSICpwfp1JKN9pkxN5Js4SU4FWxjMg0gKJq4i/Z3m
+         juea/x0zHxdUfCT/ONLj7NebPZEoZJQqOyHhdztWJd5fEexSPqteI81MXJCxC5gpxjwn
+         UdWSFNlaYPg6BXAtysbcR07TeooqQQPSQryAXEZvP4+kg0k+4fBeJ6fAk+GWUnxbteMk
+         TjTguyQ95dylDp9yGPe2XzK81ISIWdfO08e8MwwSvjEb7vRfPC/KRSfzQA49Ib/nxmlh
+         70eR5CzA+OqKFS/EQ/t2WDFWh9SEsUU4uWB0Mx4QH7EQY6iI5lEus1EvmxmQZBcWKTGM
+         Dy9Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=UUQ0NEqqglgxwxJbdDc/0JUwCyiwUSo3CM6cNI7KLok=;
-        b=HVIre6Y4Cs+4gvIvBrpHEb4E+oNeniU+JtqaIxbZDPBWtmbyAjhAQZ2gqzzy3MDJGd
-         atyj1/pitwsEoPzTTuO0O2BHTGz+sWc+x2YSCGklLBQewRYqwiUSwLkUo4zld9XlHTmc
-         Y8xFshzdvMrmheOz7WP7QZve9/fVM1hySfhQb6K2awCIyp3Q811uckZHFJlujm84J3pJ
-         PFx0oKZIekRf411xB3DrEpAgePGY8EatLbHdT/QziJ2QjfvXcemo+EZQFUJd430FYii5
-         MqtVxxH40EPPcqLWLlqxV/Ku7uCM296F/KfP2nUM5j9e+ifWiAxIDidFGYmVPQHTrCbs
-         9SyQ==
-X-Gm-Message-State: AJIora+mQcjjTx4h4lOqbOZ/S4Oq9fy4t3x0t3zWFqgKSAY6z4ic2eER
-        Mfo0LDEuWdLIRK7ViF2td2QQ4hGqY1RoSzOO6EfZqfAZLmaUtTtfyMxFPyxqZSJAOmeSJ6gByPC
-        4FzIIs4tKyTTbwVOw
-X-Received: by 2002:a7b:c389:0:b0:39c:49fe:25d3 with SMTP id s9-20020a7bc389000000b0039c49fe25d3mr2967247wmj.83.1655975623409;
-        Thu, 23 Jun 2022 02:13:43 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1sUxUdyVOvbAPwjT4DyIpf1VdxuWrxIZOKY+kIVeWBGKsk6dZQgwTLJAdtMSg2o1KzHsCMDRQ==
-X-Received: by 2002:a7b:c389:0:b0:39c:49fe:25d3 with SMTP id s9-20020a7bc389000000b0039c49fe25d3mr2967221wmj.83.1655975623102;
-        Thu, 23 Jun 2022 02:13:43 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-113-202.dyn.eolo.it. [146.241.113.202])
-        by smtp.gmail.com with ESMTPSA id q2-20020a05600000c200b0021b8ea5c7bdsm11795380wrx.42.2022.06.23.02.13.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Jun 2022 02:13:42 -0700 (PDT)
-Message-ID: <91952d00df215751cbc0e4846c2d688f964fbfc1.camel@redhat.com>
-Subject: Re: [PATCH net 1/2] net: rose: fix UAF bugs caused by timer handler
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Duoming Zhou <duoming@zju.edu.cn>, linux-hams@vger.kernel.org
-Cc:     ralf@linux-mips.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Thu, 23 Jun 2022 11:13:41 +0200
-In-Reply-To: <bbc81ddb35efd09b89e2f8f6af72866bcc9c1550.1655869357.git.duoming@zju.edu.cn>
-References: <cover.1655869357.git.duoming@zju.edu.cn>
-         <bbc81ddb35efd09b89e2f8f6af72866bcc9c1550.1655869357.git.duoming@zju.edu.cn>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=XcQS1XCkl/vk/iiK9UlBRssI2Zu/U1XTYmHdI6QOmKg=;
+        b=fPHIFW3xatu+W37Tx4ov9MiYPqQRqJEejylYjuT3k5wFkA1tjThmQ5bfPZFqLvRxve
+         XZCjn4A0VSUq3yAK0HJfyasC5PPMl5NPZG/T/fSdEs1hWf490gSO8A4Kh82hBeNu2kLe
+         Ul1CHTJAr1E3HvuDTnXKcD8bRWrarBedyQlLpqiylP/do0LatZzptB2zHpRi4+Zn34qh
+         XPByxJoS0NmYmeKe4YlJ37DF3mldG4WPeCYMv54t6hWB77rBqJteeW3bh245C4tsMcDm
+         uOG7ngsQJJZ5LdFFCykhurRV78luHzuV75jDo8HM2nM+eRplGcf1tsRxm1iCSScLpcle
+         Ig1Q==
+X-Gm-Message-State: AJIora9Bbu8tM53AbgpDcDn2a6q+pvVKCtD9JzDZFX7a1QUDWXH3Hd6U
+        wJSgn0YtFl0kdvVFPQ5Kg9FQBRO1NpuIHxsLPsELUA==
+X-Google-Smtp-Source: AGRyM1uZOd8+a/MGh7Ds9XxSG3qQcz0C1wEyURCRfKYw863suXgA3Ov2iAiQPtxpH7+zkOQpaRk2+sY63kjzx4nYjIU=
+X-Received: by 2002:a2e:b0fc:0:b0:255:6f92:f9d4 with SMTP id
+ h28-20020a2eb0fc000000b002556f92f9d4mr4259427ljl.92.1655975917005; Thu, 23
+ Jun 2022 02:18:37 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220607104015.2126118-1-poprdi@google.com> <CAPUC6bJbVMPn1FMLYnXg2GUX4ikesMSRjj=oPOOrS5H2DOx_bA@mail.gmail.com>
+ <CAPUC6b+xMnk8VDGv_7p9j4GHD75FrxG3hWKpTSF2zHj508=x9A@mail.gmail.com> <CANp29Y7gb7cop8p8k-LqR1WoLwOLxi+QGRGLEZrbYW8Tw6_i2w@mail.gmail.com>
+In-Reply-To: <CANp29Y7gb7cop8p8k-LqR1WoLwOLxi+QGRGLEZrbYW8Tw6_i2w@mail.gmail.com>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Thu, 23 Jun 2022 11:18:25 +0200
+Message-ID: <CACT4Y+b3LHerJNwcPuUSxWMXRKFAunK83BHEXiwGs53Jves6QQ@mail.gmail.com>
+Subject: Re: [PATCH v2] Bluetooth: Collect kcov coverage from hci_rx_work
+To:     Aleksandr Nogikh <nogikh@google.com>
+Cc:     =?UTF-8?Q?Tam=C3=A1s_Koczka?= <poprdi@google.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        linux-bluetooth <linux-bluetooth@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Andy Nguyen <theflow@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2022-06-22 at 12:01 +0800, Duoming Zhou wrote:
-> There are UAF bugs in rose_heartbeat_expiry(), rose_timer_expiry()
-> and rose_idletimer_expiry(). The root cause is that del_timer()
-> could not stop the timer handler that is running and the refcount
-> of sock is not managed properly.
-> 
-> One of the UAF bugs is shown below:
-> 
->     (thread 1)          |        (thread 2)
->                         |  rose_bind
->                         |  rose_connect
->                         |    rose_start_heartbeat
-> rose_release            |    (wait a time)
->   case ROSE_STATE_0     |
->   rose_destroy_socket   |  rose_heartbeat_expiry
->     rose_stop_heartbeat |
->     sock_put(sk)        |    ...
->   sock_put(sk) // FREE  |
->                         |    bh_lock_sock(sk) // USE
-> 
-> The sock is deallocated by sock_put() in rose_release() and
-> then used by bh_lock_sock() in rose_heartbeat_expiry().
-> 
-> Although rose_destroy_socket() calls rose_stop_heartbeat(),
-> it could not stop the timer that is running.
-> 
-> The KASAN report triggered by POC is shown below:
-> 
-> BUG: KASAN: use-after-free in _raw_spin_lock+0x5a/0x110
-> Write of size 4 at addr ffff88800ae59098 by task swapper/3/0
-> ...
-> Call Trace:
->  <IRQ>
->  dump_stack_lvl+0xbf/0xee
->  print_address_description+0x7b/0x440
->  print_report+0x101/0x230
->  ? irq_work_single+0xbb/0x140
->  ? _raw_spin_lock+0x5a/0x110
->  kasan_report+0xed/0x120
->  ? _raw_spin_lock+0x5a/0x110
->  kasan_check_range+0x2bd/0x2e0
->  _raw_spin_lock+0x5a/0x110
->  rose_heartbeat_expiry+0x39/0x370
->  ? rose_start_heartbeat+0xb0/0xb0
->  call_timer_fn+0x2d/0x1c0
->  ? rose_start_heartbeat+0xb0/0xb0
->  expire_timers+0x1f3/0x320
->  __run_timers+0x3ff/0x4d0
->  run_timer_softirq+0x41/0x80
->  __do_softirq+0x233/0x544
->  irq_exit_rcu+0x41/0xa0
->  sysvec_apic_timer_interrupt+0x8c/0xb0
->  </IRQ>
->  <TASK>
->  asm_sysvec_apic_timer_interrupt+0x1b/0x20
-> RIP: 0010:default_idle+0xb/0x10
-> RSP: 0018:ffffc9000012fea0 EFLAGS: 00000202
-> RAX: 000000000000bcae RBX: ffff888006660f00 RCX: 000000000000bcae
-> RDX: 0000000000000001 RSI: ffffffff843a11c0 RDI: ffffffff843a1180
-> RBP: dffffc0000000000 R08: dffffc0000000000 R09: ffffed100da36d46
-> R10: dfffe9100da36d47 R11: ffffffff83cf0950 R12: 0000000000000000
-> R13: 1ffff11000ccc1e0 R14: ffffffff8542af28 R15: dffffc0000000000
-> ...
-> Allocated by task 146:
->  __kasan_kmalloc+0xc4/0xf0
->  sk_prot_alloc+0xdd/0x1a0
->  sk_alloc+0x2d/0x4e0
->  rose_create+0x7b/0x330
->  __sock_create+0x2dd/0x640
->  __sys_socket+0xc7/0x270
->  __x64_sys_socket+0x71/0x80
->  do_syscall_64+0x43/0x90
->  entry_SYSCALL_64_after_hwframe+0x46/0xb0
-> 
-> Freed by task 152:
->  kasan_set_track+0x4c/0x70
->  kasan_set_free_info+0x1f/0x40
->  ____kasan_slab_free+0x124/0x190
->  kfree+0xd3/0x270
->  __sk_destruct+0x314/0x460
->  rose_release+0x2fa/0x3b0
->  sock_close+0xcb/0x230
->  __fput+0x2d9/0x650
->  task_work_run+0xd6/0x160
->  exit_to_user_mode_loop+0xc7/0xd0
->  exit_to_user_mode_prepare+0x4e/0x80
->  syscall_exit_to_user_mode+0x20/0x40
->  do_syscall_64+0x4f/0x90
->  entry_SYSCALL_64_after_hwframe+0x46/0xb0
-> 
-> This patch adds refcount of sock when we use functions
-> such as rose_start_heartbeat() and so on to start timer,
-> and decreases the refcount of sock when timer is finished
-> or deleted by functions such as rose_stop_heartbeat()
-> and so on. As a result, the UAF bugs could be mitigated.
-> 
-> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-> Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-> Tested-by: Duoming Zhou <duoming@zju.edu.cn>
-> ---
->  net/rose/rose_timer.c | 22 +++++++++++++---------
->  1 file changed, 13 insertions(+), 9 deletions(-)
-> 
-> diff --git a/net/rose/rose_timer.c b/net/rose/rose_timer.c
-> index b3138fc2e55..18d1912520b 100644
-> --- a/net/rose/rose_timer.c
-> +++ b/net/rose/rose_timer.c
-> @@ -36,7 +36,7 @@ void rose_start_heartbeat(struct sock *sk)
->  	sk->sk_timer.function = rose_heartbeat_expiry;
->  	sk->sk_timer.expires  = jiffies + 5 * HZ;
->  
-> -	add_timer(&sk->sk_timer);
-> +	sk_reset_timer(sk, &sk->sk_timer, sk->sk_timer.expires);
->  }
->  
->  void rose_start_t1timer(struct sock *sk)
-> @@ -48,7 +48,7 @@ void rose_start_t1timer(struct sock *sk)
->  	rose->timer.function = rose_timer_expiry;
->  	rose->timer.expires  = jiffies + rose->t1;
->  
-> -	add_timer(&rose->timer);
-> +	sk_reset_timer(sk, &rose->timer, rose->timer.expires);
->  }
->  
->  void rose_start_t2timer(struct sock *sk)
-> @@ -60,7 +60,7 @@ void rose_start_t2timer(struct sock *sk)
->  	rose->timer.function = rose_timer_expiry;
->  	rose->timer.expires  = jiffies + rose->t2;
->  
-> -	add_timer(&rose->timer);
-> +	sk_reset_timer(sk, &rose->timer, rose->timer.expires);
->  }
->  
->  void rose_start_t3timer(struct sock *sk)
-> @@ -72,7 +72,7 @@ void rose_start_t3timer(struct sock *sk)
->  	rose->timer.function = rose_timer_expiry;
->  	rose->timer.expires  = jiffies + rose->t3;
->  
-> -	add_timer(&rose->timer);
-> +	sk_reset_timer(sk, &rose->timer, rose->timer.expires);
->  }
->  
->  void rose_start_hbtimer(struct sock *sk)
-> @@ -84,7 +84,7 @@ void rose_start_hbtimer(struct sock *sk)
->  	rose->timer.function = rose_timer_expiry;
->  	rose->timer.expires  = jiffies + rose->hb;
->  
-> -	add_timer(&rose->timer);
-> +	sk_reset_timer(sk, &rose->timer, rose->timer.expires);
->  }
->  
->  void rose_start_idletimer(struct sock *sk)
-> @@ -97,23 +97,23 @@ void rose_start_idletimer(struct sock *sk)
->  		rose->idletimer.function = rose_idletimer_expiry;
->  		rose->idletimer.expires  = jiffies + rose->idle;
->  
-> -		add_timer(&rose->idletimer);
-> +		sk_reset_timer(sk, &rose->idletimer, rose->idletimer.expires);
+On Wed, 22 Jun 2022 at 12:20, Aleksandr Nogikh <nogikh@google.com> wrote:
+>
+> (Resending the reply I sent to the v1 of the patch. I sent it by
+> mistake with HTML content, so it did not reach lore.)
+>
+> I checked out v5.18.1, applied this patch and fuzzed it with syzkaller
+> for a day. The fuzzer was indeed able to find and report more coverage
+> of the BT subsystem than without the patch.
+>
+> Tested-by: Aleksandr Nogikh <nogikh@google.com>
+>
+>
+> On Tue, Jun 14, 2022 at 3:34 PM Tam=C3=A1s Koczka <poprdi@google.com> wro=
+te:
+> >
+> > Hello Marcel,
+> >
+> > I hope this was the change you originally requested, and I did not
+> > misunderstand anything, but if you need any additional modification to
+> > the code or the commit, please feel free to let me know!
+> >
+> > Thank you,
+> > Tamas
+> >
+> > On Tue, Jun 7, 2022 at 1:44 PM Tam=C3=A1s Koczka <poprdi@google.com> wr=
+ote:
+> > >
+> > > Hello Marcel,
+> > >
+> > > I added some comments into the code about what the kcov_remote calls =
+do and
+> > > why they were implemented and I also added some reasoning to the comm=
+it
+> > > message.
+> > >
+> > > I did not mention in the commit but these functions only run if the k=
+ernel
+> > > is compiled with CONFIG_KCOV.
+> > >
+> > > Thank you again for reviewing the patch!
+> > >
+> > > --
+> > > Tamas
+> > >
+> > > On Tue, Jun 7, 2022 at 12:40 PM Tamas Koczka <poprdi@google.com> wrot=
+e:
+> > > >
+> > > > Annotate hci_rx_work() with kcov_remote_start() and kcov_remote_sto=
+p()
+> > > > calls, so remote KCOV coverage is collected while processing the rx=
+_q
+> > > > queue which is the main incoming Bluetooth packet queue.
+> > > >
+> > > > Coverage is associated with the thread which created the packet skb=
+.
+> > > >
+> > > > The collected extra coverage helps kernel fuzzing efforts in findin=
+g
+> > > > vulnerabilities.
+> > > >
+> > > > Signed-off-by: Tamas Koczka <poprdi@google.com>
+> > > > ---
+> > > > Changelog since v1:
+> > > >  - add comment about why kcov_remote functions are called
+> > > >
+> > > > v1: https://lore.kernel.org/all/20220517094532.2729049-1-poprdi@goo=
+gle.com/
+> > > >
+> > > >  net/bluetooth/hci_core.c | 10 +++++++++-
+> > > >  1 file changed, 9 insertions(+), 1 deletion(-)
+> > > >
+> > > > diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+> > > > index 45c2dd2e1590..0af43844c55a 100644
+> > > > --- a/net/bluetooth/hci_core.c
+> > > > +++ b/net/bluetooth/hci_core.c
+> > > > @@ -29,6 +29,7 @@
+> > > >  #include <linux/rfkill.h>
+> > > >  #include <linux/debugfs.h>
+> > > >  #include <linux/crypto.h>
+> > > > +#include <linux/kcov.h>
+> > > >  #include <linux/property.h>
+> > > >  #include <linux/suspend.h>
+> > > >  #include <linux/wait.h>
+> > > > @@ -3780,7 +3781,14 @@ static void hci_rx_work(struct work_struct *=
+work)
+> > > >
+> > > >         BT_DBG("%s", hdev->name);
+> > > >
+> > > > -       while ((skb =3D skb_dequeue(&hdev->rx_q))) {
+> > > > +       /* The kcov_remote functions used for collecting packet par=
+sing
+> > > > +        * coverage information from this background thread and ass=
+ociate
+> > > > +        * the coverage with the syscall's thread which originally =
+injected
+> > > > +        * the packet. This helps fuzzing the kernel.
+> > > > +        */
+> > > > +       for (; (skb =3D skb_dequeue(&hdev->rx_q)); kcov_remote_stop=
+()) {
+> > > > +               kcov_remote_start_common(skb_get_kcov_handle(skb));
+> > > > +
+> > > >                 /* Send copy to monitor */
+> > > >                 hci_send_to_monitor(hdev, skb);
 
-A few lines above there is still a 'del_timer(&rose->idletimer);' call
-which must be converted to sk_stop_timer(), otherwise there will be a
-possible sk reference leak.
+Looks good to me.
+Anything else needed to merge this patch?
 
-There are other del_timer(&rose->timer) that need conversion.
-
-Thanks
-
-Paolo
-
+Reviewed-by: Dmitry Vyukov <dvyukov@google.com>
