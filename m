@@ -2,79 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C1037557589
-	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 10:33:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 93DC555755B
+	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 10:25:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230021AbiFWIdN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jun 2022 04:33:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45356 "EHLO
+        id S230119AbiFWIZK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jun 2022 04:25:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229528AbiFWIdL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 04:33:11 -0400
-Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48E35DEB5;
-        Thu, 23 Jun 2022 01:33:10 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R211e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046051;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=19;SR=0;TI=SMTPD_---0VHAoIhL_1655973184;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VHAoIhL_1655973184)
-          by smtp.aliyun-inc.com;
-          Thu, 23 Jun 2022 16:33:05 +0800
-Message-ID: <1655972550.3746855-1-xuanzhuo@linux.alibaba.com>
-Subject: Re: [syzbot] WARNING: suspicious RCU usage (5)
-Date:   Thu, 23 Jun 2022 16:22:30 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     syzbot <syzbot+9cbc6bed3a22f1d37395@syzkaller.appspotmail.com>
-Cc:     alobakin@pm.me, bp@alien8.de, daniel@iogearbox.net, hpa@zytor.com,
-        jmattson@google.com, john.fastabend@gmail.com, joro@8bytes.org,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        mingo@redhat.com, netdev@vger.kernel.org, pbonzini@redhat.com,
-        seanjc@google.com, syzkaller-bugs@googlegroups.com,
-        tglx@linutronix.de, vkuznets@redhat.com, wanpengli@tencent.com,
-        x86@kernel.org
-References: <000000000000b9edeb05e1aca987@google.com>
- <0000000000008b8cd205e2187ea2@google.com>
-In-Reply-To: <0000000000008b8cd205e2187ea2@google.com>
-X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SORTED_RECIPS,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
-        autolearn=no autolearn_force=no version=3.4.6
+        with ESMTP id S229812AbiFWIZG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 04:25:06 -0400
+Received: from smtp.smtpout.orange.fr (smtp08.smtpout.orange.fr [80.12.242.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A66F4888D
+        for <netdev@vger.kernel.org>; Thu, 23 Jun 2022 01:25:05 -0700 (PDT)
+Received: from [192.168.1.18] ([90.11.190.129])
+        by smtp.orange.fr with ESMTPA
+        id 4I96oKg22NUm14I96oB4mn; Thu, 23 Jun 2022 10:25:02 +0200
+X-ME-Helo: [192.168.1.18]
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Thu, 23 Jun 2022 10:25:02 +0200
+X-ME-IP: 90.11.190.129
+Message-ID: <77bdb152-db01-9ad0-fc9f-a8921107a119@wanadoo.fr>
+Date:   Thu, 23 Jun 2022 10:24:59 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] net: sfp: fix memory leak in sfp_probe()
+Content-Language: fr
+To:     Jianglei Nie <niejianglei2021@163.com>, linux@armlinux.org.uk,
+        andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220623070914.1781700-1-niejianglei2021@163.com>
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+In-Reply-To: <20220623070914.1781700-1-niejianglei2021@163.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 23 Jun 2022 00:35:13 -0700, syzbot <syzbot+9cbc6bed3a22f1d37395@syzkaller.appspotmail.com> wrote:
-> syzbot has bisected this issue to:
->
-> commit c2ff53d8049f30098153cd2d1299a44d7b124c57
-> Author: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> Date:   Thu Feb 18 20:50:02 2021 +0000
->
->     net: Add priv_flags for allow tx skb without linear
->
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11596838080000
-> start commit:   a5b00f5b78b7 Merge branch 'hns3-fixres'
-> git tree:       net
-> final oops:     https://syzkaller.appspot.com/x/report.txt?x=13596838080000
-> console output: https://syzkaller.appspot.com/x/log.txt?x=15596838080000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=20ac3e0ebf0db3bd
-> dashboard link: https://syzkaller.appspot.com/bug?extid=9cbc6bed3a22f1d37395
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=143b22abf00000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=125194eff00000
->
-> Reported-by: syzbot+9cbc6bed3a22f1d37395@syzkaller.appspotmail.com
-> Fixes: c2ff53d8049f ("net: Add priv_flags for allow tx skb without linear")
+Le 23/06/2022 à 09:09, Jianglei Nie a écrit :
+> sfp_probe() allocates a memory chunk from sfp with sfp_alloc(), when
+> devm_add_action() fails, sfp is not freed, which leads to a memory leak.
+> 
+> We should free the sfp with sfp_cleanup() when devm_add_action() fails.
+> 
+> Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
+> ---
+>   drivers/net/phy/sfp.c | 4 +++-
+>   1 file changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
+> index 9a5d5a10560f..366a89adabf5 100644
+> --- a/drivers/net/phy/sfp.c
+> +++ b/drivers/net/phy/sfp.c
+> @@ -2517,8 +2517,10 @@ static int sfp_probe(struct platform_device *pdev)
+>   	platform_set_drvdata(pdev, sfp);
+>   
+>   	err = devm_add_action(sfp->dev, sfp_cleanup, sfp);
+> -	if (err < 0)
+> +	if (err < 0) {
+> +		sfp_cleanup(sfp);
+>   		return err;
+> +	}
 
+Hi,
 
-I think it's unlikely that my patch is causing the problem, because my patch is
-very simple and doesn't have any effect on the kernel. I don't know if there is
-something wrong.
+or use devm_add_action_or_reset() instead?
 
-I used the above config (make olddefconfig) to compile this commit, and it
-crashed directly after starting it in qemu.
+Just my 2c,
 
-Thanks.
+CJ
 
+>   
+>   	sff = sfp->type = &sfp_data;
+>   
 
->
-> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
