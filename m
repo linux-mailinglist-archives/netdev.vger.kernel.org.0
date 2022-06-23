@@ -2,70 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4715D558930
-	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 21:39:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AFDCC55892B
+	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 21:39:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230392AbiFWTi5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jun 2022 15:38:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57868 "EHLO
+        id S231150AbiFWTjB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jun 2022 15:39:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230168AbiFWTii (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 15:38:38 -0400
+        with ESMTP id S231139AbiFWTij (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 15:38:39 -0400
 Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F28591EECF;
-        Thu, 23 Jun 2022 12:27:07 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id q18so70597pld.13;
-        Thu, 23 Jun 2022 12:27:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5675525C52;
+        Thu, 23 Jun 2022 12:27:16 -0700 (PDT)
+Received: by mail-pl1-x642.google.com with SMTP id c4so94626plc.8;
+        Thu, 23 Jun 2022 12:27:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=i/IuSNY1nTR+i2SmVAA4oqUp1JTqS3dcX7JKuVibnNI=;
-        b=OS5Y1n2KlxPV2GCSCzyO6/im/laq+l0XbrOcYiGEaGjvcB4N+Fwcd+PN3Dbs+a/URO
-         Gc7KdRvBroRDFHmV/BuxDKnVYEerV69Wq7wSYe3kib82WwLvvJ/rXxmfujDwYjTUN0yx
-         4XY/po2aThnbv+CNkV403T+sPWwLnyqJr/VRCerofB5YznNaNFEZF3SqGd/DvpBu50td
-         6IHtqHdmNXur9K0UvJzmE3mZVxoe58bvBRpKUmLkzY9xkgGFGqy31k8h2fbmOWpjUsAb
-         lhuiykwW/V6n2aavl7kyLNYIq1zZCn3chCccDNOyIbtRdY+Pfq6HP1YsWEqsu+6Fr0gD
-         n5Mg==
+        bh=rTdBog/fVFVehsGVVg5MRfeHgkRypizQwrV37IOZOC0=;
+        b=LH961ZVaZ+4TpGICrA0Ysm2sOIh2aB/w9DkZzYS3J1s1PoomPTcK/xur8rjraxeLr7
+         ip3pLJKGZv0Y7PkOINkmF9Z5JIiAX1cMrerrDYAcsJi8noEBi7RXMLNTTjSvw7qE4O7H
+         Sh1kQ2NHJYTzgRfowgjpuakl1e9rpb8hlXPRnYUZtBfFdImAgckVf/9tWVUySiy0RhmA
+         I4L5TkCEizDKvngKqAavK6hyj6tWJN5P5dOpLD4C3yaLaJaC0asDmDN3Ft856H5GuXnB
+         TDJ+bxfPilmdoq1DJr4H5hujW5BIY0XCPyM6C4kvEQGZ7ExMZMm24zIr9QL4peCTvl9f
+         DJpQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=i/IuSNY1nTR+i2SmVAA4oqUp1JTqS3dcX7JKuVibnNI=;
-        b=Ir8tjwI6TRYSt2eoJ5CTdwHKNawhmQUjWF06H6WXOtFccvbgZaaKu8E6+plNPxMtXm
-         ptxaTtn1OP+7VgaAU7fOm/RRJI7kMrofYyqKXb+MfuV9riN/fDghZl+ysA3+diArrzrV
-         55gLLyS8U2cDQGm0+WvwdIC1VC0odewaSUEUDq20wp2jH+j++9OYp73/dH9EKqSljsRL
-         Cr76WUVwk3lRFaDb6eot18Pjc5TYpiOvit0L0DZYGHWzzVLB0OFRutt5uhlAqFzhwYZ6
-         rPXwXBJ8PgMm/dtE8vev6f5nF2N3IR8xTEYwJhrJkSQD5C/Uj7gdE9hPPIu1ueXG0sag
-         Xveg==
-X-Gm-Message-State: AJIora/A/RO8cYSAaMyIVDxokDkTONpbgutJmFcV1KDFF2y0v67WY+8d
-        NcpnifU1yyRmQXDmozIlJ6c0mzj34NtH7w==
-X-Google-Smtp-Source: AGRyM1tCb5EtyO0w4L+lAX/vi9CssffJ8U2CoLQ2TKrl5ySJ9rEe2tunON4aklOp4IuAqv/AstaI/A==
-X-Received: by 2002:a17:902:f787:b0:16a:1e2b:e97 with SMTP id q7-20020a170902f78700b0016a1e2b0e97mr24672383pln.27.1656012427265;
-        Thu, 23 Jun 2022 12:27:07 -0700 (PDT)
+        bh=rTdBog/fVFVehsGVVg5MRfeHgkRypizQwrV37IOZOC0=;
+        b=6zBvtywxtxLdYmL7fEFVDxTAwuvv5ltjSiVAvbqyso5VGpeUsIDFuV2FJK1udkf0sT
+         NkuRF6iNumDV9R1VK35VCxBoxW456klVe1xw6CuTBDPRkYzAYxffNnM4qRFh0TQZkZ+k
+         dYsFCMVVzkBofTlWcRiR8hLjLMk0nmP5ngvkWe5ldJ+AFfwFvOPfsWgYa4sEq2mcnAPe
+         nM9JeezSvRVPGnyhqsW9krZ0WYSGzf6luBrzXvNeZI7EKyBYrbEBfifzhBR/RfpwTJak
+         TmpDeSjmyqAfzBR4EP0hQsI/ILddKQmNFG20yJ3K0E+zTu/1UEKnxzpHgzkj9InaPdi0
+         l/HA==
+X-Gm-Message-State: AJIora+uWe+uLorUZPtH+q9PraGRpfPfsQiR0R5V7VHp29boZcgUsK2N
+        0/4/eoqddPKC1uyp0OO7eVoEF/cpbmcHpw==
+X-Google-Smtp-Source: AGRyM1v9UAyXk9cXUO1Pqi1LYbOWNTg46tyFDoePSSOKj7onXnCp+gJzwXewi3pZVZdzF8gAb5d9Fw==
+X-Received: by 2002:a17:90a:5e0e:b0:1ec:aa3f:8dc1 with SMTP id w14-20020a17090a5e0e00b001ecaa3f8dc1mr5438166pjf.145.1656012435754;
+        Thu, 23 Jun 2022 12:27:15 -0700 (PDT)
 Received: from localhost ([2405:201:6014:d0c0:79de:f3f4:353c:8616])
-        by smtp.gmail.com with ESMTPSA id z19-20020aa78893000000b0050dc76281e0sm786pfe.186.2022.06.23.12.27.06
+        by smtp.gmail.com with ESMTPSA id a20-20020a621a14000000b005251bea0d53sm13600pfa.83.2022.06.23.12.27.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Jun 2022 12:27:06 -0700 (PDT)
+        Thu, 23 Jun 2022 12:27:15 -0700 (PDT)
 From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
 To:     bpf@vger.kernel.org
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
+Cc:     Yonghong Song <yhs@fb.com>, Alexei Starovoitov <ast@kernel.org>,
         Andrii Nakryiko <andrii@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Pablo Neira Ayuso <pablo@netfilter.org>,
         Florian Westphal <fw@strlen.de>,
         Jesper Dangaard Brouer <brouer@redhat.com>,
         =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org
-Subject: [PATCH bpf-next v5 5/8] net: netfilter: Add kfuncs to set and change CT status
-Date:   Fri, 24 Jun 2022 00:56:34 +0530
-Message-Id: <20220623192637.3866852-6-memxor@gmail.com>
+        Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org
+Subject: [PATCH bpf-next v5 6/8] selftests/bpf: Add verifier tests for forced kfunc ref args
+Date:   Fri, 24 Jun 2022 00:56:35 +0530
+Message-Id: <20220623192637.3866852-7-memxor@gmail.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623192637.3866852-1-memxor@gmail.com>
 References: <20220623192637.3866852-1-memxor@gmail.com>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=7434; i=memxor@gmail.com; h=from:subject; bh=5vZDzfYMdwGatzyK+LNL9zGsmO8GE8lBDG0BNOIDIhU=; b=owEBbQKS/ZANAwAIAUzgyIZIvxHKAcsmYgBitL5LCo0N3KkU4qPBz5fo08oK1ygYQ6wgi4A/0kHO hm67GHWJAjMEAAEIAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYrS+SwAKCRBM4MiGSL8Ryu0zEA CNlOeZlLcx9yjWSQoQMUbCFe1X6P/EDzjTY9teX9qlqXqfbuVAi4wLoEUZDiAUQmAyN5BJhWRhCmFm 8Br6PgvwPVfIiWo9e/cpqJdebMiNkQcjaMDdMEeu9TmSXVQMhLQAbN5IzKxEhb8nOuJNSxAwOK+LuB W8yQLcN61aTC8X5xciHM9kEwlPJpRIPpdSrcVQqFn6GR3Y+eLmvwbUzVMV/i9bVwP6/UWzJ+1iSuET ZL8KwS7yP48EYkfExDbvp9rhBFVuA7FTvc8pJyGFpEep6loVAI4nl2X9ioQcGg1OVNNLfJngFp/tNC zQ1KyPJW7NbfBMya1JIwP3L5oVEIiS1lM2ICwE8kr1Od9pw0SqkmDrQs1AW6dIW7ep7UA0VBIxk2Ye md6VQkApVTTBVckhCaFRFVGS8KITLm01K2bT19px0+HUDYHz9KvOSNDdedFcCF4uJiBFfn0xZBJgBp 9wwLK5ZcgtWZrZpJakrXpIsVnyYKuA8YiFLip7bCYO/ZJiOX7hhBEBXbX3ymIV5rEiFQJ2m9IxioxM S0qJiDpP4lBxL06o44xH5PlgHxg1DrqM9VwIACT5vaFUmhgXa3Rg1l3Wpa/IhWAoR0/DMBy5/kMRSl OdfUaSstDRhRFI0LhBOwhVaybYklK6Mdl9VBDXayO3nIxUgYcGItC4FDiQbQ==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2710; h=from:subject; bh=KTldfN2HxtfUAqDwOHNrh3Yr2EfzeShwwjvJTjpRhqk=; b=owEBbQKS/ZANAwAIAUzgyIZIvxHKAcsmYgBitL5MjDBcoslWjE16JopPpwfWHBhS2it21L/4BeYr akvSp0OJAjMEAAEIAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYrS+TAAKCRBM4MiGSL8RyvNBD/ oCfvnkB15/EP+Pgg6ojn5xklwM3LCuksnfxCU9g5cw26iOrJJRT/Smi3JOFIqlp76t6SCRwcx4h2tO QArDBNix4fSZ5/zCNDmmKZ3w/IPE/XzUxDHFKDFkBPK75gRVF9cn8tJJa+DiXqrvSwcCDJ7XWW4mNC NvD/5IrOfafdru+Jn6Bj+hvOUAADrLXRrYT9vaGZr9AapHjgC5XXHRV9gCirR4U44M6N9DbKysVIGr 3/d94dvD67WhRhicqUR0EIv3ITt44fwWOlzhumyfFLYDhIHv/knH3q6bg7AE+/HHedSXjTWT3SZfCe cKovIvMbQty/RoXMmzlefjA0jME29aYBAqlbY1xAhOGrEzsxQR8ZK7IDQwGa/ORSPIwuyBczFP9Sod B4ynm5zXnGYolYtyDXdPfFznzdafe4CcG6lq1okB+Sp7K0Xw6/fCnkpc1Ch6Rwjn39izNgfQXhvLGD dtLQvGmZg3aEklw/nwDP2qWpvxEs75P9AjSGq2lgun7Q7NfH2YcURat7/PlN82xMeMdH+UVIRc8Nmo 0zOfxynoW49TjLO2MrIJYD9kvGefwF854EQc0a9RbEZpTvOIGLkojxoGCC269wsKKROpEAVWdctE6A +S5M74D0XbH1kX6XqSQGZ489fRJS9EjBzvOsMu/xk3XUyumHZi76XdZfYcjg==
 X-Developer-Key: i=memxor@gmail.com; a=openpgp; fpr=4BBE2A7E06ECF9D5823C61114CE0C88648BF11CA
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -78,218 +78,80 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Lorenzo Bianconi <lorenzo@kernel.org>
+Make sure verifier rejects the bad cases and ensure the good case keeps
+working. The selftests make use of the bpf_kfunc_call_test_ref kfunc
+added in the previous patch only for verification.
 
-Introduce bpf_ct_set_status and bpf_ct_change_status kfunc helpers in
-order to set nf_conn field of allocated entry or update nf_conn status
-field of existing inserted entry. Use nf_ct_change_status_common to
-share the permitted status field changes between netlink and BPF side
-by refactoring ctnetlink_change_status.
-
-It is required to introduce two kfuncs taking nf_conn___init and nf_conn
-instead of sharing one because __ref suffix on the parameter name causes
-strict type checking. This would disallow passing nf_conn___init to
-kfunc taking nf_conn, and vice versa. We cannot remove the __ref suffix
-as we only want to accept refcounted pointers and not e.g. ct->master.
-
-Hence, bpf_ct_set_* kfuncs are meant to be used on allocated CT, and
-bpf_ct_change_* kfuncs are meant to be used on inserted or looked up
-CT entry.
-
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-Co-developed-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Acked-by: Yonghong Song <yhs@fb.com>
 Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 ---
- include/net/netfilter/nf_conntrack_core.h |  2 ++
- net/netfilter/nf_conntrack_bpf.c          | 37 +++++++++++++++++++++
- net/netfilter/nf_conntrack_core.c         | 40 +++++++++++++++++++++++
- net/netfilter/nf_conntrack_netlink.c      | 39 ++--------------------
- 4 files changed, 81 insertions(+), 37 deletions(-)
+ tools/testing/selftests/bpf/verifier/calls.c | 53 ++++++++++++++++++++
+ 1 file changed, 53 insertions(+)
 
-diff --git a/include/net/netfilter/nf_conntrack_core.h b/include/net/netfilter/nf_conntrack_core.h
-index 3b0f7d0eebae..3cd3a6e631aa 100644
---- a/include/net/netfilter/nf_conntrack_core.h
-+++ b/include/net/netfilter/nf_conntrack_core.h
-@@ -98,6 +98,8 @@ static inline void __nf_ct_set_timeout(struct nf_conn *ct, u64 timeout)
- }
- 
- int __nf_ct_change_timeout(struct nf_conn *ct, u64 cta_timeout);
-+void __nf_ct_change_status(struct nf_conn *ct, unsigned long on, unsigned long off);
-+int nf_ct_change_status_common(struct nf_conn *ct, unsigned int status);
- 
- #endif
- 
-diff --git a/net/netfilter/nf_conntrack_bpf.c b/net/netfilter/nf_conntrack_bpf.c
-index db04874da950..6975dda77173 100644
---- a/net/netfilter/nf_conntrack_bpf.c
-+++ b/net/netfilter/nf_conntrack_bpf.c
-@@ -394,6 +394,39 @@ int bpf_ct_change_timeout(struct nf_conn *nfct__ref, u32 timeout)
- 	return __nf_ct_change_timeout(nfct__ref, msecs_to_jiffies(timeout));
- }
- 
-+/* bpf_ct_set_status - Set status field of allocated nf_conn
-+ *
-+ * Set the status field of the newly allocated nf_conn before insertion.
-+ * This must be invoked for referenced PTR_TO_BTF_ID to nf_conn___init.
-+ *
-+ * Parameters:
-+ * @nfct__ref    - Pointer to referenced nf_conn object, obtained using
-+ *		   bpf_xdp_ct_alloc or bpf_skb_ct_alloc.
-+ * @status       - New status value.
-+ */
-+int bpf_ct_set_status(const struct nf_conn___init *nfct__ref, u32 status)
+diff --git a/tools/testing/selftests/bpf/verifier/calls.c b/tools/testing/selftests/bpf/verifier/calls.c
+index 743ed34c1238..3fb4f69b1962 100644
+--- a/tools/testing/selftests/bpf/verifier/calls.c
++++ b/tools/testing/selftests/bpf/verifier/calls.c
+@@ -218,6 +218,59 @@
+ 	.result = REJECT,
+ 	.errstr = "variable ptr_ access var_off=(0x0; 0x7) disallowed",
+ },
 +{
-+	return nf_ct_change_status_common((struct nf_conn *)nfct__ref, status);
-+}
-+
-+/* bpf_ct_change_status - Change status of inserted nf_conn
-+ *
-+ * Change the status field of the provided connection tracking entry.
-+ * This must be invoked for referenced PTR_TO_BTF_ID to nf_conn.
-+ *
-+ * Parameters:
-+ * @nfct__ref    - Pointer to referenced nf_conn object, obtained using
-+ *		   bpf_ct_insert_entry, bpf_xdp_ct_lookup or bpf_skb_ct_lookup.
-+ * @status       - New status value.
-+ */
-+int bpf_ct_change_status(struct nf_conn *nfct__ref, u32 status)
++	"calls: invalid kfunc call: referenced arg needs refcounted PTR_TO_BTF_ID",
++	.insns = {
++	BPF_MOV64_REG(BPF_REG_1, BPF_REG_10),
++	BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, -8),
++	BPF_ST_MEM(BPF_DW, BPF_REG_1, 0, 0),
++	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, BPF_PSEUDO_KFUNC_CALL, 0, 0),
++	BPF_JMP_IMM(BPF_JNE, BPF_REG_0, 0, 1),
++	BPF_EXIT_INSN(),
++	BPF_MOV64_REG(BPF_REG_6, BPF_REG_0),
++	BPF_MOV64_REG(BPF_REG_1, BPF_REG_0),
++	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, BPF_PSEUDO_KFUNC_CALL, 0, 0),
++	BPF_LDX_MEM(BPF_DW, BPF_REG_1, BPF_REG_6, 16),
++	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, BPF_PSEUDO_KFUNC_CALL, 0, 0),
++	BPF_MOV64_IMM(BPF_REG_0, 0),
++	BPF_EXIT_INSN(),
++	},
++	.prog_type = BPF_PROG_TYPE_SCHED_CLS,
++	.fixup_kfunc_btf_id = {
++		{ "bpf_kfunc_call_test_acquire", 3 },
++		{ "bpf_kfunc_call_test_ref", 8 },
++		{ "bpf_kfunc_call_test_ref", 10 },
++	},
++	.result_unpriv = REJECT,
++	.result = REJECT,
++	.errstr = "R1 must be referenced",
++},
 +{
-+	/* We need a different kfunc because __ref suffix makes type matching
-+	 * strict, so normal nf_conn cannot be passed to bpf_ct_set_status.
-+	 */
-+	return nf_ct_change_status_common(nfct__ref, status);
-+}
-+
- __diag_pop()
- 
- BTF_SET_START(nf_ct_xdp_check_kfunc_ids)
-@@ -403,6 +436,8 @@ BTF_ID(func, bpf_ct_insert_entry)
- BTF_ID(func, bpf_ct_release)
- BTF_ID(func, bpf_ct_set_timeout);
- BTF_ID(func, bpf_ct_change_timeout);
-+BTF_ID(func, bpf_ct_set_status);
-+BTF_ID(func, bpf_ct_change_status);
- BTF_SET_END(nf_ct_xdp_check_kfunc_ids)
- 
- BTF_SET_START(nf_ct_tc_check_kfunc_ids)
-@@ -412,6 +447,8 @@ BTF_ID(func, bpf_ct_insert_entry)
- BTF_ID(func, bpf_ct_release)
- BTF_ID(func, bpf_ct_set_timeout);
- BTF_ID(func, bpf_ct_change_timeout);
-+BTF_ID(func, bpf_ct_set_status);
-+BTF_ID(func, bpf_ct_change_status);
- BTF_SET_END(nf_ct_tc_check_kfunc_ids)
- 
- BTF_SET_START(nf_ct_acquire_kfunc_ids)
-diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
-index 572f59a5e936..66a0aa8dbc3b 100644
---- a/net/netfilter/nf_conntrack_core.c
-+++ b/net/netfilter/nf_conntrack_core.c
-@@ -2807,4 +2807,44 @@ int __nf_ct_change_timeout(struct nf_conn *ct, u64 timeout)
- }
- EXPORT_SYMBOL_GPL(__nf_ct_change_timeout);
- 
-+void __nf_ct_change_status(struct nf_conn *ct, unsigned long on, unsigned long off)
-+{
-+	unsigned int bit;
-+
-+	/* Ignore these unchangable bits */
-+	on &= ~IPS_UNCHANGEABLE_MASK;
-+	off &= ~IPS_UNCHANGEABLE_MASK;
-+
-+	for (bit = 0; bit < __IPS_MAX_BIT; bit++) {
-+		if (on & (1 << bit))
-+			set_bit(bit, &ct->status);
-+		else if (off & (1 << bit))
-+			clear_bit(bit, &ct->status);
-+	}
-+}
-+EXPORT_SYMBOL_GPL(__nf_ct_change_status);
-+
-+int nf_ct_change_status_common(struct nf_conn *ct, unsigned int status)
-+{
-+	unsigned long d;
-+
-+	d = ct->status ^ status;
-+
-+	if (d & (IPS_EXPECTED|IPS_CONFIRMED|IPS_DYING))
-+		/* unchangeable */
-+		return -EBUSY;
-+
-+	if (d & IPS_SEEN_REPLY && !(status & IPS_SEEN_REPLY))
-+		/* SEEN_REPLY bit can only be set */
-+		return -EBUSY;
-+
-+	if (d & IPS_ASSURED && !(status & IPS_ASSURED))
-+		/* ASSURED bit can only be set */
-+		return -EBUSY;
-+
-+	__nf_ct_change_status(ct, status, 0);
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(nf_ct_change_status_common);
-+
- #endif
-diff --git a/net/netfilter/nf_conntrack_netlink.c b/net/netfilter/nf_conntrack_netlink.c
-index b1de07c73845..e02832ef9b9f 100644
---- a/net/netfilter/nf_conntrack_netlink.c
-+++ b/net/netfilter/nf_conntrack_netlink.c
-@@ -1890,45 +1890,10 @@ ctnetlink_parse_nat_setup(struct nf_conn *ct,
- }
- #endif
- 
--static void
--__ctnetlink_change_status(struct nf_conn *ct, unsigned long on,
--			  unsigned long off)
--{
--	unsigned int bit;
--
--	/* Ignore these unchangable bits */
--	on &= ~IPS_UNCHANGEABLE_MASK;
--	off &= ~IPS_UNCHANGEABLE_MASK;
--
--	for (bit = 0; bit < __IPS_MAX_BIT; bit++) {
--		if (on & (1 << bit))
--			set_bit(bit, &ct->status);
--		else if (off & (1 << bit))
--			clear_bit(bit, &ct->status);
--	}
--}
--
- static int
- ctnetlink_change_status(struct nf_conn *ct, const struct nlattr * const cda[])
++	"calls: valid kfunc call: referenced arg needs refcounted PTR_TO_BTF_ID",
++	.insns = {
++	BPF_MOV64_REG(BPF_REG_1, BPF_REG_10),
++	BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, -8),
++	BPF_ST_MEM(BPF_DW, BPF_REG_1, 0, 0),
++	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, BPF_PSEUDO_KFUNC_CALL, 0, 0),
++	BPF_JMP_IMM(BPF_JNE, BPF_REG_0, 0, 1),
++	BPF_EXIT_INSN(),
++	BPF_MOV64_REG(BPF_REG_6, BPF_REG_0),
++	BPF_MOV64_REG(BPF_REG_1, BPF_REG_0),
++	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, BPF_PSEUDO_KFUNC_CALL, 0, 0),
++	BPF_MOV64_REG(BPF_REG_1, BPF_REG_6),
++	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, BPF_PSEUDO_KFUNC_CALL, 0, 0),
++	BPF_MOV64_IMM(BPF_REG_0, 0),
++	BPF_EXIT_INSN(),
++	},
++	.prog_type = BPF_PROG_TYPE_SCHED_CLS,
++	.fixup_kfunc_btf_id = {
++		{ "bpf_kfunc_call_test_acquire", 3 },
++		{ "bpf_kfunc_call_test_ref", 8 },
++		{ "bpf_kfunc_call_test_release", 10 },
++	},
++	.result_unpriv = REJECT,
++	.result = ACCEPT,
++},
  {
--	unsigned long d;
--	unsigned int status = ntohl(nla_get_be32(cda[CTA_STATUS]));
--	d = ct->status ^ status;
--
--	if (d & (IPS_EXPECTED|IPS_CONFIRMED|IPS_DYING))
--		/* unchangeable */
--		return -EBUSY;
--
--	if (d & IPS_SEEN_REPLY && !(status & IPS_SEEN_REPLY))
--		/* SEEN_REPLY bit can only be set */
--		return -EBUSY;
--
--	if (d & IPS_ASSURED && !(status & IPS_ASSURED))
--		/* ASSURED bit can only be set */
--		return -EBUSY;
--
--	__ctnetlink_change_status(ct, status, 0);
--	return 0;
-+	return nf_ct_change_status_common(ct, ntohl(nla_get_be32(cda[CTA_STATUS])));
- }
- 
- static int
-@@ -2825,7 +2790,7 @@ ctnetlink_update_status(struct nf_conn *ct, const struct nlattr * const cda[])
- 	 * unchangeable bits but do not error out. Also user programs
- 	 * are allowed to clear the bits that they are allowed to change.
- 	 */
--	__ctnetlink_change_status(ct, status, ~status);
-+	__nf_ct_change_status(ct, status, ~status);
- 	return 0;
- }
- 
+ 	"calls: basic sanity",
+ 	.insns = {
 -- 
 2.36.1
 
