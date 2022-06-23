@@ -2,85 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 399F3558996
-	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 21:51:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 496EC5589E2
+	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 22:17:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231190AbiFWTv2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jun 2022 15:51:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52464 "EHLO
+        id S229547AbiFWUQv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jun 2022 16:16:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230473AbiFWTv1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 15:51:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88E1CE6A;
-        Thu, 23 Jun 2022 12:51:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 33E4EB824D6;
-        Thu, 23 Jun 2022 19:51:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BA66C341C0;
-        Thu, 23 Jun 2022 19:51:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656013883;
-        bh=VLyBp5Co68HkeVuGaxmyXwHAeDZdj1CEZJbovhRG/j4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=HavezG7o7tE5X6T1K09XV+bgeG1QWXJo90zYp6Z4Kid+4cpRMIKHw1exq32Btxp5m
-         qC5GO7Bwd2Z0v5l2dEAQ4o/wHxmv6AkjV5xyWEzDg3JSwSAJXNMagqv7yR1IjZZCEy
-         +QKblGmtyDfXhW2SwTr1bX0QHdF6lhHXItOphKqQ0GgxLLSKaVA/KL9ivjMuql4CxO
-         2vnU1yg/WvhfScR+Z9M07GPzR3ZtrcR+aHkS8R8LcmRIxOpqNmArPDft0fFLNaXkt/
-         0rO4mlTNWmKWDkE/GwuAuVqbXl6Hw+l3spk6Vq/p2oBkiJijyYhlwoCILDEZ5hmry8
-         ry34p7MwgGZEw==
-Date:   Thu, 23 Jun 2022 12:51:13 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Francesco Dolcini <francesco.dolcini@toradex.com>
-Cc:     Marcel Holtmann <marcel@holtmann.org>,
-        Vasyl Vavrychuk <vasyl.vavrychuk@opensynergy.com>,
-        Max Krummenacher <max.oss.09@gmail.com>,
-        max.krummenacher@toradex.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v1] Revert "Bluetooth: core: Fix missing power_on work
- cancel on HCI close"
-Message-ID: <20220623125113.214fac0b@kernel.org>
-In-Reply-To: <20220621115514.GA75773@francesco-nb.int.toradex.com>
-References: <20220614181706.26513-1-max.oss.09@gmail.com>
-        <20220621115514.GA75773@francesco-nb.int.toradex.com>
+        with ESMTP id S229451AbiFWUQu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 16:16:50 -0400
+Received: from mail-qv1-xf36.google.com (mail-qv1-xf36.google.com [IPv6:2607:f8b0:4864:20::f36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED422527E1;
+        Thu, 23 Jun 2022 13:16:49 -0700 (PDT)
+Received: by mail-qv1-xf36.google.com with SMTP id o43so1685216qvo.4;
+        Thu, 23 Jun 2022 13:16:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=YWrCQp6H9wIltSv1NIBwWayinjF3IWxeRXdz64C/6O8=;
+        b=H0iRj/c6MpY2eSSDDZgyYSk4nDUWmxYHRjgj/m/4qUypbcJDTPIYhuazKHcWobrHr5
+         gzMxPmUZ9TfzoBSbDy93yX8ibOTfAgZvUQ9nlTwbpwBobAafrndImc/rjqlIdrsjGgIU
+         f939IpzQVfemTQC12tvKJFYdtEcTrC9hRKFPx1sxB9nFhDjPgJUcZl+Gj7cuYk5uqdlc
+         Wuhk8GAWrGirtvCXM2trIZbiskzbpJqoWnkSSuLaP6YZXRsHMIp2vx68N6kkGoejR9Bc
+         OnLAZPnHxE1tdrKATsSqZJRPMxMIxGVQ7N5PWXw8NOaCt9IJo+MjipZvs8RqUkY5as6R
+         kA+Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YWrCQp6H9wIltSv1NIBwWayinjF3IWxeRXdz64C/6O8=;
+        b=t5iY1kIaeAGt94QrZdjRrTwAdd3Wsai7H3+/OsB/LM3FwgXoOQrKXXeNg9Dw146R/P
+         l842nbLuuPhT2jnnVvOkoVedttM99TnpnL52yikM/yU1YqWirgPBnIJ0XV35ednPXHb9
+         jMkO769m64sv9aM9NTyFbIQP4qzleVHC3DC1fY76lS1z3493jQqZKnld+G7nbj4+HMvA
+         2fE693NGq30L7tiGCxujn1/apjr40D5vS06wMqVV9WvzMREY3ZUZsBz2EsaCLik8PiA6
+         E4aet7uZegq5zge21kFyDeyH2FB8/VfP9S24Z+vLDWnCoTpCQRlP1PVJbY58XO1FVgTA
+         9adg==
+X-Gm-Message-State: AJIora84HQ1fgUyO59de1hyMboiahQTCeQg0fzTGsy1VaZRZCXA/B1V3
+        evtY5Ph1zUtt2y30hy4GIdNrHn1pAlRqBerXZDc=
+X-Google-Smtp-Source: AGRyM1uOtTXMj9r/qGMK6GqGlRRTsCptlK8dfpB68zWK8onR9QisCok7v5sadUPaTDEsbVzVvhUCa+H87ScWox2/GG4=
+X-Received: by 2002:ac8:5dce:0:b0:305:300e:146d with SMTP id
+ e14-20020ac85dce000000b00305300e146dmr10167380qtx.546.1656015409065; Thu, 23
+ Jun 2022 13:16:49 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220621135339.1269409-1-robimarko@gmail.com> <a194d4c5-8e31-ecd9-ecd0-0c96af03485b@linaro.org>
+ <CAOX2RU6fBo5f6cxAUgLKj3j+_oP7nSm7awCpr_yiO_p3NssWkQ@mail.gmail.com> <60ee4aa5-4fef-24e0-0ccf-b93eee1db876@linaro.org>
+In-Reply-To: <60ee4aa5-4fef-24e0-0ccf-b93eee1db876@linaro.org>
+From:   Robert Marko <robimarko@gmail.com>
+Date:   Thu, 23 Jun 2022 22:16:38 +0200
+Message-ID: <CAOX2RU7da_bUNM0Zr-YA1eQN96ENcfsKLD9C2PVVNijN6Y2hNw@mail.gmail.com>
+Subject: Re: [PATCH 1/2] dt-bindings: net: wireless: ath11k: add new DT entry
+ for board ID
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Kalle Valo <kvalo@kernel.org>, davem@davemloft.net,
+        Eric Dumazet <edumazet@google.com>, kuba@kernel.org,
+        pabeni@redhat.com, Rob Herring <robh+dt@kernel.org>,
+        krzysztof.kozlowski+dt@linaro.org, ath11k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Devicetree List <devicetree@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 21 Jun 2022 13:55:14 +0200 Francesco Dolcini wrote:
-> Marcel, Vasyl,
-> any comment on this?
+On Wed, 22 Jun 2022 at 16:55, Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
+>
+> On 21/06/2022 20:47, Robert Marko wrote:
+> > On Tue, 21 Jun 2022 at 17:58, Krzysztof Kozlowski
+> > <krzysztof.kozlowski@linaro.org> wrote:
+> >>
+> >> On 21/06/2022 15:53, Robert Marko wrote:
+> >>> bus + qmi-chip-id + qmi-board-id and optionally the variant are currently
+> >>> used for identifying the correct board data file.
+> >>>
+> >>> This however is sometimes not enough as all of the IPQ8074 boards that I
+> >>> have access to dont have the qmi-board-id properly fused and simply return
+> >>> the default value of 0xFF.
+> >>>
+> >>> So, to provide the correct qmi-board-id add a new DT property that allows
+> >>> the qmi-board-id to be overridden from DTS in cases where its not set.
+> >>> This is what vendors have been doing in the stock firmwares that were
+> >>> shipped on boards I have.
+> >>>
+> >>> Signed-off-by: Robert Marko <robimarko@gmail.com>
+> >>
+> >> Thank you for your patch. There is something to discuss/improve.
+> >>
+> >>> ---
+> >>>  .../devicetree/bindings/net/wireless/qcom,ath11k.yaml     | 8 ++++++++
+> >>>  1 file changed, 8 insertions(+)
+> >>>
+> >>> diff --git a/Documentation/devicetree/bindings/net/wireless/qcom,ath11k.yaml b/Documentation/devicetree/bindings/net/wireless/qcom,ath11k.yaml
+> >>> index a677b056f112..fe6aafdab9d4 100644
+> >>> --- a/Documentation/devicetree/bindings/net/wireless/qcom,ath11k.yaml
+> >>> +++ b/Documentation/devicetree/bindings/net/wireless/qcom,ath11k.yaml
+> >>> @@ -41,6 +41,14 @@ properties:
+> >>>          * reg
+> >>>          * reg-names
+> >>>
+> >>> +  qcom,ath11k-board-id:
+> >>
+> >> The "board" a bit confuses me because in the context of entire system it
+> >> means the entire hardware running Qualcomm SoC. This is sometimes
+> >> encoded as qcom,board-id property.
+> >
+> > Hi Krzysztof,
+> > I agree that the name is a bit confusing, it's not the same as
+> > qcom,board-id AFAIK
+> > and QCA as well as vendors are using a similar property in the wifi
+> > node to override
+> > the default qmi-board-id to the correct one as its rarely properly fused.
+> >
+> > I assume it would be better-called qcom,ath11k-qmi-board-id as you
+> > dont even have
+> > to be using a Qualcomm SoC as the same is used by PCI ath11k cards as well.
+> >
+>
+> Thanks for the explanation. What is the "board" in that context? The
+> card/hardware with ath11k? Then maybe qcom,ath11k-qmi-id or
+> qcom,ath11k-qmi-hw-id?
 
-+1 is there an ETA on the fix getting into net?
+Hi,
 
-> On Tue, Jun 14, 2022 at 08:17:06PM +0200, Max Krummenacher wrote:
-> > From: Max Krummenacher <max.krummenacher@toradex.com>
-> > 
-> > This reverts commit ff7f2926114d3a50f5ffe461a9bce8d761748da5.
-> > 
-> > The commit ff7f2926114d ("Bluetooth: core: Fix missing power_on work
-> > cancel on HCI close") introduced between v5.18 and v5.19-rc1 makes
-> > going to suspend freeze. v5.19-rc2 is equally affected.
-> > 
-> > This has been seen on a Colibri iMX6ULL WB which has a Marvell 8997
-> > based WiFi / Bluetooth module connected over SDIO.
-> > 
-> > With 'v5.18' or 'v5.19-rc1 with said commit reverted' a suspend/resume
-> > cycle looks as follows and the device is functional after the resume:
+I assume it started off as a numerical value to match the board design and was
+then simply carried off to the PCI cards as well.
+
+qcom,ath11k-qmi-hw-id is fine by me, will just expand the description to make
+it clear.
+
+Regards,
+Robert
+
+>
+> Best regards,
+> Krzysztof
