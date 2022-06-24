@@ -2,97 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EFC4559800
-	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 12:38:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 050C855980A
+	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 12:43:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229808AbiFXKiw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jun 2022 06:38:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49220 "EHLO
+        id S231187AbiFXKmh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jun 2022 06:42:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229595AbiFXKiu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 06:38:50 -0400
+        with ESMTP id S231616AbiFXKmf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 06:42:35 -0400
 Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E93D47C530;
-        Fri, 24 Jun 2022 03:38:49 -0700 (PDT)
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25O8j04c029582;
-        Fri, 24 Jun 2022 10:38:06 GMT
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBD057C867;
+        Fri, 24 Jun 2022 03:42:34 -0700 (PDT)
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25OALx0j015133;
+        Fri, 24 Jun 2022 10:42:04 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : subject :
  to : cc : references : in-reply-to : mime-version : message-id :
  content-type : content-transfer-encoding; s=pp1;
- bh=GmQ/Ok3MALIzsxkrn+jtIODmpczo8l5jpYyEIpA1p2Q=;
- b=PLUkv/RANIu9jhpx/D3mE1U6sHR5uqkrJLyQureLki5hdUHsbiJqA9+9yYeXyetS7Yll
- PLEzv7S9zNtQOrQuIDIbpGn2KyHRUzGPjblAcIHomLpW8k6vgzm+onLR2vQKJ3Bqs+9t
- HSkvog+xuAhfOWizlcAgUKI1XHh4ALDORsL42mgf5mKhgrTupGykfW4U9KW3ZAs5KsKE
- hE7YgMf+HEE8tdB647MgrEouSRm47UDqkuyn6/5N+kX4S9Ni0PjIFkCJk8ERSuv+3Vg3
- 65kUmtar7D24I2eborvheK+Hmm7BZ1jI4QaBnlZT40P+1/POgu7riY4cQSwQoo5IOLY4 Dw== 
+ bh=/ReY4q8LSwkqVJLz/FiVwZsbdICwkTULS923eQ5fhec=;
+ b=FglWVjZrAhKI72+l4guaX07i4DBl40HiT4pN4vgiQFAsNJhHkpCO9NqUNe5ticavJVhi
+ vErC0eGN75OcfR5j7t/cjugD/evnZDtJ9hEtS2Dl77QLHbuGHmC4pWKICQMMH6/zj7vI
+ auAM3UyvMjOQjTvxmPAOUmWVikcbwu2NBmfPOoBDPR9hwITb/aFhJATvxJOHb6ympj0X
+ edVtdjXoKq5e1i4H5Pb7hLMmt6+Z/YsqaBad6g2cBTfJWp5wOEwQOOOQCo30ikCfqoDH
+ bGvjVzTBHfbF1ppPZK6zsHYlqLeC4u+LVtEoq+iyI+BLnWFDwBR/snwwkTeNpMzDg7sb sA== 
 Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gw9hyka5b-1
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gwbf18dau-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 24 Jun 2022 10:38:05 +0000
-Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25OAVmm1003164;
-        Fri, 24 Jun 2022 10:38:05 GMT
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gw9hyka4e-1
+        Fri, 24 Jun 2022 10:42:04 +0000
+Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25OAUkYC024049;
+        Fri, 24 Jun 2022 10:42:03 GMT
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gwbf18d9y-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 24 Jun 2022 10:38:04 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25OAaWGx009801;
-        Fri, 24 Jun 2022 10:38:02 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma03ams.nl.ibm.com with ESMTP id 3gvuj7s7a0-1
+        Fri, 24 Jun 2022 10:42:03 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25OAcTgI009034;
+        Fri, 24 Jun 2022 10:42:01 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+        by ppma04ams.nl.ibm.com with ESMTP id 3gs6b98um9-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 24 Jun 2022 10:38:02 +0000
+        Fri, 24 Jun 2022 10:42:01 +0000
 Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25OAc6VN31588708
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25OAf8fn14352716
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 24 Jun 2022 10:38:06 GMT
+        Fri, 24 Jun 2022 10:41:08 GMT
 Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 282664C046;
-        Fri, 24 Jun 2022 10:38:00 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id F066C4C04E;
+        Fri, 24 Jun 2022 10:41:58 +0000 (GMT)
 Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 82DE44C044;
-        Fri, 24 Jun 2022 10:37:59 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id 504984C040;
+        Fri, 24 Jun 2022 10:41:58 +0000 (GMT)
 Received: from localhost (unknown [9.43.19.217])
         by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri, 24 Jun 2022 10:37:59 +0000 (GMT)
-Date:   Fri, 24 Jun 2022 16:07:58 +0530
+        Fri, 24 Jun 2022 10:41:58 +0000 (GMT)
+Date:   Fri, 24 Jun 2022 16:11:57 +0530
 From:   "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>
-Subject: Re: [PATCH v2 0/5] Atomics support for eBPF on powerpc
-To:     bpf@vger.kernel.org, Hari Bathini <hbathini@linux.ibm.com>,
+Subject: Re: [PATCH v2 5/5] bpf ppc32: Add instructions for atomic_[cmp]xchg
+To:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Hari Bathini <hbathini@linux.ibm.com>,
         linuxppc-dev <linuxppc-dev@lists.ozlabs.org>
 Cc:     Andrii Nakryiko <andrii@kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Jordan Niethe <jniethe5@gmail.com>,
         John Fastabend <john.fastabend@gmail.com>,
         Martin KaFai Lau <kafai@fb.com>,
         KP Singh <kpsingh@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>, netdev@vger.kernel.org,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         Paul Mackerras <paulus@samba.org>,
-        Russell Currey <ruscur@russell.cc>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>
 References: <20220610155552.25892-1-hbathini@linux.ibm.com>
-In-Reply-To: <20220610155552.25892-1-hbathini@linux.ibm.com>
+        <20220610155552.25892-6-hbathini@linux.ibm.com>
+        <f09b59ee-c965-a140-4d03-723830cba66d@csgroup.eu>
+        <3d5f05d1-448f-58a6-20b0-3e9f0b13df03@linux.ibm.com>
+        <bb492bb1-e9e4-76fb-4c5f-2a0a2537d544@linux.ibm.com>
+In-Reply-To: <bb492bb1-e9e4-76fb-4c5f-2a0a2537d544@linux.ibm.com>
 MIME-Version: 1.0
 User-Agent: astroid/4d6b06ad (https://github.com/astroidmail/astroid)
-Message-Id: <1656066254.ebcla8exs0.naveen@linux.ibm.com>
+Message-Id: <1656067094.lxf6wftwai.naveen@linux.ibm.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: quoted-printable
 X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: RE9FtiVUmc3qtD5v52sO1YemoU8KsuwS
-X-Proofpoint-ORIG-GUID: Fe2VZ9a_OwBLHfgStWkAeLerODyLOCZf
+X-Proofpoint-ORIG-GUID: nZ8FQ679B7xbpHdpQd3Hs0z4UdBqLv8J
+X-Proofpoint-GUID: PbzvuLvRUIF4mEVX6aF9Q6qR-cfltJkz
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-06-24_06,2022-06-23_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 adultscore=0
- lowpriorityscore=0 spamscore=0 bulkscore=0 mlxlogscore=999 malwarescore=0
- priorityscore=1501 clxscore=1011 suspectscore=0 mlxscore=0 phishscore=0
+ definitions=2022-06-24_07,2022-06-23_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 malwarescore=0
+ mlxscore=0 suspectscore=0 phishscore=0 lowpriorityscore=0 adultscore=0
+ spamscore=0 mlxlogscore=999 impostorscore=0 priorityscore=1501 bulkscore=0
  classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2204290000
- definitions=main-2206240040
+ definitions=main-2206240041
 X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
@@ -102,77 +105,168 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Hari,
-
 Hari Bathini wrote:
-> This patchset adds atomic operations to the eBPF instruction set on
-> powerpc. The instructions that are added here can be summarised with
-> this list of kernel operations for ppc64:
 >=20
-> * atomic[64]_[fetch_]add
-> * atomic[64]_[fetch_]and
-> * atomic[64]_[fetch_]or
-> * atomic[64]_[fetch_]xor
-> * atomic[64]_xchg
-> * atomic[64]_cmpxchg
 >=20
-> and this list of kernel operations for ppc32:
+> On 14/06/22 12:41 am, Hari Bathini wrote:
+>>=20
+>>=20
+>> On 11/06/22 11:04 pm, Christophe Leroy wrote:
+>>>
+>>>
+>>> Le 10/06/2022 =C3=A0 17:55, Hari Bathini a =C3=A9crit=C2=A0:
+>>>> This adds two atomic opcodes BPF_XCHG and BPF_CMPXCHG on ppc32, both
+>>>> of which include the BPF_FETCH flag.=C2=A0 The kernel's atomic_cmpxchg
+>>>> operation fundamentally has 3 operands, but we only have two register
+>>>> fields. Therefore the operand we compare against (the kernel's API
+>>>> calls it 'old') is hard-coded to be BPF_REG_R0. Also, kernel's
+>>>> atomic_cmpxchg returns the previous value at dst_reg + off. JIT the
+>>>> same for BPF too with return value put in BPF_REG_0.
+>>>>
+>>>> =C2=A0=C2=A0=C2=A0 BPF_REG_R0 =3D atomic_cmpxchg(dst_reg + off, BPF_RE=
+G_R0, src_reg);
+>>>>
+>>>> Signed-off-by: Hari Bathini <hbathini@linux.ibm.com>
+>>>> ---
+>>>>
+>>>> Changes in v2:
+>>>> * Moved variable declaration to avoid late declaration error on
+>>>> =C2=A0=C2=A0=C2=A0 some compilers.
+>>>> * Tried to make code readable and compact.
+>>>>
+>>>>
+>>>> =C2=A0=C2=A0 arch/powerpc/net/bpf_jit_comp32.c | 25 ++++++++++++++++++=
+++++---
+>>>> =C2=A0=C2=A0 1 file changed, 22 insertions(+), 3 deletions(-)
+>>>>
+>>>> diff --git a/arch/powerpc/net/bpf_jit_comp32.c=20
+>>>> b/arch/powerpc/net/bpf_jit_comp32.c
+>>>> index 28dc6a1a8f2f..43f1c76d48ce 100644
+>>>> --- a/arch/powerpc/net/bpf_jit_comp32.c
+>>>> +++ b/arch/powerpc/net/bpf_jit_comp32.c
+>>>> @@ -297,6 +297,7 @@ int bpf_jit_build_body(struct bpf_prog *fp, u32=20
+>>>> *image, struct codegen_context *
+>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 u32 ax_re=
+g =3D bpf_to_ppc(BPF_REG_AX);
+>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 u32 tmp_r=
+eg =3D bpf_to_ppc(TMP_REG);
+>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 u32 size =
+=3D BPF_SIZE(code);
+>>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 u32 save_reg, ret_reg;
+>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 s16 off =
+=3D insn[i].off;
+>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 s32 imm =
+=3D insn[i].imm;
+>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 bool func=
+_addr_fixed;
+>>>> @@ -799,6 +800,9 @@ int bpf_jit_build_body(struct bpf_prog *fp, u32=20
+>>>> *image, struct codegen_context *
+>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 * B=
+PF_STX ATOMIC (atomic ops)
+>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 */
+>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 case BPF_=
+STX | BPF_ATOMIC | BPF_W:
+>>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 sa=
+ve_reg =3D _R0;
+>>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 re=
+t_reg =3D src_reg;
+>>>> +
+>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0 bpf_set_seen_register(ctx, tmp_reg);
+>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0 bpf_set_seen_register(ctx, ax_reg);
+>>>> @@ -829,6 +833,21 @@ int bpf_jit_build_body(struct bpf_prog *fp, u32=20
+>>>> *image, struct codegen_context *
+>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0 case BPF_XOR | BPF_FETCH:
+>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 EMIT(PPC_RAW_XOR(_R0, _R0, src_reg)=
+);
+>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 break;
+>>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ca=
+se BPF_CMPXCHG:
+>>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0 /*
+>>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0 * Return old value in BPF_REG_0 for BPF_CMPXCHG=
+ &
+>>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0 * in src_reg for other cases.
+>>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0 */
+>>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0 ret_reg =3D bpf_to_ppc(BPF_REG_0);
+>>>> +
+>>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0 /* Compare with old value in BPF_REG_0 */
+>>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0 EMIT(PPC_RAW_CMPW(bpf_to_ppc(BPF_REG_0), _R0));
+>>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0 /* Don't set if different from old value */
+>>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0 PPC_BCC_SHORT(COND_NE, (ctx->idx + 3) * 4);
+>>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0 fallthrough;
+>>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ca=
+se BPF_XCHG:
+>>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0 save_reg =3D src_reg;
+>>>
+>>> I'm a bit lost, when save_reg is src_reg, don't we expect the upper par=
+t
+>>> (ie src_reg - 1) to be explicitely zeroised ?
+>>>
+>>=20
+>> For BPF_FETCH variants, old value is returned in src_reg (ret_reg).
+>> In all such cases, higher 32-bit is zero'ed. But in case of BPF_CMPXCHG,
+>> src_reg is untouched as BPF_REG_0 is used instead. So, higher 32-bit
+>> remains untouched for that case alone..
+>>=20
+>>=20
+>>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0 break;
+>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0 default:
+>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 pr_err_ratelimited("eBPF filter ato=
+mic op code=20
+>>>> %02x (@%d) unsupported\n",
+>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 code, i);
+>>>> @@ -836,15 +855,15 @@ int bpf_jit_build_body(struct bpf_prog *fp, u32=20
+>>>> *image, struct codegen_context *
+>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0 }
+>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0 /* store new value */
+>>>> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 EM=
+IT(PPC_RAW_STWCX(_R0, tmp_reg, dst_reg));
+>>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 EM=
+IT(PPC_RAW_STWCX(save_reg, tmp_reg, dst_reg));
+>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0 /* we're done if this succeeded */
+>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0 PPC_BCC_SHORT(COND_NE, tmp_idx);
 >=20
-> * atomic_[fetch_]add
-> * atomic_[fetch_]and
-> * atomic_[fetch_]or
-> * atomic_[fetch_]xor
-> * atomic_xchg
-> * atomic_cmpxchg
+>>=20
+>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0 /* For the BPF_FETCH variant, get old data into=20
+>>>> src_reg */
+>>=20
+>> With this commit, this comment is not true for BPF_CMPXCHG. So, this
+>> comment should not be removed..
+>=20
+> Sorry, the above should read:
+>    "should be removed" instead of "should not be removed"..
+>=20
 
-Thanks for your work on this. For this series:
-Reviewed-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+Or, just add BPF_REG_0 at the end:
+  /* For the BPF_FETCH variant, get old data into src_reg/BPF_REG_0 */
 
->=20
-> The following are left out of scope for this effort:
->=20
-> * 64 bit operations on ppc32.
-> * Explicit memory barriers, 16 and 8 bit operations on both ppc32
->   & ppc64.
-
-The latter is a limitation of the eBPF instruction set itself today,=20
-rather than a powerpc-specific limitation.
-
->=20
-> The first patch adds support for bitwsie atomic operations on ppc64.
-> The next patch adds fetch variant support for these instructions. The
-> third patch adds support for xchg and cmpxchg atomic operations on
-> ppc64. Patch #4 adds support for 32-bit atomic bitwise operations on
-> ppc32. patch #5 adds support for xchg and cmpxchg atomic operations
-> on ppc32.
->=20
-> Validated these changes successfully with atomics test cases in
-> test_bpf testsuite and  test_verifier & test_progs selftests.
-> With test_bpf testsuite:
->=20
->   all 147 atomics related test cases (both 32-bit & 64-bit) JIT'ed
->   successfully on ppc64:
->=20
->     test_bpf: Summary: 1026 PASSED, 0 FAILED, [1014/1014 JIT'ed]
->=20
->   all 76 atomics related test cases (32-bit) JIT'ed successfully
->   on ppc32:
->=20
->     test_bpf: Summary: 1027 PASSED, 0 FAILED, [915/1015 JIT'ed]
-
-Indeed. In my tests, before this series, with CONFIG_BPF_JIT_ALWAYS_ON=3Dy:
-test_bpf: Summary: 894 PASSED, 132 FAILED, [882/882 JIT'ed]
-test_progs --name=3Datomic: Summary: 0/0 PASSED, 0 SKIPPED, 2 FAILED
-test_verifier 0 100: Summary: 46 PASSED, 151 SKIPPED, 0 FAILED
-
-With your patches:
-test_bpf: Summary: 1026 PASSED, 0 FAILED, [1014/1014 JIT'ed]
-test_progs --name=3Datomic: Summary: 2/7 PASSED, 0 SKIPPED, 0 FAILED
-test_verifier 0 100: Summary: 101 PASSED, 96 SKIPPED, 0 FAILED
-
-It is nice to see all the test_bpf tests pass again on ppc64le!
-
-Tested-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com> (ppc64le)
+The comment in CMPXCHG anyway details the difference. In any case, we=20
+can clean this up subsequently.
 
 
 - Naveen
