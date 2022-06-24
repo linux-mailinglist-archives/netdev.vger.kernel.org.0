@@ -2,50 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 04F1F559470
-	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 09:57:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F6B255946E
+	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 09:57:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230151AbiFXH4T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jun 2022 03:56:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44094 "EHLO
+        id S229914AbiFXH5H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jun 2022 03:57:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230050AbiFXH4L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 03:56:11 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E60F69FBA
-        for <netdev@vger.kernel.org>; Fri, 24 Jun 2022 00:56:08 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1o4eAa-0006PA-Ql; Fri, 24 Jun 2022 09:56:00 +0200
-Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1o4eAY-002Nyq-Lj; Fri, 24 Jun 2022 09:56:00 +0200
-Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1o4eAZ-00DBFf-7O; Fri, 24 Jun 2022 09:55:59 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        with ESMTP id S229798AbiFXH5E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 03:57:04 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2B14369FA2
+        for <netdev@vger.kernel.org>; Fri, 24 Jun 2022 00:57:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656057422;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=s2LZA/fXI+mD13WTemreZqL0kxh0eBajgvaYdX/0vbQ=;
+        b=gMIXHNyeT5Y3T+b68PoCRGPpoe0R3VXJQRw7FzGY+/E6mCMtDNAORqbTggpVKsiH4IGs7a
+        VlaTmvW4MxX3PwkMp0S9qvd0SFCvBfbe9FTX7YL0pMm6tRHsP++QP5ysRWIx5u+ZOGkMVW
+        ivRJ50AcTpJBHO1IlwM5bmhCFkK55TQ=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-511-h5zqBCYzOlaL4wP60DC-0Q-1; Fri, 24 Jun 2022 03:57:00 -0400
+X-MC-Unique: h5zqBCYzOlaL4wP60DC-0Q-1
+Received: by mail-wr1-f69.google.com with SMTP id l9-20020adfa389000000b0021b8b489336so163485wrb.13
+        for <netdev@vger.kernel.org>; Fri, 24 Jun 2022 00:57:00 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=s2LZA/fXI+mD13WTemreZqL0kxh0eBajgvaYdX/0vbQ=;
+        b=znIMs/X1YDxKafkzq26i16MAOuE0cXiEcO7AKntZuk+ZrcHLT1bK2X+1qRYULWqx08
+         m17opK88laUIlCooM9QKHVRjqWu56esMV9z7yPUTdxwGlUZhCH0zAydSzKkgTk7+zovJ
+         VIZeQfso5osLUuPJlEIGOGsuUkRQ1xQ/BcZgRc2oPUD1BMKQ+VTsJaP79zhzvQSptUio
+         uV93tX2pJVTHDD/1Lh2ea2/t4zCCycxyZPL0CA3fxvac1dZoMPTT5bTze4swaEPWd8KU
+         ZkUKTVObYJRk0sWdphuW+GeB68uUsRpty+TiSK4Cqa0S2WGuy+9TOYtsEAFKQULubs9b
+         /ENQ==
+X-Gm-Message-State: AJIora9LbE7WZLfWDh6Y4gJmHKyCioLlUpuWpJDL7/EwdZaS8MJ3XnAF
+        wLJa/6/WOVX8vuk5ybpwthQOp25J9LYek3xDrudQWL3CCQi24JrlHxxiMZZx2QQJhZy3V0QTpaG
+        lgFY8WTIdueQdUJ3/
+X-Received: by 2002:a05:600c:4ca7:b0:3a0:3905:d441 with SMTP id g39-20020a05600c4ca700b003a03905d441mr2235410wmp.159.1656057419296;
+        Fri, 24 Jun 2022 00:56:59 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1vNfHWb9u9vWiW5DWSFpAv1CdnziWuY0VO871vq8AjALqHLbv+K+Sigjdz+Mpcfn9SgjHzANA==
+X-Received: by 2002:a05:600c:4ca7:b0:3a0:3905:d441 with SMTP id g39-20020a05600c4ca700b003a03905d441mr2235389wmp.159.1656057419075;
+        Fri, 24 Jun 2022 00:56:59 -0700 (PDT)
+Received: from step1.redhat.com (host-79-46-200-40.retail.telecomitalia.it. [79.46.200.40])
+        by smtp.gmail.com with ESMTPSA id c2-20020a1c3502000000b0039c5328ad92sm5975322wma.41.2022.06.24.00.56.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 24 Jun 2022 00:56:58 -0700 (PDT)
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     virtualization@lists.linux-foundation.org
+Cc:     Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
+        "Michael S. Tsirkin" <mst@redhat.com>,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Lukas Wunner <lukas@wunner.de>
-Subject: [PATCH net-next v1 1/1] net: phy: ax88772a: fix lost pause advertisement configuration
-Date:   Fri, 24 Jun 2022 09:55:58 +0200
-Message-Id: <20220624075558.3141464-1-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
+        Stefano Garzarella <sgarzare@redhat.com>
+Subject: [PATCH] vringh: iterate on iotlb_translate to handle large translations
+Date:   Fri, 24 Jun 2022 09:56:56 +0200
+Message-Id: <20220624075656.13997-1-sgarzare@redhat.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
+Content-type: text/plain
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -53,78 +76,150 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In case of asix_ax88772a_link_change_notify() workaround, we run soft
-reset which will automatically clear MII_ADVERTISE configuration. The
-PHYlib framework do not know about changed configuration state of the
-PHY, so we need to save and restore all needed configuration registers.
+iotlb_translate() can return -ENOBUFS if the bio_vec is not big enough
+to contain all the ranges for translation.
+This can happen for example if the VMM maps a large bounce buffer,
+without using hugepages, that requires more than 16 ranges to translate
+the addresses.
 
-Fixes: dde258469257 ("net: usb/phy: asix: add support for ax88772A/C PHYs")
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+To handle this case, let's extend iotlb_translate() to also return the
+number of bytes successfully translated.
+In copy_from_iotlb()/copy_to_iotlb() loops by calling iotlb_translate()
+several times until we complete the translation.
+
+Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
 ---
- drivers/net/phy/ax88796b.c | 37 ++++++++++++++++++++++++++++++++++++-
- 1 file changed, 36 insertions(+), 1 deletion(-)
+ drivers/vhost/vringh.c | 78 ++++++++++++++++++++++++++++++------------
+ 1 file changed, 56 insertions(+), 22 deletions(-)
 
-diff --git a/drivers/net/phy/ax88796b.c b/drivers/net/phy/ax88796b.c
-index 457896337505..6971d0196917 100644
---- a/drivers/net/phy/ax88796b.c
-+++ b/drivers/net/phy/ax88796b.c
-@@ -18,6 +18,11 @@ MODULE_DESCRIPTION("Asix PHY driver");
- MODULE_AUTHOR("Michael Schmitz <schmitzmic@gmail.com>");
- MODULE_LICENSE("GPL");
+diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
+index eab55accf381..11f59dd06a74 100644
+--- a/drivers/vhost/vringh.c
++++ b/drivers/vhost/vringh.c
+@@ -1095,7 +1095,8 @@ EXPORT_SYMBOL(vringh_need_notify_kern);
+ #if IS_REACHABLE(CONFIG_VHOST_IOTLB)
  
-+struct asix_context {
-+	u16 bmcr;
-+	u16 advertise;
-+};
-+
- /**
-  * asix_soft_reset - software reset the PHY via BMCR_RESET bit
-  * @phydev: target phy_device struct
-@@ -83,13 +88,43 @@ static int asix_ax88772a_read_status(struct phy_device *phydev)
- 	return 0;
- }
- 
-+/* save relevant PHY registers to private copy */
-+static void asix_context_save(struct phy_device *phydev,
-+			      struct asix_context *context)
-+{
-+	context->bmcr = phy_read(phydev, MII_BMCR);
-+	context->advertise = phy_read(phydev, MII_ADVERTISE);
-+}
-+
-+/* restore relevant PHY registers from private copy */
-+static void asix_context_restore(struct phy_device *phydev,
-+				 const struct asix_context *context)
-+{
-+	u16 bmcr = context->bmcr;
-+
-+	phy_write(phydev, MII_ADVERTISE, context->advertise);
-+
-+	/* after all settings are restored, restart autoneg */
-+	if (phydev->autoneg == AUTONEG_ENABLE)
-+		bmcr |= BMCR_ANRESTART;
-+
-+	phy_write(phydev, MII_BMCR, bmcr);
-+}
-+
- static void asix_ax88772a_link_change_notify(struct phy_device *phydev)
+ static int iotlb_translate(const struct vringh *vrh,
+-			   u64 addr, u64 len, struct bio_vec iov[],
++			   u64 addr, u64 len, u64 *translated,
++			   struct bio_vec iov[],
+ 			   int iov_size, u32 perm)
  {
- 	/* Reset PHY, otherwise MII_LPA will provide outdated information.
- 	 * This issue is reproducible only with some link partner PHYs
- 	 */
--	if (phydev->state == PHY_NOLINK && phydev->drv->soft_reset)
-+	if (phydev->state == PHY_NOLINK && phydev->drv->soft_reset) {
-+		struct asix_context context;
+ 	struct vhost_iotlb_map *map;
+@@ -1136,43 +1137,76 @@ static int iotlb_translate(const struct vringh *vrh,
+ 
+ 	spin_unlock(vrh->iotlb_lock);
+ 
++	if (translated)
++		*translated = min(len, s);
 +
-+		asix_context_save(phydev, &context);
-+
- 		phydev->drv->soft_reset(phydev);
-+
-+		asix_context_restore(phydev, &context);
-+	}
+ 	return ret;
  }
  
- static struct phy_driver asix_driver[] = {
+ static inline int copy_from_iotlb(const struct vringh *vrh, void *dst,
+ 				  void *src, size_t len)
+ {
+-	struct iov_iter iter;
+-	struct bio_vec iov[16];
+-	int ret;
++	u64 total_translated = 0;
+ 
+-	ret = iotlb_translate(vrh, (u64)(uintptr_t)src,
+-			      len, iov, 16, VHOST_MAP_RO);
+-	if (ret < 0)
+-		return ret;
++	while (total_translated < len) {
++		struct bio_vec iov[16];
++		struct iov_iter iter;
++		u64 translated;
++		int ret;
+ 
+-	iov_iter_bvec(&iter, READ, iov, ret, len);
++		ret = iotlb_translate(vrh, (u64)(uintptr_t)src,
++				      len - total_translated, &translated,
++				      iov, ARRAY_SIZE(iov), VHOST_MAP_RO);
++		if (ret == -ENOBUFS)
++			ret = ARRAY_SIZE(iov);
++		else if (ret < 0)
++			return ret;
+ 
+-	ret = copy_from_iter(dst, len, &iter);
++		iov_iter_bvec(&iter, READ, iov, ret, translated);
+ 
+-	return ret;
++		ret = copy_from_iter(dst, translated, &iter);
++		if (ret < 0)
++			return ret;
++
++		src += translated;
++		dst += translated;
++		total_translated += translated;
++	}
++
++	return total_translated;
+ }
+ 
+ static inline int copy_to_iotlb(const struct vringh *vrh, void *dst,
+ 				void *src, size_t len)
+ {
+-	struct iov_iter iter;
+-	struct bio_vec iov[16];
+-	int ret;
++	u64 total_translated = 0;
+ 
+-	ret = iotlb_translate(vrh, (u64)(uintptr_t)dst,
+-			      len, iov, 16, VHOST_MAP_WO);
+-	if (ret < 0)
+-		return ret;
++	while (total_translated < len) {
++		struct bio_vec iov[16];
++		struct iov_iter iter;
++		u64 translated;
++		int ret;
++
++		ret = iotlb_translate(vrh, (u64)(uintptr_t)dst,
++				      len - total_translated, &translated,
++				      iov, ARRAY_SIZE(iov), VHOST_MAP_WO);
++		if (ret == -ENOBUFS)
++			ret = ARRAY_SIZE(iov);
++		else if (ret < 0)
++			return ret;
+ 
+-	iov_iter_bvec(&iter, WRITE, iov, ret, len);
++		iov_iter_bvec(&iter, WRITE, iov, ret, translated);
++
++		ret = copy_to_iter(src, translated, &iter);
++		if (ret < 0)
++			return ret;
++
++		src += translated;
++		dst += translated;
++		total_translated += translated;
++	}
+ 
+-	return copy_to_iter(src, len, &iter);
++	return total_translated;
+ }
+ 
+ static inline int getu16_iotlb(const struct vringh *vrh,
+@@ -1183,7 +1217,7 @@ static inline int getu16_iotlb(const struct vringh *vrh,
+ 	int ret;
+ 
+ 	/* Atomic read is needed for getu16 */
+-	ret = iotlb_translate(vrh, (u64)(uintptr_t)p, sizeof(*p),
++	ret = iotlb_translate(vrh, (u64)(uintptr_t)p, sizeof(*p), NULL,
+ 			      &iov, 1, VHOST_MAP_RO);
+ 	if (ret < 0)
+ 		return ret;
+@@ -1204,7 +1238,7 @@ static inline int putu16_iotlb(const struct vringh *vrh,
+ 	int ret;
+ 
+ 	/* Atomic write is needed for putu16 */
+-	ret = iotlb_translate(vrh, (u64)(uintptr_t)p, sizeof(*p),
++	ret = iotlb_translate(vrh, (u64)(uintptr_t)p, sizeof(*p), NULL,
+ 			      &iov, 1, VHOST_MAP_WO);
+ 	if (ret < 0)
+ 		return ret;
 -- 
-2.30.2
+2.36.1
 
