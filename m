@@ -2,198 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DE2AA559928
-	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 14:07:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6AF5E5599A8
+	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 14:30:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231661AbiFXMGV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jun 2022 08:06:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54824 "EHLO
+        id S230283AbiFXM3o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jun 2022 08:29:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231628AbiFXMGU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 08:06:20 -0400
-X-Greylist: delayed 84089 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 24 Jun 2022 05:06:15 PDT
-Received: from out162-62-57-87.mail.qq.com (out162-62-57-87.mail.qq.com [162.62.57.87])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD2FF7E03A;
-        Fri, 24 Jun 2022 05:06:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-        s=s201512; t=1656072371;
-        bh=i+TLfV7Q9WtZuQ96Ed6tMGTjvVaQatLT38cfNmU5J68=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To;
-        b=cLXPFY372oDe+pbOhU1HNAAz78ygRh06kiA6QHm4hrEbPgK3+EJRXIOreuML4S/7W
-         y06ndLkcXn0bWcP6WHR/GQOWdSvvp9HU036+D5cAcsDKe+fRlBM9hd1ajWG7HUjbtT
-         SEikGSmSjwu5dSmN5dmx8/rsgYl6DmtcS159oFqc=
-Received: from wh-VirtualBox ([117.175.169.40])
-        by newxmesmtplogicsvrszc8.qq.com (NewEsmtp) with SMTP
-        id 18829089; Fri, 24 Jun 2022 20:06:08 +0800
-X-QQ-mid: xmsmtpt1656072368tgl9vexc1
-Message-ID: <tencent_2B372B7CD9C70750319022510DAD3C081108@qq.com>
-X-QQ-XMAILINFO: MDPfhejMR4aI4PAqisrv/a5FviYMYw5okHeM8LAtB8FVYZxnhMSGffLnyl6h1r
-         Rvh6D2upLqn53X9Zb58QU+PlmfEcAAuc3GNqPuhMiv7NdKKNkRAel3HU9QhReS762KW7RQhk9vG9
-         uftPHNIcVk2ATN22wknZ5uf447Sc2qNXg666+Jtj1nDj+NjUFv4dA94yj2YCdwX1Jkr4a/y8Q+aw
-         L80daUrzlK2rV/JPBB0/DPdDfTvbCW55F7RXea74gF+ac5AhChaM2RyVE/rAKz1SGFmQjXGGV8yV
-         FBhgp0HVcJa7Vv9JNPWzydG+RIxq/aST6sTOr7G43vLgvBtz2WB58vsCxOXD/pVZK34gBR9u6hz1
-         90/BPbvYsszovw/PDqHgMsi3fZRDHyh7pc9O9l6/8J2sY3Rj3dVDmtuVkkmp93LLP/1aD6+IdwIa
-         0h8SR+TDjyucOX78Bqg7r/cv5gAEYUV+ON+ypWIe17cCVfgzf1k7Zj7eoAGaTtpzjgE+AxdYc7TZ
-         xhYF4JTcRE62BUBP3yJSPRwj05zvupPLHK6pFDogT0mjPCmyLOVKj5QZftu39OjAiTRpjiIzddsu
-         0eo3se5z5yvmSSzg4kCwhAHNVI/gRlk3AHz+faTW/eZndfCV7U4iSvdZPd64rONaFaXZdO7y1tF4
-         04qplFIXOWaJbIZ+ErDkUtTAvCkCR0rpH5+qF8lg0hac6J9ab4CYrFEz2GPgNh9Klhy4qq3Y1NuM
-         LRKnptbvSwV0iEv5SGSR7akvTORXJCseLC7izEt5HGjHOTGB1B7mS6gYLOz9Y7mGQ2SIpQgargN+
-         /Ugek9KHBs171DCgju3obY7iMs+G6U53dA+J1XGdPgIC4kq0dz7odhHu8zDush9dgrv1f9eoH2L6
-         lW/rtguGludenX44uPd+Xs+6EcdzoUv82C4VFcUkHWTlcL7zdK4tQ8ZwUzOOaVJmwpm4QuOQ2T53
-         XKAlFla84kwvuzRizqM8bzji96ovru
-Date:   Fri, 24 Jun 2022 20:05:30 +0800
-From:   Wei Han <lailitty@foxmail.com>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     kadlec@netfilter.org, fw@strlen.de, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lailitty@foxmail.com
-Subject: Re: [PATCH] netfilter: xt_esp: add support for ESP match in NAT
- Traversal
-X-OQ-MSGID: <20220624120530.GA23845@wh-VirtualBox>
-References: <tencent_DDE91CB7412D427A442DB4362364DC04F20A@qq.com>
- <YrTAyW0phD0OiYN/@salvia>
+        with ESMTP id S229603AbiFXM3n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 08:29:43 -0400
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCB1D4B431
+        for <netdev@vger.kernel.org>; Fri, 24 Jun 2022 05:29:42 -0700 (PDT)
+Received: by mail-yb1-xb35.google.com with SMTP id o79so4269392ybc.4
+        for <netdev@vger.kernel.org>; Fri, 24 Jun 2022 05:29:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2nQO6CeYq5fKHfv30czV2m4ZtSM4QjltO0wwv/dnqkA=;
+        b=pj0s49K9iGzTNZ9BU6izO5Hh1ZIt1MaYN4ZXoSYBHkReYDj2fwnN13fi9Zd5giPvJ0
+         /xcBXDwwmd4TSi/KCN/QhCRqkUZdkzJHxjssFmBCVQFIuNwA9l5IJd81Uc9l3QoR7LUD
+         uWYCrDkdwZqKugVguoxl8F4MMqMVi5fda4NtYPorHFU2nPDyC4XyhnHLSJi8kZ12rUkg
+         9rDsg4ONoPe+xVVd+Vp5XSMqh4DIQSAIsMVuIhoI78un5BOZN8Lz9FHFp3LjfsIozg3q
+         Hq2eBOoOzCChEAy7W+ryEl9mdw0MKsU2NUYQ2MzjtairrsmKCibNAbAHB+DYBFo38QcJ
+         +WVg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2nQO6CeYq5fKHfv30czV2m4ZtSM4QjltO0wwv/dnqkA=;
+        b=7OsXXNF8uhQ80dQzOjX9DwpALbI6lb39+9ExKuP7U3MboTYmvbXdqiezl4I0NIL+VP
+         E8PApszP0GtZR/fVUHVh61ub6wvOtFDDAHTNI6uJVa0N2zD9U9TYH+CivsT38YCFOces
+         xjUDlDBLbp6zlio067Yl4VhhgxGQhxdRrDsWW9E1zOvufp9oZGuixhYK6jt4v4lactCG
+         Oft6VFX2ngO4/If/pLTm8AbBYpAs+1EvsWgrs+UwEcbYVwH0/P/8zqb/bBU2noMeDzSG
+         eGXFWGmUuCDTm0VU93X+6o798iQ8YVkiuoOBgyPnnNrlxj4QsCTmnnuy/w0azb7YwpZ8
+         7VXA==
+X-Gm-Message-State: AJIora/29VmEq2uuNnW0ZiipDvpIEmFhmSfq7f+VCalaWzWEd1HGn6mE
+        AFqQsw5g4wNiwWDG9vclisEAokq5xVKj8CPjz0BiXQ==
+X-Google-Smtp-Source: AGRyM1tOZFaEaVQKL3O/4ZeAuY/ouoz02/V9pgqlyavmMkV2SFrmfg7c4zcy3rKoZgIu5wbx1OO2C2/hWFbq6g94oKM=
+X-Received: by 2002:a05:6902:a:b0:65c:b38e:6d9f with SMTP id
+ l10-20020a056902000a00b0065cb38e6d9fmr15283526ybh.36.1656073781827; Fri, 24
+ Jun 2022 05:29:41 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YrTAyW0phD0OiYN/@salvia>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        HELO_DYNAMIC_IPADDR,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,RDNS_DYNAMIC,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
+References: <20220624041217.1805512-1-niejianglei2021@163.com>
+In-Reply-To: <20220624041217.1805512-1-niejianglei2021@163.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 24 Jun 2022 14:29:30 +0200
+Message-ID: <CANn89i+=8odkFV=b_krwKq2+u5S9q7KSvQ6jDCHX7gG8+LdnSw@mail.gmail.com>
+Subject: Re: [PATCH] bnx2x: fix memory leak in bnx2x_tpa_stop()
+To:     Jianglei Nie <niejianglei2021@163.com>
+Cc:     Ariel Elior <aelior@marvell.com>, skalluru@marvell.com,
+        manishc@marvell.com, David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thank you for your reply, please see my answer below.
+On Fri, Jun 24, 2022 at 6:12 AM Jianglei Nie <niejianglei2021@163.com> wrote:
+>
+> bnx2x_tpa_stop() allocates a memory chunk from new_data with
+> bnx2x_frag_alloc(). The new_data should be freed when some errors occur.
+> But when "pad + len > fp->rx_buf_size" is true, bnx2x_tpa_stop() returns
+> without releasing the new_data, which leads to a memory leak.
+>
+> We should free the new_data with bnx2x_frag_free() when "pad + len >
+> fp->rx_buf_size" is true.
+>
+> Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
+> ---
+>  drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c | 1 +
+>  1 file changed, 1 insertion(+)
+>
+> diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
+> index 5729a5ab059d..4cbd3ba5acb9 100644
+> --- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
+> +++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
+> @@ -789,6 +789,7 @@ static void bnx2x_tpa_stop(struct bnx2x *bp, struct bnx2x_fastpath *fp,
+>                         BNX2X_ERR("skb_put is about to fail...  pad %d  len %d  rx_buf_size %d\n",
+>                                   pad, len, fp->rx_buf_size);
+>                         bnx2x_panic();
+> +                       bnx2x_frag_free(fp, new_data);
 
-On Thu, Jun 23, 2022 at 09:36:41PM +0200, Pablo Neira Ayuso wrote:
-> On Thu, Jun 23, 2022 at 08:42:48PM +0800, Wei Han wrote:
-> > when the ESP packets traversing Network Address Translators,
-> > which are encapsulated and decapsulated inside UDP packets,
-> > so we need to get ESP data in UDP.
-> > 
-> > Signed-off-by: Wei Han <lailitty@foxmail.com>
-> > ---
-> >  net/netfilter/xt_esp.c | 54 +++++++++++++++++++++++++++++++++++-------
-> >  1 file changed, 45 insertions(+), 9 deletions(-)
-> > 
-> > diff --git a/net/netfilter/xt_esp.c b/net/netfilter/xt_esp.c
-> > index 2a1c0ad0ff07..c3feb79a830a 100644
-> > --- a/net/netfilter/xt_esp.c
-> > +++ b/net/netfilter/xt_esp.c
-> > @@ -8,12 +8,14 @@
-> >  #include <linux/skbuff.h>
-> >  #include <linux/in.h>
-> >  #include <linux/ip.h>
-> > +#include <linux/ipv6.h>
-> >  
-> >  #include <linux/netfilter/xt_esp.h>
-> >  #include <linux/netfilter/x_tables.h>
-> >  
-> >  #include <linux/netfilter_ipv4/ip_tables.h>
-> >  #include <linux/netfilter_ipv6/ip6_tables.h>
-> > +#include <net/ip.h>
-> >  
-> >  MODULE_LICENSE("GPL");
-> >  MODULE_AUTHOR("Yon Uriarte <yon@astaro.de>");
-> > @@ -39,17 +41,53 @@ static bool esp_mt(const struct sk_buff *skb, struct xt_action_param *par)
-> >  	struct ip_esp_hdr _esp;
-> >  	const struct xt_esp *espinfo = par->matchinfo;
-> >  
-> > +	const struct iphdr *iph = NULL;
-> > +	const struct ipv6hdr *ip6h = NULL;
-> > +	const struct udphdr *udph = NULL;
-> > +	struct udphdr _udph;
-> > +	int proto = -1;
-> > +
-> >  	/* Must not be a fragment. */
-> >  	if (par->fragoff != 0)
-> >  		return false;
-> >  
-> > -	eh = skb_header_pointer(skb, par->thoff, sizeof(_esp), &_esp);
-> > -	if (eh == NULL) {
-> > -		/* We've been asked to examine this packet, and we
-> > -		 * can't.  Hence, no choice but to drop.
-> > -		 */
-> > -		pr_debug("Dropping evil ESP tinygram.\n");
-> > -		par->hotdrop = true;
-> > +	if (xt_family(par) == NFPROTO_IPV6) {
-> > +		ip6h = ipv6_hdr(skb);
-> > +		if (!ip6h)
-> > +			return false;
-> > +		proto = ip6h->nexthdr;
-> > +	} else {
-> > +		iph = ip_hdr(skb);
-> > +		if (!iph)
-> > +			return false;
-> > +		proto = iph->protocol;
-> > +	}
-> > +
-> > +	if (proto == IPPROTO_UDP) {
-> > +		//for NAT-T
-> > +		udph = skb_header_pointer(skb, par->thoff, sizeof(_udph), &_udph);
-> > +		if (udph && (udph->source == htons(4500) || udph->dest == htons(4500))) {
-> > +			/* Not deal with above data it don't conflict with SPI
-> > +			 * 1.IKE Header Format for Port 4500(Non-ESP Marker 0x00000000)
-> > +			 * 2.NAT-Keepalive Packet Format(0xFF)
-> > +			 */
-> > +			eh = (struct ip_esp_hdr *)((char *)udph + sizeof(struct udphdr));
-> 
-> this is not safe, skbuff might not be linear.
+This will crash the host if new_data == NULL
+
+Really, given that BNX2X_STOP_ON_ERROR is not defined, I am not sure
+we really care about this ?
+
+>                         return;
+>                 }
+>  #endif
+> --
+> 2.25.1
 >
-  Will be modified to "eh = skb_header_pointer(skb, par->thoff + sizeof(struct udphdr), sizeof(_esp), &_esp);"
-> > +		} else {
-> > +			return false;
-> > +		}
-> > +	} else if (proto == IPPROTO_ESP) {
-> > +		//not NAT-T
-> > +		eh = skb_header_pointer(skb, par->thoff, sizeof(_esp), &_esp);
-> > +		if (!eh) {
-> > +			/* We've been asked to examine this packet, and we
-> > +			 * can't.  Hence, no choice but to drop.
-> > +			 */
-> > +			pr_debug("Dropping evil ESP tinygram.\n");
-> > +			par->hotdrop = true;
-> > +			return false;
-> > +		}
-> 
-> This is loose, the user does not have a way to restrict to either
-> ESP over UDP or native ESP. I don't think this is going to look nice
-> from iptables syntax perspective to restrict either one or another
-> mode.
->
-  This match original purpose is check the ESP packet's SPI value, so I
-  think the user maybe not need to pay attention that the packet is 
-  ESP over UDP or native ESP just get SPI and check it, this patch is 
-  only want to add support for get SPI in ESP over UDP.And the iptables rules like:
-  "iptables -A INPUT -m esp --espspi 0x12345678 -j ACCEPT"
-> > +	} else {
-> > +		//not esp data
-> >  		return false;
-> >  	}
-> >  
-> > @@ -76,7 +114,6 @@ static struct xt_match esp_mt_reg[] __read_mostly = {
-> >  		.checkentry	= esp_mt_check,
-> >  		.match		= esp_mt,
-> >  		.matchsize	= sizeof(struct xt_esp),
-> > -		.proto		= IPPROTO_ESP,
-> >  		.me		= THIS_MODULE,
-> >  	},
-> >  	{
-> > @@ -85,7 +122,6 @@ static struct xt_match esp_mt_reg[] __read_mostly = {
-> >  		.checkentry	= esp_mt_check,
-> >  		.match		= esp_mt,
-> >  		.matchsize	= sizeof(struct xt_esp),
-> > -		.proto		= IPPROTO_ESP,
-> >  		.me		= THIS_MODULE,
-> >  	},
-> >  };
-> > -- 
-> > 2.17.1
-> > 
