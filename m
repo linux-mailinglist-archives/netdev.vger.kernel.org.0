@@ -2,50 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 222DB5593BA
-	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 08:49:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FDCF5593CE
+	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 08:57:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229980AbiFXGtw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jun 2022 02:49:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55696 "EHLO
+        id S230301AbiFXG4z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jun 2022 02:56:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229457AbiFXGtu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 02:49:50 -0400
-Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C80FD4F9DE;
-        Thu, 23 Jun 2022 23:49:48 -0700 (PDT)
-Received: from [192.168.0.2] (ip5f5aeb79.dynamic.kabel-deutschland.de [95.90.235.121])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 9D46A61EA1929;
-        Fri, 24 Jun 2022 08:49:45 +0200 (CEST)
-Message-ID: <9ee7f8de-ba70-c930-6f4b-d3c066ac88bc@molgen.mpg.de>
-Date:   Fri, 24 Jun 2022 08:49:45 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v2 1/2] Bluetooth: Add support for devcoredump
-Content-Language: en-US
-To:     Manish Mandlik <mmandlik@google.com>,
-        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-Cc:     marcel@holtmann.org, luiz.dentz@gmail.com,
-        chromeos-bluetooth-upstreaming@chromium.org,
-        linux-bluetooth@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S230220AbiFXG4y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 02:56:54 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30FCB67E7B;
+        Thu, 23 Jun 2022 23:56:53 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id 65so1744822pfw.11;
+        Thu, 23 Jun 2022 23:56:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=CQLW04s8vb4y/9XuYLHdde+ABYigEI4asQuaKgLJKrc=;
+        b=EaJlsD5vomAKolqToFKbaK9jwrVvh6ooFjnstoPX7A0a2umRNYpz9NH3KVmtY32G2B
+         Z4bLBwWRl9uhoasIHDdcc0KQsrwKQZv9VvU01IopJVPIUBlIMIJvOfnu6MdnHgDfh+R/
+         7HkwqeOZxFh4Vr5R/T0/yUt4MWFSjHTHXT5zFX5xC3eFhJ0HjCnQ6nSNzOVddcUL36Um
+         /EaACA5h/5jcM9LgrgwK8gw/bIBn2/maGcajsmMxsUUVbIThGdxN8OPvBY+8Ap82xzCm
+         NXX9mNyyt0URHsVvVPA3+b3RzFREjJ4Fm89nB9WyMb+8XXVrakT1VRbIzyj5Ryya9u3U
+         Qojg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=CQLW04s8vb4y/9XuYLHdde+ABYigEI4asQuaKgLJKrc=;
+        b=MYzRDJ2s5+B3ku/692qVpek7T8DA8Ae0hxIei/Od71t/Qza5P17xBSQMPRhmV8k5Xe
+         uchBIiGmkkiTK3IyOD5U8SOa5tqBQzpgUSc4nsSDoBhS+ZQV/0Ju/Nu5CZWpjfLef3b4
+         IiKVYrTFgcParMA85w/9p5uvGBHw7uBWEvO5K60f5kLHPld+QmvFHqTIpuTV6tF+5qq0
+         /x3WXVuzgVEIqQqNoS0rvRxgWyWhuUEGQlQ70PhCD6qc668sA/gdGytxkQhiM9EGaOQB
+         6tUGoDM6LVg4tAX2bSo22HD2owVrkEMpbT3E0K4u3uxzYNpHa97kVmIyLZcrRTm4xsAU
+         rDMg==
+X-Gm-Message-State: AJIora/8HNLZyR+UfCLnA09fRfGR/SnKnMoBrJFLQM8e/Psfyq1LFWsS
+        oAZMvpjUgk5/mCK3nPiCzc/GpubfFAt1cQ==
+X-Google-Smtp-Source: AGRyM1vE7dCW7jW8K5Sj06K5myCG9Uagi6GaFVdToms/HjUTM7g5G2vtGxXs54WjU2i5Yk8Z8Vx0Ww==
+X-Received: by 2002:a63:680a:0:b0:40d:bb2:19f4 with SMTP id d10-20020a63680a000000b0040d0bb219f4mr10564952pgc.593.1656053812518;
+        Thu, 23 Jun 2022 23:56:52 -0700 (PDT)
+Received: from archdragon (dragonet.kaist.ac.kr. [143.248.133.220])
+        by smtp.gmail.com with ESMTPSA id 9-20020a170902c20900b0015e8d4eb1dfsm985871pll.41.2022.06.23.23.56.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Jun 2022 23:56:52 -0700 (PDT)
+Date:   Fri, 24 Jun 2022 15:56:48 +0900
+From:   "Dae R. Jeong" <threeearcat@gmail.com>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20220623123549.v2.1.Iaf638bb9f885f5880ab1b4e7ae2f73dd53a54661@changeid>
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-In-Reply-To: <20220623123549.v2.1.Iaf638bb9f885f5880ab1b4e7ae2f73dd53a54661@changeid>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        Paolo Abeni <pabeni@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: KASAN: use-after-free Read in cfusbl_device_notify
+Message-ID: <YrVgMPxy2vNT9stU@archdragon>
+References: <YrVUujEka5jSXZvt@archdragon>
+ <CANn89iKLpGamedvzZjnhpNUUpPJ7ueiGo62DH0XM+omQvhr9HA@mail.gmail.com>
+ <YrVYywPFYiqWJo4a@archdragon>
+ <CANn89iJOibYQCsY+ekObagmwmPap0FGqYdJacsO1mVvOgkKmdg@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CANn89iJOibYQCsY+ekObagmwmPap0FGqYdJacsO1mVvOgkKmdg@mail.gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -53,114 +75,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Manish, dear Abhishek,
-
-
-Thank you for the patch.
-
-Am 23.06.22 um 21:37 schrieb Manish Mandlik:
-> From: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+On Fri, Jun 24, 2022 at 08:32:31AM +0200, Eric Dumazet wrote:
+> On Fri, Jun 24, 2022 at 8:25 AM Dae R. Jeong <threeearcat@gmail.com> wrote:
+> >
+> > On Fri, Jun 24, 2022 at 08:15:54AM +0200, Eric Dumazet wrote:
+> > > On Fri, Jun 24, 2022 at 8:08 AM Dae R. Jeong <threeearcat@gmail.com> wrote:
+> > > >
+> > > > Hello,
+> > > >
+> > > > We observed a crash "KASAN: use-after-free Read in cfusbl_device_notify" during fuzzing.
+> > >
+> > > This is a known problem.
+> > >
+> > > Some drivers do not like NETDEV_UNREGISTER being delivered multiple times.
+> > >
+> > > Make sure in your fuzzing to have NET_DEV_REFCNT_TRACKER=y
+> > >
+> > > Thanks.
+> >
+> > Our config already have CONFIG_NET_DEV_REFCNT_TRACKER=y.
 > 
-> Add devcoredump APIs to hci core so that drivers only have to provide
-> the dump skbs instead of managing the synchronization and timeouts.
+> Are you also setting netdev_unregister_timeout_secs to a smaller value ?
 > 
-> The devcoredump APIs should be used in the following manner:
->   - hci_devcoredump_init is called to allocate the dump.
->   - hci_devcoredump_append is called to append any skbs with dump data
->     OR hci_devcoredump_append_pattern is called to insert a pattern.
->   - hci_devcoredump_complete is called when all dump packets have been
->     sent OR hci_devcoredump_abort is called to indicate an error and
->     cancel an ongoing dump collection.
+> netdev_unregister_timeout_secs
+> ------------------------------
 > 
-> The high level APIs just prepare some skbs with the appropriate data and
-> queue it for the dump to process. Packets part of the crashdump can be
-> intercepted in the driver in interrupt context and forwarded directly to
-> the devcoredump APIs.
-> 
-> Internally, there are 5 states for the dump: idle, active, complete,
-> abort and timeout. A devcoredump will only be in active state after it
-> has been initialized. Once active, it accepts data to be appended,
-> patterns to be inserted (i.e. memset) and a completion event or an abort
-> event to generate a devcoredump. The timeout is initialized at the same
-> time the dump is initialized (defaulting to 10s) and will be cleared
-> either when the timeout occurs or the dump is complete or aborted.
+> Unregister network device timeout in seconds.
+> This option controls the timeout (in seconds) used to issue a warning while
+> waiting for a network device refcount to drop to 0 during device
+> unregistration. A lower value may be useful during bisection to detect
+> a leaked reference faster. A larger value may be useful to prevent false
+> warnings on slow/loaded systems.
+> Default value is 10, minimum 1, maximum 3600.
 
-Do you have a usage example, how this can be used fro userspace?
+We are using the same config that Syzkaller uses. So its value is 140.
 
-> Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-> Signed-off-by: Manish Mandlik <mmandlik@google.com>
-> Reviewed-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-> ---
-> 
-> Changes in v2:
-> - Move hci devcoredump implementation to new files
-> - Move dump queue and dump work to hci_devcoredump struct
-> - Add CONFIG_DEV_COREDUMP conditional compile
-> 
->   include/net/bluetooth/coredump.h | 109 +++++++
->   include/net/bluetooth/hci_core.h |   5 +
->   net/bluetooth/Makefile           |   2 +
->   net/bluetooth/coredump.c         | 504 +++++++++++++++++++++++++++++++
->   net/bluetooth/hci_core.c         |   9 +
->   net/bluetooth/hci_sync.c         |   2 +
->   6 files changed, 631 insertions(+)
->   create mode 100644 include/net/bluetooth/coredump.h
->   create mode 100644 net/bluetooth/coredump.c
-> 
-> diff --git a/include/net/bluetooth/coredump.h b/include/net/bluetooth/coredump.h
-> new file mode 100644
-> index 000000000000..73601c409c6e
-> --- /dev/null
-> +++ b/include/net/bluetooth/coredump.h
-> @@ -0,0 +1,109 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/*
-> + * Copyright (C) 2022 Google Corporation
-> + */
-> +
-> +#ifndef __COREDUMP_H
-> +#define __COREDUMP_H
-> +
-> +#define DEVCOREDUMP_TIMEOUT	msecs_to_jiffies(10000)	/* 10 sec */
-> +
-> +typedef int  (*dmp_hdr_t)(struct hci_dev *hdev, char *buf, size_t size);
-> +typedef void (*notify_change_t)(struct hci_dev *hdev, int state);
-> +
-> +/* struct hci_devcoredump - Devcoredump state
-> + *
-> + * @supported: Indicates if FW dump collection is supported by driver
-> + * @state: Current state of dump collection
-> + * @alloc_size: Total size of the dump
-> + * @head: Start of the dump
-> + * @tail: Pointer to current end of dump
-> + * @end: head + alloc_size for easy comparisons
-> + *
-> + * @dump_q: Dump queue for state machine to process
-> + * @dump_rx: Devcoredump state machine work
-> + * @dump_timeout: Devcoredump timeout work
-> + *
-> + * @dmp_hdr: Create a dump header to identify controller/fw/driver info
-> + * @notify_change: Notify driver when devcoredump state has changed
-> + */
-> +struct hci_devcoredump {
-> +	bool		supported;
-> +
-> +	enum devcoredump_state {
-> +		HCI_DEVCOREDUMP_IDLE,
-> +		HCI_DEVCOREDUMP_ACTIVE,
-> +		HCI_DEVCOREDUMP_DONE,
-> +		HCI_DEVCOREDUMP_ABORT,
-> +		HCI_DEVCOREDUMP_TIMEOUT
-> +	} state;
-> +
-> +	u32		alloc_size;
+I'm not a network developer so I don't know whether there is a
+possibility of a false alarm. Our fuzzer is a research prototype in
+development, and I don't want to interrupt you with false alarms...
 
-As it’s not packed, why specify the length? Just use size_t or `unsigned 
-int`?
+> > Anyway, this UAF report seems not interesting.
+> >
+> > Thank you for your quick reply.
+> >
+> >
+> > Best regards,
+> > Dae R. Jeong.
 
-[…]
-
-
-Kind regards,
-
-Paul
+Best regards,
+Dae R. Jeong.
