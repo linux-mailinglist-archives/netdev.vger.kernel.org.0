@@ -2,71 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DFAC559E6F
-	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 18:22:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E644559E87
+	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 18:27:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231488AbiFXQWD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jun 2022 12:22:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48358 "EHLO
+        id S231585AbiFXQYl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jun 2022 12:24:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229598AbiFXQWD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 12:22:03 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DD4356756;
-        Fri, 24 Jun 2022 09:22:02 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id t5so5775553eje.1;
-        Fri, 24 Jun 2022 09:22:02 -0700 (PDT)
+        with ESMTP id S231643AbiFXQYh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 12:24:37 -0400
+Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8855A165B2
+        for <netdev@vger.kernel.org>; Fri, 24 Jun 2022 09:24:35 -0700 (PDT)
+Received: by mail-qk1-x72c.google.com with SMTP id f14so2351648qkm.0
+        for <netdev@vger.kernel.org>; Fri, 24 Jun 2022 09:24:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=IZW2pT7Y1PlJtZTT1KeQ7+S8Oay6FOqebmbNuSNNNlY=;
-        b=QCOs9yiK7UIpiQqxyiQWztc/NGleizowx11M/398B80qoRS+/Uo9uc5VOCirYNqw2/
-         Gm3o2HHamRP6zLmklhWTtb/3gW9sIU7xnWLdw1ZULefIS7uHeqYzHpAgm1hYyUqKuvOk
-         ftVngW86ofgh7z4pwiaVRHLrq1hPysFfeJppUjemW60SJ9sL/5PG3reD/26EwuL4YBoi
-         EFw+MR7g3uzvDFW7hGopL27AsJD3R1ZODJMqPyq2ZxPs72uGaZxdnjz8EKr2wZt7I1a2
-         E3vIlff5UY2xfNApP49wbYzkB7GcecnrPwiaPqxrdkjQnOw1SNFFSIqiMSje1Ku/ySIY
-         EAYg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=V+Xo5Z+4GigNUMqqi7J1sIaRxnSMMyJNzyBU9jsG/jk=;
+        b=lLkF5lDQyf5QWfmlR9hn0mgcfC76zUlI+2cOjQTvpZlfDtehRVpGpkfCP5WstjOusa
+         rvJoi0HoifdAIeQ4XQSOw8FALLo/zd0KD8YGGOCOpUTzcIcUX+7WqlZn61gJ6KoyS18I
+         2imCEF45eZo9CNSM9/BExm1T8xDA1uRx9maLmjHgUjc8Fw2LoVLstas0+Gg4tdWeaKJ1
+         PFzhFUIxC7ej6mhoMRpNmc05srLpTEApcud9SJqDv3fnAj27h21cSJo41rQ0mYLXBTbY
+         j1JUh/q1RFV2LxJ6MDoLf4sH3JMSuRa3a7kuWXvxR16hL7Z59Trh71Vx3HZJCtqVTwyv
+         r/6Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=IZW2pT7Y1PlJtZTT1KeQ7+S8Oay6FOqebmbNuSNNNlY=;
-        b=3idllwQPeg+QHJeHAT6DHGLhFVgKKf4+sEL6kkfKBRD5U7osBboI3zMBJ8sRMAr5ej
-         jS6lHnN/nUI5NECYGfSTTKOEhJnP1hr720m3H+Cpf6Z6Eud5/vlJO8AuVPwYFlW8hCmX
-         2dnskmAGxUOg/sxHt484ka+078abqRx0snT7lJ4Bj/uFqoJcGGxU3OuCLeMD6n1dpkG2
-         UHFexN6vLLJGfTHUGXqiqaM/8DIB51jX0HsMSgYz6ie4HZfNOqSQSBXv7swVwzMdE+wr
-         mOCKw7AsaYDP5KMFCVj8Dzf4Hqzdhuqr8s+iDh4l3Y21lOr01kKZnZwzDVDvXiaFz6ip
-         SQNQ==
-X-Gm-Message-State: AJIora+cWmmdgoGs256LyxZzSuQaYXAac47uVPeXlG2tnjPDHJ98pry6
-        PKyeAul3h0kKxf96oz7oOKg=
-X-Google-Smtp-Source: AGRyM1szrUBh0WA1OG2b/WfcGqlM0v8kIHkxOWsSPykep/TaE5WgOlfsNh9qzuJUvF8KNnHQIshDOg==
-X-Received: by 2002:a17:907:1c0b:b0:711:cc52:2920 with SMTP id nc11-20020a1709071c0b00b00711cc522920mr14445838ejc.301.1656087720853;
-        Fri, 24 Jun 2022 09:22:00 -0700 (PDT)
-Received: from orome (p200300e41f12c800f22f74fffe1f3a53.dip0.t-ipconnect.de. [2003:e4:1f12:c800:f22f:74ff:fe1f:3a53])
-        by smtp.gmail.com with ESMTPSA id l4-20020aa7d944000000b00435b4775d94sm2394144eds.73.2022.06.24.09.21.59
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=V+Xo5Z+4GigNUMqqi7J1sIaRxnSMMyJNzyBU9jsG/jk=;
+        b=hE2R0Uj/v7Acn45+3nkoDE9HZu3VzR377VnylMgxrJHsZnXc7+7l2UQ0IL6RqLgbFM
+         TAu2moWk6ma0HQxtCpLdEOcHvXWmY6qUUJLN01qzP3j6o2dxkVzhHcptLeQi0Ktxe7RP
+         cxB+m50NY7F+CDFXpToJbiplJj5QI73HHgEQTL53WaKPd1V+NZUBB2jjNOTTB9lyfemA
+         abCqFAQG6APL8XSMEwxyR9P07Y6h8c+5IbwK2z/5JSz+Fy/pcgvI9BmbvFDs/sADaY9B
+         LDW7v/cQO+pDNP7RfjwWhRbyhrQxU1exUM//bc5p9eDbsV8dpnSf5mquRYW8frPbLTbZ
+         PqHw==
+X-Gm-Message-State: AJIora/NK2/xdobgbFjIO6U1XTlzDyOciKE4thdTAbSWMI41u2hqLI20
+        2Zs7NEmMIkxzcHqxp8l8QZW4z+8g49zIXk6T
+X-Google-Smtp-Source: AGRyM1uIFWrCnDTMOYgBMczFj2/o9o1rKsbbrZF0sMSyct5hvhiI/QUbthvYEiTQMdf8GUctN9xdkg==
+X-Received: by 2002:ae9:f40b:0:b0:6ae:fdd7:1939 with SMTP id y11-20020ae9f40b000000b006aefdd71939mr5537062qkl.657.1656087874176;
+        Fri, 24 Jun 2022 09:24:34 -0700 (PDT)
+Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id k20-20020a05620a07f400b006a6ab259261sm1928647qkk.29.2022.06.24.09.24.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Jun 2022 09:21:59 -0700 (PDT)
-Date:   Fri, 24 Jun 2022 18:21:58 +0200
-From:   Thierry Reding <thierry.reding@gmail.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Bhadram Varka <vbhadram@nvidia.com>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-tegra@vger.kernel.org,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        jonathanh@nvidia.com, kuba@kernel.org, catalin.marinas@arm.com,
-        will@kernel.org, Thierry Reding <treding@nvidia.com>
-Subject: Re: [PATCH net-next v1 2/9] dt-bindings: Add Tegra234 MGBE clocks
- and resets
-Message-ID: <YrXkpiaxqjzJdaL9@orome>
-References: <20220623074615.56418-1-vbhadram@nvidia.com>
- <20220623074615.56418-2-vbhadram@nvidia.com>
- <53e8aa2f-f5f6-43d9-c167-ec5c5818dfb0@linaro.org>
+        Fri, 24 Jun 2022 09:24:33 -0700 (PDT)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     network dev <netdev@vger.kernel.org>,
+        tipc-discussion@lists.sourceforge.net
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        Jon Maloy <jmaloy@redhat.com>,
+        Ying Xue <ying.xue@windriver.com>,
+        Tuong Lien <tuong.t.lien@dektech.com.au>
+Subject: [PATCH net] tipc: move bc link creation back to tipc_node_create
+Date:   Fri, 24 Jun 2022 12:24:31 -0400
+Message-Id: <fe367ef0159c2f41e475bd1d00e0dc8d8a85b224.1656087871.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="j7YpGeEo8VO5okh2"
-Content-Disposition: inline
-In-Reply-To: <53e8aa2f-f5f6-43d9-c167-ec5c5818dfb0@linaro.org>
-User-Agent: Mutt/2.2.6 (2022-06-05)
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -77,68 +70,120 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Shuang Li reported a NULL pointer dereference crash:
 
---j7YpGeEo8VO5okh2
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+  [] BUG: kernel NULL pointer dereference, address: 0000000000000068
+  [] RIP: 0010:tipc_link_is_up+0x5/0x10 [tipc]
+  [] Call Trace:
+  []  <IRQ>
+  []  tipc_bcast_rcv+0xa2/0x190 [tipc]
+  []  tipc_node_bc_rcv+0x8b/0x200 [tipc]
+  []  tipc_rcv+0x3af/0x5b0 [tipc]
+  []  tipc_udp_recv+0xc7/0x1e0 [tipc]
 
-On Fri, Jun 24, 2022 at 06:02:58PM +0200, Krzysztof Kozlowski wrote:
-> On 23/06/2022 09:46, Bhadram Varka wrote:
-> > From: Thierry Reding <treding@nvidia.com>
-> >=20
-> > Add the clocks and resets used by the MGBE Ethernet hardware found on
-> > Tegra234 SoCs.
-> >=20
-> > Signed-off-by: Thierry Reding <treding@nvidia.com>
-> > Signed-off-by: Bhadram Varka <vbhadram@nvidia.com>
-> > ---
-> >  include/dt-bindings/clock/tegra234-clock.h | 101 +++++++++++++++++++++
-> >  include/dt-bindings/reset/tegra234-reset.h |   8 ++
-> >  2 files changed, 109 insertions(+)
-> >=20
-> > diff --git a/include/dt-bindings/clock/tegra234-clock.h b/include/dt-bi=
-ndings/clock/tegra234-clock.h
-> > index bd4c3086a2da..bab85d9ba8cd 100644
-> > --- a/include/dt-bindings/clock/tegra234-clock.h
-> > +++ b/include/dt-bindings/clock/tegra234-clock.h
-> > @@ -164,10 +164,111 @@
-> >  #define TEGRA234_CLK_PEX1_C5_CORE		225U
-> >  /** @brief PLL controlled by CLK_RST_CONTROLLER_PLLC4_BASE */
-> >  #define TEGRA234_CLK_PLLC4			237U
-> > +/** @brief RX clock recovered from MGBE0 lane input */
->=20
-> The IDs should be abstract integer incremented by one, without any
-> holes. I guess the issue was here before, so it's fine but I'll start
-> complaining at some point :)
+It was caused by the 'l' passed into tipc_bcast_rcv() is NULL. When it
+creates a node in tipc_node_check_dest(), after inserting the new node
+into hashtable in tipc_node_create(), it creates the bc link. However,
+there is a gap between this insert and bc link creation, a bc packet
+may come in and get the node from the hashtable then try to dereference
+its bc link, which is NULL.
 
-These IDs originate from firmware and therefore are more like hardware
-IDs rather than an arbitrary enumeration. These will be used directly in
-IPC calls with the firmware to reference individual clocks and resets.
+This patch is to fix it by moving the bc link creation before inserting
+into the hashtable.
 
-We've adopted these 1:1 in order to avoid adding an extra level of
-indirection (via some lookup table) in the kernel.
+Note that for a preliminary node becoming "real", the bc link creation
+should also be called before it's rehashed, as we don't create it for
+preliminary nodes.
 
-Thierry
+Fixes: 4cbf8ac2fe5a ("tipc: enable creating a "preliminary" node")
+Reported-by: Shuang Li <shuali@redhat.com>
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+Acked-by: Jon Maloy <jmaloy@redhat.com>
+---
+ net/tipc/node.c | 41 ++++++++++++++++++++++-------------------
+ 1 file changed, 22 insertions(+), 19 deletions(-)
 
---j7YpGeEo8VO5okh2
-Content-Type: application/pgp-signature; name="signature.asc"
+diff --git a/net/tipc/node.c b/net/tipc/node.c
+index 6ef95ce565bd..b48d97cbbe29 100644
+--- a/net/tipc/node.c
++++ b/net/tipc/node.c
+@@ -472,8 +472,8 @@ struct tipc_node *tipc_node_create(struct net *net, u32 addr, u8 *peer_id,
+ 				   bool preliminary)
+ {
+ 	struct tipc_net *tn = net_generic(net, tipc_net_id);
++	struct tipc_link *l, *snd_l = tipc_bc_sndlink(net);
+ 	struct tipc_node *n, *temp_node;
+-	struct tipc_link *l;
+ 	unsigned long intv;
+ 	int bearer_id;
+ 	int i;
+@@ -488,6 +488,16 @@ struct tipc_node *tipc_node_create(struct net *net, u32 addr, u8 *peer_id,
+ 			goto exit;
+ 		/* A preliminary node becomes "real" now, refresh its data */
+ 		tipc_node_write_lock(n);
++		if (!tipc_link_bc_create(net, tipc_own_addr(net), addr, peer_id, U16_MAX,
++					 tipc_link_min_win(snd_l), tipc_link_max_win(snd_l),
++					 n->capabilities, &n->bc_entry.inputq1,
++					 &n->bc_entry.namedq, snd_l, &n->bc_entry.link)) {
++			pr_warn("Broadcast rcv link refresh failed, no memory\n");
++			tipc_node_write_unlock_fast(n);
++			tipc_node_put(n);
++			n = NULL;
++			goto exit;
++		}
+ 		n->preliminary = false;
+ 		n->addr = addr;
+ 		hlist_del_rcu(&n->hash);
+@@ -567,7 +577,16 @@ struct tipc_node *tipc_node_create(struct net *net, u32 addr, u8 *peer_id,
+ 	n->signature = INVALID_NODE_SIG;
+ 	n->active_links[0] = INVALID_BEARER_ID;
+ 	n->active_links[1] = INVALID_BEARER_ID;
+-	n->bc_entry.link = NULL;
++	if (!preliminary &&
++	    !tipc_link_bc_create(net, tipc_own_addr(net), addr, peer_id, U16_MAX,
++				 tipc_link_min_win(snd_l), tipc_link_max_win(snd_l),
++				 n->capabilities, &n->bc_entry.inputq1,
++				 &n->bc_entry.namedq, snd_l, &n->bc_entry.link)) {
++		pr_warn("Broadcast rcv link creation failed, no memory\n");
++		kfree(n);
++		n = NULL;
++		goto exit;
++	}
+ 	tipc_node_get(n);
+ 	timer_setup(&n->timer, tipc_node_timeout, 0);
+ 	/* Start a slow timer anyway, crypto needs it */
+@@ -1155,7 +1174,7 @@ void tipc_node_check_dest(struct net *net, u32 addr,
+ 			  bool *respond, bool *dupl_addr)
+ {
+ 	struct tipc_node *n;
+-	struct tipc_link *l, *snd_l;
++	struct tipc_link *l;
+ 	struct tipc_link_entry *le;
+ 	bool addr_match = false;
+ 	bool sign_match = false;
+@@ -1175,22 +1194,6 @@ void tipc_node_check_dest(struct net *net, u32 addr,
+ 		return;
+ 
+ 	tipc_node_write_lock(n);
+-	if (unlikely(!n->bc_entry.link)) {
+-		snd_l = tipc_bc_sndlink(net);
+-		if (!tipc_link_bc_create(net, tipc_own_addr(net),
+-					 addr, peer_id, U16_MAX,
+-					 tipc_link_min_win(snd_l),
+-					 tipc_link_max_win(snd_l),
+-					 n->capabilities,
+-					 &n->bc_entry.inputq1,
+-					 &n->bc_entry.namedq, snd_l,
+-					 &n->bc_entry.link)) {
+-			pr_warn("Broadcast rcv link creation failed, no mem\n");
+-			tipc_node_write_unlock_fast(n);
+-			tipc_node_put(n);
+-			return;
+-		}
+-	}
+ 
+ 	le = &n->links[b->identity];
+ 
+-- 
+2.31.1
 
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmK15KYACgkQ3SOs138+
-s6GZrBAAvdVy6k9waK79sgT+nnevfX0LJBLc/wZxC+HnGUilZtdkaIOOtPBUcW+K
-EYVLkOnphholpRvp8od96Ox827wQ0YgKUyAqig5IkMlzb82g4Ru5MBnF3KefYkQw
-aH4r981BEvAZWTHBs9qLVEos69O1Em+sAEM2iVXHSbix5Rn/QWMLsNODtdl9EDMz
-CZYvJRytUrG+6jimjwqTuocl09v2lrNzKeomWppGbtvE1IsibiRgLyiUc5LYUZ9U
-x7UheFrBZji67LX32afJnZzCnzpVHXysq8/vkvmOBhg97kxV0lWub/P/qXwzHppG
-7ckqcpGuTlLgVRkHcwOC/bZR6phesXtOWgm0ZX26Ury8pqfLmd79w07oIeUZidd3
-sF6I9axbArySqI4Lu2Rjo798Royc8TO4kuEQiH1jfdw4weSgxK0rg1Ox0IcR2SqZ
-swXjOBxYogPLUw5X5WHmBJYIS3d9X7qFa+zMeGhDmD+zOsFpN/1pr+GOFrQPwzyt
-xyh1OdjuAj3R/Gxoajp7jeAT+54NW3bgkJJsxwOTJ0gKNCPiGEN3KtYKEMAWmqmS
-zFyz3bQ5tRF6Qu0y+YHIJGhAA+w11QHqP19Xcj28i7MQywqfLNs3LEhz8WS0EZ7A
-ySB0czlEx8U7jtyER6wzn9SnC0YtVV9u4xAbZgx1MyV9MFfxEV4=
-=Medi
------END PGP SIGNATURE-----
-
---j7YpGeEo8VO5okh2--
