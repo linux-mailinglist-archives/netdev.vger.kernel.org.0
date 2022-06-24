@@ -2,93 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C5A7558C43
-	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 02:30:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E4BA558C9E
+	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 03:06:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231133AbiFXA3k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jun 2022 20:29:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56510 "EHLO
+        id S231146AbiFXBGQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jun 2022 21:06:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230496AbiFXA3i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 20:29:38 -0400
-Received: from zeniv.linux.org.uk (zeniv.linux.org.uk [IPv6:2a03:a000:7:0:5054:ff:fe1c:15ff])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92E3A424B1;
-        Thu, 23 Jun 2022 17:29:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=kfktLyJGFbdGRMR4t6fGt+oJoBpkUKK2mMpGpmGBT0c=; b=OjRm91aTcOgezr61Ir6vqcW3Pu
-        7Ts3LFVf7W4J6h8kC+ovTXp00Bv0su29ZPF/lCEXD/5/KxKwJwxskMLYRXgR6GTtJduh8Yl2qOWqE
-        FoLfq8lt26NSN8bzF+UV2EeW8zNeAo/L3Av0rTz9HKRzNqpLiMLcX4vF7vwi4bQoUftmwbqrAY4nW
-        t9jIoei+lRuKcix/dSF0494Zmrg/KyQBpOO7zVOfc0bhDO2j1TTdQhWFC1P8jLM7gpBgVVkP/J0mK
-        7uYIfSj1kp9K4CkOy9p6WYaa9ZQ1iJHzkSdLu0gebOC3Fa/dYIe6EOUXamvY/lQwtJs670GZzdl3Y
-        BlFOTnuQ==;
-Received: from viro by zeniv.linux.org.uk with local (Exim 4.95 #2 (Red Hat Linux))
-        id 1o4XCW-003ieU-42;
-        Fri, 24 Jun 2022 00:29:32 +0000
-Date:   Fri, 24 Jun 2022 01:29:32 +0100
-From:   Al Viro <viro@zeniv.linux.org.uk>
-To:     Chuck Lever III <chuck.lever@oracle.com>
-Cc:     Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Dave Chinner <david@fromorbit.com>,
-        "tgraf@suug.ch" <tgraf@suug.ch>, Jeff Layton <jlayton@redhat.com>
-Subject: Re: [PATCH RFC 28/30] NFSD: Set up an rhashtable for the filecache
-Message-ID: <YrUFbLJ5uVbWtZbf@ZenIV>
-References: <165590626293.75778.9843437418112335153.stgit@manet.1015granger.net>
- <165590735022.75778.7652622979487182880.stgit@manet.1015granger.net>
- <YrTvq2ED+Xugqpyi@ZenIV>
- <1E65ABAA-C9D9-41F3-A93C-086381A78F10@oracle.com>
- <4417FB68-83C9-43DC-BB57-122D405302E7@oracle.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4417FB68-83C9-43DC-BB57-122D405302E7@oracle.com>
-Sender: Al Viro <viro@ftp.linux.org.uk>
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229476AbiFXBGP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 21:06:15 -0400
+Received: from zju.edu.cn (spam.zju.edu.cn [61.164.42.155])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C8FB95DF14;
+        Thu, 23 Jun 2022 18:06:11 -0700 (PDT)
+Received: from ubuntu.localdomain (unknown [10.190.64.135])
+        by mail-app2 (Coremail) with SMTP id by_KCgCHjorsDbViLh+JAg--.57370S2;
+        Fri, 24 Jun 2022 09:05:57 +0800 (CST)
+From:   Duoming Zhou <duoming@zju.edu.cn>
+To:     linux-hams@vger.kernel.org, pabeni@redhat.com
+Cc:     ralf@linux-mips.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>
+Subject: [PATCH net v3 0/2] Fix UAF and null-ptr-deref bugs in rose protocol
+Date:   Fri, 24 Jun 2022 09:05:43 +0800
+Message-Id: <cover.1656031586.git.duoming@zju.edu.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: by_KCgCHjorsDbViLh+JAg--.57370S2
+X-Coremail-Antispam: 1UD129KBjDUn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73
+        VFW2AGmfu7bjvjm3AaLaJ3UjIYCTnIWjp_UUUY17CY07I20VC2zVCF04k26cxKx2IYs7xG
+        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+        A2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_GcCE
+        3s1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s
+        1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0
+        cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJVW8Jw
+        ACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1l42xK82IYc2Ij64vIr41l
+        42xK82IY6x8ErcxFaVAv8VW8uw4UJr1UMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I
+        8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8
+        ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x
+        0267AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_
+        Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVWUJVW8JbIYCTnIWIevJa73UjIFyTuYvjfUoO
+        J5UUUUU
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAg4KAVZdtaXsswAzsw
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 24, 2022 at 12:14:53AM +0000, Chuck Lever III wrote:
-> 
-> > On Jun 23, 2022, at 7:51 PM, Chuck Lever III <chuck.lever@oracle.com> wrote:
-> > 
-> >> On Jun 23, 2022, at 6:56 PM, Al Viro <viro@zeniv.linux.org.uk> wrote:
-> >> 
-> >> On Wed, Jun 22, 2022 at 10:15:50AM -0400, Chuck Lever wrote:
-> >> 
-> >>> +static u32 nfsd_file_obj_hashfn(const void *data, u32 len, u32 seed)
-> >>> +{
-> >>> +	const struct nfsd_file *nf = data;
-> >>> +
-> >>> +	return jhash2((const u32 *)&nf->nf_inode,
-> >>> +		      sizeof_field(struct nfsd_file, nf_inode) / sizeof(u32),
-> >>> +		      seed);
-> >> 
-> >> Out of curiosity - what are you using to allocate those?  Because if
-> >> it's a slab, then middle bits of address (i.e. lower bits of
-> >> (unsigned long)data / L1_CACHE_BYTES) would better be random enough...
-> > 
-> > 261 static struct nfsd_file *
-> > 262 nfsd_file_alloc(struct nfsd_file_lookup_key *key, unsigned int may)
-> > 263 {
-> > 264         static atomic_t nfsd_file_id;
-> > 265         struct nfsd_file *nf;
-> > 266 
-> > 267         nf = kmem_cache_alloc(nfsd_file_slab, GFP_KERNEL);
-> > 
-> > Was wondering about that. pahole says struct nfsd_file is 112
-> > bytes on my system.
-> 
-> Oops. nfsd_file_obj_hashfn() is supposed to be generating the
-> hash value based on the address stored in the nf_inode field.
-> So it's an inode pointer, alloced via kmem_cache_alloc by default.
+The first patch fixes the UAF bug of sock caused by
+timer. The second patch fixes the null-ptr-deref bug
+caused by rose_kill_by_neigh().
 
-inode pointers are definitely "divide by L1_CACHE_BYTES and take lower
-bits" fodder...
+Duoming Zhou (2):
+  net: rose: fix UAF bugs caused by timer handler
+  net: rose: fix null-ptr-deref caused by rose_kill_by_neigh
+
+ net/rose/af_rose.c    |  6 ++++++
+ net/rose/rose_route.c |  2 ++
+ net/rose/rose_timer.c | 34 +++++++++++++++++++---------------
+ 3 files changed, 27 insertions(+), 15 deletions(-)
+
+-- 
+2.17.1
+
