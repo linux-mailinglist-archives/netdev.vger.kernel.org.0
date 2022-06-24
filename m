@@ -2,158 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A297E559A04
-	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 14:59:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 64F64559A32
+	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 15:15:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232045AbiFXM7R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jun 2022 08:59:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36678 "EHLO
+        id S231511AbiFXNOK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jun 2022 09:14:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232018AbiFXM7Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 08:59:16 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10B405252C
-        for <netdev@vger.kernel.org>; Fri, 24 Jun 2022 05:59:14 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1o4itu-00076J-Dv; Fri, 24 Jun 2022 14:59:06 +0200
-Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1o4itr-002Qlm-7y; Fri, 24 Jun 2022 14:59:04 +0200
-Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1o4itr-00H4Pt-ND; Fri, 24 Jun 2022 14:59:03 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Woojung Huh <woojung.huh@microchip.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Lukas Wunner <lukas@wunner.de>, UNGLinuxDriver@microchip.com
-Subject: [PATCH net-next v1 3/3] net: dsa: microchip: add pause stats support
-Date:   Fri, 24 Jun 2022 14:59:02 +0200
-Message-Id: <20220624125902.4068436-3-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220624125902.4068436-1-o.rempel@pengutronix.de>
-References: <20220624125902.4068436-1-o.rempel@pengutronix.de>
+        with ESMTP id S232131AbiFXNOE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 09:14:04 -0400
+Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40C264FC52
+        for <netdev@vger.kernel.org>; Fri, 24 Jun 2022 06:14:02 -0700 (PDT)
+Received: by mail-oi1-x22a.google.com with SMTP id u9so3513922oiv.12
+        for <netdev@vger.kernel.org>; Fri, 24 Jun 2022 06:14:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:subject:from:to:cc:date:in-reply-to:references
+         :content-transfer-encoding:user-agent:mime-version;
+        bh=Z1QNWitNpIhDD6xVRF3hfQnWEf2O3mgHXPvPI0LkFC0=;
+        b=o/QNz/AHbDLfUvYIe0DVyRQbf2NiZNPpXcdLAQghiQkpOgbCnYoFBFYt+knQ8frfhj
+         uExBLcUT1kl2GPAlkhYdTNl9zajh2y9ieatm/vqLtCW9Oa4+YrArrL5qfyjuLhYnrViM
+         vu0a/RjTWufluq5veAoTd5wJGoHFXT5WddPPHYyaebZAIB8xSlNVPAHP2zjO2YE3Fq44
+         a3LvQxdxAb/4Twsr8jG+LVAX07ckH42F+s5aoUyZlp428Zn5z0smInBIMgoNGZaa8Yqu
+         nGS1qWNB8P6TKQuFdlsm2OKtUuwOqM29BXATU4UX7CbvSRUjd50LOCF8s0G1ipQ44aXp
+         hcIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:content-transfer-encoding:user-agent:mime-version;
+        bh=Z1QNWitNpIhDD6xVRF3hfQnWEf2O3mgHXPvPI0LkFC0=;
+        b=kcvXc0PJL71wIgjl4MtYJlkMlEwbJen210B3PPpLG+pYJaYiVHsUGDB1dm+6Lgs2wo
+         z7ZXg5Zv8UdVMNLJMY6PMqdAMeiRKG94QMQNUwPhPpJmFRqpnufupNAhWwEh3R2eSgs2
+         fSrWwJO3GyW+YmDKw7Qe0Zm5QvZjsz7AhH2RlyemG1ztyL4E3QMNJQ+OCgRuMv5eC+gj
+         Ey3fR0QaKaqseB2DKr+xT7Rkut2ONZDq/WPB4ZXS+TP1lK6x05ZoiGi6IsVTlwT3twP/
+         s2oTQkGEffWWQe9c84Gy8oukIVEY8lssxwUXDhU3bOBiaOZ8fc8Ke3y5xVDtoeUholTE
+         H+OA==
+X-Gm-Message-State: AJIora+k6aT3WCiXfxfhCokBmtzsI5MtZ5NhLhvrQYPmu+nBAZ/vUsSr
+        TV4uvrYFfzyG9oLOlsjB4ZB3zj3osPQ=
+X-Google-Smtp-Source: AGRyM1vLDAAzpvwNXg99R12lAmWaq7O+2WewDnHNNf+K2liCeZk6c2dp0ZeZXmu5K2H3sBc2ABLp0Q==
+X-Received: by 2002:a05:6808:1411:b0:335:174b:807e with SMTP id w17-20020a056808141100b00335174b807emr2024825oiv.67.1656076441613;
+        Fri, 24 Jun 2022 06:14:01 -0700 (PDT)
+Received: from ?IPv6:2804:14c:71:96e6:64c:ef9b:3df0:9e8d? ([2804:14c:71:96e6:64c:ef9b:3df0:9e8d])
+        by smtp.gmail.com with ESMTPSA id k25-20020a9d7019000000b0060c5e0afa8dsm1534308otj.34.2022.06.24.06.14.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 24 Jun 2022 06:14:01 -0700 (PDT)
+Message-ID: <80de8b6d88485fd6882d32a77d7a78777d5ae491.camel@gmail.com>
+Subject: Re: [PATCH] net: usb: ax88179_178a: corrects packet receiving
+From:   Jose Alonso <joalonsof@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Date:   Fri, 24 Jun 2022 10:13:58 -0300
+In-Reply-To: <20220623214705.2ac24b16@kernel.org>
+References: <9a2a2790acfd45bef2cd786dc92407bcd6c14448.camel@gmail.com>
+         <20220623214705.2ac24b16@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.1 (3.44.1-1.fc36) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for pause specific stats.
-
-Tested on ksz9477.
-
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
- drivers/net/dsa/microchip/ksz9477.c    |  1 +
- drivers/net/dsa/microchip/ksz_common.c | 19 +++++++++++++++++++
- drivers/net/dsa/microchip/ksz_common.h |  3 +++
- 3 files changed, 23 insertions(+)
-
-diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index ab40b700cf1a..8c31fb0fe1fd 100644
---- a/drivers/net/dsa/microchip/ksz9477.c
-+++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -1351,6 +1351,7 @@ static const struct dsa_switch_ops ksz9477_switch_ops = {
- 	.port_mirror_add	= ksz9477_port_mirror_add,
- 	.port_mirror_del	= ksz9477_port_mirror_del,
- 	.get_stats64		= ksz_get_stats64,
-+	.get_pause_stats	= ksz_get_pause_stats,
- 	.port_change_mtu	= ksz9477_change_mtu,
- 	.port_max_mtu		= ksz9477_max_mtu,
- };
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index 9ca8c8d7740f..1022affb45aa 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -461,12 +461,14 @@ EXPORT_SYMBOL_GPL(ksz_phylink_get_caps);
- 
- void ksz_r_mib_stats64(struct ksz_device *dev, int port)
- {
-+	struct ethtool_pause_stats *pstats;
- 	struct rtnl_link_stats64 *stats;
- 	struct ksz_stats_raw *raw;
- 	struct ksz_port_mib *mib;
- 
- 	mib = &dev->ports[port].mib;
- 	stats = &mib->stats64;
-+	pstats = &mib->pause_stats;
- 	raw = (struct ksz_stats_raw *)mib->counters;
- 
- 	spin_lock(&mib->stats64_lock);
-@@ -498,6 +500,9 @@ void ksz_r_mib_stats64(struct ksz_device *dev, int port)
- 	stats->multicast = raw->rx_mcast;
- 	stats->collisions = raw->tx_total_col;
- 
-+	pstats->tx_pause_frames = raw->tx_pause;
-+	pstats->rx_pause_frames = raw->rx_pause;
-+
- 	spin_unlock(&mib->stats64_lock);
- }
- EXPORT_SYMBOL_GPL(ksz_r_mib_stats64);
-@@ -516,6 +521,20 @@ void ksz_get_stats64(struct dsa_switch *ds, int port,
- }
- EXPORT_SYMBOL_GPL(ksz_get_stats64);
- 
-+void ksz_get_pause_stats(struct dsa_switch *ds, int port,
-+			 struct ethtool_pause_stats *pause_stats)
-+{
-+	struct ksz_device *dev = ds->priv;
-+	struct ksz_port_mib *mib;
-+
-+	mib = &dev->ports[port].mib;
-+
-+	spin_lock(&mib->stats64_lock);
-+	memcpy(pause_stats, &mib->pause_stats, sizeof(*pause_stats));
-+	spin_unlock(&mib->stats64_lock);
-+}
-+EXPORT_SYMBOL_GPL(ksz_get_pause_stats);
-+
- void ksz_get_strings(struct dsa_switch *ds, int port,
- 		     u32 stringset, uint8_t *buf)
- {
-diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index 8500eaedad67..5d81faf81c1b 100644
---- a/drivers/net/dsa/microchip/ksz_common.h
-+++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -25,6 +25,7 @@ struct ksz_port_mib {
- 	u8 cnt_ptr;
- 	u64 *counters;
- 	struct rtnl_link_stats64 stats64;
-+	struct ethtool_pause_stats pause_stats;
- 	struct spinlock stats64_lock;
- };
- 
-@@ -200,6 +201,8 @@ void ksz_init_mib_timer(struct ksz_device *dev);
- void ksz_r_mib_stats64(struct ksz_device *dev, int port);
- void ksz_get_stats64(struct dsa_switch *ds, int port,
- 		     struct rtnl_link_stats64 *s);
-+void ksz_get_pause_stats(struct dsa_switch *ds, int port,
-+			 struct ethtool_pause_stats *pause_stats);
- void ksz_phylink_get_caps(struct dsa_switch *ds, int port,
- 			  struct phylink_config *config);
- extern const struct ksz_chip_data ksz_switch_chips[];
--- 
-2.30.2
+On Thu, 2022-06-23 at 21:47 -0700, Jakub Kicinski wrote:
+> On Thu, 23 Jun 2022 11:06:05 -0300 Jose Alonso wrote:
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 * In current firmware there=
+ is 2 entries per packet.
+>=20
+> Do you know what FW version you have?
+I don't know.
 
