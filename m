@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 90045559A01
-	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 14:59:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A297E559A04
+	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 14:59:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232033AbiFXM7S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jun 2022 08:59:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36676 "EHLO
+        id S232045AbiFXM7R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jun 2022 08:59:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230100AbiFXM7R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 08:59:17 -0400
+        with ESMTP id S232018AbiFXM7Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 08:59:16 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 538E952537
-        for <netdev@vger.kernel.org>; Fri, 24 Jun 2022 05:59:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10B405252C
+        for <netdev@vger.kernel.org>; Fri, 24 Jun 2022 05:59:14 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1o4itu-00076H-Dv; Fri, 24 Jun 2022 14:59:06 +0200
+        id 1o4itu-00076J-Dv; Fri, 24 Jun 2022 14:59:06 +0200
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1o4itq-002Qlg-SN; Fri, 24 Jun 2022 14:59:04 +0200
+        id 1o4itr-002Qlm-7y; Fri, 24 Jun 2022 14:59:04 +0200
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1o4itr-00H4Ph-Md; Fri, 24 Jun 2022 14:59:03 +0200
+        id 1o4itr-00H4Pt-ND; Fri, 24 Jun 2022 14:59:03 +0200
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Woojung Huh <woojung.huh@microchip.com>,
         Andrew Lunn <andrew@lunn.ch>,
@@ -39,9 +39,9 @@ To:     Woojung Huh <woojung.huh@microchip.com>,
 Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         Lukas Wunner <lukas@wunner.de>, UNGLinuxDriver@microchip.com
-Subject: [PATCH net-next v1 2/3] net: dsa: ar9331: add support for pause stats
-Date:   Fri, 24 Jun 2022 14:59:01 +0200
-Message-Id: <20220624125902.4068436-2-o.rempel@pengutronix.de>
+Subject: [PATCH net-next v1 3/3] net: dsa: microchip: add pause stats support
+Date:   Fri, 24 Jun 2022 14:59:02 +0200
+Message-Id: <20220624125902.4068436-3-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220624125902.4068436-1-o.rempel@pengutronix.de>
 References: <20220624125902.4068436-1-o.rempel@pengutronix.de>
@@ -60,88 +60,100 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for pause stats and fix rx_packets/tx_packets calculation.
+Add support for pause specific stats.
 
-Pause packets are counted by raw.rx64byte/raw.tx64byte counters, so
-subtract it from main rx_packets/tx_packets counters.
-
-tx_/rx_bytes are not affected.
+Tested on ksz9477.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- drivers/net/dsa/qca/ar9331.c | 23 +++++++++++++++++++++--
- 1 file changed, 21 insertions(+), 2 deletions(-)
+ drivers/net/dsa/microchip/ksz9477.c    |  1 +
+ drivers/net/dsa/microchip/ksz_common.c | 19 +++++++++++++++++++
+ drivers/net/dsa/microchip/ksz_common.h |  3 +++
+ 3 files changed, 23 insertions(+)
 
-diff --git a/drivers/net/dsa/qca/ar9331.c b/drivers/net/dsa/qca/ar9331.c
-index fb3fe74abfe6..82412f54c432 100644
---- a/drivers/net/dsa/qca/ar9331.c
-+++ b/drivers/net/dsa/qca/ar9331.c
-@@ -231,6 +231,7 @@ struct ar9331_sw_port {
- 	int idx;
- 	struct delayed_work mib_read;
- 	struct rtnl_link_stats64 stats;
-+	struct ethtool_pause_stats pause_stats;
- 	struct spinlock stats_lock;
+diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
+index ab40b700cf1a..8c31fb0fe1fd 100644
+--- a/drivers/net/dsa/microchip/ksz9477.c
++++ b/drivers/net/dsa/microchip/ksz9477.c
+@@ -1351,6 +1351,7 @@ static const struct dsa_switch_ops ksz9477_switch_ops = {
+ 	.port_mirror_add	= ksz9477_port_mirror_add,
+ 	.port_mirror_del	= ksz9477_port_mirror_del,
+ 	.get_stats64		= ksz_get_stats64,
++	.get_pause_stats	= ksz_get_pause_stats,
+ 	.port_change_mtu	= ksz9477_change_mtu,
+ 	.port_max_mtu		= ksz9477_max_mtu,
  };
+diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+index 9ca8c8d7740f..1022affb45aa 100644
+--- a/drivers/net/dsa/microchip/ksz_common.c
++++ b/drivers/net/dsa/microchip/ksz_common.c
+@@ -461,12 +461,14 @@ EXPORT_SYMBOL_GPL(ksz_phylink_get_caps);
  
-@@ -606,6 +607,7 @@ static void ar9331_sw_phylink_mac_link_up(struct dsa_switch *ds, int port,
- static void ar9331_read_stats(struct ar9331_sw_port *port)
+ void ksz_r_mib_stats64(struct ksz_device *dev, int port)
  {
- 	struct ar9331_sw_priv *priv = ar9331_sw_port_to_priv(port);
-+	struct ethtool_pause_stats *pstats = &port->pause_stats;
- 	struct rtnl_link_stats64 *stats = &port->stats;
- 	struct ar9331_sw_stats_raw raw;
- 	int ret;
-@@ -625,9 +627,11 @@ static void ar9331_read_stats(struct ar9331_sw_port *port)
- 	stats->tx_bytes += raw.txbyte;
++	struct ethtool_pause_stats *pstats;
+ 	struct rtnl_link_stats64 *stats;
+ 	struct ksz_stats_raw *raw;
+ 	struct ksz_port_mib *mib;
  
- 	stats->rx_packets += raw.rx64byte + raw.rx128byte + raw.rx256byte +
--		raw.rx512byte + raw.rx1024byte + raw.rx1518byte + raw.rxmaxbyte;
-+		raw.rx512byte + raw.rx1024byte + raw.rx1518byte +
-+		raw.rxmaxbyte - raw.rxpause;
- 	stats->tx_packets += raw.tx64byte + raw.tx128byte + raw.tx256byte +
--		raw.tx512byte + raw.tx1024byte + raw.tx1518byte + raw.txmaxbyte;
-+		raw.tx512byte + raw.tx1024byte + raw.tx1518byte +
-+		raw.txmaxbyte - raw.txpause;
+ 	mib = &dev->ports[port].mib;
+ 	stats = &mib->stats64;
++	pstats = &mib->pause_stats;
+ 	raw = (struct ksz_stats_raw *)mib->counters;
  
- 	stats->rx_length_errors += raw.rxrunt + raw.rxfragment + raw.rxtoolong;
- 	stats->rx_crc_errors += raw.rxfcserr;
-@@ -646,6 +650,9 @@ static void ar9331_read_stats(struct ar9331_sw_port *port)
- 	stats->multicast += raw.rxmulti;
- 	stats->collisions += raw.txcollision;
+ 	spin_lock(&mib->stats64_lock);
+@@ -498,6 +500,9 @@ void ksz_r_mib_stats64(struct ksz_device *dev, int port)
+ 	stats->multicast = raw->rx_mcast;
+ 	stats->collisions = raw->tx_total_col;
  
-+	pstats->tx_pause_frames += raw.txpause;
-+	pstats->rx_pause_frames += raw.rxpause;
++	pstats->tx_pause_frames = raw->tx_pause;
++	pstats->rx_pause_frames = raw->rx_pause;
 +
- 	spin_unlock(&port->stats_lock);
+ 	spin_unlock(&mib->stats64_lock);
  }
- 
-@@ -670,6 +677,17 @@ static void ar9331_get_stats64(struct dsa_switch *ds, int port,
- 	spin_unlock(&p->stats_lock);
+ EXPORT_SYMBOL_GPL(ksz_r_mib_stats64);
+@@ -516,6 +521,20 @@ void ksz_get_stats64(struct dsa_switch *ds, int port,
  }
+ EXPORT_SYMBOL_GPL(ksz_get_stats64);
  
-+static void ar9331_get_pause_stats(struct dsa_switch *ds, int port,
-+				   struct ethtool_pause_stats *pause_stats)
++void ksz_get_pause_stats(struct dsa_switch *ds, int port,
++			 struct ethtool_pause_stats *pause_stats)
 +{
-+	struct ar9331_sw_priv *priv = (struct ar9331_sw_priv *)ds->priv;
-+	struct ar9331_sw_port *p = &priv->port[port];
++	struct ksz_device *dev = ds->priv;
++	struct ksz_port_mib *mib;
 +
-+	spin_lock(&p->stats_lock);
-+	memcpy(pause_stats, &p->pause_stats, sizeof(*pause_stats));
-+	spin_unlock(&p->stats_lock);
++	mib = &dev->ports[port].mib;
++
++	spin_lock(&mib->stats64_lock);
++	memcpy(pause_stats, &mib->pause_stats, sizeof(*pause_stats));
++	spin_unlock(&mib->stats64_lock);
 +}
++EXPORT_SYMBOL_GPL(ksz_get_pause_stats);
 +
- static const struct dsa_switch_ops ar9331_sw_ops = {
- 	.get_tag_protocol	= ar9331_sw_get_tag_protocol,
- 	.setup			= ar9331_sw_setup,
-@@ -679,6 +697,7 @@ static const struct dsa_switch_ops ar9331_sw_ops = {
- 	.phylink_mac_link_down	= ar9331_sw_phylink_mac_link_down,
- 	.phylink_mac_link_up	= ar9331_sw_phylink_mac_link_up,
- 	.get_stats64		= ar9331_get_stats64,
-+	.get_pause_stats	= ar9331_get_pause_stats,
+ void ksz_get_strings(struct dsa_switch *ds, int port,
+ 		     u32 stringset, uint8_t *buf)
+ {
+diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
+index 8500eaedad67..5d81faf81c1b 100644
+--- a/drivers/net/dsa/microchip/ksz_common.h
++++ b/drivers/net/dsa/microchip/ksz_common.h
+@@ -25,6 +25,7 @@ struct ksz_port_mib {
+ 	u8 cnt_ptr;
+ 	u64 *counters;
+ 	struct rtnl_link_stats64 stats64;
++	struct ethtool_pause_stats pause_stats;
+ 	struct spinlock stats64_lock;
  };
  
- static irqreturn_t ar9331_sw_irq(int irq, void *data)
+@@ -200,6 +201,8 @@ void ksz_init_mib_timer(struct ksz_device *dev);
+ void ksz_r_mib_stats64(struct ksz_device *dev, int port);
+ void ksz_get_stats64(struct dsa_switch *ds, int port,
+ 		     struct rtnl_link_stats64 *s);
++void ksz_get_pause_stats(struct dsa_switch *ds, int port,
++			 struct ethtool_pause_stats *pause_stats);
+ void ksz_phylink_get_caps(struct dsa_switch *ds, int port,
+ 			  struct phylink_config *config);
+ extern const struct ksz_chip_data ksz_switch_chips[];
 -- 
 2.30.2
 
