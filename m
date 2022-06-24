@@ -2,82 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 71CDE559387
-	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 08:34:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 222DB5593BA
+	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 08:49:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230172AbiFXGe2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jun 2022 02:34:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45422 "EHLO
+        id S229980AbiFXGtw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jun 2022 02:49:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229635AbiFXGe1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 02:34:27 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E17055DF07
-        for <netdev@vger.kernel.org>; Thu, 23 Jun 2022 23:34:26 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id go6so1898465pjb.0
-        for <netdev@vger.kernel.org>; Thu, 23 Jun 2022 23:34:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=71jGypN6c61twJSnmBdGUmoPeKpzoJtu/qf5Lc4Vgtg=;
-        b=GQWOciPs4SH+KIoLH/4jvpooIeGL/uKMB5IIRmqHwKrVMCLTNkhEHTFWG3stILKRer
-         cinAgcMsxDf4RTBxejYoy941btEr/eLYCO+GF0ql1oaFb5jWx60AuACLQuEvlaLYrFZf
-         UgRAAkZWXt6lWFMzYjbN06dquy9miTA8f1PyXmTEZJcjuxIApu2/k+3F3LqT6WPZStaK
-         L7ajnIeNJmeLEocSQsgypUZxz1YBXMny857DRCdVvb2g8M2IoTpQy8wBz8KkiaITpwjR
-         N+Jfv3+DvM/5n9lutIQWyD9cIG3lm6BebIyNWT6S8ze0LdBcVOk9Wq+EciVzzoisMPoO
-         SYeA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=71jGypN6c61twJSnmBdGUmoPeKpzoJtu/qf5Lc4Vgtg=;
-        b=pHRPv6Hkeu+vsw/xazdjqoHcxHihsZS3KR8Fwm+pa580yz0SO802OcmxqPfhf/PWFW
-         v1hHE9CxqSzEl6xJ83AJDNfPlzLsTIzOY2TeETn8R0VfE/3IMtrujwqHdhD8aQ66GK9n
-         TYrI06pKcK1aj5cuwODXRBb+qUUzj3Xdw2b/VConBMfTPUJ17F842SqbQljBCF/0RaAl
-         WEDxD3X2sxfh6dfTTJmx0Vl2HRYf8w8gR5k5tU/I9uk4fn8tAc8yd2t+5vK5K2sTa+lr
-         iemViGkKEyYwm38/GHrgKQe0fvPV+6fRlidsiI9KBKNV/6JrbR0c+m8LWThAM1a9AlY4
-         3V8Q==
-X-Gm-Message-State: AJIora/cIPnZEN5vHEJnX6V4X5U4yy6UqMFRy28HHtg3JIIh76eyok1X
-        ZE1vnJJsB8LQKPLsdeG5OHKbr982i71424paWRlKvg==
-X-Google-Smtp-Source: AGRyM1sH/6oaYCwlqeMz2fZ1ORa63Fgtzz9yKrkfpjijNf1stMa7F1Ub33v8l06714/cZs/6t1k6jgJJALnl6rgV8ZY=
-X-Received: by 2002:a17:902:f685:b0:16a:3c40:e3b5 with SMTP id
- l5-20020a170902f68500b0016a3c40e3b5mr15658634plg.106.1656052466148; Thu, 23
- Jun 2022 23:34:26 -0700 (PDT)
+        with ESMTP id S229457AbiFXGtu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 02:49:50 -0400
+Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C80FD4F9DE;
+        Thu, 23 Jun 2022 23:49:48 -0700 (PDT)
+Received: from [192.168.0.2] (ip5f5aeb79.dynamic.kabel-deutschland.de [95.90.235.121])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 9D46A61EA1929;
+        Fri, 24 Jun 2022 08:49:45 +0200 (CEST)
+Message-ID: <9ee7f8de-ba70-c930-6f4b-d3c066ac88bc@molgen.mpg.de>
+Date:   Fri, 24 Jun 2022 08:49:45 +0200
 MIME-Version: 1.0
-References: <20220619150456.GB34471@xsang-OptiPlex-9020> <20220622172857.37db0d29@kernel.org>
- <CADvbK_csvmkKe46hT9792=+Qcjor2EvkkAnr--CJK3NGX-N9BQ@mail.gmail.com>
- <CADvbK_eQUmb942vC+bG+NRzM1ki1LiCydEDR1AezZ35Jvsdfnw@mail.gmail.com>
- <20220623185730.25b88096@kernel.org> <CANn89iLidqjiiV8vxr7KnUg0JvfoS9+TRGg=8ANZ8NBRjeQxsQ@mail.gmail.com>
-In-Reply-To: <CANn89iLidqjiiV8vxr7KnUg0JvfoS9+TRGg=8ANZ8NBRjeQxsQ@mail.gmail.com>
-From:   Shakeel Butt <shakeelb@google.com>
-Date:   Thu, 23 Jun 2022 23:34:15 -0700
-Message-ID: <CALvZod7kULCvHAuk53FE-XBOi4-BbLdY3HCg6jfCZTJDxYsZow@mail.gmail.com>
-Subject: Re: [net] 4890b686f4: netperf.Throughput_Mbps -69.4% regression
-To:     Eric Dumazet <edumazet@google.com>, Linux MM <linux-mm@kvack.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Michal Hocko <mhocko@kernel.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Muchun Song <songmuchun@bytedance.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, Xin Long <lucien.xin@gmail.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        kernel test robot <oliver.sang@intel.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        network dev <netdev@vger.kernel.org>,
-        linux-s390@vger.kernel.org, MPTCP Upstream <mptcp@lists.linux.dev>,
-        "linux-sctp @ vger . kernel . org" <linux-sctp@vger.kernel.org>,
-        lkp@lists.01.org, kbuild test robot <lkp@intel.com>,
-        Huang Ying <ying.huang@intel.com>,
-        "Tang, Feng" <feng.tang@intel.com>,
-        Xing Zhengjun <zhengjun.xing@linux.intel.com>,
-        Yin Fengwei <fengwei.yin@intel.com>, Ying Xu <yinxu@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2 1/2] Bluetooth: Add support for devcoredump
+Content-Language: en-US
+To:     Manish Mandlik <mmandlik@google.com>,
+        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+Cc:     marcel@holtmann.org, luiz.dentz@gmail.com,
+        chromeos-bluetooth-upstreaming@chromium.org,
+        linux-bluetooth@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20220623123549.v2.1.Iaf638bb9f885f5880ab1b4e7ae2f73dd53a54661@changeid>
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+In-Reply-To: <20220623123549.v2.1.Iaf638bb9f885f5880ab1b4e7ae2f73dd53a54661@changeid>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -85,87 +53,114 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-CCing memcg folks.
+Dear Manish, dear Abhishek,
 
-The thread starts at
-https://lore.kernel.org/all/20220619150456.GB34471@xsang-OptiPlex-9020/
 
-On Thu, Jun 23, 2022 at 9:14 PM Eric Dumazet <edumazet@google.com> wrote:
->
-> On Fri, Jun 24, 2022 at 3:57 AM Jakub Kicinski <kuba@kernel.org> wrote:
-> >
-> > On Thu, 23 Jun 2022 18:50:07 -0400 Xin Long wrote:
-> > > From the perf data, we can see __sk_mem_reduce_allocated() is the one
-> > > using CPU the most more than before, and mem_cgroup APIs are also
-> > > called in this function. It means the mem cgroup must be enabled in
-> > > the test env, which may explain why I couldn't reproduce it.
-> > >
-> > > The Commit 4890b686f4 ("net: keep sk->sk_forward_alloc as small as
-> > > possible") uses sk_mem_reclaim(checking reclaimable >= PAGE_SIZE) to
-> > > reclaim the memory, which is *more frequent* to call
-> > > __sk_mem_reduce_allocated() than before (checking reclaimable >=
-> > > SK_RECLAIM_THRESHOLD). It might be cheap when
-> > > mem_cgroup_sockets_enabled is false, but I'm not sure if it's still
-> > > cheap when mem_cgroup_sockets_enabled is true.
-> > >
-> > > I think SCTP netperf could trigger this, as the CPU is the bottleneck
-> > > for SCTP netperf testing, which is more sensitive to the extra
-> > > function calls than TCP.
-> > >
-> > > Can we re-run this testing without mem cgroup enabled?
-> >
-> > FWIW I defer to Eric, thanks a lot for double checking the report
-> > and digging in!
->
-> I did tests with TCP + memcg and noticed a very small additional cost
-> in memcg functions,
-> because of suboptimal layout:
->
-> Extract of an internal Google bug, update from June 9th:
->
-> --------------------------------
-> I have noticed a minor false sharing to fetch (struct
-> mem_cgroup)->css.parent, at offset 0xc0,
-> because it shares the cache line containing struct mem_cgroup.memory,
-> at offset 0xd0
->
-> Ideally, memcg->socket_pressure and memcg->parent should sit in a read
-> mostly cache line.
-> -----------------------
->
-> But nothing that could explain a "-69.4% regression"
->
-> memcg has a very similar strategy of per-cpu reserves, with
-> MEMCG_CHARGE_BATCH being 32 pages per cpu.
->
-> It is not clear why SCTP with 10K writes would overflow this reserve constantly.
->
-> Presumably memcg experts will have to rework structure alignments to
-> make sure they can cope better
-> with more charge/uncharge operations, because we are not going back to
-> gigantic per-socket reserves,
-> this simply does not scale.
+Thank you for the patch.
 
-Yes I agree. As you pointed out there are fields which are mostly
-read-only but sharing cache lines with fields which get updated and
-definitely need work.
+Am 23.06.22 um 21:37 schrieb Manish Mandlik:
+> From: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+> 
+> Add devcoredump APIs to hci core so that drivers only have to provide
+> the dump skbs instead of managing the synchronization and timeouts.
+> 
+> The devcoredump APIs should be used in the following manner:
+>   - hci_devcoredump_init is called to allocate the dump.
+>   - hci_devcoredump_append is called to append any skbs with dump data
+>     OR hci_devcoredump_append_pattern is called to insert a pattern.
+>   - hci_devcoredump_complete is called when all dump packets have been
+>     sent OR hci_devcoredump_abort is called to indicate an error and
+>     cancel an ongoing dump collection.
+> 
+> The high level APIs just prepare some skbs with the appropriate data and
+> queue it for the dump to process. Packets part of the crashdump can be
+> intercepted in the driver in interrupt context and forwarded directly to
+> the devcoredump APIs.
+> 
+> Internally, there are 5 states for the dump: idle, active, complete,
+> abort and timeout. A devcoredump will only be in active state after it
+> has been initialized. Once active, it accepts data to be appended,
+> patterns to be inserted (i.e. memset) and a completion event or an abort
+> event to generate a devcoredump. The timeout is initialized at the same
+> time the dump is initialized (defaulting to 10s) and will be cleared
+> either when the timeout occurs or the dump is complete or aborted.
 
-However can we first confirm if memcg charging is really the issue
-here as I remember these intel lkp tests are configured to run in root
-memcg and the kernel does not associate root memcg to any socket (see
-mem_cgroup_sk_alloc()).
+Do you have a usage example, how this can be used fro userspace?
 
-If these tests are running in non-root memcg, is this cgroup v1 or v2?
-The memory counter and the 32 pages per cpu stock are only used on v2.
-For v1, there is no per-cpu stock and there is a separate tcpmem page
-counter and on v1 the network memory accounting has to be enabled
-explicitly i.e. not enabled by default.
+> Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+> Signed-off-by: Manish Mandlik <mmandlik@google.com>
+> Reviewed-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+> ---
+> 
+> Changes in v2:
+> - Move hci devcoredump implementation to new files
+> - Move dump queue and dump work to hci_devcoredump struct
+> - Add CONFIG_DEV_COREDUMP conditional compile
+> 
+>   include/net/bluetooth/coredump.h | 109 +++++++
+>   include/net/bluetooth/hci_core.h |   5 +
+>   net/bluetooth/Makefile           |   2 +
+>   net/bluetooth/coredump.c         | 504 +++++++++++++++++++++++++++++++
+>   net/bluetooth/hci_core.c         |   9 +
+>   net/bluetooth/hci_sync.c         |   2 +
+>   6 files changed, 631 insertions(+)
+>   create mode 100644 include/net/bluetooth/coredump.h
+>   create mode 100644 net/bluetooth/coredump.c
+> 
+> diff --git a/include/net/bluetooth/coredump.h b/include/net/bluetooth/coredump.h
+> new file mode 100644
+> index 000000000000..73601c409c6e
+> --- /dev/null
+> +++ b/include/net/bluetooth/coredump.h
+> @@ -0,0 +1,109 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * Copyright (C) 2022 Google Corporation
+> + */
+> +
+> +#ifndef __COREDUMP_H
+> +#define __COREDUMP_H
+> +
+> +#define DEVCOREDUMP_TIMEOUT	msecs_to_jiffies(10000)	/* 10 sec */
+> +
+> +typedef int  (*dmp_hdr_t)(struct hci_dev *hdev, char *buf, size_t size);
+> +typedef void (*notify_change_t)(struct hci_dev *hdev, int state);
+> +
+> +/* struct hci_devcoredump - Devcoredump state
+> + *
+> + * @supported: Indicates if FW dump collection is supported by driver
+> + * @state: Current state of dump collection
+> + * @alloc_size: Total size of the dump
+> + * @head: Start of the dump
+> + * @tail: Pointer to current end of dump
+> + * @end: head + alloc_size for easy comparisons
+> + *
+> + * @dump_q: Dump queue for state machine to process
+> + * @dump_rx: Devcoredump state machine work
+> + * @dump_timeout: Devcoredump timeout work
+> + *
+> + * @dmp_hdr: Create a dump header to identify controller/fw/driver info
+> + * @notify_change: Notify driver when devcoredump state has changed
+> + */
+> +struct hci_devcoredump {
+> +	bool		supported;
+> +
+> +	enum devcoredump_state {
+> +		HCI_DEVCOREDUMP_IDLE,
+> +		HCI_DEVCOREDUMP_ACTIVE,
+> +		HCI_DEVCOREDUMP_DONE,
+> +		HCI_DEVCOREDUMP_ABORT,
+> +		HCI_DEVCOREDUMP_TIMEOUT
+> +	} state;
+> +
+> +	u32		alloc_size;
 
-There is definite possibility of slowdown on v1 but let's first
-confirm the memcg setup used for this testing environment.
+As it’s not packed, why specify the length? Just use size_t or `unsigned 
+int`?
 
-Feng, can you please explain the memcg setup on these test machines
-and if the tests are run in root or non-root memcg?
+[…]
 
-thanks,
-Shakeel
+
+Kind regards,
+
+Paul
