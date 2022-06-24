@@ -2,64 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A64EA559D66
-	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 17:36:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2755C559D6B
+	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 17:37:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232166AbiFXPaZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jun 2022 11:30:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39876 "EHLO
+        id S232742AbiFXPcj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jun 2022 11:32:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230197AbiFXPaY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 11:30:24 -0400
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F38FA38788
-        for <netdev@vger.kernel.org>; Fri, 24 Jun 2022 08:30:22 -0700 (PDT)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-317ab78a345so24174527b3.10
-        for <netdev@vger.kernel.org>; Fri, 24 Jun 2022 08:30:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=AymsaJukmDqnkwIuitBzjbUhwHJnPU5OwowwLpp0N44=;
-        b=VgbRUFO8XMmF0MREQTxRyIQWarpYyx3wswIQv58yxa9HmnZv8fFqVOqN/SCUOicqQe
-         qC/OOvH6j+KbaqASwQ2tGFejmtO15cbT7/eY2rQqM6a7uwMZIifOyqG+OFT1KliLzv73
-         pyVtCplbWK1z3zQYxmbwPUaRLS+2sRWsYh/oqc1PcTiCco0Ndra2rpub9vkS162lx+EM
-         D6/SGLDsftwG7SSrRL2FYhDf1HC2Ug5pZc4MiSb9DEyKs4JGCKG1XLLQfTlEix1Dlffz
-         0PfosFv0Yl2qjoXfboxI0lr5iQydOpmUPciJOdHD94+ikcs7yeXlFMTdlb5v6SoefteF
-         PTqw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=AymsaJukmDqnkwIuitBzjbUhwHJnPU5OwowwLpp0N44=;
-        b=2S7J8IG2OFc+HjFlD1izwS+t9PJGjiOjy+O7+jL3Prdkx4L59CYZ2nmlNuLNhTAW+G
-         tTz0gb3yAp6lymjpCOz6r31tSLMGUSuBT12GwsNT+YkeCUIigh9d+lbgEuNEXOrTLcZC
-         PgOWBiH2z5Jy5quthh9qK+LqcrgQNkgItFLvkCmLhWG/SRiMOEsomdyQAMBTRIckXMX0
-         EQM+kiPIMHmr20OsyHtLc67TSQtpznFknIstDU9JWybc4mywMHcGiLaeN6UxXmrHike1
-         tXroUWPuGKjCdodB9Kui79BQXPz5M76z3fVCW69rMs8NOJAm+joEfTBNFXA0iR2YmKvv
-         nA/Q==
-X-Gm-Message-State: AJIora8UTh+3Y9hCUmqy7log3cpVdQ9Y08nb79aevGgs8CR1tMe5Io1X
-        QQBDI2LwYlNo72Kt4TGYpCvNBjbrCk3ofA==
-X-Google-Smtp-Source: AGRyM1v+vLHzbMGqj4lz4KD18rvxDQJcJsPYQlPgBG+0A0JWHRdq+SFSIRS/VOOxya4mjYzWETWmGuCYUZ9JKQ==
-X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:a5b:8d1:0:b0:668:c6ca:7571 with SMTP id
- w17-20020a5b08d1000000b00668c6ca7571mr15124343ybq.445.1656084622264; Fri, 24
- Jun 2022 08:30:22 -0700 (PDT)
-Date:   Fri, 24 Jun 2022 15:30:20 +0000
-Message-Id: <20220624153020.3246782-1-edumazet@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.37.0.rc0.104.g0611611a94-goog
-Subject: [PATCH net] tunnels: do not assume mac header is set in skb_tunnel_check_pmtu()
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
-        Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        Stefano Brivio <sbrivio@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
+        with ESMTP id S231712AbiFXPci (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 11:32:38 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA57F517D0;
+        Fri, 24 Jun 2022 08:32:35 -0700 (PDT)
+Received: from fraeml709-chm.china.huawei.com (unknown [172.18.147.206])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LV1KJ1zLSz687Z8;
+        Fri, 24 Jun 2022 23:30:28 +0800 (CST)
+Received: from fraeml714-chm.china.huawei.com (10.206.15.33) by
+ fraeml709-chm.china.huawei.com (10.206.15.37) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 24 Jun 2022 17:32:33 +0200
+Received: from fraeml714-chm.china.huawei.com ([10.206.15.33]) by
+ fraeml714-chm.china.huawei.com ([10.206.15.33]) with mapi id 15.01.2375.024;
+ Fri, 24 Jun 2022 17:32:33 +0200
+From:   Roberto Sassu <roberto.sassu@huawei.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+CC:     "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "andrii@kernel.org" <andrii@kernel.org>,
+        "kpsingh@kernel.org" <kpsingh@kernel.org>,
+        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
+        "songliubraving@fb.com" <songliubraving@fb.com>,
+        "kafai@fb.com" <kafai@fb.com>, "yhs@fb.com" <yhs@fb.com>,
+        "dhowells@redhat.com" <dhowells@redhat.com>,
+        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH v5 2/5] bpf: Add bpf_lookup_user_key() and bpf_key_put()
+ helpers
+Thread-Topic: [PATCH v5 2/5] bpf: Add bpf_lookup_user_key() and bpf_key_put()
+ helpers
+Thread-Index: AQHYhY1k21fgeQJHrk6eeuiL0ORSsa1aUQkAgACxApCAAeingIAAb3WAgAFNKjA=
+Date:   Fri, 24 Jun 2022 15:32:33 +0000
+Message-ID: <27e25756f96548aeb56d1af5c94197f6@huawei.com>
+References: <20220621163757.760304-1-roberto.sassu@huawei.com>
+ <20220621163757.760304-3-roberto.sassu@huawei.com>
+ <20220621223248.f6wgyewajw6x4lgr@macbook-pro-3.dhcp.thefacebook.com>
+ <796b55c79be142cab6a22dd281fdb9fa@huawei.com>
+ <f2d3da08e7774df9b44cc648dda7d0b8@huawei.com>
+ <CAADnVQKVx9o1PcCV_F3ywJCzDTPtQG4MTKM2BmwdCwNvyxdNPg@mail.gmail.com>
+In-Reply-To: <CAADnVQKVx9o1PcCV_F3ywJCzDTPtQG4MTKM2BmwdCwNvyxdNPg@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.221.98.153]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -67,85 +71,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Recently added debug in commit f9aefd6b2aa3 ("net: warn if mac header
-was not set") caught a bug in skb_tunnel_check_pmtu(), as shown
-in this syzbot report [1].
-
-In ndo_start_xmit() paths, there is really no need to use skb->mac_header,
-because skb->data is supposed to point at it.
-
-[1] WARNING: CPU: 1 PID: 8604 at include/linux/skbuff.h:2784 skb_mac_header_len include/linux/skbuff.h:2784 [inline]
-WARNING: CPU: 1 PID: 8604 at include/linux/skbuff.h:2784 skb_tunnel_check_pmtu+0x5de/0x2f90 net/ipv4/ip_tunnel_core.c:413
-Modules linked in:
-CPU: 1 PID: 8604 Comm: syz-executor.3 Not tainted 5.19.0-rc2-syzkaller-00443-g8720bd951b8e #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:skb_mac_header_len include/linux/skbuff.h:2784 [inline]
-RIP: 0010:skb_tunnel_check_pmtu+0x5de/0x2f90 net/ipv4/ip_tunnel_core.c:413
-Code: 00 00 00 00 fc ff df 4c 89 fa 48 c1 ea 03 80 3c 02 00 0f 84 b9 fe ff ff 4c 89 ff e8 7c 0f d7 f9 e9 ac fe ff ff e8 c2 13 8a f9 <0f> 0b e9 28 fc ff ff e8 b6 13 8a f9 48 8b 54 24 70 48 b8 00 00 00
-RSP: 0018:ffffc90002e4f520 EFLAGS: 00010212
-RAX: 0000000000000324 RBX: ffff88804d5fd500 RCX: ffffc90005b52000
-RDX: 0000000000040000 RSI: ffffffff87f05e3e RDI: 0000000000000003
-RBP: ffffc90002e4f650 R08: 0000000000000003 R09: 000000000000ffff
-R10: 000000000000ffff R11: 0000000000000000 R12: 000000000000ffff
-R13: 0000000000000000 R14: 000000000000ffcd R15: 000000000000001f
-FS: 00007f3babba9700(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
-CS: 0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000020000080 CR3: 0000000075319000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
-<TASK>
-geneve_xmit_skb drivers/net/geneve.c:927 [inline]
-geneve_xmit+0xcf8/0x35d0 drivers/net/geneve.c:1107
-__netdev_start_xmit include/linux/netdevice.h:4805 [inline]
-netdev_start_xmit include/linux/netdevice.h:4819 [inline]
-__dev_direct_xmit+0x500/0x730 net/core/dev.c:4309
-dev_direct_xmit include/linux/netdevice.h:3007 [inline]
-packet_direct_xmit+0x1b8/0x2c0 net/packet/af_packet.c:282
-packet_snd net/packet/af_packet.c:3073 [inline]
-packet_sendmsg+0x21f4/0x55d0 net/packet/af_packet.c:3104
-sock_sendmsg_nosec net/socket.c:714 [inline]
-sock_sendmsg+0xcf/0x120 net/socket.c:734
-____sys_sendmsg+0x6eb/0x810 net/socket.c:2489
-___sys_sendmsg+0xf3/0x170 net/socket.c:2543
-__sys_sendmsg net/socket.c:2572 [inline]
-__do_sys_sendmsg net/socket.c:2581 [inline]
-__se_sys_sendmsg net/socket.c:2579 [inline]
-__x64_sys_sendmsg+0x132/0x220 net/socket.c:2579
-do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
-entry_SYSCALL_64_after_hwframe+0x46/0xb0
-RIP: 0033:0x7f3baaa89109
-Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f3babba9168 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00007f3baab9bf60 RCX: 00007f3baaa89109
-RDX: 0000000000000000 RSI: 0000000020000a00 RDI: 0000000000000003
-RBP: 00007f3baaae305d R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007ffe74f2543f R14: 00007f3babba9300 R15: 0000000000022000
-</TASK>
-
-Fixes: 4cb47a8644cc ("tunnels: PMTU discovery support for directly bridged IP packets")
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Stefano Brivio <sbrivio@redhat.com>
----
- net/ipv4/ip_tunnel_core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/ipv4/ip_tunnel_core.c b/net/ipv4/ip_tunnel_core.c
-index 6b2dc7b2b6127d120b115d92746a2356dc55d5f1..cc1caab4a654921a267bac1cca56bb91244b9ea9 100644
---- a/net/ipv4/ip_tunnel_core.c
-+++ b/net/ipv4/ip_tunnel_core.c
-@@ -410,7 +410,7 @@ int skb_tunnel_check_pmtu(struct sk_buff *skb, struct dst_entry *encap_dst,
- 	u32 mtu = dst_mtu(encap_dst) - headroom;
- 
- 	if ((skb_is_gso(skb) && skb_gso_validate_network_len(skb, mtu)) ||
--	    (!skb_is_gso(skb) && (skb->len - skb_mac_header_len(skb)) <= mtu))
-+	    (!skb_is_gso(skb) && (skb->len - skb_network_offset(skb)) <= mtu))
- 		return 0;
- 
- 	skb_dst_update_pmtu_no_confirm(skb, mtu);
--- 
-2.37.0.rc0.104.g0611611a94-goog
-
+PiBGcm9tOiBBbGV4ZWkgU3Rhcm92b2l0b3YgW21haWx0bzphbGV4ZWkuc3Rhcm92b2l0b3ZAZ21h
+aWwuY29tXQ0KPiBTZW50OiBUaHVyc2RheSwgSnVuZSAyMywgMjAyMiAxMDo1NCBQTQ0KPiBPbiBU
+aHUsIEp1biAyMywgMjAyMiBhdCA1OjM2IEFNIFJvYmVydG8gU2Fzc3UgPHJvYmVydG8uc2Fzc3VA
+aHVhd2VpLmNvbT4NCj4gd3JvdGU6DQo+ID4NCj4gPiA+IEZyb206IFJvYmVydG8gU2Fzc3UgW21h
+aWx0bzpyb2JlcnRvLnNhc3N1QGh1YXdlaS5jb21dDQo+ID4gPiBTZW50OiBXZWRuZXNkYXksIEp1
+bmUgMjIsIDIwMjIgOToxMiBBTQ0KPiA+ID4gPiBGcm9tOiBBbGV4ZWkgU3Rhcm92b2l0b3YgW21h
+aWx0bzphbGV4ZWkuc3Rhcm92b2l0b3ZAZ21haWwuY29tXQ0KPiA+ID4gPiBTZW50OiBXZWRuZXNk
+YXksIEp1bmUgMjIsIDIwMjIgMTI6MzMgQU0NCj4gPiA+ID4gT24gVHVlLCBKdW4gMjEsIDIwMjIg
+YXQgMDY6Mzc6NTRQTSArMDIwMCwgUm9iZXJ0byBTYXNzdSB3cm90ZToNCj4gPiA+ID4gPiBBZGQg
+dGhlIGJwZl9sb29rdXBfdXNlcl9rZXkoKSBhbmQgYnBmX2tleV9wdXQoKSBoZWxwZXJzLCB0byBy
+ZXNwZWN0aXZlbHkNCj4gPiA+ID4gPiBzZWFyY2ggYSBrZXkgd2l0aCBhIGdpdmVuIHNlcmlhbCwg
+YW5kIHJlbGVhc2UgdGhlIHJlZmVyZW5jZSBjb3VudCBvZiB0aGUNCj4gPiA+ID4gPiBmb3VuZCBr
+ZXkuDQo+ID4gPiA+ID4NCj4gPiA+ID4gPiBTaWduZWQtb2ZmLWJ5OiBSb2JlcnRvIFNhc3N1IDxy
+b2JlcnRvLnNhc3N1QGh1YXdlaS5jb20+DQo+ID4gPiA+ID4gLS0tDQo+ID4gPiA+ID4gIGluY2x1
+ZGUvdWFwaS9saW51eC9icGYuaCAgICAgICB8IDE2ICsrKysrKysrKysrKw0KPiA+ID4gPiA+ICBr
+ZXJuZWwvYnBmL2JwZl9sc20uYyAgICAgICAgICAgfCA0Ng0KPiArKysrKysrKysrKysrKysrKysr
+KysrKysrKysrKysrKysrDQo+ID4gPiA+ID4gIGtlcm5lbC9icGYvdmVyaWZpZXIuYyAgICAgICAg
+ICB8ICA2ICsrKy0tDQo+ID4gPiA+ID4gIHNjcmlwdHMvYnBmX2RvYy5weSAgICAgICAgICAgICB8
+ICAyICsrDQo+ID4gPiA+ID4gIHRvb2xzL2luY2x1ZGUvdWFwaS9saW51eC9icGYuaCB8IDE2ICsr
+KysrKysrKysrKw0KPiA+ID4gPiA+ICA1IGZpbGVzIGNoYW5nZWQsIDg0IGluc2VydGlvbnMoKyks
+IDIgZGVsZXRpb25zKC0pDQo+ID4gPiA+ID4NCj4gPiA+ID4gPiBkaWZmIC0tZ2l0IGEvaW5jbHVk
+ZS91YXBpL2xpbnV4L2JwZi5oIGIvaW5jbHVkZS91YXBpL2xpbnV4L2JwZi5oDQo+ID4gPiA+ID4g
+aW5kZXggZTgxMzYyODkxNTk2Li43YmJjZjJjZDEwNWQgMTAwNjQ0DQo+ID4gPiA+ID4gLS0tIGEv
+aW5jbHVkZS91YXBpL2xpbnV4L2JwZi5oDQo+ID4gPiA+ID4gKysrIGIvaW5jbHVkZS91YXBpL2xp
+bnV4L2JwZi5oDQo+ID4gPiA+ID4gQEAgLTUzMjUsNiArNTMyNSwyMCBAQCB1bmlvbiBicGZfYXR0
+ciB7DQo+ID4gPiA+ID4gICAqICAgICAgICAgICAgICAgKiotRUFDQ0VTKiogaWYgdGhlIFNZTiBj
+b29raWUgaXMgbm90IHZhbGlkLg0KPiA+ID4gPiA+ICAgKg0KPiA+ID4gPiA+ICAgKiAgICAgICAg
+ICAgICAgICoqLUVQUk9UT05PU1VQUE9SVCoqIGlmIENPTkZJR19JUFY2IGlzIG5vdCBidWlsdGlu
+Lg0KPiA+ID4gPiA+ICsgKg0KPiA+ID4gPiA+ICsgKiBzdHJ1Y3Qga2V5ICpicGZfbG9va3VwX3Vz
+ZXJfa2V5KHUzMiBzZXJpYWwsIHVuc2lnbmVkIGxvbmcgZmxhZ3MpDQo+ID4gPiA+ID4gKyAqICAg
+ICAgIERlc2NyaXB0aW9uDQo+ID4gPiA+ID4gKyAqICAgICAgICAgICAgICAgU2VhcmNoIGEga2V5
+IHdpdGggYSBnaXZlbiAqc2VyaWFsKiBhbmQgdGhlIHByb3ZpZGVkICpmbGFncyosDQo+IGFuZA0K
+PiA+ID4gPiA+ICsgKiAgICAgICAgICAgICAgIGluY3JlbWVudCB0aGUgcmVmZXJlbmNlIGNvdW50
+IG9mIHRoZSBrZXkuDQo+ID4gPiA+DQo+ID4gPiA+IFdoeSBwYXNzaW5nICdmbGFncycgaXMgb2sg
+dG8gZG8/DQo+ID4gPiA+IFBsZWFzZSB0aGluayB0aHJvdWdoIGV2ZXJ5IGxpbmUgb2YgdGhlIHBh
+dGNoLg0KPiA+ID4NCj4gPiA+IFRvIGJlIGhvbmVzdCwgSSB0aG91Z2h0IGFib3V0IGl0LiBQcm9i
+YWJseSB5ZXMsIEkgc2hvdWxkIGRvIHNvbWUNCj4gPiA+IHNhbml0aXphdGlvbiwgbGlrZSBJIGRp
+ZCBmb3IgdGhlIGtleXJpbmcgSUQuIFdoZW4gSSBjaGVja2VkDQo+ID4gPiBsb29rdXBfdXNlcl9r
+ZXkoKSwgSSBzYXcgdGhhdCBmbGFncyBhcmUgY2hlY2tlZCBpbmRpdmlkdWFsbHksIHNvDQo+ID4g
+PiBhbiBhcmJpdHJhcnkgdmFsdWUgcGFzc2VkIHRvIHRoZSBoZWxwZXIgc2hvdWxkIG5vdCBjYXVz
+ZSBoYXJtLg0KPiA+ID4gV2lsbCBkbyBzYW5pdGl6YXRpb24sIGlmIHlvdSBwcmVmZXIuIEl0IGlz
+IGp1c3QgdGhhdCB3ZSBoYXZlIHRvIGtlZXANCj4gPiA+IHRoZSBlQlBGIGNvZGUgaW4gc3luYyB3
+aXRoIGtleSBmbGFnIGRlZmluaXRpb24gKHVubGVzcyB3ZSBoYXZlDQo+ID4gPiBhICdsYXN0JyBm
+bGFnKS4NCj4gPg0KPiA+IEknbSBub3Qgc3VyZSB0aGF0IGhhdmluZyBhIGhlbHBlciBmb3IgbG9v
+a3VwX3VzZXJfa2V5KCkgYWxvbmUgaXMNCj4gPiBjb3JyZWN0LiBCeSBoYXZpbmcgc2VwYXJhdGUg
+aGVscGVycyBmb3IgbG9va3VwIGFuZCB1c2FnZSBvZiB0aGUNCj4gPiBrZXksIG5vdGhpbmcgd291
+bGQgcHJldmVudCBhbiBlQlBGIHByb2dyYW0gdG8gYXNrIGZvciBhDQo+ID4gcGVybWlzc2lvbiB0
+byBwYXNzIHRoZSBhY2Nlc3MgY29udHJvbCBjaGVjaywgYW5kIHRoZW4gdXNlIHRoZQ0KPiA+IGtl
+eSBmb3Igc29tZXRoaW5nIGNvbXBsZXRlbHkgZGlmZmVyZW50IGZyb20gd2hhdCBpdCByZXF1ZXN0
+ZWQuDQo+ID4NCj4gPiBMb29raW5nIGF0IGhvdyBsb29rdXBfdXNlcl9rZXkoKSBpcyB1c2VkIGlu
+IHNlY3VyaXR5L2tleXMva2V5Y3RsLmMsDQo+ID4gaXQgc2VlbXMgY2xlYXIgdGhhdCBpdCBzaG91
+bGQgYmUgdXNlZCB0b2dldGhlciB3aXRoIHRoZSBvcGVyYXRpb24NCj4gPiB0aGF0IG5lZWRzIHRv
+IGJlIHBlcmZvcm1lZC4gT25seSBpbiB0aGlzIHdheSwgdGhlIGtleSBwZXJtaXNzaW9uDQo+ID4g
+d291bGQgbWFrZSBzZW5zZS4NCj4gDQo+IGxvb2t1cCBpcyByb3VnaGx5IGVxdWl2YWxlbnQgdG8g
+b3BlbiB3aGVuIGFsbCBwZXJtaXNzaW9uIGNoZWNrcyBhcmUgZG9uZS4NCj4gQW5kIHVzaW5nIHRo
+ZSBrZXkgaXMgcmVhZC93cml0ZS4NCg0KRm9yIGJwZl92ZXJpZnlfcGtjczdfc2lnbmF0dXJlKCks
+IHdlIG5lZWQgdGhlIHNlYXJjaCBwZXJtaXNzaW9uDQpvbiB0aGUga2V5cmluZyBjb250YWluaW5n
+IHRoZSBrZXkgdXNlZCBmb3Igc2lnbmF0dXJlIHZlcmlmaWNhdGlvbi4NCg0KVGhhbmtzDQoNClJv
+YmVydG8NCg0KKEkgd2FzIG5vdCB0b2xkIG90aGVyd2lzZSwgSSB1c2UgbXkgY29ycG9yYXRlIGVt
+YWlsIHRvIHNlbmQNCndvcmsgdG8gb3V0c2lkZSwgc28gSSBoYXZlIHRvIGtlZXAgdGhlIG5vdGlj
+ZSkNCg0KSFVBV0VJIFRFQ0hOT0xPR0lFUyBEdWVzc2VsZG9yZiBHbWJILCBIUkIgNTYwNjMNCk1h
+bmFnaW5nIERpcmVjdG9yOiBMaSBQZW5nLCBZYW5nIFhpLCBMaSBIZQ0K
