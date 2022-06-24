@@ -2,115 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B0A75559889
-	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 13:24:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F4F95598A3
+	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 13:40:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231214AbiFXLXL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jun 2022 07:23:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50074 "EHLO
+        id S230092AbiFXLkR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jun 2022 07:40:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231181AbiFXLXK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 07:23:10 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7615C17E17;
-        Fri, 24 Jun 2022 04:23:09 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id z11so2976261edp.9;
-        Fri, 24 Jun 2022 04:23:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=97l5C7KYjI62mLTEaSBvh8q8hin604D+5jLnZw8o8Hs=;
-        b=gGsd16xApVKpT/QOG6PyUQzbcvKy4PkecAqb4plJuQMkKESiQd5Snhy6ig8Cv4wtfT
-         hY8GVKO1cVP4LQPxMSKIOy/z3+HW5AqITfde0UU2CqxbPt8kpAUBJEgMJmhwOPKpK/wz
-         iGTEpMNFcvgFEwLihX+vyh9vVD86SJMUgB09evZoZKaA+p8/mS01MDXrt08srEsIKob7
-         FujT9R0RRWXDIQuSBYh7/clCHQO8jCvPN3dCglBALhWbqoKzQTQBoF6bW9raBMyy22Ra
-         xi2DH7HwV8hP7KvsVM9fzUQRQULr/0y1I7EKQS2mu4eiNEBzJLsE4uwcRsIt6ocqgJZt
-         KgsA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=97l5C7KYjI62mLTEaSBvh8q8hin604D+5jLnZw8o8Hs=;
-        b=vtPlWci1vRjzzDsY3TOir9IPJEu8rGokszu2wjK8OU1p4wDVMVEjxc1YHJ24UoFhll
-         vDsstXbXL4+VCM7KQjbagQ8l/jABN3PqjpL49py8ETfRm7oomzQO05qTm4kRVl5aqNg9
-         S34mQflS/LiMqpZ5mcvbTql0UWxQezjO2qtbRnHwwwxIQyS3OrOQM/jHLb9uo4PVMiqT
-         +HunMhuS1Ar9lolLLxQvHj6Xf4oV2v1cctlMyITrHJNuvxUM+yEmdjtZ2esZnEE9eL6J
-         EsvOwXI91mq9C/433Tbnhka+jfgnL8figIWxSJP2rmnqpad9XYF5MLYrrQkcFXEt3mcP
-         bqPA==
-X-Gm-Message-State: AJIora8lhHHvvFFoMQGd6lK3LdoKjayqajGZraC4DFhaZhVMETdDy5ah
-        WeL7os/FubQivWkGvu/yWJ0Yhl4gBDg=
-X-Google-Smtp-Source: AGRyM1sp0z4XwfeMfTfnogDy8QZgeG5xuxDpxgASKZ3PAEsgPyjKdlX2fKg+NZZqIXQhQtCPdlB7+g==
-X-Received: by 2002:a05:6402:4144:b0:431:6ef0:bef7 with SMTP id x4-20020a056402414400b004316ef0bef7mr17147768eda.151.1656069787952;
-        Fri, 24 Jun 2022 04:23:07 -0700 (PDT)
-Received: from skbuf ([188.27.185.253])
-        by smtp.gmail.com with ESMTPSA id d18-20020a05640208d200b00435bfcad6d1sm1757991edz.74.2022.06.24.04.23.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Jun 2022 04:23:06 -0700 (PDT)
-Date:   Fri, 24 Jun 2022 14:23:04 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Arun Ramadoss <arun.ramadoss@microchip.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>
-Subject: Re: [Patch net-next 00/13] net: dsa: microchip: common spi probe for
- the ksz series switches - part 2
-Message-ID: <20220624112304.zg5qypzwervonsvc@skbuf>
-References: <20220622090425.17709-1-arun.ramadoss@microchip.com>
+        with ESMTP id S229778AbiFXLkQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 07:40:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1C6C68038
+        for <netdev@vger.kernel.org>; Fri, 24 Jun 2022 04:40:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 68201621D2
+        for <netdev@vger.kernel.org>; Fri, 24 Jun 2022 11:40:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id B6009C3411C;
+        Fri, 24 Jun 2022 11:40:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656070814;
+        bh=u7SavGs/BDt9kgn7UeI3xNCQGOJTT+Tjy44jRgFBxIY=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=RQG+ub/Gp90Z6FlSKGNRz57w2/FfyAFIfR60A2AVAN3BhIeGeJ518IE+APF2hZK3h
+         m3EREcl+HGnP4b3Xvg28lpxQ9UebU+8aQ/IuGlCpoIRxX5lYEuLfTFTw9/VYSARv9Q
+         HGg3782rT4Hw6WnsO0juztA9KaacwtTqwQ9bGEpC9W8+Ew3OENIRS1Ebbs3wmqS6Oe
+         O3M6cqp2eZzx3KmfdqgimWhLSPYTbvKzUifbBEtgk/4DTMWe0uyoyOt6areEhTgdU7
+         QEgT/3bRHHQKeDaXJYWJVr2J16ltSQIWDz99fcefAR4lrjaYaopoW6wekes/LNdcf6
+         cWe7mH7ZiVEww==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8EE50E85C6D;
+        Fri, 24 Jun 2022 11:40:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220622090425.17709-1-arun.ramadoss@microchip.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 0/8] mlxsw: Unified bridge conversion - part 3/6
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165607081458.3787.15946530564012816529.git-patchwork-notify@kernel.org>
+Date:   Fri, 24 Jun 2022 11:40:14 +0000
+References: <20220623071737.318238-1-idosch@nvidia.com>
+In-Reply-To: <20220623071737.318238-1-idosch@nvidia.com>
+To:     Ido Schimmel <idosch@nvidia.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, edumazet@google.com, petrm@nvidia.com,
+        amcohen@nvidia.com, mlxsw@nvidia.com
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 02:34:12PM +0530, Arun Ramadoss wrote:
-> This patch series aims to refactor the ksz_switch_register routine to have the
-> common flow for the ksz series switch. And this is the follow up patch series.
+Hello:
+
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Thu, 23 Jun 2022 10:17:29 +0300 you wrote:
+> This is the third part of the conversion of mlxsw to the unified bridge
+> model.
 > 
-> First, it tries moves the common implementation in the setup from individual
-> files to ksz_setup. Then implements the common dsa_switch_ops structure instead
-> of independent registration. And then moves the ksz_dev_ops to ksz_common.c,
-> it allows the dynamic detection of which ksz_dev_ops to be used based on
-> the switch detection function.
+> Like the second part, this patchset does not begin the conversion, but
+> instead prepares the FID code for it. The individual changes are
+> relatively small and self-contained with detailed description and
+> motivation in the commit message.
 > 
-> Finally, the patch updates the ksz_spi probe function to be same for all the
-> ksz_switches.
+> [...]
 
-Sorry for being late to the party again. I've looked over the resulting
-code and it appears that there is still some cleanup to do.
+Here is the summary with links:
+  - [net-next,1/8] mlxsw: spectrum_fid: Maintain {port, VID}->FID mappings
+    https://git.kernel.org/netdev/net-next/c/fddf42c34349
+  - [net-next,2/8] mlxsw: spectrum_fid: Update FID structure prior to device configuration
+    https://git.kernel.org/netdev/net-next/c/d97da68e543b
+  - [net-next,3/8] mlxsw: spectrum_fid: Rename mlxsw_sp_fid_vni_op()
+    https://git.kernel.org/netdev/net-next/c/893b5c307a48
+  - [net-next,4/8] mlxsw: spectrum_fid: Pass FID structure to mlxsw_sp_fid_op()
+    https://git.kernel.org/netdev/net-next/c/97a2ae0f0c23
+  - [net-next,5/8] mlxsw: spectrum_fid: Pass FID structure to __mlxsw_sp_fid_port_vid_map()
+    https://git.kernel.org/netdev/net-next/c/2c091048015d
+  - [net-next,6/8] mlxsw: spectrum: Use different arrays of FID families per-ASIC type
+    https://git.kernel.org/netdev/net-next/c/04e85970ceea
+  - [net-next,7/8] mlxsw: spectrum: Rename MLXSW_SP_RIF_TYPE_VLAN
+    https://git.kernel.org/netdev/net-next/c/027c92e00ef9
+  - [net-next,8/8] mlxsw: spectrum: Change mlxsw_sp_rif_vlan_fid_op() to be dedicated for FID RIFs
+    https://git.kernel.org/netdev/net-next/c/7dd196480664
 
-We now have a stray struct ksz8 pointer being allocated by the common
-ksz_spi_probe(), and passed as dev->priv to ksz_switch_alloc() by this
-generic code.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Only ksz8 accesses dev->priv, although it is interesting to note that
-ksz9477_i2c_probe() calls ksz_switch_alloc() with a type-incompatible
-struct i2c_client *i2c that is unused but bogus.
 
-The concept of struct ksz8 was added by commit 9f73e11250fb ("net: dsa:
-microchip: ksz8795: move register offsets and shifts to separate
-struct"), and in essence it isn't a bad idea, it's just that I wasn't
-aware of it, and only ksz8 makes use of it.
-
-You've added some register offsets yourself to ksz_chip_data
-(stp_ctrl_reg, broadcast_ctrl_reg, multicast_ctrl_reg, start_ctrl_reg),
-and it looks like struct ksz8 shares more or less the same purpose -
-regs, masks, shifts etc. Would you mind doing some more consolidation
-work and trying to figure out if we could eliminate a data structure
-unique for ksz8 and integrate that information into struct ksz_chip_data
-(and perhaps use it in more places)?
