@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A589C558DF1
-	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 04:57:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EFF22558DF7
+	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 04:57:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231218AbiFXC4o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S231233AbiFXC4o (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Thu, 23 Jun 2022 22:56:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43622 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230512AbiFXC4l (ORCPT
+        with ESMTP id S231133AbiFXC4l (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 22:56:41 -0400
-Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBCE45DC08;
-        Thu, 23 Jun 2022 19:56:35 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R681e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=37;SR=0;TI=SMTPD_---0VHEo99q_1656039388;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VHEo99q_1656039388)
+Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CC75609D3;
+        Thu, 23 Jun 2022 19:56:37 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R241e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046050;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=37;SR=0;TI=SMTPD_---0VHF16Gr_1656039390;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VHF16Gr_1656039390)
           by smtp.aliyun-inc.com;
-          Fri, 24 Jun 2022 10:56:29 +0800
+          Fri, 24 Jun 2022 10:56:31 +0800
 From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 To:     virtualization@lists.linux-foundation.org
 Cc:     Richard Weinberger <richard@nod.at>,
@@ -53,9 +53,9 @@ Cc:     Richard Weinberger <richard@nod.at>,
         linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
         kvm@vger.kernel.org, bpf@vger.kernel.org,
         kangjie.xu@linux.alibaba.com
-Subject: [PATCH v10 03/41] virtio: struct virtio_config_ops add callbacks for queue_reset
-Date:   Fri, 24 Jun 2022 10:55:43 +0800
-Message-Id: <20220624025621.128843-4-xuanzhuo@linux.alibaba.com>
+Subject: [PATCH v10 04/41] virtio_ring: update the document of the virtqueue_detach_unused_buf for queue reset
+Date:   Fri, 24 Jun 2022 10:55:44 +0800
+Message-Id: <20220624025621.128843-5-xuanzhuo@linux.alibaba.com>
 X-Mailer: git-send-email 2.31.0
 In-Reply-To: <20220624025621.128843-1-xuanzhuo@linux.alibaba.com>
 References: <20220624025621.128843-1-xuanzhuo@linux.alibaba.com>
@@ -72,50 +72,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-reset can be divided into the following four steps (example):
- 1. transport: notify the device to reset the queue
- 2. vring:     recycle the buffer submitted
- 3. vring:     reset/resize the vring (may re-alloc)
- 4. transport: mmap vring to device, and enable the queue
-
-In order to support queue reset, add two callbacks(reset_vq,
-enable_reset_vq) in struct virtio_config_ops to implement steps 1 and 4.
+Added documentation for virtqueue_detach_unused_buf, allowing it to be
+called on queue reset.
 
 Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Acked-by: Jason Wang <jasowang@redhat.com>
 ---
- include/linux/virtio_config.h | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ drivers/virtio/virtio_ring.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/virtio_config.h b/include/linux/virtio_config.h
-index 9a36051ceb76..13a466c17969 100644
---- a/include/linux/virtio_config.h
-+++ b/include/linux/virtio_config.h
-@@ -78,6 +78,16 @@ struct virtio_shm_region {
-  * @set_vq_affinity: set the affinity for a virtqueue (optional).
-  * @get_vq_affinity: get the affinity for a virtqueue (optional).
-  * @get_shm_region: get a shared memory region based on the index.
-+ * @reset_vq: reset a queue individually (optional).
-+ *	vq: the virtqueue
-+ *	Returns 0 on success or error status
-+ *	reset_vq will guarantee that the callbacks are disabled and synchronized.
-+ *	Except for the callback, the caller should guarantee that the vring is
-+ *	not accessed by any functions of virtqueue.
-+ * @enable_reset_vq: enable a reset queue
-+ *	vq: the virtqueue
-+ *	Returns 0 on success or error status
-+ *	If reset_vq is set, then enable_reset_vq must also be set.
+diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
+index 68f55336566c..3afa0eed5602 100644
+--- a/drivers/virtio/virtio_ring.c
++++ b/drivers/virtio/virtio_ring.c
+@@ -2108,8 +2108,8 @@ EXPORT_SYMBOL_GPL(virtqueue_enable_cb_delayed);
+  * @_vq: the struct virtqueue we're talking about.
+  *
+  * Returns NULL or the "data" token handed to virtqueue_add_*().
+- * This is not valid on an active queue; it is useful only for device
+- * shutdown.
++ * This is not valid on an active queue; it is useful for device
++ * shutdown or the reset queue.
   */
- typedef void vq_callback_t(struct virtqueue *);
- struct virtio_config_ops {
-@@ -104,6 +114,8 @@ struct virtio_config_ops {
- 			int index);
- 	bool (*get_shm_region)(struct virtio_device *vdev,
- 			       struct virtio_shm_region *region, u8 id);
-+	int (*reset_vq)(struct virtqueue *vq);
-+	int (*enable_reset_vq)(struct virtqueue *vq);
- };
- 
- /* If driver didn't advertise the feature, it will never appear. */
+ void *virtqueue_detach_unused_buf(struct virtqueue *_vq)
+ {
 -- 
 2.31.0
 
