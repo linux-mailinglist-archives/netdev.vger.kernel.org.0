@@ -2,79 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 64F64559A32
-	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 15:15:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C435F559A8F
+	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 15:42:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231511AbiFXNOK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jun 2022 09:14:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50940 "EHLO
+        id S232196AbiFXNmh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jun 2022 09:42:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232131AbiFXNOE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 09:14:04 -0400
-Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40C264FC52
-        for <netdev@vger.kernel.org>; Fri, 24 Jun 2022 06:14:02 -0700 (PDT)
-Received: by mail-oi1-x22a.google.com with SMTP id u9so3513922oiv.12
-        for <netdev@vger.kernel.org>; Fri, 24 Jun 2022 06:14:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:subject:from:to:cc:date:in-reply-to:references
-         :content-transfer-encoding:user-agent:mime-version;
-        bh=Z1QNWitNpIhDD6xVRF3hfQnWEf2O3mgHXPvPI0LkFC0=;
-        b=o/QNz/AHbDLfUvYIe0DVyRQbf2NiZNPpXcdLAQghiQkpOgbCnYoFBFYt+knQ8frfhj
-         uExBLcUT1kl2GPAlkhYdTNl9zajh2y9ieatm/vqLtCW9Oa4+YrArrL5qfyjuLhYnrViM
-         vu0a/RjTWufluq5veAoTd5wJGoHFXT5WddPPHYyaebZAIB8xSlNVPAHP2zjO2YE3Fq44
-         a3LvQxdxAb/4Twsr8jG+LVAX07ckH42F+s5aoUyZlp428Zn5z0smInBIMgoNGZaa8Yqu
-         nGS1qWNB8P6TKQuFdlsm2OKtUuwOqM29BXATU4UX7CbvSRUjd50LOCF8s0G1ipQ44aXp
-         hcIg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:content-transfer-encoding:user-agent:mime-version;
-        bh=Z1QNWitNpIhDD6xVRF3hfQnWEf2O3mgHXPvPI0LkFC0=;
-        b=kcvXc0PJL71wIgjl4MtYJlkMlEwbJen210B3PPpLG+pYJaYiVHsUGDB1dm+6Lgs2wo
-         z7ZXg5Zv8UdVMNLJMY6PMqdAMeiRKG94QMQNUwPhPpJmFRqpnufupNAhWwEh3R2eSgs2
-         fSrWwJO3GyW+YmDKw7Qe0Zm5QvZjsz7AhH2RlyemG1ztyL4E3QMNJQ+OCgRuMv5eC+gj
-         Ey3fR0QaKaqseB2DKr+xT7Rkut2ONZDq/WPB4ZXS+TP1lK6x05ZoiGi6IsVTlwT3twP/
-         s2oTQkGEffWWQe9c84Gy8oukIVEY8lssxwUXDhU3bOBiaOZ8fc8Ke3y5xVDtoeUholTE
-         H+OA==
-X-Gm-Message-State: AJIora+k6aT3WCiXfxfhCokBmtzsI5MtZ5NhLhvrQYPmu+nBAZ/vUsSr
-        TV4uvrYFfzyG9oLOlsjB4ZB3zj3osPQ=
-X-Google-Smtp-Source: AGRyM1vLDAAzpvwNXg99R12lAmWaq7O+2WewDnHNNf+K2liCeZk6c2dp0ZeZXmu5K2H3sBc2ABLp0Q==
-X-Received: by 2002:a05:6808:1411:b0:335:174b:807e with SMTP id w17-20020a056808141100b00335174b807emr2024825oiv.67.1656076441613;
-        Fri, 24 Jun 2022 06:14:01 -0700 (PDT)
-Received: from ?IPv6:2804:14c:71:96e6:64c:ef9b:3df0:9e8d? ([2804:14c:71:96e6:64c:ef9b:3df0:9e8d])
-        by smtp.gmail.com with ESMTPSA id k25-20020a9d7019000000b0060c5e0afa8dsm1534308otj.34.2022.06.24.06.14.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Jun 2022 06:14:01 -0700 (PDT)
-Message-ID: <80de8b6d88485fd6882d32a77d7a78777d5ae491.camel@gmail.com>
-Subject: Re: [PATCH] net: usb: ax88179_178a: corrects packet receiving
-From:   Jose Alonso <joalonsof@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Date:   Fri, 24 Jun 2022 10:13:58 -0300
-In-Reply-To: <20220623214705.2ac24b16@kernel.org>
-References: <9a2a2790acfd45bef2cd786dc92407bcd6c14448.camel@gmail.com>
-         <20220623214705.2ac24b16@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.1 (3.44.1-1.fc36) 
+        with ESMTP id S232215AbiFXNmd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 09:42:33 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D9DD45AE0
+        for <netdev@vger.kernel.org>; Fri, 24 Jun 2022 06:42:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656078151; x=1687614151;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=UN1zVcZt17t43F9YUs2koAAnwY/AV/i1iLRoI+KLsh8=;
+  b=lkCZTKZMsugoU7A/1u4uHCCna1NCMldpOhvcT/9l22SgiaMQvB3kItG8
+   i6APHxWaIp3pYTYRDU3D3VWEfV/3lEsjoc9PW/kCYrZLkRB6TmNpANneK
+   f619xFSmPT9+E1Q42dEn8wokLwO/QZP3V0dcbN+txTKKZ6Pnp0Zi8EZCs
+   OJsBwfYCwb7JjbNb1f4LBvoLyROB3gnZJf3hRiB5SwSi3risA0OJ8Ojw4
+   8CntI+D6Puqwyt+rgCrmMdG8WhuOi5TRWkpa6F75YUxFLD/Pu8XMreFjM
+   SpYDJ0DA8WNee5oDm/KKoS0yDy3oQMBHLhzNftc7MGtqSVj5VkRJN3VqG
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10387"; a="264041757"
+X-IronPort-AV: E=Sophos;i="5.92,218,1650956400"; 
+   d="scan'208";a="264041757"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2022 06:42:25 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,218,1650956400"; 
+   d="scan'208";a="621720579"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by orsmga001.jf.intel.com with ESMTP; 24 Jun 2022 06:42:20 -0700
+Received: from rozewie.igk.intel.com (rozewie.igk.intel.com [10.211.8.69])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 25ODgI7W005567;
+        Fri, 24 Jun 2022 14:42:18 +0100
+From:   Marcin Szycik <marcin.szycik@linux.intel.com>
+To:     netdev@vger.kernel.org
+Cc:     anthony.l.nguyen@intel.com, davem@davemloft.net,
+        xiyou.wangcong@gmail.com, jesse.brandeburg@intel.com,
+        gustavoars@kernel.org, baowen.zheng@corigine.com,
+        boris.sukholitko@broadcom.com, elic@nvidia.com,
+        edumazet@google.com, kuba@kernel.org, jhs@mojatatu.com,
+        jiri@resnulli.us, kurt@linutronix.de, pablo@netfilter.org,
+        pabeni@redhat.com, paulb@nvidia.com, simon.horman@corigine.com,
+        komachi.yoshiki@gmail.com, zhangkaiheb@126.com,
+        intel-wired-lan@lists.osuosl.org,
+        michal.swiatkowski@linux.intel.com, wojciech.drewek@intel.com,
+        Marcin Szycik <marcin.szycik@linux.intel.com>
+Subject: [RFC PATCH net-next 0/4] ice: PPPoE offload support
+Date:   Fri, 24 Jun 2022 15:41:30 +0200
+Message-Id: <20220624134134.13605-1-marcin.szycik@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2022-06-23 at 21:47 -0700, Jakub Kicinski wrote:
-> On Thu, 23 Jun 2022 11:06:05 -0300 Jose Alonso wrote:
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 * In current firmware there=
- is 2 entries per packet.
->=20
-> Do you know what FW version you have?
-I don't know.
+Add support for dissecting PPPoE and PPP-specific fields in flow dissector:
+PPPoE session id and PPP protocol type. Add support for those fields in
+tc-flower and support offloading PPPoE. Finally, add support for hardware
+offload of PPPoE packets in switchdev mode in ice driver.
+
+Example filter:
+tc filter add dev $PF1 ingress protocol ppp_ses prio 1 flower pppoe_sid \
+    1234 ppp_proto ip skip_sw action mirred egress redirect dev $VF1_PR
+
+Changes in iproute2 are required to use the new fields.
+
+ICE COMMS DDP package is required to create a filter in ice.
+
+Note: currently matching on vlan + PPPoE fields is not supported. Patch [0]
+will add this feature.
+
+[0] https://patchwork.ozlabs.org/project/intel-wired-lan/patch/20220420210048.5809-1-martyna.szapar-mudlaw@intel.com
+
+Marcin Szycik (1):
+  ice: Add support for PPPoE hardware offload
+
+Wojciech Drewek (3):
+  flow_dissector: Add PPPoE dissectors
+  net/sched: flower: Add PPPoE filter
+  flow_offload: Introduce flow_match_pppoe
+
+ drivers/net/ethernet/intel/ice/ice.h          |   1 +
+ .../net/ethernet/intel/ice/ice_flex_pipe.c    |   5 +-
+ .../ethernet/intel/ice/ice_protocol_type.h    |  11 ++
+ drivers/net/ethernet/intel/ice/ice_switch.c   | 165 ++++++++++++++++++
+ drivers/net/ethernet/intel/ice/ice_tc_lib.c   |  94 ++++++++--
+ drivers/net/ethernet/intel/ice/ice_tc_lib.h   |   8 +
+ include/net/flow_dissector.h                  |  11 ++
+ include/net/flow_offload.h                    |   6 +
+ include/uapi/linux/pkt_cls.h                  |   3 +
+ net/core/flow_dissector.c                     |  51 +++++-
+ net/core/flow_offload.c                       |   7 +
+ net/sched/cls_flower.c                        |  46 +++++
+ 12 files changed, 391 insertions(+), 17 deletions(-)
+
+-- 
+2.35.1
 
