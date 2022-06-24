@@ -2,145 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 32BFB558FBA
-	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 06:23:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5200C558FF6
+	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 06:34:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229790AbiFXEW5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jun 2022 00:22:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59846 "EHLO
+        id S229543AbiFXEei (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jun 2022 00:34:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229635AbiFXEWz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 00:22:55 -0400
-Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8AC4B35
-        for <netdev@vger.kernel.org>; Thu, 23 Jun 2022 21:22:54 -0700 (PDT)
-Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-3176b6ed923so13204137b3.11
-        for <netdev@vger.kernel.org>; Thu, 23 Jun 2022 21:22:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=LrpVbauQhlY6sbHoa1+haYyof5/5LMZu+rrUVujXJmY=;
-        b=DVqUHWwjqfSyUrKEEmRQ3laXS5aZCV+h8P/IkyQC8m5k2r+n3tUMsOoQKXSoh9WRlI
-         m09tKWwK3GiflUWF0Dr20XIr6c7X7GVgN3HpaTX/FUe7X5ZdSfJ4ElUGmC7149/pIdQJ
-         9o0+iH8IHPVcRhmTCZQMzuuMazOytWvgsLgpPgHhvHqc3gB5h6ZXqeagU/N6bqv7xKHW
-         U5kAm0QEVu6jjxLZp8nNu53bqGtb1ImVP9XTBXqxr0HqrLOQoUvfXuq/KF0SsTK5lMEB
-         F8UaqHOrxK2yqpZS0IusbDmoUsv65akGOoFjouvrzFa14L3TLe/6MHJKyUHyZ6f5eNMe
-         WH8g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=LrpVbauQhlY6sbHoa1+haYyof5/5LMZu+rrUVujXJmY=;
-        b=MJDpU2i+OUu0vTUKj0bcS+3KNhLNKD4/oVGYsHkcjdrJjSId9GNqEJ2256KdFKTmWF
-         uKPqi/oe8p6PiEVGYG7XdWLccVqQ/wJ8v3vU2MavaeUShUqf+/nnRR92l3Qiso7hCv7q
-         wDnsuO40BUqyEqRyYs/0xxseC9/eUOZKxWuZBikiW2xGVPBpPY636KrrH9hnCTkXQlKw
-         CR4BpmjmUFQB2+VLT6NDOAP55Rgg1NSyYFK4aneh9Qn+kImq++X5JXY1cZCgy23cttjt
-         jG+uU4gRtshWYvbXq0iiJO4hVqOzuAyHXUiOw6mpix7B4lSolhCq4Pr0Sy1+Bc6XTraD
-         89Zg==
-X-Gm-Message-State: AJIora9ea6xmxx/MWjLJyvcd3zthUX7YtldvRdpBSYsJDNUcsHiQQTu4
-        7TkSRT1mKxsbcrglBIYB5bUQl4PCA3k7vgqnZptZ8g==
-X-Google-Smtp-Source: AGRyM1sL30OODStpdjLZ8dh2J46BQTAQn1IcN8JlLsvqWmybh46yRWiK6BObk+Guv/QOX5qo3870LRterozi/iWkdf0=
-X-Received: by 2002:a81:9b93:0:b0:317:8c9d:4c22 with SMTP id
- s141-20020a819b93000000b003178c9d4c22mr14652446ywg.278.1656044573688; Thu, 23
- Jun 2022 21:22:53 -0700 (PDT)
+        with ESMTP id S229441AbiFXEef (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 00:34:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 847DC60F25;
+        Thu, 23 Jun 2022 21:34:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 11F71620FE;
+        Fri, 24 Jun 2022 04:34:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79368C34114;
+        Fri, 24 Jun 2022 04:34:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656045273;
+        bh=IZ5ZDn+9JIMGyBmDD2iT5ZTpxrtT5hVkr4pA6eYPL1o=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=WPhKfR9xr4x2sOntt3FQPKFrIn/4f4ExdSawkL52JIm1ImarWI5KFECBHQe9mh/gu
+         PWpPiGfWpkzOhzd2/2smGxrjw8D786MLMSJbmg7Xtv/bgDVT01DVEdic8Q3W2f+ijb
+         rzYnZNxrfX1NjTEdqFG9YSppTtnwqNKZj49OLffBrpFx1YAgAwWd40XTk7tCbJkGHa
+         lCLlRcQgEFBHQNgIHvQ3Gs4hZeeUYLkX6dmvp9oTkUmMvcRibr4qHTr6Cc4lfqwL/R
+         Jf1E2it522tpqTUBmZAj28ZS6Ans+02GRKtGKdn0qIiBpec+UR8Gf9mZkZzDoNa8RR
+         poad5oYVZbaAw==
+Date:   Thu, 23 Jun 2022 21:34:31 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Biao Huang <biao.huang@mediatek.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Fabien Parent <fparent@baylibre.com>,
+        Felix Fietkau <nbd@nbd.name>,
+        "John Crispin" <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        Yinghua Pan <ot_yinghua.pan@mediatek.com>,
+        <srv_heupstream@mediatek.com>,
+        Macpaul Lin <macpaul.lin@mediatek.com>
+Subject: Re: [PATCH net-next v3 09/10] net: ethernet: mtk-star-emac:
+ separate tx/rx handling with two NAPIs
+Message-ID: <20220623213431.23528544@kernel.org>
+In-Reply-To: <20220622090545.23612-10-biao.huang@mediatek.com>
+References: <20220622090545.23612-1-biao.huang@mediatek.com>
+        <20220622090545.23612-10-biao.huang@mediatek.com>
 MIME-Version: 1.0
-References: <20220619150456.GB34471@xsang-OptiPlex-9020> <20220622172857.37db0d29@kernel.org>
- <CADvbK_csvmkKe46hT9792=+Qcjor2EvkkAnr--CJK3NGX-N9BQ@mail.gmail.com>
- <CADvbK_eQUmb942vC+bG+NRzM1ki1LiCydEDR1AezZ35Jvsdfnw@mail.gmail.com>
- <20220623185730.25b88096@kernel.org> <CANn89iLidqjiiV8vxr7KnUg0JvfoS9+TRGg=8ANZ8NBRjeQxsQ@mail.gmail.com>
-In-Reply-To: <CANn89iLidqjiiV8vxr7KnUg0JvfoS9+TRGg=8ANZ8NBRjeQxsQ@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 24 Jun 2022 06:22:42 +0200
-Message-ID: <CANn89iLZYGOjTFThvq-J678BtPtqsywwxFekt9XTcPxk_La8eg@mail.gmail.com>
-Subject: Re: [net] 4890b686f4: netperf.Throughput_Mbps -69.4% regression
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Xin Long <lucien.xin@gmail.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        kernel test robot <oliver.sang@intel.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        network dev <netdev@vger.kernel.org>,
-        linux-s390@vger.kernel.org, MPTCP Upstream <mptcp@lists.linux.dev>,
-        "linux-sctp @ vger . kernel . org" <linux-sctp@vger.kernel.org>,
-        lkp@lists.01.org, kbuild test robot <lkp@intel.com>,
-        Huang Ying <ying.huang@intel.com>,
-        "Tang, Feng" <feng.tang@intel.com>, zhengjun.xing@linux.intel.com,
-        fengwei.yin@intel.com, Ying Xu <yinxu@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 24, 2022 at 6:13 AM Eric Dumazet <edumazet@google.com> wrote:
->
-> On Fri, Jun 24, 2022 at 3:57 AM Jakub Kicinski <kuba@kernel.org> wrote:
-> >
-> > On Thu, 23 Jun 2022 18:50:07 -0400 Xin Long wrote:
-> > > From the perf data, we can see __sk_mem_reduce_allocated() is the one
-> > > using CPU the most more than before, and mem_cgroup APIs are also
-> > > called in this function. It means the mem cgroup must be enabled in
-> > > the test env, which may explain why I couldn't reproduce it.
-> > >
-> > > The Commit 4890b686f4 ("net: keep sk->sk_forward_alloc as small as
-> > > possible") uses sk_mem_reclaim(checking reclaimable >= PAGE_SIZE) to
-> > > reclaim the memory, which is *more frequent* to call
-> > > __sk_mem_reduce_allocated() than before (checking reclaimable >=
-> > > SK_RECLAIM_THRESHOLD). It might be cheap when
-> > > mem_cgroup_sockets_enabled is false, but I'm not sure if it's still
-> > > cheap when mem_cgroup_sockets_enabled is true.
-> > >
-> > > I think SCTP netperf could trigger this, as the CPU is the bottleneck
-> > > for SCTP netperf testing, which is more sensitive to the extra
-> > > function calls than TCP.
-> > >
-> > > Can we re-run this testing without mem cgroup enabled?
-> >
-> > FWIW I defer to Eric, thanks a lot for double checking the report
-> > and digging in!
->
-> I did tests with TCP + memcg and noticed a very small additional cost
-> in memcg functions,
-> because of suboptimal layout:
->
-> Extract of an internal Google bug, update from June 9th:
->
-> --------------------------------
-> I have noticed a minor false sharing to fetch (struct
-> mem_cgroup)->css.parent, at offset 0xc0,
-> because it shares the cache line containing struct mem_cgroup.memory,
-> at offset 0xd0
->
-> Ideally, memcg->socket_pressure and memcg->parent should sit in a read
-> mostly cache line.
-> -----------------------
->
-> But nothing that could explain a "-69.4% regression"
+On Wed, 22 Jun 2022 17:05:44 +0800 Biao Huang wrote:
+> +	if (rx || tx) {
+> +		spin_lock_irqsave(&priv->lock, flags);
+> +		/* mask Rx and TX Complete interrupt */
+> +		mtk_star_disable_dma_irq(priv, rx, tx);
+> +		spin_unlock_irqrestore(&priv->lock, flags);
 
-I guess the test now hits memcg limits more often, forcing expensive reclaim,
-and the memcg limits need some adjustments.
+You do _irqsave / _irqrestore here
 
-Overall, tests enabling memcg should probably need fine tuning, I will
-defer to Intel folks.
+> +		if (rx)
+> +			__napi_schedule_irqoff(&priv->rx_napi);
+> +		if (tx)
+> +			__napi_schedule_irqoff(&priv->tx_napi);
+
+Yet assume _irqoff here.
+
+So can this be run from non-IRQ context or not?
+
+> -	if (mtk_star_ring_full(ring))
+> +	if (unlikely(mtk_star_tx_ring_avail(ring) < MAX_SKB_FRAGS + 1))
+>  		netif_stop_queue(ndev);
+
+Please look around other drivers (like ixgbe) and copy the way they
+handle safe stopping of the queues. You need to add some barriers and
+re-check after disabling.
+
+> -	spin_unlock_bh(&priv->lock);
+> -
+>  	mtk_star_dma_resume_tx(priv);
+>  
+>  	return NETDEV_TX_OK;
 
 
->
-> memcg has a very similar strategy of per-cpu reserves, with
-> MEMCG_CHARGE_BATCH being 32 pages per cpu.
->
-> It is not clear why SCTP with 10K writes would overflow this reserve constantly.
->
-> Presumably memcg experts will have to rework structure alignments to
-> make sure they can cope better
-> with more charge/uncharge operations, because we are not going back to
-> gigantic per-socket reserves,
-> this simply does not scale.
+> +	while ((entry != head) && (count < MTK_STAR_RING_NUM_DESCS - 1)) {
+>  
+
+Parenthesis unnecessary, so is the empty line after the while ().
+
+>  		ret = mtk_star_tx_complete_one(priv);
+>  		if (ret < 0)
+>  			break;
+> +
+> +		count++;
+> +		pkts_compl++;
+> +		bytes_compl += ret;
+> +		entry = ring->tail;
+>  	}
+>  
+> +	__netif_tx_lock_bh(netdev_get_tx_queue(priv->ndev, 0));
+>  	netdev_completed_queue(ndev, pkts_compl, bytes_compl);
+> +	__netif_tx_unlock_bh(netdev_get_tx_queue(priv->ndev, 0));
+
+what are you taking this lock for?
+
+> -	if (wake && netif_queue_stopped(ndev))
+> +	if (unlikely(netif_queue_stopped(ndev)) &&
+> +	    (mtk_star_tx_ring_avail(ring) > MTK_STAR_TX_THRESH))
+>  		netif_wake_queue(ndev);
+>  
+> -	spin_unlock(&priv->lock);
+> +	if (napi_complete(napi)) {
+> +		spin_lock_irqsave(&priv->lock, flags);
+> +		mtk_star_enable_dma_irq(priv, false, true);
+> +		spin_unlock_irqrestore(&priv->lock, flags);
+> +	}
+> +
+> +	return 0;
+>  }
+
+> @@ -1475,6 +1514,7 @@ static int mtk_star_set_timing(struct mtk_star_priv *priv)
+>  
+>  	return regmap_write(priv->regs, MTK_STAR_REG_TEST0, delay_val);
+>  }
+> +
+>  static int mtk_star_probe(struct platform_device *pdev)
+>  {
+>  	struct device_node *of_node;
+
+spurious whitespace change
