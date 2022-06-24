@@ -2,108 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0416C55A3FA
-	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 23:52:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CFAD655A407
+	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 23:57:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231605AbiFXVw1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jun 2022 17:52:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46756 "EHLO
+        id S231881AbiFXV5b convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 24 Jun 2022 17:57:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231587AbiFXVw0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 17:52:26 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14E3E87B58;
-        Fri, 24 Jun 2022 14:52:25 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id z7so5186753edm.13;
-        Fri, 24 Jun 2022 14:52:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=1vw6jDbAQBJV5McJnm/NPAs3IUSFuM5RtJnklI0XcBw=;
-        b=fYes7wtj5Vr+nx/Rmneu8OyzNivPtagsx6buJNAs3bhAT4HCNyExMQbYh8UIKMOCv5
-         5o78i8Z3k5t7+w3weCmlwLqhTy/keiZSO/4VN/t781DtudxuAZYzuHlpNuShzSU67VJv
-         NFRDtIJzYtDSYKDJPx9MgPs5hao3WTZQscxcXSMXqag5xm4b2YCPSC14ljPkgAaTkqVi
-         jyl+RulnirAJinlsogKqQmgd9BWAOTNcsG3eI+jdR4se1ty5ncWFpzGXpH7Cy9a65pbo
-         zGQ0vP63ru1N0hQMDSSkHosLdYi3rNGJRaMsjKeqXSGepoYE18KmsmdnkHnW+rfYk4V9
-         hkXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=1vw6jDbAQBJV5McJnm/NPAs3IUSFuM5RtJnklI0XcBw=;
-        b=A6NWutPPg6xKW8Xl6EzDO7pnm+ReUqLhah6298eON6U1Zy4Kx+B+UUVH0eS3VQTOyN
-         nxHqppNMP6+IlwxjnB3Q8If+FCFnfunfPMsY9wBkDTDBLMKNYzTVsQuvkte0QwixakcZ
-         jBjUGUgTJKKzP0t32zd4V4+shpsDvyTE2VHxf0Qg/i3IJzK23/oPU/NJ5V8DWNKNyFXg
-         HBdA/XLEnoGONoxgvrgLTpBmkUAJVD+zA+mI81MBkO0PtWTlJcMusk2NAhXALDs4Xm9n
-         j+TNO38uBCkL7QKSGd6gYJOoMva+w4rX53DVSYJc316XXPeO7M66AjiqxJIYm2ZQwuJ/
-         UMPw==
-X-Gm-Message-State: AJIora/d00NG/ZF+1U80wA1UlzIJjlVu5+4bLFHIDY6UB9y18+Oq4y1P
-        HodZtc6oWesxnnCx5gFCOU++Qm/EFjA=
-X-Google-Smtp-Source: AGRyM1se8rLU7r7f3UM3P4e90AEPT8lPETUD9v+/FYsOBh9hR9GyP4thUByon/gcN/KtEYRQKlMVzg==
-X-Received: by 2002:a05:6402:354b:b0:437:60fd:4891 with SMTP id f11-20020a056402354b00b0043760fd4891mr1554559edd.344.1656107543674;
-        Fri, 24 Jun 2022 14:52:23 -0700 (PDT)
-Received: from skbuf ([188.27.185.253])
-        by smtp.gmail.com with ESMTPSA id d6-20020a170906174600b00715705dd23asm1726474eje.89.2022.06.24.14.52.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Jun 2022 14:52:22 -0700 (PDT)
-Date:   Sat, 25 Jun 2022 00:52:21 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Woojung Huh <woojung.huh@microchip.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Lukas Wunner <lukas@wunner.de>, UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH net-next v1 3/3] net: dsa: microchip: add pause stats
- support
-Message-ID: <20220624215221.irniht2xfxftodfw@skbuf>
-References: <20220624125902.4068436-1-o.rempel@pengutronix.de>
- <20220624125902.4068436-3-o.rempel@pengutronix.de>
+        with ESMTP id S231707AbiFXV5a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 17:57:30 -0400
+Received: from mx0b-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A1F387B7D
+        for <netdev@vger.kernel.org>; Fri, 24 Jun 2022 14:57:29 -0700 (PDT)
+Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25OLaFdS022033
+        for <netdev@vger.kernel.org>; Fri, 24 Jun 2022 14:57:28 -0700
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3gvqxy2v0s-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 24 Jun 2022 14:57:28 -0700
+Received: from twshared34609.14.frc2.facebook.com (2620:10d:c085:108::4) by
+ mail.thefacebook.com (2620:10d:c085:21d::5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28; Fri, 24 Jun 2022 14:57:27 -0700
+Received: by devbig932.frc1.facebook.com (Postfix, from userid 4523)
+        id C3B6494C39CB; Fri, 24 Jun 2022 14:57:20 -0700 (PDT)
+From:   Song Liu <song@kernel.org>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <x86@vger.kernel.org>
+CC:     <dave.hansen@linux.intel.com>, <mcgrof@kernel.org>,
+        <rick.p.edgecombe@intel.com>, <kernel-team@fb.com>,
+        <daniel@iogearbox.net>, Song Liu <song@kernel.org>
+Subject: [PATCH v5 bpf-next 0/5] bpf_prog_pack followup
+Date:   Fri, 24 Jun 2022 14:57:07 -0700
+Message-ID: <20220624215712.3050672-1-song@kernel.org>
+X-Mailer: git-send-email 2.30.2
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: Zu0IoColBpQveVyZ13BNZ4Z7Nmc5F6Yu
+X-Proofpoint-GUID: Zu0IoColBpQveVyZ13BNZ4Z7Nmc5F6Yu
+Content-Transfer-Encoding: 8BIT
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220624125902.4068436-3-o.rempel@pengutronix.de>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-06-24_09,2022-06-24_01,2022-06-22_01
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Oleksij,
+This set is the second half of v4 [1].
 
-On Fri, Jun 24, 2022 at 02:59:02PM +0200, Oleksij Rempel wrote:
-> Add support for pause specific stats.
-> 
-> Tested on ksz9477.
-> 
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> ---
+Changes v4 => v5:
+1. Rebase and resolve conflicts due to module.c split.
+2. Update experiment results (below).
 
-This conflicts with Arun's work:
+For our web service production benchmark, bpf_prog_pack on 4kB pages
+gives 0.5% to 0.7% more throughput than not using bpf_prog_pack.
+bpf_prog_pack on 2MB pages 0.6% to 0.9% more throughput than not using
+bpf_prog_pack. Note that 0.5% is a huge improvement for our fleet. I
+believe this is also significant for other companies with many thousand
+servers.
 
-Applying: net: dsa: add get_pause_stats support
-Applying: net: dsa: ar9331: add support for pause stats
-Applying: net: dsa: microchip: add pause stats support
-Using index info to reconstruct a base tree...
-M       drivers/net/dsa/microchip/ksz9477.c
-M       drivers/net/dsa/microchip/ksz_common.c
-M       drivers/net/dsa/microchip/ksz_common.h
-Falling back to patching base and 3-way merge...
-Auto-merging drivers/net/dsa/microchip/ksz_common.h
-CONFLICT (content): Merge conflict in drivers/net/dsa/microchip/ksz_common.h
-Auto-merging drivers/net/dsa/microchip/ksz_common.c
-CONFLICT (content): Merge conflict in drivers/net/dsa/microchip/ksz_common.c
-Auto-merging drivers/net/dsa/microchip/ksz9477.c
-CONFLICT (content): Merge conflict in drivers/net/dsa/microchip/ksz9477.c
-error: Failed to merge in the changes.
-Patch failed at 0003 net: dsa: microchip: add pause stats support
+Update: Further experiments (suggested by Rick Edgecombe) showed that most
+of benefit on the web service benchmark came from less direct map
+fragmentation. The experiment is as follows:
+
+Side A: 2MB bpf prog pack on a single 2MB page;
+Side B: 2MB bpf prog pack on 512x 4kB pages;
+
+The system only uses about 200kB for BPF programs, but 2MB is allocated
+for bpf_prog_pack (for both A and B). Therefore, direct map fragmentation
+caused by BPF programs is elminated, and we are only measuring the
+performance difference of 1x 2MB page vs. ~50 4kB pages (we only use
+about 50 out of the 512 pages). For these two sides, the difference in
+system throughput is within the noise. I also measured iTLB-load-misses
+caused by bpf programs, which is ~300/s for case A, and ~1600/s for case B.
+The overall iTLB-load-misses is about 1.5M/s on these hosts. Therefore,
+we can clearly see 2MB page reduces iTLB misses, but the difference is not
+enough to have visible impact on system throughput.
+
+Of course, the impact of iTLB miss will be more significant for systems
+with more BPF programs loaded.
+
+[1] https://lore.kernel.org/bpf/20220520235758.1858153-1-song@kernel.org/
+
+Song Liu (5):
+  module: introduce module_alloc_huge
+  bpf: use module_alloc_huge for bpf_prog_pack
+  vmalloc: WARN for set_vm_flush_reset_perms() on huge pages
+  vmalloc: introduce huge_vmalloc_supported
+  bpf: simplify select_bpf_prog_pack_size
+
+ arch/x86/kernel/module.c     | 21 +++++++++++++++++++++
+ include/linux/moduleloader.h |  5 +++++
+ include/linux/vmalloc.h      |  7 +++++++
+ kernel/bpf/core.c            | 25 ++++++++++---------------
+ kernel/module/main.c         |  8 ++++++++
+ mm/vmalloc.c                 |  5 +++++
+ 6 files changed, 56 insertions(+), 15 deletions(-)
+
+--
+2.30.2
