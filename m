@@ -2,180 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D3BA55593F2
-	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 09:07:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1BAA55941E
+	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 09:23:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230457AbiFXHH1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jun 2022 03:07:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39392 "EHLO
+        id S230296AbiFXHXV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jun 2022 03:23:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230476AbiFXHHZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 03:07:25 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C45746808E;
-        Fri, 24 Jun 2022 00:07:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656054444; x=1687590444;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=I94Jl9kETqNl2DSK3suPqG7/Oh9kRDrmgsP9ccLnRJ8=;
-  b=NHwn0VA1SCb+2v7HJs8W8ycTWM4+TfCn4rOvjdR2sCT8JjQf00WlVXlf
-   oZeGWxe1CczlbFZjZxl14W7ciPKPN3z3GqQMwnJuwQKXSIyk2dGI31cmX
-   0oEPONk8waBaIUHoKt5sXhDSll0ccOaUzNJONqobx9TJQ2Fnx6oT2B7OP
-   P2ANCVOdX7U8bOsx/rAgQqDM3KDMH3XEODtNcxoKt2UMr1bpv296YL/GU
-   /DjW+WxNe+C9iGjlzmC/ofgyPK0akwFLqwBp6xfnOwSKzf7tDWNrk4/ww
-   uu5MkUM9KCfxhxBl8ormCnxGeNUVrQoKWtnfQWqaTEHzwliaIl0y5G7P8
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10387"; a="261366468"
-X-IronPort-AV: E=Sophos;i="5.92,218,1650956400"; 
-   d="scan'208";a="261366468"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2022 00:07:02 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,218,1650956400"; 
-   d="scan'208";a="691408221"
-Received: from shbuild999.sh.intel.com (HELO localhost) ([10.239.146.138])
-  by fmsmga002.fm.intel.com with ESMTP; 24 Jun 2022 00:06:56 -0700
-Date:   Fri, 24 Jun 2022 15:06:56 +0800
-From:   Feng Tang <feng.tang@intel.com>
-To:     Shakeel Butt <shakeelb@google.com>
-Cc:     Eric Dumazet <edumazet@google.com>, Linux MM <linux-mm@kvack.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Michal Hocko <mhocko@kernel.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Muchun Song <songmuchun@bytedance.com>,
+        with ESMTP id S229441AbiFXHXU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 03:23:20 -0400
+Received: from out30-45.freemail.mail.aliyun.com (out30-45.freemail.mail.aliyun.com [115.124.30.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6819D38BC2;
+        Fri, 24 Jun 2022 00:23:16 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=36;SR=0;TI=SMTPD_---0VHG5qkt_1656055388;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VHG5qkt_1656055388)
+          by smtp.aliyun-inc.com;
+          Fri, 24 Jun 2022 15:23:09 +0800
+Message-ID: <1656055326.9754634-1-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH v10 25/41] virtio_pci: struct virtio_pci_common_cfg add queue_notify_data
+Date:   Fri, 24 Jun 2022 15:22:06 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     virtualization@lists.linux-foundation.org,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Xin Long <lucien.xin@gmail.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        kernel test robot <oliver.sang@intel.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        network dev <netdev@vger.kernel.org>,
-        linux-s390@vger.kernel.org, MPTCP Upstream <mptcp@lists.linux.dev>,
-        "linux-sctp @ vger . kernel . org" <linux-sctp@vger.kernel.org>,
-        lkp@lists.01.org, kbuild test robot <lkp@intel.com>,
-        Huang Ying <ying.huang@intel.com>,
-        Xing Zhengjun <zhengjun.xing@linux.intel.com>,
-        Yin Fengwei <fengwei.yin@intel.com>, Ying Xu <yinxu@redhat.com>
-Subject: Re: [net] 4890b686f4: netperf.Throughput_Mbps -69.4% regression
-Message-ID: <20220624070656.GE79500@shbuild999.sh.intel.com>
-References: <20220619150456.GB34471@xsang-OptiPlex-9020>
- <20220622172857.37db0d29@kernel.org>
- <CADvbK_csvmkKe46hT9792=+Qcjor2EvkkAnr--CJK3NGX-N9BQ@mail.gmail.com>
- <CADvbK_eQUmb942vC+bG+NRzM1ki1LiCydEDR1AezZ35Jvsdfnw@mail.gmail.com>
- <20220623185730.25b88096@kernel.org>
- <CANn89iLidqjiiV8vxr7KnUg0JvfoS9+TRGg=8ANZ8NBRjeQxsQ@mail.gmail.com>
- <CALvZod7kULCvHAuk53FE-XBOi4-BbLdY3HCg6jfCZTJDxYsZow@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CALvZod7kULCvHAuk53FE-XBOi4-BbLdY3HCg6jfCZTJDxYsZow@mail.gmail.com>
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        Vadim Pasternak <vadimp@nvidia.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Eric Farman <farman@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        linux-um@lists.infradead.org, netdev@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
+        kvm@vger.kernel.org, bpf@vger.kernel.org,
+        kangjie.xu@linux.alibaba.com
+References: <20220624025621.128843-1-xuanzhuo@linux.alibaba.com>
+ <20220624025621.128843-26-xuanzhuo@linux.alibaba.com>
+ <20220624025817-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20220624025817-mutt-send-email-mst@kernel.org>
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 11:34:15PM -0700, Shakeel Butt wrote:
-> CCing memcg folks.
-> 
-> The thread starts at
-> https://lore.kernel.org/all/20220619150456.GB34471@xsang-OptiPlex-9020/
-> 
-> On Thu, Jun 23, 2022 at 9:14 PM Eric Dumazet <edumazet@google.com> wrote:
+On Fri, 24 Jun 2022 02:59:39 -0400, "Michael S. Tsirkin" <mst@redhat.com> wrote:
+> On Fri, Jun 24, 2022 at 10:56:05AM +0800, Xuan Zhuo wrote:
+> > Add queue_notify_data in struct virtio_pci_common_cfg, which comes from
+> > here https://github.com/oasis-tcs/virtio-spec/issues/89
 > >
-> > On Fri, Jun 24, 2022 at 3:57 AM Jakub Kicinski <kuba@kernel.org> wrote:
-> > >
-> > > On Thu, 23 Jun 2022 18:50:07 -0400 Xin Long wrote:
-> > > > From the perf data, we can see __sk_mem_reduce_allocated() is the one
-> > > > using CPU the most more than before, and mem_cgroup APIs are also
-> > > > called in this function. It means the mem cgroup must be enabled in
-> > > > the test env, which may explain why I couldn't reproduce it.
-> > > >
-> > > > The Commit 4890b686f4 ("net: keep sk->sk_forward_alloc as small as
-> > > > possible") uses sk_mem_reclaim(checking reclaimable >= PAGE_SIZE) to
-> > > > reclaim the memory, which is *more frequent* to call
-> > > > __sk_mem_reduce_allocated() than before (checking reclaimable >=
-> > > > SK_RECLAIM_THRESHOLD). It might be cheap when
-> > > > mem_cgroup_sockets_enabled is false, but I'm not sure if it's still
-> > > > cheap when mem_cgroup_sockets_enabled is true.
-> > > >
-> > > > I think SCTP netperf could trigger this, as the CPU is the bottleneck
-> > > > for SCTP netperf testing, which is more sensitive to the extra
-> > > > function calls than TCP.
-> > > >
-> > > > Can we re-run this testing without mem cgroup enabled?
-> > >
-> > > FWIW I defer to Eric, thanks a lot for double checking the report
-> > > and digging in!
-> >
-> > I did tests with TCP + memcg and noticed a very small additional cost
-> > in memcg functions,
-> > because of suboptimal layout:
-> >
-> > Extract of an internal Google bug, update from June 9th:
-> >
-> > --------------------------------
-> > I have noticed a minor false sharing to fetch (struct
-> > mem_cgroup)->css.parent, at offset 0xc0,
-> > because it shares the cache line containing struct mem_cgroup.memory,
-> > at offset 0xd0
-> >
-> > Ideally, memcg->socket_pressure and memcg->parent should sit in a read
-> > mostly cache line.
-> > -----------------------
-> >
-> > But nothing that could explain a "-69.4% regression"
-> >
-> > memcg has a very similar strategy of per-cpu reserves, with
-> > MEMCG_CHARGE_BATCH being 32 pages per cpu.
-> >
-> > It is not clear why SCTP with 10K writes would overflow this reserve constantly.
-> >
-> > Presumably memcg experts will have to rework structure alignments to
-> > make sure they can cope better
-> > with more charge/uncharge operations, because we are not going back to
-> > gigantic per-socket reserves,
-> > this simply does not scale.
-> 
-> Yes I agree. As you pointed out there are fields which are mostly
-> read-only but sharing cache lines with fields which get updated and
-> definitely need work.
-> 
-> However can we first confirm if memcg charging is really the issue
-> here as I remember these intel lkp tests are configured to run in root
-> memcg and the kernel does not associate root memcg to any socket (see
-> mem_cgroup_sk_alloc()).
-> 
-> If these tests are running in non-root memcg, is this cgroup v1 or v2?
-> The memory counter and the 32 pages per cpu stock are only used on v2.
-> For v1, there is no per-cpu stock and there is a separate tcpmem page
-> counter and on v1 the network memory accounting has to be enabled
-> explicitly i.e. not enabled by default.
-> 
-> There is definite possibility of slowdown on v1 but let's first
-> confirm the memcg setup used for this testing environment.
-> 
-> Feng, can you please explain the memcg setup on these test machines
-> and if the tests are run in root or non-root memcg?
+> > For not breaks uABI, add a new struct virtio_pci_common_cfg_notify.
+>
+> What exactly is meant by not breaking uABI?
+> Users are supposed to be prepared for struct size to change ... no?
 
-I don't know the exact setup, Philip/Oliver from 0Day can correct me.
+This was a previous discussion with Jason Wang, who was concerned about
+affecting some existing programs.
 
-I logged into a test box which runs netperf test, and it seems to be
-cgoup v1 and non-root memcg. The netperf tasks all sit in dir:
-'/sys/fs/cgroup/memory/system.slice/lkp-bootstrap.service'
+https://lore.kernel.org/all/CACGkMEshTp8vSP9=pKj82y8+DDQFu9tFAk1EGhMZLvXUE-OSEA@mail.gmail.com/
 
-And the rootfs is a debian based rootfs
+Thanks.
 
-Thanks,
-Feng
-
-
-> thanks,
-> Shakeel
+>
+>
+> > Since I want to add queue_reset after queue_notify_data, I submitted
+> > this patch first.
+> >
+> > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> > Acked-by: Jason Wang <jasowang@redhat.com>
+> > ---
+> >  include/uapi/linux/virtio_pci.h | 7 +++++++
+> >  1 file changed, 7 insertions(+)
+> >
+> > diff --git a/include/uapi/linux/virtio_pci.h b/include/uapi/linux/virtio_pci.h
+> > index 3a86f36d7e3d..22bec9bd0dfc 100644
+> > --- a/include/uapi/linux/virtio_pci.h
+> > +++ b/include/uapi/linux/virtio_pci.h
+> > @@ -166,6 +166,13 @@ struct virtio_pci_common_cfg {
+> >  	__le32 queue_used_hi;		/* read-write */
+> >  };
+> >
+> > +struct virtio_pci_common_cfg_notify {
+> > +	struct virtio_pci_common_cfg cfg;
+> > +
+> > +	__le16 queue_notify_data;	/* read-write */
+> > +	__le16 padding;
+> > +};
+> > +
+> >  /* Fields in VIRTIO_PCI_CAP_PCI_CFG: */
+> >  struct virtio_pci_cfg_cap {
+> >  	struct virtio_pci_cap cap;
+> > --
+> > 2.31.0
+>
