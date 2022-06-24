@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D28F8558DC1
-	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 04:57:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 99E25558E02
+	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 04:57:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229719AbiFXC4c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jun 2022 22:56:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43504 "EHLO
+        id S230082AbiFXC4d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jun 2022 22:56:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229559AbiFXC4b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 22:56:31 -0400
+        with ESMTP id S229792AbiFXC4c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 22:56:32 -0400
 Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F2A556C0A;
-        Thu, 23 Jun 2022 19:56:28 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R151e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=37;SR=0;TI=SMTPD_---0VHEo97T_1656039381;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VHEo97T_1656039381)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FE4356F92;
+        Thu, 23 Jun 2022 19:56:30 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046049;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=37;SR=0;TI=SMTPD_---0VHF1U5t_1656039383;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VHF1U5t_1656039383)
           by smtp.aliyun-inc.com;
-          Fri, 24 Jun 2022 10:56:22 +0800
+          Fri, 24 Jun 2022 10:56:25 +0800
 From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 To:     virtualization@lists.linux-foundation.org
 Cc:     Richard Weinberger <richard@nod.at>,
@@ -53,10 +53,12 @@ Cc:     Richard Weinberger <richard@nod.at>,
         linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
         kvm@vger.kernel.org, bpf@vger.kernel.org,
         kangjie.xu@linux.alibaba.com
-Subject: [PATCH v10 00/41] virtio pci support VIRTIO_F_RING_RESET
-Date:   Fri, 24 Jun 2022 10:55:40 +0800
-Message-Id: <20220624025621.128843-1-xuanzhuo@linux.alibaba.com>
+Subject: [PATCH v10 01/41] remoteproc: rename len of rpoc_vring to num
+Date:   Fri, 24 Jun 2022 10:55:41 +0800
+Message-Id: <20220624025621.128843-2-xuanzhuo@linux.alibaba.com>
 X-Mailer: git-send-email 2.31.0
+In-Reply-To: <20220624025621.128843-1-xuanzhuo@linux.alibaba.com>
+References: <20220624025621.128843-1-xuanzhuo@linux.alibaba.com>
 MIME-Version: 1.0
 X-Git-Hash: fef800c86cd2
 Content-Transfer-Encoding: 8bit
@@ -70,146 +72,100 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The virtio spec already supports the virtio queue reset function. This patch set
-is to add this function to the kernel. The relevant virtio spec information is
-here:
+Rename the member len in the structure rpoc_vring to num. And remove 'in
+bytes' from the comment of it. This is misleading. Because this actually
+refers to the size of the virtio vring to be created. The unit is not
+bytes.
 
-    https://github.com/oasis-tcs/virtio-spec/issues/124
-    https://github.com/oasis-tcs/virtio-spec/issues/139
+Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+---
+ drivers/remoteproc/remoteproc_core.c   |  4 ++--
+ drivers/remoteproc/remoteproc_virtio.c | 10 +++++-----
+ include/linux/remoteproc.h             |  4 ++--
+ 3 files changed, 9 insertions(+), 9 deletions(-)
 
-Also regarding MMIO support for queue reset, I plan to support it after this
-patch is passed.
-
-This patch set implements the refactoring of vring. Finally, the
-virtuque_resize() interface is provided based on the reset function of the
-transport layer.
-
-Test environment:
-    Host: 4.19.91
-    Qemu: QEMU emulator version 6.2.50 (with vq reset support)
-    Test Cmd:  ethtool -G eth1 rx $1 tx $2; ethtool -g eth1
-
-    The default is split mode, modify Qemu virtio-net to add PACKED feature to test
-    packed mode.
-
-Qemu code:
-    https://github.com/fengidri/qemu/compare/89f3bfa3265554d1d591ee4d7f1197b6e3397e84...master
-
-In order to simplify the review of this patch set, the function of reusing
-the old buffers after resize will be introduced in subsequent patch sets.
-
-Please review. Thanks.
-
-v10:
-  1. on top of the harden vring IRQ
-  2. factor out split and packed from struct vring_virtqueue
-  3. some suggest from @Jason Wang
-
-v9:
-  1. Provide a virtqueue_resize() interface directly
-  2. A patch set including vring resize, virtio pci reset, virtio-net resize
-  3. No more separate structs
-
-v8:
-  1. Provide a virtqueue_reset() interface directly
-  2. Split the two patch sets, this is the first part
-  3. Add independent allocation helper for allocating state, extra
-
-v7:
-  1. fix #6 subject typo
-  2. fix #6 ring_size_in_bytes is uninitialized
-  3. check by: make W=12
-
-v6:
-  1. virtio_pci: use synchronize_irq(irq) to sync the irq callbacks
-  2. Introduce virtqueue_reset_vring() to implement the reset of vring during
-     the reset process. May use the old vring if num of the vq not change.
-  3. find_vqs() support sizes to special the max size of each vq
-
-v5:
-  1. add virtio-net support set_ringparam
-
-v4:
-  1. just the code of virtio, without virtio-net
-  2. Performing reset on a queue is divided into these steps:
-    1. reset_vq: reset one vq
-    2. recycle the buffer from vq by virtqueue_detach_unused_buf()
-    3. release the ring of the vq by vring_release_virtqueue()
-    4. enable_reset_vq: re-enable the reset queue
-  3. Simplify the parameters of enable_reset_vq()
-  4. add container structures for virtio_pci_common_cfg
-
-v3:
-  1. keep vq, irq unreleased
-
-*** BLURB HERE ***
-
-Xuan Zhuo (41):
-  remoteproc: rename len of rpoc_vring to num
-  virtio: add helper virtqueue_get_vring_max_size()
-  virtio: struct virtio_config_ops add callbacks for queue_reset
-  virtio_ring: update the document of the virtqueue_detach_unused_buf
-    for queue reset
-  virtio_ring: remove the arg vq of vring_alloc_desc_extra()
-  virtio_ring: extract the logic of freeing vring
-  virtio_ring: split vring_virtqueue
-  virtio_ring: introduce virtqueue_init()
-  virtio_ring: split: introduce vring_free_split()
-  virtio_ring: split: extract the logic of alloc queue
-  virtio_ring: split: extract the logic of alloc state and extra
-  virtio_ring: split: extract the logic of attach vring
-  virtio_ring: split: extract the logic of vring init
-  virtio_ring: split: introduce virtqueue_reinit_split()
-  virtio_ring: split: reserve vring_align, may_reduce_num
-  virtio_ring: split: introduce virtqueue_resize_split()
-  virtio_ring: packed: introduce vring_free_packed
-  virtio_ring: packed: extract the logic of alloc queue
-  virtio_ring: packed: extract the logic of alloc state and extra
-  virtio_ring: packed: extract the logic of attach vring
-  virtio_ring: packed: extract the logic of vring init
-  virtio_ring: packed: introduce virtqueue_reinit_packed()
-  virtio_ring: packed: introduce virtqueue_resize_packed()
-  virtio_ring: introduce virtqueue_resize()
-  virtio_pci: struct virtio_pci_common_cfg add queue_notify_data
-  virtio: queue_reset: add VIRTIO_F_RING_RESET
-  virtio: allow to unbreak/break virtqueue individually
-  virtio_pci: update struct virtio_pci_common_cfg
-  virtio_pci: introduce helper to get/set queue reset
-  virtio_pci: extract the logic of active vq for modern pci
-  virtio_pci: support VIRTIO_F_RING_RESET
-  virtio: find_vqs() add arg sizes
-  virtio_pci: support the arg sizes of find_vqs()
-  virtio_mmio: support the arg sizes of find_vqs()
-  virtio: add helper virtio_find_vqs_ctx_size()
-  virtio_net: set the default max ring size by find_vqs()
-  virtio_net: get ringparam by virtqueue_get_vring_max_size()
-  virtio_net: split free_unused_bufs()
-  virtio_net: support rx queue resize
-  virtio_net: support tx queue resize
-  virtio_net: support set_ringparam
-
- arch/um/drivers/virtio_uml.c             |   3 +-
- drivers/net/virtio_net.c                 | 209 +++++-
- drivers/platform/mellanox/mlxbf-tmfifo.c |   3 +
- drivers/remoteproc/remoteproc_core.c     |   4 +-
- drivers/remoteproc/remoteproc_virtio.c   |  13 +-
- drivers/s390/virtio/virtio_ccw.c         |   4 +
- drivers/virtio/virtio_mmio.c             |  11 +-
- drivers/virtio/virtio_pci_common.c       |  32 +-
- drivers/virtio/virtio_pci_common.h       |   3 +-
- drivers/virtio/virtio_pci_legacy.c       |   8 +-
- drivers/virtio/virtio_pci_modern.c       | 157 ++++-
- drivers/virtio/virtio_pci_modern_dev.c   |  39 ++
- drivers/virtio/virtio_ring.c             | 794 +++++++++++++++++------
- drivers/virtio/virtio_vdpa.c             |   3 +
- include/linux/remoteproc.h               |   4 +-
- include/linux/virtio.h                   |   9 +
- include/linux/virtio_config.h            |  38 +-
- include/linux/virtio_pci_modern.h        |   2 +
- include/uapi/linux/virtio_config.h       |   7 +-
- include/uapi/linux/virtio_pci.h          |  14 +
- 20 files changed, 1063 insertions(+), 294 deletions(-)
-
---
+diff --git a/drivers/remoteproc/remoteproc_core.c b/drivers/remoteproc/remoteproc_core.c
+index 02a04ab34a23..2d2f3bab5888 100644
+--- a/drivers/remoteproc/remoteproc_core.c
++++ b/drivers/remoteproc/remoteproc_core.c
+@@ -334,7 +334,7 @@ int rproc_alloc_vring(struct rproc_vdev *rvdev, int i)
+ 	size_t size;
+ 
+ 	/* actual size of vring (in bytes) */
+-	size = PAGE_ALIGN(vring_size(rvring->len, rvring->align));
++	size = PAGE_ALIGN(vring_size(rvring->num, rvring->align));
+ 
+ 	rsc = (void *)rproc->table_ptr + rvdev->rsc_offset;
+ 
+@@ -401,7 +401,7 @@ rproc_parse_vring(struct rproc_vdev *rvdev, struct fw_rsc_vdev *rsc, int i)
+ 		return -EINVAL;
+ 	}
+ 
+-	rvring->len = vring->num;
++	rvring->num = vring->num;
+ 	rvring->align = vring->align;
+ 	rvring->rvdev = rvdev;
+ 
+diff --git a/drivers/remoteproc/remoteproc_virtio.c b/drivers/remoteproc/remoteproc_virtio.c
+index 70ab496d0431..d43d74733f0a 100644
+--- a/drivers/remoteproc/remoteproc_virtio.c
++++ b/drivers/remoteproc/remoteproc_virtio.c
+@@ -87,7 +87,7 @@ static struct virtqueue *rp_find_vq(struct virtio_device *vdev,
+ 	struct fw_rsc_vdev *rsc;
+ 	struct virtqueue *vq;
+ 	void *addr;
+-	int len, size;
++	int num, size;
+ 
+ 	/* we're temporarily limited to two virtqueues per rvdev */
+ 	if (id >= ARRAY_SIZE(rvdev->vring))
+@@ -104,20 +104,20 @@ static struct virtqueue *rp_find_vq(struct virtio_device *vdev,
+ 
+ 	rvring = &rvdev->vring[id];
+ 	addr = mem->va;
+-	len = rvring->len;
++	num = rvring->num;
+ 
+ 	/* zero vring */
+-	size = vring_size(len, rvring->align);
++	size = vring_size(num, rvring->align);
+ 	memset(addr, 0, size);
+ 
+ 	dev_dbg(dev, "vring%d: va %pK qsz %d notifyid %d\n",
+-		id, addr, len, rvring->notifyid);
++		id, addr, num, rvring->notifyid);
+ 
+ 	/*
+ 	 * Create the new vq, and tell virtio we're not interested in
+ 	 * the 'weak' smp barriers, since we're talking with a real device.
+ 	 */
+-	vq = vring_new_virtqueue(id, len, rvring->align, vdev, false, ctx,
++	vq = vring_new_virtqueue(id, num, rvring->align, vdev, false, ctx,
+ 				 addr, rproc_virtio_notify, callback, name);
+ 	if (!vq) {
+ 		dev_err(dev, "vring_new_virtqueue %s failed\n", name);
+diff --git a/include/linux/remoteproc.h b/include/linux/remoteproc.h
+index 7c943f0a2fc4..aea79c77db0f 100644
+--- a/include/linux/remoteproc.h
++++ b/include/linux/remoteproc.h
+@@ -597,7 +597,7 @@ struct rproc_subdev {
+ /**
+  * struct rproc_vring - remoteproc vring state
+  * @va:	virtual address
+- * @len: length, in bytes
++ * @num: vring size
+  * @da: device address
+  * @align: vring alignment
+  * @notifyid: rproc-specific unique vring index
+@@ -606,7 +606,7 @@ struct rproc_subdev {
+  */
+ struct rproc_vring {
+ 	void *va;
+-	int len;
++	int num;
+ 	u32 da;
+ 	u32 align;
+ 	int notifyid;
+-- 
 2.31.0
 
