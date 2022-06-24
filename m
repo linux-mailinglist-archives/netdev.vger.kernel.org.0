@@ -2,122 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D1874559488
-	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 10:04:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0466559529
+	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 10:16:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230500AbiFXID4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jun 2022 04:03:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52006 "EHLO
+        id S230217AbiFXIND (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jun 2022 04:13:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230187AbiFXIDu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 04:03:50 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 985D56B8FB
-        for <netdev@vger.kernel.org>; Fri, 24 Jun 2022 01:03:46 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1o4eHy-0007dS-0s; Fri, 24 Jun 2022 10:03:38 +0200
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1o4eHx-00059C-NY; Fri, 24 Jun 2022 10:03:37 +0200
-Date:   Fri, 24 Jun 2022 10:03:37 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     kernel@pengutronix.de, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Lukas Wunner <lukas@wunner.de>
-Subject: Re: [PATCH net-next v1 1/1] net: asix: add optional flow control
- support
-Message-ID: <20220624080337.GA14396@pengutronix.de>
-References: <20220624080208.3143093-1-o.rempel@pengutronix.de>
+        with ESMTP id S229759AbiFXINC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 04:13:02 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BD6665E8;
+        Fri, 24 Jun 2022 01:13:00 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id n16-20020a17090ade9000b001ed15b37424so2087944pjv.3;
+        Fri, 24 Jun 2022 01:13:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5AbbIy759o/Iqe1P9OHT5ftFcpaWtdvxPS9b7YlrKZ4=;
+        b=WtMzW7YXzI15QW7XTko1pw5/dFcC1X37MeT2M//UW9Mv6Ngr727tBHNNz2EF8pQ8QT
+         aJxQlSp6aYKt6dlDPr4kczQLndgM2qdm7pS8wDcHCbIMyrkYHl1GnmVoAnDU5QX+WBy8
+         BfSx514DvpTYvWqofWZXfXpYzxx/HC+pz2HcLUepvoFm3sSIFpKUy1tHesEUw92JjUx0
+         3IOYHS/gQYf/rMFKpTVGdBlcN81GhRl4/bdBIWjrWtCaBx6X8CY/IIO+W84oI2zrbBaV
+         u5FtC4uoqy6mKoeVDE8niYMYI0yeyG/2pCUHOPNATqOQ345KZl3Av9hs28D69MdMZHUV
+         fdHQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5AbbIy759o/Iqe1P9OHT5ftFcpaWtdvxPS9b7YlrKZ4=;
+        b=iZT4yTKedBdYgg57oipKWBF96ksWrX4zIDSgiPR5TJ34JV6p9lwAwp3yyw8iRnvZEt
+         PHCemqpWxoQQTz2OsX8XX+CpTqNhnzEoRHTeHLFYuStli6J5SgKsusm/H0Gs7Nl7Dr8u
+         tgyuGcvJDwZXj3oIqzSKa1XgCAWQlV3SYPIdMO1cmKCzY3SEY3XB71B8+fFaYvpwa/Pb
+         ZU2cuxbrg1ST6ob0g/bkgf9eilYPsk6/bTKVZKzmOPPiobQ6W4SdNrgUXSEp/u0B6j4E
+         HgM6suh9deXGLCsVi8QJHwugDC+6XP2Yzq1zQAqTh3vIhAxf/1Z+31bYii87AntoRNQB
+         PGjA==
+X-Gm-Message-State: AJIora841JilHfn8vc35JNeE54hJIMkagPq/nw9q0RJAFDklBgA/2LMl
+        K2xIXfqPktpsdwXAxs7h5nxMtN5p2+w4AA==
+X-Google-Smtp-Source: AGRyM1vvQESFnIM7BOcBApZsUqQJehNOrF5HB5doGEwk2ExbTmM5fw5qW4nulvaADcSzOb5CP8k8WA==
+X-Received: by 2002:a17:902:c40a:b0:163:d38e:3049 with SMTP id k10-20020a170902c40a00b00163d38e3049mr42926852plk.87.1656058379871;
+        Fri, 24 Jun 2022 01:12:59 -0700 (PDT)
+Received: from localhost.localdomain ([43.132.141.8])
+        by smtp.gmail.com with ESMTPSA id f10-20020a631f0a000000b003fbb455040dsm945846pgf.84.2022.06.24.01.12.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 24 Jun 2022 01:12:59 -0700 (PDT)
+From:   zys.zljxml@gmail.com
+To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        yoshfuji@linux-ipv6.org
+Cc:     dsahern@kernel.org, kuba@kernel.org, davem@davemloft.net,
+        edumazet@google.com, eric.dumazet@gmail.com, pabeni@redhat.com,
+        katrinzhou <katrinzhou@tencent.com>
+Subject: [PATCH] ipv6/sit: fix ipip6_tunnel_get_prl when memory allocation fails
+Date:   Fri, 24 Jun 2022 16:12:54 +0800
+Message-Id: <20220624081254.1251316-1-zys.zljxml@gmail.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220624080208.3143093-1-o.rempel@pengutronix.de>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-0.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,HK_RANDOM_ENVFROM,
+        HK_RANDOM_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 24, 2022 at 10:02:07AM +0200, Oleksij Rempel wrote:
-> Add optional flow control support with respect to the link partners
-> abilities.
-> 
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+From: katrinzhou <katrinzhou@tencent.com>
 
-This is a net-next patch, depending on other net patch:
-https://lore.kernel.org/all/20220624075139.3139300-2-o.rempel@pengutronix.de/
+Fix an illegal copy_to_user() attempt when the system fails to
+allocate memory for prl due to a lack of memory.
 
-> ---
->  drivers/net/usb/asix_common.c  | 10 ++++++++++
->  drivers/net/usb/asix_devices.c |  2 ++
->  2 files changed, 12 insertions(+)
-> 
-> diff --git a/drivers/net/usb/asix_common.c b/drivers/net/usb/asix_common.c
-> index b4a1b7abcfc9..c9df7cd8daae 100644
-> --- a/drivers/net/usb/asix_common.c
-> +++ b/drivers/net/usb/asix_common.c
-> @@ -420,6 +420,8 @@ void asix_adjust_link(struct net_device *netdev)
->  	u16 mode = 0;
->  
->  	if (phydev->link) {
-> +		bool tx_pause, rx_pause;
-> +
->  		mode = AX88772_MEDIUM_DEFAULT;
->  
->  		if (phydev->duplex == DUPLEX_HALF)
-> @@ -427,6 +429,14 @@ void asix_adjust_link(struct net_device *netdev)
->  
->  		if (phydev->speed != SPEED_100)
->  			mode &= ~AX_MEDIUM_PS;
-> +
-> +		phy_get_pause(phydev, &tx_pause, &rx_pause);
-> +
-> +		if (rx_pause)
-> +			mode |= AX_MEDIUM_RFC;
-> +
-> +		if (tx_pause)
-> +			mode |= AX_MEDIUM_TFC;
->  	}
->  
->  	asix_write_medium_mode(dev, mode, 0);
-> diff --git a/drivers/net/usb/asix_devices.c b/drivers/net/usb/asix_devices.c
-> index 5b5eb630c4b7..1bb12bbc34bf 100644
-> --- a/drivers/net/usb/asix_devices.c
-> +++ b/drivers/net/usb/asix_devices.c
-> @@ -677,6 +677,8 @@ static int ax88772_init_phy(struct usbnet *dev)
->  	phy_suspend(priv->phydev);
->  	priv->phydev->mac_managed_pm = 1;
->  
-> +	phy_support_asym_pause(priv->phydev);
-> +
->  	phy_attached_info(priv->phydev);
->  
->  	if (priv->embd_phy)
-> -- 
-> 2.30.2
-> 
-> 
+Addresses-Coverity: ("Unused value")
+Fixes: 300aaeeaab5f ("[IPV6] SIT: Add SIOCGETPRL ioctl to get/dump PRL.")
+Signed-off-by: katrinzhou <katrinzhou@tencent.com>
+---
+ net/ipv6/sit.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
+diff --git a/net/ipv6/sit.c b/net/ipv6/sit.c
+index c0b138c20992..4fb84c0b30be 100644
+--- a/net/ipv6/sit.c
++++ b/net/ipv6/sit.c
+@@ -323,8 +323,6 @@ static int ipip6_tunnel_get_prl(struct net_device *dev, struct ip_tunnel_prl __u
+ 		kcalloc(cmax, sizeof(*kp), GFP_KERNEL_ACCOUNT | __GFP_NOWARN) :
+ 		NULL;
+ 
+-	rcu_read_lock();
+-
+ 	ca = min(t->prl_count, cmax);
+ 
+ 	if (!kp) {
+@@ -337,11 +335,12 @@ static int ipip6_tunnel_get_prl(struct net_device *dev, struct ip_tunnel_prl __u
+ 					      __GFP_NOWARN);
+ 		if (!kp) {
+ 			ret = -ENOMEM;
+-			goto out;
++			goto err;
+ 		}
+ 	}
+ 
+ 	c = 0;
++	rcu_read_lock();
+ 	for_each_prl_rcu(t->prl) {
+ 		if (c >= cmax)
+ 			break;
+@@ -362,7 +361,7 @@ static int ipip6_tunnel_get_prl(struct net_device *dev, struct ip_tunnel_prl __u
+ 		ret = -EFAULT;
+ 
+ 	kfree(kp);
+-
++err:
+ 	return ret;
+ }
+ 
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+2.27.0
+
