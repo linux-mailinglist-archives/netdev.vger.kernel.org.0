@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EC8A558E68
-	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 04:58:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D96A6558E6C
+	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 04:58:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231849AbiFXC60 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jun 2022 22:58:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44482 "EHLO
+        id S230446AbiFXC6b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jun 2022 22:58:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231633AbiFXC5c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 22:57:32 -0400
-Received: from out30-54.freemail.mail.aliyun.com (out30-54.freemail.mail.aliyun.com [115.124.30.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9979D60F36;
-        Thu, 23 Jun 2022 19:57:29 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046050;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=37;SR=0;TI=SMTPD_---0VHErsvC_1656039442;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VHErsvC_1656039442)
+        with ESMTP id S231473AbiFXC5e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 22:57:34 -0400
+Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C599C62722;
+        Thu, 23 Jun 2022 19:57:31 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R931e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046050;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=37;SR=0;TI=SMTPD_---0VHErsvo_1656039445;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VHErsvo_1656039445)
           by smtp.aliyun-inc.com;
-          Fri, 24 Jun 2022 10:57:24 +0800
+          Fri, 24 Jun 2022 10:57:26 +0800
 From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 To:     virtualization@lists.linux-foundation.org
 Cc:     Richard Weinberger <richard@nod.at>,
@@ -53,9 +53,9 @@ Cc:     Richard Weinberger <richard@nod.at>,
         linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
         kvm@vger.kernel.org, bpf@vger.kernel.org,
         kangjie.xu@linux.alibaba.com
-Subject: [PATCH v10 27/41] virtio: allow to unbreak/break virtqueue individually
-Date:   Fri, 24 Jun 2022 10:56:07 +0800
-Message-Id: <20220624025621.128843-28-xuanzhuo@linux.alibaba.com>
+Subject: [PATCH v10 28/41] virtio_pci: update struct virtio_pci_common_cfg
+Date:   Fri, 24 Jun 2022 10:56:08 +0800
+Message-Id: <20220624025621.128843-29-xuanzhuo@linux.alibaba.com>
 X-Mailer: git-send-email 2.31.0
 In-Reply-To: <20220624025621.128843-1-xuanzhuo@linux.alibaba.com>
 References: <20220624025621.128843-1-xuanzhuo@linux.alibaba.com>
@@ -72,65 +72,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch allows the new introduced
-__virtqueue_break()/__virtqueue_unbreak() to break/unbreak the
-virtqueue.
+Add queue_reset in virtio_pci_common_cfg.
+
+For not breaks uABI, add a new struct virtio_pci_common_cfg_reset.
+
+ https://github.com/oasis-tcs/virtio-spec/issues/124
+ https://github.com/oasis-tcs/virtio-spec/issues/139
 
 Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 ---
- drivers/virtio/virtio_ring.c | 24 ++++++++++++++++++++++++
- include/linux/virtio.h       |  3 +++
- 2 files changed, 27 insertions(+)
+ include/uapi/linux/virtio_pci.h | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-index 6ba6519c264b..4f24df0eb2d5 100644
---- a/drivers/virtio/virtio_ring.c
-+++ b/drivers/virtio/virtio_ring.c
-@@ -2709,6 +2709,30 @@ unsigned int virtqueue_get_vring_size(struct virtqueue *_vq)
- }
- EXPORT_SYMBOL_GPL(virtqueue_get_vring_size);
+diff --git a/include/uapi/linux/virtio_pci.h b/include/uapi/linux/virtio_pci.h
+index 22bec9bd0dfc..d9462efd6ce8 100644
+--- a/include/uapi/linux/virtio_pci.h
++++ b/include/uapi/linux/virtio_pci.h
+@@ -173,6 +173,13 @@ struct virtio_pci_common_cfg_notify {
+ 	__le16 padding;
+ };
  
-+/*
-+ * This function should only be called by the core, not directly by the driver.
-+ */
-+void __virtqueue_break(struct virtqueue *_vq)
-+{
-+	struct vring_virtqueue *vq = to_vvq(_vq);
++struct virtio_pci_common_cfg_reset {
++	struct virtio_pci_common_cfg cfg;
 +
-+	/* Pairs with READ_ONCE() in virtqueue_is_broken(). */
-+	WRITE_ONCE(vq->broken, true);
-+}
-+EXPORT_SYMBOL_GPL(__virtqueue_break);
++	__le16 queue_notify_data;	/* read-write */
++	__le16 queue_reset;		/* read-write */
++};
 +
-+/*
-+ * This function should only be called by the core, not directly by the driver.
-+ */
-+void __virtqueue_unbreak(struct virtqueue *_vq)
-+{
-+	struct vring_virtqueue *vq = to_vvq(_vq);
-+
-+	/* Pairs with READ_ONCE() in virtqueue_is_broken(). */
-+	WRITE_ONCE(vq->broken, false);
-+}
-+EXPORT_SYMBOL_GPL(__virtqueue_unbreak);
-+
- bool virtqueue_is_broken(struct virtqueue *_vq)
- {
- 	struct vring_virtqueue *vq = to_vvq(_vq);
-diff --git a/include/linux/virtio.h b/include/linux/virtio.h
-index 1272566adec6..dc474a0d48d1 100644
---- a/include/linux/virtio.h
-+++ b/include/linux/virtio.h
-@@ -138,6 +138,9 @@ bool is_virtio_device(struct device *dev);
- void virtio_break_device(struct virtio_device *dev);
- void __virtio_unbreak_device(struct virtio_device *dev);
- 
-+void __virtqueue_break(struct virtqueue *_vq);
-+void __virtqueue_unbreak(struct virtqueue *_vq);
-+
- void virtio_config_changed(struct virtio_device *dev);
- #ifdef CONFIG_PM_SLEEP
- int virtio_device_freeze(struct virtio_device *dev);
+ /* Fields in VIRTIO_PCI_CAP_PCI_CFG: */
+ struct virtio_pci_cfg_cap {
+ 	struct virtio_pci_cap cap;
 -- 
 2.31.0
 
