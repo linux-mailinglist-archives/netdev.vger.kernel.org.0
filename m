@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EE84A559B0B
-	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 16:08:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EEA2C559B14
+	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 16:08:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232435AbiFXOGi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jun 2022 10:06:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60322 "EHLO
+        id S232454AbiFXOGp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jun 2022 10:06:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232355AbiFXOGZ (ORCPT
+        with ESMTP id S232357AbiFXOGZ (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 10:06:25 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 099074EDDE;
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4A6D4EDEE;
         Fri, 24 Jun 2022 07:06:13 -0700 (PDT)
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LTzQ25kBgzkWSx;
-        Fri, 24 Jun 2022 22:04:26 +0800 (CST)
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LTzQd0FxNzkWjZ;
+        Fri, 24 Jun 2022 22:04:57 +0800 (CST)
 Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.2375.24; Fri, 24 Jun 2022 22:06:11 +0800
 Received: from ubuntu1804.huawei.com (10.67.174.61) by
@@ -37,9 +37,9 @@ To:     <peterz@infradead.org>, <mingo@redhat.com>, <acme@kernel.org>,
         <linux-perf-users@vger.kernel.org>, <netdev@vger.kernel.org>,
         <bpf@vger.kernel.org>
 CC:     <yangjihong1@huawei.com>
-Subject: [RFC v2 16/17] perf kwork: Add softirq trace bpf support
-Date:   Fri, 24 Jun 2022 22:03:48 +0800
-Message-ID: <20220624140349.16964-17-yangjihong1@huawei.com>
+Subject: [RFC v2 17/17] perf kwork: Add workqueue trace bpf support
+Date:   Fri, 24 Jun 2022 22:03:49 +0800
+Message-ID: <20220624140349.16964-18-yangjihong1@huawei.com>
 X-Mailer: git-send-email 2.30.GIT
 In-Reply-To: <20220624140349.16964-1-yangjihong1@huawei.com>
 References: <20220624140349.16964-1-yangjihong1@huawei.com>
@@ -59,179 +59,192 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Implements softirq trace bpf function.
+Implements workqueue trace bpf function.
 
 Test cases:
-Trace softirq latency without filter:
 
-  # perf kwork -k softirq lat -b
+  # perf kwork -k workqueue lat -b
   Starting trace, Hit <Ctrl+C> to stop and report
   ^C
     Kwork Name                     | Cpu  | Avg delay     | Count     | Max delay     | Max delay start     | Max delay end       |
    --------------------------------------------------------------------------------------------------------------------------------
-    (s)RCU:9                       | 0005 |      0.281 ms |         3 |      0.338 ms |     111295.752222 s |     111295.752560 s |
-    (s)RCU:9                       | 0002 |      0.262 ms |        24 |      1.400 ms |     111301.335986 s |     111301.337386 s |
-    (s)SCHED:7                     | 0005 |      0.177 ms |        14 |      0.212 ms |     111295.752270 s |     111295.752481 s |
-    (s)RCU:9                       | 0007 |      0.161 ms |        47 |      2.022 ms |     111295.402159 s |     111295.404181 s |
-    (s)NET_RX:3                    | 0003 |      0.149 ms |        12 |      1.261 ms |     111301.192964 s |     111301.194225 s |
-    (s)TIMER:1                     | 0001 |      0.105 ms |         9 |      0.198 ms |     111301.180191 s |     111301.180389 s |
-    ... <SNIP> ...
-    (s)NET_RX:3                    | 0002 |      0.098 ms |         6 |      0.124 ms |     111295.403760 s |     111295.403884 s |
-    (s)SCHED:7                     | 0001 |      0.093 ms |        19 |      0.242 ms |     111301.180256 s |     111301.180498 s |
-    (s)SCHED:7                     | 0007 |      0.078 ms |        15 |      0.188 ms |     111300.064226 s |     111300.064415 s |
-    (s)SCHED:7                     | 0004 |      0.077 ms |        11 |      0.213 ms |     111301.361759 s |     111301.361973 s |
-    (s)SCHED:7                     | 0000 |      0.063 ms |        33 |      0.805 ms |     111295.401811 s |     111295.402616 s |
-    (s)SCHED:7                     | 0003 |      0.063 ms |        14 |      0.085 ms |     111301.192255 s |     111301.192340 s |
+    (w)addrconf_verify_work        | 0002 |      5.856 ms |         1 |      5.856 ms |     111994.634313 s |     111994.640169 s |
+    (w)vmstat_update               | 0001 |      1.247 ms |         1 |      1.247 ms |     111996.462651 s |     111996.463899 s |
+    (w)neigh_periodic_work         | 0001 |      1.183 ms |         1 |      1.183 ms |     111996.462789 s |     111996.463973 s |
+    (w)neigh_managed_work          | 0001 |      0.989 ms |         2 |      1.635 ms |     111996.462820 s |     111996.464455 s |
+    (w)wb_workfn                   | 0000 |      0.667 ms |         1 |      0.667 ms |     111996.384273 s |     111996.384940 s |
+    (w)bpf_prog_free_deferred      | 0001 |      0.495 ms |         1 |      0.495 ms |     111986.314201 s |     111986.314696 s |
+    (w)mix_interrupt_randomness    | 0002 |      0.421 ms |         6 |      0.749 ms |     111995.927750 s |     111995.928499 s |
+    (w)vmstat_shepherd             | 0000 |      0.374 ms |         2 |      0.385 ms |     111991.265242 s |     111991.265627 s |
+    (w)e1000_watchdog              | 0002 |      0.356 ms |         5 |      0.390 ms |     111994.528380 s |     111994.528770 s |
+    (w)vmstat_update               | 0000 |      0.231 ms |         2 |      0.365 ms |     111996.384407 s |     111996.384772 s |
+    (w)flush_to_ldisc              | 0006 |      0.165 ms |         1 |      0.165 ms |     111995.930606 s |     111995.930771 s |
+    (w)flush_to_ldisc              | 0000 |      0.094 ms |         2 |      0.095 ms |     111996.460453 s |     111996.460548 s |
    --------------------------------------------------------------------------------------------------------------------------------
 
-Trace softirq latency with cpu filter:
-
-  # perf kwork -k softirq lat -b -C 1
+  # perf kwork -k workqueue rep -b
   Starting trace, Hit <Ctrl+C> to stop and report
   ^C
-    Kwork Name                     | Cpu  | Avg delay     | Count     | Max delay     | Max delay start     | Max delay end       |
+    Kwork Name                     | Cpu  | Total Runtime | Count     | Max runtime   | Max runtime start   | Max runtime end     |
    --------------------------------------------------------------------------------------------------------------------------------
-    (s)RCU:9                       | 0001 |      0.178 ms |         5 |      0.572 ms |     111435.534135 s |     111435.534707 s |
-   --------------------------------------------------------------------------------------------------------------------------------
-
-Trace softirq latency with name filter:
-
-  # perf kwork -k softirq lat -b -n SCHED
-  Starting trace, Hit <Ctrl+C> to stop and report
-  ^C
-    Kwork Name                     | Cpu  | Avg delay     | Count     | Max delay     | Max delay start     | Max delay end       |
-   --------------------------------------------------------------------------------------------------------------------------------
-    (s)SCHED:7                     | 0001 |      0.295 ms |        15 |      2.183 ms |     111452.534950 s |     111452.537133 s |
-    (s)SCHED:7                     | 0002 |      0.215 ms |        10 |      0.315 ms |     111460.000238 s |     111460.000553 s |
-    (s)SCHED:7                     | 0005 |      0.190 ms |        29 |      0.338 ms |     111457.032538 s |     111457.032876 s |
-    (s)SCHED:7                     | 0003 |      0.097 ms |        10 |      0.319 ms |     111452.434351 s |     111452.434670 s |
-    (s)SCHED:7                     | 0006 |      0.089 ms |         1 |      0.089 ms |     111450.737450 s |     111450.737539 s |
-    (s)SCHED:7                     | 0007 |      0.085 ms |        17 |      0.169 ms |     111452.471333 s |     111452.471502 s |
-    (s)SCHED:7                     | 0004 |      0.071 ms |        15 |      0.221 ms |     111452.535252 s |     111452.535473 s |
-    (s)SCHED:7                     | 0000 |      0.044 ms |        32 |      0.130 ms |     111460.001982 s |     111460.002112 s |
+    (w)e1000_watchdog              | 0002 |      0.627 ms |         2 |      0.324 ms |     112002.720665 s |     112002.720989 s |
+    (w)flush_to_ldisc              | 0007 |      0.598 ms |         2 |      0.534 ms |     112000.875226 s |     112000.875761 s |
+    (w)wq_barrier_func             | 0007 |      0.492 ms |         1 |      0.492 ms |     112000.876981 s |     112000.877473 s |
+    (w)flush_to_ldisc              | 0007 |      0.281 ms |         1 |      0.281 ms |     112005.826882 s |     112005.827163 s |
+    (w)mix_interrupt_randomness    | 0002 |      0.229 ms |         3 |      0.102 ms |     112005.825671 s |     112005.825774 s |
+    (w)vmstat_shepherd             | 0000 |      0.202 ms |         1 |      0.202 ms |     112001.504511 s |     112001.504713 s |
+    (w)bpf_prog_free_deferred      | 0001 |      0.181 ms |         1 |      0.181 ms |     112000.883251 s |     112000.883432 s |
+    (w)wb_workfn                   | 0007 |      0.130 ms |         1 |      0.130 ms |     112001.505195 s |     112001.505325 s |
+    (w)vmstat_update               | 0000 |      0.053 ms |         1 |      0.053 ms |     112001.504763 s |     112001.504815 s |
    --------------------------------------------------------------------------------------------------------------------------------
 
 Signed-off-by: Yang Jihong <yangjihong1@huawei.com>
 ---
- tools/perf/util/bpf_kwork.c                | 22 ++++++-
- tools/perf/util/bpf_skel/kwork_trace.bpf.c | 73 ++++++++++++++++++++++
- 2 files changed, 94 insertions(+), 1 deletion(-)
+ tools/perf/util/bpf_kwork.c                | 22 +++++-
+ tools/perf/util/bpf_skel/kwork_trace.bpf.c | 84 ++++++++++++++++++++++
+ 2 files changed, 105 insertions(+), 1 deletion(-)
 
 diff --git a/tools/perf/util/bpf_kwork.c b/tools/perf/util/bpf_kwork.c
-index 08252fcda1a4..1d76ca499ff6 100644
+index 1d76ca499ff6..fe9b0bdbb947 100644
 --- a/tools/perf/util/bpf_kwork.c
 +++ b/tools/perf/util/bpf_kwork.c
-@@ -100,10 +100,30 @@ static struct kwork_class_bpf kwork_irq_bpf = {
+@@ -120,11 +120,31 @@ static struct kwork_class_bpf kwork_softirq_bpf = {
  	.get_work_name = get_work_name_from_map,
  };
  
-+static void softirq_load_prepare(struct perf_kwork *kwork)
++static void workqueue_load_prepare(struct perf_kwork *kwork)
 +{
 +	if (kwork->report == KWORK_REPORT_RUNTIME) {
 +		bpf_program__set_autoload(
-+			skel->progs.report_softirq_entry, true);
++			skel->progs.report_workqueue_execute_start, true);
 +		bpf_program__set_autoload(
-+			skel->progs.report_softirq_exit, true);
++			skel->progs.report_workqueue_execute_end, true);
 +	} else if (kwork->report == KWORK_REPORT_LATENCY) {
 +		bpf_program__set_autoload(
-+			skel->progs.latency_softirq_raise, true);
++			skel->progs.latency_workqueue_activate_work, true);
 +		bpf_program__set_autoload(
-+			skel->progs.latency_softirq_entry, true);
++			skel->progs.latency_workqueue_execute_start, true);
 +	}
 +}
 +
-+static struct kwork_class_bpf kwork_softirq_bpf = {
-+	.load_prepare  = softirq_load_prepare,
++static struct kwork_class_bpf kwork_workqueue_bpf = {
++	.load_prepare  = workqueue_load_prepare,
 +	.get_work_name = get_work_name_from_map,
 +};
 +
  static struct kwork_class_bpf *
  kwork_class_bpf_supported_list[KWORK_CLASS_MAX] = {
  	[KWORK_CLASS_IRQ]       = &kwork_irq_bpf,
--	[KWORK_CLASS_SOFTIRQ]   = NULL,
-+	[KWORK_CLASS_SOFTIRQ]   = &kwork_softirq_bpf,
- 	[KWORK_CLASS_WORKQUEUE] = NULL,
+ 	[KWORK_CLASS_SOFTIRQ]   = &kwork_softirq_bpf,
+-	[KWORK_CLASS_WORKQUEUE] = NULL,
++	[KWORK_CLASS_WORKQUEUE] = &kwork_workqueue_bpf,
  };
  
+ static bool valid_kwork_class_type(enum kwork_class_type type)
 diff --git a/tools/perf/util/bpf_skel/kwork_trace.bpf.c b/tools/perf/util/bpf_skel/kwork_trace.bpf.c
-index 1925407d1c16..a9afc64f2d67 100644
+index a9afc64f2d67..238b03f9ea2b 100644
 --- a/tools/perf/util/bpf_skel/kwork_trace.bpf.c
 +++ b/tools/perf/util/bpf_skel/kwork_trace.bpf.c
-@@ -221,4 +221,77 @@ int report_irq_handler_exit(struct trace_event_raw_irq_handler_exit *ctx)
+@@ -167,6 +167,15 @@ static __always_inline void do_update_name(void *map,
+ 		bpf_map_update_elem(map, key, name, BPF_ANY);
+ }
+ 
++static __always_inline int update_timestart(void *map, struct work_key *key)
++{
++	if (!trace_event_match(key, NULL))
++		return 0;
++
++	do_update_timestart(map, key);
++	return 0;
++}
++
+ static __always_inline int update_timestart_and_name(void *time_map,
+ 						     void *names_map,
+ 						     struct work_key *key,
+@@ -192,6 +201,21 @@ static __always_inline int update_timeend(void *report_map,
+ 	return 0;
+ }
+ 
++static __always_inline int update_timeend_and_name(void *report_map,
++						   void *time_map,
++						   void *names_map,
++						   struct work_key *key,
++						   char *name)
++{
++	if (!trace_event_match(key, name))
++		return 0;
++
++	do_update_timeend(report_map, time_map, key);
++	do_update_name(names_map, key, name);
++
++	return 0;
++}
++
+ SEC("tracepoint/irq/irq_handler_entry")
+ int report_irq_handler_entry(struct trace_event_raw_irq_handler_entry *ctx)
+ {
+@@ -294,4 +318,64 @@ int latency_softirq_entry(struct trace_event_raw_softirq *ctx)
  	return update_timeend(&perf_kwork_report, &perf_kwork_time, &key);
  }
  
-+static char softirq_name_list[NR_SOFTIRQS][MAX_KWORKNAME] = {
-+	{ "HI"       },
-+	{ "TIMER"    },
-+	{ "NET_TX"   },
-+	{ "NET_RX"   },
-+	{ "BLOCK"    },
-+	{ "IRQ_POLL" },
-+	{ "TASKLET"  },
-+	{ "SCHED"    },
-+	{ "HRTIMER"  },
-+	{ "RCU"      },
-+};
-+
-+SEC("tracepoint/irq/softirq_entry")
-+int report_softirq_entry(struct trace_event_raw_softirq *ctx)
++SEC("tracepoint/workqueue/workqueue_execute_start")
++int report_workqueue_execute_start(struct trace_event_raw_workqueue_execute_start *ctx)
 +{
-+	unsigned int vec = ctx->vec;
 +	struct work_key key = {
-+		.type = KWORK_CLASS_SOFTIRQ,
++		.type = KWORK_CLASS_WORKQUEUE,
 +		.cpu  = bpf_get_smp_processor_id(),
-+		.id   = (__u64)vec,
++		.id   = (__u64)ctx->work,
 +	};
 +
-+	if (vec < NR_SOFTIRQS)
-+		return update_timestart_and_name(&perf_kwork_time,
-+						 &perf_kwork_names, &key,
-+						 softirq_name_list[vec]);
-+
-+	return 0;
++	return update_timestart(&perf_kwork_time, &key);
 +}
 +
-+SEC("tracepoint/irq/softirq_exit")
-+int report_softirq_exit(struct trace_event_raw_softirq *ctx)
++SEC("tracepoint/workqueue/workqueue_execute_end")
++int report_workqueue_execute_end(struct trace_event_raw_workqueue_execute_end *ctx)
 +{
++	char name[MAX_KWORKNAME];
 +	struct work_key key = {
-+		.type = KWORK_CLASS_SOFTIRQ,
++		.type = KWORK_CLASS_WORKQUEUE,
 +		.cpu  = bpf_get_smp_processor_id(),
-+		.id   = (__u64)ctx->vec,
++		.id   = (__u64)ctx->work,
 +	};
++	unsigned long long func_addr = (unsigned long long)ctx->function;
 +
-+	return update_timeend(&perf_kwork_report, &perf_kwork_time, &key);
++	__builtin_memset(name, 0, sizeof(name));
++	bpf_snprintf(name, sizeof(name), "%ps", &func_addr, sizeof(func_addr));
++
++	return update_timeend_and_name(&perf_kwork_report, &perf_kwork_time,
++				       &perf_kwork_names, &key, name);
 +}
 +
-+SEC("tracepoint/irq/softirq_raise")
-+int latency_softirq_raise(struct trace_event_raw_softirq *ctx)
++SEC("tracepoint/workqueue/workqueue_activate_work")
++int latency_workqueue_activate_work(struct trace_event_raw_workqueue_activate_work *ctx)
 +{
-+	unsigned int vec = ctx->vec;
 +	struct work_key key = {
-+		.type = KWORK_CLASS_SOFTIRQ,
++		.type = KWORK_CLASS_WORKQUEUE,
 +		.cpu  = bpf_get_smp_processor_id(),
-+		.id   = (__u64)vec,
++		.id   = (__u64)ctx->work,
 +	};
 +
-+	if (vec < NR_SOFTIRQS)
-+		return update_timestart_and_name(&perf_kwork_time,
-+						 &perf_kwork_names, &key,
-+						 softirq_name_list[vec]);
-+
-+	return 0;
++	return update_timestart(&perf_kwork_time, &key);
 +}
 +
-+SEC("tracepoint/irq/softirq_entry")
-+int latency_softirq_entry(struct trace_event_raw_softirq *ctx)
++SEC("tracepoint/workqueue/workqueue_execute_start")
++int latency_workqueue_execute_start(struct trace_event_raw_workqueue_execute_start *ctx)
 +{
++	char name[MAX_KWORKNAME];
 +	struct work_key key = {
-+		.type = KWORK_CLASS_SOFTIRQ,
++		.type = KWORK_CLASS_WORKQUEUE,
 +		.cpu  = bpf_get_smp_processor_id(),
-+		.id   = (__u64)ctx->vec,
++		.id   = (__u64)ctx->work,
 +	};
++	unsigned long long func_addr = (unsigned long long)ctx->function;
 +
-+	return update_timeend(&perf_kwork_report, &perf_kwork_time, &key);
++	__builtin_memset(name, 0, sizeof(name));
++	bpf_snprintf(name, sizeof(name), "%ps", &func_addr, sizeof(func_addr));
++
++	return update_timeend_and_name(&perf_kwork_report, &perf_kwork_time,
++				       &perf_kwork_names, &key, name);
 +}
 +
  char LICENSE[] SEC("license") = "Dual BSD/GPL";
