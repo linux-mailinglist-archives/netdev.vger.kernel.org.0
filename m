@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D464559C77
-	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 16:45:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2576A559C81
+	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 16:45:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233139AbiFXOlf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jun 2022 10:41:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42108 "EHLO
+        id S233156AbiFXOll (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jun 2022 10:41:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233109AbiFXOlc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 10:41:32 -0400
+        with ESMTP id S231916AbiFXOlf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 10:41:35 -0400
 Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::224])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BC7267E58;
-        Fri, 24 Jun 2022 07:41:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 132DE67E42;
+        Fri, 24 Jun 2022 07:41:32 -0700 (PDT)
 Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id B01BDE0008;
-        Fri, 24 Jun 2022 14:41:26 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 0B28AE0005;
+        Fri, 24 Jun 2022 14:41:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1656081688;
+        t=1656081691;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=tExyiPeImu1Nxom9h3UVjRKBgN09NvUrwAIoO3Vi5fo=;
-        b=VxzwWnkGYQu3G0EXW2YPGX6Xazdzcq/dpoTKjXVUs0C0YH8PDI7i+lAps6g4Pk8V8ie0sQ
-        r816HYswLeYRLG2OdpdjR8wn1kLgtjeL1MLMm5iK9r4LTebBUsYXFHSEvnw33V4Gbn0+CP
-        lyDgzr032fmOlZI5m7S4QnFm8fqikDYiuXVFlJ2KEmgACAKcNgpTJZSHTCJGIcSPTyvgZo
-        mb76CNLHsqm8l5vx10YYyHZODaePGSX+XPUvjm/IBwqXgh52Hi+1Gg1iuKQrPZUzsTtV29
-        FQSy0pcEEgJ9rPIL2gNwtDJDq2MqrM12qnz1Uhcygu+sn17HF+GmdxS1pBv30w==
+        bh=VmwCQ1JvvyQyPc8uS6VvyDQhWe60wu5gxmRmnY3hew8=;
+        b=G4vBlLsB8PxLCnUQ4EnLV0uLy0Fv1CeI6z39cKNfCMj2D0+8/qL9Zr5PJ2r1l0JQvUhPTB
+        GlzR6J7xGzyw8BhNUh1GVYn62PS7B33mgioAzbCjrB8rXTPPjgCYJWfoYRFU4d25EYmHY/
+        78WfCopaqMeYIBLbXsHbxX8JgPS7C5z9EulAWHlUMhOzlCA1GHrhxJ5FsHE3V8PNZcXe8X
+        pXoz7f7FkJcFPPHD9EMtv8W3kM73fTGuFlOR+hAzJA2RNIAOvBFOF7M/BthyNuOpxCIF/6
+        NbYq+BvNnQLsF486cp9xfl1kNq0tahWPSrUZMHjLoweR0lAw+ae6uSOIHKGb3A==
 From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -56,9 +56,9 @@ Cc:     =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
         Pascal Eberhard <pascal.eberhard@se.com>,
         linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
         linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next v9 01/16] net: dsa: allow port_bridge_join() to override extack message
-Date:   Fri, 24 Jun 2022 16:39:46 +0200
-Message-Id: <20220624144001.95518-2-clement.leger@bootlin.com>
+Subject: [PATCH net-next v9 02/16] net: dsa: add support for ethtool get_rmon_stats()
+Date:   Fri, 24 Jun 2022 16:39:47 +0200
+Message-Id: <20220624144001.95518-3-clement.leger@bootlin.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220624144001.95518-1-clement.leger@bootlin.com>
 References: <20220624144001.95518-1-clement.leger@bootlin.com>
@@ -75,35 +75,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some drivers might report that they are unable to bridge ports by
-returning -EOPNOTSUPP, but still wants to override extack message.
-In order to do so, in dsa_slave_changeupper(), if port_bridge_join()
-returns -EOPNOTSUPP, check if extack message is set and if so, do not
-override it.
+Add support to allow dsa drivers to specify the .get_rmon_stats()
+operation.
 
 Signed-off-by: Clément Léger <clement.leger@bootlin.com>
 Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- net/dsa/slave.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ include/net/dsa.h |  3 +++
+ net/dsa/slave.c   | 13 +++++++++++++
+ 2 files changed, 16 insertions(+)
 
+diff --git a/include/net/dsa.h b/include/net/dsa.h
+index 14f07275852b..64da5ed27fdc 100644
+--- a/include/net/dsa.h
++++ b/include/net/dsa.h
+@@ -888,6 +888,9 @@ struct dsa_switch_ops {
+ 				     struct ethtool_eth_mac_stats *mac_stats);
+ 	void	(*get_eth_ctrl_stats)(struct dsa_switch *ds, int port,
+ 				      struct ethtool_eth_ctrl_stats *ctrl_stats);
++	void	(*get_rmon_stats)(struct dsa_switch *ds, int port,
++				  struct ethtool_rmon_stats *rmon_stats,
++				  const struct ethtool_rmon_hist_range **ranges);
+ 	void	(*get_stats64)(struct dsa_switch *ds, int port,
+ 				   struct rtnl_link_stats64 *s);
+ 	void	(*self_test)(struct dsa_switch *ds, int port,
 diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 2e1ac638d135..509b98dd9954 100644
+index 509b98dd9954..760ca58307a3 100644
 --- a/net/dsa/slave.c
 +++ b/net/dsa/slave.c
-@@ -2460,8 +2460,9 @@ static int dsa_slave_changeupper(struct net_device *dev,
- 			if (!err)
- 				dsa_bridge_mtu_normalization(dp);
- 			if (err == -EOPNOTSUPP) {
--				NL_SET_ERR_MSG_MOD(extack,
--						   "Offloading not supported");
-+				if (!extack->_msg)
-+					NL_SET_ERR_MSG_MOD(extack,
-+							   "Offloading not supported");
- 				err = 0;
- 			}
- 			err = notifier_from_errno(err);
+@@ -1002,6 +1002,18 @@ dsa_slave_get_eth_ctrl_stats(struct net_device *dev,
+ 		ds->ops->get_eth_ctrl_stats(ds, dp->index, ctrl_stats);
+ }
+ 
++static void
++dsa_slave_get_rmon_stats(struct net_device *dev,
++			 struct ethtool_rmon_stats *rmon_stats,
++			 const struct ethtool_rmon_hist_range **ranges)
++{
++	struct dsa_port *dp = dsa_slave_to_port(dev);
++	struct dsa_switch *ds = dp->ds;
++
++	if (ds->ops->get_rmon_stats)
++		ds->ops->get_rmon_stats(ds, dp->index, rmon_stats, ranges);
++}
++
+ static void dsa_slave_net_selftest(struct net_device *ndev,
+ 				   struct ethtool_test *etest, u64 *buf)
+ {
+@@ -2081,6 +2093,7 @@ static const struct ethtool_ops dsa_slave_ethtool_ops = {
+ 	.get_eth_phy_stats	= dsa_slave_get_eth_phy_stats,
+ 	.get_eth_mac_stats	= dsa_slave_get_eth_mac_stats,
+ 	.get_eth_ctrl_stats	= dsa_slave_get_eth_ctrl_stats,
++	.get_rmon_stats		= dsa_slave_get_rmon_stats,
+ 	.set_wol		= dsa_slave_set_wol,
+ 	.get_wol		= dsa_slave_get_wol,
+ 	.set_eee		= dsa_slave_set_eee,
 -- 
 2.36.1
 
