@@ -2,207 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C26B5598B0
-	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 13:42:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE2AA559928
+	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 14:07:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230482AbiFXLmV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jun 2022 07:42:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34090 "EHLO
+        id S231661AbiFXMGV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jun 2022 08:06:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230245AbiFXLmU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 07:42:20 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6994E7A1BF
-        for <netdev@vger.kernel.org>; Fri, 24 Jun 2022 04:42:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
-        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=n/aymNz4Y0HJ9GUQg+H1tg6FWbqURMPdOK+sJTRuAWA=; b=WKQyr30DjE11qW9fPmE69ll+xy
-        vWpmBIiYwRbrT081o2mJFYV8YIgLpKth++jwlh/R+MG0nIhly8zk6cyPAxEq+Vcl0qw3K9d20lNda
-        COHDZP1rKtsB+E6qU43eBwILcZT0i0JxPrykt2SNhG2DIkC91vrjPN21l/A2hfrelUmIuP3yRrwK0
-        yJ8tDx7xEp0qj/Rr3I/kfKCTNCujptwMoFzvtFPx6JXPbkYp31M7iYubKpzy5BrpcLnnfcWnE0BAN
-        hiJYripJ93bX5ZX64YC/ovNM0KeBNz1zw94I7yfjlHER1Cs9FrVP3RvaOk1avchS61AjwrQBSQGRL
-        nwyVnDQA==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:41616 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1o4hhS-0005sh-5j; Fri, 24 Jun 2022 12:42:10 +0100
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <rmk@rmk-PC.armlinux.org.uk>)
-        id 1o4hhR-004Ap4-HJ; Fri, 24 Jun 2022 12:42:09 +0100
-In-Reply-To: <YrWi5oBFn7vR15BH@shell.armlinux.org.uk>
-References: <YrWi5oBFn7vR15BH@shell.armlinux.org.uk>
-From:   "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "Alvin __ipraga" <alsi@bang-olufsen.dk>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        UNGLinuxDriver@microchip.com,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Woojung Huh <woojung.huh@microchip.com>
-Subject: [PATCH RFC net-next 4/4] net: dsa: always use phylink for CPU and DSA
- ports
+        with ESMTP id S231628AbiFXMGU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 08:06:20 -0400
+X-Greylist: delayed 84089 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 24 Jun 2022 05:06:15 PDT
+Received: from out162-62-57-87.mail.qq.com (out162-62-57-87.mail.qq.com [162.62.57.87])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD2FF7E03A;
+        Fri, 24 Jun 2022 05:06:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1656072371;
+        bh=i+TLfV7Q9WtZuQ96Ed6tMGTjvVaQatLT38cfNmU5J68=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To;
+        b=cLXPFY372oDe+pbOhU1HNAAz78ygRh06kiA6QHm4hrEbPgK3+EJRXIOreuML4S/7W
+         y06ndLkcXn0bWcP6WHR/GQOWdSvvp9HU036+D5cAcsDKe+fRlBM9hd1ajWG7HUjbtT
+         SEikGSmSjwu5dSmN5dmx8/rsgYl6DmtcS159oFqc=
+Received: from wh-VirtualBox ([117.175.169.40])
+        by newxmesmtplogicsvrszc8.qq.com (NewEsmtp) with SMTP
+        id 18829089; Fri, 24 Jun 2022 20:06:08 +0800
+X-QQ-mid: xmsmtpt1656072368tgl9vexc1
+Message-ID: <tencent_2B372B7CD9C70750319022510DAD3C081108@qq.com>
+X-QQ-XMAILINFO: MDPfhejMR4aI4PAqisrv/a5FviYMYw5okHeM8LAtB8FVYZxnhMSGffLnyl6h1r
+         Rvh6D2upLqn53X9Zb58QU+PlmfEcAAuc3GNqPuhMiv7NdKKNkRAel3HU9QhReS762KW7RQhk9vG9
+         uftPHNIcVk2ATN22wknZ5uf447Sc2qNXg666+Jtj1nDj+NjUFv4dA94yj2YCdwX1Jkr4a/y8Q+aw
+         L80daUrzlK2rV/JPBB0/DPdDfTvbCW55F7RXea74gF+ac5AhChaM2RyVE/rAKz1SGFmQjXGGV8yV
+         FBhgp0HVcJa7Vv9JNPWzydG+RIxq/aST6sTOr7G43vLgvBtz2WB58vsCxOXD/pVZK34gBR9u6hz1
+         90/BPbvYsszovw/PDqHgMsi3fZRDHyh7pc9O9l6/8J2sY3Rj3dVDmtuVkkmp93LLP/1aD6+IdwIa
+         0h8SR+TDjyucOX78Bqg7r/cv5gAEYUV+ON+ypWIe17cCVfgzf1k7Zj7eoAGaTtpzjgE+AxdYc7TZ
+         xhYF4JTcRE62BUBP3yJSPRwj05zvupPLHK6pFDogT0mjPCmyLOVKj5QZftu39OjAiTRpjiIzddsu
+         0eo3se5z5yvmSSzg4kCwhAHNVI/gRlk3AHz+faTW/eZndfCV7U4iSvdZPd64rONaFaXZdO7y1tF4
+         04qplFIXOWaJbIZ+ErDkUtTAvCkCR0rpH5+qF8lg0hac6J9ab4CYrFEz2GPgNh9Klhy4qq3Y1NuM
+         LRKnptbvSwV0iEv5SGSR7akvTORXJCseLC7izEt5HGjHOTGB1B7mS6gYLOz9Y7mGQ2SIpQgargN+
+         /Ugek9KHBs171DCgju3obY7iMs+G6U53dA+J1XGdPgIC4kq0dz7odhHu8zDush9dgrv1f9eoH2L6
+         lW/rtguGludenX44uPd+Xs+6EcdzoUv82C4VFcUkHWTlcL7zdK4tQ8ZwUzOOaVJmwpm4QuOQ2T53
+         XKAlFla84kwvuzRizqM8bzji96ovru
+Date:   Fri, 24 Jun 2022 20:05:30 +0800
+From:   Wei Han <lailitty@foxmail.com>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     kadlec@netfilter.org, fw@strlen.de, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lailitty@foxmail.com
+Subject: Re: [PATCH] netfilter: xt_esp: add support for ESP match in NAT
+ Traversal
+X-OQ-MSGID: <20220624120530.GA23845@wh-VirtualBox>
+References: <tencent_DDE91CB7412D427A442DB4362364DC04F20A@qq.com>
+ <YrTAyW0phD0OiYN/@salvia>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1o4hhR-004Ap4-HJ@rmk-PC.armlinux.org.uk>
-Sender: Russell King <rmk@armlinux.org.uk>
-Date:   Fri, 24 Jun 2022 12:42:09 +0100
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <YrTAyW0phD0OiYN/@salvia>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        HELO_DYNAMIC_IPADDR,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,RDNS_DYNAMIC,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, we only use phylink for CPU and DSA ports if there is a
-fixed-link specification, or a PHY specified. The reason for this
-behaviour is that when neither is specified, there was no way for
-phylink to know the link parameters.
+Thank you for your reply, please see my answer below.
 
-Now that we have phylink_set_max_link_speed() (which has become
-possible through the addition of mac_capabilities) we now have the
-ability to know the maximum link speed for a specific link, and can
-now use phylink for this case as well.
-
-However, we need DSA drivers to report the interface mode being used
-on these ports so that we can select a maximum speed appropriate for
-the interface mode that hardware may have configured for the port.
-
-This is especially important with the conversion of DSA drivers to
-phylink_pcs, as the PCS code only gets called if we are using
-phylink for the port.
-
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
----
- drivers/net/dsa/mv88e6xxx/chip.c | 41 ++++----------------------------
- net/dsa/port.c                   | 19 +++++++--------
- 2 files changed, 13 insertions(+), 47 deletions(-)
-
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 1c6b4b00d58d..e19732782742 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -3287,9 +3287,8 @@ static int mv88e6xxx_setup_port(struct mv88e6xxx_chip *chip, int port)
- {
- 	struct device_node *phy_handle = NULL;
- 	struct dsa_switch *ds = chip->ds;
--	phy_interface_t mode;
- 	struct dsa_port *dp;
--	int tx_amp, speed;
-+	int tx_amp;
- 	int err;
- 	u16 reg;
- 
-@@ -3298,40 +3297,10 @@ static int mv88e6xxx_setup_port(struct mv88e6xxx_chip *chip, int port)
- 
- 	dp = dsa_to_port(ds, port);
- 
--	/* MAC Forcing register: don't force link, speed, duplex or flow control
--	 * state to any particular values on physical ports, but force the CPU
--	 * port and all DSA ports to their maximum bandwidth and full duplex.
--	 */
--	if (dsa_is_cpu_port(ds, port) || dsa_is_dsa_port(ds, port)) {
--		unsigned long caps = dp->pl_config.mac_capabilities;
--
--		if (chip->info->ops->port_max_speed_mode)
--			mode = chip->info->ops->port_max_speed_mode(port);
--		else
--			mode = PHY_INTERFACE_MODE_NA;
--
--		if (caps & MAC_10000FD)
--			speed = SPEED_10000;
--		else if (caps & MAC_5000FD)
--			speed = SPEED_5000;
--		else if (caps & MAC_2500FD)
--			speed = SPEED_2500;
--		else if (caps & MAC_1000)
--			speed = SPEED_1000;
--		else if (caps & MAC_100)
--			speed = SPEED_100;
--		else
--			speed = SPEED_10;
--
--		err = mv88e6xxx_port_setup_mac(chip, port, LINK_FORCED_UP,
--					       speed, DUPLEX_FULL,
--					       PAUSE_OFF, mode);
--	} else {
--		err = mv88e6xxx_port_setup_mac(chip, port, LINK_UNFORCED,
--					       SPEED_UNFORCED, DUPLEX_UNFORCED,
--					       PAUSE_ON,
--					       PHY_INTERFACE_MODE_NA);
--	}
-+	err = mv88e6xxx_port_setup_mac(chip, port, LINK_UNFORCED,
-+				       SPEED_UNFORCED, DUPLEX_UNFORCED,
-+				       PAUSE_ON,
-+				       PHY_INTERFACE_MODE_NA);
- 	if (err)
- 		return err;
- 
-diff --git a/net/dsa/port.c b/net/dsa/port.c
-index 35b4e1f8dc05..a1232eaa5d21 100644
---- a/net/dsa/port.c
-+++ b/net/dsa/port.c
-@@ -1559,6 +1559,9 @@ int dsa_port_phylink_create(struct dsa_port *dp)
- 		return PTR_ERR(dp->pl);
- 	}
- 
-+	if (dp->type == DSA_PORT_TYPE_CPU || dp->type == DSA_PORT_TYPE_DSA)
-+		phylink_set_max_fixed_link(dp->pl);
-+
- 	return 0;
- }
- 
-@@ -1663,20 +1666,14 @@ static int dsa_port_phylink_register(struct dsa_port *dp)
- int dsa_port_link_register_of(struct dsa_port *dp)
- {
- 	struct dsa_switch *ds = dp->ds;
--	struct device_node *phy_np;
- 	int port = dp->index;
- 
- 	if (!ds->ops->adjust_link) {
--		phy_np = of_parse_phandle(dp->dn, "phy-handle", 0);
--		if (of_phy_is_fixed_link(dp->dn) || phy_np) {
--			if (ds->ops->phylink_mac_link_down)
--				ds->ops->phylink_mac_link_down(ds, port,
--					MLO_AN_FIXED, PHY_INTERFACE_MODE_NA);
--			of_node_put(phy_np);
--			return dsa_port_phylink_register(dp);
--		}
--		of_node_put(phy_np);
--		return 0;
-+		if (ds->ops->phylink_mac_link_down)
-+			ds->ops->phylink_mac_link_down(ds, port,
-+				MLO_AN_FIXED, PHY_INTERFACE_MODE_NA);
-+
-+		return dsa_port_phylink_register(dp);
- 	}
- 
- 	dev_warn(ds->dev,
--- 
-2.30.2
-
+On Thu, Jun 23, 2022 at 09:36:41PM +0200, Pablo Neira Ayuso wrote:
+> On Thu, Jun 23, 2022 at 08:42:48PM +0800, Wei Han wrote:
+> > when the ESP packets traversing Network Address Translators,
+> > which are encapsulated and decapsulated inside UDP packets,
+> > so we need to get ESP data in UDP.
+> > 
+> > Signed-off-by: Wei Han <lailitty@foxmail.com>
+> > ---
+> >  net/netfilter/xt_esp.c | 54 +++++++++++++++++++++++++++++++++++-------
+> >  1 file changed, 45 insertions(+), 9 deletions(-)
+> > 
+> > diff --git a/net/netfilter/xt_esp.c b/net/netfilter/xt_esp.c
+> > index 2a1c0ad0ff07..c3feb79a830a 100644
+> > --- a/net/netfilter/xt_esp.c
+> > +++ b/net/netfilter/xt_esp.c
+> > @@ -8,12 +8,14 @@
+> >  #include <linux/skbuff.h>
+> >  #include <linux/in.h>
+> >  #include <linux/ip.h>
+> > +#include <linux/ipv6.h>
+> >  
+> >  #include <linux/netfilter/xt_esp.h>
+> >  #include <linux/netfilter/x_tables.h>
+> >  
+> >  #include <linux/netfilter_ipv4/ip_tables.h>
+> >  #include <linux/netfilter_ipv6/ip6_tables.h>
+> > +#include <net/ip.h>
+> >  
+> >  MODULE_LICENSE("GPL");
+> >  MODULE_AUTHOR("Yon Uriarte <yon@astaro.de>");
+> > @@ -39,17 +41,53 @@ static bool esp_mt(const struct sk_buff *skb, struct xt_action_param *par)
+> >  	struct ip_esp_hdr _esp;
+> >  	const struct xt_esp *espinfo = par->matchinfo;
+> >  
+> > +	const struct iphdr *iph = NULL;
+> > +	const struct ipv6hdr *ip6h = NULL;
+> > +	const struct udphdr *udph = NULL;
+> > +	struct udphdr _udph;
+> > +	int proto = -1;
+> > +
+> >  	/* Must not be a fragment. */
+> >  	if (par->fragoff != 0)
+> >  		return false;
+> >  
+> > -	eh = skb_header_pointer(skb, par->thoff, sizeof(_esp), &_esp);
+> > -	if (eh == NULL) {
+> > -		/* We've been asked to examine this packet, and we
+> > -		 * can't.  Hence, no choice but to drop.
+> > -		 */
+> > -		pr_debug("Dropping evil ESP tinygram.\n");
+> > -		par->hotdrop = true;
+> > +	if (xt_family(par) == NFPROTO_IPV6) {
+> > +		ip6h = ipv6_hdr(skb);
+> > +		if (!ip6h)
+> > +			return false;
+> > +		proto = ip6h->nexthdr;
+> > +	} else {
+> > +		iph = ip_hdr(skb);
+> > +		if (!iph)
+> > +			return false;
+> > +		proto = iph->protocol;
+> > +	}
+> > +
+> > +	if (proto == IPPROTO_UDP) {
+> > +		//for NAT-T
+> > +		udph = skb_header_pointer(skb, par->thoff, sizeof(_udph), &_udph);
+> > +		if (udph && (udph->source == htons(4500) || udph->dest == htons(4500))) {
+> > +			/* Not deal with above data it don't conflict with SPI
+> > +			 * 1.IKE Header Format for Port 4500(Non-ESP Marker 0x00000000)
+> > +			 * 2.NAT-Keepalive Packet Format(0xFF)
+> > +			 */
+> > +			eh = (struct ip_esp_hdr *)((char *)udph + sizeof(struct udphdr));
+> 
+> this is not safe, skbuff might not be linear.
+>
+  Will be modified to "eh = skb_header_pointer(skb, par->thoff + sizeof(struct udphdr), sizeof(_esp), &_esp);"
+> > +		} else {
+> > +			return false;
+> > +		}
+> > +	} else if (proto == IPPROTO_ESP) {
+> > +		//not NAT-T
+> > +		eh = skb_header_pointer(skb, par->thoff, sizeof(_esp), &_esp);
+> > +		if (!eh) {
+> > +			/* We've been asked to examine this packet, and we
+> > +			 * can't.  Hence, no choice but to drop.
+> > +			 */
+> > +			pr_debug("Dropping evil ESP tinygram.\n");
+> > +			par->hotdrop = true;
+> > +			return false;
+> > +		}
+> 
+> This is loose, the user does not have a way to restrict to either
+> ESP over UDP or native ESP. I don't think this is going to look nice
+> from iptables syntax perspective to restrict either one or another
+> mode.
+>
+  This match original purpose is check the ESP packet's SPI value, so I
+  think the user maybe not need to pay attention that the packet is 
+  ESP over UDP or native ESP just get SPI and check it, this patch is 
+  only want to add support for get SPI in ESP over UDP.And the iptables rules like:
+  "iptables -A INPUT -m esp --espspi 0x12345678 -j ACCEPT"
+> > +	} else {
+> > +		//not esp data
+> >  		return false;
+> >  	}
+> >  
+> > @@ -76,7 +114,6 @@ static struct xt_match esp_mt_reg[] __read_mostly = {
+> >  		.checkentry	= esp_mt_check,
+> >  		.match		= esp_mt,
+> >  		.matchsize	= sizeof(struct xt_esp),
+> > -		.proto		= IPPROTO_ESP,
+> >  		.me		= THIS_MODULE,
+> >  	},
+> >  	{
+> > @@ -85,7 +122,6 @@ static struct xt_match esp_mt_reg[] __read_mostly = {
+> >  		.checkentry	= esp_mt_check,
+> >  		.match		= esp_mt,
+> >  		.matchsize	= sizeof(struct xt_esp),
+> > -		.proto		= IPPROTO_ESP,
+> >  		.me		= THIS_MODULE,
+> >  	},
+> >  };
+> > -- 
+> > 2.17.1
+> > 
