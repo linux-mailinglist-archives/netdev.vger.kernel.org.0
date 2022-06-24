@@ -2,75 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D11F5559EE4
-	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 18:54:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 81A69559F05
+	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 19:06:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231475AbiFXQw5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jun 2022 12:52:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47380 "EHLO
+        id S230513AbiFXQ4B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jun 2022 12:56:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230366AbiFXQwx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 12:52:53 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8335554F92;
-        Fri, 24 Jun 2022 09:52:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=z/TLLw7mRzYQAex8p/0tcUML3Z0CyUY3N6YPN7Zygq8=; b=yTHVrYXvbdipcml9LQ8q2WwBVS
-        8kHZmLGGojsXKF2Hv4vohMrDU8/tuTU/kSVMM/BwMOvv1OlzNHNPK5iGFSwJTvLXUy2dPJMQZv9On
-        5kQhOf8DqYQ4eu9UGZBMzL6n6SyKB9FQKLgIKapmgmnHZmzGouHfD2e7hgimsJmgVtMc=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1o4mXi-0085tJ-Tz; Fri, 24 Jun 2022 18:52:26 +0200
-Date:   Fri, 24 Jun 2022 18:52:26 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Sebastian Reichel <sebastian.reichel@collabora.com>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        netdev@vger.kernel.org, linux-rockchip@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        David Wu <david.wu@rock-chips.com>, kernel@collabora.com
-Subject: Re: [PATCH 1/3] net: ethernet: stmmac: dwmac-rk: Disable delayline
- if it is invalid
-Message-ID: <YrXryvTpnSIOyUTD@lunn.ch>
-References: <20220623162850.245608-1-sebastian.reichel@collabora.com>
- <20220623162850.245608-2-sebastian.reichel@collabora.com>
- <YrWdnQKVbJR+NrfH@lunn.ch>
- <20220624162956.vn4b3va5cz2agvrb@mercury.elektranox.org>
+        with ESMTP id S230223AbiFXQz7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 12:55:59 -0400
+Received: from mail.yonan.net (mail.yonan.net [54.244.116.145])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EEC14755A
+        for <netdev@vger.kernel.org>; Fri, 24 Jun 2022 09:55:59 -0700 (PDT)
+Received: from unless.localdomain (unknown [76.130.91.106])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.yonan.net (Postfix) with ESMTPSA id 9651F3ECF5;
+        Fri, 24 Jun 2022 16:55:58 +0000 (UTC)
+From:   James Yonan <james@openvpn.net>
+To:     netdev@vger.kernel.org
+Cc:     therbert@google.com, James Yonan <james@openvpn.net>
+Subject: [PATCH net-next] rfs: added /proc/sys/net/core/rps_allow_ooo flag to tweak flow alg
+Date:   Fri, 24 Jun 2022 10:54:47 -0600
+Message-Id: <20220624165447.3814355-1-james@openvpn.net>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220624162956.vn4b3va5cz2agvrb@mercury.elektranox.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > So it seems to me you are changing the documented default. You cannot
-> > do that, this is ABI.
-> 
-> Right. I suppose we either need a disable value or an extra property. I
-> can add support for supplying (-1) from DT. Does that sounds ok to
-> everyone?
+rps_allow_ooo (0|1, default=0) -- if set to 1, allow RFS
+(receive flow steering) to move a flow to a new CPU even
+if the old CPU queue has pending packets.  Note that this
+can result in packets being delivered out-of-order.  If set
+to 0 (the default), the previous behavior is retained, where
+flows will not be moved as long as pending packets remain.
 
-I'm missing the big picture.
+The motivation for this patch is that while it's good to
+prevent out-of-order packets, the current RFS logic requires
+that all previous packets for the flow have been dequeued
+before an RFS CPU switch is made, so as to preserve in-order
+delivery.  In some cases, on links with heavy VPN traffic,
+we have observed that this requirement is too onerous, and
+that it prevents an RFS CPU switch from occurring within a
+reasonable time frame if heavy traffic causes the old CPU
+queue to never fully drain.
 
-Does the hardware you are adding not support delays? If so, rather
-than using the defaults, don't do anything. And if a value is
-supplied, -EINVAL?
+So rps_allow_ooo allows the user to select the tradeoff
+between a more aggressive RFS steering policy that may
+reorder packets on a CPU switch event (rps_allow_ooo=1)
+vs. one that prioritizes in-order delivery (rps_allow_ooo=0).
 
-	  Andrew
+Signed-off-by: James Yonan <james@openvpn.net>
+---
+ Documentation/networking/scaling.rst | 12 ++++++++++++
+ include/linux/netdevice.h            |  1 +
+ net/core/dev.c                       |  5 ++++-
+ net/core/sysctl_net_core.c           |  9 +++++++++
+ 4 files changed, 26 insertions(+), 1 deletion(-)
+
+diff --git a/Documentation/networking/scaling.rst b/Documentation/networking/scaling.rst
+index 3d435caa3ef2..371b9aaddf81 100644
+--- a/Documentation/networking/scaling.rst
++++ b/Documentation/networking/scaling.rst
+@@ -313,6 +313,18 @@ there are no packets outstanding on the old CPU, as the outstanding
+ packets could arrive later than those about to be processed on the new
+ CPU.
+ 
++However, in some cases it may be desirable to relax the requirement
++that a flow only moves to a new CPU when there are no packets
++outstanding on the old CPU.  For this, we introduce::
++
++  /proc/sys/net/core/rps_allow_ooo (0|1, default=0)
++
++If set to 1, allow RFS to move a flow to a new CPU even if the old CPU
++queue has pending packets.  If set to 0 (the default), flows will not be
++moved as long as pending packets remain.  So rps_allow_ooo allows the
++user to select the tradeoff between a more aggressive steering algorithm
++that can potentially reorder packets (rps_allow_ooo=1) vs. one that
++prioritizes in-order delivery (rps_allow_ooo=0).
+ 
+ RFS Configuration
+ -----------------
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 89afa4f7747d..556efe223c17 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -715,6 +715,7 @@ struct rps_sock_flow_table {
+ 
+ #define RPS_NO_CPU 0xffff
+ 
++extern int rps_allow_ooo_sysctl;
+ extern u32 rps_cpu_mask;
+ extern struct rps_sock_flow_table __rcu *rps_sock_flow_table;
+ 
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 978ed0622d8f..621b2cc311a6 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -4379,6 +4379,8 @@ struct rps_sock_flow_table __rcu *rps_sock_flow_table __read_mostly;
+ EXPORT_SYMBOL(rps_sock_flow_table);
+ u32 rps_cpu_mask __read_mostly;
+ EXPORT_SYMBOL(rps_cpu_mask);
++int rps_allow_ooo_sysctl __read_mostly;
++EXPORT_SYMBOL(rps_allow_ooo_sysctl);
+ 
+ struct static_key_false rps_needed __read_mostly;
+ EXPORT_SYMBOL(rps_needed);
+@@ -4494,6 +4496,7 @@ static int get_rps_cpu(struct net_device *dev, struct sk_buff *skb,
+ 		 * If the desired CPU (where last recvmsg was done) is
+ 		 * different from current CPU (one in the rx-queue flow
+ 		 * table entry), switch if one of the following holds:
++		 *   - rps_allow_ooo_sysctl is enabled.
+ 		 *   - Current CPU is unset (>= nr_cpu_ids).
+ 		 *   - Current CPU is offline.
+ 		 *   - The current CPU's queue tail has advanced beyond the
+@@ -4502,7 +4505,7 @@ static int get_rps_cpu(struct net_device *dev, struct sk_buff *skb,
+ 		 *     have been dequeued, thus preserving in order delivery.
+ 		 */
+ 		if (unlikely(tcpu != next_cpu) &&
+-		    (tcpu >= nr_cpu_ids || !cpu_online(tcpu) ||
++		    (rps_allow_ooo_sysctl || tcpu >= nr_cpu_ids || !cpu_online(tcpu) ||
+ 		     ((int)(per_cpu(softnet_data, tcpu).input_queue_head -
+ 		      rflow->last_qtail)) >= 0)) {
+ 			tcpu = next_cpu;
+diff --git a/net/core/sysctl_net_core.c b/net/core/sysctl_net_core.c
+index 71a13596ea2b..4fd9e61c2adf 100644
+--- a/net/core/sysctl_net_core.c
++++ b/net/core/sysctl_net_core.c
+@@ -470,6 +470,15 @@ static struct ctl_table net_core_table[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= rps_sock_flow_sysctl
+ 	},
++	{
++		.procname	= "rps_allow_ooo",
++		.data		= &rps_allow_ooo_sysctl,
++		.maxlen		= sizeof(int),
++		.mode		= 0644,
++		.proc_handler	= proc_dointvec_minmax,
++		.extra1		= SYSCTL_ZERO,
++		.extra2		= SYSCTL_ONE
++	},
+ #endif
+ #ifdef CONFIG_NET_FLOW_LIMIT
+ 	{
+-- 
+2.25.1
+
