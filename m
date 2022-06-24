@@ -2,252 +2,278 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EEA2C559B14
-	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 16:08:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 34216559C94
+	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 16:46:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232454AbiFXOGp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jun 2022 10:06:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60326 "EHLO
+        id S233083AbiFXOlb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jun 2022 10:41:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232357AbiFXOGZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 10:06:25 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4A6D4EDEE;
-        Fri, 24 Jun 2022 07:06:13 -0700 (PDT)
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LTzQd0FxNzkWjZ;
-        Fri, 24 Jun 2022 22:04:57 +0800 (CST)
-Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 24 Jun 2022 22:06:11 +0800
-Received: from ubuntu1804.huawei.com (10.67.174.61) by
- kwepemm600003.china.huawei.com (7.193.23.202) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 24 Jun 2022 22:06:10 +0800
-From:   Yang Jihong <yangjihong1@huawei.com>
-To:     <peterz@infradead.org>, <mingo@redhat.com>, <acme@kernel.org>,
-        <mark.rutland@arm.com>, <alexander.shishkin@linux.intel.com>,
-        <jolsa@kernel.org>, <namhyung@kernel.org>, <ast@kernel.org>,
-        <daniel@iogearbox.net>, <andrii@kernel.org>, <kafai@fb.com>,
-        <songliubraving@fb.com>, <yhs@fb.com>, <john.fastabend@gmail.com>,
-        <kpsingh@kernel.org>, <irogers@google.com>,
-        <davemarchevsky@fb.com>, <adrian.hunter@intel.com>,
-        <alexandre.truong@arm.com>, <linux-kernel@vger.kernel.org>,
-        <linux-perf-users@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>
-CC:     <yangjihong1@huawei.com>
-Subject: [RFC v2 17/17] perf kwork: Add workqueue trace bpf support
-Date:   Fri, 24 Jun 2022 22:03:49 +0800
-Message-ID: <20220624140349.16964-18-yangjihong1@huawei.com>
-X-Mailer: git-send-email 2.30.GIT
-In-Reply-To: <20220624140349.16964-1-yangjihong1@huawei.com>
-References: <20220624140349.16964-1-yangjihong1@huawei.com>
+        with ESMTP id S231916AbiFXOl3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 10:41:29 -0400
+Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [217.70.183.196])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B241E64796;
+        Fri, 24 Jun 2022 07:41:27 -0700 (PDT)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 1A703E0002;
+        Fri, 24 Jun 2022 14:41:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1656081686;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=m9VUnPmey1EW3PlxwufpVuRcBXj7WqcXOePoquITgbY=;
+        b=f26t62yJa4myIehQUKbczIFXeSlDXNWR2044wOkaZ5x052xBkOsk5bVQOV32z8wUtW6w3b
+        qO9T5Cfr6Guk2Ys5SRmtx1ntQVZAxZ/TPYfiepiSTTADI0I1Y3nGWEamZ+EDUUDPu8vCOS
+        F3uWGrgY1rBHCcj0J0nW2+OuFoCvC34JasW+S8ItICVnOIRu2UiWeZq7fzKYGBITWc3uK1
+        uirbGQqG1XwyGQjs+XUbHsr8r9Pd516W0gu7XSibucitviboHbdWdYfsVjw3liYA3R8n/B
+        Paw56iw/XXt4STtKtjweblWhu2u86NJbwYMgA8e6GRlxtumqeYwu3+TMvjuPkQ==
+From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Jose Abreu <joabreu@synopsys.com>
+Cc:     =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?UTF-8?q?Miqu=C3=A8l=20Raynal?= <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH net-next v9 00/16] add support for Renesas RZ/N1 ethernet subsystem devices
+Date:   Fri, 24 Jun 2022 16:39:45 +0200
+Message-Id: <20220624144001.95518-1-clement.leger@bootlin.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.174.61]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemm600003.china.huawei.com (7.193.23.202)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Implements workqueue trace bpf function.
+The Renesas RZ/N1 SoCs features an ethernet subsystem which contains
+(most notably) a switch, two GMACs, and a MII converter [1]. This
+series adds support for the switch and the MII converter.
 
-Test cases:
+The MII converter present on this SoC has been represented as a PCS
+which sit between the MACs and the PHY. This PCS driver is probed from
+the device-tree since it requires to be configured. Indeed the MII
+converter also contains the registers that are handling the muxing of
+ports (Switch, MAC, HSR, RTOS, etc) internally to the SoC.
 
-  # perf kwork -k workqueue lat -b
-  Starting trace, Hit <Ctrl+C> to stop and report
-  ^C
-    Kwork Name                     | Cpu  | Avg delay     | Count     | Max delay     | Max delay start     | Max delay end       |
-   --------------------------------------------------------------------------------------------------------------------------------
-    (w)addrconf_verify_work        | 0002 |      5.856 ms |         1 |      5.856 ms |     111994.634313 s |     111994.640169 s |
-    (w)vmstat_update               | 0001 |      1.247 ms |         1 |      1.247 ms |     111996.462651 s |     111996.463899 s |
-    (w)neigh_periodic_work         | 0001 |      1.183 ms |         1 |      1.183 ms |     111996.462789 s |     111996.463973 s |
-    (w)neigh_managed_work          | 0001 |      0.989 ms |         2 |      1.635 ms |     111996.462820 s |     111996.464455 s |
-    (w)wb_workfn                   | 0000 |      0.667 ms |         1 |      0.667 ms |     111996.384273 s |     111996.384940 s |
-    (w)bpf_prog_free_deferred      | 0001 |      0.495 ms |         1 |      0.495 ms |     111986.314201 s |     111986.314696 s |
-    (w)mix_interrupt_randomness    | 0002 |      0.421 ms |         6 |      0.749 ms |     111995.927750 s |     111995.928499 s |
-    (w)vmstat_shepherd             | 0000 |      0.374 ms |         2 |      0.385 ms |     111991.265242 s |     111991.265627 s |
-    (w)e1000_watchdog              | 0002 |      0.356 ms |         5 |      0.390 ms |     111994.528380 s |     111994.528770 s |
-    (w)vmstat_update               | 0000 |      0.231 ms |         2 |      0.365 ms |     111996.384407 s |     111996.384772 s |
-    (w)flush_to_ldisc              | 0006 |      0.165 ms |         1 |      0.165 ms |     111995.930606 s |     111995.930771 s |
-    (w)flush_to_ldisc              | 0000 |      0.094 ms |         2 |      0.095 ms |     111996.460453 s |     111996.460548 s |
-   --------------------------------------------------------------------------------------------------------------------------------
+The switch driver is based on DSA and exposes 4 ports + 1 CPU
+management port. It include basic bridging support as well as FDB and
+statistics support.
 
-  # perf kwork -k workqueue rep -b
-  Starting trace, Hit <Ctrl+C> to stop and report
-  ^C
-    Kwork Name                     | Cpu  | Total Runtime | Count     | Max runtime   | Max runtime start   | Max runtime end     |
-   --------------------------------------------------------------------------------------------------------------------------------
-    (w)e1000_watchdog              | 0002 |      0.627 ms |         2 |      0.324 ms |     112002.720665 s |     112002.720989 s |
-    (w)flush_to_ldisc              | 0007 |      0.598 ms |         2 |      0.534 ms |     112000.875226 s |     112000.875761 s |
-    (w)wq_barrier_func             | 0007 |      0.492 ms |         1 |      0.492 ms |     112000.876981 s |     112000.877473 s |
-    (w)flush_to_ldisc              | 0007 |      0.281 ms |         1 |      0.281 ms |     112005.826882 s |     112005.827163 s |
-    (w)mix_interrupt_randomness    | 0002 |      0.229 ms |         3 |      0.102 ms |     112005.825671 s |     112005.825774 s |
-    (w)vmstat_shepherd             | 0000 |      0.202 ms |         1 |      0.202 ms |     112001.504511 s |     112001.504713 s |
-    (w)bpf_prog_free_deferred      | 0001 |      0.181 ms |         1 |      0.181 ms |     112000.883251 s |     112000.883432 s |
-    (w)wb_workfn                   | 0007 |      0.130 ms |         1 |      0.130 ms |     112001.505195 s |     112001.505325 s |
-    (w)vmstat_update               | 0000 |      0.053 ms |         1 |      0.053 ms |     112001.504763 s |     112001.504815 s |
-   --------------------------------------------------------------------------------------------------------------------------------
+Link: [1] https://www.renesas.com/us/en/document/mah/rzn1d-group-rzn1s-group-rzn1l-group-users-manual-r-engine-and-ethernet-peripherals
 
-Signed-off-by: Yang Jihong <yangjihong1@huawei.com>
----
- tools/perf/util/bpf_kwork.c                | 22 +++++-
- tools/perf/util/bpf_skel/kwork_trace.bpf.c | 84 ++++++++++++++++++++++
- 2 files changed, 105 insertions(+), 1 deletion(-)
+-----
+Changes in V9:
+- Cover letter:
+  - Remove comment about RZN1 patches that are now in the master branch.
+- Commits:
+  - Add Vladimir Oltean Reviewed-by
+- PCS:
+  - Add "Depends on OF" for PCS_RZN1_MIIC due to error found by intel
+    kernel test robot <lkp@intel.com>.
+  - Check return value of of_property_read_u32() for
+    "renesas,miic-switch-portin" property before setting conf.
+  - Return miic_parse_dt() return value in miic_probe() on error
+- Switch:
+  - Add "Depends on OF" for NET_DSA_RZN1_A5PSW due to errors found by
+    intel kernel test robot <lkp@intel.com>.
+- DT:
+  - Add spaces between switch port and '{'
 
-diff --git a/tools/perf/util/bpf_kwork.c b/tools/perf/util/bpf_kwork.c
-index 1d76ca499ff6..fe9b0bdbb947 100644
---- a/tools/perf/util/bpf_kwork.c
-+++ b/tools/perf/util/bpf_kwork.c
-@@ -120,11 +120,31 @@ static struct kwork_class_bpf kwork_softirq_bpf = {
- 	.get_work_name = get_work_name_from_map,
- };
- 
-+static void workqueue_load_prepare(struct perf_kwork *kwork)
-+{
-+	if (kwork->report == KWORK_REPORT_RUNTIME) {
-+		bpf_program__set_autoload(
-+			skel->progs.report_workqueue_execute_start, true);
-+		bpf_program__set_autoload(
-+			skel->progs.report_workqueue_execute_end, true);
-+	} else if (kwork->report == KWORK_REPORT_LATENCY) {
-+		bpf_program__set_autoload(
-+			skel->progs.latency_workqueue_activate_work, true);
-+		bpf_program__set_autoload(
-+			skel->progs.latency_workqueue_execute_start, true);
-+	}
-+}
-+
-+static struct kwork_class_bpf kwork_workqueue_bpf = {
-+	.load_prepare  = workqueue_load_prepare,
-+	.get_work_name = get_work_name_from_map,
-+};
-+
- static struct kwork_class_bpf *
- kwork_class_bpf_supported_list[KWORK_CLASS_MAX] = {
- 	[KWORK_CLASS_IRQ]       = &kwork_irq_bpf,
- 	[KWORK_CLASS_SOFTIRQ]   = &kwork_softirq_bpf,
--	[KWORK_CLASS_WORKQUEUE] = NULL,
-+	[KWORK_CLASS_WORKQUEUE] = &kwork_workqueue_bpf,
- };
- 
- static bool valid_kwork_class_type(enum kwork_class_type type)
-diff --git a/tools/perf/util/bpf_skel/kwork_trace.bpf.c b/tools/perf/util/bpf_skel/kwork_trace.bpf.c
-index a9afc64f2d67..238b03f9ea2b 100644
---- a/tools/perf/util/bpf_skel/kwork_trace.bpf.c
-+++ b/tools/perf/util/bpf_skel/kwork_trace.bpf.c
-@@ -167,6 +167,15 @@ static __always_inline void do_update_name(void *map,
- 		bpf_map_update_elem(map, key, name, BPF_ANY);
- }
- 
-+static __always_inline int update_timestart(void *map, struct work_key *key)
-+{
-+	if (!trace_event_match(key, NULL))
-+		return 0;
-+
-+	do_update_timestart(map, key);
-+	return 0;
-+}
-+
- static __always_inline int update_timestart_and_name(void *time_map,
- 						     void *names_map,
- 						     struct work_key *key,
-@@ -192,6 +201,21 @@ static __always_inline int update_timeend(void *report_map,
- 	return 0;
- }
- 
-+static __always_inline int update_timeend_and_name(void *report_map,
-+						   void *time_map,
-+						   void *names_map,
-+						   struct work_key *key,
-+						   char *name)
-+{
-+	if (!trace_event_match(key, name))
-+		return 0;
-+
-+	do_update_timeend(report_map, time_map, key);
-+	do_update_name(names_map, key, name);
-+
-+	return 0;
-+}
-+
- SEC("tracepoint/irq/irq_handler_entry")
- int report_irq_handler_entry(struct trace_event_raw_irq_handler_entry *ctx)
- {
-@@ -294,4 +318,64 @@ int latency_softirq_entry(struct trace_event_raw_softirq *ctx)
- 	return update_timeend(&perf_kwork_report, &perf_kwork_time, &key);
- }
- 
-+SEC("tracepoint/workqueue/workqueue_execute_start")
-+int report_workqueue_execute_start(struct trace_event_raw_workqueue_execute_start *ctx)
-+{
-+	struct work_key key = {
-+		.type = KWORK_CLASS_WORKQUEUE,
-+		.cpu  = bpf_get_smp_processor_id(),
-+		.id   = (__u64)ctx->work,
-+	};
-+
-+	return update_timestart(&perf_kwork_time, &key);
-+}
-+
-+SEC("tracepoint/workqueue/workqueue_execute_end")
-+int report_workqueue_execute_end(struct trace_event_raw_workqueue_execute_end *ctx)
-+{
-+	char name[MAX_KWORKNAME];
-+	struct work_key key = {
-+		.type = KWORK_CLASS_WORKQUEUE,
-+		.cpu  = bpf_get_smp_processor_id(),
-+		.id   = (__u64)ctx->work,
-+	};
-+	unsigned long long func_addr = (unsigned long long)ctx->function;
-+
-+	__builtin_memset(name, 0, sizeof(name));
-+	bpf_snprintf(name, sizeof(name), "%ps", &func_addr, sizeof(func_addr));
-+
-+	return update_timeend_and_name(&perf_kwork_report, &perf_kwork_time,
-+				       &perf_kwork_names, &key, name);
-+}
-+
-+SEC("tracepoint/workqueue/workqueue_activate_work")
-+int latency_workqueue_activate_work(struct trace_event_raw_workqueue_activate_work *ctx)
-+{
-+	struct work_key key = {
-+		.type = KWORK_CLASS_WORKQUEUE,
-+		.cpu  = bpf_get_smp_processor_id(),
-+		.id   = (__u64)ctx->work,
-+	};
-+
-+	return update_timestart(&perf_kwork_time, &key);
-+}
-+
-+SEC("tracepoint/workqueue/workqueue_execute_start")
-+int latency_workqueue_execute_start(struct trace_event_raw_workqueue_execute_start *ctx)
-+{
-+	char name[MAX_KWORKNAME];
-+	struct work_key key = {
-+		.type = KWORK_CLASS_WORKQUEUE,
-+		.cpu  = bpf_get_smp_processor_id(),
-+		.id   = (__u64)ctx->work,
-+	};
-+	unsigned long long func_addr = (unsigned long long)ctx->function;
-+
-+	__builtin_memset(name, 0, sizeof(name));
-+	bpf_snprintf(name, sizeof(name), "%ps", &func_addr, sizeof(func_addr));
-+
-+	return update_timeend_and_name(&perf_kwork_report, &perf_kwork_time,
-+				       &perf_kwork_names, &key, name);
-+}
-+
- char LICENSE[] SEC("license") = "Dual BSD/GPL";
+Changes in V8:
+- Commits:
+  - Reorder Acked-By and Rewieved-by chronologically and add Florian
+    Fainelli Reviewed-By.
+- PCS:
+  - Fix of node leaks
+- MAINTAINERS:
+  - Reorder L: before S:
+
+Resent V7 due to messed up cover letter.
+
+Changes in V7:
+- Commits:
+  - Add Rob Herring Acked-by for commit "dt-bindings: net: snps,dwmac: add
+    "power-domains" property"
+  - Rebased on net-next/master
+- MAINTAINERS:
+  - Add renesas-soc and netdev mailing lists
+
+Changes in V6:
+- Commits:
+  - Add commit which enable ethernet switch on RZ/N1D-DB board
+  - Add commit which adds "renesas,rzn1-gmac" compatible t
+    "snps,dwmac" bindings
+  - Fix mutex change being done in FDB feature commit
+  - Add commit which  adds"power-domains" to "snps,dwmac" bindings
+- Bindings and DT
+  - Add clock-names to MII converter and make it required
+  - Added Reviewed-by Geert on MII converter binding
+  - Added "power-domains" to switch bindings and to switch description
+  - Use new compatible "renesas,rzn1-gmac" for GMAC2
+  - Describe all switch ports in ethernet switch node
+  - Add phy-mode = "internal" to cpu port
+- PCS:
+  - use phy_interface_mode_is_rgmii() instead of open coded check
+  - Add device_link_add() call in miic_create()
+- Switch:
+  - Fix missing of_node_put(port) in case of loop break.
+  - Fix comment alignment for statistics defines
+  - Move lk_lock mutex locking outside of the fdb_dump loop
+
+Changes in V5:
+- MAINTAINERS:
+  - Add Florian Fainelli Reviewed-by
+- Switch:
+  - Switch Lookup table lock to a mutex instead of a spinlock
+  - Only handle "ethernet-ports" property for switch ports
+  - Handle RGMII_ID/RXID/TXID
+  - Add check for pdata to be non null in remove
+  - Add missing of_node_put() for mdio and ports
+  - Applied Florian Fainelli patch which makes stats description
+    shorter
+  - Add Kconfig dependency on ARCH_RZN1 to avoid Kconfig "unmet direct
+    dependency"
+- PCS:
+  - Handle RGMII_ID/RXID/TXID
+  - Use value instead of BIT() for speed/mode
+- Tag driver:
+  - Add Florian Fainelli Reviewed-by
+
+Changes in V4:
+- Add ETH_P_DSA_A5PSW in uapi/linux/if_ether.h
+- PCS:
+  - Use devm_pm_runtime_enable() instead of pm_runtime_enable()
+- Switch:
+  - Return -EOPNOTSUPP and set extack when multiple bridges are created
+  - Remove error messages in fdb_del if entry does not exists
+  - Add compatibility with "ethernet-ports" device-tree property
+- Tag driver:
+  - Use ETH_ZLEN as padding len
+
+Changes in V3:
+- PCS:
+  - Fixed reverse christmas tree declaration
+  - Remove spurious pr_err
+  - Use pm_runtime functions
+- Tag driver:
+  - Remove packed attribute from the tag struct
+- Switch:
+  - Fix missing spin_unlock in fdb_dump in case of error
+  - Add static qualifier to dsa_switch_ops
+  - Add missing documentation for hclk and clk members of struct a5psw
+  - Changed types of fdb_entry to u16 to discard GCC note on char
+    packed bitfields and add reserved field
+- Added Reviewed-by tag from Florian Fainelli
+
+Changes in V2:
+- PCS:
+  - Fix Reverse Christmas tree declaration
+  - Removed stray newline
+  - Add PCS remove function and disable clocks in them
+  - Fix miic_validate function to return correct values
+  - Split PCS CONV_MODE definition
+  - Reordered phylink_pcs_ops in definition order
+  - Remove interface setting in miic_link_up
+  - Remove useless checks for invalid interface/speed and error prints
+  - Replace phylink_pcs_to_miic_port macro by a static function
+  - Add comment in miic_probe about platform_set_drvdata
+- Bindings:
+ - Fix wrong path for mdio.yaml $ref
+ - Fix yamllint errors
+- Tag driver:
+  - Squashed commit that added tag value with tag driver
+  - Add BUILD_BUG_ON for tag size
+  - Split control_data2 in 2 16bits values
+- Switch:
+  - Use .phylink_get_caps instead of .phylink_validate and fill
+    supported_interface correctly
+  - Use fixed size (ETH_GSTRING_LEN) string for stats and use memcpy
+  - Remove stats access locking since RTNL lock is used in upper layers
+  - Check for non C45 addresses in mdio_read/write and return
+    -EOPNOTSUPP
+  - Add get_eth_mac_stats, get_eth_mac_ctrl_stat, get_rmon_stats
+  - Fix a few indentation problems
+  - Remove reset callback from MDIO bus operation
+  - Add phy/mac/rmon stats
+- Add get_rmon_stat to dsa_ops
+
+Clément Léger (16):
+  net: dsa: allow port_bridge_join() to override extack message
+  net: dsa: add support for ethtool get_rmon_stats()
+  net: dsa: add Renesas RZ/N1 switch tag driver
+  dt-bindings: net: pcs: add bindings for Renesas RZ/N1 MII converter
+  net: pcs: add Renesas MII converter driver
+  dt-bindings: net: dsa: add bindings for Renesas RZ/N1 Advanced 5 port
+    switch
+  net: dsa: rzn1-a5psw: add Renesas RZ/N1 advanced 5 port switch driver
+  net: dsa: rzn1-a5psw: add statistics support
+  net: dsa: rzn1-a5psw: add FDB support
+  dt-bindings: net: snps,dwmac: add "power-domains" property
+  dt-bindings: net: snps,dwmac: add "renesas,rzn1" compatible
+  ARM: dts: r9a06g032: describe MII converter
+  ARM: dts: r9a06g032: describe GMAC2
+  ARM: dts: r9a06g032: describe switch
+  ARM: dts: r9a06g032-rzn1d400-db: add switch description
+  MAINTAINERS: add Renesas RZ/N1 switch related driver entry
+
+ .../bindings/net/dsa/renesas,rzn1-a5psw.yaml  |  134 +++
+ .../bindings/net/pcs/renesas,rzn1-miic.yaml   |  171 +++
+ .../devicetree/bindings/net/snps,dwmac.yaml   |    5 +
+ MAINTAINERS                                   |   13 +
+ arch/arm/boot/dts/r9a06g032-rzn1d400-db.dts   |  117 ++
+ arch/arm/boot/dts/r9a06g032.dtsi              |  108 ++
+ drivers/net/dsa/Kconfig                       |    9 +
+ drivers/net/dsa/Makefile                      |    1 +
+ drivers/net/dsa/rzn1_a5psw.c                  | 1062 +++++++++++++++++
+ drivers/net/dsa/rzn1_a5psw.h                  |  259 ++++
+ drivers/net/pcs/Kconfig                       |    8 +
+ drivers/net/pcs/Makefile                      |    1 +
+ drivers/net/pcs/pcs-rzn1-miic.c               |  520 ++++++++
+ include/dt-bindings/net/pcs-rzn1-miic.h       |   33 +
+ include/linux/pcs-rzn1-miic.h                 |   18 +
+ include/net/dsa.h                             |    5 +
+ include/uapi/linux/if_ether.h                 |    1 +
+ net/dsa/Kconfig                               |    7 +
+ net/dsa/Makefile                              |    1 +
+ net/dsa/slave.c                               |   18 +-
+ net/dsa/tag_rzn1_a5psw.c                      |  113 ++
+ 21 files changed, 2602 insertions(+), 2 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml
+ create mode 100644 Documentation/devicetree/bindings/net/pcs/renesas,rzn1-miic.yaml
+ create mode 100644 drivers/net/dsa/rzn1_a5psw.c
+ create mode 100644 drivers/net/dsa/rzn1_a5psw.h
+ create mode 100644 drivers/net/pcs/pcs-rzn1-miic.c
+ create mode 100644 include/dt-bindings/net/pcs-rzn1-miic.h
+ create mode 100644 include/linux/pcs-rzn1-miic.h
+ create mode 100644 net/dsa/tag_rzn1_a5psw.c
+
 -- 
-2.30.GIT
+2.36.1
 
