@@ -2,144 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DD649559632
-	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 11:14:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A8F4559670
+	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 11:25:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231560AbiFXJMq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jun 2022 05:12:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56398 "EHLO
+        id S231722AbiFXJYI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jun 2022 05:24:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231181AbiFXJLt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 05:11:49 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0406356777
-        for <netdev@vger.kernel.org>; Fri, 24 Jun 2022 02:11:44 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1o4fLj-0000HT-Aa; Fri, 24 Jun 2022 11:11:35 +0200
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1o4fLh-0000Rq-Py; Fri, 24 Jun 2022 11:11:33 +0200
-Date:   Fri, 24 Jun 2022 11:11:33 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Lukas Wunner <lukas@wunner.de>, linux-kernel@vger.kernel.org,
-        kernel@pengutronix.de, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v1 1/1] net: phy: ax88772a: fix lost pause
- advertisement configuration
-Message-ID: <20220624091133.GA804@pengutronix.de>
-References: <20220624075558.3141464-1-o.rempel@pengutronix.de>
+        with ESMTP id S231642AbiFXJYH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 05:24:07 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8E3B527CF;
+        Fri, 24 Jun 2022 02:24:06 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id 73-20020a17090a0fcf00b001eaee69f600so2261387pjz.1;
+        Fri, 24 Jun 2022 02:24:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=p14Bfq9lY4E0mMUKXgjLwooAfP080X4T8JGy7RTxKZM=;
+        b=lHDIN4xQd45EmpZM7fq4IL9dsmpTHiI8Zc/DJNtgSUrfmKxhW0GgUEzB/hyZ3jBY5G
+         lXCLmxPj38MqXU2j3mWBFl7R4CfEfEb5/4GG0onF9h81SalHOJg4oYvZCNR5OxVAC46y
+         B1oCha0DaN1abqTpotJ9CgIk3KaydpAcZzeUKvTFpjDq3SlqQVjnsLXlNCCdHL5GtXW1
+         ORwNLUEJ5lc+UqvP6Riemu5U3stAEDbxAEE2iU5mt331AOO0xTFeOjUSAj8jdbwV0hiV
+         0lFiuhdxdU720+fwoLj+AgD3Xc9g/2DIWv+YfndlvPj0pNNjWK4XNau6xb+PpZw30Fd9
+         TGLQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=p14Bfq9lY4E0mMUKXgjLwooAfP080X4T8JGy7RTxKZM=;
+        b=Gp1xSQ2yfrS2EMlA/Dz1G/yjDkTCApzssBKDAAaI6qui81xTdNpMylRbF7pjZom/KR
+         FxEiexXqogpLvePwqz1RNg/Tidd+kC9TDQHBQlBSbyMDRudlAvZH8Y4wgxENpur1P+I0
+         iXO/MgzjmAbxPAjrAXyz6144mxGekUJCKW0/Ofv2tgZ9hRw5SFpNDBCxufxP6iIrX+Lf
+         zW+rl1YmrOFcmWSjOLeey1+RPFj1KcTdf7pXXnyF4s4k4RpBmuEctuUuTPaBQ06AHnVV
+         VPR93avESdJ4KRmtXrQULxNQCEDYmkzvelrjwyqCJ70H3lhfkBUdh1d+zfPN3SWGsUk2
+         oNtA==
+X-Gm-Message-State: AJIora+dziA+TiKWMboLValzCESTb332HBX/+SUOrN7OSyWbMeizt+7i
+        v1F/gTBD5baIUDxE3ZPUpCNkLOENzq4Xxl+GlHw=
+X-Google-Smtp-Source: AGRyM1s94mr/vCjmKyIpDLw/LlzwwUyBZvmU+bavLdyTktJk7cdNYN4G0wPiDr6/y8zQCBcfaNl5lw==
+X-Received: by 2002:a17:902:b597:b0:168:d8ce:4a63 with SMTP id a23-20020a170902b59700b00168d8ce4a63mr43813256pls.57.1656062646212;
+        Fri, 24 Jun 2022 02:24:06 -0700 (PDT)
+Received: from [192.168.178.136] (f215227.upc-f.chello.nl. [80.56.215.227])
+        by smtp.gmail.com with ESMTPSA id w4-20020a17090a780400b001ec732eb801sm3492056pjk.9.2022.06.24.02.24.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 24 Jun 2022 02:24:05 -0700 (PDT)
+Message-ID: <9f623bb6-8957-0a9a-3eb7-9a209965ea6e@gmail.com>
+Date:   Fri, 24 Jun 2022 11:24:01 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220624075558.3141464-1-o.rempel@pengutronix.de>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2] brcmfmac: Remove #ifdef guards for PM related
+ functions
+Content-Language: en-US
+To:     Paul Cercueil <paul@crapouillou.net>,
+        Franky Lin <franky.lin@broadcom.com>
+Cc:     linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220623124221.18238-1-paul@crapouillou.net>
+From:   Arend Van Spriel <aspriel@gmail.com>
+In-Reply-To: <20220623124221.18238-1-paul@crapouillou.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I forgot to add PHY maintainers. CCing Andrew and Heiner.
-
-On Fri, Jun 24, 2022 at 09:55:58AM +0200, Oleksij Rempel wrote:
-> In case of asix_ax88772a_link_change_notify() workaround, we run soft
-> reset which will automatically clear MII_ADVERTISE configuration. The
-> PHYlib framework do not know about changed configuration state of the
-> PHY, so we need to save and restore all needed configuration registers.
+On 6/23/2022 2:42 PM, Paul Cercueil wrote:
+> Use the new DEFINE_SIMPLE_DEV_PM_OPS() and pm_sleep_ptr() macros to
+> handle the .suspend/.resume callbacks.
 > 
-> Fixes: dde258469257 ("net: usb/phy: asix: add support for ax88772A/C PHYs")
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> These macros allow the suspend and resume functions to be automatically
+> dropped by the compiler when CONFIG_SUSPEND is disabled, without having
+> to use #ifdef guards.
+> 
+> Some other functions not directly called by the .suspend/.resume
+> callbacks, but still related to PM were also taken outside #ifdef
+> guards.
+> 
+> The advantage is then that these functions are now always compiled
+> independently of any Kconfig option, and thanks to that bugs and
+> regressions are easier to catch.
+
+Reviewed-by: Arend van Spriel <aspriel@gmail.com>
+> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
 > ---
->  drivers/net/phy/ax88796b.c | 37 ++++++++++++++++++++++++++++++++++++-
->  1 file changed, 36 insertions(+), 1 deletion(-)
 > 
-> diff --git a/drivers/net/phy/ax88796b.c b/drivers/net/phy/ax88796b.c
-> index 457896337505..6971d0196917 100644
-> --- a/drivers/net/phy/ax88796b.c
-> +++ b/drivers/net/phy/ax88796b.c
-> @@ -18,6 +18,11 @@ MODULE_DESCRIPTION("Asix PHY driver");
->  MODULE_AUTHOR("Michael Schmitz <schmitzmic@gmail.com>");
->  MODULE_LICENSE("GPL");
->  
-> +struct asix_context {
-> +	u16 bmcr;
-> +	u16 advertise;
-> +};
-> +
->  /**
->   * asix_soft_reset - software reset the PHY via BMCR_RESET bit
->   * @phydev: target phy_device struct
-> @@ -83,13 +88,43 @@ static int asix_ax88772a_read_status(struct phy_device *phydev)
->  	return 0;
->  }
->  
-> +/* save relevant PHY registers to private copy */
-> +static void asix_context_save(struct phy_device *phydev,
-> +			      struct asix_context *context)
-> +{
-> +	context->bmcr = phy_read(phydev, MII_BMCR);
-> +	context->advertise = phy_read(phydev, MII_ADVERTISE);
-> +}
-> +
-> +/* restore relevant PHY registers from private copy */
-> +static void asix_context_restore(struct phy_device *phydev,
-> +				 const struct asix_context *context)
-> +{
-> +	u16 bmcr = context->bmcr;
-> +
-> +	phy_write(phydev, MII_ADVERTISE, context->advertise);
-> +
-> +	/* after all settings are restored, restart autoneg */
-> +	if (phydev->autoneg == AUTONEG_ENABLE)
-> +		bmcr |= BMCR_ANRESTART;
-> +
-> +	phy_write(phydev, MII_BMCR, bmcr);
-> +}
-> +
->  static void asix_ax88772a_link_change_notify(struct phy_device *phydev)
->  {
->  	/* Reset PHY, otherwise MII_LPA will provide outdated information.
->  	 * This issue is reproducible only with some link partner PHYs
->  	 */
-> -	if (phydev->state == PHY_NOLINK && phydev->drv->soft_reset)
-> +	if (phydev->state == PHY_NOLINK && phydev->drv->soft_reset) {
-> +		struct asix_context context;
-> +
-> +		asix_context_save(phydev, &context);
-> +
->  		phydev->drv->soft_reset(phydev);
-> +
-> +		asix_context_restore(phydev, &context);
-> +	}
->  }
->  
->  static struct phy_driver asix_driver[] = {
-> -- 
-> 2.30.2
+> Notes:
+>      v2:
+>      - Move checks for IS_ENABLED(CONFIG_PM_SLEEP) inside functions to keep
+>        the calling functions intact.
+>      - Reword the commit message to explain why this patch is useful.
 > 
+>   .../broadcom/brcm80211/brcmfmac/bcmsdh.c      | 38 +++++++------------
+>   .../broadcom/brcm80211/brcmfmac/sdio.c        |  5 +--
+>   .../broadcom/brcm80211/brcmfmac/sdio.h        | 16 --------
+>   3 files changed, 16 insertions(+), 43 deletions(-)
 > 
-> 
+> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
+> index 9c598ea97499..11ad878a906b 100644
+> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
+> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
+> @@ -784,9 +784,11 @@ void brcmf_sdiod_sgtable_alloc(struct brcmf_sdio_dev *sdiodev)
+>   	sdiodev->txglomsz = sdiodev->settings->bus.sdio.txglomsz;
+>   }
+>   
+> -#ifdef CONFIG_PM_SLEEP
+>   static int brcmf_sdiod_freezer_attach(struct brcmf_sdio_dev *sdiodev)
+>   {
+> +	if (!IS_ENABLED(CONFIG_PM_SLEEP))
+> +		return 0;
+> +
+>   	sdiodev->freezer = kzalloc(sizeof(*sdiodev->freezer), GFP_KERNEL);
+>   	if (!sdiodev->freezer)
+>   		return -ENOMEM;
+> @@ -799,7 +801,7 @@ static int brcmf_sdiod_freezer_attach(struct brcmf_sdio_dev *sdiodev)
+>   
+>   static void brcmf_sdiod_freezer_detach(struct brcmf_sdio_dev *sdiodev)
+>   {
+> -	if (sdiodev->freezer) {
+> +	if (IS_ENABLED(CONFIG_PM_SLEEP) && sdiodev->freezer) {
 
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+This change is not necessary. sdiodev->freezer will be NULL when 
+CONFIG_PM_SLEEP is not enabled.
+
+>   		WARN_ON(atomic_read(&sdiodev->freezer->freezing));
+>   		kfree(sdiodev->freezer);
+>   	}
