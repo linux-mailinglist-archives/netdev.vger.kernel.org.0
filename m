@@ -2,112 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 04E7F559BFF
-	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 16:44:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 75F17559CD0
+	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 17:00:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233486AbiFXOnl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jun 2022 10:43:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43278 "EHLO
+        id S233219AbiFXOt0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jun 2022 10:49:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233289AbiFXOm3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 10:42:29 -0400
-Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::224])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BC0C6DB37;
-        Fri, 24 Jun 2022 07:42:08 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 75869E000E;
-        Fri, 24 Jun 2022 14:42:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1656081727;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=HwRXAVM+bLFoGniqDG1yhd1DR+kIDYmn2tlOrSDOfaQ=;
-        b=UW/kVaiYEmPnYQO7vh95aNKCtlhBzFvaXS8Sv6HA0n2sUg+pN9KQ8/Hmt4CwpIG/Vo4idz
-        sY+Us0GGDX1rXhHg+MTZn0RlDAR5sqaAqgqY/lH2U6bvaVmWZJcgp9W1pT5bLlCGzJsqjl
-        jcJDJ048FEFxvVV6vmd/yGBO0k39850hKvaRtk7DqEA4jp4HVdbTifT9xrgjSU6t+2/7R3
-        lM5HhOE40+UHRq8cLANC8XfYZ1kXv+CFuiPpYQ4ECBJxNO/pV9bC5CBi+2ZAutZMjaCeK6
-        QtC2hB5v2gxR3ET5PDxUcYTz9E/THtRmalvCCfNQk5lJOv+TLNbHQq9reyk0Ew==
-From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S233481AbiFXOr3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 10:47:29 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 829957E029
+        for <netdev@vger.kernel.org>; Fri, 24 Jun 2022 07:44:09 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id u19-20020a25ab13000000b00668d212a064so2413281ybi.5
+        for <netdev@vger.kernel.org>; Fri, 24 Jun 2022 07:44:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=4626xia5d5LkF7af7H2/cvkuUYPcK6Kx8h2FacVJFEk=;
+        b=th1qe6nCen6zmaCB190GBZfnRnMr8qckPf7xXdSq0EVD8gYjLt6WzhfTitRavGwMgd
+         vXilcNgCDBJRRUwP86/NE2cFk2yt4LhrpvKbk+OSVaOhZ9QX7RoXNrnjse0RW8wrov0A
+         e/AjVrKc+b2APqiS3MmTV8TXpGYJnfibLdZbRt8tPJAQ4VejcBVaHjm3xiHfRthqt3hO
+         14SO9lJx7tqftr6orGS/SfyVF/xr5P71GTXTgmaE3fA6eyIJ4dLNQMv3/dfvge1guWtE
+         73rzZBtWVKfBk7sNXfxQEVTU5QpWxtJpBQ75xhUnQaYU9jnnZSOcZn/PcgtTEVHgJAUL
+         xvTQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=4626xia5d5LkF7af7H2/cvkuUYPcK6Kx8h2FacVJFEk=;
+        b=fRdjgogA25ovAYexI3a7iPlwV+LwX7V2XZLxfyRF2OIWl0pPm+zPrHK2veFZpr+/sq
+         LGXD32+dqAiG+VwXLn4hmIgfpM0VlrlwWk1DCBtrUrXV8b6HCl0KFNuxYanTe2TUZd+6
+         VQNNdXKi6Cu/umGydEN5B8vVIGdiWdphPb7WH+V4mG37J5Klqtm37KyGaMRiJuZSSWIM
+         6lKmup/UIkEhx+XfAfiClPWSbmw82sqOK1+EHYbQBbhAmunPwAstwLlBMqbUppB3gojY
+         q9zFglRB+P5VzR3ESX8lhwdpFw4UyfP8HdXa6n6gjqW24zvhOMve11R0GsAQdtas0thZ
+         h+9g==
+X-Gm-Message-State: AJIora8H4vQYUeB+ZVXExOoGcyoskXltsDzCbC+h0oNlo7AbPZp1OqFi
+        0/5gD9l2kfztYbV52IMOEvWSj2el/0U4HA==
+X-Google-Smtp-Source: AGRyM1u8PEp1pM9/KxJIfa3nFsPEcGkFKuipmMhOWQIlB56Ud7icllIM9M0fY7r3dfrgjjZsEQIIA/WAW9Z2GQ==
+X-Received: from shakeelb.c.googlers.com ([fda3:e722:ac3:cc00:20:ed76:c0a8:28b])
+ (user=shakeelb job=sendgmr) by 2002:a25:5bc3:0:b0:669:b722:beb8 with SMTP id
+ p186-20020a255bc3000000b00669b722beb8mr5658217ybb.447.1656081841097; Fri, 24
+ Jun 2022 07:44:01 -0700 (PDT)
+Date:   Fri, 24 Jun 2022 14:43:58 +0000
+In-Reply-To: <20220624070656.GE79500@shbuild999.sh.intel.com>
+Message-Id: <20220624144358.lqt2ffjdry6p5u4d@google.com>
+Mime-Version: 1.0
+References: <20220619150456.GB34471@xsang-OptiPlex-9020> <20220622172857.37db0d29@kernel.org>
+ <CADvbK_csvmkKe46hT9792=+Qcjor2EvkkAnr--CJK3NGX-N9BQ@mail.gmail.com>
+ <CADvbK_eQUmb942vC+bG+NRzM1ki1LiCydEDR1AezZ35Jvsdfnw@mail.gmail.com>
+ <20220623185730.25b88096@kernel.org> <CANn89iLidqjiiV8vxr7KnUg0JvfoS9+TRGg=8ANZ8NBRjeQxsQ@mail.gmail.com>
+ <CALvZod7kULCvHAuk53FE-XBOi4-BbLdY3HCg6jfCZTJDxYsZow@mail.gmail.com> <20220624070656.GE79500@shbuild999.sh.intel.com>
+Subject: Re: [net] 4890b686f4: netperf.Throughput_Mbps -69.4% regression
+From:   Shakeel Butt <shakeelb@google.com>
+To:     Feng Tang <feng.tang@intel.com>
+Cc:     Eric Dumazet <edumazet@google.com>, Linux MM <linux-mm@kvack.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Michal Hocko <mhocko@kernel.org>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Muchun Song <songmuchun@bytedance.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Jose Abreu <joabreu@synopsys.com>
-Cc:     =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?UTF-8?q?Miqu=C3=A8l=20Raynal?= <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next v9 16/16] MAINTAINERS: add Renesas RZ/N1 switch related driver entry
-Date:   Fri, 24 Jun 2022 16:40:01 +0200
-Message-Id: <20220624144001.95518-17-clement.leger@bootlin.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220624144001.95518-1-clement.leger@bootlin.com>
-References: <20220624144001.95518-1-clement.leger@bootlin.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+        Xin Long <lucien.xin@gmail.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        kernel test robot <oliver.sang@intel.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        network dev <netdev@vger.kernel.org>,
+        linux-s390@vger.kernel.org, MPTCP Upstream <mptcp@lists.linux.dev>,
+        "linux-sctp @ vger . kernel . org" <linux-sctp@vger.kernel.org>,
+        lkp@lists.01.org, kbuild test robot <lkp@intel.com>,
+        Huang Ying <ying.huang@intel.com>,
+        Xing Zhengjun <zhengjun.xing@linux.intel.com>,
+        Yin Fengwei <fengwei.yin@intel.com>, Ying Xu <yinxu@redhat.com>
+Content-Type: text/plain; charset="us-ascii"
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After contributing the drivers, volunteer for maintenance and add
-myself as the maintainer for Renesas RZ/N1 switch related drivers.
+On Fri, Jun 24, 2022 at 03:06:56PM +0800, Feng Tang wrote:
+> On Thu, Jun 23, 2022 at 11:34:15PM -0700, Shakeel Butt wrote:
+[...]
+> > 
+> > Feng, can you please explain the memcg setup on these test machines
+> > and if the tests are run in root or non-root memcg?
+> 
+> I don't know the exact setup, Philip/Oliver from 0Day can correct me.
+> 
+> I logged into a test box which runs netperf test, and it seems to be
+> cgoup v1 and non-root memcg. The netperf tasks all sit in dir:
+> '/sys/fs/cgroup/memory/system.slice/lkp-bootstrap.service'
+> 
 
-Signed-off-by: Clément Léger <clement.leger@bootlin.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
----
- MAINTAINERS | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+Thanks Feng. Can you check the value of memory.kmem.tcp.max_usage_in_bytes
+in /sys/fs/cgroup/memory/system.slice/lkp-bootstrap.service after making
+sure that the netperf test has already run?
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index e2c3548ec192..4163c072842e 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -17056,6 +17056,19 @@ S:	Supported
- F:	Documentation/devicetree/bindings/iio/adc/renesas,rzg2l-adc.yaml
- F:	drivers/iio/adc/rzg2l_adc.c
- 
-+RENESAS RZ/N1 A5PSW SWITCH DRIVER
-+M:	Clément Léger <clement.leger@bootlin.com>
-+L:	linux-renesas-soc@vger.kernel.org
-+L:	netdev@vger.kernel.org
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml
-+F:	Documentation/devicetree/bindings/net/pcs/renesas,rzn1-miic.yaml
-+F:	drivers/net/dsa/rzn1_a5psw*
-+F:	drivers/net/pcs/pcs-rzn1-miic.c
-+F:	include/dt-bindings/net/pcs-rzn1-miic.h
-+F:	include/linux/pcs-rzn1-miic.h
-+F:	net/dsa/tag_rzn1_a5psw.c
-+
- RENESAS RZ/N1 RTC CONTROLLER DRIVER
- M:	Miquel Raynal <miquel.raynal@bootlin.com>
- L:	linux-rtc@vger.kernel.org
--- 
-2.36.1
+If this is non-zero then network memory accounting is enabled and the
+slowdown is expected.
 
+> And the rootfs is a debian based rootfs
+> 
+> Thanks,
+> Feng
+> 
+> 
+> > thanks,
+> > Shakeel
