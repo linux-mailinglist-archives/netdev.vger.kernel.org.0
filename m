@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D720F558DD8
-	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 04:57:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 81363558DCB
+	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 04:57:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231289AbiFXC4s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jun 2022 22:56:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43710 "EHLO
+        id S231367AbiFXC5A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jun 2022 22:57:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230465AbiFXC4p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 22:56:45 -0400
-Received: from out30-45.freemail.mail.aliyun.com (out30-45.freemail.mail.aliyun.com [115.124.30.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC8F95DF03;
-        Thu, 23 Jun 2022 19:56:43 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R821e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046051;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=37;SR=0;TI=SMTPD_---0VHEuVuB_1656039397;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VHEuVuB_1656039397)
+        with ESMTP id S230465AbiFXC45 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 22:56:57 -0400
+Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE57460E2E;
+        Thu, 23 Jun 2022 19:56:46 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R601e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046050;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=37;SR=0;TI=SMTPD_---0VHF1UA6_1656039399;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VHF1UA6_1656039399)
           by smtp.aliyun-inc.com;
-          Fri, 24 Jun 2022 10:56:38 +0800
+          Fri, 24 Jun 2022 10:56:40 +0800
 From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 To:     virtualization@lists.linux-foundation.org
 Cc:     Richard Weinberger <richard@nod.at>,
@@ -53,9 +53,9 @@ Cc:     Richard Weinberger <richard@nod.at>,
         linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
         kvm@vger.kernel.org, bpf@vger.kernel.org,
         kangjie.xu@linux.alibaba.com
-Subject: [PATCH v10 07/41] virtio_ring: split vring_virtqueue
-Date:   Fri, 24 Jun 2022 10:55:47 +0800
-Message-Id: <20220624025621.128843-8-xuanzhuo@linux.alibaba.com>
+Subject: [PATCH v10 08/41] virtio_ring: introduce virtqueue_init()
+Date:   Fri, 24 Jun 2022 10:55:48 +0800
+Message-Id: <20220624025621.128843-9-xuanzhuo@linux.alibaba.com>
 X-Mailer: git-send-email 2.31.0
 In-Reply-To: <20220624025621.128843-1-xuanzhuo@linux.alibaba.com>
 References: <20220624025621.128843-1-xuanzhuo@linux.alibaba.com>
@@ -72,159 +72,134 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Separate the two inline structures(split and packed) from the structure
-vring_virtqueue.
+Separate the logic of virtqueue initialization. This logic is irrelevant
+to ring layout.
 
-In this way, we can use these two structures later to pass parameters
-and retain temporary variables.
+This logic can be called independently when implementing resize/reset
+later.
 
 Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 ---
- drivers/virtio/virtio_ring.c | 122 ++++++++++++++++++-----------------
- 1 file changed, 63 insertions(+), 59 deletions(-)
+ drivers/virtio/virtio_ring.c | 59 +++++++++++++++++-------------------
+ 1 file changed, 28 insertions(+), 31 deletions(-)
 
 diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-index 9338c01df1bf..973892606144 100644
+index 973892606144..7bc1eecff7fe 100644
 --- a/drivers/virtio/virtio_ring.c
 +++ b/drivers/virtio/virtio_ring.c
-@@ -85,6 +85,67 @@ struct vring_desc_extra {
- 	u16 next;			/* The next desc state in a list. */
- };
+@@ -366,6 +366,31 @@ static int vring_mapping_error(const struct vring_virtqueue *vq,
+ 	return dma_mapping_error(vring_dma_dev(vq), addr);
+ }
  
-+struct vring_virtqueue_split {
-+	/* Actual memory layout for this queue. */
-+	struct vring vring;
++static void virtqueue_init(struct vring_virtqueue *vq, u32 num)
++{
++	struct virtio_device *vdev;
 +
-+	/* Last written value to avail->flags */
-+	u16 avail_flags_shadow;
++	vdev = vq->vq.vdev;
 +
-+	/*
-+	 * Last written value to avail->idx in
-+	 * guest byte order.
-+	 */
-+	u16 avail_idx_shadow;
++	vq->vq.num_free = num;
++	vq->last_used_idx = 0;
++	vq->event_triggered = false;
++	vq->num_added = 0;
++	vq->use_dma_api = vring_use_dma_api(vdev);
++#ifdef DEBUG
++	vq->in_use = false;
++	vq->last_add_time_valid = false;
++#endif
 +
-+	/* Per-descriptor state. */
-+	struct vring_desc_state_split *desc_state;
-+	struct vring_desc_extra *desc_extra;
++	vq->event = virtio_has_feature(vdev, VIRTIO_RING_F_EVENT_IDX);
 +
-+	/* DMA address and size information */
-+	dma_addr_t queue_dma_addr;
-+	size_t queue_size_in_bytes;
-+};
++	if (virtio_has_feature(vdev, VIRTIO_F_ORDER_PLATFORM))
++		vq->weak_barriers = false;
 +
-+struct vring_virtqueue_packed {
-+	/* Actual memory layout for this queue. */
-+	struct {
-+		unsigned int num;
-+		struct vring_packed_desc *desc;
-+		struct vring_packed_desc_event *driver;
-+		struct vring_packed_desc_event *device;
-+	} vring;
++	/* Put everything in free lists. */
++	vq->free_head = 0;
++}
 +
-+	/* Driver ring wrap counter. */
-+	bool avail_wrap_counter;
-+
-+	/* Device ring wrap counter. */
-+	bool used_wrap_counter;
-+
-+	/* Avail used flags. */
-+	u16 avail_used_flags;
-+
-+	/* Index of the next avail descriptor. */
-+	u16 next_avail_idx;
-+
-+	/*
-+	 * Last written value to driver->flags in
-+	 * guest byte order.
-+	 */
-+	u16 event_flags_shadow;
-+
-+	/* Per-descriptor state. */
-+	struct vring_desc_state_packed *desc_state;
-+	struct vring_desc_extra *desc_extra;
-+
-+	/* DMA address and size information */
-+	dma_addr_t ring_dma_addr;
-+	dma_addr_t driver_event_dma_addr;
-+	dma_addr_t device_event_dma_addr;
-+	size_t ring_size_in_bytes;
-+	size_t event_size_in_bytes;
-+};
-+
- struct vring_virtqueue {
- 	struct virtqueue vq;
  
-@@ -119,67 +180,10 @@ struct vring_virtqueue {
+ /*
+  * Split ring specific functions - *_split().
+@@ -1686,28 +1711,15 @@ static struct virtqueue *vring_create_virtqueue_packed(
+ 	vq->vq.callback = callback;
+ 	vq->vq.vdev = vdev;
+ 	vq->vq.name = name;
+-	vq->vq.num_free = num;
+ 	vq->vq.index = index;
+ 	vq->we_own_ring = true;
+ 	vq->notify = notify;
+ 	vq->weak_barriers = weak_barriers;
+ 	vq->broken = true;
+-	vq->last_used_idx = 0;
+-	vq->event_triggered = false;
+-	vq->num_added = 0;
+ 	vq->packed_ring = true;
+-	vq->use_dma_api = vring_use_dma_api(vdev);
+-#ifdef DEBUG
+-	vq->in_use = false;
+-	vq->last_add_time_valid = false;
+-#endif
  
- 	union {
- 		/* Available for split ring */
--		struct {
--			/* Actual memory layout for this queue. */
--			struct vring vring;
+ 	vq->indirect = virtio_has_feature(vdev, VIRTIO_RING_F_INDIRECT_DESC) &&
+ 		!context;
+-	vq->event = virtio_has_feature(vdev, VIRTIO_RING_F_EVENT_IDX);
 -
--			/* Last written value to avail->flags */
--			u16 avail_flags_shadow;
--
--			/*
--			 * Last written value to avail->idx in
--			 * guest byte order.
--			 */
--			u16 avail_idx_shadow;
--
--			/* Per-descriptor state. */
--			struct vring_desc_state_split *desc_state;
--			struct vring_desc_extra *desc_extra;
--
--			/* DMA address and size information */
--			dma_addr_t queue_dma_addr;
--			size_t queue_size_in_bytes;
--		} split;
-+		struct vring_virtqueue_split split;
+-	if (virtio_has_feature(vdev, VIRTIO_F_ORDER_PLATFORM))
+-		vq->weak_barriers = false;
  
- 		/* Available for packed ring */
--		struct {
--			/* Actual memory layout for this queue. */
--			struct {
--				unsigned int num;
--				struct vring_packed_desc *desc;
--				struct vring_packed_desc_event *driver;
--				struct vring_packed_desc_event *device;
--			} vring;
--
--			/* Driver ring wrap counter. */
--			bool avail_wrap_counter;
--
--			/* Device ring wrap counter. */
--			bool used_wrap_counter;
--
--			/* Avail used flags. */
--			u16 avail_used_flags;
--
--			/* Index of the next avail descriptor. */
--			u16 next_avail_idx;
--
--			/*
--			 * Last written value to driver->flags in
--			 * guest byte order.
--			 */
--			u16 event_flags_shadow;
--
--			/* Per-descriptor state. */
--			struct vring_desc_state_packed *desc_state;
--			struct vring_desc_extra *desc_extra;
--
--			/* DMA address and size information */
--			dma_addr_t ring_dma_addr;
--			dma_addr_t driver_event_dma_addr;
--			dma_addr_t device_event_dma_addr;
--			size_t ring_size_in_bytes;
--			size_t event_size_in_bytes;
--		} packed;
-+		struct vring_virtqueue_packed packed;
- 	};
+ 	vq->packed.ring_dma_addr = ring_dma_addr;
+ 	vq->packed.driver_event_dma_addr = driver_event_dma_addr;
+@@ -1736,8 +1748,7 @@ static struct virtqueue *vring_create_virtqueue_packed(
+ 	memset(vq->packed.desc_state, 0,
+ 		num * sizeof(struct vring_desc_state_packed));
  
- 	/* How to notify other side. FIXME: commonalize hcalls! */
+-	/* Put everything in free lists. */
+-	vq->free_head = 0;
++	virtqueue_init(vq, num);
+ 
+ 	vq->packed.desc_extra = vring_alloc_desc_extra(num);
+ 	if (!vq->packed.desc_extra)
+@@ -2178,27 +2189,13 @@ struct virtqueue *__vring_new_virtqueue(unsigned int index,
+ 	vq->vq.callback = callback;
+ 	vq->vq.vdev = vdev;
+ 	vq->vq.name = name;
+-	vq->vq.num_free = vring.num;
+ 	vq->vq.index = index;
+ 	vq->we_own_ring = false;
+ 	vq->notify = notify;
+ 	vq->weak_barriers = weak_barriers;
+ 	vq->broken = true;
+-	vq->last_used_idx = 0;
+-	vq->event_triggered = false;
+-	vq->num_added = 0;
+-	vq->use_dma_api = vring_use_dma_api(vdev);
+-#ifdef DEBUG
+-	vq->in_use = false;
+-	vq->last_add_time_valid = false;
+-#endif
+-
+ 	vq->indirect = virtio_has_feature(vdev, VIRTIO_RING_F_INDIRECT_DESC) &&
+ 		!context;
+-	vq->event = virtio_has_feature(vdev, VIRTIO_RING_F_EVENT_IDX);
+-
+-	if (virtio_has_feature(vdev, VIRTIO_F_ORDER_PLATFORM))
+-		vq->weak_barriers = false;
+ 
+ 	vq->split.queue_dma_addr = 0;
+ 	vq->split.queue_size_in_bytes = 0;
+@@ -2224,11 +2221,11 @@ struct virtqueue *__vring_new_virtqueue(unsigned int index,
+ 	if (!vq->split.desc_extra)
+ 		goto err_extra;
+ 
+-	/* Put everything in free lists. */
+-	vq->free_head = 0;
+ 	memset(vq->split.desc_state, 0, vring.num *
+ 			sizeof(struct vring_desc_state_split));
+ 
++	virtqueue_init(vq, vq->split.vring.num);
++
+ 	spin_lock(&vdev->vqs_list_lock);
+ 	list_add_tail(&vq->vq.list, &vdev->vqs);
+ 	spin_unlock(&vdev->vqs_list_lock);
 -- 
 2.31.0
 
