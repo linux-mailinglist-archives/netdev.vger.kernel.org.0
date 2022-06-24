@@ -2,91 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AC9B559EFD
-	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 19:06:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47119559F5C
+	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 19:26:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231477AbiFXRFm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jun 2022 13:05:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58194 "EHLO
+        id S232013AbiFXRMq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jun 2022 13:12:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229552AbiFXRFl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 13:05:41 -0400
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DDDB4A3CD
-        for <netdev@vger.kernel.org>; Fri, 24 Jun 2022 10:05:40 -0700 (PDT)
-Received: by mail-pg1-x536.google.com with SMTP id 9so2956030pgd.7
-        for <netdev@vger.kernel.org>; Fri, 24 Jun 2022 10:05:40 -0700 (PDT)
+        with ESMTP id S232014AbiFXRMq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 13:12:46 -0400
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F13CA522E7
+        for <netdev@vger.kernel.org>; Fri, 24 Jun 2022 10:12:43 -0700 (PDT)
+Received: by mail-wr1-x429.google.com with SMTP id o8so3983273wro.3
+        for <netdev@vger.kernel.org>; Fri, 24 Jun 2022 10:12:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=JPkO5BsRbPVYFHaf9gF2Y632fd3taUEW4OyUqGh3Ino=;
-        b=IxfKxcMsSayPozj/fgyIo9ZhKhpi/U1N+Sgv/Id3Kt7C/wpR64vzUi9NoifeeKbaxP
-         1e1J+SVdoNnoLpodQ4FonnV0ty08cCpqrSXzeZ/UDfpQbtyWx/QL2A1sHxQyH3c4qkdB
-         niuGuvjMrTWpk4XMqB8tJPJNjTGWHU/TRD46v7159wx+OAGx2dzwMu2X8lv+uZ0Ou6E1
-         tPjB7SfBZerU+zNuMroHN1bisZjks6SNR+KIQBf4U42+K0Tl6D64xeKNk18JINcLTLZj
-         eTHB74xDaU2NaHAixDtHb4kPGNu3nLOmMa3ukfRXVMb0od10QzzPxS2Cej6ShsladLLE
-         CByA==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=S1enbfspzMYdsg8aLcCCE6tVeP2Nz6635Lj1zrxNDvo=;
+        b=fTK+IFWkefY1750lr/cELH860S2T1skNE/I48GKN1yHBXl5MnjftqDuw4DBNfrRL4e
+         8PqoLq3x+vFEW+pUf8bz9WWSrvD7YwmyCdKwg2h96SFAPYdGJZCSAiJ/hC8xhzPqpBJv
+         jvOznwmQT5fCL67U+XjRXztPqJIRI4UIgY0F4yQ45LaJtHCoShb+3uqdvm984lTdjWb2
+         YBvjd4YRFKI8nKvzmiM/+o1VsGoSGe2Bj8jw98dd/6so7pX5oHZoSiEHAJ0j3C3KH2S1
+         hz/nfxnmp+bd/XHxpBRN9uzCdSiKJVf4tBwz0gRnApaP4p5yUUMgktxeIwOGcqLl82sz
+         3yfQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=JPkO5BsRbPVYFHaf9gF2Y632fd3taUEW4OyUqGh3Ino=;
-        b=M5OtiAmHPbV3a9Cetg203d0J8GhenLRQaKKZvdhpuzJ9IfCGifg8Iec1Ky7lQjIBy4
-         oW8sv0X7KpdYiEamoIEqaY46utLGTQQ/DFIu3rahuPNhJjJnjfG6gVRJggAV9bPNFEDG
-         xjFjSFBQrvpYjiaa76VQJojlyPzT520MUEi09DX1bdw6zJ1sfi7d2RaWG3YLuojvsZ1W
-         ku7tWsRWYDXszbEtIw6gxbW+Sz+4T06kCVI9WMivBTQQXWhv8z+EUBmus+TaEVHh+5H2
-         J6FFgZQSU3U1spzOMvpN6BWBnSkw2a9U4erEAwHllXH9WRFcemuUCSpsXgKPZLu+yeXA
-         DebA==
-X-Gm-Message-State: AJIora+vTlZ9dljYH1yf0uwZzt7YEB+JEgyWHzJvPgwdOv0KoR76qcCN
-        GpMqIOWlooIwhPYT80WOeXbXrWw/OqIjfsuG
-X-Google-Smtp-Source: AGRyM1vfwb/W04yFcwUUAHh48AjDueBc9WdQZSOeUkvg680h4f/R7e2uLUq92yGAu5S1Lt4ihMROOQ==
-X-Received: by 2002:a63:6ec3:0:b0:40c:450f:2f83 with SMTP id j186-20020a636ec3000000b0040c450f2f83mr12808859pgc.220.1656090339707;
-        Fri, 24 Jun 2022 10:05:39 -0700 (PDT)
-Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
-        by smtp.gmail.com with ESMTPSA id x20-20020a170902b41400b001676dac529asm2052628plr.146.2022.06.24.10.05.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Jun 2022 10:05:39 -0700 (PDT)
-Date:   Fri, 24 Jun 2022 10:05:36 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     James Yonan <james@openvpn.net>
-Cc:     netdev@vger.kernel.org, therbert@google.com
-Subject: Re: [PATCH net-next] rfs: added /proc/sys/net/core/rps_allow_ooo
- flag to tweak flow alg
-Message-ID: <20220624100536.4bbc1156@hermes.local>
-In-Reply-To: <20220624165447.3814355-1-james@openvpn.net>
-References: <20220624165447.3814355-1-james@openvpn.net>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=S1enbfspzMYdsg8aLcCCE6tVeP2Nz6635Lj1zrxNDvo=;
+        b=atSR9oCBPGqA9ML0sIEUDr72n8LZsVHS+ccxz5SDF9jRCamr+UsW6IAvkS1gE8+Meq
+         RK/9W1dTVhpVl3fEXFm9GDV9YTM5bHvCln4fZYBoQhkNVY19vlvj28/VWmgkPFybhfTm
+         M45qPUNbcFDlwScZPOwioOtcyGYOP7/MVTEEqAoaPvcXT+r0q7/xkF4Am+fWje99hPhH
+         Qro+yRwcunuGa3pROBU+b4sHjJkeuFoIfExf+8Z44W6zRCFjIy+nHDEv/djDW2NnaFVl
+         gtRP4TaTzxInsqaeDxYr1ry+B67HutYt3B5ccKnzozm+mHj5tDS4n6O/1/AhumHpIogD
+         HX8w==
+X-Gm-Message-State: AJIora/pd5/vPfK8ZnV6cvygV6pkJeLNO3pALi6gC/NasC6X57WFywDp
+        vupZ6Ibo63Uz3gk/SvR2W5Jqeg==
+X-Google-Smtp-Source: AGRyM1ukgR0OpkdFo6A2uHwXamZLQR8RW4cLRijXAiSEjqw/+r2pulA3xRBZgK7698u6EU50UchjKA==
+X-Received: by 2002:a05:6000:223:b0:21b:b95e:a522 with SMTP id l3-20020a056000022300b0021bb95ea522mr196783wrz.46.1656090762538;
+        Fri, 24 Jun 2022 10:12:42 -0700 (PDT)
+Received: from [192.168.0.237] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id h6-20020adffd46000000b0021b96cdf68fsm2770955wrs.97.2022.06.24.10.12.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 24 Jun 2022 10:12:41 -0700 (PDT)
+Message-ID: <d8fa1d0e-99cd-9bcf-3e17-7673553c875e@linaro.org>
+Date:   Fri, 24 Jun 2022 19:12:40 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH net-next v1 2/9] dt-bindings: Add Tegra234 MGBE clocks and
+ resets
+Content-Language: en-US
+To:     Thierry Reding <thierry.reding@gmail.com>
+Cc:     Bhadram Varka <vbhadram@nvidia.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-tegra@vger.kernel.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        jonathanh@nvidia.com, kuba@kernel.org, catalin.marinas@arm.com,
+        will@kernel.org, Thierry Reding <treding@nvidia.com>
+References: <20220623074615.56418-1-vbhadram@nvidia.com>
+ <20220623074615.56418-2-vbhadram@nvidia.com>
+ <53e8aa2f-f5f6-43d9-c167-ec5c5818dfb0@linaro.org> <YrXkpiaxqjzJdaL9@orome>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <YrXkpiaxqjzJdaL9@orome>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 24 Jun 2022 10:54:47 -0600
-James Yonan <james@openvpn.net> wrote:
+On 24/06/2022 18:21, Thierry Reding wrote:
+> On Fri, Jun 24, 2022 at 06:02:58PM +0200, Krzysztof Kozlowski wrote:
+>> On 23/06/2022 09:46, Bhadram Varka wrote:
+>>> From: Thierry Reding <treding@nvidia.com>
+>>>
+>>> Add the clocks and resets used by the MGBE Ethernet hardware found on
+>>> Tegra234 SoCs.
+>>>
+>>> Signed-off-by: Thierry Reding <treding@nvidia.com>
+>>> Signed-off-by: Bhadram Varka <vbhadram@nvidia.com>
+>>> ---
+>>>  include/dt-bindings/clock/tegra234-clock.h | 101 +++++++++++++++++++++
+>>>  include/dt-bindings/reset/tegra234-reset.h |   8 ++
+>>>  2 files changed, 109 insertions(+)
+>>>
+>>> diff --git a/include/dt-bindings/clock/tegra234-clock.h b/include/dt-bindings/clock/tegra234-clock.h
+>>> index bd4c3086a2da..bab85d9ba8cd 100644
+>>> --- a/include/dt-bindings/clock/tegra234-clock.h
+>>> +++ b/include/dt-bindings/clock/tegra234-clock.h
+>>> @@ -164,10 +164,111 @@
+>>>  #define TEGRA234_CLK_PEX1_C5_CORE		225U
+>>>  /** @brief PLL controlled by CLK_RST_CONTROLLER_PLLC4_BASE */
+>>>  #define TEGRA234_CLK_PLLC4			237U
+>>> +/** @brief RX clock recovered from MGBE0 lane input */
+>>
+>> The IDs should be abstract integer incremented by one, without any
+>> holes. I guess the issue was here before, so it's fine but I'll start
+>> complaining at some point :)
+> 
+> These IDs originate from firmware and therefore are more like hardware
+> IDs rather than an arbitrary enumeration. These will be used directly in
+> IPC calls with the firmware to reference individual clocks and resets.
 
-> @@ -4494,6 +4496,7 @@ static int get_rps_cpu(struct net_device *dev, struct sk_buff *skb,
->  		 * If the desired CPU (where last recvmsg was done) is
->  		 * different from current CPU (one in the rx-queue flow
->  		 * table entry), switch if one of the following holds:
-> +		 *   - rps_allow_ooo_sysctl is enabled.
->  		 *   - Current CPU is unset (>= nr_cpu_ids).
->  		 *   - Current CPU is offline.
->  		 *   - The current CPU's queue tail has advanced beyond the
-> @@ -4502,7 +4505,7 @@ static int get_rps_cpu(struct net_device *dev, struct sk_buff *skb,
->  		 *     have been dequeued, thus preserving in order delivery.
->  		 */
->  		if (unlikely(tcpu != next_cpu) &&
-> -		    (tcpu >= nr_cpu_ids || !cpu_online(tcpu) ||
-> +		    (rps_allow_ooo_sysctl || tcpu >= nr_cpu_ids || !cpu_online(tcpu) ||
->  		     ((int)(per_cpu(softnet_data, tcpu).input_queue_head -
->  		      rflow->last_qtail)) >= 0)) {
+If they are actually shared with firmware, it's fine. Thanks for
+explanation.
 
-This conditional is getting complex, maybe an inline helper function would
-be clearer for developers that decide to add more in future.
+> We've adopted these 1:1 in order to avoid adding an extra level of
+> indirection (via some lookup table) in the kernel.
+
+This if fine, but some folks (including myself once...) define in
+bindings register values and offsets without any actual need. I was
+afraid that's the case here.
+
+Best regards,
+Krzysztof
