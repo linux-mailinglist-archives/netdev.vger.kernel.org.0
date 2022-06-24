@@ -2,139 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A8F4559670
-	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 11:25:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A3315596ED
+	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 11:44:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231722AbiFXJYI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jun 2022 05:24:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40224 "EHLO
+        id S231398AbiFXJmv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jun 2022 05:42:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231642AbiFXJYH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 05:24:07 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8E3B527CF;
-        Fri, 24 Jun 2022 02:24:06 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id 73-20020a17090a0fcf00b001eaee69f600so2261387pjz.1;
-        Fri, 24 Jun 2022 02:24:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=p14Bfq9lY4E0mMUKXgjLwooAfP080X4T8JGy7RTxKZM=;
-        b=lHDIN4xQd45EmpZM7fq4IL9dsmpTHiI8Zc/DJNtgSUrfmKxhW0GgUEzB/hyZ3jBY5G
-         lXCLmxPj38MqXU2j3mWBFl7R4CfEfEb5/4GG0onF9h81SalHOJg4oYvZCNR5OxVAC46y
-         B1oCha0DaN1abqTpotJ9CgIk3KaydpAcZzeUKvTFpjDq3SlqQVjnsLXlNCCdHL5GtXW1
-         ORwNLUEJ5lc+UqvP6Riemu5U3stAEDbxAEE2iU5mt331AOO0xTFeOjUSAj8jdbwV0hiV
-         0lFiuhdxdU720+fwoLj+AgD3Xc9g/2DIWv+YfndlvPj0pNNjWK4XNau6xb+PpZw30Fd9
-         TGLQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=p14Bfq9lY4E0mMUKXgjLwooAfP080X4T8JGy7RTxKZM=;
-        b=Gp1xSQ2yfrS2EMlA/Dz1G/yjDkTCApzssBKDAAaI6qui81xTdNpMylRbF7pjZom/KR
-         FxEiexXqogpLvePwqz1RNg/Tidd+kC9TDQHBQlBSbyMDRudlAvZH8Y4wgxENpur1P+I0
-         iXO/MgzjmAbxPAjrAXyz6144mxGekUJCKW0/Ofv2tgZ9hRw5SFpNDBCxufxP6iIrX+Lf
-         zW+rl1YmrOFcmWSjOLeey1+RPFj1KcTdf7pXXnyF4s4k4RpBmuEctuUuTPaBQ06AHnVV
-         VPR93avESdJ4KRmtXrQULxNQCEDYmkzvelrjwyqCJ70H3lhfkBUdh1d+zfPN3SWGsUk2
-         oNtA==
-X-Gm-Message-State: AJIora+dziA+TiKWMboLValzCESTb332HBX/+SUOrN7OSyWbMeizt+7i
-        v1F/gTBD5baIUDxE3ZPUpCNkLOENzq4Xxl+GlHw=
-X-Google-Smtp-Source: AGRyM1s94mr/vCjmKyIpDLw/LlzwwUyBZvmU+bavLdyTktJk7cdNYN4G0wPiDr6/y8zQCBcfaNl5lw==
-X-Received: by 2002:a17:902:b597:b0:168:d8ce:4a63 with SMTP id a23-20020a170902b59700b00168d8ce4a63mr43813256pls.57.1656062646212;
-        Fri, 24 Jun 2022 02:24:06 -0700 (PDT)
-Received: from [192.168.178.136] (f215227.upc-f.chello.nl. [80.56.215.227])
-        by smtp.gmail.com with ESMTPSA id w4-20020a17090a780400b001ec732eb801sm3492056pjk.9.2022.06.24.02.24.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 24 Jun 2022 02:24:05 -0700 (PDT)
-Message-ID: <9f623bb6-8957-0a9a-3eb7-9a209965ea6e@gmail.com>
-Date:   Fri, 24 Jun 2022 11:24:01 +0200
+        with ESMTP id S229496AbiFXJmu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 05:42:50 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C257794DF;
+        Fri, 24 Jun 2022 02:42:49 -0700 (PDT)
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.54])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LTsbS2NRqzDsTV;
+        Fri, 24 Jun 2022 17:42:12 +0800 (CST)
+Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 24 Jun 2022 17:42:46 +0800
+Received: from localhost.localdomain (10.67.165.24) by
+ kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 24 Jun 2022 17:42:46 +0800
+From:   Guangbin Huang <huangguangbin2@huawei.com>
+To:     <hawk@kernel.org>, <brouer@redhat.com>,
+        <ilias.apalodimas@linaro.org>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <edumazet@google.com>, <pabeni@redhat.com>
+CC:     <lorenzo@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
+        <chenhao288@hisilicon.com>
+Subject: [PATCH net-next] net: page_pool: optimize page pool page allocation in NUMA scenario
+Date:   Fri, 24 Jun 2022 17:36:21 +0800
+Message-ID: <20220624093621.12505-1-huangguangbin2@huawei.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v2] brcmfmac: Remove #ifdef guards for PM related
- functions
-Content-Language: en-US
-To:     Paul Cercueil <paul@crapouillou.net>,
-        Franky Lin <franky.lin@broadcom.com>
-Cc:     linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220623124221.18238-1-paul@crapouillou.net>
-From:   Arend Van Spriel <aspriel@gmail.com>
-In-Reply-To: <20220623124221.18238-1-paul@crapouillou.net>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600016.china.huawei.com (7.193.23.20)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/23/2022 2:42 PM, Paul Cercueil wrote:
-> Use the new DEFINE_SIMPLE_DEV_PM_OPS() and pm_sleep_ptr() macros to
-> handle the .suspend/.resume callbacks.
-> 
-> These macros allow the suspend and resume functions to be automatically
-> dropped by the compiler when CONFIG_SUSPEND is disabled, without having
-> to use #ifdef guards.
-> 
-> Some other functions not directly called by the .suspend/.resume
-> callbacks, but still related to PM were also taken outside #ifdef
-> guards.
-> 
-> The advantage is then that these functions are now always compiled
-> independently of any Kconfig option, and thanks to that bugs and
-> regressions are easier to catch.
+From: Jie Wang <wangjie125@huawei.com>
 
-Reviewed-by: Arend van Spriel <aspriel@gmail.com>
-> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
-> ---
-> 
-> Notes:
->      v2:
->      - Move checks for IS_ENABLED(CONFIG_PM_SLEEP) inside functions to keep
->        the calling functions intact.
->      - Reword the commit message to explain why this patch is useful.
-> 
->   .../broadcom/brcm80211/brcmfmac/bcmsdh.c      | 38 +++++++------------
->   .../broadcom/brcm80211/brcmfmac/sdio.c        |  5 +--
->   .../broadcom/brcm80211/brcmfmac/sdio.h        | 16 --------
->   3 files changed, 16 insertions(+), 43 deletions(-)
-> 
-> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
-> index 9c598ea97499..11ad878a906b 100644
-> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
-> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
-> @@ -784,9 +784,11 @@ void brcmf_sdiod_sgtable_alloc(struct brcmf_sdio_dev *sdiodev)
->   	sdiodev->txglomsz = sdiodev->settings->bus.sdio.txglomsz;
->   }
->   
-> -#ifdef CONFIG_PM_SLEEP
->   static int brcmf_sdiod_freezer_attach(struct brcmf_sdio_dev *sdiodev)
->   {
-> +	if (!IS_ENABLED(CONFIG_PM_SLEEP))
-> +		return 0;
-> +
->   	sdiodev->freezer = kzalloc(sizeof(*sdiodev->freezer), GFP_KERNEL);
->   	if (!sdiodev->freezer)
->   		return -ENOMEM;
-> @@ -799,7 +801,7 @@ static int brcmf_sdiod_freezer_attach(struct brcmf_sdio_dev *sdiodev)
->   
->   static void brcmf_sdiod_freezer_detach(struct brcmf_sdio_dev *sdiodev)
->   {
-> -	if (sdiodev->freezer) {
-> +	if (IS_ENABLED(CONFIG_PM_SLEEP) && sdiodev->freezer) {
+Currently NIC packet receiving performance based on page pool deteriorates
+occasionally. To analysis the causes of this problem page allocation stats
+are collected. Here are the stats when NIC rx performance deteriorates:
 
-This change is not necessary. sdiodev->freezer will be NULL when 
-CONFIG_PM_SLEEP is not enabled.
+bandwidth(Gbits/s)		16.8		6.91
+rx_pp_alloc_fast		13794308	21141869
+rx_pp_alloc_slow		108625		166481
+rx_pp_alloc_slow_h		0		0
+rx_pp_alloc_empty		8192		8192
+rx_pp_alloc_refill		0		0
+rx_pp_alloc_waive		100433		158289
+rx_pp_recycle_cached		0		0
+rx_pp_recycle_cache_full	0		0
+rx_pp_recycle_ring		362400		420281
+rx_pp_recycle_ring_full		6064893		9709724
+rx_pp_recycle_released_ref	0		0
 
->   		WARN_ON(atomic_read(&sdiodev->freezer->freezing));
->   		kfree(sdiodev->freezer);
->   	}
+The rx_pp_alloc_waive count indicates that a large number of pages' numa
+node are inconsistent with the NIC device numa node. Therefore these pages
+can't be reused by the page pool. As a result, many new pages would be
+allocated by __page_pool_alloc_pages_slow which is time consuming. This
+causes the NIC rx performance fluctuations.
+
+The main reason of huge numa mismatch pages in page pool is that page pool
+uses alloc_pages_bulk_array to allocate original pages. This function is
+not suitable for page allocation in NUMA scenario. So this patch uses
+alloc_pages_bulk_array_node which has a NUMA id input parameter to ensure
+the NUMA consistent between NIC device and allocated pages.
+
+Repeated NIC rx performance tests are performed 40 times. NIC rx bandwidth
+is higher and more stable compared to the datas above. Here are three test
+stats, the rx_pp_alloc_waive count is zero and rx_pp_alloc_slow which
+indicates pages allocated from slow patch is relatively low.
+
+bandwidth(Gbits/s)		93		93.9		93.8
+rx_pp_alloc_fast		60066264	61266386	60938254
+rx_pp_alloc_slow		16512		16517		16539
+rx_pp_alloc_slow_ho		0		0		0
+rx_pp_alloc_empty		16512		16517		16539
+rx_pp_alloc_refill		473841		481910		481585
+rx_pp_alloc_waive		0		0		0
+rx_pp_recycle_cached		0		0		0
+rx_pp_recycle_cache_full	0		0		0
+rx_pp_recycle_ring		29754145	30358243	30194023
+rx_pp_recycle_ring_full		0		0		0
+rx_pp_recycle_released_ref	0		0		0
+
+Signed-off-by: Jie Wang <wangjie125@huawei.com>
+---
+ net/core/page_pool.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+index f18e6e771993..15997fcd78f3 100644
+--- a/net/core/page_pool.c
++++ b/net/core/page_pool.c
+@@ -377,6 +377,7 @@ static struct page *__page_pool_alloc_pages_slow(struct page_pool *pool,
+ 	unsigned int pp_order = pool->p.order;
+ 	struct page *page;
+ 	int i, nr_pages;
++	int pref_nid; /* preferred NUMA node */
+ 
+ 	/* Don't support bulk alloc for high-order pages */
+ 	if (unlikely(pp_order))
+@@ -386,10 +387,18 @@ static struct page *__page_pool_alloc_pages_slow(struct page_pool *pool,
+ 	if (unlikely(pool->alloc.count > 0))
+ 		return pool->alloc.cache[--pool->alloc.count];
+ 
++#ifdef CONFIG_NUMA
++	pref_nid = (pool->p.nid == NUMA_NO_NODE) ? numa_mem_id() : pool->p.nid;
++#else
++	/* Ignore pool->p.nid setting if !CONFIG_NUMA, helps compiler */
++	pref_nid = numa_mem_id(); /* will be zero like page_to_nid() */
++#endif
++
+ 	/* Mark empty alloc.cache slots "empty" for alloc_pages_bulk_array */
+ 	memset(&pool->alloc.cache, 0, sizeof(void *) * bulk);
+ 
+-	nr_pages = alloc_pages_bulk_array(gfp, bulk, pool->alloc.cache);
++	nr_pages = alloc_pages_bulk_array_node(gfp, pref_nid, bulk,
++					       pool->alloc.cache);
+ 	if (unlikely(!nr_pages))
+ 		return NULL;
+ 
+-- 
+2.33.0
+
