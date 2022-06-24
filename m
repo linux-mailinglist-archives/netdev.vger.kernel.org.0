@@ -2,69 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 26366559E4A
-	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 18:15:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB36D559E5A
+	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 18:15:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230061AbiFXQGn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jun 2022 12:06:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36790 "EHLO
+        id S231361AbiFXQK7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jun 2022 12:10:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230454AbiFXQGl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 12:06:41 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B20255350
-        for <netdev@vger.kernel.org>; Fri, 24 Jun 2022 09:06:40 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id e7so3697463wrc.13
-        for <netdev@vger.kernel.org>; Fri, 24 Jun 2022 09:06:40 -0700 (PDT)
+        with ESMTP id S230463AbiFXQK6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 12:10:58 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE8D34EF6C
+        for <netdev@vger.kernel.org>; Fri, 24 Jun 2022 09:10:57 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id z11so4132478edp.9
+        for <netdev@vger.kernel.org>; Fri, 24 Jun 2022 09:10:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=XD25QM33us7hPEequuu5UA72HkDpqMdvG8CesGBJr0o=;
-        b=tTfKAwsZQSYXujHGO/BsaRvBdcaNwCqG7HIiKalwbqfhHKdbZSkZ/5Or17qeliqKGq
-         JDE2vMnl6zH0zQBkFTUAL3hK84XBjWM3WPVKld8QV4Dr4WcQ5JYi6dBVYFr2vj5gUeSA
-         Ly+HGwKo5x9GS54htRUXP3ZtOsH0H3okkdgBWMat9yKyK4/GMwBwrQ/GkOSS2p5L9h2Q
-         ALP7JernsUKXZV+TrFDXJDx8i8NDjodlVrGA69kYvyfI2dIXRfc6dntOP6rwx44y3qm5
-         8jSNWJNk4cBFM5UlKr1EnEbfqzKbZYab2vAnI81m4WGZBaxmO4EfqgLLjH4O2rQeZan8
-         EDAA==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=GVGaHvLcAZTNe2APbU/fEg0Z2klKQLmnbsFslF8kMQQ=;
+        b=Ru5smQhEMboe8UqsC9iYprq3TT+71g4O0eiD+wCzDwQGdwRvArs+NwzLEncqilSNBz
+         rpXxPmNVRZrGDaO+wmbOHPEkRmUPhLb8KD7rgRYhwP4uT1Ws3aOOZYEVQs3UbZbWawC1
+         y/htZ4R9rIXRbqdEgK8g+2VesdAzs5tPVc3HgM9WhF+aAYv6tUC/EdZ3f9Au+xgyrXjw
+         Df53PqYAp/x7h4W5K+D/OsseXXY9h7eyw+WVL/7djRuR5kjbrJS6/kUY1L6sfgawTeff
+         QB6naRuyAe2RBQAv1h7/JPoQeZW462/71bOOoXNkemEMnB7gb+C5ewvdVSLXhx8K2GAb
+         ZUUw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=XD25QM33us7hPEequuu5UA72HkDpqMdvG8CesGBJr0o=;
-        b=b/XDD66VWHE+7MFJbPIWRdkef/1MHCMClRpu3i+oMhjwWlhhtOgii7F69teUvOc9on
-         5ucpuwSSO6UHRwhBTm5unm9rrDJ4aLcXfxtGD2tRAHdn++QOMoOWqr2Ao3RRmgEu0Jw4
-         foVNFPAdtBxUEwfYEvEPiFU4kYwwBmacBf1Hb+MYm95yXV7JPHGNHD0BrgN7/zk3yPU8
-         TmivdYRlW3ErtKbcUeiXCoo3cTC4rMMNMjfrkEMvjCT0/oHvX5SlCTTLFKwMH1YN9Z2Z
-         lAhlWvVCDYbUqC9b8xzNOZjzIkVmMvfKM1b0wcWc8qMaYSbNGKeJ1oBUoZSV0Lk0nJOb
-         9Vxw==
-X-Gm-Message-State: AJIora+Ou6WupGmW2FWX31WtmiWsbIohB3XTS1BGaEFV8W82l98QOned
-        XleIzMB0n26S7ES3hUzvGRYn2J2evEil1A==
-X-Google-Smtp-Source: AGRyM1uubThZWxs0LtJdne3P4esvibl90VzKex8ROZDrXmt3/kumeOoNNP4LbTVIZXQ4u0xtRlU3tw==
-X-Received: by 2002:a5d:50d0:0:b0:21b:978f:e54 with SMTP id f16-20020a5d50d0000000b0021b978f0e54mr14021882wrt.612.1656086798942;
-        Fri, 24 Jun 2022 09:06:38 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id k1-20020a5d6281000000b0021b9e360523sm2754953wru.8.2022.06.24.09.06.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Jun 2022 09:06:38 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=GVGaHvLcAZTNe2APbU/fEg0Z2klKQLmnbsFslF8kMQQ=;
+        b=rxgXe7soYiiUkronzRiTIAZ/VupelP27dZ0UIpEWouRYY1dmqwDAOGJDf4i5lTPhSu
+         NcHYK5b1aldtFJPxfqakUnaiqxIbLXPn5TVcCH2SACJar6I+Pb/OpuPnQu3DQFiaGWn9
+         SoUqTZq3zsY744sdjNSk/e/lhr4IAhkETjgsLvHJXB+GmxCiVTOy9Jcs7ldpODDwwZBf
+         NVMW1SfPilvgq/0oGdvOUbGXtLbf1Ay+Q4RqTn/q1kL0OBZV3ewmN/eA421LB6AQkZrH
+         Ya7QWZYD/ep3bSlTYcgRDyN2XrfOZdDzNrpJaDseZKr0zjnbL7xLmuBmEng2RvySKZJA
+         gX/g==
+X-Gm-Message-State: AJIora9wNoe06NeTgpu9jZwzUWeOQaP5rfXFvdwYZI5bLPkGq42xgYk+
+        /L8Xe4uCOsJWr9Xj1ZVnQSdXyA==
+X-Google-Smtp-Source: AGRyM1vvb73J/VYAt4ux967UEedGM6d2tsVPm8xXwcPRJsbVb+q/9Lewgloj/oyuxkcY7AS92YGRRQ==
+X-Received: by 2002:a05:6402:d5e:b0:435:dc14:d457 with SMTP id ec30-20020a0564020d5e00b00435dc14d457mr9586449edb.58.1656087056517;
+        Fri, 24 Jun 2022 09:10:56 -0700 (PDT)
+Received: from [192.168.0.237] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id s12-20020a1709064d8c00b006fe8ec44461sm1342294eju.101.2022.06.24.09.10.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 24 Jun 2022 09:10:56 -0700 (PDT)
+Message-ID: <d0bc0054-4457-bd56-161b-19808c65c0e9@linaro.org>
+Date:   Fri, 24 Jun 2022 18:10:54 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: (subset) [PATCH net-next v1 3/9] dt-bindings: memory: Add
+ Tegra234 MGBE memory clients
+Content-Language: en-US
 To:     linux-tegra@vger.kernel.org, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, vbhadram@nvidia.com
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        thierry.reding@gmail.com, treding@nvidia.com, robh+dt@kernel.org,
+Cc:     thierry.reding@gmail.com, treding@nvidia.com, robh+dt@kernel.org,
         catalin.marinas@arm.com, krzysztof.kozlowski+dt@linaro.org,
         kuba@kernel.org, jonathanh@nvidia.com, will@kernel.org
-Subject: Re: (subset) [PATCH net-next v1 4/9] memory: tegra: Add MGBE memory clients for Tegra234
-Date:   Fri, 24 Jun 2022 18:06:35 +0200
-Message-Id: <165608679241.23612.16454571226827958210.b4-ty@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220623074615.56418-4-vbhadram@nvidia.com>
-References: <20220623074615.56418-1-vbhadram@nvidia.com> <20220623074615.56418-4-vbhadram@nvidia.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+References: <20220623074615.56418-1-vbhadram@nvidia.com>
+ <20220623074615.56418-3-vbhadram@nvidia.com>
+ <165608679241.23612.13616476913302198468.b4-ty@linaro.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <165608679241.23612.13616476913302198468.b4-ty@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -73,19 +78,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 23 Jun 2022 13:16:10 +0530, Bhadram Varka wrote:
-> From: Thierry Reding <treding@nvidia.com>
+On 24/06/2022 18:06, Krzysztof Kozlowski wrote:
+> On Thu, 23 Jun 2022 13:16:09 +0530, Bhadram Varka wrote:
+>> From: Thierry Reding <treding@nvidia.com>
+>>
+>> Add the memory client and stream ID definitions for the MGBE hardware
+>> found on Tegra234 SoCs.
+>>
+>>
 > 
-> Tegra234 has multiple network interfaces with each their own memory
-> clients and stream IDs to allow for proper isolation.
+> Applied, thanks!
 > 
+> [3/9] dt-bindings: memory: Add Tegra234 MGBE memory clients
+>       https://git.kernel.org/krzk/linux-mem-ctrl/c/f35756b5fc488912b8bc5f5686e4f236d00923d7
 > 
 
-Applied, thanks!
+Hmm, actually now I think you might need it for DTS, although there was
+no cover letter here explaining merging/dependencies...
 
-[4/9] memory: tegra: Add MGBE memory clients for Tegra234
-      https://git.kernel.org/krzk/linux-mem-ctrl/c/6b36629c85dc7d4551e57e92a3e970d099333e4e
+I could provide you a tag with it or opposite (take a tag with only the
+header).
 
 Best regards,
--- 
-Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Krzysztof
