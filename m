@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 99E25558E02
-	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 04:57:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 36F50558DB8
+	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 04:57:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230082AbiFXC4d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jun 2022 22:56:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43514 "EHLO
+        id S231190AbiFXC4n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jun 2022 22:56:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229792AbiFXC4c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 22:56:32 -0400
-Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FE4356F92;
-        Thu, 23 Jun 2022 19:56:30 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046049;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=37;SR=0;TI=SMTPD_---0VHF1U5t_1656039383;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VHF1U5t_1656039383)
+        with ESMTP id S230264AbiFXC4f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 22:56:35 -0400
+Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA08856C0A;
+        Thu, 23 Jun 2022 19:56:32 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046051;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=37;SR=0;TI=SMTPD_---0VHEuVqg_1656039386;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VHEuVqg_1656039386)
           by smtp.aliyun-inc.com;
-          Fri, 24 Jun 2022 10:56:25 +0800
+          Fri, 24 Jun 2022 10:56:27 +0800
 From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 To:     virtualization@lists.linux-foundation.org
 Cc:     Richard Weinberger <richard@nod.at>,
@@ -53,9 +53,9 @@ Cc:     Richard Weinberger <richard@nod.at>,
         linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
         kvm@vger.kernel.org, bpf@vger.kernel.org,
         kangjie.xu@linux.alibaba.com
-Subject: [PATCH v10 01/41] remoteproc: rename len of rpoc_vring to num
-Date:   Fri, 24 Jun 2022 10:55:41 +0800
-Message-Id: <20220624025621.128843-2-xuanzhuo@linux.alibaba.com>
+Subject: [PATCH v10 02/41] virtio: add helper virtqueue_get_vring_max_size()
+Date:   Fri, 24 Jun 2022 10:55:42 +0800
+Message-Id: <20220624025621.128843-3-xuanzhuo@linux.alibaba.com>
 X-Mailer: git-send-email 2.31.0
 In-Reply-To: <20220624025621.128843-1-xuanzhuo@linux.alibaba.com>
 References: <20220624025621.128843-1-xuanzhuo@linux.alibaba.com>
@@ -72,100 +72,177 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Rename the member len in the structure rpoc_vring to num. And remove 'in
-bytes' from the comment of it. This is misleading. Because this actually
-refers to the size of the virtio vring to be created. The unit is not
-bytes.
+Record the maximum queue num supported by the device.
+
+virtio-net can display the maximum (supported by hardware) ring size in
+ethtool -g eth0.
+
+When the subsequent patch implements vring reset, it can judge whether
+the ring size passed by the driver is legal based on this.
 
 Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 ---
- drivers/remoteproc/remoteproc_core.c   |  4 ++--
- drivers/remoteproc/remoteproc_virtio.c | 10 +++++-----
- include/linux/remoteproc.h             |  4 ++--
- 3 files changed, 9 insertions(+), 9 deletions(-)
+ arch/um/drivers/virtio_uml.c             |  1 +
+ drivers/platform/mellanox/mlxbf-tmfifo.c |  2 ++
+ drivers/remoteproc/remoteproc_virtio.c   |  2 ++
+ drivers/s390/virtio/virtio_ccw.c         |  3 +++
+ drivers/virtio/virtio_mmio.c             |  2 ++
+ drivers/virtio/virtio_pci_legacy.c       |  2 ++
+ drivers/virtio/virtio_pci_modern.c       |  2 ++
+ drivers/virtio/virtio_ring.c             | 14 ++++++++++++++
+ drivers/virtio/virtio_vdpa.c             |  2 ++
+ include/linux/virtio.h                   |  2 ++
+ 10 files changed, 32 insertions(+)
 
-diff --git a/drivers/remoteproc/remoteproc_core.c b/drivers/remoteproc/remoteproc_core.c
-index 02a04ab34a23..2d2f3bab5888 100644
---- a/drivers/remoteproc/remoteproc_core.c
-+++ b/drivers/remoteproc/remoteproc_core.c
-@@ -334,7 +334,7 @@ int rproc_alloc_vring(struct rproc_vdev *rvdev, int i)
- 	size_t size;
- 
- 	/* actual size of vring (in bytes) */
--	size = PAGE_ALIGN(vring_size(rvring->len, rvring->align));
-+	size = PAGE_ALIGN(vring_size(rvring->num, rvring->align));
- 
- 	rsc = (void *)rproc->table_ptr + rvdev->rsc_offset;
- 
-@@ -401,7 +401,7 @@ rproc_parse_vring(struct rproc_vdev *rvdev, struct fw_rsc_vdev *rsc, int i)
- 		return -EINVAL;
+diff --git a/arch/um/drivers/virtio_uml.c b/arch/um/drivers/virtio_uml.c
+index 82ff3785bf69..e719af8bdf56 100644
+--- a/arch/um/drivers/virtio_uml.c
++++ b/arch/um/drivers/virtio_uml.c
+@@ -958,6 +958,7 @@ static struct virtqueue *vu_setup_vq(struct virtio_device *vdev,
+ 		goto error_create;
  	}
+ 	vq->priv = info;
++	vq->num_max = num;
+ 	num = virtqueue_get_vring_size(vq);
  
--	rvring->len = vring->num;
-+	rvring->num = vring->num;
- 	rvring->align = vring->align;
- 	rvring->rvdev = rvdev;
+ 	if (vu_dev->protocol_features &
+diff --git a/drivers/platform/mellanox/mlxbf-tmfifo.c b/drivers/platform/mellanox/mlxbf-tmfifo.c
+index 38800e86ed8a..1ae3c56b66b0 100644
+--- a/drivers/platform/mellanox/mlxbf-tmfifo.c
++++ b/drivers/platform/mellanox/mlxbf-tmfifo.c
+@@ -959,6 +959,8 @@ static int mlxbf_tmfifo_virtio_find_vqs(struct virtio_device *vdev,
+ 			goto error;
+ 		}
  
++		vq->num_max = vring->num;
++
+ 		vqs[i] = vq;
+ 		vring->vq = vq;
+ 		vq->priv = vring;
 diff --git a/drivers/remoteproc/remoteproc_virtio.c b/drivers/remoteproc/remoteproc_virtio.c
-index 70ab496d0431..d43d74733f0a 100644
+index d43d74733f0a..0f7706e23eb9 100644
 --- a/drivers/remoteproc/remoteproc_virtio.c
 +++ b/drivers/remoteproc/remoteproc_virtio.c
-@@ -87,7 +87,7 @@ static struct virtqueue *rp_find_vq(struct virtio_device *vdev,
- 	struct fw_rsc_vdev *rsc;
- 	struct virtqueue *vq;
- 	void *addr;
--	int len, size;
-+	int num, size;
+@@ -125,6 +125,8 @@ static struct virtqueue *rp_find_vq(struct virtio_device *vdev,
+ 		return ERR_PTR(-ENOMEM);
+ 	}
  
- 	/* we're temporarily limited to two virtqueues per rvdev */
- 	if (id >= ARRAY_SIZE(rvdev->vring))
-@@ -104,20 +104,20 @@ static struct virtqueue *rp_find_vq(struct virtio_device *vdev,
++	vq->num_max = num;
++
+ 	rvring->vq = vq;
+ 	vq->priv = rvring;
  
- 	rvring = &rvdev->vring[id];
- 	addr = mem->va;
--	len = rvring->len;
-+	num = rvring->num;
+diff --git a/drivers/s390/virtio/virtio_ccw.c b/drivers/s390/virtio/virtio_ccw.c
+index 97e51c34e6cf..cbcdba00e7e9 100644
+--- a/drivers/s390/virtio/virtio_ccw.c
++++ b/drivers/s390/virtio/virtio_ccw.c
+@@ -530,6 +530,9 @@ static struct virtqueue *virtio_ccw_setup_vq(struct virtio_device *vdev,
+ 		err = -ENOMEM;
+ 		goto out_err;
+ 	}
++
++	vq->num_max = info->num;
++
+ 	/* it may have been reduced */
+ 	info->num = virtqueue_get_vring_size(vq);
  
- 	/* zero vring */
--	size = vring_size(len, rvring->align);
-+	size = vring_size(num, rvring->align);
- 	memset(addr, 0, size);
+diff --git a/drivers/virtio/virtio_mmio.c b/drivers/virtio/virtio_mmio.c
+index c9bec3813e94..2e7cbbd21043 100644
+--- a/drivers/virtio/virtio_mmio.c
++++ b/drivers/virtio/virtio_mmio.c
+@@ -402,6 +402,8 @@ static struct virtqueue *vm_setup_vq(struct virtio_device *vdev, unsigned int in
+ 		goto error_new_virtqueue;
+ 	}
  
- 	dev_dbg(dev, "vring%d: va %pK qsz %d notifyid %d\n",
--		id, addr, len, rvring->notifyid);
-+		id, addr, num, rvring->notifyid);
++	vq->num_max = num;
++
+ 	/* Activate the queue */
+ 	writel(virtqueue_get_vring_size(vq), vm_dev->base + VIRTIO_MMIO_QUEUE_NUM);
+ 	if (vm_dev->version == 1) {
+diff --git a/drivers/virtio/virtio_pci_legacy.c b/drivers/virtio/virtio_pci_legacy.c
+index a5e5721145c7..2257f1b3d8ae 100644
+--- a/drivers/virtio/virtio_pci_legacy.c
++++ b/drivers/virtio/virtio_pci_legacy.c
+@@ -135,6 +135,8 @@ static struct virtqueue *setup_vq(struct virtio_pci_device *vp_dev,
+ 	if (!vq)
+ 		return ERR_PTR(-ENOMEM);
  
- 	/*
- 	 * Create the new vq, and tell virtio we're not interested in
- 	 * the 'weak' smp barriers, since we're talking with a real device.
- 	 */
--	vq = vring_new_virtqueue(id, len, rvring->align, vdev, false, ctx,
-+	vq = vring_new_virtqueue(id, num, rvring->align, vdev, false, ctx,
- 				 addr, rproc_virtio_notify, callback, name);
- 	if (!vq) {
- 		dev_err(dev, "vring_new_virtqueue %s failed\n", name);
-diff --git a/include/linux/remoteproc.h b/include/linux/remoteproc.h
-index 7c943f0a2fc4..aea79c77db0f 100644
---- a/include/linux/remoteproc.h
-+++ b/include/linux/remoteproc.h
-@@ -597,7 +597,7 @@ struct rproc_subdev {
++	vq->num_max = num;
++
+ 	q_pfn = virtqueue_get_desc_addr(vq) >> VIRTIO_PCI_QUEUE_ADDR_SHIFT;
+ 	if (q_pfn >> 32) {
+ 		dev_err(&vp_dev->pci_dev->dev,
+diff --git a/drivers/virtio/virtio_pci_modern.c b/drivers/virtio/virtio_pci_modern.c
+index 623906b4996c..e7e0b8c850f6 100644
+--- a/drivers/virtio/virtio_pci_modern.c
++++ b/drivers/virtio/virtio_pci_modern.c
+@@ -218,6 +218,8 @@ static struct virtqueue *setup_vq(struct virtio_pci_device *vp_dev,
+ 	if (!vq)
+ 		return ERR_PTR(-ENOMEM);
+ 
++	vq->num_max = num;
++
+ 	/* activate the queue */
+ 	vp_modern_set_queue_size(mdev, index, virtqueue_get_vring_size(vq));
+ 	vp_modern_queue_address(mdev, index, virtqueue_get_desc_addr(vq),
+diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
+index 13a7348cedff..68f55336566c 100644
+--- a/drivers/virtio/virtio_ring.c
++++ b/drivers/virtio/virtio_ring.c
+@@ -2355,6 +2355,20 @@ void vring_transport_features(struct virtio_device *vdev)
+ }
+ EXPORT_SYMBOL_GPL(vring_transport_features);
+ 
++/**
++ * virtqueue_get_vring_max_size - return the max size of the virtqueue's vring
++ * @_vq: the struct virtqueue containing the vring of interest.
++ *
++ * Returns the max size of the vring.
++ *
++ * Unlike other operations, this need not be serialized.
++ */
++unsigned int virtqueue_get_vring_max_size(struct virtqueue *_vq)
++{
++	return _vq->num_max;
++}
++EXPORT_SYMBOL_GPL(virtqueue_get_vring_max_size);
++
  /**
-  * struct rproc_vring - remoteproc vring state
-  * @va:	virtual address
-- * @len: length, in bytes
-+ * @num: vring size
-  * @da: device address
-  * @align: vring alignment
-  * @notifyid: rproc-specific unique vring index
-@@ -606,7 +606,7 @@ struct rproc_subdev {
-  */
- struct rproc_vring {
- 	void *va;
--	int len;
-+	int num;
- 	u32 da;
- 	u32 align;
- 	int notifyid;
+  * virtqueue_get_vring_size - return the size of the virtqueue's vring
+  * @_vq: the struct virtqueue containing the vring of interest.
+diff --git a/drivers/virtio/virtio_vdpa.c b/drivers/virtio/virtio_vdpa.c
+index c40f7deb6b5a..9670cc79371d 100644
+--- a/drivers/virtio/virtio_vdpa.c
++++ b/drivers/virtio/virtio_vdpa.c
+@@ -183,6 +183,8 @@ virtio_vdpa_setup_vq(struct virtio_device *vdev, unsigned int index,
+ 		goto error_new_virtqueue;
+ 	}
+ 
++	vq->num_max = max_num;
++
+ 	/* Setup virtqueue callback */
+ 	cb.callback = callback ? virtio_vdpa_virtqueue_cb : NULL;
+ 	cb.private = info;
+diff --git a/include/linux/virtio.h b/include/linux/virtio.h
+index d8fdf170637c..a82620032e43 100644
+--- a/include/linux/virtio.h
++++ b/include/linux/virtio.h
+@@ -31,6 +31,7 @@ struct virtqueue {
+ 	struct virtio_device *vdev;
+ 	unsigned int index;
+ 	unsigned int num_free;
++	unsigned int num_max;
+ 	void *priv;
+ };
+ 
+@@ -80,6 +81,7 @@ bool virtqueue_enable_cb_delayed(struct virtqueue *vq);
+ 
+ void *virtqueue_detach_unused_buf(struct virtqueue *vq);
+ 
++unsigned int virtqueue_get_vring_max_size(struct virtqueue *vq);
+ unsigned int virtqueue_get_vring_size(struct virtqueue *vq);
+ 
+ bool virtqueue_is_broken(struct virtqueue *vq);
 -- 
 2.31.0
 
