@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DA9CD55A9C5
-	for <lists+netdev@lfdr.de>; Sat, 25 Jun 2022 14:14:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E6E6E55A9CF
+	for <lists+netdev@lfdr.de>; Sat, 25 Jun 2022 14:14:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232768AbiFYMG3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Jun 2022 08:06:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43958 "EHLO
+        id S232804AbiFYMGq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Jun 2022 08:06:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232770AbiFYMGZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jun 2022 08:06:25 -0400
+        with ESMTP id S232781AbiFYMG0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jun 2022 08:06:26 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5AB4140E9
-        for <netdev@vger.kernel.org>; Sat, 25 Jun 2022 05:06:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 699FC17E13
+        for <netdev@vger.kernel.org>; Sat, 25 Jun 2022 05:06:22 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1o54YL-0002Uy-5H
-        for netdev@vger.kernel.org; Sat, 25 Jun 2022 14:06:17 +0200
+        id 1o54YO-0002aC-Nq
+        for netdev@vger.kernel.org; Sat, 25 Jun 2022 14:06:20 +0200
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id 4352F9F258
-        for <netdev@vger.kernel.org>; Sat, 25 Jun 2022 12:05:06 +0000 (UTC)
+        by bjornoya.blackshift.org (Postfix) with SMTP id 82BF79F267
+        for <netdev@vger.kernel.org>; Sat, 25 Jun 2022 12:05:09 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id 9F5DC9F22B;
-        Sat, 25 Jun 2022 12:04:57 +0000 (UTC)
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 735D19F22C;
+        Sat, 25 Jun 2022 12:04:58 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id ce4a6173;
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 2976a594;
         Sat, 25 Jun 2022 12:03:37 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
         kernel@pengutronix.de, Frank Jungclaus <frank.jungclaus@esd.eu>,
         Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH net-next 18/22] can/esd_usb2: Rename esd_usb2.c to esd_usb.c
-Date:   Sat, 25 Jun 2022 14:03:31 +0200
-Message-Id: <20220625120335.324697-19-mkl@pengutronix.de>
+Subject: [PATCH net-next 19/22] can/esd_usb: Add an entry to the MAINTAINERS file
+Date:   Sat, 25 Jun 2022 14:03:32 +0200
+Message-Id: <20220625120335.324697-20-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220625120335.324697-1-mkl@pengutronix.de>
 References: <20220625120335.324697-1-mkl@pengutronix.de>
@@ -60,63 +60,34 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Frank Jungclaus <frank.jungclaus@esd.eu>
 
-As suggested by Vincent, renaming of esd_usb2.c to esd_usb.c
-and according to that, adaption of Kconfig and Makfile, too.
+As suggested by Marc, I added an entry for ESD CAN/USB Drivers
+to the MAINTAINERS file
 
-Link: https://lore.kernel.org/all/20220624190517.2299701-2-frank.jungclaus@esd.eu
+Link: https://lore.kernel.org/all/20220624190517.2299701-3-frank.jungclaus@esd.eu
 Signed-off-by: Frank Jungclaus <frank.jungclaus@esd.eu>
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- drivers/net/can/usb/Kconfig                   | 15 +++++++++++----
- drivers/net/can/usb/Makefile                  |  2 +-
- drivers/net/can/usb/{esd_usb2.c => esd_usb.c} |  0
- 3 files changed, 12 insertions(+), 5 deletions(-)
- rename drivers/net/can/usb/{esd_usb2.c => esd_usb.c} (100%)
+ MAINTAINERS | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/net/can/usb/Kconfig b/drivers/net/can/usb/Kconfig
-index f959215c9d53..1218f9642f33 100644
---- a/drivers/net/can/usb/Kconfig
-+++ b/drivers/net/can/usb/Kconfig
-@@ -14,11 +14,18 @@ config CAN_EMS_USB
- 	  This driver is for the one channel CPC-USB/ARM7 CAN/USB interface
- 	  from EMS Dr. Thomas Wuensche (http://www.ems-wuensche.de).
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 05fcbea3e432..2d1cf1718140 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -7406,6 +7406,13 @@ S:	Maintained
+ F:	include/linux/errseq.h
+ F:	lib/errseq.c
  
--config CAN_ESD_USB2
--	tristate "ESD USB/2 CAN/USB interface"
-+config CAN_ESD_USB
-+	tristate "esd electronics gmbh CAN/USB interfaces"
- 	help
--	  This driver supports the CAN-USB/2 interface
--	  from esd electronic system design gmbh (http://www.esd.eu).
-+	  This driver adds supports for several CAN/USB interfaces
-+	  from esd electronics gmbh (https://www.esd.eu).
++ESD CAN/USB DRIVERS
++M:	Frank Jungclaus <frank.jungclaus@esd.eu>
++R:	socketcan@esd.eu
++L:	linux-can@vger.kernel.org
++S:	Maintained
++F:	drivers/net/can/usb/esd_usb.c
 +
-+	  The drivers supports the following devices:
-+	    - esd CAN-USB/2
-+	    - esd CAN-USB/Micro
-+
-+	  To compile this driver as a module, choose M here: the module
-+	  will be called esd_usb.
- 
- config CAN_ETAS_ES58X
- 	tristate "ETAS ES58X CAN/USB interfaces"
-diff --git a/drivers/net/can/usb/Makefile b/drivers/net/can/usb/Makefile
-index 748cf31a0d53..1ea16be5743b 100644
---- a/drivers/net/can/usb/Makefile
-+++ b/drivers/net/can/usb/Makefile
-@@ -5,7 +5,7 @@
- 
- obj-$(CONFIG_CAN_8DEV_USB) += usb_8dev.o
- obj-$(CONFIG_CAN_EMS_USB) += ems_usb.o
--obj-$(CONFIG_CAN_ESD_USB2) += esd_usb2.o
-+obj-$(CONFIG_CAN_ESD_USB) += esd_usb.o
- obj-$(CONFIG_CAN_ETAS_ES58X) += etas_es58x/
- obj-$(CONFIG_CAN_GS_USB) += gs_usb.o
- obj-$(CONFIG_CAN_KVASER_USB) += kvaser_usb/
-diff --git a/drivers/net/can/usb/esd_usb2.c b/drivers/net/can/usb/esd_usb.c
-similarity index 100%
-rename from drivers/net/can/usb/esd_usb2.c
-rename to drivers/net/can/usb/esd_usb.c
+ ET131X NETWORK DRIVER
+ M:	Mark Einon <mark.einon@gmail.com>
+ S:	Odd Fixes
 -- 
 2.35.1
 
