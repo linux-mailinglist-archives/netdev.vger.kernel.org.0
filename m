@@ -2,102 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BA45155AC28
-	for <lists+netdev@lfdr.de>; Sat, 25 Jun 2022 21:29:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 739EB55AC88
+	for <lists+netdev@lfdr.de>; Sat, 25 Jun 2022 22:22:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233144AbiFYT3Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Jun 2022 15:29:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50636 "EHLO
+        id S233514AbiFYURa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Jun 2022 16:17:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231311AbiFYT3Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jun 2022 15:29:24 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2B6E13F5D;
-        Sat, 25 Jun 2022 12:29:23 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id g20-20020a17090a579400b001ed52939d72so337141pji.4;
-        Sat, 25 Jun 2022 12:29:23 -0700 (PDT)
+        with ESMTP id S233477AbiFYUR3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jun 2022 16:17:29 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE53614D37
+        for <netdev@vger.kernel.org>; Sat, 25 Jun 2022 13:17:27 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id eo8so7925996edb.0
+        for <netdev@vger.kernel.org>; Sat, 25 Jun 2022 13:17:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=c5lEV7bdqnDxF2NAwEQaD17yfLDKPDGXJ3egD+ggkUc=;
-        b=JuFkR299mwMEl/sHjr8YsK7XkBcyohPBCGMflYSQenEHx83adbPHh8Ptx+F/W23Dxm
-         yFAXkBkY7ErqSL3Ow9xju+nmn/2J50TeMR71bfP4YqN4Dr7y/5tRbDDEkcPQHXMlTEV3
-         8o7ibWcvTqb9BTLsvQhTfSHMuWbBxrb9BtHxkIanzaxWmTfxC6H4KMBCFPP39eJv6Zdh
-         Sd+4J56AplRlz2+XZ8Sxq5OUdOgtwAgkMGR3T2kEprDHBYs+n9Ypc2gWO5u3Ou+CqUYo
-         HfN/URxPQVOkVcStOwEHkxNZLQ8f1Ae+b3cXjSrzJePWUQGPBmpHntOFA+dNDQ6QuVDp
-         ZSQw==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=amdozWDTBW4nPW/TB1vNSE3aSyOSymWjl0xCncL2e5o=;
+        b=F0g++A1Y/eQo02URGKIJk9BaVk/w/aRYH0E8r9LCM+cHUw3azQ0UWjd9Uekx656Chu
+         Uf0pz/33ycAd7JH/ZbeL4V/Mpk8A0sbfs4W0q1dgmnT1Lkn0GfB/fgSnjdaQ9+nR8/cH
+         Yo8mILDLgU9Bt6p1HsjcmLt7mdP7H6rxOvSJq7ftpOzlWa370v3k6J/ll30nYAEwrr0p
+         Krx+hQdIJDHuzDcDPKW1vShfmkJldSiVLhInY4qPan2zaMOR+WGK66tUjRiiCPceOsK2
+         b4k+5JvQia4anX1M95Xvt4et/aE6ZWPEQfvCR9nv7w5KUPuf196YbqM66Xdva0gZaVLK
+         HSjg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=c5lEV7bdqnDxF2NAwEQaD17yfLDKPDGXJ3egD+ggkUc=;
-        b=0pj6ha02u4jLemPPqv4aFwR9RJwPUq0Vk2btMMhwFWP2h2NGA/lMLSqGefzvC0zlT6
-         wkQqXGOMYWEmZpjTG1cwIPzx4M8ZJEVs8/QWBix6HxxFvH+4Jj36zedW+tIOmFI3YcYi
-         K60rjMZV7+fjIahO2OskVYR03hCTsfvepQYTkJ5DRb+kVC+5mea/jhIpCI/Ux8/+RsbX
-         VHM+F0rYRUxa6XsznPfozr6B4HWrsq416+LRW9CJpp7Kt/XkV5YKfGm0NX6cUFQNPqTV
-         gd78t4BSjvdRmSDfAc0F976Ng7SJcAcoMttZ+ZB0vuhEU5QPLzNu1TKVxkKTaEVq7T2o
-         Sz7w==
-X-Gm-Message-State: AJIora988Vl05veVi9QU12snJG6kymPlSeHru0yCY6vcKYGfE8nC5Bmv
-        SQKDv66aLw0FfpbJz21Zq8U=
-X-Google-Smtp-Source: AGRyM1sBR1gbq+FRX/P79kfzBtenpKE3iztXCEXfUro5yRwMen+vBGatOmgkhGddAmSoQ7gzYnargQ==
-X-Received: by 2002:a17:902:d488:b0:16a:158e:dd19 with SMTP id c8-20020a170902d48800b0016a158edd19mr5787747plg.105.1656185363072;
-        Sat, 25 Jun 2022 12:29:23 -0700 (PDT)
-Received: from ip-172-31-11-128.ap-south-1.compute.internal (ec2-15-207-248-140.ap-south-1.compute.amazonaws.com. [15.207.248.140])
-        by smtp.gmail.com with ESMTPSA id c12-20020a17090a1d0c00b001ec92575e83sm3933650pjd.4.2022.06.25.12.29.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 25 Jun 2022 12:29:22 -0700 (PDT)
-From:   Praghadeesh T K S <praghadeeshthevendria@gmail.com>
-To:     Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Praghadeesh T K S <praghadeeshthevendria@gmail.com>,
-        linux-wireless@vger.kernel.org, b43-dev@lists.infradead.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     praghadeeshtks@zohomail.in, skhan@linuxfoundation.org
-Subject: [PATCH] net: wireless/broadcom: fix possible condition with no effect
-Date:   Sat, 25 Jun 2022 19:29:01 +0000
-Message-Id: <20220625192902.30050-1-praghadeeshthevendria@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        bh=amdozWDTBW4nPW/TB1vNSE3aSyOSymWjl0xCncL2e5o=;
+        b=H7haBZcJdysYZne5s1+7NJaR/mQ3nrpN9kbcyYweUQwbCCI+gSK3/kPSQqCiVtvIEW
+         IGRandfYKzbcuBp1femrE5BaaiVKGZNxbhlWuPeIWfDA0oNP/ssRc8O9Yw1j+CkwaYb0
+         aoyCm1XQOk4fhvQ5qRchJMANp6V/X7N2XCY/nVQhAC8J5oroKtJ5em/crNv0e65Rn/fD
+         iH9659qXsmrLCeCs5gbaS6oDdNuuFM9n+pyhYZrxrdJpgcSDHI66/ny/Qc19ioJdU1xG
+         vTPWfHlMNjDO1lxkLuU49NtwtG9DR3s8LkjT1ytq8wT56BwNHowDy0p2A7Wupiz+10TG
+         koqw==
+X-Gm-Message-State: AJIora9+6+HpbZDe1AcAfMB7MY85k817mPQeDXRS7Y9s3IPYOVozI8ke
+        TmvgNWkMYDckreTbBL5G6FmjjQ==
+X-Google-Smtp-Source: AGRyM1vJaTxphPLX88QmNPkoVNnp2tPE2GUrqm0eYWRQmkkPOKowlJOUbINXeXsMde+IJPsq4n/h3w==
+X-Received: by 2002:aa7:cb83:0:b0:435:9170:8e3b with SMTP id r3-20020aa7cb83000000b0043591708e3bmr7190848edt.144.1656188246288;
+        Sat, 25 Jun 2022 13:17:26 -0700 (PDT)
+Received: from [192.168.0.239] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id r1-20020a17090638c100b007219c20dcd8sm2967138ejd.196.2022.06.25.13.17.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 25 Jun 2022 13:17:25 -0700 (PDT)
+Message-ID: <000ca74c-16e1-754b-3398-8c9a65faee0b@linaro.org>
+Date:   Sat, 25 Jun 2022 22:17:24 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: (subset) [PATCH net-next v1 4/9] memory: tegra: Add MGBE memory
+ clients for Tegra234
+Content-Language: en-US
+To:     Thierry Reding <thierry.reding@gmail.com>
+Cc:     linux-tegra@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, vbhadram@nvidia.com,
+        treding@nvidia.com, robh+dt@kernel.org, catalin.marinas@arm.com,
+        krzysztof.kozlowski+dt@linaro.org, kuba@kernel.org,
+        jonathanh@nvidia.com, will@kernel.org
+References: <20220623074615.56418-1-vbhadram@nvidia.com>
+ <20220623074615.56418-4-vbhadram@nvidia.com>
+ <165608679241.23612.16454571226827958210.b4-ty@linaro.org>
+ <YrXlQJ1qzsZZrx7Q@orome>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <YrXlQJ1qzsZZrx7Q@orome>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix a coccinelle warning by removing condition with no possible effect
+On 24/06/2022 18:24, Thierry Reding wrote:
+> On Fri, Jun 24, 2022 at 06:06:35PM +0200, Krzysztof Kozlowski wrote:
+>> On Thu, 23 Jun 2022 13:16:10 +0530, Bhadram Varka wrote:
+>>> From: Thierry Reding <treding@nvidia.com>
+>>>
+>>> Tegra234 has multiple network interfaces with each their own memory
+>>> clients and stream IDs to allow for proper isolation.
+>>>
+>>>
+>>
+>> Applied, thanks!
+>>
+>> [4/9] memory: tegra: Add MGBE memory clients for Tegra234
+>>       https://git.kernel.org/krzk/linux-mem-ctrl/c/6b36629c85dc7d4551e57e92a3e970d099333e4e
+> 
+> Ah yes, you'll need the dt-bindings header for this driver bit as well.
+> If you don't mind I could pick all of these up into the Tegra tree and
+> resolve the dependencies there, then send a pull request for the memory
+> tree that incorporates the dt-bindings branch as a dependency.
+> 
+> That way you don't have to worry about this at all. We might also get
+> another set of similar changes for PCI or USB during this cycle, so it'd
+> certainly be easier to collect all of these in a central place.
 
-Signed-off-by: Praghadeesh T K S <praghadeeshthevendria@gmail.com>
----
- drivers/net/wireless/broadcom/b43/xmit.c | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
+I cannot take DTS patches to the driver tree, so it's easier if you take
+it and handle the dependencies.
 
-diff --git a/drivers/net/wireless/broadcom/b43/xmit.c b/drivers/net/wireless/broadcom/b43/xmit.c
-index 7651b1b..667a74b 100644
---- a/drivers/net/wireless/broadcom/b43/xmit.c
-+++ b/drivers/net/wireless/broadcom/b43/xmit.c
-@@ -169,12 +169,7 @@ static u16 b43_generate_tx_phy_ctl1(struct b43_wldev *dev, u8 bitrate)
- 	const struct b43_phy *phy = &dev->phy;
- 	const struct b43_tx_legacy_rate_phy_ctl_entry *e;
- 	u16 control = 0;
--	u16 bw;
--
--	if (phy->type == B43_PHYTYPE_LP)
--		bw = B43_TXH_PHY1_BW_20;
--	else /* FIXME */
--		bw = B43_TXH_PHY1_BW_20;
-+	u16 bw = B43_TXH_PHY1_BW_20;
- 
- 	if (0) { /* FIXME: MIMO */
- 	} else if (b43_is_cck_rate(bitrate) && phy->type != B43_PHYTYPE_LP) {
--- 
-2.34.1
-
+Best regards,
+Krzysztof
