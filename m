@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BDD455AB74
-	for <lists+netdev@lfdr.de>; Sat, 25 Jun 2022 18:09:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A7A455AB7F
+	for <lists+netdev@lfdr.de>; Sat, 25 Jun 2022 18:09:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233184AbiFYQCx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Jun 2022 12:02:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37946 "EHLO
+        id S233200AbiFYQCy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Jun 2022 12:02:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229492AbiFYQCu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jun 2022 12:02:50 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E508515A2A;
-        Sat, 25 Jun 2022 09:02:47 -0700 (PDT)
-Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.53])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LVdzM0VRzzDsNT;
-        Sun, 26 Jun 2022 00:02:07 +0800 (CST)
+        with ESMTP id S232827AbiFYQCw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jun 2022 12:02:52 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A6AA15FEC;
+        Sat, 25 Jun 2022 09:02:50 -0700 (PDT)
+Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.57])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LVdxZ6Jzhz1L8V6;
+        Sun, 26 Jun 2022 00:00:34 +0800 (CST)
 Received: from huawei.com (10.67.174.197) by kwepemi500013.china.huawei.com
  (7.221.188.120) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sun, 26 Jun
- 2022 00:02:43 +0800
+ 2022 00:02:45 +0800
 From:   Xu Kuohai <xukuohai@huawei.com>
 To:     <bpf@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
@@ -48,9 +48,9 @@ CC:     Mark Rutland <mark.rutland@arm.com>,
         James Morse <james.morse@arm.com>,
         Hou Tao <houtao1@huawei.com>,
         Jason Wang <wangborong@cdjrlc.com>
-Subject: [PATCH bpf-next v6 1/4] bpf: Remove is_valid_bpf_tramp_flags()
-Date:   Sat, 25 Jun 2022 12:12:52 -0400
-Message-ID: <20220625161255.547944-2-xukuohai@huawei.com>
+Subject: [PATCH bpf-next v6 2/4] arm64: Add LDR (literal) instruction
+Date:   Sat, 25 Jun 2022 12:12:53 -0400
+Message-ID: <20220625161255.547944-3-xukuohai@huawei.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220625161255.547944-1-xukuohai@huawei.com>
 References: <20220625161255.547944-1-xukuohai@huawei.com>
@@ -70,92 +70,113 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Before generating bpf trampoline, x86 calls is_valid_bpf_tramp_flags()
-to check the input flags. This check is architecture independent.
-So, to be consistent with x86, arm64 should also do this check
-before generating bpf trampoline.
+Add LDR (literal) instruction to load data from address relative to PC.
+This instruction will be used to implement long jump from bpf prog to
+bpf rampoline in the follow-up patch.
 
-However, the BPF_TRAMP_F_XXX flags are not used by user code and the
-flags argument is almost constant at copmile time, so this run time
-check is a bit redundant.
+The instruction encoding:
 
-Remove is_valid_bpf_tramp_flags() and add some comments to the usage of
-BPF_TRAMP_F_XXX flags, as suggested by Alexei.
+    3       2   2     2                                     0        0
+    0       7   6     4                                     5        0
++-----+-------+---+-----+-------------------------------------+--------+
+| 0 x | 0 1 1 | 0 | 0 0 |                imm19                |   Rt   |
++-----+-------+---+-----+-------------------------------------+--------+
+
+for 32-bit, variant x == 0; for 64-bit, x == 1.
+
+branch_imm_common() is used to check the distance between pc and target
+address, since it's reused by this patch and LDR (literal) is not a branch
+instruction, rename it to aarch64_imm_common().
 
 Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
-Acked-by: Song Liu <songliubraving@fb.com>
 ---
- arch/x86/net/bpf_jit_comp.c | 20 --------------------
- kernel/bpf/bpf_struct_ops.c |  3 +++
- kernel/bpf/trampoline.c     |  3 +++
- 3 files changed, 6 insertions(+), 20 deletions(-)
+ arch/arm64/include/asm/insn.h |  3 +++
+ arch/arm64/lib/insn.c         | 30 ++++++++++++++++++++++++++----
+ 2 files changed, 29 insertions(+), 4 deletions(-)
 
-diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
-index 2c51ca9f7cec..4f8938db03b1 100644
---- a/arch/x86/net/bpf_jit_comp.c
-+++ b/arch/x86/net/bpf_jit_comp.c
-@@ -1927,23 +1927,6 @@ static int invoke_bpf_mod_ret(const struct btf_func_model *m, u8 **pprog,
- 	return 0;
+diff --git a/arch/arm64/include/asm/insn.h b/arch/arm64/include/asm/insn.h
+index 6aa2dc836db1..834bff720582 100644
+--- a/arch/arm64/include/asm/insn.h
++++ b/arch/arm64/include/asm/insn.h
+@@ -510,6 +510,9 @@ u32 aarch64_insn_gen_load_store_imm(enum aarch64_insn_register reg,
+ 				    unsigned int imm,
+ 				    enum aarch64_insn_size_type size,
+ 				    enum aarch64_insn_ldst_type type);
++u32 aarch64_insn_gen_load_literal(unsigned long pc, unsigned long addr,
++				  enum aarch64_insn_register reg,
++				  bool is64bit);
+ u32 aarch64_insn_gen_load_store_pair(enum aarch64_insn_register reg1,
+ 				     enum aarch64_insn_register reg2,
+ 				     enum aarch64_insn_register base,
+diff --git a/arch/arm64/lib/insn.c b/arch/arm64/lib/insn.c
+index 695d7368fadc..12f7d03595af 100644
+--- a/arch/arm64/lib/insn.c
++++ b/arch/arm64/lib/insn.c
+@@ -323,7 +323,7 @@ static u32 aarch64_insn_encode_ldst_size(enum aarch64_insn_size_type type,
+ 	return insn;
  }
  
--static bool is_valid_bpf_tramp_flags(unsigned int flags)
--{
--	if ((flags & BPF_TRAMP_F_RESTORE_REGS) &&
--	    (flags & BPF_TRAMP_F_SKIP_FRAME))
--		return false;
--
--	/*
--	 * BPF_TRAMP_F_RET_FENTRY_RET is only used by bpf_struct_ops,
--	 * and it must be used alone.
--	 */
--	if ((flags & BPF_TRAMP_F_RET_FENTRY_RET) &&
--	    (flags & ~BPF_TRAMP_F_RET_FENTRY_RET))
--		return false;
--
--	return true;
--}
--
- /* Example:
-  * __be16 eth_type_trans(struct sk_buff *skb, struct net_device *dev);
-  * its 'struct btf_func_model' will be nr_args=2
-@@ -2022,9 +2005,6 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
- 	if (nr_args > 6)
- 		return -ENOTSUPP;
+-static inline long branch_imm_common(unsigned long pc, unsigned long addr,
++static inline long aarch64_imm_common(unsigned long pc, unsigned long addr,
+ 				     long range)
+ {
+ 	long offset;
+@@ -354,7 +354,7 @@ u32 __kprobes aarch64_insn_gen_branch_imm(unsigned long pc, unsigned long addr,
+ 	 * ARM64 virtual address arrangement guarantees all kernel and module
+ 	 * texts are within +/-128M.
+ 	 */
+-	offset = branch_imm_common(pc, addr, SZ_128M);
++	offset = aarch64_imm_common(pc, addr, SZ_128M);
+ 	if (offset >= SZ_128M)
+ 		return AARCH64_BREAK_FAULT;
  
--	if (!is_valid_bpf_tramp_flags(flags))
--		return -EINVAL;
--
- 	/* Generated trampoline stack layout:
- 	 *
- 	 * RBP + 8         [ return address  ]
-diff --git a/kernel/bpf/bpf_struct_ops.c b/kernel/bpf/bpf_struct_ops.c
-index 7e0068c3399c..84b2d9dba79a 100644
---- a/kernel/bpf/bpf_struct_ops.c
-+++ b/kernel/bpf/bpf_struct_ops.c
-@@ -341,6 +341,9 @@ int bpf_struct_ops_prepare_trampoline(struct bpf_tramp_links *tlinks,
+@@ -382,7 +382,7 @@ u32 aarch64_insn_gen_comp_branch_imm(unsigned long pc, unsigned long addr,
+ 	u32 insn;
+ 	long offset;
  
- 	tlinks[BPF_TRAMP_FENTRY].links[0] = link;
- 	tlinks[BPF_TRAMP_FENTRY].nr_links = 1;
-+	/* BPF_TRAMP_F_RET_FENTRY_RET is only used by bpf_struct_ops,
-+	 * and it must be used alone.
-+	 */
- 	flags = model->ret_size > 0 ? BPF_TRAMP_F_RET_FENTRY_RET : 0;
- 	return arch_prepare_bpf_trampoline(NULL, image, image_end,
- 					   model, flags, tlinks, NULL);
-diff --git a/kernel/bpf/trampoline.c b/kernel/bpf/trampoline.c
-index 93c7675f0c9e..bd3f2e673874 100644
---- a/kernel/bpf/trampoline.c
-+++ b/kernel/bpf/trampoline.c
-@@ -358,6 +358,9 @@ static int bpf_trampoline_update(struct bpf_trampoline *tr)
+-	offset = branch_imm_common(pc, addr, SZ_1M);
++	offset = aarch64_imm_common(pc, addr, SZ_1M);
+ 	if (offset >= SZ_1M)
+ 		return AARCH64_BREAK_FAULT;
  
- 	if (tlinks[BPF_TRAMP_FEXIT].nr_links ||
- 	    tlinks[BPF_TRAMP_MODIFY_RETURN].nr_links)
-+		/* NOTE: BPF_TRAMP_F_RESTORE_REGS and BPF_TRAMP_F_SKIP_FRAME
-+		 * should not be set together.
-+		 */
- 		flags = BPF_TRAMP_F_CALL_ORIG | BPF_TRAMP_F_SKIP_FRAME;
+@@ -421,7 +421,7 @@ u32 aarch64_insn_gen_cond_branch_imm(unsigned long pc, unsigned long addr,
+ 	u32 insn;
+ 	long offset;
  
- 	if (ip_arg)
+-	offset = branch_imm_common(pc, addr, SZ_1M);
++	offset = aarch64_imm_common(pc, addr, SZ_1M);
+ 
+ 	insn = aarch64_insn_get_bcond_value();
+ 
+@@ -543,6 +543,28 @@ u32 aarch64_insn_gen_load_store_imm(enum aarch64_insn_register reg,
+ 	return aarch64_insn_encode_immediate(AARCH64_INSN_IMM_12, insn, imm);
+ }
+ 
++u32 aarch64_insn_gen_load_literal(unsigned long pc, unsigned long addr,
++				  enum aarch64_insn_register reg,
++				  bool is64bit)
++{
++	u32 insn;
++	long offset;
++
++	offset = aarch64_imm_common(pc, addr, SZ_1M);
++	if (offset >= SZ_1M)
++		return AARCH64_BREAK_FAULT;
++
++	insn = aarch64_insn_get_ldr_lit_value();
++
++	if (is64bit)
++		insn |= BIT(30);
++
++	insn = aarch64_insn_encode_register(AARCH64_INSN_REGTYPE_RT, insn, reg);
++
++	return aarch64_insn_encode_immediate(AARCH64_INSN_IMM_19, insn,
++					     offset >> 2);
++}
++
+ u32 aarch64_insn_gen_load_store_pair(enum aarch64_insn_register reg1,
+ 				     enum aarch64_insn_register reg2,
+ 				     enum aarch64_insn_register base,
 -- 
 2.30.2
 
