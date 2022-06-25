@@ -2,131 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B29855A5B3
-	for <lists+netdev@lfdr.de>; Sat, 25 Jun 2022 03:10:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C77755A61D
+	for <lists+netdev@lfdr.de>; Sat, 25 Jun 2022 04:35:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229840AbiFYBJv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jun 2022 21:09:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39002 "EHLO
+        id S231826AbiFYCf3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jun 2022 22:35:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229530AbiFYBJu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 21:09:50 -0400
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75DF34505F
-        for <netdev@vger.kernel.org>; Fri, 24 Jun 2022 18:09:49 -0700 (PDT)
-Received: by mail-yb1-xb33.google.com with SMTP id i15so7290520ybp.1
-        for <netdev@vger.kernel.org>; Fri, 24 Jun 2022 18:09:49 -0700 (PDT)
+        with ESMTP id S230224AbiFYCf2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 22:35:28 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C70C3AA68;
+        Fri, 24 Jun 2022 19:35:28 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id x4so4070318pfq.2;
+        Fri, 24 Jun 2022 19:35:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Lgb/dwNym3yIQwv7VBixIQzONvaskgF7jjqJP6fYNO0=;
-        b=akG6oJnskVswrqo2dkLvCohrIurPiAfAXBqhNKxSyJslvEuXmAbypeWp+A0RWTdM2H
-         HjcZn2Oqglw1cTZA83tWRD4wi8O6zL2JuMFrU47ViCvs6Zz4NIM6x7yUgY2A4ii8okA1
-         BfeDwzNiNGDA4fUkvPJS9176itZArOvWRUiN/17sVOOn0t1G4fkUv/jZVSLHjvylfGIy
-         1uh/Kw5CXu4pR1h6UjzWgZLi7lIqYMiTj02EpNKzEiMLZvtomIV7Zvq1TXwanixS/cjO
-         LagqMoLKxYBuy4cJs11AJggF5zpHv7IAfYJAnUQYTfyJExqs+yZpOPK3/VPWABwVr7Zw
-         9P6g==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=AhW5dPn4vcxyE5LCTzwkvfsWSt6blPNQmQT3nX9+C3w=;
+        b=XuwEKU8RHAuR7o3ifTkInF67PIZITa0a2kvZCc90QxhIBMC2IqHqiw8fEJjRuCMd3y
+         JggmiEE4efIR9EJ9DyNUSeyvDCOj4scfOGJLYluld84PBcXb+qHNSBGHwJ6w+sPkLINg
+         0s4Hpw2CJO740upXABF+S1qMkbgMGcGp+LFWoT5XEsSFK6ftb3UUxu5g+6fWqBRnrG+j
+         3NP2QJ2DX2ceylChGRN0K/k9vNKFbvZfF1I176KLd5f1bmEDuIhy7PkVgHRYgYznXTAg
+         xJbl/i+xZ0FWdJva1VM9+NCuz1veE08c5fbfGF7fLTfGwtc8Ip5NJxhkltia376D40y7
+         2png==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Lgb/dwNym3yIQwv7VBixIQzONvaskgF7jjqJP6fYNO0=;
-        b=nnVqkP7y6NW1Do+7tLF6qDhO4kF4yOikOi+ZII4iMJO0Vu0bQbymtPjQqa2r1rhjRP
-         c8XYskn0pul9fdH4D7h9dR0IGw5O/I6kMiTsrsh8yxYu+mhzM3tBwtGNZoadDxbTWlyz
-         VfFTFmS1RlHT3VtNiBXXElQF5UvvTmARCQxcSIC+Q2Jmtu7mC9Idgu1tfEmyVyBDdKlx
-         Yf+bRCOMsnMR/BquVw0JMPNtHn8LiDwcE7HW71/YnWBwBejBz7bk1mpiQXWR8MYRWZob
-         lLgD8Sg84MRzGK+dK3JCw1Rz3shAZX8BNI9ejUIgnLtU6Xf+veTMGApRHRzfchTij2Rc
-         8D8A==
-X-Gm-Message-State: AJIora8MsieOfcJQsgpA0utNktK68e3225kK7rLsrnf7spTU89lFGFdV
-        iWFAYm6LdbNL/LPb22qMVzRKfu+QRG4UTyXhjlo=
-X-Google-Smtp-Source: AGRyM1tfDijXcpDHg2UE7api9laQ1R7tNoFaFA3vpai3wqvzRSxuPi98K4iWPDyE44rYsEuTapPczM4f4e+aSQr4Nqg=
-X-Received: by 2002:a25:324d:0:b0:66b:405b:752f with SMTP id
- y74-20020a25324d000000b0066b405b752fmr2062054yby.23.1656119388692; Fri, 24
- Jun 2022 18:09:48 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=AhW5dPn4vcxyE5LCTzwkvfsWSt6blPNQmQT3nX9+C3w=;
+        b=HpoFlHwVlNtGxNfoSwkx3L9xGtw6OEWZOPDIbIWmHmj0wt+uxFQf2E07FnkSd4lK6C
+         /3p+q5JiERVM37tYP0YqJaiZD02vctXMULisMviwIf7ktklUsvucqZ3xrieDFqh/DNZE
+         f/OQ4D0S/k8uv3qvZu3sGLOjn9A0eWpIJo2f+eL48lFFbuZoMN7d5Ai5KAq9F9ertvxk
+         WtQu2vERdoVUPu4QAIIWXfn5WZdPgqFkXxbJ14463zSTvVBHOYei2E90gldvapZP2sLZ
+         nKJrENefS64r0dyzaZqvy/vqGtRsWv7o9b9UIQnaiTVBwIlkt1aoPp8RYn9pjjUC5vJO
+         x9xA==
+X-Gm-Message-State: AJIora/yOVl8ejYxZnEUMXNnUb0Y1tTcSNYlfOiGsGHhZ0una4g3eJHh
+        HHJ9V/DXetO5d+gqZOFVsaU=
+X-Google-Smtp-Source: AGRyM1usgE6ZETXZYus4hRhHBYQ/PkwVQUz0WxxcgiEgOsNQFCGNtMOkODVCZj8MUiNSUbtu0QUs0w==
+X-Received: by 2002:aa7:8a54:0:b0:525:217e:fb29 with SMTP id n20-20020aa78a54000000b00525217efb29mr2001124pfa.45.1656124527587;
+        Fri, 24 Jun 2022 19:35:27 -0700 (PDT)
+Received: from ?IPV6:2600:8802:b00:4a48:edae:5ad3:3d10:1075? ([2600:8802:b00:4a48:edae:5ad3:3d10:1075])
+        by smtp.gmail.com with ESMTPSA id a26-20020a62bd1a000000b0051c66160a3asm2381948pff.181.2022.06.24.19.35.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 24 Jun 2022 19:35:26 -0700 (PDT)
+Message-ID: <2b73119a-73e5-c62e-7aef-f941f5262221@gmail.com>
+Date:   Fri, 24 Jun 2022 19:35:24 -0700
 MIME-Version: 1.0
-References: <20220623042105.2274812-1-kuba@kernel.org>
-In-Reply-To: <20220623042105.2274812-1-kuba@kernel.org>
-From:   Petar Penkov <peterpenkov96@gmail.com>
-Date:   Fri, 24 Jun 2022 18:09:38 -0700
-Message-ID: <CA+DcSEhaiOySZduR+-1Ep3WYt_9cm0kYB25GbSDZLPsCVbuYgA@mail.gmail.com>
-Subject: Re: [PATCH net] net: tun: stop NAPI when detaching queues
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Miller <davem@davemloft.net>,
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH net-next v9 05/16] net: pcs: add Renesas MII converter
+ driver
+Content-Language: en-US
+To:     =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Network Development <netdev@vger.kernel.org>,
-        pabeni@redhat.com, Mahesh Bandewar <maheshb@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Jose Abreu <joabreu@synopsys.com>
+Cc:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?UTF-8?Q?Miqu=c3=a8l_Raynal?= <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
+References: <20220624144001.95518-1-clement.leger@bootlin.com>
+ <20220624144001.95518-6-clement.leger@bootlin.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220624144001.95518-6-clement.leger@bootlin.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thanks for the fix (and for the syzbot one)!
-
-Acked-by: Petar Penkov <ppenkov@aviatrix.com>
 
 
-On Wed, Jun 22, 2022 at 9:21 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> While looking at a syzbot report I noticed the NAPI only gets
-> disabled before it's deleted. I think that user can detach
-> the queue before destroying the device and the NAPI will never
-> be stopped.
->
-> Compile tested only.
->
-> Fixes: 943170998b20 ("tun: enable NAPI for TUN/TAP driver")
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
-> CC: maheshb@google.com
-> CC: peterpenkov96@gmail.com
-> ---
->  drivers/net/tun.c | 11 ++++++++++-
->  1 file changed, 10 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-> index 7fd0288c3789..e2eb35887394 100644
-> --- a/drivers/net/tun.c
-> +++ b/drivers/net/tun.c
-> @@ -273,6 +273,12 @@ static void tun_napi_init(struct tun_struct *tun, struct tun_file *tfile,
->         }
->  }
->
-> +static void tun_napi_enable(struct tun_file *tfile)
-> +{
-> +       if (tfile->napi_enabled)
-> +               napi_enable(&tfile->napi);
-> +}
-> +
->  static void tun_napi_disable(struct tun_file *tfile)
->  {
->         if (tfile->napi_enabled)
-> @@ -653,8 +659,10 @@ static void __tun_detach(struct tun_file *tfile, bool clean)
->                 if (clean) {
->                         RCU_INIT_POINTER(tfile->tun, NULL);
->                         sock_put(&tfile->sk);
-> -               } else
-> +               } else {
->                         tun_disable_queue(tun, tfile);
-> +                       tun_napi_disable(tfile);
-> +               }
->
->                 synchronize_net();
->                 tun_flow_delete_by_queue(tun, tun->numqueues + 1);
-> @@ -808,6 +816,7 @@ static int tun_attach(struct tun_struct *tun, struct file *file,
->
->         if (tfile->detached) {
->                 tun_enable_queue(tfile);
-> +               tun_napi_enable(tfile);
->         } else {
->                 sock_hold(&tfile->sk);
->                 tun_napi_init(tun, tfile, napi, napi_frags);
-> --
-> 2.36.1
->
+On 6/24/2022 7:39 AM, Clément Léger wrote:
+> Add a PCS driver for the MII converter that is present on the Renesas
+> RZ/N1 SoC. This MII converter is reponsible for converting MII to
+> RMII/RGMII or act as a MII pass-trough. Exposing it as a PCS allows to
+> reuse it in both the switch driver and the stmmac driver. Currently,
+> this driver only allows the PCS to be used by the dual Cortex-A7
+> subsystem since the register locking system is not used.
+> 
+> Signed-off-by: Clément Léger <clement.leger@bootlin.com>
+> Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
