@@ -2,52 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 22CA255A75F
-	for <lists+netdev@lfdr.de>; Sat, 25 Jun 2022 07:41:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5926F55A75D
+	for <lists+netdev@lfdr.de>; Sat, 25 Jun 2022 07:41:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231851AbiFYFaS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Jun 2022 01:30:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39518 "EHLO
+        id S231821AbiFYFg5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Jun 2022 01:36:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231672AbiFYFaP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jun 2022 01:30:15 -0400
+        with ESMTP id S230146AbiFYFg5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jun 2022 01:36:57 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E29C250B04;
-        Fri, 24 Jun 2022 22:30:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9124043EE0;
+        Fri, 24 Jun 2022 22:36:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 63B226136A;
-        Sat, 25 Jun 2022 05:30:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 793F8C341C7;
-        Sat, 25 Jun 2022 05:30:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1FF0860BA2;
+        Sat, 25 Jun 2022 05:36:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C106BC341C0;
+        Sat, 25 Jun 2022 05:36:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656135013;
-        bh=z0cluZQlh0hiD7cXsYiqKYRRvibJSMQQGBh5L3ooxlw=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=rBWoD7etR3r1q6AtWKByDYKK03v38c4BrQHaifSefIUU0V+fJ3o/U06zWCZVjzG8h
-         PjpdXCByDmeFHDz5HxiDTIlo1LWuC9BdX1Z+RsNn/MNZZJyioMUaX3jFa0Xp8X/OLJ
-         0Ue3IxLL7n08hnfi1QqdC2mGhXmFvHn9CCUytpPrupMwZaYHLOC/unzeug+frqxWAj
-         hMEGfDsx+1FqcFNOO9ZxjFWolM8BuEcRKWNbqSaz+v18Xza2a4EpZlRaXQpIMbtPgt
-         JKXYUU06wur/9DPUvkAJD7PlvBxpb4Ey5O6BKnTpCUG4pX6uJi/IAfIa6pTYcLoFkf
-         fIZ2QdJUznU3Q==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 62821E85C6D;
-        Sat, 25 Jun 2022 05:30:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1656135415;
+        bh=6EJ0UW88YAfvJ9hKgT4WesCeHp/oC7ubM3mOpIYj6DY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Oz2of+fBM+AiYW/WWZOTa40+C8b7WkfLnrtVZzP7kmnuX/m0sutnOqa/aZb/n+BGa
+         ySPfA9kjjBelTXjfaP1gUwSv1WhG+4qyDDYut+VwpDKGG9cApuAv6ac2WRV5nmSvq1
+         6CVLoX5ulbh3VNnbEJdJMZ7DAdGG7za2UfeOVO5FfrhFe5xbsL8dT21O5JyEnDQ06Q
+         pWphVFkO8J1tiCM/xDyRKWDt4HUPZ2aqopwsWhO1YdxaW3BqGnbN6oPb79FMkLtoLy
+         wX4ZDdEap3xUT46J2FreUlouiri58x7N5sD97DmTcS8y3i+W7kQutoDCpDQG4Kzm8J
+         9qWKkyTNg09xQ==
+Date:   Fri, 24 Jun 2022 22:36:39 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     <alexandru.tachici@analog.com>
+Cc:     <netdev@vger.kernel.org>, <davem@davemloft.net>,
+        <edumazet@google.com>, <devicetree@vger.kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>,
+        <gerhard@engleder-embedded.com>, <geert+renesas@glider.be>,
+        <joel@jms.id.au>, <stefan.wahren@i2se.com>, <wellslutw@gmail.com>,
+        <geert@linux-m68k.org>, <robh+dt@kernel.org>,
+        <d.michailidis@fungible.com>, <stephen@networkplumber.org>,
+        <l.stelmach@samsung.com>, <linux-kernel@vger.kernel.org>
+Subject: Re: [net-next 1/2] net: ethernet: adi: Add ADIN1110 support
+Message-ID: <20220624223639.3dba304b@kernel.org>
+In-Reply-To: <20220624200628.77047-2-alexandru.tachici@analog.com>
+References: <20220624200628.77047-1-alexandru.tachici@analog.com>
+        <20220624200628.77047-2-alexandru.tachici@analog.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: fix IFF_TX_SKB_NO_LINEAR definition
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165613501339.30344.5019258234819055049.git-patchwork-notify@kernel.org>
-Date:   Sat, 25 Jun 2022 05:30:13 +0000
-References: <YrRrcGttfEVnf85Q@kili>
-In-Reply-To: <YrRrcGttfEVnf85Q@kili>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     davem@davemloft.net, xuanzhuo@linux.alibaba.com,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        daniel@iogearbox.net, john.fastabend@gmail.com, alobakin@pm.me,
-        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -58,29 +60,12 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Thu, 23 Jun 2022 16:32:32 +0300 you wrote:
-> The "1<<31" shift has a sign extension bug so IFF_TX_SKB_NO_LINEAR is
-> 0xffffffff80000000 instead of 0x0000000080000000.
+On Fri, 24 Jun 2022 23:06:27 +0300 alexandru.tachici@analog.com wrote:
+> From: Alexandru Tachici <alexandru.tachici@analog.com>
 > 
-> Fixes: c2ff53d8049f ("net: Add priv_flags for allow tx skb without linear")
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-> ---
-> Before IFF_CHANGE_PROTO_DOWN was added then this issue was not so bad.
-> 
-> [...]
+> The ADIN1110 is a low power single port 10BASE-T1L MAC-PHY
+> designed for industrial Ethernet applications. It integrates
+> an Ethernet PHY core with a MAC and all the associated analog
+> circuitry, input and output clock buffering.
 
-Here is the summary with links:
-  - [net] net: fix IFF_TX_SKB_NO_LINEAR definition
-    https://git.kernel.org/netdev/net/c/3b89b511ea0c
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Please fix the warnings when built with W=1 C=1.
