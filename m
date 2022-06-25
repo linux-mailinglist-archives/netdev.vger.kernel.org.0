@@ -2,93 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 23B5155A51C
-	for <lists+netdev@lfdr.de>; Sat, 25 Jun 2022 01:56:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B29855A5B3
+	for <lists+netdev@lfdr.de>; Sat, 25 Jun 2022 03:10:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231512AbiFXX40 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Jun 2022 19:56:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49134 "EHLO
+        id S229840AbiFYBJv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Jun 2022 21:09:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231496AbiFXX4Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 19:56:25 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93DA58AC3A
-        for <netdev@vger.kernel.org>; Fri, 24 Jun 2022 16:56:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656114984; x=1687650984;
-  h=from:to:cc:subject:in-reply-to:references:date:
-   message-id:mime-version;
-  bh=Zz07mbh9YfRoTYX5tVtIlDjpohvOvHEpK3Dp4+QSLvI=;
-  b=aiE2XpME7MV3Y+y5AV5rEafsIPzsKIHernMXE1mDrBmCGdm3AbJBEuE8
-   skZen9T0/SHQAbeMQHliI5GNktTJWVczg+tFGFaMuMAIURVpqAbPjDxYk
-   4KFL+FZdY6thUKieHvnWOCXYkcpbI+I0p2upQRw9XgfMxA0psFTWN2BK/
-   h5P9SIVveg6tneIsz3p5C4LxI2qjLG0ngocfUso86t9+txu4pxxnXNOH4
-   Fvrg0XCakZydY8Anp8F4z4ac3J6QXnlXKPCB+HSkzvN4bvDHkNSUGPtNo
-   AADEpDTR3Olt62SeIIk7vgeiEB0qdtphkx580oWrABy6RZ4Y9X+IN6bnH
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10388"; a="261541296"
-X-IronPort-AV: E=Sophos;i="5.92,220,1650956400"; 
-   d="scan'208";a="261541296"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2022 16:56:24 -0700
-X-IronPort-AV: E=Sophos;i="5.92,220,1650956400"; 
-   d="scan'208";a="593442823"
-Received: from jzhan12-mobl1.amr.corp.intel.com (HELO vcostago-mobl3) ([10.212.38.121])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2022 16:56:23 -0700
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     Kurt Kanzenbach <kurt@linutronix.de>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        Kurt Kanzenbach <kurt@linutronix.de>
-Subject: Re: [PATCH net-next] igc: Lift TAPRIO schedule restriction
-In-Reply-To: <20220606092747.16730-1-kurt@linutronix.de>
-References: <20220606092747.16730-1-kurt@linutronix.de>
-Date:   Fri, 24 Jun 2022 16:56:23 -0700
-Message-ID: <87pmixy5so.fsf@intel.com>
+        with ESMTP id S229530AbiFYBJu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Jun 2022 21:09:50 -0400
+Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75DF34505F
+        for <netdev@vger.kernel.org>; Fri, 24 Jun 2022 18:09:49 -0700 (PDT)
+Received: by mail-yb1-xb33.google.com with SMTP id i15so7290520ybp.1
+        for <netdev@vger.kernel.org>; Fri, 24 Jun 2022 18:09:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Lgb/dwNym3yIQwv7VBixIQzONvaskgF7jjqJP6fYNO0=;
+        b=akG6oJnskVswrqo2dkLvCohrIurPiAfAXBqhNKxSyJslvEuXmAbypeWp+A0RWTdM2H
+         HjcZn2Oqglw1cTZA83tWRD4wi8O6zL2JuMFrU47ViCvs6Zz4NIM6x7yUgY2A4ii8okA1
+         BfeDwzNiNGDA4fUkvPJS9176itZArOvWRUiN/17sVOOn0t1G4fkUv/jZVSLHjvylfGIy
+         1uh/Kw5CXu4pR1h6UjzWgZLi7lIqYMiTj02EpNKzEiMLZvtomIV7Zvq1TXwanixS/cjO
+         LagqMoLKxYBuy4cJs11AJggF5zpHv7IAfYJAnUQYTfyJExqs+yZpOPK3/VPWABwVr7Zw
+         9P6g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Lgb/dwNym3yIQwv7VBixIQzONvaskgF7jjqJP6fYNO0=;
+        b=nnVqkP7y6NW1Do+7tLF6qDhO4kF4yOikOi+ZII4iMJO0Vu0bQbymtPjQqa2r1rhjRP
+         c8XYskn0pul9fdH4D7h9dR0IGw5O/I6kMiTsrsh8yxYu+mhzM3tBwtGNZoadDxbTWlyz
+         VfFTFmS1RlHT3VtNiBXXElQF5UvvTmARCQxcSIC+Q2Jmtu7mC9Idgu1tfEmyVyBDdKlx
+         Yf+bRCOMsnMR/BquVw0JMPNtHn8LiDwcE7HW71/YnWBwBejBz7bk1mpiQXWR8MYRWZob
+         lLgD8Sg84MRzGK+dK3JCw1Rz3shAZX8BNI9ejUIgnLtU6Xf+veTMGApRHRzfchTij2Rc
+         8D8A==
+X-Gm-Message-State: AJIora8MsieOfcJQsgpA0utNktK68e3225kK7rLsrnf7spTU89lFGFdV
+        iWFAYm6LdbNL/LPb22qMVzRKfu+QRG4UTyXhjlo=
+X-Google-Smtp-Source: AGRyM1tfDijXcpDHg2UE7api9laQ1R7tNoFaFA3vpai3wqvzRSxuPi98K4iWPDyE44rYsEuTapPczM4f4e+aSQr4Nqg=
+X-Received: by 2002:a25:324d:0:b0:66b:405b:752f with SMTP id
+ y74-20020a25324d000000b0066b405b752fmr2062054yby.23.1656119388692; Fri, 24
+ Jun 2022 18:09:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220623042105.2274812-1-kuba@kernel.org>
+In-Reply-To: <20220623042105.2274812-1-kuba@kernel.org>
+From:   Petar Penkov <peterpenkov96@gmail.com>
+Date:   Fri, 24 Jun 2022 18:09:38 -0700
+Message-ID: <CA+DcSEhaiOySZduR+-1Ep3WYt_9cm0kYB25GbSDZLPsCVbuYgA@mail.gmail.com>
+Subject: Re: [PATCH net] net: tun: stop NAPI when detaching queues
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     David Miller <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Network Development <netdev@vger.kernel.org>,
+        pabeni@redhat.com, Mahesh Bandewar <maheshb@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Thanks for the fix (and for the syzbot one)!
 
-Kurt Kanzenbach <kurt@linutronix.de> writes:
+Acked-by: Petar Penkov <ppenkov@aviatrix.com>
 
-> Add support for Qbv schedules where one queue stays open
-> in consecutive entries. Currently that's not supported.
+
+On Wed, Jun 22, 2022 at 9:21 PM Jakub Kicinski <kuba@kernel.org> wrote:
 >
-> Example schedule:
+> While looking at a syzbot report I noticed the NAPI only gets
+> disabled before it's deleted. I think that user can detach
+> the queue before destroying the device and the NAPI will never
+> be stopped.
 >
-> |tc qdisc replace dev ${INTERFACE} handle 100 parent root taprio num_tc 3 \
-> |   map 2 2 1 0 2 2 2 2 2 2 2 2 2 2 2 2 \
-> |   queues 1@0 1@1 2@2 \
-> |   base-time ${BASETIME} \
-> |   sched-entry S 0x01 300000 \ # Stream High/Low
-> |   sched-entry S 0x06 500000 \ # Management and Best Effort
-> |   sched-entry S 0x04 200000 \ # Best Effort
-> |   flags 0x02
+> Compile tested only.
 >
-> Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
+> Fixes: 943170998b20 ("tun: enable NAPI for TUN/TAP driver")
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 > ---
-
-Finally did a few rounds of testing here, everything worked as expected:
-
-Reviewed-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
-
-
-Cheers,
--- 
-Vinicius
+> CC: maheshb@google.com
+> CC: peterpenkov96@gmail.com
+> ---
+>  drivers/net/tun.c | 11 ++++++++++-
+>  1 file changed, 10 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+> index 7fd0288c3789..e2eb35887394 100644
+> --- a/drivers/net/tun.c
+> +++ b/drivers/net/tun.c
+> @@ -273,6 +273,12 @@ static void tun_napi_init(struct tun_struct *tun, struct tun_file *tfile,
+>         }
+>  }
+>
+> +static void tun_napi_enable(struct tun_file *tfile)
+> +{
+> +       if (tfile->napi_enabled)
+> +               napi_enable(&tfile->napi);
+> +}
+> +
+>  static void tun_napi_disable(struct tun_file *tfile)
+>  {
+>         if (tfile->napi_enabled)
+> @@ -653,8 +659,10 @@ static void __tun_detach(struct tun_file *tfile, bool clean)
+>                 if (clean) {
+>                         RCU_INIT_POINTER(tfile->tun, NULL);
+>                         sock_put(&tfile->sk);
+> -               } else
+> +               } else {
+>                         tun_disable_queue(tun, tfile);
+> +                       tun_napi_disable(tfile);
+> +               }
+>
+>                 synchronize_net();
+>                 tun_flow_delete_by_queue(tun, tun->numqueues + 1);
+> @@ -808,6 +816,7 @@ static int tun_attach(struct tun_struct *tun, struct file *file,
+>
+>         if (tfile->detached) {
+>                 tun_enable_queue(tfile);
+> +               tun_napi_enable(tfile);
+>         } else {
+>                 sock_hold(&tfile->sk);
+>                 tun_napi_init(tun, tfile, napi, napi_frags);
+> --
+> 2.36.1
+>
