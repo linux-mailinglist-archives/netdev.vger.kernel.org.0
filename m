@@ -2,44 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1953455A9C9
-	for <lists+netdev@lfdr.de>; Sat, 25 Jun 2022 14:14:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54A5955A9CD
+	for <lists+netdev@lfdr.de>; Sat, 25 Jun 2022 14:14:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232786AbiFYMGn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Jun 2022 08:06:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43994 "EHLO
+        id S232819AbiFYMGo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Jun 2022 08:06:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232771AbiFYMG0 (ORCPT
+        with ESMTP id S232776AbiFYMG0 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sat, 25 Jun 2022 08:06:26 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 705B315802
-        for <netdev@vger.kernel.org>; Sat, 25 Jun 2022 05:06:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1FE617073
+        for <netdev@vger.kernel.org>; Sat, 25 Jun 2022 05:06:20 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1o54YL-0002WG-Mn
-        for netdev@vger.kernel.org; Sat, 25 Jun 2022 14:06:17 +0200
+        id 1o54YM-0002XF-SJ
+        for netdev@vger.kernel.org; Sat, 25 Jun 2022 14:06:18 +0200
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id 6858A9F11C
-        for <netdev@vger.kernel.org>; Sat, 25 Jun 2022 12:03:49 +0000 (UTC)
+        by bjornoya.blackshift.org (Postfix) with SMTP id 76A129F12B
+        for <netdev@vger.kernel.org>; Sat, 25 Jun 2022 12:03:51 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id F186B9F113;
-        Sat, 25 Jun 2022 12:03:42 +0000 (UTC)
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 5AA619F11A;
+        Sat, 25 Jun 2022 12:03:49 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id c0178b3c;
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 26e0e725;
         Sat, 25 Jun 2022 12:03:36 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de
-Subject: [PATCH net-next 0/22] pull-request: can-next 2022-06-25
-Date:   Sat, 25 Jun 2022 14:03:13 +0200
-Message-Id: <20220625120335.324697-1-mkl@pengutronix.de>
+        kernel@pengutronix.de, Srinivas Neeli <srinivas.neeli@xilinx.com>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH net-next 01/22] can: xilinx_can: add Transmitter Delay Compensation (TDC) feature support
+Date:   Sat, 25 Jun 2022 14:03:14 +0200
+Message-Id: <20220625120335.324697-2-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220625120335.324697-1-mkl@pengutronix.de>
+References: <20220625120335.324697-1-mkl@pengutronix.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
@@ -55,123 +59,167 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Jakub, hello David,
+From: Srinivas Neeli <srinivas.neeli@xilinx.com>
 
-this is a pull request of 22 patches for net-next/master.
+This patch adds Transmitter Delay Compensation (TDC) feature support.
 
-The first 2 patches target the xilinx driver. Srinivas Neeli's patch
-adds Transmitter Delay Compensation (TDC) support, a patch by me fixes
-a typo.
+In the case of higher measured loop delay with higher bit rates, bit
+stuff errors are observed. Enabling the TDC feature in CAN-FD
+controllers will compensate for the measured loop delay in the receive
+path.
 
-The next patch is by me and fixes a typo in the m_can driver.
-
-Another patch by me allows the configuration of fixed bit rates
-without need for do_set_bittiming callback.
-
-The following 7 patches are by Vincent Mailhol and refactor the
-can-dev module and Kbuild, de-inline the can_dropped_invalid_skb()
-function, which has grown over the time, and drop outgoing skbs if the
-controller is in listen only mode.
-
-Max Staudt's patch fixes a reference in the networking/can.rst
-documentation.
-
-Vincent Mailhol provides 2 patches with cleanups for the etas_es58x
-driver.
-
-Conor Dooley adds bindings for the mpfs-can to the PolarFire SoC dtsi.
-
-Another patch by me allows the configuration of fixed data bit rates
-without need for do_set_data_bittiming callback.
-
-The last 5 patches are by Frank Jungclaus. They prepare the esd_usb
-driver to add support for the the CAN-USB/3 device in a later series.
-
-regards,
-Marc
-
+Link: https://lore.kernel.org/all/20220609103157.1425730-1-srinivas.neeli@xilinx.com
+Signed-off-by: Srinivas Neeli <srinivas.neeli@xilinx.com>
+Reviewed-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+[mkl: fix indention]
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
+ drivers/net/can/xilinx_can.c | 66 +++++++++++++++++++++++++++++++++---
+ 1 file changed, 61 insertions(+), 5 deletions(-)
 
-The following changes since commit 27f2533bcc6e909b85d3c1b738fa1f203ed8a835:
+diff --git a/drivers/net/can/xilinx_can.c b/drivers/net/can/xilinx_can.c
+index 8a3b7b103ca4..70dcb45078bf 100644
+--- a/drivers/net/can/xilinx_can.c
++++ b/drivers/net/can/xilinx_can.c
+@@ -1,7 +1,7 @@
+ // SPDX-License-Identifier: GPL-2.0-or-later
+ /* Xilinx CAN device driver
+  *
+- * Copyright (C) 2012 - 2014 Xilinx, Inc.
++ * Copyright (C) 2012 - 2022 Xilinx, Inc.
+  * Copyright (C) 2009 PetaLogix. All rights reserved.
+  * Copyright (C) 2017 - 2018 Sandvik Mining and Construction Oy
+  *
+@@ -9,6 +9,7 @@
+  * This driver is developed for Axi CAN IP and for Zynq CANPS Controller.
+  */
+ 
++#include <linux/bitfield.h>
+ #include <linux/clk.h>
+ #include <linux/errno.h>
+ #include <linux/init.h>
+@@ -86,6 +87,8 @@ enum xcan_reg {
+ #define XCAN_MSR_LBACK_MASK		0x00000002 /* Loop back mode select */
+ #define XCAN_MSR_SLEEP_MASK		0x00000001 /* Sleep mode select */
+ #define XCAN_BRPR_BRP_MASK		0x000000FF /* Baud rate prescaler */
++#define XCAN_BRPR_TDCO_MASK		GENMASK(12, 8)  /* TDCO */
++#define XCAN_2_BRPR_TDCO_MASK		GENMASK(13, 8)  /* TDCO for CANFD 2.0 */
+ #define XCAN_BTR_SJW_MASK		0x00000180 /* Synchronous jump width */
+ #define XCAN_BTR_TS2_MASK		0x00000070 /* Time segment 2 */
+ #define XCAN_BTR_TS1_MASK		0x0000000F /* Time segment 1 */
+@@ -99,6 +102,7 @@ enum xcan_reg {
+ #define XCAN_ESR_STER_MASK		0x00000004 /* Stuff error */
+ #define XCAN_ESR_FMER_MASK		0x00000002 /* Form error */
+ #define XCAN_ESR_CRCER_MASK		0x00000001 /* CRC error */
++#define XCAN_SR_TDCV_MASK		GENMASK(22, 16) /* TDCV Value */
+ #define XCAN_SR_TXFLL_MASK		0x00000400 /* TX FIFO is full */
+ #define XCAN_SR_ESTAT_MASK		0x00000180 /* Error status */
+ #define XCAN_SR_ERRWRN_MASK		0x00000040 /* Error warning */
+@@ -132,6 +136,7 @@ enum xcan_reg {
+ #define XCAN_DLCR_BRS_MASK		0x04000000 /* BRS Mask in DLC */
+ 
+ /* CAN register bit shift - XCAN_<REG>_<BIT>_SHIFT */
++#define XCAN_BRPR_TDC_ENABLE		BIT(16) /* Transmitter Delay Compensation (TDC) Enable */
+ #define XCAN_BTR_SJW_SHIFT		7  /* Synchronous jump width */
+ #define XCAN_BTR_TS2_SHIFT		4  /* Time segment 2 */
+ #define XCAN_BTR_SJW_SHIFT_CANFD	16 /* Synchronous jump width */
+@@ -276,6 +281,26 @@ static const struct can_bittiming_const xcan_data_bittiming_const_canfd2 = {
+ 	.brp_inc = 1,
+ };
+ 
++/* Transmission Delay Compensation constants for CANFD 1.0 */
++static const struct can_tdc_const xcan_tdc_const_canfd = {
++	.tdcv_min = 0,
++	.tdcv_max = 0, /* Manual mode not supported. */
++	.tdco_min = 0,
++	.tdco_max = 32,
++	.tdcf_min = 0, /* Filter window not supported */
++	.tdcf_max = 0,
++};
++
++/* Transmission Delay Compensation constants for CANFD 2.0 */
++static const struct can_tdc_const xcan_tdc_const_canfd2 = {
++	.tdcv_min = 0,
++	.tdcv_max = 0, /* Manual mode not supported. */
++	.tdco_min = 0,
++	.tdco_max = 64,
++	.tdcf_min = 0, /* Filter window not supported */
++	.tdcf_max = 0,
++};
++
+ /**
+  * xcan_write_reg_le - Write a value to the device register little endian
+  * @priv:	Driver private data structure
+@@ -424,6 +449,14 @@ static int xcan_set_bittiming(struct net_device *ndev)
+ 	    priv->devtype.cantype == XAXI_CANFD_2_0) {
+ 		/* Setting Baud Rate prescalar value in F_BRPR Register */
+ 		btr0 = dbt->brp - 1;
++		if (can_tdc_is_enabled(&priv->can)) {
++			if (priv->devtype.cantype == XAXI_CANFD)
++				btr0 |= FIELD_PREP(XCAN_BRPR_TDCO_MASK, priv->can.tdc.tdco) |
++					XCAN_BRPR_TDC_ENABLE;
++			else
++				btr0 |= FIELD_PREP(XCAN_2_BRPR_TDCO_MASK, priv->can.tdc.tdco) |
++					XCAN_BRPR_TDC_ENABLE;
++		}
+ 
+ 		/* Setting Time Segment 1 in BTR Register */
+ 		btr1 = dbt->prop_seg + dbt->phase_seg1 - 1;
+@@ -1483,6 +1516,22 @@ static int xcan_get_berr_counter(const struct net_device *ndev,
+ 	return 0;
+ }
+ 
++/**
++ * xcan_get_auto_tdcv - Get Transmitter Delay Compensation Value
++ * @ndev:	Pointer to net_device structure
++ * @tdcv:	Pointer to TDCV value
++ *
++ * Return: 0 on success
++ */
++static int xcan_get_auto_tdcv(const struct net_device *ndev, u32 *tdcv)
++{
++	struct xcan_priv *priv = netdev_priv(ndev);
++
++	*tdcv = FIELD_GET(XCAN_SR_TDCV_MASK, priv->read_reg(priv, XCAN_SR_OFFSET));
++
++	return 0;
++}
++
+ static const struct net_device_ops xcan_netdev_ops = {
+ 	.ndo_open	= xcan_open,
+ 	.ndo_stop	= xcan_close,
+@@ -1735,17 +1784,24 @@ static int xcan_probe(struct platform_device *pdev)
+ 	priv->can.ctrlmode_supported = CAN_CTRLMODE_LOOPBACK |
+ 					CAN_CTRLMODE_BERR_REPORTING;
+ 
+-	if (devtype->cantype == XAXI_CANFD)
++	if (devtype->cantype == XAXI_CANFD) {
+ 		priv->can.data_bittiming_const =
+ 			&xcan_data_bittiming_const_canfd;
++		priv->can.tdc_const = &xcan_tdc_const_canfd;
++	}
+ 
+-	if (devtype->cantype == XAXI_CANFD_2_0)
++	if (devtype->cantype == XAXI_CANFD_2_0) {
+ 		priv->can.data_bittiming_const =
+ 			&xcan_data_bittiming_const_canfd2;
++		priv->can.tdc_const = &xcan_tdc_const_canfd2;
++	}
+ 
+ 	if (devtype->cantype == XAXI_CANFD ||
+-	    devtype->cantype == XAXI_CANFD_2_0)
+-		priv->can.ctrlmode_supported |= CAN_CTRLMODE_FD;
++	    devtype->cantype == XAXI_CANFD_2_0) {
++		priv->can.ctrlmode_supported |= CAN_CTRLMODE_FD |
++						CAN_CTRLMODE_TDC_AUTO;
++		priv->can.do_get_auto_tdcv = xcan_get_auto_tdcv;
++	}
+ 
+ 	priv->reg_base = addr;
+ 	priv->tx_max = tx_max;
 
-  nfp: flower: support to offload pedit of IPv6 flowinto fields (2022-06-10 22:23:17 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can-next.git tags/linux-can-next-for-5.20-20220625
-
-for you to fetch changes up to c3d396120d68c40cdf2a2da70eff3bf8806f0ff5:
-
-  Merge branch 'preparation-for-supporting-esd-CAN-USB-3' (2022-06-25 13:08:41 +0200)
-
-----------------------------------------------------------------
-linux-can-next-for-5.20-20220625
-
-----------------------------------------------------------------
-Conor Dooley (2):
-      dt-bindings: can: mpfs: document the mpfs CAN controller
-      riscv: dts: microchip: add mpfs's CAN controllers
-
-Frank Jungclaus (5):
-      can/esd_usb2: Rename esd_usb2.c to esd_usb.c
-      can/esd_usb: Add an entry to the MAINTAINERS file
-      can/esd_usb: Rename all terms USB2 to USB
-      can/esd_usb: Fixed some checkpatch.pl warnings
-      can/esd_usb: Update to copyright, M_AUTHOR and M_DESCRIPTION
-
-Marc Kleine-Budde (8):
-      can: xilinx_can: fix typo prescalar -> prescaler
-      can: m_can: fix typo prescalar -> prescaler
-      can: netlink: allow configuring of fixed bit rates without need for do_set_bittiming callback
-      Merge branch 'can-refactoring-of-can-dev-module-and-of-Kbuild'
-      Merge branch 'can-etas_es58x-cleanups-on-struct-es58x_device'
-      Merge branch 'document-polarfire-soc-can-controller'
-      can: netlink: allow configuring of fixed data bit rates without need for do_set_data_bittiming callback
-      Merge branch 'preparation-for-supporting-esd-CAN-USB-3'
-
-Max Staudt (1):
-      can: Break loopback loop on loopback documentation
-
-Srinivas Neeli (1):
-      can: xilinx_can: add Transmitter Delay Compensation (TDC) feature support
-
-Vincent Mailhol (9):
-      can: Kconfig: rename config symbol CAN_DEV into CAN_NETLINK
-      can: Kconfig: turn menu "CAN Device Drivers" into a menuconfig using CAN_DEV
-      can: bittiming: move bittiming calculation functions to calc_bittiming.c
-      can: Kconfig: add CONFIG_CAN_RX_OFFLOAD
-      net: Kconfig: move the CAN device menu to the "Device Drivers" section
-      can: skb: move can_dropped_invalid_skb() and can_skb_headroom_valid() to skb.c
-      can: skb: drop tx skb if in listen only mode
-      can: etas_es58x: replace es58x_device::rx_max_packet_size by usb_maxpacket()
-      can: etas_es58x: fix signedness of USB RX and TX pipes
-
- .../bindings/net/can/microchip,mpfs-can.yaml       |  45 ++++
- Documentation/networking/can.rst                   |   2 +-
- MAINTAINERS                                        |   7 +
- arch/riscv/boot/dts/microchip/mpfs.dtsi            |  18 ++
- drivers/net/Kconfig                                |   2 +
- drivers/net/can/Kconfig                            |  55 ++++-
- drivers/net/can/dev/Makefile                       |  17 +-
- drivers/net/can/dev/bittiming.c                    | 197 ----------------
- drivers/net/can/dev/calc_bittiming.c               | 202 +++++++++++++++++
- drivers/net/can/dev/dev.c                          |   9 +-
- drivers/net/can/dev/netlink.c                      |   6 +-
- drivers/net/can/dev/skb.c                          |  72 ++++++
- drivers/net/can/m_can/Kconfig                      |   1 +
- drivers/net/can/m_can/m_can.c                      |   4 +-
- drivers/net/can/spi/mcp251xfd/Kconfig              |   1 +
- drivers/net/can/usb/Kconfig                        |  15 +-
- drivers/net/can/usb/Makefile                       |   2 +-
- drivers/net/can/usb/{esd_usb2.c => esd_usb.c}      | 250 ++++++++++-----------
- drivers/net/can/usb/etas_es58x/es58x_core.c        |   5 +-
- drivers/net/can/usb/etas_es58x/es58x_core.h        |   6 +-
- drivers/net/can/xilinx_can.c                       |  72 +++++-
- include/linux/can/skb.h                            |  59 +----
- net/can/Kconfig                                    |   5 +-
- 23 files changed, 616 insertions(+), 436 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/net/can/microchip,mpfs-can.yaml
- create mode 100644 drivers/net/can/dev/calc_bittiming.c
- rename drivers/net/can/usb/{esd_usb2.c => esd_usb.c} (81%)
+base-commit: 27f2533bcc6e909b85d3c1b738fa1f203ed8a835
+-- 
+2.35.1
 
 
