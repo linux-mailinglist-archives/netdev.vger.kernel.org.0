@@ -2,139 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D31F055AB51
-	for <lists+netdev@lfdr.de>; Sat, 25 Jun 2022 17:34:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49F4655AB5B
+	for <lists+netdev@lfdr.de>; Sat, 25 Jun 2022 17:41:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233103AbiFYPe4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Jun 2022 11:34:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53038 "EHLO
+        id S233166AbiFYPkp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Jun 2022 11:40:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233065AbiFYPez (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jun 2022 11:34:55 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82B61DF48;
-        Sat, 25 Jun 2022 08:34:54 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id i8-20020a17090aee8800b001ecc929d14dso7500432pjz.0;
-        Sat, 25 Jun 2022 08:34:54 -0700 (PDT)
+        with ESMTP id S233140AbiFYPko (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jun 2022 11:40:44 -0400
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33B4515A2C
+        for <netdev@vger.kernel.org>; Sat, 25 Jun 2022 08:40:43 -0700 (PDT)
+Received: by mail-lf1-x12b.google.com with SMTP id z13so9291379lfj.13
+        for <netdev@vger.kernel.org>; Sat, 25 Jun 2022 08:40:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
+        h=mime-version:sender:from:date:message-id:subject:to
          :content-transfer-encoding;
-        bh=FhikbhadDQ0rX9caD2bvCSuXqnUHt6OCEuRHo6pJkvA=;
-        b=fIXNCPCRvCTu0lOgEh4HFQea67b2Jj2R1K+2555bdlcq4Ka1gXG9Jm8ynFsm7+ilLW
-         XRUm8/pMJUAq9h1G2AjrCTsAKXczSJBlKoQRihOYSk60y4ipilOwcOA8R+cMf7+vXJby
-         seMiyL9Xb/Wg8TfMkmI57kc2/ViJ7ka2ySl8cC/oANRIJZQLR5RiUSA0/ugDJ1K9ZYaA
-         5MwLSOwOYR+RWZcTqro9aMki4SYkIbPMbBR0DUuiNtCSSKAbRGqXb4PhUcD32PIv7GWm
-         BAM8+keXZKnzHNhwR9RjXm5gM/sRYjnH1Lhm+MhKIuRUi5YfCbdvxQol7MVlvtO+xvPv
-         u+AA==
+        bh=bI751YOuP98wHh1q4rHO/ASQoCAvLeM/hP1e2c0DqAE=;
+        b=SkYNZJw4GoZ3tDv7kOU2ZQN6l2TY4n56+yVteETy/z76+J5BoMKPI6hxijuh48gR+8
+         0ECizucx/uzETm2am7tQ9WayTg4t9Lh0K193ngwyMSvmCr/0CdAMcl6+9uC0rUml38Ht
+         by/Su8tB+dVL2XOmc0ZGzERhk5ic19aNlX6nM0YFuopVleIrJQgtMD3ff/AhT9dlO0e2
+         /2Pqps9BhqfQdoRjmFsJ4isPmpnjkAZiANiRdHYNQ+KFIpOynjEk0+T1GLD6S6MBqiO1
+         cZQflq0spuOtaPudXEFMdQmGNOrBHwz/UfOvsIhN1DWfjSXR9RQW8T3mGLPlIrd/YMrZ
+         XkfA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=FhikbhadDQ0rX9caD2bvCSuXqnUHt6OCEuRHo6pJkvA=;
-        b=ryolrr/4RqZ4BQHn1qdT+dtiGRJx57o1PtQu7luHZUYFTFWWAMwvex9OdqEWJkYsl6
-         gxG7NkywSmWBlgdwmEA1bNFIg8GbgP6pVpxToU8EKi4MNWha97qyV5QjiLbFAGrF+F6e
-         Za3Ix5G/kKqCloLAJQW8wKjRdA5gzS0jRWSFkdSKL16Apq8mJBgxkULzbIZb1Yx8eBiT
-         DGkMz9hKazMZqtoKk412d4UKgBIP8Gs/PtMU3IeezbYXVUcaMeWekO+H1gcBFIvgG7g/
-         Q55UqefZukfJIJNJal5qqtbcust6wInZz27XQXwxyLyn8FdrMnGcsk/D3P1U8Cm+1TEv
-         p82w==
-X-Gm-Message-State: AJIora+L1dxsNvJfg1kGeTeLjU7l18no8/7cUCaD53Y8mH+2prk69t6v
-        pt/FkkanWe96ZbYR2dQxF+wzNj05P6HriBvrNuI=
-X-Google-Smtp-Source: AGRyM1tavCXlDm4hg0O97qPWPbGoHwIuq/p+xNf5aGqhFOas5qGzsQOJBxgxITW53VJY1WumlbstGQ==
-X-Received: by 2002:a17:902:6946:b0:167:8ff3:1608 with SMTP id k6-20020a170902694600b001678ff31608mr5010136plt.116.1656171293921;
-        Sat, 25 Jun 2022 08:34:53 -0700 (PDT)
-Received: from computer.. ([111.43.251.41])
-        by smtp.gmail.com with ESMTPSA id e17-20020a170902d39100b0016a3db5d608sm3852904pld.289.2022.06.25.08.34.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 25 Jun 2022 08:34:53 -0700 (PDT)
-From:   Zixuan Tan <tanzixuangg@gmail.com>
-X-Google-Original-From: Zixuan Tan <tanzixuan.me@gmail.com>
-To:     terrelln@fb.com
-Cc:     Zixuan Tan <tanzixuan.me@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH] perf build: Suppress openssl v3 deprecation warnings in libcrypto feature test
-Date:   Sat, 25 Jun 2022 23:34:38 +0800
-Message-Id: <20220625153439.513559-1-tanzixuan.me@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to:content-transfer-encoding;
+        bh=bI751YOuP98wHh1q4rHO/ASQoCAvLeM/hP1e2c0DqAE=;
+        b=wMuh+tCDf/IyMG8c2OIMmBwcI8S+hOtTqF9iTCmvIQI58Af3WWH83E/c5Lw8IUq9CA
+         pUUQZIzjIoMHSA1vAGMtzH133fuIVasCZKULyqy0ZBjQin344x0L0c7rcdWSeakussBY
+         fjLu6FvkxZx3GsICP+j+Vo3AAQakG1gzHnOtmzI+PrhQLxh3qGTcD7ciKDf3Uk8MPusR
+         AS+O89EOxPnK1pWpxlbOeLviDBUNcaCYnKz0nrb5sw4aLkYXHGn+itfY4NULsNgWvB20
+         te7EKEWN9miRLvWtkiPEO5PIzZQZ2VWSqEmd8sTe8zVBYjtsCSvOcuD1lT77AxIdWO2g
+         WNZQ==
+X-Gm-Message-State: AJIora8Tive/duqNj7OwSD/+phoHMcDaA3PiDv4gSubnbmjh3Hnyz7CG
+        TFdgA5NDnRIAMQ9gv0eFLj75pe3byK1+9jzINCA=
+X-Google-Smtp-Source: AGRyM1tfE/NATW2Fswjt1P4LWPJs1+ec+H7R4J+s639rswSr4n7KiM/+FsOEs16fipxyfvIotEVDadEWk5C7AgTym20=
+X-Received: by 2002:a05:6512:687:b0:47f:c1e8:522f with SMTP id
+ t7-20020a056512068700b0047fc1e8522fmr2754592lfe.122.1656171641456; Sat, 25
+ Jun 2022 08:40:41 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Sender: mrsaliceragnvar@gmail.com
+Received: by 2002:a05:6512:169e:0:0:0:0 with HTTP; Sat, 25 Jun 2022 08:40:40
+ -0700 (PDT)
+From:   Dina Mckenna <dinamckenna1894@gmail.com>
+Date:   Sat, 25 Jun 2022 15:40:40 +0000
+X-Google-Sender-Auth: HNRzpEmbFBnEUq3fX9WRPgtj2j0
+Message-ID: <CAGHGhXDAY2x4aZn4hHjiE9tMyCiMHtasSewTW1WXNwaB+-u_dA@mail.gmail.com>
+Subject: Please need your urgent assistance,
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: Yes, score=7.6 required=5.0 tests=ADVANCE_FEE_5_NEW_MONEY,
+        BAYES_80,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        FREEMAIL_FROM,LOTS_OF_MONEY,MONEY_FRAUD_8,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,UNDISC_MONEY,URG_BIZ
+        autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2a00:1450:4864:20:0:0:0:12b listed in]
+        [list.dnswl.org]
+        *  2.0 BAYES_80 BODY: Bayes spam probability is 80 to 95%
+        *      [score: 0.8650]
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [dinamckenna1894[at]gmail.com]
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        *  0.0 LOTS_OF_MONEY Huge... sums of money
+        *  0.6 URG_BIZ Contains urgent matter
+        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
+        *  0.0 MONEY_FRAUD_8 Lots of money and very many fraud phrases
+        *  3.0 ADVANCE_FEE_5_NEW_MONEY Advance Fee fraud and lots of money
+        *  2.2 UNDISC_MONEY Undisclosed recipients + money/fraud signs
+X-Spam-Level: *******
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With OpenSSL v3 installed, the libcrypto feature check fails as it use the
-deprecated MD5_* API (and is compiled with -Werror). The error message is
-as follows.
+Hello my dear.,
 
-$ make tools/perf
-```
-Makefile.config:778: No libcrypto.h found, disables jitted code injection,
-please install openssl-devel or libssl-dev
+ I sent this mail praying it will get to you in a good condition of
+health, since I myself are in a very critical health condition in
+which I sleep every night without knowing if I may be alive to see the
+next day. I bring peace and love to you. It is by the grace of God, I
+had no choice than to do what is lawful and right in the sight of God
+for eternal life and in the sight of man, for witness of God=E2=80=99s merc=
+y
+and glory upon my life. I am Mrs. Dina. mckenna howley, a widow. I am
+suffering from a long time brain tumor, It has defiled all forms of
+medical treatment, and right now I have about a few months to leave,
+according to medical experts. The situation has gotten complicated
+recently with my inability to hear proper, am communicating with you
+with the help of the chief nurse herein the hospital, from all
+indication my conditions is really deteriorating and it is quite
+obvious that, according to my doctors they have advised me that I may
+not live too long, Because this illness has gotten to a very bad
+stage. I plead that you will not expose or betray this trust and
+confidence that I am about to repose on you for the mutual benefit of
+the orphans and the less privilege. I have some funds I inherited from
+my late husband, the sum of ($ 11,000,000.00, Eleven Million Dollars
+).  Having known my condition, I decided to donate this fund to you
+believing that you will utilize it the way i am going to instruct
+herein. I need you to assist me and reclaim this money and use it for
+Charity works therein your country for orphanages and gives justice
+and help to the poor, needy and widows says The Lord." Jeremiah
+22:15-16.=E2=80=9C and also build schools for less privilege that will be
+named after my late husband if possible and to promote the word of God
+and the effort that the house of God is maintained. I do not want a
+situation where this money will be used in an ungodly manner. That's
+why I'm taking this decision. I'm not afraid of death, so I know where
+I'm going. I accept this decision because I do not have any child who
+will inherit this money after I die. Please I want your sincerely and
+urgent answer to know if you will be able to execute this project for
+the glory of God, and I will give you more information on how the fund
+will be transferred to your bank account. May the grace, peace, love
+and the truth in the Word of God be with you and all those that you
+love and care for..
 
-Auto-detecting system features:
-...                         dwarf: [ on  ]
-...            dwarf_getlocations: [ on  ]
-...                         glibc: [ on  ]
-...                        libbfd: [ on  ]
-...                libbfd-buildid: [ on  ]
-...                        libcap: [ on  ]
-...                        libelf: [ on  ]
-...                       libnuma: [ on  ]
-...        numa_num_possible_cpus: [ on  ]
-...                       libperl: [ on  ]
-...                     libpython: [ on  ]
-...                     libcrypto: [ OFF ]
-...                     libunwind: [ on  ]
-...            libdw-dwarf-unwind: [ on  ]
-...                          zlib: [ on  ]
-...                          lzma: [ on  ]
-...                     get_cpuid: [ on  ]
-...                           bpf: [ on  ]
-...                        libaio: [ on  ]
-...                       libzstd: [ on  ]
-...        disassembler-four-args: [ on  ]
-```
+I'm waiting for your immediate reply.
 
-This is very confusing because the suggested library (on my Ubuntu 20.04
-it is libssl-dev) is already installed. As the test only checks for the
-presence of libcrypto, this commit suppresses the deprecation warning to
-allow the test to pass.
-
-Signed-off-by: Zixuan Tan <tanzixuan.me@gmail.com>
----
- tools/build/feature/test-libcrypto.c | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/tools/build/feature/test-libcrypto.c b/tools/build/feature/test-libcrypto.c
-index a98174e0569c..31afff093d0b 100644
---- a/tools/build/feature/test-libcrypto.c
-+++ b/tools/build/feature/test-libcrypto.c
-@@ -2,6 +2,12 @@
- #include <openssl/sha.h>
- #include <openssl/md5.h>
- 
-+/*
-+ * The MD5_* API have been deprecated since OpenSSL 3.0, which causes the
-+ * feature test to fail silently. This is a workaround.
-+ */
-+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-+
- int main(void)
- {
- 	MD5_CTX context;
--- 
-2.34.1
-
+May God Bless you,
+Mrs. Dina. Mckenna Howley.
