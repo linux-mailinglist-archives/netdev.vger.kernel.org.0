@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E19B455AB66
-	for <lists+netdev@lfdr.de>; Sat, 25 Jun 2022 17:59:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C17E855AB78
+	for <lists+netdev@lfdr.de>; Sat, 25 Jun 2022 18:09:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233064AbiFYP7C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Jun 2022 11:59:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36282 "EHLO
+        id S233148AbiFYQCq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Jun 2022 12:02:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229516AbiFYP7A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jun 2022 11:59:00 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B9D514D2E;
-        Sat, 25 Jun 2022 08:58:58 -0700 (PDT)
-Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.53])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LVdtv6Gt7zDsK4;
-        Sat, 25 Jun 2022 23:58:15 +0800 (CST)
+        with ESMTP id S229492AbiFYQCp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jun 2022 12:02:45 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38A821580B;
+        Sat, 25 Jun 2022 09:02:43 -0700 (PDT)
+Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LVdxR4HYyzhXY5;
+        Sun, 26 Jun 2022 00:00:27 +0800 (CST)
 Received: from huawei.com (10.67.174.197) by kwepemi500013.china.huawei.com
  (7.221.188.120) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sat, 25 Jun
- 2022 23:58:51 +0800
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sun, 26 Jun
+ 2022 00:02:38 +0800
 From:   Xu Kuohai <xukuohai@huawei.com>
 To:     <bpf@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
@@ -48,15 +48,15 @@ CC:     Mark Rutland <mark.rutland@arm.com>,
         James Morse <james.morse@arm.com>,
         Hou Tao <houtao1@huawei.com>,
         Jason Wang <wangborong@cdjrlc.com>
-Subject: [PATCH bpf-next v6 0/5] bpf trampoline for arm64
-Date:   Sat, 25 Jun 2022 12:08:30 -0400
-Message-ID: <20220625160834.547456-1-xukuohai@huawei.com>
+Subject: [PATCH bpf-next v6 0/4] bpf trampoline for arm64
+Date:   Sat, 25 Jun 2022 12:12:51 -0400
+Message-ID: <20220625161255.547944-1-xukuohai@huawei.com>
 X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
 X-Originating-IP: [10.67.174.197]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
  kwepemi500013.china.huawei.com (7.221.188.120)
 X-CFilter-Loop: Reflected
 X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
