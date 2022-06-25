@@ -2,113 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 35D0255AAFC
-	for <lists+netdev@lfdr.de>; Sat, 25 Jun 2022 16:30:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D31F055AB51
+	for <lists+netdev@lfdr.de>; Sat, 25 Jun 2022 17:34:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232943AbiFYO06 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Jun 2022 10:26:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47552 "EHLO
+        id S233103AbiFYPe4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Jun 2022 11:34:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229524AbiFYO05 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jun 2022 10:26:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6F0DE0E2;
-        Sat, 25 Jun 2022 07:26:56 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 97D1DB80B6F;
-        Sat, 25 Jun 2022 14:26:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94445C3411C;
-        Sat, 25 Jun 2022 14:26:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656167214;
-        bh=56xO8nsdt8HDZ8eKJcZsZturnOZobYXhKpYstAWes3s=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=pG8GyiDGNAmyfE5bJp19nE/3gAbZiimS5JkXS4qiRMz6YA2p5dHVU1ea3dRfq5T3N
-         9hI3kysESnWOCH0VvOMouKG6J1L2azUZVnNXxwE5cdoehY8QvQQp3WbhvKA1kQW4Mi
-         Ek9zPtDEIRRdWk5l/j/L2hIPvxgnSwkmD89osI5U=
-Date:   Sat, 25 Jun 2022 16:26:51 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Maciej =?utf-8?Q?=C5=BBenczykowski?= <maze@google.com>
-Cc:     patchwork-bot+netdevbpf@kernel.org, stable@vger.kernel.org,
-        Riccardo Paolo Bestetti <pbl@bestov.io>,
-        Carlos Llamas <cmllamas@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, kernel-team@android.com,
-        Kernel hackers <linux-kernel@vger.kernel.org>,
-        Linux NetDev <netdev@vger.kernel.org>,
-        Miaohe Lin <linmiaohe@huawei.com>
-Subject: Re: [PATCH v2] ipv4: ping: fix bind address validity check
-Message-ID: <YrcbKzTuUssl+x0G@kroah.com>
-References: <20220617085435.193319-1-pbl@bestov.io>
- <165546541315.12170.9716012665055247467.git-patchwork-notify@kernel.org>
- <CANP3RGcMqXH2+g1=40zwpzbpDORjDpyo4cVYZWS_tfVR8A_6CQ@mail.gmail.com>
- <YrBH1MXZq2/3Z94T@kroah.com>
- <CANP3RGc8tjqk+c=+rAHNON8u=21Uu+kWveuMWZxGCNMjvqRHYg@mail.gmail.com>
+        with ESMTP id S233065AbiFYPez (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jun 2022 11:34:55 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82B61DF48;
+        Sat, 25 Jun 2022 08:34:54 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id i8-20020a17090aee8800b001ecc929d14dso7500432pjz.0;
+        Sat, 25 Jun 2022 08:34:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FhikbhadDQ0rX9caD2bvCSuXqnUHt6OCEuRHo6pJkvA=;
+        b=fIXNCPCRvCTu0lOgEh4HFQea67b2Jj2R1K+2555bdlcq4Ka1gXG9Jm8ynFsm7+ilLW
+         XRUm8/pMJUAq9h1G2AjrCTsAKXczSJBlKoQRihOYSk60y4ipilOwcOA8R+cMf7+vXJby
+         seMiyL9Xb/Wg8TfMkmI57kc2/ViJ7ka2ySl8cC/oANRIJZQLR5RiUSA0/ugDJ1K9ZYaA
+         5MwLSOwOYR+RWZcTqro9aMki4SYkIbPMbBR0DUuiNtCSSKAbRGqXb4PhUcD32PIv7GWm
+         BAM8+keXZKnzHNhwR9RjXm5gM/sRYjnH1Lhm+MhKIuRUi5YfCbdvxQol7MVlvtO+xvPv
+         u+AA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FhikbhadDQ0rX9caD2bvCSuXqnUHt6OCEuRHo6pJkvA=;
+        b=ryolrr/4RqZ4BQHn1qdT+dtiGRJx57o1PtQu7luHZUYFTFWWAMwvex9OdqEWJkYsl6
+         gxG7NkywSmWBlgdwmEA1bNFIg8GbgP6pVpxToU8EKi4MNWha97qyV5QjiLbFAGrF+F6e
+         Za3Ix5G/kKqCloLAJQW8wKjRdA5gzS0jRWSFkdSKL16Apq8mJBgxkULzbIZb1Yx8eBiT
+         DGkMz9hKazMZqtoKk412d4UKgBIP8Gs/PtMU3IeezbYXVUcaMeWekO+H1gcBFIvgG7g/
+         Q55UqefZukfJIJNJal5qqtbcust6wInZz27XQXwxyLyn8FdrMnGcsk/D3P1U8Cm+1TEv
+         p82w==
+X-Gm-Message-State: AJIora+L1dxsNvJfg1kGeTeLjU7l18no8/7cUCaD53Y8mH+2prk69t6v
+        pt/FkkanWe96ZbYR2dQxF+wzNj05P6HriBvrNuI=
+X-Google-Smtp-Source: AGRyM1tavCXlDm4hg0O97qPWPbGoHwIuq/p+xNf5aGqhFOas5qGzsQOJBxgxITW53VJY1WumlbstGQ==
+X-Received: by 2002:a17:902:6946:b0:167:8ff3:1608 with SMTP id k6-20020a170902694600b001678ff31608mr5010136plt.116.1656171293921;
+        Sat, 25 Jun 2022 08:34:53 -0700 (PDT)
+Received: from computer.. ([111.43.251.41])
+        by smtp.gmail.com with ESMTPSA id e17-20020a170902d39100b0016a3db5d608sm3852904pld.289.2022.06.25.08.34.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 25 Jun 2022 08:34:53 -0700 (PDT)
+From:   Zixuan Tan <tanzixuangg@gmail.com>
+X-Google-Original-From: Zixuan Tan <tanzixuan.me@gmail.com>
+To:     terrelln@fb.com
+Cc:     Zixuan Tan <tanzixuan.me@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH] perf build: Suppress openssl v3 deprecation warnings in libcrypto feature test
+Date:   Sat, 25 Jun 2022 23:34:38 +0800
+Message-Id: <20220625153439.513559-1-tanzixuan.me@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CANP3RGc8tjqk+c=+rAHNON8u=21Uu+kWveuMWZxGCNMjvqRHYg@mail.gmail.com>
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 11:18:21AM -0700, Maciej Żenczykowski wrote:
-> On Mon, Jun 20, 2022 at 3:11 AM Greg KH <gregkh@linuxfoundation.org> wrote:
-> > On Fri, Jun 17, 2022 at 04:45:52PM -0700, Maciej Żenczykowski wrote:
-> > > On Fri, Jun 17, 2022 at 4:30 AM <patchwork-bot+netdevbpf@kernel.org> wrote:
-> > > >
-> > > > Hello:
-> > > >
-> > > > This patch was applied to netdev/net.git (master)
-> > > > by David S. Miller <davem@davemloft.net>:
-> > > >
-> > > > On Fri, 17 Jun 2022 10:54:35 +0200 you wrote:
-> > > > > Commit 8ff978b8b222 ("ipv4/raw: support binding to nonlocal addresses")
-> > > > > introduced a helper function to fold duplicated validity checks of bind
-> > > > > addresses into inet_addr_valid_or_nonlocal(). However, this caused an
-> > > > > unintended regression in ping_check_bind_addr(), which previously would
-> > > > > reject binding to multicast and broadcast addresses, but now these are
-> > > > > both incorrectly allowed as reported in [1].
-> > > > >
-> > > > > [...]
-> > > >
-> > > > Here is the summary with links:
-> > > >   - [v2] ipv4: ping: fix bind address validity check
-> > > >     https://git.kernel.org/netdev/net/c/b4a028c4d031
-> > > >
-> > > > You are awesome, thank you!
-> > > > --
-> > > > Deet-doot-dot, I am a bot.
-> > > > https://korg.docs.kernel.org/patchwork/pwbot.html
-> > >
-> > > I believe this [
-> > > https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?id=b4a028c4d031
-> > > ] needs to end up in 5.17+ LTS (though I guess 5.17 is eol, so
-> > > probably just 5.18)
-> >
-> > 5.17 is end-of-life, sorry.
-> >
-> > And this needs to hit Linus's tree first.
-> 
-> It now has:
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/log/net/ipv4/ping.c
-> 
-> ipv4: ping: fix bind address validity check
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/net/ipv4/ping.c?id=b4a028c4d031c27704ad73b1195ca69a1206941e
+With OpenSSL v3 installed, the libcrypto feature check fails as it use the
+deprecated MD5_* API (and is compiled with -Werror). The error message is
+as follows.
 
-Great, now queued up, thanks.
+$ make tools/perf
+```
+Makefile.config:778: No libcrypto.h found, disables jitted code injection,
+please install openssl-devel or libssl-dev
 
-greg k-h
+Auto-detecting system features:
+...                         dwarf: [ on  ]
+...            dwarf_getlocations: [ on  ]
+...                         glibc: [ on  ]
+...                        libbfd: [ on  ]
+...                libbfd-buildid: [ on  ]
+...                        libcap: [ on  ]
+...                        libelf: [ on  ]
+...                       libnuma: [ on  ]
+...        numa_num_possible_cpus: [ on  ]
+...                       libperl: [ on  ]
+...                     libpython: [ on  ]
+...                     libcrypto: [ OFF ]
+...                     libunwind: [ on  ]
+...            libdw-dwarf-unwind: [ on  ]
+...                          zlib: [ on  ]
+...                          lzma: [ on  ]
+...                     get_cpuid: [ on  ]
+...                           bpf: [ on  ]
+...                        libaio: [ on  ]
+...                       libzstd: [ on  ]
+...        disassembler-four-args: [ on  ]
+```
+
+This is very confusing because the suggested library (on my Ubuntu 20.04
+it is libssl-dev) is already installed. As the test only checks for the
+presence of libcrypto, this commit suppresses the deprecation warning to
+allow the test to pass.
+
+Signed-off-by: Zixuan Tan <tanzixuan.me@gmail.com>
+---
+ tools/build/feature/test-libcrypto.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/tools/build/feature/test-libcrypto.c b/tools/build/feature/test-libcrypto.c
+index a98174e0569c..31afff093d0b 100644
+--- a/tools/build/feature/test-libcrypto.c
++++ b/tools/build/feature/test-libcrypto.c
+@@ -2,6 +2,12 @@
+ #include <openssl/sha.h>
+ #include <openssl/md5.h>
+ 
++/*
++ * The MD5_* API have been deprecated since OpenSSL 3.0, which causes the
++ * feature test to fail silently. This is a workaround.
++ */
++#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
++
+ int main(void)
+ {
+ 	MD5_CTX context;
+-- 
+2.34.1
+
