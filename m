@@ -2,62 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BA4B355A8CF
-	for <lists+netdev@lfdr.de>; Sat, 25 Jun 2022 12:33:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1953455A9C9
+	for <lists+netdev@lfdr.de>; Sat, 25 Jun 2022 14:14:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232420AbiFYKZZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Jun 2022 06:25:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39086 "EHLO
+        id S232786AbiFYMGn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Jun 2022 08:06:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230401AbiFYKZY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jun 2022 06:25:24 -0400
-Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BF69220FC
-        for <netdev@vger.kernel.org>; Sat, 25 Jun 2022 03:25:23 -0700 (PDT)
-Received: by mail-il1-f199.google.com with SMTP id w15-20020a056e021a6f00b002d8eef284f0so3156769ilv.6
-        for <netdev@vger.kernel.org>; Sat, 25 Jun 2022 03:25:23 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=PpTw+0pR7d6KHpWzvUOwmUS7vIoJqaATGHEMY/gsX2A=;
-        b=2FxvpQkXKEjzxn3CzIBAsqMTkxqOa/3eGAhLVVeoE5BCYNY8Nqov2qffbzlciCcRlA
-         /OdC9cYXnsEF7gOEUpOgo+TGcBqYKxkjYXRmKloD+E945JXOyTF/aRmvwYLc0+bg2T+K
-         /v594FYJgkaTLET3/s256sAEXPHa7Sm6a0sUyhHnmKCl5Z//Ep8R+2DnV8hUlj0mNCde
-         D5CdGJwR9OaKDpBKvwjnen32N0FrIIFWPKnoNgMNgtrA3xyDeXQP3yPG3YHZ/6oG4+KF
-         jH5yjn+s9Gmmw6rpjjZ95VFRFmL+G4DCSH7UMixazGcTEYOXzTQWtj1ZA3LYVVoS7jLI
-         jA2w==
-X-Gm-Message-State: AJIora/pkCcMPpat0a2N00ZjcnKTkPWPFqlFrsvpASXvxG+9wtthpc4d
-        xuPLYtgtrqVpJ7ZeiguI9Kv9V/SIo2DpSMnjw1q8TX3PBzwE
-X-Google-Smtp-Source: AGRyM1vyuTnNG1op68acyHfJlLSr34YHYTrvAEpZwGi6Cbef/aP1GrA3CCCBKweTEXTj6eEY5/aDNdEA2+u9dTrnUMthPogUPw/n
+        with ESMTP id S232771AbiFYMG0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jun 2022 08:06:26 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 705B315802
+        for <netdev@vger.kernel.org>; Sat, 25 Jun 2022 05:06:19 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1o54YL-0002WG-Mn
+        for netdev@vger.kernel.org; Sat, 25 Jun 2022 14:06:17 +0200
+Received: from dspam.blackshift.org (localhost [127.0.0.1])
+        by bjornoya.blackshift.org (Postfix) with SMTP id 6858A9F11C
+        for <netdev@vger.kernel.org>; Sat, 25 Jun 2022 12:03:49 +0000 (UTC)
+Received: from hardanger.blackshift.org (unknown [172.20.34.65])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id F186B9F113;
+        Sat, 25 Jun 2022 12:03:42 +0000 (UTC)
+Received: from blackshift.org (localhost [::1])
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id c0178b3c;
+        Sat, 25 Jun 2022 12:03:36 +0000 (UTC)
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
+        kernel@pengutronix.de
+Subject: [PATCH net-next 0/22] pull-request: can-next 2022-06-25
+Date:   Sat, 25 Jun 2022 14:03:13 +0200
+Message-Id: <20220625120335.324697-1-mkl@pengutronix.de>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-X-Received: by 2002:a6b:ed15:0:b0:674:f8eb:a373 with SMTP id
- n21-20020a6bed15000000b00674f8eba373mr1734128iog.37.1656152722465; Sat, 25
- Jun 2022 03:25:22 -0700 (PDT)
-Date:   Sat, 25 Jun 2022 03:25:22 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000b76c8005e2431a11@google.com>
-Subject: [syzbot] WARNING in cfg80211_ch_switch_notify
-From:   syzbot <syzbot+90d912872157e63589e4@syzkaller.appspotmail.com>
-To:     SHA-cyfmac-dev-list@infineon.com, ajay.kathat@microchip.com,
-        amitkarwar@gmail.com, aspriel@gmail.com,
-        brcm80211-dev-list.pdl@broadcom.com, claudiu.beznea@microchip.com,
-        davem@davemloft.net, edumazet@google.com, fabioaiuto83@gmail.com,
-        franky.lin@broadcom.com, ganapathi017@gmail.com,
-        geomatsi@gmail.com, gregkh@linuxfoundation.org,
-        hante.meuleman@broadcom.com, hdegoede@redhat.com,
-        huxinming820@gmail.com, imitsyanko@quantenna.com,
-        jagathjog1996@gmail.com, johannes.berg@intel.com,
-        johannes@sipsolutions.net, kuba@kernel.org, kvalo@kernel.org,
-        libertas-dev@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-staging@lists.linux.dev, linux-wireless@vger.kernel.org,
-        loic.poulain@linaro.org, netdev@vger.kernel.org, pabeni@redhat.com,
-        prestwoj@gmail.com, sharvari.harisangam@nxp.com, smoch@web.de,
-        syzkaller-bugs@googlegroups.com, ye.guojin@zte.com.cn
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -65,75 +55,123 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Hello Jakub, hello David,
 
-syzbot found the following issue on:
+this is a pull request of 22 patches for net-next/master.
 
-HEAD commit:    34d1d36073ea Add linux-next specific files for 20220621
-git tree:       linux-next
-console+strace: https://syzkaller.appspot.com/x/log.txt?x=175aca1ff00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=b24b62d1c051cfc8
-dashboard link: https://syzkaller.appspot.com/bug?extid=90d912872157e63589e4
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15a50e1ff00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=104b1cc4080000
+The first 2 patches target the xilinx driver. Srinivas Neeli's patch
+adds Transmitter Delay Compensation (TDC) support, a patch by me fixes
+a typo.
 
-The issue was bisected to:
+The next patch is by me and fixes a typo in the m_can driver.
 
-commit 7b0a0e3c3a88260b6fcb017e49f198463aa62ed1
-Author: Johannes Berg <johannes.berg@intel.com>
-Date:   Thu Apr 14 14:50:57 2022 +0000
+Another patch by me allows the configuration of fixed bit rates
+without need for do_set_bittiming callback.
 
-    wifi: cfg80211: do some rework towards MLO link APIs
+The following 7 patches are by Vincent Mailhol and refactor the
+can-dev module and Kbuild, de-inline the can_dropped_invalid_skb()
+function, which has grown over the time, and drop outgoing skbs if the
+controller is in listen only mode.
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=177e008ff00000
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=14fe008ff00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=10fe008ff00000
+Max Staudt's patch fixes a reference in the networking/can.rst
+documentation.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+90d912872157e63589e4@syzkaller.appspotmail.com
-Fixes: 7b0a0e3c3a88 ("wifi: cfg80211: do some rework towards MLO link APIs")
+Vincent Mailhol provides 2 patches with cleanups for the etas_es58x
+driver.
 
-------------[ cut here ]------------
-WARNING: CPU: 1 PID: 1021 at net/wireless/nl80211.c:18562 cfg80211_ch_switch_notify+0x3b7/0x8a0 net/wireless/nl80211.c:18562
-Modules linked in:
-CPU: 1 PID: 1021 Comm: kworker/u4:5 Not tainted 5.19.0-rc3-next-20220621-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: phy4 ieee80211_csa_finalize_work
+Conor Dooley adds bindings for the mpfs-can to the PolarFire SoC dtsi.
 
-RIP: 0010:cfg80211_ch_switch_notify+0x3b7/0x8a0 net/wireless/nl80211.c:18562
-Code: fc ff df 48 c1 ea 03 80 3c 02 00 0f 85 d2 04 00 00 49 8b 14 24 44 89 ee 48 89 ef e8 33 fa fb ff e9 44 ff ff ff e8 e9 78 cc f8 <0f> 0b e9 38 ff ff ff e8 dd 78 cc f8 48 8d bd f8 04 00 00 48 ba 00
-RSP: 0018:ffffc90004dcfc60 EFLAGS: 00010293
+Another patch by me allows the configuration of fixed data bit rates
+without need for do_set_data_bittiming callback.
 
-RAX: 0000000000000000 RBX: 0000000000000001 RCX: 0000000000000000
-RDX: ffff88801eea57c0 RSI: ffffffff88ae4467 RDI: 0000000000000005
-RBP: ffff88801f004c90 R08: 0000000000000005 R09: 0000000000000009
-R10: 0000000000000001 R11: 0000000000000010 R12: ffff88801f006458
-R13: 0000000000000000 R14: ffff88801f004000 R15: ffff888021d90000
-FS:  0000000000000000(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000021000000 CR3: 000000000ba8e000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- __ieee80211_csa_finalize+0x738/0xc90 net/mac80211/cfg.c:3432
- ieee80211_csa_finalize net/mac80211/cfg.c:3439 [inline]
- ieee80211_csa_finalize_work+0x131/0x170 net/mac80211/cfg.c:3464
- process_one_work+0x996/0x1610 kernel/workqueue.c:2289
- worker_thread+0x665/0x1080 kernel/workqueue.c:2436
- kthread+0x2e9/0x3a0 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:302
- </TASK>
+The last 5 patches are by Frank Jungclaus. They prepare the esd_usb
+driver to add support for the the CAN-USB/3 device in a later series.
 
+regards,
+Marc
 
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+The following changes since commit 27f2533bcc6e909b85d3c1b738fa1f203ed8a835:
+
+  nfp: flower: support to offload pedit of IPv6 flowinto fields (2022-06-10 22:23:17 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can-next.git tags/linux-can-next-for-5.20-20220625
+
+for you to fetch changes up to c3d396120d68c40cdf2a2da70eff3bf8806f0ff5:
+
+  Merge branch 'preparation-for-supporting-esd-CAN-USB-3' (2022-06-25 13:08:41 +0200)
+
+----------------------------------------------------------------
+linux-can-next-for-5.20-20220625
+
+----------------------------------------------------------------
+Conor Dooley (2):
+      dt-bindings: can: mpfs: document the mpfs CAN controller
+      riscv: dts: microchip: add mpfs's CAN controllers
+
+Frank Jungclaus (5):
+      can/esd_usb2: Rename esd_usb2.c to esd_usb.c
+      can/esd_usb: Add an entry to the MAINTAINERS file
+      can/esd_usb: Rename all terms USB2 to USB
+      can/esd_usb: Fixed some checkpatch.pl warnings
+      can/esd_usb: Update to copyright, M_AUTHOR and M_DESCRIPTION
+
+Marc Kleine-Budde (8):
+      can: xilinx_can: fix typo prescalar -> prescaler
+      can: m_can: fix typo prescalar -> prescaler
+      can: netlink: allow configuring of fixed bit rates without need for do_set_bittiming callback
+      Merge branch 'can-refactoring-of-can-dev-module-and-of-Kbuild'
+      Merge branch 'can-etas_es58x-cleanups-on-struct-es58x_device'
+      Merge branch 'document-polarfire-soc-can-controller'
+      can: netlink: allow configuring of fixed data bit rates without need for do_set_data_bittiming callback
+      Merge branch 'preparation-for-supporting-esd-CAN-USB-3'
+
+Max Staudt (1):
+      can: Break loopback loop on loopback documentation
+
+Srinivas Neeli (1):
+      can: xilinx_can: add Transmitter Delay Compensation (TDC) feature support
+
+Vincent Mailhol (9):
+      can: Kconfig: rename config symbol CAN_DEV into CAN_NETLINK
+      can: Kconfig: turn menu "CAN Device Drivers" into a menuconfig using CAN_DEV
+      can: bittiming: move bittiming calculation functions to calc_bittiming.c
+      can: Kconfig: add CONFIG_CAN_RX_OFFLOAD
+      net: Kconfig: move the CAN device menu to the "Device Drivers" section
+      can: skb: move can_dropped_invalid_skb() and can_skb_headroom_valid() to skb.c
+      can: skb: drop tx skb if in listen only mode
+      can: etas_es58x: replace es58x_device::rx_max_packet_size by usb_maxpacket()
+      can: etas_es58x: fix signedness of USB RX and TX pipes
+
+ .../bindings/net/can/microchip,mpfs-can.yaml       |  45 ++++
+ Documentation/networking/can.rst                   |   2 +-
+ MAINTAINERS                                        |   7 +
+ arch/riscv/boot/dts/microchip/mpfs.dtsi            |  18 ++
+ drivers/net/Kconfig                                |   2 +
+ drivers/net/can/Kconfig                            |  55 ++++-
+ drivers/net/can/dev/Makefile                       |  17 +-
+ drivers/net/can/dev/bittiming.c                    | 197 ----------------
+ drivers/net/can/dev/calc_bittiming.c               | 202 +++++++++++++++++
+ drivers/net/can/dev/dev.c                          |   9 +-
+ drivers/net/can/dev/netlink.c                      |   6 +-
+ drivers/net/can/dev/skb.c                          |  72 ++++++
+ drivers/net/can/m_can/Kconfig                      |   1 +
+ drivers/net/can/m_can/m_can.c                      |   4 +-
+ drivers/net/can/spi/mcp251xfd/Kconfig              |   1 +
+ drivers/net/can/usb/Kconfig                        |  15 +-
+ drivers/net/can/usb/Makefile                       |   2 +-
+ drivers/net/can/usb/{esd_usb2.c => esd_usb.c}      | 250 ++++++++++-----------
+ drivers/net/can/usb/etas_es58x/es58x_core.c        |   5 +-
+ drivers/net/can/usb/etas_es58x/es58x_core.h        |   6 +-
+ drivers/net/can/xilinx_can.c                       |  72 +++++-
+ include/linux/can/skb.h                            |  59 +----
+ net/can/Kconfig                                    |   5 +-
+ 23 files changed, 616 insertions(+), 436 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/can/microchip,mpfs-can.yaml
+ create mode 100644 drivers/net/can/dev/calc_bittiming.c
+ rename drivers/net/can/usb/{esd_usb2.c => esd_usb.c} (81%)
+
+
