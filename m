@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AD1FA55A9DA
-	for <lists+netdev@lfdr.de>; Sat, 25 Jun 2022 14:14:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA9CD55A9C5
+	for <lists+netdev@lfdr.de>; Sat, 25 Jun 2022 14:14:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232789AbiFYMG2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Jun 2022 08:06:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43782 "EHLO
+        id S232768AbiFYMG3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Jun 2022 08:06:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232582AbiFYMGS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jun 2022 08:06:18 -0400
+        with ESMTP id S232770AbiFYMGZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jun 2022 08:06:25 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6C6E140BD
-        for <netdev@vger.kernel.org>; Sat, 25 Jun 2022 05:06:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5AB4140E9
+        for <netdev@vger.kernel.org>; Sat, 25 Jun 2022 05:06:18 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1o54YJ-0002Tv-QQ
-        for netdev@vger.kernel.org; Sat, 25 Jun 2022 14:06:15 +0200
+        id 1o54YL-0002Uy-5H
+        for netdev@vger.kernel.org; Sat, 25 Jun 2022 14:06:17 +0200
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id 3855C9F248
-        for <netdev@vger.kernel.org>; Sat, 25 Jun 2022 12:05:04 +0000 (UTC)
+        by bjornoya.blackshift.org (Postfix) with SMTP id 4352F9F258
+        for <netdev@vger.kernel.org>; Sat, 25 Jun 2022 12:05:06 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id 885ED9F20F;
-        Sat, 25 Jun 2022 12:04:55 +0000 (UTC)
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 9F5DC9F22B;
+        Sat, 25 Jun 2022 12:04:57 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 9919699e;
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id ce4a6173;
         Sat, 25 Jun 2022 12:03:37 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de, Marc Kleine-Budde <mkl@pengutronix.de>,
-        Max Staudt <max@enpas.org>
-Subject: [PATCH net-next 17/22] can: netlink: allow configuring of fixed data bit rates without need for do_set_data_bittiming callback
-Date:   Sat, 25 Jun 2022 14:03:30 +0200
-Message-Id: <20220625120335.324697-18-mkl@pengutronix.de>
+        kernel@pengutronix.de, Frank Jungclaus <frank.jungclaus@esd.eu>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH net-next 18/22] can/esd_usb2: Rename esd_usb2.c to esd_usb.c
+Date:   Sat, 25 Jun 2022 14:03:31 +0200
+Message-Id: <20220625120335.324697-19-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220625120335.324697-1-mkl@pengutronix.de>
 References: <20220625120335.324697-1-mkl@pengutronix.de>
@@ -58,52 +58,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch is similar to 7e193a42c37c ("can: netlink: allow
-configuring of fixed bit rates without need for do_set_bittiming
-callback") but for data bit rates instead of bit rates.
+From: Frank Jungclaus <frank.jungclaus@esd.eu>
 
-Usually CAN devices support configurable data bit rates. The limits
-are defined by struct can_priv::data_bittiming_const. Another way is
-to implement the struct can_priv::do_set_data_bittiming callback.
+As suggested by Vincent, renaming of esd_usb2.c to esd_usb.c
+and according to that, adaption of Kconfig and Makfile, too.
 
-If the bit rate is configured via netlink, the can_changelink()
-function checks that either can_priv::data_bittiming_const or struct
-can_priv::do_set_data_bittiming is implemented.
-
-In commit 431af779256c ("can: dev: add CAN interface API for fixed
-bitrates") an API for configuring bit rates on CAN interfaces that
-only support fixed bit rates was added. The supported bit rates are
-defined by struct can_priv::bitrate_const.
-
-However the above mentioned commit forgot to add the struct
-can_priv::data_bitrate_const to the check in can_changelink().
-
-In order to avoid to implement a no-op can_priv::do_set_data_bittiming
-callback on devices with fixed data bit rates, extend the check in
-can_changelink() accordingly.
-
-Link: https://lore.kernel.org/all/20220613143633.4151884-1-mkl@pengutronix.de
-Fixes: 431af779256c ("can: dev: add CAN interface API for fixed bitrates")
-Acked-by: Max Staudt <max@enpas.org>
+Link: https://lore.kernel.org/all/20220624190517.2299701-2-frank.jungclaus@esd.eu
+Signed-off-by: Frank Jungclaus <frank.jungclaus@esd.eu>
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- drivers/net/can/dev/netlink.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/can/usb/Kconfig                   | 15 +++++++++++----
+ drivers/net/can/usb/Makefile                  |  2 +-
+ drivers/net/can/usb/{esd_usb2.c => esd_usb.c} |  0
+ 3 files changed, 12 insertions(+), 5 deletions(-)
+ rename drivers/net/can/usb/{esd_usb2.c => esd_usb.c} (100%)
 
-diff --git a/drivers/net/can/dev/netlink.c b/drivers/net/can/dev/netlink.c
-index 667ddd28fcdc..037824011266 100644
---- a/drivers/net/can/dev/netlink.c
-+++ b/drivers/net/can/dev/netlink.c
-@@ -279,7 +279,8 @@ static int can_changelink(struct net_device *dev, struct nlattr *tb[],
- 		 * directly via do_set_bitrate(). Bail out if neither
- 		 * is given.
- 		 */
--		if (!priv->data_bittiming_const && !priv->do_set_data_bittiming)
-+		if (!priv->data_bittiming_const && !priv->do_set_data_bittiming &&
-+		    !priv->data_bitrate_const)
- 			return -EOPNOTSUPP;
+diff --git a/drivers/net/can/usb/Kconfig b/drivers/net/can/usb/Kconfig
+index f959215c9d53..1218f9642f33 100644
+--- a/drivers/net/can/usb/Kconfig
++++ b/drivers/net/can/usb/Kconfig
+@@ -14,11 +14,18 @@ config CAN_EMS_USB
+ 	  This driver is for the one channel CPC-USB/ARM7 CAN/USB interface
+ 	  from EMS Dr. Thomas Wuensche (http://www.ems-wuensche.de).
  
- 		memcpy(&dbt, nla_data(data[IFLA_CAN_DATA_BITTIMING]),
+-config CAN_ESD_USB2
+-	tristate "ESD USB/2 CAN/USB interface"
++config CAN_ESD_USB
++	tristate "esd electronics gmbh CAN/USB interfaces"
+ 	help
+-	  This driver supports the CAN-USB/2 interface
+-	  from esd electronic system design gmbh (http://www.esd.eu).
++	  This driver adds supports for several CAN/USB interfaces
++	  from esd electronics gmbh (https://www.esd.eu).
++
++	  The drivers supports the following devices:
++	    - esd CAN-USB/2
++	    - esd CAN-USB/Micro
++
++	  To compile this driver as a module, choose M here: the module
++	  will be called esd_usb.
+ 
+ config CAN_ETAS_ES58X
+ 	tristate "ETAS ES58X CAN/USB interfaces"
+diff --git a/drivers/net/can/usb/Makefile b/drivers/net/can/usb/Makefile
+index 748cf31a0d53..1ea16be5743b 100644
+--- a/drivers/net/can/usb/Makefile
++++ b/drivers/net/can/usb/Makefile
+@@ -5,7 +5,7 @@
+ 
+ obj-$(CONFIG_CAN_8DEV_USB) += usb_8dev.o
+ obj-$(CONFIG_CAN_EMS_USB) += ems_usb.o
+-obj-$(CONFIG_CAN_ESD_USB2) += esd_usb2.o
++obj-$(CONFIG_CAN_ESD_USB) += esd_usb.o
+ obj-$(CONFIG_CAN_ETAS_ES58X) += etas_es58x/
+ obj-$(CONFIG_CAN_GS_USB) += gs_usb.o
+ obj-$(CONFIG_CAN_KVASER_USB) += kvaser_usb/
+diff --git a/drivers/net/can/usb/esd_usb2.c b/drivers/net/can/usb/esd_usb.c
+similarity index 100%
+rename from drivers/net/can/usb/esd_usb2.c
+rename to drivers/net/can/usb/esd_usb.c
 -- 
 2.35.1
 
