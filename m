@@ -2,116 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1934B55A766
-	for <lists+netdev@lfdr.de>; Sat, 25 Jun 2022 08:12:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C56655A764
+	for <lists+netdev@lfdr.de>; Sat, 25 Jun 2022 08:12:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232107AbiFYFsT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Jun 2022 01:48:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50776 "EHLO
+        id S231799AbiFYGAT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Jun 2022 02:00:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231679AbiFYFsS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jun 2022 01:48:18 -0400
-Received: from mail-oa1-x2f.google.com (mail-oa1-x2f.google.com [IPv6:2001:4860:4864:20::2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A171E205DD;
-        Fri, 24 Jun 2022 22:48:17 -0700 (PDT)
-Received: by mail-oa1-x2f.google.com with SMTP id 586e51a60fabf-fb6b4da1dfso6505201fac.4;
-        Fri, 24 Jun 2022 22:48:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=IfTILB5eXlDVPgIJdz9bz3GF6bYR+K+qjiBY2DrpT28=;
-        b=FMtMByBRhEeA6z4IgZ2QYocc2mM7IA0qRZt3haGjxsZRhulnUDhs8XgvO0vW7rRNqo
-         lt8BnqtjbNLHEkEvBefK011Is8LdkZXz6keQ6n53UM1o1yd6omTMWY3xapSAUMeZKHhv
-         sNtmQCr5atKnqX9CYOUmS1v+3N86swIvStNwrnIj9L1SlwDxDcpz/t2iM0Ri1rare7/S
-         gGQu73aF+tW5eFJ5VaS8Qv173iCWWbrkEZKGw4jag/exQl8iNUiGe+WchSXW/NBVR2om
-         6mBnEfH9vn3KMUw7RISSIgolw36vhsFBvGxcVtLBPNqRt3NwgcHP2b4U5n0ohMUl09u8
-         ZD3g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=IfTILB5eXlDVPgIJdz9bz3GF6bYR+K+qjiBY2DrpT28=;
-        b=Uslf5RoAWSWSyOp98+//Itic3bVzUR2L00S++BDcb4QE8Ce6Puuh2zeDC9RAj4m//J
-         Q4WjFT0daMyBUTl+KB10MJhqJ4g5IK2GDRgZNt2OFLbIYj0BHnsIUnP/yRdF3uL+UPoP
-         rd/XTfvtEaW6ld1j/5LZh2ZGVtZox1EzXGS54gxhAGnIfm0tzktyV6gN/S7k8kbMAWOS
-         vxdJgdFxKnUJhBzsDW6Ck8WwVU/mgs0upFZF6yjnVR6wfzfXKFxciFquQ/LSc0ncp2iU
-         DbsIaqr9bvrMzF2NSBmHLPMkVAxei3QKdWObEMEqV6dl6j24yOd7ZntTSL/I8XuGRKl2
-         T8ug==
-X-Gm-Message-State: AJIora8JbkvQT3U5EH4w1gRoQSHr2V3r6e5cP3Aa9NDcXzMgPZ9H+cEk
-        PA9CspnKUPwdRkf+ahaN3wYyABgCUfgkBsTzIPw=
-X-Google-Smtp-Source: AGRyM1t46n1N/R96oZMiwsy+lj1hF+OXTMt6pNIqCGQoHtjIP9Xik43ybKXp2Cb+Smogmt+IYFfxEpKJDFWri9wo86M=
-X-Received: by 2002:a05:6870:f618:b0:f3:cb8:91b with SMTP id
- ek24-20020a056870f61800b000f30cb8091bmr4092815oab.265.1656136096965; Fri, 24
- Jun 2022 22:48:16 -0700 (PDT)
+        with ESMTP id S230077AbiFYGAS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jun 2022 02:00:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19D722250E
+        for <netdev@vger.kernel.org>; Fri, 24 Jun 2022 23:00:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B9ABDB825EB
+        for <netdev@vger.kernel.org>; Sat, 25 Jun 2022 06:00:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 674A9C341C8;
+        Sat, 25 Jun 2022 06:00:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656136814;
+        bh=9IfhjINmCnVPe4B5oMS4WGEKHRHCo+dPUB51aGxRTSA=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=d/RWU6M768Fyri9TZmRu05+v+qcDxFzdD5MiNipdBBGl0B/kqN1VBtRd+OhgOcCJ8
+         neIhG8hqcfhdV8z4lkkY6NuSxOyc0Anq3ixu7SWo8cfQyTwJdjivuTo/fdKBzSN6YY
+         L26icfYw/1WCdfEVgdhCH7kRnWeipP/8zGIl2m8raV/SH2AZU00XUW896WjB56rXSG
+         sogJkc8F9hsvNUP/tmT4FzZ2oeer2zeyP1JIucX2Q5gsTeb2O5n8pMhUcG9unsfY0O
+         GYwukxP3mYsyOGeMOEqXET799lyb8FNZs2Zc/WMFtRxMG/a/44CaRPvEMDH0G4kU40
+         VmWzrDgtpYqcw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 496E1E85C6D;
+        Sat, 25 Jun 2022 06:00:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20220624081254.1251316-1-zys.zljxml@gmail.com> <ad7673eb-ff0d-ce39-e05d-6af3be5ac68c@kernel.org>
-In-Reply-To: <ad7673eb-ff0d-ce39-e05d-6af3be5ac68c@kernel.org>
-From:   Katrin Jo <zys.zljxml@gmail.com>
-Date:   Sat, 25 Jun 2022 13:48:06 +0800
-Message-ID: <CAOaDN_S=TyNPTcVrcx9SLLtqrMLbkV31TRQJB4GKKyQCFReKOQ@mail.gmail.com>
-Subject: Re: [PATCH] ipv6/sit: fix ipip6_tunnel_get_prl when memory allocation fails
-To:     David Ahern <dsahern@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        yoshfuji@linux-ipv6.org, kuba@kernel.org, davem@davemloft.net,
-        Eric Dumazet <edumazet@google.com>, eric.dumazet@gmail.com,
-        pabeni@redhat.com, katrinzhou <katrinzhou@tencent.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-0.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,HK_RANDOM_ENVFROM,
-        HK_RANDOM_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next] raw: fix a typo in raw_icmp_error()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165613681429.10048.14710476185860491279.git-patchwork-notify@kernel.org>
+Date:   Sat, 25 Jun 2022 06:00:14 +0000
+References: <20220623193540.2851799-1-edumazet@google.com>
+In-Reply-To: <20220623193540.2851799-1-edumazet@google.com>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, eric.dumazet@gmail.com,
+        jsperbeck@google.com
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 24, 2022 at 11:12 PM David Ahern <dsahern@kernel.org> wrote:
->
-> On 6/24/22 2:12 AM, zys.zljxml@gmail.com wrote:
-> > diff --git a/net/ipv6/sit.c b/net/ipv6/sit.c
-> > index c0b138c20992..4fb84c0b30be 100644
-> > --- a/net/ipv6/sit.c
-> > +++ b/net/ipv6/sit.c
-> > @@ -323,8 +323,6 @@ static int ipip6_tunnel_get_prl(struct net_device *dev, struct ip_tunnel_prl __u
-> >               kcalloc(cmax, sizeof(*kp), GFP_KERNEL_ACCOUNT | __GFP_NOWARN) :
-> >               NULL;
-> >
-> > -     rcu_read_lock();
-> > -
-> >       ca = min(t->prl_count, cmax);
-> >
-> >       if (!kp) {
-> > @@ -337,11 +335,12 @@ static int ipip6_tunnel_get_prl(struct net_device *dev, struct ip_tunnel_prl __u
-> >                                             __GFP_NOWARN);
-> >               if (!kp) {
-> >                       ret = -ENOMEM;
-> > -                     goto out;
-> > +                     goto err;
-> >               }
-> >       }
-> >
-> >       c = 0;
-> > +     rcu_read_lock();
-> >       for_each_prl_rcu(t->prl) {
-> >               if (c >= cmax)
-> >                       break;
-> > @@ -362,7 +361,7 @@ static int ipip6_tunnel_get_prl(struct net_device *dev, struct ip_tunnel_prl __u
-> >               ret = -EFAULT;
-> >
-> >       kfree(kp);
-> > -
-> > +err:
-> >       return ret;
-> >  }
-> >
->
-> 'out' label is no longer used and should be removed.
+Hello:
 
-Thanks for reviewing! I sent the V2 patch, modified according to your
-suggestion.
-The label is removed, and I still use the label "out" instead of "err".
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-Best Regards,
-Katrin
+On Thu, 23 Jun 2022 19:35:40 +0000 you wrote:
+> I accidentally broke IPv4 traceroute, by swaping iph->saddr and iph->daddr.
+> 
+> Probably because raw_icmp_error() and raw_v4_input()
+> use different order for iph->saddr and iph->daddr.
+> 
+> Fixes: ba44f8182ec2 ("raw: use more conventional iterators")
+> Reported-by: John Sperbeck<jsperbeck@google.com>
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next] raw: fix a typo in raw_icmp_error()
+    https://git.kernel.org/netdev/net-next/c/97a4d46b1516
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
