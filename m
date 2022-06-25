@@ -2,67 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DA16F55A801
-	for <lists+netdev@lfdr.de>; Sat, 25 Jun 2022 10:16:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3A7355A80F
+	for <lists+netdev@lfdr.de>; Sat, 25 Jun 2022 10:26:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231454AbiFYIN4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Jun 2022 04:13:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44406 "EHLO
+        id S232204AbiFYIXP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Jun 2022 04:23:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229593AbiFYINz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jun 2022 04:13:55 -0400
-Received: from jari.cn (unknown [218.92.28.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 03CFD10FD1;
-        Sat, 25 Jun 2022 01:13:53 -0700 (PDT)
-Received: by ajax-webmail-localhost.localdomain (Coremail) ; Sat, 25 Jun
- 2022 16:08:28 +0800 (GMT+08:00)
-X-Originating-IP: [125.70.163.206]
-Date:   Sat, 25 Jun 2022 16:08:28 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   "XueBing Chen" <chenxuebing@jari.cn>
-To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com
-Cc:     jeroendb@google.com, csully@google.com, awogbemila@google.com,
-        arnd@arndb.de, netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject:  [PATCH] gve: drop unexpected word 'a' in comments
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT6.0.1 build 20210329(c53f3fee)
- Copyright (c) 2002-2022 www.mailtech.cn
- mispb-4e503810-ca60-4ec8-a188-7102c18937cf-zhkzyfz.cn
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        with ESMTP id S231923AbiFYIXO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jun 2022 04:23:14 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED91D12779;
+        Sat, 25 Jun 2022 01:23:13 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id h23so9038469ejj.12;
+        Sat, 25 Jun 2022 01:23:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=65Q8k0imOaRF9rnJ5hHPlshRRUlGLNdbW9j4sF8Q/TM=;
+        b=gUrn5r9Ph5LUVGtYTQdBY1IPrbtqC4eI1AIe2Rcu36DehVXdSc9vK2mj15KJQoF0H9
+         BvzWfuln4jPQOvwi1Z7V/gWK6fZ0adi9mbxrNSTyqhFexhMYLp1o39DSmzlHr+vhqwuC
+         sWKaUx66LLkPgAWAMW7+jE8dhpXfIWzusfTWidKzsFHuJA5qwvXAA0Auy2qvSnayi/zO
+         qaBLBQlgfFfK6heIBC6osC1iuxmD/3wCd67Camj7Xj78M3EMHbGTX0MaRKy3/DfE+rB8
+         O3Xb2BiuSTAIcba9DNCKPFluZoPDwymXjZddAddpaX86fLqHKtXERZmnft4v6j9M0ML+
+         dzzw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=65Q8k0imOaRF9rnJ5hHPlshRRUlGLNdbW9j4sF8Q/TM=;
+        b=WhDVKsgF+KlsOIkrbVfFtdRVmask9aDHkNTtwmnQ1cnGC2BKyurwZ6BEoLnV9mhVrt
+         5XEx1Jb8FKZXGbh45eHbnfTGO8Q58YxV42wsTxQAcBv06NCq7Vv0ENuX0/CdPM0+kb2k
+         qmVjOux6Kr83XELN8ML6GPKs1y72uXfdpoXrFL9mx8IS9CNclIuTBd2I2BuwG8dkpvjA
+         NvGQusmBpt+q2xanXf60wna/NU08vWDXR3UdMKnQB/QRfz5pIc0I5KQSev123zToIIna
+         DRtzdhXeqoLwiD6YdxsTptMsGj1vCsoYfxu8DlRX90E5cjBek0gWeYpwXAFw4nG8n9wP
+         8ugw==
+X-Gm-Message-State: AJIora+GuNp6vtN4NOu+Nu1vcpGo5hpqsKFIEZuJk3zzYvT+j5UZY6RK
+        sWhbdGIPmrpOeJPztMHDLdylQY7KNLNG/0FSlekwAOKer9S42g==
+X-Google-Smtp-Source: AGRyM1vkYSWMUMHcrjnAB2zpsWLfkrs1qjSoyzng3NZUT/lgWgNtuFB9Hi+RMZ/8r6iW43Fk01yMR4s2n/+cG09CES4=
+X-Received: by 2002:a17:907:eab:b0:70f:599c:c730 with SMTP id
+ ho43-20020a1709070eab00b0070f599cc730mr2762650ejc.362.1656145392365; Sat, 25
+ Jun 2022 01:23:12 -0700 (PDT)
 MIME-Version: 1.0
-Message-ID: <762564ba.c84.18199e7b56b.Coremail.chenxuebing@jari.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: AQAAfwAHEW98wrZieDREAA--.797W
-X-CM-SenderInfo: hfkh05pxhex0nj6mt2flof0/1tbiAQAICmFEYxsvNQACsG
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
-X-Spam-Status: No, score=2.2 required=5.0 tests=BAYES_00,RCVD_IN_PBL,RDNS_NONE,
-        T_SCC_BODY_TEXT_LINE,T_SPF_HELO_PERMERROR,T_SPF_PERMERROR,XPRIO
-        autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: **
+References: <20220621073233.53776-1-nashuiliang@gmail.com> <CAEf4BzZmZjF62GzwQ2D7Sarhfha+Uc1g+TKPszZJ60jTMb0dbA@mail.gmail.com>
+In-Reply-To: <CAEf4BzZmZjF62GzwQ2D7Sarhfha+Uc1g+TKPszZJ60jTMb0dbA@mail.gmail.com>
+From:   Chuang W <nashuiliang@gmail.com>
+Date:   Sat, 25 Jun 2022 16:23:01 +0800
+Message-ID: <CACueBy6Ufi_jY9DcD_cTntPFxPe_6fOOqt5Ms-gg-ZcjDGE-CA@mail.gmail.com>
+Subject: Re: [PATCH v2] libbpf: Cleanup the kprobe_event on failed add_kprobe_event_legacy()
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Jingren Zhou <zhoujingren@didiglobal.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-CnRoZXJlIGlzIGFuIHVuZXhwZWN0ZWQgd29yZCAnYScgaW4gdGhlIGNvbW1lbnRzIHRoYXQgbmVl
-ZCB0byBiZSBkcm9wcGVkCgpTaWduZWQtb2ZmLWJ5OiBYdWVCaW5nIENoZW4gPGNoZW54dWViaW5n
-QGphcmkuY24+Ci0tLQogZHJpdmVycy9uZXQvZXRoZXJuZXQvZ29vZ2xlL2d2ZS9ndmVfdHhfZHFv
-LmMgfCAyICstCiAxIGZpbGUgY2hhbmdlZCwgMSBpbnNlcnRpb24oKyksIDEgZGVsZXRpb24oLSkK
-CmRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9nb29nbGUvZ3ZlL2d2ZV90eF9kcW8u
-YyBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L2dvb2dsZS9ndmUvZ3ZlX3R4X2Rxby5jCmluZGV4IGVj
-Mzk0ZDk5MTY2OC4uZjdiYTYxNjE5NWYzIDEwMDY0NAotLS0gYS9kcml2ZXJzL25ldC9ldGhlcm5l
-dC9nb29nbGUvZ3ZlL2d2ZV90eF9kcW8uYworKysgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9nb29n
-bGUvZ3ZlL2d2ZV90eF9kcW8uYwpAQCAtNzk1LDcgKzc5NSw3IEBAIHN0YXRpYyB2b2lkIGd2ZV9o
-YW5kbGVfcGFja2V0X2NvbXBsZXRpb24oc3RydWN0IGd2ZV9wcml2ICpwcml2LAogCQkJICAgICBH
-VkVfUEFDS0VUX1NUQVRFX1BFTkRJTkdfUkVJTkpFQ1RfQ09NUEwpKSB7CiAJCQkvKiBObyBvdXRz
-dGFuZGluZyBtaXNzIGNvbXBsZXRpb24gYnV0IHBhY2tldCBhbGxvY2F0ZWQKIAkJCSAqIGltcGxp
-ZXMgcGFja2V0IHJlY2VpdmVzIGEgcmUtaW5qZWN0aW9uIGNvbXBsZXRpb24KLQkJCSAqIHdpdGhv
-dXQgYSBhIHByaW9yIG1pc3MgY29tcGxldGlvbi4gUmV0dXJuIHdpdGhvdXQKKwkJCSAqIHdpdGhv
-dXQgYSBwcmlvciBtaXNzIGNvbXBsZXRpb24uIFJldHVybiB3aXRob3V0CiAJCQkgKiBjb21wbGV0
-aW5nIHRoZSBwYWNrZXQuCiAJCQkgKi8KIAkJCW5ldF9lcnJfcmF0ZWxpbWl0ZWQoIiVzOiBSZS1p
-bmplY3Rpb24gY29tcGxldGlvbiByZWNlaXZlZCB3aXRob3V0IGNvcnJlc3BvbmRpbmcgbWlzcyBj
-b21wbGV0aW9uOiAlZFxuIiwKLS0gCjIuMTcuMQo=
+Hi, Andrii,
+
+Oh, yes. I verified that when bpf_program__attach_kprobe_opts() fails,
+the kprobe_event did not clean up.
+I will resubmit V3 soon, and fix it.
+
+Thanks.
+
+On Thu, Jun 23, 2022 at 12:03 PM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
+>
+> On Tue, Jun 21, 2022 at 12:32 AM Chuang W <nashuiliang@gmail.com> wrote:
+> >
+> > Before the 0bc11ed5ab60 commit ("kprobes: Allow kprobes coexist with
+> > livepatch"), in a scenario where livepatch and kprobe coexist on the
+> > same function entry, the creation of kprobe_event using
+> > add_kprobe_event_legacy() will be successful, at the same time as a
+> > trace event (e.g. /debugfs/tracing/events/kprobe/XX) will exist, but
+> > perf_event_open() will return an error because both livepatch and kprobe
+> > use FTRACE_OPS_FL_IPMODIFY.
+> >
+> > With this patch, whenever an error is returned after
+> > add_kprobe_event_legacy(), this ensures that the created kprobe_event is
+> > cleaned.
+> >
+> > Signed-off-by: Chuang W <nashuiliang@gmail.com>
+> > Signed-off-by: Jingren Zhou <zhoujingren@didiglobal.com>
+> > ---
+>
+> This part is good, but I think there are few error paths in
+> bpf_program__attach_kprobe_opts() itself that would need to call
+> remove_kprobe_event_legacy() explicitly as well, no?
+>
+> >  tools/lib/bpf/libbpf.c | 12 +++++++++---
+> >  1 file changed, 9 insertions(+), 3 deletions(-)
+> >
+> > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> > index 0781fae58a06..d0a36350e22a 100644
+> > --- a/tools/lib/bpf/libbpf.c
+> > +++ b/tools/lib/bpf/libbpf.c
+> > @@ -10809,10 +10809,11 @@ static int perf_event_kprobe_open_legacy(const char *probe_name, bool retprobe,
+> >         }
+> >         type = determine_kprobe_perf_type_legacy(probe_name, retprobe);
+> >         if (type < 0) {
+> > +               err = type;
+> >                 pr_warn("failed to determine legacy kprobe event id for '%s+0x%zx': %s\n",
+> >                         kfunc_name, offset,
+> > -                       libbpf_strerror_r(type, errmsg, sizeof(errmsg)));
+> > -               return type;
+> > +                       libbpf_strerror_r(err, errmsg, sizeof(errmsg)));
+> > +               goto clear_kprobe_event;
+> >         }
+> >         attr.size = sizeof(attr);
+> >         attr.config = type;
+> > @@ -10826,9 +10827,14 @@ static int perf_event_kprobe_open_legacy(const char *probe_name, bool retprobe,
+> >                 err = -errno;
+> >                 pr_warn("legacy kprobe perf_event_open() failed: %s\n",
+> >                         libbpf_strerror_r(err, errmsg, sizeof(errmsg)));
+> > -               return err;
+> > +               goto clear_kprobe_event;
+> >         }
+> >         return pfd;
+> > +
+> > +clear_kprobe_event:
+> > +       /* Clear the newly added kprobe_event */
+> > +       remove_kprobe_event_legacy(probe_name, retprobe);
+> > +       return err;
+> >  }
+> >
+> >  struct bpf_link *
+> > --
+> > 2.34.1
+> >
