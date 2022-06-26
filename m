@@ -2,68 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F65255B136
-	for <lists+netdev@lfdr.de>; Sun, 26 Jun 2022 12:42:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D6C755B163
+	for <lists+netdev@lfdr.de>; Sun, 26 Jun 2022 13:00:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234253AbiFZKf6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Jun 2022 06:35:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60452 "EHLO
+        id S234296AbiFZK7h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Jun 2022 06:59:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232828AbiFZKf4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jun 2022 06:35:56 -0400
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4E9B1275B;
-        Sun, 26 Jun 2022 03:35:52 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id a15so6434461pfv.13;
-        Sun, 26 Jun 2022 03:35:52 -0700 (PDT)
+        with ESMTP id S229513AbiFZK7g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jun 2022 06:59:36 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B58A538B6;
+        Sun, 26 Jun 2022 03:59:35 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id bo5so6510359pfb.4;
+        Sun, 26 Jun 2022 03:59:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=CT9UzjAprHUqV7ZTg5rA+EnKneUfvjzMy7Q3wVldT2o=;
-        b=S9F3gYcdAgALN/i00FyqnFPtw72EX93LhTZjMcfrkZUtXojwUQ9tPv/wzwSjp1qmWk
-         TTZufc3+EeKVDchJO/N9kqI6IP9t4OMy+QPy02kqaNxRVAEGoQ2j4oozWseT+euZJaZa
-         WwMfRf/17IKfcMeVkaDXkOhBnTNBoRsoUE7587XITamp2UYpa1AiEr4L13IIT1g1jVtu
-         +t7ygiWiLTigI7XjxQbVzh7vWEnQDTQAnXTqn9dmF2jnN53kEJuBP0ckSNiB7ZEIs2Uy
-         7Ktp5TtzKeM8yuDyBEXY9a/ZzxVFOhxQES4k5HvrEdlf11fajT6MYCXu3CPyxVic1NV5
-         UgTA==
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=Vg0cRpEtb7ifVHWlwN4JySsa2TxMFUY1alHj7UpNopU=;
+        b=eA4fAhRYOxinFBIKOjsdC5/JMtdwRbDdcLmMQfLEP8BUXn+jdxzL/SFPRhPbP7sl5s
+         B2tMBHS4ffugy61meKrUepvXyx5eGMIO9aQswV591V9aDB9uTZevnRSGuQ+WW+O3d850
+         9ga84NWlQn4qmwvua2hq28dpR3CqMZJ8C6yTLj6USWIbE5RSYJ25wj8JwQRcozQ+Axeh
+         yt2/7Q7CR+KaeVvtf4KOsNS9vjdPom2WbO65C3y7RRt21g8xTDi2K/bh2lDc5f1tNQXa
+         /1kO1n5V0s+bJd64f/vfjrF2kalUnCKp/BTo/dlj0bTpuogGXLyWMbvyV61OokjiQTTp
+         XQ9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=CT9UzjAprHUqV7ZTg5rA+EnKneUfvjzMy7Q3wVldT2o=;
-        b=yjJi8i/zG9DO8tW3qjWsPz4wLGQ7izj/kxCqxMgat5QjsrQchI8y5HqTzpEve7tx5r
-         3Fyr7AwPPT/KmqSKa9rYo1lRBaNxkKOrnGRZA2X37covPz/2/WuQPQw9dWKFUR/LiaOB
-         GpcCTaFek3Nnhb15YPLGzpqviDDxULZ9F+78pn3NG3zoVRrii6yR3QI6EV/0rwOe9JM0
-         Leuq/5/x4Q18gpZcjkwoovWuaWNLScNqTdJb658YQ0QZKl14VG05NfuDBVW3gDd6VMs6
-         uePBe1xjVTJpufQI27IW/PdMAUSjaHfF4WhTHbIDPCEivOm97SpxZNyORZaUpZikgw3M
-         QD4w==
-X-Gm-Message-State: AJIora/cqls/PB8EjpNRri0JBFBDk5qeqF+bymeTOwsPmFG+vU6bUvhu
-        VJ0h9BLiKYvugObreyhJP0l75TADkaUab6EaJclfng==
-X-Google-Smtp-Source: AGRyM1tyxkS+6IBKYS5jpOLHXHR+Grdw0U05dHqC0cQpGPwB5fWT+ckGXL6txKRos0UN3ZQVfZs6tg==
-X-Received: by 2002:a63:f91b:0:b0:40d:d291:1555 with SMTP id h27-20020a63f91b000000b0040dd2911555mr3559579pgi.399.1656239752099;
-        Sun, 26 Jun 2022 03:35:52 -0700 (PDT)
-Received: from ip-172-31-11-128.ap-south-1.compute.internal (ec2-35-154-4-181.ap-south-1.compute.amazonaws.com. [35.154.4.181])
-        by smtp.gmail.com with ESMTPSA id n9-20020a635c49000000b0040cf8789851sm4849234pgm.35.2022.06.26.03.35.48
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=Vg0cRpEtb7ifVHWlwN4JySsa2TxMFUY1alHj7UpNopU=;
+        b=txWyG6dqIjMLD+pOU6xeknTJz/sBgGgvU+zaTIisUaWzRM82UK1NFOAmqUOnsC2MWA
+         ILJwoeE4eorXyL3Qwq6tY28iZSjaw2d2JVp+D0REsj9BhEJvv8EPWteGKmIGEwrVuSrl
+         ZkqCv+HLF0bEMxlKOisO9qXSnlFG75d0axp4kmiVTCTXjc9qgAuSCfJjGOWacbowd5fa
+         rFrPFexwfI3+c/2E4O4MaOtkZb2WkuzPmGcZq8olDdiRJ/Z1bCgjukeyrddY7LOPDuJ9
+         3Z4gwnjblW2UbBMXUfoqMjuvYimnmAswMedQlw8YGpPMLytWvB8iqtSyuSYr+4/NJ48O
+         p/Kw==
+X-Gm-Message-State: AJIora8PEmp56eQmS2tom4equBYsRcLaIpnJNC+SYEaSpyQM5ybCf6s3
+        LS1cST34MrGEgzYQCMp7Nq0=
+X-Google-Smtp-Source: AGRyM1t9jm7Eg21m24Ktie7XX0KqKdjojE4Y8MgzYJx2RCv9lcN2U4EXgyZLQBiZWJRepJ+nQq5Q4w==
+X-Received: by 2002:a63:1a0f:0:b0:3fe:4da7:1a38 with SMTP id a15-20020a631a0f000000b003fe4da71a38mr7561453pga.332.1656241175238;
+        Sun, 26 Jun 2022 03:59:35 -0700 (PDT)
+Received: from ubuntu ([175.124.254.119])
+        by smtp.gmail.com with ESMTPSA id a27-20020aa794bb000000b005252a06750esm5019941pfl.182.2022.06.26.03.59.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 26 Jun 2022 03:35:51 -0700 (PDT)
-From:   Praghadeesh T K S <praghadeeshthevendria@gmail.com>
-To:     Rain River <rain.1986.08.12@gmail.com>,
-        Zhu Yanjun <zyjzyj2000@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     skhan@linuxfoundation.org, praghadeeshtks@zohomail.in,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        Praghadeesh T K S <praghadeeshthevendria@gmail.com>
-Subject: [PATCH] net: ethernet/nvidia: fix possible condition with no effect
-Date:   Sun, 26 Jun 2022 10:35:39 +0000
-Message-Id: <20220626103539.80283-1-praghadeeshthevendria@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        Sun, 26 Jun 2022 03:59:34 -0700 (PDT)
+Date:   Sun, 26 Jun 2022 03:59:31 -0700
+From:   Hyunwoo Kim <imv4bel@gmail.com>
+To:     gregory.greenman@intel.com, kvalo@kernel.org
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH] iwlwifi: pcie: Fixed integer overflow in
+ iwl_write_to_user_buf
+Message-ID: <20220626105931.GA57801@ubuntu>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -74,27 +66,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix Coccinelle bug, removed condition with no effect.
+An integer overflow occurs in the iwl_write_to_user_buf() function,
+   which is called by the iwl_dbgfs_monitor_data_read() function.
 
-Signed-off-by: Praghadeesh T K S <praghadeeshthevendria@gmail.com>
+static bool iwl_write_to_user_buf(char __user *user_buf, ssize_t count,
+				  void *buf, ssize_t *size,
+				  ssize_t *bytes_copied)
+{
+	int buf_size_left = count - *bytes_copied;
+
+	buf_size_left = buf_size_left - (buf_size_left % sizeof(u32));
+	if (*size > buf_size_left)
+		*size = buf_size_left;
+
+If the user passes a SIZE_MAX value to the "ssize_t count" parameter,
+   the ssize_t count parameter is assigned to "int buf_size_left".
+Then compare "*size" with "buf_size_left" . Here, "buf_size_left" is a
+negative number, so "*size" is assigned "buf_size_left" and goes into
+the third argument of the copy_to_user function, causing a heap overflow.
+
+This is not a security vulnerability because iwl_dbgfs_monitor_data_read()
+is a debugfs operation with 0400 privileges.
+
+Signed-off-by: Hyunwoo Kim <imv4bel@gmail.com>
 ---
- drivers/net/ethernet/nvidia/forcedeth.c | 3 ---
- 1 file changed, 3 deletions(-)
+ drivers/net/wireless/intel/iwlwifi/pcie/trans.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/nvidia/forcedeth.c b/drivers/net/ethernet/nvidia/forcedeth.c
-index 5116bad..8e49cfa 100644
---- a/drivers/net/ethernet/nvidia/forcedeth.c
-+++ b/drivers/net/ethernet/nvidia/forcedeth.c
-@@ -3471,9 +3471,6 @@ static int nv_update_linkspeed(struct net_device *dev)
- 	} else if (adv_lpa & LPA_10FULL) {
- 		newls = NVREG_LINKSPEED_FORCE|NVREG_LINKSPEED_10;
- 		newdup = 1;
--	} else if (adv_lpa & LPA_10HALF) {
--		newls = NVREG_LINKSPEED_FORCE|NVREG_LINKSPEED_10;
--		newdup = 0;
- 	} else {
- 		newls = NVREG_LINKSPEED_FORCE|NVREG_LINKSPEED_10;
- 		newdup = 0;
+diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/trans.c b/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
+index bd50f52a1aad..fded5d305b11 100644
+--- a/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
++++ b/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
+@@ -2854,7 +2854,7 @@ static bool iwl_write_to_user_buf(char __user *user_buf, ssize_t count,
+ 				  void *buf, ssize_t *size,
+ 				  ssize_t *bytes_copied)
+ {
+-	int buf_size_left = count - *bytes_copied;
++	ssize_t buf_size_left = count - *bytes_copied;
+ 
+ 	buf_size_left = buf_size_left - (buf_size_left % sizeof(u32));
+ 	if (*size > buf_size_left)
 -- 
-2.34.1
+2.25.1
 
+Dear all,
+
+I submitted this patch 11 days ago.
+
+Can I get feedback on this patch?
+
+Regards,
+Hyunwoo Kim.
