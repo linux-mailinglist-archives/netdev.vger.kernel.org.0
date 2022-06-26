@@ -2,65 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C6CFB55B043
-	for <lists+netdev@lfdr.de>; Sun, 26 Jun 2022 10:26:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF28B55B07F
+	for <lists+netdev@lfdr.de>; Sun, 26 Jun 2022 11:03:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234062AbiFZIXu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Jun 2022 04:23:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54930 "EHLO
+        id S230221AbiFZI6s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Jun 2022 04:58:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232734AbiFZIXt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jun 2022 04:23:49 -0400
-Received: from smtp-fw-9103.amazon.com (smtp-fw-9103.amazon.com [207.171.188.200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B315A1B2
-        for <netdev@vger.kernel.org>; Sun, 26 Jun 2022 01:23:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1656231828; x=1687767828;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=urTJ2Oa2gf/XXPJzzfjdCcEZrbbaPHAfAHdZgK1sHjc=;
-  b=GT0OWGg/hMK3hjAv5h3XPS9nuYrIouLmmSLTjrlWtJLDsc1DwS7WE0GC
-   tgCiZhBJwtbaxuZkoz+XUCohopxcerC5TRpbUml6AfBQZzBJ7RezqJXbk
-   wHCm2JyyKByO/UvaA25pkZ/r879PXh2x/A9udZYV4MpviLBk1HOMWIf+T
-   4=;
-X-IronPort-AV: E=Sophos;i="5.92,223,1650931200"; 
-   d="scan'208";a="1028197668"
-Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-iad-1a-b27d4a00.us-east-1.amazon.com) ([10.25.36.214])
-  by smtp-border-fw-9103.sea19.amazon.com with ESMTP; 26 Jun 2022 08:23:46 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1a-b27d4a00.us-east-1.amazon.com (Postfix) with ESMTPS id 4269F827E3;
-        Sun, 26 Jun 2022 08:23:43 +0000 (UTC)
-Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.36; Sun, 26 Jun 2022 08:23:43 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.161.210) by
- EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.36; Sun, 26 Jun 2022 08:23:40 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S229550AbiFZI6q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jun 2022 04:58:46 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14FDAE0F8;
+        Sun, 26 Jun 2022 01:58:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=1JKbLmopt0oRqy5yYNNrI21JPFQkbbU7U2hItfpsuus=; b=bJR8iIVxbtaUXB8NG6eDKqiuVa
+        9xrMJnFB15Amkl8LagOgvijKEaeh9zgoC3mhJBCcBNlf4ZjIxiLGToqMKFmW+xvL1pkeMHdaK4ZL9
+        tFyONmKeM676Dr4TwnFCvsDVXQw1uEDIbBVkcF76otqwqJWfovuEgAvUbIuI+cyDRGNg=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1o5O64-008HQM-Mi; Sun, 26 Jun 2022 10:58:24 +0200
+Date:   Sun, 26 Jun 2022 10:58:24 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Lukas Wunner <lukas@wunner.de>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-CC:     "Eric W. Biederman" <ebiederm@xmission.com>,
-        Pavel Emelyanov <xemul@openvz.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "Kuniyuki Iwashima" <kuniyu@amazon.com>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>,
-        <netdev@vger.kernel.org>
-Subject: [PATCH v2 net] af_unix: Do not call kmemdup() for init_net's sysctl table.
-Date:   Sun, 26 Jun 2022 01:23:31 -0700
-Message-ID: <20220626082331.36119-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
+        Paolo Abeni <pabeni@redhat.com>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v1 1/1] net: phy: ax88772a: fix lost pause
+ advertisement configuration
+Message-ID: <YrgfsPq4lrYnSStk@lunn.ch>
+References: <20220624075558.3141464-1-o.rempel@pengutronix.de>
+ <20220625071731.GA3462@wunner.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.161.210]
-X-ClientProxiedBy: EX13D40UWA001.ant.amazon.com (10.43.160.53) To
- EX13D04ANC001.ant.amazon.com (10.43.157.89)
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220625071731.GA3462@wunner.de>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -68,56 +52,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-While setting up init_net's sysctl table, we need not duplicate the global
-table and can use it directly.
+On Sat, Jun 25, 2022 at 09:17:31AM +0200, Lukas Wunner wrote:
+> On Fri, Jun 24, 2022 at 09:55:58AM +0200, Oleksij Rempel wrote:
+> > In case of asix_ax88772a_link_change_notify() workaround, we run soft
+> > reset which will automatically clear MII_ADVERTISE configuration. The
+> > PHYlib framework do not know about changed configuration state of the
+> > PHY, so we need to save and restore all needed configuration registers.
+> [...]
+> >  static void asix_ax88772a_link_change_notify(struct phy_device *phydev)
+> >  {
+> >  	/* Reset PHY, otherwise MII_LPA will provide outdated information.
+> >  	 * This issue is reproducible only with some link partner PHYs
+> >  	 */
+> > -	if (phydev->state == PHY_NOLINK && phydev->drv->soft_reset)
+> > +	if (phydev->state == PHY_NOLINK && phydev->drv->soft_reset) {
+> > +		struct asix_context context;
+> > +
+> > +		asix_context_save(phydev, &context);
+> > +
+> >  		phydev->drv->soft_reset(phydev);
+> > +
+> > +		asix_context_restore(phydev, &context);
+> > +	}
+> >  }
+> 
+> Hm, how about just calling phy_init_hw()?  That will perform a
+> ->soft_reset() and also restore the configuration, including
+> interrupts (which the above does not, but I guess that's
+> irrelevant as long as the driver uses polling).
+> 
+> Does phy_init_hw() do too much or too little compared to the above
+> and is hence not a viable solution?
 
-Fixes: 1597fbc0faf8 ("[UNIX]: Make the unix sysctl tables per-namespace")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
----
-v2:
-  * Fix NULL comparison style by checkpatch.pl
 
-v1: https://lore.kernel.org/all/20220626074454.28944-1-kuniyu@amazon.com/
----
----
- net/unix/sysctl_net_unix.c | 16 +++++++++++-----
- 1 file changed, 11 insertions(+), 5 deletions(-)
+at803x.c has:
 
-diff --git a/net/unix/sysctl_net_unix.c b/net/unix/sysctl_net_unix.c
-index 01d44e2598e2..4bd856d05135 100644
---- a/net/unix/sysctl_net_unix.c
-+++ b/net/unix/sysctl_net_unix.c
-@@ -26,11 +26,16 @@ int __net_init unix_sysctl_register(struct net *net)
- {
- 	struct ctl_table *table;
- 
--	table = kmemdup(unix_table, sizeof(unix_table), GFP_KERNEL);
--	if (table == NULL)
--		goto err_alloc;
-+	if (net_eq(net, &init_net)) {
-+		table = unix_table;
-+	} else {
-+		table = kmemdup(unix_table, sizeof(unix_table), GFP_KERNEL);
-+		if (!table)
-+			goto err_alloc;
-+
-+		table[0].data = &net->unx.sysctl_max_dgram_qlen;
-+	}
- 
--	table[0].data = &net->unx.sysctl_max_dgram_qlen;
- 	net->unx.ctl = register_net_sysctl(net, "net/unix", table);
- 	if (net->unx.ctl == NULL)
- 		goto err_reg;
-@@ -38,7 +43,8 @@ int __net_init unix_sysctl_register(struct net *net)
- 	return 0;
- 
- err_reg:
--	kfree(table);
-+	if (net_eq(net, &init_net))
-+		kfree(table);
- err_alloc:
- 	return -ENOMEM;
- }
--- 
-2.30.2
+        /* After changing the smart speed settings, we need to perform a
+         * software reset, use phy_init_hw() to make sure we set the
+         * reapply any values which might got lost during software reset.
+         */
+        if (ret == 1)
+                ret = phy_init_hw(phydev);
 
+	Andrew
