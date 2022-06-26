@@ -2,89 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7288D55B101
-	for <lists+netdev@lfdr.de>; Sun, 26 Jun 2022 12:09:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F65255B136
+	for <lists+netdev@lfdr.de>; Sun, 26 Jun 2022 12:42:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233701AbiFZKGS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Jun 2022 06:06:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47512 "EHLO
+        id S234253AbiFZKf6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Jun 2022 06:35:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229955AbiFZKGS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jun 2022 06:06:18 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A434B4AE;
-        Sun, 26 Jun 2022 03:06:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=ETSXXR3XzgEhkm6ZhG3jzrQ5JVh23r2tv8xELktbMK0=; b=2VxIh+rLvtGkW1BMXzrLQTbgJh
-        b0gPCfkzwwu5a0FknvqBQ2ICpc60iHlAnYvw68oXbqo6ZYV0xRLxBI/lggAVjMvhHutBCgh3cH/oK
-        qrkGjqA7YjIK+Hy2sTNd4zD7FvnjAlkxGOZXJ/d5uKKiPeEXy+AI5RalhXZKxbqWBtRk=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1o5P9W-008Hgp-AH; Sun, 26 Jun 2022 12:06:02 +0200
-Date:   Sun, 26 Jun 2022 12:06:02 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     alexandru.tachici@analog.com
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, devicetree@vger.kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, gerhard@engleder-embedded.com,
-        geert+renesas@glider.be, joel@jms.id.au, stefan.wahren@i2se.com,
-        wellslutw@gmail.com, geert@linux-m68k.org, robh+dt@kernel.org,
-        d.michailidis@fungible.com, stephen@networkplumber.org,
-        l.stelmach@samsung.com, linux-kernel@vger.kernel.org
-Subject: Re: [net-next 2/2] dt-bindings: net: adin1110: Add docs
-Message-ID: <YrgvimyFdPVhL6hF@lunn.ch>
-References: <20220624200628.77047-1-alexandru.tachici@analog.com>
- <20220624200628.77047-3-alexandru.tachici@analog.com>
+        with ESMTP id S232828AbiFZKf4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jun 2022 06:35:56 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4E9B1275B;
+        Sun, 26 Jun 2022 03:35:52 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id a15so6434461pfv.13;
+        Sun, 26 Jun 2022 03:35:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CT9UzjAprHUqV7ZTg5rA+EnKneUfvjzMy7Q3wVldT2o=;
+        b=S9F3gYcdAgALN/i00FyqnFPtw72EX93LhTZjMcfrkZUtXojwUQ9tPv/wzwSjp1qmWk
+         TTZufc3+EeKVDchJO/N9kqI6IP9t4OMy+QPy02kqaNxRVAEGoQ2j4oozWseT+euZJaZa
+         WwMfRf/17IKfcMeVkaDXkOhBnTNBoRsoUE7587XITamp2UYpa1AiEr4L13IIT1g1jVtu
+         +t7ygiWiLTigI7XjxQbVzh7vWEnQDTQAnXTqn9dmF2jnN53kEJuBP0ckSNiB7ZEIs2Uy
+         7Ktp5TtzKeM8yuDyBEXY9a/ZzxVFOhxQES4k5HvrEdlf11fajT6MYCXu3CPyxVic1NV5
+         UgTA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CT9UzjAprHUqV7ZTg5rA+EnKneUfvjzMy7Q3wVldT2o=;
+        b=yjJi8i/zG9DO8tW3qjWsPz4wLGQ7izj/kxCqxMgat5QjsrQchI8y5HqTzpEve7tx5r
+         3Fyr7AwPPT/KmqSKa9rYo1lRBaNxkKOrnGRZA2X37covPz/2/WuQPQw9dWKFUR/LiaOB
+         GpcCTaFek3Nnhb15YPLGzpqviDDxULZ9F+78pn3NG3zoVRrii6yR3QI6EV/0rwOe9JM0
+         Leuq/5/x4Q18gpZcjkwoovWuaWNLScNqTdJb658YQ0QZKl14VG05NfuDBVW3gDd6VMs6
+         uePBe1xjVTJpufQI27IW/PdMAUSjaHfF4WhTHbIDPCEivOm97SpxZNyORZaUpZikgw3M
+         QD4w==
+X-Gm-Message-State: AJIora/cqls/PB8EjpNRri0JBFBDk5qeqF+bymeTOwsPmFG+vU6bUvhu
+        VJ0h9BLiKYvugObreyhJP0l75TADkaUab6EaJclfng==
+X-Google-Smtp-Source: AGRyM1tyxkS+6IBKYS5jpOLHXHR+Grdw0U05dHqC0cQpGPwB5fWT+ckGXL6txKRos0UN3ZQVfZs6tg==
+X-Received: by 2002:a63:f91b:0:b0:40d:d291:1555 with SMTP id h27-20020a63f91b000000b0040dd2911555mr3559579pgi.399.1656239752099;
+        Sun, 26 Jun 2022 03:35:52 -0700 (PDT)
+Received: from ip-172-31-11-128.ap-south-1.compute.internal (ec2-35-154-4-181.ap-south-1.compute.amazonaws.com. [35.154.4.181])
+        by smtp.gmail.com with ESMTPSA id n9-20020a635c49000000b0040cf8789851sm4849234pgm.35.2022.06.26.03.35.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 26 Jun 2022 03:35:51 -0700 (PDT)
+From:   Praghadeesh T K S <praghadeeshthevendria@gmail.com>
+To:     Rain River <rain.1986.08.12@gmail.com>,
+        Zhu Yanjun <zyjzyj2000@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     skhan@linuxfoundation.org, praghadeeshtks@zohomail.in,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        Praghadeesh T K S <praghadeeshthevendria@gmail.com>
+Subject: [PATCH] net: ethernet/nvidia: fix possible condition with no effect
+Date:   Sun, 26 Jun 2022 10:35:39 +0000
+Message-Id: <20220626103539.80283-1-praghadeeshthevendria@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220624200628.77047-3-alexandru.tachici@analog.com>
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +patternProperties:
-> +  "^phy@[0-1]$":
-> +    description: |
-> +      ADIN1100 PHY that is present on the same chip as the MAC.
-> +    type: object
-> +
-> +    properties:
-> +      reg:
-> +        items:
-> +          maximum: 1
-> +
-> +    allOf:
-> +      - if:
-> +          properties:
-> +            compatible:
-> +              contains:
-> +                const: adi,adin1110
-> +        then:
-> +          properties:
-> +            compatible:
-> +              const: ethernet-phy-id0283.bc91
-> +        else:
-> +          properties:
-> +            compatible:
-> +              const: ethernet-phy-id0283.bca1
-> +
-> +    required:
-> +      - compatible
-> +      - reg
+Fix Coccinelle bug, removed condition with no effect.
 
-Why is any of this needed? You register an MDIO bus and then use the
-PHY at address 0 or 1. phylib should find the PHY and read its ID
-register to load the driver. So i don't think there is anything useful
-here.
+Signed-off-by: Praghadeesh T K S <praghadeeshthevendria@gmail.com>
+---
+ drivers/net/ethernet/nvidia/forcedeth.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-	Andrew
+diff --git a/drivers/net/ethernet/nvidia/forcedeth.c b/drivers/net/ethernet/nvidia/forcedeth.c
+index 5116bad..8e49cfa 100644
+--- a/drivers/net/ethernet/nvidia/forcedeth.c
++++ b/drivers/net/ethernet/nvidia/forcedeth.c
+@@ -3471,9 +3471,6 @@ static int nv_update_linkspeed(struct net_device *dev)
+ 	} else if (adv_lpa & LPA_10FULL) {
+ 		newls = NVREG_LINKSPEED_FORCE|NVREG_LINKSPEED_10;
+ 		newdup = 1;
+-	} else if (adv_lpa & LPA_10HALF) {
+-		newls = NVREG_LINKSPEED_FORCE|NVREG_LINKSPEED_10;
+-		newdup = 0;
+ 	} else {
+ 		newls = NVREG_LINKSPEED_FORCE|NVREG_LINKSPEED_10;
+ 		newdup = 0;
+-- 
+2.34.1
+
