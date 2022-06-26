@@ -2,75 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 88A1C55ACB2
-	for <lists+netdev@lfdr.de>; Sat, 25 Jun 2022 22:59:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A83E655ADB2
+	for <lists+netdev@lfdr.de>; Sun, 26 Jun 2022 02:03:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233500AbiFYU7j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Jun 2022 16:59:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41056 "EHLO
+        id S233582AbiFZADl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Jun 2022 20:03:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233365AbiFYU7i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jun 2022 16:59:38 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80F4F12AD7
-        for <netdev@vger.kernel.org>; Sat, 25 Jun 2022 13:59:36 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id eo8so8001943edb.0
-        for <netdev@vger.kernel.org>; Sat, 25 Jun 2022 13:59:36 -0700 (PDT)
+        with ESMTP id S233433AbiFZADj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jun 2022 20:03:39 -0400
+Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45C9113CC7
+        for <netdev@vger.kernel.org>; Sat, 25 Jun 2022 17:03:38 -0700 (PDT)
+Received: by mail-qv1-xf35.google.com with SMTP id y14so9940005qvs.10
+        for <netdev@vger.kernel.org>; Sat, 25 Jun 2022 17:03:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=8DfPB+6+v8MPZjnhRqnPJ95rq7IbN6JaoTlReGsTtZw=;
-        b=J1Y9airSGKm4W7Ntehp1NBPUtCHFAsGVCmPiLsw4GI8HIpoML+FgByP9iG2S0A9b85
-         dvac41Ml0vNUDWuyyje4WZ/buNkqUi7buep79Rv5+UMFwHoKlrHl6otkBjf2bhnjfPhQ
-         iZiwzxC9IkBC+mhJ+ef7vpBe2zQaQTkqLVApmDYudVZVcxlvcZCI2dE+fGtfJicQAt+0
-         GXWFSEclRoyQhImU3H4mY1VtsqoQ8W1JbU7qefb1Jznc+vLRA436+2qJ4xQlVzam8WSM
-         eCXATZxTwl5LLJlXW+l4xcNBRjEo1pbmMl2pUoUpFlKDZZfxb0yVjefS9BIGOpwqjenv
-         OrHw==
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=uzBv+rLiOMQN1QJ1CAlWRVrSA/M0AyPQIUhJ4NlvMOE=;
+        b=DuSHNIG60LiWNKf6jLN1j6RVigzx0qhdEesKDgOV6wCISOLAQI7oQlLZ/pFMrGS7uL
+         hfcEwE0OB9CtMtMYxyMiNYaG81IkT4C7Ua/QhOEJnd39panh+4ltOP/BIBAEV3y1R9GA
+         gv/uHXrgxGI6bX2M8ODhkxbSUoYXIQKyd3l/SN/UakjuIzb9CfFxYw4rJ1i++aOpA7Ar
+         28C4xehBv/LYcrSDI0eWRkL2H7mbfx8qErhO3Q+c3I7RJcgd1K95DRVGNFv533NU9SJR
+         LJCRdDJqjgWOpL8hXm0Btn05S45hfiod4wR8rAV4Po2MD/PXo22z8w15OPX/cpr44Fsz
+         wgfQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=8DfPB+6+v8MPZjnhRqnPJ95rq7IbN6JaoTlReGsTtZw=;
-        b=PDYOQ6tQmjvQZ0TieCd/b3/t7Zi99ZlHbAQ1DIdAYuSumj128ZpmhsrMuhftsH96+j
-         JctasJBfYXEYo7qTutDs+7qYKdy/J1Xo9fwEhvzsb55f7WE8SAxi80kCbGPV3caVzXpL
-         7hR6hYAF2tcGel3GNd8QOggksMSIn0HJocZTJzsqVuwSll09I09barieKrrKjmrBJhTN
-         1L6JOv7teOOnkUl87O/QKwqARumgkleE8akstFCqmVFvVvnRbNv+F83sCSvRfiVZbgCM
-         lP3LF6aFt048jenambcgECgzWGHmixKRHnk6fFxLZc+iE3jb73qNWT9p70IDG11eNWAT
-         g6yA==
-X-Gm-Message-State: AJIora9QqKJ/MhP1Lk5IanXCasEhORzkPIki5VE5OGcq6jIHkIpAuI0N
-        Px5ic/urQQKcGEl0beaM/IxtNQ==
-X-Google-Smtp-Source: AGRyM1tRJB/iLbCtlrDGd9h3fOaIgHK7o7Kfgt52jMoZJEqIJ0+P5rwgbJa9NFoitReQKaqnlDEzow==
-X-Received: by 2002:a05:6402:4244:b0:437:726c:e1a with SMTP id g4-20020a056402424400b00437726c0e1amr4502166edb.107.1656190775076;
-        Sat, 25 Jun 2022 13:59:35 -0700 (PDT)
-Received: from [192.168.0.239] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id g3-20020a1709061c8300b0070759e37183sm3007655ejh.59.2022.06.25.13.59.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 25 Jun 2022 13:59:34 -0700 (PDT)
-Message-ID: <f14c4deb-6430-5f9e-1607-81e661b6d5e2@linaro.org>
-Date:   Sat, 25 Jun 2022 22:59:33 +0200
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=uzBv+rLiOMQN1QJ1CAlWRVrSA/M0AyPQIUhJ4NlvMOE=;
+        b=ainqOwF9ZbYEST1IKEqEYi9cq8IgJOzNYe/x8xFq90y2Inc1Oh5XE6Vq2PX/mIk5dk
+         7UXPURkf0iQsoqow7wiV8CwwGt5lMRykhQx+at4Hh31/0AXu02ueeDJV5o5OXAwKJoD7
+         DRP5H0QvA6d6dYV/18W7QmLzDuJRJiuTekvBTX/IwviT8adpcaIxQcfeOnnhiS762oKr
+         DVBeh+pbzLMVq2PjP/oy/JnTA20W5YxcGEYDRfyinXn8jvZHZMx98m8kyE/M14R0gDrA
+         7S/ocxIyevahC92kR+1KTnTu2gA6t/aOP0qjRH9tzkH9Mq7hCbDKpqaedjfr+kDz4v6s
+         MxSA==
+X-Gm-Message-State: AJIora+cWVS1/N/7euXyJ0JIVqU71ygIanL4K7zHYSMrevlJaw5FT5F6
+        CI2c/QxeDJF5H1/gie/5jD6BvQ==
+X-Google-Smtp-Source: AGRyM1tE4BoFBAJJvdfxmP6e/GRmO8k9uiseuk8Afwuboo2RrknpwMgvTsRL6ljMihM8ni/ZMauTrg==
+X-Received: by 2002:a05:6214:c2c:b0:470:a060:4543 with SMTP id a12-20020a0562140c2c00b00470a0604543mr4509412qvd.49.1656201817425;
+        Sat, 25 Jun 2022 17:03:37 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-162-113-129.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.129])
+        by smtp.gmail.com with ESMTPSA id h18-20020ac87772000000b002f905347586sm4168554qtu.14.2022.06.25.17.03.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 25 Jun 2022 17:03:36 -0700 (PDT)
+Received: from jgg by mlx with local (Exim 4.94)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1o5FkV-001s2q-Pc; Sat, 25 Jun 2022 21:03:35 -0300
+Date:   Sat, 25 Jun 2022 21:03:35 -0300
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Ajay Sharma <sharmaajay@microsoft.com>
+Cc:     Long Li <longli@microsoft.com>, KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "shiraz.saleem@intel.com" <shiraz.saleem@intel.com>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
+Subject: Re: [EXTERNAL] [Patch v4 12/12] RDMA/mana_ib: Add a driver for
+ Microsoft Azure Network Adapter
+Message-ID: <20220626000335.GL23621@ziepe.ca>
+References: <1655345240-26411-1-git-send-email-longli@linuxonhyperv.com>
+ <1655345240-26411-13-git-send-email-longli@linuxonhyperv.com>
+ <DM4PR21MB32967BB85B7B022671ECADD1D6B79@DM4PR21MB3296.namprd21.prod.outlook.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [net-next 2/2] dt-bindings: net: adin1110: Add docs
-Content-Language: en-US
-To:     alexandru.tachici@analog.com, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        devicetree@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        gerhard@engleder-embedded.com, geert+renesas@glider.be,
-        joel@jms.id.au, stefan.wahren@i2se.com, wellslutw@gmail.com,
-        geert@linux-m68k.org, robh+dt@kernel.org,
-        d.michailidis@fungible.com, stephen@networkplumber.org,
-        l.stelmach@samsung.com, linux-kernel@vger.kernel.org
-References: <20220624200628.77047-1-alexandru.tachici@analog.com>
- <20220624200628.77047-3-alexandru.tachici@analog.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220624200628.77047-3-alexandru.tachici@analog.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <DM4PR21MB32967BB85B7B022671ECADD1D6B79@DM4PR21MB3296.namprd21.prod.outlook.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -79,190 +87,16 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 24/06/2022 22:06, alexandru.tachici@analog.com wrote:
-> From: Alexandru Tachici <alexandru.tachici@analog.com>
-> 
-> Add bindings for the ADIN1110/2111 MAC-PHY/SWITCH.
-> 
-> Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
-> ---
->  .../devicetree/bindings/net/adi,adin1110.yaml | 127 ++++++++++++++++++
->  1 file changed, 127 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/adi,adin1110.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/net/adi,adin1110.yaml b/Documentation/devicetree/bindings/net/adi,adin1110.yaml
-> new file mode 100644
-> index 000000000000..0ac18dd62e5a
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/net/adi,adin1110.yaml
-> @@ -0,0 +1,127 @@
-> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: "http://devicetree.org/schemas/net/adi,adin1110.yaml#"
-> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
+On Sat, Jun 25, 2022 at 04:20:19AM +0000, Ajay Sharma wrote:
+> Hello Maintainers,
+>  Any idea when these patches would make it into the next kernel release ?
 
-No quotes in both of above.
+New rdma drivers typically take a long time to get merged due to their
+typical huge size. Currently I'm working through ERDMA. Reviewing the
+ERDMA submission would be helpful, I generally prefer it if people
+proposing new drivers review other new drivers being submitted.
 
-> +
-> +title: ADI ADIN1110 MAC-PHY
-> +
-> +allOf:
+In this case it seems smaller, so you might make this cycle, though I
+haven't even opened the userspace portion yet.
 
-allOf goes after description.
-
-> +  - $ref: ethernet-controller.yaml#
-> +  - $ref: spi-controller.yaml#
-
-From the description it looks it is SPI device, not a controller.
-
-> +
-> +maintainers:
-> +  - Alexandru Tachici <alexandru.tachici@analog.com>
-> +
-> +description: |
-> +  The ADIN1110 is a low power single port 10BASE-T1L MAC-
-> +  PHY designed for industrial Ethernet applications. It integrates
-> +  an Ethernet PHY core with a MAC and all the associated analog
-> +  circuitry, input and output clock buffering.
-> +
-> +  The ADIN2111 is a low power, low complexity, two-Ethernet ports
-> +  switch with integrated 10BASE-T1L PHYs and one serial peripheral
-> +  interface (SPI) port. The device is designed for industrial Ethernet
-> +  applications using low power constrained nodes and is compliant
-> +  with the IEEE 802.3cg-2019 Ethernet standard for long reach
-> +  10 Mbps single pair Ethernet (SPE).
-> +
-> +  The device has a 4-wire SPI interface for communication
-> +  between the MAC and host processor.
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - adi,adin1110
-> +      - adi,adin2111
-> +
-> +  '#address-cells':
-> +    const: 1
-> +
-> +  '#size-cells':
-> +    const: 0
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  adi,spi-crc:
-> +    description: |
-> +      Enable CRC8 checks on SPI read/writes.
-> +    type: boolean
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +patternProperties:
-> +  "^phy@[0-1]$":
-
-[01] is shorter
-
-"phy" child node is deprecated, so phy@0 and phy@1, I think, as well.
-Look how other ethernet controllers are doing it.
-
-> +    description: |
-> +      ADIN1100 PHY that is present on the same chip as the MAC.
-> +    type: object
-> +
-> +    properties:
-> +      reg:
-
-maxItems:1
-
-> +        items:
-> +          maximum: 1
-> +
-> +    allOf:
-> +      - if:
-> +          properties:
-> +            compatible:
-
-I am not sure this works correctly... You reference here parent
-properties but then change them to some other compatible?
-
-Did you actually test that this works as it should?
-
-> +              contains:
-> +                const: adi,adin1110
-> +        then:
-> +          properties:
-> +            compatible:
-> +              const: ethernet-phy-id0283.bc91
-> +        else:
-> +          properties:
-> +            compatible:
-> +              const: ethernet-phy-id0283.bca1
-> +
-> +    required:
-> +      - compatible
-> +      - reg
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - interrupts
-> +  - phy@0
-> +
-> +unevaluatedProperties: false
-> +
-> +examples:
-> +  - |
-> +        spi0 {
-
-1. spi, not spi0
-2. Wrong indentation. Use 4 spaces for DTS example.
-
-
-> +                #address-cells = <1>;
-> +                #size-cells = <0>;
-> +                status = "okay";
-
-This is not needed.
-
-> +
-> +                ethernet@0 {
-> +                        compatible = "adi,adin2111";
-> +                        reg = <0>;
-> +                        spi-max-frequency = <24500000>;
-> +
-> +                        adi,spi-crc;
-> +
-> +                        #address-cells = <1>;
-> +                        #size-cells = <0>;
-> +
-> +                        interrupt-parent = <&gpio>;
-> +                        interrupts = <25 2>;
-
-"2" looks like interrupt flag, so use it.
-
-> +
-> +                        mac-address = [ ca 2f b7 10 23 63 ];
-
-This should be rather some 00 11 22 type of MAC, or you expect to encode
-same MAC in several devices?
-
-> +
-> +                        phy@0 {
-> +                                #phy-cells = <0>;
-> +                                compatible = "ethernet-phy-id0283.bca1";
-> +                                reg = <0>;
-> +                        };
-> +
-> +                        phy@1 {
-> +                                #phy-cells = <0>;
-> +                                compatible = "ethernet-phy-id0283.bca1";
-> +                                reg = <1>;
-> +                        };
-> +                };
-> +        };
-
-
-Best regards,
-Krzysztof
+Jason
