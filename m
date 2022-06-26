@@ -2,148 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BB5F55B21E
-	for <lists+netdev@lfdr.de>; Sun, 26 Jun 2022 15:20:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 33D2555B24D
+	for <lists+netdev@lfdr.de>; Sun, 26 Jun 2022 15:52:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234542AbiFZNCB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Jun 2022 09:02:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42938 "EHLO
+        id S234408AbiFZN3z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Jun 2022 09:29:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234520AbiFZNBz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jun 2022 09:01:55 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F0F811A02;
-        Sun, 26 Jun 2022 06:01:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1656248514; x=1687784514;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=QJx/KSDQuzLjOJSNYWiOeeuqt+7awbeyjleOCYK2Tic=;
-  b=Lv4go0qSK4ybWZzmRMLYnGq/ETnCYZLVutyf1u2Lhk2pKDDQqjgcdrVL
-   OeuBwndYAb12iI1TtmEqlw8vGetf8rFUDgGmEsHpKSj2mQ199B3AjfFBi
-   n5eQMJSKcvxWaV3/VctQVVRxRKftaWCNsDCHtzy1+a7fqtEXUm0i3kjK/
-   u813UaycfaENtESWsj/fs4bTzTmE2oTHxs6OwJXs/Df/VyliOud4hxYUV
-   Rl3AG19NagYs3NG6761jkPJkgV3cX7NxuhSNmE/i/m1XDVMhxGd2v9Z2B
-   vzAbkNLpwq2oMxOLebR7nAZxUk2WC95h57ovkTjcNSTiG8xSgMQZYIJP/
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.92,224,1650956400"; 
-   d="scan'208";a="165122628"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 26 Jun 2022 06:01:53 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Sun, 26 Jun 2022 06:01:51 -0700
-Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Sun, 26 Jun 2022 06:01:49 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     <UNGLinuxDriver@microchip.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <linux@armlinux.org.uk>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next 8/8] net: lan966x: Update PGID when lag ports are changing link status
-Date:   Sun, 26 Jun 2022 15:04:51 +0200
-Message-ID: <20220626130451.1079933-9-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220626130451.1079933-1-horatiu.vultur@microchip.com>
-References: <20220626130451.1079933-1-horatiu.vultur@microchip.com>
+        with ESMTP id S233009AbiFZN3x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jun 2022 09:29:53 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B920B7D0;
+        Sun, 26 Jun 2022 06:29:53 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id n10so6035103plp.0;
+        Sun, 26 Jun 2022 06:29:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2RULbZpZ72MsKU+VIPl1ZlCBfNyyNEfInSr7ctdeJaA=;
+        b=HFTRyZFM8fp4D4uT6kYifZ7HVbB/p1GelMjEw5/uVBwH8BRQRGBWWHzpDPM8QtqpcY
+         s+6l3mqidoZHQZTYhsw7OMMfcVwafFQgsJrO3Eo6IahbH64LbxCZU3az9l9u6r8FxFKP
+         JNibHIx1vqqIfm2c6C/CLWs/l9tYmfyRRGK7ZyGkP4fvSCe4+92cBbR88q2lwyvqxPDd
+         pnVrwHs9+V9SQCvudiQa0f1Df37x2yLhWsRfSgX8RzBZtE/phIEPagJtFSc6PBnZtDaJ
+         Iir4q2GJ9eX9zVAp81RJdrP/X3TnsloA8cR4I/60UNTeTuKVRzjH2BLfKIgrKLZ+4l42
+         /8lw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2RULbZpZ72MsKU+VIPl1ZlCBfNyyNEfInSr7ctdeJaA=;
+        b=hVGq45c4RZYLDTXS/+ZDowqbNhKoq+XLKLvzBSUMJXH/bVtkxwS9OzGO7l/7KHzX6X
+         kgwEDu4L1rKzqjPni8Aklhixm0+gFSXRwphHoILLW4/3dchPyc1sux2XV37Sr8NE8/OS
+         b8xqrtTG9zu0lErIlJGKW79+GdOmeMNRUEiATPGCw/ZfXFZSfwSOvwYG91iBviPMifW9
+         MbSIvyvZVBDOCRuwL/QfmcU/8rLSz3bWKuL+FQtPIXHUTrwZ2ciIY2oBBmP3IlF4SEso
+         iFon6s7LCkBzttw4a8ti/sKe0WPmfqSmzZX5UUN84GvDtNo7/vJI1sa1HbCu91f0kYCb
+         e5Lw==
+X-Gm-Message-State: AJIora8ox3FeyWYg4dx/1XuI3f1hNeTeumLjzdxDxDjWHMI28/t59aYR
+        ZwDjay4IXUk1SFjgbEwzTQtVFkyAxlo+zhRXPcw=
+X-Google-Smtp-Source: AGRyM1ua2YJsU6YVxvsGpX/2Z37w3giUBi12PGVeX/Z5t641sFM4jy3euZf3jF2F29omGD5aiX+IFQ==
+X-Received: by 2002:a17:90a:df98:b0:1ec:96e5:b04d with SMTP id p24-20020a17090adf9800b001ec96e5b04dmr10065479pjv.185.1656250192428;
+        Sun, 26 Jun 2022 06:29:52 -0700 (PDT)
+Received: from f34-buildvm.eng.vmware.com ([66.170.99.2])
+        by smtp.gmail.com with ESMTPSA id v8-20020a17090a00c800b001df82551cf2sm5044526pjd.44.2022.06.26.06.29.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 26 Jun 2022 06:29:52 -0700 (PDT)
+From:   Shreenidhi Shedi <yesshedi@gmail.com>
+X-Google-Original-From: Shreenidhi Shedi <sshedi@vmware.com>
+To:     vburru@marvell.com, aayarekar@marvell.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Shreenidhi Shedi <sshedi@vmware.com>
+Subject: [PATCH] octeon_ep: use bitwise AND
+Date:   Sun, 26 Jun 2022 18:59:47 +0530
+Message-Id: <20220626132947.3992423-1-sshedi@vmware.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=1.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_SBL_CSS,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When a port under a bond device is changing it's link status it is
-required to recalculate the PGID entries. Otherwise the HW will still
-try to transmit frames on the port that is down.
+From: Shreenidhi Shedi <sshedi@vmware.com>
 
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+This should be bitwise operator not logical.
+
+Fixes: 862cd659a6fb ("octeon_ep: Add driver framework and device initialization")
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
 ---
- .../net/ethernet/microchip/lan966x/lan966x_lag.c | 16 ++++++++++++++++
- .../ethernet/microchip/lan966x/lan966x_main.h    |  3 +++
- .../ethernet/microchip/lan966x/lan966x_port.c    |  6 ++++++
- 3 files changed, 25 insertions(+)
+ drivers/net/ethernet/marvell/octeon_ep/octep_regs_cn9k_pf.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_lag.c b/drivers/net/ethernet/microchip/lan966x/lan966x_lag.c
-index 4ce41a55737c..eec5d6912757 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_lag.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_lag.c
-@@ -151,6 +151,22 @@ void lan966x_lag_port_leave(struct lan966x_port *port, struct net_device *bond)
- 	lan966x_lag_set_aggr_pgids(lan966x);
- }
- 
-+void lan966x_lag_port_down(struct lan966x_port *port)
-+{
-+	port->bond_fix = port->bond;
-+	lan966x_lag_port_leave(port, port->bond);
-+}
-+
-+void lan966x_lag_port_up(struct lan966x_port *port)
-+{
-+	struct lan966x *lan966x = port->lan966x;
-+
-+	port->bond = port->bond_fix;
-+	lan966x_lag_set_port_ids(lan966x);
-+	lan966x_update_fwd_mask(lan966x);
-+	lan966x_lag_set_aggr_pgids(lan966x);
-+}
-+
- int lan966x_lag_port_prechangeupper(struct net_device *dev,
- 				    struct netdev_notifier_changeupper_info *info)
- {
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-index c1f5ca5d91a4..23264e70fb8a 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-@@ -293,6 +293,7 @@ struct lan966x_port {
- 	struct sk_buff_head tx_skbs;
- 
- 	struct net_device *bond;
-+	struct net_device *bond_fix;
- 	bool lag_tx_active;
- };
- 
-@@ -420,6 +421,8 @@ int lan966x_lag_port_join(struct lan966x_port *port,
- 			  struct net_device *bond,
- 			  struct netlink_ext_ack *extack);
- void lan966x_lag_port_leave(struct lan966x_port *port, struct net_device *bond);
-+void lan966x_lag_port_down(struct lan966x_port *port);
-+void lan966x_lag_port_up(struct lan966x_port *port);
- int lan966x_lag_port_prechangeupper(struct net_device *dev,
- 				    struct netdev_notifier_changeupper_info *info);
- int lan966x_lag_port_changelowerstate(struct net_device *dev,
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_port.c b/drivers/net/ethernet/microchip/lan966x/lan966x_port.c
-index f141644e4372..e99478a443cb 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_port.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_port.c
-@@ -274,11 +274,17 @@ static void lan966x_port_link_up(struct lan966x_port *port)
- void lan966x_port_config_down(struct lan966x_port *port)
- {
- 	lan966x_port_link_down(port);
-+
-+	if (port->bond)
-+		lan966x_lag_port_down(port);
- }
- 
- void lan966x_port_config_up(struct lan966x_port *port)
- {
- 	lan966x_port_link_up(port);
-+
-+	if (port->bond_fix)
-+		lan966x_lag_port_up(port);
- }
- 
- void lan966x_port_status_get(struct lan966x_port *port,
--- 
-2.33.0
+diff --git a/drivers/net/ethernet/marvell/octeon_ep/octep_regs_cn9k_pf.h b/drivers/net/ethernet/marvell/octeon_ep/octep_regs_cn9k_pf.h
+index cc5114979..3d5d39a52 100644
+--- a/drivers/net/ethernet/marvell/octeon_ep/octep_regs_cn9k_pf.h
++++ b/drivers/net/ethernet/marvell/octeon_ep/octep_regs_cn9k_pf.h
+@@ -52,7 +52,7 @@
+
+ #define    CN93_SDP_EPF_RINFO_SRN(val)           ((val) & 0xFF)
+ #define    CN93_SDP_EPF_RINFO_RPVF(val)          (((val) >> 32) & 0xF)
+-#define    CN93_SDP_EPF_RINFO_NVFS(val)          (((val) >> 48) && 0xFF)
++#define    CN93_SDP_EPF_RINFO_NVFS(val)          (((val) >> 48) & 0xFF)
+
+ /* SDP Function select */
+ #define    CN93_SDP_FUNC_SEL_EPF_BIT_POS         8
+--
+2.36.1
 
