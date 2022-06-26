@@ -2,162 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B24C55AE69
-	for <lists+netdev@lfdr.de>; Sun, 26 Jun 2022 05:15:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4665C55AEFA
+	for <lists+netdev@lfdr.de>; Sun, 26 Jun 2022 06:45:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233880AbiFZDNY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Jun 2022 23:13:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36764 "EHLO
+        id S233959AbiFZEpO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Jun 2022 00:45:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230050AbiFZDNW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Jun 2022 23:13:22 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE1DEA459;
-        Sat, 25 Jun 2022 20:13:20 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id l6so5338025plg.11;
-        Sat, 25 Jun 2022 20:13:20 -0700 (PDT)
+        with ESMTP id S233773AbiFZEpM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Jun 2022 00:45:12 -0400
+Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F35113E36;
+        Sat, 25 Jun 2022 21:45:12 -0700 (PDT)
+Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-3178acf2a92so57913717b3.6;
+        Sat, 25 Jun 2022 21:45:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=SgbVSj7uwsLnvEUbZN3GbnRrDYKXQqdcuWn4sqFZbNg=;
-        b=iB/S/QAzCdI/g68PoramR6Mb+h4Ws1VqmlViROnz2he1H/oDuPwxBxpg/huDmxrIT0
-         LU2ZfiKSl+9snTtgUhkgEwliW/p1M0u4m+V8VhbGA60++/wOkmQ+RPNixycJl1o0X8En
-         omrRBRfy5taE4pp8adIjzbfMBJwW2dHMFaSGrKIifxROgor8FmJfWCz8ouUdVrX8NmTE
-         TVow5tT5P3fxnJztRXhjzmiMKXNpSBwPubHud6Eo4lozVgS9/tdBXZF4089cn6QhW7X6
-         nypcsCBhKZxN0n5LzRN9lqftJOrZk3jzGe74M6iLoFbbV55wWiPdpal6alAqtcOwNXeP
-         0xyQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=mfondrNowJy2MyDkZH1tseDvQbcDiYCbfVByxBjiMa8=;
+        b=Clz/bnpubUuCNK5azdaWhznKmfR+aDJZJCingFwsA19xbp8jHaox0rqFxqXxvWozY5
+         5FnmHwuxopztUt0Ezev/LszePHdlvV41NzFTcvSkKy48ER1Jw5qRcKAC/scPW/CW7/h5
+         8WDCKE3vd6s6BbKLSQYuIcNV3LwKV16CrLGYTGIDHajGex3MVCt4XkN60RvZxQe+L63G
+         Vj7uxs328NBMqhuWbBJwgcjMneBw3fJk4ABpYy3bkx7AzJUc2yo7ivmxc+rVF7gJjcg8
+         X7YDz8+mr+/E6/RP1kG64TVFLC6E5FSPHY7mwC4LXmQGAMqws4+vsaSOU47+kp5vzxGO
+         uxyg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=SgbVSj7uwsLnvEUbZN3GbnRrDYKXQqdcuWn4sqFZbNg=;
-        b=czlaj5KANe7T2gZcyW4sjMBNrjrfwT23gORugF2CdSF4lEfZyB/I49tIqaXPByKPBn
-         obM0imRPK2EzshfJdFUqxOmo7ukZMi1ENgbh9ES4u46pNK9HjxDJCdnwJeH4agOL39wn
-         ZYrsvREpcoZM4e/O+iAS1UaRp0rqkLMvvA1uGvRXLE5XRQkuwJZ1LBuzaVYcHUjxBykJ
-         GZA0uuFWefrI6uxW2cOwaXu2i66r1pzyl3+NeeCRCYpoyYnjYJhWYXLpsoddWz3Fso6p
-         hQFE7vN3dU6AXTy2b92LxiIRlddzJfFP3ezrI2omFAQOpn08/uZZgJBVipT45oSV5Vfu
-         AIfQ==
-X-Gm-Message-State: AJIora9l3Os00m7/ySkMY77zm8Lc6PDPF+6mRRcwwWh+usNdUq69QNUy
-        9lblMkuQxWvTw4M3qM59EO8=
-X-Google-Smtp-Source: AGRyM1stAWGoo0bxh88Zdi6Q4DRIQGkWuqyjqvmBVE9AZu+PgPasDI6mXiAa9YTxhVomXojubSDOjw==
-X-Received: by 2002:a17:902:da87:b0:16a:2158:9a11 with SMTP id j7-20020a170902da8700b0016a21589a11mr7268381plx.71.1656213200211;
-        Sat, 25 Jun 2022 20:13:20 -0700 (PDT)
-Received: from localhost.localdomain ([47.242.114.172])
-        by smtp.gmail.com with ESMTPSA id q16-20020a17090311d000b001636c0b98a7sm4366652plh.226.2022.06.25.20.13.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 25 Jun 2022 20:13:19 -0700 (PDT)
-From:   Chuang W <nashuiliang@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Chuang W <nashuiliang@gmail.com>,
-        Jingren Zhou <zhoujingren@didiglobal.com>
-Subject: [PATCH v3] libbpf: Cleanup the legacy kprobe_event on failed add/attach_event()
-Date:   Sun, 26 Jun 2022 11:13:01 +0800
-Message-Id: <20220626031301.60390-1-nashuiliang@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=mfondrNowJy2MyDkZH1tseDvQbcDiYCbfVByxBjiMa8=;
+        b=NqcUFtfV0qQ05VlK2rkQFqmQczNNjgObSMbbz9rq1Q5dTlM879bDWMlxph7XNVNZA+
+         00yazCfECGhH9+emrjFPgJnfCdm9CJRNhcx8DNjiKNymMaY9Zb+cYdVjFP3iv2oypwZg
+         y3IaCXE7PlazrVrdOREac9B2HoP/DS91a2rDYv/QmYQB2LCmk1Atx1kVFk9KWsiVddKy
+         DROqZIVfRh0/GKfDRun+/SaHVSEelKlNbakphHuiXTSKgah0rMIwLvt8oRZHhFSEprfH
+         IE+vDuTmWeThZMuKF53FS+Q1CrOPwSZ5obH7FRE4Cgd2u2QD/2tqdtDR1X6GN4kXISnJ
+         3vEA==
+X-Gm-Message-State: AJIora9y5nlUZAoHDt7KV9Pg75nbuuwK4Cu9nFbmASF2epFHO4g/psZ/
+        uVlotLc7nC7lPbaS3QM617QMCICeYgJVrOA1Pfs=
+X-Google-Smtp-Source: AGRyM1tQKA39vvEyfFnxgVUxhLji4zj6DOAxlGntbkdgcS/NyCI5P0h8PG9pJg9IsmpRL53jPWTDf8Ws+9yUUU+Lf54=
+X-Received: by 2002:a81:1315:0:b0:318:1841:8060 with SMTP id
+ 21-20020a811315000000b0031818418060mr7938630ywt.452.1656218711305; Sat, 25
+ Jun 2022 21:45:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <20220623074005.259309-1-ztong0001@gmail.com> <YrQw1CVJfIS18CNo@electric-eye.fr.zoreil.com>
+ <20220624114121.2c95c3aa@kernel.org>
+In-Reply-To: <20220624114121.2c95c3aa@kernel.org>
+From:   Tong Zhang <ztong0001@gmail.com>
+Date:   Sat, 25 Jun 2022 21:45:00 -0700
+Message-ID: <CAA5qM4Aq_2HSxCgaHUgZX9C3E0OCPT4tN-61-MZP1iLXCbF-=Q@mail.gmail.com>
+Subject: Re: [PATCH] epic100: fix use after free on rmmod
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Francois Romieu <romieu@fr.zoreil.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>, Jason Gunthorpe <jgg@ziepe.ca>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        Netdev <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Yilun Wu <yiluwu@cs.stonybrook.edu>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Before the 0bc11ed5ab60 commit ("kprobes: Allow kprobes coexist with
-livepatch"), in a scenario where livepatch and kprobe coexist on the
-same function entry, the creation of kprobe_event using
-add_kprobe_event_legacy() will be successful, at the same time as a
-trace event (e.g. /debugfs/tracing/events/kprobe/XXX) will exist, but
-perf_event_open() will return an error because both livepatch and kprobe
-use FTRACE_OPS_FL_IPMODIFY. As follows:
+On Fri, Jun 24, 2022 at 11:41 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Thu, 23 Jun 2022 11:22:28 +0200 Francois Romieu wrote:
+> > Tong Zhang <ztong0001@gmail.com> :
+> > > epic_close() calls epic_rx() and uses dma buffer, but in epic_remove_one()
+> > > we already freed the dma buffer. To fix this issue, reorder function calls
+> > > like in the .probe function.
+> > >
+> > > BUG: KASAN: use-after-free in epic_rx+0xa6/0x7e0 [epic100]
+> > > Call Trace:
+> > >  epic_rx+0xa6/0x7e0 [epic100]
+> > >  epic_close+0xec/0x2f0 [epic100]
+> > >  unregister_netdev+0x18/0x20
+> > >  epic_remove_one+0xaa/0xf0 [epic100]
+> > >
+> > > Fixes: ae150435b59e ("smsc: Move the SMC (SMSC) drivers")
+> > > Reported-by: Yilun Wu <yiluwu@cs.stonybrook.edu>
+> > > Signed-off-by: Tong Zhang <ztong0001@gmail.com>
+> >
+> > The "Fixes:" tag is a bit misleading: this code path predates the move
+> > by several years. Ignoring pci_* vs dma_* API changes, this is pre-2005
+> > material.
+>
+> Yeah, please find the correct Fixes tag.
+>
+> > Reviewed-by: Francois Romieu <romieu@fr.zoreil.com>
+>
+> Keep Francois' tag when reposting.
 
-1) add a livepatch
-
-$ insmod livepatch-XXX.ko
-
-2) add a kprobe using tracefs API (i.e. add_kprobe_event_legacy)
-
-$ echo 'p:mykprobe XXX' > /sys/kernel/debug/tracing/kprobe_events
-
-3) enable this kprobe (i.e. sys_perf_event_open)
-
-This will return an error, -EBUSY.
-
-On Andrii Nakryiko's comment, few error paths in
-bpf_program__attach_kprobe_opts() which should need to call
-remove_kprobe_event_legacy().
-
-With this patch, whenever an error is returned after
-add_kprobe_event_legacy() or bpf_program__attach_perf_event_opts(), this
-ensures that the created kprobe_event is cleaned.
-
-Signed-off-by: Chuang W <nashuiliang@gmail.com>
-Signed-off-by: Jingren Zhou <zhoujingren@didiglobal.com>
----
-V2->v3:
-- add detail commits
-- call remove_kprobe_event_legacy() on failed bpf_program__attach_perf_event_opts()
-
- tools/lib/bpf/libbpf.c | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
-
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 49e359cd34df..038b0cb3313f 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -10811,10 +10811,11 @@ static int perf_event_kprobe_open_legacy(const char *probe_name, bool retprobe,
- 	}
- 	type = determine_kprobe_perf_type_legacy(probe_name, retprobe);
- 	if (type < 0) {
-+		err = type;
- 		pr_warn("failed to determine legacy kprobe event id for '%s+0x%zx': %s\n",
- 			kfunc_name, offset,
--			libbpf_strerror_r(type, errmsg, sizeof(errmsg)));
--		return type;
-+			libbpf_strerror_r(err, errmsg, sizeof(errmsg)));
-+		goto clear_kprobe_event;
- 	}
- 	attr.size = sizeof(attr);
- 	attr.config = type;
-@@ -10828,9 +10829,14 @@ static int perf_event_kprobe_open_legacy(const char *probe_name, bool retprobe,
- 		err = -errno;
- 		pr_warn("legacy kprobe perf_event_open() failed: %s\n",
- 			libbpf_strerror_r(err, errmsg, sizeof(errmsg)));
--		return err;
-+		goto clear_kprobe_event;
- 	}
- 	return pfd;
-+
-+clear_kprobe_event:
-+	/* Clear the newly added legacy kprobe_event */
-+	remove_kprobe_event_legacy(probe_name, retprobe);
-+	return err;
- }
- 
- struct bpf_link *
-@@ -10899,6 +10905,9 @@ bpf_program__attach_kprobe_opts(const struct bpf_program *prog,
- 
- 	return link;
- err_out:
-+	/* Clear the newly added legacy kprobe_event */
-+	if (legacy)
-+		remove_kprobe_event_legacy(legacy_probe, retprobe);
- 	free(legacy_probe);
- 	return libbpf_err_ptr(err);
- }
--- 
-2.34.1
-
+Looks like drivers/net/ethernet/smsc/epic100.c is renamed from
+drivers/net/epic100.c
+and this bug has been around since the very initial commit. What would
+you suggest ?
+Remove the fix tag or use
+Fix: 1da177e4c3f4 ("Linux-2.6.12-rc2")
