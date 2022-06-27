@@ -2,70 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E43AC55D037
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:07:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6533C55DA16
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:22:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242183AbiF0V7G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jun 2022 17:59:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59450 "EHLO
+        id S239690AbiF0WIX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jun 2022 18:08:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242060AbiF0V5j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 17:57:39 -0400
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F34E4DF07
-        for <netdev@vger.kernel.org>; Mon, 27 Jun 2022 14:56:26 -0700 (PDT)
-Received: by mail-wm1-x32f.google.com with SMTP id i67-20020a1c3b46000000b003a03567d5e9so6649864wma.1
-        for <netdev@vger.kernel.org>; Mon, 27 Jun 2022 14:56:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=j50Rgb0UoT37KieYstNf0pUQuA+Xdht7tbivSbvQRIg=;
-        b=kNgPnT8A46jB1Z772VOHfNfUU46YYFHUHF/Wey9vzvPcHaO0Z9jD3j8LZU4e+Jisub
-         vK8hmqhdWiWSQ95Hdo+ix2mQyzOA9jkBaCgbfsbHnKq4JVo5GMwPJ1442wBQ/mileWbf
-         9mYo+EvdIX7WeqBf5wylyUrv9l9eXYUiBdLrzceiZN0BT948fspmog/Yv6bFC/nFQbvW
-         ryjWzOewkiJCeqwMKkHdd1a/SWhpBv3PHqKe8slaoOS7Z+rGEeW1344IYDCm9U2Iotk6
-         BWwtOsUXNjiGMBup++IkLKdpS5mkqL0+RTt6ngzpFa78W4V62n9dsq7yCP+6Kd6lWZq9
-         dIog==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=j50Rgb0UoT37KieYstNf0pUQuA+Xdht7tbivSbvQRIg=;
-        b=bda12pVlqWyeUPd0fIhdNGz0Uk8qmOyJYDw8uomcXXLn1bltEr1xYWrhW5qAp2Fyzb
-         VERtKFZvYdb+KWVA1mNonaE5mleMxlC6av25IvwfiLiV1Remc5Qgmmp5tNg6iZpHrYfl
-         kCeYvCBCNmjd0GSmNh/7NY5VKem73v/7sP91SYrIZGxzBNCm3Thhj4QEOT0oxThXfWMi
-         rWFegtqM2El3AzAgJ9ZSNRhQLrfEXTkX7wrm8794dFK3tVw4XQ3z/2+cgH4w1zZYlmeq
-         9CtXVp57cUACTpzi8Hpev7FhYFcv2GxWLlocr7MRC+W4xcR6Wi41S0sYw3wrVhOGGOTY
-         fSdA==
-X-Gm-Message-State: AJIora9HrEbw/O08mU706d9aTKlHqrw6lXGSGuBcNDIFNeDbLcFXXyeZ
-        dehKaeVEsolLb9N0WeZWlt3AHYYP+tIdQSkHy93L77Q+VQ==
-X-Google-Smtp-Source: AGRyM1ttvt1ApkpTPqcwbne7qYG4tYVamXmU4jEvQ3apNg8AHj9gs6Ech4xvdOAfdmWgLjNkk6YvbCCDCzTzaEHUnFE=
-X-Received: by 2002:a05:600c:2246:b0:3a0:4d14:e9d5 with SMTP id
- a6-20020a05600c224600b003a04d14e9d5mr5247909wmm.70.1656366985523; Mon, 27 Jun
- 2022 14:56:25 -0700 (PDT)
+        with ESMTP id S242029AbiF0WH3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 18:07:29 -0400
+Received: from novek.ru (unknown [213.148.174.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8642BC31
+        for <netdev@vger.kernel.org>; Mon, 27 Jun 2022 15:04:53 -0700 (PDT)
+Received: from [192.168.0.18] (unknown [37.228.234.7])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by novek.ru (Postfix) with ESMTPSA id 6E6E150057F;
+        Tue, 28 Jun 2022 01:03:14 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru 6E6E150057F
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
+        t=1656367395; bh=jGaDFoI6IQoF0vY7kOqp0aU1M8SCsUgBGpdsKiEkDl4=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=urkc0Cy2+yk/gY+ZLxZEbOdj3hTC2UYvY3kR2XVfzInqQGRZ72i4hOfgpTIKVgj1x
+         HYYDqy4Yc+39BEtC1ThpD/wGVG1rAz3JK1z7Wt11o/Jk0daI2lhbSyCZFxXVWLW1ja
+         kN/bj4bBpZz58tY325k+q+d29AvsD+u9i+mPfc3I=
+Message-ID: <11daa581-65c2-47d5-8bd3-78757fd55ee3@novek.ru>
+Date:   Mon, 27 Jun 2022 23:04:48 +0100
 MIME-Version: 1.0
-References: <20220621233939.993579-1-fred@cloudflare.com> <ce1653b1-feb0-1a99-0e97-8dfb289eeb79@schaufler-ca.com>
- <b72c889a-4a50-3330-baae-3bbf065e7187@cloudflare.com> <CAHC9VhSTkEMT90Tk+=iTyp3npWEm+3imrkFVX2qb=XsOPp9F=A@mail.gmail.com>
- <20220627121137.cnmctlxxtcgzwrws@wittgenstein>
-In-Reply-To: <20220627121137.cnmctlxxtcgzwrws@wittgenstein>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Mon, 27 Jun 2022 17:56:14 -0400
-Message-ID: <CAHC9VhSQH9tE-NgU6Q-GLqSy7R6FVjSbp4Tc4gVTbjZCqAWy5Q@mail.gmail.com>
-Subject: Re: [PATCH 0/2] Introduce security_create_user_ns()
-To:     Christian Brauner <brauner@kernel.org>
-Cc:     Frederick Lawler <fred@cloudflare.com>,
-        Casey Schaufler <casey@schaufler-ca.com>, kpsingh@kernel.org,
-        revest@chromium.org, jackmanb@chromium.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
-        jmorris@namei.org, serge@hallyn.com, bpf@vger.kernel.org,
-        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-team@cloudflare.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [RFC PATCH v1 3/3] ptp_ocp: implement DPLL ops
+Content-Language: en-US
+To:     Jonathan Lemon <jonathan.lemon@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Vadim Fedorenko <vadfed@fb.com>,
+        Aya Levin <ayal@nvidia.com>,
+        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+References: <20220623005717.31040-1-vfedorenko@novek.ru>
+ <20220623005717.31040-4-vfedorenko@novek.ru>
+ <20220623182813.safjhwvu67i4vu3b@bsd-mbp.dhcp.thefacebook.com>
+ <80568c10-2d73-2a68-aed6-a553ae2410f8@novek.ru>
+ <20220627192354.pyy2lcyy4aiz6s4l@bsd-mbp.dhcp.thefacebook.com>
+From:   Vadim Fedorenko <vfedorenko@novek.ru>
+In-Reply-To: <20220627192354.pyy2lcyy4aiz6s4l@bsd-mbp.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_PASS,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -73,31 +57,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 8:11 AM Christian Brauner <brauner@kernel.org> wrote:
-> On Thu, Jun 23, 2022 at 11:21:37PM -0400, Paul Moore wrote:
+On 27.06.2022 20:23, Jonathan Lemon wrote:
+> On Sun, Jun 26, 2022 at 08:27:17PM +0100, Vadim Fedorenko wrote:
+>> On 23.06.2022 19:28, Jonathan Lemon wrote:
+>>> On Thu, Jun 23, 2022 at 03:57:17AM +0300, Vadim Fedorenko wrote:
+>>>> From: Vadim Fedorenko <vadfed@fb.com>
+>>>>
+>>>> +static int ptp_ocp_dpll_get_status(struct dpll_device *dpll)
+>>>> +{
+>>>> +	struct ptp_ocp *bp = (struct ptp_ocp *)dpll_priv(dpll);
+>>>> +	int sync;
+>>>> +
+>>>> +	sync = ioread32(&bp->reg->status) & OCP_STATUS_IN_SYNC;
+>>>> +	return sync;
+>>>> +}
+>>>
+>>> Please match existing code style.
+>>>
+>>
+>> Didn't get this point. The same code is used through out the driver.
+>> Could you please explain?
+> 
+> Match existing function definition style.
 
-...
-
-> > This is one of the reasons why I usually like to see at least one LSM
-> > implementation to go along with every new/modified hook.  The
-> > implementation forces you to think about what information is necessary
-> > to perform a basic access control decision; sometimes it isn't always
-> > obvious until you have to write the access control :)
->
-> I spoke to Frederick at length during LSS and as I've been given to
-> understand there's a eBPF program that would immediately use this new
-> hook. Now I don't want to get into the whole "Is the eBPF LSM hook
-> infrastructure an LSM" but I think we can let this count as a legitimate
-> first user of this hook/code.
-
-Yes, for the most part I don't really worry about the "is a BPF LSM a
-LSM?" question, it's generally not important for most discussions.
-However, there is an issue unique to the BPF LSMs which I think is
-relevant here: there is no hook implementation code living under
-security/.  While I talked about a hook implementation being helpful
-to verify the hook prototype, it is also helpful in providing an
-in-tree example for other LSMs; unfortunately we don't get that same
-example value when the initial hook implementation is a BPF LSM.
-
--- 
-paul-moore.com
+Got it. Will address in the next version, thanks!
