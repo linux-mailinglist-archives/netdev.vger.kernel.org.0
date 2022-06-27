@@ -2,401 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EA72755D624
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:16:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 527E955C590
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 14:51:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234172AbiF0KkV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jun 2022 06:40:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42152 "EHLO
+        id S234095AbiF0Ju4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jun 2022 05:50:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234155AbiF0KkU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 06:40:20 -0400
-X-Greylist: delayed 2969 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 27 Jun 2022 03:40:18 PDT
-Received: from syslogsrv (unknown [217.20.186.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA2D56378;
-        Mon, 27 Jun 2022 03:40:18 -0700 (PDT)
-Received: from fg200.ow.s ([172.20.254.44] helo=localhost.localdomain)
-        by syslogsrv with esmtp (Exim 4.90_1)
-        (envelope-from <maksym.glubokiy@plvision.eu>)
-        id 1o5lO2-00005Z-Rf; Mon, 27 Jun 2022 12:50:31 +0300
-From:   Maksym Glubokiy <maksym.glubokiy@plvision.eu>
-To:     Taras Chornyi <tchornyi@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Maksym Glubokiy <maksym.glubokiy@plvision.eu>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next] net: prestera: acl: add support for 'egress' rules
-Date:   Mon, 27 Jun 2022 12:50:18 +0300
-Message-Id: <20220627095019.152746-1-maksym.glubokiy@plvision.eu>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S234085AbiF0Juw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 05:50:52 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E5084616C
+        for <netdev@vger.kernel.org>; Mon, 27 Jun 2022 02:50:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656323450;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=bpgVvEHm/IV3hFTY2amgkVK+YIMLBXRHwpjPAdXd8MA=;
+        b=GEQNMDb2+d4gfZNyNW5wQPUjM5jBO4Zxh0cqWokNml5sTpXBlQvQBv5Y6+GNW3epkjEqQV
+        R5/H2Mijl6iGG12wmrVlufbR93b5aLxSQ9QvGou+UaEYm5ekZcjHikYYGvaPBSF02umAlA
+        wjMz2zu719nxdlhs62pKiwaViqzQdos=
+Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com
+ [209.85.167.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-608-VuUPtuhgOp-FB8R3lmmLSg-1; Mon, 27 Jun 2022 05:50:49 -0400
+X-MC-Unique: VuUPtuhgOp-FB8R3lmmLSg-1
+Received: by mail-lf1-f72.google.com with SMTP id h18-20020a056512055200b004810d1b257aso1878732lfl.13
+        for <netdev@vger.kernel.org>; Mon, 27 Jun 2022 02:50:49 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:message-id:date:mime-version:user-agent:cc
+         :subject:content-language:to:references:in-reply-to
+         :content-transfer-encoding;
+        bh=bpgVvEHm/IV3hFTY2amgkVK+YIMLBXRHwpjPAdXd8MA=;
+        b=SdA3VmQI0LJysvC0oi2xKnDyfhe1n6N4SLBlLB45ZZl6JSaZjN7r3l9iMM3Y+6996m
+         npSowIwLB+uFxtqNzynp/2lwqeMJWOiLNW2uEvv01RswMqKyTm48G406sPi/jQ87NZnu
+         IT1Vivl4ijtKEK3HQVXXvkQnfs0niN2BcYdzB0ySxyNt0gsBzALj8iqbxMywkwE8M3eU
+         rGNibsdrrUemE3CSxXeCEZeUfm5unoy6z6rvXQEeqi0FXY9Ke0r4VKmlc12BWF+BRa6v
+         mY65IRlbX/daY+LNk9wq2vHPvSpxMBpJNLltBANPQlsFe0rA0yISfxYvP737YYfPVcdJ
+         sKUA==
+X-Gm-Message-State: AJIora9ltcjww92qao6dsZNBmyFnmbhKZpk4qNFaXYXgY2aVPskr8qb0
+        JTSTyxo5m/oSnNqGOwS7zGpTcd8zpHvP8gKsKKtzlR/XIy1apFwc56gSGLoNfJFfkgpVlIJAu2o
+        5sBu+60z5TSv0Obks
+X-Received: by 2002:a05:6512:2208:b0:480:ff57:ab31 with SMTP id h8-20020a056512220800b00480ff57ab31mr7704973lfu.144.1656323446880;
+        Mon, 27 Jun 2022 02:50:46 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1v6NtFz8znhFOivwgMDjtuZ13nFN7XQO5FYA1oOa2kxAuJ3kJU0aVCNUE8LBKrPh0N5ds5U7g==
+X-Received: by 2002:a05:6512:2208:b0:480:ff57:ab31 with SMTP id h8-20020a056512220800b00480ff57ab31mr7704954lfu.144.1656323446542;
+        Mon, 27 Jun 2022 02:50:46 -0700 (PDT)
+Received: from [192.168.0.50] (87-59-106-155-cable.dk.customer.tdc.net. [87.59.106.155])
+        by smtp.gmail.com with ESMTPSA id d22-20020a2e3316000000b0025907141aa6sm1338611ljc.83.2022.06.27.02.50.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 27 Jun 2022 02:50:46 -0700 (PDT)
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
+Message-ID: <64caa039-14fb-c883-de1c-6549b5314269@redhat.com>
+Date:   Mon, 27 Jun 2022 11:50:44 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,FSL_HELO_NON_FQDN_1,
-        HELO_NO_DOMAIN,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Cc:     brouer@redhat.com, lorenzo@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        lipeng321@huawei.com, chenhao288@hisilicon.com
+Subject: Re: [PATCH net-next] net: page_pool: optimize page pool page
+ allocation in NUMA scenario
+Content-Language: en-US
+To:     Guangbin Huang <huangguangbin2@huawei.com>, hawk@kernel.org,
+        ilias.apalodimas@linaro.org, davem@davemloft.net, kuba@kernel.org,
+        edumazet@google.com, pabeni@redhat.com
+References: <20220624093621.12505-1-huangguangbin2@huawei.com>
+In-Reply-To: <20220624093621.12505-1-huangguangbin2@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The following is now supported:
 
-  $ tc qdisc add PORT clsact
-  $ tc filter add dev PORT egress ...
 
-Signed-off-by: Maksym Glubokiy <maksym.glubokiy@plvision.eu>
----
- .../net/ethernet/marvell/prestera/prestera.h  |  3 +-
- .../ethernet/marvell/prestera/prestera_acl.c  | 47 ++++++++++++-----
- .../ethernet/marvell/prestera/prestera_acl.h  |  4 +-
- .../ethernet/marvell/prestera/prestera_flow.c | 52 +++++++++++++------
- .../ethernet/marvell/prestera/prestera_flow.h |  1 +
- .../marvell/prestera/prestera_flower.c        |  2 +-
- .../ethernet/marvell/prestera/prestera_hw.h   |  7 +--
- 7 files changed, 82 insertions(+), 34 deletions(-)
+On 24/06/2022 11.36, Guangbin Huang wrote:
+> From: Jie Wang <wangjie125@huawei.com>
+> 
+> Currently NIC packet receiving performance based on page pool deteriorates
+> occasionally. To analysis the causes of this problem page allocation stats
+> are collected. Here are the stats when NIC rx performance deteriorates:
+> 
+> bandwidth(Gbits/s)		16.8		6.91
+> rx_pp_alloc_fast		13794308	21141869
+> rx_pp_alloc_slow		108625		166481
+> rx_pp_alloc_slow_h		0		0
+> rx_pp_alloc_empty		8192		8192
+> rx_pp_alloc_refill		0		0
+> rx_pp_alloc_waive		100433		158289
+> rx_pp_recycle_cached		0		0
+> rx_pp_recycle_cache_full	0		0
+> rx_pp_recycle_ring		362400		420281
+> rx_pp_recycle_ring_full		6064893		9709724
+> rx_pp_recycle_released_ref	0		0
+> 
+> The rx_pp_alloc_waive count indicates that a large number of pages' numa
+> node are inconsistent with the NIC device numa node. Therefore these pages
+> can't be reused by the page pool. As a result, many new pages would be
+> allocated by __page_pool_alloc_pages_slow which is time consuming. This
+> causes the NIC rx performance fluctuations.
+> 
+> The main reason of huge numa mismatch pages in page pool is that page pool
+> uses alloc_pages_bulk_array to allocate original pages. This function is
+> not suitable for page allocation in NUMA scenario. So this patch uses
+> alloc_pages_bulk_array_node which has a NUMA id input parameter to ensure
+> the NUMA consistent between NIC device and allocated pages.
+> 
+> Repeated NIC rx performance tests are performed 40 times. NIC rx bandwidth
+> is higher and more stable compared to the datas above. Here are three test
+> stats, the rx_pp_alloc_waive count is zero and rx_pp_alloc_slow which
+> indicates pages allocated from slow patch is relatively low.
+> 
+> bandwidth(Gbits/s)		93		93.9		93.8
+> rx_pp_alloc_fast		60066264	61266386	60938254
+> rx_pp_alloc_slow		16512		16517		16539
+> rx_pp_alloc_slow_ho		0		0		0
+> rx_pp_alloc_empty		16512		16517		16539
+> rx_pp_alloc_refill		473841		481910		481585
+> rx_pp_alloc_waive		0		0		0
+> rx_pp_recycle_cached		0		0		0
+> rx_pp_recycle_cache_full	0		0		0
+> rx_pp_recycle_ring		29754145	30358243	30194023
+> rx_pp_recycle_ring_full		0		0		0
+> rx_pp_recycle_released_ref	0		0		0
+> 
+> Signed-off-by: Jie Wang <wangjie125@huawei.com>
+> ---
+>   net/core/page_pool.c | 11 ++++++++++-
+>   1 file changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/marvell/prestera/prestera.h b/drivers/net/ethernet/marvell/prestera/prestera.h
-index 6f754ae2a584..0bb46eee46b4 100644
---- a/drivers/net/ethernet/marvell/prestera/prestera.h
-+++ b/drivers/net/ethernet/marvell/prestera/prestera.h
-@@ -107,7 +107,8 @@ struct prestera_port_phy_config {
- struct prestera_port {
- 	struct net_device *dev;
- 	struct prestera_switch *sw;
--	struct prestera_flow_block *flow_block;
-+	struct prestera_flow_block *ingress_flow_block;
-+	struct prestera_flow_block *egress_flow_block;
- 	struct devlink_port dl_port;
- 	struct list_head lag_member;
- 	struct prestera_lag *lag;
-diff --git a/drivers/net/ethernet/marvell/prestera/prestera_acl.c b/drivers/net/ethernet/marvell/prestera/prestera_acl.c
-index 3a141f2db812..3d4b85f2d541 100644
---- a/drivers/net/ethernet/marvell/prestera/prestera_acl.c
-+++ b/drivers/net/ethernet/marvell/prestera/prestera_acl.c
-@@ -61,6 +61,7 @@ struct prestera_acl_ruleset {
- 	u32 index;
- 	u16 pcl_id;
- 	bool offload;
-+	bool ingress;
- };
- 
- struct prestera_acl_vtcam {
-@@ -70,6 +71,7 @@ struct prestera_acl_vtcam {
- 	u32 id;
- 	bool is_keymask_set;
- 	u8 lookup;
-+	u8 direction;
- };
- 
- static const struct rhashtable_params prestera_acl_ruleset_ht_params = {
-@@ -93,23 +95,36 @@ static const struct rhashtable_params __prestera_acl_rule_entry_ht_params = {
- 	.automatic_shrinking = true,
- };
- 
--int prestera_acl_chain_to_client(u32 chain_index, u32 *client)
-+int prestera_acl_chain_to_client(u32 chain_index, bool ingress, u32 *client)
- {
--	static const u32 client_map[] = {
--		PRESTERA_HW_COUNTER_CLIENT_LOOKUP_0,
--		PRESTERA_HW_COUNTER_CLIENT_LOOKUP_1,
--		PRESTERA_HW_COUNTER_CLIENT_LOOKUP_2
-+	static const u32 ingress_client_map[] = {
-+		PRESTERA_HW_COUNTER_CLIENT_INGRESS_LOOKUP_0,
-+		PRESTERA_HW_COUNTER_CLIENT_INGRESS_LOOKUP_1,
-+		PRESTERA_HW_COUNTER_CLIENT_INGRESS_LOOKUP_2
- 	};
- 
--	if (chain_index >= ARRAY_SIZE(client_map))
-+	if (!ingress) {
-+		/* prestera supports only one chain on egress */
-+		if (chain_index > 0)
-+			return -EINVAL;
-+
-+		*client = PRESTERA_HW_COUNTER_CLIENT_EGRESS_LOOKUP;
-+		return 0;
-+	}
-+
-+	if (chain_index >= ARRAY_SIZE(ingress_client_map))
- 		return -EINVAL;
- 
--	*client = client_map[chain_index];
-+	*client = ingress_client_map[chain_index];
- 	return 0;
- }
- 
--static bool prestera_acl_chain_is_supported(u32 chain_index)
-+static bool prestera_acl_chain_is_supported(u32 chain_index, bool ingress)
- {
-+	if (!ingress)
-+		/* prestera supports only one chain on egress */
-+		return chain_index == 0;
-+
- 	return (chain_index & ~PRESTERA_ACL_CHAIN_MASK) == 0;
- }
- 
-@@ -122,7 +137,7 @@ prestera_acl_ruleset_create(struct prestera_acl *acl,
- 	u32 uid = 0;
- 	int err;
- 
--	if (!prestera_acl_chain_is_supported(chain_index))
-+	if (!prestera_acl_chain_is_supported(chain_index, block->ingress))
- 		return ERR_PTR(-EINVAL);
- 
- 	ruleset = kzalloc(sizeof(*ruleset), GFP_KERNEL);
-@@ -130,6 +145,7 @@ prestera_acl_ruleset_create(struct prestera_acl *acl,
- 		return ERR_PTR(-ENOMEM);
- 
- 	ruleset->acl = acl;
-+	ruleset->ingress = block->ingress;
- 	ruleset->ht_key.block = block;
- 	ruleset->ht_key.chain_index = chain_index;
- 	refcount_set(&ruleset->refcount, 1);
-@@ -172,13 +188,18 @@ int prestera_acl_ruleset_offload(struct prestera_acl_ruleset *ruleset)
- {
- 	struct prestera_acl_iface iface;
- 	u32 vtcam_id;
-+	int dir;
- 	int err;
- 
-+	dir = ruleset->ingress ?
-+		PRESTERA_HW_VTCAM_DIR_INGRESS : PRESTERA_HW_VTCAM_DIR_EGRESS;
-+
- 	if (ruleset->offload)
- 		return -EEXIST;
- 
- 	err = prestera_acl_vtcam_id_get(ruleset->acl,
- 					ruleset->ht_key.chain_index,
-+					dir,
- 					ruleset->keymask, &vtcam_id);
- 	if (err)
- 		goto err_vtcam_create;
-@@ -719,7 +740,7 @@ static int __prestera_acl_vtcam_id_try_fit(struct prestera_acl *acl, u8 lookup,
- 	return 0;
- }
- 
--int prestera_acl_vtcam_id_get(struct prestera_acl *acl, u8 lookup,
-+int prestera_acl_vtcam_id_get(struct prestera_acl *acl, u8 lookup, u8 dir,
- 			      void *keymask, u32 *vtcam_id)
- {
- 	struct prestera_acl_vtcam *vtcam;
-@@ -731,7 +752,8 @@ int prestera_acl_vtcam_id_get(struct prestera_acl *acl, u8 lookup,
- 	 * fine for now
- 	 */
- 	list_for_each_entry(vtcam, &acl->vtcam_list, list) {
--		if (lookup != vtcam->lookup)
-+		if (lookup != vtcam->lookup ||
-+		    dir != vtcam->direction)
- 			continue;
- 
- 		if (!keymask && !vtcam->is_keymask_set) {
-@@ -752,7 +774,7 @@ int prestera_acl_vtcam_id_get(struct prestera_acl *acl, u8 lookup,
- 		return -ENOMEM;
- 
- 	err = prestera_hw_vtcam_create(acl->sw, lookup, keymask, &new_vtcam_id,
--				       PRESTERA_HW_VTCAM_DIR_INGRESS);
-+				       dir);
- 	if (err) {
- 		kfree(vtcam);
- 
-@@ -765,6 +787,7 @@ int prestera_acl_vtcam_id_get(struct prestera_acl *acl, u8 lookup,
- 		return 0;
- 	}
- 
-+	vtcam->direction = dir;
- 	vtcam->id = new_vtcam_id;
- 	vtcam->lookup = lookup;
- 	if (keymask) {
-diff --git a/drivers/net/ethernet/marvell/prestera/prestera_acl.h b/drivers/net/ethernet/marvell/prestera/prestera_acl.h
-index f963e1e0c0f0..03fc5b9dc925 100644
---- a/drivers/net/ethernet/marvell/prestera/prestera_acl.h
-+++ b/drivers/net/ethernet/marvell/prestera/prestera_acl.h
-@@ -199,9 +199,9 @@ void
- prestera_acl_rule_keymask_pcl_id_set(struct prestera_acl_rule *rule,
- 				     u16 pcl_id);
- 
--int prestera_acl_vtcam_id_get(struct prestera_acl *acl, u8 lookup,
-+int prestera_acl_vtcam_id_get(struct prestera_acl *acl, u8 lookup, u8 dir,
- 			      void *keymask, u32 *vtcam_id);
- int prestera_acl_vtcam_id_put(struct prestera_acl *acl, u32 vtcam_id);
--int prestera_acl_chain_to_client(u32 chain_index, u32 *client);
-+int prestera_acl_chain_to_client(u32 chain_index, bool ingress, u32 *client);
- 
- #endif /* _PRESTERA_ACL_H_ */
-diff --git a/drivers/net/ethernet/marvell/prestera/prestera_flow.c b/drivers/net/ethernet/marvell/prestera/prestera_flow.c
-index 05c3ad98eba9..2262693bd5cf 100644
---- a/drivers/net/ethernet/marvell/prestera/prestera_flow.c
-+++ b/drivers/net/ethernet/marvell/prestera/prestera_flow.c
-@@ -75,7 +75,9 @@ static void prestera_flow_block_destroy(void *cb_priv)
- }
- 
- static struct prestera_flow_block *
--prestera_flow_block_create(struct prestera_switch *sw, struct net *net)
-+prestera_flow_block_create(struct prestera_switch *sw,
-+			   struct net *net,
-+			   bool ingress)
- {
- 	struct prestera_flow_block *block;
- 
-@@ -87,6 +89,7 @@ prestera_flow_block_create(struct prestera_switch *sw, struct net *net)
- 	INIT_LIST_HEAD(&block->template_list);
- 	block->net = net;
- 	block->sw = sw;
-+	block->ingress = ingress;
- 
- 	return block;
- }
-@@ -165,7 +168,8 @@ static int prestera_flow_block_unbind(struct prestera_flow_block *block,
- static struct prestera_flow_block *
- prestera_flow_block_get(struct prestera_switch *sw,
- 			struct flow_block_offload *f,
--			bool *register_block)
-+			bool *register_block,
-+			bool ingress)
- {
- 	struct prestera_flow_block *block;
- 	struct flow_block_cb *block_cb;
-@@ -173,7 +177,7 @@ prestera_flow_block_get(struct prestera_switch *sw,
- 	block_cb = flow_block_cb_lookup(f->block,
- 					prestera_flow_block_cb, sw);
- 	if (!block_cb) {
--		block = prestera_flow_block_create(sw, f->net);
-+		block = prestera_flow_block_create(sw, f->net, ingress);
- 		if (!block)
- 			return ERR_PTR(-ENOMEM);
- 
-@@ -209,7 +213,7 @@ static void prestera_flow_block_put(struct prestera_flow_block *block)
- }
- 
- static int prestera_setup_flow_block_bind(struct prestera_port *port,
--					  struct flow_block_offload *f)
-+					  struct flow_block_offload *f, bool ingress)
- {
- 	struct prestera_switch *sw = port->sw;
- 	struct prestera_flow_block *block;
-@@ -217,7 +221,7 @@ static int prestera_setup_flow_block_bind(struct prestera_port *port,
- 	bool register_block;
- 	int err;
- 
--	block = prestera_flow_block_get(sw, f, &register_block);
-+	block = prestera_flow_block_get(sw, f, &register_block, ingress);
- 	if (IS_ERR(block))
- 		return PTR_ERR(block);
- 
-@@ -232,7 +236,11 @@ static int prestera_setup_flow_block_bind(struct prestera_port *port,
- 		list_add_tail(&block_cb->driver_list, &prestera_block_cb_list);
- 	}
- 
--	port->flow_block = block;
-+	if (ingress)
-+		port->ingress_flow_block = block;
-+	else
-+		port->egress_flow_block = block;
-+
- 	return 0;
- 
- err_block_bind:
-@@ -242,7 +250,7 @@ static int prestera_setup_flow_block_bind(struct prestera_port *port,
- }
- 
- static void prestera_setup_flow_block_unbind(struct prestera_port *port,
--					     struct flow_block_offload *f)
-+					     struct flow_block_offload *f, bool ingress)
- {
- 	struct prestera_switch *sw = port->sw;
- 	struct prestera_flow_block *block;
-@@ -266,24 +274,38 @@ static void prestera_setup_flow_block_unbind(struct prestera_port *port,
- 		list_del(&block_cb->driver_list);
- 	}
- error:
--	port->flow_block = NULL;
-+	if (ingress)
-+		port->ingress_flow_block = NULL;
-+	else
-+		port->egress_flow_block = NULL;
- }
- 
--int prestera_flow_block_setup(struct prestera_port *port,
--			      struct flow_block_offload *f)
-+static int prestera_setup_flow_block_clsact(struct prestera_port *port,
-+					    struct flow_block_offload *f,
-+					    bool ingress)
- {
--	if (f->binder_type != FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS)
--		return -EOPNOTSUPP;
--
- 	f->driver_block_list = &prestera_block_cb_list;
- 
- 	switch (f->command) {
- 	case FLOW_BLOCK_BIND:
--		return prestera_setup_flow_block_bind(port, f);
-+		return prestera_setup_flow_block_bind(port, f, ingress);
- 	case FLOW_BLOCK_UNBIND:
--		prestera_setup_flow_block_unbind(port, f);
-+		prestera_setup_flow_block_unbind(port, f, ingress);
- 		return 0;
- 	default:
- 		return -EOPNOTSUPP;
- 	}
- }
-+
-+int prestera_flow_block_setup(struct prestera_port *port,
-+			      struct flow_block_offload *f)
-+{
-+	switch (f->binder_type) {
-+	case FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS:
-+		return prestera_setup_flow_block_clsact(port, f, true);
-+	case FLOW_BLOCK_BINDER_TYPE_CLSACT_EGRESS:
-+		return prestera_setup_flow_block_clsact(port, f, false);
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+}
-diff --git a/drivers/net/ethernet/marvell/prestera/prestera_flow.h b/drivers/net/ethernet/marvell/prestera/prestera_flow.h
-index 6550278b166a..0c9e13263261 100644
---- a/drivers/net/ethernet/marvell/prestera/prestera_flow.h
-+++ b/drivers/net/ethernet/marvell/prestera/prestera_flow.h
-@@ -23,6 +23,7 @@ struct prestera_flow_block {
- 	struct flow_block_cb *block_cb;
- 	struct list_head template_list;
- 	unsigned int rule_count;
-+	bool ingress;
- };
- 
- int prestera_flow_block_setup(struct prestera_port *port,
-diff --git a/drivers/net/ethernet/marvell/prestera/prestera_flower.c b/drivers/net/ethernet/marvell/prestera/prestera_flower.c
-index d43e503c644f..a54748ac6541 100644
---- a/drivers/net/ethernet/marvell/prestera/prestera_flower.c
-+++ b/drivers/net/ethernet/marvell/prestera/prestera_flower.c
-@@ -79,7 +79,7 @@ static int prestera_flower_parse_actions(struct prestera_flow_block *block,
- 	} else if (act->hw_stats & FLOW_ACTION_HW_STATS_DELAYED) {
- 		/* setup counter first */
- 		rule->re_arg.count.valid = true;
--		err = prestera_acl_chain_to_client(chain_index,
-+		err = prestera_acl_chain_to_client(chain_index, block->ingress,
- 						   &rule->re_arg.count.client);
- 		if (err)
- 			return err;
-diff --git a/drivers/net/ethernet/marvell/prestera/prestera_hw.h b/drivers/net/ethernet/marvell/prestera/prestera_hw.h
-index 579d9ba23ffc..aa74f668aa3c 100644
---- a/drivers/net/ethernet/marvell/prestera/prestera_hw.h
-+++ b/drivers/net/ethernet/marvell/prestera/prestera_hw.h
-@@ -123,9 +123,10 @@ enum prestera_hw_vtcam_direction_t {
- };
- 
- enum {
--	PRESTERA_HW_COUNTER_CLIENT_LOOKUP_0 = 0,
--	PRESTERA_HW_COUNTER_CLIENT_LOOKUP_1 = 1,
--	PRESTERA_HW_COUNTER_CLIENT_LOOKUP_2 = 2,
-+	PRESTERA_HW_COUNTER_CLIENT_INGRESS_LOOKUP_0 = 0,
-+	PRESTERA_HW_COUNTER_CLIENT_INGRESS_LOOKUP_1 = 1,
-+	PRESTERA_HW_COUNTER_CLIENT_INGRESS_LOOKUP_2 = 2,
-+	PRESTERA_HW_COUNTER_CLIENT_EGRESS_LOOKUP = 3,
- };
- 
- struct prestera_switch;
--- 
-2.25.1
+Thanks for improving this, but we need some small adjustments below.
+And then you need to send a V2 of the patch.
+
+> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+> index f18e6e771993..15997fcd78f3 100644
+> --- a/net/core/page_pool.c
+> +++ b/net/core/page_pool.c
+> @@ -377,6 +377,7 @@ static struct page *__page_pool_alloc_pages_slow(struct page_pool *pool,
+>   	unsigned int pp_order = pool->p.order;
+>   	struct page *page;
+>   	int i, nr_pages;
+> +	int pref_nid; /* preferred NUMA node */
+>   
+>   	/* Don't support bulk alloc for high-order pages */
+>   	if (unlikely(pp_order))
+> @@ -386,10 +387,18 @@ static struct page *__page_pool_alloc_pages_slow(struct page_pool *pool,
+>   	if (unlikely(pool->alloc.count > 0))
+>   		return pool->alloc.cache[--pool->alloc.count];
+>   
+> +#ifdef CONFIG_NUMA
+> +	pref_nid = (pool->p.nid == NUMA_NO_NODE) ? numa_mem_id() : pool->p.nid;
+> +#else
+> +	/* Ignore pool->p.nid setting if !CONFIG_NUMA, helps compiler */
+
+Remove "helps compiler" from comments, it only make sense in the code
+this was copy-pasted from.
+
+
+> +	pref_nid = numa_mem_id(); /* will be zero like page_to_nid() */
+
+The comment about "page_to_nid()" is only relevant in the code
+this was copy-pasted from.
+
+Change to:
+	pref_nid = NUMA_NO_NODE;
+
+As alloc_pages_bulk_array_node() will be inlined, the effect (generated 
+asm code) will be the same, but it will be better for code maintenance.
+
+> +#endif
+> +
+>   	/* Mark empty alloc.cache slots "empty" for alloc_pages_bulk_array */
+>   	memset(&pool->alloc.cache, 0, sizeof(void *) * bulk);
+>   
+> -	nr_pages = alloc_pages_bulk_array(gfp, bulk, pool->alloc.cache);
+> +	nr_pages = alloc_pages_bulk_array_node(gfp, pref_nid, bulk,
+> +					       pool->alloc.cache);
+>   	if (unlikely(!nr_pages))
+>   		return NULL;
+>   
 
