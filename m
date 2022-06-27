@@ -2,223 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CAD0755CDFA
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:04:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FA0655DEF4
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:29:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240406AbiF0ThS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jun 2022 15:37:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52444 "EHLO
+        id S238643AbiF0Tkh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jun 2022 15:40:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238466AbiF0ThR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 15:37:17 -0400
-Received: from aposti.net (aposti.net [89.234.176.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBED9631D;
-        Mon, 27 Jun 2022 12:37:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
-        s=mail; t=1656358632; h=from:from:sender:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:references; bh=6eSzpP3gF9wHixe+jAcmFdCUtXsxEMHUrso/b5UAcMU=;
-        b=W/PDWKW+pdopMXowbtUohfKpQSg2dAd2G3CsI91U+epglSW0ADxlADmzw24TOKFXIHZzHd
-        NAHRbbzIzznigka8ZOGaOZ9RKim89SJNBl0y4UCfg8XWQcJzzuxDFB9LkGBTKeHcYjb87k
-        8SuLTjTpbftef72CClCmBxRIe2bgTUo=
-From:   Paul Cercueil <paul@crapouillou.net>
-To:     Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>
-Cc:     linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH v3] brcmfmac: Remove #ifdef guards for PM related functions
-Date:   Mon, 27 Jun 2022 20:37:01 +0100
-Message-Id: <20220627193701.31074-1-paul@crapouillou.net>
+        with ESMTP id S231765AbiF0Tkf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 15:40:35 -0400
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2069.outbound.protection.outlook.com [40.107.21.69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1562815A27;
+        Mon, 27 Jun 2022 12:40:34 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=lz3zQV9TPcMXfDmpjQ9Pu0E+upYtc347huEzj6j+Y/KxhxUaT0TqLAcmE6XOkZOsgpk/uNknr2BrmEhOcijc5YMIwWqxnSTFDmjnOHTjGnWCo3dapAp0ZDRHfcqC+NbZZPxQaLuNy8eGwt4Xp7QPZBcqbcUFg+K0SDc5uWcfagBP2vW3tQNsW8adTPqfGm2CKfgx/mTktVzjJPbNeAkOLUNoCcJfE14CiLcJxUe3vTJ2qqtsHHbsohv4qhkdCdLKL2z6iRisOwTexrpVEN3d9ixnyy9lxCjeoG05nc+zEMkDDpkgYlJpbLOU1NyJao1PeJfmGwOkz9dtOnrx3X64Gw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=jQ0NdlynsJ/Q02qrRa0Yf30IESLNZcAJIQj7uUlJmas=;
+ b=eoDwMNIQtQP1gk2Fl9Z2GVbraBILZVObGb6ob8b++EkmUJgFoT8+Y3g2Ii1f85BafQ6/jnjfOUNxRAdhOElDR76ZtkZNUHNFJKEW4LL3JKsZOrfDJVIxFshyQQfwvizkh7MWIwAINGDsHe5T0SiyPN8LnlUXjiPaNXDXUeAqmBEcoZs1QWca2LZso+NjzLFAVes8cb8Z3qqYxEwpUEbgispaLEdIuNsAWq17kNkxxEfPIfeYmWaDGqAwAMCQ/+TpcSQm3jqSm6jRid04XSwVnygXZTRYtTljtlLxmd/amDTL+lawZjaOfJBJYqSI8Y8EtAtAuC2yiLLEqH6wuzxpZw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jQ0NdlynsJ/Q02qrRa0Yf30IESLNZcAJIQj7uUlJmas=;
+ b=i7m1WORlB9YOAxIxQAu4BsCeeoEf8EFA9JWaJEN0p5he6B1c/eTRCUFJ/Bjc3uh/72YN67E8V7pgpYp4leT+DVcFYacZFaSMZlQtGwwppuuwLGfGulQHYvNmaifPVZCbkGrJs1ILHaml70zAlBkBfGsW3VtDn2qx7Hkm9PJMo6M=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by DB6PR0401MB2535.eurprd04.prod.outlook.com (2603:10a6:4:34::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.18; Mon, 27 Jun
+ 2022 19:40:31 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::94fe:9cbe:247b:47ea]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::94fe:9cbe:247b:47ea%7]) with mapi id 15.20.5373.018; Mon, 27 Jun 2022
+ 19:40:31 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Michael Walle <michael@walle.cc>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Maxim Kochetkov <fido_max@inbox.ru>,
+        Colin Foster <colin.foster@in-advantage.com>,
+        Richie Pearn <richard.pearn@nxp.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next 4/4] net: dsa: felix: drop oversized frames with
+ tc-taprio instead of hanging the port
+Thread-Topic: [PATCH net-next 4/4] net: dsa: felix: drop oversized frames with
+ tc-taprio instead of hanging the port
+Thread-Index: AQHYiVUMDrzfbWhGTUGNTUf+r0GzEa1jmdQAgAAPBgA=
+Date:   Mon, 27 Jun 2022 19:40:31 +0000
+Message-ID: <20220627194030.uyaygut2n2sjywni@skbuf>
+References: <20220626120505.2369600-1-vladimir.oltean@nxp.com>
+ <20220626120505.2369600-5-vladimir.oltean@nxp.com>
+ <20220627114644.6c2c163b@kernel.org>
+In-Reply-To: <20220627114644.6c2c163b@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: b6160460-c5f9-44f3-7c29-08da5874e541
+x-ms-traffictypediagnostic: DB6PR0401MB2535:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: j5iAjpB2/ML+3PQO4a+WfgRU1+FgXDhsBVrhQ3Nbqr6JTnlY+AGeEebUtpFxeX5rmcF/RrC1p8m9hkz9fUFgpjsl9Sfk+n6MqiI99+DAY71ewkfeXhVlGtkIQkYsNY1ovb1L3d3I2jB0M3hz7n+a9jmy1vJqTD9eW7gfjp54xBPalpFGtl4x//+dDwq0Vr0r76m7lzX+FA+6VH8Usgs/bWcQhIg0xrOyxIPea1QTqhAy9tgTnmtFdo7Ljirv9dBnZeIkOSUdgZpxYkIfNUz2LQOShg31kEx0tGRx0WhAP1Bx0PbjEERQ/JVvckxb8ui9or5CmN0R1Amb/5+Z8ct8ZpHb4A8EAObpdoN+eFiJhLNhfpK0gVKLwD+6phb20CxXxfiJO/ZQFD3vbUxBe5dt/52VdIDaYx7+KjKYthW3bQ0A3pKZllUBOESErWytt7TAIwg2Z9veRWfBJzb++Znv/g3EpUpg3ih3rTyF2jIVMp7WtynLsgo2hOTvd6BJaUn38cT6Yho3xKYCY/1mNZ4ivMar1ZUCWixPMv0RO0naHFH4d2JB+v9EBceXd+NC0oiFjcfQXbI/WXLKWpsavlLkqEuwLxdknQj9j8GKiE0JxAdlsQ7fNlB3pTz7FpFUXWlgDsPrGn8OejSdR0IsN3hspZzGVWwfN1Y7RCxUnWF3J80tAEllwBfG/gwB69rBpLbSaDuXPV3NkYEEiA6qHz2eEU4x5hUy/BClcAR/xADxd5Tx6e4+ECPK+3YQJto65qUCwuATmtZLWpd5tkZen/EWOJtquO/OihIDlWS/CVzFCoA=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(4636009)(136003)(39860400002)(396003)(346002)(366004)(376002)(38070700005)(26005)(122000001)(91956017)(71200400001)(7416002)(6916009)(54906003)(5660300002)(41300700001)(76116006)(9686003)(64756008)(66446008)(2906002)(6512007)(44832011)(6506007)(478600001)(1076003)(8936002)(86362001)(83380400001)(38100700002)(186003)(33716001)(66556008)(8676002)(4326008)(66946007)(316002)(6486002)(66476007);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?9RiEqZlP20Xf6j9gr23ZWe4MlmylLLQ+J/tyCRwKUKKlS+Z0MveRMwekfiSv?=
+ =?us-ascii?Q?sV+1MbK3GmpTrJKkEDl72qQT08SlDeBinNSNJzmcy1xc1YbSpuhMqn00KH2B?=
+ =?us-ascii?Q?XKZKDOzmM4S5+S/rwyaV88kQvaDTP4BgxlBB1geytrMs7j+8S/i9Rmp7z0xP?=
+ =?us-ascii?Q?ijn1+z/VW5JICTvsB/jMLBHujJ65Vq6zxheu9Y4dNi/QYy7L3XuStWCtH0z5?=
+ =?us-ascii?Q?ifaSB4d+rKdvd+eIrGKBlp34nqBfOWMF/fDRNDP5vWEd/dRELB8WnZ/WHIWB?=
+ =?us-ascii?Q?DRA+lEGaOPyew4C+EmC0VBq6cpr+vk011IaxIQkL6QKufoC4XvvzyK8kKHT1?=
+ =?us-ascii?Q?mK/34WT6QT0/EDKvWg5iaxOMRHoIjefQBWWlVfB9UcjMinFrgI6rpq6kxaFL?=
+ =?us-ascii?Q?VBG1eJTWhNe28V5bomE1bYJ7ttz1/u2VumEZFgYZR8JRBO+KAHdDZspUjIZm?=
+ =?us-ascii?Q?iL31N22kWJYcXh+3RZg0yiD+3iXPpQ04Aw3igkuppRqym1iKlUY7gWQU6rp9?=
+ =?us-ascii?Q?CPtm8YpJf/3wDu79sv3hkmRo4Hkkeb6sgKDJ8+siebo1AlJP6sTEMGZABT28?=
+ =?us-ascii?Q?05uM+Mlf4HoabpPhfmMYBuIkbnHCIUJYuC6q2eHKcCMF7P+rZbS1wqMO+hhr?=
+ =?us-ascii?Q?5pXVD2M/ntmSE90AeXooen2b8kgy1OAuK1t5TJISAms00SCeTQf20mAXiuBK?=
+ =?us-ascii?Q?XRk4KlEYD/4YWwPEY+6gPXM85IOYVNDaW7Mo7YRr2LM1vYMaNFljD3NS15ey?=
+ =?us-ascii?Q?RUENHca3KiQ1LiSyDe1d5DURoqOQfL8VQ7lNQ26dSO1DoJq2ne6fcRzTxNmy?=
+ =?us-ascii?Q?N9t/GWcfRaGGQ+Fpgo7FVuMd7g9tiffUojOMWWN3/crKItAT7s4Nbi1T5Bth?=
+ =?us-ascii?Q?t7CEfcB3i1Do+/hAakBNPeYgcWGhe1V6vLQcnZ8Jxdgihh2DiKkmGjD8EBXi?=
+ =?us-ascii?Q?+ZaZbgZipfmqIKWCfHyfaHqJOqrS6I9JlzpwLcqwdyF34Yg+VsKg5AYix+Uz?=
+ =?us-ascii?Q?YLSpLxXy4h4+nHosCVkZfkMILGEJaGUG96hxIR3SzET6FZu7+OOUdp0vtg3r?=
+ =?us-ascii?Q?aUHBei7L8/H5/Tpqtd474+uVO3tQyvanQP2t8nKh4prJsNhUOyJKKVEL37IR?=
+ =?us-ascii?Q?GRNEJPMFfihQCyvyuvqXiIt4+Hw3ic+MJqcjX82HrxGbU4f8mGPBKnmnY2Yu?=
+ =?us-ascii?Q?iCglzZ+lPZOfg+9wYxP45jQnJXHwB40fI/sKilB6scmxRfeNckVk0Mi7Bzfz?=
+ =?us-ascii?Q?mjEgVVZLTHBoNKQyVIU3iTahvEUSuVnQNPzAb7eZP0hWVdKpHG0Gf/gUOpTC?=
+ =?us-ascii?Q?phrk5ciSL2hOHn7zC3fWpElq5g+j0USg0c1CL0I3Jil1GAC47XdGmZBQPM/a?=
+ =?us-ascii?Q?BNCswGJ6nBsCpEs333ZI5XngAr+T67tta/RfeR1NzG8nk03R6yKpmlEffyTu?=
+ =?us-ascii?Q?tZbkA2IoXO2R2VAWuJ4OcUY28EaaCv826H0Y3suVsbWGU/ImcYuxhY4DJ7tm?=
+ =?us-ascii?Q?lDwTtFfPD75xF5bGYrLPR0ymO7d7aboHpDim9jjdr/sl0VtVMC41ENeADcd2?=
+ =?us-ascii?Q?jio5CCNtGkLj0rQXnlc73UCdQN/fZSm+lt23Cx9oOte4kEdn2gOvflJcsiAp?=
+ =?us-ascii?Q?/g=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <432ADA23FDC5A3459DFB82BA0F2C6E23@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b6160460-c5f9-44f3-7c29-08da5874e541
+X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Jun 2022 19:40:31.1602
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: MKKrMihKlyqInvmhquSYVWj3ihwI6NhClqwTrf8gJQSH+ddJJpzEOSt9RHxszEMp3ydLOdPNPQ2hlJbZ2MISFQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0401MB2535
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the new DEFINE_SIMPLE_DEV_PM_OPS() and pm_sleep_ptr() macros to
-handle the .suspend/.resume callbacks.
+On Mon, Jun 27, 2022 at 11:46:44AM -0700, Jakub Kicinski wrote:
+> On Sun, 26 Jun 2022 15:05:05 +0300 Vladimir Oltean wrote:
+> > When a frame is dropped due to a queue system oversize condition, the
+> > counter that increments is the generic "drop_tail" in ethtool -S, even
+> > if this isn't a tail drop as the rest (i.e. the controlling watermarks
+> > don't count these frames, as can be seen in "devlink sb occupancy show
+> > pci/0000:00:00.5 sb 0"). So the hardware counter is unspecific
+> > regarding the drop reason.
+>=20
+> I had mixed feelings about the stats, as I usually do, but I don't
+> recall if I sent that email. Are you at least counting the drop_tail
+> into one of the standard tx error / drop stats so admins will notice?
 
-These macros allow the suspend and resume functions to be automatically
-dropped by the compiler when CONFIG_SUSPEND is disabled, without having
-to use #ifdef guards.
+Sorry for being unclear, fact is, I had even forgot this small detail
+between testing and writing the commit message...
 
-Some other functions not directly called by the .suspend/.resume
-callbacks, but still related to PM were also taken outside #ifdef
-guards.
-
-The advantage is then that these functions are now always compiled
-independently of any Kconfig option, and thanks to that bugs and
-regressions are easier to catch.
-
-Signed-off-by: Paul Cercueil <paul@crapouillou.net>
----
-
-Notes:
-    v2:
-    - Move checks for IS_ENABLED(CONFIG_PM_SLEEP) inside functions to keep
-      the calling functions intact.
-    - Reword the commit message to explain why this patch is useful.
-    
-    v3:
-    - Remove useless IS_ENABLED(CONFIG_PM_SLEEP) check in
-      brcmf_sdiod_freezer_detach()
-
- .../broadcom/brcm80211/brcmfmac/bcmsdh.c      | 36 +++++++------------
- .../broadcom/brcm80211/brcmfmac/sdio.c        |  5 ++-
- .../broadcom/brcm80211/brcmfmac/sdio.h        | 16 ---------
- 3 files changed, 15 insertions(+), 42 deletions(-)
-
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
-index 9c598ea97499..62d5c5f5fbc8 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
-@@ -784,9 +784,11 @@ void brcmf_sdiod_sgtable_alloc(struct brcmf_sdio_dev *sdiodev)
- 	sdiodev->txglomsz = sdiodev->settings->bus.sdio.txglomsz;
- }
- 
--#ifdef CONFIG_PM_SLEEP
- static int brcmf_sdiod_freezer_attach(struct brcmf_sdio_dev *sdiodev)
- {
-+	if (!IS_ENABLED(CONFIG_PM_SLEEP))
-+		return 0;
-+
- 	sdiodev->freezer = kzalloc(sizeof(*sdiodev->freezer), GFP_KERNEL);
- 	if (!sdiodev->freezer)
- 		return -ENOMEM;
-@@ -833,7 +835,8 @@ static void brcmf_sdiod_freezer_off(struct brcmf_sdio_dev *sdiodev)
- 
- bool brcmf_sdiod_freezing(struct brcmf_sdio_dev *sdiodev)
- {
--	return atomic_read(&sdiodev->freezer->freezing);
-+	return IS_ENABLED(CONFIG_PM_SLEEP) &&
-+		atomic_read(&sdiodev->freezer->freezing);
- }
- 
- void brcmf_sdiod_try_freeze(struct brcmf_sdio_dev *sdiodev)
-@@ -847,24 +850,16 @@ void brcmf_sdiod_try_freeze(struct brcmf_sdio_dev *sdiodev)
- 
- void brcmf_sdiod_freezer_count(struct brcmf_sdio_dev *sdiodev)
- {
--	atomic_inc(&sdiodev->freezer->thread_count);
-+	if (IS_ENABLED(CONFIG_PM_SLEEP))
-+		atomic_inc(&sdiodev->freezer->thread_count);
- }
- 
- void brcmf_sdiod_freezer_uncount(struct brcmf_sdio_dev *sdiodev)
- {
--	atomic_dec(&sdiodev->freezer->thread_count);
--}
--#else
--static int brcmf_sdiod_freezer_attach(struct brcmf_sdio_dev *sdiodev)
--{
--	return 0;
-+	if (IS_ENABLED(CONFIG_PM_SLEEP))
-+		atomic_dec(&sdiodev->freezer->thread_count);
- }
- 
--static void brcmf_sdiod_freezer_detach(struct brcmf_sdio_dev *sdiodev)
--{
--}
--#endif /* CONFIG_PM_SLEEP */
--
- int brcmf_sdiod_remove(struct brcmf_sdio_dev *sdiodev)
- {
- 	sdiodev->state = BRCMF_SDIOD_DOWN;
-@@ -1136,7 +1131,6 @@ void brcmf_sdio_wowl_config(struct device *dev, bool enabled)
- 	brcmf_dbg(SDIO, "WOWL not supported\n");
- }
- 
--#ifdef CONFIG_PM_SLEEP
- static int brcmf_ops_sdio_suspend(struct device *dev)
- {
- 	struct sdio_func *func;
-@@ -1204,11 +1198,9 @@ static int brcmf_ops_sdio_resume(struct device *dev)
- 	return ret;
- }
- 
--static const struct dev_pm_ops brcmf_sdio_pm_ops = {
--	.suspend	= brcmf_ops_sdio_suspend,
--	.resume		= brcmf_ops_sdio_resume,
--};
--#endif	/* CONFIG_PM_SLEEP */
-+static DEFINE_SIMPLE_DEV_PM_OPS(brcmf_sdio_pm_ops,
-+				brcmf_ops_sdio_suspend,
-+				brcmf_ops_sdio_resume);
- 
- static struct sdio_driver brcmf_sdmmc_driver = {
- 	.probe = brcmf_ops_sdio_probe,
-@@ -1217,9 +1209,7 @@ static struct sdio_driver brcmf_sdmmc_driver = {
- 	.id_table = brcmf_sdmmc_ids,
- 	.drv = {
- 		.owner = THIS_MODULE,
--#ifdef CONFIG_PM_SLEEP
--		.pm = &brcmf_sdio_pm_ops,
--#endif	/* CONFIG_PM_SLEEP */
-+		.pm = pm_sleep_ptr(&brcmf_sdio_pm_ops),
- 		.coredump = brcmf_dev_coredump,
- 	},
- };
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-index 212fbbe1cd7e..58ed6b70f8c5 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-@@ -4020,15 +4020,14 @@ brcmf_sdio_probe_attach(struct brcmf_sdio *bus)
- 	 */
- 	brcmf_sdiod_sgtable_alloc(sdiodev);
- 
--#ifdef CONFIG_PM_SLEEP
- 	/* wowl can be supported when KEEP_POWER is true and (WAKE_SDIO_IRQ
- 	 * is true or when platform data OOB irq is true).
- 	 */
--	if ((sdio_get_host_pm_caps(sdiodev->func1) & MMC_PM_KEEP_POWER) &&
-+	if (IS_ENABLED(CONFIG_PM_SLEEP) &&
-+	    (sdio_get_host_pm_caps(sdiodev->func1) & MMC_PM_KEEP_POWER) &&
- 	    ((sdio_get_host_pm_caps(sdiodev->func1) & MMC_PM_WAKE_SDIO_IRQ) ||
- 	     (sdiodev->settings->bus.sdio.oob_irq_supported)))
- 		sdiodev->bus_if->wowl_supported = true;
--#endif
- 
- 	if (brcmf_sdio_kso_init(bus)) {
- 		brcmf_err("error enabling KSO\n");
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.h b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.h
-index 15d2c02fa3ec..47351ff458ca 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.h
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.h
-@@ -346,26 +346,10 @@ int brcmf_sdiod_abort(struct brcmf_sdio_dev *sdiodev, struct sdio_func *func);
- void brcmf_sdiod_sgtable_alloc(struct brcmf_sdio_dev *sdiodev);
- void brcmf_sdiod_change_state(struct brcmf_sdio_dev *sdiodev,
- 			      enum brcmf_sdiod_state state);
--#ifdef CONFIG_PM_SLEEP
- bool brcmf_sdiod_freezing(struct brcmf_sdio_dev *sdiodev);
- void brcmf_sdiod_try_freeze(struct brcmf_sdio_dev *sdiodev);
- void brcmf_sdiod_freezer_count(struct brcmf_sdio_dev *sdiodev);
- void brcmf_sdiod_freezer_uncount(struct brcmf_sdio_dev *sdiodev);
--#else
--static inline bool brcmf_sdiod_freezing(struct brcmf_sdio_dev *sdiodev)
--{
--	return false;
--}
--static inline void brcmf_sdiod_try_freeze(struct brcmf_sdio_dev *sdiodev)
--{
--}
--static inline void brcmf_sdiod_freezer_count(struct brcmf_sdio_dev *sdiodev)
--{
--}
--static inline void brcmf_sdiod_freezer_uncount(struct brcmf_sdio_dev *sdiodev)
--{
--}
--#endif /* CONFIG_PM_SLEEP */
- 
- int brcmf_sdiod_probe(struct brcmf_sdio_dev *sdiodev);
- int brcmf_sdiod_remove(struct brcmf_sdio_dev *sdiodev);
--- 
-2.35.1
-
+The switch, being a switch, will not 'drop' the packet per se, it will
+still try to forward it towards the ports it can. It will only drop it
+and record it as such if it couldn't forward it towards any port (i.e.
+if we're in a 2-port bridge and there isn't any learned FDB entry, it
+will still flood it towards the CPU).
+Because of that, the "drop_tail" counter is incremented on the _ingress_
+port. Good luck counting that into a tx_errors counter :)=
