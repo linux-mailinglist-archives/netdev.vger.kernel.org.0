@@ -2,237 +2,401 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A393F55E305
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:36:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA72755D624
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:16:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233799AbiF0JtQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jun 2022 05:49:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38418 "EHLO
+        id S234172AbiF0KkV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jun 2022 06:40:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229561AbiF0JtO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 05:49:14 -0400
-Received: from mailout3.hostsharing.net (mailout3.hostsharing.net [IPv6:2a01:4f8:150:2161:1:b009:f236:0])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B17A42735;
-        Mon, 27 Jun 2022 02:49:11 -0700 (PDT)
-Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
-        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
-        by mailout3.hostsharing.net (Postfix) with ESMTPS id BB4E3101E1D9F;
-        Mon, 27 Jun 2022 11:49:09 +0200 (CEST)
-Received: from localhost (unknown [89.246.108.87])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by h08.hostsharing.net (Postfix) with ESMTPSA id 7985461B8672;
-        Mon, 27 Jun 2022 11:49:09 +0200 (CEST)
-X-Mailbox-Line: From c5595bdb20625382538816c2e6d917d95c62e09b Mon Sep 17 00:00:00 2001
-Message-Id: <c5595bdb20625382538816c2e6d917d95c62e09b.1656322883.git.lukas@wunner.de>
-From:   Lukas Wunner <lukas@wunner.de>
-Date:   Mon, 27 Jun 2022 11:49:08 +0200
-Subject: [PATCH net v3] net: phy: Don't trigger state machine while in suspend
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
+        with ESMTP id S234155AbiF0KkU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 06:40:20 -0400
+X-Greylist: delayed 2969 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 27 Jun 2022 03:40:18 PDT
+Received: from syslogsrv (unknown [217.20.186.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA2D56378;
+        Mon, 27 Jun 2022 03:40:18 -0700 (PDT)
+Received: from fg200.ow.s ([172.20.254.44] helo=localhost.localdomain)
+        by syslogsrv with esmtp (Exim 4.90_1)
+        (envelope-from <maksym.glubokiy@plvision.eu>)
+        id 1o5lO2-00005Z-Rf; Mon, 27 Jun 2022 12:50:31 +0300
+From:   Maksym Glubokiy <maksym.glubokiy@plvision.eu>
+To:     Taras Chornyi <tchornyi@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Thomas Gleixner <tglx@linutronix.de>
-Cc:     netdev@vger.kernel.org,
-        Steve Glendinning <steve.glendinning@shawell.net>,
-        UNGLinuxDriver@microchip.com, Oliver Neukum <oneukum@suse.com>,
-        Andre Edich <andre.edich@microchip.com>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Martyn Welch <martyn.welch@collabora.com>,
-        Gabriel Hojda <ghojda@yo2urs.ro>,
-        Christoph Fritz <chf.fritz@googlemail.com>,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-        Philipp Rosenberger <p.rosenberger@kunbus.com>,
-        Ferry Toth <fntoth@gmail.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, "Rafael J. Wysocki" <rafael@kernel.org>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Maksym Glubokiy <maksym.glubokiy@plvision.eu>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next] net: prestera: acl: add support for 'egress' rules
+Date:   Mon, 27 Jun 2022 12:50:18 +0300
+Message-Id: <20220627095019.152746-1-maksym.glubokiy@plvision.eu>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,FSL_HELO_NON_FQDN_1,
+        HELO_NO_DOMAIN,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Upon system sleep, mdio_bus_phy_suspend() stops the phy_state_machine(),
-but subsequent interrupts may retrigger it:
+The following is now supported:
 
-They may have been left enabled to facilitate wakeup and are not
-quiesced until the ->suspend_noirq() phase.  Unwanted interrupts may
-hence occur between mdio_bus_phy_suspend() and dpm_suspend_noirq(),
-as well as between dpm_resume_noirq() and mdio_bus_phy_resume().
+  $ tc qdisc add PORT clsact
+  $ tc filter add dev PORT egress ...
 
-Retriggering the phy_state_machine() through an interrupt is not only
-undesirable for the reason given in mdio_bus_phy_suspend() (freezing it
-midway with phydev->lock held), but also because the PHY may be
-inaccessible after it's suspended:  Accesses to USB-attached PHYs are
-blocked once usb_suspend_both() clears the can_submit flag and PHYs on
-PCI network cards may become inaccessible upon suspend as well.
-
-Amend phy_interrupt() to avoid triggering the state machine if the PHY
-is suspended.  Signal wakeup instead if the attached net_device or its
-parent has been configured as a wakeup source.  (Those conditions are
-identical to mdio_bus_phy_may_suspend().)  Postpone handling of the
-interrupt until the PHY has resumed.
-
-Before stopping the phy_state_machine() in mdio_bus_phy_suspend(),
-wait for a concurrent phy_interrupt() to run to completion.  That is
-necessary because phy_interrupt() may have checked the PHY's suspend
-status before the system sleep transition commenced and it may thus
-retrigger the state machine after it was stopped.
-
-Likewise, after re-enabling interrupt handling in mdio_bus_phy_resume(),
-wait for a concurrent phy_interrupt() to complete to ensure that
-interrupts which it postponed are properly rerun.
-
-The issue was exposed by commit 3873b20fd278 ("usbnet: smsc95xx: Forward
-PHY interrupts to PHY driver to avoid polling"), but has existed since
-forever.  Hence the stable designation.
-
-Link: https://lore.kernel.org/netdev/a5315a8a-32c2-962f-f696-de9a26d30091@samsung.com/
-Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Signed-off-by: Lukas Wunner <lukas@wunner.de>
-Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Cc: stable@vger.kernel.org
+Signed-off-by: Maksym Glubokiy <maksym.glubokiy@plvision.eu>
 ---
- Resending as requested by Jakub.  No code changes since v1.
- 
- Changes v1 -> v2:
- * Extend rationale in commit message.
- * Drop Fixes tag, add Tested-by tag (Marek).
- 
- Changes v2 -> v3:
- * Add stable designation.
- * Add Acked-by tag (Rafael).
- 
- Link to v1:
- https://lore.kernel.org/netdev/688f559346ea747d3b47a4d16ef8277e093f9ebe.1653556322.git.lukas@wunner.de/
- 
- Link to v2:
- https://lore.kernel.org/netdev/cover.1654680790.git.lukas@wunner.de/
- 
- drivers/net/phy/phy.c        | 23 +++++++++++++++++++++++
- drivers/net/phy/phy_device.c | 23 +++++++++++++++++++++++
- include/linux/phy.h          |  6 ++++++
- 3 files changed, 52 insertions(+)
+ .../net/ethernet/marvell/prestera/prestera.h  |  3 +-
+ .../ethernet/marvell/prestera/prestera_acl.c  | 47 ++++++++++++-----
+ .../ethernet/marvell/prestera/prestera_acl.h  |  4 +-
+ .../ethernet/marvell/prestera/prestera_flow.c | 52 +++++++++++++------
+ .../ethernet/marvell/prestera/prestera_flow.h |  1 +
+ .../marvell/prestera/prestera_flower.c        |  2 +-
+ .../ethernet/marvell/prestera/prestera_hw.h   |  7 +--
+ 7 files changed, 82 insertions(+), 34 deletions(-)
 
-diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
-index ef62f357b76d..8d3ee3a6495b 100644
---- a/drivers/net/phy/phy.c
-+++ b/drivers/net/phy/phy.c
-@@ -31,6 +31,7 @@
- #include <linux/io.h>
- #include <linux/uaccess.h>
- #include <linux/atomic.h>
-+#include <linux/suspend.h>
- #include <net/netlink.h>
- #include <net/genetlink.h>
- #include <net/sock.h>
-@@ -976,6 +977,28 @@ static irqreturn_t phy_interrupt(int irq, void *phy_dat)
- 	struct phy_driver *drv = phydev->drv;
- 	irqreturn_t ret;
+diff --git a/drivers/net/ethernet/marvell/prestera/prestera.h b/drivers/net/ethernet/marvell/prestera/prestera.h
+index 6f754ae2a584..0bb46eee46b4 100644
+--- a/drivers/net/ethernet/marvell/prestera/prestera.h
++++ b/drivers/net/ethernet/marvell/prestera/prestera.h
+@@ -107,7 +107,8 @@ struct prestera_port_phy_config {
+ struct prestera_port {
+ 	struct net_device *dev;
+ 	struct prestera_switch *sw;
+-	struct prestera_flow_block *flow_block;
++	struct prestera_flow_block *ingress_flow_block;
++	struct prestera_flow_block *egress_flow_block;
+ 	struct devlink_port dl_port;
+ 	struct list_head lag_member;
+ 	struct prestera_lag *lag;
+diff --git a/drivers/net/ethernet/marvell/prestera/prestera_acl.c b/drivers/net/ethernet/marvell/prestera/prestera_acl.c
+index 3a141f2db812..3d4b85f2d541 100644
+--- a/drivers/net/ethernet/marvell/prestera/prestera_acl.c
++++ b/drivers/net/ethernet/marvell/prestera/prestera_acl.c
+@@ -61,6 +61,7 @@ struct prestera_acl_ruleset {
+ 	u32 index;
+ 	u16 pcl_id;
+ 	bool offload;
++	bool ingress;
+ };
  
-+	/* Wakeup interrupts may occur during a system sleep transition.
-+	 * Postpone handling until the PHY has resumed.
-+	 */
-+	if (IS_ENABLED(CONFIG_PM_SLEEP) && phydev->irq_suspended) {
-+		struct net_device *netdev = phydev->attached_dev;
+ struct prestera_acl_vtcam {
+@@ -70,6 +71,7 @@ struct prestera_acl_vtcam {
+ 	u32 id;
+ 	bool is_keymask_set;
+ 	u8 lookup;
++	u8 direction;
+ };
+ 
+ static const struct rhashtable_params prestera_acl_ruleset_ht_params = {
+@@ -93,23 +95,36 @@ static const struct rhashtable_params __prestera_acl_rule_entry_ht_params = {
+ 	.automatic_shrinking = true,
+ };
+ 
+-int prestera_acl_chain_to_client(u32 chain_index, u32 *client)
++int prestera_acl_chain_to_client(u32 chain_index, bool ingress, u32 *client)
+ {
+-	static const u32 client_map[] = {
+-		PRESTERA_HW_COUNTER_CLIENT_LOOKUP_0,
+-		PRESTERA_HW_COUNTER_CLIENT_LOOKUP_1,
+-		PRESTERA_HW_COUNTER_CLIENT_LOOKUP_2
++	static const u32 ingress_client_map[] = {
++		PRESTERA_HW_COUNTER_CLIENT_INGRESS_LOOKUP_0,
++		PRESTERA_HW_COUNTER_CLIENT_INGRESS_LOOKUP_1,
++		PRESTERA_HW_COUNTER_CLIENT_INGRESS_LOOKUP_2
+ 	};
+ 
+-	if (chain_index >= ARRAY_SIZE(client_map))
++	if (!ingress) {
++		/* prestera supports only one chain on egress */
++		if (chain_index > 0)
++			return -EINVAL;
 +
-+		if (netdev) {
-+			struct device *parent = netdev->dev.parent;
-+
-+			if (netdev->wol_enabled)
-+				pm_system_wakeup();
-+			else if (device_may_wakeup(&netdev->dev))
-+				pm_wakeup_dev_event(&netdev->dev, 0, true);
-+			else if (parent && device_may_wakeup(parent))
-+				pm_wakeup_dev_event(parent, 0, true);
-+		}
-+
-+		phydev->irq_rerun = 1;
-+		disable_irq_nosync(irq);
-+		return IRQ_HANDLED;
++		*client = PRESTERA_HW_COUNTER_CLIENT_EGRESS_LOOKUP;
++		return 0;
 +	}
 +
- 	mutex_lock(&phydev->lock);
- 	ret = drv->handle_interrupt(phydev);
- 	mutex_unlock(&phydev->lock);
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 431a8719c635..46acddd865a7 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -278,6 +278,15 @@ static __maybe_unused int mdio_bus_phy_suspend(struct device *dev)
- 	if (phydev->mac_managed_pm)
++	if (chain_index >= ARRAY_SIZE(ingress_client_map))
+ 		return -EINVAL;
+ 
+-	*client = client_map[chain_index];
++	*client = ingress_client_map[chain_index];
+ 	return 0;
+ }
+ 
+-static bool prestera_acl_chain_is_supported(u32 chain_index)
++static bool prestera_acl_chain_is_supported(u32 chain_index, bool ingress)
+ {
++	if (!ingress)
++		/* prestera supports only one chain on egress */
++		return chain_index == 0;
++
+ 	return (chain_index & ~PRESTERA_ACL_CHAIN_MASK) == 0;
+ }
+ 
+@@ -122,7 +137,7 @@ prestera_acl_ruleset_create(struct prestera_acl *acl,
+ 	u32 uid = 0;
+ 	int err;
+ 
+-	if (!prestera_acl_chain_is_supported(chain_index))
++	if (!prestera_acl_chain_is_supported(chain_index, block->ingress))
+ 		return ERR_PTR(-EINVAL);
+ 
+ 	ruleset = kzalloc(sizeof(*ruleset), GFP_KERNEL);
+@@ -130,6 +145,7 @@ prestera_acl_ruleset_create(struct prestera_acl *acl,
+ 		return ERR_PTR(-ENOMEM);
+ 
+ 	ruleset->acl = acl;
++	ruleset->ingress = block->ingress;
+ 	ruleset->ht_key.block = block;
+ 	ruleset->ht_key.chain_index = chain_index;
+ 	refcount_set(&ruleset->refcount, 1);
+@@ -172,13 +188,18 @@ int prestera_acl_ruleset_offload(struct prestera_acl_ruleset *ruleset)
+ {
+ 	struct prestera_acl_iface iface;
+ 	u32 vtcam_id;
++	int dir;
+ 	int err;
+ 
++	dir = ruleset->ingress ?
++		PRESTERA_HW_VTCAM_DIR_INGRESS : PRESTERA_HW_VTCAM_DIR_EGRESS;
++
+ 	if (ruleset->offload)
+ 		return -EEXIST;
+ 
+ 	err = prestera_acl_vtcam_id_get(ruleset->acl,
+ 					ruleset->ht_key.chain_index,
++					dir,
+ 					ruleset->keymask, &vtcam_id);
+ 	if (err)
+ 		goto err_vtcam_create;
+@@ -719,7 +740,7 @@ static int __prestera_acl_vtcam_id_try_fit(struct prestera_acl *acl, u8 lookup,
+ 	return 0;
+ }
+ 
+-int prestera_acl_vtcam_id_get(struct prestera_acl *acl, u8 lookup,
++int prestera_acl_vtcam_id_get(struct prestera_acl *acl, u8 lookup, u8 dir,
+ 			      void *keymask, u32 *vtcam_id)
+ {
+ 	struct prestera_acl_vtcam *vtcam;
+@@ -731,7 +752,8 @@ int prestera_acl_vtcam_id_get(struct prestera_acl *acl, u8 lookup,
+ 	 * fine for now
+ 	 */
+ 	list_for_each_entry(vtcam, &acl->vtcam_list, list) {
+-		if (lookup != vtcam->lookup)
++		if (lookup != vtcam->lookup ||
++		    dir != vtcam->direction)
+ 			continue;
+ 
+ 		if (!keymask && !vtcam->is_keymask_set) {
+@@ -752,7 +774,7 @@ int prestera_acl_vtcam_id_get(struct prestera_acl *acl, u8 lookup,
+ 		return -ENOMEM;
+ 
+ 	err = prestera_hw_vtcam_create(acl->sw, lookup, keymask, &new_vtcam_id,
+-				       PRESTERA_HW_VTCAM_DIR_INGRESS);
++				       dir);
+ 	if (err) {
+ 		kfree(vtcam);
+ 
+@@ -765,6 +787,7 @@ int prestera_acl_vtcam_id_get(struct prestera_acl *acl, u8 lookup,
  		return 0;
+ 	}
  
-+	/* Wakeup interrupts may occur during the system sleep transition when
-+	 * the PHY is inaccessible. Set flag to postpone handling until the PHY
-+	 * has resumed. Wait for concurrent interrupt handler to complete.
-+	 */
-+	if (phy_interrupt_is_valid(phydev)) {
-+		phydev->irq_suspended = 1;
-+		synchronize_irq(phydev->irq);
++	vtcam->direction = dir;
+ 	vtcam->id = new_vtcam_id;
+ 	vtcam->lookup = lookup;
+ 	if (keymask) {
+diff --git a/drivers/net/ethernet/marvell/prestera/prestera_acl.h b/drivers/net/ethernet/marvell/prestera/prestera_acl.h
+index f963e1e0c0f0..03fc5b9dc925 100644
+--- a/drivers/net/ethernet/marvell/prestera/prestera_acl.h
++++ b/drivers/net/ethernet/marvell/prestera/prestera_acl.h
+@@ -199,9 +199,9 @@ void
+ prestera_acl_rule_keymask_pcl_id_set(struct prestera_acl_rule *rule,
+ 				     u16 pcl_id);
+ 
+-int prestera_acl_vtcam_id_get(struct prestera_acl *acl, u8 lookup,
++int prestera_acl_vtcam_id_get(struct prestera_acl *acl, u8 lookup, u8 dir,
+ 			      void *keymask, u32 *vtcam_id);
+ int prestera_acl_vtcam_id_put(struct prestera_acl *acl, u32 vtcam_id);
+-int prestera_acl_chain_to_client(u32 chain_index, u32 *client);
++int prestera_acl_chain_to_client(u32 chain_index, bool ingress, u32 *client);
+ 
+ #endif /* _PRESTERA_ACL_H_ */
+diff --git a/drivers/net/ethernet/marvell/prestera/prestera_flow.c b/drivers/net/ethernet/marvell/prestera/prestera_flow.c
+index 05c3ad98eba9..2262693bd5cf 100644
+--- a/drivers/net/ethernet/marvell/prestera/prestera_flow.c
++++ b/drivers/net/ethernet/marvell/prestera/prestera_flow.c
+@@ -75,7 +75,9 @@ static void prestera_flow_block_destroy(void *cb_priv)
+ }
+ 
+ static struct prestera_flow_block *
+-prestera_flow_block_create(struct prestera_switch *sw, struct net *net)
++prestera_flow_block_create(struct prestera_switch *sw,
++			   struct net *net,
++			   bool ingress)
+ {
+ 	struct prestera_flow_block *block;
+ 
+@@ -87,6 +89,7 @@ prestera_flow_block_create(struct prestera_switch *sw, struct net *net)
+ 	INIT_LIST_HEAD(&block->template_list);
+ 	block->net = net;
+ 	block->sw = sw;
++	block->ingress = ingress;
+ 
+ 	return block;
+ }
+@@ -165,7 +168,8 @@ static int prestera_flow_block_unbind(struct prestera_flow_block *block,
+ static struct prestera_flow_block *
+ prestera_flow_block_get(struct prestera_switch *sw,
+ 			struct flow_block_offload *f,
+-			bool *register_block)
++			bool *register_block,
++			bool ingress)
+ {
+ 	struct prestera_flow_block *block;
+ 	struct flow_block_cb *block_cb;
+@@ -173,7 +177,7 @@ prestera_flow_block_get(struct prestera_switch *sw,
+ 	block_cb = flow_block_cb_lookup(f->block,
+ 					prestera_flow_block_cb, sw);
+ 	if (!block_cb) {
+-		block = prestera_flow_block_create(sw, f->net);
++		block = prestera_flow_block_create(sw, f->net, ingress);
+ 		if (!block)
+ 			return ERR_PTR(-ENOMEM);
+ 
+@@ -209,7 +213,7 @@ static void prestera_flow_block_put(struct prestera_flow_block *block)
+ }
+ 
+ static int prestera_setup_flow_block_bind(struct prestera_port *port,
+-					  struct flow_block_offload *f)
++					  struct flow_block_offload *f, bool ingress)
+ {
+ 	struct prestera_switch *sw = port->sw;
+ 	struct prestera_flow_block *block;
+@@ -217,7 +221,7 @@ static int prestera_setup_flow_block_bind(struct prestera_port *port,
+ 	bool register_block;
+ 	int err;
+ 
+-	block = prestera_flow_block_get(sw, f, &register_block);
++	block = prestera_flow_block_get(sw, f, &register_block, ingress);
+ 	if (IS_ERR(block))
+ 		return PTR_ERR(block);
+ 
+@@ -232,7 +236,11 @@ static int prestera_setup_flow_block_bind(struct prestera_port *port,
+ 		list_add_tail(&block_cb->driver_list, &prestera_block_cb_list);
+ 	}
+ 
+-	port->flow_block = block;
++	if (ingress)
++		port->ingress_flow_block = block;
++	else
++		port->egress_flow_block = block;
++
+ 	return 0;
+ 
+ err_block_bind:
+@@ -242,7 +250,7 @@ static int prestera_setup_flow_block_bind(struct prestera_port *port,
+ }
+ 
+ static void prestera_setup_flow_block_unbind(struct prestera_port *port,
+-					     struct flow_block_offload *f)
++					     struct flow_block_offload *f, bool ingress)
+ {
+ 	struct prestera_switch *sw = port->sw;
+ 	struct prestera_flow_block *block;
+@@ -266,24 +274,38 @@ static void prestera_setup_flow_block_unbind(struct prestera_port *port,
+ 		list_del(&block_cb->driver_list);
+ 	}
+ error:
+-	port->flow_block = NULL;
++	if (ingress)
++		port->ingress_flow_block = NULL;
++	else
++		port->egress_flow_block = NULL;
+ }
+ 
+-int prestera_flow_block_setup(struct prestera_port *port,
+-			      struct flow_block_offload *f)
++static int prestera_setup_flow_block_clsact(struct prestera_port *port,
++					    struct flow_block_offload *f,
++					    bool ingress)
+ {
+-	if (f->binder_type != FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS)
+-		return -EOPNOTSUPP;
+-
+ 	f->driver_block_list = &prestera_block_cb_list;
+ 
+ 	switch (f->command) {
+ 	case FLOW_BLOCK_BIND:
+-		return prestera_setup_flow_block_bind(port, f);
++		return prestera_setup_flow_block_bind(port, f, ingress);
+ 	case FLOW_BLOCK_UNBIND:
+-		prestera_setup_flow_block_unbind(port, f);
++		prestera_setup_flow_block_unbind(port, f, ingress);
+ 		return 0;
+ 	default:
+ 		return -EOPNOTSUPP;
+ 	}
+ }
++
++int prestera_flow_block_setup(struct prestera_port *port,
++			      struct flow_block_offload *f)
++{
++	switch (f->binder_type) {
++	case FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS:
++		return prestera_setup_flow_block_clsact(port, f, true);
++	case FLOW_BLOCK_BINDER_TYPE_CLSACT_EGRESS:
++		return prestera_setup_flow_block_clsact(port, f, false);
++	default:
++		return -EOPNOTSUPP;
 +	}
-+
- 	/* We must stop the state machine manually, otherwise it stops out of
- 	 * control, possibly with the phydev->lock held. Upon resume, netdev
- 	 * may call phy routines that try to grab the same lock, and that may
-@@ -315,6 +324,20 @@ static __maybe_unused int mdio_bus_phy_resume(struct device *dev)
- 	if (ret < 0)
- 		return ret;
- no_resume:
-+	if (phy_interrupt_is_valid(phydev)) {
-+		phydev->irq_suspended = 0;
-+		synchronize_irq(phydev->irq);
-+
-+		/* Rerun interrupts which were postponed by phy_interrupt()
-+		 * because they occurred during the system sleep transition.
-+		 */
-+		if (phydev->irq_rerun) {
-+			phydev->irq_rerun = 0;
-+			enable_irq(phydev->irq);
-+			irq_wake_thread(phydev->irq, phydev);
-+		}
-+	}
-+
- 	if (phydev->attached_dev && phydev->adjust_link)
- 		phy_start_machine(phydev);
++}
+diff --git a/drivers/net/ethernet/marvell/prestera/prestera_flow.h b/drivers/net/ethernet/marvell/prestera/prestera_flow.h
+index 6550278b166a..0c9e13263261 100644
+--- a/drivers/net/ethernet/marvell/prestera/prestera_flow.h
++++ b/drivers/net/ethernet/marvell/prestera/prestera_flow.h
+@@ -23,6 +23,7 @@ struct prestera_flow_block {
+ 	struct flow_block_cb *block_cb;
+ 	struct list_head template_list;
+ 	unsigned int rule_count;
++	bool ingress;
+ };
  
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index 508f1149665b..b09f7d36cff2 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -572,6 +572,10 @@ struct macsec_ops;
-  * @mdix_ctrl: User setting of crossover
-  * @pma_extable: Cached value of PMA/PMD Extended Abilities Register
-  * @interrupts: Flag interrupts have been enabled
-+ * @irq_suspended: Flag indicating PHY is suspended and therefore interrupt
-+ *                 handling shall be postponed until PHY has resumed
-+ * @irq_rerun: Flag indicating interrupts occurred while PHY was suspended,
-+ *             requiring a rerun of the interrupt handler after resume
-  * @interface: enum phy_interface_t value
-  * @skb: Netlink message for cable diagnostics
-  * @nest: Netlink nest used for cable diagnostics
-@@ -626,6 +630,8 @@ struct phy_device {
+ int prestera_flow_block_setup(struct prestera_port *port,
+diff --git a/drivers/net/ethernet/marvell/prestera/prestera_flower.c b/drivers/net/ethernet/marvell/prestera/prestera_flower.c
+index d43e503c644f..a54748ac6541 100644
+--- a/drivers/net/ethernet/marvell/prestera/prestera_flower.c
++++ b/drivers/net/ethernet/marvell/prestera/prestera_flower.c
+@@ -79,7 +79,7 @@ static int prestera_flower_parse_actions(struct prestera_flow_block *block,
+ 	} else if (act->hw_stats & FLOW_ACTION_HW_STATS_DELAYED) {
+ 		/* setup counter first */
+ 		rule->re_arg.count.valid = true;
+-		err = prestera_acl_chain_to_client(chain_index,
++		err = prestera_acl_chain_to_client(chain_index, block->ingress,
+ 						   &rule->re_arg.count.client);
+ 		if (err)
+ 			return err;
+diff --git a/drivers/net/ethernet/marvell/prestera/prestera_hw.h b/drivers/net/ethernet/marvell/prestera/prestera_hw.h
+index 579d9ba23ffc..aa74f668aa3c 100644
+--- a/drivers/net/ethernet/marvell/prestera/prestera_hw.h
++++ b/drivers/net/ethernet/marvell/prestera/prestera_hw.h
+@@ -123,9 +123,10 @@ enum prestera_hw_vtcam_direction_t {
+ };
  
- 	/* Interrupts are enabled */
- 	unsigned interrupts:1;
-+	unsigned irq_suspended:1;
-+	unsigned irq_rerun:1;
+ enum {
+-	PRESTERA_HW_COUNTER_CLIENT_LOOKUP_0 = 0,
+-	PRESTERA_HW_COUNTER_CLIENT_LOOKUP_1 = 1,
+-	PRESTERA_HW_COUNTER_CLIENT_LOOKUP_2 = 2,
++	PRESTERA_HW_COUNTER_CLIENT_INGRESS_LOOKUP_0 = 0,
++	PRESTERA_HW_COUNTER_CLIENT_INGRESS_LOOKUP_1 = 1,
++	PRESTERA_HW_COUNTER_CLIENT_INGRESS_LOOKUP_2 = 2,
++	PRESTERA_HW_COUNTER_CLIENT_EGRESS_LOOKUP = 3,
+ };
  
- 	enum phy_state state;
- 
+ struct prestera_switch;
 -- 
-2.36.1
+2.25.1
 
