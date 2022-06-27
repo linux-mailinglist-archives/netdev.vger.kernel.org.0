@@ -2,108 +2,260 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 85A3A55CDD9
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:04:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2690E55C23B
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 14:46:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237590AbiF0OqR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jun 2022 10:46:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57744 "EHLO
+        id S236768AbiF0Osb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jun 2022 10:48:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237514AbiF0OqQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 10:46:16 -0400
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C6E3DF65;
-        Mon, 27 Jun 2022 07:46:14 -0700 (PDT)
-Received: by mail-lf1-x12c.google.com with SMTP id i18so17029262lfu.8;
-        Mon, 27 Jun 2022 07:46:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=LUcZmkTGR5Hh6C+2kCtH4XekfuDCWDdiu6aLWv9Bsvc=;
-        b=bsPG5e6pSA54rPqXT/iG2JQkmpub79669Ga7QL7JTWZMGl9RnNaHE8Jeonlpw/N9+x
-         zKu7VxfkFdEDaC8YdNx165AUkCsKJ23tmjMePbt814goc5Sj/GbwIpsfUfkNupx29Zo0
-         u+QI/m8Ejf5qNPjjprjSvoixrfmEcLhdyA8f9xGz2W9lAhu6NsXhYFm22t0Kscu8WKzM
-         rMMN5hE72xUJN4GBMyhG7ZBzVkC2XJ0WfOXCHtBEFtqlZTHR4PPL5g8/ZsaNWoFE4Dza
-         UIAnVrGZsdr8o3RZZS30SQPKbjmC1jORZ5DRQdLwErj+ORRpJ44plrdGgRyQdnYUPTMm
-         oeOg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=LUcZmkTGR5Hh6C+2kCtH4XekfuDCWDdiu6aLWv9Bsvc=;
-        b=OeP9l3EH4CjFCkTfLN8Bf+nE1yIyA5r4E+Fvqt2IyH3/LTQ5rxMDHkf5UQcHdAAZwR
-         j/2GFjsS4iEOhMnGKkT32J+AoDhr4mhs2yfAPHFjDvFWAPUJM60Pw5FfzuLT2hWSOfp+
-         fc1qa3hRsrkWhM6XRmmviH/XKgx5qSRuBr3vhvJaRr/InAjlT4+pj3NSIYnA1dzr3w+y
-         KNg9WlDUB/42oCStvt6ko2yPHtExxbB8BjmpSVX7oZCJSgifEqy+E7tydQy6+w1mhxCN
-         8MJY6gf0NZLa0wOalTE0ZWpMEmAVVwlDgPd9k57CC998pShazQzFMo0ol5kMNt4fLY/M
-         1beA==
-X-Gm-Message-State: AJIora/DFKN+nWd+irRlna3lLsO4dI5ZlRXgvuVIjBr0Ey84WYmAEWjF
-        ZqihKBDflUnwoZozk2Yw9L0=
-X-Google-Smtp-Source: AGRyM1tEjNUY1M3nmtsa+tlN070CxCzLPFktJ7wQV4c4x+FiWp+SfX/XIX/XRE1+28iHiBZzkjw0vg==
-X-Received: by 2002:a05:6512:3e16:b0:47f:9d6d:c7e3 with SMTP id i22-20020a0565123e1600b0047f9d6dc7e3mr9221730lfv.393.1656341172695;
-        Mon, 27 Jun 2022 07:46:12 -0700 (PDT)
-Received: from [192.168.1.11] ([46.235.67.63])
-        by smtp.gmail.com with ESMTPSA id c2-20020ac25f62000000b00478f3fe716asm1828735lfc.200.2022.06.27.07.46.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 27 Jun 2022 07:46:11 -0700 (PDT)
-Message-ID: <4d08b849-3e79-7c82-803c-51c251344c7a@gmail.com>
-Date:   Mon, 27 Jun 2022 17:46:10 +0300
+        with ESMTP id S235431AbiF0Osa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 10:48:30 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07AA8DE8D;
+        Mon, 27 Jun 2022 07:48:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656341309; x=1687877309;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=GZMliLRlHleESM1HM8TNKFzFHDsF5p46y9U7WBnfrg8=;
+  b=R72+llGxHVb5SnZpGDreeaXa2EHFd8xxGNZJRn2+fu4VhXu+1y8vrf4w
+   ijIHVHdBhs9LMgZ5sndjECu7I5ZbDpPQ6RcE60c3bj/tLBWHl6PuX+Bi0
+   v9OH1rymlvA35bizrB5LmKYPmQvHhhaATKab4Odb2eMI00XHgWrr8eL9b
+   2DX+i9zZJwiR1/Vx8QFJOsFZX1cwMmS4XmnmdMc1Qrj1cY/hIUtItLv7a
+   yDQFpHZWZdQAY+Gsu87AtWt84O7d/t9kM1gY9zdg/ucrZjfA5sV3CPzJE
+   JjnsKpiRN1l+icjNjiOxTuXyO6z6bU7wJS6KQ+m+hTYMj4yxDGgbIIHrS
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10390"; a="280224472"
+X-IronPort-AV: E=Sophos;i="5.92,226,1650956400"; 
+   d="scan'208";a="280224472"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 07:48:28 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,226,1650956400"; 
+   d="scan'208";a="679604256"
+Received: from shbuild999.sh.intel.com (HELO localhost) ([10.239.146.138])
+  by FMSMGA003.fm.intel.com with ESMTP; 27 Jun 2022 07:48:23 -0700
+Date:   Mon, 27 Jun 2022 22:48:22 +0800
+From:   Feng Tang <feng.tang@intel.com>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Shakeel Butt <shakeelb@google.com>, Linux MM <linux-mm@kvack.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Michal Hocko <mhocko@kernel.org>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Xin Long <lucien.xin@gmail.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        kernel test robot <oliver.sang@intel.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        network dev <netdev@vger.kernel.org>,
+        linux-s390@vger.kernel.org, MPTCP Upstream <mptcp@lists.linux.dev>,
+        "linux-sctp @ vger . kernel . org" <linux-sctp@vger.kernel.org>,
+        lkp@lists.01.org, kbuild test robot <lkp@intel.com>,
+        Huang Ying <ying.huang@intel.com>,
+        Xing Zhengjun <zhengjun.xing@linux.intel.com>,
+        Yin Fengwei <fengwei.yin@intel.com>, Ying Xu <yinxu@redhat.com>
+Subject: Re: [net] 4890b686f4: netperf.Throughput_Mbps -69.4% regression
+Message-ID: <20220627144822.GA20878@shbuild999.sh.intel.com>
+References: <20220623185730.25b88096@kernel.org>
+ <CANn89iLidqjiiV8vxr7KnUg0JvfoS9+TRGg=8ANZ8NBRjeQxsQ@mail.gmail.com>
+ <CALvZod7kULCvHAuk53FE-XBOi4-BbLdY3HCg6jfCZTJDxYsZow@mail.gmail.com>
+ <20220624070656.GE79500@shbuild999.sh.intel.com>
+ <20220624144358.lqt2ffjdry6p5u4d@google.com>
+ <20220625023642.GA40868@shbuild999.sh.intel.com>
+ <20220627023812.GA29314@shbuild999.sh.intel.com>
+ <CANn89i+6NPujMyiQxriZRt6vhv6hNrAntXxi1uOhJ0SSqnJ47w@mail.gmail.com>
+ <20220627123415.GA32052@shbuild999.sh.intel.com>
+ <CANn89iJAoYCebNbXpNMXRoDUkFMhg9QagetVU9NZUq+GnLMgqQ@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v2] net: ocelot: fix wrong time_after usage
-Content-Language: en-US
-To:     =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <YoeMW+/KGk8VpbED@lunn.ch>
- <20220520213115.7832-1-paskripkin@gmail.com> <YojvUsJ090H/wfEk@lunn.ch>
- <20220521162108.bact3sn4z2yuysdt@skbuf> <20220624171429.4b3f7c0a@fixe.home>
-From:   Pavel Skripkin <paskripkin@gmail.com>
-In-Reply-To: <20220624171429.4b3f7c0a@fixe.home>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CANn89iJAoYCebNbXpNMXRoDUkFMhg9QagetVU9NZUq+GnLMgqQ@mail.gmail.com>
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/24/22 18:14, Clément Léger wrote:
-> So I actually tested and added logging to see if the CH_SAFE
-> register bits are set for the channel on the first iteration. From
-> what I could test (iperf3 with huge/non huge packets, TCP/UDP), it
-> always return true on the first try. So since I think Pavel solution
-> is ok to go with.
+On Mon, Jun 27, 2022 at 04:07:55PM +0200, Eric Dumazet wrote:
+> On Mon, Jun 27, 2022 at 2:34 PM Feng Tang <feng.tang@intel.com> wrote:
+> >
+> > On Mon, Jun 27, 2022 at 10:46:21AM +0200, Eric Dumazet wrote:
+> > > On Mon, Jun 27, 2022 at 4:38 AM Feng Tang <feng.tang@intel.com> wrote:
+> > [snip]
+> > > > > >
+> > > > > > Thanks Feng. Can you check the value of memory.kmem.tcp.max_usage_in_bytes
+> > > > > > in /sys/fs/cgroup/memory/system.slice/lkp-bootstrap.service after making
+> > > > > > sure that the netperf test has already run?
+> > > > >
+> > > > > memory.kmem.tcp.max_usage_in_bytes:0
+> > > >
+> > > > Sorry, I made a mistake that in the original report from Oliver, it
+> > > > was 'cgroup v2' with a 'debian-11.1' rootfs.
+> > > >
+> > > > When you asked about cgroup info, I tried the job on another tbox, and
+> > > > the original 'job.yaml' didn't work, so I kept the 'netperf' test
+> > > > parameters and started a new job which somehow run with a 'debian-10.4'
+> > > > rootfs and acutally run with cgroup v1.
+> > > >
+> > > > And as you mentioned cgroup version does make a big difference, that
+> > > > with v1, the regression is reduced to 1% ~ 5% on different generations
+> > > > of test platforms. Eric mentioned they also got regression report,
+> > > > but much smaller one, maybe it's due to the cgroup version?
+> > >
+> > > This was using the current net-next tree.
+> > > Used recipe was something like:
+> > >
+> > > Make sure cgroup2 is mounted or mount it by mount -t cgroup2 none $MOUNT_POINT.
+> > > Enable memory controller by echo +memory > $MOUNT_POINT/cgroup.subtree_control.
+> > > Create a cgroup by mkdir $MOUNT_POINT/job.
+> > > Jump into that cgroup by echo $$ > $MOUNT_POINT/job/cgroup.procs.
+> > >
+> > > <Launch tests>
+> > >
+> > > The regression was smaller than 1%, so considered noise compared to
+> > > the benefits of the bug fix.
+> >
+> > Yes, 1% is just around noise level for a microbenchmark.
+> >
+> > I went check the original test data of Oliver's report, the tests was
+> > run 6 rounds and the performance data is pretty stable (0Day's report
+> > will show any std deviation bigger than 2%)
+> >
+> > The test platform is a 4 sockets 72C/144T machine, and I run the
+> > same job (nr_tasks = 25% * nr_cpus) on one CascadeLake AP (4 nodes)
+> > and one Icelake 2 sockets platform, and saw 75% and 53% regresson on
+> > them.
+> >
+> > In the first email, there is a file named 'reproduce', it shows the
+> > basic test process:
+> >
+> > "
+> >   use 'performane' cpufre  governor for all CPUs
+> >
+> >   netserver -4 -D
+> >   modprobe sctp
+> >   netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
+> >   netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
+> >   netperf -4 -H 127.0.0.1 -t SCTP_STREAM_MANY -c -C -l 300 -- -m 10K  &
+> >   (repeat 36 times in total)
+> >   ...
+> >
+> > "
+> >
+> > Which starts 36 (25% of nr_cpus) netperf clients. And the clients number
+> > also matters, I tried to increase the client number from 36 to 72(50%),
+> > and the regression is changed from 69.4% to 73.7%"
+> >
 > 
-> However, since ocelot_fdma_wait_chan_safe() is also called in the napi
-> poll function of this driver, I don't think sleeping is allowed (softirq
-> context) and thus I would suggest using the readx_poll_timeout_atomic()
-> function instead.
+> This seems like a lot of opportunities for memcg folks :)
 > 
-> Regarding the delay to wait between each read, I don't have any
-> information about that possible value, the datasheet only says "wait
-> for the bit to be set" so I guess we'll have to live with an
-> approximate value.
+> struct page_counter has poor field placement [1], and no per-cpu cache.
 > 
+> [1] "atomic_long_t usage" is sharing cache line with read mostly fields.
+> 
+> (struct mem_cgroup also has poor field placement, mainly because of
+> struct page_counter)
+> 
+>     28.69%  [kernel]       [k] copy_user_enhanced_fast_string
+>     16.13%  [kernel]       [k] intel_idle_irq
+>      6.46%  [kernel]       [k] page_counter_try_charge
+>      6.20%  [kernel]       [k] __sk_mem_reduce_allocated
+>      5.68%  [kernel]       [k] try_charge_memcg
+>      5.16%  [kernel]       [k] page_counter_cancel
 
-Thank you for testing!
+Yes, I also analyzed the perf-profile data, and made some layout changes
+which could recover the changes from 69% to 40%.
 
-I will update update v3 with _atomic variant
+7c80b038d23e1f4c 4890b686f4088c90432149bd6de 332b589c49656a45881bca4ecc0
+---------------- --------------------------- --------------------------- 
+     15722           -69.5%       4792           -40.8%       9300        netperf.Throughput_Mbps
+ 
 
+diff --git a/include/linux/cgroup-defs.h b/include/linux/cgroup-defs.h
+index 1bfcfb1af352..aa37bd39116c 100644
+--- a/include/linux/cgroup-defs.h
++++ b/include/linux/cgroup-defs.h
+@@ -179,14 +179,13 @@ struct cgroup_subsys_state {
+ 	atomic_t online_cnt;
+ 
+ 	/* percpu_ref killing and RCU release */
+-	struct work_struct destroy_work;
+ 	struct rcu_work destroy_rwork;
+-
++	struct cgroup_subsys_state *parent;
++	struct work_struct destroy_work;
+ 	/*
+ 	 * PI: the parent css.	Placed here for cache proximity to following
+ 	 * fields of the containing structure.
+ 	 */
+-	struct cgroup_subsys_state *parent;
+ };
+ 
+ /*
+diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
+index 9ecead1042b9..963b88ab9930 100644
+--- a/include/linux/memcontrol.h
++++ b/include/linux/memcontrol.h
+@@ -239,9 +239,6 @@ struct mem_cgroup {
+ 	/* Private memcg ID. Used to ID objects that outlive the cgroup */
+ 	struct mem_cgroup_id id;
+ 
+-	/* Accounted resources */
+-	struct page_counter memory;		/* Both v1 & v2 */
+-
+ 	union {
+ 		struct page_counter swap;	/* v2 only */
+ 		struct page_counter memsw;	/* v1 only */
+@@ -251,6 +248,9 @@ struct mem_cgroup {
+ 	struct page_counter kmem;		/* v1 only */
+ 	struct page_counter tcpmem;		/* v1 only */
+ 
++	/* Accounted resources */
++	struct page_counter memory;		/* Both v1 & v2 */
++
+ 	/* Range enforcement for interrupt charges */
+ 	struct work_struct high_work;
+ 
+@@ -313,7 +313,6 @@ struct mem_cgroup {
+ 	atomic_long_t		memory_events[MEMCG_NR_MEMORY_EVENTS];
+ 	atomic_long_t		memory_events_local[MEMCG_NR_MEMORY_EVENTS];
+ 
+-	unsigned long		socket_pressure;
+ 
+ 	/* Legacy tcp memory accounting */
+ 	bool			tcpmem_active;
+@@ -349,6 +348,7 @@ struct mem_cgroup {
+ #ifdef CONFIG_TRANSPARENT_HUGEPAGE
+ 	struct deferred_split deferred_split_queue;
+ #endif
++	unsigned long		socket_pressure;
+ 
+ 	struct mem_cgroup_per_node *nodeinfo[];
+ };
 
+And some of these are specific for network and may not be a universal
+win, though I think the 'cgroup_subsys_state' could keep the
+read-mostly 'parent' away from following written-mostly counters.
+
+Btw, I tried your debug patch which compiled fail with 0Day's kbuild
+system, but it did compile ok on my local machine.
 
 Thanks,
---Pavel Skripkin
+Feng
+
+> 
+> > Thanks,
+> > Feng
+> >
+> > > >
+> > > > Thanks,
+> > > > Feng
