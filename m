@@ -2,102 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 458B955C190
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 14:45:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B04A55DAB3
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:23:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235717AbiF0NbO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jun 2022 09:31:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41406 "EHLO
+        id S236513AbiF0NzM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jun 2022 09:55:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235469AbiF0NbN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 09:31:13 -0400
-Received: from mail-io1-f41.google.com (mail-io1-f41.google.com [209.85.166.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A000F6457;
-        Mon, 27 Jun 2022 06:31:12 -0700 (PDT)
-Received: by mail-io1-f41.google.com with SMTP id z191so9525900iof.6;
-        Mon, 27 Jun 2022 06:31:12 -0700 (PDT)
+        with ESMTP id S236480AbiF0NzK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 09:55:10 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31D56631F
+        for <netdev@vger.kernel.org>; Mon, 27 Jun 2022 06:55:04 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id pk21so19384872ejb.2
+        for <netdev@vger.kernel.org>; Mon, 27 Jun 2022 06:55:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=SfoYsWd57yKqNv7iQd6/6QquGaCdlwXHJFF4B/euNcI=;
+        b=3Kp1pjScC8HuywBFZbsdkwqLjKjnP6fYIAJHwCWgne+582a9ald4AUpC4zbVx1FaH2
+         mzZrQsAuhu/I7XlYm3Rvs3r4PLK9J153fzSFQ2vnA/kUtYZL1kZoQnTTav4dxzy84zdn
+         lH51ZkAtMROnJvqPj0trTbho4y7FvCmAVvj2fx4neD200uu8kJkD9N+I0U3m/eS+i1kI
+         mnu1xxq0M01hr5bYyS733uSR2qnfVDB764Febv9Hi416ocoR3sm/wg0/hKILtHavh4ww
+         Ob7TIfXqPZO9Lo1t6FIKMvQA4/hEfe3CULMP7CYtik/M/yUQF6rA5zMshIX4ZCXA8uXt
+         SSjg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=gvyNOyKg09RJXU5ec40IlIX3sIrR9XwCvpl1WEk0W1A=;
-        b=Yy3XmkTJ4AuyTeGg+L1n9Um8dBoidfwsPStfg+WFgZhNEd5n0dG3jLpGouzAGBnCou
-         qqW5NsoyMLsLVcG9Ra7fVGLJcAJfjya/nNQQJPdea44VFoLYGWSP86S6J16RRySgohsK
-         3JQmTpnepk5sNItWRdcxhQWGlFoL+Uf6uwFmxXRsM3IKCtSWNTm+TBURveHNJ9VNB8Wx
-         fB6OGE38wedfHvlUKAasn1SpoSzxhIUB+o9o1yJHL8N4+UYPl0EKIaKBmiC2ktKCNsLx
-         vFXiwhyjg1cfovHq0DR+DgsZuaH/BpXEjm5J4Zzk7D52Kh42gfd03KG92CR0n8kbi6pe
-         oV/w==
-X-Gm-Message-State: AJIora8CaVeH1HQAUqqUJZKHLv0HdyC9UbfRsp9ueWgrroNqKaCLAErS
-        VpBpP4J0UvAdEXy9B5xuUQ==
-X-Google-Smtp-Source: AGRyM1sn5cxnWTFDJThm/N0WYIXFSI3CGx3Yy45HDIAoBp2dOs8SX9fD0bX2JUrEW7c9t3fT7UtB8g==
-X-Received: by 2002:a02:c942:0:b0:339:ec11:d04e with SMTP id u2-20020a02c942000000b00339ec11d04emr7739526jao.174.1656336671717;
-        Mon, 27 Jun 2022 06:31:11 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.253])
-        by smtp.gmail.com with ESMTPSA id n21-20020a6b4115000000b0067554b8e92asm229787ioa.20.2022.06.27.06.31.10
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=SfoYsWd57yKqNv7iQd6/6QquGaCdlwXHJFF4B/euNcI=;
+        b=0K30XT4rNZAG2mOnoRYuTgmLd6qPUAXRGiSLEfsX54YV1tTWjOVkEKO7ec5F/aGpOb
+         eFWYlBA2HTHHpzeUYdCHTrin0AvNJ7DeBVehiXTJuv4sbGEmK2BVYVIE13Qf6+x7stDk
+         eFJX8bOtkY8mPK1ALGuKWquRTz0LEAlhaNzRSY1A1R882SKaJ1u4MqeewgVig5VbjnO2
+         49evegPo/7bYwfbA8l8Du5soqrZQfJviqPt2kbKZY+OCL4uLOFwF5GtGQgp3EJHIdxKf
+         CRYZ9gMeopnbJrGxjFHXNbKfbHAofwYpoi0Remvzft1fhHMbvcwO+mCvNtUbQedQJNAh
+         gedw==
+X-Gm-Message-State: AJIora/ahW9hgVCVB9tJzsuv1m8WKUJ4o4qYBX2mjDyEyQ1obQ45YXgL
+        CqCdnDUtL64YmVkHa1AAYVFJrJ/sIfDkcecc1GI=
+X-Google-Smtp-Source: AGRyM1tX7p+9lyfpNxHW1PsgH2chAR9R1IkclT5D0fjqcTwVb/aCybiaOpi/q/me2ltfULbfYti3Jg==
+X-Received: by 2002:a17:906:7955:b0:726:a858:5a75 with SMTP id l21-20020a170906795500b00726a8585a75mr3939770ejo.764.1656338102696;
+        Mon, 27 Jun 2022 06:55:02 -0700 (PDT)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id d25-20020a50fe99000000b004355998ec1asm7555305edt.14.2022.06.27.06.55.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jun 2022 06:31:11 -0700 (PDT)
-Received: (nullmailer pid 2285163 invoked by uid 1000);
-        Mon, 27 Jun 2022 13:31:09 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     alexandru.tachici@analog.com
-Cc:     krzysztof.kozlowski+dt@linaro.org, joel@jms.id.au,
-        l.stelmach@samsung.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, stephen@networkplumber.org,
-        geert@linux-m68k.org, stefan.wahren@i2se.com, wellslutw@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        gerhard@engleder-embedded.com, devicetree@vger.kernel.org,
-        geert+renesas@glider.be, robh+dt@kernel.org,
-        d.michailidis@fungible.com
-In-Reply-To: <20220624200628.77047-3-alexandru.tachici@analog.com>
-References: <20220624200628.77047-1-alexandru.tachici@analog.com> <20220624200628.77047-3-alexandru.tachici@analog.com>
-Subject: Re: [net-next 2/2] dt-bindings: net: adin1110: Add docs
-Date:   Mon, 27 Jun 2022 07:31:09 -0600
-Message-Id: <1656336669.630006.2285162.nullmailer@robh.at.kernel.org>
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
+        Mon, 27 Jun 2022 06:55:02 -0700 (PDT)
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, idosch@nvidia.com,
+        petrm@nvidia.com, pabeni@redhat.com, edumazet@google.com,
+        mlxsw@nvidia.com, saeedm@nvidia.com
+Subject: [patch net-next RFC 0/2] net: devlink: remove devlink big lock
+Date:   Mon, 27 Jun 2022 15:54:59 +0200
+Message-Id: <20220627135501.713980-1-jiri@resnulli.us>
+X-Mailer: git-send-email 2.35.3
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 24 Jun 2022 23:06:28 +0300, alexandru.tachici@analog.com wrote:
-> From: Alexandru Tachici <alexandru.tachici@analog.com>
-> 
-> Add bindings for the ADIN1110/2111 MAC-PHY/SWITCH.
-> 
-> Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
-> ---
->  .../devicetree/bindings/net/adi,adin1110.yaml | 127 ++++++++++++++++++
->  1 file changed, 127 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/adi,adin1110.yaml
-> 
+From: Jiri Pirko <jiri@nvidia.com>
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+This is an attempt to remove use of devlink_mutex. This is a global lock
+taken for every user command. That causes that long operations performed
+on one devlink instance (like flash update) are blocking other
+operations on different instances.
 
-yamllint warnings/errors:
+The first patch makes sure that the xarray that holds devlink pointers
+is possible to be safely iterated.
 
-dtschema/dtc warnings/errors:
-./Documentation/devicetree/bindings/net/adi,adin1110.yaml: Unable to find schema file matching $id: http://devicetree.org/schemas/net/spi-controller.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/adi,adin1110.example.dtb: ethernet@0: False schema does not allow {'compatible': ['adi,adin2111'], 'reg': [[0]], 'spi-max-frequency': [[24500000]], 'adi,spi-crc': True, '#address-cells': [[1]], '#size-cells': [[0]], 'interrupts': [[25, 2]], 'mac-address': [[202, 47, 183, 16, 35, 99]], 'phy@0': {'#phy-cells': [[0]], 'compatible': ['ethernet-phy-id0283.bca1'], 'reg': [[0]]}, 'phy@1': {'#phy-cells': [[0]], 'compatible': ['ethernet-phy-id0283.bca1'], 'reg': [[1]]}, '$nodename': ['ethernet@0']}
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/adi,adin1110.yaml
+The second patch moves the user command mutex to be per-devlink.
 
-doc reference errors (make refcheckdocs):
+Jiri Pirko (2):
+  net: devlink: make sure that devlink_try_get() works with valid
+    pointer during xarray iteration
+  net: devlink: replace devlink_mutex by per-devlink lock
 
-See https://patchwork.ozlabs.org/patch/
+ net/core/devlink.c | 256 ++++++++++++++++++++++++++++-----------------
+ 1 file changed, 161 insertions(+), 95 deletions(-)
 
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
+-- 
+2.35.3
 
