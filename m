@@ -2,179 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0629155CE0B
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:04:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 85A3A55CDD9
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:04:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236428AbiF0Olh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jun 2022 10:41:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55138 "EHLO
+        id S237590AbiF0OqR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jun 2022 10:46:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235080AbiF0Olg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 10:41:36 -0400
-Received: from mail-yw1-x112d.google.com (mail-yw1-x112d.google.com [IPv6:2607:f8b0:4864:20::112d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B044FBF75
-        for <netdev@vger.kernel.org>; Mon, 27 Jun 2022 07:41:35 -0700 (PDT)
-Received: by mail-yw1-x112d.google.com with SMTP id 00721157ae682-31772f8495fso87705827b3.4
-        for <netdev@vger.kernel.org>; Mon, 27 Jun 2022 07:41:35 -0700 (PDT)
+        with ESMTP id S237514AbiF0OqQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 10:46:16 -0400
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C6E3DF65;
+        Mon, 27 Jun 2022 07:46:14 -0700 (PDT)
+Received: by mail-lf1-x12c.google.com with SMTP id i18so17029262lfu.8;
+        Mon, 27 Jun 2022 07:46:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1hHJnJQFjFuIToWQDKaqG2N15/HHTzVxPaO06uGF804=;
-        b=qTM2lIpYwNuYEZQHZ/Ga8EB8z8R7o9AlA+eFAqPxYsUT4s9V9gs4aimap7TPAFPAaA
-         ELUH0DHsK9PT8ELf2dOUQ4WQNMbFH3LZpKgMsvmF3l8l+QU2g6NII4dNHODvqI+AP2Db
-         E4bZLJ5qn6m5BvtP3b80w2chOfqLRLwTFHL5OgSvy1ylgaAqrQdZVeb8rfTXkGffV5qD
-         0CR3PXBpHQfC3kB3Qw7CeYcUGVvSGHmsCuOnH3tXUnt4opHjvfidbEXTZvnww+jzze0N
-         mY8whBGPhmS8XmcFL98LqcG4CuVlwXAdfqY3s6h5MpWMqN+EUi4/duM3XUjkfqNGpvGi
-         DYbw==
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=LUcZmkTGR5Hh6C+2kCtH4XekfuDCWDdiu6aLWv9Bsvc=;
+        b=bsPG5e6pSA54rPqXT/iG2JQkmpub79669Ga7QL7JTWZMGl9RnNaHE8Jeonlpw/N9+x
+         zKu7VxfkFdEDaC8YdNx165AUkCsKJ23tmjMePbt814goc5Sj/GbwIpsfUfkNupx29Zo0
+         u+QI/m8Ejf5qNPjjprjSvoixrfmEcLhdyA8f9xGz2W9lAhu6NsXhYFm22t0Kscu8WKzM
+         rMMN5hE72xUJN4GBMyhG7ZBzVkC2XJ0WfOXCHtBEFtqlZTHR4PPL5g8/ZsaNWoFE4Dza
+         UIAnVrGZsdr8o3RZZS30SQPKbjmC1jORZ5DRQdLwErj+ORRpJ44plrdGgRyQdnYUPTMm
+         oeOg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1hHJnJQFjFuIToWQDKaqG2N15/HHTzVxPaO06uGF804=;
-        b=V55gcp42bnJZGi20uCJNJqwf2A1PLRhLOQBS0uhCoXEwhm/nyLSPmfV4Me9g5Tllr+
-         jjXvDh5Bz6tQnwlK2/2Oi9fI+yRRK9AybeYxMZzXQUwvBJNBabVmptZwkBS5GSMyAnBb
-         8TwEBu5q/tsWGk3I02rsAFDh0wf50rigJuZ9p71qhFdnmsYcAiYzEZ4da/VJV+Lz+r/d
-         aHDKDrLQO5Xb11UO0OBhFK2g5x6pXh/vcCmGO5O9OqSD+MpsAz7BDwqLk8NzWC9E81Kk
-         41os/CABZB5zt4AeLlQtxcZFyHTvayTjwTLYtttl7moujDFK9FPSBmdCF5r9ZYnPrXmz
-         0v+A==
-X-Gm-Message-State: AJIora/UO8Fzpi9Z57NOMwKavvoWVmnRc9hX9kM4yRoZHjbCiYihcLWu
-        mDgZ+smykZ0NIECBLGCn2mq2UEq/7Mn/CjOIDZlLqg==
-X-Google-Smtp-Source: AGRyM1urGW/4H0GG94INFmrk81Rte5WO/5OidXSkbfUxWXyGmrcqN1x1WsStdWmSl8REBtZN+R+gCul7YvpVCEsrNVM=
-X-Received: by 2002:a81:9b93:0:b0:317:8c9d:4c22 with SMTP id
- s141-20020a819b93000000b003178c9d4c22mr14864512ywg.278.1656340894677; Mon, 27
- Jun 2022 07:41:34 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=LUcZmkTGR5Hh6C+2kCtH4XekfuDCWDdiu6aLWv9Bsvc=;
+        b=OeP9l3EH4CjFCkTfLN8Bf+nE1yIyA5r4E+Fvqt2IyH3/LTQ5rxMDHkf5UQcHdAAZwR
+         j/2GFjsS4iEOhMnGKkT32J+AoDhr4mhs2yfAPHFjDvFWAPUJM60Pw5FfzuLT2hWSOfp+
+         fc1qa3hRsrkWhM6XRmmviH/XKgx5qSRuBr3vhvJaRr/InAjlT4+pj3NSIYnA1dzr3w+y
+         KNg9WlDUB/42oCStvt6ko2yPHtExxbB8BjmpSVX7oZCJSgifEqy+E7tydQy6+w1mhxCN
+         8MJY6gf0NZLa0wOalTE0ZWpMEmAVVwlDgPd9k57CC998pShazQzFMo0ol5kMNt4fLY/M
+         1beA==
+X-Gm-Message-State: AJIora/DFKN+nWd+irRlna3lLsO4dI5ZlRXgvuVIjBr0Ey84WYmAEWjF
+        ZqihKBDflUnwoZozk2Yw9L0=
+X-Google-Smtp-Source: AGRyM1tEjNUY1M3nmtsa+tlN070CxCzLPFktJ7wQV4c4x+FiWp+SfX/XIX/XRE1+28iHiBZzkjw0vg==
+X-Received: by 2002:a05:6512:3e16:b0:47f:9d6d:c7e3 with SMTP id i22-20020a0565123e1600b0047f9d6dc7e3mr9221730lfv.393.1656341172695;
+        Mon, 27 Jun 2022 07:46:12 -0700 (PDT)
+Received: from [192.168.1.11] ([46.235.67.63])
+        by smtp.gmail.com with ESMTPSA id c2-20020ac25f62000000b00478f3fe716asm1828735lfc.200.2022.06.27.07.46.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 27 Jun 2022 07:46:11 -0700 (PDT)
+Message-ID: <4d08b849-3e79-7c82-803c-51c251344c7a@gmail.com>
+Date:   Mon, 27 Jun 2022 17:46:10 +0300
 MIME-Version: 1.0
-References: <20220622082716.478486-1-lee.jones@linaro.org>
-In-Reply-To: <20220622082716.478486-1-lee.jones@linaro.org>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 27 Jun 2022 16:41:23 +0200
-Message-ID: <CANn89iK-uFP6Swgc0ZeEC38UsuywJ3wbybSNouH202Wa7X7Tzg@mail.gmail.com>
-Subject: Re: [RESEND 1/1] Bluetooth: Use chan_list_lock to protect the whole
- put/destroy invokation
-To:     Lee Jones <lee.jones@linaro.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>, stable@kernel.org,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-bluetooth@vger.kernel.org, netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2] net: ocelot: fix wrong time_after usage
+Content-Language: en-US
+To:     =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <YoeMW+/KGk8VpbED@lunn.ch>
+ <20220520213115.7832-1-paskripkin@gmail.com> <YojvUsJ090H/wfEk@lunn.ch>
+ <20220521162108.bact3sn4z2yuysdt@skbuf> <20220624171429.4b3f7c0a@fixe.home>
+From:   Pavel Skripkin <paskripkin@gmail.com>
+In-Reply-To: <20220624171429.4b3f7c0a@fixe.home>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 10:27 AM Lee Jones <lee.jones@linaro.org> wrote:
->
-> This change prevents a use-after-free caused by one of the worker
-> threads starting up (see below) *after* the final channel reference
-> has been put() during sock_close() but *before* the references to the
-> channel have been destroyed.
->
->   refcount_t: increment on 0; use-after-free.
->   BUG: KASAN: use-after-free in refcount_dec_and_test+0x20/0xd0
->   Read of size 4 at addr ffffffc114f5bf18 by task kworker/u17:14/705
->
->   CPU: 4 PID: 705 Comm: kworker/u17:14 Tainted: G S      W       4.14.234-00003-g1fb6d0bd49a4-dirty #28
->   Hardware name: Qualcomm Technologies, Inc. SM8150 V2 PM8150 Google Inc. MSM sm8150 Flame DVT (DT)
->   Workqueue: hci0 hci_rx_work
->   Call trace:
->    dump_backtrace+0x0/0x378
->    show_stack+0x20/0x2c
->    dump_stack+0x124/0x148
->    print_address_description+0x80/0x2e8
->    __kasan_report+0x168/0x188
->    kasan_report+0x10/0x18
->    __asan_load4+0x84/0x8c
->    refcount_dec_and_test+0x20/0xd0
->    l2cap_chan_put+0x48/0x12c
->    l2cap_recv_frame+0x4770/0x6550
->    l2cap_recv_acldata+0x44c/0x7a4
->    hci_acldata_packet+0x100/0x188
->    hci_rx_work+0x178/0x23c
->    process_one_work+0x35c/0x95c
->    worker_thread+0x4cc/0x960
->    kthread+0x1a8/0x1c4
->    ret_from_fork+0x10/0x18
->
-> Cc: stable@kernel.org
+On 6/24/22 18:14, Clément Léger wrote:
+> So I actually tested and added logging to see if the CH_SAFE
+> register bits are set for the channel on the first iteration. From
+> what I could test (iperf3 with huge/non huge packets, TCP/UDP), it
+> always return true on the first try. So since I think Pavel solution
+> is ok to go with.
+> 
+> However, since ocelot_fdma_wait_chan_safe() is also called in the napi
+> poll function of this driver, I don't think sleeping is allowed (softirq
+> context) and thus I would suggest using the readx_poll_timeout_atomic()
+> function instead.
+> 
+> Regarding the delay to wait between each read, I don't have any
+> information about that possible value, the datasheet only says "wait
+> for the bit to be set" so I guess we'll have to live with an
+> approximate value.
+> 
 
-When was the bug added ? (Fixes: tag please)
+Thank you for testing!
 
-> Cc: Marcel Holtmann <marcel@holtmann.org>
-> Cc: Johan Hedberg <johan.hedberg@gmail.com>
-> Cc: Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Eric Dumazet <edumazet@google.com>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Paolo Abeni <pabeni@redhat.com>
-> Cc: linux-bluetooth@vger.kernel.org
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: Lee Jones <lee.jones@linaro.org>
-> ---
->  net/bluetooth/l2cap_core.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
-> index ae78490ecd3d4..82279c5919fd8 100644
-> --- a/net/bluetooth/l2cap_core.c
-> +++ b/net/bluetooth/l2cap_core.c
-> @@ -483,9 +483,7 @@ static void l2cap_chan_destroy(struct kref *kref)
->
->         BT_DBG("chan %p", chan);
->
-> -       write_lock(&chan_list_lock);
->         list_del(&chan->global_l);
-> -       write_unlock(&chan_list_lock);
->
->         kfree(chan);
->  }
-> @@ -501,7 +499,9 @@ void l2cap_chan_put(struct l2cap_chan *c)
->  {
->         BT_DBG("chan %p orig refcnt %u", c, kref_read(&c->kref));
->
-> +       write_lock(&chan_list_lock);
->         kref_put(&c->kref, l2cap_chan_destroy);
-> +       write_unlock(&chan_list_lock);
->  }
->  EXPORT_SYMBOL_GPL(l2cap_chan_put);
->
-> --
-> 2.36.1.255.ge46751e96f-goog
->
+I will update update v3 with _atomic variant
 
-I do not think this patch is correct.
 
-a kref does not need to be protected by a write lock.
 
-This might shuffle things enough to work around a particular repro you have.
-
-If the patch was correct why not protect kref_get() sides ?
-
-Before the &hdev->rx_work is scheduled (queue_work(hdev->workqueue,
-&hdev->rx_work),
-a reference must be taken.
-
-Then this reference must be released at the end of hci_rx_work() or
-when hdev->workqueue
-is canceled.
-
-This refcount is not needed _if_ the workqueue is properly canceled at
-device dismantle,
-in a synchronous way.
-
-I do not see this hdev->rx_work being canceled, maybe this is the real issue.
-
-There is a call to drain_workqueue() but this is not enough I think,
-because hci_recv_frame()
-can re-arm
-   queue_work(hdev->workqueue, &hdev->rx_work);
+Thanks,
+--Pavel Skripkin
