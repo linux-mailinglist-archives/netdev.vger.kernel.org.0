@@ -2,120 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A2A9955C1FF
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 14:45:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A4F8D55D294
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:11:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235646AbiF0RH5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jun 2022 13:07:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56412 "EHLO
+        id S239924AbiF0RSL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jun 2022 13:18:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235663AbiF0RHz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 13:07:55 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B52A18E07;
-        Mon, 27 Jun 2022 10:07:54 -0700 (PDT)
-Received: from jupiter.universe (dyndsl-095-033-171-114.ewe-ip-backbone.de [95.33.171.114])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: sre)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 50F71660184F;
-        Mon, 27 Jun 2022 18:07:52 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1656349672;
-        bh=8EUZhSokoUy572fOzha939IV7xaBmGQX0rZAPrDlbp0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ANSQI2d3dDVsTENU4yz9KnX6IyapF886hc3bNee50cTvzvW4uz5psj1pc846U17Mp
-         rRQF7kz5d3J431CQN6ekI7F3dcuKVbrHjnx8w0RVy2cSJSFD0MuQJ+ZRBPHkRLRVRW
-         MG3TJqHqrtd+jMOgvE4djCmcniT/QyKccSNKfDp2y7ykBTfqnIpSxhgP9tKnkZ9wYR
-         SjbdC61WEhFN91i2jyHp4LQEkfTui9SEH8oNdvJ0ciyKYy2DHl+IPs0OSXOO78EH8E
-         wu/+uIEyV1+buqFV7/uK4Gq/r8Mkz5smpitCxRFQeHKskCiWEA1clj0Pj+zNOnwVIO
-         QprgLnnJfr2eA==
-Received: by jupiter.universe (Postfix, from userid 1000)
-        id F0F1448010C; Mon, 27 Jun 2022 19:07:49 +0200 (CEST)
-From:   Sebastian Reichel <sebastian.reichel@collabora.com>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        netdev@vger.kernel.org, linux-rockchip@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        kernel@collabora.com
-Subject: [PATCHv2 2/2] dt-bindings: net: rockchip-dwmac: add rk3588 gmac compatible
-Date:   Mon, 27 Jun 2022 19:07:47 +0200
-Message-Id: <20220627170747.137386-3-sebastian.reichel@collabora.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220627170747.137386-1-sebastian.reichel@collabora.com>
-References: <20220627170747.137386-1-sebastian.reichel@collabora.com>
+        with ESMTP id S238961AbiF0RSJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 13:18:09 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62056136
+        for <netdev@vger.kernel.org>; Mon, 27 Jun 2022 10:18:07 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id b26so1627010wrc.2
+        for <netdev@vger.kernel.org>; Mon, 27 Jun 2022 10:18:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Rx9f3FFpQHBCbk0ON6Xh6VW45WNeEZB24W/hAUNIOhc=;
+        b=G+D6o8B0JVucQW6+PhCQ5L2XRwfWedIWe5iLwmsIKnP8l2kIPE3ln4/ME0/NvRV+UI
+         IRq3HZNljewherNlCxkZNHbPRyhOKbLAJsPLf/122Lc0zDeUZ3DSYptMKEcEzzE5M49v
+         K7z5/G6X58efTmpm/XecTLJdA7JzogWXZL37jfBfaiP12a4vZimKbpMNVbZqbhlrQndn
+         amVSil4XRxHxN3Czg+9XDVPJzWWjWA1lGbD0M6Gf9a4KCdlQI4edBbYRGLimeSp7uaaN
+         pvrRhrhKcOF/RRlK5ucxsSdCE8jF8RFh7BplqDvHDLsP9MUYF1Emg8N/f0LtedmrcKxn
+         UcoQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Rx9f3FFpQHBCbk0ON6Xh6VW45WNeEZB24W/hAUNIOhc=;
+        b=pZipCK2075jVnbTMZH1t9TdIDy9yhizrf9SEoCmWKpXeJ6zv4dNclrqjWhFGmtw+do
+         20nuWhNg+TUecBgADhnFEMBOz85mDB/4UDXLQ23/MCF9rOIpwNigifAvLYcqo4kDw2Iv
+         lmQ9hV46xRXbpWSITfe4AyH/K5YAvgU8bJT02cFz/vP+aPsrTR1dNshFGX4aba3fiwNW
+         PBgnrw/VVINc9oc5+QrsZG+hT43VICbhhCZtwf2nD96y3Q1k6LB8/9psPAPRfZLslAp/
+         brzarTm9JXATpQ6z1VSSRCWTeHncO/1YefMi9KcbFCcv1CLmLG1AyzEeq8TJ5LyCZ0SS
+         hfCA==
+X-Gm-Message-State: AJIora+/MMqAdXONKVvrbWR3pk7co5RowciutPa6S++DQ1fekmCliSlp
+        8GiK0CSYjU4nbPb6QohzRylVq6Ta8vIZCY2VjbEleA==
+X-Google-Smtp-Source: AGRyM1vXlEJ2cJEQvlLdrnPihXwK9o/E1cIAWChD1xuv8agkjMs9iJuTfwntYyHAZfhGP9MzEdXOJwWhE277bB/fsJI=
+X-Received: by 2002:a5d:6b91:0:b0:21b:bc0b:7282 with SMTP id
+ n17-20020a5d6b91000000b0021bbc0b7282mr13477019wrx.375.1656350285740; Mon, 27
+ Jun 2022 10:18:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220614014714.1407239-1-irogers@google.com>
+In-Reply-To: <20220614014714.1407239-1-irogers@google.com>
+From:   Ian Rogers <irogers@google.com>
+Date:   Mon, 27 Jun 2022 10:17:51 -0700
+Message-ID: <CAP-5=fVg9ZVOONuiJZopC7RyuEXvP8t79EFjQF0GCcV=atGbCg@mail.gmail.com>
+Subject: Re: [PATCH] perf bpf: 8 byte align bpil data
+To:     Dave Marchevsky <davemarchevsky@fb.com>
+Cc:     Stephane Eranian <eranian@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        bpf@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        Song Liu <songliubraving@fb.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Quentin Monnet <quentin@isovalent.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add compatible string for RK3588 gmac, which is similar to the RK3568
-one, but needs another syscon device for clock selection.
+On Mon, Jun 13, 2022 at 6:47 PM Ian Rogers <irogers@google.com> wrote:
+>
+> bpil data is accessed assuming 64-bit alignment resulting in undefined
+> behavior as the data is just byte aligned. With an -fsanitize=undefined
+> build the following errors are observed:
+>
+> $ sudo perf record -a sleep 1
+> util/bpf-event.c:310:22: runtime error: load of misaligned address 0x55f61084520f for type '__u64', which requires 8 byte alignment
+> 0x55f61084520f: note: pointer points here
+>  a8 fe ff ff 3c  51 d3 c0 ff ff ff ff 04  84 d3 c0 ff ff ff ff d8  aa d3 c0 ff ff ff ff a4  c0 d3 c0
+>              ^
+> util/bpf-event.c:311:20: runtime error: load of misaligned address 0x55f61084522f for type '__u32', which requires 4 byte alignment
+> 0x55f61084522f: note: pointer points here
+>  ff ff ff ff c7  17 00 00 f1 02 00 00 1f  04 00 00 58 04 00 00 00  00 00 00 0f 00 00 00 63  02 00 00
+>              ^
+> util/bpf-event.c:198:33: runtime error: member access within misaligned address 0x55f61084523f for type 'const struct bpf_func_info', which requires 4 byte alignment
+> 0x55f61084523f: note: pointer points here
+>  58 04 00 00 00  00 00 00 0f 00 00 00 63  02 00 00 3b 00 00 00 ab  02 00 00 44 00 00 00 14  03 00 00
+>
+> Correct this by rouding up the data sizes and aligning the pointers.
 
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
----
- Documentation/devicetree/bindings/net/rockchip-dwmac.yaml | 6 ++++++
- Documentation/devicetree/bindings/net/snps,dwmac.yaml     | 1 +
- 2 files changed, 7 insertions(+)
+Happy Monday, polite ping!
 
-diff --git a/Documentation/devicetree/bindings/net/rockchip-dwmac.yaml b/Documentation/devicetree/bindings/net/rockchip-dwmac.yaml
-index 083623c8d718..1783f5eb9e50 100644
---- a/Documentation/devicetree/bindings/net/rockchip-dwmac.yaml
-+++ b/Documentation/devicetree/bindings/net/rockchip-dwmac.yaml
-@@ -25,6 +25,7 @@ select:
-           - rockchip,rk3368-gmac
-           - rockchip,rk3399-gmac
-           - rockchip,rk3568-gmac
-+          - rockchip,rk3588-gmac
-           - rockchip,rv1108-gmac
-   required:
-     - compatible
-@@ -50,6 +51,7 @@ properties:
-       - items:
-           - enum:
-               - rockchip,rk3568-gmac
-+              - rockchip,rk3588-gmac
-           - const: snps,dwmac-4.20a
- 
-   clocks:
-@@ -81,6 +83,10 @@ properties:
-     description: The phandle of the syscon node for the general register file.
-     $ref: /schemas/types.yaml#/definitions/phandle
- 
-+  rockchip,php-grf:
-+    description: The phandle of the syscon node for the peripheral general register file.
-+    $ref: /schemas/types.yaml#/definitions/phandle
-+
-   tx_delay:
-     description: Delay value for TXD timing. Range value is 0~0x7F, 0x30 as default.
-     $ref: /schemas/types.yaml#/definitions/uint32
-diff --git a/Documentation/devicetree/bindings/net/snps,dwmac.yaml b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-index 36c85eb3dc0d..b5aba399ca5d 100644
---- a/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-+++ b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-@@ -72,6 +72,7 @@ properties:
-         - rockchip,rk3328-gmac
-         - rockchip,rk3366-gmac
-         - rockchip,rk3368-gmac
-+        - rockchip,rk3588-gmac
-         - rockchip,rk3399-gmac
-         - rockchip,rv1108-gmac
-         - snps,dwmac
--- 
-2.35.1
+Thanks,
+Ian
 
+> Signed-off-by: Ian Rogers <irogers@google.com>
+> ---
+>  tools/perf/util/bpf-utils.c | 5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
+>
+> diff --git a/tools/perf/util/bpf-utils.c b/tools/perf/util/bpf-utils.c
+> index e271e05e51bc..80b1d2b3729b 100644
+> --- a/tools/perf/util/bpf-utils.c
+> +++ b/tools/perf/util/bpf-utils.c
+> @@ -149,11 +149,10 @@ get_bpf_prog_info_linear(int fd, __u64 arrays)
+>                 count = bpf_prog_info_read_offset_u32(&info, desc->count_offset);
+>                 size  = bpf_prog_info_read_offset_u32(&info, desc->size_offset);
+>
+> -               data_len += count * size;
+> +               data_len += roundup(count * size, sizeof(__u64));
+>         }
+>
+>         /* step 3: allocate continuous memory */
+> -       data_len = roundup(data_len, sizeof(__u64));
+>         info_linear = malloc(sizeof(struct perf_bpil) + data_len);
+>         if (!info_linear)
+>                 return ERR_PTR(-ENOMEM);
+> @@ -180,7 +179,7 @@ get_bpf_prog_info_linear(int fd, __u64 arrays)
+>                 bpf_prog_info_set_offset_u64(&info_linear->info,
+>                                              desc->array_offset,
+>                                              ptr_to_u64(ptr));
+> -               ptr += count * size;
+> +               ptr += roundup(count * size, sizeof(__u64));
+>         }
+>
+>         /* step 5: call syscall again to get required arrays */
+> --
+> 2.36.1.476.g0c4daa206d-goog
+>
