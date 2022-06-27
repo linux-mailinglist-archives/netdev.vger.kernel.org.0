@@ -2,183 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7595455C689
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 14:52:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E7C855DA6E
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:23:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240149AbiF0MLt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jun 2022 08:11:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50408 "EHLO
+        id S240289AbiF0MQq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jun 2022 08:16:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233113AbiF0MLt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 08:11:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00E1ED12D;
-        Mon, 27 Jun 2022 05:11:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ACBFBB8117E;
-        Mon, 27 Jun 2022 12:11:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC8BBC3411D;
-        Mon, 27 Jun 2022 12:11:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656331905;
-        bh=lN/r9d/SD827cGR9LTMT8U4qhtJ7GeJIvd2S8K1gKh0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=O9Y/7rkpxtUWfwtqptPABSQ9MnmZeKcFhIuUgd2g4TKqOJymCv21FzM5W+volxX27
-         HLwF+PZCGgJa9ksN1ket46bu+BI++Zkr8ztJdXYNyyIbZNIS6ESMy0BfQEEDdvF/G3
-         1AMPQciYcwRgzO2/n1elJxkIKKJWRgV5vk7imUWzY7iaWzsYqEuhcGz9J3z3tJM0C4
-         9CFJX8nObRhR2WqaDSAOkWF0U1ZYGg79MTfDjW3mZfhhYxQ8j27LuAjjTjbnqoka/v
-         6bj5vMUQYWiiVN9eUWNkb3eAdk/ShR48YFdv3wSIV8vhjnfgqOPFQqCCvPBTguIRr3
-         gRDgD7s3x/aHA==
-Date:   Mon, 27 Jun 2022 14:11:37 +0200
-From:   Christian Brauner <brauner@kernel.org>
-To:     Paul Moore <paul@paul-moore.com>
-Cc:     Frederick Lawler <fred@cloudflare.com>,
-        Casey Schaufler <casey@schaufler-ca.com>, kpsingh@kernel.org,
-        revest@chromium.org, jackmanb@chromium.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
-        jmorris@namei.org, serge@hallyn.com, bpf@vger.kernel.org,
-        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-team@cloudflare.com
-Subject: Re: [PATCH 0/2] Introduce security_create_user_ns()
-Message-ID: <20220627121137.cnmctlxxtcgzwrws@wittgenstein>
-References: <20220621233939.993579-1-fred@cloudflare.com>
- <ce1653b1-feb0-1a99-0e97-8dfb289eeb79@schaufler-ca.com>
- <b72c889a-4a50-3330-baae-3bbf065e7187@cloudflare.com>
- <CAHC9VhSTkEMT90Tk+=iTyp3npWEm+3imrkFVX2qb=XsOPp9F=A@mail.gmail.com>
+        with ESMTP id S233238AbiF0MQo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 08:16:44 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CD98DED0;
+        Mon, 27 Jun 2022 05:16:44 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id h9-20020a17090a648900b001ecb8596e43so9230421pjj.5;
+        Mon, 27 Jun 2022 05:16:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=gzxBbJxhdHK6PNoavR99hps1yhOfCLiWPLboRKYj7ko=;
+        b=ZRFbVcvsBqhinQXNr/BOVOG9sV99j1Dkygit4IkDetSqhua+BHHR6GqN5kV1qSnThz
+         xIaiZ3SYUUAoXBZVhNgovSnGPg6F2yJOiZ/JVVa7dFDoHGNLVGe8FROiDZwnMefWq/G6
+         ohPY9NdesHaJYPKSfhgQgU/xcW8rzUT9kgrzm8SuVV1BbKTi1VxbLATSiE13Zwkeg0Mn
+         N1A9yQ8ekUkK8wWu6MKX09H4SNITQrJZZR/uzQeI360+EnGCpXu6srsBvpmDwdJ/G13o
+         WWIg1foMw6ZmcZoDMjvA0khfRBdx8qnwYADyLxoNpFup+fno95QRfRBgVRoun4OBFpUE
+         2G7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=gzxBbJxhdHK6PNoavR99hps1yhOfCLiWPLboRKYj7ko=;
+        b=Efmosx55uethjpNLWm6LUvGs2BIYIiSeXBsl/TvjzubqkBuZrE9W96PFOIMhWqgLd/
+         e5g3wkitAgOyHZYA1XDtDJhRcE3Jntewpwz5mQ6mTC/MLDF07FiQh1GdxNbidAzn5f6P
+         YU4DaiT0Ob/FQewjDLivGeGnybK7k/W3j70NdE0mw3Gqov/fEbIcNS4Z7TVnK0zCOXWU
+         WgaM9tbXSuz2URfE+2ckXEaWu24z9lZvnEYAEOiKpkcaVdAJ1H0714MB9fxR9Jx5dIS0
+         rGtjyVuefPYe9HIhaPq7+N5B7qmmg9+IMdjCYGEXgUqwT97zKcIYxKe3DtO/hBShLXak
+         uLVg==
+X-Gm-Message-State: AJIora84SPPddxmwUyQ8Izqd/WuqupDn5Q8mfWrYNrUpJ5IY160OWfPF
+        AeBH5fRUjJ1PFzm9VD8d8SY=
+X-Google-Smtp-Source: AGRyM1tg6C4UQ21pl4+ohFSN9n9PXFWmzvYebZbqdMhPyjty+7iSxesWjR6H5X46le/MTfoHBdLS4A==
+X-Received: by 2002:a17:90b:1d84:b0:1ed:5918:74e3 with SMTP id pf4-20020a17090b1d8400b001ed591874e3mr8785846pjb.173.1656332203802;
+        Mon, 27 Jun 2022 05:16:43 -0700 (PDT)
+Received: from localhost.localdomain ([203.205.141.82])
+        by smtp.gmail.com with ESMTPSA id h6-20020a170902680600b00163ffe73300sm7057389plk.137.2022.06.27.05.16.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Jun 2022 05:16:43 -0700 (PDT)
+From:   menglong8.dong@gmail.com
+X-Google-Original-From: imagedong@tencent.com
+To:     kuba@kernel.org
+Cc:     mathew.j.martineau@linux.intel.com, matthieu.baerts@tessares.net,
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        netdev@vger.kernel.org, mptcp@lists.linux.dev,
+        linux-kernel@vger.kernel.org, Menglong Dong <imagedong@tencent.com>
+Subject: [PATCH net-next] net: mptcp: fix some spelling mistake in mptcp
+Date:   Mon, 27 Jun 2022 20:16:25 +0800
+Message-Id: <20220627121626.1595732-1-imagedong@tencent.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CAHC9VhSTkEMT90Tk+=iTyp3npWEm+3imrkFVX2qb=XsOPp9F=A@mail.gmail.com>
-X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 11:21:37PM -0400, Paul Moore wrote:
-> On Wed, Jun 22, 2022 at 10:24 AM Frederick Lawler <fred@cloudflare.com> wrote:
-> > On 6/21/22 7:19 PM, Casey Schaufler wrote:
-> > > On 6/21/2022 4:39 PM, Frederick Lawler wrote:
-> > >> While creating a LSM BPF MAC policy to block user namespace creation, we
-> > >> used the LSM cred_prepare hook because that is the closest hook to
-> > >> prevent
-> > >> a call to create_user_ns().
-> > >>
-> > >> The calls look something like this:
-> > >>
-> > >>      cred = prepare_creds()
-> > >>          security_prepare_creds()
-> > >>              call_int_hook(cred_prepare, ...
-> > >>      if (cred)
-> > >>          create_user_ns(cred)
-> > >>
-> > >> We noticed that error codes were not propagated from this hook and
-> > >> introduced a patch [1] to propagate those errors.
-> > >>
-> > >> The discussion notes that security_prepare_creds()
-> > >> is not appropriate for MAC policies, and instead the hook is
-> > >> meant for LSM authors to prepare credentials for mutation. [2]
-> > >>
-> > >> Ultimately, we concluded that a better course of action is to introduce
-> > >> a new security hook for LSM authors. [3]
-> > >>
-> > >> This patch set first introduces a new security_create_user_ns() function
-> > >> and create_user_ns LSM hook, then marks the hook as sleepable in BPF.
-> > >
-> > > Why restrict this hook to user namespaces? It seems that an LSM that
-> > > chooses to preform controls on user namespaces may want to do so for
-> > > network namespaces as well.
-> >
-> > IIRC, CLONE_NEWUSER is the only namespace flag that does not require
-> > CAP_SYS_ADMIN. There is a security use case to prevent this namespace
-> > from being created within an unprivileged environment. I'm not opposed
-> > to a more generic hook, but I don't currently have a use case to block
-> > any others. We can also say the same is true for the other namespaces:
-> > add this generic security function to these too.
-> >
-> > I'm curious what others think about this too.
-> 
-> While user namespaces are obviously one of the more significant
-> namespaces from a security perspective, I do think it seems reasonable
-> that the LSMs could benefit from additional namespace creation hooks.
-> However, I don't think we need to do all of them at once, starting
-> with a userns hook seems okay to me.
-> 
-> I also think that using the same LSM hook as an access control point
-> for all of the different namespaces would be a mistake.  At the very
+From: Menglong Dong <imagedong@tencent.com>
 
-Agreed.
+codespell finds some spelling mistake in mptcp:
 
-> least we would need to pass a flag or some form of context to the hook
-> to indicate which new namespace(s) are being requested and I fear that
-> is a problem waiting to happen.  That isn't to say someone couldn't
-> mistakenly call the security_create_user_ns(...) from the mount
-> namespace code, but I suspect that is much easier to identify as wrong
-> than the equivalent security_create_ns(USER, ...).
+net/mptcp/subflow.c:1624: interaces ==> interfaces
+net/mptcp/pm_netlink.c:1130: regarless ==> regardless
 
-Yeah, I think that's a pretty unlikely scenario.
+Just fix them.
 
-> 
-> We also should acknowledge that while in most cases the current task's
-> credentials are probably sufficient to make any LSM access control
-> decisions around namespace creation, it's possible that for some
-> namespaces we would need to pass additional, namespace specific info
-> to the LSM.  With a shared LSM hook this could become rather awkward.
+Signed-off-by: Menglong Dong <imagedong@tencent.com>
+---
+ net/mptcp/pm_netlink.c | 2 +-
+ net/mptcp/subflow.c    | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-Agreed.
+diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
+index e099f2a12504..3de83e2a2611 100644
+--- a/net/mptcp/pm_netlink.c
++++ b/net/mptcp/pm_netlink.c
+@@ -1127,7 +1127,7 @@ void mptcp_pm_nl_subflow_chk_stale(const struct mptcp_sock *msk, struct sock *ss
+ 			}
+ 			unlock_sock_fast(ssk, slow);
+ 
+-			/* always try to push the pending data regarless of re-injections:
++			/* always try to push the pending data regardless of re-injections:
+ 			 * we can possibly use backup subflows now, and subflow selection
+ 			 * is cheap under the msk socket lock
+ 			 */
+diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
+index 654cc602ff2c..8c3e699d3387 100644
+--- a/net/mptcp/subflow.c
++++ b/net/mptcp/subflow.c
+@@ -1621,7 +1621,7 @@ int mptcp_subflow_create_socket(struct sock *sk, struct socket **new_sock)
+ 	/* the newly created socket really belongs to the owning MPTCP master
+ 	 * socket, even if for additional subflows the allocation is performed
+ 	 * by a kernel workqueue. Adjust inode references, so that the
+-	 * procfs/diag interaces really show this one belonging to the correct
++	 * procfs/diag interfaces really show this one belonging to the correct
+ 	 * user.
+ 	 */
+ 	SOCK_INODE(sf)->i_ino = SOCK_INODE(sk->sk_socket)->i_ino;
+-- 
+2.36.1
 
-> 
-> > > Also, the hook seems backwards. You should
-> > > decide if the creation of the namespace is allowed before you create it.
-> > > Passing the new namespace to a function that checks to see creating a
-> > > namespace is allowed doesn't make a lot off sense.
-> >
-> > I think having more context to a security hook is a good thing.
-> 
-> This is one of the reasons why I usually like to see at least one LSM
-> implementation to go along with every new/modified hook.  The
-> implementation forces you to think about what information is necessary
-> to perform a basic access control decision; sometimes it isn't always
-> obvious until you have to write the access control :)
-
-I spoke to Frederick at length during LSS and as I've been given to
-understand there's a eBPF program that would immediately use this new
-hook. Now I don't want to get into the whole "Is the eBPF LSM hook
-infrastructure an LSM" but I think we can let this count as a legitimate
-first user of this hook/code.
-
-> 
-> [aside: If you would like to explore the SELinux implementation let me
-> know, I'm happy to work with you on this.  I suspect Casey and the
-> other LSM maintainers would also be willing to do the same for their
-> LSMs.]
-> 
-> In this particular case I think the calling task's credentials are
-> generally all that is needed.  You mention that the newly created
-
-Agreed.
-
-> namespace would be helpful, so I'll ask: what info in the new ns do
-> you believe would be helpful in making an access decision about its
-> creation?
-> 
-> Once we've sorted that we can make a better decision about the hook
-> placement, but right now my gut feeling is that we only need to pass
-> the task's creds, and I think placing the hook right after the UID/GID
-> mapping check (before the new ns allocation) would be the best spot.
-
-When I toyed with this I placed it directly into create_user_ns() and
-only relied on the calling task's cred. I just created an eBPF program
-that verifies the caller is capable(CAP_SYS_ADMIN). Since both the
-chrooted and mapping check return EPERM it doesn't really matter that
-much where exactly. Conceptually it makes more sense to me to place it
-after the mapping check because then all the preliminaries are done.
-
-Christian
