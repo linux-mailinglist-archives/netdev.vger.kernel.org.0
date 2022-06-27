@@ -2,73 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EFE9455D1DB
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:10:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4809D55E0E3
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:33:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238902AbiF0Ren (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jun 2022 13:34:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45804 "EHLO
+        id S236952AbiF0RjR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jun 2022 13:39:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236463AbiF0Rel (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 13:34:41 -0400
-Received: from mail-io1-f43.google.com (mail-io1-f43.google.com [209.85.166.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A64D1B1CD;
-        Mon, 27 Jun 2022 10:34:39 -0700 (PDT)
-Received: by mail-io1-f43.google.com with SMTP id p69so10277998iod.10;
-        Mon, 27 Jun 2022 10:34:39 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=a/8X5CuFWSs44Wf8DabrTq3lrtrQa6yryAnIBK8XrMM=;
-        b=dpTwiJs0sVdT1dprtR6W49mKRmiOZLvX5QJCz7jLaFoMhZ613SSTKyOjtjAveo6f9A
-         QPxBnkiAQXYnLrS+bZKV5vhwtPD/menrEhc7E0mDpeMR2SETfT/cM4GQxRRj8bX4wkTU
-         b/eCoCRC/RbBKBU2SHKxRGq8sVjwQl2vdyBlFv5gEEwlP4bWZWta0xqIeGC78IcaSAtz
-         OVRMszn/hNqDJDDA2yV0uSaQCdG+tBhNBVnwkugxeCGpz9IiNUL0E3Sw9R+KMVwAUtqX
-         /qIhBATsJkFj8VMAb+53kmuODivn4ojdzNuz9q5R/hOIOvfu4CGibjST1azv2xe2eHz/
-         1e/g==
-X-Gm-Message-State: AJIora8k2Xj/cnpRQnvlyI9Hu7EPJd9KBbf7EHwXKJFXG8RTmpb74Tam
-        QaTvFEEOrW4RuxVmz/oQetcRCiGmGw==
-X-Google-Smtp-Source: AGRyM1sywh7nza/vYaLVKSMTgBH/gRL4kZTOpa021AlwH6FPO+QZDC2J6Bq3pJHgENIJ1ZNse6UfLQ==
-X-Received: by 2002:a5e:c60a:0:b0:674:fd9d:e31f with SMTP id f10-20020a5ec60a000000b00674fd9de31fmr7164558iok.148.1656351278940;
-        Mon, 27 Jun 2022 10:34:38 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.253])
-        by smtp.gmail.com with ESMTPSA id i39-20020a023b67000000b00339e90e57e6sm4946959jaf.104.2022.06.27.10.34.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jun 2022 10:34:38 -0700 (PDT)
-Received: (nullmailer pid 2637344 invoked by uid 1000);
-        Mon, 27 Jun 2022 17:34:36 -0000
-Date:   Mon, 27 Jun 2022 11:34:36 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Hakan Jansson <hakan.jansson@infineon.com>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        linux-bluetooth@vger.kernel.org
-Subject: Re: [PATCH 1/4] dt-bindings: net: broadcom-bluetooth: Add CYW55572
- DT binding
-Message-ID: <20220627173436.GA2616639-robh@kernel.org>
-References: <cover.1655723462.git.hakan.jansson@infineon.com>
- <acd9e85b1ba82875e83ca68ae2aa62d828bfdfa3.1655723462.git.hakan.jansson@infineon.com>
- <2c753258-b68e-b2ad-c4cc-f0a437769bc2@linaro.org>
- <cb973352-36f9-8d70-95ac-5b63a566422c@infineon.com>
+        with ESMTP id S230102AbiF0RjQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 13:39:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49E39BC11;
+        Mon, 27 Jun 2022 10:39:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DFC7BB81062;
+        Mon, 27 Jun 2022 17:39:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 520D6C3411D;
+        Mon, 27 Jun 2022 17:39:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656351552;
+        bh=Zn0Dfb4M02qxEfqvQzrDg8XHxtNPpoaNnFOSN6zyqcQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=XzH3tXT3H9L7KDQzTdC3I4DnJaB+mhExMuomvsSJVtjPdDWa53REixFOQ4tlRaRgB
+         Dau6EcVZT097k2R5PlMlSrrircErH+zgXxRd58ebu2yILqYResOpDx/qkBJTybJBzC
+         aDXOIeZZUz0J7nebzfXbkmrHNYk9fI5HGXWgwb5Xn+1I3ATXg/w1Zr1+1dAv0MqP7q
+         WiGRgSQRZHKR8Gsh2phfFlHXTXRPqESdF1VSYROT2m6CwKL6V/eYcSBUpOLYaYlQbO
+         HknfH8oBojGD2/28mzQuQqXBpLqdZk2/o5t6sdWVMqBh7o8TUMTIFcX3MnJ8pPjU9c
+         hgu088FI8qugw==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
+        Jakub Kicinski <kuba@kernel.org>, geert+renesas@glider.be,
+        magnus.damm@gmail.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org,
+        linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org
+Subject: [PATCH net-next] Revert the ARM/dts changes for Renesas RZ/N1
+Date:   Mon, 27 Jun 2022 10:39:00 -0700
+Message-Id: <20220627173900.3136386-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cb973352-36f9-8d70-95ac-5b63a566422c@infineon.com>
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,48 +54,287 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 20, 2022 at 04:06:25PM +0200, Hakan Jansson wrote:
-> Hi Krzysztof,
-> 
-> Thanks for replying.
-> 
-> On 6/20/2022 2:32 PM, Krzysztof Kozlowski wrote:
-> > > CYW55572 is a Wi-Fi + Bluetooth combo device from Infineon.
-> > > Extend the binding with its DT compatible.
-> > > 
-> > > Signed-off-by: Hakan Jansson <hakan.jansson@infineon.com>
-> > > ---
-> > >   Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml | 1 +
-> > >   1 file changed, 1 insertion(+)
-> > > 
-> > > diff --git a/Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml b/Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml
-> > > index df59575840fe..71fe9b17f8f1 100644
-> > > --- a/Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml
-> > > +++ b/Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml
-> > > @@ -24,6 +24,7 @@ properties:
-> > >         - brcm,bcm43540-bt
-> > >         - brcm,bcm4335a0
-> > >         - brcm,bcm4349-bt
-> > > +      - infineon,cyw55572-bt
-> > Patch is okay, but just to be sure - is it entirely different device
-> > from Infineon or some variant of Broadcom block?
-> 
-> CYW55572 is a new device from Infineon. It is not the same as any Broadcom
-> device.
-> 
-> >   Are all existing
-> > properties applicable to it as well?
-> 
-> Yes, all existing properties are applicable.
+Based on a request from Geert:
 
-Including 'brcm,bt-pcm-int-params'? I don't see a BT reset signal 
-either, but maybe that's not pinned out in the AzureWave module which 
-was the only documentation details I could find[1].
+Revert "ARM: dts: r9a06g032-rzn1d400-db: add switch description"
+This reverts commit 9aab31d66ec97d7047e42feacc356bc9c21a5bf5.
 
-I think a separate doc will be better as it can be more precise as to 
-what's allowed or not. It's fine to reuse the same property names 
-though.
+Revert "ARM: dts: r9a06g032: describe switch"
+This reverts commit cf9695d8a7e927f7563ce6ea0a4e54b8214a12f1.
 
-Rob
+Revert "ARM: dts: r9a06g032: describe GMAC2"
+This reverts commit 3f5261f1c2a8d7b178f9f65c6dda92523329486e.
 
-[1] https://www.azurewave.com/img/infineon/AW-XH316_DS_DF_A_STD.pdf
+Revert "ARM: dts: r9a06g032: describe MII converter"
+This reverts commit 066c3bd358355185d9313358281fe03113c0a9ad.
+
+to let these changes flow thru the platform and SoC trees.
+
+Link: https://lore.kernel.org/r/CAMuHMdUvSLFU56gsp1a9isOiP9otdCJ2-BqhbrffcoHuA6JNig@mail.gmail.com/
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+CC: geert+renesas@glider.be
+CC: magnus.damm@gmail.com
+CC: robh+dt@kernel.org
+CC: krzysztof.kozlowski+dt@linaro.org
+CC: linux-renesas-soc@vger.kernel.org
+CC: devicetree@vger.kernel.org
+---
+ arch/arm/boot/dts/r9a06g032-rzn1d400-db.dts | 117 --------------------
+ arch/arm/boot/dts/r9a06g032.dtsi            | 108 ------------------
+ 2 files changed, 225 deletions(-)
+
+diff --git a/arch/arm/boot/dts/r9a06g032-rzn1d400-db.dts b/arch/arm/boot/dts/r9a06g032-rzn1d400-db.dts
+index 4227aba70c30..3f8f3ce87e12 100644
+--- a/arch/arm/boot/dts/r9a06g032-rzn1d400-db.dts
++++ b/arch/arm/boot/dts/r9a06g032-rzn1d400-db.dts
+@@ -8,8 +8,6 @@
+ 
+ /dts-v1/;
+ 
+-#include <dt-bindings/pinctrl/rzn1-pinctrl.h>
+-#include <dt-bindings/net/pcs-rzn1-miic.h>
+ #include "r9a06g032.dtsi"
+ 
+ / {
+@@ -33,118 +31,3 @@ &wdt0 {
+ 	timeout-sec = <60>;
+ 	status = "okay";
+ };
+-
+-&gmac2 {
+-	status = "okay";
+-	phy-mode = "gmii";
+-	fixed-link {
+-		speed = <1000>;
+-		full-duplex;
+-	};
+-};
+-
+-&switch {
+-	status = "okay";
+-	#address-cells = <1>;
+-	#size-cells = <0>;
+-
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pins_mdio1>, <&pins_eth3>, <&pins_eth4>;
+-
+-	dsa,member = <0 0>;
+-
+-	mdio {
+-		clock-frequency = <2500000>;
+-
+-		#address-cells = <1>;
+-		#size-cells = <0>;
+-
+-		switch0phy4: ethernet-phy@4 {
+-			reg = <4>;
+-			micrel,led-mode = <1>;
+-		};
+-
+-		switch0phy5: ethernet-phy@5 {
+-			reg = <5>;
+-			micrel,led-mode = <1>;
+-		};
+-	};
+-};
+-
+-&switch_port0 {
+-	label = "lan0";
+-	phy-mode = "mii";
+-	phy-handle = <&switch0phy5>;
+-	status = "okay";
+-};
+-
+-&switch_port1 {
+-	label = "lan1";
+-	phy-mode = "mii";
+-	phy-handle = <&switch0phy4>;
+-	status = "okay";
+-};
+-
+-&switch_port4 {
+-	status = "okay";
+-};
+-
+-&eth_miic {
+-	status = "okay";
+-	renesas,miic-switch-portin = <MIIC_GMAC2_PORT>;
+-};
+-
+-&mii_conv4 {
+-	renesas,miic-input = <MIIC_SWITCH_PORTB>;
+-	status = "okay";
+-};
+-
+-&mii_conv5 {
+-	renesas,miic-input = <MIIC_SWITCH_PORTA>;
+-	status = "okay";
+-};
+-
+-&pinctrl{
+-	pins_mdio1: pins_mdio1 {
+-		pinmux = <
+-			RZN1_PINMUX(152, RZN1_FUNC_MDIO1_SWITCH)
+-			RZN1_PINMUX(153, RZN1_FUNC_MDIO1_SWITCH)
+-		>;
+-	};
+-	pins_eth3: pins_eth3 {
+-		pinmux = <
+-			RZN1_PINMUX(36, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
+-			RZN1_PINMUX(37, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
+-			RZN1_PINMUX(38, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
+-			RZN1_PINMUX(39, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
+-			RZN1_PINMUX(40, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
+-			RZN1_PINMUX(41, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
+-			RZN1_PINMUX(42, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
+-			RZN1_PINMUX(43, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
+-			RZN1_PINMUX(44, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
+-			RZN1_PINMUX(45, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
+-			RZN1_PINMUX(46, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
+-			RZN1_PINMUX(47, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
+-		>;
+-		drive-strength = <6>;
+-		bias-disable;
+-	};
+-	pins_eth4: pins_eth4 {
+-		pinmux = <
+-			RZN1_PINMUX(48, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
+-			RZN1_PINMUX(49, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
+-			RZN1_PINMUX(50, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
+-			RZN1_PINMUX(51, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
+-			RZN1_PINMUX(52, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
+-			RZN1_PINMUX(53, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
+-			RZN1_PINMUX(54, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
+-			RZN1_PINMUX(55, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
+-			RZN1_PINMUX(56, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
+-			RZN1_PINMUX(57, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
+-			RZN1_PINMUX(58, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
+-			RZN1_PINMUX(59, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
+-		>;
+-		drive-strength = <6>;
+-		bias-disable;
+-	};
+-};
+diff --git a/arch/arm/boot/dts/r9a06g032.dtsi b/arch/arm/boot/dts/r9a06g032.dtsi
+index 5b97fa85474f..d3665910958b 100644
+--- a/arch/arm/boot/dts/r9a06g032.dtsi
++++ b/arch/arm/boot/dts/r9a06g032.dtsi
+@@ -304,114 +304,6 @@ dma1: dma-controller@40105000 {
+ 			data-width = <8>;
+ 		};
+ 
+-		gmac2: ethernet@44002000 {
+-			compatible = "renesas,r9a06g032-gmac", "renesas,rzn1-gmac", "snps,dwmac";
+-			reg = <0x44002000 0x2000>;
+-			interrupt-parent = <&gic>;
+-			interrupts = <GIC_SPI 37 IRQ_TYPE_LEVEL_HIGH>,
+-				     <GIC_SPI 39 IRQ_TYPE_LEVEL_HIGH>,
+-				     <GIC_SPI 38 IRQ_TYPE_LEVEL_HIGH>;
+-			interrupt-names = "macirq", "eth_wake_irq", "eth_lpi";
+-			clocks = <&sysctrl R9A06G032_HCLK_GMAC1>;
+-			clock-names = "stmmaceth";
+-			power-domains = <&sysctrl>;
+-			snps,multicast-filter-bins = <256>;
+-			snps,perfect-filter-entries = <128>;
+-			tx-fifo-depth = <2048>;
+-			rx-fifo-depth = <4096>;
+-			status = "disabled";
+-		};
+-
+-		eth_miic: eth-miic@44030000 {
+-			compatible = "renesas,r9a06g032-miic", "renesas,rzn1-miic";
+-			#address-cells = <1>;
+-			#size-cells = <0>;
+-			reg = <0x44030000 0x10000>;
+-			clocks = <&sysctrl R9A06G032_CLK_MII_REF>,
+-				 <&sysctrl R9A06G032_CLK_RGMII_REF>,
+-				 <&sysctrl R9A06G032_CLK_RMII_REF>,
+-				 <&sysctrl R9A06G032_HCLK_SWITCH_RG>;
+-			clock-names = "mii_ref", "rgmii_ref", "rmii_ref", "hclk";
+-			power-domains = <&sysctrl>;
+-			status = "disabled";
+-
+-			mii_conv1: mii-conv@1 {
+-				reg = <1>;
+-				status = "disabled";
+-			};
+-
+-			mii_conv2: mii-conv@2 {
+-				reg = <2>;
+-				status = "disabled";
+-			};
+-
+-			mii_conv3: mii-conv@3 {
+-				reg = <3>;
+-				status = "disabled";
+-			};
+-
+-			mii_conv4: mii-conv@4 {
+-				reg = <4>;
+-				status = "disabled";
+-			};
+-
+-			mii_conv5: mii-conv@5 {
+-				reg = <5>;
+-				status = "disabled";
+-			};
+-		};
+-
+-		switch: switch@44050000 {
+-			compatible = "renesas,r9a06g032-a5psw", "renesas,rzn1-a5psw";
+-			reg = <0x44050000 0x10000>;
+-			clocks = <&sysctrl R9A06G032_HCLK_SWITCH>,
+-				 <&sysctrl R9A06G032_CLK_SWITCH>;
+-			clock-names = "hclk", "clk";
+-			power-domains = <&sysctrl>;
+-			status = "disabled";
+-
+-			ethernet-ports {
+-				#address-cells = <1>;
+-				#size-cells = <0>;
+-
+-				switch_port0: port@0 {
+-					reg = <0>;
+-					pcs-handle = <&mii_conv5>;
+-					status = "disabled";
+-				};
+-
+-				switch_port1: port@1 {
+-					reg = <1>;
+-					pcs-handle = <&mii_conv4>;
+-					status = "disabled";
+-				};
+-
+-				switch_port2: port@2 {
+-					reg = <2>;
+-					pcs-handle = <&mii_conv3>;
+-					status = "disabled";
+-				};
+-
+-				switch_port3: port@3 {
+-					reg = <3>;
+-					pcs-handle = <&mii_conv2>;
+-					status = "disabled";
+-				};
+-
+-				switch_port4: port@4 {
+-					reg = <4>;
+-					ethernet = <&gmac2>;
+-					label = "cpu";
+-					phy-mode = "internal";
+-					status = "disabled";
+-					fixed-link {
+-						speed = <1000>;
+-						full-duplex;
+-					};
+-				};
+-			};
+-		};
+-
+ 		gic: interrupt-controller@44101000 {
+ 			compatible = "arm,gic-400", "arm,cortex-a7-gic";
+ 			interrupt-controller;
+-- 
+2.36.1
+
