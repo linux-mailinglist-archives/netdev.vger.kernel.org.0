@@ -2,192 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 363BB55E365
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:36:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 63F5955D607
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:16:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237752AbiF0P4v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jun 2022 11:56:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59252 "EHLO
+        id S238819AbiF0QGp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jun 2022 12:06:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237456AbiF0P4t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 11:56:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC7331AE;
-        Mon, 27 Jun 2022 08:56:48 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 437666162F;
-        Mon, 27 Jun 2022 15:56:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EADAC3411D;
-        Mon, 27 Jun 2022 15:56:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656345407;
-        bh=0uKIHk5NAfqiC1sw9PWOYGqU8fOKFZ6Vg6CrIR19Zgk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=hZHHtIFw51nNpjsX7K/dxIQcTbD2G+uJd1OfO3hGMoQGBgPQxqvCUqglpOJ+0Miq1
-         /K9FJ6bviXkg8wvG9kV6dx2lv8AS20+9aO0WKX6mGy4sWw4nEM0sKNiC1vw1oXz0S8
-         MZC45o3icMlBflLrxfR5pKEh6xshNAP+BJb5XnUEKnHgz3Eq1HkDflYfMJKH94Uv9/
-         pInFmw9bADF7m9RkzBOUbRJioaLOLLZd5TIE004Mec+oRIdJki75A6bh0/lDJXQQ5a
-         H6/cA13NJWiimkA6z33xsWtpyYowiwfMSH4XGy7/ueH8+uOhaRdVFplx04Sh009dWU
-         0kV3+gimxBa0w==
-Date:   Mon, 27 Jun 2022 17:56:39 +0200
-From:   Christian Brauner <brauner@kernel.org>
-To:     Frederick Lawler <fred@cloudflare.com>
-Cc:     Paul Moore <paul@paul-moore.com>,
-        Casey Schaufler <casey@schaufler-ca.com>, kpsingh@kernel.org,
-        revest@chromium.org, jackmanb@chromium.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
-        jmorris@namei.org, serge@hallyn.com, bpf@vger.kernel.org,
-        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-team@cloudflare.com
-Subject: Re: [PATCH 0/2] Introduce security_create_user_ns()
-Message-ID: <20220627155639.b5jky27loen3ydrz@wittgenstein>
-References: <20220621233939.993579-1-fred@cloudflare.com>
- <ce1653b1-feb0-1a99-0e97-8dfb289eeb79@schaufler-ca.com>
- <b72c889a-4a50-3330-baae-3bbf065e7187@cloudflare.com>
- <CAHC9VhSTkEMT90Tk+=iTyp3npWEm+3imrkFVX2qb=XsOPp9F=A@mail.gmail.com>
- <20220627121137.cnmctlxxtcgzwrws@wittgenstein>
- <b7c23d54-d196-98d1-8187-605f6d4dca4d@cloudflare.com>
+        with ESMTP id S238946AbiF0QGk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 12:06:40 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 111ED18B11;
+        Mon, 27 Jun 2022 09:06:39 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id o10so13776602edi.1;
+        Mon, 27 Jun 2022 09:06:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=iuUWp9TRDjV8xfxvCWucHl38XhVPl+OOiSPhV3nTBNU=;
+        b=P1KgjzNMzTbU02Xdz1jhSzqkjg+/Ua9ZFGv2do6fIZsZHHbzn0SJAI7GJWkOVK7lQ6
+         r6tgeY6+6cc1y5N3JSaLXF4u6vgo38QWnEK1/yC5LcyY8j+XMshtbWTOkphK6N/frYV1
+         KewycUy7CV0QtMIzvflQrnNWwBEVWb17wHMeluD01ar2fPCSdM6uhQ1Dub06c358ESh5
+         pfa850qzPD3mtK5431jZXZvxvnp/Lr5T1CHYH/udwJs24gfVVmGC93WeOaWnrmveTQGZ
+         AoDNUdI05wizpG/NPB/VnqhtKrtouINsOD/HQUU0x1TrrIckJxO59IlWHrtnRGNOEe5E
+         SKxw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=iuUWp9TRDjV8xfxvCWucHl38XhVPl+OOiSPhV3nTBNU=;
+        b=yinJ/aJCeehb0A6OTM3BskGRNoybsxlifp5it0xyVj2D7CsfXm2cHmlF6Tub/1CoSR
+         p+ghQ6FbYj+50Yu6km/MMG+Fo07DHu1taGpPSqdUEa2ap2NrIzbDe6aZWpn29Thw7j6C
+         Upbd05oJzCpOLhLsm+q8hqD/V6V+gtxhEkoWwODuuDQB1eOog34SGlgDckrSXyaA1dpd
+         h4TzeTW/mfOYW+It/J0AJWN1pFgMhJCIPyl9dJdOvHsrAk1B9kIw73mSeVSwwUzVN/+9
+         sh74SBAsaYXUVno0tvOXIOqBKlxZkeUZMQrWRioFEHbCyucQl4O5oBjv+lLVRD3/TjY3
+         UMTw==
+X-Gm-Message-State: AJIora+mTuG1OR6Zea6aujFhH9pUhp6wEePORZfHfCYQiDKemOqu+X9z
+        Y5sNvV3GGDB+NGZCuR1I778=
+X-Google-Smtp-Source: AGRyM1vvn6z+JQ7FLdOGqNSyhTsbwQd6U8hADBkygQKpKeWIgtARIaam0U5/zWgvi0rwVmhQij6o+Q==
+X-Received: by 2002:a05:6402:4252:b0:437:6618:1738 with SMTP id g18-20020a056402425200b0043766181738mr17811363edb.259.1656345997452;
+        Mon, 27 Jun 2022 09:06:37 -0700 (PDT)
+Received: from skbuf ([188.25.231.135])
+        by smtp.gmail.com with ESMTPSA id d10-20020a056402400a00b004357ab9cfb1sm7789834eda.26.2022.06.27.09.06.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Jun 2022 09:06:36 -0700 (PDT)
+Date:   Mon, 27 Jun 2022 19:06:34 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Hans Schultz <schultz.hans@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Hans Schultz <schultz.hans+netdev@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH V3 net-next 2/4] net: switchdev: add support for
+ offloading of fdb locked flag
+Message-ID: <20220627160634.wylbknsbsafvs3ij@skbuf>
+References: <20220524152144.40527-1-schultz.hans+netdev@gmail.com>
+ <20220524152144.40527-3-schultz.hans+netdev@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <b7c23d54-d196-98d1-8187-605f6d4dca4d@cloudflare.com>
-X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20220524152144.40527-3-schultz.hans+netdev@gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 10:51:48AM -0500, Frederick Lawler wrote:
-> On 6/27/22 7:11 AM, Christian Brauner wrote:
-> > On Thu, Jun 23, 2022 at 11:21:37PM -0400, Paul Moore wrote:
-> > > On Wed, Jun 22, 2022 at 10:24 AM Frederick Lawler <fred@cloudflare.com> wrote:
-> > > > On 6/21/22 7:19 PM, Casey Schaufler wrote:
-> > > > > On 6/21/2022 4:39 PM, Frederick Lawler wrote:
-> > > > > > While creating a LSM BPF MAC policy to block user namespace creation, we
-> > > > > > used the LSM cred_prepare hook because that is the closest hook to
-> > > > > > prevent
-> > > > > > a call to create_user_ns().
-> > > > > > 
-> > > > > > The calls look something like this:
-> > > > > > 
-> > > > > >       cred = prepare_creds()
-> > > > > >           security_prepare_creds()
-> > > > > >               call_int_hook(cred_prepare, ...
-> > > > > >       if (cred)
-> > > > > >           create_user_ns(cred)
-> > > > > > 
-> > > > > > We noticed that error codes were not propagated from this hook and
-> > > > > > introduced a patch [1] to propagate those errors.
-> > > > > > 
-> > > > > > The discussion notes that security_prepare_creds()
-> > > > > > is not appropriate for MAC policies, and instead the hook is
-> > > > > > meant for LSM authors to prepare credentials for mutation. [2]
-> > > > > > 
-> > > > > > Ultimately, we concluded that a better course of action is to introduce
-> > > > > > a new security hook for LSM authors. [3]
-> > > > > > 
-> > > > > > This patch set first introduces a new security_create_user_ns() function
-> > > > > > and create_user_ns LSM hook, then marks the hook as sleepable in BPF.
-> > > > > 
-> > > > > Why restrict this hook to user namespaces? It seems that an LSM that
-> > > > > chooses to preform controls on user namespaces may want to do so for
-> > > > > network namespaces as well.
-> > > > 
-> > > > IIRC, CLONE_NEWUSER is the only namespace flag that does not require
-> > > > CAP_SYS_ADMIN. There is a security use case to prevent this namespace
-> > > > from being created within an unprivileged environment. I'm not opposed
-> > > > to a more generic hook, but I don't currently have a use case to block
-> > > > any others. We can also say the same is true for the other namespaces:
-> > > > add this generic security function to these too.
-> > > > 
-> > > > I'm curious what others think about this too.
-> > > 
-> > > While user namespaces are obviously one of the more significant
-> > > namespaces from a security perspective, I do think it seems reasonable
-> > > that the LSMs could benefit from additional namespace creation hooks.
-> > > However, I don't think we need to do all of them at once, starting
-> > > with a userns hook seems okay to me.
-> > > 
-> > > I also think that using the same LSM hook as an access control point
-> > > for all of the different namespaces would be a mistake.  At the very
-> > 
-> > Agreed. >
-> > > least we would need to pass a flag or some form of context to the hook
-> > > to indicate which new namespace(s) are being requested and I fear that
-> > > is a problem waiting to happen.  That isn't to say someone couldn't
-> > > mistakenly call the security_create_user_ns(...) from the mount
-> > > namespace code, but I suspect that is much easier to identify as wrong
-> > > than the equivalent security_create_ns(USER, ...).
-> > 
-> > Yeah, I think that's a pretty unlikely scenario.
-> > 
-> > > 
-> > > We also should acknowledge that while in most cases the current task's
-> > > credentials are probably sufficient to make any LSM access control
-> > > decisions around namespace creation, it's possible that for some
-> > > namespaces we would need to pass additional, namespace specific info
-> > > to the LSM.  With a shared LSM hook this could become rather awkward.
-> > 
-> > Agreed.
-> > 
-> > > 
-> > > > > Also, the hook seems backwards. You should
-> > > > > decide if the creation of the namespace is allowed before you create it.
-> > > > > Passing the new namespace to a function that checks to see creating a
-> > > > > namespace is allowed doesn't make a lot off sense.
-> > > > 
-> > > > I think having more context to a security hook is a good thing.
-> > > 
-> > > This is one of the reasons why I usually like to see at least one LSM
-> > > implementation to go along with every new/modified hook.  The
-> > > implementation forces you to think about what information is necessary
-> > > to perform a basic access control decision; sometimes it isn't always
-> > > obvious until you have to write the access control :)
-> > 
-> > I spoke to Frederick at length during LSS and as I've been given to
-> > understand there's a eBPF program that would immediately use this new
-> > hook. Now I don't want to get into the whole "Is the eBPF LSM hook
-> > infrastructure an LSM" but I think we can let this count as a legitimate
-> > first user of this hook/code.
-> > 
-> > > 
-> > > [aside: If you would like to explore the SELinux implementation let me
-> > > know, I'm happy to work with you on this.  I suspect Casey and the
-> > > other LSM maintainers would also be willing to do the same for their
-> > > LSMs.]
-> > > 
+On Tue, May 24, 2022 at 05:21:42PM +0200, Hans Schultz wrote:
+> Used for Mac-auth/MAB feature in the offloaded case.
 > 
-> I can take a shot at making a SELinux implementation, but the question
-> becomes: is that for v2 or a later patch? I don't think the implementation
-> for SELinux would be too complicated (i.e. make a call to avc_has_perm()?)
-> but, testing and revisions might take a bit longer.
+> Signed-off-by: Hans Schultz <schultz.hans+netdev@gmail.com>
+> ---
+>  include/net/dsa.h       | 6 ++++++
+>  include/net/switchdev.h | 3 ++-
+>  net/bridge/br.c         | 3 ++-
+>  net/bridge/br_fdb.c     | 7 +++++--
+>  net/bridge/br_private.h | 2 +-
+>  5 files changed, 16 insertions(+), 5 deletions(-)
 > 
-> > > In this particular case I think the calling task's credentials are
-> > > generally all that is needed.  You mention that the newly created
-> > 
-> > Agreed.
-> > 
-> > > namespace would be helpful, so I'll ask: what info in the new ns do
-> > > you believe would be helpful in making an access decision about its
-> > > creation?
-> > > 
-> 
-> In the other thread [1], there was mention of xattr mapping support. As I
-> understand Caseys response to this thread [2], that feature is no longer
-> requested for this hook.
+> diff --git a/include/net/dsa.h b/include/net/dsa.h
+> index 14f07275852b..a5a843b2d67d 100644
+> --- a/include/net/dsa.h
+> +++ b/include/net/dsa.h
+> @@ -330,6 +330,12 @@ struct dsa_port {
+>  	/* List of VLANs that CPU and DSA ports are members of. */
+>  	struct mutex		vlans_lock;
+>  	struct list_head	vlans;
+> +
+> +	/* List and maintenance of locked ATU entries */
+> +	struct mutex		locked_entries_list_lock;
+> +	struct list_head	atu_locked_entries_list;
+> +	atomic_t		atu_locked_entry_cnt;
+> +	struct delayed_work	atu_work;
 
-I think that is an orthogonal problem at least wrt to this hook.
+DSA is not Marvell only, so please remove these from struct dsa_port and
+place them somewhere like struct mv88e6xxx_port. Also, the change has
+nothing to do in a patch with the "net: switchdev: " prefix.
 
+>  };
+>  
+>  /* TODO: ideally DSA ports would have a single dp->link_dp member,
+> diff --git a/include/net/switchdev.h b/include/net/switchdev.h
+> index aa0171d5786d..62f4f7c9c7c2 100644
+> --- a/include/net/switchdev.h
+> +++ b/include/net/switchdev.h
+> @@ -245,7 +245,8 @@ struct switchdev_notifier_fdb_info {
+>  	u16 vid;
+>  	u8 added_by_user:1,
+>  	   is_local:1,
+> -	   offloaded:1;
+> +	   offloaded:1,
+> +	   locked:1;
+
+As mentioned by Ido, please update br_switchdev_fdb_populate() as part
+of this change, in the bridge->switchdev direction. We should add a
+comment near struct switchdev_notifier_fdb_info stating just that,
+so that people don't forget.
+
+>  };
+>  
+>  struct switchdev_notifier_port_obj_info {
+> diff --git a/net/bridge/br.c b/net/bridge/br.c
+> index 96e91d69a9a8..12933388a5a4 100644
+> --- a/net/bridge/br.c
+> +++ b/net/bridge/br.c
+> @@ -166,7 +166,8 @@ static int br_switchdev_event(struct notifier_block *unused,
+>  	case SWITCHDEV_FDB_ADD_TO_BRIDGE:
+>  		fdb_info = ptr;
+>  		err = br_fdb_external_learn_add(br, p, fdb_info->addr,
+> -						fdb_info->vid, false);
+> +						fdb_info->vid, false,
+> +						fdb_info->locked);
+>  		if (err) {
+>  			err = notifier_from_errno(err);
+>  			break;
+> diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
+> index 6b83e2d6435d..92469547283a 100644
+> --- a/net/bridge/br_fdb.c
+> +++ b/net/bridge/br_fdb.c
+> @@ -1135,7 +1135,7 @@ static int __br_fdb_add(struct ndmsg *ndm, struct net_bridge *br,
+>  					   "FDB entry towards bridge must be permanent");
+>  			return -EINVAL;
+>  		}
+> -		err = br_fdb_external_learn_add(br, p, addr, vid, true);
+> +		err = br_fdb_external_learn_add(br, p, addr, vid, true, false);
+>  	} else {
+>  		spin_lock_bh(&br->hash_lock);
+>  		err = fdb_add_entry(br, p, addr, ndm, nlh_flags, vid, nfea_tb);
+> @@ -1365,7 +1365,7 @@ void br_fdb_unsync_static(struct net_bridge *br, struct net_bridge_port *p)
+>  
+>  int br_fdb_external_learn_add(struct net_bridge *br, struct net_bridge_port *p,
+>  			      const unsigned char *addr, u16 vid,
+> -			      bool swdev_notify)
+> +			      bool swdev_notify, bool locked)
+>  {
+>  	struct net_bridge_fdb_entry *fdb;
+>  	bool modified = false;
+> @@ -1385,6 +1385,9 @@ int br_fdb_external_learn_add(struct net_bridge *br, struct net_bridge_port *p,
+>  		if (!p)
+>  			flags |= BIT(BR_FDB_LOCAL);
+>  
+> +		if (locked)
+> +			flags |= BIT(BR_FDB_ENTRY_LOCKED);
+> +
+>  		fdb = fdb_create(br, p, addr, vid, flags);
+>  		if (!fdb) {
+>  			err = -ENOMEM;
+> diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
+> index be17c99efe65..88913e6a59e1 100644
+> --- a/net/bridge/br_private.h
+> +++ b/net/bridge/br_private.h
+> @@ -815,7 +815,7 @@ int br_fdb_sync_static(struct net_bridge *br, struct net_bridge_port *p);
+>  void br_fdb_unsync_static(struct net_bridge *br, struct net_bridge_port *p);
+>  int br_fdb_external_learn_add(struct net_bridge *br, struct net_bridge_port *p,
+>  			      const unsigned char *addr, u16 vid,
+> -			      bool swdev_notify);
+> +			      bool swdev_notify, bool locked);
+>  int br_fdb_external_learn_del(struct net_bridge *br, struct net_bridge_port *p,
+>  			      const unsigned char *addr, u16 vid,
+>  			      bool swdev_notify);
+> -- 
+> 2.30.2
 > 
-> Users can still access the older parent ns from the passed in cred, but I
-> was thinking of handling the transition point here. There's probably more
-> suitable hooks for that case.
 
-Yes.
