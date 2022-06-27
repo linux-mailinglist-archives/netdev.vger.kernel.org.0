@@ -2,884 +2,231 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 098BF55CA5D
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 14:58:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1E0555CC92
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:01:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235286AbiF0NzP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jun 2022 09:55:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57854 "EHLO
+        id S236585AbiF0OFh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jun 2022 10:05:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236472AbiF0NzM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 09:55:12 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6E5BAE68
-        for <netdev@vger.kernel.org>; Mon, 27 Jun 2022 06:55:07 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id fd6so13150042edb.5
-        for <netdev@vger.kernel.org>; Mon, 27 Jun 2022 06:55:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=BEqzxiDAs/X5si+YmvCouItm0e8tV9qBF7LsnhX9L3Q=;
-        b=xuVEJpW6ZnNYrmo/3baCFVsQBzDw9k4oQIxMZ5gPJ9q67dUU5hfMHdqoTzlptsGiei
-         rUdGIevZj9ZViihrPkX83E7fFdlCcGo3cGSBOv/TNWofoqfuLCPkeUDvPEDAhpBICeP0
-         6NSnZJVH15sNLS17S+x8Y+iyqzsNoxLx3A55kuSVF+qaGQJMoWJzTlVW39qojioK0puf
-         9nMxyxuPSQjbgylad5C3HSYolZAqUA+SgOID+Yk6XpduoPHEqE4dVyk+NTqXv7+rjIka
-         fVznjgof1uPmuqpX4mb0wFzR2Qzw2/Y/LT5NUfMe2mJmHQWMK7GGOLbcgHbyXrTa4MaE
-         hYrg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=BEqzxiDAs/X5si+YmvCouItm0e8tV9qBF7LsnhX9L3Q=;
-        b=JISlMUfDfWzMfsS0yeIBYnC0Q8vIBzXzPQD0LC1DGEjK1IQn+ZKXYrBBIWU4+4QLRF
-         hwm2L+4nik5+r8VsBB0efxyxgUH8hQbCL0zxjKzFy1Y/i7cpEKa2UBCXaY0zfiTFCxsC
-         BRV5yK41Vz3Kif6XtE32gkY/MAv/yBEyOGi9lyzsP7yDZKJzE3eV8n4X6OyxmblK2Jlj
-         ZoRhilJnKyCM7bKmixJ012mHegiz20Ey4lIIuDtM7mVesospcR+jEYeP5w6KHIsMeWN0
-         cVyr7AcKvSpAQjBhsweQq0PLqC9U2a0HRP4I8vxYfYVKAeKef0MhHj8Sivelok0NP/nz
-         GvjQ==
-X-Gm-Message-State: AJIora/Xg31jwN9a1en93ufHk9TrJd+t50olSUmtl8gKBaF5WvfagIHy
-        HOlHwuBkzKcOnpvfS84URPJOZevpj5vgle97MXw=
-X-Google-Smtp-Source: AGRyM1twZI5bxSn8OpctnZ234mSvyJkbhe9YGxMahXJIq7gE9du5dDTVp8TaeXme3Znj0GJ9rmVJaQ==
-X-Received: by 2002:a05:6402:4244:b0:437:726c:e1a with SMTP id g4-20020a056402424400b00437726c0e1amr14235328edb.107.1656338106067;
-        Mon, 27 Jun 2022 06:55:06 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id j12-20020a1709064b4c00b00722e7e48dfdsm5036664ejv.218.2022.06.27.06.55.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jun 2022 06:55:05 -0700 (PDT)
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, idosch@nvidia.com,
-        petrm@nvidia.com, pabeni@redhat.com, edumazet@google.com,
-        mlxsw@nvidia.com, saeedm@nvidia.com
-Subject: [patch net-next RFC 2/2] net: devlink: replace devlink_mutex by per-devlink lock
-Date:   Mon, 27 Jun 2022 15:55:01 +0200
-Message-Id: <20220627135501.713980-3-jiri@resnulli.us>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220627135501.713980-1-jiri@resnulli.us>
-References: <20220627135501.713980-1-jiri@resnulli.us>
+        with ESMTP id S236653AbiF0OFg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 10:05:36 -0400
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2067.outbound.protection.outlook.com [40.107.22.67])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48903120B4
+        for <netdev@vger.kernel.org>; Mon, 27 Jun 2022 07:05:34 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Q1o5TInqio7ZSHhO/tjebiqWQTXl/sxtjO0cs/Yi6YrjdctQ7rPL6kbFHTDdEMfv5poVwMBqKQuIvphn8NG1ZuEtp7rn3CoPpe7pGH4yau3bdpsFcOG21LPMU/UpWIgVB7M7Q6uaIxGUuTFihJgq8S8i5D/5c+rvFQbkb3HKmEI94X508UpUMFobWfR6dgYyOYwa5se2eSKvpNA+xjM0CNuumpM3BsIQ83fr8hi+97ps2QjnSYeqCzRRQuYD5clWdNZZe0F0qhhm5bT39+HiXSwkT67RqUmoyis/oxqrr54GLYhbrcraGN5rfEh0Pos5jeEZRLU8zNhkaeg0+4ysfg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ood1FBUVkQpCy+rzeSWEHZT4Hubj3preSnjzT3Uy4yY=;
+ b=Vlk+0rYc82DxZuSWZ/2Sc0yVEicKTdP2JHkbC7v9yKuILpUyfMG678QuXj2DlUVkURiK1Wbdf81rMw+7+pxHCvmmlzgwEfqYAiys5vwJf2XyswWmAi+VrZ90TjljCn73uM9bt7t1cyyDCk9A0Cwmb62Fdy9wN53SoULJ22QRynHQWIRQDkqo0GI3DZqOZvrfcLvQTS5non+TBm2zjTXnXVHMWTS3NO46njQj7Z15FCX1ukMrBa57lDVa01UT2hwN2cwQsb2EERha5zb3PgmZdHeGag5t/5pgdNAcpgQwQMWkjlVcKKK/6jRihXh3HWc6ZWXw9RYt081437ktW2d2eQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=suse.com; dmarc=pass action=none header.from=suse.com;
+ dkim=pass header.d=suse.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ood1FBUVkQpCy+rzeSWEHZT4Hubj3preSnjzT3Uy4yY=;
+ b=kwkWjINf6cNEwbR/GWue1CMA4HGNmAS7B99MfMhJsVv8d2eyHPmwqIHFupPnSpUVgzZo460BkD+mTe0KFHI7sdrPVariaJLv5k1NZ0SjeTPTLLmsFyVMIurrO5FjrNNzWSr+enTUY2AVbji3X3u9m2bvgpYUa7i8aAmBa9QsKHeAHpqgC30WGq3SyiPjgJJZlazZUD+9NXTCJgDYkSkoNaHPW8pZ80JDjHuSra1fV4HXytN6QN5Y+MM4AfJN4Hj+wqQPWb4Qli3eN1pk1F/7IhZhY8fvLdyQEZWL+HjV8bROtqTB+ulp6gE6oUf8a8hxz6cVg1W/oSnNSPrwTtOnYQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=suse.com;
+Received: from VI1PR0401MB2526.eurprd04.prod.outlook.com
+ (2603:10a6:800:58::16) by DB8PR04MB5835.eurprd04.prod.outlook.com
+ (2603:10a6:10:a6::27) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.18; Mon, 27 Jun
+ 2022 14:05:29 +0000
+Received: from VI1PR0401MB2526.eurprd04.prod.outlook.com
+ ([fe80::21d5:a855:6e65:cf5d]) by VI1PR0401MB2526.eurprd04.prod.outlook.com
+ ([fe80::21d5:a855:6e65:cf5d%12]) with mapi id 15.20.5373.018; Mon, 27 Jun
+ 2022 14:05:29 +0000
+Content-Type: multipart/mixed; boundary="------------0FFoJw0FEiF6vUoJK38012RO"
+Message-ID: <24312261-6c84-cd2a-9ab4-c92eb700507f@suse.com>
+Date:   Mon, 27 Jun 2022 16:05:27 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+To:     Lukas Wunner <lukas@wunner.de>
+Content-Language: en-US
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   Oliver Neukum <oneukum@suse.com>
+Subject: How to safely disconnect an usbnet device
+X-ClientProxiedBy: AM5PR0502CA0013.eurprd05.prod.outlook.com
+ (2603:10a6:203:91::23) To VI1PR0401MB2526.eurprd04.prod.outlook.com
+ (2603:10a6:800:58::16)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 95dad8a2-ae65-41cf-1c01-08da584617b2
+X-MS-TrafficTypeDiagnostic: DB8PR04MB5835:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: vQm7JpVFl9QQrjZ05FN/m7zSb57XSuzbt+snwPcbUD3Mtz6NQKkOO0a3y7sc1F5ryJzCiKYWc7oILIDrfxYi5DpahEhQllp1cS8lgZtbMH2wT2W04iWGSRxj0Xb8grh1jeY1EpyLGoOlt1C39JK/d3cCzev/dHz95SaTpV63f2piklLtjHJVpjAJjIVZ0j3mCiLWmpjgUiG8ozc4okYqTe844NC3ZEx1j0lsoyuFBxru4Up0O90d+UfnPvXBWOajfjXMm4KOmPUHJAZGG8dK/w3vnGWr/tGbB7OokEjqTF74cvChsqWZAi4X2dvIFLy325SQ/KuxAaOUjIwAHm4mXOwU+aMofrcgv8qD4cXgXkU3ib/pR/jnb+F+YYqQOgoZujVLSzoOFDGVc2opjWwpHVAlwSft3ah2KD2o1jlAiRE3X3/QoGKV3Q8E9NXVSnb5bBj0rhC9QzeCLGRRp2E32S8XILh9kE71d+wQ5mgtHE1GAnMsXLY7uVzyDkQg+6hQMqywXtOXnGxp0pjy486QTWdNd2Z6cHg4dLoPmtJmE8pHydtgXmeEMEEAs+ZKYp+BqwgHCnC/hkbuB8R775keo1qdVfcqbpYJ4Dd+hfI4icnTiBP7ClGqWzAx2nL2jtfJl/E/gZYYToi6hCSxbyrYszxlUnBeJVRLTxOfvKRYpuHghmebf3KduhG9OXJWJ0VYkYxERX/Ei2wyNW0DFg4zAmTHK9PoJupy3EZmyscxNmZEHv5dQQDieagHJcNrM1jwerBMVXfyg88GlvRhfPBLb4Wrdi2+2PotvPNopMdhd98EczL/Kn4WXSfwnAWSp8AV
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0401MB2526.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(366004)(39860400002)(346002)(396003)(136003)(376002)(38100700002)(8676002)(2906002)(186003)(6486002)(66946007)(86362001)(8936002)(36756003)(31686004)(31696002)(316002)(235185007)(33964004)(6916009)(5660300002)(2616005)(478600001)(4326008)(66556008)(41300700001)(6506007)(66476007)(6512007)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?N0FrK0k3ODhFOXJ3TndLS2lPd1pCellXRnF3Q3BkYzMrVFB4c2JVL1lPcTJM?=
+ =?utf-8?B?bU1YVUNnNXc1VjhVSnQyaG1TVXRBWk1LUFRoWjl0dzIzcGVrK3YrM3NOeTRj?=
+ =?utf-8?B?dGxNMC9uZlhjb0RmNks5QjJ0ZVpEWUpaRCtncXYzR0p2YWlPYzJvZ25CVEV0?=
+ =?utf-8?B?RDRyMmc1amtyZVB1VzRVTEZIZzFTK25TZVZnSlpOTVphK3VOb1dMbkxGUTha?=
+ =?utf-8?B?TmsxY1Iyd3Y3TGFOWGJlUS8yN0EvbjdWMlRObEtFYWZhcHljR0h2Q0V1OSs4?=
+ =?utf-8?B?L1hMTDhVZ0FWTkRsU0pOWVV4anVQYlNZMldBN1NEalFnSlU4K2doNkVNUnp5?=
+ =?utf-8?B?ZmJHM2tvcit5WFpJU2FQR2RlNVpPVUVhaVFjei9JQ2lIcXg4enpEdHJCdXli?=
+ =?utf-8?B?K01PVU5IeHBEMGtDMWpjYjRLQTRZOWlRZ0I3ZmEyZUEySnhidGRKUSsrQjBX?=
+ =?utf-8?B?Tkl0TFBRTUs5ZXkrMGhQVWxBUHNNaHVTdGtDOVFLeEYvVVRvV2dNNW5qZmx0?=
+ =?utf-8?B?L3VlY09BVldCSnZTNUJuemhhNjFLenE4TDVMZHY4dVVxNmpwaW5VeDFpd0ZD?=
+ =?utf-8?B?V2ZreDMxOHNaZmtMZlBOek9aZW9FNTNCSUtzcTlIL1JkU0dnamVZc2lYSVhn?=
+ =?utf-8?B?K0l0a2FPNGk0UTJNYTZ2eWI1ajhpRU93MjNGOUFDYStQSm1JZkljd0lTM2VV?=
+ =?utf-8?B?bDdrR2orS043b3RZNkFGdGx3THNRZUZWbzUrMXNXeEJvS3YrQ1V0S2M3dmhl?=
+ =?utf-8?B?UGN1aTJhdXpsNk1XVmV2Ti9FakxHQ3ZKUHJGK016aUFhY1pEeGRKaDZMRUdZ?=
+ =?utf-8?B?RkRHMS9uSG0vV2lzY3hETmt3bTdQczk0WGVYbDBwOXd3QldreHVUSFBDeUFP?=
+ =?utf-8?B?MUhuQVduMWdxamZxWUtjQTZxbEhrOGVFYkFlVmY5a0M2MG9vbDNZNnZTaDdx?=
+ =?utf-8?B?MHQxemliYko1bCswMk4vTnpJOE8xcmUyaVE5UWdvWlNvM1JSMkg2RFNxTlFP?=
+ =?utf-8?B?emEra3RRcC9tbmx1d1AzeXVPekZTYlJDVVFnNkNHOWVxUGhtRHpmS0RXNmtX?=
+ =?utf-8?B?ZmdManZXQlhML3lFMVVhc0hKWWlLM3doVWpmMDArM1VXNTJrK1ZlZ3FYbE1l?=
+ =?utf-8?B?NEEwazNhZGZqQnBKUzZRRTBiU3FjbkxEQjU1aEhjRmFDcXMvTFVvNjlzZEJk?=
+ =?utf-8?B?R2ZBS3cwLzhSRlk3YTN4OGZKQ3hXV2ZnaFRxdndIUk0rb1NBOFVNYjJtN3Fm?=
+ =?utf-8?B?NE9lVnAwVUwvSGxJSFlocUFEeWlScjdnbGNQa1JRckJmQlFMZUZWTTE0U1l6?=
+ =?utf-8?B?aWNvQU96a28yaWVGakJjZkNwanNjakFneXEvMVhGdGV5M0ZoK0lOcEU1Z2pa?=
+ =?utf-8?B?Y1dqSEdoL2VuSHVRVzg2djFuTUJCeUpjS3hmYzdQWVVxazN0NFhRVkJvSVFh?=
+ =?utf-8?B?enEwMDBESlQxNE9wQ0M4MHlzaEdBUFdyMkNxem9wVXcramhmdEVjK2FLNFFv?=
+ =?utf-8?B?dGNGSmM1c09aRzBEb0cvUElZKzN5QmM3YkJnQlMzWFdTWXVMc1FVZEx4WFVt?=
+ =?utf-8?B?bWF2Mm1RalFydUV5cFdQMG9vUXFCSFExcEQ2Wm5PMER6RDNTZ3I0SzZYYkhX?=
+ =?utf-8?B?SFV0SU8rVUdOZ3lBQWl3d2JBQ0NDdi9YWkRxSVAwNGRtaURRK2pVdlBIdUg2?=
+ =?utf-8?B?NGJhQWJtditJVVpKdXV5eUVTdmdwTmtQNlpHaVkyZ0RySndHa2VhK0xnQTJv?=
+ =?utf-8?B?ZjNnSTM5OEZIdFhzMnFEYVNVSE9sR3pmUlNSak1oaHRmSkNVUHlEZHpISG9E?=
+ =?utf-8?B?L2FFUFNpemFpek96UjJPMFNRSExQYVprL2V6R2xQNFlKTXFjUExhTWVucFdY?=
+ =?utf-8?B?OHJmY3Rqbkpmdjl0VW8xMGlKOUpDNVd1dEVsV2lRcE1lb3JHSWYvTnhqcXNx?=
+ =?utf-8?B?Y0UzZ0NKK1FLTU00VnRxZS8rZzE5TWMvNWFISHdITjRqUmFKMVI5c0xHR28x?=
+ =?utf-8?B?czFZanZnbldsT1AzNUJhM0pDMTVZUjJHSzRlZ0oxUTN6YkpLbGZlVDMwNXVw?=
+ =?utf-8?B?OCtDc0lXRFhadFB2M3dLUXo0U01PbWoxcG9MUHMzOEE0bXJJL2hXS0hMZG1V?=
+ =?utf-8?B?NXdiNTdFMEdnclVRb21sTUJuVEFZNUU5WGNkR1ZlclpkQkNIUzRjaER6WTR3?=
+ =?utf-8?Q?PQgIsIxwE6aq865EGe1PolH8C2PTp+yflPdtVjwwKc+I?=
+X-OriginatorOrg: suse.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 95dad8a2-ae65-41cf-1c01-08da584617b2
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR0401MB2526.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jun 2022 14:05:29.6724
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 7zazpKq6dbQP/Kx4h/U4tRNZi5Wqkn3T+LhPjRG+zT1YxkyZpSMyxWhr9AD9g1U/17zSewgkzFKrexim3bvS1g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB5835
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Pirko <jiri@nvidia.com>
+--------------0FFoJw0FEiF6vUoJK38012RO
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Currently devlink_mutex enforces user commands to not run in parallel.
-However not only per-devlink instance, but globally.
+Hi,
 
-Break this big lock into per-devlink instance mutex.
+looking at the race conditions with respect to works, timers and bottom
+halves it looks to me like me it needs the following algorithm (in
+pseudocode):
 
-Signed-off-by: Jiri Pirko <jiri@nvidia.com>
----
- net/core/devlink.c | 143 +++++++++++++++++++++------------------------
- 1 file changed, 66 insertions(+), 77 deletions(-)
+1. Set a flag
+2. Cancel everything
+3. Recancel everything
 
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 9e34b4b9b19b..966749aa3158 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -66,6 +66,8 @@ struct devlink {
- 	 * port, sb, dpipe, resource, params, region, traps and more.
- 	 */
- 	struct mutex lock;
-+	/* Makes sure only one user cmd is in execution at a time. */
-+	struct mutex cmd_mutex;
- 	u8 reload_failed:1;
- 	refcount_t refcount;
- 	struct completion comp;
-@@ -218,12 +220,6 @@ static DEFINE_XARRAY_FLAGS(devlinks, XA_FLAGS_ALLOC);
- #define ASSERT_DEVLINK_NOT_REGISTERED(d)                                       \
- 	WARN_ON_ONCE(xa_get_mark(&devlinks, (d)->index, DEVLINK_REGISTERED))
- 
--/* devlink_mutex
-- *
-- * An overall lock guarding every operation coming from userspace.
-- */
--static DEFINE_MUTEX(devlink_mutex);
--
- struct net *devlink_net(const struct devlink *devlink)
- {
- 	return read_pnet(&devlink->_net);
-@@ -296,8 +292,6 @@ static struct devlink *devlink_get_from_attrs(struct net *net,
- 	busname = nla_data(attrs[DEVLINK_ATTR_BUS_NAME]);
- 	devname = nla_data(attrs[DEVLINK_ATTR_DEV_NAME]);
- 
--	lockdep_assert_held(&devlink_mutex);
--
- 	rcu_read_lock();
- 	xa_for_each_marked(&devlinks, index, devlink, DEVLINK_REGISTERED) {
- 		if (strcmp(devlink->dev->bus->name, busname) == 0 &&
-@@ -703,8 +697,8 @@ devlink_region_snapshot_get_by_id(struct devlink_region *region, u32 id)
- #define DEVLINK_NL_FLAG_NEED_LINECARD		BIT(4)
- 
- /* The per devlink instance lock is taken by default in the pre-doit
-- * operation, yet several commands do not require this. The global
-- * devlink lock is taken and protects from disruption by user-calls.
-+ * operation, yet several commands do not require this. The devlink
-+ * command mutex is taken and protects from disruption by user-calls.
-  */
- #define DEVLINK_NL_FLAG_NO_LOCK			BIT(5)
- 
-@@ -716,12 +710,10 @@ static int devlink_nl_pre_doit(const struct genl_ops *ops,
- 	struct devlink *devlink;
- 	int err;
- 
--	mutex_lock(&devlink_mutex);
- 	devlink = devlink_get_from_attrs(genl_info_net(info), info->attrs);
--	if (IS_ERR(devlink)) {
--		mutex_unlock(&devlink_mutex);
-+	if (IS_ERR(devlink))
- 		return PTR_ERR(devlink);
--	}
-+	mutex_lock(&devlink->cmd_mutex);
- 	if (~ops->internal_flags & DEVLINK_NL_FLAG_NO_LOCK)
- 		mutex_lock(&devlink->lock);
- 	info->user_ptr[0] = devlink;
-@@ -767,8 +759,8 @@ static int devlink_nl_pre_doit(const struct genl_ops *ops,
- unlock:
- 	if (~ops->internal_flags & DEVLINK_NL_FLAG_NO_LOCK)
- 		mutex_unlock(&devlink->lock);
-+	mutex_unlock(&devlink->cmd_mutex);
- 	devlink_put(devlink);
--	mutex_unlock(&devlink_mutex);
- 	return err;
- }
- 
-@@ -785,8 +777,8 @@ static void devlink_nl_post_doit(const struct genl_ops *ops,
- 	}
- 	if (~ops->internal_flags & DEVLINK_NL_FLAG_NO_LOCK)
- 		mutex_unlock(&devlink->lock);
-+	mutex_unlock(&devlink->cmd_mutex);
- 	devlink_put(devlink);
--	mutex_unlock(&devlink_mutex);
- }
- 
- static struct genl_family devlink_nl_family;
-@@ -1333,7 +1325,6 @@ static int devlink_nl_cmd_rate_get_dumpit(struct sk_buff *msg,
- 	int idx = 0;
- 	int err = 0;
- 
--	mutex_lock(&devlink_mutex);
- 	rcu_read_lock();
- 	xa_for_each_marked(&devlinks, index, devlink, DEVLINK_REGISTERED) {
- 		if (!devlink_try_get(devlink))
-@@ -1343,6 +1334,7 @@ static int devlink_nl_cmd_rate_get_dumpit(struct sk_buff *msg,
- 		if (!net_eq(devlink_net(devlink), sock_net(msg->sk)))
- 			goto retry;
- 
-+		mutex_lock(&devlink->cmd_mutex);
- 		mutex_lock(&devlink->lock);
- 		list_for_each_entry(devlink_rate, &devlink->rate_list, list) {
- 			enum devlink_command cmd = DEVLINK_CMD_RATE_NEW;
-@@ -1357,19 +1349,20 @@ static int devlink_nl_cmd_rate_get_dumpit(struct sk_buff *msg,
- 						   NLM_F_MULTI, NULL);
- 			if (err) {
- 				mutex_unlock(&devlink->lock);
-+				mutex_unlock(&devlink->cmd_mutex);
- 				devlink_put(devlink);
- 				goto out;
- 			}
- 			idx++;
- 		}
- 		mutex_unlock(&devlink->lock);
-+		mutex_unlock(&devlink->cmd_mutex);
- retry:
- 		devlink_put(devlink);
- 		rcu_read_lock();
- 	}
- 	rcu_read_unlock();
- out:
--	mutex_unlock(&devlink_mutex);
- 	if (err != -EMSGSIZE)
- 		return err;
- 
-@@ -1440,7 +1433,6 @@ static int devlink_nl_cmd_get_dumpit(struct sk_buff *msg,
- 	int idx = 0;
- 	int err;
- 
--	mutex_lock(&devlink_mutex);
- 	rcu_read_lock();
- 	xa_for_each_marked(&devlinks, index, devlink, DEVLINK_REGISTERED) {
- 		if (!devlink_try_get(devlink))
-@@ -1453,9 +1445,11 @@ static int devlink_nl_cmd_get_dumpit(struct sk_buff *msg,
- 		if (idx < start)
- 			goto inc;
- 
-+		mutex_lock(&devlink->cmd_mutex);
- 		err = devlink_nl_fill(msg, devlink, DEVLINK_CMD_NEW,
- 				      NETLINK_CB(cb->skb).portid,
- 				      cb->nlh->nlmsg_seq, NLM_F_MULTI);
-+		mutex_unlock(&devlink->cmd_mutex);
- 		if (err) {
- 			devlink_put(devlink);
- 			goto out;
-@@ -1468,8 +1462,6 @@ static int devlink_nl_cmd_get_dumpit(struct sk_buff *msg,
- 	}
- 	rcu_read_unlock();
- out:
--	mutex_unlock(&devlink_mutex);
--
- 	cb->args[0] = idx;
- 	return msg->len;
- }
-@@ -1506,7 +1498,6 @@ static int devlink_nl_cmd_port_get_dumpit(struct sk_buff *msg,
- 	int idx = 0;
- 	int err;
- 
--	mutex_lock(&devlink_mutex);
- 	rcu_read_lock();
- 	xa_for_each_marked(&devlinks, index, devlink, DEVLINK_REGISTERED) {
- 		if (!devlink_try_get(devlink))
-@@ -1516,6 +1507,7 @@ static int devlink_nl_cmd_port_get_dumpit(struct sk_buff *msg,
- 		if (!net_eq(devlink_net(devlink), sock_net(msg->sk)))
- 			goto retry;
- 
-+		mutex_lock(&devlink->cmd_mutex);
- 		mutex_lock(&devlink->lock);
- 		list_for_each_entry(devlink_port, &devlink->port_list, list) {
- 			if (idx < start) {
-@@ -1529,20 +1521,20 @@ static int devlink_nl_cmd_port_get_dumpit(struct sk_buff *msg,
- 						   NLM_F_MULTI, cb->extack);
- 			if (err) {
- 				mutex_unlock(&devlink->lock);
-+				mutex_unlock(&devlink->cmd_mutex);
- 				devlink_put(devlink);
- 				goto out;
- 			}
- 			idx++;
- 		}
- 		mutex_unlock(&devlink->lock);
-+		mutex_unlock(&devlink->cmd_mutex);
- retry:
- 		devlink_put(devlink);
- 		rcu_read_lock();
- 	}
- 	rcu_read_unlock();
- out:
--	mutex_unlock(&devlink_mutex);
--
- 	cb->args[0] = idx;
- 	return msg->len;
- }
-@@ -2195,7 +2187,6 @@ static int devlink_nl_cmd_linecard_get_dumpit(struct sk_buff *msg,
- 	int idx = 0;
- 	int err;
- 
--	mutex_lock(&devlink_mutex);
- 	rcu_read_lock();
- 	xa_for_each_marked(&devlinks, index, devlink, DEVLINK_REGISTERED) {
- 		if (!devlink_try_get(devlink))
-@@ -2205,6 +2196,7 @@ static int devlink_nl_cmd_linecard_get_dumpit(struct sk_buff *msg,
- 		if (!net_eq(devlink_net(devlink), sock_net(msg->sk)))
- 			goto retry;
- 
-+		mutex_lock(&devlink->cmd_mutex);
- 		mutex_lock(&devlink->linecards_lock);
- 		list_for_each_entry(linecard, &devlink->linecard_list, list) {
- 			if (idx < start) {
-@@ -2221,20 +2213,20 @@ static int devlink_nl_cmd_linecard_get_dumpit(struct sk_buff *msg,
- 			mutex_unlock(&linecard->state_lock);
- 			if (err) {
- 				mutex_unlock(&devlink->linecards_lock);
-+				mutex_unlock(&devlink->cmd_mutex);
- 				devlink_put(devlink);
- 				goto out;
- 			}
- 			idx++;
- 		}
- 		mutex_unlock(&devlink->linecards_lock);
-+		mutex_unlock(&devlink->cmd_mutex);
- retry:
- 		devlink_put(devlink);
- 		rcu_read_lock();
- 	}
- 	rcu_read_unlock();
- out:
--	mutex_unlock(&devlink_mutex);
--
- 	cb->args[0] = idx;
- 	return msg->len;
- }
-@@ -2471,7 +2463,6 @@ static int devlink_nl_cmd_sb_get_dumpit(struct sk_buff *msg,
- 	int idx = 0;
- 	int err;
- 
--	mutex_lock(&devlink_mutex);
- 	rcu_read_lock();
- 	xa_for_each_marked(&devlinks, index, devlink, DEVLINK_REGISTERED) {
- 		if (!devlink_try_get(devlink))
-@@ -2481,6 +2472,7 @@ static int devlink_nl_cmd_sb_get_dumpit(struct sk_buff *msg,
- 		if (!net_eq(devlink_net(devlink), sock_net(msg->sk)))
- 			goto retry;
- 
-+		mutex_lock(&devlink->cmd_mutex);
- 		mutex_lock(&devlink->lock);
- 		list_for_each_entry(devlink_sb, &devlink->sb_list, list) {
- 			if (idx < start) {
-@@ -2494,20 +2486,20 @@ static int devlink_nl_cmd_sb_get_dumpit(struct sk_buff *msg,
- 						 NLM_F_MULTI);
- 			if (err) {
- 				mutex_unlock(&devlink->lock);
-+				mutex_unlock(&devlink->cmd_mutex);
- 				devlink_put(devlink);
- 				goto out;
- 			}
- 			idx++;
- 		}
- 		mutex_unlock(&devlink->lock);
-+		mutex_unlock(&devlink->cmd_mutex);
- retry:
- 		devlink_put(devlink);
- 		rcu_read_lock();
- 	}
- 	rcu_read_unlock();
- out:
--	mutex_unlock(&devlink_mutex);
--
- 	cb->args[0] = idx;
- 	return msg->len;
- }
-@@ -2627,7 +2619,6 @@ static int devlink_nl_cmd_sb_pool_get_dumpit(struct sk_buff *msg,
- 	int idx = 0;
- 	int err = 0;
- 
--	mutex_lock(&devlink_mutex);
- 	rcu_read_lock();
- 	xa_for_each_marked(&devlinks, index, devlink, DEVLINK_REGISTERED) {
- 		if (!devlink_try_get(devlink))
-@@ -2638,6 +2629,7 @@ static int devlink_nl_cmd_sb_pool_get_dumpit(struct sk_buff *msg,
- 		    !devlink->ops->sb_pool_get)
- 			goto retry;
- 
-+		mutex_lock(&devlink->cmd_mutex);
- 		mutex_lock(&devlink->lock);
- 		list_for_each_entry(devlink_sb, &devlink->sb_list, list) {
- 			err = __sb_pool_get_dumpit(msg, start, &idx, devlink,
-@@ -2648,19 +2640,19 @@ static int devlink_nl_cmd_sb_pool_get_dumpit(struct sk_buff *msg,
- 				err = 0;
- 			} else if (err) {
- 				mutex_unlock(&devlink->lock);
-+				mutex_unlock(&devlink->cmd_mutex);
- 				devlink_put(devlink);
- 				goto out;
- 			}
- 		}
- 		mutex_unlock(&devlink->lock);
-+		mutex_unlock(&devlink->cmd_mutex);
- retry:
- 		devlink_put(devlink);
- 		rcu_read_lock();
- 	}
- 	rcu_read_unlock();
- out:
--	mutex_unlock(&devlink_mutex);
--
- 	if (err != -EMSGSIZE)
- 		return err;
- 
-@@ -2852,7 +2844,6 @@ static int devlink_nl_cmd_sb_port_pool_get_dumpit(struct sk_buff *msg,
- 	int idx = 0;
- 	int err = 0;
- 
--	mutex_lock(&devlink_mutex);
- 	rcu_read_lock();
- 	xa_for_each_marked(&devlinks, index, devlink, DEVLINK_REGISTERED) {
- 		if (!devlink_try_get(devlink))
-@@ -2863,6 +2854,7 @@ static int devlink_nl_cmd_sb_port_pool_get_dumpit(struct sk_buff *msg,
- 		    !devlink->ops->sb_port_pool_get)
- 			goto retry;
- 
-+		mutex_lock(&devlink->cmd_mutex);
- 		mutex_lock(&devlink->lock);
- 		list_for_each_entry(devlink_sb, &devlink->sb_list, list) {
- 			err = __sb_port_pool_get_dumpit(msg, start, &idx,
-@@ -2873,19 +2865,19 @@ static int devlink_nl_cmd_sb_port_pool_get_dumpit(struct sk_buff *msg,
- 				err = 0;
- 			} else if (err) {
- 				mutex_unlock(&devlink->lock);
-+				mutex_unlock(&devlink->cmd_mutex);
- 				devlink_put(devlink);
- 				goto out;
- 			}
- 		}
- 		mutex_unlock(&devlink->lock);
-+		mutex_unlock(&devlink->cmd_mutex);
- retry:
- 		devlink_put(devlink);
- 		rcu_read_lock();
- 	}
- 	rcu_read_unlock();
- out:
--	mutex_unlock(&devlink_mutex);
--
- 	if (err != -EMSGSIZE)
- 		return err;
- 
-@@ -3105,7 +3097,6 @@ devlink_nl_cmd_sb_tc_pool_bind_get_dumpit(struct sk_buff *msg,
- 	int idx = 0;
- 	int err = 0;
- 
--	mutex_lock(&devlink_mutex);
- 	rcu_read_lock();
- 	xa_for_each_marked(&devlinks, index, devlink, DEVLINK_REGISTERED) {
- 		if (!devlink_try_get(devlink))
-@@ -3116,6 +3107,7 @@ devlink_nl_cmd_sb_tc_pool_bind_get_dumpit(struct sk_buff *msg,
- 		    !devlink->ops->sb_tc_pool_bind_get)
- 			goto retry;
- 
-+		mutex_lock(&devlink->cmd_mutex);
- 		mutex_lock(&devlink->lock);
- 		list_for_each_entry(devlink_sb, &devlink->sb_list, list) {
- 			err = __sb_tc_pool_bind_get_dumpit(msg, start, &idx,
-@@ -3127,19 +3119,19 @@ devlink_nl_cmd_sb_tc_pool_bind_get_dumpit(struct sk_buff *msg,
- 				err = 0;
- 			} else if (err) {
- 				mutex_unlock(&devlink->lock);
-+				mutex_unlock(&devlink->cmd_mutex);
- 				devlink_put(devlink);
- 				goto out;
- 			}
- 		}
- 		mutex_unlock(&devlink->lock);
-+		mutex_unlock(&devlink->cmd_mutex);
- retry:
- 		devlink_put(devlink);
- 		rcu_read_lock();
- 	}
- 	rcu_read_unlock();
- out:
--	mutex_unlock(&devlink_mutex);
--
- 	if (err != -EMSGSIZE)
- 		return err;
- 
-@@ -5196,7 +5188,6 @@ static int devlink_nl_cmd_param_get_dumpit(struct sk_buff *msg,
- 	int idx = 0;
- 	int err = 0;
- 
--	mutex_lock(&devlink_mutex);
- 	rcu_read_lock();
- 	xa_for_each_marked(&devlinks, index, devlink, DEVLINK_REGISTERED) {
- 		if (!devlink_try_get(devlink))
-@@ -5206,6 +5197,7 @@ static int devlink_nl_cmd_param_get_dumpit(struct sk_buff *msg,
- 		if (!net_eq(devlink_net(devlink), sock_net(msg->sk)))
- 			goto retry;
- 
-+		mutex_lock(&devlink->cmd_mutex);
- 		mutex_lock(&devlink->lock);
- 		list_for_each_entry(param_item, &devlink->param_list, list) {
- 			if (idx < start) {
-@@ -5221,20 +5213,20 @@ static int devlink_nl_cmd_param_get_dumpit(struct sk_buff *msg,
- 				err = 0;
- 			} else if (err) {
- 				mutex_unlock(&devlink->lock);
-+				mutex_unlock(&devlink->cmd_mutex);
- 				devlink_put(devlink);
- 				goto out;
- 			}
- 			idx++;
- 		}
- 		mutex_unlock(&devlink->lock);
-+		mutex_unlock(&devlink->cmd_mutex);
- retry:
- 		devlink_put(devlink);
- 		rcu_read_lock();
- 	}
- 	rcu_read_unlock();
- out:
--	mutex_unlock(&devlink_mutex);
--
- 	if (err != -EMSGSIZE)
- 		return err;
- 
-@@ -5435,7 +5427,6 @@ static int devlink_nl_cmd_port_param_get_dumpit(struct sk_buff *msg,
- 	int idx = 0;
- 	int err = 0;
- 
--	mutex_lock(&devlink_mutex);
- 	rcu_read_lock();
- 	xa_for_each_marked(&devlinks, index, devlink, DEVLINK_REGISTERED) {
- 		if (!devlink_try_get(devlink))
-@@ -5445,6 +5436,7 @@ static int devlink_nl_cmd_port_param_get_dumpit(struct sk_buff *msg,
- 		if (!net_eq(devlink_net(devlink), sock_net(msg->sk)))
- 			goto retry;
- 
-+		mutex_lock(&devlink->cmd_mutex);
- 		mutex_lock(&devlink->lock);
- 		list_for_each_entry(devlink_port, &devlink->port_list, list) {
- 			list_for_each_entry(param_item,
-@@ -5464,6 +5456,7 @@ static int devlink_nl_cmd_port_param_get_dumpit(struct sk_buff *msg,
- 					err = 0;
- 				} else if (err) {
- 					mutex_unlock(&devlink->lock);
-+					mutex_unlock(&devlink->cmd_mutex);
- 					devlink_put(devlink);
- 					goto out;
- 				}
-@@ -5471,14 +5464,13 @@ static int devlink_nl_cmd_port_param_get_dumpit(struct sk_buff *msg,
- 			}
- 		}
- 		mutex_unlock(&devlink->lock);
-+		mutex_unlock(&devlink->cmd_mutex);
- retry:
- 		devlink_put(devlink);
- 		rcu_read_lock();
- 	}
- 	rcu_read_unlock();
- out:
--	mutex_unlock(&devlink_mutex);
--
- 	if (err != -EMSGSIZE)
- 		return err;
- 
-@@ -6023,7 +6015,6 @@ static int devlink_nl_cmd_region_get_dumpit(struct sk_buff *msg,
- 	int idx = 0;
- 	int err = 0;
- 
--	mutex_lock(&devlink_mutex);
- 	rcu_read_lock();
- 	xa_for_each_marked(&devlinks, index, devlink, DEVLINK_REGISTERED) {
- 		if (!devlink_try_get(devlink))
-@@ -6033,8 +6024,10 @@ static int devlink_nl_cmd_region_get_dumpit(struct sk_buff *msg,
- 		if (!net_eq(devlink_net(devlink), sock_net(msg->sk)))
- 			goto retry;
- 
-+		mutex_lock(&devlink->cmd_mutex);
- 		err = devlink_nl_cmd_region_get_devlink_dumpit(msg, cb, devlink,
- 							       &idx, start);
-+		mutex_unlock(&devlink->cmd_mutex);
- retry:
- 		devlink_put(devlink);
- 		if (err)
-@@ -6043,7 +6036,6 @@ static int devlink_nl_cmd_region_get_dumpit(struct sk_buff *msg,
- 	}
- 	rcu_read_unlock();
- out:
--	mutex_unlock(&devlink_mutex);
- 	cb->args[0] = idx;
- 	return msg->len;
- }
-@@ -6297,13 +6289,11 @@ static int devlink_nl_cmd_region_read_dumpit(struct sk_buff *skb,
- 
- 	start_offset = *((u64 *)&cb->args[0]);
- 
--	mutex_lock(&devlink_mutex);
- 	devlink = devlink_get_from_attrs(sock_net(cb->skb->sk), attrs);
--	if (IS_ERR(devlink)) {
--		err = PTR_ERR(devlink);
--		goto out_dev;
--	}
-+	if (IS_ERR(devlink))
-+		return PTR_ERR(devlink);
- 
-+	mutex_lock(&devlink->cmd_mutex);
- 	mutex_lock(&devlink->lock);
- 
- 	if (!attrs[DEVLINK_ATTR_REGION_NAME] ||
-@@ -6401,8 +6391,8 @@ static int devlink_nl_cmd_region_read_dumpit(struct sk_buff *skb,
- 	nla_nest_end(skb, chunks_attr);
- 	genlmsg_end(skb, hdr);
- 	mutex_unlock(&devlink->lock);
-+	mutex_unlock(&devlink->cmd_mutex);
- 	devlink_put(devlink);
--	mutex_unlock(&devlink_mutex);
- 
- 	return skb->len;
- 
-@@ -6410,9 +6400,8 @@ static int devlink_nl_cmd_region_read_dumpit(struct sk_buff *skb,
- 	genlmsg_cancel(skb, hdr);
- out_unlock:
- 	mutex_unlock(&devlink->lock);
-+	mutex_unlock(&devlink->cmd_mutex);
- 	devlink_put(devlink);
--out_dev:
--	mutex_unlock(&devlink_mutex);
- 	return err;
- }
- 
-@@ -6561,7 +6550,6 @@ static int devlink_nl_cmd_info_get_dumpit(struct sk_buff *msg,
- 	int idx = 0;
- 	int err = 0;
- 
--	mutex_lock(&devlink_mutex);
- 	rcu_read_lock();
- 	xa_for_each_marked(&devlinks, index, devlink, DEVLINK_REGISTERED) {
- 		if (!devlink_try_get(devlink))
-@@ -6574,12 +6562,14 @@ static int devlink_nl_cmd_info_get_dumpit(struct sk_buff *msg,
- 		if (idx < start || !devlink->ops->info_get)
- 			goto inc;
- 
-+		mutex_lock(&devlink->cmd_mutex);
- 		mutex_lock(&devlink->lock);
- 		err = devlink_nl_info_fill(msg, devlink, DEVLINK_CMD_INFO_GET,
- 					   NETLINK_CB(cb->skb).portid,
- 					   cb->nlh->nlmsg_seq, NLM_F_MULTI,
- 					   cb->extack);
- 		mutex_unlock(&devlink->lock);
-+		mutex_unlock(&devlink->cmd_mutex);
- 		if (err == -EOPNOTSUPP)
- 			err = 0;
- 		else if (err) {
-@@ -6593,7 +6583,6 @@ static int devlink_nl_cmd_info_get_dumpit(struct sk_buff *msg,
- 		rcu_read_lock();
- 	}
- 	rcu_read_unlock();
--	mutex_unlock(&devlink_mutex);
- 
- 	if (err != -EMSGSIZE)
- 		return err;
-@@ -7668,18 +7657,13 @@ devlink_health_reporter_get_from_cb(struct netlink_callback *cb)
- 	struct nlattr **attrs = info->attrs;
- 	struct devlink *devlink;
- 
--	mutex_lock(&devlink_mutex);
- 	devlink = devlink_get_from_attrs(sock_net(cb->skb->sk), attrs);
- 	if (IS_ERR(devlink))
--		goto unlock;
-+		return NULL;
- 
- 	reporter = devlink_health_reporter_get_from_attrs(devlink, attrs);
- 	devlink_put(devlink);
--	mutex_unlock(&devlink_mutex);
- 	return reporter;
--unlock:
--	mutex_unlock(&devlink_mutex);
--	return NULL;
- }
- 
- void
-@@ -7745,7 +7729,6 @@ devlink_nl_cmd_health_reporter_get_dumpit(struct sk_buff *msg,
- 	int idx = 0;
- 	int err;
- 
--	mutex_lock(&devlink_mutex);
- 	rcu_read_lock();
- 	xa_for_each_marked(&devlinks, index, devlink, DEVLINK_REGISTERED) {
- 		if (!devlink_try_get(devlink))
-@@ -7755,6 +7738,7 @@ devlink_nl_cmd_health_reporter_get_dumpit(struct sk_buff *msg,
- 		if (!net_eq(devlink_net(devlink), sock_net(msg->sk)))
- 			goto retry_rep;
- 
-+		mutex_lock(&devlink->cmd_mutex);
- 		mutex_lock(&devlink->reporters_lock);
- 		list_for_each_entry(reporter, &devlink->reporter_list,
- 				    list) {
-@@ -7768,12 +7752,14 @@ devlink_nl_cmd_health_reporter_get_dumpit(struct sk_buff *msg,
- 				NLM_F_MULTI);
- 			if (err) {
- 				mutex_unlock(&devlink->reporters_lock);
-+				mutex_unlock(&devlink->cmd_mutex);
- 				devlink_put(devlink);
- 				goto out;
- 			}
- 			idx++;
- 		}
- 		mutex_unlock(&devlink->reporters_lock);
-+		mutex_unlock(&devlink->cmd_mutex);
- retry_rep:
- 		devlink_put(devlink);
- 		rcu_read_lock();
-@@ -7787,6 +7773,7 @@ devlink_nl_cmd_health_reporter_get_dumpit(struct sk_buff *msg,
- 		if (!net_eq(devlink_net(devlink), sock_net(msg->sk)))
- 			goto retry_port;
- 
-+		mutex_lock(&devlink->cmd_mutex);
- 		mutex_lock(&devlink->lock);
- 		list_for_each_entry(port, &devlink->port_list, list) {
- 			mutex_lock(&port->reporters_lock);
-@@ -7803,6 +7790,7 @@ devlink_nl_cmd_health_reporter_get_dumpit(struct sk_buff *msg,
- 				if (err) {
- 					mutex_unlock(&port->reporters_lock);
- 					mutex_unlock(&devlink->lock);
-+					mutex_unlock(&devlink->cmd_mutex);
- 					devlink_put(devlink);
- 					goto out;
- 				}
-@@ -7811,14 +7799,13 @@ devlink_nl_cmd_health_reporter_get_dumpit(struct sk_buff *msg,
- 			mutex_unlock(&port->reporters_lock);
- 		}
- 		mutex_unlock(&devlink->lock);
-+		mutex_unlock(&devlink->cmd_mutex);
- retry_port:
- 		devlink_put(devlink);
- 		rcu_read_lock();
- 	}
- 	rcu_read_unlock();
- out:
--	mutex_unlock(&devlink_mutex);
--
- 	cb->args[0] = idx;
- 	return msg->len;
- }
-@@ -8351,7 +8338,6 @@ static int devlink_nl_cmd_trap_get_dumpit(struct sk_buff *msg,
- 	int idx = 0;
- 	int err;
- 
--	mutex_lock(&devlink_mutex);
- 	rcu_read_lock();
- 	xa_for_each_marked(&devlinks, index, devlink, DEVLINK_REGISTERED) {
- 		if (!devlink_try_get(devlink))
-@@ -8361,6 +8347,7 @@ static int devlink_nl_cmd_trap_get_dumpit(struct sk_buff *msg,
- 		if (!net_eq(devlink_net(devlink), sock_net(msg->sk)))
- 			goto retry;
- 
-+		mutex_lock(&devlink->cmd_mutex);
- 		mutex_lock(&devlink->lock);
- 		list_for_each_entry(trap_item, &devlink->trap_list, list) {
- 			if (idx < start) {
-@@ -8374,20 +8361,20 @@ static int devlink_nl_cmd_trap_get_dumpit(struct sk_buff *msg,
- 						   NLM_F_MULTI);
- 			if (err) {
- 				mutex_unlock(&devlink->lock);
-+				mutex_unlock(&devlink->cmd_mutex);
- 				devlink_put(devlink);
- 				goto out;
- 			}
- 			idx++;
- 		}
- 		mutex_unlock(&devlink->lock);
-+		mutex_unlock(&devlink->cmd_mutex);
- retry:
- 		devlink_put(devlink);
- 		rcu_read_lock();
- 	}
- 	rcu_read_unlock();
- out:
--	mutex_unlock(&devlink_mutex);
--
- 	cb->args[0] = idx;
- 	return msg->len;
- }
-@@ -8582,7 +8569,6 @@ static int devlink_nl_cmd_trap_group_get_dumpit(struct sk_buff *msg,
- 	int idx = 0;
- 	int err;
- 
--	mutex_lock(&devlink_mutex);
- 	rcu_read_lock();
- 	xa_for_each_marked(&devlinks, index, devlink, DEVLINK_REGISTERED) {
- 		if (!devlink_try_get(devlink))
-@@ -8592,6 +8578,7 @@ static int devlink_nl_cmd_trap_group_get_dumpit(struct sk_buff *msg,
- 		if (!net_eq(devlink_net(devlink), sock_net(msg->sk)))
- 			goto retry;
- 
-+		mutex_lock(&devlink->cmd_mutex);
- 		mutex_lock(&devlink->lock);
- 		list_for_each_entry(group_item, &devlink->trap_group_list,
- 				    list) {
-@@ -8606,20 +8593,20 @@ static int devlink_nl_cmd_trap_group_get_dumpit(struct sk_buff *msg,
- 							 NLM_F_MULTI);
- 			if (err) {
- 				mutex_unlock(&devlink->lock);
-+				mutex_unlock(&devlink->cmd_mutex);
- 				devlink_put(devlink);
- 				goto out;
- 			}
- 			idx++;
- 		}
- 		mutex_unlock(&devlink->lock);
-+		mutex_unlock(&devlink->cmd_mutex);
- retry:
- 		devlink_put(devlink);
- 		rcu_read_lock();
- 	}
- 	rcu_read_unlock();
- out:
--	mutex_unlock(&devlink_mutex);
--
- 	cb->args[0] = idx;
- 	return msg->len;
- }
-@@ -8900,7 +8887,6 @@ static int devlink_nl_cmd_trap_policer_get_dumpit(struct sk_buff *msg,
- 	int idx = 0;
- 	int err;
- 
--	mutex_lock(&devlink_mutex);
- 	rcu_read_lock();
- 	xa_for_each_marked(&devlinks, index, devlink, DEVLINK_REGISTERED) {
- 		if (!devlink_try_get(devlink))
-@@ -8910,6 +8896,7 @@ static int devlink_nl_cmd_trap_policer_get_dumpit(struct sk_buff *msg,
- 		if (!net_eq(devlink_net(devlink), sock_net(msg->sk)))
- 			goto retry;
- 
-+		mutex_lock(&devlink->cmd_mutex);
- 		mutex_lock(&devlink->lock);
- 		list_for_each_entry(policer_item, &devlink->trap_policer_list,
- 				    list) {
-@@ -8924,20 +8911,20 @@ static int devlink_nl_cmd_trap_policer_get_dumpit(struct sk_buff *msg,
- 							   NLM_F_MULTI);
- 			if (err) {
- 				mutex_unlock(&devlink->lock);
-+				mutex_unlock(&devlink->cmd_mutex);
- 				devlink_put(devlink);
- 				goto out;
- 			}
- 			idx++;
- 		}
- 		mutex_unlock(&devlink->lock);
-+		mutex_unlock(&devlink->cmd_mutex);
- retry:
- 		devlink_put(devlink);
- 		rcu_read_lock();
- 	}
- 	rcu_read_unlock();
- out:
--	mutex_unlock(&devlink_mutex);
--
- 	cb->args[0] = idx;
- 	return msg->len;
- }
-@@ -9555,6 +9542,7 @@ struct devlink *devlink_alloc_ns(const struct devlink_ops *ops,
- 	INIT_LIST_HEAD(&devlink->trap_group_list);
- 	INIT_LIST_HEAD(&devlink->trap_policer_list);
- 	mutex_init(&devlink->lock);
-+	mutex_init(&devlink->cmd_mutex);
- 	mutex_init(&devlink->reporters_lock);
- 	mutex_init(&devlink->linecards_lock);
- 	refcount_set(&devlink->refcount, 1);
-@@ -9696,6 +9684,7 @@ void devlink_free(struct devlink *devlink)
- 
- 	mutex_destroy(&devlink->linecards_lock);
- 	mutex_destroy(&devlink->reporters_lock);
-+	mutex_destroy(&devlink->cmd_mutex);
- 	mutex_destroy(&devlink->lock);
- 	WARN_ON(!list_empty(&devlink->trap_policer_list));
- 	WARN_ON(!list_empty(&devlink->trap_group_list));
-@@ -12190,7 +12179,6 @@ static void __net_exit devlink_pernet_pre_exit(struct net *net)
- 	/* In case network namespace is getting destroyed, reload
- 	 * all devlink instances from this namespace into init_net.
- 	 */
--	mutex_lock(&devlink_mutex);
- 	rcu_read_lock();
- 	xa_for_each_marked(&devlinks, index, devlink, DEVLINK_REGISTERED) {
- 		if (!devlink_try_get(devlink))
-@@ -12201,10 +12189,12 @@ static void __net_exit devlink_pernet_pre_exit(struct net *net)
- 			goto retry;
- 
- 		WARN_ON(!(devlink->features & DEVLINK_F_RELOAD));
-+		mutex_lock(&devlink->cmd_mutex);
- 		err = devlink_reload(devlink, &init_net,
- 				     DEVLINK_RELOAD_ACTION_DRIVER_REINIT,
- 				     DEVLINK_RELOAD_LIMIT_UNSPEC,
- 				     &actions_performed, NULL);
-+		mutex_unlock(&devlink->cmd_mutex);
- 		if (err && err != -EOPNOTSUPP)
- 			pr_warn("Failed to reload devlink instance into init_net\n");
- retry:
-@@ -12212,7 +12202,6 @@ static void __net_exit devlink_pernet_pre_exit(struct net *net)
- 		rcu_read_lock();
- 	}
- 	rcu_read_unlock();
--	mutex_unlock(&devlink_mutex);
- }
- 
- static struct pernet_operations devlink_pernet_ops __net_initdata = {
--- 
-2.35.3
+while checking for the flag while every time a work is scheduled,
+a timer armed or something similar.
+By that logic anything that escapes the first round will be caught
+in the second round. What do you think of his patch?
 
+	Regards
+		Oliver
+
+--------------0FFoJw0FEiF6vUoJK38012RO
+Content-Type: text/x-patch; charset=UTF-8;
+ name="0001-usbnet-fix-cyclical-race-on-disconnect.patch"
+Content-Disposition: attachment;
+ filename="0001-usbnet-fix-cyclical-race-on-disconnect.patch"
+Content-Transfer-Encoding: base64
+
+RnJvbSAxNWM1MzdkZTVlNmU5NDk5Yjk2NGY4MzM3YjIyYWUxODM3NDJjYmI1IE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQpGcm9tOiBPbGl2ZXIgTmV1a3VtIDxvbmV1a3VtQHN1c2UuY29tPgpEYXRl
+OiBNb24sIDI3IEp1biAyMDIyIDE2OjAzOjM3ICswMjAwClN1YmplY3Q6IFtQQVRDSF0gdXNibmV0
+OiBmaXggY3ljbGljYWwgcmFjZSBvbiBkaXNjb25uZWN0CgpUaGVyZSBpcyBhIGN5Y2xpY2FsIGRl
+cGVuZGVuY3kgdGhhdCBtdXN0IGJlIGJyb2tlbi4KClNpZ25lZC1vZmYtYnk6IE9saXZlciBOZXVr
+dW0gPG9uZXVrdW1Ac3VzZS5jb20+Ci0tLQogZHJpdmVycy9uZXQvdXNiL3VzYm5ldC5jICAgfCAy
+OCArKysrKysrKysrKysrKysrKysrKysrKy0tLS0tCiBpbmNsdWRlL2xpbnV4L3VzYi91c2JuZXQu
+aCB8IDE4ICsrKysrKysrKysrKysrKysrKwogMiBmaWxlcyBjaGFuZ2VkLCA0MSBpbnNlcnRpb25z
+KCspLCA1IGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L3VzYi91c2JuZXQu
+YyBiL2RyaXZlcnMvbmV0L3VzYi91c2JuZXQuYwppbmRleCA3ODM1ODkwZGY2ZDMuLmZjZjFhM2I5
+ZGIxMiAxMDA2NDQKLS0tIGEvZHJpdmVycy9uZXQvdXNiL3VzYm5ldC5jCisrKyBiL2RyaXZlcnMv
+bmV0L3VzYi91c2JuZXQuYwpAQCAtNTAxLDcgKzUwMSw4IEBAIHN0YXRpYyBpbnQgcnhfc3VibWl0
+IChzdHJ1Y3QgdXNibmV0ICpkZXYsIHN0cnVjdCB1cmIgKnVyYiwgZ2ZwX3QgZmxhZ3MpCiAJCXNr
+YiA9IF9fbmV0ZGV2X2FsbG9jX3NrYl9pcF9hbGlnbihkZXYtPm5ldCwgc2l6ZSwgZmxhZ3MpOwog
+CWlmICghc2tiKSB7CiAJCW5ldGlmX2RiZyhkZXYsIHJ4X2VyciwgZGV2LT5uZXQsICJubyByeCBz
+a2JcbiIpOwotCQl1c2JuZXRfZGVmZXJfa2V2ZW50IChkZXYsIEVWRU5UX1JYX01FTU9SWSk7CisJ
+CWlmICghdXNibmV0X2dvaW5nX2F3YXkoZGV2KSkKKwkJCXVzYm5ldF9kZWZlcl9rZXZlbnQgKGRl
+diwgRVZFTlRfUlhfTUVNT1JZKTsKIAkJdXNiX2ZyZWVfdXJiICh1cmIpOwogCQlyZXR1cm4gLUVO
+T01FTTsKIAl9CkBAIC01MTgsNiArNTE5LDcgQEAgc3RhdGljIGludCByeF9zdWJtaXQgKHN0cnVj
+dCB1c2JuZXQgKmRldiwgc3RydWN0IHVyYiAqdXJiLCBnZnBfdCBmbGFncykKIAogCWlmIChuZXRp
+Zl9ydW5uaW5nIChkZXYtPm5ldCkgJiYKIAkgICAgbmV0aWZfZGV2aWNlX3ByZXNlbnQgKGRldi0+
+bmV0KSAmJgorCSAgICAhdXNibmV0X2dvaW5nX2F3YXkoZGV2KSAmJgogCSAgICB0ZXN0X2JpdChF
+VkVOVF9ERVZfT1BFTiwgJmRldi0+ZmxhZ3MpICYmCiAJICAgICF0ZXN0X2JpdCAoRVZFTlRfUlhf
+SEFMVCwgJmRldi0+ZmxhZ3MpICYmCiAJICAgICF0ZXN0X2JpdCAoRVZFTlRfREVWX0FTTEVFUCwg
+JmRldi0+ZmxhZ3MpKSB7CkBAIC04NTQsNiArODU2LDE2IEBAIGludCB1c2JuZXRfc3RvcCAoc3Ry
+dWN0IG5ldF9kZXZpY2UgKm5ldCkKIAlkZWxfdGltZXJfc3luYyAoJmRldi0+ZGVsYXkpOwogCXRh
+c2tsZXRfa2lsbCAoJmRldi0+YmgpOwogCWNhbmNlbF93b3JrX3N5bmMoJmRldi0+a2V2ZW50KTsK
+KworCS8qCisJICogd2UgaGF2ZSBjeWNsaWMgZGVwZW5kZW5jaWVzLiBUaG9zZSBjYWxscyBhcmUg
+bmVlZGVkCisJICogdG8gYnJlYWsgYSBjeWNsZS4gV2UgY2Fubm90IGZhbGwgaW50byB0aGUgZ2Fw
+cyBiZWNhdXNlCisJICogd2UgaGF2ZSBhIGZsYWcKKwkgKi8KKwl0YXNrbGV0X2tpbGwgKCZkZXYt
+PmJoKTsKKwlkZWxfdGltZXJfc3luYyAoJmRldi0+ZGVsYXkpOworCWNhbmNlbF93b3JrX3N5bmMo
+JmRldi0+a2V2ZW50KTsKKwogCWlmICghcG0pCiAJCXVzYl9hdXRvcG1fcHV0X2ludGVyZmFjZShk
+ZXYtPmludGYpOwogCkBAIC0xMTc5LDcgKzExOTEsOCBAQCB1c2JuZXRfZGVmZXJyZWRfa2V2ZW50
+IChzdHJ1Y3Qgd29ya19zdHJ1Y3QgKndvcmspCiAJCQkJCSAgIHN0YXR1cyk7CiAJCX0gZWxzZSB7
+CiAJCQljbGVhcl9iaXQgKEVWRU5UX1JYX0hBTFQsICZkZXYtPmZsYWdzKTsKLQkJCXRhc2tsZXRf
+c2NoZWR1bGUgKCZkZXYtPmJoKTsKKwkJCWlmICghdXNibmV0X2dvaW5nX2F3YXkoZGV2KSkKKwkJ
+CQl0YXNrbGV0X3NjaGVkdWxlICgmZGV2LT5iaCk7CiAJCX0KIAl9CiAKQEAgLTEyMDEsMTAgKzEy
+MTQsMTMgQEAgdXNibmV0X2RlZmVycmVkX2tldmVudCAoc3RydWN0IHdvcmtfc3RydWN0ICp3b3Jr
+KQogCQkJfQogCQkJaWYgKHJ4X3N1Ym1pdCAoZGV2LCB1cmIsIEdGUF9LRVJORUwpID09IC1FTk9M
+SU5LKQogCQkJCXJlc2NoZWQgPSAwOwotCQkJdXNiX2F1dG9wbV9wdXRfaW50ZXJmYWNlKGRldi0+
+aW50Zik7CiBmYWlsX2xvd21lbToKLQkJCWlmIChyZXNjaGVkKQorCQkJdXNiX2F1dG9wbV9wdXRf
+aW50ZXJmYWNlKGRldi0+aW50Zik7CisJCQlpZiAocmVzY2hlZCAmJiAhdXNibmV0X2dvaW5nX2F3
+YXkoZGV2KSkgeworCQkJCXNldF9iaXQgKEVWRU5UX1JYX01FTU9SWSwgJmRldi0+ZmxhZ3MpOwor
+CiAJCQkJdGFza2xldF9zY2hlZHVsZSAoJmRldi0+YmgpOworCQkJfQogCQl9CiAJfQogCkBAIC0x
+MjE3LDEzICsxMjMzLDEzIEBAIHVzYm5ldF9kZWZlcnJlZF9rZXZlbnQgKHN0cnVjdCB3b3JrX3N0
+cnVjdCAqd29yaykKIAkJaWYgKHN0YXR1cyA8IDApCiAJCQlnb3RvIHNraXBfcmVzZXQ7CiAJCWlm
+KGluZm8tPmxpbmtfcmVzZXQgJiYgKHJldHZhbCA9IGluZm8tPmxpbmtfcmVzZXQoZGV2KSkgPCAw
+KSB7Ci0JCQl1c2JfYXV0b3BtX3B1dF9pbnRlcmZhY2UoZGV2LT5pbnRmKTsKIHNraXBfcmVzZXQ6
+CiAJCQluZXRkZXZfaW5mbyhkZXYtPm5ldCwgImxpbmsgcmVzZXQgZmFpbGVkICglZCkgdXNibmV0
+IHVzYi0lcy0lcywgJXNcbiIsCiAJCQkJICAgIHJldHZhbCwKIAkJCQkgICAgZGV2LT51ZGV2LT5i
+dXMtPmJ1c19uYW1lLAogCQkJCSAgICBkZXYtPnVkZXYtPmRldnBhdGgsCiAJCQkJICAgIGluZm8t
+PmRlc2NyaXB0aW9uKTsKKwkJCXVzYl9hdXRvcG1fcHV0X2ludGVyZmFjZShkZXYtPmludGYpOwog
+CQl9IGVsc2UgewogCQkJdXNiX2F1dG9wbV9wdXRfaW50ZXJmYWNlKGRldi0+aW50Zik7CiAJCX0K
+QEAgLTE1NjAsNiArMTU3Niw3IEBAIHN0YXRpYyB2b2lkIHVzYm5ldF9iaCAoc3RydWN0IHRpbWVy
+X2xpc3QgKnQpCiAJfSBlbHNlIGlmIChuZXRpZl9ydW5uaW5nIChkZXYtPm5ldCkgJiYKIAkJICAg
+bmV0aWZfZGV2aWNlX3ByZXNlbnQgKGRldi0+bmV0KSAmJgogCQkgICBuZXRpZl9jYXJyaWVyX29r
+KGRldi0+bmV0KSAmJgorCQkgICAhdXNibmV0X2dvaW5nX2F3YXkoZGV2KSAmJgogCQkgICAhdGlt
+ZXJfcGVuZGluZygmZGV2LT5kZWxheSkgJiYKIAkJICAgIXRlc3RfYml0KEVWRU5UX1JYX1BBVVNF
+RCwgJmRldi0+ZmxhZ3MpICYmCiAJCSAgICF0ZXN0X2JpdChFVkVOVF9SWF9IQUxULCAmZGV2LT5m
+bGFncykpIHsKQEAgLTE2MDYsNiArMTYyMyw3IEBAIHZvaWQgdXNibmV0X2Rpc2Nvbm5lY3QgKHN0
+cnVjdCB1c2JfaW50ZXJmYWNlICppbnRmKQogCXVzYl9zZXRfaW50ZmRhdGEoaW50ZiwgTlVMTCk7
+CiAJaWYgKCFkZXYpCiAJCXJldHVybjsKKwl1c2JuZXRfbWFya19nb2luZ19hd2F5KGRldik7CiAK
+IAl4ZGV2ID0gaW50ZXJmYWNlX3RvX3VzYmRldiAoaW50Zik7CiAKZGlmZiAtLWdpdCBhL2luY2x1
+ZGUvbGludXgvdXNiL3VzYm5ldC5oIGIvaW5jbHVkZS9saW51eC91c2IvdXNibmV0LmgKaW5kZXgg
+MWI0ZDcyZDVlODkxLi44YjU2OGFlNjUzNjYgMTAwNjQ0Ci0tLSBhL2luY2x1ZGUvbGludXgvdXNi
+L3VzYm5ldC5oCisrKyBiL2luY2x1ZGUvbGludXgvdXNiL3VzYm5ldC5oCkBAIC04NCw4ICs4NCwy
+NiBAQCBzdHJ1Y3QgdXNibmV0IHsKICMJCWRlZmluZSBFVkVOVF9MSU5LX0NIQU5HRQkxMQogIwkJ
+ZGVmaW5lIEVWRU5UX1NFVF9SWF9NT0RFCTEyCiAjCQlkZWZpbmUgRVZFTlRfTk9fSVBfQUxJR04J
+MTMKKy8qCisgKiB0aGlzIG9uZSBpcyBzcGVjaWFsLCBhcyBpdCBpbmRpY2F0ZXMgdGhhdCB0aGUg
+ZGV2aWNlIGlzIGdvaW5nIGF3YXkKKyAqIHRoZXJlIGFyZSBjeWNsaWMgZGVwZW5kZW5jaWVzIGJl
+dHdlZW4gdGFza2xldCwgdGltZXIgYW5kIGJoCisgKiB0aGF0IG11c3QgYmUgYnJva2VuCisgKi8K
+KyMJCWRlZmluZSBFVkVOVF9VTlBMVUcJCTMxCiB9OwogCitzdGF0aWMgaW5saW5lIGJvb2wgdXNi
+bmV0X2dvaW5nX2F3YXkoc3RydWN0IHVzYm5ldCAqdWJuKQoreworCXNtcF9tYl9fYmVmb3JlX2F0
+b21pYygpOworCXJldHVybiB0ZXN0X2JpdChFVkVOVF9VTlBMVUcsICZ1Ym4tPmZsYWdzKTsKK30K
+Kworc3RhdGljIGlubGluZSB2b2lkIHVzYm5ldF9tYXJrX2dvaW5nX2F3YXkoc3RydWN0IHVzYm5l
+dCAqdWJuKQoreworCXNldF9iaXQoRVZFTlRfVU5QTFVHLCAmdWJuLT5mbGFncyk7CisJc21wX21i
+X19hZnRlcl9hdG9taWMoKTsKK30KKwogc3RhdGljIGlubGluZSBzdHJ1Y3QgdXNiX2RyaXZlciAq
+ZHJpdmVyX29mKHN0cnVjdCB1c2JfaW50ZXJmYWNlICppbnRmKQogewogCXJldHVybiB0b191c2Jf
+ZHJpdmVyKGludGYtPmRldi5kcml2ZXIpOwotLSAKMi4zNS4zCgo=
+
+--------------0FFoJw0FEiF6vUoJK38012RO--
