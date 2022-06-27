@@ -2,63 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E151B55DA95
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:23:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BA1255DB6A
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:24:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233369AbiF0JZx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jun 2022 05:25:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46272 "EHLO
+        id S233422AbiF0Jki (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jun 2022 05:40:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233023AbiF0JZx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 05:25:53 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0DD132DE4;
-        Mon, 27 Jun 2022 02:25:52 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C4B141758;
-        Mon, 27 Jun 2022 02:25:51 -0700 (PDT)
-Received: from [192.168.4.21] (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9BC583F792;
-        Mon, 27 Jun 2022 02:25:47 -0700 (PDT)
-Message-ID: <4e4b9e1a-778e-9ca1-5c15-65e45a532790@arm.com>
-Date:   Mon, 27 Jun 2022 10:25:42 +0100
+        with ESMTP id S233227AbiF0Jkg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 05:40:36 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D7C8271C;
+        Mon, 27 Jun 2022 02:40:34 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id sb34so17843001ejc.11;
+        Mon, 27 Jun 2022 02:40:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=4bs5ngsqqRx1f04+L+uYwafgG5i+bKqIK3lficiCvxw=;
+        b=Y36f5ADCzumyujivYanEu6iCETNpoIGG1d1Tu/H2yNKHxADocDxsZLzfVenAsLzEDK
+         byES0B1obpd5492FO7AnuduoDDe/yLnCIuCqnc8DWQRnJ4IywyLAtOKO+Xp18DaabXMy
+         yA1vimFH2FrfYKu6O3sfsoNZQQQhM50Emjn++ismXmwQPkR4uegTSJ9LfQe9iVyQlSjx
+         yO+oAq8g+0FHbmrr6Lp7OVh1/Vw9BiZSLhpL8I8NNJAcyJMsJahbS73uRm5LrUzJed4C
+         FuZ6K1uMHVMZaz70kEZ56BWfvCtYVIH+RKWXdsrtFj/P+zxrhKwTXGOw8l/29I6d3mZQ
+         hD1Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=4bs5ngsqqRx1f04+L+uYwafgG5i+bKqIK3lficiCvxw=;
+        b=U75G//HhMCrZIf2vAyhJGTVip5cPPnsWL/Jdp9vmmTLn4Xtw/bcr48zb9k2vvbCb6e
+         kmaio+0mVMQ1WCeR5LVufqhWxWizTDJOS8fvW0VxN9u9rtWp6pDE2UjKi2s+acfn7HBT
+         pEWk36UFfzWAwK6iEfjEby/Ydu7zReXxA7PNxD514P43HnkusCVFOMPsLq/TjcqEvpOI
+         yqIcqYwD33tLFQdJJVIFCr1bRpa5hlKf2ONf5TmSW0/dIgYt/i6SCESHRcWrgCkLlvOt
+         7gX7N6RAz6LQrZNbMxHCac1O1Swj6zxRJvtYdumOSGCMtL7xjVylvJKgh4p81xpqQLf2
+         P3zQ==
+X-Gm-Message-State: AJIora9G5uVcZ4IZ4wcemZ8UNqGdPlmHEA3jRFY6haIbzgYsJFXAq7Ih
+        fJzAEh7na0bnEIxODyFJT3o=
+X-Google-Smtp-Source: AGRyM1t5a7Eou055etsus47FVrwMiE9ka2jtp4iJ5wkJsRbnfGzhImC2+yniOdas5TTKgLTpEH9ocA==
+X-Received: by 2002:a17:907:8694:b0:726:31dc:47dd with SMTP id qa20-20020a170907869400b0072631dc47ddmr11997246ejc.395.1656322833024;
+        Mon, 27 Jun 2022 02:40:33 -0700 (PDT)
+Received: from skbuf ([188.25.231.135])
+        by smtp.gmail.com with ESMTPSA id f3-20020a170906138300b006fe9209a9edsm4778703ejc.128.2022.06.27.02.40.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Jun 2022 02:40:31 -0700 (PDT)
+Date:   Mon, 27 Jun 2022 12:40:29 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        UNGLinuxDriver@microchip.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux@armlinux.org.uk
+Subject: Re: [PATCH net-next 5/8] net: lan966x: Add lag support for lan966x.
+Message-ID: <20220627094029.el2m6k6w6ypgtwqg@skbuf>
+References: <20220626130451.1079933-1-horatiu.vultur@microchip.com>
+ <20220626130451.1079933-6-horatiu.vultur@microchip.com>
+ <20220626141139.kbwhpgmwzp7rpxgy@skbuf>
+ <20220627064612.vzz2sd7kxpxnprxc@soft-dev3-1.localhost>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH net-next 1/4] time64.h: define PSEC_PER_NSEC and use it in
- tc-taprio
-Content-Language: en-US
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Michael Walle <michael@walle.cc>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Maxim Kochetkov <fido_max@inbox.ru>,
-        Colin Foster <colin.foster@in-advantage.com>,
-        Richie Pearn <richard.pearn@nxp.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>
-References: <20220626120505.2369600-1-vladimir.oltean@nxp.com>
- <20220626120505.2369600-2-vladimir.oltean@nxp.com>
- <5db4e640-8165-d7bf-c6b6-192ea7edfafd@arm.com>
- <20220627085101.jw55y3fakqcw7zgi@skbuf>
-From:   Vincenzo Frascino <vincenzo.frascino@arm.com>
-In-Reply-To: <20220627085101.jw55y3fakqcw7zgi@skbuf>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-6.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220627064612.vzz2sd7kxpxnprxc@soft-dev3-1.localhost>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -66,55 +74,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Vladimir,
-
-On 6/27/22 09:51, Vladimir Oltean wrote:
-> Hi Vincenzo,
+On Mon, Jun 27, 2022 at 08:46:12AM +0200, Horatiu Vultur wrote:
+> > This incorrect logic seems to have been copied from ocelot from before
+> > commit a14e6b69f393 ("net: mscc: ocelot: fix incorrect balancing with
+> > down LAG ports").
+> > 
+> > The issue is that you calculate bond_mask with only_active_ports=true.
+> > This means the for_each_set_bit() will not iterate through the inactive
+> > LAG ports, and won't set the bond_mask as the PGID destination for those
+> > ports.
+> > 
+> > That isn't what is desired; as explained in that commit, inactive LAG
+> > ports should be removed via the aggregation PGIDs and not via the
+> > destination PGIDs. Otherwise, an FDB entry targeted towards the
+> > LAG (effectively towards the "primary" LAG port, whose logical port ID
+> > gives the LAG ID) will not egress even the "secondary" LAG port if the
+> > primary's link is down.
 > 
-> On Mon, Jun 27, 2022 at 08:52:51AM +0100, Vincenzo Frascino wrote:
->> Hi Vladimir,
->>
->> On 6/26/22 13:05, Vladimir Oltean wrote:
->>> Time-sensitive networking code needs to work with PTP times expressed in
->>> nanoseconds, and with packet transmission times expressed in
->>> picoseconds, since those would be fractional at higher than gigabit
->>> speed when expressed in nanoseconds.
->>>
->>> Convert the existing uses in tc-taprio to a PSEC_PER_NSEC macro.
->>>
->>> Cc: Andy Lutomirski <luto@kernel.org>
->>> Cc: Thomas Gleixner <tglx@linutronix.de>
->>> Cc: Vincenzo Frascino <vincenzo.frascino@arm.com>
->>> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
->>> ---
->>>  include/vdso/time64.h  | 1 +
->>>  net/sched/sch_taprio.c | 4 ++--
->>>  2 files changed, 3 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/include/vdso/time64.h b/include/vdso/time64.h
->>> index b40cfa2aa33c..f1c2d02474ae 100644
->>> --- a/include/vdso/time64.h
->>> +++ b/include/vdso/time64.h
->>> @@ -6,6 +6,7 @@
->>>  #define MSEC_PER_SEC	1000L
->>>  #define USEC_PER_MSEC	1000L
->>>  #define NSEC_PER_USEC	1000L
->>> +#define PSEC_PER_NSEC	1000L
->>
->> Are you planning to use this definition in the vdso library code? If not, you
->> should define PSEC_PER_NSEC in "include/linux/time64.h". The vdso namespace
->> should contain only the definitions shared by the implementations of the kernel
->> and of the vdso library.
-> 
-> I am not. I thought it would be ok to preserve the locality of
-> definitions by placing this near the others of its kind, since a macro
-> doesn't affect the compiled vDSO code in any way. But if you prefer, I
-> can create a new mini-section in linux/time64.h. Any preference on where
-> exactly to place that definition within the file?
+> Thanks for looking at this.
+> That is correct, ocelot was the source of inspiration. The issue that
+> you described in the mentioned commit is fixed in the last patch of this
+> series.
+> I will have a look at your commit and will try to integrated it. Thanks.
 
-I do not have a strong opinion on where to put it. But I think that if you put a
-section above TIME64_MAX should work.
-
--- 
-Regards,
-Vincenzo
+I figured that would be the case, although I didn't really understand
+the explanation from patch 8/8 (arguably, there it is said that the
+switch tries to send on the down port, not that it won't send on the up
+port, which is more relevant information). But in any case, it would be
+good to introduce code that works from the beginning, rather than fix it
+up in a follow-up patch. I believe that the commit I referenced is a
+simplification either way, since it removes the "only_active_ports"
+argument from the bond mask function.
