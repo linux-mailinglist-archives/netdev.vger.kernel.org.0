@@ -2,173 +2,241 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DDB8055C964
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 14:56:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C0D6955C782
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 14:54:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240846AbiF0XFw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jun 2022 19:05:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41456 "EHLO
+        id S241099AbiF0XRD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jun 2022 19:17:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240751AbiF0XFt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 19:05:49 -0400
-Received: from mail-io1-f49.google.com (mail-io1-f49.google.com [209.85.166.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A94FD22507;
-        Mon, 27 Jun 2022 16:05:48 -0700 (PDT)
-Received: by mail-io1-f49.google.com with SMTP id u20so11201008iob.8;
-        Mon, 27 Jun 2022 16:05:48 -0700 (PDT)
+        with ESMTP id S239986AbiF0XQ7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 19:16:59 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B73B23178;
+        Mon, 27 Jun 2022 16:16:57 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id eq6so15138140edb.6;
+        Mon, 27 Jun 2022 16:16:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=p/RWrnG5CvcdZnmSlYf5gOqW3tUhDBkt/ZrWvUubV7Q=;
+        b=iOJwzXHhA1f43yermVi07KMZL5AhwhcModmJOuH7TDgBLnTBUTc9MoaqTlRZjUjoRa
+         Ft6D+mzSy/aBNBC4Zy3ktvP7n9Mwd6c7NoC0ddxc3gOghRkrUNS6EcUG8UOrGHbqk7cJ
+         6vuVEr+TuXDXFockvLgj1JCATF5MhWaSHDsSPBOSaOUtJWxTzDY0AzGOAatn9BgdKn0J
+         mlk+KqFGHe+pQSYsCcf7z0Sui/KA9iWwXS2Djy64Ul12OnStxpBVBuv3P/eCwgkJFbpg
+         hGUzyD1bcpvf++kUS63MyR+8/0Rmw1kYk0YuMiK6wC9xbCoEsn7CBE9JSwdEbeHeRJct
+         SlvA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=RsbxMGrAEPpDrcq9SD5GCJ241orHnQShiio8WLL4UIU=;
-        b=vosbjv9Rzy6oFghQx+giSZ32iDKT/5vZrxBqa9FuukA6j5Q7zOPTG/Sejx74FzMej7
-         3v4Gf2D+7iwxNOmZCCE8tYi0wyF6LM71ynZ8MY3z7Sx7p5Yag10buDDpkzOxfZuB7iHB
-         jtqwnH9OVmhj2BwkoTr3RfV1rccKMF8k0hNDSH/8YCQJBC2rUkHNogRfjbqHUbcA5pKQ
-         73Xdvd2YFzNdnGVW1qc/+7Sh9VvodTAjYzK5HOAxS21aOlPquIYK+lO/kcOz8HhWzpXK
-         6m5OidXPFYeG9K1aLRSjtGoNGCGCZVvdJ1al+b327Fj1+3JhQmSq3zBRCM6dj2FpHVqi
-         PNPw==
-X-Gm-Message-State: AJIora9qy1BoJBXBDXA+s3e0GiiENXs5thgLngsQeGMflpmOZm9x7GJ9
-        zzrIF/Jq3fxbsVcKt/C+1A==
-X-Google-Smtp-Source: AGRyM1usk/wrttz5ONExBVqjv9hoJ7YL8ko7p4t0WyBusRIAayBBYIv7q93475PYWubiuUWy74YCpg==
-X-Received: by 2002:a02:a08d:0:b0:33c:6a7d:87db with SMTP id g13-20020a02a08d000000b0033c6a7d87dbmr7505895jah.64.1656371147890;
-        Mon, 27 Jun 2022 16:05:47 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.253])
-        by smtp.gmail.com with ESMTPSA id t64-20020a025443000000b0033b73557de4sm5156297jaa.93.2022.06.27.16.05.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jun 2022 16:05:47 -0700 (PDT)
-Received: (nullmailer pid 3134751 invoked by uid 1000);
-        Mon, 27 Jun 2022 23:05:45 -0000
-Date:   Mon, 27 Jun 2022 17:05:45 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Sean Anderson <sean.anderson@seco.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Madalin Bucur <madalin.bucur@nxp.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Eric Dumazet <edumazet@google.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH net-next 02/28] dt-bindings: net: fman: Add additional
- interface properties
-Message-ID: <20220627230545.GA3128808-robh@kernel.org>
-References: <20220617203312.3799646-1-sean.anderson@seco.com>
- <20220617203312.3799646-3-sean.anderson@seco.com>
- <d483da73-c5a1-2474-4992-f7ce9947d5ba@linaro.org>
- <4b305b67-7bc1-d188-23b8-6e5c7e81813b@seco.com>
- <9c0513dd-67ce-0d6a-f2a5-58e981f0d55c@linaro.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=p/RWrnG5CvcdZnmSlYf5gOqW3tUhDBkt/ZrWvUubV7Q=;
+        b=7+gkFltDG2uj7Sdu6NJxeH94QApLsfMkX8RCYAUN613YdzErsoaw8nN4SNOCdMGyow
+         UiCQKg9B1l4iy93MC6+lNPHrfN4Dt2ifbv3T10vdyiojima6F8lUAmYtsyzEXqeUSeAq
+         aBA2kdgH7GWqYV/ndCHm7AWz63N/3Xq6CXkWjF5ufF577UOmUdN9DPAsr/9TrJYdgS+A
+         TdKY8rwXZTnywSzfdokYwLxwsJj8txuJEohpBm0YCGU7WwzQnop6BOguoy/ERTpeaj/9
+         D/giACRKIyAssjCQ3Y/hzcMmp8yDz+Nm5wKRByZAeu+qAexaRl31rcPKQW3/bmPOaiQf
+         pXSQ==
+X-Gm-Message-State: AJIora9kS5IgjW3TiK5Ri/K2MAbP7FQH7Tb9cEAnPNtYz4ttJiisy9yK
+        wYMVmSYE+C9TCjdk6h5bCSCKwWTeoyqYqbeDloQ=
+X-Google-Smtp-Source: AGRyM1vwbgm9NsfYBpK363uThEsZQgIruI9F1H/fF/JoZIEZ7Hsw+zKw0xINkCAE4UsVwPI9wqYYxHoFLWd/c4Drgh4=
+X-Received: by 2002:a05:6402:3514:b0:435:f24a:fbad with SMTP id
+ b20-20020a056402351400b00435f24afbadmr18912316edd.311.1656371815794; Mon, 27
+ Jun 2022 16:16:55 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9c0513dd-67ce-0d6a-f2a5-58e981f0d55c@linaro.org>
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
+References: <20220609062412.3950380-1-james.hilliard1@gmail.com>
+ <CAEf4BzbL8ivLH=HZDFTNyCTFjhWrWLcY3K34Ef+q4Pr+oDe_Gw@mail.gmail.com> <CADvTj4opMh978fMBV7cH89wbS1N_PK31AybZJ5NUacnp4kBeqg@mail.gmail.com>
+In-Reply-To: <CADvTj4opMh978fMBV7cH89wbS1N_PK31AybZJ5NUacnp4kBeqg@mail.gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 27 Jun 2022 16:16:42 -0700
+Message-ID: <CAEf4BzbkckyfKuhu9CV9wofCHeYa83NnfQNeK82pXLe-s8zhxA@mail.gmail.com>
+Subject: Re: [PATCH v3 1/1] libbpf: fix broken gcc SEC pragma macro
+To:     James Hilliard <james.hilliard1@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "open list:BPF (Safe dynamic programs and tools)" 
+        <netdev@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jun 19, 2022 at 12:33:22PM +0200, Krzysztof Kozlowski wrote:
-> On 18/06/2022 17:55, Sean Anderson wrote:
-> > Hi Krzysztof,
-> > 
-> > On 6/17/22 9:16 PM, Krzysztof Kozlowski wrote:
-> >> On 17/06/2022 13:32, Sean Anderson wrote:
-> >>> At the moment, MEMACs are configured almost completely based on the
-> >>> phy-connection-type. That is, if the phy interface is RGMII, it assumed
-> >>> that RGMII is supported. For some interfaces, it is assumed that the
-> >>> RCW/bootloader has set up the SerDes properly. The actual link state is
-> >>> never reported.
-> >>>
-> >>> To address these shortcomings, the driver will need additional
-> >>> information. First, it needs to know how to access the PCS/PMAs (in
-> >>> order to configure them and get the link status). The SGMII PCS/PMA is
-> >>> the only currently-described PCS/PMA. Add the XFI and QSGMII PCS/PMAs as
-> >>> well. The XFI (and 1GBase-KR) PCS/PMA is a c45 "phy" which sits on the
-> >>> same MDIO bus as SGMII PCS/PMA. By default they will have conflicting
-> >>> addresses, but they are also not enabled at the same time by default.
-> >>> Therefore, we can let the default address for the XFI PCS/PMA be the
-> >>> same as for SGMII. This will allow for backwards-compatibility.
-> >>>
-> >>> QSGMII, however, cannot work with the current binding. This is because
-> >>> the QSGMII PCS/PMAs are only present on one MAC's MDIO bus. At the
-> >>> moment this is worked around by having every MAC write to the PCS/PMA
-> >>> addresses (without checking if they are present). This only works if
-> >>> each MAC has the same configuration, and only if we don't need to know
-> >>> the status. Because the QSGMII PCS/PMA will typically be located on a
-> >>> different MDIO bus than the MAC's SGMII PCS/PMA, there is no fallback
-> >>> for the QSGMII PCS/PMA.
-> >>>
-> >>> MEMACs (across all SoCs) support the following protocols:
-> >>>
-> >>> - MII
-> >>> - RGMII
-> >>> - SGMII, 1000Base-X, and 1000Base-KX
-> >>> - 2500Base-X (aka 2.5G SGMII)
-> >>> - QSGMII
-> >>> - 10GBase-R (aka XFI) and 10GBase-KR
-> >>> - XAUI and HiGig
-> >>>
-> >>> Each line documents a set of orthogonal protocols (e.g. XAUI is
-> >>> supported if and only if HiGig is supported). Additionally,
-> >>>
-> >>> - XAUI implies support for 10GBase-R
-> >>> - 10GBase-R is supported if and only if RGMII is not supported
-> >>> - 2500Base-X implies support for 1000Base-X
-> >>> - MII implies support for RGMII
-> >>>
-> >>> To switch between different protocols, we must reconfigure the SerDes.
-> >>> This is done by using the standard phys property. We can also use it to
-> >>> validate whether different protocols are supported (e.g. using
-> >>> phy_validate). This will work for serial protocols, but not RGMII or
-> >>> MII. Additionally, we still need to be compatible when there is no
-> >>> SerDes.
-> >>>
-> >>> While we can detect 10G support by examining the port speed (as set by
-> >>> fsl,fman-10g-port), we cannot determine support for any of the other
-> >>> protocols based on the existing binding. In fact, the binding works
-> >>> against us in some respects, because pcsphy-handle is required even if
-> >>> there is no possible PCS/PMA for that MAC. To allow for backwards-
-> >>> compatibility, we use a boolean-style property for RGMII (instead of
-> >>> presence/absence-style). When the property for RGMII is missing, we will
-> >>> assume that it is supported. The exception is MII, since no existing
-> >>> device trees use it (as far as I could tell).
-> >>>
-> >>> Unfortunately, QSGMII support will be broken for old device trees. There
-> >>> is nothing we can do about this because of the PCS/PMA situation (as
-> >>> described above).
-> >>>
-> >>> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
-> >>
-> >> Thanks for the patch but you add too many new properties. The file
-> >> should be converted to YAML/DT schema first.
-> > 
-> > Perhaps. However, conversion to yaml is a non-trivial task, especially for
-> > a complicated binding such as this one. I am more than happy to rework this
-> > patch to be based on a yaml conversion, but I do not have the bandwidth to
-> > do so myself.
-> 
-> I understand. Although since 2020  - since when we expect the bindings
-> to be in YAML - this file grew by 6 properties, because each person
-> extends it instead of converting. Each person uses the same excuse...
-> 
-> You add here 5 more, so it would be 11 new properties in total.
-> 
-> > 
-> > If you have any comments on the binding changes themselves, that would be
-> > much appreciated.
-> 
-> Maybe Rob will ack it, but for me the change is too big to be accepted
-> in TXT, so no from me.
+On Thu, Jun 9, 2022 at 4:27 PM James Hilliard <james.hilliard1@gmail.com> wrote:
+>
+> On Thu, Jun 9, 2022 at 12:13 PM Andrii Nakryiko
+> <andrii.nakryiko@gmail.com> wrote:
+> >
+> > On Wed, Jun 8, 2022 at 11:24 PM James Hilliard
+> > <james.hilliard1@gmail.com> wrote:
+> > >
+> > > It seems the gcc preprocessor breaks unless pragmas are wrapped
+> > > individually inside macros when surrounding __attribute__.
+> > >
+> > > Fixes errors like:
+> > > error: expected identifier or '(' before '#pragma'
+> > >   106 | SEC("cgroup/bind6")
+> > >       | ^~~
+> > >
+> > > error: expected '=', ',', ';', 'asm' or '__attribute__' before '#pragma'
+> > >   114 | char _license[] SEC("license") = "GPL";
+> > >       | ^~~
+> > >
+> > > Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
+> > > ---
+> > > Changes v2 -> v3:
+> > >   - just fix SEC pragma
+> > > Changes v1 -> v2:
+> > >   - replace typeof with __typeof__ instead of changing pragma macros
+> > > ---
+> > >  tools/lib/bpf/bpf_helpers.h | 7 ++++---
+> > >  1 file changed, 4 insertions(+), 3 deletions(-)
+> > >
+> > > diff --git a/tools/lib/bpf/bpf_helpers.h b/tools/lib/bpf/bpf_helpers.h
+> > > index fb04eaf367f1..66d23c47c206 100644
+> > > --- a/tools/lib/bpf/bpf_helpers.h
+> > > +++ b/tools/lib/bpf/bpf_helpers.h
+> > > @@ -22,11 +22,12 @@
+> > >   * To allow use of SEC() with externs (e.g., for extern .maps declarations),
+> > >   * make sure __attribute__((unused)) doesn't trigger compilation warning.
+> > >   */
+> > > +#define DO_PRAGMA(x) _Pragma(#x)
+> > >  #define SEC(name) \
+> > > -       _Pragma("GCC diagnostic push")                                      \
+> > > -       _Pragma("GCC diagnostic ignored \"-Wignored-attributes\"")          \
+> > > +       DO_PRAGMA("GCC diagnostic push")                                    \
+> > > +       DO_PRAGMA("GCC diagnostic ignored \"-Wignored-attributes\"")        \
+> > >         __attribute__((section(name), used))                                \
+> > > -       _Pragma("GCC diagnostic pop")                                       \
+> > > +       DO_PRAGMA("GCC diagnostic pop")                                     \
+> > >
+> >
+> > I'm not going to accept this unless I can repro it in the first place.
+> > Using -std=c17 doesn't trigger such issue. Please provide the repro
+> > first. Building systemd is not a repro, unfortunately. Please try to
+> > do it based on libbpf-bootstrap ([0])
+> >
+> >   [0] https://github.com/libbpf/libbpf-bootstrap
+>
+> Seems to reproduce just fine already there with:
+> https://github.com/libbpf/libbpf-bootstrap/blob/31face36d469a0e3e4c4ac1cafc66747d3150930/examples/c/minimal.bpf.c
+>
+> See here:
+> $ /home/buildroot/buildroot/output/per-package/libbpf/host/bin/bpf-gcc
+> -Winline -O2 -mframe-limit=32767 -mco-re -gbtf -std=gnu17 -v
+> -D__x86_64__ -mlittle-endian -I
+> /home/buildroot/buildroot/output/per-package/libbpf/host/x86_64-buildroot-linux-gnu/sysroot/usr/include
+> minimal.bpf.c -o minimal.bpf.o
+> Using built-in specs.
+> COLLECT_GCC=/home/buildroot/buildroot/output/per-package/libbpf/host/bin/bpf-gcc.br_real
+> COLLECT_LTO_WRAPPER=/home/buildroot/buildroot/output/per-package/libbpf/host/bin/../libexec/gcc/bpf-buildroot-none/12.1.0/lto-wrapper
+> Target: bpf-buildroot-none
+> Configured with: ./configure
+> --prefix=/home/buildroot/buildroot/output/per-package/host-gcc-bpf/host
+> --sysconfdir=/home/buildroot/buildroot/output/per-package/host-gcc-bpf/host/etc
+> --localstatedir=/home/buildroot/buildroot/output/per-package/host-gcc-bpf/host/var
+> --enable-shared --disable-static --disable-gtk-doc
+> --disable-gtk-doc-html --disable-doc --disable-docs
+> --disable-documentation --disable-debug --with-xmlto=no --with-fop=no
+> --disable-nls --disable-dependency-tracking
+> --target=bpf-buildroot-none
+> --prefix=/home/buildroot/buildroot/output/per-package/host-gcc-bpf/host
+> --sysconfdir=/home/buildroot/buildroot/output/per-package/host-gcc-bpf/host/etc
+> --enable-languages=c --with-gnu-ld --enable-static
+> --disable-decimal-float --disable-gcov --disable-libssp
+> --disable-multilib --disable-shared
+> --with-gmp=/home/buildroot/buildroot/output/per-package/host-gcc-bpf/host
+> --with-mpc=/home/buildroot/buildroot/output/per-package/host-gcc-bpf/host
+> --with-mpfr=/home/buildroot/buildroot/output/per-package/host-gcc-bpf/host
+> --with-pkgversion='Buildroot 2022.05-118-ge052166011-dirty'
+> --with-bugurl=http://bugs.buildroot.net/ --without-zstd --without-isl
+> --without-cloog
+> Thread model: single
+> Supported LTO compression algorithms: zlib
+> gcc version 12.1.0 (Buildroot 2022.05-118-ge052166011-dirty)
+> COLLECT_GCC_OPTIONS='--sysroot=/home/buildroot/buildroot/output/per-package/libbpf/host/x86_64-buildroot-linux-gnu/sysroot'
+> '-Winline' '-O2' '-mframe-limit=32767' '-mco-re' '-gbtf' '-std=gnu17'
+> '-v' '-D' '__x86_64__' '-mlittle-endian' '-I'
+> '/home/buildroot/buildroot/output/per-package/libbpf/host/x86_64-buildroot-linux-gnu/sysroot/usr/include'
+> '-o' 'minimal.bpf.o' '-dumpdir' 'minimal.bpf.o-'
+>  /home/buildroot/buildroot/output/per-package/libbpf/host/bin/../libexec/gcc/bpf-buildroot-none/12.1.0/cc1
+> -quiet -v -I /home/buildroot/buildroot/output/per-package/libbpf/host/x86_64-buildroot-linux-gnu/sysroot/usr/include
+> -iprefix /home/buildroot/buildroot/output/per-package/libbpf/host/bin/../lib/gcc/bpf-buildroot-none/12.1.0/
+> -isysroot /home/buildroot/buildroot/output/per-package/libbpf/host/x86_64-buildroot-linux-gnu/sysroot
+> -D __x86_64__ minimal.bpf.c -quiet -dumpdir minimal.bpf.o- -dumpbase
+> minimal.bpf.c -dumpbase-ext .c -mframe-limit=32767 -mco-re
+> -mlittle-endian -gbtf -O2 -Winline -std=gnu17 -version -o
+> /tmp/cct4AXvg.s
+> GNU C17 (Buildroot 2022.05-118-ge052166011-dirty) version 12.1.0
+> (bpf-buildroot-none)
+>     compiled by GNU C version 12.1.0, GMP version 6.2.1, MPFR version
+> 4.1.0, MPC version 1.2.1, isl version none
+> GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+> ignoring nonexistent directory
+> "/home/buildroot/buildroot/output/per-package/libbpf/host/bin/../lib/gcc/bpf-buildroot-none/12.1.0/../../../../bpf-buildroot-none/sys-include"
+> ignoring nonexistent directory
+> "/home/buildroot/buildroot/output/per-package/libbpf/host/bin/../lib/gcc/bpf-buildroot-none/12.1.0/../../../../bpf-buildroot-none/include"
+> ignoring duplicate directory
+> "/home/buildroot/buildroot/output/per-package/libbpf/host/bin/../lib/gcc/../../lib/gcc/bpf-buildroot-none/12.1.0/include"
+> ignoring duplicate directory
+> "/home/buildroot/buildroot/output/per-package/libbpf/host/bin/../lib/gcc/../../lib/gcc/bpf-buildroot-none/12.1.0/include-fixed"
+> ignoring nonexistent directory
+> "/home/buildroot/buildroot/output/per-package/libbpf/host/bin/../lib/gcc/../../lib/gcc/bpf-buildroot-none/12.1.0/../../../../bpf-buildroot-none/sys-include"
+> ignoring nonexistent directory
+> "/home/buildroot/buildroot/output/per-package/libbpf/host/bin/../lib/gcc/../../lib/gcc/bpf-buildroot-none/12.1.0/../../../../bpf-buildroot-none/include"
+> #include "..." search starts here:
+> #include <...> search starts here:
+>  /home/buildroot/buildroot/output/per-package/libbpf/host/x86_64-buildroot-linux-gnu/sysroot/usr/include
+>  /home/buildroot/buildroot/output/per-package/libbpf/host/bin/../lib/gcc/bpf-buildroot-none/12.1.0/include
+>  /home/buildroot/buildroot/output/per-package/libbpf/host/bin/../lib/gcc/bpf-buildroot-none/12.1.0/include-fixed
+> End of search list.
+> GNU C17 (Buildroot 2022.05-118-ge052166011-dirty) version 12.1.0
+> (bpf-buildroot-none)
+>     compiled by GNU C version 12.1.0, GMP version 6.2.1, MPFR version
+> 4.1.0, MPC version 1.2.1, isl version none
+> GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+> Compiler executable checksum: 9bf241ca1a2dd4ffd7652c5e247c9be8
+> minimal.bpf.c:6:1: error: expected '=', ',', ';', 'asm' or
+> '__attribute__' before '#pragma'
+>     6 | char LICENSE[] SEC("license") = "Dual BSD/GPL";
+>       | ^~~
+> minimal.bpf.c:6:1: error: expected identifier or '(' before '#pragma'
+> minimal.bpf.c:10:1: error: expected identifier or '(' before '#pragma'
+>    10 | SEC("tp/syscalls/sys_enter_write")
+>       | ^~~
 
-Above my threshold for not first converting too. Really, I'm pretty 
-close to saying no .txt file changes at all. Maybe compatible string 
-updates only, people should be rewarded for not changing their h/w.
+So this is a bug (hard to call this a feature) in gcc (not even
+bpf-gcc, I could repro with a simple gcc). Is there a bug reported for
+this somewhere? Are GCC folks aware and working on the fix?
 
-Rob
+What's curious is that the only thing that allows to bypass this is
+adding #x in macro, having #define DO_PRAGMA(x) _Pragma(x) doesn't
+help.
+
+So ideally GCC can fix this? But either way your patch as is
+erroneously passing extra quoted strings to _Pragma().
+
+I'm pondering whether it's just cleaner to define SEC() without
+pragmas for GCC? It will only cause compiler warning about unnecessary
+unused attribute for extern *variable* declarations, which are very
+rare. Instead of relying on this quirky "fix" approach. Ideally,
+though, GCC just fixes _Pragma() handling, of course.
+
+>
+> >
+> > >  /* Avoid 'linux/stddef.h' definition of '__always_inline'. */
+> > >  #undef __always_inline
+> > > --
+> > > 2.25.1
+> > >
