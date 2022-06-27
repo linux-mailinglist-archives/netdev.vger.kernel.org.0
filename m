@@ -2,74 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E27B955D768
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:18:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A21C55D14B
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:09:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233041AbiF0Hoc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jun 2022 03:44:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51838 "EHLO
+        id S233098AbiF0Hpu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jun 2022 03:45:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233023AbiF0Hob (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 03:44:31 -0400
+        with ESMTP id S233099AbiF0Hpr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 03:45:47 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3410C60C6
-        for <netdev@vger.kernel.org>; Mon, 27 Jun 2022 00:44:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EBA0D60ED
+        for <netdev@vger.kernel.org>; Mon, 27 Jun 2022 00:45:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656315868;
+        s=mimecast20190719; t=1656315946;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=9JFk1orzuEaIozJoxvbuTHAStsu1Q5iabE/7CHYRH08=;
-        b=Mv3kIJErS7wp/Y55Ab2p1uQCUVZA/zUdHu0cLlnLJIwsJkJF8M+4fiheZ8El4nfAGf+Rkl
-        jlynTXMBUmlJoaBGti7nxQzyd3uX7rm+wOemk6/GIXijQ1Mbpj43f+pZO7VzABcW9/UexR
-        DaB1Oej8as9VRRi1YBj2tCWO3Z83GFE=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=DJ8lTv8mNQFqfIpLLTdJ5wTzmtewiqdkMpwZ7L0k0po=;
+        b=KXg4+yAT/k4dGT4oL0+uisSo09uQ5Gm/y6wyRSIBGKhckjOlFnUG4iZbWWBHQlxP97J69p
+        a8bKlkjeXWOvT/VrbTnMkYBxyNP2PKxJZN/vl5qYJxjB+uShrRL5GGctYLATOWSYuTse1i
+        cbMAuTiSvxvuoxG+Zznu0Qg/RHTq9Ko=
+Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com
+ [209.85.167.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-135-A_5fLLhnP1e98V_L_aaQsA-1; Mon, 27 Jun 2022 03:44:26 -0400
-X-MC-Unique: A_5fLLhnP1e98V_L_aaQsA-1
-Received: by mail-wr1-f70.google.com with SMTP id n5-20020adf8b05000000b00219ece7272bso950048wra.8
-        for <netdev@vger.kernel.org>; Mon, 27 Jun 2022 00:44:26 -0700 (PDT)
+ us-mta-183-HdrXa0R8OUWISBtCVwOe-g-1; Mon, 27 Jun 2022 03:45:42 -0400
+X-MC-Unique: HdrXa0R8OUWISBtCVwOe-g-1
+Received: by mail-lf1-f69.google.com with SMTP id z13-20020a056512308d00b004811694f893so1249163lfd.6
+        for <netdev@vger.kernel.org>; Mon, 27 Jun 2022 00:45:42 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=9JFk1orzuEaIozJoxvbuTHAStsu1Q5iabE/7CHYRH08=;
-        b=bDbPc4f6s1hktR/pZBgWoO4XpgDmaBuYzBSYdH6HOhxRdeWUVdlQfZCP+2q+12mg4a
-         FfxMbTMcofvs4aTnnohFj7EWyC1FrzLKaCXFhm5pg86vfgeU9cWMR8bIKDYT6FDw/8a6
-         5Tsc+tNfgjV6ypJlzUj1jCyQsc0CJbnJlUqRgxu61bEs5O5YXwDe1i0dZgegiGEHBbJP
-         ulrCH6qQoNX7+wl/CsLMHGZJfUYYqJZwCndVxeYl6MKVdd74kudYrwqkkT0eBLNGIoP/
-         QP9r/QENVxnkNDr/GCneXg1tUuoWpUP618Xl/iIHRPDPEMaE1P7aSv0AHzITXDkIzuNF
-         bitw==
-X-Gm-Message-State: AJIora8byMWVLEH9a8rK9Anfcxy/U49OVbXMdyOmkOHh9uFV3EFQcdwM
-        /qTAlHrVIcraGYRfL+bD9kXr17Mv33EzUAM5puaMgLaYdH+P128dWNmzmDnxQg0h/NAaFZThmJw
-        EwE7jdUtaszLAWDKj
-X-Received: by 2002:a5d:49cc:0:b0:21b:aaec:eba8 with SMTP id t12-20020a5d49cc000000b0021baaeceba8mr10755141wrs.660.1656315865084;
-        Mon, 27 Jun 2022 00:44:25 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1sbVryOidUE0xJ953k5Axs8LsqG+OeJXJtKMhrC6JEI5Et8HZUs3TNohurBNJO6jZ45MJflcw==
-X-Received: by 2002:a5d:49cc:0:b0:21b:aaec:eba8 with SMTP id t12-20020a5d49cc000000b0021baaeceba8mr10755126wrs.660.1656315864813;
-        Mon, 27 Jun 2022 00:44:24 -0700 (PDT)
-Received: from redhat.com ([2.54.45.90])
-        by smtp.gmail.com with ESMTPSA id k8-20020a05600c1c8800b003a04722d745sm5020741wms.23.2022.06.27.00.44.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jun 2022 00:44:24 -0700 (PDT)
-Date:   Mon, 27 Jun 2022 03:44:20 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] virtio-net: fix race between ndo_open() and
- virtio_device_ready()
-Message-ID: <20220627033422-mutt-send-email-mst@kernel.org>
-References: <20220627063656.52397-1-jasowang@redhat.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=DJ8lTv8mNQFqfIpLLTdJ5wTzmtewiqdkMpwZ7L0k0po=;
+        b=pg6SV1sRpqVmVMf11BGDE/9GEsSmBETDO/I2jmliINHWPKX6+9MIsSbDPrKrhUolRw
+         x+fToomzj/OiLGoH0JHdrlTzMJPBnZVspkkisyBgbaatl3aGs8+OE3q33NF42w/3HCrW
+         g/5Z5ak9bOk9quQEG5yRuwtFFw3/kXRKauQUFiw7gbNnQoffYiYGaZaqXZFPzq+FnjF4
+         0ec+qrdazH4WtgUJKxVO18i6sofwtTsITU6a2ILDbLT2veeIbMf3N4AVxW72QAMTRynB
+         agSAi0NravV2BCrRhGqpkhrj6rSV7AjM9YozMjw2E5vRdlokM1bmyQkyJwP/Cs58NSxM
+         MCgA==
+X-Gm-Message-State: AJIora+9MOuIHhtW2SNJ9/fU5JxUuiTqIVQQH/MGy6uB2eKqXZwLswlQ
+        oiWN1b4N13HVfqlEB8Q0GfEaELqjkuhZE2NHMOOjc5ArzqX5Fd/xdFUYUQfsfctU+09pDwMXn20
+        cMDXdUuwkNRxeiWpOYm2TqboDXO2A5dsw
+X-Received: by 2002:a2e:aaa5:0:b0:25b:ae57:4ad7 with SMTP id bj37-20020a2eaaa5000000b0025bae574ad7mr6113587ljb.323.1656315941392;
+        Mon, 27 Jun 2022 00:45:41 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1vViYYUTuYJvHrB7a6J1t+RbESIVnJ/fW5l8pDtbVNhAjJvWLMAazge0YptM+fayabkTwGDETijvn1jNEjsB7g=
+X-Received: by 2002:a2e:aaa5:0:b0:25b:ae57:4ad7 with SMTP id
+ bj37-20020a2eaaa5000000b0025bae574ad7mr6113578ljb.323.1656315941180; Mon, 27
+ Jun 2022 00:45:41 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220627063656.52397-1-jasowang@redhat.com>
+References: <20220624025621.128843-1-xuanzhuo@linux.alibaba.com>
+ <20220624025621.128843-26-xuanzhuo@linux.alibaba.com> <20220624025817-mutt-send-email-mst@kernel.org>
+ <CACGkMEseptD=45j3kQr0yciRxR679Jcig=292H07-RYC2vXmFQ@mail.gmail.com> <20220627023841-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20220627023841-mutt-send-email-mst@kernel.org>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Mon, 27 Jun 2022 15:45:30 +0800
+Message-ID: <CACGkMEvy8xF2T_vubKeUEPC2aroO_fbB0Xe8nnxK4OBUgAS+Gw@mail.gmail.com>
+Subject: Re: [PATCH v10 25/41] virtio_pci: struct virtio_pci_common_cfg add queue_notify_data
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        Vadim Pasternak <vadimp@nvidia.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Eric Farman <farman@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        linux-um@lists.infradead.org, netdev <netdev@vger.kernel.org>,
+        platform-driver-x86@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
+        kvm <kvm@vger.kernel.org>,
+        "open list:XDP (eXpress Data Path)" <bpf@vger.kernel.org>,
+        kangjie.xu@linux.alibaba.com
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,71 +104,74 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 02:36:56PM +0800, Jason Wang wrote:
-> We used to call virtio_device_ready() after netdev registration.
+On Mon, Jun 27, 2022 at 2:39 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+>
+> On Mon, Jun 27, 2022 at 10:30:42AM +0800, Jason Wang wrote:
+> > On Fri, Jun 24, 2022 at 2:59 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+> > >
+> > > On Fri, Jun 24, 2022 at 10:56:05AM +0800, Xuan Zhuo wrote:
+> > > > Add queue_notify_data in struct virtio_pci_common_cfg, which comes from
+> > > > here https://github.com/oasis-tcs/virtio-spec/issues/89
+> > > >
+> > > > For not breaks uABI, add a new struct virtio_pci_common_cfg_notify.
+> > >
+> > > What exactly is meant by not breaking uABI?
+> > > Users are supposed to be prepared for struct size to change ... no?
+> >
+> > Not sure, any doc for this?
+> >
+> > Thanks
+>
+>
+> Well we have this:
+>
+>         The drivers SHOULD only map part of configuration structure
+>         large enough for device operation.  The drivers MUST handle
+>         an unexpectedly large \field{length}, but MAY check that \field{length}
+>         is large enough for device operation.
 
-s/used to call/currently call/
+Yes, but that's the device/driver interface. What's done here is the
+userspace/kernel.
 
-> This
-> cause
+Userspace may break if it uses e.g sizeof(struct virtio_pci_common_cfg)?
 
-s/This cause/Since ndo_open can be called immediately
-after register_netdev, this means there exists/
+Thanks
 
-> a race between ndo_open() and virtio_device_ready(): if
-> ndo_open() is called before virtio_device_ready(), the driver may
-> start to use the device before DRIVER_OK which violates the spec.
-> 
-> Fixing
-
-s/Fixing/Fix/
-
-> this by switching to use register_netdevice() and protect the
-> virtio_device_ready() with rtnl_lock() to make sure ndo_open() can
-> only be called after virtio_device_ready().
-> 
-> Fixes: 4baf1e33d0842 ("virtio_net: enable VQs early")
-
-it's an unusual use of Fixes - the patch in question does not
-introduce the problem, it just does not fix it completely.
-But OK I guess.
-
-> Signed-off-by: Jason Wang <jasowang@redhat.com>
-
-With commit log changes:
-
-Acked-by: Michael S. Tsirkin <mst@redhat.com>
-
-> ---
->  drivers/net/virtio_net.c | 8 +++++++-
->  1 file changed, 7 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index db05b5e930be..8a5810bcb839 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -3655,14 +3655,20 @@ static int virtnet_probe(struct virtio_device *vdev)
->  	if (vi->has_rss || vi->has_rss_hash_report)
->  		virtnet_init_default_rss(vi);
->  
-> -	err = register_netdev(dev);
-> +	/* serialize netdev register + virtio_device_ready() with ndo_open() */
-> +	rtnl_lock();
-> +
-> +	err = register_netdevice(dev);
->  	if (err) {
->  		pr_debug("virtio_net: registering device failed\n");
-> +		rtnl_unlock();
->  		goto free_failover;
->  	}
->  
->  	virtio_device_ready(vdev);
->  
-> +	rtnl_unlock();
-> +
->  	err = virtnet_cpu_notif_add(vi);
->  	if (err) {
->  		pr_debug("virtio_net: registering cpu notifier failed\n");
-> -- 
-> 2.25.1
+>
+>
+>
+> >
+> > >
+> > >
+> > > > Since I want to add queue_reset after queue_notify_data, I submitted
+> > > > this patch first.
+> > > >
+> > > > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> > > > Acked-by: Jason Wang <jasowang@redhat.com>
+> > > > ---
+> > > >  include/uapi/linux/virtio_pci.h | 7 +++++++
+> > > >  1 file changed, 7 insertions(+)
+> > > >
+> > > > diff --git a/include/uapi/linux/virtio_pci.h b/include/uapi/linux/virtio_pci.h
+> > > > index 3a86f36d7e3d..22bec9bd0dfc 100644
+> > > > --- a/include/uapi/linux/virtio_pci.h
+> > > > +++ b/include/uapi/linux/virtio_pci.h
+> > > > @@ -166,6 +166,13 @@ struct virtio_pci_common_cfg {
+> > > >       __le32 queue_used_hi;           /* read-write */
+> > > >  };
+> > > >
+> > > > +struct virtio_pci_common_cfg_notify {
+> > > > +     struct virtio_pci_common_cfg cfg;
+> > > > +
+> > > > +     __le16 queue_notify_data;       /* read-write */
+> > > > +     __le16 padding;
+> > > > +};
+> > > > +
+> > > >  /* Fields in VIRTIO_PCI_CAP_PCI_CFG: */
+> > > >  struct virtio_pci_cfg_cap {
+> > > >       struct virtio_pci_cap cap;
+> > > > --
+> > > > 2.31.0
+> > >
+>
 
