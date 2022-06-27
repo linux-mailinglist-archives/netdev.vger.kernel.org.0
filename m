@@ -2,115 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E7C855DA6E
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:23:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C24CA55D670
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:16:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240289AbiF0MQq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jun 2022 08:16:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53386 "EHLO
+        id S234390AbiF0M1M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jun 2022 08:27:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233238AbiF0MQo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 08:16:44 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CD98DED0;
-        Mon, 27 Jun 2022 05:16:44 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id h9-20020a17090a648900b001ecb8596e43so9230421pjj.5;
-        Mon, 27 Jun 2022 05:16:44 -0700 (PDT)
+        with ESMTP id S229582AbiF0M1L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 08:27:11 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E37962AF6
+        for <netdev@vger.kernel.org>; Mon, 27 Jun 2022 05:27:09 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id v14so12826632wra.5
+        for <netdev@vger.kernel.org>; Mon, 27 Jun 2022 05:27:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=gzxBbJxhdHK6PNoavR99hps1yhOfCLiWPLboRKYj7ko=;
-        b=ZRFbVcvsBqhinQXNr/BOVOG9sV99j1Dkygit4IkDetSqhua+BHHR6GqN5kV1qSnThz
-         xIaiZ3SYUUAoXBZVhNgovSnGPg6F2yJOiZ/JVVa7dFDoHGNLVGe8FROiDZwnMefWq/G6
-         ohPY9NdesHaJYPKSfhgQgU/xcW8rzUT9kgrzm8SuVV1BbKTi1VxbLATSiE13Zwkeg0Mn
-         N1A9yQ8ekUkK8wWu6MKX09H4SNITQrJZZR/uzQeI360+EnGCpXu6srsBvpmDwdJ/G13o
-         WWIg1foMw6ZmcZoDMjvA0khfRBdx8qnwYADyLxoNpFup+fno95QRfRBgVRoun4OBFpUE
-         2G7A==
+        d=tessares-net.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=wbsk5o6KgdL4SnufubuiVYM7EL+gtXq5PDT+l+PqB58=;
+        b=G39QUtITWY0/DbOcOb//w+M4CHOPXvYEoF0ubU5juOPNHcEYSrbvs643OgfKroXIDK
+         HCnkbocFpkO8zOxae0uYMUwDCj8D8+g1OP5T04xB2IOh8VzD4Kq43QVYZduOEWxxN3n2
+         TXvgzj0sEK993zoM4sITfkxNnS4p0fDaE/Or310c/w8ffN8kd0jI/k6mByuoK5jorTYh
+         MXJxNy/srJ7sIfNNF2DN+XQmh/VGhAyTT+gdbvkIJbgGVGPnLN3p4hqfc0GcZuziZcYO
+         zjntYDlGC9aTnlmUUrOEw7yZz7SHrfAsJcfhxAtYalKS4GetimgBD5h6UWA24P8f5RpN
+         OI5A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=gzxBbJxhdHK6PNoavR99hps1yhOfCLiWPLboRKYj7ko=;
-        b=Efmosx55uethjpNLWm6LUvGs2BIYIiSeXBsl/TvjzubqkBuZrE9W96PFOIMhWqgLd/
-         e5g3wkitAgOyHZYA1XDtDJhRcE3Jntewpwz5mQ6mTC/MLDF07FiQh1GdxNbidAzn5f6P
-         YU4DaiT0Ob/FQewjDLivGeGnybK7k/W3j70NdE0mw3Gqov/fEbIcNS4Z7TVnK0zCOXWU
-         WgaM9tbXSuz2URfE+2ckXEaWu24z9lZvnEYAEOiKpkcaVdAJ1H0714MB9fxR9Jx5dIS0
-         rGtjyVuefPYe9HIhaPq7+N5B7qmmg9+IMdjCYGEXgUqwT97zKcIYxKe3DtO/hBShLXak
-         uLVg==
-X-Gm-Message-State: AJIora84SPPddxmwUyQ8Izqd/WuqupDn5Q8mfWrYNrUpJ5IY160OWfPF
-        AeBH5fRUjJ1PFzm9VD8d8SY=
-X-Google-Smtp-Source: AGRyM1tg6C4UQ21pl4+ohFSN9n9PXFWmzvYebZbqdMhPyjty+7iSxesWjR6H5X46le/MTfoHBdLS4A==
-X-Received: by 2002:a17:90b:1d84:b0:1ed:5918:74e3 with SMTP id pf4-20020a17090b1d8400b001ed591874e3mr8785846pjb.173.1656332203802;
-        Mon, 27 Jun 2022 05:16:43 -0700 (PDT)
-Received: from localhost.localdomain ([203.205.141.82])
-        by smtp.gmail.com with ESMTPSA id h6-20020a170902680600b00163ffe73300sm7057389plk.137.2022.06.27.05.16.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jun 2022 05:16:43 -0700 (PDT)
-From:   menglong8.dong@gmail.com
-X-Google-Original-From: imagedong@tencent.com
-To:     kuba@kernel.org
-Cc:     mathew.j.martineau@linux.intel.com, matthieu.baerts@tessares.net,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        netdev@vger.kernel.org, mptcp@lists.linux.dev,
-        linux-kernel@vger.kernel.org, Menglong Dong <imagedong@tencent.com>
-Subject: [PATCH net-next] net: mptcp: fix some spelling mistake in mptcp
-Date:   Mon, 27 Jun 2022 20:16:25 +0800
-Message-Id: <20220627121626.1595732-1-imagedong@tencent.com>
-X-Mailer: git-send-email 2.36.1
+        bh=wbsk5o6KgdL4SnufubuiVYM7EL+gtXq5PDT+l+PqB58=;
+        b=EITAiPUYq0JXeL5XS1rnp+/faDk9BttMY8UwaLp87QmAZSLAWO/8VfpNtrXnbkil3C
+         FDg77KEmzLfb1sDpf9wcGuUEjC2GOZkKogzayo+Db7euCcS76QHVA15691A/gOVC/aWD
+         Q1hACl7UrQQWo5OXtQ+JaHGJVR2EhtjY1GndeCdXWqvMjS7CWuX3C32bQtKFSVzTmyzF
+         F9kbFfGQ+68yDDwCrsqqmUmAKGNC6a65KEDp/IEUciYbe0Vv3Rd2He+LxgEMNe4qTR6M
+         0SJ5TRDituTPhQ1jcXQb4HYBFWocciv3s4SkIcrcvn9XPUc9+/bctWSNfRF1GXp7jQcX
+         reaw==
+X-Gm-Message-State: AJIora8A127ZUDeQzrhefg/I9TzpRdml0Z67wBzutAmXvSxL+f4vH9Is
+        Q6OmN5OHI0sjd+SIVfmxgVHRJg==
+X-Google-Smtp-Source: AGRyM1s10QCPtzo9j4RkTgku5PKsw19klOZT3gv3QSpsPaPKYe0nS6sDZVGtf8it5iJlLaSmpS/klg==
+X-Received: by 2002:a5d:6da8:0:b0:218:510a:be9f with SMTP id u8-20020a5d6da8000000b00218510abe9fmr12054141wrs.352.1656332828373;
+        Mon, 27 Jun 2022 05:27:08 -0700 (PDT)
+Received: from [10.44.2.26] ([81.246.10.41])
+        by smtp.gmail.com with ESMTPSA id d10-20020adff2ca000000b0021a38089e99sm10360546wrp.57.2022.06.27.05.27.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 27 Jun 2022 05:27:07 -0700 (PDT)
+Message-ID: <c1fb40e6-7bab-20a3-febe-3af3b84fc2cd@tessares.net>
+Date:   Mon, 27 Jun 2022 14:27:06 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH net-next] net: mptcp: fix some spelling mistake in mptcp
+Content-Language: en-GB
+To:     menglong8.dong@gmail.com, kuba@kernel.org
+Cc:     mathew.j.martineau@linux.intel.com, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, netdev@vger.kernel.org,
+        mptcp@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Menglong Dong <imagedong@tencent.com>
+References: <20220627121626.1595732-1-imagedong@tencent.com>
+From:   Matthieu Baerts <matthieu.baerts@tessares.net>
+In-Reply-To: <20220627121626.1595732-1-imagedong@tencent.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Menglong Dong <imagedong@tencent.com>
+Hi Menglong Dong,
 
-codespell finds some spelling mistake in mptcp:
+On 27/06/2022 14:16, menglong8.dong@gmail.com wrote:
+> From: Menglong Dong <imagedong@tencent.com>
+> 
+> codespell finds some spelling mistake in mptcp:
+> 
+> net/mptcp/subflow.c:1624: interaces ==> interfaces
+> net/mptcp/pm_netlink.c:1130: regarless ==> regardless
+> 
+> Just fix them.
 
-net/mptcp/subflow.c:1624: interaces ==> interfaces
-net/mptcp/pm_netlink.c:1130: regarless ==> regardless
+Thank you for this fix.
 
-Just fix them.
+Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
 
-Signed-off-by: Menglong Dong <imagedong@tencent.com>
----
- net/mptcp/pm_netlink.c | 2 +-
- net/mptcp/subflow.c    | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
-index e099f2a12504..3de83e2a2611 100644
---- a/net/mptcp/pm_netlink.c
-+++ b/net/mptcp/pm_netlink.c
-@@ -1127,7 +1127,7 @@ void mptcp_pm_nl_subflow_chk_stale(const struct mptcp_sock *msk, struct sock *ss
- 			}
- 			unlock_sock_fast(ssk, slow);
- 
--			/* always try to push the pending data regarless of re-injections:
-+			/* always try to push the pending data regardless of re-injections:
- 			 * we can possibly use backup subflows now, and subflow selection
- 			 * is cheap under the msk socket lock
- 			 */
-diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-index 654cc602ff2c..8c3e699d3387 100644
---- a/net/mptcp/subflow.c
-+++ b/net/mptcp/subflow.c
-@@ -1621,7 +1621,7 @@ int mptcp_subflow_create_socket(struct sock *sk, struct socket **new_sock)
- 	/* the newly created socket really belongs to the owning MPTCP master
- 	 * socket, even if for additional subflows the allocation is performed
- 	 * by a kernel workqueue. Adjust inode references, so that the
--	 * procfs/diag interaces really show this one belonging to the correct
-+	 * procfs/diag interfaces really show this one belonging to the correct
- 	 * user.
- 	 */
- 	SOCK_INODE(sf)->i_ino = SOCK_INODE(sk->sk_socket)->i_ino;
+Cheers,
+Matt
 -- 
-2.36.1
-
+Tessares | Belgium | Hybrid Access Solutions
+www.tessares.net
