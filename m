@@ -2,201 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 63F5955D607
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:16:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27DC855CB10
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 14:59:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238819AbiF0QGp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jun 2022 12:06:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39780 "EHLO
+        id S238881AbiF0QJW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jun 2022 12:09:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238946AbiF0QGk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 12:06:40 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 111ED18B11;
-        Mon, 27 Jun 2022 09:06:39 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id o10so13776602edi.1;
-        Mon, 27 Jun 2022 09:06:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=iuUWp9TRDjV8xfxvCWucHl38XhVPl+OOiSPhV3nTBNU=;
-        b=P1KgjzNMzTbU02Xdz1jhSzqkjg+/Ua9ZFGv2do6fIZsZHHbzn0SJAI7GJWkOVK7lQ6
-         r6tgeY6+6cc1y5N3JSaLXF4u6vgo38QWnEK1/yC5LcyY8j+XMshtbWTOkphK6N/frYV1
-         KewycUy7CV0QtMIzvflQrnNWwBEVWb17wHMeluD01ar2fPCSdM6uhQ1Dub06c358ESh5
-         pfa850qzPD3mtK5431jZXZvxvnp/Lr5T1CHYH/udwJs24gfVVmGC93WeOaWnrmveTQGZ
-         AoDNUdI05wizpG/NPB/VnqhtKrtouINsOD/HQUU0x1TrrIckJxO59IlWHrtnRGNOEe5E
-         SKxw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=iuUWp9TRDjV8xfxvCWucHl38XhVPl+OOiSPhV3nTBNU=;
-        b=yinJ/aJCeehb0A6OTM3BskGRNoybsxlifp5it0xyVj2D7CsfXm2cHmlF6Tub/1CoSR
-         p+ghQ6FbYj+50Yu6km/MMG+Fo07DHu1taGpPSqdUEa2ap2NrIzbDe6aZWpn29Thw7j6C
-         Upbd05oJzCpOLhLsm+q8hqD/V6V+gtxhEkoWwODuuDQB1eOog34SGlgDckrSXyaA1dpd
-         h4TzeTW/mfOYW+It/J0AJWN1pFgMhJCIPyl9dJdOvHsrAk1B9kIw73mSeVSwwUzVN/+9
-         sh74SBAsaYXUVno0tvOXIOqBKlxZkeUZMQrWRioFEHbCyucQl4O5oBjv+lLVRD3/TjY3
-         UMTw==
-X-Gm-Message-State: AJIora+mTuG1OR6Zea6aujFhH9pUhp6wEePORZfHfCYQiDKemOqu+X9z
-        Y5sNvV3GGDB+NGZCuR1I778=
-X-Google-Smtp-Source: AGRyM1vvn6z+JQ7FLdOGqNSyhTsbwQd6U8hADBkygQKpKeWIgtARIaam0U5/zWgvi0rwVmhQij6o+Q==
-X-Received: by 2002:a05:6402:4252:b0:437:6618:1738 with SMTP id g18-20020a056402425200b0043766181738mr17811363edb.259.1656345997452;
-        Mon, 27 Jun 2022 09:06:37 -0700 (PDT)
-Received: from skbuf ([188.25.231.135])
-        by smtp.gmail.com with ESMTPSA id d10-20020a056402400a00b004357ab9cfb1sm7789834eda.26.2022.06.27.09.06.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jun 2022 09:06:36 -0700 (PDT)
-Date:   Mon, 27 Jun 2022 19:06:34 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Hans Schultz <schultz.hans@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Hans Schultz <schultz.hans+netdev@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH V3 net-next 2/4] net: switchdev: add support for
- offloading of fdb locked flag
-Message-ID: <20220627160634.wylbknsbsafvs3ij@skbuf>
-References: <20220524152144.40527-1-schultz.hans+netdev@gmail.com>
- <20220524152144.40527-3-schultz.hans+netdev@gmail.com>
+        with ESMTP id S238282AbiF0QJV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 12:09:21 -0400
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BA6C64D8
+        for <netdev@vger.kernel.org>; Mon, 27 Jun 2022 09:09:20 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=MtUmDHGQMM0+0L0X691m3h3O2QBLvqXUy/Wz4Rs6mwkrCFrHS1Xa3/09u0awM/WyqNdDqy1bstpba5/19bYlU56ozs/FjDRPPkeeGzuP3KkmXa/gM9Y59YMBmSBwBNnp5OfslX0a0WVP6KRhHJb5hwH95GFhcehWw9QhKYgYJ4dVa7uGMJBwuVD+q7U3h722Ok8nPPCYi7bQSVqdfaukLPtTDWQnalcFp+DXIobRttFG4glZFrjXR90IjeZBaGSJJtztg1Kk0b+PiCbLH7FliYB4y5Jp/S1JjwQteIO7Z2f5tr+HvlUQw9rY1rYJfdWaFrBt6cBOj4T43EugvziBvQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=LVToDp4dEvHqJfbwl0VTVms1OUA4W/mf6O/8CA5p9c4=;
+ b=jDpTEuvhiqPcuRx2XtNh4cq+9nZyc/qawUjyXz7cQ3Xq1/cz+gIxAlC5D29gbxO5rdy6CZGdfEW/HmH9YHkp+iHlbTO+ju1neeH7gHyXLX8wFX0AYPXZKH0ZpXI2Jw9uFRi0vEeiUpUb8JyF9+/xeSEelS7BZFF7xJ0gtphKfXqiYOEgG7e/ty/RitO4ZPhsayt1aFN8kolAX0ZX4VFT5s3MBtQfN68rg6tvQGwyr1ZbYB8mqIPqd5lKtABkYu7hO06ZHxb01Np3cjANrgwTqyryQdL7g7LX3AL+Jx3QlhJPHejDe1dCzsxGp8a2SopG5/kUYGf0+ILf4/UnDfD5iQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=temperror (sender ip
+ is 12.22.5.236) smtp.rcpttodomain=networkplumber.org
+ smtp.mailfrom=nvidia.com; dmarc=temperror action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=LVToDp4dEvHqJfbwl0VTVms1OUA4W/mf6O/8CA5p9c4=;
+ b=mZE44SszBajyzyiMeRCRTh8P00K50X1HdNBVGIwsN7hnWhI0maY+B8A4hOCWujnINVaQQAnGtI8k9oOmio4UBW+1q+5VUi/HEKnUdz5f8DUwNa7Sbif841xPpz07WsKic4nBQMdmNIkcpY6CEc+ef8EG9nHkW1n8QRqnYUGcPZVl42q2T3xMyYkVpt+KqqxII/HV3h3BYqK0WuUZ4rjwJyPRpXrdgfFwM4NIYaYoE4okIU1PUjgMpcbLWc+8X5rrAaCo49zDjol+3plWiqjle4mHPQAg3HVbfoFIa7wTa4EOIOttYuoFFa4YSks6SZwQoGvYB2Y1lAOIdgleGL7beQ==
+Received: from DM5PR07CA0092.namprd07.prod.outlook.com (2603:10b6:4:ae::21) by
+ BY5PR12MB3650.namprd12.prod.outlook.com (2603:10b6:a03:1a3::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.15; Mon, 27 Jun
+ 2022 16:09:17 +0000
+Received: from DM6NAM11FT057.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:4:ae:cafe::5c) by DM5PR07CA0092.outlook.office365.com
+ (2603:10b6:4:ae::21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.16 via Frontend
+ Transport; Mon, 27 Jun 2022 16:09:17 +0000
+X-MS-Exchange-Authentication-Results: spf=temperror (sender IP is 12.22.5.236)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=temperror action=none header.from=nvidia.com;
+Received-SPF: TempError (protection.outlook.com: error in processing during
+ lookup of nvidia.com: DNS Timeout)
+Received: from mail.nvidia.com (12.22.5.236) by
+ DM6NAM11FT057.mail.protection.outlook.com (10.13.172.252) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5373.15 via Frontend Transport; Mon, 27 Jun 2022 16:09:15 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL109.nvidia.com
+ (10.27.9.19) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Mon, 27 Jun
+ 2022 16:09:14 +0000
+Received: from yaviefel (10.126.231.35) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Mon, 27 Jun
+ 2022 09:09:12 -0700
+References: <1b8c8a3e8ae41a85f2167d94a6d7bcc4d46757f6.1656335952.git.petrm@nvidia.com>
+ <20220627081421.3228af32@hermes.local>
+User-agent: mu4e 1.6.6; emacs 27.2
+From:   Petr Machata <petrm@nvidia.com>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+CC:     Petr Machata <petrm@nvidia.com>, <netdev@vger.kernel.org>,
+        David Ahern <dsahern@gmail.com>
+Subject: Re: [PATCH iproute2] ip: Fix size_columns() invocation that passes
+ a 32-bit quantity
+Date:   Mon, 27 Jun 2022 18:06:54 +0200
+In-Reply-To: <20220627081421.3228af32@hermes.local>
+Message-ID: <87tu86ulzt.fsf@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220524152144.40527-3-schultz.hans+netdev@gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [10.126.231.35]
+X-ClientProxiedBy: rnnvmail201.nvidia.com (10.129.68.8) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 276b1fdd-1eba-4a07-4220-08da585761e6
+X-MS-TrafficTypeDiagnostic: BY5PR12MB3650:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: CHnN4Usjrwf6ud9MJWWIMUwf+/2HzVb1PhUQZi/mFZtAp4pm0bIaTpwNbHuBWcKQXWeXOJbs74el1U/mdXq9fEcQaL7v660BEAZMZgpEWhKTsi3T883qVDlx2bwuZY7t7WkjPm7SmnPjV72nMNeE1ycLRiQ7QIJYbViK0EjPtzdXYuw7t4zdSutAU1c/YnjHhZ30owyp49uKumd5ZF7NUiJsIjb2DMxWJ1QYMgUU/PRw7UKQOVgkim56LRN3Ki5mk8aUtScVRl0OBkle6P9Po9rtbmDR2w4S2Z/lwkhwyUwYWRjrbRM84knxz+dMiSgMBuhre9jtsE+bLZo4G5r/b9h7+yvsJ6bRRHX76ZfsgjHEmU7bGIwXXX0lWSH0RRvEWU/PVh45Dyk+IXXGTspRDzx53+Zqnk5MK9T2GZb8IK7XJXkQMKfuyJaerhS7HES3LWKUBPbrMYDWZdeIekTD7PUD5yit0g/8OH8Y4I93hz502tSDWx49TaKEfK/oKFlAD66CRLkrTTIdiexHQnBYALHfGh5zpAuqGUbwqgTwswSvxJR+j/kP0z6ohic+SPBVFE1tmnQLGDxcsFMMduZU3fRBfLEnZzAIPF6jlxSq3cGdBT4ayLtiNxfAj7Vnt//gzIu4Xr5Oux0HIqiVe0Tdyr0L9+f56YKKfU8lQwMKmnIRlq3rSJG4JrYYijCMUnExop3BUGch7B3x/lQ4Rjg//1RRM7GXcw82HJ+kU2WoMvF1CTA7E0qkfeZ8LdhA3VdQJQQEIv6cdst9EYa0pKNevD5pkUIc/DuJ2oNDy2WnaJKFdf6OXeWgNxcxD7AqFKXMsb+Wy82MQ3ZwgIiy7iro3w==
+X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(376002)(346002)(39860400002)(136003)(396003)(36840700001)(46966006)(40470700004)(6666004)(36860700001)(26005)(41300700001)(36756003)(356005)(16526019)(40480700001)(186003)(478600001)(86362001)(2616005)(40460700003)(82310400005)(82740400003)(63350400001)(8676002)(2906002)(6916009)(63370400001)(4326008)(54906003)(5660300002)(4744005)(47076005)(70586007)(70206006)(81166007)(8936002)(426003)(336012)(316002)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jun 2022 16:09:15.2975
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 276b1fdd-1eba-4a07-4220-08da585761e6
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT057.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB3650
+X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 24, 2022 at 05:21:42PM +0200, Hans Schultz wrote:
-> Used for Mac-auth/MAB feature in the offloaded case.
-> 
-> Signed-off-by: Hans Schultz <schultz.hans+netdev@gmail.com>
-> ---
->  include/net/dsa.h       | 6 ++++++
->  include/net/switchdev.h | 3 ++-
->  net/bridge/br.c         | 3 ++-
->  net/bridge/br_fdb.c     | 7 +++++--
->  net/bridge/br_private.h | 2 +-
->  5 files changed, 16 insertions(+), 5 deletions(-)
-> 
-> diff --git a/include/net/dsa.h b/include/net/dsa.h
-> index 14f07275852b..a5a843b2d67d 100644
-> --- a/include/net/dsa.h
-> +++ b/include/net/dsa.h
-> @@ -330,6 +330,12 @@ struct dsa_port {
->  	/* List of VLANs that CPU and DSA ports are members of. */
->  	struct mutex		vlans_lock;
->  	struct list_head	vlans;
-> +
-> +	/* List and maintenance of locked ATU entries */
-> +	struct mutex		locked_entries_list_lock;
-> +	struct list_head	atu_locked_entries_list;
-> +	atomic_t		atu_locked_entry_cnt;
-> +	struct delayed_work	atu_work;
 
-DSA is not Marvell only, so please remove these from struct dsa_port and
-place them somewhere like struct mv88e6xxx_port. Also, the change has
-nothing to do in a patch with the "net: switchdev: " prefix.
+Stephen Hemminger <stephen@networkplumber.org> writes:
 
->  };
->  
->  /* TODO: ideally DSA ports would have a single dp->link_dp member,
-> diff --git a/include/net/switchdev.h b/include/net/switchdev.h
-> index aa0171d5786d..62f4f7c9c7c2 100644
-> --- a/include/net/switchdev.h
-> +++ b/include/net/switchdev.h
-> @@ -245,7 +245,8 @@ struct switchdev_notifier_fdb_info {
->  	u16 vid;
->  	u8 added_by_user:1,
->  	   is_local:1,
-> -	   offloaded:1;
-> +	   offloaded:1,
-> +	   locked:1;
+>> diff --git a/ip/ipaddress.c b/ip/ipaddress.c
+>> index 5a3b1cae..8cd76073 100644
+>> --- a/ip/ipaddress.c
+>> +++ b/ip/ipaddress.c
+>> @@ -788,8 +788,9 @@ void print_stats64(FILE *fp, struct rtnl_link_stats64 *s,
+>>  				     s->tx_aborted_errors, s->tx_fifo_errors,
+>>  				     s->tx_window_errors,
+>>  				     s->tx_heartbeat_errors,
+>> -				     carrier_changes ?
+>> -				     rta_getattr_u32(carrier_changes) : 0);
+>> +				     (uint64_t)(carrier_changes ?
+>> +						rta_getattr_u32(carrier_changes)
+>> +						: 0));
+>
+> Looks good, but would be clearer with a local temporary variable
+> which would eliminate the cast etc.
 
-As mentioned by Ido, please update br_switchdev_fdb_populate() as part
-of this change, in the bridge->switchdev direction. We should add a
-comment near struct switchdev_notifier_fdb_info stating just that,
-so that people don't forget.
-
->  };
->  
->  struct switchdev_notifier_port_obj_info {
-> diff --git a/net/bridge/br.c b/net/bridge/br.c
-> index 96e91d69a9a8..12933388a5a4 100644
-> --- a/net/bridge/br.c
-> +++ b/net/bridge/br.c
-> @@ -166,7 +166,8 @@ static int br_switchdev_event(struct notifier_block *unused,
->  	case SWITCHDEV_FDB_ADD_TO_BRIDGE:
->  		fdb_info = ptr;
->  		err = br_fdb_external_learn_add(br, p, fdb_info->addr,
-> -						fdb_info->vid, false);
-> +						fdb_info->vid, false,
-> +						fdb_info->locked);
->  		if (err) {
->  			err = notifier_from_errno(err);
->  			break;
-> diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
-> index 6b83e2d6435d..92469547283a 100644
-> --- a/net/bridge/br_fdb.c
-> +++ b/net/bridge/br_fdb.c
-> @@ -1135,7 +1135,7 @@ static int __br_fdb_add(struct ndmsg *ndm, struct net_bridge *br,
->  					   "FDB entry towards bridge must be permanent");
->  			return -EINVAL;
->  		}
-> -		err = br_fdb_external_learn_add(br, p, addr, vid, true);
-> +		err = br_fdb_external_learn_add(br, p, addr, vid, true, false);
->  	} else {
->  		spin_lock_bh(&br->hash_lock);
->  		err = fdb_add_entry(br, p, addr, ndm, nlh_flags, vid, nfea_tb);
-> @@ -1365,7 +1365,7 @@ void br_fdb_unsync_static(struct net_bridge *br, struct net_bridge_port *p)
->  
->  int br_fdb_external_learn_add(struct net_bridge *br, struct net_bridge_port *p,
->  			      const unsigned char *addr, u16 vid,
-> -			      bool swdev_notify)
-> +			      bool swdev_notify, bool locked)
->  {
->  	struct net_bridge_fdb_entry *fdb;
->  	bool modified = false;
-> @@ -1385,6 +1385,9 @@ int br_fdb_external_learn_add(struct net_bridge *br, struct net_bridge_port *p,
->  		if (!p)
->  			flags |= BIT(BR_FDB_LOCAL);
->  
-> +		if (locked)
-> +			flags |= BIT(BR_FDB_ENTRY_LOCKED);
-> +
->  		fdb = fdb_create(br, p, addr, vid, flags);
->  		if (!fdb) {
->  			err = -ENOMEM;
-> diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-> index be17c99efe65..88913e6a59e1 100644
-> --- a/net/bridge/br_private.h
-> +++ b/net/bridge/br_private.h
-> @@ -815,7 +815,7 @@ int br_fdb_sync_static(struct net_bridge *br, struct net_bridge_port *p);
->  void br_fdb_unsync_static(struct net_bridge *br, struct net_bridge_port *p);
->  int br_fdb_external_learn_add(struct net_bridge *br, struct net_bridge_port *p,
->  			      const unsigned char *addr, u16 vid,
-> -			      bool swdev_notify);
-> +			      bool swdev_notify, bool locked);
->  int br_fdb_external_learn_del(struct net_bridge *br, struct net_bridge_port *p,
->  			      const unsigned char *addr, u16 vid,
->  			      bool swdev_notify);
-> -- 
-> 2.30.2
-> 
-
+OK, I have a v2 queued up. I'll wait a bit before sending for possible
+comments on the rx_otherhost_dropped patch, as it depends on this one,
+and will need to be resent for this change anyway.
