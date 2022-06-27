@@ -2,122 +2,208 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BCE3C55C65B
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 14:52:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EFD655DD94
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:27:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238427AbiF0Lxj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jun 2022 07:53:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56004 "EHLO
+        id S238401AbiF0L7B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jun 2022 07:59:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239041AbiF0LxF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 07:53:05 -0400
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48344BC14
-        for <netdev@vger.kernel.org>; Mon, 27 Jun 2022 04:47:38 -0700 (PDT)
-Received: by mail-yb1-xb30.google.com with SMTP id q132so16236572ybg.10
-        for <netdev@vger.kernel.org>; Mon, 27 Jun 2022 04:47:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=sYQeWp+d/TDh1H/J2tAI+oPQ1oT8ub0d1dZxrLNepr0=;
-        b=UPzvybY0bUlTHioTVtlg1r6HIBbwwz/d3MemQOdMhEBUDWAYwzK9gjvr7nukp+W3om
-         FPunTbjw+RmMAICaPiA5Qz57ge5thTtCBR/RXgKhGqFdnS2/dcRN0ignpFzzLSV/AYbv
-         voKglgXJeOIrRcZiCHI7cZVJptRpIBYziO4rzpJD4BGPSBcZlIZhiMT7uq3SJQvODjld
-         4a3PRy8QlV22PLYG8eXjiirzDutcbu/Bf6vNTZSqIxn5aGdjig/3TzwSTy3s4pR3kXzS
-         4yynoJ1AQD6TUGL1mvfRnyeg7u0psa+mneEmhJIXHIUmP1R7B1bpKs6LitQkd07e5xUF
-         qIfQ==
+        with ESMTP id S239525AbiF0L5s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 07:57:48 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AE3A8BCB3
+        for <netdev@vger.kernel.org>; Mon, 27 Jun 2022 04:53:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656330812;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=R4iA+zJThegEvaay5X9bkB6r2mlx5a4ueL2JEW4gqMI=;
+        b=TA+uUJSSAXxi439YnvjU0idz0Fh9Rjk6i2w+2sga1ZNo44Hd5nmyltefb0YtS5GrUCh9Jk
+        V7fmNPGR0F96m9eq4JU9b3Bq9hDuVpOakgWqZq7Mbt8eCsnSrZxoTRbMI+fx+gGI56lZ0S
+        dzCdXBMY2+R+gbAi8elMRlAB306dAvQ=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-140-9zcosTmaPtmObRRdTs7ziw-1; Mon, 27 Jun 2022 07:53:31 -0400
+X-MC-Unique: 9zcosTmaPtmObRRdTs7ziw-1
+Received: by mail-wr1-f72.google.com with SMTP id o1-20020adfba01000000b0021b90bd28d2so1130311wrg.14
+        for <netdev@vger.kernel.org>; Mon, 27 Jun 2022 04:53:31 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=sYQeWp+d/TDh1H/J2tAI+oPQ1oT8ub0d1dZxrLNepr0=;
-        b=W5FpLM/icaavwOpF9tXq0Nud6EM8Pea+YDx2iLNEp7iINaXkgJECm9YgrV1vnH6rYm
-         G4k4WxLvUUElk6hHlsGlH/dy9xPSZk/1ebx41UBcaSXjing7N92Ka9VM+ksRjcYy3j02
-         kEg6K+XYSXqV78RZd82ejkQNBxQ4x519jC1HDJhLzrLo9RELxuXCU96DU11QjL29Sx3r
-         cHzl8fkoJ90wid11Q5cFryAKzEiGsaGQtwWzEQ/uXIHm18P+erXQz7HRoYvAlKhsGYEH
-         ECYcTQssr7XdXOpap8dpTUSeFDjEc3+mvjMWgxnF4lAK3E2s5BfBFUyRch4V7fMARW2F
-         o67A==
-X-Gm-Message-State: AJIora8jBB/re9xb2FXwsUmylvuVNLzyhYEWfvp3yf+ZnulDlfbuLH3+
-        /Gd9aZWNoe5+b7jEETjsDKUX2wl3NBnKB1LdRkgDTo7QkLo=
-X-Google-Smtp-Source: AGRyM1vsb3IWmoRSnGZh3ttsZ3YpojKFr+QijIvG7tlw3HK3Vcfo9jwOLrfH13sj2GW9udIyiw+Gv5kmO2NxafX0bP8=
-X-Received: by 2002:a25:d957:0:b0:66c:9476:708f with SMTP id
- q84-20020a25d957000000b0066c9476708fmr9897744ybg.427.1656330457231; Mon, 27
- Jun 2022 04:47:37 -0700 (PDT)
-MIME-Version: 1.0
-References: <5099dc39-c6d9-115a-855b-6aa98d17eb4b@collabora.com>
- <CANn89i+R9RgmD=AQ4vX1Vb_SQAj4c3fi7-ZtQz-inYY4Sq4CMQ@mail.gmail.com>
- <8eb9b438-7018-4fe3-8be6-bb023df99594@collabora.com> <CANn89iJ1DfmuPz5pGdw=j9o+3O4R9tnTNFKi-ppW1O2sfmnN4g@mail.gmail.com>
- <63316ba7-f612-af5a-3f33-125cf89de754@collabora.com>
-In-Reply-To: <63316ba7-f612-af5a-3f33-125cf89de754@collabora.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 27 Jun 2022 13:47:25 +0200
-Message-ID: <CANn89iK96naKmc5Ep1PBxvksShQk=WMEoY_V0qZneN_JAEgtRg@mail.gmail.com>
-Subject: Re: [RFC] EADDRINUSE from bind() on application restart after killing
-To:     Muhammad Usama Anjum <usama.anjum@collabora.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=R4iA+zJThegEvaay5X9bkB6r2mlx5a4ueL2JEW4gqMI=;
+        b=bqhxmQGGw2B6l1PNBmuwQn5CfOX+mGWz7F5GY00LWvf4TRfexS5ADSieiSgmw9adRj
+         drnSUysrjpEmB9NavYfHcvJDtfZOAyIHBWcQy7bFXWj7b2IkI6WUhzgZW1jvw6yM1AbU
+         YwtjYGEpTFCNj/M9JtrgJgOLXQAl9SMBrx4BSqUORSzaoDUXFYMzucmiugTXwvP1Nlfd
+         mw8mluKQZR8dwwoJ8OXR9VUUb7phx/WUc01AjbMHf0f5onxhK5MVnaywinKuGtk/7R2m
+         xVxetJeEBYUKwJciTdwb3NE9SP6/fz+0qN8MJqY2KZSsTuQVZXCFYjqda1Js/TE2pWJ5
+         nkDg==
+X-Gm-Message-State: AJIora8eLR1nkMoDFeQkUFsspaB1mu4HfSE9TjvnSBcdRbWDy9/jCWR8
+        rfciYiva+gYXxVgZfRU8AnVx6OCcpg37safQgFR7MD7WIS51KTjiwMqIIIryVNtxNQmaUFOMFvo
+        BeqvDma0JWQxgwerM
+X-Received: by 2002:a1c:7c18:0:b0:3a0:39b1:3403 with SMTP id x24-20020a1c7c18000000b003a039b13403mr21172914wmc.84.1656330810174;
+        Mon, 27 Jun 2022 04:53:30 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1umV07YHfv9l89u85pmjMFPA0YWmqYXm7VuXyf0J+ISW9dEoHO5P2MBiXRfYI/0CpLN0ZOgWg==
+X-Received: by 2002:a1c:7c18:0:b0:3a0:39b1:3403 with SMTP id x24-20020a1c7c18000000b003a039b13403mr21172868wmc.84.1656330809951;
+        Mon, 27 Jun 2022 04:53:29 -0700 (PDT)
+Received: from redhat.com ([2.54.45.90])
+        by smtp.gmail.com with ESMTPSA id a19-20020a05600c349300b0039db500714fsm13454861wmq.6.2022.06.27.04.53.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Jun 2022 04:53:29 -0700 (PDT)
+Date:   Mon, 27 Jun 2022 07:53:22 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Gabriel Krisman Bertazi <krisman@collabora.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        Collabora Kernel ML <kernel@collabora.com>,
-        Paul Gofman <pgofman@codeweavers.com>,
-        "open list:NETWORKING [TCP]" <netdev@vger.kernel.org>,
-        Sami Farin <hvtaifwkbgefbaei@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        Vadim Pasternak <vadimp@nvidia.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Eric Farman <farman@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        linux-um@lists.infradead.org, netdev <netdev@vger.kernel.org>,
+        platform-driver-x86@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
+        kvm <kvm@vger.kernel.org>,
+        "open list:XDP (eXpress Data Path)" <bpf@vger.kernel.org>,
+        kangjie.xu@linux.alibaba.com
+Subject: Re: [PATCH v10 25/41] virtio_pci: struct virtio_pci_common_cfg add
+ queue_notify_data
+Message-ID: <20220627074723-mutt-send-email-mst@kernel.org>
+References: <20220624025621.128843-1-xuanzhuo@linux.alibaba.com>
+ <20220624025621.128843-26-xuanzhuo@linux.alibaba.com>
+ <20220624025817-mutt-send-email-mst@kernel.org>
+ <CACGkMEseptD=45j3kQr0yciRxR679Jcig=292H07-RYC2vXmFQ@mail.gmail.com>
+ <20220627023841-mutt-send-email-mst@kernel.org>
+ <CACGkMEvy8xF2T_vubKeUEPC2aroO_fbB0Xe8nnxK4OBUgAS+Gw@mail.gmail.com>
+ <20220627034733-mutt-send-email-mst@kernel.org>
+ <CACGkMEtpjUBaUML=fEs5hR66rzNTBhBXOmfpzyXV1F-6BqvsGg@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CACGkMEtpjUBaUML=fEs5hR66rzNTBhBXOmfpzyXV1F-6BqvsGg@mail.gmail.com>
+X-Spam-Status: No, score=-2.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 12:20 PM Muhammad Usama Anjum
-<usama.anjum@collabora.com> wrote:
->
-> Hi Eric,
->
-> On 5/30/22 8:28 PM, Eric Dumazet wrote:
-> >> The following command and patch work for my use case. The socket in
-> >> TIME_WAIT_2 or TIME_WAIT state are closed when zapped.
-> >>
-> >> Can you please upstream this patch?
-> > Yes, I will when net-next reopens, thanks for testing it.
-> Have you tried upstreaming it?
->
-> Tested-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
->
+On Mon, Jun 27, 2022 at 04:14:20PM +0800, Jason Wang wrote:
+> On Mon, Jun 27, 2022 at 3:58 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+> >
+> > On Mon, Jun 27, 2022 at 03:45:30PM +0800, Jason Wang wrote:
+> > > On Mon, Jun 27, 2022 at 2:39 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+> > > >
+> > > > On Mon, Jun 27, 2022 at 10:30:42AM +0800, Jason Wang wrote:
+> > > > > On Fri, Jun 24, 2022 at 2:59 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+> > > > > >
+> > > > > > On Fri, Jun 24, 2022 at 10:56:05AM +0800, Xuan Zhuo wrote:
+> > > > > > > Add queue_notify_data in struct virtio_pci_common_cfg, which comes from
+> > > > > > > here https://github.com/oasis-tcs/virtio-spec/issues/89
+> > > > > > >
+> > > > > > > For not breaks uABI, add a new struct virtio_pci_common_cfg_notify.
+> > > > > >
+> > > > > > What exactly is meant by not breaking uABI?
+> > > > > > Users are supposed to be prepared for struct size to change ... no?
+> > > > >
+> > > > > Not sure, any doc for this?
+> > > > >
+> > > > > Thanks
+> > > >
+> > > >
+> > > > Well we have this:
+> > > >
+> > > >         The drivers SHOULD only map part of configuration structure
+> > > >         large enough for device operation.  The drivers MUST handle
+> > > >         an unexpectedly large \field{length}, but MAY check that \field{length}
+> > > >         is large enough for device operation.
+> > >
+> > > Yes, but that's the device/driver interface. What's done here is the
+> > > userspace/kernel.
+> > >
+> > > Userspace may break if it uses e.g sizeof(struct virtio_pci_common_cfg)?
+> > >
+> > > Thanks
+> >
+> > Hmm I guess there's risk... but then how are we going to maintain this
+> > going forward?  Add a new struct on any change?
+> 
+> This is the way we have used it for the past 5 or more years. I don't
+> see why this must be handled in the vq reset feature.
+> 
+> >Can we at least
+> > prevent this going forward somehow?
+> 
+> Like have some padding?
+> 
+> Thanks
 
-I will do this today, thanks for the heads up.
-
+Maybe - this is what QEMU does ...
 
 > >
-> >>> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-> >>> index 9984d23a7f3e1353d2e1fc9053d98c77268c577e..1b7bde889096aa800b2994c64a3a68edf3b62434
-> >>> 100644
-> >>> --- a/net/ipv4/tcp.c
-> >>> +++ b/net/ipv4/tcp.c
-> >>> @@ -4519,6 +4519,15 @@ int tcp_abort(struct sock *sk, int err)
-> >>>                         local_bh_enable();
-> >>>                         return 0;
-> >>>                 }
-> >>> +               if (sk->sk_state == TCP_TIME_WAIT) {
-> >>> +                       struct inet_timewait_sock *tw = inet_twsk(sk);
-> >>> +
-> >>> +                       refcount_inc(&tw->tw_refcnt);
-> >>> +                       local_bh_disable();
-> >>> +                       inet_twsk_deschedule_put(tw);
-> >>> +                       local_bh_enable();
-> >>> +                       return 0;
-> >>> +               }
-> >>>                 return -EOPNOTSUPP;
-> >>>         }
->
-> --
-> Muhammad Usama Anjum
+> >
+> > > >
+> > > >
+> > > >
+> > > > >
+> > > > > >
+> > > > > >
+> > > > > > > Since I want to add queue_reset after queue_notify_data, I submitted
+> > > > > > > this patch first.
+> > > > > > >
+> > > > > > > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> > > > > > > Acked-by: Jason Wang <jasowang@redhat.com>
+> > > > > > > ---
+> > > > > > >  include/uapi/linux/virtio_pci.h | 7 +++++++
+> > > > > > >  1 file changed, 7 insertions(+)
+> > > > > > >
+> > > > > > > diff --git a/include/uapi/linux/virtio_pci.h b/include/uapi/linux/virtio_pci.h
+> > > > > > > index 3a86f36d7e3d..22bec9bd0dfc 100644
+> > > > > > > --- a/include/uapi/linux/virtio_pci.h
+> > > > > > > +++ b/include/uapi/linux/virtio_pci.h
+> > > > > > > @@ -166,6 +166,13 @@ struct virtio_pci_common_cfg {
+> > > > > > >       __le32 queue_used_hi;           /* read-write */
+> > > > > > >  };
+> > > > > > >
+> > > > > > > +struct virtio_pci_common_cfg_notify {
+> > > > > > > +     struct virtio_pci_common_cfg cfg;
+> > > > > > > +
+> > > > > > > +     __le16 queue_notify_data;       /* read-write */
+> > > > > > > +     __le16 padding;
+> > > > > > > +};
+> > > > > > > +
+> > > > > > >  /* Fields in VIRTIO_PCI_CAP_PCI_CFG: */
+> > > > > > >  struct virtio_pci_cfg_cap {
+> > > > > > >       struct virtio_pci_cap cap;
+> > > > > > > --
+> > > > > > > 2.31.0
+> > > > > >
+> > > >
+> >
+
