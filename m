@@ -2,107 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C6AA55C82E
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 14:55:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1EC755DCAB
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:26:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229746AbiF0Gjz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jun 2022 02:39:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34610 "EHLO
+        id S232448AbiF0Gm1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jun 2022 02:42:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232234AbiF0Gjy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 02:39:54 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 256832BF8
-        for <netdev@vger.kernel.org>; Sun, 26 Jun 2022 23:39:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656311992;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=U7baKcmVh0uhuh+ZmBGa53jqLb2UYPCAjccnnH6jK0k=;
-        b=RBMXiC1qYB+yM8w4m4XxcH1W4IekBWfTlqb/GcduNEEXtOwaM1ck51jGi/b7hfLKmSHy0p
-        CSAUoZqCmGaGUF5zR7bq7sbVJKfhAPp903bFFStW7OEYHc0L7lcbiw0PIGwhnwjtHY8qOA
-        WJB4Q/xuVHbw7h5BVeHbg8IfzGaA+jY=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-191-Dhfm8M6XMXeU__SVusUsnQ-1; Mon, 27 Jun 2022 02:39:49 -0400
-X-MC-Unique: Dhfm8M6XMXeU__SVusUsnQ-1
-Received: by mail-wm1-f71.google.com with SMTP id j31-20020a05600c1c1f00b0039c481c4664so3139936wms.7
-        for <netdev@vger.kernel.org>; Sun, 26 Jun 2022 23:39:49 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=U7baKcmVh0uhuh+ZmBGa53jqLb2UYPCAjccnnH6jK0k=;
-        b=rkv26oyz10IG8fC2tUV5F9lYWdgpMvV0T8LZlTKsuo9/gE0Z+Pj+sTh2j9g1RAbyyO
-         ikLmdEcBWNCERqZIEb3675jXc3HN1pZY5hhS9DiNAW0KsoWhyDhaOjjYZsyP6EGStexY
-         6wlDjOQOTlalwjXqbp0zjxCTaxvFKEGvxLSJie24BrkqnPZ8pP7itBSivmtXqthr5ZNb
-         33NYRDlBCF3nxyppKGu3yCxmLd7fYVb+WtvtKQ54L7oX0vCefCQGJl/0z67e9PjrfX1N
-         TQnUroKev3qVKgjx9FAxpr95/KMThCld12Pb+pFMn8i5txN7zyAYo81LHtY78zkTgEBh
-         b8rg==
-X-Gm-Message-State: AJIora8EAgEdURUWymJz7jPMld0Ka3QgO0KRexEKSdlw8pYUUTU2Lr8e
-        40visEOJEV5UWB6XK7kh7MEqbIdnOhBRxiwQoTPnV/OoNAf3MpKGC4TSDzxt/LV5g8TA97n1AWj
-        leVSYQ7Nff4RiFoE6
-X-Received: by 2002:a1c:7719:0:b0:3a0:31a6:4469 with SMTP id t25-20020a1c7719000000b003a031a64469mr13386052wmi.20.1656311988762;
-        Sun, 26 Jun 2022 23:39:48 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1vfc26YvQIey3qttFGe5qu2ZyIXAHXaFMfl6hGpqk+G+5KirT06gbQyA+crLIwD71j66IUjig==
-X-Received: by 2002:a1c:7719:0:b0:3a0:31a6:4469 with SMTP id t25-20020a1c7719000000b003a031a64469mr13386024wmi.20.1656311988469;
-        Sun, 26 Jun 2022 23:39:48 -0700 (PDT)
-Received: from redhat.com ([2.54.45.90])
-        by smtp.gmail.com with ESMTPSA id bg21-20020a05600c3c9500b003a046549a85sm5777975wmb.37.2022.06.26.23.39.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 26 Jun 2022 23:39:47 -0700 (PDT)
-Date:   Mon, 27 Jun 2022 02:39:41 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Vadim Pasternak <vadimp@nvidia.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Eric Farman <farman@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        linux-um@lists.infradead.org, netdev <netdev@vger.kernel.org>,
-        platform-driver-x86@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
-        kvm <kvm@vger.kernel.org>,
-        "open list:XDP (eXpress Data Path)" <bpf@vger.kernel.org>,
-        kangjie.xu@linux.alibaba.com
-Subject: Re: [PATCH v10 25/41] virtio_pci: struct virtio_pci_common_cfg add
- queue_notify_data
-Message-ID: <20220627023841-mutt-send-email-mst@kernel.org>
-References: <20220624025621.128843-1-xuanzhuo@linux.alibaba.com>
- <20220624025621.128843-26-xuanzhuo@linux.alibaba.com>
- <20220624025817-mutt-send-email-mst@kernel.org>
- <CACGkMEseptD=45j3kQr0yciRxR679Jcig=292H07-RYC2vXmFQ@mail.gmail.com>
+        with ESMTP id S231767AbiF0Gm0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 02:42:26 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85FC73881;
+        Sun, 26 Jun 2022 23:42:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1656312142; x=1687848142;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=/B9jPCXoGr+s2dOSilHfB1A0vqJQl+HCS0EByBkjXms=;
+  b=VbhPiumJkyxNlGQ91SmFinRUX4nQXV3UJ40YzXQFZs9CgQjw2I/u+b79
+   Skrp5qbSuT87vrh8VFqZHpyumhcOjy9aPlahyGX0zGxeI8fh7e6A2PMmr
+   WycljlJJ2E7Rq0ooZNz0Vhb6Xu3FVPdLvQ3yHMj/XNLwFGRsoMGVzbdQZ
+   GI1xAmZWmCOZEPOIuCw8VErdhy5dOl53b9ShXS3J1H2HmKyEic8CAWzx+
+   8iHL8ZHNkPvdLqJ8EgIZBz2klAOQ7SJUd6p5/kpflFZqfYaCMa7ZbC8J0
+   Q2lUqUxa/9NjSpzDjfuu1g0aXVaQcfsr/j0bZbpfp8Fk92Ff/323ModPw
+   g==;
+X-IronPort-AV: E=Sophos;i="5.92,225,1650956400"; 
+   d="scan'208";a="179614170"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 26 Jun 2022 23:42:21 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Sun, 26 Jun 2022 23:42:21 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Sun, 26 Jun 2022 23:42:21 -0700
+Date:   Mon, 27 Jun 2022 08:46:12 +0200
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <UNGLinuxDriver@microchip.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <linux@armlinux.org.uk>
+Subject: Re: [PATCH net-next 5/8] net: lan966x: Add lag support for lan966x.
+Message-ID: <20220627064612.vzz2sd7kxpxnprxc@soft-dev3-1.localhost>
+References: <20220626130451.1079933-1-horatiu.vultur@microchip.com>
+ <20220626130451.1079933-6-horatiu.vultur@microchip.com>
+ <20220626141139.kbwhpgmwzp7rpxgy@skbuf>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
-In-Reply-To: <CACGkMEseptD=45j3kQr0yciRxR679Jcig=292H07-RYC2vXmFQ@mail.gmail.com>
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+In-Reply-To: <20220626141139.kbwhpgmwzp7rpxgy@skbuf>
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -110,63 +64,151 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 10:30:42AM +0800, Jason Wang wrote:
-> On Fri, Jun 24, 2022 at 2:59 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> >
-> > On Fri, Jun 24, 2022 at 10:56:05AM +0800, Xuan Zhuo wrote:
-> > > Add queue_notify_data in struct virtio_pci_common_cfg, which comes from
-> > > here https://github.com/oasis-tcs/virtio-spec/issues/89
-> > >
-> > > For not breaks uABI, add a new struct virtio_pci_common_cfg_notify.
-> >
-> > What exactly is meant by not breaking uABI?
-> > Users are supposed to be prepared for struct size to change ... no?
+The 06/26/2022 17:11, Vladimir Oltean wrote:
 > 
-> Not sure, any doc for this?
-> 
-> Thanks
+> Hi Horatiu,
 
-
-Well we have this:
-
-        The drivers SHOULD only map part of configuration structure
-        large enough for device operation.  The drivers MUST handle
-        an unexpectedly large \field{length}, but MAY check that \field{length}
-        is large enough for device operation.
-
-
+Hi Vladimir,
 
 > 
-> >
-> >
-> > > Since I want to add queue_reset after queue_notify_data, I submitted
-> > > this patch first.
-> > >
-> > > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> > > Acked-by: Jason Wang <jasowang@redhat.com>
-> > > ---
-> > >  include/uapi/linux/virtio_pci.h | 7 +++++++
-> > >  1 file changed, 7 insertions(+)
-> > >
-> > > diff --git a/include/uapi/linux/virtio_pci.h b/include/uapi/linux/virtio_pci.h
-> > > index 3a86f36d7e3d..22bec9bd0dfc 100644
-> > > --- a/include/uapi/linux/virtio_pci.h
-> > > +++ b/include/uapi/linux/virtio_pci.h
-> > > @@ -166,6 +166,13 @@ struct virtio_pci_common_cfg {
-> > >       __le32 queue_used_hi;           /* read-write */
-> > >  };
-> > >
-> > > +struct virtio_pci_common_cfg_notify {
-> > > +     struct virtio_pci_common_cfg cfg;
-> > > +
-> > > +     __le16 queue_notify_data;       /* read-write */
-> > > +     __le16 padding;
-> > > +};
-> > > +
-> > >  /* Fields in VIRTIO_PCI_CAP_PCI_CFG: */
-> > >  struct virtio_pci_cfg_cap {
-> > >       struct virtio_pci_cap cap;
-> > > --
-> > > 2.31.0
-> >
+> Just casually browsing through the patches. A comment below.
 
+> 
+> On Sun, Jun 26, 2022 at 03:04:48PM +0200, Horatiu Vultur wrote:
+> > Add link aggregation hardware offload support for lan966x
+> >
+> > Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+> > ---
+> >  .../net/ethernet/microchip/lan966x/Makefile   |   2 +-
+> >  .../ethernet/microchip/lan966x/lan966x_lag.c  | 296 ++++++++++++++++++
+> >  .../ethernet/microchip/lan966x/lan966x_main.h |  28 ++
+> >  .../microchip/lan966x/lan966x_switchdev.c     |  78 ++++-
+> >  4 files changed, 388 insertions(+), 16 deletions(-)
+> >  create mode 100644 drivers/net/ethernet/microchip/lan966x/lan966x_lag.c
+> >
+> > diff --git a/drivers/net/ethernet/microchip/lan966x/Makefile b/drivers/net/ethernet/microchip/lan966x/Makefile
+> > index fd2e0ebb2427..0c22c86bdaa9 100644
+> > --- a/drivers/net/ethernet/microchip/lan966x/Makefile
+> > +++ b/drivers/net/ethernet/microchip/lan966x/Makefile
+> > @@ -8,4 +8,4 @@ obj-$(CONFIG_LAN966X_SWITCH) += lan966x-switch.o
+> >  lan966x-switch-objs  := lan966x_main.o lan966x_phylink.o lan966x_port.o \
+> >                       lan966x_mac.o lan966x_ethtool.o lan966x_switchdev.o \
+> >                       lan966x_vlan.o lan966x_fdb.o lan966x_mdb.o \
+> > -                     lan966x_ptp.o lan966x_fdma.o
+> > +                     lan966x_ptp.o lan966x_fdma.o lan966x_lag.o
+> > diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_lag.c b/drivers/net/ethernet/microchip/lan966x/lan966x_lag.c
+> > new file mode 100644
+> > index 000000000000..c721a05d44d2
+> > --- /dev/null
+> > +++ b/drivers/net/ethernet/microchip/lan966x/lan966x_lag.c
+> > @@ -0,0 +1,296 @@
+> > +// SPDX-License-Identifier: GPL-2.0+
+> > +
+> > +#include "lan966x_main.h"
+> > +
+> > +static void lan966x_lag_set_aggr_pgids(struct lan966x *lan966x)
+> > +{
+> > +     u32 visited = GENMASK(lan966x->num_phys_ports - 1, 0);
+> > +     int p, lag, i;
+> > +
+> > +     /* Reset destination and aggregation PGIDS */
+> > +     for (p = 0; p < lan966x->num_phys_ports; ++p)
+> > +             lan_wr(ANA_PGID_PGID_SET(BIT(p)),
+> > +                    lan966x, ANA_PGID(p));
+> > +
+> > +     for (p = PGID_AGGR; p < PGID_SRC; ++p)
+> > +             lan_wr(ANA_PGID_PGID_SET(visited),
+> > +                    lan966x, ANA_PGID(p));
+> > +
+> > +     /* The visited ports bitmask holds the list of ports offloading any
+> > +      * bonding interface. Initially we mark all these ports as unvisited,
+> > +      * then every time we visit a port in this bitmask, we know that it is
+> > +      * the lowest numbered port, i.e. the one whose logical ID == physical
+> > +      * port ID == LAG ID. So we mark as visited all further ports in the
+> > +      * bitmask that are offloading the same bonding interface. This way,
+> > +      * we set up the aggregation PGIDs only once per bonding interface.
+> > +      */
+> > +     for (p = 0; p < lan966x->num_phys_ports; ++p) {
+> > +             struct lan966x_port *port = lan966x->ports[p];
+> > +
+> > +             if (!port || !port->bond)
+> > +                     continue;
+> > +
+> > +             visited &= ~BIT(p);
+> > +     }
+> > +
+> > +     /* Now, set PGIDs for each active LAG */
+> > +     for (lag = 0; lag < lan966x->num_phys_ports; ++lag) {
+> > +             struct lan966x_port *port = lan966x->ports[lag];
+> > +             int num_active_ports = 0;
+> > +             struct net_device *bond;
+> > +             unsigned long bond_mask;
+> > +             u8 aggr_idx[16];
+> > +
+> > +             if (!port || !port->bond || (visited & BIT(lag)))
+> > +                     continue;
+> > +
+> > +             bond = port->bond;
+> > +             bond_mask = lan966x_lag_get_mask(lan966x, bond, true);
+> > +
+> > +             for_each_set_bit(p, &bond_mask, lan966x->num_phys_ports) {
+> > +                     lan_wr(ANA_PGID_PGID_SET(bond_mask),
+> > +                            lan966x, ANA_PGID(p));
+> > +                     aggr_idx[num_active_ports++] = p;
+> > +             }
+> 
+> This incorrect logic seems to have been copied from ocelot from before
+> commit a14e6b69f393 ("net: mscc: ocelot: fix incorrect balancing with
+> down LAG ports").
+> 
+> The issue is that you calculate bond_mask with only_active_ports=true.
+> This means the for_each_set_bit() will not iterate through the inactive
+> LAG ports, and won't set the bond_mask as the PGID destination for those
+> ports.
+> 
+> That isn't what is desired; as explained in that commit, inactive LAG
+> ports should be removed via the aggregation PGIDs and not via the
+> destination PGIDs. Otherwise, an FDB entry targeted towards the
+> LAG (effectively towards the "primary" LAG port, whose logical port ID
+> gives the LAG ID) will not egress even the "secondary" LAG port if the
+> primary's link is down.
+
+Thanks for looking at this.
+That is correct, ocelot was the source of inspiration. The issue that
+you described in the mentioned commit is fixed in the last patch of this
+series.
+I will have a look at your commit and will try to integrated it. Thanks.
+
+> 
+> > +
+> > +             for (i = PGID_AGGR; i < PGID_SRC; ++i) {
+> > +                     u32 ac;
+> > +
+> > +                     ac = lan_rd(lan966x, ANA_PGID(i));
+> > +                     ac &= ~bond_mask;
+> > +                     /* Don't do division by zero if there was no active
+> > +                      * port. Just make all aggregation codes zero.
+> > +                      */
+> > +                     if (num_active_ports)
+> > +                             ac |= BIT(aggr_idx[i % num_active_ports]);
+> > +                     lan_wr(ANA_PGID_PGID_SET(ac),
+> > +                            lan966x, ANA_PGID(i));
+> > +             }
+> > +
+> > +             /* Mark all ports in the same LAG as visited to avoid applying
+> > +              * the same config again.
+> > +              */
+> > +             for (p = lag; p < lan966x->num_phys_ports; p++) {
+> > +                     struct lan966x_port *port = lan966x->ports[p];
+> > +
+> > +                     if (!port)
+> > +                             continue;
+> > +
+> > +                     if (port->bond == bond)
+> > +                             visited |= BIT(p);
+> > +             }
+> > +     }
+> > +}
+
+-- 
+/Horatiu
