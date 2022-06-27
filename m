@@ -2,122 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 51D8E55D099
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:08:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 28B1255D3DC
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:13:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239147AbiF0S7c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jun 2022 14:59:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49450 "EHLO
+        id S240359AbiF0TJM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jun 2022 15:09:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237262AbiF0S7b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 14:59:31 -0400
-Received: from smtp-fw-33001.amazon.com (smtp-fw-33001.amazon.com [207.171.190.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 244DB10DE
-        for <netdev@vger.kernel.org>; Mon, 27 Jun 2022 11:59:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1656356370; x=1687892370;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=lvNw/P7qM5QCfdssWxmMogElVd1RUtk20y5SfXAxbvc=;
-  b=rf+BSBBqsfTYK6L1HYuTnG6Fo4VfZNlcJGYzPp8H/8DjkvIhKDJWLYyd
-   KW8oFRMF+ZQwrEw0cUn8plmIJlgrfOExR8ESctsPQJqlTnIIX/KdfuoxT
-   jBqiJmOB5MR7oXPCbLWEbltobkw7iRpAlsPqMh5ZVL1MI2SuAnlfp1pac
-   E=;
-X-IronPort-AV: E=Sophos;i="5.92,227,1650931200"; 
-   d="scan'208";a="205524144"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-pdx-2c-d9fba5dd.us-west-2.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-33001.sea14.amazon.com with ESMTP; 27 Jun 2022 18:59:09 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-pdx-2c-d9fba5dd.us-west-2.amazon.com (Postfix) with ESMTPS id AE65E434F0;
-        Mon, 27 Jun 2022 18:59:08 +0000 (UTC)
-Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.36; Mon, 27 Jun 2022 18:59:08 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.160.124) by
- EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.36; Mon, 27 Jun 2022 18:59:05 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     <edumazet@google.com>
-CC:     <davem@davemloft.net>, <ebiederm@xmission.com>,
-        <herbert@gondor.apana.org.au>, <kuba@kernel.org>,
-        <kuni1840@gmail.com>, <kuniyu@amazon.com>,
-        <netdev@vger.kernel.org>, <pabeni@redhat.com>, <xemul@openvz.org>
-Subject: Re: [PATCH v2 net] af_unix: Do not call kmemdup() for init_net's sysctl table.
-Date:   Mon, 27 Jun 2022 11:58:57 -0700
-Message-ID: <20220627185857.1272-1-kuniyu@amazon.com>
+        with ESMTP id S237795AbiF0TJL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 15:09:11 -0400
+X-Greylist: delayed 462 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 27 Jun 2022 12:09:10 PDT
+Received: from shelob.oktetlabs.ru (shelob.oktetlabs.ru [91.220.146.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3E9725C4;
+        Mon, 27 Jun 2022 12:09:10 -0700 (PDT)
+Received: from bree.oktetlabs.ru (bree.oktetlabs.ru [192.168.34.5])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by shelob.oktetlabs.ru (Postfix) with ESMTPS id 92342A5;
+        Mon, 27 Jun 2022 22:01:25 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 shelob.oktetlabs.ru 92342A5
+Authentication-Results: shelob.oktetlabs.ru/92342A5; dkim=none;
+        dkim-atps=neutral
+From:   Ivan Malov <ivan.malov@oktetlabs.ru>
+To:     Magnus Karlsson <magnus.karlsson@intel.com>,
+        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
+        netdev@vger.kernel.org
+Cc:     Andrew Rybchenko <andrew.rybchenko@oktetlabs.ru>,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Maxim Mikityanskiy <maximmi@mellanox.com>
+Subject: [PATCH] xsk: clear page contiguity bit when unmapping pool
+Date:   Mon, 27 Jun 2022 22:01:20 +0300
+Message-Id: <20220627190120.176470-1-ivan.malov@oktetlabs.ru>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <CANn89i+QSfFpwkmHhrH3qkpFTK2XEO1OTdgfSSbQFNGGu2WT_A@mail.gmail.com>
-References: <CANn89i+QSfFpwkmHhrH3qkpFTK2XEO1OTdgfSSbQFNGGu2WT_A@mail.gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.160.124]
-X-ClientProxiedBy: EX13D23UWA001.ant.amazon.com (10.43.160.68) To
- EX13D04ANC001.ant.amazon.com (10.43.157.89)
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-0.1 required=5.0 tests=BAYES_00,DKIM_ADSP_DISCARD,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 27 Jun 2022 20:40:24 +0200
-> On Mon, Jun 27, 2022 at 8:30 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
-> >
-> > From:   Jakub Kicinski <kuba@kernel.org>
-> > Date:   Mon, 27 Jun 2022 10:58:59 -0700
-> > > On Sun, 26 Jun 2022 11:43:27 -0500 Eric W. Biederman wrote:
-> > > > Kuniyuki Iwashima <kuniyu@amazon.com> writes:
-> > > >
-> > > > > While setting up init_net's sysctl table, we need not duplicate the global
-> > > > > table and can use it directly.
-> > > >
-> > > > Acked-by: "Eric W. Biederman" <ebiederm@xmission.com>
-> > > >
-> > > > I am not quite certain the savings of a single entry table justivies
-> > > > the complexity.  But the looks correct.
-> > >
-> > > Yeah, the commit message is a little sparse. The "why" is not addressed.
-> > > Could you add more details to explain the motivation?
-> >
-> > I was working on a series which converts UDP/TCP hash tables into per-netns
-> > ones like AF_UNIX to speed up looking up sockets.  It will consume much
-> > memory on a host with thousands of netns, but it can be waste if we do not
-> > have its protocol family's sockets.
-> 
-> For the record, I doubt we will accept such a patch (per net-ns
-> TCP/UDP hash tables)
+When a XSK pool gets mapped, xp_check_dma_contiguity() adds bit 0x1
+to pages' DMA addresses that go in ascending order and at 4K stride.
+The problem is that the bit does not get cleared before doing unmap.
 
-Is it because it's risky?
-IIRC, you said we need per netns table for TCP in the future.
+As a result, a lot of warnings from iommu_dma_unmap_page() are seen
+suggesting mapping lookup failures at drivers/iommu/dma-iommu.c:848.
 
+Fixes: 2b43470add8c ("xsk: Introduce AF_XDP buffer allocation API")
 
-> > So, I'm now working on a follow-up series for AF_UNIX per-netns hash table
-> > so that we can change the size for a child netns by a sysctl knob:
-> >
-> >   # sysctl -w net.unix.child_hash_entries=128
-> >   # ip net add test  # created with the hash table size 128
-> >   # ip net exec test sh
-> >   # sysctl net.unix.hash_entries  # read-only
-> >   128
-> >
-> >   (The size for init_net can be changed via a new boot parameter
-> >    xhash_entries like uhash_entries/thash_entries.)
-> >
-> > While implementing that, I found that kmemdup() is called for init_net but
-> > TCP/UDP does not (See: ipv4_sysctl_init_net()).  Unlike IPv4, AF_UNIX does
-> > not have a huge sysctl table, so it cannot be a problem though, this patch
-> > is for consuming less memory and kind of consistency.  The reason I submit
-> > this seperately is that it might be better to have a Fixes tag.
-> 
-> I think that af_unix module can be unloaded.
-> 
-> Your patch will break the module unload operation.
+Signed-off-by: Ivan Malov <ivan.malov@oktetlabs.ru>
+---
+ net/xdp/xsk_buff_pool.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Thank you!
-I had to take of kfree() in unix_sysctl_unregister().
+diff --git a/net/xdp/xsk_buff_pool.c b/net/xdp/xsk_buff_pool.c
+index 87bdd71c7bb6..f70112176b7c 100644
+--- a/net/xdp/xsk_buff_pool.c
++++ b/net/xdp/xsk_buff_pool.c
+@@ -332,6 +332,7 @@ static void __xp_dma_unmap(struct xsk_dma_map *dma_map, unsigned long attrs)
+ 	for (i = 0; i < dma_map->dma_pages_cnt; i++) {
+ 		dma = &dma_map->dma_pages[i];
+ 		if (*dma) {
++			*dma &= ~XSK_NEXT_PG_CONTIG_MASK;
+ 			dma_unmap_page_attrs(dma_map->dev, *dma, PAGE_SIZE,
+ 					     DMA_BIDIRECTIONAL, attrs);
+ 			*dma = 0;
+-- 
+2.30.2
+
