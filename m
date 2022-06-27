@@ -2,201 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E4C255C931
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 14:56:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BCB455E29C
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:35:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239818AbiF0SUF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jun 2022 14:20:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39760 "EHLO
+        id S240187AbiF0SVX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jun 2022 14:21:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234890AbiF0SUF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 14:20:05 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DED3BE0DD
-        for <netdev@vger.kernel.org>; Mon, 27 Jun 2022 11:20:02 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id w24so10105957pjg.5
-        for <netdev@vger.kernel.org>; Mon, 27 Jun 2022 11:20:02 -0700 (PDT)
+        with ESMTP id S239947AbiF0SVV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 14:21:21 -0400
+Received: from mail-yw1-x1130.google.com (mail-yw1-x1130.google.com [IPv6:2607:f8b0:4864:20::1130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2E8CEE26
+        for <netdev@vger.kernel.org>; Mon, 27 Jun 2022 11:21:19 -0700 (PDT)
+Received: by mail-yw1-x1130.google.com with SMTP id 00721157ae682-31780ad7535so93872687b3.8
+        for <netdev@vger.kernel.org>; Mon, 27 Jun 2022 11:21:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fungible.com; s=google;
-        h=from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=AUlKhvKSjzeI5cLspDHMu5nnFXaHuMw/V5S0p0g0tUU=;
-        b=lb9s6jtfI0BHZ6c33RNZEfCGWZw5e4cRQ6AQ2UTfzY7wxjkwheFzeHJCAINwpMuL0b
-         4w7pgzTgC4IouQ6VkJjrSE1DcH36C8E4qD5TVDUtb4H+QmuzGwNazyct0MR8UswO1R3k
-         uLqTYxKbrtuEf8Z90FPE1G2Rt/oiSf09s2X2M=
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=zAvy14WQSJajEvtEq9Z9V458WL9rypKqsSWZ5e8ff+Q=;
+        b=QfczmHRT9/HR8HyazKLbsqrs7cCP2iZKaxG/OXGSPnAc8W5YAiaVA0WqjZ3/6QtXqU
+         42K81l24QIf3XynW/JKjRGJ7dmfzwI2FUm73m5CnsNDIqxjEz+NWZjbRqeUpE3CO+oZH
+         +WHVevlpyQHs4NMeAMNGbQrzcjZNAN6YiP+T/yfSSMD0p0fn3Nshe7kDoUKHwoSYa4N3
+         VnE5Z7u+uJPgYCZdcfgQYEKpStJa5alN/Ge9h9ME6zGeGt1uUwucGuzxD4iyBvikWn6I
+         UNKi3EkIpSabWBkxoc2zg+IeRkTOZHzN8h/RLyTzMjG2hCOwCIaltZxdV6oluuLg1E7j
+         RMQA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=AUlKhvKSjzeI5cLspDHMu5nnFXaHuMw/V5S0p0g0tUU=;
-        b=Sw98PTBOVLkFxV++pVc8NFYCMWKZ4xh4PPtNcSNoguCXP/4h7ZQgLWBIYMSrHSLd0l
-         lOPCFIUJmpltL094epTTjSv2jw4TNiZoRicxdsWF2gxj/E9Oi2U6aOVidqPVV2X2FRb8
-         zULtToAUEjHEugnf0HrfIIqqzdjMuQxgO0wfuiA+Xl9aRyNupYO/z8cAFMXzW09pLm34
-         trvudRuP7+V25ZTppkUaufzTzCaXptM0CXj3KePxskEyTo7V+wByz7FTWCdb7WM88OBL
-         PjGULOitb0hcIeE3PnwiZg7HLmWt76rAXWfmYKbWVNBa9UnRFuc34G1R4hcvO9VBd/im
-         IQeg==
-X-Gm-Message-State: AJIora8BBUH1Keretbvv77ju6/gu2iIZsubHFfrlqvSyeWso2EtnrA/k
-        IBJ9YHZz8PG6sYqXYWDZ8jQjvA==
-X-Google-Smtp-Source: AGRyM1uf291LtqNYxUXoOkDRwLPNdtS17vq9ozwFPzMVlUXJQJRlNPWf6iKGaYgmSmHy85BtgcL+yA==
-X-Received: by 2002:a17:90b:1e0e:b0:1ec:adbe:3b35 with SMTP id pg14-20020a17090b1e0e00b001ecadbe3b35mr23314304pjb.134.1656354002388;
-        Mon, 27 Jun 2022 11:20:02 -0700 (PDT)
-Received: from cab09-qa-09.fungible.local ([12.190.10.11])
-        by smtp.gmail.com with ESMTPSA id x12-20020a17090300cc00b001624dab05edsm7597064plc.8.2022.06.27.11.20.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jun 2022 11:20:02 -0700 (PDT)
-From:   Dimitris Michailidis <d.michailidis@fungible.com>
-X-Google-Original-From: Dimitris Michailidis <dmichail@fungible.com>
-To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, d.michailidis@fungible.com
-Subject: [PATCH net-next] net/funeth: Support for ethtool -m
-Date:   Mon, 27 Jun 2022 11:20:00 -0700
-Message-Id: <20220627182000.8198-1-dmichail@fungible.com>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=zAvy14WQSJajEvtEq9Z9V458WL9rypKqsSWZ5e8ff+Q=;
+        b=jbGfgc+3e24RHkAPh9ZxCcCFOZZnbnHdhXIYMg7c4BFcPi+X3kqSYaB74+5Ei7ahLV
+         qmLRP2cWD34OSKBl7r6PpC0W9LFh2erfCjU9u/Bj+o7CEQ0R9WnkNmM2W4RBFESppOnD
+         aEkBGGinr2QHKJCYAJL/MzicmGXzaF7pvU5ATNe/XlfzQfpYkvAoYN7l/FBhbJgt5lNv
+         aTZDmBQ0ZiQsgykHwiDxCPlFnEh6aQhkGDfEFGU7aELx/fOw/2csp+Ftw3rL2tyvIH9/
+         lHERNjHt9VU/U9uMgT6zZnUMHaPGiYTQ/gztu0ApuGfvFoIt5T8oqmiX0BdoU6CI81mN
+         /E8g==
+X-Gm-Message-State: AJIora/qq/88kW1nmnPpm2Vzy5QoFUG+5nTYp46RES5TWiV8nJuzAvHQ
+        Cvm/fL1RSpB72CkdL9J3nTB2JEIEfQeeqZtoWDCoFw==
+X-Google-Smtp-Source: AGRyM1ut1mmdvIzz+fGssaCHywTk0zdoNUyWRaIm6VKkay06+F6yyhsbCZbfM6hX7GjWG5RLUmdofYrPpF5aZ5NeSXg=
+X-Received: by 2002:a0d:eace:0:b0:317:87ac:b3a8 with SMTP id
+ t197-20020a0deace000000b0031787acb3a8mr16855244ywe.126.1656354078827; Mon, 27
+ Jun 2022 11:21:18 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220623080344.783549-1-saravanak@google.com> <20220623080344.783549-3-saravanak@google.com>
+ <20220623100421.GY1615@pengutronix.de> <20220627175046.GA2644138-robh@kernel.org>
+In-Reply-To: <20220627175046.GA2644138-robh@kernel.org>
+From:   Saravana Kannan <saravanak@google.com>
+Date:   Mon, 27 Jun 2022 11:20:42 -0700
+Message-ID: <CAGETcx8YSuq+_tiWwShjZBeHd7+CHwLRdvdT6yb3xfEUD7DB0Q@mail.gmail.com>
+Subject: Re: [PATCH v2 2/2] of: base: Avoid console probe delay when fw_devlink.strict=1
+To:     Rob Herring <robh@kernel.org>
+Cc:     sascha hauer <sha@pengutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Len Brown <lenb@kernel.org>, peng fan <peng.fan@nxp.com>,
+        kevin hilman <khilman@kernel.org>,
+        ulf hansson <ulf.hansson@linaro.org>,
+        len brown <len.brown@intel.com>, pavel machek <pavel@ucw.cz>,
+        joerg roedel <joro@8bytes.org>, will deacon <will@kernel.org>,
+        andrew lunn <andrew@lunn.ch>,
+        heiner kallweit <hkallweit1@gmail.com>,
+        russell king <linux@armlinux.org.uk>,
+        "david s. miller" <davem@davemloft.net>,
+        eric dumazet <edumazet@google.com>,
+        jakub kicinski <kuba@kernel.org>,
+        paolo abeni <pabeni@redhat.com>,
+        linus walleij <linus.walleij@linaro.org>,
+        hideaki yoshifuji <yoshfuji@linux-ipv6.org>,
+        david ahern <dsahern@kernel.org>, kernel-team@android.com,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-gpio@vger.kernel.org, kernel@pengutronix.de,
+        devicetree@vger.kernel.org, linux-acpi@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the FW command for reading port module memory pages and implement
-ethtool's get_module_eeprom_by_page operation.
+On Mon, Jun 27, 2022 at 10:50 AM Rob Herring <robh@kernel.org> wrote:
+>
+> On Thu, Jun 23, 2022 at 12:04:21PM +0200, sascha hauer wrote:
+> > On Thu, Jun 23, 2022 at 01:03:43AM -0700, Saravana Kannan wrote:
+> > > Commit 71066545b48e ("driver core: Set fw_devlink.strict=1 by default")
+> > > enabled iommus and dmas dependency enforcement by default. On some
+> > > systems, this caused the console device's probe to get delayed until the
+> > > deferred_probe_timeout expires.
+> > >
+> > > We need consoles to work as soon as possible, so mark the console device
+> > > node with FWNODE_FLAG_BEST_EFFORT so that fw_delink knows not to delay
+> > > the probe of the console device for suppliers without drivers. The
+> > > driver can then make the decision on where it can probe without those
+> > > suppliers or defer its probe.
+> > >
+> > > Fixes: 71066545b48e ("driver core: Set fw_devlink.strict=1 by default")
+> > > Reported-by: Sascha Hauer <sha@pengutronix.de>
+> > > Reported-by: Peng Fan <peng.fan@nxp.com>
+> > > Signed-off-by: Saravana Kannan <saravanak@google.com>
+> > > Tested-by: Peng Fan <peng.fan@nxp.com>
+> > > ---
+> > >  drivers/of/base.c | 2 ++
+> > >  1 file changed, 2 insertions(+)
+> > >
+> > > diff --git a/drivers/of/base.c b/drivers/of/base.c
+> > > index d4f98c8469ed..a19cd0c73644 100644
+> > > --- a/drivers/of/base.c
+> > > +++ b/drivers/of/base.c
+> > > @@ -1919,6 +1919,8 @@ void of_alias_scan(void * (*dt_alloc)(u64 size, u64 align))
+> > >                     of_property_read_string(of_aliases, "stdout", &name);
+> > >             if (name)
+> > >                     of_stdout = of_find_node_opts_by_path(name, &of_stdout_options);
+> > > +           if (of_stdout)
+> > > +                   of_stdout->fwnode.flags |= FWNODE_FLAG_BEST_EFFORT;
+> >
+> > The device given in the stdout-path property doesn't necessarily have to
+> > be consistent with the console= parameter. The former is usually
+> > statically set in the device trees contained in the kernel while the
+> > latter is dynamically set by the bootloader. So if you change the
+> > console uart in the bootloader then you'll still run into this trap.
+> >
+> > It's problematic to consult only the device tree for dependencies. I
+> > found several examples of drivers in the tree for which dma support
+> > is optional. They use it if they can, but continue without it when
+> > not available. "hwlock" is another property which consider several
+> > drivers as optional. Also consider SoCs in early upstreaming phases
+> > when the device tree is merged with "dmas" or "hwlock" properties,
+> > but the corresponding drivers are not yet upstreamed. It's not nice
+> > to defer probing of all these devices for a long time.
+> >
+> > I wonder if it wouldn't be a better approach to just probe all devices
+> > and record the device(node) they are waiting on. Then you know that you
+> > don't need to probe them again until the device they are waiting for
+> > is available.
+>
+> Can't we have a driver flag 'I have optional dependencies' that will
+> trigger probe without all dependencies and then the driver can defer
+> probe if required dependencies are not yet met.
 
-Signed-off-by: Dimitris Michailidis <dmichail@fungible.com>
----
- .../net/ethernet/fungible/funcore/fun_hci.h   | 40 +++++++++++++++++++
- .../ethernet/fungible/funeth/funeth_ethtool.c | 34 ++++++++++++++++
- 2 files changed, 74 insertions(+)
+Haha... that's kinda what I'm working on right now. But named
+intentionally in a more limited sense of "I can't wait for the
+timeout" where fw_devlink will relax and allow the driver to probe
+(and have it make the call) once we hit late_initcall(). I'm
+explicitly limiting it to "timeout" because we don't want everyone
+adding this flag everytime they hit an issue. That'll beat the point
+of fw_devlink=on.
 
-diff --git a/drivers/net/ethernet/fungible/funcore/fun_hci.h b/drivers/net/ethernet/fungible/funcore/fun_hci.h
-index 257203e94b68..f21819670106 100644
---- a/drivers/net/ethernet/fungible/funcore/fun_hci.h
-+++ b/drivers/net/ethernet/fungible/funcore/fun_hci.h
-@@ -442,6 +442,7 @@ enum fun_port_lane_attr {
- };
- 
- enum fun_admin_port_subop {
-+	FUN_ADMIN_PORT_SUBOP_XCVR_READ = 0x23,
- 	FUN_ADMIN_PORT_SUBOP_INETADDR_EVENT = 0x24,
- };
- 
-@@ -595,6 +596,19 @@ struct fun_admin_port_req {
- 
- 			struct fun_admin_read48_req read48[];
- 		} read;
-+		struct fun_admin_port_xcvr_read_req {
-+			u8 subop;
-+			u8 rsvd0;
-+			__be16 flags;
-+			__be32 id;
-+
-+			u8 bank;
-+			u8 page;
-+			u8 offset;
-+			u8 length;
-+			u8 dev_addr;
-+			u8 rsvd1[3];
-+		} xcvr_read;
- 		struct fun_admin_port_inetaddr_event_req {
- 			__u8 subop;
- 			__u8 rsvd0;
-@@ -625,6 +639,15 @@ struct fun_admin_port_req {
- 		.id = cpu_to_be32(_id),                          \
- 	}
- 
-+#define FUN_ADMIN_PORT_XCVR_READ_REQ_INIT(_flags, _id, _bank, _page,   \
-+					  _offset, _length, _dev_addr) \
-+	((struct fun_admin_port_xcvr_read_req) {                       \
-+		.subop = FUN_ADMIN_PORT_SUBOP_XCVR_READ,               \
-+		.flags = cpu_to_be16(_flags), .id = cpu_to_be32(_id),  \
-+		.bank = (_bank), .page = (_page), .offset = (_offset), \
-+		.length = (_length), .dev_addr = (_dev_addr),          \
-+	})
-+
- struct fun_admin_port_rsp {
- 	struct fun_admin_rsp_common common;
- 
-@@ -659,6 +682,23 @@ struct fun_admin_port_rsp {
- 	} u;
- };
- 
-+struct fun_admin_port_xcvr_read_rsp {
-+	struct fun_admin_rsp_common common;
-+
-+	u8 subop;
-+	u8 rsvd0[3];
-+	__be32 id;
-+
-+	u8 bank;
-+	u8 page;
-+	u8 offset;
-+	u8 length;
-+	u8 dev_addr;
-+	u8 rsvd1[3];
-+
-+	u8 data[128];
-+};
-+
- enum fun_xcvr_type {
- 	FUN_XCVR_BASET = 0x0,
- 	FUN_XCVR_CU = 0x1,
-diff --git a/drivers/net/ethernet/fungible/funeth/funeth_ethtool.c b/drivers/net/ethernet/fungible/funeth/funeth_ethtool.c
-index da42dd53a87c..31aa185f4d17 100644
---- a/drivers/net/ethernet/fungible/funeth/funeth_ethtool.c
-+++ b/drivers/net/ethernet/fungible/funeth/funeth_ethtool.c
-@@ -1118,6 +1118,39 @@ static int fun_set_fecparam(struct net_device *netdev,
- 	return fun_port_write_cmd(fp, FUN_ADMIN_PORT_KEY_FEC, fec_mode);
- }
- 
-+static int fun_get_port_module_page(struct net_device *netdev,
-+				    const struct ethtool_module_eeprom *req,
-+				    struct netlink_ext_ack *extack)
-+{
-+	union {
-+		struct fun_admin_port_req req;
-+		struct fun_admin_port_xcvr_read_rsp rsp;
-+	} cmd;
-+	struct funeth_priv *fp = netdev_priv(netdev);
-+	int rc;
-+
-+	if (fp->port_caps & FUN_PORT_CAP_VPORT) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "Specified port is virtual, only physical ports have modules");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	cmd.req.common = FUN_ADMIN_REQ_COMMON_INIT2(FUN_ADMIN_OP_PORT,
-+						    sizeof(cmd.req));
-+	cmd.req.u.xcvr_read =
-+		FUN_ADMIN_PORT_XCVR_READ_REQ_INIT(0, netdev->dev_port,
-+						  req->bank, req->page,
-+						  req->offset, req->length,
-+						  req->i2c_address);
-+	rc = fun_submit_admin_sync_cmd(fp->fdev, &cmd.req.common, &cmd.rsp,
-+				       sizeof(cmd.rsp), 0);
-+	if (rc)
-+		return rc;
-+
-+	memcpy(req->data, cmd.rsp.data, req->length);
-+	return req->length;
-+}
-+
- static const struct ethtool_ops fun_ethtool_ops = {
- 	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
- 				     ETHTOOL_COALESCE_MAX_FRAMES,
-@@ -1156,6 +1189,7 @@ static const struct ethtool_ops fun_ethtool_ops = {
- 	.get_eth_mac_stats   = fun_get_802_3_stats,
- 	.get_eth_ctrl_stats  = fun_get_802_3_ctrl_stats,
- 	.get_rmon_stats      = fun_get_rmon_stats,
-+	.get_module_eeprom_by_page = fun_get_port_module_page,
- };
- 
- void fun_set_ethtool_ops(struct net_device *netdev)
--- 
-2.25.1
+Also, setting the flag for a driver to fix one system might break
+another system because in the other system the user might want to wait
+for the timeout because the supplier drivers would be loaded before
+the timeout.
 
+Another option is to restart the timer (if it hasn't expired) when
+filesystems get mounted (in addition to the current "when new driver
+gets registered). That way, we might be able to drop the timeout from
+10s to 5s.
+
+-Saravana
