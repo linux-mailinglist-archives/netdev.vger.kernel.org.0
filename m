@@ -2,128 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 311E655D320
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:11:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8714D55DED5
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:29:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235603AbiF0MIV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jun 2022 08:08:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41856 "EHLO
+        id S239992AbiF0MKo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jun 2022 08:10:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240426AbiF0MHn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 08:07:43 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1D520D12A
-        for <netdev@vger.kernel.org>; Mon, 27 Jun 2022 05:06:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656331567;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=oa0hKhTUeCCnu5O/zbJifpjkPRkzcn5Dvdk3HuT+Faw=;
-        b=VlHd09c6wMBCMI/f/fFNRRhJ7ZCtUGx/uqK21XCohzV2xKgTEhD41+GV74ae7Tkap0dTpu
-        inawsKoSZnttyWTwbzPi7AC1ipr8LZoUesA9m8a3IFU1Zp+j3jE5vj4pEoh9JuegYdCZH8
-        YuwRfkXnP3ET1lA65jGsdW86r3w0wNY=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-638-oN254a0sM36aHz3GtO-voA-1; Mon, 27 Jun 2022 08:06:05 -0400
-X-MC-Unique: oN254a0sM36aHz3GtO-voA-1
-Received: by mail-wm1-f70.google.com with SMTP id k5-20020a05600c0b4500b003941ca130f9so3499607wmr.0
-        for <netdev@vger.kernel.org>; Mon, 27 Jun 2022 05:06:05 -0700 (PDT)
+        with ESMTP id S233113AbiF0MKl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 08:10:41 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88520BE2A
+        for <netdev@vger.kernel.org>; Mon, 27 Jun 2022 05:10:40 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id u131-20020a254789000000b0066c8beed1e2so4775112yba.16
+        for <netdev@vger.kernel.org>; Mon, 27 Jun 2022 05:10:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=Dwpo1nep3UGiZJY5l6NyxfXrUEP7wnxKsudZdsMvFW0=;
+        b=SgAQlxMSBojvLkSv9fcuJc3SqmTBwZvjcHaPQUkqinspFgeiAsMXBYX/UMm+lWBKow
+         O3xBZE1dK8F+Ou668GDbML16BuDxC00YFiTiXgTnwQ/WVA4LtHNwrlzE7yVHurVXL6QN
+         ZWG7U99zs5rjO4Tvwp1MZ+zWxoYR6Ui06Vz8HH2xrkyz58xJ9kDBQxw7vvuC1QI/vDXf
+         w8dMXqlikuy+/YBqQk2UFyPIpB6+0eF2/2aoyI/77R+U1nTUsK5ZQ5m1FUBF1KD7h7gg
+         BrJDPAG70fQkrxDfGUuiRD6x9yZrWp+3Om2SZjekyrybeJdfTf9Q+eSzgym6hYrcpM1B
+         rSvg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=oa0hKhTUeCCnu5O/zbJifpjkPRkzcn5Dvdk3HuT+Faw=;
-        b=mkipWIqCj/tiJ3aYYx4oTgjT089ox6ZaCuZlfcoO6x2PBNriXNpzTMq8MfFvRJgQd5
-         6MKl5kF+lw5xuvi9XcJpLdeEwEC4lVOD/r5jcwIWOFjNkAAHAlJ2uN35utwUqdrA0rg3
-         0nUiHfWW3zfhgzyaPkTBW6KbSyq5k+9ryA/XLH6D0T4mB7zDngSYT88NZLzOFYStFjHd
-         Cy2k9QEOtEsppz+LX9rec1wfmUUyxv9Vwiid4VbhJGn4W+vGUoaozDLzdiS87UEU7Uxp
-         iEHcZAn24YGDQ89M0eE+PhlidqHuo/c/aUFSqVFHltnf8JIj+2JWxusREs80/3kejJKq
-         Xodg==
-X-Gm-Message-State: AJIora8nf6jwyIvsfQ/tvQcoOK8HAeZGUkCBasv+5JXIcacyP2z3f49P
-        kIievlSI4w7z44i70FIPFDt/0T2UcF1EwLEa3d4mYKdAF/Ki4X2h4ISIpZGHzXjBFVt7iGMz0G0
-        dMn2g3dJuWSQ9q9S9
-X-Received: by 2002:adf:fad2:0:b0:21b:b947:bfa8 with SMTP id a18-20020adffad2000000b0021bb947bfa8mr12316745wrs.73.1656331564548;
-        Mon, 27 Jun 2022 05:06:04 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1uH4dSe1OM+SF7gXPkS4xVRzc70/2+VEa4uCZyX8h1qerL46FWK8xW87SYP/3wUoSpkIGVe8w==
-X-Received: by 2002:adf:fad2:0:b0:21b:b947:bfa8 with SMTP id a18-20020adffad2000000b0021bb947bfa8mr12316730wrs.73.1656331564326;
-        Mon, 27 Jun 2022 05:06:04 -0700 (PDT)
-Received: from redhat.com ([2.54.45.90])
-        by smtp.gmail.com with ESMTPSA id h4-20020a5d4304000000b0021b829d111csm10533390wrq.112.2022.06.27.05.06.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jun 2022 05:06:03 -0700 (PDT)
-Date:   Mon, 27 Jun 2022 08:05:59 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net V2] virtio-net: fix race between ndo_open() and
- virtio_device_ready()
-Message-ID: <20220627080539-mutt-send-email-mst@kernel.org>
-References: <20220627083040.53506-1-jasowang@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220627083040.53506-1-jasowang@redhat.com>
-X-Spam-Status: No, score=-2.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=Dwpo1nep3UGiZJY5l6NyxfXrUEP7wnxKsudZdsMvFW0=;
+        b=CwccQ84izAZ5n1Y3Tbs2FxJ+fNbb8Qf3M9ML3a/ZYco3rnP4yUml3l36Gy8JCSxNK8
+         M9eNjAZWsKg3T172k3vvu4ASbk/rpp6EBPAmCFQOr0bJ/CuRpt+bvm1AKxxWvPoGUOkA
+         KZNad7OUk0jLqGJPNBwNMNzZOLf5Ysbs/sjK/M0mYYAxOIdozgrutCoq8Y7xz0GXn1l8
+         GLBAxpZ0R6GpbKguO6djfAqNNZKLSdHm4hHqZhuy56GBxAknqWNh1vDk+63lIZf2qXkx
+         8a5osXkWn6JQ+3QgwKZJwWzh7hrOW2zAVT5DtlJNc4b1L1Vf6psGUkofnCA9c3PY0gUK
+         ODwA==
+X-Gm-Message-State: AJIora/A6cFBEznwjIxYL+da0cNon0SltfaAx/7+NaKoK7K0tJaCznjl
+        Fw9KDvp/hiwGsyOTpPpWcOzN+JXJbmYFJQ==
+X-Google-Smtp-Source: AGRyM1s3fPoFeW8fWGXQKlQyt6CboRrAkMIGmHOlv2bYYlRtKiYp724uf8Mdjy3prOhsyWEdFYGvkP8IMRztxw==
+X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
+ (user=edumazet job=sendgmr) by 2002:a25:a28d:0:b0:66c:e11a:5152 with SMTP id
+ c13-20020a25a28d000000b0066ce11a5152mr3238810ybi.286.1656331839862; Mon, 27
+ Jun 2022 05:10:39 -0700 (PDT)
+Date:   Mon, 27 Jun 2022 12:10:38 +0000
+Message-Id: <20220627121038.226500-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
+Subject: [PATCH net-next] tcp: diag: add support for TIME_WAIT sockets to tcp_abort()
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
+        Eric Dumazet <edumazet@google.com>,
+        Muhammad Usama Anjum <usama.anjum@collabora.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 04:30:40PM +0800, Jason Wang wrote:
-> We currently call virtio_device_ready() after netdev
-> registration. Since ndo_open() can be called immediately
-> after register_netdev, this means there exists a race between
-> ndo_open() and virtio_device_ready(): the driver may start to use the
-> device before DRIVER_OK which violates the spec.
-> 
-> Fix this by switching to use register_netdevice() and protect the
-> virtio_device_ready() with rtnl_lock() to make sure ndo_open() can
-> only be called after virtio_device_ready().
-> 
-> Fixes: 4baf1e33d0842 ("virtio_net: enable VQs early")
-> Acked-by: Michael S. Tsirkin <mst@redhat.com>
-> Signed-off-by: Jason Wang <jasowang@redhat.com>
+Currently, "ss -K -ta ..." does not support TIME_WAIT sockets.
 
-I reworded the caif commit log similarly and put both on my tree.
+Issue has been raised at least two times in the past [1] [2]
+it is time to fix it.
 
-> ---
->  drivers/net/virtio_net.c | 8 +++++++-
->  1 file changed, 7 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index db05b5e930be..8a5810bcb839 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -3655,14 +3655,20 @@ static int virtnet_probe(struct virtio_device *vdev)
->  	if (vi->has_rss || vi->has_rss_hash_report)
->  		virtnet_init_default_rss(vi);
->  
-> -	err = register_netdev(dev);
-> +	/* serialize netdev register + virtio_device_ready() with ndo_open() */
-> +	rtnl_lock();
-> +
-> +	err = register_netdevice(dev);
->  	if (err) {
->  		pr_debug("virtio_net: registering device failed\n");
-> +		rtnl_unlock();
->  		goto free_failover;
->  	}
->  
->  	virtio_device_ready(vdev);
->  
-> +	rtnl_unlock();
-> +
->  	err = virtnet_cpu_notif_add(vi);
->  	if (err) {
->  		pr_debug("virtio_net: registering cpu notifier failed\n");
-> -- 
-> 2.25.1
+[1] https://lore.kernel.org/netdev/ba65f579-4e69-ae0d-4770-bc6234beb428@gmail.com/
+[2] https://lore.kernel.org/netdev/CANn89i+R9RgmD=AQ4vX1Vb_SQAj4c3fi7-ZtQz-inYY4Sq4CMQ@mail.gmail.com/T/
+
+While we are at it, use inet_sk_state_load() while tcp_abort()
+does not hold a lock on the socket.
+
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Tested-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+---
+ net/ipv4/tcp.c | 26 +++++++++++++++++---------
+ 1 file changed, 17 insertions(+), 9 deletions(-)
+
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index f7309452bdcec095fd7d923089881f0b99c97df7..d2ca56aa18eb35b314ff02bbece8c3e713fe57bd 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -4531,16 +4531,24 @@ EXPORT_SYMBOL_GPL(tcp_done);
+ 
+ int tcp_abort(struct sock *sk, int err)
+ {
+-	if (!sk_fullsock(sk)) {
+-		if (sk->sk_state == TCP_NEW_SYN_RECV) {
+-			struct request_sock *req = inet_reqsk(sk);
++	int state = inet_sk_state_load(sk);
+ 
+-			local_bh_disable();
+-			inet_csk_reqsk_queue_drop(req->rsk_listener, req);
+-			local_bh_enable();
+-			return 0;
+-		}
+-		return -EOPNOTSUPP;
++	if (state == TCP_NEW_SYN_RECV) {
++		struct request_sock *req = inet_reqsk(sk);
++
++		local_bh_disable();
++		inet_csk_reqsk_queue_drop(req->rsk_listener, req);
++		local_bh_enable();
++		return 0;
++	}
++	if (state == TCP_TIME_WAIT) {
++		struct inet_timewait_sock *tw = inet_twsk(sk);
++
++		refcount_inc(&tw->tw_refcnt);
++		local_bh_disable();
++		inet_twsk_deschedule_put(tw);
++		local_bh_enable();
++		return 0;
+ 	}
+ 
+ 	/* Don't race with userspace socket closes such as tcp_close. */
+-- 
+2.37.0.rc0.161.g10f37bed90-goog
 
