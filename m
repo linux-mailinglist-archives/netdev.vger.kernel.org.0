@@ -2,116 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E52255C6DE
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 14:53:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE1E855C1C4
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 14:45:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237298AbiF0O5D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jun 2022 10:57:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37950 "EHLO
+        id S237364AbiF0PEx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jun 2022 11:04:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237163AbiF0O5B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 10:57:01 -0400
-Received: from mail-yw1-x1130.google.com (mail-yw1-x1130.google.com [IPv6:2607:f8b0:4864:20::1130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2FE017589
-        for <netdev@vger.kernel.org>; Mon, 27 Jun 2022 07:56:59 -0700 (PDT)
-Received: by mail-yw1-x1130.google.com with SMTP id 00721157ae682-317710edb9dso88727147b3.0
-        for <netdev@vger.kernel.org>; Mon, 27 Jun 2022 07:56:59 -0700 (PDT)
+        with ESMTP id S235173AbiF0PEw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 11:04:52 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40AB41707F
+        for <netdev@vger.kernel.org>; Mon, 27 Jun 2022 08:04:51 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id n16-20020a17090ade9000b001ed15b37424so9714588pjv.3
+        for <netdev@vger.kernel.org>; Mon, 27 Jun 2022 08:04:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=V2nkfUAYBDu+tfL2X9orUiMGatP89Pe54EDyxN988kQ=;
-        b=i+OGq2gIOrj1f7wJzQ/eJW7dkmfzigU161pJ9k36Z3eExzuYM+VOxhAoq8edk1Lj6g
-         GI/bPHIeILex5TIvyQUh9j5heq/SmDq7hfMD81AoulOR5oXjLHEwbRahu/0IOZ6XBzcb
-         kzJH4QV57nE3AOYV6nw52zlZNjxqVQ7rk8D+tA58OeeOHf+3PtKM96u1+os+o3UFPnqU
-         qfVS2dWuH5VfyxtdEiJk6Rw0iPTSMhC9CdmRxAoqt3dPzOsnhCbsa288dFK5oepKzJzI
-         IFAbYUxAe2mFHV+UT4i5fQJ53K6bAoD/8IXzOQMCLsQjhBZmYNgAleopWVgDXEb9DCuU
-         PeGg==
+        d=gmail.com; s=20210112;
+        h=mime-version:sender:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=tEcR4Yf4Pxbn3po5iIQimLfypZXloy0PqyCU480O85w=;
+        b=mphmH1MJDsm43b704Lhh1x+DcmpWQ4I/iLAKsrHsR+ATGSlRC35d1DJNpUhPrNG6ri
+         +FbKlzy81OXL4MeRZaJAOIuETiSel4wqGxsH2QFbeDACyfq7c8w/1WWahQcpdPuLi0sB
+         uDZj+UWMeHnZxMAXx2QY7p8TqE62g4FUVFf5fG5h1hZyT6AB13sPUAoX3sTuUFFP0Dw+
+         F8b3Fzlt9lYC5TYy+h2GD3x9DQzji0tQFPv3bowNqzjSwCmHZBY6h26MCm8jG5lsipUj
+         JlHFxP9uJBr8gHEI2wdi6WTpr1eONZZh5T7Bq3DXuymZkcPO2F74eAEJb0I2vgNG7mvX
+         LeHA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=V2nkfUAYBDu+tfL2X9orUiMGatP89Pe54EDyxN988kQ=;
-        b=u9zaQC8QAuowaAyI3ipqs8xz+PwJpcHYgdrpPX2e95WgCZa+HMuRJBQ9XPrsLm0inP
-         TRhTJgBMxZQO2mjJq6fDHon76cw4lq3wI7NvB2TEillUFjRWQ/WAmjIqp68T3n2D9qhp
-         GDuHvoeQ85wgqgtSTLMahKJvvp3fHg7ViIay7FFdb+h7jwjpN3VVhfkcAvLdfRVOjd9m
-         qhZuh7gtf2BsI7JMXmrgvA4+p0HKKaKmgwa7fPbEhYtyBuyirkShUHPhsa4jH9tpNYZS
-         NQMIAzNsHXu7pT63dUgc4pNx0NRmnHpa553NrnL/jo1PuMHymZ5EVqHbnoHqQs6G623U
-         mang==
-X-Gm-Message-State: AJIora8LovZnzmCcnD9XKEdF1oGtLYvI6bzgHg/j8kEy3l6JISk09WhH
-        DN2zcvc2OOdU+1PNObJVudwj5/I2xpLPkVYgceZbzg==
-X-Google-Smtp-Source: AGRyM1u8B4kcLVWeZgzZxIUcRpqFs89OsvNHHhNb/IgGIfmRs5gfWD02FqhOdPn0RnPeAh7WgtQAQ18XliZui2xrm3U=
-X-Received: by 2002:a0d:df50:0:b0:317:9c40:3b8b with SMTP id
- i77-20020a0ddf50000000b003179c403b8bmr15687403ywe.332.1656341818790; Mon, 27
- Jun 2022 07:56:58 -0700 (PDT)
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to:content-transfer-encoding;
+        bh=tEcR4Yf4Pxbn3po5iIQimLfypZXloy0PqyCU480O85w=;
+        b=VJeRqWxb83HlQqlOaNpfhNveDB5gZSigVXM4s1JIeOzmHmmLGjoIh41dY3JkNyKaAz
+         n5TUv0fuI483XDeY31YDbUZ2S4l0XBHiZ1NFl+8UNZ9+GjWTPhFJV2BD+W37q0y0KePp
+         udSr/hgg3KuckoiHJ8F28Xmnz1fJFl1vWXjgU+hf2V5A8yWUjGLx4sVGIWCiMnY4XzX5
+         3hcFX/Ng72dnxnul7JDMl24pnA5cbSCUyxnox2ofMiV6riEjXtxQ58d7TgUh5vhHSnd1
+         VEC6upzjB0o/qdI7F+mKxNOciE1SWcRBje/cXSI4XnrGOuimAAsAQztIwKJWCULvmS2j
+         Ls6g==
+X-Gm-Message-State: AJIora/0PQXB6XskVbgcv+W5nD8UnnujjhY4KZOO1ON5sqI/hdan919Y
+        e4glnYKb1DCMJizUVgXDyyAvQ12g+4mTS7JxEmM=
+X-Google-Smtp-Source: AGRyM1tXz1+pSDRJWCYnYw2xBKqun6+920S5zV9XF5IaWJyKjXMQkaE1B8sGCGC33rJc6n2DpABJu56f00dxnPh5s/g=
+X-Received: by 2002:a17:902:aa05:b0:16a:5113:229d with SMTP id
+ be5-20020a170902aa0500b0016a5113229dmr15172790plb.111.1656342290692; Mon, 27
+ Jun 2022 08:04:50 -0700 (PDT)
 MIME-Version: 1.0
-References: <CADvbK_csvmkKe46hT9792=+Qcjor2EvkkAnr--CJK3NGX-N9BQ@mail.gmail.com>
- <CADvbK_eQUmb942vC+bG+NRzM1ki1LiCydEDR1AezZ35Jvsdfnw@mail.gmail.com>
- <20220623185730.25b88096@kernel.org> <CANn89iLidqjiiV8vxr7KnUg0JvfoS9+TRGg=8ANZ8NBRjeQxsQ@mail.gmail.com>
- <CALvZod7kULCvHAuk53FE-XBOi4-BbLdY3HCg6jfCZTJDxYsZow@mail.gmail.com>
- <20220624070656.GE79500@shbuild999.sh.intel.com> <20220624144358.lqt2ffjdry6p5u4d@google.com>
- <20220625023642.GA40868@shbuild999.sh.intel.com> <20220627023812.GA29314@shbuild999.sh.intel.com>
- <CANn89i+6NPujMyiQxriZRt6vhv6hNrAntXxi1uOhJ0SSqnJ47w@mail.gmail.com>
- <20220627123415.GA32052@shbuild999.sh.intel.com> <CALvZod7i_=7bNZR-LAXBPXJFxj-1KBuYs+rmG0iABAE1T90BPg@mail.gmail.com>
-In-Reply-To: <CALvZod7i_=7bNZR-LAXBPXJFxj-1KBuYs+rmG0iABAE1T90BPg@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 27 Jun 2022 16:56:47 +0200
-Message-ID: <CANn89i+gKtKsNT3SUJyOc8FiF4EO74Fando7GudeXw0+CPr=EQ@mail.gmail.com>
-Subject: Re: [net] 4890b686f4: netperf.Throughput_Mbps -69.4% regression
-To:     Shakeel Butt <shakeelb@google.com>
-Cc:     Feng Tang <feng.tang@intel.com>, Linux MM <linux-mm@kvack.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Michal Hocko <mhocko@kernel.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Xin Long <lucien.xin@gmail.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        kernel test robot <oliver.sang@intel.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        network dev <netdev@vger.kernel.org>,
-        linux-s390@vger.kernel.org, MPTCP Upstream <mptcp@lists.linux.dev>,
-        "linux-sctp @ vger . kernel . org" <linux-sctp@vger.kernel.org>,
-        lkp@lists.01.org, kbuild test robot <lkp@intel.com>,
-        Huang Ying <ying.huang@intel.com>,
-        Xing Zhengjun <zhengjun.xing@linux.intel.com>,
-        Yin Fengwei <fengwei.yin@intel.com>, Ying Xu <yinxu@redhat.com>
+Sender: vivienkoko693@gmail.com
+Received: by 2002:a05:7022:792:b0:40:f5ae:5a8c with HTTP; Mon, 27 Jun 2022
+ 08:04:50 -0700 (PDT)
+From:   "Capt. Sherri" <sherrigallagher409@gmail.com>
+Date:   Mon, 27 Jun 2022 15:04:50 +0000
+X-Google-Sender-Auth: BHsyMz6_njJ9RnN_0UBb9HPozzU
+Message-ID: <CACkbk-4FjqSb17OUycMAhKf182Oax3_ECJxTMYzbyuy_kyHf+A@mail.gmail.com>
+Subject: Re: Hello Dear, How Are You
+To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: base64
+X-Spam-Status: No, score=0.0 required=5.0 tests=BAYES_20,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 4:53 PM Shakeel Butt <shakeelb@google.com> wrote:
-
-> Am I understanding correctly that this 69.4% (or 73.7%) regression is
-> with cgroup v2?
->
-> Eric did the experiments on v2 but on real hardware where the
-> performance impact was negligible.
->
-> BTW do you see similar regression for tcp as well or just sctp?
-
-TCP_RR with big packets can show a regression as well.
-
-I gave this perf profile:
-
-    28.69%  [kernel]       [k] copy_user_enhanced_fast_string
-    16.13%  [kernel]       [k] intel_idle_irq
-     6.46%  [kernel]       [k] page_counter_try_charge
-     6.20%  [kernel]       [k] __sk_mem_reduce_allocated
-     5.68%  [kernel]       [k] try_charge_memcg
-     5.16%  [kernel]       [k] page_counter_cancel
-
-And this points to false sharing on (struct page_counter *)->usage
-
-I guess memcg had free lunch, because of per-socket cache, that we
-need to remove.
+2YXYsdit2KjZi9in2IwNCg0K2YfZhCDYqtmE2YLZitiqINix2LPYp9mE2KrZiiDYp9mE2LPYp9io
+2YLYqdifINmE2YLYryDYp9iq2LXZhNiqINio2YMg2YXZhiDZgtio2YQg2YjZhNmD2YYg2KfZhNix
+2LPYp9mE2Kkg2YHYtNmE2Kog2YXYsdipDQrYo9iu2LHZiSDYjCDZhNiw2YTZgyDZgtix2LHYqiDY
+o9mGINij2YPYqtioINmF2LHYqSDYo9iu2LHZiS4g2YrYsdis2Ykg2KfZhNiq2KPZg9mK2K8g2KXY
+sNinINiq2YTZgtmK2Kog2YfYsNinINit2KrZiQ0K2KPYqtmF2YPZhiDZhdmGINin2YTZhdiq2KfY
+qNi52Kkg2IwNCg0K2KfZhtiq2LjYsSDYsdiv2YMuDQoNCtmK2LnYqtio2LHYjA0K2KfZhNmG2YLZ
+itioINi02YrYsdmKDQo=
