@@ -2,102 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 932C355D524
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:14:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01E2D55C355
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 14:48:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240207AbiF0SgL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jun 2022 14:36:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35408 "EHLO
+        id S240470AbiF0Si3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jun 2022 14:38:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239253AbiF0Sfr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 14:35:47 -0400
-Received: from smtp-fw-6001.amazon.com (smtp-fw-6001.amazon.com [52.95.48.154])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C585E08
-        for <netdev@vger.kernel.org>; Mon, 27 Jun 2022 11:30:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1656354636; x=1687890636;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=BvdEY2kcjmkiLSIAoyKf24xtHwDnbh4LjAj8MAbvQ3s=;
-  b=nm0MpSdhnN5C4fpUtlSE2PsWaLxad1Hdc9KAFQGPSxm1+RpoaBE3FxLa
-   c4i2g7sPNl0IIM7jH9geN8XVIdc8k4rtRAp9/jUfzDvjPYTP46bs+qL/L
-   5hbpqQapjmmH0WIMLjtdGKqdz7R86hwpYtlh2cxa/2pbfeUBTpQHS8hpo
-   A=;
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1a-4ba5c7da.us-east-1.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-6001.iad6.amazon.com with ESMTP; 27 Jun 2022 18:30:22 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
-        by email-inbound-relay-iad-1a-4ba5c7da.us-east-1.amazon.com (Postfix) with ESMTPS id 69B8CC0A2C;
-        Mon, 27 Jun 2022 18:30:20 +0000 (UTC)
-Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.36; Mon, 27 Jun 2022 18:30:19 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.160.124) by
- EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.36; Mon, 27 Jun 2022 18:30:16 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     <kuba@kernel.org>
-CC:     <davem@davemloft.net>, <ebiederm@xmission.com>,
-        <edumazet@google.com>, <herbert@gondor.apana.org.au>,
-        <kuni1840@gmail.com>, <kuniyu@amazon.com>,
-        <netdev@vger.kernel.org>, <pabeni@redhat.com>, <xemul@openvz.org>
-Subject: Re: [PATCH v2 net] af_unix: Do not call kmemdup() for init_net's sysctl table.
-Date:   Mon, 27 Jun 2022 11:30:09 -0700
-Message-ID: <20220627183009.94599-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220627105859.3ffec11a@kernel.org>
-References: <20220627105859.3ffec11a@kernel.org>
+        with ESMTP id S240436AbiF0SiC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 14:38:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9128FC34;
+        Mon, 27 Jun 2022 11:35:20 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5B84EB81A31;
+        Mon, 27 Jun 2022 18:35:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43D52C3411D;
+        Mon, 27 Jun 2022 18:35:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656354918;
+        bh=lSduwLf0URPGJXhzE2uMPDSka0BN2NuObX6s6wiVjLw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=V1wgnhWIBSxTWZs7oVLQcgu6ow7j/nvOHPvXzsT1Nn9X7hdwGhqh7NAL8uHaamcIf
+         IY07sAxOhUQqndCnsaxA3ScC1kTdg2Yn9hsnKIlxq8rxFKlV7RaY+NRmyVh3m75Tb8
+         ZpcqX4hfVCDBy0N1EVQnXiwwX9rIvnnkMDcCS04gZPnAV3H3k5TZVX9FzOMlpLx209
+         8O1zovzb/AU8MtbMYOdG7MyCPnmJKw+tFasJC0wEQpVPIKC5aCfVMO84EEc2E/4TTl
+         9dxSDJTazopgz1hOdfhMFc0UNVAF149+GJwdJJ2/y5zxk6J7RR9WnMOk8pk02PIKf/
+         G0d/RZr8PVXzA==
+Date:   Mon, 27 Jun 2022 20:35:13 +0200
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Kees Cook <keescook@chromium.org>, linux-kernel@vger.kernel.org,
+        x86@kernel.org, dm-devel@redhat.com,
+        linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org,
+        linux-s390@vger.kernel.org, kvm@vger.kernel.org,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-btrfs@vger.kernel.org, linux-can@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org,
+        linux1394-devel@lists.sourceforge.net, io-uring@vger.kernel.org,
+        lvs-devel@vger.kernel.org, linux-mtd@lists.infradead.org,
+        kasan-dev@googlegroups.com, linux-mmc@vger.kernel.org,
+        nvdimm@lists.linux.dev, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org, linux-perf-users@vger.kernel.org,
+        linux-raid@vger.kernel.org, linux-sctp@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-scsi@vger.kernel.org,
+        target-devel@vger.kernel.org, linux-usb@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        v9fs-developer@lists.sourceforge.net, linux-rdma@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH][next] treewide: uapi: Replace zero-length arrays with
+ flexible-array members
+Message-ID: <20220627183513.GA137875@embeddedor>
+References: <20220627180432.GA136081@embeddedor>
+ <6bc1e94c-ce1d-a074-7d0c-8dbe6ce22637@iogearbox.net>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.160.124]
-X-ClientProxiedBy: EX13D38UWC004.ant.amazon.com (10.43.162.204) To
- EX13D04ANC001.ant.amazon.com (10.43.157.89)
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <6bc1e94c-ce1d-a074-7d0c-8dbe6ce22637@iogearbox.net>
+X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Jakub Kicinski <kuba@kernel.org>
-Date:   Mon, 27 Jun 2022 10:58:59 -0700
-> On Sun, 26 Jun 2022 11:43:27 -0500 Eric W. Biederman wrote:
-> > Kuniyuki Iwashima <kuniyu@amazon.com> writes:
+On Mon, Jun 27, 2022 at 08:27:37PM +0200, Daniel Borkmann wrote:
+> On 6/27/22 8:04 PM, Gustavo A. R. Silva wrote:
+> > There is a regular need in the kernel to provide a way to declare
+> > having a dynamically sized set of trailing elements in a structure.
+> > Kernel code should always use “flexible array members”[1] for these
+> > cases. The older style of one-element or zero-length arrays should
+> > no longer be used[2].
 > > 
-> > > While setting up init_net's sysctl table, we need not duplicate the global
-> > > table and can use it directly.  
+> > This code was transformed with the help of Coccinelle:
+> > (linux-5.19-rc2$ spatch --jobs $(getconf _NPROCESSORS_ONLN) --sp-file script.cocci --include-headers --dir . > output.patch)
 > > 
-> > Acked-by: "Eric W. Biederman" <ebiederm@xmission.com>
+> > @@
+> > identifier S, member, array;
+> > type T1, T2;
+> > @@
 > > 
-> > I am not quite certain the savings of a single entry table justivies
-> > the complexity.  But the looks correct.
+> > struct S {
+> >    ...
+> >    T1 member;
+> >    T2 array[
+> > - 0
+> >    ];
+> > };
+> > 
+> > -fstrict-flex-arrays=3 is coming and we need to land these changes
+> > to prevent issues like these in the short future:
+> > 
+> > ../fs/minix/dir.c:337:3: warning: 'strcpy' will always overflow; destination buffer has size 0,
+> > but the source string has length 2 (including NUL byte) [-Wfortify-source]
+> > 		strcpy(de3->name, ".");
+> > 		^
+> > 
+> > Since these are all [0] to [] changes, the risk to UAPI is nearly zero. If
+> > this breaks anything, we can use a union with a new member name.
+> > 
+> > [1] https://en.wikipedia.org/wiki/Flexible_array_member
+> > [2] https://www.kernel.org/doc/html/v5.16/process/deprecated.html#zero-length-and-one-element-arrays
+> > 
+> > Link: https://github.com/KSPP/linux/issues/78
+> > Build-tested-by: https://lore.kernel.org/lkml/62b675ec.wKX6AOZ6cbE71vtF%25lkp@intel.com/
+> > Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+> > ---
+> > Hi all!
+> > 
+> > JFYI: I'm adding this to my -next tree. :)
 > 
-> Yeah, the commit message is a little sparse. The "why" is not addressed.
-> Could you add more details to explain the motivation?
+> Fyi, this breaks BPF CI:
 
-I was working on a series which converts UDP/TCP hash tables into per-netns
-ones like AF_UNIX to speed up looking up sockets.  It will consume much
-memory on a host with thousands of netns, but it can be waste if we do not
-have its protocol family's sockets.
+Thanks for the report! It seems the 0-day robot didn't catch that one.
+I'll fix it up right away. :)
 
-So, I'm now working on a follow-up series for AF_UNIX per-netns hash table
-so that we can change the size for a child netns by a sysctl knob:
+--
+Gustavo
 
-  # sysctl -w net.unix.child_hash_entries=128
-  # ip net add test  # created with the hash table size 128
-  # ip net exec test sh
-  # sysctl net.unix.hash_entries  # read-only
-  128
-
-  (The size for init_net can be changed via a new boot parameter
-   xhash_entries like uhash_entries/thash_entries.)
-
-While implementing that, I found that kmemdup() is called for init_net but
-TCP/UDP does not (See: ipv4_sysctl_init_net()).  Unlike IPv4, AF_UNIX does
-not have a huge sysctl table, so it cannot be a problem though, this patch
-is for consuming less memory and kind of consistency.  The reason I submit
-this seperately is that it might be better to have a Fixes tag.
+> 
+> https://github.com/kernel-patches/bpf/runs/7078719372?check_suite_focus=true
+> 
+>   [...]
+>   progs/map_ptr_kern.c:314:26: error: field 'trie_key' with variable sized type 'struct bpf_lpm_trie_key' not at the end of a struct or class is a GNU extension [-Werror,-Wgnu-variable-sized-type-not-at-end]
+>           struct bpf_lpm_trie_key trie_key;
+>                                   ^
+>   1 error generated.
+>   make: *** [Makefile:519: /tmp/runner/work/bpf/bpf/tools/testing/selftests/bpf/map_ptr_kern.o] Error 1
+>   make: *** Waiting for unfinished jobs....
+>   Error: Process completed with exit code 2.
