@@ -2,64 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 39EE655D8CE
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:20:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 30DA755E0BE
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:32:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233609AbiF0InJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jun 2022 04:43:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38512 "EHLO
+        id S233614AbiF0InY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jun 2022 04:43:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232724AbiF0InI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 04:43:08 -0400
-Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [217.70.183.194])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B4E06327;
-        Mon, 27 Jun 2022 01:43:06 -0700 (PDT)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 53EA440012;
-        Mon, 27 Jun 2022 08:43:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1656319385;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=f9dzcE7F6naI6mowy0rxK9mblp39wVly6K3avxay1Us=;
-        b=LJlYD6NaMBVpI/YwBWTZstDh+bxlTmdcM1yQc5wXwT43opSBBshs1JoB7wK5LcUlazzmFv
-        Ads1vpPz0lxNP3A6ZwDUXyxtYamb3UQHOCuv2JviMAVg7wv3fER/jo5Hz1G/YaV19ZUJTv
-        /TtHvg3Yav9ZwzP9tsys5mCK4yjYOjSSMoSiLvL5q3wA+3OMYGgpdareyembNpyjaIOCb8
-        358uMtQ6KIBFBK4NL7IDCQFcIf0qJmJ+EGtu7qHreOFoBSOZBMPQS7uSe5fIpt2yFlUzKP
-        MIolH27kigwg8IJ1lRTg6m4jkU6d295aiLFNwWuHQr0jaqYePEXDVeySTpbcMA==
-Date:   Mon, 27 Jun 2022 10:43:03 +0200
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Alexander Aring <aahringo@redhat.com>
-Cc:     Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Network Development <netdev@vger.kernel.org>,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH wpan-next v3 2/4] net: ieee802154: Add support for inter
- PAN management
-Message-ID: <20220627104303.5392c7f6@xps-13>
-In-Reply-To: <CAK-6q+jAhikJq5tp-DRx1C_7ka5M4w6EKUB_cUdagSSwP5Tk_A@mail.gmail.com>
-References: <20220620134018.62414-1-miquel.raynal@bootlin.com>
-        <20220620134018.62414-3-miquel.raynal@bootlin.com>
-        <CAK-6q+jAhikJq5tp-DRx1C_7ka5M4w6EKUB_cUdagSSwP5Tk_A@mail.gmail.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        with ESMTP id S230007AbiF0InX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 04:43:23 -0400
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5053F631E
+        for <netdev@vger.kernel.org>; Mon, 27 Jun 2022 01:43:22 -0700 (PDT)
+Received: by mail-wr1-x429.google.com with SMTP id o16so11970539wra.4
+        for <netdev@vger.kernel.org>; Mon, 27 Jun 2022 01:43:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=eIaHt431DOTF+WVJZjV+oZtpFuSBBOgymS2pDU1Ycis=;
+        b=hy2wqZBYHUz+ndHgsyYs12mpGOz7Lebf0SlALDIhJk6V1WSJ78VID+5gWHXfLbNfFi
+         ajm0Ge1SgNXf1pCt2iJXIyU8gRb5+xaBbxD9qSQCIdk9zoxyM+umePqP/pggawC0jlAK
+         yObrBb8kBwEwqdjWRnHjGb/w5TUcLQCB2FF0/3vGBGq0O/5T3fyJQ2KXSX5rRm1k1gLG
+         vw7RDKhfNFB15+VhyfHlie53242NUTxLqT/f/pquhCnkZPnTKo5oRvNXbvtVeqxC9v4F
+         4A1xBQvoDsZ/8dyaZYKiBG3EekVRa1hYjRWwyqM5yQLmMZqEO8jgoz1Fi3ZxAcSXUnxD
+         E4vg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=eIaHt431DOTF+WVJZjV+oZtpFuSBBOgymS2pDU1Ycis=;
+        b=m6tb6u7d5OtQbLIMlQdXzHPbFpqydOUg/4FYLFY6TLcNrTXgDzpQlTiwkwolKK3BaK
+         I7fOhiJ5nBLaGHPhjpef4KFjq1bCrOJkGWc0bJibc0aOjTLaw/puBQFHLbuWwS/yuH+W
+         yexEJrQkycPeTfBCGas9wUacqKvR82vKHNaii9+DDz47JDFiyoPE2VO+1aP41tiuA1Dm
+         mcrkTJck6YiNCL4pZYec7C8xBWdDytmUAbfRmIUbs5KvcyPh7IZPwvTwxb+6dtAM9lDk
+         idnAcjqllHk1PCNN3KBDzGKWW2eIXDr2DsPLkGPIKX97tDzM+rwvcwQ5Bfi6s0xrzq7H
+         76Gw==
+X-Gm-Message-State: AJIora9sZcJRN8ez2zmjfEXSNSWFCXmwf+pyhAHRxt0LKUnhgLFpTU3F
+        KA9kx3AZOLmXUjpWhbG1ENACwA==
+X-Google-Smtp-Source: AGRyM1tHs5uOPHQREvn2AcvaHEt+Oz8ixsTfp7wwjk8RqBKUTxU2k2uiJtUIh9ojWskK9lf1N2ZdJw==
+X-Received: by 2002:a5d:44ca:0:b0:21b:8998:43e7 with SMTP id z10-20020a5d44ca000000b0021b899843e7mr11514146wrr.613.1656319400727;
+        Mon, 27 Jun 2022 01:43:20 -0700 (PDT)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id bg21-20020a05600c3c9500b003a046549a85sm6423477wmb.37.2022.06.27.01.43.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Jun 2022 01:43:20 -0700 (PDT)
+Date:   Mon, 27 Jun 2022 10:43:19 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Shannon Nelson <snelson@pensando.io>
+Cc:     Ido Schimmel <idosch@nvidia.com>, netdev@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org, petrm@nvidia.com,
+        pabeni@redhat.com, edumazet@google.com, mlxsw@nvidia.com
+Subject: Re: [patch net-next 00/11] mlxsw: Implement dev info and dev flash
+ for line cards
+Message-ID: <Yrltpz0wXW35xmgd@nanopsycho>
+References: <20220614123326.69745-1-jiri@resnulli.us>
+ <Yqmiv2+C1AXa6BY3@shredder>
+ <YqoZkqwBPoX5lGrR@nanopsycho>
+ <fbaca11c-c706-b993-fa0d-ec7a1ba34203@pensando.io>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <fbaca11c-c706-b993-fa0d-ec7a1ba34203@pensando.io>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -67,58 +73,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alexander,
+Sat, Jun 18, 2022 at 08:12:20AM CEST, snelson@pensando.io wrote:
+>
+>
+>On 6/15/22 10:40 AM, Jiri Pirko wrote:
+>> Wed, Jun 15, 2022 at 11:13:35AM CEST, idosch@nvidia.com wrote:
+>> > On Tue, Jun 14, 2022 at 02:33:15PM +0200, Jiri Pirko wrote:
+>> > > From: Jiri Pirko <jiri@nvidia.com>
+>> > > 
+>> > > This patchset implements two features:
+>> > > 1) "devlink dev info" is exposed for line card (patches 3-8)
+>> > > 2) "devlink dev flash" is implemented for line card gearbox
+>> > >     flashing (patch 9)
+>> > > 
+>> > > For every line card, "a nested" auxiliary device is created which
+>> > > allows to bind the features mentioned above (patch 2).
+>> > 
+>[...]>>
+>> > > 
+>> > > The relationship between line card and its auxiliary dev devlink
+>> > > is carried over extra line card netlink attribute (patches 1 and 3).
+>> > > 
+>> > > Examples:
+>> > > 
+>> > > $ devlink lc show pci/0000:01:00.0 lc 1
+>> > > pci/0000:01:00.0:
+>> > >    lc 1 state active type 16x100G nested_devlink auxiliary/mlxsw_core.lc.0
+>> > 
+>> > Can we try to use the index of the line card as the identifier of the
+>> > auxiliary device?
+>> 
+>> Not really. We would have a collision if there are 2 mlxsw instances.
+>> 
+>
+>Can you encode the base device's PCI info into the auxiliary device's id
 
-aahringo@redhat.com wrote on Sat, 25 Jun 2022 22:29:08 -0400:
+Would look odd to he PCI BDF in auxdev addsess, wouldn't it?
 
-> Hi,
->=20
-> On Mon, Jun 20, 2022 at 10:26 AM Miquel Raynal
-> <miquel.raynal@bootlin.com> wrote:
-> >
-> > Let's introduce the basics for defining PANs:
-> > - structures defining a PAN
-> > - helpers for PAN registration
-> > - helpers discarding old PANs
-> > =20
->=20
-> I think the whole pan management can/should be stored in user space by
-> a daemon running in background.
 
-We need both, and currently:
-- while the scan is happening, the kernel saves all the discovered PANs
-- the kernel PAN list can be dumped (and also flushed) asynchronously by
-  the userspace
+>to make it unique?  Or maybe have each mlxsw instance have a unique ida value
+>to encode in the linecard auxiliary device id?
 
-IOW the userspace is responsible of keeping its own list of PANs in
-sync with what the kernel discovers, so at any moment it can ask the
-kernel what it has in memory, it can be done during a scan or after. It
-can request a new scan to update the entries, or flush the kernel list.
-The scan operation is always requested by the user anyway, it's not
-something happening in the background.
+Well, which value would that bring? It would be dynamic random number.
+How the use would use that tho figure out the relation to the mlxsw
+instance?
 
-> This can be a network manager as it
-> listens to netlink events as "detect PAN xy" and stores it and offers
-> it in their list to associate with it.
-
-There are events produced, yes. But really, this is not something we
-actually need. The user requests a scan over a given range, when the
-scan is over it looks at the list and decides which PAN it
-wants to associate with, and through which coordinator (95% of the
-scenarii).
-
-> We need somewhere to draw a line and I guess the line is "Is this
-> information used e.g. as any lookup or something in the hot path", I
-> don't see this currently...
-
-Each PAN descriptor is like 20 bytes, so that's why I don't feel back
-keeping them, I think it's easier to be able to serve the list of PANs
-upon request rather than only forwarding events and not being able to
-retrieve the list a second time (at least during the development).
-
-Overall I feel like this part is still a little bit blurry because it
-has currently no user, perhaps I should send the next series which
-actually makes the current series useful.
-
-Thanks,
-Miqu=C3=A8l
+>
+>sln
