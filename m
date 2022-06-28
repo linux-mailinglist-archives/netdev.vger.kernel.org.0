@@ -2,91 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F0AEF55E99D
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 18:42:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A006055E864
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 18:35:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347011AbiF1Ohp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 10:37:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47660 "EHLO
+        id S1346851AbiF1Op4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 10:45:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346842AbiF1Oho (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 10:37:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9E402CDF0;
-        Tue, 28 Jun 2022 07:37:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 564A361AFA;
-        Tue, 28 Jun 2022 14:37:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 610EAC3411D;
-        Tue, 28 Jun 2022 14:37:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656427062;
-        bh=8IhwuHf6kLvlJEYrB32nyTk/crpQ/pfgGZRB0YohMio=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ZahUBiu5zdhLOZVShpBvz+nFxHnAqAJcObDKJEtatPRJN57dH/pnaloFHG9XP2BKg
-         MSD777Kj9eH38plJTFrNNFCzvwX88oofsrKMN7YFzjsUY+uyUyblCNb4/x1uYJKxay
-         wB8XUh2RfMOGYLovd3V5z8QwVdLCRlUwd6ebUJnQ=
-Date:   Tue, 28 Jun 2022 16:37:40 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Meng Tang <tangmeng@uniontech.com>
-Cc:     stable@vger.kernel.org, tony0620emma@gmail.com,
-        kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Guo-Feng Fan <vincent_fann@realtek.com>,
-        Ping-Ke Shih <pkshih@realtek.com>,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>
-Subject: Re: [PATCH 5.10 1/3] commit 5d6651fe8583 ("rtw88: 8821c: support RFE
- type2 wifi NIC")
-Message-ID: <YrsSNGN6fDMtGufl@kroah.com>
-References: <20220628133046.2474-1-tangmeng@uniontech.com>
- <YrsSJLqq/ZoKw8MP@kroah.com>
+        with ESMTP id S240816AbiF1Opz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 10:45:55 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D4B62E6A6;
+        Tue, 28 Jun 2022 07:45:55 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id w19-20020a17090a8a1300b001ec79064d8dso16166726pjn.2;
+        Tue, 28 Jun 2022 07:45:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=C2TU20f4wyf+zfFLwfO6epS0rxwd11FopiHGQ1fLJg0=;
+        b=Qbk41NY+109uhYB0wE2Vp9QhBtBKgM28fP5hp2db400M31o0U2JNe04q/578gXbzmC
+         H7FB0pW50UtrLqOcthINdYew44afyKK0FyL5bTDtuhcvECfHT4Owex35U70tq0XO7pDB
+         KBGxa/5jTZHaXCJ9PYO/+kt54KqhQJOOIH7jQ/w3t5iA5oySbw+qFiw8TOWIjSnxBy2g
+         zq4tC7yXWT4kwWSvm8uK1ztLdu8gNQ88yM26qaac76k6GqUMF1e5sN10b1DSbk131PPq
+         McMfFYsTzKdWukS4Nsri0JJ9siX3ZoLkbvpHNc1Sfu1SslHwAaqKdReuLHjN0CbeJyK7
+         FWFQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=C2TU20f4wyf+zfFLwfO6epS0rxwd11FopiHGQ1fLJg0=;
+        b=RhGcEhFYcf12Ldpzm23xCNBUlm0VnWBAkXr1ChCuku/2HAkZfhnrju67tdQw85WM3l
+         i8YI5QZVHfv0ITds+M6ZYTHFVZR45XdR6TmWX1OK9c2mgpYSj3jLPINAwl+O68qdUuVa
+         0+fyEzgYiajpQ40GRGJewa9fPnKK0e9PE+ukLoga4xJ+8I8093TusBrRPsFssRZwfwhK
+         zA5ECQcGK8r2WcT3Hy2O3Zr9OW7e4e1MhEfvTXQgOqQa1LC8AzxAn6l2NJPr2ehyksTb
+         N/izD+/XuD4IiR1cES7sHKZVg+GL7iQ+fuaugLdNkXiEKW+2e8yZ0N1DgHtBEA0/vsGC
+         +dJQ==
+X-Gm-Message-State: AJIora+tz4VIY5jGz6p8HU98JNOqrTirrdZGetkn71Rf7BVwiy7/we4x
+        fUW96L14f+nPsg6J9wddzkw=
+X-Google-Smtp-Source: AGRyM1vV84aJuh8gGSEdhBSzQNEe3Hud6oMcLzucjqsa5H4gWdc/CaYL7BIILLS7iOowABQZ/gB9xg==
+X-Received: by 2002:a17:903:2452:b0:16a:3b58:48fd with SMTP id l18-20020a170903245200b0016a3b5848fdmr5288887pls.67.1656427554722;
+        Tue, 28 Jun 2022 07:45:54 -0700 (PDT)
+Received: from ?IPV6:2600:8802:b00:4a48:c569:fa46:5b43:1b1e? ([2600:8802:b00:4a48:c569:fa46:5b43:1b1e])
+        by smtp.gmail.com with ESMTPSA id h6-20020a170902680600b00163ffe73300sm9386192plk.137.2022.06.28.07.45.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 28 Jun 2022 07:45:54 -0700 (PDT)
+Message-ID: <b43dde07-84da-c0a2-2aef-163cdbfecf26@gmail.com>
+Date:   Tue, 28 Jun 2022 07:45:53 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YrsSJLqq/ZoKw8MP@kroah.com>
-X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH net-next v2 1/4] net: dsa: add get_pause_stats support
+Content-Language: en-US
+To:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     kernel@pengutronix.de, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Lukas Wunner <lukas@wunner.de>,
+        UNGLinuxDriver@microchip.com
+References: <20220628085155.2591201-1-o.rempel@pengutronix.de>
+ <20220628085155.2591201-2-o.rempel@pengutronix.de>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220628085155.2591201-2-o.rempel@pengutronix.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 28, 2022 at 04:37:24PM +0200, Greg KH wrote:
-> On Tue, Jun 28, 2022 at 09:30:44PM +0800, Meng Tang wrote:
-> > From: Guo-Feng Fan <vincent_fann@realtek.com>
-> > 
-> > RFE type2 is a new NIC which has one RF antenna shares with BT.
-> > Update phy parameter to verstion V57 to allow initial procedure
-> > to load extra AGC table for sharing antenna NIC.
-> > 
-> > Signed-off-by: Guo-Feng Fan <vincent_fann@realtek.com>
-> > Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
-> > Tested-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-> > Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-> > Link: https://lore.kernel.org/r/20210202055012.8296-4-pkshih@realtek.com
-> > Signed-off-by: Meng Tang <tangmeng@uniontech.com>
-> > ---
-> >  drivers/net/wireless/realtek/rtw88/main.c     |   2 +
-> >  drivers/net/wireless/realtek/rtw88/main.h     |   7 +
-> >  drivers/net/wireless/realtek/rtw88/rtw8821c.c |  47 +++
-> >  drivers/net/wireless/realtek/rtw88/rtw8821c.h |  14 +
-> >  .../wireless/realtek/rtw88/rtw8821c_table.c   | 397 ++++++++++++++++++
-> >  .../wireless/realtek/rtw88/rtw8821c_table.h   |   1 +
-> >  6 files changed, 468 insertions(+)
-> > 
-> 
-> <formletter>
-> 
-> This is not the correct way to submit patches for inclusion in the
-> stable kernel tree.  Please read:
->     https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.html
-> for how to do this properly.
-> 
-> </formletter>
 
-Sorry, no, this is all good, my fault.
+
+On 6/28/2022 1:51 AM, Oleksij Rempel wrote:
+> Add support for pause stats
+> 
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
