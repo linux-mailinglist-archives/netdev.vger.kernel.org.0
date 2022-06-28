@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A25655C605
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 14:52:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C95B155C97F
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 14:57:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245612AbiF1IwO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 04:52:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49470 "EHLO
+        id S1343628AbiF1IwQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 04:52:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244301AbiF1IwL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 04:52:11 -0400
+        with ESMTP id S245246AbiF1IwM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 04:52:12 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 966702F65E
-        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 01:52:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD56C2F663
+        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 01:52:11 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1o66x1-0003rq-Fd; Tue, 28 Jun 2022 10:52:03 +0200
+        id 1o66x2-0003sA-DF; Tue, 28 Jun 2022 10:52:04 +0200
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1o66wx-003Ael-7g; Tue, 28 Jun 2022 10:52:02 +0200
+        id 1o66wy-003Aep-1D; Tue, 28 Jun 2022 10:52:03 +0200
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1o66wz-00As6t-VH; Tue, 28 Jun 2022 10:52:01 +0200
+        id 1o66x0-00As72-OT; Tue, 28 Jun 2022 10:52:02 +0200
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Woojung Huh <woojung.huh@microchip.com>,
         Andrew Lunn <andrew@lunn.ch>,
@@ -39,9 +39,9 @@ To:     Woojung Huh <woojung.huh@microchip.com>,
 Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         Lukas Wunner <lukas@wunner.de>, UNGLinuxDriver@microchip.com
-Subject: [PATCH net-next v2 2/4] net: dsa: ar9331: add support for pause stats
-Date:   Tue, 28 Jun 2022 10:51:53 +0200
-Message-Id: <20220628085155.2591201-3-o.rempel@pengutronix.de>
+Subject: [PATCH net-next v2 3/4] net: dsa: microchip: add pause stats support
+Date:   Tue, 28 Jun 2022 10:51:54 +0200
+Message-Id: <20220628085155.2591201-4-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220628085155.2591201-1-o.rempel@pengutronix.de>
 References: <20220628085155.2591201-1-o.rempel@pengutronix.de>
@@ -60,69 +60,85 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for pause stats.
+Add support for pause specific stats.
+
+Tested on ksz9477.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- drivers/net/dsa/qca/ar9331.c | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+ drivers/net/dsa/microchip/ksz_common.c | 19 +++++++++++++++++++
+ drivers/net/dsa/microchip/ksz_common.h |  1 +
+ 2 files changed, 20 insertions(+)
 
-diff --git a/drivers/net/dsa/qca/ar9331.c b/drivers/net/dsa/qca/ar9331.c
-index fb3fe74abfe6..b286e4e9c2c4 100644
---- a/drivers/net/dsa/qca/ar9331.c
-+++ b/drivers/net/dsa/qca/ar9331.c
-@@ -231,6 +231,7 @@ struct ar9331_sw_port {
- 	int idx;
- 	struct delayed_work mib_read;
- 	struct rtnl_link_stats64 stats;
-+	struct ethtool_pause_stats pause_stats;
- 	struct spinlock stats_lock;
- };
+diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+index 59582eb3bcaf..7c221ec331ee 100644
+--- a/drivers/net/dsa/microchip/ksz_common.c
++++ b/drivers/net/dsa/microchip/ksz_common.c
+@@ -586,12 +586,14 @@ static void ksz_phylink_get_caps(struct dsa_switch *ds, int port,
  
-@@ -606,6 +607,7 @@ static void ar9331_sw_phylink_mac_link_up(struct dsa_switch *ds, int port,
- static void ar9331_read_stats(struct ar9331_sw_port *port)
+ void ksz_r_mib_stats64(struct ksz_device *dev, int port)
  {
- 	struct ar9331_sw_priv *priv = ar9331_sw_port_to_priv(port);
-+	struct ethtool_pause_stats *pstats = &port->pause_stats;
- 	struct rtnl_link_stats64 *stats = &port->stats;
- 	struct ar9331_sw_stats_raw raw;
- 	int ret;
-@@ -646,6 +648,9 @@ static void ar9331_read_stats(struct ar9331_sw_port *port)
- 	stats->multicast += raw.rxmulti;
- 	stats->collisions += raw.txcollision;
++	struct ethtool_pause_stats *pstats;
+ 	struct rtnl_link_stats64 *stats;
+ 	struct ksz_stats_raw *raw;
+ 	struct ksz_port_mib *mib;
  
-+	pstats->tx_pause_frames += raw.txpause;
-+	pstats->rx_pause_frames += raw.rxpause;
+ 	mib = &dev->ports[port].mib;
+ 	stats = &mib->stats64;
++	pstats = &mib->pause_stats;
+ 	raw = (struct ksz_stats_raw *)mib->counters;
+ 
+ 	spin_lock(&mib->stats64_lock);
+@@ -623,6 +625,9 @@ void ksz_r_mib_stats64(struct ksz_device *dev, int port)
+ 	stats->multicast = raw->rx_mcast;
+ 	stats->collisions = raw->tx_total_col;
+ 
++	pstats->tx_pause_frames = raw->tx_pause;
++	pstats->rx_pause_frames = raw->rx_pause;
 +
- 	spin_unlock(&port->stats_lock);
+ 	spin_unlock(&mib->stats64_lock);
  }
  
-@@ -670,6 +675,17 @@ static void ar9331_get_stats64(struct dsa_switch *ds, int port,
- 	spin_unlock(&p->stats_lock);
+@@ -639,6 +644,19 @@ static void ksz_get_stats64(struct dsa_switch *ds, int port,
+ 	spin_unlock(&mib->stats64_lock);
  }
  
-+static void ar9331_get_pause_stats(struct dsa_switch *ds, int port,
-+				   struct ethtool_pause_stats *pause_stats)
++static void ksz_get_pause_stats(struct dsa_switch *ds, int port,
++				struct ethtool_pause_stats *pause_stats)
 +{
-+	struct ar9331_sw_priv *priv = (struct ar9331_sw_priv *)ds->priv;
-+	struct ar9331_sw_port *p = &priv->port[port];
++	struct ksz_device *dev = ds->priv;
++	struct ksz_port_mib *mib;
 +
-+	spin_lock(&p->stats_lock);
-+	memcpy(pause_stats, &p->pause_stats, sizeof(*pause_stats));
-+	spin_unlock(&p->stats_lock);
++	mib = &dev->ports[port].mib;
++
++	spin_lock(&mib->stats64_lock);
++	memcpy(pause_stats, &mib->pause_stats, sizeof(*pause_stats));
++	spin_unlock(&mib->stats64_lock);
 +}
 +
- static const struct dsa_switch_ops ar9331_sw_ops = {
- 	.get_tag_protocol	= ar9331_sw_get_tag_protocol,
- 	.setup			= ar9331_sw_setup,
-@@ -679,6 +695,7 @@ static const struct dsa_switch_ops ar9331_sw_ops = {
- 	.phylink_mac_link_down	= ar9331_sw_phylink_mac_link_down,
- 	.phylink_mac_link_up	= ar9331_sw_phylink_mac_link_up,
- 	.get_stats64		= ar9331_get_stats64,
-+	.get_pause_stats	= ar9331_get_pause_stats,
+ static void ksz_get_strings(struct dsa_switch *ds, int port,
+ 			    u32 stringset, uint8_t *buf)
+ {
+@@ -1248,6 +1266,7 @@ static const struct dsa_switch_ops ksz_switch_ops = {
+ 	.port_mirror_add	= ksz_port_mirror_add,
+ 	.port_mirror_del	= ksz_port_mirror_del,
+ 	.get_stats64		= ksz_get_stats64,
++	.get_pause_stats	= ksz_get_pause_stats,
+ 	.port_change_mtu	= ksz_change_mtu,
+ 	.port_max_mtu		= ksz_max_mtu,
+ };
+diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
+index 0e7f15efbb79..28846566028d 100644
+--- a/drivers/net/dsa/microchip/ksz_common.h
++++ b/drivers/net/dsa/microchip/ksz_common.h
+@@ -25,6 +25,7 @@ struct ksz_port_mib {
+ 	u8 cnt_ptr;
+ 	u64 *counters;
+ 	struct rtnl_link_stats64 stats64;
++	struct ethtool_pause_stats pause_stats;
+ 	struct spinlock stats64_lock;
  };
  
- static irqreturn_t ar9331_sw_irq(int irq, void *data)
 -- 
 2.30.2
 
