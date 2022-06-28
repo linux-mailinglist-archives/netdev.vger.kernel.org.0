@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 46E1655EE30
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 21:59:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8733E55EE84
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 22:00:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230039AbiF1TvX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 15:51:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45042 "EHLO
+        id S231150AbiF1TvU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 15:51:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229706AbiF1Tuu (ORCPT
+        with ESMTP id S232183AbiF1Tuu (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 15:50:50 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F58A3A712;
-        Tue, 28 Jun 2022 12:49:15 -0700 (PDT)
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A1573A715;
+        Tue, 28 Jun 2022 12:49:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656445755; x=1687981755;
+  t=1656445757; x=1687981757;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=KP8+M2ZNDj+bGLuKjD0DKVm/0e+VNysNArAnGfFt/hk=;
-  b=VGZyeyQOA3ZQRhYZoUgIuckUwXOmqYutJY5+HNigN9K72rmhMp9INWeW
-   Y+Bu/DjnkxucyGGLkc0SSrHB8RQ7um98prNg9NRbSolPPRu4AryaIQrKi
-   /Glb9JT90jKwdiajo4fwKbKc4ASS0HAdC2wPv2wbwxrOr5bmH9BneQ2WU
-   NdXMdeYR3dgkj3YethqmI+6aIKcvPylqTc/Rer+ImB0nUVjHLY95WJq0C
-   5IqTdyUcSn4B1hl7wHqYqeVgAIWxsCyJliW0kzfVX0gUUVFntzuraTPAs
-   TTyOP9AMRcu+GD9M4mobUsNdkgQmF79tKrRC3AVxfZn1ELTURWH5T79vu
+  bh=TNfBgVKLQyn2LgZtWghMUTiye2sgpvYA6TvdfH/NL10=;
+  b=fquriFWpmeUuj/t+DBAb6GdrZkHwE7Wiq9kNGOGKyngzfCbwckFZoV4w
+   0WfecC5+zO/EmKCtMUA8ZSrVzCca3OWtfkinhg3EOFHas5XWk7ZFBKg99
+   xT0WkGJOPn8Qmw1Ab4+BSR0D6ILhrMPxsb/FLWIa+f3heumivQKrJsXIY
+   OTP/RhxsBxDVgIsieZIm6RY4IWQ+v/LXSWlcpTVj4v+ahEqp+3I9gbscf
+   zHK6p2VQm238Gnbfb628I61Dua9PkGCWHCxydbw+Ch3h8wbeNntdVML33
+   LGsqeXls5OIqmyQtZ7AGPf2rkPlf+eVaIaVwZ7hakL63ZmO1tVqJSUZrI
    Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="282568081"
+X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="281869513"
 X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
-   d="scan'208";a="282568081"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 12:49:14 -0700
+   d="scan'208";a="281869513"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 12:49:16 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
-   d="scan'208";a="680182439"
+   d="scan'208";a="587988501"
 Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by FMSMGA003.fm.intel.com with ESMTP; 28 Jun 2022 12:49:10 -0700
+  by orsmga007.jf.intel.com with ESMTP; 28 Jun 2022 12:49:11 -0700
 Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 25SJmr9B022013;
-        Tue, 28 Jun 2022 20:49:08 +0100
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 25SJmr9C022013;
+        Tue, 28 Jun 2022 20:49:10 +0100
 From:   Alexander Lobakin <alexandr.lobakin@intel.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -64,160 +64,189 @@ Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
         Willem de Bruijn <willemb@google.com>, bpf@vger.kernel.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         xdp-hints@xdp-project.net
-Subject: [PATCH RFC bpf-next 11/52] libbpf: factor out __bpf_set_link_xdp_fd_replace() args into a struct
-Date:   Tue, 28 Jun 2022 21:47:31 +0200
-Message-Id: <20220628194812.1453059-12-alexandr.lobakin@intel.com>
+Subject: [PATCH RFC bpf-next 12/52] libbpf: add ability to set the BTF/type ID on setting XDP prog
+Date:   Tue, 28 Jun 2022 21:47:32 +0200
+Message-Id: <20220628194812.1453059-13-alexandr.lobakin@intel.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220628194812.1453059-1-alexandr.lobakin@intel.com>
 References: <20220628194812.1453059-1-alexandr.lobakin@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Its argument list already consists of 4 entries, and there are more
-to be added. It's convenient to add new opts as they are already
-being passed using structs, but at the end the mentioned function
-take all the opts one by one.
-Place them into a local struct which will satisfy every initial call
-site, so it will be now a matter of adding a new field and a
-corresponding nlattr_add() to handle a new opt.
+Covered functions:
+ * bpf_link_create() - via &bpf_link_create_ops;
+ * bpf_link_update() - via &bpf_link_update_ops;
+ * bpf_xdp_attach() - via &bpf_xdp_attach_ops;
+ * bpf_set_link_xdp_fd_opts() - via &bpf_xdp_set_link_opts;
+
+bpf_link_update() got the ability to pass arbitrary link
+type-specific data to the kernel, not just the old and new FDs.
+No support for bpf_get_link_xdp_info()/&xdp_link_info as we store
+additional data such as flags and BTF ID in the kernel in BPF link
+mode only.
 
 Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
 ---
- tools/lib/bpf/netlink.c | 60 ++++++++++++++++++++++++++++-------------
- 1 file changed, 42 insertions(+), 18 deletions(-)
+ tools/lib/bpf/bpf.c     | 19 +++++++++++++++++++
+ tools/lib/bpf/bpf.h     | 16 +++++++++++++++-
+ tools/lib/bpf/libbpf.h  |  8 ++++++--
+ tools/lib/bpf/netlink.c | 11 +++++++++++
+ 4 files changed, 51 insertions(+), 3 deletions(-)
 
+diff --git a/tools/lib/bpf/bpf.c b/tools/lib/bpf/bpf.c
+index 240186aac8e6..6036dc75cc7b 100644
+--- a/tools/lib/bpf/bpf.c
++++ b/tools/lib/bpf/bpf.c
+@@ -805,6 +805,11 @@ int bpf_link_create(int prog_fd, int target_fd,
+ 		if (!OPTS_ZEROED(opts, tracing))
+ 			return libbpf_err(-EINVAL);
+ 		break;
++	case BPF_XDP:
++		attr.link_create.xdp.btf_id = OPTS_GET(opts, xdp.btf_id, 0);
++		if (!OPTS_ZEROED(opts, xdp))
++			return libbpf_err(-EINVAL);
++		break;
+ 	default:
+ 		if (!OPTS_ZEROED(opts, flags))
+ 			return libbpf_err(-EINVAL);
+@@ -872,6 +877,20 @@ int bpf_link_update(int link_fd, int new_prog_fd,
+ 	attr.link_update.flags = OPTS_GET(opts, flags, 0);
+ 	attr.link_update.old_prog_fd = OPTS_GET(opts, old_prog_fd, 0);
+ 
++	/* As the union in both @attr and @opts is unnamed, just use a pointer
++	 * to any of its members to copy the whole rest of the union/opts
++	 */
++	if (opts && opts->sz > offsetof(typeof(*opts), xdp)) {
++		__u32 attr_left, opts_left;
++
++		attr_left = sizeof(attr.link_update) -
++			    offsetof(typeof(attr.link_update), xdp);
++		opts_left = opts->sz - offsetof(typeof(*opts), xdp);
++
++		memcpy(&attr.link_update.xdp, &opts->xdp,
++		       min(attr_left, opts_left));
++	}
++
+ 	ret = sys_bpf(BPF_LINK_UPDATE, &attr, sizeof(attr));
+ 	return libbpf_err_errno(ret);
+ }
+diff --git a/tools/lib/bpf/bpf.h b/tools/lib/bpf/bpf.h
+index cabc03703e29..4e17995fdaff 100644
+--- a/tools/lib/bpf/bpf.h
++++ b/tools/lib/bpf/bpf.h
+@@ -382,6 +382,10 @@ struct bpf_link_create_opts {
+ 		struct {
+ 			__u64 cookie;
+ 		} tracing;
++		struct {
++			/* target metadata BTF + type ID */
++			__aligned_u64 btf_id;
++		} xdp;
+ 	};
+ 	size_t :0;
+ };
+@@ -397,8 +401,18 @@ struct bpf_link_update_opts {
+ 	size_t sz; /* size of this struct for forward/backward compatibility */
+ 	__u32 flags;	   /* extra flags */
+ 	__u32 old_prog_fd; /* expected old program FD */
++	/* must have the same layout as the same union from
++	 * bpf_attr::link_update, uses direct memcpy() to there
++	 */
++	union {
++		struct {
++			/* new target metadata BTF + type ID */
++			__aligned_u64 new_btf_id;
++		} xdp;
++	};
++	size_t :0;
+ };
+-#define bpf_link_update_opts__last_field old_prog_fd
++#define bpf_link_update_opts__last_field xdp.new_btf_id
+ 
+ LIBBPF_API int bpf_link_update(int link_fd, int new_prog_fd,
+ 			       const struct bpf_link_update_opts *opts);
+diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
+index 4056e9038086..4f77128ba770 100644
+--- a/tools/lib/bpf/libbpf.h
++++ b/tools/lib/bpf/libbpf.h
+@@ -1193,9 +1193,11 @@ struct xdp_link_info {
+ struct bpf_xdp_set_link_opts {
+ 	size_t sz;
+ 	int old_fd;
++	__u32 :32;
++	__u64 btf_id;
+ 	size_t :0;
+ };
+-#define bpf_xdp_set_link_opts__last_field old_fd
++#define bpf_xdp_set_link_opts__last_field btf_id
+ 
+ LIBBPF_DEPRECATED_SINCE(0, 8, "use bpf_xdp_attach() instead")
+ LIBBPF_API int bpf_set_link_xdp_fd(int ifindex, int fd, __u32 flags);
+@@ -1211,9 +1213,11 @@ LIBBPF_API int bpf_get_link_xdp_info(int ifindex, struct xdp_link_info *info,
+ struct bpf_xdp_attach_opts {
+ 	size_t sz;
+ 	int old_prog_fd;
++	__u32 :32;
++	__u64 btf_id;
+ 	size_t :0;
+ };
+-#define bpf_xdp_attach_opts__last_field old_prog_fd
++#define bpf_xdp_attach_opts__last_field btf_id
+ 
+ struct bpf_xdp_query_opts {
+ 	size_t sz;
 diff --git a/tools/lib/bpf/netlink.c b/tools/lib/bpf/netlink.c
-index cbc8967d5402..3a25178d0d12 100644
+index 3a25178d0d12..104a809d5fb2 100644
 --- a/tools/lib/bpf/netlink.c
 +++ b/tools/lib/bpf/netlink.c
-@@ -230,8 +230,15 @@ static int libbpf_netlink_send_recv(struct libbpf_nla_req *req,
- 	return ret;
- }
+@@ -235,6 +235,7 @@ struct __bpf_set_link_xdp_fd_opts {
+ 	int fd;
+ 	int old_fd;
+ 	__u32 flags;
++	__u64 btf_id;
+ };
  
--static int __bpf_set_link_xdp_fd_replace(int ifindex, int fd, int old_fd,
--					 __u32 flags)
-+struct __bpf_set_link_xdp_fd_opts {
-+	int ifindex;
-+	int fd;
-+	int old_fd;
-+	__u32 flags;
-+};
-+
-+static int
-+__bpf_set_link_xdp_fd_replace(const struct __bpf_set_link_xdp_fd_opts *opts)
- {
- 	struct nlattr *nla;
- 	int ret;
-@@ -242,22 +249,23 @@ static int __bpf_set_link_xdp_fd_replace(int ifindex, int fd, int old_fd,
- 	req.nh.nlmsg_flags    = NLM_F_REQUEST | NLM_F_ACK;
- 	req.nh.nlmsg_type     = RTM_SETLINK;
- 	req.ifinfo.ifi_family = AF_UNSPEC;
--	req.ifinfo.ifi_index  = ifindex;
-+	req.ifinfo.ifi_index  = opts->ifindex;
- 
- 	nla = nlattr_begin_nested(&req, IFLA_XDP);
- 	if (!nla)
- 		return -EMSGSIZE;
--	ret = nlattr_add(&req, IFLA_XDP_FD, &fd, sizeof(fd));
-+	ret = nlattr_add(&req, IFLA_XDP_FD, &opts->fd, sizeof(opts->fd));
- 	if (ret < 0)
- 		return ret;
--	if (flags) {
--		ret = nlattr_add(&req, IFLA_XDP_FLAGS, &flags, sizeof(flags));
-+	if (opts->flags) {
-+		ret = nlattr_add(&req, IFLA_XDP_FLAGS, &opts->flags,
-+				 sizeof(opts->flags));
+ static int
+@@ -269,6 +270,12 @@ __bpf_set_link_xdp_fd_replace(const struct __bpf_set_link_xdp_fd_opts *opts)
  		if (ret < 0)
  			return ret;
  	}
--	if (flags & XDP_FLAGS_REPLACE) {
--		ret = nlattr_add(&req, IFLA_XDP_EXPECTED_FD, &old_fd,
--				 sizeof(old_fd));
-+	if (opts->flags & XDP_FLAGS_REPLACE) {
-+		ret = nlattr_add(&req, IFLA_XDP_EXPECTED_FD, &opts->old_fd,
-+				 sizeof(opts->old_fd));
- 		if (ret < 0)
- 			return ret;
- 	}
-@@ -268,18 +276,23 @@ static int __bpf_set_link_xdp_fd_replace(int ifindex, int fd, int old_fd,
++	if (opts->btf_id) {
++		ret = nlattr_add(&req, IFLA_XDP_BTF_ID, &opts->btf_id,
++				 sizeof(opts->btf_id));
++		if (ret < 0)
++			return ret;
++	}
+ 	nlattr_end_nested(&req, nla);
  
- int bpf_xdp_attach(int ifindex, int prog_fd, __u32 flags, const struct bpf_xdp_attach_opts *opts)
- {
--	int old_prog_fd, err;
-+	struct __bpf_set_link_xdp_fd_opts sl_opts = {
-+		.ifindex = ifindex,
-+		.flags = flags,
-+		.fd = prog_fd,
-+	};
-+	int err;
- 
- 	if (!OPTS_VALID(opts, bpf_xdp_attach_opts))
- 		return libbpf_err(-EINVAL);
- 
--	old_prog_fd = OPTS_GET(opts, old_prog_fd, 0);
--	if (old_prog_fd)
-+	sl_opts.old_fd = OPTS_GET(opts, old_prog_fd, 0);
-+	if (sl_opts.old_fd)
- 		flags |= XDP_FLAGS_REPLACE;
+ 	return libbpf_netlink_send_recv(&req, NULL, NULL, NULL);
+@@ -292,6 +299,8 @@ int bpf_xdp_attach(int ifindex, int prog_fd, __u32 flags, const struct bpf_xdp_a
  	else
--		old_prog_fd = -1;
-+		sl_opts.old_fd = -1;
+ 		sl_opts.old_fd = -1;
  
--	err = __bpf_set_link_xdp_fd_replace(ifindex, prog_fd, old_prog_fd, flags);
-+	err = __bpf_set_link_xdp_fd_replace(&sl_opts);
++	sl_opts.btf_id = OPTS_GET(opts, btf_id, 0);
++
+ 	err = __bpf_set_link_xdp_fd_replace(&sl_opts);
  	return libbpf_err(err);
  }
- 
-@@ -291,25 +304,36 @@ int bpf_xdp_detach(int ifindex, __u32 flags, const struct bpf_xdp_attach_opts *o
- int bpf_set_link_xdp_fd_opts(int ifindex, int fd, __u32 flags,
- 			     const struct bpf_xdp_set_link_opts *opts)
- {
--	int old_fd = -1, ret;
-+	struct __bpf_set_link_xdp_fd_opts sl_opts = {
-+		.ifindex = ifindex,
-+		.flags = flags,
-+		.old_fd = -1,
-+		.fd = fd,
-+	};
-+	int ret;
- 
- 	if (!OPTS_VALID(opts, bpf_xdp_set_link_opts))
- 		return libbpf_err(-EINVAL);
- 
- 	if (OPTS_HAS(opts, old_fd)) {
--		old_fd = OPTS_GET(opts, old_fd, -1);
-+		sl_opts.old_fd = OPTS_GET(opts, old_fd, -1);
+@@ -320,6 +329,8 @@ int bpf_set_link_xdp_fd_opts(int ifindex, int fd, __u32 flags,
  		flags |= XDP_FLAGS_REPLACE;
  	}
  
--	ret = __bpf_set_link_xdp_fd_replace(ifindex, fd, old_fd, flags);
-+	ret = __bpf_set_link_xdp_fd_replace(&sl_opts);
++	sl_opts.btf_id = OPTS_GET(opts, btf_id, 0);
++
+ 	ret = __bpf_set_link_xdp_fd_replace(&sl_opts);
  	return libbpf_err(ret);
  }
- 
- int bpf_set_link_xdp_fd(int ifindex, int fd, __u32 flags)
- {
-+	struct __bpf_set_link_xdp_fd_opts sl_opts = {
-+		.ifindex = ifindex,
-+		.flags = flags,
-+		.fd = fd,
-+	};
- 	int ret;
- 
--	ret = __bpf_set_link_xdp_fd_replace(ifindex, fd, 0, flags);
-+	ret = __bpf_set_link_xdp_fd_replace(&sl_opts);
- 	return libbpf_err(ret);
- }
- 
 -- 
 2.36.1
 
