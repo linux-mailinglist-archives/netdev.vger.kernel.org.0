@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 76F9255EEA3
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 22:00:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C8D255EE59
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 21:59:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232951AbiF1Txb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 15:53:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46130 "EHLO
+        id S232063AbiF1TwS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 15:52:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232457AbiF1Tu5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 15:50:57 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5CAD1FCD4;
-        Tue, 28 Jun 2022 12:49:50 -0700 (PDT)
+        with ESMTP id S231273AbiF1Tuy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 15:50:54 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17655223;
+        Tue, 28 Jun 2022 12:49:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656445790; x=1687981790;
+  t=1656445774; x=1687981774;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=jaSXqFe1wqX1hqacI7CTj2oedil7nvHz4K/7STA+keI=;
-  b=N0B9qgAboZogUAyD+8k87qAz7sQb5bvmMGkpwDW0iBJ4g8NBwUXZrMcN
-   v89RTJ6zO0BRpcvQvPHbZW1OcYs10X0I++wJ68NdHaY3OUA7rY8k3PVR5
-   oB9BI6iZROpFjqIu5bziauhVmqy8LwRKadfiRoWLrukqGk8E/HQR0guR7
-   X50uFsKYUcxgJKfduxXgunJfUB4Haab2JD5oH1+eCfuR9Cai1vrl9yukf
-   WmgaauBj036acS/qYGvp6BPqWlcOemwY8r0GF109k3DLNIY/LOgT1LUi3
-   MoqwFWbcBY5eaHFmUxK2MMr0syH7pFIYSHSEVVFCguEsOzcsrRlJ3psnL
+  bh=NHfK9H6RSRv2T0ejOH0djO6jg9We4wQHQ8pCfIZVGsQ=;
+  b=lQQybeuzYeIdKVoitwuoX+OTzSkc8kyMsRZP1B2C7LF/Fxu3af3JsQyh
+   OvQd+CsmdxTB2ALPlHvUFG94OrpzcylhHrlHWIGJC6aGs5ZrfEBeeYuAj
+   OaPy+wfuWlX8lpru+GK0UalDJIdP16idEIJjuR1oGLzFe9NBslEAmqEQU
+   e5Cj7s07tySYz9QKwl4A5TcgsImQVL+9+G4I5J1o05z0Rg/QGiIDcndBR
+   HWD/Va2Ia9sAxoGcDQCS7+t705EPJnbXTYJvaLr6QxZunr8HGSLqwqq5i
+   YIIyCvM+V21WdLT44TRB+t9C9aAjNy1HSMfdDUP9aj8f/DQX5YCgH309h
    g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="281869605"
+X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="343523285"
 X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
-   d="scan'208";a="281869605"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 12:49:32 -0700
+   d="scan'208";a="343523285"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 12:49:33 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
-   d="scan'208";a="767288117"
+   d="scan'208";a="565181272"
 Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga005.jf.intel.com with ESMTP; 28 Jun 2022 12:49:27 -0700
+  by orsmga006.jf.intel.com with ESMTP; 28 Jun 2022 12:49:29 -0700
 Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 25SJmr9O022013;
-        Tue, 28 Jun 2022 20:49:26 +0100
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 25SJmr9P022013;
+        Tue, 28 Jun 2022 20:49:27 +0100
 From:   Alexander Lobakin <alexandr.lobakin@intel.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -64,16 +64,16 @@ Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
         Willem de Bruijn <willemb@google.com>, bpf@vger.kernel.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         xdp-hints@xdp-project.net
-Subject: [PATCH RFC bpf-next 24/52] bpf, xdp: declare generic XDP metadata structure
-Date:   Tue, 28 Jun 2022 21:47:44 +0200
-Message-Id: <20220628194812.1453059-25-alexandr.lobakin@intel.com>
+Subject: [PATCH RFC bpf-next 25/52] net, xdp: add basic generic metadata accessors
+Date:   Tue, 28 Jun 2022 21:47:45 +0200
+Message-Id: <20220628194812.1453059-26-alexandr.lobakin@intel.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220628194812.1453059-1-alexandr.lobakin@intel.com>
 References: <20220628194812.1453059-1-alexandr.lobakin@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -82,421 +82,275 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+As all of the fields in the generic XDP metadata structure have
+explicit Endianness, it's worth to provide some basic helpers.
+Add get and set accessors for each field and get, set and rep
+accessors for each bitfield of ::{rx,tx}_flags. rep are for the
+cases when it's unknown whether a flags field is clear, so they
+effectively replace the value in a bitfield instead of just ORing.
+Also add a couple of helpers: to get a pointer to the generic
+metadata structure and check whether a given metadata is generic
+compatible.
 
-The generic XDP metadata is a driver-independent "header" which
-carries the essential info such as the checksum status, the hash
-etc. It can be composed by both hardware and software (drivers)
-and is designed to pass that info, usually taken from the NIC
-descriptors, between the different subsystems and layers in one
-unified format.
-As it's "cross-everything" and can be composed by hardware
-(primarily SmartNICs), an explicit Endianness is required. Most
-hardware and hosts operate in LE nowadays, so the choice was
-obvious although network frames themselves are in BE. The byteswap
-macros will be no-ops for LE systems.
-The first and the last field must always be 2-byte one to have
-a natural alignment of 4 and 8 byte members on 32-bit platforms
-where there's an "IP align" 2-byte padding in front of the data:
-the first member paired with that padding makes the next one
-aligned to 4 bytes, the last one stacks with the Ethernet header
-to make its end aligned to 4 bytes.
-As it's being prepended right in front of the Ethernet header, it
-grows to the left, so all new fields must be added at the beginning
-of the structure in the future.
-The related definitions are declared inside an enum so that they're
-visible to BPF programs. The struct is declared in UAPI so AF_XDP
-programs, which can work with metadata as well, would have access
-to it.
-
-Signed-off-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-Co-developed-by: Larysa Zaremba <larysa.zaremba@intel.com>
-Signed-off-by: Larysa Zaremba <larysa.zaremba@intel.com>
-Co-developed-by: Alexander Lobakin <alexandr.lobakin@intel.com>
 Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
 ---
- include/uapi/linux/bpf.h       | 173 +++++++++++++++++++++++++++++++++
- tools/include/uapi/linux/bpf.h | 173 +++++++++++++++++++++++++++++++++
- 2 files changed, 346 insertions(+)
+ include/net/xdp_meta.h | 238 +++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 238 insertions(+)
 
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index 372170ded1d8..1caaec1de625 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -8,6 +8,7 @@
- #ifndef _UAPI__LINUX_BPF_H__
- #define _UAPI__LINUX_BPF_H__
+diff --git a/include/net/xdp_meta.h b/include/net/xdp_meta.h
+index 3a40189d71c6..f61831e39eb0 100644
+--- a/include/net/xdp_meta.h
++++ b/include/net/xdp_meta.h
+@@ -4,6 +4,7 @@
+ #ifndef __LINUX_NET_XDP_META_H__
+ #define __LINUX_NET_XDP_META_H__
  
-+#include <asm/byteorder.h>
- #include <linux/types.h>
- #include <linux/bpf_common.h>
++#include <linux/bitfield.h>
+ #include <net/xdp.h>
+ #include <uapi/linux/bpf.h>
  
-@@ -6859,4 +6860,176 @@ struct bpf_core_relo {
- 	enum bpf_core_relo_kind kind;
- };
+@@ -45,4 +46,241 @@ static inline bool xdp_metalen_invalid(unsigned long metalen)
+ 	return (metalen & (sizeof(u32) - 1)) || metalen > max;
+ }
  
-+/* Definitions being used to work with &xdp_meta_generic, declared as an enum
-+ * so they are visible for BPF programs via vmlinux.h.
++/* This builds _get(), _set() and _rep() for each bitfield.
++ * If you know for sure the field is empty (e.g. you zeroed the struct
++ * previously), use faster _set() op to save several cycles, otherwise
++ * use _rep() to avoid mixing values.
 + */
-+enum xdp_meta_generic_defs {
-+	/* xdp_meta_generic::tx_flags */
++#define XDP_META_BUILD_FLAGS_ACC(dir, pfx, FLD)				     \
++static inline u32							     \
++xdp_meta_##dir##_##pfx##_get(const struct xdp_meta_generic *md)		     \
++{									     \
++	static_assert(__same_type(md->dir##_flags, __le32));		     \
++									     \
++	return le32_get_bits(md->dir##_flags, XDP_META_##FLD);		     \
++}									     \
++									     \
++static inline void							     \
++xdp_meta_##dir##_##pfx##_set(struct xdp_meta_generic *md, u32 val)	     \
++{									     \
++	md->dir##_flags |= le32_encode_bits(val, XDP_META_##FLD);	     \
++}									     \
++									     \
++static inline void							     \
++xdp_meta_##dir##_##pfx##_rep(struct xdp_meta_generic *md, u32 val)	     \
++{									     \
++	le32p_replace_bits(&md->dir##_flags, val, XDP_META_##FLD);	     \
++}									     \
 +
-+	/* Mask of bits containing Tx timestamp action */
-+	XDP_META_TX_TSTAMP_TYPE		= (0x3 << 4),
-+	/* No action is needed */
-+	XDP_META_TX_TSTAMP_ACT		= 0x0,
-+	/* %SO_TIMESTAMP command */
-+	XDP_META_TX_TSTAMP_SOCK		= 0x1,
-+	/* Set the value to the actual time when a packet is sent */
-+	XDP_META_TX_TSTAMP_COMP		= 0x2,
-+	/* Mask of bits containing Tx VLAN action */
-+	XDP_META_TX_VLAN_TYPE		= (0x3 << 2),
-+	/* No action is needed */
-+	XDP_META_TX_VLAN_NONE		= 0x0,
-+	/* NIC must push C-VLAN tag */
-+	XDP_META_TX_CVID		= 0x1,
-+	/* NIC must push S-VLAN tag */
-+	XDP_META_TX_SVID		= 0x2,
-+	/* Mask of bits containing Tx checksum action */
-+	XDP_META_TX_CSUM_ACT		= (0x3 << 0),
-+	/* No action for checksum */
-+	XDP_META_TX_CSUM_ASIS		= 0x0,
-+	/* NIC must compute checksum, no start/offset are provided */
-+	XDP_META_TX_CSUM_AUTO		= 0x1,
-+	/* NIC must compute checksum using the provided start and offset */
-+	XDP_META_TX_CSUM_HELP		= 0x2,
-+
-+	/* xdp_meta_generic::rx_flags */
-+
-+	/* Metadata contains valid Rx queue ID */
-+	XDP_META_RX_QID_PRESENT		= (0x1 << 9),
-+	/* Metadata contains valid Rx timestamp */
-+	XDP_META_RX_TSTAMP_PRESENT	= (0x1 << 8),
-+	/* Mask of bits containing Rx VLAN status */
-+	XDP_META_RX_VLAN_TYPE		= (0x3 << 6),
-+	/* Metadata does not have any VLAN tags */
-+	XDP_META_RX_VLAN_NONE		= 0x0,
-+	/* Metadata carries valid C-VLAN tag */
-+	XDP_META_RX_CVID		= 0x1,
-+	/* Metadata carries valid S-VLAN tag */
-+	XDP_META_RX_SVID		= 0x2,
-+	/* Mask of bits containing Rx hash status */
-+	XDP_META_RX_HASH_TYPE		= (0x3 << 4),
-+	/* Metadata has no RSS hash */
-+	XDP_META_RX_HASH_NONE		= 0x0,
-+	/* Metadata has valid L2 hash */
-+	XDP_META_RX_HASH_L2		= 0x1,
-+	/* Metadata has valid L3 hash */
-+	XDP_META_RX_HASH_L3		= 0x2,
-+	/* Metadata has valid L4 hash */
-+	XDP_META_RX_HASH_L4		= 0x3,
-+	/* Mask of the field containing checksum level (if there's encap) */
-+	XDP_META_RX_CSUM_LEVEL		= (0x3 << 2),
-+	/* Mask of bits containing Rx checksum status */
-+	XDP_META_RX_CSUM_STATUS		= (0x3 << 0),
-+	/* Metadata has no checksum info */
-+	XDP_META_RX_CSUM_NONE		= 0x0,
-+	/* Checksum has been verified by NIC */
-+	XDP_META_RX_CSUM_OK		= 0x1,
-+	/* Metadata carries valid checksum */
-+	XDP_META_RX_CSUM_COMP		= 0x2,
-+
-+	/* xdp_meta_generic::magic_id indicates that the metadata is either
-+	 * struct xdp_meta_generic itself or contains it at the end -> can be
-+	 * used to get/set HW hints.
-+	 * Direct btf_id comparison is not enough here as a custom structure
-+	 * caring xdp_meta_generic at the end will have a different ID.
-+	 */
-+	XDP_META_GENERIC_MAGIC	= 0xeda6,
-+};
-+
-+/* Generic metadata can be composed directly by HW, plus it should always
-+ * have the first field as __le16 to account the 2 bytes of "IP align", so
-+ * we pack it to avoid unexpected paddings. Also, it should be aligned to
-+ * sizeof(__be16) as any other Ethernet data, and to optimize access on the
-+ * 32-bit platforms.
++/* This builds _get() and _set() for each structure field -- those are just
++ * byteswap operations however.
++ * The second static assertion is due to that all of the fields in the
++ * structure should be naturally-aligned when ::magic_id starts at
++ * `XDP_PACKET_HEADROOM + 8n`, which is the default and recommended case.
++ * This check makes no sense for the efficient unaligned access platforms,
++ * but helps the rest.
 + */
-+#define __xdp_meta_generic_attrs			\
-+	__attribute__((__packed__))			\
-+	__attribute__((aligned(sizeof(__be16))))
++#define XDP_META_BUILD_ACC(dir, pfx, sz)				     \
++static inline u##sz							     \
++xdp_meta_##dir##_##pfx##_get(const struct xdp_meta_generic *md)		     \
++{									     \
++	static_assert(__same_type(md->dir##_##pfx, __le##sz));		     \
++									     \
++	return le##sz##_to_cpu(md->dir##_##pfx);			     \
++}									     \
++									     \
++static inline void							     \
++xdp_meta_##dir##_##pfx##_set(struct xdp_meta_generic *md, u##sz val)	     \
++{									     \
++	static_assert((XDP_PACKET_HEADROOM - sizeof(*md) +		     \
++		       sizeof_field(typeof(*md), magic_id) +		     \
++		       offsetof(typeof(*md), dir##_##pfx)) %		     \
++		      sizeof_field(typeof(*md), dir##_##pfx) == 0);	     \
++									     \
++	md->dir##_##pfx = cpu_to_le##sz(val);				     \
++}
 +
-+/* Depending on the field layout inside the structure, it might or might not
-+ * emit a "packed attribute is unnecessary" warning (when enabled, e.g. in
-+ * libbpf). To not add and remove the attributes on each field addition,
-+ * just suppress it.
++#if 0 /* For grepping/indexers */
++u16 xdp_meta_tx_csum_action_get(const struct xdp_meta_generic *md);
++void xdp_meta_tx_csum_action_set(struct xdp_meta_generic *md, u16 val);
++void xdp_meta_tx_csum_action_rep(struct xdp_meta_generic *md, u16 val);
++u16 xdp_meta_tx_vlan_type_get(const struct xdp_meta_generic *md);
++void xdp_meta_tx_vlan_type_set(struct xdp_meta_generic *md, u16 val);
++void xdp_meta_tx_vlan_type_rep(struct xdp_meta_generic *md, u16 val);
++u16 xdp_meta_tx_tstamp_action_get(const struct xdp_meta_generic *md);
++void xdp_meta_tx_tstamp_action_set(struct xdp_meta_generic *md, u16 val);
++void xdp_meta_tx_tstamp_action_rep(struct xdp_meta_generic *md, u16 val);
++#endif
++XDP_META_BUILD_FLAGS_ACC(tx, csum_action, TX_CSUM_ACT);
++XDP_META_BUILD_FLAGS_ACC(tx, vlan_type, TX_VLAN_TYPE);
++XDP_META_BUILD_FLAGS_ACC(tx, tstamp_action, TX_TSTAMP_ACT);
++
++#if 0
++u16 xdp_meta_tx_csum_start_get(const struct xdp_meta_generic *md);
++void xdp_meta_tx_csum_start_set(struct xdp_meta_generic *md, u64 val);
++u16 xdp_meta_tx_csum_off_get(const struct xdp_meta_generic *md);
++void xdp_meta_tx_csum_off_set(struct xdp_meta_generic *md, u64 val);
++u16 xdp_meta_tx_vid_get(const struct xdp_meta_generic *md);
++void xdp_meta_tx_vid_set(struct xdp_meta_generic *md, u64 val);
++u32 xdp_meta_tx_flags_get(const struct xdp_meta_generic *md);
++void xdp_meta_tx_flags_set(struct xdp_meta_generic *md, u32 val);
++u64 xdp_meta_tx_tstamp_get(const struct xdp_meta_generic *md);
++void xdp_meta_tx_tstamp_set(struct xdp_meta_generic *md, u64 val);
++#endif
++XDP_META_BUILD_ACC(tx, csum_start, 16);
++XDP_META_BUILD_ACC(tx, csum_off, 16);
++XDP_META_BUILD_ACC(tx, vid, 16);
++XDP_META_BUILD_ACC(tx, flags, 32);
++XDP_META_BUILD_ACC(tx, tstamp, 64);
++
++#if 0
++u16 xdp_meta_rx_csum_status_get(const struct xdp_meta_generic *md);
++void xdp_meta_rx_csum_status_set(struct xdp_meta_generic *md, u16 val);
++void xdp_meta_rx_csum_status_rep(struct xdp_meta_generic *md, u16 val);
++u16 xdp_meta_rx_csum_level_get(const struct xdp_meta_generic *md);
++void xdp_meta_rx_csum_level_set(struct xdp_meta_generic *md, u16 val);
++void xdp_meta_rx_csum_level_rep(struct xdp_meta_generic *md, u16 val);
++u16 xdp_meta_rx_hash_type_get(const struct xdp_meta_generic *md);
++void xdp_meta_rx_hash_type_set(struct xdp_meta_generic *md, u16 val);
++void xdp_meta_rx_hash_type_rep(struct xdp_meta_generic *md, u16 val);
++u16 xdp_meta_rx_vlan_type_get(const struct xdp_meta_generic *md);
++void xdp_meta_rx_vlan_type_set(struct xdp_meta_generic *md, u16 val);
++void xdp_meta_rx_vlan_type_rep(struct xdp_meta_generic *md, u16 val);
++u16 xdp_meta_rx_tstamp_present_get(const struct xdp_meta_generic *md);
++void xdp_meta_rx_tstamp_present_set(struct xdp_meta_generic *md, u16 val);
++void xdp_meta_rx_tstamp_present_rep(struct xdp_meta_generic *md, u16 val);
++u16 xdp_meta_rx_qid_present_get(const struct xdp_meta_generic *md);
++void xdp_meta_rx_qid_present_set(struct xdp_meta_generic *md, u16 val);
++void xdp_meta_rx_qid_present_rep(struct xdp_meta_generic *md, u16 val);
++#endif
++XDP_META_BUILD_FLAGS_ACC(rx, csum_status, RX_CSUM_STATUS);
++XDP_META_BUILD_FLAGS_ACC(rx, csum_level, RX_CSUM_LEVEL);
++XDP_META_BUILD_FLAGS_ACC(rx, hash_type, RX_HASH_TYPE);
++XDP_META_BUILD_FLAGS_ACC(rx, vlan_type, RX_VLAN_TYPE);
++XDP_META_BUILD_FLAGS_ACC(rx, tstamp_present, RX_TSTAMP_PRESENT);
++XDP_META_BUILD_FLAGS_ACC(rx, qid_present, RX_QID_PRESENT);
++
++#if 0
++u64 xdp_meta_rx_tstamp_get(const struct xdp_meta_generic *md);
++void xdp_meta_rx_tstamp_set(struct xdp_meta_generic *md, u64 val);
++u32 xdp_meta_rx_hash_get(const struct xdp_meta_generic *md);
++void xdp_meta_rx_hash_set(struct xdp_meta_generic *md, u32 val);
++u32 xdp_meta_rx_csum_get(const struct xdp_meta_generic *md);
++void xdp_meta_rx_csum_set(struct xdp_meta_generic *md, u32 val);
++u16 xdp_meta_rx_vid_get(const struct xdp_meta_generic *md);
++void xdp_meta_rx_vid_set(struct xdp_meta_generic *md, u16 val);
++u16 xdp_meta_rx_qid_get(const struct xdp_meta_generic *md);
++void xdp_meta_rx_qid_set(struct xdp_meta_generic *md, u16 val);
++u32 xdp_meta_rx_flags_get(const struct xdp_meta_generic *md);
++void xdp_meta_rx_flags_set(struct xdp_meta_generic *md, u32 val);
++#endif
++XDP_META_BUILD_ACC(rx, tstamp, 64);
++XDP_META_BUILD_ACC(rx, hash, 32);
++XDP_META_BUILD_ACC(rx, csum, 32);
++XDP_META_BUILD_ACC(rx, vid, 16);
++XDP_META_BUILD_ACC(rx, qid, 16);
++XDP_META_BUILD_ACC(rx, flags, 32);
++
++#if 0
++u32 xdp_meta_btf_id_get(const struct xdp_meta_generic *md);
++void xdp_meta_btf_id_set(struct xdp_meta_generic *md, u32 val);
++u32 xdp_meta_type_id_get(const struct xdp_meta_generic *md);
++void xdp_meta_type_id_set(struct xdp_meta_generic *md, u32 val);
++u64 xdp_meta_full_id_get(const struct xdp_meta_generic *md);
++void xdp_meta_full_id_set(struct xdp_meta_generic *md, u64 val);
++u16 xdp_meta_magic_id_get(const struct xdp_meta_generic *md);
++void xdp_meta_magic_id_set(struct xdp_meta_generic *md, u16 val);
++#endif
++XDP_META_BUILD_ACC(btf, id, 32);
++XDP_META_BUILD_ACC(type, id, 32);
++XDP_META_BUILD_ACC(full, id, 64);
++XDP_META_BUILD_ACC(magic, id, 16);
++
++/* This allows to jump from xdp_metadata_generic::{tx,rx_full,rx,id} to the
++ * parent if needed. For example, declare one of them on stack for convenience
++ * and still pass a generic pointer.
++ * No out-of-bound checks, a caller must sanitize it on its side.
 + */
-+#pragma GCC diagnostic push
-+#pragma GCC diagnostic ignored "-Wpacked"
++#define _to_gen_md(ptr, locptr, locmd) ({				      \
++	struct xdp_meta_generic *locmd;					      \
++	typeof(ptr) locptr = (ptr);					      \
++									      \
++	if (__same_type(*locptr, typeof(locmd->tx)))			      \
++		locmd = (void *)locptr - offsetof(typeof(*locmd), tx);	      \
++	else if (__same_type(*locptr, typeof(locmd->rx_full)))		      \
++		locmd = (void *)locptr - offsetof(typeof(*locmd), rx_full);   \
++	else if (__same_type(*locptr, typeof(locmd->rx)))		      \
++		locmd = (void *)locptr - offsetof(typeof(*locmd), rx);	      \
++	else if (__same_type(*locptr, typeof(locmd->id)))		      \
++		locmd = (void *)locptr - offsetof(typeof(*locmd), id);	      \
++	else if (__same_type(*locptr, typeof(locmd)) ||			      \
++		 __same_type(*locptr, void))				      \
++		locmd = (void *)locptr;					      \
++	else								      \
++		BUILD_BUG();						      \
++									      \
++	locmd;								      \
++})
++#define to_gen_md(ptr)	_to_gen_md((ptr), __UNIQUE_ID(ptr_), __UNIQUE_ID(md_))
 +
-+/* All fields have explicit endianness, as it might be composed by HW.
-+ * Byteswaps are needed for the Big Endian architectures to access the
-+ * fields.
++/* This allows to pass an xdp_meta_generic pointer instead of an
++ * xdp_meta_generic::rx{,_full} pointer for convenience.
 + */
-+struct xdp_meta_generic {
-+	/* Add new fields here */
++#define _to_rx_md(ptr, locptr, locmd) ({				      \
++	struct xdp_meta_generic_rx *locmd;				      \
++	typeof(ptr) locptr = (ptr);					      \
++									      \
++	if (__same_type(*locptr, struct xdp_meta_generic_rx))		      \
++		locmd = (struct xdp_meta_generic_rx *)locptr;		      \
++	else if (__same_type(*locptr, struct xdp_meta_generic) ||	      \
++		 __same_type(*locptr, void))				      \
++		locmd = &((struct xdp_meta_generic *)locptr)->rx_full;	      \
++	else								      \
++		BUILD_BUG();						      \
++									      \
++	locmd;								      \
++})
++#define to_rx_md(ptr)	_to_rx_md((ptr), __UNIQUE_ID(ptr_), __UNIQUE_ID(md_))
 +
-+	/* Egress part */
-+	__struct_group(/* no tag */, tx, __xdp_meta_generic_attrs,
-+		/* Offset from the start of the frame to the L4 header
-+		 * to compute checksum for
-+		 */
-+		__le16 tx_csum_start;
-+		/* Offset inside the L4 header to the checksum field */
-+		__le16 tx_csum_off;
-+		/* ID for hardware VLAN push */
-+		__le16 tx_vid;
-+		/* Flags indicating which Tx metadata is used */
-+		__le32 tx_flags;
-+		/* Tx timestamp value */
-+		__le64 tx_tstamp;
-+	);
-+
-+	/* Shortcut for the half relevant on ingress: Rx + IDs */
-+	__struct_group(xdp_meta_generic_rx, rx_full, __xdp_meta_generic_attrs,
-+		/* Ingress part */
-+		__struct_group(/* no tag */, rx, __xdp_meta_generic_attrs,
-+			/* Rx timestamp value */
-+			__le64 rx_tstamp;
-+			/* Rx hash value */
-+			__le32 rx_hash;
-+			/* Rx checksum value */
-+			__le32 rx_csum;
-+			/* VLAN ID popped on Rx */
-+			__le16 rx_vid;
-+			/* Rx queue ID on which the frame has arrived */
-+			__le16 rx_qid;
-+			/* Flags indicating which Rx metadata is used */
-+			__le32 rx_flags;
-+		);
-+
-+		/* Unique metadata identifiers */
-+		__struct_group(/* no tag */, id, __xdp_meta_generic_attrs,
-+			union {
-+				struct {
-+#ifdef __BIG_ENDIAN_BITFIELD
-+					/* Indicates the ID of the BTF which
-+					 * the below type ID comes from, as
-+					 * several kernel modules may have
-+					 * identical type IDs
-+					 */
-+					__le32 btf_id;
-+					/* Indicates the ID of the actual
-+					 * structure passed as metadata,
-+					 * within the above BTF ID
-+					 */
-+					__le32 type_id;
-+#else /* __LITTLE_ENDIAN_BITFIELD */
-+					__le32 type_id;
-+					__le32 btf_id;
-+#endif /* __LITTLE_ENDIAN_BITFIELD */
-+				};
-+				/* BPF program gets IDs coded as one __u64:
-+				 * `btf_id << 32 | type_id`, allow direct
-+				 * comparison
-+				 */
-+				__le64 full_id;
-+			};
-+			/* If set to the correct value, indicates that the
-+			 * meta is generic-compatible and can be used by
-+			 * the consumers of generic metadata
-+			 */
-+			__le16 magic_id;
-+		);
-+	);
-+} __xdp_meta_generic_attrs;
-+
-+#pragma GCC diagnostic pop
-+
- #endif /* _UAPI__LINUX_BPF_H__ */
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index 372170ded1d8..436b925adfb3 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -8,6 +8,7 @@
- #ifndef _UAPI__LINUX_BPF_H__
- #define _UAPI__LINUX_BPF_H__
- 
-+#include <asm/byteorder.h>
- #include <linux/types.h>
- #include <linux/bpf_common.h>
- 
-@@ -6859,4 +6860,176 @@ struct bpf_core_relo {
- 	enum bpf_core_relo_kind kind;
- };
- 
-+/* Definitions being used to work with &xdp_meta_generic, declared as an enum
-+ * so they are visible for BPF programs via vmlinux.h.
++/**
++ * xdp_meta_has_generic - get a pointer to the generic metadata before a frame
++ * @data: a pointer to the beginning of the frame
++ *
++ * Note: the function does not perform any access sanity checks, they should
++ * be done manually prior to calling it.
++ *
++ * Returns a pointer to the beginning of the generic metadata.
 + */
-+enum xdp_meta_generic_defs {
-+	/* xdp_meta_generic::tx_flags */
++static inline struct xdp_meta_generic *xdp_meta_generic_ptr(const void *data)
++{
++	BUILD_BUG_ON(xdp_metalen_invalid(sizeof(struct xdp_meta_generic)));
 +
-+	/* Mask of bits containing Tx timestamp action */
-+	XDP_META_TX_TSTAMP_ACT		= (0x3 << 4),
-+	/* No action is needed */
-+	XDP_META_TX_TSTAMP_NONE		= 0x0,
-+	/* %SO_TIMESTAMP command */
-+	XDP_META_TX_TSTAMP_SOCK		= 0x1,
-+	/* Set the value to the actual time when a packet is sent */
-+	XDP_META_TX_TSTAMP_COMP		= 0x2,
-+	/* Mask of bits containing Tx VLAN action */
-+	XDP_META_TX_VLAN_TYPE		= (0x3 << 2),
-+	/* No action is needed */
-+	XDP_META_TX_VLAN_NONE		= 0x0,
-+	/* NIC must push C-VLAN tag */
-+	XDP_META_TX_CVID		= 0x1,
-+	/* NIC must push S-VLAN tag */
-+	XDP_META_TX_SVID		= 0x2,
-+	/* Mask of bits containing Tx checksum action */
-+	XDP_META_TX_CSUM_ACT		= (0x3 << 0),
-+	/* No action for checksum */
-+	XDP_META_TX_CSUM_ASIS		= 0x0,
-+	/* NIC must compute checksum, no start/offset are provided */
-+	XDP_META_TX_CSUM_AUTO		= 0x1,
-+	/* NIC must compute checksum using the provided start and offset */
-+	XDP_META_TX_CSUM_HELP		= 0x2,
++	return (void *)data - sizeof(struct xdp_meta_generic);
++}
 +
-+	/* xdp_meta_generic::rx_flags */
-+
-+	/* Metadata contains valid Rx queue ID */
-+	XDP_META_RX_QID_PRESENT		= (0x1 << 9),
-+	/* Metadata contains valid Rx timestamp */
-+	XDP_META_RX_TSTAMP_PRESENT	= (0x1 << 8),
-+	/* Mask of bits containing Rx VLAN status */
-+	XDP_META_RX_VLAN_TYPE		= (0x3 << 6),
-+	/* Metadata does not have any VLAN tags */
-+	XDP_META_RX_VLAN_NONE		= 0x0,
-+	/* Metadata carries valid C-VLAN tag */
-+	XDP_META_RX_CVID		= 0x1,
-+	/* Metadata carries valid S-VLAN tag */
-+	XDP_META_RX_SVID		= 0x2,
-+	/* Mask of bits containing Rx hash status */
-+	XDP_META_RX_HASH_TYPE		= (0x3 << 4),
-+	/* Metadata has no RSS hash */
-+	XDP_META_RX_HASH_NONE		= 0x0,
-+	/* Metadata has valid L2 hash */
-+	XDP_META_RX_HASH_L2		= 0x1,
-+	/* Metadata has valid L3 hash */
-+	XDP_META_RX_HASH_L3		= 0x2,
-+	/* Metadata has valid L4 hash */
-+	XDP_META_RX_HASH_L4		= 0x3,
-+	/* Mask of the field containing checksum level (if there's encap) */
-+	XDP_META_RX_CSUM_LEVEL		= (0x3 << 2),
-+	/* Mask of bits containing Rx checksum status */
-+	XDP_META_RX_CSUM_STATUS		= (0x3 << 0),
-+	/* Metadata has no checksum info */
-+	XDP_META_RX_CSUM_NONE		= 0x0,
-+	/* Checksum has been verified by NIC */
-+	XDP_META_RX_CSUM_OK		= 0x1,
-+	/* Metadata carries valid checksum */
-+	XDP_META_RX_CSUM_COMP		= 0x2,
-+
-+	/* xdp_meta_generic::magic_id indicates that the metadata is either
-+	 * struct xdp_meta_generic itself or contains it at the end -> can be
-+	 * used to get/set HW hints.
-+	 * Direct btf_id comparison is not enough here as a custom structure
-+	 * caring xdp_meta_generic at the end will have a different ID.
-+	 */
-+	XDP_META_GENERIC_MAGIC	= 0xeda6,
-+};
-+
-+/* Generic metadata can be composed directly by HW, plus it should always
-+ * have the first field as __le16 to account the 2 bytes of "IP align", so
-+ * we pack it to avoid unexpected paddings. Also, it should be aligned to
-+ * sizeof(__be16) as any other Ethernet data, and to optimize access on the
-+ * 32-bit platforms.
++/**
++ * xdp_meta_has_generic - check whether a frame has a generic meta in front
++ * @data: a pointer to the beginning of the frame
++ *
++ * Returns true if it does, false otherwise.
 + */
-+#define __xdp_meta_generic_attrs			\
-+	__attribute__((__packed__))			\
-+	__attribute__((aligned(sizeof(__be16))))
++static inline bool xdp_meta_has_generic(const void *data)
++{
++	return xdp_meta_generic_ptr(data)->magic_id ==
++	       cpu_to_le16(XDP_META_GENERIC_MAGIC);
++}
 +
-+/* Depending on the field layout inside the structure, it might or might not
-+ * emit a "packed attribute is unnecessary" warning (when enabled, e.g. in
-+ * libbpf). To not add and remove the attributes on each field addition,
-+ * just suppress it.
++/**
++ * xdp_meta_skb_has_generic - check whether an skb has a generic meta
++ * @skb: a pointer to the &sk_buff
++ *
++ * Note: must be called only when skb_mac_header_was_set(skb) == true.
++ *
++ * Returns true if it does, false otherwise.
 + */
-+#pragma GCC diagnostic push
-+#pragma GCC diagnostic ignored "-Wpacked"
++static inline bool xdp_meta_skb_has_generic(const struct sk_buff *skb)
++{
++	return xdp_meta_has_generic(skb_metadata_end(skb));
++}
 +
-+/* All fields have explicit endianness, as it might be composed by HW.
-+ * Byteswaps are needed for the Big Endian architectures to access the
-+ * fields.
-+ */
-+struct xdp_meta_generic {
-+	/* Add new fields here */
-+
-+	/* Egress part */
-+	__struct_group(/* no tag */, tx, __xdp_meta_generic_attrs,
-+		/* Offset from the start of the frame to the L4 header
-+		 * to compute checksum for
-+		 */
-+		__le16 tx_csum_start;
-+		/* Offset inside the L4 header to the checksum field */
-+		__le16 tx_csum_off;
-+		/* ID for hardware VLAN push */
-+		__le16 tx_vid;
-+		/* Flags indicating which Tx metadata is used */
-+		__le32 tx_flags;
-+		/* Tx timestamp value */
-+		__le64 tx_tstamp;
-+	);
-+
-+	/* Shortcut for the half relevant on ingress: Rx + IDs */
-+	__struct_group(xdp_meta_generic_rx, rx_full, __xdp_meta_generic_attrs,
-+		/* Ingress part */
-+		__struct_group(/* no tag */, rx, __xdp_meta_generic_attrs,
-+			/* Rx timestamp value */
-+			__le64 rx_tstamp;
-+			/* Rx hash value */
-+			__le32 rx_hash;
-+			/* Rx checksum value */
-+			__le32 rx_csum;
-+			/* VLAN ID popped on Rx */
-+			__le16 rx_vid;
-+			/* Rx queue ID on which the frame has arrived */
-+			__le16 rx_qid;
-+			/* Flags indicating which Rx metadata is used */
-+			__le32 rx_flags;
-+		);
-+
-+		/* Unique metadata identifiers */
-+		__struct_group(/* no tag */, id, __xdp_meta_generic_attrs,
-+			union {
-+				struct {
-+#ifdef __BIG_ENDIAN_BITFIELD
-+					/* Indicates the ID of the BTF which
-+					 * the below type ID comes from, as
-+					 * several kernel modules may have
-+					 * identical type IDs
-+					 */
-+					__le32 btf_id;
-+					/* Indicates the ID of the actual
-+					 * structure passed as metadata,
-+					 * within the above BTF ID
-+					 */
-+					__le32 type_id;
-+#else /* __LITTLE_ENDIAN_BITFIELD */
-+					__le32 type_id;
-+					__le32 btf_id;
-+#endif /* __LITTLE_ENDIAN_BITFIELD */
-+				};
-+				/* BPF program gets IDs coded as one __u64:
-+				 * `btf_id << 32 | type_id`, allow direct
-+				 * comparison
-+				 */
-+				__le64 full_id;
-+			};
-+			/* If set to the correct value, indicates that the
-+			 * meta is generic-compatible and can be used by
-+			 * the consumers of generic metadata
-+			 */
-+			__le16 magic_id;
-+		);
-+	);
-+} __xdp_meta_generic_attrs;
-+
-+#pragma GCC diagnostic pop
-+
- #endif /* _UAPI__LINUX_BPF_H__ */
+ #endif /* __LINUX_NET_XDP_META_H__ */
 -- 
 2.36.1
 
