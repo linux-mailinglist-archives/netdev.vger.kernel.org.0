@@ -2,85 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 82C3655ED7C
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 21:04:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2650C55ED97
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 21:06:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232704AbiF1TET (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 15:04:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56242 "EHLO
+        id S234995AbiF1TGr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 15:06:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234200AbiF1TBR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 15:01:17 -0400
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFDF3CE18;
-        Tue, 28 Jun 2022 12:00:47 -0700 (PDT)
-Received: by mail-yb1-xb35.google.com with SMTP id v38so13098560ybi.3;
-        Tue, 28 Jun 2022 12:00:47 -0700 (PDT)
+        with ESMTP id S235003AbiF1TG3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 15:06:29 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAE3419026;
+        Tue, 28 Jun 2022 12:06:28 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id o9so18895784edt.12;
+        Tue, 28 Jun 2022 12:06:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hfrZZUEEnusraqTcoBwljzuTX+gSwEEKqtBGfjRQA5s=;
-        b=Fjr1Ac23mV/gAq32rtrGhHFbiAtx7Z/rqECiXYYFvDabBSHfwkresVl4zV4BHJdgXL
-         BLMyCajzhrK84VdRjqrhOtDnZm4/X8iuNxXeTJm1qsWD3joGoa7VoiTCktl2aFuvDG/8
-         1IJjrLsSBbKE2raRCPJeTs34T93kFvT1Ay+raFqYsBhz1GM2+5erS+hp1ZL6N8oesb0q
-         E5NoJKh3QOGwmAOUBKnnrnfPWFopo7ls7rzGsOQCloKeaMn5R9ROtlECpO87RRCKd0ma
-         Kng+5H0c53E1HoHKIv3FYgHdYWWHBYjYsZg8D9i16tPHAOzzS4rXP4i9w7zDLvRSzZ6Y
-         8yFQ==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=KX9jc9OA6lP47XCbfqQxmVV0wzSC5gcouuvPJAXYRUg=;
+        b=OeDPzwRN8aS7Z6+5YNW5bt5XPl4FCy4QSVBhHJqxN329d25togrn5Rb1NNwd76i84L
+         B7xuSHHkGYWmcMb72Ql9C1HHMuyDl0oLivOWUjBnjy+MhG5oI4ttDaHp+DrEtDmzLXKM
+         3I9mJ/zzY+Lu79fKWUWJsefzfuhR0co68/X7oNURoG2oFjlDaa5g3WbCDIDlVQ4V8ki8
+         scEY8bTCO98WA+OJNk4HK44hhbSnySavnduolO8CTBdlYa0NtRhGuBujZ/HTf811tvOr
+         ZwuFRLxfM55Qju0O44wFstrGCn6c8YB6ekWCCR063OnSafM8s0ISjE4kalUi/AhBJCMS
+         srHA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hfrZZUEEnusraqTcoBwljzuTX+gSwEEKqtBGfjRQA5s=;
-        b=Yy43Qu9RGoPdubg8DX4YjoS6+LJz7D5mJQjysek5bQtKD/L+HCKs0l9810tXyEXPlK
-         7SzBVvrKRXNpknx/YqRZW/JmXhSrCeCG/W7Fwc9RLn1uMLT4RCpZXIYxu5DHxBeos7a/
-         VFuDoUoujyNhV2sPvC1OjB0H0JBwlsEBP+1HsZUtPBuLbSZBnVRqLM6+ZJSyZ72U3w3/
-         UJSHIvs8Ej6EN6YtgBADqDyIprhD1ldbK4qVnAqBSKGUkLjp1gMGSkY+84ubmlSsiU4G
-         YDwYgVOLVbZUCgttyxtAllyz3YSyPmNHrwGhsBWZMuZvbKIO9PGGcJ0v4eK2zuR66fx7
-         WIgQ==
-X-Gm-Message-State: AJIora/zTnXKQ1PszPiF4gniNVy0DpHoO9ES4Dhxf6CKKXoLXbTlc/6G
-        l8mLjR/Oi3UrdRWalDDhdtL4GLn7Ul5jFJP8jM8=
-X-Google-Smtp-Source: AGRyM1ubmnldUYfOH5scD10FhmXU1zZDYRVh2ucvLL7Z7EYE8yjowr6ydYCwm+ayjB00+OKR6o9rr9MjILNWmBIOCbg=
-X-Received: by 2002:a25:dd83:0:b0:66c:8d8d:4f5f with SMTP id
- u125-20020a25dd83000000b0066c8d8d4f5fmr19106724ybg.79.1656442846932; Tue, 28
- Jun 2022 12:00:46 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=KX9jc9OA6lP47XCbfqQxmVV0wzSC5gcouuvPJAXYRUg=;
+        b=qy8tOiWJBQjY4bz0BYh9/SoPlXSSFNlptY44CSRNU91lLn5iHmkUNOrQGDcfp0FHFP
+         38taXzFfh7AABq2fzs0SR+tjH11q+dpnMD77GUEL/1H4xzjTRs8tYuai4jBR+c+6C87N
+         iWjfwlTwB9u16aVCg2uFtwYP6etmGuntz/864ruE4FmdbHpx7sJRq62tM1jKfYfgLTd+
+         WvsAScopOoHLArmIL/y0KALgVd3fv99Of4ROk5tLiqy1VG2MoSsXWaO/SOon+0qsAk0p
+         lfkuE+NE44kY3LNE5nynY5GsLr9RHp0Ewdh1HX/LlHE7bAaV/c0BKQgBluEuTvxFEy4n
+         E/sg==
+X-Gm-Message-State: AJIora9aorrHBFHVV5zDTGNJGKYpynY3X/AOxq3nRJO7qGQzzwQaYj8g
+        Z9EKsffHtto7AqeRC9eMXAvlByVyxd7P3g==
+X-Google-Smtp-Source: AGRyM1sSzYaK9iGyQTc/eWqkAAzNRoyNyfBKpAgLFqlWhy6E8+LGYGZqYRdUO6xlkdXZwdgSpDdelw==
+X-Received: by 2002:aa7:c6d9:0:b0:435:706a:4578 with SMTP id b25-20020aa7c6d9000000b00435706a4578mr25592987eds.24.1656443187198;
+        Tue, 28 Jun 2022 12:06:27 -0700 (PDT)
+Received: from [192.168.8.198] (188.28.125.106.threembb.co.uk. [188.28.125.106])
+        by smtp.gmail.com with ESMTPSA id p26-20020a1709061b5a00b00727c6da57cesm103090ejg.147.2022.06.28.12.06.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 28 Jun 2022 12:06:26 -0700 (PDT)
+Message-ID: <4963e756-506b-d705-d00e-183ba468d894@gmail.com>
+Date:   Tue, 28 Jun 2022 20:03:37 +0100
 MIME-Version: 1.0
-References: <20220628081709.829811-1-colin.foster@in-advantage.com>
- <20220628081709.829811-4-colin.foster@in-advantage.com> <CAHp75Vcm=Zopv2CZZFWwqgxQ_g8XqNRZB6zEcX3F4BhmcPGxFA@mail.gmail.com>
- <20220628182535.GC855398@euler>
-In-Reply-To: <20220628182535.GC855398@euler>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 28 Jun 2022 21:00:06 +0200
-Message-ID: <CAHp75VejZB8Wg4tuz51r1ezLw0vawP+LNcYkmHd5FjyQTW4asA@mail.gmail.com>
-Subject: Re: [PATCH v11 net-next 3/9] pinctrl: ocelot: allow pinctrl-ocelot to
- be loaded as a module
-To:     Colin Foster <colin.foster@in-advantage.com>
-Cc:     devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [RFC net-next v3 00/29] io_uring zerocopy send
+Content-Language: en-US
+To:     io-uring@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Wolfram Sang <wsa@kernel.org>,
-        Terry Bowman <terry.bowman@amd.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Jens Axboe <axboe@kernel.dk>, kernel-team@fb.com
+References: <cover.1653992701.git.asml.silence@gmail.com>
+From:   Pavel Begunkov <asml.silence@gmail.com>
+In-Reply-To: <cover.1653992701.git.asml.silence@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -89,29 +77,13 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 28, 2022 at 8:25 PM Colin Foster
-<colin.foster@in-advantage.com> wrote:
-> On Tue, Jun 28, 2022 at 02:53:49PM +0200, Andy Shevchenko wrote:
-> > On Tue, Jun 28, 2022 at 10:17 AM Colin Foster
-> > <colin.foster@in-advantage.com> wrote:
+On 6/28/22 19:56, Pavel Begunkov wrote:
+> The third iteration of patches for zerocopy io_uring sends. I fixed
+> all known issues since the previous version and reshuffled io_uring
+> patches, but the net/ code didn't change much. I think it's ready
+> and will send it as a non-RFC soon.
 
-...
-
-> > >  builtin_platform_driver(ocelot_pinctrl_driver);
-> >
-> > This contradicts the logic behind this change. Perhaps you need to
-> > move to module_platform_driver(). (Yes, I think functionally it won't
-> > be any changes if ->remove() is not needed, but for the sake of
-> > logical correctness...)
->
-> I'll do this. Thanks.
->
-> Process question: If I make this change is it typical to remove all
-> Reviewed-By tags? I assume "yes"
-
-I would not. This change is logical continuation and I truly believe
-every reviewer will agree on it.
+Please ignore, it's a wrong version and shouldn't be RFC
 
 -- 
-With Best Regards,
-Andy Shevchenko
+Pavel Begunkov
