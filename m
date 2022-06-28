@@ -2,31 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D6B8E55EC32
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 20:09:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E0DC655EC34
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 20:09:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234386AbiF1SJD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 14:09:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53418 "EHLO
+        id S234409AbiF1SJJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 14:09:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234363AbiF1SI6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 14:08:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0701E15711;
-        Tue, 28 Jun 2022 11:08:58 -0700 (PDT)
+        with ESMTP id S234388AbiF1SJF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 14:09:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ECC813E8E;
+        Tue, 28 Jun 2022 11:09:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 934E361ADB;
-        Tue, 28 Jun 2022 18:08:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95C79C3411D;
-        Tue, 28 Jun 2022 18:08:56 +0000 (UTC)
-Subject: [PATCH v2 29/31] NFSD: Move nfsd_file_trace_alloc() tracepoint
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0B26861ADB;
+        Tue, 28 Jun 2022 18:09:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20054C3411D;
+        Tue, 28 Jun 2022 18:09:03 +0000 (UTC)
+Subject: [PATCH v2 30/31] NFSD: Update the nfsd_file_fsnotify_handle_event()
+ tracepoint
 From:   Chuck Lever <chuck.lever@oracle.com>
 To:     linux-nfs@vger.kernel.org, netdev@vger.kernel.org
 Cc:     david@fromorbit.com, jlayton@redhat.com, tgraf@suug.ch
-Date:   Tue, 28 Jun 2022 14:08:55 -0400
-Message-ID: <165643973558.84360.24238171962065271.stgit@manet.1015granger.net>
+Date:   Tue, 28 Jun 2022 14:09:02 -0400
+Message-ID: <165643974221.84360.1679436915112501560.stgit@manet.1015granger.net>
 In-Reply-To: <165643915086.84360.2809940286726976517.stgit@manet.1015granger.net>
 References: <165643915086.84360.2809940286726976517.stgit@manet.1015granger.net>
 User-Agent: StGit/1.5.dev2+g9ce680a5
@@ -42,76 +43,107 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Avoid recording the allocation of an nfsd_file item that is
-immediately released because of a matching item was already
-inserted in the hash.
+As a convenience, display the mode and event mask symbolically
+rather than numerically.
 
 Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 ---
- fs/nfsd/filecache.c |    2 +-
- fs/nfsd/trace.h     |   25 ++++++++++++++++++++++++-
- 2 files changed, 25 insertions(+), 2 deletions(-)
+ fs/nfsd/trace.h           |   21 ++++++++++++++-------
+ include/trace/events/fs.h |   37 +++++++++++++++++++++++++++++++++++++
+ 2 files changed, 51 insertions(+), 7 deletions(-)
 
-diff --git a/fs/nfsd/filecache.c b/fs/nfsd/filecache.c
-index 0c7f86e81f4e..cee2770e13e5 100644
---- a/fs/nfsd/filecache.c
-+++ b/fs/nfsd/filecache.c
-@@ -309,7 +309,6 @@ nfsd_file_alloc(struct nfsd_file_lookup_key *key, unsigned int may)
- 				__set_bit(NFSD_FILE_BREAK_READ, &nf->nf_flags);
- 		}
- 		nf->nf_mark = NULL;
--		trace_nfsd_file_alloc(nf);
- 	}
- 	return nf;
- }
-@@ -1150,6 +1149,7 @@ nfsd_file_do_acquire(struct svc_rqst *rqstp, struct svc_fh *fhp,
- 	return status;
- 
- open_file:
-+	trace_nfsd_file_alloc(nf);
- 	nf->nf_mark = nfsd_file_mark_find_or_create(nf);
- 	if (nf->nf_mark) {
- 		if (open) {
 diff --git a/fs/nfsd/trace.h b/fs/nfsd/trace.h
-index de765c583c62..c4582bdf988a 100644
+index c4582bdf988a..22358c38691b 100644
 --- a/fs/nfsd/trace.h
 +++ b/fs/nfsd/trace.h
-@@ -730,12 +730,35 @@ DEFINE_EVENT(nfsd_file_class, name, \
- 	TP_PROTO(struct nfsd_file *nf), \
- 	TP_ARGS(nf))
+@@ -9,6 +9,7 @@
+ #define _NFSD_TRACE_H
  
--DEFINE_NFSD_FILE_EVENT(nfsd_file_alloc);
- DEFINE_NFSD_FILE_EVENT(nfsd_file_put_final);
- DEFINE_NFSD_FILE_EVENT(nfsd_file_unhash);
- DEFINE_NFSD_FILE_EVENT(nfsd_file_put);
- DEFINE_NFSD_FILE_EVENT(nfsd_file_unhash_and_dispose);
+ #include <linux/tracepoint.h>
++#include <trace/events/fs.h>
  
-+TRACE_EVENT(nfsd_file_alloc,
+ #include "export.h"
+ #include "nfsfh.h"
+@@ -974,22 +975,28 @@ TRACE_EVENT(nfsd_file_is_cached,
+ );
+ 
+ TRACE_EVENT(nfsd_file_fsnotify_handle_event,
+-	TP_PROTO(struct inode *inode, u32 mask),
 +	TP_PROTO(
-+		const struct nfsd_file *nf
++		const struct inode *inode,
++		u32 mask
 +	),
-+	TP_ARGS(nf),
-+	TP_STRUCT__entry(
-+		__field(const void *, nf_inode)
-+		__field(unsigned long, nf_flags)
-+		__field(unsigned long, nf_may)
-+		__field(unsigned int, nf_ref)
-+	),
-+	TP_fast_assign(
-+		__entry->nf_inode = nf->nf_inode;
-+		__entry->nf_flags = nf->nf_flags;
-+		__entry->nf_ref = refcount_read(&nf->nf_ref);
-+		__entry->nf_may = nf->nf_may;
-+	),
-+	TP_printk("inode=%p ref=%u flags=%s may=%s",
-+		__entry->nf_inode, __entry->nf_ref,
-+		show_nf_flags(__entry->nf_flags),
-+		show_nfsd_may_flags(__entry->nf_may)
+ 	TP_ARGS(inode, mask),
+ 	TP_STRUCT__entry(
+-		__field(struct inode *, inode)
++		__field(const struct inode *, inode)
+ 		__field(unsigned int, nlink)
+-		__field(umode_t, mode)
+-		__field(u32, mask)
++		__field(unsigned long, mode)
++		__field(unsigned long, mask)
+ 	),
+ 	TP_fast_assign(
+ 		__entry->inode = inode;
+ 		__entry->nlink = inode->i_nlink;
+-		__entry->mode = inode->i_mode;
++		__entry->mode = inode->i_mode & S_IFMT;
+ 		__entry->mask = mask;
+ 	),
+-	TP_printk("inode=%p nlink=%u mode=0%ho mask=0x%x", __entry->inode,
+-			__entry->nlink, __entry->mode, __entry->mask)
++	TP_printk("inode=%p nlink=%u mode=%s mask=%s",
++		__entry->inode, __entry->nlink,
++		show_fs_file_type(__entry->mode),
++		show_fs_notify_flags(__entry->mask)
 +	)
-+);
+ );
+ 
+ DECLARE_EVENT_CLASS(nfsd_file_gc_class,
+diff --git a/include/trace/events/fs.h b/include/trace/events/fs.h
+index 738b97f22f36..3c75f85086a2 100644
+--- a/include/trace/events/fs.h
++++ b/include/trace/events/fs.h
+@@ -120,3 +120,40 @@
+ 		{ LOOKUP_BENEATH,	"BENEATH" }, \
+ 		{ LOOKUP_IN_ROOT,	"IN_ROOT" }, \
+ 		{ LOOKUP_CACHED,	"CACHED" })
 +
- TRACE_EVENT(nfsd_file_acquire,
- 	TP_PROTO(
- 		const struct svc_rqst *rqstp,
++#define show_fs_file_type(x) \
++	__print_symbolic(x, \
++		{ S_IFLNK,		"LNK" }, \
++		{ S_IFREG,		"REG" }, \
++		{ S_IFDIR,		"DIR" }, \
++		{ S_IFCHR,		"CHR" }, \
++		{ S_IFBLK,		"BLK" }, \
++		{ S_IFIFO,		"FIFO" }, \
++		{ S_IFSOCK,		"SOCK" })
++
++#define show_fs_notify_flags(x) \
++	__print_flags(x, "|", \
++		{ FS_ACCESS,		"ACCESS" }, \
++		{ FS_MODIFY,		"MODIFY" }, \
++		{ FS_ATTRIB,		"ATTRIB" }, \
++		{ FS_CLOSE_WRITE,	"CLOSE_WRITE" }, \
++		{ FS_CLOSE_NOWRITE,	"CLOSE_NOWRITE" }, \
++		{ FS_OPEN,		"OPEN" }, \
++		{ FS_MOVED_FROM,	"MOVED_FROM" }, \
++		{ FS_MOVED_TO,		"MOVED_TO" }, \
++		{ FS_CREATE,		"CREATE" }, \
++		{ FS_DELETE,		"DELETE" }, \
++		{ FS_DELETE_SELF,	"DELETE_SELF" }, \
++		{ FS_MOVE_SELF,		"MOVE_SELF" }, \
++		{ FS_OPEN_EXEC,		"OPEN_EXEC" }, \
++		{ FS_UNMOUNT,		"UNMOUNT" }, \
++		{ FS_Q_OVERFLOW,	"Q_OVERFLOW" }, \
++		{ FS_ERROR,		"ERROR" }, \
++		{ FS_IN_IGNORED,	"IN_IGNORED" }, \
++		{ FS_OPEN_PERM,		"OPEN_PERM" }, \
++		{ FS_ACCESS_PERM,	"ACCESS_PERM" }, \
++		{ FS_OPEN_EXEC_PERM,	"OPEN_EXEC_PERM" }, \
++		{ FS_EVENT_ON_CHILD,	"EVENT_ON_CHILD" }, \
++		{ FS_RENAME,		"RENAME" }, \
++		{ FS_DN_MULTISHOT,	"DN_MULTISHOT" }, \
++		{ FS_ISDIR,		"ISDIR" })
 
 
