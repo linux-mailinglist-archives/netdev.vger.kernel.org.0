@@ -2,51 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 60E9055D69B
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:17:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5976355C9EB
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 14:57:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244458AbiF1FKS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 01:10:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52972 "EHLO
+        id S243846AbiF1FLL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 01:11:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244423AbiF1FKP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 01:10:15 -0400
+        with ESMTP id S232767AbiF1FLJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 01:11:09 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EDE0A19E;
-        Mon, 27 Jun 2022 22:10:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0AC09FCF;
+        Mon, 27 Jun 2022 22:11:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 104D46179B;
-        Tue, 28 Jun 2022 05:10:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 58B6CC341CD;
-        Tue, 28 Jun 2022 05:10:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D08B61784;
+        Tue, 28 Jun 2022 05:11:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 205F3C341C6;
+        Tue, 28 Jun 2022 05:11:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656393013;
-        bh=/IpUtgE84LF5Tp1Ba3s8+JPpbDXqgbqnLSAezRyQKUM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=D2FBeBMhn+BfZHvP5t8Y5zCGQt+pTVohGje06x8lylXrFjm/IPp92BhOQJslUeBP1
-         FcfyO7oCpA74Q5Ito6DsGE783Cm6l6N3xLkG2/yik3rB/R89RA/8Jcuv1FD30qQeue
-         QdTNXVUPnlKsRcyt2QgRwkdG92ikoIjayWnRjYMX3fHPJ4sd0c2o+n2c2lRrKpNMdr
-         3XaIP9+a9HhxX60konW1d2Vow9rTiuRGy1mv+byxm+5k+jEKP1Iu3zGY1heNLwrovE
-         SM90Z4yD2WOKBGmu3uXi80SRN6fGoQx/0Uc4QKajrj2L7tsuOvybWAGlImeouy6aPl
-         0u/fPFyyjlZkA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3DD3FE49FA1;
-        Tue, 28 Jun 2022 05:10:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1656393067;
+        bh=gRITldOs4wFjJJ/Yq+ASt8gLd+uLO3gYyD/lQOZHrqc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=hg/plIKhrf8qrDSTcJYKhT1RGIr4RqDfcYcCSW3eMK10FeVlkwyDLCHfbgMiqB5Wk
+         JwEfFYAqNZPov9K81/sAvff2wXm1RhWjJqa+qTglgwHESfNDkupNnOCaI6JgzxCzzs
+         ujt4GgSegDKOxupcXcQVtmk09aI4OOXHGrluD5Xc5BIjjJwbBBNF9Vh/5G9tsYc8pW
+         VJcUmpyr09GOSzm8ixltVD+kTm7i3E+6KfuP8S2nMTVPJkIpeSMI64hUEcYByaXTVH
+         cimlXr7ypucRtrCfLcZFZCYlkffbUcXuxWH+9XxWotNFPWBaUfx6bvKa1IrKpGP2BG
+         T/b3TtnqHGKQA==
+Date:   Mon, 27 Jun 2022 22:11:05 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jianglei Nie <niejianglei2021@163.com>
+Cc:     linux@armlinux.org.uk, andrew@lunn.ch, hkallweit1@gmail.com,
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] net: sfp: fix memory leak in sfp_probe()
+Message-ID: <20220627221105.5a5feb7c@kernel.org>
+In-Reply-To: <20220624044941.1807118-1-niejianglei2021@163.com>
+References: <20220624044941.1807118-1-niejianglei2021@163.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] octeon_ep: use bitwise AND
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165639301324.30025.4937002197818933977.git-patchwork-notify@kernel.org>
-Date:   Tue, 28 Jun 2022 05:10:13 +0000
-References: <20220626132947.3992423-1-sshedi@vmware.com>
-In-Reply-To: <20220626132947.3992423-1-sshedi@vmware.com>
-To:     Shreenidhi Shedi <yesshedi@gmail.com>
-Cc:     vburru@marvell.com, aayarekar@marvell.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, sshedi@vmware.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -57,28 +54,11 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Sun, 26 Jun 2022 18:59:47 +0530 you wrote:
-> From: Shreenidhi Shedi <sshedi@vmware.com>
+On Fri, 24 Jun 2022 12:49:41 +0800 Jianglei Nie wrote:
+> sfp_probe() allocates a memory chunk from sfp with sfp_alloc(). When
+> devm_add_action() fails, sfp is not freed, which leads to a memory leak.
 > 
-> This should be bitwise operator not logical.
-> 
-> Fixes: 862cd659a6fb ("octeon_ep: Add driver framework and device initialization")
-> Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
-> 
-> [...]
+> We should use devm_add_action_or_reset() instead of devm_add_action().
 
-Here is the summary with links:
-  - octeon_ep: use bitwise AND
-    https://git.kernel.org/netdev/net/c/4bbfed9112ca
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Please add a Fixes tag referencing the commit which added the bug.
+The subject for the next version should be start with [PATCH net v3].
