@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EC0D55EE51
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 21:59:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 142AC55EE25
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 21:51:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232823AbiF1TvZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 15:51:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45866 "EHLO
+        id S232273AbiF1Tu7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 15:50:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229829AbiF1Tuu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 15:50:50 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D570523BD9;
-        Tue, 28 Jun 2022 12:49:16 -0700 (PDT)
+        with ESMTP id S229948AbiF1Tut (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 15:50:49 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FE9F3A704;
+        Tue, 28 Jun 2022 12:49:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656445757; x=1687981757;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=Xomyw9XXjXPC+yIudFgA3BYxFaSNAAIjzdcntCkl8mQ=;
-  b=LgX8BzhHMafidNw8qU9f5A9LAJ7o7J2yAsIN+Od8aezUFqUBE74Ow6Bg
-   FvQQyWwVufigfQEw4ZxNKlxsVK4vPSl+Thd1E4EUSTI0EyYLPPdS0ON/B
-   OQTcY65zMalamCAbnAu8tezvHcFsvKGn2S5C+3cETPM+ZitEanUL0YYKe
-   n8DkZtCgiPhJHjpFvWBxAaIuIjDjlV6BBmFIAxHyl6hUCfcNMIixt4GeD
-   8tGS/BHRYUcvsqC7pNAFewe4/6ZhiPagVItsNScwI1WE1IfKEORf/v9He
-   TvH3Sd3Hf4+n9hSN9TfQ/8SiG/ji8JnCtNPAqCewu+93mgnwSpHbunmKY
+  t=1656445741; x=1687981741;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=pQr3fCJrk4WXxCYLImyg32mOo+swJBRtDbJmx5XeYg8=;
+  b=Qb6+wwwKBBVgNEnIllsp5ZfJL5X/aHS/ynQdSeTc2vkfZo0G+ko16ko2
+   FALj+HTaU1bgc1/Aw1AqHUEJ4iWGC9eDKLHKKlrYsTK0Z0lPIIDE6wfZH
+   zuwZ/KS87FATbzBGKBeKP53AgjRILlCltugzzaKp/APDStQNhpXSKGbkC
+   ZXlyc7dvCIy5z2II8MnsLs+1H0uW082avgozwOJGmixmutV1u5SGRUJPq
+   BCgNLCEdqafcN4J6+SyHz0qH8wJ0aK1Xe/6EsOFdqt8N3vz5y0QDwgGp+
+   z6fQevnMjuRZXp07EsFeBfD/zJQQ+X3Ec7XFTCVl2C9KDb+xKrUf/xN49
    g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="343523113"
+X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="307319464"
 X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
-   d="scan'208";a="343523113"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 12:49:00 -0700
+   d="scan'208";a="307319464"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 12:49:01 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
-   d="scan'208";a="767287992"
+   d="scan'208";a="594927452"
 Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga005.jf.intel.com with ESMTP; 28 Jun 2022 12:48:55 -0700
+  by fmsmga007.fm.intel.com with ESMTP; 28 Jun 2022 12:48:56 -0700
 Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 25SJmr90022013;
-        Tue, 28 Jun 2022 20:48:53 +0100
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 25SJmr91022013;
+        Tue, 28 Jun 2022 20:48:55 +0100
 From:   Alexander Lobakin <alexandr.lobakin@intel.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -64,296 +64,312 @@ Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
         Willem de Bruijn <willemb@google.com>, bpf@vger.kernel.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         xdp-hints@xdp-project.net
-Subject: [PATCH RFC bpf-next 00/52] bpf, xdp: introduce and use Generic Hints/metadata
-Date:   Tue, 28 Jun 2022 21:47:20 +0200
-Message-Id: <20220628194812.1453059-1-alexandr.lobakin@intel.com>
+Subject: [PATCH RFC bpf-next 01/52] libbpf: factor out BTF loading from load_module_btfs()
+Date:   Tue, 28 Jun 2022 21:47:21 +0200
+Message-Id: <20220628194812.1453059-2-alexandr.lobakin@intel.com>
 X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220628194812.1453059-1-alexandr.lobakin@intel.com>
+References: <20220628194812.1453059-1-alexandr.lobakin@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This RFC is to give the whole picture. It will most likely be split
-onto several series, maybe even merge cycles. See the "table of
-contents" below.
+From: Larysa Zaremba <larysa.zaremba@intel.com>
 
-The series adds ability to pass different frame
-details/parameters/parameters used by most of NICs and the kernel
-stack (in skbs), not essential, but highly wanted, such as:
+In order to be able to reuse BTF loading logics, move it to the new
+btf_load_next_with_info() and call it from load_module_btfs()
+instead.
+To still be able to get the ID, introduce the ID field to the
+userspace struct btf and return it via the new btf_obj_id().
+To still be able to use bpf_btf_info::name as a string, locally add
+a counterpart to ptr_to_u64() - u64_to_ptr() and use it to filter
+vmlinux/module BTFs.
+Also, add a definition for easy bpf_btf_info name declaration and
+make btf_get_from_fd() static as it's now used only in btf.c.
 
-* checksum value, status (Rx) or command (Tx);
-* hash value and type/level (Rx);
-* queue number (Rx);
-* timestamps;
-* and so on.
+Signed-off-by: Larysa Zaremba <larysa.zaremba@intel.com>
+Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+---
+ tools/lib/bpf/btf.c             | 110 +++++++++++++++++++++++++++++++-
+ tools/lib/bpf/libbpf.c          |  52 ++++-----------
+ tools/lib/bpf/libbpf_internal.h |   7 +-
+ 3 files changed, 126 insertions(+), 43 deletions(-)
 
-As XDP structures used to represent frames are as small as possible
-and must stay like that, it is done by using the already existing
-concept of metadata, i.e. some space right before a frame where BPF
-programs can put arbitrary data.
-
-Now, a NIC driver, or even a SmartNIC itself, can put those params
-there in a well-defined format. The format is fixed, but can be of
-several different types represented by structures, which definitions
-are available to the kernel, BPF programs and the userland.
-It is fixed due to it being almost a UAPI, and the exact format can
-be determined by reading the last 10 bytes of metadata. They contain
-a 2-byte magic ID to not confuse it with a non-compatible meta and
-a 8-byte combined BTF ID + type ID: the ID of the BTF where this
-structure is defined and the ID of that definition inside that BTF.
-Users can obtain BTF IDs by structure types using helpers available
-in the kernel, BPF (written by the CO-RE/verifier) and the userland
-(libbpf -> kernel call) and then rely on those ID when reading data
-to make sure whether they support it and what to do with it.
-Why separate magic and ID? The idea is to make different formats
-always contain the basic/"generic" structure embedded at the end.
-This way we can still benefit in purely generic consumers (like
-cpumap) while providing some "extra" data to those who support it.
-
-The enablement of this feature is controlled on attaching/replacing
-XDP program on an interface with two new parameters: that combined
-BTF+type ID and metadata threshold.
-The threshold specifies the minimum frame size which a driver (or
-NIC) should start composing metadata from. It is introduced instead
-of just false/true flag due to that often it's not worth it to spend
-cycles to fetch all that data for such small frames: let's say, it
-can be even faster to just calculate checksums for them on CPU
-rather than touch non-coherent DMA zone. Simple XDP_DROP case loses
-15 Mpps on 64 byte frames with enabled metadata, threshold can help
-mitigate that.
-
-The RFC can be divided into 8 parts:
-
-01-04: BTF ID hacking: here Larysa provides BPF programs with not
-       only type ID, but the ID of the BTF as well by using the
-       unused upper 32 bits.
-05-10: this provides in-kernel mechanisms for taking ID and
-       threshold from the userspace and passing it to the drivers.
-11-18: provides libbpf API to be able to specify those params from
-       the userspace, plus some small selftest to verify that both
-       the kernel and the userspace parts work.
-19-29: here the actual structure is defined, then the in-kernel
-       helpers and finally here comes the first consumer: function
-       used to convert &xdp_frame to &sk_buff now will be trying
-       to parse metadata. The affected users are cpumap and veth.
-30-36: here I try to benefit from the metadata in cpumap even more
-       by switching it to GRO. Now that we have checksums from NIC
-       available... but even with no meta it gives some fair
-       improvements.
-37-43: enabling building generic metadata on Generic/skb path. Since
-       skbs already have all those fields, it's not a problem to do
-       this in here, plus allows to benefit from it on interfaces
-       not supporting meta yet.
-44-47: ice driver part, including enabling prog hot-swap;
-48-52: adds a complex selftest to verify everything works. Can be
-       used as a sample as well, showing how to work with metadata
-       in BPF programs and how to configure it from the userspace.
-
-Please refer to the actual commit messages where some precise
-implementation details might be explained.
-Nearly 20 of 52 are various cleanups and prereqs, as usually.
-
-Perf figures were taken on cpumap redirect from the ice interface
-(driver-side XDP), redirecting the traffic within the same node.
-
-Frame size /   64/42  128/20  256/8  512/4  1024/2  1532/1
-thread num
-
-meta off       30022  31350   21993  12144  6374    3610
-meta on        33059  28502   21503  12146  6380    3610
-GRO meta off   30020  31822   21970  12145  6384    3610
-GRO meta on    34736  28848   21566  12144  6381    3610
-
-Yes, redirect between the nodes plays awfully with the metadata
-composed by the driver:
-
-meta off       21449  18078   16897  11820  6383    3610
-meta on        16956  19004   14337  8228   5683    2822
-GRO meta off   22539  19129   16304  11659  6381    3592
-GRO meta on    17047  20366   15435  8878   5600    2753
-
-Questions still open:
-
-* the actual generic structure: it must have all the fields used
-  oftenly and by the majority of NICs. It can always be expanded
-  later on (note that the structure grows to the left), but the
-  less often UAPI is modified, the better (less compat pain);
-* ability to specify the exact fields to fill by the driver, e.g.
-  flags bitmap passed from the userspace. In theory it can be more
-  optimal to not spend cycles on data we don't need, but at the
-  same time increases the complexity of the whole concept (e.g. it
-  will be more problematic to unify drivers' routines for collecting
-  data from descriptors to metadata and to skbs);
-* there was an idea to be able to specify from the userspace the
-  desired cacheline offset, so that [the wanted fields of] metadata
-  and the packet headers would lay in the same CL. Can't be
-  implemented in Generic/skb XDP and ice has some troubles with it
-  too;
-* lacks AF_XDP/XSk perf numbers and different other scenarios in
-  general, is the current implementation optimal for them?
-* metadata threshold and everything else present in this
-  implementation.
-
-The RFC is also available on my open GitHub[0].
-
-Merry and long review and discussion, enjoy!
-
-[0] https://github.com/alobakin/linux/tree/xdp_hints
-
-Alexander Lobakin (46):
-  libbpf: add function to get the pair BTF ID + type ID for a given type
-  net, xdp: decouple XDP code from the core networking code
-  bpf: pass a pointer to union bpf_attr to bpf_link_ops::update_prog()
-  net, xdp: remove redundant arguments from dev_xdp_{at,de}tach_link()
-  net, xdp: factor out XDP install arguments to a separate structure
-  net, xdp: add ability to specify BTF ID for XDP metadata
-  net, xdp: add ability to specify frame size threshold for XDP metadata
-  libbpf: factor out __bpf_set_link_xdp_fd_replace() args into a struct
-  libbpf: add ability to set the BTF/type ID on setting XDP prog
-  libbpf: add ability to set the meta threshold on setting XDP prog
-  libbpf: pass &bpf_link_create_opts directly to
-    bpf_program__attach_fd()
-  libbpf: add bpf_program__attach_xdp_opts()
-  selftests/bpf: expand xdp_link to check that setting meta opts works
-  samples/bpf: pass a struct to sample_install_xdp()
-  samples/bpf: add ability to specify metadata threshold
-  stddef: make __struct_group() UAPI C++-friendly
-  net, xdp: move XDP metadata helpers into new xdp_meta.h
-  net, xdp: allow metadata > 32
-  net, skbuff: add ability to skip skb metadata comparison
-  net, skbuff: constify the @skb argument of skb_hwtstamps()
-  net, xdp: add basic generic metadata accessors
-  bpf, btf: add a pair of function to work with the BTF ID + type ID
-    pair
-  net, xdp: add &sk_buff <-> &xdp_meta_generic converters
-  net, xdp: prefetch data a bit when building an skb from an &xdp_frame
-  net, xdp: try to fill skb fields when converting from an &xdp_frame
-  net, gro: decouple GRO from the NAPI layer
-  net, gro: expose some GRO API to use outside of NAPI
-  bpf, cpumap: switch to GRO from netif_receive_skb_list()
-  bpf, cpumap: add option to set a timeout for deferred flush
-  samples/bpf: add 'timeout' option to xdp_redirect_cpu
-  net, skbuff: introduce napi_skb_cache_get_bulk()
-  bpf, cpumap: switch to napi_skb_cache_get_bulk()
-  rcupdate: fix access helpers for incomplete struct pointers on GCC <
-    10
-  net, xdp: remove unused xdp_attachment_info::flags
-  net, xdp: make &xdp_attachment_info a bit more useful in drivers
-  net, xdp: add an RCU version of xdp_attachment_setup()
-  net, xdp: replace net_device::xdp_prog pointer with
-    &xdp_attachment_info
-  net, xdp: shortcut skb->dev in bpf_prog_run_generic_xdp()
-  net, xdp: build XDP generic metadata on Generic (skb) XDP path
-  net, ice: allow XDP prog hot-swapping
-  net, ice: consolidate all skb fields processing
-  net, ice: use an onstack &xdp_meta_generic_rx to store HW frame info
-  net, ice: build XDP generic metadata
-  libbpf: compress Endianness ops with a macro
-  selftests/bpf: fix using test_xdp_meta BPF prog via skeleton infra
-  selftests/bpf: add XDP Generic Hints selftest
-
-Larysa Zaremba (5):
-  libbpf: factor out BTF loading from load_module_btfs()
-  libbpf: try to load vmlinux BTF from the kernel first
-  libbpf: patch module BTF ID into BPF insns
-  libbpf: add LE <--> CPU conversion helpers
-  libbpf: introduce a couple memory access helpers
-
-Michal Swiatkowski (1):
-  bpf, xdp: declare generic XDP metadata structure
-
- MAINTAINERS                                   |   5 +-
- drivers/net/ethernet/brocade/bna/bnad.c       |   1 +
- drivers/net/ethernet/cortina/gemini.c         |   1 +
- drivers/net/ethernet/intel/ice/ice.h          |  16 +-
- drivers/net/ethernet/intel/ice/ice_lib.c      |   4 +-
- drivers/net/ethernet/intel/ice/ice_main.c     |  79 +-
- drivers/net/ethernet/intel/ice/ice_ptp.c      |  19 +-
- drivers/net/ethernet/intel/ice/ice_ptp.h      |  17 +-
- drivers/net/ethernet/intel/ice/ice_txrx.c     |  51 +-
- drivers/net/ethernet/intel/ice/ice_txrx.h     |   3 +-
- drivers/net/ethernet/intel/ice/ice_txrx_lib.c | 154 +--
- drivers/net/ethernet/intel/ice/ice_txrx_lib.h |  88 +-
- drivers/net/ethernet/intel/ice/ice_xsk.c      |  26 +-
- .../ethernet/mellanox/mlx5/core/en/xsk/rx.c   |   1 +
- drivers/net/ethernet/netronome/nfp/nfd3/xsk.c |   1 +
- drivers/net/tun.c                             |   2 +-
- include/linux/bpf.h                           |   3 +-
- include/linux/btf.h                           |  13 +
- include/linux/filter.h                        |   2 +
- include/linux/netdevice.h                     |  41 +-
- include/linux/rcupdate.h                      |  37 +-
- include/linux/skbuff.h                        |  35 +-
- include/net/gro.h                             |  53 +-
- include/net/xdp.h                             |  34 +-
- include/net/xdp_meta.h                        | 398 ++++++++
- include/uapi/linux/bpf.h                      | 194 ++++
- include/uapi/linux/if_link.h                  |   2 +
- include/uapi/linux/stddef.h                   |  12 +-
- kernel/bpf/bpf_iter.c                         |   1 +
- kernel/bpf/btf.c                              | 133 ++-
- kernel/bpf/cgroup.c                           |   4 +-
- kernel/bpf/cpumap.c                           |  80 +-
- kernel/bpf/net_namespace.c                    |   1 +
- kernel/bpf/syscall.c                          |   4 +-
- net/bpf/Makefile                              |   5 +-
- net/{core/xdp.c => bpf/core.c}                | 214 +++-
- net/bpf/dev.c                                 | 871 +++++++++++++++++
- net/bpf/prog_ops.c                            | 912 ++++++++++++++++++
- net/bpf/test_run.c                            |   2 +-
- net/core/Makefile                             |   2 +-
- net/core/dev.c                                | 869 +----------------
- net/core/dev.h                                |   4 -
- net/core/filter.c                             | 883 +----------------
- net/core/gro.c                                | 120 ++-
- net/core/rtnetlink.c                          |  24 +-
- net/core/skbuff.c                             |  44 +
- net/packet/af_packet.c                        |   8 +-
- net/xdp/xsk.c                                 |   2 +-
- samples/bpf/xdp_redirect_cpu_user.c           |  44 +-
- samples/bpf/xdp_redirect_map_multi_user.c     |  26 +-
- samples/bpf/xdp_redirect_map_user.c           |  22 +-
- samples/bpf/xdp_redirect_user.c               |  21 +-
- samples/bpf/xdp_router_ipv4_user.c            |  20 +-
- samples/bpf/xdp_sample_user.c                 |  38 +-
- samples/bpf/xdp_sample_user.h                 |  11 +-
- tools/include/uapi/linux/bpf.h                | 194 ++++
- tools/include/uapi/linux/if_link.h            |   2 +
- tools/include/uapi/linux/stddef.h             |  50 +
- tools/lib/bpf/bpf.c                           |  22 +
- tools/lib/bpf/bpf.h                           |  22 +-
- tools/lib/bpf/bpf_core_read.h                 |   3 +-
- tools/lib/bpf/bpf_endian.h                    |  56 +-
- tools/lib/bpf/bpf_helpers.h                   |  64 ++
- tools/lib/bpf/btf.c                           | 142 ++-
- tools/lib/bpf/libbpf.c                        | 201 +++-
- tools/lib/bpf/libbpf.h                        |  30 +-
- tools/lib/bpf/libbpf.map                      |   2 +
- tools/lib/bpf/libbpf_internal.h               |   7 +-
- tools/lib/bpf/netlink.c                       |  81 +-
- tools/lib/bpf/relo_core.c                     |   8 +-
- tools/lib/bpf/relo_core.h                     |   1 +
- tools/testing/selftests/bpf/.gitignore        |   1 +
- tools/testing/selftests/bpf/Makefile          |   4 +-
- .../selftests/bpf/prog_tests/xdp_link.c       |  30 +-
- .../selftests/bpf/progs/test_xdp_meta.c       |  40 +-
- tools/testing/selftests/bpf/test_xdp_meta.c   | 294 ++++++
- tools/testing/selftests/bpf/test_xdp_meta.sh  |  59 +-
- 77 files changed, 4758 insertions(+), 2212 deletions(-)
- create mode 100644 include/net/xdp_meta.h
- rename net/{core/xdp.c => bpf/core.c} (73%)
- create mode 100644 net/bpf/dev.c
- create mode 100644 net/bpf/prog_ops.c
- create mode 100644 tools/include/uapi/linux/stddef.h
- create mode 100644 tools/testing/selftests/bpf/test_xdp_meta.c
-
---
+diff --git a/tools/lib/bpf/btf.c b/tools/lib/bpf/btf.c
+index ae1520f7e1b0..7e4dbf71fd52 100644
+--- a/tools/lib/bpf/btf.c
++++ b/tools/lib/bpf/btf.c
+@@ -121,6 +121,9 @@ struct btf {
+ 
+ 	/* Pointer size (in bytes) for a target architecture of this BTF */
+ 	int ptr_sz;
++
++	/* BTF object ID, valid for vmlinux and module BTF */
++	__u32 id;
+ };
+ 
+ static inline __u64 ptr_to_u64(const void *ptr)
+@@ -128,6 +131,11 @@ static inline __u64 ptr_to_u64(const void *ptr)
+ 	return (__u64) (unsigned long) ptr;
+ }
+ 
++static inline const void *u64_to_ptr(__u64 val)
++{
++	return (const void *)(unsigned long)val;
++}
++
+ /* Ensure given dynamically allocated memory region pointed to by *data* with
+  * capacity of *cap_cnt* elements each taking *elem_sz* bytes has enough
+  * memory to accommodate *add_cnt* new elements, assuming *cur_cnt* elements
+@@ -463,6 +471,11 @@ const struct btf *btf__base_btf(const struct btf *btf)
+ 	return btf->base_btf;
+ }
+ 
++__u32 btf_obj_id(const struct btf *btf)
++{
++	return btf->id;
++}
++
+ /* internal helper returning non-const pointer to a type */
+ struct btf_type *btf_type_by_id(const struct btf *btf, __u32 type_id)
+ {
+@@ -819,6 +832,7 @@ static struct btf *btf_new_empty(struct btf *base_btf)
+ 	btf->fd = -1;
+ 	btf->ptr_sz = sizeof(void *);
+ 	btf->swapped_endian = false;
++	btf->id = 0;
+ 
+ 	if (base_btf) {
+ 		btf->base_btf = base_btf;
+@@ -869,6 +883,7 @@ static struct btf *btf_new(const void *data, __u32 size, struct btf *base_btf)
+ 	btf->start_id = 1;
+ 	btf->start_str_off = 0;
+ 	btf->fd = -1;
++	btf->id = 0;
+ 
+ 	if (base_btf) {
+ 		btf->base_btf = base_btf;
+@@ -1334,7 +1349,7 @@ const char *btf__name_by_offset(const struct btf *btf, __u32 offset)
+ 	return btf__str_by_offset(btf, offset);
+ }
+ 
+-struct btf *btf_get_from_fd(int btf_fd, struct btf *base_btf)
++static struct btf *btf_get_from_fd(int btf_fd, struct btf *base_btf)
+ {
+ 	struct bpf_btf_info btf_info;
+ 	__u32 len = sizeof(btf_info);
+@@ -1382,6 +1397,8 @@ struct btf *btf_get_from_fd(int btf_fd, struct btf *base_btf)
+ 	}
+ 
+ 	btf = btf_new(ptr, btf_info.btf_size, base_btf);
++	if (!IS_ERR_OR_NULL(btf))
++		btf->id = btf_info.id;
+ 
+ exit_free:
+ 	free(ptr);
+@@ -4819,6 +4836,97 @@ static int btf_dedup_remap_types(struct btf_dedup *d)
+ 	return 0;
+ }
+ 
++/**
++ * btf_load_next_with_info - get first BTF with ID bigger than the input one.
++ * @start_id: ID to start the search from
++ * @info: buffer to put BTF info to
++ * @base_btf: base BTF, can be %NULL if @vmlinux is true
++ * @vmlinux: true to look for the vmlinux BTF instead of a module BTF
++ *
++ * Obtains the first BTF with the ID bigger than the @start_id. @info::name and
++ * @info::name_len must be initialized by the caller. The default name buffer
++ * size is %BTF_NAME_BUF_LEN.
++ * FD must be closed after BTF is no longer needed. If @vmlinux is true, FD can
++ * be closed and set to -1 right away without preventing later usage.
++ *
++ * Returns pointer to the BTF loaded from the kernel or an error pointer.
++ */
++struct btf *btf_load_next_with_info(__u32 start_id, struct bpf_btf_info *info,
++				    struct btf *base_btf, bool vmlinux)
++{
++	__u32 name_len = info->name_len;
++	__u64 name = info->name;
++	const char *name_str;
++	__u32 id = start_id;
++
++	if (!name)
++		return ERR_PTR(-EINVAL);
++
++	name_str = u64_to_ptr(name);
++
++	while (true) {
++		__u32 len = sizeof(*info);
++		struct btf *btf;
++		int err, fd;
++
++		err = bpf_btf_get_next_id(id, &id);
++		if (err) {
++			err = -errno;
++			if (err != -ENOENT)
++				pr_warn("failed to iterate BTF objects: %d\n",
++					err);
++			return ERR_PTR(err);
++		}
++
++		fd = bpf_btf_get_fd_by_id(id);
++		if (fd < 0) {
++			err = -errno;
++			if (err == -ENOENT)
++				/* Expected race: non-vmlinux BTF was
++				 * unloaded
++				 */
++				continue;
++			pr_warn("failed to get BTF object #%d FD: %d\n",
++				id, err);
++			return ERR_PTR(err);
++		}
++
++		memset(info, 0, len);
++		info->name = name;
++		info->name_len = name_len;
++
++		err = bpf_obj_get_info_by_fd(fd, info, &len);
++		if (err) {
++			err = -errno;
++			pr_warn("failed to get BTF object #%d info: %d\n",
++				id, err);
++			goto err_out;
++		}
++
++		/* Filter BTFs */
++		if (!info->kernel_btf ||
++		    !strcmp(name_str, "vmlinux") != vmlinux) {
++			close(fd);
++			continue;
++		}
++
++		btf = btf_get_from_fd(fd, base_btf);
++		err = libbpf_get_error(btf);
++		if (err) {
++			pr_warn("failed to load module [%s]'s BTF object #%d: %d\n",
++				name_str, id, err);
++			goto err_out;
++		}
++
++		btf->fd = fd;
++		return btf;
++
++err_out:
++		close(fd);
++		return ERR_PTR(err);
++	}
++}
++
+ /*
+  * Probe few well-known locations for vmlinux kernel image and try to load BTF
+  * data out of it to use for target BTF.
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 335467ece75f..8e27bad5e80f 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -5559,11 +5559,11 @@ int bpf_core_add_cands(struct bpf_core_cand *local_cand,
+ 
+ static int load_module_btfs(struct bpf_object *obj)
+ {
+-	struct bpf_btf_info info;
++	char name[BTF_NAME_BUF_LEN] = { };
+ 	struct module_btf *mod_btf;
++	struct bpf_btf_info info;
+ 	struct btf *btf;
+-	char name[64];
+-	__u32 id = 0, len;
++	__u32 id = 0;
+ 	int err, fd;
+ 
+ 	if (obj->btf_modules_loaded)
+@@ -5580,49 +5580,19 @@ static int load_module_btfs(struct bpf_object *obj)
+ 		return 0;
+ 
+ 	while (true) {
+-		err = bpf_btf_get_next_id(id, &id);
+-		if (err && errno == ENOENT)
+-			return 0;
+-		if (err) {
+-			err = -errno;
+-			pr_warn("failed to iterate BTF objects: %d\n", err);
+-			return err;
+-		}
+-
+-		fd = bpf_btf_get_fd_by_id(id);
+-		if (fd < 0) {
+-			if (errno == ENOENT)
+-				continue; /* expected race: BTF was unloaded */
+-			err = -errno;
+-			pr_warn("failed to get BTF object #%d FD: %d\n", id, err);
+-			return err;
+-		}
+-
+-		len = sizeof(info);
+ 		memset(&info, 0, sizeof(info));
+ 		info.name = ptr_to_u64(name);
+ 		info.name_len = sizeof(name);
+ 
+-		err = bpf_obj_get_info_by_fd(fd, &info, &len);
+-		if (err) {
+-			err = -errno;
+-			pr_warn("failed to get BTF object #%d info: %d\n", id, err);
+-			goto err_out;
+-		}
+-
+-		/* ignore non-module BTFs */
+-		if (!info.kernel_btf || strcmp(name, "vmlinux") == 0) {
+-			close(fd);
+-			continue;
+-		}
+-
+-		btf = btf_get_from_fd(fd, obj->btf_vmlinux);
++		btf = btf_load_next_with_info(id, &info, obj->btf_vmlinux,
++					      false);
+ 		err = libbpf_get_error(btf);
+-		if (err) {
+-			pr_warn("failed to load module [%s]'s BTF object #%d: %d\n",
+-				name, id, err);
+-			goto err_out;
+-		}
++		if (err)
++			return err == -ENOENT ? 0 : err;
++
++		fd = btf__fd(btf);
++		btf__set_fd(btf, -1);
++		id = btf_obj_id(btf);
+ 
+ 		err = libbpf_ensure_mem((void **)&obj->btf_modules, &obj->btf_module_cap,
+ 				        sizeof(*obj->btf_modules), obj->btf_module_cnt + 1);
+diff --git a/tools/lib/bpf/libbpf_internal.h b/tools/lib/bpf/libbpf_internal.h
+index a1ad145ffa74..9b0bbd4a5f64 100644
+--- a/tools/lib/bpf/libbpf_internal.h
++++ b/tools/lib/bpf/libbpf_internal.h
+@@ -366,9 +366,14 @@ int libbpf__load_raw_btf(const char *raw_types, size_t types_len,
+ 			 const char *str_sec, size_t str_len);
+ int btf_load_into_kernel(struct btf *btf, char *log_buf, size_t log_sz, __u32 log_level);
+ 
+-struct btf *btf_get_from_fd(int btf_fd, struct btf *base_btf);
+ void btf_get_kernel_prefix_kind(enum bpf_attach_type attach_type,
+ 				const char **prefix, int *kind);
++__u32 btf_obj_id(const struct btf *btf);
++
++#define BTF_NAME_BUF_LEN 64
++
++struct btf *btf_load_next_with_info(__u32 start_id, struct bpf_btf_info *info,
++				    struct btf *base_btf, bool vmlinux);
+ 
+ struct btf_ext_info {
+ 	/*
+-- 
 2.36.1
+
