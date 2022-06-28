@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C463355EAC9
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 19:15:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DFD3055EAC7
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 19:15:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232602AbiF1ROr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 13:14:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55540 "EHLO
+        id S230393AbiF1RO7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 13:14:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230296AbiF1ROk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 13:14:40 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E94B52CCA0;
-        Tue, 28 Jun 2022 10:14:39 -0700 (PDT)
+        with ESMTP id S232609AbiF1RO4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 13:14:56 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B06F2CCBD;
+        Tue, 28 Jun 2022 10:14:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1656436480; x=1687972480;
+  t=1656436493; x=1687972493;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=4aUB8XdEZI44hkwWiLzjnR4eIChSP8Np2Da2KuqwoQs=;
-  b=xDcJ9HlJSG4KI9L0bJJnBpWiFTp+4EyBmNYVSrwGmPmI68pd08MMpK92
-   NhrjL/ojAzAjyYO8xiIFlWyvjf4cY0kRnotk1yIzOgRjr+r5OTFfs8Wac
-   SEKSdFGQfeTMoqHBqf6m5a/qu35Ny1nnnFlsKfUb+sZeW1kbDobtx8Ocs
-   SSNf0cgcCCRb7TUo4ESBmkjdVCLGppJ+/7Ed/rMB2jLwp5ngnhQFIOOo6
-   1W/OQnq1lYQn3GShwq94+//XH4WeqDP0t5DN4U6QsBg/7COFDUOFJ+dxB
-   q7kDI782TZV9W5MR8xQN0FT4Q4w2MSwW15VbhnGBlzsGomffeHNwavSzn
-   A==;
+  bh=wVM6MHqJ/3CzokUzpdzu9UEnvRuwP6DusvD+3MpK4b8=;
+  b=E4r8dRUEw/gMPDYQFoN2ZSbTH252rgaDBnCgc6r3znB9p1sjO3dgg3bn
+   4YSwvepjggWsLYJMmyyGkos4w7/HEt05sYo6+x0/YmIbyyoJQJdkvnIsx
+   L3M//LJc7X3eakb3zelxcul1gn3ZuxYqJt3TSLS7wkm6SirJfaU6X/ii4
+   Zwtqa68Vbuh7o3284en2V/YZTbbadK2xMzPfXoCTuM7YYRL7Lv23H4f1X
+   P7AAbzJsCYKdLxUdE1Igj6LQMS0hTX1/wJV572Hu2aeVUgoTNyYf+bWDu
+   z3ulfSQwqa0fhcGKE4VVFn+2yo5takAWXRb0GD4wtVayZ5su9oWgi2kwL
+   g==;
 X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
-   d="scan'208";a="169967896"
+   d="scan'208";a="102138314"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 28 Jun 2022 10:14:40 -0700
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 28 Jun 2022 10:14:52 -0700
 Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 28 Jun 2022 10:14:36 -0700
+ 15.1.2375.17; Tue, 28 Jun 2022 10:14:49 -0700
 Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Tue, 28 Jun 2022 10:14:25 -0700
+ 15.1.2375.17 via Frontend Transport; Tue, 28 Jun 2022 10:14:38 -0700
 From:   Arun Ramadoss <arun.ramadoss@microchip.com>
 To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
 CC:     Woojung Huh <woojung.huh@microchip.com>,
@@ -50,9 +50,9 @@ CC:     Woojung Huh <woojung.huh@microchip.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         "Russell King" <linux@armlinux.org.uk>
-Subject: [Patch net-next 3/7] net: dsa: microchip: move ksz8->shifts to ksz_common
-Date:   Tue, 28 Jun 2022 22:43:25 +0530
-Message-ID: <20220628171329.25503-4-arun.ramadoss@microchip.com>
+Subject: [Patch net-next 4/7] net: dsa: microchip: remove the struct ksz8
+Date:   Tue, 28 Jun 2022 22:43:26 +0530
+Message-ID: <20220628171329.25503-5-arun.ramadoss@microchip.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220628171329.25503-1-arun.ramadoss@microchip.com>
 References: <20220628171329.25503-1-arun.ramadoss@microchip.com>
@@ -69,286 +69,113 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch moves ksz8->shifts from ksz8795.c to ksz_common.c. The shifts
-are dereferenced using dev->info->shifts.
+This patch removes the struct ksz8 from ksz8.h which is no longer
+needed. The platform bus specific details are now deferenced through
+dev->priv.
 
 Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
 ---
- drivers/net/dsa/microchip/ksz8.h       | 13 -------
- drivers/net/dsa/microchip/ksz8795.c    | 49 ++++----------------------
- drivers/net/dsa/microchip/ksz_common.c | 27 ++++++++++++++
- drivers/net/dsa/microchip/ksz_common.h | 13 +++++++
- 4 files changed, 46 insertions(+), 56 deletions(-)
+ drivers/net/dsa/microchip/ksz8.h        |  4 ----
+ drivers/net/dsa/microchip/ksz8863_smi.c | 17 +++--------------
+ drivers/net/dsa/microchip/ksz_spi.c     | 10 +---------
+ 3 files changed, 4 insertions(+), 27 deletions(-)
 
 diff --git a/drivers/net/dsa/microchip/ksz8.h b/drivers/net/dsa/microchip/ksz8.h
-index 22a047761aa5..a4a2dc889b30 100644
+index a4a2dc889b30..42c50cc4d853 100644
 --- a/drivers/net/dsa/microchip/ksz8.h
 +++ b/drivers/net/dsa/microchip/ksz8.h
-@@ -12,20 +12,7 @@
+@@ -12,10 +12,6 @@
  #include <net/dsa.h>
  #include "ksz_common.h"
  
--enum ksz_shifts {
--	VLAN_TABLE_MEMBERSHIP_S,
--	VLAN_TABLE,
--	STATIC_MAC_FWD_PORTS,
--	STATIC_MAC_FID,
--	DYNAMIC_MAC_ENTRIES_H,
--	DYNAMIC_MAC_ENTRIES,
--	DYNAMIC_MAC_FID,
--	DYNAMIC_MAC_TIMESTAMP,
--	DYNAMIC_MAC_SRC_PORT,
+-struct ksz8 {
+-	void *priv;
 -};
 -
- struct ksz8 {
--	const u8 *shifts;
- 	void *priv;
- };
+ int ksz8_setup(struct dsa_switch *ds);
+ u32 ksz8_get_port_addr(int port, int offset);
+ void ksz8_cfg_port_member(struct ksz_device *dev, int port, u8 member);
+diff --git a/drivers/net/dsa/microchip/ksz8863_smi.c b/drivers/net/dsa/microchip/ksz8863_smi.c
+index d71df05b8b7b..5247fdfb964d 100644
+--- a/drivers/net/dsa/microchip/ksz8863_smi.c
++++ b/drivers/net/dsa/microchip/ksz8863_smi.c
+@@ -26,11 +26,9 @@ static int ksz8863_mdio_read(void *ctx, const void *reg_buf, size_t reg_len,
+ 	struct mdio_device *mdev;
+ 	u8 reg = *(u8 *)reg_buf;
+ 	u8 *val = val_buf;
+-	struct ksz8 *ksz8;
+ 	int i, ret = 0;
  
-diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index 0c72ec50c04d..2b3db33c32ce 100644
---- a/drivers/net/dsa/microchip/ksz8795.c
-+++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -26,29 +26,6 @@
- #include "ksz8795_reg.h"
- #include "ksz8.h"
+-	ksz8 = dev->priv;
+-	mdev = ksz8->priv;
++	mdev = dev->priv;
  
--static const u8 ksz8795_shifts[] = {
--	[VLAN_TABLE_MEMBERSHIP_S]	= 7,
--	[VLAN_TABLE]			= 16,
--	[STATIC_MAC_FWD_PORTS]		= 16,
--	[STATIC_MAC_FID]		= 24,
--	[DYNAMIC_MAC_ENTRIES_H]		= 3,
--	[DYNAMIC_MAC_ENTRIES]		= 29,
--	[DYNAMIC_MAC_FID]		= 16,
--	[DYNAMIC_MAC_TIMESTAMP]		= 27,
--	[DYNAMIC_MAC_SRC_PORT]		= 24,
--};
--
--static u8 ksz8863_shifts[] = {
--	[VLAN_TABLE_MEMBERSHIP_S]	= 16,
--	[STATIC_MAC_FWD_PORTS]		= 16,
--	[STATIC_MAC_FID]		= 22,
--	[DYNAMIC_MAC_ENTRIES_H]		= 3,
--	[DYNAMIC_MAC_ENTRIES]		= 24,
--	[DYNAMIC_MAC_FID]		= 16,
--	[DYNAMIC_MAC_TIMESTAMP]		= 24,
--	[DYNAMIC_MAC_SRC_PORT]		= 20,
--};
--
- static bool ksz_is_ksz88x3(struct ksz_device *dev)
+ 	mutex_lock_nested(&mdev->bus->mdio_lock, MDIO_MUTEX_NESTED);
+ 	for (i = 0; i < val_len; i++) {
+@@ -55,13 +53,11 @@ static int ksz8863_mdio_write(void *ctx, const void *data, size_t count)
  {
- 	return dev->chip_id == 0x8830;
-@@ -374,7 +351,6 @@ static int ksz8_valid_dyn_entry(struct ksz_device *dev, u8 *data)
- int ksz8_r_dyn_mac_table(struct ksz_device *dev, u16 addr, u8 *mac_addr,
- 			 u8 *fid, u8 *src_port, u8 *timestamp, u16 *entries)
+ 	struct ksz_device *dev = ctx;
+ 	struct mdio_device *mdev;
+-	struct ksz8 *ksz8;
+ 	int i, ret = 0;
+ 	u32 reg;
+ 	u8 *val;
+ 
+-	ksz8 = dev->priv;
+-	mdev = ksz8->priv;
++	mdev = dev->priv;
+ 
+ 	val = (u8 *)(data + 4);
+ 	reg = *(u32 *)data;
+@@ -142,17 +138,10 @@ static int ksz8863_smi_probe(struct mdio_device *mdiodev)
  {
--	struct ksz8 *ksz8 = dev->priv;
- 	u32 data_hi, data_lo;
- 	const u8 *shifts;
- 	const u32 *masks;
-@@ -383,7 +359,7 @@ int ksz8_r_dyn_mac_table(struct ksz_device *dev, u16 addr, u8 *mac_addr,
- 	u8 data;
- 	int rc;
- 
--	shifts = ksz8->shifts;
-+	shifts = dev->info->shifts;
- 	masks = dev->info->masks;
- 	regs = dev->info->regs;
- 
-@@ -438,13 +414,12 @@ int ksz8_r_dyn_mac_table(struct ksz_device *dev, u16 addr, u8 *mac_addr,
- int ksz8_r_sta_mac_table(struct ksz_device *dev, u16 addr,
- 			 struct alu_struct *alu)
- {
--	struct ksz8 *ksz8 = dev->priv;
- 	u32 data_hi, data_lo;
- 	const u8 *shifts;
- 	const u32 *masks;
- 	u64 data;
- 
--	shifts = ksz8->shifts;
-+	shifts = dev->info->shifts;
- 	masks = dev->info->masks;
- 
- 	ksz8_r_table(dev, TABLE_STATIC_MAC, addr, &data);
-@@ -477,13 +452,12 @@ int ksz8_r_sta_mac_table(struct ksz_device *dev, u16 addr,
- void ksz8_w_sta_mac_table(struct ksz_device *dev, u16 addr,
- 			  struct alu_struct *alu)
- {
--	struct ksz8 *ksz8 = dev->priv;
- 	u32 data_hi, data_lo;
- 	const u8 *shifts;
- 	const u32 *masks;
- 	u64 data;
- 
--	shifts = ksz8->shifts;
-+	shifts = dev->info->shifts;
- 	masks = dev->info->masks;
- 
- 	data_lo = ((u32)alu->mac[2] << 24) |
-@@ -510,11 +484,10 @@ void ksz8_w_sta_mac_table(struct ksz_device *dev, u16 addr,
- static void ksz8_from_vlan(struct ksz_device *dev, u32 vlan, u8 *fid,
- 			   u8 *member, u8 *valid)
- {
--	struct ksz8 *ksz8 = dev->priv;
- 	const u8 *shifts;
- 	const u32 *masks;
- 
--	shifts = ksz8->shifts;
-+	shifts = dev->info->shifts;
- 	masks = dev->info->masks;
- 
- 	*fid = vlan & masks[VLAN_TABLE_FID];
-@@ -526,11 +499,10 @@ static void ksz8_from_vlan(struct ksz_device *dev, u32 vlan, u8 *fid,
- static void ksz8_to_vlan(struct ksz_device *dev, u8 fid, u8 member, u8 valid,
- 			 u16 *vlan)
- {
--	struct ksz8 *ksz8 = dev->priv;
- 	const u8 *shifts;
- 	const u32 *masks;
- 
--	shifts = ksz8->shifts;
-+	shifts = dev->info->shifts;
- 	masks = dev->info->masks;
- 
- 	*vlan = fid;
-@@ -541,12 +513,11 @@ static void ksz8_to_vlan(struct ksz_device *dev, u8 fid, u8 member, u8 valid,
- 
- static void ksz8_r_vlan_entries(struct ksz_device *dev, u16 addr)
- {
--	struct ksz8 *ksz8 = dev->priv;
- 	const u8 *shifts;
- 	u64 data;
+ 	struct regmap_config rc;
+ 	struct ksz_device *dev;
+-	struct ksz8 *ksz8;
+ 	int ret;
  	int i;
  
--	shifts = ksz8->shifts;
-+	shifts = dev->info->shifts;
- 
- 	ksz8_r_table(dev, TABLE_VLAN, addr, &data);
- 	addr *= 4;
-@@ -1366,18 +1337,10 @@ u32 ksz8_get_port_addr(int port, int offset)
- 
- int ksz8_switch_init(struct ksz_device *dev)
- {
--	struct ksz8 *ksz8 = dev->priv;
+-	ksz8 = devm_kzalloc(&mdiodev->dev, sizeof(struct ksz8), GFP_KERNEL);
+-	if (!ksz8)
+-		return -ENOMEM;
 -
- 	dev->cpu_port = fls(dev->info->cpu_ports) - 1;
- 	dev->phy_port_cnt = dev->info->port_cnt - 1;
- 	dev->port_mask = (BIT(dev->phy_port_cnt) - 1) | dev->info->cpu_ports;
- 
--	if (ksz_is_ksz88x3(dev)) {
--		ksz8->shifts = ksz8863_shifts;
--	} else {
--		ksz8->shifts = ksz8795_shifts;
--	}
+-	ksz8->priv = mdiodev;
 -
- 	/* We rely on software untagging on the CPU port, so that we
- 	 * can support both tagged and untagged VLANs
- 	 */
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index fc1ef0e50bff..fa66bd14f66a 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -240,6 +240,18 @@ static const u32 ksz8795_masks[] = {
- 	[DYNAMIC_MAC_TABLE_TIMESTAMP]	= GENMASK(28, 27),
- };
+-	dev = ksz_switch_alloc(&mdiodev->dev, ksz8);
++	dev = ksz_switch_alloc(&mdiodev->dev, mdiodev);
+ 	if (!dev)
+ 		return -ENOMEM;
  
-+static const u8 ksz8795_shifts[] = {
-+	[VLAN_TABLE_MEMBERSHIP_S]	= 7,
-+	[VLAN_TABLE]			= 16,
-+	[STATIC_MAC_FWD_PORTS]		= 16,
-+	[STATIC_MAC_FID]		= 24,
-+	[DYNAMIC_MAC_ENTRIES_H]		= 3,
-+	[DYNAMIC_MAC_ENTRIES]		= 29,
-+	[DYNAMIC_MAC_FID]		= 16,
-+	[DYNAMIC_MAC_TIMESTAMP]		= 27,
-+	[DYNAMIC_MAC_SRC_PORT]		= 24,
-+};
-+
- static const u8 ksz8863_regs[] = {
- 	[REG_IND_CTRL_0]		= 0x79,
- 	[REG_IND_DATA_8]		= 0x7B,
-@@ -278,6 +290,17 @@ static const u32 ksz8863_masks[] = {
- 	[DYNAMIC_MAC_TABLE_TIMESTAMP]	= GENMASK(23, 22),
- };
+diff --git a/drivers/net/dsa/microchip/ksz_spi.c b/drivers/net/dsa/microchip/ksz_spi.c
+index 344ff92db099..69fabb190f26 100644
+--- a/drivers/net/dsa/microchip/ksz_spi.c
++++ b/drivers/net/dsa/microchip/ksz_spi.c
+@@ -14,7 +14,6 @@
+ #include <linux/regmap.h>
+ #include <linux/spi/spi.h>
  
-+static u8 ksz8863_shifts[] = {
-+	[VLAN_TABLE_MEMBERSHIP_S]	= 16,
-+	[STATIC_MAC_FWD_PORTS]		= 16,
-+	[STATIC_MAC_FID]		= 22,
-+	[DYNAMIC_MAC_ENTRIES_H]		= 3,
-+	[DYNAMIC_MAC_ENTRIES]		= 24,
-+	[DYNAMIC_MAC_FID]		= 16,
-+	[DYNAMIC_MAC_TIMESTAMP]		= 24,
-+	[DYNAMIC_MAC_SRC_PORT]		= 20,
-+};
-+
- const struct ksz_chip_data ksz_switch_chips[] = {
- 	[KSZ8795] = {
- 		.chip_id = KSZ8795_CHIP_ID,
-@@ -294,6 +317,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.reg_mib_cnt = MIB_COUNTER_NUM,
- 		.regs = ksz8795_regs,
- 		.masks = ksz8795_masks,
-+		.shifts = ksz8795_shifts,
- 		.stp_ctrl_reg = 0x02,
- 		.broadcast_ctrl_reg =  0x06,
- 		.multicast_ctrl_reg = 0x04,
-@@ -333,6 +357,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.reg_mib_cnt = MIB_COUNTER_NUM,
- 		.regs = ksz8795_regs,
- 		.masks = ksz8795_masks,
-+		.shifts = ksz8795_shifts,
- 		.stp_ctrl_reg = 0x02,
- 		.broadcast_ctrl_reg =  0x06,
- 		.multicast_ctrl_reg = 0x04,
-@@ -358,6 +383,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.reg_mib_cnt = MIB_COUNTER_NUM,
- 		.regs = ksz8795_regs,
- 		.masks = ksz8795_masks,
-+		.shifts = ksz8795_shifts,
- 		.stp_ctrl_reg = 0x02,
- 		.broadcast_ctrl_reg =  0x06,
- 		.multicast_ctrl_reg = 0x04,
-@@ -382,6 +408,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.reg_mib_cnt = MIB_COUNTER_NUM,
- 		.regs = ksz8863_regs,
- 		.masks = ksz8863_masks,
-+		.shifts = ksz8863_shifts,
- 		.stp_ctrl_reg = 0x02,
- 		.broadcast_ctrl_reg =  0x06,
- 		.multicast_ctrl_reg = 0x04,
-diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index b1e4732357a1..c11adf67757d 100644
---- a/drivers/net/dsa/microchip/ksz_common.h
-+++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -49,6 +49,7 @@ struct ksz_chip_data {
- 	u8 reg_mib_cnt;
- 	const u8 *regs;
- 	const u32 *masks;
-+	const u8 *shifts;
- 	int stp_ctrl_reg;
- 	int broadcast_ctrl_reg;
- 	int multicast_ctrl_reg;
-@@ -187,6 +188,18 @@ enum ksz_masks {
- 	DYNAMIC_MAC_TABLE_TIMESTAMP,
- };
+-#include "ksz8.h"
+ #include "ksz_common.h"
  
-+enum ksz_shifts {
-+	VLAN_TABLE_MEMBERSHIP_S,
-+	VLAN_TABLE,
-+	STATIC_MAC_FWD_PORTS,
-+	STATIC_MAC_FID,
-+	DYNAMIC_MAC_ENTRIES_H,
-+	DYNAMIC_MAC_ENTRIES,
-+	DYNAMIC_MAC_FID,
-+	DYNAMIC_MAC_TIMESTAMP,
-+	DYNAMIC_MAC_SRC_PORT,
-+};
-+
- struct alu_struct {
- 	/* entry 1 */
- 	u8	is_static:1;
+ #define KSZ8795_SPI_ADDR_SHIFT			12
+@@ -45,16 +44,9 @@ static int ksz_spi_probe(struct spi_device *spi)
+ 	struct device *ddev = &spi->dev;
+ 	struct regmap_config rc;
+ 	struct ksz_device *dev;
+-	struct ksz8 *ksz8;
+ 	int i, ret = 0;
+ 
+-	ksz8 = devm_kzalloc(&spi->dev, sizeof(struct ksz8), GFP_KERNEL);
+-	if (!ksz8)
+-		return -ENOMEM;
+-
+-	ksz8->priv = spi;
+-
+-	dev = ksz_switch_alloc(&spi->dev, ksz8);
++	dev = ksz_switch_alloc(&spi->dev, spi);
+ 	if (!dev)
+ 		return -ENOMEM;
+ 
 -- 
 2.36.1
 
