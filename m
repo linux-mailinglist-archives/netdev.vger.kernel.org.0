@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B68955EC1D
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 20:07:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0745055EC20
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 20:08:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234001AbiF1SH4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 14:07:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51856 "EHLO
+        id S233981AbiF1SIC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 14:08:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234173AbiF1SHy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 14:07:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A93C1EEE1;
-        Tue, 28 Jun 2022 11:07:54 -0700 (PDT)
+        with ESMTP id S232133AbiF1SH7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 14:07:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF3231EECA;
+        Tue, 28 Jun 2022 11:07:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5C735B81F5A;
-        Tue, 28 Jun 2022 18:07:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B343DC3411D;
-        Tue, 28 Jun 2022 18:07:50 +0000 (UTC)
-Subject: [PATCH v2 19/31] NFSD: Remove lockdep assertion from
- unhash_and_release_locked()
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5324961AED;
+        Tue, 28 Jun 2022 18:07:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50F80C3411D;
+        Tue, 28 Jun 2022 18:07:57 +0000 (UTC)
+Subject: [PATCH v2 20/31] NFSD: nfsd_file_unhash can compute hashval from
+ nf->nf_inode
 From:   Chuck Lever <chuck.lever@oracle.com>
 To:     linux-nfs@vger.kernel.org, netdev@vger.kernel.org
 Cc:     david@fromorbit.com, jlayton@redhat.com, tgraf@suug.ch
-Date:   Tue, 28 Jun 2022 14:07:49 -0400
-Message-ID: <165643966981.84360.18336825644808669920.stgit@manet.1015granger.net>
+Date:   Tue, 28 Jun 2022 14:07:56 -0400
+Message-ID: <165643967625.84360.12001257218905569232.stgit@manet.1015granger.net>
 In-Reply-To: <165643915086.84360.2809940286726976517.stgit@manet.1015granger.net>
 References: <165643915086.84360.2809940286726976517.stgit@manet.1015granger.net>
 User-Agent: StGit/1.5.dev2+g9ce680a5
@@ -43,26 +43,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-IIUC, holding the hash bucket lock is needed only in
-nfsd_file_unhash, and there is already a lockdep assertion there.
+Remove an unnecessary usage of nf_hashval.
 
 Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 ---
- fs/nfsd/filecache.c |    2 --
- 1 file changed, 2 deletions(-)
+ fs/nfsd/filecache.c |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
 diff --git a/fs/nfsd/filecache.c b/fs/nfsd/filecache.c
-index 32ada8cce2e0..278a13d85e8f 100644
+index 278a13d85e8f..4143898fff37 100644
 --- a/fs/nfsd/filecache.c
 +++ b/fs/nfsd/filecache.c
-@@ -306,8 +306,6 @@ nfsd_file_unhash(struct nfsd_file *nf)
- static bool
- nfsd_file_unhash_and_release_locked(struct nfsd_file *nf, struct list_head *dispose)
+@@ -279,13 +279,17 @@ static void nfsd_file_lru_remove(struct nfsd_file *nf)
+ static void
+ nfsd_file_do_unhash(struct nfsd_file *nf)
  {
 -	lockdep_assert_held(&nfsd_file_hashtbl[nf->nf_hashval].nfb_lock);
--
- 	trace_nfsd_file_unhash_and_release_locked(nf);
- 	if (!nfsd_file_unhash(nf))
- 		return false;
++	struct inode *inode = nf->nf_inode;
++	unsigned int hashval = (unsigned int)hash_long(inode->i_ino,
++				NFSD_FILE_HASH_BITS);
++
++	lockdep_assert_held(&nfsd_file_hashtbl[hashval].nfb_lock);
+ 
+ 	trace_nfsd_file_unhash(nf);
+ 
+ 	if (nfsd_file_check_write_error(nf))
+ 		nfsd_reset_write_verifier(net_generic(nf->nf_net, nfsd_net_id));
+-	--nfsd_file_hashtbl[nf->nf_hashval].nfb_count;
++	--nfsd_file_hashtbl[hashval].nfb_count;
+ 	hlist_del_rcu(&nf->nf_node);
+ 	atomic_long_dec(&nfsd_filecache_count);
+ }
 
 
