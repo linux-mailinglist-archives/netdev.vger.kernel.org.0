@@ -2,76 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9AF5255D767
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:18:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DCF9D55D370
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:12:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345603AbiF1M06 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 08:26:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55028 "EHLO
+        id S1345767AbiF1M2c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 08:28:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231292AbiF1M05 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 08:26:57 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E8E222B2D;
-        Tue, 28 Jun 2022 05:26:56 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id s1so17431511wra.9;
-        Tue, 28 Jun 2022 05:26:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=BBbAz4nN/kEqq17Hkjd67PQhLHR+U0drfdLc0GuJOK0=;
-        b=cxtKJCUSVEzVJj+iL4lJVQDHlo8KUSad6DH1tB6D4RVSogOwanBgqMd0a7/CM6A31q
-         YX6ICf9+Kg67EFa+6e3LOOIUc51JeiXLQ9jHtvpbY6f/EeXvVQyNfCSgbsTfp7Tb4+lW
-         PQZGbz0YrR5kLAldX7FCEF6OdyAUzit/IVw3pTBMv8kAER4StE17ex6WXGbi2FOm7f6U
-         T2ExIT3Za05kRaSn3Aar/nOm+pL/BXFjj19AwqbAneKuNWrj4lX/Yg+V3QSq5GSf65Ux
-         FurUnaV109XZAmrnMLufxcIQFk2Mgw1IbIoBETKMpQrcIzsTJkCXK1LjLeSGeyOklGXv
-         clqQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=BBbAz4nN/kEqq17Hkjd67PQhLHR+U0drfdLc0GuJOK0=;
-        b=wSRo3QxC7NNeQfg/6r1YD3tAbl1sZl6mBt6ZIfo8vqA6/07MH6DxIXjbiXGaOhz1G5
-         29ytl9tKoR2mvWizwQEaMf9E+cbOjV91PZlS2XNKLvgiUxGq1YjCYZUwMH6+v4MqNOQR
-         it6zhCdQ5Dryec1NHLb0HBeWl5s0y9UFJUue45OpvC8+YPXcfNIaYM3wnGtiROVo1GAT
-         +k8D7QUVwcBjNyfqFXkaDxaTDtbS+6/Rjce+ESg4eUkLA+KXDesEpvlJUvNnIukdXpdu
-         TxxQkLcRDBKqmdFb0tOui7LdPz8e/Yjjp4QpSchhUPndmdk8cJahVbIBqCVTJ6NYxDAZ
-         MqzQ==
-X-Gm-Message-State: AJIora/Oo5lYfOxS/oql2FGzhyxknBGY4mxwa4Md0zr69Nt9SIi6S/ea
-        OAsrO/DAGPKM3Nj0PdVEC6HQjMVnTsbfvayGHUE=
-X-Google-Smtp-Source: AGRyM1voH42e5mjzI0lnr+10bt6FCTPk+PnGDK5RqDBBbHmDFr3LDPyV0ljIqlsW4S2b/SZB14dNXoGA9cuDTzQY6EQ=
-X-Received: by 2002:a5d:4c90:0:b0:21b:8b2a:1656 with SMTP id
- z16-20020a5d4c90000000b0021b8b2a1656mr17171451wrs.249.1656419214549; Tue, 28
- Jun 2022 05:26:54 -0700 (PDT)
+        with ESMTP id S1345715AbiF1M2S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 08:28:18 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46392DFB2;
+        Tue, 28 Jun 2022 05:28:07 -0700 (PDT)
+Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.226])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LXP0M4Xn1z67LMV;
+        Tue, 28 Jun 2022 20:24:03 +0800 (CST)
+Received: from roberto-ThinkStation-P620.huawei.com (10.204.63.22) by
+ fraeml714-chm.china.huawei.com (10.206.15.33) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 28 Jun 2022 14:28:04 +0200
+From:   Roberto Sassu <roberto.sassu@huawei.com>
+To:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <kpsingh@kernel.org>, <john.fastabend@gmail.com>,
+        <songliubraving@fb.com>, <kafai@fb.com>, <yhs@fb.com>,
+        <dhowells@redhat.com>
+CC:     <keyrings@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
+        <linux-security-module@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        Roberto Sassu <roberto.sassu@huawei.com>
+Subject: [PATCH v6 0/5] bpf: Add bpf_verify_pkcs7_signature() helper
+Date:   Tue, 28 Jun 2022 14:27:45 +0200
+Message-ID: <20220628122750.1895107-1-roberto.sassu@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220524152144.40527-1-schultz.hans+netdev@gmail.com>
- <20220524152144.40527-4-schultz.hans+netdev@gmail.com> <20220627180557.xnxud7d6ol22lexb@skbuf>
-In-Reply-To: <20220627180557.xnxud7d6ol22lexb@skbuf>
-From:   Hans S <schultz.hans@gmail.com>
-Date:   Tue, 28 Jun 2022 14:26:43 +0200
-Message-ID: <CAKUejP7ugMB9d3MVX3m9Brw12_ocFoT+nuJJucYdQH70kzC7=w@mail.gmail.com>
-Subject: Re: [PATCH V3 net-next 3/4] net: dsa: mv88e6xxx: mac-auth/MAB implementation
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Hans Schultz <schultz.hans+netdev@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.204.63.22]
+X-ClientProxiedBy: lhreml751-chm.china.huawei.com (10.201.108.201) To
+ fraeml714-chm.china.huawei.com (10.206.15.33)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -79,424 +51,169 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 8:06 PM Vladimir Oltean <olteanv@gmail.com> wrote:
->
-> Hi Hans,
->
-> On Tue, May 24, 2022 at 05:21:43PM +0200, Hans Schultz wrote:
-> > This implementation for the Marvell mv88e6xxx chip series, is
-> > based on handling ATU miss violations occurring when packets
-> > ingress on a port that is locked. The mac address triggering
-> > the ATU miss violation is communicated through switchdev to
-> > the bridge module, which adds a fdb entry with the fdb locked
-> > flag set. The entry is kept according to the bridges ageing
-> > time, thus simulating a dynamic entry.
-> >
-> > Note: The locked port must have learning enabled for the ATU
-> > miss violation to occur.
-> >
-> > Signed-off-by: Hans Schultz <schultz.hans+netdev@gmail.com>
-> > ---
->
-> I'm sorry that I couldn't focus on the big picture of this patch,
-> but locking is an absolute disaster and I just stopped after a while,
-> it's really distracting :)
+One of the desirable features in security is the ability to restrict import
+of data to a given system based on data authenticity. If data import can be
+restricted, it would be possible to enforce a system-wide policy based on
+the signing keys the system owner trusts.
 
-The code works, but I think that we should "undisaster" it. :)
+This feature is widely used in the kernel. For example, if the restriction
+is enabled, kernel modules can be plugged in only if they are signed with a
+key whose public part is in the primary or secondary keyring.
 
->
-> Would you mind addressing the feedback below first, and I'll take
-> another look when you send v4?
+For eBPF, it can be useful as well. For example, it might be useful to
+authenticate data an eBPF program makes security decisions on.
 
-fine :)
+After a discussion in the eBPF mailing list, it was decided that the stated
+goal should be accomplished by introducing a new helper:
+bpf_verify_pkcs7_signature(), dedicated to verify PKCS#7 signatures. More
+helpers will be introduced later, as necessary.
 
-> >       if (err)
-> >               dev_err(chip->dev,
-> >                       "p%d: failed to force MAC link down\n", port);
-> > +     else
-> > +             if (mv88e6xxx_port_is_locked(chip, port, true))
-> > +                     mv88e6xxx_atu_locked_entry_flush(ds, port);
->
-> This is superfluous, is it not? The bridge will transition a port whose
-> link goes down to BR_STATE_DISABLED, which will make dsa_port_set_state()
-> fast-age the dynamic FDB entries on the port, which you've already
-> handled below.
+The job of bpf_verify_pkcs7_signature() is to retrieve the trusted keyring 
+from function parameters, and to perform signature verification by calling
+verify_pkcs7_signature().
 
-I guess you are right.
+Data and signature can be provided to the new helper with two dynamic
+pointers, to reduce the number of parameters. The keyring can be provided
+by its serial, or by its special ID defined in verification.h, if the
+serial is zero (not a valid value). bpf_verify_pkcs7_signature() also
+accepts key lookup-specific flags, passed to lookup_user_key() when the
+helper searches the keyring by its serial.
 
+While passing the keyring serial to bpf_verify_pkcs7_signature() provides
+great flexibility, it seems suboptimal in terms of security guarantees, as
+even if the eBPF program is assumed to be trusted, that serial might come
+from untrusted user space not choosing one that the system administrator
+approves to enforce a mandatory policy. The same goal could be instead more
+easily achieved by setting a hardcoded keyring ID in the signed eBPF
+program, to be passed to bpf_verify_pkcs7_signature().
 
-> >  }
-> >
-> >  static void mv88e6xxx_mac_link_up(struct dsa_switch *ds, int port,
-> > @@ -1685,6 +1689,9 @@ static void mv88e6xxx_port_fast_age(struct dsa_switch *ds, int port)
-> >       struct mv88e6xxx_chip *chip = ds->priv;
-> >       int err;
-> >
-> > +     if (mv88e6xxx_port_is_locked(chip, port, true))
-> > +             mv88e6xxx_atu_locked_entry_flush(ds, port);
-> > +
->
-> Dumb question: if you only flush the locked entries at fast age if the
-> port is locked, then what happens with the existing locked entries if
-> the port becomes unlocked before an FDB flush takes place?
-> Shouldn't mv88e6xxx_port_set_lock() call mv88e6xxx_atu_locked_entry_flush()
-> too?
+bpf_verify_pkcs7_signature() can be called only from sleepable programs,
+because of memory allocation (with lookup flag KEY_LOOKUP_CREATE) and
+crypto operations. For example, the lsm.s/bpf attach point is suitable,
+fexit/array_map_update_elem is not.
 
-That was my first thought too, but the way the flags are handled with
-the mask etc, does so that
-mv88e6xxx_port_set_lock() is called when other flags change. It could
-be done by the transition
-from locked->unlocked by checking if the port is locked already.
-On the other hand, the timers will timeout and the entries will be
-removed anyhow.
+A test was added to check the ability of bpf_verify_pkcs7_signature() to
+verify PKCS#7 signatures from the session keyring, a newly-created keyring,
+and from the primary and secondary keyring (taking the tcp_bic.ko kernel
+module for the verification). The test does not fail if that kernel module
+is not found (needs support from the CI).
 
-> > +     if (mv88e6xxx_port_is_locked(chip, port, true))
-> > +             mv88e6xxx_atu_locked_entry_find_purge(ds, port, addr, vid);
-> > +
-> >       mv88e6xxx_reg_lock(chip);
-> >       err = mv88e6xxx_port_db_load_purge(chip, port, addr, vid,
-> > -                                        MV88E6XXX_G1_ATU_DATA_STATE_UC_STATIC);
-> > +                     MV88E6XXX_G1_ATU_DATA_STATE_UC_STATIC);
->
-> Unrelated and unjustified change.
->
-Ups, missed that one.
+A consideration was made on whether bpf_verify_pkcs7_signature() should be
+a simple wrapper, doing as little as possible, or whether it could have
+more complex logic. Having a simple and flexible wrapper requires two
+additional helpers, bpf_lookup_user_key() and bpf_key_put(), to search and
+acquire a key reference, pass that key to the wrapper, and release the
+reference. More care is also required on the eBPF verifier side, to ensure
+that an eBPF program always releases an acquired reference.
 
-> >  static int mv88e6xxx_port_setup(struct dsa_switch *ds, int port)
-> >  {
-> > -     return mv88e6xxx_setup_devlink_regions_port(ds, port);
-> > +     int err;
-> > +
-> > +     err = mv88e6xxx_setup_devlink_regions_port(ds, port);
-> > +     mv88e6xxx_init_violation_handler(ds, port);
->
-> What's with this quirky placement? You need to do error checking and
-> call mv88e6xxx_teardown_violation_handler() if setting up the devlink
-> port regions fails, otherwise the port will fail to probe but no one
-> will quiesce its delayed ATU work.
+While that gives eBPF developers the greatest flexibility to use the
+helpers as necessary, it does not match the security of the solution of
+retrieving the key and using it within the same function, as for example in
+security/keys/keyctl.c. The risk is that an eBPF program requests a key for
+a purpose, and then uses the key in a different way with one of the
+available key-related helpers (to be added in the future).
 
-Yes, of course.
+struct key is not like a file descriptor, carrying permissions requested
+during an open, that can be revalidated at the time a read or write is
+performed. It is more close to a struct inode, the function using the key
+cannot know reliably which permission was requested at lookup time.
 
-> By the way, do all mv88e6xxx switches support 802.1X and MAC Auth Bypass,
-> or do we need to initialize these structures depending on some capability?
+For that reason, the key lookup and usage cannot be separated, as the
+kernel will guarantee (also to other MAC mechanisms) that once a key has
+been requested with a specific purpose, it will be used accordingly, beyond
+the control of eBFP programs.
 
-I will have to look into that, but I think they all do support these features.
+The patch set is organized as follows.
 
-> > +     err = mv88e6xxx_g1_write(chip, MV88E6XXX_G1_ATU_OP,
-> > +                              MV88E6XXX_G1_ATU_OP_BUSY | MV88E6XXX_G1_ATU_OP_GET_CLR_VIOLATION);
->
-> Split on 3 lines please.
+Patch 1 exports bpf_dynptr_get_size(), to obtain the real size of data
+carried by a dynamic pointer. Patch 2 makes available for new eBPF helpers
+some key-related definitions. Patch 3 fixes the helper prototype regular
+expression to accept unsigned as type prefix. Patch 4 introduces the
+bpf_verify_pkcs7_signature() helper and patch 5 adds the corresponding
+test.
 
-OK.
+Changelog
 
-> > +     if (err)
-> > +             return err;
-> > +
-> > +     return mv88e6xxx_g1_atu_op_wait(chip);
-> > +}
-> > +
-> >  static int mv88e6xxx_g1_atu_op(struct mv88e6xxx_chip *chip, u16 fid, u16 op)
-> >  {
-> >       u16 val;
-> > @@ -356,11 +370,11 @@ static irqreturn_t mv88e6xxx_g1_atu_prob_irq_thread_fn(int irq, void *dev_id)
-> >       int spid;
-> >       int err;
-> >       u16 val;
-> > +     u16 fid;
-> >
-> >       mv88e6xxx_reg_lock(chip);
-> >
-> > -     err = mv88e6xxx_g1_atu_op(chip, 0,
-> > -                               MV88E6XXX_G1_ATU_OP_GET_CLR_VIOLATION);
-> > +     err = mv88e6xxx_g1_read_atu_violation(chip);
->
-> I cannot comment on the validity of this change: previously, we were
-> writing FID 0 as part of mv88e6xxx_g1_atu_op(), now we are reading back
-> the FID. Definitely too much going on in a single change, this needs a
-> separate patch with an explanation.
+v5:
+ - Move KEY_LOOKUP_ to include/linux/key.h
+   for validation of bpf_verify_pkcs7_signature() parameter
+ - Remove bpf_lookup_user_key() and bpf_key_put() helpers, and the
+   corresponding tests
+ - Replace struct key parameter of bpf_verify_pkcs7_signature() with the
+   keyring serial and lookup flags
+ - Call lookup_user_key() and key_put() in bpf_verify_pkcs7_signature()
+   code, to ensure that the retrieved key is used according to the
+   permission requested at lookup time
+ - Clarified keyring precedence in the description of
+   bpf_verify_pkcs7_signature() (suggested by John)
+ - Remove newline in the second argument of ASSERT_
+ - Fix helper prototype regular expression in bpf_doc.py
 
-It is of course needed to read the fid and I couldn't really
-understand the reasoning behind how it was before,
-but I will do as you say as best I can.
+v4:
+ - Remove bpf_request_key_by_id(), don't return an invalid pointer that
+   other helpers can use
+ - Pass the keyring ID (without ULONG_MAX, suggested by Alexei) to
+   bpf_verify_pkcs7_signature()
+ - Introduce bpf_lookup_user_key() and bpf_key_put() helpers (suggested by
+   Alexei)
+ - Add lookup_key_norelease test, to ensure that the verifier blocks eBPF
+   programs which don't decrement the key reference count
+ - Parse raw PKCS#7 signature instead of module-style signature in the
+   verify_pkcs7_signature test (suggested by Alexei)
+ - Parse kernel module in user space and pass raw PKCS#7 signature to the
+   eBPF program for signature verification
 
->
-> >       if (err)
-> >               goto out;
-> >
-> > @@ -368,6 +382,10 @@ static irqreturn_t mv88e6xxx_g1_atu_prob_irq_thread_fn(int irq, void *dev_id)
-> >       if (err)
-> >               goto out;
-> >
-> > +     err = mv88e6xxx_g1_read(chip, MV88E6352_G1_ATU_FID, &fid);
-> > +     if (err)
-> > +             goto out;
->
-> Is it ok to read the MV88E6352_G1_ATU_FID register from an IRQ handler
-> common for all switches, I wonder?
+v3:
+ - Rename bpf_verify_signature() back to bpf_verify_pkcs7_signature() to
+   avoid managing different parameters for each signature verification
+   function in one helper (suggested by Daniel)
+ - Use dynamic pointers and export bpf_dynptr_get_size() (suggested by
+   Alexei)
+ - Introduce bpf_request_key_by_id() to give more flexibility to the caller
+   of bpf_verify_pkcs7_signature() to retrieve the appropriate keyring
+   (suggested by Alexei)
+ - Fix test by reordering the gcc command line, always compile sign-file
+ - Improve helper support check mechanism in the test
 
-I don't know about the naming of this define (I probably overlooked
-the 6352 part), but it is the same as I have in the
-spec for 6097, and I don't see any alternative...
+v2:
+ - Rename bpf_verify_pkcs7_signature() to a more generic
+   bpf_verify_signature() and pass the signature type (suggested by KP)
+ - Move the helper and prototype declaration under #ifdef so that user
+   space can probe for support for the helper (suggested by Daniel)
+ - Describe better the keyring types (suggested by Daniel)
+ - Include linux/bpf.h instead of vmlinux.h to avoid implicit or
+   redeclaration
+ - Make the test selfcontained (suggested by Alexei)
 
-> > +
-> >       err = mv88e6xxx_g1_atu_data_read(chip, &entry);
-> >       if (err)
-> >               goto out;
-> > @@ -382,6 +400,11 @@ static irqreturn_t mv88e6xxx_g1_atu_prob_irq_thread_fn(int irq, void *dev_id)
-> >               dev_err_ratelimited(chip->dev,
-> >                                   "ATU age out violation for %pM\n",
-> >                                   entry.mac);
-> > +             err = mv88e6xxx_handle_violation(chip,
-> > +                                              chip->ports[spid].port,
->
-> Dumb question: isn't chip->ports[spid].port == spid?
+v1:
+ - Don't define new map flag but introduce simple wrapper of
+   verify_pkcs7_signature() (suggested by Alexei and KP)
 
-Probably you are right.
+Roberto Sassu (5):
+  bpf: Export bpf_dynptr_get_size()
+  KEYS: Move KEY_LOOKUP_ to include/linux/key.h
+  scripts: Handle unsigned type prefix in bpf_doc.py
+  bpf: Add bpf_verify_pkcs7_signature() helper
+  selftests/bpf: Add test for bpf_verify_pkcs7_signature() helper
 
->
-> > +                                              &entry,
-> > +                                              fid,
-> > +                                              MV88E6XXX_G1_ATU_OP_AGE_OUT_VIOLATION);
->
-> This fits on 3 lines instead of 5 (and same below).
+ include/linux/bpf.h                           |   1 +
+ include/linux/key.h                           |   3 +
+ include/uapi/linux/bpf.h                      |  24 ++
+ kernel/bpf/bpf_lsm.c                          |  63 +++
+ kernel/bpf/helpers.c                          |   2 +-
+ scripts/bpf_doc.py                            |   2 +-
+ security/keys/internal.h                      |   2 -
+ tools/include/uapi/linux/bpf.h                |  24 ++
+ tools/testing/selftests/bpf/Makefile          |  14 +-
+ tools/testing/selftests/bpf/config            |   2 +
+ .../bpf/prog_tests/verify_pkcs7_sig.c         | 359 ++++++++++++++++++
+ .../bpf/progs/test_verify_pkcs7_sig.c         |  79 ++++
+ .../testing/selftests/bpf/verify_sig_setup.sh | 104 +++++
+ 13 files changed, 672 insertions(+), 7 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/verify_pkcs7_sig.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_verify_pkcs7_sig.c
+ create mode 100755 tools/testing/selftests/bpf/verify_sig_setup.sh
 
-OK
+-- 
+2.25.1
 
->
-> > +static void mv88e6xxx_atu_locked_entry_timer_work(struct atu_locked_entry *ale)
->
-> Please find a more adequate name for this function.
-
-Any suggestions?
-
->
-> > +{
-> > +     struct switchdev_notifier_fdb_info info = {
-> > +             .addr = ale->mac,
-> > +             .vid = ale->vid,
-> > +             .added_by_user = false,
-> > +             .is_local = false,
->
-> No need to have an initializer for the false members.
-
-OK
-
-> > +             .offloaded = true,
-> > +             .locked = true,
-> > +     };
-> > +     struct mv88e6xxx_atu_entry entry;
-> > +     struct net_device *brport;
-> > +     struct dsa_port *dp;
-> > +
-> > +     entry.state = MV88E6XXX_G1_ATU_DATA_STATE_UC_UNUSED;
-> > +     entry.trunk = false;
-> > +     memcpy(&entry.mac, &ale->mac, ETH_ALEN);
->
-> ether_addr_copy
->
-> > +
-> > +     mv88e6xxx_reg_lock(ale->chip);
-> > +     mv88e6xxx_g1_atu_loadpurge(ale->chip, ale->fid, &entry);
->
-> The portvec will be junk memory that's on stack, is that what you want?
->
-Probably not what I want.
-
-> > +     if (brport) {
-> > +             if (!rtnl_is_locked()) {
-> > +                     rtnl_lock();
->
-> No, no, no, no, no, no, no.
->
-> As I've explained already:
-> https://patchwork.kernel.org/project/netdevbpf/patch/20220317093902.1305816-4-schultz.hans+netdev@gmail.com/#24782974
-> dsa_port_to_bridge_port() needs to be called with the rtnl_mutex held.
->
-> Please take a moment to figure out which function expects which lock and
-> for what operation, then draw a call graph, figure out a consistent lock
-> hierarchy where things are always acquired in the same order, and if a
-> function needs a locking context but not all callers offer it, put an
-> ASSERT_RTNL() (for example) and transfer the locking responsibility to
-> the caller.
-
-As I remember it was because mv88e6xxx_atu_locked_entry_flush() was called both
-with and without the lock, but there was something I didn't know about
-how link down
-handling works.
-
->
-> Doing this will also help you name your functions better than
-> "locked entry timer work" (which are called from... drum roll...
-> mv88e6xxx_port_fdb_del and mv88e6xxx_port_fast_age).
->
-> Which by the way, reminds me that.....
-> You can't take rtnl_lock() from port_fdb_add() and port_fdb_del(),
-> see commits d7d0d423dbaa ("net: dsa: flush switchdev workqueue when
-> leaving the bridge") and 0faf890fc519 ("net: dsa: drop rtnl_lock from
-> dsa_slave_switchdev_event_work"), as you'll deadlock with
-> dsa_port_pre_bridge_leave(). In fact you never could, but for a slightly
-> different reason.
->
-> From the discussion with Ido and Nikolay I get the impression that
-> you're not doing the right thing here either, notifying a
-> SWITCHDEV_FDB_DEL_TO_BRIDGE from what is effectively the
-> SWITCHDEV_FDB_DEL_TO_DEVICE handler (port_fdb_del).
-
-Hmm, my experience tells me that much is opposite the normal
-conventions when dealing with
-locked ports, as there was never switchdev notifications from the
-driver to the bridge before, but
-that is needed to keep ATU and FDB entries in sync.
-
->
-> No inline functions in .c files.
-
-OK
-
-> Nasty lock ordering inversion. In mv88e6xxx_handle_violation() we take
-> &dp->locked_entries_list_lock with mv88e6xxx_reg_lock() held.
-> Here (in mv88e6xxx_atu_locked_entry_timer_work called from here) we take
-> mv88e6xxx_reg_lock() with &dp->locked_entries_list_lock held.
->
-I will look into that.
-
-> > +     switch (type) {
-> > +     case MV88E6XXX_G1_ATU_OP_MISS_VIOLATION:
-> > +             if (atomic_read(&dp->atu_locked_entry_cnt) >= ATU_LOCKED_ENTRIES_MAX) {
-> > +                     mv88e6xxx_reg_unlock(chip);
->
-> You call mv88e6xxx_reg_lock() from mv88e6xxx_g1_atu_prob_irq_thread_fn()
-> and mv88e6xxx_reg_unlock() from mv88e6xxx_handle_violation()? Nice!
->
-> And I understand why that is: to avoid a lock ordering inversion with
-> rtnl_lock(). Just unlock the mv88e6xxx registers after the last hardware
-> access in mv88e6xxx_g1_atu_prob_irq_thread_fn() - after mv88e6xxx_g1_atu_mac_read(),
-> and call mv88e6xxx_handle_violation() with the registers unlocked, and
-> lock them when you need them.
-
-OK.
-
-> > +             locked_entry = kmalloc(sizeof(*locked_entry), GFP_ATOMIC);
->
-> Please be consistent in your naming of struct atu_locked_entry
-> variables, be they "locked_entry" or "ale" or otherwise.
-> And please create a helper function that creates such a structure and
-> initializes it.
-
-OK
-
-> > +             if (!locked_entry)
-> > +                     return -ENOMEM;
-> > +             timer_setup(&locked_entry->timer, mv88e6xxx_atu_locked_entry_timer_handler, 0);
->
-> Does this have to be a dedicated timer per entry, or can you just record
-> the "jiffies" at creation time per locked entry, and compare it with the
-> current jiffies from the periodic, sleepable mv88e6xxx_atu_locked_entry_cleanup?
-
-I think that approach should be sufficient too.
-
->
-> Why is the rtnl_unlock() outside the switch statement but the rtnl_lock() inside?
-> Not to mention, the dsa_port_to_bridge_port() call needs to be under rtnl_lock().
-
-Just a small optimization as I also have another case of the switch
-(only one switch case if
-you didn't notice) belonging to the next patch set regarding dynamic
-ATU entries.
-
-> > +void mv88e6xxx_atu_locked_entry_flush(struct dsa_switch *ds, int port)
-> > +{
-> > +     struct dsa_port *dp = dsa_to_port(ds, port);
-> > +     struct atu_locked_entry *ale, *tmp;
-> > +
-> > +     mutex_lock(&dp->locked_entries_list_lock);
-> > +     list_for_each_entry_safe(ale, tmp, &dp->atu_locked_entries_list, list) {
-> > +             mv88e6xxx_atu_locked_entry_purge(ale);
-> > +             atomic_dec(&dp->atu_locked_entry_cnt);
-> > +     }
-> > +     mutex_unlock(&dp->locked_entries_list_lock);
-> > +
-> > +     if (atomic_read(&dp->atu_locked_entry_cnt) != 0)
-> > +             dev_err(ds->dev,
-> > +                     "ERROR: Locked entries count is not zero after flush on port %d\n",
-> > +                     port);
->
-> And generally speaking, why would you expect it to be 0, since there's
-> nothing that stops this check from racing with mv88e6xxx_handle_violation?
-
-I guess you are right that when setting the port STP state to BLOCKED, there is
-the potential race you mention.
-
-> Also, random fact: no need to say ERROR when printing with the KERN_ERR
-> log level. It's kind of implied from the log level.
-
-Of course.
-
-> > +     dp->atu_locked_entry_cnt.counter = 0;
->
-> atomic_set()
-
-Right!
-
-> This and mv88e6xxx_switchdev.c are the only source files belonging to
-> this driver which have the mv88e6xxx_ prefix (others are "chip.c" etc).
-> Can you please follow the convention?
-
-Yes. I think I got that idea from some other driver, thus avoiding
-switchdev.h file,
-but I will change it.
-
-> > +struct atu_locked_entry {
->
-> mv88e6xxx driver specific structure names should be prefixed with mv88e6xxx_.
-
-OK
-
-> > +     u8      mac[ETH_ALEN];
->
-> Either align everything with tabs, or nothing.
-
-Ups.
-
-> > +int mv88e6xxx_handle_violation(struct mv88e6xxx_chip *chip,
-> > +                            int port,
-> > +                            struct mv88e6xxx_atu_entry *entry,
-> > +                            u16 fid,
-> > +                            u16 type);
->
-> Both this and the function definition can easily fit on 3 lines.
-
-OK
-
-> Please, no "if (chiplock) mutex_lock()" hacks. Just lockdep_assert_held(&chip->reg_lock),
-> which serves both for documentation and for validation purposes, ensure
-> the lock is always taken at the caller (which in this case is super easy)
-> and move on.
-
-As I am calling the function in if statement checks, it would make
-that code more messy, while with
-this approach the function can be called from anywhere. I also looked
-at having two functions, with
-one being a wrapper function taking the lock and calling the other...
-
->
-> > +
-> > +     if (mv88e6xxx_port_read(chip, port, MV88E6XXX_PORT_CTL0, &reg))
-> > +             goto out;
->
-> It would be good to actually propagate the error to the caller and
-> "locked" via a pass-by-reference bool pointer argument, not just say
-> that I/O errors mean that the port is unlocked.
-
-Again the wish to be able to call it from if statement checks,.
-
-> > +     reg &= MV88E6XXX_PORT_ASSOC_VECTOR_PAV_MASK;
-> > +     if (locked) {
-> > +             reg |= MV88E6XXX_PORT_ASSOC_VECTOR_IGNORE_WRONG |
-> > +                     MV88E6XXX_PORT_ASSOC_VECTOR_LOCKED_PORT |
-> > +                     MV88E6XXX_PORT_ASSOC_VECTOR_INT_AGE_OUT |
-> > +                     MV88E6XXX_PORT_ASSOC_VECTOR_HOLD_AT_1;
->
-> I'd suggest aligning these macros vertically.
-
-They are according to the Linux kernel coding standard wrt indentation afaik.
