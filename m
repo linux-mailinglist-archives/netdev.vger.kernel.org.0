@@ -2,57 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EEE6E55EABF
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 19:15:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1259855EAD2
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 19:18:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232763AbiF1RPh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 13:15:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56194 "EHLO
+        id S232367AbiF1RQa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 13:16:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231248AbiF1RPg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 13:15:36 -0400
+        with ESMTP id S230397AbiF1RQ3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 13:16:29 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FC742CE22;
-        Tue, 28 Jun 2022 10:15:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F2362DA98
+        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 10:16:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 962B861937;
-        Tue, 28 Jun 2022 17:15:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B72FC3411D;
-        Tue, 28 Jun 2022 17:15:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D89C16191F
+        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 17:16:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2555DC3411D;
+        Tue, 28 Jun 2022 17:16:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656436534;
-        bh=UBVsW+yzxyFb/s3b5sRvKn2VSjVfkBM2AyEJPMVc8lo=;
+        s=k20201202; t=1656436586;
+        bh=oTZ25kbo5ZOH1yPhL3JZEMmA6MsmSGt5s/8V9IXmgIE=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=jtn6qXrzGfs6D+k2i4yl2UP7DzBvENpEo9EjvzK+oRPwSzmDr0+t2nd5udz2o3BvX
-         TGsN68oe9rG7XqUXpemiQKvPcflszZit6/04QYDvyPhA69X45MSFrMsJUccxh3mXiX
-         uFTFQTrgi8rRmPAf2Fs5J0LNiut+VYhc37dqeo1hkldj25rbmgvWwIWu+VM/rdg1uw
-         VzvcLeKj+4Vrd/e2HnSmMz1g59J6MYQPgXQkyHRGw8XDl3IpVRaxrZaQ6I9Ax7iGa+
-         5yYLu6ZG5mRitcZ/FmnnO+eSvvxEZVzuKs098M4xaAp6kV8P13z35Ll/LBe0qmS8rJ
-         7BCDunm4kr1fA==
-Date:   Tue, 28 Jun 2022 10:15:32 -0700
+        b=cTy6Y1sPWjSeoclh9uVcza0MmqsSMhgZOA7vEsfXdLMQyiKyja7VdV4OXrk1/gSpO
+         AdBjK8vMSDw2YiTbgG0obyMNBx03OYPDzblpuQa7BkLQvyqemSLzthhEcbohqPqM3Q
+         aAXzREVWd7CHI6dPMVINXCOZ66NQFzbfeDOB9qJ7ZM0yiMDCA5nbIKM8VMnNCVAbX2
+         VWjEnlASl2mTm9scPPOdQ4wgF7Dec/Odf0yf+KXlgX6j4Z5K2FlTcnDqm6RSsLeEdh
+         DOlGvdAUdkxO4EdvG6lDlN2b31hjnW7bF1kxVVBX+IN3mk8zIHYDIJR3rzkICDvAA2
+         2Xw8/PWtwViVA==
+Date:   Tue, 28 Jun 2022 10:16:25 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Albert Huang <huangjie.albert@bytedance.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Menglong Dong <imagedong@tencent.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Antoine Tenart <atenart@kernel.org>,
-        Phil Auld <pauld@redhat.com>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Xin Long <lucien.xin@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] net : rps : supoort a single flow to use rps
-Message-ID: <20220628101532.1be4a9df@kernel.org>
-In-Reply-To: <CANn89iKfW8_OLN3veCaMDDLLPU1EP_eAcf03PJZJnLD+6Pv3vw@mail.gmail.com>
-References: <20220628140044.65068-1-huangjie.albert@bytedance.com>
-        <CANn89iKfW8_OLN3veCaMDDLLPU1EP_eAcf03PJZJnLD+6Pv3vw@mail.gmail.com>
+To:     James Yonan <james@openvpn.net>
+Cc:     netdev@vger.kernel.org, therbert@google.com,
+        stephen@networkplumber.org
+Subject: Re: [PATCH net-next v2] rfs: added /proc/sys/net/core/rps_allow_ooo
+ flag to tweak flow alg
+Message-ID: <20220628101620.75c2941b@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <20220628051754.365238-1-james@openvpn.net>
+References: <20220624100536.4bbc1156@hermes.local>
+        <20220628051754.365238-1-james@openvpn.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -66,19 +55,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 28 Jun 2022 17:31:12 +0200 Eric Dumazet wrote:
-> > how to use:
-> > echo xxx > /sys/class/net/xxx/queues/rx-x/rps_cpus
-> > echo 1 > /sys/class/net/xxx/queues/rx-x/rps_single_flow
-> > and create a flow node with the function:
-> > rps_flow_node_create  
+On Mon, 27 Jun 2022 23:17:54 -0600 James Yonan wrote:
+> rps_allow_ooo (0|1, default=0) -- if set to 1, allow RFS (receive flow
+> steering) to move a flow to a new CPU even if the old CPU queue has
+> pending packets.  Note that this can result in packets being delivered
+> out-of-order.  If set to 0 (the default), the previous behavior is
+> retained, where flows will not be moved as long as pending packets remain.
 > 
-> Which part calls rps_flow_node_create() exactly ?
+> The motivation for this patch is that while it's good to prevent
+> out-of-order packets, the current RFS logic requires that all previous
+> packets for the flow have been dequeued before an RFS CPU switch is made,
+> so as to preserve in-order delivery.  In some cases, on links with heavy
+> VPN traffic, we have observed that this requirement is too onerous, and
+> that it prevents an RFS CPU switch from occurring within a reasonable time
+> frame if heavy traffic causes the old CPU queue to never fully drain.
 > 
-> This seems to be very specialized to IPSEC.
-> 
-> Can IPSEC  use multiple threads for decryption ?
+> So rps_allow_ooo allows the user to select the tradeoff between a more
+> aggressive RFS steering policy that may reorder packets on a CPU switch
+> event (rps_allow_ooo=1) vs. one that prioritizes in-order delivery
+> (rps_allow_ooo=0).
 
-+1 Doesn't wireguard do something to spread the load across CPUs?
-Maybe it can be generalized? I don't think a solution to "spray 
-crypto around" belongs as part of RPS.
+BTW please see:
+
+https://lore.kernel.org/all/20220628051754.365238-1-james@openvpn.net/
+
+Y'all should work together.
