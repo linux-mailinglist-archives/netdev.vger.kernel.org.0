@@ -2,45 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5976355C9EB
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 14:57:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 48EF055CC67
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:01:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243846AbiF1FLL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 01:11:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53642 "EHLO
+        id S244724AbiF1FVH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 01:21:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232767AbiF1FLJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 01:11:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0AC09FCF;
-        Mon, 27 Jun 2022 22:11:08 -0700 (PDT)
+        with ESMTP id S244713AbiF1FUk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 01:20:40 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8E6B2BB0F;
+        Mon, 27 Jun 2022 22:17:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D08B61784;
-        Tue, 28 Jun 2022 05:11:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 205F3C341C6;
-        Tue, 28 Jun 2022 05:11:07 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id CAF35CE1E21;
+        Tue, 28 Jun 2022 05:17:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57111C3411D;
+        Tue, 28 Jun 2022 05:17:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656393067;
-        bh=gRITldOs4wFjJJ/Yq+ASt8gLd+uLO3gYyD/lQOZHrqc=;
+        s=k20201202; t=1656393426;
+        bh=xmVWOoWZhk9VF36Zkrlyh06JziflhI5QKam3v92NMvA=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=hg/plIKhrf8qrDSTcJYKhT1RGIr4RqDfcYcCSW3eMK10FeVlkwyDLCHfbgMiqB5Wk
-         JwEfFYAqNZPov9K81/sAvff2wXm1RhWjJqa+qTglgwHESfNDkupNnOCaI6JgzxCzzs
-         ujt4GgSegDKOxupcXcQVtmk09aI4OOXHGrluD5Xc5BIjjJwbBBNF9Vh/5G9tsYc8pW
-         VJcUmpyr09GOSzm8ixltVD+kTm7i3E+6KfuP8S2nMTVPJkIpeSMI64hUEcYByaXTVH
-         cimlXr7ypucRtrCfLcZFZCYlkffbUcXuxWH+9XxWotNFPWBaUfx6bvKa1IrKpGP2BG
-         T/b3TtnqHGKQA==
-Date:   Mon, 27 Jun 2022 22:11:05 -0700
+        b=TlVCCepDrRxZtmEXvs4LRZA3aNZ2uAYFJbUvtcR43+vNK9OATwsOgQcoKHIozHxnt
+         JkRTdfsD1EB1uy/ndCKrdW2nKzq/9e7Xi+fXPiDW7tUSn1qnu0X1s3xvY9Oolmv/pM
+         1Kq5ueb8cT7kVVYMhLmYHmE4AHFgRvHXK7hQFHTGGZiRbN5EUvjjb9ZKI7ZujfBtcR
+         kRyHZGd7G3HkWgEFgMzbOb7+969VpZJukq/q35rVkWw9y29nck2DILB+/fOQQafyQb
+         RH5yPGzTpsUolrfY5jwBcZfJiat1pjJKw9QOtA1Rf+qqJror9UPfZGJZGQVHKic4/R
+         1R4AZDAQHGUkQ==
+Date:   Mon, 27 Jun 2022 22:17:05 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jianglei Nie <niejianglei2021@163.com>
-Cc:     linux@armlinux.org.uk, andrew@lunn.ch, hkallweit1@gmail.com,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] net: sfp: fix memory leak in sfp_probe()
-Message-ID: <20220627221105.5a5feb7c@kernel.org>
-In-Reply-To: <20220624044941.1807118-1-niejianglei2021@163.com>
-References: <20220624044941.1807118-1-niejianglei2021@163.com>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Lukas Wunner <lukas@wunner.de>
+Subject: Re: [PATCH net-next v2 1/1] net: phy: ax88772a: fix lost pause
+ advertisement configuration
+Message-ID: <20220627221705.0a49f3c9@kernel.org>
+In-Reply-To: <20220626152703.18157-1-o.rempel@pengutronix.de>
+References: <20220626152703.18157-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -54,11 +59,14 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 24 Jun 2022 12:49:41 +0800 Jianglei Nie wrote:
-> sfp_probe() allocates a memory chunk from sfp with sfp_alloc(). When
-> devm_add_action() fails, sfp is not freed, which leads to a memory leak.
+On Sun, 26 Jun 2022 17:27:03 +0200 Oleksij Rempel wrote:
+> Subject: [PATCH net-next v2 1/1] net: phy: ax88772a: fix lost pause advertisement configuration
 > 
-> We should use devm_add_action_or_reset() instead of devm_add_action().
+> In case of asix_ax88772a_link_change_notify() workaround, we run soft
+> reset which will automatically clear MII_ADVERTISE configuration. The
+> PHYlib framework do not know about changed configuration state of the
+> PHY, so we need use phy_init_hw() to reinit PHY configuration.
+> 
+> Fixes: dde258469257 ("net: usb/phy: asix: add support for ax88772A/C PHYs")
 
-Please add a Fixes tag referencing the commit which added the bug.
-The subject for the next version should be start with [PATCH net v3].
+Why net-next?
