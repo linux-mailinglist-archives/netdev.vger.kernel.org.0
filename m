@@ -2,80 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ECE9255C552
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 14:51:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8937A55D802
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:19:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344458AbiF1JrY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 05:47:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39828 "EHLO
+        id S245600AbiF1JrH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 05:47:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242407AbiF1JrD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 05:47:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A422225E82;
-        Tue, 28 Jun 2022 02:46:36 -0700 (PDT)
+        with ESMTP id S1344312AbiF1Jqg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 05:46:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F0BB25C7C;
+        Tue, 28 Jun 2022 02:46:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E0964B81D9C;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2123D617FB;
         Tue, 28 Jun 2022 09:46:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75818C341ED;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D74AC341D0;
         Tue, 28 Jun 2022 09:46:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1656409590;
-        bh=Pidffgv8+vxANZk99fiHBEcr5xE1kNKPmd0X8nIl4XY=;
-        h=From:To:Cc:Subject:Date:From;
-        b=nOcRjaFPNFScFiXdKrB2F8YYb6CPmWyMpALhxvrj3cjnCrtSSHb1z+KLKVayVCVda
-         at8owWAD3BEqBPRjixrG39Cx0vu51KH26s0QaNFZI9hpYtmuwntZ1PeuqYcGsbBstt
-         DKInp9Myza28C9F5Mmo31eFMfV2Kc8JOzfbNFZAWJWtVGt7np+qwiL1lcryxy7sUjC
-         p5W0pHxXEX4FAr9kK8uZ/zcRkHryiIBDQ6IWmOMBxVam4kkykvl0yMbVuAELhJW4+a
-         pqC+XiDPQEOcY9he59MFVJViMVrlXI42knJl/YF5d6vbYHlcclC/nS3jS9OJ46JdOK
-         Y7rUWeaKNq8tA==
+        bh=xHKhJmmG6pOtTNRxB35U3omdaLpNm3R0DbSnh9czaGY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=UW40VbnEsQCyVuLWDjzMPJKYEaZPLkuBmqtpWuafag+7UevJxyBBZ5Cc8SHZ8hdXg
+         r5IwdOynhIafXdmOMo2EOjrV6wsFBDFlLpkJcDGLZJrRqLtOXiSNlrUmVOIpK31jKf
+         prT4obQtUZwaFg61yt7uf13T0KE9hW+pcSl61qqHMTfwD2UPUBVSJpn8R6xJulT2fR
+         sgy0XyO/zb2Wn9jWflQ3rgeuy5/1YzXp31pSKhboa1hEAi3mXpnL1AswXnZ2rMfl0m
+         jqwUZrwZCfcG45680QBxbFGYlS6rh4MQROP4aN7cn686mV+FsCaPT+5IZINYhcBnss
+         bjVSz1juAz5Dw==
 Received: from mchehab by mail.kernel.org with local (Exim 4.95)
         (envelope-from <mchehab@kernel.org>)
-        id 1o67nf-005HEj-Ip;
+        id 1o67nf-005HEm-KU;
         Tue, 28 Jun 2022 10:46:27 +0100
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
         "David S. Miller" <davem@davemloft.net>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Alexander Potapenko <glider@google.com>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrey Grodzovsky <andrey.grodzovsky@amd.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Dmitry Vyukov <dvyukov@google.com>,
+        "Jonathan Corbet" <corbet@lwn.net>,
+        "Mauro Carvalho Chehab" <mchehab+huawei@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
-        Felipe Balbi <balbi@kernel.org>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Ingo Molnar <mingo@redhat.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Johannes Berg <johannes@sipsolutions.net>,
-        Kyungmin Park <kyungmin.park@samsung.com>,
-        Marco Elver <elver@google.com>,
-        MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        kasan-dev@googlegroups.com, linaro-mm-sig@lists.linaro.org,
-        linux-cachefs@redhat.com, linux-fsdevel@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-mm@kvack.org,
-        linux-pm@vger.kernel.org, linux-sgx@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, x86@kernel.org
-Subject: [PATCH 00/22] Fix kernel-doc warnings at linux-next
-Date:   Tue, 28 Jun 2022 10:46:04 +0100
-Message-Id: <cover.1656409369.git.mchehab@kernel.org>
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH 01/22] net: cfg80211: fix kernel-doc warnings all over the file
+Date:   Tue, 28 Jun 2022 10:46:05 +0100
+Message-Id: <f6f522cdc716a01744bb0eae2186f4592976222b.1656409369.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.36.1
+In-Reply-To: <cover.1656409369.git.mchehab@kernel.org>
+References: <cover.1656409369.git.mchehab@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -88,50 +64,7 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As we're currently discussing about making kernel-doc issues fatal when
-CONFIG_WERROR is enable, let's fix all 60 kernel-doc warnings 
-inside linux-next:
-
-	arch/x86/include/uapi/asm/sgx.h:19: warning: Enum value 'SGX_PAGE_MEASURE' not described in enum 'sgx_page_flags'
-	arch/x86/include/uapi/asm/sgx.h:97: warning: Function parameter or member 'rdi' not described in 'sgx_enclave_user_handler_t'
-	arch/x86/include/uapi/asm/sgx.h:97: warning: Function parameter or member 'rsi' not described in 'sgx_enclave_user_handler_t'
-	arch/x86/include/uapi/asm/sgx.h:97: warning: Function parameter or member 'rdx' not described in 'sgx_enclave_user_handler_t'
-	arch/x86/include/uapi/asm/sgx.h:97: warning: Function parameter or member 'rsp' not described in 'sgx_enclave_user_handler_t'
-	arch/x86/include/uapi/asm/sgx.h:97: warning: Function parameter or member 'r8' not described in 'sgx_enclave_user_handler_t'
-	arch/x86/include/uapi/asm/sgx.h:97: warning: Function parameter or member 'r9' not described in 'sgx_enclave_user_handler_t'
-	arch/x86/include/uapi/asm/sgx.h:124: warning: Function parameter or member 'reserved' not described in 'sgx_enclave_run'
-	drivers/devfreq/devfreq.c:707: warning: Function parameter or member 'val' not described in 'qos_min_notifier_call'
-	drivers/devfreq/devfreq.c:707: warning: Function parameter or member 'ptr' not described in 'qos_min_notifier_call'
-	drivers/devfreq/devfreq.c:717: warning: Function parameter or member 'val' not described in 'qos_max_notifier_call'
-	drivers/devfreq/devfreq.c:717: warning: Function parameter or member 'ptr' not described in 'qos_max_notifier_call'
-	drivers/gpu/drm/amd/amdgpu/amdgpu_device.c:5095: warning: expecting prototype for amdgpu_device_gpu_recover_imp(). Prototype was for amdgpu_device_gpu_recover() instead
-	drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.h:544: warning: Function parameter or member 'dmub_outbox_params' not described in 'amdgpu_display_manager'
-	drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.h:544: warning: Function parameter or member 'num_of_edps' not described in 'amdgpu_display_manager'
-	drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.h:544: warning: Function parameter or member 'disable_hpd_irq' not described in 'amdgpu_display_manager'
-	drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.h:544: warning: Function parameter or member 'dmub_aux_transfer_done' not described in 'amdgpu_display_manager'
-	drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.h:544: warning: Function parameter or member 'delayed_hpd_wq' not described in 'amdgpu_display_manager'
-	drivers/gpu/drm/amd/include/amd_shared.h:224: warning: Enum value 'PP_GFX_DCS_MASK' not described in enum 'PP_FEATURE_MASK'
-	drivers/gpu/drm/scheduler/sched_main.c:999: warning: Function parameter or member 'dev' not described in 'drm_sched_init'
-	drivers/usb/dwc3/core.h:1328: warning: Function parameter or member 'async_callbacks' not described in 'dwc3'
-	drivers/usb/dwc3/gadget.c:675: warning: Function parameter or member 'mult' not described in 'dwc3_gadget_calc_tx_fifo_size'
-	fs/attr.c:36: warning: Function parameter or member 'ia_vfsuid' not described in 'chown_ok'
-	fs/attr.c:36: warning: Excess function parameter 'uid' description in 'chown_ok'
-	fs/attr.c:63: warning: Function parameter or member 'ia_vfsgid' not described in 'chgrp_ok'
-	fs/attr.c:63: warning: Excess function parameter 'gid' description in 'chgrp_ok'
-	fs/namei.c:649: warning: Function parameter or member 'mnt' not described in 'path_connected'
-	fs/namei.c:649: warning: Function parameter or member 'dentry' not described in 'path_connected'
-	fs/namei.c:1089: warning: Function parameter or member 'inode' not described in 'may_follow_link'
-	include/drm/gpu_scheduler.h:463: warning: Function parameter or member 'dev' not described in 'drm_gpu_scheduler'
-	include/linux/dcache.h:309: warning: expecting prototype for dget, dget_dlock(). Prototype was for dget_dlock() instead
-	include/linux/fscache.h:270: warning: Function parameter or member 'cookie' not described in 'fscache_use_cookie'
-	include/linux/fscache.h:270: warning: Excess function parameter 'object' description in 'fscache_use_cookie'
-	include/linux/fscache.h:287: warning: Function parameter or member 'cookie' not described in 'fscache_unuse_cookie'
-	include/linux/fscache.h:287: warning: Excess function parameter 'object' description in 'fscache_unuse_cookie'
-	include/linux/genalloc.h:54: warning: Function parameter or member 'start_addr' not described in 'genpool_algo_t'
-	include/linux/kfence.h:221: warning: Function parameter or member 'slab' not described in '__kfence_obj_info'
-	include/linux/regulator/driver.h:434: warning: Function parameter or member 'n_ramp_values' not described in 'regulator_desc'
-	include/linux/textsearch.h:51: warning: Function parameter or member 'list' not described in 'ts_ops'
-	include/linux/usb/typec_altmode.h:132: warning: Function parameter or member 'altmode' not described in 'typec_altmode_get_orientation'
+There are currently 17 kernel-doc warnings on this file:
 	include/net/cfg80211.h:391: warning: Function parameter or member 'bw' not described in 'ieee80211_eht_mcs_nss_supp'
 	include/net/cfg80211.h:437: warning: Function parameter or member 'eht_cap' not described in 'ieee80211_sband_iftype_data'
 	include/net/cfg80211.h:507: warning: Function parameter or member 's1g' not described in 'ieee80211_sta_s1g_cap'
@@ -149,59 +82,160 @@ inside linux-next:
 	include/net/cfg80211.h:5742: warning: Function parameter or member 'valid_links' not described in 'wireless_dev'
 	include/net/cfg80211.h:6076: warning: Function parameter or member 'is_amsdu' not described in 'ieee80211_data_to_8023_exthdr'
 	include/net/cfg80211.h:6949: warning: Function parameter or member 'sig_dbm' not described in 'cfg80211_notify_new_peer_candidate'
-	include/net/mac80211.h:6250: warning: Function parameter or member 'vif' not described in 'ieee80211_channel_switch_disconnect'
-	mm/memory.c:1729: warning: Function parameter or member 'mt' not described in 'unmap_vmas'
-	net/mac80211/sta_info.h:569: warning: Function parameter or member 'cur_max_bandwidth' not described in 'link_sta_info'
 
-Mauro Carvalho Chehab (22):
-  net: cfg80211: fix kernel-doc warnings all over the file
-  net: mac80211: add a missing comma at kernel-doc markup
-  net: mac80211: sta_info: fix a missing kernel-doc struct element
-  x86/sgx: fix kernel-doc markups
-  fscache: fix kernel-doc documentation
-  fs: attr: update vfs uid/gid parameters at kernel-doc
-  fs: namei: address some kernel-doc issues
-  devfreq: shut up kernel-doc warnings
-  drm: amdgpu: amdgpu_dm: fix kernel-doc markups
-  drm: amdgpu: amdgpu_device.c: fix a kernel-doc markup
-  drm: amd: amd_shared.h: Add missing doc for PP_GFX_DCS_MASK
-  drm: gpu_scheduler: fix a kernel-doc warning
-  drm: scheduler: add a missing kernel-doc parameter
-  kfence: fix a kernel-doc parameter
-  mm: document maple tree pointer at unmap_vmas() at memory.c
-  genalloc: add a description for start_addr parameter
-  textsearch: document list inside struct ts_ops
-  regulator: fix a kernel-doc warning
-  dcache: fix a kernel-doc warning
-  usb: typec_altmode: add a missing "@" at a kernel-doc parameter
-  usb: dwc3: document async_callbacks field
-  usb: dwc3: gadget: fix a kernel-doc warning
+Address them, in order to build a better documentation from this
+header.
 
- arch/x86/include/uapi/asm/sgx.h               | 10 +++++--
- drivers/devfreq/devfreq.c                     |  4 +++
- drivers/gpu/drm/amd/amdgpu/amdgpu_device.c    |  2 +-
- .../gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.h |  7 +++++
- drivers/gpu/drm/amd/include/amd_shared.h      |  1 +
- drivers/gpu/drm/scheduler/sched_main.c        |  1 +
- drivers/usb/dwc3/core.h                       |  2 ++
- drivers/usb/dwc3/gadget.c                     |  1 +
- fs/attr.c                                     |  4 +--
- fs/namei.c                                    |  3 ++
- include/drm/gpu_scheduler.h                   |  1 +
- include/linux/dcache.h                        |  2 +-
- include/linux/fscache.h                       |  4 +--
- include/linux/genalloc.h                      |  1 +
- include/linux/kfence.h                        |  1 +
- include/linux/regulator/driver.h              |  1 +
- include/linux/textsearch.h                    |  1 +
- include/linux/usb/typec_altmode.h             |  2 +-
- include/net/cfg80211.h                        | 28 ++++++++++++++-----
- include/net/mac80211.h                        |  2 +-
- mm/memory.c                                   |  2 ++
- net/mac80211/sta_info.h                       |  2 ++
- 22 files changed, 65 insertions(+), 17 deletions(-)
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+---
 
+To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
+See [PATCH 00/22] at: https://lore.kernel.org/all/cover.1656409369.git.mchehab@kernel.org/
+
+ include/net/cfg80211.h | 28 +++++++++++++++++++++-------
+ 1 file changed, 21 insertions(+), 7 deletions(-)
+
+diff --git a/include/net/cfg80211.h b/include/net/cfg80211.h
+index 996782c44838..c7e641071eff 100644
+--- a/include/net/cfg80211.h
++++ b/include/net/cfg80211.h
+@@ -374,6 +374,7 @@ struct ieee80211_sta_he_cap {
+  * and NSS Set field"
+  *
+  * @only_20mhz: MCS/NSS support for 20 MHz-only STA.
++ * @bw: MCS/NSS support for 80, 160 and 320 MHz
+  * @bw._80: MCS/NSS support for BW <= 80 MHz
+  * @bw._160: MCS/NSS support for BW = 160 MHz
+  * @bw._320: MCS/NSS support for BW = 320 MHz
+@@ -420,6 +421,7 @@ struct ieee80211_sta_eht_cap {
+  * @he_cap: holds the HE capabilities
+  * @he_6ghz_capa: HE 6 GHz capabilities, must be filled in for a
+  *	6 GHz band channel (and 0 may be valid value).
++ * @eht_cap: STA's EHT capabilities
+  * @vendor_elems: vendor element(s) to advertise
+  * @vendor_elems.data: vendor element(s) data
+  * @vendor_elems.len: vendor element(s) length
+@@ -495,7 +497,7 @@ struct ieee80211_edmg {
+  * This structure describes most essential parameters needed
+  * to describe 802.11ah S1G capabilities for a STA.
+  *
+- * @s1g_supported: is STA an S1G STA
++ * @s1g: is STA an S1G STA
+  * @cap: S1G capabilities information
+  * @nss_mcs: Supported NSS MCS set
+  */
+@@ -1373,8 +1375,8 @@ struct cfg80211_csa_settings {
+  * Used for bss color change
+  *
+  * @beacon_color_change: beacon data while performing the color countdown
+- * @counter_offsets_beacon: offsets of the counters within the beacon (tail)
+- * @counter_offsets_presp: offsets of the counters within the probe response
++ * @counter_offset_beacon: offsets of the counters within the beacon (tail)
++ * @counter_offset_presp: offsets of the counters within the probe response
+  * @beacon_next: beacon data to be used after the color change
+  * @count: number of beacons until the color change
+  * @color: the color used after the change
+@@ -1417,6 +1419,7 @@ struct iface_combination_params {
+  * @STATION_PARAM_APPLY_UAPSD: apply new uAPSD parameters (uapsd_queues, max_sp)
+  * @STATION_PARAM_APPLY_CAPABILITY: apply new capability
+  * @STATION_PARAM_APPLY_PLINK_STATE: apply new plink state
++ * @STATION_PARAM_APPLY_STA_TXPOWER: apply tx power for STA
+  *
+  * Not all station parameters have in-band "no change" signalling,
+  * for those that don't these flags will are used.
+@@ -2149,6 +2152,9 @@ struct bss_parameters {
+  * @plink_timeout: If no tx activity is seen from a STA we've established
+  *	peering with for longer than this time (in seconds), then remove it
+  *	from the STA's list of peers.  Default is 30 minutes.
++ * @dot11MeshConnectedToAuthServer: if set to true then this mesh STA
++ *	will advertise that it is connected to a authentication server
++ *	in the mesh formation field.
+  * @dot11MeshConnectedToMeshGate: if set to true, advertise that this STA is
+  *      connected to a mesh gate in mesh formation info.  If false, the
+  *      value in mesh formation is determined by the presence of root paths
+@@ -2321,12 +2327,12 @@ struct cfg80211_scan_info {
+ /**
+  * struct cfg80211_scan_6ghz_params - relevant for 6 GHz only
+  *
+- * @short_bssid: short ssid to scan for
++ * @short_ssid: short ssid to scan for
+  * @bssid: bssid to scan for
+  * @channel_idx: idx of the channel in the channel array in the scan request
+  *	 which the above info relvant to
+  * @unsolicited_probe: the AP transmits unsolicited probe response every 20 TU
+- * @short_ssid_valid: short_ssid is valid and can be used
++ * @short_ssid_valid: @short_ssid is valid and can be used
+  * @psc_no_listen: when set, and the channel is a PSC channel, no need to wait
+  *       20 TUs before starting to send probe requests.
+  */
+@@ -3317,7 +3323,7 @@ struct cfg80211_wowlan_wakeup {
+  * @kck: key confirmation key (@kck_len bytes)
+  * @replay_ctr: replay counter (NL80211_REPLAY_CTR_LEN bytes)
+  * @kek_len: length of kek
+- * @kck_len length of kck
++ * @kck_len: length of kck
+  * @akm: akm (oui, id)
+  */
+ struct cfg80211_gtk_rekey_data {
+@@ -3679,6 +3685,7 @@ struct cfg80211_pmsr_ftm_result {
+  * @type: type of the measurement reported, note that we only support reporting
+  *	one type at a time, but you can report multiple results separately and
+  *	they're all aggregated for userspace.
++ * @ftm: FTM result
+  */
+ struct cfg80211_pmsr_result {
+ 	u64 host_time, ap_tsf;
+@@ -3817,7 +3824,7 @@ struct cfg80211_update_owe_info {
+  *	for the entire device
+  * @interface_stypes: bitmap of management frame subtypes registered
+  *	for the given interface
+- * @global_mcast_rx: mcast RX is needed globally for these subtypes
++ * @global_mcast_stypes: mcast RX is needed globally for these subtypes
+  * @interface_mcast_stypes: mcast RX is needed on this interface
+  *	for these subtypes
+  */
+@@ -4940,6 +4947,7 @@ struct wiphy_iftype_ext_capab {
+  * @max_peers: maximum number of peers in a single measurement
+  * @report_ap_tsf: can report assoc AP's TSF for radio resource measurement
+  * @randomize_mac_addr: can randomize MAC address for measurement
++ * @ftm: FTM measurement data
+  * @ftm.supported: FTM measurement is supported
+  * @ftm.asap: ASAP-mode is supported
+  * @ftm.non_asap: non-ASAP-mode is supported
+@@ -5563,6 +5571,7 @@ static inline void wiphy_unlock(struct wiphy *wiphy)
+  * @netdev: (private) Used to reference back to the netdev, may be %NULL
+  * @identifier: (private) Identifier used in nl80211 to identify this
+  *	wireless device if it has no netdev
++ * @u: union containing data specific to @iftype
+  * @connected_addr: (private) BSSID or AP MLD address if connected
+  * @connected: indicates if connected or not (STA mode)
+  * @current_bss: (private) Used by the internal configuration code
+@@ -5624,6 +5633,9 @@ static inline void wiphy_unlock(struct wiphy *wiphy)
+  * @pmsr_free_wk: (private) peer measurements cleanup work
+  * @unprot_beacon_reported: (private) timestamp of last
+  *	unprotected beacon report
++ * @links: array of %IEEE80211_MLD_MAX_NUM_LINKS elements containing @addr
++ *	@ap and @client for each link
++ * @valid_links: bitmap describing what elements of @links are valid
+  */
+ struct wireless_dev {
+ 	struct wiphy *wiphy;
+@@ -6068,6 +6080,7 @@ unsigned int ieee80211_get_mesh_hdrlen(struct ieee80211s_hdr *meshhdr);
+  * @addr: the device MAC address
+  * @iftype: the virtual interface type
+  * @data_offset: offset of payload after the 802.11 header
++ * @is_amsdu: true if the 802.11 header is A-MSDU
+  * Return: 0 on success. Non-zero on error.
+  */
+ int ieee80211_data_to_8023_exthdr(struct sk_buff *skb, struct ethhdr *ehdr,
+@@ -6937,6 +6950,7 @@ void cfg80211_ibss_joined(struct net_device *dev, const u8 *bssid,
+  * @macaddr: the MAC address of the new candidate
+  * @ie: information elements advertised by the peer candidate
+  * @ie_len: length of the information elements buffer
++ * @sig_dbm: signal level in dBm
+  * @gfp: allocation flags
+  *
+  * This function notifies cfg80211 that the mesh peer candidate has been
 -- 
 2.36.1
-
 
