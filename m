@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 885EA55EE97
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 22:00:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FF4C55EEA0
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 22:00:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233771AbiF1Tyl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 15:54:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46030 "EHLO
+        id S233754AbiF1Tyi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 15:54:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232145AbiF1Tu5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 15:50:57 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6C27101D5;
-        Tue, 28 Jun 2022 12:49:48 -0700 (PDT)
+        with ESMTP id S232430AbiF1Tu4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 15:50:56 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C8C013DC8;
+        Tue, 28 Jun 2022 12:49:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656445788; x=1687981788;
+  t=1656445789; x=1687981789;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=f++W//QJlwHfgm1DNYa0qsrg7yVxZsil1tIeQfMWplE=;
-  b=AfngGRlqtLpC26acAHuYJlvLDUCzpYtJFlIVJ3OpNBzqU1GAhGZOWofQ
-   xKodbPyGv1lHZzKBTylTQaRxe3jZzTCVU7TrwFu7fIOfXmqBVp5xNAGiG
-   2B3mwNg+VMPj5dmEyro/+9Do9pu9fKSQtn2r/Tfv3S7tSPGt5OY7I+FwN
-   eFK+xR81T1/fU28tRQx/CLEb8Ubdf4vmF7kWCDdBkdLCua7oriLGRp1si
-   RFuuNH9dGcXL3gxC1/GHJS60PcN5SR7XsmujSnmMKlUqOFV//HEpZjDLM
-   8ot3BKOZTTf0pZ4aKWldmljbiJURTeeyCHNRHZSH81NC4VaxGhgz9sfza
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="264874207"
+  bh=1xrvhIX2IWhOahXdK1kR3UK2m56gKZ4b7bS+Cp3UyoY=;
+  b=UNFyog5gECIDIzKB4WbDHf9yKQDb9XjLLsdTPouQSnCuIsdlBU7D99DB
+   pUT+u/qvn55h8k2lV5ntKVTM+EjB6FZCp0VYkmCN+0OSx7X3Xefs7xxcU
+   Cz1qddahTEdaPbKo2DrBjIx/bm374ZBVwNA1c4I1CDOxirPF6RfVts5Mw
+   1IbGnXv+0aTNPvc1+4ArAHGxil2ozCRW58g4Cka4SaiseFeIy83bpf8mf
+   lxR/WN3G7LokNruh7oPEFB6LvRn0G3jt/CLdeswAqPftB5bo8iQScUZpJ
+   mSIMMtFh14lqkZepDeLPoUC9PBaPxDBNKS8Onsow/QPBEsAnhoW7ya1uj
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="262242974"
 X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
-   d="scan'208";a="264874207"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 12:49:48 -0700
+   d="scan'208";a="262242974"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 12:49:49 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
-   d="scan'208";a="565181352"
+   d="scan'208";a="836809521"
 Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga006.jf.intel.com with ESMTP; 28 Jun 2022 12:49:43 -0700
+  by fmsmga006.fm.intel.com with ESMTP; 28 Jun 2022 12:49:45 -0700
 Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 25SJmr9a022013;
-        Tue, 28 Jun 2022 20:49:41 +0100
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 25SJmr9b022013;
+        Tue, 28 Jun 2022 20:49:43 +0100
 From:   Alexander Lobakin <alexandr.lobakin@intel.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -64,72 +64,150 @@ Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
         Willem de Bruijn <willemb@google.com>, bpf@vger.kernel.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         xdp-hints@xdp-project.net
-Subject: [PATCH RFC bpf-next 36/52] bpf, cpumap: switch to napi_skb_cache_get_bulk()
-Date:   Tue, 28 Jun 2022 21:47:56 +0200
-Message-Id: <20220628194812.1453059-37-alexandr.lobakin@intel.com>
+Subject: [PATCH RFC bpf-next 37/52] rcupdate: fix access helpers for incomplete struct pointers on GCC < 10
+Date:   Tue, 28 Jun 2022 21:47:57 +0200
+Message-Id: <20220628194812.1453059-38-alexandr.lobakin@intel.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220628194812.1453059-1-alexandr.lobakin@intel.com>
 References: <20220628194812.1453059-1-alexandr.lobakin@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now that cpumap uses GRO, which drops unused skb heads to the NAPI
-cache, use napi_skb_cache_get_bulk() to try to reuse cached entries
-and lower the MM layer pressure.
-In the situation when all 8 skbs from one cpumap batch goes into one
-GRO skb (so the rest 7 go into the cache), there will now be only 1
-skb to allocate per cycle instead of 8. If there is some other work
-happening in between the cycles, even all 8 might be getting
-decached each cycle.
-This makes the BH-off period per each batch slightly longer --
-previously, skb allocation was happening in the process context.
+It's been found that currently it is impossible to use RCU for
+incomplete struct pointers.
+RCU access helpers have the following construct:
 
+	typeof(*p) *local = ...
+
+GCC versions older than 10 don't look at the whole sentence and
+believe that there's a dereference happening inside the typeof(),
+although it does not.
+As RCU doesn't imply any dereference, but only the way to store and
+access pointers, this is not a valid case. Moreover, Clang and GCC
+10 onwards evaluate it with no issues.
+Fix this by introducing a new macro, __rcutype(), which will take
+care of pointer annotations inside the RCU access helpers, in two
+different ways depending on the compiler used. For sane compilers,
+leave it as it is for now, as it ensures that the passed argument
+is a pointer, and for the affected ones use...
+`typeof(0 ? (p) : (p))`. As:
+
+void fc(void) { }
+
+...
+	pr_info("%d", __builtin_types_compatible(typeof(*fn) *, typeof(fn)));
+	pr_info("%d", __builtin_types_compatible(typeof(*fn) *, typeof(&fn)));
+	pr_info("%d", __builtin_types_compatible(typeof(*fn) *,
+						 typeof(0 ? (fn) : (fn)));
+
+emits:
+
+011
+
+and we can't use the second for non-functions.
+
+Fixes: ca5ecddfa8fc ("rcu: define __rcu address space modifier for sparse")
 Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
 ---
- kernel/bpf/cpumap.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ include/linux/rcupdate.h | 37 ++++++++++++++++++++++++++-----------
+ 1 file changed, 26 insertions(+), 11 deletions(-)
 
-diff --git a/kernel/bpf/cpumap.c b/kernel/bpf/cpumap.c
-index 145f49de0931..1bb3ae570e6c 100644
---- a/kernel/bpf/cpumap.c
-+++ b/kernel/bpf/cpumap.c
-@@ -365,7 +365,6 @@ static int cpu_map_kthread_run(void *data)
- 	while (!kthread_should_stop() || !__ptr_ring_empty(rcpu->queue)) {
- 		struct xdp_cpumap_stats stats = {}; /* zero stats */
- 		unsigned int kmem_alloc_drops = 0, sched = 0;
--		gfp_t gfp = __GFP_ZERO | GFP_ATOMIC;
- 		int i, n, m, nframes, xdp_n;
- 		void *frames[CPUMAP_BATCH];
- 		void *skbs[CPUMAP_BATCH];
-@@ -416,8 +415,10 @@ static int cpu_map_kthread_run(void *data)
+diff --git a/include/linux/rcupdate.h b/include/linux/rcupdate.h
+index 1a32036c918c..f5971fccf852 100644
+--- a/include/linux/rcupdate.h
++++ b/include/linux/rcupdate.h
+@@ -358,18 +358,33 @@ static inline void rcu_preempt_sleep_check(void) { }
+  * (e.g., __srcu), should this make sense in the future.
+  */
  
- 		/* Support running another XDP prog on this CPU */
- 		nframes = cpu_map_bpf_prog_run(rcpu, frames, xdp_n, &stats, &list);
-+		local_bh_disable();
++/*
++ * Unfortunately, GCC versions older than 10 don't look at the whole sentence
++ * and treat `typeof(*(p)) *` as dereferencing although it is not. This makes
++ * it impossible to use those helpers with pointers to incomplete structures.
++ * Plain `typeof(p)` is not the same, as `typeof(func)` returns the type of a
++ * function, not a pointer to it, as `typeof(*(func)) *` does.
++ * `typeof(<anything> ? (func) : (func))` is silly; however, it works just as
++ * the original definition.
++ */
++#if defined(CONFIG_CC_IS_GCC) && CONFIG_GCC_VERSION < 100000
++#define __rcutype(p, ...)	typeof(0 ? (p) : (p)) __VA_ARGS__
++#else
++#define __rcutype(p, ...)	typeof(*(p)) __VA_ARGS__ *
++#endif
 +
- 		if (nframes) {
--			m = kmem_cache_alloc_bulk(skbuff_head_cache, gfp, nframes, skbs);
-+			m = napi_skb_cache_get_bulk(skbs, nframes);
- 			if (unlikely(m == 0)) {
- 				for (i = 0; i < nframes; i++)
- 					skbs[i] = NULL; /* effect: xdp_return_frame */
-@@ -425,7 +426,6 @@ static int cpu_map_kthread_run(void *data)
- 			}
- 		}
+ #ifdef __CHECKER__
+ #define rcu_check_sparse(p, space) \
+-	((void)(((typeof(*p) space *)p) == p))
++	((void)((__rcutype(p, space))(p) == (p)))
+ #else /* #ifdef __CHECKER__ */
+ #define rcu_check_sparse(p, space)
+ #endif /* #else #ifdef __CHECKER__ */
  
--		local_bh_disable();
- 		for (i = 0; i < nframes; i++) {
- 			struct xdp_frame *xdpf = frames[i];
- 			struct sk_buff *skb = skbs[i];
+ #define __unrcu_pointer(p, local)					\
+ ({									\
+-	typeof(*p) *local = (typeof(*p) *__force)(p);			\
++	__rcutype(p) local = (__rcutype(p, __force))(p);		\
+ 	rcu_check_sparse(p, __rcu);					\
+-	((typeof(*p) __force __kernel *)(local)); 			\
++	((__rcutype(p, __force __kernel))(local)); 			\
+ })
+ /**
+  * unrcu_pointer - mark a pointer as not being RCU protected
+@@ -382,29 +397,29 @@ static inline void rcu_preempt_sleep_check(void) { }
+ 
+ #define __rcu_access_pointer(p, local, space) \
+ ({ \
+-	typeof(*p) *local = (typeof(*p) *__force)READ_ONCE(p); \
++	__rcutype(p) local = (__rcutype(p, __force))READ_ONCE(p); \
+ 	rcu_check_sparse(p, space); \
+-	((typeof(*p) __force __kernel *)(local)); \
++	((__rcutype(p, __force __kernel))(local)); \
+ })
+ #define __rcu_dereference_check(p, local, c, space) \
+ ({ \
+ 	/* Dependency order vs. p above. */ \
+-	typeof(*p) *local = (typeof(*p) *__force)READ_ONCE(p); \
++	__rcutype(p) local = (__rcutype(p, __force))READ_ONCE(p); \
+ 	RCU_LOCKDEP_WARN(!(c), "suspicious rcu_dereference_check() usage"); \
+ 	rcu_check_sparse(p, space); \
+-	((typeof(*p) __force __kernel *)(local)); \
++	((__rcutype(p, __force __kernel))(local)); \
+ })
+ #define __rcu_dereference_protected(p, local, c, space) \
+ ({ \
+ 	RCU_LOCKDEP_WARN(!(c), "suspicious rcu_dereference_protected() usage"); \
+ 	rcu_check_sparse(p, space); \
+-	((typeof(*p) __force __kernel *)(p)); \
++	((__rcutype(p, __force __kernel))(p)); \
+ })
+ #define __rcu_dereference_raw(p, local) \
+ ({ \
+ 	/* Dependency order vs. p above. */ \
+-	typeof(p) local = READ_ONCE(p); \
+-	((typeof(*p) __force __kernel *)(local)); \
++	__rcutype(p) local = READ_ONCE(p); \
++	((__rcutype(p, __force __kernel))(local)); \
+ })
+ #define rcu_dereference_raw(p) __rcu_dereference_raw(p, __UNIQUE_ID(rcu))
+ 
+@@ -412,7 +427,7 @@ static inline void rcu_preempt_sleep_check(void) { }
+  * RCU_INITIALIZER() - statically initialize an RCU-protected global variable
+  * @v: The value to statically initialize with.
+  */
+-#define RCU_INITIALIZER(v) (typeof(*(v)) __force __rcu *)(v)
++#define RCU_INITIALIZER(v) (__rcutype(v, __force __rcu))(v)
+ 
+ /**
+  * rcu_assign_pointer() - assign to RCU-protected pointer
 -- 
 2.36.1
 
