@@ -2,232 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 66C5D55DBBC
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:25:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8440D55DB33
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:24:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344990AbiF1Kik (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 06:38:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41252 "EHLO
+        id S1344972AbiF1KjR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 06:39:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343767AbiF1Kij (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 06:38:39 -0400
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2050.outbound.protection.outlook.com [40.107.92.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8714510546;
-        Tue, 28 Jun 2022 03:38:34 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fd9Jr2Lw8h8j5Y7fp5/zfe3LkOA5fy4h1uh+eMj7otu4nztGgCE+i6zC0l+W+wOoL+xYkHymqGGNoBsydXXcfb6G1ptxUldcykh0H+D2w+5JwN9UUIzl49aE44KTfgazX++jiS8YafuIqcr9W6DdxplPpY0GqAVqR1KA2vq4FNcqaJrF1UMbUUTrzMtYD0f9MQXSyoVQBJA3EiCMzbyU7pz5QZwo8ysmaD6OUMLCCjaVCXMBvoY6iP15XB7TYLDZIJ3g6ZBeOVLXZ71iKlSHOoapUI/iyqUcO0maWVt67+NtyS4Se4U5+xxq88AXvFIXyYFXNW3BqgH5txDrsXK13w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vrzsN/IbPGs0RyNyU7wBMc4OxtCdSfJiP46j5mrJ7dQ=;
- b=UgTwbTDY1Xj8zziUnwZsXGug2iTwOKPrfzS26PJub0v8PAvxKZ7pepqC+U+xtoR2HOzHw57PJKc+14GpcAKfmwSg0acsGeTk8NuUI6p9vFRirWPUdBg1N+bWzhOxiB0BkrhQiQcDCS+vB6Kq372qYsSw7uo92zzpzNXWLHIQs84/SziOvK02GOSmWAM3e5yEXDs7JRLJYfcj501S+B+2er9NlrFjbZ4fSkL6M7ovulv8ZAhgx4y5WrwtBUJXv4uiVU0LmLKFkVFxKZBtP2z3hn8ngjagKz9Gq9pKOCAEoEP9WzyiEFebIGFwp+MFkMz2emz7ZODitjW1qgiWPYHp6A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.236) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vrzsN/IbPGs0RyNyU7wBMc4OxtCdSfJiP46j5mrJ7dQ=;
- b=KjANjbVIsia47KhrPZ93DXvyVtgJatdJZIXtinGU8D3/Ht91HTvMN0bmWyaMHxKmLqquw+kfs1EQ/kteh6hchj1O07HFd6kmD9cG0LOJoQg4JhTKeISwWevODrVfCWd1f+xEtLAsI0ndXDco8MpwEuokNb/B/4VntJqXY8hURv3uRuGNWIG+xs97pFy+GqIt16AdxW5FL9ZJBCtGOTUqpTQ/f2F2hCDyJ+finbO2eR+MPds/S+F0FTcS776FFw58BmjOIgxtqMK0EwjMGiwXLxo/MEaFuyPn/KxCeVzkhkfWLs5mS79x9iyMRFgVDYqTzLzK2EbnN5l6m0CfmNmRrQ==
-Received: from BN8PR04CA0059.namprd04.prod.outlook.com (2603:10b6:408:d4::33)
- by BYAPR12MB4759.namprd12.prod.outlook.com (2603:10b6:a03:9d::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.18; Tue, 28 Jun
- 2022 10:38:32 +0000
-Received: from BN8NAM11FT016.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:d4:cafe::20) by BN8PR04CA0059.outlook.office365.com
- (2603:10b6:408:d4::33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.16 via Frontend
- Transport; Tue, 28 Jun 2022 10:38:31 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.236; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.236) by
- BN8NAM11FT016.mail.protection.outlook.com (10.13.176.97) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5373.15 via Frontend Transport; Tue, 28 Jun 2022 10:38:31 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL109.nvidia.com
- (10.27.9.19) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Tue, 28 Jun
- 2022 10:38:30 +0000
-Received: from localhost.localdomain (10.126.230.35) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Tue, 28 Jun
- 2022 03:38:27 -0700
-From:   Petr Machata <petrm@nvidia.com>
-To:     <netdev@vger.kernel.org>, <linux-kselftest@vger.kernel.org>
-CC:     <mlxsw@nvidia.com>, Petr Machata <petrm@nvidia.com>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <shuah@kernel.org>,
-        Amit Cohen <amcohen@nvidia.com>
-Subject: [PATCH net-next] selftests: forwarding: ethtool_extended_state: Convert to busywait
-Date:   Tue, 28 Jun 2022 12:37:44 +0200
-Message-ID: <b3f4a264c0270f3e4e22e291ee843fbf72d3fc7f.1656412324.git.petrm@nvidia.com>
-X-Mailer: git-send-email 2.36.1
+        with ESMTP id S1344209AbiF1KjQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 06:39:16 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 740512E9C7
+        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 03:39:15 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1o68cc-00089w-0A; Tue, 28 Jun 2022 12:39:06 +0200
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 3AD36A0E07;
+        Tue, 28 Jun 2022 10:38:54 +0000 (UTC)
+Date:   Tue, 28 Jun 2022 12:38:50 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Dario Binacchi <dario.binacchi@amarulasolutions.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Amarula patchwork <linux-amarula@amarulasolutions.com>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        michael@amarulasolutions.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH v4 05/12] can: slcan: use CAN network device driver API
+Message-ID: <20220628103850.4g2fyjybokraqz4b@pengutronix.de>
+References: <20220614122821.3646071-1-dario.binacchi@amarulasolutions.com>
+ <20220614122821.3646071-6-dario.binacchi@amarulasolutions.com>
+ <20220628092833.uo66jbnwhh5af6je@pengutronix.de>
+ <CABGWkvrdw27T+g==HrknM+52mhvgEDS_4P9__7tsc+aV-oAvCw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.126.230.35]
-X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: dd083c5a-dfa9-49c9-f569-08da58f25882
-X-MS-TrafficTypeDiagnostic: BYAPR12MB4759:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 0d6WZgLVO3k/rpS3/+mZBJS3k4Fc+c2Vx5wDSh6+Vkv7vOIkxw/r7fslIOH8LrPZi8m+B90Z+MJazKydzHlg3stoOEfRcEALxu8oPKJ26PlF0Qrl7Fx7iKkOT7JK0VomYmkR19W/EK3jGRbNVWpfFHo1jhSeSDLMv5p4tH3PF4GlhLu2jMGUGZSaycpJHR/Ad9isa9IKZH+5G8tH+0gARIddQWte/uU07vWasZKtyhV4FOCXYrAJjMVsj2La5n7ouNnlJuv4R8xU1BNHHgOVW24Oc5Figu1VNl8QjCsAwZDk0JNaxyC5NTNrDLFGQK0SFgpEb83kOR/nGXTw0EggV3NxzsH5P2uEhG2hzhxLntvbRnKKhW3j6sm+VP8tGNPt7AZaPZsf2W+8h/kMhOx7L4ccHjGSl28OZdiYUQfP0yVPnnSuKS8y6CPXFpTTsycJg13HCdZO06qP3tqsh9uOSWtfk0T2lhYC8OJ0Tnz5bRPeGzPN/EHymWvcgMTiJahszxJPz2W2383C+7pGWjGPb/kKV1ZGlkkvVTgLmh8hn8EtXXekhKFTTjLpJUXAtioNuo6I7vzS41nZyuiRnu60+qgHzpxwCLMkzOQmi251jpcsqCXerXKDuiAjet/h1uPOoviIO5yvChL+hgmA7MEJzDPbhmcq2cWkg+V/VnyhdH+Od+jytscTAgmmLimqva/gF8i8kFezsft6DIhw/9z8v8ZvcZKT4O5woILDWqJF5Ze92MIbN442NnUyCf0ZO9+T8Ac7bmmdoXBgIMuadSOfOIHuy0XtProtcVKoQnuy/Ec/NChxZ0sVX/HknIadjVTEDVXSaQKsEmeOklcc8ZJWwA==
-X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(376002)(346002)(39860400002)(136003)(396003)(46966006)(40470700004)(36840700001)(186003)(83380400001)(336012)(41300700001)(8676002)(16526019)(6666004)(107886003)(26005)(426003)(47076005)(2616005)(54906003)(70586007)(36860700001)(81166007)(356005)(82740400003)(4326008)(36756003)(82310400005)(2906002)(5660300002)(86362001)(478600001)(110136005)(40480700001)(8936002)(70206006)(316002)(40460700003)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jun 2022 10:38:31.4935
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: dd083c5a-dfa9-49c9-f569-08da58f25882
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT016.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB4759
-X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="tbsrzes5xfujdruo"
+Content-Disposition: inline
+In-Reply-To: <CABGWkvrdw27T+g==HrknM+52mhvgEDS_4P9__7tsc+aV-oAvCw@mail.gmail.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, this script sets up the test scenario, which is supposed to end
-in an inability of the system to negotiate a link. It then waits for a bit,
-and verifies that the system can diagnose why the link was not established.
 
-The wait time for the scenario where different link speeds are forced on
-the two ends of a loopback cable, was set to 4 seconds, which exactly
-covered it. As of a recent mlxsw firmware update, this time gets longer,
-and this test starts failing.
+--tbsrzes5xfujdruo
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-The time that selftests currently wait for links to be established is
-currently $WAIT_TIMEOUT, or 20 seconds. It seems reasonable that if this is
-the time necessary to establish and bring up a link, it should also be
-enough to determine that a link cannot be established and why.
+On 28.06.2022 11:48:48, Dario Binacchi wrote:
+> Hi Marc,
+>=20
+> On Tue, Jun 28, 2022 at 11:28 AM Marc Kleine-Budde <mkl@pengutronix.de> w=
+rote:
+> >
+> > On 14.06.2022 14:28:14, Dario Binacchi wrote:
+> > > As suggested by commit [1], now the driver uses the functions and the
+> > > data structures provided by the CAN network device driver interface.
+> > >
+> > > Currently the driver doesn't implement a way to set bitrate for SLCAN
+> > > based devices via ip tool, so you'll have to do this by slcand or
+> > > slcan_attach invocation through the -sX parameter:
+> > >
+> > > - slcan_attach -f -s6 -o /dev/ttyACM0
+> > > - slcand -f -s8 -o /dev/ttyUSB0
+> > >
+> > > where -s6 in will set adapter's bitrate to 500 Kbit/s and -s8 to
+> > > 1Mbit/s.
+> > > See the table below for further CAN bitrates:
+> > > - s0 ->   10 Kbit/s
+> > > - s1 ->   20 Kbit/s
+> > > - s2 ->   50 Kbit/s
+> > > - s3 ->  100 Kbit/s
+> > > - s4 ->  125 Kbit/s
+> > > - s5 ->  250 Kbit/s
+> > > - s6 ->  500 Kbit/s
+> > > - s7 ->  800 Kbit/s
+> > > - s8 -> 1000 Kbit/s
+> > >
+> > > In doing so, the struct can_priv::bittiming.bitrate of the driver is =
+not
+> > > set and since the open_candev() checks that the bitrate has been set,=
+ it
+> > > must be a non-zero value, the bitrate is set to a fake value (-1U)
+> > > before it is called.
+> > >
+> > > The patch also changes the slcan_devs locking from rtnl to spin_lock.=
+ The
+> > > change was tested with a kernel with the CONFIG_PROVE_LOCKING option
+> > > enabled that did not show any errors.
+> >
+> > You're not allowed to call alloc_candev() with a spin_lock held. See
+> > today's kernel test robot mail:
+> >
+> > | https://lore.kernel.org/all/YrpqO5jepAvv4zkf@xsang-OptiPlex-9020
+> >
+> > I think it's best to keep the rtnl for now.
+>=20
+> The rtnl_lock() uses a mutex while I used a spin_lock.
+>=20
+> static DEFINE_MUTEX(rtnl_mutex);
+>=20
+> void rtnl_lock(void)
+> {
+> mutex_lock(&rtnl_mutex);
+> }
+> EXPORT_SYMBOL(rtnl_lock);
+>=20
+> So might it be worth trying with a mutex instead of rtnl_lock(), or do
+> you think it is
+> safer to return to rtn_lock () anyway?
 
-Therefore in this patch, convert the sleeps to busywaits, so that if a
-failure is established sooner (as is expected), the test runs quicker. And
-use $WAIT_TIMEOUT as the time to wait.
+As Max pointed out the whole static dev array is not needed at all. Just
+keep the rtnl, until removing the array altogether.
 
-Signed-off-by: Petr Machata <petrm@nvidia.com>
-Reviewed-by: Amit Cohen <amcohen@nvidia.com>
----
- .../net/forwarding/ethtool_extended_state.sh  | 43 ++++++++++++-------
- 1 file changed, 28 insertions(+), 15 deletions(-)
+regards,
+Marc
 
-diff --git a/tools/testing/selftests/net/forwarding/ethtool_extended_state.sh b/tools/testing/selftests/net/forwarding/ethtool_extended_state.sh
-index 4b42dfd4efd1..072faa77f53b 100755
---- a/tools/testing/selftests/net/forwarding/ethtool_extended_state.sh
-+++ b/tools/testing/selftests/net/forwarding/ethtool_extended_state.sh
-@@ -11,6 +11,8 @@ NUM_NETIFS=2
- source lib.sh
- source ethtool_lib.sh
- 
-+TIMEOUT=$((WAIT_TIMEOUT * 1000)) # ms
-+
- setup_prepare()
- {
- 	swp1=${NETIFS[p1]}
-@@ -18,7 +20,7 @@ setup_prepare()
- 	swp3=$NETIF_NO_CABLE
- }
- 
--ethtool_extended_state_check()
-+ethtool_ext_state()
- {
- 	local dev=$1; shift
- 	local expected_ext_state=$1; shift
-@@ -30,21 +32,27 @@ ethtool_extended_state_check()
- 		| sed -e 's/^[[:space:]]*//')
- 	ext_state=$(echo $ext_state | cut -d "," -f1)
- 
--	[[ $ext_state == $expected_ext_state ]]
--	check_err $? "Expected \"$expected_ext_state\", got \"$ext_state\""
--
--	[[ $ext_substate == $expected_ext_substate ]]
--	check_err $? "Expected \"$expected_ext_substate\", got \"$ext_substate\""
-+	if [[ $ext_state != $expected_ext_state ]]; then
-+		echo "Expected \"$expected_ext_state\", got \"$ext_state\""
-+		return 1
-+	fi
-+	if [[ $ext_substate != $expected_ext_substate ]]; then
-+		echo "Expected \"$expected_ext_substate\", got \"$ext_substate\""
-+		return 1
-+	fi
- }
- 
- autoneg()
- {
-+	local msg
-+
- 	RET=0
- 
- 	ip link set dev $swp1 up
- 
--	sleep 4
--	ethtool_extended_state_check $swp1 "Autoneg" "No partner detected"
-+	msg=$(busywait $TIMEOUT ethtool_ext_state $swp1 \
-+			"Autoneg" "No partner detected")
-+	check_err $? "$msg"
- 
- 	log_test "Autoneg, No partner detected"
- 
-@@ -53,6 +61,8 @@ autoneg()
- 
- autoneg_force_mode()
- {
-+	local msg
-+
- 	RET=0
- 
- 	ip link set dev $swp1 up
-@@ -65,12 +75,13 @@ autoneg_force_mode()
- 	ethtool_set $swp1 speed $speed1 autoneg off
- 	ethtool_set $swp2 speed $speed2 autoneg off
- 
--	sleep 4
--	ethtool_extended_state_check $swp1 "Autoneg" \
--		"No partner detected during force mode"
-+	msg=$(busywait $TIMEOUT ethtool_ext_state $swp1 \
-+			"Autoneg" "No partner detected during force mode")
-+	check_err $? "$msg"
- 
--	ethtool_extended_state_check $swp2 "Autoneg" \
--		"No partner detected during force mode"
-+	msg=$(busywait $TIMEOUT ethtool_ext_state $swp2 \
-+			"Autoneg" "No partner detected during force mode")
-+	check_err $? "$msg"
- 
- 	log_test "Autoneg, No partner detected during force mode"
- 
-@@ -83,12 +94,14 @@ autoneg_force_mode()
- 
- no_cable()
- {
-+	local msg
-+
- 	RET=0
- 
- 	ip link set dev $swp3 up
- 
--	sleep 1
--	ethtool_extended_state_check $swp3 "No cable"
-+	msg=$(busywait $TIMEOUT ethtool_ext_state $swp3 "No cable")
-+	check_err $? "$msg"
- 
- 	log_test "No cable"
- 
--- 
-2.35.3
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
+--tbsrzes5xfujdruo
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmK62jcACgkQrX5LkNig
+010jzwf/YtSV3kHaxcOCJQDr/oebHEMDUbH6lToSB5vR4Wo0ADsCZjTs5Z2HwNEv
+onCHfInDk50Ky1seqz0GrtIH9mPZIPLFyrQlTtFNfdkluQJy1/JnoZRBzkjMMDkD
+PS858Y/ntrQJDAAklT7c2YbNmvN9EkoNDSHMG6lVgB0IDY3+EHHHQKZf1sWh+4wf
+3aQ8UHguqfqJWnGC43azlu1SzjVRmVQ322C0e8xyqXmpc/XZ9jHJAW/TWq/+2aD1
+8wkZS1gkCyg0eCh4AK5tEHHxNWkhJrDDjB4NBY/G6Yg3RNxwgBOv/gVW2ndQIYJB
+nPNJcJ9+iIE2zrUEtHRZSHimkL/ZSQ==
+=bC7y
+-----END PGP SIGNATURE-----
+
+--tbsrzes5xfujdruo--
