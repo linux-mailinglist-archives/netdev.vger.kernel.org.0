@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E029955EE44
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 21:59:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EE6855EEB2
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 22:00:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232864AbiF1Tva (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 15:51:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45704 "EHLO
+        id S232875AbiF1Tvb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 15:51:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230298AbiF1Tuv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 15:50:51 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89D963819E;
-        Tue, 28 Jun 2022 12:49:19 -0700 (PDT)
+        with ESMTP id S230151AbiF1Tuw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 15:50:52 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB03E3A718;
+        Tue, 28 Jun 2022 12:49:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656445759; x=1687981759;
+  t=1656445760; x=1687981760;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=KvcLFlvO+Aq/YsYPMNHuBin8lYDZ9TRXn0mscwW8tkw=;
-  b=V/GfsjM42m5u0YL8eT/47JtQYYGDQRC66vGuDwGm1YaPkTMBNAWg7Zqf
-   HLFUuExKiaV1DwQllpe5oZ34TrnSPeNGUYwCW6j4sKDGFVSmIyEBoYLRs
-   WehCNUsq3ASxJx8ow52d1FNZxPkFYAZ1plDzsUN1SycIbVwXxVv5EkKkC
-   Qft/Rm6l2JB93rgN1aA9kjLIa881RZHv63QEZZIM8BhId8ze+uevxSB8e
-   /GtWCVjYsHb/p7SjO4nyZp+0w75/Efoz+iSp9VZLcDyEbPVz29hnksg0O
-   +5B3DV+jcvvUc/RQt27x96ECRgGCoedzj9etYCSsE9usQo+8K8xLRAmun
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="343523213"
+  bh=Br7PA2LhyRZLtGRuJC1NdDKYX7AsconXTD56haHkAIc=;
+  b=gMf7pQgWoNgVnc+Lnz/9QCg6nQ1Qj0YebyBl/ga5IDMfduefkTNc4A/b
+   IYEgF47Yl13KGqt5qVfroNTNsQS0L31w61lr5IufzRylvYyvDQr6pIGfs
+   kD1v88+X45LzxpJFfe7D6vfhxakvSVdKkkxzXVpbMR7QCGST/czfOexuZ
+   WBTs/GU9yDRV5N3YD/cdHY/qjSXz+B7DigtQ1Dq4F9GXdkYstX1jsOatx
+   tscKnMFNA1WGzvjNUVpndjMFU+6EE6nKrIbdk3mV1DSJg8zCtvO7HVYet
+   UDApQS1hED7OqgwzJxoG+WmO4yPo0EdU+gxo4g9QLRRDM7/w8leIb7AtR
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="282927787"
 X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
-   d="scan'208";a="343523213"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 12:49:19 -0700
+   d="scan'208";a="282927787"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 12:49:20 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
-   d="scan'208";a="717555046"
+   d="scan'208";a="540598913"
 Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga004.jf.intel.com with ESMTP; 28 Jun 2022 12:49:14 -0700
+  by orsmga003.jf.intel.com with ESMTP; 28 Jun 2022 12:49:15 -0700
 Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 25SJmr9E022013;
-        Tue, 28 Jun 2022 20:49:12 +0100
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 25SJmr9F022013;
+        Tue, 28 Jun 2022 20:49:14 +0100
 From:   Alexander Lobakin <alexandr.lobakin@intel.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -64,9 +64,9 @@ Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
         Willem de Bruijn <willemb@google.com>, bpf@vger.kernel.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         xdp-hints@xdp-project.net
-Subject: [PATCH RFC bpf-next 14/52] libbpf: pass &bpf_link_create_opts directly to bpf_program__attach_fd()
-Date:   Tue, 28 Jun 2022 21:47:34 +0200
-Message-Id: <20220628194812.1453059-15-alexandr.lobakin@intel.com>
+Subject: [PATCH RFC bpf-next 15/52] libbpf: add bpf_program__attach_xdp_opts()
+Date:   Tue, 28 Jun 2022 21:47:35 +0200
+Message-Id: <20220628194812.1453059-16-alexandr.lobakin@intel.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220628194812.1453059-1-alexandr.lobakin@intel.com>
 References: <20220628194812.1453059-1-alexandr.lobakin@intel.com>
@@ -82,84 +82,107 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Instead of providing an optional @btf_id which is zero in 3 of 4
-cases as an argument, pass a pointer to &bpf_link_create_ops
-directly instead. This way we can just pass %NULL when no opts are
-needed and use any of its fields on our wish otherwise.
+Add a version of bpf_program__attach_xdp() which can take an
+optional pointer to &bpf_xdp_attach_opts to carry opts from it to
+bpf_link_create(), primarily to be able to specify a BTF/type ID and
+a metadata threshold when attaching an XDP program.
+This struct is originally designed for bpf_xdp_{at,de}tach(), reuse
+it here as well to not spawn entities (with ::old_prog_fd reused for
+XDP flags via union).
 
 Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
 ---
- tools/lib/bpf/libbpf.c | 20 ++++++++++++--------
- 1 file changed, 12 insertions(+), 8 deletions(-)
+ tools/lib/bpf/libbpf.c   | 16 ++++++++++++++++
+ tools/lib/bpf/libbpf.h   | 27 ++++++++++++++++++---------
+ tools/lib/bpf/libbpf.map |  1 +
+ 3 files changed, 35 insertions(+), 9 deletions(-)
 
 diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 9bda111c8167..f4014c09f1cf 100644
+index f4014c09f1cf..b6cc238a2657 100644
 --- a/tools/lib/bpf/libbpf.c
 +++ b/tools/lib/bpf/libbpf.c
-@@ -11958,11 +11958,10 @@ static int attach_lsm(const struct bpf_program *prog, long cookie, struct bpf_li
+@@ -12010,6 +12010,22 @@ struct bpf_link *bpf_program__attach_xdp(const struct bpf_program *prog, int ifi
+ 	return bpf_program__attach_fd(prog, ifindex, NULL, "xdp");
  }
  
- static struct bpf_link *
--bpf_program__attach_fd(const struct bpf_program *prog, int target_fd, int btf_id,
-+bpf_program__attach_fd(const struct bpf_program *prog, int target_fd,
-+		       const struct bpf_link_create_opts *opts,
- 		       const char *target_name)
- {
--	DECLARE_LIBBPF_OPTS(bpf_link_create_opts, opts,
--			    .target_btf_id = btf_id);
- 	enum bpf_attach_type attach_type;
- 	char errmsg[STRERR_BUFSIZE];
- 	struct bpf_link *link;
-@@ -11980,7 +11979,7 @@ bpf_program__attach_fd(const struct bpf_program *prog, int target_fd, int btf_id
- 	link->detach = &bpf_link__detach_fd;
- 
- 	attach_type = bpf_program__expected_attach_type(prog);
--	link_fd = bpf_link_create(prog_fd, target_fd, attach_type, &opts);
-+	link_fd = bpf_link_create(prog_fd, target_fd, attach_type, opts);
- 	if (link_fd < 0) {
- 		link_fd = -errno;
- 		free(link);
-@@ -11996,19 +11995,19 @@ bpf_program__attach_fd(const struct bpf_program *prog, int target_fd, int btf_id
- struct bpf_link *
- bpf_program__attach_cgroup(const struct bpf_program *prog, int cgroup_fd)
- {
--	return bpf_program__attach_fd(prog, cgroup_fd, 0, "cgroup");
-+	return bpf_program__attach_fd(prog, cgroup_fd, NULL, "cgroup");
- }
- 
- struct bpf_link *
- bpf_program__attach_netns(const struct bpf_program *prog, int netns_fd)
- {
--	return bpf_program__attach_fd(prog, netns_fd, 0, "netns");
-+	return bpf_program__attach_fd(prog, netns_fd, NULL, "netns");
- }
- 
- struct bpf_link *bpf_program__attach_xdp(const struct bpf_program *prog, int ifindex)
- {
- 	/* target_fd/target_ifindex use the same field in LINK_CREATE */
--	return bpf_program__attach_fd(prog, ifindex, 0, "xdp");
-+	return bpf_program__attach_fd(prog, ifindex, NULL, "xdp");
- }
- 
++struct bpf_link *
++bpf_program__attach_xdp_opts(const struct bpf_program *prog, int ifindex,
++			     const struct bpf_xdp_attach_opts *opts)
++{
++	LIBBPF_OPTS(bpf_link_create_opts, lc_opts);
++
++	if (!OPTS_VALID(opts, bpf_xdp_attach_opts))
++		return libbpf_err_ptr(-EINVAL);
++
++	lc_opts.flags = OPTS_GET(opts, flags, 0);
++	lc_opts.xdp.btf_id = OPTS_GET(opts, btf_id, 0);
++	lc_opts.xdp.meta_thresh = OPTS_GET(opts, meta_thresh, 0);
++
++	return bpf_program__attach_fd(prog, ifindex, &lc_opts, "xdp");
++}
++
  struct bpf_link *bpf_program__attach_freplace(const struct bpf_program *prog,
-@@ -12030,11 +12029,16 @@ struct bpf_link *bpf_program__attach_freplace(const struct bpf_program *prog,
- 	}
- 
- 	if (target_fd) {
-+		LIBBPF_OPTS(bpf_link_create_opts, opts);
+ 					      int target_fd,
+ 					      const char *attach_func_name)
+diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
+index 99ac94f148fc..d6dd05b5b753 100644
+--- a/tools/lib/bpf/libbpf.h
++++ b/tools/lib/bpf/libbpf.h
+@@ -678,8 +678,26 @@ LIBBPF_API struct bpf_link *
+ bpf_program__attach_cgroup(const struct bpf_program *prog, int cgroup_fd);
+ LIBBPF_API struct bpf_link *
+ bpf_program__attach_netns(const struct bpf_program *prog, int netns_fd);
 +
- 		btf_id = libbpf_find_prog_btf_id(attach_func_name, target_fd);
- 		if (btf_id < 0)
- 			return libbpf_err_ptr(btf_id);
- 
--		return bpf_program__attach_fd(prog, target_fd, btf_id, "freplace");
-+		opts.target_btf_id = btf_id;
++struct bpf_xdp_attach_opts {
++	size_t sz;
++	union {
++		int old_prog_fd;
++		/* for bpf_program__attach_xdp_opts() */
++		__u32 flags;
++	};
++	__u32 meta_thresh;
++	__u64 btf_id;
++	size_t :0;
++};
++#define bpf_xdp_attach_opts__last_field btf_id
 +
-+		return bpf_program__attach_fd(prog, target_fd, &opts,
-+					      "freplace");
- 	} else {
- 		/* no target, so use raw_tracepoint_open for compatibility
- 		 * with old kernels
+ LIBBPF_API struct bpf_link *
+ bpf_program__attach_xdp(const struct bpf_program *prog, int ifindex);
++LIBBPF_API struct bpf_link *
++bpf_program__attach_xdp_opts(const struct bpf_program *prog, int ifindex,
++			     const struct bpf_xdp_attach_opts *opts);
++
+ LIBBPF_API struct bpf_link *
+ bpf_program__attach_freplace(const struct bpf_program *prog,
+ 			     int target_fd, const char *attach_func_name);
+@@ -1210,15 +1228,6 @@ LIBBPF_DEPRECATED_SINCE(0, 8, "use bpf_xdp_query() instead")
+ LIBBPF_API int bpf_get_link_xdp_info(int ifindex, struct xdp_link_info *info,
+ 				     size_t info_size, __u32 flags);
+ 
+-struct bpf_xdp_attach_opts {
+-	size_t sz;
+-	int old_prog_fd;
+-	__u32 meta_thresh;
+-	__u64 btf_id;
+-	size_t :0;
+-};
+-#define bpf_xdp_attach_opts__last_field btf_id
+-
+ struct bpf_xdp_query_opts {
+ 	size_t sz;
+ 	__u32 prog_id;		/* output */
+diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
+index f0987df15b7a..d14bbf82e37c 100644
+--- a/tools/lib/bpf/libbpf.map
++++ b/tools/lib/bpf/libbpf.map
+@@ -464,6 +464,7 @@ LIBBPF_1.0.0 {
+ 	global:
+ 		btf__add_enum64;
+ 		btf__add_enum64_value;
++		bpf_program__attach_xdp_opts;
+ 		libbpf_bpf_attach_type_str;
+ 		libbpf_bpf_link_type_str;
+ 		libbpf_bpf_map_type_str;
 -- 
 2.36.1
 
