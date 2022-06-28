@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F42955ED25
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 21:00:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5F2C55ED37
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 21:01:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234607AbiF1TAl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 15:00:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56794 "EHLO
+        id S233883AbiF1TA4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 15:00:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233883AbiF1TAU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 15:00:20 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79746CE1A;
-        Tue, 28 Jun 2022 11:59:56 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id fd6so18898459edb.5;
-        Tue, 28 Jun 2022 11:59:56 -0700 (PDT)
+        with ESMTP id S234018AbiF1TAW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 15:00:22 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCE5DBF6C;
+        Tue, 28 Jun 2022 11:59:57 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id cf14so18904716edb.8;
+        Tue, 28 Jun 2022 11:59:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=5dH/7z5ivFVO5BHaFYr7Z/XbdA3PCvYtaqkIcRmZ+ew=;
-        b=J3VMvjRE2aCmN5CovG1k5i/yJ77M0VMkQTyWYUV1xWfdD4M+GSgjHsTZEO3QayIdGP
-         lAIaosJGVCaArl4kZy6ut6NvQWWD36X8UkgW3nniv6YbmwT/L93lY9DvPhrFarzh+/oN
-         oTpQJi405WBnmM2UXaKszXT3sMfxkXwh0El8sPfRk9rGVIXAOlytuSr5vPNNwiJvg/Fj
-         UTqmi2guHL9oDdsxKq1+cVVN8Yc33fLp1WtA0CN/sIvz0FqO2yZeWZ0qBrzyAQfakFua
-         2m1HmBtZ7oHX//Jcmst2HVWUReS8QRpm+HoXDKAIyySHWrEFRAdMWH99zYlyL0ZB2t7M
-         PyiQ==
+        bh=p79o1VsFDo3cqk77y+g7Vo/BbqY9LUCoOrOtB7thWXc=;
+        b=kCuOg+JnsMVf2GKgp0FVpXjiZvxoJtJjry8oHlX2MssbI32rWwy5pOqbpWYl/RBv6n
+         SdIUM9aZMrfxqcmVo3UCUY+52jLzD74eKkpiFxVYWBhEWKVl+0w1wMPJmIpJ7krtoHbL
+         TAyV1MeBFVt/N3btF3lTG4qTgKw5Zinm3LfEqhuo9j8lcleifwMs29AyBkX7WPwKZOAI
+         mx7xIIzJmuUEkc0NXSCSdCGg7uFnG3nZkfr+3lVNxcog3UlZ87R/loFGtMw5Wai+9OLn
+         PSTmDIOfX5Zpv/71WkQHg9hOOmyEoGBqhvqDSovCuTCkB4nO94D/w7am3C/Hs1m/prj+
+         WBig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=5dH/7z5ivFVO5BHaFYr7Z/XbdA3PCvYtaqkIcRmZ+ew=;
-        b=W8cSDoiFl9BpeVsPuViBg9FuIOCFteea1QYnvlPQC16B56qm6nHhMzTTW6NKxe5tm/
-         MnKfukFgbVbxshRYXEqaM+zLRwHWoWCEZOQHp5+3W/CojNj47f7QH/UWZpAOVx9Fqcmk
-         cFGMJrPedxEAcvqxTw2xij14iafzbKZsByQ/hXUY7j1WRPFpp8QPsUwdqwco6QLEgZpB
-         ELzHMEhZi7PSim0LEUX1OJpN5VqDgdRDw/f8YnDXXay6wexOy5IpzdxfSg+aUm58gjeE
-         9c4+mgflBt/QD0lT8J0EFv5dMfBPtBpM7Qr3A7HdRmTZcbC+Yh3iu12Z8BV5KAfU7Xrd
-         dF+w==
-X-Gm-Message-State: AJIora8CBBkfudOT7usC06vZeBFPutPk6Zoms+5aFCz2IwmhfHg2NRO0
-        iUNMwmsIv2OTY3ZP9wDtCj6XcM8Uisos7g==
-X-Google-Smtp-Source: AGRyM1tzidqJtkS9GbJ51EKbq3+QT82smcW2dq9tUHG5uXnX/7jnNszUnu93omlW5c0CoMGFi7Z/HA==
-X-Received: by 2002:a05:6402:5388:b0:435:71b:5d44 with SMTP id ew8-20020a056402538800b00435071b5d44mr24524607edb.364.1656442794760;
-        Tue, 28 Jun 2022 11:59:54 -0700 (PDT)
+        bh=p79o1VsFDo3cqk77y+g7Vo/BbqY9LUCoOrOtB7thWXc=;
+        b=cXSv/acy3B54tgSvwe1Fai5TrefZeuxVD9ENeBVg/5pQjsJH0jGZeZMtjKh8ten/Bt
+         Lj7q3YveqplpK9RScHQFevMYraIWyQMZ462toCe5l1cUz/orraMo0tRdy451IKXbYpCp
+         z6oESamH3sWkrTOr0QrOYvYssknLhwWhLDipsuQ8Ay+8OS+qIfgGU48pN2T6qrlnmaUi
+         o+pjwqf8ZABUMY9JRIJ+j55lQ2gXbXROLk7GDA/bsn7RfnXuI8b3pTeyANVHCnzCF4Vw
+         92768xtB21MgKiRvp3jj4xXbLUr/ONe47efdcrlqpbLPKVY/jelNZlXocfCBJz4o3WIE
+         6NAw==
+X-Gm-Message-State: AJIora/2EdHjeYKCDj6uMfdolqizCsYvDuIK/vV8qRoRclo0TpvqeUvb
+        FLARH2930BVq2EXgFD2U8FXhFFmGyrbHxg==
+X-Google-Smtp-Source: AGRyM1sfveaW9Z0wUTJdyiH4ioJG+ffU6P3nXYR1U35Urv1GNQ5nJo6QrTpR64WlJRJWKdj/slZAPw==
+X-Received: by 2002:a05:6402:5306:b0:437:8bbd:b313 with SMTP id eo6-20020a056402530600b004378bbdb313mr16741610edb.123.1656442796044;
+        Tue, 28 Jun 2022 11:59:56 -0700 (PDT)
 Received: from 127.0.0.1localhost (188.28.125.106.threembb.co.uk. [188.28.125.106])
-        by smtp.gmail.com with ESMTPSA id t21-20020a05640203d500b0043573c59ea0sm9758451edw.90.2022.06.28.11.59.53
+        by smtp.gmail.com with ESMTPSA id t21-20020a05640203d500b0043573c59ea0sm9758451edw.90.2022.06.28.11.59.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jun 2022 11:59:54 -0700 (PDT)
+        Tue, 28 Jun 2022 11:59:55 -0700 (PDT)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     io-uring@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
@@ -56,9 +56,9 @@ Cc:     "David S . Miller" <davem@davemloft.net>,
         Willem de Bruijn <willemb@google.com>,
         Jens Axboe <axboe@kernel.dk>, kernel-team@fb.com,
         Pavel Begunkov <asml.silence@gmail.com>
-Subject: [RFC net-next v3 02/29] ipv6: avoid partial copy for zc
-Date:   Tue, 28 Jun 2022 19:56:24 +0100
-Message-Id: <9806f2103d0c0512155957ee57ead379a11d93bd.1653992701.git.asml.silence@gmail.com>
+Subject: [RFC net-next v3 03/29] skbuff: add SKBFL_DONT_ORPHAN flag
+Date:   Tue, 28 Jun 2022 19:56:25 +0100
+Message-Id: <1def15f02ef8bcfe9fd80a4accd3c5af57675179.1653992701.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1653992701.git.asml.silence@gmail.com>
 References: <cover.1653992701.git.asml.silence@gmail.com>
@@ -74,50 +74,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Even when zerocopy transmission is requested and possible,
-__ip_append_data() will still copy a small chunk of data just because it
-allocated some extra linear space (e.g. 128 bytes). It wastes CPU cycles
-on copy and iter manipulations and also misalignes potentially aligned
-data. Avoid such coies. And as a bonus we can allocate smaller skb.
+We don't want to list every single ubuf_info callback in
+skb_orphan_frags(), add a flag controlling the behaviour.
 
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 ---
- net/ipv6/ip6_output.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ include/linux/skbuff.h | 8 +++++---
+ net/core/skbuff.c      | 2 +-
+ 2 files changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index 4081b12a01ff..6103cd9066ff 100644
---- a/net/ipv6/ip6_output.c
-+++ b/net/ipv6/ip6_output.c
-@@ -1464,6 +1464,7 @@ static int __ip6_append_data(struct sock *sk,
- 	int copy;
- 	int err;
- 	int offset = 0;
-+	bool zc = false;
- 	u32 tskey = 0;
- 	struct rt6_info *rt = (struct rt6_info *)cork->dst;
- 	struct ipv6_txoptions *opt = v6_cork->opt;
-@@ -1549,6 +1550,7 @@ static int __ip6_append_data(struct sock *sk,
- 		if (rt->dst.dev->features & NETIF_F_SG &&
- 		    csummode == CHECKSUM_PARTIAL) {
- 			paged = true;
-+			zc = true;
- 		} else {
- 			uarg->zerocopy = 0;
- 			skb_zcopy_set(skb, uarg, &extra_uref);
-@@ -1630,9 +1632,12 @@ static int __ip6_append_data(struct sock *sk,
- 				 (fraglen + alloc_extra < SKB_MAX_ALLOC ||
- 				  !(rt->dst.dev->features & NETIF_F_SG)))
- 				alloclen = fraglen;
--			else {
-+			else if (!zc) {
- 				alloclen = min_t(int, fraglen, MAX_HEADER);
- 				pagedlen = fraglen - alloclen;
-+			} else {
-+				alloclen = fragheaderlen + transhdrlen;
-+				pagedlen = datalen - transhdrlen;
- 			}
- 			alloclen += alloc_extra;
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index da96f0d3e753..eead3527bdaf 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -686,10 +686,13 @@ enum {
+ 	 * charged to the kernel memory.
+ 	 */
+ 	SKBFL_PURE_ZEROCOPY = BIT(2),
++
++	SKBFL_DONT_ORPHAN = BIT(3),
+ };
+ 
+ #define SKBFL_ZEROCOPY_FRAG	(SKBFL_ZEROCOPY_ENABLE | SKBFL_SHARED_FRAG)
+-#define SKBFL_ALL_ZEROCOPY	(SKBFL_ZEROCOPY_FRAG | SKBFL_PURE_ZEROCOPY)
++#define SKBFL_ALL_ZEROCOPY	(SKBFL_ZEROCOPY_FRAG | SKBFL_PURE_ZEROCOPY | \
++				 SKBFL_DONT_ORPHAN)
+ 
+ /*
+  * The callback notifies userspace to release buffers when skb DMA is done in
+@@ -3175,8 +3178,7 @@ static inline int skb_orphan_frags(struct sk_buff *skb, gfp_t gfp_mask)
+ {
+ 	if (likely(!skb_zcopy(skb)))
+ 		return 0;
+-	if (!skb_zcopy_is_nouarg(skb) &&
+-	    skb_uarg(skb)->callback == msg_zerocopy_callback)
++	if (skb_shinfo(skb)->flags & SKBFL_DONT_ORPHAN)
+ 		return 0;
+ 	return skb_copy_ubufs(skb, gfp_mask);
+ }
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 5b3559cb1d82..5b35791064d1 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -1193,7 +1193,7 @@ static struct ubuf_info *msg_zerocopy_alloc(struct sock *sk, size_t size)
+ 	uarg->len = 1;
+ 	uarg->bytelen = size;
+ 	uarg->zerocopy = 1;
+-	uarg->flags = SKBFL_ZEROCOPY_FRAG;
++	uarg->flags = SKBFL_ZEROCOPY_FRAG | SKBFL_DONT_ORPHAN;
+ 	refcount_set(&uarg->refcnt, 1);
+ 	sock_hold(sk);
  
 -- 
 2.36.1
