@@ -2,104 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 64CB255C49B
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 14:50:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C890255D7AA
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:18:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245598AbiF1HvA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 03:51:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45720 "EHLO
+        id S1343731AbiF1Hzu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 03:55:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244517AbiF1Hu7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 03:50:59 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1073810E9
-        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 00:50:58 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[IPv6:::1])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <l.stach@pengutronix.de>)
-        id 1o65zg-0003iD-3b; Tue, 28 Jun 2022 09:50:44 +0200
-Message-ID: <897594cde5f294f9d5e96917bce1ac751338d0aa.camel@pengutronix.de>
-Subject: Re: [PATCH net v1 1/2] net: asix: fix "can't send until first
- packet is send" issue
-From:   Lucas Stach <l.stach@pengutronix.de>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S1343681AbiF1Hzu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 03:55:50 -0400
+Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 701DC13FA7
+        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 00:55:49 -0700 (PDT)
+Received: by mail-lj1-x22c.google.com with SMTP id b19so1134853ljf.6
+        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 00:55:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version:organization
+         :content-transfer-encoding;
+        bh=CfDHQwRwqZq5XpGRYdGPtbOI2+7Srf+S8q/0QgKiGe8=;
+        b=WU/pm2NzAdRKFbDdiXlpijFtX0wFBt5GRNm0JqhMbq+/04hs0T3QRYoUq8gdd5to0b
+         Uhhv6U2kJiDvP5Q3pjSsmqAHPDX3T6SDxiKgn+Dfrx0I8VLSp4pZhQ8IRrvfE8nGtm8z
+         0sXvq6DsRTQS33sw5LOh6mdFSeVWjPNN35FMnHbm4us6ngh6NQbCIQXmk+gJCe6EzWGJ
+         o5j6Lqcak4KdHxv5b5ZFwxGuRahMtfrOigjSMVKIQClwo3ytZ9TUYqpN/232ExDIUWHm
+         AYA3UvE2bxfnRGjPW0TCSqwcpaNrEWWFU1wly/86bUKdb0P8mwpO6cIk7ojsFNd78RUh
+         QwAg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :organization:content-transfer-encoding;
+        bh=CfDHQwRwqZq5XpGRYdGPtbOI2+7Srf+S8q/0QgKiGe8=;
+        b=kHToxKsaGJlKUmX++iy50BgPR/ubin/FJPq120aA73s+7r9kPzOxyEuUxDdri5P41S
+         8Cp40qAvhtoKiasl5nZ8FFzq5tS3Pfilgsfl1a1AjBiK+aE3Fxw3R85R0L3NP/LcQkcp
+         /JkCa1S+ut9XU8Z1UaMI9Vf3mRB4T/3W3KszSQ5sMkYF07D700ze2ZH5+9mGrkpJlcWA
+         WGX02zHuAjJEGTygeFbX+NkfC2xjd09iDX3xKGCFBAacpeeB49WNmCt9HfX5cX6Hm1Uz
+         /j99j0pzP6t/k0kH+nQG/Prp8z1To2fwNIMhpiYBg824/CXRtEGm0F4Mxq+lvWuoGKsS
+         rntQ==
+X-Gm-Message-State: AJIora/BQmyftgdNg0Gpr998zdMBXJkwlYZB3uoUhE/ughAf4grWi8fk
+        j5mRW+7T4rlj82jwN1zS5Os=
+X-Google-Smtp-Source: AGRyM1tW7WP2jbltl2Cz9g53l3q+wNG4D4sWHxrQpgPW8iYPw/Qi1vwQaE95tJcQZonw2qiswzjT7A==
+X-Received: by 2002:a2e:a26c:0:b0:25a:6dad:8bf5 with SMTP id k12-20020a2ea26c000000b0025a6dad8bf5mr9146201ljm.136.1656402947703;
+        Tue, 28 Jun 2022 00:55:47 -0700 (PDT)
+Received: from wse-c0155.labs.westermo.se (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id f1-20020a056512360100b0047f9cee5f16sm2101392lfs.183.2022.06.28.00.55.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Jun 2022 00:55:47 -0700 (PDT)
+From:   Casper Andersson <casper.casan@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>
-Cc:     Anton Lundin <glance@acc.umu.se>, Lukas Wunner <lukas@wunner.de>,
-        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
-        netdev@vger.kernel.org
-Date:   Tue, 28 Jun 2022 09:50:42 +0200
-In-Reply-To: <20220628044913.GB13092@pengutronix.de>
-References: <20220624075139.3139300-1-o.rempel@pengutronix.de>
-         <20220628044913.GB13092@pengutronix.de>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4 (3.40.4-1.fc34) 
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        UNGLinuxDriver@microchip.com, netdev@vger.kernel.org
+Subject: [PATCH net-next] net: sparx5: mdb add/del handle non-sparx5 devices
+Date:   Tue, 28 Jun 2022 09:55:46 +0200
+Message-Id: <20220628075546.3560083-1-casper.casan@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: l.stach@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Organization: Westermo Network Technologies AB
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Oleksij,
+When adding/deleting mdb entries on other net_devices, eg., tap
+interfaces, it should not crash.
 
-subject of this patch looks strange. It should probably read "can't
-receive until first packet is sent".
+Signed-off-by: Casper Andersson <casper.casan@gmail.com>
+---
+ drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-Regards,
-Lucas
-
-Am Dienstag, dem 28.06.2022 um 06:49 +0200 schrieb Oleksij Rempel:
-> On Fri, Jun 24, 2022 at 09:51:38AM +0200, Oleksij Rempel wrote:
-> > If cable is attached after probe sequence, the usbnet framework would
-> > not automatically start processing RX packets except at least one
-> > packet was transmitted.
-> > 
-> > On systems with any kind of address auto configuration this issue was
-> > not detected, because some packets are send immediately after link state
-> > is changed to "running".
-> > 
-> > With this patch we will notify usbnet about link status change provided by the
-> > PHYlib.
-> > 
-> > Fixes: e532a096be0e ("net: usb: asix: ax88772: add phylib support")
-> > Reported-by: Anton Lundin <glance@acc.umu.se>
-> > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> 
-> In different mail thread Anton reported as tested.
-> Tested-by: Anton Lundin <glance@acc.umu.se>
-> 
-> > ---
-> >  drivers/net/usb/asix_common.c | 1 +
-> >  1 file changed, 1 insertion(+)
-> > 
-> > diff --git a/drivers/net/usb/asix_common.c b/drivers/net/usb/asix_common.c
-> > index 632fa6c1d5e3..b4a1b7abcfc9 100644
-> > --- a/drivers/net/usb/asix_common.c
-> > +++ b/drivers/net/usb/asix_common.c
-> > @@ -431,6 +431,7 @@ void asix_adjust_link(struct net_device *netdev)
-> >  
-> >  	asix_write_medium_mode(dev, mode, 0);
-> >  	phy_print_status(phydev);
-> > +	usbnet_link_change(dev, phydev->link, 0);
-> >  }
-> >  
-> >  int asix_write_gpio(struct usbnet *dev, u16 value, int sleep, int in_pm)
-> > -- 
-> > 2.30.2
-> > 
-> > 
-> 
-
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c b/drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c
+index 40ef9fad3a77..ec07f7d0528c 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c
+@@ -397,6 +397,9 @@ static int sparx5_handle_port_mdb_add(struct net_device *dev,
+ 	bool is_host;
+ 	int res, err;
+ 
++	if (!sparx5_netdevice_check(dev))
++		return -EOPNOTSUPP;
++
+ 	is_host = netif_is_bridge_master(v->obj.orig_dev);
+ 
+ 	/* When VLAN unaware the vlan value is not parsed and we receive vid 0.
+@@ -480,6 +483,9 @@ static int sparx5_handle_port_mdb_del(struct net_device *dev,
+ 	u32 mact_entry, res, pgid_entry[3], misc_cfg;
+ 	bool host_ena;
+ 
++	if (!sparx5_netdevice_check(dev))
++		return -EOPNOTSUPP;
++
+ 	if (!br_vlan_enabled(spx5->hw_bridge_dev))
+ 		vid = 1;
+ 	else
+-- 
+2.30.2
 
