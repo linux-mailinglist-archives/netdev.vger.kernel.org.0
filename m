@@ -2,217 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E7FAE55CCE8
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:02:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 347E355CA86
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 14:58:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244928AbiF1FVd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 01:21:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34276 "EHLO
+        id S244837AbiF1FkT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 01:40:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244930AbiF1FVB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 01:21:01 -0400
-Received: from mail.yonan.net (mail.yonan.net [54.244.116.145])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4DD226AE3
-        for <netdev@vger.kernel.org>; Mon, 27 Jun 2022 22:19:02 -0700 (PDT)
-Received: from unless.localdomain (unknown [76.130.91.106])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        with ESMTP id S230265AbiF1FkR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 01:40:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C95513F05
+        for <netdev@vger.kernel.org>; Mon, 27 Jun 2022 22:40:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.yonan.net (Postfix) with ESMTPSA id 156603E947;
-        Tue, 28 Jun 2022 05:19:02 +0000 (UTC)
-From:   James Yonan <james@openvpn.net>
-To:     netdev@vger.kernel.org
-Cc:     therbert@google.com, stephen@networkplumber.org,
-        James Yonan <james@openvpn.net>
-Subject: [PATCH net-next v2] rfs: added /proc/sys/net/core/rps_allow_ooo flag to tweak flow alg
-Date:   Mon, 27 Jun 2022 23:17:54 -0600
-Message-Id: <20220628051754.365238-1-james@openvpn.net>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220624100536.4bbc1156@hermes.local>
-References: <20220624100536.4bbc1156@hermes.local>
+        by ams.source.kernel.org (Postfix) with ESMTPS id D7276B81CA0
+        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 05:40:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 603AEC341C6;
+        Tue, 28 Jun 2022 05:40:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656394813;
+        bh=JVEBfAkUUsssanf50hzV6mN4yCdaBMQeDhYZXNMVLbM=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=UX59W0PXKUWQeRG8c4PQnyBwdKkFn5e3U5J9tnhTboUbvfwisP7Fqwzi5mB8rM04+
+         f2tZFo7bhqw21nNwxTSALQLZ/xR1qrrwWH46duMO66oJjpr8G2Y8o4maq+nAi/RmHQ
+         cCY+u1Nyne+QRaAQV3GdxmY46YNV6dz28ExbxvkycXUzcR29ZmfqQsCKdxF8pvqdyB
+         IIsSzPUOoBhoq0k2p99r+VfqgsmqQOMD6BxaRHI78hLjqJqrR8PchMnloi/VW9CsY5
+         7QymcCzeJnfYaNB59SCLvo1/BUa/nEQD/34XQJXJ4awBiJKANjbam+QsWAjEtXodO8
+         T8WDLNmJi1Oxw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 42205E49FA1;
+        Tue, 28 Jun 2022 05:40:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Subject: Re: [PATCH net] ipv6: take care of disable_policy when restoring routes
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165639481325.10558.17743723876862500477.git-patchwork-notify@kernel.org>
+Date:   Tue, 28 Jun 2022 05:40:13 +0000
+References: <20220623120015.32640-1-nicolas.dichtel@6wind.com>
+In-Reply-To: <20220623120015.32640-1-nicolas.dichtel@6wind.com>
+To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, klassert@kernel.org,
+        herbert@gondor.apana.org.au, dsahern@kernel.org,
+        netdev@vger.kernel.org, stable@kernel.org, dforster@brocade.com,
+        siwar.zitouni@6wind.com
+X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-rps_allow_ooo (0|1, default=0) -- if set to 1, allow RFS (receive flow
-steering) to move a flow to a new CPU even if the old CPU queue has
-pending packets.  Note that this can result in packets being delivered
-out-of-order.  If set to 0 (the default), the previous behavior is
-retained, where flows will not be moved as long as pending packets remain.
+Hello:
 
-The motivation for this patch is that while it's good to prevent
-out-of-order packets, the current RFS logic requires that all previous
-packets for the flow have been dequeued before an RFS CPU switch is made,
-so as to preserve in-order delivery.  In some cases, on links with heavy
-VPN traffic, we have observed that this requirement is too onerous, and
-that it prevents an RFS CPU switch from occurring within a reasonable time
-frame if heavy traffic causes the old CPU queue to never fully drain.
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-So rps_allow_ooo allows the user to select the tradeoff between a more
-aggressive RFS steering policy that may reorder packets on a CPU switch
-event (rps_allow_ooo=1) vs. one that prioritizes in-order delivery
-(rps_allow_ooo=0).
+On Thu, 23 Jun 2022 14:00:15 +0200 you wrote:
+> When routes corresponding to addresses are restored by
+> fixup_permanent_addr(), the dst_nopolicy parameter was not set.
+> The typical use case is a user that configures an address on a down
+> interface and then put this interface up.
+> 
+> Let's take care of this flag in addrconf_f6i_alloc(), so that every callers
+> benefit ont it.
+> 
+> [...]
 
-Patch history:
+Here is the summary with links:
+  - [net] ipv6: take care of disable_policy when restoring routes
+    https://git.kernel.org/netdev/net/c/3b0dc529f56b
 
-v2: based on feedback from Stephen Hemminger <stephen@networkplumber.org>,
-    for clarity, refactor the big conditional in get_rps_cpu() that
-    determines whether or not to switch the RPS CPU into a new inline
-    function __should_reset_rps_cpu().
-
-Signed-off-by: James Yonan <james@openvpn.net>
----
- Documentation/networking/scaling.rst | 12 ++++++
- include/linux/netdevice.h            |  1 +
- net/core/dev.c                       | 58 +++++++++++++++++++++-------
- net/core/sysctl_net_core.c           |  9 +++++
- 4 files changed, 65 insertions(+), 15 deletions(-)
-
-diff --git a/Documentation/networking/scaling.rst b/Documentation/networking/scaling.rst
-index f78d7bf27ff5..2c2e9007a5e0 100644
---- a/Documentation/networking/scaling.rst
-+++ b/Documentation/networking/scaling.rst
-@@ -313,6 +313,18 @@ there are no packets outstanding on the old CPU, as the outstanding
- packets could arrive later than those about to be processed on the new
- CPU.
- 
-+However, in some cases it may be desirable to relax the requirement
-+that a flow only moves to a new CPU when there are no packets
-+outstanding on the old CPU.  For this, we introduce::
-+
-+  /proc/sys/net/core/rps_allow_ooo (0|1, default=0)
-+
-+If set to 1, allow RFS to move a flow to a new CPU even if the old CPU
-+queue has pending packets.  If set to 0 (the default), flows will not be
-+moved as long as pending packets remain.  So rps_allow_ooo allows the
-+user to choose the tradeoff between a more aggressive steering algorithm
-+that can potentially reorder packets (rps_allow_ooo=1) vs. one that
-+prioritizes in-order delivery (rps_allow_ooo=0).
- 
- RFS Configuration
- -----------------
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 288a58678256..dee6a481ec0d 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -710,6 +710,7 @@ struct rps_sock_flow_table {
- 
- #define RPS_NO_CPU 0xffff
- 
-+extern int rps_allow_ooo_sysctl;
- extern u32 rps_cpu_mask;
- extern struct rps_sock_flow_table __rcu *rps_sock_flow_table;
- 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index a03036456221..962f3931de10 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -3899,6 +3899,8 @@ struct rps_sock_flow_table __rcu *rps_sock_flow_table __read_mostly;
- EXPORT_SYMBOL(rps_sock_flow_table);
- u32 rps_cpu_mask __read_mostly;
- EXPORT_SYMBOL(rps_cpu_mask);
-+int rps_allow_ooo_sysctl __read_mostly;
-+EXPORT_SYMBOL(rps_allow_ooo_sysctl);
- 
- struct static_key_false rps_needed __read_mostly;
- EXPORT_SYMBOL(rps_needed);
-@@ -3950,6 +3952,45 @@ set_rps_cpu(struct net_device *dev, struct sk_buff *skb,
- 	return rflow;
- }
- 
-+/* Helper function used by get_rps_cpu() below.
-+ * Returns true if we should reset the current
-+ * RPS CPU (tcpu) to next_cpu.
-+ */
-+static inline bool __should_reset_rps_cpu(const struct rps_dev_flow *rflow,
-+					  const u32 tcpu,
-+					  const u32 next_cpu)
-+{
-+	/* Is the desired CPU (next_cpu, where last recvmsg was done)
-+	 * the same as the current CPU (tcpu from the rx-queue flow
-+	 * table entry)?
-+	 */
-+	if (likely(tcpu == next_cpu))
-+		return false; /* no action */
-+
-+	/* Is rps_allow_ooo_sysctl enabled? */
-+	if (rps_allow_ooo_sysctl)
-+		return true;  /* reset RPS CPU to next_cpu */
-+
-+	/* Is current CPU unset? */
-+	if (unlikely(tcpu >= nr_cpu_ids))
-+		return true;  /* reset RPS CPU to next_cpu */
-+
-+	/* Is current CPU offline? */
-+	if (unlikely(!cpu_online(tcpu)))
-+		return true;  /* reset RPS CPU to next_cpu */
-+
-+	/* Has the current CPU's queue tail advanced beyond the
-+	 * last packet that was enqueued using this table entry?
-+	 * If so, this guarantees that all previous packets for the
-+	 * flow have been dequeued, thus preserving in-order delivery.
-+	 */
-+	if ((int)(per_cpu(softnet_data, tcpu).input_queue_head -
-+		  rflow->last_qtail) >= 0)
-+		return true;  /* reset RPS CPU to next_cpu */
-+
-+	return false; /* no action */
-+}
-+
- /*
-  * get_rps_cpu is called from netif_receive_skb and returns the target
-  * CPU from the RPS map of the receiving queue for a given skb.
-@@ -4010,21 +4051,8 @@ static int get_rps_cpu(struct net_device *dev, struct sk_buff *skb,
- 		rflow = &flow_table->flows[hash & flow_table->mask];
- 		tcpu = rflow->cpu;
- 
--		/*
--		 * If the desired CPU (where last recvmsg was done) is
--		 * different from current CPU (one in the rx-queue flow
--		 * table entry), switch if one of the following holds:
--		 *   - Current CPU is unset (>= nr_cpu_ids).
--		 *   - Current CPU is offline.
--		 *   - The current CPU's queue tail has advanced beyond the
--		 *     last packet that was enqueued using this table entry.
--		 *     This guarantees that all previous packets for the flow
--		 *     have been dequeued, thus preserving in order delivery.
--		 */
--		if (unlikely(tcpu != next_cpu) &&
--		    (tcpu >= nr_cpu_ids || !cpu_online(tcpu) ||
--		     ((int)(per_cpu(softnet_data, tcpu).input_queue_head -
--		      rflow->last_qtail)) >= 0)) {
-+		/* Should we reset the current RPS CPU (tcpu) to next_cpu? */
-+		if (__should_reset_rps_cpu(rflow, tcpu, next_cpu)) {
- 			tcpu = next_cpu;
- 			rflow = set_rps_cpu(dev, skb, rflow, next_cpu);
- 		}
-diff --git a/net/core/sysctl_net_core.c b/net/core/sysctl_net_core.c
-index 48041f50ecfb..20e82a432d88 100644
---- a/net/core/sysctl_net_core.c
-+++ b/net/core/sysctl_net_core.c
-@@ -471,6 +471,15 @@ static struct ctl_table net_core_table[] = {
- 		.mode		= 0644,
- 		.proc_handler	= rps_sock_flow_sysctl
- 	},
-+	{
-+		.procname	= "rps_allow_ooo",
-+		.data		= &rps_allow_ooo_sysctl,
-+		.maxlen		= sizeof(int),
-+		.mode		= 0644,
-+		.proc_handler	= proc_dointvec_minmax,
-+		.extra1		= SYSCTL_ZERO,
-+		.extra2		= SYSCTL_ONE
-+	},
- #endif
- #ifdef CONFIG_NET_FLOW_LIMIT
- 	{
+You are awesome, thank you!
 -- 
-2.25.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
