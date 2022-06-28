@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C29A55EE3C
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 21:59:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57F0055EEC4
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 22:00:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231901AbiF1TxM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 15:53:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45598 "EHLO
+        id S229627AbiF1TxQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 15:53:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231344AbiF1Tuy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 15:50:54 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8A3032A;
-        Tue, 28 Jun 2022 12:49:35 -0700 (PDT)
+        with ESMTP id S231462AbiF1Tuz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 15:50:55 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DACFB24F00;
+        Tue, 28 Jun 2022 12:49:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656445775; x=1687981775;
+  t=1656445776; x=1687981776;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=aCT7NnW5qPpXUE6PtAGgHOwhQXci7vR5TCit02FfCKA=;
-  b=LtdfgLRuo4Hoh3h0n/cMTHpuB6VfSrVy6ps0knn7S4Om2jj2Pt8Kmzkd
-   i0qFl8Smyr0rmsIhjfRZ2AhNVPpo7gDRdkEQas2T4xhWWcNJ3Nlqoc0Xv
-   sCwMxkDoDDmmBvzwVF2ljLfHR0q5iJ1F9hyByFuP5cU89sCFmZs2DuAxh
-   fbKey+CYfRjaIB6uG4Q2uw4biD02nntbi2tqGk8P/Bq+0LqDYT/qjowkt
-   8Sj7n/VhrFecUB4YZmXKi0pGYRPWhAloYk0RfljWYa/m8GmVcJXw5aZPM
-   b3/hYojjhwxa/HJPjriU6SYNnJ+1z+Dp1ntoYk7s7hvdKFazObhpP3hGI
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="282568197"
+  bh=m0oceUhK3hnv1otJUNLutQy3sAaI+qAGxK7L6haMKZI=;
+  b=nSIsnJphcuhXLkcH2HfNfEeKyPh9oDKz9JmT3EYe1Ncxklz0Kvm+eG5w
+   KBpCSh/sNjru5IlS81X7ucX5un6NDcz/aIAj3LqXW/WOE+27xnyAvSdH+
+   EurClCLaeiPmXOLpVS65F4W9EsfAVZonGkCnARThmJWF2ac9vHss7j9jz
+   9Gwoxn+Ofx3/PAo1DZRCAbTebS2jtp5jsvb+35GJ5QRXlxtL9GVrvxMOL
+   wIAlg37VyPWp0DCk+WMqEw2ID6SHc9a/YJSNTf7mfG5/fAPLRY+f2ROv5
+   zisx5hV8pzhm+aHfYk1bG29Ecc3/cmvccZ8j/lg50jYxoIxyd3Yn1YOXA
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="264874164"
 X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
-   d="scan'208";a="282568197"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 12:49:35 -0700
+   d="scan'208";a="264874164"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 12:49:36 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
-   d="scan'208";a="587988541"
+   d="scan'208";a="623054140"
 Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga007.jf.intel.com with ESMTP; 28 Jun 2022 12:49:30 -0700
+  by orsmga001.jf.intel.com with ESMTP; 28 Jun 2022 12:49:31 -0700
 Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 25SJmr9Q022013;
-        Tue, 28 Jun 2022 20:49:28 +0100
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 25SJmr9R022013;
+        Tue, 28 Jun 2022 20:49:30 +0100
 From:   Alexander Lobakin <alexandr.lobakin@intel.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -64,274 +64,332 @@ Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
         Willem de Bruijn <willemb@google.com>, bpf@vger.kernel.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         xdp-hints@xdp-project.net
-Subject: [PATCH RFC bpf-next 26/52] bpf, btf: add a pair of function to work with the BTF ID + type ID pair
-Date:   Tue, 28 Jun 2022 21:47:46 +0200
-Message-Id: <20220628194812.1453059-27-alexandr.lobakin@intel.com>
+Subject: [PATCH RFC bpf-next 27/52] net, xdp: add &sk_buff <-> &xdp_meta_generic converters
+Date:   Tue, 28 Jun 2022 21:47:47 +0200
+Message-Id: <20220628194812.1453059-28-alexandr.lobakin@intel.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220628194812.1453059-1-alexandr.lobakin@intel.com>
 References: <20220628194812.1453059-1-alexandr.lobakin@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a kernel counterpart of libbpf_get_type_btf_id() to easily get
-the pair of BTF ID << 32 | type ID for the provided type. Drivers
-and the XDP core will use it to handle different XDP generic
-metadata formats.
-
-Also add a function to return matching type string (e.g.
-"struct foo") index from an array of such strings for a given BTF
-ID + type ID pair. The intention is to be able to quickly identify
-the ID received from somewhere else and to assign some own constant
-identifiers to the supported types.
-To not do:
-
-	priv->foo_id = bpf_get_type_btf_id("struct foo");
-	priv->bar_id = bpf_get_type_btf_id("struct bar");
-
-[...]
-
-	if (id == priv->foo_id)
-		do_smth_for_foo();
-	else if (id == priv->bar_id)
-		do_smth_for_bar();
-	else
-		unsupp();
-
-but instead:
-
-const char * const supp[] = {
-	[FOO_ID] = "struct foo",
-	[BAR_ID] = "struct bar",
-	NULL,				// serves as a terminator, can be ""
-};
-
-[...]
-
-	type = bpf_match_type_btf_id(supp, id);
-	switch(type) {
-	case FOO_ID:
-		do_smth_for_foo();
-		break;
-	case BAR_ID:
-		do_smth_for_bar();
-		break;
-	default:
-		unsupp();
-		break;
-	}
-
-Aux function:
- * btf_kind_from_str(): returns the kind of the provided full type
-   string and removes the kind identifier to e.g. be able to pass it
-   directly to btf_find_by_name_kind(). For example, "struct foo"
-   becomes "foo" and the return value will be BTF_KIND_STRUCT.
- * btf_get_by_id() is a shorthand to quickly get the BTF by its ID,
-   factored-out from btf_get_fd_by_id().
+Add two functions (with their underscored versions) to pass
+HW-origined info (checksums, hashes, Rx queue ID etc.) from an skb
+to an XDP generic metadata and vice versa. They can be used to carry
+that info between hardware, xdp_buff/xdp_frame and sk_buff.
+The &sk_buff -> &xdp_meta_generic converter uses a static,
+init-time filled &xdp_meta_tail to not query BTF info on hotpath.
+For the fields which values are being assigned directly, make sure
+they match with the help of static asserts.
+Also add a wrapper bpf_match_type_btf_id() designed especially for
+drivers and taking care of corner-cases.
 
 Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
 ---
- include/linux/btf.h |  13 +++++
- kernel/bpf/btf.c    | 133 ++++++++++++++++++++++++++++++++++++++++++--
- 2 files changed, 140 insertions(+), 6 deletions(-)
+ include/net/xdp_meta.h | 112 +++++++++++++++++++++++++++++++
+ net/bpf/core.c         | 148 ++++++++++++++++++++++++++++++++++++++++-
+ 2 files changed, 259 insertions(+), 1 deletion(-)
 
-diff --git a/include/linux/btf.h b/include/linux/btf.h
-index 1bfed7fa0428..36bc9c499409 100644
---- a/include/linux/btf.h
-+++ b/include/linux/btf.h
-@@ -386,6 +386,8 @@ int register_btf_kfunc_id_set(enum bpf_prog_type prog_type,
- s32 btf_find_dtor_kfunc(struct btf *btf, u32 btf_id);
- int register_btf_id_dtor_kfuncs(const struct btf_id_dtor_kfunc *dtors, u32 add_cnt,
- 				struct module *owner);
-+int bpf_get_type_btf_id(const char *type, u64 *res_id);
-+int bpf_match_type_btf_id(const char * const *list, u64 id);
- #else
- static inline const struct btf_type *btf_type_by_id(const struct btf *btf,
- 						    u32 type_id)
-@@ -418,6 +420,17 @@ static inline int register_btf_id_dtor_kfuncs(const struct btf_id_dtor_kfunc *dt
- {
- 	return 0;
- }
-+static inline int bpf_get_type_btf_id(const char *type, u64 *res_id)
-+{
-+	if (res_id)
-+		*res_id = 0;
-+
-+	return -ENOSYS;
-+}
-+static inline int bpf_match_type_btf_id(const char * const *list, u64 id)
-+{
-+	return -ENOSYS;
-+}
- #endif
- 
- #endif
-diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-index 2e2066d6af94..dc316c43a348 100644
---- a/kernel/bpf/btf.c
-+++ b/kernel/bpf/btf.c
-@@ -317,6 +317,28 @@ const char *btf_type_str(const struct btf_type *t)
- 	return btf_kind_str[BTF_INFO_KIND(t->info)];
+diff --git a/include/net/xdp_meta.h b/include/net/xdp_meta.h
+index f61831e39eb0..d37ea873a6a8 100644
+--- a/include/net/xdp_meta.h
++++ b/include/net/xdp_meta.h
+@@ -46,6 +46,17 @@ static inline bool xdp_metalen_invalid(unsigned long metalen)
+ 	return (metalen & (sizeof(u32) - 1)) || metalen > max;
  }
  
-+static u32 btf_kind_from_str(const char **type)
-+{
-+	const char *pos, *orig = *type;
-+	u32 kind;
-+	int len;
-+
-+	pos = strchr(orig, ' ');
-+	if (pos) {
-+		len = pos - orig;
-+		*type = pos + 1;
-+	} else {
-+		len = strlen(orig);
-+	}
-+
-+	for (kind = BTF_KIND_UNKN; kind < NR_BTF_KINDS; kind++) {
-+		if (!strncasecmp(orig, btf_kind_str[kind], len))
-+			break;
-+	}
-+
-+	return kind < NR_BTF_KINDS ? kind : BTF_KIND_UNKN;
-+}
-+
- /* Chunk size we use in safe copy of data to be shown. */
- #define BTF_SHOW_OBJ_SAFE_SIZE		32
- 
-@@ -579,6 +601,110 @@ static s32 bpf_find_btf_id(const char *name, u32 kind, struct btf **btf_p)
- 	return ret;
- }
- 
-+/**
-+ * bpf_get_type_btf_id - get the pair BTF ID + type ID for a given type
-+ * @type: pointer to the name of the type to look for
-+ * @res_id: pointer to write the result to
-+ *
-+ * Tries to find the BTF corresponding to the provided type (full string) and
-+ * write the pair of BTF ID << 32 | type ID. Such coded __u64 are being used
-+ * in XDP generic-compatible metadata to distinguish between different
-+ * metadata structures.
-+ * @res_id can be %NULL to only check if a particular type exists within
-+ * the BTF.
-+ *
-+ * Returns 0 in case of success, an error code otherwise.
++/* We use direct assignments from &xdp_meta_generic to &sk_buff fields,
++ * thus they must match.
 + */
-+int bpf_get_type_btf_id(const char *type, u64 *res_id)
++static_assert((u32)XDP_META_RX_CSUM_NONE == (u32)CHECKSUM_NONE);
++static_assert((u32)XDP_META_RX_CSUM_OK == (u32)CHECKSUM_UNNECESSARY);
++static_assert((u32)XDP_META_RX_CSUM_COMP == (u32)CHECKSUM_COMPLETE);
++static_assert((u32)XDP_META_RX_HASH_NONE == (u32)PKT_HASH_TYPE_NONE);
++static_assert((u32)XDP_META_RX_HASH_L2 == (u32)PKT_HASH_TYPE_L2);
++static_assert((u32)XDP_META_RX_HASH_L3 == (u32)PKT_HASH_TYPE_L3);
++static_assert((u32)XDP_META_RX_HASH_L4 == (u32)PKT_HASH_TYPE_L4);
++
+ /* This builds _get(), _set() and _rep() for each bitfield.
+  * If you know for sure the field is empty (e.g. you zeroed the struct
+  * previously), use faster _set() op to save several cycles, otherwise
+@@ -283,4 +294,105 @@ static inline bool xdp_meta_skb_has_generic(const struct sk_buff *skb)
+ 	return xdp_meta_has_generic(skb_metadata_end(skb));
+ }
+ 
++/**
++ * xdp_meta_init - initialize a metadata structure
++ * @md: pointer to xdp_meta_generic or its ::rx_full or its ::id member
++ * @id: full BTF + type ID for the metadata type (can be u* or __le64)
++ *
++ * Zeroes the passed metadata struct (or part) and initializes its tail, so
++ * it becomes ready for further processing. If a driver is responsible for
++ * composing metadata, it is important to zero the space it occupies in each
++ * Rx buffer as `xdp->data - xdp->data_hard_start` doesn't get initialized
++ * by default.
++ */
++#define _xdp_meta_init(md, id, locmd, locid) ({				      \
++	typeof(md) locmd = (md);					      \
++	typeof(id) locid = (id);					      \
++									      \
++	if (offsetof(typeof(*locmd), full_id))				      \
++		memset(locmd, 0, offsetof(typeof(*locmd), full_id));	      \
++									      \
++	locmd->full_id = __same_type(locid, __le64) ? (__force __le64)locid : \
++			 cpu_to_le64((__force u64)locid);		      \
++	locmd->magic_id = cpu_to_le16(XDP_META_GENERIC_MAGIC);		      \
++})
++#define xdp_meta_init(md, id)						      \
++	_xdp_meta_init((md), (id), __UNIQUE_ID(md_), __UNIQUE_ID(id_))
++
++void ___xdp_build_meta_generic_from_skb(struct xdp_meta_generic_rx *rx_md,
++					const struct sk_buff *skb);
++void ___xdp_populate_skb_meta_generic(struct sk_buff *skb,
++				      const struct xdp_meta_generic_rx *rx_md);
++
++#define _xdp_build_meta_generic_from_skb(md, skb, locmd) ({		      \
++	typeof(md) locmd = (md);					      \
++									      \
++	if (offsetof(typeof(*locmd), rx))				      \
++		memset(locmd, 0, offsetof(typeof(*locmd), rx));		      \
++									      \
++	___xdp_build_meta_generic_from_skb(to_rx_md(locmd), skb);	      \
++})
++#define __xdp_build_meta_generic_from_skb(md, skb)			      \
++	_xdp_build_meta_generic_from_skb((md), (skb), __UNIQUE_ID(md_))
++
++#define __xdp_populate_skb_meta_generic(skb, md)			      \
++	___xdp_populate_skb_meta_generic((skb), to_rx_md(md))
++
++/**
++ * xdp_build_meta_generic_from_skb - build the generic meta before the skb data
++ * @skb: a pointer to the &sk_buff
++ *
++ * Builds an XDP generic metadata in front of the skb data from its fields.
++ * Note: skb->mac_header must be set and valid.
++ */
++static inline void xdp_build_meta_generic_from_skb(struct sk_buff *skb)
 +{
-+	struct btf *btf = NULL;
-+	s32 type_id;
-+	u32 kind;
++	struct xdp_meta_generic *md;
++	u32 needed;
 +
-+	if (res_id)
-+		*res_id = 0;
++	/* skb_headroom() is `skb->data - skb->head`, i.e. it doesn't account
++	 * for the pulled headers, e.g. MAC header. Metadata resides in front
++	 * of the MAC header, so counting starts from there, not the current
++	 * data pointer position.
++	 * CoW won't happen in here when coming from Generic XDP path as it
++	 * ensures that an skb has at least %XDP_PACKET_HEADROOM beforehand.
++	 * It won't be happening also as long as `sizeof(*md) <= NET_SKB_PAD`.
++	 */
++	needed = (void *)skb->data - skb_metadata_end(skb) + sizeof(*md);
++	if (unlikely(skb_cow_head(skb, needed)))
++		return;
 +
-+	if (!type || !*type)
-+		return -EINVAL;
++	md = xdp_meta_generic_ptr(skb_metadata_end(skb));
++	__xdp_build_meta_generic_from_skb(md, skb);
 +
-+	kind = btf_kind_from_str(&type);
-+
-+	type_id = bpf_find_btf_id(type, kind, &btf);
-+	if (type_id > 0 && res_id)
-+		*res_id = ((u64)btf_obj_id(btf) << 32) | type_id;
-+
-+	btf_put(btf);
-+
-+	return min(type_id, 0);
-+}
-+EXPORT_SYMBOL_GPL(bpf_get_type_btf_id);
-+
-+static struct btf *btf_get_by_id(u32 id)
-+{
-+	struct btf *btf;
-+
-+	rcu_read_lock();
-+	btf = idr_find(&btf_idr, id);
-+	if (!btf || !refcount_inc_not_zero(&btf->refcnt))
-+		btf = ERR_PTR(-ENOENT);
-+	rcu_read_unlock();
-+
-+	return btf;
++	skb_metadata_set(skb, sizeof(*md));
++	skb_metadata_nocomp_set(skb);
 +}
 +
 +/**
-+ * bpf_match_type_btf_id - find a type name corresponding to a given full ID
++ * xdp_populate_skb_meta_generic - fill an skb from the metadata in front of it
++ * @skb: a pointer to the &sk_buff
++ *
++ * Fills the skb fields from the metadata in front of its MAC header and marks
++ * its metadata as "non-comparable".
++ * Note: skb->mac_header must be set and valid.
++ */
++static inline void xdp_populate_skb_meta_generic(struct sk_buff *skb)
++{
++	const struct xdp_meta_generic *md;
++
++	if (skb_metadata_len(skb) < sizeof(*md))
++		return;
++
++	md = xdp_meta_generic_ptr(skb_metadata_end(skb));
++	__xdp_populate_skb_meta_generic(skb, md);
++
++	/* We know at this point that skb metadata may contain
++	 * unique values, mark it as nocomp to not confuse GRO.
++	 */
++	skb_metadata_nocomp_set(skb);
++}
++
++int xdp_meta_match_id(const char * const *list, u64 id);
++
+ #endif /* __LINUX_NET_XDP_META_H__ */
+diff --git a/net/bpf/core.c b/net/bpf/core.c
+index 18174d6d8687..a8685bcc6e00 100644
+--- a/net/bpf/core.c
++++ b/net/bpf/core.c
+@@ -3,7 +3,7 @@
+  *
+  * Copyright (c) 2017 Jesper Dangaard Brouer, Red Hat Inc.
+  */
+-#include <linux/bpf.h>
++#include <linux/btf.h>
+ #include <linux/filter.h>
+ #include <linux/types.h>
+ #include <linux/mm.h>
+@@ -713,3 +713,149 @@ struct xdp_frame *xdpf_clone(struct xdp_frame *xdpf)
+ 
+ 	return nxdpf;
+ }
++
++/**
++ * xdp_meta_match_id - find a type name corresponding to a given full ID
 + * @list: pointer to the %NULL-terminated list of type names
 + * @id: full ID (BTF ID + type ID) of the type to look
 + *
-+ * Do the opposite to what bpf_get_type_btf_id() does: looks over the
-+ * candidates in %NULL-terminated @list and tries to find a match for
-+ * the given ID. If found, returns its index.
++ * Convenience wrapper over bpf_match_type_btf_id() for usage in drivers which
++ * takes care of zeroed ID and BPF syscall being not compiled in (to not break
++ * code flow and return "no meta").
 + *
 + * Returns a string array element index on success, an error code otherwise.
 + */
-+int bpf_match_type_btf_id(const char * const *list, u64 id)
++int xdp_meta_match_id(const char * const *list, u64 id)
 +{
-+	const struct btf_type *t;
-+	int ret = -ENOENT;
-+	const char *name;
-+	struct btf *btf;
-+	u32 kind;
++	int ret;
 +
-+	btf = btf_get_by_id(upper_32_bits(id));
-+	if (IS_ERR(btf))
-+		return PTR_ERR(btf);
++	if (unlikely(!list || !*list))
++		return id ? -EINVAL : 0;
 +
-+	t = btf_type_by_id(btf, lower_32_bits(id));
-+	if (!t)
-+		goto err_put;
-+
-+	name = btf_name_by_offset(btf, t->name_off);
-+	if (!name) {
-+		ret = -EINVAL;
-+		goto err_put;
++	ret = bpf_match_type_btf_id(list, id);
++	if (ret == -ENOSYS || !id) {
++		for (ret = 0; list[ret]; ret++)
++			;
 +	}
-+
-+	kind = BTF_INFO_KIND(t->info);
-+
-+	for (u32 i = 0; ; i++) {
-+		const char *cand = list[i];
-+
-+		if (!cand)
-+			break;
-+
-+		if (btf_kind_from_str(&cand) == kind && !strcmp(cand, name)) {
-+			ret = i;
-+			break;
-+		}
-+	}
-+
-+err_put:
-+	btf_put(btf);
 +
 +	return ret;
 +}
++EXPORT_SYMBOL_GPL(xdp_meta_match_id);
 +
- const struct btf_type *btf_type_skip_modifiers(const struct btf *btf,
- 					       u32 id, u32 *res_id)
- {
-@@ -6804,12 +6930,7 @@ int btf_get_fd_by_id(u32 id)
- 	struct btf *btf;
- 	int fd;
- 
--	rcu_read_lock();
--	btf = idr_find(&btf_idr, id);
--	if (!btf || !refcount_inc_not_zero(&btf->refcnt))
--		btf = ERR_PTR(-ENOENT);
--	rcu_read_unlock();
--
-+	btf = btf_get_by_id(id);
- 	if (IS_ERR(btf))
- 		return PTR_ERR(btf);
- 
++/* Used in __xdp_build_meta_generic_from_skb() to quickly get the ID
++ * on hotpath.
++ */
++static __le64 xdp_meta_generic_id __ro_after_init;
++
++static int __init xdp_meta_generic_id_init(void)
++{
++	int ret;
++	u64 id;
++
++	ret = bpf_get_type_btf_id("struct xdp_meta_generic", &id);
++	xdp_meta_generic_id = cpu_to_le64(id);
++
++	return ret;
++}
++late_initcall(xdp_meta_generic_id_init);
++
++#define _xdp_meta_rx_hash_type_from_skb(skb, locskb) ({		\
++	typeof(skb) locskb = (skb);				\
++								\
++	likely((locskb)->l4_hash) ? XDP_META_RX_HASH_L4 :	\
++	skb_get_hash_raw(locskb) ? XDP_META_RX_HASH_L3 :	\
++	XDP_META_RX_HASH_NONE;					\
++})
++#define xdp_meta_rx_hash_type_from_skb(skb)			\
++	_xdp_meta_rx_hash_type_from_skb((skb), __UNIQUE_ID(skb_))
++
++#define xdp_meta_rx_vlan_from_prot(skb) ({			\
++	(skb)->vlan_proto == htons(ETH_P_8021Q) ?		\
++	XDP_META_RX_CVID : XDP_META_RX_SVID;			\
++})
++
++#define xdp_meta_rx_vlan_to_prot(md) ({				\
++	xdp_meta_rx_vlan_type_get(md) == XDP_META_RX_CVID ?	\
++	htons(ETH_P_8021Q) : htons(ETH_P_8021AD);		\
++})
++
++/**
++ * ___xdp_build_meta_generic_from_skb - fill a generic metadata from an skb
++ * @rx_md: a pointer to the XDP generic metadata to be filled
++ * @skb: a pointer to the skb to take the info from
++ *
++ * Fills a given generic metadata struct with the info set previously in
++ * an skb. @md can point to anywhere and the function doesn't use the
++ * skb_metadata_{end,len}().
++ */
++void ___xdp_build_meta_generic_from_skb(struct xdp_meta_generic_rx *rx_md,
++					const struct sk_buff *skb)
++{
++	struct xdp_meta_generic *md = to_gen_md(rx_md);
++	ktime_t ts;
++
++	xdp_meta_init(rx_md, xdp_meta_generic_id);
++
++	xdp_meta_rx_csum_level_set(md, skb->csum_level);
++	xdp_meta_rx_csum_status_set(md, skb->ip_summed);
++	xdp_meta_rx_csum_set(md, skb->csum);
++
++	xdp_meta_rx_hash_set(md, skb_get_hash_raw(skb));
++	xdp_meta_rx_hash_type_set(md, xdp_meta_rx_hash_type_from_skb(skb));
++
++	if (likely(skb_rx_queue_recorded(skb))) {
++		xdp_meta_rx_qid_present_set(md, 1);
++		xdp_meta_rx_qid_set(md, skb_get_rx_queue(skb));
++	}
++
++	if (skb_vlan_tag_present(skb)) {
++		xdp_meta_rx_vlan_type_set(md, xdp_meta_rx_vlan_from_prot(skb));
++		xdp_meta_rx_vid_set(md, skb_vlan_tag_get(skb));
++	}
++
++	ts = skb_hwtstamps(skb)->hwtstamp;
++	if (ts) {
++		xdp_meta_rx_tstamp_present_set(md, 1);
++		xdp_meta_rx_tstamp_set(md, ktime_to_ns(ts));
++	}
++}
++EXPORT_SYMBOL_GPL(___xdp_build_meta_generic_from_skb);
++
++/**
++ * ___xdp_populate_skb_meta_generic - fill the skb fields from a generic meta
++ * @skb: a pointer to the skb to be filled
++ * @rx_md: a pointer to the generic metadata to take the values from
++ *
++ * Populates the &sk_buff fields from a given XDP generic metadata. A meta
++ * can be from anywhere, the function doesn't use skb_metadata_{end,len}().
++ * Checks whether the metadata is generic-compatible before accessing other
++ * fields.
++ */
++void ___xdp_populate_skb_meta_generic(struct sk_buff *skb,
++				      const struct xdp_meta_generic_rx *rx_md)
++{
++	const struct xdp_meta_generic *md = to_gen_md(rx_md);
++
++	if (unlikely(!xdp_meta_has_generic(md + 1)))
++		return;
++
++	skb->csum_level = xdp_meta_rx_csum_level_get(md);
++	skb->ip_summed = xdp_meta_rx_csum_status_get(md);
++	skb->csum = xdp_meta_rx_csum_get(md);
++
++	skb_set_hash(skb, xdp_meta_rx_hash_get(md),
++		     xdp_meta_rx_hash_type_get(md));
++
++	if (likely(xdp_meta_rx_qid_present_get(md)))
++		skb_record_rx_queue(skb, xdp_meta_rx_qid_get(md));
++
++	if (xdp_meta_rx_vlan_type_get(md))
++		__vlan_hwaccel_put_tag(skb, xdp_meta_rx_vlan_to_prot(md),
++				       xdp_meta_rx_vid_get(md));
++
++	if (xdp_meta_rx_tstamp_present_get(md))
++		*skb_hwtstamps(skb) = (struct skb_shared_hwtstamps){
++			.hwtstamp = ns_to_ktime(xdp_meta_rx_tstamp_get(md)),
++		};
++}
++EXPORT_SYMBOL_GPL(___xdp_populate_skb_meta_generic);
 -- 
 2.36.1
 
