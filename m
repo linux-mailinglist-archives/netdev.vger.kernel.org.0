@@ -2,77 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C4F9655E751
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 18:32:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 56CE255E989
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 18:42:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346447AbiF1Nng (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 09:43:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47434 "EHLO
+        id S1346769AbiF1NoB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 09:44:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346848AbiF1Nnd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 09:43:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC1151CB09;
-        Tue, 28 Jun 2022 06:43:28 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7B55DB81E16;
-        Tue, 28 Jun 2022 13:43:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93634C3411D;
-        Tue, 28 Jun 2022 13:43:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656423806;
-        bh=Mu07+NkAeIWQxqDrSfWHBkagAH3qiS5hRkhUS/KEB+8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=J26wAUkMEANntFYIvZPSyjRIRDBcF+0CYhgasflX/sFmF3R2jSZgCYNFz3Ynufqqz
-         nzeG/jqshDGe3knqrMZ6LXcKAICeN8pbhTN0uX0rgz8dRC1YlEMk7ISAYbSEGNsozr
-         vMxbVtI/cVWlsFmtm6PBsVByLIwnivkOj1AJrkxj/wXQRhS/ln9VsFhQnbbn/n2PIn
-         QzAw/V4dQkJ41Sn1oOGwbBEr5dwHr6L6ETynGtdZIr8NvIdrA2IOpy2Ggx+LW85NkG
-         M7m209vEq9dxSuBiAncmEIgn4Mvu51957qmvXRBAQRo+OwPw3t5gNRgFO+Buf2FD6s
-         0aBj8RlvROlWA==
-Date:   Tue, 28 Jun 2022 15:43:17 +0200
-From:   Christian Brauner <brauner@kernel.org>
-To:     David Laight <David.Laight@ACULAB.COM>
-Cc:     Ralph Corderoy <ralph@inputplus.co.uk>,
-        Matthew Wilcox <willy@infradead.org>,
-        Nate Karstens <nate.karstens@garmin.com>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J. Bruce Fields" <bfields@fieldses.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
-        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>,
-        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
-        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Changli Gao <xiaosuo@gmail.com>
-Subject: Re: [PATCH v2] Implement close-on-fork
-Message-ID: <20220628134317.heagqm6dplf5vk7u@wittgenstein>
-References: <20200515152321.9280-1-nate.karstens@garmin.com>
- <20220618114111.61EC71F981@orac.inputplus.co.uk>
- <Yq4qIxh5QnhQZ0SJ@casper.infradead.org>
- <20220619104228.A9789201F7@orac.inputplus.co.uk>
- <20220628131304.gbiqqxamg6pmvsxf@wittgenstein>
- <35d0facc934748f995c2e7ab695301f7@AcuMS.aculab.com>
+        with ESMTP id S1346790AbiF1Nnw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 09:43:52 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3111718B2B
+        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 06:43:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656423828;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=abXoIOqyAhxt2c9XGMOMQUpyKJ4rqMJ6hybu9hpX0PI=;
+        b=fKPXuQ3gYZWullknpFnkPzlUMVAa3CHtv5OJN9N7AG36R9ZAqBau4GtSxzmVLGbpStZPie
+        NcTV57LGiGF7d9kJCIpu66amSn7L3XU0Jwo6SjOuRgaFtfgQyEOVLZd1h1fhmEhrV+bpVu
+        E1G2eCLFiaIN60H2AKYISpEiX8oRl2w=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-150-z9jL5y31Nhe9QkTF6Cp5Tg-1; Tue, 28 Jun 2022 09:43:46 -0400
+X-MC-Unique: z9jL5y31Nhe9QkTF6Cp5Tg-1
+Received: by mail-wm1-f72.google.com with SMTP id o28-20020a05600c511c00b003a04f97f27aso1583573wms.9
+        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 06:43:45 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=abXoIOqyAhxt2c9XGMOMQUpyKJ4rqMJ6hybu9hpX0PI=;
+        b=jjE+WHAE+W7MufPNWNoP8bJkk1nUs1pPeqCNNq7mzekLMioCREIE6WC36PRZOa0lEA
+         0icDp+fq/kmO7KYhsB+oUPoHY4Rb/FvYSMNIl04W9wLeVlj5Rz90q75qM1x3U4s/RP94
+         rea9M1hK6LjPa26bOPkvxOudqwU6VA9ZS7gbh+s/XXGweig89ze72HUy5TetunHuUMwu
+         uMissokCaBkI2WeYqIBNHbhVLVkWB/jemcjzvtgEx3FnL95klCjp3P/YDKtBjcVDpMf1
+         dEEuIMsFnrmOizGumkFr/iUxn24p+SDERXnPSNpsryuy2ya1iID9fmKh51cBzJrGy6Tf
+         wxsA==
+X-Gm-Message-State: AJIora/KlFs++xnrEqAAuoumMHSDCHJ7jhgK//DiVkYR014mvMV1+jb8
+        PJgDE6w6YDwq8JZDJhOhTh9ze6wRPpIC2zkzTYLlIanDbEjMaXPsMDe+2e2v1MxFruJJz6Icpb2
+        oveymKuW1cgoWnTBo
+X-Received: by 2002:a05:6000:1a8b:b0:219:af0c:ddf8 with SMTP id f11-20020a0560001a8b00b00219af0cddf8mr16993632wry.142.1656423824960;
+        Tue, 28 Jun 2022 06:43:44 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1ulCbVDwMIzdNmmQrb5kCw0weokx6fGGdIcmA6shirIYjb3LYAkbgo0mXLYbXoBYhaHKES0mQ==
+X-Received: by 2002:a05:6000:1a8b:b0:219:af0c:ddf8 with SMTP id f11-20020a0560001a8b00b00219af0cddf8mr16993581wry.142.1656423824625;
+        Tue, 28 Jun 2022 06:43:44 -0700 (PDT)
+Received: from sgarzare-redhat (host-87-11-6-149.retail.telecomitalia.it. [87.11.6.149])
+        by smtp.gmail.com with ESMTPSA id j18-20020a05600c42d200b003a02b9c47e4sm24072440wme.27.2022.06.28.06.43.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Jun 2022 06:43:44 -0700 (PDT)
+Date:   Tue, 28 Jun 2022 15:43:40 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Eugenio =?utf-8?B?UMOpcmV6?= <eperezma@redhat.com>
+Cc:     netdev@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
+        linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        lulu@redhat.com, tanuj.kamde@amd.com,
+        Si-Wei Liu <si-wei.liu@oracle.com>, Piotr.Uminski@intel.com,
+        habetsm.xilinx@gmail.com, gautam.dawar@amd.com, pabloc@xilinx.com,
+        Zhu Lingshan <lingshan.zhu@intel.com>, lvivier@redhat.com,
+        Longpeng <longpeng2@huawei.com>, dinang@xilinx.com,
+        martinh@xilinx.com, martinpo@xilinx.com,
+        Eli Cohen <elic@nvidia.com>, ecree.xilinx@gmail.com,
+        Wu Zongyong <wuzongyong@linux.alibaba.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>, hanand@xilinx.com,
+        Xie Yongji <xieyongji@bytedance.com>,
+        Zhang Min <zhang.min9@zte.com.cn>
+Subject: Re: [PATCH v6 2/4] vhost-vdpa: introduce SUSPEND backend feature bit
+Message-ID: <20220628134340.5fla7surd34bwnq3@sgarzare-redhat>
+References: <20220623160738.632852-1-eperezma@redhat.com>
+ <20220623160738.632852-3-eperezma@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <35d0facc934748f995c2e7ab695301f7@AcuMS.aculab.com>
-X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+In-Reply-To: <20220623160738.632852-3-eperezma@redhat.com>
+X-Spam-Status: No, score=-2.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -80,55 +94,86 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 28, 2022 at 01:38:07PM +0000, David Laight wrote:
-> From: Christian Brauner
-> > Sent: 28 June 2022 14:13
-> > 
-> > On Sun, Jun 19, 2022 at 11:42:28AM +0100, Ralph Corderoy wrote:
-> > > Hi Matthew, thanks for replying.
-> > >
-> > > > > The need for O_CLOFORK might be made more clear by looking at a
-> > > > > long-standing Go issue, i.e. unrelated to system(3), which was started
-> > > > > in 2017 by Russ Cox when he summed up the current race-condition
-> > > > > behaviour of trying to execve(2) a newly created file:
-> > > > > https://github.com/golang/go/issues/22315.
-> > > >
-> > > > The problem is that people advocating for O_CLOFORK understand its
-> > > > value, but not its cost.  Other google employees have a system which
-> > > > has literally millions of file descriptors in a single process.
-> > > > Having to maintain this extra state per-fd is a cost they don't want
-> > > > to pay (and have been quite vocal about earlier in this thread).
-> > >
-> > > So do you agree the userspace issue is best solved by *_CLOFORK and the
-> > > problem is how to implement *_CLOFORK at an acceptable cost?
-> > >
-> > > OTOH David Laight was making suggestions on moving the load to the
-> > > fork/exec path earlier in the thread, but OTOH Al Viro mentioned a
-> > > â€˜portable solutionâ€™, though that could have been to a specific issue
-> > > rather than the more general case.
-> > >
-> > > How would you recommend approaching an acceptable cost is progressed?
-> > > Iterate on patch versions?  Open a bugzilla.kernel.org for central
-> > > tracking and linking from the other projects?  ..?
-> > 
-> > Quoting from that go thread
-> > 
-> > "If the OS had a "close all fds above x", we could use that. (I don't know of any that do, but it sure
-> > would help.)"
-> > 
-> > So why can't this be solved with:
-> > close_range(fd_first, fd_last, CLOSE_RANGE_CLOEXEC | CLOSE_RANGE_UNSHARE)?
-> > e.g.
-> > close_range(100, ~0U, CLOSE_RANGE_CLOEXEC | CLOSE_RANGE_UNSHARE)?
-> 
-> That is a relatively recent linux system call.
-> Although it can be (mostly) emulated by reading /proc/fd
-> - but that may not be mounted.
-> 
-> In any case another thread can open an fd between the close_range()
-> and fork() calls.
+On Thu, Jun 23, 2022 at 06:07:36PM +0200, Eugenio Pérez wrote:
+>Userland knows if it can suspend the device or not by checking this feature
+>bit.
+>
+>It's only offered if the vdpa driver backend implements the suspend()
+>operation callback, and to offer it or userland to ack it if the backend
+>does not offer that callback is an error.
 
-The CLOSE_RANGE_UNSHARE gives the calling thread a private file
-descriptor table before marking fs close-on-exec.
+Should we document in the previous patch that the callback must be 
+implemented only if the drive/device support it?
 
-close_range(100, ~0U, CLOSE_RANGE_CLOEXEC | CLOSE_RANGE_UNSHARE)?
+The rest LGTM although I have a doubt whether it is better to move this 
+patch after patch 3, or merge it with patch 3, for bisectability since 
+we enable the feature here but if the userspace calls ioctl() with 
+VHOST_VDPA_SUSPEND we reply back that it is not supported.
+
+Thanks,
+Stefano
+
+>
+>Signed-off-by: Eugenio Pérez <eperezma@redhat.com>
+>---
+> drivers/vhost/vdpa.c             | 16 +++++++++++++++-
+> include/uapi/linux/vhost_types.h |  2 ++
+> 2 files changed, 17 insertions(+), 1 deletion(-)
+>
+>diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+>index 23dcbfdfa13b..3d636e192061 100644
+>--- a/drivers/vhost/vdpa.c
+>+++ b/drivers/vhost/vdpa.c
+>@@ -347,6 +347,14 @@ static long vhost_vdpa_set_config(struct vhost_vdpa *v,
+> 	return 0;
+> }
+>
+>+static bool vhost_vdpa_can_suspend(const struct vhost_vdpa *v)
+>+{
+>+	struct vdpa_device *vdpa = v->vdpa;
+>+	const struct vdpa_config_ops *ops = vdpa->config;
+>+
+>+	return ops->suspend;
+>+}
+>+
+> static long vhost_vdpa_get_features(struct vhost_vdpa *v, u64 __user *featurep)
+> {
+> 	struct vdpa_device *vdpa = v->vdpa;
+>@@ -577,7 +585,11 @@ static long vhost_vdpa_unlocked_ioctl(struct file *filep,
+> 	if (cmd == VHOST_SET_BACKEND_FEATURES) {
+> 		if (copy_from_user(&features, featurep, sizeof(features)))
+> 			return -EFAULT;
+>-		if (features & ~VHOST_VDPA_BACKEND_FEATURES)
+>+		if (features & ~(VHOST_VDPA_BACKEND_FEATURES |
+>+				 BIT_ULL(VHOST_BACKEND_F_SUSPEND)))
+>+			return -EOPNOTSUPP;
+>+		if ((features & BIT_ULL(VHOST_BACKEND_F_SUSPEND)) &&
+>+		     !vhost_vdpa_can_suspend(v))
+> 			return -EOPNOTSUPP;
+> 		vhost_set_backend_features(&v->vdev, features);
+> 		return 0;
+>@@ -628,6 +640,8 @@ static long vhost_vdpa_unlocked_ioctl(struct file *filep,
+> 		break;
+> 	case VHOST_GET_BACKEND_FEATURES:
+> 		features = VHOST_VDPA_BACKEND_FEATURES;
+>+		if (vhost_vdpa_can_suspend(v))
+>+			features |= BIT_ULL(VHOST_BACKEND_F_SUSPEND);
+> 		if (copy_to_user(featurep, &features, sizeof(features)))
+> 			r = -EFAULT;
+> 		break;
+>diff --git a/include/uapi/linux/vhost_types.h b/include/uapi/linux/vhost_types.h
+>index 634cee485abb..1bdd6e363f4c 100644
+>--- a/include/uapi/linux/vhost_types.h
+>+++ b/include/uapi/linux/vhost_types.h
+>@@ -161,5 +161,7 @@ struct vhost_vdpa_iova_range {
+>  * message
+>  */
+> #define VHOST_BACKEND_F_IOTLB_ASID  0x3
+>+/* Device can be suspended */
+>+#define VHOST_BACKEND_F_SUSPEND  0x4
+>
+> #endif
+>-- 
+>2.31.1
+>
+
