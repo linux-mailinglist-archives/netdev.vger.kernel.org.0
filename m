@@ -2,184 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F2A955C825
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 14:55:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EAC3655E158
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:33:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244392AbiF1CZL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jun 2022 22:25:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33314 "EHLO
+        id S244673AbiF1C3l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jun 2022 22:29:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244078AbiF1CXs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 22:23:48 -0400
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB936B94;
-        Mon, 27 Jun 2022 19:23:03 -0700 (PDT)
-Received: by mail-pg1-x534.google.com with SMTP id 68so10793016pgb.10;
-        Mon, 27 Jun 2022 19:23:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HJxtqab0/tMiakWNEyC3nFz1/Ap3ZwjlyjInjl9oQ08=;
-        b=GtISRQAw32VwWkIqJjbS6kPz10YSeb/J+R05thf6bFPMAOY82jKQN3UdU/3Xm5A6wE
-         tMPJ9jiXwXd5WIpoNmuhYObSQi+a4vbyn3XjCacf3FIX++nTWeWgUHF+xWdV2kFekLbZ
-         0OzYqNi1FmudYoMCCJZeGvG2ye4sCgduv0rk2Zt4nVkQ98BfuFa3NPGjGKGgPVG9KtHY
-         DntPc1msd2JalXRAlzsxyFpEjwPnKkzTvOPkfaVuXEaP+ZKelLBEm4Nr7ZrcOOgm/4RV
-         HPa6kkD+OJGFCcd57tIyozXxW7wCGRkiieRac/DfVSrfyK1ch327OFoWU4ImG2SclPJ9
-         uIig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HJxtqab0/tMiakWNEyC3nFz1/Ap3ZwjlyjInjl9oQ08=;
-        b=uKtNSVIaMW9Afk2Jysh68j5jGzaY4UZsPPMdW7SZfsYYvY0v6Bo09tzf8KSCA+Fgm8
-         Va6JUpV1KXGNS/fpYTWvxUO+W8pU2ZebRpiE+seQuWUTiIr0Dj3ENGHm71zWjXSQSXUC
-         a5vdRjGXrSZLpYtjvaEpEcONTLDWOwz+eE0j6JQUaGW42rKHKJllTDEMTgQojWB9BNfY
-         EGP3l2tHt09Oy/l+W15beUJ2z6jcculr8sszAXkHvJvZTgHGVcTAbJFM9AnBJBVex5El
-         C+0qExBVo5Ki/EN0o02R35GVQzPk6hFvWkGrolIldrHoZmKXiXi2pyQsT18sW2boZbQa
-         MNxw==
-X-Gm-Message-State: AJIora9/lsd2H0Y1KkPVZPBON5mKRxcyiSWhum39wLTZW8EWzT1vM6UI
-        LKQvyxC709xvJlpCrV2Qfn3lC/9QvbzFsZjp+Qk=
-X-Google-Smtp-Source: AGRyM1tkELEQsXZZ9rCiYz26Ox2Bo3COuaabo0ODviEYu2B5j99coTUXvXqjCJz9EcYG+uOHPMvd9KNaBAGlSJExO9A=
-X-Received: by 2002:a65:6a0e:0:b0:405:2310:22d0 with SMTP id
- m14-20020a656a0e000000b00405231022d0mr15760605pgu.290.1656382983124; Mon, 27
- Jun 2022 19:23:03 -0700 (PDT)
+        with ESMTP id S244519AbiF1C1I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 22:27:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A97324BDC;
+        Mon, 27 Jun 2022 19:24:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 45A58B81C14;
+        Tue, 28 Jun 2022 02:24:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B75A5C341CB;
+        Tue, 28 Jun 2022 02:24:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656383072;
+        bh=F5PklHD+9cTDpXg9Leq80IrJfmRoAeSbs4nZU72r4SI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=pLnMyXQKpD3myhHY1lrGZdpeopIDQRowpfR2A+P4elec71k6VGIlvAVOMfwY+p0Fg
+         6wqfn50EWX7K++wp4CYuTxz3DbtembSd5o/t1ZaK5Knagj/uN2tFUTtXeQNXaqohEb
+         AeiYlm61LxW46Fiu+EJjVAf1ZXGtKUCkbe6ArQhjqzjnT8wQxeSwwt/HIhOh5Ycvak
+         Ylcwj9prz+zIQuRFr3Wl4Ho2R+26LfLIKWI4sXzfmqwQ72YfzJsJii7nqqKtEQQotv
+         ySaAcSAQ9yQnYI925hXDyvZsF7m96rhwcfouG6d1HJuDlGk7tVTt2Gzd7OA6/IAmxO
+         vdaBVHsYkpOaA==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Xu Jia <xujia39@huawei.com>, Hulk Robot <hulkci@huawei.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, ajk@comnets.uni-bremen.de,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux-hams@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 08/27] hamradio: 6pack: fix array-index-out-of-bounds in decode_std_command()
+Date:   Mon, 27 Jun 2022 22:23:54 -0400
+Message-Id: <20220628022413.596341-8-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220628022413.596341-1-sashal@kernel.org>
+References: <20220628022413.596341-1-sashal@kernel.org>
 MIME-Version: 1.0
-References: <20220628020110.1601693-1-saravanak@google.com>
-In-Reply-To: <20220628020110.1601693-1-saravanak@google.com>
-From:   Fabio Estevam <festevam@gmail.com>
-Date:   Mon, 27 Jun 2022 23:22:52 -0300
-Message-ID: <CAOMZO5D29QqH_-pktht6yO_Ga7B7KgeGXxzyUHJWGYfGTJr4pw@mail.gmail.com>
-Subject: Re: [PATCH v1 0/2] Fix console probe delay when stdout-path isn't set
-To:     Saravana Kannan <saravanak@google.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Al Cooper <alcooperx@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Tobias Klauser <tklauser@distanz.ch>,
-        Russell King <linux@armlinux.org.uk>,
-        Vineet Gupta <vgupta@kernel.org>,
-        Richard Genoud <richard.genoud@gmail.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Alexander Shiyan <shc_work@mail.ru>,
-        Baruch Siach <baruch@tkos.co.il>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Karol Gugala <kgugala@antmicro.com>,
-        Mateusz Holenko <mholenko@antmicro.com>,
-        Gabriel Somlo <gsomlo@gmail.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Taichi Sugaya <sugaya.taichi@socionext.com>,
-        Takao Orito <orito.takao@socionext.com>,
-        Liviu Dudau <liviu.dudau@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Pali Rohar <pali@kernel.org>,
-        Andreas Farber <afaerber@suse.de>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Laxman Dewangan <ldewangan@nvidia.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Patrice Chotard <patrice.chotard@foss.st.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hammer Hsieh <hammerh0314@gmail.com>,
-        Peter Korsgaard <jacmet@sunsite.dk>,
-        Timur Tabi <timur@kernel.org>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Rob Herring <robh@kernel.org>,
-        sascha hauer <sha@pengutronix.de>, peng fan <peng.fan@nxp.com>,
-        kevin hilman <khilman@kernel.org>,
-        ulf hansson <ulf.hansson@linaro.org>,
-        len brown <len.brown@intel.com>, pavel machek <pavel@ucw.cz>,
-        joerg roedel <joro@8bytes.org>, will deacon <will@kernel.org>,
-        andrew lunn <andrew@lunn.ch>,
-        heiner kallweit <hkallweit1@gmail.com>,
-        eric dumazet <edumazet@google.com>,
-        jakub kicinski <kuba@kernel.org>,
-        paolo abeni <pabeni@redhat.com>,
-        linus walleij <linus.walleij@linaro.org>,
-        hideaki yoshifuji <yoshfuji@linux-ipv6.org>,
-        david ahern <dsahern@kernel.org>, kernel-team@android.com,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-pm@vger.kernel.org, iommu@lists.linux-foundation.org,
-        netdev <netdev@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        linux-serial@vger.kernel.org,
-        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        linux-aspeed@lists.ozlabs.org,
-        linux-rpi-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-tegra@vger.kernel.org,
-        linux-snps-arc@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-        linux-actions@lists.infradead.org,
-        linux-unisoc@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        sparclinux@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Saravana,
+From: Xu Jia <xujia39@huawei.com>
 
-On Mon, Jun 27, 2022 at 11:03 PM Saravana Kannan <saravanak@google.com> wrote:
->
-> Since the series that fixes console probe delay based on stdout-path[1] got
-> pulled into driver-core-next, I made these patches on top of them.
->
-> Even if stdout-path isn't set in DT, this patch should take console
-> probe times back to how they were before the deferred_probe_timeout
-> clean up series[2].
->
-> Fabio/Ahmad/Sascha,
->
-> Can you give this a shot please?
+[ Upstream commit 2b04495e21cdb9b45c28c6aeb2da560184de20a3 ]
 
-This series works fine for me (with and without stdout-path), thanks:
+Hulk Robot reports incorrect sp->rx_count_cooked value in decode_std_command().
+This should be caused by the subtracting from sp->rx_count_cooked before.
+It seems that sp->rx_count_cooked value is changed to 0, which bypassed the
+previous judgment.
 
-Tested-by: Fabio Estevam <festevam@gmail.com>
+The situation is shown below:
+
+         (Thread 1)			|  (Thread 2)
+decode_std_command()		| resync_tnc()
+...					|
+if (rest == 2)			|
+	sp->rx_count_cooked -= 2;	|
+else if (rest == 3)			| ...
+					| sp->rx_count_cooked = 0;
+	sp->rx_count_cooked -= 1;	|
+for (i = 0; i < sp->rx_count_cooked; i++) // report error
+	checksum += sp->cooked_buf[i];
+
+sp->rx_count_cooked is a shared variable but is not protected by a lock.
+The same applies to sp->rx_count. This patch adds a lock to fix the bug.
+
+The fail log is shown below:
+=======================================================================
+UBSAN: array-index-out-of-bounds in drivers/net/hamradio/6pack.c:925:31
+index 400 is out of range for type 'unsigned char [400]'
+CPU: 3 PID: 7433 Comm: kworker/u10:1 Not tainted 5.18.0-rc5-00163-g4b97bac0756a #2
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.14.0-0-g155821a1990b-prebuilt.qemu.org 04/01/2014
+Workqueue: events_unbound flush_to_ldisc
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xcd/0x134
+ ubsan_epilogue+0xb/0x50
+ __ubsan_handle_out_of_bounds.cold+0x62/0x6c
+ sixpack_receive_buf+0xfda/0x1330
+ tty_ldisc_receive_buf+0x13e/0x180
+ tty_port_default_receive_buf+0x6d/0xa0
+ flush_to_ldisc+0x213/0x3f0
+ process_one_work+0x98f/0x1620
+ worker_thread+0x665/0x1080
+ kthread+0x2e9/0x3a0
+ ret_from_fork+0x1f/0x30
+ ...
+
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Xu Jia <xujia39@huawei.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/hamradio/6pack.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/hamradio/6pack.c b/drivers/net/hamradio/6pack.c
+index 83dc1c2c3b84..d92df9bafbbd 100644
+--- a/drivers/net/hamradio/6pack.c
++++ b/drivers/net/hamradio/6pack.c
+@@ -99,6 +99,7 @@ struct sixpack {
+ 
+ 	unsigned int		rx_count;
+ 	unsigned int		rx_count_cooked;
++	spinlock_t		rxlock;
+ 
+ 	int			mtu;		/* Our mtu (to spot changes!) */
+ 	int			buffsize;       /* Max buffers sizes */
+@@ -570,6 +571,7 @@ static int sixpack_open(struct tty_struct *tty)
+ 	sp->dev = dev;
+ 
+ 	spin_lock_init(&sp->lock);
++	spin_lock_init(&sp->rxlock);
+ 	refcount_set(&sp->refcnt, 1);
+ 	init_completion(&sp->dead);
+ 
+@@ -925,6 +927,7 @@ static void decode_std_command(struct sixpack *sp, unsigned char cmd)
+ 			sp->led_state = 0x60;
+ 			/* fill trailing bytes with zeroes */
+ 			sp->tty->ops->write(sp->tty, &sp->led_state, 1);
++			spin_lock_bh(&sp->rxlock);
+ 			rest = sp->rx_count;
+ 			if (rest != 0)
+ 				 for (i = rest; i <= 3; i++)
+@@ -942,6 +945,7 @@ static void decode_std_command(struct sixpack *sp, unsigned char cmd)
+ 				sp_bump(sp, 0);
+ 			}
+ 			sp->rx_count_cooked = 0;
++			spin_unlock_bh(&sp->rxlock);
+ 		}
+ 		break;
+ 	case SIXP_TX_URUN: printk(KERN_DEBUG "6pack: TX underrun\n");
+@@ -971,8 +975,11 @@ sixpack_decode(struct sixpack *sp, const unsigned char *pre_rbuff, int count)
+ 			decode_prio_command(sp, inbyte);
+ 		else if ((inbyte & SIXP_STD_CMD_MASK) != 0)
+ 			decode_std_command(sp, inbyte);
+-		else if ((sp->status & SIXP_RX_DCD_MASK) == SIXP_RX_DCD_MASK)
++		else if ((sp->status & SIXP_RX_DCD_MASK) == SIXP_RX_DCD_MASK) {
++			spin_lock_bh(&sp->rxlock);
+ 			decode_data(sp, inbyte);
++			spin_unlock_bh(&sp->rxlock);
++		}
+ 	}
+ }
+ 
+-- 
+2.35.1
+
