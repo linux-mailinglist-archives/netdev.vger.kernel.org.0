@@ -2,83 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BFC9255DD5E
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:27:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B02F55CFBD
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:06:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345681AbiF1McN convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 28 Jun 2022 08:32:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60042 "EHLO
+        id S1345499AbiF1Mcw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 08:32:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345614AbiF1McL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 08:32:11 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25F9B2E9C3;
-        Tue, 28 Jun 2022 05:32:11 -0700 (PDT)
-Received: from fraeml715-chm.china.huawei.com (unknown [172.18.147.206])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LXP8t3QSTz6855h;
-        Tue, 28 Jun 2022 20:31:26 +0800 (CST)
-Received: from fraeml714-chm.china.huawei.com (10.206.15.33) by
- fraeml715-chm.china.huawei.com (10.206.15.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 28 Jun 2022 14:32:09 +0200
-Received: from fraeml714-chm.china.huawei.com ([10.206.15.33]) by
- fraeml714-chm.china.huawei.com ([10.206.15.33]) with mapi id 15.01.2375.024;
- Tue, 28 Jun 2022 14:32:09 +0200
-From:   Roberto Sassu <roberto.sassu@huawei.com>
-To:     "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "andrii@kernel.org" <andrii@kernel.org>,
-        "kpsingh@kernel.org" <kpsingh@kernel.org>,
-        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
-        "songliubraving@fb.com" <songliubraving@fb.com>,
-        "kafai@fb.com" <kafai@fb.com>, "yhs@fb.com" <yhs@fb.com>,
-        "dhowells@redhat.com" <dhowells@redhat.com>
-CC:     "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH v6 5/5] selftests/bpf: Add test for
- bpf_verify_pkcs7_signature() helper
-Thread-Topic: [PATCH v6 5/5] selftests/bpf: Add test for
- bpf_verify_pkcs7_signature() helper
-Thread-Index: AQHYiuqztw8/FQ63U0mmvw4+rrmglK1kwAzg
-Date:   Tue, 28 Jun 2022 12:32:09 +0000
-Message-ID: <96c8a537297242f9a01b8124179611d6@huawei.com>
-References: <20220628122750.1895107-1-roberto.sassu@huawei.com>
- <20220628122750.1895107-6-roberto.sassu@huawei.com>
-In-Reply-To: <20220628122750.1895107-6-roberto.sassu@huawei.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.221.98.153]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        with ESMTP id S1345694AbiF1Mc2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 08:32:28 -0400
+Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D569F2E9C3
+        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 05:32:27 -0700 (PDT)
+Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-3176b6ed923so115025137b3.11
+        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 05:32:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=RVfbgOitG18bb87yWBkH35J4JenCkCxRi/ygXGcpbt4=;
+        b=tGDyMj1XdbwFx5ENUdMBx7m0pmv1IRVf63OHKrsDLJaeKTSSU2j33ObLxTEK/a1s7Y
+         jrOPoEx2nYoNwN/ceD5w9u66ehVEcvbB7E3vPaR+lDZvoKpzNs1eTK0ER7hkvQe6m/VL
+         vc+wfNUJ6WJ7Sye6jdDw4Ow3y/KAqjzKYuY6qwnQ9WhqpoeIWOqI32MWXDG6n7fy9Cpk
+         6D931yS1B2I3am70V095kXKMLaW15fL1j0Hmj65paVEps+dGjAg7uti5JJ/xTsZ3ffcU
+         /T1xlJJOoIPNCE4UuUNFGc1XtroA22QdqISWZXog6bvdHHDaXe0g6WdCDKQnW7q4V5ah
+         E3Qw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=RVfbgOitG18bb87yWBkH35J4JenCkCxRi/ygXGcpbt4=;
+        b=4JMlT5mMPTeftc2DMu3NNv4v1P9NqGvOwfemukMYJCgYYBguaDUYhtrBTQp0/XvqmX
+         NGYotPl55z5pSsmENTOQYDZBCScsAtznCMN3DWZ0kwKDLyyXhrfMZfV7D1SvFojUWto7
+         A+btRSMGWkE7mrNdmLFQRncrQGu64LKuvmpCXXNKpbLV3uSfW5VF8Q1MbnjA3vsHXEeq
+         oJI5EZM4GUcAb2zn/Fi0YtrjI4QGRlMaDALBm3gpm9/B3DifJ0B/Kg7/iQXxGAk0fyPO
+         b5d4qJeIRIQMV1dNp0gg65kz+OZ5Ah6zfu4+YiePxgEc+/tQ7+iyB49toQdyzepTdx+Y
+         grng==
+X-Gm-Message-State: AJIora+uNDluoedioBmjyqmI84Ofqqo8+9tV3fM6eivr0c6/bpT7BdHy
+        K87nkvLd7WwmYCE/JiGwAbXuIR32pXcTgo5vCHFQzw==
+X-Google-Smtp-Source: AGRyM1tZOg8a8akbWJ6uq2aHl4kzEALWqREo/NhIhOnARsOJw9Xp0MQNW5ZunAPwLkiwJuL6LtQs7iavkhL0jCc/bFc=
+X-Received: by 2002:a81:d05:0:b0:317:76a1:9507 with SMTP id
+ 5-20020a810d05000000b0031776a19507mr21222754ywn.151.1656419547105; Tue, 28
+ Jun 2022 05:32:27 -0700 (PDT)
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <cover.1655723462.git.hakan.jansson@infineon.com> <0e3c48f0f38b167d83feb102284eaf24caa8c500.1655723462.git.hakan.jansson@infineon.com>
+In-Reply-To: <0e3c48f0f38b167d83feb102284eaf24caa8c500.1655723462.git.hakan.jansson@infineon.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Tue, 28 Jun 2022 14:32:15 +0200
+Message-ID: <CACRpkdZu9RrmWN+AZi_wy-UsJtdsfBHW+27Nj+n7YRSRXpoSEQ@mail.gmail.com>
+Subject: Re: [PATCH 3/4] Bluetooth: hci_bcm: Prevent early baudrate setting in
+ autobaud mode
+To:     Hakan Jansson <hakan.jansson@infineon.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        linux-bluetooth@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> From: Roberto Sassu
-> Sent: Tuesday, June 28, 2022 2:28 PM
-> Ensure that signature verification is performed successfully from an eBPF
-> program, with the new bpf_verify_pkcs7_signature() helper.
-> 
-> Generate a testing signature key and compile sign-file from scripts/, so
-> that the test is selfcontained. Also, search for the tcb_bic.ko kernel
-> module, parse it in user space to extract the raw PKCS#7 signature and send
-> it to the eBPF program for signature verification. If tcb_bic.ko is not
-> found, the test does not fail.
+On Mon, Jun 20, 2022 at 2:02 PM Hakan Jansson
+<hakan.jansson@infineon.com> wrote:
 
-Ops, tcp_bic.ko.
+> Always prevent trying to set device baudrate before calling setup() when
+> using autobaud mode.
+>
+> This was previously happening for devices which had device specific data
+> with member no_early_set_baudrate set to 0.
+>
+> Signed-off-by: Hakan Jansson <hakan.jansson@infineon.com>
 
-Roberto
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+
+Yours,
+Linus Walleij
