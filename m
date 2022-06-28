@@ -2,178 +2,673 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 56CE255E989
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 18:42:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 078CF55E69D
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 18:30:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346769AbiF1NoB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 09:44:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48008 "EHLO
+        id S1346796AbiF1No1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 09:44:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346790AbiF1Nnw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 09:43:52 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3111718B2B
-        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 06:43:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656423828;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=abXoIOqyAhxt2c9XGMOMQUpyKJ4rqMJ6hybu9hpX0PI=;
-        b=fKPXuQ3gYZWullknpFnkPzlUMVAa3CHtv5OJN9N7AG36R9ZAqBau4GtSxzmVLGbpStZPie
-        NcTV57LGiGF7d9kJCIpu66amSn7L3XU0Jwo6SjOuRgaFtfgQyEOVLZd1h1fhmEhrV+bpVu
-        E1G2eCLFiaIN60H2AKYISpEiX8oRl2w=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-150-z9jL5y31Nhe9QkTF6Cp5Tg-1; Tue, 28 Jun 2022 09:43:46 -0400
-X-MC-Unique: z9jL5y31Nhe9QkTF6Cp5Tg-1
-Received: by mail-wm1-f72.google.com with SMTP id o28-20020a05600c511c00b003a04f97f27aso1583573wms.9
-        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 06:43:45 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=abXoIOqyAhxt2c9XGMOMQUpyKJ4rqMJ6hybu9hpX0PI=;
-        b=jjE+WHAE+W7MufPNWNoP8bJkk1nUs1pPeqCNNq7mzekLMioCREIE6WC36PRZOa0lEA
-         0icDp+fq/kmO7KYhsB+oUPoHY4Rb/FvYSMNIl04W9wLeVlj5Rz90q75qM1x3U4s/RP94
-         rea9M1hK6LjPa26bOPkvxOudqwU6VA9ZS7gbh+s/XXGweig89ze72HUy5TetunHuUMwu
-         uMissokCaBkI2WeYqIBNHbhVLVkWB/jemcjzvtgEx3FnL95klCjp3P/YDKtBjcVDpMf1
-         dEEuIMsFnrmOizGumkFr/iUxn24p+SDERXnPSNpsryuy2ya1iID9fmKh51cBzJrGy6Tf
-         wxsA==
-X-Gm-Message-State: AJIora/KlFs++xnrEqAAuoumMHSDCHJ7jhgK//DiVkYR014mvMV1+jb8
-        PJgDE6w6YDwq8JZDJhOhTh9ze6wRPpIC2zkzTYLlIanDbEjMaXPsMDe+2e2v1MxFruJJz6Icpb2
-        oveymKuW1cgoWnTBo
-X-Received: by 2002:a05:6000:1a8b:b0:219:af0c:ddf8 with SMTP id f11-20020a0560001a8b00b00219af0cddf8mr16993632wry.142.1656423824960;
-        Tue, 28 Jun 2022 06:43:44 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1ulCbVDwMIzdNmmQrb5kCw0weokx6fGGdIcmA6shirIYjb3LYAkbgo0mXLYbXoBYhaHKES0mQ==
-X-Received: by 2002:a05:6000:1a8b:b0:219:af0c:ddf8 with SMTP id f11-20020a0560001a8b00b00219af0cddf8mr16993581wry.142.1656423824625;
-        Tue, 28 Jun 2022 06:43:44 -0700 (PDT)
-Received: from sgarzare-redhat (host-87-11-6-149.retail.telecomitalia.it. [87.11.6.149])
-        by smtp.gmail.com with ESMTPSA id j18-20020a05600c42d200b003a02b9c47e4sm24072440wme.27.2022.06.28.06.43.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jun 2022 06:43:44 -0700 (PDT)
-Date:   Tue, 28 Jun 2022 15:43:40 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Eugenio =?utf-8?B?UMOpcmV6?= <eperezma@redhat.com>
-Cc:     netdev@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
-        linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        lulu@redhat.com, tanuj.kamde@amd.com,
-        Si-Wei Liu <si-wei.liu@oracle.com>, Piotr.Uminski@intel.com,
-        habetsm.xilinx@gmail.com, gautam.dawar@amd.com, pabloc@xilinx.com,
-        Zhu Lingshan <lingshan.zhu@intel.com>, lvivier@redhat.com,
-        Longpeng <longpeng2@huawei.com>, dinang@xilinx.com,
-        martinh@xilinx.com, martinpo@xilinx.com,
-        Eli Cohen <elic@nvidia.com>, ecree.xilinx@gmail.com,
-        Wu Zongyong <wuzongyong@linux.alibaba.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>, hanand@xilinx.com,
-        Xie Yongji <xieyongji@bytedance.com>,
-        Zhang Min <zhang.min9@zte.com.cn>
-Subject: Re: [PATCH v6 2/4] vhost-vdpa: introduce SUSPEND backend feature bit
-Message-ID: <20220628134340.5fla7surd34bwnq3@sgarzare-redhat>
-References: <20220623160738.632852-1-eperezma@redhat.com>
- <20220623160738.632852-3-eperezma@redhat.com>
+        with ESMTP id S1346758AbiF1NoT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 09:44:19 -0400
+Received: from smtpbg151.qq.com (smtpbg151.qq.com [18.169.211.239])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAD751A3BA
+        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 06:44:16 -0700 (PDT)
+X-QQ-mid: bizesmtp64t1656423839tkdhbeya
+Received: from localhost.localdomain ( [58.240.82.166])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Tue, 28 Jun 2022 21:43:52 +0800 (CST)
+X-QQ-SSF: 01400000002000G0S000C00A0000000
+X-QQ-FEAT: JRmPfD6HWhxvhx+AxRTpRMSO0a3Xm5Y47NTnxjDMAmQLYl07HLxMSf5awd4SE
+        RIf7ES1pECbis4SFQvbeMStZRlMgckxukk/087No6MJIf4uLxdrk2CUrWqxgT8EM4h11vvQ
+        nJeQV/QZHLhb55VUSehn8p/HyMRuWNqjwjjeDXymiOPw7OWleqc0azb7q5+2fgalM0tm5jA
+        fhuan2v2qymO29KXt2Pw+f6wcVxtdk8vq6GLlRwYcP5c7cRaQl+2R00h3dmgLy9dLMule8f
+        ME+jvtqgb9I6Cj34d47mkXbMnAe+SCxl+BHG+x4wJBfU+ZBJAolQ5pEmPwlLP2uvujhEYoH
+        OU3Io7xM6CQpMrCmJAXRfUkE+JCl21u2CEOIscm0f8hQi71AqvFjtjQzMWI1g==
+X-QQ-GoodBg: 2
+From:   Meng Tang <tangmeng@uniontech.com>
+To:     stable@vger.kernel.org, tony0620emma@gmail.com,
+        kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Guo-Feng Fan <vincent_fann@realtek.com>,
+        Ping-Ke Shih <pkshih@realtek.com>,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        Meng Tang <tangmeng@uniontech.com>
+Subject: [PATCH 5.10 v2 1/3] commit 5d6651fe8583 ("rtw88: 8821c: support RFE type2 wifi NIC")
+Date:   Tue, 28 Jun 2022 21:43:49 +0800
+Message-Id: <20220628134351.4182-1-tangmeng@uniontech.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220623160738.632852-3-eperezma@redhat.com>
-X-Spam-Status: No, score=-2.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign9
+X-QQ-Bgrelay: 1
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 06:07:36PM +0200, Eugenio Pérez wrote:
->Userland knows if it can suspend the device or not by checking this feature
->bit.
->
->It's only offered if the vdpa driver backend implements the suspend()
->operation callback, and to offer it or userland to ack it if the backend
->does not offer that callback is an error.
+From: Guo-Feng Fan <vincent_fann@realtek.com>
 
-Should we document in the previous patch that the callback must be 
-implemented only if the drive/device support it?
+RFE type2 is a new NIC which has one RF antenna shares with BT.
+Update phy parameter to verstion V57 to allow initial procedure
+to load extra AGC table for sharing antenna NIC.
 
-The rest LGTM although I have a doubt whether it is better to move this 
-patch after patch 3, or merge it with patch 3, for bisectability since 
-we enable the feature here but if the userspace calls ioctl() with 
-VHOST_VDPA_SUSPEND we reply back that it is not supported.
+Signed-off-by: Guo-Feng Fan <vincent_fann@realtek.com>
+Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+Tested-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20210202055012.8296-4-pkshih@realtek.com
+Signed-off-by: Meng Tang <tangmeng@uniontech.com>
+---
+ drivers/net/wireless/realtek/rtw88/main.c     |   2 +
+ drivers/net/wireless/realtek/rtw88/main.h     |   7 +
+ drivers/net/wireless/realtek/rtw88/rtw8821c.c |  47 +++
+ drivers/net/wireless/realtek/rtw88/rtw8821c.h |  14 +
+ .../wireless/realtek/rtw88/rtw8821c_table.c   | 397 ++++++++++++++++++
+ .../wireless/realtek/rtw88/rtw8821c_table.h   |   1 +
+ 6 files changed, 468 insertions(+)
 
-Thanks,
-Stefano
+diff --git a/drivers/net/wireless/realtek/rtw88/main.c b/drivers/net/wireless/realtek/rtw88/main.c
+index 2ef1416899f0..c09d2a8b51dd 100644
+--- a/drivers/net/wireless/realtek/rtw88/main.c
++++ b/drivers/net/wireless/realtek/rtw88/main.c
+@@ -1551,6 +1551,8 @@ static int rtw_chip_board_info_setup(struct rtw_dev *rtwdev)
+ 	rtw_phy_setup_phy_cond(rtwdev, 0);
+ 
+ 	rtw_phy_init_tx_power(rtwdev);
++	if (rfe_def->agc_btg_tbl)
++		rtw_load_table(rtwdev, rfe_def->agc_btg_tbl);
+ 	rtw_load_table(rtwdev, rfe_def->phy_pg_tbl);
+ 	rtw_load_table(rtwdev, rfe_def->txpwr_lmt_tbl);
+ 	rtw_phy_tx_power_by_rate_config(hal);
+diff --git a/drivers/net/wireless/realtek/rtw88/main.h b/drivers/net/wireless/realtek/rtw88/main.h
+index 8ba0b0824ae9..7769cad3f731 100644
+--- a/drivers/net/wireless/realtek/rtw88/main.h
++++ b/drivers/net/wireless/realtek/rtw88/main.h
+@@ -1041,6 +1041,7 @@ enum rtw_rfe_fem {
+ struct rtw_rfe_def {
+ 	const struct rtw_table *phy_pg_tbl;
+ 	const struct rtw_table *txpwr_lmt_tbl;
++	const struct rtw_table *agc_btg_tbl;
+ };
+ 
+ #define RTW_DEF_RFE(chip, bb_pg, pwrlmt) {				  \
+@@ -1048,6 +1049,12 @@ struct rtw_rfe_def {
+ 	.txpwr_lmt_tbl = &rtw ## chip ## _txpwr_lmt_type ## pwrlmt ## _tbl, \
+ 	}
+ 
++#define RTW_DEF_RFE_EXT(chip, bb_pg, pwrlmt, btg) {			  \
++	.phy_pg_tbl = &rtw ## chip ## _bb_pg_type ## bb_pg ## _tbl,	  \
++	.txpwr_lmt_tbl = &rtw ## chip ## _txpwr_lmt_type ## pwrlmt ## _tbl, \
++	.agc_btg_tbl = &rtw ## chip ## _agc_btg_type ## btg ## _tbl, \
++	}
++
+ #define RTW_PWR_TRK_5G_1		0
+ #define RTW_PWR_TRK_5G_2		1
+ #define RTW_PWR_TRK_5G_3		2
+diff --git a/drivers/net/wireless/realtek/rtw88/rtw8821c.c b/drivers/net/wireless/realtek/rtw88/rtw8821c.c
+index f9615f76f173..4514c4e8ee58 100644
+--- a/drivers/net/wireless/realtek/rtw88/rtw8821c.c
++++ b/drivers/net/wireless/realtek/rtw88/rtw8821c.c
+@@ -21,6 +21,13 @@ static void rtw8821ce_efuse_parsing(struct rtw_efuse *efuse,
+ 	ether_addr_copy(efuse->addr, map->e.mac_addr);
+ }
+ 
++enum rtw8821ce_rf_set {
++	SWITCH_TO_BTG,
++	SWITCH_TO_WLG,
++	SWITCH_TO_WLA,
++	SWITCH_TO_BT,
++};
++
+ static int rtw8821c_read_efuse(struct rtw_dev *rtwdev, u8 *log_map)
+ {
+ 	struct rtw_efuse *efuse = &rtwdev->efuse;
+@@ -224,6 +231,40 @@ static void rtw8821c_cfg_ldo25(struct rtw_dev *rtwdev, bool enable)
+ 	rtw_write8(rtwdev, REG_LDO_EFUSE_CTRL + 3, ldo_pwr);
+ }
+ 
++static void rtw8821c_switch_rf_set(struct rtw_dev *rtwdev, u8 rf_set)
++{
++	u32 reg;
++
++	rtw_write32_set(rtwdev, REG_DMEM_CTRL, BIT_WL_RST);
++	rtw_write32_set(rtwdev, REG_SYS_CTRL, BIT_FEN_EN);
++
++	reg = rtw_read32(rtwdev, REG_RFECTL);
++	switch (rf_set) {
++	case SWITCH_TO_BTG:
++		reg |= B_BTG_SWITCH;
++		reg &= ~(B_CTRL_SWITCH | B_WL_SWITCH | B_WLG_SWITCH |
++			 B_WLA_SWITCH);
++		rtw_write32_mask(rtwdev, REG_ENRXCCA, MASKBYTE2, BTG_CCA);
++		rtw_write32_mask(rtwdev, REG_ENTXCCK, MASKLWORD, BTG_LNA);
++		break;
++	case SWITCH_TO_WLG:
++		reg |= B_WL_SWITCH | B_WLG_SWITCH;
++		reg &= ~(B_BTG_SWITCH | B_CTRL_SWITCH | B_WLA_SWITCH);
++		rtw_write32_mask(rtwdev, REG_ENRXCCA, MASKBYTE2, WLG_CCA);
++		rtw_write32_mask(rtwdev, REG_ENTXCCK, MASKLWORD, WLG_LNA);
++		break;
++	case SWITCH_TO_WLA:
++		reg |= B_WL_SWITCH | B_WLA_SWITCH;
++		reg &= ~(B_BTG_SWITCH | B_CTRL_SWITCH | B_WLG_SWITCH);
++		break;
++	case SWITCH_TO_BT:
++	default:
++		break;
++	}
++
++	rtw_write32(rtwdev, REG_RFECTL, reg);
++}
++
+ static void rtw8821c_set_channel_rf(struct rtw_dev *rtwdev, u8 channel, u8 bw)
+ {
+ 	u32 rf_reg18;
+@@ -257,9 +298,14 @@ static void rtw8821c_set_channel_rf(struct rtw_dev *rtwdev, u8 channel, u8 bw)
+ 	}
+ 
+ 	if (channel <= 14) {
++		if (rtwdev->efuse.rfe_option == 0)
++			rtw8821c_switch_rf_set(rtwdev, SWITCH_TO_WLG);
++		else if (rtwdev->efuse.rfe_option == 2)
++			rtw8821c_switch_rf_set(rtwdev, SWITCH_TO_BTG);
+ 		rtw_write_rf(rtwdev, RF_PATH_A, RF_LUTDBG, BIT(6), 0x1);
+ 		rtw_write_rf(rtwdev, RF_PATH_A, 0x64, 0xf, 0xf);
+ 	} else {
++		rtw8821c_switch_rf_set(rtwdev, SWITCH_TO_WLA);
+ 		rtw_write_rf(rtwdev, RF_PATH_A, RF_LUTDBG, BIT(6), 0x0);
+ 	}
+ 
+@@ -1410,6 +1456,7 @@ static const struct rtw_intf_phy_para_table phy_para_table_8821c = {
+ 
+ static const struct rtw_rfe_def rtw8821c_rfe_defs[] = {
+ 	[0] = RTW_DEF_RFE(8821c, 0, 0),
++	[2] = RTW_DEF_RFE_EXT(8821c, 0, 0, 2),
+ };
+ 
+ static struct rtw_hw_reg rtw8821c_dig[] = {
+diff --git a/drivers/net/wireless/realtek/rtw88/rtw8821c.h b/drivers/net/wireless/realtek/rtw88/rtw8821c.h
+index 8d1e8ff71d7e..b8d6b1b29387 100644
+--- a/drivers/net/wireless/realtek/rtw88/rtw8821c.h
++++ b/drivers/net/wireless/realtek/rtw88/rtw8821c.h
+@@ -173,6 +173,8 @@ _rtw_write32s_mask(struct rtw_dev *rtwdev, u32 addr, u32 mask, u32 data)
+ #define GET_PHY_STAT_P1_RXSNR_B(phy_stat)                                      \
+ 	le32_get_bits(*((__le32 *)(phy_stat) + 0x06), GENMASK(15, 8))
+ 
++#define REG_SYS_CTRL	0x000
++#define BIT_FEN_EN	BIT(26)
+ #define REG_INIRTS_RATE_SEL 0x0480
+ #define REG_HTSTFWT	0x800
+ #define REG_RXPSEL	0x808
+@@ -204,6 +206,11 @@ _rtw_write32s_mask(struct rtw_dev *rtwdev, u32 addr, u32 mask, u32 data)
+ #define REG_FA_CCK	0xa5c
+ #define REG_RXDESC	0xa2c
+ #define REG_ENTXCCK	0xa80
++#define BTG_LNA		0xfc84
++#define WLG_LNA		0x7532
++#define REG_ENRXCCA	0xa84
++#define BTG_CCA		0x0e
++#define WLG_CCA		0x12
+ #define REG_PWRTH2	0xaa8
+ #define REG_CSRATIO	0xaaa
+ #define REG_TXFILTER	0xaac
+@@ -217,6 +224,11 @@ _rtw_write32s_mask(struct rtw_dev *rtwdev, u32 addr, u32 mask, u32 data)
+ #define REG_RFESEL0	0xcb0
+ #define REG_RFESEL8	0xcb4
+ #define REG_RFECTL	0xcb8
++#define B_BTG_SWITCH	BIT(16)
++#define B_CTRL_SWITCH	BIT(18)
++#define B_WL_SWITCH	(BIT(20) | BIT(22))
++#define B_WLG_SWITCH	BIT(21)
++#define B_WLA_SWITCH	BIT(23)
+ #define REG_RFEINV	0xcbc
+ #define REG_AGCTR_B	0xe08
+ #define REG_RXIGI_B	0xe50
+@@ -227,6 +239,8 @@ _rtw_write32s_mask(struct rtw_dev *rtwdev, u32 addr, u32 mask, u32 data)
+ #define REG_CCA_OFDM	0xf08
+ #define REG_FA_OFDM	0xf48
+ #define REG_CCA_CCK	0xfcc
++#define REG_DMEM_CTRL	0x1080
++#define BIT_WL_RST	BIT(16)
+ #define REG_ANTWT	0x1904
+ #define REG_IQKFAILMSK	0x1bf0
+ #define BIT_MASK_R_RFE_SEL_15	GENMASK(31, 28)
+diff --git a/drivers/net/wireless/realtek/rtw88/rtw8821c_table.c b/drivers/net/wireless/realtek/rtw88/rtw8821c_table.c
+index 970f903f7dc7..8e8915c5c498 100644
+--- a/drivers/net/wireless/realtek/rtw88/rtw8821c_table.c
++++ b/drivers/net/wireless/realtek/rtw88/rtw8821c_table.c
+@@ -1342,6 +1342,399 @@ static const u32 rtw8821c_agc[] = {
+ 
+ RTW_DECL_TABLE_PHY_COND(rtw8821c_agc, rtw_phy_cfg_agc);
+ 
++static const u32 rtw8821c_agc_btg_type2[] = {
++	0x80001004,	0x00000000,	0x40000000,	0x00000000,
++	0x81C, 0xFF000013,
++	0x81C, 0xFE020013,
++	0x81C, 0xFD040013,
++	0x81C, 0xFC060013,
++	0x81C, 0xFB080013,
++	0x81C, 0xFA0A0013,
++	0x81C, 0xF90C0013,
++	0x81C, 0xF80E0013,
++	0x81C, 0xF7100013,
++	0x81C, 0xF6120013,
++	0x81C, 0xF5140013,
++	0x81C, 0xF4160013,
++	0x81C, 0xF3180013,
++	0x81C, 0xF21A0013,
++	0x81C, 0xF11C0013,
++	0x81C, 0xF01E0013,
++	0x81C, 0xEF200013,
++	0x81C, 0xEE220013,
++	0x81C, 0xED240013,
++	0x81C, 0xEC260013,
++	0x81C, 0xEB280013,
++	0x81C, 0xEA2A0013,
++	0x81C, 0xE92C0013,
++	0x81C, 0xE82E0013,
++	0x81C, 0xE7300013,
++	0x81C, 0x8B320013,
++	0x81C, 0x8A340013,
++	0x81C, 0x89360013,
++	0x81C, 0x88380013,
++	0x81C, 0x873A0013,
++	0x81C, 0x863C0013,
++	0x81C, 0x853E0013,
++	0x81C, 0x84400013,
++	0x81C, 0x83420013,
++	0x81C, 0x82440013,
++	0x81C, 0x81460013,
++	0x81C, 0x08480013,
++	0x81C, 0x074A0013,
++	0x81C, 0x064C0013,
++	0x81C, 0x054E0013,
++	0x81C, 0x04500013,
++	0x81C, 0x03520013,
++	0x81C, 0x88540003,
++	0x81C, 0x87560003,
++	0x81C, 0x86580003,
++	0x81C, 0x855A0003,
++	0x81C, 0x845C0003,
++	0x81C, 0x835E0003,
++	0x81C, 0x82600003,
++	0x81C, 0x81620003,
++	0x81C, 0x07640003,
++	0x81C, 0x06660003,
++	0x81C, 0x05680003,
++	0x81C, 0x046A0003,
++	0x81C, 0x036C0003,
++	0x81C, 0x026E0003,
++	0x81C, 0x01700003,
++	0x81C, 0x01720003,
++	0x81C, 0x01740003,
++	0x81C, 0x01760003,
++	0x81C, 0x01780003,
++	0x81C, 0x017A0003,
++	0x81C, 0x017C0003,
++	0x81C, 0x017E0003,
++	0x81C, 0xFF000813,
++	0x81C, 0xFE020813,
++	0x81C, 0xFD040813,
++	0x81C, 0xFC060813,
++	0x81C, 0xFB080813,
++	0x81C, 0xFA0A0813,
++	0x81C, 0xF90C0813,
++	0x81C, 0xF80E0813,
++	0x81C, 0xF7100813,
++	0x81C, 0xF6120813,
++	0x81C, 0xF5140813,
++	0x81C, 0xF4160813,
++	0x81C, 0xF3180813,
++	0x81C, 0xF21A0813,
++	0x81C, 0xF11C0813,
++	0x81C, 0x941E0813,
++	0x81C, 0x93200813,
++	0x81C, 0x92220813,
++	0x81C, 0x91240813,
++	0x81C, 0x90260813,
++	0x81C, 0x8F280813,
++	0x81C, 0x8E2A0813,
++	0x81C, 0x8D2C0813,
++	0x81C, 0x8C2E0813,
++	0x81C, 0x8B300813,
++	0x81C, 0x8A320813,
++	0x81C, 0x89340813,
++	0x81C, 0x88360813,
++	0x81C, 0x87380813,
++	0x81C, 0x863A0813,
++	0x81C, 0x853C0813,
++	0x81C, 0x843E0813,
++	0x81C, 0x83400813,
++	0x81C, 0x82420813,
++	0x81C, 0x81440813,
++	0x81C, 0x07460813,
++	0x81C, 0x06480813,
++	0x81C, 0x054A0813,
++	0x81C, 0x044C0813,
++	0x81C, 0x034E0813,
++	0x81C, 0x02500813,
++	0x81C, 0x01520813,
++	0x81C, 0x88540803,
++	0x81C, 0x87560803,
++	0x81C, 0x86580803,
++	0x81C, 0x855A0803,
++	0x81C, 0x845C0803,
++	0x81C, 0x835E0803,
++	0x81C, 0x82600803,
++	0x81C, 0x81620803,
++	0x81C, 0x07640803,
++	0x81C, 0x06660803,
++	0x81C, 0x05680803,
++	0x81C, 0x046A0803,
++	0x81C, 0x036C0803,
++	0x81C, 0x026E0803,
++	0x81C, 0x01700803,
++	0x81C, 0x01720803,
++	0x81C, 0x01740803,
++	0x81C, 0x01760803,
++	0x81C, 0x01780803,
++	0x81C, 0x017A0803,
++	0x81C, 0x017C0803,
++	0x81C, 0x017E0803,
++	0x90001005,	0x00000000,	0x40000000,	0x00000000,
++	0x81C, 0xFF000013,
++	0x81C, 0xFE020013,
++	0x81C, 0xFD040013,
++	0x81C, 0xFC060013,
++	0x81C, 0xFB080013,
++	0x81C, 0xFA0A0013,
++	0x81C, 0xF90C0013,
++	0x81C, 0xF80E0013,
++	0x81C, 0xF7100013,
++	0x81C, 0xF6120013,
++	0x81C, 0xF5140013,
++	0x81C, 0xF4160013,
++	0x81C, 0xF3180013,
++	0x81C, 0xF21A0013,
++	0x81C, 0xF11C0013,
++	0x81C, 0xF01E0013,
++	0x81C, 0xEF200013,
++	0x81C, 0xEE220013,
++	0x81C, 0xED240013,
++	0x81C, 0xEC260013,
++	0x81C, 0xEB280013,
++	0x81C, 0xEA2A0013,
++	0x81C, 0xE92C0013,
++	0x81C, 0xE82E0013,
++	0x81C, 0xE7300013,
++	0x81C, 0x8B320013,
++	0x81C, 0x8A340013,
++	0x81C, 0x89360013,
++	0x81C, 0x88380013,
++	0x81C, 0x873A0013,
++	0x81C, 0x863C0013,
++	0x81C, 0x853E0013,
++	0x81C, 0x84400013,
++	0x81C, 0x83420013,
++	0x81C, 0x82440013,
++	0x81C, 0x81460013,
++	0x81C, 0x08480013,
++	0x81C, 0x074A0013,
++	0x81C, 0x064C0013,
++	0x81C, 0x054E0013,
++	0x81C, 0x04500013,
++	0x81C, 0x03520013,
++	0x81C, 0x88540003,
++	0x81C, 0x87560003,
++	0x81C, 0x86580003,
++	0x81C, 0x855A0003,
++	0x81C, 0x845C0003,
++	0x81C, 0x835E0003,
++	0x81C, 0x82600003,
++	0x81C, 0x81620003,
++	0x81C, 0x07640003,
++	0x81C, 0x06660003,
++	0x81C, 0x05680003,
++	0x81C, 0x046A0003,
++	0x81C, 0x036C0003,
++	0x81C, 0x026E0003,
++	0x81C, 0x01700003,
++	0x81C, 0x01720003,
++	0x81C, 0x01740003,
++	0x81C, 0x01760003,
++	0x81C, 0x01780003,
++	0x81C, 0x017A0003,
++	0x81C, 0x017C0003,
++	0x81C, 0x017E0003,
++	0x81C, 0xFF000813,
++	0x81C, 0xFE020813,
++	0x81C, 0xFD040813,
++	0x81C, 0xFC060813,
++	0x81C, 0xFB080813,
++	0x81C, 0xFA0A0813,
++	0x81C, 0xF90C0813,
++	0x81C, 0xF80E0813,
++	0x81C, 0xF7100813,
++	0x81C, 0xF6120813,
++	0x81C, 0xF5140813,
++	0x81C, 0xF4160813,
++	0x81C, 0xF3180813,
++	0x81C, 0xF21A0813,
++	0x81C, 0xF11C0813,
++	0x81C, 0x941E0813,
++	0x81C, 0x93200813,
++	0x81C, 0x92220813,
++	0x81C, 0x91240813,
++	0x81C, 0x90260813,
++	0x81C, 0x8F280813,
++	0x81C, 0x8E2A0813,
++	0x81C, 0x8D2C0813,
++	0x81C, 0x8C2E0813,
++	0x81C, 0x8B300813,
++	0x81C, 0x8A320813,
++	0x81C, 0x89340813,
++	0x81C, 0x88360813,
++	0x81C, 0x87380813,
++	0x81C, 0x863A0813,
++	0x81C, 0x853C0813,
++	0x81C, 0x843E0813,
++	0x81C, 0x83400813,
++	0x81C, 0x82420813,
++	0x81C, 0x81440813,
++	0x81C, 0x07460813,
++	0x81C, 0x06480813,
++	0x81C, 0x054A0813,
++	0x81C, 0x044C0813,
++	0x81C, 0x034E0813,
++	0x81C, 0x02500813,
++	0x81C, 0x01520813,
++	0x81C, 0x88540803,
++	0x81C, 0x87560803,
++	0x81C, 0x86580803,
++	0x81C, 0x855A0803,
++	0x81C, 0x845C0803,
++	0x81C, 0x835E0803,
++	0x81C, 0x82600803,
++	0x81C, 0x81620803,
++	0x81C, 0x07640803,
++	0x81C, 0x06660803,
++	0x81C, 0x05680803,
++	0x81C, 0x046A0803,
++	0x81C, 0x036C0803,
++	0x81C, 0x026E0803,
++	0x81C, 0x01700803,
++	0x81C, 0x01720803,
++	0x81C, 0x01740803,
++	0x81C, 0x01760803,
++	0x81C, 0x01780803,
++	0x81C, 0x017A0803,
++	0x81C, 0x017C0803,
++	0x81C, 0x017E0803,
++	0xA0000000,	0x00000000,
++	0x81C, 0xFF000013,
++	0x81C, 0xFE020013,
++	0x81C, 0xFD040013,
++	0x81C, 0xFC060013,
++	0x81C, 0xFB080013,
++	0x81C, 0xFA0A0013,
++	0x81C, 0xF90C0013,
++	0x81C, 0xF80E0013,
++	0x81C, 0xF7100013,
++	0x81C, 0xF6120013,
++	0x81C, 0xF5140013,
++	0x81C, 0xF4160013,
++	0x81C, 0xF3180013,
++	0x81C, 0xF21A0013,
++	0x81C, 0xF11C0013,
++	0x81C, 0xF01E0013,
++	0x81C, 0xEF200013,
++	0x81C, 0xEE220013,
++	0x81C, 0xED240013,
++	0x81C, 0xEC260013,
++	0x81C, 0xEB280013,
++	0x81C, 0xEA2A0013,
++	0x81C, 0xE92C0013,
++	0x81C, 0xE82E0013,
++	0x81C, 0xE7300013,
++	0x81C, 0x8A320013,
++	0x81C, 0x89340013,
++	0x81C, 0x88360013,
++	0x81C, 0x87380013,
++	0x81C, 0x863A0013,
++	0x81C, 0x853C0013,
++	0x81C, 0x843E0013,
++	0x81C, 0x83400013,
++	0x81C, 0x82420013,
++	0x81C, 0x81440013,
++	0x81C, 0x07460013,
++	0x81C, 0x06480013,
++	0x81C, 0x054A0013,
++	0x81C, 0x044C0013,
++	0x81C, 0x034E0013,
++	0x81C, 0x02500013,
++	0x81C, 0x01520013,
++	0x81C, 0x88540003,
++	0x81C, 0x87560003,
++	0x81C, 0x86580003,
++	0x81C, 0x855A0003,
++	0x81C, 0x845C0003,
++	0x81C, 0x835E0003,
++	0x81C, 0x82600003,
++	0x81C, 0x81620003,
++	0x81C, 0x07640003,
++	0x81C, 0x06660003,
++	0x81C, 0x05680003,
++	0x81C, 0x046A0003,
++	0x81C, 0x036C0003,
++	0x81C, 0x026E0003,
++	0x81C, 0x01700003,
++	0x81C, 0x01720003,
++	0x81C, 0x01740003,
++	0x81C, 0x01760003,
++	0x81C, 0x01780003,
++	0x81C, 0x017A0003,
++	0x81C, 0x017C0003,
++	0x81C, 0x017E0003,
++	0x81C, 0xFF000813,
++	0x81C, 0xFE020813,
++	0x81C, 0xFD040813,
++	0x81C, 0xFC060813,
++	0x81C, 0xFB080813,
++	0x81C, 0xFA0A0813,
++	0x81C, 0xF90C0813,
++	0x81C, 0xF80E0813,
++	0x81C, 0xF7100813,
++	0x81C, 0xF6120813,
++	0x81C, 0xF5140813,
++	0x81C, 0xF4160813,
++	0x81C, 0xF3180813,
++	0x81C, 0xF21A0813,
++	0x81C, 0xF11C0813,
++	0x81C, 0x961E0813,
++	0x81C, 0x95200813,
++	0x81C, 0x94220813,
++	0x81C, 0x93240813,
++	0x81C, 0x92260813,
++	0x81C, 0x91280813,
++	0x81C, 0x8F2A0813,
++	0x81C, 0x8E2C0813,
++	0x81C, 0x8D2E0813,
++	0x81C, 0x8C300813,
++	0x81C, 0x8B320813,
++	0x81C, 0x8A340813,
++	0x81C, 0x89360813,
++	0x81C, 0x88380813,
++	0x81C, 0x873A0813,
++	0x81C, 0x863C0813,
++	0x81C, 0x853E0813,
++	0x81C, 0x84400813,
++	0x81C, 0x83420813,
++	0x81C, 0x82440813,
++	0x81C, 0x08460813,
++	0x81C, 0x07480813,
++	0x81C, 0x064A0813,
++	0x81C, 0x054C0813,
++	0x81C, 0x044E0813,
++	0x81C, 0x03500813,
++	0x81C, 0x02520813,
++	0x81C, 0x89540803,
++	0x81C, 0x88560803,
++	0x81C, 0x87580803,
++	0x81C, 0x865A0803,
++	0x81C, 0x855C0803,
++	0x81C, 0x845E0803,
++	0x81C, 0x83600803,
++	0x81C, 0x82620803,
++	0x81C, 0x07640803,
++	0x81C, 0x06660803,
++	0x81C, 0x05680803,
++	0x81C, 0x046A0803,
++	0x81C, 0x036C0803,
++	0x81C, 0x026E0803,
++	0x81C, 0x01700803,
++	0x81C, 0x01720803,
++	0x81C, 0x01740803,
++	0x81C, 0x01760803,
++	0x81C, 0x01780803,
++	0x81C, 0x017A0803,
++	0x81C, 0x017C0803,
++	0x81C, 0x017E0803,
++	0xB0000000,	0x00000000,
++};
++
++RTW_DECL_TABLE_PHY_COND(rtw8821c_agc_btg_type2, rtw_phy_cfg_agc);
++
+ static const u32 rtw8821c_bb[] = {
+ 	0x800, 0x9020D010,
+ 	0x804, 0x80018180,
+@@ -1394,7 +1787,11 @@ static const u32 rtw8821c_bb[] = {
+ 	0x8C0, 0xFFE04020,
+ 	0x8C4, 0x47C00000,
+ 	0x8C8, 0x00025165,
++	0x82000400,	0x00000000,	0x40000000,	0x00000000,
++	0x8CC, 0x08190492,
++	0xA0000000,	0x00000000,
+ 	0x8CC, 0x08188492,
++	0xB0000000,	0x00000000,
+ 	0x8D0, 0x0000B800,
+ 	0x8D4, 0x860308A0,
+ 	0x8D8, 0x290B5612,
+diff --git a/drivers/net/wireless/realtek/rtw88/rtw8821c_table.h b/drivers/net/wireless/realtek/rtw88/rtw8821c_table.h
+index 5ea8b4fc7fba..cda98f5c4a01 100644
+--- a/drivers/net/wireless/realtek/rtw88/rtw8821c_table.h
++++ b/drivers/net/wireless/realtek/rtw88/rtw8821c_table.h
+@@ -7,6 +7,7 @@
+ 
+ extern const struct rtw_table rtw8821c_mac_tbl;
+ extern const struct rtw_table rtw8821c_agc_tbl;
++extern const struct rtw_table rtw8821c_agc_btg_type2_tbl;
+ extern const struct rtw_table rtw8821c_bb_tbl;
+ extern const struct rtw_table rtw8821c_bb_pg_type0_tbl;
+ extern const struct rtw_table rtw8821c_rf_a_tbl;
+-- 
+2.20.1
 
->
->Signed-off-by: Eugenio Pérez <eperezma@redhat.com>
->---
-> drivers/vhost/vdpa.c             | 16 +++++++++++++++-
-> include/uapi/linux/vhost_types.h |  2 ++
-> 2 files changed, 17 insertions(+), 1 deletion(-)
->
->diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
->index 23dcbfdfa13b..3d636e192061 100644
->--- a/drivers/vhost/vdpa.c
->+++ b/drivers/vhost/vdpa.c
->@@ -347,6 +347,14 @@ static long vhost_vdpa_set_config(struct vhost_vdpa *v,
-> 	return 0;
-> }
->
->+static bool vhost_vdpa_can_suspend(const struct vhost_vdpa *v)
->+{
->+	struct vdpa_device *vdpa = v->vdpa;
->+	const struct vdpa_config_ops *ops = vdpa->config;
->+
->+	return ops->suspend;
->+}
->+
-> static long vhost_vdpa_get_features(struct vhost_vdpa *v, u64 __user *featurep)
-> {
-> 	struct vdpa_device *vdpa = v->vdpa;
->@@ -577,7 +585,11 @@ static long vhost_vdpa_unlocked_ioctl(struct file *filep,
-> 	if (cmd == VHOST_SET_BACKEND_FEATURES) {
-> 		if (copy_from_user(&features, featurep, sizeof(features)))
-> 			return -EFAULT;
->-		if (features & ~VHOST_VDPA_BACKEND_FEATURES)
->+		if (features & ~(VHOST_VDPA_BACKEND_FEATURES |
->+				 BIT_ULL(VHOST_BACKEND_F_SUSPEND)))
->+			return -EOPNOTSUPP;
->+		if ((features & BIT_ULL(VHOST_BACKEND_F_SUSPEND)) &&
->+		     !vhost_vdpa_can_suspend(v))
-> 			return -EOPNOTSUPP;
-> 		vhost_set_backend_features(&v->vdev, features);
-> 		return 0;
->@@ -628,6 +640,8 @@ static long vhost_vdpa_unlocked_ioctl(struct file *filep,
-> 		break;
-> 	case VHOST_GET_BACKEND_FEATURES:
-> 		features = VHOST_VDPA_BACKEND_FEATURES;
->+		if (vhost_vdpa_can_suspend(v))
->+			features |= BIT_ULL(VHOST_BACKEND_F_SUSPEND);
-> 		if (copy_to_user(featurep, &features, sizeof(features)))
-> 			r = -EFAULT;
-> 		break;
->diff --git a/include/uapi/linux/vhost_types.h b/include/uapi/linux/vhost_types.h
->index 634cee485abb..1bdd6e363f4c 100644
->--- a/include/uapi/linux/vhost_types.h
->+++ b/include/uapi/linux/vhost_types.h
->@@ -161,5 +161,7 @@ struct vhost_vdpa_iova_range {
->  * message
->  */
-> #define VHOST_BACKEND_F_IOTLB_ASID  0x3
->+/* Device can be suspended */
->+#define VHOST_BACKEND_F_SUSPEND  0x4
->
-> #endif
->-- 
->2.31.1
->
+
 
