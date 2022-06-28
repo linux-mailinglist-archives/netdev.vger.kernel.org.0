@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6838155EC01
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 20:06:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CAB9D55EC04
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 20:06:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233885AbiF1SGZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 14:06:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50662 "EHLO
+        id S233939AbiF1SGl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 14:06:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233916AbiF1SGW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 14:06:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05A641C923;
-        Tue, 28 Jun 2022 11:06:22 -0700 (PDT)
+        with ESMTP id S233941AbiF1SGh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 14:06:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DDCA1EAD6;
+        Tue, 28 Jun 2022 11:06:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BDDF8B81F55;
-        Tue, 28 Jun 2022 18:06:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3339EC3411D;
-        Tue, 28 Jun 2022 18:06:19 +0000 (UTC)
-Subject: [PATCH v2 05/31] NFSD: Report average age of filecache items
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3D7EFB81F58;
+        Tue, 28 Jun 2022 18:06:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5AAAC341C6;
+        Tue, 28 Jun 2022 18:06:25 +0000 (UTC)
+Subject: [PATCH v2 06/31] NFSD: Add nfsd_file_lru_dispose_list() helper
 From:   Chuck Lever <chuck.lever@oracle.com>
 To:     linux-nfs@vger.kernel.org, netdev@vger.kernel.org
 Cc:     david@fromorbit.com, jlayton@redhat.com, tgraf@suug.ch
-Date:   Tue, 28 Jun 2022 14:06:18 -0400
-Message-ID: <165643957825.84360.15206355426631591915.stgit@manet.1015granger.net>
+Date:   Tue, 28 Jun 2022 14:06:24 -0400
+Message-ID: <165643958472.84360.12808478593932401447.stgit@manet.1015granger.net>
 In-Reply-To: <165643915086.84360.2809940286726976517.stgit@manet.1015granger.net>
 References: <165643915086.84360.2809940286726976517.stgit@manet.1015granger.net>
 User-Agent: StGit/1.5.dev2+g9ce680a5
@@ -42,86 +42,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a measure of how long items stay in the filecache, to help
-assess how efficient the cache is.
+Refactor the invariant part of nfsd_file_lru_walk_list() into a
+separate helper function.
 
 Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 ---
- fs/nfsd/filecache.c |   11 ++++++++++-
- fs/nfsd/filecache.h |    1 +
- 2 files changed, 11 insertions(+), 1 deletion(-)
+ fs/nfsd/filecache.c |   29 ++++++++++++++++++++++-------
+ 1 file changed, 22 insertions(+), 7 deletions(-)
 
 diff --git a/fs/nfsd/filecache.c b/fs/nfsd/filecache.c
-index c28e9577837d..da48c51a2bf0 100644
+index da48c51a2bf0..b278030e0a12 100644
 --- a/fs/nfsd/filecache.c
 +++ b/fs/nfsd/filecache.c
-@@ -45,6 +45,7 @@ struct nfsd_fcache_bucket {
- static DEFINE_PER_CPU(unsigned long, nfsd_file_cache_hits);
- static DEFINE_PER_CPU(unsigned long, nfsd_file_acquisitions);
- static DEFINE_PER_CPU(unsigned long, nfsd_file_releases);
-+static DEFINE_PER_CPU(unsigned long, nfsd_file_total_age);
- 
- struct nfsd_fcache_disposal {
- 	struct work_struct work;
-@@ -178,6 +179,7 @@ nfsd_file_alloc(struct inode *inode, unsigned int may, unsigned int hashval,
- 	if (nf) {
- 		INIT_HLIST_NODE(&nf->nf_node);
- 		INIT_LIST_HEAD(&nf->nf_lru);
-+		nf->nf_birthtime = ktime_get();
- 		nf->nf_file = NULL;
- 		nf->nf_cred = get_current_cred();
- 		nf->nf_net = net;
-@@ -201,9 +203,11 @@ nfsd_file_alloc(struct inode *inode, unsigned int may, unsigned int hashval,
- static bool
- nfsd_file_free(struct nfsd_file *nf)
- {
-+	s64 age = ktime_to_ms(ktime_sub(ktime_get(), nf->nf_birthtime));
- 	bool flush = false;
- 
- 	this_cpu_inc(nfsd_file_releases);
-+	this_cpu_add(nfsd_file_total_age, age);
- 
- 	trace_nfsd_file_put_final(nf);
- 	if (nf->nf_mark)
-@@ -1075,7 +1079,7 @@ static int nfsd_file_cache_stats_show(struct seq_file *m, void *v)
- {
- 	unsigned long hits = 0, acquisitions = 0, releases = 0;
- 	unsigned int i, count = 0, longest = 0;
--	unsigned long lru = 0;
-+	unsigned long lru = 0, total_age = 0;
- 
- 	/*
- 	 * No need for spinlocks here since we're not terribly interested in
-@@ -1096,6 +1100,7 @@ static int nfsd_file_cache_stats_show(struct seq_file *m, void *v)
- 		hits += per_cpu(nfsd_file_cache_hits, i);
- 		acquisitions += per_cpu(nfsd_file_acquisitions, i);
- 		releases += per_cpu(nfsd_file_releases, i);
-+		total_age += per_cpu(nfsd_file_total_age, i);
- 	}
- 
- 	seq_printf(m, "total entries: %u\n", count);
-@@ -1104,6 +1109,10 @@ static int nfsd_file_cache_stats_show(struct seq_file *m, void *v)
- 	seq_printf(m, "cache hits:    %lu\n", hits);
- 	seq_printf(m, "acquisitions:  %lu\n", acquisitions);
- 	seq_printf(m, "releases:      %lu\n", releases);
-+	if (releases)
-+		seq_printf(m, "mean age (ms): %ld\n", total_age / releases);
-+	else
-+		seq_printf(m, "mean age (ms): -\n");
- 	return 0;
+@@ -457,11 +457,31 @@ nfsd_file_lru_cb(struct list_head *item, struct list_lru_one *lru,
+ 	return LRU_SKIP;
  }
  
-diff --git a/fs/nfsd/filecache.h b/fs/nfsd/filecache.h
-index 1da0c79a5580..d0c42619dc10 100644
---- a/fs/nfsd/filecache.h
-+++ b/fs/nfsd/filecache.h
-@@ -46,6 +46,7 @@ struct nfsd_file {
- 	refcount_t		nf_ref;
- 	unsigned char		nf_may;
- 	struct nfsd_file_mark	*nf_mark;
-+	ktime_t			nf_birthtime;
- };
++/*
++ * Unhash items on @dispose immediately, then queue them on the
++ * disposal workqueue to finish releasing them in the background.
++ *
++ * cel: Note that between the time list_lru_shrink_walk runs and
++ * now, these items are in the hash table but marked unhashed.
++ * Why release these outside of lru_cb ? There's no lock ordering
++ * problem since lru_cb currently takes no lock.
++ */
++static void nfsd_file_gc_dispose_list(struct list_head *dispose)
++{
++	struct nfsd_file *nf;
++
++	list_for_each_entry(nf, dispose, nf_lru) {
++		spin_lock(&nfsd_file_hashtbl[nf->nf_hashval].nfb_lock);
++		nfsd_file_do_unhash(nf);
++		spin_unlock(&nfsd_file_hashtbl[nf->nf_hashval].nfb_lock);
++	}
++	nfsd_file_dispose_list_delayed(dispose);
++}
++
+ static unsigned long
+ nfsd_file_lru_walk_list(struct shrink_control *sc)
+ {
+ 	LIST_HEAD(head);
+-	struct nfsd_file *nf;
+ 	unsigned long ret;
  
- int nfsd_file_cache_init(void);
+ 	if (sc)
+@@ -471,12 +491,7 @@ nfsd_file_lru_walk_list(struct shrink_control *sc)
+ 		ret = list_lru_walk(&nfsd_file_lru,
+ 				nfsd_file_lru_cb,
+ 				&head, LONG_MAX);
+-	list_for_each_entry(nf, &head, nf_lru) {
+-		spin_lock(&nfsd_file_hashtbl[nf->nf_hashval].nfb_lock);
+-		nfsd_file_do_unhash(nf);
+-		spin_unlock(&nfsd_file_hashtbl[nf->nf_hashval].nfb_lock);
+-	}
+-	nfsd_file_dispose_list_delayed(&head);
++	nfsd_file_gc_dispose_list(&head);
+ 	return ret;
+ }
+ 
 
 
