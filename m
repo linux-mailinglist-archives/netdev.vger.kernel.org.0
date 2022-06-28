@@ -2,504 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9544C55DCA7
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:26:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DEDE55CB93
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:00:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344545AbiF1JtD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 05:49:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39308 "EHLO
+        id S245647AbiF1KCn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 06:02:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344543AbiF1Jro (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 05:47:44 -0400
-Received: from smtpproxy21.qq.com (smtpbg704.qq.com [203.205.195.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2090B2B25E
-        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 02:47:33 -0700 (PDT)
-X-QQ-mid: bizesmtp62t1656409647tz3djeux
-Received: from wxdbg.localdomain.com ( [183.129.236.74])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 28 Jun 2022 17:47:19 +0800 (CST)
-X-QQ-SSF: 01400000000000G0Q000B00A0000000
-X-QQ-FEAT: pAmd6q8a+CcXcv0aP9JTW8p4dvxYLuw4IxQNVD5wITo1P5hz4KHf6oLzcDK/K
-        10a0U9HftwyJInUkJIkdhHpKCvR8vuq1JgPKpIXAEhaHy3YGwOmjHevRm9VeuwFNLU05x9L
-        lv5JoqiXiAWnMsp5f9efzuYHYCMVB+w9oMWbhjEskKfqueR0h8smdB+Z/fozEu0tgwWbS2f
-        vfLRepPJSZTXMZrbqwvFDNilHCbdJ3myT3nFwDqxH4QY852oXvwLdJxMofQKP8QbMLRpgU/
-        03/uUYZZqhp2si/xhPLxSAocAzlVrT7geVIr9Tif/C8niHcMaMa+Le1KXWrfFeGqchbqVS7
-        CRWdmns3rOvpXEqIkJFZ968CX10Dw==
-X-QQ-GoodBg: 2
-From:   Jiawen Wu <jiawenwu@trustnetic.com>
-To:     netdev@vger.kernel.org
-Cc:     Jiawen Wu <jiawenwu@trustnetic.com>
-Subject: [PATCH net-next v8] net: txgbe: Add build support for txgbe
-Date:   Tue, 28 Jun 2022 17:55:30 +0800
-Message-Id: <20220628095530.889344-1-jiawenwu@trustnetic.com>
-X-Mailer: git-send-email 2.27.0
+        with ESMTP id S1344698AbiF1KCX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 06:02:23 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0801A2E9ED;
+        Tue, 28 Jun 2022 03:01:56 -0700 (PDT)
+Received: from mercury (dyndsl-095-033-152-169.ewe-ip-backbone.de [95.33.152.169])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: sre)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id AC26566015BF;
+        Tue, 28 Jun 2022 11:01:54 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1656410514;
+        bh=B+3J166mE7yKiVnjSIyWp3uT7KdPeBK+33FGGWy9RJg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=M8saON4JHL9YGPUFK1egyrxL/8I/qsYZXe6LxdIs3ftZ5nLVb6f2GxpvYQYI1gwXE
+         Er8Li0/WGkZydvB3Qk+R21aLPz2KZjEa6eNgiMKI3M9PCTptid9HYSTA4v0K3RiT2a
+         Wf3GfKywmOT0WhMh4JB0oY1imBpu9Ec7LZr3NlfxSzqqSyExNPROSxXYtxGUtP7PXQ
+         16+dtthw8a12V5kqJcR2MSWd+obty7RK9U+4z6eAkllpVo1zcElPZwtUoL8j7vabIh
+         tCNs1KxSZUZcERzPF8Lu3fgWl/NKynNBUwfyCOPO9CXGLn4coDOwYj7SuJwa1PIIo+
+         TrMiFE8+UMOMQ==
+Received: by mercury (Postfix, from userid 1000)
+        id A946E106069D; Tue, 28 Jun 2022 12:01:52 +0200 (CEST)
+Date:   Tue, 28 Jun 2022 12:01:52 +0200
+From:   Sebastian Reichel <sebastian.reichel@collabora.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        netdev@vger.kernel.org, linux-rockchip@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        David Wu <david.wu@rock-chips.com>, kernel@collabora.com
+Subject: Re: [PATCHv2 1/2] net: ethernet: stmmac: dwmac-rk: Add gmac support
+ for rk3588
+Message-ID: <20220628100152.hpugcvxtqdq7pfic@mercury.elektranox.org>
+References: <20220627170747.137386-1-sebastian.reichel@collabora.com>
+ <20220627170747.137386-2-sebastian.reichel@collabora.com>
+ <7314b028-3cda-d70c-80a1-25750235a907@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:trustnetic.com:qybgforeign:qybgforeign8
-X-QQ-Bgrelay: 1
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="c2yjj25avm3cvkmr"
+Content-Disposition: inline
+In-Reply-To: <7314b028-3cda-d70c-80a1-25750235a907@linaro.org>
+X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_SORBS_WEB,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add doc build infrastructure for txgbe driver.
-Initialize PCI memory space for WangXun 10 Gigabit Ethernet devices.
 
-Signed-off-by: Jiawen Wu <jiawenwu@trustnetic.com>
----
-Change log:
-v8: address comments:
-    Jakub Kicinski: https://lore.kernel.org/netdev/20220621223716.5b936d93@kernel.org/
-v7: address comments:
-    Andrew Lunn & Jakub Kicinski: https://lore.kernel.org/netdev/20220616132908.789b9be4@kernel.org/
-v6: address comments:
-    Jakub Kicinski: make it build cleanly with W=1 C=1
-v5: address comments:
-    Andrew Lunn: repost the patch
-v4: address comments:
-    Leon Romanovsky: remove unused data setting, add PCI quirk
-    Andrew Lunn: remove devm_iounmap(), use module_pci_driver()
-v3: address comments:
-    Andrew Lunn: https://lore.kernel.org/netdev/YoRkONdJlIU0ymd6@lunn.ch/
-v2: address comments:
-    Andrew Lunn & Jakub Kicinski: https://lore.kernel.org/netdev/Yn2E8X6f8PJ0c4CB@lunn.ch/
+--c2yjj25avm3cvkmr
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
- .../device_drivers/ethernet/index.rst         |   1 +
- .../device_drivers/ethernet/wangxun/txgbe.rst |  20 +++
- MAINTAINERS                                   |   7 +
- drivers/net/ethernet/Kconfig                  |   1 +
- drivers/net/ethernet/Makefile                 |   1 +
- drivers/net/ethernet/wangxun/Kconfig          |  32 ++++
- drivers/net/ethernet/wangxun/Makefile         |   6 +
- drivers/net/ethernet/wangxun/txgbe/Makefile   |   9 +
- drivers/net/ethernet/wangxun/txgbe/txgbe.h    |  24 +++
- .../net/ethernet/wangxun/txgbe/txgbe_main.c   | 165 ++++++++++++++++++
- .../net/ethernet/wangxun/txgbe/txgbe_type.h   |  57 ++++++
- 11 files changed, 323 insertions(+)
- create mode 100644 Documentation/networking/device_drivers/ethernet/wangxun/txgbe.rst
- create mode 100644 drivers/net/ethernet/wangxun/Kconfig
- create mode 100644 drivers/net/ethernet/wangxun/Makefile
- create mode 100644 drivers/net/ethernet/wangxun/txgbe/Makefile
- create mode 100644 drivers/net/ethernet/wangxun/txgbe/txgbe.h
- create mode 100644 drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
- create mode 100644 drivers/net/ethernet/wangxun/txgbe/txgbe_type.h
+Hi Krzysztof,
 
-diff --git a/Documentation/networking/device_drivers/ethernet/index.rst b/Documentation/networking/device_drivers/ethernet/index.rst
-index 4e06684d079b..2249ba010d8a 100644
---- a/Documentation/networking/device_drivers/ethernet/index.rst
-+++ b/Documentation/networking/device_drivers/ethernet/index.rst
-@@ -52,6 +52,7 @@ Contents:
-    ti/am65_nuss_cpsw_switchdev
-    ti/tlan
-    toshiba/spider_net
-+   wangxun/txgbe
- 
- .. only::  subproject and html
- 
-diff --git a/Documentation/networking/device_drivers/ethernet/wangxun/txgbe.rst b/Documentation/networking/device_drivers/ethernet/wangxun/txgbe.rst
-new file mode 100644
-index 000000000000..eaa87dbe8848
---- /dev/null
-+++ b/Documentation/networking/device_drivers/ethernet/wangxun/txgbe.rst
-@@ -0,0 +1,20 @@
-+.. SPDX-License-Identifier: GPL-2.0
-+
-+================================================================
-+Linux Base Driver for WangXun(R) 10 Gigabit PCI Express Adapters
-+================================================================
-+
-+WangXun 10 Gigabit Linux driver.
-+Copyright (c) 2015 - 2022 Beijing WangXun Technology Co., Ltd.
-+
-+
-+Contents
-+========
-+
-+- Support
-+
-+
-+Support
-+=======
-+If you got any problem, contact Wangxun support team via support@trustnetic.com
-+and Cc: netdev.
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 6a288d59ff79..3f4970dccc89 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -21435,6 +21435,13 @@ L:	linux-input@vger.kernel.org
- S:	Maintained
- F:	drivers/input/tablet/wacom_serial4.c
- 
-+WANGXUN ETHERNET DRIVER
-+M:	Jiawen Wu <jiawenwu@trustnetic.com>
-+L:	netdev@vger.kernel.org
-+S:	Maintained
-+F:	Documentation/networking/device_drivers/ethernet/wangxun/txgbe.rst
-+F:	drivers/net/ethernet/wangxun/
-+
- WATCHDOG DEVICE DRIVERS
- M:	Wim Van Sebroeck <wim@linux-watchdog.org>
- M:	Guenter Roeck <linux@roeck-us.net>
-diff --git a/drivers/net/ethernet/Kconfig b/drivers/net/ethernet/Kconfig
-index 955abbc5490e..9a55c1d5a0a1 100644
---- a/drivers/net/ethernet/Kconfig
-+++ b/drivers/net/ethernet/Kconfig
-@@ -84,6 +84,7 @@ source "drivers/net/ethernet/huawei/Kconfig"
- source "drivers/net/ethernet/i825xx/Kconfig"
- source "drivers/net/ethernet/ibm/Kconfig"
- source "drivers/net/ethernet/intel/Kconfig"
-+source "drivers/net/ethernet/wangxun/Kconfig"
- source "drivers/net/ethernet/xscale/Kconfig"
- 
- config JME
-diff --git a/drivers/net/ethernet/Makefile b/drivers/net/ethernet/Makefile
-index 9eb01169957f..c06e75ed4231 100644
---- a/drivers/net/ethernet/Makefile
-+++ b/drivers/net/ethernet/Makefile
-@@ -97,6 +97,7 @@ obj-$(CONFIG_NET_VENDOR_TOSHIBA) += toshiba/
- obj-$(CONFIG_NET_VENDOR_TUNDRA) += tundra/
- obj-$(CONFIG_NET_VENDOR_VERTEXCOM) += vertexcom/
- obj-$(CONFIG_NET_VENDOR_VIA) += via/
-+obj-$(CONFIG_NET_VENDOR_WANGXUN) += wangxun/
- obj-$(CONFIG_NET_VENDOR_WIZNET) += wiznet/
- obj-$(CONFIG_NET_VENDOR_XILINX) += xilinx/
- obj-$(CONFIG_NET_VENDOR_XIRCOM) += xircom/
-diff --git a/drivers/net/ethernet/wangxun/Kconfig b/drivers/net/ethernet/wangxun/Kconfig
-new file mode 100644
-index 000000000000..baa1f0a5cc37
---- /dev/null
-+++ b/drivers/net/ethernet/wangxun/Kconfig
-@@ -0,0 +1,32 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+#
-+# Wangxun network device configuration
-+#
-+
-+config NET_VENDOR_WANGXUN
-+	bool "Wangxun devices"
-+	default y
-+	help
-+	  If you have a network (Ethernet) card belonging to this class, say Y.
-+
-+	  Note that the answer to this question doesn't directly affect the
-+	  kernel: saying N will just cause the configurator to skip all
-+	  the questions about Intel cards. If you say Y, you will be asked for
-+	  your specific card in the following questions.
-+
-+if NET_VENDOR_WANGXUN
-+
-+config TXGBE
-+	tristate "Wangxun(R) 10GbE PCI Express adapters support"
-+	depends on PCI
-+	help
-+	  This driver supports Wangxun(R) 10GbE PCI Express family of
-+	  adapters.
-+
-+	  More specific information on configuring the driver is in
-+	  <file:Documentation/networking/device_drivers/ethernet/wangxun/txgbe.rst>.
-+
-+	  To compile this driver as a module, choose M here. The module
-+	  will be called txgbe.
-+
-+endif # NET_VENDOR_WANGXUN
-diff --git a/drivers/net/ethernet/wangxun/Makefile b/drivers/net/ethernet/wangxun/Makefile
-new file mode 100644
-index 000000000000..c34db1bead25
---- /dev/null
-+++ b/drivers/net/ethernet/wangxun/Makefile
-@@ -0,0 +1,6 @@
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# Makefile for the Wangxun network device drivers.
-+#
-+
-+obj-$(CONFIG_TXGBE) += txgbe/
-diff --git a/drivers/net/ethernet/wangxun/txgbe/Makefile b/drivers/net/ethernet/wangxun/txgbe/Makefile
-new file mode 100644
-index 000000000000..431303ca75b4
---- /dev/null
-+++ b/drivers/net/ethernet/wangxun/txgbe/Makefile
-@@ -0,0 +1,9 @@
-+# SPDX-License-Identifier: GPL-2.0
-+# Copyright (c) 2015 - 2022 Beijing WangXun Technology Co., Ltd.
-+#
-+# Makefile for the Wangxun(R) 10GbE PCI Express ethernet driver
-+#
-+
-+obj-$(CONFIG_TXGBE) += txgbe.o
-+
-+txgbe-objs := txgbe_main.o
-diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe.h b/drivers/net/ethernet/wangxun/txgbe/txgbe.h
-new file mode 100644
-index 000000000000..38ddbde0ed0f
---- /dev/null
-+++ b/drivers/net/ethernet/wangxun/txgbe/txgbe.h
-@@ -0,0 +1,24 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (c) 2015 - 2022 Beijing WangXun Technology Co., Ltd. */
-+
-+#ifndef _TXGBE_H_
-+#define _TXGBE_H_
-+
-+#include "txgbe_type.h"
-+
-+#define TXGBE_MAX_FDIR_INDICES          63
-+
-+#define TXGBE_MAX_RX_QUEUES   (TXGBE_MAX_FDIR_INDICES + 1)
-+#define TXGBE_MAX_TX_QUEUES   (TXGBE_MAX_FDIR_INDICES + 1)
-+
-+/* board specific private data structure */
-+struct txgbe_adapter {
-+	u8 __iomem *io_addr;    /* Mainly for iounmap use */
-+	/* OS defined structs */
-+	struct net_device *netdev;
-+	struct pci_dev *pdev;
-+};
-+
-+extern char txgbe_driver_name[];
-+
-+#endif /* _TXGBE_H_ */
-diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c b/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
-new file mode 100644
-index 000000000000..55c3c720b377
---- /dev/null
-+++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
-@@ -0,0 +1,165 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2015 - 2022 Beijing WangXun Technology Co., Ltd. */
-+
-+#include <linux/types.h>
-+#include <linux/module.h>
-+#include <linux/pci.h>
-+#include <linux/netdevice.h>
-+#include <linux/string.h>
-+#include <linux/aer.h>
-+#include <linux/etherdevice.h>
-+
-+#include "txgbe.h"
-+
-+char txgbe_driver_name[] = "txgbe";
-+
-+/* txgbe_pci_tbl - PCI Device ID Table
-+ *
-+ * Wildcard entries (PCI_ANY_ID) should come last
-+ * Last entry must be all 0s
-+ *
-+ * { Vendor ID, Device ID, SubVendor ID, SubDevice ID,
-+ *   Class, Class Mask, private data (not used) }
-+ */
-+static const struct pci_device_id txgbe_pci_tbl[] = {
-+	{ PCI_VDEVICE(WANGXUN, TXGBE_DEV_ID_SP1000), 0},
-+	{ PCI_VDEVICE(WANGXUN, TXGBE_DEV_ID_WX1820), 0},
-+	/* required last entry */
-+	{ .device = 0 }
-+};
-+
-+#define DEFAULT_DEBUG_LEVEL_SHIFT 3
-+
-+static void txgbe_dev_shutdown(struct pci_dev *pdev, bool *enable_wake)
-+{
-+	struct txgbe_adapter *adapter = pci_get_drvdata(pdev);
-+	struct net_device *netdev = adapter->netdev;
-+
-+	netif_device_detach(netdev);
-+
-+	pci_disable_device(pdev);
-+}
-+
-+static void txgbe_shutdown(struct pci_dev *pdev)
-+{
-+	bool wake;
-+
-+	txgbe_dev_shutdown(pdev, &wake);
-+
-+	if (system_state == SYSTEM_POWER_OFF) {
-+		pci_wake_from_d3(pdev, wake);
-+		pci_set_power_state(pdev, PCI_D3hot);
-+	}
-+}
-+
-+/**
-+ * txgbe_probe - Device Initialization Routine
-+ * @pdev: PCI device information struct
-+ * @ent: entry in txgbe_pci_tbl
-+ *
-+ * Returns 0 on success, negative on failure
-+ *
-+ * txgbe_probe initializes an adapter identified by a pci_dev structure.
-+ * The OS initialization, configuring of the adapter private structure,
-+ * and a hardware reset occur.
-+ **/
-+static int txgbe_probe(struct pci_dev *pdev,
-+		       const struct pci_device_id __always_unused *ent)
-+{
-+	struct txgbe_adapter *adapter = NULL;
-+	struct net_device *netdev;
-+	int err;
-+
-+	err = pci_enable_device_mem(pdev);
-+	if (err)
-+		return err;
-+
-+	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
-+	if (err) {
-+		dev_err(&pdev->dev,
-+			"No usable DMA configuration, aborting\n");
-+		goto err_pci_disable_dev;
-+	}
-+
-+	err = pci_request_selected_regions(pdev,
-+					   pci_select_bars(pdev, IORESOURCE_MEM),
-+					   txgbe_driver_name);
-+	if (err) {
-+		dev_err(&pdev->dev,
-+			"pci_request_selected_regions failed 0x%x\n", err);
-+		goto err_pci_disable_dev;
-+	}
-+
-+	pci_enable_pcie_error_reporting(pdev);
-+	pci_set_master(pdev);
-+
-+	netdev = devm_alloc_etherdev_mqs(&pdev->dev,
-+					 sizeof(struct txgbe_adapter),
-+					 TXGBE_MAX_TX_QUEUES,
-+					 TXGBE_MAX_RX_QUEUES);
-+	if (!netdev) {
-+		err = -ENOMEM;
-+		goto err_pci_release_regions;
-+	}
-+
-+	SET_NETDEV_DEV(netdev, &pdev->dev);
-+
-+	adapter = netdev_priv(netdev);
-+	adapter->netdev = netdev;
-+	adapter->pdev = pdev;
-+
-+	adapter->io_addr = devm_ioremap(&pdev->dev,
-+					pci_resource_start(pdev, 0),
-+					pci_resource_len(pdev, 0));
-+	if (!adapter->io_addr) {
-+		err = -EIO;
-+		goto err_pci_release_regions;
-+	}
-+
-+	netdev->features |= NETIF_F_HIGHDMA;
-+
-+	pci_set_drvdata(pdev, adapter);
-+
-+	return 0;
-+
-+err_pci_release_regions:
-+	pci_release_selected_regions(pdev,
-+				     pci_select_bars(pdev, IORESOURCE_MEM));
-+err_pci_disable_dev:
-+	pci_disable_device(pdev);
-+	return err;
-+}
-+
-+/**
-+ * txgbe_remove - Device Removal Routine
-+ * @pdev: PCI device information struct
-+ *
-+ * txgbe_remove is called by the PCI subsystem to alert the driver
-+ * that it should release a PCI device.  The could be caused by a
-+ * Hot-Plug event, or because the driver is going to be removed from
-+ * memory.
-+ **/
-+static void txgbe_remove(struct pci_dev *pdev)
-+{
-+	pci_release_selected_regions(pdev,
-+				     pci_select_bars(pdev, IORESOURCE_MEM));
-+
-+	pci_disable_pcie_error_reporting(pdev);
-+
-+	pci_disable_device(pdev);
-+}
-+
-+static struct pci_driver txgbe_driver = {
-+	.name     = txgbe_driver_name,
-+	.id_table = txgbe_pci_tbl,
-+	.probe    = txgbe_probe,
-+	.remove   = txgbe_remove,
-+	.shutdown = txgbe_shutdown,
-+};
-+
-+module_pci_driver(txgbe_driver);
-+
-+MODULE_DEVICE_TABLE(pci, txgbe_pci_tbl);
-+MODULE_AUTHOR("Beijing WangXun Technology Co., Ltd, <software@trustnetic.com>");
-+MODULE_DESCRIPTION("WangXun(R) 10 Gigabit PCI Express Network Driver");
-+MODULE_LICENSE("GPL");
-diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h b/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h
-new file mode 100644
-index 000000000000..b2e329f50bae
---- /dev/null
-+++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h
-@@ -0,0 +1,57 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (c) 2015 - 2022 Beijing WangXun Technology Co., Ltd. */
-+
-+#ifndef _TXGBE_TYPE_H_
-+#define _TXGBE_TYPE_H_
-+
-+#include <linux/types.h>
-+#include <linux/netdevice.h>
-+
-+/************ txgbe_register.h ************/
-+/* Vendor ID */
-+#ifndef PCI_VENDOR_ID_WANGXUN
-+#define PCI_VENDOR_ID_WANGXUN                   0x8088
-+#endif
-+
-+/* Device IDs */
-+#define TXGBE_DEV_ID_SP1000                     0x1001
-+#define TXGBE_DEV_ID_WX1820                     0x2001
-+
-+/* Subsystem IDs */
-+/* SFP */
-+#define TXGBE_ID_SP1000_SFP                     0x0000
-+#define TXGBE_ID_WX1820_SFP                     0x2000
-+#define TXGBE_ID_SFP                            0x00
-+
-+/* copper */
-+#define TXGBE_ID_SP1000_XAUI                    0x1010
-+#define TXGBE_ID_WX1820_XAUI                    0x2010
-+#define TXGBE_ID_XAUI                           0x10
-+#define TXGBE_ID_SP1000_SGMII                   0x1020
-+#define TXGBE_ID_WX1820_SGMII                   0x2020
-+#define TXGBE_ID_SGMII                          0x20
-+/* backplane */
-+#define TXGBE_ID_SP1000_KR_KX_KX4               0x1030
-+#define TXGBE_ID_WX1820_KR_KX_KX4               0x2030
-+#define TXGBE_ID_KR_KX_KX4                      0x30
-+/* MAC Interface */
-+#define TXGBE_ID_SP1000_MAC_XAUI                0x1040
-+#define TXGBE_ID_WX1820_MAC_XAUI                0x2040
-+#define TXGBE_ID_MAC_XAUI                       0x40
-+#define TXGBE_ID_SP1000_MAC_SGMII               0x1060
-+#define TXGBE_ID_WX1820_MAC_SGMII               0x2060
-+#define TXGBE_ID_MAC_SGMII                      0x60
-+
-+#define TXGBE_NCSI_SUP                          0x8000
-+#define TXGBE_NCSI_MASK                         0x8000
-+#define TXGBE_WOL_SUP                           0x4000
-+#define TXGBE_WOL_MASK                          0x4000
-+#define TXGBE_DEV_MASK                          0xf0
-+
-+/* Combined interface*/
-+#define TXGBE_ID_SFI_XAUI			0x50
-+
-+/* Revision ID */
-+#define TXGBE_SP_MPW  1
-+
-+#endif /* _TXGBE_TYPE_H_ */
--- 
-2.27.0
+On Tue, Jun 28, 2022 at 10:55:04AM +0200, Krzysztof Kozlowski wrote:
+> On 27/06/2022 19:07, Sebastian Reichel wrote:
+> > From: David Wu <david.wu@rock-chips.com>
+> >=20
+> > Add constants and callback functions for the dwmac on RK3588 soc.
+> > As can be seen, the base structure is the same, only registers
+> > and the bits in them moved slightly.
+> >=20
+> > Signed-off-by: David Wu <david.wu@rock-chips.com>
+> > [rebase, squash fixes]
+> > Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+> > ---
+> > Krzysztof asked what "php" means. The answer is: The datasheet
+> > calls the referenced syscon area "PHP_GRF" with GRF meaning
+> > "general register file". PHP is never written out in the datasheet,
+> > but is the name of a subsystem in the SoC which contains the ethernet
+> > controllers, USB and SATA with it's own MMU and power domain.
+>=20
+> Maybe there was a typo and name is PPH? Like some kind of short cut of
+> "peripheral"?
 
+Maybe, but then it is consistent throughout the datasheet and the
+vendor kernel. There is a few hundred instances of PHP_ in the
+datasheet and PPH is only found for Displayport PHYs (DPPHY).
 
+-- Sebastian
 
+--c2yjj25avm3cvkmr
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAmK60YgACgkQ2O7X88g7
++poNGA//fEqVCXbx8RU3oSYO8REyv6/VZBK5mmbgFGTRgfx6saGdL23ygwT5CwJV
+ONdL3BuHUBeSIOEVCe9HaTiE4LezWtdmNijAQm5dV47TIOyA2LYyoXtW+uYpWcc8
+G0Mv547WfztVhClFCP+EjNuP/krXiNOaQU+JsvtFEzGK3t2RiPzCzFqMCkDke4F1
+xE7Oz9UAgiFCFDxwKZdON1hP1rTYYBSKqiWT+6HuWY/kwSOPJxMK5/AQhKoEm9lC
+j3yPpI82w4lN1E643IdJ/OWmiQb7NFLJ3RL2BgNiy/RQ8UyrlXaNCn557KX+tD6A
+DFIIMVBmsjMwMxqb5tUanEydIH6I93vTBhKwRcztmJ6Gl6XZF0CuKXy5FqrhIABy
+nYmb2Bonj9wU0SGoOYd4OX6nrCZ/nwbjHLO+xBxgKdX5s109WOJL0VX637p6mTmZ
+XhweYOjZZGu+Or741RxiIfjoUjGKpbElbAbKApM7BaDmqO5VWhcZakq8oJ4TtH66
+B4Otqi/5YJJLmyizWNZsfJHI7K7rvB+pc4L896Ve77SXJZaePzA/9/zr7X45h+rW
+KfSiiP82YulVWYNXRNX5A1pMqOx8AG2P4R11IDZ3FnI+wVzDsAuz51IWFSk6q6XF
+NLHlLM70E9ZoVWIR9MDF6AenyA2iTNqgMVoN7GlynUCi8x5yqGg=
+=lyNm
+-----END PGP SIGNATURE-----
+
+--c2yjj25avm3cvkmr--
