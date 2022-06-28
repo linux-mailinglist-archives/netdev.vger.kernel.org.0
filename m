@@ -2,82 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2875755E6B0
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 18:30:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F7DE55E86E
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 18:35:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347978AbiF1POf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 11:14:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48000 "EHLO
+        id S1348183AbiF1PPs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 11:15:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347964AbiF1POe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 11:14:34 -0400
-Received: from mail-oa1-x29.google.com (mail-oa1-x29.google.com [IPv6:2001:4860:4864:20::29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A76A2E086
-        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 08:14:32 -0700 (PDT)
-Received: by mail-oa1-x29.google.com with SMTP id 586e51a60fabf-1048b8a38bbso17418132fac.12
-        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 08:14:32 -0700 (PDT)
+        with ESMTP id S1348162AbiF1PP2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 11:15:28 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BFC832059
+        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 08:15:19 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id d17so12535788wrc.10
+        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 08:15:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=j8onA5YycLKvgtR2+Db5ek4DglhDGyf/OLtfUjKRawU=;
-        b=u6WOgNzk0OTDG+9CtSE/K6ru5P4/825Mxogdf7Dswt+4t/A0V9RTEQu1NpcqxbuOa3
-         B4hqvjDfLFtBTP9KYVkOi3g7QlsZKUQzgD92kVESgJJxK+jXkXcvybUWXvwj/VmqoDIl
-         5xxDbbSUpmnkaQOKd5z4WWRNePbFeh98woYL4=
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8kVNWHrBL0GiaNqy7pXs9TTaPLwVW5aeut18uIqtgkc=;
+        b=Lur6rtWdWtsnC+SAMWRIoyGTCnfrArnoVRT/JoKQA1MBFjN7wKpLHEMLSnukDEMMHU
+         Ay8mffu3ExD+WOLzoMZ+p+JZ0ihbmQHBW6GWjmYKXBoeoe0FBG0XJ7G9Gj7v5Haq+GO3
+         Q4N96g0vvP7TUEYJcVhsixklEsMkotlZak7Lw+VD8LfCJ+ePdug2NU13uZZa4uLEPlGY
+         R1LHApvvD7Xx1zetSoSWWfwOIYLhCIdnAERf7Bj6mgMQXZar+tZqeEOkuMD/O/XWIa7q
+         K+OFjxGLNiNhPL9R9aMgdJuBzRu/VIrMkviyPILGE1JV+wYAVrZ32Z/g1Y0yuXXmJN41
+         0Myw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=j8onA5YycLKvgtR2+Db5ek4DglhDGyf/OLtfUjKRawU=;
-        b=152wLiJHlm0Y3WpfgsVjOAfpO6M1Ic3CFnSyzMMXjPEoZeqwCPCq4dVeZfedfEpN77
-         Pw+TMXIFc+dFB3uq0F7HULL8B56Uu+/KFlapG0M9tbGOQUgKcuAD65MiKCllO3xPnEuK
-         B/MHL+1ONTcxazTwm/4POU/C/Xy/EzzpG0tqQcR0qhDmaSQrkOjnkDM1AXNoBkz/wAZZ
-         femswxo1Y8KF5LopSk61mgDSiU9J/2hsW33gMNWC99ns+mc0+Y0W95YfsAFJJBHcS3pY
-         28qg0R+IvR5XlVEu/Lcl1kBAv1yz30F1O6Az6A0ltTNNsABs/bXWrimaypfqTmmdDoRq
-         AMNQ==
-X-Gm-Message-State: AJIora/Plsbks8Lt9Puw3ZoLmwiTGEyiar1u77ewNOxROG0L0e27ZnsR
-        QWtnIIhB++dnJlW7ZtepLIyHYAiCCWxGBA==
-X-Google-Smtp-Source: AGRyM1uLW59VDfTdcT1rmoKGVRJWZs1FpMlfYJhdMO+WliY5H3oO1o0ddfaCifkp3pHZhBu467hUdQ==
-X-Received: by 2002:a05:6870:8195:b0:101:9342:bf1a with SMTP id k21-20020a056870819500b001019342bf1amr37752oae.149.1656429271809;
-        Tue, 28 Jun 2022 08:14:31 -0700 (PDT)
-Received: from [192.168.0.41] ([184.4.90.121])
-        by smtp.gmail.com with ESMTPSA id x18-20020a056830409200b0060aeccf6b44sm8167298ott.41.2022.06.28.08.14.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 28 Jun 2022 08:14:31 -0700 (PDT)
-Message-ID: <9ae473c4-cd42-bb45-bce2-8aa2e4784a43@cloudflare.com>
-Date:   Tue, 28 Jun 2022 10:14:29 -0500
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8kVNWHrBL0GiaNqy7pXs9TTaPLwVW5aeut18uIqtgkc=;
+        b=vub5rM8GaeCfcBffMX74OPWdqtCeiPNjgHwfVZDXH7CoX3kyWqUzbxHFXi8/cDrgNu
+         wRiIkZdVFAC4XeXdQNhdCo9p6flUQAULqFnmDaCD9GR5fAq4SnU8gQINnIUxIwGju7+f
+         DYhAlM83lFAhbjJZKLwaxgIs8lCZ8NGMy4Vb4vsjbaDu4IBNIcImYnwIJRcCrd8PTluO
+         2GxleUII+eKn72t4Qdd0i6PLyQKi57SysnvImueDc+a1NqhBXKIstKbQSUCqtWYc7V0I
+         iRvA5FReOssrlyabhefEsaaQ2Lhrb7UfopmWfxd6b9Jq5sUEthJmYt4nRMzo5V21uVi2
+         rZAw==
+X-Gm-Message-State: AJIora8Dxztbt/qr9B7INS20WUHvP/KHipE6NTO6cTzN8xY+0GNP1tKk
+        8Tc7oNWmqahYd3eruglEqya/PxZgbgxtnYxt6wf6rA==
+X-Google-Smtp-Source: AGRyM1vzfRMZwSSEMuW4Vd1zY8jVZxxwz2LtHYL1OrjbU/xaztX9Iy32yiJySZYdl72ksriuNPl+C/SvWFQ9AuqsVYs=
+X-Received: by 2002:a5d:544c:0:b0:21b:a288:f98c with SMTP id
+ w12-20020a5d544c000000b0021ba288f98cmr17779907wrv.300.1656429317400; Tue, 28
+ Jun 2022 08:15:17 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 0/2] Introduce security_create_user_ns()
-Content-Language: en-US
-To:     Casey Schaufler <casey@schaufler-ca.com>,
-        Paul Moore <paul@paul-moore.com>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Christian Brauner <brauner@kernel.org>, kpsingh@kernel.org,
-        revest@chromium.org, jackmanb@chromium.org, ast@kernel.org,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, jmorris@namei.org, serge@hallyn.com,
-        bpf@vger.kernel.org, linux-security-module@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-team@cloudflare.com
-References: <20220621233939.993579-1-fred@cloudflare.com>
- <ce1653b1-feb0-1a99-0e97-8dfb289eeb79@schaufler-ca.com>
- <b72c889a-4a50-3330-baae-3bbf065e7187@cloudflare.com>
- <CAHC9VhSTkEMT90Tk+=iTyp3npWEm+3imrkFVX2qb=XsOPp9F=A@mail.gmail.com>
- <20220627121137.cnmctlxxtcgzwrws@wittgenstein>
- <CAHC9VhSQH9tE-NgU6Q-GLqSy7R6FVjSbp4Tc4gVTbjZCqAWy5Q@mail.gmail.com>
- <6a8fba0a-c9c9-61ba-793a-c2e0c2924f88@iogearbox.net>
- <CAHC9VhQQJH95jTWMOGDB4deS=whSfnaF_e73zoabOOeHJMv+0Q@mail.gmail.com>
- <685096bb-af0a-08c0-491a-e176ac009e85@schaufler-ca.com>
-From:   Frederick Lawler <fred@cloudflare.com>
-In-Reply-To: <685096bb-af0a-08c0-491a-e176ac009e85@schaufler-ca.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+References: <20220614014714.1407239-1-irogers@google.com> <Yrq5Bun3Nmb1vrW3@krava>
+In-Reply-To: <Yrq5Bun3Nmb1vrW3@krava>
+From:   Ian Rogers <irogers@google.com>
+Date:   Tue, 28 Jun 2022 08:15:04 -0700
+Message-ID: <CAP-5=fXNJjRxGCE=mH22bLg1mNXMRgL_px4=-=8Zq-DLUXbxTg@mail.gmail.com>
+Subject: Re: [PATCH] perf bpf: 8 byte align bpil data
+To:     olsajiri@gmail.com
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Quentin Monnet <quentin@isovalent.com>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Stephane Eranian <eranian@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
         autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -85,61 +82,75 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/27/22 6:18 PM, Casey Schaufler wrote:
-> On 6/27/2022 3:27 PM, Paul Moore wrote:
->> On Mon, Jun 27, 2022 at 6:15 PM Daniel Borkmann <daniel@iogearbox.net> 
->> wrote:
->>> On 6/27/22 11:56 PM, Paul Moore wrote:
->>>> On Mon, Jun 27, 2022 at 8:11 AM Christian Brauner 
->>>> <brauner@kernel.org> wrote:
->>>>> On Thu, Jun 23, 2022 at 11:21:37PM -0400, Paul Moore wrote:
->>>> ...
->>>>
->>>>>> This is one of the reasons why I usually like to see at least one LSM
->>>>>> implementation to go along with every new/modified hook.  The
->>>>>> implementation forces you to think about what information is 
->>>>>> necessary
->>>>>> to perform a basic access control decision; sometimes it isn't always
->>>>>> obvious until you have to write the access control :)
->>>>> I spoke to Frederick at length during LSS and as I've been given to
->>>>> understand there's a eBPF program that would immediately use this new
->>>>> hook. Now I don't want to get into the whole "Is the eBPF LSM hook
->>>>> infrastructure an LSM" but I think we can let this count as a 
->>>>> legitimate
->>>>> first user of this hook/code.
->>>> Yes, for the most part I don't really worry about the "is a BPF LSM a
->>>> LSM?" question, it's generally not important for most discussions.
->>>> However, there is an issue unique to the BPF LSMs which I think is
->>>> relevant here: there is no hook implementation code living under
->>>> security/.  While I talked about a hook implementation being helpful
->>>> to verify the hook prototype, it is also helpful in providing an
->>>> in-tree example for other LSMs; unfortunately we don't get that same
->>>> example value when the initial hook implementation is a BPF LSM.
->>> I would argue that such a patch series must come together with a BPF
->>> selftest which then i) contains an in-tree usage example, ii) adds BPF
->>> CI test coverage. Shipping with a BPF selftest at least would be the
->>> usual expectation.
->> I'm not going to disagree with that, I generally require matching
->> tests for new SELinux kernel code, but I was careful to mention code
->> under 'security/' and not necessarily just a test implementation :)  I
->> don't want to get into a big discussion about it, but I think having a
->> working implementation somewhere under 'security/' is more
->> discoverable for most LSM folks.
-> 
-> I agree. It would be unfortunate if we added a hook explicitly for eBPF
-> only to discover that the proposed user needs something different. The
-> LSM community should have a chance to review the code before committing
-> to all the maintenance required in supporting it.
-> 
-> Is there a reference on how to write an eBPF security module?
+On Tue, Jun 28, 2022 at 1:41 AM <olsajiri@gmail.com> wrote:
+>
+> On Mon, Jun 13, 2022 at 06:47:14PM -0700, Ian Rogers wrote:
+> > bpil data is accessed assuming 64-bit alignment resulting in undefined
+> > behavior as the data is just byte aligned. With an -fsanitize=undefined
+> > build the following errors are observed:
+>
+> I need to add -w to get the clean build with that, do you see that as well?
+>
+>   $ make EXTRA_CFLAGS='-fsanitize=undefined -w'
 
-There's a documentation page that briefly touches on a BPF LSM 
-implementation [1].
+I don't recall needing this, but I was stacking fixes which may explain it.
 
-> There should be something out there warning the eBPF programmer of the
-> implications of providing a secid_to_secctx hook for starters.
-> 
+> >
+> > $ sudo perf record -a sleep 1
+> > util/bpf-event.c:310:22: runtime error: load of misaligned address 0x55f61084520f for type '__u64', which requires 8 byte alignment
+> > 0x55f61084520f: note: pointer points here
+> >  a8 fe ff ff 3c  51 d3 c0 ff ff ff ff 04  84 d3 c0 ff ff ff ff d8  aa d3 c0 ff ff ff ff a4  c0 d3 c0
+> >              ^
+> > util/bpf-event.c:311:20: runtime error: load of misaligned address 0x55f61084522f for type '__u32', which requires 4 byte alignment
+> > 0x55f61084522f: note: pointer points here
+> >  ff ff ff ff c7  17 00 00 f1 02 00 00 1f  04 00 00 58 04 00 00 00  00 00 00 0f 00 00 00 63  02 00 00
+> >              ^
+> > util/bpf-event.c:198:33: runtime error: member access within misaligned address 0x55f61084523f for type 'const struct bpf_func_info', which requires 4 byte alignment
+> > 0x55f61084523f: note: pointer points here
+> >  58 04 00 00 00  00 00 00 0f 00 00 00 63  02 00 00 3b 00 00 00 ab  02 00 00 44 00 00 00 14  03 00 00
+>
+>
+> and I'm also getting another error in:
+>
+> [root@krava perf]# ./perf record -a sleep 1
+> util/synthetic-events.c:1202:11: runtime error: member access within misaligned address 0x00000286f7ea for type 'struct perf_record_record_cpu_map', which requires 8 byte alignment
+> 0x00000286f7ea: note: pointer points here
+>  20 00  01 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  00 00 00 00 00 00
+>               ^
+> util/synthetic-events.c:1203:18: runtime error: member access within misaligned address 0x00000286f7ea for type 'struct perf_record_record_cpu_map', which requires 8 byte alignment
+> 0x00000286f7ea: note: pointer points here
+>  20 00  01 00 01 00 00 00 00 00  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  00 00 00 00 00 00
+>               ^
+> util/synthetic-events.c:1206:46: runtime error: member access within misaligned address 0x00000286f7ea for type 'struct perf_record_record_cpu_map', which requires 8 byte alignment
+> 0x00000286f7ea: note: pointer points here
+>  20 00  01 00 01 00 08 00 00 00  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  00 00 00 00 00 00
+>               ^
+> /home/jolsa/kernel/linux-perf/tools/include/asm-generic/bitops/atomic.h:10:29: runtime error: load of misaligned address 0x00000286f7f2 for type 'long unsigned int', which requires 8 byte alignment
+> 0x00000286f7f2: note: pointer points here
+>  00 00  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  51 00 00 00 00 00
+>               ^
+>
+> are you going to address this one as well?
+>
+>
+> the reason for this one is that 'data' in struct perf_record_cpu_map_data
+> is not alligned(8), so that's why I raised the question in my other reply ;-)
+>
+> I wonder we should mark all tools/lib/perf/include/perf/event.h types
+> as packed to prevent any compiler padding
 
-Links:
-1. https://docs.kernel.org/bpf/prog_lsm.html?highlight=bpf+lsm#
+I already sent out a fix and some improvements related to this:
+https://lore.kernel.org/lkml/20220614143353.1559597-1-irogers@google.com/
+Could you take a look?
 
+I'm not sure about aligned and packed. I tried to minimize it in the
+change above. The issue is that taking the address of a variable in a
+packed struct results in an unaligned pointer. To address this in the
+fix above I changed the functions to pass pointers to the whole
+struct.
+
+Thanks,
+Ian
+
+> thanks,
+> jirka
