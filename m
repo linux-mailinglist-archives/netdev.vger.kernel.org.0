@@ -2,50 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E570C55DBD4
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:25:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF90E55D43C
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:13:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245090AbiF1Fmm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 01:42:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54512 "EHLO
+        id S245132AbiF1Fot (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 01:44:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245055AbiF1Fml (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 01:42:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2253A15FFC;
-        Mon, 27 Jun 2022 22:42:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C4C13B81C0D;
-        Tue, 28 Jun 2022 05:42:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5DC4C3411D;
-        Tue, 28 Jun 2022 05:42:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656394957;
-        bh=i4IQ7mI8v3I51rhfoiIPQVDJPufpQ55yf7neoa0dHJQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=UlbPryCxIRTdLBTqYWQU8lnuCx6bve+r9jG/ypm4NcgLz4sWstZlEx4LrqjRpmjXM
-         g2x8cRdM066MxplrOX7bvB44rSfKQ2pDaiLw7lTxA5H8hLljrmVbnop8bjSNGJfzLL
-         5R8tl4h/tQAqca/jydyJLKImb63d3G9mGEFVjULE=
-Date:   Tue, 28 Jun 2022 07:42:34 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Franklin Lin <franklin_lin@wistron.corp-partner.google.com>
-Cc:     edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, davem@davemloft.net,
-        franklin_lin@wistron.com
-Subject: Re: [PATCH] drivers/net/usb/r8152: Enable MAC address passthru
- support
-Message-ID: <YrqUyvS1OVSTIvvP@kroah.com>
-References: <20220628015325.1204234-1-franklin_lin@wistron.corp-partner.google.com>
+        with ESMTP id S245128AbiF1For (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 01:44:47 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08B8C1CFEA;
+        Mon, 27 Jun 2022 22:44:38 -0700 (PDT)
+X-UUID: 2f6f6cecdcca40c5a588f0ae662acb32-20220628
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.7,REQID:472ae498-e919-464c-98ec-16bcb49ca63d,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:0
+X-CID-META: VersionHash:87442a2,CLOUDID:afcdf485-57f0-47ca-ba27-fe8c57fbf305,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
+        ,QS:nil,BEC:nil,COL:0
+X-UUID: 2f6f6cecdcca40c5a588f0ae662acb32-20220628
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
+        (envelope-from <biao.huang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 100667279; Tue, 28 Jun 2022 13:44:34 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Tue, 28 Jun 2022 13:44:32 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 28 Jun 2022 13:44:31 +0800
+Message-ID: <3f42845aafce14dcd96a83690fe296eb9eb6b50d.camel@mediatek.com>
+Subject: Re: [PATCH net-next v3 09/10] net: ethernet: mtk-star-emac:
+ separate tx/rx handling with two NAPIs
+From:   Biao Huang <biao.huang@mediatek.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     David Miller <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Fabien Parent <fparent@baylibre.com>,
+        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        "Matthias Brugger" <matthias.bgg@gmail.com>,
+        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        Yinghua Pan <ot_yinghua.pan@mediatek.com>,
+        <srv_heupstream@mediatek.com>,
+        Macpaul Lin <macpaul.lin@mediatek.com>
+Date:   Tue, 28 Jun 2022 13:44:31 +0800
+In-Reply-To: <20220623213431.23528544@kernel.org>
+References: <20220622090545.23612-1-biao.huang@mediatek.com>
+         <20220622090545.23612-10-biao.huang@mediatek.com>
+         <20220623213431.23528544@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220628015325.1204234-1-franklin_lin@wistron.corp-partner.google.com>
-X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,T_SCC_BODY_TEXT_LINE,
+        T_SPF_HELO_TEMPERROR,T_SPF_TEMPERROR,UNPARSEABLE_RELAY autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -53,82 +73,110 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 28, 2022 at 09:53:25AM +0800, Franklin Lin wrote:
-> From: franklin_lin <franklin_lin@wistron.corp-partner.google.com>
+Dear Jakub,
+	Thanks for your comments~
+
+On Thu, 2022-06-23 at 21:34 -0700, Jakub Kicinski wrote:
+> On Wed, 22 Jun 2022 17:05:44 +0800 Biao Huang wrote:
+> > +	if (rx || tx) {
+> > +		spin_lock_irqsave(&priv->lock, flags);
+> > +		/* mask Rx and TX Complete interrupt */
+> > +		mtk_star_disable_dma_irq(priv, rx, tx);
+> > +		spin_unlock_irqrestore(&priv->lock, flags);
 > 
-> Enable the support for providing a MAC address
-> for a dock to use based on the VPD values set in the platform.
+> You do _irqsave / _irqrestore here
+We should invoke spin_lock, no need save/store irq here.
 > 
-> Signed-off-by: franklin_lin <franklin_lin@wistron.corp-partner.google.com>
-> ---
->  drivers/net/usb/r8152.c | 49 ++++++++++++++++++++++++++++++-----------
->  1 file changed, 36 insertions(+), 13 deletions(-)
+> > +		if (rx)
+> > +			__napi_schedule_irqoff(&priv->rx_napi);
+> > +		if (tx)
+> > +			__napi_schedule_irqoff(&priv->tx_napi);
 > 
-> diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
-> index 7389d6ef8..732e48d99 100644
-> --- a/drivers/net/usb/r8152.c
-> +++ b/drivers/net/usb/r8152.c
-> @@ -3,6 +3,7 @@
->   *  Copyright (c) 2014 Realtek Semiconductor Corp. All rights reserved.
->   */
->  
-> +#include <linux/fs.h>
->  #include <linux/signal.h>
->  #include <linux/slab.h>
->  #include <linux/module.h>
-> @@ -1608,6 +1609,11 @@ static int vendor_mac_passthru_addr_read(struct r8152 *tp, struct sockaddr *sa)
->  	acpi_object_type mac_obj_type;
->  	int mac_strlen;
->  
-> +	struct file *fp;
-> +	unsigned char read_buf[32];
-> +	loff_t f_pos = 0;
-> +	int i, j, len;
-> +
->  	if (tp->lenovo_macpassthru) {
->  		mac_obj_name = "\\MACA";
->  		mac_obj_type = ACPI_TYPE_STRING;
-> @@ -1641,22 +1647,39 @@ static int vendor_mac_passthru_addr_read(struct r8152 *tp, struct sockaddr *sa)
->  	/* returns _AUXMAC_#AABBCCDDEEFF# */
->  	status = acpi_evaluate_object(NULL, mac_obj_name, NULL, &buffer);
->  	obj = (union acpi_object *)buffer.pointer;
-> -	if (!ACPI_SUCCESS(status))
-> -		return -ENODEV;
-> -	if (obj->type != mac_obj_type || obj->string.length != mac_strlen) {
-> -		netif_warn(tp, probe, tp->netdev,
-> +	if (ACPI_SUCCESS(status)) {
-> +		if (obj->type != mac_obj_type || obj->string.length != mac_strlen) {
-> +			netif_warn(tp, probe, tp->netdev,
->  			   "Invalid buffer for pass-thru MAC addr: (%d, %d)\n",
->  			   obj->type, obj->string.length);
-> -		goto amacout;
-> -	}
-> -
-> -	if (strncmp(obj->string.pointer, "_AUXMAC_#", 9) != 0 ||
-> -	    strncmp(obj->string.pointer + 0x15, "#", 1) != 0) {
-> -		netif_warn(tp, probe, tp->netdev,
-> -			   "Invalid header when reading pass-thru MAC addr\n");
-> -		goto amacout;
-> +			goto amacout;
-> +		}
-> +		if (strncmp(obj->string.pointer, "_AUXMAC_#", 9) != 0 ||
-> +			strncmp(obj->string.pointer + 0x15, "#", 1) != 0) {
-> +			netif_warn(tp, probe, tp->netdev,
-> +				"Invalid header when reading pass-thru MAC addr\n");
-> +			goto amacout;
-> +		}
-> +		ret = hex2bin(buf, obj->string.pointer + 9, 6);
-> +	} else {
-> +		/* read from "/sys/firmware/vpd/ro/dock_mac" */
-> +		fp = filp_open("/sys/firmware/vpd/ro/dock_mac", O_RDONLY, 0);
+> Yet assume _irqoff here.
+> 
+> So can this be run from non-IRQ context or not?
+seems __napi_schedule is more proper for our case, we'll modify it in
+next send.
+> 
+> > -	if (mtk_star_ring_full(ring))
+> > +	if (unlikely(mtk_star_tx_ring_avail(ring) < MAX_SKB_FRAGS + 1))
+> >  		netif_stop_queue(ndev);
+> 
+> Please look around other drivers (like ixgbe) and copy the way they
+> handle safe stopping of the queues. You need to add some barriers and
+> re-check after disabling.
+Yes, we look drivers from other vendors, and will do similar thing in
+next send.
+> 
+> > -	spin_unlock_bh(&priv->lock);
+> > -
+> >  	mtk_star_dma_resume_tx(priv);
+> >  
+> >  	return NETDEV_TX_OK;
+> 
+> 
+> > +	while ((entry != head) && (count < MTK_STAR_RING_NUM_DESCS -
+> > 1)) {
+> >  
+> 
+> Parenthesis unnecessary, so is the empty line after the while ().
+Yes, the empty line will be removed in next send.
+> 
+> >  		ret = mtk_star_tx_complete_one(priv);
+> >  		if (ret < 0)
+> >  			break;
+> > +
+> > +		count++;
+> > +		pkts_compl++;
+> > +		bytes_compl += ret;
+> > +		entry = ring->tail;
+> >  	}
+> >  
+> > +	__netif_tx_lock_bh(netdev_get_tx_queue(priv->ndev, 0));
+> >  	netdev_completed_queue(ndev, pkts_compl, bytes_compl);
+> > +	__netif_tx_unlock_bh(netdev_get_tx_queue(priv->ndev, 0));
+> 
+> what are you taking this lock for?
+In this version, we encounter some issue related to
+__QUEUE_STATE_STACK_OFF, 
+and if we add __netif_tx_lock_bh here, it disappears.
 
-Woah, what?  No, that's not how firmware works at all, sorry.  Please
-use the correct firmware interface if this really is firmware.  If it is
-not, please use the correct networking interface instead.
+When recieve your comments, we survey netdev_completed_queue handles in
+drivers from other vendors, we beleive the __QUEUE_STATE_STACK_OFF
+issue may caused by unproper usage of __napi_schedule_irqoff in
+previous lines, and we'll remove __netif_tx_lock_bh, and have another
+try.
 
-you should NEVER read from a file from a driver, that is a sure sign
-something is really really wrong.
+If our local stress test pass, corresponding modification will be added
+in next send.
+> 
+> > -	if (wake && netif_queue_stopped(ndev))
+> > +	if (unlikely(netif_queue_stopped(ndev)) &&
+> > +	    (mtk_star_tx_ring_avail(ring) > MTK_STAR_TX_THRESH))
+> >  		netif_wake_queue(ndev);
+> >  
+> > -	spin_unlock(&priv->lock);
+> > +	if (napi_complete(napi)) {
+> > +		spin_lock_irqsave(&priv->lock, flags);
+> > +		mtk_star_enable_dma_irq(priv, false, true);
+> > +		spin_unlock_irqrestore(&priv->lock, flags);
+> > +	}
+> > +
+> > +	return 0;
+> >  }
+> > @@ -1475,6 +1514,7 @@ static int mtk_star_set_timing(struct
+> > mtk_star_priv *priv)
+> >  
+> >  	return regmap_write(priv->regs, MTK_STAR_REG_TEST0, delay_val);
+> >  }
+> > +
+> >  static int mtk_star_probe(struct platform_device *pdev)
+> >  {
+> >  	struct device_node *of_node;
+> 
+> spurious whitespace change
+Yes, will fix it in next send.
 
-thanks,
+Best Regards!
+Biao
 
-greg k-h
