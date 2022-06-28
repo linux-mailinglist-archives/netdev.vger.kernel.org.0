@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A80B455EE2E
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 21:59:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CFC355EE33
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 21:59:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233335AbiF1Tyc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 15:54:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46018 "EHLO
+        id S233738AbiF1Ty2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 15:54:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231727AbiF1Tuz (ORCPT
+        with ESMTP id S232326AbiF1Tuz (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 15:50:55 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D9A5B4F;
-        Tue, 28 Jun 2022 12:49:42 -0700 (PDT)
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4760BA5;
+        Tue, 28 Jun 2022 12:49:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656445782; x=1687981782;
+  t=1656445783; x=1687981783;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=lpTv4+c3cx/2/djGl4KefPjDjGKGmL+71fUeHlFr2sM=;
-  b=A4V9r/GMuPynOtIJJef8ffIFcwdKYG1c1nfP0lt9IgxOCHiKbLNSpDp0
-   zFr5Cy66uaTFyeCjPeXceJGaKliERxKvf6Mr+llzbJ2Ww2K+aOsOaqW54
-   Hkp0DhZIvhdHTDUtwXO0GxI48lDCXAQF+i0Y2iB7HCAwNIhYcCsHuhjif
-   J7qlSdIhLhpDqrx4lh+USsCzPDUBKUZKE3CNE8kuBE8eswrPR0QZxmT8T
-   jS5oiezxCN9FbtRR+vqahKesKX1Ma2Wz6h6GtcNWkqKKUv36Fsm7eR/23
-   eLgYmRMCLc9F7PlYJtJlQuyWiRhEJqNNsU4uosHCZForskZUs5o+NnBnz
+  bh=assH3g8cMJnpD/kb79aEpQaxf3/AadyGdz71JUQEZCc=;
+  b=k9ItFV9wBsi5bb2jx6jBFlsBOt7P9s9pksSLrsfoKSgw6BiJoL1C+o2Z
+   BfF5NEGomXvus5NlfzF27UK9FncQno2FHmxmZ0lFeAX0mpiovB8XAj1wU
+   xoyKMadcPSFHwAB3nziGKhAUBqKr04RY/8eOHEs1rOh7SAIhNixApthj5
+   beMAi7c5N+ZCsxm+AAUll7kV59mAKXlT7xwfu7xZ2F9klch6hihqVqQGC
+   V2ddAcWudk0PkXc1h6G5D4S1oPUk8Oy3iY3jVFGSVlnvpQrCOSWx/NWFx
+   O8ldWxru8Cr10LwMTxY0c1CzddJaTNmJ5WrdySX0bTYn9fAXpnZvC3t5W
    Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="343523308"
+X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="261635707"
 X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
-   d="scan'208";a="343523308"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 12:49:41 -0700
+   d="scan'208";a="261635707"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 12:49:43 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
-   d="scan'208";a="617303088"
+   d="scan'208";a="767288164"
 Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga008.jf.intel.com with ESMTP; 28 Jun 2022 12:49:37 -0700
+  by orsmga005.jf.intel.com with ESMTP; 28 Jun 2022 12:49:38 -0700
 Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 25SJmr9V022013;
-        Tue, 28 Jun 2022 20:49:35 +0100
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 25SJmr9W022013;
+        Tue, 28 Jun 2022 20:49:36 +0100
 From:   Alexander Lobakin <alexandr.lobakin@intel.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -64,9 +64,9 @@ Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
         Willem de Bruijn <willemb@google.com>, bpf@vger.kernel.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         xdp-hints@xdp-project.net
-Subject: [PATCH RFC bpf-next 31/52] net, gro: expose some GRO API to use outside of NAPI
-Date:   Tue, 28 Jun 2022 21:47:51 +0200
-Message-Id: <20220628194812.1453059-32-alexandr.lobakin@intel.com>
+Subject: [PATCH RFC bpf-next 32/52] bpf, cpumap: switch to GRO from netif_receive_skb_list()
+Date:   Tue, 28 Jun 2022 21:47:52 +0200
+Message-Id: <20220628194812.1453059-33-alexandr.lobakin@intel.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220628194812.1453059-1-alexandr.lobakin@intel.com>
 References: <20220628194812.1453059-1-alexandr.lobakin@intel.com>
@@ -74,7 +74,7 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -82,232 +82,124 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make several functions global to be able to use GRO without a NAPI
-instance. This includes init, cleanup, receive functions, as well
-as a couple inlines to start and stop the deferred flush timer.
-Taking into account already global gro_flush(), it is now fully
-possible to maintain a GRO node without an aux NAPI entity.
+cpumap has its own BH context based on kthread. It has a sane batch
+size of 8 frames per one cycle.
+GRO can be used on its own, adjust cpumap calls to the
+upper stack to use GRO API instead of netif_receive_skb_list() which
+processes skbs by batches, but doesn't involve GRO layer at all.
+It is most beneficial when a NIC which frame come from is XDP
+generic metadata-enabled, but in plenty of tests GRO performs better
+than listed receiving even given that it has to calculate full frame
+checksums on CPU.
+As GRO passes the skbs to the upper stack in the batches of
+@gro_normal_batch, i.e. 8 by default, and @skb->dev point to the
+device where the frame comes from, it is enough to disable GRO
+netdev feature on it to completely restore the original behaviour:
+untouched frames will be being bulked and passed to the upper stack
+by 8, as it was with netif_receive_skb_list().
 
 Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
 ---
- include/net/gro.h | 18 +++++++++++++++
- net/core/dev.c    | 45 ++++++-------------------------------
- net/core/gro.c    | 57 +++++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 82 insertions(+), 38 deletions(-)
+ kernel/bpf/cpumap.c | 43 ++++++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 38 insertions(+), 5 deletions(-)
 
-diff --git a/include/net/gro.h b/include/net/gro.h
-index 75211ebd8765..539f931e736f 100644
---- a/include/net/gro.h
-+++ b/include/net/gro.h
-@@ -421,6 +421,7 @@ static inline __wsum ip6_gro_compute_pseudo(struct sk_buff *skb, int proto)
+diff --git a/kernel/bpf/cpumap.c b/kernel/bpf/cpumap.c
+index f4860ac756cd..2d0edf8f6a05 100644
+--- a/kernel/bpf/cpumap.c
++++ b/kernel/bpf/cpumap.c
+@@ -29,8 +29,8 @@
+ #include <trace/events/xdp.h>
+ #include <linux/btf_ids.h>
+ 
+-#include <linux/netdevice.h>   /* netif_receive_skb_list */
+-#include <linux/etherdevice.h> /* eth_type_trans */
++#include <linux/netdevice.h>
++#include <net/gro.h>
+ 
+ /* General idea: XDP packets getting XDP redirected to another CPU,
+  * will maximum be stored/queued for one driver ->poll() call.  It is
+@@ -67,6 +67,8 @@ struct bpf_cpu_map_entry {
+ 	struct bpf_cpumap_val value;
+ 	struct bpf_prog *prog;
+ 
++	struct gro_node gro;
++
+ 	atomic_t refcnt; /* Control when this struct can be free'ed */
+ 	struct rcu_head rcu;
+ 
+@@ -162,6 +164,7 @@ static void put_cpu_map_entry(struct bpf_cpu_map_entry *rcpu)
+ 	if (atomic_dec_and_test(&rcpu->refcnt)) {
+ 		if (rcpu->prog)
+ 			bpf_prog_put(rcpu->prog);
++		gro_cleanup(&rcpu->gro);
+ 		/* The queue should be empty at this point */
+ 		__cpu_map_ring_cleanup(rcpu->queue);
+ 		ptr_ring_cleanup(rcpu->queue, NULL);
+@@ -295,6 +298,33 @@ static int cpu_map_bpf_prog_run(struct bpf_cpu_map_entry *rcpu, void **frames,
+ 	return nframes;
  }
  
- int skb_gro_receive(struct sk_buff *p, struct sk_buff *skb);
-+void gro_receive_skb_list(struct gro_node *gro, struct list_head *list);
- void __gro_flush(struct gro_node *gro, bool flush_old);
- 
- static inline void gro_flush(struct gro_node *gro, bool flush_old)
-@@ -458,5 +459,22 @@ static inline void gro_normal_one(struct gro_node *gro, struct sk_buff *skb,
- 		gro_normal_list(gro);
- }
- 
-+static inline void gro_timer_start(struct gro_node *gro, u64 timeout_ns)
++static void cpu_map_gro_flush(struct bpf_cpu_map_entry *rcpu,
++			      struct list_head *list)
 +{
-+	if (!timeout_ns)
-+		return;
++	bool new = !list_empty(list);
 +
-+	hrtimer_start(&gro->timer, ns_to_ktime(timeout_ns),
-+		      HRTIMER_MODE_REL_PINNED);
++	if (likely(new))
++		gro_receive_skb_list(&rcpu->gro, list);
++
++	if (rcpu->gro.bitmask) {
++		bool flush_old = HZ >= 1000;
++
++		/* If the ring is not empty, there'll be a new iteration
++		 * soon, and we only need to do a full flush if a tick is
++		 * long (> 1 ms).
++		 * If the ring is empty, to not hold GRO packets in the
++		 * stack for too long, do a full flush.
++		 * This is equivalent to how NAPI decides whether to perform
++		 * a full flush (by batches of up to 64 frames tho).
++		 */
++		if (__ptr_ring_empty(rcpu->queue))
++			flush_old = false;
++
++		__gro_flush(&rcpu->gro, flush_old);
++	}
++
++	gro_normal_list(&rcpu->gro);
 +}
-+
-+static inline void gro_timer_cancel(struct gro_node *gro)
-+{
-+	hrtimer_cancel(&gro->timer);
-+}
-+
-+void gro_init(struct gro_node *gro,
-+	      enum hrtimer_restart (*timer_cb)(struct hrtimer *timer));
-+void gro_cleanup(struct gro_node *gro);
  
- #endif /* _NET_IPV6_GRO_H */
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 8b334aa974c2..62bf6ee00741 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -5812,9 +5812,8 @@ bool napi_complete_done(struct napi_struct *n, int work_done)
- 		return false;
- 	}
+ static int cpu_map_kthread_run(void *data)
+ {
+@@ -384,7 +414,7 @@ static int cpu_map_kthread_run(void *data)
  
--	if (timeout)
--		hrtimer_start(&n->gro.timer, ns_to_ktime(timeout),
--			      HRTIMER_MODE_REL_PINNED);
-+	gro_timer_start(&n->gro, timeout);
-+
- 	return ret;
- }
- EXPORT_SYMBOL(napi_complete_done);
-@@ -5876,7 +5875,7 @@ static void busy_poll_stop(struct napi_struct *napi, void *have_poll_lock, bool
- 		napi->defer_hard_irqs_count = READ_ONCE(napi->dev->napi_defer_hard_irqs);
- 		timeout = READ_ONCE(napi->dev->gro_flush_timeout);
- 		if (napi->defer_hard_irqs_count && timeout) {
--			hrtimer_start(&napi->gro.timer, ns_to_ktime(timeout), HRTIMER_MODE_REL_PINNED);
-+			gro_timer_start(&napi->gro, timeout);
- 			skip_schedule = true;
+ 			list_add_tail(&skb->list, &list);
  		}
- 	}
-@@ -6025,17 +6024,6 @@ static enum hrtimer_restart napi_watchdog(struct hrtimer *timer)
- 	return HRTIMER_NORESTART;
- }
+-		netif_receive_skb_list(&list);
++		cpu_map_gro_flush(rcpu, &list);
  
--static void init_gro_hash(struct napi_struct *napi)
--{
--	int i;
--
--	for (i = 0; i < GRO_HASH_BUCKETS; i++) {
--		INIT_LIST_HEAD(&napi->gro.hash[i].list);
--		napi->gro.hash[i].count = 0;
--	}
--	napi->gro.bitmask = 0;
--}
--
- int dev_set_threaded(struct net_device *dev, bool threaded)
- {
- 	struct napi_struct *napi;
-@@ -6105,12 +6093,8 @@ void netif_napi_add_weight(struct net_device *dev, struct napi_struct *napi,
+ 		/* Feedback loop via tracepoint */
+ 		trace_xdp_cpumap_kthread(rcpu->map_id, n, kmem_alloc_drops,
+@@ -460,8 +490,10 @@ __cpu_map_entry_alloc(struct bpf_map *map, struct bpf_cpumap_val *value,
+ 	rcpu->map_id = map->id;
+ 	rcpu->value.qsize  = value->qsize;
  
- 	INIT_LIST_HEAD(&napi->poll_list);
- 	INIT_HLIST_NODE(&napi->napi_hash_node);
--	hrtimer_init(&napi->gro.timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL_PINNED);
--	napi->gro.timer.function = napi_watchdog;
--	init_gro_hash(napi);
-+	gro_init(&napi->gro, napi_watchdog);
- 	napi->skb = NULL;
--	INIT_LIST_HEAD(&napi->gro.rx_list);
--	napi->gro.rx_count = 0;
- 	napi->poll = poll;
- 	if (weight > NAPI_POLL_WEIGHT)
- 		netdev_err_once(dev, "%s() called with weight %d\n", __func__,
-@@ -6155,8 +6139,7 @@ void napi_disable(struct napi_struct *n)
- 			break;
- 	}
++	gro_init(&rcpu->gro, NULL);
++
+ 	if (fd > 0 && __cpu_map_load_bpf_program(rcpu, map, fd))
+-		goto free_ptr_ring;
++		goto free_gro;
  
--	hrtimer_cancel(&n->gro.timer);
--
-+	gro_timer_cancel(&n->gro);
- 	clear_bit(NAPI_STATE_DISABLE, &n->state);
- }
- EXPORT_SYMBOL(napi_disable);
-@@ -6183,19 +6166,6 @@ void napi_enable(struct napi_struct *n)
- }
- EXPORT_SYMBOL(napi_enable);
- 
--static void flush_gro_hash(struct napi_struct *napi)
--{
--	int i;
--
--	for (i = 0; i < GRO_HASH_BUCKETS; i++) {
--		struct sk_buff *skb, *n;
--
--		list_for_each_entry_safe(skb, n, &napi->gro.hash[i].list, list)
--			kfree_skb(skb);
--		napi->gro.hash[i].count = 0;
--	}
--}
--
- /* Must be called in process context */
- void __netif_napi_del(struct napi_struct *napi)
- {
-@@ -6206,8 +6176,7 @@ void __netif_napi_del(struct napi_struct *napi)
- 	list_del_rcu(&napi->dev_list);
- 	napi_free_frags(napi);
- 
--	flush_gro_hash(napi);
--	napi->gro.bitmask = 0;
-+	gro_cleanup(&napi->gro);
- 
- 	if (napi->thread) {
- 		kthread_stop(napi->thread);
-@@ -10627,7 +10596,7 @@ static int __init net_dev_init(void)
- 		INIT_CSD(&sd->defer_csd, trigger_rx_softirq, sd);
- 		spin_lock_init(&sd->defer_lock);
- 
--		init_gro_hash(&sd->backlog);
-+		gro_init(&sd->backlog.gro, NULL);
- 		sd->backlog.poll = process_backlog;
- 		sd->backlog.weight = weight_p;
- 	}
-diff --git a/net/core/gro.c b/net/core/gro.c
-index 67fd587a87c9..424c812abe79 100644
---- a/net/core/gro.c
-+++ b/net/core/gro.c
-@@ -624,6 +624,18 @@ static gro_result_t gro_skb_finish(struct gro_node *gro, struct sk_buff *skb,
- 	return ret;
- }
- 
-+void gro_receive_skb_list(struct gro_node *gro, struct list_head *list)
-+{
-+	struct sk_buff *skb, *tmp;
-+
-+	list_for_each_entry_safe(skb, tmp, list, list) {
-+		skb_list_del_init(skb);
-+
-+		skb_gro_reset_offset(skb, 0);
-+		gro_skb_finish(gro, skb, dev_gro_receive(gro, skb));
-+	}
-+}
-+
- gro_result_t napi_gro_receive(struct napi_struct *napi, struct sk_buff *skb)
- {
- 	struct gro_node *gro = &napi->gro;
-@@ -792,3 +804,48 @@ __sum16 __skb_gro_checksum_complete(struct sk_buff *skb)
- 	return sum;
- }
- EXPORT_SYMBOL(__skb_gro_checksum_complete);
-+
-+void gro_init(struct gro_node *gro,
-+	      enum hrtimer_restart (*timer_cb)(struct hrtimer *))
-+{
-+	u32 i;
-+
-+	for (i = 0; i < GRO_HASH_BUCKETS; i++) {
-+		INIT_LIST_HEAD(&gro->hash[i].list);
-+		gro->hash[i].count = 0;
-+	}
-+
-+	gro->bitmask = 0;
-+
-+	INIT_LIST_HEAD(&gro->rx_list);
-+	gro->rx_count = 0;
-+
-+	if (!timer_cb)
-+		return;
-+
-+	hrtimer_init(&gro->timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL_PINNED);
-+	gro->timer.function = timer_cb;
-+}
-+
-+void gro_cleanup(struct gro_node *gro)
-+{
-+	struct sk_buff *skb, *n;
-+	u32 i;
-+
-+	gro_timer_cancel(gro);
-+	memset(&gro->timer, 0, sizeof(gro->timer));
-+
-+	for (i = 0; i < GRO_HASH_BUCKETS; i++) {
-+		list_for_each_entry_safe(skb, n, &gro->hash[i].list, list)
-+			kfree_skb(skb);
-+
-+		gro->hash[i].count = 0;
-+	}
-+
-+	gro->bitmask = 0;
-+
-+	list_for_each_entry_safe(skb, n, &gro->rx_list, list)
-+		kfree_skb(skb);
-+
-+	gro->rx_count = 0;
-+}
+ 	/* Setup kthread */
+ 	rcpu->kthread = kthread_create_on_node(cpu_map_kthread_run, rcpu, numa,
+@@ -482,7 +514,8 @@ __cpu_map_entry_alloc(struct bpf_map *map, struct bpf_cpumap_val *value,
+ free_prog:
+ 	if (rcpu->prog)
+ 		bpf_prog_put(rcpu->prog);
+-free_ptr_ring:
++free_gro:
++	gro_cleanup(&rcpu->gro);
+ 	ptr_ring_cleanup(rcpu->queue, NULL);
+ free_queue:
+ 	kfree(rcpu->queue);
 -- 
 2.36.1
 
