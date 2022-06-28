@@ -2,67 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CE8DD55C55C
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 14:51:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 99EDE55D500
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:14:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244725AbiF1HE5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 03:04:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41906 "EHLO
+        id S1343875AbiF1HHB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 03:07:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343708AbiF1HEo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 03:04:44 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7CCF27173
-        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 00:04:14 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id ej4so16166159edb.7
-        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 00:04:14 -0700 (PDT)
+        with ESMTP id S1343870AbiF1HGs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 03:06:48 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAA8E60DA
+        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 00:06:46 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id q6so23684612eji.13
+        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 00:06:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20210112.gappssmtp.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=eDn3dht2/D+ZQK9SSTRuAZZR+21qC04HtRN/aXKLPBM=;
-        b=OJwXas1bZEVv5wg16DYhRFrQqVbnBgUqw2zd4YMj0yK6e71mD/2zBEui5elyAbNzcS
-         1T8bvdritJIGBOe2+9U3M0nNgo0q3mX7y22PdnIgifiEPym7/h9mXfL+9Uf3MeWgcjIP
-         PlVfZmp+/qZa4XtNbyKj0KuTb6NHIpI0xIGTFpzcuziIBpRfASQZBR15SGNo4sTe3ZNh
-         oiu8qs4/a7rooTYTTl7CI07ZhtH4e/OZX/7i+aAsfUipF49qgoo3wqH7g2VUgKJWPiqV
-         aGiD1guDjZYzmBJtAhb/JPDSvG6NoXEbWGCVoBGkHgHn8zjbw5GwT77010rQ9vFgI3Km
-         ZZvQ==
+        bh=6v63Di1vZL+ZIKrUzYH79iK4RHj+x0z/lnmYN2sHosE=;
+        b=bGrrAtsm23nQy7f4Gsya34S1vn3HXpRZkiPRfGgDpuzqOBQpUEvKkHSSpQhUM/mMkb
+         kx/EGumeacRTdaVYEC0XSr4jOIpk5AOJ00RylgWTBFZP3aE3UEgpPQnHGWhYdLe+l+Nv
+         a7jbTil3SsDrSjrwqdZ+IPuCKV95cibDBqFVHuzXyBMPZGSImXoCYbQ3+tGgNYWvNJAW
+         uedLHVlOrFn02fg5BNH/xUsdT7KpHzJd5ftkS8wLxXzGjla9RchxCEBv6PYsR8iV4xsR
+         mLgfRlpe3aL5gKZRc1hPgtym78ACTGk5h9NnmSYLRUd7D7WgDPrA76OJyAopmcpPoJIW
+         /BwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=eDn3dht2/D+ZQK9SSTRuAZZR+21qC04HtRN/aXKLPBM=;
-        b=6jFQWLHrHOKKg16lcGFG1Qeg90Hz++WmbBlS1VrFen9JdTBHIwZWPya7g6N1XsCeMi
-         LTTf0eGIZ6/+U7YeCgqKjh+R8s4TSZjnEotL/9bbiVSDx3fx2hYKkgCHmgNE4m4x21nY
-         TdcupH5vByUouweoNzxdd/WIh9dO6XrP58Oq521MbraAHjwI0HAohYGYWgsUDpFl4prG
-         PAU41I2qr+Lsh7WU30QmMBYvt3ZxjWlOKumoM70KHKUEdNCPy/wlDz3Ia7jQ/At1UdIw
-         JxyWrwiW4LAnqIeBZZwPO/jMGcnOKpX2PFFH5gnAhivJETpgdmP3g1Km1gb7HHsz+1W8
-         /F8A==
-X-Gm-Message-State: AJIora+wrhve8yjFEuklYzNKARynzSrOWT0R8nCWPjNPmDTLlKh5Zu3C
-        laxMehYWVmJ+xmPWj7t3tuUX9aGmhsnWj/hBnHE=
-X-Google-Smtp-Source: AGRyM1t3C6yL9JxUwVEQaI3LvFof0o/TjdZ+vODzr8SDaBxHrG9Yq76c3QCdrKBsBfP8P74dVuuzjQ==
-X-Received: by 2002:a05:6402:1f14:b0:435:97f3:640 with SMTP id b20-20020a0564021f1400b0043597f30640mr20673700edb.169.1656399853283;
-        Tue, 28 Jun 2022 00:04:13 -0700 (PDT)
+        bh=6v63Di1vZL+ZIKrUzYH79iK4RHj+x0z/lnmYN2sHosE=;
+        b=qE0+IbabYqlzdZYa5oVErqgs3EfQSmPIZgiOHlJda8P6MhbenhrNXdJhEjld1DdQ93
+         McRI7c5uyImB5CvObp1zdGE8jVkKusHz1cCaVZsQuw53Ih9HZjO3VYHHaN2JT0zNJS8W
+         pKp8Jrzxl7e+Vq5adlCZWe20jEmyvK7BlSLiSmWkZqAo1zThq6hP4BF32VA7Xh2c6CtN
+         emRbyYFHx5N2ah2OjSPEx8S7vvOVfxfYkSoMjtnv2TcmcD+yTsD7bwy8iu0cKz1tyoA8
+         wN4UJT28HHcMkHuPQiZknuyMYYEtugG+1c+ov9WZ0Pvyh+UY4n4M77HOymAjjqv1/vUN
+         mH2A==
+X-Gm-Message-State: AJIora+jpM76PCTcHnNO6z0DxCU6Q7Vq2b+TbDnZhdy3WKm8wfVq3sGN
+        rB5SR2s+cQiigMmv0QqXLcn9eA==
+X-Google-Smtp-Source: AGRyM1t8DW7M5/JpgnskduM3+hvwZaNIDRXrehWFJkigZmd61np6j2UNvItI1f8i731y0aMw2jmDFw==
+X-Received: by 2002:a17:906:99c5:b0:6fe:b069:4ab6 with SMTP id s5-20020a17090699c500b006feb0694ab6mr16705560ejn.436.1656400005362;
+        Tue, 28 Jun 2022 00:06:45 -0700 (PDT)
 Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id au8-20020a170907092800b00722e19fec6dsm6009203ejc.156.2022.06.28.00.04.12
+        by smtp.gmail.com with ESMTPSA id p27-20020a1709060ddb00b00722e559ee66sm5902478eji.62.2022.06.28.00.06.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jun 2022 00:04:12 -0700 (PDT)
-Date:   Tue, 28 Jun 2022 09:04:11 +0200
+        Tue, 28 Jun 2022 00:06:44 -0700 (PDT)
+Date:   Tue, 28 Jun 2022 09:06:43 +0200
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Ido Schimmel <idosch@nvidia.com>, netdev@vger.kernel.org,
+Cc:     Shannon Nelson <snelson@pensando.io>,
+        Ido Schimmel <idosch@nvidia.com>, netdev@vger.kernel.org,
         davem@davemloft.net, petrm@nvidia.com, pabeni@redhat.com,
-        edumazet@google.com, mlxsw@nvidia.com, saeedm@nvidia.com
-Subject: Re: [patch net-next RFC 0/2] net: devlink: remove devlink big lock
-Message-ID: <Yrqn6zM/kYVpc+Cg@nanopsycho>
-References: <20220627135501.713980-1-jiri@resnulli.us>
- <YrnPqzKexfgNVC10@shredder>
- <20220627104945.5d8337a5@kernel.org>
- <YrqgkKxHReC6evao@nanopsycho>
+        edumazet@google.com, mlxsw@nvidia.com
+Subject: Re: [patch net-next 00/11] mlxsw: Implement dev info and dev flash
+ for line cards
+Message-ID: <Yrqogz8U+BxtFWiu@nanopsycho>
+References: <20220614123326.69745-1-jiri@resnulli.us>
+ <Yqmiv2+C1AXa6BY3@shredder>
+ <YqoZkqwBPoX5lGrR@nanopsycho>
+ <fbaca11c-c706-b993-fa0d-ec7a1ba34203@pensando.io>
+ <Yrltpz0wXW35xmgd@nanopsycho>
+ <ccd0e04c-5241-16da-929f-18059caee428@pensando.io>
+ <20220627115209.35b699d9@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YrqgkKxHReC6evao@nanopsycho>
+In-Reply-To: <20220627115209.35b699d9@kernel.org>
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
@@ -72,55 +77,24 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, Jun 28, 2022 at 08:32:49AM CEST, jiri@resnulli.us wrote:
->Mon, Jun 27, 2022 at 07:49:45PM CEST, kuba@kernel.org wrote:
->>On Mon, 27 Jun 2022 18:41:31 +0300 Ido Schimmel wrote:
->>> On Mon, Jun 27, 2022 at 03:54:59PM +0200, Jiri Pirko wrote:
->>> > This is an attempt to remove use of devlink_mutex. This is a global lock
->>> > taken for every user command. That causes that long operations performed
->>> > on one devlink instance (like flash update) are blocking other
->>> > operations on different instances.  
->>> 
->>> This patchset is supposed to prevent one devlink instance from blocking
->>> another? Devlink does not enable "parallel_ops", which means that the
->>> generic netlink mutex is serializing all user space operations. AFAICT,
->>> this series does not enable "parallel_ops", so I'm not sure what
->>> difference the removal of the devlink mutex makes.
->>> 
->>> The devlink mutex (in accordance with the comment above it) serializes
->>> all user space operations and accesses to the devlink devices list. This
->>> resulted in a AA deadlock in the previous submission because we had a
->>> flow where a user space operation (which acquires this mutex) also tries
->>> to register / unregister a nested devlink instance which also tries to
->>> acquire the mutex.
->>> 
->>> As long as devlink does not implement "parallel_ops", it seems that the
->>> devlink mutex can be reduced to only serializing accesses to the devlink
->>> devices list, thereby eliminating the deadlock.
->>
->>I'm unclear on why we can't wait for mlx5 locking rework which will
+Mon, Jun 27, 2022 at 08:52:09PM CEST, kuba@kernel.org wrote:
+>On Mon, 27 Jun 2022 11:38:50 -0700 Shannon Nelson wrote:
+>> >> Can you encode the base device's PCI info into the auxiliary device's id  
+>> > 
+>> > Would look odd to he PCI BDF in auxdev addsess, wouldn't it?  
+>> 
+>> Sure, it looks a little odd to see something like mycore.app.1281, but 
+>> it does afford the auxiliary driver, and any other observer, a way to 
+>> figure out which device it is representing.  This also works nicely when 
+>> trying to associate an auxiliary driver instance for a VF with the 
+>> matching VF PCI driver instance.
 >
->Sure we can, no rush.
->
->>allow us to move completely to per-instance locks. Do you have extra
->>insights into how that work is progressing? I was hoping that it will
->
->It's under internal review afaik.
->
->>be complete in the next two months. 
->
->What do you mean exactly? Is that that we would be okay just with
->devlink->lock? I don't think so. We need user lock because we can't take
->devlink->lock for port split and reload. devlink_mutex protects that now,
+>I'd personally not mind divorcing devlink from bus devices a little
+>more. On one hand we have cases like this where there's naturally no
 
-Okay, I take back port split, that is already fixed.
-Moshe is taking care of the reset (port_new/del, reporter_*). I will
-check out the reload. One we have that, you are correct, we are fine
-with devlink->lock instance lock.
-
-Thanks!
+How exactly do you envision to do this? There is a good reason to have
+the handle based on bus/name, as it is constant and predictable.
 
 
->the devlink->cmd_lock I'm introducing here just replaces devlink_mutex.
->If we can do without, that is fine. I just can't see how.
->Also, I don't see the relation to mlx5 work. What is that?
+>bus device, on the other we have multi-link PCI devices which want to
+>straddle NUMA nodes but otherwise are just a logical unit.
