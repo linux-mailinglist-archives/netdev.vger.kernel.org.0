@@ -2,123 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B10355C7E8
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 14:54:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CFC455DA03
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:22:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241834AbiF1Ibh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 04:31:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54024 "EHLO
+        id S237786AbiF1Ipn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 04:45:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235548AbiF1Ibe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 04:31:34 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E72926542;
-        Tue, 28 Jun 2022 01:31:32 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 82C1E1FE28;
-        Tue, 28 Jun 2022 08:31:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1656405091; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=j25UoOm2dE6A3ykiJ0v4lsMTEc9lp0qSV4lsagNUBdI=;
-        b=X6TAIic0X5iXMa87ccIOYXvkZAj7XlX3qEW0wMzZWwfrZEV+ihsbZNOxT16O5sXb5iOb4h
-        uMkyNxdgny0ipq9rOqNoNhEoaFdFpuTTe3+Q2LLDxUl/uUjWVpcY7Kv0F40OrIOoQVrtem
-        LBevGnYCa1yr4yb215w/UTokX6m9L5c=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 4AAF913ACA;
-        Tue, 28 Jun 2022 08:31:31 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id K12LEGO8umKUMAAAMHmgww
-        (envelope-from <oneukum@suse.com>); Tue, 28 Jun 2022 08:31:31 +0000
-From:   Oliver Neukum <oneukum@suse.com>
-To:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
-        linux-usb@vger.kernel.org
-Cc:     Oliver Neukum <oneukum@suse.com>
-Subject: [PATCHv2] usbnet: fix memory leak in error case
-Date:   Tue, 28 Jun 2022 10:31:28 +0200
-Message-Id: <20220628083128.28472-1-oneukum@suse.com>
-X-Mailer: git-send-email 2.35.3
+        with ESMTP id S245489AbiF1Ipk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 04:45:40 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2D55C48
+        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 01:45:11 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1o66qI-0002yY-8s; Tue, 28 Jun 2022 10:45:06 +0200
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1o66qG-0000Bz-Ok; Tue, 28 Jun 2022 10:45:04 +0200
+Date:   Tue, 28 Jun 2022 10:45:04 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Lukas Wunner <lukas@wunner.de>, kernel@pengutronix.de,
+        Paolo Abeni <pabeni@redhat.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH net-next v1 2/3] net: dsa: ar9331: add support for pause
+ stats
+Message-ID: <20220628084504.GA31626@pengutronix.de>
+References: <20220624125902.4068436-1-o.rempel@pengutronix.de>
+ <20220624125902.4068436-2-o.rempel@pengutronix.de>
+ <20220624220317.ckhx6z7cmzegvoqi@skbuf>
+ <20220626171008.GA7581@pengutronix.de>
+ <20220627091521.3b80a4e8@kernel.org>
+ <20220627200238.en2b5zij4sakau2t@skbuf>
+ <20220627200959.683de11b@kernel.org>
+ <YrqsTY0uUy4AwKHN@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <YrqsTY0uUy4AwKHN@lunn.ch>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-usbnet_write_cmd_async() mixed up which buffers
-need to be freed in which error case.
+On Tue, Jun 28, 2022 at 09:22:53AM +0200, Andrew Lunn wrote:
+> > Yeah, the corrections are always iffy. I understand the doubts, and we
+> > can probably leave things "under-specified" until someone with a strong
+> > preference comes along. But I hope that the virt example makes it clear
+> > that neither of the choices is better (SR-IOV NICs would have to start
+> > adding the pause if we declare rtnl stats as inclusive).
+> > 
+> > I can see advantages to both counting (they are packets) and not
+> > counting those frames (Linux doesn't see them, they get "invented" 
+> > by HW).
+> > 
+> > Stats are hard.
+> 
+> I doubt we can define it either way. I once submitted a patch for one
+> driver to make it ignore CRC bytes. It then gave the exact same counts
+> as another hardware i was using, making the testing i was doing
+> simpler.
+> 
+> The patch got rejected simply because we have both, with CRC and
+> without CRC, neither is correct, neither is wrong.
+> 
+> So i would keep it KISS, pause frames can be included, but i would not
+> go to extra effort to include them, or to exclude them.
 
-v2: add Fixes tag
+After I started investigating this topic, I was really frustrated. It is
+has hard to find what is wrong: my patch is not working and flow
+controller is not triggered? Or every HW/driver implements counters in
+some own way. Same is about byte counts: for same packet with different
+NICs i have at least 3 different results: 50, 64 and 68.
+It makes testing and validation a nightmare. 
 
-Fixes: 877bd862f32b8 ("usbnet: introduce usbnet 3 command helpers")
-Signed-off-by: Oliver Neukum <oneukum@suse.com>
----
- drivers/net/usb/usbnet.c | 19 +++++++++++++------
- 1 file changed, 13 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/net/usb/usbnet.c b/drivers/net/usb/usbnet.c
-index 1cb6dab3e2d0..c66d2a097b0c 100644
---- a/drivers/net/usb/usbnet.c
-+++ b/drivers/net/usb/usbnet.c
-@@ -2137,10 +2137,10 @@ static void usbnet_async_cmd_cb(struct urb *urb)
- int usbnet_write_cmd_async(struct usbnet *dev, u8 cmd, u8 reqtype,
- 			   u16 value, u16 index, const void *data, u16 size)
- {
--	struct usb_ctrlrequest *req = NULL;
-+	struct usb_ctrlrequest *req;
- 	struct urb *urb;
- 	int err = -ENOMEM;
--	void *buf = NULL;
-+	void *buf;
- 
- 	netdev_dbg(dev->net, "usbnet_write_cmd cmd=0x%02x reqtype=%02x"
- 		   " value=0x%04x index=0x%04x size=%d\n",
-@@ -2155,7 +2155,7 @@ int usbnet_write_cmd_async(struct usbnet *dev, u8 cmd, u8 reqtype,
- 		if (!buf) {
- 			netdev_err(dev->net, "Error allocating buffer"
- 				   " in %s!\n", __func__);
--			goto fail_free;
-+			goto fail_free_urb;
- 		}
- 	}
- 
-@@ -2179,14 +2179,21 @@ int usbnet_write_cmd_async(struct usbnet *dev, u8 cmd, u8 reqtype,
- 	if (err < 0) {
- 		netdev_err(dev->net, "Error submitting the control"
- 			   " message: status=%d\n", err);
--		goto fail_free;
-+		goto fail_free_all;
- 	}
- 	return 0;
- 
-+fail_free_all:
-+	kfree(req);
- fail_free_buf:
- 	kfree(buf);
--fail_free:
--	kfree(req);
-+	/*
-+	 * avoid a double free
-+	 * needed because the flag can be set only
-+	 * after filling the URB
-+	 */
-+	urb->transfer_flags = 0;
-+fail_free_urb:
- 	usb_free_urb(urb);
- fail:
- 	return err;
+Regards,
+Oleksij
 -- 
-2.35.3
-
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
