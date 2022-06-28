@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 81FB355ED3D
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 21:01:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DD2955ED3F
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 21:01:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233131AbiF1TBD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 15:01:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55760 "EHLO
+        id S234957AbiF1TBH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 15:01:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234292AbiF1TA0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 15:00:26 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD66A1834A;
-        Tue, 28 Jun 2022 12:00:08 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id ay16so27701169ejb.6;
-        Tue, 28 Jun 2022 12:00:08 -0700 (PDT)
+        with ESMTP id S233544AbiF1TA2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 15:00:28 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE90418B28;
+        Tue, 28 Jun 2022 12:00:10 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id lw20so27726288ejb.4;
+        Tue, 28 Jun 2022 12:00:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=/eliap5e56eSK1XJIKpFjzJdFDnEAAzOxoC0xRFCg9s=;
-        b=ng4a/WkkirDrg9xLd+5D0FaZK/PEUwa33PoIhHvBn2h1I8ghHCvnimUGG1oOJZUR4l
-         xetU9D0YQTf+cVE+EtsawtUwI4CV5EZRmNc6A4qTr7w1XshqqHtt1lpSJ6v+W1AnyuvJ
-         wrGeb0o1+AvtKS06LvUXGS+IHTigEZMUs3di5eZm0/8mPNjAUpAoP0ljXkxvRWX5Yr3u
-         pz7Qn5AWkkHDLBblr/lRPKobznku2l5hYyFWsd893Wuxiv9L5VAGzOzZkzziJ3PFaE9Q
-         yhXtWwy23hNTr3i5zj9i/qQPc8U7X4Z2hc48KVmbuHF4QJ1Wh0cASOony3t3Przt5F4O
-         QGew==
+        bh=UONJeK+9EHyQ+C5KYc2Q0yOxdhk4aZ1zarcHPxbpVEY=;
+        b=FjK/M13ETjiXIqAKhIdhfR2WpMeaoovAIhcP2sJfYOENz6mOGZrIdO8aH75lI/KPt/
+         Bw6w/brAwILJ5A1STFGloCjay/dkeIX8LVUoVsiv1DPDXuVLNMJ6tnnoY2yqfVjgmkUJ
+         RJu9ettGHpJJRqrpuhvHkFgzuXHD9uH2jS/FRM2xYgm5XuWFgHwCLjllPdIhcWLj0bTA
+         53DWfk2ytIDL1j1WXZ2XNtjRv+kaU0dYAFMjMvdSEDjQx+4VrzfVxgdx5IDiYUuA47so
+         Nflx+Xnrx98AqgZRKw3crBq9oXycoJhapIZXVBZjS7zQ/yeqi+XCw4gaNNJBwtDNuuyd
+         ksTw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=/eliap5e56eSK1XJIKpFjzJdFDnEAAzOxoC0xRFCg9s=;
-        b=rNIY019Uo5631Ua869nPLgr8gtWD8Xomk6tUDjryYfNuUs/x+HNgGSwRw5W9wb1Gm8
-         fYwYL8iemygGQ0HYNfuR0xYe7FNS6D9ZN2FAEy24koaNqZWGdv+hFIYcJ7dLOL46SrDq
-         5OX1iUpq+tHlptwrF1owdICxNUgoDZZvDqoAB6SoRv/aVd/Q7dNrfHOg8Oq35R54DsJX
-         9hL6wgNfJ7CgwcAeHreNkZ4VPXJ2wGksP8R55q3zXb0beDzW9rd4+YX+esOroFQQQSfQ
-         83DmqxWzpcqrdrFaah23e4a2ln/auW6HiHRI57rbHOW9zoHs13dutKnm80qY5Phl+u7a
-         dKIA==
-X-Gm-Message-State: AJIora8LXD2d4ZGYaogJtW/ta223PbiL6pKYKOWIebFDhTJMqYd4LSl6
-        Bsj0D6imHxWTDb7X3J0HRmiXFreH2pDRyQ==
-X-Google-Smtp-Source: AGRyM1ubd9IfdC3EMIb/uwZNW9iUepQ2Li08wZlSCpq5YyIseEz2RCZKI13ZzMvXzuq46t9Rr+V7rg==
-X-Received: by 2002:a17:907:6ea3:b0:726:ca39:5d98 with SMTP id sh35-20020a1709076ea300b00726ca395d98mr5385796ejc.400.1656442808005;
-        Tue, 28 Jun 2022 12:00:08 -0700 (PDT)
+        bh=UONJeK+9EHyQ+C5KYc2Q0yOxdhk4aZ1zarcHPxbpVEY=;
+        b=56+0NVYO+oV4DNIk609mZ/gb7cAqvPR3DEqu0S7OoOQGwYMwqSJPPC8ITw0MPF/Bt+
+         OBR5uOHsCSJp2NXfkYcj65CxVq+9sPUx+lurfGkWI/lWykosusC9HUwTQ8G3pMf/9UuM
+         +7Vh0HiSUPwnDFhaOVdT8w6EhFioG9ChXDFnoSnZ4qjYaLT5oBwUBH76/ziQaKbkx7wV
+         eLuwm6f6ViohaR7KCf05uxTqDIPmdAX/aKnTVhzshJiYp569bgAsPfz+r/HUpaay7nAC
+         1iPSXL1bhHpKH6upNKHZxd68/STCcDDiyiC6jjwHuptC9XgMEC43k7lUoW+jex0WimLV
+         qmvQ==
+X-Gm-Message-State: AJIora+vFrM4zFYWLKn3cYZDoWloWNarxxL/lr1rDOHSV3Y8snf82Px6
+        UW/IH9Mu3G19783COhiMgiPIc9wAAqO3Pw==
+X-Google-Smtp-Source: AGRyM1sqoPxWmG3jBD+RHQNAsgIEpV0+nyh4rKhc8jV5q3gGuiC0v43l5+foAmsZFEKZB9WiRCqV2Q==
+X-Received: by 2002:a17:907:1c01:b0:6f4:2692:e23 with SMTP id nc1-20020a1709071c0100b006f426920e23mr18883015ejc.243.1656442809225;
+        Tue, 28 Jun 2022 12:00:09 -0700 (PDT)
 Received: from 127.0.0.1localhost (188.28.125.106.threembb.co.uk. [188.28.125.106])
-        by smtp.gmail.com with ESMTPSA id t21-20020a05640203d500b0043573c59ea0sm9758451edw.90.2022.06.28.12.00.07
+        by smtp.gmail.com with ESMTPSA id t21-20020a05640203d500b0043573c59ea0sm9758451edw.90.2022.06.28.12.00.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jun 2022 12:00:07 -0700 (PDT)
+        Tue, 28 Jun 2022 12:00:08 -0700 (PDT)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     io-uring@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
@@ -56,9 +56,9 @@ Cc:     "David S . Miller" <davem@davemloft.net>,
         Willem de Bruijn <willemb@google.com>,
         Jens Axboe <axboe@kernel.dk>, kernel-team@fb.com,
         Pavel Begunkov <asml.silence@gmail.com>
-Subject: [RFC net-next v3 13/29] net: let callers provide extra ubuf_info refs
-Date:   Tue, 28 Jun 2022 19:56:35 +0100
-Message-Id: <c08a379e615cd9d9fd7a606438cee90a4aece0b6.1653992701.git.asml.silence@gmail.com>
+Subject: [RFC net-next v3 14/29] io_uring: opcode independent fixed buf import
+Date:   Tue, 28 Jun 2022 19:56:36 +0100
+Message-Id: <b72ba1d67363445c1b660cb166713f68468f09a2.1653992701.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1653992701.git.asml.silence@gmail.com>
 References: <cover.1653992701.git.asml.silence@gmail.com>
@@ -74,62 +74,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Subsystems providing external ubufs to the net layer, i.e. ->msg_ubuf,
-might have a better way to refcount it. For instance, io_uring can
-ammortise ref allocation.
-
-Add a way to pass one extra ref to ->msg_ubuf into the network stack by
-setting struct msghdr::msg_ubuf_ref bit. Whoever consumes the ref should
-clear the flat. If not consumed, it's the responsibility of the caller
-to put it. Make __ip{,6}_append_data() to use it.
+Extract an opcode independent helper from io_import_fixed for
+initialising an iov_iter with a fixed buffer.
 
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 ---
- include/linux/socket.h | 1 +
- net/ipv4/ip_output.c   | 3 +++
- net/ipv6/ip6_output.c  | 3 +++
- 3 files changed, 7 insertions(+)
+ fs/io_uring.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/include/linux/socket.h b/include/linux/socket.h
-index ba84ee614d5a..ae869dee82de 100644
---- a/include/linux/socket.h
-+++ b/include/linux/socket.h
-@@ -72,6 +72,7 @@ struct msghdr {
- 	 * to be non-NULL.
- 	 */
- 	bool		msg_managed_data : 1;
-+	bool		msg_ubuf_ref : 1;
- 	unsigned int	msg_flags;	/* flags on received message */
- 	__kernel_size_t	msg_controllen;	/* ancillary data buffer length */
- 	struct kiocb	*msg_iocb;	/* ptr to iocb for async requests */
-diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
-index 3fd1bf675598..d73ec0a73bd2 100644
---- a/net/ipv4/ip_output.c
-+++ b/net/ipv4/ip_output.c
-@@ -1032,6 +1032,9 @@ static int __ip_append_data(struct sock *sk,
- 				paged = true;
- 				zc = true;
- 				uarg = msg->msg_ubuf;
-+				/* we might've been given a free ref */
-+				extra_uref = msg->msg_ubuf_ref;
-+				msg->msg_ubuf_ref = false;
- 			}
- 		} else if (sock_flag(sk, SOCK_ZEROCOPY)) {
- 			uarg = msg_zerocopy_realloc(sk, length, skb_zcopy(skb));
-diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index f4138ce6eda3..90bbaab21dbc 100644
---- a/net/ipv6/ip6_output.c
-+++ b/net/ipv6/ip6_output.c
-@@ -1557,6 +1557,9 @@ static int __ip6_append_data(struct sock *sk,
- 				paged = true;
- 				zc = true;
- 				uarg = msg->msg_ubuf;
-+				/* we might've been given a free ref */
-+				extra_uref = msg->msg_ubuf_ref;
-+				msg->msg_ubuf_ref = false;
- 			}
- 		} else if (sock_flag(sk, SOCK_ZEROCOPY)) {
- 			uarg = msg_zerocopy_realloc(sk, length, skb_zcopy(skb));
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index 6a57a5ae18fb..e47629adf3f7 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -3728,11 +3728,11 @@ static void kiocb_done(struct io_kiocb *req, ssize_t ret,
+ 	}
+ }
+ 
+-static int __io_import_fixed(struct io_kiocb *req, int rw, struct iov_iter *iter,
+-			     struct io_mapped_ubuf *imu)
++static int __io_import_fixed(int rw, struct iov_iter *iter,
++			     struct io_mapped_ubuf *imu,
++			     u64 buf_addr, size_t len)
+ {
+-	size_t len = req->rw.len;
+-	u64 buf_end, buf_addr = req->rw.addr;
++	u64 buf_end;
+ 	size_t offset;
+ 
+ 	if (unlikely(check_add_overflow(buf_addr, (u64)len, &buf_end)))
+@@ -3802,7 +3802,7 @@ static int io_import_fixed(struct io_kiocb *req, int rw, struct iov_iter *iter,
+ 		imu = READ_ONCE(ctx->user_bufs[index]);
+ 		req->imu = imu;
+ 	}
+-	return __io_import_fixed(req, rw, iter, imu);
++	return __io_import_fixed(rw, iter, imu, req->rw.addr, req->rw.len);
+ }
+ 
+ static int io_buffer_add_list(struct io_ring_ctx *ctx,
 -- 
 2.36.1
 
