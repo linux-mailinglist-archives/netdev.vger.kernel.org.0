@@ -2,151 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6362E55E94D
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 18:41:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8206655E93F
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 18:41:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347121AbiF1OAd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 10:00:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40220 "EHLO
+        id S1347127AbiF1OAo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 10:00:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346506AbiF1OAc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 10:00:32 -0400
-Received: from sym2.noone.org (sym.noone.org [178.63.92.236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54ABE369D4;
-        Tue, 28 Jun 2022 07:00:30 -0700 (PDT)
-Received: by sym2.noone.org (Postfix, from userid 1002)
-        id 4LXR7Z2Gb9zvjfm; Tue, 28 Jun 2022 16:00:26 +0200 (CEST)
-Date:   Tue, 28 Jun 2022 16:00:26 +0200
-From:   Tobias Klauser <tklauser@distanz.ch>
-To:     Saravana Kannan <saravanak@google.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Al Cooper <alcooperx@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Vineet Gupta <vgupta@kernel.org>,
-        Richard Genoud <richard.genoud@gmail.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Alexander Shiyan <shc_work@mail.ru>,
-        Baruch Siach <baruch@tkos.co.il>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Karol Gugala <kgugala@antmicro.com>,
-        Mateusz Holenko <mholenko@antmicro.com>,
-        Gabriel Somlo <gsomlo@gmail.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Taichi Sugaya <sugaya.taichi@socionext.com>,
-        Takao Orito <orito.takao@socionext.com>,
-        Liviu Dudau <liviu.dudau@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Pali Rohar <pali@kernel.org>,
-        Andreas Farber <afaerber@suse.de>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Laxman Dewangan <ldewangan@nvidia.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Patrice Chotard <patrice.chotard@foss.st.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hammer Hsieh <hammerh0314@gmail.com>,
-        Peter Korsgaard <jacmet@sunsite.dk>,
-        Timur Tabi <timur@kernel.org>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Rob Herring <robh@kernel.org>,
-        sascha hauer <sha@pengutronix.de>, peng fan <peng.fan@nxp.com>,
-        kevin hilman <khilman@kernel.org>,
-        ulf hansson <ulf.hansson@linaro.org>,
-        len brown <len.brown@intel.com>, pavel machek <pavel@ucw.cz>,
-        joerg roedel <joro@8bytes.org>, will deacon <will@kernel.org>,
-        andrew lunn <andrew@lunn.ch>,
-        heiner kallweit <hkallweit1@gmail.com>,
-        eric dumazet <edumazet@google.com>,
-        jakub kicinski <kuba@kernel.org>,
-        paolo abeni <pabeni@redhat.com>,
-        linus walleij <linus.walleij@linaro.org>,
-        hideaki yoshifuji <yoshfuji@linux-ipv6.org>,
-        david ahern <dsahern@kernel.org>, kernel-team@android.com,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org,
-        linux-rpi-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-tegra@vger.kernel.org,
-        linux-snps-arc@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-        linux-actions@lists.infradead.org,
-        linux-unisoc@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        sparclinux@vger.kernel.org, Ahmad Fatoum <a.fatoum@pengutronix.de>
-Subject: Re: [PATCH v1 2/2] serial: Set probe_no_timeout for all DT based
- drivers
-Message-ID: <20220628140025.qpom64ptru4ub6fu@distanz.ch>
-References: <20220628020110.1601693-1-saravanak@google.com>
- <20220628020110.1601693-3-saravanak@google.com>
+        with ESMTP id S1346506AbiF1OAh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 10:00:37 -0400
+Received: from mint-fitpc2.mph.net (unknown [81.168.73.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9891E369E2
+        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 07:00:36 -0700 (PDT)
+Received: from palantir17.mph.net (unknown [192.168.0.4])
+        by mint-fitpc2.mph.net (Postfix) with ESMTP id D7B43320102;
+        Tue, 28 Jun 2022 15:00:35 +0100 (BST)
+Received: from localhost ([::1] helo=palantir17.mph.net)
+        by palantir17.mph.net with esmtp (Exim 4.95)
+        (envelope-from <habetsm.xilinx@gmail.com>)
+        id 1o6Bla-0008Ia-VE;
+        Tue, 28 Jun 2022 15:00:34 +0100
+Subject: [PATCH net-next v2 09/10] sfc: replace function name in string with
+ __func__
+From:   Martin Habets <habetsm.xilinx@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, jonathan.s.cooper@amd.com
+Cc:     netdev@vger.kernel.org, ecree.xilinx@gmail.com
+Date:   Tue, 28 Jun 2022 15:00:34 +0100
+Message-ID: <165642483484.31669.11292363129265370240.stgit@palantir17.mph.net>
+In-Reply-To: <165642465886.31669.17429834766693417246.stgit@palantir17.mph.net>
+References: <165642465886.31669.17429834766693417246.stgit@palantir17.mph.net>
+User-Agent: StGit/0.19
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220628020110.1601693-3-saravanak@google.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=0.7 required=5.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+        FORGED_GMAIL_RCVD,FREEMAIL_FROM,KHOP_HELO_FCRDNS,NML_ADSP_CUSTOM_MED,
+        SPF_HELO_NONE,SPF_SOFTFAIL,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-06-28 at 04:01:03 +0200, Saravana Kannan <saravanak@google.com> wrote:
-> diff --git a/drivers/tty/serial/8250/8250_acorn.c b/drivers/tty/serial/8250/8250_acorn.c
-> index 758c4aa203ab..5a6f2f67de4f 100644
-> --- a/drivers/tty/serial/8250/8250_acorn.c
-> +++ b/drivers/tty/serial/8250/8250_acorn.c
-> @@ -114,7 +114,6 @@ static const struct ecard_id serial_cids[] = {
->  static struct ecard_driver serial_card_driver = {
->  	.probe		= serial_card_probe,
->  	.remove		= serial_card_remove,
-> -	.id_table	= serial_cids,
+From: Jonathan Cooper <jonathan.s.cooper@amd.com>
 
-Is this change intentional? All other drivers are only changed to set
-.probe_no_time and I don't see anything mentioned in the commit message
-re. this driver's change.
+Minor fix to existing code to make later patch checkpatch clean.
+
+Signed-off-by: Jonathan Cooper <jonathan.s.cooper@amd.com>
+Acked-by: Martin Habets <habetsm.xilinx@gmail.com>
+---
+ drivers/net/ethernet/sfc/mcdi.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/sfc/mcdi.c b/drivers/net/ethernet/sfc/mcdi.c
+index a3425b6be3f7..b53fb01dcbad 100644
+--- a/drivers/net/ethernet/sfc/mcdi.c
++++ b/drivers/net/ethernet/sfc/mcdi.c
+@@ -1472,7 +1472,8 @@ static int efx_mcdi_drv_attach(struct efx_nic *efx, bool driver_operating,
+ 	 */
+ 	if (rc == -EPERM) {
+ 		netif_dbg(efx, probe, efx->net_dev,
+-			  "efx_mcdi_drv_attach with fw-variant setting failed EPERM, trying without it\n");
++			  "%s with fw-variant setting failed EPERM, trying without it\n",
++			  __func__);
+ 		MCDI_SET_DWORD(inbuf, DRV_ATTACH_IN_FIRMWARE_ID,
+ 			       MC_CMD_FW_DONT_CARE);
+ 		rc = efx_mcdi_rpc_quiet(efx, MC_CMD_DRV_ATTACH, inbuf,
+
+
