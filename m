@@ -2,203 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A7A755D3EC
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:13:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E864255C818
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 14:55:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237587AbiF1Bvn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jun 2022 21:51:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38326 "EHLO
+        id S243292AbiF1Bxa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jun 2022 21:53:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231941AbiF1Bvm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 21:51:42 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74363BCA;
-        Mon, 27 Jun 2022 18:51:41 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id g26so22701005ejb.5;
-        Mon, 27 Jun 2022 18:51:41 -0700 (PDT)
+        with ESMTP id S243275AbiF1Bxa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 21:53:30 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E697EB85F
+        for <netdev@vger.kernel.org>; Mon, 27 Jun 2022 18:53:28 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id x4so10668623pfq.2
+        for <netdev@vger.kernel.org>; Mon, 27 Jun 2022 18:53:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MhFY3rtD/q7Wr+T8t3g4+nPTox6Sro+VzMF9uZtA8u8=;
-        b=i0BZLfnwJi1O9knf5euVJp2mlPjEaMiCI5S2XfK+mLGp8LqTLC+E6JySPg82hQxXIM
-         eJmwFkt5yvo+Og6wd2+Qr87/oc2o9L72zknGMCa5xgyUGk8hhyLCaIUaYnnekpLRioCi
-         hxVKM2k+7hTRsLSKZHyX4rPIm6+XSR8cBZYt85fflMiXXCU7UE5uMYwK1fLwndfaKwei
-         212g1zmz4OR5ylMPwsLp9q3tJj4zkZuMuf5sH+JDhHMgCfrbNsKmfnkMJGo8qadH+TLE
-         baUz5h1XXvgI9vmlVbO4tQWZXvh8SnTmbQnycHPsZQRZWDEM28IzCybtpZ5qQxdEiwLh
-         Q2CA==
+        d=wistron-corp-partner-google-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qmNe/0N3fselmjXx6WkFjhVxkRMv0d5IBKx3lO9MXkg=;
+        b=UNsaSKXvhyPVTm2DEwZmNzWe7Vo+++Awnh+gFpClAhy8HlwHpzG+Z7zhxPZUfRnGd1
+         HIhvVUFI2ADEGsu/vdM3ow/HGbzT39WdDv889cAipONE3vkMNNvNbM575X6paPnFIdiz
+         uNT6eoVqGOWH4FFCft2z+0fMfknGqU8mzrsuaCRH41kNFt1oz4DY2SemNRfnJzGfXK8v
+         0cUIcuoIiB7UMXfk3o3ULwjBAzGxSBPrmGLLSR2Np2KAsfCEVI278jMtfMrxuQvxPHLf
+         5r0keiF+noXuTUWL6DdZt4O7DWkG8hQsPhi3PzsYSBaV8shxUwQgle1zidnE2kuL56PN
+         lhQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MhFY3rtD/q7Wr+T8t3g4+nPTox6Sro+VzMF9uZtA8u8=;
-        b=Jv8w5mcfoeSCcV9gDkdMAj8Xrmv0+ADI2WMjVKKjHg53grZtg+ze494sL9o17PyHMY
-         6ysu8gD4X4JEynk5z7K9NZgVjUmRy8gFLESZmTkkfLjbHa+Pun+QS/SSbdrVezmrowDp
-         62PciMP+00xZNvAZOMd55cHufYZ1WAyDJOeVxj5saHlAuCzi5UL0vd6KbqffhfNFCMSZ
-         S1Sq9CRa4IdNWUQGdnknCPpZpDVt1LzW+Q7cgfzXZ3CZgL0cQBeZ/W71eo2ASCuqe5Zt
-         uOtMm1TPnS/qDplcq/+TvfsxwVesboxFC6eJ7/tjYWnHneGiuLF3HXWmepmrJdi1kF+N
-         vwSw==
-X-Gm-Message-State: AJIora/Y2uz+1wU8WTA/kY9+eIb1uV0L7D6dRaZuSgqehgMVVjSwlwd6
-        P2fj9u63K9SPUzyISkZyteD+tCC0v/rj5ouhldA=
-X-Google-Smtp-Source: AGRyM1vQ2Bdgdo2pPyQJ1+rY4Q94dbyrrntHYe0A7MBoP8z3ESjVHhfvMbtTUXqcFJcKL7eWZCpgh9aYlLOeCsQg/sw=
-X-Received: by 2002:a17:906:3404:b0:726:3afc:fe28 with SMTP id
- c4-20020a170906340400b007263afcfe28mr15560606ejb.340.1656381099869; Mon, 27
- Jun 2022 18:51:39 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qmNe/0N3fselmjXx6WkFjhVxkRMv0d5IBKx3lO9MXkg=;
+        b=iRkIwJnTlytOMrO2J8KgL4HrWutvOA0htpZhInIPiK6qhMMgT/bLhBp0R6jaH6JNzo
+         dwDzBAwh/MSl3znj1fjrjNUkuUUskfasFw5HVwdM38NKGCUqWoiRwA/LyqlgH3jzKrxN
+         6IvaBZ9ybIwo3NToHHGuzdsIhm2OVunssv1Wox5kliwMbt8VmrbJEzwEwXa+maI4LXRP
+         KpYEgvdY+ftpiUrvRCijn5ySXsKya7nNBZxMGz2qmnCJ8U530WotykbvDkVpgms8B4Z3
+         UsVJSB/TrLFdnku6k7b8oaozT2TDQnKk/6VloA10FqzUH7gzD4lCm2SlDDaxVEaXyrlb
+         fIpw==
+X-Gm-Message-State: AJIora+r4EeUGGmjZb/d0C43Ywa2uQbZGCmtSUn/8gE5ti/UGqlZ7kMO
+        Mm150CzUFsCbeZHWgvpsKDppWg==
+X-Google-Smtp-Source: AGRyM1sEdmmSKiRug0JES0Mnz8bDifIHsM4ASO0PiDH35MxEPibvVHpL9D6WFZFnmA3BbqsrIvSibA==
+X-Received: by 2002:a63:ae48:0:b0:40c:3775:8b49 with SMTP id e8-20020a63ae48000000b0040c37758b49mr15259472pgp.268.1656381208345;
+        Mon, 27 Jun 2022 18:53:28 -0700 (PDT)
+Received: from localhost (1-164-249-67.dynamic-ip.hinet.net. [1.164.249.67])
+        by smtp.gmail.com with ESMTPSA id 11-20020a63164b000000b0040d4c8e335csm7722004pgw.75.2022.06.27.18.53.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Jun 2022 18:53:28 -0700 (PDT)
+From:   Franklin Lin <franklin_lin@wistron.corp-partner.google.com>
+To:     edumazet@google.com
+Cc:     kuba@kernel.org, pabeni@redhat.com, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        davem@davemloft.net, franklin_lin@wistron.com,
+        franklin_lin <franklin_lin@wistron.corp-partner.google.com>
+Subject: [PATCH] drivers/net/usb/r8152: Enable MAC address passthru support
+Date:   Tue, 28 Jun 2022 09:53:25 +0800
+Message-Id: <20220628015325.1204234-1-franklin_lin@wistron.corp-partner.google.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <20220626031301.60390-1-nashuiliang@gmail.com> <CAEf4BzbnEFqdEZTNRWf8vJ8hExpKkg_rwgoQE-cyyU7fDafxZw@mail.gmail.com>
-In-Reply-To: <CAEf4BzbnEFqdEZTNRWf8vJ8hExpKkg_rwgoQE-cyyU7fDafxZw@mail.gmail.com>
-From:   Chuang W <nashuiliang@gmail.com>
-Date:   Tue, 28 Jun 2022 09:51:28 +0800
-Message-ID: <CACueBy5zdsVz-CVhtY0ekKDbrmF3ra6YSBuPWQK_qxSb6dXsxA@mail.gmail.com>
-Subject: Re: [PATCH v3] libbpf: Cleanup the legacy kprobe_event on failed add/attach_event()
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Jingren Zhou <zhoujingren@didiglobal.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrii,
+From: franklin_lin <franklin_lin@wistron.corp-partner.google.com>
 
-On Tue, Jun 28, 2022 at 5:27 AM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Sat, Jun 25, 2022 at 8:13 PM Chuang W <nashuiliang@gmail.com> wrote:
-> >
-> > Before the 0bc11ed5ab60 commit ("kprobes: Allow kprobes coexist with
-> > livepatch"), in a scenario where livepatch and kprobe coexist on the
-> > same function entry, the creation of kprobe_event using
-> > add_kprobe_event_legacy() will be successful, at the same time as a
-> > trace event (e.g. /debugfs/tracing/events/kprobe/XXX) will exist, but
-> > perf_event_open() will return an error because both livepatch and kprobe
-> > use FTRACE_OPS_FL_IPMODIFY. As follows:
-> >
-> > 1) add a livepatch
-> >
-> > $ insmod livepatch-XXX.ko
-> >
-> > 2) add a kprobe using tracefs API (i.e. add_kprobe_event_legacy)
-> >
-> > $ echo 'p:mykprobe XXX' > /sys/kernel/debug/tracing/kprobe_events
-> >
-> > 3) enable this kprobe (i.e. sys_perf_event_open)
-> >
-> > This will return an error, -EBUSY.
-> >
-> > On Andrii Nakryiko's comment, few error paths in
-> > bpf_program__attach_kprobe_opts() which should need to call
-> > remove_kprobe_event_legacy().
-> >
-> > With this patch, whenever an error is returned after
-> > add_kprobe_event_legacy() or bpf_program__attach_perf_event_opts(), this
-> > ensures that the created kprobe_event is cleaned.
-> >
-> > Signed-off-by: Chuang W <nashuiliang@gmail.com>
->
-> Is this your full name? Signed-off-by is required to have a full name
-> of a person, please update if it's not
->
-> > Signed-off-by: Jingren Zhou <zhoujingren@didiglobal.com>
-> > ---
-> > V2->v3:
-> > - add detail commits
-> > - call remove_kprobe_event_legacy() on failed bpf_program__attach_perf_event_opts()
-> >
-> >  tools/lib/bpf/libbpf.c | 15 ++++++++++++---
-> >  1 file changed, 12 insertions(+), 3 deletions(-)
-> >
-> > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> > index 49e359cd34df..038b0cb3313f 100644
-> > --- a/tools/lib/bpf/libbpf.c
-> > +++ b/tools/lib/bpf/libbpf.c
-> > @@ -10811,10 +10811,11 @@ static int perf_event_kprobe_open_legacy(const char *probe_name, bool retprobe,
-> >         }
-> >         type = determine_kprobe_perf_type_legacy(probe_name, retprobe);
-> >         if (type < 0) {
-> > +               err = type;
-> >                 pr_warn("failed to determine legacy kprobe event id for '%s+0x%zx': %s\n",
-> >                         kfunc_name, offset,
-> > -                       libbpf_strerror_r(type, errmsg, sizeof(errmsg)));
-> > -               return type;
-> > +                       libbpf_strerror_r(err, errmsg, sizeof(errmsg)));
-> > +               goto clear_kprobe_event;
-> >         }
-> >         attr.size = sizeof(attr);
-> >         attr.config = type;
-> > @@ -10828,9 +10829,14 @@ static int perf_event_kprobe_open_legacy(const char *probe_name, bool retprobe,
-> >                 err = -errno;
-> >                 pr_warn("legacy kprobe perf_event_open() failed: %s\n",
-> >                         libbpf_strerror_r(err, errmsg, sizeof(errmsg)));
-> > -               return err;
-> > +               goto clear_kprobe_event;
-> >         }
-> >         return pfd;
-> > +
-> > +clear_kprobe_event:
-> > +       /* Clear the newly added legacy kprobe_event */
-> > +       remove_kprobe_event_legacy(probe_name, retprobe);
-> > +       return err;
-> >  }
-> >
->
-> this part looks good
->
->
-> >  struct bpf_link *
-> > @@ -10899,6 +10905,9 @@ bpf_program__attach_kprobe_opts(const struct bpf_program *prog,
-> >
-> >         return link;
-> >  err_out:
-> > +       /* Clear the newly added legacy kprobe_event */
-> > +       if (legacy)
-> > +               remove_kprobe_event_legacy(legacy_probe, retprobe);
->
-> this one will call remove_kprobe_event_legacy() even if we failed to
-> create that kprobe_event in the first place. So let's maybe add
->
-> err_clean_legacy:
->     if (legacy)
->          remove_kprobe_event_legacy(legacy_probe, retprobe);
->
-> before err_out: and goto there if we fail to attach (but not if we
-> fail to create pfd)?
->
+Enable the support for providing a MAC address
+for a dock to use based on the VPD values set in the platform.
 
-Nice, I will modify it.
+Signed-off-by: franklin_lin <franklin_lin@wistron.corp-partner.google.com>
+---
+ drivers/net/usb/r8152.c | 49 ++++++++++++++++++++++++++++++-----------
+ 1 file changed, 36 insertions(+), 13 deletions(-)
 
->
-> Also, looking through libbpf code, I realized that we have exactly the
-> same problem for uprobes, so please add same fixed to
-> perf_event_uprobe_open_legacy and attach_uprobe_opts. Thanks!
->
+diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
+index 7389d6ef8..732e48d99 100644
+--- a/drivers/net/usb/r8152.c
++++ b/drivers/net/usb/r8152.c
+@@ -3,6 +3,7 @@
+  *  Copyright (c) 2014 Realtek Semiconductor Corp. All rights reserved.
+  */
+ 
++#include <linux/fs.h>
+ #include <linux/signal.h>
+ #include <linux/slab.h>
+ #include <linux/module.h>
+@@ -1608,6 +1609,11 @@ static int vendor_mac_passthru_addr_read(struct r8152 *tp, struct sockaddr *sa)
+ 	acpi_object_type mac_obj_type;
+ 	int mac_strlen;
+ 
++	struct file *fp;
++	unsigned char read_buf[32];
++	loff_t f_pos = 0;
++	int i, j, len;
++
+ 	if (tp->lenovo_macpassthru) {
+ 		mac_obj_name = "\\MACA";
+ 		mac_obj_type = ACPI_TYPE_STRING;
+@@ -1641,22 +1647,39 @@ static int vendor_mac_passthru_addr_read(struct r8152 *tp, struct sockaddr *sa)
+ 	/* returns _AUXMAC_#AABBCCDDEEFF# */
+ 	status = acpi_evaluate_object(NULL, mac_obj_name, NULL, &buffer);
+ 	obj = (union acpi_object *)buffer.pointer;
+-	if (!ACPI_SUCCESS(status))
+-		return -ENODEV;
+-	if (obj->type != mac_obj_type || obj->string.length != mac_strlen) {
+-		netif_warn(tp, probe, tp->netdev,
++	if (ACPI_SUCCESS(status)) {
++		if (obj->type != mac_obj_type || obj->string.length != mac_strlen) {
++			netif_warn(tp, probe, tp->netdev,
+ 			   "Invalid buffer for pass-thru MAC addr: (%d, %d)\n",
+ 			   obj->type, obj->string.length);
+-		goto amacout;
+-	}
+-
+-	if (strncmp(obj->string.pointer, "_AUXMAC_#", 9) != 0 ||
+-	    strncmp(obj->string.pointer + 0x15, "#", 1) != 0) {
+-		netif_warn(tp, probe, tp->netdev,
+-			   "Invalid header when reading pass-thru MAC addr\n");
+-		goto amacout;
++			goto amacout;
++		}
++		if (strncmp(obj->string.pointer, "_AUXMAC_#", 9) != 0 ||
++			strncmp(obj->string.pointer + 0x15, "#", 1) != 0) {
++			netif_warn(tp, probe, tp->netdev,
++				"Invalid header when reading pass-thru MAC addr\n");
++			goto amacout;
++		}
++		ret = hex2bin(buf, obj->string.pointer + 9, 6);
++	} else {
++		/* read from "/sys/firmware/vpd/ro/dock_mac" */
++		fp = filp_open("/sys/firmware/vpd/ro/dock_mac", O_RDONLY, 0);
++		if (IS_ERR(fp))
++			return -ENOENT;
++		kernel_read(fp, read_buf, 32, &f_pos);
++		len = strlen(read_buf);
++		/* remove ':' form mac address string */
++		for (i = 0; i < len; i++) {
++			if (read_buf[i] == ':') {
++				for (j = i; j < len; j++)
++					read_buf[j] = read_buf[j+1];
++				len--;
++				i--;
++			}
++		}
++		filp_close(fp, NULL);
++		ret = hex2bin(buf, read_buf, 6);
+ 	}
+-	ret = hex2bin(buf, obj->string.pointer + 9, 6);
+ 	if (!(ret == 0 && is_valid_ether_addr(buf))) {
+ 		netif_warn(tp, probe, tp->netdev,
+ 			   "Invalid MAC for pass-thru MAC addr: %d, %pM\n",
+-- 
+2.34.1
 
-Oh, yes. I also noticed this problem for uprobes, I was planning to
-submit a patch for uprobes.
-Do you think I should submit another patch for uprobes or combine
-kprobes and uprobes into one?
-
-Thanks,
->
->
-> >         free(legacy_probe);
-> >         return libbpf_err_ptr(err);
-> >  }
-> > --
-> > 2.34.1
-> >
