@@ -2,152 +2,281 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 32B8755E6A5
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 18:30:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A35E255E88C
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 18:36:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347914AbiF1QD3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 12:03:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41188 "EHLO
+        id S1347790AbiF1QJs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 12:09:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348304AbiF1QDP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 12:03:15 -0400
-Received: from sonic307-9.consmr.mail.ne1.yahoo.com (sonic307-9.consmr.mail.ne1.yahoo.com [66.163.190.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFCD9387B0
-        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 09:02:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1656432140; bh=NFgR5zMErQI+MFhX1BCxRPaLLs76pZr4D/3Kb0cfplE=; h=Date:Subject:To:Cc:References:From:In-Reply-To:From:Subject:Reply-To; b=G1zQ3KF9/613EAeAbBue3kImcZusseETmmk8MjC4UMmtJDYKNFAlGNz9StxcWW8JylSMj/12yUyrH0BFEjzDFY/Qq+Y3R8drmwAcmifm6BYz0HQ8wRi4PLSrI/iZFwY66xLtnp7uQvd7VKTAYd/8stouQ9c1AHkbB08v7ZVN0i3dvhmmGMaQJ3qfRVmqipaOqCt1/ugm+3QBSIzaDbnFCvrc12iV8N0jnksWiDGrFR3yNmA8mGBdQcKOn6jtldy9VG1yQoIjML6megvHp3UfdMU4qFppGHMe16RmTfY45qYcigofeGUeeOWlx6m59jcL6cwX5w5m8bxshjJeoRlUuQ==
-X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1656432140; bh=ytki79+iGuSfuH2jjue7pGvSWCRSKSybyuEWT20SfY2=; h=X-Sonic-MF:Date:Subject:To:From:From:Subject; b=OVvFxTDgI+0gt+UCoRlh1TfURSFJ9DXtqRQN76N7VQooCdMhTZOZ1zHV6FfouAz+Qq3rEW/NidvqNErmrBknfLuL9/tc2IpGjGjYBQu9RSeU/aoVRCZQDwAjoPJZURtT9cazXEZ1MoReP7gYAHEJ/oasoUQBvJEP3slo0XiE2aOD02tHl5gOQKxdQ/0Tkn4AzPQwhef2+g6bg5dKsthVnqFRpx9AK0Zoyex5RVmWfxEpTacryxkcSK0CLinErCmKdekfoKVaLDk46CUa4FS5MQyt0TQqxaubEUToV3QIDpxnBbXHYKQPYJZo6yVoY931hnFkZxcRjSMYOU7EUEQcVQ==
-X-YMail-OSG: 4zB.uFcVM1kCIpVhDR9QhPx6E.JQQtvgPsq_JMAkkKUaBieex9PuCt_icoYdaoq
- bzKLMSD8biF1sKZZwDnNvogand_MKl9xnUyC3Hnkxut1EV5_47FdwCQ6QCTFdNYQKR69ESEG9Cq6
- 5Lwj1QpuDEitISSBlb9DQrtNY51NdwUHX9IHCOVXVkMEcimn5EyrJA1EByeXQorNYP9DU_J.KWwF
- 7BnesB7zvNMx_ba2lNk4eocs48HwfHgzQH34ooMORe5SkUWR7r13b4H3yHCYhWK8afQ8l6bq4neC
- fpantU_W..5okL9oEJvMrn1nTgZXkDgyRIf3owMK7JFpuZjJ_gzOCuWlwl_ba9N56bTLwCH0PfFu
- NP8f9RXQR3olDJhZU2LZ5a2ycavmErmzd_77fFAYLX0u2QkwWATd9PEOKyzno_vNnXo9fMh2EHsn
- GgkZR8Y3gE6g1MhbBsb5K8m66Zw0Ui0KL9gYER1O3uSRR3NHJlCxS403t8mUZ8j0CdS7UUbhdplr
- 8nZkLouS2s8UfV5BMs3vJXPH5OrOZhMchCAWGM9KBRQrJdC9Z3VbWgjcjV_FsRxrD.ARIQM3cMaY
- mTyHDoxepeZ13_2IP8R7ONtVWDOK4SjNcCwGb9_BNM1nsjwLsHHBqf7Mz6mh5ypVTHpuxKvEVd9d
- kf5Fqjkd793QdHmIqsabtyVavYgYAFaRROfxyyInIOEm4cfUJMVgCMTDiGPRnL6B9SuRTpMw4EAT
- mNUsGOM.G4Zjv_Drj9T4Bb6_b3WahQdEvQnsRM8kt5T_ZRO0WtzVu_e1JngccZXSYKzCS2fvzc4S
- rK7.dDmMwHAl7ZafkX5oHQEwPF1bd_fralLVZG61OoTGCipqJUwxy2DX.qv91N_0SnuVxMtfj1p9
- H6zv.nzA5oRYWnPgpjVfkcMMX9xMpcdmqNBmT5tT5qc0vVDJW1NT.FiY1eJNRJ97PfctQF_hYMAV
- 2X6gOx6aVjIcVe6TaDBJ_T.bTI5yg08WX3TwcD.gTI_z3dTG1KCka9bbFYHZ9vHx583HiDtSp8tA
- 6JYh2wiGxwjzNJYmkSaFTgVooNiAj__aXZmC5vo.IARfHYW4AJRYimlftzAiHA_Cbf._Bui4L6Uy
- b6zq2g.dT6VFhR4bbnqBaiH4YboCkF26dWcUJE6IJYiUKp1YEkUgDG6I339PLc.hEczcHTJrTX8U
- ZbUSAhFbGHAbyBWLzmQEzgwXcpGjaGBWpO6Lf264pzWuS9BTy9v_UX8P8gClGgBO_BlEIkWetEn8
- EhIMeDKYO9Vu9lkvTIeSUOA_gsWu95GG6Mv8L47vVaK8vUHSIhc24i7N3zGPDlqHqYHuz.vennYZ
- ze4X4MuKd.Nxdw3mS_NiMSP3ZtIemTxzV5IbUUg_RgoVlGKPi.Y.xXeE7a8aVzFAv4DOer47SPf3
- .zDOe9jTfEWEhYsN8F0U7J2XruXlylU3_.U833O8GyiL0co59yBy8JZeFpbLedYVD1nzSVo4sesk
- O_xTjoKmgzJva.ca7U91Zp73EwTWpJeAPn2oQTntl2bMmxmW6eGio6Zje8TnqeLaa79TEureBTh.
- 39GM_sd0oLT_hyg47Q7LPV4opr700QccPGdqoIHnsXZtAJGmncl37EFeYQoNOs4b.oNq4wyixJVz
- .QiZsBAIV7Ik56xFaGlE7ZOT8k8GbcUWpBBFCO4vURH8f2YqqIX6T7T9S_kiLFdAKgP8YWwd1spe
- jVQoytgEc7ZeVJJgTNy5ZHhtRebnuBA2AMIxSPsZZi4HCR0xcUZCnuKx0NTtJR8h.NCuFjF.QcoY
- gpGb12yCum4kic66tBpKAJZauW1lOFmxzAkLEuwAnCFp1vmqXjemEWVTWrtiHgW_hANqElmp39kB
- KKOi.on92I1Qo0wEEuOrwbJ_Lg51mzEMzJvh9l3trQQ17iHHZFnpMD6iy5SVdnlfSGFm3SopJFyW
- 3JD.eWQ6IH9VV.0anIu2_Nt7tfRaXyKKrPRkvc.oRkkyHR3M2k5rZ7b7.BMxnRTtW9SPCQVq.7uA
- BXKZGxoMKZ0cK0r_4wFkjQJv4Xc.ikEfiOw--
-X-Sonic-MF: <casey@schaufler-ca.com>
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic307.consmr.mail.ne1.yahoo.com with HTTP; Tue, 28 Jun 2022 16:02:20 +0000
-Received: by hermes--production-ne1-7459d5c5c9-vbpdr (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID b9a7850224cb4de8d716fcd4b3186b7d;
-          Tue, 28 Jun 2022 16:02:15 +0000 (UTC)
-Message-ID: <d70d3b2d-6c3f-b1fc-f40c-f5ec01a627c0@schaufler-ca.com>
-Date:   Tue, 28 Jun 2022 09:02:13 -0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 0/2] Introduce security_create_user_ns()
+        with ESMTP id S1347751AbiF1QIx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 12:08:53 -0400
+Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70071.outbound.protection.outlook.com [40.107.7.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02473A45D;
+        Tue, 28 Jun 2022 09:08:13 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ioHkSy/PskT/doXqASFaquxT0UEGA7grFHX6Z1ou+9laYYkGP75YKRdIlA95MGRhXaD7Mi1wUKvNkqKji9x6a7g6ZlYm+NxP6P+LfukWhVcc0gg5FDh9+H9m3hvNWYgn6PaXunbupMrXluKy/UE/w0KrIactkJbzCPgnQtVSQC35lVtzb9fiIHeFQj0MVm7Y5kW0GEwtKosm4NhxQ6KejwyL1e29dLzIXnnWAMHgWG/r9tQSEvSluVcdAKB0ybDZV4FllY3pab+IuSLNGe/oO69TxdirLQCIFjpIg90cW/v2pNGf+CkQ48JUPL+eEpdogEUE8bE/GHEbQXCqUQxgoA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=8zX5N+ZynjZYV3VwBEDQC/yu++SgtqrvMDLJ4yAip+Y=;
+ b=aegRERwlcgO5tn0xCb/lmGIpFk/E0cliKvBJY9qnwmX84J2b1n7mseLryc0bXKQuJ4Wg9NPgNJnDmDLK9tzH5hv9yk1hwdJ+e83KOfLwDSHjPp0kmYv3Tr7fGOOMdvVdG1CigXRPvC/FXEUvH8At7gE5VoQ1fdRAbAvM+5o6w645WcYEGVaR5smaHvFqvvSnvhpGksy2AI1GAR5u0IaUjjaLBISLFQ98iZN2wCQpXbuf6//JfyA5FZs6B5KYMRyQgQFkL5sEaSH3tDHusr/bGfYfgLl+l/zmtEVD+yHE2mpHkX2Fk3LIxmum9T2wc24UCpb6GJUhW+3+YbIj0AvN6w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=8zX5N+ZynjZYV3VwBEDQC/yu++SgtqrvMDLJ4yAip+Y=;
+ b=Pq3WPl/BV9uJzw2BrtsqQcdV1bJecFH/z69sZM/KmxPjWQGrTwIxgiGizsHVO0wslTfv2Sp8iXuu0pOxDGygETYZbMIcK9kXsDZtT87pjj6i2f8elBt2czOCQU7SLm7nHoIJEFZQuO5yuLqKCOZBIude47WLJ2ghNHsacGCoWIQ=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by AM6PR04MB3960.eurprd04.prod.outlook.com (2603:10a6:209:3f::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.18; Tue, 28 Jun
+ 2022 16:08:10 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::94fe:9cbe:247b:47ea]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::94fe:9cbe:247b:47ea%7]) with mapi id 15.20.5373.018; Tue, 28 Jun 2022
+ 16:08:10 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Colin Foster <colin.foster@in-advantage.com>
+CC:     "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Wolfram Sang <wsa@kernel.org>,
+        Terry Bowman <terry.bowman@amd.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: Re: [PATCH v11 net-next 1/9] mfd: ocelot: add helper to get regmap
+ from a resource
+Thread-Topic: [PATCH v11 net-next 1/9] mfd: ocelot: add helper to get regmap
+ from a resource
+Thread-Index: AQHYiseGTWpqx8Siq0u0vYqv+P3KI61k/PWA
+Date:   Tue, 28 Jun 2022 16:08:10 +0000
+Message-ID: <20220628160809.marto7t6k24lneau@skbuf>
+References: <20220628081709.829811-1-colin.foster@in-advantage.com>
+ <20220628081709.829811-2-colin.foster@in-advantage.com>
+In-Reply-To: <20220628081709.829811-2-colin.foster@in-advantage.com>
+Accept-Language: en-US
 Content-Language: en-US
-To:     Frederick Lawler <fred@cloudflare.com>,
-        Paul Moore <paul@paul-moore.com>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Christian Brauner <brauner@kernel.org>, kpsingh@kernel.org,
-        revest@chromium.org, jackmanb@chromium.org, ast@kernel.org,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, jmorris@namei.org, serge@hallyn.com,
-        bpf@vger.kernel.org, linux-security-module@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-team@cloudflare.com,
-        Casey Schaufler <casey@schaufler-ca.com>
-References: <20220621233939.993579-1-fred@cloudflare.com>
- <ce1653b1-feb0-1a99-0e97-8dfb289eeb79@schaufler-ca.com>
- <b72c889a-4a50-3330-baae-3bbf065e7187@cloudflare.com>
- <CAHC9VhSTkEMT90Tk+=iTyp3npWEm+3imrkFVX2qb=XsOPp9F=A@mail.gmail.com>
- <20220627121137.cnmctlxxtcgzwrws@wittgenstein>
- <CAHC9VhSQH9tE-NgU6Q-GLqSy7R6FVjSbp4Tc4gVTbjZCqAWy5Q@mail.gmail.com>
- <6a8fba0a-c9c9-61ba-793a-c2e0c2924f88@iogearbox.net>
- <CAHC9VhQQJH95jTWMOGDB4deS=whSfnaF_e73zoabOOeHJMv+0Q@mail.gmail.com>
- <685096bb-af0a-08c0-491a-e176ac009e85@schaufler-ca.com>
- <9ae473c4-cd42-bb45-bce2-8aa2e4784a43@cloudflare.com>
-From:   Casey Schaufler <casey@schaufler-ca.com>
-In-Reply-To: <9ae473c4-cd42-bb45-bce2-8aa2e4784a43@cloudflare.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Mailer: WebService/1.1.20280 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.yahoo
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 2ab0eee9-2971-4839-560a-08da59206572
+x-ms-traffictypediagnostic: AM6PR04MB3960:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: L9CYD4V+vuGCh9gm5z/6AW0W5UKGdtGTHuo/DQrbytZsXDCEh/Kgxu5RUyAxiXbK6nU6oO3lBGUCTk2ySZWm26ewjAyk7g5LZyJ2Kf/NmvGD4ycFvrs3ij0T0lBQSQynOjccSi9hfWslNs7oMGv/DRjSi1Rz3FVTBzUrWkFkqg/i/zlsy7erbLUYfh6IPA3pJzdERmf5F8Hrcr/FGlD4B8wlKBPba+yqcInaCg2gddJG6YMrHKs681qGZGdnJZsMyOJjdKJf0Ci5KFL3eHPkpMTc+LHVeW7VreLCXHvl5Md+smcnm2kv4a5iAJiMlIAlILtEIFOj11t+1duffbDbGzO0OQnn/PCCTkWjCtIBO+2gHGdhDtShss/AiFLiqwsLTPA9wdlJeELbzTdFBUHCv7Sq4ZPsXb2+0WrHNmVoF3XWoWM+6uGv8hQdrEZSEQuW3Z/vQD6R1M2iXrVwiltToTIEUsQ2oMwfrPwrmFfUsA+b0GS392QiqN66PuxQJfJum8fSoVuS2VW5nrRE8ffGtaUcR7xnNuquscvprV/bL1eLkOngV1MoeaqRRv5rrwCerw09kRKROCkdtTGrIccqemDsedAHx2uteKUjqXeMq7P+FioSiaiVEhkN+ieeiDsYjur4qm4HB/QUzuRym/PCttI4xBRdYCSYE5M29dPQD4SkW0l6e26iqDmq+D4jqWSt0q5oLYcA/Ak578+f68YYgsjQ2BTZ6YYztQRY98DmAzKvuUlu7mevl4WRDbetymMNIN1xqVAgnnlcIx+bi0lvkwXeCfCjjrDER1sEtKLtD3M=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(7916004)(396003)(346002)(366004)(136003)(376002)(39860400002)(6506007)(8676002)(33716001)(66476007)(86362001)(7416002)(71200400001)(6486002)(64756008)(4326008)(76116006)(66946007)(41300700001)(478600001)(44832011)(2906002)(8936002)(66556008)(66446008)(122000001)(6512007)(38070700005)(6916009)(1076003)(54906003)(316002)(9686003)(38100700002)(186003)(5660300002)(26005);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?MwQxlc0K/qihR/m4pJSBd3Skl/W+1x7BWnYDue0RkrpW63sH+U1sxl3fkC+D?=
+ =?us-ascii?Q?GdDpy6ztyB/fU/r3jiL/x9Fp4Bx981FcxB4qLwRwo5cwNBvB/M99b/JsFNk/?=
+ =?us-ascii?Q?/bE15CCf1tgw+J1s2j3qwh1qHnxotDb7YsnOAjggQ43pUYXmJQEuJYp+EsF9?=
+ =?us-ascii?Q?Jvb4UzWfDBXrLMNa2Im+oktXYigdB92H35zg+EBHIbz4InMZOyb2grjk5WKy?=
+ =?us-ascii?Q?MW7xhmUmKU6t1kQAy5mZOxN+dgWAnXLc4+T0lzM++WzZONATZShmdxGLoAnI?=
+ =?us-ascii?Q?XcNo+KckQelmHycHieTClIHsU+lQJbOXcn2XJegHWuR5LkErtMpplRu2Lx7d?=
+ =?us-ascii?Q?K+16izMTN6JRWLXlnFOTrO1ZNFXY8YfE+g+0YgJ+cp2V6UkbEPYfPV6PyG3K?=
+ =?us-ascii?Q?C5GEQRCnXj2frd+okVoHI43JoEB+tODaBKJaZ4cxhkr/7z4krKdt+DTXW2V3?=
+ =?us-ascii?Q?9kTHylvdl+oGpMM9VQNET7nH4T0oJLp3BxyNbzboNNjnh4fUWg84oF3paCLW?=
+ =?us-ascii?Q?2JVB+5JUmph/lNmv+oirhdpthIstBORcJCs1BGrGh/h3rVX2W2ngrfJXkzng?=
+ =?us-ascii?Q?/SAihfairjy6LxtyyYwijfEpS7EWPBWGdESKUenTLWoejcjetmvQjyhTjQWQ?=
+ =?us-ascii?Q?UI/La5xuCfpIyH6PkxuRdOvnksaKlXZzwCZLhgNHUteFxZNwArY0k81at6QC?=
+ =?us-ascii?Q?7wekQC8OsuCp3+lOGqjEmKWE2HIdjLK0pPWWMMUogDYTQocmhFVgiGBM7CtO?=
+ =?us-ascii?Q?c+3oOoKEqpSr4hxA8pyCTuWdPfzgEU6VkZ8Ub9nzgtzv7GBZhCZyA9Mo/fur?=
+ =?us-ascii?Q?C3Chp2hxIy3qoLhiPXAcjWM1ZGqEdFSrr+SwFunHiJbTBXTWCglKUqsKXEpT?=
+ =?us-ascii?Q?zA0Tmh3o5Do3lt8EVeadiovue6W9bl+WcpiyZWV/buj79nhTYvH9aocAYDCn?=
+ =?us-ascii?Q?+XFk1qaPVXoTGvYCi4LtRyGHvAKm5+bnFaARUQltvtqscyyzlH1OXP7pBImm?=
+ =?us-ascii?Q?trBTuADj891uswt6D8TUsHm1TQKXrncijVgQRluitFY9CEIVqViEwnFSV4el?=
+ =?us-ascii?Q?0cOTIkXQm4ue3Ek5sFDUfRr30DUvNqauunDbCI6ponmdjZmNp2m05tX09VR7?=
+ =?us-ascii?Q?ltVP2+WMy7oRgyns0AA+tj6ybDGGvf+CV9iHgNaVAGMYsUQMWoQ9KLl2YL+F?=
+ =?us-ascii?Q?PruDZ2rnwrPzI9j6eaiwHkgRYSeIxxKBCl8Y+MAmazyyckgx6Vzgk6vpFYH8?=
+ =?us-ascii?Q?AC6loqMWSHDyJvZall/6dJpSvjpGw/Q313PA3n+T5iC2es4fqyCp1b8m+wke?=
+ =?us-ascii?Q?VXvOulPZtauMW7do7gGa/DqcyYZWTLQcCFAd7WdeSNyQZxOx9oTw/Y8JCi2F?=
+ =?us-ascii?Q?aiH82FEL5VeD5v9g0uvGEFuk0sbSQbyXW7vbTf4HHVpT/u3bUzfO9jpyREw3?=
+ =?us-ascii?Q?fiQ21u7FJ3L7KLWDQn+r1sT5TVrufnMAnqWcoUDJmhdnRl0W52mmhCtw1bTg?=
+ =?us-ascii?Q?XkGIBPyBb3c7DGzYyhLmwphT3wbijcvyWdZvF9mVuQeMD0NKUR5dAqiCnOa/?=
+ =?us-ascii?Q?bxtoEqAGj9s6YjPRm3wJJA1DiMLOJyox/zbvdm8o+6BWdnpW3FztYKa3Am4v?=
+ =?us-ascii?Q?fA=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <81C691B95E8EC74895C0068C3B5AFA80@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2ab0eee9-2971-4839-560a-08da59206572
+X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Jun 2022 16:08:10.1851
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: QWZ1N3/T4foI1Ka2AUb7/OIBe5hp/L76bdUfxS58AgIF8YN9mVd6AIpp382FZIAMocb/3JqsX93vpdIjQoMXmA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR04MB3960
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/28/2022 8:14 AM, Frederick Lawler wrote:
-> On 6/27/22 6:18 PM, Casey Schaufler wrote:
->> On 6/27/2022 3:27 PM, Paul Moore wrote:
->>> On Mon, Jun 27, 2022 at 6:15 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
->>>> On 6/27/22 11:56 PM, Paul Moore wrote:
->>>>> On Mon, Jun 27, 2022 at 8:11 AM Christian Brauner <brauner@kernel.org> wrote:
->>>>>> On Thu, Jun 23, 2022 at 11:21:37PM -0400, Paul Moore wrote:
->>>>> ...
->>>>>
->>>>>>> This is one of the reasons why I usually like to see at least one LSM
->>>>>>> implementation to go along with every new/modified hook.  The
->>>>>>> implementation forces you to think about what information is necessary
->>>>>>> to perform a basic access control decision; sometimes it isn't always
->>>>>>> obvious until you have to write the access control :)
->>>>>> I spoke to Frederick at length during LSS and as I've been given to
->>>>>> understand there's a eBPF program that would immediately use this new
->>>>>> hook. Now I don't want to get into the whole "Is the eBPF LSM hook
->>>>>> infrastructure an LSM" but I think we can let this count as a legitimate
->>>>>> first user of this hook/code.
->>>>> Yes, for the most part I don't really worry about the "is a BPF LSM a
->>>>> LSM?" question, it's generally not important for most discussions.
->>>>> However, there is an issue unique to the BPF LSMs which I think is
->>>>> relevant here: there is no hook implementation code living under
->>>>> security/.  While I talked about a hook implementation being helpful
->>>>> to verify the hook prototype, it is also helpful in providing an
->>>>> in-tree example for other LSMs; unfortunately we don't get that same
->>>>> example value when the initial hook implementation is a BPF LSM.
->>>> I would argue that such a patch series must come together with a BPF
->>>> selftest which then i) contains an in-tree usage example, ii) adds BPF
->>>> CI test coverage. Shipping with a BPF selftest at least would be the
->>>> usual expectation.
->>> I'm not going to disagree with that, I generally require matching
->>> tests for new SELinux kernel code, but I was careful to mention code
->>> under 'security/' and not necessarily just a test implementation :)  I
->>> don't want to get into a big discussion about it, but I think having a
->>> working implementation somewhere under 'security/' is more
->>> discoverable for most LSM folks.
->>
->> I agree. It would be unfortunate if we added a hook explicitly for eBPF
->> only to discover that the proposed user needs something different. The
->> LSM community should have a chance to review the code before committing
->> to all the maintenance required in supporting it.
->>
->> Is there a reference on how to write an eBPF security module?
->
-> There's a documentation page that briefly touches on a BPF LSM implementation [1].
+On Tue, Jun 28, 2022 at 01:17:01AM -0700, Colin Foster wrote:
+> diff --git a/include/linux/mfd/ocelot.h b/include/linux/mfd/ocelot.h
+> new file mode 100644
+> index 000000000000..5c95e4ee38a6
+> --- /dev/null
+> +++ b/include/linux/mfd/ocelot.h
+> @@ -0,0 +1,27 @@
+> +/* SPDX-License-Identifier: GPL-2.0 OR MIT */
+> +/* Copyright 2022 Innovative Advantage Inc. */
+> +
+> +#include <linux/err.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/regmap.h>
+> +#include <linux/types.h>
+> +
+> +struct resource;
+> +
+> +static inline struct regmap *
+> +ocelot_platform_init_regmap_from_resource(struct platform_device *pdev,
+> +					  unsigned int index,
+> +					  const struct regmap_config *config)
 
-That's a brief touch, alright. I'll grant that the LSM interface isn't
-especially well documented for C developers, but we have done tutorials
-and have multiple examples. I worry that without an in-tree example for
-eBPF we might well be setting developers up for spectacular failure.
+I think this function name is too long (especially if you're going to
+also introduce ocelot_platform_init_regmap_from_resource_optional),
+and I have the impression that the "platform_init_" part of the name
+doesn't bring too much value. How about ocelot_regmap_from_resource()?
 
+> +{
+> +	struct resource *res;
+> +	u32 __iomem *regs;
+> +
+> +	regs =3D devm_platform_get_and_ioremap_resource(pdev, index, &res);
+> +
+> +	if (!res)
+> +		return ERR_PTR(-ENOENT);
+> +	else if (IS_ERR(regs))
+> +		return ERR_CAST(regs);
+> +	else
+> +		return devm_regmap_init_mmio(&pdev->dev, regs, config);
+> +}
+> --=20
+> 2.25.1
 >
->> There should be something out there warning the eBPF programmer of the
->> implications of providing a secid_to_secctx hook for starters.
->>
->
-> Links:
-> 1. https://docs.kernel.org/bpf/prog_lsm.html?highlight=bpf+lsm#
->
+
+To illustrate what I'm trying to say, these would be the shim
+definitions:
+
+static inline struct regmap *
+ocelot_regmap_from_resource(struct platform_device *pdev,
+			    unsigned int index,
+			    const struct regmap_config *config)
+{
+	struct resource *res;
+	void __iomem *regs;
+
+	regs =3D devm_platform_get_and_ioremap_resource(pdev, index, &res);
+	if (IS_ERR(regs))
+		return regs;
+
+	return devm_regmap_init_mmio(&pdev->dev, regs, config);
+}
+
+static inline struct regmap *
+ocelot_regmap_from_resource_optional(struct platform_device *pdev,
+				     unsigned int index,
+				     const struct regmap_config *config)
+{
+	struct resource *res;
+	void __iomem *regs;
+
+	res =3D platform_get_resource(pdev, IORESOURCE_MEM, index);
+	if (!res)
+		return NULL;
+
+	regs =3D devm_ioremap_resource(&pdev->dev, r);
+	if (IS_ERR(regs))
+		return regs;
+
+	return devm_regmap_init_mmio(&pdev->dev, regs, config);
+}
+
+and these would be the full versions:
+
+static struct regmap *
+ocelot_regmap_from_mem_resource(struct device *dev, struct resource *res,
+				const struct regmap_config *config)
+{
+	void __iomem *regs;
+
+	regs =3D devm_ioremap_resource(dev, r);
+	if (IS_ERR(regs))
+		return regs;
+
+	return devm_regmap_init_mmio(dev, regs, config);
+}
+
+static struct regmap *
+ocelot_regmap_from_reg_resource(struct device *dev, struct resource *res,
+				const struct regmap_config *config)
+{
+	/* Open question: how to differentiate SPI from I2C resources? */
+	return ocelot_spi_init_regmap(dev->parent, dev, res);
+}
+
+struct regmap *
+ocelot_regmap_from_resource_optional(struct platform_device *pdev,
+				     unsigned int index,
+				     const struct regmap_config *config)
+{
+	struct device *dev =3D &pdev->dev;
+	struct resource *res;
+
+	res =3D platform_get_resource(pdev, IORESOURCE_MEM, index);
+	if (res)
+		return ocelot_regmap_from_mem_resource(dev, res, config);
+
+	/*
+	 * Fall back to using IORESOURCE_REG, which is possible in an
+	 * MFD configuration
+	 */
+	res =3D platform_get_resource(pdev, IORESOURCE_REG, index);
+	if (res)
+		return ocelot_regmap_from_reg_resource(dev, res, config);
+
+	return NULL;
+}
+
+struct regmap *
+ocelot_regmap_from_resource(struct platform_device *pdev,
+			    unsigned int index,
+			    const struct regmap_config *config)
+{
+	struct regmap *map;
+
+	map =3D ocelot_regmap_from_resource_optional(pdev, index, config);
+	return map ? : ERR_PTR(-ENOENT);
+}
+
+I hope I didn't get something wrong, this is all code written within the
+email client, so it is obviously not compiled/tested....=
