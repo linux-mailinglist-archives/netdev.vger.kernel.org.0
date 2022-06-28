@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CAED55E999
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 18:42:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE72C55E89B
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 18:36:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346248AbiF1N7j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 09:59:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38240 "EHLO
+        id S1347116AbiF1N7n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 09:59:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245663AbiF1N7X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 09:59:23 -0400
+        with ESMTP id S1347089AbiF1N7f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 09:59:35 -0400
 Received: from mint-fitpc2.mph.net (unknown [81.168.73.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5A5D735A91
-        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 06:59:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C68B83617A
+        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 06:59:34 -0700 (PDT)
 Received: from palantir17.mph.net (unknown [192.168.0.4])
-        by mint-fitpc2.mph.net (Postfix) with ESMTP id 99CF2320102;
-        Tue, 28 Jun 2022 14:59:21 +0100 (BST)
+        by mint-fitpc2.mph.net (Postfix) with ESMTP id 12CF7320102;
+        Tue, 28 Jun 2022 14:59:34 +0100 (BST)
 Received: from localhost ([::1] helo=palantir17.mph.net)
         by palantir17.mph.net with esmtp (Exim 4.95)
         (envelope-from <habetsm.xilinx@gmail.com>)
-        id 1o6BkO-0008HK-HS;
-        Tue, 28 Jun 2022 14:59:20 +0100
-Subject: [PATCH net-next v2 03/10] sfc: Remove netdev init from
- efx_init_struct
+        id 1o6Bka-0008HV-Ud;
+        Tue, 28 Jun 2022 14:59:32 +0100
+Subject: [PATCH net-next v2 04/10] sfc: Change BUG_ON to WARN_ON and recovery
+ code.
 From:   Martin Habets <habetsm.xilinx@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com, jonathan.s.cooper@amd.com
 Cc:     netdev@vger.kernel.org, ecree.xilinx@gmail.com
-Date:   Tue, 28 Jun 2022 14:59:20 +0100
-Message-ID: <165642476042.31669.15853043973065279553.stgit@palantir17.mph.net>
+Date:   Tue, 28 Jun 2022 14:59:32 +0100
+Message-ID: <165642477283.31669.14698542396209546371.stgit@palantir17.mph.net>
 In-Reply-To: <165642465886.31669.17429834766693417246.stgit@palantir17.mph.net>
 References: <165642465886.31669.17429834766693417246.stgit@palantir17.mph.net>
 User-Agent: StGit/0.19
@@ -48,97 +48,28 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jonathan Cooper <jonathan.s.cooper@amd.com>
 
-Move functionality involving the struct net_device out of
-efx_init_struct so that we can initialise without a net dev
-for VDPA operation.
+Pre-emptively fix a checkpatch warning in a subsequent patch.
 
 Signed-off-by: Jonathan Cooper <jonathan.s.cooper@amd.com>
 Co-developed-by: Martin Habets <habetsm.xilinx@gmail.com>
 Signed-off-by: Martin Habets <habetsm.xilinx@gmail.com>
 ---
- drivers/net/ethernet/sfc/ef100.c      |    4 +++-
- drivers/net/ethernet/sfc/efx.c        |    3 ++-
- drivers/net/ethernet/sfc/efx_common.c |    5 +----
- drivers/net/ethernet/sfc/efx_common.h |    3 +--
- 4 files changed, 7 insertions(+), 8 deletions(-)
+ drivers/net/ethernet/sfc/efx.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/sfc/ef100.c b/drivers/net/ethernet/sfc/ef100.c
-index 173f0ecebc70..3b8f02b59d31 100644
---- a/drivers/net/ethernet/sfc/ef100.c
-+++ b/drivers/net/ethernet/sfc/ef100.c
-@@ -469,10 +469,12 @@ static int ef100_pci_probe(struct pci_dev *pci_dev,
- 
- 	pci_set_drvdata(pci_dev, efx);
- 	SET_NETDEV_DEV(net_dev, &pci_dev->dev);
--	rc = efx_init_struct(efx, pci_dev, net_dev);
-+	efx->net_dev = net_dev;
-+	rc = efx_init_struct(efx, pci_dev);
- 	if (rc)
- 		goto fail;
- 
-+	efx->mdio.dev = net_dev;
- 	efx->vi_stride = EF100_DEFAULT_VI_STRIDE;
- 	netif_info(efx, probe, efx->net_dev,
- 		   "Solarflare EF100 NIC detected\n");
 diff --git a/drivers/net/ethernet/sfc/efx.c b/drivers/net/ethernet/sfc/efx.c
-index 7f4e96a422e6..955271ff06bb 100644
+index 955271ff06bb..dead69025bf5 100644
 --- a/drivers/net/ethernet/sfc/efx.c
 +++ b/drivers/net/ethernet/sfc/efx.c
-@@ -1056,9 +1056,10 @@ static int efx_pci_probe(struct pci_dev *pci_dev,
+@@ -774,7 +774,8 @@ static void efx_unregister_netdev(struct efx_nic *efx)
+ 	if (!efx->net_dev)
+ 		return;
  
- 	pci_set_drvdata(pci_dev, efx);
- 	SET_NETDEV_DEV(net_dev, &pci_dev->dev);
--	rc = efx_init_struct(efx, pci_dev, net_dev);
-+	rc = efx_init_struct(efx, pci_dev);
- 	if (rc)
- 		goto fail1;
-+	efx->mdio.dev = net_dev;
+-	BUG_ON(netdev_priv(efx->net_dev) != efx);
++	if (WARN_ON(netdev_priv(efx->net_dev) != efx))
++		return;
  
- 	pci_info(pci_dev, "Solarflare NIC detected\n");
- 
-diff --git a/drivers/net/ethernet/sfc/efx_common.c b/drivers/net/ethernet/sfc/efx_common.c
-index 0e0e86a53407..de37d415a6f9 100644
---- a/drivers/net/ethernet/sfc/efx_common.c
-+++ b/drivers/net/ethernet/sfc/efx_common.c
-@@ -978,8 +978,7 @@ void efx_port_dummy_op_void(struct efx_nic *efx) {}
- /* This zeroes out and then fills in the invariants in a struct
-  * efx_nic (including all sub-structures).
-  */
--int efx_init_struct(struct efx_nic *efx,
--		    struct pci_dev *pci_dev, struct net_device *net_dev)
-+int efx_init_struct(struct efx_nic *efx, struct pci_dev *pci_dev)
- {
- 	int rc = -ENOMEM;
- 
-@@ -998,7 +997,6 @@ int efx_init_struct(struct efx_nic *efx,
- 	efx->state = STATE_UNINIT;
- 	strlcpy(efx->name, pci_name(pci_dev), sizeof(efx->name));
- 
--	efx->net_dev = net_dev;
- 	efx->rx_prefix_size = efx->type->rx_prefix_size;
- 	efx->rx_ip_align =
- 		NET_IP_ALIGN ? (efx->rx_prefix_size + NET_IP_ALIGN) % 4 : 0;
-@@ -1023,7 +1021,6 @@ int efx_init_struct(struct efx_nic *efx,
- 	efx->rps_hash_table = kcalloc(EFX_ARFS_HASH_TABLE_SIZE,
- 				      sizeof(*efx->rps_hash_table), GFP_KERNEL);
- #endif
--	efx->mdio.dev = net_dev;
- 	INIT_WORK(&efx->mac_work, efx_mac_work);
- 	init_waitqueue_head(&efx->flush_wq);
- 
-diff --git a/drivers/net/ethernet/sfc/efx_common.h b/drivers/net/ethernet/sfc/efx_common.h
-index 022ba56736a7..93babc1a2678 100644
---- a/drivers/net/ethernet/sfc/efx_common.h
-+++ b/drivers/net/ethernet/sfc/efx_common.h
-@@ -14,8 +14,7 @@
- int efx_init_io(struct efx_nic *efx, int bar, dma_addr_t dma_mask,
- 		unsigned int mem_map_size);
- void efx_fini_io(struct efx_nic *efx);
--int efx_init_struct(struct efx_nic *efx, struct pci_dev *pci_dev,
--		    struct net_device *net_dev);
-+int efx_init_struct(struct efx_nic *efx, struct pci_dev *pci_dev);
- void efx_fini_struct(struct efx_nic *efx);
- 
- #define EFX_MAX_DMAQ_SIZE 4096UL
+ 	if (efx_dev_registered(efx)) {
+ 		strlcpy(efx->name, pci_name(efx->pci_dev), sizeof(efx->name));
 
 
