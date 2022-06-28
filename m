@@ -2,139 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D370455E8DF
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 18:37:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB4A955E66E
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 18:27:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347280AbiF1P0T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 11:26:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57276 "EHLO
+        id S1346244AbiF1P24 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 28 Jun 2022 11:28:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347495AbiF1P0R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 11:26:17 -0400
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE7FD2DA95;
-        Tue, 28 Jun 2022 08:26:15 -0700 (PDT)
-Received: by mail-wm1-x32e.google.com with SMTP id h14-20020a1ccc0e000000b0039eff745c53so7797242wmb.5;
-        Tue, 28 Jun 2022 08:26:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fvFBEHCo1qH1EpWhDVKqHf9IDy6JRx+nY8qFP/kBMhY=;
-        b=KxQLq7QONownthdqop92oYKwYYFYISLoMKf9ehLy0vv1r8UFYTE+7PgxsoQ5u76CnT
-         rZ8H9Zd6PryENnGnjZxlS2I+xQsLlNsdD9jgnmRB0PEMWML5CGrSEsvonVfyeJXyD1WI
-         2VC7XYo2XPTbxGiXeCyjX8yN733r44TRNivAeerqD9xLb4OQ2vMyarl4Ga96Ef1Xl9Ha
-         w+WNUWBFsuzhtnO/5Y3iYrbgzvbohsI4sCmYrs8TSuZ86JGvImK10xRGjPpkGIMnJiJU
-         c0FQBO16LV+jH5uJccBbgXI/ctyufg5SBxOpac+95wDfEt7FQ0UmrEunzOzZTUVgNCnX
-         7Tsg==
+        with ESMTP id S1345696AbiF1P2z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 11:28:55 -0400
+Received: from mail-qv1-f47.google.com (mail-qv1-f47.google.com [209.85.219.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E4FBBF9;
+        Tue, 28 Jun 2022 08:28:54 -0700 (PDT)
+Received: by mail-qv1-f47.google.com with SMTP id q4so20506459qvq.8;
+        Tue, 28 Jun 2022 08:28:54 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fvFBEHCo1qH1EpWhDVKqHf9IDy6JRx+nY8qFP/kBMhY=;
-        b=CK42xg60Sp8N1BA1Afz+sjo1e0zr8jKeUFn1b2XFdNLfXFKE2JiwVebsDUhwp+SpK8
-         N180Yak9LfefKBL95JdwEXP63NSLNtb+HjobXP/7vqJ50cLMFoGWrFPHZkzdLz6cy3tN
-         xe6wytKW/1CRusfRhAldnELm0t7099LQFuOXJRYndOy6BTTt6z8sDHlBifGwkuJ7zNqW
-         i2VeQedlxva6bvUSJW/cts47BWzBmw51Zh3OkosxTjWL8xQM8JxeZzdsDP5/472ll+V8
-         QDyAiJaWdz0hO4U0WWQBByKfp6VvmoMqoG4iZ6H/a7OJ9fcY8TNNj0HaNFxIlnUCbei0
-         YhjA==
-X-Gm-Message-State: AJIora/tslDfGPQgNylWWQiMvOlfOeellJIHdx4Ha9G0Vr5ndI8Xahup
-        I0opzGwl1OPvTRwp1j57im8milNzVEdr0A==
-X-Google-Smtp-Source: AGRyM1sA6ZFCQWb1zW117IHiYrAI11XwEaU/NW/NufaxRKB6mQkfCKPdHnyekumv+v78K1vhafEvnw==
-X-Received: by 2002:a05:600c:6013:b0:3a0:2aec:8695 with SMTP id az19-20020a05600c601300b003a02aec8695mr176135wmb.192.1656429974248;
-        Tue, 28 Jun 2022 08:26:14 -0700 (PDT)
-Received: from localhost.localdomain (91-170-156-47.subs.proxad.net. [91.170.156.47])
-        by smtp.gmail.com with ESMTPSA id c3-20020a05600c0a4300b00397393419e3sm26293264wmq.28.2022.06.28.08.26.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jun 2022 08:26:13 -0700 (PDT)
-From:   Julien Salleyron <julien.salleyron@gmail.com>
-To:     bpf@vger.kernel.org, netdev@vger.kernel.org
-Cc:     Julien Salleyron <julien.salleyron@gmail.com>,
-        Marc Vertes <mvertes@free.fr>
-Subject: [PATCH] net: tls: fix tls with sk_redirect using a BPF verdict.
-Date:   Tue, 28 Jun 2022 17:25:05 +0200
-Message-Id: <20220628152505.298790-1-julien.salleyron@gmail.com>
-X-Mailer: git-send-email 2.36.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=rWGuKnx4Ujs9MkjGuIowwwhdvBAe4X1vSQOEKzeoNPs=;
+        b=4DCbD1rF0scov5Ko7iDju9vfgg7rLsjW7qsJGtC8D6jre+pPsBC78/VT9hv3JGZOAt
+         34wSXyjcaeQwKqfBk81e8P4l+7PQ2q8QUxmcrBBn4gXrpgESafmFXlySYvuULJf0mxF1
+         tsVkNNxN8S7PMOo/6TULTnOHdDKxF/bF65JXC7e1g558pzmNdw5uQZCJh6KT+pwfLeCR
+         zh+vFHzhZFjVBzBbUetd+BxoFLq5qk2Q6N9j0/IpU4ulKe+UmChiU+bKe8tZNkje2yPw
+         ocje7m++kHyNCGrWFr8gJknXDGZbgEIzd+ueJgZltbtQ0BCpXAHZjHQqgw5Bi88Foqdw
+         JvQA==
+X-Gm-Message-State: AJIora+Ia7iN9nC1l+uansP/0g+kOmd8RmPF2bhIwI1n2XulP1/PrTEB
+        az5bSLIuee1Yj/XMQBoConNUcMxllDfxRQ==
+X-Google-Smtp-Source: AGRyM1tqwjvQCLtYoNT4ij+Qnjr0uI8ehRX4sKRW0KViu46Vu9lNJtAIA8G+uJH5CjOBrnraFMRByw==
+X-Received: by 2002:a05:622a:1108:b0:305:3092:b831 with SMTP id e8-20020a05622a110800b003053092b831mr13808695qty.624.1656430133241;
+        Tue, 28 Jun 2022 08:28:53 -0700 (PDT)
+Received: from mail-yb1-f176.google.com (mail-yb1-f176.google.com. [209.85.219.176])
+        by smtp.gmail.com with ESMTPSA id m14-20020a05620a290e00b006a6b498e23esm12226163qkp.81.2022.06.28.08.28.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 28 Jun 2022 08:28:52 -0700 (PDT)
+Received: by mail-yb1-f176.google.com with SMTP id r3so22838484ybr.6;
+        Tue, 28 Jun 2022 08:28:52 -0700 (PDT)
+X-Received: by 2002:a05:6902:1141:b0:669:3f2a:c6bb with SMTP id
+ p1-20020a056902114100b006693f2ac6bbmr18971911ybu.365.1656430131905; Tue, 28
+ Jun 2022 08:28:51 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <20220624144001.95518-1-clement.leger@bootlin.com> <20220624144001.95518-13-clement.leger@bootlin.com>
+In-Reply-To: <20220624144001.95518-13-clement.leger@bootlin.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 28 Jun 2022 17:28:39 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdWDL7k9m_ephLsFtsfceKPkO5WF=bbp6iQMaU+608H-Ew@mail.gmail.com>
+Message-ID: <CAMuHMdWDL7k9m_ephLsFtsfceKPkO5WF=bbp6iQMaU+608H-Ew@mail.gmail.com>
+Subject: Re: [PATCH net-next v9 12/16] ARM: dts: r9a06g032: describe MII converter
+To:     =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?UTF-8?Q?Miqu=C3=A8l_Raynal?= <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch allows to use KTLS on a socket where we apply sk_redirect using a BPF
-verdict program.
+On Fri, Jun 24, 2022 at 4:41 PM Clément Léger <clement.leger@bootlin.com> wrote:
+> Add the MII converter node which describes the MII converter that is
+> present on the RZ/N1 SoC.
+>
+> Signed-off-by: Clément Léger <clement.leger@bootlin.com>
 
-Without this patch, we see that the data received after the redirection are
-decrypted but with an incorrect offset and length. It seems to us that the
-offset and length are correct in the stream-parser data, but finally not applied
-in the skb. We have simply applied those values to the skb.
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+i.e. will queue in renesas-devel for v5.20.
 
-In the case of regular sockets, we saw a big performance improvement from
-applying redirect. This is not the case now with KTLS, may be related to the
-following point.
+Gr{oetje,eeting}s,
 
-It is still necessary to perform a read operation (never triggered) from user
-space despite the redirection. It makes no sense, since this read operation is
-not necessary on regular sockets without KTLS.
+                        Geert
 
-We do not see how to fix this problem without a change of architecture, for
-example by performing TLS decrypt directly inside the BPF verdict program.
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-An example program can be found at
-https://github.com/juliens/ktls-bpf_redirect-example/
-
-Co-authored-by: Marc Vertes <mvertes@free.fr>
----
- net/tls/tls_sw.c                           | 6 ++++++
- tools/testing/selftests/bpf/test_sockmap.c | 8 +++-----
- 2 files changed, 9 insertions(+), 5 deletions(-)
-
-diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
-index 0513f82b8537..a409f8a251db 100644
---- a/net/tls/tls_sw.c
-+++ b/net/tls/tls_sw.c
-@@ -1839,8 +1839,14 @@ int tls_sw_recvmsg(struct sock *sk,
- 			if (bpf_strp_enabled) {
- 				/* BPF may try to queue the skb */
- 				__skb_unlink(skb, &ctx->rx_list);
-+
- 				err = sk_psock_tls_strp_read(psock, skb);
-+
- 				if (err != __SK_PASS) {
-+                    if (err == __SK_REDIRECT) {
-+                        skb->data += rxm->offset;
-+                        skb->len = rxm->full_len;
-+                    }
- 					rxm->offset = rxm->offset + rxm->full_len;
- 					rxm->full_len = 0;
- 					if (err == __SK_DROP)
-diff --git a/tools/testing/selftests/bpf/test_sockmap.c b/tools/testing/selftests/bpf/test_sockmap.c
-index 0fbaccdc8861..503e0f3d16a7 100644
---- a/tools/testing/selftests/bpf/test_sockmap.c
-+++ b/tools/testing/selftests/bpf/test_sockmap.c
-@@ -739,13 +739,11 @@ static int sendmsg_test(struct sockmap_options *opt)
- 
- 	if (ktls) {
- 		/* Redirecting into non-TLS socket which sends into a TLS
--		 * socket is not a valid test. So in this case lets not
--		 * enable kTLS but still run the test.
-+		 * socket is not a valid test. So in this case just skip
-+		 * the test.
- 		 */
- 		if (!txmsg_redir || txmsg_ingress) {
--			err = sockmap_init_ktls(opt->verbose, rx_fd);
--			if (err)
--				return err;
-+			return 0;
- 		}
- 		err = sockmap_init_ktls(opt->verbose, c1);
- 		if (err)
--- 
-2.36.1
-
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
