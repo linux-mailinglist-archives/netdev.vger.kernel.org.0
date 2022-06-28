@@ -2,33 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1891055E758
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 18:32:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D44FC55E6A1
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 18:30:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345766AbiF1OAC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 10:00:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39504 "EHLO
+        id S1347087AbiF1OAD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 10:00:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347089AbiF1N77 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 09:59:59 -0400
+        with ESMTP id S1347059AbiF1OAC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 10:00:02 -0400
 Received: from mint-fitpc2.mph.net (unknown [81.168.73.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A79D436313
-        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 06:59:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7471336170
+        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 07:00:01 -0700 (PDT)
 Received: from palantir17.mph.net (unknown [192.168.0.4])
-        by mint-fitpc2.mph.net (Postfix) with ESMTP id 72C94320102;
-        Tue, 28 Jun 2022 14:59:46 +0100 (BST)
+        by mint-fitpc2.mph.net (Postfix) with ESMTP id 9F892320102;
+        Tue, 28 Jun 2022 15:00:00 +0100 (BST)
 Received: from localhost ([::1] helo=palantir17.mph.net)
         by palantir17.mph.net with esmtp (Exim 4.95)
         (envelope-from <habetsm.xilinx@gmail.com>)
-        id 1o6Bkn-0008Hf-By;
-        Tue, 28 Jun 2022 14:59:45 +0100
-Subject: [PATCH net-next v2 05/10] sfc: Encapsulate access to netdev_priv()
+        id 1o6Bkz-0008Hw-Oh;
+        Tue, 28 Jun 2022 14:59:57 +0100
+Subject: [PATCH net-next v2 06/10] sfc: Separate efx_nic memory from
+ net_device memory
 From:   Martin Habets <habetsm.xilinx@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com, jonathan.s.cooper@amd.com
 Cc:     netdev@vger.kernel.org, ecree.xilinx@gmail.com
-Date:   Tue, 28 Jun 2022 14:59:45 +0100
-Message-ID: <165642478523.31669.2687944929091946086.stgit@palantir17.mph.net>
+Date:   Tue, 28 Jun 2022 14:59:57 +0100
+Message-ID: <165642479764.31669.184417069047565479.stgit@palantir17.mph.net>
 In-Reply-To: <165642465886.31669.17429834766693417246.stgit@palantir17.mph.net>
 References: <165642465886.31669.17429834766693417246.stgit@palantir17.mph.net>
 User-Agent: StGit/0.19
@@ -47,747 +48,159 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jonathan Cooper <jonathan.s.cooper@amd.com>
 
-Once we separate struct efx_nic memory from net_device memory the
-existing usage will have to change.
-Apart from the new function efx_netdev_priv() accesses have been
-changed using:
-  sed -i 's/netdev_priv/efx_netdev_priv/'
+As we have a lot of common code this applies to all NIC architectures.
 
 Signed-off-by: Jonathan Cooper <jonathan.s.cooper@amd.com>
 Co-developed-by: Martin Habets <habetsm.xilinx@gmail.com>
 Signed-off-by: Martin Habets <habetsm.xilinx@gmail.com>
 ---
- drivers/net/ethernet/sfc/ef10.c           |    4 +-
- drivers/net/ethernet/sfc/ef100.c          |    2 +
- drivers/net/ethernet/sfc/ef100_ethtool.c  |    2 +
- drivers/net/ethernet/sfc/ef100_netdev.c   |    8 ++---
- drivers/net/ethernet/sfc/efx.c            |   20 ++++++------
- drivers/net/ethernet/sfc/efx_common.c     |   18 +++++------
- drivers/net/ethernet/sfc/ethtool.c        |   22 +++++++------
- drivers/net/ethernet/sfc/ethtool_common.c |   48 +++++++++++++++--------------
- drivers/net/ethernet/sfc/mcdi_port.c      |    4 +-
- drivers/net/ethernet/sfc/net_driver.h     |    5 +++
- drivers/net/ethernet/sfc/rx_common.c      |    4 +-
- drivers/net/ethernet/sfc/sriov.c          |   10 +++---
- drivers/net/ethernet/sfc/tx.c             |    4 +-
- 13 files changed, 78 insertions(+), 73 deletions(-)
+ drivers/net/ethernet/sfc/ef100.c        |   18 +++++++++++++++---
+ drivers/net/ethernet/sfc/ef100_netdev.c |    2 +-
+ drivers/net/ethernet/sfc/efx.c          |   20 ++++++++++++++++----
+ drivers/net/ethernet/sfc/net_driver.h   |   15 ++++++++++++++-
+ 4 files changed, 46 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
-index 186cb28c03bd..a99c3a6b912c 100644
---- a/drivers/net/ethernet/sfc/ef10.c
-+++ b/drivers/net/ethernet/sfc/ef10.c
-@@ -3874,7 +3874,7 @@ static int efx_ef10_udp_tnl_set_port(struct net_device *dev,
- 				     unsigned int table, unsigned int entry,
- 				     struct udp_tunnel_info *ti)
- {
--	struct efx_nic *efx = netdev_priv(dev);
-+	struct efx_nic *efx = efx_netdev_priv(dev);
- 	struct efx_ef10_nic_data *nic_data;
- 	int efx_tunnel_type, rc;
- 
-@@ -3934,7 +3934,7 @@ static int efx_ef10_udp_tnl_unset_port(struct net_device *dev,
- 				       unsigned int table, unsigned int entry,
- 				       struct udp_tunnel_info *ti)
- {
--	struct efx_nic *efx = netdev_priv(dev);
-+	struct efx_nic *efx = efx_netdev_priv(dev);
- 	struct efx_ef10_nic_data *nic_data;
- 	int rc;
- 
 diff --git a/drivers/net/ethernet/sfc/ef100.c b/drivers/net/ethernet/sfc/ef100.c
-index 3b8f02b59d31..96b99966ce25 100644
+index 96b99966ce25..a77100239e7c 100644
 --- a/drivers/net/ethernet/sfc/ef100.c
 +++ b/drivers/net/ethernet/sfc/ef100.c
-@@ -464,7 +464,7 @@ static int ef100_pci_probe(struct pci_dev *pci_dev,
- 	net_dev = alloc_etherdev_mq(sizeof(*efx), EFX_MAX_CORE_TX_QUEUES);
+@@ -423,6 +423,7 @@ static int ef100_pci_find_func_ctrl_window(struct efx_nic *efx,
+  */
+ static void ef100_pci_remove(struct pci_dev *pci_dev)
+ {
++	struct efx_probe_data *probe_data;
+ 	struct efx_nic *efx;
+ 
+ 	efx = pci_get_drvdata(pci_dev);
+@@ -448,6 +449,8 @@ static void ef100_pci_remove(struct pci_dev *pci_dev)
+ 	pci_set_drvdata(pci_dev, NULL);
+ 	efx_fini_struct(efx);
+ 	free_netdev(efx->net_dev);
++	probe_data = container_of(efx, struct efx_probe_data, efx);
++	kfree(probe_data);
+ 
+ 	pci_disable_pcie_error_reporting(pci_dev);
+ };
+@@ -455,16 +458,25 @@ static void ef100_pci_remove(struct pci_dev *pci_dev)
+ static int ef100_pci_probe(struct pci_dev *pci_dev,
+ 			   const struct pci_device_id *entry)
+ {
++	struct efx_probe_data *probe_data, **probe_ptr;
+ 	struct ef100_func_ctl_window fcw = { 0 };
+ 	struct net_device *net_dev;
+ 	struct efx_nic *efx;
+ 	int rc;
+ 
+-	/* Allocate and initialise a struct net_device and struct efx_nic */
+-	net_dev = alloc_etherdev_mq(sizeof(*efx), EFX_MAX_CORE_TX_QUEUES);
++	/* Allocate probe data and struct efx_nic */
++	probe_data = kzalloc(sizeof(*probe_data), GFP_KERNEL);
++	if (!probe_data)
++		return -ENOMEM;
++	probe_data->pci_dev = pci_dev;
++	efx = &probe_data->efx;
++
++	/* Allocate and initialise a struct net_device */
++	net_dev = alloc_etherdev_mq(sizeof(probe_data), EFX_MAX_CORE_TX_QUEUES);
  	if (!net_dev)
  		return -ENOMEM;
--	efx = netdev_priv(net_dev);
-+	efx = efx_netdev_priv(net_dev);
+-	efx = efx_netdev_priv(net_dev);
++	probe_ptr = netdev_priv(net_dev);
++	*probe_ptr = probe_data;
  	efx->type = (const struct efx_nic_type *)entry->driver_data;
  
  	pci_set_drvdata(pci_dev, efx);
-diff --git a/drivers/net/ethernet/sfc/ef100_ethtool.c b/drivers/net/ethernet/sfc/ef100_ethtool.c
-index 5dba4125d953..702abbe59b76 100644
---- a/drivers/net/ethernet/sfc/ef100_ethtool.c
-+++ b/drivers/net/ethernet/sfc/ef100_ethtool.c
-@@ -26,7 +26,7 @@ ef100_ethtool_get_ringparam(struct net_device *net_dev,
- 			    struct kernel_ethtool_ringparam *kernel_ring,
- 			    struct netlink_ext_ack *extack)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 
- 	ring->rx_max_pending = EFX_EF100_MAX_DMAQ_SIZE;
- 	ring->tx_max_pending = EFX_EF100_MAX_DMAQ_SIZE;
 diff --git a/drivers/net/ethernet/sfc/ef100_netdev.c b/drivers/net/ethernet/sfc/ef100_netdev.c
-index 3bb9a79bad22..e833eaaf61b6 100644
+index e833eaaf61b6..7a80979f4ab7 100644
 --- a/drivers/net/ethernet/sfc/ef100_netdev.c
 +++ b/drivers/net/ethernet/sfc/ef100_netdev.c
-@@ -79,7 +79,7 @@ static int ef100_remap_bar(struct efx_nic *efx, int max_vis)
-  */
- static int ef100_net_stop(struct net_device *net_dev)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 
- 	netif_dbg(efx, ifdown, efx->net_dev, "closing on CPU %d\n",
- 		  raw_smp_processor_id());
-@@ -104,7 +104,7 @@ static int ef100_net_stop(struct net_device *net_dev)
- /* Context: process, rtnl_lock() held. */
- static int ef100_net_open(struct net_device *net_dev)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 	unsigned int allocated_vis;
- 	int rc;
- 
-@@ -193,7 +193,7 @@ static int ef100_net_open(struct net_device *net_dev)
- static netdev_tx_t ef100_hard_start_xmit(struct sk_buff *skb,
- 					 struct net_device *net_dev)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 	struct efx_tx_queue *tx_queue;
- 	struct efx_channel *channel;
- 	int rc;
 @@ -243,7 +243,7 @@ int ef100_netdev_event(struct notifier_block *this,
  	struct efx_nic *efx = container_of(this, struct efx_nic, netdev_notifier);
  	struct net_device *net_dev = netdev_notifier_info_to_dev(ptr);
  
--	if (netdev_priv(net_dev) == efx && event == NETDEV_CHANGENAME)
-+	if (efx_netdev_priv(net_dev) == efx && event == NETDEV_CHANGENAME)
+-	if (efx_netdev_priv(net_dev) == efx && event == NETDEV_CHANGENAME)
++	if (efx->net_dev == net_dev && event == NETDEV_CHANGENAME)
  		ef100_update_name(efx);
  
  	return NOTIFY_DONE;
 diff --git a/drivers/net/ethernet/sfc/efx.c b/drivers/net/ethernet/sfc/efx.c
-index dead69025bf5..f874835e1764 100644
+index f874835e1764..c88e9de9dcd0 100644
 --- a/drivers/net/ethernet/sfc/efx.c
 +++ b/drivers/net/ethernet/sfc/efx.c
-@@ -492,7 +492,7 @@ void efx_get_irq_moderation(struct efx_nic *efx, unsigned int *tx_usecs,
+@@ -861,6 +861,7 @@ static void efx_pci_remove_main(struct efx_nic *efx)
   */
- static int efx_ioctl(struct net_device *net_dev, struct ifreq *ifr, int cmd)
+ static void efx_pci_remove(struct pci_dev *pci_dev)
  {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 	struct mii_ioctl_data *data = if_mii(ifr);
++	struct efx_probe_data *probe_data;
+ 	struct efx_nic *efx;
  
- 	if (cmd == SIOCSHWTSTAMP)
-@@ -517,7 +517,7 @@ static int efx_ioctl(struct net_device *net_dev, struct ifreq *ifr, int cmd)
- /* Context: process, rtnl_lock() held. */
- int efx_net_open(struct net_device *net_dev)
+ 	efx = pci_get_drvdata(pci_dev);
+@@ -889,6 +890,8 @@ static void efx_pci_remove(struct pci_dev *pci_dev)
+ 
+ 	efx_fini_struct(efx);
+ 	free_netdev(efx->net_dev);
++	probe_data = container_of(efx, struct efx_probe_data, efx);
++	kfree(probe_data);
+ 
+ 	pci_disable_pcie_error_reporting(pci_dev);
+ };
+@@ -1042,16 +1045,25 @@ static int efx_pci_probe_post_io(struct efx_nic *efx)
+ static int efx_pci_probe(struct pci_dev *pci_dev,
+ 			 const struct pci_device_id *entry)
  {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
++	struct efx_probe_data *probe_data, **probe_ptr;
+ 	struct net_device *net_dev;
+ 	struct efx_nic *efx;
  	int rc;
  
- 	netif_dbg(efx, ifup, efx->net_dev, "opening device on CPU %d\n",
-@@ -551,7 +551,7 @@ int efx_net_open(struct net_device *net_dev)
-  */
- int efx_net_stop(struct net_device *net_dev)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 
- 	netif_dbg(efx, ifdown, efx->net_dev, "closing on CPU %d\n",
- 		  raw_smp_processor_id());
-@@ -564,7 +564,7 @@ int efx_net_stop(struct net_device *net_dev)
- 
- static int efx_vlan_rx_add_vid(struct net_device *net_dev, __be16 proto, u16 vid)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 
- 	if (efx->type->vlan_rx_add_vid)
- 		return efx->type->vlan_rx_add_vid(efx, proto, vid);
-@@ -574,7 +574,7 @@ static int efx_vlan_rx_add_vid(struct net_device *net_dev, __be16 proto, u16 vid
- 
- static int efx_vlan_rx_kill_vid(struct net_device *net_dev, __be16 proto, u16 vid)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 
- 	if (efx->type->vlan_rx_kill_vid)
- 		return efx->type->vlan_rx_kill_vid(efx, proto, vid);
-@@ -643,7 +643,7 @@ static int efx_xdp_setup_prog(struct efx_nic *efx, struct bpf_prog *prog)
- /* Context: process, rtnl_lock() held. */
- static int efx_xdp(struct net_device *dev, struct netdev_bpf *xdp)
- {
--	struct efx_nic *efx = netdev_priv(dev);
-+	struct efx_nic *efx = efx_netdev_priv(dev);
- 
- 	switch (xdp->command) {
- 	case XDP_SETUP_PROG:
-@@ -656,7 +656,7 @@ static int efx_xdp(struct net_device *dev, struct netdev_bpf *xdp)
- static int efx_xdp_xmit(struct net_device *dev, int n, struct xdp_frame **xdpfs,
- 			u32 flags)
- {
--	struct efx_nic *efx = netdev_priv(dev);
-+	struct efx_nic *efx = efx_netdev_priv(dev);
- 
- 	if (!netif_running(dev))
- 		return -EINVAL;
-@@ -678,7 +678,7 @@ static int efx_netdev_event(struct notifier_block *this,
- 
- 	if ((net_dev->netdev_ops == &efx_netdev_ops) &&
- 	    event == NETDEV_CHANGENAME)
--		efx_update_name(netdev_priv(net_dev));
-+		efx_update_name(efx_netdev_priv(net_dev));
- 
- 	return NOTIFY_DONE;
- }
-@@ -774,7 +774,7 @@ static void efx_unregister_netdev(struct efx_nic *efx)
- 	if (!efx->net_dev)
- 		return;
- 
--	if (WARN_ON(netdev_priv(efx->net_dev) != efx))
-+	if (WARN_ON(efx_netdev_priv(efx->net_dev) != efx))
- 		return;
- 
- 	if (efx_dev_registered(efx)) {
-@@ -1051,7 +1051,7 @@ static int efx_pci_probe(struct pci_dev *pci_dev,
- 				     EFX_MAX_RX_QUEUES);
+-	/* Allocate and initialise a struct net_device and struct efx_nic */
+-	net_dev = alloc_etherdev_mqs(sizeof(*efx), EFX_MAX_CORE_TX_QUEUES,
+-				     EFX_MAX_RX_QUEUES);
++	/* Allocate probe data and struct efx_nic */
++	probe_data = kzalloc(sizeof(*probe_data), GFP_KERNEL);
++	if (!probe_data)
++		return -ENOMEM;
++	probe_data->pci_dev = pci_dev;
++	efx = &probe_data->efx;
++
++	/* Allocate and initialise a struct net_device */
++	net_dev = alloc_etherdev_mq(sizeof(probe_data), EFX_MAX_CORE_TX_QUEUES);
  	if (!net_dev)
  		return -ENOMEM;
--	efx = netdev_priv(net_dev);
-+	efx = efx_netdev_priv(net_dev);
+-	efx = efx_netdev_priv(net_dev);
++	probe_ptr = netdev_priv(net_dev);
++	*probe_ptr = probe_data;
++	efx->net_dev = net_dev;
  	efx->type = (const struct efx_nic_type *) entry->driver_data;
  	efx->fixed_features |= NETIF_F_HIGHDMA;
  
-diff --git a/drivers/net/ethernet/sfc/efx_common.c b/drivers/net/ethernet/sfc/efx_common.c
-index de37d415a6f9..b4a101d0d41d 100644
---- a/drivers/net/ethernet/sfc/efx_common.c
-+++ b/drivers/net/ethernet/sfc/efx_common.c
-@@ -167,7 +167,7 @@ static void efx_mac_work(struct work_struct *data)
- 
- int efx_set_mac_address(struct net_device *net_dev, void *data)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 	struct sockaddr *addr = data;
- 	u8 *new_addr = addr->sa_data;
- 	u8 old_addr[6];
-@@ -202,7 +202,7 @@ int efx_set_mac_address(struct net_device *net_dev, void *data)
- /* Context: netif_addr_lock held, BHs disabled. */
- void efx_set_rx_mode(struct net_device *net_dev)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 
- 	if (efx->port_enabled)
- 		queue_work(efx->workqueue, &efx->mac_work);
-@@ -211,7 +211,7 @@ void efx_set_rx_mode(struct net_device *net_dev)
- 
- int efx_set_features(struct net_device *net_dev, netdev_features_t data)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 	int rc;
- 
- 	/* If disabling RX n-tuple filtering, clear existing filters */
-@@ -285,7 +285,7 @@ unsigned int efx_xdp_max_mtu(struct efx_nic *efx)
- /* Context: process, rtnl_lock() held. */
- int efx_change_mtu(struct net_device *net_dev, int new_mtu)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 	int rc;
- 
- 	rc = efx_check_disabled(efx);
-@@ -600,7 +600,7 @@ void efx_stop_all(struct efx_nic *efx)
- /* Context: process, dev_base_lock or RTNL held, non-blocking. */
- void efx_net_stats(struct net_device *net_dev, struct rtnl_link_stats64 *stats)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 
- 	spin_lock_bh(&efx->stats_lock);
- 	efx_nic_update_stats_atomic(efx, NULL, stats);
-@@ -723,7 +723,7 @@ void efx_reset_down(struct efx_nic *efx, enum reset_type method)
- /* Context: netif_tx_lock held, BHs disabled. */
- void efx_watchdog(struct net_device *net_dev, unsigned int txqueue)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 
- 	netif_err(efx, tx_err, efx->net_dev,
- 		  "TX stuck with port_enabled=%d: resetting channels\n",
-@@ -1356,7 +1356,7 @@ static bool efx_can_encap_offloads(struct efx_nic *efx, struct sk_buff *skb)
- netdev_features_t efx_features_check(struct sk_buff *skb, struct net_device *dev,
- 				     netdev_features_t features)
- {
--	struct efx_nic *efx = netdev_priv(dev);
-+	struct efx_nic *efx = efx_netdev_priv(dev);
- 
- 	if (skb->encapsulation) {
- 		if (features & NETIF_F_GSO_MASK)
-@@ -1377,7 +1377,7 @@ netdev_features_t efx_features_check(struct sk_buff *skb, struct net_device *dev
- int efx_get_phys_port_id(struct net_device *net_dev,
- 			 struct netdev_phys_item_id *ppid)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 
- 	if (efx->type->get_phys_port_id)
- 		return efx->type->get_phys_port_id(efx, ppid);
-@@ -1387,7 +1387,7 @@ int efx_get_phys_port_id(struct net_device *net_dev,
- 
- int efx_get_phys_port_name(struct net_device *net_dev, char *name, size_t len)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 
- 	if (snprintf(name, len, "p%u", efx->port_num) >= len)
- 		return -EINVAL;
-diff --git a/drivers/net/ethernet/sfc/ethtool.c b/drivers/net/ethernet/sfc/ethtool.c
-index 48506373721a..364323599f7b 100644
---- a/drivers/net/ethernet/sfc/ethtool.c
-+++ b/drivers/net/ethernet/sfc/ethtool.c
-@@ -33,7 +33,7 @@
- static int efx_ethtool_phys_id(struct net_device *net_dev,
- 			       enum ethtool_phys_id_state state)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 	enum efx_led_mode mode = EFX_LED_DEFAULT;
- 
- 	switch (state) {
-@@ -55,13 +55,13 @@ static int efx_ethtool_phys_id(struct net_device *net_dev,
- 
- static int efx_ethtool_get_regs_len(struct net_device *net_dev)
- {
--	return efx_nic_get_regs_len(netdev_priv(net_dev));
-+	return efx_nic_get_regs_len(efx_netdev_priv(net_dev));
- }
- 
- static void efx_ethtool_get_regs(struct net_device *net_dev,
- 				 struct ethtool_regs *regs, void *buf)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 
- 	regs->version = efx->type->revision;
- 	efx_nic_get_regs(efx, buf);
-@@ -101,7 +101,7 @@ static int efx_ethtool_get_coalesce(struct net_device *net_dev,
- 				    struct kernel_ethtool_coalesce *kernel_coal,
- 				    struct netlink_ext_ack *extack)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 	unsigned int tx_usecs, rx_usecs;
- 	bool rx_adaptive;
- 
-@@ -121,7 +121,7 @@ static int efx_ethtool_set_coalesce(struct net_device *net_dev,
- 				    struct kernel_ethtool_coalesce *kernel_coal,
- 				    struct netlink_ext_ack *extack)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 	struct efx_channel *channel;
- 	unsigned int tx_usecs, rx_usecs;
- 	bool adaptive, rx_may_override_tx;
-@@ -163,7 +163,7 @@ efx_ethtool_get_ringparam(struct net_device *net_dev,
- 			  struct kernel_ethtool_ringparam *kernel_ring,
- 			  struct netlink_ext_ack *extack)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 
- 	ring->rx_max_pending = EFX_MAX_DMAQ_SIZE;
- 	ring->tx_max_pending = EFX_TXQ_MAX_ENT(efx);
-@@ -177,7 +177,7 @@ efx_ethtool_set_ringparam(struct net_device *net_dev,
- 			  struct kernel_ethtool_ringparam *kernel_ring,
- 			  struct netlink_ext_ack *extack)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 	u32 txq_entries;
- 
- 	if (ring->rx_mini_pending || ring->rx_jumbo_pending ||
-@@ -204,7 +204,7 @@ efx_ethtool_set_ringparam(struct net_device *net_dev,
- static void efx_ethtool_get_wol(struct net_device *net_dev,
- 				struct ethtool_wolinfo *wol)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 	return efx->type->get_wol(efx, wol);
- }
- 
-@@ -212,14 +212,14 @@ static void efx_ethtool_get_wol(struct net_device *net_dev,
- static int efx_ethtool_set_wol(struct net_device *net_dev,
- 			       struct ethtool_wolinfo *wol)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 	return efx->type->set_wol(efx, wol->wolopts);
- }
- 
- static void efx_ethtool_get_fec_stats(struct net_device *net_dev,
- 				      struct ethtool_fec_stats *fec_stats)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 
- 	if (efx->type->get_fec_stats)
- 		efx->type->get_fec_stats(efx, fec_stats);
-@@ -228,7 +228,7 @@ static void efx_ethtool_get_fec_stats(struct net_device *net_dev,
- static int efx_ethtool_get_ts_info(struct net_device *net_dev,
- 				   struct ethtool_ts_info *ts_info)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 
- 	/* Software capabilities */
- 	ts_info->so_timestamping = (SOF_TIMESTAMPING_RX_SOFTWARE |
-diff --git a/drivers/net/ethernet/sfc/ethtool_common.c b/drivers/net/ethernet/sfc/ethtool_common.c
-index 3846b76b8972..58ad9d665805 100644
---- a/drivers/net/ethernet/sfc/ethtool_common.c
-+++ b/drivers/net/ethernet/sfc/ethtool_common.c
-@@ -103,7 +103,7 @@ static const struct efx_sw_stat_desc efx_sw_stat_desc[] = {
- void efx_ethtool_get_drvinfo(struct net_device *net_dev,
- 			     struct ethtool_drvinfo *info)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 
- 	strlcpy(info->driver, KBUILD_MODNAME, sizeof(info->driver));
- 	efx_mcdi_print_fwver(efx, info->fw_version,
-@@ -113,14 +113,14 @@ void efx_ethtool_get_drvinfo(struct net_device *net_dev,
- 
- u32 efx_ethtool_get_msglevel(struct net_device *net_dev)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 
- 	return efx->msg_enable;
- }
- 
- void efx_ethtool_set_msglevel(struct net_device *net_dev, u32 msg_enable)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 
- 	efx->msg_enable = msg_enable;
- }
-@@ -128,7 +128,7 @@ void efx_ethtool_set_msglevel(struct net_device *net_dev, u32 msg_enable)
- void efx_ethtool_self_test(struct net_device *net_dev,
- 			   struct ethtool_test *test, u64 *data)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 	struct efx_self_tests *efx_tests;
- 	bool already_up;
- 	int rc = -ENOMEM;
-@@ -176,7 +176,7 @@ void efx_ethtool_self_test(struct net_device *net_dev,
- void efx_ethtool_get_pauseparam(struct net_device *net_dev,
- 				struct ethtool_pauseparam *pause)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 
- 	pause->rx_pause = !!(efx->wanted_fc & EFX_FC_RX);
- 	pause->tx_pause = !!(efx->wanted_fc & EFX_FC_TX);
-@@ -186,7 +186,7 @@ void efx_ethtool_get_pauseparam(struct net_device *net_dev,
- int efx_ethtool_set_pauseparam(struct net_device *net_dev,
- 			       struct ethtool_pauseparam *pause)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 	u8 wanted_fc, old_fc;
- 	u32 old_adv;
- 	int rc = 0;
-@@ -441,7 +441,7 @@ static size_t efx_describe_per_queue_stats(struct efx_nic *efx, u8 *strings)
- 
- int efx_ethtool_get_sset_count(struct net_device *net_dev, int string_set)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 
- 	switch (string_set) {
- 	case ETH_SS_STATS:
-@@ -459,7 +459,7 @@ int efx_ethtool_get_sset_count(struct net_device *net_dev, int string_set)
- void efx_ethtool_get_strings(struct net_device *net_dev,
- 			     u32 string_set, u8 *strings)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 	int i;
- 
- 	switch (string_set) {
-@@ -487,7 +487,7 @@ void efx_ethtool_get_stats(struct net_device *net_dev,
- 			   struct ethtool_stats *stats,
- 			   u64 *data)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 	const struct efx_sw_stat_desc *stat;
- 	struct efx_channel *channel;
- 	struct efx_tx_queue *tx_queue;
-@@ -561,7 +561,7 @@ void efx_ethtool_get_stats(struct net_device *net_dev,
- int efx_ethtool_get_link_ksettings(struct net_device *net_dev,
- 				   struct ethtool_link_ksettings *cmd)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 	struct efx_link_state *link_state = &efx->link_state;
- 
- 	mutex_lock(&efx->mac_lock);
-@@ -584,7 +584,7 @@ int efx_ethtool_get_link_ksettings(struct net_device *net_dev,
- int efx_ethtool_set_link_ksettings(struct net_device *net_dev,
- 				   const struct ethtool_link_ksettings *cmd)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 	int rc;
- 
- 	/* GMAC does not support 1000Mbps HD */
-@@ -604,7 +604,7 @@ int efx_ethtool_set_link_ksettings(struct net_device *net_dev,
- int efx_ethtool_get_fecparam(struct net_device *net_dev,
- 			     struct ethtool_fecparam *fecparam)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 	int rc;
- 
- 	mutex_lock(&efx->mac_lock);
-@@ -617,7 +617,7 @@ int efx_ethtool_get_fecparam(struct net_device *net_dev,
- int efx_ethtool_set_fecparam(struct net_device *net_dev,
- 			     struct ethtool_fecparam *fecparam)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 	int rc;
- 
- 	mutex_lock(&efx->mac_lock);
-@@ -809,7 +809,7 @@ static int efx_ethtool_get_class_rule(struct efx_nic *efx,
- int efx_ethtool_get_rxnfc(struct net_device *net_dev,
- 			  struct ethtool_rxnfc *info, u32 *rule_locs)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 	u32 rss_context = 0;
- 	s32 rc = 0;
- 
-@@ -1127,7 +1127,7 @@ static int efx_ethtool_set_class_rule(struct efx_nic *efx,
- int efx_ethtool_set_rxnfc(struct net_device *net_dev,
- 			  struct ethtool_rxnfc *info)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 
- 	if (efx_filter_get_rx_id_limit(efx) == 0)
- 		return -EOPNOTSUPP;
-@@ -1148,7 +1148,7 @@ int efx_ethtool_set_rxnfc(struct net_device *net_dev,
- 
- u32 efx_ethtool_get_rxfh_indir_size(struct net_device *net_dev)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 
- 	if (efx->n_rx_channels == 1)
- 		return 0;
-@@ -1157,7 +1157,7 @@ u32 efx_ethtool_get_rxfh_indir_size(struct net_device *net_dev)
- 
- u32 efx_ethtool_get_rxfh_key_size(struct net_device *net_dev)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 
- 	return efx->type->rx_hash_key_size;
- }
-@@ -1165,7 +1165,7 @@ u32 efx_ethtool_get_rxfh_key_size(struct net_device *net_dev)
- int efx_ethtool_get_rxfh(struct net_device *net_dev, u32 *indir, u8 *key,
- 			 u8 *hfunc)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 	int rc;
- 
- 	rc = efx->type->rx_pull_rss_config(efx);
-@@ -1186,7 +1186,7 @@ int efx_ethtool_get_rxfh(struct net_device *net_dev, u32 *indir, u8 *key,
- int efx_ethtool_set_rxfh(struct net_device *net_dev, const u32 *indir,
- 			 const u8 *key, const u8 hfunc)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 
- 	/* Hash function is Toeplitz, cannot be changed */
- 	if (hfunc != ETH_RSS_HASH_NO_CHANGE && hfunc != ETH_RSS_HASH_TOP)
-@@ -1205,7 +1205,7 @@ int efx_ethtool_set_rxfh(struct net_device *net_dev, const u32 *indir,
- int efx_ethtool_get_rxfh_context(struct net_device *net_dev, u32 *indir,
- 				 u8 *key, u8 *hfunc, u32 rss_context)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 	struct efx_rss_context *ctx;
- 	int rc = 0;
- 
-@@ -1238,7 +1238,7 @@ int efx_ethtool_set_rxfh_context(struct net_device *net_dev,
- 				 const u8 hfunc, u32 *rss_context,
- 				 bool delete)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 	struct efx_rss_context *ctx;
- 	bool allocated = false;
- 	int rc;
-@@ -1300,7 +1300,7 @@ int efx_ethtool_set_rxfh_context(struct net_device *net_dev,
- 
- int efx_ethtool_reset(struct net_device *net_dev, u32 *flags)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 	int rc;
- 
- 	rc = efx->type->map_reset_flags(flags);
-@@ -1314,7 +1314,7 @@ int efx_ethtool_get_module_eeprom(struct net_device *net_dev,
- 				  struct ethtool_eeprom *ee,
- 				  u8 *data)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 	int ret;
- 
- 	mutex_lock(&efx->mac_lock);
-@@ -1327,7 +1327,7 @@ int efx_ethtool_get_module_eeprom(struct net_device *net_dev,
- int efx_ethtool_get_module_info(struct net_device *net_dev,
- 				struct ethtool_modinfo *modinfo)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 	int ret;
- 
- 	mutex_lock(&efx->mac_lock);
-diff --git a/drivers/net/ethernet/sfc/mcdi_port.c b/drivers/net/ethernet/sfc/mcdi_port.c
-index 94c6a345c0b1..ad4694fa3dda 100644
---- a/drivers/net/ethernet/sfc/mcdi_port.c
-+++ b/drivers/net/ethernet/sfc/mcdi_port.c
-@@ -20,7 +20,7 @@
- static int efx_mcdi_mdio_read(struct net_device *net_dev,
- 			      int prtad, int devad, u16 addr)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 	MCDI_DECLARE_BUF(inbuf, MC_CMD_MDIO_READ_IN_LEN);
- 	MCDI_DECLARE_BUF(outbuf, MC_CMD_MDIO_READ_OUT_LEN);
- 	size_t outlen;
-@@ -46,7 +46,7 @@ static int efx_mcdi_mdio_read(struct net_device *net_dev,
- static int efx_mcdi_mdio_write(struct net_device *net_dev,
- 			       int prtad, int devad, u16 addr, u16 value)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 	MCDI_DECLARE_BUF(inbuf, MC_CMD_MDIO_WRITE_IN_LEN);
- 	MCDI_DECLARE_BUF(outbuf, MC_CMD_MDIO_WRITE_OUT_LEN);
- 	size_t outlen;
 diff --git a/drivers/net/ethernet/sfc/net_driver.h b/drivers/net/ethernet/sfc/net_driver.h
-index 546552d5d86f..df93ffd7092a 100644
+index df93ffd7092a..2228c88a7f31 100644
 --- a/drivers/net/ethernet/sfc/net_driver.h
 +++ b/drivers/net/ethernet/sfc/net_driver.h
-@@ -1166,6 +1166,11 @@ struct efx_nic {
+@@ -1166,9 +1166,22 @@ struct efx_nic {
  	atomic_t n_rx_noskb_drops;
  };
  
-+static inline struct efx_nic *efx_netdev_priv(struct net_device *dev)
-+{
-+	return netdev_priv(dev);
-+}
++/**
++ * struct efx_probe_data - State after hardware probe
++ * @pci_dev: The PCI device
++ * @efx: Efx NIC details
++ */
++struct efx_probe_data {
++	struct pci_dev *pci_dev;
++	struct efx_nic efx;
++};
 +
+ static inline struct efx_nic *efx_netdev_priv(struct net_device *dev)
+ {
+-	return netdev_priv(dev);
++	struct efx_probe_data **probe_ptr = netdev_priv(dev);
++	struct efx_probe_data *probe_data = *probe_ptr;
++
++	return &probe_data->efx;
+ }
+ 
  static inline int efx_dev_registered(struct efx_nic *efx)
- {
- 	return efx->net_dev->reg_state == NETREG_REGISTERED;
-diff --git a/drivers/net/ethernet/sfc/rx_common.c b/drivers/net/ethernet/sfc/rx_common.c
-index fa8b9aacca11..bd21d6ac778a 100644
---- a/drivers/net/ethernet/sfc/rx_common.c
-+++ b/drivers/net/ethernet/sfc/rx_common.c
-@@ -857,7 +857,7 @@ static void efx_filter_rfs_work(struct work_struct *data)
- {
- 	struct efx_async_filter_insertion *req = container_of(data, struct efx_async_filter_insertion,
- 							      work);
--	struct efx_nic *efx = netdev_priv(req->net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(req->net_dev);
- 	struct efx_channel *channel = efx_get_channel(efx, req->rxq_index);
- 	int slot_idx = req - efx->rps_slot;
- 	struct efx_arfs_rule *rule;
-@@ -942,7 +942,7 @@ static void efx_filter_rfs_work(struct work_struct *data)
- int efx_filter_rfs(struct net_device *net_dev, const struct sk_buff *skb,
- 		   u16 rxq_index, u32 flow_id)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 	struct efx_async_filter_insertion *req;
- 	struct efx_arfs_rule *rule;
- 	struct flow_keys fk;
-diff --git a/drivers/net/ethernet/sfc/sriov.c b/drivers/net/ethernet/sfc/sriov.c
-index 3f241e6c881a..fc9f0189f285 100644
---- a/drivers/net/ethernet/sfc/sriov.c
-+++ b/drivers/net/ethernet/sfc/sriov.c
-@@ -10,7 +10,7 @@
- 
- int efx_sriov_set_vf_mac(struct net_device *net_dev, int vf_i, u8 *mac)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 
- 	if (efx->type->sriov_set_vf_mac)
- 		return efx->type->sriov_set_vf_mac(efx, vf_i, mac);
-@@ -21,7 +21,7 @@ int efx_sriov_set_vf_mac(struct net_device *net_dev, int vf_i, u8 *mac)
- int efx_sriov_set_vf_vlan(struct net_device *net_dev, int vf_i, u16 vlan,
- 			  u8 qos, __be16 vlan_proto)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 
- 	if (efx->type->sriov_set_vf_vlan) {
- 		if ((vlan & ~VLAN_VID_MASK) ||
-@@ -40,7 +40,7 @@ int efx_sriov_set_vf_vlan(struct net_device *net_dev, int vf_i, u16 vlan,
- int efx_sriov_set_vf_spoofchk(struct net_device *net_dev, int vf_i,
- 			      bool spoofchk)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 
- 	if (efx->type->sriov_set_vf_spoofchk)
- 		return efx->type->sriov_set_vf_spoofchk(efx, vf_i, spoofchk);
-@@ -51,7 +51,7 @@ int efx_sriov_set_vf_spoofchk(struct net_device *net_dev, int vf_i,
- int efx_sriov_get_vf_config(struct net_device *net_dev, int vf_i,
- 			    struct ifla_vf_info *ivi)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 
- 	if (efx->type->sriov_get_vf_config)
- 		return efx->type->sriov_get_vf_config(efx, vf_i, ivi);
-@@ -62,7 +62,7 @@ int efx_sriov_get_vf_config(struct net_device *net_dev, int vf_i,
- int efx_sriov_set_vf_link_state(struct net_device *net_dev, int vf_i,
- 				int link_state)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 
- 	if (efx->type->sriov_set_vf_link_state)
- 		return efx->type->sriov_set_vf_link_state(efx, vf_i,
-diff --git a/drivers/net/ethernet/sfc/tx.c b/drivers/net/ethernet/sfc/tx.c
-index 138bca611341..79cc0bb76321 100644
---- a/drivers/net/ethernet/sfc/tx.c
-+++ b/drivers/net/ethernet/sfc/tx.c
-@@ -512,7 +512,7 @@ int efx_xdp_tx_buffers(struct efx_nic *efx, int n, struct xdp_frame **xdpfs,
- netdev_tx_t efx_hard_start_xmit(struct sk_buff *skb,
- 				struct net_device *net_dev)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 	struct efx_tx_queue *tx_queue;
- 	unsigned index, type;
- 
-@@ -609,7 +609,7 @@ void efx_init_tx_queue_core_txq(struct efx_tx_queue *tx_queue)
- int efx_setup_tc(struct net_device *net_dev, enum tc_setup_type type,
- 		 void *type_data)
- {
--	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
- 	struct tc_mqprio_qopt *mqprio = type_data;
- 	unsigned tc, num_tc;
- 
 
 
