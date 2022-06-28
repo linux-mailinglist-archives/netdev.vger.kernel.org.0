@@ -2,49 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CA5E55E320
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:36:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D344355E28B
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:35:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244646AbiF1C3j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jun 2022 22:29:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40046 "EHLO
+        id S244589AbiF1C3f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jun 2022 22:29:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244724AbiF1C1w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 22:27:52 -0400
+        with ESMTP id S244823AbiF1C2F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 22:28:05 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0696825EB5;
-        Mon, 27 Jun 2022 19:25:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DEC92612A;
+        Mon, 27 Jun 2022 19:26:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 84F4C61853;
-        Tue, 28 Jun 2022 02:25:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21A49C34115;
-        Tue, 28 Jun 2022 02:25:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9F5236192D;
+        Tue, 28 Jun 2022 02:26:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D649C385A2;
+        Tue, 28 Jun 2022 02:26:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656383138;
-        bh=LAsMc+w7Uo8GAQcfURhGk1NCnmuE4xcX8QY3ixcqMSc=;
+        s=k20201202; t=1656383191;
+        bh=3c+fm8yAKutn57gpVT3sRmiREAIJbO7swD2Smxx7jJA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VWkCKir5+p+LJ/IdYNW94rGafXZ4sudm5QDuUiIBHdNAw5UZqoVyyWHGZKmetuCbN
-         yDFoUdcYO6CStKqHdA3a+oon+s2nhh9F3YCPC7ajh6gSDJk60redcMMFcnYTPMiL1n
-         tknxQyChz9uCm6ao7BIv3ZjgXr9yDA38h0VwiHTNGDFjdsT0bknstedIU4o3Ix5MLu
-         a0rSxzMLu96Cgalp6moQkwsNcMwZlBqMu5X/yWV7aneZUyq9xgiUY3dubBvx4Z2ZMT
-         IUBJH9SJX2YS5XaDhmz1mq7PF5OLgpNhh/Mrs1n0nW8Cv+OTUoFxJH25GLfXh6fMMO
-         lFP+0qWzxadBQ==
+        b=C+TGqMqn3GEFqSy65GoXJ4MdOpcZGR1273dxAAl5S7SuYTTlZNCG8IOn0Z7D74Maa
+         T7lHB4nHd4f9SBHRAv+QX1rq8HPBOdr++zjg/guaVAKVYynKzHRyv3dIzIeMD2aNSi
+         wkj7AWelpO+iAbkAyDW+aLUbAaRjbaM6Oq4/fgkf+mtmIZToWoDibZmJq3TMN06bIZ
+         5wLXBg9HLCERO0ErY50a1334v2Q/Jz0wEgGMdR2oPcNAVJ84gqTxIRMOni98VFvziI
+         QQ9aY5of9IfvJxPRR0WDFH45msDEpo5POTo41No23TtmskoSe2V6+JjPovAU39RbI5
+         GepEWRnsRd0dA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Wentao_Liang <Wentao_Liang_g@163.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, jdmason@kudzu.us,
         edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        jgg@ziepe.ca, paskripkin@gmail.com, christophe.jaillet@wanadoo.fr,
-        arnd@arndb.de, liuhangbin@gmail.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 08/22] drivers/net/ethernet/neterion/vxge: Fix a use-after-free bug in vxge-main.c
-Date:   Mon, 27 Jun 2022 22:25:03 -0400
-Message-Id: <20220628022518.596687-8-sashal@kernel.org>
+        jesse.brandeburg@intel.com, arnd@arndb.de, chi.minghao@zte.com.cn,
+        christophe.jaillet@wanadoo.fr, paskripkin@gmail.com,
+        liuhangbin@gmail.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 06/17] drivers/net/ethernet/neterion/vxge: Fix a use-after-free bug in vxge-main.c
+Date:   Mon, 27 Jun 2022 22:26:04 -0400
+Message-Id: <20220628022615.596977-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220628022518.596687-1-sashal@kernel.org>
-References: <20220628022518.596687-1-sashal@kernel.org>
+In-Reply-To: <20220628022615.596977-1-sashal@kernel.org>
+References: <20220628022615.596977-1-sashal@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 X-stable: review
@@ -203,10 +204,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/neterion/vxge/vxge-main.c b/drivers/net/ethernet/neterion/vxge/vxge-main.c
-index 0766288e2f38..321171afd81e 100644
+index e69e76bb2c77..d17dd9410b96 100644
 --- a/drivers/net/ethernet/neterion/vxge/vxge-main.c
 +++ b/drivers/net/ethernet/neterion/vxge/vxge-main.c
-@@ -4780,10 +4780,10 @@ static void vxge_remove(struct pci_dev *pdev)
+@@ -4788,10 +4788,10 @@ static void vxge_remove(struct pci_dev *pdev)
  	for (i = 0; i < vdev->no_of_vpath; i++)
  		vxge_free_mac_add_list(&vdev->vpaths[i]);
  
