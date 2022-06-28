@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B7DF955EE88
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 22:00:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4233F55EEC1
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 22:00:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233000AbiF1Tvo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 15:51:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45990 "EHLO
+        id S233040AbiF1Tvt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 15:51:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231670AbiF1Tux (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 15:50:53 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0C80381B2;
-        Tue, 28 Jun 2022 12:49:28 -0700 (PDT)
+        with ESMTP id S230089AbiF1Tuw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 15:50:52 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93FFF62FA;
+        Tue, 28 Jun 2022 12:49:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656445768; x=1687981768;
+  t=1656445769; x=1687981769;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=ZoktIBH2DcbAQq3Yb1c6s52MpIMxZuvptyzwO9VbH6M=;
-  b=KDWxERp5hZjnzyL92jLmpa3tHJ/Mbdxukb39r9VL6V4jyQwgzzQMMghj
-   6yjEMKa/twYYIiE/DLNY+AwHM9eJvOgHykwvmb9zu68rPc5p/n4kNBZtx
-   EAE2ze6DML/eNjnh5jtcPsjS0yXLKelHhT3z6Bk5fjM0ztpALcJsF2Bh6
-   qR6X93EHtNYA7y+Qqken7ALmII3/VUh/RfjXOd+DbeEVdFKE7uQbdGASw
-   Ql9GWQ98EvK65v/u5O906ftTlHYe3DKsVvhJ8JYxW6cwx8+iEJR0KxwIu
-   Ty+0NW9oFdnsWBIOJfUC0yFxXplpbtJzq8tFqDHA+QgwV/tsB1Zyz2LvY
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="281869586"
+  bh=SutG8vtwjgxHponFr0JSgxWBk/og3Hhe0diuNsWKHbE=;
+  b=MTibYOcQnodnkJWUOqTgp6T/m8KOaAMZuCjoqwkBhxDSAFVJeuGWDzA0
+   gluNCtMqofVjmVOy5+RApv0SdK1VgM/ebRjUcu3Fhd7U011/mCYSnlcTX
+   w11c8ieCNDmU/dirMoiGk99Z7MizVZxMEudaEhjbH8niNuSRfxyuoj/Sq
+   GPj4rTkSIzlEktthH8uuMAmNoy7omx0/Bn+kWUwszpe9EhMYnpthfUieE
+   mZm1pNzIhT/nbo/bjJigZtA0FDKH1dya4lQB9eJH4Ci3HIsIllDTc93YO
+   72mPI5jR/ZRiC00Z775Zvm0WxiJhdD5c0UDJTg7nH/Q0cu65A3CatPToJ
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="368146910"
 X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
-   d="scan'208";a="281869586"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 12:49:28 -0700
+   d="scan'208";a="368146910"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 12:49:29 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
-   d="scan'208";a="767288101"
+   d="scan'208";a="732883398"
 Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga005.jf.intel.com with ESMTP; 28 Jun 2022 12:49:23 -0700
+  by fmsmga001.fm.intel.com with ESMTP; 28 Jun 2022 12:49:25 -0700
 Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 25SJmr9L022013;
-        Tue, 28 Jun 2022 20:49:22 +0100
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 25SJmr9M022013;
+        Tue, 28 Jun 2022 20:49:23 +0100
 From:   Alexander Lobakin <alexandr.lobakin@intel.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -64,16 +64,16 @@ Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
         Willem de Bruijn <willemb@google.com>, bpf@vger.kernel.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         xdp-hints@xdp-project.net
-Subject: [PATCH RFC bpf-next 21/52] net, xdp: allow metadata > 32
-Date:   Tue, 28 Jun 2022 21:47:41 +0200
-Message-Id: <20220628194812.1453059-22-alexandr.lobakin@intel.com>
+Subject: [PATCH RFC bpf-next 22/52] net, skbuff: add ability to skip skb metadata comparison
+Date:   Tue, 28 Jun 2022 21:47:42 +0200
+Message-Id: <20220628194812.1453059-23-alexandr.lobakin@intel.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220628194812.1453059-1-alexandr.lobakin@intel.com>
 References: <20220628194812.1453059-1-alexandr.lobakin@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -82,98 +82,85 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hardware/driver-prepended XDP metadata might be much bigger than 32
-bytes, especially if it includes a piece of a descriptor.
-Relax the restriction and allow metadata larger than 32 bytes and
-make __skb_metadata_differs() work with bigger lengths. The new
-restriction is pretty much mechanical -- skb_shared_info::meta_len
-is a u8 and XDP_PACKET_HEADROOM is 256 (minus
-`sizeof(struct xdp_frame)`).
-The requirement of having its length aligned to 4 bytes is still
-valid.
+Some XDP metadata fields maybe be unique from frame to frame, not
+necessarily indicating that it's from a different flow. This
+includes frame checksums, timestamps etc.
+The drivers usually carry the metadata to skbs along with the
+payload, and the GRO layer tries to compare the metadata of
+the frames. This not only leads to perf regressions (esp. given
+that metadata can now be larger than 32 bytes -> a slower call to
+memmp() will be used), but also breaks frame coalescing at all.
+To avoid that, add an skb flag indicating that the metadata can
+carry unique values and thus should not be compared. If at least
+one of the skbs passed to skb_metadata_differs() carries it, the
+function will then immediately return reporting that they're
+identical.
+The underscored version of the function is not affected, allowing
+to explicitly compare the meta if needed. The flag is being cleared
+on pskb_expand_head() when the skb_shared_info::meta_len gets
+zeroed.
 
 Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
 ---
- include/linux/skbuff.h | 13 ++++++++-----
- include/net/xdp_meta.h | 21 ++++++++++++++++++++-
- 2 files changed, 28 insertions(+), 6 deletions(-)
+ include/linux/skbuff.h | 18 ++++++++++++++++++
+ net/core/skbuff.c      |  1 +
+ 2 files changed, 19 insertions(+)
 
 diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 82edf0359ab3..a825ea7f375d 100644
+index a825ea7f375d..1c308511acbb 100644
 --- a/include/linux/skbuff.h
 +++ b/include/linux/skbuff.h
-@@ -4096,10 +4096,13 @@ static inline bool __skb_metadata_differs(const struct sk_buff *skb_a,
- {
- 	const void *a = skb_metadata_end(skb_a);
- 	const void *b = skb_metadata_end(skb_b);
--	/* Using more efficient varaiant than plain call to memcmp(). */
--#if defined(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS) && BITS_PER_LONG == 64
- 	u64 diffs = 0;
- 
-+	if (!IS_ENABLED(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS) ||
-+	    BITS_PER_LONG != 64)
-+		goto slow;
+@@ -509,6 +509,11 @@ enum {
+ 	 * charged to the kernel memory.
+ 	 */
+ 	SKBFL_PURE_ZEROCOPY = BIT(2),
 +
-+	/* Using more efficient variant than plain call to memcmp(). */
- 	switch (meta_len) {
- #define __it(x, op) (x -= sizeof(u##op))
- #define __it_diff(a, b, op) (*(u##op *)__it(a, op)) ^ (*(u##op *)__it(b, op))
-@@ -4119,11 +4122,11 @@ static inline bool __skb_metadata_differs(const struct sk_buff *skb_a,
- 		fallthrough;
- 	case  4: diffs |= __it_diff(a, b, 32);
- 		break;
-+	default:
-+slow:
-+		return memcmp(a - meta_len, b - meta_len, meta_len);
- 	}
- 	return diffs;
--#else
--	return memcmp(a - meta_len, b - meta_len, meta_len);
--#endif
++	/* skb metadata may contain unique values such as checksums
++	 * and we should not compare it against others.
++	 */
++	SKBFL_METADATA_NOCOMP = BIT(3),
+ };
+ 
+ #define SKBFL_ZEROCOPY_FRAG	(SKBFL_ZEROCOPY_ENABLE | SKBFL_SHARED_FRAG)
+@@ -4137,6 +4142,9 @@ static inline bool skb_metadata_differs(const struct sk_buff *skb_a,
+ 
+ 	if (!(len_a | len_b))
+ 		return false;
++	if ((skb_shinfo(skb_a)->flags | skb_shinfo(skb_b)->flags) &
++	    SKBFL_METADATA_NOCOMP)
++		return false;
+ 
+ 	return len_a != len_b ?
+ 	       true : __skb_metadata_differs(skb_a, skb_b, len_a);
+@@ -4152,6 +4160,16 @@ static inline void skb_metadata_clear(struct sk_buff *skb)
+ 	skb_metadata_set(skb, 0);
  }
  
- static inline bool skb_metadata_differs(const struct sk_buff *skb_a,
-diff --git a/include/net/xdp_meta.h b/include/net/xdp_meta.h
-index e1f3df9ceb93..3a40189d71c6 100644
---- a/include/net/xdp_meta.h
-+++ b/include/net/xdp_meta.h
-@@ -5,6 +5,7 @@
- #define __LINUX_NET_XDP_META_H__
- 
- #include <net/xdp.h>
-+#include <uapi/linux/bpf.h>
- 
- /* Drivers not supporting XDP metadata can use this helper, which
-  * rejects any room expansion for metadata as a result.
-@@ -21,9 +22,27 @@ xdp_data_meta_unsupported(const struct xdp_buff *xdp)
- 	return unlikely(xdp->data_meta > xdp->data);
- }
- 
-+/**
-+ * xdp_metalen_invalid -- check if the length of a frame's metadata is valid
-+ * @metalen: the length of the frame's metadata
-+ *
-+ * skb_shared_info::meta_len is of 1 byte long, thus it can't be longer than
-+ * 255, but this always can change. XDP_PACKET_HEADROOM is 256, and this is a
-+ * UAPI. sizeof(struct xdp_frame) is reserved since xdp_frame is being placed
-+ * at xdp_buff::data_hard_start whilst being constructed on XDP_REDIRECT.
-+ * The 32-bit alignment requirement is arbitrary, kept for simplicity and,
-+ * sometimes, speed.
-+ */
- static inline bool xdp_metalen_invalid(unsigned long metalen)
- {
--	return (metalen & (sizeof(__u32) - 1)) || (metalen > 32);
-+	typeof(metalen) max;
++static inline void skb_metadata_nocomp_set(struct sk_buff *skb)
++{
++	skb_shinfo(skb)->flags |= SKBFL_METADATA_NOCOMP;
++}
 +
-+	max = min_t(typeof(max),
-+		    (typeof_member(struct skb_shared_info, meta_len))~0UL,
-+		    XDP_PACKET_HEADROOM - sizeof(struct xdp_frame));
-+	BUILD_BUG_ON(!__builtin_constant_p(max));
++static inline void skb_metadata_nocomp_clear(struct sk_buff *skb)
++{
++	skb_shinfo(skb)->flags &= ~SKBFL_METADATA_NOCOMP;
++}
 +
-+	return (metalen & (sizeof(u32) - 1)) || metalen > max;
- }
+ struct sk_buff *skb_clone_sk(struct sk_buff *skb);
  
- #endif /* __LINUX_NET_XDP_META_H__ */
+ #ifdef CONFIG_NETWORK_PHY_TIMESTAMPING
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 00bf35ee8205..5b23fc7f1157 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -1750,6 +1750,7 @@ int pskb_expand_head(struct sk_buff *skb, int nhead, int ntail,
+ 	atomic_set(&skb_shinfo(skb)->dataref, 1);
+ 
+ 	skb_metadata_clear(skb);
++	skb_metadata_nocomp_clear(skb);
+ 
+ 	/* It is not generally safe to change skb->truesize.
+ 	 * For the moment, we really care of rx path, or
 -- 
 2.36.1
 
