@@ -2,40 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A85555E4D0
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:39:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A922055E4AF
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:39:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343666AbiF1NeW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 09:34:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57268 "EHLO
+        id S241827AbiF1Ncm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 09:32:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345252AbiF1Nbr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 09:31:47 -0400
-Received: from smtpbgsg1.qq.com (smtpbgsg1.qq.com [54.254.200.92])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12D5E2A94C
-        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 06:31:18 -0700 (PDT)
-X-QQ-mid: bizesmtp78t1656423060trmfx83z
+        with ESMTP id S1346153AbiF1NcO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 09:32:14 -0400
+Received: from smtpproxy21.qq.com (smtpbg701.qq.com [203.205.195.86])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 562BF55A3
+        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 06:31:22 -0700 (PDT)
+X-QQ-mid: bizesmtp78t1656423065tqijenko
 Received: from localhost.localdomain ( [58.240.82.166])
         by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 28 Jun 2022 21:30:57 +0800 (CST)
+        id ; Tue, 28 Jun 2022 21:31:03 +0800 (CST)
 X-QQ-SSF: 01400000002000G0S000B00A0000000
-X-QQ-FEAT: zCqO8hPdPe7z4KFAQ2d/MgTLxnUx5zs48XI+5lOMBR/3ecyAbEqg7rDeyhyQS
-        71wY5Ql/Ee4gWGv8+i42FfBLRjYaIa2Bmrp86AFCRcdQ4kOl3QwiiUZfObwBPr8yVwaDikj
-        U6h+iw6Tt/nt+gxiQhRzjRQIvRlFTUyGYHM52g8VeZBBg1B5lR5Ts8YU9mGatG8q9NSyEH3
-        oE4X9G1ZYMYUPE/fq+YkxeuFJia9WAzJSr7Z1nawwYo1J4RFey+CPr03PlSrgvOytYh/D66
-        9f9Pf0ovgMFzg4BcTRO8E8om+nTfBzVhCuxA/UrzZqH6wZnwjEFWyHsTb6ALtG1zG2kqAkF
-        Ji8NUAdHFvSNWF6Ehkm2icY1TD0SWn2MAVKgeFIQEyX6vk/QySv9Zp+Y9nn6A==
+X-QQ-FEAT: 4LFlwc+MlXnChWxg3oOtFJfgLn7urosoV/9rl2dk+8gxm5PSaDOW+ATgGdXwo
+        1IlJfMixzWnih6orY1V4z0UOzxhXvTCzfAUZ5HQKKsWoXzXWLJSV6hj82Ewlhe6nXlzbhE/
+        gmpovedVoA+2a1DSkKh0O1gF2SOzV9Bbj74Y9i0f2ZnNJePqj8IfLgYGM6/seRHjhJ00lfz
+        X2U54K7QgtGv1OrM2Kfs/myObSwpHy/KPU2kERdkMEvEpvmdNRIoKl8XUXdRBPZCGnSTuVr
+        aqeBsfjzn2NUxh7ntPzdsf+2fFv7n5Pmp7HeVJ4ICGvnZlqQUwT2UohDM5ZEByThQqk+oh1
+        /OYA+IUyCrJjYMUYAOx6G2/0Rc9grKYQUg/fXrsG2ZMY4zZg4eLpiy3C1tZEXaH32erz1D8
 X-QQ-GoodBg: 2
 From:   Meng Tang <tangmeng@uniontech.com>
 To:     stable@vger.kernel.org, tony0620emma@gmail.com,
         kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Guo-Feng Fan <vincent_fann@realtek.com>,
+        Meng Tang <tangmeng@uniontech.com>,
         Ping-Ke Shih <pkshih@realtek.com>,
-        Meng Tang <tangmeng@uniontech.com>
-Subject: [PATCH 5.10 2/3] commit b789e3fe7047 ("rtw88: 8821c: support RFE type4 wifi NIC")
-Date:   Tue, 28 Jun 2022 21:30:45 +0800
-Message-Id: <20220628133046.2474-2-tangmeng@uniontech.com>
+        masterzorag <masterzorag@gmail.com>,
+        Larry Finger <Larry.Finger@lwfinger.net>,
+        Kalle Valo <kvalo@kernel.org>
+Subject: [PATCH 5.10 3/3] commit e109e3617e5d ("rtw88: rtw8821c: enable rfe 6 devices")
+Date:   Tue, 28 Jun 2022 21:30:46 +0800
+Message-Id: <20220628133046.2474-3-tangmeng@uniontech.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20220628133046.2474-1-tangmeng@uniontech.com>
 References: <20220628133046.2474-1-tangmeng@uniontech.com>
@@ -44,68 +46,46 @@ Content-Transfer-Encoding: 8bit
 X-QQ-SENDSIZE: 520
 Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign10
 X-QQ-Bgrelay: 1
-X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,RCVD_IN_VALIDITY_RPBL,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,PDS_BTC_ID,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Guo-Feng Fan <vincent_fann@realtek.com>
+These commits can fix the problem of wifi not loading properly, so I think
+that 5.10 need to merge these commits.
 
-RFE type4 is a new NIC which has one RF antenna shares with BT.
-RFE type4 HW is the same as RFE type2 but attaching antenna to
-aux antenna connector.
+Ping-Ke Shih answered[1] a question for a user about an rtl8821ce device that
+reported RFE 6, which the driver did not support. Ping-Ke suggested a possible
+fix, but the user never reported back.
 
-RFE type2 attach antenna to main antenna connector.
-Load the same parameter as RFE type2 when initializing NIC.
+A second user discovered the above thread and tested the proposed fix.
+Accordingly, I am pushing this change, even though I am not the author.
 
-Signed-off-by: Guo-Feng Fan <vincent_fann@realtek.com>
+[1] https://lore.kernel.org/linux-wireless/3f5e2f6eac344316b5dd518ebfea2f95@realtek.com/
+
 Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20210922023637.9357-1-pkshih@realtek.com
+Reported-and-tested-by: masterzorag <masterzorag@gmail.com>
+Signed-off-by: Larry Finger <Larry.Finger@lwfinger.net>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220107024739.20967-1-Larry.Finger@lwfinger.net
 Signed-off-by: Meng Tang <tangmeng@uniontech.com>
 ---
- drivers/net/wireless/realtek/rtw88/rtw8821c.c | 13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
+ drivers/net/wireless/realtek/rtw88/rtw8821c.c | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/drivers/net/wireless/realtek/rtw88/rtw8821c.c b/drivers/net/wireless/realtek/rtw88/rtw8821c.c
-index 4514c4e8ee58..9c8fbc96f536 100644
+index 9c8fbc96f536..cbb4c761c5cb 100644
 --- a/drivers/net/wireless/realtek/rtw88/rtw8821c.c
 +++ b/drivers/net/wireless/realtek/rtw88/rtw8821c.c
-@@ -300,7 +300,8 @@ static void rtw8821c_set_channel_rf(struct rtw_dev *rtwdev, u8 channel, u8 bw)
- 	if (channel <= 14) {
- 		if (rtwdev->efuse.rfe_option == 0)
- 			rtw8821c_switch_rf_set(rtwdev, SWITCH_TO_WLG);
--		else if (rtwdev->efuse.rfe_option == 2)
-+		else if (rtwdev->efuse.rfe_option == 2 ||
-+			 rtwdev->efuse.rfe_option == 4)
- 			rtw8821c_switch_rf_set(rtwdev, SWITCH_TO_BTG);
- 		rtw_write_rf(rtwdev, RF_PATH_A, RF_LUTDBG, BIT(6), 0x1);
- 		rtw_write_rf(rtwdev, RF_PATH_A, 0x64, 0xf, 0xf);
-@@ -737,6 +738,15 @@ static void rtw8821c_coex_cfg_ant_switch(struct rtw_dev *rtwdev, u8 ctrl_type,
- 	if (switch_status == coex_dm->cur_switch_status)
- 		return;
- 
-+	if (coex_rfe->wlg_at_btg) {
-+		ctrl_type = COEX_SWITCH_CTRL_BY_BBSW;
-+
-+		if (coex_rfe->ant_switch_polarity)
-+			pos_type = COEX_SWITCH_TO_WLA;
-+		else
-+			pos_type = COEX_SWITCH_TO_WLG_BT;
-+	}
-+
- 	coex_dm->cur_switch_status = switch_status;
- 
- 	if (coex_rfe->ant_switch_diversity &&
-@@ -1457,6 +1467,7 @@ static const struct rtw_intf_phy_para_table phy_para_table_8821c = {
- static const struct rtw_rfe_def rtw8821c_rfe_defs[] = {
+@@ -1468,6 +1468,7 @@ static const struct rtw_rfe_def rtw8821c_rfe_defs[] = {
  	[0] = RTW_DEF_RFE(8821c, 0, 0),
  	[2] = RTW_DEF_RFE_EXT(8821c, 0, 0, 2),
-+	[4] = RTW_DEF_RFE_EXT(8821c, 0, 0, 2),
+ 	[4] = RTW_DEF_RFE_EXT(8821c, 0, 0, 2),
++	[6] = RTW_DEF_RFE(8821c, 0, 0),
  };
  
  static struct rtw_hw_reg rtw8821c_dig[] = {
