@@ -2,114 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 099AA55D244
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:10:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B57F55D2D1
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:11:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344212AbiF1LuH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 07:50:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50400 "EHLO
+        id S1345043AbiF1L5y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 07:57:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344287AbiF1LuG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 07:50:06 -0400
-Received: from smtp.uniroma2.it (smtp.uniroma2.it [160.80.6.16])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B202BB5A
-        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 04:50:05 -0700 (PDT)
-Received: from localhost.localdomain ([160.80.103.126])
-        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 25SBnu3Z012357
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 28 Jun 2022 13:49:56 +0200
-From:   Paolo Lungaroni <paolo.lungaroni@uniroma2.it>
-To:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Stefano Salsano <stefano.salsano@uniroma2.it>,
-        Ahmed Abdelsalam <ahabdels.dev@gmail.com>,
-        Andrea Mayer <andrea.mayer@uniroma2.it>,
-        Anton Makarov <antonmakarov11235@gmail.com>,
-        Paolo Lungaroni <paolo.lungaroni@uniroma2.it>
-Subject: [iproute2-next v1] seg6: add support for SRv6 Headend Reduced Encapsulation
-Date:   Tue, 28 Jun 2022 13:49:49 +0200
-Message-Id: <20220628114949.5199-1-paolo.lungaroni@uniroma2.it>
-X-Mailer: git-send-email 2.20.1
+        with ESMTP id S1345004AbiF1L5r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 07:57:47 -0400
+Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 504493205A
+        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 04:57:47 -0700 (PDT)
+Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-2ef5380669cso114173767b3.9
+        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 04:57:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=uLZdrC+swnkCKR0I6SG4QWd9p3MVQZBE19TS1zpMRXw=;
+        b=b3TStvl9YDWhqzJY2DvGVjkqLn4eFR4cFB5BI+2vlB8L98qodsAogGh9Fy4QfAgudQ
+         aO9vAtg9XFwgWNPZjbf3Y3YewdzERAnmNWa2AibsAMhDnzPssOAh6uqP4VYXdC3NjMsj
+         z6uMvk7gp8QhYiE4HGEgMC4QT/sK7+nuJS3picYKEprfop0deeHezTsyEohj5AQmt8EN
+         xho2UmIZYtqBvOnvJhEv7JbopWimiMNgPRUdKEVdm1CB183nYSPwBdZLzEwzMSdjNo45
+         o3YRY49SW7sqL0+LXSbEsxsevL0D2hX54lPzxYez85wDeXeach0zJr7+SVg9lrvK19Dq
+         hlxA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=uLZdrC+swnkCKR0I6SG4QWd9p3MVQZBE19TS1zpMRXw=;
+        b=pmS2/6GCNQrSItqytR5gULWCVKGKcYpWNAUsYXAntkHz8bvkiFfCdMW7SqIOOy/Za/
+         wCa+vuxaAwgniTf2Ca9R2d/QeTP0MPk5bjaY0BHA/FLCcNFgajPmgFVmlL8FY7pj9UB9
+         8qnoIAFyo0580h3FbNlMTWRfrqsBmEUJJZHTP091xgVlcKKZO0MrkSszBdPnsJennWC2
+         pt2oHOVd0pvRbSxIwcUPGKnprU8Z3gI2A6u8Gz34BZP2gfI6ibmGrlKDxBeAp58aHm9Q
+         /H2H1J9WTEJrcGOEmcP1Aj75kIgX9Z2QA3SYz1QCtiMNyobQldu+rde0rFevK2rQ3b6y
+         vNiw==
+X-Gm-Message-State: AJIora/Q2Qneb/HrvoLOCUOL7L2ylSaXi1XkORmqw7uGBLDv8o1qlDOI
+        FVCqG73DQj8QLXLvIHn43tuy3DpGuI95bzp7xyJTsA==
+X-Google-Smtp-Source: AGRyM1tqpFMzemg8g47JeYue9sdLoY13F98Rp4MmgardxNEJXXi1KU8knn77vx906pR3dNjnWzA3JBw9b6tmjutNX9c=
+X-Received: by 2002:a81:e93:0:b0:317:8db7:aa8e with SMTP id
+ 141-20020a810e93000000b003178db7aa8emr21314397ywo.55.1656417466312; Tue, 28
+ Jun 2022 04:57:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: clamav-milter 0.100.0 at smtp-2015
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220628035030.1039171-1-zys.zljxml@gmail.com>
+In-Reply-To: <20220628035030.1039171-1-zys.zljxml@gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 28 Jun 2022 13:57:35 +0200
+Message-ID: <CANn89iK=SYDOXcTa=bEwr7-sr63c+zWd-t4FcezU2S9296zkOQ@mail.gmail.com>
+Subject: Re: [PATCH v3] ipv6/sit: fix ipip6_tunnel_get_prl return value
+To:     zys.zljxml@gmail.com
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        katrinzhou <katrinzhou@tencent.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds the support for the reduced version of the H.Encaps and
-H.L2Encaps behaviors as defined in RFC 8986 [1].
+On Tue, Jun 28, 2022 at 5:50 AM <zys.zljxml@gmail.com> wrote:
+>
+> From: katrinzhou <katrinzhou@tencent.com>
+>
+> When kcalloc fails, ipip6_tunnel_get_prl() should return -ENOMEM.
+> Move the position of label "out" to return correctly.
+>
+> Addresses-Coverity: ("Unused value")
+> Fixes: 300aaeeaab5f ("[IPV6] SIT: Add SIOCGETPRL ioctl to get/dump PRL.")
+> Signed-off-by: katrinzhou <katrinzhou@tencent.com>
+> ---
+>
 
-H.Encaps.Red and H.L2Encaps.Red SRv6 behaviors are an optimization of the
-H.Encaps and H.L2Encaps aiming to reduce the length of the SID List carried
-in the pushed SRH. Specifically, the reduced version of the behaviors
-removes the first SID contained in the SID List (i.e. SRv6 Policy) by
-storing it into the IPv6 Destination Address. When SRv6 Policy is made of
-only one SID, the reduced version of the behaviors omits the SRH at all and
-pushes that SID directly into the IPv6 DA.
-
-Some examples:
-ip -6 route add 2001:db8::1 encap seg6 mode encap.red segs fcf0:1::e,fcf0:2::d6 dev eth0
-ip -6 route add 2001:db8::2 encap seg6 mode l2encap.red segs fcf0:1::d2 dev eth0
-
-Standard Output:
-ip -6 route show 2001:db8::1
-2001:db8::1  encap seg6 mode encap.red segs 2 [ fcf0:1::e fcf0:2::d6 ] dev eth0 metric 1024 pref medium
-
-JSON Output:
-ip -6 -j -p route show 2001:db8::1
-[ {
-        "dst": "2001:db8::1",
-        "encap": "seg6",
-        "mode": "encap.red",
-        "segs": [ "fcf0:1::e","fcf0:2::d6" ],
-        "dev": "eth0",
-        "metric": 1024,
-        "flags": [ ],
-        "pref": "medium"
-    } ]
-
-[1] - https://datatracker.ietf.org/doc/html/rfc8986
-
-Signed-off-by: Paolo Lungaroni <paolo.lungaroni@uniroma2.it>
----
- include/uapi/linux/seg6_iptunnel.h | 2 ++
- ip/iproute_lwtunnel.c              | 2 ++
- 2 files changed, 4 insertions(+)
-
-diff --git a/include/uapi/linux/seg6_iptunnel.h b/include/uapi/linux/seg6_iptunnel.h
-index ee6d1dd5..f2e47aad 100644
---- a/include/uapi/linux/seg6_iptunnel.h
-+++ b/include/uapi/linux/seg6_iptunnel.h
-@@ -35,6 +35,8 @@ enum {
- 	SEG6_IPTUN_MODE_INLINE,
- 	SEG6_IPTUN_MODE_ENCAP,
- 	SEG6_IPTUN_MODE_L2ENCAP,
-+	SEG6_IPTUN_MODE_ENCAP_RED,
-+	SEG6_IPTUN_MODE_L2ENCAP_RED,
- };
- 
- #endif
-diff --git a/ip/iproute_lwtunnel.c b/ip/iproute_lwtunnel.c
-index f4192229..8ffca4f9 100644
---- a/ip/iproute_lwtunnel.c
-+++ b/ip/iproute_lwtunnel.c
-@@ -135,6 +135,8 @@ static const char *seg6_mode_types[] = {
- 	[SEG6_IPTUN_MODE_INLINE]	= "inline",
- 	[SEG6_IPTUN_MODE_ENCAP]		= "encap",
- 	[SEG6_IPTUN_MODE_L2ENCAP]	= "l2encap",
-+	[SEG6_IPTUN_MODE_ENCAP_RED]	= "encap.red",
-+	[SEG6_IPTUN_MODE_L2ENCAP_RED]	= "l2encap.red",
- };
- 
- static const char *format_seg6mode_type(int mode)
--- 
-2.20.1
-
+Reviewed-by: Eric Dumazet<edumazet@google.com>
