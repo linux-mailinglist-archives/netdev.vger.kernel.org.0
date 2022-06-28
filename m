@@ -2,405 +2,734 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6855155E757
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 18:32:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6632255E6DF
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 18:31:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347137AbiF1OBJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 10:01:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40604 "EHLO
+        id S1347132AbiF1OAx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 10:00:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347130AbiF1OBI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 10:01:08 -0400
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98DF1369F6
-        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 07:01:06 -0700 (PDT)
-Received: by mail-pf1-x430.google.com with SMTP id 65so12058998pfw.11
-        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 07:01:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Pu5c/s8tN2EOWgET0uQyR/IwKTP0IajG/rgww1EnD4o=;
-        b=NfLwl9loqYJ2lJtKFJUooems105/1q90D9jE+HV3wQqWcyiS/Dk5uuzZWDplN5Akki
-         65+fE83RaHHfVy/lHQtPFjL3WR/3b5V+kJBSZh/eFEiC+zWCipbTk0UCZc4kAib5j1Dz
-         Gbzf/e47CGpBVbBcxh0uf/fU8GeKjJbJuzqWHftUfmeGBZjicDR/VN87mIGBflaky0S0
-         t5iF42NKHff1ImlDPL9TH5GOvPFOlTz2paoI8S1pC1tNAL/bY4JRlzZhuw79nrwnLx61
-         Xc3H4Yj09dv27GdoV/H//Q9EZRV9qAkFDC94VrSMEjappicb3pWFNZVepM8BFa6OWRx/
-         RA0g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Pu5c/s8tN2EOWgET0uQyR/IwKTP0IajG/rgww1EnD4o=;
-        b=di8oRf2ttZLv9wMlFSRTb0iK/t9SnVrHTD5sC1GZi14h/UNj5h19NOzKTomSF5ZXM3
-         nuOBf9PRvpsclsxAflW3njzt+K16xholoFL928b5GJ53LISshPSV/mM5vuUwbx83A9FJ
-         fqRLnpuku6QUmCNSW+lQEAtdZxdvNUjXAZs22V/8NElxNt6DYLsnwPfkxTDGOrXrhZfn
-         xbYH5ZP0+2n0czcnd9guKz7DQyJQmnirxjSemUAHZ7sfsOS8BN2TKs/E51hoaG8uPv6u
-         jPbBs6kGF+T0GXNgNUG/zE2yUgHQMFkpHxuyQsCRDj2mGlMdB3DRfqytLosN2+g1Dy3f
-         +nIw==
-X-Gm-Message-State: AJIora9KGchxbZWCNuLnxEgsnN8smx8jjmRI6QR+BIKCxKBoZlm9AE4J
-        RXaHQP8ZwF9w/XMNZJinYE8D2Q==
-X-Google-Smtp-Source: AGRyM1shZzm9RVgmmAI0COqEmL66affXff8K7Z4n2ZLls9QRdkETQ+6QIhrUjkuAPIwdXO8UTettMg==
-X-Received: by 2002:a63:7a5e:0:b0:40c:f760:2f18 with SMTP id j30-20020a637a5e000000b0040cf7602f18mr17940630pgn.456.1656424865982;
-        Tue, 28 Jun 2022 07:01:05 -0700 (PDT)
-Received: from C02FG34NMD6R.bytedance.net ([139.177.225.251])
-        by smtp.gmail.com with ESMTPSA id x34-20020a634a22000000b0040ca587fe0fsm9160877pga.63.2022.06.28.07.00.59
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 28 Jun 2022 07:01:05 -0700 (PDT)
-From:   Albert Huang <huangjie.albert@bytedance.com>
-Cc:     "huangjie.albert" <huangjie.albert@bytedance.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Menglong Dong <imagedong@tencent.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Antoine Tenart <atenart@kernel.org>,
-        Phil Auld <pauld@redhat.com>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Xin Long <lucien.xin@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] net : rps : supoort a single flow to use rps
-Date:   Tue, 28 Jun 2022 22:00:37 +0800
-Message-Id: <20220628140044.65068-1-huangjie.albert@bytedance.com>
-X-Mailer: git-send-email 2.30.1 (Apple Git-130)
+        with ESMTP id S1347130AbiF1OAw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 10:00:52 -0400
+Received: from mint-fitpc2.mph.net (unknown [81.168.73.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 52993369F5
+        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 07:00:49 -0700 (PDT)
+Received: from palantir17.mph.net (unknown [192.168.0.4])
+        by mint-fitpc2.mph.net (Postfix) with ESMTP id 75B59320102;
+        Tue, 28 Jun 2022 15:00:48 +0100 (BST)
+Received: from localhost ([::1] helo=palantir17.mph.net)
+        by palantir17.mph.net with esmtp (Exim 4.95)
+        (envelope-from <habetsm.xilinx@gmail.com>)
+        id 1o6Bln-0008Ik-CB;
+        Tue, 28 Jun 2022 15:00:47 +0100
+Subject: [PATCH net-next v2 10/10] sfc: Separate netdev probe/remove from PCI
+ probe/remove
+From:   Martin Habets <habetsm.xilinx@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, jonathan.s.cooper@amd.com
+Cc:     netdev@vger.kernel.org, ecree.xilinx@gmail.com
+Date:   Tue, 28 Jun 2022 15:00:47 +0100
+Message-ID: <165642484725.31669.9720961738718137940.stgit@palantir17.mph.net>
+In-Reply-To: <165642465886.31669.17429834766693417246.stgit@palantir17.mph.net>
+References: <165642465886.31669.17429834766693417246.stgit@palantir17.mph.net>
+User-Agent: StGit/0.19
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=0.7 required=5.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+        FORGED_GMAIL_RCVD,FREEMAIL_FROM,KHOP_HELO_FCRDNS,NML_ADSP_CUSTOM_MED,
+        SPF_HELO_NONE,SPF_SOFTFAIL,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "huangjie.albert" <huangjie.albert@bytedance.com>
+From: Jonathan Cooper <jonathan.s.cooper@amd.com>
 
-In some scenarios(ipsec) or products(VPN gateway),
-we need to enable a single network stream to support RPS.
-but In the current rps implementation, there is no support
-for a single stream to utilize rps.
+The netdev probe will be used when moving from vDPA to EF100 BAR config.
+The netdev remove will be used when moving from EF100 to vDPA BAR config.
 
-Introduce a hashtable to record flows that need to use rps.
-For these flows, use round robin to put them on different CPUs
-for further processing
+In the process, change several log messages to pci_ instead of netif_
+to remove the "(unregistered net_device)" text.
 
-how to use:
-echo xxx > /sys/class/net/xxx/queues/rx-x/rps_cpus
-echo 1 > /sys/class/net/xxx/queues/rx-x/rps_single_flow
-and create a flow node with the function:
-rps_flow_node_create
-
-This patch can improve the performance of a single stream,
-for example: On my virtual machine (4 vcpu + 8g), a single
-ipsec stream (3des encryption) can improve throughput by 3-4 times:
-before           after
-212 Mbits/sec    698 Mbits/sec
-
-Signed-off-by: huangjie.albert <huangjie.albert@bytedance.com>
+Signed-off-by: Jonathan Cooper <jonathan.s.cooper@amd.com>
+Co-developed-by: Martin Habets <habetsm.xilinx@gmail.com>
+Signed-off-by: Martin Habets <habetsm.xilinx@gmail.com>
 ---
- include/linux/netdevice.h |  15 +++
- net/core/dev.c            | 187 ++++++++++++++++++++++++++++++++++++++
- net/core/net-sysfs.c      |  36 ++++++++
- 3 files changed, 238 insertions(+)
+ drivers/net/ethernet/sfc/ef100.c        |   65 +++++------------
+ drivers/net/ethernet/sfc/ef100_netdev.c |  116 ++++++++++++++++++++++++++++++-
+ drivers/net/ethernet/sfc/ef100_netdev.h |    4 +
+ drivers/net/ethernet/sfc/ef100_nic.c    |   80 ++++-----------------
+ drivers/net/ethernet/sfc/ef100_nic.h    |   10 ++-
+ drivers/net/ethernet/sfc/efx.c          |    2 -
+ drivers/net/ethernet/sfc/efx_common.c   |   38 +++++-----
+ drivers/net/ethernet/sfc/mcdi.c         |   16 ++--
+ 8 files changed, 183 insertions(+), 148 deletions(-)
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index f615a66c89e9..36412d0e0255 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -743,6 +743,7 @@ bool rps_may_expire_flow(struct net_device *dev, u16 rxq_index, u32 flow_id,
- struct netdev_rx_queue {
- 	struct xdp_rxq_info		xdp_rxq;
- #ifdef CONFIG_RPS
-+	bool   rps_single_flow_enable;
- 	struct rps_map __rcu		*rps_map;
- 	struct rps_dev_flow_table __rcu	*rps_flow_table;
- #endif
-@@ -811,6 +812,20 @@ struct xps_dev_maps {
- #define XPS_RXQ_DEV_MAPS_SIZE(_tcs, _rxqs) (sizeof(struct xps_dev_maps) +\
- 	(_rxqs * (_tcs) * sizeof(struct xps_map *)))
- 
-+
-+/* define for rps_single_flow */
-+struct rps_flow_info_node {
-+	__be32 saddr;
-+	__be32 daddr;
-+	__u8 protocol;
-+	u64  jiffies; /* keep the time update entry */
-+	struct hlist_node node;
-+};
-+#define MAX_MAINTENANCE_TIME (2000)
-+#define PERIODIC_AGEING_TIME (10000)
-+bool rps_flow_node_create(__be32 saddr, __be32 daddr, __u8 protocol);
-+void rps_single_flow_set(bool enable);
-+
- #endif /* CONFIG_XPS */
- 
- #define TC_MAX_QUEUE	16
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 08ce317fcec8..da3eb184fca1 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -4433,6 +4433,142 @@ set_rps_cpu(struct net_device *dev, struct sk_buff *skb,
-  * CPU from the RPS map of the receiving queue for a given skb.
-  * rcu_read_lock must be held on entry.
+diff --git a/drivers/net/ethernet/sfc/ef100.c b/drivers/net/ethernet/sfc/ef100.c
+index a77100239e7c..425017fbcb25 100644
+--- a/drivers/net/ethernet/sfc/ef100.c
++++ b/drivers/net/ethernet/sfc/ef100.c
+@@ -423,44 +423,32 @@ static int ef100_pci_find_func_ctrl_window(struct efx_nic *efx,
   */
-+#define DEFAULT_HASH_BUKET_BIT (3)
-+#define DEFAULT_QUOTA_PER_CPU (64)
-+static unsigned int  quota_per_cpu = DEFAULT_QUOTA_PER_CPU;
-+static atomic_t rps_flow_queue_enable_count = ATOMIC_INIT(0);
-+static u64 last_aging_jiffies;
-+static DEFINE_HASHTABLE(rps_flow_info_htable, DEFAULT_HASH_BUKET_BIT);
-+static DEFINE_RWLOCK(rps_flow_rwlock);
-+
-+/* create rps flow node if not exist.
-+ * update Timestamp for rps flow node if exist
-+ */
-+bool rps_flow_node_create(__be32 saddr, __be32 daddr, __u8 protocol)
-+{
-+	/* hash key */
-+	u32 hash_key = saddr ^ daddr ^ protocol;
-+	struct rps_flow_info_node *p_rps_flow_info = NULL;
-+
-+	/* no rps_single_flow_enable */
-+	if (!atomic_read(&rps_flow_queue_enable_count))
-+		return false;
-+
-+	/* find if the node already  exist */
-+	read_lock(&rps_flow_rwlock);
-+	hash_for_each_possible(rps_flow_info_htable, p_rps_flow_info, node, hash_key) {
-+		if ((saddr == p_rps_flow_info->saddr) && (daddr == p_rps_flow_info->daddr)
-+			&& (protocol == p_rps_flow_info->protocol)) {
-+			p_rps_flow_info->jiffies = jiffies;
-+			read_unlock(&rps_flow_rwlock);
-+			return true;
-+		}
-+	}
-+	read_unlock(&rps_flow_rwlock);
-+
-+	/*if not exist. get a new one */
-+	p_rps_flow_info = kmalloc(sizeof(*p_rps_flow_info), GFP_KERNEL);
-+	if (!p_rps_flow_info)
-+		return false;
-+
-+	memset(p_rps_flow_info, 0, sizeof(struct rps_flow_info_node));
-+	p_rps_flow_info->saddr = saddr;
-+	p_rps_flow_info->daddr = daddr;
-+	p_rps_flow_info->protocol = protocol;
-+	p_rps_flow_info->jiffies = jiffies;
-+
-+	/*add the hash nodee*/
-+	write_lock(&rps_flow_rwlock);
-+	hash_add(rps_flow_info_htable, &p_rps_flow_info->node, hash_key);
-+	write_unlock(&rps_flow_rwlock);
-+	return true;
-+}
-+EXPORT_SYMBOL(rps_flow_node_create);
-+
-+static void rps_flow_node_clear(void)
-+{
-+	u32 bkt = 0;
-+	struct rps_flow_info_node *p_rps_flow_entry = NULL;
-+	struct hlist_node *tmp;
-+
-+	write_lock(&rps_flow_rwlock);
-+	hash_for_each_safe(rps_flow_info_htable, bkt, tmp, p_rps_flow_entry, node) {
-+		hash_del(&p_rps_flow_entry->node);
-+		kfree(p_rps_flow_entry);
-+	}
-+	write_unlock(&rps_flow_rwlock);
-+}
-+
-+void rps_single_flow_set(bool enable)
-+{
-+	if (enable) {
-+		atomic_inc(&rps_flow_queue_enable_count);
-+	} else {
-+		atomic_dec(&rps_flow_queue_enable_count);
-+		if (!atomic_read(&rps_flow_queue_enable_count))
-+			rps_flow_node_clear();
-+	}
-+}
-+EXPORT_SYMBOL(rps_single_flow_set);
-+
-+/* compute hash */
-+static inline u32 rps_flow_hash_update(void)
-+{
-+	static u32 packet_count;
-+	static u32 hash_count;
-+
-+	packet_count++;
-+	if (packet_count % quota_per_cpu) {
-+		packet_count = 0;
-+		hash_count++;
-+		if (hash_count == U32_MAX)
-+			hash_count = 0;
-+	}
-+	return hash_count;
-+}
-+
-+/* delete aging rps_flow  */
-+static inline bool rps_flow_node_aging_period(void)
-+{
-+	u32 bkt = 0;
-+	struct rps_flow_info_node *p_rps_flow_entry = NULL;
-+	struct hlist_node *tmp;
-+
-+	if (jiffies_to_msecs(jiffies - last_aging_jiffies) < PERIODIC_AGEING_TIME)
-+		return false;
-+
-+	last_aging_jiffies = jiffies;
-+	write_lock(&rps_flow_rwlock);
-+	hash_for_each_safe(rps_flow_info_htable, bkt, tmp, p_rps_flow_entry, node) {
-+		if (jiffies_to_msecs(jiffies - p_rps_flow_entry->jiffies) >= MAX_MAINTENANCE_TIME) {
-+			hash_del(&p_rps_flow_entry->node);
-+			kfree(p_rps_flow_entry);
-+		}
-+	}
-+	write_unlock(&rps_flow_rwlock);
-+	return true;
-+}
-+
-+/*  find vailed rps_flow */
-+static inline struct rps_flow_info_node *rps_flow_find_vailed_node(__be32 saddr,
-+		__be32 daddr, __u8 protocol)
-+{
-+	struct rps_flow_info_node *p_rps_flow_info = NULL;
-+	u32 hash_key = saddr ^ daddr ^ protocol;
-+
-+	read_lock(&rps_flow_rwlock);
-+	hash_for_each_possible(rps_flow_info_htable, p_rps_flow_info, node, hash_key) {
-+		if ((saddr == p_rps_flow_info->saddr) && (daddr == p_rps_flow_info->daddr)
-+		&& (protocol == p_rps_flow_info->protocol)
-+		&& (jiffies_to_msecs(jiffies - p_rps_flow_info->jiffies) < MAX_MAINTENANCE_TIME)) {
-+			read_unlock(&rps_flow_rwlock);
-+			return p_rps_flow_info;
-+		}
-+	}
-+	read_unlock(&rps_flow_rwlock);
-+	return NULL;
-+}
-+
- static int get_rps_cpu(struct net_device *dev, struct sk_buff *skb,
- 		       struct rps_dev_flow **rflowp)
+ static void ef100_pci_remove(struct pci_dev *pci_dev)
  {
-@@ -4465,6 +4601,57 @@ static int get_rps_cpu(struct net_device *dev, struct sk_buff *skb,
- 		goto done;
++	struct efx_nic *efx = pci_get_drvdata(pci_dev);
+ 	struct efx_probe_data *probe_data;
+-	struct efx_nic *efx;
  
- 	skb_reset_network_header(skb);
-+	/* this is to set rps for single flow */
-+	if (unlikely(rxqueue->rps_single_flow_enable)) {
-+		/* clean the old node */
-+		rps_flow_node_aging_period();
+-	efx = pci_get_drvdata(pci_dev);
+ 	if (!efx)
+ 		return;
+ 
+-	rtnl_lock();
+-	dev_close(efx->net_dev);
+-	rtnl_unlock();
+-
+-	/* Unregistering our netdev notifier triggers unbinding of TC indirect
+-	 * blocks, so we have to do it before PCI removal.
+-	 */
+-	unregister_netdevice_notifier(&efx->netdev_notifier);
+-#if defined(CONFIG_SFC_SRIOV)
+-	if (!efx->type->is_vf)
+-		efx_ef100_pci_sriov_disable(efx);
+-#endif
++	probe_data = container_of(efx, struct efx_probe_data, efx);
++	ef100_remove_netdev(probe_data);
 +
-+		/* no rps ,skip it*/
-+		if (!map)
-+			goto orgin_rps;
+ 	ef100_remove(efx);
+ 	efx_fini_io(efx);
+-	netif_dbg(efx, drv, efx->net_dev, "shutdown successful\n");
 +
-+		/* skip vlan first  */
-+		if (skb_vlan_tag_present(skb))
-+			goto done;
++	pci_dbg(pci_dev, "shutdown successful\n");
 +
-+		switch (skb->protocol) {
-+		/*  ipv4  */
-+		case htons(ETH_P_IP): {
-+			const struct iphdr *iph;
-+			struct rps_flow_info_node *p_flow;
-+
-+			iph = (struct iphdr *)skb_network_header(skb);
-+			/* hash map to match the src and dest ipaddr */
-+			p_flow = rps_flow_find_vailed_node(iph->saddr, iph->daddr, iph->protocol);
-+			/* check if vailed */
-+			if (p_flow) {
-+				pr_debug("single flow rps,flow info: saddr = %pI4, daddr =%pI4, proto=%d\n",
-+						&p_flow->saddr,
-+						&p_flow->daddr,
-+						p_flow->protocol);
-+			} else {
-+				goto orgin_rps;
-+			}
-+		}
-+		break;
-+		/* to do, ipv6 */
-+		default:
-+			goto orgin_rps;
-+
-+		}
-+
-+		/* get the target cpu */
-+		u32 hash_single_flow = rps_flow_hash_update();
-+
-+		tcpu = map->cpus[hash_single_flow % map->len];
-+		if (cpu_online(tcpu)) {
-+			cpu = tcpu;
-+			pr_debug("single flow rps, target cpuid = %d\n", cpu);
-+			return cpu;
-+		}
-+	}
-+
-+orgin_rps:
- 	hash = skb_get_hash(skb);
- 	if (!hash)
- 		goto done;
-diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
-index e319e242dddf..c72ce20081e8 100644
---- a/net/core/net-sysfs.c
-+++ b/net/core/net-sysfs.c
-@@ -978,6 +978,41 @@ static ssize_t store_rps_dev_flow_table_cnt(struct netdev_rx_queue *queue,
- 	return len;
++	pci_disable_pcie_error_reporting(pci_dev);
+ 
+ 	pci_set_drvdata(pci_dev, NULL);
+ 	efx_fini_struct(efx);
+-	free_netdev(efx->net_dev);
+-	probe_data = container_of(efx, struct efx_probe_data, efx);
+ 	kfree(probe_data);
+-
+-	pci_disable_pcie_error_reporting(pci_dev);
+ };
+ 
+ static int ef100_pci_probe(struct pci_dev *pci_dev,
+ 			   const struct pci_device_id *entry)
+ {
+-	struct efx_probe_data *probe_data, **probe_ptr;
+ 	struct ef100_func_ctl_window fcw = { 0 };
+-	struct net_device *net_dev;
++	struct efx_probe_data *probe_data;
+ 	struct efx_nic *efx;
+ 	int rc;
+ 
+@@ -471,31 +459,22 @@ static int ef100_pci_probe(struct pci_dev *pci_dev,
+ 	probe_data->pci_dev = pci_dev;
+ 	efx = &probe_data->efx;
+ 
+-	/* Allocate and initialise a struct net_device */
+-	net_dev = alloc_etherdev_mq(sizeof(probe_data), EFX_MAX_CORE_TX_QUEUES);
+-	if (!net_dev)
+-		return -ENOMEM;
+-	probe_ptr = netdev_priv(net_dev);
+-	*probe_ptr = probe_data;
+ 	efx->type = (const struct efx_nic_type *)entry->driver_data;
+ 
++	efx->pci_dev = pci_dev;
+ 	pci_set_drvdata(pci_dev, efx);
+-	SET_NETDEV_DEV(net_dev, &pci_dev->dev);
+-	efx->net_dev = net_dev;
+ 	rc = efx_init_struct(efx, pci_dev);
+ 	if (rc)
+ 		goto fail;
+ 
+-	efx->mdio.dev = net_dev;
+ 	efx->vi_stride = EF100_DEFAULT_VI_STRIDE;
+-	netif_info(efx, probe, efx->net_dev,
+-		   "Solarflare EF100 NIC detected\n");
++	pci_info(pci_dev, "Solarflare EF100 NIC detected\n");
+ 
+ 	rc = ef100_pci_find_func_ctrl_window(efx, &fcw);
+ 	if (rc) {
+-		netif_err(efx, probe, efx->net_dev,
+-			  "Error looking for ef100 function control window, rc=%d\n",
+-			  rc);
++		pci_err(pci_dev,
++			"Error looking for ef100 function control window, rc=%d\n",
++			rc);
+ 		goto fail;
+ 	}
+ 
+@@ -507,8 +486,7 @@ static int ef100_pci_probe(struct pci_dev *pci_dev,
+ 	}
+ 
+ 	if (fcw.offset > pci_resource_len(efx->pci_dev, fcw.bar) - ESE_GZ_FCW_LEN) {
+-		netif_err(efx, probe, efx->net_dev,
+-			  "Func control window overruns BAR\n");
++		pci_err(pci_dev, "Func control window overruns BAR\n");
+ 		rc = -EIO;
+ 		goto fail;
+ 	}
+@@ -522,19 +500,16 @@ static int ef100_pci_probe(struct pci_dev *pci_dev,
+ 
+ 	efx->reg_base = fcw.offset;
+ 
+-	efx->netdev_notifier.notifier_call = ef100_netdev_event;
+-	rc = register_netdevice_notifier(&efx->netdev_notifier);
+-	if (rc) {
+-		netif_err(efx, probe, efx->net_dev,
+-			  "Failed to register netdevice notifier, rc=%d\n", rc);
++	rc = efx->type->probe(efx);
++	if (rc)
+ 		goto fail;
+-	}
+ 
+-	rc = efx->type->probe(efx);
++	efx->state = STATE_PROBED;
++	rc = ef100_probe_netdev(probe_data);
+ 	if (rc)
+ 		goto fail;
+ 
+-	netif_dbg(efx, probe, efx->net_dev, "initialisation successful\n");
++	pci_dbg(pci_dev, "initialisation successful\n");
+ 
+ 	return 0;
+ 
+diff --git a/drivers/net/ethernet/sfc/ef100_netdev.c b/drivers/net/ethernet/sfc/ef100_netdev.c
+index 7a80979f4ab7..060392ddd612 100644
+--- a/drivers/net/ethernet/sfc/ef100_netdev.c
++++ b/drivers/net/ethernet/sfc/ef100_netdev.c
+@@ -22,6 +22,7 @@
+ #include "ef100_regs.h"
+ #include "mcdi_filters.h"
+ #include "rx_common.h"
++#include "ef100_sriov.h"
+ 
+ static void ef100_update_name(struct efx_nic *efx)
+ {
+@@ -243,13 +244,14 @@ int ef100_netdev_event(struct notifier_block *this,
+ 	struct efx_nic *efx = container_of(this, struct efx_nic, netdev_notifier);
+ 	struct net_device *net_dev = netdev_notifier_info_to_dev(ptr);
+ 
+-	if (efx->net_dev == net_dev && event == NETDEV_CHANGENAME)
++	if (efx->net_dev == net_dev &&
++	    (event == NETDEV_CHANGENAME || event == NETDEV_REGISTER))
+ 		ef100_update_name(efx);
+ 
+ 	return NOTIFY_DONE;
  }
  
-+static ssize_t show_rps_single_flow(struct netdev_rx_queue *queue, char *buf)
-+{
-+	unsigned long val = 0;
+-int ef100_register_netdev(struct efx_nic *efx)
++static int ef100_register_netdev(struct efx_nic *efx)
+ {
+ 	struct net_device *net_dev = efx->net_dev;
+ 	int rc;
+@@ -287,7 +289,7 @@ int ef100_register_netdev(struct efx_nic *efx)
+ 	return rc;
+ }
+ 
+-void ef100_unregister_netdev(struct efx_nic *efx)
++static void ef100_unregister_netdev(struct efx_nic *efx)
+ {
+ 	if (efx_dev_registered(efx)) {
+ 		efx_fini_mcdi_logging(efx);
+@@ -295,3 +297,111 @@ void ef100_unregister_netdev(struct efx_nic *efx)
+ 		unregister_netdev(efx->net_dev);
+ 	}
+ }
 +
-+	val = queue->rps_single_flow_enable;
-+	return sprintf(buf, "%lu\n", val);
++void ef100_remove_netdev(struct efx_probe_data *probe_data)
++{
++	struct efx_nic *efx = &probe_data->efx;
++
++	if (!efx->net_dev)
++		return;
++
++	rtnl_lock();
++	dev_close(efx->net_dev);
++	rtnl_unlock();
++
++	unregister_netdevice_notifier(&efx->netdev_notifier);
++#if defined(CONFIG_SFC_SRIOV)
++	if (!efx->type->is_vf)
++		efx_ef100_pci_sriov_disable(efx);
++#endif
++
++	ef100_unregister_netdev(efx);
++
++	down_write(&efx->filter_sem);
++	efx_mcdi_filter_table_remove(efx);
++	up_write(&efx->filter_sem);
++	efx_fini_channels(efx);
++	kfree(efx->phy_data);
++	efx->phy_data = NULL;
++
++	free_netdev(efx->net_dev);
++	efx->net_dev = NULL;
++	efx->state = STATE_PROBED;
 +}
 +
-+static ssize_t store_rps_single_flow(struct netdev_rx_queue *queue, const char *buf, size_t len)
++int ef100_probe_netdev(struct efx_probe_data *probe_data)
 +{
++	struct efx_nic *efx = &probe_data->efx;
++	struct efx_probe_data **probe_ptr;
++	struct net_device *net_dev;
 +	int rc;
-+	unsigned long enable;
-+	bool rps_single_flow_enable = false;
 +
-+	if (!capable(CAP_NET_ADMIN))
-+		return -EPERM;
-+
-+	rc = kstrtoul(buf, 0, &enable);
-+	if (rc < 0)
-+		return rc;
-+
-+	rps_single_flow_enable = !!enable;
-+
-+	/* if changed, store the new one */
-+	if (rps_single_flow_enable != queue->rps_single_flow_enable) {
-+		queue->rps_single_flow_enable = rps_single_flow_enable;
-+		rps_single_flow_set(rps_single_flow_enable);
++	if (efx->mcdi->fn_flags &
++			(1 << MC_CMD_DRV_ATTACH_EXT_OUT_FLAG_NO_ACTIVE_PORT)) {
++		pci_info(efx->pci_dev, "No network port on this PCI function");
++		return 0;
 +	}
 +
-+	return len;
++	/* Allocate and initialise a struct net_device */
++	net_dev = alloc_etherdev_mq(sizeof(probe_data), EFX_MAX_CORE_TX_QUEUES);
++	if (!net_dev)
++		return -ENOMEM;
++	probe_ptr = netdev_priv(net_dev);
++	*probe_ptr = probe_data;
++	efx->net_dev = net_dev;
++	SET_NETDEV_DEV(net_dev, &efx->pci_dev->dev);
++
++	net_dev->features |= efx->type->offload_features;
++	net_dev->hw_features |= efx->type->offload_features;
++	net_dev->hw_enc_features |= efx->type->offload_features;
++	net_dev->vlan_features |= NETIF_F_HW_CSUM | NETIF_F_SG |
++				  NETIF_F_HIGHDMA | NETIF_F_ALL_TSO;
++	netif_set_tso_max_segs(net_dev,
++			       ESE_EF100_DP_GZ_TSO_MAX_HDR_NUM_SEGS_DEFAULT);
++	efx->mdio.dev = net_dev;
++
++	rc = efx_ef100_init_datapath_caps(efx);
++	if (rc < 0)
++		goto fail;
++
++	rc = ef100_phy_probe(efx);
++	if (rc)
++		goto fail;
++
++	rc = efx_init_channels(efx);
++	if (rc)
++		goto fail;
++
++	down_write(&efx->filter_sem);
++	rc = ef100_filter_table_probe(efx);
++	up_write(&efx->filter_sem);
++	if (rc)
++		goto fail;
++
++	netdev_rss_key_fill(efx->rss_context.rx_hash_key,
++			    sizeof(efx->rss_context.rx_hash_key));
++
++	/* Don't fail init if RSS setup doesn't work. */
++	efx_mcdi_push_default_indir_table(efx, efx->n_rx_channels);
++
++	rc = ef100_register_netdev(efx);
++	if (rc)
++		goto fail;
++
++	if (!efx->type->is_vf) {
++		rc = ef100_probe_netdev_pf(efx);
++		if (rc)
++			goto fail;
++	}
++
++	efx->netdev_notifier.notifier_call = ef100_netdev_event;
++	rc = register_netdevice_notifier(&efx->netdev_notifier);
++	if (rc) {
++		netif_err(efx, probe, efx->net_dev,
++			  "Failed to register netdevice notifier, rc=%d\n", rc);
++		goto fail;
++	}
++
++fail:
++	return rc;
 +}
-+
-+static struct rx_queue_attribute rps_single_flow_attribute  __ro_after_init
-+	= __ATTR(rps_single_flow, 0644, show_rps_single_flow, store_rps_single_flow);
-+
- static struct rx_queue_attribute rps_cpus_attribute __ro_after_init
- 	= __ATTR(rps_cpus, 0644, show_rps_map, store_rps_map);
+diff --git a/drivers/net/ethernet/sfc/ef100_netdev.h b/drivers/net/ethernet/sfc/ef100_netdev.h
+index d40abb7cc086..38b032ba0953 100644
+--- a/drivers/net/ethernet/sfc/ef100_netdev.h
++++ b/drivers/net/ethernet/sfc/ef100_netdev.h
+@@ -13,5 +13,5 @@
  
-@@ -988,6 +1023,7 @@ static struct rx_queue_attribute rps_dev_flow_table_cnt_attribute __ro_after_ini
+ int ef100_netdev_event(struct notifier_block *this,
+ 		       unsigned long event, void *ptr);
+-int ef100_register_netdev(struct efx_nic *efx);
+-void ef100_unregister_netdev(struct efx_nic *efx);
++int ef100_probe_netdev(struct efx_probe_data *probe_data);
++void ef100_remove_netdev(struct efx_probe_data *probe_data);
+diff --git a/drivers/net/ethernet/sfc/ef100_nic.c b/drivers/net/ethernet/sfc/ef100_nic.c
+index fcbc9de1bbf2..f89e695cf8ac 100644
+--- a/drivers/net/ethernet/sfc/ef100_nic.c
++++ b/drivers/net/ethernet/sfc/ef100_nic.c
+@@ -148,7 +148,7 @@ static int ef100_get_mac_address(struct efx_nic *efx, u8 *mac_address)
+ 	return 0;
+ }
  
- static struct attribute *rx_queue_default_attrs[] __ro_after_init = {
- #ifdef CONFIG_RPS
-+	&rps_single_flow_attribute.attr,
- 	&rps_cpus_attribute.attr,
- 	&rps_dev_flow_table_cnt_attribute.attr,
- #endif
--- 
-2.31.1
+-static int efx_ef100_init_datapath_caps(struct efx_nic *efx)
++int efx_ef100_init_datapath_caps(struct efx_nic *efx)
+ {
+ 	MCDI_DECLARE_BUF(outbuf, MC_CMD_GET_CAPABILITIES_V7_OUT_LEN);
+ 	struct ef100_nic_data *nic_data = efx->nic_data;
+@@ -327,7 +327,7 @@ static irqreturn_t ef100_msi_interrupt(int irq, void *dev_id)
+ 	return IRQ_HANDLED;
+ }
+ 
+-static int ef100_phy_probe(struct efx_nic *efx)
++int ef100_phy_probe(struct efx_nic *efx)
+ {
+ 	struct efx_mcdi_phy_data *phy_data;
+ 	int rc;
+@@ -365,7 +365,7 @@ static int ef100_phy_probe(struct efx_nic *efx)
+ 	return 0;
+ }
+ 
+-static int ef100_filter_table_probe(struct efx_nic *efx)
++int ef100_filter_table_probe(struct efx_nic *efx)
+ {
+ 	return efx_mcdi_filter_table_probe(efx, true);
+ }
+@@ -905,8 +905,7 @@ static int ef100_check_design_params(struct efx_nic *efx)
+ 
+ 	efx_readd(efx, &reg, ER_GZ_PARAMS_TLV_LEN);
+ 	total_len = EFX_DWORD_FIELD(reg, EFX_DWORD_0);
+-	netif_dbg(efx, probe, efx->net_dev, "%u bytes of design parameters\n",
+-		  total_len);
++	pci_dbg(efx->pci_dev, "%u bytes of design parameters\n", total_len);
+ 	while (offset < total_len) {
+ 		efx_readd(efx, &reg, ER_GZ_PARAMS_TLV + offset);
+ 		data = EFX_DWORD_FIELD(reg, EFX_DWORD_0);
+@@ -945,7 +944,6 @@ static int ef100_check_design_params(struct efx_nic *efx)
+ static int ef100_probe_main(struct efx_nic *efx)
+ {
+ 	unsigned int bar_size = resource_size(&efx->pci_dev->resource[efx->mem_bar]);
+-	struct net_device *net_dev = efx->net_dev;
+ 	struct ef100_nic_data *nic_data;
+ 	char fw_version[32];
+ 	int i, rc;
+@@ -958,24 +956,18 @@ static int ef100_probe_main(struct efx_nic *efx)
+ 		return -ENOMEM;
+ 	efx->nic_data = nic_data;
+ 	nic_data->efx = efx;
+-	net_dev->features |= efx->type->offload_features;
+-	net_dev->hw_features |= efx->type->offload_features;
+-	net_dev->hw_enc_features |= efx->type->offload_features;
+-	net_dev->vlan_features |= NETIF_F_HW_CSUM | NETIF_F_SG |
+-				  NETIF_F_HIGHDMA | NETIF_F_ALL_TSO;
++	efx->max_vis = EF100_MAX_VIS;
+ 
+ 	/* Populate design-parameter defaults */
+ 	nic_data->tso_max_hdr_len = ESE_EF100_DP_GZ_TSO_MAX_HDR_LEN_DEFAULT;
+ 	nic_data->tso_max_frames = ESE_EF100_DP_GZ_TSO_MAX_NUM_FRAMES_DEFAULT;
+ 	nic_data->tso_max_payload_num_segs = ESE_EF100_DP_GZ_TSO_MAX_PAYLOAD_NUM_SEGS_DEFAULT;
+ 	nic_data->tso_max_payload_len = ESE_EF100_DP_GZ_TSO_MAX_PAYLOAD_LEN_DEFAULT;
+-	netif_set_tso_max_segs(net_dev,
+-			       ESE_EF100_DP_GZ_TSO_MAX_HDR_NUM_SEGS_DEFAULT);
++
+ 	/* Read design parameters */
+ 	rc = ef100_check_design_params(efx);
+ 	if (rc) {
+-		netif_err(efx, probe, efx->net_dev,
+-			  "Unsupported design parameters\n");
++		pci_err(efx->pci_dev, "Unsupported design parameters\n");
+ 		goto fail;
+ 	}
+ 
+@@ -1012,12 +1004,6 @@ static int ef100_probe_main(struct efx_nic *efx)
+ 	/* Post-IO section. */
+ 
+ 	rc = efx_mcdi_init(efx);
+-	if (!rc && efx->mcdi->fn_flags &
+-		   (1 << MC_CMD_DRV_ATTACH_EXT_OUT_FLAG_NO_ACTIVE_PORT)) {
+-		netif_info(efx, probe, efx->net_dev,
+-			   "No network port on this PCI function");
+-		rc = -ENODEV;
+-	}
+ 	if (rc)
+ 		goto fail;
+ 	/* Reset (most) configuration for this function */
+@@ -1033,67 +1019,37 @@ static int ef100_probe_main(struct efx_nic *efx)
+ 	if (rc)
+ 		goto fail;
+ 
+-	rc = efx_ef100_init_datapath_caps(efx);
+-	if (rc < 0)
+-		goto fail;
+-
+-	efx->max_vis = EF100_MAX_VIS;
+-
+ 	rc = efx_mcdi_port_get_number(efx);
+ 	if (rc < 0)
+ 		goto fail;
+ 	efx->port_num = rc;
+ 
+ 	efx_mcdi_print_fwver(efx, fw_version, sizeof(fw_version));
+-	netif_dbg(efx, drv, efx->net_dev, "Firmware version %s\n", fw_version);
++	pci_dbg(efx->pci_dev, "Firmware version %s\n", fw_version);
+ 
+ 	if (compare_versions(fw_version, "1.1.0.1000") < 0) {
+-		netif_info(efx, drv, efx->net_dev, "Firmware uses old event descriptors\n");
++		pci_info(efx->pci_dev, "Firmware uses old event descriptors\n");
+ 		rc = -EINVAL;
+ 		goto fail;
+ 	}
+ 
+ 	if (efx_has_cap(efx, UNSOL_EV_CREDIT_SUPPORTED)) {
+-		netif_info(efx, drv, efx->net_dev, "Firmware uses unsolicited-event credits\n");
++		pci_info(efx->pci_dev, "Firmware uses unsolicited-event credits\n");
+ 		rc = -EINVAL;
+ 		goto fail;
+ 	}
+ 
+-	rc = ef100_phy_probe(efx);
+-	if (rc)
+-		goto fail;
+-
+-	down_write(&efx->filter_sem);
+-	rc = ef100_filter_table_probe(efx);
+-	up_write(&efx->filter_sem);
+-	if (rc)
+-		goto fail;
+-
+-	netdev_rss_key_fill(efx->rss_context.rx_hash_key,
+-			    sizeof(efx->rss_context.rx_hash_key));
+-
+-	/* Don't fail init if RSS setup doesn't work. */
+-	efx_mcdi_push_default_indir_table(efx, efx->n_rx_channels);
+-
+-	rc = ef100_register_netdev(efx);
+-	if (rc)
+-		goto fail;
+-
+ 	return 0;
+ fail:
+ 	return rc;
+ }
+ 
+-int ef100_probe_pf(struct efx_nic *efx)
++int ef100_probe_netdev_pf(struct efx_nic *efx)
+ {
++	struct ef100_nic_data *nic_data = efx->nic_data;
+ 	struct net_device *net_dev = efx->net_dev;
+-	struct ef100_nic_data *nic_data;
+-	int rc = ef100_probe_main(efx);
+-
+-	if (rc)
+-		goto fail;
++	int rc;
+ 
+-	nic_data = efx->nic_data;
+ 	rc = ef100_get_mac_address(efx, net_dev->perm_addr);
+ 	if (rc)
+ 		goto fail;
+@@ -1116,14 +1072,6 @@ void ef100_remove(struct efx_nic *efx)
+ {
+ 	struct ef100_nic_data *nic_data = efx->nic_data;
+ 
+-	ef100_unregister_netdev(efx);
+-
+-	down_write(&efx->filter_sem);
+-	efx_mcdi_filter_table_remove(efx);
+-	up_write(&efx->filter_sem);
+-	efx_fini_channels(efx);
+-	kfree(efx->phy_data);
+-	efx->phy_data = NULL;
+ 	efx_mcdi_detach(efx);
+ 	efx_mcdi_fini(efx);
+ 	if (nic_data)
+@@ -1142,7 +1090,7 @@ void ef100_remove(struct efx_nic *efx)
+ const struct efx_nic_type ef100_pf_nic_type = {
+ 	.revision = EFX_REV_EF100,
+ 	.is_vf = false,
+-	.probe = ef100_probe_pf,
++	.probe = ef100_probe_main,
+ 	.offload_features = EF100_OFFLOAD_FEATURES,
+ 	.mcdi_max_ver = 2,
+ 	.mcdi_request = ef100_mcdi_request,
+diff --git a/drivers/net/ethernet/sfc/ef100_nic.h b/drivers/net/ethernet/sfc/ef100_nic.h
+index e799688d5264..744dbbdb4adc 100644
+--- a/drivers/net/ethernet/sfc/ef100_nic.h
++++ b/drivers/net/ethernet/sfc/ef100_nic.h
+@@ -8,6 +8,8 @@
+  * under the terms of the GNU General Public License version 2 as published
+  * by the Free Software Foundation, incorporated herein by reference.
+  */
++#ifndef EFX_EF100_NIC_H
++#define EFX_EF100_NIC_H
+ 
+ #include "net_driver.h"
+ #include "nic_common.h"
+@@ -15,7 +17,7 @@
+ extern const struct efx_nic_type ef100_pf_nic_type;
+ extern const struct efx_nic_type ef100_vf_nic_type;
+ 
+-int ef100_probe_pf(struct efx_nic *efx);
++int ef100_probe_netdev_pf(struct efx_nic *efx);
+ int ef100_probe_vf(struct efx_nic *efx);
+ void ef100_remove(struct efx_nic *efx);
+ 
+@@ -78,3 +80,9 @@ struct ef100_nic_data {
+ 
+ #define efx_ef100_has_cap(caps, flag) \
+ 	(!!((caps) & BIT_ULL(MC_CMD_GET_CAPABILITIES_V4_OUT_ ## flag ## _LBN)))
++
++int efx_ef100_init_datapath_caps(struct efx_nic *efx);
++int ef100_phy_probe(struct efx_nic *efx);
++int ef100_filter_table_probe(struct efx_nic *efx);
++
++#endif	/* EFX_EF100_NIC_H */
+diff --git a/drivers/net/ethernet/sfc/efx.c b/drivers/net/ethernet/sfc/efx.c
+index c88e9de9dcd0..153d68e29b8b 100644
+--- a/drivers/net/ethernet/sfc/efx.c
++++ b/drivers/net/ethernet/sfc/efx.c
+@@ -886,7 +886,7 @@ static void efx_pci_remove(struct pci_dev *pci_dev)
+ 	efx_pci_remove_main(efx);
+ 
+ 	efx_fini_io(efx);
+-	netif_dbg(efx, drv, efx->net_dev, "shutdown successful\n");
++	pci_dbg(efx->pci_dev, "shutdown successful\n");
+ 
+ 	efx_fini_struct(efx);
+ 	free_netdev(efx->net_dev);
+diff --git a/drivers/net/ethernet/sfc/efx_common.c b/drivers/net/ethernet/sfc/efx_common.c
+index e867c3457859..56eb717bb07a 100644
+--- a/drivers/net/ethernet/sfc/efx_common.c
++++ b/drivers/net/ethernet/sfc/efx_common.c
+@@ -1074,13 +1074,11 @@ int efx_init_io(struct efx_nic *efx, int bar, dma_addr_t dma_mask,
+ 	int rc;
+ 
+ 	efx->mem_bar = UINT_MAX;
+-
+-	netif_dbg(efx, probe, efx->net_dev, "initialising I/O bar=%d\n", bar);
++	pci_dbg(pci_dev, "initialising I/O bar=%d\n", bar);
+ 
+ 	rc = pci_enable_device(pci_dev);
+ 	if (rc) {
+-		netif_err(efx, probe, efx->net_dev,
+-			  "failed to enable PCI device\n");
++		pci_err(pci_dev, "failed to enable PCI device\n");
+ 		goto fail1;
+ 	}
+ 
+@@ -1088,42 +1086,40 @@ int efx_init_io(struct efx_nic *efx, int bar, dma_addr_t dma_mask,
+ 
+ 	rc = dma_set_mask_and_coherent(&pci_dev->dev, dma_mask);
+ 	if (rc) {
+-		netif_err(efx, probe, efx->net_dev,
+-			  "could not find a suitable DMA mask\n");
++		pci_err(efx->pci_dev, "could not find a suitable DMA mask\n");
+ 		goto fail2;
+ 	}
+-	netif_dbg(efx, probe, efx->net_dev,
+-		  "using DMA mask %llx\n", (unsigned long long)dma_mask);
++	pci_dbg(efx->pci_dev, "using DMA mask %llx\n", (unsigned long long)dma_mask);
+ 
+ 	efx->membase_phys = pci_resource_start(efx->pci_dev, bar);
+ 	if (!efx->membase_phys) {
+-		netif_err(efx, probe, efx->net_dev,
+-			  "ERROR: No BAR%d mapping from the BIOS. Try pci=realloc on the kernel command line\n",
+-			  bar);
++		pci_err(efx->pci_dev,
++			"ERROR: No BAR%d mapping from the BIOS. Try pci=realloc on the kernel command line\n",
++			bar);
+ 		rc = -ENODEV;
+ 		goto fail3;
+ 	}
+ 
+ 	rc = pci_request_region(pci_dev, bar, "sfc");
+ 	if (rc) {
+-		netif_err(efx, probe, efx->net_dev,
+-			  "request for memory BAR[%d] failed\n", bar);
++		pci_err(efx->pci_dev,
++			"request for memory BAR[%d] failed\n", bar);
+ 		rc = -EIO;
+ 		goto fail3;
+ 	}
+ 	efx->mem_bar = bar;
+ 	efx->membase = ioremap(efx->membase_phys, mem_map_size);
+ 	if (!efx->membase) {
+-		netif_err(efx, probe, efx->net_dev,
+-			  "could not map memory BAR[%d] at %llx+%x\n", bar,
+-			  (unsigned long long)efx->membase_phys, mem_map_size);
++		pci_err(efx->pci_dev,
++			"could not map memory BAR[%d] at %llx+%x\n", bar,
++			(unsigned long long)efx->membase_phys, mem_map_size);
+ 		rc = -ENOMEM;
+ 		goto fail4;
+ 	}
+-	netif_dbg(efx, probe, efx->net_dev,
+-		  "memory BAR[%d] at %llx+%x (virtual %p)\n", bar,
+-		  (unsigned long long)efx->membase_phys, mem_map_size,
+-		  efx->membase);
++	pci_dbg(efx->pci_dev,
++		"memory BAR[%d] at %llx+%x (virtual %p)\n", bar,
++		(unsigned long long)efx->membase_phys, mem_map_size,
++		efx->membase);
+ 
+ 	return 0;
+ 
+@@ -1139,7 +1135,7 @@ int efx_init_io(struct efx_nic *efx, int bar, dma_addr_t dma_mask,
+ 
+ void efx_fini_io(struct efx_nic *efx)
+ {
+-	netif_dbg(efx, drv, efx->net_dev, "shutting down I/O\n");
++	pci_dbg(efx->pci_dev, "shutting down I/O\n");
+ 
+ 	if (efx->membase) {
+ 		iounmap(efx->membase);
+diff --git a/drivers/net/ethernet/sfc/mcdi.c b/drivers/net/ethernet/sfc/mcdi.c
+index b53fb01dcbad..3225fe64c397 100644
+--- a/drivers/net/ethernet/sfc/mcdi.c
++++ b/drivers/net/ethernet/sfc/mcdi.c
+@@ -99,14 +99,12 @@ int efx_mcdi_init(struct efx_nic *efx)
+ 	 */
+ 	rc = efx_mcdi_drv_attach(efx, true, &already_attached);
+ 	if (rc) {
+-		netif_err(efx, probe, efx->net_dev,
+-			  "Unable to register driver with MCPU\n");
++		pci_err(efx->pci_dev, "Unable to register driver with MCPU\n");
+ 		goto fail2;
+ 	}
+ 	if (already_attached)
+ 		/* Not a fatal error */
+-		netif_err(efx, probe, efx->net_dev,
+-			  "Host already registered with MCPU\n");
++		pci_err(efx->pci_dev, "Host already registered with MCPU\n");
+ 
+ 	if (efx->mcdi->fn_flags &
+ 	    (1 << MC_CMD_DRV_ATTACH_EXT_OUT_FLAG_PRIMARY))
+@@ -1447,7 +1445,7 @@ void efx_mcdi_print_fwver(struct efx_nic *efx, char *buf, size_t len)
+ 	return;
+ 
+ fail:
+-	netif_err(efx, probe, efx->net_dev, "%s: failed rc=%d\n", __func__, rc);
++	pci_err(efx->pci_dev, "%s: failed rc=%d\n", __func__, rc);
+ 	buf[0] = 0;
+ }
+ 
+@@ -1471,9 +1469,9 @@ static int efx_mcdi_drv_attach(struct efx_nic *efx, bool driver_operating,
+ 	 * care what firmware we get.
+ 	 */
+ 	if (rc == -EPERM) {
+-		netif_dbg(efx, probe, efx->net_dev,
+-			  "%s with fw-variant setting failed EPERM, trying without it\n",
+-			  __func__);
++		pci_dbg(efx->pci_dev,
++			"%s with fw-variant setting failed EPERM, trying without it\n",
++			__func__);
+ 		MCDI_SET_DWORD(inbuf, DRV_ATTACH_IN_FIRMWARE_ID,
+ 			       MC_CMD_FW_DONT_CARE);
+ 		rc = efx_mcdi_rpc_quiet(efx, MC_CMD_DRV_ATTACH, inbuf,
+@@ -1515,7 +1513,7 @@ static int efx_mcdi_drv_attach(struct efx_nic *efx, bool driver_operating,
+ 	return 0;
+ 
+ fail:
+-	netif_err(efx, probe, efx->net_dev, "%s: failed rc=%d\n", __func__, rc);
++	pci_err(efx->pci_dev, "%s: failed rc=%d\n", __func__, rc);
+ 	return rc;
+ }
+ 
+
 
