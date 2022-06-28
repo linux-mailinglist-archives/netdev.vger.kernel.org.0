@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A73C55E9FD
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 18:42:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5668A55E9F9
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 18:42:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237400AbiF1QgQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 12:36:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52340 "EHLO
+        id S239254AbiF1QgI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 12:36:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237767AbiF1Qe7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 12:34:59 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5933F35877
-        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 09:32:05 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id d2so15169658ejy.1
-        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 09:32:05 -0700 (PDT)
+        with ESMTP id S232011AbiF1QfA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 12:35:00 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13964BB9
+        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 09:32:07 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id ay16so26921732ejb.6
+        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 09:32:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=amarulasolutions.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=dlTOY2xvVGa6BOY+C/5W0PL43wDapCN5T2ZQIpzidGs=;
-        b=FFGuQTgNFPUOJy7W7LyC6yuBr+1gnvvgi5oICNleFC9tYjsV7E65ZItYDQYG7QxPMu
-         MYIGFHznp0t0+2QDquc6gaj6dHhvwNNv+YdX7n2h4XyOO0mGYF8/Tc+AeoWBnrTskmRA
-         IKRfOaJ1/XK68brtxVVQKiW43xvrFYdzhNbLo=
+        bh=CuGBayQTKpzveprbko8jS+HWnVHJqO4mYljV1kMBj3A=;
+        b=MtMhCSr/fei8ro6GAgFIQN2QNwArvDPswgWVA92bCcINrM3QNrv44Ufz8bcR70Hin9
+         d2E1yfK//6FaPHzSk22x2w3jobVMv2wtKrVGn9OdNqZB7u+60qS6jfZ1dys6YiZ5AtBI
+         lBRrfoVADTV1DCY2tdEqS/CwfhNpHWI8tMDXg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=dlTOY2xvVGa6BOY+C/5W0PL43wDapCN5T2ZQIpzidGs=;
-        b=ViOaqSZQFFwtJEhgz7JPLzO35CU7lqaSEh3tpM7j7H9+B8OUoClNjWNXmuWQ1cPVum
-         /wDDTV7htozqBQOdoD6sqKrLcFm+oz5U+PRh457OnOSkFxMO/NNjNPpfeA9jd5cFYw2/
-         sAW4ay8t4VaOuC0m1FNbgg3sbrfDh+ZNXPHRMKAh/gjTojdVCl2XR24P6GbWA0ecgGTk
-         yDss+rgl40Hk+TrRbRNeSXz6jjUk0RRezZLjGhWkav9RqN6fFiLLMGefsIw7NsEwzCOW
-         X4666Fl/Uulc/RlcGSA20ddgep39ljtxBdSpiU2VaFXauxc5y0jWyqrOgonthTnptaBd
-         ClvQ==
-X-Gm-Message-State: AJIora9CFm7Weuz5lsUcEgk1Kxzu7EwYoIHdVHtKmKYoef6azy1Zx/8Q
-        RmkxcTbXNIK0lj0NLWzpuDN53A==
-X-Google-Smtp-Source: AGRyM1vx3ooj/k5/B7RWpo8vUen0e+1A7wWHA37jOfUxzwtSR3c2Ip2cIO8jdB2tCXVi8ls/o9KiGw==
-X-Received: by 2002:a17:907:94d4:b0:722:e4b8:c2f2 with SMTP id dn20-20020a17090794d400b00722e4b8c2f2mr18565878ejc.527.1656433924935;
-        Tue, 28 Jun 2022 09:32:04 -0700 (PDT)
+        bh=CuGBayQTKpzveprbko8jS+HWnVHJqO4mYljV1kMBj3A=;
+        b=eet/CGqg4xxVlu3mACqQZ/OprEFLDKyOsrrwxOvA4K5WiYO1A61ZwXtGa5lRHl4SXX
+         X44FMgoi79KIAelCFyU8UemcxGVfhNXarujxaUdsDtowLnSS8boCHF8wvjd6sKX0S7df
+         GqRzLmLxoSXe3AixvSx6/gdMMaoqRurVWjzule3xyXUL8uAExLhZFjwWDqlcjahNqE+j
+         uQZvlkfUf8eP2XQQ9UXfmAFss9yDUvO4TIDjIIbqyT1w6WNbXmxXGsBiq1Wek3FXw6G8
+         fyB3E59t5a2UzgPe9BKHrMmZgni04/hWKehPxBRjI0tmR0eB+xygPaCMMw+J4zQjQn0S
+         BKrQ==
+X-Gm-Message-State: AJIora9FLWSD7nXp4deRgcXaBjo555caNNgLyMp8s9VfCTDoBWcrLIK6
+        YP66/2rLL2tudbjQ7lSJziymeQ==
+X-Google-Smtp-Source: AGRyM1s72MC8BHF9j5Ha54DSEtE2W5iZoGmr+77mt8A8eJMZUG9x4pM48O9yrt22/OipX0MUoLoO3g==
+X-Received: by 2002:a17:906:c152:b0:726:3226:2e61 with SMTP id dp18-20020a170906c15200b0072632262e61mr18889180ejc.122.1656433926614;
+        Tue, 28 Jun 2022 09:32:06 -0700 (PDT)
 Received: from dario-ThinkPad-T14s-Gen-2i.homenet.telecomitalia.it (host-80-116-90-174.pool80116.interbusiness.it. [80.116.90.174])
-        by smtp.gmail.com with ESMTPSA id b20-20020a0564021f1400b0042e15364d14sm9916952edb.8.2022.06.28.09.32.03
+        by smtp.gmail.com with ESMTPSA id b20-20020a0564021f1400b0042e15364d14sm9916952edb.8.2022.06.28.09.32.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jun 2022 09:32:04 -0700 (PDT)
+        Tue, 28 Jun 2022 09:32:06 -0700 (PDT)
 From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     michael@amarulasolutions.com,
@@ -61,9 +61,9 @@ Cc:     michael@amarulasolutions.com,
         Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
         Wolfgang Grandegger <wg@grandegger.com>,
         linux-can@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v5 11/12] can: slcan: extend the protocol with error info
-Date:   Tue, 28 Jun 2022 18:31:35 +0200
-Message-Id: <20220628163137.413025-12-dario.binacchi@amarulasolutions.com>
+Subject: [PATCH v5 12/12] can: slcan: extend the protocol with CAN state info
+Date:   Tue, 28 Jun 2022 18:31:36 +0200
+Message-Id: <20220628163137.413025-13-dario.binacchi@amarulasolutions.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220628163137.413025-1-dario.binacchi@amarulasolutions.com>
 References: <20220628163137.413025-1-dario.binacchi@amarulasolutions.com>
@@ -79,8 +79,8 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It extends the protocol to receive the adapter CAN communication errors
-and forward them to the netdev upper levels.
+It extends the protocol to receive the adapter CAN state changes
+(warning, busoff, etc.) and forward them to the netdev upper levels.
 
 Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
 
@@ -89,180 +89,124 @@ Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
 (no changes since v4)
 
 Changes in v4:
-- Add description of slc_bump_err() function.
-- Remove check for the 'e' character at the beggining of the function.
+- Add description of slc_bump_state() function.
+- Remove check for the 's' character at the beggining of the function.
   It was already checked by the caller function.
-- Protect decoding against the case the len value is longer than the
-  received data.
+- Protect decoding against the case the frame len is longer than the
+  received data (add SLC_STATE_FRAME_LEN macro).
+- Set cf to NULL in case of alloc_can_err_skb() failure.
 - Some small changes to make the decoding more readable.
-- Increment all the error counters at the end of the function.
+- Use the character 'b' instead of 'f' for bus-off state.
+
+Changes in v3:
+- Drop the patch "can: slcan: simplify the device de-allocation".
+- Add the patch "can: netlink: dump bitrate 0 if can_priv::bittiming.bitrate is -1U".
 
 Changes in v2:
-- Protect decoding against the case the len value is longer than the
-  received data.
 - Continue error handling even if no skb can be allocated.
 
- drivers/net/can/slcan/slcan-core.c | 140 ++++++++++++++++++++++++++++-
- 1 file changed, 139 insertions(+), 1 deletion(-)
+ drivers/net/can/slcan/slcan-core.c | 74 +++++++++++++++++++++++++++++-
+ 1 file changed, 73 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/can/slcan/slcan-core.c b/drivers/net/can/slcan/slcan-core.c
-index c1fd1e934d93..4269b2267be2 100644
+index 4269b2267be2..54d29a410ad5 100644
 --- a/drivers/net/can/slcan/slcan-core.c
 +++ b/drivers/net/can/slcan/slcan-core.c
-@@ -175,7 +175,7 @@ int slcan_enable_err_rst_on_open(struct net_device *ndev, bool on)
-   ************************************************************************/
- 
- /* Send one completely decapsulated can_frame to the network layer */
--static void slc_bump(struct slcan *sl)
-+static void slc_bump_frame(struct slcan *sl)
- {
- 	struct sk_buff *skb;
- 	struct can_frame *cf;
-@@ -254,6 +254,144 @@ static void slc_bump(struct slcan *sl)
+@@ -78,7 +78,11 @@ MODULE_PARM_DESC(maxdev, "Maximum number of slcan interfaces");
+ #define SLC_CMD_LEN 1
+ #define SLC_SFF_ID_LEN 3
+ #define SLC_EFF_ID_LEN 8
+-
++#define SLC_STATE_LEN 1
++#define SLC_STATE_BE_RXCNT_LEN 3
++#define SLC_STATE_BE_TXCNT_LEN 3
++#define SLC_STATE_FRAME_LEN       (1 + SLC_CMD_LEN + SLC_STATE_BE_RXCNT_LEN + \
++				   SLC_STATE_BE_TXCNT_LEN)
+ struct slcan {
+ 	struct can_priv         can;
+ 	int			magic;
+@@ -254,6 +258,72 @@ static void slc_bump_frame(struct slcan *sl)
  	dev_kfree_skb(skb);
  }
  
-+/* An error frame can contain more than one type of error.
++/* A change state frame must contain state info and receive and transmit
++ * error counters.
 + *
 + * Examples:
 + *
-+ * e1a : len 1, errors: ACK error
-+ * e3bcO: len 3, errors: Bit0 error, CRC error, Tx overrun error
++ * sb256256 : state bus-off: rx counter 256, tx counter 256
++ * sa057033 : state active, rx counter 57, tx counter 33
 + */
-+static void slc_bump_err(struct slcan *sl)
++static void slc_bump_state(struct slcan *sl)
 +{
 +	struct net_device *dev = sl->dev;
 +	struct sk_buff *skb;
 +	struct can_frame *cf;
 +	char *cmd = sl->rbuff;
-+	bool rx_errors = false, tx_errors = false, rx_over_errors = false;
-+	int i, len;
++	u32 rxerr, txerr;
++	enum can_state state, rx_state, tx_state;
 +
-+	/* get len from sanitized ASCII value */
-+	len = cmd[1];
-+	if (len >= '0' && len < '9')
-+		len -= '0';
-+	else
++	switch (cmd[1]) {
++	case 'a':
++		state = CAN_STATE_ERROR_ACTIVE;
++		break;
++	case 'w':
++		state = CAN_STATE_ERROR_WARNING;
++		break;
++	case 'p':
++		state = CAN_STATE_ERROR_PASSIVE;
++		break;
++	case 'b':
++		state = CAN_STATE_BUS_OFF;
++		break;
++	default:
++		return;
++	}
++
++	if (state == sl->can.state || sl->rcount < SLC_STATE_FRAME_LEN)
 +		return;
 +
-+	if ((len + SLC_CMD_LEN + 1) > sl->rcount)
++	cmd += SLC_STATE_BE_RXCNT_LEN + SLC_CMD_LEN + 1;
++	cmd[SLC_STATE_BE_TXCNT_LEN] = 0;
++	if (kstrtou32(cmd, 10, &txerr))
++		return;
++
++	*cmd = 0;
++	cmd -= SLC_STATE_BE_RXCNT_LEN;
++	if (kstrtou32(cmd, 10, &rxerr))
 +		return;
 +
 +	skb = alloc_can_err_skb(dev, &cf);
-+
-+	if (skb)
-+		cf->can_id |= CAN_ERR_PROT | CAN_ERR_BUSERROR;
-+
-+	cmd += SLC_CMD_LEN + 1;
-+	for (i = 0; i < len; i++, cmd++) {
-+		switch (*cmd) {
-+		case 'a':
-+			netdev_dbg(dev, "ACK error\n");
-+			tx_errors = true;
-+			if (skb) {
-+				cf->can_id |= CAN_ERR_ACK;
-+				cf->data[3] = CAN_ERR_PROT_LOC_ACK;
-+			}
-+
-+			break;
-+		case 'b':
-+			netdev_dbg(dev, "Bit0 error\n");
-+			tx_errors = true;
-+			if (skb)
-+				cf->data[2] |= CAN_ERR_PROT_BIT0;
-+
-+			break;
-+		case 'B':
-+			netdev_dbg(dev, "Bit1 error\n");
-+			tx_errors = true;
-+			if (skb)
-+				cf->data[2] |= CAN_ERR_PROT_BIT1;
-+
-+			break;
-+		case 'c':
-+			netdev_dbg(dev, "CRC error\n");
-+			rx_errors = true;
-+			if (skb) {
-+				cf->data[2] |= CAN_ERR_PROT_BIT;
-+				cf->data[3] = CAN_ERR_PROT_LOC_CRC_SEQ;
-+			}
-+
-+			break;
-+		case 'f':
-+			netdev_dbg(dev, "Form Error\n");
-+			rx_errors = true;
-+			if (skb)
-+				cf->data[2] |= CAN_ERR_PROT_FORM;
-+
-+			break;
-+		case 'o':
-+			netdev_dbg(dev, "Rx overrun error\n");
-+			rx_over_errors = true;
-+			rx_errors = true;
-+			if (skb) {
-+				cf->can_id |= CAN_ERR_CRTL;
-+				cf->data[1] = CAN_ERR_CRTL_RX_OVERFLOW;
-+			}
-+
-+			break;
-+		case 'O':
-+			netdev_dbg(dev, "Tx overrun error\n");
-+			tx_errors = true;
-+			if (skb) {
-+				cf->can_id |= CAN_ERR_CRTL;
-+				cf->data[1] = CAN_ERR_CRTL_TX_OVERFLOW;
-+			}
-+
-+			break;
-+		case 's':
-+			netdev_dbg(dev, "Stuff error\n");
-+			rx_errors = true;
-+			if (skb)
-+				cf->data[2] |= CAN_ERR_PROT_STUFF;
-+
-+			break;
-+		default:
-+			if (skb)
-+				dev_kfree_skb(skb);
-+
-+			return;
-+		}
++	if (skb) {
++		cf->data[6] = txerr;
++		cf->data[7] = rxerr;
++	} else {
++		cf = NULL;
 +	}
 +
-+	if (rx_errors)
-+		dev->stats.rx_errors++;
++	tx_state = txerr >= rxerr ? state : 0;
++	rx_state = txerr <= rxerr ? state : 0;
++	can_change_state(dev, cf, tx_state, rx_state);
 +
-+	if (rx_over_errors)
-+		dev->stats.rx_over_errors++;
-+
-+	if (tx_errors)
-+		dev->stats.tx_errors++;
++	if (state == CAN_STATE_BUS_OFF)
++		can_bus_off(dev);
 +
 +	if (skb)
 +		netif_rx(skb);
 +}
 +
-+static void slc_bump(struct slcan *sl)
-+{
-+	switch (sl->rbuff[0]) {
-+	case 'r':
-+		fallthrough;
-+	case 't':
-+		fallthrough;
-+	case 'R':
-+		fallthrough;
-+	case 'T':
-+		return slc_bump_frame(sl);
-+	case 'e':
-+		return slc_bump_err(sl);
-+	default:
-+		return;
-+	}
-+}
-+
- /* parse tty input stream */
- static void slcan_unesc(struct slcan *sl, unsigned char s)
- {
+ /* An error frame can contain more than one type of error.
+  *
+  * Examples:
+@@ -387,6 +457,8 @@ static void slc_bump(struct slcan *sl)
+ 		return slc_bump_frame(sl);
+ 	case 'e':
+ 		return slc_bump_err(sl);
++	case 's':
++		return slc_bump_state(sl);
+ 	default:
+ 		return;
+ 	}
 -- 
 2.32.0
 
