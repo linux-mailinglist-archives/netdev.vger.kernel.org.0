@@ -2,176 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AEC7155DA5B
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:23:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F6D755DF24
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:30:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344892AbiF1LPX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 07:15:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41814 "EHLO
+        id S229846AbiF1LQY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 07:16:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230489AbiF1LPU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 07:15:20 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 631AC2CE07;
-        Tue, 28 Jun 2022 04:15:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656414919; x=1687950919;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=VAm8GqMxSVbXa5l11MJLdH5RISvLfde2v1QEXHVyiio=;
-  b=mZq8HQm1gvx+ndU7H/4UXDpllHvZVhrQ1XAiisz3B81fZx3onExWwa6O
-   HVQxDRJDl50jvnbmrxEchDmq6UY8/i+ttGS+eDncCPGtynlXDroamI9ti
-   Uq51RMcF+qY6EIE39PfvMcnXDxErEvuU2MDeFHDV+KJ2SAyoSQ3S2hSqI
-   dLdVcrslX3VZW+FTuv6drbFpkgP25VRuSTGtqxOLLsDysNrBVHYiSkTT6
-   Ea8A9VKdMgtpUdr7diMyFGcq3zGsVKsEyAHor2tTs2WoAdvklRfh8+/gy
-   205fk4PmBhGiS2cOmHsS+LF9r8uF1CXZqm9uam08rIymaHIDGHF6iO5Pp
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="281749895"
-X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="281749895"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 04:15:19 -0700
-X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="693067914"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 04:15:16 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1o69BV-000wl7-8C;
-        Tue, 28 Jun 2022 14:15:09 +0300
-Date:   Tue, 28 Jun 2022 14:15:09 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Saravana Kannan <saravanak@google.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Al Cooper <alcooperx@gmail.com>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Tobias Klauser <tklauser@distanz.ch>,
-        Russell King <linux@armlinux.org.uk>,
-        Vineet Gupta <vgupta@kernel.org>,
-        Richard Genoud <richard.genoud@gmail.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Alexander Shiyan <shc_work@mail.ru>,
-        Baruch Siach <baruch@tkos.co.il>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Karol Gugala <kgugala@antmicro.com>,
-        Mateusz Holenko <mholenko@antmicro.com>,
-        Gabriel Somlo <gsomlo@gmail.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Taichi Sugaya <sugaya.taichi@socionext.com>,
-        Takao Orito <orito.takao@socionext.com>,
-        Liviu Dudau <liviu.dudau@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Pali Rohar <pali@kernel.org>,
-        Andreas Farber <afaerber@suse.de>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Laxman Dewangan <ldewangan@nvidia.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Patrice Chotard <patrice.chotard@foss.st.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hammer Hsieh <hammerh0314@gmail.com>,
-        Peter Korsgaard <jacmet@sunsite.dk>,
-        Timur Tabi <timur@kernel.org>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Rob Herring <robh@kernel.org>,
-        sascha hauer <sha@pengutronix.de>, peng fan <peng.fan@nxp.com>,
-        kevin hilman <khilman@kernel.org>,
-        ulf hansson <ulf.hansson@linaro.org>,
-        len brown <len.brown@intel.com>, pavel machek <pavel@ucw.cz>,
-        joerg roedel <joro@8bytes.org>, will deacon <will@kernel.org>,
-        andrew lunn <andrew@lunn.ch>,
-        heiner kallweit <hkallweit1@gmail.com>,
-        eric dumazet <edumazet@google.com>,
-        jakub kicinski <kuba@kernel.org>,
-        paolo abeni <pabeni@redhat.com>,
-        linus walleij <linus.walleij@linaro.org>,
-        hideaki yoshifuji <yoshfuji@linux-ipv6.org>,
-        david ahern <dsahern@kernel.org>, kernel-team@android.com,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org,
-        linux-rpi-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-tegra@vger.kernel.org,
-        linux-snps-arc@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-        linux-actions@lists.infradead.org,
-        linux-unisoc@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        sparclinux@vger.kernel.org
-Subject: Re: [PATCH v1 0/2] Fix console probe delay when stdout-path isn't set
-Message-ID: <Yrrivbk2NSK3loBW@smile.fi.intel.com>
-References: <20220628020110.1601693-1-saravanak@google.com>
+        with ESMTP id S234708AbiF1LQX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 07:16:23 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 052932D1DE;
+        Tue, 28 Jun 2022 04:16:22 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id o16so17202242wra.4;
+        Tue, 28 Jun 2022 04:16:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=khKbGoD/EsCCSptEY2l7mXv0XjlFAynzPduQhYuFFhI=;
+        b=qfaJW/EmJ4YwhHlj2/AFKWE4FYfUYGz8TJQVOXiBK/of0V9uYRiex1uKba3zt/lwCe
+         PVyT0aof9JJD4IJu/Kivg0ppXcweF+WBwMrsKB7+2JnJ29cR1Wewgwq5Uct+FUQvVC3m
+         5cLD6UhXTBL8iH61R8itHfH3VzV+WRGPs9WepefdD1IZJUtEvVSgEuP2DTmbedKJO8UW
+         kZJ7VN9RrZPMEPCgoSooKFCStaVHMK5SwPmKr67hFUV0FNEziS8hLUU14vzJndJf7BSo
+         klRiPjyuReJfs/gXsTgyK1SqLBA0znUsoIopu/UgpPekyO5MYCuWzbG9JLfMz1Jycb5y
+         tgzg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=khKbGoD/EsCCSptEY2l7mXv0XjlFAynzPduQhYuFFhI=;
+        b=yJgkGEAzxveU6ZDntDgFVcmH2xzcjF6OWZer6nrAoKtqtoBzkodH7a1ujDh011alDr
+         3Kwnfa0zKesPaJIT3wyPL49a7eYav3GHSGVrDIVkTRQRTSXBBcq2oqiQ71zDYge6h2bW
+         c11wspTB3H0/3jEsQ+dwGookCXGn0slnarYmxIqMa82MLS2hqn5jgzJWFhhR5wikBIcz
+         zVDjxv0SSUo8FYohXPw8vUuzgvLPELk1og4b6escyux6qq6ipXeUwjCtH89qPBf89nXL
+         QQr1h+w3z2UqXDNszICQsMjQ6Myk6SjYM1wuVJkCagaoGB8GYV7HDxRNradqQ6EX2c4l
+         hwbw==
+X-Gm-Message-State: AJIora8gUvu78AD0b/5rMLpgCGjNCSq0A9w6oxsNUW80FLewbSQAPnks
+        GdonAL2VrE4kjOzaODQqJjbHKP7v0EtZtQ==
+X-Google-Smtp-Source: AGRyM1s2gS1+xR/Q7VDKrY0SAQhYxZhlWh7z8FX4wUlDAxJHqo883Lkso09hiOzc64pgGSjFaRVyFQ==
+X-Received: by 2002:a5d:62c4:0:b0:21b:c031:a94b with SMTP id o4-20020a5d62c4000000b0021bc031a94bmr14878911wrv.624.1656414980558;
+        Tue, 28 Jun 2022 04:16:20 -0700 (PDT)
+Received: from cfernandez-Prestige-15-A11SCS.. (136.red-2-136-200.staticip.rima-tde.net. [2.136.200.136])
+        by smtp.gmail.com with ESMTPSA id c16-20020adfe750000000b002103a7c5c91sm13152649wrn.43.2022.06.28.04.16.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Jun 2022 04:16:20 -0700 (PDT)
+From:   Carlos Fernandez <carlos.escuin@gmail.com>
+X-Google-Original-From: Carlos Fernandez <carlos.fernandez@technica-engineering.de>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, mayflowerera@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Carlos Fernandez <carlos.fernandez@technica-engineering.de>
+Subject: [PATCH net] net: macsec: Retrieve MACSec-XPN attributes before offloading
+Date:   Tue, 28 Jun 2022 13:16:17 +0200
+Message-Id: <20220628111617.28001-1-carlos.fernandez@technica-engineering.de>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220524114134.366696-1-carlos.fernandez@technica-engineering.de>
+References: <20220524114134.366696-1-carlos.fernandez@technica-engineering.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220628020110.1601693-1-saravanak@google.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 07:01:01PM -0700, Saravana Kannan wrote:
-> Since the series that fixes console probe delay based on stdout-path[1] got
-> pulled into driver-core-next, I made these patches on top of them.
-> 
-> Even if stdout-path isn't set in DT, this patch should take console
-> probe times back to how they were before the deferred_probe_timeout
-> clean up series[2].
+When MACsec offloading is used with XPN, before mdo_add_rxsa
+and mdo_add_txsa functions are called, the key salt is not
+copied to the macsec context struct. Offloaded phys will need
+this data when performing offloading.
 
-Are you sure it's only limited to the serial drivers?
-(just asking, I don't know myself the answer)
+Fix by copying salt and id to context struct before calling the
+offloading functions.
 
--- 
-With Best Regards,
-Andy Shevchenko
+Fixes: 48ef50fa866a ("macsec: Netlink support of XPN cipher suites")
+Signed-off-by: Carlos Fernandez <carlos.fernandez@technica-engineering.de>
+---
+ drivers/net/macsec.c | 30 ++++++++++++++++--------------
+ 1 file changed, 16 insertions(+), 14 deletions(-)
 
+diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
+index 832f09ac075e..4f2bd3d722c3 100644
+--- a/drivers/net/macsec.c
++++ b/drivers/net/macsec.c
+@@ -1804,6 +1804,14 @@ static int macsec_add_rxsa(struct sk_buff *skb, struct genl_info *info)
+ 
+ 	rx_sa->sc = rx_sc;
+ 
++	if (secy->xpn) {
++		rx_sa->ssci = nla_get_ssci(tb_sa[MACSEC_SA_ATTR_SSCI]);
++		nla_memcpy(rx_sa->key.salt.bytes, tb_sa[MACSEC_SA_ATTR_SALT],
++			   MACSEC_SALT_LEN);
++	}
++
++	nla_memcpy(rx_sa->key.id, tb_sa[MACSEC_SA_ATTR_KEYID], MACSEC_KEYID_LEN);
++
+ 	/* If h/w offloading is available, propagate to the device */
+ 	if (macsec_is_offloaded(netdev_priv(dev))) {
+ 		const struct macsec_ops *ops;
+@@ -1826,13 +1834,6 @@ static int macsec_add_rxsa(struct sk_buff *skb, struct genl_info *info)
+ 			goto cleanup;
+ 	}
+ 
+-	if (secy->xpn) {
+-		rx_sa->ssci = nla_get_ssci(tb_sa[MACSEC_SA_ATTR_SSCI]);
+-		nla_memcpy(rx_sa->key.salt.bytes, tb_sa[MACSEC_SA_ATTR_SALT],
+-			   MACSEC_SALT_LEN);
+-	}
+-
+-	nla_memcpy(rx_sa->key.id, tb_sa[MACSEC_SA_ATTR_KEYID], MACSEC_KEYID_LEN);
+ 	rcu_assign_pointer(rx_sc->sa[assoc_num], rx_sa);
+ 
+ 	rtnl_unlock();
+@@ -2046,6 +2047,14 @@ static int macsec_add_txsa(struct sk_buff *skb, struct genl_info *info)
+ 	if (assoc_num == tx_sc->encoding_sa && tx_sa->active)
+ 		secy->operational = true;
+ 
++	if (secy->xpn) {
++		tx_sa->ssci = nla_get_ssci(tb_sa[MACSEC_SA_ATTR_SSCI]);
++		nla_memcpy(tx_sa->key.salt.bytes, tb_sa[MACSEC_SA_ATTR_SALT],
++			   MACSEC_SALT_LEN);
++	}
++
++	nla_memcpy(tx_sa->key.id, tb_sa[MACSEC_SA_ATTR_KEYID], MACSEC_KEYID_LEN);
++
+ 	/* If h/w offloading is available, propagate to the device */
+ 	if (macsec_is_offloaded(netdev_priv(dev))) {
+ 		const struct macsec_ops *ops;
+@@ -2068,13 +2077,6 @@ static int macsec_add_txsa(struct sk_buff *skb, struct genl_info *info)
+ 			goto cleanup;
+ 	}
+ 
+-	if (secy->xpn) {
+-		tx_sa->ssci = nla_get_ssci(tb_sa[MACSEC_SA_ATTR_SSCI]);
+-		nla_memcpy(tx_sa->key.salt.bytes, tb_sa[MACSEC_SA_ATTR_SALT],
+-			   MACSEC_SALT_LEN);
+-	}
+-
+-	nla_memcpy(tx_sa->key.id, tb_sa[MACSEC_SA_ATTR_KEYID], MACSEC_KEYID_LEN);
+ 	rcu_assign_pointer(tx_sc->sa[assoc_num], tx_sa);
+ 
+ 	rtnl_unlock();
 
