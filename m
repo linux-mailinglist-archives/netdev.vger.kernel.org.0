@@ -2,83 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 79CB855DC83
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:26:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E9C1755DE50
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:28:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241372AbiF1HoK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 03:44:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42598 "EHLO
+        id S243934AbiF1Hsv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 03:48:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235637AbiF1HoJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 03:44:09 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ECA5CEC
-        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 00:44:06 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id q9so16351221wrd.8
-        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 00:44:06 -0700 (PDT)
+        with ESMTP id S243058AbiF1HrY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 03:47:24 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BB2A393;
+        Tue, 28 Jun 2022 00:47:23 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id g20-20020a17090a579400b001ed52939d72so6357013pji.4;
+        Tue, 28 Jun 2022 00:47:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=u6ggXRO11FTu/8FIHZeboB1kewGhJtnNr1j3aBIk+94=;
-        b=tLhUAaysmE6YD7G7xOGcd/ihPxp0qfum+urqElPDE0LZbn/gq2M30xSk4vheXd0PKq
-         hw6fQTEFxq/Ul7hWIzkJBujoeTfTWqTHzAbRniUhF8o7/FGkgggWlOQEp2OriBKjk/gQ
-         QvYjxrb5MIp71ngc24H83rQHk4dceBBDqtVLzllBscDCxmm0ZwoTlbdcD0JccFnTEya0
-         OBaNs44+bdS1B3OWagvSkxJkyiEsdh62q8sGZex8M+7i6a2oz89y1FoLMeiVYNnj+fln
-         HxrIQ2SDUzLtgjT0j0OeeU+kqN9XwVeDHFszncb8Q0uZ3gL85+qIvmmakW/bGoPn4B51
-         p98g==
+        bh=2ksIIskBw2Ba8fG6PLP066/IQFUnSATGlOiAhq4Wz6g=;
+        b=ihFYpfFS8d6iJ2BV7LsKrSmaDFX/g69vCGo1x2oSR8/wmtfo6fxfMMYR0bxhc6fIw0
+         WGA/putgNHdRpGSTxz7GdsuNVs7Rf7KLBFPGCUVbIv1xXoE0H6pjOpxtLnx5QvRF1UvH
+         gI/S2VkUVzaCahnqFLm39oicCvBQckGeaspWAF5wqIwvYnA2WzRfVAL3Rtr8EmSSqCXS
+         jHbOR/6aBc08MLxm5/thxsWstzTfGddSseEn0MehzdeW8eM3Mk95xW8mm2upYycqfFgT
+         8ts+t7H/OwnPWudq52iwoMTuGo3yRuv+idiBn8/aIVqu0BkG55SW+ar2q1lHdv+JNiwj
+         /bjQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=u6ggXRO11FTu/8FIHZeboB1kewGhJtnNr1j3aBIk+94=;
-        b=aJUWEPYB9ng9m7KhaafH3sahSZ9u7ReTksy4ZBHHGEsl0Rqroaqcjixy5m4N8DGMCd
-         8VI1x5d5Ylt/sOSnyelmS+xAXEtA3qaE/g3XiisgCRsaQx5Wu3fBPO0znInkUEgBi63F
-         Q9Pbm3ehSQsL0sUruvEfUHHGhnT0cF/R7Tan1VeraNBcFq8bw7M0fG/9eW+Odj12gj4C
-         uBuaFurag/GNFHePWBsYwblVh6CfIABzJ6bzSJhhxr2vTwkfJ/oJWKr81BXs0Di6zgfw
-         JszP+ano2aRsJVC8dmhD+Hwm211JAkZEUvDBamm+2jYoOahVDA/y8mVTSm/UJp6lk69L
-         gumg==
-X-Gm-Message-State: AJIora8Gk+esNNhal6N2biFumrANZOF1ug2ACAJ20UZt019ZWWH2o9MM
-        S+0z61ReQS9YD9HkRU5ECnWKthPWdrmLjSqy8YhgKg==
-X-Google-Smtp-Source: AGRyM1vk4OMmjwp0kku/o3oKtOZB29esVN5yBEI/0FyPz8q6tXWb8nfWdWo5aC+AJRp1tNDwUX2im+qMLIIIy7QfPVY=
-X-Received: by 2002:a5d:664d:0:b0:21a:3b82:6bb2 with SMTP id
- f13-20020a5d664d000000b0021a3b826bb2mr16378246wrw.534.1656402244783; Tue, 28
- Jun 2022 00:44:04 -0700 (PDT)
+        bh=2ksIIskBw2Ba8fG6PLP066/IQFUnSATGlOiAhq4Wz6g=;
+        b=LB8Us1SW+jkb2yobdESqPpYXh6WeeCX6ejbToPozC4U7kiYN0hcUvcyG/MwbnsBFf7
+         nqfD3JnIDkhQ3lLlqWwyStUnmfvOy7RC3I3Qw3NgapeR8qbaHu8OpqPOb+49Qf1/EMoS
+         e53uEqfun/hVQDBaL8jEqmrSLDAapFtv42GGskWtHuLI3e8RafPhoFz5xxBy1rML6+ql
+         GHfhtYqHMSchpix5ETilR1tnurl923OGgbmPeeY37yCsONd7hEfKe/ZjdZI4/+/pr7XO
+         GVSeb8wWHc+Mom9cAd5SYkhUAjt3vZU6ksaCQyFwR3zkYkFENf17I1Yvzdwd0rjIG4Tl
+         KB6g==
+X-Gm-Message-State: AJIora+iiXope+pwGnDuLEz+Wf0o3Yehv5KmZL9BhNfNbko1SA9HBRQO
+        w0+1oeh1tJeK46I3xRWfWC3QauTnftnlr0bWSY30Y5RlEX8Zsb0x
+X-Google-Smtp-Source: AGRyM1tfbhrWRuWpNYKQ03g2t4onqMKMSYhyD8nIEgluUdUVAr0LVkkndOKQCV2/HktBaPmG0Za5N+AEfqrhU7SgQGA=
+X-Received: by 2002:a17:902:d701:b0:16a:2206:9ba8 with SMTP id
+ w1-20020a170902d70100b0016a22069ba8mr2377741ply.168.1656402442810; Tue, 28
+ Jun 2022 00:47:22 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220610194435.2268290-1-yosryahmed@google.com>
- <20220610194435.2268290-9-yosryahmed@google.com> <00df1932-38fe-c6f8-49d0-3a44affb1268@fb.com>
- <CAJD7tkaNnx6ebFrMxWgkJbtx=Qoe+cEwnjtWeY5=EAaVktrenw@mail.gmail.com>
-In-Reply-To: <CAJD7tkaNnx6ebFrMxWgkJbtx=Qoe+cEwnjtWeY5=EAaVktrenw@mail.gmail.com>
-From:   Yosry Ahmed <yosryahmed@google.com>
-Date:   Tue, 28 Jun 2022 00:43:28 -0700
-Message-ID: <CAJD7tkbOztCEWgMzoCOdD+g3whMMQWW2e0gwo9p0tVK=3hqmcw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 8/8] bpf: add a selftest for cgroup
- hierarchical stats collection
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
+References: <20220627190120.176470-1-ivan.malov@oktetlabs.ru> <20220628001752.17586-1-ivan.malov@oktetlabs.ru>
+In-Reply-To: <20220628001752.17586-1-ivan.malov@oktetlabs.ru>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Tue, 28 Jun 2022 09:47:11 +0200
+Message-ID: <CAJ8uoz2Gcs+oYorgHofz=0ZOznNoKS8hdyOK=rWwhRtYXO=RHw@mail.gmail.com>
+Subject: Re: [PATCH v2 1/1] xsk: clear page contiguity bit when unmapping pool
+To:     Ivan Malov <ivan.malov@oktetlabs.ru>
+Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Network Development <netdev@vger.kernel.org>,
+        Andrew Rybchenko <andrew.rybchenko@oktetlabs.ru>,
+        bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
         John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        David Rientjes <rientjes@google.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Greg Thelen <gthelen@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Cgroups <cgroups@vger.kernel.org>
-Content-Type: multipart/mixed; boundary="0000000000006885d305e27d3323"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        Maxim Mikityanskiy <maximmi@mellanox.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -86,787 +81,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000006885d305e27d3323
-Content-Type: text/plain; charset="UTF-8"
-
-On Mon, Jun 27, 2022 at 11:47 PM Yosry Ahmed <yosryahmed@google.com> wrote:
+On Tue, Jun 28, 2022 at 2:18 AM Ivan Malov <ivan.malov@oktetlabs.ru> wrote:
 >
-> On Mon, Jun 27, 2022 at 11:14 PM Yonghong Song <yhs@fb.com> wrote:
-> >
-> >
-> >
-> > On 6/10/22 12:44 PM, Yosry Ahmed wrote:
-> > > Add a selftest that tests the whole workflow for collecting,
-> > > aggregating (flushing), and displaying cgroup hierarchical stats.
-> > >
-> > > TL;DR:
-> > > - Whenever reclaim happens, vmscan_start and vmscan_end update
-> > >    per-cgroup percpu readings, and tell rstat which (cgroup, cpu) pairs
-> > >    have updates.
-> > > - When userspace tries to read the stats, vmscan_dump calls rstat to flush
-> > >    the stats, and outputs the stats in text format to userspace (similar
-> > >    to cgroupfs stats).
-> > > - rstat calls vmscan_flush once for every (cgroup, cpu) pair that has
-> > >    updates, vmscan_flush aggregates cpu readings and propagates updates
-> > >    to parents.
-> > >
-> > > Detailed explanation:
-> > > - The test loads tracing bpf programs, vmscan_start and vmscan_end, to
-> > >    measure the latency of cgroup reclaim. Per-cgroup ratings are stored in
-> > >    percpu maps for efficiency. When a cgroup reading is updated on a cpu,
-> > >    cgroup_rstat_updated(cgroup, cpu) is called to add the cgroup to the
-> > >    rstat updated tree on that cpu.
-> > >
-> > > - A cgroup_iter program, vmscan_dump, is loaded and pinned to a file, for
-> > >    each cgroup. Reading this file invokes the program, which calls
-> > >    cgroup_rstat_flush(cgroup) to ask rstat to propagate the updates for all
-> > >    cpus and cgroups that have updates in this cgroup's subtree. Afterwards,
-> > >    the stats are exposed to the user. vmscan_dump returns 1 to terminate
-> > >    iteration early, so that we only expose stats for one cgroup per read.
-> > >
-> > > - An ftrace program, vmscan_flush, is also loaded and attached to
-> > >    bpf_rstat_flush. When rstat flushing is ongoing, vmscan_flush is invoked
-> > >    once for each (cgroup, cpu) pair that has updates. cgroups are popped
-> > >    from the rstat tree in a bottom-up fashion, so calls will always be
-> > >    made for cgroups that have updates before their parents. The program
-> > >    aggregates percpu readings to a total per-cgroup reading, and also
-> > >    propagates them to the parent cgroup. After rstat flushing is over, all
-> > >    cgroups will have correct updated hierarchical readings (including all
-> > >    cpus and all their descendants).
-> > >
-> > > Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
-> >
-> > There are a selftest failure with test:
-> >
-> > get_cgroup_vmscan_delay:PASS:output format 0 nsec
-> > get_cgroup_vmscan_delay:PASS:cgroup_id 0 nsec
-> > get_cgroup_vmscan_delay:PASS:vmscan_reading 0 nsec
-> > get_cgroup_vmscan_delay:PASS:read cgroup_iter 0 nsec
-> > get_cgroup_vmscan_delay:PASS:output format 0 nsec
-> > get_cgroup_vmscan_delay:PASS:cgroup_id 0 nsec
-> > get_cgroup_vmscan_delay:FAIL:vmscan_reading unexpected vmscan_reading:
-> > actual 0 <= expected 0
-> > check_vmscan_stats:FAIL:child1_vmscan unexpected child1_vmscan: actual
-> > 781874 != expected 382092
-> > check_vmscan_stats:FAIL:child2_vmscan unexpected child2_vmscan: actual
-> > -1 != expected -2
-> > check_vmscan_stats:FAIL:test_vmscan unexpected test_vmscan: actual
-> > 781874 != expected 781873
-> > check_vmscan_stats:FAIL:root_vmscan unexpected root_vmscan: actual 0 <
-> > expected 781874
-> > destroy_progs:PASS:remove cgroup_iter pin 0 nsec
-> > destroy_progs:PASS:remove cgroup_iter pin 0 nsec
-> > destroy_progs:PASS:remove cgroup_iter pin 0 nsec
-> > destroy_progs:PASS:remove cgroup_iter pin 0 nsec
-> > destroy_progs:PASS:remove cgroup_iter pin 0 nsec
-> > destroy_progs:PASS:remove cgroup_iter pin 0 nsec
-> > destroy_progs:PASS:remove cgroup_iter pin 0 nsec
-> > destroy_progs:PASS:remove cgroup_iter root pin 0 nsec
-> > cleanup_bpffs:PASS:rmdir /sys/fs/bpf/vmscan/ 0 nsec
-> > #33      cgroup_hierarchical_stats:FAIL
-> >
+> When a XSK pool gets mapped, xp_check_dma_contiguity() adds bit 0x1
+> to pages' DMA addresses that go in ascending order and at 4K stride.
+> The problem is that the bit does not get cleared before doing unmap.
+> As a result, a lot of warnings from iommu_dma_unmap_page() are seen
+> suggesting mapping lookup failures at drivers/iommu/dma-iommu.c:848.
+
+Thanks Ivan for spotting this. Please add if this patch is for bpf or
+net in your subject line. E.g., [PATCH net].
+
+Also, I cannot find a warning at drivers/iommu/dma-iommu.c:848. For
+net and bpf I have a WARN() at line 679 in __iommu_dma_unmap(). Maybe
+it would be better to just refer to __iommu_dma_unmap() and the
+warning in that function. Line numbers tend to change.
+
+> Fixes: 2b43470add8c ("xsk: Introduce AF_XDP buffer allocation API")
+> Signed-off-by: Ivan Malov <ivan.malov@oktetlabs.ru>
+> ---
+>  v1 -> v2: minor adjustments to dispose of the "Fixes:" tag warning
 >
-> The test is passing on my setup. I am trying to figure out if there is
-> something outside the setup done by the test that can cause the test
-> to fail.
+>  net/xdp/xsk_buff_pool.c | 1 +
+>  1 file changed, 1 insertion(+)
 >
-> >
-> > Also an existing test also failed.
-> >
-> > btf_dump_data:PASS:find type id 0 nsec
-> >
-> >
-> > btf_dump_data:PASS:failed/unexpected type_sz 0 nsec
-> >
-> >
-> > btf_dump_data:FAIL:ensure expected/actual match unexpected ensure
-> > expected/actual match: actual '(union bpf_iter_link_info){.map =
-> > (struct){.map_fd = (__u32)1,},.cgroup '
-> > test_btf_dump_struct_data:PASS:find struct sk_buff 0 nsec
-> >
+> diff --git a/net/xdp/xsk_buff_pool.c b/net/xdp/xsk_buff_pool.c
+> index 87bdd71c7bb6..f70112176b7c 100644
+> --- a/net/xdp/xsk_buff_pool.c
+> +++ b/net/xdp/xsk_buff_pool.c
+> @@ -332,6 +332,7 @@ static void __xp_dma_unmap(struct xsk_dma_map *dma_map, unsigned long attrs)
+>         for (i = 0; i < dma_map->dma_pages_cnt; i++) {
+>                 dma = &dma_map->dma_pages[i];
+>                 if (*dma) {
+> +                       *dma &= ~XSK_NEXT_PG_CONTIG_MASK;
+>                         dma_unmap_page_attrs(dma_map->dev, *dma, PAGE_SIZE,
+>                                              DMA_BIDIRECTIONAL, attrs);
+>                         *dma = 0;
+> --
+> 2.30.2
 >
-> Yeah I see what happened there. bpf_iter_link_info was changed by the
-> patch that introduced cgroup_iter, and this specific union is used by
-> the test to test the "union with nested struct" btf dumping. I will
-> add a patch in the next version that updates the btf_dump_data test
-> accordingly. Thanks.
->
-
-So I actually tried the attached diff to updated the expected dump of
-bpf_iter_link_info in this test, but the test still failed:
-
-btf_dump_data:FAIL:ensure expected/actual match unexpected ensure
-expected/actual match: actual '(union bpf_iter_link_info){.map =
-(struct){.map_fd = (__u32)1,},.cgroup = (struct){.cgroup_fd =
-(__u32)1,},}'  != expected '(union bpf_iter_link_info){.map =
-(struct){.map_fd = (__u32)1,},.cgroup = (struct){.cgroup_fd =
-(__u32)1,.traversal_order = (__u32)1},}'
-
-It seems to me that the actual output in this case is not right, it is
-missing traversal_order. Did we accidentally find a bug in btf dumping
-of unions with nested structs, or am I missing something here?
-Thanks!
-
-> >
-> > test_btf_dump_struct_data:PASS:unexpected return value dumping sk_buff 0
-> > nsec
-> >
-> > btf_dump_data:PASS:verify prefix match 0 nsec
-> >
-> >
-> > btf_dump_data:PASS:find type id 0 nsec
-> >
-> >
-> > btf_dump_data:PASS:failed to return -E2BIG 0 nsec
-> >
-> >
-> > btf_dump_data:PASS:ensure expected/actual match 0 nsec
-> >
-> >
-> > btf_dump_data:PASS:verify prefix match 0 nsec
-> >
-> >
-> > btf_dump_data:PASS:find type id 0 nsec
-> >
-> >
-> > btf_dump_data:PASS:failed to return -E2BIG 0 nsec
-> >
-> >
-> > btf_dump_data:PASS:ensure expected/actual match 0 nsec
-> >
-> >
-> > #21/14   btf_dump/btf_dump: struct_data:FAIL
-> >
-> > please take a look.
-> >
-> > > ---
-> > >   .../prog_tests/cgroup_hierarchical_stats.c    | 351 ++++++++++++++++++
-> > >   .../bpf/progs/cgroup_hierarchical_stats.c     | 234 ++++++++++++
-> > >   2 files changed, 585 insertions(+)
-> > >   create mode 100644 tools/testing/selftests/bpf/prog_tests/cgroup_hierarchical_stats.c
-> > >   create mode 100644 tools/testing/selftests/bpf/progs/cgroup_hierarchical_stats.c
-> > >
-> > > diff --git a/tools/testing/selftests/bpf/prog_tests/cgroup_hierarchical_stats.c b/tools/testing/selftests/bpf/prog_tests/cgroup_hierarchical_stats.c
-> > > new file mode 100644
-> > > index 0000000000000..b78a4043da49a
-> > > --- /dev/null
-> > > +++ b/tools/testing/selftests/bpf/prog_tests/cgroup_hierarchical_stats.c
-> > > @@ -0,0 +1,351 @@
-> > > +// SPDX-License-Identifier: GPL-2.0-only
-> > > +/*
-> > > + * Functions to manage eBPF programs attached to cgroup subsystems
-> > > + *
-> > > + * Copyright 2022 Google LLC.
-> > > + */
-> > > +#include <errno.h>
-> > > +#include <sys/types.h>
-> > > +#include <sys/mount.h>
-> > > +#include <sys/stat.h>
-> > > +#include <unistd.h>
-> > > +
-> > > +#include <test_progs.h>
-> > > +#include <bpf/libbpf.h>
-> > > +#include <bpf/bpf.h>
-> > > +
-> > > +#include "cgroup_helpers.h"
-> > > +#include "cgroup_hierarchical_stats.skel.h"
-> > > +
-> > > +#define PAGE_SIZE 4096
-> > > +#define MB(x) (x << 20)
-> > > +
-> > > +#define BPFFS_ROOT "/sys/fs/bpf/"
-> > > +#define BPFFS_VMSCAN BPFFS_ROOT"vmscan/"
-> > > +
-> > > +#define CG_ROOT_NAME "root"
-> > > +#define CG_ROOT_ID 1
-> > > +
-> > > +#define CGROUP_PATH(p, n) {.path = #p"/"#n, .name = #n}
-> > > +
-> > > +static struct {
-> > > +     const char *path, *name;
-> > > +     unsigned long long id;
-> > > +     int fd;
-> > > +} cgroups[] = {
-> > > +     CGROUP_PATH(/, test),
-> > > +     CGROUP_PATH(/test, child1),
-> > > +     CGROUP_PATH(/test, child2),
-> > > +     CGROUP_PATH(/test/child1, child1_1),
-> > > +     CGROUP_PATH(/test/child1, child1_2),
-> > > +     CGROUP_PATH(/test/child2, child2_1),
-> > > +     CGROUP_PATH(/test/child2, child2_2),
-> > > +};
-> > > +
-> > > +#define N_CGROUPS ARRAY_SIZE(cgroups)
-> > > +#define N_NON_LEAF_CGROUPS 3
-> > > +
-> > > +int root_cgroup_fd;
-> > > +bool mounted_bpffs;
-> > > +
-> > > +static int read_from_file(const char *path, char *buf, size_t size)
-> > > +{
-> > > +     int fd, len;
-> > > +
-> > > +     fd = open(path, O_RDONLY);
-> > > +     if (fd < 0) {
-> > > +             log_err("Open %s", path);
-> > > +             return -errno;
-> > > +     }
-> > > +     len = read(fd, buf, size);
-> > > +     if (len < 0)
-> > > +             log_err("Read %s", path);
-> > > +     else
-> > > +             buf[len] = 0;
-> > > +     close(fd);
-> > > +     return len < 0 ? -errno : 0;
-> > > +}
-> > > +
-> > > +static int setup_bpffs(void)
-> > > +{
-> > > +     int err;
-> > > +
-> > > +     /* Mount bpffs */
-> > > +     err = mount("bpf", BPFFS_ROOT, "bpf", 0, NULL);
-> > > +     mounted_bpffs = !err;
-> > > +     if (!ASSERT_OK(err && errno != EBUSY, "mount bpffs"))
-> > > +             return err;
-> > > +
-> > > +     /* Create a directory to contain stat files in bpffs */
-> > > +     err = mkdir(BPFFS_VMSCAN, 0755);
-> > > +     ASSERT_OK(err, "mkdir bpffs");
-> > > +     return err;
-> > > +}
-> > > +
-> > > +static void cleanup_bpffs(void)
-> > > +{
-> > > +     /* Remove created directory in bpffs */
-> > > +     ASSERT_OK(rmdir(BPFFS_VMSCAN), "rmdir "BPFFS_VMSCAN);
-> > > +
-> > > +     /* Unmount bpffs, if it wasn't already mounted when we started */
-> > > +     if (mounted_bpffs)
-> > > +             return;
-> > > +     ASSERT_OK(umount(BPFFS_ROOT), "unmount bpffs");
-> > > +}
-> > > +
-> > > +static int setup_cgroups(void)
-> > > +{
-> > > +     int i, fd, err;
-> > > +
-> > > +     err = setup_cgroup_environment();
-> > > +     if (!ASSERT_OK(err, "setup_cgroup_environment"))
-> > > +             return err;
-> > > +
-> > > +     root_cgroup_fd = get_root_cgroup();
-> > > +     if (!ASSERT_GE(root_cgroup_fd, 0, "get_root_cgroup"))
-> > > +             return root_cgroup_fd;
-> > > +
-> > > +     for (i = 0; i < N_CGROUPS; i++) {
-> > > +             fd = create_and_get_cgroup(cgroups[i].path);
-> > > +             if (!ASSERT_GE(fd, 0, "create_and_get_cgroup"))
-> > > +                     return fd;
-> > > +
-> > > +             cgroups[i].fd = fd;
-> > > +             cgroups[i].id = get_cgroup_id(cgroups[i].path);
-> > > +
-> > > +             /*
-> > > +              * Enable memcg controller for the entire hierarchy.
-> > > +              * Note that stats are collected for all cgroups in a hierarchy
-> > > +              * with memcg enabled anyway, but are only exposed for cgroups
-> > > +              * that have memcg enabled.
-> > > +              */
-> > > +             if (i < N_NON_LEAF_CGROUPS) {
-> > > +                     err = enable_controllers(cgroups[i].path, "memory");
-> > > +                     if (!ASSERT_OK(err, "enable_controllers"))
-> > > +                             return err;
-> > > +             }
-> > > +     }
-> > > +     return 0;
-> > > +}
-> > > +
-> > > +static void cleanup_cgroups(void)
-> > > +{
-> > > +     close(root_cgroup_fd);
-> > > +     for (int i = 0; i < N_CGROUPS; i++)
-> > > +             close(cgroups[i].fd);
-> > > +     cleanup_cgroup_environment();
-> > > +}
-> > > +
-> > > +
-> > > +static int setup_hierarchy(void)
-> > > +{
-> > > +     return setup_bpffs() || setup_cgroups();
-> > > +}
-> > > +
-> > > +static void destroy_hierarchy(void)
-> > > +{
-> > > +     cleanup_cgroups();
-> > > +     cleanup_bpffs();
-> > > +}
-> > > +
-> > > +static void alloc_anon(size_t size)
-> > > +{
-> > > +     char *buf, *ptr;
-> > > +
-> > > +     buf = malloc(size);
-> > > +     for (ptr = buf; ptr < buf + size; ptr += PAGE_SIZE)
-> > > +             *ptr = 0;
-> > > +     free(buf);
-> > > +}
-> > > +
-> > > +static int induce_vmscan(void)
-> > > +{
-> > > +     char size[128];
-> > > +     int i, err;
-> > > +
-> > > +     /*
-> > > +      * Set memory.high for test parent cgroup to 1 MB to throttle
-> > > +      * allocations and invoke reclaim in children.
-> > > +      */
-> > > +     snprintf(size, 128, "%d", MB(1));
-> > > +     err = write_cgroup_file(cgroups[0].path, "memory.high", size);
-> > > +     if (!ASSERT_OK(err, "write memory.high"))
-> > > +             return err;
-> > > +     /*
-> > > +      * In every leaf cgroup, run a memory hog for a few seconds to induce
-> > > +      * reclaim then kill it.
-> > > +      */
-> > > +     for (i = N_NON_LEAF_CGROUPS; i < N_CGROUPS; i++) {
-> > > +             pid_t pid = fork();
-> > > +
-> > > +             if (pid == 0) {
-> > > +                     /* Join cgroup in the parent process workdir */
-> > > +                     join_parent_cgroup(cgroups[i].path);
-> > > +
-> > > +                     /* Allocate more memory than memory.high */
-> > > +                     alloc_anon(MB(2));
-> > > +                     exit(0);
-> > > +             } else {
-> > > +                     /* Wait for child to cause reclaim then kill it */
-> > > +                     if (!ASSERT_GT(pid, 0, "fork"))
-> > > +                             return pid;
-> > > +                     sleep(2);
-> > > +                     kill(pid, SIGKILL);
-> > > +                     waitpid(pid, NULL, 0);
-> > > +             }
-> > > +     }
-> > > +     return 0;
-> > > +}
-> > > +
-> > > +static unsigned long long get_cgroup_vmscan_delay(unsigned long long cgroup_id,
-> > > +                                               const char *file_name)
-> > > +{
-> > > +     char buf[128], path[128];
-> > > +     unsigned long long vmscan = 0, id = 0;
-> > > +     int err;
-> > > +
-> > > +     /* For every cgroup, read the file generated by cgroup_iter */
-> > > +     snprintf(path, 128, "%s%s", BPFFS_VMSCAN, file_name);
-> > > +     err = read_from_file(path, buf, 128);
-> > > +     if (!ASSERT_OK(err, "read cgroup_iter"))
-> > > +             return 0;
-> > > +
-> > > +     /* Check the output file formatting */
-> > > +     ASSERT_EQ(sscanf(buf, "cg_id: %llu, total_vmscan_delay: %llu\n",
-> > > +                      &id, &vmscan), 2, "output format");
-> > > +
-> > > +     /* Check that the cgroup_id is displayed correctly */
-> > > +     ASSERT_EQ(id, cgroup_id, "cgroup_id");
-> > > +     /* Check that the vmscan reading is non-zero */
-> > > +     ASSERT_GT(vmscan, 0, "vmscan_reading");
-> > > +     return vmscan;
-> > > +}
-> > > +
-> > > +static void check_vmscan_stats(void)
-> > > +{
-> > > +     int i;
-> > > +     unsigned long long vmscan_readings[N_CGROUPS], vmscan_root;
-> > > +
-> > > +     for (i = 0; i < N_CGROUPS; i++)
-> > > +             vmscan_readings[i] = get_cgroup_vmscan_delay(cgroups[i].id,
-> > > +                                                          cgroups[i].name);
-> > > +
-> > > +     /* Read stats for root too */
-> > > +     vmscan_root = get_cgroup_vmscan_delay(CG_ROOT_ID, CG_ROOT_NAME);
-> > > +
-> > > +     /* Check that child1 == child1_1 + child1_2 */
-> > > +     ASSERT_EQ(vmscan_readings[1], vmscan_readings[3] + vmscan_readings[4],
-> > > +               "child1_vmscan");
-> > > +     /* Check that child2 == child2_1 + child2_2 */
-> > > +     ASSERT_EQ(vmscan_readings[2], vmscan_readings[5] + vmscan_readings[6],
-> > > +               "child2_vmscan");
-> > > +     /* Check that test == child1 + child2 */
-> > > +     ASSERT_EQ(vmscan_readings[0], vmscan_readings[1] + vmscan_readings[2],
-> > > +               "test_vmscan");
-> > > +     /* Check that root >= test */
-> > > +     ASSERT_GE(vmscan_root, vmscan_readings[1], "root_vmscan");
-> > > +}
-> > > +
-> > > +static int setup_cgroup_iter(struct cgroup_hierarchical_stats *obj, int cgroup_fd,
-> > > +                          const char *file_name)
-> > > +{
-> > > +     DECLARE_LIBBPF_OPTS(bpf_iter_attach_opts, opts);
-> > > +     union bpf_iter_link_info linfo = {};
-> > > +     struct bpf_link *link;
-> > > +     char path[128];
-> > > +     int err;
-> > > +
-> > > +     /*
-> > > +      * Create an iter link, parameterized by cgroup_fd.
-> > > +      * We only want to traverse one cgroup, so set the traversal order to
-> > > +      * "pre", and return 1 from dump_vmscan to stop iteration after the
-> > > +      * first cgroup.
-> > > +      */
-> > > +     linfo.cgroup.cgroup_fd = cgroup_fd;
-> > > +     linfo.cgroup.traversal_order = BPF_ITER_CGROUP_PRE;
-> > > +     opts.link_info = &linfo;
-> > > +     opts.link_info_len = sizeof(linfo);
-> > > +     link = bpf_program__attach_iter(obj->progs.dump_vmscan, &opts);
-> > > +     if (!ASSERT_OK_PTR(link, "attach iter"))
-> > > +             return libbpf_get_error(link);
-> > > +
-> > > +     /* Pin the link to a bpffs file */
-> > > +     snprintf(path, 128, "%s%s", BPFFS_VMSCAN, file_name);
-> > > +     err = bpf_link__pin(link, path);
-> > > +     ASSERT_OK(err, "pin cgroup_iter");
-> > > +     return err;
-> > > +}
-> > > +
-> > > +static int setup_progs(struct cgroup_hierarchical_stats **skel)
-> > > +{
-> > > +     int i, err;
-> > > +     struct bpf_link *link;
-> > > +     struct cgroup_hierarchical_stats *obj;
-> > > +
-> > > +     obj = cgroup_hierarchical_stats__open_and_load();
-> > > +     if (!ASSERT_OK_PTR(obj, "open_and_load"))
-> > > +             return libbpf_get_error(obj);
-> > > +
-> > > +     /* Attach cgroup_iter program that will dump the stats to cgroups */
-> > > +     for (i = 0; i < N_CGROUPS; i++) {
-> > > +             err = setup_cgroup_iter(obj, cgroups[i].fd, cgroups[i].name);
-> > > +             if (!ASSERT_OK(err, "setup_cgroup_iter"))
-> > > +                     return err;
-> > > +     }
-> > > +     /* Also dump stats for root */
-> > > +     err = setup_cgroup_iter(obj, root_cgroup_fd, CG_ROOT_NAME);
-> > > +     if (!ASSERT_OK(err, "setup_cgroup_iter"))
-> > > +             return err;
-> > > +
-> > > +     /* Attach rstat flusher */
-> > > +     link = bpf_program__attach(obj->progs.vmscan_flush);
-> > > +     if (!ASSERT_OK_PTR(link, "attach rstat"))
-> > > +             return libbpf_get_error(link);
-> > > +
-> > > +     /* Attach tracing programs that will calculate vmscan delays */
-> > > +     link = bpf_program__attach(obj->progs.vmscan_start);
-> > > +     if (!ASSERT_OK_PTR(obj, "attach raw_tracepoint"))
-> > > +             return libbpf_get_error(obj);
-> > > +
-> > > +     link = bpf_program__attach(obj->progs.vmscan_end);
-> > > +     if (!ASSERT_OK_PTR(obj, "attach raw_tracepoint"))
-> > > +             return libbpf_get_error(obj);
-> > > +
-> > > +     *skel = obj;
-> > > +     return 0;
-> > > +}
-> > > +
-> > > +void destroy_progs(struct cgroup_hierarchical_stats *skel)
-> > > +{
-> > > +     char path[128];
-> > > +     int i;
-> > > +
-> > > +     for (i = 0; i < N_CGROUPS; i++) {
-> > > +             /* Delete files in bpffs that cgroup_iters are pinned in */
-> > > +             snprintf(path, 128, "%s%s", BPFFS_VMSCAN,
-> > > +                      cgroups[i].name);
-> > > +             ASSERT_OK(remove(path), "remove cgroup_iter pin");
-> > > +     }
-> > > +
-> > > +     /* Delete root file in bpffs */
-> > > +     snprintf(path, 128, "%s%s", BPFFS_VMSCAN, CG_ROOT_NAME);
-> > > +     ASSERT_OK(remove(path), "remove cgroup_iter root pin");
-> > > +     cgroup_hierarchical_stats__destroy(skel);
-> > > +}
-> > > +
-> > > +void test_cgroup_hierarchical_stats(void)
-> > > +{
-> > > +     struct cgroup_hierarchical_stats *skel = NULL;
-> > > +
-> > > +     if (setup_hierarchy())
-> > > +             goto hierarchy_cleanup;
-> > > +     if (setup_progs(&skel))
-> > > +             goto cleanup;
-> > > +     if (induce_vmscan())
-> > > +             goto cleanup;
-> > > +     check_vmscan_stats();
-> > > +cleanup:
-> > > +     destroy_progs(skel);
-> > > +hierarchy_cleanup:
-> > > +     destroy_hierarchy();
-> > > +}
-> > > diff --git a/tools/testing/selftests/bpf/progs/cgroup_hierarchical_stats.c b/tools/testing/selftests/bpf/progs/cgroup_hierarchical_stats.c
-> > > new file mode 100644
-> > > index 0000000000000..fd2028f1ed70b
-> > > --- /dev/null
-> > > +++ b/tools/testing/selftests/bpf/progs/cgroup_hierarchical_stats.c
-> > > @@ -0,0 +1,234 @@
-> > > +// SPDX-License-Identifier: GPL-2.0-only
-> > > +/*
-> > > + * Functions to manage eBPF programs attached to cgroup subsystems
-> > > + *
-> > > + * Copyright 2022 Google LLC.
-> > > + */
-> > > +#include "vmlinux.h"
-> > > +#include <bpf/bpf_helpers.h>
-> > > +#include <bpf/bpf_tracing.h>
-> > > +
-> > > +char _license[] SEC("license") = "GPL";
-> > > +
-> > > +/*
-> > > + * Start times are stored per-task, not per-cgroup, as multiple tasks in one
-> > > + * cgroup can perform reclain concurrently.
-> > > + */
-> > > +struct {
-> > > +     __uint(type, BPF_MAP_TYPE_TASK_STORAGE);
-> > > +     __uint(map_flags, BPF_F_NO_PREALLOC);
-> > > +     __type(key, int);
-> > > +     __type(value, __u64);
-> > > +} vmscan_start_time SEC(".maps");
-> > > +
-> > > +struct vmscan_percpu {
-> > > +     /* Previous percpu state, to figure out if we have new updates */
-> > > +     __u64 prev;
-> > > +     /* Current percpu state */
-> > > +     __u64 state;
-> > > +};
-> > > +
-> > > +struct vmscan {
-> > > +     /* State propagated through children, pending aggregation */
-> > > +     __u64 pending;
-> > > +     /* Total state, including all cpus and all children */
-> > > +     __u64 state;
-> > > +};
-> > > +
-> > > +struct {
-> > > +     __uint(type, BPF_MAP_TYPE_PERCPU_HASH);
-> > > +     __uint(max_entries, 10);
-> > > +     __type(key, __u64);
-> > > +     __type(value, struct vmscan_percpu);
-> > > +} pcpu_cgroup_vmscan_elapsed SEC(".maps");
-> > > +
-> > > +struct {
-> > > +     __uint(type, BPF_MAP_TYPE_HASH);
-> > > +     __uint(max_entries, 10);
-> > > +     __type(key, __u64);
-> > > +     __type(value, struct vmscan);
-> > > +} cgroup_vmscan_elapsed SEC(".maps");
-> > > +
-> > > +extern void cgroup_rstat_updated(struct cgroup *cgrp, int cpu) __ksym;
-> > > +extern void cgroup_rstat_flush(struct cgroup *cgrp) __ksym;
-> > > +
-> > > +static inline struct cgroup *task_memcg(struct task_struct *task)
-> > > +{
-> > > +     return task->cgroups->subsys[memory_cgrp_id]->cgroup;
-> > > +}
-> > > +
-> > > +static inline uint64_t cgroup_id(struct cgroup *cgrp)
-> > > +{
-> > > +     return cgrp->kn->id;
-> > > +}
-> > > +
-> > > +static inline int create_vmscan_percpu_elem(__u64 cg_id, __u64 state)
-> > > +{
-> > > +     struct vmscan_percpu pcpu_init = {.state = state, .prev = 0};
-> > > +
-> > > +     if (bpf_map_update_elem(&pcpu_cgroup_vmscan_elapsed, &cg_id,
-> > > +                             &pcpu_init, BPF_NOEXIST)) {
-> > > +             bpf_printk("failed to create pcpu entry for cgroup %llu\n"
-> > > +                        , cg_id);
-> > > +             return 1;
-> > > +     }
-> > > +     return 0;
-> > > +}
-> > > +
-> > > +static inline int create_vmscan_elem(__u64 cg_id, __u64 state, __u64 pending)
-> > > +{
-> > > +     struct vmscan init = {.state = state, .pending = pending};
-> > > +
-> > > +     if (bpf_map_update_elem(&cgroup_vmscan_elapsed, &cg_id,
-> > > +                             &init, BPF_NOEXIST)) {
-> > > +             bpf_printk("failed to create entry for cgroup %llu\n"
-> > > +                        , cg_id);
-> > > +             return 1;
-> > > +     }
-> > > +     return 0;
-> > > +}
-> > > +
-> > > +SEC("tp_btf/mm_vmscan_memcg_reclaim_begin")
-> > > +int BPF_PROG(vmscan_start, struct lruvec *lruvec, struct scan_control *sc)
-> > > +{
-> > > +     struct task_struct *task = bpf_get_current_task_btf();
-> > > +     __u64 *start_time_ptr;
-> > > +
-> > > +     start_time_ptr = bpf_task_storage_get(&vmscan_start_time, task, 0,
-> > > +                                       BPF_LOCAL_STORAGE_GET_F_CREATE);
-> > > +     if (!start_time_ptr) {
-> > > +             bpf_printk("error retrieving storage\n");
-> > > +             return 0;
-> > > +     }
-> > > +
-> > > +     *start_time_ptr = bpf_ktime_get_ns();
-> > > +     return 0;
-> > > +}
-> > > +
-> > > +SEC("tp_btf/mm_vmscan_memcg_reclaim_end")
-> > > +int BPF_PROG(vmscan_end, struct lruvec *lruvec, struct scan_control *sc)
-> > > +{
-> > > +     struct vmscan_percpu *pcpu_stat;
-> > > +     struct task_struct *current = bpf_get_current_task_btf();
-> > > +     struct cgroup *cgrp;
-> > > +     __u64 *start_time_ptr;
-> > > +     __u64 current_elapsed, cg_id;
-> > > +     __u64 end_time = bpf_ktime_get_ns();
-> > > +
-> > > +     /*
-> > > +      * cgrp is the first parent cgroup of current that has memcg enabled in
-> > > +      * its subtree_control, or NULL if memcg is disabled in the entire tree.
-> > > +      * In a cgroup hierarchy like this:
-> > > +      *                               a
-> > > +      *                              / \
-> > > +      *                             b   c
-> > > +      *  If "a" has memcg enabled, while "b" doesn't, then processes in "b"
-> > > +      *  will accumulate their stats directly to "a". This makes sure that no
-> > > +      *  stats are lost from processes in leaf cgroups that don't have memcg
-> > > +      *  enabled, but only exposes stats for cgroups that have memcg enabled.
-> > > +      */
-> > > +     cgrp = task_memcg(current);
-> > > +     if (!cgrp)
-> > > +             return 0;
-> > > +
-> > > +     cg_id = cgroup_id(cgrp);
-> > > +     start_time_ptr = bpf_task_storage_get(&vmscan_start_time, current, 0,
-> > > +                                           BPF_LOCAL_STORAGE_GET_F_CREATE);
-> > > +     if (!start_time_ptr) {
-> > > +             bpf_printk("error retrieving storage local storage\n");
-> > > +             return 0;
-> > > +     }
-> > > +
-> > > +     current_elapsed = end_time - *start_time_ptr;
-> > > +     pcpu_stat = bpf_map_lookup_elem(&pcpu_cgroup_vmscan_elapsed,
-> > > +                                     &cg_id);
-> > > +     if (pcpu_stat)
-> > > +             __sync_fetch_and_add(&pcpu_stat->state, current_elapsed);
-> > > +     else
-> > > +             create_vmscan_percpu_elem(cg_id, current_elapsed);
-> > > +
-> > > +     cgroup_rstat_updated(cgrp, bpf_get_smp_processor_id());
-> > > +     return 0;
-> > > +}
-> > > +
-> > > +SEC("fentry/bpf_rstat_flush")
-> > > +int BPF_PROG(vmscan_flush, struct cgroup *cgrp, struct cgroup *parent, int cpu)
-> > > +{
-> > > +     struct vmscan_percpu *pcpu_stat;
-> > > +     struct vmscan *total_stat, *parent_stat;
-> > > +     __u64 cg_id = cgroup_id(cgrp);
-> > > +     __u64 parent_cg_id = parent ? cgroup_id(parent) : 0;
-> > > +     __u64 *pcpu_vmscan;
-> > > +     __u64 state;
-> > > +     __u64 delta = 0;
-> > > +
-> > > +     /* Add CPU changes on this level since the last flush */
-> > > +     pcpu_stat = bpf_map_lookup_percpu_elem(&pcpu_cgroup_vmscan_elapsed,
-> > > +                                            &cg_id, cpu);
-> > > +     if (pcpu_stat) {
-> > > +             state = pcpu_stat->state;
-> > > +             delta += state - pcpu_stat->prev;
-> > > +             pcpu_stat->prev = state;
-> > > +     }
-> > > +
-> > > +     total_stat = bpf_map_lookup_elem(&cgroup_vmscan_elapsed, &cg_id);
-> > > +     if (!total_stat) {
-> > > +             create_vmscan_elem(cg_id, delta, 0);
-> > > +             goto update_parent;
-> > > +     }
-> > > +
-> > > +     /* Collect pending stats from subtree */
-> > > +     if (total_stat->pending) {
-> > > +             delta += total_stat->pending;
-> > > +             total_stat->pending = 0;
-> > > +     }
-> > > +
-> > > +     /* Propagate changes to this cgroup's total */
-> > > +     total_stat->state += delta;
-> > > +
-> > > +update_parent:
-> > > +     /* Skip if there are no changes to propagate, or no parent */
-> > > +     if (!delta || !parent_cg_id)
-> > > +             return 0;
-> > > +
-> > > +     /* Propagate changes to cgroup's parent */
-> > > +     parent_stat = bpf_map_lookup_elem(&cgroup_vmscan_elapsed,
-> > > +                                       &parent_cg_id);
-> > > +     if (parent_stat)
-> > > +             parent_stat->pending += delta;
-> > > +     else
-> > > +             create_vmscan_elem(parent_cg_id, 0, delta);
-> > > +
-> > > +     return 0;
-> > > +}
-> > > +
-> > > +SEC("iter.s/cgroup")
-> > > +int BPF_PROG(dump_vmscan, struct bpf_iter_meta *meta, struct cgroup *cgrp)
-> > > +{
-> > > +     struct seq_file *seq = meta->seq;
-> > > +     struct vmscan *total_stat;
-> > > +     __u64 cg_id = cgroup_id(cgrp);
-> > > +
-> > > +     /* Do nothing for the terminal call */
-> > > +     if (!cgrp)
-> > > +             return 1;
-> > > +
-> > > +     /* Flush the stats to make sure we get the most updated numbers */
-> > > +     cgroup_rstat_flush(cgrp);
-> > > +
-> > > +     total_stat = bpf_map_lookup_elem(&cgroup_vmscan_elapsed, &cg_id);
-> > > +     if (!total_stat) {
-> > > +             bpf_printk("error finding stats for cgroup %llu\n", cg_id);
-> > > +             BPF_SEQ_PRINTF(seq, "cg_id: %llu, total_vmscan_delay: -1\n",
-> > > +                            cg_id);
-> > > +             return 1;
-> > > +     }
-> > > +     BPF_SEQ_PRINTF(seq, "cg_id: %llu, total_vmscan_delay: %llu\n",
-> > > +                    cg_id, total_stat->state);
-> > > +
-> > > +     /*
-> > > +      * We only dump stats for one cgroup here, so return 1 to stop
-> > > +      * iteration after the first cgroup.
-> > > +      */
-> > > +     return 1;
-> > > +}
-
---0000000000006885d305e27d3323
-Content-Type: application/octet-stream; name="btf_dump_fix.patch"
-Content-Disposition: attachment; filename="btf_dump_fix.patch"
-Content-Transfer-Encoding: base64
-Content-ID: <f_l4xv3t100>
-X-Attachment-Id: f_l4xv3t100
-
-ZGlmZiAtLWdpdCBhL3Rvb2xzL3Rlc3Rpbmcvc2VsZnRlc3RzL2JwZi9wcm9nX3Rlc3RzL2J0Zl9k
-dW1wLmMgYi90b29scy90ZXN0aW5nL3NlbGZ0ZXN0cy9icGYvcHJvZ190ZXN0cy9idGZfZHVtcC5j
-CmluZGV4IDVmY2U3MDA4ZDFmZjMuLmE3YjdlMDA4ZGQ2ZjggMTAwNjQ0Ci0tLSBhL3Rvb2xzL3Rl
-c3Rpbmcvc2VsZnRlc3RzL2JwZi9wcm9nX3Rlc3RzL2J0Zl9kdW1wLmMKKysrIGIvdG9vbHMvdGVz
-dGluZy9zZWxmdGVzdHMvYnBmL3Byb2dfdGVzdHMvYnRmX2R1bXAuYwpAQCAtNzY0LDggKzc2NCw4
-IEBAIHN0YXRpYyB2b2lkIHRlc3RfYnRmX2R1bXBfc3RydWN0X2RhdGEoc3RydWN0IGJ0ZiAqYnRm
-LCBzdHJ1Y3QgYnRmX2R1bXAgKmQsCiAKIAkvKiB1bmlvbiB3aXRoIG5lc3RlZCBzdHJ1Y3QgKi8K
-IAlURVNUX0JURl9EVU1QX0RBVEEoYnRmLCBkLCAidW5pb24iLCBzdHIsIHVuaW9uIGJwZl9pdGVy
-X2xpbmtfaW5mbywgQlRGX0ZfQ09NUEFDVCwKLQkJCSAgICIodW5pb24gYnBmX2l0ZXJfbGlua19p
-bmZvKXsubWFwID0gKHN0cnVjdCl7Lm1hcF9mZCA9IChfX3UzMikxLH0sfSIsCi0JCQkgICB7IC5t
-YXAgPSB7IC5tYXBfZmQgPSAxIH19KTsKKwkJCSAgICIodW5pb24gYnBmX2l0ZXJfbGlua19pbmZv
-KXsubWFwID0gKHN0cnVjdCl7Lm1hcF9mZCA9IChfX3UzMikxLH0sLmNncm91cCA9IChzdHJ1Y3Qp
-ey5jZ3JvdXBfZmQgPSAoX191MzIpMSwudHJhdmVyc2FsX29yZGVyID0gKF9fdTMyKTF9LH0iLAor
-CQkJICAgeyAubWFwID0geyAubWFwX2ZkID0gMSB9LCAuY2dyb3VwID0gey5jZ3JvdXBfZmQgPSAx
-LCAudHJhdmVyc2FsX29yZGVyID0gQlBGX0lURVJfQ0dST1VQX1BSRSB9fSk7CiAKIAkvKiBzdHJ1
-Y3Qgc2tiIHdpdGggbmVzdGVkIHN0cnVjdHMvdW5pb25zOyBiZWNhdXNlIHR5cGUgb3V0cHV0IGlz
-IHNvCiAJICogY29tcGxleCwgd2UgZG9uJ3QgZG8gYSBzdHJpbmcgY29tcGFyaXNvbiwganVzdCB2
-ZXJpZnkgd2UgcmV0dXJuCg==
---0000000000006885d305e27d3323--
