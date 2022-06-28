@@ -2,223 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 051A455EDA9
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 21:10:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9240155EDAB
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 21:11:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235120AbiF1TKH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 15:10:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43254 "EHLO
+        id S233263AbiF1TLj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 15:11:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235307AbiF1TKD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 15:10:03 -0400
-Received: from hr2.samba.org (hr2.samba.org [IPv6:2a01:4f8:192:486::2:0])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ACE61A049;
-        Tue, 28 Jun 2022 12:10:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=samba.org;
-        s=42; h=Cc:From:To:Date:Message-ID;
-        bh=jzYbi/j3D57gaWt0HxtaLJPk+sHrnWlq2sHekUsBRVk=; b=amkpGHn3VPVJJIurV1r/PTlvlZ
-        9oLWmSVsfLs2fzzbXn6RhEkRFYxNxnU4a+mKV+m99vmznOl2FlP1uKSdB54WPE+J89hu2wVjzfQFF
-        KDsnWdDh4xyZRsKYktuk/u1y0uvELHq0MGQ/s72vAboXEHCJCSqCH3Xu3o+PhMO7YzMv6YTDJF7lE
-        +4jl30rJAgmo2LSf7K4QNTmx3lwuXg2d6igBhr+bbon7+luq+gi3XHSnzEL7QSPbyDAv5xGxrn2IP
-        iZI9Z0Rx/M6BrjHVYlmHTA+CsUIaNO0YXb3Qz6FXQ2z+lbtHdEXnqSitvHwBPDbWareUgxqbfIGVQ
-        mkO8VSPl/fbJ5LBVPCHES5LKjcYuPNTb8m7ghpZH5uYwChMcpG1DFhvqVWHSQS5acRaQgZi1+4wIt
-        c5f6Zhj1PAdyGd0sb+EEIQASngM7ZejL+mJBKExTonQhMemhUQZ3nxsr9Q4r/zLNjLJP/uVbFA0pp
-        QFbV3OcPPM58S/gOpv8HIq8A;
-Received: from [127.0.0.2] (localhost [127.0.0.1])
-        by hr2.samba.org with esmtpsa (TLS1.3:ECDHE_SECP256R1__ECDSA_SECP256R1_SHA256__CHACHA20_POLY1305:256)
-        (Exim)
-        id 1o6Gb0-0029Pu-7l; Tue, 28 Jun 2022 19:09:58 +0000
-Message-ID: <bd2ad505-4d1c-ff13-de87-b4b3d397e159@samba.org>
-Date:   Tue, 28 Jun 2022 21:09:57 +0200
+        with ESMTP id S235377AbiF1TLa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 15:11:30 -0400
+Received: from smtp2.emailarray.com (smtp.emailarray.com [69.28.212.198])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEE4F25584
+        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 12:11:28 -0700 (PDT)
+Received: (qmail 85275 invoked by uid 89); 28 Jun 2022 19:11:26 -0000
+Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTYzLjExNC4xMzIuNQ==) (POLARISLOCAL)  
+  by smtp2.emailarray.com with SMTP; 28 Jun 2022 19:11:26 -0000
+Date:   Tue, 28 Jun 2022 12:11:24 -0700
+From:   Jonathan Lemon <jonathan.lemon@gmail.com>
+To:     Vadim Fedorenko <vfedorenko@novek.ru>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
+        Vadim Fedorenko <vadfed@fb.com>, Aya Levin <ayal@nvidia.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-clk@vger.kernel.org
+Subject: Re: [RFC PATCH v2 3/3] ptp_ocp: implement DPLL ops
+Message-ID: <20220628191124.qvto5tyfe63htxxr@bsd-mbp.dhcp.thefacebook.com>
+References: <20220626192444.29321-1-vfedorenko@novek.ru>
+ <20220626192444.29321-4-vfedorenko@novek.ru>
+ <20220627193436.3wjunjqqtx7dtqm6@bsd-mbp.dhcp.thefacebook.com>
+ <7c2fa2e9-6353-5472-75c8-b3ffe403f0f3@novek.ru>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Content-Language: en-US
-To:     Jens Axboe <axboe@kernel.dk>
-From:   Stefan Metzmacher <metze@samba.org>
-Cc:     io-uring <io-uring@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: For 5.20 or 5.19? net: wire up support for
- file_operations->uring_cmd()
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7c2fa2e9-6353-5472-75c8-b3ffe403f0f3@novek.ru>
+X-Spam-Status: No, score=0.7 required=5.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+        FORGED_GMAIL_RCVD,FREEMAIL_FROM,KHOP_HELO_FCRDNS,NML_ADSP_CUSTOM_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_SOFTFAIL,T_SCC_BODY_TEXT_LINE,
+        UNPARSEABLE_RELAY autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jens,
+On Mon, Jun 27, 2022 at 11:13:22PM +0100, Vadim Fedorenko wrote:
+> On 27.06.2022 20:34, Jonathan Lemon wrote:
+> > On Sun, Jun 26, 2022 at 10:24:44PM +0300, Vadim Fedorenko wrote:
+> > > From: Vadim Fedorenko <vadfed@fb.com>
+> > > 
+> > > Implement DPLL operations in ptp_ocp driver.
+> > > 
+> > > Signed-off-by: Vadim Fedorenko <vadfed@fb.com>
+> > > ---
+> > >   drivers/ptp/Kconfig       |   1 +
+> > >   drivers/ptp/ptp_ocp.c     | 169 ++++++++++++++++++++++++++++++--------
+> > >   include/uapi/linux/dpll.h |   2 +
+> > >   3 files changed, 136 insertions(+), 36 deletions(-)
+> > > 
+> > > diff --git a/drivers/ptp/Kconfig b/drivers/ptp/Kconfig
+> > > index 458218f88c5e..f74846ebc177 100644
+> > > --- a/drivers/ptp/Kconfig
+> > > +++ b/drivers/ptp/Kconfig
+> > > @@ -176,6 +176,7 @@ config PTP_1588_CLOCK_OCP
+> > >   	depends on !S390
+> > >   	depends on COMMON_CLK
+> > >   	select NET_DEVLINK
+> > > +	select DPLL
+> > >   	help
+> > >   	  This driver adds support for an OpenCompute time card.
+> > > diff --git a/drivers/ptp/ptp_ocp.c b/drivers/ptp/ptp_ocp.c
+> > > index e59ea2173aac..f830625a63a3 100644
+> > > --- a/drivers/ptp/ptp_ocp.c
+> > > +++ b/drivers/ptp/ptp_ocp.c
+> > > @@ -21,6 +21,7 @@
+> > >   #include <linux/mtd/mtd.h>
+> > >   #include <linux/nvmem-consumer.h>
+> > >   #include <linux/crc16.h>
+> > > +#include <uapi/linux/dpll.h>
+> > >   #define PCI_VENDOR_ID_FACEBOOK			0x1d9b
+> > >   #define PCI_DEVICE_ID_FACEBOOK_TIMECARD		0x0400
+> > > @@ -336,6 +337,7 @@ struct ptp_ocp {
+> > >   	struct ptp_ocp_signal	signal[4];
+> > >   	struct ptp_ocp_sma_connector sma[4];
+> > >   	const struct ocp_sma_op *sma_op;
+> > > +	struct dpll_device *dpll;
+> > >   };
+> > >   #define OCP_REQ_TIMESTAMP	BIT(0)
+> > > @@ -660,18 +662,19 @@ static DEFINE_IDR(ptp_ocp_idr);
+> > >   struct ocp_selector {
+> > >   	const char *name;
+> > >   	int value;
+> > > +	int dpll_type;
+> > >   };
+> > >   static const struct ocp_selector ptp_ocp_clock[] = {
+> > > -	{ .name = "NONE",	.value = 0 },
+> > > -	{ .name = "TOD",	.value = 1 },
+> > > -	{ .name = "IRIG",	.value = 2 },
+> > > -	{ .name = "PPS",	.value = 3 },
+> > > -	{ .name = "PTP",	.value = 4 },
+> > > -	{ .name = "RTC",	.value = 5 },
+> > > -	{ .name = "DCF",	.value = 6 },
+> > > -	{ .name = "REGS",	.value = 0xfe },
+> > > -	{ .name = "EXT",	.value = 0xff },
+> > > +	{ .name = "NONE",	.value = 0,		.dpll_type = 0 },
+> > > +	{ .name = "TOD",	.value = 1,		.dpll_type = 0 },
+> > > +	{ .name = "IRIG",	.value = 2,		.dpll_type = 0 },
+> > > +	{ .name = "PPS",	.value = 3,		.dpll_type = 0 },
+> > > +	{ .name = "PTP",	.value = 4,		.dpll_type = 0 },
+> > > +	{ .name = "RTC",	.value = 5,		.dpll_type = 0 },
+> > > +	{ .name = "DCF",	.value = 6,		.dpll_type = 0 },
+> > > +	{ .name = "REGS",	.value = 0xfe,		.dpll_type = 0 },
+> > > +	{ .name = "EXT",	.value = 0xff,		.dpll_type = 0 },
+> > 
+> > No need for zeros, or are they just temp stubs?
+> 
+> These are just temp stubs for now.
+> 
+> > 
+> > > @@ -680,37 +683,37 @@ static const struct ocp_selector ptp_ocp_clock[] = {
+> > >   #define SMA_SELECT_MASK		GENMASK(14, 0)
+> > >   static const struct ocp_selector ptp_ocp_sma_in[] = {
+> > > -	{ .name = "10Mhz",	.value = 0x0000 },
+> > > -	{ .name = "PPS1",	.value = 0x0001 },
+> > > -	{ .name = "PPS2",	.value = 0x0002 },
+> > > -	{ .name = "TS1",	.value = 0x0004 },
+> > > -	{ .name = "TS2",	.value = 0x0008 },
+> > > -	{ .name = "IRIG",	.value = 0x0010 },
+> > > -	{ .name = "DCF",	.value = 0x0020 },
+> > > -	{ .name = "TS3",	.value = 0x0040 },
+> > > -	{ .name = "TS4",	.value = 0x0080 },
+> > > -	{ .name = "FREQ1",	.value = 0x0100 },
+> > > -	{ .name = "FREQ2",	.value = 0x0200 },
+> > > -	{ .name = "FREQ3",	.value = 0x0400 },
+> > > -	{ .name = "FREQ4",	.value = 0x0800 },
+> > > -	{ .name = "None",	.value = SMA_DISABLE },
+> > > +	{ .name = "10Mhz",	.value = 0x0000,	.dpll_type = DPLL_TYPE_EXT_10MHZ },
+> > > +	{ .name = "PPS1",	.value = 0x0001,	.dpll_type = DPLL_TYPE_EXT_1PPS },
+> > > +	{ .name = "PPS2",	.value = 0x0002,	.dpll_type = DPLL_TYPE_EXT_1PPS },
+> > > +	{ .name = "TS1",	.value = 0x0004,	.dpll_type = DPLL_TYPE_CUSTOM },
+> > > +	{ .name = "TS2",	.value = 0x0008,	.dpll_type = DPLL_TYPE_CUSTOM },
+> > > +	{ .name = "IRIG",	.value = 0x0010,	.dpll_type = DPLL_TYPE_CUSTOM },
+> > > +	{ .name = "DCF",	.value = 0x0020,	.dpll_type = DPLL_TYPE_CUSTOM },
+> > > +	{ .name = "TS3",	.value = 0x0040,	.dpll_type = DPLL_TYPE_CUSTOM },
+> > > +	{ .name = "TS4",	.value = 0x0080,	.dpll_type = DPLL_TYPE_CUSTOM },
+> > > +	{ .name = "FREQ1",	.value = 0x0100,	.dpll_type = DPLL_TYPE_CUSTOM },
+> > > +	{ .name = "FREQ2",	.value = 0x0200,	.dpll_type = DPLL_TYPE_CUSTOM },
+> > > +	{ .name = "FREQ3",	.value = 0x0400,	.dpll_type = DPLL_TYPE_CUSTOM },
+> > > +	{ .name = "FREQ4",	.value = 0x0800,	.dpll_type = DPLL_TYPE_CUSTOM },
+> > > +	{ .name = "None",	.value = SMA_DISABLE,	.dpll_type = DPLL_TYPE_NONE },
+> > 
+> > 80-column limit (here and throughout the file)
+> 
+> I thought this rule was relaxed up to 100-columns?
 
-I'm wondering what happened to you patch passing file_ops->uring_cmd()
-down to socket layers.
+Only in exceptional cases, IIRC.  checkpatch complains too.
 
-It was part of you work in progress branches...
 
-The latest one I found was this:
-https://git.kernel.dk/cgit/linux-block/commit/?h=nvme-passthru-wip.2&id=28b71b85831f5dd303acae12cfdc89e5aaae442b
+> > >   static int
+> > >   ptp_ocp_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+> > >   {
+> > > @@ -3768,6 +3855,14 @@ ptp_ocp_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+> > >   	ptp_ocp_info(bp);
+> > >   	devlink_register(devlink);
+> > > +
+> > > +	bp->dpll = dpll_device_alloc(&dpll_ops, ARRAY_SIZE(bp->sma), ARRAY_SIZE(bp->sma), bp);
+> > > +	if (!bp->dpll) {
+> > > +		dev_err(&pdev->dev, "dpll_device_alloc failed\n");
+> > > +		return 0;
+> > > +	}
+> > > +	dpll_device_register(bp->dpll);
+> > > +
+> > >   	return 0;
+> > 
+> > 80 cols, and this should be done before ptp_ocp_complete()
+> > Also, should 'goto out', not return 0 and leak resources.
+> 
+> I don't think we have to go with error path. Driver itself can work without
+> DPLL device registered, there is no hard dependency. The DPLL device will
+> not be registered and HW could not be configured/monitored via netlink, but
+> could still be usable.
 
-And this one just having the generic parts were in a separate commit
-https://git.kernel.dk/cgit/linux-block/commit/?h=io_uring-fops.v7&id=c2ba3bd8940ef0b7d1c09adf4bed01acc8171407
-vs.
-https://git.kernel.dk/cgit/linux-block/commit/?h=io_uring-fops.v7&id=542c38da58841097f97f710d1f05055c2f1039f0
-
-I took this:
-https://git.kernel.dk/cgit/linux-block/commit/?h=io_uring-fops.v7&id=c2ba3bd8940ef0b7d1c09adf4bed01acc8171407
-adapted it on top of v5.19-rc4 and removed stuff that was not really needed.
-
-Even if it's not used in tree, it would be good to have uring_cmd hooks in
-struct proto_ops and struct proto, so that out of tree socket implementations
-like my smbdirect driver are able to hook into it.
-
-What do you think?
-
-https://git.samba.org/?p=metze/linux/wip.git;a=commitdiff;h=7541d40a482a9f57d580ac05254c5a5982edff15
-
- From 7541d40a482a9f57d580ac05254c5a5982edff15 Mon Sep 17 00:00:00 2001
-From: Jens Axboe <axboe@kernel.dk>
-Date: Fri, 18 Dec 2020 15:12:46 -0700
-Subject: [PATCH] net: wire up support for file_operations->uring_cmd()
-
-Pass it through the proto_ops->uring_cmd() handler, so we can plumb it
-through all the way to the proto->uring_cmd() handler later
-as required.
-
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Stefan Metzmacher <metze@samba.org>
----
-  include/linux/net.h |  4 ++++
-  include/net/sock.h  |  7 +++++++
-  net/core/sock.c     | 12 ++++++++++++
-  net/socket.c        | 13 +++++++++++++
-  4 files changed, 36 insertions(+)
-
-diff --git a/include/linux/net.h b/include/linux/net.h
-index 12093f4db50c..59d37aade979 100644
---- a/include/linux/net.h
-+++ b/include/linux/net.h
-@@ -31,6 +31,7 @@ struct pipe_inode_info;
-  struct inode;
-  struct file;
-  struct net;
-+struct io_uring_cmd;
-
-  /* Historically, SOCKWQ_ASYNC_NOSPACE & SOCKWQ_ASYNC_WAITDATA were located
-   * in sock->flags, but moved into sk->sk_wq->flags to be RCU protected.
-@@ -178,6 +179,9 @@ struct proto_ops {
-  	int	 	(*compat_ioctl) (struct socket *sock, unsigned int cmd,
-  				      unsigned long arg);
-  #endif
-+	int		(*uring_cmd)(struct socket *sock,
-+				     struct io_uring_cmd *ioucmd,
-+				     unsigned issue_flags);
-  	int		(*gettstamp) (struct socket *sock, void __user *userstamp,
-  				      bool timeval, bool time32);
-  	int		(*listen)    (struct socket *sock, int len);
-diff --git a/include/net/sock.h b/include/net/sock.h
-index 72ca97ccb460..80fd3f45cd09 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -111,6 +111,7 @@ typedef struct {
-  struct sock;
-  struct proto;
-  struct net;
-+struct io_uring_cmd;
-
-  typedef __u32 __bitwise __portpair;
-  typedef __u64 __bitwise __addrpair;
-@@ -1181,6 +1182,9 @@ struct proto {
-
-  	int			(*ioctl)(struct sock *sk, int cmd,
-  					 unsigned long arg);
-+	int			(*uring_cmd)(struct sock *sk,
-+					struct io_uring_cmd *ioucmd,
-+					unsigned int issue_flags);
-  	int			(*init)(struct sock *sk);
-  	void			(*destroy)(struct sock *sk);
-  	void			(*shutdown)(struct sock *sk, int how);
-@@ -1886,6 +1890,9 @@ int sock_common_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
-  int sock_common_setsockopt(struct socket *sock, int level, int optname,
-  			   sockptr_t optval, unsigned int optlen);
-
-+int sock_common_uring_cmd(struct socket *sock, struct io_uring_cmd *ioucmd,
-+			  unsigned int issue_flags);
-+
-  void sk_common_release(struct sock *sk);
-
-  /*
-diff --git a/net/core/sock.c b/net/core/sock.c
-index 2ff40dd0a7a6..42b3def01a5f 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -3582,6 +3582,18 @@ int sock_common_setsockopt(struct socket *sock, int level, int optname,
-  }
-  EXPORT_SYMBOL(sock_common_setsockopt);
-
-+int sock_common_uring_cmd(struct socket *sock, struct io_uring_cmd *ioucmd,
-+			  unsigned int issue_flags)
-+{
-+	struct sock *sk = sock->sk;
-+
-+	if (!sk->sk_prot->uring_cmd)
-+		return -EOPNOTSUPP;
-+
-+	return sk->sk_prot->uring_cmd(sk, ioucmd, issue_flags);
-+}
-+EXPORT_SYMBOL(sock_common_uring_cmd);
-+
-  void sk_common_release(struct sock *sk)
-  {
-  	if (sk->sk_prot->destroy)
-diff --git a/net/socket.c b/net/socket.c
-index 2bc8773d9dc5..67701c685921 100644
---- a/net/socket.c
-+++ b/net/socket.c
-@@ -87,6 +87,7 @@
-  #include <linux/xattr.h>
-  #include <linux/nospec.h>
-  #include <linux/indirect_call_wrapper.h>
-+#include <linux/io_uring.h>
-
-  #include <linux/uaccess.h>
-  #include <asm/unistd.h>
-@@ -115,6 +116,7 @@ unsigned int sysctl_net_busy_poll __read_mostly;
-  static ssize_t sock_read_iter(struct kiocb *iocb, struct iov_iter *to);
-  static ssize_t sock_write_iter(struct kiocb *iocb, struct iov_iter *from);
-  static int sock_mmap(struct file *file, struct vm_area_struct *vma);
-+static int sock_uring_cmd(struct io_uring_cmd *ioucmd, unsigned int issue_flags);
-
-  static int sock_close(struct inode *inode, struct file *file);
-  static __poll_t sock_poll(struct file *file,
-@@ -158,6 +160,7 @@ static const struct file_operations socket_file_ops = {
-  #ifdef CONFIG_COMPAT
-  	.compat_ioctl = compat_sock_ioctl,
-  #endif
-+	.uring_cmd =	sock_uring_cmd,
-  	.mmap =		sock_mmap,
-  	.release =	sock_close,
-  	.fasync =	sock_fasync,
-@@ -1289,6 +1292,16 @@ static long sock_ioctl(struct file *file, unsigned cmd, unsigned long arg)
-  	return err;
-  }
-
-+static int sock_uring_cmd(struct io_uring_cmd *ioucmd, unsigned int issue_flags)
-+{
-+	struct socket *sock = ioucmd->file->private_data;
-+
-+	if (!sock->ops->uring_cmd)
-+		return -EOPNOTSUPP;
-+
-+	return sock->ops->uring_cmd(sock, ioucmd, issue_flags);
-+}
-+
-  /**
-   *	sock_create_lite - creates a socket
-   *	@family: protocol family (AF_INET, ...)
+Not sure I agree with that - the DPLL device is selected in Kconfig, so
+users would expect to have it present.  I think it makes more sense to
+fail if it cannot be allocated.
 -- 
-2.34.1
-
+Jonathan
