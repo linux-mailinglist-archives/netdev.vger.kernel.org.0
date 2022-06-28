@@ -2,160 +2,285 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E864255C818
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 14:55:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CCD9B55D968
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:21:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243292AbiF1Bxa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jun 2022 21:53:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39348 "EHLO
+        id S242806AbiF1CDK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jun 2022 22:03:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243275AbiF1Bxa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 21:53:30 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E697EB85F
-        for <netdev@vger.kernel.org>; Mon, 27 Jun 2022 18:53:28 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id x4so10668623pfq.2
-        for <netdev@vger.kernel.org>; Mon, 27 Jun 2022 18:53:28 -0700 (PDT)
+        with ESMTP id S233608AbiF1CDI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 22:03:08 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54C4B60CA
+        for <netdev@vger.kernel.org>; Mon, 27 Jun 2022 19:03:05 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id j198-20020a25d2cf000000b0066d2f5b87e7so150050ybg.5
+        for <netdev@vger.kernel.org>; Mon, 27 Jun 2022 19:03:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=wistron-corp-partner-google-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=qmNe/0N3fselmjXx6WkFjhVxkRMv0d5IBKx3lO9MXkg=;
-        b=UNsaSKXvhyPVTm2DEwZmNzWe7Vo+++Awnh+gFpClAhy8HlwHpzG+Z7zhxPZUfRnGd1
-         HIhvVUFI2ADEGsu/vdM3ow/HGbzT39WdDv889cAipONE3vkMNNvNbM575X6paPnFIdiz
-         uNT6eoVqGOWH4FFCft2z+0fMfknGqU8mzrsuaCRH41kNFt1oz4DY2SemNRfnJzGfXK8v
-         0cUIcuoIiB7UMXfk3o3ULwjBAzGxSBPrmGLLSR2Np2KAsfCEVI278jMtfMrxuQvxPHLf
-         5r0keiF+noXuTUWL6DdZt4O7DWkG8hQsPhi3PzsYSBaV8shxUwQgle1zidnE2kuL56PN
-         lhQQ==
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=/OuahP8oPHDxIXADrtMOHzHvbE6HS+PoE4WDHegn+rY=;
+        b=XSa6BG9j+Us6qSO6vPHqc2TVfQxumnU0pAOfjBJHFlWcIck0At2n2mfq5tAA7z3Bx5
+         PD0vlBv1k9Q/E/30MAFFG1P5OxPr5/WK6+axB0HoavtP7KnHzjHkg1qUFmVSky1XYmCE
+         keKg7zc6YYKZDYEnwk3qbSxvFO3Xk4Y8/tdDX97msFctgpLZBdPkJDnH5LbWzXx7pTZH
+         CgzyIamG5okMqCh9aY8wAvuFixrOfwL/UhwfbnX/7paM2krnQNZDjv67WdvSzvvMWo7D
+         m5fFpT4ZoMrA6AasD66OkuDUwH3oHEeuCSo5kX9VLcSW8/gQ+X2898P5YGyQhyrYIK8G
+         Aulw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=qmNe/0N3fselmjXx6WkFjhVxkRMv0d5IBKx3lO9MXkg=;
-        b=iRkIwJnTlytOMrO2J8KgL4HrWutvOA0htpZhInIPiK6qhMMgT/bLhBp0R6jaH6JNzo
-         dwDzBAwh/MSl3znj1fjrjNUkuUUskfasFw5HVwdM38NKGCUqWoiRwA/LyqlgH3jzKrxN
-         6IvaBZ9ybIwo3NToHHGuzdsIhm2OVunssv1Wox5kliwMbt8VmrbJEzwEwXa+maI4LXRP
-         KpYEgvdY+ftpiUrvRCijn5ySXsKya7nNBZxMGz2qmnCJ8U530WotykbvDkVpgms8B4Z3
-         UsVJSB/TrLFdnku6k7b8oaozT2TDQnKk/6VloA10FqzUH7gzD4lCm2SlDDaxVEaXyrlb
-         fIpw==
-X-Gm-Message-State: AJIora+r4EeUGGmjZb/d0C43Ywa2uQbZGCmtSUn/8gE5ti/UGqlZ7kMO
-        Mm150CzUFsCbeZHWgvpsKDppWg==
-X-Google-Smtp-Source: AGRyM1sEdmmSKiRug0JES0Mnz8bDifIHsM4ASO0PiDH35MxEPibvVHpL9D6WFZFnmA3BbqsrIvSibA==
-X-Received: by 2002:a63:ae48:0:b0:40c:3775:8b49 with SMTP id e8-20020a63ae48000000b0040c37758b49mr15259472pgp.268.1656381208345;
-        Mon, 27 Jun 2022 18:53:28 -0700 (PDT)
-Received: from localhost (1-164-249-67.dynamic-ip.hinet.net. [1.164.249.67])
-        by smtp.gmail.com with ESMTPSA id 11-20020a63164b000000b0040d4c8e335csm7722004pgw.75.2022.06.27.18.53.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jun 2022 18:53:28 -0700 (PDT)
-From:   Franklin Lin <franklin_lin@wistron.corp-partner.google.com>
-To:     edumazet@google.com
-Cc:     kuba@kernel.org, pabeni@redhat.com, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        davem@davemloft.net, franklin_lin@wistron.com,
-        franklin_lin <franklin_lin@wistron.corp-partner.google.com>
-Subject: [PATCH] drivers/net/usb/r8152: Enable MAC address passthru support
-Date:   Tue, 28 Jun 2022 09:53:25 +0800
-Message-Id: <20220628015325.1204234-1-franklin_lin@wistron.corp-partner.google.com>
-X-Mailer: git-send-email 2.34.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=/OuahP8oPHDxIXADrtMOHzHvbE6HS+PoE4WDHegn+rY=;
+        b=wHIiWUs4+dJmQlDApgJruTMz1eIAvmswcltX7Ucss7ICv7qK8V/OABls8wWscnNk4O
+         MC4vysBFgp+EJj/k/jHSmqpN8AByjXl2UR1kuJHcnLuDFJT9Wcm4QVvSOs2/WxbdOT0x
+         aFdzXRgrU9rsWeiWhnuWIWYKb6KLk+YvuZMcTOcOjFSmuqCTo+X8r+HahoqCaZWH4A3D
+         gsR53nynPe3CSh5hrw4x1ZkKhVt1Xnp2UmakApM2szdZKbB/9zPpYhZz5Z0Unoghq1B+
+         c7epGV/cXX0eutc2IXJQoS3VVtbVV8SgDKXQmsMbp9uf4Yd/dX030EN/3jSEcdQZVLOB
+         XrSA==
+X-Gm-Message-State: AJIora8hnnYqkJSOvkTRHVN4DuAC8+viBmF+6iGu+g4NjMhoRGqKAsBD
+        uTpq1PLrbx+SCkdKkNUxlFQa3LgrcgPB8G4=
+X-Google-Smtp-Source: AGRyM1s6TFssoICBD8dW4KaHJ9QFnbGLouWSVAgJ1icUDVgZq5pRLN92A6h2ACkaFVoX2i0qb9ktR7y39ECy36c=
+X-Received: from saravanak.san.corp.google.com ([2620:15c:2d:3:1f27:a302:2101:1c82])
+ (user=saravanak job=sendgmr) by 2002:a81:9292:0:b0:317:dd64:5adc with SMTP id
+ j140-20020a819292000000b00317dd645adcmr19123629ywg.145.1656381784427; Mon, 27
+ Jun 2022 19:03:04 -0700 (PDT)
+Date:   Mon, 27 Jun 2022 19:01:01 -0700
+Message-Id: <20220628020110.1601693-1-saravanak@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
+Subject: [PATCH v1 0/2] Fix console probe delay when stdout-path isn't set
+From:   Saravana Kannan <saravanak@google.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Al Cooper <alcooperx@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Tobias Klauser <tklauser@distanz.ch>,
+        Russell King <linux@armlinux.org.uk>,
+        Vineet Gupta <vgupta@kernel.org>,
+        Richard Genoud <richard.genoud@gmail.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Alexander Shiyan <shc_work@mail.ru>,
+        Baruch Siach <baruch@tkos.co.il>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Karol Gugala <kgugala@antmicro.com>,
+        Mateusz Holenko <mholenko@antmicro.com>,
+        Gabriel Somlo <gsomlo@gmail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Taichi Sugaya <sugaya.taichi@socionext.com>,
+        Takao Orito <orito.takao@socionext.com>,
+        Liviu Dudau <liviu.dudau@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Pali Rohar <pali@kernel.org>,
+        Andreas Farber <afaerber@suse.de>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Laxman Dewangan <ldewangan@nvidia.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Baolin Wang <baolin.wang7@gmail.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        Patrice Chotard <patrice.chotard@foss.st.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Hammer Hsieh <hammerh0314@gmail.com>,
+        Peter Korsgaard <jacmet@sunsite.dk>,
+        Timur Tabi <timur@kernel.org>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Saravana Kannan <saravanak@google.com>
+Cc:     Rob Herring <robh@kernel.org>, sascha hauer <sha@pengutronix.de>,
+        peng fan <peng.fan@nxp.com>, kevin hilman <khilman@kernel.org>,
+        ulf hansson <ulf.hansson@linaro.org>,
+        len brown <len.brown@intel.com>, pavel machek <pavel@ucw.cz>,
+        joerg roedel <joro@8bytes.org>, will deacon <will@kernel.org>,
+        andrew lunn <andrew@lunn.ch>,
+        heiner kallweit <hkallweit1@gmail.com>,
+        eric dumazet <edumazet@google.com>,
+        jakub kicinski <kuba@kernel.org>,
+        paolo abeni <pabeni@redhat.com>,
+        linus walleij <linus.walleij@linaro.org>,
+        hideaki yoshifuji <yoshfuji@linux-ipv6.org>,
+        david ahern <dsahern@kernel.org>, kernel-team@android.com,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org,
+        linux-rpi-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-tegra@vger.kernel.org,
+        linux-snps-arc@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+        linux-actions@lists.infradead.org,
+        linux-unisoc@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        sparclinux@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: franklin_lin <franklin_lin@wistron.corp-partner.google.com>
+Since the series that fixes console probe delay based on stdout-path[1] got
+pulled into driver-core-next, I made these patches on top of them.
 
-Enable the support for providing a MAC address
-for a dock to use based on the VPD values set in the platform.
+Even if stdout-path isn't set in DT, this patch should take console
+probe times back to how they were before the deferred_probe_timeout
+clean up series[2].
 
-Signed-off-by: franklin_lin <franklin_lin@wistron.corp-partner.google.com>
----
- drivers/net/usb/r8152.c | 49 ++++++++++++++++++++++++++++++-----------
- 1 file changed, 36 insertions(+), 13 deletions(-)
+Fabio/Ahmad/Sascha,
 
-diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
-index 7389d6ef8..732e48d99 100644
---- a/drivers/net/usb/r8152.c
-+++ b/drivers/net/usb/r8152.c
-@@ -3,6 +3,7 @@
-  *  Copyright (c) 2014 Realtek Semiconductor Corp. All rights reserved.
-  */
- 
-+#include <linux/fs.h>
- #include <linux/signal.h>
- #include <linux/slab.h>
- #include <linux/module.h>
-@@ -1608,6 +1609,11 @@ static int vendor_mac_passthru_addr_read(struct r8152 *tp, struct sockaddr *sa)
- 	acpi_object_type mac_obj_type;
- 	int mac_strlen;
- 
-+	struct file *fp;
-+	unsigned char read_buf[32];
-+	loff_t f_pos = 0;
-+	int i, j, len;
-+
- 	if (tp->lenovo_macpassthru) {
- 		mac_obj_name = "\\MACA";
- 		mac_obj_type = ACPI_TYPE_STRING;
-@@ -1641,22 +1647,39 @@ static int vendor_mac_passthru_addr_read(struct r8152 *tp, struct sockaddr *sa)
- 	/* returns _AUXMAC_#AABBCCDDEEFF# */
- 	status = acpi_evaluate_object(NULL, mac_obj_name, NULL, &buffer);
- 	obj = (union acpi_object *)buffer.pointer;
--	if (!ACPI_SUCCESS(status))
--		return -ENODEV;
--	if (obj->type != mac_obj_type || obj->string.length != mac_strlen) {
--		netif_warn(tp, probe, tp->netdev,
-+	if (ACPI_SUCCESS(status)) {
-+		if (obj->type != mac_obj_type || obj->string.length != mac_strlen) {
-+			netif_warn(tp, probe, tp->netdev,
- 			   "Invalid buffer for pass-thru MAC addr: (%d, %d)\n",
- 			   obj->type, obj->string.length);
--		goto amacout;
--	}
--
--	if (strncmp(obj->string.pointer, "_AUXMAC_#", 9) != 0 ||
--	    strncmp(obj->string.pointer + 0x15, "#", 1) != 0) {
--		netif_warn(tp, probe, tp->netdev,
--			   "Invalid header when reading pass-thru MAC addr\n");
--		goto amacout;
-+			goto amacout;
-+		}
-+		if (strncmp(obj->string.pointer, "_AUXMAC_#", 9) != 0 ||
-+			strncmp(obj->string.pointer + 0x15, "#", 1) != 0) {
-+			netif_warn(tp, probe, tp->netdev,
-+				"Invalid header when reading pass-thru MAC addr\n");
-+			goto amacout;
-+		}
-+		ret = hex2bin(buf, obj->string.pointer + 9, 6);
-+	} else {
-+		/* read from "/sys/firmware/vpd/ro/dock_mac" */
-+		fp = filp_open("/sys/firmware/vpd/ro/dock_mac", O_RDONLY, 0);
-+		if (IS_ERR(fp))
-+			return -ENOENT;
-+		kernel_read(fp, read_buf, 32, &f_pos);
-+		len = strlen(read_buf);
-+		/* remove ':' form mac address string */
-+		for (i = 0; i < len; i++) {
-+			if (read_buf[i] == ':') {
-+				for (j = i; j < len; j++)
-+					read_buf[j] = read_buf[j+1];
-+				len--;
-+				i--;
-+			}
-+		}
-+		filp_close(fp, NULL);
-+		ret = hex2bin(buf, read_buf, 6);
- 	}
--	ret = hex2bin(buf, obj->string.pointer + 9, 6);
- 	if (!(ret == 0 && is_valid_ether_addr(buf))) {
- 		netif_warn(tp, probe, tp->netdev,
- 			   "Invalid MAC for pass-thru MAC addr: %d, %pM\n",
+Can you give this a shot please?
+
+[1] - https://lore.kernel.org/lkml/20220623080344.783549-1-saravanak@google.com/
+[2] - https://lore.kernel.org/lkml/20220601070707.3946847-1-saravanak@google.com/
+
+Thanks,
+Saravana
+
+cc: Rob Herring <robh@kernel.org>
+cc: sascha hauer <sha@pengutronix.de>
+cc: peng fan <peng.fan@nxp.com>
+cc: kevin hilman <khilman@kernel.org>
+cc: ulf hansson <ulf.hansson@linaro.org>
+cc: len brown <len.brown@intel.com>
+cc: pavel machek <pavel@ucw.cz>
+cc: joerg roedel <joro@8bytes.org>
+cc: will deacon <will@kernel.org>
+cc: andrew lunn <andrew@lunn.ch>
+cc: heiner kallweit <hkallweit1@gmail.com>
+cc: russell king <linux@armlinux.org.uk>
+cc: "david s. miller" <davem@davemloft.net>
+cc: eric dumazet <edumazet@google.com>
+cc: jakub kicinski <kuba@kernel.org>
+cc: paolo abeni <pabeni@redhat.com>
+cc: linus walleij <linus.walleij@linaro.org>
+cc: hideaki yoshifuji <yoshfuji@linux-ipv6.org>
+cc: david ahern <dsahern@kernel.org>
+cc: kernel-team@android.com
+cc: linux-kernel@vger.kernel.org
+cc: linux-pm@vger.kernel.org
+cc: iommu@lists.linux-foundation.org
+cc: netdev@vger.kernel.org
+cc: linux-gpio@vger.kernel.org
+Cc: kernel@pengutronix.de
+
+Saravana Kannan (2):
+  driver core: Add probe_no_timeout flag for drivers
+  serial: Set probe_no_timeout for all DT based drivers
+
+ drivers/base/base.h                         |  1 +
+ drivers/base/core.c                         |  7 +++++++
+ drivers/base/dd.c                           |  3 +++
+ drivers/tty/ehv_bytechan.c                  |  1 +
+ drivers/tty/goldfish.c                      |  1 +
+ drivers/tty/hvc/hvc_opal.c                  |  1 +
+ drivers/tty/serial/8250/8250_acorn.c        |  1 -
+ drivers/tty/serial/8250/8250_aspeed_vuart.c |  1 +
+ drivers/tty/serial/8250/8250_bcm2835aux.c   |  1 +
+ drivers/tty/serial/8250/8250_bcm7271.c      |  1 +
+ drivers/tty/serial/8250/8250_dw.c           |  1 +
+ drivers/tty/serial/8250/8250_em.c           |  1 +
+ drivers/tty/serial/8250/8250_ingenic.c      |  1 +
+ drivers/tty/serial/8250/8250_lpc18xx.c      |  1 +
+ drivers/tty/serial/8250/8250_mtk.c          |  1 +
+ drivers/tty/serial/8250/8250_of.c           |  1 +
+ drivers/tty/serial/8250/8250_omap.c         |  1 +
+ drivers/tty/serial/8250/8250_pxa.c          |  1 +
+ drivers/tty/serial/8250/8250_tegra.c        |  1 +
+ drivers/tty/serial/8250/8250_uniphier.c     |  1 +
+ drivers/tty/serial/altera_jtaguart.c        |  1 +
+ drivers/tty/serial/altera_uart.c            |  1 +
+ drivers/tty/serial/amba-pl011.c             |  1 +
+ drivers/tty/serial/apbuart.c                |  1 +
+ drivers/tty/serial/ar933x_uart.c            |  1 +
+ drivers/tty/serial/arc_uart.c               |  1 +
+ drivers/tty/serial/atmel_serial.c           |  1 +
+ drivers/tty/serial/bcm63xx_uart.c           |  1 +
+ drivers/tty/serial/clps711x.c               |  1 +
+ drivers/tty/serial/cpm_uart/cpm_uart_core.c |  1 +
+ drivers/tty/serial/digicolor-usart.c        |  1 +
+ drivers/tty/serial/fsl_linflexuart.c        |  1 +
+ drivers/tty/serial/fsl_lpuart.c             |  1 +
+ drivers/tty/serial/imx.c                    |  1 +
+ drivers/tty/serial/lantiq.c                 |  1 +
+ drivers/tty/serial/liteuart.c               |  1 +
+ drivers/tty/serial/lpc32xx_hs.c             |  1 +
+ drivers/tty/serial/max310x.c                |  1 +
+ drivers/tty/serial/meson_uart.c             |  1 +
+ drivers/tty/serial/milbeaut_usio.c          |  1 +
+ drivers/tty/serial/mpc52xx_uart.c           |  1 +
+ drivers/tty/serial/mps2-uart.c              |  1 +
+ drivers/tty/serial/msm_serial.c             |  1 +
+ drivers/tty/serial/mvebu-uart.c             |  1 +
+ drivers/tty/serial/mxs-auart.c              |  1 +
+ drivers/tty/serial/omap-serial.c            |  1 +
+ drivers/tty/serial/owl-uart.c               |  1 +
+ drivers/tty/serial/pic32_uart.c             |  1 +
+ drivers/tty/serial/pmac_zilog.c             |  1 +
+ drivers/tty/serial/pxa.c                    |  1 +
+ drivers/tty/serial/qcom_geni_serial.c       |  1 +
+ drivers/tty/serial/rda-uart.c               |  1 +
+ drivers/tty/serial/samsung_tty.c            |  1 +
+ drivers/tty/serial/sc16is7xx.c              |  1 +
+ drivers/tty/serial/serial-tegra.c           |  1 +
+ drivers/tty/serial/sh-sci.c                 |  1 +
+ drivers/tty/serial/sifive.c                 |  1 +
+ drivers/tty/serial/sprd_serial.c            |  1 +
+ drivers/tty/serial/st-asc.c                 |  1 +
+ drivers/tty/serial/stm32-usart.c            |  1 +
+ drivers/tty/serial/sunhv.c                  |  1 +
+ drivers/tty/serial/sunplus-uart.c           |  1 +
+ drivers/tty/serial/sunsab.c                 |  1 +
+ drivers/tty/serial/sunsu.c                  |  1 +
+ drivers/tty/serial/sunzilog.c               |  1 +
+ drivers/tty/serial/tegra-tcu.c              |  1 +
+ drivers/tty/serial/uartlite.c               |  1 +
+ drivers/tty/serial/ucc_uart.c               |  1 +
+ drivers/tty/serial/vt8500_serial.c          |  1 +
+ drivers/tty/serial/xilinx_uartps.c          |  1 +
+ include/linux/device.h                      |  7 +++++++
+ include/linux/device/driver.h               | 11 +++++++++++
+ 72 files changed, 95 insertions(+), 1 deletion(-)
+
 -- 
-2.34.1
+2.37.0.rc0.161.g10f37bed90-goog
 
