@@ -2,124 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B157D55E949
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 18:41:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 88B3F55E6BD
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 18:30:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347157AbiF1Oqu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 10:46:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54902 "EHLO
+        id S1346574AbiF1Oqm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 10:46:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346214AbiF1Oqq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 10:46:46 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E59B52E9E2;
-        Tue, 28 Jun 2022 07:46:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=7pHTbqwaXaGFRCw7vMsZqLcpFUBsqDmJuAosMkAmWD0=; b=bRHWXWlSE3wMVf7UeDn4OnRTQt
-        zoWrl09nNqQM8atnUITqNjK3zrN07UdVqqzMNTgSa1Ha/9WDOVgAYs1fyfzs+ZbIL4QFERh4gmjqY
-        7R127QQv6utP1BeRvqQixqPTyPw2pz5GG8Yj60Ju/qS3Cou/5962e0N/xmqt37WmZSs8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1o6CU5-008a55-Ia; Tue, 28 Jun 2022 16:46:33 +0200
-Date:   Tue, 28 Jun 2022 16:46:33 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Frank <Frank.Sae@motor-comm.com>
-Cc:     Peter Geis <pgwipeout@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S1346214AbiF1Oql (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 10:46:41 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2F782E085;
+        Tue, 28 Jun 2022 07:46:40 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id jb13so11274598plb.9;
+        Tue, 28 Jun 2022 07:46:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=0PttLrl7XzFT/DEx+fCRDXEzmtLQpluLTks1IMGMmBg=;
+        b=lN3bOoP2kYrFIINdnvZW/U3+4JXVSc7UBijEkw5HwTnsZJE6iWecvoCvZmr8Vo1X4u
+         GDhEXQyuhE0Fd4H5r7mV/KYmRKO80+Nyb30xwNNoSuAty6Why5IZ4kyLk4MV1FnhzeDS
+         7rnpZbZkEqGoPgE+XspcKiRRah4ES5DN/Fe7ik1Jutd7IamXbNCEKJPYC7KkV2x7dHY7
+         e5mFaaKNojIxk8W83EysIpSVTg0Jm9rGaurF7/bqbc5ofU4Y8Yvcvz0J/8Xm+efMZ93U
+         /7IK42i+4lzbIqoohy9eOSn1SBO9mxYbP8JkpyJrRHBUyv5dyVxyL2YmAuy8ptulFpog
+         z8lg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=0PttLrl7XzFT/DEx+fCRDXEzmtLQpluLTks1IMGMmBg=;
+        b=syxJ4NMvBxAipFbwjHB4Y+x9kXneQVnQDtjWOrDimcqYKcRpKhJZLmlyq6nGjuCJOb
+         XXRU/2CcQN3/nQSxU9eluNMwAb9aTdQiapEFMGorD6sAwVFkYGsxZRbyywHKRUKZdFT4
+         gh5H52cTd5SUoD8k1vuVoo2rv5haXzQtIY8QMLXjt803noyWl/HUntigkkR+INNNFg7d
+         4oXjflHOOGa3d4UulTguLkTgTuPhMRx/u4X3RuvCGxyochdROVsJ7bz9wRowJC0ouIjd
+         xzj0hQRsHqvMAPcbgDqKGYiXkJYRRI6fTEcP+G2sN+oplV2/kbGYzvxwdCb6yc22cUa5
+         qwTw==
+X-Gm-Message-State: AJIora+HI1I95S80ULcgEeosSL/j+JwuK7uwY1Y4Tkr/fe3UYUhFkXAi
+        bNJSgMESM6q50nZFvkZcrm8=
+X-Google-Smtp-Source: AGRyM1tKpFw5r1POn/3CA5HmCjwUu7gNX0Wo3qEufctgXHk5mNL08xP+g5VODiaEfo6qCo28ADa7PA==
+X-Received: by 2002:a17:902:7102:b0:168:dcbe:7c50 with SMTP id a2-20020a170902710200b00168dcbe7c50mr5465892pll.116.1656427600078;
+        Tue, 28 Jun 2022 07:46:40 -0700 (PDT)
+Received: from ?IPV6:2600:8802:b00:4a48:c569:fa46:5b43:1b1e? ([2600:8802:b00:4a48:c569:fa46:5b43:1b1e])
+        by smtp.gmail.com with ESMTPSA id jf20-20020a170903269400b0015e8d4eb25fsm9329014plb.169.2022.06.28.07.46.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 28 Jun 2022 07:46:39 -0700 (PDT)
+Message-ID: <8ec75f24-bf35-2331-0fbb-49e12bc45f73@gmail.com>
+Date:   Tue, 28 Jun 2022 07:46:39 -0700
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH net-next v2 2/4] net: dsa: ar9331: add support for pause
+ stats
+Content-Language: en-US
+To:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, yinghong.zhang@motor-comm.com,
-        fei.zhang@motor-comm.com, hua.sun@motor-comm.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] net: phy: Add driver for Motorcomm yt8521 gigabit
- ethernet phy
-Message-ID: <YrsUSSImpUXrZFUl@lunn.ch>
-References: <20220628104245.35-1-Frank.Sae@motor-comm.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220628104245.35-1-Frank.Sae@motor-comm.com>
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     kernel@pengutronix.de, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Lukas Wunner <lukas@wunner.de>,
+        UNGLinuxDriver@microchip.com
+References: <20220628085155.2591201-1-o.rempel@pengutronix.de>
+ <20220628085155.2591201-3-o.rempel@pengutronix.de>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220628085155.2591201-3-o.rempel@pengutronix.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> --- a/drivers/net/phy/motorcomm.c
-> +++ b/drivers/net/phy/motorcomm.c
-> @@ -1,15 +1,115 @@
->  // SPDX-License-Identifier: GPL-2.0+
->  /*
-> - * Driver for Motorcomm PHYs
-> + * motorcomm.c: Motorcomm 8511/8521 PHY driver.
 
-Generally you don't include a files name in the file, because it can
-get renamed and nobody updates it.
 
->   *
->   * Author: Peter Geis <pgwipeout@gmail.com>
-> + * Author: Frank <Frank.Sae@motor-comm.com>
->   */
->  
->  #include <linux/kernel.h>
->  #include <linux/module.h>
->  #include <linux/phy.h>
-> +#include <linux/etherdevice.h>
+On 6/28/2022 1:51 AM, Oleksij Rempel wrote:
+> Add support for pause stats.
+> 
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 
-The includes are currently sorted, please keep it so.
-
->  
->  #define PHY_ID_YT8511		0x0000010a
-> +#define PHY_ID_YT8521				0x0000011A
-> +
-> +/* YT8521 Register Overview
-> + *	UTP Register space	|	FIBER Register space
-> + *  ------------------------------------------------------------
-> + * |	UTP MII			|	FIBER MII		|
-> + * |	UTP MMD			|				|
-> + * |	UTP Extended		|	FIBER Extended		|
-> + *  ------------------------------------------------------------
-> + * |			Common Extended				|
-> + *  ------------------------------------------------------------
-> + */
-> +
-> +/* 0x10 ~ 0x15 , 0x1E and 0x1F are common MII registers of yt phy */
-> +
-> +/* Specific Function Control Register */
-> +#define YTPHY_SPECIFIC_FUNCTION_CONTROL_REG	0x10
-> +
-> +/* 2b00 Manual MDI configuration
-> + * 2b01 Manual MDIX configuration
-> + * 2b10 Reserved
-> + * 2b11 Enable automatic crossover for all modes  *default*
-
-> +
-> +/* 2b00 10 Mbps
-> + * 2b01 100 Mbps
-> + * 2b10 1000 Mbps
-> + * 2b11 Reserved
-> +
-> +/* 8 working modes:
-> + * 3b000 UTP_TO_RGMII  *default*
-> + * 3b001 FIBER_TO_RGMII
-> + * 3b010 UTP_FIBER_TO_RGMII
-> + * 3b011 UTP_TO_SGMII
-> + * 3b100 SGPHY_TO_RGMAC
-> + * 3b101 SGMAC_TO_RGPHY
-> + * 3b110 UTP_TO_FIBER_AUTO
-> + * 3b111 UTP_TO_FIBER_FORCE
-
-I don't think this notation is used anywhere else in the kernel. It
-also took me a little while to figure it out. It would probably be
-better to just add comments next to the #define.
-
-       Andrew
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
