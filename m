@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D3CB55EEAC
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 22:00:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F02055EE87
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 22:00:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233345AbiF1Txx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 15:53:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45686 "EHLO
+        id S233301AbiF1Txv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 15:53:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232530AbiF1TvE (ORCPT
+        with ESMTP id S232553AbiF1TvE (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 15:51:04 -0400
 Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B3F32C66A;
-        Tue, 28 Jun 2022 12:50:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B59AC2D1FA;
+        Tue, 28 Jun 2022 12:50:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656445801; x=1687981801;
+  t=1656445802; x=1687981802;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=RMjkP7N3C2aO9AK8761DdIt9FB/kHYV8pUPcGpDSf7k=;
-  b=asWFRFcFARiYjK9mBun5GPp/WU1aL9x0NAjxChHdkWpYS8tnMzH2I1Ja
-   MCts2qnENZPjl/RRd2iFFxTW2ZNi5Xkpm/heSqn0pRHmOVZdtcIR4d3N/
-   C8/yP+vH/y4Nmi9VagoZIG8Hs6lsvYSThpOkwFLmQ7cnpGow9V6tzPOAz
-   Qz2fRSPhd15GVNveVkgp12Mv8qs5ZdK5y4NqSTMpYax6hrCZDNBxLANIg
-   MIr1dzOovf7XQhEH77gRG8iP9wpEM4B8HJgtaooWJc2RTu96xx38MERCi
-   Afv1cswgGJMYJn7Qh6lex3Jbw41MYSOaUcToor/6GHyBUstu0i6lKcp71
+  bh=mGtrmaLjPcZAooH9D0ihpXQHll3Ueacp1yT+KsPx7iI=;
+  b=DsUaoryMmLzcorx3s1JVgNTjDVRHbUz4Xsm34EXveL4mnCd9iQoEXM1N
+   qTWFQURxo4Ez5t+z13daV5w2OG7yhbaKVHrPQLXQQ+34XFX+6N/NBpasg
+   eVKZ1xnZwBKO8mQ0k3bBmZnH3ZdQz679/p5+6yQYy0FOiKrRW3m6RFrqZ
+   55jcnGNLQYT2wNe3nMbmMT/RYF7Nd5ecy5K4kQ+ZHw+nJoMUXk6BRebx9
+   NnCJ/SZ19mthYbEmOLkVniE0ngX4KwhNvy8UiprU4swLYilViq6hgBEHb
+   M6wdPxrZcaFsYOrOXwDsRbyh7zyc99Law+TCFwtswftLkiUg+VVT0d9Ew
    A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="280596055"
+X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="280596062"
 X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
-   d="scan'208";a="280596055"
+   d="scan'208";a="280596062"
 Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 12:50:01 -0700
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 12:50:02 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
-   d="scan'208";a="594927668"
+   d="scan'208";a="594927683"
 Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by fmsmga007.fm.intel.com with ESMTP; 28 Jun 2022 12:49:57 -0700
+  by fmsmga007.fm.intel.com with ESMTP; 28 Jun 2022 12:49:58 -0700
 Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 25SJmr9k022013;
-        Tue, 28 Jun 2022 20:49:55 +0100
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 25SJmr9l022013;
+        Tue, 28 Jun 2022 20:49:56 +0100
 From:   Alexander Lobakin <alexandr.lobakin@intel.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -64,9 +64,9 @@ Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
         Willem de Bruijn <willemb@google.com>, bpf@vger.kernel.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         xdp-hints@xdp-project.net
-Subject: [PATCH RFC bpf-next 46/52] net, ice: use an onstack &xdp_meta_generic_rx to store HW frame info
-Date:   Tue, 28 Jun 2022 21:48:06 +0200
-Message-Id: <20220628194812.1453059-47-alexandr.lobakin@intel.com>
+Subject: [PATCH RFC bpf-next 47/52] net, ice: build XDP generic metadata
+Date:   Tue, 28 Jun 2022 21:48:07 +0200
+Message-Id: <20220628194812.1453059-48-alexandr.lobakin@intel.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220628194812.1453059-1-alexandr.lobakin@intel.com>
 References: <20220628194812.1453059-1-alexandr.lobakin@intel.com>
@@ -82,394 +82,283 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-To be able to pass HW-provided frame metadata, such as hash,
-checksum status etc., to BPF and XSK programs, unify the container
-which is used to store it regardless of an XDP program presence or
-a verdict returned by it. Use an intermediate onstack
-&xdp_meta_generic_rx before filling skb fields and switch descriptor
-parsing functions to use it instead of an &sk_buff.
-This works the same way how &xdp_buff is being filled before forming
-an skb. If metadata generation is enabled, the actual space in front
-of a frame will be used in the upcoming changes.
-Using &xdp_meta_generic_rx instead of full-blown &xdp_meta_generic
-reduces text size by 32 bytes per function.
+Now that the driver builds skbs from an onstack generic meta
+structure, add the ability to configure the actual metadata format
+to be provided to BPF and XSK programs (and other consumers like
+cpumap).
+At first, it is being built on the stack and then synchronized with
+the buffer in front of a frame; and vice versa after the program
+returns back to the driver. In cases when meta is disabled or the
+frame size is below the threshold, the driver populates it only on
+%XDP_PASS and right before populating an skb, so no perf hits for
+that.
 
 Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_ptp.c      |  19 ++--
- drivers/net/ethernet/intel/ice/ice_ptp.h      |  17 ++-
- drivers/net/ethernet/intel/ice/ice_txrx.c     |   4 +-
- drivers/net/ethernet/intel/ice/ice_txrx.h     |   1 +
- drivers/net/ethernet/intel/ice/ice_txrx_lib.c | 105 ++++++++++--------
- drivers/net/ethernet/intel/ice/ice_txrx_lib.h |  12 +-
- drivers/net/ethernet/intel/ice/ice_xsk.c      |   4 +-
- 7 files changed, 91 insertions(+), 71 deletions(-)
+ drivers/net/ethernet/intel/ice/ice.h          |  8 +++
+ drivers/net/ethernet/intel/ice/ice_main.c     | 18 ++++++-
+ drivers/net/ethernet/intel/ice/ice_txrx.c     | 25 ++++++---
+ drivers/net/ethernet/intel/ice/ice_txrx_lib.h | 53 +++++++++++++++++++
+ drivers/net/ethernet/intel/ice/ice_xsk.c      | 17 ++++--
+ 5 files changed, 107 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_ptp.c b/drivers/net/ethernet/intel/ice/ice_ptp.c
-index ef9344ef0d8e..d4d955152682 100644
---- a/drivers/net/ethernet/intel/ice/ice_ptp.c
-+++ b/drivers/net/ethernet/intel/ice/ice_ptp.c
-@@ -1795,24 +1795,22 @@ int ice_ptp_set_ts_config(struct ice_pf *pf, struct ifreq *ifr)
+diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
+index 402b71ab48e4..bd929bb1a359 100644
+--- a/drivers/net/ethernet/intel/ice/ice.h
++++ b/drivers/net/ethernet/intel/ice/ice.h
+@@ -490,6 +490,14 @@ enum ice_pf_flags {
+ 	ICE_PF_FLAGS_NBITS		/* must be last */
+ };
  
- /**
-  * ice_ptp_rx_hwtstamp - Check for an Rx timestamp
-- * @rx_ring: Ring to get the VSI info
-  * @rx_desc: Receive descriptor
-- * @skb: Particular skb to send timestamp with
-+ * @rx_ring: Ring to get the VSI info
-+ * @md: Metadata to set timestamp in
-  *
-  * The driver receives a notification in the receive descriptor with timestamp.
-  * The timestamp is in ns, so we must convert the result first.
-  */
--void
--ice_ptp_rx_hwtstamp(struct ice_rx_ring *rx_ring,
--		    union ice_32b_rx_flex_desc *rx_desc, struct sk_buff *skb)
-+void ice_ptp_rx_hwtstamp(struct xdp_meta_generic *md,
-+			 const union ice_32b_rx_flex_desc *rx_desc,
-+			 const struct ice_rx_ring *rx_ring)
- {
- 	u32 ts_high;
- 	u64 ts_ns;
- 
--	/* Populate timesync data into skb */
-+	/* Populate timesync data into md */
- 	if (rx_desc->wb.time_stamp_low & ICE_PTP_TS_VALID) {
--		struct skb_shared_hwtstamps *hwtstamps;
--
- 		/* Use ice_ptp_extend_32b_ts directly, using the ring-specific
- 		 * cached PHC value, rather than accessing the PF. This also
- 		 * allows us to simply pass the upper 32bits of nanoseconds
-@@ -1822,9 +1820,8 @@ ice_ptp_rx_hwtstamp(struct ice_rx_ring *rx_ring,
- 		ts_high = le32_to_cpu(rx_desc->wb.flex_ts.ts_high);
- 		ts_ns = ice_ptp_extend_32b_ts(rx_ring->cached_phctime, ts_high);
- 
--		hwtstamps = skb_hwtstamps(skb);
--		memset(hwtstamps, 0, sizeof(*hwtstamps));
--		hwtstamps->hwtstamp = ns_to_ktime(ts_ns);
-+		xdp_meta_rx_tstamp_present_set(md, 1);
-+		xdp_meta_rx_tstamp_set(md, ts_ns);
- 	}
- }
- 
-diff --git a/drivers/net/ethernet/intel/ice/ice_ptp.h b/drivers/net/ethernet/intel/ice/ice_ptp.h
-index 10e396abf130..488b6bb01605 100644
---- a/drivers/net/ethernet/intel/ice/ice_ptp.h
-+++ b/drivers/net/ethernet/intel/ice/ice_ptp.h
-@@ -228,8 +228,12 @@ struct ice_ptp {
- #define N_EXT_TS_E810_NO_SMA		2
- #define ETH_GLTSYN_ENA(_i)		(0x03000348 + ((_i) * 4))
- 
--#if IS_ENABLED(CONFIG_PTP_1588_CLOCK)
- struct ice_pf;
-+struct ice_rx_ring;
-+struct xdp_meta_generic;
-+union ice_32b_rx_flex_desc;
++enum {
++	ICE_MD_GENERIC,
 +
-+#if IS_ENABLED(CONFIG_PTP_1588_CLOCK)
- int ice_ptp_set_ts_config(struct ice_pf *pf, struct ifreq *ifr);
- int ice_ptp_get_ts_config(struct ice_pf *pf, struct ifreq *ifr);
- void ice_ptp_cfg_timestamp(struct ice_pf *pf, bool ena);
-@@ -238,9 +242,9 @@ int ice_get_ptp_clock_index(struct ice_pf *pf);
- s8 ice_ptp_request_ts(struct ice_ptp_tx *tx, struct sk_buff *skb);
- void ice_ptp_process_ts(struct ice_pf *pf);
++	/* Must be last */
++	ICE_MD_NONE,
++	__ICE_MD_NUM,
++};
++
+ struct ice_switchdev_info {
+ 	struct ice_vsi *control_vsi;
+ 	struct ice_vsi *uplink_vsi;
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index 7d049930a0a8..62bd0d316873 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -48,6 +48,11 @@ static DEFINE_IDA(ice_aux_ida);
+ DEFINE_STATIC_KEY_FALSE(ice_xdp_locking_key);
+ EXPORT_SYMBOL(ice_xdp_locking_key);
  
--void
--ice_ptp_rx_hwtstamp(struct ice_rx_ring *rx_ring,
--		    union ice_32b_rx_flex_desc *rx_desc, struct sk_buff *skb);
-+void ice_ptp_rx_hwtstamp(struct xdp_meta_generic *md,
-+			 const union ice_32b_rx_flex_desc *rx_desc,
-+			 const struct ice_rx_ring *rx_ring);
- void ice_ptp_reset(struct ice_pf *pf);
- void ice_ptp_prepare_for_reset(struct ice_pf *pf);
- void ice_ptp_init(struct ice_pf *pf);
-@@ -271,8 +275,9 @@ ice_ptp_request_ts(struct ice_ptp_tx *tx, struct sk_buff *skb)
++/* List of XDP metadata formats supported by the driver */
++static const char * const ice_supported_md[__ICE_MD_NUM] = {
++	[ICE_MD_GENERIC]	= "struct xdp_meta_generic",
++};
++
+ /**
+  * ice_hw_to_dev - Get device pointer from the hardware structure
+  * @hw: pointer to the device HW structure
+@@ -2848,13 +2853,19 @@ ice_xdp_setup_prog(struct ice_vsi *vsi, struct netdev_bpf *xdp)
+ 	int frame_size = vsi->netdev->mtu + ICE_ETH_PKT_HDR_PAD;
+ 	struct netlink_ext_ack *extack = xdp->extack;
+ 	bool restart = false, prog = !!xdp->prog;
+-	int ret = 0, xdp_ring_err = 0;
++	int pos, ret = 0, xdp_ring_err = 0;
  
- static inline void ice_ptp_process_ts(struct ice_pf *pf) { }
- static inline void
--ice_ptp_rx_hwtstamp(struct ice_rx_ring *rx_ring,
--		    union ice_32b_rx_flex_desc *rx_desc, struct sk_buff *skb) { }
-+ice_ptp_rx_hwtstamp(struct xdp_meta_generic *md,
-+		    const union ice_32b_rx_flex_desc *rx_desc,
-+		    const struct ice_rx_ring *rx_ring) { }
- static inline void ice_ptp_reset(struct ice_pf *pf) { }
- static inline void ice_ptp_prepare_for_reset(struct ice_pf *pf) { }
- static inline void ice_ptp_init(struct ice_pf *pf) { }
+ 	if (frame_size > vsi->rx_buf_len) {
+ 		NL_SET_ERR_MSG_MOD(extack, "MTU too large for loading XDP");
+ 		return -EOPNOTSUPP;
+ 	}
+ 
++	pos = xdp_meta_match_id(ice_supported_md, xdp->btf_id);
++	if (pos < 0) {
++		NL_SET_ERR_MSG_MOD(extack, "Invalid or unsupported BTF ID");
++		return pos;
++	}
++
+ 	/* need to stop netdev while setting up the program for Rx rings */
+ 	if (ice_is_xdp_ena_vsi(vsi) != prog && netif_running(vsi->netdev) &&
+ 	    !test_and_set_bit(ICE_VSI_DOWN, vsi->state)) {
+@@ -2867,6 +2878,9 @@ ice_xdp_setup_prog(struct ice_vsi *vsi, struct netdev_bpf *xdp)
+ 		restart = true;
+ 	}
+ 
++	/* Paired with the READ_ONCE()'s in ice_clean_rx_irq{,_zc}() */
++	WRITE_ONCE(vsi->xdp_info.drv_cookie, ICE_MD_NONE);
++
+ 	if (!ice_is_xdp_ena_vsi(vsi) && prog) {
+ 		xdp_ring_err = ice_vsi_determine_xdp_res(vsi);
+ 		if (xdp_ring_err) {
+@@ -2889,6 +2903,8 @@ ice_xdp_setup_prog(struct ice_vsi *vsi, struct netdev_bpf *xdp)
+ 		xdp_attachment_setup_rcu(&vsi->xdp_info, xdp);
+ 	}
+ 
++	WRITE_ONCE(vsi->xdp_info.drv_cookie, pos);
++
+ 	if (restart)
+ 		ret = ice_up(vsi);
+ 
 diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.c b/drivers/net/ethernet/intel/ice/ice_txrx.c
-index ffea5138a7e8..c679f7c30bdc 100644
+index c679f7c30bdc..50de6d54e3b0 100644
 --- a/drivers/net/ethernet/intel/ice/ice_txrx.c
 +++ b/drivers/net/ethernet/intel/ice/ice_txrx.c
-@@ -1123,6 +1123,7 @@ int ice_clean_rx_irq(struct ice_rx_ring *rx_ring, int budget)
+@@ -1103,10 +1103,10 @@ int ice_clean_rx_irq(struct ice_rx_ring *rx_ring, int budget)
+ 	unsigned int total_rx_bytes = 0, total_rx_pkts = 0, frame_sz = 0;
+ 	u16 cleaned_count = ICE_DESC_UNUSED(rx_ring);
+ 	unsigned int offset = rx_ring->rx_offset;
++	struct xdp_attachment_info xdp_info;
+ 	struct ice_tx_ring *xdp_ring = NULL;
+ 	unsigned int xdp_res, xdp_xmit = 0;
+ 	struct sk_buff *skb = rx_ring->skb;
+-	struct bpf_prog *xdp_prog = NULL;
+ 	struct xdp_buff xdp;
+ 	bool failure;
+ 
+@@ -1116,9 +1116,16 @@ int ice_clean_rx_irq(struct ice_rx_ring *rx_ring, int budget)
+ #endif
+ 	xdp_init_buff(&xdp, frame_sz, &rx_ring->xdp_rxq);
+ 
+-	xdp_prog = rcu_dereference(rx_ring->xdp_info->prog_rcu);
+-	if (xdp_prog)
++	xdp_info.prog = rcu_dereference(rx_ring->xdp_info->prog_rcu);
++	if (xdp_info.prog) {
++		const struct xdp_attachment_info *info = rx_ring->xdp_info;
++
++		xdp_info.btf_id_le = cpu_to_le64(READ_ONCE(info->btf_id));
++		xdp_info.meta_thresh = READ_ONCE(info->meta_thresh);
++		xdp_info.drv_cookie = READ_ONCE(info->drv_cookie);
++
+ 		xdp_ring = rx_ring->xdp_ring;
++	}
+ 
  	/* start the loop to process Rx packets bounded by 'budget' */
  	while (likely(total_rx_pkts < (unsigned int)budget)) {
- 		union ice_32b_rx_flex_desc *rx_desc;
-+		struct xdp_meta_generic_rx md;
- 		struct ice_rx_buf *rx_buf;
- 		unsigned char *hard_start;
- 		unsigned int size;
-@@ -1239,7 +1240,8 @@ int ice_clean_rx_irq(struct ice_rx_ring *rx_ring, int budget)
+@@ -1182,10 +1189,12 @@ int ice_clean_rx_irq(struct ice_rx_ring *rx_ring, int budget)
+ 		xdp.frame_sz = ice_rx_frame_truesize(rx_ring, size);
+ #endif
+ 
+-		if (!xdp_prog)
++		if (!xdp_info.prog)
+ 			goto construct_skb;
+ 
+-		xdp_res = ice_run_xdp(rx_ring, &xdp, xdp_prog, xdp_ring);
++		ice_xdp_handle_meta(&xdp, &md, &xdp_info, rx_desc, rx_ring);
++
++		xdp_res = ice_run_xdp(rx_ring, &xdp, xdp_info.prog, xdp_ring);
+ 		if (!xdp_res)
+ 			goto construct_skb;
+ 		if (xdp_res & (ICE_XDP_TX | ICE_XDP_REDIR)) {
+@@ -1240,8 +1249,8 @@ int ice_clean_rx_irq(struct ice_rx_ring *rx_ring, int budget)
  		/* probably a little skewed due to removing CRC */
  		total_rx_bytes += skb->len;
  
--		ice_process_skb_fields(rx_ring, rx_desc, skb);
-+		ice_xdp_build_meta(&md, rx_desc, rx_ring, 0);
-+		__xdp_populate_skb_meta_generic(skb, &md);
+-		ice_xdp_build_meta(&md, rx_desc, rx_ring, 0);
+-		__xdp_populate_skb_meta_generic(skb, &md);
++		ice_xdp_meta_populate_skb(skb, &md, xdp.data, rx_desc,
++					  rx_ring);
  
  		ice_trace(clean_rx_irq_indicate, rx_ring, rx_desc, skb);
  		ice_receive_skb(rx_ring, skb);
-diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.h b/drivers/net/ethernet/intel/ice/ice_txrx.h
-index 1fc31ab0bf33..a814709deb50 100644
---- a/drivers/net/ethernet/intel/ice/ice_txrx.h
-+++ b/drivers/net/ethernet/intel/ice/ice_txrx.h
-@@ -4,6 +4,7 @@
- #ifndef _ICE_TXRX_H_
- #define _ICE_TXRX_H_
+@@ -1254,7 +1263,7 @@ int ice_clean_rx_irq(struct ice_rx_ring *rx_ring, int budget)
+ 	/* return up to cleaned_count buffers to hardware */
+ 	failure = ice_alloc_rx_bufs(rx_ring, cleaned_count);
  
-+#include <net/xdp_meta.h>
- #include "ice_type.h"
+-	if (xdp_prog)
++	if (xdp_info.prog)
+ 		ice_finalize_xdp_rx(xdp_ring, xdp_xmit);
+ 	rx_ring->skb = skb;
  
- #define ICE_DFLT_IRQ_WORK	256
-diff --git a/drivers/net/ethernet/intel/ice/ice_txrx_lib.c b/drivers/net/ethernet/intel/ice/ice_txrx_lib.c
-index 92c001baa2cc..7550e2ed8936 100644
---- a/drivers/net/ethernet/intel/ice/ice_txrx_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_txrx_lib.c
-@@ -43,36 +43,37 @@ void ice_release_rx_desc(struct ice_rx_ring *rx_ring, u16 val)
-  * @decoded: the decoded ptype value from the descriptor
-  *
-  * Returns appropriate hash type (such as PKT_HASH_TYPE_L2/L3/L4) to be used by
-- * skb_set_hash based on PTYPE as parsed by HW Rx pipeline and is part of
-- * Rx desc.
-+ * xdp_meta_rx_hash_type_set() based on PTYPE as parsed by HW Rx pipeline and
-+ * is part of Rx desc.
-  */
--static enum pkt_hash_types
-+static u32
- ice_ptype_to_htype(struct ice_rx_ptype_decoded decoded)
- {
- 	if (!decoded.known)
--		return PKT_HASH_TYPE_NONE;
-+		return XDP_META_RX_HASH_NONE;
- 	if (decoded.payload_layer == ICE_RX_PTYPE_PAYLOAD_LAYER_PAY4)
--		return PKT_HASH_TYPE_L4;
-+		return XDP_META_RX_HASH_L4;
- 	if (decoded.payload_layer == ICE_RX_PTYPE_PAYLOAD_LAYER_PAY3)
--		return PKT_HASH_TYPE_L3;
-+		return XDP_META_RX_HASH_L3;
- 	if (decoded.outer_ip == ICE_RX_PTYPE_OUTER_L2)
--		return PKT_HASH_TYPE_L2;
-+		return XDP_META_RX_HASH_L2;
- 
--	return PKT_HASH_TYPE_NONE;
-+	return XDP_META_RX_HASH_NONE;
- }
- 
- /**
-- * ice_rx_hash - set the hash value in the skb
-+ * ice_rx_hash - set the hash value in the medatadata
-+ * @md: pointer to current metadata
-  * @rx_ring: descriptor ring
-  * @rx_desc: specific descriptor
-- * @skb: pointer to current skb
-  * @decoded: the decoded ptype value from the descriptor
-  */
--static void
--ice_rx_hash(struct ice_rx_ring *rx_ring, union ice_32b_rx_flex_desc *rx_desc,
--	    struct sk_buff *skb, struct ice_rx_ptype_decoded decoded)
-+static void ice_rx_hash(struct xdp_meta_generic *md,
-+			const struct ice_rx_ring *rx_ring,
-+			const union ice_32b_rx_flex_desc *rx_desc,
-+			struct ice_rx_ptype_decoded decoded)
- {
--	struct ice_32b_rx_flex_desc_nic *nic_mdid;
-+	const struct ice_32b_rx_flex_desc_nic *nic_mdid;
- 	u32 hash;
- 
- 	if (!(rx_ring->netdev->features & NETIF_F_RXHASH))
-@@ -81,24 +82,24 @@ ice_rx_hash(struct ice_rx_ring *rx_ring, union ice_32b_rx_flex_desc *rx_desc,
- 	if (rx_desc->wb.rxdid != ICE_RXDID_FLEX_NIC)
- 		return;
- 
--	nic_mdid = (struct ice_32b_rx_flex_desc_nic *)rx_desc;
-+	nic_mdid = (typeof(nic_mdid))rx_desc;
- 	hash = le32_to_cpu(nic_mdid->rss_hash);
--	skb_set_hash(skb, hash, ice_ptype_to_htype(decoded));
-+
-+	xdp_meta_rx_hash_type_set(md, ice_ptype_to_htype(decoded));
-+	xdp_meta_rx_hash_set(md, hash);
- }
- 
- /**
-- * ice_rx_csum - Indicate in skb if checksum is good
-+ * ice_rx_csum - Indicate in metadata if checksum is good
-+ * @md: metadata currently being filled
-  * @ring: the ring we care about
-- * @skb: skb currently being received and modified
-  * @rx_desc: the receive descriptor
-  * @decoded: the decoded packet type parsed by hardware
-- *
-- * skb->protocol must be set before this function is called
-  */
--static void
--ice_rx_csum(struct ice_rx_ring *ring, struct sk_buff *skb,
--	    union ice_32b_rx_flex_desc *rx_desc,
--	    struct ice_rx_ptype_decoded decoded)
-+static void ice_rx_csum(struct xdp_meta_generic *md,
-+			const struct ice_rx_ring *ring,
-+			const union ice_32b_rx_flex_desc *rx_desc,
-+			struct ice_rx_ptype_decoded decoded)
- {
- 	u16 rx_status0, rx_status1;
- 	bool ipv4, ipv6;
-@@ -106,10 +107,6 @@ ice_rx_csum(struct ice_rx_ring *ring, struct sk_buff *skb,
- 	rx_status0 = le16_to_cpu(rx_desc->wb.status_error0);
- 	rx_status1 = le16_to_cpu(rx_desc->wb.status_error1);
- 
--	/* Start with CHECKSUM_NONE and by default csum_level = 0 */
--	skb->ip_summed = CHECKSUM_NONE;
--	skb_checksum_none_assert(skb);
--
- 	/* check if Rx checksum is enabled */
- 	if (!(ring->netdev->features & NETIF_F_RXCSUM))
- 		return;
-@@ -149,14 +146,14 @@ ice_rx_csum(struct ice_rx_ring *ring, struct sk_buff *skb,
- 	 * we are indicating we validated the inner checksum.
- 	 */
- 	if (decoded.tunnel_type >= ICE_RX_PTYPE_TUNNEL_IP_GRENAT)
--		skb->csum_level = 1;
-+		xdp_meta_rx_csum_level_set(md, 1);
- 
- 	/* Only report checksum unnecessary for TCP, UDP, or SCTP */
- 	switch (decoded.inner_prot) {
- 	case ICE_RX_PTYPE_INNER_PROT_TCP:
- 	case ICE_RX_PTYPE_INNER_PROT_UDP:
- 	case ICE_RX_PTYPE_INNER_PROT_SCTP:
--		skb->ip_summed = CHECKSUM_UNNECESSARY;
-+		xdp_meta_rx_csum_status_set(md, XDP_META_RX_CSUM_OK);
- 		break;
- 	default:
- 		break;
-@@ -167,7 +164,13 @@ ice_rx_csum(struct ice_rx_ring *ring, struct sk_buff *skb,
- 	ring->vsi->back->hw_csum_rx_error++;
- }
- 
--static void ice_rx_vlan(struct sk_buff *skb,
-+#define xdp_meta_rx_vlan_from_feat(feat) ({			\
-+	((feat) & NETIF_F_HW_VLAN_CTAG_RX) ? XDP_META_RX_CVID :	\
-+	((feat) & NETIF_F_HW_VLAN_STAG_RX) ? XDP_META_RX_SVID :	\
-+	XDP_META_RX_VLAN_NONE;					\
-+})
-+
-+static void ice_rx_vlan(struct xdp_meta_generic *md,
- 			const struct ice_rx_ring *rx_ring,
- 			const union ice_32b_rx_flex_desc *rx_desc)
- {
-@@ -181,42 +184,48 @@ static void ice_rx_vlan(struct sk_buff *skb,
- 	if (!non_zero_vlan)
- 		return;
- 
--	if ((features & NETIF_F_HW_VLAN_CTAG_RX))
--		__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q), vlan_tag);
--	else if ((features & NETIF_F_HW_VLAN_STAG_RX))
--		__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021AD), vlan_tag);
-+	xdp_meta_rx_vlan_type_set(md, xdp_meta_rx_vlan_from_feat(features));
-+	xdp_meta_rx_vid_set(md, vlan_tag);
- }
- 
- /**
-- * ice_process_skb_fields - Populate skb header fields from Rx descriptor
-- * @rx_ring: Rx descriptor ring packet is being transacted on
-+ * __ice_xdp_build_meta - Populate XDP generic metadata fields from Rx desc
-+ * @rx_md: pointer to the metadata structure to be populated
-  * @rx_desc: pointer to the EOP Rx descriptor
-- * @skb: pointer to current skb being populated
-+ * @rx_ring: Rx descriptor ring packet is being transacted on
-+ * @full_id: full ID (BTF ID + type ID) to fill in
-  *
-  * This function checks the ring, descriptor, and packet information in
-  * order to populate the hash, checksum, VLAN, protocol, and
-- * other fields within the skb.
-+ * other fields within the metadata.
-  */
--void
--ice_process_skb_fields(struct ice_rx_ring *rx_ring,
--		       union ice_32b_rx_flex_desc *rx_desc,
--		       struct sk_buff *skb)
-+void __ice_xdp_build_meta(struct xdp_meta_generic_rx *rx_md,
-+			  const union ice_32b_rx_flex_desc *rx_desc,
-+			  const struct ice_rx_ring *rx_ring,
-+			  __le64 full_id)
- {
-+	struct xdp_meta_generic *md = to_gen_md(rx_md);
- 	struct ice_rx_ptype_decoded decoded;
- 	u16 ptype;
- 
--	skb_record_rx_queue(skb, rx_ring->q_index);
-+	xdp_meta_init(&md->id, full_id);
-+	md->rx_hash = 0;
-+	md->rx_csum = 0;
-+	md->rx_flags = 0;
-+
-+	xdp_meta_rx_qid_present_set(md, 1);
-+	xdp_meta_rx_qid_set(md, rx_ring->q_index);
- 
- 	ptype = le16_to_cpu(rx_desc->wb.ptype_flex_flags0) &
- 		ICE_RX_FLEX_DESC_PTYPE_M;
- 	decoded = ice_decode_rx_desc_ptype(ptype);
- 
--	ice_rx_hash(rx_ring, rx_desc, skb, decoded);
--	ice_rx_csum(rx_ring, skb, rx_desc, decoded);
--	ice_rx_vlan(skb, rx_ring, rx_desc);
-+	ice_rx_hash(md, rx_ring, rx_desc, decoded);
-+	ice_rx_csum(md, rx_ring, rx_desc, decoded);
-+	ice_rx_vlan(md, rx_ring, rx_desc);
- 
- 	if (rx_ring->ptp_rx)
--		ice_ptp_rx_hwtstamp(rx_ring, rx_desc, skb);
-+		ice_ptp_rx_hwtstamp(md, rx_desc, rx_ring);
- }
- 
- /**
 diff --git a/drivers/net/ethernet/intel/ice/ice_txrx_lib.h b/drivers/net/ethernet/intel/ice/ice_txrx_lib.h
-index 45dc5ef79e28..b51e58b8e83d 100644
+index b51e58b8e83d..a9d3f3adf86b 100644
 --- a/drivers/net/ethernet/intel/ice/ice_txrx_lib.h
 +++ b/drivers/net/ethernet/intel/ice/ice_txrx_lib.h
-@@ -92,9 +92,13 @@ void ice_finalize_xdp_rx(struct ice_tx_ring *xdp_ring, unsigned int xdp_res);
- int ice_xmit_xdp_buff(struct xdp_buff *xdp, struct ice_tx_ring *xdp_ring);
- int ice_xmit_xdp_ring(void *data, u16 size, struct ice_tx_ring *xdp_ring);
- void ice_release_rx_desc(struct ice_rx_ring *rx_ring, u16 val);
--void
--ice_process_skb_fields(struct ice_rx_ring *rx_ring,
--		       union ice_32b_rx_flex_desc *rx_desc,
--		       struct sk_buff *skb);
+@@ -98,7 +98,60 @@ void __ice_xdp_build_meta(struct xdp_meta_generic_rx *rx_md,
+ 			  const struct ice_rx_ring *rx_ring,
+ 			  __le64 full_id);
+ 
++static inline void
++__ice_xdp_handle_meta(struct xdp_buff *xdp, struct xdp_meta_generic_rx *rx_md,
++		      const struct xdp_attachment_info *info,
++		      const union ice_32b_rx_flex_desc *rx_desc,
++		      const struct ice_rx_ring *rx_ring)
++{
++	rx_md->rx_flags = 0;
 +
-+void __ice_xdp_build_meta(struct xdp_meta_generic_rx *rx_md,
-+			  const union ice_32b_rx_flex_desc *rx_desc,
-+			  const struct ice_rx_ring *rx_ring,
-+			  __le64 full_id);
++	if (xdp->data_end - xdp->data < info->meta_thresh)
++		return;
 +
-+#define ice_xdp_build_meta(md, ...)					\
-+	__ice_xdp_build_meta(to_rx_md(md), ##__VA_ARGS__)
++	switch (info->drv_cookie) {
++	case ICE_MD_GENERIC:
++		__ice_xdp_build_meta(rx_md, rx_desc, rx_ring, info->btf_id_le);
++
++		xdp->data_meta = xdp_meta_generic_ptr(xdp->data);
++		memcpy(to_rx_md(xdp->data_meta), rx_md, sizeof(*rx_md));
++
++		/* Just zero Tx flags instead of zeroing the whole part */
++		to_gen_md(xdp->data_meta)->tx_flags = 0;
++		break;
++	default:
++		break;
++	}
++}
++
++static inline void
++__ice_xdp_meta_populate_skb(struct sk_buff *skb,
++			    struct xdp_meta_generic_rx *rx_md,
++			    const void *data,
++			    const union ice_32b_rx_flex_desc *rx_desc,
++			    const struct ice_rx_ring *rx_ring)
++{
++	/* __ice_xdp_build_meta() unconditionally sets Rx queue id. If it's
++	 * not here, it means that metadata for this frame hasn't been built
++	 * yet and we need to do this now. Otherwise, sync onstack metadata
++	 * copy and mark meta as nocomp to ignore it on GRO layer.
++	 */
++	if (rx_md->rx_flags && likely(xdp_meta_has_generic(data))) {
++		memcpy(rx_md, to_rx_md(xdp_meta_generic_ptr(data)),
++		       sizeof(*rx_md));
++		skb_metadata_nocomp_set(skb);
++	} else {
++		__ice_xdp_build_meta(rx_md, rx_desc, rx_ring, 0);
++	}
++
++	__xdp_populate_skb_meta_generic(skb, rx_md);
++}
++
+ #define ice_xdp_build_meta(md, ...)					\
+ 	__ice_xdp_build_meta(to_rx_md(md), ##__VA_ARGS__)
++#define ice_xdp_handle_meta(xdp, md, ...)				\
++	__ice_xdp_handle_meta((xdp), to_rx_md(md), ##__VA_ARGS__)
++#define ice_xdp_meta_populate_skb(skb, md, ...)				\
++	__ice_xdp_meta_populate_skb((skb), to_rx_md(md), ##__VA_ARGS__)
  
  #endif /* !_ICE_TXRX_LIB_H_ */
 diff --git a/drivers/net/ethernet/intel/ice/ice_xsk.c b/drivers/net/ethernet/intel/ice/ice_xsk.c
-index 0a66128964e7..eade918723eb 100644
+index eade918723eb..f5769f49e3c3 100644
 --- a/drivers/net/ethernet/intel/ice/ice_xsk.c
 +++ b/drivers/net/ethernet/intel/ice/ice_xsk.c
-@@ -603,6 +603,7 @@ int ice_clean_rx_irq_zc(struct ice_rx_ring *rx_ring, int budget)
+@@ -588,16 +588,20 @@ ice_run_xdp_zc(struct ice_rx_ring *rx_ring, struct xdp_buff *xdp,
+ int ice_clean_rx_irq_zc(struct ice_rx_ring *rx_ring, int budget)
+ {
+ 	unsigned int total_rx_bytes = 0, total_rx_packets = 0;
++	const struct xdp_attachment_info *rxi = rx_ring->xdp_info, xdp_info = {
++		.prog		= rcu_dereference(rxi->prog_rcu),
++		.btf_id_le	= cpu_to_le64(READ_ONCE(rxi->btf_id)),
++		.meta_thresh	= READ_ONCE(rxi->meta_thresh),
++		.drv_cookie	= READ_ONCE(rxi->drv_cookie),
++	};
+ 	struct ice_tx_ring *xdp_ring;
+ 	unsigned int xdp_xmit = 0;
+-	struct bpf_prog *xdp_prog;
+ 	bool failure = false;
+ 	int entries_to_alloc;
+ 
+ 	/* ZC patch is enabled only when XDP program is set,
+ 	 * so here it can not be NULL
+ 	 */
+-	xdp_prog = rcu_dereference(rx_ring->xdp_info->prog_rcu);
+ 	xdp_ring = rx_ring->xdp_ring;
+ 
  	while (likely(total_rx_packets < (unsigned int)budget)) {
- 		union ice_32b_rx_flex_desc *rx_desc;
- 		unsigned int size, xdp_res = 0;
-+		struct xdp_meta_generic_rx md;
- 		struct xdp_buff *xdp;
- 		struct sk_buff *skb;
- 		u16 stat_err_bits;
-@@ -673,7 +674,8 @@ int ice_clean_rx_irq_zc(struct ice_rx_ring *rx_ring, int budget)
+@@ -638,7 +642,10 @@ int ice_clean_rx_irq_zc(struct ice_rx_ring *rx_ring, int budget)
+ 		xsk_buff_set_size(xdp, size);
+ 		xsk_buff_dma_sync_for_cpu(xdp, rx_ring->xsk_pool);
+ 
+-		xdp_res = ice_run_xdp_zc(rx_ring, xdp, xdp_prog, xdp_ring);
++		ice_xdp_handle_meta(xdp, &md, &xdp_info, rx_desc, rx_ring);
++
++		xdp_res = ice_run_xdp_zc(rx_ring, xdp, xdp_info.prog,
++					 xdp_ring);
+ 		if (likely(xdp_res & (ICE_XDP_TX | ICE_XDP_REDIR))) {
+ 			xdp_xmit |= xdp_res;
+ 		} else if (xdp_res == ICE_XDP_EXIT) {
+@@ -674,8 +681,8 @@ int ice_clean_rx_irq_zc(struct ice_rx_ring *rx_ring, int budget)
  		total_rx_bytes += skb->len;
  		total_rx_packets++;
  
--		ice_process_skb_fields(rx_ring, rx_desc, skb);
-+		ice_xdp_build_meta(&md, rx_desc, rx_ring, 0);
-+		__xdp_populate_skb_meta_generic(skb, &md);
+-		ice_xdp_build_meta(&md, rx_desc, rx_ring, 0);
+-		__xdp_populate_skb_meta_generic(skb, &md);
++		ice_xdp_meta_populate_skb(skb, &md, xdp->data, rx_desc,
++					  rx_ring);
  		ice_receive_skb(rx_ring, skb);
  	}
  
