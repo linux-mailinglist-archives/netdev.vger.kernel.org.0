@@ -2,153 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D8B5855EA2D
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 18:53:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 646F355EA3E
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 18:53:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234437AbiF1Qq1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 12:46:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59504 "EHLO
+        id S233589AbiF1Qu4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 12:50:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231877AbiF1QpO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 12:45:14 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC12FE7;
-        Tue, 28 Jun 2022 09:43:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=2/M/g5u5jwnlXk0l7tYRn4YYZxyECZLA2UT2UxDh/rE=; b=vXjUkTHoKF9wG+0zPAswh9DSOb
-        RsQSXx7BoC5v/xQ14v1zMPvDwiKVB9Sv2pxEc+XWcncKgq0Z/HT8WubPMvV1qsxccdXwoaTvj3S7Z
-        NDXkr5OwavFOhntxOrMQE/BVQyD2h3QjHfMa5DIjvskJ5PHebKiMdjxEjgcs/JcMgj2jjBF6Cqefd
-        U04OBrXPApVGa3j0spj3ivPGv0+APH8fmUzv54/WWnTL1eDLSBkw3GFSMTttu5+ELD+HxNI/iBadG
-        e8axuok8t2CWG2iEnpAavMQR1vXUTjvpcsPBfiz+jk3khYCvd1qw7iBrOq/WNmg1KuMTd3a5KWtnc
-        9yB/LKPw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33068)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1o6EIu-0001r6-9p; Tue, 28 Jun 2022 17:43:08 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1o6EIk-00052x-LT; Tue, 28 Jun 2022 17:42:58 +0100
-Date:   Tue, 28 Jun 2022 17:42:58 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?iso-8859-1?Q?Miqu=E8l?= Raynal <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v9 05/16] net: pcs: add Renesas MII converter
- driver
-Message-ID: <YrsvkqBbzUvTYOeI@shell.armlinux.org.uk>
-References: <20220624144001.95518-1-clement.leger@bootlin.com>
- <20220624144001.95518-6-clement.leger@bootlin.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220624144001.95518-6-clement.leger@bootlin.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S238760AbiF1Qrx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 12:47:53 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9565C5FA5
+        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 09:44:58 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id m14so11587512plg.5
+        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 09:44:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=w24gFDd6t9fJ/cXfFzQKhMkujtRoBl/sVF4IhaSPLbU=;
+        b=HduuVqUqIL1IMksNck6ya0EZjBQQ/iW3qP3eT/zG7MNKTkpKNTw6DR2w5r/xjdowl4
+         WdHp3I528XdsrRIP3u5Jnk7KFlhmNQ3qqU/L2fyfeSIS93Bbujhai0DWcHI90ExjOVMR
+         LFJNuJXVVR/UGAf8w/MhPK8271LJoX2M11vCY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=w24gFDd6t9fJ/cXfFzQKhMkujtRoBl/sVF4IhaSPLbU=;
+        b=M7vEfI4ItIDznsL13HUUW66kbB1Py8MZJznazwdHBYrz3eebZW/LeAp13b+I+ZW9ST
+         e6W0ZK0O8qBGwR068GpjGfDm6IQpHgUQ039ofuUA5XQgXFdrY3073+7EJ7VP3+f/yTqR
+         vy15bjzx5BEZMd+JMZxRvq5ACs3TpjLdE9ozQmsI6YBgkVC0opy7Yy5/cv6uyY0bU2Yf
+         LJWAV0gLVg+7tVhX+njGxy1H/XMnBodqWc/m6sV8Kzm4He2hVPh/Zg0QAfTjziVNu8YX
+         fHf1TwUpsF+2359if2GgIIksxbq3eXeZV5qMhldBD5YlOqhX8MAxcMgvauzhDA7jAu6e
+         rqyA==
+X-Gm-Message-State: AJIora/QrKiqqADNlr1nDVxBr/bnjF4sgq1YQwxAQHWfNaIZR432m3ci
+        7kSlUXP8sS0D5pzly8LLPHM9Dg==
+X-Google-Smtp-Source: AGRyM1t3egWjHk6Jr+DPzP2zPkOQMIP9I9w6xVwoZtxP+VNAtfCzfXbFgESkLI4emFMtX0AuosbbuA==
+X-Received: by 2002:a17:902:bc43:b0:16b:82ff:e5b4 with SMTP id t3-20020a170902bc4300b0016b82ffe5b4mr5694235plz.5.1656434697916;
+        Tue, 28 Jun 2022 09:44:57 -0700 (PDT)
+Received: from rahul_yocto_ubuntu18.ibn.broadcom.net ([192.19.234.250])
+        by smtp.gmail.com with ESMTPSA id cb14-20020a056a00430e00b0051bbe085f16sm9630866pfb.104.2022.06.28.09.44.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Jun 2022 09:44:57 -0700 (PDT)
+From:   Vikas Gupta <vikas.gupta@broadcom.com>
+To:     jiri@nvidia.com, dsahern@kernel.org, stephen@networkplumber.org
+Cc:     kuba@kernel.org, netdev@vger.kernel.org, edumazet@google.com,
+        michael.chan@broadcom.com, andrew.gospodarek@broadcom.com,
+        Vikas Gupta <vikas.gupta@broadcom.com>
+Subject: [PATCH iproute2-next v1 0/2] devlink: add support to run selftests  
+Date:   Tue, 28 Jun 2022 22:14:45 +0530
+Message-Id: <20220628164447.45202-1-vikas.gupta@broadcom.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="000000000000c9692d05e284c149"
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        MIME_HEADER_CTYPE_ONLY,MIME_NO_TEXT,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE,T_TVD_MIME_NO_HEADERS autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 24, 2022 at 04:39:50PM +0200, Clément Léger wrote:
-> Add a PCS driver for the MII converter that is present on the Renesas
-> RZ/N1 SoC. This MII converter is reponsible for converting MII to
-> RMII/RGMII or act as a MII pass-trough. Exposing it as a PCS allows to
-> reuse it in both the switch driver and the stmmac driver. Currently,
-> this driver only allows the PCS to be used by the dual Cortex-A7
-> subsystem since the register locking system is not used.
-> 
-> Signed-off-by: Clément Léger <clement.leger@bootlin.com>
-> Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+--000000000000c9692d05e284c149
 
-Looks good to me, thanks.
+Hi,
+  This patchset adds support in devlink to run selftests.
+  A related patchset for kernel has been pushed for review.
+  Below are the few examples for the commands.
+  
+   $ devlink dev selftests run pci/0000:03:00.0 test flash
+     results:
+        flash test :  failed
 
-The only issue I haven't brought up is:
+    $ devlink dev selftests show pci/0000:03:00.0
+    device suuports:
+        flash test
 
-> +static int miic_config(struct phylink_pcs *pcs, unsigned int mode,
-> +		       phy_interface_t interface,
-> +		       const unsigned long *advertising, bool permit)
-> +{
-> +	struct miic_port *miic_port = phylink_pcs_to_miic_port(pcs);
-> +	struct miic *miic = miic_port->miic;
-> +	int port = miic_port->port;
-> +	u32 speed, conv_mode, val;
-> +
-> +	switch (interface) {
-> +	case PHY_INTERFACE_MODE_RMII:
-> +		conv_mode = CONV_MODE_RMII;
-> +		speed = CONV_MODE_100MBPS;
-> +		break;
-> +	case PHY_INTERFACE_MODE_RGMII:
-> +	case PHY_INTERFACE_MODE_RGMII_ID:
-> +	case PHY_INTERFACE_MODE_RGMII_TXID:
-> +	case PHY_INTERFACE_MODE_RGMII_RXID:
-> +		conv_mode = CONV_MODE_RGMII;
-> +		speed = CONV_MODE_1000MBPS;
-> +		break;
-> +	case PHY_INTERFACE_MODE_MII:
-> +		conv_mode = CONV_MODE_MII;
-> +		/* When in MII mode, speed should be set to 0 (which is actually
-> +		 * CONV_MODE_10MBPS)
-> +		 */
-> +		speed = CONV_MODE_10MBPS;
-> +		break;
-> +	default:
-> +		return -EOPNOTSUPP;
-> +	}
-> +
-> +	val = FIELD_PREP(MIIC_CONVCTRL_CONV_MODE, conv_mode) |
-> +	      FIELD_PREP(MIIC_CONVCTRL_CONV_SPEED, speed);
-> +
-> +	miic_reg_rmw(miic, MIIC_CONVCTRL(port),
-> +		     MIIC_CONVCTRL_CONV_MODE | MIIC_CONVCTRL_CONV_SPEED, val);
-> +	miic_converter_enable(miic_port->miic, miic_port->port, 1);
-> +
-> +	return 0;
-> +}
 
-the stting of the speed here. As this function can be called as a result
-of ethtool setting the configuration while the link is up, this could
-have disasterous effects on the link. This will only happen if there is
-no PHY present and we aren't using fixed-link mode.
+Thanks,
+Vikas   
 
-Therefore, I'm willing to get this pass, but I think it would be better
-if the speed was only updated if the interface setting is actually
-being changed. So:
+Vikas Gupta (2):
+  Update kernel header
+  devlink: add support for running selftests
 
-Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+ devlink/devlink.c            | 157 +++++++++++++++++++++++++++++++++++
+ include/uapi/linux/devlink.h |  24 ++++++
+ 2 files changed, 181 insertions(+)
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.31.1
+
+
+--000000000000c9692d05e284c149
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+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
+I7qKxvF8Yo7eGTnHRTa99J+6yTd88AKVuhM5TEhpC8cS7qvrQXJje+Uing2xWC4FH76LEWIFH0Pt
+x8C1WoCU0ClXHU/XfzH2mYrFANBSCeP1Co6QdEfRAgMBAAGjggHZMIIB1TAOBgNVHQ8BAf8EBAMC
+BaAwgaMGCCsGAQUFBwEBBIGWMIGTME4GCCsGAQUFBzAChkJodHRwOi8vc2VjdXJlLmdsb2JhbHNp
+Z24uY29tL2NhY2VydC9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcnQwQQYIKwYBBQUHMAGG
+NWh0dHA6Ly9vY3NwLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwME0G
+A1UdIARGMEQwQgYKKwYBBAGgMgEoCjA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3dy5nbG9iYWxz
+aWduLmNvbS9yZXBvc2l0b3J5LzAJBgNVHRMEAjAAMEkGA1UdHwRCMEAwPqA8oDqGOGh0dHA6Ly9j
+cmwuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3JsMCMGA1UdEQQc
+MBqBGHZpa2FzLmd1cHRhQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNVHSME
+GDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUUc6J11rH3s6PyZQ0zIVZHIuP20Yw
+DQYJKoZIhvcNAQELBQADggEBALvCjXn9gy9a2nU/Ey0nphGZefIP33ggiyuKnmqwBt7Wk/uDHIIc
+kkIlqtTbo0x0PqphS9A23CxCDjKqZq2WN34fL5MMW83nrK0vqnPloCaxy9/6yuLbottBY4STNuvA
+mQ//Whh+PE+DZadqiDbxXbos3IH8AeFXH4A1zIqIrc0Um2/CSD/T6pvu9QrchtvemfP0z/f1Bk+8
+QbQ4ARVP93WV1I13US69evWXw+mOv9VnejShU9PMcDK203xjXbBOi9Hm+fthrWfwIyGoC5aEf7vd
+PKkEDt4VZ9RbudZU/c3N8+kURaHNtrvu2K+mQs5w/AF7HYZThqmOzQJnvMRjuL8xggJtMIICaQIB
+ATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQDEyhH
+bG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwYjepatB64S625eswwDQYJ
+YIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEII0JZakY+QBqrVTiSxEIxQTlV+w13Qpn5B+G
+LmowJx9WMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDYyODE2
+NDQ1OFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCGSAFl
+AwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQCATAN
+BgkqhkiG9w0BAQEFAASCAQBKyZG+vwAiz9fwI4GflRgI4EjIYbWqpf/eHgUgg28Y5NOfqwCM17tR
+/ctv22fxVesF21I9jO7Z32QahP20WAO5RyweMJgzRiC9yWg6p5SXEI7URKYG603ivPkG6BMyIn8u
+13UPmHJnbUXArnQD9kMelib5mQ2DB9NmheOnO3PtJtKx7eLdAiHMY/alfv6rWrZHzjVS1r3YtIba
+MMH+uu0tr7bTYaWtcHfvQu2riaubcLDZDHn7Ah2TTme3ihsHJSeIz14+e72u5Gwp4wTWhJp2R4x7
+c6sRTn3m1AOPR2iOlhl7w55et2vizbPw9j0jOUHvDHkR6/dv7IZgXv7DbsEQ
+--000000000000c9692d05e284c149--
