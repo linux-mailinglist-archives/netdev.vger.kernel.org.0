@@ -2,54 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A8DB555E8BA
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 18:36:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 822E655E89D
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 18:36:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346806AbiF1No3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 09:44:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47922 "EHLO
+        id S1346797AbiF1NpM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 09:45:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346797AbiF1NoZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 09:44:25 -0400
-X-Greylist: delayed 787 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 28 Jun 2022 06:44:19 PDT
-Received: from smtpbg501.qq.com (smtpbg501.qq.com [203.205.250.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 431931D308
-        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 06:44:18 -0700 (PDT)
-X-QQ-mid: bizesmtp64t1656423848tkj4xcfq
-Received: from localhost.localdomain ( [58.240.82.166])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 28 Jun 2022 21:44:06 +0800 (CST)
-X-QQ-SSF: 01400000002000G0S000C00A0000000
-X-QQ-FEAT: HY+AX7pyI8QB7szTDhJx3uiSVjuJ5OspBHsfTn0MCzfyhIQ9N1kZ8V6ke/uZs
-        RGk6BQ9ePYIwXsaob6QIup/iGHvfKwKLE76nvn1tPcNov29/n0SDQ2jPxmyzWzm8nYD14aE
-        ikUa4VLDZJCgCO/eMe+XvAz7mj1xgqLzpVvPYUQtnRZ98R2Y4LRyUQHDvhWBhG7TGPeZ4R+
-        1gv5/H5sRbLkUnZG7wDHWeo7hOT9uzrSbXaZd8v2BlyBJKfIT8Z+fH5hgZCUHdFKJ3eNoMI
-        zZpSDn3Nc3a6mpT+txDPktGkQbPzVRjvJy7GBLRHo5PaDBQg+lvuJvy77fXq+LLzyd9ptJB
-        dnEQbkv8Bsn1QIS4ZSkI3fFw4JxeNe8HV0aShkQVXpZBPfchG2KxhdbO06QuI4T8fso/deC
-X-QQ-GoodBg: 2
-From:   Meng Tang <tangmeng@uniontech.com>
-To:     stable@vger.kernel.org, tony0620emma@gmail.com,
-        kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Meng Tang <tangmeng@uniontech.com>,
-        Ping-Ke Shih <pkshih@realtek.com>,
-        masterzorag <masterzorag@gmail.com>,
-        Larry Finger <Larry.Finger@lwfinger.net>,
-        Kalle Valo <kvalo@kernel.org>
-Subject: [PATCH 5.10 v2 3/3] commit e109e3617e5d ("rtw88: rtw8821c: enable rfe 6 devices")
-Date:   Tue, 28 Jun 2022 21:43:51 +0800
-Message-Id: <20220628134351.4182-3-tangmeng@uniontech.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220628134351.4182-1-tangmeng@uniontech.com>
-References: <20220628134351.4182-1-tangmeng@uniontech.com>
+        with ESMTP id S1346912AbiF1No5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 09:44:57 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3A7842CDC9
+        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 06:44:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656423893;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=hTKU2Np09ZtKabep+TfxXVYS1Y9DSz+czzdyoC+zeWM=;
+        b=EAGPn7vUKcbB6rfFOvSpssKNBAt9yRZ37cGVBNH2iKbD8MPdiX0VoWsV2Elfejqb98IJ7U
+        6JMbOJUR31CkDOsXvAfOII4i/8+XEZvuhkzwQOJY8wETZAIacJXtvSZGODiFnct/tfTSTs
+        hx0P55zQPnfdh4LE+UVM9NDfGmGtrvE=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-321-TtrMHO3KNLqoZBUYl8vYQQ-1; Tue, 28 Jun 2022 09:44:51 -0400
+X-MC-Unique: TtrMHO3KNLqoZBUYl8vYQQ-1
+Received: by mail-wm1-f69.google.com with SMTP id j19-20020a05600c191300b003a048196712so3795031wmq.4
+        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 06:44:51 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=hTKU2Np09ZtKabep+TfxXVYS1Y9DSz+czzdyoC+zeWM=;
+        b=wiYQzRtz3omquxM8/adjAv4xwvDqtSnCybGubUe2JKZoUFwqrp06Ca/TxYF+cYdOZb
+         DIXJBCB/PCSH62RQmABiiX3666cUbQP+U8rb2Q5t2DIy8VLO+OS4dB7I33c+soxrKGe2
+         7aECkIRNAWTtV2tHW6c6RMB52eoKfS4zdi6ekBgsWRUWW9TIr0E/EcH9hQemt+WB5bc5
+         Q8IE6Wj//TMp7GWQxrLQZujcuGbKjAyfKuQMfh5dAPbpMZM4LWNF6lUh2Cz3oHaG5GsY
+         m25bXIp0Y1xm3RqRWL4MN2G33nEoiI5CENBOo+6pcDhJ3OiL3ZzpawDRb7Mh9IRpvtVA
+         cNgA==
+X-Gm-Message-State: AJIora888GzbET6O28TNu3hzfwGcSLpoGt7YLCohuENZt2NEel/VthGf
+        Q1Mek3divVk2kaeNK5NFO34jYnDqLVJz21eCTQWJq2dVcfSRK2xplZHtxanqTKyaEPfjva0i2gH
+        ZICpol5Mwsy/U6hB2
+X-Received: by 2002:a05:6000:79e:b0:21b:bc0a:99d4 with SMTP id bu30-20020a056000079e00b0021bbc0a99d4mr17240173wrb.565.1656423890333;
+        Tue, 28 Jun 2022 06:44:50 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1sPWXFvUvtzyxCMk9Gd6kxz02V2LWzAokqDn4AqQ5aZX6+OSB5A0LtPAjU3qDMm4YViNyvqeQ==
+X-Received: by 2002:a05:6000:79e:b0:21b:bc0a:99d4 with SMTP id bu30-20020a056000079e00b0021bbc0a99d4mr17240143wrb.565.1656423890092;
+        Tue, 28 Jun 2022 06:44:50 -0700 (PDT)
+Received: from sgarzare-redhat (host-87-11-6-149.retail.telecomitalia.it. [87.11.6.149])
+        by smtp.gmail.com with ESMTPSA id g13-20020adffc8d000000b0021b99efceb6sm13809079wrr.22.2022.06.28.06.44.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Jun 2022 06:44:49 -0700 (PDT)
+Date:   Tue, 28 Jun 2022 15:44:46 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Eugenio =?utf-8?B?UMOpcmV6?= <eperezma@redhat.com>
+Cc:     netdev <netdev@vger.kernel.org>, Jason Wang <jasowang@redhat.com>,
+        kernel list <linux-kernel@vger.kernel.org>,
+        Linux Virtualization <virtualization@lists.linux-foundation.org>,
+        kvm <kvm@vger.kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Cindy Lu <lulu@redhat.com>,
+        "Kamde, Tanuj" <tanuj.kamde@amd.com>,
+        Si-Wei Liu <si-wei.liu@oracle.com>, Piotr.Uminski@intel.com,
+        habetsm.xilinx@gmail.com, "Dawar, Gautam" <gautam.dawar@amd.com>,
+        Pablo Cascon Katchadourian <pabloc@xilinx.com>,
+        Zhu Lingshan <lingshan.zhu@intel.com>,
+        Laurent Vivier <lvivier@redhat.com>,
+        Longpeng <longpeng2@huawei.com>,
+        Dinan Gunawardena <dinang@xilinx.com>,
+        Martin Petrus Hubertus Habets <martinh@xilinx.com>,
+        Martin Porter <martinpo@xilinx.com>,
+        Eli Cohen <elic@nvidia.com>, ecree.xilinx@gmail.com,
+        Wu Zongyong <wuzongyong@linux.alibaba.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Harpreet Singh Anand <hanand@xilinx.com>,
+        Xie Yongji <xieyongji@bytedance.com>,
+        Zhang Min <zhang.min9@zte.com.cn>
+Subject: Re: [PATCH v6 3/4] vhost-vdpa: uAPI to suspend the device
+Message-ID: <CAGxU2F43+5zsQOR4ReTtQtEF47s6y-XKcevosMOzUdEqpLhAsg@mail.gmail.com>
+References: <20220623160738.632852-1-eperezma@redhat.com>
+ <20220623160738.632852-4-eperezma@redhat.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign3
-X-QQ-Bgrelay: 1
-X-Spam-Status: No, score=-1.0 required=5.0 tests=BAYES_00,PDS_BTC_ID,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,RCVD_IN_XBL,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,T_SPF_HELO_TEMPERROR autolearn=no
+In-Reply-To: <20220623160738.632852-4-eperezma@redhat.com>
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,52 +100,91 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-These commits can fix the problem of wifi not loading properly. At
-least in my 5.10 kernel environment, the following error message is
-reported:
+On Thu, Jun 23, 2022 at 06:07:37PM +0200, Eugenio Pérez wrote:
+>The ioctl adds support for suspending the device from userspace.
+>
+>This is a must before getting virtqueue indexes (base) for live migration,
+>since the device could modify them after userland gets them. There are
+>individual ways to perform that action for some devices
+>(VHOST_NET_SET_BACKEND, VHOST_VSOCK_SET_RUNNING, ...) but there was no
+>way to perform it for any vhost device (and, in particular, vhost-vdpa).
+>
+>After a successful return of the ioctl call the device must not process
+>more virtqueue descriptors. The device can answer to read or writes of
+>config fields as if it were not suspended. In particular, writing to
+>"queue_enable" with a value of 1 will not make the device start
+>processing buffers of the virtqueue.
+>
+>Signed-off-by: Eugenio Pérez <eperezma@redhat.com>
+>---
+> drivers/vhost/vdpa.c       | 19 +++++++++++++++++++
+> include/uapi/linux/vhost.h | 14 ++++++++++++++
+> 2 files changed, 33 insertions(+)
+>
+>diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+>index 3d636e192061..7fa671ac4bdf 100644
+>--- a/drivers/vhost/vdpa.c
+>+++ b/drivers/vhost/vdpa.c
+>@@ -478,6 +478,22 @@ static long vhost_vdpa_get_vqs_count(struct vhost_vdpa *v, u32 __user *argp)
+>       return 0;
+> }
+>
+>+/* After a successful return of ioctl the device must not process more
+>+ * virtqueue descriptors. The device can answer to read or writes of config
+>+ * fields as if it were not suspended. In particular, writing to "queue_enable"
+>+ * with a value of 1 will not make the device start processing buffers.
+>+ */
+>+static long vhost_vdpa_suspend(struct vhost_vdpa *v)
+>+{
+>+      struct vdpa_device *vdpa = v->vdpa;
+>+      const struct vdpa_config_ops *ops = vdpa->config;
+>+
+>+      if (!ops->suspend)
+>+              return -EOPNOTSUPP;
+>+
+>+      return ops->suspend(vdpa);
+>+}
+>+
+> static long vhost_vdpa_vring_ioctl(struct vhost_vdpa *v, unsigned int cmd,
+>                                  void __user *argp)
+> {
+>@@ -654,6 +670,9 @@ static long vhost_vdpa_unlocked_ioctl(struct file *filep,
+>       case VHOST_VDPA_GET_VQS_COUNT:
+>               r = vhost_vdpa_get_vqs_count(v, argp);
+>               break;
+>+      case VHOST_VDPA_SUSPEND:
+>+              r = vhost_vdpa_suspend(v);
+>+              break;
+>       default:
+>               r = vhost_dev_ioctl(&v->vdev, cmd, argp);
+>               if (r == -ENOIOCTLCMD)
+>diff --git a/include/uapi/linux/vhost.h b/include/uapi/linux/vhost.h
+>index cab645d4a645..6d9f45163155 100644
+>--- a/include/uapi/linux/vhost.h
+>+++ b/include/uapi/linux/vhost.h
+>@@ -171,4 +171,18 @@
+> #define VHOST_VDPA_SET_GROUP_ASID     _IOW(VHOST_VIRTIO, 0x7C, \
+>                                            struct vhost_vring_state)
+>
+>+/* Suspend or resume a device so it does not process virtqueue requests anymore
+>+ *
+>+ * After the return of ioctl with suspend != 0, the device must finish any
+>+ * pending operations like in flight requests. It must also preserve all the
+>+ * necessary state (the virtqueue vring base plus the possible device specific
+>+ * states) that is required for restoring in the future. The device must not
+>+ * change its configuration after that point.
+>+ *
+>+ * After the return of ioctl with suspend == 0, the device can continue
+>+ * processing buffers as long as typical conditions are met (vq is enabled,
+>+ * DRIVER_OK status bit is enabled, etc).
+>+ */
+>+#define VHOST_VDPA_SUSPEND            _IOW(VHOST_VIRTIO, 0x7D, int)
+                                         ^
+IIUC we are not using the argument anymore, so this should be changed in
+_IO(VHOST_VIRTIO, 0x7D).
 
-rtw_8821ce 0000:01:00.0: rfe 6 isn't supported
-rtw_8821ce 0000:01:00.0: failed to setup chip efuse info
-rtw_8821ce 0000:01:00.0: failed to setup chip information
+And we should update a bit the documentation.
 
-so I think that 5.10 need to merge these commits.
-
-The patch 1/3 and patch 2/3 need to be merged synchronously, otherwise it
-will cause OE and then kernel exception.
-
-Ping-Ke Shih answered[1] a question for a user about an rtl8821ce device that
-reported RFE 6, which the driver did not support. Ping-Ke suggested a possible
-fix, but the user never reported back.
-
-A second user discovered the above thread and tested the proposed fix.
-Accordingly, I am pushing this change, even though I am not the author.
-
-[1] https://lore.kernel.org/linux-wireless/3f5e2f6eac344316b5dd518ebfea2f95@realtek.com/
-
-Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
-Reported-and-tested-by: masterzorag <masterzorag@gmail.com>
-Signed-off-by: Larry Finger <Larry.Finger@lwfinger.net>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220107024739.20967-1-Larry.Finger@lwfinger.net
-Signed-off-by: Meng Tang <tangmeng@uniontech.com>
----
- drivers/net/wireless/realtek/rtw88/rtw8821c.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/net/wireless/realtek/rtw88/rtw8821c.c b/drivers/net/wireless/realtek/rtw88/rtw8821c.c
-index 9c8fbc96f536..cbb4c761c5cb 100644
---- a/drivers/net/wireless/realtek/rtw88/rtw8821c.c
-+++ b/drivers/net/wireless/realtek/rtw88/rtw8821c.c
-@@ -1468,6 +1468,7 @@ static const struct rtw_rfe_def rtw8821c_rfe_defs[] = {
- 	[0] = RTW_DEF_RFE(8821c, 0, 0),
- 	[2] = RTW_DEF_RFE_EXT(8821c, 0, 0, 2),
- 	[4] = RTW_DEF_RFE_EXT(8821c, 0, 0, 2),
-+	[6] = RTW_DEF_RFE(8821c, 0, 0),
- };
- 
- static struct rtw_hw_reg rtw8821c_dig[] = {
--- 
-2.20.1
-
-
+Thanks,
+Stefano
 
