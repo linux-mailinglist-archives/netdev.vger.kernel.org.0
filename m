@@ -2,318 +2,501 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3811C55DF23
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:30:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AF5255D767
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:18:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345568AbiF1MSo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 08:18:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47914 "EHLO
+        id S1345603AbiF1M06 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 08:26:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345537AbiF1MSi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 08:18:38 -0400
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2131.outbound.protection.outlook.com [40.107.223.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27A3A2D1D7
-        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 05:18:36 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SHjywws6j/buaziDvZHbAhXlowmM38YqDoqu1XOagrVxO5dGi49LIWSgAmAFca+zz7umJYMehA2ULHnHiSNFUirY0qHdZsD4fNzptZwtM07CBerOOdI6qW8Dj9U8SH8295O3W5Txxu4syGkOoEu7IR5jNtWLs8/HMidYvWIyKHJyfCTLbK62Mou7wym3zw48pKN3Hyz9QKdQrqaZDX5A823AUl6uwY7GVIHBPA2jfadYIqcJ8Rqwb/mXOz+41n29sdlAIrn3rJoQpGcvdcYeWmQQv+NFONfOizpYycFIchQHpUJXhkQLwwvT6ngiXdA/HZElmKyKHEDhTz93c9JTKQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=YyeIbK1irTYYamUy6U66Zl7SHwFgqQrkMi3EXVsNL3Y=;
- b=Zz/hxMqVDuQCHpbbV5gB33du+v531tvZVBgBt68cBrWJmcmNCwFmD0U7QdUDAsjXkazkOMfN3fY+VW1cDjLM/X5FkSvhHnMFk7TPEHFqHwyRK9gwnKSjOn/UGYfjKyxm3h2V3Bq1QOxlISe2DLtjLewsOrHcnptMyZvB4Ic2TkZMdhmZAZGPaznbvncxClqCY8BsVu5wMHqGzXIWnK+VO1iNGiko+BI9MkFlR4EPli0i4D4Mj+IwsLIl5Hp4//I6UhaZpZla5srxuIrtpxzEpWB8FRCWIEoZLAVPov9FLpvJZegpbWlyPY7cqdEHUKiny9Q4F1+lsgAmGeka7JER0Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
+        with ESMTP id S231292AbiF1M05 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 08:26:57 -0400
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E8E222B2D;
+        Tue, 28 Jun 2022 05:26:56 -0700 (PDT)
+Received: by mail-wr1-x433.google.com with SMTP id s1so17431511wra.9;
+        Tue, 28 Jun 2022 05:26:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YyeIbK1irTYYamUy6U66Zl7SHwFgqQrkMi3EXVsNL3Y=;
- b=GCllmsTkLEZHhZdDsWvlONI7unHJOgGj0fVjc0auX//dFFk6+cnOlDriyXcKByCRTtoXHT5vCHOzrPMucFS4eMjSzBD2h5bj8WHEmqMzP2OBADoGPRy2T3SuTHErwGF9NJDaB9DznrrT3Cn7MPrGSIUFGKuwyZsK31C5zadZAuM=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by BN6PR13MB3250.namprd13.prod.outlook.com (2603:10b6:405:7c::32) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.15; Tue, 28 Jun
- 2022 12:18:32 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::b18b:5e90:6805:a8fa]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::b18b:5e90:6805:a8fa%6]) with mapi id 15.20.5373.018; Tue, 28 Jun 2022
- 12:18:32 +0000
-From:   Simon Horman <simon.horman@corigine.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, oss-drivers@corigine.com,
-        Walter Heymans <walter.heymans@corigine.com>
-Subject: [PATCH net-next] nfp: flower: fix comment typos and formatting
-Date:   Tue, 28 Jun 2022 14:18:02 +0200
-Message-Id: <20220628121802.450999-1-simon.horman@corigine.com>
-X-Mailer: git-send-email 2.30.2
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: AM0PR04CA0001.eurprd04.prod.outlook.com
- (2603:10a6:208:122::14) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=BBbAz4nN/kEqq17Hkjd67PQhLHR+U0drfdLc0GuJOK0=;
+        b=cxtKJCUSVEzVJj+iL4lJVQDHlo8KUSad6DH1tB6D4RVSogOwanBgqMd0a7/CM6A31q
+         YX6ICf9+Kg67EFa+6e3LOOIUc51JeiXLQ9jHtvpbY6f/EeXvVQyNfCSgbsTfp7Tb4+lW
+         PQZGbz0YrR5kLAldX7FCEF6OdyAUzit/IVw3pTBMv8kAER4StE17ex6WXGbi2FOm7f6U
+         T2ExIT3Za05kRaSn3Aar/nOm+pL/BXFjj19AwqbAneKuNWrj4lX/Yg+V3QSq5GSf65Ux
+         FurUnaV109XZAmrnMLufxcIQFk2Mgw1IbIoBETKMpQrcIzsTJkCXK1LjLeSGeyOklGXv
+         clqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=BBbAz4nN/kEqq17Hkjd67PQhLHR+U0drfdLc0GuJOK0=;
+        b=wSRo3QxC7NNeQfg/6r1YD3tAbl1sZl6mBt6ZIfo8vqA6/07MH6DxIXjbiXGaOhz1G5
+         29ytl9tKoR2mvWizwQEaMf9E+cbOjV91PZlS2XNKLvgiUxGq1YjCYZUwMH6+v4MqNOQR
+         it6zhCdQ5Dryec1NHLb0HBeWl5s0y9UFJUue45OpvC8+YPXcfNIaYM3wnGtiROVo1GAT
+         +k8D7QUVwcBjNyfqFXkaDxaTDtbS+6/Rjce+ESg4eUkLA+KXDesEpvlJUvNnIukdXpdu
+         TxxQkLcRDBKqmdFb0tOui7LdPz8e/Yjjp4QpSchhUPndmdk8cJahVbIBqCVTJ6NYxDAZ
+         MqzQ==
+X-Gm-Message-State: AJIora/Oo5lYfOxS/oql2FGzhyxknBGY4mxwa4Md0zr69Nt9SIi6S/ea
+        OAsrO/DAGPKM3Nj0PdVEC6HQjMVnTsbfvayGHUE=
+X-Google-Smtp-Source: AGRyM1voH42e5mjzI0lnr+10bt6FCTPk+PnGDK5RqDBBbHmDFr3LDPyV0ljIqlsW4S2b/SZB14dNXoGA9cuDTzQY6EQ=
+X-Received: by 2002:a5d:4c90:0:b0:21b:8b2a:1656 with SMTP id
+ z16-20020a5d4c90000000b0021b8b2a1656mr17171451wrs.249.1656419214549; Tue, 28
+ Jun 2022 05:26:54 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 789d3557-2bd9-4a7a-a56c-08da59005121
-X-MS-TrafficTypeDiagnostic: BN6PR13MB3250:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Mjdx6c3Z+JBeGPJ+7pFwPQOKNrqcmYuQG48tWdI5CqnGjQEi1PqU2Mh0q9XE6wWUCA8kko3zyTWh0RV20H/bZ7+aFpNSd6vuQ+sR9EXyMECj0JfTkHmOsT/fBdwwxYGVSUqmlmaHWhkMHHOeOKDHSG21E+8b7JTkUQSBgx6g6Steaua0FWn3zUTblHvch1UC/b3HOVSXsPR5PJU2GmuQo9E4GjPANWkQte9pJO05jg4VRNqiV4VmWjoNYEaSdukU03QMG/hJ0yPPeb7bvB8v1HddUCg6DI0oKrWZGMU2lxqvmEQAjva8U8rt9LQiXS94SCfO/KojqhIQEBwTwnCoKMgrmpulWHCfbR/sBBTwdDtum3QVc6UBJ+D1oAdI2NnD8X5RqXj3rplTR+CkLI5bZV4SpHE3DX9PvBqnk6l/EoVl/8AtZe8r9ogv/ETnhyCxTm041dngwHXEPvNOoHOwtUZDNxQBOpj3EX4WQISglJTVKlFXW1UyIxnqllvuFK3MhynpO0sWnUz8ASC4k8mNl8nN9rSomNzt5NKcc5qyYDyFHnqa2hcuUF56eKCLNBz+EyNpFQ1YQL0Z6jCtOqPaJBJe2znWyKt5MfH8uB3ovul81pliHvvSF9NdSUridrq3+kNsnJFn018OaEZ74ab4niWlH7a93ZnAw2n+BH/0qaRVrmIjyhn3EOj/+ACRONe0pvkco4xUa3N7s85A8gamGbpULOAweDu6YeSjHsZkwe0=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39830400003)(346002)(376002)(136003)(396003)(366004)(66556008)(86362001)(66946007)(8676002)(83380400001)(6512007)(6666004)(186003)(4326008)(52116002)(6506007)(2906002)(2616005)(66476007)(107886003)(38100700002)(41300700001)(44832011)(6486002)(1076003)(478600001)(316002)(36756003)(110136005)(5660300002)(8936002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?6btczzAnvQn771eqNREm0WDw6Twn7hsuJ4mirdFYfEKFFOXYTfyMDJcirzU0?=
- =?us-ascii?Q?bhdI2LazR2GW3NacRyYqWXI542bw6u0/YpsIDfyb9cRn3Bmu+fl9leDi6u9o?=
- =?us-ascii?Q?RcLeLbX6jG5YaD68tMTQA1uqzmMcdhBvTqxZfnpNUEPY+T+bHMm16+4nDGZ0?=
- =?us-ascii?Q?/nss/1xyslXAwl/UiOQz6l/OndBw0yA6sjVLCHi/vhfnS/L1slCrnbLTc9gd?=
- =?us-ascii?Q?iN5hSu3utPj5oE6fpKdhfGuhSX855UWDIvOCICMRzazm+bw0r7a5AazD6e1T?=
- =?us-ascii?Q?FFJ7vSlvDoGlDEuNkHxkWprw/KjG2Vtq1e9+oTEoejtQnM7lNRbKt5z/sWr+?=
- =?us-ascii?Q?K1eRhV94G7NC8qYyGa2kB6XJohQ22B/ketIwro0cmENQ55C1E6umc7fvpPUk?=
- =?us-ascii?Q?2i5CYO7kjJw9xA8jrwawhdKmxjc7/zY3dnB61PqP1xElLI1Y6YtVTtypOn4D?=
- =?us-ascii?Q?pgJ2Govwi4BhYMXPI+mHT8AN1r/5gBP638jse5hwchGpyFm9k07TejkK7GT7?=
- =?us-ascii?Q?diT1oQRBLwNpwPvxBpQFNDxcFctr1XZ+LjjlzBuxtr3uKugqhsOw9Bt2nnT+?=
- =?us-ascii?Q?mL2mEqnNWPkipHhgLBUWSw/GMhz7CLMGhe1JHCEeoD/xQNjdCIiONrqjWnF/?=
- =?us-ascii?Q?g1qq6chtT/1f289av/g3FXv8YU1cHO/FiYxvF2o17BXmfEbATevAYeZDTfZt?=
- =?us-ascii?Q?i5rqaOTZzc59SkKUpfBzCusDcNTtX1+k/NowHjb7m7ocpyczma2N0EHz6u3M?=
- =?us-ascii?Q?m8LDsZtDkLt4M+tmg1r0D9IpajqUmJLtNsucGvknsLPJ8xy3wMj8VfKzCBE8?=
- =?us-ascii?Q?fbFgKU2aqTN9Eibiapbjbv1SFynX/y59nu8fyU5bmhB/79gfQq6jOPf7kSBt?=
- =?us-ascii?Q?x0TUEG1+LK29tcVqgqa/SoPDNbCLPHZsDhf+84ebMz+UtK/6gj+zVmsyOk4E?=
- =?us-ascii?Q?IGXzZTwWJKSl3mMqIVHKixwsbTiuFcsMVuzL0PdkkG3ohTgecXMjnCAoBipF?=
- =?us-ascii?Q?L+y2Dx1iF3G3yCX8PjsXtHPYWPwOxtGoGMUbMRZqN7sZezP0S2ZBpr8IIP2s?=
- =?us-ascii?Q?xQCQofceHawJhOTcA9pcOHSZuvXyY7diM0/Q7TXk4iD3rpbm3Lm7zP+ltAoG?=
- =?us-ascii?Q?43bbj+QJdbLYdqV5nC9vCNnfHntcRan0aNHdyxXH0Q/cqRttC6u5uyK213wA?=
- =?us-ascii?Q?KReWo4bjyZqAJxsMGoXxhMYxRFFIMybguCJCf+a7m95fWqCklpOGEwBx4HoH?=
- =?us-ascii?Q?BzdpDJFwpG/gQY+B8eF+buDVkrZBtTfmyU7AyF5eQzfSmErpbHrHTEmQNrIO?=
- =?us-ascii?Q?JRahiiectOWlg47rXa6poqG1b7lXUocGAuV2yzJVB/ehz9xl/5SzvDKM4zn4?=
- =?us-ascii?Q?31FhzpYU6QhF6HuzxukK6TsBQoN94p1AajuQYtM56Ss0GpRbW1ph8/5Q3C8/?=
- =?us-ascii?Q?4kIsxGWCzGfrRwU2qT+KiFlTyUpLGDL6lzmJ3oofzXEQxElrVZTSKt8oB18U?=
- =?us-ascii?Q?YWTdnEWW6li7nux6W6FHd+9N2Cvft28i+HFwuZyAItTx653faqarGgP13xZ0?=
- =?us-ascii?Q?IFvDmzp65daU/kF3fSGP9WYE4gEBnhECVOl4Z6/TsJKdOJTCGC7pZyuV/dh3?=
- =?us-ascii?Q?DY2sGMas0sjJfniTCdX/4hKxGBhNxTI9jyDnoMlR2hr0laOu9n9ezLbOZ1Ed?=
- =?us-ascii?Q?EIZE8A=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 789d3557-2bd9-4a7a-a56c-08da59005121
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jun 2022 12:18:32.5502
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: iNPkQnz7gDChsvF3ujsQEfYK7V61gSJPielPDt2ZrhF97YkBbludBVOcMxd9G5U14Yq4e8uMXX7jaw5XsYrrJF4WJKxt0vBcdHlg+hDpTSg=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR13MB3250
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220524152144.40527-1-schultz.hans+netdev@gmail.com>
+ <20220524152144.40527-4-schultz.hans+netdev@gmail.com> <20220627180557.xnxud7d6ol22lexb@skbuf>
+In-Reply-To: <20220627180557.xnxud7d6ol22lexb@skbuf>
+From:   Hans S <schultz.hans@gmail.com>
+Date:   Tue, 28 Jun 2022 14:26:43 +0200
+Message-ID: <CAKUejP7ugMB9d3MVX3m9Brw12_ocFoT+nuJJucYdQH70kzC7=w@mail.gmail.com>
+Subject: Re: [PATCH V3 net-next 3/4] net: dsa: mv88e6xxx: mac-auth/MAB implementation
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Hans Schultz <schultz.hans+netdev@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Walter Heymans <walter.heymans@corigine.com>
+On Mon, Jun 27, 2022 at 8:06 PM Vladimir Oltean <olteanv@gmail.com> wrote:
+>
+> Hi Hans,
+>
+> On Tue, May 24, 2022 at 05:21:43PM +0200, Hans Schultz wrote:
+> > This implementation for the Marvell mv88e6xxx chip series, is
+> > based on handling ATU miss violations occurring when packets
+> > ingress on a port that is locked. The mac address triggering
+> > the ATU miss violation is communicated through switchdev to
+> > the bridge module, which adds a fdb entry with the fdb locked
+> > flag set. The entry is kept according to the bridges ageing
+> > time, thus simulating a dynamic entry.
+> >
+> > Note: The locked port must have learning enabled for the ATU
+> > miss violation to occur.
+> >
+> > Signed-off-by: Hans Schultz <schultz.hans+netdev@gmail.com>
+> > ---
+>
+> I'm sorry that I couldn't focus on the big picture of this patch,
+> but locking is an absolute disaster and I just stopped after a while,
+> it's really distracting :)
 
-A number of spelling and language mistakes in the flower section are
-fixed. The spacing between the text inside some comments and the comment
-symbols are also updated for consistency.
+The code works, but I think that we should "undisaster" it. :)
 
-Signed-off-by: Walter Heymans <walter.heymans@corigine.com>
-Reviewed-by: Louis Peens <louis.peens@corigine.com>
-Signed-off-by: Simon Horman <simon.horman@corigine.com>
----
- drivers/net/ethernet/netronome/nfp/flower/action.c |  2 +-
- .../net/ethernet/netronome/nfp/flower/conntrack.c  | 14 +++++++-------
- .../net/ethernet/netronome/nfp/flower/lag_conf.c   |  4 ++--
- .../net/ethernet/netronome/nfp/flower/metadata.c   |  2 +-
- .../net/ethernet/netronome/nfp/flower/offload.c    |  4 ++--
- .../net/ethernet/netronome/nfp/flower/qos_conf.c   |  6 +++---
- .../ethernet/netronome/nfp/flower/tunnel_conf.c    |  2 +-
- 7 files changed, 17 insertions(+), 17 deletions(-)
+>
+> Would you mind addressing the feedback below first, and I'll take
+> another look when you send v4?
 
-diff --git a/drivers/net/ethernet/netronome/nfp/flower/action.c b/drivers/net/ethernet/netronome/nfp/flower/action.c
-index b456e81a73a4..7453cc5ba832 100644
---- a/drivers/net/ethernet/netronome/nfp/flower/action.c
-+++ b/drivers/net/ethernet/netronome/nfp/flower/action.c
-@@ -149,7 +149,7 @@ nfp_fl_pre_lag(struct nfp_app *app, const struct flow_action_entry *act,
- 	}
- 
- 	/* Pre_lag action must be first on action list.
--	 * If other actions already exist they need pushed forward.
-+	 * If other actions already exist they need to be pushed forward.
- 	 */
- 	if (act_len)
- 		memmove(nfp_flow->action_data + act_size,
-diff --git a/drivers/net/ethernet/netronome/nfp/flower/conntrack.c b/drivers/net/ethernet/netronome/nfp/flower/conntrack.c
-index 7c31a46195b2..b3b2a23b8d89 100644
---- a/drivers/net/ethernet/netronome/nfp/flower/conntrack.c
-+++ b/drivers/net/ethernet/netronome/nfp/flower/conntrack.c
-@@ -182,7 +182,7 @@ static int nfp_ct_merge_check(struct nfp_fl_ct_flow_entry *entry1,
- 	u8 ip_proto = 0;
- 	/* Temporary buffer for mangling keys, 64 is enough to cover max
- 	 * struct size of key in various fields that may be mangled.
--	 * Supported fileds to mangle:
-+	 * Supported fields to mangle:
- 	 * mac_src/mac_dst(struct flow_match_eth_addrs, 12B)
- 	 * nw_tos/nw_ttl(struct flow_match_ip, 2B)
- 	 * nw_src/nw_dst(struct flow_match_ipv4/6_addrs, 32B)
-@@ -194,7 +194,7 @@ static int nfp_ct_merge_check(struct nfp_fl_ct_flow_entry *entry1,
- 	    entry1->netdev != entry2->netdev)
- 		return -EINVAL;
- 
--	/* check the overlapped fields one by one, the unmasked part
-+	/* Check the overlapped fields one by one, the unmasked part
- 	 * should not conflict with each other.
- 	 */
- 	if (ovlp_keys & BIT(FLOW_DISSECTOR_KEY_CONTROL)) {
-@@ -563,7 +563,7 @@ static int nfp_fl_merge_actions_offload(struct flow_rule **rules,
- 		if (flow_rule_match_key(rules[j], FLOW_DISSECTOR_KEY_BASIC)) {
- 			struct flow_match_basic match;
- 
--			/* ip_proto is the only field that needed in later compile_action,
-+			/* ip_proto is the only field that is needed in later compile_action,
- 			 * needed to set the correct checksum flags. It doesn't really matter
- 			 * which input rule's ip_proto field we take as the earlier merge checks
- 			 * would have made sure that they don't conflict. We do not know which
-@@ -1013,7 +1013,7 @@ static int nfp_ct_do_nft_merge(struct nfp_fl_ct_zone_entry *zt,
- 	nft_m_entry->tc_m_parent = tc_m_entry;
- 	nft_m_entry->nft_parent = nft_entry;
- 	nft_m_entry->tc_flower_cookie = 0;
--	/* Copy the netdev from one the pre_ct entry. When the tc_m_entry was created
-+	/* Copy the netdev from the pre_ct entry. When the tc_m_entry was created
- 	 * it only combined them if the netdevs were the same, so can use any of them.
- 	 */
- 	nft_m_entry->netdev = pre_ct_entry->netdev;
-@@ -1143,7 +1143,7 @@ nfp_fl_ct_zone_entry *get_nfp_zone_entry(struct nfp_flower_priv *priv,
- 	zt->priv = priv;
- 	zt->nft = NULL;
- 
--	/* init the various hash tables and lists*/
-+	/* init the various hash tables and lists */
- 	INIT_LIST_HEAD(&zt->pre_ct_list);
- 	INIT_LIST_HEAD(&zt->post_ct_list);
- 	INIT_LIST_HEAD(&zt->nft_flows_list);
-@@ -1346,7 +1346,7 @@ static void nfp_free_nft_merge_children(void *entry, bool is_nft_flow)
- 	 */
- 
- 	if (is_nft_flow) {
--		/* Need to iterate through list of nft_flow entries*/
-+		/* Need to iterate through list of nft_flow entries */
- 		struct nfp_fl_ct_flow_entry *ct_entry = entry;
- 
- 		list_for_each_entry_safe(m_entry, tmp, &ct_entry->children,
-@@ -1354,7 +1354,7 @@ static void nfp_free_nft_merge_children(void *entry, bool is_nft_flow)
- 			cleanup_nft_merge_entry(m_entry);
- 		}
- 	} else {
--		/* Need to iterate through list of tc_merged_flow entries*/
-+		/* Need to iterate through list of tc_merged_flow entries */
- 		struct nfp_fl_ct_tc_merge *ct_entry = entry;
- 
- 		list_for_each_entry_safe(m_entry, tmp, &ct_entry->children,
-diff --git a/drivers/net/ethernet/netronome/nfp/flower/lag_conf.c b/drivers/net/ethernet/netronome/nfp/flower/lag_conf.c
-index ede90e086b28..e92860e20a24 100644
---- a/drivers/net/ethernet/netronome/nfp/flower/lag_conf.c
-+++ b/drivers/net/ethernet/netronome/nfp/flower/lag_conf.c
-@@ -234,7 +234,7 @@ nfp_fl_lag_config_group(struct nfp_fl_lag *lag, struct nfp_fl_lag_group *group,
- 	}
- 
- 	/* To signal the end of a batch, both the switch and last flags are set
--	 * and the the reserved SYNC group ID is used.
-+	 * and the reserved SYNC group ID is used.
- 	 */
- 	if (*batch == NFP_FL_LAG_BATCH_FINISHED) {
- 		flags |= NFP_FL_LAG_SWITCH | NFP_FL_LAG_LAST;
-@@ -576,7 +576,7 @@ nfp_fl_lag_changeupper_event(struct nfp_fl_lag *lag,
- 	group->dirty = true;
- 	group->slave_cnt = slave_count;
- 
--	/* Group may have been on queue for removal but is now offloable. */
-+	/* Group may have been on queue for removal but is now offloadable. */
- 	group->to_remove = false;
- 	mutex_unlock(&lag->lock);
- 
-diff --git a/drivers/net/ethernet/netronome/nfp/flower/metadata.c b/drivers/net/ethernet/netronome/nfp/flower/metadata.c
-index 74e1b279c13b..0f06ef6e24bf 100644
---- a/drivers/net/ethernet/netronome/nfp/flower/metadata.c
-+++ b/drivers/net/ethernet/netronome/nfp/flower/metadata.c
-@@ -339,7 +339,7 @@ int nfp_compile_flow_metadata(struct nfp_app *app, u32 cookie,
- 		goto err_free_ctx_entry;
- 	}
- 
--	/* Do net allocate a mask-id for pre_tun_rules. These flows are used to
-+	/* Do not allocate a mask-id for pre_tun_rules. These flows are used to
- 	 * configure the pre_tun table and are never actually send to the
- 	 * firmware as an add-flow message. This causes the mask-id allocation
- 	 * on the firmware to get out of sync if allocated here.
-diff --git a/drivers/net/ethernet/netronome/nfp/flower/offload.c b/drivers/net/ethernet/netronome/nfp/flower/offload.c
-index 9d65459bdba5..83c97154c0c7 100644
---- a/drivers/net/ethernet/netronome/nfp/flower/offload.c
-+++ b/drivers/net/ethernet/netronome/nfp/flower/offload.c
-@@ -359,7 +359,7 @@ nfp_flower_calculate_key_layers(struct nfp_app *app,
- 			flow_rule_match_enc_opts(rule, &enc_op);
- 
- 		if (!flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_ENC_PORTS)) {
--			/* check if GRE, which has no enc_ports */
-+			/* Check if GRE, which has no enc_ports */
- 			if (!netif_is_gretap(netdev) && !netif_is_ip6gretap(netdev)) {
- 				NL_SET_ERR_MSG_MOD(extack, "unsupported offload: an exact match on L4 destination port is required for non-GRE tunnels");
- 				return -EOPNOTSUPP;
-@@ -1016,7 +1016,7 @@ int nfp_flower_merge_offloaded_flows(struct nfp_app *app,
- 	    nfp_flower_is_merge_flow(sub_flow2))
- 		return -EINVAL;
- 
--	/* check if the two flows are already merged */
-+	/* Check if the two flows are already merged */
- 	parent_ctx = (u64)(be32_to_cpu(sub_flow1->meta.host_ctx_id)) << 32;
- 	parent_ctx |= (u64)(be32_to_cpu(sub_flow2->meta.host_ctx_id));
- 	if (rhashtable_lookup_fast(&priv->merge_table,
-diff --git a/drivers/net/ethernet/netronome/nfp/flower/qos_conf.c b/drivers/net/ethernet/netronome/nfp/flower/qos_conf.c
-index 3206ba83b1aa..4e5df9f2c372 100644
---- a/drivers/net/ethernet/netronome/nfp/flower/qos_conf.c
-+++ b/drivers/net/ethernet/netronome/nfp/flower/qos_conf.c
-@@ -534,7 +534,7 @@ int nfp_flower_setup_qos_offload(struct nfp_app *app, struct net_device *netdev,
- 	}
- }
- 
--/* offload tc action, currently only for tc police */
-+/* Offload tc action, currently only for tc police */
- 
- static const struct rhashtable_params stats_meter_table_params = {
- 	.key_offset	= offsetof(struct nfp_meter_entry, meter_id),
-@@ -690,7 +690,7 @@ nfp_act_install_actions(struct nfp_app *app, struct flow_offload_action *fl_act,
- 	pps_support = !!(fl_priv->flower_ext_feats & NFP_FL_FEATS_QOS_PPS);
- 
- 	for (i = 0 ; i < action_num; i++) {
--		/*set qos associate data for this interface */
-+		/* Set qos associate data for this interface */
- 		action = paction + i;
- 		if (action->id != FLOW_ACTION_POLICE) {
- 			NL_SET_ERR_MSG_MOD(extack,
-@@ -736,7 +736,7 @@ nfp_act_remove_actions(struct nfp_app *app, struct flow_offload_action *fl_act,
- 	u32 meter_id;
- 	bool pps;
- 
--	/*delete qos associate data for this interface */
-+	/* Delete qos associate data for this interface */
- 	if (fl_act->id != FLOW_ACTION_POLICE) {
- 		NL_SET_ERR_MSG_MOD(extack,
- 				   "unsupported offload: qos rate limit offload requires police action");
-diff --git a/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c b/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
-index 6bf3ec448e7e..0af5541c6eaf 100644
---- a/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
-+++ b/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
-@@ -1064,7 +1064,7 @@ nfp_tunnel_del_shared_mac(struct nfp_app *app, struct net_device *netdev,
- 		return 0;
- 
- 	entry->ref_count--;
--	/* If del is part of a mod then mac_list is still in use elsewheree. */
-+	/* If del is part of a mod then mac_list is still in use elsewhere. */
- 	if (nfp_netdev_is_nfp_repr(netdev) && !mod) {
- 		repr = netdev_priv(netdev);
- 		repr_priv = repr->app_priv;
--- 
-2.30.2
+fine :)
 
+> >       if (err)
+> >               dev_err(chip->dev,
+> >                       "p%d: failed to force MAC link down\n", port);
+> > +     else
+> > +             if (mv88e6xxx_port_is_locked(chip, port, true))
+> > +                     mv88e6xxx_atu_locked_entry_flush(ds, port);
+>
+> This is superfluous, is it not? The bridge will transition a port whose
+> link goes down to BR_STATE_DISABLED, which will make dsa_port_set_state()
+> fast-age the dynamic FDB entries on the port, which you've already
+> handled below.
+
+I guess you are right.
+
+
+> >  }
+> >
+> >  static void mv88e6xxx_mac_link_up(struct dsa_switch *ds, int port,
+> > @@ -1685,6 +1689,9 @@ static void mv88e6xxx_port_fast_age(struct dsa_switch *ds, int port)
+> >       struct mv88e6xxx_chip *chip = ds->priv;
+> >       int err;
+> >
+> > +     if (mv88e6xxx_port_is_locked(chip, port, true))
+> > +             mv88e6xxx_atu_locked_entry_flush(ds, port);
+> > +
+>
+> Dumb question: if you only flush the locked entries at fast age if the
+> port is locked, then what happens with the existing locked entries if
+> the port becomes unlocked before an FDB flush takes place?
+> Shouldn't mv88e6xxx_port_set_lock() call mv88e6xxx_atu_locked_entry_flush()
+> too?
+
+That was my first thought too, but the way the flags are handled with
+the mask etc, does so that
+mv88e6xxx_port_set_lock() is called when other flags change. It could
+be done by the transition
+from locked->unlocked by checking if the port is locked already.
+On the other hand, the timers will timeout and the entries will be
+removed anyhow.
+
+> > +     if (mv88e6xxx_port_is_locked(chip, port, true))
+> > +             mv88e6xxx_atu_locked_entry_find_purge(ds, port, addr, vid);
+> > +
+> >       mv88e6xxx_reg_lock(chip);
+> >       err = mv88e6xxx_port_db_load_purge(chip, port, addr, vid,
+> > -                                        MV88E6XXX_G1_ATU_DATA_STATE_UC_STATIC);
+> > +                     MV88E6XXX_G1_ATU_DATA_STATE_UC_STATIC);
+>
+> Unrelated and unjustified change.
+>
+Ups, missed that one.
+
+> >  static int mv88e6xxx_port_setup(struct dsa_switch *ds, int port)
+> >  {
+> > -     return mv88e6xxx_setup_devlink_regions_port(ds, port);
+> > +     int err;
+> > +
+> > +     err = mv88e6xxx_setup_devlink_regions_port(ds, port);
+> > +     mv88e6xxx_init_violation_handler(ds, port);
+>
+> What's with this quirky placement? You need to do error checking and
+> call mv88e6xxx_teardown_violation_handler() if setting up the devlink
+> port regions fails, otherwise the port will fail to probe but no one
+> will quiesce its delayed ATU work.
+
+Yes, of course.
+
+> By the way, do all mv88e6xxx switches support 802.1X and MAC Auth Bypass,
+> or do we need to initialize these structures depending on some capability?
+
+I will have to look into that, but I think they all do support these features.
+
+> > +     err = mv88e6xxx_g1_write(chip, MV88E6XXX_G1_ATU_OP,
+> > +                              MV88E6XXX_G1_ATU_OP_BUSY | MV88E6XXX_G1_ATU_OP_GET_CLR_VIOLATION);
+>
+> Split on 3 lines please.
+
+OK.
+
+> > +     if (err)
+> > +             return err;
+> > +
+> > +     return mv88e6xxx_g1_atu_op_wait(chip);
+> > +}
+> > +
+> >  static int mv88e6xxx_g1_atu_op(struct mv88e6xxx_chip *chip, u16 fid, u16 op)
+> >  {
+> >       u16 val;
+> > @@ -356,11 +370,11 @@ static irqreturn_t mv88e6xxx_g1_atu_prob_irq_thread_fn(int irq, void *dev_id)
+> >       int spid;
+> >       int err;
+> >       u16 val;
+> > +     u16 fid;
+> >
+> >       mv88e6xxx_reg_lock(chip);
+> >
+> > -     err = mv88e6xxx_g1_atu_op(chip, 0,
+> > -                               MV88E6XXX_G1_ATU_OP_GET_CLR_VIOLATION);
+> > +     err = mv88e6xxx_g1_read_atu_violation(chip);
+>
+> I cannot comment on the validity of this change: previously, we were
+> writing FID 0 as part of mv88e6xxx_g1_atu_op(), now we are reading back
+> the FID. Definitely too much going on in a single change, this needs a
+> separate patch with an explanation.
+
+It is of course needed to read the fid and I couldn't really
+understand the reasoning behind how it was before,
+but I will do as you say as best I can.
+
+>
+> >       if (err)
+> >               goto out;
+> >
+> > @@ -368,6 +382,10 @@ static irqreturn_t mv88e6xxx_g1_atu_prob_irq_thread_fn(int irq, void *dev_id)
+> >       if (err)
+> >               goto out;
+> >
+> > +     err = mv88e6xxx_g1_read(chip, MV88E6352_G1_ATU_FID, &fid);
+> > +     if (err)
+> > +             goto out;
+>
+> Is it ok to read the MV88E6352_G1_ATU_FID register from an IRQ handler
+> common for all switches, I wonder?
+
+I don't know about the naming of this define (I probably overlooked
+the 6352 part), but it is the same as I have in the
+spec for 6097, and I don't see any alternative...
+
+> > +
+> >       err = mv88e6xxx_g1_atu_data_read(chip, &entry);
+> >       if (err)
+> >               goto out;
+> > @@ -382,6 +400,11 @@ static irqreturn_t mv88e6xxx_g1_atu_prob_irq_thread_fn(int irq, void *dev_id)
+> >               dev_err_ratelimited(chip->dev,
+> >                                   "ATU age out violation for %pM\n",
+> >                                   entry.mac);
+> > +             err = mv88e6xxx_handle_violation(chip,
+> > +                                              chip->ports[spid].port,
+>
+> Dumb question: isn't chip->ports[spid].port == spid?
+
+Probably you are right.
+
+>
+> > +                                              &entry,
+> > +                                              fid,
+> > +                                              MV88E6XXX_G1_ATU_OP_AGE_OUT_VIOLATION);
+>
+> This fits on 3 lines instead of 5 (and same below).
+
+OK
+
+>
+> > +static void mv88e6xxx_atu_locked_entry_timer_work(struct atu_locked_entry *ale)
+>
+> Please find a more adequate name for this function.
+
+Any suggestions?
+
+>
+> > +{
+> > +     struct switchdev_notifier_fdb_info info = {
+> > +             .addr = ale->mac,
+> > +             .vid = ale->vid,
+> > +             .added_by_user = false,
+> > +             .is_local = false,
+>
+> No need to have an initializer for the false members.
+
+OK
+
+> > +             .offloaded = true,
+> > +             .locked = true,
+> > +     };
+> > +     struct mv88e6xxx_atu_entry entry;
+> > +     struct net_device *brport;
+> > +     struct dsa_port *dp;
+> > +
+> > +     entry.state = MV88E6XXX_G1_ATU_DATA_STATE_UC_UNUSED;
+> > +     entry.trunk = false;
+> > +     memcpy(&entry.mac, &ale->mac, ETH_ALEN);
+>
+> ether_addr_copy
+>
+> > +
+> > +     mv88e6xxx_reg_lock(ale->chip);
+> > +     mv88e6xxx_g1_atu_loadpurge(ale->chip, ale->fid, &entry);
+>
+> The portvec will be junk memory that's on stack, is that what you want?
+>
+Probably not what I want.
+
+> > +     if (brport) {
+> > +             if (!rtnl_is_locked()) {
+> > +                     rtnl_lock();
+>
+> No, no, no, no, no, no, no.
+>
+> As I've explained already:
+> https://patchwork.kernel.org/project/netdevbpf/patch/20220317093902.1305816-4-schultz.hans+netdev@gmail.com/#24782974
+> dsa_port_to_bridge_port() needs to be called with the rtnl_mutex held.
+>
+> Please take a moment to figure out which function expects which lock and
+> for what operation, then draw a call graph, figure out a consistent lock
+> hierarchy where things are always acquired in the same order, and if a
+> function needs a locking context but not all callers offer it, put an
+> ASSERT_RTNL() (for example) and transfer the locking responsibility to
+> the caller.
+
+As I remember it was because mv88e6xxx_atu_locked_entry_flush() was called both
+with and without the lock, but there was something I didn't know about
+how link down
+handling works.
+
+>
+> Doing this will also help you name your functions better than
+> "locked entry timer work" (which are called from... drum roll...
+> mv88e6xxx_port_fdb_del and mv88e6xxx_port_fast_age).
+>
+> Which by the way, reminds me that.....
+> You can't take rtnl_lock() from port_fdb_add() and port_fdb_del(),
+> see commits d7d0d423dbaa ("net: dsa: flush switchdev workqueue when
+> leaving the bridge") and 0faf890fc519 ("net: dsa: drop rtnl_lock from
+> dsa_slave_switchdev_event_work"), as you'll deadlock with
+> dsa_port_pre_bridge_leave(). In fact you never could, but for a slightly
+> different reason.
+>
+> From the discussion with Ido and Nikolay I get the impression that
+> you're not doing the right thing here either, notifying a
+> SWITCHDEV_FDB_DEL_TO_BRIDGE from what is effectively the
+> SWITCHDEV_FDB_DEL_TO_DEVICE handler (port_fdb_del).
+
+Hmm, my experience tells me that much is opposite the normal
+conventions when dealing with
+locked ports, as there was never switchdev notifications from the
+driver to the bridge before, but
+that is needed to keep ATU and FDB entries in sync.
+
+>
+> No inline functions in .c files.
+
+OK
+
+> Nasty lock ordering inversion. In mv88e6xxx_handle_violation() we take
+> &dp->locked_entries_list_lock with mv88e6xxx_reg_lock() held.
+> Here (in mv88e6xxx_atu_locked_entry_timer_work called from here) we take
+> mv88e6xxx_reg_lock() with &dp->locked_entries_list_lock held.
+>
+I will look into that.
+
+> > +     switch (type) {
+> > +     case MV88E6XXX_G1_ATU_OP_MISS_VIOLATION:
+> > +             if (atomic_read(&dp->atu_locked_entry_cnt) >= ATU_LOCKED_ENTRIES_MAX) {
+> > +                     mv88e6xxx_reg_unlock(chip);
+>
+> You call mv88e6xxx_reg_lock() from mv88e6xxx_g1_atu_prob_irq_thread_fn()
+> and mv88e6xxx_reg_unlock() from mv88e6xxx_handle_violation()? Nice!
+>
+> And I understand why that is: to avoid a lock ordering inversion with
+> rtnl_lock(). Just unlock the mv88e6xxx registers after the last hardware
+> access in mv88e6xxx_g1_atu_prob_irq_thread_fn() - after mv88e6xxx_g1_atu_mac_read(),
+> and call mv88e6xxx_handle_violation() with the registers unlocked, and
+> lock them when you need them.
+
+OK.
+
+> > +             locked_entry = kmalloc(sizeof(*locked_entry), GFP_ATOMIC);
+>
+> Please be consistent in your naming of struct atu_locked_entry
+> variables, be they "locked_entry" or "ale" or otherwise.
+> And please create a helper function that creates such a structure and
+> initializes it.
+
+OK
+
+> > +             if (!locked_entry)
+> > +                     return -ENOMEM;
+> > +             timer_setup(&locked_entry->timer, mv88e6xxx_atu_locked_entry_timer_handler, 0);
+>
+> Does this have to be a dedicated timer per entry, or can you just record
+> the "jiffies" at creation time per locked entry, and compare it with the
+> current jiffies from the periodic, sleepable mv88e6xxx_atu_locked_entry_cleanup?
+
+I think that approach should be sufficient too.
+
+>
+> Why is the rtnl_unlock() outside the switch statement but the rtnl_lock() inside?
+> Not to mention, the dsa_port_to_bridge_port() call needs to be under rtnl_lock().
+
+Just a small optimization as I also have another case of the switch
+(only one switch case if
+you didn't notice) belonging to the next patch set regarding dynamic
+ATU entries.
+
+> > +void mv88e6xxx_atu_locked_entry_flush(struct dsa_switch *ds, int port)
+> > +{
+> > +     struct dsa_port *dp = dsa_to_port(ds, port);
+> > +     struct atu_locked_entry *ale, *tmp;
+> > +
+> > +     mutex_lock(&dp->locked_entries_list_lock);
+> > +     list_for_each_entry_safe(ale, tmp, &dp->atu_locked_entries_list, list) {
+> > +             mv88e6xxx_atu_locked_entry_purge(ale);
+> > +             atomic_dec(&dp->atu_locked_entry_cnt);
+> > +     }
+> > +     mutex_unlock(&dp->locked_entries_list_lock);
+> > +
+> > +     if (atomic_read(&dp->atu_locked_entry_cnt) != 0)
+> > +             dev_err(ds->dev,
+> > +                     "ERROR: Locked entries count is not zero after flush on port %d\n",
+> > +                     port);
+>
+> And generally speaking, why would you expect it to be 0, since there's
+> nothing that stops this check from racing with mv88e6xxx_handle_violation?
+
+I guess you are right that when setting the port STP state to BLOCKED, there is
+the potential race you mention.
+
+> Also, random fact: no need to say ERROR when printing with the KERN_ERR
+> log level. It's kind of implied from the log level.
+
+Of course.
+
+> > +     dp->atu_locked_entry_cnt.counter = 0;
+>
+> atomic_set()
+
+Right!
+
+> This and mv88e6xxx_switchdev.c are the only source files belonging to
+> this driver which have the mv88e6xxx_ prefix (others are "chip.c" etc).
+> Can you please follow the convention?
+
+Yes. I think I got that idea from some other driver, thus avoiding
+switchdev.h file,
+but I will change it.
+
+> > +struct atu_locked_entry {
+>
+> mv88e6xxx driver specific structure names should be prefixed with mv88e6xxx_.
+
+OK
+
+> > +     u8      mac[ETH_ALEN];
+>
+> Either align everything with tabs, or nothing.
+
+Ups.
+
+> > +int mv88e6xxx_handle_violation(struct mv88e6xxx_chip *chip,
+> > +                            int port,
+> > +                            struct mv88e6xxx_atu_entry *entry,
+> > +                            u16 fid,
+> > +                            u16 type);
+>
+> Both this and the function definition can easily fit on 3 lines.
+
+OK
+
+> Please, no "if (chiplock) mutex_lock()" hacks. Just lockdep_assert_held(&chip->reg_lock),
+> which serves both for documentation and for validation purposes, ensure
+> the lock is always taken at the caller (which in this case is super easy)
+> and move on.
+
+As I am calling the function in if statement checks, it would make
+that code more messy, while with
+this approach the function can be called from anywhere. I also looked
+at having two functions, with
+one being a wrapper function taking the lock and calling the other...
+
+>
+> > +
+> > +     if (mv88e6xxx_port_read(chip, port, MV88E6XXX_PORT_CTL0, &reg))
+> > +             goto out;
+>
+> It would be good to actually propagate the error to the caller and
+> "locked" via a pass-by-reference bool pointer argument, not just say
+> that I/O errors mean that the port is unlocked.
+
+Again the wish to be able to call it from if statement checks,.
+
+> > +     reg &= MV88E6XXX_PORT_ASSOC_VECTOR_PAV_MASK;
+> > +     if (locked) {
+> > +             reg |= MV88E6XXX_PORT_ASSOC_VECTOR_IGNORE_WRONG |
+> > +                     MV88E6XXX_PORT_ASSOC_VECTOR_LOCKED_PORT |
+> > +                     MV88E6XXX_PORT_ASSOC_VECTOR_INT_AGE_OUT |
+> > +                     MV88E6XXX_PORT_ASSOC_VECTOR_HOLD_AT_1;
+>
+> I'd suggest aligning these macros vertically.
+
+They are according to the Linux kernel coding standard wrt indentation afaik.
