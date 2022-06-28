@@ -2,76 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5668A55E9F9
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 18:42:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5B2455EA45
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 18:53:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239254AbiF1QgI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 12:36:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50362 "EHLO
+        id S234788AbiF1Qqa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 12:46:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232011AbiF1QfA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 12:35:00 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13964BB9
-        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 09:32:07 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id ay16so26921732ejb.6
-        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 09:32:07 -0700 (PDT)
+        with ESMTP id S234920AbiF1QpP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 12:45:15 -0400
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC8F1267
+        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 09:43:30 -0700 (PDT)
+Received: by mail-pg1-x52d.google.com with SMTP id 68so12706134pgb.10
+        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 09:43:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=CuGBayQTKpzveprbko8jS+HWnVHJqO4mYljV1kMBj3A=;
-        b=MtMhCSr/fei8ro6GAgFIQN2QNwArvDPswgWVA92bCcINrM3QNrv44Ufz8bcR70Hin9
-         d2E1yfK//6FaPHzSk22x2w3jobVMv2wtKrVGn9OdNqZB7u+60qS6jfZ1dys6YiZ5AtBI
-         lBRrfoVADTV1DCY2tdEqS/CwfhNpHWI8tMDXg=
+        d=broadcom.com; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=+MUga+MCrIfdpvjiymozAyZI2p2NNL3FWiLnGebOq9w=;
+        b=hio2unkXiGno529Cf68PNABUpMYZM4ygupsa07i6LuKQuOZXoUqtjndRob7/IEX0jT
+         /zD6PLYoTLZD6lzJq5PtI03Ldcw4hpOKApdwC2n7zhgYmepriWkgVwh0iDG7bLyenWsY
+         16NYR2XbYf/iEODdUvTLfGkYivE3Xi/U/LreE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=CuGBayQTKpzveprbko8jS+HWnVHJqO4mYljV1kMBj3A=;
-        b=eet/CGqg4xxVlu3mACqQZ/OprEFLDKyOsrrwxOvA4K5WiYO1A61ZwXtGa5lRHl4SXX
-         X44FMgoi79KIAelCFyU8UemcxGVfhNXarujxaUdsDtowLnSS8boCHF8wvjd6sKX0S7df
-         GqRzLmLxoSXe3AixvSx6/gdMMaoqRurVWjzule3xyXUL8uAExLhZFjwWDqlcjahNqE+j
-         uQZvlkfUf8eP2XQQ9UXfmAFss9yDUvO4TIDjIIbqyT1w6WNbXmxXGsBiq1Wek3FXw6G8
-         fyB3E59t5a2UzgPe9BKHrMmZgni04/hWKehPxBRjI0tmR0eB+xygPaCMMw+J4zQjQn0S
-         BKrQ==
-X-Gm-Message-State: AJIora9FLWSD7nXp4deRgcXaBjo555caNNgLyMp8s9VfCTDoBWcrLIK6
-        YP66/2rLL2tudbjQ7lSJziymeQ==
-X-Google-Smtp-Source: AGRyM1s72MC8BHF9j5Ha54DSEtE2W5iZoGmr+77mt8A8eJMZUG9x4pM48O9yrt22/OipX0MUoLoO3g==
-X-Received: by 2002:a17:906:c152:b0:726:3226:2e61 with SMTP id dp18-20020a170906c15200b0072632262e61mr18889180ejc.122.1656433926614;
-        Tue, 28 Jun 2022 09:32:06 -0700 (PDT)
-Received: from dario-ThinkPad-T14s-Gen-2i.homenet.telecomitalia.it (host-80-116-90-174.pool80116.interbusiness.it. [80.116.90.174])
-        by smtp.gmail.com with ESMTPSA id b20-20020a0564021f1400b0042e15364d14sm9916952edb.8.2022.06.28.09.32.05
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=+MUga+MCrIfdpvjiymozAyZI2p2NNL3FWiLnGebOq9w=;
+        b=Jk1Fg7tttxeB4NxzBw7Ut0X14DRK7Sp3EMYsgyutsdcA7gXMsPSVRKl2hbTFpXVfG5
+         +A4eY8KI/9p/MxpN3BDAw+ZBZvMHmLxVJlK7xZn7GkNn4ih4b9cVPZ/F/B9QLw5vFRxa
+         OVn0NB5R/CbBqfxFRg0T3UvlStrrPfxsZlrq452fdpT4g7XtyTcuutyFzKZhq3Qj7V4Z
+         mQMV1BVrEOrHzgGjvvpm+zS42t4gauXDyJGQv94npEV/dz+XAFzNvOpLt/IX76pzj3Zx
+         0lCM8gnMFcyJGzwFm3oGtN8VRJjN/1w5nyeXOPIqTPaQMecBqkez0Nv/xUrt7J+zkXwf
+         36VQ==
+X-Gm-Message-State: AJIora+9yhqaPlTFci303+vLTqqjWoZmoZIEELhC0DCAegzt41BfL+lG
+        qKl1entuHyyAq6ecc4Ui3lX/GA==
+X-Google-Smtp-Source: AGRyM1uOhHUIhgMKnuW245g6qVFuJ4cXVdvY9axOOAGTQUZV37QV1bINSLUokCWzmSpZKTUogx/izA==
+X-Received: by 2002:a63:b54c:0:b0:40c:7b84:4f7f with SMTP id u12-20020a63b54c000000b0040c7b844f7fmr17870316pgo.586.1656434610019;
+        Tue, 28 Jun 2022 09:43:30 -0700 (PDT)
+Received: from rahul_yocto_ubuntu18.ibn.broadcom.net ([192.19.234.250])
+        by smtp.gmail.com with ESMTPSA id mn9-20020a17090b188900b001ec9d45776bsm38248pjb.42.2022.06.28.09.43.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jun 2022 09:32:06 -0700 (PDT)
-From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     michael@amarulasolutions.com,
-        Amarula patchwork <linux-amarula@amarulasolutions.com>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Dario Binacchi <dario.binacchi@amarulasolutions.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v5 12/12] can: slcan: extend the protocol with CAN state info
-Date:   Tue, 28 Jun 2022 18:31:36 +0200
-Message-Id: <20220628163137.413025-13-dario.binacchi@amarulasolutions.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220628163137.413025-1-dario.binacchi@amarulasolutions.com>
-References: <20220628163137.413025-1-dario.binacchi@amarulasolutions.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        Tue, 28 Jun 2022 09:43:28 -0700 (PDT)
+From:   Vikas Gupta <vikas.gupta@broadcom.com>
+To:     jiri@nvidia.com, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        davem@davemloft.net, dsahern@kernel.org,
+        stephen@networkplumber.org, edumazet@google.com,
+        michael.chan@broadcom.com, andrew.gospodarek@broadcom.com,
+        Vikas Gupta <vikas.gupta@broadcom.com>
+Subject: [PATCH net-next v1 0/3] add framework for selftests in devlink
+Date:   Tue, 28 Jun 2022 22:12:38 +0530
+Message-Id: <20220628164241.44360-1-vikas.gupta@broadcom.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="0000000000008cd7e205e284bcd7"
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        MIME_HEADER_CTYPE_ONLY,MIME_NO_TEXT,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE,T_TVD_MIME_NO_HEADERS autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -79,134 +66,127 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It extends the protocol to receive the adapter CAN state changes
-(warning, busoff, etc.) and forward them to the netdev upper levels.
+--0000000000008cd7e205e284bcd7
 
-Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
+Hi,
+  This patchset adds support for selftests in the devlink framework.
+  It adds a callback .selftests_show and .selftests_run in devlink_ops. 
+  User can provide test(s) suite as a testmask and subsequently it is passed 
+  to the driver which can opt for running particular tests based on
+  its capabilities.
 
----
+  Patchset adds a flash based test for the bnxt_en driver.
 
-(no changes since v4)
+  Suggested commands at user level would be as below:
 
-Changes in v4:
-- Add description of slc_bump_state() function.
-- Remove check for the 's' character at the beggining of the function.
-  It was already checked by the caller function.
-- Protect decoding against the case the frame len is longer than the
-  received data (add SLC_STATE_FRAME_LEN macro).
-- Set cf to NULL in case of alloc_can_err_skb() failure.
-- Some small changes to make the decoding more readable.
-- Use the character 'b' instead of 'f' for bus-off state.
+   $ devlink dev selftests run pci/0000:03:00.0 test flash
+     results:
+        flash test :  failed
 
-Changes in v3:
-- Drop the patch "can: slcan: simplify the device de-allocation".
-- Add the patch "can: netlink: dump bitrate 0 if can_priv::bittiming.bitrate is -1U".
+    $ devlink dev selftests show pci/0000:03:00.0
+    device suuports:
+        flash test
 
-Changes in v2:
-- Continue error handling even if no skb can be allocated.
+Thanks,
+Vikas
 
- drivers/net/can/slcan/slcan-core.c | 74 +++++++++++++++++++++++++++++-
- 1 file changed, 73 insertions(+), 1 deletion(-)
+Vikas Gupta (3):
+  devlink: introduce framework for selftests
+  bnxt_en: refactor NVM APIs
+  bnxt_en: implement callbacks for devlink selftests
 
-diff --git a/drivers/net/can/slcan/slcan-core.c b/drivers/net/can/slcan/slcan-core.c
-index 4269b2267be2..54d29a410ad5 100644
---- a/drivers/net/can/slcan/slcan-core.c
-+++ b/drivers/net/can/slcan/slcan-core.c
-@@ -78,7 +78,11 @@ MODULE_PARM_DESC(maxdev, "Maximum number of slcan interfaces");
- #define SLC_CMD_LEN 1
- #define SLC_SFF_ID_LEN 3
- #define SLC_EFF_ID_LEN 8
--
-+#define SLC_STATE_LEN 1
-+#define SLC_STATE_BE_RXCNT_LEN 3
-+#define SLC_STATE_BE_TXCNT_LEN 3
-+#define SLC_STATE_FRAME_LEN       (1 + SLC_CMD_LEN + SLC_STATE_BE_RXCNT_LEN + \
-+				   SLC_STATE_BE_TXCNT_LEN)
- struct slcan {
- 	struct can_priv         can;
- 	int			magic;
-@@ -254,6 +258,72 @@ static void slc_bump_frame(struct slcan *sl)
- 	dev_kfree_skb(skb);
- }
- 
-+/* A change state frame must contain state info and receive and transmit
-+ * error counters.
-+ *
-+ * Examples:
-+ *
-+ * sb256256 : state bus-off: rx counter 256, tx counter 256
-+ * sa057033 : state active, rx counter 57, tx counter 33
-+ */
-+static void slc_bump_state(struct slcan *sl)
-+{
-+	struct net_device *dev = sl->dev;
-+	struct sk_buff *skb;
-+	struct can_frame *cf;
-+	char *cmd = sl->rbuff;
-+	u32 rxerr, txerr;
-+	enum can_state state, rx_state, tx_state;
-+
-+	switch (cmd[1]) {
-+	case 'a':
-+		state = CAN_STATE_ERROR_ACTIVE;
-+		break;
-+	case 'w':
-+		state = CAN_STATE_ERROR_WARNING;
-+		break;
-+	case 'p':
-+		state = CAN_STATE_ERROR_PASSIVE;
-+		break;
-+	case 'b':
-+		state = CAN_STATE_BUS_OFF;
-+		break;
-+	default:
-+		return;
-+	}
-+
-+	if (state == sl->can.state || sl->rcount < SLC_STATE_FRAME_LEN)
-+		return;
-+
-+	cmd += SLC_STATE_BE_RXCNT_LEN + SLC_CMD_LEN + 1;
-+	cmd[SLC_STATE_BE_TXCNT_LEN] = 0;
-+	if (kstrtou32(cmd, 10, &txerr))
-+		return;
-+
-+	*cmd = 0;
-+	cmd -= SLC_STATE_BE_RXCNT_LEN;
-+	if (kstrtou32(cmd, 10, &rxerr))
-+		return;
-+
-+	skb = alloc_can_err_skb(dev, &cf);
-+	if (skb) {
-+		cf->data[6] = txerr;
-+		cf->data[7] = rxerr;
-+	} else {
-+		cf = NULL;
-+	}
-+
-+	tx_state = txerr >= rxerr ? state : 0;
-+	rx_state = txerr <= rxerr ? state : 0;
-+	can_change_state(dev, cf, tx_state, rx_state);
-+
-+	if (state == CAN_STATE_BUS_OFF)
-+		can_bus_off(dev);
-+
-+	if (skb)
-+		netif_rx(skb);
-+}
-+
- /* An error frame can contain more than one type of error.
-  *
-  * Examples:
-@@ -387,6 +457,8 @@ static void slc_bump(struct slcan *sl)
- 		return slc_bump_frame(sl);
- 	case 'e':
- 		return slc_bump_err(sl);
-+	case 's':
-+		return slc_bump_state(sl);
- 	default:
- 		return;
- 	}
+ .../networking/devlink/devlink-selftests.rst  |  39 +++++
+ .../net/ethernet/broadcom/bnxt/bnxt_devlink.c |  66 ++++++++
+ .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c |  24 +--
+ .../net/ethernet/broadcom/bnxt/bnxt_ethtool.h |  12 ++
+ include/net/devlink.h                         |  40 +++++
+ include/uapi/linux/devlink.h                  |  24 +++
+ net/core/devlink.c                            | 147 ++++++++++++++++++
+ 7 files changed, 340 insertions(+), 12 deletions(-)
+ create mode 100644 Documentation/networking/devlink/devlink-selftests.rst
+
 -- 
-2.32.0
+2.31.1
 
+
+--0000000000008cd7e205e284bcd7
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+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
+I7qKxvF8Yo7eGTnHRTa99J+6yTd88AKVuhM5TEhpC8cS7qvrQXJje+Uing2xWC4FH76LEWIFH0Pt
+x8C1WoCU0ClXHU/XfzH2mYrFANBSCeP1Co6QdEfRAgMBAAGjggHZMIIB1TAOBgNVHQ8BAf8EBAMC
+BaAwgaMGCCsGAQUFBwEBBIGWMIGTME4GCCsGAQUFBzAChkJodHRwOi8vc2VjdXJlLmdsb2JhbHNp
+Z24uY29tL2NhY2VydC9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcnQwQQYIKwYBBQUHMAGG
+NWh0dHA6Ly9vY3NwLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwME0G
+A1UdIARGMEQwQgYKKwYBBAGgMgEoCjA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3dy5nbG9iYWxz
+aWduLmNvbS9yZXBvc2l0b3J5LzAJBgNVHRMEAjAAMEkGA1UdHwRCMEAwPqA8oDqGOGh0dHA6Ly9j
+cmwuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3JsMCMGA1UdEQQc
+MBqBGHZpa2FzLmd1cHRhQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNVHSME
+GDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUUc6J11rH3s6PyZQ0zIVZHIuP20Yw
+DQYJKoZIhvcNAQELBQADggEBALvCjXn9gy9a2nU/Ey0nphGZefIP33ggiyuKnmqwBt7Wk/uDHIIc
+kkIlqtTbo0x0PqphS9A23CxCDjKqZq2WN34fL5MMW83nrK0vqnPloCaxy9/6yuLbottBY4STNuvA
+mQ//Whh+PE+DZadqiDbxXbos3IH8AeFXH4A1zIqIrc0Um2/CSD/T6pvu9QrchtvemfP0z/f1Bk+8
+QbQ4ARVP93WV1I13US69evWXw+mOv9VnejShU9PMcDK203xjXbBOi9Hm+fthrWfwIyGoC5aEf7vd
+PKkEDt4VZ9RbudZU/c3N8+kURaHNtrvu2K+mQs5w/AF7HYZThqmOzQJnvMRjuL8xggJtMIICaQIB
+ATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQDEyhH
+bG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwYjepatB64S625eswwDQYJ
+YIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIN/ByoaeqEVPvWEkRCWDG3G3idGYFnqnGHnG
+6dhdkbHeMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDYyODE2
+NDMzMFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCGSAFl
+AwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQCATAN
+BgkqhkiG9w0BAQEFAASCAQBM58cN/kZOZzN/YVnWyiH+4yFUb5zQW3oC+eovRyIXOx06uFxt6ZWk
+GXMdTbx1Qa1be3HnlLuS5zq5u46A2U66jqjxn+8aU0issdMS5BkI5wLIp0iXcd7XAkRCDasKyJ4U
+xK6Ua8WUAh90ygBjNcqlX/2IXaMhLAJ852oDgSPfGYMuMho/Ny+j9wmSNKPjCzbkjQH3dHcU8rws
+F2nwy/y8uTugrF+0azvVApPmTnGdYBytO6bITVRfEtHbE/gPtXcXTxVPGJLBcDXwHE9o8RsK6iSz
+k/kQKPfgZOS1K11Ce9i6xstcAwe4I3E2wIha3VKkNc/IIoQJdFXd+pBLgY0i
+--0000000000008cd7e205e284bcd7--
