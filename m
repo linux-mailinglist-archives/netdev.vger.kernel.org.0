@@ -2,105 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 23DB855D96D
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:21:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA4D355C513
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 14:50:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245321AbiF1GHr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 02:07:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44140 "EHLO
+        id S245368AbiF1GJy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 02:09:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236321AbiF1GHp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 02:07:45 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 26B40255BF
-        for <netdev@vger.kernel.org>; Mon, 27 Jun 2022 23:07:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656396463;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=KUT1KDRsQCbghYqw5mAjvKAipnK8+qvq4+LEkef6mwI=;
-        b=Du04u4zhc9ZRJZhKm1iTicPX1EddZSVBsh/n1aKqlt8rnzyj99hbM0LuDIy6RtYvVV4tze
-        UXXmZLYm8m9/L1FZxwnip2svnDwU2IXO/lw1UafFFsUpiRip6g+Hdr07/uvAStftyHc1YI
-        PU85neXedQgdA0dtJluE3UzWvH/UAm0=
-Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
- [209.85.167.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-46-P3SZ2aZoP9CedDqUkH1S4Q-1; Tue, 28 Jun 2022 02:07:41 -0400
-X-MC-Unique: P3SZ2aZoP9CedDqUkH1S4Q-1
-Received: by mail-lf1-f71.google.com with SMTP id b2-20020a0565120b8200b00477a4532448so5805360lfv.22
-        for <netdev@vger.kernel.org>; Mon, 27 Jun 2022 23:07:41 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=KUT1KDRsQCbghYqw5mAjvKAipnK8+qvq4+LEkef6mwI=;
-        b=L5aauC3o52klIEQpa780pBqqtL++FeRYf1+vq9Q9nJP0LUAryRd5Y67Dp50GOtDqN0
-         P51kpclC/f1Y9/WwzJo7Ur423msHGogU4n7ZDdXq/BaAlFA9hzt5/vVnsYuiQnf7EHkG
-         WyWQ//KktN3Sot9cfzobtrSqCNZwTJx1quKzPUrBU2/X4VlxP391/m5oUpD3D/w0bAq9
-         tzTmiIkYFNxRjS2l9W4zt5ve2WAp7Y+Lu5aqhizFnpdwABTQvNS408og/jK4WQAg6AyP
-         zIf0dTYHyD8/i9QqNPLDyzZUfoMS7s5lpsqH4rO+iwnb4Bv3RmpdjWvRsP6BBmzatwT2
-         pOKQ==
-X-Gm-Message-State: AJIora9/LnC5GDLMUwfF4Y6TDxmI/5rrlnrc+jWsdKv5QxWtWrfCUpX6
-        +MMqCJOgbq0dMifI7ZAC27VM+jsEq6PLlTRWwMqa9kJRFeUZ6klbu+Whc6HJPJ5XeYLDkTREIiB
-        hZwhvjX6YdOB6aSwKz4xTxRRlDZiBt5P2
-X-Received: by 2002:a05:651c:895:b0:250:c5ec:bc89 with SMTP id d21-20020a05651c089500b00250c5ecbc89mr8315118ljq.251.1656396460036;
-        Mon, 27 Jun 2022 23:07:40 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1uv1ZBawh+P9oWSPBH26qPWCIYjS9uNve6lqad17cW1vkQvItG6ZzBL6RQ0GxzhIXXq3N271R2bfg7ykwVXyRw=
-X-Received: by 2002:a05:651c:895:b0:250:c5ec:bc89 with SMTP id
- d21-20020a05651c089500b00250c5ecbc89mr8315105ljq.251.1656396459820; Mon, 27
- Jun 2022 23:07:39 -0700 (PDT)
+        with ESMTP id S245378AbiF1GJu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 02:09:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D7E92610A;
+        Mon, 27 Jun 2022 23:09:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1976761874;
+        Tue, 28 Jun 2022 06:09:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8F93C341C6;
+        Tue, 28 Jun 2022 06:09:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656396576;
+        bh=TnPnSztZaMrJo3SBp024+cQ77bnVWMMq6znbAKHu1xI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=mvMtZYJF9WFCY8+lH/0s1P9xyrfjb3ljM5CwNj5NpBh2WoNTfgjRLyKYL6AMz/bfv
+         iPkewmoS7+wqdU+uAIVMrcZEZhXrL3sjUGSXUAclO7BYeK8UzQf2LpeCMpYBtwfGT1
+         pFEQ6QvZRIkZDsV21PbxFlZrnojEeTb3hp/cGD/I=
+Date:   Tue, 28 Jun 2022 08:09:33 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Duoming Zhou <duoming@zju.edu.cn>
+Cc:     linux-wireless@vger.kernel.org, amitkarwar@gmail.com,
+        ganapathi017@gmail.com, sharvari.harisangam@nxp.com,
+        huxinming820@gmail.com, kvalo@kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Subject: Re: [PATCH V6 RESEND] mwifiex: fix sleep in atomic context bugs
+ caused by dev_coredumpv
+Message-ID: <YrqbHWWKjoyBwMae@kroah.com>
+References: <20220628014110.9183-1-duoming@zju.edu.cn>
 MIME-Version: 1.0
-References: <20220624025621.128843-1-xuanzhuo@linux.alibaba.com>
- <20220624025621.128843-26-xuanzhuo@linux.alibaba.com> <20220624025817-mutt-send-email-mst@kernel.org>
- <CACGkMEseptD=45j3kQr0yciRxR679Jcig=292H07-RYC2vXmFQ@mail.gmail.com>
- <20220627023841-mutt-send-email-mst@kernel.org> <CACGkMEvy8xF2T_vubKeUEPC2aroO_fbB0Xe8nnxK4OBUgAS+Gw@mail.gmail.com>
- <20220627034733-mutt-send-email-mst@kernel.org> <CACGkMEtpjUBaUML=fEs5hR66rzNTBhBXOmfpzyXV1F-6BqvsGg@mail.gmail.com>
- <20220627074723-mutt-send-email-mst@kernel.org> <CACGkMEv0zdgG6SAaxRwkpObEFX_KRB1ovezNiHX+QXsYhE=qaQ@mail.gmail.com>
- <20220628014309-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20220628014309-mutt-send-email-mst@kernel.org>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Tue, 28 Jun 2022 14:07:28 +0800
-Message-ID: <CACGkMEuzrmVsM5Xa3N_9n0-XOqyMAz65AON8oxkgmjnXb_bAFg@mail.gmail.com>
-Subject: Re: [PATCH v10 25/41] virtio_pci: struct virtio_pci_common_cfg add queue_notify_data
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Vadim Pasternak <vadimp@nvidia.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Eric Farman <farman@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        linux-um@lists.infradead.org, netdev <netdev@vger.kernel.org>,
-        platform-driver-x86@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
-        kvm <kvm@vger.kernel.org>,
-        "open list:XDP (eXpress Data Path)" <bpf@vger.kernel.org>,
-        kangjie.xu@linux.alibaba.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220628014110.9183-1-duoming@zju.edu.cn>
+X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -108,123 +55,82 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 28, 2022 at 1:46 PM Michael S. Tsirkin <mst@redhat.com> wrote:
->
-> On Tue, Jun 28, 2022 at 11:50:37AM +0800, Jason Wang wrote:
-> > On Mon, Jun 27, 2022 at 7:53 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > >
-> > > On Mon, Jun 27, 2022 at 04:14:20PM +0800, Jason Wang wrote:
-> > > > On Mon, Jun 27, 2022 at 3:58 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > > > >
-> > > > > On Mon, Jun 27, 2022 at 03:45:30PM +0800, Jason Wang wrote:
-> > > > > > On Mon, Jun 27, 2022 at 2:39 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > > > > > >
-> > > > > > > On Mon, Jun 27, 2022 at 10:30:42AM +0800, Jason Wang wrote:
-> > > > > > > > On Fri, Jun 24, 2022 at 2:59 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > > > > > > > >
-> > > > > > > > > On Fri, Jun 24, 2022 at 10:56:05AM +0800, Xuan Zhuo wrote:
-> > > > > > > > > > Add queue_notify_data in struct virtio_pci_common_cfg, which comes from
-> > > > > > > > > > here https://github.com/oasis-tcs/virtio-spec/issues/89
-> > > > > > > > > >
-> > > > > > > > > > For not breaks uABI, add a new struct virtio_pci_common_cfg_notify.
-> > > > > > > > >
-> > > > > > > > > What exactly is meant by not breaking uABI?
-> > > > > > > > > Users are supposed to be prepared for struct size to change ... no?
-> > > > > > > >
-> > > > > > > > Not sure, any doc for this?
-> > > > > > > >
-> > > > > > > > Thanks
-> > > > > > >
-> > > > > > >
-> > > > > > > Well we have this:
-> > > > > > >
-> > > > > > >         The drivers SHOULD only map part of configuration structure
-> > > > > > >         large enough for device operation.  The drivers MUST handle
-> > > > > > >         an unexpectedly large \field{length}, but MAY check that \field{length}
-> > > > > > >         is large enough for device operation.
-> > > > > >
-> > > > > > Yes, but that's the device/driver interface. What's done here is the
-> > > > > > userspace/kernel.
-> > > > > >
-> > > > > > Userspace may break if it uses e.g sizeof(struct virtio_pci_common_cfg)?
-> > > > > >
-> > > > > > Thanks
-> > > > >
-> > > > > Hmm I guess there's risk... but then how are we going to maintain this
-> > > > > going forward?  Add a new struct on any change?
-> > > >
-> > > > This is the way we have used it for the past 5 or more years. I don't
-> > > > see why this must be handled in the vq reset feature.
-> > > >
-> > > > >Can we at least
-> > > > > prevent this going forward somehow?
-> > > >
-> > > > Like have some padding?
-> > > >
-> > > > Thanks
-> > >
-> > > Maybe - this is what QEMU does ...
-> >
-> > Do you want this to be addressed in this series (it's already very huge anyhow)?
-> >
-> > Thanks
->
-> Let's come up with a solution at least. QEMU does not seem to need the struct.
+On Tue, Jun 28, 2022 at 09:41:09AM +0800, Duoming Zhou wrote:
+> There are sleep in atomic context bugs when uploading device dump
+> data in mwifiex. The root cause is that dev_coredumpv could not
+> be used in atomic contexts, because it calls dev_set_name which
+> include operations that may sleep. The call tree shows execution
+> paths that could lead to bugs:
+> 
+>    (Interrupt context)
+> fw_dump_timer_fn
+>   mwifiex_upload_device_dump
+>     dev_coredumpv(..., GFP_KERNEL)
+>       dev_coredumpm()
+>         kzalloc(sizeof(*devcd), gfp); //may sleep
+>         dev_set_name
+>           kobject_set_name_vargs
+>             kvasprintf_const(GFP_KERNEL, ...); //may sleep
+>             kstrdup(s, GFP_KERNEL); //may sleep
+> 
+> The corresponding fail log is shown below:
+> 
+> [  135.275938] usb 1-1: == mwifiex dump information to /sys/class/devcoredump start
+> [  135.281029] BUG: sleeping function called from invalid context at include/linux/sched/mm.h:265
+> ...
+> [  135.293613] Call Trace:
+> [  135.293613]  <IRQ>
+> [  135.293613]  dump_stack_lvl+0x57/0x7d
+> [  135.293613]  __might_resched.cold+0x138/0x173
+> [  135.293613]  ? dev_coredumpm+0xca/0x2e0
+> [  135.293613]  kmem_cache_alloc_trace+0x189/0x1f0
+> [  135.293613]  ? devcd_match_failing+0x30/0x30
+> [  135.293613]  dev_coredumpm+0xca/0x2e0
+> [  135.293613]  ? devcd_freev+0x10/0x10
+> [  135.293613]  dev_coredumpv+0x1c/0x20
+> [  135.293613]  ? devcd_match_failing+0x30/0x30
+> [  135.293613]  mwifiex_upload_device_dump+0x65/0xb0
+> [  135.293613]  ? mwifiex_dnld_fw+0x1b0/0x1b0
+> [  135.293613]  call_timer_fn+0x122/0x3d0
+> [  135.293613]  ? msleep_interruptible+0xb0/0xb0
+> [  135.293613]  ? lock_downgrade+0x3c0/0x3c0
+> [  135.293613]  ? __next_timer_interrupt+0x13c/0x160
+> [  135.293613]  ? lockdep_hardirqs_on_prepare+0xe/0x220
+> [  135.293613]  ? mwifiex_dnld_fw+0x1b0/0x1b0
+> [  135.293613]  __run_timers.part.0+0x3f8/0x540
+> [  135.293613]  ? call_timer_fn+0x3d0/0x3d0
+> [  135.293613]  ? arch_restore_msi_irqs+0x10/0x10
+> [  135.293613]  ? lapic_next_event+0x31/0x40
+> [  135.293613]  run_timer_softirq+0x4f/0xb0
+> [  135.293613]  __do_softirq+0x1c2/0x651
+> ...
+> [  135.293613] RIP: 0010:default_idle+0xb/0x10
+> [  135.293613] RSP: 0018:ffff888006317e68 EFLAGS: 00000246
+> [  135.293613] RAX: ffffffff82ad8d10 RBX: ffff888006301cc0 RCX: ffffffff82ac90e1
+> [  135.293613] RDX: ffffed100d9ff1b4 RSI: ffffffff831ad140 RDI: ffffffff82ad8f20
+> [  135.293613] RBP: 0000000000000003 R08: 0000000000000000 R09: ffff88806cff8d9b
+> [  135.293613] R10: ffffed100d9ff1b3 R11: 0000000000000001 R12: ffffffff84593410
+> [  135.293613] R13: 0000000000000000 R14: 0000000000000000 R15: 1ffff11000c62fd2
+> ...
+> [  135.389205] usb 1-1: == mwifiex dump information to /sys/class/devcoredump end
+> 
+> This patch uses delayed work to replace timer and moves the operations
+> that may sleep into a delayed work in order to mitigate bugs, it was
+> tested on Marvell 88W8801 chip whose port is usb and the firmware is
+> usb8801_uapsta.bin. The following is the result after using delayed
+> work to replace timer.
+> 
+> [  134.936453] usb 1-1: == mwifiex dump information to /sys/class/devcoredump start
+> [  135.043344] usb 1-1: == mwifiex dump information to /sys/class/devcoredump end
+> 
+> As we can see, there is no bug now.
+> 
+> Cc: stable@vger.kernel.org
+> Fixes: f5ecd02a8b20 ("mwifiex: device dump support for usb interface")
+> Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+> Reviewed-by: Brian Norris <briannorris@chromium.org>
+> ---
+> Changes in v6:
+>   - Use clang-format to adjust the format of code.
 
-If we want to implement it in Qemu we need that:
-
-https://github.com/fengidri/qemu/commit/39b79335cb55144d11a3b01f93d46cc73342c6bb
-
-> Let's just put
-> it in virtio_pci_modern.h for now then?
-
-Does this mean userspace needs to define the struct by their own
-instead of depending on the uapi in the future?
-
-Thanks
-
->
-> > >
-> > > > >
-> > > > >
-> > > > > > >
-> > > > > > >
-> > > > > > >
-> > > > > > > >
-> > > > > > > > >
-> > > > > > > > >
-> > > > > > > > > > Since I want to add queue_reset after queue_notify_data, I submitted
-> > > > > > > > > > this patch first.
-> > > > > > > > > >
-> > > > > > > > > > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> > > > > > > > > > Acked-by: Jason Wang <jasowang@redhat.com>
-> > > > > > > > > > ---
-> > > > > > > > > >  include/uapi/linux/virtio_pci.h | 7 +++++++
-> > > > > > > > > >  1 file changed, 7 insertions(+)
-> > > > > > > > > >
-> > > > > > > > > > diff --git a/include/uapi/linux/virtio_pci.h b/include/uapi/linux/virtio_pci.h
-> > > > > > > > > > index 3a86f36d7e3d..22bec9bd0dfc 100644
-> > > > > > > > > > --- a/include/uapi/linux/virtio_pci.h
-> > > > > > > > > > +++ b/include/uapi/linux/virtio_pci.h
-> > > > > > > > > > @@ -166,6 +166,13 @@ struct virtio_pci_common_cfg {
-> > > > > > > > > >       __le32 queue_used_hi;           /* read-write */
-> > > > > > > > > >  };
-> > > > > > > > > >
-> > > > > > > > > > +struct virtio_pci_common_cfg_notify {
-> > > > > > > > > > +     struct virtio_pci_common_cfg cfg;
-> > > > > > > > > > +
-> > > > > > > > > > +     __le16 queue_notify_data;       /* read-write */
-> > > > > > > > > > +     __le16 padding;
-> > > > > > > > > > +};
-> > > > > > > > > > +
-> > > > > > > > > >  /* Fields in VIRTIO_PCI_CAP_PCI_CFG: */
-> > > > > > > > > >  struct virtio_pci_cfg_cap {
-> > > > > > > > > >       struct virtio_pci_cap cap;
-> > > > > > > > > > --
-> > > > > > > > > > 2.31.0
-> > > > > > > > >
-> > > > > > >
-> > > > >
-> > >
->
-
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
