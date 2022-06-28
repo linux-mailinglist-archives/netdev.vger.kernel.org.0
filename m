@@ -2,156 +2,211 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C7BBC55E9D0
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 18:42:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A04055E9E3
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 18:42:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237819AbiF1QeD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 12:34:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50786 "EHLO
+        id S238372AbiF1Qfa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 12:35:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229973AbiF1QdU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 12:33:20 -0400
-Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70049.outbound.protection.outlook.com [40.107.7.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 282A732EF4;
-        Tue, 28 Jun 2022 09:26:08 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OdjwN7C6552Fyxi6Cudhf4DCKwacU4j/CgrlPsOdqrxfG186ZyyKMJwHQPmBi5+LRVL+/gjEv5OXaae33Xy2jDPJDKrLgO6HF2RdHLUHY5zCUnZtMZH3hzJsZdJTI9qsHUqlfImS5eYjaipjY+ifGwsBoZ+HnKgmcyjENWYoDVka4eIZYjuzrHiKlCBw7XomFUBHAHwtEFg4wZlNuqGmZ0hIV6ueWAO301FDsl49GvyEZAUCKAUR/RLEnET94BBMzI85Z2oapcm5TV2/f2k4RhAapA7borpvsAKazq0+XRVGfrnSbUxisf+iPDJCatFGg6hZrKE/wAkoNxL72gP9VA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=YjsoKb4xNdz7SEsp5DrK7/0xuSh+X5ymvZ62id+fOGg=;
- b=d1vDKhgn/enHpZxtresOq8Mq85MOm1gsIEe5wdTg1tuevacg+cDsD/wN8gP6bUA3UtyKINDWeezRTewAKk0+Tal005WlIEhKu7t4QCAzaFsy6cL/W7pvPADVU5/VwXVf3mO/Z5tguLxFPonOEPUFumMamUPKyvPyiIsHn5ULk2/sqVMR1XyOEDe7YCYE5AN/LPN/Xj83P0KRS5U3Z+rsTVKZGb8qtgIVL4WjhhOrRmpNF5jPXZsYGOuHRCuhTe1P4hoDOep0IHBrpyifmwnftU2u+8hP20sOSNZDu1D8ODLwWlZNQZa+ZWQnRxzEXZU0+8P9u0hFoGmK7PxAP3t1bw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YjsoKb4xNdz7SEsp5DrK7/0xuSh+X5ymvZ62id+fOGg=;
- b=PRoXTkz7lDDAH4d5p0qZVMdfTIu9ofoUfw5dvcyrsOCr5yV5lZxszqRvqty5hczPTGAHsDWZ5WVQjf/BZqgPiaW+42RZ1L5kLNPqwNYlhtJjCLVdpBAXeQYyQu3X27VDbPH28OzpBH6sBnfor3wW3QqY5zuLGrtAFLtoiMe0mOA=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VI1PR0401MB2367.eurprd04.prod.outlook.com (2603:10a6:800:24::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.18; Tue, 28 Jun
- 2022 16:26:05 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::94fe:9cbe:247b:47ea]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::94fe:9cbe:247b:47ea%7]) with mapi id 15.20.5373.018; Tue, 28 Jun 2022
- 16:26:05 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Colin Foster <colin.foster@in-advantage.com>
-CC:     "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
+        with ESMTP id S235933AbiF1Qen (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 12:34:43 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ECA73151C
+        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 09:31:49 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id pk21so26957917ejb.2
+        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 09:31:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=amarulasolutions.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bul38R93x//KNOyQi8klG2NZQTS/GpM9te9tWvCtSxw=;
+        b=aZfzn3sb8w/YS2hcLL2B4c0d715KalCFCH+F93LNVlFdmDLTNzG+PshqN6U+C9fMmY
+         XGRmmbuBnh2cl2ZFTI1l6ZyXZbnAdDwCi0gKOr3MZAd/gdZYyB5eDmWj0YgvJXJ7aUY3
+         wsYAr0TZDzid3K3wzsibEtXlJRNIM7rRs5nF0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bul38R93x//KNOyQi8klG2NZQTS/GpM9te9tWvCtSxw=;
+        b=ck8yA60EzjKXqTIZmdkg0+aDvFKaAPiTbgG3Cf1ANO6tdBqjhUjdXgWJxG4NfoVcfZ
+         Pwtufv8ivV4/Q7tU/1AeVnKaBKgST2uTJ9RKO67KeXZ+CDS/4ehCzc6kk+zXTf23KJcH
+         7SHHTwCauuEq7pKA7Xt7SFfBLnLw1tUp6aneUgyUcjszB4lgsC2TuF45XIfnI4gmoXO6
+         iDVzU2E8uddXRGiUBfK9otGORL4t2lFSaKXk9maDY7UaZIEl7I4BOhsumD2luDjpyWnt
+         VSnU+fWqyJJxJn/VT3sH4XNUA+MKEkwgcMQcUch1ufzFfSqgEMH0ATjBeXroKoav8nnw
+         bmDQ==
+X-Gm-Message-State: AJIora+QUSm+TkYYSOJGkmpM2bjEHnwOKKauOoTiOoYjSKtirzCZ+tXk
+        ZtgEcagOBg3RQ4rf007ZvqB/ZA==
+X-Google-Smtp-Source: AGRyM1tHcXAjOHTgxJOkl0owaZUTlp2VvNesYHKFklptO0nkOnfG3bhhYHq3odMXDMlZjPpW2psiXg==
+X-Received: by 2002:a17:907:1b14:b0:6ef:a5c8:afbd with SMTP id mp20-20020a1709071b1400b006efa5c8afbdmr18523050ejc.151.1656433907916;
+        Tue, 28 Jun 2022 09:31:47 -0700 (PDT)
+Received: from dario-ThinkPad-T14s-Gen-2i.homenet.telecomitalia.it (host-80-116-90-174.pool80116.interbusiness.it. [80.116.90.174])
+        by smtp.gmail.com with ESMTPSA id b20-20020a0564021f1400b0042e15364d14sm9916952edb.8.2022.06.28.09.31.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Jun 2022 09:31:47 -0700 (PDT)
+From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     michael@amarulasolutions.com,
+        Amarula patchwork <linux-amarula@amarulasolutions.com>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Dario Binacchi <dario.binacchi@amarulasolutions.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jakub Kicinski <kuba@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
         Paolo Abeni <pabeni@redhat.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Wolfram Sang <wsa@kernel.org>,
-        Terry Bowman <terry.bowman@amd.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH v11 net-next 2/9] net: mdio: mscc-miim: add ability to be
- used in a non-mmio configuration
-Thread-Topic: [PATCH v11 net-next 2/9] net: mdio: mscc-miim: add ability to be
- used in a non-mmio configuration
-Thread-Index: AQHYiseFWqiBct4k00WOzITu2aZtrK1lAfYA
-Date:   Tue, 28 Jun 2022 16:26:05 +0000
-Message-ID: <20220628162604.fxhbcaimv2ioovrk@skbuf>
-References: <20220628081709.829811-1-colin.foster@in-advantage.com>
- <20220628081709.829811-3-colin.foster@in-advantage.com>
-In-Reply-To: <20220628081709.829811-3-colin.foster@in-advantage.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 69cb9347-e168-4b3a-bbdf-08da5922e651
-x-ms-traffictypediagnostic: VI1PR0401MB2367:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: dF3G/JbTcQa5VDWDVoR8Y/7FyEJcEmi8cBJjPYHuo7CDj2wHEyrg3dzLxPJHLhYYU7ldqMC8txGv2Y8yN5mtswaBzukrZH/9rKM0oJccCyLZ3/lvqsXa3CNZKJZEsZBsLSXbl4cQaO7GPQAcEUZIaMDI475lBUkRIAPb23PzYSoRYPPkDBcVsKVER0DTPCAEMO6VQTtaIKTJJlwGdQGypNOsNpPwokCuY+aMvkg1xf+uyVJhM30naFJ6F7OhkEWrh65CYQ9P3OqgJjTr1iZz0YS5g9jSETZ3k0aDsxLAcBBHCscSyv8N/x2I0oW62977wyH/FU+LQcUQ+RloZs0mdYEEiEmMrM6k890ACePyEaVn1fPEOZLYw53nDLaXQOLcSwYtfDDlrxTX5PY6G1XudYBvvI/UGFShDo327cF0uM5h+px+4htgEE2EtszvlJyR1NZynDRx2Fk3WDfrbpUR0TMUuyFYXU0FaQQZwgrqp47lrBmh37UWMjIsn7P6ubp0v6xHD51N2OUhO/a5iK9wjtGvXVcpJZBr7OZqT2gP77FlGsEIJ/hQkdgwE7dMSRgliTGLROIzupZS7dd+qm4XUig0CSNVFDSuBZ9pyE2JaFwW0SPGJoIbD49LijQlBlUj1YzE1vHFQlBQQCAgV2sRCZZNUBRhjeSKwMDQ7ZztqC3eI6jmZlhmrBTDrA21DGPa3oel7cF5eAm1+Iezy2CkfSb1nmpJ/l+FeOvvNvyts2gFhsbh8GOmm0KbkU7TtoaWIGaJ+LY2iBES3vFOrvfcPNCfYwW5JK+ASJ0tYgURmQw=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(4636009)(39860400002)(396003)(136003)(376002)(366004)(346002)(41300700001)(6512007)(6506007)(66946007)(8676002)(26005)(83380400001)(478600001)(66556008)(86362001)(76116006)(66476007)(38070700005)(316002)(54906003)(38100700002)(64756008)(66446008)(4326008)(71200400001)(2906002)(33716001)(6916009)(1076003)(44832011)(7416002)(186003)(6486002)(4744005)(9686003)(122000001)(5660300002)(8936002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?PXcbKzKBL72uAqOjIIjpY+U9NsR4+xgZz/xLYHTF91S+ryU3SBOSPfT2edmf?=
- =?us-ascii?Q?xTPX7mAq7WYoTYn+/s1XIurYProf87Gl1iEuMzO9qGV4unV5jNHutQ5DmPMf?=
- =?us-ascii?Q?KOJiZzYw7Q6aMuE6gkyNvAxXvGDQ8PSS43NCHuJBWL0+OZZ4xrhWUlOecZQB?=
- =?us-ascii?Q?Zsn6x7Jq1XnZXh5LjRhLt/LFS2C/SBpDTF/fYClZ00vqLBJZXWypu9y5G014?=
- =?us-ascii?Q?GiOb0aBAWkbsk+/MbhbnloWAwnJKvuQ0SgjFj2/PGBBkWBczScwcqxCimF70?=
- =?us-ascii?Q?K1tiYQNel7Q82Sc/v9/BTDANFUnut3r2UUKGDRBl6IfUOOBVHYiN2qWvJBDu?=
- =?us-ascii?Q?68vXVT6nYx+PI3kBp/dUBo94u269XFLANMdJ1hfEcVwTTHr99ys68zy4rCt6?=
- =?us-ascii?Q?BDpi/zRkyNEsHI9cFXcRWX8IySlIi+BEn0xRnVGcbGYzRi6wdU+DSDEI7x2I?=
- =?us-ascii?Q?LzORFCZuS0Mnwh9mE3U3oHFG5OrYlrxgT3lxYtY2PXHA06SAObFUulJOA+0G?=
- =?us-ascii?Q?k5wrHPAeIqKMaNosGlT5QwZfij9mBC7nIbUwWHpKmOo6jYO6UWyhB/BL6uLJ?=
- =?us-ascii?Q?nWs/22UrEffNFMiineq8WXscNj9HbFsYHXQuuxXRzKRHGfL2iH3EO110bxY4?=
- =?us-ascii?Q?ck2rpCdfYbADp8binFWTFIcpm6xjvPt0z4w9OOxMIxXYTLlaual7hKPJtznz?=
- =?us-ascii?Q?k+FDd9eHvvuLsZPc+7e1pcqfNqIn2Kmb40lPKuRoB0y9CkTF/u/ixj2Ni3cP?=
- =?us-ascii?Q?BksF+DPoUfz/pI4m8mt+WNZAmwE/H/VZN4t/EoCfs0VHpe/T4K0Bsjb+x0yG?=
- =?us-ascii?Q?+X75ZvdKO0AtGdd3HRltjYjUpdWXk2Kwsb9HPZcm4nzjET6qIQgckiGrXwOX?=
- =?us-ascii?Q?xhCJL56ekRURRb24GQFQV9GEAB9cc4Q6hXDWys1/FBGMxpDdAIvgqNwqhGem?=
- =?us-ascii?Q?7HKsAVkfToZ+hf9XUowtHxBP4wDCORNI3ktyoKIZvs5uPjh/XNHOVkO0WCet?=
- =?us-ascii?Q?jJe9IXTWlEH1Qxnj7h2DnZZS1zp9u9oxtkwK/usvkT/0uFD7eHdRkjP9eLnn?=
- =?us-ascii?Q?fc34UecWps6IaDy8Idvx3OetkpIIY87exXx/3S034Wm2zgl1QJ7PIPKxik3J?=
- =?us-ascii?Q?YxFGjQ+Py9neBLS6ftVH1rx2XJctuYOEp5rY40AFSN6H2OK5SKgkOwKzqH+X?=
- =?us-ascii?Q?KvM2xy65uypzny5Pd1pk+M297znhUKqj/XyN4zWQb8es31/IU+gAcdl7bi88?=
- =?us-ascii?Q?6BY62vaB9bU8k1WAwB5ZJa2DftbdbK/zGay7Oh+wB+lVuTe+knOZzzraurNC?=
- =?us-ascii?Q?f5qEE+zeA7g3/VVMJYZWQYy6P57M9kKXFSmMLCqoBDA5p+z6niHgPUtBS3T6?=
- =?us-ascii?Q?A8gGZujGp1fe+vozUYETZtMehsdEUeUQ2acULBH3k9QBFasrjUpQ4mqRsuel?=
- =?us-ascii?Q?Ihnu0+PXI1sznKF0VJkqlvyLqc2IC1hcrIqa8kBBH2pJgAaIB5mhaPxmTIVe?=
- =?us-ascii?Q?B/pmwzg27sQmDIBkFUkkdChDtFL1HyF2+s2MxCQ/iAa+VFKEiEtQ9kJONUB3?=
- =?us-ascii?Q?Kjm8b+MNItJS+XnjEq8W5CXxmYcBXSqBbI40d8qzaUONiQTcAOrS3ed+fZaG?=
- =?us-ascii?Q?DA=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <DEA2719DD20A2B47B79AC3DFE36E58F1@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH v5 00/12] can: slcan: extend supported features
+Date:   Tue, 28 Jun 2022 18:31:24 +0200
+Message-Id: <20220628163137.413025-1-dario.binacchi@amarulasolutions.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 69cb9347-e168-4b3a-bbdf-08da5922e651
-X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Jun 2022 16:26:05.4066
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: W1H54u0klSJghA+k5ITglc5heLoR9c1aPtEZT5xlJU841Stngl287/ugwUB9cX05DEsSqhO3n8tNFagkZsrZkA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0401MB2367
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 28, 2022 at 01:17:02AM -0700, Colin Foster wrote:
-> There are a few Ocelot chips that contain the logic for this bus, but are
-> controlled externally. Specifically the VSC7511, 7512, 7513, and 7514. In
-> the externally controlled configurations these registers are not
-> memory-mapped.
->=20
-> Add support for these non-memory-mapped configurations.
->=20
-> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
-> ---
+This series originated as a result of CAN communication tests for an
+application using the USBtin adapter (https://www.fischl.de/usbtin/).
+The tests showed some errors but for the driver everything was ok.
+Also, being the first time I used the slcan driver, I was amazed that
+it was not possible to configure the bitrate via the ip tool.
+For these two reasons, I started looking at the driver code and realized
+that it didn't use the CAN network device driver interface.
 
-These "add ability to be used in a non-MMIO configuration" commit
-messages are very confusing when you are only adding support for
-non-MMIO in ocelot_platform_init_regmap_from_resource() in patch 9/9.
-May I suggest a reorder?=
+Starting from these assumptions, I tried to:
+- Use the CAN network device driver interface.
+- Set the bitrate via the ip tool.
+- Send the open/close command to the adapter from the driver.
+- Add ethtool support to reset the adapter errors.
+- Extend the protocol to forward the adapter CAN communication
+  errors and the CAN state changes to the netdev upper layers.
+
+Except for the protocol extension patches (i. e. forward the adapter CAN
+communication errors and the CAN state changes to the netdev upper
+layers), the whole series has been tested under QEMU with Linux 4.19.208
+using the USBtin adapter.
+Testing the extension protocol patches requires updating the adapter
+firmware. Before modifying the firmware I think it makes sense to know if
+these extensions can be considered useful.
+
+Before applying the series I used these commands:
+
+slcan_attach -f -s6 -o /dev/ttyACM0
+slcand ttyACM0 can0
+ip link set can0 up
+
+After applying the series I am using these commands:
+
+slcan_attach /dev/ttyACM0
+slcand ttyACM0 can0
+ip link set dev can0 down
+ip link set can0 type can bitrate 500000
+ethtool --set-priv-flags can0 err-rst-on-open on
+ip link set dev can0 up
+
+Now there is a clearer separation between serial line and CAN,
+but above all, it is possible to use the ip and ethtool commands
+as it happens for any CAN device driver. The changes are backward
+compatible, you can continue to use the slcand and slcan_attach
+command options.
+
+
+Changes in v5:
+- Update the commit message.
+- Restore the use of rtnl_lock() and rtnl_unlock().
+
+Changes in v4:
+- Move the patch in front of the patch "[v3,04/13] can: slcan: use CAN network device driver API".
+- Add the CAN_BITRATE_UNSET (0) and CAN_BITRATE_UNKNOWN (-1U) macros.
+- Simplify the bitrate check to dump it.
+- Update the commit description.
+- Update the commit description.
+- Use the CAN_BITRATE_UNKNOWN macro.
+- Use kfree_skb() instead of can_put_echo_skb() in the slc_xmit().
+- Remove the `if (slcan_devs)' check in the slc_dealloc().
+- Replace `sl->tty == NULL' with `!sl->tty'.
+- Use CAN_BITRATE_UNSET (0) and CAN_BITRATE_UNKNOWN (-1U) macros.
+- Don't reset the bitrate in ndo_stop() if it has been configured.
+- Squashed to the patch [v3,09/13] can: slcan: send the close command to the adapter.
+- Use the CAN_BITRATE_UNKNOWN macro.
+- Add description of slc_bump_err() function.
+- Remove check for the 'e' character at the beggining of the function.
+  It was already checked by the caller function.
+- Protect decoding against the case the len value is longer than the
+  received data.
+- Some small changes to make the decoding more readable.
+- Increment all the error counters at the end of the function.
+- Add description of slc_bump_state() function.
+- Remove check for the 's' character at the beggining of the function.
+  It was already checked by the caller function.
+- Protect decoding against the case the frame len is longer than the
+  received data (add SLC_STATE_FRAME_LEN macro).
+- Set cf to NULL in case of alloc_can_err_skb() failure.
+- Some small changes to make the decoding more readable.
+- Use the character 'b' instead of 'f' for bus-off state.
+
+Changes in v3:
+- Increment the error counter in case of decoding failure.
+- Replace (-1) with (-1U) in the commit description.
+- Update the commit description.
+- Remove the slc_do_set_bittiming().
+- Set the bitrate in the ndo_open().
+- Replace -1UL with -1U in setting a fake value for the bitrate.
+- Drop the patch "can: slcan: simplify the device de-allocation".
+- Add the patch "can: netlink: dump bitrate 0 if can_priv::bittiming.bitrate is -1U".
+
+Changes in v2:
+- Put the data into the allocated skb directly instead of first
+  filling the "cf" on the stack and then doing a memcpy().
+- Move CAN_SLCAN Kconfig option inside CAN_DEV scope.
+- Improve the commit message.
+- Use the CAN framework support for setting fixed bit rates.
+- Improve the commit message.
+- Protect decoding against the case the len value is longer than the
+  received data.
+- Continue error handling even if no skb can be allocated.
+- Continue error handling even if no skb can be allocated.
+
+Dario Binacchi (12):
+  can: slcan: use the BIT() helper
+  can: slcan: use netdev helpers to print out messages
+  can: slcan: use the alloc_can_skb() helper
+  can: netlink: dump bitrate 0 if can_priv::bittiming.bitrate is -1U
+  can: slcan: use CAN network device driver API
+  can: slcan: allow to send commands to the adapter
+  can: slcan: set bitrate by CAN device driver API
+  can: slcan: send the open/close commands to the adapter
+  can: slcan: move driver into separate sub directory
+  can: slcan: add ethtool support to reset adapter errors
+  can: slcan: extend the protocol with error info
+  can: slcan: extend the protocol with CAN state info
+
+ drivers/net/can/Kconfig                       |  40 +-
+ drivers/net/can/Makefile                      |   2 +-
+ drivers/net/can/dev/netlink.c                 |   3 +-
+ drivers/net/can/slcan/Makefile                |   7 +
+ .../net/can/{slcan.c => slcan/slcan-core.c}   | 504 +++++++++++++++---
+ drivers/net/can/slcan/slcan-ethtool.c         |  65 +++
+ drivers/net/can/slcan/slcan.h                 |  18 +
+ include/linux/can/bittiming.h                 |   2 +
+ 8 files changed, 536 insertions(+), 105 deletions(-)
+ create mode 100644 drivers/net/can/slcan/Makefile
+ rename drivers/net/can/{slcan.c => slcan/slcan-core.c} (65%)
+ create mode 100644 drivers/net/can/slcan/slcan-ethtool.c
+ create mode 100644 drivers/net/can/slcan/slcan.h
+
+-- 
+2.32.0
+
