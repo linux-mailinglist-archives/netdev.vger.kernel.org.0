@@ -2,120 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ABC5755F050
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 23:27:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CCFDC55F06A
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 23:36:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230230AbiF1V1H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 17:27:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38374 "EHLO
+        id S229670AbiF1VgT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 17:36:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229972AbiF1V1F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 17:27:05 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D2F93AA57
-        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 14:27:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656451624; x=1687987624;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=KFw1Jf1CGCi6tvKBAkg6fX1RZBJfp5GQwXtTCsGuW14=;
-  b=f9VbrkRZDwR4oJAi8Uvf+LffjVyB7bvVD9NejU6FJR0saVKAKZKrohHj
-   gFaJvPzZUSJdpaL2G8tTd7Y+AEG+1HbR+g22nqvMvlEhfXXiY21o/sXNP
-   UoVQzdaobM2QzLkLIhDaP6vg2tRRRYK+Tciib5j+A4wTMpkNtM0LXF72b
-   NAGZBERsF1Aas7EhErllUjAxtiZmqQLGAu29xtwG+OS8GXTtJSvzSkpgE
-   6OGX8Iz2C8pqM9iK3tv3nlGDfmO8PwkJFja6HUPz+yX082c4Q26mTMuYD
-   U+YTVKdAaF8QCwv/xjhL7CtnXTtOtEBBFQGENGsqfiQSX4pVTanBgr5xm
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="368165706"
-X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
-   d="scan'208";a="368165706"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 14:27:04 -0700
-X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
-   d="scan'208";a="647086093"
-Received: from tuckermc-mobl.amr.corp.intel.com (HELO [10.212.191.153]) ([10.212.191.153])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 14:27:03 -0700
-Message-ID: <395cbc90-da43-c505-7bf0-18f8ac8e78cc@linux.intel.com>
-Date:   Tue, 28 Jun 2022 14:26:55 -0700
+        with ESMTP id S229436AbiF1VgR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 17:36:17 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA3D12ED69;
+        Tue, 28 Jun 2022 14:36:15 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id n8so5448738eda.0;
+        Tue, 28 Jun 2022 14:36:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=HUL3dhmazHACLWg3Jqji+i1NZvZ2c9MkkehxgzHYnVo=;
+        b=LnQ9zYXKPe1cHsHner0sFmNa+CG2mooABLHzHPnG37uphSLEvIijDwftPXJ/8zhoUL
+         4UBB93mISsMj1X4pSTIDhAqwW+03KqzSdqgyUBNgX3ooqDGbh9RxUh/q5GS19pcBt33s
+         Te7lWmiBrsbBXZWNLuKamC6ZKm99bAXkSu3MF9XdB4ED0aVjPT6hv/jEts794NVkmQtG
+         E8wyWTEDACK7jRIVI2Gn0FlaUd7e1Ls+WoXeY0DIDz82GuNQc0J9ETNCOefAy/ndaQsr
+         2ZX2mKd0L39oiJlg6/ryprq2+TUQx24Kdx0FuTOgRuFFRLgfKJmWOQdpDTC7zdbygdFW
+         qEGw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=HUL3dhmazHACLWg3Jqji+i1NZvZ2c9MkkehxgzHYnVo=;
+        b=DCuJWRs4lalSho49UBGXhswU30w6DK32JsUjOb9Igw5+JhiEptzpWGJZJzgko/TfvM
+         ZeJPbUO1Slx5OHZ5SkLqRqo73O55IUZweOTONBNKyEy/iiFyV6GivxqYxqyqkW1CRPbK
+         E1IaUU6nLqU0W2b90aSf7RDVlwjvA3X4zflu6rfKwvQc12oCRFJI8Rv+GcxVaV0aOBx6
+         u0WlYBHaI/i5YjSnJPyqNNJjzYGj6d3SvWL1iTnoSDgL2sUUTMCaoMv+PuEyu8pI2CE+
+         SWIHpZo6/qwn9XXilunKLTFIT6o1sMY+iG4JSEPGI252z9QAsbSp9FmyYTsHTcA4HeNi
+         OyHQ==
+X-Gm-Message-State: AJIora8lbqpvgSVnAVX0qTq5kTQ5kfn8VnAiSWeri4/NsqaPE0KnAcSM
+        q+ok3FnIO2bO4Yw1mFh5ucg=
+X-Google-Smtp-Source: AGRyM1vpHdR+++4F6Rzrttu7QmIXX746plknU+annn8p6oKDODgOjJeco4YhMOrhhevHCXQCd1MXQg==
+X-Received: by 2002:a05:6402:d05:b0:425:b5c8:faeb with SMTP id eb5-20020a0564020d0500b00425b5c8faebmr74752edb.273.1656452174287;
+        Tue, 28 Jun 2022 14:36:14 -0700 (PDT)
+Received: from [192.168.8.198] (188.28.125.106.threembb.co.uk. [188.28.125.106])
+        by smtp.gmail.com with ESMTPSA id lu4-20020a170906fac400b006fec69696a0sm6817919ejb.220.2022.06.28.14.36.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 28 Jun 2022 14:36:13 -0700 (PDT)
+Message-ID: <c84bdaec-3691-de84-95a5-d600e4b7ac2f@gmail.com>
+Date:   Tue, 28 Jun 2022 22:33:10 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH net-next v2 1/1] net: wwan: t7xx: Add AP CLDMA and GNSS
- port
+ Thunderbird/91.10.0
+Subject: Re: [RFC net-next v3 05/29] net: bvec specific path in
+ zerocopy_sg_from_iter
 Content-Language: en-US
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
-        johannes@sipsolutions.net, ryazanov.s.a@gmail.com,
-        loic.poulain@linaro.org, m.chetan.kumar@intel.com,
-        chandrashekar.devegowda@intel.com, linuxwwan@intel.com,
-        chiranjeevi.rapolu@linux.intel.com, haijun.liu@mediatek.com,
-        ricardo.martinez@linux.intel.com, dinesh.sharma@intel.com,
-        ilpo.jarvinen@linux.intel.com, moises.veleta@intel.com,
-        Madhusmita Sahu <madhusmita.sahu@intel.com>
-References: <20220628165024.25718-1-moises.veleta@linux.intel.com>
- <YrtonRQTeLZeYm8T@smile.fi.intel.com>
-From:   "moises.veleta" <moises.veleta@linux.intel.com>
-In-Reply-To: <YrtonRQTeLZeYm8T@smile.fi.intel.com>
+To:     Al Viro <viro@zeniv.linux.org.uk>
+Cc:     io-uring@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Jens Axboe <axboe@kernel.dk>, kernel-team@fb.com
+References: <cover.1653992701.git.asml.silence@gmail.com>
+ <5143111391e771dc97237e2a5e6a74223ef8f15f.1653992701.git.asml.silence@gmail.com>
+ <YrtfMr+waxp37ru9@ZenIV>
+From:   Pavel Begunkov <asml.silence@gmail.com>
+In-Reply-To: <YrtfMr+waxp37ru9@ZenIV>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 6/28/22 21:06, Al Viro wrote:
+> On Tue, Jun 28, 2022 at 07:56:27PM +0100, Pavel Begunkov wrote:
+>> Add an bvec specialised and optimised path in zerocopy_sg_from_iter.
+>> It'll be used later for {get,put}_page() optimisations.
+> 
+> If you need a variant that would not grab page references for ITER_BVEC
+> (and presumably other non-userland ones), the natural thing to do would
 
-On 6/28/22 13:46, Andy Shevchenko wrote:
-> On Tue, Jun 28, 2022 at 09:50:24AM -0700, Moises Veleta wrote:
->> From: Haijun Liu <haijun.liu@mediatek.com>
->>
->> The t7xx device contains two Cross Layer DMA (CLDMA) interfaces to
->> communicate with AP and Modem processors respectively. So far only
->> MD-CLDMA was being used, this patch enables AP-CLDMA and the GNSS
->> port which requires such channel.
->>
->> GNSS AT control port allows Modem Manager to control GPS for:
->> - Start/Stop GNSS sessions,
->> - Configuration commands to support Assisted GNSS positioning
->> - Crash & reboot (notifications when resetting device (AP) & host)
->> - Settings to Enable/Disable GNSS solution
->> - Geofencing
->>
->> Rename small Application Processor (sAP) to AP.
->>
->> Signed-off-by: Haijun Liu <haijun.liu@mediatek.com>
->> Co-developed-by: Madhusmita Sahu <madhusmita.sahu@intel.com>
->> Signed-off-by: Madhusmita Sahu <madhusmita.sahu@intel.com>
->> Signed-off-by: Moises Veleta <moises.veleta@linux.intel.com>
-> Missed cutter '---' line here. Effectively invalidates your tag block and may
-> not be applied (as no SoB present _as a tag_).
-Thanks for catching that! Next time I will add '---' between the 
-Signed-offs and the vX change log.
->> Change log in v2:
->> - Add to commit message renaming sAP to AP
->> - Add to commit message GNSS AT port info
->> - Lowercase X in constant prefix
->> - Add GNSS AT comment in static port file
->> ---
->>   drivers/net/wwan/t7xx/t7xx_hif_cldma.c     | 17 +++--
->>   drivers/net/wwan/t7xx/t7xx_hif_cldma.h     |  2 +-
->>   drivers/net/wwan/t7xx/t7xx_mhccif.h        |  1 +
->>   drivers/net/wwan/t7xx/t7xx_modem_ops.c     | 85 ++++++++++++++++++----
->>   drivers/net/wwan/t7xx/t7xx_modem_ops.h     |  3 +
->>   drivers/net/wwan/t7xx/t7xx_port.h          | 10 ++-
->>   drivers/net/wwan/t7xx/t7xx_port_ctrl_msg.c |  8 +-
->>   drivers/net/wwan/t7xx/t7xx_port_proxy.c    | 24 ++++++
->>   drivers/net/wwan/t7xx/t7xx_reg.h           |  2 +-
->>   drivers/net/wwan/t7xx/t7xx_state_monitor.c | 13 +++-
->>   drivers/net/wwan/t7xx/t7xx_state_monitor.h |  2 +
+I don't see other iter types interesting in this context
+
+> be to provide just such a primitive, wouldn't it?
+
+A helper returning a page array sounds like overshot and waste of cycles
+considering that it copies one bvec into another, and especially since
+iov_iter_get_pages() parses only the first struct bio_vec and so returns
+only 1 page at a time.
+
+I can actually use for_each_bvec(), but still leaves updating the iter
+from bvec_iter.
+
+> The fun question here is by which paths ITER_BVEC can be passed to that
+> function and which all of them are currently guaranteed to hold the
+> underlying pages pinned...
+
+It's the other way around, not all ITER_BVEC are managed but all users
+asking to use managed frags (i.e. io_uring) should keep pages pinned and
+provide ITER_BVEC. It's opt-in, both for users and protocols.
+
+--- a/include/linux/socket.h
++++ b/include/linux/socket.h
+@@ -66,9 +66,16 @@ struct msghdr {
+  	};
+  	bool		msg_control_is_user : 1;
+  	bool		msg_get_inq : 1;/* return INQ after receive */
++	/*
++	 * The data pages are pinned and won't be released before ->msg_ubuf
++	 * is released. ->msg_iter should point to a bvec and ->msg_ubuf has
++	 * to be non-NULL.
++	 */
++	bool		msg_managed_data : 1;
+  	unsigned int	msg_flags;	/* flags on received message */
+  	__kernel_size_t	msg_controllen;	/* ancillary data buffer length */
+  	struct kiocb	*msg_iocb;	/* ptr to iocb for async requests */
++	struct ubuf_info *msg_ubuf;
+  };
+
+The user sets ->msg_managed_data, then protocols find it and set
+SKBFL_MANAGED_FRAG_REFS. If either of the steps didn't happen the
+feature is not used.
+The ->msg_managed_data part makes io_uring the only user, and io_uring
+ensures pages are pinned.
 
 
-Regards,
+> And AFAICS you quietly assume that only ITER_BVEC ones will ever have that
+> "managed" flag of your set.  Or am I misreading the next patch in the
+> series?
 
-Moises
+I hope a comment just above ->msg_managed_data should count as not quiet.
 
+-- 
+Pavel Begunkov
