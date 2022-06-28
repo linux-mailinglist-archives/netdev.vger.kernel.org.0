@@ -2,105 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AB9E855E3E5
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:38:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EA9755E3F5
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:38:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345991AbiF1M4I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 08:56:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49526 "EHLO
+        id S1345913AbiF1NAU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 09:00:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345249AbiF1M4F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 08:56:05 -0400
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C7F22F660;
-        Tue, 28 Jun 2022 05:56:04 -0700 (PDT)
-Received: by mail-yb1-xb36.google.com with SMTP id r3so22065082ybr.6;
-        Tue, 28 Jun 2022 05:56:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ggwF5g1h8Ead4FuQw5zkAX1BhU9Zyqolzn8TdYVGstg=;
-        b=KeCLJ5ykrnqYEpWJJO9nXzaPfE5yt0z4Iq/Nje/aq0a043RgdvwLLQV9N99LTC6o66
-         neO4UcQYMDBwdFwCXMIaMYvKQxZ6v1pFmZJsxFGltIYh2by2CXKx3NmpbLgaSmEp9iE2
-         xXp9GVm1KHZ8TIeaVu1XWRPW1IUGhAmRvk0VSWKgoeogO+AJEtl1dKvTIzv2Br+KO6iH
-         uknuFW/Dy88sbBADAhdqNAk/Rr7YAxjywb6zMGIJ/n5LOomZvFrMS5rD5f7UZGZSAmhH
-         rg7WjkZtrtjJyayI4yLWQIe4J0IY96As42R+OlnJwepW6Ie/omPO4jukd5ozyg4JMo+i
-         bDoQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ggwF5g1h8Ead4FuQw5zkAX1BhU9Zyqolzn8TdYVGstg=;
-        b=V10Q+hd9a0gB+/X90e6RGRt65TJLT3TwZS0xWBr2XnPKEwvEiXWO0qJ33VxDOyx+K4
-         xWG9IcPlez45YZttfKn/vLthk+mIcRazMzy+tvdQWvIfdM9NDgarLk7GFsRh8ZbWSoMr
-         K8tWbPOuedaPBUg8iOnae4U4FdFYDeA/mKAn/JBKNPVW0Qk2IEcicptyzOsUvIjsvp56
-         hGdIcDx8kbb7b4drGFa9b+rd9MwY65xX7p32xAHyOZBePiEEzFs7350BfwEPS9OpAXnY
-         2FYU5ETLq1/y2fi9W8WQPGHJE62KvE4VJc/yR+yNc0UkEOlJU+pU56nJxun4NDiSYiMQ
-         0s9A==
-X-Gm-Message-State: AJIora8u2hxeT9N0PfKRBPETtmOu6BgIQOzrY6ZzPSZs3q7UsuHJ6Jyp
-        R7TTeF2fvocg+eIkvbYz3LVabgwxEcOg/h5bQZ4=
-X-Google-Smtp-Source: AGRyM1tJmBePXIn17WC/ITK/MV0xG89V4LBimXqbrTG2bJTr+PdbMYfS52+jNtpI0qjpMFF1BO0XbyVnla79lsfFCWM=
-X-Received: by 2002:a25:b2a8:0:b0:66c:8110:3331 with SMTP id
- k40-20020a25b2a8000000b0066c81103331mr20100404ybj.460.1656420963675; Tue, 28
- Jun 2022 05:56:03 -0700 (PDT)
+        with ESMTP id S231792AbiF1NAT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 09:00:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C69562FE7A
+        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 06:00:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7F9ADB81E14
+        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 13:00:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 39392C341CB;
+        Tue, 28 Jun 2022 13:00:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656421216;
+        bh=g5vJx1ufHS98t6VLxOeod6M2/4DouERJTvDX7gj+20w=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=f2noS+P3U3nF7496Xc8Tg5Skc7utOlTKUvIUrw+S5EOcgpfyMzrlhDnaawHaYA1Ih
+         76fYDwp+ZcVC42KLMk5MOE9nxHpKVFCLcwgvIimgUQzdDyS8UITtO0To7FmC2pxxoD
+         gOONb3zvuu58z2CcoslgaeullLBEFzqxlCGoZu7u/0eFPA7ipL/7L8yzRoYn+oTRG3
+         lMAFBk+5K9U4Pg0bu4eSaVN7ku9QXexzXtAUlMIrhoXBH/JZ0mDE+2bS2uwdA1K/+M
+         0qiYACHp5A/8ErL+WOjoNpdMbHh2fzuaxbVRvFKNUxasSHw9KVwwwMzDGA4lhryxj5
+         GRc3aOKo8sxag==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1B687E49F65;
+        Tue, 28 Jun 2022 13:00:16 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20220628081709.829811-1-colin.foster@in-advantage.com> <20220628081709.829811-6-colin.foster@in-advantage.com>
-In-Reply-To: <20220628081709.829811-6-colin.foster@in-advantage.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 28 Jun 2022 14:55:23 +0200
-Message-ID: <CAHp75VcEcHxExFsdJGYu2FO0YZVOr5dNYPhCTqYNwRrE1wEQZA@mail.gmail.com>
-Subject: Re: [PATCH v11 net-next 5/9] pinctrl: microchip-sgpio: allow sgpio
- driver to be used as a module
-To:     Colin Foster <colin.foster@in-advantage.com>
-Cc:     devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Wolfram Sang <wsa@kernel.org>,
-        Terry Bowman <terry.bowman@amd.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 00/13] mlxsw: Unified bridge conversion - part 4/6
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165642121610.28895.9213208050951195008.git-patchwork-notify@kernel.org>
+Date:   Tue, 28 Jun 2022 13:00:16 +0000
+References: <20220627070621.648499-1-idosch@nvidia.com>
+In-Reply-To: <20220627070621.648499-1-idosch@nvidia.com>
+To:     Ido Schimmel <idosch@nvidia.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, edumazet@google.com, petrm@nvidia.com,
+        amcohen@nvidia.com, mlxsw@nvidia.com
+X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 28, 2022 at 10:17 AM Colin Foster
-<colin.foster@in-advantage.com> wrote:
->
-> As the commit message suggests, this simply adds the ability to select
-> SGPIO pinctrl as a module. This becomes more practical when the SGPIO
-> hardware exists on an external chip, controlled indirectly by I2C or SPI.
-> This commit enables that level of control.
+Hello:
 
-...
+This series was applied to netdev/net-next.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
 
->  builtin_platform_driver(microchip_sgpio_pinctrl_driver);
+On Mon, 27 Jun 2022 10:06:08 +0300 you wrote:
+> This is the fourth part of the conversion of mlxsw to the unified bridge
+> model.
+> 
+> Unlike previous parts that prepared mlxsw for the conversion, this part
+> actually starts the conversion. It focuses on flooding configuration and
+> converts mlxsw to the more "raw" APIs of the unified bridge model.
+> 
+> [...]
 
-As per one of the previous patches. And repetitive if needed.
+Here is the summary with links:
+  - [net-next,01/13] mlxsw: spectrum: Add a temporary variable to indicate bridge model
+    https://git.kernel.org/netdev/net-next/c/d6d9026668db
+  - [net-next,02/13] mlxsw: spectrum_fid: Configure flooding table type for rFID
+    https://git.kernel.org/netdev/net-next/c/93303ff828fd
+  - [net-next,03/13] mlxsw: Prepare 'bridge_type' field for SFMR usage
+    https://git.kernel.org/netdev/net-next/c/fad8e1b6d52d
+  - [net-next,04/13] mlxsw: spectrum_fid: Store 'bridge_type' as part of FID family
+    https://git.kernel.org/netdev/net-next/c/dd8c77d59708
+  - [net-next,05/13] mlxsw: Set flood bridge type for FIDs
+    https://git.kernel.org/netdev/net-next/c/aa845e36a069
+  - [net-next,06/13] mlxsw: spectrum_fid: Configure egress VID classification for multicast
+    https://git.kernel.org/netdev/net-next/c/8c2da081c8b8
+  - [net-next,07/13] mlxsw: Add an initial PGT table support
+    https://git.kernel.org/netdev/net-next/c/d8782ec59eb8
+  - [net-next,08/13] mlxsw: Add an indication of SMPE index validity for PGT table
+    https://git.kernel.org/netdev/net-next/c/a1697d11c945
+  - [net-next,09/13] mlxsw: Add a dedicated structure for bitmap of ports
+    https://git.kernel.org/netdev/net-next/c/d7a7b6978709
+  - [net-next,10/13] mlxsw: Extend PGT APIs to support maintaining list of ports per entry
+    https://git.kernel.org/netdev/net-next/c/a3a7992bc4e4
+  - [net-next,11/13] mlxsw: spectrum: Initialize PGT table
+    https://git.kernel.org/netdev/net-next/c/bb1bba35f50a
+  - [net-next,12/13] mlxsw: spectrum_fid: Set 'mid_base' as part of flood tables initialization
+    https://git.kernel.org/netdev/net-next/c/9f6f467a3cdb
+  - [net-next,13/13] mlxsw: spectrum_fid: Configure flooding entries using PGT APIs
+    https://git.kernel.org/netdev/net-next/c/fe94df6dc622
 
+You are awesome, thank you!
 -- 
-With Best Regards,
-Andy Shevchenko
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
