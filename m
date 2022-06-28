@@ -2,96 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0650955DC5E
-	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:26:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9829055D146
+	for <lists+netdev@lfdr.de>; Tue, 28 Jun 2022 15:09:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244015AbiF1C74 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Jun 2022 22:59:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47776 "EHLO
+        id S230075AbiF1DKS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Jun 2022 23:10:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243980AbiF1C7y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 22:59:54 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF3CD10C2;
-        Mon, 27 Jun 2022 19:59:53 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id x138so8079943pfc.3;
-        Mon, 27 Jun 2022 19:59:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Iy098yhdyb0a5SyXKWlT7u6iJuhvMN00ep0qgOXCHoI=;
-        b=QNi1HHEUK8o83bxfsVWh2Z0OllMq9omDy4K0glAnV1LGSn1WJXd0+NQ3BRRpFmKvA5
-         5/j747pZhTLek5CVOQXiMuEWWxwBhbLbao5Pr5hOj9KusCwA4nBbj7vXgr1Zl9RkE6EA
-         qgaw2bj8pIM4ZZ0Ia8S52x392+ts1SD7cpwoEqJ5KnIqLy0gWV4Q3CFiq3SeFWPUjh2k
-         p/sxlkizJIi9Dv1y57lcHlBCcn4KFG6EiU4h6ygq5x1u8ZSuwAs87Kj3xd8cMAbMG+tn
-         2LxX6ntrg1x1YqjBvAj+iRdKh5D4si73ROhexqPsT087pEtiD3yccUDvnH4FiMLd4+N0
-         53bA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Iy098yhdyb0a5SyXKWlT7u6iJuhvMN00ep0qgOXCHoI=;
-        b=I9eb/yPL1baXk6Wj5fTIzH/uEvDz1vJSZromklSWohUOY21g4fdPtRJRU0FObpKvMK
-         lt3i55B9pLWmUeHZTh2qokMjo1+0tAGlTOtNJ86cjFgZW9gSmpzEY1GcDr9nUBbT1nhG
-         OmhXNwhptFbXaAFOsDqQvw9qAIJeFkKaxXl5KTQDZwgD6Ial+eyLqPSbnsjKWkoBYegu
-         43UZwT4jUv5jGbjcpRYVJXyMRYg1dm/cojZpTYeBoT4aM/YyHDX28iPMnmAx5kKcPJGy
-         EWODvvQM33FR0Bc5NZPWL1iOu7Gm+uFMOxHEIjKj++aWDuH+9QjMfFouV+palTiK8KK5
-         7vjg==
-X-Gm-Message-State: AJIora/TCj4gKprZyN0xxLSI/3nbAWMrEkCMaufvWgwtdf3eDXPqp2zz
-        RWv0KKs7DaUVZwdihRFcIiU=
-X-Google-Smtp-Source: AGRyM1vvx3EazGHMG0o771576+yjZRDKDLi71wCcXpaTemWTOq/i4T3QX8lr7Fg/tBCUj4dtvYtX8w==
-X-Received: by 2002:a63:5610:0:b0:3f2:7e19:1697 with SMTP id k16-20020a635610000000b003f27e191697mr15973688pgb.74.1656385193204;
-        Mon, 27 Jun 2022 19:59:53 -0700 (PDT)
-Received: from localhost.localdomain ([103.84.139.165])
-        by smtp.gmail.com with ESMTPSA id 17-20020a17090a199100b001eccaf818c5sm8096334pji.27.2022.06.27.19.59.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jun 2022 19:59:52 -0700 (PDT)
-From:   Hangyu Hua <hbh25y@gmail.com>
-To:     jmaloy@redhat.com, ying.xue@windriver.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
-Cc:     netdev@vger.kernel.org, tipc-discussion@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>
-Subject: [PATCH] net: tipc: fix possible infoleak in tipc_mon_rcv()
-Date:   Tue, 28 Jun 2022 10:59:21 +0800
-Message-Id: <20220628025921.14767-1-hbh25y@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S229840AbiF1DKN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Jun 2022 23:10:13 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A26825293;
+        Mon, 27 Jun 2022 20:10:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id D4276CE1DB0;
+        Tue, 28 Jun 2022 03:10:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B27D4C34115;
+        Tue, 28 Jun 2022 03:10:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656385809;
+        bh=/A5lHilGEudxQN1O5lOE9f2WrwiKW9Rpq6x20lJowk4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=h166QgdZP9uwpn/JkxefGVFxMXKdD8DfVDJglCGI+/gO8rliUYhFA0zTxWl68rDVi
+         xaOHqczWVTdbZOn6kvLHvHZf7uR2a6sDas4Xu5jha4ky7CLU9dRnTJWtUJLAPxYUeS
+         6k3FutNoHPR+q2PKYpLYc4WnB/VH3/lBgyF4sZXwW1bfDsDfQeMEF/y3T7UuADShhT
+         DYyoITkrMtHA1///J0ZfrVe0YiOcUyyHCKsK5T21aHELFDYYUQSHrVRvr7Xl9OJNHj
+         FlHwrDUGB1cEQISrkqw1lIZ6ua4T98+JO1SK4N6ReEbXoPXgCXmm2fioOQUOUIIJkn
+         cqn0bUER1tZBw==
+Date:   Mon, 27 Jun 2022 20:09:59 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Lukas Wunner <lukas@wunner.de>, UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH net-next v1 2/3] net: dsa: ar9331: add support for pause
+ stats
+Message-ID: <20220627200959.683de11b@kernel.org>
+In-Reply-To: <20220627200238.en2b5zij4sakau2t@skbuf>
+References: <20220624125902.4068436-1-o.rempel@pengutronix.de>
+        <20220624125902.4068436-2-o.rempel@pengutronix.de>
+        <20220624220317.ckhx6z7cmzegvoqi@skbuf>
+        <20220626171008.GA7581@pengutronix.de>
+        <20220627091521.3b80a4e8@kernel.org>
+        <20220627200238.en2b5zij4sakau2t@skbuf>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-dom_bef is use to cache current domain record only if current domain
-exists. But when current domain does not exist, dom_bef will still be used
-in mon_identify_lost_members. This may lead to an information leak.
+On Mon, 27 Jun 2022 23:02:38 +0300 Vladimir Oltean wrote:
+> > > Yes, it will be interesting to know how to proceed with it.  
+> > 
+> > I'm curious as well, AFAIK most drivers do not count pause to ifc stats.  
+> 
+> How do you know? Just because they manually bump stats->tx_bytes and
+> stats->tx_packets during ndo_start_xmit?
+> 
+> That would be a good assumption, but what if a network driver populates
+> struct rtnl_link_stats64 entirely based on counters reported by hardware,
+> including {rx,tx}_{packets,bytes}?
 
-Fix this by adding a memset before using dom_bef.
+Yeah, a lot of drivers use SW stats. What matters is where the packets
+get counted, even if device does the counting it may be in/before or
+after the MAC. Modern NICs generally don't use MAC-level stats for the
+interface because of virtualization.
 
-Fixes: 35c55c9877f8 ("tipc: add neighbor monitoring framework")
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
----
- net/tipc/monitor.c | 1 +
- 1 file changed, 1 insertion(+)
+> Personally I can't really find a reason why not count pause frames if
+> you can. And in the same note, why go to the extra lengths of hiding
+> them as Oleksij does. For example, the ocelot/felix switches do count
+> PAUSE frames as packets/bytes, both on rx and tx.
 
-diff --git a/net/tipc/monitor.c b/net/tipc/monitor.c
-index 2f4d23238a7e..67084e5aa15c 100644
---- a/net/tipc/monitor.c
-+++ b/net/tipc/monitor.c
-@@ -534,6 +534,7 @@ void tipc_mon_rcv(struct net *net, void *data, u16 dlen, u32 addr,
- 	state->peer_gen = new_gen;
- 
- 	/* Cache current domain record for later use */
-+	memset(&dom_bef, 0, sizeof(dom_bef));
- 	dom_bef.member_cnt = 0;
- 	dom = peer->domain;
- 	if (dom)
--- 
-2.25.1
+Yeah, the corrections are always iffy. I understand the doubts, and we
+can probably leave things "under-specified" until someone with a strong
+preference comes along. But I hope that the virt example makes it clear
+that neither of the choices is better (SR-IOV NICs would have to start
+adding the pause if we declare rtnl stats as inclusive).
 
+I can see advantages to both counting (they are packets) and not
+counting those frames (Linux doesn't see them, they get "invented" 
+by HW).
+
+Stats are hard.
