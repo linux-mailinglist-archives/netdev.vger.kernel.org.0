@@ -2,209 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F02D56079D
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 19:46:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF2925607A7
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 19:48:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231583AbiF2Rqt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 13:46:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53040 "EHLO
+        id S229955AbiF2RsF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 13:48:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229932AbiF2Rqs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 13:46:48 -0400
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D6823C489
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 10:46:47 -0700 (PDT)
-Received: by mail-yb1-xb36.google.com with SMTP id i7so29228590ybe.11
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 10:46:47 -0700 (PDT)
+        with ESMTP id S229635AbiF2RsA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 13:48:00 -0400
+Received: from smtp-fw-33001.amazon.com (smtp-fw-33001.amazon.com [207.171.190.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79D0B3D1E5;
+        Wed, 29 Jun 2022 10:47:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=GnCFFzin90d0S1FUIwG38kZMcd1UpYtWk55I3wgLeas=;
-        b=a3GNNraXMmzMEuvESxKPyx85GdkGhCPkt+2tz5ZVH/lQcMHtH3911ZMak4VTTRPGQ5
-         UVvTi0Y70ivxz+OOE0hGL1xiFvv98sb+YsQteuhrp+p24gJzHRg7vAIXbemfUTJelV6j
-         XzylEI8kCplEAfoyU8daCLu2pLzhuyAKxoDmQwXBpecGK0yQQSAz3vUxsFlQyyS6iWvc
-         poxerGUw6YTWY2saCE2c9MX0RP4Pkt90KauA/3VvMJEoiq1/Key0z+XNQmZxDUOrmKzb
-         ebyCEyAFbo54JeLXWoL/cEqGiH9lOj7lVdKsreHhFC2qr8OFQw6GKDch89sHTw2iPfb3
-         /9Ew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=GnCFFzin90d0S1FUIwG38kZMcd1UpYtWk55I3wgLeas=;
-        b=Pln+uh2CioLjKRC96fwgNsUdeva/TG+l3UmpIbvdzBhz4FOCONA1Ht7KLTi4cqncjO
-         AwD9SXtEQd95aOnHu6qJpShnA3fOMZ+VUF4TrDqoqqRaR2TT0q+BLtvcN5Pr5xtWr2QF
-         j9tcweb3QjUJA5uVokXjy75a6B4/W6ZQ+3/pkuD3sXS/dJeFHinoHL/k6FzJeIT4pnxK
-         gbCKl7CsptixYdupTqrFkx+ybzxnbrFOcZCXf2doOaR2AwZ4Zfvkn+h4/qp6fz046nor
-         ywzKImNIcWB7A5hdne6PkbLYgEJH6BGdYs+FgNKmwPMuGGvzKI/KNwlaRp/Mh4jiFrbY
-         2Tow==
-X-Gm-Message-State: AJIora+DUrc/rQV1x3st0yb60gIctyEdLqma3kJPjgdiz1qTcbOYQyz2
-        Z1sFXKzCO+hCc9AniwuLZbUX7Tfq/m2mEt9HpbISKA==
-X-Google-Smtp-Source: AGRyM1t1B8hes0xn4lPh9NreJCJ+uJ3BOi14Xe3jcLy3ihtOQGI8xKwoYgI/81Rp7Ezf86wqfSoc/N16+yVtEJy7/As=
-X-Received: by 2002:a25:d957:0:b0:66c:9476:708f with SMTP id
- q84-20020a25d957000000b0066c9476708fmr4736144ybg.427.1656524806261; Wed, 29
- Jun 2022 10:46:46 -0700 (PDT)
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1656524879; x=1688060879;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=ZQt8BrZncvEXonYqD8ln2HEUss6QJGKaiw+Ny1S0QT4=;
+  b=l7I6f4UoEyLElsi68apVpB5MhJvU6QZ3KQFhNmxglsCpG7U6X9brISIT
+   vH6xYjRe2H+hmy2PzpnDMIMkGMDhKOubKinLzect1qlzvG+Y2sOh4xtsZ
+   LxbYnWLCMoqJMZoAjwhzBMlAyL6JoDQNMrl+LmTlHSJrb/biv0bpW12GX
+   0=;
+X-IronPort-AV: E=Sophos;i="5.92,231,1650931200"; 
+   d="scan'208";a="206136409"
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-pdx-2a-5bed4ba5.us-west-2.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-33001.sea14.amazon.com with ESMTP; 29 Jun 2022 17:47:42 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
+        by email-inbound-relay-pdx-2a-5bed4ba5.us-west-2.amazon.com (Postfix) with ESMTPS id 37F4B91D4A;
+        Wed, 29 Jun 2022 17:47:40 +0000 (UTC)
+Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.36; Wed, 29 Jun 2022 17:47:39 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.160.95) by
+ EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.36; Wed, 29 Jun 2022 17:47:37 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     <sachinp@linux.ibm.com>
+CC:     <davem@davemloft.net>, <kuniyu@amazon.com>,
+        <linux-next@vger.kernel.org>, <linuxppc-dev@lists.ozlabs.org>,
+        <netdev@vger.kernel.org>
+Subject: Re: [powerpc] Fingerprint systemd service fails to start (next-20220624)
+Date:   Wed, 29 Jun 2022 10:47:29 -0700
+Message-ID: <20220629174729.6744-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <FAA64E21-B3FE-442A-BA6B-D865006CBE3E@linux.ibm.com>
+References: <FAA64E21-B3FE-442A-BA6B-D865006CBE3E@linux.ibm.com>
 MIME-Version: 1.0
-References: <000000000000b06e5505e299a9b6@google.com> <CANn89iLuGKyVcNAAjvwWk8HoJrNgZ5HM4itXEsnqzU=+xZLKOQ@mail.gmail.com>
-In-Reply-To: <CANn89iLuGKyVcNAAjvwWk8HoJrNgZ5HM4itXEsnqzU=+xZLKOQ@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 29 Jun 2022 19:46:35 +0200
-Message-ID: <CANn89iLvG0QBVkdhbC-x59ac=B=j+ZxXitBGanBo+8ThMJGG1g@mail.gmail.com>
-Subject: Re: [syzbot] WARNING in sk_stream_kill_queues (8)
-To:     syzbot <syzbot+a0e6f8738b58f7654417@syzkaller.appspotmail.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Wei Wang <weiwan@google.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.43.160.95]
+X-ClientProxiedBy: EX13D48UWA001.ant.amazon.com (10.43.163.52) To
+ EX13D04ANC001.ant.amazon.com (10.43.157.89)
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 29, 2022 at 7:45 PM Eric Dumazet <edumazet@google.com> wrote:
->
-> On Wed, Jun 29, 2022 at 7:41 PM syzbot
-> <syzbot+a0e6f8738b58f7654417@syzkaller.appspotmail.com> wrote:
-> >
-> > Hello,
-> >
-> > syzbot found the following issue on:
-> >
-> > HEAD commit:    aab35c3d5112 Add linux-next specific files for 20220627
-> > git tree:       linux-next
-> > console+strace: https://syzkaller.appspot.com/x/log.txt?x=126fef90080000
-> > kernel config:  https://syzkaller.appspot.com/x/.config?x=6a874f114a1e4a6b
-> > dashboard link: https://syzkaller.appspot.com/bug?extid=a0e6f8738b58f7654417
-> > compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14ae0c98080000
-> > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=145124f4080000
-> >
-> > IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> > Reported-by: syzbot+a0e6f8738b58f7654417@syzkaller.appspotmail.com
-> >
-> > nf_conntrack: default automatic helper assignment has been turned off for security reasons and CT-based firewall rule not found. Use the iptables CT target to attach helpers instead.
-> > ------------[ cut here ]------------
-> > WARNING: CPU: 1 PID: 3601 at net/core/stream.c:205 sk_stream_kill_queues+0x2ee/0x3d0 net/core/stream.c:205
-> > Modules linked in:
-> > CPU: 1 PID: 3601 Comm: syz-executor340 Not tainted 5.19.0-rc4-next-20220627-syzkaller #0
-> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> > RIP: 0010:sk_stream_kill_queues+0x2ee/0x3d0 net/core/stream.c:205
-> > Code: 03 0f b6 04 02 84 c0 74 08 3c 03 0f 8e ec 00 00 00 8b ab 28 02 00 00 e9 60 ff ff ff e8 3b 9a 29 fa 0f 0b eb 97 e8 32 9a 29 fa <0f> 0b eb a0 e8 29 9a 29 fa 0f 0b e9 6a fe ff ff e8 0d a1 75 fa e9
-> > RSP: 0018:ffffc90002e6fbf0 EFLAGS: 00010293
-> > RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-> > RDX: ffff88801e90ba80 RSI: ffffffff87511cce RDI: 0000000000000005
-> > RBP: 0000000000000b00 R08: 0000000000000005 R09: 0000000000000000
-> > R10: 0000000000000b00 R11: 0000000000000004 R12: ffff88801e0c8e28
-> > R13: ffffffff913121c0 R14: ffff88801e0c8c28 R15: ffff88801e0c8db8
-> > FS:  0000000000000000(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
-> > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > CR2: 000000000045b630 CR3: 000000000ba8e000 CR4: 00000000003506e0
-> > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> > Call Trace:
-> >  <TASK>
-> >  inet_csk_destroy_sock+0x1a5/0x440 net/ipv4/inet_connection_sock.c:1013
-> >  __tcp_close+0xb92/0xf50 net/ipv4/tcp.c:2963
-> >  tcp_close+0x29/0xc0 net/ipv4/tcp.c:2975
-> >  inet_release+0x12e/0x270 net/ipv4/af_inet.c:428
-> >  __sock_release+0xcd/0x280 net/socket.c:650
-> >  sock_close+0x18/0x20 net/socket.c:1365
-> >  __fput+0x277/0x9d0 fs/file_table.c:317
-> >  task_work_run+0xdd/0x1a0 kernel/task_work.c:177
-> >  exit_task_work include/linux/task_work.h:38 [inline]
-> >  do_exit+0xaf1/0x29f0 kernel/exit.c:795
-> >  do_group_exit+0xd2/0x2f0 kernel/exit.c:925
-> >  __do_sys_exit_group kernel/exit.c:936 [inline]
-> >  __se_sys_exit_group kernel/exit.c:934 [inline]
-> >  __x64_sys_exit_group+0x3a/0x50 kernel/exit.c:934
-> >  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-> >  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
-> >  entry_SYSCALL_64_after_hwframe+0x46/0xb0
-> > RIP: 0033:0x7f080e760989
-> > Code: Unable to access opcode bytes at RIP 0x7f080e76095f.
-> > RSP: 002b:00007ffcee785818 EFLAGS: 00000246 ORIG_RAX: 00000000000000e7
-> > RAX: ffffffffffffffda RBX: 00007f080e7d4270 RCX: 00007f080e760989
-> > RDX: 000000000000003c RSI: 00000000000000e7 RDI: 0000000000000000
-> > RBP: 0000000000000000 R08: ffffffffffffffc0 R09: 0000000000000010
-> > R10: 0000000000000010 R11: 0000000000000246 R12: 00007f080e7d4270
-> > R13: 0000000000000001 R14: 0000000000000000 R15: 0000000000000001
-> >  </TASK>
-> >
-> >
-> > ---
-> > This report is generated by a bot. It may contain errors.
-> > See https://goo.gl/tpsmEJ for more information about syzbot.
-> > syzbot engineers can be reached at syzkaller@googlegroups.com.
-> >
-> > syzbot will keep track of this issue. See:
-> > https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-> > syzbot can test patches for this issue, for details see:
-> > https://goo.gl/tpsmEJ#testing-patches
->
-> Stanislav has bisected the issue to:
->
-> commit 965b57b469a589d64d81b1688b38dcb537011bb0
-> Author: Cong Wang <cong.wang@bytedance.com>
-> Date:   Wed Jun 15 09:20:12 2022 -0700
->
->     net: Introduce a new proto_ops ->read_skb()
->
->     Currently both splice() and sockmap use ->read_sock() to
->     read skb from receive queue, but for sockmap we only read
->     one entire skb at a time, so ->read_sock() is too conservative
->     to use. Introduce a new proto_ops ->read_skb() which supports
->     this sematic, with this we can finally pass the ownership of
->     skb to recv actors.
->
->     For non-TCP protocols, all ->read_sock() can be simply
->     converted to ->read_skb().
->
->     Signed-off-by: Cong Wang <cong.wang@bytedance.com>
->     Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
->     Reviewed-by: John Fastabend <john.fastabend@gmail.com>
->     Link: https://lore.kernel.org/bpf/20220615162014.89193-3-xiyou.wangcong@gmail.com
+From:   Sachin Sant <sachinp@linux.ibm.com>
+Date:   Tue, 28 Jun 2022 12:41:35 +0530
+>>> I have attached dmesg log for reference. Let me know if any additional
+>>> Information is required.
+>> 
+>> * Could you provide
+>> * dmesg and /var/log/messages on a successful case? (without the commit)
+>> * Unit file
+>> * repro steps
+> 
+> I have attached the relevant log files. The attached tarball contains
+> dmesg, /var/log/messages and strace o/p for fprintd service collected
+> for working case and failure case.
 
-Repro is doing something like:
+Thanks for your help!
 
 
-mmap(0x1ffff000, 4096, PROT_NONE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS,
--1, 0) = 0x1ffff000
-mmap(0x20000000, 16777216, PROT_READ|PROT_WRITE|PROT_EXEC,
-MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x20000000
-mmap(0x21000000, 4096, PROT_NONE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS,
--1, 0) = 0x21000000
-socket(AF_INET, SOCK_STREAM, IPPROTO_IP) = 3
-bpf(BPF_PROG_LOAD, {prog_type=BPF_PROG_TYPE_SK_SKB, insn_cnt=4,
-insns=0x20000040, license="GPL", log_level=4, log_size=64912,
-log_buf="", kern_version=KERNEL_VERSION(0, 0, 0), prog_flags=0,
-prog_name="", prog_ifindex=0,
-expected_attach_type=BPF_CGROUP_INET_INGRESS}, 72) = 4
-bpf(BPF_MAP_CREATE, {map_type=BPF_MAP_TYPE_SOCKHASH, key_size=4,
-value_size=4, max_entries=18, map_flags=0, inner_map_fd=-1,
-map_name="", map_ifindex=0, btf_fd=-1, btf_key_type_id=0,
-btf_value_type_id=0, btf_vmlinux_value_type_id=0, map_extra=0}, 72) =
-5
-bpf(BPF_PROG_ATTACH, {target_fd=5, attach_bpf_fd=4,
-attach_type=BPF_SK_SKB_STREAM_VERDICT, attach_flags=0}, 16) = 0
-bind(3, {sa_family=AF_INET, sin_port=htons(20000),
-sin_addr=inet_addr("224.0.0.2")}, 16) = 0
-sendto(3, NULL, 0, MSG_OOB|MSG_SENDPAGE_NOTLAST|MSG_FASTOPEN,
-{sa_family=AF_INET, sin_port=htons(20000),
-sin_addr=inet_addr("0.0.0.0")}, 16) = 0
-bpf(BPF_MAP_UPDATE_ELEM, {map_fd=5, key=0x200002c0, value=0x20000340,
-flags=BPF_ANY}, 32) = 0
-shutdown(3, SHUT_WR)                    = 0
-exit_group(0)                           = ?
+>> * Is it reproducible after login? (e.g. systemctl restart)
+>> * If so, please provide
+>> * the result of strace -t -ff
+>> 
+> Yes, the problem can be recreated after login. I have collected the strace
+> logs.
+
+I confirmed fprintd failed to launch with this message on failure case.
+
+===
+ltcden8-lp6 fprintd[2516]: (fprintd:2516): fprintd-WARNING **: 01:56:45.705: Failed to open connection to bus: Could not connect: Connection refused
+===
+
+
+But in the strace log of both cases, only one socket is created and
+following connect() completes without an error.  And the peer socket
+does not seem to be d-bus one.
+
+===
+$ cat working-case/strace-fprintd-service.log | grep "socket("
+01:52:08 socket(AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK, 0) = 3
+$ cat working-case/strace-fprintd-service.log | grep "socket(" -A 10
+01:52:08 socket(AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK, 0) = 3
+...
+01:52:08 connect(3, {sa_family=AF_UNIX, sun_path="/run/systemd/private"}, 22) = 0
+...
+$ cat not-working-case/strace-fprintd-service.log | grep "socket("
+01:58:14 socket(AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK, 0) = 3
+$ cat not-working-case/strace-fprintd-service.log | grep "socket(" -A 10
+01:58:14 socket(AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK, 0) = 3
+...
+01:58:14 connect(3, {sa_family=AF_UNIX, sun_path="/run/systemd/private"}, 22) = 0
+===
+
+So I think the error message part is not traced well.
+Could you try to strace directly for the command in ExecStart section of
+its unit file?
+
+
+>> * Does it happen on only powerpc? How about x86 or arm64?
+>> 
+> I have attempted this only on powerpc. Don’t have access to arm or x86
+> setup to attempt it.
+
+I tried on my machine but fprintd launched successfully in both cases.
+And few minutes later, it exited because there was no dedicated device for
+fprintd, I think.
+
+===
+$ sudo systemctl status fprintd
+● fprintd.service - Fingerprint Authentication Daemon
+   Loaded: loaded (/usr/lib/systemd/system/fprintd.service; static; vendor preset: disabled)
+   Active: inactive (dead)
+     Docs: man:fprintd(1)
+
+Jun 29 05:46:22 ip-10-0-0-163.ap-northeast-1.compute.internal systemd[1]: Starting Fingerprint Authentication Daemon...
+Jun 29 05:46:22 ip-10-0-0-163.ap-northeast-1.compute.internal systemd[1]: Started Fingerprint Authentication Daemon.
+Jun 29 05:46:22 ip-10-0-0-163.ap-northeast-1.compute.internal fprintd[1291]: Launching FprintObject
+Jun 29 05:46:22 ip-10-0-0-163.ap-northeast-1.compute.internal fprintd[1291]: D-Bus service launched with name: net.reactivated.Fprint
+Jun 29 05:46:22 ip-10-0-0-163.ap-northeast-1.compute.internal fprintd[1291]: entering main loop
+Jun 29 05:46:52 ip-10-0-0-163.ap-northeast-1.compute.internal fprintd[1291]: No devices in use, exit
+===
