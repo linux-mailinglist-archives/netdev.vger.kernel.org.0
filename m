@@ -2,51 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 17877560D4C
-	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 01:32:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D0D2560DA0
+	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 01:37:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231485AbiF2XcC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 19:32:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38636 "EHLO
+        id S231951AbiF2Xhf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 19:37:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231394AbiF2XcB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 19:32:01 -0400
+        with ESMTP id S232036AbiF2Xhb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 19:37:31 -0400
 Received: from novek.ru (unknown [213.148.174.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36FCD31F;
-        Wed, 29 Jun 2022 16:32:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66008B10;
+        Wed, 29 Jun 2022 16:37:30 -0700 (PDT)
 Received: from [10.22.0.128] (unknown [176.74.39.122])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by novek.ru (Postfix) with ESMTPSA id C79E35005C5;
-        Thu, 30 Jun 2022 02:30:20 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru C79E35005C5
+        by novek.ru (Postfix) with ESMTPSA id 8B9BE5005C5;
+        Thu, 30 Jun 2022 02:35:50 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru 8B9BE5005C5
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
-        t=1656545421; bh=nuefLE1G5OwMPAfk0WFiIBC94LretIpZqAk2u42KMGM=;
+        t=1656545751; bh=zCQ4JA9OXV9FjwFr6O6e3eTB5QmVfvYRSojJ4nPLGWA=;
         h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=jnkK6/hdmhGC57itbxeqFGEgknpFnkbX2UJqz7nKPf/PEhlZ7A4CbEAp8rL3RtQYm
-         MIABuOuDSwEs2O14YhqR9qUpo6aSJ9q0pvnKsi1rh9si9Z/B6cOo1kKyq3GejP0xVk
-         6syGeALP6k2iVRFN3iJJKOPBodcW3gNA9fEWu0h8=
-Message-ID: <a4defe2e-143d-0dba-03a1-cb23082ce673@novek.ru>
-Date:   Thu, 30 Jun 2022 00:31:55 +0100
+        b=zcS8Jv1Dra8uP8LjkzBRcA+vJWxllLJC6cdoO23bklHqfknrkmqn9QYEzcqKgF4F/
+         hVsSKelqGzb47ocxihqoUP7G08m4FmrrA31soqTUHVrvI9CcQaZpJeSUvS1c/5MPY8
+         EIzpZkXQ3n7DMlLlnOxWFSqq8yKDm5c67nt1qAfY=
+Message-ID: <3bdbf164-f28a-5954-408b-99be3ecaa6c1@novek.ru>
+Date:   Thu, 30 Jun 2022 00:37:25 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.9.1
-Subject: Re: [RFC PATCH v2 3/3] ptp_ocp: implement DPLL ops
+Subject: Re: [RFC PATCH v2 1/3] dpll: Add DPLL framework base functions
 Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>,
+To:     Stephen Boyd <sboyd@kernel.org>,
+        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Jonathan Lemon <jonathan.lemon@gmail.com>
-Cc:     Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
-        Vadim Fedorenko <vadfed@fb.com>, Aya Levin <ayal@nvidia.com>,
+Cc:     Vadim Fedorenko <vadfed@fb.com>, Aya Levin <ayal@nvidia.com>,
         netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-clk@vger.kernel.org
 References: <20220626192444.29321-1-vfedorenko@novek.ru>
- <20220626192444.29321-4-vfedorenko@novek.ru>
- <20220627193436.3wjunjqqtx7dtqm6@bsd-mbp.dhcp.thefacebook.com>
- <7c2fa2e9-6353-5472-75c8-b3ffe403f0f3@novek.ru>
- <20220628191124.qvto5tyfe63htxxr@bsd-mbp.dhcp.thefacebook.com>
- <20220628202414.02ac8fd1@kernel.org>
+ <20220626192444.29321-2-vfedorenko@novek.ru>
+ <20220629083439.6F5E3C34114@smtp.kernel.org>
 From:   Vadim Fedorenko <vfedorenko@novek.ru>
-In-Reply-To: <20220628202414.02ac8fd1@kernel.org>
+In-Reply-To: <20220629083439.6F5E3C34114@smtp.kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -59,33 +57,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 29.06.2022 04:24, Jakub Kicinski wrote:
-> On Tue, 28 Jun 2022 12:11:24 -0700 Jonathan Lemon wrote:
->>>> 80-column limit (here and throughout the file)
->>>
->>> I thought this rule was relaxed up to 100-columns?
+Hi Stephen!
+
+On 29.06.2022 09:34, Stephen Boyd wrote:
+> Quoting Vadim Fedorenko (2022-06-26 12:24:42)
+>> From: Vadim Fedorenko <vadfed@fb.com>
 >>
->> Only in exceptional cases, IIRC.  checkpatch complains too.
+>> DPLL framework is used to represent and configure DPLL devices
+>> in systems. Each device that has DPLL and can configure sources
+>> and outputs can use this framework.
 > 
-> Yup, for networking I still prefer 80 chars.
-> My field of vision is narrow.
+> Please add more details to the commit text, and possibly introduce some
+> Documentation/ about this driver subsystem. I'm curious what is
+> different from drivers/clk/, is it super large frequencies that don't
+> fit into 32-bits when represented in Hz? Or PLL focused? Or is sub-Hz
+> required?
+
+Sure, I'm working on adding Documentation/ patch in the next iteration. For now 
+I would it's mostly focused on PLL configuration rather then clocking thing. And 
+the main reason is to provide flexible netlink API.
+
 > 
-Ok, no problem, will follow strict rules next time.
-
-
->>>> 80 cols, and this should be done before ptp_ocp_complete()
->>>> Also, should 'goto out', not return 0 and leak resources.
->>>
->>> I don't think we have to go with error path. Driver itself can work without
->>> DPLL device registered, there is no hard dependency. The DPLL device will
->>> not be registered and HW could not be configured/monitored via netlink, but
->>> could still be usable.
->>
->> Not sure I agree with that - the DPLL device is selected in Kconfig, so
->> users would expect to have it present.  I think it makes more sense to
->> fail if it cannot be allocated.
+> Details please!
 > 
-> +1
+> Does DPLL stand for digital phase locked loop? Again, I have no idea! I
+> think you get my point.
 
-Ok, it's not a big deal to make it fail in case of DPLL error, will do it in 
-next iteration.
+Yes, you are right, DPLL stands for digital phase locked loop.
