@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 437995600FD
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 15:10:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D7175600FB
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 15:10:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233721AbiF2NKV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 09:10:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43914 "EHLO
+        id S233708AbiF2NKS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 09:10:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233720AbiF2NKU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 09:10:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37F6321B8
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 06:10:20 -0700 (PDT)
+        with ESMTP id S233673AbiF2NKR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 09:10:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57EE021A2;
+        Wed, 29 Jun 2022 06:10:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 243EAB82466
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 13:10:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id C0FF9C341CF;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EAE8061DE8;
+        Wed, 29 Jun 2022 13:10:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 57202C341CB;
         Wed, 29 Jun 2022 13:10:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1656508215;
-        bh=jh5ASVrRmCVJ3r9xofPxe5m3VxyREPgkEJ/KXRxqVCs=;
+        bh=7YM6pTsDK2XVPmkR6++yTEqzX03KJjCzPOtYRGHpzbI=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=PsVqv80SJKlHz+o9VgEL+/osxai3WJggMKxd4CjdqQjbqiXQn2csIJNLa0nA7UxuW
-         Ur2umq+ZZhVfDWy6tatbD/w8IoVce+KOnVFeqCQd3KI98r1qNtwbqf7pXNGSSb/4XR
-         SUw2yDLO8Ec+6LVXYa0OYmNAdM4KZ6vvcrczpE1TsmQYk3uNqA/f9r4s0C5Xk2qYZb
-         ghpLsF9KCcH+nXpXK9Oh3rvB8fFtmptxT9ULA1WAU6VkS3jz+fQrxOD9Z5xUv/Lz5z
-         t470mfQ7fg7WFtHnHtEhNC8gcuGTWCBhy6JQDNvq20VxuXm6dwPfgJMTUrtMiw7ol9
-         1XFZTDNDByZ5g==
+        b=Y4DXgvjWdGEMcQM6R5xUjOuuHK/BrLocwkl27LDCaZfiJgFM5iFlnBbJuur2tQ+UN
+         GgEhBTQbFO3mOnXAPMSZZE3UbhXUWRmp0LG5Ju17Zx4QggSzMAoFNriY1qUVz36hAB
+         5CrJsj6vASUK5fJ6FIn7UEqpEL4ejajIyGDKibNw5gu285EnfDh5dcshJFsU4by7vZ
+         3JLGNpHJV1e/ktdvJ+UztrVznN2OLlbi5aT9SjnqpK/UlvjCLgIaXjgl+eYpA3HrBv
+         x1yKTaY1slbh386ZIudVYMdMbu+yu/L5Q9Es8QNokvmlaNKMPFEWtxGoQzvV6TjTqN
+         dgOnbW9A7o5Nw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id AD1F4E49F61;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3E30CE49F61;
         Wed, 29 Jun 2022 13:10:15 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] nfp: flower: fix comment typos and formatting
+Subject: Re: [PATCH v2 1/2] NFC: nxp-nci: Don't issue a zero length
+ i2c_master_read()
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165650821570.20617.8744410468518863649.git-patchwork-notify@kernel.org>
+Message-Id: <165650821524.20617.14794992816689313521.git-patchwork-notify@kernel.org>
 Date:   Wed, 29 Jun 2022 13:10:15 +0000
-References: <20220628121802.450999-1-simon.horman@corigine.com>
-In-Reply-To: <20220628121802.450999-1-simon.horman@corigine.com>
-To:     Simon Horman <simon.horman@corigine.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, oss-drivers@corigine.com,
-        walter.heymans@corigine.com
+References: <20220627170643.98239-1-michael@walle.cc>
+In-Reply-To: <20220627170643.98239-1-michael@walle.cc>
+To:     Michael Walle <michael@walle.cc>
+Cc:     krzysztof.kozlowski@linaro.org, clement.perrochaud@nxp.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -59,25 +59,27 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (master)
+This series was applied to netdev/net.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Tue, 28 Jun 2022 14:18:02 +0200 you wrote:
-> From: Walter Heymans <walter.heymans@corigine.com>
+On Mon, 27 Jun 2022 19:06:42 +0200 you wrote:
+> There are packets which doesn't have a payload. In that case, the second
+> i2c_master_read() will have a zero length. But because the NFC
+> controller doesn't have any data left, it will NACK the I2C read and
+> -ENXIO will be returned. In case there is no payload, just skip the
+> second i2c master read.
 > 
-> A number of spelling and language mistakes in the flower section are
-> fixed. The spacing between the text inside some comments and the comment
-> symbols are also updated for consistency.
-> 
-> Signed-off-by: Walter Heymans <walter.heymans@corigine.com>
-> Reviewed-by: Louis Peens <louis.peens@corigine.com>
-> Signed-off-by: Simon Horman <simon.horman@corigine.com>
+> Fixes: 6be88670fc59 ("NFC: nxp-nci_i2c: Add I2C support to NXP NCI driver")
+> Signed-off-by: Michael Walle <michael@walle.cc>
+> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next] nfp: flower: fix comment typos and formatting
-    https://git.kernel.org/netdev/net-next/c/9bacb93bcfb8
+  - [v2,1/2] NFC: nxp-nci: Don't issue a zero length i2c_master_read()
+    https://git.kernel.org/netdev/net/c/eddd95b94239
+  - [v2,2/2] NFC: nxp-nci: don't print header length mismatch on i2c error
+    https://git.kernel.org/netdev/net/c/9577fc5fdc8b
 
 You are awesome, thank you!
 -- 
