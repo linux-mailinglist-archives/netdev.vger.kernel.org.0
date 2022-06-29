@@ -2,107 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E4B0D55FC43
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 11:43:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD72255FC45
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 11:43:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229824AbiF2Jl1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 05:41:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53032 "EHLO
+        id S233006AbiF2Jle (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 05:41:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233006AbiF2JlZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 05:41:25 -0400
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2069.outbound.protection.outlook.com [40.107.244.69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEE6B3BA5A
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 02:41:24 -0700 (PDT)
+        with ESMTP id S233016AbiF2Jlc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 05:41:32 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2070.outbound.protection.outlook.com [40.107.244.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3D1A3BA59
+        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 02:41:31 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=oGczNdi5uaUCIRX5RbfuFsekEOKcLx37rG6jG+IQhEe3WqPlBH83PZEjzz8o01VYaNeQIycssb804em6ntrVYnUqKMONGcIaUNP6nB/thWbnSmU60sj5UOwfAzlq3DfdrUpSfgN0afeqCKFTEaHfb00yMgyd2KRgdnCR1WC+1knflDOZYYmKswQ3pzkJvPD1pF/BhVQSdV8Djh1ckfVWzcLcUuLvmJxz9BQiqFEj7lVMhZAe9hhXKSf3SSFe90hynS4iC2DTYYg3sbtqvH+NfsFSYGI6fnQCQj2Z2sCgOpTkHcxKUsNFDVXeRSQvDCvrkPFsxw07T5lZreVPBWZ8vw==
+ b=kDkwFK22bGPg1Uy5+A+GV13k4yUwKmjuHf1HgLGod/w4G3dNg82cZmLpuCM4sowe1AYPgnskmi5PXmqk154rBYJ78KPkhsPzEue+yDo8Y9mX96zi3qFznnBZyBSe19lvXPpRp37kUctiHxbIBbr29pAG/3t+OpyKYZnMnRPcRk5HhLk+aH6enyNZD51ZR39pYernW9KVZgpnyZszk4DPKwgPMpkGl62eXpF1BxqUxKjRrvydSYwXkSQk1WCFfEUFCKUZF1qBkiyWinQmDlGWnR9e0ru6ska59nRsK5tw0qA8F4hx2kPHu/zDmq831aI27+++JCxxXm5pzcHdhTYTSw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=own8Mj9/2MIG7rUYJSP0lBpFtKd4NRplV1J+RPjI/vY=;
- b=KBGasaK1aqBM1UacsMmp+9zvyzbSs079WjXMcPLYXZIzik+tn4YenkjFdQWRTjBTV7qjkrUy/gsfhZtJ4mkYllO/JOZTmGjZNoRq0aU99RWdHwmETYIeTJfGDOzEt326YqTT39qdvH/L3v+VYmQDsE16n8jps4s92wdWPmYs3VRAeEsp6DaXNPlia5/Tv+YXJ5xFwA4Dnyi0jXccPTpshG5qkWZJfobtthISpAmyUBxPoHLZVlyJjbPHVsHCRoupu2XQ0AUmcQf8wqfudloEW+H06xCRtESjwYVzL16WYouAL/0Tf+E7HB1zYSSXlkfkcPJ6DQuGCqtzvbIjqr4LtA==
+ bh=FjEM4CcIZVF2n4U/8uFBIXJmD4TrFTz+u3ie1scmIoc=;
+ b=fSRXXDw1ZjYenHAeY+OD5vFAvZgh/fkW/mVgkBxTMrUEeLNP40Mh63ZEAbu8ChB+8ZnjqOgPz9BJYSCLLQf/MSl5TWKsAWKLW+2SNjL4dBJohEmRtLCWYGR+bo4BWMk98gQZpRsI9Z6lJ7k1drOkkyJ5c6m//7NFBAbHwqmFEqXEfJMAm3ALLtzdBECvEsN3y4lZuvj79cnBcvc8gjsEYYfZwiqabMoiuafgviYBQ5tAwhIp9uBsJVF01/elMPR5gf7FIX01G+zes+U+Xxj6LQPSmCk9mY+IXOxqjI3JLXxAiEfxJkRQg+CgOPLFKVwkw8mVkqTQC4dndC59bh4kiA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=own8Mj9/2MIG7rUYJSP0lBpFtKd4NRplV1J+RPjI/vY=;
- b=s9w/ncCU2Q2ruGKTikvXrF+njTJcZ61NEa64+pJ4Vv61OIB4cQ9SzyDThXacLG/lJPeVV6UKdncXJdLN8EG447fC34ZAWMQivK+1YWAMX6C+jSIMa8ID43mIv9RedkwzTeDBSG0LUKjqFDO4IEifnNyNuAGlRl8QPwOKPy2yH85GpxfAVlwL+XP8+5ZdtgC3LnLKGVmUq1WIxW4WeuUF3wCYDD5detotHwIBYD9o4uYV4PcDHELV7axuWm7le18AGRw6F0b6kwsOFpg2Rlx1JdfrFr0FsgZIVePGBt3vuBf4NtjByR3kNuE4DCyAShPpkYl13dtWBmLnbhryY/w+gw==
+ bh=FjEM4CcIZVF2n4U/8uFBIXJmD4TrFTz+u3ie1scmIoc=;
+ b=n6eER4kTUMu+mNw2ilLLuXA9zdoqo9+T3PsMotH38RRu2oGEx8rOADY5elyUsE+/j1EGlyda68zC8rC9uA25P1r0JWimSJMH8ZuF2Dt/NwM3tKTOH3wgAN3f/QLneIJ/vkxkKuIkD8tunGMV0U2/jve1S5GcLGdE2zC7VBciLtsAOu00TiVkNkMwL6dMUrLcGmNU0t+BsnPp75sV0fLLYP8Dc3MGg6j5bURUuO0WR0nTuD9IK8VKflyrY7nzFGbgn+5ehOC0HVDB0IX9G0DUZsqApgoW8fD6zn7coOcuWETWT7K+doUGthoJnrvVz9Y/9+FLK3Tbgf7vedmx+5kUbQ==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
  by DM6PR12MB3850.namprd12.prod.outlook.com (2603:10b6:5:1c3::15) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.16; Wed, 29 Jun
- 2022 09:41:23 +0000
+ 2022 09:41:30 +0000
 Received: from CY5PR12MB6179.namprd12.prod.outlook.com
  ([fe80::611c:e609:d343:aa34]) by CY5PR12MB6179.namprd12.prod.outlook.com
  ([fe80::611c:e609:d343:aa34%5]) with mapi id 15.20.5395.014; Wed, 29 Jun 2022
- 09:41:23 +0000
+ 09:41:30 +0000
 From:   Ido Schimmel <idosch@nvidia.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com, petrm@nvidia.com, amcohen@nvidia.com,
         mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 08/10] mlxsw: spectrum_switchdev: Add support for getting and putting MDB entry
-Date:   Wed, 29 Jun 2022 12:40:05 +0300
-Message-Id: <20220629094007.827621-9-idosch@nvidia.com>
+Subject: [PATCH net-next 09/10] mlxsw: spectrum_switchdev: Flush port from MDB entries according to FID index
+Date:   Wed, 29 Jun 2022 12:40:06 +0300
+Message-Id: <20220629094007.827621-10-idosch@nvidia.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220629094007.827621-1-idosch@nvidia.com>
 References: <20220629094007.827621-1-idosch@nvidia.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: VE1PR03CA0029.eurprd03.prod.outlook.com
- (2603:10a6:803:118::18) To CY5PR12MB6179.namprd12.prod.outlook.com
+X-ClientProxiedBy: VI1PR06CA0157.eurprd06.prod.outlook.com
+ (2603:10a6:803:c8::14) To CY5PR12MB6179.namprd12.prod.outlook.com
  (2603:10b6:930:24::22)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5c90c979-ab7b-4a6d-5578-08da59b38789
+X-MS-Office365-Filtering-Correlation-Id: dc835895-d5d4-4273-7325-08da59b38b75
 X-MS-TrafficTypeDiagnostic: DM6PR12MB3850:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: mc6TrJu6lT8NLa4aAzJkESpbqqrGTNfq4aXOPr4yRXA2tf0DSKiWHDwKOP/c8wO8pi5Xpd3vM3+heD7ejZu1i5Sv/j8O5NKrQZL/AlIi87q4fWtdiztH2fyYRBdHxAvLsiZL4NVl+/IyYezcrkh703FPluZXeCR328WNXufNkuPhMt0NSH3lGECe27Bia1973rU7XJbNb6Ps2ZV3z1RNG0iEd4+bBvZRErlP4R8ffThJ4wtRgIgd6IlHz/j+aM9PZMqeCbCm+Uf3jLfVQA0lXG2KRpY4yjI2jecRw7exP9uWFLelSEehJFQU6q4oINr2Q6xrCqxxKgKHfU2QB6vN4NPz35mYvy+Om64fOswju670mYNbN8BiCZ8uKrP1BZ11PdMl3W4IUkcr93KOIpbBFE68YWOHWJWsiqgNN3UUK5A38jBu0Z33ZcDU7+LvA53e3Ushe02Nz6rLcjWDWKnCb5y7gbe4T6NpQeDwQpaNnFfG4Xjw2oZrW7gheMqz4wLlEzB4H4WH2RR/CAuRyPvqUfm4H7ANNs190E2SIubP6e4hKqpGZhk+53F3phKWIj9sTer5F3KRqef0d0uScK2kPc4GQOX0BSOOIdxyoZzyap/dR5QntLeUdWVJqgg+sjAXbnQJ/acx7v8XG1/QuYgJzigJuX7+VzzzdRXkgA9Ow51W2r3LrlbUk/+z05vUPOFF+sGF3Z8bOXVghlwc383XgkwgPGgdlolzNo22yeFeJyvNb+cLcho9sE+ET+5FDb2n
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(39860400002)(366004)(396003)(346002)(136003)(6506007)(2906002)(6512007)(26005)(38100700002)(6666004)(66574015)(186003)(1076003)(107886003)(6916009)(83380400001)(41300700001)(2616005)(66556008)(66476007)(8936002)(4326008)(8676002)(36756003)(6486002)(478600001)(66946007)(86362001)(5660300002)(316002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: QepR4ZOWVLGzmLrPXOXw2GYBhSCasnWrRN3Wewr4Vy0lbEuebSHRI0QY6zIo5TfdCHlRG8fxTcs3U2PI4/uNfPWRQ8eCTtYjZMJK3YAn/CRRhntz3Z/DWSHyHff1sGziox9SWoixDyULRzjmwn/3Z1XjHa4qvVGy2ErNxUx77wvK8ZMb+I5UsTRmtSA74li3HdA6O92cJ9U3kOY42PwWxKk6xKGFrcqP94NUE+PBNeQfL2v1FmA2vtg7Lgb0AKq7mZL9DLcX0kDbw5RfsvSbNn/ws9jE7oqWcBluDH7hYFbrvgBD70y9S5fYUGiedHBXKLv7Yk2759+weB14ZvJrW3XzGuw0u/kvN9WrIvHD62UX5XLx6vZNccU5c58EDF6PDfcAchQgthwYV1eBgKv9E+MvKysPPXzpRgg7+3ST5VkoDtnLuwJEw9m8unsx/lafE2bbBw3raxP8dDvgP2fGmyqw2U5iAlBXZRz+C4PCkf7KyId3zVOEWhnDlGcrCl+ZXe3N/d79CAKzaZtB2j1bF9euHGk0iMgkIc35eJJDhnnQZH6fVxUqkbUaRPnYpIjWH4lkgmJGK/G5fnRoAPSL/D395V+3fjUSiyBivA8/FiX3GcAe5C3fxgZtNV2Je9N+mPzQlhsc+dFt/LQ+ejPCPpZ3up/ZCelWiZ3aGwsnW5PCdMzJVjIOIAksgbYe2TAGuSEIBuWxXMt4w5sMOeqGQIN/E1s48C1kJHslxrVJvUgKXFvDTUqKoDAH2nELqeRP
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(39860400002)(366004)(396003)(346002)(136003)(6506007)(2906002)(6512007)(26005)(38100700002)(6666004)(186003)(1076003)(107886003)(6916009)(83380400001)(41300700001)(2616005)(66556008)(66476007)(8936002)(4326008)(8676002)(36756003)(6486002)(478600001)(66946007)(86362001)(5660300002)(316002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?fXqHdaTFEPggVvf1d4cs9Ap6WhqDXGMLJRo4aqez9cisG4H9yJrD9ntSO2P6?=
- =?us-ascii?Q?KkfalE1R7D31uiUaPxSSfUABCV3DIETrsH9rH5MH8jWKbrSLUYUETo3gLazZ?=
- =?us-ascii?Q?+fIctT143JhT+a7VTAkvtkjtYXZeIXKIi2dQiZZcnDg19J42VhRlndtdYyKJ?=
- =?us-ascii?Q?XQz+lqguOUhiOc1EJyCm8cS7iBiUUv4x2+lYLzSSRyzR2SPXoULUnHY+HlOd?=
- =?us-ascii?Q?sH1Z1sFNXJt/1Q4w+2dFIK6yyRf7ivYlcexIR7kNJcdjpVqLZXxrra893lNI?=
- =?us-ascii?Q?vJxE+LWSZar2MsUc8JV0EzJ4MSWME6QT94sJ75FueSTT2i9QzO9BzvrPBqXo?=
- =?us-ascii?Q?b8zQV0T7xxwYwhjvocpRVC5A2C6cvVYI30B0lcEm5IX7PcEzg38Q3SO88hr1?=
- =?us-ascii?Q?EpAhhV1CUzOYjTt/g1IXQ/urgjhL0RyG3ldM5KqGlFiMKUlCELR3+4uWwK0p?=
- =?us-ascii?Q?X1NhjqQ2E6oeSZ4XpK8/a4fg/kWUhw5tY1No1T82KI3+5RjNCdvvw+h0nBgx?=
- =?us-ascii?Q?TCTkxN98KP+c14WwOzS8IM4PTL2jWJSo/ndawcRJkZOfrk+9rrKnhPUoMqLx?=
- =?us-ascii?Q?+z5Mv+Tp2R5TuwCSYURuVYINpGg8h9avvGLs4Vt8Sk0xjWCGcRC9bqQFgW/b?=
- =?us-ascii?Q?SmglZZLifrmjic9wGCOrBRc8Q6fUnk+5eSNvFI5qEQr1p2WK/UjyBk0wGsTQ?=
- =?us-ascii?Q?4vm2wa5hWOio/mi8MgyD5mCvRWRkCvhiM+uRYOMZ57KTH155KYwbmgquDlpu?=
- =?us-ascii?Q?bJ2UcCNpTjWVoNyEqyU1jKUEXeqD/DFCGLgj038IBFQh4BMCj6UlsSr5NKmz?=
- =?us-ascii?Q?DwbF1yur8lkDF85tBt9xWXusajyvThdxbQvW2Gm3yVEtMveDl076MDbGBMLu?=
- =?us-ascii?Q?UATUL1Qxe2YyyKQ/gFwPZHk0h9iddpDRqZOd7RXrtX6wCo1aAY4Et+/x8Pwl?=
- =?us-ascii?Q?lf7+pm8bGlwk2ehIJFQR51ZFoApd4v5BQZofdm2lrPFTDRkTC01lGeeVFsLL?=
- =?us-ascii?Q?pzATNw2OLVD730bi4h+99CKY1RhS/3PZlV+au/tc3NhU/PbEmdHT669/HNJq?=
- =?us-ascii?Q?bbfHrafUttddRnSw4DYBYIga6N1z8JzrZonFPfMsfygNg1vQxenYTpFmmPOq?=
- =?us-ascii?Q?ZuJFMP21xhj3+4NUBPwaaqG9Iwi2uzD22WvaEcMJpCKZr6JIVaQC1fhZv3nV?=
- =?us-ascii?Q?ITpD+JqCJgRHFb2/92+fIorx4+6Ye8bQlMjlXT2eQDI/NG5Hup55ckUtKR6g?=
- =?us-ascii?Q?ygfGJfsP2pMAAEv59sSrDsDGm3aiNpWYUwYggHiclJ42EU/546AYFEVFDFRV?=
- =?us-ascii?Q?xZs966vIQQS+b0V5hlgsK/YFglXPU75dkQ4H2siE+CpQgTcjsDiQacVPGVul?=
- =?us-ascii?Q?J9Ee+9n9t8ZEHYnrxqaPLEufxZ2OwnaPnnCySuurrB3j4/Y2kuRx7AYKHxv+?=
- =?us-ascii?Q?lCF0e+Fy82puTa3dF40/C1Iinm8364m2oc8yY5801iXKYbp3/pqOniP7U0zE?=
- =?us-ascii?Q?nIjEZMtL2BcviqzLWbsSHcSnqEHvzRoUeXOn5F8GX2hqEMGpFSAn6E6zjn/J?=
- =?us-ascii?Q?zGxkw9OMVjsPYP1bVJxFzVYbfiZheHLgO2z62SYm?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?BSF8tQjMHZhhD4cGlRDoyk4HZQbG5VyMMzBO52tvcMkuzkd1+bAesGEn7HK3?=
+ =?us-ascii?Q?6ouoJ+k29CKmnPez1pCSOtvkKvq/nkji9858wiLakGaAkrV8xqdDzMiH/BL/?=
+ =?us-ascii?Q?C92khnxNaZ+71suSv1+2KDaJ4kyKqHkUdeHE3+rShdXOJL47BqCcucuhxM9a?=
+ =?us-ascii?Q?DLSwuOJq7ZVkopVtCbLz9pSJl430FxSYQp4NZtT4Exb9aZfjaP2qYY4h+0a8?=
+ =?us-ascii?Q?Jf206qP9lnbj4yOw8rQsbhDYHUO8n6QC2xXTrzOA57K00hYJoZDH8uRxpxIh?=
+ =?us-ascii?Q?L2AEMIF1O/cxzF80EfPjI7HBiIMuemldN/fKs9SDUmiR282uAZH/LKwHHS4Q?=
+ =?us-ascii?Q?y+c4u+q9uZc5XPFjKrEPz+1W0Z0wcv9AZFPorBQ0LRhGVQsH/H07Lq7PCzfw?=
+ =?us-ascii?Q?frF8PadMyoKcs+cCVEvlJDopWZk7a4x6RtNzrWOVvizh8f4Ff+fOKgQdSxNm?=
+ =?us-ascii?Q?xDPoatZwZs+7NZzKRgqd+WS2o/4jB5OA4DYtXZqCqRCVi3xzc4u8+EWCUMvh?=
+ =?us-ascii?Q?/zKo29V6OBWTJV70kWQ41jhQClkiVa8O31HRs2cpD8X8q0xexwPzhFyXKgiy?=
+ =?us-ascii?Q?rdwsjgn24cIZwnm3PWC7x7SrdPATgshjMTtD370BzxIKqvEO0Y8JB2anXJeh?=
+ =?us-ascii?Q?i2muotlROqJ7Ln76QIr1L7lHUzjtGYZm0UJolU0bajUGVJiWK9LbaCgda8J9?=
+ =?us-ascii?Q?HadwWqTQqoWY8fXGS/+8dRA9s1fxJzK03eeZOZ3+oB0aHY4WDQOeA/Gs+VuV?=
+ =?us-ascii?Q?jrsisXmbEmqrIme0aAYHZYTuSIswzk5sRkAr6gNg5c4O+uz74KBfU4xc1t2D?=
+ =?us-ascii?Q?iz2Eyhbnij9GpoDEAb0GBdiLlEs26d8efZGimlrwgcaNRltqlXkebc9Ae0sH?=
+ =?us-ascii?Q?i2BV3IdBzZK4gUyJZNEc+6rrgOsIvUgJR2Pg6vCGnhpT3lnkFQGJifXlCp/P?=
+ =?us-ascii?Q?Ut5KJvRBePtyO49v5mOByeFzlWgCJGXPLKFlReiUQRsmk2/nY0Tq3iS45w/b?=
+ =?us-ascii?Q?iIAv7cbIl5CZ86aXG+c+xssi3E81uE0qz9S0X0/lUl3fI/tnV5KSUdjxIh+0?=
+ =?us-ascii?Q?eACp26uS6otFrKd2QKS5rEQs4hllTF+yrSL+XDIVn6OJnvmajLf8cVf9DAtB?=
+ =?us-ascii?Q?qi0oL2ooC6Qix+mL6K3TJwEkyKfjcLHsPUVNtF3X308BccfgmK3rjJ7EjzQ4?=
+ =?us-ascii?Q?mDXxcKAJTACPkQeTRnZ8sAAhzr6c2vOy24QjZCB0d8fZ9kmDrgvt1HYJF2QL?=
+ =?us-ascii?Q?pGDcnU2xp52dMsgu7qLJh/TQPMKwo7Z41v2rVESLyYcGc7sEkIbqEFlKGBXM?=
+ =?us-ascii?Q?xpAdV0ebxj84pl6yw0grh/R4VUgZLz+63dkyd8ZNJHhE/WbToDC0Ret+8xdJ?=
+ =?us-ascii?Q?u9CqMN0BcHk8kEQxBr+n9i+5Aa3BscpMYg4AfKFIG6oS3IYQpUyovAnLIYCl?=
+ =?us-ascii?Q?3FPC8zqD/Z3vyTl+JmY0bBdY7o9J2uJE9PenqzL2bMrlPHF/NULCuckQ1zbj?=
+ =?us-ascii?Q?QQD6ZXWYTfHrglZ3adBUQ3caHFfnfamed06H5P56WhrVlF8FSuhQwRxvsDig?=
+ =?us-ascii?Q?KWBrww9uVerfoPL29hDG/M+jMRpqbP0BKh3GYP2v?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5c90c979-ab7b-4a6d-5578-08da59b38789
+X-MS-Exchange-CrossTenant-Network-Message-Id: dc835895-d5d4-4273-7325-08da59b38b75
 X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jun 2022 09:41:23.5069
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jun 2022 09:41:30.1656
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 7LVK/iGS19fzL4VASe7ptXKk7L5bk/txjMBLqMKounFFVQ3NZ2KwTDtKZLxfxdOhGGdnerfyn7M8WY/ACxo2IQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: fq7CSnn/Jlw3pvY14SIH1odyZoRQT/Qn1WKAXYk/8Yenpdz/aSwgCJzI3TGStHxjOlVAywPZ69libw8BQK5qBA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3850
 X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
@@ -116,138 +116,84 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Amit Cohen <amcohen@nvidia.com>
 
-A previous patch added support for init() and fini() for MDB entries. MDB
-entry can be updated, ports can be added and removed from the entry. Add
-get() and put() functions, the first one checks if the entry already exists
-and otherwise initializes the entry. The second removes the entry just in
-case that there are no more ports in this entry.
+Currently, flushing port from all MDB entries is done when the last VLAN
+is removed. This behavior is inaccurate, as port can be removed while there
+is another port which uses the same VLAN, in such case, this is not the
+last port which uses this VLAN and removed, but this port is supposed to be
+removed from the MDB entries.
 
-Use the list of the ports which was added in a previous patch. When the
-list contains only one port which is not multicast router, and this port
-is removed, the MDB entry can be removed. Use
-'struct mlxsw_sp_mdb_entry.ports_count' to know how many ports use the
-entry, regardless the use of multicast router ports.
-
-When mlxsw_sp_mc_mdb_entry_put() is called with specific port which
-supposed to be removed, check if the removal will cause a deletion of
-the entry. If this is the case, call mlxsw_sp_mc_mdb_entry_fini() which
-first deletes the MDB entry and then releases the PGT entry, to avoid a
-temporary situation in which the MDB entry points to an empty PGT entry,
-as otherwise packets will be temporarily dropped instead of being flooded.
-
-The new functions will be used in the next patches.
+Flush the port from MDB when it is removed, regardless the state of other
+ports. Flush only the MDB entries which are relevant for the same FID
+index.
 
 Signed-off-by: Amit Cohen <amcohen@nvidia.com>
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- .../mellanox/mlxsw/spectrum_switchdev.c       | 80 ++++++++++++++++++-
- 1 file changed, 78 insertions(+), 2 deletions(-)
+ .../mellanox/mlxsw/spectrum_switchdev.c         | 17 +++++++++++------
+ 1 file changed, 11 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
-index bb2694ef6220..5f8136a8db13 100644
+index 5f8136a8db13..0cf442e0dce0 100644
 --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
 +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
-@@ -2131,7 +2131,7 @@ mlxsw_sp_mc_mdb_mrouters_set(struct mlxsw_sp *mlxsw_sp,
- 	return err;
- }
+@@ -139,7 +139,8 @@ mlxsw_sp_bridge_port_fdb_flush(struct mlxsw_sp *mlxsw_sp,
  
--static __always_unused struct mlxsw_sp_mdb_entry *
-+static struct mlxsw_sp_mdb_entry *
- mlxsw_sp_mc_mdb_entry_init(struct mlxsw_sp *mlxsw_sp,
- 			   struct mlxsw_sp_bridge_device *bridge_device,
- 			   const unsigned char *addr, u16 fid, u16 local_port)
-@@ -2194,7 +2194,7 @@ mlxsw_sp_mc_mdb_entry_init(struct mlxsw_sp *mlxsw_sp,
- 	return ERR_PTR(err);
- }
+ static void
+ mlxsw_sp_bridge_port_mdb_flush(struct mlxsw_sp_port *mlxsw_sp_port,
+-			       struct mlxsw_sp_bridge_port *bridge_port);
++			       struct mlxsw_sp_bridge_port *bridge_port,
++			       u16 fid_index);
  
--static __always_unused void
-+static void
- mlxsw_sp_mc_mdb_entry_fini(struct mlxsw_sp *mlxsw_sp,
- 			   struct mlxsw_sp_mdb_entry *mdb_entry,
- 			   struct mlxsw_sp_bridge_device *bridge_device,
-@@ -2212,6 +2212,82 @@ mlxsw_sp_mc_mdb_entry_fini(struct mlxsw_sp *mlxsw_sp,
- 	kfree(mdb_entry);
- }
+ static int
+ mlxsw_sp_bridge_mdb_mc_enable_sync(struct mlxsw_sp *mlxsw_sp,
+@@ -1382,14 +1383,13 @@ mlxsw_sp_port_vlan_bridge_leave(struct mlxsw_sp_port_vlan *mlxsw_sp_port_vlan)
+ 	struct mlxsw_sp_bridge_vlan *bridge_vlan;
+ 	struct mlxsw_sp_bridge_port *bridge_port;
+ 	u16 vid = mlxsw_sp_port_vlan->vid;
+-	bool last_port, last_vlan;
++	bool last_port;
  
-+static __always_unused struct mlxsw_sp_mdb_entry *
-+mlxsw_sp_mc_mdb_entry_get(struct mlxsw_sp *mlxsw_sp,
-+			  struct mlxsw_sp_bridge_device *bridge_device,
-+			  const unsigned char *addr, u16 fid, u16 local_port)
-+{
-+	struct mlxsw_sp_mdb_entry_key key = {};
-+	struct mlxsw_sp_mdb_entry *mdb_entry;
+ 	if (WARN_ON(mlxsw_sp_fid_type(fid) != MLXSW_SP_FID_TYPE_8021Q &&
+ 		    mlxsw_sp_fid_type(fid) != MLXSW_SP_FID_TYPE_8021D))
+ 		return;
+ 
+ 	bridge_port = mlxsw_sp_port_vlan->bridge_port;
+-	last_vlan = list_is_singular(&bridge_port->vlans_list);
+ 	bridge_vlan = mlxsw_sp_bridge_vlan_find(bridge_port, vid);
+ 	last_port = list_is_singular(&bridge_vlan->port_vlan_list);
+ 
+@@ -1401,8 +1401,9 @@ mlxsw_sp_port_vlan_bridge_leave(struct mlxsw_sp_port_vlan *mlxsw_sp_port_vlan)
+ 		mlxsw_sp_bridge_port_fdb_flush(mlxsw_sp_port->mlxsw_sp,
+ 					       bridge_port,
+ 					       mlxsw_sp_fid_index(fid));
+-	if (last_vlan)
+-		mlxsw_sp_bridge_port_mdb_flush(mlxsw_sp_port, bridge_port);
 +
-+	ether_addr_copy(key.addr, addr);
-+	key.fid = fid;
-+	mdb_entry = rhashtable_lookup_fast(&bridge_device->mdb_ht, &key,
-+					   mlxsw_sp_mdb_ht_params);
-+	if (mdb_entry) {
-+		struct mlxsw_sp_mdb_entry_port *mdb_entry_port;
-+
-+		mdb_entry_port = mlxsw_sp_mdb_entry_port_get(mlxsw_sp,
-+							     mdb_entry,
-+							     local_port);
-+		if (IS_ERR(mdb_entry_port))
-+			return ERR_CAST(mdb_entry_port);
-+
-+		return mdb_entry;
-+	}
-+
-+	return mlxsw_sp_mc_mdb_entry_init(mlxsw_sp, bridge_device, addr, fid,
-+					  local_port);
-+}
-+
-+static bool
-+mlxsw_sp_mc_mdb_entry_remove(struct mlxsw_sp_mdb_entry *mdb_entry,
-+			     struct mlxsw_sp_mdb_entry_port *removed_entry_port,
-+			     bool force)
-+{
-+	if (mdb_entry->ports_count > 1)
-+		return false;
-+
-+	if (force)
-+		return true;
-+
-+	if (!removed_entry_port->mrouter &&
-+	    refcount_read(&removed_entry_port->refcount) > 1)
-+		return false;
-+
-+	if (removed_entry_port->mrouter &&
-+	    refcount_read(&removed_entry_port->refcount) > 2)
-+		return false;
-+
-+	return true;
-+}
-+
-+static __always_unused void
-+mlxsw_sp_mc_mdb_entry_put(struct mlxsw_sp *mlxsw_sp,
-+			  struct mlxsw_sp_bridge_device *bridge_device,
-+			  struct mlxsw_sp_mdb_entry *mdb_entry, u16 local_port,
-+			  bool force)
-+{
-+	struct mlxsw_sp_mdb_entry_port *mdb_entry_port;
-+
-+	mdb_entry_port = mlxsw_sp_mdb_entry_port_lookup(mdb_entry, local_port);
-+	if (!mdb_entry_port)
-+		return;
-+
-+	/* Avoid a temporary situation in which the MDB entry points to an empty
-+	 * PGT entry, as otherwise packets will be temporarily dropped instead
-+	 * of being flooded. Instead, in this situation, call
-+	 * mlxsw_sp_mc_mdb_entry_fini(), which first deletes the MDB entry and
-+	 * then releases the PGT entry.
-+	 */
-+	if (mlxsw_sp_mc_mdb_entry_remove(mdb_entry, mdb_entry_port, force))
-+		mlxsw_sp_mc_mdb_entry_fini(mlxsw_sp, mdb_entry, bridge_device,
-+					   local_port, force);
-+	else
-+		mlxsw_sp_mdb_entry_port_put(mlxsw_sp, mdb_entry, local_port,
-+					    force);
-+}
-+
- static int mlxsw_sp_port_mdb_add(struct mlxsw_sp_port *mlxsw_sp_port,
- 				 const struct switchdev_obj_port_mdb *mdb)
++	mlxsw_sp_bridge_port_mdb_flush(mlxsw_sp_port, bridge_port,
++				       mlxsw_sp_fid_index(fid));
+ 
+ 	mlxsw_sp_port_vlan_fid_leave(mlxsw_sp_port_vlan);
+ 
+@@ -2528,7 +2529,8 @@ static int mlxsw_sp_port_mdb_del(struct mlxsw_sp_port *mlxsw_sp_port,
+ 
+ static void
+ mlxsw_sp_bridge_port_mdb_flush(struct mlxsw_sp_port *mlxsw_sp_port,
+-			       struct mlxsw_sp_bridge_port *bridge_port)
++			       struct mlxsw_sp_bridge_port *bridge_port,
++			       u16 fid_index)
  {
+ 	struct mlxsw_sp_bridge_device *bridge_device;
+ 	struct mlxsw_sp_mdb_entry *mdb_entry, *tmp;
+@@ -2538,6 +2540,9 @@ mlxsw_sp_bridge_port_mdb_flush(struct mlxsw_sp_port *mlxsw_sp_port,
+ 
+ 	list_for_each_entry_safe(mdb_entry, tmp, &bridge_device->mdb_list,
+ 				 list) {
++		if (mdb_entry->key.fid != fid_index)
++			continue;
++
+ 		if (test_bit(local_port, mdb_entry->ports_in_mid)) {
+ 			__mlxsw_sp_port_mdb_del(mlxsw_sp_port, bridge_port,
+ 						mdb_entry);
 -- 
 2.36.1
 
