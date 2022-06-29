@@ -2,69 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E3EB955FAB4
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 10:37:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 71A0655FAEB
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 10:45:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232802AbiF2Igc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 04:36:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50674 "EHLO
+        id S232885AbiF2IpK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 04:45:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232513AbiF2Iga (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 04:36:30 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DCF1C3C70B
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 01:36:28 -0700 (PDT)
+        with ESMTP id S232870AbiF2IpF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 04:45:05 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4407C3C709
+        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 01:45:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656491787;
+        s=mimecast20190719; t=1656492303;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=Bet7RPOPoI6qEqFJfuyVXTSgqEPE876J831j55LAYEI=;
-        b=TP9G4S9cVQnQXnflZcr5ee9IIdzz/Jf15dIMeN0J24CztXr6Cd3ig3W7hwx3sHcl7aiAZ+
-        /ZGlh/3jF3+O0YgiXvsImzKbV2VBrmpJqmbMNLddkcT17WHXg/zDr7odOiijhEXlJW80vY
-        1LHo003+Gt5kq+7t7e1vuMPglhoMKEI=
-Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
- [209.85.208.200]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=Ce8LCIJWlyU+gKAFW1266Y8Jb/qLrB5BB1Xt2Vb9bMA=;
+        b=T3j7ro3Lxuxv9oRuY2zUY/+z8jpvAv0NInhIuYmQYJ61Todzndwj7RhTSblZgiY0t5yA3J
+        9Q+9MHsmu6DQHAeGKtjG50O1/EbEITm66xdeZRaj1oMsqxwuNx3dKZAy9pxoWBpLcFFBfC
+        PRTQHyi6tm4wl6F+4zkwB2HI1aQKe5A=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-584-OfBukc4nNHu5VBrfNShOXA-1; Wed, 29 Jun 2022 04:36:26 -0400
-X-MC-Unique: OfBukc4nNHu5VBrfNShOXA-1
-Received: by mail-lj1-f200.google.com with SMTP id n18-20020a2e9052000000b0025a891ce677so2116962ljg.15
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 01:36:25 -0700 (PDT)
+ us-mta-49-i5nTdZyTPrCJ76dDWvaz9Q-1; Wed, 29 Jun 2022 04:45:02 -0400
+X-MC-Unique: i5nTdZyTPrCJ76dDWvaz9Q-1
+Received: by mail-wr1-f70.google.com with SMTP id e5-20020adff345000000b0021b9f00e882so2178699wrp.6
+        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 01:45:01 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Bet7RPOPoI6qEqFJfuyVXTSgqEPE876J831j55LAYEI=;
-        b=shcza3kewE5LA96PS7YswyxM7tmqQb8MDTr2zonuNzzGBNfx1bWlJ2DbfSgLHQZQVi
-         boiU8aH4E+ULFgoOobwVjqr7UVRYh/QuFqFTBArNDkx6WbjI4pTCAEPcVDtmFOi8Z3EL
-         ltEqQ+AwIunmH38DLfVOVZK4RVu3YNhu0wNHwOR42RedxidedWskaCYgozv/pTC1RwT3
-         O0P5Wom1rWwplH1BW9aJo4y7gG+KLcDCMjGherjvDsOBadXmIyXSAm+z95lYGP79HINT
-         jXk34s4q75NrnI1Mx/9jadyaG8QI9K0+s1aG+icHoUuhFFlq/EL5R1qo9nWopYvjRr5t
-         ulPg==
-X-Gm-Message-State: AJIora8zvWouXrLAnx1Vc9loZ94ZC37m2/q5Al6OcUzfQCa1U0/QhDd/
-        PBVhTiXa3HNZjenqKA0yCNCHCI1/MVekG5UaNbov19O+KDWjD6VItlpp1iBT8FNJtQGNfeYGlO8
-        8UmRODP97VzVhMhmP8E/Oeo1D7T4Gl4j4
-X-Received: by 2002:a05:651c:895:b0:250:c5ec:bc89 with SMTP id d21-20020a05651c089500b00250c5ecbc89mr1000413ljq.251.1656491784163;
-        Wed, 29 Jun 2022 01:36:24 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1vBelXp7oblduZwmkq8dd6rRu3tkscsPBwJaVedQQ56Gmdo+PJ5Ijy22sPBo/8FbgLCMMKyAjmHBfc3NkfgJ8g=
-X-Received: by 2002:a05:651c:895:b0:250:c5ec:bc89 with SMTP id
- d21-20020a05651c089500b00250c5ecbc89mr1000402ljq.251.1656491783902; Wed, 29
- Jun 2022 01:36:23 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220628090324.62219-1-jasowang@redhat.com> <20220629032106-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20220629032106-mutt-send-email-mst@kernel.org>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Wed, 29 Jun 2022 16:36:12 +0800
-Message-ID: <CACGkMEutEYHf8kO_6gpk5BrMAndJPd8wDAPG2_Z9pxSiXXNDCw@mail.gmail.com>
-Subject: Re: [PATCH] virtio-net: fix the race between refill work and close
-To:     "Michael S. Tsirkin" <mst@redhat.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Ce8LCIJWlyU+gKAFW1266Y8Jb/qLrB5BB1Xt2Vb9bMA=;
+        b=d9yD4Jk5/7arXvkMelwhlhGK/OdWZkaaSrYz3xMYJnjtyDoG0NmhTE/PM2gfbQp4me
+         /Sb82MPasmkMbEjWAW0OxiWfJBeATBkfVOiseHQW/nV6CF87lIzHXRpmA/xyz7ZMuC5q
+         JEjy04En9cxqmNNwI0IpelVmNp8RljquBhXDKuq/F4C6qBKem41jcZn15P69o841a5P6
+         zUAO/wEFdfnSoZ/us5ivd91eYqQwKye+MNK7UYE+j7zGTZDHQ+mQ26IF8FODaZxAetH7
+         Dy5c/PJ+C1wvahj9Lw5gwg5AH+bltooot0ynXVbbM5uXoOJhxK26x3fDKMy5koq4V+Hh
+         Izrg==
+X-Gm-Message-State: AJIora+TlPuyXJPAYRAcJ04eZiLPoL+Gm5IoZGSFEIkl3LtJ2XEdBb7S
+        TZeD1puLyUJjAaVt5MMlKh2FFz45AUwj+ATMfDrsa+WWH/7DJVvFbkQBmLSmnuFST2XPOBmlWUo
+        WGJhEJeZWfts3B3yS
+X-Received: by 2002:a05:600c:41d1:b0:3a0:301d:f75f with SMTP id t17-20020a05600c41d100b003a0301df75fmr4234829wmh.31.1656492300134;
+        Wed, 29 Jun 2022 01:45:00 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1vq81KZkWHPP6HoDbBvjIka45K9E4a+OATXJO8gsMLATGBlbrgfVU1VS4agrmPdzgbyKsGUnQ==
+X-Received: by 2002:a05:600c:41d1:b0:3a0:301d:f75f with SMTP id t17-20020a05600c41d100b003a0301df75fmr4234805wmh.31.1656492299865;
+        Wed, 29 Jun 2022 01:44:59 -0700 (PDT)
+Received: from redhat.com ([2.52.23.204])
+        by smtp.gmail.com with ESMTPSA id t11-20020adff60b000000b0021b962f4256sm15540856wrp.80.2022.06.29.01.44.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Jun 2022 01:44:59 -0700 (PDT)
+Date:   Wed, 29 Jun 2022 04:44:55 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
 Cc:     davem <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
         virtualization <virtualization@lists.linux-foundation.org>,
         netdev <netdev@vger.kernel.org>,
         linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+Subject: Re: [PATCH] virtio-net: fix the race between refill work and close
+Message-ID: <20220629044316-mutt-send-email-mst@kernel.org>
+References: <20220628090324.62219-1-jasowang@redhat.com>
+ <20220629032106-mutt-send-email-mst@kernel.org>
+ <CACGkMEutEYHf8kO_6gpk5BrMAndJPd8wDAPG2_Z9pxSiXXNDCw@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CACGkMEutEYHf8kO_6gpk5BrMAndJPd8wDAPG2_Z9pxSiXXNDCw@mail.gmail.com>
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
         SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -73,175 +79,182 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 29, 2022 at 3:29 PM Michael S. Tsirkin <mst@redhat.com> wrote:
->
-> On Tue, Jun 28, 2022 at 05:03:24PM +0800, Jason Wang wrote:
-> > We try using cancel_delayed_work_sync() to prevent the work from
-> > enabling NAPI. This is insufficient since we don't disable the the
-> > source the scheduling
->
-> can't parse this sentence
+On Wed, Jun 29, 2022 at 04:36:12PM +0800, Jason Wang wrote:
+> On Wed, Jun 29, 2022 at 3:29 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+> >
+> > On Tue, Jun 28, 2022 at 05:03:24PM +0800, Jason Wang wrote:
+> > > We try using cancel_delayed_work_sync() to prevent the work from
+> > > enabling NAPI. This is insufficient since we don't disable the the
+> > > source the scheduling
+> >
+> > can't parse this sentence
+> 
+> I actually meant "we don't disable the source of the refill work scheduling".
+> 
+> >
+> > > of the refill work. This means an NAPI
+> >
+> > what do you mean "an NAPI"? a NAPI poll callback?
+> 
+> Yes.
 
-I actually meant "we don't disable the source of the refill work scheduling".
+pls post with a fixed log then.
 
->
-> > of the refill work. This means an NAPI
->
-> what do you mean "an NAPI"? a NAPI poll callback?
+> >
+> > > after
+> > > cancel_delayed_work_sync() can schedule the refill work then can
+> > > re-enable the NAPI that leads to use-after-free [1].
+> > >
+> > > Since the work can enable NAPI, we can't simply disable NAPI before
+> > > calling cancel_delayed_work_sync(). So fix this by introducing a
+> > > dedicated boolean to control whether or not the work could be
+> > > scheduled from NAPI.
+> > >
+> > > [1]
+> > > ==================================================================
+> > > BUG: KASAN: use-after-free in refill_work+0x43/0xd4
+> > > Read of size 2 at addr ffff88810562c92e by task kworker/2:1/42
+> > >
+> > > CPU: 2 PID: 42 Comm: kworker/2:1 Not tainted 5.19.0-rc1+ #480
+> > > Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.16.0-0-gd239552ce722-prebuilt.qemu.org 04/01/2014
+> > > Workqueue: events refill_work
+> > > Call Trace:
+> > >  <TASK>
+> > >  dump_stack_lvl+0x34/0x44
+> > >  print_report.cold+0xbb/0x6ac
+> > >  ? _printk+0xad/0xde
+> > >  ? refill_work+0x43/0xd4
+> > >  kasan_report+0xa8/0x130
+> > >  ? refill_work+0x43/0xd4
+> > >  refill_work+0x43/0xd4
+> > >  process_one_work+0x43d/0x780
+> > >  worker_thread+0x2a0/0x6f0
+> > >  ? process_one_work+0x780/0x780
+> > >  kthread+0x167/0x1a0
+> > >  ? kthread_exit+0x50/0x50
+> > >  ret_from_fork+0x22/0x30
+> > >  </TASK>
+> > > ...
+> > >
+> > > Fixes: b2baed69e605c ("virtio_net: set/cancel work on ndo_open/ndo_stop")
+> > > Signed-off-by: Jason Wang <jasowang@redhat.com>
+> > > ---
+> > >  drivers/net/virtio_net.c | 38 ++++++++++++++++++++++++++++++++++++--
+> > >  1 file changed, 36 insertions(+), 2 deletions(-)
+> > >
+> > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> > > index db05b5e930be..21bf1e5c81ef 100644
+> > > --- a/drivers/net/virtio_net.c
+> > > +++ b/drivers/net/virtio_net.c
+> > > @@ -251,6 +251,12 @@ struct virtnet_info {
+> > >       /* Does the affinity hint is set for virtqueues? */
+> > >       bool affinity_hint_set;
+> > >
+> > > +     /* Is refill work enabled? */
+> > > +     bool refill_work_enabled;
+> > > +
+> > > +     /* The lock to synchronize the access to refill_work_enabled */
+> > > +     spinlock_t refill_lock;
+> > > +
+> > >       /* CPU hotplug instances for online & dead */
+> > >       struct hlist_node node;
+> > >       struct hlist_node node_dead;
+> > > @@ -348,6 +354,20 @@ static struct page *get_a_page(struct receive_queue *rq, gfp_t gfp_mask)
+> > >       return p;
+> > >  }
+> > >
+> > > +static void enable_refill_work(struct virtnet_info *vi)
+> > > +{
+> > > +     spin_lock(&vi->refill_lock);
+> > > +     vi->refill_work_enabled = true;
+> > > +     spin_unlock(&vi->refill_lock);
+> > > +}
+> > > +
+> > > +static void disable_refill_work(struct virtnet_info *vi)
+> > > +{
+> > > +     spin_lock(&vi->refill_lock);
+> > > +     vi->refill_work_enabled = false;
+> > > +     spin_unlock(&vi->refill_lock);
+> > > +}
+> > > +
+> > >  static void virtqueue_napi_schedule(struct napi_struct *napi,
+> > >                                   struct virtqueue *vq)
+> > >  {
+> > > @@ -1527,8 +1547,12 @@ static int virtnet_receive(struct receive_queue *rq, int budget,
+> > >       }
+> > >
+> > >       if (rq->vq->num_free > min((unsigned int)budget, virtqueue_get_vring_size(rq->vq)) / 2) {
+> > > -             if (!try_fill_recv(vi, rq, GFP_ATOMIC))
+> > > -                     schedule_delayed_work(&vi->refill, 0);
+> > > +             if (!try_fill_recv(vi, rq, GFP_ATOMIC)) {
+> > > +                     spin_lock(&vi->refill_lock);
+> > > +                     if (vi->refill_work_enabled)
+> > > +                             schedule_delayed_work(&vi->refill, 0);
+> > > +                     spin_unlock(&vi->refill_lock);
+> > > +             }
+> > >       }
+> > >
+> > >       u64_stats_update_begin(&rq->stats.syncp);
+> > > @@ -1651,6 +1675,8 @@ static int virtnet_open(struct net_device *dev)
+> > >       struct virtnet_info *vi = netdev_priv(dev);
+> > >       int i, err;
+> > >
+> > > +     enable_refill_work(vi);
+> > > +
+> > >       for (i = 0; i < vi->max_queue_pairs; i++) {
+> > >               if (i < vi->curr_queue_pairs)
+> > >                       /* Make sure we have some buffers: if oom use wq. */
+> > > @@ -2033,6 +2059,8 @@ static int virtnet_close(struct net_device *dev)
+> > >       struct virtnet_info *vi = netdev_priv(dev);
+> > >       int i;
+> > >
+> > > +     /* Make sure NAPI doesn't schedule refill work */
+> > > +     disable_refill_work(vi);
+> > >       /* Make sure refill_work doesn't re-enable napi! */
+> > >       cancel_delayed_work_sync(&vi->refill);
+> > >
+> > > @@ -2776,6 +2804,9 @@ static void virtnet_freeze_down(struct virtio_device *vdev)
+> > >       netif_tx_lock_bh(vi->dev);
+> > >       netif_device_detach(vi->dev);
+> > >       netif_tx_unlock_bh(vi->dev);
+> > > +     /* Make sure NAPI doesn't schedule refill work */
+> > > +     disable_refill_work(vi);
+> > > +     /* Make sure refill_work doesn't re-enable napi! */
+> > >       cancel_delayed_work_sync(&vi->refill);
+> > >
+> > >       if (netif_running(vi->dev)) {
+> > > @@ -2799,6 +2830,8 @@ static int virtnet_restore_up(struct virtio_device *vdev)
+> > >
+> > >       virtio_device_ready(vdev);
+> > >
+> > > +     enable_refill_work(vi);
+> > > +
+> > >       if (netif_running(vi->dev)) {
+> > >               for (i = 0; i < vi->curr_queue_pairs; i++)
+> > >                       if (!try_fill_recv(vi, &vi->rq[i], GFP_KERNEL))
+> > > @@ -3548,6 +3581,7 @@ static int virtnet_probe(struct virtio_device *vdev)
+> > >       vdev->priv = vi;
+> > >
+> > >       INIT_WORK(&vi->config_work, virtnet_config_changed_work);
+> > > +     spin_lock_init(&vi->refill_lock);
+> > >
+> > >       /* If we can receive ANY GSO packets, we must allocate large ones. */
+> > >       if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO4) ||
+> >
+> >
+> > Can't say I love all the extra state but oh well.
+> 
+> I couldn't find a better way. The tricky part is that NAPI and refill
+> can schedule each other so we need a third state.
+> 
+> Thanks
 
-Yes.
 
->
-> > after
-> > cancel_delayed_work_sync() can schedule the refill work then can
-> > re-enable the NAPI that leads to use-after-free [1].
-> >
-> > Since the work can enable NAPI, we can't simply disable NAPI before
-> > calling cancel_delayed_work_sync(). So fix this by introducing a
-> > dedicated boolean to control whether or not the work could be
-> > scheduled from NAPI.
-> >
-> > [1]
-> > ==================================================================
-> > BUG: KASAN: use-after-free in refill_work+0x43/0xd4
-> > Read of size 2 at addr ffff88810562c92e by task kworker/2:1/42
-> >
-> > CPU: 2 PID: 42 Comm: kworker/2:1 Not tainted 5.19.0-rc1+ #480
-> > Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.16.0-0-gd239552ce722-prebuilt.qemu.org 04/01/2014
-> > Workqueue: events refill_work
-> > Call Trace:
-> >  <TASK>
-> >  dump_stack_lvl+0x34/0x44
-> >  print_report.cold+0xbb/0x6ac
-> >  ? _printk+0xad/0xde
-> >  ? refill_work+0x43/0xd4
-> >  kasan_report+0xa8/0x130
-> >  ? refill_work+0x43/0xd4
-> >  refill_work+0x43/0xd4
-> >  process_one_work+0x43d/0x780
-> >  worker_thread+0x2a0/0x6f0
-> >  ? process_one_work+0x780/0x780
-> >  kthread+0x167/0x1a0
-> >  ? kthread_exit+0x50/0x50
-> >  ret_from_fork+0x22/0x30
-> >  </TASK>
-> > ...
-> >
-> > Fixes: b2baed69e605c ("virtio_net: set/cancel work on ndo_open/ndo_stop")
-> > Signed-off-by: Jason Wang <jasowang@redhat.com>
-> > ---
-> >  drivers/net/virtio_net.c | 38 ++++++++++++++++++++++++++++++++++++--
-> >  1 file changed, 36 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > index db05b5e930be..21bf1e5c81ef 100644
-> > --- a/drivers/net/virtio_net.c
-> > +++ b/drivers/net/virtio_net.c
-> > @@ -251,6 +251,12 @@ struct virtnet_info {
-> >       /* Does the affinity hint is set for virtqueues? */
-> >       bool affinity_hint_set;
-> >
-> > +     /* Is refill work enabled? */
-> > +     bool refill_work_enabled;
-> > +
-> > +     /* The lock to synchronize the access to refill_work_enabled */
-> > +     spinlock_t refill_lock;
-> > +
-> >       /* CPU hotplug instances for online & dead */
-> >       struct hlist_node node;
-> >       struct hlist_node node_dead;
-> > @@ -348,6 +354,20 @@ static struct page *get_a_page(struct receive_queue *rq, gfp_t gfp_mask)
-> >       return p;
-> >  }
-> >
-> > +static void enable_refill_work(struct virtnet_info *vi)
-> > +{
-> > +     spin_lock(&vi->refill_lock);
-> > +     vi->refill_work_enabled = true;
-> > +     spin_unlock(&vi->refill_lock);
-> > +}
-> > +
-> > +static void disable_refill_work(struct virtnet_info *vi)
-> > +{
-> > +     spin_lock(&vi->refill_lock);
-> > +     vi->refill_work_enabled = false;
-> > +     spin_unlock(&vi->refill_lock);
-> > +}
-> > +
-> >  static void virtqueue_napi_schedule(struct napi_struct *napi,
-> >                                   struct virtqueue *vq)
-> >  {
-> > @@ -1527,8 +1547,12 @@ static int virtnet_receive(struct receive_queue *rq, int budget,
-> >       }
-> >
-> >       if (rq->vq->num_free > min((unsigned int)budget, virtqueue_get_vring_size(rq->vq)) / 2) {
-> > -             if (!try_fill_recv(vi, rq, GFP_ATOMIC))
-> > -                     schedule_delayed_work(&vi->refill, 0);
-> > +             if (!try_fill_recv(vi, rq, GFP_ATOMIC)) {
-> > +                     spin_lock(&vi->refill_lock);
-> > +                     if (vi->refill_work_enabled)
-> > +                             schedule_delayed_work(&vi->refill, 0);
-> > +                     spin_unlock(&vi->refill_lock);
-> > +             }
-> >       }
-> >
-> >       u64_stats_update_begin(&rq->stats.syncp);
-> > @@ -1651,6 +1675,8 @@ static int virtnet_open(struct net_device *dev)
-> >       struct virtnet_info *vi = netdev_priv(dev);
-> >       int i, err;
-> >
-> > +     enable_refill_work(vi);
-> > +
-> >       for (i = 0; i < vi->max_queue_pairs; i++) {
-> >               if (i < vi->curr_queue_pairs)
-> >                       /* Make sure we have some buffers: if oom use wq. */
-> > @@ -2033,6 +2059,8 @@ static int virtnet_close(struct net_device *dev)
-> >       struct virtnet_info *vi = netdev_priv(dev);
-> >       int i;
-> >
-> > +     /* Make sure NAPI doesn't schedule refill work */
-> > +     disable_refill_work(vi);
-> >       /* Make sure refill_work doesn't re-enable napi! */
-> >       cancel_delayed_work_sync(&vi->refill);
-> >
-> > @@ -2776,6 +2804,9 @@ static void virtnet_freeze_down(struct virtio_device *vdev)
-> >       netif_tx_lock_bh(vi->dev);
-> >       netif_device_detach(vi->dev);
-> >       netif_tx_unlock_bh(vi->dev);
-> > +     /* Make sure NAPI doesn't schedule refill work */
-> > +     disable_refill_work(vi);
-> > +     /* Make sure refill_work doesn't re-enable napi! */
-> >       cancel_delayed_work_sync(&vi->refill);
-> >
-> >       if (netif_running(vi->dev)) {
-> > @@ -2799,6 +2830,8 @@ static int virtnet_restore_up(struct virtio_device *vdev)
-> >
-> >       virtio_device_ready(vdev);
-> >
-> > +     enable_refill_work(vi);
-> > +
-> >       if (netif_running(vi->dev)) {
-> >               for (i = 0; i < vi->curr_queue_pairs; i++)
-> >                       if (!try_fill_recv(vi, &vi->rq[i], GFP_KERNEL))
-> > @@ -3548,6 +3581,7 @@ static int virtnet_probe(struct virtio_device *vdev)
-> >       vdev->priv = vi;
-> >
-> >       INIT_WORK(&vi->config_work, virtnet_config_changed_work);
-> > +     spin_lock_init(&vi->refill_lock);
-> >
-> >       /* If we can receive ANY GSO packets, we must allocate large ones. */
-> >       if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO4) ||
->
->
-> Can't say I love all the extra state but oh well.
+I wonder whether we can add a napi flag that says going away
+do not schedule, and have napi_enable/napi_disable fail then.
 
-I couldn't find a better way. The tricky part is that NAPI and refill
-can schedule each other so we need a third state.
-
-Thanks
-
->
-> > --
-> > 2.25.1
->
+> >
+> > > --
+> > > 2.25.1
+> >
 
