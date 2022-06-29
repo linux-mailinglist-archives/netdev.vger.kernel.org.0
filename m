@@ -2,85 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7975855F48B
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 05:56:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B065E55F4AF
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 06:03:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230265AbiF2Dyl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 23:54:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44812 "EHLO
+        id S229492AbiF2D5B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 23:57:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229553AbiF2Dyk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 23:54:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D97591FCD9;
-        Tue, 28 Jun 2022 20:54:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A13E7B82160;
-        Wed, 29 Jun 2022 03:54:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C218AC34114;
-        Wed, 29 Jun 2022 03:54:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656474877;
-        bh=uGe21oy82tSdMA/YvpYvQVzqQbNQiBgl0vADr1AFTdY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=lNSlP1p+ukhqJtiPg2ozJ5MLFhq2KeadAUOnIaxqNjPNALtINmszC1a778vlk/+Jv
-         QAi+R+5uceMsmtAbOx35LGxwwsPcG0N2aZ+xHf4OAHNKpYqjQWLHKDy+z8GsRcpjI2
-         XfxkCtqrEMAYKbPBm+8t/6UpYntRTKDFFD3oQXjdANESi/s6807MUxASlB3AZJguBc
-         ulLXwIGHyiIFe+nY3V7+XDNQVP4q316rjalagSZzFQqTObTNvShUZ5jr84p16jxDJo
-         9ztfUwwO77UzYDDz5UlTNYCA8E+GCGUhlAfZE0N8k8A/72C6N87rVJhy9/HJOQ0JE0
-         u89rPBXslFfCg==
-Date:   Tue, 28 Jun 2022 20:54:35 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Christian Marangi <ansuelsmth@gmail.com>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [net-next PATCH RFC 2/5] net: ethernet: stmicro: stmmac: first
- disable all queues in release
-Message-ID: <20220628205435.44b0c78c@kernel.org>
-In-Reply-To: <20220628013342.13581-3-ansuelsmth@gmail.com>
-References: <20220628013342.13581-1-ansuelsmth@gmail.com>
-        <20220628013342.13581-3-ansuelsmth@gmail.com>
+        with ESMTP id S229712AbiF2D4a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 23:56:30 -0400
+Received: from smtp-fw-2101.amazon.com (smtp-fw-2101.amazon.com [72.21.196.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ACBA2EA0C
+        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 20:56:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1656474972; x=1688010972;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=CpARIZ88B6LpHVrC9VDFCk/8IW9GbXo1UW3T9JUvOVk=;
+  b=V8p4s/QSDQAUppXdkjAp9v9/sEFqmurceNuOon3S6x/74S8YYchn3DTq
+   aJgw2XlJxygBok0MToI1mDsF+LT8Sn/JIor9DwkpaTRkLGczb+JlYfwq6
+   kIUkVIo4dHTxpiGLhuUzvoHdjvMRSbX8mBpwLnAR9gsBq26oxFExDeorZ
+   U=;
+X-IronPort-AV: E=Sophos;i="5.92,230,1650931200"; 
+   d="scan'208";a="212897893"
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-iad-1d-9a235a16.us-east-1.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-2101.iad2.amazon.com with ESMTP; 29 Jun 2022 03:56:01 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-iad-1d-9a235a16.us-east-1.amazon.com (Postfix) with ESMTPS id B3B7F800C0;
+        Wed, 29 Jun 2022 03:55:58 +0000 (UTC)
+Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.36; Wed, 29 Jun 2022 03:55:57 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.161.183) by
+ EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.36; Wed, 29 Jun 2022 03:55:54 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     <kuba@kernel.org>
+CC:     <davem@davemloft.net>, <ebiederm@xmission.com>,
+        <edumazet@google.com>, <herbert@gondor.apana.org.au>,
+        <kuni1840@gmail.com>, <kuniyu@amazon.com>,
+        <netdev@vger.kernel.org>, <pabeni@redhat.com>, <xemul@openvz.org>
+Subject: Re: [PATCH v3 net] af_unix: Do not call kmemdup() for init_net's sysctl table.
+Date:   Tue, 28 Jun 2022 20:55:46 -0700
+Message-ID: <20220629035546.58196-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220628205125.2b443819@kernel.org>
+References: <20220628205125.2b443819@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.161.183]
+X-ClientProxiedBy: EX13D02UWB004.ant.amazon.com (10.43.161.11) To
+ EX13D04ANC001.ant.amazon.com (10.43.157.89)
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 28 Jun 2022 03:33:39 +0200 Christian Marangi wrote:
-> +	stmmac_disable_all_queues(priv);
-> +
-> +	for (chan = 0; chan < priv->plat->tx_queues_to_use; chan++)
-> +		hrtimer_cancel(&priv->tx_queue[chan].txtimer);
+From:   Jakub Kicinski <kuba@kernel.org>
+Date:   Tue, 28 Jun 2022 20:51:25 -0700
+> On Mon, 27 Jun 2022 16:36:27 -0700 Kuniyuki Iwashima wrote:
+> > While setting up init_net's sysctl table, we need not duplicate the
+> > global table and can use it directly as ipv4_sysctl_init_net() does.
+> > 
+> > Unlike IPv4, AF_UNIX does not have a huge sysctl table for now, so it
+> > cannot be a problem, but this patch makes code consistent.
+> 
+> Thanks for the extra info. It sounds like an optimization, tho.
+> We save one table's worth of memory. Any objections to applying
+> this to net-next?
 
-IIRC this hrtimer is to check for completions. Canceling it before
-netif_tx_disable() looks odd, presumably until the queues are stopped
-the timer can get scheduled again, no?
+I'm fine with net-next.
 
->  	netif_tx_disable(dev);
->  
->  	if (device_may_wakeup(priv->device))
-> @@ -3764,11 +3769,6 @@ static int stmmac_release(struct net_device *dev)
->  	phylink_stop(priv->phylink);
->  	phylink_disconnect_phy(priv->phylink);
->  
-> -	stmmac_disable_all_queues(priv);
-> -
-> -	for (chan = 0; chan < priv->plat->tx_queues_to_use; chan++)
-> -		hrtimer_cancel(&priv->tx_queue[chan].txtimer);
+Thank you,
+Kuniyuki
+
+
+> > Fixes: 1597fbc0faf8 ("[UNIX]: Make the unix sysctl tables per-namespace")
+> > Acked-by: Eric W. Biederman <ebiederm@xmission.com>
+> > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
