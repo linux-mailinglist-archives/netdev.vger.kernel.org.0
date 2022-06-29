@@ -2,81 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C551C5601A4
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 15:45:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BEDE8560203
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 16:07:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233434AbiF2Nog (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 09:44:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46912 "EHLO
+        id S231819AbiF2OEu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 10:04:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233578AbiF2No2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 09:44:28 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CC6C165AA;
-        Wed, 29 Jun 2022 06:44:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=iNNpZQ4J4NP0iLtyPz5n241klxoCoQZ9heLmCzkZuyg=; b=TwsloGtjAMMljfnpdRox6V4P/a
-        wbtHRFasAHZBA1hoamnYFBUBJAFhjoW3j5sL1zQGXw0Sujv/quxmbPZ1xUFTwQFpM4XvfL2SoR5/A
-        SUDcbrmEZCvEWqOM6TZMAJ5PwcLwitZa3TxtLXd24SZaQNT9EfsPSUkDl1U5bLimTCFxY9BzmnKan
-        VD7xTpwofgjxuO5CcmZfejlFQx1XGU1XH6+07oMpoCD3AzXr1Wp34hpg5PS7qtAoDkSAos4xvBLbW
-        6/sDxE8MHzzwtpw2/3XyAAbXu0EjBDD2FnCpoKR9fK99s/Htoo9vFflVRfwydHfx1SFqSdyBiPbFq
-        f8mOlvsg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33098)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1o6XzO-0003E8-I3; Wed, 29 Jun 2022 14:44:18 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1o6XzL-0005tn-Qa; Wed, 29 Jun 2022 14:44:15 +0100
-Date:   Wed, 29 Jun 2022 14:44:15 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Divya Koppera <Divya.Koppera@microchip.com>, hkallweit1@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, UNGLinuxDriver@microchip.com,
-        Madhuri.Sripada@microchip.com
-Subject: Re: [PATCH net-next] net: phy: micrel: Adding LED feature for
- LAN8814 PHY
-Message-ID: <YrxXL/p3q35SsXmk@shell.armlinux.org.uk>
-References: <20220628054925.14198-1-Divya.Koppera@microchip.com>
- <YrsRUd6GPG0qCJsw@lunn.ch>
+        with ESMTP id S231501AbiF2OEt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 10:04:49 -0400
+Received: from smtpbg.qq.com (biz-43-154-54-12.mail.qq.com [43.154.54.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B73F2529E;
+        Wed, 29 Jun 2022 07:04:43 -0700 (PDT)
+X-QQ-mid: bizesmtp63t1656511447t5k5iapr
+Received: from localhost.localdomain ( [182.148.13.66])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Wed, 29 Jun 2022 22:03:59 +0800 (CST)
+X-QQ-SSF: 0100000000200060C000C00A0000000
+X-QQ-FEAT: 3uawQE1sH+2MKe39u4T+sQMZuK7zrFp2/8EpLwS4FOyKK8QBIIkGb6ZhK+FVV
+        VyvUFiDUrUD9efbZQkW8A5KeW2IFH5aZ6ngwzVCnB01UMfdV5m/hc86xqccf1l6vVrf89ZZ
+        +RSSwjwNh+s9N0/B1X+GgyGcH3e1cFoa+gnDD9pNO7hM9HqE3X7XDSiY2ZRTlqhlRblhLil
+        s4hjRGc13E23C50JsrnZwA/e6LKZd4OUDlN5U6x0ADvPxvt2EK9em5AoUYBXVgTjYVjp3pL
+        MM2Ub6HzZLpa6ysLB1+5+OHBu/0DlBpkX7PHD0Yvt1m00rHpPaqwfW2+5oHqFubGPw2eBxr
+        arUS3qO
+X-QQ-GoodBg: 0
+From:   Jilin Yuan <yuanjilin@cdjrlc.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jilin Yuan <yuanjilin@cdjrlc.com>
+Subject: [PATCH] intel/iavf:fix repeated words in comments
+Date:   Wed, 29 Jun 2022 22:03:52 +0800
+Message-Id: <20220629140352.51610-1-yuanjilin@cdjrlc.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YrsRUd6GPG0qCJsw@lunn.ch>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
+X-Spam-Status: No, score=0.4 required=5.0 tests=BAYES_00,RCVD_IN_VALIDITY_RPBL,
+        RDNS_DYNAMIC,SPF_PASS,T_SCC_BODY_TEXT_LINE,T_SPF_HELO_TEMPERROR
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 28, 2022 at 04:33:53PM +0200, Andrew Lunn wrote:
-> On Tue, Jun 28, 2022 at 11:19:25AM +0530, Divya Koppera wrote:
-> > LED support for extended mode where
-> > LED 1: Enhanced Mode 5 (10M/1000M/Activity)
-> > LED 2: Enhanced Mode 4 (100M/1000M/Activity)
-> > 
-> > By default it supports KSZ9031 LED mode
-> 
-> You need to update the binding documentation.
+Delete the redundant word 'a'.
 
-What happened to "use the LEDs interface, don't invent private bindings
-for PHY LEDs" ?
+Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
+---
+ drivers/net/ethernet/intel/iavf/iavf_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Does this mean the private bindings are now acceptable and I can
-resubmit my 88x3310 LED support code?
-
+diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
+index 7dfcf78b57fb..548302b1cb8d 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf_main.c
++++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
+@@ -4162,7 +4162,7 @@ static netdev_features_t iavf_features_check(struct sk_buff *skb,
+ 	}
+ 
+ 	/* No need to validate L4LEN as TCP is the only protocol with a
+-	 * a flexible value and we support all possible values supported
++	 * flexible value and we support all possible values supported
+ 	 * by TCP, which is at most 15 dwords
+ 	 */
+ 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.36.1
+
