@@ -2,114 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A4F8055F8D2
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 09:24:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39F0055F8E1
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 09:25:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231555AbiF2HXM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 03:23:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38368 "EHLO
+        id S231851AbiF2HYP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 03:24:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230516AbiF2HXG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 03:23:06 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC5C0222;
-        Wed, 29 Jun 2022 00:23:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=udw9lHGmzoAvFePyLCTqIKD8e/mAeVeJzVZcMu5/Lq4=; b=j+WgdvbgwVAiXYEKAtG4WPjD0X
-        46phVxCdZseTfn5Sqq8rzFUj9MHWNX27GVEfZiR0NHLIGG84wfxUcMdEybxgfTXszXBobgLYgcyNU
-        TK+U5pj9jP0tFtlxOEx/8NavELJT8zKDhgCEVxFpIERWhb+Oq7yvGRDDwejQbKGTS8Pc=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1o6S23-008gOb-QH; Wed, 29 Jun 2022 09:22:39 +0200
-Date:   Wed, 29 Jun 2022 09:22:39 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Lukas Wunner <lukas@wunner.de>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Thomas Gleixner <tglx@linutronix.de>, netdev@vger.kernel.org,
-        Steve Glendinning <steve.glendinning@shawell.net>,
-        UNGLinuxDriver@microchip.com, Oliver Neukum <oneukum@suse.com>,
-        Andre Edich <andre.edich@microchip.com>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Martyn Welch <martyn.welch@collabora.com>,
-        Gabriel Hojda <ghojda@yo2urs.ro>,
-        Christoph Fritz <chf.fritz@googlemail.com>,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-        Philipp Rosenberger <p.rosenberger@kunbus.com>,
-        Ferry Toth <fntoth@gmail.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, "Rafael J. Wysocki" <rafael@kernel.org>
-Subject: Re: [PATCH net v4] net: phy: Don't trigger state machine while in
- suspend
-Message-ID: <Yrv9v/uiZ/uMvtR3@lunn.ch>
-References: <b7f386d04e9b5b0e2738f0125743e30676f309ef.1656410895.git.lukas@wunner.de>
+        with ESMTP id S231755AbiF2HYM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 03:24:12 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABA9B252AB
+        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 00:24:10 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1o6S2d-0005UO-4V; Wed, 29 Jun 2022 09:23:15 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1o6S2S-003M3c-Vk; Wed, 29 Jun 2022 09:23:08 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1o6S2V-001qeU-Nu; Wed, 29 Jun 2022 09:23:07 +0200
+Date:   Wed, 29 Jun 2022 09:23:04 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Jeremy Kerr <jk@codeconstruct.com.au>
+Cc:     Wolfram Sang <wsa@kernel.org>, dri-devel@lists.freedesktop.org,
+        linux-serial@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-mtd@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-crypto@vger.kernel.org,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        linux-i2c@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        acpi4asus-user@lists.sourceforge.net,
+        linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org,
+        linux-integrity@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-rtc@vger.kernel.org, netdev@vger.kernel.org,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        chrome-platform@lists.linux.dev, linux-input@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-media@vger.kernel.org,
+        openipmi-developer@lists.sourceforge.net,
+        linux-hwmon@vger.kernel.org,
+        Support Opensource <support.opensource@diasemi.com>,
+        linux-fbdev@vger.kernel.org, patches@opensource.cirrus.com,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-pwm@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        kasan-dev@googlegroups.com, linux-staging@lists.linux.dev
+Subject: Re: [PATCH 6/6] i2c: Make remove callback return void
+Message-ID: <20220629072304.qazmloqdi5h5kdre@pengutronix.de>
+References: <20220628140313.74984-1-u.kleine-koenig@pengutronix.de>
+ <20220628140313.74984-7-u.kleine-koenig@pengutronix.de>
+ <60cc6796236f23c028a9ae76dbe00d1917df82a5.camel@codeconstruct.com.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="3yzpq2rgg2xm7tqn"
 Content-Disposition: inline
-In-Reply-To: <b7f386d04e9b5b0e2738f0125743e30676f309ef.1656410895.git.lukas@wunner.de>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <60cc6796236f23c028a9ae76dbe00d1917df82a5.camel@codeconstruct.com.au>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 28, 2022 at 12:15:08PM +0200, Lukas Wunner wrote:
-> Upon system sleep, mdio_bus_phy_suspend() stops the phy_state_machine(),
-> but subsequent interrupts may retrigger it:
-> 
-> They may have been left enabled to facilitate wakeup and are not
-> quiesced until the ->suspend_noirq() phase.  Unwanted interrupts may
-> hence occur between mdio_bus_phy_suspend() and dpm_suspend_noirq(),
-> as well as between dpm_resume_noirq() and mdio_bus_phy_resume().
-> 
-> Retriggering the phy_state_machine() through an interrupt is not only
-> undesirable for the reason given in mdio_bus_phy_suspend() (freezing it
-> midway with phydev->lock held), but also because the PHY may be
-> inaccessible after it's suspended:  Accesses to USB-attached PHYs are
-> blocked once usb_suspend_both() clears the can_submit flag and PHYs on
-> PCI network cards may become inaccessible upon suspend as well.
-> 
-> Amend phy_interrupt() to avoid triggering the state machine if the PHY
-> is suspended.  Signal wakeup instead if the attached net_device or its
-> parent has been configured as a wakeup source.  (Those conditions are
-> identical to mdio_bus_phy_may_suspend().)  Postpone handling of the
-> interrupt until the PHY has resumed.
-> 
-> Before stopping the phy_state_machine() in mdio_bus_phy_suspend(),
-> wait for a concurrent phy_interrupt() to run to completion.  That is
-> necessary because phy_interrupt() may have checked the PHY's suspend
-> status before the system sleep transition commenced and it may thus
-> retrigger the state machine after it was stopped.
-> 
-> Likewise, after re-enabling interrupt handling in mdio_bus_phy_resume(),
-> wait for a concurrent phy_interrupt() to complete to ensure that
-> interrupts which it postponed are properly rerun.
-> 
-> The issue was exposed by commit 1ce8b37241ed ("usbnet: smsc95xx: Forward
-> PHY interrupts to PHY driver to avoid polling"), but has existed since
-> forever.
-> 
-> Fixes: 541cd3ee00a4 ("phylib: Fix deadlock on resume")
-> Link: https://lore.kernel.org/netdev/a5315a8a-32c2-962f-f696-de9a26d30091@samsung.com/
-> Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> Signed-off-by: Lukas Wunner <lukas@wunner.de>
-> Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-> Cc: stable@vger.kernel.org # v2.6.33+
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+--3yzpq2rgg2xm7tqn
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-    Andrew
+Hello,
+
+[I dropped nearly all individuals from the Cc: list because various
+bounces reported to be unhappy about the long (logical) line.]
+
+On Wed, Jun 29, 2022 at 03:03:54PM +0800, Jeremy Kerr wrote:
+> Looks good - just one minor change for the mctp-i2c driver, but only
+> worthwhile if you end up re-rolling this series for other reasons:
+>=20
+> > -static int mctp_i2c_remove(struct i2c_client *client)
+> > +static void mctp_i2c_remove(struct i2c_client *client)
+> > =A0{
+> > =A0=A0=A0=A0=A0=A0=A0=A0struct mctp_i2c_client *mcli =3D i2c_get_client=
+data(client);
+> > =A0=A0=A0=A0=A0=A0=A0=A0struct mctp_i2c_dev *midev =3D NULL, *tmp =3D N=
+ULL;
+> > @@ -1000,7 +1000,6 @@ static int mctp_i2c_remove(struct i2c_client *cli=
+ent)
+> > =A0=A0=A0=A0=A0=A0=A0=A0mctp_i2c_free_client(mcli);
+> > =A0=A0=A0=A0=A0=A0=A0=A0mutex_unlock(&driver_clients_lock);
+> > =A0=A0=A0=A0=A0=A0=A0=A0/* Callers ignore return code */
+> > -=A0=A0=A0=A0=A0=A0=A0return 0;
+> > =A0}
+>=20
+> The comment there no longer makes much sense, I'd suggest removing that
+> too.
+
+Yeah, that was already pointed out to me in a private reply. It's
+already fixed in
+
+	https://git.pengutronix.de/cgit/ukl/linux/log/?h=3Di2c-remove-void
+
+> Either way:
+>=20
+> Reviewed-by: Jeremy Kerr <jk@codeconstruct.com.au>
+
+Added to my tree, too.
+
+Thanks
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--3yzpq2rgg2xm7tqn
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmK7/dUACgkQwfwUeK3K
+7AnTJgf9GW2H7fk9/Je11PRlCnUOSZ1sz/49RHAm4xj66pI/hdRP++D8L5o7ntEU
+Hl5hKosR36cUyX12ie+YQtiCRkjhLqUoJnPzJOtcXQNV7mlMt6ds2INSO4iHYtMa
+b2UH+lLQ6K/DO0+1KquElKJhfBOKucYY1WQAVK4cfasBKMR4MtukcHAgcYClRYdj
+Nvvy6bCjqr8M1+uqDTJUUR/d0rWYHxFKygYRUfK7YPpz57gaVgaR9Js9GDGkVFB4
+qVL5x23NzgB/Djr1Ls1F6Z5eFMjbtVb+S1HDRsU+HJOYD6v1LkT2OFx9iFpme+8m
++4HHNR5pxKogz59u4YpP1pIb0MejhA==
+=ibah
+-----END PGP SIGNATURE-----
+
+--3yzpq2rgg2xm7tqn--
