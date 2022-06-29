@@ -2,84 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D8D3455F41E
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 05:24:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 832D355F454
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 05:50:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231688AbiF2DYu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 23:24:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52506 "EHLO
+        id S230102AbiF2Dsv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 23:48:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231671AbiF2DYT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 23:24:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0609BC08;
-        Tue, 28 Jun 2022 20:24:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 94655B81BAF;
-        Wed, 29 Jun 2022 03:24:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC686C341C6;
-        Wed, 29 Jun 2022 03:24:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656473056;
-        bh=hEKpqsCTCBYl6X3gx6o4CGg4SOmuRDZ3EoHxt9IO4QA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=IhmRobJSTIP86pLtSRAiaGG98BmiqQqGSXRMjhzDITCuEpkAwp5eCrogCu1DVC4Ih
-         e50Vdb4galVkGeIOYFbI/eDIWJ/XXq1dFSQgyj2Gl8ZeRvKdg4kmOS22Y2QsjcQm0g
-         UgGPMw7F2ZXVKKY8j16xQvZ6UDXgfrm+9kLh/kgRp2tXl2gbss9tg1MB3RC8A5gN60
-         fqQjfkPXY+CIhOvcJcl2OIhwnq2PmJBxqIg8njS7vTeFcyC+OjTQRIPUoxiChWc2PA
-         HOM0mvHoXbCDSZYWR9j9n71AS5hGnEjF+whcOpjJX03ScJmD8tMjAbk8C3uOylkekO
-         0E5mkTI/KcKKQ==
-Date:   Tue, 28 Jun 2022 20:24:14 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>
-Cc:     Vadim Fedorenko <vfedorenko@novek.ru>,
-        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
-        Vadim Fedorenko <vadfed@fb.com>, Aya Levin <ayal@nvidia.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-clk@vger.kernel.org
-Subject: Re: [RFC PATCH v2 3/3] ptp_ocp: implement DPLL ops
-Message-ID: <20220628202414.02ac8fd1@kernel.org>
-In-Reply-To: <20220628191124.qvto5tyfe63htxxr@bsd-mbp.dhcp.thefacebook.com>
-References: <20220626192444.29321-1-vfedorenko@novek.ru>
-        <20220626192444.29321-4-vfedorenko@novek.ru>
-        <20220627193436.3wjunjqqtx7dtqm6@bsd-mbp.dhcp.thefacebook.com>
-        <7c2fa2e9-6353-5472-75c8-b3ffe403f0f3@novek.ru>
-        <20220628191124.qvto5tyfe63htxxr@bsd-mbp.dhcp.thefacebook.com>
+        with ESMTP id S229541AbiF2Dst (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 23:48:49 -0400
+Received: from azure-sdnproxy-1.icoremail.net (azure-sdnproxy.icoremail.net [52.237.72.81])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id 20BEF1F2C5;
+        Tue, 28 Jun 2022 20:48:46 -0700 (PDT)
+Received: by ajax-webmail-mail-app3 (Coremail) ; Wed, 29 Jun 2022 11:48:30
+ +0800 (GMT+08:00)
+X-Originating-IP: [221.192.178.115]
+Date:   Wed, 29 Jun 2022 11:48:30 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From:   duoming@zju.edu.cn
+To:     "Paolo Abeni" <pabeni@redhat.com>
+Cc:     linux-hams@vger.kernel.org, ralf@linux-mips.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net v3 2/2] net: rose: fix null-ptr-deref caused by
+ rose_kill_by_neigh
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
+ Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
+In-Reply-To: <ecac788497ea0e4e5b725226ad8b1209dc62fa0e.camel@redhat.com>
+References: <cover.1656031586.git.duoming@zju.edu.cn>
+ <c31f454f74833b2003713fffa881aabb190b8290.1656031586.git.duoming@zju.edu.cn>
+ <ecac788497ea0e4e5b725226ad8b1209dc62fa0e.camel@redhat.com>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Message-ID: <411487ea.1b211.181ad932398.Coremail.duoming@zju.edu.cn>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: cC_KCgDXT0OPy7tilWYZAQ--.7854W
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgIQAVZdtac28AAAsO
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
+        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+        daVFxhVjvjDU=
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 28 Jun 2022 12:11:24 -0700 Jonathan Lemon wrote:
-> > > 80-column limit (here and throughout the file)  
-> > 
-> > I thought this rule was relaxed up to 100-columns?  
-> 
-> Only in exceptional cases, IIRC.  checkpatch complains too.
-
-Yup, for networking I still prefer 80 chars. 
-My field of vision is narrow.
-
-> > > 80 cols, and this should be done before ptp_ocp_complete()
-> > > Also, should 'goto out', not return 0 and leak resources.  
-> > 
-> > I don't think we have to go with error path. Driver itself can work without
-> > DPLL device registered, there is no hard dependency. The DPLL device will
-> > not be registered and HW could not be configured/monitored via netlink, but
-> > could still be usable.  
-> 
-> Not sure I agree with that - the DPLL device is selected in Kconfig, so
-> users would expect to have it present.  I think it makes more sense to
-> fail if it cannot be allocated.
-
-+1
+SGVsbG8sCgpPbiBUdWUsIDI4IEp1biAyMDIyIDEzOjEyOjQwICswMjAwIFBhb2xvIEFiZW5pIHdy
+b3RlOgoKPiA+IFdoZW4gdGhlIGxpbmsgbGF5ZXIgY29ubmVjdGlvbiBpcyBicm9rZW4sIHRoZSBy
+b3NlLT5uZWlnaGJvdXIgaXMKPiA+IHNldCB0byBudWxsLiBCdXQgcm9zZS0+bmVpZ2hib3VyIGNv
+dWxkIGJlIHVzZWQgYnkgcm9zZV9jb25uZWN0aW9uKCkKPiA+IGFuZCByb3NlX3JlbGVhc2UoKSBs
+YXRlciwgYmVjYXVzZSB0aGVyZSBpcyBubyBzeW5jaHJvbml6YXRpb24gYW1vbmcKPiA+IHRoZW0u
+IEFzIGEgcmVzdWx0LCB0aGUgbnVsbC1wdHItZGVyZWYgYnVncyB3aWxsIGhhcHBlbi4KPiA+IAo+
+ID4gT25lIG9mIHRoZSBudWxsLXB0ci1kZXJlZiBidWdzIGlzIHNob3duIGJlbG93Ogo+ID4gCj4g
+PiAgICAgKHRocmVhZCAxKSAgICAgICAgICAgICAgICAgIHwgICAgICAgICh0aHJlYWQgMikKPiA+
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgcm9zZV9jb25uZWN0Cj4gPiByb3Nl
+X2tpbGxfYnlfbmVpZ2ggICAgICAgICAgICAgIHwgICAgbG9ja19zb2NrKHNrKQo+ID4gICBzcGlu
+X2xvY2tfYmgoJnJvc2VfbGlzdF9sb2NrKSB8ICAgIGlmICghcm9zZS0+bmVpZ2hib3VyKQo+ID4g
+ICByb3NlLT5uZWlnaGJvdXIgPSBOVUxMOy8vKDEpICB8Cj4gPiAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgIHwgICAgcm9zZS0+bmVpZ2hib3VyLT51c2UrKzsvLygyKQo+ID4gCj4gPiBU
+aGUgcm9zZS0+bmVpZ2hib3VyIGlzIHNldCB0byBudWxsIGluIHBvc2l0aW9uICgxKSBhbmQgZGVy
+ZWZlcmVuY2VkCj4gPiBpbiBwb3NpdGlvbiAoMikuCj4gPiAKPiA+IFRoZSBLQVNBTiByZXBvcnQg
+dHJpZ2dlcmVkIGJ5IFBPQyBpcyBzaG93biBiZWxvdzoKPiA+IAo+ID4gS0FTQU46IG51bGwtcHRy
+LWRlcmVmIGluIHJhbmdlIFsweDAwMDAwMDAwMDAwMDAwMjgtMHgwMDAwMDAwMDAwMDAwMDJmXQo+
+ID4gLi4uCj4gPiBSSVA6IDAwMTA6cm9zZV9jb25uZWN0KzB4NmMyLzB4ZjMwCj4gPiBSU1A6IDAw
+MTg6ZmZmZjg4ODAwYWI0N2Q2MCBFRkxBR1M6IDAwMDAwMjA2Cj4gPiBSQVg6IDAwMDAwMDAwMDAw
+MDAwMDUgUkJYOiAwMDAwMDAwMDAwMDAwMDJhIFJDWDogMDAwMDAwMDAwMDAwMDAwMAo+ID4gUkRY
+OiBmZmZmODg4MDBhYjM4MDAwIFJTSTogZmZmZjg4ODAwYWI0N2U0OCBSREk6IGZmZmY4ODgwMGFi
+MzgzMDkKPiA+IFJCUDogZGZmZmZjMDAwMDAwMDAwMCBSMDg6IDAwMDAwMDAwMDAwMDAwMDAgUjA5
+OiBmZmZmZWQxMDAxNTY3MDYyCj4gPiBSMTA6IGRmZmZlOTEwMDE1NjcwNjMgUjExOiAxZmZmZjEx
+MDAxNTY3MDYxIFIxMjogMWZmZmYxMTAwMGQxN2NkMAo+ID4gUjEzOiBmZmZmODg4MDA2OGJlNjgw
+IFIxNDogMDAwMDAwMDAwMDAwMDAwMiBSMTU6IDFmZmZmMTEwMDBkMTdjZDAKPiA+IC4uLgo+ID4g
+Q2FsbCBUcmFjZToKPiA+ICAgPFRBU0s+Cj4gPiAgID8gX19sb2NhbF9iaF9lbmFibGVfaXArMHg1
+NC8weDgwCj4gPiAgID8gc2VsaW51eF9uZXRsYmxfc29ja2V0X2Nvbm5lY3QrMHgyNi8weDMwCj4g
+PiAgID8gcm9zZV9iaW5kKzB4NWIwLzB4NWIwCj4gPiAgIF9fc3lzX2Nvbm5lY3QrMHgyMTYvMHgy
+ODAKPiA+ICAgX194NjRfc3lzX2Nvbm5lY3QrMHg3MS8weDgwCj4gPiAgIGRvX3N5c2NhbGxfNjQr
+MHg0My8weDkwCj4gPiAgIGVudHJ5X1NZU0NBTExfNjRfYWZ0ZXJfaHdmcmFtZSsweDQ2LzB4YjAK
+PiA+IAo+ID4gVGhpcyBwYXRjaCBhZGRzIGxvY2tfc29jaygpIGluIHJvc2Vfa2lsbF9ieV9uZWln
+aCgpIGluIG9yZGVyIHRvCj4gPiBzeW5jaHJvbml6ZSB3aXRoIHJvc2VfY29ubmVjdCgpIGFuZCBy
+b3NlX3JlbGVhc2UoKS4KPiA+IAo+ID4gTWVhbndoaWxlLCB0aGlzIHBhdGNoIGFkZHMgc29ja19o
+b2xkKCkgcHJvdGVjdGVkIGJ5IHJvc2VfbGlzdF9sb2NrCj4gPiB0aGF0IGNvdWxkIHN5bmNocm9u
+aXplIHdpdGggcm9zZV9yZW1vdmVfc29ja2V0KCkgaW4gb3JkZXIgdG8gbWl0aWdhdGUKPiA+IFVB
+RiBidWcgY2F1c2VkIGJ5IGxvY2tfc29jaygpIHdlIGFkZC4KPiA+IAo+ID4gV2hhdCdzIG1vcmUs
+IHRoZXJlIGlzIG5vIG5lZWQgdXNpbmcgcm9zZV9uZWlnaF9saXN0X2xvY2sgdG8gcHJvdGVjdAo+
+ID4gcm9zZV9raWxsX2J5X25laWdoKCkuIEJlY2F1c2Ugd2UgaGF2ZSBhbHJlYWR5IHVzZWQgcm9z
+ZV9uZWlnaF9saXN0X2xvY2sKPiA+IHRvIHByb3RlY3QgdGhlIHN0YXRlIGNoYW5nZSBvZiByb3Nl
+X25laWdoIGluIHJvc2VfbGlua19mYWlsZWQoKSwgd2hpY2gKPiA+IGlzIHdlbGwgc3luY2hyb25p
+emVkLgo+ID4gCj4gPiBGaXhlczogMWRhMTc3ZTRjM2Y0ICgiTGludXgtMi42LjEyLXJjMiIpCj4g
+PiBTaWduZWQtb2ZmLWJ5OiBEdW9taW5nIFpob3UgPGR1b21pbmdAemp1LmVkdS5jbj4KPiA+IC0t
+LQo+ID4gQ2hhbmdlcyBzaW5jZSB2MjoKPiA+ICAgLSB2MjogRml4IHJlZmNvdW50IGxlYWsgb2Yg
+c29jay4KPiA+IAo+ID4gIG5ldC9yb3NlL2FmX3Jvc2UuYyAgICB8IDYgKysrKysrCj4gPiAgbmV0
+L3Jvc2Uvcm9zZV9yb3V0ZS5jIHwgMiArKwo+ID4gIDIgZmlsZXMgY2hhbmdlZCwgOCBpbnNlcnRp
+b25zKCspCj4gPiAKPiA+IGRpZmYgLS1naXQgYS9uZXQvcm9zZS9hZl9yb3NlLmMgYi9uZXQvcm9z
+ZS9hZl9yb3NlLmMKPiA+IGluZGV4IGJmMmQ5ODZhNmJjLi41Y2FhMjIyYzQ5MCAxMDA2NDQKPiA+
+IC0tLSBhL25ldC9yb3NlL2FmX3Jvc2UuYwo+ID4gKysrIGIvbmV0L3Jvc2UvYWZfcm9zZS5jCj4g
+PiBAQCAtMTY5LDkgKzE2OSwxNSBAQCB2b2lkIHJvc2Vfa2lsbF9ieV9uZWlnaChzdHJ1Y3Qgcm9z
+ZV9uZWlnaCAqbmVpZ2gpCj4gPiAgCQlzdHJ1Y3Qgcm9zZV9zb2NrICpyb3NlID0gcm9zZV9zayhz
+KTsKPiA+ICAKPiA+ICAJCWlmIChyb3NlLT5uZWlnaGJvdXIgPT0gbmVpZ2gpIHsKPiA+ICsJCQlz
+b2NrX2hvbGQocyk7Cj4gPiAgCQkJcm9zZV9kaXNjb25uZWN0KHMsIEVORVRVTlJFQUNILCBST1NF
+X09VVF9PRl9PUkRFUiwgMCk7Cj4gPiAgCQkJcm9zZS0+bmVpZ2hib3VyLT51c2UtLTsKPiA+ICsJ
+CQlzcGluX3VubG9ja19iaCgmcm9zZV9saXN0X2xvY2spOwo+ID4gKwkJCWxvY2tfc29jayhzKTsK
+PiA+ICAJCQlyb3NlLT5uZWlnaGJvdXIgPSBOVUxMOwo+ID4gKwkJCXJlbGVhc2Vfc29jayhzKTsK
+PiA+ICsJCQlzcGluX2xvY2tfYmgoJnJvc2VfbGlzdF9sb2NrKTsKPiAKPiBJJ20gc29ycnksIEkg
+bGlrZWx5IHdhcyBub3QgY2xlYXIgZW5vdWdoIGluIG15IHByZXZpb3VzIHJlcGx5LiBUaGlzIGlz
+Cj4gYnJva2VuLiBJZiBhIGxpc3QgaXMgW3NwaW5fXWxvY2sgcHJvdGVjdGVkLCB5b3UgY2FuJ3Qg
+cmVsZWFzZSB0aGUgbG9jaywKPiByZWFjcXVpcmUgaXQgYW5kIGNvbnRpbnVlIHRyYXZlcnNpbmcg
+dGhlIGxpc3QgZnJvbSB0aGUgW25vdyBpbnZhbGlkXQo+IHNhbWUgaXRlcmF0b3IuCj4gCj4gZS5n
+LiBpZiBzIGlzIHJlbW92ZWQgZnJvbSB0aGUgbGlzdCwgZXZlbiBpZiB0aGUgc29jayBpcyBub3Qg
+ZGUtCj4gYWxsb2NhdGVkIGR1ZSB0byB0aGUgYWRkdGlvbmFsIHJlZmNvdW50LCB0aGUgdHJhdmVy
+c2luZyB3aWxsIGVycm5vdXNseQo+IHN0b3AgYWZ0ZXIgdGhpcyBzb2NrLCBpbnN0ZWFkIG9mIGNv
+bnRpbnVpbmcgcHJvY2Vzc2luZyB0aGUgcmVtYWluaW5nCj4gc29ja3MgaW4gdGhlIGxpc3QuCgpJ
+IHVuZGVyc3RhbmQuIFRoZSBmb2xsb3dpbmcgaXMgYSBuZXcgc29sdXRpb246CgpkaWZmIC0tZ2l0
+IGEvbmV0L3Jvc2UvYWZfcm9zZS5jIGIvbmV0L3Jvc2UvYWZfcm9zZS5jCmluZGV4IGJmMmQ5ODZh
+NmJjLi4yNGRjYmRlODhmYiAxMDA2NDQKLS0tIGEvbmV0L3Jvc2UvYWZfcm9zZS5jCisrKyBiL25l
+dC9yb3NlL2FmX3Jvc2UuYwpAQCAtMTY1LDEzICsxNjUsMjEgQEAgdm9pZCByb3NlX2tpbGxfYnlf
+bmVpZ2goc3RydWN0IHJvc2VfbmVpZ2ggKm5laWdoKQogICAgICAgIHN0cnVjdCBzb2NrICpzOwoK
+ICAgICAgICBzcGluX2xvY2tfYmgoJnJvc2VfbGlzdF9sb2NrKTsKK2FnYWluOgogICAgICAgIHNr
+X2Zvcl9lYWNoKHMsICZyb3NlX2xpc3QpIHsKICAgICAgICAgICAgICAgIHN0cnVjdCByb3NlX3Nv
+Y2sgKnJvc2UgPSByb3NlX3NrKHMpOwoKICAgICAgICAgICAgICAgIGlmIChyb3NlLT5uZWlnaGJv
+dXIgPT0gbmVpZ2gpIHsKKyAgICAgICAgICAgICAgICAgICAgICAgc29ja19ob2xkKHMpOworICAg
+ICAgICAgICAgICAgICAgICAgICBzcGluX3VubG9ja19iaCgmcm9zZV9saXN0X2xvY2spOworICAg
+ICAgICAgICAgICAgICAgICAgICBsb2NrX3NvY2socyk7CiAgICAgICAgICAgICAgICAgICAgICAg
+IHJvc2VfZGlzY29ubmVjdChzLCBFTkVUVU5SRUFDSCwgUk9TRV9PVVRfT0ZfT1JERVIsIDApOwog
+ICAgICAgICAgICAgICAgICAgICAgICByb3NlLT5uZWlnaGJvdXItPnVzZS0tOwogICAgICAgICAg
+ICAgICAgICAgICAgICByb3NlLT5uZWlnaGJvdXIgPSBOVUxMOworICAgICAgICAgICAgICAgICAg
+ICAgICByZWxlYXNlX3NvY2socyk7CisgICAgICAgICAgICAgICAgICAgICAgIHNwaW5fbG9ja19i
+aCgmcm9zZV9saXN0X2xvY2spOworICAgICAgICAgICAgICAgICAgICAgICBzb2NrX3B1dChzKTsK
+KyAgICAgICAgICAgICAgICAgICAgICAgZ290byBhZ2FpbjsKICAgICAgICAgICAgICAgIH0KICAg
+ICAgICB9CiAgICAgICAgc3Bpbl91bmxvY2tfYmgoJnJvc2VfbGlzdF9sb2NrKTsKZGlmZiAtLWdp
+dCBhL25ldC9yb3NlL3Jvc2Vfcm91dGUuYyBiL25ldC9yb3NlL3Jvc2Vfcm91dGUuYwppbmRleCBm
+ZWU2NDA5YzJiYi4uYjExNjgyOGI0MjIgMTAwNjQ0Ci0tLSBhL25ldC9yb3NlL3Jvc2Vfcm91dGUu
+YworKysgYi9uZXQvcm9zZS9yb3NlX3JvdXRlLmMKQEAgLTgyNyw3ICs4MjcsOSBAQCB2b2lkIHJv
+c2VfbGlua19mYWlsZWQoYXgyNV9jYiAqYXgyNSwgaW50IHJlYXNvbikKICAgICAgICAgICAgICAg
+IGF4MjVfY2JfcHV0KGF4MjUpOwoKICAgICAgICAgICAgICAgIHJvc2VfZGVsX3JvdXRlX2J5X25l
+aWdoKHJvc2VfbmVpZ2gpOworICAgICAgICAgICAgICAgc3Bpbl91bmxvY2tfYmgoJnJvc2VfbmVp
+Z2hfbGlzdF9sb2NrKTsKICAgICAgICAgICAgICAgIHJvc2Vfa2lsbF9ieV9uZWlnaChyb3NlX25l
+aWdoKTsKKyAgICAgICAgICAgICAgIHJldHVybjsKICAgICAgICB9CiAgICAgICAgc3Bpbl91bmxv
+Y2tfYmgoJnJvc2VfbmVpZ2hfbGlzdF9sb2NrKTsKIH0KCklmIHMgaXMgcmVtb3ZlZCBmcm9tIHRo
+ZSBsaXN0LCB0aGUgdHJhdmVyc2luZyB3aWxsIG5vdCBzdG9wIGVycm9uZW91c2x5LgoKQmVzdCBy
+ZWdhcmRzLApEdW9taW5nIFpob3U=
