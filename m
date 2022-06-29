@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B170560B22
+	by mail.lfdr.de (Postfix) with ESMTP id E2532560B23
 	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 22:37:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230517AbiF2Ugq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 16:36:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59662 "EHLO
+        id S230511AbiF2Ugs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 16:36:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230152AbiF2Ugo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 16:36:44 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94EB23AA5D
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 13:36:43 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id r20so24186061wra.1
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 13:36:43 -0700 (PDT)
+        with ESMTP id S230513AbiF2Ugp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 16:36:45 -0400
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A053F3B28C
+        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 13:36:44 -0700 (PDT)
+Received: by mail-wr1-x42b.google.com with SMTP id v14so24154954wra.5
+        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 13:36:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=isovalent-com.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ttD/svoirIxXxLwqSgiy25UwXzGhj+wZ4JgpAPoFz9E=;
-        b=KgDiNniiYWBisspGSMN9xQ63GID+vC+UlaWOOZmi45qZRlDgwS0luI+CYOQFT0blfV
-         dDLZLJMwk4I27vn+KYMEPVeCb+b4yJ5hIFV9ZxgKaOuUvNJCjSYQC3KD/DjwYCWeQSD7
-         JUx0H/lzWCe5vuEBBW5/MgKMG40WKh5DsKET1jOMPU1FhEVze4iIL0nHJ62zxQrkadnF
-         QVBDlMONIjC/m91AhARsjG4ChRpdGyOaI9xXcZtVg42bmV3DTfZ7gvVutm7VkPS71MbN
-         n9bWRbiHW8/r5KiZw2+5hg7gAn3mEwzLFXy+MVps2uvPPTUe2sL273shLvW/7FUe7PCL
-         /jfg==
+        bh=uh25l/IFco/FD8J+cYVy+J2iIOHc7T8pp9VdIsWpzAg=;
+        b=ien+f4LFgCja40NSqLyHWhVOv/7Wdfcavz4tlywtklkmXPhi34avqTB6f6ktZ0vPLj
+         eCHxrOOZUkuLIF6Uok85efNCTlpaJ98azX6Qqxw2g8ZB7DI4LD27dAazuGsTqYZsZ6WK
+         bnvRI5O9nlLZUN+KRlLegudtXPVNm5GwpL2k9ot8bMhqpc2cHeP6HOl7/InlN7jkutTF
+         WK6Dkerk6pTneLMdyLRsGNBAG6LT2Y5fC/+ja0+rDva8xshsA1U9cPOp445kfly7lsZq
+         sYFuGZcX1xmWWgSWepsTaTBTxh17ldY0nocaokRsg+/7lLzuVS1OPEdf/4hVnhYR03Ud
+         ofEg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ttD/svoirIxXxLwqSgiy25UwXzGhj+wZ4JgpAPoFz9E=;
-        b=BBSE/OkkD42lBSCXNOreIk0Gi2YsA2Qd0oqH1f6sWv983Rn26bErNkYLLaXGu+FLEQ
-         ZFmaWjEwiTV/KwSnhFMvwEB7dF905Y4lXpkBoj1KyqhFUVFr4tf3e9A5r+8fyxfqdKdV
-         eJoIzqhg9eOBXBgfa117v6HH6S2GwyRZt5RNeOgg2wV2nMc32wj0qE/SjQUYmsPsRCXY
-         FWXdnv8WSGc9z29A6KLIHRS2ULUkJJvXqfhMFPJ9da8sjzrDQKyyWx9C/xekPv3WhFsd
-         1YH7kYsQYI5K7nUWspPsoiLGoyx2vy1NMNuJs83QFViUiRXDfAodugmDmiozuEPdRnzR
-         92/A==
-X-Gm-Message-State: AJIora965fCbo2hA4yjHhikY9MRaOSd4uDqrFm/COOyAl5koEHgfeRAQ
-        2MgEN1vWDB89CMTk12TZjR5tNPf50K/xS8IEB7E=
-X-Google-Smtp-Source: AGRyM1tQKG+Jh3QEDjiSJ9ky+EG7wHmknbGdBqxfMG+ZkeEUK3jTMDqKqcMMtPM+MfMhjw5IF0qp4Q==
-X-Received: by 2002:a05:6000:1888:b0:21d:151c:92a0 with SMTP id a8-20020a056000188800b0021d151c92a0mr4813311wri.609.1656535002161;
-        Wed, 29 Jun 2022 13:36:42 -0700 (PDT)
+        bh=uh25l/IFco/FD8J+cYVy+J2iIOHc7T8pp9VdIsWpzAg=;
+        b=4fRcZ6u0zkm2KcID+Dt5a3APdUiUOGa/Ap3GABk3sdCFQDNwj/Ig01dcRqZ+JJW/wX
+         9wlkph8r5Rkkwii0+6YmgyGkUGZxzH5hCmR02f3VLUwKyJvAYuBcJab9f+KNXMtQGDDH
+         w9BL9FQ5SSekYIAuAMOR0DcaMlsI0MdEJdLZaRZlveA+Y21Co/lRaL4neApakefht5rf
+         /cHOLK7b22a8bibMSDERpeBnlWIXzzB5JgyaaiqYOXVgcY1qtqoCGc9xsP+N4sl6oZZ1
+         TMLTZdIczrxen92xyZCSVahrcIXjwULOFbTamjvfyvapPKQmxv+HXPd9U1mT+quMjyr2
+         y7jA==
+X-Gm-Message-State: AJIora+uH7VHrrzJs1GA6Fysl+R59j5n5F57z3INGhJIFP8DCozk1fYf
+        mV6MV3wYJ72q0wjcU53s3pcfwQ==
+X-Google-Smtp-Source: AGRyM1vVpwA30xKGQ6CowZhwLEKAGwXKAoHykqSixE3UeBRk1EDhTloDp+DL0Xg+fM1NzLODki8Y1g==
+X-Received: by 2002:a5d:4102:0:b0:21b:8a6f:ff64 with SMTP id l2-20020a5d4102000000b0021b8a6fff64mr4954665wrp.186.1656535003108;
+        Wed, 29 Jun 2022 13:36:43 -0700 (PDT)
 Received: from harfang.fritz.box ([51.155.200.13])
-        by smtp.gmail.com with ESMTPSA id l21-20020a05600c4f1500b003a02b9c47e4sm246986wmq.27.2022.06.29.13.36.41
+        by smtp.gmail.com with ESMTPSA id l21-20020a05600c4f1500b003a02b9c47e4sm246986wmq.27.2022.06.29.13.36.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Jun 2022 13:36:41 -0700 (PDT)
+        Wed, 29 Jun 2022 13:36:42 -0700 (PDT)
 From:   Quentin Monnet <quentin@isovalent.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -57,9 +57,9 @@ Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
         KP Singh <kpsingh@kernel.org>, bpf@vger.kernel.org,
         netdev@vger.kernel.org, Quentin Monnet <quentin@isovalent.com>,
         =?UTF-8?q?Daniel=20M=C3=BCller?= <deso@posteo.net>
-Subject: [PATCH bpf-next v2 1/2] bpftool: Add feature list (prog/map/link/attach types, helpers)
-Date:   Wed, 29 Jun 2022 21:36:36 +0100
-Message-Id: <20220629203637.138944-2-quentin@isovalent.com>
+Subject: [PATCH bpf-next v2 2/2] bpftool: Use feature list in bash completion
+Date:   Wed, 29 Jun 2022 21:36:37 +0100
+Message-Id: <20220629203637.138944-3-quentin@isovalent.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220629203637.138944-1-quentin@isovalent.com>
 References: <20220629203637.138944-1-quentin@isovalent.com>
@@ -76,194 +76,125 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a "bpftool feature list" subcommand to list BPF "features".
-Contrarily to "bpftool feature probe", this is not about the features
-available on the system. Instead, it lists all features known to bpftool
-from compilation time; in other words, all program, map, attach, link
-types known to the libbpf version in use, and all helpers found in the
-UAPI BPF header.
+Now that bpftool is able to produce a list of known program, map, attach
+types, let's use as much of this as we can in the bash completion file,
+so that we don't have to expand the list each time a new type is added
+to the kernel.
 
-The first use case for this feature is bash completion: running the
-command provides a list of types that can be used to produce the list of
-candidate map types, for example.
-
-Now that bpftool uses "standard" names provided by libbpf for the
-program, map, link, and attach types, having the ability to list these
-types and helpers could also be useful in scripts to loop over existing
-items.
-
-Sample output:
-
-    # bpftool feature list prog_types | grep -vw unspec | head -n 6
-    socket_filter
-    kprobe
-    sched_cls
-    sched_act
-    tracepoint
-    xdp
-
-    # bpftool -p feature list map_types | jq '.[1]'
-    "hash"
-
-    # bpftool feature list attach_types | grep '^cgroup_'
-    cgroup_inet_ingress
-    cgroup_inet_egress
-    [...]
-    cgroup_inet_sock_release
-
-    # bpftool feature list helpers | grep -vw bpf_unspec | wc -l
-    207
-
-The "unspec" types and helpers are not filtered out by bpftool, so as to
-remain closer to the enums, and to preserve the indices in the JSON
-arrays (e.g. "hash" at index 1 == BPF_MAP_TYPE_HASH in map types list).
-
-v2: Add missing "link_types" to the list of GROUPs in man page.
+Also update the relevant test script to remove some checks that are no
+longer needed.
 
 Acked-by: Daniel Müller <deso@posteo.net>
 Signed-off-by: Quentin Monnet <quentin@isovalent.com>
 ---
- .../bpftool/Documentation/bpftool-feature.rst | 12 ++++
- tools/bpf/bpftool/bash-completion/bpftool     |  7 ++-
- tools/bpf/bpftool/feature.c                   | 55 +++++++++++++++++++
- 3 files changed, 73 insertions(+), 1 deletion(-)
+ tools/bpf/bpftool/bash-completion/bpftool     | 21 ++++---------------
+ .../selftests/bpf/test_bpftool_synctypes.py   | 20 +++---------------
+ 2 files changed, 7 insertions(+), 34 deletions(-)
 
-diff --git a/tools/bpf/bpftool/Documentation/bpftool-feature.rst b/tools/bpf/bpftool/Documentation/bpftool-feature.rst
-index 4ce9a77bc1e0..c08064628d39 100644
---- a/tools/bpf/bpftool/Documentation/bpftool-feature.rst
-+++ b/tools/bpf/bpftool/Documentation/bpftool-feature.rst
-@@ -24,9 +24,11 @@ FEATURE COMMANDS
- ================
- 
- |	**bpftool** **feature probe** [*COMPONENT*] [**full**] [**unprivileged**] [**macros** [**prefix** *PREFIX*]]
-+|	**bpftool** **feature list** *GROUP*
- |	**bpftool** **feature help**
- |
- |	*COMPONENT* := { **kernel** | **dev** *NAME* }
-+|	*GROUP* := { **prog_types** | **map_types** | **attach_types** | **link_types** | **helpers** }
- 
- DESCRIPTION
- ===========
-@@ -70,6 +72,16 @@ DESCRIPTION
- 		  The keywords **full**, **macros** and **prefix** have the
- 		  same role as when probing the kernel.
- 
-+	**bpftool feature list** *GROUP*
-+		  List items known to bpftool. These can be BPF program types
-+		  (**prog_types**), BPF map types (**map_types**), attach types
-+		  (**attach_types**), link types (**link_types**), or BPF helper
-+		  functions (**helpers**). The command does not probe the system, but
-+		  simply lists the elements that bpftool knows from compilation time,
-+		  as provided from libbpf (for all object types) or from the BPF UAPI
-+		  header (list of helpers). This can be used in scripts to iterate over
-+		  BPF types or helpers.
-+
- 	**bpftool feature help**
- 		  Print short help message.
- 
 diff --git a/tools/bpf/bpftool/bash-completion/bpftool b/tools/bpf/bpftool/bash-completion/bpftool
-index 91f89a9a5b36..9cef6516320b 100644
+index 9cef6516320b..ee177f83b179 100644
 --- a/tools/bpf/bpftool/bash-completion/bpftool
 +++ b/tools/bpf/bpftool/bash-completion/bpftool
-@@ -1175,9 +1175,14 @@ _bpftool()
-                     _bpftool_once_attr 'full unprivileged'
+@@ -703,15 +703,8 @@ _bpftool()
+                             return 0
+                             ;;
+                         type)
+-                            local BPFTOOL_MAP_CREATE_TYPES='hash array \
+-                                prog_array perf_event_array percpu_hash \
+-                                percpu_array stack_trace cgroup_array lru_hash \
+-                                lru_percpu_hash lpm_trie array_of_maps \
+-                                hash_of_maps devmap devmap_hash sockmap cpumap \
+-                                xskmap sockhash cgroup_storage reuseport_sockarray \
+-                                percpu_cgroup_storage queue stack sk_storage \
+-                                struct_ops ringbuf inode_storage task_storage \
+-                                bloom_filter'
++                            local BPFTOOL_MAP_CREATE_TYPES="$(bpftool feature list map_types | \
++                                grep -v '^unspec$')"
+                             COMPREPLY=( $( compgen -W "$BPFTOOL_MAP_CREATE_TYPES" -- "$cur" ) )
+                             return 0
+                             ;;
+@@ -1039,14 +1032,8 @@ _bpftool()
                      return 0
                      ;;
-+                list)
-+                    [[ $prev != "$command" ]] && return 0
-+                    COMPREPLY=( $( compgen -W 'prog_types map_types \
-+                        attach_types link_types helpers' -- "$cur" ) )
-+                    ;;
-                 *)
-                     [[ $prev == $object ]] && \
--                        COMPREPLY=( $( compgen -W 'help probe' -- "$cur" ) )
-+                        COMPREPLY=( $( compgen -W 'help list probe' -- "$cur" ) )
-                     ;;
-             esac
-             ;;
-diff --git a/tools/bpf/bpftool/feature.c b/tools/bpf/bpftool/feature.c
-index bac4ef428a02..576cc6b90c6a 100644
---- a/tools/bpf/bpftool/feature.c
-+++ b/tools/bpf/bpftool/feature.c
-@@ -1258,6 +1258,58 @@ static int do_probe(int argc, char **argv)
- 	return 0;
- }
+                 attach|detach)
+-                    local BPFTOOL_CGROUP_ATTACH_TYPES='cgroup_inet_ingress cgroup_inet_egress \
+-                        cgroup_inet_sock_create cgroup_sock_ops cgroup_device cgroup_inet4_bind \
+-                        cgroup_inet6_bind cgroup_inet4_post_bind cgroup_inet6_post_bind \
+-                        cgroup_inet4_connect cgroup_inet6_connect cgroup_inet4_getpeername \
+-                        cgroup_inet6_getpeername cgroup_inet4_getsockname cgroup_inet6_getsockname \
+-                        cgroup_udp4_sendmsg cgroup_udp6_sendmsg cgroup_udp4_recvmsg \
+-                        cgroup_udp6_recvmsg cgroup_sysctl cgroup_getsockopt cgroup_setsockopt \
+-                        cgroup_inet_sock_release'
++                    local BPFTOOL_CGROUP_ATTACH_TYPES="$(bpftool feature list attach_types | \
++                        grep '^cgroup_')"
+                     local ATTACH_FLAGS='multi override'
+                     local PROG_TYPE='id pinned tag name'
+                     # Check for $prev = $command first
+diff --git a/tools/testing/selftests/bpf/test_bpftool_synctypes.py b/tools/testing/selftests/bpf/test_bpftool_synctypes.py
+index e443e6542cb9..a6410bebe603 100755
+--- a/tools/testing/selftests/bpf/test_bpftool_synctypes.py
++++ b/tools/testing/selftests/bpf/test_bpftool_synctypes.py
+@@ -471,12 +471,6 @@ class BashcompExtractor(FileExtractor):
+     def get_prog_attach_types(self):
+         return self.get_bashcomp_list('BPFTOOL_PROG_ATTACH_TYPES')
  
-+static const char *get_helper_name(unsigned int id)
-+{
-+	if (id >= ARRAY_SIZE(helper_name))
-+		return NULL;
-+
-+	return helper_name[id];
-+}
-+
-+static int do_list(int argc, char **argv)
-+{
-+	const char *(*get_name)(unsigned int id);
-+	unsigned int id = 0;
-+
-+	if (argc < 1)
-+		usage();
-+
-+	if (is_prefix(*argv, "prog_types")) {
-+		get_name = (const char *(*)(unsigned int))libbpf_bpf_prog_type_str;
-+	} else if (is_prefix(*argv, "map_types")) {
-+		get_name = (const char *(*)(unsigned int))libbpf_bpf_map_type_str;
-+	} else if (is_prefix(*argv, "attach_types")) {
-+		get_name = (const char *(*)(unsigned int))libbpf_bpf_attach_type_str;
-+	} else if (is_prefix(*argv, "link_types")) {
-+		get_name = (const char *(*)(unsigned int))libbpf_bpf_link_type_str;
-+	} else if (is_prefix(*argv, "helpers")) {
-+		get_name = get_helper_name;
-+	} else {
-+		p_err("expected 'prog_types', 'map_types', 'attach_types', 'link_types' or 'helpers', got: %s", *argv);
-+		return -1;
-+	}
-+
-+	if (json_output)
-+		jsonw_start_array(json_wtr);	/* root array */
-+
-+	while (true) {
-+		const char *name;
-+
-+		name = get_name(id++);
-+		if (!name)
-+			break;
-+		if (json_output)
-+			jsonw_string(json_wtr, name);
-+		else
-+			printf("%s\n", name);
-+	}
-+
-+	if (json_output)
-+		jsonw_end_array(json_wtr);	/* root array */
-+
-+	return 0;
-+}
-+
- static int do_help(int argc, char **argv)
- {
- 	if (json_output) {
-@@ -1267,9 +1319,11 @@ static int do_help(int argc, char **argv)
+-    def get_map_types(self):
+-        return self.get_bashcomp_list('BPFTOOL_MAP_CREATE_TYPES')
+-
+-    def get_cgroup_attach_types(self):
+-        return self.get_bashcomp_list('BPFTOOL_CGROUP_ATTACH_TYPES')
+-
+ def verify(first_set, second_set, message):
+     """
+     Print all values that differ between two sets.
+@@ -516,17 +510,12 @@ def main():
+     man_map_types = man_map_info.get_map_types()
+     man_map_info.close()
  
- 	fprintf(stderr,
- 		"Usage: %1$s %2$s probe [COMPONENT] [full] [unprivileged] [macros [prefix PREFIX]]\n"
-+		"       %1$s %2$s list GROUP\n"
- 		"       %1$s %2$s help\n"
- 		"\n"
- 		"       COMPONENT := { kernel | dev NAME }\n"
-+		"       GROUP := { prog_types | map_types | attach_types | link_types | helpers }\n"
- 		"       " HELP_SPEC_OPTIONS " }\n"
- 		"",
- 		bin_name, argv[-2]);
-@@ -1279,6 +1333,7 @@ static int do_help(int argc, char **argv)
+-    bashcomp_info = BashcompExtractor()
+-    bashcomp_map_types = bashcomp_info.get_map_types()
+-
+     verify(source_map_types, help_map_types,
+             f'Comparing {BpfHeaderExtractor.filename} (bpf_map_type) and {MapFileExtractor.filename} (do_help() TYPE):')
+     verify(source_map_types, man_map_types,
+             f'Comparing {BpfHeaderExtractor.filename} (bpf_map_type) and {ManMapExtractor.filename} (TYPE):')
+     verify(help_map_options, man_map_options,
+             f'Comparing {MapFileExtractor.filename} (do_help() OPTIONS) and {ManMapExtractor.filename} (OPTIONS):')
+-    verify(source_map_types, bashcomp_map_types,
+-            f'Comparing {BpfHeaderExtractor.filename} (bpf_map_type) and {BashcompExtractor.filename} (BPFTOOL_MAP_CREATE_TYPES):')
  
- static const struct cmd cmds[] = {
- 	{ "probe",	do_probe },
-+	{ "list",	do_list },
- 	{ "help",	do_help },
- 	{ 0 }
- };
+     # Attach types (names)
+ 
+@@ -542,8 +531,10 @@ def main():
+     man_prog_attach_types = man_prog_info.get_attach_types()
+     man_prog_info.close()
+ 
+-    bashcomp_info.reset_read() # We stopped at map types, rewind
++
++    bashcomp_info = BashcompExtractor()
+     bashcomp_prog_attach_types = bashcomp_info.get_prog_attach_types()
++    bashcomp_info.close()
+ 
+     verify(source_prog_attach_types, help_prog_attach_types,
+             f'Comparing {ProgFileExtractor.filename} (bpf_attach_type) and {ProgFileExtractor.filename} (do_help() ATTACH_TYPE):')
+@@ -568,17 +559,12 @@ def main():
+     man_cgroup_attach_types = man_cgroup_info.get_attach_types()
+     man_cgroup_info.close()
+ 
+-    bashcomp_cgroup_attach_types = bashcomp_info.get_cgroup_attach_types()
+-    bashcomp_info.close()
+-
+     verify(source_cgroup_attach_types, help_cgroup_attach_types,
+             f'Comparing {BpfHeaderExtractor.filename} (bpf_attach_type) and {CgroupFileExtractor.filename} (do_help() ATTACH_TYPE):')
+     verify(source_cgroup_attach_types, man_cgroup_attach_types,
+             f'Comparing {BpfHeaderExtractor.filename} (bpf_attach_type) and {ManCgroupExtractor.filename} (ATTACH_TYPE):')
+     verify(help_cgroup_options, man_cgroup_options,
+             f'Comparing {CgroupFileExtractor.filename} (do_help() OPTIONS) and {ManCgroupExtractor.filename} (OPTIONS):')
+-    verify(source_cgroup_attach_types, bashcomp_cgroup_attach_types,
+-            f'Comparing {BpfHeaderExtractor.filename} (bpf_attach_type) and {BashcompExtractor.filename} (BPFTOOL_CGROUP_ATTACH_TYPES):')
+ 
+     # Options for remaining commands
+ 
 -- 
 2.34.1
 
