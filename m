@@ -2,42 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0702E560569
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 18:09:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E5F3560575
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 18:10:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231345AbiF2QH6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 12:07:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50568 "EHLO
+        id S232027AbiF2QJi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 12:09:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229546AbiF2QH5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 12:07:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A1F0F46;
-        Wed, 29 Jun 2022 09:07:56 -0700 (PDT)
+        with ESMTP id S232959AbiF2QJh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 12:09:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F007822B0A;
+        Wed, 29 Jun 2022 09:09:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 91DF0B82567;
-        Wed, 29 Jun 2022 16:07:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9B59C34114;
-        Wed, 29 Jun 2022 16:07:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656518873;
-        bh=Lm6CUaZIH8JvfgITPcL/dkrUMXZH0oRURSUBr2YgLgk=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=CSgi0oG3+JdttLszw8ZyEnYpeVES69JAlKUWmUzp/8WF3y5ze5fuuJGuP4XDZjWZL
-         rWgWX+ssvIfPx9P4KDn3eP8uwNH5qxa6OLk+aIOkhiKQtbXNNF0mEWt9XzpiQoajF4
-         ELNbiS8yiU0bo54oPuAeipD3ipo5xQONwIjaItB1WXt3WOZobx80hy6IAWFAath78B
-         xGBxkP+gbwtCH4j/kOozHCgF/OOvmVtu8mjRmEf8/YsDu2ulfhAWFVLYIEpCIxHFmt
-         hK1Sli1dOEFWlTUgmBNbGU5XzXxv0c6zk5z25S90hzCi1qAZvnIWUo0C7eAm9SkTFV
-         P8bKccTWXoYuQ==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 8F3F15C0921; Wed, 29 Jun 2022 09:07:52 -0700 (PDT)
-Date:   Wed, 29 Jun 2022 09:07:52 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C41A61BD6;
+        Wed, 29 Jun 2022 16:09:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E8D2C34114;
+        Wed, 29 Jun 2022 16:09:32 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="pUHci5uX"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1656518970;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ulgicCSwAYHtgZTUtITAxwZdp4jV/NBvkJ1S3ys4pvs=;
+        b=pUHci5uXb9l405fL8FD2wM/Xr8vP+OkOGimAV+9AWYLO6eTRGFk57+3ZykBS/RtrcrOCul
+        +XfDgJ1rvZtR4QCuYxlv8tFOlV+QTfMl5aImwN0xYvu8A6G6V/9++ByQTmF52mdzRIs99r
+        f+1hTkVgPTNYEGoMVtvF05tQC9H5M7M=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 766dd221 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Wed, 29 Jun 2022 16:09:29 +0000 (UTC)
+Date:   Wed, 29 Jun 2022 18:09:18 +0200
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
 To:     Christoph Hellwig <hch@lst.de>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arve =?iso-8859-1?B?SGr4bm5lduVn?= <arve@android.com>,
+        Arve =?utf-8?B?SGrDuG5uZXbDpWc=?= <arve@android.com>,
         Todd Kjos <tkjos@android.com>,
         Martijn Coenen <maco@android.com>,
         Joel Fernandes <joel@joelfernandes.org>,
@@ -45,12 +46,12 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Hridya Valsaraju <hridya@google.com>,
         Suren Baghdasaryan <surenb@google.com>,
         Theodore Ts'o <tytso@mit.edu>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         "Alex Xu (Hello71)" <alex_y_xu@yahoo.ca>,
         Paolo Abeni <pabeni@redhat.com>, Rob Herring <robh@kernel.org>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
         Frederic Weisbecker <frederic@kernel.org>,
         Neeraj Upadhyay <quic_neeraju@quicinc.com>,
         Josh Triplett <josh@joshtriplett.org>,
@@ -61,85 +62,26 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         wireguard@lists.zx2c4.com, netdev@vger.kernel.org,
         rcu@vger.kernel.org, linux-kselftest@vger.kernel.org
 Subject: Re: [PATCH] remove CONFIG_ANDROID
-Message-ID: <20220629160752.GE1790663@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
+Message-ID: <Yrx5Lt7jrk5BiHXx@zx2c4.com>
 References: <20220629150102.1582425-1-hch@lst.de>
  <20220629150102.1582425-2-hch@lst.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 In-Reply-To: <20220629150102.1582425-2-hch@lst.de>
-X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Christoph,
+
 On Wed, Jun 29, 2022 at 05:01:02PM +0200, Christoph Hellwig wrote:
-> The ANDROID config symbol is only used to guard the binder config
-> symbol and to inject completely random config changes.  Remove it
-> as it is obviously a bad idea.
-> 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-
-And I got confirmation from the Android folks that they have other ways
-of getting their 20-millisecond expedited RCU CPU stall warnings, so:
-
-Acked-by: Paul E. McKenney <paulmck@kernel.org>
-
-> ---
->  drivers/Makefile                                    | 2 +-
->  drivers/android/Kconfig                             | 9 ---------
->  drivers/char/random.c                               | 3 +--
->  drivers/net/wireguard/device.c                      | 2 +-
->  kernel/configs/android-base.config                  | 1 -
->  kernel/rcu/Kconfig.debug                            | 3 +--
->  tools/testing/selftests/filesystems/binderfs/config | 1 -
->  tools/testing/selftests/sync/config                 | 1 -
->  8 files changed, 4 insertions(+), 18 deletions(-)
-> 
-> diff --git a/drivers/Makefile b/drivers/Makefile
-> index 9a30842b22c54..123dce2867583 100644
-> --- a/drivers/Makefile
-> +++ b/drivers/Makefile
-> @@ -176,7 +176,7 @@ obj-$(CONFIG_USB4)		+= thunderbolt/
->  obj-$(CONFIG_CORESIGHT)		+= hwtracing/coresight/
->  obj-y				+= hwtracing/intel_th/
->  obj-$(CONFIG_STM)		+= hwtracing/stm/
-> -obj-$(CONFIG_ANDROID)		+= android/
-> +obj-y				+= android/
->  obj-$(CONFIG_NVMEM)		+= nvmem/
->  obj-$(CONFIG_FPGA)		+= fpga/
->  obj-$(CONFIG_FSI)		+= fsi/
-> diff --git a/drivers/android/Kconfig b/drivers/android/Kconfig
-> index 53b22e26266c3..07aa8ae0a058c 100644
-> --- a/drivers/android/Kconfig
-> +++ b/drivers/android/Kconfig
-> @@ -1,13 +1,6 @@
->  # SPDX-License-Identifier: GPL-2.0
->  menu "Android"
->  
-> -config ANDROID
-> -	bool "Android Drivers"
-> -	help
-> -	  Enable support for various drivers needed on the Android platform
-> -
-> -if ANDROID
-> -
->  config ANDROID_BINDER_IPC
->  	bool "Android Binder IPC Driver"
->  	depends on MMU
-> @@ -54,6 +47,4 @@ config ANDROID_BINDER_IPC_SELFTEST
->  	  exhaustively with combinations of various buffer sizes and
->  	  alignments.
->  
-> -endif # if ANDROID
-> -
->  endmenu
 > diff --git a/drivers/char/random.c b/drivers/char/random.c
 > index e3dd1dd3dd226..f35ad1a9dff3e 100644
 > --- a/drivers/char/random.c
@@ -167,48 +109,37 @@ Acked-by: Paul E. McKenney <paulmck@kernel.org>
 >  		return 0;
 >  
 >  	if (action != PM_HIBERNATION_PREPARE && action != PM_SUSPEND_PREPARE)
-> diff --git a/kernel/configs/android-base.config b/kernel/configs/android-base.config
-> index eb701b2ac72ff..44b0f0146a3fc 100644
-> --- a/kernel/configs/android-base.config
-> +++ b/kernel/configs/android-base.config
-> @@ -7,7 +7,6 @@
->  # CONFIG_OABI_COMPAT is not set
->  # CONFIG_SYSVIPC is not set
->  # CONFIG_USELIB is not set
-> -CONFIG_ANDROID=y
->  CONFIG_ANDROID_BINDER_IPC=y
->  CONFIG_ANDROID_BINDER_DEVICES=binder,hwbinder,vndbinder
->  CONFIG_ANDROID_LOW_MEMORY_KILLER=y
-> diff --git a/kernel/rcu/Kconfig.debug b/kernel/rcu/Kconfig.debug
-> index 9b64e55d4f615..e875f4f889656 100644
-> --- a/kernel/rcu/Kconfig.debug
-> +++ b/kernel/rcu/Kconfig.debug
-> @@ -86,8 +86,7 @@ config RCU_EXP_CPU_STALL_TIMEOUT
->  	int "Expedited RCU CPU stall timeout in milliseconds"
->  	depends on RCU_STALL_COMMON
->  	range 0 21000
-> -	default 20 if ANDROID
-> -	default 0 if !ANDROID
-> +	default 0
->  	help
->  	  If a given expedited RCU grace period extends more than the
->  	  specified number of milliseconds, a CPU stall warning is printed.
-> diff --git a/tools/testing/selftests/filesystems/binderfs/config b/tools/testing/selftests/filesystems/binderfs/config
-> index 02dd6cc9cf992..7b4fc6ee62057 100644
-> --- a/tools/testing/selftests/filesystems/binderfs/config
-> +++ b/tools/testing/selftests/filesystems/binderfs/config
-> @@ -1,3 +1,2 @@
-> -CONFIG_ANDROID=y
->  CONFIG_ANDROID_BINDERFS=y
->  CONFIG_ANDROID_BINDER_IPC=y
-> diff --git a/tools/testing/selftests/sync/config b/tools/testing/selftests/sync/config
-> index 47ff5afc37271..64c60f38b4464 100644
-> --- a/tools/testing/selftests/sync/config
-> +++ b/tools/testing/selftests/sync/config
-> @@ -1,3 +1,2 @@
->  CONFIG_STAGING=y
-> -CONFIG_ANDROID=y
->  CONFIG_SW_SYNC=y
-> -- 
-> 2.30.2
-> 
+ 
+CONFIG_ANDROID is used here for a reason. As somebody suggested in
+another thread of which you were a participant, it acts as a proxy for
+"probably running on Android hardware", which in turn is a proxy for,
+"suspend happens all the time on this machine, so don't do fancy key
+clearing stuff every time the user clicks the power button."
+
+You can see the history of that in these two commits here:
+https://git.zx2c4.com/wireguard-linux-compat/commit/?id=36f81c83674e0fd7c18e5b15499d1a275b6d4d7f
+https://git.zx2c4.com/wireguard-linux-compat/commit/?id=a89d53098dbde43f56e4d1e16ba5e24ef807c03b
+
+The former commit was done when I first got this running on an Android
+device (a Oneplus 3T, IIRC) and I encountered this problem. The latter
+was a refinement after suggestions on LKML during WireGuard's
+upstreaming.
+
+So there *is* a reason to have that kind of conditionalization in the
+code. The question is: does CONFIG_ANDROID actually represent something
+interesting here? Is this already taken care of by CONFIG_PM_AUTOSLEEP
+on all CONFIG_ANDROID devices? That is, do the base Android configs set
+CONFIG_PM_AUTOSLEEP already so this isn't necessary? Or is there some
+*other* proxy config value that should be used? Or is there a different
+solution entirely that should be considered?
+
+I don't know the answers to these questions, because I haven't done a
+recent analysis. Obviously at one point in time I did, and that's why
+the code is how it is. It sounds like you'd now like to revisit that
+original decision. That's fine with me. But you need to conduct a new
+analysis and write down your findings inside of a commit message. I must
+see that you've at least thought about the problem and looked into it
+substantially enough that making this change is safe. Your "let's delete
+it; it's not doing much" alone seems more expedient than thorough.
+
+Jason
