@@ -2,50 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A29F55F587
+	by mail.lfdr.de (Postfix) with ESMTP id D7B6F55F589
 	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 07:10:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230502AbiF2FIu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 01:08:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38818 "EHLO
+        id S230396AbiF2FKP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 01:10:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230491AbiF2FIt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 01:08:49 -0400
+        with ESMTP id S229462AbiF2FKP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 01:10:15 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C94232E9E2;
-        Tue, 28 Jun 2022 22:08:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 701112E086;
+        Tue, 28 Jun 2022 22:10:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6575A615DC;
-        Wed, 29 Jun 2022 05:08:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EF5CC34114;
-        Wed, 29 Jun 2022 05:08:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A74761629;
+        Wed, 29 Jun 2022 05:10:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 62457C3411E;
+        Wed, 29 Jun 2022 05:10:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656479327;
-        bh=qKoWmOE8wDVApwAvhbp7QoaGnFYnIMcssf1/9hrHyqg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=hcKjf/cTvbYfgKprkAclqDoXCgp2kBmU2mc+8Cz7ywTyrWvC4DWYrm5771pE+tdb0
-         LGIsuwdN3x3ibZvu3bniZ0qsnAWk1Vzp9iw1yzWHqXg14LQANs3kODSncTUtRSxJpN
-         ec4LYVqPiK4TSg4xlwclynQzCQVsXzuTvtsvWzrK6j1kzk3088ecFkXWSbhfkv+MO+
-         ZlPWSmpoVJdcCfuM1Q226IXVtjlXwM3CWcNKnCjZYLrHlLmCAxZGwaTelwtUmJjuab
-         vgbbtKMq1JpIVSQvQzSC3tIx6zQQimM785dRJHTcQuoBMR/wF1hshXC+J/b3tSIthK
-         aOsewsiai1sww==
-Date:   Tue, 28 Jun 2022 22:08:46 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Radhey Shyam Pandey <radhey.shyam.pandey@amd.com>
-Cc:     <nicolas.ferre@microchip.com>, <claudiu.beznea@microchip.com>,
-        <davem@davemloft.net>, <edumazet@google.com>, <pabeni@redhat.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <git@amd.com>, <harini.katakam@amd.com>
-Subject: Re: [PATCH net-next] net: macb: In shared MDIO usecase make MDIO
- producer ethernet node to probe first
-Message-ID: <20220628220846.25025a22@kernel.org>
-In-Reply-To: <1656439734-632-1-git-send-email-radhey.shyam.pandey@amd.com>
-References: <1656439734-632-1-git-send-email-radhey.shyam.pandey@amd.com>
+        s=k20201202; t=1656479413;
+        bh=fH3KHSSPf/f1Sz+0BB9KsOfbCTRq1jMyu37S09YyXIo=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=bGpHiYwPHhEmiSgprJfcxktSY55yfG020yZtSnhmEP1vmvF+eio7enY0xaLp7vuG6
+         k/33HOzkFH7g2DIWHSz4jYwUrAypLyIob+Duh66f2QwAGLZHvPGEi7oPiLJC0ng9r+
+         /zndPUshYw+NSp3NWic67y0zhy7crTPwjdacmT6uXlPQrPF7vpaO0TMPJzJzoyNBEi
+         bGvGFXrqI8y+wrPrm6OvlQf5eicB1rXPDvIw+4DG6QVjb2z5+fGtY8W3axiOXs9vzt
+         1ba72ZvypwxcVlrsj10Rdc3ovbl9bAxhSTQhGsOVOasAr7zPm6JTgjL6OxhfQsFazj
+         hjAp/6iRIttOQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 43CA2E49F61;
+        Wed, 29 Jun 2022 05:10:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next] Revert the ARM/dts changes for Renesas RZ/N1
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165647941327.13568.9977362848658590724.git-patchwork-notify@kernel.org>
+Date:   Wed, 29 Jun 2022 05:10:13 +0000
+References: <20220627173900.3136386-1-kuba@kernel.org>
+In-Reply-To: <20220627173900.3136386-1-kuba@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
+        pabeni@redhat.com, geert+renesas@glider.be, magnus.damm@gmail.com,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org
 X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -56,13 +58,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 28 Jun 2022 23:38:54 +0530 Radhey Shyam Pandey wrote:
-> In shared MDIO suspend/resume usecase for ex. with MDIO producer
-> (0xff0c0000) eth1 and MDIO consumer(0xff0b0000) eth0 there is a
-> constraint that ethernet interface(ff0c0000) MDIO bus producer
-> has to be resumed before the consumer ethernet interface(ff0b0000).
+Hello:
 
-ERROR: modpost: "device_is_bound" [drivers/net/ethernet/cadence/macb.ko] undefined!
-make[2]: *** [../scripts/Makefile.modpost:128: modules-only.symvers] Error 1
-make[1]: *** [/home/nipa/net-next/Makefile:1757: modules] Error 2
-make: *** [Makefile:219: __sub-make] Error 2
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Mon, 27 Jun 2022 10:39:00 -0700 you wrote:
+> Based on a request from Geert:
+> 
+> Revert "ARM: dts: r9a06g032-rzn1d400-db: add switch description"
+> This reverts commit 9aab31d66ec97d7047e42feacc356bc9c21a5bf5.
+> 
+> Revert "ARM: dts: r9a06g032: describe switch"
+> This reverts commit cf9695d8a7e927f7563ce6ea0a4e54b8214a12f1.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next] Revert the ARM/dts changes for Renesas RZ/N1
+    https://git.kernel.org/netdev/net-next/c/eba3a9816ad1
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
