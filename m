@@ -2,112 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 50D7B5608CB
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 20:14:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1635A5608D0
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 20:14:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230387AbiF2SN4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 14:13:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56922 "EHLO
+        id S231217AbiF2SOE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 14:14:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229525AbiF2SNz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 14:13:55 -0400
-Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70053.outbound.protection.outlook.com [40.107.7.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D81429C92
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 11:13:55 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=B7odoRO2Idb2n4g2Muz40okpvaJauCTbbZKzuwGXCoUBHiqArOdHAezYoy6BBQKGro4ILvnhFsTkq278Gnq4YOsQKtETCpxKIkCmdxkedLIMw3WZ4s53exqGtrxnQDNjAmoFQFf43KzfEYgV754x4y+QjDjPhC6yTVYfr7DP83KUtlyhBLlAR7ZhjSKAbVXj/9YGs83MXgVi6SCVTAWdCdYLzif9N/ErHeTwwOXiFH4Aq8sJJTIj/rEUDC7BqhWCZlFRKN0R3f/d+iMVRCBvqwoES+ZQlVkES/O3XcVhQWwE+fJy/67PH+2F0B9cAbgov3kMKBsHw6LP/BrONja7oQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=UsfJgD/8RSswMCCqd3hmJx0nWs0PiZuAUJ5R7abouKQ=;
- b=nj1V/gDyLuUwVq9OwjqUjXmDO4k8/8d2cNO8KVXV1GYPZDqwddTCaYF86VPnhKasNPzpl198t7N9FwE7TVkAv/RV8SfLFsnKxQ85l+V2yc+IbBY4ngQndSV2RtJAQWYQa0A5fPYDzK9sAO0MWFmCRFz1iI7zoZ5rFNK31R8TO0s+V5OcmC/5D29YlO9kfpTZCEajgSqbqqS6awfX/K51ZzH1JACju35sWm9f9W5PZGOo+RHx0Fme3yqFtTB9s4Cgd44qpa3mnUKmZC/fvGzCEDSQGGK8ftTGtj/2P4a7FpKWgogSUgdWmyNMczr/XQnrtrk+HOwzIM1oTlhTLmfIVg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=UsfJgD/8RSswMCCqd3hmJx0nWs0PiZuAUJ5R7abouKQ=;
- b=hHetUsmGvbvmdbPKAqtx9qHy+hkFfFpxCufOuYqz9SVyLKkeNM9hpcMi36qUbsJC3/ubDnEPtQTueTQW4JbkjMySKyPzwODBP/3TNThY9ZsD1UAzWBDUJNq0i/6Lu1CJ3Wri73LFd+maXbLdGUfHbHSe15PxIwMHCrGO2mmipEA=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by AM0PR0402MB3604.eurprd04.prod.outlook.com (2603:10a6:208:1c::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.18; Wed, 29 Jun
- 2022 18:13:52 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::71b7:8ed1:e4e0:3857]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::71b7:8ed1:e4e0:3857%4]) with mapi id 15.20.5395.014; Wed, 29 Jun 2022
- 18:13:51 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     netdev@vger.kernel.org
-Cc:     "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S230434AbiF2SOD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 14:14:03 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9A4834678;
+        Wed, 29 Jun 2022 11:14:01 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id w24so16401242pjg.5;
+        Wed, 29 Jun 2022 11:14:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=C258cRyl5UWzTKvylMmLG3MCSyuB6tgFP9sHV+YoG8Y=;
+        b=CEQ9lL2j3pp6O8ZO2gX4t+08rLRbrgmTTlcead1YygHVKQpGYT+OeN7ouHClLfJyX3
+         chkn1hfSrlS2IUafhAE1MBHkOBJfD0rrUkDnqX1iykBa9FnV67OfvcgrrQ/Ts3owS3AR
+         YNaHrF/8WQ7kOj9pEqcsImkWCy1kken3JlFx5A+WLaUP9gXKcEIJzPODbY8tpLH/3sns
+         55PPq8rta2pDArJgMaK9d2QjOGqD27OGhTX7pk6oCPKmXgj9MBOye7cNfbiainq+AgGJ
+         yPnc+uIVDA3vMAPbuuBI8NnsTsSBMnp/QN/nZwAEO1VZ9bQ6XGGl6hrdO0fA20Oeb5t0
+         YMPg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=C258cRyl5UWzTKvylMmLG3MCSyuB6tgFP9sHV+YoG8Y=;
+        b=auLRaqU/fFyafvrnTwr5YDDAhGdbLUG7/6/EabibB3rz++LfFGIwo6v0Tcv1IhDLn8
+         WZJ6bPhYpr1iAE3rt70TjQLaFjauq/UHFSdzXkpaG8xLGDoUfyH81QCt+QLmAhQbh956
+         a4rf2qLyXGI52eNRwyEfHNyKi6QF/sv24nPFw0MqbfcnJXvsVj+CXidk1HprpIpnkz0H
+         X2pmswaqG7xe3ujWIqlhxAKBABtfZz4oPrXirIvH7Y5ivpj12YdMzqAMrZ8YclZaQuNy
+         0p31/1uRHVwcHqivpj+sYzCZjH1Q8eBQRyZ7X0X8O3rG62D50DsoGQFOP2FjuLTGdW/Z
+         wOSQ==
+X-Gm-Message-State: AJIora8KZnrljLeVc/cA7uJBuDgPWp54y4XRMdYGd11fC8JeBeNyp4FU
+        hSE0hDIwBnRiI5zYw9uNE80=
+X-Google-Smtp-Source: AGRyM1tyxe5F3OWS3/WKjxfYYZKfXVBgflCFWhgFiKjlQdRSVkeHMNjhfxQcpCVrYrrkd+Q16gQNTw==
+X-Received: by 2002:a17:902:ef4f:b0:16b:8744:6c5f with SMTP id e15-20020a170902ef4f00b0016b87446c5fmr8411836plx.60.1656526441282;
+        Wed, 29 Jun 2022 11:14:01 -0700 (PDT)
+Received: from localhost ([98.97.119.237])
+        by smtp.gmail.com with ESMTPSA id v23-20020a62a517000000b00525b61fc3f8sm6780181pfm.40.2022.06.29.11.14.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Jun 2022 11:14:00 -0700 (PDT)
+Date:   Wed, 29 Jun 2022 11:13:59 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Eric Dumazet <edumazet@google.com>,
+        syzbot <syzbot+a0e6f8738b58f7654417@syzkaller.appspotmail.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Richard Cochran <richardcochran@gmail.com>
-Subject: [PATCH net-next] net: gianfar: add support for software TX timestamping
-Date:   Wed, 29 Jun 2022 21:13:35 +0300
-Message-Id: <20220629181335.3800821-1-vladimir.oltean@nxp.com>
-X-Mailer: git-send-email 2.25.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: VE1PR03CA0003.eurprd03.prod.outlook.com
- (2603:10a6:802:a0::15) To VI1PR04MB5136.eurprd04.prod.outlook.com
- (2603:10a6:803:55::19)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 6e0e071c-5fc1-43cc-b765-08da59fb1ed1
-X-MS-TrafficTypeDiagnostic: AM0PR0402MB3604:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: fg/AJt5i7sqLzqrrB0WhDi+tLIiqHAfm/UPGlymgtqXGPCvkU96ujgIne975hlltGin/ItwEmN6XGIlJofodbjn103665/j3LZTkJkR4NK/F0hLrmhhUXCiQQU5AC14kVzRu7L9ZkLh0RLK42JRO7u7Xqxd73UK1LGmOxJK0uobLdV6iic3SE0XElX2+0Rzz0dP9RgUwwRbMToap42vU0nuZ40ZEJ0WMgFPA/d3I3IHUO5ItVI1xbBLTs26L6FYIK79Ri00Z3ysOjJlR2hwQzH1TJ8lYoXdyaywFoNmqr+izpmOd9+sNVYqyMaf+HRLtiyE4PexwzHRWc6iWhYi/OoeNm3oNj9UNI4QwPMVG/5pNa3pxm4mJsYRSdyOKIt4guJBG/auGvnuI5qpqeIneWBdIgMOjXG4LQ6r/BkXIdcD4lJru961+QEie+GGvbeIwOichzEybq4H0YREKkszKPNWKACHWHxvekRFpoVba98mMBIDCOirvAXsOyP2yL4Igqb/dgxx4uRazmG0mm4XR7DvlPzOAR4BBEb3tNqBnsbEUOLN1GxASHW4R+Mv3Sa7km/nFSWref6MRsbmFDYM2VBtk7ScaOur0MuIxzVmaBdAE2bUAYp0jO5vZsAeHJ3eiPhfumZDym567tQc5XVfLjgC9WGQD5MVvfllEuR/xcT/rTGWZiDSFgdxO6dOOli0eXgPf3RC4Wvyq+DKogvVP5Jmu8ogqODYiNGxk8tHU7hSrJEiFLPQDVgG5jvJo/6UrqsVB58LxFgX9OXH+mYRVmWNa03KDR4uaJHpyHQ+Eht4=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(346002)(376002)(366004)(136003)(39860400002)(86362001)(6916009)(6506007)(2906002)(6666004)(5660300002)(41300700001)(83380400001)(186003)(38350700002)(52116002)(54906003)(36756003)(6486002)(38100700002)(66556008)(66946007)(2616005)(6512007)(8676002)(478600001)(26005)(44832011)(316002)(66476007)(1076003)(8936002)(4326008);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Ns1RBgNGLhvb2uecATUEf9p79wwylehiKBOTQASVhM94C4K2Z9htQBi5+sAl?=
- =?us-ascii?Q?5NQX1uAZJfCyZ0i0+tkHzaqj4Tf3NzZ6pp/f9URdFwhfgHolbe7Lso9qHDaP?=
- =?us-ascii?Q?dlKm/3PqAzbCUv3DR+qdcwlrEdr5zBFuTffjyWZCQBQpSk4skRAiqq1gDeME?=
- =?us-ascii?Q?Ydz5JZX3Kcwo4VR0upIIxV2TodhkbGe3n7/XZp8LzJs4ai01Is+ORc2iIM6e?=
- =?us-ascii?Q?z9Truzj+C1u41EG/Hs+miWwjQPUx6qgFI4v09NSQ8ny5wDdpb6JrXfwnpxC1?=
- =?us-ascii?Q?oh3hCQizzK508dXYdFV3vO9LscT1j6o8kZ6Pjak2sw4OTFtB9LpUi1szf7ie?=
- =?us-ascii?Q?Lsm0d7NYMwOXegANVxzXYyrgMwHkofh2NXuB/0yPXQVcLjU1R8CMpNmpsOYm?=
- =?us-ascii?Q?BWUHVHBmhWUXzOzidtH6GEbq23M8xy0aGaOUjPPIQFpSkxvnjbs9qRthgwab?=
- =?us-ascii?Q?njyora91MypS2RXT57BvAtmthsIOx+bYdzfbEtSavlgKh6A+POKDN5F09IHo?=
- =?us-ascii?Q?Tw8fhf3xsoCw4OOB3DcKEe1sXePniPAPX3tq4y261wpYwgtsfcu80o5jbRvz?=
- =?us-ascii?Q?gyKDWnyvqTb+MHqrKzNK21f7+nBdalnOwtJsWk0DIgaiIAKDS2Laxov2+9On?=
- =?us-ascii?Q?7pIxgz/Br3Q4U02O6BCC6wmGB1XJ7RluLiQDATeGRF5ILBztinpcLtGlvmFd?=
- =?us-ascii?Q?pmWfB7ZomOsgN1zw7EIZ1nDTvF98rNOjsGCnr6Af9ktRC30B+eVsE6kTWw5b?=
- =?us-ascii?Q?3KKPZyR1aFEWh14C74bRRY2b9s/unnxe9Aq/F+FRDY3Ei44soy0xoQ3jqD0D?=
- =?us-ascii?Q?UT/LgzzEnGbbTFclrXpGSflLuwH3o8KBx/a4RiACzynNK+fDmQ8VxZXIl60i?=
- =?us-ascii?Q?gJtqnglwty4nrzygt5rmDRI/k9+QbfyVDhbEdCa4/Y6q7G1TKJg5/an8OHtx?=
- =?us-ascii?Q?C7UYmZNdCFHoqRaHvMNZGlXvAQ8IwpgjaWbPIrt8T6v1P8riPGcUss5istFD?=
- =?us-ascii?Q?E3awBwDrm/BS0mEPjAuAr2HWmTAxiU/uf+BrfIpcd7q2TaeLs0uPLvPh67nN?=
- =?us-ascii?Q?NJjrVwyMkXGO8Ev+aMYDRbW6RjbEEKYhl+ss//XZ66m0s4BCuIiiTcWGVwBv?=
- =?us-ascii?Q?SCjCOjk3dygvSpV0P2eYLwU/uNsj5/SaL6ZDwaid+NBiJum4FC7SZOWcV/Hu?=
- =?us-ascii?Q?jgwv5TcT9Gn+i9d5HDeVkUAGsxb2jjz5BD9vbDFRaA6F75tAVwYfkGbaHnPu?=
- =?us-ascii?Q?U91Gl2XYBdMPXDIo3oon3sKj9Sbk/cpoE9p2iYVE5yoBdPia+q4iJEaRP0fs?=
- =?us-ascii?Q?ZiprxyoIA07jvPDm+2I4RZgvNot4U8+9kRcGfcBDHSnUqF9yu86WR02HNbln?=
- =?us-ascii?Q?NYhp7wES76Zvd/JNyLnLbm4k6a6CydFpaUO5/9dOV8zFzj8tKqkWeY3+zc7D?=
- =?us-ascii?Q?JQX4cW/nxCQ3Q/X9FjAn+KGxAiHw7Vhiuko5MspLRUeYstVDQgm+0iYWENHX?=
- =?us-ascii?Q?jQ/gbzl3D0Jl7EiaCtdRILO8aDH5r5OilDKCeOefrO519vi0nGB0jV5h1+4I?=
- =?us-ascii?Q?MIYbnE9OHAyYoarV0a+Z5e0r3tuWUYBJp9PZj+yXYF4F000ulojmqQMQ8TEJ?=
- =?us-ascii?Q?Jg=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6e0e071c-5fc1-43cc-b765-08da59fb1ed1
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jun 2022 18:13:51.7726
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: NWxnTz+wJbGS81BwjAdF1XWWm27haUaLVzTJeefBp8lgPPc7mCLvKRFEs8A53Gywsyx5ovKrEQrni11rU8DCiw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR0402MB3604
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Wei Wang <weiwan@google.com>
+Message-ID: <62bc966740c4c_5ddc20893@john.notmuch>
+In-Reply-To: <CANn89iLvG0QBVkdhbC-x59ac=B=j+ZxXitBGanBo+8ThMJGG1g@mail.gmail.com>
+References: <000000000000b06e5505e299a9b6@google.com>
+ <CANn89iLuGKyVcNAAjvwWk8HoJrNgZ5HM4itXEsnqzU=+xZLKOQ@mail.gmail.com>
+ <CANn89iLvG0QBVkdhbC-x59ac=B=j+ZxXitBGanBo+8ThMJGG1g@mail.gmail.com>
+Subject: Re: [syzbot] WARNING in sk_stream_kill_queues (8)
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -115,51 +81,140 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-These are required by certain network profiling applications in order to
-measure delays.
+Eric Dumazet wrote:
+> On Wed, Jun 29, 2022 at 7:45 PM Eric Dumazet <edumazet@google.com> wrote:
+> >
+> > On Wed, Jun 29, 2022 at 7:41 PM syzbot
+> > <syzbot+a0e6f8738b58f7654417@syzkaller.appspotmail.com> wrote:
+> > >
+> > > Hello,
+> > >
+> > > syzbot found the following issue on:
+> > >
+> > > HEAD commit:    aab35c3d5112 Add linux-next specific files for 20220627
+> > > git tree:       linux-next
+> > > console+strace: https://syzkaller.appspot.com/x/log.txt?x=126fef90080000
+> > > kernel config:  https://syzkaller.appspot.com/x/.config?x=6a874f114a1e4a6b
+> > > dashboard link: https://syzkaller.appspot.com/bug?extid=a0e6f8738b58f7654417
+> > > compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> > > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14ae0c98080000
+> > > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=145124f4080000
+> > >
+> > > IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> > > Reported-by: syzbot+a0e6f8738b58f7654417@syzkaller.appspotmail.com
+> > >
+> > > nf_conntrack: default automatic helper assignment has been turned off for security reasons and CT-based firewall rule not found. Use the iptables CT target to attach helpers instead.
+> > > ------------[ cut here ]------------
+> > > WARNING: CPU: 1 PID: 3601 at net/core/stream.c:205 sk_stream_kill_queues+0x2ee/0x3d0 net/core/stream.c:205
+> > > Modules linked in:
+> > > CPU: 1 PID: 3601 Comm: syz-executor340 Not tainted 5.19.0-rc4-next-20220627-syzkaller #0
+> > > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> > > RIP: 0010:sk_stream_kill_queues+0x2ee/0x3d0 net/core/stream.c:205
+> > > Code: 03 0f b6 04 02 84 c0 74 08 3c 03 0f 8e ec 00 00 00 8b ab 28 02 00 00 e9 60 ff ff ff e8 3b 9a 29 fa 0f 0b eb 97 e8 32 9a 29 fa <0f> 0b eb a0 e8 29 9a 29 fa 0f 0b e9 6a fe ff ff e8 0d a1 75 fa e9
+> > > RSP: 0018:ffffc90002e6fbf0 EFLAGS: 00010293
+> > > RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+> > > RDX: ffff88801e90ba80 RSI: ffffffff87511cce RDI: 0000000000000005
+> > > RBP: 0000000000000b00 R08: 0000000000000005 R09: 0000000000000000
+> > > R10: 0000000000000b00 R11: 0000000000000004 R12: ffff88801e0c8e28
+> > > R13: ffffffff913121c0 R14: ffff88801e0c8c28 R15: ffff88801e0c8db8
+> > > FS:  0000000000000000(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
+> > > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > > CR2: 000000000045b630 CR3: 000000000ba8e000 CR4: 00000000003506e0
+> > > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> > > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> > > Call Trace:
+> > >  <TASK>
+> > >  inet_csk_destroy_sock+0x1a5/0x440 net/ipv4/inet_connection_sock.c:1013
+> > >  __tcp_close+0xb92/0xf50 net/ipv4/tcp.c:2963
+> > >  tcp_close+0x29/0xc0 net/ipv4/tcp.c:2975
+> > >  inet_release+0x12e/0x270 net/ipv4/af_inet.c:428
+> > >  __sock_release+0xcd/0x280 net/socket.c:650
+> > >  sock_close+0x18/0x20 net/socket.c:1365
+> > >  __fput+0x277/0x9d0 fs/file_table.c:317
+> > >  task_work_run+0xdd/0x1a0 kernel/task_work.c:177
+> > >  exit_task_work include/linux/task_work.h:38 [inline]
+> > >  do_exit+0xaf1/0x29f0 kernel/exit.c:795
+> > >  do_group_exit+0xd2/0x2f0 kernel/exit.c:925
+> > >  __do_sys_exit_group kernel/exit.c:936 [inline]
+> > >  __se_sys_exit_group kernel/exit.c:934 [inline]
+> > >  __x64_sys_exit_group+0x3a/0x50 kernel/exit.c:934
+> > >  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+> > >  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+> > >  entry_SYSCALL_64_after_hwframe+0x46/0xb0
+> > > RIP: 0033:0x7f080e760989
+> > > Code: Unable to access opcode bytes at RIP 0x7f080e76095f.
+> > > RSP: 002b:00007ffcee785818 EFLAGS: 00000246 ORIG_RAX: 00000000000000e7
+> > > RAX: ffffffffffffffda RBX: 00007f080e7d4270 RCX: 00007f080e760989
+> > > RDX: 000000000000003c RSI: 00000000000000e7 RDI: 0000000000000000
+> > > RBP: 0000000000000000 R08: ffffffffffffffc0 R09: 0000000000000010
+> > > R10: 0000000000000010 R11: 0000000000000246 R12: 00007f080e7d4270
+> > > R13: 0000000000000001 R14: 0000000000000000 R15: 0000000000000001
+> > >  </TASK>
+> > >
+> > >
+> > > ---
+> > > This report is generated by a bot. It may contain errors.
+> > > See https://goo.gl/tpsmEJ for more information about syzbot.
+> > > syzbot engineers can be reached at syzkaller@googlegroups.com.
+> > >
+> > > syzbot will keep track of this issue. See:
+> > > https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> > > syzbot can test patches for this issue, for details see:
+> > > https://goo.gl/tpsmEJ#testing-patches
+> >
+> > Stanislav has bisected the issue to:
+> >
+> > commit 965b57b469a589d64d81b1688b38dcb537011bb0
+> > Author: Cong Wang <cong.wang@bytedance.com>
+> > Date:   Wed Jun 15 09:20:12 2022 -0700
+> >
+> >     net: Introduce a new proto_ops ->read_skb()
+> >
+> >     Currently both splice() and sockmap use ->read_sock() to
+> >     read skb from receive queue, but for sockmap we only read
+> >     one entire skb at a time, so ->read_sock() is too conservative
+> >     to use. Introduce a new proto_ops ->read_skb() which supports
+> >     this sematic, with this we can finally pass the ownership of
+> >     skb to recv actors.
+> >
+> >     For non-TCP protocols, all ->read_sock() can be simply
+> >     converted to ->read_skb().
+> >
+> >     Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+> >     Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+> >     Reviewed-by: John Fastabend <john.fastabend@gmail.com>
+> >     Link: https://lore.kernel.org/bpf/20220615162014.89193-3-xiyou.wangcong@gmail.com
+> 
+> Repro is doing something like:
+> 
+> 
+> mmap(0x1ffff000, 4096, PROT_NONE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS,
+> -1, 0) = 0x1ffff000
+> mmap(0x20000000, 16777216, PROT_READ|PROT_WRITE|PROT_EXEC,
+> MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x20000000
+> mmap(0x21000000, 4096, PROT_NONE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS,
+> -1, 0) = 0x21000000
+> socket(AF_INET, SOCK_STREAM, IPPROTO_IP) = 3
+> bpf(BPF_PROG_LOAD, {prog_type=BPF_PROG_TYPE_SK_SKB, insn_cnt=4,
+> insns=0x20000040, license="GPL", log_level=4, log_size=64912,
+> log_buf="", kern_version=KERNEL_VERSION(0, 0, 0), prog_flags=0,
+> prog_name="", prog_ifindex=0,
+> expected_attach_type=BPF_CGROUP_INET_INGRESS}, 72) = 4
+> bpf(BPF_MAP_CREATE, {map_type=BPF_MAP_TYPE_SOCKHASH, key_size=4,
+> value_size=4, max_entries=18, map_flags=0, inner_map_fd=-1,
+> map_name="", map_ifindex=0, btf_fd=-1, btf_key_type_id=0,
+> btf_value_type_id=0, btf_vmlinux_value_type_id=0, map_extra=0}, 72) =
+> 5
+> bpf(BPF_PROG_ATTACH, {target_fd=5, attach_bpf_fd=4,
+> attach_type=BPF_SK_SKB_STREAM_VERDICT, attach_flags=0}, 16) = 0
+> bind(3, {sa_family=AF_INET, sin_port=htons(20000),
+> sin_addr=inet_addr("224.0.0.2")}, 16) = 0
+> sendto(3, NULL, 0, MSG_OOB|MSG_SENDPAGE_NOTLAST|MSG_FASTOPEN,
+> {sa_family=AF_INET, sin_port=htons(20000),
+> sin_addr=inet_addr("0.0.0.0")}, 16) = 0
+> bpf(BPF_MAP_UPDATE_ELEM, {map_fd=5, key=0x200002c0, value=0x20000340,
+> flags=BPF_ANY}, 32) = 0
+> shutdown(3, SHUT_WR)                    = 0
+> exit_group(0)                           = ?
 
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- drivers/net/ethernet/freescale/gianfar.c         | 1 +
- drivers/net/ethernet/freescale/gianfar_ethtool.c | 6 +++++-
- 2 files changed, 6 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/freescale/gianfar.c b/drivers/net/ethernet/freescale/gianfar.c
-index 3dc9369a33f7..e7bf1524b68e 100644
---- a/drivers/net/ethernet/freescale/gianfar.c
-+++ b/drivers/net/ethernet/freescale/gianfar.c
-@@ -1944,6 +1944,7 @@ static netdev_tx_t gfar_start_xmit(struct sk_buff *skb, struct net_device *dev)
- 		lstatus |= BD_LFLAG(TXBD_CRC | TXBD_READY) | skb_headlen(skb);
- 	}
- 
-+	skb_tx_timestamp(skb);
- 	netdev_tx_sent_queue(txq, bytes_sent);
- 
- 	gfar_wmb();
-diff --git a/drivers/net/ethernet/freescale/gianfar_ethtool.c b/drivers/net/ethernet/freescale/gianfar_ethtool.c
-index 9a2c16d69e2c..81fb68730138 100644
---- a/drivers/net/ethernet/freescale/gianfar_ethtool.c
-+++ b/drivers/net/ethernet/freescale/gianfar_ethtool.c
-@@ -1457,6 +1457,7 @@ static int gfar_get_ts_info(struct net_device *dev,
- 
- 	if (!(priv->device_flags & FSL_GIANFAR_DEV_HAS_TIMER)) {
- 		info->so_timestamping = SOF_TIMESTAMPING_RX_SOFTWARE |
-+					SOF_TIMESTAMPING_TX_SOFTWARE |
- 					SOF_TIMESTAMPING_SOFTWARE;
- 		return 0;
- 	}
-@@ -1474,7 +1475,10 @@ static int gfar_get_ts_info(struct net_device *dev,
- 
- 	info->so_timestamping = SOF_TIMESTAMPING_TX_HARDWARE |
- 				SOF_TIMESTAMPING_RX_HARDWARE |
--				SOF_TIMESTAMPING_RAW_HARDWARE;
-+				SOF_TIMESTAMPING_RAW_HARDWARE |
-+				SOF_TIMESTAMPING_RX_SOFTWARE |
-+				SOF_TIMESTAMPING_TX_SOFTWARE |
-+				SOF_TIMESTAMPING_SOFTWARE;
- 	info->tx_types = (1 << HWTSTAMP_TX_OFF) |
- 			 (1 << HWTSTAMP_TX_ON);
- 	info->rx_filters = (1 << HWTSTAMP_FILTER_NONE) |
--- 
-2.25.1
-
+Thanks Eric, Stanislav for the bisect. I'll take a look this afternoon. 
