@@ -2,71 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B0FC55FB32
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 10:59:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BFB0055FB2C
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 10:59:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232527AbiF2I6g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 04:58:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40092 "EHLO
+        id S232430AbiF2I6x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 04:58:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232518AbiF2I6d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 04:58:33 -0400
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5EBCB7E5;
-        Wed, 29 Jun 2022 01:58:32 -0700 (PDT)
-Received: by mail-wm1-x330.google.com with SMTP id g39-20020a05600c4ca700b003a03ac7d540so8300730wmp.3;
-        Wed, 29 Jun 2022 01:58:32 -0700 (PDT)
+        with ESMTP id S232767AbiF2I6t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 04:58:49 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 404781C91B;
+        Wed, 29 Jun 2022 01:58:43 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id fd6so21218664edb.5;
+        Wed, 29 Jun 2022 01:58:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=umDz2mWCfuNGKxLZgsu5rbBZtAx6nyuFjdxun9aV4xE=;
-        b=igeEuASPkzX9RW9eFzx69DtY/S3fjzeuSgzNJNE6ccmJcJJhlh79HvQAVu5fG0xyYk
-         B80qQSeQNGfGFRdUh17FT6q7R+rhrW8EICQncoFtzs2RdqqlN8B7OzJsoyW8M4fKvc9X
-         6zK1u+SS9ClBWd8f6TfvM+IhwKOlqZUTFlSdAm3RZ2EEt+cydcQxkNWYZv0be70Np4ES
-         anp602Z8/bjkG+gxcpj4zBDGirAeoPTQrI52pitPQYDGwKHIPlCIYJ+Dshod8BSGlcSw
-         h1sUZu745mXDc5d/7A1UDZnDUuArlJSYHjuzbwwSvTkeiZ081plLMNL2hVhNOnMBVs7P
-         pL/A==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=r++121sbLgXWyC87t6HhBYGjFC1OZo7m/Al81TbSLAc=;
+        b=QRckV6V4u2oiBdEL0UBUoDQqliBh7zDWCo7k1wV03x1E23P11wbDeU1C05lwfZlo7U
+         LS+eADyHaw9InWhCnF/7orpv+hOmwZAOR6FUSY7KN9zvf8S+nx0qNzodpfbGArqJzex6
+         BmGLDdZrXozYghL4CSdujGNIKFF5x3xfGQarw24QAtndrBGt/4CyrPusRrD5cGMnV82R
+         Ctr1zok0+gHGhnUpNKHnXamxIHOcNfsMC758001icFlfMLfMm+jhN2k4Kyx2QCybyWWG
+         r2bc3KP926tzQLNJZS3tETF5L4vlpvYabcqn2Ez5OkrjqnoV4tJwPSodC5ynDlKv3ERf
+         l45A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=umDz2mWCfuNGKxLZgsu5rbBZtAx6nyuFjdxun9aV4xE=;
-        b=UT1pUo+lNqGUic+NtAyZgtbBuDrIPOZ3hsZ1l154cH9y4WyCMP7Ng8Nbatp3IXXkh8
-         JoZ2uBksKIc9GonlKjK0njURKPWCWQXqRacz+rRt4Pyv+O0bRTT9UnB2I/ScNTBn+Rz9
-         bpcbTEvnQzOP4K44InrqQBFRbP1Cm2pA3OHpWjZmbjeJBoaoWs7m9QSgPHHVdhscRKNq
-         B6WXkNKwO9epFE7gLiAeOmXEsmhLh98A98AINL3/UzjoiZWFmEkbSl8j5xNQw+tbGKZa
-         aoBjiiYWeFRjrwFXDwjy8bWl7LIbh2MvnyTh3oIupSeRi3CR3bkhPfcpxH9bN7mPupfe
-         xWmQ==
-X-Gm-Message-State: AJIora9OSYjAFxfDZqQvkB+nfRow9WdTidp7kLqf/0Yf9l9+MoAss3b1
-        pmMRL3j0j8H7wYrA1A5DYo8=
-X-Google-Smtp-Source: AGRyM1sGgXlu2mq97AaBmcjcLiVYJodcP0N+RBgSwukn4QqiE3rB4AkOFVsQ1fafsW11m3pvdmOjhQ==
-X-Received: by 2002:a05:600c:2290:b0:3a0:3e42:4f9a with SMTP id 16-20020a05600c229000b003a03e424f9amr4174898wmf.28.1656493111164;
-        Wed, 29 Jun 2022 01:58:31 -0700 (PDT)
-Received: from ?IPV6:2a01:e0a:2a7:be0:64e9:b8c:15e9:ebb? ([2a01:e0a:2a7:be0:64e9:b8c:15e9:ebb])
-        by smtp.gmail.com with ESMTPSA id t18-20020a5d42d2000000b0021a56cda047sm15533141wrr.60.2022.06.29.01.58.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 29 Jun 2022 01:58:30 -0700 (PDT)
-Message-ID: <25de5ab0-551e-7304-9715-558ee0a5c501@gmail.com>
-Date:   Wed, 29 Jun 2022 10:58:29 +0200
+        bh=r++121sbLgXWyC87t6HhBYGjFC1OZo7m/Al81TbSLAc=;
+        b=7Po6aogJcZlnLkXxpDwkC2Gd1TEKZpJCDSfHwEydGCzDkXlt6+5s3xmvjjMtAFHqbl
+         YBACdYJpCBecHIAF5QBuvCJDokR2t0V1XUycFoaoSdCvRWOaUtfk0NZT9pTnOONnd2BL
+         juqvLNaBuQSkaP0XeTJtqFLWkWZahjMkejhD3cVOtXitsRA/Q8gOpDj66bt2YgsFwiOt
+         96LkbsTgaDIpT6ebAwY4lRynWrYiE2HMY2sSDmi5W5c9Idw2O36peOQICR0tCfjU6qbm
+         W73GT+CWFxVtIdfcHKpvUuzeKlIaIUzrWNSGX89EAa1MQiD/ePSbcjAebin/ie4beasr
+         LcDg==
+X-Gm-Message-State: AJIora8r+AOLdeIU7h928vVIgo9h7QwDnBZM/DHBzld4+lTLedejsx2T
+        bVQfgr27C2Sf5NNJ+oiG5hI=
+X-Google-Smtp-Source: AGRyM1tAyTjbfqt55MKCcHD0WymqazhAWk4ybuv3YQ8j6WxGsH0iTFjyiTpmDaLtRbAiv1DK0y0lbQ==
+X-Received: by 2002:a05:6402:4387:b0:435:94c6:716d with SMTP id o7-20020a056402438700b0043594c6716dmr2837654edc.298.1656493121725;
+        Wed, 29 Jun 2022 01:58:41 -0700 (PDT)
+Received: from localhost.localdomain (host-87-6-98-182.retail.telecomitalia.it. [87.6.98.182])
+        by smtp.gmail.com with ESMTPSA id a18-20020a170906671200b00718e4e64b7bsm7489740ejp.79.2022.06.29.01.58.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Jun 2022 01:58:39 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org
+Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
+        Ira Weiny <ira.weiny@intel.com>
+Subject: [PATCH] ixgbe: Use kmap_local_page in ixgbe_check_lbtest_frame()
+Date:   Wed, 29 Jun 2022 10:58:36 +0200
+Message-Id: <20220629085836.18042-1-fmdefrancesco@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH] net: tls: fix tls with sk_redirect using a BPF verdict.
-Content-Language: en-US
-To:     John Fastabend <john.fastabend@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Marc Vertes <mvertes@free.fr>
-References: <20220628152505.298790-1-julien.salleyron@gmail.com>
- <20220628103424.5330e046@kernel.org> <62bbf87f16223_2181420853@john.notmuch>
-From:   Julien Salleyron <julien.salleyron@gmail.com>
-In-Reply-To: <62bbf87f16223_2181420853@john.notmuch>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -75,35 +78,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thanks for your quick response.
+The use of kmap() is being deprecated in favor of kmap_local_page().
 
- > It's because kTLS does a very expensive reallocation and copy for the
- > non-zerocopy case (which currently means all of TLS 1.3). I have
- > code almost ready to fix that (just needs to be reshuffled into
- > upstreamable patches). Brings us up from 5.9 Gbps to 8.4 Gbps per CPU
- > on my test box with 16k records. Probably much more than that with
- > smaller records.
+With kmap_local_page(), the mapping is per thread, CPU local and not
+globally visible. Furthermore, the mapping can be acquired from any context
+(including interrupts).
 
-Happy to hear that, it seems an impressive improvement!
+Therefore, use kmap_local_page() in ixgbe_check_lbtest_frame() because
+this mapping is per thread, CPU local, and not globally visible.
 
- > You'll also need a signed-off-by.
+Suggested-by: Ira Weiny <ira.weiny@intel.com>
+Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+---
+ drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-We will do it.
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c
+index 628d0eb0599f..e64d40482bfd 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c
+@@ -1966,14 +1966,14 @@ static bool ixgbe_check_lbtest_frame(struct ixgbe_rx_buffer *rx_buffer,
+ 
+ 	frame_size >>= 1;
+ 
+-	data = kmap(rx_buffer->page) + rx_buffer->page_offset;
++	data = kmap_local_page(rx_buffer->page) + rx_buffer->page_offset;
+ 
+ 	if (data[3] != 0xFF ||
+ 	    data[frame_size + 10] != 0xBE ||
+ 	    data[frame_size + 12] != 0xAF)
+ 		match = false;
+ 
+-	kunmap(rx_buffer->page);
++	kunmap_local(data);
+ 
+ 	return match;
+ }
+-- 
+2.36.1
 
- >
- > > IDK what this is trying to do but I certainly depends on the fact
- > > we run skb_cow_data() and is not "generally correct" :S
- >
- > Ah also we are not handling partially consumed correctly either.
- > Seems we might pop off the skb even when we need to continue;
- >
- > Maybe look at how skb_copy_datagram_msg() goes below because it
- > fixes the skb copy up with the rxm->offset. But, also we need to
- > do this repair before sk_psock_tls_strp_read I think so that
- > the BPF program reads the correct data in all cases? I guess
- > your sample program (and selftests for that matter) just did
- > the redirect without reading the data?
-
-Even if our sample program doesn't read data, we can confirm that the 
-data in the BPF Program are incorrect (no rxm applied).
-We will make a change to handle this.
