@@ -2,117 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B42C55FDAB
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 12:45:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B3AB55FDC8
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 12:50:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229834AbiF2Ko6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 06:44:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52744 "EHLO
+        id S232745AbiF2KuW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 06:50:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229716AbiF2Ko6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 06:44:58 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AE813E0C6;
-        Wed, 29 Jun 2022 03:44:57 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id fw3so4067092ejc.10;
-        Wed, 29 Jun 2022 03:44:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=kOaVpaz5661w2bixlQiYEfULRrUSFVOS6Ar20pgYWdM=;
-        b=LF2lslnh++0WUUFSJgCf7GvK+7VGZjFnE9ZBbYiMfeRwO2yaf9Ln/SJBTKjRsgHGjc
-         ynpjUtRsZ1U+KbtMClec0oNoSnSzavFKBv8njhon7gRuhr3D9yqZx+M0GyZBrZ509Qw4
-         +mAKJE7HVZDa3sxZJcmTWL2hEm87MW+sDgJZPFJm6b/JWqG+Jgi45KQCc1t+/H5jK2W+
-         fRUCYvZLfdWcmZ/OqgdqLjsS7Ts50BTbwOuUcWRGWj8jTXAfAA6UUa8uG14kqK44fCdx
-         nOKfMf8WkJf2JJUqV6PRX94klpxmWXkgKjnuYXfHFkSZZELKHNI3wP3heKqRmRkRJF8u
-         CqMQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=kOaVpaz5661w2bixlQiYEfULRrUSFVOS6Ar20pgYWdM=;
-        b=vnh9iLQT8m7g5P3mfSE/TOSiBHoYP105H3AnGmOPr1xeQyE6R34exqOqL9AcigGJX3
-         sOrechWxIBXIxmYwQj7U6D8jGA2RqWdF6dhELa0/tpsZFpgief3OmfuOZF+rg+l09mjx
-         mdRZjykMO4uj1qjJUAWZ5vsJTQXm8JsDQtQeoNPjCd0b1E4bL/kn59/1SG3WAX+AnJqB
-         A4nGBkm9JeZRFUB9rXOybONaZRYjwTTiETnFgcRZVV1Q+/XbDFGFDIn3QoFhU7JcNcla
-         +VlwDCQt2deeJbnPVCDB+tQoKAzqENstEV9uuOwMG9XBg8qXI+X73ofdvW0C51iCG5yg
-         JD7Q==
-X-Gm-Message-State: AJIora8m2kzTdV2UovM8tZbzxvBPYX46yFYYT8XvzaEeFsUksG5vHG8E
-        KVcP9GF7HQE4xUSBdFSL7Bs=
-X-Google-Smtp-Source: AGRyM1sEQsEwoJqoLD3KZMvpu1kGdNVgPe7HSW37VlXIh+dBpCD8gQzpF8VkmufZxyX5eF3MYN2amQ==
-X-Received: by 2002:a17:907:c14:b0:726:9118:3326 with SMTP id ga20-20020a1709070c1400b0072691183326mr2749834ejc.68.1656499495587;
-        Wed, 29 Jun 2022 03:44:55 -0700 (PDT)
-Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.gmail.com with ESMTPSA id v10-20020a1709063bca00b00706e8ac43b8sm7560722ejf.199.2022.06.29.03.44.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Jun 2022 03:44:54 -0700 (PDT)
-Message-ID: <62bc2d26.1c69fb81.8efff.df8d@mx.google.com>
-X-Google-Original-Message-ID: <YrwtJVZZJ6QvaXEr@Ansuel-xps.>
-Date:   Wed, 29 Jun 2022 12:44:53 +0200
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [net-next PATCH RFC 2/5] net: ethernet: stmicro: stmmac: first
- disable all queues in release
-References: <20220628013342.13581-1-ansuelsmth@gmail.com>
- <20220628013342.13581-3-ansuelsmth@gmail.com>
- <20220628205435.44b0c78c@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220628205435.44b0c78c@kernel.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S232597AbiF2KuU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 06:50:20 -0400
+Received: from zju.edu.cn (mail.zju.edu.cn [61.164.42.155])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9C4C01EC54;
+        Wed, 29 Jun 2022 03:50:18 -0700 (PDT)
+Received: from ubuntu.localdomain (unknown [10.190.68.163])
+        by mail-app3 (Coremail) with SMTP id cC_KCgCH_0JKLrxiJU0gAQ--.277S2;
+        Wed, 29 Jun 2022 18:49:59 +0800 (CST)
+From:   Duoming Zhou <duoming@zju.edu.cn>
+To:     linux-hams@vger.kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ralf@linux-mips.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com,
+        Duoming Zhou <duoming@zju.edu.cn>
+Subject: [PATCH v4] net: rose: fix null-ptr-deref caused by rose_kill_by_neigh
+Date:   Wed, 29 Jun 2022 18:49:41 +0800
+Message-Id: <20220629104941.26351-1-duoming@zju.edu.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: cC_KCgCH_0JKLrxiJU0gAQ--.277S2
+X-Coremail-Antispam: 1UD129KBjvJXoWxJw1fGr1kXFyrXw4fAFWfGrg_yoW5tF4Dpr
+        9xKrW3Grs7Jws8WFsrJF18ur4FvF1q9F9rWrW09F92y3Z8GrWjvrykKFWUWr15XFsrGFya
+        gF1UW3ySyrnFyw7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUka1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
+        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
+        IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2
+        z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcV
+        Aq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j
+        6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64
+        vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxAIw28IcxkI7VAKI48JMxAIw28IcVCjz48v
+        1sIEY20_GFWkJr1UJwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r
+        18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vI
+        r41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr
+        1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvE
+        x4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUdHUDUUUUU=
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgoQAVZdtadZFgANsC
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 28, 2022 at 08:54:35PM -0700, Jakub Kicinski wrote:
-> On Tue, 28 Jun 2022 03:33:39 +0200 Christian Marangi wrote:
-> > +	stmmac_disable_all_queues(priv);
-> > +
-> > +	for (chan = 0; chan < priv->plat->tx_queues_to_use; chan++)
-> > +		hrtimer_cancel(&priv->tx_queue[chan].txtimer);
-> 
-> IIRC this hrtimer is to check for completions. Canceling it before
-> netif_tx_disable() looks odd, presumably until the queues are stopped
-> the timer can get scheduled again, no?
-> 
+When the link layer connection is broken, the rose->neighbour is
+set to null. But rose->neighbour could be used by rose_connection()
+and rose_release() later, because there is no synchronization among
+them. As a result, the null-ptr-deref bugs will happen.
 
-My concern is that at the time hrtimer_cancel is called there may be
-some packet that still has to be processed and this cause kernel panic
-as stmmac_release free the descriptor (and tx_clean try to free garbage
-pointer)
+One of the null-ptr-deref bugs is shown below:
 
-Bu honestly I put the hrtimer_cancel up to be extra safe, the main
-problem here was disabling napi polling after tx_disable that I think
-was wrong from the start.
+    (thread 1)                  |        (thread 2)
+                                |  rose_connect
+rose_kill_by_neigh              |    lock_sock(sk)
+  spin_lock_bh(&rose_list_lock) |    if (!rose->neighbour)
+  rose->neighbour = NULL;//(1)  |
+                                |    rose->neighbour->use++;//(2)
 
-> >  	netif_tx_disable(dev);
-> >  
-> >  	if (device_may_wakeup(priv->device))
-> > @@ -3764,11 +3769,6 @@ static int stmmac_release(struct net_device *dev)
-> >  	phylink_stop(priv->phylink);
-> >  	phylink_disconnect_phy(priv->phylink);
-> >  
-> > -	stmmac_disable_all_queues(priv);
-> > -
-> > -	for (chan = 0; chan < priv->plat->tx_queues_to_use; chan++)
-> > -		hrtimer_cancel(&priv->tx_queue[chan].txtimer);
+The rose->neighbour is set to null in position (1) and dereferenced
+in position (2).
 
+The KASAN report triggered by POC is shown below:
+
+KASAN: null-ptr-deref in range [0x0000000000000028-0x000000000000002f]
+...
+RIP: 0010:rose_connect+0x6c2/0xf30
+RSP: 0018:ffff88800ab47d60 EFLAGS: 00000206
+RAX: 0000000000000005 RBX: 000000000000002a RCX: 0000000000000000
+RDX: ffff88800ab38000 RSI: ffff88800ab47e48 RDI: ffff88800ab38309
+RBP: dffffc0000000000 R08: 0000000000000000 R09: ffffed1001567062
+R10: dfffe91001567063 R11: 1ffff11001567061 R12: 1ffff11000d17cd0
+R13: ffff8880068be680 R14: 0000000000000002 R15: 1ffff11000d17cd0
+...
+Call Trace:
+  <TASK>
+  ? __local_bh_enable_ip+0x54/0x80
+  ? selinux_netlbl_socket_connect+0x26/0x30
+  ? rose_bind+0x5b0/0x5b0
+  __sys_connect+0x216/0x280
+  __x64_sys_connect+0x71/0x80
+  do_syscall_64+0x43/0x90
+  entry_SYSCALL_64_after_hwframe+0x46/0xb0
+
+This patch adds lock_sock() in rose_kill_by_neigh() in order to
+synchronize with rose_connect() and rose_release().
+
+Meanwhile, this patch adds sock_hold() protected by rose_list_lock
+that could synchronize with rose_remove_socket() in order to mitigate
+UAF bug caused by lock_sock() we add.
+
+What's more, there is no need using rose_neigh_list_lock to protect
+rose_kill_by_neigh(). Because we have already used rose_neigh_list_lock
+to protect the state change of rose_neigh in rose_link_failed(), which
+is well synchronized.
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+---
+Changes in v4:
+  - v4: Fix traversing erroneously stop problem.
+
+ net/rose/af_rose.c    | 8 ++++++++
+ net/rose/rose_route.c | 2 ++
+ 2 files changed, 10 insertions(+)
+
+diff --git a/net/rose/af_rose.c b/net/rose/af_rose.c
+index bf2d986a6bc..24dcbde88fb 100644
+--- a/net/rose/af_rose.c
++++ b/net/rose/af_rose.c
+@@ -165,13 +165,21 @@ void rose_kill_by_neigh(struct rose_neigh *neigh)
+ 	struct sock *s;
+ 
+ 	spin_lock_bh(&rose_list_lock);
++again:
+ 	sk_for_each(s, &rose_list) {
+ 		struct rose_sock *rose = rose_sk(s);
+ 
+ 		if (rose->neighbour == neigh) {
++			sock_hold(s);
++			spin_unlock_bh(&rose_list_lock);
++			lock_sock(s);
+ 			rose_disconnect(s, ENETUNREACH, ROSE_OUT_OF_ORDER, 0);
+ 			rose->neighbour->use--;
+ 			rose->neighbour = NULL;
++			release_sock(s);
++			spin_lock_bh(&rose_list_lock);
++			sock_put(s);
++			goto again;
+ 		}
+ 	}
+ 	spin_unlock_bh(&rose_list_lock);
+diff --git a/net/rose/rose_route.c b/net/rose/rose_route.c
+index fee6409c2bb..b116828b422 100644
+--- a/net/rose/rose_route.c
++++ b/net/rose/rose_route.c
+@@ -827,7 +827,9 @@ void rose_link_failed(ax25_cb *ax25, int reason)
+ 		ax25_cb_put(ax25);
+ 
+ 		rose_del_route_by_neigh(rose_neigh);
++		spin_unlock_bh(&rose_neigh_list_lock);
+ 		rose_kill_by_neigh(rose_neigh);
++		return;
+ 	}
+ 	spin_unlock_bh(&rose_neigh_list_lock);
+ }
 -- 
-	Ansuel
+2.17.1
+
