@@ -2,124 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E4F655FCE2
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 12:11:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9693B55FD3A
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 12:33:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231430AbiF2KKc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 06:10:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54200 "EHLO
+        id S231860AbiF2K0E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 06:26:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229777AbiF2KKa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 06:10:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26E6B22B06
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 03:10:30 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B256661ED4
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 10:10:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFEF3C34114;
-        Wed, 29 Jun 2022 10:10:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656497429;
-        bh=gumbGasP0T/XEgPCejFFb3EYwfVesF4bIVPFRQ3YSN8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=VdOsgqg+RS0Ue5vKZjp9OLNtY8fNDwj8+ERoCCon3jm+WRMH3w4o3HGhst8x8Y+13
-         BoUfpZ3GStSsD3sgeAoc+EhVdYpi6Y5yavqeFNY/JOoptTR3fnKMsbhOdaK6o8Wxkl
-         PIOtTjg2cDd+f2FE0TroCywxwOf4ueVSA+XiXe8ri8+AVF2JochONNwSJpghPYujBk
-         lw2tV8ON9hAhmfvcreLyfwAGZcKE1zSthSaFQC8at2g0mwqD2IDe9zNbVy2+xafeGy
-         OFuCinYQQ6u7FfnCsv78UpaF7bm04xZIW33N0RedubgVMsnPsRxGtn3h4Nue1nkgn0
-         XoGgH85eABDog==
-Date:   Wed, 29 Jun 2022 12:10:20 +0200
-From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Alvin =?UTF-8?B?xaBp?= =?UTF-8?B?cHJhZ2E=?= 
-        <alsi@bang-olufsen.dk>, Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        UNGLinuxDriver@microchip.com,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Woojung Huh <woojung.huh@microchip.com>
-Subject: Re: [PATCH RFC net-next 0/4] net: dsa: always use phylink
-Message-ID: <20220629121020.583144a5@thinkpad>
-In-Reply-To: <YrweuzL2LYNbfvAY@shell.armlinux.org.uk>
-References: <YrWi5oBFn7vR15BH@shell.armlinux.org.uk>
-        <YrtvoRhUK+4BneYC@shell.armlinux.org.uk>
-        <Yrv8snvIChmoNPwh@lunn.ch>
-        <YrweuzL2LYNbfvAY@shell.armlinux.org.uk>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        with ESMTP id S232754AbiF2K0A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 06:26:00 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 572C632EDA
+        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 03:25:52 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id q6so31544936eji.13
+        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 03:25:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=sBJdrlguIXhimT4JZ53Dob2yg/bXuqOE77iYKfnTPKs=;
+        b=eoLLeh5w0sTfWv7/+jqxYAHniRIjcEhuR9jwHAVXrbUFAmUG5gSHLIagiWkFD5K1mx
+         9FHdnmwpCCIApEB8vVg01sJEsrrnRjCE+uk39L9GOfsSJXSTtMrN2cPf8t0A1V8CgyBE
+         i/dZExpsSe3wwrFFB2wUaqgpcpVWajCCZOlJSgm2GJ6eHphT4uLweGsKqsQnuBc5vV7B
+         5jJ5O89xRRLCiSw72RXCYU5C3950QGqPDsaVUG6x+8BQvv8038o9nbpSA542FlJPSNg4
+         jQrpYROw01wTMuBy0+YE/Xco5e3KVaqJquJkNaJatSeZT7wvK5kl3U/TLfR7u1DCO07G
+         AACw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=sBJdrlguIXhimT4JZ53Dob2yg/bXuqOE77iYKfnTPKs=;
+        b=RjHVo+smiIVXEeiw3rXW2CHuodfOkF84jLorsYNZoxkQkHABOIjOIwfkRzwzaS/cc0
+         D4bLn/Zm0V8Hog+8d1dd34O0UN4tLsLCvY+bxvpPDPS0B2AAbHlvHy6tJUapsFKzNF10
+         qhy1VG1VA4Krdr/NDs71vfic1wXU08bxB3pmbKW+rlbeouAEJxmfRHoPv8u9gDKjpsu+
+         vWGi1F8TmcDXUzSw1tPcUV2Nu1Vo5515Ua3SDYnO2ArEgLwcdvFzAjFYBkCXX1qnRydW
+         DBdALjkW+2lTu+3QwW2TA8eUsa9LZjPZgw9xz3KkuIaxqg4iqllAQrxccs++gDRb91zY
+         6RDw==
+X-Gm-Message-State: AJIora8OGb07rCxjWuGXCJUPQKrVyKdZR4cfduI1bigGLZCJr4E13pnW
+        ohBu3Q0Fw01u60qnW/BD2pajgP3rG3lbDNtbRtI=
+X-Google-Smtp-Source: AGRyM1v4D5U5sRiwcOhBYscA260PSi2WJ9EINaGy0aZaSfMf0QdKN9m/7IHl8qSWXXn9IqsrmGs/ag==
+X-Received: by 2002:a17:906:4fc6:b0:722:e730:2355 with SMTP id i6-20020a1709064fc600b00722e7302355mr2596397ejw.50.1656498350735;
+        Wed, 29 Jun 2022 03:25:50 -0700 (PDT)
+Received: from localhost ([85.163.43.78])
+        by smtp.gmail.com with ESMTPSA id jz2-20020a170906bb0200b00726314d0655sm7577368ejb.39.2022.06.29.03.25.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Jun 2022 03:25:50 -0700 (PDT)
+Date:   Wed, 29 Jun 2022 12:25:49 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Ido Schimmel <idosch@nvidia.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        petrm@nvidia.com, pabeni@redhat.com, edumazet@google.com,
+        mlxsw@nvidia.com, saeedm@nvidia.com
+Subject: Re: [patch net-next RFC 0/2] net: devlink: remove devlink big lock
+Message-ID: <YrworZb5yNdnMFDI@nanopsycho>
+References: <20220627135501.713980-1-jiri@resnulli.us>
+ <YrnPqzKexfgNVC10@shredder>
+ <YrnS2tcgyI9Aqe+b@nanopsycho>
+ <YrqxHpvSuEkc45uM@shredder>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YrqxHpvSuEkc45uM@shredder>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 29 Jun 2022 10:43:23 +0100
-"Russell King (Oracle)" <linux@armlinux.org.uk> wrote:
+Tue, Jun 28, 2022 at 09:43:26AM CEST, idosch@nvidia.com wrote:
+>On Mon, Jun 27, 2022 at 05:55:06PM +0200, Jiri Pirko wrote:
+>> Mon, Jun 27, 2022 at 05:41:31PM CEST, idosch@nvidia.com wrote:
+>> >On Mon, Jun 27, 2022 at 03:54:59PM +0200, Jiri Pirko wrote:
+>> >> From: Jiri Pirko <jiri@nvidia.com>
+>> >> 
+>> >> This is an attempt to remove use of devlink_mutex. This is a global lock
+>> >> taken for every user command. That causes that long operations performed
+>> >> on one devlink instance (like flash update) are blocking other
+>> >> operations on different instances.
+>> >
+>> >This patchset is supposed to prevent one devlink instance from blocking
+>> >another? Devlink does not enable "parallel_ops", which means that the
+>> >generic netlink mutex is serializing all user space operations. AFAICT,
+>> >this series does not enable "parallel_ops", so I'm not sure what
+>> >difference the removal of the devlink mutex makes.
+>> 
+>> You are correct, that is missing. For me, as a side effect this patchset
+>> resolved the deadlock for LC auxdev you pointed out. That was my
+>> motivation for this patchset :)
+>
+>Given that devlink does not enable "parallel_ops" and that the generic
+>netlink mutex is held throughout all callbacks, what prevents you from
+>simply dropping the devlink mutex now? IOW, why can't this series be
+>patch #1 and another patch that removes the devlink mutex?
 
-> On Wed, Jun 29, 2022 at 09:18:10AM +0200, Andrew Lunn wrote:
-> > > I should point out that if a DSA port can be programmed in software to
-> > > support both SGMII and 1000baseX, this will end up selecting SGMII
-> > > irrespective of what the hardware was wire-strapped to and how it was
-> > > initially configured. Do we believe that would be acceptable?  
-> > 
-> > I'm pretty sure the devel b board has 1000BaseX DSA links between its
-> > two switches. Since both should end up SGMII that should be O.K.  
-> 
-> Would such a port have a programmable C_Mode, and would it specify that
-> it supports both SGMII and 1000BaseX ? Without going through a lot of
-> boards and documentation for every switch, I can't say.
-> 
-> I don't think we can come to any conclusion on what the right way to
-> deal with this actually is - we don't have enough information about how
-> this is used across all the platforms we have. I think we can only try
-> something, get it merged into net-next, and wait to see whether anyone
-> complains.
-> 
-> When we have a CPU or DSA port without a fixed-link, phy or sfp specified,
-> I think we should:
-> (a) use the phy-mode property if present, otherwise,
-> (b,i) have the DSA driver return the interface mode that it wants to use
-> for max speed for CPU and DSA ports.
-> (b,ii) in the absence of the DSA driver returning a valid interface mode,
-> we use the supported_interfaces to find an interface which gives the
-> maximum speed (irrespective of duplex?) that falls within the
-> mac capabilities.
-> 
-> If all those fail, then things will break, and we will have to wait for
-> people to report that breakage. Does this sound a sane approach, or
-> does anyone have any other suggestions how to solve this?
+Yep, I think you are correct. We are currently working with Moshe on
+conversion of commands that does not late devlink->lock (like health
+reporters and reload) to take devlink->lock. Once we have that, we can
+enable parallel_ops.
 
-It is a sane approach. But in the future I think we should get rid of
-(b,i): I always considered the max_speed_interface() method a temporary
-solution, until the drivers report what a specific port support and the
-subsystem can then choose whichever mode it wants that is wired and
-supported by hardware. Then we could also make it possible to change
-the CPU interface mode via ethtool, which would be cool...
-
-Marek
+>
+>> 
+>> 
+>> >
+>> >The devlink mutex (in accordance with the comment above it) serializes
+>> >all user space operations and accesses to the devlink devices list. This
+>> >resulted in a AA deadlock in the previous submission because we had a
+>> >flow where a user space operation (which acquires this mutex) also tries
+>> >to register / unregister a nested devlink instance which also tries to
+>> >acquire the mutex.
+>> >
+>> >As long as devlink does not implement "parallel_ops", it seems that the
+>> >devlink mutex can be reduced to only serializing accesses to the devlink
+>> >devices list, thereby eliminating the deadlock.
+>> >
+>> >> 
+>> >> The first patch makes sure that the xarray that holds devlink pointers
+>> >> is possible to be safely iterated.
+>> >> 
+>> >> The second patch moves the user command mutex to be per-devlink.
+>> >> 
+>> >> Jiri Pirko (2):
+>> >>   net: devlink: make sure that devlink_try_get() works with valid
+>> >>     pointer during xarray iteration
+>> >>   net: devlink: replace devlink_mutex by per-devlink lock
+>> >> 
+>> >>  net/core/devlink.c | 256 ++++++++++++++++++++++++++++-----------------
+>> >>  1 file changed, 161 insertions(+), 95 deletions(-)
+>> >> 
+>> >> -- 
+>> >> 2.35.3
+>> >> 
