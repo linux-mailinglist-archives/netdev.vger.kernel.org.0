@@ -2,125 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E03355F4C3
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 06:03:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55D7E55F4CF
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 06:03:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229620AbiF2EAj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 00:00:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50208 "EHLO
+        id S231373AbiF2EAn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 00:00:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231281AbiF2EAP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 00:00:15 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 299993193B;
-        Tue, 28 Jun 2022 21:00:11 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id w19-20020a17090a8a1300b001ec79064d8dso18026498pjn.2;
-        Tue, 28 Jun 2022 21:00:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=k7DngibUnT+ItaNOgowcLkkewFPcMFOrPMA2cD6INTw=;
-        b=MUc5knluDO9nLpuqEDeF91dvitB/m2ZFo9RUzw52yszxX1R9gCFgs1SMwjb0KVeoXv
-         bd9gbtoD0QqZZj7aPL3lp/EJXmo5jXIyqiBb7jwE6EylL9Ar6WxgQFlTWJdvE0WdznOp
-         kzGq+dOQETlJyjWiErZ+5xdl5izjt5cvHsRUKs9nm6qKh5t98PpNSkGQiQNp211O555c
-         bSVoHDBc8BkBJVUdj14/+i/h1C5CtGs6PmThhQgiWMY0XXjXVL2MtwMTLUnPMmQtDTWQ
-         hnKY3wTmH1LJq7D0fV4ukOE7CHOPa8IdIMA/k3i3PtDL6AlTM3QyQ1+x6WR5dmVS/MS8
-         l4bw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=k7DngibUnT+ItaNOgowcLkkewFPcMFOrPMA2cD6INTw=;
-        b=kdyrwgqlHROizFiu6+tVdo2UL2jp+/evwXBXfShZbF2WacP0QFAHsnN4jEZHfsvLp6
-         NgQ9rOG/yXZrSRCyO/WTarN6FSi7ARS1lZu2VBNkskgHprYrecTt1WoWSPzIXFP7ZArm
-         ctLKMmqVAktjOqzgkF4UZabLfxIugfV3gZ6xBTQaO915t0nkaP778QAF1eHSL1E3KkDI
-         N2iqI1LYlCmw9A265hs+M4U4QTdOc5sbyaVECkPjNrDoPGcVs0e0Q1LosVpiiyPYCS4m
-         iov0lNJ3reM7ePXsFDqi4YIoeevR85blfPqOfvSbdngD/k6oiEWUsCHznlKUfNIa3Pe0
-         iBQQ==
-X-Gm-Message-State: AJIora/1c26lVEetSHvXGMIaLXp2ZT8YHEgwR/vufg/Z7WzcgkUOdl1R
-        eFHVwNp0Qcpv2Wql8TXcRBw=
-X-Google-Smtp-Source: AGRyM1vGPFqOHcf5q4Ku3swiOuWMjQNzbUmYnUzh8IgDNQQEvWGFFpxL+yylnXbFSlH9sA1Ox/jGBA==
-X-Received: by 2002:a17:902:ccc4:b0:156:5d37:b42f with SMTP id z4-20020a170902ccc400b001565d37b42fmr7027326ple.157.1656475210689;
-        Tue, 28 Jun 2022 21:00:10 -0700 (PDT)
-Received: from [192.168.43.80] (subs02-180-214-232-13.three.co.id. [180.214.232.13])
-        by smtp.gmail.com with ESMTPSA id ca27-20020a056a00419b00b00525133f98adsm10456763pfb.146.2022.06.28.21.00.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 28 Jun 2022 21:00:09 -0700 (PDT)
-Message-ID: <9f2760f9-5778-b600-0709-a354062c677d@gmail.com>
-Date:   Wed, 29 Jun 2022 11:00:04 +0700
+        with ESMTP id S229501AbiF2EAT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 00:00:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25D891F2FB
+        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 21:00:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DE302B8215D
+        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 04:00:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 9A9DDC341C8;
+        Wed, 29 Jun 2022 04:00:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656475215;
+        bh=FGbd2l+VwCTrhQBwqDGWQH2b1/i1EnTUU4/sq2wyOic=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=MTYoHsumdISbLymskDtSGQqi6kekxO2dYzxWHw/kopjRqo8kWPhclr0SuSiQhLvEF
+         +EoM7r2hLA/Ct7lsqd997eMcUlLA2ypt7f5+ze3IQJ12EzvaTz3CeLkLbdR4eqJ5Cl
+         zGhYzMlMXVReT+ZIRX1vPCCCAn3K/RRPcHd8b4nNbwa3WFew/Hl64CIkBss2HTCsda
+         KCU0Z0y6DXFWQr30TJhokfYXUM5sowEzY+sJhaPe7Ixm9OmzgJKFgJ17g7VYBJwutY
+         O747VHZad9wBCua3LSV/5y9amBhxbKx+ZslHcqDOA37wwfBEzDroqJXGTmHuJTsnjf
+         LLgsqEMl5yOQA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7CE40E49BB8;
+        Wed, 29 Jun 2022 04:00:15 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 5.10 1/3] commit 5d6651fe8583 ("rtw88: 8821c: support RFE
- type2 wifi NIC")
-Content-Language: en-US
-To:     Greg KH <gregkh@linuxfoundation.org>,
-        Meng Tang <tangmeng@uniontech.com>
-Cc:     stable@vger.kernel.org, tony0620emma@gmail.com,
-        kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Guo-Feng Fan <vincent_fann@realtek.com>,
-        Ping-Ke Shih <pkshih@realtek.com>,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>
-References: <20220628133046.2474-1-tangmeng@uniontech.com>
- <YrsSJLqq/ZoKw8MP@kroah.com> <YrsSNGN6fDMtGufl@kroah.com>
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-In-Reply-To: <YrsSNGN6fDMtGufl@kroah.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_SORBS_WEB,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net 0/9] mptcp: Fixes for 5.19
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165647521550.15342.17491165529630810403.git-patchwork-notify@kernel.org>
+Date:   Wed, 29 Jun 2022 04:00:15 +0000
+References: <20220628010243.166605-1-mathew.j.martineau@linux.intel.com>
+In-Reply-To: <20220628010243.166605-1-mathew.j.martineau@linux.intel.com>
+To:     Mat Martineau <mathew.j.martineau@linux.intel.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, edumazet@google.com, fw@strlen.de,
+        geliang.tang@suse.com, matthieu.baerts@tessares.net,
+        mptcp@lists.linux.dev
+X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/28/22 21:37, Greg KH wrote:
-> On Tue, Jun 28, 2022 at 04:37:24PM +0200, Greg KH wrote:
->> On Tue, Jun 28, 2022 at 09:30:44PM +0800, Meng Tang wrote:
->>> From: Guo-Feng Fan <vincent_fann@realtek.com>
->>>
->>> RFE type2 is a new NIC which has one RF antenna shares with BT.
->>> Update phy parameter to verstion V57 to allow initial procedure
->>> to load extra AGC table for sharing antenna NIC.
->>>
->>> Signed-off-by: Guo-Feng Fan <vincent_fann@realtek.com>
->>> Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
->>> Tested-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
->>> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
->>> Link: https://lore.kernel.org/r/20210202055012.8296-4-pkshih@realtek.com
->>> Signed-off-by: Meng Tang <tangmeng@uniontech.com>
->>> ---
->>>  drivers/net/wireless/realtek/rtw88/main.c     |   2 +
->>>  drivers/net/wireless/realtek/rtw88/main.h     |   7 +
->>>  drivers/net/wireless/realtek/rtw88/rtw8821c.c |  47 +++
->>>  drivers/net/wireless/realtek/rtw88/rtw8821c.h |  14 +
->>>  .../wireless/realtek/rtw88/rtw8821c_table.c   | 397 ++++++++++++++++++
->>>  .../wireless/realtek/rtw88/rtw8821c_table.h   |   1 +
->>>  6 files changed, 468 insertions(+)
->>>
->>
->> <formletter>
->>
->> This is not the correct way to submit patches for inclusion in the
->> stable kernel tree.  Please read:
->>     https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.html
->> for how to do this properly.
->>
->> </formletter>
+Hello:
+
+This series was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Mon, 27 Jun 2022 18:02:34 -0700 you wrote:
+> Several categories of fixes from the mptcp tree:
 > 
-> Sorry, no, this is all good, my fault.
+> Patches 1-3 are fixes related to MP_FAIL and FASTCLOSE, to make sure
+> MIBs are accurate, and to handle MP_FAIL transmission and responses at
+> the correct times. sk_timer conflicts are also resolved.
+> 
+> Patches 4 and 6 handle two separate race conditions, one at socket
+> shutdown and one with unaccepted subflows.
+> 
+> [...]
 
-Hi Greg,
+Here is the summary with links:
+  - [net,1/9] mptcp: fix error mibs accounting
+    https://git.kernel.org/netdev/net/c/0c1f78a49af7
+  - [net,2/9] mptcp: introduce MAPPING_BAD_CSUM
+    https://git.kernel.org/netdev/net/c/31bf11de146c
+  - [net,3/9] mptcp: invoke MP_FAIL response when needed
+    https://git.kernel.org/netdev/net/c/76a13b315709
+  - [net,4/9] mptcp: fix shutdown vs fallback race
+    https://git.kernel.org/netdev/net/c/d51991e2e314
+  - [net,5/9] mptcp: consistent map handling on failure
+    https://git.kernel.org/netdev/net/c/f745a3ebdfb9
+  - [net,6/9] mptcp: fix race on unaccepted mptcp sockets
+    https://git.kernel.org/netdev/net/c/6aeed9045071
+  - [net,7/9] selftests: mptcp: more stable diag tests
+    https://git.kernel.org/netdev/net/c/42fb6cddec3b
+  - [net,8/9] mptcp: fix conflict with <netinet/in.h>
+    https://git.kernel.org/netdev/net/c/06e445f740c1
+  - [net,9/9] selftests: mptcp: Initialize variables to quiet gcc 12 warnings
+    https://git.kernel.org/netdev/net/c/fd37c2ecb21f
 
-The problem here is patch title. If this is indeed a backport, the patch
-title should be same as in the mainline. Also, mainline (upstream)
-commit should be noted in the backport.
-
+You are awesome, thank you!
 -- 
-An old man doll... just what I always wanted! - Clara
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
