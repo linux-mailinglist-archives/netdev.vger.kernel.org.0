@@ -2,70 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AC2B55FEC2
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 13:38:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A4C655FF01
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 13:48:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232894AbiF2Lhp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 07:37:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42624 "EHLO
+        id S233331AbiF2Lrh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 07:47:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233159AbiF2Lhg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 07:37:36 -0400
-Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E29EF5AB
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 04:37:35 -0700 (PDT)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.nyi.internal (Postfix) with ESMTP id E06385C02C5;
-        Wed, 29 Jun 2022 07:37:31 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Wed, 29 Jun 2022 07:37:31 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; t=1656502651; x=1656589051; bh=P0IHYhnU3P2n89YYS5NACqA87Uib
-        /LVb15nmw/s9QkI=; b=aBnQ2UZPYDdc+2pLCaA6YZyIeI80gIAIT6OuSkPRZPwl
-        AAED+TRcdcMuogtdPucnaq35JGmxraMJWgPiN7Sq2kldb5iUs7By8A0KaIoILA1U
-        CEWd3UD0s5QfdaO7r/W+FtyyMMTjwzqvVhB40uniJfrecDYjFLWRJp/t7ZLJO/Ij
-        58PJbcUTIg5BT1clCU/FCkdFKy3svfrnyprjOWW9cbDh5/4pFdOME/FJhbAwx1OK
-        Ws+72017Z/siNkcfGrGrlknbgjvvpEj9jdi4wrn1CgB42xYF71D/mUSWgaHjjb2q
-        lQ622R4xZdctCdh1u5uvuooIQSf6vZS6C1UTmu7PXA==
-X-ME-Sender: <xms:ezm8YsGXDX-t1QefAsLKWuUJyWrpJLU67vGKY1EV1OwNYmBx2Hx-FA>
-    <xme:ezm8YlUfA9tlZNt6oyRfJUw0zhq-OWHnUmrqTc4mdY0SLY-c9kP2WPdcE6o6JUBqp
-    uhwxluA5HTJFPM>
-X-ME-Received: <xmr:ezm8YmINN55Ju4j31kOJdT407XDNfszZpC5IGOsk42UkyU9wfsPlQDrNSBEwqd1NBkAFM-qitkeNa3goPQreW9pqBepllg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudegledggeduucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvfevuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
-    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
-    htvghrnhepvddufeevkeehueegfedtvdevfefgudeifeduieefgfelkeehgeelgeejjeeg
-    gefhnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepih
-    guohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:ezm8YuEqsmoOHiWf204ufjVLTpO35jsbZon4O1HOTxGBtEFOrb7rQQ>
-    <xmx:ezm8YiUsEmIezBzEZDdHotolh32GWWw2XL9Hue1KY3QPCOTiVntsKw>
-    <xmx:ezm8YhOmaF4jTPoN_Ula136zmFMblkjnrFbJMDMcfymtFXqUx9QnsA>
-    <xmx:ezm8YkJvhCxfwfxnnthxYXZ4lqmirWBwIU4aDI0-mYZEjU95_He8UQ>
-Feedback-ID: i494840e7:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 29 Jun 2022 07:37:30 -0400 (EDT)
-Date:   Wed, 29 Jun 2022 14:37:27 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Vikas Gupta <vikas.gupta@broadcom.com>
-Cc:     jiri@nvidia.com, dsahern@kernel.org, stephen@networkplumber.org,
-        kuba@kernel.org, netdev@vger.kernel.org, edumazet@google.com,
-        michael.chan@broadcom.com, andrew.gospodarek@broadcom.com
-Subject: Re: [PATCH iproute2-next v1 0/2] devlink: add support to run
- selftests
-Message-ID: <Yrw5d9jqe8/JCIbj@shredder>
-References: <20220628164447.45202-1-vikas.gupta@broadcom.com>
+        with ESMTP id S233209AbiF2Lr2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 07:47:28 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51CF33F88A
+        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 04:47:26 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id ay16so32042715ejb.6
+        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 04:47:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=xAPX6GqWzgTnXl12HGmecePjsjgx6ysCX22LSso1BeM=;
+        b=EnWS/Dl8XbTDf+jSLd1nJPVDSXjV5bC2dmMFUGglOFtJrFWPVFyYLf+qGzycK1yJFu
+         Sbr1g+2kCBSF3eG9cJHss1htVShfUrQ7sVrQ3SbI0A+sxYwy9+xHSvL1FiJxbjuFieif
+         Y9NCjFeM9aJ7cgZWb7u0YfF5vHUuFtPV0XncepnOec84Ag87WEoHu+R63iXA/psnYjZP
+         S4dE9ikYDMT5nosxZ0mA469sSyytS7lECn92Pv1U7SZp0rOLCbdW/WoPSZkuY8HHQjho
+         f7bRq9HCRoF5fH8mU2QshQHmS+R9XElPcaJzT2dPXr1P3oXp3TnJwfTg9q3NI43Fs02F
+         PwjA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=xAPX6GqWzgTnXl12HGmecePjsjgx6ysCX22LSso1BeM=;
+        b=aFzg6e/FbvST/NiOYhSHaxr0w6QrC6WOYkwzaLQjJe2KnKP/2chmSfM1/LA4axZ3P5
+         SPE6X0hkeLXo7dUaCFQYCK7DEGi6PXVzqZ/+Kj711zOvQ41UkkjP2uF2o67wPyvOp0NR
+         JxG54zPvh8je8gajbFasy6sIKJMrff1TNF/ipsiI+08HPQoSiW4HzhWGs/hiiUCD4NHL
+         6WO8n1af4xD+z5LwgOGaeV3uzLkgMnVDb7mlvpiqPClLmM1ZabRB1iGsKCdI2Y/CiFSI
+         uxKYbG4mApnLVtq0n/CpApeOjcWYDJP79XBbgn1oMLbkr9FLtVFoxCcAZuPmkxB62p8B
+         l/MA==
+X-Gm-Message-State: AJIora9LjJKh2cMtmVgf2PwFo1pWDwyTV/+8uYNkbNZMd+GMfQqdP+6F
+        O9uNFFKT1DIeR/XIoHszGFooZA==
+X-Google-Smtp-Source: AGRyM1sv2hOcEkNfbv0oq815kjDoaUYRM+t1Gjr5y6BjgSJ6xYS51vzGqLXU1AeeLSyQzdk9F8apsA==
+X-Received: by 2002:a17:906:58cb:b0:722:fc1a:4fd with SMTP id e11-20020a17090658cb00b00722fc1a04fdmr2942793ejs.548.1656503244908;
+        Wed, 29 Jun 2022 04:47:24 -0700 (PDT)
+Received: from localhost ([85.163.43.78])
+        by smtp.gmail.com with ESMTPSA id s17-20020a1709060c1100b00722e52d043dsm7732684ejf.114.2022.06.29.04.47.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Jun 2022 04:47:24 -0700 (PDT)
+Date:   Wed, 29 Jun 2022 13:47:22 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Ido Schimmel <idosch@nvidia.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        petrm@nvidia.com, pabeni@redhat.com, edumazet@google.com,
+        mlxsw@nvidia.com, saeedm@nvidia.com
+Subject: Re: [patch net-next RFC 0/2] net: devlink: remove devlink big lock
+Message-ID: <Yrw7yl+hTbBuDFvU@nanopsycho>
+References: <20220627135501.713980-1-jiri@resnulli.us>
+ <YrnPqzKexfgNVC10@shredder>
+ <YrnS2tcgyI9Aqe+b@nanopsycho>
+ <YrqxHpvSuEkc45uM@shredder>
+ <YrworZb5yNdnMFDI@nanopsycho>
+ <YrwrKDAkR2xCAAWd@nanopsycho>
+ <Yrw3vz4+umAxXVrc@shredder>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220628164447.45202-1-vikas.gupta@broadcom.com>
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_NONE,
+In-Reply-To: <Yrw3vz4+umAxXVrc@shredder>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -73,10 +75,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 28, 2022 at 10:14:45PM +0530, Vikas Gupta wrote:
->  devlink/devlink.c            | 157 +++++++++++++++++++++++++++++++++++
->  include/uapi/linux/devlink.h |  24 ++++++
->  2 files changed, 181 insertions(+)
+Wed, Jun 29, 2022 at 01:30:07PM CEST, idosch@nvidia.com wrote:
+>On Wed, Jun 29, 2022 at 12:36:24PM +0200, Jiri Pirko wrote:
+>> Wed, Jun 29, 2022 at 12:25:49PM CEST, jiri@resnulli.us wrote:
+>> >Tue, Jun 28, 2022 at 09:43:26AM CEST, idosch@nvidia.com wrote:
+>> >>On Mon, Jun 27, 2022 at 05:55:06PM +0200, Jiri Pirko wrote:
+>> >>> Mon, Jun 27, 2022 at 05:41:31PM CEST, idosch@nvidia.com wrote:
+>> >>> >On Mon, Jun 27, 2022 at 03:54:59PM +0200, Jiri Pirko wrote:
+>> >>> >> From: Jiri Pirko <jiri@nvidia.com>
+>> >>> >> 
+>> >>> >> This is an attempt to remove use of devlink_mutex. This is a global lock
+>> >>> >> taken for every user command. That causes that long operations performed
+>> >>> >> on one devlink instance (like flash update) are blocking other
+>> >>> >> operations on different instances.
+>> >>> >
+>> >>> >This patchset is supposed to prevent one devlink instance from blocking
+>> >>> >another? Devlink does not enable "parallel_ops", which means that the
+>> >>> >generic netlink mutex is serializing all user space operations. AFAICT,
+>> >>> >this series does not enable "parallel_ops", so I'm not sure what
+>> >>> >difference the removal of the devlink mutex makes.
+>> >>> 
+>> >>> You are correct, that is missing. For me, as a side effect this patchset
+>> >>> resolved the deadlock for LC auxdev you pointed out. That was my
+>> >>> motivation for this patchset :)
+>> >>
+>> >>Given that devlink does not enable "parallel_ops" and that the generic
+>> >>netlink mutex is held throughout all callbacks, what prevents you from
+>> >>simply dropping the devlink mutex now? IOW, why can't this series be
+>> >>patch #1 and another patch that removes the devlink mutex?
+>> >
+>> >Yep, I think you are correct. We are currently working with Moshe on
+>> 
+>> Okay, I see the problem with what you suggested:
+>> devlink_pernet_pre_exit()
+>> There, devlink_mutex is taken to protect against simultaneous cmds
+>> from being executed. That will be fixed with reload conversion to take
+>> devlink->lock.
+>
+>OK, so this lock does not actually protect against simultaneous user
+>space operations (this is handled by the generic netlink mutex).
+>Instead, it protects against user space operations during netns
+>dismantle.
+>
+>IIUC, the current plan is:
+>
+>1. Get the devlink->lock rework done. Devlink will hold the lock for
+>every operation invocation and drivers will hold it while calling into
+>devlink via devl_lock().
+>
+>This means 'DEVLINK_NL_FLAG_NO_LOCK' is removed and the lock will also
+>be taken in netns dismantle.
+>
+>2. At this stage, the devlink mutex is only taken in devlink_register()
+>/ devlink_unregister() and some form of patch #1 will take care of that
+>so that this mutex can be removed.
+>
+>3. Enable "parallel_ops"
 
-Please update the man pages and bash completion
-(bash-completion/devlink) in the next version
+Yes, exactly. With devlink_mutex removal in between 2 and 3.
+
+>
+>?
