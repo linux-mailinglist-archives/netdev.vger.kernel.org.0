@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F28FD560265
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 16:18:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9135F560276
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 16:22:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231634AbiF2ORp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 10:17:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47920 "EHLO
+        id S232825AbiF2OWe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 10:22:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230219AbiF2ORo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 10:17:44 -0400
+        with ESMTP id S232511AbiF2OW3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 10:22:29 -0400
 Received: from smtpbg.qq.com (biz-43-154-54-12.mail.qq.com [43.154.54.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C5EB3152D;
-        Wed, 29 Jun 2022 07:17:39 -0700 (PDT)
-X-QQ-mid: bizesmtp83t1656512237tjzkwm5b
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47B5E1CB38;
+        Wed, 29 Jun 2022 07:22:24 -0700 (PDT)
+X-QQ-mid: bizesmtp85t1656512516torh9h9i
 Received: from localhost.localdomain ( [182.148.13.66])
         by bizesmtp.qq.com (ESMTP) with 
-        id ; Wed, 29 Jun 2022 22:17:14 +0800 (CST)
+        id ; Wed, 29 Jun 2022 22:21:53 +0800 (CST)
 X-QQ-SSF: 0100000000200060C000C00A0000000
-X-QQ-FEAT: dLvv507TVpQIdL/x1ynPIdYqh6JthnLEqmtvph9RisMObet0dM2sNVX/jylm1
-        QZca3Y4gSGvPO5ZZAdzDnJvziKtQ7OYo4kdUrkEX7iM5G7OOuvcG0K+3tah9eUtxCopP0d7
-        oC4Jv5ydP8ZtCDPteglIWbEPjPUj97i8+Ri9ptm5dZv8LpnbSCENnhQGuz6XqPGEPHxk1Ce
-        axK54lvVY+DOOXfitZqbb4TEY0VtKllR7ZgL/8QJRwgQw0t7mAsuTodhNP8WqYhMQmEoJho
-        ms590Gl0hZSvYzPYmd+K9p2Ppb61e8iq7zUj5/J8dDGwa5fHDhD1I9OzLyR9aFwl4uNrNzL
-        4246+LHzORggWq1Xxg=
+X-QQ-FEAT: c0j92dw6IxKSeiEhrm+PtPxktskjXZcL4jlLKZjz7sO7OU5wzT87U/K4i93M1
+        SIXryARAEXvXxv8ewgPkqT8uNecc8E29dDtO47pw+aNrj8xqVlE/kxAyWin8eWOUZuZPioZ
+        Hy8wKoBUlufjdCMEqtDETjL9Z2pK+a1WvihZ52kZzAZ6Suotgy44vC3to4tP0DUQzObdo2B
+        qfKmyv7xsWx49nK79I1zbk4IxNW0jycTMfX6mLJzR8f8FmwPyt06ivN/9p3rVz/GEO3CpKA
+        Aj6PBwEXzTTC1C7xwUjtV1AuLnVB1+gd4TviIieLQ9ClUfjaKhFp7pfKAeaK/KUOetFvPum
+        ZWcs3f2roAscvhvtgg=
 X-QQ-GoodBg: 0
 From:   Jilin Yuan <yuanjilin@cdjrlc.com>
 To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         pabeni@redhat.com
 Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Jilin Yuan <yuanjilin@cdjrlc.com>
-Subject: [PATCH] intel/igb:fix repeated words in comments
-Date:   Wed, 29 Jun 2022 22:17:08 +0800
-Message-Id: <20220629141708.13292-1-yuanjilin@cdjrlc.com>
+Subject: [PATCH] intel/igbvf:fix repeated words in comments
+Date:   Wed, 29 Jun 2022 22:21:47 +0800
+Message-Id: <20220629142147.15535-1-yuanjilin@cdjrlc.com>
 X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -48,59 +48,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Delete the redundant word 'the'.
-Delete the redundant word 'frames'.
-Delete the redundant word 'set'.
+Delete the redundant word 'on'.
 Delete the redundant word 'slot'.
 
 Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
 ---
- drivers/net/ethernet/intel/igb/e1000_82575.c | 2 +-
- drivers/net/ethernet/intel/igb/e1000_mac.c   | 2 +-
- drivers/net/ethernet/intel/igb/igb_main.c    | 4 ++--
- 3 files changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/intel/igbvf/igbvf.h  | 2 +-
+ drivers/net/ethernet/intel/igbvf/netdev.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/igb/e1000_82575.c b/drivers/net/ethernet/intel/igb/e1000_82575.c
-index cbe92fd23a70..8d6e44ee1895 100644
---- a/drivers/net/ethernet/intel/igb/e1000_82575.c
-+++ b/drivers/net/ethernet/intel/igb/e1000_82575.c
-@@ -2207,7 +2207,7 @@ s32 igb_write_phy_reg_82580(struct e1000_hw *hw, u32 offset, u16 data)
-  *  igb_reset_mdicnfg_82580 - Reset MDICNFG destination and com_mdio bits
-  *  @hw: pointer to the HW structure
-  *
-- *  This resets the the MDICNFG.Destination and MDICNFG.Com_MDIO bits based on
-+ *  This resets the MDICNFG.Destination and MDICNFG.Com_MDIO bits based on
-  *  the values found in the EEPROM.  This addresses an issue in which these
-  *  bits are not restored from EEPROM after reset.
-  **/
-diff --git a/drivers/net/ethernet/intel/igb/e1000_mac.c b/drivers/net/ethernet/intel/igb/e1000_mac.c
-index 1277c5c7d099..205d577bdbba 100644
---- a/drivers/net/ethernet/intel/igb/e1000_mac.c
-+++ b/drivers/net/ethernet/intel/igb/e1000_mac.c
-@@ -854,7 +854,7 @@ s32 igb_force_mac_fc(struct e1000_hw *hw)
- 	 *      1:  Rx flow control is enabled (we can receive pause
- 	 *          frames but not send pause frames).
- 	 *      2:  Tx flow control is enabled (we can send pause frames
--	 *          frames but we do not receive pause frames).
-+	 *          but we do not receive pause frames).
- 	 *      3:  Both Rx and TX flow control (symmetric) is enabled.
- 	 *  other:  No other values should be possible at this point.
+diff --git a/drivers/net/ethernet/intel/igbvf/igbvf.h b/drivers/net/ethernet/intel/igbvf/igbvf.h
+index 975eb47ee04d..57d39ee00b58 100644
+--- a/drivers/net/ethernet/intel/igbvf/igbvf.h
++++ b/drivers/net/ethernet/intel/igbvf/igbvf.h
+@@ -227,7 +227,7 @@ struct igbvf_adapter {
+ 
+ 	/* The VF counters don't clear on read so we have to get a base
+ 	 * count on driver start up and always subtract that base on
+-	 * on the first update, thus the flag..
++	 * the first update, thus the flag..
  	 */
-diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-index 68be2976f539..85e8de511d35 100644
---- a/drivers/net/ethernet/intel/igb/igb_main.c
-+++ b/drivers/net/ethernet/intel/igb/igb_main.c
-@@ -1945,7 +1945,7 @@ static void igb_setup_tx_mode(struct igb_adapter *adapter)
- 		 * However, when we do so, no frame from queue 2 and 3 are
- 		 * transmitted.  It seems the MAX_TPKT_SIZE should not be great
- 		 * or _equal_ to the buffer size programmed in TXPBS. For this
--		 * reason, we set set MAX_ TPKT_SIZE to (4kB - 1) / 64.
-+		 * reason, we set MAX_ TPKT_SIZE to (4kB - 1) / 64.
- 		 */
- 		val = (4096 - 1) / 64;
- 		wr32(E1000_I210_DTXMXPKTSZ, val);
-@@ -9519,7 +9519,7 @@ static pci_ers_result_t igb_io_error_detected(struct pci_dev *pdev,
- 		igb_down(adapter);
+ 	struct e1000_vf_stats stats;
+ 	u64 zero_base;
+diff --git a/drivers/net/ethernet/intel/igbvf/netdev.c b/drivers/net/ethernet/intel/igbvf/netdev.c
+index 43ced78c3a2e..f4e91db89fe5 100644
+--- a/drivers/net/ethernet/intel/igbvf/netdev.c
++++ b/drivers/net/ethernet/intel/igbvf/netdev.c
+@@ -2537,7 +2537,7 @@ static pci_ers_result_t igbvf_io_error_detected(struct pci_dev *pdev,
+ 		igbvf_down(adapter);
  	pci_disable_device(pdev);
  
 -	/* Request a slot slot reset. */
