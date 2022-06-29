@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 46DA15602FA
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 16:34:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91DAD56031C
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 16:34:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233643AbiF2ObL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 10:31:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58358 "EHLO
+        id S233441AbiF2Oes (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 10:34:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233139AbiF2Oah (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 10:30:37 -0400
+        with ESMTP id S232106AbiF2Oep (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 10:34:45 -0400
 Received: from smtpbg.qq.com (unknown [43.155.67.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CDF41EC55;
-        Wed, 29 Jun 2022 07:30:32 -0700 (PDT)
-X-QQ-mid: bizesmtp86t1656513011th4nq7cj
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6C702EA28;
+        Wed, 29 Jun 2022 07:34:40 -0700 (PDT)
+X-QQ-mid: bizesmtp65t1656513261tfud432q
 Received: from localhost.localdomain ( [182.148.13.66])
         by bizesmtp.qq.com (ESMTP) with 
-        id ; Wed, 29 Jun 2022 22:30:09 +0800 (CST)
+        id ; Wed, 29 Jun 2022 22:34:18 +0800 (CST)
 X-QQ-SSF: 0100000000200060C000C00A0000000
-X-QQ-FEAT: ACkb0FcbxRk3MGc6ImTK9UmnAVdZePcX1z96KWehZyPgYCmwgwh4XGH0SK2vf
-        qQnDDf2BildBdjrHleiBlFKBB3otwxfXqb9gKI9UA0TeO1rvBd7wc4LUGIKswbKXozxVmcN
-        Y3X9btPWLkVVoF3+IzaSz2EH5BG3I7xkQN/CrEJ17zv6yGw5wbiEb6M72OU6111pi6x9cDs
-        00YhsHRbTtHx050+5bXFjt1OuiobZkfBeWXzKWJvebSnyguR7cSLSdkScGbpdRhY5ZRrYYn
-        Qn4b8dU9lTYyuuqsXkP5WfqpACzD6vovaIh9ESeTQL2AQLqYkjDMGmDLBp3dSnA8aKG6pTj
-        vTd36H/Nk/pswRq0hk=
+X-QQ-FEAT: ZHWZeLXy+8dy2IPb5OrWCa7omzZetmReOw5KuLhq7YQxXkAo7SR+PHOoaDvKU
+        tUFDiqbQI3GkZT6YgApcsrxmjwJb4uLxtqV5Bv53DZuEAfYK8/CmwXTobt/862lIH1d+uJd
+        1Z0J5647yZEtbmnfxYC6RUG6d81i9snZXXXqzVaQXlTNYO0Y12vsqTKcoxlfu2J24kqdCfs
+        wym840SOmrv5ONKjCnXGJUb4XvOdRfvOUg9Mb1m/ZtPVov2lPVJtJV7nTFhahNiEOIKUUql
+        bwMfSz+tTaBFQM9yexG53DRBM2ZNOpoWzKhb856YeuRIVmIpdG0/cNW1oh4QY+Kzparago+
+        j2OEtkB5XTeVNml37g=
 X-QQ-GoodBg: 0
 From:   Jilin Yuan <yuanjilin@cdjrlc.com>
 To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         pabeni@redhat.com
 Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Jilin Yuan <yuanjilin@cdjrlc.com>
-Subject: [PATCH] intel/ixgbe:fix repeated words in comments
-Date:   Wed, 29 Jun 2022 22:29:52 +0800
-Message-Id: <20220629142952.18664-1-yuanjilin@cdjrlc.com>
+Subject: [PATCH] intel/ixgbevf:fix repeated words in comments
+Date:   Wed, 29 Jun 2022 22:34:01 +0800
+Message-Id: <20220629143401.20380-1-yuanjilin@cdjrlc.com>
 X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -48,50 +48,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Delete the redundant word 'for'.
-Delete the redundant word 'the'.
+Delete the redundant word 'slot'.
+Delete the redundant word 'we'.
 
 Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
 ---
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 2 +-
- drivers/net/ethernet/intel/ixgbe/ixgbe_x550.c | 4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c | 2 +-
+ drivers/net/ethernet/intel/ixgbevf/vf.c           | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-index 77c2e70b0860..23b7e1d9652e 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-@@ -5161,7 +5161,7 @@ static int ixgbe_hpbthresh(struct ixgbe_adapter *adapter, int pb)
+diff --git a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
+index 55b87bc3a938..2f12fbe229c1 100644
+--- a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
++++ b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
+@@ -4787,7 +4787,7 @@ static pci_ers_result_t ixgbevf_io_error_detected(struct pci_dev *pdev,
+ 		pci_disable_device(pdev);
+ 	rtnl_unlock();
+ 
+-	/* Request a slot slot reset. */
++	/* Request a slot reset. */
+ 	return PCI_ERS_RESULT_NEED_RESET;
  }
  
- /**
-- * ixgbe_lpbthresh - calculate low water mark for for flow control
-+ * ixgbe_lpbthresh - calculate low water mark for flow control
-  *
-  * @adapter: board private structure to calculate for
-  * @pb: packet buffer to calculate
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_x550.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_x550.c
-index e4b50c7781ff..35c2b9b8bd19 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_x550.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_x550.c
-@@ -1737,7 +1737,7 @@ static s32 ixgbe_setup_sfi_x550a(struct ixgbe_hw *hw, ixgbe_link_speed *speed)
-  * @speed: link speed
-  * @autoneg_wait_to_complete: unused
-  *
-- * Configure the the integrated PHY for native SFP support.
-+ * Configure the integrated PHY for native SFP support.
-  */
- static s32
- ixgbe_setup_mac_link_sfp_n(struct ixgbe_hw *hw, ixgbe_link_speed speed,
-@@ -1786,7 +1786,7 @@ ixgbe_setup_mac_link_sfp_n(struct ixgbe_hw *hw, ixgbe_link_speed speed,
-  * @speed: link speed
-  * @autoneg_wait_to_complete: unused
-  *
-- * Configure the the integrated PHY for SFP support.
-+ * Configure the integrated PHY for SFP support.
-  */
- static s32
- ixgbe_setup_mac_link_sfp_x550a(struct ixgbe_hw *hw, ixgbe_link_speed speed,
+diff --git a/drivers/net/ethernet/intel/ixgbevf/vf.c b/drivers/net/ethernet/intel/ixgbevf/vf.c
+index 68fc32e36e88..1641d00d8ed3 100644
+--- a/drivers/net/ethernet/intel/ixgbevf/vf.c
++++ b/drivers/net/ethernet/intel/ixgbevf/vf.c
+@@ -964,7 +964,7 @@ int ixgbevf_get_queues(struct ixgbe_hw *hw, unsigned int *num_tcs,
+ 	if (!err) {
+ 		msg[0] &= ~IXGBE_VT_MSGTYPE_CTS;
+ 
+-		/* if we we didn't get an ACK there must have been
++		/* if we didn't get an ACK there must have been
+ 		 * some sort of mailbox error so we should treat it
+ 		 * as such
+ 		 */
 -- 
 2.36.1
 
