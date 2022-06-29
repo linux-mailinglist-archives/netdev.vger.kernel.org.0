@@ -2,244 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B08A5605A4
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 18:20:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CA045605B3
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 18:23:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231735AbiF2QUN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 12:20:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34454 "EHLO
+        id S230045AbiF2QWL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 12:22:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229699AbiF2QUM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 12:20:12 -0400
-Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08728344C7
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 09:20:10 -0700 (PDT)
-Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-317741c86fdso153118367b3.2
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 09:20:10 -0700 (PDT)
+        with ESMTP id S229747AbiF2QWK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 12:22:10 -0400
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72A9135DF3
+        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 09:22:09 -0700 (PDT)
+Received: by mail-wm1-x334.google.com with SMTP id k129so8281593wme.0
+        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 09:22:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=EMPWdq/I+lPKqNd/fDVbNzWWr2RoFlkpAnrXoeK2nUo=;
-        b=NB4/yScx1TfL6ixPtfgy/J5tpPwta7VfoQ2jmjdwx9gIm2wCdug0MIP3ZpsXDsBDlj
-         34Jm7SWPIZq9pbmMBbOA4ZMAVTeLtz9nKQU4EWl/Vr6tzTB3b7erIxunLKl591/AUk3y
-         QGk9wbU/p7MVnCLrMBqSGFRShEwBBep+FZtauNgfwaxM8kiStUz1/yZzi55zIDkjlKwq
-         WipptdWhAbFn3xr1OKNKUlUz6NZQHgYKAcqsmISLGPdH88zX/9NeqOls2EU3Lbj1sV32
-         QjHJDfwtFXhkwluRt52y3VV5p0aGAx223ZI71613qK3obH7BYQSCa7w3f+YXBT6n+GYe
-         5S2g==
+        d=isovalent-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Ijpocm3vatH5kO+ZYUOc9TTjlnVNAZIcW9a/yBu6ItE=;
+        b=6QfwbhcmCIRs1J6nA6jB+X0ioyM/nOdbmTtw1TGv9YlEpSgVxTMJFnUuC4aCXZLMY0
+         i6RETTRSkURH4JR8kRMXMNmiweTZChS2WBWpcR3Y8lxTvkB92MPHHoqKrOgIZFlU1zV0
+         /KCG15N092mbxeDpvhzL4DT6iqrvMgkSVtOC0PvmyniK1/C8i81j46rbl5bNI2EkUmmS
+         NK2KFQWX0MJWgfhnz5S6YpedRCo0vA+I6k9O5cdQbrdumW+zi6X5beT5UcXDjuoFqWl+
+         WUj05AtBDaU+bX7DDU2mn6veE5xXf9L5PqeNjW1PGkW6VJPBuZBc3Fr/4mtxsmEL3GlH
+         VJOA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=EMPWdq/I+lPKqNd/fDVbNzWWr2RoFlkpAnrXoeK2nUo=;
-        b=1vwWcEZkplOURFcX1xDNmTm94b5q1XvjhV0Iio/H654TRuSeMVpf01xlsVFM6EoV+W
-         oWD5lxbWiNdPfPh9sTDLRQiuWgMlRnfv128n0prRr7uzSUWlNFGdyaXCioUGRiNKt3/f
-         CQRsiqiwCAtiKzinVE/3U6JSZCvCNTARCvAoLwAwYIOo7sJWWpBT7AdrDHunxRCz9sms
-         mM+dhf+E4bgph6lC+R3oc53DmPfW61EJG5vYn/LMBY5MowCB8FLbK7Q5v5bmNCfGlKLN
-         HJBH7xfY66+vggiZYOju/xF3q3n2LQI1XESSJ9VrtBt9rgYTOpwaplJ+aZQBnKBgxD9g
-         VWhg==
-X-Gm-Message-State: AJIora8MhwXw7LFyLudNJdmpqmEFs4gkK8ZKsScFzpVcOE9/I8CocaEa
-        0Q/DKQ5EylgXs1tcpRkZUySsAa35r+h+qyscYYUqNQ==
-X-Google-Smtp-Source: AGRyM1sjfZI0HW3DtQnWfXaVj9Qvvy1yR0579oHZIZneFS4HpXPniV0tKqkxUln0qYFcOQiWfhxlB55fdK8whilV3vE=
-X-Received: by 2002:a81:e93:0:b0:317:8db7:aa8e with SMTP id
- 141-20020a810e93000000b003178db7aa8emr4860124ywo.55.1656519609796; Wed, 29
- Jun 2022 09:20:09 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Ijpocm3vatH5kO+ZYUOc9TTjlnVNAZIcW9a/yBu6ItE=;
+        b=2S0B7cudPsWdYMjnhLPze6yCxS7KA0DsmUoo78qpI33nh84BmNsdYemAIn3tRZQBc9
+         N0NxrESR57/wH3khqPzOdonsBslmC6m6Whfm4ZiAlg7acBlibU0xF397M/zTglzaY36i
+         Ok0yhpSs1jpJHY9QS7E8NYGM2WakGcELCccqIMSvNCYhJKt3RW0z6hiLkvuIHcO/l6HY
+         Y12wuxhNuvV0y02SIzI6uDzbVEk+BgQLLfD+fiLyu1qoKwW9QTZzrGxq5h4kfFBugzG2
+         oS4MdNjeUvX12VXaP8yrY7maoEC1x00M55Ub4kut/8Zb/BA62f53a9niCm3SHWyxyAAn
+         owtQ==
+X-Gm-Message-State: AJIora91LjeIMUuvWbhN4tV0p2VZnqfZ3qMUEo4jctjAEbibzQCsoBUI
+        c0v7BLTP0uDuppwJrg9eGM535w==
+X-Google-Smtp-Source: AGRyM1uOs8/d5+zKxZTiwBOush36fLvJcaIOeFgJWDSwKuIMeNRn3DDJU8QII8xrEdZPiBCpRwXcUw==
+X-Received: by 2002:a05:600c:198e:b0:3a1:6db7:fdd0 with SMTP id t14-20020a05600c198e00b003a16db7fdd0mr3314140wmq.14.1656519728042;
+        Wed, 29 Jun 2022 09:22:08 -0700 (PDT)
+Received: from [192.168.178.21] ([51.155.200.13])
+        by smtp.gmail.com with ESMTPSA id w8-20020a1cf608000000b0039c5a765388sm3744476wmc.28.2022.06.29.09.22.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 29 Jun 2022 09:22:07 -0700 (PDT)
+Message-ID: <14bdc764-a129-35f6-bacc-6f517b259a5c@isovalent.com>
+Date:   Wed, 29 Jun 2022 17:22:06 +0100
 MIME-Version: 1.0
-References: <20220629093752.1935215-1-edumazet@google.com> <20220629091750.1f0dc8ed@kernel.org>
-In-Reply-To: <20220629091750.1f0dc8ed@kernel.org>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 29 Jun 2022 18:19:58 +0200
-Message-ID: <CANn89iJxAL5v0FtkaRXjDH--PeTB7MoqV1Y16YQoOgDUCNXjmw@mail.gmail.com>
-Subject: Re: [PATCH net] net: tun: do not call napi_disable() twice
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        Petar Penkov <ppenkov@aviatrix.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.0
+Subject: Re: [PATCH bpf-next 4/4] bpftool: Show also the name of type
+ BPF_OBJ_LINK
+Content-Language: en-GB
+To:     Yafang Shao <laoar.shao@gmail.com>, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org
+References: <20220629154832.56986-1-laoar.shao@gmail.com>
+ <20220629154832.56986-5-laoar.shao@gmail.com>
+From:   Quentin Monnet <quentin@isovalent.com>
+In-Reply-To: <20220629154832.56986-5-laoar.shao@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 29, 2022 at 6:17 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Wed, 29 Jun 2022 09:37:52 +0000 Eric Dumazet wrote:
-> > syzbot reported a hang in tun_napi_disable() while RTNL is held.
-> >
-> > Because tun.c logic is complicated, I chose to:
-> >
-> > 1) rename tun->napi_enabled to tun->napi_configured
-> >
-> > 2) Add a new boolean, tracking if tun->napi is enabled or not.
->
-> Not a huge surprise TBH :S
->
-> Is there a repro?
+On 29/06/2022 16:48, Yafang Shao wrote:
+> For example,
+> /sys/fs/bpf/maps.debug is a bpf link, when you run `bpftool map show` to
+> show it,
+> - before
+>   $ bpftool map show pinned /sys/fs/bpf/maps.debug
+>   Error: incorrect object type: unknown
+> - after
+>   $ bpftool map show pinned /sys/fs/bpf/maps.debug
+>   Error: incorrect object type: link
+> 
+> Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
+> ---
+>  tools/bpf/bpftool/common.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/tools/bpf/bpftool/common.c b/tools/bpf/bpftool/common.c
+> index a0d4acd7c54a..5e979269c89a 100644
+> --- a/tools/bpf/bpftool/common.c
+> +++ b/tools/bpf/bpftool/common.c
+> @@ -251,6 +251,7 @@ const char *get_fd_type_name(enum bpf_obj_type type)
+>  		[BPF_OBJ_UNKNOWN]	= "unknown",
+>  		[BPF_OBJ_PROG]		= "prog",
+>  		[BPF_OBJ_MAP]		= "map",
+> +		[BPF_OBJ_LINK]		= "link",
+>  	};
+>  
+>  	if (type < 0 || type >= ARRAY_SIZE(names) || !names[type])
 
-Yes, here it is:
+Reviewed-by: Quentin Monnet <quentin@isovalent.com>
 
-// autogenerated by syzkaller (https://github.com/google/syzkaller)
-
-#define _GNU_SOURCE
-
-#include <dirent.h>
-#include <endian.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <signal.h>
-#include <stdarg.h>
-#include <stdbool.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/prctl.h>
-#include <sys/stat.h>
-#include <sys/syscall.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <time.h>
-#include <unistd.h>
-
-static void sleep_ms(uint64_t ms)
-{
-  usleep(ms * 1000);
-}
-
-static uint64_t current_time_ms(void)
-{
-  struct timespec ts;
-  if (clock_gettime(CLOCK_MONOTONIC, &ts))
-    exit(1);
-  return (uint64_t)ts.tv_sec * 1000 + (uint64_t)ts.tv_nsec / 1000000;
-}
-
-static bool write_file(const char* file, const char* what, ...)
-{
-  char buf[1024];
-  va_list args;
-  va_start(args, what);
-  vsnprintf(buf, sizeof(buf), what, args);
-  va_end(args);
-  buf[sizeof(buf) - 1] = 0;
-  int len = strlen(buf);
-  int fd = open(file, O_WRONLY | O_CLOEXEC);
-  if (fd == -1)
-    return false;
-  if (write(fd, buf, len) != len) {
-    int err = errno;
-    close(fd);
-    errno = err;
-    return false;
-  }
-  close(fd);
-  return true;
-}
-
-static void kill_and_wait(int pid, int* status)
-{
-  kill(-pid, SIGKILL);
-  kill(pid, SIGKILL);
-  for (int i = 0; i < 100; i++) {
-    if (waitpid(-1, status, WNOHANG | __WALL) == pid)
-      return;
-    usleep(1000);
-  }
-  DIR* dir = opendir("/sys/fs/fuse/connections");
-  if (dir) {
-    for (;;) {
-      struct dirent* ent = readdir(dir);
-      if (!ent)
-        break;
-      if (strcmp(ent->d_name, ".") == 0 || strcmp(ent->d_name, "..") == 0)
-        continue;
-      char abort[300];
-      snprintf(abort, sizeof(abort), "/sys/fs/fuse/connections/%s/abort",
-               ent->d_name);
-      int fd = open(abort, O_WRONLY);
-      if (fd == -1) {
-        continue;
-      }
-      if (write(fd, abort, 1) < 0) {
-      }
-      close(fd);
-    }
-    closedir(dir);
-  } else {
-  }
-  while (waitpid(-1, status, __WALL) != pid) {
-  }
-}
-
-static void setup_test()
-{
-  prctl(PR_SET_PDEATHSIG, SIGKILL, 0, 0, 0);
-  setpgrp();
-  write_file("/proc/self/oom_score_adj", "1000");
-}
-
-static void execute_one(void);
-
-#define WAIT_FLAGS __WALL
-
-static void loop(void)
-{
-  int iter = 0;
-  for (;; iter++) {
-    int pid = fork();
-    if (pid < 0)
-      exit(1);
-    if (pid == 0) {
-      setup_test();
-      execute_one();
-      exit(0);
-    }
-    int status = 0;
-    uint64_t start = current_time_ms();
-    for (;;) {
-      if (waitpid(-1, &status, WNOHANG | WAIT_FLAGS) == pid)
-        break;
-      sleep_ms(1);
-      if (current_time_ms() - start < 5000)
-        continue;
-      kill_and_wait(pid, &status);
-      break;
-    }
-  }
-}
-
-uint64_t r[1] = {0xffffffffffffffff};
-
-void execute_one(void)
-{
-  intptr_t res = 0;
-  memcpy((void*)0x20000100, "/dev/net/tun\000", 13);
-  res = syscall(__NR_openat, 0xffffffffffffff9cul, 0x20000100ul, 0ul, 0ul);
-  if (res != -1)
-    r[0] = res;
-  memcpy((void*)0x20000040, "netpci0\000\000\000\000\000\000\000\000\000", 16);
-  *(uint16_t*)0x20000050 = 0x2512;
-  syscall(__NR_ioctl, r[0], 0x400454ca, 0x20000040ul);
-  memcpy((void*)0x200001c0, "caif0\000\000\000\000\000\000\000\000\000\000\000",
-         16);
-  *(uint16_t*)0x200001d0 = 0x400;
-  syscall(__NR_ioctl, r[0], 0x400454d9, 0x200001c0ul);
-  syscall(__NR_ioctl, r[0], 0x401054d5, 0ul);
-}
-int main(void)
-{
-  syscall(__NR_mmap, 0x1ffff000ul, 0x1000ul, 0ul, 0x32ul, -1, 0ul);
-  syscall(__NR_mmap, 0x20000000ul, 0x1000000ul, 7ul, 0x32ul, -1, 0ul);
-  syscall(__NR_mmap, 0x21000000ul, 0x1000ul, 0ul, 0x32ul, -1, 0ul);
-  loop();
-  return 0;
-}
+Thanks!
