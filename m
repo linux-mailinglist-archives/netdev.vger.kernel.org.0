@@ -2,231 +2,237 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 28577560DBB
-	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 01:52:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DCF78560DC0
+	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 01:54:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230229AbiF2XwV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 19:52:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56280 "EHLO
+        id S231218AbiF2Xyu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 19:54:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230112AbiF2XwR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 19:52:17 -0400
-Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94F1F21E07
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 16:52:16 -0700 (PDT)
-Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-31772f8495fso163696787b3.4
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 16:52:16 -0700 (PDT)
+        with ESMTP id S229838AbiF2Xyt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 19:54:49 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2120.outbound.protection.outlook.com [40.107.244.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2E0B248C4;
+        Wed, 29 Jun 2022 16:54:48 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dKvPwFwTQppIDYt8xYM+dDblD6IIwreMTvmXluNbSpWT9E9N8f6nTJG+UHH7L/cqgg9nOBP0NOidubycbqR2dlld47IE8kodFwFM3hi1AiqbEFuFwXK3ClgyQ/ZVyKMr8CF++cn5uccV/9GF7OyBsMxXa0SAqZ5tEuDCxm1e8hO8YYmVzWDoxM486373ZVfOhC3i9eUrcWjHW5vwbD+1V1eYjNx+vjm7qrG4NxqQ5Oe8eIakRv+fXYwtNMXrerxTK+7VsVzd5pYxUmyxwvHI9wqlwZzaMQWtAoXlzcD/USbnYKFsbxIC5THtHJ7pxuKgIt9f1FOVlh2oxRSQXPQWzQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=MM7Q0wZ9EV8oVX1hKXAbFxwh1/CidJgDXyNrtpUKkz8=;
+ b=XAIfKACt6UOkPmz3yJdmQtQU0eSUhHQre0w+zBYX4wQpfkp6UYoWeyQavuZOxAw1Kmg29QVaoylhHNFiPfKD0nFYDbcYX+w3spW7nMrGH4CkW4wAy01UoliSPPB6lF2wU+25Zx0V6rOlPVAo6A3Y6xuHPJkXFogwj0jpOTqGu2zr7yqqvHIhRM5hAoveedsRM3je6r4Nz073kJBwH2FzYRAr9rF5C7yd5n40V01G1F2Im82rWrs4HIwX1j/cI4/++Sgw4rxqfNzWxQqlPN5KRiEI23ALrzJeEWhL4SD/nGNDGdV5tJJScGfQkdH7E8bHzYVFwr0m22euuV9292eXIA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=in-advantage.com; dmarc=pass action=none
+ header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=jj2bErexLgV1A9YIdvzx3PGjusAMI02AE7tzIDJ1M5A=;
-        b=Y2Tu2OdDzMgyWgz7uI6wnDGVdXiBPwT0tk13f7mVdOKDysVRR/kbruRKXKz2I5+Mni
-         GQx6RMKlgx3jTU8tqKusqnJzX0RL/HtsP7Km6NeANpCcKuitYurgmkGIZxyd81D0b7c4
-         M6hgkp/CS/Lan4c8MCYn+6RBduyK3MXC1Q5hpln09l+yFeWTrPqOilPtanfcysyDmduD
-         1QqYZFTcDH7Rj6fKdLgMxiOspYiBUK9DkBCSjd2QsNvE7OGJUY1fr6YAUMEzUMi16PcV
-         Pr19C5xIMVz6otGKDdAXazhClNibtSR2AR9TjfOL7WIpf1a3vQmUpvWxoW405WHuZuXJ
-         zzZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jj2bErexLgV1A9YIdvzx3PGjusAMI02AE7tzIDJ1M5A=;
-        b=SYy8i+VtzTbM+QS8pQtm5Rgk83tZFXr4KQuyop5XmQEicBstfCGLwv6CPG42S5mjjE
-         ZFOOHXzXFnGFkd12M9h5U6R9NadNnc4oU8zSk2mi7hZk7O67v3GkYClkiKwz/UjDRuwq
-         5SQUnZ8aMpfTXdHD/AUHk6BGrqKzfIUKBWbNIgodaS7msN8XrMsr5fWMkqXfIaPbVVnh
-         5ULoOpXYYAE/warqDmy/fBvH1sn2JKMYkdkD6rD4Kb7G1BMyVzwuSsWjq5eyUAWCDT6O
-         y/t0wbvDF9bJWuS9zuDraE7zI79Yy6Xu1ILEc+nWSlLlmnsDhbQFD2jOvBndjNBRUTt8
-         e9Kw==
-X-Gm-Message-State: AJIora9yx4zgO/55/EbDHdehUuIf7PEfB9Sn/mm0WaPeTuhcV5DhEO/U
-        yYm3bHFv27q2fNUalPozxM9yunrZKmlW5m4HifTu
-X-Google-Smtp-Source: AGRyM1v1n7EWs3fcbJobS/0qoUyUpaOGXwj1JxcVbNWxYIvJDEF/meItbXW0LeimAccioancoaiWdGtPrhVNyLhYnGY=
-X-Received: by 2002:a81:8d08:0:b0:317:a4cd:d65d with SMTP id
- d8-20020a818d08000000b00317a4cdd65dmr6750642ywg.329.1656546735690; Wed, 29
- Jun 2022 16:52:15 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220629161020.GA24891@lst.de> <Yrx6EVHtroXeEZGp@zx2c4.com>
- <20220629161527.GA24978@lst.de> <Yrx8/Fyx15CTi2zq@zx2c4.com>
- <20220629163007.GA25279@lst.de> <Yrx/8UOY+J8Ao3Bd@zx2c4.com>
- <YryNQvWGVwCjJYmB@zx2c4.com> <Yryic4YG9X2/DJiX@google.com>
- <Yry6XvOGge2xKx/n@zx2c4.com> <CAC_TJve_Jk0+XD7VeSJVvJq4D9ZofnH69B4QZv2LPT4X3KNfeg@mail.gmail.com>
- <YrzaCRl9rwy9DgOC@zx2c4.com>
-In-Reply-To: <YrzaCRl9rwy9DgOC@zx2c4.com>
-From:   John Stultz <jstultz@google.com>
-Date:   Wed, 29 Jun 2022 16:52:05 -0700
-Message-ID: <CANDhNCpRzzULaGmEGCbbJgVinA0pJJB-gOP9AY0Hy488n9ZStA@mail.gmail.com>
-Subject: Re: [PATCH] remove CONFIG_ANDROID
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     Kalesh Singh <kaleshsingh@google.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        =?UTF-8?B?QXJ2ZSBIasO4bm5ldsOlZw==?= <arve@android.com>,
-        Todd Kjos <tkjos@android.com>,
-        Martijn Coenen <maco@android.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Hridya Valsaraju <hridya@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        "Theodore Ts'o" <tytso@mit.edu>,
+ d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=MM7Q0wZ9EV8oVX1hKXAbFxwh1/CidJgDXyNrtpUKkz8=;
+ b=Z9oOVK4rDPsnrqaWQSwNh2aSECzf7O6SgV9oY7ujzyVCG3Oq2ilHgGPffPibntMpIJeohs3Or3hIXv2YE59gPn4DK+0HblpQP2iTMpBKl8VLQph6NErPpmMwsMuouIcu+MY8Pg205JoV/rbjt/UEMMzY/aofvdY0JTiJt6uChDA=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=in-advantage.com;
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37) by SJ0PR10MB5567.namprd10.prod.outlook.com
+ (2603:10b6:a03:3dd::22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.15; Wed, 29 Jun
+ 2022 23:54:43 +0000
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::712f:6916:3431:e74e]) by MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::712f:6916:3431:e74e%6]) with mapi id 15.20.5373.018; Wed, 29 Jun 2022
+ 23:54:43 +0000
+Date:   Wed, 29 Jun 2022 16:54:35 -0700
+From:   Colin Foster <colin.foster@in-advantage.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        "Alex Xu (Hello71)" <alex_y_xu@yahoo.ca>,
-        Paolo Abeni <pabeni@redhat.com>, Rob Herring <robh@kernel.org>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Shuah Khan <shuah@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, wireguard@lists.zx2c4.com,
-        netdev@vger.kernel.org, rcu <rcu@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>, sultan@kerneltoast.com,
-        android-kernel-team <android-kernel-team@google.com>,
-        Saravana Kannan <saravanak@google.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Wolfram Sang <wsa@kernel.org>,
+        Terry Bowman <terry.bowman@amd.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Arnd Bergmann <arnd@kernel.org>
+Subject: Re: [PATCH v11 net-next 1/9] mfd: ocelot: add helper to get regmap
+ from a resource
+Message-ID: <20220629235435.GA992734@euler>
+References: <20220628081709.829811-2-colin.foster@in-advantage.com>
+ <20220628160809.marto7t6k24lneau@skbuf>
+ <20220628172518.GA855398@euler>
+ <20220628184659.sel4kfvrm2z6rwx6@skbuf>
+ <20220628185638.dpm2w2rfc3xls7xd@skbuf>
+ <CAHp75Ve-MF=MafvwYbFvW330-GhZM9VKKUWmSVxUQ4r_8U1mJQ@mail.gmail.com>
+ <20220628195654.GE855398@euler>
+ <20220629175305.4pugpbmf5ezeemx3@skbuf>
+ <20220629203905.GA932353@euler>
+ <20220629230805.klgcklovkkunn5cm@skbuf>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220629230805.klgcklovkkunn5cm@skbuf>
+X-ClientProxiedBy: MW4PR03CA0118.namprd03.prod.outlook.com
+ (2603:10b6:303:b7::33) To MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 2edbd7b9-4025-4ef5-ecf3-08da5a2abcce
+X-MS-TrafficTypeDiagnostic: SJ0PR10MB5567:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: CFq6BDE8KPTXxXAl8iseB+MBY9d12EotqAPdhVziXv3EMPZ1MNmJDDTwB9LG0a212SZrl68Qj/xxgB89AFgrMNMKTtv1PAOCYgpp6UPMLm+OZhK9ISdS2m+4fkOHzAaasWEkG6Quv2RmxeLi0uxj4exbvoWtl5M7W/tsefRVDVQDfTY3jN6tZJduaY9x2VpoVudffju01pcYsF3/REbQ/PpnOKBlX2bQf9US32aoHexV91Kxul6sZ1yb65QZTTr72JOfVdz0gLmiGy3nzKBJcxgJGKKH8xdIBJqa5mWG09htiCxJWnwOyR6FNstK6T/iZiMsORxjkaDP6M5kyJT9pMehMYIA5eiC8c7YmSSia/ggq/844d1uAHikFxr94V2HHcIPr60cv8lUv1rlVbQRBnPLgA0WgRP48CVT/oKr+qu4XewavrEPW1L5UdZ8Dvjti7/0Pf5Rnic0rDq2ZUbS/bGx8IH2izWFRBHdRr5XZ/+FMQB/OfcHjjWAZ9ESV/HMg1FKpcCQVT+LxEXjDePEwrV4ZNR3118XuMcqiJr7PYAmb5OstNEDPaR4nYSZNFugga6qE5rCm9yP+nXAYFFcX0HaWJ1+/u2KM343VD88AjgfVAu4vh9sjEDojb6nHnLOfg8gmUnUP2siRaUc/9hDV/KVHrPgn616UVOCem6IJGPeSsP/JtEtfiye+5bJjuwO2zGY6wTZTJfAt4I65L+6HbENc36lQbTCapF408adtXDWcKoPPaYoxBMexKswqoUf1zcPeQLDkIsykYoS4VOf+W1OHaVVTpoPvao97Nje7vQ=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(136003)(346002)(366004)(39840400004)(376002)(396003)(33656002)(8936002)(66946007)(1076003)(66556008)(4326008)(186003)(7416002)(86362001)(83380400001)(6666004)(38100700002)(6916009)(478600001)(5660300002)(316002)(8676002)(54906003)(66476007)(26005)(52116002)(9686003)(6506007)(44832011)(41300700001)(6512007)(38350700002)(6486002)(2906002)(33716001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Bhx8S7iRCwNbrZBrmxXDMMWanO+xFejStn6bORAH8aIjRlWqXT31gk9JhQmz?=
+ =?us-ascii?Q?ho8I3S2knyb+d0xKpuEhhuXCZvqu3itnm4t3aMG8MZ5ltzEKdKQgnybo2H3I?=
+ =?us-ascii?Q?jH6HUrkhRMfB3HgmFufKHqlD0nc8PtPyUeSAk8ZzB+HAv9lEh0DZEyOmIP2R?=
+ =?us-ascii?Q?x9rINGv/FscOuuNkYX0z2r8yS3WLpwLuQesmOpKulPPd17ExbQzlelSWVJ3n?=
+ =?us-ascii?Q?wivsOLQKMwMqu1FPwGQFWzVRTvR3ZUG8M2HVD3f9qP+I6MsQVT6JwWUGz1KW?=
+ =?us-ascii?Q?fGA7kuUZT98Q6tBfOlIEFynWZNA6kDFYtqz+9mQDO2U1qVGOOOd5aLi6y8L/?=
+ =?us-ascii?Q?UScYQhwv0E6aM5FyQod1LPgFcQTePsb4zeHpietXf4Vu4Tx4L7tKql5+C9mF?=
+ =?us-ascii?Q?ffGu1P7c03fOuoWmd7Xhl/w10meTrUK+4Tyahiu+OS6OxGSd4XQmzq9MPIq8?=
+ =?us-ascii?Q?BMcVB7vilb0My9Yntj/X/iI744TRxmzcaeEAtU1YUsRVmm62C9OtL/8KMZuC?=
+ =?us-ascii?Q?/0uAV4mfV08cAZ1yC3rnK1cOlbWdctmbI2MgPHi+QY065pazMcyNtR8dTFpN?=
+ =?us-ascii?Q?1j+u1UXOtvFaJfMPjuUsy1T3etIrl5GHCq14eDI/g4isPtroKbqu000b4+xn?=
+ =?us-ascii?Q?PV8mC8FwSmnvwR6Ye4KlV3Qh3WsZd9Z23BXR/4scmun0yEEEsoz7rowxyT9z?=
+ =?us-ascii?Q?Bzhm/Dq/6eTUmXERVKnsE3A+90OUXPsc99qY19Or6UR/I6otkFWYXxe2VK9X?=
+ =?us-ascii?Q?Wl84mTyAEIQsBus3E8X/3MMLN39IPf48K9FOzp9TABrPLntE4QoC2pG5R42O?=
+ =?us-ascii?Q?Wb88uiJ/WEKpVzU4vnF0VLJGv2BeLTTb+/8MNhu5rT09/UXicOOhhiKLKwVu?=
+ =?us-ascii?Q?2Ocm27Y3cdmTPDlL2QNbccRji2YsVxPXKp1m2CwBUaDOYPoQDtBphDpU2XhO?=
+ =?us-ascii?Q?jF8fzGql7TpXoauNdkmw2KRbLu2FJ4b1qAyE8fP2xdwv2pA9+f2i73BV3NLX?=
+ =?us-ascii?Q?m6dQvoW3sTZhhB6ccHQqcgwtREYMxJX0HTzSUlyTwX3oi52wXQsS+Pu4LTCp?=
+ =?us-ascii?Q?Fn3H3kGQDc2pGeJ146CSCQrwtvktaIKz4l/tuwnqixN/5jtmDxSddJprljEz?=
+ =?us-ascii?Q?d6rKRCh8rrI4gceWJP0CDIxE4+ZqggGj3mhsO1+8Id8OkTjADD6DN7gIYNyy?=
+ =?us-ascii?Q?Kb40D9krsqwXVjoCyuzsKU+Jfe8f9RvvrvzHTtaBtxNI5Y+Xi2OnFFqGBx7r?=
+ =?us-ascii?Q?1zCwA4FNDQ2eWeXfOghK+pZNi/RXlcwFkTPtzvNniMV6xlAS+0yrg4XYUubo?=
+ =?us-ascii?Q?Wfd5fnwEhFEiy+MF8lGygPntV7CbjLuVOB/m4ksHA/zK7Ve42fLGUP38yVgX?=
+ =?us-ascii?Q?Z8gKrBxSrOFMjytP+QqYLxuemS5a7PN98aPmI028qfvLxVxAedDn15JzWkFe?=
+ =?us-ascii?Q?H0b1hMmeR9iL1iS+RKDLjJ4ohurGI2MRwylMy69KDCnNyU1DxSZ/dxHOxc7c?=
+ =?us-ascii?Q?Td7j+nvAnp/N93EzCJCMeajN9NszStHXw/evZFkYPe79HgQdhpdXcGq499VU?=
+ =?us-ascii?Q?RmvTxeBh1w7e92dRg9PvCbuXS78eog+vbqQuk56SdZeC4Lv1+dc3Cy2s9rMo?=
+ =?us-ascii?Q?0g=3D=3D?=
+X-OriginatorOrg: in-advantage.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2edbd7b9-4025-4ef5-ecf3-08da5a2abcce
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jun 2022 23:54:43.4462
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: r4l66/jQX3Aug0BZTeHcaUZfnN3674Vjwf4Hm5U1P4F7VHHThK6HFr78bjosRjjph3QOwgTJQ+3knbyHKt0M8tz4RFvOj64spwLspwm3ds8=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR10MB5567
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 29, 2022 at 4:02 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
->
-> Hi Kalesh,
->
-> On Wed, Jun 29, 2022 at 03:26:33PM -0700, Kalesh Singh wrote:
-> > Thanks for taking a look. I'm concerned holding the sys/power/state
-> > open would have unintentional side effects. Adding the
-> > /sys/power/userspace_autosuspender seems more appropriate. We don't
-> > have a use case for the refcounting, so would prefer the simpler
-> > writing '0' / '1' to toggle semantics.
->
-> Alright. So I've cooked you up some code that you can submit, since I
-> assume based on Christoph's bristliness that he won't do so. The below
-> adds /sys/power/pm_userspace_autosleeper, which you can write a 0 or a 1
-> into, and fixes up wireguard and random.c to use it. The code is
-> untested, but should generally be the correct thing, I think.
->
-> So in order of operations:
->
-> 1. You write a patch for SystemSuspend.cpp and post it on Gerrit.
->
-> 2. You take the diff below, clean it up or bikeshed the naming a bit or
->    do whatever there, and submit it to Rafael's PM tree, including as a
->    `Link: ...` this thread and the Gerrit link.
->
-> 3. When/if Rafael accepts the patch, you submit the Gerrit CL.
->
-> 4. When both have landed, Christoph moves forward with his
->    CONFIG_ANDROID removal.
->
-> Does that seem like a reasonable way forward?
->
-> Jason
->
-> diff --git a/drivers/char/random.c b/drivers/char/random.c
-> index e3dd1dd3dd22..c25e3be10d9c 100644
-> --- a/drivers/char/random.c
-> +++ b/drivers/char/random.c
-> @@ -756,7 +756,7 @@ static int random_pm_notification(struct notifier_block *nb, unsigned long actio
->
->         if (crng_ready() && (action == PM_RESTORE_PREPARE ||
->             (action == PM_POST_SUSPEND &&
-> -            !IS_ENABLED(CONFIG_PM_AUTOSLEEP) && !IS_ENABLED(CONFIG_ANDROID)))) {
-> +            !IS_ENABLED(CONFIG_PM_AUTOSLEEP) && !pm_userspace_autosleeper_enabled))) {
->                 crng_reseed();
->                 pr_notice("crng reseeded on system resumption\n");
->         }
-> diff --git a/drivers/net/wireguard/device.c b/drivers/net/wireguard/device.c
-> index aa9a7a5970fd..1983e0fadb6e 100644
-> --- a/drivers/net/wireguard/device.c
-> +++ b/drivers/net/wireguard/device.c
-> @@ -69,7 +69,7 @@ static int wg_pm_notification(struct notifier_block *nb, unsigned long action, v
->          * its normal operation rather than as a somewhat rare event, then we
->          * don't actually want to clear keys.
->          */
-> -       if (IS_ENABLED(CONFIG_PM_AUTOSLEEP) || IS_ENABLED(CONFIG_ANDROID))
-> +       if (IS_ENABLED(CONFIG_PM_AUTOSLEEP) || pm_userspace_autosleeper_enabled)
->                 return 0;
->
->         if (action != PM_HIBERNATION_PREPARE && action != PM_SUSPEND_PREPARE)
-> diff --git a/include/linux/suspend.h b/include/linux/suspend.h
-> index 70f2921e2e70..0acff26f87b4 100644
-> --- a/include/linux/suspend.h
-> +++ b/include/linux/suspend.h
-> @@ -498,6 +498,7 @@ extern void ksys_sync_helper(void);
->  /* drivers/base/power/wakeup.c */
->  extern bool events_check_enabled;
->  extern suspend_state_t pm_suspend_target_state;
-> +extern bool pm_userspace_autosleeper_enabled;
->
->  extern bool pm_wakeup_pending(void);
->  extern void pm_system_wakeup(void);
-> @@ -537,6 +538,8 @@ static inline void pm_system_irq_wakeup(unsigned int irq_number) {}
->  static inline void lock_system_sleep(void) {}
->  static inline void unlock_system_sleep(void) {}
->
-> +#define pm_userspace_autosleeper_enabled (false)
-> +
->  #endif /* !CONFIG_PM_SLEEP */
->
->  #ifdef CONFIG_PM_SLEEP_DEBUG
-> diff --git a/kernel/power/main.c b/kernel/power/main.c
-> index e3694034b753..08f32a281010 100644
-> --- a/kernel/power/main.c
-> +++ b/kernel/power/main.c
-> @@ -120,6 +120,23 @@ static ssize_t pm_async_store(struct kobject *kobj, struct kobj_attribute *attr,
->
->  power_attr(pm_async);
->
-> +bool pm_userspace_autosleeper_enabled;
-> +
-> +static ssize_t pm_userspace_autosleeper_show(struct kobject *kobj,
-> +                               struct kobj_attribute *attr, char *buf)
-> +{
-> +       return sprintf(buf, "%d\n", pm_userspace_autosleeper_enabled);
-> +}
-> +
-> +static ssize_t pm_userspace_autosleeper_store(struct kobject *kobj,
-> +                                   struct kobj_attribute *attr,
-> +                                   const char *buf, size_t n)
-> +{
-> +       return kstrtobool(buf, &pm_userspace_autosleeper_enabled);
-> +}
-> +
-> +power_attr(pm_userspace_autosleeper);
-> +
+On Wed, Jun 29, 2022 at 11:08:05PM +0000, Vladimir Oltean wrote:
+> On Wed, Jun 29, 2022 at 01:39:05PM -0700, Colin Foster wrote:
+> > I liked the idea of the MFD being "code complete" so if future regmaps
+> > were needed for the felix dsa driver came about, it wouldn't require
+> > changes to the "parent." But I think that was a bad goal - especially
+> > since MFD requires all the resources anyway.
+> > 
+> > Also at the time, I was trying a hybrid "create it if it doesn't exist,
+> > return it if was already created" approach. I backed that out after an
+> > RFC.
+> > 
+> > Focusing only on the non-felix drivers: it seems trivial for the parent
+> > to create _all_ the possible child regmaps, register them to the parent
+> > via by way of regmap_attach_dev().
+> > 
+> > At that point, changing things like drivers/pinctrl/pinctrl-ocelot.c to
+> > initalize like (untested, and apologies for indentation):
+> > 
+> > regs = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
+> > if (IS_ERR(regs)) {
+> >     map = dev_get_regmap(dev->parent, name);
+> > } else {
+> >     map = devm_regmap_init_mmio(dev, regs, config);
+> > }
+> 
+> Again, those dev_err(dev, "invalid resource\n"); prints you were
+> complaining about earlier are self-inflicted IMO, and caused exactly by
+> this pattern. I get why you prefer to call larger building blocks if
+> possible, but in this case, devm_platform_get_and_ioremap_resource()
+> calls exactly 2 sub-functions: platform_get_resource() and
+> devm_ioremap_resource(). The IS_ERR() that you check for is caused by
+> devm_ioremap_resource() being passed a NULL pointer, and same goes for
+> the print. Just call them individually, and put your dev_get_regmap()
+> hook in case platform_get_resource() returns NULL, rather than passing
+> NULL to devm_ioremap_resource() and waiting for that to fail.
 
-Jason: Thanks for raising this issue and sharing this patch to avoid
-breakage! I really appreciate it.
+I see that now. Hoping this next version removes a lot of this
+unnecessary complexity.
 
-My only concern with this change introducting a userspace knob set at
-runtime, vs a (hopefully more specific than _ANDROID) kernel config is
-that it's not exactly clear what the flag really means (which is the
-same issue CONFIG_ANDROID has). And more problematic, with this it
-would be an ABI.
+> 
+> > In that case, "name" would either be hard-coded to match what is in
+> > drivers/mfd/ocelot-core.c. The other option is to fall back to
+> > platform_get_resource(pdev, IORESOURCE_REG, 0), and pass in
+> > resource->name. I'll be able to deal with that when I try it. (hopefully
+> > this evening)
+> 
+> I'm not exactly clear on what you'd do with the REG resource once you
+> get it. Assuming you'd get access to the "reg = <0x71070034 0x6c>;"
+> from the device tree, what next, who's going to set up the SPI regmap
+> for you?
 
-So for this we probably need to have a very clear description of what
-userland is telling the kernel. Because I'm sure userlands behavior
-will drift and shift and we'll end up litigating what kind of behavior
-is really userspace_autosleeping vs userspace_sortof_autosleeping. :)
+The REG resource would only get the resource name, while the MFD core
+driver would set up the regmaps.
 
-Alternatively, maybe we should switch it to describe what behavior
-change we are wanting the kernel take (instead of it hinting to the
-kernel what to expect from userland's behavior)? That way it might be
-more specific.
+e.g. drivers/mfd/ocelot-core.c has (annotated):
+static const struct resource vsc7512_sgpio_resources[] = {
+    DEFINE_RES_REG_NAMED(start, size, "gcb_gpio") };
 
-Again, really appreciate your efforts here!
+Now, the drivers/pinctrl/pinctrl-ocelot.c expects resource 0 to be the
+gpio resource, and gets the resource by index.
 
-thanks
--john
+So for this there seem to be two options:
+Option 1:
+drivers/pinctrl/pinctrl-ocelot.c:
+res = platform_get_resource(pdev, IORESOURCE_REG, 0);
+map = dev_get_regmap(dev->parent, res->name);
+
+
+OR Option 2:
+include/linux/mfd/ocelot.h has something like:
+#define GCB_GPIO_REGMAP_NAME "gcb_gpio"
+
+and drivers/pinctrl/pinctrl-ocelot.c skips get_resource and jumps to:
+map = dev_get_regmap(dev->parent, GCB_GPIO_REGMAP_NAME);
+
+(With error checking, macro reuse, etc.)
+
+
+I like option 1, since it then makes ocelot-pinctrl.c have no reliance
+on include/linux/mfd/ocelot.h. But in both cases, all the regmaps are
+set up in advance during the start of ocelot_core_init, just before
+devm_mfd_add_devices is called.
+
+
+I should be able to test this all tonight.
+
+> 
+> > This seems to be a solid design that I missed! As you mention, it'll
+> > require changes to felix dsa... but not as much as I had feared. And I
+> > think it solves all my fears about modules to boot. This seems too good
+> > to be true - but maybe I was too deep and needed to take this step back.
