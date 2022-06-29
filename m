@@ -2,136 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9693B55FD3A
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 12:33:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5978255FD2C
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 12:33:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231860AbiF2K0E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 06:26:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36040 "EHLO
+        id S232010AbiF2K3i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 06:29:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232754AbiF2K0A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 06:26:00 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 572C632EDA
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 03:25:52 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id q6so31544936eji.13
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 03:25:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=sBJdrlguIXhimT4JZ53Dob2yg/bXuqOE77iYKfnTPKs=;
-        b=eoLLeh5w0sTfWv7/+jqxYAHniRIjcEhuR9jwHAVXrbUFAmUG5gSHLIagiWkFD5K1mx
-         9FHdnmwpCCIApEB8vVg01sJEsrrnRjCE+uk39L9GOfsSJXSTtMrN2cPf8t0A1V8CgyBE
-         i/dZExpsSe3wwrFFB2wUaqgpcpVWajCCZOlJSgm2GJ6eHphT4uLweGsKqsQnuBc5vV7B
-         5jJ5O89xRRLCiSw72RXCYU5C3950QGqPDsaVUG6x+8BQvv8038o9nbpSA542FlJPSNg4
-         jQrpYROw01wTMuBy0+YE/Xco5e3KVaqJquJkNaJatSeZT7wvK5kl3U/TLfR7u1DCO07G
-         AACw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=sBJdrlguIXhimT4JZ53Dob2yg/bXuqOE77iYKfnTPKs=;
-        b=RjHVo+smiIVXEeiw3rXW2CHuodfOkF84jLorsYNZoxkQkHABOIjOIwfkRzwzaS/cc0
-         D4bLn/Zm0V8Hog+8d1dd34O0UN4tLsLCvY+bxvpPDPS0B2AAbHlvHy6tJUapsFKzNF10
-         qhy1VG1VA4Krdr/NDs71vfic1wXU08bxB3pmbKW+rlbeouAEJxmfRHoPv8u9gDKjpsu+
-         vWGi1F8TmcDXUzSw1tPcUV2Nu1Vo5515Ua3SDYnO2ArEgLwcdvFzAjFYBkCXX1qnRydW
-         DBdALjkW+2lTu+3QwW2TA8eUsa9LZjPZgw9xz3KkuIaxqg4iqllAQrxccs++gDRb91zY
-         6RDw==
-X-Gm-Message-State: AJIora8OGb07rCxjWuGXCJUPQKrVyKdZR4cfduI1bigGLZCJr4E13pnW
-        ohBu3Q0Fw01u60qnW/BD2pajgP3rG3lbDNtbRtI=
-X-Google-Smtp-Source: AGRyM1v4D5U5sRiwcOhBYscA260PSi2WJ9EINaGy0aZaSfMf0QdKN9m/7IHl8qSWXXn9IqsrmGs/ag==
-X-Received: by 2002:a17:906:4fc6:b0:722:e730:2355 with SMTP id i6-20020a1709064fc600b00722e7302355mr2596397ejw.50.1656498350735;
-        Wed, 29 Jun 2022 03:25:50 -0700 (PDT)
-Received: from localhost ([85.163.43.78])
-        by smtp.gmail.com with ESMTPSA id jz2-20020a170906bb0200b00726314d0655sm7577368ejb.39.2022.06.29.03.25.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Jun 2022 03:25:50 -0700 (PDT)
-Date:   Wed, 29 Jun 2022 12:25:49 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Ido Schimmel <idosch@nvidia.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        petrm@nvidia.com, pabeni@redhat.com, edumazet@google.com,
-        mlxsw@nvidia.com, saeedm@nvidia.com
-Subject: Re: [patch net-next RFC 0/2] net: devlink: remove devlink big lock
-Message-ID: <YrworZb5yNdnMFDI@nanopsycho>
-References: <20220627135501.713980-1-jiri@resnulli.us>
- <YrnPqzKexfgNVC10@shredder>
- <YrnS2tcgyI9Aqe+b@nanopsycho>
- <YrqxHpvSuEkc45uM@shredder>
+        with ESMTP id S229828AbiF2K3h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 06:29:37 -0400
+Received: from smtp14.infineon.com (smtp14.infineon.com [IPv6:2a00:18f0:1e00:4::6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FDEE3DDCB;
+        Wed, 29 Jun 2022 03:29:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=infineon.com; i=@infineon.com; q=dns/txt; s=IFXMAIL;
+  t=1656498576; x=1688034576;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=6z7jW+xFVUIPRN6xY5/GMDD9lYAIYUh7aTFgycfE2KY=;
+  b=lLUEJcdx8FMANgi1s+66u7P8P+CawWgZtu7A0vOwMoYjq45TcoGLv6NS
+   VXdo6QjrOp7To9u1SBbdOOqAFBUnZ+Sz1CJaeZK+ToG7Q2i7ZJuYSd3dZ
+   g9Ot7jZW0NiIVQfXR1JYCrbxbzZ++HaYf5WTwXMH31ewXfOG7TBXRRjCg
+   o=;
+X-SBRS: None
+X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="128909583"
+X-IronPort-AV: E=Sophos;i="5.92,231,1650924000"; 
+   d="scan'208";a="128909583"
+Received: from unknown (HELO mucxv001.muc.infineon.com) ([172.23.11.16])
+  by smtp14.infineon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2022 12:29:33 +0200
+Received: from MUCSE803.infineon.com (MUCSE803.infineon.com [172.23.29.29])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mucxv001.muc.infineon.com (Postfix) with ESMTPS;
+        Wed, 29 Jun 2022 12:29:33 +0200 (CEST)
+Received: from MUCSE807.infineon.com (172.23.29.33) by MUCSE803.infineon.com
+ (172.23.29.29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Wed, 29 Jun
+ 2022 12:29:33 +0200
+Received: from [10.160.193.107] (172.23.8.247) by MUCSE807.infineon.com
+ (172.23.29.33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Wed, 29 Jun
+ 2022 12:29:32 +0200
+Message-ID: <174363bc-e8e5-debd-f8f6-a252d2bbddb9@infineon.com>
+Date:   Wed, 29 Jun 2022 12:29:31 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YrqxHpvSuEkc45uM@shredder>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 1/4] dt-bindings: net: broadcom-bluetooth: Add CYW55572 DT
+ binding
+Content-Language: en-US
+To:     Rob Herring <robh@kernel.org>
+CC:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        "Luiz Augusto von Dentz" <luiz.dentz@gmail.com>,
+        <linux-bluetooth@vger.kernel.org>
+References: <cover.1655723462.git.hakan.jansson@infineon.com>
+ <acd9e85b1ba82875e83ca68ae2aa62d828bfdfa3.1655723462.git.hakan.jansson@infineon.com>
+ <2c753258-b68e-b2ad-c4cc-f0a437769bc2@linaro.org>
+ <cb973352-36f9-8d70-95ac-5b63a566422c@infineon.com>
+ <20220627173436.GA2616639-robh@kernel.org>
+ <6e3a557a-fb0e-3b28-68f2-32804b071cfb@infineon.com>
+ <20220628224110.GD963202-robh@kernel.org>
+From:   Hakan Jansson <hakan.jansson@infineon.com>
+In-Reply-To: <20220628224110.GD963202-robh@kernel.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [172.23.8.247]
+X-ClientProxiedBy: MUCSE813.infineon.com (172.23.29.39) To
+ MUCSE807.infineon.com (172.23.29.33)
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, Jun 28, 2022 at 09:43:26AM CEST, idosch@nvidia.com wrote:
->On Mon, Jun 27, 2022 at 05:55:06PM +0200, Jiri Pirko wrote:
->> Mon, Jun 27, 2022 at 05:41:31PM CEST, idosch@nvidia.com wrote:
->> >On Mon, Jun 27, 2022 at 03:54:59PM +0200, Jiri Pirko wrote:
->> >> From: Jiri Pirko <jiri@nvidia.com>
->> >> 
->> >> This is an attempt to remove use of devlink_mutex. This is a global lock
->> >> taken for every user command. That causes that long operations performed
->> >> on one devlink instance (like flash update) are blocking other
->> >> operations on different instances.
->> >
->> >This patchset is supposed to prevent one devlink instance from blocking
->> >another? Devlink does not enable "parallel_ops", which means that the
->> >generic netlink mutex is serializing all user space operations. AFAICT,
->> >this series does not enable "parallel_ops", so I'm not sure what
->> >difference the removal of the devlink mutex makes.
->> 
->> You are correct, that is missing. For me, as a side effect this patchset
->> resolved the deadlock for LC auxdev you pointed out. That was my
->> motivation for this patchset :)
+On 6/29/2022 12:41 AM, Rob Herring wrote:
+> On Tue, Jun 28, 2022 at 04:03:57PM +0200, Hakan Jansson wrote:
+>> Hi Rob,
+>>
+>> On 6/27/2022 7:34 PM, Rob Herring wrote:
+>>> On Mon, Jun 20, 2022 at 04:06:25PM +0200, Hakan Jansson wrote:
+>>>> Hi Krzysztof,
+>>>>
+>>>> Thanks for replying.
+>>>>
+>>>> On 6/20/2022 2:32 PM, Krzysztof Kozlowski wrote:
+>>>>>> CYW55572 is a Wi-Fi + Bluetooth combo device from Infineon.
+>>>>>> Extend the binding with its DT compatible.
+>>>>>>
+>>>>>> Signed-off-by: Hakan Jansson <hakan.jansson@infineon.com>
+>>>>>> ---
+>>>>>>     Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml | 1 +
+>>>>>>     1 file changed, 1 insertion(+)
+>>>>>>
+>>>>>> diff --git a/Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml b/Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml
+>>>>>> index df59575840fe..71fe9b17f8f1 100644
+>>>>>> --- a/Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml
+>>>>>> +++ b/Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml
+>>>>>> @@ -24,6 +24,7 @@ properties:
+>>>>>>           - brcm,bcm43540-bt
+>>>>>>           - brcm,bcm4335a0
+>>>>>>           - brcm,bcm4349-bt
+>>>>>> +      - infineon,cyw55572-bt
+>>>>> Patch is okay, but just to be sure - is it entirely different device
+>>>>> from Infineon or some variant of Broadcom block?
+>>>> CYW55572 is a new device from Infineon. It is not the same as any Broadcom
+>>>> device.
+>>>>
+>>>>>     Are all existing
+>>>>> properties applicable to it as well?
+>>>> Yes, all existing properties are applicable.
+>>> Including 'brcm,bt-pcm-int-params'?
+>> Yes, 'brcm,bt-pcm-int-params' is also applicable to CYW55572.
+>>
+>>> I don't see a BT reset signal
+>>> either, but maybe that's not pinned out in the AzureWave module which
+>>> was the only documentation details I could find[1].
+>> That's correct, CYW55572 does not have a BT reset signal. Most of the
+>> existing listed compatible devices does not seem to have a BT reset signal
+>> either so I think this is in line with the intention of the existing
+>> document and driver implementation.
+>>
+>>> I think a separate doc will be better as it can be more precise as to
+>>> what's allowed or not. It's fine to reuse the same property names
+>>> though.
+>> I don't really see anything besides the optional BT reset property that
+>> would be changed in a separate doc.  As a separate doc would mean a
+>> duplication of data that would need to be maintained in two more or less
+>> identical docs, perhaps it would be better to modify the existing doc to
+>> clarify for which compatible devices that the BT reset property applies?
+>> (Which I believe are only these three: bcm20702a1, bcm4329-bt and
+>> bcm4330-bt)
+> Okay, I guess this is fine in the same doc. Any conditionals to tighten
+> up the constraints would be welcome.
 >
->Given that devlink does not enable "parallel_ops" and that the generic
->netlink mutex is held throughout all callbacks, what prevents you from
->simply dropping the devlink mutex now? IOW, why can't this series be
->patch #1 and another patch that removes the devlink mutex?
+> Rob
 
-Yep, I think you are correct. We are currently working with Moshe on
-conversion of commands that does not late devlink->lock (like health
-reporters and reload) to take devlink->lock. Once we have that, we can
-enable parallel_ops.
+Ok, I'll add a patch with conditionals and resubmit a new rev of the 
+patch series.
 
->
->> 
->> 
->> >
->> >The devlink mutex (in accordance with the comment above it) serializes
->> >all user space operations and accesses to the devlink devices list. This
->> >resulted in a AA deadlock in the previous submission because we had a
->> >flow where a user space operation (which acquires this mutex) also tries
->> >to register / unregister a nested devlink instance which also tries to
->> >acquire the mutex.
->> >
->> >As long as devlink does not implement "parallel_ops", it seems that the
->> >devlink mutex can be reduced to only serializing accesses to the devlink
->> >devices list, thereby eliminating the deadlock.
->> >
->> >> 
->> >> The first patch makes sure that the xarray that holds devlink pointers
->> >> is possible to be safely iterated.
->> >> 
->> >> The second patch moves the user command mutex to be per-devlink.
->> >> 
->> >> Jiri Pirko (2):
->> >>   net: devlink: make sure that devlink_try_get() works with valid
->> >>     pointer during xarray iteration
->> >>   net: devlink: replace devlink_mutex by per-devlink lock
->> >> 
->> >>  net/core/devlink.c | 256 ++++++++++++++++++++++++++++-----------------
->> >>  1 file changed, 161 insertions(+), 95 deletions(-)
->> >> 
->> >> -- 
->> >> 2.35.3
->> >> 
+/Håkan
