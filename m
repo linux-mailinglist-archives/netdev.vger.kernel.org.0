@@ -2,109 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CA045605B3
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 18:23:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FAC95605CA
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 18:27:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230045AbiF2QWL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 12:22:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35986 "EHLO
+        id S231165AbiF2QZt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 12:25:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229747AbiF2QWK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 12:22:10 -0400
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72A9135DF3
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 09:22:09 -0700 (PDT)
-Received: by mail-wm1-x334.google.com with SMTP id k129so8281593wme.0
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 09:22:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Ijpocm3vatH5kO+ZYUOc9TTjlnVNAZIcW9a/yBu6ItE=;
-        b=6QfwbhcmCIRs1J6nA6jB+X0ioyM/nOdbmTtw1TGv9YlEpSgVxTMJFnUuC4aCXZLMY0
-         i6RETTRSkURH4JR8kRMXMNmiweTZChS2WBWpcR3Y8lxTvkB92MPHHoqKrOgIZFlU1zV0
-         /KCG15N092mbxeDpvhzL4DT6iqrvMgkSVtOC0PvmyniK1/C8i81j46rbl5bNI2EkUmmS
-         NK2KFQWX0MJWgfhnz5S6YpedRCo0vA+I6k9O5cdQbrdumW+zi6X5beT5UcXDjuoFqWl+
-         WUj05AtBDaU+bX7DDU2mn6veE5xXf9L5PqeNjW1PGkW6VJPBuZBc3Fr/4mtxsmEL3GlH
-         VJOA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Ijpocm3vatH5kO+ZYUOc9TTjlnVNAZIcW9a/yBu6ItE=;
-        b=2S0B7cudPsWdYMjnhLPze6yCxS7KA0DsmUoo78qpI33nh84BmNsdYemAIn3tRZQBc9
-         N0NxrESR57/wH3khqPzOdonsBslmC6m6Whfm4ZiAlg7acBlibU0xF397M/zTglzaY36i
-         Ok0yhpSs1jpJHY9QS7E8NYGM2WakGcELCccqIMSvNCYhJKt3RW0z6hiLkvuIHcO/l6HY
-         Y12wuxhNuvV0y02SIzI6uDzbVEk+BgQLLfD+fiLyu1qoKwW9QTZzrGxq5h4kfFBugzG2
-         oS4MdNjeUvX12VXaP8yrY7maoEC1x00M55Ub4kut/8Zb/BA62f53a9niCm3SHWyxyAAn
-         owtQ==
-X-Gm-Message-State: AJIora91LjeIMUuvWbhN4tV0p2VZnqfZ3qMUEo4jctjAEbibzQCsoBUI
-        c0v7BLTP0uDuppwJrg9eGM535w==
-X-Google-Smtp-Source: AGRyM1uOs8/d5+zKxZTiwBOush36fLvJcaIOeFgJWDSwKuIMeNRn3DDJU8QII8xrEdZPiBCpRwXcUw==
-X-Received: by 2002:a05:600c:198e:b0:3a1:6db7:fdd0 with SMTP id t14-20020a05600c198e00b003a16db7fdd0mr3314140wmq.14.1656519728042;
-        Wed, 29 Jun 2022 09:22:08 -0700 (PDT)
-Received: from [192.168.178.21] ([51.155.200.13])
-        by smtp.gmail.com with ESMTPSA id w8-20020a1cf608000000b0039c5a765388sm3744476wmc.28.2022.06.29.09.22.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 29 Jun 2022 09:22:07 -0700 (PDT)
-Message-ID: <14bdc764-a129-35f6-bacc-6f517b259a5c@isovalent.com>
-Date:   Wed, 29 Jun 2022 17:22:06 +0100
+        with ESMTP id S229760AbiF2QZs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 12:25:48 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F03E313BA;
+        Wed, 29 Jun 2022 09:25:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id F3794CE2819;
+        Wed, 29 Jun 2022 16:25:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C294C34114;
+        Wed, 29 Jun 2022 16:25:41 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="pcAWGf38"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1656519940;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=68juHfv4ygcIaahoO6PbfPTLidvNwti4IiRxQ+0kt6w=;
+        b=pcAWGf38OzIMgyPi4OUE3lxDPN67fDsAwjtmVY65jBcFJHVgSvrOJLrXxTDJgzjglyzQ1u
+        2CSO9+yCjfBazL0tv1CtSmUtDTr4aCsE3ZzVZ02CULsAB0CdMri+FLuqwPNnCRQgJS+/oB
+        YOKOC2ccbkhGrCi051exLIABSKZ8eyM=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 1fb02a60 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Wed, 29 Jun 2022 16:25:40 +0000 (UTC)
+Date:   Wed, 29 Jun 2022 18:25:32 +0200
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Arve =?utf-8?B?SGrDuG5uZXbDpWc=?= <arve@android.com>,
+        Todd Kjos <tkjos@android.com>,
+        Martijn Coenen <maco@android.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Hridya Valsaraju <hridya@google.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Theodore Ts'o <tytso@mit.edu>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Alex Xu (Hello71)" <alex_y_xu@yahoo.ca>,
+        Paolo Abeni <pabeni@redhat.com>, Rob Herring <robh@kernel.org>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Shuah Khan <shuah@kernel.org>, linux-kernel@vger.kernel.org,
+        wireguard@lists.zx2c4.com, netdev@vger.kernel.org,
+        rcu@vger.kernel.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH] remove CONFIG_ANDROID
+Message-ID: <Yrx8/Fyx15CTi2zq@zx2c4.com>
+References: <20220629150102.1582425-1-hch@lst.de>
+ <20220629150102.1582425-2-hch@lst.de>
+ <Yrx5Lt7jrk5BiHXx@zx2c4.com>
+ <20220629161020.GA24891@lst.de>
+ <Yrx6EVHtroXeEZGp@zx2c4.com>
+ <20220629161527.GA24978@lst.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.0
-Subject: Re: [PATCH bpf-next 4/4] bpftool: Show also the name of type
- BPF_OBJ_LINK
-Content-Language: en-GB
-To:     Yafang Shao <laoar.shao@gmail.com>, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org
-References: <20220629154832.56986-1-laoar.shao@gmail.com>
- <20220629154832.56986-5-laoar.shao@gmail.com>
-From:   Quentin Monnet <quentin@isovalent.com>
-In-Reply-To: <20220629154832.56986-5-laoar.shao@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220629161527.GA24978@lst.de>
+X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 29/06/2022 16:48, Yafang Shao wrote:
-> For example,
-> /sys/fs/bpf/maps.debug is a bpf link, when you run `bpftool map show` to
-> show it,
-> - before
->   $ bpftool map show pinned /sys/fs/bpf/maps.debug
->   Error: incorrect object type: unknown
-> - after
->   $ bpftool map show pinned /sys/fs/bpf/maps.debug
->   Error: incorrect object type: link
+On Wed, Jun 29, 2022 at 06:15:27PM +0200, Christoph Hellwig wrote:
+> On Wed, Jun 29, 2022 at 06:13:05PM +0200, Jason A. Donenfeld wrote:
+> > Good! It sounds like you're starting to develop opinions on the matter.
 > 
-> Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
-> ---
->  tools/bpf/bpftool/common.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/tools/bpf/bpftool/common.c b/tools/bpf/bpftool/common.c
-> index a0d4acd7c54a..5e979269c89a 100644
-> --- a/tools/bpf/bpftool/common.c
-> +++ b/tools/bpf/bpftool/common.c
-> @@ -251,6 +251,7 @@ const char *get_fd_type_name(enum bpf_obj_type type)
->  		[BPF_OBJ_UNKNOWN]	= "unknown",
->  		[BPF_OBJ_PROG]		= "prog",
->  		[BPF_OBJ_MAP]		= "map",
-> +		[BPF_OBJ_LINK]		= "link",
->  	};
->  
->  	if (type < 0 || type >= ARRAY_SIZE(names) || !names[type])
+> No, I provide facts.
 
-Reviewed-by: Quentin Monnet <quentin@isovalent.com>
+Lol.
 
-Thanks!
+> Look at both the definition of the symbol, and
+> various distribution kernel that enabled it and think hard if they run
+> on "Android" hardware.  Not just primarily, but at all.
+
+There are two failure modes:
+
+1) Key clearing code is skipped when it shouldn't be.
+2) Key clearing code is run when it shouldn't be.
+
+You've identified (well, Alex in the other thread I think?) a case of
+(1). I was sort of thinking the fix to that would be that distros
+shouldn't enable that option, but it doesn't really matter to me.
+
+However, what I'm pointing out is the potential for (2). A (2)-style
+regression means that WireGuard basically doesn't work, because, for
+example, qcacld's packet-triggered wakeups tend to be too short to
+renegotiate a handshake.
+
+Anyway, instead of the slow drip of "facts" and ≤three sentence emails,
+can you just write up a paragraph that indicates this is safe to do (for
+both (1) and (2)) in your v+1?
+
+I don't really want to argue about it, because I don't have anything to
+argue about. Your change is probably fine. I'd just like it to be
+spelled out why this is safe to do from somebody who has looked into it.
+I have not looked into it, but it sounds like you have or are in the
+process of doing so. Just write down what you find, please.
+
+Jason
