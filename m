@@ -2,104 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CB1155FB6C
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 11:11:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BE0255FB8A
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 11:14:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231901AbiF2JJm convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 29 Jun 2022 05:09:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50976 "EHLO
+        id S232269AbiF2JOA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 05:14:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231613AbiF2JJk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 05:09:40 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2D044B3F
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 02:09:39 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-89-0bow6AXVPaapSvqyvZPCXg-1; Wed, 29 Jun 2022 10:09:36 +0100
-X-MC-Unique: 0bow6AXVPaapSvqyvZPCXg-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.36; Wed, 29 Jun 2022 10:09:35 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.036; Wed, 29 Jun 2022 10:09:35 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Alexander Lobakin' <alexandr.lobakin@intel.com>,
-        Albert Huang <huangjie.albert@bytedance.com>
-CC:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S229534AbiF2JOA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 05:14:00 -0400
+Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [217.70.183.193])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D356720F46;
+        Wed, 29 Jun 2022 02:13:57 -0700 (PDT)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id AF7EA24000A;
+        Wed, 29 Jun 2022 09:13:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1656494036;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=rDHvQvZTZ+R6+aUdOzyCj3VSYkqM3jPLAofXVQtDdKs=;
+        b=bydiXHqeu+ipQRkYLeFH2JmHxjH2WIGFKp3qA2p8qTs6a7F26ADptQeOoLq2C0Fpn6/OsY
+        RH/OZ56cmcDgYw3ABqTGhrukKF/i70oh7D2Qe54WuPO/M1hGw41LBL/j36W/ixGKt7mLGx
+        M4S3FMhE4QvMqyi5rMGcfDcTa/U2nSxTE2G1W570/nsTzP9XBnJ1SDQIizh+1WIabXS4sC
+        wkPDB1ZWxn1S9Lq9B/xveASOcGrUVdEH5ymjgnQcX7Dl/lAMR1oyoRl/0Waiq9pPvp32gZ
+        7yb621L4HpCDyzIVlZfIxTJqoXcIZx/oWa6hQTZDxv1l2yHkMluV2KTcOzSwnQ==
+From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Menglong Dong <imagedong@tencent.com>,
-        Petr Machata <petrm@nvidia.com>,
-        "Kumar Kartikeya Dwivedi" <memxor@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        "Antoine Tenart" <atenart@kernel.org>,
-        Phil Auld <pauld@redhat.com>,
-        "Frederic Weisbecker" <frederic@kernel.org>,
-        Xin Long <lucien.xin@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH] net : rps : supoort a single flow to use rps
-Thread-Topic: [PATCH] net : rps : supoort a single flow to use rps
-Thread-Index: AQHYiw+BtF4BFejA6Eeu6pKM0/Ynka1mGL6A
-Date:   Wed, 29 Jun 2022 09:09:35 +0000
-Message-ID: <2ed297c680f24879aba6f15df7630b96@AcuMS.aculab.com>
-References: <20220628140044.65068-1-huangjie.albert@bytedance.com>
- <20220628152956.1407334-1-alexandr.lobakin@intel.com>
-In-Reply-To: <20220628152956.1407334-1-alexandr.lobakin@intel.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
+        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?UTF-8?q?Miqu=C3=A8l=20Raynal?= <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>
+Subject: [PATCH net-next] dt-bindings: net: dsa: renesas,rzn1-a5psw: add interrupts description
+Date:   Wed, 29 Jun 2022 11:13:04 +0200
+Message-Id: <20220629091305.125291-1-clement.leger@bootlin.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-....
-> I'd suggest to use some flags bitfield instead, so it would be way
-> more scalable and at the same time have the pre-determined size. Ar
-> per several LKML discussions, `bool` may have different size and
-> logics depending on architecture and compiler, so when using it not
-> on the stack inside a function, but in a structure, it might be not
-> easy then to track cacheline layout etc.
-> So, maybe
-> 
-> 	unsigned long rps_flags;
->  #define RPS_SINGLE_FLOW_ENABLE BIT(0)
-> 
-> or even
-> 
-> 	DECLARE_BITMAP(rps_flags);
->  #define RPS_SINGLE_FLOW_ENABLE 0
+Describe the switch interrupts (dlr, switch, prp, hub, pattern) which
+are connected to the GIC.
 
-I don't think BITMAPs are a good idea unless you really
-need a lot of bits and (probably) locked accesses.
+Signed-off-by: Clément Léger <clement.leger@bootlin.com>
+---
+ .../bindings/net/dsa/renesas,rzn1-a5psw.yaml  | 23 +++++++++++++++++++
+ 1 file changed, 23 insertions(+)
 
-You can use C bitfields - the compiler doesn't (usually)
-make too much of a 'pigs breakfast' of them unless you
-needs to set/test multiple ones at the same time.
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+diff --git a/Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml b/Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml
+index 103b1ef5af1b..51f274c16ed1 100644
+--- a/Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml
++++ b/Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml
+@@ -26,6 +26,22 @@ properties:
+   reg:
+     maxItems: 1
+ 
++  interrupts:
++    items:
++      - description: DLR interrupt
++      - description: Switch interrupt
++      - description: PRP interrupt
++      - description: Integrated HUB module interrupt
++      - description: RX Pattern interrupt
++
++  interrupts-names:
++    items:
++      - const: dlr
++      - const: switch
++      - const: prp
++      - const: hub
++      - const: ptrn
++
+   power-domains:
+     maxItems: 1
+ 
+@@ -76,6 +92,7 @@ examples:
+   - |
+     #include <dt-bindings/gpio/gpio.h>
+     #include <dt-bindings/clock/r9a06g032-sysctrl.h>
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
+ 
+     switch@44050000 {
+         compatible = "renesas,r9a06g032-a5psw", "renesas,rzn1-a5psw";
+@@ -83,6 +100,12 @@ examples:
+         clocks = <&sysctrl R9A06G032_HCLK_SWITCH>, <&sysctrl R9A06G032_CLK_SWITCH>;
+         clock-names = "hclk", "clk";
+         power-domains = <&sysctrl>;
++        interrupts = <GIC_SPI 40 IRQ_TYPE_LEVEL_HIGH>,
++                     <GIC_SPI 42 IRQ_TYPE_LEVEL_HIGH>,
++                     <GIC_SPI 43 IRQ_TYPE_LEVEL_HIGH>,
++                     <GIC_SPI 44 IRQ_TYPE_LEVEL_HIGH>,
++                     <GIC_SPI 45 IRQ_TYPE_LEVEL_HIGH>;
++        interrupts-name = "dlr", "switch", "prp", "hub", "ptrn";
+ 
+         dsa,member = <0 0>;
+ 
+-- 
+2.36.1
 
