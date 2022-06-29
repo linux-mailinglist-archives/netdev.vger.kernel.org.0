@@ -2,105 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A317755FCCF
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 12:05:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E4F655FCE2
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 12:11:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232211AbiF2KDp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 06:03:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48986 "EHLO
+        id S231430AbiF2KKc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 06:10:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230338AbiF2KDo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 06:03:44 -0400
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D42CF3D1FA
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 03:03:43 -0700 (PDT)
-Received: by mail-pg1-x529.google.com with SMTP id e63so14853641pgc.5
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 03:03:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=v+1Kh9yXYSF/SSlAxUUF7lfd7AbotnJ6XEUP9Y2jqwE=;
-        b=bT696kWD335zwtQvW47vd4+mT5xdlttfcuP/cfCSLGtb7YgSROS2L7ffdCL6lmeT9X
-         hLO4kCeKrh9RhaoNZxg6Eb6G+AeKxnOiLYRUTEAnkTGswpNC6vnrXR6z0mf+a5G3eiBo
-         qz29lWEkYZ+jCGe3KfM0543mgg0fJH1DNS32yfChg36ESaebBkp+5PiUj4TLvqXaNtAB
-         hFiO0kxoSePedtkr8Bj6ref1wJrQW2YrtDSKlp8QvVVMHgn0EQdjXFyD+DRBJhVULj3G
-         3PMAGlJ4zKL0SJ3SmGf40soyRQiN8+kQzPniaDWJ4WGCcVg5SX+5l2znBCumkn7e5N/I
-         ggLw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=v+1Kh9yXYSF/SSlAxUUF7lfd7AbotnJ6XEUP9Y2jqwE=;
-        b=Z/gKHwDQRyLan627xcVo+ZlhuYiPO5Py8Smx9SEfbuQaG07Dan3P9B67nRSfOqNgzp
-         FJN74hp2rTCK+8nHc5d7LkGXh+9USsNiNGDBuzSYOz5GJuvWkmdd1MZ1DdoH9GA8wpHj
-         s+5UvL+k58JKE3KLQPL7qtjtmYwLZW9Qg/ByGz0f++fW/Y1NE4uXvcxWdX9e3D5zVg1Q
-         iBLq8KiiOwljGei2nf8cSsK+hJbbO2aVmUOwmBRAqaQKIuHASdwlcvxzW642gINpR3PP
-         ZJt2ucVnr0SUCFJIn7CKT01nx6Bfd+gq7P1TXQQeZKCd5uAkrDUIkwmqxVfwqemwr3o6
-         /ldA==
-X-Gm-Message-State: AJIora9rvM9eAChf4mqlv1USYAfKxXAAEYy91JjJ44b3LLe4XEWpMGZr
-        kt0qBLR5awtvnK4IJ8yPIzcpdQ==
-X-Google-Smtp-Source: AGRyM1sTw4UxgBgSUAtM/Ce+HiXo5qoS5Rt9oKfdvJ/YFT4je9ZLNVgxqIQyVnyMl/m9dosjMIfh0g==
-X-Received: by 2002:a62:7b95:0:b0:525:8304:2f16 with SMTP id w143-20020a627b95000000b0052583042f16mr8194428pfc.33.1656497023394;
-        Wed, 29 Jun 2022 03:03:43 -0700 (PDT)
-Received: from C02F63J9MD6R.bytedance.net ([61.120.150.74])
-        by smtp.gmail.com with ESMTPSA id u5-20020a17090a1f0500b001ed1444df67sm1696872pja.6.2022.06.29.03.03.38
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 29 Jun 2022 03:03:42 -0700 (PDT)
-From:   Zhuo Chen <chenzhuo.1@bytedance.com>
-To:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, intel-wired-lan@lists.osuosl.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Zhuo Chen <chenzhuo.1@bytedance.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Sen Wang <wangsen.harry@bytedance.com>,
-        Wenliang Wang <wangwenliang.1995@bytedance.com>
-Subject: [PATCH] ice: Remove pci_aer_clear_nonfatal_status() call
-Date:   Wed, 29 Jun 2022 18:03:34 +0800
-Message-Id: <20220629100334.60710-1-chenzhuo.1@bytedance.com>
-X-Mailer: git-send-email 2.30.1 (Apple Git-130)
+        with ESMTP id S229777AbiF2KKa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 06:10:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26E6B22B06
+        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 03:10:30 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B256661ED4
+        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 10:10:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFEF3C34114;
+        Wed, 29 Jun 2022 10:10:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656497429;
+        bh=gumbGasP0T/XEgPCejFFb3EYwfVesF4bIVPFRQ3YSN8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=VdOsgqg+RS0Ue5vKZjp9OLNtY8fNDwj8+ERoCCon3jm+WRMH3w4o3HGhst8x8Y+13
+         BoUfpZ3GStSsD3sgeAoc+EhVdYpi6Y5yavqeFNY/JOoptTR3fnKMsbhOdaK6o8Wxkl
+         PIOtTjg2cDd+f2FE0TroCywxwOf4ueVSA+XiXe8ri8+AVF2JochONNwSJpghPYujBk
+         lw2tV8ON9hAhmfvcreLyfwAGZcKE1zSthSaFQC8at2g0mwqD2IDe9zNbVy2+xafeGy
+         OFuCinYQQ6u7FfnCsv78UpaF7bm04xZIW33N0RedubgVMsnPsRxGtn3h4Nue1nkgn0
+         XoGgH85eABDog==
+Date:   Wed, 29 Jun 2022 12:10:20 +0200
+From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Alvin =?UTF-8?B?xaBp?= =?UTF-8?B?cHJhZ2E=?= 
+        <alsi@bang-olufsen.dk>, Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        UNGLinuxDriver@microchip.com,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Woojung Huh <woojung.huh@microchip.com>
+Subject: Re: [PATCH RFC net-next 0/4] net: dsa: always use phylink
+Message-ID: <20220629121020.583144a5@thinkpad>
+In-Reply-To: <YrweuzL2LYNbfvAY@shell.armlinux.org.uk>
+References: <YrWi5oBFn7vR15BH@shell.armlinux.org.uk>
+        <YrtvoRhUK+4BneYC@shell.armlinux.org.uk>
+        <Yrv8snvIChmoNPwh@lunn.ch>
+        <YrweuzL2LYNbfvAY@shell.armlinux.org.uk>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After 62b36c3 ("PCI/AER: Remove pci_cleanup_aer_uncorrect_error_status()
-calls"), Calls to pci_cleanup_aer_uncorrect_error_status() have already
-been removed. But in 5995b6d pci_cleanup_aer_uncorrect_error_status was
-used again, so remove it in this patch.
+On Wed, 29 Jun 2022 10:43:23 +0100
+"Russell King (Oracle)" <linux@armlinux.org.uk> wrote:
 
-Signed-off-by: Zhuo Chen <chenzhuo.1@bytedance.com>
-Cc: Muchun Song <songmuchun@bytedance.com>
-Cc: Sen Wang <wangsen.harry@bytedance.com>
-Cc: Wenliang Wang <wangwenliang.1995@bytedance.com>
----
- drivers/net/ethernet/intel/ice/ice_main.c | 6 ------
- 1 file changed, 6 deletions(-)
+> On Wed, Jun 29, 2022 at 09:18:10AM +0200, Andrew Lunn wrote:
+> > > I should point out that if a DSA port can be programmed in software to
+> > > support both SGMII and 1000baseX, this will end up selecting SGMII
+> > > irrespective of what the hardware was wire-strapped to and how it was
+> > > initially configured. Do we believe that would be acceptable?  
+> > 
+> > I'm pretty sure the devel b board has 1000BaseX DSA links between its
+> > two switches. Since both should end up SGMII that should be O.K.  
+> 
+> Would such a port have a programmable C_Mode, and would it specify that
+> it supports both SGMII and 1000BaseX ? Without going through a lot of
+> boards and documentation for every switch, I can't say.
+> 
+> I don't think we can come to any conclusion on what the right way to
+> deal with this actually is - we don't have enough information about how
+> this is used across all the platforms we have. I think we can only try
+> something, get it merged into net-next, and wait to see whether anyone
+> complains.
+> 
+> When we have a CPU or DSA port without a fixed-link, phy or sfp specified,
+> I think we should:
+> (a) use the phy-mode property if present, otherwise,
+> (b,i) have the DSA driver return the interface mode that it wants to use
+> for max speed for CPU and DSA ports.
+> (b,ii) in the absence of the DSA driver returning a valid interface mode,
+> we use the supported_interfaces to find an interface which gives the
+> maximum speed (irrespective of duplex?) that falls within the
+> mac capabilities.
+> 
+> If all those fail, then things will break, and we will have to wait for
+> people to report that breakage. Does this sound a sane approach, or
+> does anyone have any other suggestions how to solve this?
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index c1ac2f746714..6bf6d8b5a967 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -5313,12 +5313,6 @@ static pci_ers_result_t ice_pci_err_slot_reset(struct pci_dev *pdev)
- 			result = PCI_ERS_RESULT_DISCONNECT;
- 	}
- 
--	err = pci_aer_clear_nonfatal_status(pdev);
--	if (err)
--		dev_dbg(&pdev->dev, "pci_aer_clear_nonfatal_status() failed, error %d\n",
--			err);
--		/* non-fatal, continue */
--
- 	return result;
- }
- 
--- 
-2.20.1
+It is a sane approach. But in the future I think we should get rid of
+(b,i): I always considered the max_speed_interface() method a temporary
+solution, until the drivers report what a specific port support and the
+subsystem can then choose whichever mode it wants that is wired and
+supported by hardware. Then we could also make it possible to change
+the CPU interface mode via ethtool, which would be cool...
 
+Marek
