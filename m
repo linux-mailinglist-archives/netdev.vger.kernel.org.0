@@ -2,127 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 98DA955F40E
+	by mail.lfdr.de (Postfix) with ESMTP id 50A7F55F40D
 	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 05:24:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231608AbiF2DXg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 23:23:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51298 "EHLO
+        id S231646AbiF2DYk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 23:24:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231623AbiF2DXX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 23:23:23 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9572C1161;
-        Tue, 28 Jun 2022 20:23:08 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id k14so12853832plh.4;
-        Tue, 28 Jun 2022 20:23:08 -0700 (PDT)
+        with ESMTP id S231676AbiF2DYQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 23:24:16 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E32111D8;
+        Tue, 28 Jun 2022 20:24:05 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id h9-20020a17090a648900b001ecb8596e43so14674240pjj.5;
+        Tue, 28 Jun 2022 20:24:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=NxEYTV5XaHlvQ6SClhq7DbGXKrVTnCi9AeoTaN417P4=;
-        b=LC+jLqtg/KFZgUbUa1pd6NdegM0TT6JQEuJS6HAqrQoQOYSZyiMXXEuYErJZH0lxBc
-         Rgpj/IvgLgNBYEg5EFdpawHtGDP5qG9fVoMtOjYQqZ9qeHhWRZW1FlRov4ZVKiapsscR
-         W8VV9enNv+1BzDOKmRo4xDUTPAO8QDMo7DsxguKW2vbcYJ9GTsEaFRaBVo7UrDTE2yvv
-         UwWeWaknK4yi0AQV/bPVjgro7B8YxfKCe9lhjMWXtnMfG29pNlxWmeVbpj5Yd3bhxXgu
-         vghC5LxJ9ToX+CLAHv8RyLGuyI6d0YcDfj3hh3IZcFsfdnmA5PltqU249zOLm5cTEuBv
-         24cQ==
+        bh=Fj7BbdljqsoGparCST0EyCcPUKNtLNBlk+LCRCpdJLw=;
+        b=oFx79pTDKe/0K4DzWTg5WbhaY9GMAgsDaFSkH6r1vPW1HFdOJXqGQ5UZxgywHDM3Ir
+         0equTGt8PyPlERIlnTf5/BcxXxzGITpucSE2VIl8CV1o9ehzFCMhzuOGmi45/AK6qG76
+         /8w9TpCEjcwZrf18xju/rDZxtqGU8P6zQ25P+y1i5vCqEbFPPa98WvDxnH8cFtX3sIwJ
+         junUVkx5AYbgAFw0eC61vARiqpw1IzYsntMTivQEIBdgIUJa+1mBXf7au2lMkxwOomRF
+         Tq177jWJbMD53EgF/Vw9Bn+IKNlGCEHOCstQTlq+u9cuVkwNV5MjGVV2oNYBWWI67o+0
+         Kprw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=NxEYTV5XaHlvQ6SClhq7DbGXKrVTnCi9AeoTaN417P4=;
-        b=7Ut5M8C7uyOr5HQdyvLJbRBBqLpIt+d0FdwJkHDCWh8mUsZGzv+tDvlSMwf6p7nddV
-         kCuSXjFusjuWNcy8dUkK83dghAX1cG2WIVszY/Pk25+3UGDWn5FA6XPfO4uQdvsL1r2z
-         QGsGhsVvarcxv0/kZDyYxNYX1F0WSbaGLNgSyq8ULAqlEnjJPaVEktv4wLCSddu3g3/+
-         CzS0AGFw+LdKeyhxPFGtlFnjzq2qzbq2Eei6dojTROSC9RrhOm8xTdpjd3adiVjbNqqd
-         B6GgtpEP73Q6c3cY7ILLiBDllZaSVGlwkJHsOMP9TulEIj2OAeTgGkwW1j+tIlMAN0ma
-         RriQ==
-X-Gm-Message-State: AJIora+M2IoaN268ODQFV13GK+Lm3EpLrKo7CttOIBgzDem5C4P5qlAB
-        agKhhc61sCvBPR3GNF0T0hw=
-X-Google-Smtp-Source: AGRyM1s8T50ZrH+JFuqnAVZSZInwjmbYfb1FtxQ49H5wx8jAm+7e7flb83p2EDjiT+JAYTYo1op1ow==
-X-Received: by 2002:a17:90b:503:b0:1e2:f129:5135 with SMTP id r3-20020a17090b050300b001e2f1295135mr1404738pjz.22.1656472987950;
-        Tue, 28 Jun 2022 20:23:07 -0700 (PDT)
-Received: from macbook-pro-3.dhcp.thefacebook.com ([2620:10d:c090:400::5:28a7])
-        by smtp.gmail.com with ESMTPSA id a20-20020a170903101400b001641670d1adsm10022345plb.131.2022.06.28.20.23.06
+        bh=Fj7BbdljqsoGparCST0EyCcPUKNtLNBlk+LCRCpdJLw=;
+        b=oXJlEWr9GORBnTsXKEBiPrTqXFmJCmxnu7Eo/itHVD/+d2QUCErNnoFyEEHD7Awpxd
+         X9TDcjBEeJqDOZ4b9mHB0EZzkkwaWSfy5wEgTb80yGw+xSpQyjs4sQ3aYFlvrb8eoCad
+         vkr6ZQUdt6PJz6i3XIwBvf0/Tv4YchtzS84riNvnquk7d8VL8etOhqXhDSqAVfAfjWF7
+         q1yTgemMYx5XBdK4fAY7n9Egu3tZMM1sLyXueNBnNgeMpDMZi+SXaX5p87Ly+W+xvUpr
+         asNXkkjYPrAUHA7GXXV4L/WprbOomuAK11H2VPyhlyZROLOJKoD5uaeQtZrPSE5eAU8P
+         +pHw==
+X-Gm-Message-State: AJIora/k8F4rc5Gm/NSxX7x+P6nAq2G1WPW/RjzZYOWwIhVq/ilMxMLm
+        5ZeL2xU9DHpIJqvbZ9Usm0M=
+X-Google-Smtp-Source: AGRyM1vsi7CgNn+hm6JA8nRBvn1UfsHiN+DuVQjG+D41n++oNdHScStsgrICm72S8/mDUKvSMDDq4A==
+X-Received: by 2002:a17:902:a701:b0:16a:65b:f9f1 with SMTP id w1-20020a170902a70100b0016a065bf9f1mr8387462plq.73.1656473045455;
+        Tue, 28 Jun 2022 20:24:05 -0700 (PDT)
+Received: from debian.me (subs02-180-214-232-13.three.co.id. [180.214.232.13])
+        by smtp.gmail.com with ESMTPSA id p9-20020a1709026b8900b0016372486febsm10011584plk.297.2022.06.28.20.24.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jun 2022 20:23:07 -0700 (PDT)
-Date:   Tue, 28 Jun 2022 20:23:04 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc:     bpf@vger.kernel.org, Yonghong Song <yhs@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org
-Subject: Re: [PATCH bpf-next v5 1/8] bpf: Add support for forcing kfunc args
- to be referenced
-Message-ID: <20220629032304.h5ck7tizbfehiwut@macbook-pro-3.dhcp.thefacebook.com>
-References: <20220623192637.3866852-1-memxor@gmail.com>
- <20220623192637.3866852-2-memxor@gmail.com>
+        Tue, 28 Jun 2022 20:24:04 -0700 (PDT)
+Received: by debian.me (Postfix, from userid 1000)
+        id E4C29103832; Wed, 29 Jun 2022 10:23:59 +0700 (WIB)
+Date:   Wed, 29 Jun 2022 10:23:58 +0700
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Alexander Potapenko <glider@google.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andrey Grodzovsky <andrey.grodzovsky@amd.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Felipe Balbi <balbi@kernel.org>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Kyungmin Park <kyungmin.park@samsung.com>,
+        Marco Elver <elver@google.com>,
+        MyungJoo Ham <myungjoo.ham@samsung.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        kasan-dev@googlegroups.com, linaro-mm-sig@lists.linaro.org,
+        linux-cachefs@redhat.com, linux-fsdevel@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-mm@kvack.org,
+        linux-pm@vger.kernel.org, linux-sgx@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, x86@kernel.org
+Subject: Re: [PATCH 00/22] Fix kernel-doc warnings at linux-next
+Message-ID: <YrvFzoH61feRFoxV@debian.me>
+References: <cover.1656409369.git.mchehab@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220623192637.3866852-2-memxor@gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+In-Reply-To: <cover.1656409369.git.mchehab@kernel.org>
+X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        RCVD_IN_DNSWL_NONE,RCVD_IN_SORBS_WEB,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 24, 2022 at 12:56:30AM +0530, Kumar Kartikeya Dwivedi wrote:
-> Similar to how we detect mem, size pairs in kfunc, teach verifier to
-> treat __ref suffix on argument name to imply that it must be a
-> referenced pointer when passed to kfunc. This is required to ensure that
-> kfunc that operate on some object only work on acquired pointers and not
-> normal PTR_TO_BTF_ID with same type which can be obtained by pointer
-> walking. Release functions need not specify such suffix on release
-> arguments as they are already expected to receive one referenced
-> argument.
+On Tue, Jun 28, 2022 at 10:46:04AM +0100, Mauro Carvalho Chehab wrote:
+> As we're currently discussing about making kernel-doc issues fatal when
+> CONFIG_WERROR is enable, let's fix all 60 kernel-doc warnings 
+> inside linux-next:
 > 
-> Note that we use strict type matching when a __ref suffix is present on
-> the argument.
-... 
-> +		/* Check if argument must be a referenced pointer, args + i has
-> +		 * been verified to be a pointer (after skipping modifiers).
-> +		 */
-> +		arg_ref = is_kfunc_arg_ref(btf, args + i);
-> +		if (is_kfunc && arg_ref && !reg->ref_obj_id) {
-> +			bpf_log(log, "R%d must be referenced\n", regno);
-> +			return -EINVAL;
-> +		}
-> +
 
-imo this suffix will be confusing to use.
-If I understand the intent the __ref should only be used
-in acquire (and other) kfuncs that also do release.
-Adding __ref to actual release kfunc will be a nop.
-It will be checked, but it's not necessary.
+To be fair, besides triggering error on kernel-doc warnings, Sphinx
+warnings should also be errors on CONFIG_WERROR.
 
-At the end
-+struct nf_conn *bpf_ct_insert_entry(struct nf_conn___init *nfct__ref)
-will behave like kptr_xchg with exception that kptr_xchg takes any btf_id
-while here it's fixed.
-
-The code:
- if (rel && reg->ref_obj_id)
-        arg_type |= OBJ_RELEASE;
-should probably be updated with '|| arg_ref'
-to make sure reg->off == 0 ?
-That looks like a small bug.
-
-But stepping back... why __ref is needed ?
-We can add bpf_ct_insert_entry to acq and rel sets and it should work?
-I'm assuming you're doing the orthogonal cleanup of resolve_btfid,
-so we will have a single kfunc set where bpf_ct_insert_entry will
-have both acq and rel flags.
-I'm surely missing something.
+-- 
+An old man doll... just what I always wanted! - Clara
