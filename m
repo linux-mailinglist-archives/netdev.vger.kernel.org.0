@@ -2,55 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 37D6B55FAA2
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 10:34:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 37F6055FAB6
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 10:37:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232021AbiF2Iem (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 04:34:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48956 "EHLO
+        id S232743AbiF2Ifs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 04:35:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229585AbiF2Iel (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 04:34:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DAAFE0E8;
-        Wed, 29 Jun 2022 01:34:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2701361D9C;
-        Wed, 29 Jun 2022 08:34:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F5E3C34114;
-        Wed, 29 Jun 2022 08:34:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656491679;
-        bh=SMibcKHmejQMaGMtAlC/Nipg6tudBRypeBB8W2Rzp7U=;
-        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-        b=DyVu2wl+v8Y6B0cJ7WyzUXEJlcm53mO80NZvJl/RbqkF4KezQWXh5R+94iHf8tJ/6
-         +xDqmU0sknExE5WIqFJ/dfQK8jspbNRrqIRMszRIiFNm7hILjXG2ZuMrQ5K7mFwo/V
-         5R1WhWlnZe8hTVkAgWWLaVSxB1rH3eAkEuJUOCCJ2zcak4qHH++egUxnA1GGK/+viZ
-         pRtq0KV+t01G9lrJNHcNifnz6uVwdMwhB/XgelpTJ3S4KOTroT42H7kQ5mNCfqGucH
-         A0oC+AuyUKc9z5mvWdvHE7eE2SMYiDJjAljcVM79ftHYOKyhJCgf3etfLO6T3gqazx
-         1RkPdSMgalevQ==
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20220626192444.29321-2-vfedorenko@novek.ru>
-References: <20220626192444.29321-1-vfedorenko@novek.ru> <20220626192444.29321-2-vfedorenko@novek.ru>
-Subject: Re: [RFC PATCH v2 1/3] dpll: Add DPLL framework base functions
-From:   Stephen Boyd <sboyd@kernel.org>
-Cc:     Vadim Fedorenko <vadfed@fb.com>, Aya Levin <ayal@nvidia.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-clk@vger.kernel.org
-To:     Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Vadim Fedorenko <vfedorenko@novek.ru>
-Date:   Wed, 29 Jun 2022 01:34:37 -0700
-User-Agent: alot/0.10
-Message-Id: <20220629083439.6F5E3C34114@smtp.kernel.org>
-X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        with ESMTP id S231713AbiF2Ifr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 04:35:47 -0400
+Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4704A3BF82;
+        Wed, 29 Jun 2022 01:35:44 -0700 (PDT)
+Received: from localhost (unknown [127.0.0.1])
+        by mail.nfschina.com (Postfix) with ESMTP id 915AC1E80D11;
+        Wed, 29 Jun 2022 16:34:32 +0800 (CST)
+X-Virus-Scanned: amavisd-new at test.com
+Received: from mail.nfschina.com ([127.0.0.1])
+        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id XP7WIkAKEhFy; Wed, 29 Jun 2022 16:34:30 +0800 (CST)
+Received: from localhost.localdomain (unknown [219.141.250.2])
+        (Authenticated sender: kunyu@nfschina.com)
+        by mail.nfschina.com (Postfix) with ESMTPA id E56491E80CDC;
+        Wed, 29 Jun 2022 16:34:29 +0800 (CST)
+From:   Li kunyu <kunyu@nfschina.com>
+To:     rajur@chelsio.com, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Li kunyu <kunyu@nfschina.com>
+Subject: [PATCH] drivers: Remove extra commas and align them
+Date:   Wed, 29 Jun 2022 16:35:30 +0800
+Message-Id: <20220629083530.48186-1-kunyu@nfschina.com>
+X-Mailer: git-send-email 2.18.2
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,RDNS_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -58,20 +43,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Quoting Vadim Fedorenko (2022-06-26 12:24:42)
-> From: Vadim Fedorenko <vadfed@fb.com>
->=20
-> DPLL framework is used to represent and configure DPLL devices
-> in systems. Each device that has DPLL and can configure sources
-> and outputs can use this framework.
+There is an extra comma and space in this sentence when I read the code.
 
-Please add more details to the commit text, and possibly introduce some
-Documentation/ about this driver subsystem. I'm curious what is
-different from drivers/clk/, is it super large frequencies that don't
-fit into 32-bits when represented in Hz? Or PLL focused? Or is sub-Hz
-required?
+Signed-off-by: Li kunyu <kunyu@nfschina.com>
+---
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4_dcb.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Details please!
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_dcb.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_dcb.c
+index 4a872f328fea..7d5204834ee2 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_dcb.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_dcb.c
+@@ -85,7 +85,7 @@ static void cxgb4_dcb_cleanup_apps(struct net_device *dev)
+ 
+ 		if (err) {
+ 			dev_err(adap->pdev_dev,
+-				"Failed DCB Clear %s Application Priority: sel=%d, prot=%d, , err=%d\n",
++				"Failed DCB Clear %s Application Priority: sel=%d, prot=%d, err=%d\n",
+ 				dcb_ver_array[dcb->dcb_version], app.selector,
+ 				app.protocol, -err);
+ 			break;
+-- 
+2.18.2
 
-Does DPLL stand for digital phase locked loop? Again, I have no idea! I
-think you get my point.
