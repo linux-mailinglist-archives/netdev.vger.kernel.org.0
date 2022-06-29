@@ -2,58 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DF8BC55F558
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 06:41:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 69CBF55F568
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 06:51:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229720AbiF2Ek0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 00:40:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50078 "EHLO
+        id S229539AbiF2EuQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 00:50:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229475AbiF2EkZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 00:40:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA7F82C64A
-        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 21:40:24 -0700 (PDT)
+        with ESMTP id S229475AbiF2EuQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 00:50:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF7EE17E24
+        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 21:50:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 267BBB821B0
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 04:40:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0627DC3411E;
-        Wed, 29 Jun 2022 04:40:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A432614F6
+        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 04:50:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id B4845C3411E;
+        Wed, 29 Jun 2022 04:50:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656477621;
-        bh=iHw9bd8s4EekjXNRbJp+UlyFG/OqrDWm5kUz2JiIYjM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=GD4Q6OAPWtS2tJDYyq+B7IwLHgSANFRKHGUT4Saed8lSn1NUhBWXev69bFxTercB6
-         bIGPDAXbVWHucBIs96tei3pdmPkZvfrqbBTKusg0Mg5LmXRi/sxIJRRYifZpS5idhD
-         w/V7bLpfIHjd4jK+zsqo4GpKqzz9rl6RixbAh6DRu+7tTeZe5yNvVWTMa/HJcSyh++
-         xIrkYg5ueBsONBT7aBLBOUHxBwHNSMKFQes23nRhGFPQjjvHLw/ZkBebgPSCBGH+aI
-         byZ5JVdByHN///4+qc6uiu5eOj5/MsqacmbFuWnIjEfwq0kB3/1usSXBZV3a3YtxZs
-         LWWZq7oUrDdLg==
-Date:   Tue, 28 Jun 2022 21:40:20 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Marcin Szycik <marcin.szycik@linux.intel.com>
-Cc:     netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        davem@davemloft.net, xiyou.wangcong@gmail.com,
-        jesse.brandeburg@intel.com, gustavoars@kernel.org,
-        baowen.zheng@corigine.com, boris.sukholitko@broadcom.com,
-        edumazet@google.com, jhs@mojatatu.com, jiri@resnulli.us,
-        kurt@linutronix.de, pablo@netfilter.org, pabeni@redhat.com,
-        paulb@nvidia.com, simon.horman@corigine.com,
-        komachi.yoshiki@gmail.com, zhangkaiheb@126.com,
-        intel-wired-lan@lists.osuosl.org,
-        michal.swiatkowski@linux.intel.com, wojciech.drewek@intel.com,
-        alexandr.lobakin@intel.com
-Subject: Re: [RFC PATCH net-next v2 1/4] flow_dissector: Add PPPoE
- dissectors
-Message-ID: <20220628214020.0f83fc21@kernel.org>
-In-Reply-To: <20220628112918.11296-2-marcin.szycik@linux.intel.com>
-References: <20220628112918.11296-1-marcin.szycik@linux.intel.com>
-        <20220628112918.11296-2-marcin.szycik@linux.intel.com>
+        s=k20201202; t=1656478213;
+        bh=u6B+4XjrHuIhqCGF1f+LNOE7uzTCHDnG3WpJ2xg+NtM=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=bkQwuY1Nxu25op3gkaX6wUOGj/XTNR4ay9+vFtAuMupQkQTa+kZJexvp/aUOOCrYv
+         Lb9rEOQTyWDpY7o7RIus6EhUxp9eSFYOdVaZiNaRh3g8MhMQ00jMxqEqLu41Su7veF
+         wABLlD/qTVUKZP0tK8FNn4m6d8YYfcvkVtRkEgRsf8JefQGHfwCecLhe4sP9+OhU3Y
+         d1T4qPCOtbbITLx+uc/HOobV90i2pEl9K+0Bny+dY6t4HvUkuV6W3x8WFXDWZBLw4h
+         hI3dPGzgdu5S4BeakW5y19bjri7pVOnGIhPiAa6r9qnDdyz8t1c3c9M4ZbZkcZkQhA
+         zCyrDfV7+44tQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 995C9E49F61;
+        Wed, 29 Jun 2022 04:50:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 0/2] net: phylink: cleanup pcs code
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165647821362.6492.1196261975874560231.git-patchwork-notify@kernel.org>
+Date:   Wed, 29 Jun 2022 04:50:13 +0000
+References: <YrmYEC2N9mVpg9g6@shell.armlinux.org.uk>
+In-Reply-To: <YrmYEC2N9mVpg9g6@shell.armlinux.org.uk>
+To:     Russell King (Oracle) <linux@armlinux.org.uk>
+Cc:     andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, netdev@vger.kernel.org,
+        pabeni@redhat.com
 X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -64,38 +57,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 28 Jun 2022 13:29:15 +0200 Marcin Szycik wrote:
-> +static bool is_ppp_proto_supported(__be16 proto)
+Hello:
 
-What does supported mean in this context?
+This series was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-> +{
-> +	switch (ntohs(proto)) {
-> +	case PPP_AT:
+On Mon, 27 Jun 2022 12:44:16 +0100 you wrote:
+> Hi,
+> 
+> These two patches were part of the larger series for the mv88e6xxx
+> phylink pcs conversion. As this is delayed, I've decided to send these
+> two patches now.
+> 
+>  drivers/net/phy/phylink.c | 69 ++++++++++++++++++++++++++---------------------
+>  1 file changed, 39 insertions(+), 30 deletions(-)
 
-Byte swap on the constant.
+Here is the summary with links:
+  - [net-next,1/2] net: phylink: remove pcs_ops member
+    https://git.kernel.org/netdev/net-next/c/4f1dd48f4031
+  - [net-next,2/2] net: phylink: disable PCS polling over major configuration
+    https://git.kernel.org/netdev/net-next/c/bfac8c490d60
 
-> +	case PPP_IPX:
-> +	case PPP_VJC_COMP:
-> +	case PPP_VJC_UNCOMP:
-> +	case PPP_MP:
-> +	case PPP_COMPFRAG:
-> +	case PPP_COMP:
-> +	case PPP_MPLS_UC:
-> +	case PPP_MPLS_MC:
-> +	case PPP_IPCP:
-> +	case PPP_ATCP:
-> +	case PPP_IPXCP:
-> +	case PPP_IPV6CP:
-> +	case PPP_CCPFRAG:
-> +	case PPP_MPLSCP:
-> +	case PPP_LCP:
-> +	case PPP_PAP:
-> +	case PPP_LQR:
-> +	case PPP_CHAP:
-> +	case PPP_CBCP:
-> +		return true;
-> +	default:
-> +		return false;
-> +	}
-> +}
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
