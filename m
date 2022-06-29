@@ -2,66 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 30218560A36
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 21:22:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03887560A3D
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 21:24:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229977AbiF2TV7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 15:21:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34718 "EHLO
+        id S229680AbiF2TYR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 15:24:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229774AbiF2TV6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 15:21:58 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EB402EA23;
-        Wed, 29 Jun 2022 12:21:57 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id eq6so23531076edb.6;
-        Wed, 29 Jun 2022 12:21:57 -0700 (PDT)
+        with ESMTP id S229478AbiF2TYQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 15:24:16 -0400
+Received: from mail-ot1-x32b.google.com (mail-ot1-x32b.google.com [IPv6:2607:f8b0:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B97C4340ED
+        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 12:24:15 -0700 (PDT)
+Received: by mail-ot1-x32b.google.com with SMTP id y10-20020a9d634a000000b006167f7ce0c5so12949615otk.0
+        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 12:24:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=/PjH9DrncQjphXUiAsRmBLYPPYTi+A1PhhVz0t7N/Nc=;
-        b=QxViXKRsnIoBrQZXPt9bhi+0m5dJVacZbOdR3YnN2c3JNScZa3mSLvAZw+lEd6zAiG
-         o8K5oZqjoWaX3BRmawxjXcSU9Rln3RkkGpC7Wv8RFURpc7LA4vHyab6d73w6HzbZ/Wd9
-         +uBVbM28LoSdzbjUaV3lRg7NEyLjpQhWmw3SOP2wOVl9Chp7OcCjtmr1umyr01M6oreQ
-         ih/ar34l82ZFVSKMbjO7LS9JrL0zAWsd5E3LkGiKkdNUx88F4L7ZqYmWry2H7NqBFfOl
-         qtOICQV9eG7IU9Dm83/ldMx12JtAbmpnjWNm3nTJLLwNzZvyFJflB3VOQVXVg6t6uW6a
-         Cdzg==
+        bh=mSOlrv1rPTeZjGb/Mbo0vBlb0WQ3QZQ/E2flsfQdF0U=;
+        b=YlmiP8jeFBSeHj+I6ouuPe7oVJrnRCjq76M92ui2B6YwAB7OcUjxgB8a7RdVIQE7bA
+         /K8wuh9kqG9kuhmpIxgmf/Gl1N7WmrUWoSEztcL7awGRiRIGqAJ6pk4K27Il94PviMYj
+         Gf5EBv9DGbMb6T5xHwQ7K7ZDW4S9veUOeKOMGhXpj8ezyYwIQQpzmG9bD7qGVD/EyG/J
+         l1nXunj+oghUPow1ADV86t4mNRCSKAwb0ePoyA0yTEAbXM7ZSY4h5o71fpLrTlQ+RYU9
+         9y05kQpPBda5rBmGC3sdw6gaEsKkRuPpbC0glXy2EINqSxb6TIMv6bC1BDVRHDrAEZpd
+         TxpA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=/PjH9DrncQjphXUiAsRmBLYPPYTi+A1PhhVz0t7N/Nc=;
-        b=3aDcOK5MEi1LKAWBgUiTU4FaLxQAcfgCLxSrLIPdsnMDxRLGSsFw//kEILBbCucYh8
-         6l374f19XkDWzJ6QMq9hyzkxUhoyEgc6VzAjiAt2eyOBz41LKVLkNjWdVv3dR/N13vB0
-         /YbNlXEgPWEt0EGGrypYpJr8b6RhRRpYRrnluqxTdYtHUON2GhHgVB6SWGIyRocIRaqi
-         HpSmGQMC++6KzupZggclIWKfgqCeLVhNF4hM+g/ivtR0xyvqb50KdTlpujFZn0HucXPq
-         DD33buew6aPKC8tha8ZynRWrhr8nZCghJ+CefTIpX5rcnzzN6hP+OV3LXXkdZTR0MEsr
-         bA6Q==
-X-Gm-Message-State: AJIora8NDOO991M0PMJ5E3n4ENjcrWBWe+tgm6Y9ZBw/98ekM9+lyAaF
-        6/reNP3Yr80mLVcfuO96F7i/bZld75dJmcXYgMI1wJGC
-X-Google-Smtp-Source: AGRyM1ulpK6b/agsTb0936XMKMX/ktiuX2mSZ33MXBLtuzmaRJLPMF7QRlCuqC7DE2m2RuQRXAg9tHJCudxY4w7LPqE=
-X-Received: by 2002:a05:6402:3487:b0:435:b0d2:606e with SMTP id
- v7-20020a056402348700b00435b0d2606emr6522763edc.66.1656530516219; Wed, 29 Jun
- 2022 12:21:56 -0700 (PDT)
+        bh=mSOlrv1rPTeZjGb/Mbo0vBlb0WQ3QZQ/E2flsfQdF0U=;
+        b=3mNO302Nmazwy6WOa1eZMuijmfpdVulXMLnigRyezoHG/CD1pkn7RtFNtxRoZOBPMm
+         XzbjgLl25P/jwbecwao0dPwDs/cozVpq2+Jo99Z8PxV9DlwXeNhCWdbBUOAwXC6sjhaz
+         hW9n8+jnXqZpETjpnOt0cAg5XqW/fIuQRNpa1USN+YsUoxJtjjWpkLfGNELQVT8dXViA
+         71ZVtD7jDtMDtacsGSG43mROPxYWV6zyGJOELp8Qv5y+x3K0V6bEwd2CHYGLgVgL1pRH
+         Jq+m5f0iBHX1EQ88WLJrDIqEjfX7c606H7M7cJTx55gj9W/g+AqdGYfDKRkQigA44Rrv
+         TUyw==
+X-Gm-Message-State: AJIora90+hPv59F185lGs5P9VIztGkq7ThADproUp+Lo833XDjiD3uBZ
+        ggNWoPDuy2OkS5cfgQuE5Dt4xVlZD/aeh9MZw8I=
+X-Google-Smtp-Source: AGRyM1t4VXnXn8+Loc5ODJnUdTydrfli0STSQdWPpmsCAuf+A10LSMxmSbypmIxm3SS5MvgJQizLNsqzw9uQ73ChQNM=
+X-Received: by 2002:a9d:674e:0:b0:614:da04:4b12 with SMTP id
+ w14-20020a9d674e000000b00614da044b12mr2197363otm.170.1656530655056; Wed, 29
+ Jun 2022 12:24:15 -0700 (PDT)
 MIME-Version: 1.0
-References: <YryIdu0jdTF+fIiW@playground>
-In-Reply-To: <YryIdu0jdTF+fIiW@playground>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 29 Jun 2022 12:21:44 -0700
-Message-ID: <CAADnVQ+8dqkrp_tH4PfeY9wOA60QAHS2xo4xt5F09Q-UUBHeQA@mail.gmail.com>
-Subject: Re: [PATCH 1/2] btf: Fix required space error
-To:     Jules Irenge <jbi.octave@gmail.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
+References: <20220628165024.25718-1-moises.veleta@linux.intel.com>
+In-Reply-To: <20220628165024.25718-1-moises.veleta@linux.intel.com>
+From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
+Date:   Wed, 29 Jun 2022 22:24:04 +0300
+Message-ID: <CAHNKnsTUbdhZ9uUJnF535WajPm6k7R2nECaJZrKjFJCUuHmHEQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 1/1] net: wwan: t7xx: Add AP CLDMA and GNSS port
+To:     Moises Veleta <moises.veleta@linux.intel.com>
+Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        M Chetan Kumar <m.chetan.kumar@intel.com>,
+        "Devegowda, Chandrashekar" <chandrashekar.devegowda@intel.com>,
+        Intel Corporation <linuxwwan@intel.com>,
+        chiranjeevi.rapolu@linux.intel.com,
+        =?UTF-8?B?SGFpanVuIExpdSAo5YiY5rW35YabKQ==?= 
+        <haijun.liu@mediatek.com>,
+        Ricardo Martinez <ricardo.martinez@linux.intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "Sharma, Dinesh" <dinesh.sharma@intel.com>,
+        =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        "Veleta, Moises" <moises.veleta@intel.com>,
+        Madhusmita Sahu <madhusmita.sahu@intel.com>
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
@@ -73,10 +79,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 29, 2022 at 10:14 AM Jules Irenge <jbi.octave@gmail.com> wrote:
->
-> This patch fixes error reported ny Checkpatch at bpf_log()
+Hello Moises,
 
-Please do not send patches suggested by checkpatch.
-checkpatch is not an authoritative tool.
-It's merely suggesting things.
+On Tue, Jun 28, 2022 at 7:51 PM Moises Veleta
+<moises.veleta@linux.intel.com> wrote:
+> The t7xx device contains two Cross Layer DMA (CLDMA) interfaces to
+> communicate with AP and Modem processors respectively. So far only
+> MD-CLDMA was being used, this patch enables AP-CLDMA and the GNSS
+> port which requires such channel.
+>
+> GNSS AT control port allows Modem Manager to control GPS for:
+> - Start/Stop GNSS sessions,
+> - Configuration commands to support Assisted GNSS positioning
+> - Crash & reboot (notifications when resetting device (AP) & host)
+> - Settings to Enable/Disable GNSS solution
+> - Geofencing
+
+I am still in doubt, should we export the pure GNSS port via the wwan
+subsystem. Personally, I like Loic's suggestion to export this port
+via the gnss subsystem. This way, the modem interface will be
+consistent with the kernel device model. What drawbacks do you see in
+this approach?
+
+--
+Sergey
