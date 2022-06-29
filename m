@@ -2,84 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 97BA55605F8
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 18:38:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 65A9A560615
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 18:44:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229736AbiF2QiZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 12:38:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49078 "EHLO
+        id S229994AbiF2Qn7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 12:43:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229457AbiF2QiX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 12:38:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9EAA1A064;
-        Wed, 29 Jun 2022 09:38:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 827E861CEB;
-        Wed, 29 Jun 2022 16:38:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38917C34114;
-        Wed, 29 Jun 2022 16:38:18 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="ZNKx75q7"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1656520696;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=oqsTdiLfWpJvLwXGqGd7Je96p2+qJUVXjf/cM3xQGqA=;
-        b=ZNKx75q7yT64VSkCyZYIG/UKOvmj2k2d+g2rhHqSjeu1Zdq/d9bl9TVbzbqjHVmavQYjof
-        KuXqFM7kkX42Se1F8LiCZUWNnALfjzJmU8Ysdci7RZK9kyZOyLEcxbiTpNjTBsI4Ywyan1
-        UosUpF3Ud0xyjAhkSthaJ/NO4xyrkkI=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 2422f02d (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Wed, 29 Jun 2022 16:38:16 +0000 (UTC)
-Date:   Wed, 29 Jun 2022 18:38:09 +0200
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arve =?utf-8?B?SGrDuG5uZXbDpWc=?= <arve@android.com>,
-        Todd Kjos <tkjos@android.com>,
-        Martijn Coenen <maco@android.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Hridya Valsaraju <hridya@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Theodore Ts'o <tytso@mit.edu>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Alex Xu (Hello71)" <alex_y_xu@yahoo.ca>,
-        Paolo Abeni <pabeni@redhat.com>, Rob Herring <robh@kernel.org>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Shuah Khan <shuah@kernel.org>, linux-kernel@vger.kernel.org,
-        wireguard@lists.zx2c4.com, netdev@vger.kernel.org,
-        rcu@vger.kernel.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH] remove CONFIG_ANDROID
-Message-ID: <Yrx/8UOY+J8Ao3Bd@zx2c4.com>
-References: <20220629150102.1582425-1-hch@lst.de>
- <20220629150102.1582425-2-hch@lst.de>
- <Yrx5Lt7jrk5BiHXx@zx2c4.com>
- <20220629161020.GA24891@lst.de>
- <Yrx6EVHtroXeEZGp@zx2c4.com>
- <20220629161527.GA24978@lst.de>
- <Yrx8/Fyx15CTi2zq@zx2c4.com>
- <20220629163007.GA25279@lst.de>
+        with ESMTP id S229841AbiF2Qn6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 12:43:58 -0400
+Received: from mail-ua1-x931.google.com (mail-ua1-x931.google.com [IPv6:2607:f8b0:4864:20::931])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4A5C1FCEB
+        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 09:43:57 -0700 (PDT)
+Received: by mail-ua1-x931.google.com with SMTP id c7so5281398uak.1
+        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 09:43:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ECxWJ8+hcunFxEee4Dm/hI3ca5o+3lf6Z2+XxRk9iBU=;
+        b=E/1rhnxb5jmKeWAf/UFFnGn+xd+IJDqdcY6Kj8Vi0SwVStH37AnTzug/UaFlZsTici
+         lrCc+f2LxQBxDn7jq7NhqOOH63yXTiUn4pPZ2Kq3JIjJEmeOBk/SMT67l6fF0/RWfqzi
+         08DDF8hd4TFKSb4pCrh7jfnrhwfOqxfQ+eLHNlFm2/j6RI00XEW31xQJMDTuNRtcoLs6
+         MPDUie1BlOWPqSdpAcb0nlk9zxFDZPdVmzatoMYURtLqVCess4SHXOBCavYFxW32zgwI
+         bLNTbD5uJ0iresciyaTkUySy3m6uMtEuogK188usZAOgrYDrsFlyHPgoS3XaZzgI3RmR
+         Ke4A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ECxWJ8+hcunFxEee4Dm/hI3ca5o+3lf6Z2+XxRk9iBU=;
+        b=22aBVSIOsRoVWIFWCv+hZJxN6aJ96NzsMIemtCvl0WfCLR0P+TqQfJ+Fulhuupig4G
+         wtOeZpho/7bKOKwfhmceMovXyCcGZokyF/SGAZB3Z58dFtXQ/l/loZ2dCERDBgP81bJR
+         j+U2ZxCnQ80SqgP14xnlv3Et1OI2c8Ue2BPUYX+sdH38dlLK36SxdLBM1m27fbjy4b8H
+         5RKXyZIVK4V2tqGfVEgwNqnppsGnqCYsITSEt72KPrxKsTeXxzMaUsdJNxSCKQ/fto0Z
+         RV9AurI9+m6lkNStfi5i/Ek45a7wgopklC3Yfsb2hLyVpsSNwAap3GoD6No+dbZOYovV
+         niUw==
+X-Gm-Message-State: AJIora/M4gf0N+PjEoOtXogqrFpagtMFBCSabOgNv/X3IiEB9/V38xbr
+        ABTTqNXQ9IJjpM6RkXTiiiJmH3Nd562x8mvDqs0PmS8tSX8=
+X-Google-Smtp-Source: AGRyM1vA/Ued5rxPy7nJKDwc0yDOhWbBXnVEUgEP+sypSLTdDETAkBWqomXbJFqY6ckBSFqgjiLBAxl2W8yRGYoNiUM=
+X-Received: by 2002:ab0:1430:0:b0:37f:315b:8802 with SMTP id
+ b45-20020ab01430000000b0037f315b8802mr2512484uae.90.1656521036578; Wed, 29
+ Jun 2022 09:43:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220629163007.GA25279@lst.de>
-X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+References: <20220629035434.1891-1-luizluca@gmail.com>
+In-Reply-To: <20220629035434.1891-1-luizluca@gmail.com>
+From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
+Date:   Wed, 29 Jun 2022 13:43:45 -0300
+Message-ID: <CAJq09z44SNGFkCi_BCpQ+3DuXhKfGVsMubRYE7AezJsGGOboVA@mail.gmail.com>
+Subject: Re: [PATCH net-next RFC 0/3] net: dsa: realtek: drop custom slave MII
+To:     "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>, krzk+dt@kernel.org,
+        =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -87,26 +74,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 29, 2022 at 06:30:07PM +0200, Christoph Hellwig wrote:
-> On Wed, Jun 29, 2022 at 06:25:32PM +0200, Jason A. Donenfeld wrote:
-> > Anyway, instead of the slow drip of "facts" and ≤three sentence emails,
-> > can you just write up a paragraph that indicates this is safe to do (for
-> > both (1) and (2)) in your v+1?
-> 
-> Why would I care?  If your config wakeups up so often that you need
-> special casing find a way to deal with it. 
+This RFC patch series cleans realtek-smi custom slave mii bus. Since
+fe7324b932, dsa generic code provides everything needed for
+realtek-smi driver. For extra caution, this series should be applied
+in two steps: the first 2 patches introduce the new code path that
+uses dsa generic code. It will show a warning message if the tree
+contains deprecated references. It will still fall back to the old
+code path if an "mdio"
+is not found.
 
-You should care, because the change you're suggesting might break code
-that I maintain. If you don't care about breaking my code with your
-change, than just have my "nack", and it'll be up to Greg to decide
-whether he wants to apply this despite the nack for two separate
-affected code spots.
+>
+> The last patch cleans all the deprecated code while keeping the kernel
+> messages. However, if there is no "mdio" node but there is a node with
+> the old compatible stings "realtek,smi-mdio", it will show an error. It
+> should still work but it will use polling instead of interruptions.
+>
+> My idea, if accepted, is to submit patches 1 and 2 now. After a
+> reasonable period, submit patch 3.
+>
+> I don't have an SMI-connected device and I'm asking for testers. It
+> would be nice to test the first 2 patches with:
+> 1) "mdio" without a compatible string. It should work without warnings.
+> 2) "mdio" with a compatible string. It should work with a warning asking
+> to remove the compatible string
+> 3) "xxx" node with compatible string. It should work with a warning
+> asking to rename "xxx" to "mdio" and remove the compatible string
+>
+> In all those cases, the switch should still keep using interruptions.
+>
+> After that, the last patch can be applied. The same tests can be
+> performed:
+> 1) "mdio" without a compatible string. It should work without warnings.
+> 2) "mdio" with a compatible string. It should work with a warning asking
+> to remove the compatible string
+> 3) "xxx" node with compatible string. It should work with an error
+> asking to rename "xxx" to "mdio" and remove the compatible string. The
+> switch will use polling instead of interruptions.
+>
+> This series might inspire other drivers as well. Currently, most dsa
+> driver implements a custom slave mii, normally only defining a
+> phy_{read,write} and loading properties from an "mdio" OF node. Since
+> fe7324b932, dsa generic code can do all that if the mdio node is named
+> "mdio".  I believe most drivers could simply drop their slave mii
+> implementations and add phy_{read,write} to the dsa_switch_ops. For
+> drivers that look for an "mdio-like" node using a compatible string, it
+> might need some type of transition to let vendors update their OF tree.
+>
+> Regards,
+>
+> Luiz
+>
 
-On the technical topic, an Android developer friend following this
-thread just pointed out to me that Android doesn't use PM_AUTOSLEEP and
-just has userspace causing suspend frequently. So by his rough
-estimation your patch actually *will* break Android devices. Zoinks.
-Maybe he's right, maybe he's not -- I don't know -- but you should
-probably look into this if you want this patch to land without breakage.
+I might have forgotten to add a new line after the subject. It ate the
+first paragraph. I'm top-posting it.
 
-Jason
+Regards,
+
+Luiz
