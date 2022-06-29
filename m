@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C5F5D5604E7
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 17:50:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 62A9F5604E9
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 17:50:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234279AbiF2PtE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 11:49:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60294 "EHLO
+        id S234306AbiF2PtF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 11:49:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229885AbiF2PtA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 11:49:00 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CE2E1FCF6;
-        Wed, 29 Jun 2022 08:48:59 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id b12-20020a17090a6acc00b001ec2b181c98so19854699pjm.4;
-        Wed, 29 Jun 2022 08:48:59 -0700 (PDT)
+        with ESMTP id S234298AbiF2PtC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 11:49:02 -0400
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1879523BCE;
+        Wed, 29 Jun 2022 08:49:02 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id jb13so14494043plb.9;
+        Wed, 29 Jun 2022 08:49:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=yW9E9JVH5fs7X71RFKnyotPspjqZm3d0xpIXUa3OJ/A=;
-        b=Q7rsteGSBnW7ZEDalfCDVngQLqRN8/Tzx3ICFDxYPq0ldtWJitNSpcHyCkr/HrFaw0
-         sWtA7D8VNHDqUAJKn+HBUSQegd+AIMTOubG0GyJ5pNGB3wPeDjXJM0/sSqTTDxo2II6m
-         UOwZDc6TzDJkXs4PXTS7dLRtTtuln4ohuv70D1/Lrdk1//+M6MafQQwXjPfHx2kSXSUy
-         4SKEiivqPcFTKCt4njn6YVAejfTihGdQY4RW8/8MtpfD6xuLsjXNxSc9FNkdfJdWFU8g
-         l0Rz5k7+KpKiklel18Z+0tWgKEMc4GP1mOVelovmCqxQRXe2ij0pflR8/gu/iFKvY0YU
-         IyPw==
+        bh=vxAcFzym4yK6vclsN66EpoJd/l4weH1dmVD/ChYTtkY=;
+        b=qv3H0fb6lRBBnyIfBFvc4vOdOCgLdTn2jfPqphNv5dY2pelqa8RtvYeYnJMTTWQ27m
+         QHQh8W1xPacszWuUibRB1oy5UTOCr1cGgq3cGtvaeAoatwJ2gH0xuvwYlQ0vdBrxXYc4
+         00KKDdqbMPT2nujw+sJmGNYqg3g+hAYpdXPrkNnBr2yHX3fkfH1i2kMdEztjTZMgMI/m
+         638y1PtcTmkoOtvbtooxrvlCZLrvy6qzw45L/upyFRwJy4iPTWb3prU/vBEI/XTy3j9n
+         Lu1q8cFkkPr+I+6pMAY1jPybjDqkDx3Iw1LxTIQlUxSuIwtQAtAtO3SV0yzGZ4MUpZ0q
+         WTBw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=yW9E9JVH5fs7X71RFKnyotPspjqZm3d0xpIXUa3OJ/A=;
-        b=z+3I6evEVtiVc3YImuh/P78cIMjEgdWsTuElcqX8MkjzNF/27FVHsOXSKVFbPpz+mC
-         rh8K5mjfj/JMwtkJZwlg6qpSN2fU/r94C0LR2fJqSY3RrfvH+TIKtLELNjjU2LqJcQSW
-         2jF/NnwzZTLMJUwttiUjquMIodp5zS6Evr8/5jgsm0CTMoF+7Z/gZZ+UaSGE6HmP6mL0
-         BHgAK7LYEuQ1ZEx+6ujB9eSzphVC3kLfywj0PebUvPFeVxT5XwF172OcK40ttXzeCBdK
-         QDo2mRf7dkA8SeLjd/1JCrEyJlQY9v8Z9YOj1S5PWb/Ylhz4yw7U6Bjek0iS2SOta8Lf
-         LN8w==
-X-Gm-Message-State: AJIora+j9URpOLn6pya9Bn8gKRjoQtXTVdGHrw2062dLP4VVb01N0I5A
-        LvtQEVogjmB51QH0Ik5qETg=
-X-Google-Smtp-Source: AGRyM1stN92bINXjMaKBW+pcw4z7iWvZye3Zl3CnbtfYDy2SaWR+Uveru3hWhxIglaB+T9m/WGcNxg==
-X-Received: by 2002:a17:902:b286:b0:16b:89b2:4e34 with SMTP id u6-20020a170902b28600b0016b89b24e34mr11291340plr.108.1656517739019;
-        Wed, 29 Jun 2022 08:48:59 -0700 (PDT)
+        bh=vxAcFzym4yK6vclsN66EpoJd/l4weH1dmVD/ChYTtkY=;
+        b=DrErbb+ldO06g8rnhEFk8U9pbRLWp26+4HW2hM1Hb48kc2Tll3lCe1+U7ta7bL03wN
+         ovf9NJwr/+ABF9IEM7qumbX2Sa6eVbmbWaBgtuWcPPMmvKue3T6yF9OKf/Qi6qfctC04
+         4rg/N+gYp7fiXkYV9vS1GugPeD0dXoPUk/KdDXDt8gWcCh1/InCyB51IbDBlDbhNO514
+         mM4m8/WO7YcPA+TSkKqCvqMStE0grRAx197y4XkVDXXVIen1b7ycVRW8elIvftlPnuMu
+         H1gRdpvUrLIweHDD5n2t1GGsffC4TsUykzYWUSv+QYwh+UrqW4dGgzNIbH169JE05ukH
+         zzSQ==
+X-Gm-Message-State: AJIora8wVvGiRVRruWoGaloh/c2XjKiW9OEVA9JnqrtmBT1g4Itbp4Bb
+        +y4Y7McUxbU3/NqaJyG9H6ZAgEDByN7zA87YWaA=
+X-Google-Smtp-Source: AGRyM1ugnZr1HPSuDuSfEwPx0q0JfyLubjSeJ6L1y3vByg/wZOiYpfPBR6lXjLvtl8iPLN4ox/NwoQ==
+X-Received: by 2002:a17:902:e887:b0:16a:5446:6dae with SMTP id w7-20020a170902e88700b0016a54466daemr9723276plg.75.1656517741625;
+        Wed, 29 Jun 2022 08:49:01 -0700 (PDT)
 Received: from vultr.guest ([45.32.72.20])
-        by smtp.gmail.com with ESMTPSA id 1-20020a620501000000b00527d84dfa42sm2661329pff.167.2022.06.29.08.48.57
+        by smtp.gmail.com with ESMTPSA id 1-20020a620501000000b00527d84dfa42sm2661329pff.167.2022.06.29.08.48.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Jun 2022 08:48:57 -0700 (PDT)
+        Wed, 29 Jun 2022 08:49:00 -0700 (PDT)
 From:   Yafang Shao <laoar.shao@gmail.com>
 To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
         kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
         john.fastabend@gmail.com, kpsingh@kernel.org, quentin@isovalent.com
 Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         Yafang Shao <laoar.shao@gmail.com>
-Subject: [PATCH bpf-next 2/4] bpf: Warn on non-preallocated case for missed trace types
-Date:   Wed, 29 Jun 2022 15:48:30 +0000
-Message-Id: <20220629154832.56986-3-laoar.shao@gmail.com>
+Subject: [PATCH bpf-next 3/4] bpf: Don't do preempt check when migrate is disabled
+Date:   Wed, 29 Jun 2022 15:48:31 +0000
+Message-Id: <20220629154832.56986-4-laoar.shao@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220629154832.56986-1-laoar.shao@gmail.com>
 References: <20220629154832.56986-1-laoar.shao@gmail.com>
@@ -71,29 +71,92 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-BPF_PROG_TYPE_RAW_TRACEPOINT_WRITABLE and BPF_PROG_TYPE_TRACING are
-trace type as well, which may also cause unexpected memory allocation if
-we set BPF_F_NO_PREALLOC.
-Let's also warn on both of them.
+It doesn't need to do the preempt check when migrate is disabled
+after commit
+74d862b682f5 ("sched: Make migrate_disable/enable() independent of RT").
 
 Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
 ---
- kernel/bpf/verifier.c | 2 ++
- 1 file changed, 2 insertions(+)
+ kernel/bpf/bpf_task_storage.c | 8 ++++----
+ kernel/bpf/hashtab.c          | 6 +++---
+ kernel/bpf/trampoline.c       | 4 ++--
+ 3 files changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 4938477912cd..8452e5746f59 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -12539,6 +12539,8 @@ static bool is_tracing_prog_type(enum bpf_prog_type type)
- 	case BPF_PROG_TYPE_TRACEPOINT:
- 	case BPF_PROG_TYPE_PERF_EVENT:
- 	case BPF_PROG_TYPE_RAW_TRACEPOINT:
-+	case BPF_PROG_TYPE_RAW_TRACEPOINT_WRITABLE:
-+	case BPF_PROG_TYPE_TRACING:
- 		return true;
- 	default:
+diff --git a/kernel/bpf/bpf_task_storage.c b/kernel/bpf/bpf_task_storage.c
+index e9014dc62682..6f290623347e 100644
+--- a/kernel/bpf/bpf_task_storage.c
++++ b/kernel/bpf/bpf_task_storage.c
+@@ -26,20 +26,20 @@ static DEFINE_PER_CPU(int, bpf_task_storage_busy);
+ static void bpf_task_storage_lock(void)
+ {
+ 	migrate_disable();
+-	__this_cpu_inc(bpf_task_storage_busy);
++	this_cpu_inc(bpf_task_storage_busy);
+ }
+ 
+ static void bpf_task_storage_unlock(void)
+ {
+-	__this_cpu_dec(bpf_task_storage_busy);
++	this_cpu_dec(bpf_task_storage_busy);
+ 	migrate_enable();
+ }
+ 
+ static bool bpf_task_storage_trylock(void)
+ {
+ 	migrate_disable();
+-	if (unlikely(__this_cpu_inc_return(bpf_task_storage_busy) != 1)) {
+-		__this_cpu_dec(bpf_task_storage_busy);
++	if (unlikely(this_cpu_inc_return(bpf_task_storage_busy) != 1)) {
++		this_cpu_dec(bpf_task_storage_busy);
+ 		migrate_enable();
  		return false;
+ 	}
+diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
+index 9d4559a1c032..6a3a95037aac 100644
+--- a/kernel/bpf/hashtab.c
++++ b/kernel/bpf/hashtab.c
+@@ -166,8 +166,8 @@ static inline int htab_lock_bucket(const struct bpf_htab *htab,
+ 	hash = hash & HASHTAB_MAP_LOCK_MASK;
+ 
+ 	migrate_disable();
+-	if (unlikely(__this_cpu_inc_return(*(htab->map_locked[hash])) != 1)) {
+-		__this_cpu_dec(*(htab->map_locked[hash]));
++	if (unlikely(this_cpu_inc_return(*(htab->map_locked[hash])) != 1)) {
++		this_cpu_dec(*(htab->map_locked[hash]));
+ 		migrate_enable();
+ 		return -EBUSY;
+ 	}
+@@ -190,7 +190,7 @@ static inline void htab_unlock_bucket(const struct bpf_htab *htab,
+ 		raw_spin_unlock_irqrestore(&b->raw_lock, flags);
+ 	else
+ 		spin_unlock_irqrestore(&b->lock, flags);
+-	__this_cpu_dec(*(htab->map_locked[hash]));
++	this_cpu_dec(*(htab->map_locked[hash]));
+ 	migrate_enable();
+ }
+ 
+diff --git a/kernel/bpf/trampoline.c b/kernel/bpf/trampoline.c
+index 93c7675f0c9e..f4486e54fdb3 100644
+--- a/kernel/bpf/trampoline.c
++++ b/kernel/bpf/trampoline.c
+@@ -585,7 +585,7 @@ u64 notrace __bpf_prog_enter(struct bpf_prog *prog, struct bpf_tramp_run_ctx *ru
+ 
+ 	run_ctx->saved_run_ctx = bpf_set_run_ctx(&run_ctx->run_ctx);
+ 
+-	if (unlikely(__this_cpu_inc_return(*(prog->active)) != 1)) {
++	if (unlikely(this_cpu_inc_return(*(prog->active)) != 1)) {
+ 		inc_misses_counter(prog);
+ 		return 0;
+ 	}
+@@ -631,7 +631,7 @@ u64 notrace __bpf_prog_enter_sleepable(struct bpf_prog *prog, struct bpf_tramp_r
+ 	migrate_disable();
+ 	might_fault();
+ 
+-	if (unlikely(__this_cpu_inc_return(*(prog->active)) != 1)) {
++	if (unlikely(this_cpu_inc_return(*(prog->active)) != 1)) {
+ 		inc_misses_counter(prog);
+ 		return 0;
+ 	}
 -- 
 2.17.1
 
