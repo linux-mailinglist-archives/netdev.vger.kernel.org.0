@@ -2,74 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9638C5609FC
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 21:09:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 30218560A36
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 21:22:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230184AbiF2TJH convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 29 Jun 2022 15:09:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52348 "EHLO
+        id S229977AbiF2TV7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 15:21:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229777AbiF2TJG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 15:09:06 -0400
-Received: from mailsnd3.chol.com (mailsnd5.chollian.net [203.252.1.139])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id E6A2B26AC7
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 12:09:03 -0700 (PDT)
-Received: (qmail 22630 invoked from network); Thu, 30 Jun 2022 04:06:05 +0900 (KST)
-message-id: <1656529565.22630@chol.com>
-Received: from [45.137.22.86] (45.137.22.86)
-  by mailsnd5.chol.com with ESMTP;
- Thu, 30 Jun 2022 04:06:05 +0900 (KST)
-Content-Type: text/plain; charset="iso-8859-1"
+        with ESMTP id S229774AbiF2TV6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 15:21:58 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EB402EA23;
+        Wed, 29 Jun 2022 12:21:57 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id eq6so23531076edb.6;
+        Wed, 29 Jun 2022 12:21:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/PjH9DrncQjphXUiAsRmBLYPPYTi+A1PhhVz0t7N/Nc=;
+        b=QxViXKRsnIoBrQZXPt9bhi+0m5dJVacZbOdR3YnN2c3JNScZa3mSLvAZw+lEd6zAiG
+         o8K5oZqjoWaX3BRmawxjXcSU9Rln3RkkGpC7Wv8RFURpc7LA4vHyab6d73w6HzbZ/Wd9
+         +uBVbM28LoSdzbjUaV3lRg7NEyLjpQhWmw3SOP2wOVl9Chp7OcCjtmr1umyr01M6oreQ
+         ih/ar34l82ZFVSKMbjO7LS9JrL0zAWsd5E3LkGiKkdNUx88F4L7ZqYmWry2H7NqBFfOl
+         qtOICQV9eG7IU9Dm83/ldMx12JtAbmpnjWNm3nTJLLwNzZvyFJflB3VOQVXVg6t6uW6a
+         Cdzg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/PjH9DrncQjphXUiAsRmBLYPPYTi+A1PhhVz0t7N/Nc=;
+        b=3aDcOK5MEi1LKAWBgUiTU4FaLxQAcfgCLxSrLIPdsnMDxRLGSsFw//kEILBbCucYh8
+         6l374f19XkDWzJ6QMq9hyzkxUhoyEgc6VzAjiAt2eyOBz41LKVLkNjWdVv3dR/N13vB0
+         /YbNlXEgPWEt0EGGrypYpJr8b6RhRRpYRrnluqxTdYtHUON2GhHgVB6SWGIyRocIRaqi
+         HpSmGQMC++6KzupZggclIWKfgqCeLVhNF4hM+g/ivtR0xyvqb50KdTlpujFZn0HucXPq
+         DD33buew6aPKC8tha8ZynRWrhr8nZCghJ+CefTIpX5rcnzzN6hP+OV3LXXkdZTR0MEsr
+         bA6Q==
+X-Gm-Message-State: AJIora8NDOO991M0PMJ5E3n4ENjcrWBWe+tgm6Y9ZBw/98ekM9+lyAaF
+        6/reNP3Yr80mLVcfuO96F7i/bZld75dJmcXYgMI1wJGC
+X-Google-Smtp-Source: AGRyM1ulpK6b/agsTb0936XMKMX/ktiuX2mSZ33MXBLtuzmaRJLPMF7QRlCuqC7DE2m2RuQRXAg9tHJCudxY4w7LPqE=
+X-Received: by 2002:a05:6402:3487:b0:435:b0d2:606e with SMTP id
+ v7-20020a056402348700b00435b0d2606emr6522763edc.66.1656530516219; Wed, 29 Jun
+ 2022 12:21:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-Content-Description: Mail message body
-Subject: BUSINESS PATNERSHIP PROPOSAL
-To:     Recipients <m92137465@chol.com>
-From:   "MR NICOLAS THOMAS" <m92137465@chol.com>
-Date:   Wed, 29 Jun 2022 21:07:16 +0200
-Reply-To: nicolasthomas@zohomail.eu
-X-Spam-Status: Yes, score=5.0 required=5.0 tests=ADVANCE_FEE_2_NEW_MONEY,
-        BAYES_50,HK_NAME_MR_MRS,LOTS_OF_MONEY,MILLION_USD,
-        MSGID_FROM_MTA_HEADER,RCVD_IN_DNSWL_LOW,RCVD_IN_SBL,
-        RCVD_IN_VALIDITY_RPBL,SPF_HELO_NONE,SPF_PASS,SUBJ_ALL_CAPS,
-        T_SCC_BODY_TEXT_LINE,UPPERCASE_75_100 autolearn=no autolearn_force=no
-        version=3.4.6
-X-Spam-Report: * -0.7 RCVD_IN_DNSWL_LOW RBL: Sender listed at https://www.dnswl.org/,
-        *       low trust
-        *      [203.252.1.139 listed in list.dnswl.org]
-        *  0.1 RCVD_IN_SBL RBL: Received via a relay in Spamhaus SBL
-        *      [45.137.22.86 listed in zen.spamhaus.org]
-        *  1.3 RCVD_IN_VALIDITY_RPBL RBL: Relay in Validity RPBL,
-        *      https://senderscore.org/blocklistlookup/
-        *      [203.252.1.139 listed in bl.score.senderscore.com]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.5000]
-        *  0.5 SUBJ_ALL_CAPS Subject is all capitals
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.0 MILLION_USD BODY: Talks about millions of dollars
-        *  1.0 HK_NAME_MR_MRS No description available.
-        *  0.0 LOTS_OF_MONEY Huge... sums of money
-        *  0.0 MSGID_FROM_MTA_HEADER Message-Id was added by a relay
-        *  0.0 UPPERCASE_75_100 message body is 75-100% uppercase
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  2.0 ADVANCE_FEE_2_NEW_MONEY Advance Fee fraud and lots of money
-X-Spam-Level: *****
+References: <YryIdu0jdTF+fIiW@playground>
+In-Reply-To: <YryIdu0jdTF+fIiW@playground>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Wed, 29 Jun 2022 12:21:44 -0700
+Message-ID: <CAADnVQ+8dqkrp_tH4PfeY9wOA60QAHS2xo4xt5F09Q-UUBHeQA@mail.gmail.com>
+Subject: Re: [PATCH 1/2] btf: Fix required space error
+To:     Jules Irenge <jbi.octave@gmail.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Jun 29, 2022 at 10:14 AM Jules Irenge <jbi.octave@gmail.com> wrote:
+>
+> This patch fixes error reported ny Checkpatch at bpf_log()
 
-GREETINGS FROM MR NICOLAS!
-
-WE CAN GO INTO PARTNERSHIP TOGETHER ON THIS DEAL, LET ME FIRST INTRODUCE MYSELF TO YOU PROPERLY, MY NAME IS MR NICOLAS THOMAS, I'M A FUND PORTFOLIO MANAGER TO MR. DMITRY RYBOLOVLEV A RUSSIAN BILLIONAIRE AND PRESIDENT OF MONACO'S FOOTBALL CLUB (AS MONACO).
-
-DUE TO THE ONGOING PAPER LEAK CRISIS IN PANAMA, WHICH WAS BROUGHT UP BY MOSSACK FONSECA LAW FIRM, MY CLIENT WOULD LIKE TO MOVE OUT PART OF HIS FUNDS IN THE SUM OF ($300,000,000.00) THREE HUNDRED MILLION UNITED STATES DOLLARS FROM AN OFFSHORE BANK IN PANAMA. FOR SAFEKEEPING AND INVESTMENT PURPOSES.
-
-IF INTERESTED, KINDLY GET BACK FOR MORE DETAILS VIA EMAIL; nicolasthomas@zohomail.eu
-
-THANKS AND BEST REGARDS,
-
-NICOLAS THOMAS
+Please do not send patches suggested by checkpatch.
+checkpatch is not an authoritative tool.
+It's merely suggesting things.
