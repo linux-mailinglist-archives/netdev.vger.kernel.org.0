@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EAA0055F479
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 05:56:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 30DB955F490
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 05:56:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231216AbiF2Dyx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 23:54:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44962 "EHLO
+        id S229572AbiF2DzA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 23:55:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231165AbiF2Dyv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 23:54:51 -0400
-Received: from mail-ot1-x329.google.com (mail-ot1-x329.google.com [IPv6:2607:f8b0:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D7B4205D8
-        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 20:54:50 -0700 (PDT)
-Received: by mail-ot1-x329.google.com with SMTP id t26-20020a9d775a000000b006168f7563daso11258431otl.2
-        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 20:54:50 -0700 (PDT)
+        with ESMTP id S230235AbiF2Dy6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 23:54:58 -0400
+Received: from mail-oa1-x36.google.com (mail-oa1-x36.google.com [IPv6:2001:4860:4864:20::36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28A5E29808
+        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 20:54:54 -0700 (PDT)
+Received: by mail-oa1-x36.google.com with SMTP id 586e51a60fabf-101bb9275bcso19771665fac.8
+        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 20:54:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=zT6ZznFkaTdmQtDR/I7q1fiiUEuYnpac/NIGkYGkHto=;
-        b=PjDxawVi8fuUKmHEmVY3MyqdQe+2K3+fKuARweOfe28onUai6eh3kl9INQ3iDTyTd9
-         D9DCsytQ85brRliJJhrUYIbu3qEE3/Yy5O0tSUazL1ZItjQ7aUCrs+NenbwoUmbzB7WZ
-         2d5jrbFHm7ma2u+i4OZp4bFxzDwEVFTvbBtQ8bqlCueIq2p0YCHwPtLoOzkfwlxXkAw5
-         cIrelOjwfsDzDZgF5eY8F4cFew+4Rq14CUJgwxEUP8+w24p3k5Hp8thX9jszoMC6FBBj
-         YVYU+YcI1ZPKPtrJj8ZAXYmvRGF55oaYX/hwdOnkYQnBBXBglGr51r6VSRgSQudh4E71
-         +6Fw==
+        bh=QNzQn/kZnGRmAeuFru6HW4F7EfldgkyUkpR5YkXQfwk=;
+        b=UKVg5bxtqemAHqpSOlx+3tgwdsaBX8xJwuhu6vYY+rBpngnr0vweVAX4gv6dTDgcdT
+         7xdxYV2mXsRRu0+Kue8r3FooDPFaKVSslELHddyeFINJ7hBAu2FZhbFpTOkIYgTCV/6W
+         7gEgy1ElqyjC1b/BmffTE29aILjwlqHzGTPCCzLJxWNigJiiOPAue6QFjy95PuASuZE6
+         Mg+8KZVOu9RqxYMUv1EFcBfH/nLLHWXDboFZojyo8vaNWFstmMqDzHRXUGdJTp1lJ0cY
+         c6ulmq9DRk0rfG3VCNS/OZwkWQXjgQvJdMxyN8pw7VqKwIe9wPNws5w9H4BbEIQEY0uL
+         0URQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=zT6ZznFkaTdmQtDR/I7q1fiiUEuYnpac/NIGkYGkHto=;
-        b=XZp+9QNVCtysNi1VRXe3e79SKvO5fZ3DqiH0lVTpTK6HqRxZYhtHYkYcszCPYXUkz0
-         KRRoNOJOwCkXo/E4nsZ2fbp7O300TwEE/03CoIHxt3dHIb6zdzEvNQBg9BrtVEaXXmTs
-         KfakqbLLT0iG6LhgufqAoRM7kSSt2FGSTZKqRpjX05Ajgr5DjgAnqheZuj7ftsrJ5puc
-         /PY9VM7Ca+L8vwQg8hDKqYINJpvC27i0/vpdZ834IZX3IYvssqkxTgRNJF60SVsoDYHM
-         KvmVSeQ4/TH/znUvT3Jbjb4CXGjEoN/311fg/xuiy9hn2b9/TCbJcSpjvAixGzpLijm3
-         CRpg==
-X-Gm-Message-State: AJIora9IV7C60/2F6+v95yVyG0+yZQr7KTBQxFy3xt4AJT4k4iw/VWzE
-        QNbfhIBmasnB7FhH3ppocWxQyNrJr/JS6g==
-X-Google-Smtp-Source: AGRyM1skBgJbuybToBBlHaJULzqg9upc7Ua9MEs04ghUxBfggZZ+lRZE7nqZIZkhYiovcqt1uZduzA==
-X-Received: by 2002:a05:6830:2459:b0:616:ce47:fae8 with SMTP id x25-20020a056830245900b00616ce47fae8mr609838otr.291.1656474889147;
-        Tue, 28 Jun 2022 20:54:49 -0700 (PDT)
+        bh=QNzQn/kZnGRmAeuFru6HW4F7EfldgkyUkpR5YkXQfwk=;
+        b=kLWX2C/W7PZpYJCmJ91siSugoTyf0+IpzxQ+g+NF/lulbzocyEbSh3U1ga3qCQniv9
+         htjRrGK2jAdrtdjqH0qEop0nHKvQL+RMR2jx8i5yYxvXvqZlsiFG5+RWACnd73gPrT2d
+         Lxy3Ui2QeVjEFVOpVqJIk7+4Tm1+gCGvq5ye8UG2pGBHTEgpj3BN+ACBxu2lI77yb5VP
+         IO38faL5q+OnBQedtxDdxvhimyZGKZVv9IYtFf4NNTN8MznG869/qlEiGA1xFyXjrynF
+         ENlpr/APJDJ4gYY4ncix4K+hAvarwh5SEQEf8JMR/Kb2zPdMsHMKmGNjyprztuion7FU
+         B09A==
+X-Gm-Message-State: AJIora8be9iOuK9Rkr65z4VuNMXzCIHzWSxXhKhqS6cjACWlkwipu3SR
+        nJ1SYh4U/jG8qnuXMTXWrj6nQzfuV4+RrA==
+X-Google-Smtp-Source: AGRyM1tq7/Gme7OzCGkvoyg8PgO0fSMvOwDqTCzHG3XpVFZ4hrVSRGtTeuJNy4m/JwY+qStXgBdt0w==
+X-Received: by 2002:a05:6870:b414:b0:10b:8204:7e95 with SMTP id x20-20020a056870b41400b0010b82047e95mr727264oap.88.1656474893256;
+        Tue, 28 Jun 2022 20:54:53 -0700 (PDT)
 Received: from tresc043793.tre-sc.gov.br ([187.94.103.218])
-        by smtp.gmail.com with ESMTPSA id r6-20020a056870580600b001089aef1815sm5636756oap.20.2022.06.28.20.54.44
+        by smtp.gmail.com with ESMTPSA id r6-20020a056870580600b001089aef1815sm5636756oap.20.2022.06.28.20.54.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jun 2022 20:54:47 -0700 (PDT)
+        Tue, 28 Jun 2022 20:54:52 -0700 (PDT)
 From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     linus.walleij@linaro.org, alsi@bang-olufsen.dk, andrew@lunn.ch,
@@ -54,9 +54,9 @@ Cc:     linus.walleij@linaro.org, alsi@bang-olufsen.dk, andrew@lunn.ch,
         davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         robh+dt@kernel.org, krzk+dt@kernel.org, arinc.unal@arinc9.com,
         Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Subject: [PATCH net-next RFC 1/3] net: dsa: realtek: rename switch_ops to its usage, not users
-Date:   Wed, 29 Jun 2022 00:54:32 -0300
-Message-Id: <20220629035434.1891-2-luizluca@gmail.com>
+Subject: [PATCH net-next RFC 2/3] net: dsa: realtek: deprecate custom slave mii
+Date:   Wed, 29 Jun 2022 00:54:33 -0300
+Message-Id: <20220629035434.1891-3-luizluca@gmail.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220629035434.1891-1-luizluca@gmail.com>
 References: <20220629035434.1891-1-luizluca@gmail.com>
@@ -72,128 +72,85 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The difference between ds_ops_smi and ds_ops_mdio is only the presence
-of phy_{read,write} because the realtek-smi implements a custom slave
-MII while realtek-mdio uses the standard slave mii created by DSA. It's
-better to have a name that reflects why we need different switch_ops
-instead of who is using it.
+The custom slave mii was required only to parse the OF mdio node.
+However, since fe7324b932, the standard slave mii created by dsa already
+looks for an "mdio" node.
+
+The realtek-smi was using a compatible string ("realtek,smi-mdio") to
+find the slave mdio node. Although device-tree bindings and examples all
+use "mdio". If the name does not match "mdio", the driver will still use
+the custom mii slave. The driver will also ask to remove the compatible
+string if it exists in the "mdio" node.
+
+After a grace period, we can remove:
+- realtek_variant.ds_ops_custom_slavemii
+- realtek_ops.phy_{read,write}
+- realtek_ops.setup_interface
+- {rtl8365mb,rtl8366rb}_phy_{read,write}
+- realtek_smi_setup_mdio
 
 Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
 ---
- drivers/net/dsa/realtek/realtek-mdio.c | 2 +-
- drivers/net/dsa/realtek/realtek-smi.c  | 2 +-
- drivers/net/dsa/realtek/realtek.h      | 4 ++--
- drivers/net/dsa/realtek/rtl8365mb.c    | 8 ++++----
- drivers/net/dsa/realtek/rtl8366rb.c    | 8 ++++----
- 5 files changed, 12 insertions(+), 12 deletions(-)
+ drivers/net/dsa/realtek/realtek-smi.c | 21 ++++++++++++++++++---
+ 1 file changed, 18 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/dsa/realtek/realtek-mdio.c b/drivers/net/dsa/realtek/realtek-mdio.c
-index c58f49d558d2..90624a5102b5 100644
---- a/drivers/net/dsa/realtek/realtek-mdio.c
-+++ b/drivers/net/dsa/realtek/realtek-mdio.c
-@@ -222,7 +222,7 @@ static int realtek_mdio_probe(struct mdio_device *mdiodev)
+diff --git a/drivers/net/dsa/realtek/realtek-smi.c b/drivers/net/dsa/realtek/realtek-smi.c
+index 3eb9d67fd2de..c3668a9208ac 100644
+--- a/drivers/net/dsa/realtek/realtek-smi.c
++++ b/drivers/net/dsa/realtek/realtek-smi.c
+@@ -379,6 +379,10 @@ static int realtek_smi_setup_mdio(struct dsa_switch *ds)
+ 		return -ENODEV;
+ 	}
+ 
++	dev_warn(priv->dev,
++		 "Rename '%s' to 'mdio' and remove the compatible string\n",
++		  mdio_np->full_name);
++
+ 	priv->slave_mii_bus = devm_mdiobus_alloc(priv->dev);
+ 	if (!priv->slave_mii_bus) {
+ 		ret = -ENOMEM;
+@@ -412,10 +416,10 @@ static int realtek_smi_setup_mdio(struct dsa_switch *ds)
+ static int realtek_smi_probe(struct platform_device *pdev)
+ {
+ 	const struct realtek_variant *var;
++	struct device_node *np, *mdio_np;
+ 	struct device *dev = &pdev->dev;
+ 	struct realtek_priv *priv;
+ 	struct regmap_config rc;
+-	struct device_node *np;
+ 	int ret;
+ 
+ 	var = of_device_get_match_data(dev);
+@@ -452,7 +456,6 @@ static int realtek_smi_probe(struct platform_device *pdev)
+ 	priv->cmd_write = var->cmd_write;
+ 	priv->ops = var->ops;
+ 
+-	priv->setup_interface = realtek_smi_setup_mdio;
+ 	priv->write_reg_noack = realtek_smi_write_reg_noack;
+ 
+ 	dev_set_drvdata(dev, priv);
+@@ -497,8 +500,20 @@ static int realtek_smi_probe(struct platform_device *pdev)
  	priv->ds->dev = dev;
  	priv->ds->num_ports = priv->num_ports;
  	priv->ds->priv = priv;
--	priv->ds->ops = var->ds_ops_mdio;
 +	priv->ds->ops = var->ds_ops;
++
++	mdio_np = of_get_child_by_name(np, "mdio");
++	if (mdio_np) {
++		if (of_device_is_compatible(mdio_np, "realtek,smi-mdio"))
++			dev_warn(dev, "Remove deprecated prop '%s' from '%s'",
++				 "compatible = \"realtek,smi-mdio\"",
++				 mdio_np->full_name);
++		of_node_put(mdio_np);
++	} else {
++		priv->ds->ops = var->ds_ops_custom_slavemii;
++		priv->setup_interface = realtek_smi_setup_mdio;
++	}
  
- 	ret = dsa_register_switch(priv->ds);
- 	if (ret) {
-diff --git a/drivers/net/dsa/realtek/realtek-smi.c b/drivers/net/dsa/realtek/realtek-smi.c
-index 45992f79ec8d..3eb9d67fd2de 100644
---- a/drivers/net/dsa/realtek/realtek-smi.c
-+++ b/drivers/net/dsa/realtek/realtek-smi.c
-@@ -498,7 +498,7 @@ static int realtek_smi_probe(struct platform_device *pdev)
- 	priv->ds->num_ports = priv->num_ports;
- 	priv->ds->priv = priv;
- 
--	priv->ds->ops = var->ds_ops_smi;
-+	priv->ds->ops = var->ds_ops_custom_slavemii;
+-	priv->ds->ops = var->ds_ops_custom_slavemii;
  	ret = dsa_register_switch(priv->ds);
  	if (ret) {
  		dev_err_probe(dev, ret, "unable to register switch\n");
-diff --git a/drivers/net/dsa/realtek/realtek.h b/drivers/net/dsa/realtek/realtek.h
-index 4fa7c6ba874a..004a9ae91ccf 100644
---- a/drivers/net/dsa/realtek/realtek.h
-+++ b/drivers/net/dsa/realtek/realtek.h
-@@ -116,8 +116,8 @@ struct realtek_ops {
- };
- 
- struct realtek_variant {
--	const struct dsa_switch_ops *ds_ops_smi;
--	const struct dsa_switch_ops *ds_ops_mdio;
-+	const struct dsa_switch_ops *ds_ops_custom_slavemii;
-+	const struct dsa_switch_ops *ds_ops;
- 	const struct realtek_ops *ops;
- 	unsigned int clk_delay;
- 	u8 cmd_read;
-diff --git a/drivers/net/dsa/realtek/rtl8365mb.c b/drivers/net/dsa/realtek/rtl8365mb.c
-index da31d8b839ac..35fd32c4d340 100644
---- a/drivers/net/dsa/realtek/rtl8365mb.c
-+++ b/drivers/net/dsa/realtek/rtl8365mb.c
-@@ -2086,7 +2086,7 @@ static int rtl8365mb_detect(struct realtek_priv *priv)
- 	return 0;
- }
- 
--static const struct dsa_switch_ops rtl8365mb_switch_ops_smi = {
-+static const struct dsa_switch_ops rtl8365mb_switch_ops_custom_slavemii = {
- 	.get_tag_protocol = rtl8365mb_get_tag_protocol,
- 	.change_tag_protocol = rtl8365mb_change_tag_protocol,
- 	.setup = rtl8365mb_setup,
-@@ -2105,7 +2105,7 @@ static const struct dsa_switch_ops rtl8365mb_switch_ops_smi = {
- 	.get_stats64 = rtl8365mb_get_stats64,
- };
- 
--static const struct dsa_switch_ops rtl8365mb_switch_ops_mdio = {
-+static const struct dsa_switch_ops rtl8365mb_switch_ops = {
- 	.get_tag_protocol = rtl8365mb_get_tag_protocol,
- 	.change_tag_protocol = rtl8365mb_change_tag_protocol,
- 	.setup = rtl8365mb_setup,
-@@ -2133,8 +2133,8 @@ static const struct realtek_ops rtl8365mb_ops = {
- };
- 
- const struct realtek_variant rtl8365mb_variant = {
--	.ds_ops_smi = &rtl8365mb_switch_ops_smi,
--	.ds_ops_mdio = &rtl8365mb_switch_ops_mdio,
-+	.ds_ops_custom_slavemii = &rtl8365mb_switch_ops_custom_slavemii,
-+	.ds_ops = &rtl8365mb_switch_ops,
- 	.ops = &rtl8365mb_ops,
- 	.clk_delay = 10,
- 	.cmd_read = 0xb9,
-diff --git a/drivers/net/dsa/realtek/rtl8366rb.c b/drivers/net/dsa/realtek/rtl8366rb.c
-index 25f88022b9e4..7c3de3be3a53 100644
---- a/drivers/net/dsa/realtek/rtl8366rb.c
-+++ b/drivers/net/dsa/realtek/rtl8366rb.c
-@@ -1793,7 +1793,7 @@ static int rtl8366rb_detect(struct realtek_priv *priv)
- 	return 0;
- }
- 
--static const struct dsa_switch_ops rtl8366rb_switch_ops_smi = {
-+static const struct dsa_switch_ops rtl8366rb_switch_ops_custom_slavemii = {
- 	.get_tag_protocol = rtl8366_get_tag_protocol,
- 	.setup = rtl8366rb_setup,
- 	.phylink_mac_link_up = rtl8366rb_mac_link_up,
-@@ -1816,7 +1816,7 @@ static const struct dsa_switch_ops rtl8366rb_switch_ops_smi = {
- 	.port_max_mtu = rtl8366rb_max_mtu,
- };
- 
--static const struct dsa_switch_ops rtl8366rb_switch_ops_mdio = {
-+static const struct dsa_switch_ops rtl8366rb_switch_ops = {
- 	.get_tag_protocol = rtl8366_get_tag_protocol,
- 	.setup = rtl8366rb_setup,
- 	.phy_read = rtl8366rb_dsa_phy_read,
-@@ -1858,8 +1858,8 @@ static const struct realtek_ops rtl8366rb_ops = {
- };
- 
- const struct realtek_variant rtl8366rb_variant = {
--	.ds_ops_smi = &rtl8366rb_switch_ops_smi,
--	.ds_ops_mdio = &rtl8366rb_switch_ops_mdio,
-+	.ds_ops_custom_slavemii = &rtl8366rb_switch_ops_custom_slavemii,
-+	.ds_ops = &rtl8366rb_switch_ops,
- 	.ops = &rtl8366rb_ops,
- 	.clk_delay = 10,
- 	.cmd_read = 0xa9,
 -- 
 2.36.1
 
