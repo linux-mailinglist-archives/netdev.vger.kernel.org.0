@@ -2,82 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 488065606DE
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 19:02:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39EB85606ED
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 19:04:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230525AbiF2RBa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 13:01:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46264 "EHLO
+        id S231273AbiF2REJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 13:04:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230458AbiF2RB3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 13:01:29 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA0A338D8E;
-        Wed, 29 Jun 2022 10:01:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=TOrOdK/kM8JgnYoofm5Ds5kWRQVMJdq/dybV2/q0OTk=; b=Ey0WqmkLQSWxxDxJVbg9oIZboy
-        9AFlaPEM/7o6pnGF24CQvbkDxS4S28hEE99HizhvqvWxoaA7Fuh61bCTpzmvt4hwxahxCdOcD6EeQ
-        zGMyF2zFhSv8glHWqHcxQWHq7mNLVWinYOpammeq/rMVucTt6xPV+WAP1j3ZSvr6V5vE=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1o6b3u-008je8-GO; Wed, 29 Jun 2022 19:01:10 +0200
-Date:   Wed, 29 Jun 2022 19:01:10 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Divya Koppera <Divya.Koppera@microchip.com>, hkallweit1@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, UNGLinuxDriver@microchip.com,
-        Madhuri.Sripada@microchip.com
-Subject: Re: [PATCH net-next] net: phy: micrel: Adding LED feature for
- LAN8814 PHY
-Message-ID: <YryFVpFTrQ1GAXhl@lunn.ch>
-References: <20220628054925.14198-1-Divya.Koppera@microchip.com>
- <YrsRUd6GPG0qCJsw@lunn.ch>
- <YrxXL/p3q35SsXmk@shell.armlinux.org.uk>
+        with ESMTP id S230072AbiF2REF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 13:04:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B54C3BA7C;
+        Wed, 29 Jun 2022 10:04:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BD83A61E38;
+        Wed, 29 Jun 2022 17:04:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1ACF9C341C8;
+        Wed, 29 Jun 2022 17:04:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656522243;
+        bh=LT/4rclcv8CQ0DzOB/V1Ibt/rIEd3slMQebLqTbu1MU=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=nQtcMEpfYeKbWO6wJ3nY4KeR2Eh+CWhTbuRsPbiSFKjc49LK7je/UNPcsvfIws0qY
+         GrcJgwe9Zl+1aYqhsmXs/xlFIO1GAJAv05b3k8STp/S9XqwjQd//LpNSQkkHmkdQbD
+         1K0R8dbv7+QZn4t/W8O961z8x71BrzkbU3EMc46H4rdGBhsZCrfue1ER4+io6v+FUg
+         pHVs1T2KnolYy7oPAyyUL8rkqHJdmdfHD5zkFsWg9rryZ8Z/JvK7i0VFo507XeK5zh
+         DnZbMMLlruplBrxswUzUhDbbd3OdaOhog76V88/4sYxlKWR4WZOm1Pos+8/QMzbqnh
+         7uH12fphg1CjQ==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id B68635C0E5F; Wed, 29 Jun 2022 10:04:02 -0700 (PDT)
+Date:   Wed, 29 Jun 2022 10:04:02 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Christoph Hellwig <hch@lst.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Arve =?iso-8859-1?B?SGr4bm5lduVn?= <arve@android.com>,
+        Todd Kjos <tkjos@android.com>,
+        Martijn Coenen <maco@android.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Hridya Valsaraju <hridya@google.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Theodore Ts'o <tytso@mit.edu>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Alex Xu (Hello71)" <alex_y_xu@yahoo.ca>,
+        Paolo Abeni <pabeni@redhat.com>, Rob Herring <robh@kernel.org>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Shuah Khan <shuah@kernel.org>, linux-kernel@vger.kernel.org,
+        wireguard@lists.zx2c4.com, netdev@vger.kernel.org,
+        rcu@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        sultan@kerneltoast.com
+Subject: Re: [PATCH] remove CONFIG_ANDROID
+Message-ID: <20220629170402.GJ1790663@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220629150102.1582425-1-hch@lst.de>
+ <20220629150102.1582425-2-hch@lst.de>
+ <Yrx5Lt7jrk5BiHXx@zx2c4.com>
+ <20220629161020.GA24891@lst.de>
+ <Yrx6EVHtroXeEZGp@zx2c4.com>
+ <20220629161527.GA24978@lst.de>
+ <20220629163444.GG1790663@paulmck-ThinkPad-P17-Gen-1>
+ <20220629163701.GA25519@lst.de>
+ <YryBvAvhnyZ4mZKD@zx2c4.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YrxXL/p3q35SsXmk@shell.armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <YryBvAvhnyZ4mZKD@zx2c4.com>
+X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 29, 2022 at 02:44:15PM +0100, Russell King (Oracle) wrote:
-> On Tue, Jun 28, 2022 at 04:33:53PM +0200, Andrew Lunn wrote:
-> > On Tue, Jun 28, 2022 at 11:19:25AM +0530, Divya Koppera wrote:
-> > > LED support for extended mode where
-> > > LED 1: Enhanced Mode 5 (10M/1000M/Activity)
-> > > LED 2: Enhanced Mode 4 (100M/1000M/Activity)
-> > > 
-> > > By default it supports KSZ9031 LED mode
-> > 
-> > You need to update the binding documentation.
+On Wed, Jun 29, 2022 at 06:45:48PM +0200, Jason A. Donenfeld wrote:
+> On Wed, Jun 29, 2022 at 06:37:01PM +0200, Christoph Hellwig wrote:
+> > be a policy set somewhere either in the kernel or fed into the kernel
+> > by userspace.  Then we can key it off that, and I suspect it is
+> > probably going to be a runtime variable and not a config option.
 > 
-> What happened to "use the LEDs interface, don't invent private bindings
-> for PHY LEDs" ?
+> Right, this would be a good way of addressing it.
 > 
-> Does this mean the private bindings are now acceptable and I can
-> resubmit my 88x3310 LED support code?
+> Maybe some Android people on the list have a good idea off hand of what
+> Android uses at runtime to control this, and how it'd be accessible in
+> the kernel?
 
-I hummed and harded about this case. The binding is there, documented
-and in use. It comes from the times before we started pushing back on
-vendor LED configuration methods. All this patch does is extend the
-existing binding to another device of the same family. It seemed
-unfair to reject it. The mess of a vendor proprietary binding exists,
-and this does not make it worse.
+In case it helps, in the case of CONFIG_RCU_EXP_CPU_STALL_TIMEOUT,
+the Android guys can use things like defconfig at kernel-build time or
+the rcu_exp_cpu_stall_timeout kernel-boot/sysfs parameter at boot time
+or runtime.
 
-For 88x3310 there is no president set, it should be done via Linux
-LEDs.
-
-	Andrew
-
+							Thanx, Paul
