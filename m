@@ -2,54 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D7175600FB
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 15:10:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6260F560107
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 15:16:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233708AbiF2NKS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 09:10:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43886 "EHLO
+        id S233781AbiF2NOS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 09:14:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233673AbiF2NKR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 09:10:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57EE021A2;
-        Wed, 29 Jun 2022 06:10:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EAE8061DE8;
-        Wed, 29 Jun 2022 13:10:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 57202C341CB;
-        Wed, 29 Jun 2022 13:10:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656508215;
-        bh=7YM6pTsDK2XVPmkR6++yTEqzX03KJjCzPOtYRGHpzbI=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Y4DXgvjWdGEMcQM6R5xUjOuuHK/BrLocwkl27LDCaZfiJgFM5iFlnBbJuur2tQ+UN
-         GgEhBTQbFO3mOnXAPMSZZE3UbhXUWRmp0LG5Ju17Zx4QggSzMAoFNriY1qUVz36hAB
-         5CrJsj6vASUK5fJ6FIn7UEqpEL4ejajIyGDKibNw5gu285EnfDh5dcshJFsU4by7vZ
-         3JLGNpHJV1e/ktdvJ+UztrVznN2OLlbi5aT9SjnqpK/UlvjCLgIaXjgl+eYpA3HrBv
-         x1yKTaY1slbh386ZIudVYMdMbu+yu/L5Q9Es8QNokvmlaNKMPFEWtxGoQzvV6TjTqN
-         dgOnbW9A7o5Nw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3E30CE49F61;
-        Wed, 29 Jun 2022 13:10:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S233780AbiF2NOR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 09:14:17 -0400
+Received: from smtpbg.qq.com (unknown [43.155.67.158])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3B1426541;
+        Wed, 29 Jun 2022 06:14:10 -0700 (PDT)
+X-QQ-mid: bizesmtp80t1656508420tyf0raqj
+Received: from localhost.localdomain ( [182.148.13.66])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Wed, 29 Jun 2022 21:13:37 +0800 (CST)
+X-QQ-SSF: 0100000000200060C000C00A0000000
+X-QQ-FEAT: 02HFykG0jktbnPvtiDf42PmRotP77QBKZH3mQMCDt+sxKkQD1HhZLNwh/7Tnv
+        F8grmefunn+Mf2aK9yLuTJeKV+vndFDoe2rV3ee5gwsMKcMIDSwoELUgzHYm5RqBerPEHHG
+        4F2qLaOkXQ/XxLvK8TEI+TGSPeWsqICcdpWRZ+YKIscr2cCHyYXrbrLQLFeZ/qC3/QbSBaJ
+        aBYgPRzSyxkcljMQSfX2xVXs65PeDIxV1GbBpQzkJbKE+cZzeiFf2iRf5NAU0tI+NRtk26y
+        WxhEPiFAeq/o40OqO5FXgPWOCRuoZlg51CPGjPkcAr2cRlXL8c/9NDhiDDnytf1ewR6oznq
+        glC6ts0
+X-QQ-GoodBg: 0
+From:   Jilin Yuan <yuanjilin@cdjrlc.com>
+To:     yisen.zhuang@huawei.com, salil.mehta@huawei.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     shenjian15@huawei.com, lipeng321@huawei.com,
+        zhangjiaran@huawei.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jilin Yuan <yuanjilin@cdjrlc.com>
+Subject: [PATCH] hisilicon/hns3/hns3vf:fix repeated words in comments
+Date:   Wed, 29 Jun 2022 21:13:30 +0800
+Message-Id: <20220629131330.16812-1-yuanjilin@cdjrlc.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 1/2] NFC: nxp-nci: Don't issue a zero length
- i2c_master_read()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165650821524.20617.14794992816689313521.git-patchwork-notify@kernel.org>
-Date:   Wed, 29 Jun 2022 13:10:15 +0000
-References: <20220627170643.98239-1-michael@walle.cc>
-In-Reply-To: <20220627170643.98239-1-michael@walle.cc>
-To:     Michael Walle <michael@walle.cc>
-Cc:     krzysztof.kozlowski@linaro.org, clement.perrochaud@nxp.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,RDNS_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,T_SPF_HELO_TEMPERROR autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,33 +50,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Delete the redundant word 'new'.
 
-This series was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
+Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
+---
+ drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-On Mon, 27 Jun 2022 19:06:42 +0200 you wrote:
-> There are packets which doesn't have a payload. In that case, the second
-> i2c_master_read() will have a zero length. But because the NFC
-> controller doesn't have any data left, it will NACK the I2C read and
-> -ENXIO will be returned. In case there is no payload, just skip the
-> second i2c master read.
-> 
-> Fixes: 6be88670fc59 ("NFC: nxp-nci_i2c: Add I2C support to NXP NCI driver")
-> Signed-off-by: Michael Walle <michael@walle.cc>
-> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> 
-> [...]
-
-Here is the summary with links:
-  - [v2,1/2] NFC: nxp-nci: Don't issue a zero length i2c_master_read()
-    https://git.kernel.org/netdev/net/c/eddd95b94239
-  - [v2,2/2] NFC: nxp-nci: don't print header length mismatch on i2c error
-    https://git.kernel.org/netdev/net/c/9577fc5fdc8b
-
-You are awesome, thank you!
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
+index 5eaf09ea4009..26f87330173e 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
+@@ -979,7 +979,7 @@ static int hclgevf_update_mac_list(struct hnae3_handle *handle,
+ 
+ 	/* if the mac addr is already in the mac list, no need to add a new
+ 	 * one into it, just check the mac addr state, convert it to a new
+-	 * new state, or just remove it, or do nothing.
++	 * state, or just remove it, or do nothing.
+ 	 */
+ 	mac_node = hclgevf_find_mac_node(list, addr);
+ 	if (mac_node) {
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.36.1
 
