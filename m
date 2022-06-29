@@ -2,83 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6447C56069F
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 18:49:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD6855606AA
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 18:50:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231997AbiF2Qs2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 12:48:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55306 "EHLO
+        id S230333AbiF2QuG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 12:50:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231740AbiF2QrD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 12:47:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB99F3EF0B;
-        Wed, 29 Jun 2022 09:46:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BDD10B825D1;
-        Wed, 29 Jun 2022 16:46:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D23CC341C8;
-        Wed, 29 Jun 2022 16:45:56 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="TsNOHWCg"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1656521154;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ASD5b//5M4+dV962dXEVwT1+SJjjwZxEO+zUhq2xQMw=;
-        b=TsNOHWCgRMiDrTOulOzTvSrO3bQgTMHaZPGpMk5oCNYQA4X8w1nLmBPjFAgdX2USwOw6XD
-        MMs5WA1OlKuNdVRVopg7Lgn6u/JgJbuYIAEBTk/elR0847C2e8cAFmHCj0+8ZnvdGisK/r
-        Svr5ztsAKQDXuTJjwF/4bMdgYmibOAw=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id d04e828e (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Wed, 29 Jun 2022 16:45:54 +0000 (UTC)
-Date:   Wed, 29 Jun 2022 18:45:48 +0200
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     "Paul E. McKenney" <paulmck@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arve =?utf-8?B?SGrDuG5uZXbDpWc=?= <arve@android.com>,
-        Todd Kjos <tkjos@android.com>,
-        Martijn Coenen <maco@android.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Hridya Valsaraju <hridya@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Theodore Ts'o <tytso@mit.edu>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Alex Xu (Hello71)" <alex_y_xu@yahoo.ca>,
-        Paolo Abeni <pabeni@redhat.com>, Rob Herring <robh@kernel.org>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Shuah Khan <shuah@kernel.org>, linux-kernel@vger.kernel.org,
-        wireguard@lists.zx2c4.com, netdev@vger.kernel.org,
-        rcu@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        sultan@kerneltoast.com
-Subject: Re: [PATCH] remove CONFIG_ANDROID
-Message-ID: <YryBvAvhnyZ4mZKD@zx2c4.com>
-References: <20220629150102.1582425-1-hch@lst.de>
- <20220629150102.1582425-2-hch@lst.de>
- <Yrx5Lt7jrk5BiHXx@zx2c4.com>
- <20220629161020.GA24891@lst.de>
- <Yrx6EVHtroXeEZGp@zx2c4.com>
- <20220629161527.GA24978@lst.de>
- <20220629163444.GG1790663@paulmck-ThinkPad-P17-Gen-1>
- <20220629163701.GA25519@lst.de>
+        with ESMTP id S230484AbiF2QuC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 12:50:02 -0400
+Received: from mail-vk1-xa29.google.com (mail-vk1-xa29.google.com [IPv6:2607:f8b0:4864:20::a29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD00919B
+        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 09:50:01 -0700 (PDT)
+Received: by mail-vk1-xa29.google.com with SMTP id b5so7744304vkp.4
+        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 09:50:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=1xjaurxtrr+ElYOOvMAKu4UXyGgzuY971CUxJkJcb9M=;
+        b=W+6qb8mmAJjS7XSVfIzriHNyoifK3hu5L0Lu2ZZ+fygaMDkfvcVL5nLy8Ju3QuoSkX
+         ISkm020By6aUvZcIfql48a4CEnP1f1YMirudA8RJnH8iTkY0YKCtecYs8cg8Pf0eWSgP
+         orkAOkkVqhpqRGC/+eG48FwLBdR6Wbulu3WEVpUOICxZw6MS1U5ySxFIWtho9ZTlxNWa
+         TuzfYncXT8WLuz11HghZiASMupDw6F++NFvutMoIEqwYZblPXyR9xuRv3TiEN/LobE31
+         Tf+WA72LPGRncFri6d642ZV/lTBCH5D3OkWB1zym9T6mNxM4qpUYczzkYbWcrfEOxIgV
+         vXhQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=1xjaurxtrr+ElYOOvMAKu4UXyGgzuY971CUxJkJcb9M=;
+        b=IoJuVcHb3oysUt5v8MkLJihpaznYPWLW71+uVTEPwZFU4+g9pJCXKz2+L+ZvZDmaan
+         NGBLAZYcyuSiYXoP4r4/5t5kcNlqzpKe0rb66NhF7cQiwzJyo6HpwnovqqJqU8O1yPxz
+         pon6aGCEANmj7l9sHC+NQOv4Ipv0uzYbe13OMWioeo2jmc+Tfctyf7vzA/qZMF5VSEL5
+         mtTyQpmzzPuOJCmtaVmsXeIjt7h4JRVbzqi7yBRrPbKY6wUPMQ63fzPR38qIv+zNFJPl
+         uEYCma5wRdv7jqinJXa4H3njDydg1wOwR65cBrTYAQhlxIGhDgWo6Alwo80dz07mWQ5I
+         3MTg==
+X-Gm-Message-State: AJIora9rnX6UJX9BFFIVVbYVggy12pVGjgXsCc5DEJAAfPqil4KG5lkk
+        K3vgMuiNvU7slba5Mup1GP0+YMfnYL4vaYdy2wc=
+X-Google-Smtp-Source: AGRyM1slKgsizARc3rR9HsRkxcP+DxL7w59oVFXkilDMTIq3KWEiIw8tABZ1gkXALqWD0MDm6a8KyY6KABGHrnK2c8U=
+X-Received: by 2002:ac5:cd94:0:b0:370:a1da:b959 with SMTP id
+ i20-20020ac5cd94000000b00370a1dab959mr2015238vka.38.1656521400850; Wed, 29
+ Jun 2022 09:50:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220629163701.GA25519@lst.de>
-X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+References: <20220629035434.1891-1-luizluca@gmail.com> <6f4e00d6-6b7d-e4c7-8108-67c009f7a6d8@arinc9.com>
+In-Reply-To: <6f4e00d6-6b7d-e4c7-8108-67c009f7a6d8@arinc9.com>
+From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
+Date:   Wed, 29 Jun 2022 13:49:49 -0300
+Message-ID: <CAJq09z6j2FFHRs243OX37ycT7w1vHVpf1LeDWR1Ybh5vaJZyMw@mail.gmail.com>
+Subject: Re: [PATCH net-next RFC 0/3] net: dsa: realtek: drop custom slave MII
+To:     =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+Cc:     "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>, krzk+dt@kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -86,15 +75,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 29, 2022 at 06:37:01PM +0200, Christoph Hellwig wrote:
-> be a policy set somewhere either in the kernel or fed into the kernel
-> by userspace.  Then we can key it off that, and I suspect it is
-> probably going to be a runtime variable and not a config option.
+Em qua., 29 de jun. de 2022 =C3=A0s 09:30, Ar=C4=B1n=C3=A7 =C3=9CNAL
+<arinc.unal@arinc9.com> escreveu:
+>
+> On 29.06.2022 06:54, Luiz Angelo Daros de Luca wrote:
+> > The last patch cleans all the deprecated code while keeping the kernel
+> > messages. However, if there is no "mdio" node but there is a node with
+> > the old compatible stings "realtek,smi-mdio", it will show an error. It
+> > should still work but it will use polling instead of interruptions.
+> >
+> > My idea, if accepted, is to submit patches 1 and 2 now. After a
+> > reasonable period, submit patch 3.
+> >
+> > I don't have an SMI-connected device and I'm asking for testers. It
+> > would be nice to test the first 2 patches with:
+>
+> I'd love to test this on an Asus RT-AC88U which has got the
+> smi-connected RTL8365MB switch but modifying the OpenWrt SDK to build
+> for latest kernels is a really painful process. I know it's not related
+> to this patch series but, does anyone know a more efficient way of
+> building the kernel with rootfs with sufficent userspace tools? Like, am
+> I supposed to use Buildroot, Yocto?
 
-Right, this would be a good way of addressing it.
+Hello Arin=C3=A7,
 
-Maybe some Android people on the list have a good idea off hand of what
-Android uses at runtime to control this, and how it'd be accessible in
-the kernel?
+You can backport those patches to mostly any device already using
+rtl8365mb. The code it changes is mostly the same since the files
+migrated to the realtek directory. However, you do need to backport
+fe7324b932 (which is also easily applicable). I believe only the last
+patch will conflict as some new functions were added to the
+dsa_switch_ops that is being removed.
 
-Jason
+Regards,
+
+Luiz
