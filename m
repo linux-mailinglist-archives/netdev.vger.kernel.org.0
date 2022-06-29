@@ -2,87 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9135F560276
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 16:22:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B357D560274
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 16:22:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232825AbiF2OWe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 10:22:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50884 "EHLO
+        id S231897AbiF2OV4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 10:21:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232511AbiF2OW3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 10:22:29 -0400
-Received: from smtpbg.qq.com (biz-43-154-54-12.mail.qq.com [43.154.54.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47B5E1CB38;
-        Wed, 29 Jun 2022 07:22:24 -0700 (PDT)
-X-QQ-mid: bizesmtp85t1656512516torh9h9i
-Received: from localhost.localdomain ( [182.148.13.66])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Wed, 29 Jun 2022 22:21:53 +0800 (CST)
-X-QQ-SSF: 0100000000200060C000C00A0000000
-X-QQ-FEAT: c0j92dw6IxKSeiEhrm+PtPxktskjXZcL4jlLKZjz7sO7OU5wzT87U/K4i93M1
-        SIXryARAEXvXxv8ewgPkqT8uNecc8E29dDtO47pw+aNrj8xqVlE/kxAyWin8eWOUZuZPioZ
-        Hy8wKoBUlufjdCMEqtDETjL9Z2pK+a1WvihZ52kZzAZ6Suotgy44vC3to4tP0DUQzObdo2B
-        qfKmyv7xsWx49nK79I1zbk4IxNW0jycTMfX6mLJzR8f8FmwPyt06ivN/9p3rVz/GEO3CpKA
-        Aj6PBwEXzTTC1C7xwUjtV1AuLnVB1+gd4TviIieLQ9ClUfjaKhFp7pfKAeaK/KUOetFvPum
-        ZWcs3f2roAscvhvtgg=
-X-QQ-GoodBg: 0
-From:   Jilin Yuan <yuanjilin@cdjrlc.com>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jilin Yuan <yuanjilin@cdjrlc.com>
-Subject: [PATCH] intel/igbvf:fix repeated words in comments
-Date:   Wed, 29 Jun 2022 22:21:47 +0800
-Message-Id: <20220629142147.15535-1-yuanjilin@cdjrlc.com>
-X-Mailer: git-send-email 2.36.1
+        with ESMTP id S229982AbiF2OVz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 10:21:55 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DC741C922;
+        Wed, 29 Jun 2022 07:21:54 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 0DD131F8B4;
+        Wed, 29 Jun 2022 14:21:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1656512513; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=aOG9X1b4Ob32haIWwZ2IslSJ0NRUu/DTnEGsmTzdgcg=;
+        b=I4IEOOV4hor01P3bk8KCMmAeWp34J9OTzcGqqy6G/k8nXx8H4htcDboJWSw4BzCrMRUVBP
+        2f7qLRAJPAdfSK5BiSKoSTOqRfo8djeqoejy9RzC41rAhObdcoz7PnlfVl3J4sVq0r0ua/
+        Ypj8KMrGlvTMjEhO5STMRPeQdbKGLl8=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id C5F90133D1;
+        Wed, 29 Jun 2022 14:21:52 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id UX7VLQBgvGJ6BwAAMHmgww
+        (envelope-from <oneukum@suse.com>); Wed, 29 Jun 2022 14:21:52 +0000
+From:   Oliver Neukum <oneukum@suse.com>
+To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org
+Cc:     Oliver Neukum <oneukum@suse.com>
+Subject: [PATCH] usbnet: use each random address only once
+Date:   Wed, 29 Jun 2022 16:21:49 +0200
+Message-Id: <20220629142149.1298-1-oneukum@suse.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
-X-Spam-Status: No, score=0.4 required=5.0 tests=BAYES_00,RCVD_IN_VALIDITY_RPBL,
-        RDNS_DYNAMIC,SPF_PASS,T_SCC_BODY_TEXT_LINE,T_SPF_HELO_TEMPERROR
-        autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Delete the redundant word 'on'.
-Delete the redundant word 'slot'.
+Even random MACs should be unique to a device.
+Get a new one each time it is used.
 
-Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
+This bug is as old as the driver.
+
+Signed-off-by: Oliver Neukum <oneukum@suse.com>
 ---
- drivers/net/ethernet/intel/igbvf/igbvf.h  | 2 +-
- drivers/net/ethernet/intel/igbvf/netdev.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/usb/usbnet.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/igbvf/igbvf.h b/drivers/net/ethernet/intel/igbvf/igbvf.h
-index 975eb47ee04d..57d39ee00b58 100644
---- a/drivers/net/ethernet/intel/igbvf/igbvf.h
-+++ b/drivers/net/ethernet/intel/igbvf/igbvf.h
-@@ -227,7 +227,7 @@ struct igbvf_adapter {
+diff --git a/drivers/net/usb/usbnet.c b/drivers/net/usb/usbnet.c
+index 02b915b1e142..a90aece93f4a 100644
+--- a/drivers/net/usb/usbnet.c
++++ b/drivers/net/usb/usbnet.c
+@@ -1797,8 +1797,11 @@ usbnet_probe (struct usb_interface *udev, const struct usb_device_id *prod)
+ 	}
  
- 	/* The VF counters don't clear on read so we have to get a base
- 	 * count on driver start up and always subtract that base on
--	 * on the first update, thus the flag..
-+	 * the first update, thus the flag..
- 	 */
- 	struct e1000_vf_stats stats;
- 	u64 zero_base;
-diff --git a/drivers/net/ethernet/intel/igbvf/netdev.c b/drivers/net/ethernet/intel/igbvf/netdev.c
-index 43ced78c3a2e..f4e91db89fe5 100644
---- a/drivers/net/ethernet/intel/igbvf/netdev.c
-+++ b/drivers/net/ethernet/intel/igbvf/netdev.c
-@@ -2537,7 +2537,7 @@ static pci_ers_result_t igbvf_io_error_detected(struct pci_dev *pdev,
- 		igbvf_down(adapter);
- 	pci_disable_device(pdev);
+ 	/* let userspace know we have a random address */
+-	if (ether_addr_equal(net->dev_addr, node_id))
++	if (ether_addr_equal(net->dev_addr, node_id)) {
+ 		net->addr_assign_type = NET_ADDR_RANDOM;
++		/* next device needs a new one*/
++		eth_random_addr(node_id);
++	}
  
--	/* Request a slot slot reset. */
-+	/* Request a slot reset. */
- 	return PCI_ERS_RESULT_NEED_RESET;
- }
- 
+ 	if ((dev->driver_info->flags & FLAG_WLAN) != 0)
+ 		SET_NETDEV_DEVTYPE(net, &wlan_type);
 -- 
-2.36.1
+2.35.3
 
