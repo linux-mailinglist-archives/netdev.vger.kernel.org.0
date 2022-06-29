@@ -2,60 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 88E0C55FB16
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 10:54:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C744F55FB14
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 10:54:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229720AbiF2Ixx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 04:53:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37346 "EHLO
+        id S230229AbiF2Ix6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 04:53:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229573AbiF2Ixv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 04:53:51 -0400
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3877B3983E
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 01:53:51 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id a15so14438088pfv.13
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 01:53:51 -0700 (PDT)
+        with ESMTP id S229897AbiF2Ix4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 04:53:56 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ABFA3B3DE
+        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 01:53:55 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id i8-20020a17090aee8800b001ecc929d14dso833919pjz.0
+        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 01:53:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=9Uj6zbSREGN1nMpBprSeQN/3wmRyMG124zBtpw8EGUY=;
-        b=HP2xVzm6iHmSIyFRnEwNNj1TuTcI29bUr3dToCg+36QA62zxkfqMe2dRZ3P7e7iV53
-         zj6teoHUcW5J/1LDfErAqHXOHNzR4sCLjnZHBQ7EunphCAY2dUVhCceID+1pUhPLowAN
-         NeyBO+LsSZR1tRyXDxRmzW6fGJdPQv8n0uyUXhgK2S8Z2gXisShYCyOGbHoMb8z37TD9
-         b4lwhmMChBZnkrzwy0GWD8kBXGnNhE0BxfYwAOco9t5a5BZ6yw4kbLQF8USi9vCmI8jU
-         lr13RNLWkV7ytB80qgCT8cZOrDRA89hhq5RBjUJVj2aNb//3doVXgqeERKQKfrOkBgBF
-         c0YA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=ztdRYmrrwDFseGrJ4VibDTAR9vIvAp47d87V542cPI0=;
+        b=d85Yv5BReGTbP35b9lpDINHK1E4gHsweaFdjjNkvBRLxdDHcy0RSTLzWhZplYQMmYK
+         Zs4w4yqHB1jkIZVEeJiieBE+hC8ggl2xnoVGDXF9yU8fyXD6mEUsDls4dYgCHFd2aBho
+         K+dgBAReL7JlS4pnPO4+ACT/P9syl8f6mxBfyfsMH1xMlkZFW09FfXiMFoWquYK+hbIr
+         eH5+iKCQnHMvGyn3qEa6fRVKCGXbzNVn4V6aA1JqW66sSed0IYKsvB9PAeri19RSNDk2
+         D+Qg2H0bOXlxEFxyLgjRQ0iiMIg+xpFggRu6Uq/6+EbtpB6gSp5OQDEZN+P89NInnKOC
+         cKUg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=9Uj6zbSREGN1nMpBprSeQN/3wmRyMG124zBtpw8EGUY=;
-        b=WolsrfPkVgsCt13sNSBtpzIFdkRiuPjnVALmr9hd4DicV1GHaeBMsME1H+bkCy8jce
-         2In+yU11TLbLKYikSsj9eg/j79ZtOZyCOKcc0UzhjXXSBwhtT7GG4DjR9d21Ryye33gB
-         RgCYrk/oW7gA3wKhNX1QGYT7W9WvFFFs+kYieBZpJSDx2Tz79oCxdHDbuSe2L1PBkssm
-         aOBux/VGWBI7cp5tiE0hUykumsnbwql+MSes3BrQwf1LI+St76MExd5jLQKl4lNP0Xip
-         VdpXKD3cyJIFzLosXOz+5wlG/zUoYDqHZbWpy0CddfVXf0LboNTeTF1MJQVVgto3IDH7
-         un2Q==
-X-Gm-Message-State: AJIora8tj0ewQ/uN7hW7dzTcWJ8QSyXfNUVdrXAyVFpLXgS75ukUt7/i
-        YfHSElRTagmHtzQzDWgdSAE=
-X-Google-Smtp-Source: AGRyM1u39BpHHkwV8TiwTWISkgl4KiW2WDQLDfUTe/QZC72yvXdjlwWnAPNuN1me3E7U6MN0sJoeag==
-X-Received: by 2002:a05:6a00:808:b0:525:3c3f:7393 with SMTP id m8-20020a056a00080800b005253c3f7393mr9281390pfk.57.1656492830744;
-        Wed, 29 Jun 2022 01:53:50 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=ztdRYmrrwDFseGrJ4VibDTAR9vIvAp47d87V542cPI0=;
+        b=r02xLNHn2dhz7wvVMrbaYKfm7ZAGOkx6D5scUMJAc+AAjy+FCvBNp9hb6PS2PcNtlv
+         w+AJ8FtBdmcO6ocAFtYOb1hg+/D27mhCfs0f+wKPuTqk4CrjHoaXNzY0QlSq9SXF1CqI
+         r+EQq4+vmHxdcfJ5dTUmzIx1DngAnElL5tq/jXThRP0c8cAGlEcWxBvlLmpO3AUlQmuu
+         laBUNXXMdTXx3XqdMPDfdCLF7Foc8pYoZud//7YyvOkVdLU8usJvHScOuaUgdfmf0LX5
+         1I5qEl4wVFC0DYZYVMLoGHsoPtAONpzpocs8WcjOBcU3lsXaFlBvE/FS4eO+4oyMzde1
+         1F1g==
+X-Gm-Message-State: AJIora/YCdiAFxKKb9qeuClqi127PNsGswPDc69wAjf+RkC0xZ1u9YdG
+        F4yxSwTP0eJHAjQWGxJoZ2w=
+X-Google-Smtp-Source: AGRyM1twPrlvFrOriaSTGrfM4x1/SmRaPN9N1yo1HpXzRSwBH3iMa+kBX6hsFH2zXsIloFHlzDcJ+w==
+X-Received: by 2002:a17:903:2281:b0:16a:6604:d1d8 with SMTP id b1-20020a170903228100b0016a6604d1d8mr8007298plh.78.1656492835121;
+        Wed, 29 Jun 2022 01:53:55 -0700 (PDT)
 Received: from nvm-geerzzfj.. ([103.142.140.73])
-        by smtp.gmail.com with ESMTPSA id y19-20020a17090aca9300b001e0c5da6a51sm1425724pjt.50.2022.06.29.01.53.46
+        by smtp.gmail.com with ESMTPSA id y19-20020a17090aca9300b001e0c5da6a51sm1425724pjt.50.2022.06.29.01.53.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Jun 2022 01:53:50 -0700 (PDT)
+        Wed, 29 Jun 2022 01:53:54 -0700 (PDT)
 From:   Yuwei Wang <wangyuweihx@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
         pabeni@redhat.com, daniel@iogearbox.net
 Cc:     roopa@nvidia.com, dsahern@kernel.org, qindi@staff.weibo.com,
         netdev@vger.kernel.org, Yuwei Wang <wangyuweihx@gmail.com>
-Subject: [PATCH net-next v4 0/2] net, neigh: introduce interval_probe_time for periodic probe
-Date:   Wed, 29 Jun 2022 08:48:30 +0000
-Message-Id: <20220629084832.2842973-1-wangyuweihx@gmail.com>
+Subject: [PATCH net-next v4 1/2] sysctl: add proc_dointvec_ms_jiffies_minmax
+Date:   Wed, 29 Jun 2022 08:48:31 +0000
+Message-Id: <20220629084832.2842973-2-wangyuweihx@gmail.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220629084832.2842973-1-wangyuweihx@gmail.com>
+References: <20220629084832.2842973-1-wangyuweihx@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -70,27 +72,94 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series adds a new option `interval_probe_time_ms` in net, neigh
-for periodic probe, and add a limitation to prevent it set to 0
+add proc_dointvec_ms_jiffies_minmax to fit read msecs value to jiffies
+with a limited range of values
 
-Yuwei Wang (2):
-  sysctl: add proc_dointvec_ms_jiffies_minmax
-  net, neigh: introduce interval_probe_time_ms for periodic probe
+Signed-off-by: Yuwei Wang <wangyuweihx@gmail.com>
+---
+ include/linux/sysctl.h |  2 ++
+ kernel/sysctl.c        | 41 +++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 43 insertions(+)
 
- Documentation/networking/ip-sysctl.rst |  6 ++++
- include/linux/sysctl.h                 |  2 ++
- include/net/neighbour.h                |  1 +
- include/uapi/linux/neighbour.h         |  1 +
- include/uapi/linux/sysctl.h            | 37 ++++++++++++-----------
- kernel/sysctl.c                        | 41 ++++++++++++++++++++++++++
- net/core/neighbour.c                   | 32 ++++++++++++++++++--
- net/decnet/dn_neigh.c                  |  1 +
- net/ipv4/arp.c                         |  1 +
- net/ipv6/ndisc.c                       |  1 +
- 10 files changed, 103 insertions(+), 20 deletions(-)
-
-
-base-commit: da6e113ff010815fdd21ee1e9af2e8d179a2680f
+diff --git a/include/linux/sysctl.h b/include/linux/sysctl.h
+index 80263f7cdb77..17b42ce89d3e 100644
+--- a/include/linux/sysctl.h
++++ b/include/linux/sysctl.h
+@@ -75,6 +75,8 @@ int proc_douintvec_minmax(struct ctl_table *table, int write, void *buffer,
+ int proc_dou8vec_minmax(struct ctl_table *table, int write, void *buffer,
+ 			size_t *lenp, loff_t *ppos);
+ int proc_dointvec_jiffies(struct ctl_table *, int, void *, size_t *, loff_t *);
++int proc_dointvec_ms_jiffies_minmax(struct ctl_table *table, int write,
++		void *buffer, size_t *lenp, loff_t *ppos);
+ int proc_dointvec_userhz_jiffies(struct ctl_table *, int, void *, size_t *,
+ 		loff_t *);
+ int proc_dointvec_ms_jiffies(struct ctl_table *, int, void *, size_t *,
+diff --git a/kernel/sysctl.c b/kernel/sysctl.c
+index e52b6e372c60..85c92e2c2570 100644
+--- a/kernel/sysctl.c
++++ b/kernel/sysctl.c
+@@ -1237,6 +1237,30 @@ static int do_proc_dointvec_ms_jiffies_conv(bool *negp, unsigned long *lvalp,
+ 	return 0;
+ }
+ 
++static int do_proc_dointvec_ms_jiffies_minmax_conv(bool *negp, unsigned long *lvalp,
++						int *valp, int write, void *data)
++{
++	int tmp, ret;
++	struct do_proc_dointvec_minmax_conv_param *param = data;
++	/*
++	 * If writing, first do so via a temporary local int so we can
++	 * bounds-check it before touching *valp.
++	 */
++	int *ip = write ? &tmp : valp;
++
++	ret = do_proc_dointvec_ms_jiffies_conv(negp, lvalp, ip, write, data);
++	if (ret)
++		return ret;
++
++	if (write) {
++		if ((param->min && *param->min > tmp) ||
++				(param->max && *param->max < tmp))
++			return -EINVAL;
++		*valp = tmp;
++	}
++	return 0;
++}
++
+ /**
+  * proc_dointvec_jiffies - read a vector of integers as seconds
+  * @table: the sysctl table
+@@ -1259,6 +1283,17 @@ int proc_dointvec_jiffies(struct ctl_table *table, int write,
+ 		    	    do_proc_dointvec_jiffies_conv,NULL);
+ }
+ 
++int proc_dointvec_ms_jiffies_minmax(struct ctl_table *table, int write,
++			  void *buffer, size_t *lenp, loff_t *ppos)
++{
++	struct do_proc_dointvec_minmax_conv_param param = {
++		.min = (int *) table->extra1,
++		.max = (int *) table->extra2,
++	};
++	return do_proc_dointvec(table, write, buffer, lenp, ppos,
++			do_proc_dointvec_ms_jiffies_minmax_conv, &param);
++}
++
+ /**
+  * proc_dointvec_userhz_jiffies - read a vector of integers as 1/USER_HZ seconds
+  * @table: the sysctl table
+@@ -1523,6 +1558,12 @@ int proc_dointvec_jiffies(struct ctl_table *table, int write,
+ 	return -ENOSYS;
+ }
+ 
++int proc_dointvec_ms_jiffies_minmax(struct ctl_table *table, int write,
++				    void *buffer, size_t *lenp, loff_t *ppos)
++{
++	return -ENOSYS;
++}
++
+ int proc_dointvec_userhz_jiffies(struct ctl_table *table, int write,
+ 		    void *buffer, size_t *lenp, loff_t *ppos)
+ {
 -- 
 2.34.1
 
