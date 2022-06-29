@@ -2,226 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7849B55FB2B
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 10:59:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B0FC55FB32
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 10:59:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232514AbiF2I6d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 04:58:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40252 "EHLO
+        id S232527AbiF2I6g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 04:58:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232331AbiF2I6a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 04:58:30 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67E8FB4B2;
-        Wed, 29 Jun 2022 01:58:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1656493108; x=1688029108;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=Beq/F3djt8kqwPMZlUOzGpv6gng0bk4dp4axW3sNFkw=;
-  b=hcrDBWTIBipv1VCKLmzOBf5fJhmCoKs5Q1DU5fVR7zJo5Kzn+RTq4RC8
-   oXmhrsAV5fEKxfbiUJZ018FoHnWoHODew81oKH2wakDACOMOc+ojiaezf
-   gaY3laskD0mqJmMoBuX63xC4h6N/0jvKykezqgS7x8c8+R2wBkl6NJSh0
-   v1Ha5vHhMf79IDNrlpux6TYP8itE+UyPrqVyJ39NfwjxX626jUMvnbw9h
-   hoStwPLZbwWnpCcMMKxkYTmek/IHMkOhsjYjd4B4L7LJnmGz5R9qpasmD
-   VBZshr9TXKoWk5aCgboDC0BEHkdPTDNTzjy06kl9y/H2EjgJ8lFUqg+Dn
-   A==;
-X-IronPort-AV: E=Sophos;i="5.92,231,1650956400"; 
-   d="scan'208";a="165594578"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 29 Jun 2022 01:58:27 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 29 Jun 2022 01:58:26 -0700
-Received: from training-HP-280-G1-MT-PC.microchip.com (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Wed, 29 Jun 2022 01:58:21 -0700
-From:   Divya Koppera <Divya.Koppera@microchip.com>
-To:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <devicetree@vger.kernel.org>
-CC:     <UNGLinuxDriver@microchip.com>, <Madhuri.Sripada@microchip.com>
-Subject: [PATCH v2 net-next 2/2] net: phy: micrel: Adding LED feature for LAN8814 PHY
-Date:   Wed, 29 Jun 2022 14:28:00 +0530
-Message-ID: <20220629085800.11600-3-Divya.Koppera@microchip.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220629085800.11600-1-Divya.Koppera@microchip.com>
-References: <20220629085800.11600-1-Divya.Koppera@microchip.com>
+        with ESMTP id S232518AbiF2I6d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 04:58:33 -0400
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5EBCB7E5;
+        Wed, 29 Jun 2022 01:58:32 -0700 (PDT)
+Received: by mail-wm1-x330.google.com with SMTP id g39-20020a05600c4ca700b003a03ac7d540so8300730wmp.3;
+        Wed, 29 Jun 2022 01:58:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=umDz2mWCfuNGKxLZgsu5rbBZtAx6nyuFjdxun9aV4xE=;
+        b=igeEuASPkzX9RW9eFzx69DtY/S3fjzeuSgzNJNE6ccmJcJJhlh79HvQAVu5fG0xyYk
+         B80qQSeQNGfGFRdUh17FT6q7R+rhrW8EICQncoFtzs2RdqqlN8B7OzJsoyW8M4fKvc9X
+         6zK1u+SS9ClBWd8f6TfvM+IhwKOlqZUTFlSdAm3RZ2EEt+cydcQxkNWYZv0be70Np4ES
+         anp602Z8/bjkG+gxcpj4zBDGirAeoPTQrI52pitPQYDGwKHIPlCIYJ+Dshod8BSGlcSw
+         h1sUZu745mXDc5d/7A1UDZnDUuArlJSYHjuzbwwSvTkeiZ081plLMNL2hVhNOnMBVs7P
+         pL/A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=umDz2mWCfuNGKxLZgsu5rbBZtAx6nyuFjdxun9aV4xE=;
+        b=UT1pUo+lNqGUic+NtAyZgtbBuDrIPOZ3hsZ1l154cH9y4WyCMP7Ng8Nbatp3IXXkh8
+         JoZ2uBksKIc9GonlKjK0njURKPWCWQXqRacz+rRt4Pyv+O0bRTT9UnB2I/ScNTBn+Rz9
+         bpcbTEvnQzOP4K44InrqQBFRbP1Cm2pA3OHpWjZmbjeJBoaoWs7m9QSgPHHVdhscRKNq
+         B6WXkNKwO9epFE7gLiAeOmXEsmhLh98A98AINL3/UzjoiZWFmEkbSl8j5xNQw+tbGKZa
+         aoBjiiYWeFRjrwFXDwjy8bWl7LIbh2MvnyTh3oIupSeRi3CR3bkhPfcpxH9bN7mPupfe
+         xWmQ==
+X-Gm-Message-State: AJIora9OSYjAFxfDZqQvkB+nfRow9WdTidp7kLqf/0Yf9l9+MoAss3b1
+        pmMRL3j0j8H7wYrA1A5DYo8=
+X-Google-Smtp-Source: AGRyM1sGgXlu2mq97AaBmcjcLiVYJodcP0N+RBgSwukn4QqiE3rB4AkOFVsQ1fafsW11m3pvdmOjhQ==
+X-Received: by 2002:a05:600c:2290:b0:3a0:3e42:4f9a with SMTP id 16-20020a05600c229000b003a03e424f9amr4174898wmf.28.1656493111164;
+        Wed, 29 Jun 2022 01:58:31 -0700 (PDT)
+Received: from ?IPV6:2a01:e0a:2a7:be0:64e9:b8c:15e9:ebb? ([2a01:e0a:2a7:be0:64e9:b8c:15e9:ebb])
+        by smtp.gmail.com with ESMTPSA id t18-20020a5d42d2000000b0021a56cda047sm15533141wrr.60.2022.06.29.01.58.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 29 Jun 2022 01:58:30 -0700 (PDT)
+Message-ID: <25de5ab0-551e-7304-9715-558ee0a5c501@gmail.com>
+Date:   Wed, 29 Jun 2022 10:58:29 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] net: tls: fix tls with sk_redirect using a BPF verdict.
+Content-Language: en-US
+To:     John Fastabend <john.fastabend@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Marc Vertes <mvertes@free.fr>
+References: <20220628152505.298790-1-julien.salleyron@gmail.com>
+ <20220628103424.5330e046@kernel.org> <62bbf87f16223_2181420853@john.notmuch>
+From:   Julien Salleyron <julien.salleyron@gmail.com>
+In-Reply-To: <62bbf87f16223_2181420853@john.notmuch>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-LED support for extended mode where
-LED 1: Enhanced Mode 5 (10M/1000M/Activity)
-LED 2: Enhanced Mode 4 (100M/1000M/Activity)
+Thanks for your quick response.
 
-By default it supports KSZ9031 LED mode
+ > It's because kTLS does a very expensive reallocation and copy for the
+ > non-zerocopy case (which currently means all of TLS 1.3). I have
+ > code almost ready to fix that (just needs to be reshuffled into
+ > upstreamable patches). Brings us up from 5.9 Gbps to 8.4 Gbps per CPU
+ > on my test box with 16k records. Probably much more than that with
+ > smaller records.
 
-Signed-off-by: Divya Koppera <Divya.Koppera@microchip.com>
----
-v1 -> v2:
-- No changes
+Happy to hear that, it seems an impressive improvement!
 
- drivers/net/phy/micrel.c | 71 +++++++++++++++++++++++++++++++---------
- 1 file changed, 56 insertions(+), 15 deletions(-)
+ > You'll also need a signed-off-by.
 
-diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-index 22139901f01c..297e58d49159 100644
---- a/drivers/net/phy/micrel.c
-+++ b/drivers/net/phy/micrel.c
-@@ -209,6 +209,9 @@
- #define PTP_TSU_INT_STS_PTP_RX_TS_OVRFL_INT_	BIT(1)
- #define PTP_TSU_INT_STS_PTP_RX_TS_EN_		BIT(0)
- 
-+#define LAN8814_LED_CTRL_1			0x0
-+#define LAN8814_LED_CTRL_1_KSZ9031_LED_MODE_	BIT(6)
-+
- /* PHY Control 1 */
- #define MII_KSZPHY_CTRL_1			0x1e
- #define KSZ8081_CTRL1_MDIX_STAT			BIT(4)
-@@ -308,6 +311,10 @@ struct kszphy_priv {
- 	u64 stats[ARRAY_SIZE(kszphy_hw_stats)];
- };
- 
-+static const struct kszphy_type lan8814_type = {
-+	.led_mode_reg		= ~LAN8814_LED_CTRL_1,
-+};
-+
- static const struct kszphy_type ksz8021_type = {
- 	.led_mode_reg		= MII_KSZPHY_CTRL_2,
- 	.has_broadcast_disable	= true,
-@@ -1688,6 +1695,30 @@ static int kszphy_suspend(struct phy_device *phydev)
- 	return genphy_suspend(phydev);
- }
- 
-+static void kszphy_parse_led_mode(struct phy_device *phydev)
-+{
-+	const struct kszphy_type *type = phydev->drv->driver_data;
-+	const struct device_node *np = phydev->mdio.dev.of_node;
-+	struct kszphy_priv *priv = phydev->priv;
-+	int ret;
-+
-+	if (type && type->led_mode_reg) {
-+		ret = of_property_read_u32(np, "micrel,led-mode",
-+					   &priv->led_mode);
-+
-+		if (ret)
-+			priv->led_mode = -1;
-+
-+		if (priv->led_mode > 3) {
-+			phydev_err(phydev, "invalid led mode: 0x%02x\n",
-+				   priv->led_mode);
-+			priv->led_mode = -1;
-+		}
-+	} else {
-+		priv->led_mode = -1;
-+	}
-+}
-+
- static int kszphy_resume(struct phy_device *phydev)
- {
- 	int ret;
-@@ -1720,7 +1751,6 @@ static int kszphy_probe(struct phy_device *phydev)
- 	const struct device_node *np = phydev->mdio.dev.of_node;
- 	struct kszphy_priv *priv;
- 	struct clk *clk;
--	int ret;
- 
- 	priv = devm_kzalloc(&phydev->mdio.dev, sizeof(*priv), GFP_KERNEL);
- 	if (!priv)
-@@ -1730,20 +1760,7 @@ static int kszphy_probe(struct phy_device *phydev)
- 
- 	priv->type = type;
- 
--	if (type && type->led_mode_reg) {
--		ret = of_property_read_u32(np, "micrel,led-mode",
--				&priv->led_mode);
--		if (ret)
--			priv->led_mode = -1;
--
--		if (priv->led_mode > 3) {
--			phydev_err(phydev, "invalid led mode: 0x%02x\n",
--				   priv->led_mode);
--			priv->led_mode = -1;
--		}
--	} else {
--		priv->led_mode = -1;
--	}
-+	kszphy_parse_led_mode(phydev);
- 
- 	clk = devm_clk_get(&phydev->mdio.dev, "rmii-ref");
- 	/* NOTE: clk may be NULL if building without CONFIG_HAVE_CLK */
-@@ -2815,8 +2832,23 @@ static int lan8814_ptp_probe_once(struct phy_device *phydev)
- 	return 0;
- }
- 
-+static void lan8814_setup_led(struct phy_device *phydev, int val)
-+{
-+	int temp;
-+
-+	temp = lan8814_read_page_reg(phydev, 5, LAN8814_LED_CTRL_1);
-+
-+	if (val)
-+		temp |= LAN8814_LED_CTRL_1_KSZ9031_LED_MODE_;
-+	else
-+		temp &= ~LAN8814_LED_CTRL_1_KSZ9031_LED_MODE_;
-+
-+	lan8814_write_page_reg(phydev, 5, LAN8814_LED_CTRL_1, temp);
-+}
-+
- static int lan8814_config_init(struct phy_device *phydev)
- {
-+	struct kszphy_priv *lan8814 = phydev->priv;
- 	int val;
- 
- 	/* Reset the PHY */
-@@ -2850,11 +2882,15 @@ static int lan8814_release_coma_mode(struct phy_device *phydev)
- 	gpiod_set_consumer_name(gpiod, "LAN8814 coma mode");
- 	gpiod_set_value_cansleep(gpiod, 0);
- 
-+	if (lan8814->led_mode >= 0)
-+		lan8814_setup_led(phydev, lan8814->led_mode);
-+
- 	return 0;
- }
- 
- static int lan8814_probe(struct phy_device *phydev)
- {
-+	const struct kszphy_type *type = phydev->drv->driver_data;
- 	struct kszphy_priv *priv;
- 	u16 addr;
- 	int err;
-@@ -2867,6 +2903,10 @@ static int lan8814_probe(struct phy_device *phydev)
- 
- 	phydev->priv = priv;
- 
-+	priv->type = type;
-+
-+	kszphy_parse_led_mode(phydev);
-+
- 	/* Strap-in value for PHY address, below register read gives starting
- 	 * phy address value
- 	 */
-@@ -3068,6 +3108,7 @@ static struct phy_driver ksphy_driver[] = {
- 	.phy_id_mask	= MICREL_PHY_ID_MASK,
- 	.name		= "Microchip INDY Gigabit Quad PHY",
- 	.config_init	= lan8814_config_init,
-+	.driver_data	= &lan8814_type,
- 	.probe		= lan8814_probe,
- 	.soft_reset	= genphy_soft_reset,
- 	.read_status	= ksz9031_read_status,
--- 
-2.17.1
+We will do it.
 
+ >
+ > > IDK what this is trying to do but I certainly depends on the fact
+ > > we run skb_cow_data() and is not "generally correct" :S
+ >
+ > Ah also we are not handling partially consumed correctly either.
+ > Seems we might pop off the skb even when we need to continue;
+ >
+ > Maybe look at how skb_copy_datagram_msg() goes below because it
+ > fixes the skb copy up with the rxm->offset. But, also we need to
+ > do this repair before sk_psock_tls_strp_read I think so that
+ > the BPF program reads the correct data in all cases? I guess
+ > your sample program (and selftests for that matter) just did
+ > the redirect without reading the data?
+
+Even if our sample program doesn't read data, we can confirm that the 
+data in the BPF Program are incorrect (no rxm applied).
+We will make a change to handle this.
