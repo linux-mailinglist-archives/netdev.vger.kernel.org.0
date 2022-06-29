@@ -2,115 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 55AB155FA10
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 10:09:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C36C55FA1D
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 10:09:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229879AbiF2IHt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 04:07:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54084 "EHLO
+        id S232688AbiF2IJP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 04:09:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230349AbiF2IHs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 04:07:48 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A78323BA41
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 01:07:47 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id e40so21084026eda.2
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 01:07:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=tqDYe+CaxG5rdxrYEshOizmWJw2UB37F2HUQkIlbpzg=;
-        b=eTa5kFPRhJ9XXCyyvuOAJJD9KztwiyJQVOdeTwhCfAJ8/3zUUatQUlSLeJ+Fiu9pA7
-         kpnodWjT/LVmq3UFR4Rv14xKzK2psWjiUaGTxZuip23qTnQSpU4l+TO388gVpGEZQBoj
-         N7lY3ZL1rrCFNpdMZtg7G1byq/bHLicqMZ6AfPxZv7k87s+1AZY4O73FfpnkwNS721/h
-         DJ95nr0M3Vkuoc99UYP+J0i6sh1KjQg7Ompeb1D0m2CM0D98Kl8ZMaEwh8KCPdKNLXxA
-         7GjaQgnPQQ315EakB8OwowLdRW0qeAEhG38i64dnVQ+EmH3jZCGSunJxhWhT+Zdn2qBJ
-         EejQ==
+        with ESMTP id S232568AbiF2IJK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 04:09:10 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 45E953BBCE
+        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 01:09:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656490147;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=7hQQnP6ElkRz6EikrOqVkat5RAwQAYxqOhDbZ9zjeug=;
+        b=fgsDzeyRjFEk2KeWSqmbecKyn25Vy9Yr9ksDNykkz9dbfibRQ1L2qZtCKWDjwTLV/Uk6rf
+        5eskSYYjJuqE8dTfdzbVu/c8lHf9ZfI/MxhZTUQ/0PRnz/2WCOCjXmOWpkNEs2HTUBOUZc
+        hcCoase9/NGzpmY7V6jwkU2icPl1iRM=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-244-o_fx7V0NNFKyyOh8uvA_-w-1; Wed, 29 Jun 2022 04:09:05 -0400
+X-MC-Unique: o_fx7V0NNFKyyOh8uvA_-w-1
+Received: by mail-wr1-f71.google.com with SMTP id t13-20020adfe10d000000b0021bae3def1eso2147211wrz.3
+        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 01:09:05 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=tqDYe+CaxG5rdxrYEshOizmWJw2UB37F2HUQkIlbpzg=;
-        b=mTwn4IqNMCD9CxyM+xqGdSvpbWfgWz+NJ/ij4dI9yjQ0LMEoF6zqVPvSk6TbrvuITs
-         U5E8nJvrcsxGj6n/TaccPs7A5hv+TYJMQhLu0kJ8Orea2OfmEKz4UTmm6qWQxPrTGOdr
-         Q/C4EzDNo3EQfGMKMIJ1ACwe1WnmPNNjtgEg4I7rYwHfQeX51t8F23/8XA5DWmS93t9l
-         Ur93FX2DZyYhpTdgxQo8tvbyED+4bg/9JyjerZDpCW4ZVOIAzfZpjGVJs0GcNl9dCXu5
-         KlH7x2+15Kj2GviLhansWjIasb3RmGuhQ/VLA+Io7jarLMIEtCGJEEkDQ1JmxSjr/toC
-         i7Gw==
-X-Gm-Message-State: AJIora9NBXwla7XJmZi42fjw2YfQ7UkI7/fWX1F4nlPVGAOWvvdFg4A7
-        g0Wm2kMTbadsPqlMorZseQ5l8A==
-X-Google-Smtp-Source: AGRyM1tuu9CQHgVFJEA7+0jyEpjwj+NgRKS3hxtfjlaGipukmjzZImAv7vIEB3AwtAheS2Zttv60cA==
-X-Received: by 2002:a05:6402:440f:b0:435:2e63:aca9 with SMTP id y15-20020a056402440f00b004352e63aca9mr2521235eda.162.1656490066029;
-        Wed, 29 Jun 2022 01:07:46 -0700 (PDT)
-Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
-        by smtp.gmail.com with ESMTPSA id ov24-20020a170906fc1800b006f3ef214d9fsm7358531ejb.5.2022.06.29.01.07.44
+        bh=7hQQnP6ElkRz6EikrOqVkat5RAwQAYxqOhDbZ9zjeug=;
+        b=P1HoLcyfHLZWvq0r5rfalv7dmbABso6O2KLZaJRq6XasD+8CnDC2hHwubtaGKqcEX8
+         qbRzei7LZqClGq2wArnBoNR5vYA9S4pNqVbwF7DcUChBuHK+EwzWx3GMq+iFwry6jjfl
+         /Zh5bB+czWepoQfzR/xnJ1eU5E4EwrzyhNSH+HIh1/5i/XBu+bk8fUaUqEU3QWizkH0f
+         2nq3nmJbBj4tfXIev/CY6+FugIIM2oBwQFfSvV7I7Ui76akaD/w+7w3C6ca+FQsKnwKN
+         BtCer3NFUqtgVfEEjNbRosEzrKEV0ArjtKpkrdI1MlRbv9H44bNsM/c+bl4b9Gqkmz4b
+         qNig==
+X-Gm-Message-State: AJIora8s4L6lZNiYu6W1MAtfo+5HJ8Bnjs2nAHAl38RsdjlT1qQ5RaO/
+        3MlDXA6bg7/L86hk2mRNsekiASVrbteQmPCkSwmfzG4/+sfhvSqJT1C+uWf7yiQwSNgg7B4Pjjt
+        Icm7GTUSejLAz9Lq2
+X-Received: by 2002:a05:600c:2246:b0:3a0:4d14:e9d5 with SMTP id a6-20020a05600c224600b003a04d14e9d5mr2201672wmm.70.1656490144656;
+        Wed, 29 Jun 2022 01:09:04 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1usFW/96xeCeX9gWa5EcwEsowhB540yEb4Gaanj9433iMcJH3n1uDXhdEWzSLPQicn1TmuJ9w==
+X-Received: by 2002:a05:600c:2246:b0:3a0:4d14:e9d5 with SMTP id a6-20020a05600c224600b003a04d14e9d5mr2201616wmm.70.1656490144372;
+        Wed, 29 Jun 2022 01:09:04 -0700 (PDT)
+Received: from [192.168.1.129] (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id p2-20020a05600c358200b003942a244f47sm2507134wmq.32.2022.06.29.01.09.02
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 29 Jun 2022 01:07:45 -0700 (PDT)
-Message-ID: <33ceacbe-7cde-d131-f208-2d53a47eca0e@blackwall.org>
-Date:   Wed, 29 Jun 2022 11:07:43 +0300
+        Wed, 29 Jun 2022 01:09:03 -0700 (PDT)
+Message-ID: <a5a3e2ca-030a-4838-296e-50dbb6d87330@redhat.com>
+Date:   Wed, 29 Jun 2022 10:09:01 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.10.0
-Subject: Re: [PATCH net-next] net: switchdev: add reminder near struct
- switchdev_notifier_fdb_info
+Subject: Re: [PATCH 6/6] i2c: Make remove callback return void
 Content-Language: en-US
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>
-References: <20220628100831.2899434-1-vladimir.oltean@nxp.com>
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <20220628100831.2899434-1-vladimir.oltean@nxp.com>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
+        Jeremy Kerr <jk@codeconstruct.com.au>
+Cc:     "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        "platform-driver-x86@vger.kernel.org" 
+        <platform-driver-x86@vger.kernel.org>,
+        "patches@opensource.cirrus.com" <patches@opensource.cirrus.com>,
+        "linux-mtd@lists.infradead.org" <linux-mtd@lists.infradead.org>,
+        "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        "linux-rtc@vger.kernel.org" <linux-rtc@vger.kernel.org>,
+        "chrome-platform@lists.linux.dev" <chrome-platform@lists.linux.dev>,
+        "linux-staging@lists.linux.dev" <linux-staging@lists.linux.dev>,
+        "kasan-dev@googlegroups.com" <kasan-dev@googlegroups.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
+        "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
+        "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>,
+        "linux-watchdog@vger.kernel.org" <linux-watchdog@vger.kernel.org>,
+        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
+        "acpi4asus-user@lists.sourceforge.net" 
+        <acpi4asus-user@lists.sourceforge.net>,
+        "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
+        "linux-mediatek@lists.infradead.org" 
+        <linux-mediatek@lists.infradead.org>,
+        "linux-rpi-kernel@lists.infradead.org" 
+        <linux-rpi-kernel@lists.infradead.org>,
+        "openipmi-developer@lists.sourceforge.net" 
+        <openipmi-developer@lists.sourceforge.net>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-hwmon@vger.kernel.org" <linux-hwmon@vger.kernel.org>,
+        Support Opensource <support.opensource@diasemi.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Wolfram Sang <wsa@kernel.org>,
+        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>
+References: <20220628140313.74984-1-u.kleine-koenig@pengutronix.de>
+ <20220628140313.74984-7-u.kleine-koenig@pengutronix.de>
+ <60cc6796236f23c028a9ae76dbe00d1917df82a5.camel@codeconstruct.com.au>
+ <20220629072304.qazmloqdi5h5kdre@pengutronix.de>
+ <5517f329-b6ba-efbd-ccab-3d5caa658b80@csgroup.eu>
+From:   Javier Martinez Canillas <javierm@redhat.com>
+In-Reply-To: <5517f329-b6ba-efbd-ccab-3d5caa658b80@csgroup.eu>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 28/06/2022 13:08, Vladimir Oltean wrote:
-> br_switchdev_fdb_notify() creates an on-stack FDB info variable, and
-> initializes it member by member. As such, newly added fields which are
-> not initialized by br_switchdev_fdb_notify() will contain junk bytes
-> from the stack.
+On 6/29/22 09:55, Christophe Leroy wrote:
 > 
-> Other uses of struct switchdev_notifier_fdb_info have a struct
-> initializer which should put zeroes in the uninitialized fields.
 > 
-> Add a reminder above the structure for future developers. Recently
-> discussed during review.
+> Le 29/06/2022 à 09:23, Uwe Kleine-König a écrit :
+>> Hello,
+>>
+>> [I dropped nearly all individuals from the Cc: list because various
+>> bounces reported to be unhappy about the long (logical) line.]
 > 
-> Link: https://patchwork.kernel.org/project/netdevbpf/patch/20220524152144.40527-2-schultz.hans+netdev@gmail.com/#24877698
-> Link: https://patchwork.kernel.org/project/netdevbpf/patch/20220524152144.40527-3-schultz.hans+netdev@gmail.com/#24912269
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
->  include/net/switchdev.h | 3 +++
->  1 file changed, 3 insertions(+)
+> Good idea, even patchwork made a mess of it, see 
+> https://patchwork.ozlabs.org/project/linuxppc-dev/patch/20220628140313.74984-7-u.kleine-koenig@pengutronix.de/
 > 
-> diff --git a/include/net/switchdev.h b/include/net/switchdev.h
-> index aa0171d5786d..7dcdc97c0bc3 100644
-> --- a/include/net/switchdev.h
-> +++ b/include/net/switchdev.h
-> @@ -239,6 +239,9 @@ struct switchdev_notifier_info {
->  	const void *ctx;
->  };
->  
-> +/* Remember to update br_switchdev_fdb_populate() when adding
-> + * new members to this structure
-> + */
->  struct switchdev_notifier_fdb_info {
->  	struct switchdev_notifier_info info; /* must be first */
->  	const unsigned char *addr;
 
-Reviewed-by: Nikolay Aleksandrov <razor@blackwall.org>
+FYI, for patches like these what I usually use is:
+
+./scripts/get_maintainer.pl --nogit-fallback --no-m --no-r
+
+-- 
+Best regards,
+
+Javier Martinez Canillas
+Linux Engineering
+Red Hat
 
