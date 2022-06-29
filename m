@@ -2,105 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D734560075
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 14:55:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45DCD56007B
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 14:55:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233491AbiF2MwB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 08:52:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50540 "EHLO
+        id S230466AbiF2Mxi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 08:53:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230523AbiF2Mv7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 08:51:59 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 124D936179
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 05:51:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
-        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=BiBqIp0Uei0foUzBaUWHLORzLsEoXqLNweYtBe3Ap9c=; b=DeU7grXNcbB3LdAOVYyirqd8Aj
-        wyM+KoKJVo+TjRyAVXixjOQqzwwdxFxRgSiKp7NyCGFfwfjXrwhStI6QGmQtOIy3Pw+cW8v80qteP
-        msEOouU0YDaA0IQZChGbWlbkk3xUYHhlID3cpVMpKXVGjWL0/NRE+tj6tZdl+asSOy9It0azZ5QBx
-        sYt+HBuQeNToNbCZEQj8wpj3np6+sqgfyf8l5TRLndiuy+GGs8tK3UTsj35t8r9yKRszXmhhm/0rP
-        KBLA8rpIqSq8Q6RchklsSYvObdgQMWflcuUlgTY6BRKURW94Hn9xy3qHmRlidg2eObjL/bLqzuHVD
-        xlT/HHWQ==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:35720 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1o6XAb-000386-AQ; Wed, 29 Jun 2022 13:51:49 +0100
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <rmk@rmk-PC.armlinux.org.uk>)
-        id 1o6XAa-004pW8-IP; Wed, 29 Jun 2022 13:51:48 +0100
-In-Reply-To: <YrxKdVmBzeMsVjsH@shell.armlinux.org.uk>
-References: <YrxKdVmBzeMsVjsH@shell.armlinux.org.uk>
-From:   "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "Alvin __ipraga" <alsi@bang-olufsen.dk>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        UNGLinuxDriver@microchip.com,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
-Subject: [PATCH RFC net-next 6/6] net: phylink: debug print
+        with ESMTP id S229952AbiF2Mxh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 08:53:37 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E40917A8E;
+        Wed, 29 Jun 2022 05:53:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656507217; x=1688043217;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=NBFLWofkDnaYU8CY8LB/55jv2/b16mClVdfs49+iIRA=;
+  b=CHXuJrSoscC+u878y2OHeU9ILhyQoZkUfRWpQPHkp0efBS6Sh7Hjn/kw
+   hVJXQWpoWSoS10L46WE3M6gO8Y3lr9nuqmKrH5de8zIKSx0qBq+oRwWyq
+   ufGG34pDvLbGXaXpPPc3y+lGfr/t9G212GdrV7FnseKKNmLuuR8+A7O2R
+   /Zt6CiCKDFwmlVe5GTumQSRFzjZ7s5Cw++cmqL8tn935uWkv4FPhK3gs3
+   47iHI2+WFpLue0Xqdqc866Ybk/wdXitR8Xn3apZuYKPpgBQOcY2JwDxR5
+   LYM1w4e5MgYqcNbp3HVjkj7bHiA/mPIcigI6eOSxejsH83zh70IsIvlpK
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="346014091"
+X-IronPort-AV: E=Sophos;i="5.92,231,1650956400"; 
+   d="scan'208";a="346014091"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2022 05:53:36 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,231,1650956400"; 
+   d="scan'208";a="588299334"
+Received: from boxer.igk.intel.com (HELO boxer) ([10.102.20.173])
+  by orsmga007.jf.intel.com with ESMTP; 29 Jun 2022 05:53:35 -0700
+Date:   Wed, 29 Jun 2022 14:53:34 +0200
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>
+Subject: Re: [PATCH bpf] xsk: mark napi_id on sendmsg()
+Message-ID: <YrxLTiOIpD44JM7R@boxer>
+References: <20220629105752.933839-1-maciej.fijalkowski@intel.com>
+ <CAJ+HfNj0FU=DBNdwD3HODbevcP-btoaeCCGCfn2Y5eP2WoEXHA@mail.gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1o6XAa-004pW8-IP@rmk-PC.armlinux.org.uk>
-Sender: Russell King <rmk@armlinux.org.uk>
-Date:   Wed, 29 Jun 2022 13:51:48 +0100
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <CAJ+HfNj0FU=DBNdwD3HODbevcP-btoaeCCGCfn2Y5eP2WoEXHA@mail.gmail.com>
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
----
- drivers/net/phy/phylink.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+On Wed, Jun 29, 2022 at 02:45:11PM +0200, Björn Töpel wrote:
+> On Wed, 29 Jun 2022 at 12:58, Maciej Fijalkowski
+> <maciej.fijalkowski@intel.com> wrote:
+> >
+> > When application runs in zero copy busy poll mode and does not receive a
+> > single packet but only sends them, it is currently impossible to get
+> > into napi_busy_loop() as napi_id is only marked on Rx side in
+> > xsk_rcv_check(). In there, napi_id is being taken from xdp_rxq_info
+> > carried by xdp_buff. From Tx perspective, we do not have access to it.
+> > What we have handy is the xsk pool.
+> 
+> The fact that the napi_id is not set unless set from the ingress side
+> is actually "by design". It's CONFIG_NET_RX_BUSY_POLL after all. I
+> followed the semantics of the regular busy-polling sockets. So, I
+> wouldn't say it's a fix! The busy-polling in sendmsg is really just
+> about "driving the RX busy-polling from another socket syscall".
 
-diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-index 23be3f041705..bd493280c8af 100644
---- a/drivers/net/phy/phylink.c
-+++ b/drivers/net/phy/phylink.c
-@@ -1378,6 +1378,13 @@ int phylink_set_max_fixed_link(struct phylink *pl)
- 	if (pl->cfg_link_an_mode != MLO_AN_PHY || pl->phydev || pl->sfp_bus)
- 		return -EBUSY;
- 
-+	phylink_info(pl, "sif=%*pbl if=%d(%s) cap=%lx\n",
-+		     (int)PHY_INTERFACE_MODE_MAX,
-+		     pl->config->supported_interfaces,
-+		     pl->link_interface,
-+		     phy_modes(pl->link_interface),
-+		     pl->config->mac_capabilities);
-+
- 	interface = pl->link_interface;
- 	if (interface != PHY_INTERFACE_MODE_NA) {
- 		/* Get the speed/duplex capabilities and reduce according to the
--- 
-2.30.2
+I just felt that busy polling for txonly apps was broken, hence the
+'fixing' flavour. I can send it just as improvement to bpf-next.
 
+> 
+> That being said, I definitely see that this is useful for AF_XDP
+> sockets, but keep in mind that it sort of changes the behavior from
+> regular sockets. And we'll get different behavior for
+> copy-mode/zero-copy mode.
+> 
+> TL;DR, I think it's a good addition. One small nit below:
+> 
+> > +                       __sk_mark_napi_id_once(sk, xs->pool->heads[0].xdp.rxq->napi_id);
+> 
+> Please hide this hideous pointer chasing in something neater:
+> xsk_pool_get_napi_id() or something.
+
+Would it make sense to introduce napi_id to xsk_buff_pool then?
+xp_set_rxq_info() could be setting it. We are sure that napi_id is the
+same for whole pool (each xdp_buff_xsk's rxq info).
+
+> 
+> 
+> Björn
