@@ -2,410 +2,720 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A45AA55F2F0
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 03:47:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 17ABB55F2F5
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 03:50:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229557AbiF2BrB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Jun 2022 21:47:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44274 "EHLO
+        id S230231AbiF2Btk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Jun 2022 21:49:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229475AbiF2BrA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 21:47:00 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B7A12C651
-        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 18:46:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656467218; x=1688003218;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=FU/DOlslzB1Opm8LgiId3ZSusJk6j1Oq/Hrh2FcTygw=;
-  b=aB6Z+MQpXqUTCIjzMW92c/GuiCinlRK17J+Je18XnNtHRMWPafpehrda
-   SMFNsIelux89xM6lI9cVXgX4+CNoELd+k+KEHWz9JZD6/iwaBnkjCalGz
-   Z1c6PlkoVmu5YCROAOIFKXzCl4KXWyjLhX6/5xPaXvZG+xNB5XgBd1S2S
-   Uscli4xifgoyPxMjCDfpu9+YwgrLGATEbN6Me8/CwNv5rZOlukJcY7sZz
-   6gkc5r4+LwscCMr8vfDLbBT+oIvuC6Aij5n3381sj8G1seNzdAegdV9oV
-   u+9HQsk+7rgWG2AjHqwRz0utaeQaUlXpEgnRatj5In7cEUwmF0dL6b/hW
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="343583047"
-X-IronPort-AV: E=Sophos;i="5.92,230,1650956400"; 
-   d="scan'208";a="343583047"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 18:46:58 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,230,1650956400"; 
-   d="scan'208";a="680290165"
-Received: from fmsmsx605.amr.corp.intel.com ([10.18.126.85])
-  by FMSMGA003.fm.intel.com with ESMTP; 28 Jun 2022 18:46:57 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx605.amr.corp.intel.com (10.18.126.85) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Tue, 28 Jun 2022 18:46:57 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Tue, 28 Jun 2022 18:46:57 -0700
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.175)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Tue, 28 Jun 2022 18:46:57 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=e2uwXof+ZCFYafsvuXAQpeg9/F+KN7toSJd3Yse1W567DEtSfA5fkJG68lsm4eoil0fvxQ1NvfSoCzgFGCEJOzaktO9Mu6s0OlQt84L+S/yBbMnhuUe+I21Yr6UDT1vDfGy2gpnn/WwlyoOdf66wXGS3UBTq5I9vm2gKGN9GYD466yt2ggOXvgPOpe7S96nE9v9fbfQkUAK/8JK6jxCbHH3pqkmUxQ1TrNkAqVTjpnDjU8fE+lfWS5BMWhPAET2Nk2Ju72rBz2aiaPxYXPSsyVzX8QwI26YV3W9nfC7+f270AtZjPT+NZG9NtZb3blGPknQ8SYYnB3EKhI4CprnIYw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=FU/DOlslzB1Opm8LgiId3ZSusJk6j1Oq/Hrh2FcTygw=;
- b=MJ6YUnqLNc7MNdHKq+yPESSsYsAcEK4jSeRyaoS6lpb3zbpN5t4Ak8dpcMKyNz9Qrph0Yu393Ycy1qOd8KEiq7nDmO6iz0P6zI8edq86vDBi6Sac5fOIxj6yruL/igZjSwacOc20/YSdCsquAFCS7N5FS4BdmLDsOOH8Xu9UJ3d63l27CVX4eVYZkrc7YxakdlQL26lClfkJxgh2i66Fhd0yBSn177kyDOhWgk71rUaFZNqD7fllU+U0OmXVDxJL4DsQafvvKn7dbdX2Si9ZOAYklF4GvTnvXdO4ONkZYMT80+kuutU/oc+ldC9pmrhKgnvxeWZf5dNYC11wS54Dlw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from DM6PR11MB4657.namprd11.prod.outlook.com (2603:10b6:5:2a6::7) by
- BYAPR11MB3287.namprd11.prod.outlook.com (2603:10b6:a03:1c::28) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5373.15; Wed, 29 Jun 2022 01:46:55 +0000
-Received: from DM6PR11MB4657.namprd11.prod.outlook.com
- ([fe80::2ce4:94fa:eef0:b822]) by DM6PR11MB4657.namprd11.prod.outlook.com
- ([fe80::2ce4:94fa:eef0:b822%4]) with mapi id 15.20.5373.022; Wed, 29 Jun 2022
- 01:46:55 +0000
-From:   "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>
-To:     Vadim Fedorenko <vfedorenko@novek.ru>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     Vadim Fedorenko <vadfed@fb.com>, Aya Levin <ayal@nvidia.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>
-Subject: RE: [RFC PATCH v1 1/3] dpll: Add DPLL framework base functions
-Thread-Topic: [RFC PATCH v1 1/3] dpll: Add DPLL framework base functions
-Thread-Index: AQHYhpxJ2Syh50hy706ooWW0d2tMpK1dHSMwgAB8SQCAATqG8IADR7oAgAOKzIA=
-Date:   Wed, 29 Jun 2022 01:46:55 +0000
-Message-ID: <DM6PR11MB46572B45C787C6D1351D606C9BBB9@DM6PR11MB4657.namprd11.prod.outlook.com>
-References: <20220623005717.31040-1-vfedorenko@novek.ru>
- <20220623005717.31040-2-vfedorenko@novek.ru>
- <DM6PR11MB46579C692B75DEF81530B7339BB59@DM6PR11MB4657.namprd11.prod.outlook.com>
- <34093244-431b-98c8-ba88-82957c659808@novek.ru>
- <DM6PR11MB4657C1830DACC5EB4CD98B789BB49@DM6PR11MB4657.namprd11.prod.outlook.com>
- <a85620a1-94ef-0fdf-3c92-6c9d2e3614f5@novek.ru>
-In-Reply-To: <a85620a1-94ef-0fdf-3c92-6c9d2e3614f5@novek.ru>
-Accept-Language: pl-PL, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 2f88c027-66e8-45c7-37b5-08da59713f36
-x-ms-traffictypediagnostic: BYAPR11MB3287:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: TqWxw4CTdu6v82fbHFaMJpi3RbI8SZ1PLsCyO/yyA2Z/0KBerd3ptnntlFIJKoen0bbPh9t1X4EkvPhyoyb7c4W1W0/vp12I9NmhNWG36qTZFv4g5sYnCxobVPGpuMOQ8ROU8BO4LjxId753rhcBgOPL8JYQobv7xJ6iEwoK3IzIMZDF+yGsFhRGeETIajCAk9duoWDWnnIXxjuR3/SeiEQ3MVCx5Ig7XTROUE5RhbntEHqL7JOlk2kLqeAIulhJVLRJizNi/6QwXJPu9pngkWaVp77R28r1tgUXAPZXoqGhiT1OA/WxvVgQP7CqZtjxjUOscW2TX/vah/QW/FJ/BwDHwRCOvnv6CjsdjBQeGeGY3GeHo1atCbPj7dc3UBzOhaeCOYK4BvfUEkgvpDP15OKV6NCRWhjWhI9b3HVEBq49TWrxvCh2/CF6mz7zxTvToMOStX1zqK9CM1h4UN196UKVj7vQ2eLj2I+OctE+GuJVKHyjugnU8H3zvuMF5u5sAoBLwZ9ahBBSwflj/PleaW05gE8pG8+8p4YMELg+PAXjUvvDIMSGjFCm9hPkFLzFPn2pyigLspoPD5YmfcJnpmuaPRV0zhBpCf6034NOis7xqNHEZoFe29q+EzwAimRPp10WvBDRnGaA/ewIPZ/x5bvUoHKtHl/IGcNU4udGOizAG+DfT0uA+z1Yf3YgpakCd17PLDbV+zr0AkCgucB1VyC3xcoClM5Gg6qH0mVIYJis9WlgLiCUgOXJt3zyNaxlBKDwiOvcANPtu2OCWAi9MyxioA5a/FlvI4xepqCpAYY=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB4657.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(136003)(396003)(39860400002)(366004)(346002)(376002)(186003)(83380400001)(55016003)(82960400001)(38070700005)(122000001)(6506007)(7696005)(38100700002)(41300700001)(26005)(9686003)(54906003)(71200400001)(110136005)(316002)(19627235002)(478600001)(2906002)(30864003)(76116006)(66946007)(66556008)(66476007)(66446008)(8676002)(4326008)(64756008)(5660300002)(8936002)(52536014)(86362001)(33656002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?Vm5kNTlzbm80MGNETDFISWFuV3FwdWNpTWIzcmdWbVNPUzUyQ2ZYeSt3ckZZ?=
- =?utf-8?B?RTlBQitmbnJyZEFPRFNWV1VlOHhMWk1YTGFJRXJjZnJhaVA1Mk9QRTdrdmRG?=
- =?utf-8?B?WjMvN1ZGSVI0Z3pBZGVTLzdSZjZaUXdQc0E0ZUtaM2tBaVdCOWpPNUQ0Q1U5?=
- =?utf-8?B?bzBJZkhVRnpZTWNRU2YxUitZNzFHYVpaWDR0UHVOU2RMN3BGSkFaTnFKMGhX?=
- =?utf-8?B?aDB2K09MTU4zVEJxSWUyRDBReEh1dHlvWXVtV3dQVG9nRzdsRkEzV0E0TjZr?=
- =?utf-8?B?Z3lqMVlWRko0bEFHUUdlT2w0YmZNdzJLY1JaTktmOVA2WkgrMGo3K1NpdzdH?=
- =?utf-8?B?L0RJSWtFeXZvSDR5UUxlbEIxT3I3a0NaUnNxUUt2QWRuc2RYTy8vcE1HcmNC?=
- =?utf-8?B?K2xmYlFwUWtVcUZxMm4wQkkwUUVwVWc0aURKT3pmNC85OW5GV1dDaTdtbGJa?=
- =?utf-8?B?dzBJQy82bkY4R1ZrVUY2UUdlQWpQeVR6QzVRQ2VBSFZ0eDVpN0xLT1B1WjV5?=
- =?utf-8?B?WE9yalhndzY4RWRVMm1aNHlqRTAzWFlXbjFMZFZCRjRodHNnRHVDSE01V0ky?=
- =?utf-8?B?MkNiWXpDM3o3MDJ3aFdvYk1iRnExeTg1VWpmK3FoaHErWmJMa1hpQzNzdUs4?=
- =?utf-8?B?bG5BK3Y5WFdlekp0Zlg3ck8zUkpzOFMxZ01LbitPang4cFE5QkZScHdPWnor?=
- =?utf-8?B?b2hoejNhNDE1MXY2bThtSVFuVi9iSldQc0MydEdkekk1RDdxUFdhbTU4clp4?=
- =?utf-8?B?WnNNL0pBbjRTeFFkbUJldlI1M2FLTm03YWd1bTF3cUtrZ29paldSR2o0NmFw?=
- =?utf-8?B?TVlSQ0pvRzRSVm5NRXlLd1RWWEo2N1d0dlZuUFEvV25XMHdBdFB2RnpydWZz?=
- =?utf-8?B?SkRnZC9wdXhrMW9HUXdrVjYvNWpnWmhRUEJYMlhrR2k2OUZBL2pkOXloV1o5?=
- =?utf-8?B?bE93VnZIYnZTRFhPRTYxZitlMTA2RTVjRG0rMDRSMHRHOENFWVRqdUNCTDVu?=
- =?utf-8?B?alI5dXlkWnQxN1owZHV6TGs2OHRvb1ZIWGpwSmhPOFJ1dXl5VG53YTNmZVZx?=
- =?utf-8?B?cStIMkJOZUJzbDlSZTl2c3JxVVRiVXFBRTRKZ3FRdVh1TVJuM09ZSmZOdmNk?=
- =?utf-8?B?WDhoTS9GcG9xRlcwTFdFV3JSZUc5NGRucUJhTk90QjJMVCtkOGcvUGlKSU9k?=
- =?utf-8?B?SVlOdDNVSTdHRDNwVU15cEdhSDdiaEZDZ3o2ZnFJZzUxU29Lbm5oS3FKNWsx?=
- =?utf-8?B?YmVmQlZyT3VFNWcwWWcyNXd6Wmw2eEpSZ09MSk80dXVkL21RR1lKU04zUkVW?=
- =?utf-8?B?TlA4QW5tdTluR3RsUDViS0xZOE9PN3BLWUlRdUhpSFRBbjhlcUdMU21abGpm?=
- =?utf-8?B?ajJZdk1uMEN1U0dFZFlRUTJ1UWsvLzkzQUpUQmZyZlVFczI0bWdMQTVUMGds?=
- =?utf-8?B?SEtZVWw5RDFSckJnM1EyZ01UbW9jQi9KQjlSTnJWMkJyU21WaFlkK3V5UWgz?=
- =?utf-8?B?NTRqSk1QUlJ6RnpFU1R3TUYzQzNaNnR0UzVoQTZkNFV6c25uQ3NIUnp4S1lW?=
- =?utf-8?B?OXZhQWNRNTFyVlJLeXk3QkxGZmtnbTRwaFFEL0NtenZpMFBZcTdTMkJYSWdk?=
- =?utf-8?B?ZG4vR1V4dnkwaktZRW04YTlmTEhJODB4RDBuWmRLQW1nbGxBYzYwZ1EyUnh5?=
- =?utf-8?B?SjVWZGZkWmIzdFFROU1sUXorSzBEVVF1eGI5SkFlVnpHM1UyY3NvT0locDFu?=
- =?utf-8?B?Q1RhcDZOME0xWk5LNjdqVFVkUmR6S284T05jQmRWMzMzNkNuVFlGUkw0VlFw?=
- =?utf-8?B?dUNsejk3djN5NUI0bXg1YmVNQlAzQno4WVZOZmM1VmRtTWR5cjhqS3l4YUZj?=
- =?utf-8?B?QlFHVjY2K0xsNW42MGIwNVRtR0E0SStsN3RoNWxIMkxIWkRWTThLbS81YmNI?=
- =?utf-8?B?ZFUzUUVWNm9NMXhaMnhkOC91enl3NFVHeTdnZmUvUnhFU1VLKzVxc1IyL2pv?=
- =?utf-8?B?ZEVSTXNidGgyTURNWk9VTHVaZzFlSVkwQmtpMXpQcHZ3bFhOK05rYnB6OEpN?=
- =?utf-8?B?ZHlsYks2SnZieFl0dDVFcXYrMGZFOXR5SkR3TXBzWGtOb3llWHNSYWRyZ0VY?=
- =?utf-8?B?MzlseDZsNGN1ZFBBMGJQcmZpb2NFZHAvWWdnNnNsZ3M0TW9sRWlwWFJ0UE0x?=
- =?utf-8?B?RkE9PQ==?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        with ESMTP id S229475AbiF2Btg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Jun 2022 21:49:36 -0400
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1769525C4B
+        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 18:49:35 -0700 (PDT)
+Received: by mail-pl1-x630.google.com with SMTP id q18so12647017pld.13
+        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 18:49:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1PSdXPukbi6aFwDhJ4/qZvYPLDW/1WLX/nPn4Q1wuec=;
+        b=TF9kohNo/tsvxWQFyJTbovJKgeJVWYp+O8xTrfrm0qoWNLImsGgKwGP21aFdDQhgN7
+         OxfZqd7tA/D2fK9huyiLsPBqHplBOaG9lOx3gJgcq8VmgkyEBfiI9rNB2PMv46Un2Uhg
+         vuUba8snzH3pCVYZ7XJ1+kY9ynGWImXd/m2SLTmmz1Re9dLGLcWq8SaO43BXzcQQK3kK
+         XhTWXWhpiSNIZ+fPHojhXXkViVVgMu9ielfzilynjTS6hurutJ4XFgZcUnHIRJqINBOR
+         PtbRmS91gLkJNH3ipL2CwV2iLOmUkCeXKNuzdwrL6hTPq7Z1drgZ3nw+QSpqioaKc2YL
+         Xtdw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1PSdXPukbi6aFwDhJ4/qZvYPLDW/1WLX/nPn4Q1wuec=;
+        b=UQJW81vc+uheLsT+ITDS8Zj77eYrQ+Pxet8nBrVIcKUkvT6Zgt/EPqRIv0aSPAXCx8
+         aWzeaVpNhuwZcMSCWuYicS74+jPjfWhcLOJrgkpmDUKWitBB3aXdYvcK3+FaQiPZUkxl
+         14xxg3pxGrsEVlQdr0NizN86XEdAO2bwbr+aFZLsu4xTS504kctNFXmeb3i2Z/W8m5uU
+         p3qV2O3MNKCRzO1yFPVslfZOp8UUxyGJpyM/A05Db5ZBWgUWGzf5gjLCh4mNDidDwuyg
+         3dO8eQD6U7ffFh0tWw0Tvk3Uu7DM0MyZuA+bvxQfZ2SyKV/1VZZf2vMLiG0u/R6hbSiM
+         xx0A==
+X-Gm-Message-State: AJIora97c5zs5xO2n2hPi8xvTrvrok60ILP8SeARZpfliUp4TMUmW+ks
+        jSoF4RDldwabLYywJkczhVGhssRlnFA=
+X-Google-Smtp-Source: AGRyM1tNa5W5OSWU6N2MV816hE0am1MEhTorg2RuakKob3kJ8cVMGYsOYJ/N5rs6U1Xx0Ptx3LzXkA==
+X-Received: by 2002:a17:902:c943:b0:16a:3ab8:3678 with SMTP id i3-20020a170902c94300b0016a3ab83678mr7818089pla.56.1656467373908;
+        Tue, 28 Jun 2022 18:49:33 -0700 (PDT)
+Received: from tuc-a02.vmware.com.com (c-67-160-105-174.hsd1.wa.comcast.net. [67.160.105.174])
+        by smtp.gmail.com with ESMTPSA id c16-20020a056a00009000b0051c1b445094sm10221273pfj.7.2022.06.28.18.49.32
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 28 Jun 2022 18:49:33 -0700 (PDT)
+From:   William Tu <u9012063@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     doshir@vmware.com, jbrouer@redhat.com, lorenzo.bianconi@redhat.com,
+        gyang@vmware.com, William Tu <tuc@vmware.com>
+Subject: [RFC PATCH 1/2] vmxnet3: Add basic XDP support.
+Date:   Tue, 28 Jun 2022 18:49:26 -0700
+Message-Id: <20220629014927.2123-1-u9012063@gmail.com>
+X-Mailer: git-send-email 2.30.1 (Apple Git-130)
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB4657.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2f88c027-66e8-45c7-37b5-08da59713f36
-X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Jun 2022 01:46:55.2728
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: mYpoEublNhqrElFcKUzTpengMxJNBYk6Xz/5R6F4gzR2BJbcVhKj4TLzdP1fSmE0QGTDmfWDzpVlz/VFrki0xaMtzWH1zPz6/eEBkwQwF0Y=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR11MB3287
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-LS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCkZyb206IFZhZGltIEZlZG9yZW5rbyA8dmZlZG9y
-ZW5rb0Bub3Zlay5ydT4gDQpTZW50OiBTdW5kYXksIEp1bmUgMjYsIDIwMjIgOTozOSBQTQ0KPg0K
-Pk9uIDI0LjA2LjIwMjIgMTg6MzYsIEt1YmFsZXdza2ksIEFya2FkaXVzeiB3cm90ZToNCj4NCj4u
-Li4gc2tpcHBlZCAuLi4NCj4NCj4+Pj4+ICtzdGF0aWMgaW50IF9fZHBsbF9jbWRfZHVtcF9zdGF0
-dXMoc3RydWN0IGRwbGxfZGV2aWNlICpkcGxsLA0KPj4+Pj4gKwkJCQkJICAgc3RydWN0IHNrX2J1
-ZmYgKm1zZykNCj4+Pj4+ICt7DQo+Pj4+PiArCWludCByZXQ7DQo+Pj4+PiArDQo+Pj4+PiArCWlm
-ICghZHBsbC0+b3BzLT5nZXRfc3RhdHVzICYmICFkcGxsLT5vcHMtPmdldF90ZW1wICYmICFkcGxs
-LT5vcHMtPmdldF9sb2NrX3N0YXR1cykNCj4+Pj4+ICsJCXJldHVybiAwOw0KPj4+Pg0KPj4+PiB3
-aGF0IGlmIGRwbGwgZG9lc24ndCBzdXBwb3J0IG9uZSBvZiB0aG9zZSBjb21tYW5kcz8NCj4+Pj4N
-Cj4+Pg0KPj4+IHRoZW4gb25seSBzdXBwb3J0ZWQgYXR0cmlidXRlcyB3aWxsIGJlIG1lc3NhZ2Vk
-IGJhY2sgdG8gdXNlcg0KPj4gDQo+PiBIbW0sIGlzbid0IHRoYXQgcmVkdW5kYXQgaWYgd2UgbmVl
-ZCB0byBjaGVjayB0aG9zZSBhZ2FpbiBiZWxvdz8NCj4+IA0KPg0KPkkgcmVtb3ZlZCB0aGlzIGNo
-ZWNrIGZvciBub3cuIE1heWJlIEkgd2lsbCByZXR1cm4gLU5PT1BTVVBQIGhlcmUuDQoNCk9rLCB0
-aGF0IHNlZW1zIHJlYXNvbmFibGUuDQoNCj4NCj4+Pg0KPj4+Pj4gKw0KPj4+Pj4gKwlpZiAoZHBs
-bC0+b3BzLT5nZXRfc3RhdHVzKSB7DQo+Pj4+PiArCQlyZXQgPSBkcGxsLT5vcHMtPmdldF9zdGF0
-dXMoZHBsbCk7DQo+Pj4+PiArCQlpZiAobmxhX3B1dF91MzIobXNnLCBEUExMQV9TVEFUVVMsIHJl
-dCkpDQo+Pj4+PiArCQkJcmV0dXJuIC1FTVNHU0laRTsNCj4+Pj4+ICsJfQ0KPj4+Pj4gKw0KPj4+
-Pj4gKwlpZiAoZHBsbC0+b3BzLT5nZXRfdGVtcCkgew0KPj4+Pj4gKwkJcmV0ID0gZHBsbC0+b3Bz
-LT5nZXRfc3RhdHVzKGRwbGwpOw0KPj4+Pj4gKwkJaWYgKG5sYV9wdXRfdTMyKG1zZywgRFBMTEFf
-VEVNUCwgcmV0KSkNCj4+Pj4+ICsJCQlyZXR1cm4gLUVNU0dTSVpFOw0KPj4+Pj4gKwl9DQo+Pj4+
-DQo+Pj4+IHNob3VsZG4ndCBiZSBnZXRfdGVtcChkcGxsKT8NCj4+Pg0KPj4+IGdvb2QgY2F0Y2gs
-IGNvcHktcGFzdGUgZXJyb3INCj4+Pg0KPj4+Pj4gKw0KPj4+Pj4gKwlpZiAoZHBsbC0+b3BzLT5n
-ZXRfbG9ja19zdGF0dXMpIHsNCj4+Pj4+ICsJCXJldCA9IGRwbGwtPm9wcy0+Z2V0X2xvY2tfc3Rh
-dHVzKGRwbGwpOw0KPj4+Pj4gKwkJaWYgKG5sYV9wdXRfdTMyKG1zZywgRFBMTEFfTE9DS19TVEFU
-VVMsIHJldCkpDQo+Pj4+PiArCQkJcmV0dXJuIC1FTVNHU0laRTsNCj4+Pj4+ICsJfQ0KPj4+Pj4g
-Kw0KPj4+Pj4gKwlyZXR1cm4gMDsNCj4+Pj4+ICt9DQo+Pj4+PiArDQo+Pj4+PiArc3RhdGljIGlu
-dCBkcGxsX2RldmljZV9kdW1wX29uZShzdHJ1Y3QgZHBsbF9kZXZpY2UgKmRldiwgc3RydWN0IHNr
-X2J1ZmYgKm1zZywgaW50IGZsYWdzKQ0KPj4+Pj4gK3sNCj4+Pj4+ICsJc3RydWN0IG5sYXR0ciAq
-aGRyOw0KPj4+Pj4gKwlpbnQgcmV0Ow0KPj4+Pj4gKw0KPj4+Pj4gKwloZHIgPSBubGFfbmVzdF9z
-dGFydChtc2csIERQTExBX0RFVklDRSk7DQo+Pj4+PiArCWlmICghaGRyKQ0KPj4+Pj4gKwkJcmV0
-dXJuIC1FTVNHU0laRTsNCj4+Pj4+ICsNCj4+Pj4+ICsJbXV0ZXhfbG9jaygmZGV2LT5sb2NrKTsN
-Cj4+Pj4+ICsJcmV0ID0gX19kcGxsX2NtZF9kZXZpY2VfZHVtcF9vbmUoZGV2LCBtc2cpOw0KPj4+
-Pj4gKwlpZiAocmV0KQ0KPj4+Pj4gKwkJZ290byBvdXRfY2FuY2VsX25lc3Q7DQo+Pj4+PiArDQo+
-Pj4+PiArCWlmIChmbGFncyAmIERQTExfRkxBR19TT1VSQ0VTICYmIGRldi0+b3BzLT5nZXRfc291
-cmNlX3R5cGUpIHsNCj4+Pj4+ICsJCXJldCA9IF9fZHBsbF9jbWRfZHVtcF9zb3VyY2VzKGRldiwg
-bXNnKTsNCj4+Pj4+ICsJCWlmIChyZXQpDQo+Pj4+PiArCQkJZ290byBvdXRfY2FuY2VsX25lc3Q7
-DQo+Pj4+PiArCX0NCj4+Pj4+ICsNCj4+Pj4+ICsJaWYgKGZsYWdzICYgRFBMTF9GTEFHX09VVFBV
-VFMgJiYgZGV2LT5vcHMtPmdldF9vdXRwdXRfdHlwZSkgew0KPj4+Pj4gKwkJcmV0ID0gX19kcGxs
-X2NtZF9kdW1wX291dHB1dHMoZGV2LCBtc2cpOw0KPj4+Pj4gKwkJaWYgKHJldCkNCj4+Pj4+ICsJ
-CQlnb3RvIG91dF9jYW5jZWxfbmVzdDsNCj4+Pj4+ICsJfQ0KPj4+Pj4gKw0KPj4+Pj4gKwlpZiAo
-ZmxhZ3MgJiBEUExMX0ZMQUdfU1RBVFVTKSB7DQo+Pj4+PiArCQlyZXQgPSBfX2RwbGxfY21kX2R1
-bXBfc3RhdHVzKGRldiwgbXNnKTsNCj4+Pj4+ICsJCWlmIChyZXQpDQo+Pj4+PiArCQkJZ290byBv
-dXRfY2FuY2VsX25lc3Q7DQo+Pj4+PiArCX0NCj4+Pj4+ICsNCj4+Pj4+ICsJbXV0ZXhfdW5sb2Nr
-KCZkZXYtPmxvY2spOw0KPj4+Pj4gKwlubGFfbmVzdF9lbmQobXNnLCBoZHIpOw0KPj4+Pj4gKw0K
-Pj4+Pj4gKwlyZXR1cm4gMDsNCj4+Pj4+ICsNCj4+Pj4+ICtvdXRfY2FuY2VsX25lc3Q6DQo+Pj4+
-PiArCW11dGV4X3VubG9jaygmZGV2LT5sb2NrKTsNCj4+Pj4+ICsJbmxhX25lc3RfY2FuY2VsKG1z
-ZywgaGRyKTsNCj4+Pj4+ICsNCj4+Pj4+ICsJcmV0dXJuIHJldDsNCj4+Pj4+ICt9DQo+Pj4+PiAr
-DQo+Pj4+PiArc3RhdGljIGludCBkcGxsX2dlbmxfY21kX3NldF9zb3VyY2Uoc3RydWN0IHBhcmFt
-ICpwKQ0KPj4+Pj4gK3sNCj4+Pj4+ICsJY29uc3Qgc3RydWN0IGdlbmxfZHVtcGl0X2luZm8gKmlu
-Zm8gPSBnZW5sX2R1bXBpdF9pbmZvKHAtPmNiKTsNCj4+Pj4+ICsJc3RydWN0IGRwbGxfZGV2aWNl
-ICpkcGxsID0gcC0+ZHBsbDsNCj4+Pj4+ICsJaW50IHJldCA9IDAsIHNyY19pZCwgdHlwZTsNCj4+
-Pj4+ICsNCj4+Pj4+ICsJaWYgKCFpbmZvLT5hdHRyc1tEUExMQV9TT1VSQ0VfSURdIHx8DQo+Pj4+
-PiArCSAgICAhaW5mby0+YXR0cnNbRFBMTEFfU09VUkNFX1RZUEVdKQ0KPj4+Pj4gKwkJcmV0dXJu
-IC1FSU5WQUw7DQo+Pj4+PiArDQo+Pj4+PiArCWlmICghZHBsbC0+b3BzLT5zZXRfc291cmNlX3R5
-cGUpDQo+Pj4+PiArCQlyZXR1cm4gLUVPUE5PVFNVUFA7DQo+Pj4+PiArDQo+Pj4+PiArCXNyY19p
-ZCA9IG5sYV9nZXRfdTMyKGluZm8tPmF0dHJzW0RQTExBX1NPVVJDRV9JRF0pOw0KPj4+Pj4gKwl0
-eXBlID0gbmxhX2dldF91MzIoaW5mby0+YXR0cnNbRFBMTEFfU09VUkNFX1RZUEVdKTsNCj4+Pj4+
-ICsNCj4+Pj4+ICsJbXV0ZXhfbG9jaygmZHBsbC0+bG9jayk7DQo+Pj4+PiArCXJldCA9IGRwbGwt
-Pm9wcy0+c2V0X3NvdXJjZV90eXBlKGRwbGwsIHNyY19pZCwgdHlwZSk7DQo+Pj4+PiArCW11dGV4
-X3VubG9jaygmZHBsbC0+bG9jayk7DQo+PiANCj4+IEkgd29uZGVyIGlmIHNob3VsZG4ndCB0aGUg
-ZHBsbCBwdHIgYmUgdmFsaWRhdGVkIGhlcmUsIGFuZCBpbiBzaW1pbGFyIGNhc2VzLg0KPj4gSSBt
-ZWFuLCBiZXR3ZWVuIGNhbGxpbmcgZHBsbF9wcmVfZG9pdCBhbmQgYWN0dWFsbHkgZG9pbmcgc29t
-ZXRoaW5nIG9uIGEgJ2RwbGwnLA0KPj4gaXQgaXMgcG9zc2libGUgdGhhdCBkZXZpY2UgZ2V0cyBy
-ZW1vdmVkPw0KPj4gDQo+PiBPciBtYXliZSBwcmVfZG9pdC9wb3N0X2RvaXQgc2hhbGwgbG9jayBh
-bmQgdW5sb2NrIHNvbWUgb3RoZXIgbXV0ZXg/DQo+PiBBbHRvdWdoLCBJIGFtIG5vdCBhbiBleHBl
-cnQgaW4gdGhlIG5ldGxpbmsgc3R1ZmYsIHRodXMganVzdCByYWlzaW5nIGEgY29uY2Vybi4NCj4+
-DQo+DQo+SSB3YXMgdHJ5aW5nIHRvIHJlZHVjZSB0aGUgc2NvcGUgb2YgbXV0ZXggYXMgbXVjaCBh
-cyBwb3NzaWJsZSwgYnV0IGl0IGxvb2tzIGxpa2UgDQo+aXQncyBiZXR0ZXIgdG8gZXh0ZW5kIGl0
-IHRvIGNvdmVyIHdob2xlIGl0ZXJhdGlvbiB3aXRoIGRwbGwgcHRyLiBOb3Qgc3VyZSBpZiANCj50
-aGlzIGlzIGEgY29ycmVjdCB3YXkgdGhvdWdoLg0KDQpBY2NvcmRpbmcgdG8gZG9jcywgcHJlL3Bv
-c3QtZG9pdCBhcmUgZGVzaWduZWQgZm9yIHRoYXQuDQoNCj4NCj4uLi4gc2tpcHBlZCAuLi4NCj4N
-Cj4+Pj4+ICsNCj4+Pj4+ICsvKiBBdHRyaWJ1dGVzIG9mIGRwbGxfZ2VubF9mYW1pbHkgKi8NCj4+
-Pj4+ICtlbnVtIGRwbGxfZ2VubF9nZXRfYXR0ciB7DQo+Pj4+PiArCURQTExBX1VOU1BFQywNCj4+
-Pj4+ICsJRFBMTEFfREVWSUNFLA0KPj4+Pj4gKwlEUExMQV9ERVZJQ0VfSUQsDQo+Pj4+PiArCURQ
-TExBX0RFVklDRV9OQU1FLA0KPj4+Pj4gKwlEUExMQV9TT1VSQ0UsDQo+Pj4+PiArCURQTExBX1NP
-VVJDRV9JRCwNCj4+Pj4+ICsJRFBMTEFfU09VUkNFX1RZUEUsDQo+Pj4+PiArCURQTExBX09VVFBV
-VCwNCj4+Pj4+ICsJRFBMTEFfT1VUUFVUX0lELA0KPj4+Pj4gKwlEUExMQV9PVVRQVVRfVFlQRSwN
-Cj4+Pj4+ICsJRFBMTEFfU1RBVFVTLA0KPj4+Pj4gKwlEUExMQV9URU1QLA0KPj4+Pj4gKwlEUExM
-QV9MT0NLX1NUQVRVUywNCj4+Pj4+ICsJRFBMTEFfRkxBR1MsDQo+Pj4+PiArDQo+Pj4+PiArCV9f
-RFBMTEFfTUFYLA0KPj4+Pj4gK307DQo+Pj4+PiArI2RlZmluZSBEUExMQV9HRVRfTUFYIChfX0RQ
-TExBX01BWCAtIDEpDQo+Pj4+DQo+Pj4+IEkgdGhpbmsgIl9nZXRfL19HRVRfIiBpbiBhYm92ZSBu
-YW1lcyBpcyBvdXRkYXRlZD8NCj4+Pj4NCj4+Pg0KPj4+IFllcywgeW91IGFyZSByaWdodC4gVGhl
-IGVhcmxpZXN0IHJldmlzaW9uIGhhZCB0aGVzZSAiR0VUL1NFVCIgaW4gYXR0cmlidXRlcyBidXQN
-Cj4+PiBsYXRlciB3ZSBkZWNpZGVkIHRvIHVuaXRlIHRoZW0gaW50byBjb21tb24gYXR0cmlidXRl
-cy4gSSB3aWxsIHJlbW92ZSB0aGVzZQ0KPj4+IGFydGlmYWN0cyBpbiB0aGUgbmV4dCByZXZpc2lv
-bi4NCj4+Pg0KPg0KPnJlbW92ZWQgdGhlc2UgYXJ0aWZhY3RzDQo+DQo+Pj4+PiArDQo+Pj4+PiAr
-LyogRFBMTCBzaWduYWwgdHlwZXMgdXNlZCBhcyBzb3VyY2Ugb3IgYXMgb3V0cHV0ICovDQo+Pj4+
-PiArZW51bSBkcGxsX2dlbmxfc2lnbmFsX3R5cGUgew0KPj4+Pj4gKwlEUExMX1RZUEVfRVhUXzFQ
-UFMsDQo+Pj4+PiArCURQTExfVFlQRV9FWFRfMTBNSFosDQo+Pj4+PiArCURQTExfVFlQRV9TWU5D
-RV9FVEhfUE9SVCwNCj4+Pj4+ICsJRFBMTF9UWVBFX0lOVF9PU0NJTExBVE9SLA0KPj4+Pj4gKwlE
-UExMX1RZUEVfR05TUywNCj4+Pj4+ICsNCj4+Pj4+ICsJX19EUExMX1RZUEVfTUFYLA0KPj4+Pj4g
-K307DQo+Pj4+PiArI2RlZmluZSBEUExMX1RZUEVfTUFYIChfX0RQTExfVFlQRV9NQVggLSAxKQ0K
-Pj4+Pj4gKw0KPj4+Pj4gKy8qIEV2ZW50cyBvZiBkcGxsX2dlbmxfZmFtaWx5ICovDQo+Pj4+PiAr
-ZW51bSBkcGxsX2dlbmxfZXZlbnQgew0KPj4+Pj4gKwlEUExMX0VWRU5UX1VOU1BFQywNCj4+Pj4+
-ICsJRFBMTF9FVkVOVF9ERVZJQ0VfQ1JFQVRFLAkJLyogRFBMTCBkZXZpY2UgY3JlYXRpb24gKi8N
-Cj4+Pj4+ICsJRFBMTF9FVkVOVF9ERVZJQ0VfREVMRVRFLAkJLyogRFBMTCBkZXZpY2UgZGVsZXRp
-b24gKi8NCj4+Pj4+ICsJRFBMTF9FVkVOVF9TVEFUVVNfTE9DS0VELAkJLyogRFBMTCBkZXZpY2Ug
-bG9ja2VkIHRvIHNvdXJjZSAqLw0KPj4+Pj4gKwlEUExMX0VWRU5UX1NUQVRVU19VTkxPQ0tFRCwJ
-LyogRFBMTCBkZXZpY2UgZnJlZXJ1biAqLw0KPj4+Pj4gKwlEUExMX0VWRU5UX1NPVVJDRV9DSEFO
-R0UsCQkvKiBEUExMIGRldmljZSBzb3VyY2UgY2hhbmdlZCAqLw0KPj4+Pj4gKwlEUExMX0VWRU5U
-X09VVFBVVF9DSEFOR0UsCQkvKiBEUExMIGRldmljZSBvdXRwdXQgY2hhbmdlZCAqLw0KPj4+Pj4g
-Kw0KPj4+Pj4gKwlfX0RQTExfRVZFTlRfTUFYLA0KPj4+Pj4gK307DQo+Pj4+PiArI2RlZmluZSBE
-UExMX0VWRU5UX01BWCAoX19EUExMX0VWRU5UX01BWCAtIDEpDQo+Pj4+PiArDQo+Pj4+PiArLyog
-Q29tbWFuZHMgc3VwcG9ydGVkIGJ5IHRoZSBkcGxsX2dlbmxfZmFtaWx5ICovDQo+Pj4+PiArZW51
-bSBkcGxsX2dlbmxfY21kIHsNCj4+Pj4+ICsJRFBMTF9DTURfVU5TUEVDLA0KPj4+Pj4gKwlEUExM
-X0NNRF9ERVZJQ0VfR0VULAkvKiBMaXN0IG9mIERQTEwgZGV2aWNlcyBpZCAqLw0KPj4+Pj4gKwlE
-UExMX0NNRF9TRVRfU09VUkNFX1RZUEUsCS8qIFNldCB0aGUgRFBMTCBkZXZpY2Ugc291cmNlIHR5
-cGUgKi8NCj4+Pj4+ICsJRFBMTF9DTURfU0VUX09VVFBVVF9UWVBFLAkvKiBHZXQgdGhlIERQTEwg
-ZGV2aWNlIG91dHB1dCB0eXBlICovDQo+Pj4+DQo+Pj4+ICJHZXQiIGluIGNvbW1lbnQgZGVzY3Jp
-cHRpb24gbG9va3MgbGlrZSBhIHR5cG8uDQo+Pj4+IEkgYW0gZ2V0dGluZyBiaXQgY29uZnVzZWQg
-d2l0aCB0aGUgbmFtZSBhbmQgY29tbWVudHMuDQo+Pj4+IEZvciBtZSwgZmlyc3QgbG9vayBzYXlz
-OiBpdCBpcyBzZWxlY3Rpb24gb2YgYSB0eXBlIG9mIGEgc291cmNlLg0KPj4+PiBCdXQgaW4gdGhl
-IGNvZGUgSSBjYW4gc2VlIGl0IHNlbGVjdHMgYSBzb3VyY2UgaWQgYW5kIGEgdHlwZS4NCj4+Pj4g
-VHlwZSBvZiBzb3VyY2Ugb3JpZ2luYXRlcyBpbiBIVyBkZXNpZ24sIHdoeSB3b3VsZCB0aGUgb25l
-IHdhbnQgdG8gInNldCIgaXQ/DQo+Pj4+IEkgY2FuIGltYWdpbmUgYSBIVyBkZXNpZ24gd2hlcmUg
-YSBzaW5nbGUgc291cmNlIG9yIG91dHB1dCB3b3VsZCBhbGxvdyB0byBjaG9vc2UNCj4+Pj4gd2hl
-cmUgdGhlIHNpZ25hbCBvcmlnaW5hdGVzL2dvZXMsIHNvbWUga2luZCBvZiBleHRyYSBzZWxlY3Rv
-ciBsYXllciBmb3IgYQ0KPj4+PiBzb3VyY2Uvb3V0cHV0LCBidXQgd2FzIHRoYXQgdGhlIGludGVu
-dGlvbj8NCj4+Pg0KPj4+IEluIGdlbmVyYWwgLSB5ZXMsIHdlIGhhdmUgZXhwZXJpbWVudGVkIHdp
-dGggb3VyIHRpbWUgY2FyZCBwcm92aWRpbmcgZGlmZmVyZW50DQo+Pj4gdHlwZXMgb2Ygc291cmNl
-IHN5bmNocm9uaXNhdGlvbiBzaWduYWwgb24gZGlmZmVyZW50IGlucHV0IHBpbnMsIGkuZS4gMVBQ
-UywNCj4+PiAxME1IeiwgSVJJRy1CLCBldGMuIEFueSBvZiB0aGVzZSBzaWduYWxzIGNvdWxkIGJl
-IGNvbm5lY3RlZCB0byBhbnkgb2YgNCBleHRlcm5hbA0KPj4+IHBpbnMsIHRoYXQncyB3aHkgSSBz
-b3VyY2UgaWQgaXMgdHJlYXRlZCBhcyBpbnB1dCBwaW4gaWRlbnRpZmllciBhbmQgc291cmNlIHR5
-cGUNCj4+PiBpcyB0aGUgc2lnbmFsIHR5cGUgaXQgcmVjZWl2ZXMuDQo+Pj4NCj4+Pj4gSWYgc28s
-IHNob3VsZG4ndCB0aGUgdXNlciBnZXQgc29tZSBiaXRtYXAvbGlzdCBvZiBtb2RlcyBhdmFpbGFi
-bGUgZm9yIGVhY2gNCj4+Pj4gc291cmNlL291dHB1dD8NCj4+Pg0KPj4+IEdvb2QgaWRlYS4gV2Ug
-aGF2ZSBsaXN0IG9mIGF2YWlsYWJsZSBtb2RlcyBleHBvc2VkIHZpYSBzeXNmcyBmaWxlLCBhbmQg
-SSBhZ3JlZQ0KPj4+IHRoYXQgaXQncyB3b3J0aCB0byBleHBvc2UgdGhlbSB2aWEgbmV0bGluayBp
-bnRlcmZhY2UuIEkgd2lsbCB0cnkgdG8gYWRkcmVzcyB0aGlzDQo+Pj4gaW4gdGhlIG5leHQgdmVy
-c2lvbi4NCj4+Pg0KPj4+Pg0KPj4+PiBUaGUgdXNlciBzaGFsbCBnZXQgc29tZSBleHRyYSBpbmZv
-cm1hdGlvbiBhYm91dCB0aGUgc291cmNlL291dHB1dC4gUmlnaHQgbm93DQo+Pj4+IHRoZXJlIGNh
-biBiZSBtdWx0aXBsZSBzb3VyY2VzL291dHB1dHMgb2YgdGhlIHNhbWUgdHlwZSwgYnV0IG5vdCBy
-ZWFsbHkgcG9zc2libGUNCj4+Pj4gdG8gZmluZCBvdXQgdGhlaXIgcHVycG9zZS4gSS5lLiBhIGRw
-bGwgZXF1aXBwZWQgd2l0aCBmb3VyIHNvdXJjZSBvZg0KPj4+PiBEUExMX1RZUEVfRVhUXzFQUFMg
-dHlwZS4NCj4+Pj4gICA+IFRoaXMgaW1wbGVtZW50YXRpb24gbG9va3MgbGlrZSBkZXNpZ25lZCBm
-b3IgYSAiZm9yY2VkIHJlZmVyZW5jZSBsb2NrIiBtb2RlDQo+Pj4+IHdoZXJlIHRoZSB1c2VyIG11
-c3QgZXhwbGljaXRseSBzZWxlY3Qgb25lIHNvdXJjZS4gQnV0IGEgbXVsdGkgc291cmNlL291dHB1
-dA0KPj4+PiBEUExMIGNvdWxkIGJlIHJ1bm5pbmcgaW4gZGlmZmVyZW50IG1vZGVzLiBJIGJlbGll
-dmUgbW9zdCBpbXBvcnRhbnQgaXMgYXV0b21hdGljDQo+Pj4+IG1vZGUsIHdoZXJlIGl0IHRyaWVz
-IHRvIGxvY2sgdG8gYSB1c2VyLWNvbmZpZ3VyZWQgc291cmNlIHByaW9yaXR5IGxpc3QuDQo+Pj4+
-IEhvd2V2ZXIsIHRoZXJlIGlzIGFsc28gZnJlZXJ1biBtb2RlLCB3aGVyZSBkcGxsIGlzbid0IGV2
-ZW4gdHJ5aW5nIHRvIGxvY2sgdG8NCj4+Pj4gYW55dGhpbmcsIG9yIE5DTyAtIE51bWVyaWNhbGx5
-IENvbnRyb2xsZWQgT3NjaWxsYXRvciBtb2RlLg0KPj4+DQo+Pj4gWWVzLCB5b3UgYXJlIHJpZ2h0
-LCBteSBmb2N1cyB3YXMgb24gImZvcmNlZCByZWZlcmVuY2UgbG9jayIgbW9kZSBhcyBjdXJyZW50
-bHkNCj4+PiB0aGlzIGlzIHRoZSBvbmx5IG1vZGUgc3VwcG9ydGVkIGJ5IG91ciBoYXJkd2FyZS4g
-QnV0IEknbSBoYXBweSB0byBleHRlbmQgaXQgdG8NCj4+PiBvdGhlciB1c2VjYXNlcy4NCj4+Pg0K
-Pj4+PiBJdCB3b3VsZCBiZSBncmVhdCB0byBoYXZlIGFiaWxpdHkgdG8gc2VsZWN0IERQTEwgbW9k
-ZXMsIGJ1dCBhbHNvIHRvIGJlIGFibGUgdG8NCj4+Pj4gY29uZmlndXJlIHByaW9yaXRpZXMsIHJl
-YWQgZmFpbHVyZSBzdGF0dXMsIGNvbmZpZ3VyZSBleHRyYSAiZmVhdHVyZXMiIChpLmUuDQo+Pj4+
-IEVtYmVkZGVkIFN5bmMsIEVFQyBtb2RlcywgRmFzdCBMb2NrKQ0KPj4+IEkgYWJzb2x1dGVseSBh
-Z3JlZSBvbiB0aGlzIHdheSBvZiBpbXByb3ZlbWVudCwgYW5kIEkgYWxyZWFkeSBoYXZlIHNvbWUg
-b25nb2luZw0KPj4+IHdvcmsgYWJvdXQgZmFpbHVyZXMvZXZlbnRzL3N0YXR1cyBjaGFuZ2UgbWVz
-c2FnZXMuIEkgY2FuIHNlZSBubyBzdG9wcGVycyBmb3INCj4+PiBjcmVhdGluZyBwcmlvcml0aWVz
-IChpZiBzdXBwb3J0ZWQgYnkgSFcpIGFuZCBvdGhlciBleHRyYSAiZmVhdHVyZXMiLCBidXQgd2Ug
-aGF2ZQ0KPj4+IHRvIGFncmVlIG9uIHRoZSBpbnRlcmZhY2Ugd2l0aCBmbGV4aWJpbGl0eSBpbiBt
-aW5kLg0KPj4gDQo+PiBHcmVhdCBhbmQgbWFrZXMgcGVyZmVjdCBzZW5zZSENCj4+IA0KPj4+DQo+
-Pj4+IFRoZSBzb3VyY2VzIGFuZCBvdXRwdXRzIGNhbiBhbHNvIGhhdmUgc29tZSBleHRyYSBmZWF0
-dXJlcyBvciBjYXBhYmlsaXRpZXMsIGxpa2U6DQo+Pj4+IC0gZW5hYmxlIEVtYmVkZGVkIFN5bmMN
-Cj4+Pg0KPj4+IERvZXMgaXQgbWVhbiB3ZSB3YW50IHRvIGVuYWJsZSBvciBkaXNhYmxlIEVtYmVk
-ZGVkIFN5bmMgd2l0aGluIG9uZSBwcm90b2NvbD8gSXMNCj4+PiBpdCBsaWtlIFRpbWUtU2Vuc2l0
-aXZlIE5ldHdvcmtpbmcgKFRTTikgZm9yIEV0aGVybmV0Pw0KPj4gDQo+PiBXZWxsLCBmcm9tIHdo
-YXQgSSBrbm93LCBFbWJlZGRlZCBQUFMgKGVQUFMpLCBFbWJlZGRlZCBQdWxzZSBQZXIgMiBTZWNv
-bmRzDQo+PiAoZVBQMlMpIGFuZCBFbWJlZGRlZCBTeW5jIChlU3luYykgY2FuIGJlIGVpdGhlciAy
-NS83NSBvciA3NS8yNSwgd2hpY2ggZGVzY3JpYmVzDQo+PiBhIHJhdGlvIG9mIGhvdyB0aGUgJ2Vt
-YmVkZGVkIHB1bHNlJyBpcyBkaXZpZGVkIGludG8gSElHSCBhbmQgTE9XIHN0YXRlcyBvbiBhDQo+
-PiBwdWxzZSBvZiBoaWdoZXIgZnJlcXVlbmN5IHNpZ25hbCBpbiB3aGljaCBFUFBTL0VQUDJTL0VT
-eW5jIGlzIGVtYmVkZGVkLg0KPj4gDQo+PiBFUFBTIGFuZCBFUFAyUyBhcmUgcmF0aGVyIHN0cmFp
-Z2h0Zm9yd2FyZCwgb25jZSBhbiBFUFBTIGVuYWJsZWQgaW5wdXQgaXMNCj4+IHNlbGVjdGVkIGFz
-IGEgc291cmNlLCB0aGVuIG91dHB1dCBjb25maWd1cmVkIGFzIFBQUyhQUDJTKSBzaGFsbCB0aWNr
-IGluIHRoZQ0KPj4gc2FtZSBwZXJpb2RzIGFzIHNpZ25hbCAiZW1iZWRkZWQiIGluIGlucHV0Lg0K
-Pj4gRW1iZWRkZWQgU3luYyAoZVN5bmMpIGlzIHNpbWlsYXIgYnV0IGl0IGFsbG93cyBmb3IgY29u
-ZmlndXJhdGlvbiBvZiBmcmVxdWVuY3kNCj4+IG9mIGEgJ3N5bmMnIHNpZ25hbCwgaS5lLiBzb3Vy
-Y2UgaXMgMTBNSHogd2l0aCBlU3luYyBjb25maWd1cmVkIGFzIDEwMCBIWiwgd2hlcmUNCj4+IHRo
-ZSBvdXRwdXQgY29uZmlndXJlZCBmb3IgMTAwSFogY291bGQgdXNlIGl0Lg0KPj4gDQo+PiBJIGNh
-bm5vdCBzYXkgaG93IGV4YWN0bHkgRW1iZWRkZWQgU3luYy9QUFMgd2lsbCBiZSB1c2VkLCBhcyBm
-cm9tIG15IHBlcnNwZWN0aXZlDQo+PiB0aGlzIGlzIHVzZXIgc3BlY2lmaWMsIGFuZCBJIGFtIG5v
-dCB2ZXJ5IGZhbWlsaWFyIHdpdGggYW55IHN0YW5kYXJkIGRlc2NyaWJpbmcNCj4+IGl0cyB1c2Fn
-ZS4NCj4+IEkgYW0gd29ya2luZyBvbiBTeW5jRSwgd2hlcmUgZWl0aGVyIEVtYmVkZGVkIFN5bmMg
-b3IgUFBTIGlzIG5vdCBhIHBhcnQgb2YgU3luY0UNCj4+IHN0YW5kYXJkLCBidXQgSSBzdHJvbmds
-eSBiZWxpZXZlIHRoYXQgdXNlcnMgd291bGQgbmVlZCB0byBydW4gYSBEUExMIHdpdGgNCj4+IEVt
-YmVkZGVkIFN5bmMvUFBTIGVuYWJsZWQgZm9yIHNvbWUgb3RoZXIgdGhpbmdzLiBBbmQgcHJvYmFi
-bHkgd291bGQgbG92ZSB0bw0KPj4gaGF2ZSBTVyBjb250cm9sIG92ZXIgdGhlIGRwbGwuDQo+PiAN
-Cj4+IExldHMgYXNzdW1lIGZvbGxvd2luZyBzaW1wbGlmaWVkIGV4YW1wbGU6DQo+PiBpbnB1dDEg
-Ky0tLS0tLS0tLS0tLS0rIG91dHB1dDENCj4+IC0tLS0tLS18ICAgICAgICAgICAgIHwtLS0tLS0t
-LS0NCj4+ICAgICAgICAgfCAgRFBMTCAxICAgICB8DQo+PiBpbnB1dDIgfCAgICAgICAgICAgICB8
-IG91dHB1dDINCj4+IC0tLS0tLS18ICAgICAgICAgICAgIHwtLS0tLS0tLS0NCj4+ICAgICAgICAg
-Ky0tLS0tLS0tLS0tLS0rDQo+PiB3aGVyZToNCj4+IC0gaW5wdXQxIGlzIGV4dGVybmFsIDEwTUh6
-IHdpdGggMjUvNzUgRW1iZWRkZWQgUFBTIGVuYWJsZWQsDQo+PiAtIGlucHV0MiBpcyBhIGZhbGxi
-YWNrIFBQUyBmcm9tIEdOU1MNCj4+IHVzZXIgZXhwZWN0czoNCj4+IC0gb3V0cHV0MSBhcyBhIDEw
-TUh6IHdpdGggZW1iZWRkZWQgc3luYw0KPj4gLSBvdXRwdXQyIGFzIGEgUFBTDQo+PiBBcyBsb25n
-IGFzIGlucHV0MSBpcyBzZWxlY3RlZCBzb3VyY2UsIG91dHB1dDEgaXMgc3luY2hvbml6ZWQgd2l0
-aCBpdCBhbmQNCj4+IG91dHB1dDIgdGlja3MgYXJlIHN5bmNocm9uaXplZCB3aXRoIGVQUFMuDQo+
-PiBOb3cgdGhlIHVzZXIgc2VsZWN0cyBpbnB1dDIgYXMgYSBzb3VyY2UsIHdoZXJlIG91dHB1dHMg
-YXJlIHVuY2hhbmdlZCwNCj4+IGJvdGggb3V0cHV0MiBhbmQgb3V0cHV0MS1lUFBTIGFyZSBzeW5j
-aHJvbml6ZWQgd2l0aCBpbnB1dDIsIGFuZCBvdXRwdXQxDQo+PiAxME1IeiBtdXN0IGJlIGdlbmVy
-YXRlZCBieSBEUExMLg0KPj4gDQo+PiBJIGFtIHRyeWluZyB0byBzaG93IGV4YW1wbGUgb2Ygd2hh
-dCBEUExMIHVzZXIgbWlnaHQgd2FudCB0byBjb25maWd1cmUsIHRoaXMNCj4+IHdvdWxkIGJlIGEg
-c2VwYXJhdGVkIGNvbmZpZ3VyYXRpb24gb2YgZVBQUy9lUFAyUy9lU3luYyBwZXIgc291cmNlIGFz
-IHdlbGwgYXMNCj4+IHBlciBvdXRwdXQuDQo+PiBBbHNvIGEgRFBMTCBpdHNlbGYgY2FuIGhhdmUg
-ZXhwbGljaXRseSBkaXNhYmxlZCBlbWJlZGRlZCBzaWduYWwgcHJvY2Vzc2luZyBvbg0KPj4gaXRz
-IHNvdXJjZXMuDQo+Pg0KPg0KPlRoYW5rIHlvdSBmb3IgdGhlIGV4cGxhbmF0aW9uLiBMb29rcyBs
-aWtlIHdlIHdpbGwgbmVlZCBzZXZlcmFsIGF0dHJpYnV0ZXMgdG8gDQo+Y29uZmlndXJlIGlucHV0
-cy9vdXRwdXRzLiBBbmQgdGhpcyB3YXkgY2FuIGFsc28gYW5zd2VyIHNvbWUgcXVlc3Rpb25zIGZy
-b20gDQo+Sm9uYXRoYW4gcmVnYXJkaW5nIHN1cHBvcnQgb2YgZGlmZmVyZW50IHNwZWNpZmljIGZl
-YXR1cmVzIG9mIGhhcmR3YXJlLiBJJ20gaW4gDQo+cHJvY2VzcyBvZiBmaW5kaW5nIGFuIGludGVy
-ZmFjZSB0byBpbXBsZW1lbnQgaXQsIGlmIHlvdSBoYXZlIGFueSBzdWdnZXN0aW9ucywgDQo+cGxl
-YXNlIHNoYXJlIGl0Lg0KDQpJIHdvdWxkIGRlZmluZSBmZWF0dXJlLWJpdCdzIGFuZCBnZXQvc2V0
-IHRoZSBiaXRtYXNrIG9uIHRoZW0uDQoNCkZvciBwdWxzZS1wZXItMi1zZWNvbmRzIChQUDJTKSAt
-IDAuNSBIWiBpcyBwb3NzaWJsZSwgc28gbG9va3MgbGlrZSBtb3JlIGVudW0NCnR5cGVzIHdvdWxk
-IGJlIG5lZWRlZDogMC41SHovMUh6LzEwTUh6L2N1c3RvbS8ya0h6LzhrSHogKGxhc3QgdHdvIGZv
-cg0KU09ORVQvU0RIKS4NCg0KRm9yIGN1c3RvbS1mcmVxdWVuY3kgaW5wdXQvb3V0cHV0IGl0IHdv
-dWxkIGJlIGdyZWF0IHRvIGhhdmUgc2V0L2dldCBvZiB1MzINCmZyZXF1ZW5jeS4NCg0KRm9yIGFk
-anVzdGluZyBwaGFzZSBvZmZzZXQgaXQgd291bGQgYmUgZ3JlYXQgdG8gaGF2ZSBzZXQvZ2V0IG9m
-IHM2NCBwaGFzZQ0Kb2Zmc2V0Lg0KDQpzb3VyY2Uvb3V0cHV0IGNhbiBiZSBhZGRpdGlvbmFsbHkg
-cHJvdmlkZWQgd2l0aCAiZVN5bmMgZnJlcXVlbmN5Ii4gV2hpY2ggc2hhbGwNCmJlIGhhbmRsZWQg
-c2ltaWxhcmx5IHRvIGZyZXF1ZW5jeSBvZiBzb3VyY2Uvb3V0cHV0LCB3aGVyZSBjb21tb24gbW9k
-ZXMgYXJlDQpkZWZpbmVkICgwLjVIei8xSHovMTBNSHovY3VzdG9tLzJrSHovOGtIeikgYW5kIHBv
-c3NpYmlsaXR5IHRvIHNldCBhbnkgZnJlcSBpZg0KY3VzdG9tIGlzIGNob3Nlbi4gDQoNCj4NCj4+
-Pg0KPj4+PiAtIGFkZCBwaGFzZSBkZWxheQ0KPj4+PiAtIGNvbmZpZ3VyZSBmcmVxdWVuY3kgKHVz
-ZXIgbWlnaHQgbmVlZCB0byB1c2Ugc291cmNlL291dHB1dCB3aXRoIGRpZmZlcmVudA0KPj4+PiAg
-ICAgZnJlcXVlbmN5IHRoZW4gMSBQUFMgb3IgMTBNSHopDQo+Pj4NCj4+PiBQcm92aWRpbmcgdGhl
-c2UgbW9kZXMgSSB3YXMgdGhpbmtpbmcgYWJvdXQgdGhlIG1vc3QgY29tbW9uIGFuZCB3aWRlbHkg
-dXNlZA0KPj4+IHNpZ25hbHMgaW4gbWVhc3VyZW1lbnQgZXF1aXBtZW50LiBTbyBteSBwb2ludCBo
-ZXJlIGlzIHRoYXQgYm90aCAxUFBTIGFuZCAxME1Ieg0KPj4+IHNob3VsZCBzdGF5IGFzIGlzLCBi
-dXQgYW5vdGhlciB0eXBlIG9mIHNpZ25hbCBzaG91bGQgYmUgYWRkZWQsIGxldCdzIHNheQ0KPj4+
-IENVU1RPTV9GUkVRLCB3aGljaCB3aWxsIGFsc28gY29uc2lkZXIgc3BlY2lhbCBhdHRyaWJ1dGUg
-aW4gbmV0bGluayB0ZXJtcy4gaXMgaXQgb2s/DQo+PiANCj4+IFN1cmUsIG1ha2VzIHNlbnNlLg0K
-Pj4gDQo+Pj4NCj4+Pj4gR2VuZXJhbGx5LCBmb3Igc2ltcGxlIERQTEwgZGVzaWducyB0aGlzIGlu
-dGVyZmFjZSBjb3VsZCBkbyB0aGUgam9iIChhbHRob3VnaCwNCj4+Pj4gSSBzdGlsbCB0aGluayB1
-c2VyIG5lZWRzIG1vcmUgaW5mb3JtYXRpb24gYWJvdXQgdGhlIHNvdXJjZXMvb3V0cHV0cyksIGJ1
-dCBmb3INCj4+Pj4gbW9yZSBjb21wbGV4IG9uZXMsIHRoZXJlIHNob3VsZCBiZSBzb21ldGhpbmcg
-ZGlmZmVyZW50LCB3aGljaCB0YWtlcyBjYXJlIG9mIG15DQo+Pj4+IGNvbW1lbnRzIHJlZ2FyZGlu
-ZyBleHRyYSBjb25maWd1cmF0aW9uIG5lZWRlZC4NCj4+Pj4NCj4+Pg0KPj4+IEFzIEkgYWxyZWFk
-eSBtZW50aW9uZWQgZWFybGllciwgSSdtIG9wZW4gZm9yIGltcHJvdmVtZW50cyBhbmQgaGFwcHkg
-dG8NCj4+PiBjb2xsYWJvcmF0ZSB0byBjb3ZlciBvdGhlciB1c2UgY2FzZXMgb2YgdGhpcyBzdWJz
-eXN0ZW0gZnJvbSB0aGUgdmVyeSBiZWdpbm5pbmcNCj4+PiBvZiBkZXZlbG9wbWVudC4gV2UgY2Fu
-IGV2ZW4gY3JlYXRlIGFuIG9wZW4gZ2l0aHViIHJlcG8gdG8gc2hhcmUgaW1wbGVtZW50YXRpb24N
-Cj4+PiBkZXRhaWxzIHRvZ2V0aGVyIHdpdGggY29tbWVudHMgaWYgaXQgd29ya3MgYmV0dGVyIGZv
-ciB5b3UuDQo+Pj4NCj4+IA0KPj4gU3VyZSwgZ3JlYXQhIEkgYW0gaGFwcHkgdG8gaGVscC4NCj4+
-IEkgY291bGQgc3RhcnQgd29ya2luZyBvbiBhIHBhcnQgZm9yIGV4dHJhIERQTEwgbW9kZXMgYW5k
-IHNvdXJjZS1wcmlvcml0aWVzIGFzDQo+PiBhdXRvbWF0aWMgbW9kZSBkb2Vzbid0IG1ha2Ugc2Vu
-c2Ugd2l0aG91dCB0aGVtLg0KPj4gDQo+PiBUaGFuayB5b3UsDQo+PiBBcmthZGl1c3oNCj4+IA0K
-Pg0KPlBsZWFzZSwgdGFrZSBhIGxvb2sgYXQgUkZDIHYyLCBJIHRyaWVkIHRvIGFkZHJlc3Mgc29t
-ZSBvZiB0aGUgY29tbWVudHMuDQoNClllcywgcGxhbm5pbmcgaXQgZm9yIHRvbW9ycm93Lg0KDQpU
-aGFua3MsDQpBcmthZGl1c3oNCg0KPg0KPlRoYW5rcywNCj5WYWRpbQ0KPg0K
+The patch adds native-mode XDP support: XDP_DROP, XDP_PASS, and XDP_TX.
+The vmxnet3 rx consists of three rings: r0, r1, and dataring.
+Buffers at r0 are allocated using alloc_skb APIs and dma mapped to the
+ring's descriptor. If LRO is enabled and packet size is larger than
+3K, VMXNET3_MAX_SKB_BUF_SIZE, then r1 is used to mapped the rest of
+the buffer larger than VMXNET3_MAX_SKB_BUF_SIZE. Each buffer in r1 is
+allocated using alloc_page. So for LRO packets, the payload will be
+in one buffer from r0 and multiple from r1, for non-LRO packets,
+only one descriptor in r0 is used for packet size less than 3k.
+
+The first descriptor will have the sop (start of packet) bit set,
+and the last descriptor will have the eop (end of packet) bit set.
+Non-LRO packets will have only one descriptor with both sop and eop set.
+
+The vmxnet3 dataring is optimized for handling small packet size, usually
+128 bytes, defined in VMXNET3_DEF_RXDATA_DESC_SIZE, by simply copying the
+packet to avoid memory mapping/unmapping overhead. In summary, packet
+size:
+    < 128B: dataring
+    128B - 3K: ring0
+    > 3K: ring0 and ring1
+As a result, the patch adds XDP support for packets using dataring
+and r0, not the large packet size when LRO is enabled.
+
+For TX, vmxnet3 has split header design. Outgoing packets are parsed
+first and protocol headers (L2/L3/L4) are copied to the backend. The
+rest of the payload are dma mapped. Since XDP_TX does not parse the
+packet protocol, the entire XDP frame is using dma mapped for the
+transmission.
+
+Tested using two VMs inside one ESXi machine, using single core on each
+vmxnet3 device, sender using DPDK testpmd tx-mode attached to vmxnet3
+device, sending 64B or 512B packet.
+
+VM1 txgen:
+$ dpdk-testpmd -l 0-3 -n 1 -- -i --nb-cores=3 \
+--forward-mode=txonly --eth-peer=0,<mac addr of vm2>
+optional: add "--txonly-multi-flow"
+
+VM2 running XDP:
+$ ./samples/bpf/xdp_rxq_info -d ens160 -a XDP_DROP --skb-mode
+$ ./samples/bpf/xdp_rxq_info -d ens160 -a XDP_DROP
+options: XDP_DROP, XDP_PASS, XDP_TX
+
+Performance comparison with skb-mode.
+64B:      skb-mode -> native-mode (with this patch)
+XDP_DROP: 960Kpps -> 1.4Mpps
+XDP_PASS: 220Kpps -> 240Kpps
+XDP_TX:   683Kpps -> 1.25Mpps
+
+512B:      skb-mode -> native-mode (with this patch)
+XDP_DROP: 640Kpps -> 914Kpps
+XDP_PASS: 220Kpps -> 240Kpps
+XDP_TX:   483Kpps -> 886Kpps
+
+Limitations:
+a. LRO will be disabled when users load XDP program
+b. MTU will be checked and limit to
+   VMXNET3_MAX_SKB_BUF_SIZE(3K) - XDP_PACKET_HEADROOM(256) -
+   SKB_DATA_ALIGN(sizeof(struct skb_shared_info))
+c. XDP_REDIRECT not supported yet.
+
+Need Feebacks:
+d. user needs to disable TSO using ethtool
+e. I should be able to move the run_xdp before the
+   netdev_alloc_skb_ip_align() in vmxnet3_rq_rx_complete
+   so avoiding the skb allocation overhead.
+f. I looked at "Add XDP support on a NIC driver" from Lorenzo,
+   https://legacy.netdevconf.info/0x14/pub/slides/10/add-xdp-on-driver.pdf
+   and I'm not sure whether I should use page_pool allocator
+g. Some drivers are using rcu (virtio_net.c) to access xdp prog
+	rcu_read_lock();
+	xdp_prog = rcu_dereference(rq->xdp_prog);
+   Some are using READ_ONCE. Not sure which one I should use.
+
+Signed-off-by: William Tu <tuc@vmware.com>
+---
+ drivers/net/vmxnet3/vmxnet3_drv.c     | 360 +++++++++++++++++++++++++-
+ drivers/net/vmxnet3/vmxnet3_ethtool.c |  10 +
+ drivers/net/vmxnet3/vmxnet3_int.h     |  16 ++
+ 3 files changed, 382 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
+index 1565e1808a19..549e31a1d485 100644
+--- a/drivers/net/vmxnet3/vmxnet3_drv.c
++++ b/drivers/net/vmxnet3/vmxnet3_drv.c
+@@ -26,6 +26,10 @@
+ 
+ #include <linux/module.h>
+ #include <net/ip6_checksum.h>
++#include <linux/filter.h>
++#include <linux/bpf_trace.h>
++#include <linux/netlink.h>
++#include <net/xdp.h>
+ 
+ #include "vmxnet3_int.h"
+ 
+@@ -47,6 +51,8 @@ static int enable_mq = 1;
+ 
+ static void
+ vmxnet3_write_mac_addr(struct vmxnet3_adapter *adapter, const u8 *mac);
++static int
++vmxnet3_xdp_headroom(struct vmxnet3_adapter *adapter);
+ 
+ /*
+  *    Enable/Disable the given intr
+@@ -592,6 +598,9 @@ vmxnet3_rq_alloc_rx_buf(struct vmxnet3_rx_queue *rq, u32 ring_idx,
+ 				rbi->skb = __netdev_alloc_skb_ip_align(adapter->netdev,
+ 								       rbi->len,
+ 								       GFP_KERNEL);
++				if (adapter->xdp_enabled)
++					skb_reserve(rbi->skb, XDP_PACKET_HEADROOM);
++
+ 				if (unlikely(rbi->skb == NULL)) {
+ 					rq->stats.rx_buf_alloc_failure++;
+ 					break;
+@@ -1387,6 +1396,182 @@ vmxnet3_get_hdr_len(struct vmxnet3_adapter *adapter, struct sk_buff *skb,
+ 	return (hlen + (hdr.tcp->doff << 2));
+ }
+ 
++static int
++vmxnet3_xdp_xmit_frame(struct vmxnet3_adapter *adapter,
++		       struct xdp_frame *xdpf,
++		       struct sk_buff *skb,
++		       struct vmxnet3_tx_queue *tq);
++
++static int
++vmxnet3_xdp_xmit_back(struct vmxnet3_adapter *adapter,
++		      struct xdp_frame *xdpf,
++		      struct sk_buff *skb)
++{
++        struct vmxnet3_tx_queue *tq;
++        struct netdev_queue *nq;
++	int err = 0, cpu;
++	int tq_number;
++
++	tq_number = adapter->num_tx_queues;
++        cpu = smp_processor_id();
++	tq = &adapter->tx_queue[cpu % tq_number];
++        nq = netdev_get_tx_queue(adapter->netdev, tq->qid);
++
++        __netif_tx_lock(nq, cpu);
++
++	err = vmxnet3_xdp_xmit_frame(adapter, xdpf, skb, tq);
++	if (err) {
++		goto exit;
++	}
++
++exit:
++        __netif_tx_unlock(nq);
++
++	return err;
++}
++
++static int
++vmxnet3_xdp_xmit_frame(struct vmxnet3_adapter *adapter,
++		       struct xdp_frame *xdpf,
++		       struct sk_buff *skb,
++		       struct vmxnet3_tx_queue *tq)
++{
++	struct vmxnet3_tx_ctx ctx;
++	struct vmxnet3_tx_buf_info *tbi = NULL;
++	union Vmxnet3_GenericDesc *gdesc;
++	int tx_num_deferred;
++	u32 buf_size;
++	u32 dw2;
++        int ret = 0;
++
++	if (vmxnet3_cmd_ring_desc_avail(&tq->tx_ring) == 0) {
++		tq->stats.tx_ring_full++;
++		ret = -ENOMEM;
++		goto exit;
++	}
++
++	dw2 = (tq->tx_ring.gen ^ 0x1) << VMXNET3_TXD_GEN_SHIFT;
++	dw2 |= xdpf->len;
++	ctx.sop_txd = tq->tx_ring.base + tq->tx_ring.next2fill;
++	gdesc = ctx.sop_txd;
++
++	buf_size = xdpf->len;
++	tbi = tq->buf_info + tq->tx_ring.next2fill;
++	tbi->map_type = VMXNET3_MAP_SINGLE;
++	tbi->dma_addr = dma_map_single(&adapter->pdev->dev,
++				       xdpf->data, buf_size,
++				       DMA_TO_DEVICE);
++	if (dma_mapping_error(&adapter->pdev->dev, tbi->dma_addr)) {
++		ret = -EFAULT;
++		goto exit;
++	}
++	tbi->len = buf_size;
++
++	gdesc = tq->tx_ring.base + tq->tx_ring.next2fill;
++	BUG_ON(gdesc->txd.gen == tq->tx_ring.gen);
++
++	gdesc->txd.addr = cpu_to_le64(tbi->dma_addr);
++	gdesc->dword[2] = cpu_to_le32(dw2);
++
++	/* Setup the EOP desc */
++	gdesc->dword[3] = cpu_to_le32(VMXNET3_TXD_CQ | VMXNET3_TXD_EOP);
++
++	gdesc->txd.om = 0;
++        gdesc->txd.msscof = 0;
++	gdesc->txd.hlen = 0;
++	gdesc->txd.ti = 0;
++
++	tx_num_deferred = le32_to_cpu(tq->shared->txNumDeferred);
++	tq->shared->txNumDeferred += 1;
++	tx_num_deferred++;
++
++	vmxnet3_cmd_ring_adv_next2fill(&tq->tx_ring);
++
++	/* set the last buf_info for the pkt */
++	tbi->skb = skb;
++	tbi->sop_idx = ctx.sop_txd - tq->tx_ring.base;
++
++	dma_wmb();
++	gdesc->dword[2] = cpu_to_le32(le32_to_cpu(gdesc->dword[2]) ^
++						  VMXNET3_TXD_GEN);
++	if (tx_num_deferred >= le32_to_cpu(tq->shared->txThreshold)) {
++		tq->shared->txNumDeferred = 0;
++		VMXNET3_WRITE_BAR0_REG(adapter,
++			       VMXNET3_REG_TXPROD + tq->qid * 8,
++			       tq->tx_ring.next2fill);
++	}
++exit:
++	return ret;
++}
++
++static int
++vmxnet3_run_xdp(struct vmxnet3_rx_queue *rq, struct sk_buff *skb,
++		int frame_sz, bool *need_xdp_flush)
++{
++	struct vmxnet3_rx_ctx *ctx = &rq->rx_ctx;
++	int delta, delta_len, xdp_metasize;
++	int headroom = XDP_PACKET_HEADROOM;
++	struct xdp_frame *xdpf;
++	struct xdp_buff xdp;
++	void *orig_data;
++	void *buf_hard_start;
++	u32 act;
++
++	buf_hard_start = skb->data - headroom;
++	xdp_init_buff(&xdp, frame_sz, &rq->xdp_rxq);
++	xdp_prepare_buff(&xdp, buf_hard_start,
++			 headroom, skb->len, true);
++	orig_data = xdp.data;
++
++	if (!READ_ONCE(rq->xdp_bpf_prog))
++		return 0;
++
++	act = bpf_prog_run_xdp(rq->xdp_bpf_prog, &xdp);
++	rq->stats.xdp_packets++;
++
++	switch (act) {
++	case XDP_DROP:
++		if (ctx->skb)
++			dev_kfree_skb(ctx->skb);
++		ctx->skb = NULL;
++		rq->stats.xdp_drops++;
++		break;
++	case XDP_PASS:
++		/* Recalculate length in case bpf program changed it. */
++		delta = xdp.data - orig_data;
++		skb_reserve(skb, delta);
++	        delta_len = (xdp.data_end - xdp.data) - skb->len;
++		xdp_metasize = xdp.data - xdp.data_meta;
++
++		skb_metadata_set(skb, xdp_metasize);
++		skb_put(skb, delta_len);
++		break;
++	case XDP_TX:
++		xdpf = xdp_convert_buff_to_frame(&xdp);
++		if (!xdpf || vmxnet3_xdp_xmit_back(rq->adapter, xdpf, skb)) {
++			dev_kfree_skb(ctx->skb);
++			rq->stats.xdp_drops++;
++		} else {
++			rq->stats.xdp_tx++;
++		}
++		ctx->skb = NULL;
++		break;
++	case XDP_ABORTED:
++		ctx->skb = NULL;
++		trace_xdp_exception(rq->adapter->netdev, rq->xdp_bpf_prog, act);
++		rq->stats.xdp_aborted++;
++		break;
++	case XDP_REDIRECT: /* Not Supported. */
++		ctx->skb = NULL;
++		fallthrough;
++	default:
++		bpf_warn_invalid_xdp_action(rq->adapter->netdev,
++					    rq->xdp_bpf_prog, act);
++		break;
++	}
++	return act;
++}
++
+ static int
+ vmxnet3_rq_rx_complete(struct vmxnet3_rx_queue *rq,
+ 		       struct vmxnet3_adapter *adapter, int quota)
+@@ -1404,6 +1589,8 @@ vmxnet3_rq_rx_complete(struct vmxnet3_rx_queue *rq,
+ 	struct Vmxnet3_RxDesc rxCmdDesc;
+ 	struct Vmxnet3_RxCompDesc rxComp;
+ #endif
++	bool need_xdp_flush = 0;
++
+ 	vmxnet3_getRxComp(rcd, &rq->comp_ring.base[rq->comp_ring.next2proc].rcd,
+ 			  &rxComp);
+ 	while (rcd->gen == rq->comp_ring.gen) {
+@@ -1469,7 +1656,9 @@ vmxnet3_rq_rx_complete(struct vmxnet3_rx_queue *rq,
+ 
+ 			rxDataRingUsed =
+ 				VMXNET3_RX_DATA_RING(adapter, rcd->rqID);
+-			len = rxDataRingUsed ? rcd->len : rbi->len;
++			len = rxDataRingUsed ?
++				rcd->len + vmxnet3_xdp_headroom(adapter)
++				: rbi->len;
+ 			new_skb = netdev_alloc_skb_ip_align(adapter->netdev,
+ 							    len);
+ 			if (new_skb == NULL) {
+@@ -1483,6 +1672,9 @@ vmxnet3_rq_rx_complete(struct vmxnet3_rx_queue *rq,
+ 				goto rcd_done;
+ 			}
+ 
++			if (adapter->xdp_enabled)
++				skb_reserve(new_skb, XDP_PACKET_HEADROOM);
++
+ 			if (rxDataRingUsed) {
+ 				size_t sz;
+ 
+@@ -1620,8 +1812,30 @@ vmxnet3_rq_rx_complete(struct vmxnet3_rx_queue *rq,
+ 			}
+ 		}
+ 
+-
+ 		skb = ctx->skb;
++
++		if (rcd->sop && rcd->eop) {
++			struct bpf_prog *xdp_prog;
++			int buflen = rbi->len;
++			int act = XDP_PASS;
++
++			xdp_prog = READ_ONCE(rq->xdp_bpf_prog);
++			if (!xdp_prog)
++				goto skip_xdp;
++
++			act = vmxnet3_run_xdp(rq, skb, buflen,
++					      &need_xdp_flush);
++			switch (act) {
++			case XDP_PASS:
++				goto skip_xdp;
++			case XDP_DROP:
++			case XDP_TX:
++			case XDP_REDIRECT:
++			default:
++				goto rcd_done;
++			}
++		}
++skip_xdp:
+ 		if (rcd->eop) {
+ 			u32 mtu = adapter->netdev->mtu;
+ 			skb->len += skb->data_len;
+@@ -1775,6 +1989,7 @@ vmxnet3_rq_cleanup(struct vmxnet3_rx_queue *rq,
+ 
+ 	rq->comp_ring.gen = VMXNET3_INIT_GEN;
+ 	rq->comp_ring.next2proc = 0;
++	rq->xdp_bpf_prog = NULL;
+ }
+ 
+ 
+@@ -1787,6 +2002,32 @@ vmxnet3_rq_cleanup_all(struct vmxnet3_adapter *adapter)
+ 		vmxnet3_rq_cleanup(&adapter->rx_queue[i], adapter);
+ }
+ 
++static void
++vmxnet3_unregister_xdp_rxq(struct vmxnet3_rx_queue *rq)
++{
++	xdp_rxq_info_unreg_mem_model(&rq->xdp_rxq);
++	xdp_rxq_info_unreg(&rq->xdp_rxq);
++}
++
++static int
++vmxnet3_register_xdp_rxq(struct vmxnet3_rx_queue *rq,
++			struct vmxnet3_adapter *adapter)
++{
++	int err;
++
++	err = xdp_rxq_info_reg(&rq->xdp_rxq, adapter->netdev, rq->qid, 0);
++	if (err < 0) {
++		return err;
++	}
++
++	err = xdp_rxq_info_reg_mem_model(&rq->xdp_rxq, MEM_TYPE_PAGE_SHARED,
++					 NULL);
++	if (err < 0) {
++		xdp_rxq_info_unreg(&rq->xdp_rxq);
++		return err;
++	}
++	return 0;
++}
+ 
+ static void vmxnet3_rq_destroy(struct vmxnet3_rx_queue *rq,
+ 			       struct vmxnet3_adapter *adapter)
+@@ -1831,6 +2072,8 @@ static void vmxnet3_rq_destroy(struct vmxnet3_rx_queue *rq,
+ 	kfree(rq->buf_info[0]);
+ 	rq->buf_info[0] = NULL;
+ 	rq->buf_info[1] = NULL;
++
++	vmxnet3_unregister_xdp_rxq(rq);
+ }
+ 
+ static void
+@@ -1892,6 +2135,10 @@ vmxnet3_rq_init(struct vmxnet3_rx_queue *rq,
+ 	}
+ 	vmxnet3_rq_alloc_rx_buf(rq, 1, rq->rx_ring[1].size - 1, adapter);
+ 
++	/* always register, even if no XDP prog used */
++	if (vmxnet3_register_xdp_rxq(rq, adapter))
++		return -EINVAL;
++
+ 	/* reset the comp ring */
+ 	rq->comp_ring.next2proc = 0;
+ 	memset(rq->comp_ring.base, 0, rq->comp_ring.size *
+@@ -2593,7 +2840,8 @@ vmxnet3_setup_driver_shared(struct vmxnet3_adapter *adapter)
+ 	if (adapter->netdev->features & NETIF_F_RXCSUM)
+ 		devRead->misc.uptFeatures |= UPT1_F_RXCSUM;
+ 
+-	if (adapter->netdev->features & NETIF_F_LRO) {
++	if (adapter->netdev->features & NETIF_F_LRO &&
++		!adapter->xdp_enabled) {
+ 		devRead->misc.uptFeatures |= UPT1_F_LRO;
+ 		devRead->misc.maxNumRxSG = cpu_to_le16(1 + MAX_SKB_FRAGS);
+ 	}
+@@ -3033,6 +3281,14 @@ vmxnet3_free_pci_resources(struct vmxnet3_adapter *adapter)
+ 	pci_disable_device(adapter->pdev);
+ }
+ 
++static int
++vmxnet3_xdp_headroom(struct vmxnet3_adapter *adapter)
++{
++	if (adapter->xdp_enabled)
++		return VMXNET3_XDP_ROOM;
++	else
++		return 0;
++}
+ 
+ static void
+ vmxnet3_adjust_rx_ring_size(struct vmxnet3_adapter *adapter)
+@@ -3043,7 +3299,8 @@ vmxnet3_adjust_rx_ring_size(struct vmxnet3_adapter *adapter)
+ 		if (adapter->netdev->mtu <= VMXNET3_MAX_SKB_BUF_SIZE -
+ 					    VMXNET3_MAX_ETH_HDR_SIZE) {
+ 			adapter->skb_buf_size = adapter->netdev->mtu +
+-						VMXNET3_MAX_ETH_HDR_SIZE;
++						VMXNET3_MAX_ETH_HDR_SIZE +
++						vmxnet3_xdp_headroom(adapter);
+ 			if (adapter->skb_buf_size < VMXNET3_MIN_T0_BUF_SIZE)
+ 				adapter->skb_buf_size = VMXNET3_MIN_T0_BUF_SIZE;
+ 
+@@ -3564,6 +3821,99 @@ vmxnet3_reset_work(struct work_struct *data)
+ 	clear_bit(VMXNET3_STATE_BIT_RESETTING, &adapter->state);
+ }
+ 
++static void
++vmxnet3_xdp_exchange_program(struct vmxnet3_adapter *adapter,
++			     struct bpf_prog *prog)
++{
++	struct vmxnet3_rx_queue *rq;
++	int i;
++
++	for (i = 0; i < adapter->num_rx_queues; i++) {
++		rq = &adapter->rx_queue[i];
++		WRITE_ONCE(rq->xdp_bpf_prog, prog);
++	}
++	if (prog)
++		adapter->xdp_enabled = true;
++	else
++		adapter->xdp_enabled = false;
++}
++
++static int
++vmxnet3_xdp_set(struct net_device *netdev, struct netdev_bpf *bpf,
++		struct netlink_ext_ack *extack)
++{
++	struct vmxnet3_adapter *adapter = netdev_priv(netdev);
++	struct bpf_prog *new_bpf_prog = bpf->prog;
++	struct bpf_prog *old_bpf_prog;
++	bool use_dataring;
++	bool need_update;
++	bool running;
++	int err = 0;
++
++	if (new_bpf_prog && netdev->mtu > VMXNET3_XDP_MAX_MTU) {
++		NL_SET_ERR_MSG_MOD(extack, "MTU too large for XDP");
++		return -EOPNOTSUPP;
++	}
++
++	use_dataring = VMXNET3_RX_DATA_RING(adapter, 0);
++	if (new_bpf_prog && use_dataring) {
++		NL_SET_ERR_MSG_MOD(extack, "RX data ring not supported\n");
++		return -EOPNOTSUPP;
++	}
++
++	old_bpf_prog = READ_ONCE(adapter->rx_queue[0].xdp_bpf_prog);
++	if (!new_bpf_prog && !old_bpf_prog) {
++		adapter->xdp_enabled = false;
++		return 0;
++	}
++	running = netif_running(netdev);
++	need_update = !!old_bpf_prog != !!new_bpf_prog;
++
++	if (running && need_update) {
++		vmxnet3_quiesce_dev(adapter);
++	}
++
++	vmxnet3_xdp_exchange_program(adapter, new_bpf_prog);
++	if (old_bpf_prog) {
++		bpf_prog_put(old_bpf_prog);
++	}
++
++	if (running && need_update) {
++		vmxnet3_reset_dev(adapter);
++		vmxnet3_rq_destroy_all(adapter);
++		vmxnet3_adjust_rx_ring_size(adapter);
++		err = vmxnet3_rq_create_all(adapter);
++		if (err) {
++			NL_SET_ERR_MSG_MOD(extack,
++				   "failed to re-create rx queues for XDP.");
++			err = -EOPNOTSUPP;
++			goto out;
++		}
++		err = vmxnet3_activate_dev(adapter);
++		if (err) {
++			NL_SET_ERR_MSG_MOD(extack,
++				   "failed to activate device for XDP.");
++			err = -EOPNOTSUPP;
++			goto out;
++		}
++		clear_bit(VMXNET3_STATE_BIT_RESETTING, &adapter->state);
++	}
++out:
++	return err;
++}
++
++/* This is the main xdp call used by kernel to set/unset eBPF program. */
++static int
++vmxnet3_xdp(struct net_device *netdev, struct netdev_bpf *bpf)
++{
++	switch (bpf->command) {
++	case XDP_SETUP_PROG:
++		return vmxnet3_xdp_set(netdev, bpf, bpf->extack);
++	default:
++		return -EINVAL;
++	}
++	return 0;
++}
+ 
+ static int
+ vmxnet3_probe_device(struct pci_dev *pdev,
+@@ -3586,6 +3936,7 @@ vmxnet3_probe_device(struct pci_dev *pdev,
+ #ifdef CONFIG_NET_POLL_CONTROLLER
+ 		.ndo_poll_controller = vmxnet3_netpoll,
+ #endif
++		.ndo_bpf = vmxnet3_xdp,
+ 	};
+ 	int err;
+ 	u32 ver;
+@@ -3901,6 +4252,7 @@ vmxnet3_probe_device(struct pci_dev *pdev,
+ 		goto err_register;
+ 	}
+ 
++	adapter->xdp_enabled = false;
+ 	vmxnet3_check_link(adapter, false);
+ 	return 0;
+ 
+diff --git a/drivers/net/vmxnet3/vmxnet3_ethtool.c b/drivers/net/vmxnet3/vmxnet3_ethtool.c
+index ce3993282c0f..5574c18c0727 100644
+--- a/drivers/net/vmxnet3/vmxnet3_ethtool.c
++++ b/drivers/net/vmxnet3/vmxnet3_ethtool.c
+@@ -106,6 +106,16 @@ vmxnet3_rq_driver_stats[] = {
+ 					 drop_fcs) },
+ 	{ "  rx buf alloc fail", offsetof(struct vmxnet3_rq_driver_stats,
+ 					  rx_buf_alloc_failure) },
++	{ "     xdp packets", offsetof(struct vmxnet3_rq_driver_stats,
++				       xdp_packets) },
++	{ "     xdp tx", offsetof(struct vmxnet3_rq_driver_stats,
++				  xdp_tx) },
++	{ "     xdp redirects", offsetof(struct vmxnet3_rq_driver_stats,
++					 xdp_redirects) },
++	{ "     xdp drops", offsetof(struct vmxnet3_rq_driver_stats,
++				     xdp_drops) },
++	{ "     xdp aborted", offsetof(struct vmxnet3_rq_driver_stats,
++				       xdp_aborted) },
+ };
+ 
+ /* global stats maintained by the driver */
+diff --git a/drivers/net/vmxnet3/vmxnet3_int.h b/drivers/net/vmxnet3/vmxnet3_int.h
+index 3367db23aa13..0f3b243302e4 100644
+--- a/drivers/net/vmxnet3/vmxnet3_int.h
++++ b/drivers/net/vmxnet3/vmxnet3_int.h
+@@ -56,6 +56,8 @@
+ #include <linux/if_arp.h>
+ #include <linux/inetdevice.h>
+ #include <linux/log2.h>
++#include <linux/bpf.h>
++#include <linux/skbuff.h>
+ 
+ #include "vmxnet3_defs.h"
+ 
+@@ -285,6 +287,12 @@ struct vmxnet3_rq_driver_stats {
+ 	u64 drop_err;
+ 	u64 drop_fcs;
+ 	u64 rx_buf_alloc_failure;
++
++	u64 xdp_packets;	/* Total packets processed by XDP. */
++	u64 xdp_tx;
++	u64 xdp_redirects;
++	u64 xdp_drops;
++	u64 xdp_aborted;
+ };
+ 
+ struct vmxnet3_rx_data_ring {
+@@ -307,6 +315,8 @@ struct vmxnet3_rx_queue {
+ 	struct vmxnet3_rx_buf_info     *buf_info[2];
+ 	struct Vmxnet3_RxQueueCtrl            *shared;
+ 	struct vmxnet3_rq_driver_stats  stats;
++	struct bpf_prog *xdp_bpf_prog;
++	struct xdp_rxq_info xdp_rxq;
+ } __attribute__((__aligned__(SMP_CACHE_BYTES)));
+ 
+ #define VMXNET3_DEVICE_MAX_TX_QUEUES 32
+@@ -415,6 +425,7 @@ struct vmxnet3_adapter {
+ 	u16    tx_prod_offset;
+ 	u16    rx_prod_offset;
+ 	u16    rx_prod2_offset;
++	bool   xdp_enabled;
+ };
+ 
+ #define VMXNET3_WRITE_BAR0_REG(adapter, reg, val)  \
+@@ -457,6 +468,11 @@ struct vmxnet3_adapter {
+ #define VMXNET3_MAX_ETH_HDR_SIZE    22
+ #define VMXNET3_MAX_SKB_BUF_SIZE    (3*1024)
+ 
++#define VMXNET3_XDP_ROOM SKB_DATA_ALIGN(sizeof(struct skb_shared_info)) + \
++		         XDP_PACKET_HEADROOM
++#define VMXNET3_XDP_MAX_MTU VMXNET3_MAX_SKB_BUF_SIZE - VMXNET3_XDP_ROOM
++
++
+ #define VMXNET3_GET_RING_IDX(adapter, rqID)		\
+ 	((rqID >= adapter->num_rx_queues &&		\
+ 	 rqID < 2 * adapter->num_rx_queues) ? 1 : 0)	\
+-- 
+2.30.1 (Apple Git-130)
+
