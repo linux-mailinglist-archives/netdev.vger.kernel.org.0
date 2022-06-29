@@ -2,105 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 45DCD56007B
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 14:55:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E9354560080
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 14:55:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230466AbiF2Mxi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 08:53:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53212 "EHLO
+        id S232699AbiF2MzP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 08:55:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229952AbiF2Mxh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 08:53:37 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E40917A8E;
-        Wed, 29 Jun 2022 05:53:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656507217; x=1688043217;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=NBFLWofkDnaYU8CY8LB/55jv2/b16mClVdfs49+iIRA=;
-  b=CHXuJrSoscC+u878y2OHeU9ILhyQoZkUfRWpQPHkp0efBS6Sh7Hjn/kw
-   hVJXQWpoWSoS10L46WE3M6gO8Y3lr9nuqmKrH5de8zIKSx0qBq+oRwWyq
-   ufGG34pDvLbGXaXpPPc3y+lGfr/t9G212GdrV7FnseKKNmLuuR8+A7O2R
-   /Zt6CiCKDFwmlVe5GTumQSRFzjZ7s5Cw++cmqL8tn935uWkv4FPhK3gs3
-   47iHI2+WFpLue0Xqdqc866Ybk/wdXitR8Xn3apZuYKPpgBQOcY2JwDxR5
-   LYM1w4e5MgYqcNbp3HVjkj7bHiA/mPIcigI6eOSxejsH83zh70IsIvlpK
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="346014091"
-X-IronPort-AV: E=Sophos;i="5.92,231,1650956400"; 
-   d="scan'208";a="346014091"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2022 05:53:36 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,231,1650956400"; 
-   d="scan'208";a="588299334"
-Received: from boxer.igk.intel.com (HELO boxer) ([10.102.20.173])
-  by orsmga007.jf.intel.com with ESMTP; 29 Jun 2022 05:53:35 -0700
-Date:   Wed, 29 Jun 2022 14:53:34 +0200
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>
-Subject: Re: [PATCH bpf] xsk: mark napi_id on sendmsg()
-Message-ID: <YrxLTiOIpD44JM7R@boxer>
-References: <20220629105752.933839-1-maciej.fijalkowski@intel.com>
- <CAJ+HfNj0FU=DBNdwD3HODbevcP-btoaeCCGCfn2Y5eP2WoEXHA@mail.gmail.com>
+        with ESMTP id S229952AbiF2MzO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 08:55:14 -0400
+Received: from mail-ot1-x333.google.com (mail-ot1-x333.google.com [IPv6:2607:f8b0:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 374D02BB23;
+        Wed, 29 Jun 2022 05:55:14 -0700 (PDT)
+Received: by mail-ot1-x333.google.com with SMTP id 73-20020a9d084f000000b00616b04c7656so10763828oty.3;
+        Wed, 29 Jun 2022 05:55:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=DJv7P9JBK5V21yUHUPSn4s4mgLe8+QTUb4c7j/mSOLk=;
+        b=eM9fqYL7ibhxiiJX8yOPW5oaV4u0Psui/sBLW5T3uFQmjEewxYqjdbXglrZPcg6Mb+
+         gx3Z/xnu6ZwC1yC2UsmNxBRW4CEQZEz6BkpBuq1g+r3XrAEWRWoojU+NIdBUwoDT+ozG
+         YFZZFfmGh+lQbFoBiZsKgXXn5BQZJHRBd/NPhXgIjGW5OoivEFa723vgglP7u6cEyPWT
+         iLxZVYR09XdioFObXfZAn4Cl5hJSAk7SfxUaxgw4q9KoV/mr1fpcmdKqN+XDnHCxDg8n
+         l33B3qs8wiEnDGpm+9lQTFzTRlg0MCdgdOSQuDcBkXKzkDrY2rb9ab4GkJ2VvU6lnJzu
+         2Myg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=DJv7P9JBK5V21yUHUPSn4s4mgLe8+QTUb4c7j/mSOLk=;
+        b=1cbib8oofnMdUQErHPl3VawqbhBXksNkS2Gm0FfSbJgKP0PG8uaiNcjd3KzfdHL8ak
+         DwR9Xtjhgmd5dvdvf/9g1o8alUxW8ufJRkMGxVEtxGDE9BwfKyRtZckQp4EpnfXN1HXJ
+         4rUNNrXyWJ8iwH+XyMEqQswaFVLwwDxJUVcpJ2EZv3Ox1C5q8/MTqluYvYOCMTMDN0q0
+         Sc2uMUhwe8mgGiM8riYfsMHsdEG9R1sN3W/d7BHWtWWakbn/XE1em6Lm+Fd65cCSLF58
+         lhcbUT3cev6kF+LSpli/JlY4NbebCnP4OgrqX6geiIh7dijzYmqIIWae+sQN6K+rkdWp
+         /eQA==
+X-Gm-Message-State: AJIora9sBpjkO+Pphkopo0abTMzPV5i7J0kUP3HAEkkBtqoGyicVLflG
+        IdX5gTFExwo4GbCsanekdO8FZwnLXDIYeAO34OI=
+X-Google-Smtp-Source: AGRyM1ubOMO/6qYKDT6+NrKMJ5lSTgo6Osgx4Ml9JrLcBoiH7a89AVmmPX6l4FFSm0TPsUsfpuT+IafBw4ee7YzbwBQ=
+X-Received: by 2002:a9d:1c6:0:b0:617:865:c204 with SMTP id e64-20020a9d01c6000000b006170865c204mr558791ote.17.1656507313503;
+ Wed, 29 Jun 2022 05:55:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAJ+HfNj0FU=DBNdwD3HODbevcP-btoaeCCGCfn2Y5eP2WoEXHA@mail.gmail.com>
-X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <cover.1656031586.git.duoming@zju.edu.cn> <c31f454f74833b2003713fffa881aabb190b8290.1656031586.git.duoming@zju.edu.cn>
+ <ecac788497ea0e4e5b725226ad8b1209dc62fa0e.camel@redhat.com> <411487ea.1b211.181ad932398.Coremail.duoming@zju.edu.cn>
+In-Reply-To: <411487ea.1b211.181ad932398.Coremail.duoming@zju.edu.cn>
+From:   Dan Cross <crossd@gmail.com>
+Date:   Wed, 29 Jun 2022 08:54:37 -0400
+Message-ID: <CAEoi9W6KBmJNO1obk5pPVhugjRjSs8PY2fC3r0wN2OD=3Ei5eg@mail.gmail.com>
+Subject: Re: [PATCH net v3 2/2] net: rose: fix null-ptr-deref caused by rose_kill_by_neigh
+To:     duoming@zju.edu.cn
+Cc:     Paolo Abeni <pabeni@redhat.com>, linux-hams@vger.kernel.org,
+        ralf@linux-mips.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 29, 2022 at 02:45:11PM +0200, Björn Töpel wrote:
-> On Wed, 29 Jun 2022 at 12:58, Maciej Fijalkowski
-> <maciej.fijalkowski@intel.com> wrote:
+On Tue, Jun 28, 2022 at 11:59 PM <duoming@zju.edu.cn> wrote:
+> Hello,
+>
+> On Tue, 28 Jun 2022 13:12:40 +0200 Paolo Abeni wrote:
+> > [snip]
+> > I'm sorry, I likely was not clear enough in my previous reply. This is
+> > broken. If a list is [spin_]lock protected, you can't release the lock,
+> > reacquire it and continue traversing the list from the [now invalid]
+> > same iterator.
 > >
-> > When application runs in zero copy busy poll mode and does not receive a
-> > single packet but only sends them, it is currently impossible to get
-> > into napi_busy_loop() as napi_id is only marked on Rx side in
-> > xsk_rcv_check(). In there, napi_id is being taken from xdp_rxq_info
-> > carried by xdp_buff. From Tx perspective, we do not have access to it.
-> > What we have handy is the xsk pool.
-> 
-> The fact that the napi_id is not set unless set from the ingress side
-> is actually "by design". It's CONFIG_NET_RX_BUSY_POLL after all. I
-> followed the semantics of the regular busy-polling sockets. So, I
-> wouldn't say it's a fix! The busy-polling in sendmsg is really just
-> about "driving the RX busy-polling from another socket syscall".
+> > e.g. if s is removed from the list, even if the sock is not de-
+> > allocated due to the addtional refcount, the traversing will errnously
+> > stop after this sock, instead of continuing processing the remaining
+> > socks in the list.
+>
+> I understand. The following is a new solution:
+>
+> diff --git a/net/rose/af_rose.c b/net/rose/af_rose.c
+> index bf2d986a6bc..24dcbde88fb 100644
+> --- a/net/rose/af_rose.c
+> +++ b/net/rose/af_rose.c
+> @@ -165,13 +165,21 @@ void rose_kill_by_neigh(struct rose_neigh *neigh)
+>         struct sock *s;
+>
+>         spin_lock_bh(&rose_list_lock);
+> +again:
+>         sk_for_each(s, &rose_list) {
+>                 struct rose_sock *rose = rose_sk(s);
+>
+>                 if (rose->neighbour == neigh) {
+> +                       sock_hold(s);
+> +                       spin_unlock_bh(&rose_list_lock);
+> +                       lock_sock(s);
+>                         rose_disconnect(s, ENETUNREACH, ROSE_OUT_OF_ORDER, 0);
+>                         rose->neighbour->use--;
+>                         rose->neighbour = NULL;
+> +                       release_sock(s);
+> +                       spin_lock_bh(&rose_list_lock);
+> +                       sock_put(s);
+> +                       goto again;
 
-I just felt that busy polling for txonly apps was broken, hence the
-'fixing' flavour. I can send it just as improvement to bpf-next.
+It may be worthwhile noting that this changes the time complexity
+of the algorithm to be O(n^2) in the number of entries in `rose_list`,
+instead of linear.  But as that number is extremely unlikely to ever
+be large, it probably makes no practical difference.
 
-> 
-> That being said, I definitely see that this is useful for AF_XDP
-> sockets, but keep in mind that it sort of changes the behavior from
-> regular sockets. And we'll get different behavior for
-> copy-mode/zero-copy mode.
-> 
-> TL;DR, I think it's a good addition. One small nit below:
-> 
-> > +                       __sk_mark_napi_id_once(sk, xs->pool->heads[0].xdp.rxq->napi_id);
-> 
-> Please hide this hideous pointer chasing in something neater:
-> xsk_pool_get_napi_id() or something.
+        - Dan C.
 
-Would it make sense to introduce napi_id to xsk_buff_pool then?
-xp_set_rxq_info() could be setting it. We are sure that napi_id is the
-same for whole pool (each xdp_buff_xsk's rxq info).
-
-> 
-> 
-> Björn
+>                 }
+>         }
+>         spin_unlock_bh(&rose_list_lock);
+> diff --git a/net/rose/rose_route.c b/net/rose/rose_route.c
+> index fee6409c2bb..b116828b422 100644
+> --- a/net/rose/rose_route.c
+> +++ b/net/rose/rose_route.c
+> @@ -827,7 +827,9 @@ void rose_link_failed(ax25_cb *ax25, int reason)
+>                 ax25_cb_put(ax25);
+>
+>                 rose_del_route_by_neigh(rose_neigh);
+> +               spin_unlock_bh(&rose_neigh_list_lock);
+>                 rose_kill_by_neigh(rose_neigh);
+> +               return;
+>         }
+>         spin_unlock_bh(&rose_neigh_list_lock);
+>  }
+>
+> If s is removed from the list, the traversing will not stop erroneously.
+>
+> Best regards,
+> Duoming Zhou
