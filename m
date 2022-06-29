@@ -2,304 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C995555FC30
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 11:38:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3522355FC4C
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 11:43:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232729AbiF2Jh6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 05:37:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49584 "EHLO
+        id S231546AbiF2Jkb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 05:40:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229575AbiF2Jh5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 05:37:57 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FDC13B3EE
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 02:37:55 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id j2-20020a2597c2000000b0064b3e54191aso13508273ybo.20
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 02:37:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=2vmOW5O+3X6jjcHv25xR/wkZ3qN26t3IZu4/4ShklkU=;
-        b=Q/WVfWYrCCRrXUHdHdUntQaFpIZeUDVeDcHgsA8/7QIXA3pu147cw4U/XxmNlR+EV8
-         JPjj31R1grZwDQmassvn+C/zkSFKLP+6CgrLxthDMhfANTOnfyu0PTWjakq8hU/3ELV6
-         tjHmGlgFvD0/MgLWpRQjOgG8MPqUi7tIpK+efHCsq6fEIsC2AArBnz8bCrV9vBMEc4SC
-         sV7dWq8kmyaOtOW0K9wirsG+yI3wiqIrf0UlZMyO9mP3s245u78Rga7hYzGvO+SjV18G
-         NPZvOgHqSai5zdmCEXbivNBWJ+6Rq5QU7pYoNT8UxesKJoDDkmVcY/4PtFV6T5nFVPeN
-         f0WA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=2vmOW5O+3X6jjcHv25xR/wkZ3qN26t3IZu4/4ShklkU=;
-        b=lhfobV4R8N7Hjbzp4AuTnKa/F9DrkOI4NjItgN3QMRzGfb4ID5uomaE8Bf4Lvbwu4q
-         LxjHPveZNJNFqUpZJICTzRyZ/CBjVfVtbGpEFq0enAEsXQvYyKgilKH5pd6ydLmLCpP2
-         jNX7TL0NspiSDPhKYrR0+ePHZaiZeI2RQ7vPORa6zOd4NDw3sYfnmXFm6XVTwuwDO28u
-         7YnU0kJQQ/p0MBtpyaLezXvDsTJqUCs0OJdZxD6v30zJh7N3TQhZ6AF+IpK6T9hLs+li
-         kWtxbSvB9H+sq6DHmcQhQv0j0vIwkjrqPmSToz+6QUMqX5VIV/FX94CKmNqVvuHab2Qi
-         uYAg==
-X-Gm-Message-State: AJIora/JtlIXModVvriQkj2GYTKfKiO56SAHWSiK1pCYt8VyPn9/NK7p
-        jLvx8Y3B1ibOt0pJtRvw/rZ0SLOIMzYpDQ==
-X-Google-Smtp-Source: AGRyM1uXr0jmzhPjkQBzi74H0612Pr4D0ApPpzxhx4S8dT8awlnhEa68RHfeyn6GbG2jg7WlcmrEAUb6fCfv7A==
-X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:a81:431d:0:b0:317:8897:3d94 with SMTP id
- q29-20020a81431d000000b0031788973d94mr2774363ywa.456.1656495474309; Wed, 29
- Jun 2022 02:37:54 -0700 (PDT)
-Date:   Wed, 29 Jun 2022 09:37:52 +0000
-Message-Id: <20220629093752.1935215-1-edumazet@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
-Subject: [PATCH net] net: tun: do not call napi_disable() twice
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
-        Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        Petar Penkov <ppenkov@aviatrix.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S231485AbiF2Jka (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 05:40:30 -0400
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2059.outbound.protection.outlook.com [40.107.92.59])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E890535A92
+        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 02:40:28 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=TUPS5SgHkoOKe8SieUJEOll0vLbCC4xKgLNb+7G8CdhnYKTgJdStSa8c/SHab+M7V7nP80Dml8oJ8Glc9OzN8BBHYryskPJu51Bu/82sXNpU8X2XZEhaEW8gDipCTYnJgvGzbN1xKOJb0p/yHnSkMWIIyKvTW1atkwi4FFcUjopYLLixc0tZy9QiiFgHCjx5s1l72mCBEsVErA2IKwG4nhklcJWgsX6lnOIPgNFphJOcsID+1GKcaoM9IeKsfyFCNBrmf9Ft8RaCNvNmbs2IE+14HAK6SRDBMU71+Bt4cixazZKmRhxbApO7QaYbYLqo5zHvbNTTE5XFJNasxxmpjw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=GnGrw5nezzKcPT/+N3vUF5l9ZUUOd57BxQb8Z9FYpto=;
+ b=MSGyC7jPtpGO27xvZmxQaqzhe+RB/tIvCoY+7iOlCee2x49hF7+DB92QAfXNFHgg+a1nDumnofHt/oCZHQrH446LWFa6mLOpYtjoSnnu/1AexNrsQa+0jnE4Qp+S/lo6knxjTMSYU9jC4PYeX4nrdkwN6iRZQ+Qo+ABxoLJ0AkAiwT2jVuESi74ewy9E0a0jT83yc/NPRhdEBfMj3nGH2w6TWtubT9/HBTqHPueGhCHHod6w6QnDDbaIVVnLbtC6zQ+1E2ups92emtYZqcx3N51V3z9JRQhvXUQWM7zZgKd2tfpFca78DFYQDcC611XB3+TGS2Bx0V+ycKGNzVEYsA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GnGrw5nezzKcPT/+N3vUF5l9ZUUOd57BxQb8Z9FYpto=;
+ b=QqxePkYgPUtSn31P1LkOp89eCLuM5CSm/J6YPU+yG71MXI2flqxruEe55oR1NLH7SCXhb/9PJQNSnkJELAeA5kFsLsVCKpUvTon2ZyeZQ13UHMU8iL5BffKsjDeB6dUrrdAxIYwvxONcYX6onyuCJWJhkKgcsjtGKSCo8p+2Fpu3GApHoWuk2m/k7JNUMErDZCY0vBFvYp+gb/z1e8bnxwcRuu/V0Y7/Bm+AYXHEE4R8AtEUcR9Lw5upCdsvg/4uSXOg4MLn4UYiSoS3ecWtyAuPpIfpxYwx1q1cN8rlHUU3EGias3f4fvirRa8MmIrDgC/J0l/o/1j1tAnMaown3w==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
+ by BL0PR12MB4689.namprd12.prod.outlook.com (2603:10b6:208:8f::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.15; Wed, 29 Jun
+ 2022 09:40:27 +0000
+Received: from CY5PR12MB6179.namprd12.prod.outlook.com
+ ([fe80::611c:e609:d343:aa34]) by CY5PR12MB6179.namprd12.prod.outlook.com
+ ([fe80::611c:e609:d343:aa34%5]) with mapi id 15.20.5395.014; Wed, 29 Jun 2022
+ 09:40:27 +0000
+From:   Ido Schimmel <idosch@nvidia.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, petrm@nvidia.com, amcohen@nvidia.com,
+        mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
+Subject: [PATCH net-next 00/10] mlxsw: Unified bridge conversion - part 5/6
+Date:   Wed, 29 Jun 2022 12:39:57 +0300
+Message-Id: <20220629094007.827621-1-idosch@nvidia.com>
+X-Mailer: git-send-email 2.36.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: VI1PR0902CA0058.eurprd09.prod.outlook.com
+ (2603:10a6:802:1::47) To CY5PR12MB6179.namprd12.prod.outlook.com
+ (2603:10b6:930:24::22)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 35d733ce-2660-4460-edc7-08da59b365cc
+X-MS-TrafficTypeDiagnostic: BL0PR12MB4689:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: wkxFLvtLhrjPepDCba8ofdANwb/ulgkR07Bd7FHwAVVoP7vlmlXEQNCdNgxB0E7rjTBV20Y3Mwi1q7hxLCypReKq68c1raIGkOL0n1hdT2bFk5d3SYpKyFnvrUJ4bO97G7CApWCD/0lJDk2yxHrN0VfurBnpHnsqrksBW9DokiG7I6G4+bq3HfSP0tW36BAxXbC3k9Hc2CS7aPSjjkXXQQ+0DtyYCNFKSgQdabzJPqDGmds2nleJ24w9HbEVI4WFXyo58YtP7GGRRJQ2qyuXCJFfGIOCCFbxipw/aZuzWsA44HLpF3RMRFs7tbs/BSk0136MwRzyX3QqTvhFfpQH9xm/gWgq5zILOSGTs5UtGXGtyfjc0MFZItv7ZDzYOaJtk5arzyMS9uwsVKozjx8lkwi88awbQCKQLKR7TDFUt0CTBlOf3tSeW099gQjB4fF0HLIdQIP9JSI4msVTVTLr8G4w0JCV6HnOa1rEO8wZzc3B3ICtaRdtjIHxfosSkU6uZLzQ/ilY0jjI98PcJ6fYliPjyHTTp/tzU7jxummXN8fl6jZymGMr2Ai/ihgLtenyqLETiDIPVNoLHaaAYYBr1TDV0a0iSG6NkzOM9dMD9Bgz+tLGqc3Y4Be/hpS/UXtdqgiiLsRj6Kee24pR4pc9L7x5SvYzT7uVz8lWMRbJ6J1DF5Fv+XQCOUiQocUZpVlCYyG4wfcA+9wylO27O4lD7KigDXEcluV7oaqvrnhvLSU=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(39860400002)(366004)(346002)(136003)(396003)(6916009)(186003)(83380400001)(5660300002)(6506007)(6666004)(316002)(2906002)(1076003)(86362001)(8936002)(41300700001)(107886003)(2616005)(66946007)(8676002)(66476007)(4326008)(6512007)(66556008)(26005)(6486002)(36756003)(38100700002)(478600001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?SokQk+PL3BpAueKbj4e1VRbBVJyL/i9Yk1cdPCfaSVFy8/uNmeuY4Y9rZTu4?=
+ =?us-ascii?Q?D+6ekEOaDg2MJSg0dvohminevRi+dRAulVuidEgeFmCboJsFbX4XCAm9R4ih?=
+ =?us-ascii?Q?/sIN+BTdg9BSy7lNrum6DT19pxI5TdkeW2Hfk9TROo9l93vWKlVtRUz/MDs4?=
+ =?us-ascii?Q?6fDCAwDixY16LRYbfscxElSuMV+f396YQqjB02NWDuUZd4g6CtPGXNOh6K7+?=
+ =?us-ascii?Q?lYV3lagtDUE/aTQebrQDPufotFzLJzivcuRREURsY13LENm8luqGMbrGv251?=
+ =?us-ascii?Q?ZEzkpAjCiVRe1RNz4q9Fbt7dIWs9USZPUWSIok53QfO/W4eGtHrFmZaRf+gq?=
+ =?us-ascii?Q?ujA/9KuVA+uPTHqrOj7xhXrCgDguG+z4+ASgZWecn2DAM5D4XDnwB8f7mYbc?=
+ =?us-ascii?Q?3cozDIDPxdIHSjqZKRvTTVD9Cj/lPnImpYOTlH6RI5p3Rg/aWaBgS/WYQy2m?=
+ =?us-ascii?Q?ZGIiMAhWz5u0Lb0I9NpdjteJysdy2O4X8t9g/P229SSntvBGTHnDtbR7HfJz?=
+ =?us-ascii?Q?+d7MihLegcFQ9AR+muDBvePpWDnhFqjmN+WqEIy4AJY/ZC4TUNjQgOOjdD7t?=
+ =?us-ascii?Q?7ehr9U9+xzEX/JQOIOg65RYRqbaqnbHxYJbfpbtWSDKSDaLKO5z1Dd7LUu0F?=
+ =?us-ascii?Q?Ht+2OYZ7hPnWXUB0DHwOzT9z8S6/7xZQX2IoH7vRqasJq9B0ESnGHOIb0KzW?=
+ =?us-ascii?Q?SIoYORgdHPT6y1klaIOaMWVhmGJfv2NEvLnNteENhHFLYwxA758zsK+GkCQ0?=
+ =?us-ascii?Q?jF59Z4qehiuhaQsYF1D7myS1cPr89NuiJ1PF2tUuLfJt0XG+gYc6hPsj7Ssz?=
+ =?us-ascii?Q?/TvLfhyZaMsekzyZM3Ezw3mjZfEMXf2cIslZEgm29SC0Ufl/NBHG4NtP4LD/?=
+ =?us-ascii?Q?RRvfTBUiHe8xW9j1TgO8uF4l7TF+5TuX6yrRXZdSBjd3KBNlKdCQDpREJzv0?=
+ =?us-ascii?Q?SItfHI6dlvM9wySk8OMXLNdGqHtjuUTPOGDjbh4BwA4eSUHp3H8Y9ZJTdrYK?=
+ =?us-ascii?Q?xb86XO6s/LxVzL6cvNDDlW+0B6DX9GcvsPh0zzUZcmBTGQMC+gHh51tN6tZ7?=
+ =?us-ascii?Q?6HMoh2pet7J6Iw2jxdy25XVLLWGhYBeRDXZnIr8NXL/E1cHfdrraYQruDYOW?=
+ =?us-ascii?Q?ojMdwWQqjY9/9S4jkTBLFGW7SDOy8abkkIM2Jbqpl69S8RIUZrgmzOVxMT8C?=
+ =?us-ascii?Q?/g3PgaJ8mvneULaFbiPvVcXEGYItXSNfj+PF7NlwtY2MPbi1C6o6b3nPwu8d?=
+ =?us-ascii?Q?gasyT91/hDu84izSemVOn+Mvi0mvq2Jo910FF6eeysicBbeweRAipXO1gMn8?=
+ =?us-ascii?Q?70Bp9+IEiwpLjzHMVQ8uvrURc6tKLwplhZ5E/FmG9NHHBloHoZ5JoXlcR+a+?=
+ =?us-ascii?Q?7Pb+GgkDkTOfxuRJym/qLLvL+hp9Slz3DUmI+lgz+tcTLIazG0kmhhOMvefA?=
+ =?us-ascii?Q?aFFWCekDqbQ4ZCjOuR9Q0U4Ef/K17kXcZwwV3n1umkNW9834L4Aec/dqlV4g?=
+ =?us-ascii?Q?ePXs4eKQy0W/a9Vsg1ugYsS0TXY7+SxCazjJwoTmks9G4owWVaXMuns2okGW?=
+ =?us-ascii?Q?8xgVYuhEwbOCppMiAJfEeGExB3paK3muNVPyyX4m?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 35d733ce-2660-4460-edc7-08da59b365cc
+X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jun 2022 09:40:27.0636
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: mdPDHUXQYXEcznSqVTVDKWWclnHedAxG7fZ+LEyyqAitzZXZ0o3y2OUVVY9j6Kvf4gNKVIbath1cd1egDkZ3MA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB4689
+X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot reported a hang in tun_napi_disable() while RTNL is held.
+This is the fifth part of the conversion of mlxsw to the unified bridge
+model.
 
-Because tun.c logic is complicated, I chose to:
+The previous part that was merged in commit d521bc0a0f7c ("Merge branch
+'mlxsw-unified-bridge-conversion-part-4-6'") converted the flooding code
+to use the new APIs of the unified bridge model. As part of this
+conversion, the flooding code started accessing the port group table
+(PGT) directly in order to allocate MID indexes and configure the ports
+via which a packet needs to be replicated.
 
-1) rename tun->napi_enabled to tun->napi_configured
+MDB entries in the device also make use of the PGT table, but the
+related code has its own PGT allocator and does not make use of the
+common core that was added in the previous patchset. This patchset
+converts the MDB code to use the common PGT code.
 
-2) Add a new boolean, tracking if tun->napi is enabled or not.
+The first nine patches prepare the MDB code for the conversion that is
+performed by the last patch.
 
-INFO: task kworker/0:1:14 blocked for more than 143 seconds.
-Not tainted 5.19.0-rc3-syzkaller-00144-g3b0dc529f56b #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-task:kworker/0:1 state:D stack:27168 pid: 14 ppid: 2 flags:0x00004000
-Workqueue: ipv6_addrconf addrconf_verify_work
-Call Trace:
-<TASK>
-context_switch kernel/sched/core.c:5146 [inline]
-__schedule+0xa00/0x4b50 kernel/sched/core.c:6458
-schedule+0xd2/0x1f0 kernel/sched/core.c:6530
-schedule_preempt_disabled+0xf/0x20 kernel/sched/core.c:6589
-__mutex_lock_common kernel/locking/mutex.c:679 [inline]
-__mutex_lock+0xa70/0x1350 kernel/locking/mutex.c:747
-addrconf_verify_work+0xe/0x20 net/ipv6/addrconf.c:4616
-process_one_work+0x996/0x1610 kernel/workqueue.c:2289
-worker_thread+0x665/0x1080 kernel/workqueue.c:2436
-kthread+0x2e9/0x3a0 kernel/kthread.c:376
-ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:302
-</TASK>
-INFO: task dhcpcd:3190 blocked for more than 143 seconds.
-Not tainted 5.19.0-rc3-syzkaller-00144-g3b0dc529f56b #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-task:dhcpcd state:D stack:22976 pid: 3190 ppid: 3189 flags:0x00000000
-Call Trace:
-<TASK>
-context_switch kernel/sched/core.c:5146 [inline]
-__schedule+0xa00/0x4b50 kernel/sched/core.c:6458
-schedule+0xd2/0x1f0 kernel/sched/core.c:6530
-schedule_preempt_disabled+0xf/0x20 kernel/sched/core.c:6589
-__mutex_lock_common kernel/locking/mutex.c:679 [inline]
-__mutex_lock+0xa70/0x1350 kernel/locking/mutex.c:747
-__netlink_dump_start+0x16a/0x900 net/netlink/af_netlink.c:2344
-netlink_dump_start include/linux/netlink.h:245 [inline]
-rtnetlink_rcv_msg+0x73e/0xc90 net/core/rtnetlink.c:6046
-netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2501
-netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
-netlink_unicast+0x543/0x7f0 net/netlink/af_netlink.c:1345
-netlink_sendmsg+0x917/0xe10 net/netlink/af_netlink.c:1921
-sock_sendmsg_nosec net/socket.c:714 [inline]
-sock_sendmsg+0xcf/0x120 net/socket.c:734
-__sys_sendto+0x21a/0x320 net/socket.c:2119
-__do_sys_sendto net/socket.c:2131 [inline]
-__se_sys_sendto net/socket.c:2127 [inline]
-__x64_sys_sendto+0xdd/0x1b0 net/socket.c:2127
-do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
-entry_SYSCALL_64_after_hwframe+0x46/0xb0
-RIP: 0033:0x7fca4209d206
-RSP: 002b:00007fff12495ae8 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
-RAX: ffffffffffffffda RBX: 00007fff12496c20 RCX: 00007fca4209d206
-RDX: 0000000000000014 RSI: 00007fff12496b40 RDI: 0000000000000018
-RBP: 00007fff12496bb0 R08: 00007fff12496b24 R09: 000000000000000c
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007fff12496b40
-R13: 00007fff12496b24 R14: 0000000000000000 R15: 00007fff12495af0
-</TASK>
+Amit Cohen (10):
+  mlxsw: Align PGT index to legacy bridge model
+  mlxsw: spectrum_switchdev: Rename MID structure
+  mlxsw: spectrum_switchdev: Rename MIDs list
+  mlxsw: spectrum_switchdev: Save MAC and FID as a key in 'struct
+    mlxsw_sp_mdb_entry'
+  mlxsw: spectrum_switchdev: Add support for maintaining hash table of
+    MDB entries
+  mlxsw: spectrum_switchdev: Add support for maintaining list of ports
+    per MDB entry
+  mlxsw: spectrum_switchdev: Implement mlxsw_sp_mc_mdb_entry_{init,
+    fini}()
+  mlxsw: spectrum_switchdev: Add support for getting and putting MDB
+    entry
+  mlxsw: spectrum_switchdev: Flush port from MDB entries according to
+    FID index
+  mlxsw: spectrum_switchdev: Convert MDB code to use PGT APIs
 
-Showing all locks held in the system:
-3 locks held by kworker/0:1/14:
-1 lock held by khungtaskd/29:
-1 lock held by dhcpcd/3190:
-2 locks held by getty/3293:
-1 lock held by syz-executor658/3647:
+ .../net/ethernet/mellanox/mlxsw/spectrum.h    |  10 +-
+ .../ethernet/mellanox/mlxsw/spectrum_pgt.c    |  16 +-
+ .../mellanox/mlxsw/spectrum_switchdev.c       | 697 +++++++++++-------
+ 3 files changed, 455 insertions(+), 268 deletions(-)
 
-=============================================
-
-NMI backtrace for cpu 0
-CPU: 0 PID: 29 Comm: khungtaskd Not tainted 5.19.0-rc3-syzkaller-00144-g3b0dc529f56b #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
-<TASK>
-__dump_stack lib/dump_stack.c:88 [inline]
-dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
-nmi_cpu_backtrace.cold+0x47/0x144 lib/nmi_backtrace.c:111
-nmi_trigger_cpumask_backtrace+0x1e6/0x230 lib/nmi_backtrace.c:62
-trigger_all_cpu_backtrace include/linux/nmi.h:146 [inline]
-check_hung_uninterruptible_tasks kernel/hung_task.c:220 [inline]
-watchdog+0xc22/0xf90 kernel/hung_task.c:378
-kthread+0x2e9/0x3a0 kernel/kthread.c:376
-ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:302
-</TASK>
-Sending NMI from CPU 0 to CPUs 1:
-NMI backtrace for cpu 1
-CPU: 1 PID: 3647 Comm: syz-executor658 Not tainted 5.19.0-rc3-syzkaller-00144-g3b0dc529f56b #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:arch_local_irq_restore arch/x86/include/asm/irqflags.h:137 [inline]
-RIP: 0010:lock_is_held_type+0xf0/0x140 kernel/locking/lockdep.c:5710
-Code: f0 41 0f 94 c5 48 c7 c7 e0 7c cc 89 e8 69 0d 00 00 b8 ff ff ff ff 65 0f c1 05 d4 79 8b 76 83 f8 01 75 29 9c 58 f6 c4 02 75 3d <48> f7 04 24 00 02 00 00 74 01 fb 48 83 c4 08 44 89 e8 5b 5d 41 5c
-RSP: 0018:ffffc90002fcf928 EFLAGS: 00000046
-RAX: 0000000000000046 RBX: 0000000000000001 RCX: 0000000000000001
-RDX: 0000000000000000 RSI: 0000000000000002 RDI: 0000000000000000
-RBP: ffff8880b9b39ed8 R08: ffff8880b9b3a908 R09: ffffffff8dbb8517
-R10: fffffbfff1b770a2 R11: dffffc0000000000 R12: ffff88801ba31d80
-R13: 0000000000000001 R14: 00000000ffffffff R15: ffff88801ba32808
-FS: 0000000000000000(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
-CS: 0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000055fe675980b0 CR3: 000000000ba8e000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
-<TASK>
-lock_is_held include/linux/lockdep.h:279 [inline]
-lockdep_assert_rq_held kernel/sched/sched.h:1295 [inline]
-rq_clock kernel/sched/sched.h:1450 [inline]
-sched_info_arrive kernel/sched/stats.h:239 [inline]
-sched_info_switch kernel/sched/stats.h:295 [inline]
-prepare_task_switch kernel/sched/core.c:4955 [inline]
-context_switch kernel/sched/core.c:5098 [inline]
-__schedule+0x2b44/0x4b50 kernel/sched/core.c:6458
-schedule+0xd2/0x1f0 kernel/sched/core.c:6530
-schedule_hrtimeout_range_clock+0x195/0x390 kernel/time/hrtimer.c:2305
-usleep_range_state+0x129/0x1b0 kernel/time/timer.c:2132
-usleep_range include/linux/delay.h:67 [inline]
-napi_disable+0xff/0x120 net/core/dev.c:6402
-tun_napi_disable drivers/net/tun.c:285 [inline]
-__tun_detach+0x165/0x1440 drivers/net/tun.c:643
-tun_detach drivers/net/tun.c:700 [inline]
-tun_chr_close+0xc4/0x180 drivers/net/tun.c:3454
-__fput+0x277/0x9d0 fs/file_table.c:317
-task_work_run+0xdd/0x1a0 kernel/task_work.c:177
-exit_task_work include/linux/task_work.h:38 [inline]
-do_exit+0xaff/0x2a00 kernel/exit.c:795
-do_group_exit+0xd2/0x2f0 kernel/exit.c:925
-__do_sys_exit_group kernel/exit.c:936 [inline]
-__se_sys_exit_group kernel/exit.c:934 [inline]
-__x64_sys_exit_group+0x3a/0x50 kernel/exit.c:934
-do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
-entry_SYSCALL_64_after_hwframe+0x46/0xb0
-RIP: 0033:0x7efd8d173a29
-Code: Unable to access opcode bytes at RIP 0x7efd8d1739ff.
-RSP: 002b:00007ffdb72544d8 EFLAGS: 00000246 ORIG_RAX: 00000000000000e7
-RAX: ffffffffffffffda RBX: 00007efd8d1e7330 RCX: 00007efd8d173a29
-RDX: 000000000000003c RSI: 00000000000000e7 RDI: 0000000000000000
-RBP: 0000000000000000 R08: ffffffffffffffc0 R09: 00007ffdb72546c8
-R10: 00007ffdb72546c8 R11: 0000000000000246 R12: 00007efd8d1e7330
-R13: 0000000000000001 R14: 0000000000000000 R15: 0000000000000001
-</TASK>
-
-Fixes: a8fc8cb5692a ("net: tun: stop NAPI when detaching queues")
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Petar Penkov <ppenkov@aviatrix.com>
----
- drivers/net/tun.c | 20 +++++++++++++-------
- 1 file changed, 13 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-index e2eb35887394e384972f573745f5870ba8c9d19b..7dab3dc1c387a4f98c72490e955e78b8d5d9da25 100644
---- a/drivers/net/tun.c
-+++ b/drivers/net/tun.c
-@@ -138,6 +138,7 @@ struct tun_file {
- 		unsigned int ifindex;
- 	};
- 	struct napi_struct napi;
-+	bool napi_configured;
- 	bool napi_enabled;
- 	bool napi_frags_enabled;
- 	struct mutex napi_mutex;	/* Protects access to the above napi */
-@@ -265,29 +266,34 @@ static int tun_napi_poll(struct napi_struct *napi, int budget)
- static void tun_napi_init(struct tun_struct *tun, struct tun_file *tfile,
- 			  bool napi_en, bool napi_frags)
- {
--	tfile->napi_enabled = napi_en;
-+	tfile->napi_configured = napi_en;
- 	tfile->napi_frags_enabled = napi_en && napi_frags;
- 	if (napi_en) {
- 		netif_napi_add_tx(tun->dev, &tfile->napi, tun_napi_poll);
- 		napi_enable(&tfile->napi);
-+		tfile->napi_enabled = true;
- 	}
- }
- 
- static void tun_napi_enable(struct tun_file *tfile)
- {
--	if (tfile->napi_enabled)
-+	if (tfile->napi_configured && !tfile->napi_enabled) {
- 		napi_enable(&tfile->napi);
-+		tfile->napi_enabled = true;
-+	}
- }
- 
- static void tun_napi_disable(struct tun_file *tfile)
- {
--	if (tfile->napi_enabled)
-+	if (tfile->napi_configured && tfile->napi_enabled) {
- 		napi_disable(&tfile->napi);
-+		tfile->napi_enabled = false;
-+	}
- }
- 
- static void tun_napi_del(struct tun_file *tfile)
- {
--	if (tfile->napi_enabled)
-+	if (tfile->napi_configured)
- 		netif_napi_del(&tfile->napi);
- }
- 
-@@ -1977,7 +1983,7 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
- 		napi_gro_frags(&tfile->napi);
- 		local_bh_enable();
- 		mutex_unlock(&tfile->napi_mutex);
--	} else if (tfile->napi_enabled) {
-+	} else if (tfile->napi_configured) {
- 		struct sk_buff_head *queue = &tfile->sk.sk_write_queue;
- 		int queue_len;
- 
-@@ -2498,7 +2504,7 @@ static int tun_xdp_one(struct tun_struct *tun,
- 	    !tfile->detached)
- 		rxhash = __skb_get_hash_symmetric(skb);
- 
--	if (tfile->napi_enabled) {
-+	if (tfile->napi_configured) {
- 		queue = &tfile->sk.sk_write_queue;
- 		spin_lock(&queue->lock);
- 		__skb_queue_tail(queue, skb);
-@@ -2553,7 +2559,7 @@ static int tun_sendmsg(struct socket *sock, struct msghdr *m, size_t total_len)
- 		if (flush)
- 			xdp_do_flush();
- 
--		if (tfile->napi_enabled && queued > 0)
-+		if (tfile->napi_configured && queued > 0)
- 			napi_schedule(&tfile->napi);
- 
- 		rcu_read_unlock();
 -- 
-2.37.0.rc0.161.g10f37bed90-goog
+2.36.1
 
