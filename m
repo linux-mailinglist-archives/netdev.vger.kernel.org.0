@@ -2,107 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 209AF55FC46
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 11:43:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E001255FC40
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 11:43:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232607AbiF2JlK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 05:41:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52848 "EHLO
+        id S233003AbiF2JlP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 05:41:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233003AbiF2JlH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 05:41:07 -0400
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2071.outbound.protection.outlook.com [40.107.92.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8BEB39B8F
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 02:41:06 -0700 (PDT)
+        with ESMTP id S232642AbiF2JlO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 05:41:14 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2042.outbound.protection.outlook.com [40.107.244.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DB333B574
+        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 02:41:12 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bSampyXJ6+KUgMLjTCRYBC8Rc8M/AVygsAqeQhpXo7JqJngOpRxo5CgWVqmQIwxUYmZrq8OTmq6WXRdRx8hXA6c60wZlc0kQJTXE2mlVJ84j+57Kr0c2RJJ3DjCl8ixmcq9XSA9G+TAD+zN8Uy7c8zgluUvI6oi9UEEMJl4SvKjOCvk9hDbh+F88Z7Z2tpVmCJcgc6BItJh0WnhTrFPiuW0jT+a4lt8OigFnIuIOLQ9FIRKv1eKr+R4Bm/Ol+wkjXg6y41ATt5Ymp2fqrkyF8oUQTrBUIC0oPzvzgYPN7deUqspQUDrT/moChxpxAgqIUs8khOkxuOrfmXB2EPnvIA==
+ b=lECjNTOu6JIFs0HAjCNL9/8nCYuK59eBuZYsR7JjdPAweexTt+kOXFQQ19nHYO+IzWS7fWhCQRMT1nvNnWiib7ieZXI9QsnHSx97ZT3BJlMgMiyJmEqeNutT8fqi5biItkius3BhmcqBnPC4nh2NswVnWg1yHkIEk1vkiDva+t1niDdq4lpg2ihkwGps5UXqPZ9gdocrQpFtclFIm/nrb6qkLdPZED7US0VC+dHPTx20hNsrbG3VLqKrnCQObL99ZewpQU3iTQUdUXy6E6sU32I/jgqtVkRKvBa1glUSukqu7cBc+d+exHEUZLQDhUcnG0uwsqrnQ5lRI/hwCQ9zhA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=0KQ8OOf4nfykdcKZd8G1UHAWzLBDM+eGlr0oum0kAj4=;
- b=E1oP0q3sw1+w0xPaQlVLLus8G8GGKZkLp4TSyUdFdVP63OPg/xJMnPxQg3dD0+kFaW+dvadCGpDLcNdlh+uQCFhfygZLmUBKBJH2gq97g1+WB9m370wOtXmXYaXnLAABPJSSnHhQfj2z8aP9EDnT3S4GLDxjPysCPidT18kuEamPd0KxhSTcCCENOY95XZ6WdY+f+2Y4eMk82yeQvZ6Xo1HPNYZy9h0IiGbPIZLh2kKTOJJhNfs/+HoFHjARtaCHLEOYHPCHPXFS4BPUEHsGCw+npmSVYhBjHhruyIiaV53ODwonNzJQGot38OZciIfA2o9DWJntEdtHv/Kef+60Qg==
+ bh=MCp9r79aVrrrmidq6j5HteGL0Vr3BUBqp31bMSZvy/g=;
+ b=mSN8LB5cyxnrN4UyDRGbEj+rfpneyo7U1m6jJUBsUYEP7M9VYyJW21jGoVu64TG0EBtCEFjUjGQXsAz+q1bGDGHVj5S/WWspdWi4+U2+mfjn4hVAR1+OjSarKj49KcYdz6hzZGX7uUdXdvbqP79ib1tFev+WRpRd9p4r6u00T5mtNMkcsasyiEQ3HZOa/bI1g/EqQgofSfCwv019Rmdz4/tsFwIa5B1FGMkhfLjNU0Y7ik6nRDKy4xUWyss07Q3zvYevi3i85GJGeFhHXksYaVSBkiv6fG9IZ+35Lw/rLGOfqQbYyUHII1jVZ0zHMxJ80ctaOyhhduDE5V5kiephsw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0KQ8OOf4nfykdcKZd8G1UHAWzLBDM+eGlr0oum0kAj4=;
- b=YxpyC1tZJHc7HqncT6wYrRX0k4nIRr5emxEpnmLGdWnsFiZzyeW1yn9MR4/BdP1YSGOHHhxd/LtnNIpP0tLtBc4F0p6J9kKb7QAP4zohgbi5UkB20Wp4b7PNyM4Y0FsxYJMVmmzATW0BAtolU1eDh05FdgpSb8opp/7BQXEe3d1tE/XiLONcrIxM2D0QlMcjV6XyROIyhSTXR58WnrDugVCaQMBA0epO5Hu6K32KiT5DLzQg49+W2bEWPiD2oclsgwX8+2U2nBbl7+6pDTINZSMpOo9ISkb8EVZ0P1SH2w/baIjheMvhKGr/eXQ7F8b04vld6kQBc3yfLBjotwGDGQ==
+ bh=MCp9r79aVrrrmidq6j5HteGL0Vr3BUBqp31bMSZvy/g=;
+ b=Tfe+Idf2iQioLwF/hMqAAlq3yx0E92iVtv/XapabA7CNImRdXlltGX2nbG5oIMlJZuvwKY4VArcEEQ2i9oQmJTurcgEmSZzKlBm8WNWf5v1AUMIO1/xwoOi1mGmz+KC6zEdhA056XAX6v5BNCNdNXBftIAKjQX8+SWPmw7VYi6USeC0kSjoE6M9FaN13PRGEu2pAPqt87QrtXZCEJo9fpDOKRDXccH9LVzYj4gTmJWMBsaLtt4k+kKX3lYUoCYsdFnk5zRM6DC//J3H9KIiJ5amk6ZyfGqtjtwNdcKU8o6CKKQhKKYFywGAy7cSkpQrrn8KWlf91g+2JAtIF4bZPog==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
  by DM6PR12MB3850.namprd12.prod.outlook.com (2603:10b6:5:1c3::15) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.16; Wed, 29 Jun
- 2022 09:41:05 +0000
+ 2022 09:41:11 +0000
 Received: from CY5PR12MB6179.namprd12.prod.outlook.com
  ([fe80::611c:e609:d343:aa34]) by CY5PR12MB6179.namprd12.prod.outlook.com
  ([fe80::611c:e609:d343:aa34%5]) with mapi id 15.20.5395.014; Wed, 29 Jun 2022
- 09:41:05 +0000
+ 09:41:11 +0000
 From:   Ido Schimmel <idosch@nvidia.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com, petrm@nvidia.com, amcohen@nvidia.com,
         mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 06/10] mlxsw: spectrum_switchdev: Add support for maintaining list of ports per MDB entry
-Date:   Wed, 29 Jun 2022 12:40:03 +0300
-Message-Id: <20220629094007.827621-7-idosch@nvidia.com>
+Subject: [PATCH net-next 07/10] mlxsw: spectrum_switchdev: Implement mlxsw_sp_mc_mdb_entry_{init, fini}()
+Date:   Wed, 29 Jun 2022 12:40:04 +0300
+Message-Id: <20220629094007.827621-8-idosch@nvidia.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220629094007.827621-1-idosch@nvidia.com>
 References: <20220629094007.827621-1-idosch@nvidia.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: VI1P195CA0063.EURP195.PROD.OUTLOOK.COM
- (2603:10a6:802:59::16) To CY5PR12MB6179.namprd12.prod.outlook.com
+X-ClientProxiedBy: VI1P195CA0075.EURP195.PROD.OUTLOOK.COM
+ (2603:10a6:802:59::28) To CY5PR12MB6179.namprd12.prod.outlook.com
  (2603:10b6:930:24::22)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 2d6c8c89-71a0-4a2e-7328-08da59b37c8e
+X-MS-Office365-Filtering-Correlation-Id: fdb2416a-70c7-494a-4d68-08da59b3800f
 X-MS-TrafficTypeDiagnostic: DM6PR12MB3850:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Gnbc/nnHGl4IR/siCsKl1VkbcC3cysfSQ6/+8WPyuOY8K8bTw0/+SW2C0R6sb4x9o4QXFICt7hynRRidovKmDnIdCR4aYn98Viv1W3lfq3f6UF7UCm7uEopR01yn0Ct5gPO95NMIXWyhqTtBuEom2UEhQwtg6K3ieIjEGHg+HxyMV1K/oagNGZH+oqAEztAN8RUEOcFQJksSYuRWI869RpT1OEsRcUnAr4fLpgfmdlUW8uD1KDjQy/SkGV++Rzq8ky7rvtzkHJw1M5eEhP7QECZ+DLwqs2f9pP4QqRtxr3brkwQScQc2NiYPJ0pvk3Ueh3M4QjZOJQhG9ZPb6OFnJRdzaPWDWsNEDLNuP+H/toTnUfQ+sFBkthLc35wvxi2HJ4fQUDPG+eHL+rN9qemVRSETPVgxwZ0vIK+GG0Hh0bXgblKN6up5/D5/OA7xtwdDlXwSdvRgFDqtM/9cqOj/heR2V6fnZzXGEotwxV90P8Z8EyrArmKAiJWPjSV8H6g4rq2vul0+Li7QAT7BNWocsKNYelVzRTbrPoXzrUZOU0wB0yAm/kRcQKEtL+2mpIgMDxdpyxETp9e4MNxcF6EvXrPmg7eEceyOlGaeoStvhEV2vecXytANF9eNYbtSxeiJDg11bozDc85DlfC8BQhTXhvC1C/srNra+RnL14r+kxRWG5rTO1YxpWU+Ag48bslGxA6bi3Dp6piy0+MsBsmoFPwYPuLtEPOOOVsunbpCeffQZ7l+kiDmD76tBQHJoGH8
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(39860400002)(366004)(396003)(346002)(136003)(6506007)(2906002)(6512007)(26005)(38100700002)(66574015)(186003)(1076003)(107886003)(6916009)(83380400001)(41300700001)(2616005)(66556008)(66476007)(8936002)(4326008)(8676002)(36756003)(6486002)(478600001)(66946007)(86362001)(5660300002)(316002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: Hv7N/p0iANRJm5+RyPllMaL9oIAF8o22QjpGRIolIDoLXkFSB+6VodVuUw6YQ/BqLn/Z01LXFC4NFPGp3zDNaamX0vcRB4SYScwEnoPsFENW2gGDZWGVwOMycJ8GiZyEqsjolt+y6Bl7qPubDfEN2Zy1aPPkHlGeoQZQiyKRf9HEowIse8wkOmB23Q0HDK6cC7juXrKwOtlpHmYB1GKTkMf3vZZv7mKv1glSuvXpDRuwqrT+Sw7DtMM/pJ/ksmLYODeO8iw1mxlRR1sLVcLJ6teSdc9VkjVsPeDhoAnUO39k9H5r5DitE2zg8sKZy+2cCYKfNVrJOHnz0ILZNNFE8nWjSBTx1aggr/zuJMRl4SFjdYo1PqpS+TAhp9hw73jYlOJm439OAI7n3MuZhqJwRHDY/dUu6heuX9r7w8vYMbvtKE+JF19V6hhcp0Q/KBBKgjQsMMM3GMvW8+ii4S7Q1vdcfXs8EGepY9uOjURRrYhlLOMPDEfgxaJUn34InzQu8cNc85blWZ1WYnwoHFHPvDRdG9QErs+UQPbGTcRWX721keTfDlNPAzUUCMCxteGTxjYieZJoe3KICvVDCSEOQ6j+WvBli3Wh4nWPXaDmWeS7J1CviPPCBTb+uBj7CjNNGElCof3hwP7dYCP/pw5UDuTG4hV4NUVwy0vN0n7AuKk8TiI5StBLMOjljtzvdoPltf4EtiRe9PZ5qMiWX401J9bVez/3E8zN0DScMDbkxg9HCjPKw7RTKce6jL/DPL4J
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(39860400002)(366004)(396003)(346002)(136003)(6506007)(2906002)(6512007)(26005)(38100700002)(6666004)(66574015)(186003)(1076003)(107886003)(6916009)(83380400001)(41300700001)(2616005)(66556008)(66476007)(8936002)(4326008)(8676002)(36756003)(6486002)(478600001)(66946007)(86362001)(5660300002)(316002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?JRIR/DQUG7Ulrd2lRUWQpqLuBj+RHW9WbW5pSVKgl82Za1Rybbx9A1vv6qtP?=
- =?us-ascii?Q?rK+3OO8xKXL7WrVfWKGw/0rnm8RqBb5YrcRWETQXV7cd4rjHsfn6YQhtJOvM?=
- =?us-ascii?Q?7Dnw9ChHc6DL9TAb49GzrR+kxdkLa/JNJBEITlVJp2dh+eSdy1NbHycG7DpT?=
- =?us-ascii?Q?bPKrBiNjgXzDkKA/FOWl3LcxF/MLvR3Dj/irBz/JumoPRvrRm/gRzauNNGIj?=
- =?us-ascii?Q?1lxXUBs5fCK6ZMBQPqlNyijSVNewiN5CH1CFKIsv+D/2l9Z2+zz+T8QGiiUd?=
- =?us-ascii?Q?T6enMPgjeJ30nNyYc0u2xvE3EcP7PSZP2TBHzH6Yje+hq8DGyhv3eZtuzD5G?=
- =?us-ascii?Q?ePY3abZbZLtaLJvDt96+2iiHjVLsBYe2iJ/PK8LbgijTljKdFTW0uiAaUprV?=
- =?us-ascii?Q?tkQ0DhfWNxBtP2V91QNGthpXAwv+yFa2SsHPdkT1Vnp4ZeShDfrOy0EtY5zh?=
- =?us-ascii?Q?iCeSupUH9FKfdNAn6rGswC/6892rCkuhQE6mFrA6YiaB9JdsbgMinXvnBs47?=
- =?us-ascii?Q?T/uUhDGyNGNYZahFe9rrCuFjG/qa+011dMTjvNL0AFw6WFuAImJh7psD7gtm?=
- =?us-ascii?Q?H2bYNZJCV2SnbChgRwYkoVdwAYTNj2ca3G7vWqM+kpzgSwClhJUPF3MOZU6m?=
- =?us-ascii?Q?EMPKiG0yM3K3q1UzgwrhwTY1ihixsXv0WCC1TYpZrnVwZXxrW7X4xVZeUWnu?=
- =?us-ascii?Q?wNd4Uwvd4ohEbMffcvV9WqucoU8lrVHMxPTzpKtMz5UkOH7ckCyD1+FoYc44?=
- =?us-ascii?Q?aMy+EPKTCWoqQRE77/ciZ3zT/xOIQmkv3Se4sInXqvP21dwZ/v9nKvBa8NoV?=
- =?us-ascii?Q?M4xNMXaANLPrTZikrHS2hAGwga3y6L1YNAeINbSpHMD915Q/dWaJ3wMvexJu?=
- =?us-ascii?Q?nJ4JfWNY2YULqlUIEQhUF3eguXga1aGgk3k8i7eNRAZtYA7vTXBbtFOxqPYY?=
- =?us-ascii?Q?6CXGngFDJYWaYQzk+fuwNpx13sRSOcac7ah0RA0EzeehLiZaQlGWV6/FrTH/?=
- =?us-ascii?Q?/YZ+6koNG5T+d+5bVT7NqauI22zt+WsCbGZb8F2MQUoGv3Su2DCV7NFg94Pl?=
- =?us-ascii?Q?035ztNhz9vFcnPeCselJusbYkTKfKHGVS7EWj2/NeFrfN5/iuBnCqv9fdW6h?=
- =?us-ascii?Q?Y0BLGB2Bd+itaWyd5q8K3PjTBwX9dfsAgjC+mqQGoIOL6fSuLnwOH10qqFD1?=
- =?us-ascii?Q?NtxoyXm3sHgj7OZkdVk2SgKIRE4LC8TSETWKU/JO0VjUCmoyuRpeKs4DgiOl?=
- =?us-ascii?Q?RgmDbCjpsJrR5y/zPlGruzukatFxpTCRP2xHwYUwOUTgLhnApN3A3rYpSAdA?=
- =?us-ascii?Q?q4Uma+ouvEKibcC1DiKNxTw17U2yF8scrJ+wlullr5IclyNlBjyTh7E1QSG5?=
- =?us-ascii?Q?U9aW1jlwqBGoGcdem2sX5pqlqfBtidcdqC+JdhtFdkvDGI17EEif21ldcSmn?=
- =?us-ascii?Q?Ov2WXQY0omX8nieCjLtqN3XcOMmESiBMGrLL0Yys94ZwXRswG00w9krmXsji?=
- =?us-ascii?Q?irQUgIQARlisF1maQHSgRxx4AMUFNFMGNMFB9q12Wx1cc9CMb8sY+H61joTz?=
- =?us-ascii?Q?ubD7vb4b2qRp+jL4CLq0aHiFeZInu4VLxJKuTj9C?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?JG9k8cRKvTqRFZ/LqB9VxatXsN9Pfh7z5bKkOk06cXosChrA4O4tPn57heBY?=
+ =?us-ascii?Q?4kf2Wu2PMjrqt3U3qCqerbwoKCPrulumaT2lf30LzNo/apVR+jZ0/PWeN2IJ?=
+ =?us-ascii?Q?EDQ0+NsfpkCYFer0hLDeXrSrItApwYrpSiTtJAx2FV1ZFMsn6bVwxWbMlSyF?=
+ =?us-ascii?Q?fBkBCqWSwJ/VENfYqWViOWIZkwRcLkwniNSrtYl6MZ0DGFYREBIi1zZ9pzj6?=
+ =?us-ascii?Q?LvciFSbosIZkaK3NmAxI34MK4z/zU8zjhInJEOUzagGx1/i4YAY33FCyp8NV?=
+ =?us-ascii?Q?OQ8p9U1z/JF5x4zQsVzontq8dJLz9RLMvSEnKgXBI8Z79b31tJmcf30NoakX?=
+ =?us-ascii?Q?FbAUHkvDxlRLTnhHACnmDjR+tZ+bYPnleSYP2p84RAmnMHlXT86cT05/l4GW?=
+ =?us-ascii?Q?7FWiUGvZ3ZM8HwQswzATDG4yKVk1ZIkoqmGajXlx46oAK+r0jPOavesx7O/U?=
+ =?us-ascii?Q?MBd/kWDXZYjyZ00ohNd+fPHfGRwVj5cOXXh441PGoWqlveO3QcpFHPhVxHEU?=
+ =?us-ascii?Q?rnwn2HoY//YMQfCegMoJrR5Hf+8x2sV4LBXzCxZLAoCyrLeD9LGssDlu2U5+?=
+ =?us-ascii?Q?jRBQ9seAf8mnIR6QYoSKUdMfvZ091q8G4IDs7Ldf9S++BEd6TSouujYvo4cw?=
+ =?us-ascii?Q?9JeOtMSoQhEdCYcQKVsbUbPchmGYqLi4l9HOpOgRyv7hmj6Qma5qT9bYp/+K?=
+ =?us-ascii?Q?qruvF1F+4fQF7+I2cDTlbspdmPbwNms1lVYLarL2kNBn390RYuMYWsRHYVbF?=
+ =?us-ascii?Q?nHXLq0hdjkIWKZ5XALidV/OfneuwJdm1Zh9WbP5xIoSVsTRdgay9oGIyVHQN?=
+ =?us-ascii?Q?c581P0iYycYWobN6WaWLf9Raelg4F3qCcqleznsj27a/qN+bfRTJzK6X1ksq?=
+ =?us-ascii?Q?j1OCEEDG44tRaweMwZ+qb8sFdaQXa9YSF5DGfAogiV417gmZiMAjemq8UqU2?=
+ =?us-ascii?Q?KNCUG+6ZRk2omgxNrhJ73hg/d5B1o6flHus8QmEIfO9SiIzob/8ppC0BG+jK?=
+ =?us-ascii?Q?iHhzraHQsWdDvv7MVuJAYqkMDRySFf8NsdFAw5MxkF4BAXf7AXhPcEHXNACJ?=
+ =?us-ascii?Q?U6Th6WrZ4VToeaoQCHOPGCrkfOWu0No8GCNku/eTD2wRmF9Tn228I+bQCIlZ?=
+ =?us-ascii?Q?z+WbitPA1RLIuCVZ8ojvRG/VyN49C8gW72vKW4qha5uBy9mlNDCskV9QKn6x?=
+ =?us-ascii?Q?sMhZXKusy7XfkE4LWseJMfta9dusNLePlCKatlN/K8DtlR5IOmkJw0mAAhSs?=
+ =?us-ascii?Q?laPYdcavrZAFyBXQZPlEJ5imXWVFeNAwGtFwWxBicIFy3FYkjcFl0uJ0nyzG?=
+ =?us-ascii?Q?ESS4ASjVPbjn/fKo97WRIqOWG8VPLe3Llgww1EmBpiE/sdeRYfGTeaBJZBsA?=
+ =?us-ascii?Q?4c6v73WYM2n5kGsbQh7XHQq6k+Z72IxOtKr/yUcbFumHh5Txr8IPbxEm4G7q?=
+ =?us-ascii?Q?jjvzMewJnKXOE+BOVv7yzx9hGXQ9xe/ty5kbIPnHg65ky1qnD6h5jy28EZmP?=
+ =?us-ascii?Q?JO5Ji9+eBsQSokoiju0RGroQzIPaiQVC7Jurwonk8L80LMl18BnMQE4CkUl+?=
+ =?us-ascii?Q?whB73rw47vbBoHyQu52ZU6KR+0pTw73ybniSJmrH?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2d6c8c89-71a0-4a2e-7328-08da59b37c8e
+X-MS-Exchange-CrossTenant-Network-Message-Id: fdb2416a-70c7-494a-4d68-08da59b3800f
 X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jun 2022 09:41:05.0867
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jun 2022 09:41:11.0881
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 2FXEEq5JcEu3GtBJm8MHTwIxl+O1Le1JWWiLBMedr6yxDMxOb5ghrT/BR3332D4goMx+Bz6ezsvOMf6Q2EuSEQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: pG0HuXKqMITbvj/EcBb5cNIjHv9pg8pFs9JcnkAUmjtdba+EyyNF9OO+jQ5JVG8Tuw6GlXDsYRbxBzeP5Oum7A==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3850
 X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
@@ -116,216 +116,267 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Amit Cohen <amcohen@nvidia.com>
 
-As part of converting MDB code to use PGT APIs, PGT code stores which ports
-are mapped to each PGT entry. PGT code is not aware of the type of the port
-(multicast router or not), as it is not relevant there.
+The next patches will convert MDB code to use PGT APIs. The change will
+move the responsibility of allocating MID indexes and writing PGT
+configurations to hardware to PGT code. As part of this change, most of the
+MDB code will be changed and improved.
 
-To be able to release an MDB entry when the there are no ports which are
-not multicast routers, the entry should be aware of the state of its
-ports. Add support for maintaining list of ports per MDB entry.
+As a preparation for the above mentioned change, implement
+mlxsw_sp_mc_mdb_entry_{init, fini}(). Currently, there is a function
+__mlxsw_sp_mc_alloc(), which does not only allocate MID. In addition,
+there is no an equivalent function to free the MID. When
+mlxsw_sp_port_remove_from_mid() removes the last port, it handles MID
+removal. Instead, add init() and fini() functions, which use PGT APIs.
 
-Each port will hold a reference count as multiple MDB entries can use the
-same hardware MDB entry. It occurs because MDB entries in the Linux bridge
-are keyed according to their multicast IP, when these entries are notified
-to device drivers via switchdev, the multicast IP is converted to a
-multicast MAC. This conversion might cause collisions, for example,
-ff0e::1 and ff0e:1234::1 are both mapped to the multicast MAC
-33:33:00:00:00:01.
+The differences between the existing and the new functions are as follows:
+1. Today MDB code does not update SMID when port is added/removed while
+   multicast is disabled. It maintains a bitmap of ports and once multicast
+   is enabled, it writes the entry to hardware. Instead, using PGT APIs,
+   the entry will be updated also when multicast is disabled, but the
+   mapping between {MAC, FID}->{MID} (is configured using SFD) will be
+   updated according to multicast state. It means that SMID will be updated
+   all the time and disable/enable multicast will impact only SFD
+   configuration.
 
-Multicast router port will take a reference once, and will be marked as
-'mrouter', then when port in the list is multicast router and its
-reference value is one, it means that the entry can be removed in case
-that there are no other ports which are not multicast routers. For that,
-maintain a counter per MDB entry to count ports in the list, which were
-added to the multicast group, and not because they are multicast routers.
-When this counter is zero, the entry can be removed.
+2. Today the allocation of MID index is done as part of
+   mlxsw_sp_mc_write_mdb_entry(). The fact that the entry will be
+   written in hardware all the time, moves the allocation of the index to
+   be as part of the MDB entry initialization. PGT API is used for the
+   allocation.
 
-Add mlxsw_sp_mdb_entry_port_{get,put}() for regular ports and
-mlxsw_sp_mdb_entry_mrouter_port_{get,put}() for multicast router ports.
-Call PGT API to add or remove port from PGT entry when port is first added
-or removed, according to the reference counting.
+3. Today the update of multicast router ports is done as part of
+   mlxsw_sp_mc_write_mdb_entry(). Instead, add functions to add/remove
+   all multicast router ports when entry is first added or removed. When
+   new multicast router port will be added/removed, the dedicated API will
+   be used to add/remove it from the existing entries.
+
+4. A list of ports will be stored per MDB entry instead of the exiting
+   bitmap. The list will contain the multicast router ports and maintain
+   reference counter per port.
+
+Add mlxsw_sp_mdb_entry_write() which is almost identical to
+mlxsw_sp_port_mdb_op(). Use more clear name and align the MID index to
+bridge model using PGT API. The existing function will be removed in the
+next patches.
+
+Note that PGT APIs configure the firmware using SMID register, like the
+driver already does today for MDB entries, so PGT APIs can be used also
+using legacy bridge model.
 
 Signed-off-by: Amit Cohen <amcohen@nvidia.com>
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- .../mellanox/mlxsw/spectrum_switchdev.c       | 153 ++++++++++++++++++
- 1 file changed, 153 insertions(+)
+ .../mellanox/mlxsw/spectrum_switchdev.c       | 176 +++++++++++++++++-
+ 1 file changed, 174 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
-index 617ec3312fd8..d1b0eddad504 100644
+index d1b0eddad504..bb2694ef6220 100644
 --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
 +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
-@@ -113,10 +113,19 @@ struct mlxsw_sp_mdb_entry {
- 	struct rhash_head ht_node;
- 	struct mlxsw_sp_mdb_entry_key key;
- 	u16 mid;
-+	struct list_head ports_list;
-+	u16 ports_count;
- 	bool in_hw;
- 	unsigned long *ports_in_mid; /* bits array */
- };
+@@ -1018,7 +1018,7 @@ mlxsw_sp_mdb_entry_port_lookup(struct mlxsw_sp_mdb_entry *mdb_entry,
+ 	return NULL;
+ }
  
-+struct mlxsw_sp_mdb_entry_port {
-+	struct list_head list; /* Member of 'ports_list'. */
-+	u16 local_port;
-+	refcount_t refcount;
-+	bool mrouter;
-+};
+-static __always_unused struct mlxsw_sp_mdb_entry_port *
++static struct mlxsw_sp_mdb_entry_port *
+ mlxsw_sp_mdb_entry_port_get(struct mlxsw_sp *mlxsw_sp,
+ 			    struct mlxsw_sp_mdb_entry *mdb_entry,
+ 			    u16 local_port)
+@@ -1060,7 +1060,7 @@ mlxsw_sp_mdb_entry_port_get(struct mlxsw_sp *mlxsw_sp,
+ 	return ERR_PTR(err);
+ }
+ 
+-static __always_unused void
++static void
+ mlxsw_sp_mdb_entry_port_put(struct mlxsw_sp *mlxsw_sp,
+ 			    struct mlxsw_sp_mdb_entry *mdb_entry,
+ 			    u16 local_port, bool force)
+@@ -1801,6 +1801,37 @@ mlxsw_sp_port_fdb_set(struct mlxsw_sp_port *mlxsw_sp_port,
+ 						   vid, adding, false);
+ }
+ 
++static int mlxsw_sp_mdb_entry_write(struct mlxsw_sp *mlxsw_sp,
++				    const struct mlxsw_sp_mdb_entry *mdb_entry,
++				    bool adding)
++{
++	char *sfd_pl;
++	u16 mid_idx;
++	u8 num_rec;
++	int err;
 +
- static const struct rhashtable_params mlxsw_sp_mdb_ht_params = {
- 	.key_offset = offsetof(struct mlxsw_sp_mdb_entry, key),
- 	.head_offset = offsetof(struct mlxsw_sp_mdb_entry, ht_node),
-@@ -995,6 +1004,150 @@ static int mlxsw_sp_smid_router_port_set(struct mlxsw_sp *mlxsw_sp,
++	sfd_pl = kmalloc(MLXSW_REG_SFD_LEN, GFP_KERNEL);
++	if (!sfd_pl)
++		return -ENOMEM;
++
++	mid_idx = mlxsw_sp_pgt_index_to_mid(mlxsw_sp, mdb_entry->mid);
++	mlxsw_reg_sfd_pack(sfd_pl, mlxsw_sp_sfd_op(adding), 0);
++	mlxsw_reg_sfd_mc_pack(sfd_pl, 0, mdb_entry->key.addr,
++			      mdb_entry->key.fid, MLXSW_REG_SFD_REC_ACTION_NOP,
++			      mid_idx);
++	num_rec = mlxsw_reg_sfd_num_rec_get(sfd_pl);
++	err = mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(sfd), sfd_pl);
++	if (err)
++		goto out;
++
++	if (num_rec != mlxsw_reg_sfd_num_rec_get(sfd_pl))
++		err = -EBUSY;
++
++out:
++	kfree(sfd_pl);
++	return err;
++}
++
+ static int mlxsw_sp_port_mdb_op(struct mlxsw_sp *mlxsw_sp, const char *addr,
+ 				u16 fid, u16 mid_idx, bool adding)
+ {
+@@ -2040,6 +2071,147 @@ static int mlxsw_sp_port_remove_from_mid(struct mlxsw_sp_port *mlxsw_sp_port,
  	return err;
  }
  
-+static struct mlxsw_sp_mdb_entry_port *
-+mlxsw_sp_mdb_entry_port_lookup(struct mlxsw_sp_mdb_entry *mdb_entry,
-+			       u16 local_port)
++static int mlxsw_sp_mc_mdb_mrouters_add(struct mlxsw_sp *mlxsw_sp,
++					struct mlxsw_sp_ports_bitmap *ports_bm,
++					struct mlxsw_sp_mdb_entry *mdb_entry)
 +{
 +	struct mlxsw_sp_mdb_entry_port *mdb_entry_port;
++	unsigned int nbits = ports_bm->nbits;
++	int i;
 +
-+	list_for_each_entry(mdb_entry_port, &mdb_entry->ports_list, list) {
-+		if (mdb_entry_port->local_port == local_port)
-+			return mdb_entry_port;
++	for_each_set_bit(i, ports_bm->bitmap, nbits) {
++		mdb_entry_port = mlxsw_sp_mdb_entry_mrouter_port_get(mlxsw_sp,
++								     mdb_entry,
++								     i);
++		if (IS_ERR(mdb_entry_port)) {
++			nbits = i;
++			goto err_mrouter_port_get;
++		}
 +	}
 +
-+	return NULL;
++	return 0;
++
++err_mrouter_port_get:
++	for_each_set_bit(i, ports_bm->bitmap, nbits)
++		mlxsw_sp_mdb_entry_mrouter_port_put(mlxsw_sp, mdb_entry, i);
++	return PTR_ERR(mdb_entry_port);
 +}
 +
-+static __always_unused struct mlxsw_sp_mdb_entry_port *
-+mlxsw_sp_mdb_entry_port_get(struct mlxsw_sp *mlxsw_sp,
-+			    struct mlxsw_sp_mdb_entry *mdb_entry,
-+			    u16 local_port)
++static void mlxsw_sp_mc_mdb_mrouters_del(struct mlxsw_sp *mlxsw_sp,
++					 struct mlxsw_sp_ports_bitmap *ports_bm,
++					 struct mlxsw_sp_mdb_entry *mdb_entry)
 +{
-+	struct mlxsw_sp_mdb_entry_port *mdb_entry_port;
++	int i;
++
++	for_each_set_bit(i, ports_bm->bitmap, ports_bm->nbits)
++		mlxsw_sp_mdb_entry_mrouter_port_put(mlxsw_sp, mdb_entry, i);
++}
++
++static int
++mlxsw_sp_mc_mdb_mrouters_set(struct mlxsw_sp *mlxsw_sp,
++			     struct mlxsw_sp_bridge_device *bridge_device,
++			     struct mlxsw_sp_mdb_entry *mdb_entry, bool add)
++{
++	struct mlxsw_sp_ports_bitmap ports_bm;
 +	int err;
 +
-+	mdb_entry_port = mlxsw_sp_mdb_entry_port_lookup(mdb_entry, local_port);
-+	if (mdb_entry_port) {
-+		if (mdb_entry_port->mrouter &&
-+		    refcount_read(&mdb_entry_port->refcount) == 1)
-+			mdb_entry->ports_count++;
-+
-+		refcount_inc(&mdb_entry_port->refcount);
-+		return mdb_entry_port;
-+	}
-+
-+	err = mlxsw_sp_pgt_entry_port_set(mlxsw_sp, mdb_entry->mid,
-+					  mdb_entry->key.fid, local_port, true);
++	err = mlxsw_sp_port_bitmap_init(mlxsw_sp, &ports_bm);
 +	if (err)
-+		return ERR_PTR(err);
++		return err;
 +
-+	mdb_entry_port = kzalloc(sizeof(*mdb_entry_port), GFP_KERNEL);
-+	if (!mdb_entry_port) {
-+		err = -ENOMEM;
-+		goto err_mdb_entry_port_alloc;
++	mlxsw_sp_mc_get_mrouters_bitmap(&ports_bm, bridge_device, mlxsw_sp);
++
++	if (add)
++		err = mlxsw_sp_mc_mdb_mrouters_add(mlxsw_sp, &ports_bm,
++						   mdb_entry);
++	else
++		mlxsw_sp_mc_mdb_mrouters_del(mlxsw_sp, &ports_bm, mdb_entry);
++
++	mlxsw_sp_port_bitmap_fini(&ports_bm);
++	return err;
++}
++
++static __always_unused struct mlxsw_sp_mdb_entry *
++mlxsw_sp_mc_mdb_entry_init(struct mlxsw_sp *mlxsw_sp,
++			   struct mlxsw_sp_bridge_device *bridge_device,
++			   const unsigned char *addr, u16 fid, u16 local_port)
++{
++	struct mlxsw_sp_mdb_entry_port *mdb_entry_port;
++	struct mlxsw_sp_mdb_entry *mdb_entry;
++	int err;
++
++	mdb_entry = kzalloc(sizeof(*mdb_entry), GFP_KERNEL);
++	if (!mdb_entry)
++		return ERR_PTR(-ENOMEM);
++
++	ether_addr_copy(mdb_entry->key.addr, addr);
++	mdb_entry->key.fid = fid;
++	err = mlxsw_sp_pgt_mid_alloc(mlxsw_sp, &mdb_entry->mid);
++	if (err)
++		goto err_pgt_mid_alloc;
++
++	INIT_LIST_HEAD(&mdb_entry->ports_list);
++
++	err = mlxsw_sp_mc_mdb_mrouters_set(mlxsw_sp, bridge_device, mdb_entry,
++					   true);
++	if (err)
++		goto err_mdb_mrouters_set;
++
++	mdb_entry_port = mlxsw_sp_mdb_entry_port_get(mlxsw_sp, mdb_entry,
++						     local_port);
++	if (IS_ERR(mdb_entry_port)) {
++		err = PTR_ERR(mdb_entry_port);
++		goto err_mdb_entry_port_get;
 +	}
 +
-+	mdb_entry_port->local_port = local_port;
-+	refcount_set(&mdb_entry_port->refcount, 1);
-+	list_add(&mdb_entry_port->list, &mdb_entry->ports_list);
-+	mdb_entry->ports_count++;
++	if (bridge_device->multicast_enabled) {
++		err = mlxsw_sp_mdb_entry_write(mlxsw_sp, mdb_entry, true);
++		if (err)
++			goto err_mdb_entry_write;
++	}
 +
-+	return mdb_entry_port;
++	err = rhashtable_insert_fast(&bridge_device->mdb_ht,
++				     &mdb_entry->ht_node,
++				     mlxsw_sp_mdb_ht_params);
++	if (err)
++		goto err_rhashtable_insert;
 +
-+err_mdb_entry_port_alloc:
-+	mlxsw_sp_pgt_entry_port_set(mlxsw_sp, mdb_entry->mid,
-+				    mdb_entry->key.fid, local_port, false);
++	list_add_tail(&mdb_entry->list, &bridge_device->mdb_list);
++
++	return mdb_entry;
++
++err_rhashtable_insert:
++	if (bridge_device->multicast_enabled)
++		mlxsw_sp_mdb_entry_write(mlxsw_sp, mdb_entry, false);
++err_mdb_entry_write:
++	mlxsw_sp_mdb_entry_port_put(mlxsw_sp, mdb_entry, local_port, false);
++err_mdb_entry_port_get:
++	mlxsw_sp_mc_mdb_mrouters_set(mlxsw_sp, bridge_device, mdb_entry, false);
++err_mdb_mrouters_set:
++	mlxsw_sp_pgt_mid_free(mlxsw_sp, mdb_entry->mid);
++err_pgt_mid_alloc:
++	kfree(mdb_entry);
 +	return ERR_PTR(err);
 +}
 +
 +static __always_unused void
-+mlxsw_sp_mdb_entry_port_put(struct mlxsw_sp *mlxsw_sp,
-+			    struct mlxsw_sp_mdb_entry *mdb_entry,
-+			    u16 local_port, bool force)
++mlxsw_sp_mc_mdb_entry_fini(struct mlxsw_sp *mlxsw_sp,
++			   struct mlxsw_sp_mdb_entry *mdb_entry,
++			   struct mlxsw_sp_bridge_device *bridge_device,
++			   u16 local_port, bool force)
 +{
-+	struct mlxsw_sp_mdb_entry_port *mdb_entry_port;
-+
-+	mdb_entry_port = mlxsw_sp_mdb_entry_port_lookup(mdb_entry, local_port);
-+	if (!mdb_entry_port)
-+		return;
-+
-+	if (!force && !refcount_dec_and_test(&mdb_entry_port->refcount)) {
-+		if (mdb_entry_port->mrouter &&
-+		    refcount_read(&mdb_entry_port->refcount) == 1)
-+			mdb_entry->ports_count--;
-+		return;
-+	}
-+
-+	mdb_entry->ports_count--;
-+	list_del(&mdb_entry_port->list);
-+	kfree(mdb_entry_port);
-+	mlxsw_sp_pgt_entry_port_set(mlxsw_sp, mdb_entry->mid,
-+				    mdb_entry->key.fid, local_port, false);
++	list_del(&mdb_entry->list);
++	rhashtable_remove_fast(&bridge_device->mdb_ht, &mdb_entry->ht_node,
++			       mlxsw_sp_mdb_ht_params);
++	if (bridge_device->multicast_enabled)
++		mlxsw_sp_mdb_entry_write(mlxsw_sp, mdb_entry, false);
++	mlxsw_sp_mdb_entry_port_put(mlxsw_sp, mdb_entry, local_port, force);
++	mlxsw_sp_mc_mdb_mrouters_set(mlxsw_sp, bridge_device, mdb_entry, false);
++	WARN_ON(!list_empty(&mdb_entry->ports_list));
++	mlxsw_sp_pgt_mid_free(mlxsw_sp, mdb_entry->mid);
++	kfree(mdb_entry);
 +}
 +
-+static __always_unused struct mlxsw_sp_mdb_entry_port *
-+mlxsw_sp_mdb_entry_mrouter_port_get(struct mlxsw_sp *mlxsw_sp,
-+				    struct mlxsw_sp_mdb_entry *mdb_entry,
-+				    u16 local_port)
-+{
-+	struct mlxsw_sp_mdb_entry_port *mdb_entry_port;
-+	int err;
-+
-+	mdb_entry_port = mlxsw_sp_mdb_entry_port_lookup(mdb_entry, local_port);
-+	if (mdb_entry_port) {
-+		if (!mdb_entry_port->mrouter)
-+			refcount_inc(&mdb_entry_port->refcount);
-+		return mdb_entry_port;
-+	}
-+
-+	err = mlxsw_sp_pgt_entry_port_set(mlxsw_sp, mdb_entry->mid,
-+					  mdb_entry->key.fid, local_port, true);
-+	if (err)
-+		return ERR_PTR(err);
-+
-+	mdb_entry_port = kzalloc(sizeof(*mdb_entry_port), GFP_KERNEL);
-+	if (!mdb_entry_port) {
-+		err = -ENOMEM;
-+		goto err_mdb_entry_port_alloc;
-+	}
-+
-+	mdb_entry_port->local_port = local_port;
-+	refcount_set(&mdb_entry_port->refcount, 1);
-+	mdb_entry_port->mrouter = true;
-+	list_add(&mdb_entry_port->list, &mdb_entry->ports_list);
-+
-+	return mdb_entry_port;
-+
-+err_mdb_entry_port_alloc:
-+	mlxsw_sp_pgt_entry_port_set(mlxsw_sp, mdb_entry->mid,
-+				    mdb_entry->key.fid, local_port, false);
-+	return ERR_PTR(err);
-+}
-+
-+static __always_unused void
-+mlxsw_sp_mdb_entry_mrouter_port_put(struct mlxsw_sp *mlxsw_sp,
-+				    struct mlxsw_sp_mdb_entry *mdb_entry,
-+				    u16 local_port)
-+{
-+	struct mlxsw_sp_mdb_entry_port *mdb_entry_port;
-+
-+	mdb_entry_port = mlxsw_sp_mdb_entry_port_lookup(mdb_entry, local_port);
-+	if (!mdb_entry_port)
-+		return;
-+
-+	if (!mdb_entry_port->mrouter)
-+		return;
-+
-+	mdb_entry_port->mrouter = false;
-+	if (!refcount_dec_and_test(&mdb_entry_port->refcount))
-+		return;
-+
-+	list_del(&mdb_entry_port->list);
-+	kfree(mdb_entry_port);
-+	mlxsw_sp_pgt_entry_port_set(mlxsw_sp, mdb_entry->mid,
-+				    mdb_entry->key.fid, local_port, false);
-+}
-+
- static void
- mlxsw_sp_bridge_mrouter_update_mdb(struct mlxsw_sp *mlxsw_sp,
- 				   struct mlxsw_sp_bridge_device *bridge_device,
+ static int mlxsw_sp_port_mdb_add(struct mlxsw_sp_port *mlxsw_sp_port,
+ 				 const struct switchdev_obj_port_mdb *mdb)
+ {
 -- 
 2.36.1
 
