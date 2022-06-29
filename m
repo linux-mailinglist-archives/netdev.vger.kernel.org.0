@@ -2,44 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BF0F2560744
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 19:20:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B22B56073E
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 19:20:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231698AbiF2RTt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 13:19:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33950 "EHLO
+        id S231491AbiF2RTr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 13:19:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231515AbiF2RTr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 13:19:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C4CA22289;
-        Wed, 29 Jun 2022 10:19:46 -0700 (PDT)
+        with ESMTP id S230254AbiF2RTp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 13:19:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E74822289;
+        Wed, 29 Jun 2022 10:19:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4920FB82606;
-        Wed, 29 Jun 2022 17:19:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C585C34114;
-        Wed, 29 Jun 2022 17:19:41 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="BrbSg1Vt"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1656523179;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=fsBwgNg1ukyy5sKsyWfNHxn8YCblfO3rC3IUjQX7AoE=;
-        b=BrbSg1VtIZauthhC7A4FpBWtPGMjymeSv7g8hWDginRCvLJ+RMLVDlJEcvsFYikaO4hrRJ
-        Rh29fbfAO7/WdP5XiA1k+76aR94FCcwH+yW1gLEWAgQM0A4Y7u36Bp8u/TAFICDGVuTRRI
-        Msyq4UJYlg3WGkRPkQZ0XTdLCNcFhLo=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 68b5588d (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Wed, 29 Jun 2022 17:19:39 +0000 (UTC)
-Date:   Wed, 29 Jun 2022 19:19:30 +0200
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     Steven Rostedt <rostedt@goodmis.org>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A13DF61E6B;
+        Wed, 29 Jun 2022 17:19:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D9E1C341C8;
+        Wed, 29 Jun 2022 17:19:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656523184;
+        bh=7SEzehmTNiedxnN/WyWz5hw+VLLOK+1tiViOeyV+LwU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=nTB2P46GglBZYH8eYlOmT0yhVsC0SdQpx2SlanJHUQqipHLAZHXfbNFgBiQ0FQM/F
+         cD+JTc+uDNS6UJ9YPZzL8dsW2GbUU5yf8dl5N9O/jtPNDW7Zui8HY9idCsKDfXZd8W
+         46gApD0MR22xzwtQEPeLhQJLah20KDBiKC3GVi7Y=
+Date:   Wed, 29 Jun 2022 19:19:36 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
 Cc:     Christoph Hellwig <hch@lst.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arve =?utf-8?B?SGrDuG5uZXbDpWc=?= <arve@android.com>,
+        Arve =?iso-8859-1?B?SGr4bm5lduVn?= <arve@android.com>,
         Todd Kjos <tkjos@android.com>,
         Martijn Coenen <maco@android.com>,
         Joel Fernandes <joel@joelfernandes.org>,
@@ -56,58 +49,80 @@ Cc:     Christoph Hellwig <hch@lst.de>,
         Frederic Weisbecker <frederic@kernel.org>,
         Neeraj Upadhyay <quic_neeraju@quicinc.com>,
         Josh Triplett <josh@joshtriplett.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
         Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
         Lai Jiangshan <jiangshanlai@gmail.com>,
-        Shuah Khan <shuah@kernel.org>, linux-kernel@vger.kernel.org,
-        wireguard@lists.zx2c4.com, netdev@vger.kernel.org,
-        rcu@vger.kernel.org, linux-kselftest@vger.kernel.org
+        Shuah Khan <shuah@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        WireGuard mailing list <wireguard@lists.zx2c4.com>,
+        Netdev <netdev@vger.kernel.org>, rcu@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
 Subject: Re: [PATCH] remove CONFIG_ANDROID
-Message-ID: <YryJotKWelr5KFPO@zx2c4.com>
-References: <20220629150102.1582425-2-hch@lst.de>
- <Yrx5Lt7jrk5BiHXx@zx2c4.com>
- <20220629161020.GA24891@lst.de>
+Message-ID: <YryJqI/ppVfMhRhI@kroah.com>
+References: <20220629161020.GA24891@lst.de>
  <Yrx6EVHtroXeEZGp@zx2c4.com>
  <20220629161527.GA24978@lst.de>
  <Yrx8/Fyx15CTi2zq@zx2c4.com>
  <20220629163007.GA25279@lst.de>
  <Yrx/8UOY+J8Ao3Bd@zx2c4.com>
  <20220629164543.GA25672@lst.de>
- <20220629125643.393df70d@gandalf.local.home>
+ <CAHmME9rwKmEQcn84GfTrCPzaK3g6vh6rpQ=YcgyTo_PWpJ5VcA@mail.gmail.com>
+ <YryFKXsx/Bgv/oBE@kroah.com>
+ <YryHk06Ye/12dMEN@zx2c4.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220629125643.393df70d@gandalf.local.home>
-X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <YryHk06Ye/12dMEN@zx2c4.com>
+X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 29, 2022 at 12:56:43PM -0400, Steven Rostedt wrote:
-> > And it will also "break" anyone else doing frequent suspends from
-> > userspace, as that behavior is still in no way related to
-> > CONFIG_ANDROID.
+On Wed, Jun 29, 2022 at 07:10:43PM +0200, Jason A. Donenfeld wrote:
+> On Wed, Jun 29, 2022 at 07:00:25PM +0200, Greg Kroah-Hartman wrote:
+> > I think that by the time the next kernel release comes out, and
+> > percolates to a real Android device, the years gone by will have caused
+> > those who care about this to fix it.
 > 
-> Should there then be a CONFIG_FREQUENT_SUSPENDS ?
+> You assume that there aren't Android devices using kernels outside of
+> the ones you're referring to. That's a rather Google-centric
+> perspective. It's still breakage, even if Google has the ability to fix
+> it locally after "years gone by". If you want Android things to be
+> upstream, this is the way you must think about it; otherwise, what's the
+> point? By your logic, upstream should probably remove the Android code
+> everywhere and let Google handle it downstream. Except nobody wants
+> that; we want Android upstream. So let's keep it working upstream, not
+> intentionally break it.
 
-That'd be fine by me. It could be selected by PM_AUTOSLEEP as well.
+I would be totally and completly amazed if there are any Android kernels
+in real devices in the world that are not at the very least, based on
+LTS releases.  But maybe there is, this patch series isn't going to land
+until 5.20, and by then, I think the "define behavior, not hardware" fix
+for random and wg will be properly resolved :)
 
-[ Bikeshed: maybe CONFIG_PM_CONTINUOUS_SUSPENDS would make more sense,
-  to really drive home how often these suspends are to make the option a
-  reasonable thing to turn on. ]
+> > In the meantime, this might actually fix issues in desktop distros that
+> > were enabling this option, thinking it only affected the building of a
+> > driver
+> 
+> That sounds like a false dichotomy. It's not about "fix Android" vs "fix
+> distros". What I'm suggesting is fixing Android AND fixing distros, by
+> looking at the problem holistically. Trading a bad problem on Android
+> (wg connections are broken) for a manageable problem on distros (something
+> something theoretical warm boot attack something) doesn't sound like a
+> nice trade off. Let's instead get this all fixed at the same time.
 
-I think Christoph had in mind a runtime switch instead (like a sysctl or
-something), but it doesn't make a difference to me whether it's runtime
-or compile time. If CONFIG_ANDROID is to go away, the code using it now
-needs *some* replacement that's taken up by the Android people. So
-whatever they agree to works for me, for what my concerns are.
+Agreed, so what should we use instead in the wg code?  What userspace
+functionality are you trying to trigger off of here in the current
+CONFIG_ANDROID check?
 
-Maybe v2 of this patchset can propose such an option and the right
-Android people can be CC'd on it. (Who are they, by the way? There's no
-android-kernel@vger mailing list, right?)
+The RCU stuff is already handled as Paul has stated, so that's not an
+issue.
 
-Jason
+thanks,
+
+greg k-h
