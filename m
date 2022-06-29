@@ -2,132 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D8952560720
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 19:14:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB228560728
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 19:15:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229750AbiF2ROF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 13:14:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56840 "EHLO
+        id S231563AbiF2ROk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 13:14:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230496AbiF2ROC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 13:14:02 -0400
-Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 596873B54C;
-        Wed, 29 Jun 2022 10:14:01 -0700 (PDT)
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
-        pabeni@redhat.com, edumazet@google.com
-Subject: [PATCH net 3/3] netfilter: br_netfilter: do not skip all hooks with 0 priority
-Date:   Wed, 29 Jun 2022 19:13:54 +0200
-Message-Id: <20220629171354.208773-4-pablo@netfilter.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220629171354.208773-1-pablo@netfilter.org>
-References: <20220629171354.208773-1-pablo@netfilter.org>
+        with ESMTP id S229821AbiF2ROj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 13:14:39 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 377D03C706;
+        Wed, 29 Jun 2022 10:14:38 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id r20so23478626wra.1;
+        Wed, 29 Jun 2022 10:14:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=QtkOAm0FQLhRgm9nQIcdvq/G+pjTMw1++vcyZDrhmCY=;
+        b=qNeOuwYwu8CSAclcMtI0eB4EyowiRSGhu/GjxlWeh6+xNjCSTzlc0UjUNepKIAdiqs
+         4A+DQe5VXZ0zghAi8AphvoK9Db//FTr3MD56CZ7FG+Vhvh3Tu4Hgb8+JEdeL8ky8IM7e
+         6DBYY37p14oePiNVP7vXutAASoUg/HQQcDCECFIFweDQabA0LXWz4pknxGP2l/c6lRzN
+         GVLvUdaE3HUpg5uDOXCHJJAx2razHNkL+pF0x5ZKrHX75/eUaoXLuqVKTM8+8sjphr8z
+         t2EgrHI4vurdlXVKPR8R4X2Y0wVdOzlUgkfAf6H1tT1vnFaCw/CTIKs77cxgAxjJz3jI
+         jnVw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=QtkOAm0FQLhRgm9nQIcdvq/G+pjTMw1++vcyZDrhmCY=;
+        b=09elqe3BuRXtt7ZNVP2iZnU9DY4hX+joCNDCY82QzrhU1d5FHVd+dGMVY5fESfUBk0
+         5nlInFEb4iooWumNtuXmefUwa1V0FtGK6UiMeh9jksBLLKrnGBfLxQbKE+ziU2SAqwhc
+         xwUDB0oRdL/Jsm6JYjdAsGSb20csTaiNrDxmuCJ135jrSAQxcWGG6ordCNr7/7NhngZ/
+         IBKS62bRu7r6fdOpS0UhK5+0fuNU+Bf5N+wKPppHBZS+99DUkFpFk8gISBHq4S5MxOrV
+         OCnZewOC3EXS6YKpc9xR4vuOj2cVtsBIy6gvhtQwyAByZ80teYoS7TYf69tnSBuqzX5P
+         7b/g==
+X-Gm-Message-State: AJIora/VCXw4r2gQ6ekNyQb7GsTGEcNBzHwdud5oAp3yuY4zOZd5Uns/
+        N9DTi3wOjS4XhxLMl1I42pl51ok9lMp0fE+Brw==
+X-Google-Smtp-Source: AGRyM1tIRAchdw3GOYBjxXnXREzBWUO8obItkKRDgyPyadqp50TYce8Wl312TzI0qDl6L/q9Bs7y1g==
+X-Received: by 2002:a5d:6487:0:b0:21b:983c:5508 with SMTP id o7-20020a5d6487000000b0021b983c5508mr4197505wri.185.1656522876148;
+        Wed, 29 Jun 2022 10:14:36 -0700 (PDT)
+Received: from playground (host-78-146-72-11.as13285.net. [78.146.72.11])
+        by smtp.gmail.com with ESMTPSA id d11-20020a5d6dcb000000b0020e6ce4dabdsm16636281wrz.103.2022.06.29.10.14.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Jun 2022 10:14:35 -0700 (PDT)
+Date:   Wed, 29 Jun 2022 18:14:30 +0100
+From:   Jules Irenge <jbi.octave@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH 1/2] btf: Fix required space error
+Message-ID: <YryIdu0jdTF+fIiW@playground>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+This patch fixes error reported ny Checkpatch at bpf_log()
 
-When br_netfilter module is loaded, skbs may be diverted to the
-ipv4/ipv6 hooks, just like as if we were routing.
-
-Unfortunately, bridge filter hooks with priority 0 may be skipped
-in this case.
-
-Example:
-1. an nftables bridge ruleset is loaded, with a prerouting
-   hook that has priority 0.
-2. interface is added to the bridge.
-3. no tcp packet is ever seen by the bridge prerouting hook.
-4. flush the ruleset
-5. load the bridge ruleset again.
-6. tcp packets are processed as expected.
-
-After 1) the only registered hook is the bridge prerouting hook, but its
-not called yet because the bridge hasn't been brought up yet.
-
-After 2), hook order is:
-   0 br_nf_pre_routing // br_netfilter internal hook
-   0 chain bridge f prerouting // nftables bridge ruleset
-
-The packet is diverted to br_nf_pre_routing.
-If call-iptables is off, the nftables bridge ruleset is called as expected.
-
-But if its enabled, br_nf_hook_thresh() will skip it because it assumes
-that all 0-priority hooks had been called previously in bridge context.
-
-To avoid this, check for the br_nf_pre_routing hook itself, we need to
-resume directly after it, even if this hook has a priority of 0.
-
-Unfortunately, this still results in different packet flow.
-With this fix, the eval order after in 3) is:
-1. br_nf_pre_routing
-2. ip(6)tables (if enabled)
-3. nftables bridge
-
-but after 5 its the much saner:
-1. nftables bridge
-2. br_nf_pre_routing
-3. ip(6)tables (if enabled)
-
-Unfortunately I don't see a solution here:
-It would be possible to move br_nf_pre_routing to a higher priority
-so that it will be called later in the pipeline, but this also impacts
-ebtables evaluation order, and would still result in this very ordering
-problem for all nftables-bridge hooks with the same priority as the
-br_nf_pre_routing one.
-
-Searching back through the git history I don't think this has
-ever behaved in any other way, hence, no fixes-tag.
-
-Reported-by: Radim Hrazdil <rhrazdil@redhat.com>
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+ERROR: space required after that , ctx:VxV
+Signed-off-by: Jules Irenge <jbi.octave@gmail.com>
 ---
- net/bridge/br_netfilter_hooks.c | 21 ++++++++++++++++++---
- 1 file changed, 18 insertions(+), 3 deletions(-)
+ kernel/bpf/btf.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/net/bridge/br_netfilter_hooks.c b/net/bridge/br_netfilter_hooks.c
-index 4fd882686b04..ff4779036649 100644
---- a/net/bridge/br_netfilter_hooks.c
-+++ b/net/bridge/br_netfilter_hooks.c
-@@ -1012,9 +1012,24 @@ int br_nf_hook_thresh(unsigned int hook, struct net *net,
- 		return okfn(net, sk, skb);
+diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+index 2e2066d6af94..1bc496162572 100644
+--- a/kernel/bpf/btf.c
++++ b/kernel/bpf/btf.c
+@@ -5454,7 +5454,9 @@ bool btf_ctx_access(int off, int size, enum bpf_access_type type,
  
- 	ops = nf_hook_entries_get_hook_ops(e);
--	for (i = 0; i < e->num_hook_entries &&
--	      ops[i]->priority <= NF_BR_PRI_BRNF; i++)
--		;
-+	for (i = 0; i < e->num_hook_entries; i++) {
-+		/* These hooks have already been called */
-+		if (ops[i]->priority < NF_BR_PRI_BRNF)
-+			continue;
-+
-+		/* These hooks have not been called yet, run them. */
-+		if (ops[i]->priority > NF_BR_PRI_BRNF)
-+			break;
-+
-+		/* take a closer look at NF_BR_PRI_BRNF. */
-+		if (ops[i]->hook == br_nf_pre_routing) {
-+			/* This hook diverted the skb to this function,
-+			 * hooks after this have not been run yet.
-+			 */
-+			i++;
-+			break;
-+		}
-+	}
+ 		if (ctx_arg_info->offset == off) {
+ 			if (!ctx_arg_info->btf_id) {
+-				bpf_log(log,"invalid btf_id for context argument offset %u\n", off);
++				bpf_log(log,
++					"invalid btf_id for context argument offset %u\n",
++					off);
+ 				return false;
+ 			}
  
- 	nf_hook_state_init(&state, hook, NFPROTO_BRIDGE, indev, outdev,
- 			   sk, net, okfn);
 -- 
-2.30.2
+2.36.1
 
