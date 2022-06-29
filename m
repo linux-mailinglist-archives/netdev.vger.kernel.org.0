@@ -2,104 +2,368 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E15C156007D
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 14:55:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 19EA6560077
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 14:55:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233453AbiF2Mu1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 08:50:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49180 "EHLO
+        id S233295AbiF2Mvk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 08:51:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233438AbiF2MuZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 08:50:25 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38805326C0
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 05:50:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 3F747CE26B0
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 12:50:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 44B7BC341D2;
-        Wed, 29 Jun 2022 12:50:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656507020;
-        bh=OR75pV5bq83Og4Ei7qCf1qdyosXRxYstjVOb1hnjuB8=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=RO0Y1irrfkud4zW0/pmNkTbY0TlfLijy+s0lnKyj2tHi3IFWgcEBG12QJl530gFyE
-         MOk7KaxShbq7hDppFd1eAqBDVALfZ6sETuGQTznFYgi+xTXS0raeqd39NnwfO1fKNS
-         1bQviW6vTernFCypVw0FsoYFkutOmf2wCix74BaalNh6PmzfLmAYZKAy1ZG06fGmEV
-         0TCbxLFLJNjEDXp9UIK8f0fCTSWzItsI3sOaBO6QhSTXFlmpXTP5vmSbKCrcWqJp6S
-         dUUTkcscwTjDwjkz9Uqu4xCDEAbh4MYzt4VP3+e4Di0kzTQN6hsfd6RmAIOPOdPHAz
-         G8PCKsb9PyiJg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1FBEFE49BBA;
-        Wed, 29 Jun 2022 12:50:20 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S230412AbiF2Mvi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 08:51:38 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63E3C32EC9
+        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 05:51:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
+        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=rbz1iHEBy1nQ2MpJL88y0TKKnXZhRnkuJV4SL0d6G0c=; b=YWmLQPLZbN+kIMPvX7BAx+MNJq
+        mxJ7ySprlRI+AZ9mJ69yElHb/MrLQOWygaMZPyUqUYedXGr8HKX1e/UGhgAHOk4RWmZi42ofmmP/l
+        7QLaf+n3h+snfvg2uj2pCsB7RBkJ7idhzT8qUOpIsHAc/SMqdyE5vrhWQysklXeWnG44K+funyIiI
+        s7M0hWqUe9SC5fuFCFzEVH8c7ucqBI38XyQpVz4/IkzPzIs8786mrHuJxf3eUqG8NoZXcCVzK6DT7
+        31lJZnjQV7oV3LbcpNO1/7yU/VohkTjYtPAAUXNHRVSVsGcwYTaBVSZQ5nNvmac48JvhYvnISUSB9
+        bFEt4rzw==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:35710 helo=rmk-PC.armlinux.org.uk)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1o6XAB-00036S-F0; Wed, 29 Jun 2022 13:51:23 +0100
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <rmk@rmk-PC.armlinux.org.uk>)
+        id 1o6XAA-004pVc-Pd; Wed, 29 Jun 2022 13:51:22 +0100
+In-Reply-To: <YrxKdVmBzeMsVjsH@shell.armlinux.org.uk>
+References: <YrxKdVmBzeMsVjsH@shell.armlinux.org.uk>
+From:   "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "Alvin __ipraga" <alsi@bang-olufsen.dk>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        UNGLinuxDriver@microchip.com,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
+Subject: [PATCH RFC net-next 1/6] net: dsa: add support for retrieving the
+ interface mode
 MIME-Version: 1.0
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 00/10] mlxsw: Unified bridge conversion - part 5/6
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165650702012.9231.18075354679202882162.git-patchwork-notify@kernel.org>
-Date:   Wed, 29 Jun 2022 12:50:20 +0000
-References: <20220629094007.827621-1-idosch@nvidia.com>
-In-Reply-To: <20220629094007.827621-1-idosch@nvidia.com>
-To:     Ido Schimmel <idosch@nvidia.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, edumazet@google.com, petrm@nvidia.com,
-        amcohen@nvidia.com, mlxsw@nvidia.com
-X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1o6XAA-004pVc-Pd@rmk-PC.armlinux.org.uk>
+Sender: Russell King <rmk@armlinux.org.uk>
+Date:   Wed, 29 Jun 2022 13:51:22 +0100
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+DSA port bindings allow for an optional phy interface mode. When an
+interface mode is not specified, DSA uses the NA interface mode type.
 
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+However, phylink needs to know the parameters of the link, and this
+will become especially important when using phylink for ports that
+are devoid of all properties except the required "reg" property, so
+that phylink can select the maximum supported link settings. Without
+knowing the interface mode, phylink can't truely know the maximum
+link speed.
 
-On Wed, 29 Jun 2022 12:39:57 +0300 you wrote:
-> This is the fifth part of the conversion of mlxsw to the unified bridge
-> model.
-> 
-> The previous part that was merged in commit d521bc0a0f7c ("Merge branch
-> 'mlxsw-unified-bridge-conversion-part-4-6'") converted the flooding code
-> to use the new APIs of the unified bridge model. As part of this
-> conversion, the flooding code started accessing the port group table
-> (PGT) directly in order to allocate MID indexes and configure the ports
-> via which a packet needs to be replicated.
-> 
-> [...]
+Update the prototype for the phylink_get_caps method to allow drivers
+to report this information back to DSA, and update all DSA
+implementations function declarations to cater for this change. No
+code is added to the implementations.
 
-Here is the summary with links:
-  - [net-next,01/10] mlxsw: Align PGT index to legacy bridge model
-    https://git.kernel.org/netdev/net-next/c/4abaa5cc4d7c
-  - [net-next,02/10] mlxsw: spectrum_switchdev: Rename MID structure
-    https://git.kernel.org/netdev/net-next/c/eede53a49b3c
-  - [net-next,03/10] mlxsw: spectrum_switchdev: Rename MIDs list
-    https://git.kernel.org/netdev/net-next/c/eaa0791aed8b
-  - [net-next,04/10] mlxsw: spectrum_switchdev: Save MAC and FID as a key in 'struct mlxsw_sp_mdb_entry'
-    https://git.kernel.org/netdev/net-next/c/0ac985436eb9
-  - [net-next,05/10] mlxsw: spectrum_switchdev: Add support for maintaining hash table of MDB entries
-    https://git.kernel.org/netdev/net-next/c/5d0512e5cf74
-  - [net-next,06/10] mlxsw: spectrum_switchdev: Add support for maintaining list of ports per MDB entry
-    https://git.kernel.org/netdev/net-next/c/d2994e130585
-  - [net-next,07/10] mlxsw: spectrum_switchdev: Implement mlxsw_sp_mc_mdb_entry_{init, fini}()
-    https://git.kernel.org/netdev/net-next/c/ea0f58d6c543
-  - [net-next,08/10] mlxsw: spectrum_switchdev: Add support for getting and putting MDB entry
-    https://git.kernel.org/netdev/net-next/c/7434ed6102c1
-  - [net-next,09/10] mlxsw: spectrum_switchdev: Flush port from MDB entries according to FID index
-    https://git.kernel.org/netdev/net-next/c/4c3f7442770b
-  - [net-next,10/10] mlxsw: spectrum_switchdev: Convert MDB code to use PGT APIs
-    https://git.kernel.org/netdev/net-next/c/e28cd993b9a4
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+---
+ drivers/net/dsa/b53/b53_common.c       |  3 ++-
+ drivers/net/dsa/bcm_sf2.c              |  3 ++-
+ drivers/net/dsa/hirschmann/hellcreek.c |  3 ++-
+ drivers/net/dsa/lantiq_gswip.c         |  6 ++++--
+ drivers/net/dsa/microchip/ksz_common.c |  3 ++-
+ drivers/net/dsa/mt7530.c               |  3 ++-
+ drivers/net/dsa/mv88e6xxx/chip.c       |  3 ++-
+ drivers/net/dsa/ocelot/felix.c         |  3 ++-
+ drivers/net/dsa/qca/ar9331.c           |  3 ++-
+ drivers/net/dsa/qca8k.c                |  3 ++-
+ drivers/net/dsa/realtek/rtl8365mb.c    |  3 ++-
+ drivers/net/dsa/sja1105/sja1105_main.c |  3 ++-
+ drivers/net/dsa/xrs700x/xrs700x.c      |  3 ++-
+ include/net/dsa.h                      |  3 ++-
+ net/dsa/port.c                         | 23 +++++++++++++++++------
+ 15 files changed, 47 insertions(+), 21 deletions(-)
 
-You are awesome, thank you!
+diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
+index 48cf344750ff..fe75b84ab791 100644
+--- a/drivers/net/dsa/b53/b53_common.c
++++ b/drivers/net/dsa/b53/b53_common.c
+@@ -1310,7 +1310,8 @@ void b53_port_event(struct dsa_switch *ds, int port)
+ EXPORT_SYMBOL(b53_port_event);
+ 
+ static void b53_phylink_get_caps(struct dsa_switch *ds, int port,
+-				 struct phylink_config *config)
++				 struct phylink_config *config,
++				 phy_interface_t *default_interface)
+ {
+ 	struct b53_device *dev = ds->priv;
+ 
+diff --git a/drivers/net/dsa/bcm_sf2.c b/drivers/net/dsa/bcm_sf2.c
+index 87e81c636339..da90e182ae0e 100644
+--- a/drivers/net/dsa/bcm_sf2.c
++++ b/drivers/net/dsa/bcm_sf2.c
+@@ -713,7 +713,8 @@ static u32 bcm_sf2_sw_get_phy_flags(struct dsa_switch *ds, int port)
+ }
+ 
+ static void bcm_sf2_sw_get_caps(struct dsa_switch *ds, int port,
+-				struct phylink_config *config)
++				struct phylink_config *config,
++				phy_interface_t *default_interface)
+ {
+ 	unsigned long *interfaces = config->supported_interfaces;
+ 	struct bcm_sf2_priv *priv = bcm_sf2_to_priv(ds);
+diff --git a/drivers/net/dsa/hirschmann/hellcreek.c b/drivers/net/dsa/hirschmann/hellcreek.c
+index ac1f3b3a7040..ff78f580bb14 100644
+--- a/drivers/net/dsa/hirschmann/hellcreek.c
++++ b/drivers/net/dsa/hirschmann/hellcreek.c
+@@ -1462,7 +1462,8 @@ static void hellcreek_teardown(struct dsa_switch *ds)
+ }
+ 
+ static void hellcreek_phylink_get_caps(struct dsa_switch *ds, int port,
+-				       struct phylink_config *config)
++				       struct phylink_config *config,
++				       phy_interface_t *default_interface)
+ {
+ 	struct hellcreek *hellcreek = ds->priv;
+ 
+diff --git a/drivers/net/dsa/lantiq_gswip.c b/drivers/net/dsa/lantiq_gswip.c
+index e531b93f3cb2..a43dabfa5453 100644
+--- a/drivers/net/dsa/lantiq_gswip.c
++++ b/drivers/net/dsa/lantiq_gswip.c
+@@ -1492,7 +1492,8 @@ static int gswip_port_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
+ }
+ 
+ static void gswip_xrx200_phylink_get_caps(struct dsa_switch *ds, int port,
+-					  struct phylink_config *config)
++					  struct phylink_config *config,
++					  phy_interface_t *default_interface)
+ {
+ 	switch (port) {
+ 	case 0:
+@@ -1525,7 +1526,8 @@ static void gswip_xrx200_phylink_get_caps(struct dsa_switch *ds, int port,
+ }
+ 
+ static void gswip_xrx300_phylink_get_caps(struct dsa_switch *ds, int port,
+-					  struct phylink_config *config)
++					  struct phylink_config *config,
++					  phy_interface_t *default_interface)
+ {
+ 	switch (port) {
+ 	case 0:
+diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+index 59582eb3bcaf..4313be859b0a 100644
+--- a/drivers/net/dsa/microchip/ksz_common.c
++++ b/drivers/net/dsa/microchip/ksz_common.c
+@@ -560,7 +560,8 @@ static int ksz_check_device_id(struct ksz_device *dev)
+ }
+ 
+ static void ksz_phylink_get_caps(struct dsa_switch *ds, int port,
+-				 struct phylink_config *config)
++				 struct phylink_config *config,
++				 phy_interface_t *default_interface)
+ {
+ 	struct ksz_device *dev = ds->priv;
+ 
+diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+index 835807911be0..dab308e454e3 100644
+--- a/drivers/net/dsa/mt7530.c
++++ b/drivers/net/dsa/mt7530.c
+@@ -2914,7 +2914,8 @@ mt7531_cpu_port_config(struct dsa_switch *ds, int port)
+ }
+ 
+ static void mt753x_phylink_get_caps(struct dsa_switch *ds, int port,
+-				    struct phylink_config *config)
++				    struct phylink_config *config,
++				    phy_interface_t *default_interface)
+ {
+ 	struct mt7530_priv *priv = ds->priv;
+ 
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index 37b649501500..f98be98551ef 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -819,7 +819,8 @@ static void mv88e6393x_phylink_get_caps(struct mv88e6xxx_chip *chip, int port,
+ }
+ 
+ static void mv88e6xxx_get_caps(struct dsa_switch *ds, int port,
+-			       struct phylink_config *config)
++			       struct phylink_config *config,
++			       phy_interface_t *default_interface)
+ {
+ 	struct mv88e6xxx_chip *chip = ds->priv;
+ 
+diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
+index 3e07dc39007a..fd8a3840b2f7 100644
+--- a/drivers/net/dsa/ocelot/felix.c
++++ b/drivers/net/dsa/ocelot/felix.c
+@@ -937,7 +937,8 @@ static int felix_vlan_del(struct dsa_switch *ds, int port,
+ }
+ 
+ static void felix_phylink_get_caps(struct dsa_switch *ds, int port,
+-				   struct phylink_config *config)
++				   struct phylink_config *config,
++				   phy_interface_t *default_interface)
+ {
+ 	struct ocelot *ocelot = ds->priv;
+ 
+diff --git a/drivers/net/dsa/qca/ar9331.c b/drivers/net/dsa/qca/ar9331.c
+index f23ce56fa591..1706c7976c38 100644
+--- a/drivers/net/dsa/qca/ar9331.c
++++ b/drivers/net/dsa/qca/ar9331.c
+@@ -500,7 +500,8 @@ static enum dsa_tag_protocol ar9331_sw_get_tag_protocol(struct dsa_switch *ds,
+ }
+ 
+ static void ar9331_sw_phylink_get_caps(struct dsa_switch *ds, int port,
+-				       struct phylink_config *config)
++				       struct phylink_config *config,
++				       phy_interface_t *default_interface)
+ {
+ 	config->mac_capabilities = MAC_ASYM_PAUSE | MAC_SYM_PAUSE |
+ 		MAC_10 | MAC_100;
+diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
+index 1cbb05b0323f..beccd8338c81 100644
+--- a/drivers/net/dsa/qca8k.c
++++ b/drivers/net/dsa/qca8k.c
+@@ -1749,7 +1749,8 @@ qca8k_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
+ }
+ 
+ static void qca8k_phylink_get_caps(struct dsa_switch *ds, int port,
+-				   struct phylink_config *config)
++				   struct phylink_config *config,
++				   phy_interface_t *default_interface)
+ {
+ 	switch (port) {
+ 	case 0: /* 1st CPU port */
+diff --git a/drivers/net/dsa/realtek/rtl8365mb.c b/drivers/net/dsa/realtek/rtl8365mb.c
+index da31d8b839ac..7bf420c2b083 100644
+--- a/drivers/net/dsa/realtek/rtl8365mb.c
++++ b/drivers/net/dsa/realtek/rtl8365mb.c
+@@ -1024,7 +1024,8 @@ static int rtl8365mb_ext_config_forcemode(struct realtek_priv *priv, int port,
+ }
+ 
+ static void rtl8365mb_phylink_get_caps(struct dsa_switch *ds, int port,
+-				       struct phylink_config *config)
++				       struct phylink_config *config,
++				       phy_interface_t *default_interface)
+ {
+ 	const struct rtl8365mb_extint *extint =
+ 		rtl8365mb_get_port_extint(ds->priv, port);
+diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
+index b253e27bcfb4..e15033177643 100644
+--- a/drivers/net/dsa/sja1105/sja1105_main.c
++++ b/drivers/net/dsa/sja1105/sja1105_main.c
+@@ -1390,7 +1390,8 @@ static void sja1105_mac_link_up(struct dsa_switch *ds, int port,
+ }
+ 
+ static void sja1105_phylink_get_caps(struct dsa_switch *ds, int port,
+-				     struct phylink_config *config)
++				     struct phylink_config *config,
++				     phy_interface_t *default_interface)
+ {
+ 	struct sja1105_private *priv = ds->priv;
+ 	struct sja1105_xmii_params_entry *mii;
+diff --git a/drivers/net/dsa/xrs700x/xrs700x.c b/drivers/net/dsa/xrs700x/xrs700x.c
+index 3887ed33c5fe..214a1dd670c2 100644
+--- a/drivers/net/dsa/xrs700x/xrs700x.c
++++ b/drivers/net/dsa/xrs700x/xrs700x.c
+@@ -443,7 +443,8 @@ static void xrs700x_teardown(struct dsa_switch *ds)
+ }
+ 
+ static void xrs700x_phylink_get_caps(struct dsa_switch *ds, int port,
+-				     struct phylink_config *config)
++				     struct phylink_config *config,
++				     phy_interface_t *default_interface)
+ {
+ 	switch (port) {
+ 	case 0:
+diff --git a/include/net/dsa.h b/include/net/dsa.h
+index 33283eeda697..25748d81eaf1 100644
+--- a/include/net/dsa.h
++++ b/include/net/dsa.h
+@@ -850,7 +850,8 @@ struct dsa_switch_ops {
+ 	 * PHYLINK integration
+ 	 */
+ 	void	(*phylink_get_caps)(struct dsa_switch *ds, int port,
+-				    struct phylink_config *config);
++				    struct phylink_config *config,
++				    phy_interface_t *default_interface);
+ 	void	(*phylink_validate)(struct dsa_switch *ds, int port,
+ 				    unsigned long *supported,
+ 				    struct phylink_link_state *state);
+diff --git a/net/dsa/port.c b/net/dsa/port.c
+index 3738f2d40a0b..35b4e1f8dc05 100644
+--- a/net/dsa/port.c
++++ b/net/dsa/port.c
+@@ -1524,13 +1524,9 @@ static const struct phylink_mac_ops dsa_port_phylink_mac_ops = {
+ int dsa_port_phylink_create(struct dsa_port *dp)
+ {
+ 	struct dsa_switch *ds = dp->ds;
+-	phy_interface_t mode;
++	phy_interface_t mode, def_mode;
+ 	int err;
+ 
+-	err = of_get_phy_mode(dp->dn, &mode);
+-	if (err)
+-		mode = PHY_INTERFACE_MODE_NA;
+-
+ 	/* Presence of phylink_mac_link_state or phylink_mac_an_restart is
+ 	 * an indicator of a legacy phylink driver.
+ 	 */
+@@ -1538,8 +1534,23 @@ int dsa_port_phylink_create(struct dsa_port *dp)
+ 	    ds->ops->phylink_mac_an_restart)
+ 		dp->pl_config.legacy_pre_march2020 = true;
+ 
++	def_mode = PHY_INTERFACE_MODE_NA;
+ 	if (ds->ops->phylink_get_caps)
+-		ds->ops->phylink_get_caps(ds, dp->index, &dp->pl_config);
++		ds->ops->phylink_get_caps(ds, dp->index, &dp->pl_config,
++					  &def_mode);
++
++	err = of_get_phy_mode(dp->dn, &mode);
++	if (err) {
++		/* We must not set the default mode for user ports as a PHY
++		 * overrides the NA mode in phylink. Setting it here would
++		 * prevent the interface mode being updated.
++		 */
++		if (dp->type == DSA_PORT_TYPE_CPU ||
++		    dp->type == DSA_PORT_TYPE_DSA)
++			mode = def_mode;
++		else
++			mode = PHY_INTERFACE_MODE_NA;
++	}
+ 
+ 	dp->pl = phylink_create(&dp->pl_config, of_fwnode_handle(dp->dn),
+ 				mode, &dsa_port_phylink_mac_ops);
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.30.2
 
