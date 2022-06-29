@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 55D7E55F4CF
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 06:03:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F16355F4E2
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 06:13:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231373AbiF2EAn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 00:00:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50320 "EHLO
+        id S230455AbiF2EKU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 00:10:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229501AbiF2EAT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 00:00:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25D891F2FB
-        for <netdev@vger.kernel.org>; Tue, 28 Jun 2022 21:00:18 -0700 (PDT)
+        with ESMTP id S229804AbiF2EKS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 00:10:18 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA9EF220C5;
+        Tue, 28 Jun 2022 21:10:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DE302B8215D
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 04:00:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 9A9DDC341C8;
-        Wed, 29 Jun 2022 04:00:15 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id A91A8CE220D;
+        Wed, 29 Jun 2022 04:10:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id B7582C341CD;
+        Wed, 29 Jun 2022 04:10:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656475215;
-        bh=FGbd2l+VwCTrhQBwqDGWQH2b1/i1EnTUU4/sq2wyOic=;
+        s=k20201202; t=1656475813;
+        bh=+lrPPePihGOQSBmRtOjtdtauhhMK3bc2RbQmmsKN20A=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=MTYoHsumdISbLymskDtSGQqi6kekxO2dYzxWHw/kopjRqo8kWPhclr0SuSiQhLvEF
-         +EoM7r2hLA/Ct7lsqd997eMcUlLA2ypt7f5+ze3IQJ12EzvaTz3CeLkLbdR4eqJ5Cl
-         zGhYzMlMXVReT+ZIRX1vPCCCAn3K/RRPcHd8b4nNbwa3WFew/Hl64CIkBss2HTCsda
-         KCU0Z0y6DXFWQr30TJhokfYXUM5sowEzY+sJhaPe7Ixm9OmzgJKFgJ17g7VYBJwutY
-         O747VHZad9wBCua3LSV/5y9amBhxbKx+ZslHcqDOA37wwfBEzDroqJXGTmHuJTsnjf
-         LLgsqEMl5yOQA==
+        b=RfEcZGJm/n1H3whit5kajmz4nGPVQFR+zAbnjtNlh0PuKvYDy1ssmTfeP/okKExlt
+         mUz4XE2Z3ox+SHokqbTbmuLwLQeBZs5qV+0wKHgYG4/wmwclSRTK2zi6ZNUUCD8Dif
+         bpt9o2bq9cM7rwBfiTksnWQ3ucFgg1DPv6jdwYU5VR2I3SFow2ZKG/RIycNHSCHEWk
+         fc7okke3bX70WBMkZUQs1b36RMRL9/KajTyxZ/HUQmWKtAoIYDMyGtuC65W5bmwFXt
+         Iru5oSKNLk4scO66nbWwndITzDgn+U2b3RSsPjgpIsivpXqr+mmnNzzO01huy0gwBv
+         E/sZQhJXpV1Ig==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7CE40E49BB8;
-        Wed, 29 Jun 2022 04:00:15 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 908E4E49BBA;
+        Wed, 29 Jun 2022 04:10:13 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/9] mptcp: Fixes for 5.19
+Subject: Re: [PATCH v3] ipv6/sit: fix ipip6_tunnel_get_prl return value
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165647521550.15342.17491165529630810403.git-patchwork-notify@kernel.org>
-Date:   Wed, 29 Jun 2022 04:00:15 +0000
-References: <20220628010243.166605-1-mathew.j.martineau@linux.intel.com>
-In-Reply-To: <20220628010243.166605-1-mathew.j.martineau@linux.intel.com>
-To:     Mat Martineau <mathew.j.martineau@linux.intel.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, edumazet@google.com, fw@strlen.de,
-        geliang.tang@suse.com, matthieu.baerts@tessares.net,
-        mptcp@lists.linux.dev
+Message-Id: <165647581358.19740.5854557950098797693.git-patchwork-notify@kernel.org>
+Date:   Wed, 29 Jun 2022 04:10:13 +0000
+References: <20220628035030.1039171-1-zys.zljxml@gmail.com>
+In-Reply-To: <20220628035030.1039171-1-zys.zljxml@gmail.com>
+To:     Katrin Jo <zys.zljxml@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
+        davem@davemloft.net, edumazet@google.com, eric.dumazet@gmail.com,
+        pabeni@redhat.com, katrinzhou@tencent.com
 X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -60,40 +60,24 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net.git (master)
+This patch was applied to netdev/net.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Mon, 27 Jun 2022 18:02:34 -0700 you wrote:
-> Several categories of fixes from the mptcp tree:
+On Tue, 28 Jun 2022 11:50:30 +0800 you wrote:
+> From: katrinzhou <katrinzhou@tencent.com>
 > 
-> Patches 1-3 are fixes related to MP_FAIL and FASTCLOSE, to make sure
-> MIBs are accurate, and to handle MP_FAIL transmission and responses at
-> the correct times. sk_timer conflicts are also resolved.
+> When kcalloc fails, ipip6_tunnel_get_prl() should return -ENOMEM.
+> Move the position of label "out" to return correctly.
 > 
-> Patches 4 and 6 handle two separate race conditions, one at socket
-> shutdown and one with unaccepted subflows.
+> Addresses-Coverity: ("Unused value")
+> Fixes: 300aaeeaab5f ("[IPV6] SIT: Add SIOCGETPRL ioctl to get/dump PRL.")
+> Signed-off-by: katrinzhou <katrinzhou@tencent.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,1/9] mptcp: fix error mibs accounting
-    https://git.kernel.org/netdev/net/c/0c1f78a49af7
-  - [net,2/9] mptcp: introduce MAPPING_BAD_CSUM
-    https://git.kernel.org/netdev/net/c/31bf11de146c
-  - [net,3/9] mptcp: invoke MP_FAIL response when needed
-    https://git.kernel.org/netdev/net/c/76a13b315709
-  - [net,4/9] mptcp: fix shutdown vs fallback race
-    https://git.kernel.org/netdev/net/c/d51991e2e314
-  - [net,5/9] mptcp: consistent map handling on failure
-    https://git.kernel.org/netdev/net/c/f745a3ebdfb9
-  - [net,6/9] mptcp: fix race on unaccepted mptcp sockets
-    https://git.kernel.org/netdev/net/c/6aeed9045071
-  - [net,7/9] selftests: mptcp: more stable diag tests
-    https://git.kernel.org/netdev/net/c/42fb6cddec3b
-  - [net,8/9] mptcp: fix conflict with <netinet/in.h>
-    https://git.kernel.org/netdev/net/c/06e445f740c1
-  - [net,9/9] selftests: mptcp: Initialize variables to quiet gcc 12 warnings
-    https://git.kernel.org/netdev/net/c/fd37c2ecb21f
+  - [v3] ipv6/sit: fix ipip6_tunnel_get_prl return value
+    https://git.kernel.org/netdev/net/c/adabdd8f6aca
 
 You are awesome, thank you!
 -- 
