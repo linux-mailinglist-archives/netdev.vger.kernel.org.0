@@ -2,177 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F20DE56007A
+	by mail.lfdr.de (Postfix) with ESMTP id A9F42560079
 	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 14:55:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232818AbiF2MuT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 08:50:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49076 "EHLO
+        id S233437AbiF2Mu1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 08:50:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233231AbiF2MuR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 08:50:17 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 890CD31211
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 05:50:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
-        Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=iqUD70VzcyYlY5BxqwY1iE/pyhBwtZ4AsMYJqUHH9VI=; b=JzGt96ETVLhbBFMBkdiQEmUmbC
-        ltPCR08T2aS4h3dDRs/kEavEqy945gNSsG19RBONrJfR5VT7Hc+pz4TEuvBpknQEAeQomCYvK8UOh
-        AKH5CcDT7qQnieRKjs1iDQzepoRzzNRwfBy2ztnKWqbmGDvkC2bn0kc3Jiu5F6Mh/csWoMdo8dKfy
-        zRiyR4kZsqzZ6ORLUjW8Iw2T7KQOHtiGFHIYFv+htjPNKKvbyXBHq67F/zdXuEY8iI26B8VoQDvJb
-        vWFKodr3cieWa99tbtDKw9VqXukKkUw/Gohb/Z+0xfkWsENky2fBh2Vb2R6MQVDOCx+42mprPcZzS
-        UoBkWPHA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33094)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1o6X8r-00035m-Ae; Wed, 29 Jun 2022 13:50:01 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1o6X8o-0005rZ-0h; Wed, 29 Jun 2022 13:49:58 +0100
-Date:   Wed, 29 Jun 2022 13:49:57 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        UNGLinuxDriver@microchip.com,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Woojung Huh <woojung.huh@microchip.com>
-Subject: [PATCH RFC net-next 0/6] net: dsa: always use phylink
-Message-ID: <YrxKdVmBzeMsVjsH@shell.armlinux.org.uk>
+        with ESMTP id S233427AbiF2MuX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 08:50:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7EA032EF5
+        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 05:50:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A8E15B8241E
+        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 12:50:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 54AD1C341D1;
+        Wed, 29 Jun 2022 12:50:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656507020;
+        bh=vst2VfpHQtD6kF9Fkz/ITluE/HWUXe1/ekoMZyvd53g=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=OJQIUnpj8DK17Z1Gr7EhxR/owzkMNniSlJo3DM1ORcfCPAE+j278kozgL05llnTZt
+         6DVxRPZ7z7wcxNlQeV91Z/b/Yrugut9TW1IBnbKmqzcBNnkRrZ4xt0Ldj7WPkPcuwj
+         TSn8sdvDxK0JkF+KGC4b4PnNhFi4vYuGuUPIXmOT5v+BXwgTrNY5uhTfoK/OFdlKjq
+         57Y5xrbl/PgCCmaebLoH/wu/LVFTo8bOHxBOZ2ExZb1v5KSg99NkUEkhWdSUXP3ai0
+         vy4xdLnIfpjHSzsFHBDuYF/jRatBcmE3FCo33IRAwsGIFZAiexIxZgy5wKwcWtuQZ3
+         eAjbSGUH7o/yQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 355B7E49F61;
+        Wed, 29 Jun 2022 12:50:20 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v2 00/10]  sfc: Add extra states for VDPA
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165650702021.9231.8524288962828359852.git-patchwork-notify@kernel.org>
+Date:   Wed, 29 Jun 2022 12:50:20 +0000
+References: <165642465886.31669.17429834766693417246.stgit@palantir17.mph.net>
+In-Reply-To: <165642465886.31669.17429834766693417246.stgit@palantir17.mph.net>
+To:     Martin Habets <habetsm.xilinx@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, jonathan.s.cooper@amd.com,
+        netdev@vger.kernel.org, ecree.xilinx@gmail.com
+X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mostly the same as the previous RFC, except:
+Hello:
 
-1) incldues the phylink_validate_mask_caps() function
-2) has Marek's idea of searching the supported_interfaces bitmap for the
-   fastest interface we can use
-3) includes a final patch to add a print which will be useful to hear
-   from people testing it.
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-Some of the questions from the original RFC remain though, so I've
-included that text below. I'm guessing as they remain unanswered that
-no one has any opinions on them?
+On Tue, 28 Jun 2022 14:58:43 +0100 you wrote:
+> For EF100 VDPA support we need to enhance the sfc driver's load and
+> unload functionality so that it can probe and then unregister its
+> network device, so that VDPA can use services such as MCDI to initialise
+> VDPA resources.
+> 
+> v2:
+> - Fix checkpatch errors.
+> - Correct signoffs.
+> 
+> [...]
 
- drivers/net/dsa/b53/b53_common.c       |   3 +-
- drivers/net/dsa/bcm_sf2.c              |   3 +-
- drivers/net/dsa/hirschmann/hellcreek.c |   3 +-
- drivers/net/dsa/lantiq_gswip.c         |   6 +-
- drivers/net/dsa/microchip/ksz_common.c |   3 +-
- drivers/net/dsa/mt7530.c               |   3 +-
- drivers/net/dsa/mv88e6xxx/chip.c       |  53 ++++--------
- drivers/net/dsa/ocelot/felix.c         |   3 +-
- drivers/net/dsa/qca/ar9331.c           |   3 +-
- drivers/net/dsa/qca8k.c                |   3 +-
- drivers/net/dsa/realtek/rtl8365mb.c    |   3 +-
- drivers/net/dsa/sja1105/sja1105_main.c |   3 +-
- drivers/net/dsa/xrs700x/xrs700x.c      |   3 +-
- drivers/net/phy/phylink.c              | 148 ++++++++++++++++++++++++++++++---
- include/linux/phylink.h                |   5 ++
- include/net/dsa.h                      |   3 +-
- net/dsa/port.c                         |  47 +++++++----
- 17 files changed, 215 insertions(+), 80 deletions(-)
+Here is the summary with links:
+  - [net-next,v2,01/10] sfc: Split STATE_READY in to STATE_NET_DOWN and STATE_NET_UP.
+    https://git.kernel.org/netdev/net-next/c/813cf9d1e753
+  - [net-next,v2,02/10] sfc: Add a PROBED state for EF100 VDPA use.
+    https://git.kernel.org/netdev/net-next/c/8b39db19b21b
+  - [net-next,v2,03/10] sfc: Remove netdev init from efx_init_struct
+    https://git.kernel.org/netdev/net-next/c/62ac3ce542ff
+  - [net-next,v2,04/10] sfc: Change BUG_ON to WARN_ON and recovery code.
+    https://git.kernel.org/netdev/net-next/c/b3fd0a86dad2
+  - [net-next,v2,05/10] sfc: Encapsulate access to netdev_priv()
+    https://git.kernel.org/netdev/net-next/c/8cb03f4e084e
+  - [net-next,v2,06/10] sfc: Separate efx_nic memory from net_device memory
+    https://git.kernel.org/netdev/net-next/c/7e773594dada
+  - [net-next,v2,07/10] sfc: Move EF100 efx_nic_type structs to the end of the file
+    https://git.kernel.org/netdev/net-next/c/3e341d84bd9f
+  - [net-next,v2,08/10] sfc: Unsplit literal string.
+    https://git.kernel.org/netdev/net-next/c/bba84bf4c1f2
+  - [net-next,v2,09/10] sfc: replace function name in string with __func__
+    https://git.kernel.org/netdev/net-next/c/7592d754c09c
+  - [net-next,v2,10/10] sfc: Separate netdev probe/remove from PCI probe/remove
+    https://git.kernel.org/netdev/net-next/c/98ff4c7c8ac7
 
-On Fri, Jun 24, 2022 at 12:41:26PM +0100, Russell King (Oracle) wrote:
-> Hi,
-> 
-> Currently, the core DSA code conditionally uses phylink for CPU and DSA
-> ports depending on whether the firmware specifies a fixed-link or a PHY.
-> If either of these are specified, then phylink is used for these ports,
-> otherwise phylink is not, and we rely on the DSA drivers to "do the
-> right thing". However, this detail is not mentioned in the DT binding,
-> but Andrew has said that this behaviour has always something that DSA
-> wants.
-> 
-> mv88e6xxx has had support for this for a long time with its "SPEED_MAX"
-> thing, which I recently reworked to make use of the mac_capabilities in
-> preparation to solving this more fully.
-> 
-> This series is an experiment to solve this properly, and it does this
-> in two steps.
-> 
-> The first step consists of the first two patches. Phylink needs to
-> know the PHY interface mode that is being used so it can (a) pass the
-> right mode into the MAC/PCS etc and (b) know the properties of the
-> link and therefore which speeds can be supported across it.
-> 
-> In order to achieve this, the DSA phylink_get_caps() method has an
-> extra argument added to it so that DSA drivers can report the
-> interface mode that they will be using for this port back to the core
-> DSA code, thereby allowing phylink to be initialised with the correct
-> interface mode.
-> 
-> Note that this can only be used for CPU and DSA ports as "user" ports
-> need a different behaviour - they rely on getting the interface mode
-> from phylib, which will only happen if phylink is initialised with
-> PHY_INTERFACE_MODE_NA. Unfortunately, changing this behaviour is likely
-> to cause widespread regressions.
-> 
-> Obvious questions:
-> 1. Should phylink_get_caps() be augmented in this way, or should it be
->    a separate method?
-> 
-> 2. DSA has traditionally used "interface mode for the maximum supported
->    speed on this port" where the interface mode is programmable (via
->    its internal port_max_speed_mode() method) but this is only present
->    for a few of the sub-drivers. Is reporting the current interface
->    mode correct where this method is not implemented?
-> 
-> The second step is to introduce a function that allows phylink to be
-> reconfigured after creation time to operate at max-speed fixed-link
-> mode for the PHY interface mode, also using the MAC capabilities to
-> determine the speed and duplex mode we should be using.
-> 
-> Obvious questions:
-> 1. Should we be allowing half-duplex for this?
-> 2. If we do allow half-duplex, should we prefer fastest speed over
->    duplex setting, or should we prefer fastest full-duplex speed
->    over any half-duplex?
-> 3. How do we sanely switch DSA from its current behaviour to always
->    using phylink for these ports without breakage - this is the
->    difficult one, because it's not obvious which drivers have been
->    coded to either work around this quirk of the DSA implementation.
->    For example, if we start forcing the link down before calling
->    dsa_port_phylink_create(), and we then fail to set max-fixed-link,
->    then the CPU/DSA port is going to fail, and we're going to have
->    lots of regressions.
-> 
-> Please look at the patches and make suggestions on how we can proceed
-> to clean up this quirk of DSA.
-
+You are awesome, thank you!
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
