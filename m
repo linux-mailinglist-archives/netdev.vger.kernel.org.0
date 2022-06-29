@@ -2,76 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 289B75602AF
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 16:28:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 46DA15602FA
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 16:34:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231466AbiF2O20 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 10:28:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56240 "EHLO
+        id S233643AbiF2ObL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 10:31:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231177AbiF2O2Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 10:28:24 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95CF2EE31;
-        Wed, 29 Jun 2022 07:28:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656512902; x=1688048902;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=dbj3+S/9miE8Pcqc+T5v7JFxc6IEMNZmGc4ZgWOS75I=;
-  b=YOdQdhRzgqsNnHhi9gugPhS24X7b2GRQD6WIenDnDWy4FsfFJzz8fjqD
-   v18/NyCXOtfmUsWZzTbHz3kPv+bhpQ7rXirjHgM5wRswgOd6nALF1ghfK
-   5XE5S3anWhhfkxLwTByAdndQnxUtj5xUD8LvJTYVQVUlFok4W7kMe2zl3
-   aP0PIb3n0TTY5a/fOSqfGGL/nA0+/2/C84JLxzRICvRCp8aczrMMG/cHr
-   lJyfO5DwQhFKL54Tj/Jx1UvebWoqKOoJh0aHvXGVygu9FD3jxDnmEhn7x
-   +AHI/wBpuudHXbQ1AK1E+L6PlTSB9TxiBV+wEH1xaS7WoHIlN6ZK00jcF
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="265080784"
-X-IronPort-AV: E=Sophos;i="5.92,231,1650956400"; 
-   d="scan'208";a="265080784"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2022 07:28:21 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,231,1650956400"; 
-   d="scan'208";a="647414082"
-Received: from boxer.igk.intel.com (HELO boxer) ([10.102.20.173])
-  by fmsmga008.fm.intel.com with ESMTP; 29 Jun 2022 07:28:20 -0700
-Date:   Wed, 29 Jun 2022 16:28:19 +0200
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>
-Subject: Re: [PATCH bpf] xsk: mark napi_id on sendmsg()
-Message-ID: <Yrxhg2R6rk1PKe4E@boxer>
-References: <20220629105752.933839-1-maciej.fijalkowski@intel.com>
- <CAJ+HfNj0FU=DBNdwD3HODbevcP-btoaeCCGCfn2Y5eP2WoEXHA@mail.gmail.com>
- <CAJ+HfNgBXTWLWOthG1mOmy8ZZyzLAggpZLq9qOzbdzRxxmK77Q@mail.gmail.com>
+        with ESMTP id S233139AbiF2Oah (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 10:30:37 -0400
+Received: from smtpbg.qq.com (unknown [43.155.67.158])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CDF41EC55;
+        Wed, 29 Jun 2022 07:30:32 -0700 (PDT)
+X-QQ-mid: bizesmtp86t1656513011th4nq7cj
+Received: from localhost.localdomain ( [182.148.13.66])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Wed, 29 Jun 2022 22:30:09 +0800 (CST)
+X-QQ-SSF: 0100000000200060C000C00A0000000
+X-QQ-FEAT: ACkb0FcbxRk3MGc6ImTK9UmnAVdZePcX1z96KWehZyPgYCmwgwh4XGH0SK2vf
+        qQnDDf2BildBdjrHleiBlFKBB3otwxfXqb9gKI9UA0TeO1rvBd7wc4LUGIKswbKXozxVmcN
+        Y3X9btPWLkVVoF3+IzaSz2EH5BG3I7xkQN/CrEJ17zv6yGw5wbiEb6M72OU6111pi6x9cDs
+        00YhsHRbTtHx050+5bXFjt1OuiobZkfBeWXzKWJvebSnyguR7cSLSdkScGbpdRhY5ZRrYYn
+        Qn4b8dU9lTYyuuqsXkP5WfqpACzD6vovaIh9ESeTQL2AQLqYkjDMGmDLBp3dSnA8aKG6pTj
+        vTd36H/Nk/pswRq0hk=
+X-QQ-GoodBg: 0
+From:   Jilin Yuan <yuanjilin@cdjrlc.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jilin Yuan <yuanjilin@cdjrlc.com>
+Subject: [PATCH] intel/ixgbe:fix repeated words in comments
+Date:   Wed, 29 Jun 2022 22:29:52 +0800
+Message-Id: <20220629142952.18664-1-yuanjilin@cdjrlc.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAJ+HfNgBXTWLWOthG1mOmy8ZZyzLAggpZLq9qOzbdzRxxmK77Q@mail.gmail.com>
-X-Spam-Status: No, score=-2.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,RDNS_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,T_SPF_HELO_TEMPERROR autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 29, 2022 at 03:39:57PM +0200, Björn Töpel wrote:
-> On Wed, 29 Jun 2022 at 14:45, Björn Töpel <bjorn.topel@gmail.com> wrote:
-> >
-> > TL;DR, I think it's a good addition. One small nit below:
-> >
-> 
-> I forgot one thing. Setting napi_id should be gated by
-> "CONFIG_NET_RX_BUSY_POLL" ifdefs.
+Delete the redundant word 'for'.
+Delete the redundant word 'the'.
 
-napi id marking functions are wrapped inside with this ifdef
+Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
+---
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 2 +-
+ drivers/net/ethernet/intel/ixgbe/ixgbe_x550.c | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+index 77c2e70b0860..23b7e1d9652e 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+@@ -5161,7 +5161,7 @@ static int ixgbe_hpbthresh(struct ixgbe_adapter *adapter, int pb)
+ }
+ 
+ /**
+- * ixgbe_lpbthresh - calculate low water mark for for flow control
++ * ixgbe_lpbthresh - calculate low water mark for flow control
+  *
+  * @adapter: board private structure to calculate for
+  * @pb: packet buffer to calculate
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_x550.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_x550.c
+index e4b50c7781ff..35c2b9b8bd19 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_x550.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_x550.c
+@@ -1737,7 +1737,7 @@ static s32 ixgbe_setup_sfi_x550a(struct ixgbe_hw *hw, ixgbe_link_speed *speed)
+  * @speed: link speed
+  * @autoneg_wait_to_complete: unused
+  *
+- * Configure the the integrated PHY for native SFP support.
++ * Configure the integrated PHY for native SFP support.
+  */
+ static s32
+ ixgbe_setup_mac_link_sfp_n(struct ixgbe_hw *hw, ixgbe_link_speed speed,
+@@ -1786,7 +1786,7 @@ ixgbe_setup_mac_link_sfp_n(struct ixgbe_hw *hw, ixgbe_link_speed speed,
+  * @speed: link speed
+  * @autoneg_wait_to_complete: unused
+  *
+- * Configure the the integrated PHY for SFP support.
++ * Configure the integrated PHY for SFP support.
+  */
+ static s32
+ ixgbe_setup_mac_link_sfp_x550a(struct ixgbe_hw *hw, ixgbe_link_speed speed,
+-- 
+2.36.1
+
