@@ -2,224 +2,372 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F3A43560D18
-	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 01:20:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 640F9560D3D
+	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 01:31:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229966AbiF2XUJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 19:20:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57698 "EHLO
+        id S231252AbiF2XaR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 19:30:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230112AbiF2XUI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 19:20:08 -0400
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2B0322BE4
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 16:20:05 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id n185so10235180wmn.4
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 16:20:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=+sgKiiXbPvFwyYU8o7PbhLKBAM5khScy7fiUEj1PWbo=;
-        b=ZS8pZ8AkCzaaVPMBMBlNMb7xmEcWyThMpKD4H9SxTn4aRlFL+W90lgmPz6YW6AqbTK
-         az6lnnWR+9t97ButIT3JuiD5TuQ7VjYn19RAuDFGSrHNamK8if1SUysJ+ITjgK4tSHJi
-         1GSlaNpR1IgPbvhoKBLigo1nSTHF/oMFj+7QVBiS93FHum9BPPx/cfy13jaj0mmZeBSe
-         zOm9tqbWAwZ4ITlZMiIu/xcywPZWzBgma5twMf0dYBrIKBpvzJZOBsCw5XLqURKl6bVk
-         JotXGD0fZz41OwPVNs1Q4qsbZYKIXdP64yXX0zAAeM5jRRvpwsRCJIO3yodRkRyxWVwV
-         Ta6Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+sgKiiXbPvFwyYU8o7PbhLKBAM5khScy7fiUEj1PWbo=;
-        b=tP3eI8VjZGJ0ZFmLg0wZF+yx1rAq1nASuZFaJbI02zNhdYqUT0eepovZHYsmqI2Abv
-         GX9qPDdzAy+pqny8Stw8PSuxEJF/4X4YLZ3fqJQWm3kPKF08j9KBe0Tj3bRCrKnGEHBi
-         qFOocrAZPt6GjOnCe4O95cLfhSi60I2NZG0tG9DUKZuAvdKyJ19/fbLx21WN8sakzyxF
-         3km2Jmyj25BdMKBSLhMoeCmpdnf9pxG2b4KA/T8NrPamwoeRM1GBi4ctJayblunvFacE
-         l8a02wjr0hZYjH7NK/EEVfeZfkLiBvsPhkGnpG39qcLc2lfWWEJ3S7R2n88vhT57OSzI
-         BJOA==
-X-Gm-Message-State: AJIora+d/pNXtgCucDI6AE0dgbLRuTuO25rYiKIKJpAQnw1EMY/TZdgN
-        n+mbGUYuNx/UHACaMGALY+LRYl2Q0F64rzbE1xpgrQ==
-X-Google-Smtp-Source: AGRyM1sfkNAdLMD1HYwGLNTvaIF0Dst/TgdO4rRRnXhlJE6YhvrqSGBP68be1nutxJacar9qONmUp2Galr2SkNF40y4=
-X-Received: by 2002:a05:600c:4081:b0:3a0:47c4:8dd0 with SMTP id
- k1-20020a05600c408100b003a047c48dd0mr6134358wmh.178.1656544804063; Wed, 29
- Jun 2022 16:20:04 -0700 (PDT)
+        with ESMTP id S231143AbiF2XaR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 19:30:17 -0400
+Received: from novek.ru (unknown [213.148.174.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C270CB
+        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 16:30:15 -0700 (PDT)
+Received: from [10.22.0.128] (unknown [176.74.39.122])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by novek.ru (Postfix) with ESMTPSA id 281235005C5;
+        Thu, 30 Jun 2022 02:28:34 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru 281235005C5
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
+        t=1656545315; bh=M8QHFE0IfLZ8fveDTk+OspXNnT+NhIodtQ35U76wUS4=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=kOILhT9EA5n88TGEip8uEvvBM5D80i2tjY17QKoeNSR5AFMLp/PxMhB44CjdUDnF4
+         PzOOeg4qPaSPjE2wfh0TDaFTS3cRtehtfAFxPFFoMJ+VI7rZJXMPwJZnEC8WWJT+EZ
+         S7SwGRgCbLpMtpr01LJx+Ux+csDUm9IK7bWscUAY=
+Message-ID: <528be46d-16d4-bf71-a657-8e7fd55f9ebd@novek.ru>
+Date:   Thu, 30 Jun 2022 00:30:08 +0100
 MIME-Version: 1.0
-References: <20220629161020.GA24891@lst.de> <Yrx6EVHtroXeEZGp@zx2c4.com>
- <20220629161527.GA24978@lst.de> <Yrx8/Fyx15CTi2zq@zx2c4.com>
- <20220629163007.GA25279@lst.de> <Yrx/8UOY+J8Ao3Bd@zx2c4.com>
- <YryNQvWGVwCjJYmB@zx2c4.com> <Yryic4YG9X2/DJiX@google.com>
- <Yry6XvOGge2xKx/n@zx2c4.com> <CAC_TJve_Jk0+XD7VeSJVvJq4D9ZofnH69B4QZv2LPT4X3KNfeg@mail.gmail.com>
- <YrzaCRl9rwy9DgOC@zx2c4.com>
-In-Reply-To: <YrzaCRl9rwy9DgOC@zx2c4.com>
-From:   Kalesh Singh <kaleshsingh@google.com>
-Date:   Wed, 29 Jun 2022 16:19:52 -0700
-Message-ID: <CAC_TJvcEzp+zQp50wtj4=7b6vEObpJCQYLaTLhHJCxFdk3TgPg@mail.gmail.com>
-Subject: Re: [PATCH] remove CONFIG_ANDROID
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     Christoph Hellwig <hch@lst.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        =?UTF-8?B?QXJ2ZSBIasO4bm5ldsOlZw==?= <arve@android.com>,
-        Todd Kjos <tkjos@android.com>,
-        Martijn Coenen <maco@android.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Hridya Valsaraju <hridya@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        "Theodore Ts'o" <tytso@mit.edu>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Alex Xu (Hello71)" <alex_y_xu@yahoo.ca>,
-        Paolo Abeni <pabeni@redhat.com>, Rob Herring <robh@kernel.org>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Shuah Khan <shuah@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, wireguard@lists.zx2c4.com,
-        netdev@vger.kernel.org, rcu <rcu@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>, sultan@kerneltoast.com,
-        android-kernel-team <android-kernel-team@google.com>,
-        John Stultz <jstultz@google.com>,
-        Saravana Kannan <saravanak@google.com>, rafael@kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [RFC PATCH v1 1/3] dpll: Add DPLL framework base functions
+Content-Language: en-US
+To:     "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Vadim Fedorenko <vadfed@fb.com>, Aya Levin <ayal@nvidia.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>
+References: <20220623005717.31040-1-vfedorenko@novek.ru>
+ <20220623005717.31040-2-vfedorenko@novek.ru>
+ <DM6PR11MB46579C692B75DEF81530B7339BB59@DM6PR11MB4657.namprd11.prod.outlook.com>
+ <34093244-431b-98c8-ba88-82957c659808@novek.ru>
+ <DM6PR11MB4657C1830DACC5EB4CD98B789BB49@DM6PR11MB4657.namprd11.prod.outlook.com>
+ <a85620a1-94ef-0fdf-3c92-6c9d2e3614f5@novek.ru>
+ <DM6PR11MB46572B45C787C6D1351D606C9BBB9@DM6PR11MB4657.namprd11.prod.outlook.com>
+From:   Vadim Fedorenko <vfedorenko@novek.ru>
+In-Reply-To: <DM6PR11MB46572B45C787C6D1351D606C9BBB9@DM6PR11MB4657.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_PASS,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 29, 2022 at 4:02 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
->
-> Hi Kalesh,
->
-> On Wed, Jun 29, 2022 at 03:26:33PM -0700, Kalesh Singh wrote:
-> > Thanks for taking a look. I'm concerned holding the sys/power/state
-> > open would have unintentional side effects. Adding the
-> > /sys/power/userspace_autosuspender seems more appropriate. We don't
-> > have a use case for the refcounting, so would prefer the simpler
-> > writing '0' / '1' to toggle semantics.
->
-> Alright. So I've cooked you up some code that you can submit, since I
-> assume based on Christoph's bristliness that he won't do so. The below
-> adds /sys/power/pm_userspace_autosleeper, which you can write a 0 or a 1
-> into, and fixes up wireguard and random.c to use it. The code is
-> untested, but should generally be the correct thing, I think.
->
-> So in order of operations:
->
-> 1. You write a patch for SystemSuspend.cpp and post it on Gerrit.
->
-> 2. You take the diff below, clean it up or bikeshed the naming a bit or
->    do whatever there, and submit it to Rafael's PM tree, including as a
->    `Link: ...` this thread and the Gerrit link.
->
-> 3. When/if Rafael accepts the patch, you submit the Gerrit CL.
->
-> 4. When both have landed, Christoph moves forward with his
->    CONFIG_ANDROID removal.
->
-> Does that seem like a reasonable way forward?
+On 29.06.2022 02:46, Kubalewski, Arkadiusz wrote:
+> -----Original Message-----
+> From: Vadim Fedorenko <vfedorenko@novek.ru>
+> Sent: Sunday, June 26, 2022 9:39 PM
+>>
+>> On 24.06.2022 18:36, Kubalewski, Arkadiusz wrote:
+>>
+>> ... skipped ...
+>>
+>>>>>> +static int dpll_device_dump_one(struct dpll_device *dev, struct sk_buff *msg, int flags)
+>>>>>> +{
+>>>>>> +	struct nlattr *hdr;
+>>>>>> +	int ret;
+>>>>>> +
+>>>>>> +	hdr = nla_nest_start(msg, DPLLA_DEVICE);
+>>>>>> +	if (!hdr)
+>>>>>> +		return -EMSGSIZE;
+>>>>>> +
+>>>>>> +	mutex_lock(&dev->lock);
+>>>>>> +	ret = __dpll_cmd_device_dump_one(dev, msg);
+>>>>>> +	if (ret)
+>>>>>> +		goto out_cancel_nest;
+>>>>>> +
+>>>>>> +	if (flags & DPLL_FLAG_SOURCES && dev->ops->get_source_type) {
+>>>>>> +		ret = __dpll_cmd_dump_sources(dev, msg);
+>>>>>> +		if (ret)
+>>>>>> +			goto out_cancel_nest;
+>>>>>> +	}
+>>>>>> +
+>>>>>> +	if (flags & DPLL_FLAG_OUTPUTS && dev->ops->get_output_type) {
+>>>>>> +		ret = __dpll_cmd_dump_outputs(dev, msg);
+>>>>>> +		if (ret)
+>>>>>> +			goto out_cancel_nest;
+>>>>>> +	}
+>>>>>> +
+>>>>>> +	if (flags & DPLL_FLAG_STATUS) {
+>>>>>> +		ret = __dpll_cmd_dump_status(dev, msg);
+>>>>>> +		if (ret)
+>>>>>> +			goto out_cancel_nest;
+>>>>>> +	}
+>>>>>> +
+>>>>>> +	mutex_unlock(&dev->lock);
+>>>>>> +	nla_nest_end(msg, hdr);
+>>>>>> +
+>>>>>> +	return 0;
+>>>>>> +
+>>>>>> +out_cancel_nest:
+>>>>>> +	mutex_unlock(&dev->lock);
+>>>>>> +	nla_nest_cancel(msg, hdr);
+>>>>>> +
+>>>>>> +	return ret;
+>>>>>> +}
+>>>>>> +
+>>>>>> +static int dpll_genl_cmd_set_source(struct param *p)
+>>>>>> +{
+>>>>>> +	const struct genl_dumpit_info *info = genl_dumpit_info(p->cb);
+>>>>>> +	struct dpll_device *dpll = p->dpll;
+>>>>>> +	int ret = 0, src_id, type;
+>>>>>> +
+>>>>>> +	if (!info->attrs[DPLLA_SOURCE_ID] ||
+>>>>>> +	    !info->attrs[DPLLA_SOURCE_TYPE])
+>>>>>> +		return -EINVAL;
+>>>>>> +
+>>>>>> +	if (!dpll->ops->set_source_type)
+>>>>>> +		return -EOPNOTSUPP;
+>>>>>> +
+>>>>>> +	src_id = nla_get_u32(info->attrs[DPLLA_SOURCE_ID]);
+>>>>>> +	type = nla_get_u32(info->attrs[DPLLA_SOURCE_TYPE]);
+>>>>>> +
+>>>>>> +	mutex_lock(&dpll->lock);
+>>>>>> +	ret = dpll->ops->set_source_type(dpll, src_id, type);
+>>>>>> +	mutex_unlock(&dpll->lock);
+>>>
+>>> I wonder if shouldn't the dpll ptr be validated here, and in similar cases.
+>>> I mean, between calling dpll_pre_doit and actually doing something on a 'dpll',
+>>> it is possible that device gets removed?
+>>>
+>>> Or maybe pre_doit/post_doit shall lock and unlock some other mutex?
+>>> Altough, I am not an expert in the netlink stuff, thus just raising a concern.
+>>>
+>>
+>> I was trying to reduce the scope of mutex as much as possible, but it looks like
+>> it's better to extend it to cover whole iteration with dpll ptr. Not sure if
+>> this is a correct way though.
+> 
+> According to docs, pre/post-doit are designed for that.
+> 
 
-Sounds like a plan. I'll clean up and repost your patch once the
-Gerrit change is ready.
+Yeah, got it. Will re-implement locking for next iteration.
+
+>>
+>> ... skipped ...
+>>
+>>>>>> +
+>>>>>> +/* DPLL signal types used as source or as output */
+>>>>>> +enum dpll_genl_signal_type {
+>>>>>> +	DPLL_TYPE_EXT_1PPS,
+>>>>>> +	DPLL_TYPE_EXT_10MHZ,
+>>>>>> +	DPLL_TYPE_SYNCE_ETH_PORT,
+>>>>>> +	DPLL_TYPE_INT_OSCILLATOR,
+>>>>>> +	DPLL_TYPE_GNSS,
+>>>>>> +
+>>>>>> +	__DPLL_TYPE_MAX,
+>>>>>> +};
+>>>>>> +#define DPLL_TYPE_MAX (__DPLL_TYPE_MAX - 1)
+>>>>>> +
+>>>>>> +/* Events of dpll_genl_family */
+>>>>>> +enum dpll_genl_event {
+>>>>>> +	DPLL_EVENT_UNSPEC,
+>>>>>> +	DPLL_EVENT_DEVICE_CREATE,		/* DPLL device creation */
+>>>>>> +	DPLL_EVENT_DEVICE_DELETE,		/* DPLL device deletion */
+>>>>>> +	DPLL_EVENT_STATUS_LOCKED,		/* DPLL device locked to source */
+>>>>>> +	DPLL_EVENT_STATUS_UNLOCKED,	/* DPLL device freerun */
+>>>>>> +	DPLL_EVENT_SOURCE_CHANGE,		/* DPLL device source changed */
+>>>>>> +	DPLL_EVENT_OUTPUT_CHANGE,		/* DPLL device output changed */
+>>>>>> +
+>>>>>> +	__DPLL_EVENT_MAX,
+>>>>>> +};
+>>>>>> +#define DPLL_EVENT_MAX (__DPLL_EVENT_MAX - 1)
+>>>>>> +
+>>>>>> +/* Commands supported by the dpll_genl_family */
+>>>>>> +enum dpll_genl_cmd {
+>>>>>> +	DPLL_CMD_UNSPEC,
+>>>>>> +	DPLL_CMD_DEVICE_GET,	/* List of DPLL devices id */
+>>>>>> +	DPLL_CMD_SET_SOURCE_TYPE,	/* Set the DPLL device source type */
+>>>>>> +	DPLL_CMD_SET_OUTPUT_TYPE,	/* Get the DPLL device output type */
+>>>>>
+>>>>> "Get" in comment description looks like a typo.
+>>>>> I am getting bit confused with the name and comments.
+>>>>> For me, first look says: it is selection of a type of a source.
+>>>>> But in the code I can see it selects a source id and a type.
+>>>>> Type of source originates in HW design, why would the one want to "set" it?
+>>>>> I can imagine a HW design where a single source or output would allow to choose
+>>>>> where the signal originates/goes, some kind of extra selector layer for a
+>>>>> source/output, but was that the intention?
+>>>>
+>>>> In general - yes, we have experimented with our time card providing different
+>>>> types of source synchronisation signal on different input pins, i.e. 1PPS,
+>>>> 10MHz, IRIG-B, etc. Any of these signals could be connected to any of 4 external
+>>>> pins, that's why I source id is treated as input pin identifier and source type
+>>>> is the signal type it receives.
+>>>>
+>>>>> If so, shouldn't the user get some bitmap/list of modes available for each
+>>>>> source/output?
+>>>>
+>>>> Good idea. We have list of available modes exposed via sysfs file, and I agree
+>>>> that it's worth to expose them via netlink interface. I will try to address this
+>>>> in the next version.
+>>>>
+>>>>>
+>>>>> The user shall get some extra information about the source/output. Right now
+>>>>> there can be multiple sources/outputs of the same type, but not really possible
+>>>>> to find out their purpose. I.e. a dpll equipped with four source of
+>>>>> DPLL_TYPE_EXT_1PPS type.
+>>>>>    > This implementation looks like designed for a "forced reference lock" mode
+>>>>> where the user must explicitly select one source. But a multi source/output
+>>>>> DPLL could be running in different modes. I believe most important is automatic
+>>>>> mode, where it tries to lock to a user-configured source priority list.
+>>>>> However, there is also freerun mode, where dpll isn't even trying to lock to
+>>>>> anything, or NCO - Numerically Controlled Oscillator mode.
+>>>>
+>>>> Yes, you are right, my focus was on "forced reference lock" mode as currently
+>>>> this is the only mode supported by our hardware. But I'm happy to extend it to
+>>>> other usecases.
+>>>>
+>>>>> It would be great to have ability to select DPLL modes, but also to be able to
+>>>>> configure priorities, read failure status, configure extra "features" (i.e.
+>>>>> Embedded Sync, EEC modes, Fast Lock)
+>>>> I absolutely agree on this way of improvement, and I already have some ongoing
+>>>> work about failures/events/status change messages. I can see no stoppers for
+>>>> creating priorities (if supported by HW) and other extra "features", but we have
+>>>> to agree on the interface with flexibility in mind.
+>>>
+>>> Great and makes perfect sense!
+>>>
+>>>>
+>>>>> The sources and outputs can also have some extra features or capabilities, like:
+>>>>> - enable Embedded Sync
+>>>>
+>>>> Does it mean we want to enable or disable Embedded Sync within one protocol? Is
+>>>> it like Time-Sensitive Networking (TSN) for Ethernet?
+>>>
+>>> Well, from what I know, Embedded PPS (ePPS), Embedded Pulse Per 2 Seconds
+>>> (ePP2S) and Embedded Sync (eSync) can be either 25/75 or 75/25, which describes
+>>> a ratio of how the 'embedded pulse' is divided into HIGH and LOW states on a
+>>> pulse of higher frequency signal in which EPPS/EPP2S/ESync is embedded.
+>>>
+>>> EPPS and EPP2S are rather straightforward, once an EPPS enabled input is
+>>> selected as a source, then output configured as PPS(PP2S) shall tick in the
+>>> same periods as signal "embedded" in input.
+>>> Embedded Sync (eSync) is similar but it allows for configuration of frequency
+>>> of a 'sync' signal, i.e. source is 10MHz with eSync configured as 100 HZ, where
+>>> the output configured for 100HZ could use it.
+>>>
+>>> I cannot say how exactly Embedded Sync/PPS will be used, as from my perspective
+>>> this is user specific, and I am not very familiar with any standard describing
+>>> its usage.
+>>> I am working on SyncE, where either Embedded Sync or PPS is not a part of SyncE
+>>> standard, but I strongly believe that users would need to run a DPLL with
+>>> Embedded Sync/PPS enabled for some other things. And probably would love to
+>>> have SW control over the dpll.
+>>>
+>>> Lets assume following simplified example:
+>>> input1 +-------------+ output1
+>>> -------|             |---------
+>>>          |  DPLL 1     |
+>>> input2 |             | output2
+>>> -------|             |---------
+>>>          +-------------+
+>>> where:
+>>> - input1 is external 10MHz with 25/75 Embedded PPS enabled,
+>>> - input2 is a fallback PPS from GNSS
+>>> user expects:
+>>> - output1 as a 10MHz with embedded sync
+>>> - output2 as a PPS
+>>> As long as input1 is selected source, output1 is synchonized with it and
+>>> output2 ticks are synchronized with ePPS.
+>>> Now the user selects input2 as a source, where outputs are unchanged,
+>>> both output2 and output1-ePPS are synchronized with input2, and output1
+>>> 10MHz must be generated by DPLL.
+>>>
+>>> I am trying to show example of what DPLL user might want to configure, this
+>>> would be a separated configuration of ePPS/ePP2S/eSync per source as well as
+>>> per output.
+>>> Also a DPLL itself can have explicitly disabled embedded signal processing on
+>>> its sources.
+>>>
+>>
+>> Thank you for the explanation. Looks like we will need several attributes to
+>> configure inputs/outputs. And this way can also answer some questions from
+>> Jonathan regarding support of different specific features of hardware. I'm in
+>> process of finding an interface to implement it, if you have any suggestions,
+>> please share it.
+> 
+> I would define feature-bit's and get/set the bitmask on them.
+> 
+> For pulse-per-2-seconds (PP2S) - 0.5 HZ is possible, so looks like more enum
+> types would be needed: 0.5Hz/1Hz/10MHz/custom/2kHz/8kHz (last two for
+> SONET/SDH).
+> 
+> For custom-frequency input/output it would be great to have set/get of u32
+> frequency.
+
+Ok. This is the way I was thinking about too, will make an implementation.
+
+> 
+> For adjusting phase offset it would be great to have set/get of s64 phase
+> offset.
+
+This way it's getting closer and closer to ptp, but still having phase offset is 
+fair point and I will go this way. Jakub, do you have any objections?
+
+> 
+> source/output can be additionally provided with "eSync frequency". Which shall
+> be handled similarly to frequency of source/output, where common modes are
+> defined (0.5Hz/1Hz/10MHz/custom/2kHz/8kHz) and possibility to set any freq if
+> custom is chosen.
+> 
+
+Didn't get the reason to have special eSync with the same options again. We 
+might want a kind of flag/indicator that the port has eSync?
+
+>>
+>>>>
+>>>>> - add phase delay
+>>>>> - configure frequency (user might need to use source/output with different
+>>>>>      frequency then 1 PPS or 10MHz)
+>>>>
+>>>> Providing these modes I was thinking about the most common and widely used
+>>>> signals in measurement equipment. So my point here is that both 1PPS and 10MHz
+>>>> should stay as is, but another type of signal should be added, let's say
+>>>> CUSTOM_FREQ, which will also consider special attribute in netlink terms. is it ok?
+>>>
+>>> Sure, makes sense.
+>>>
+>>>>
+>>>>> Generally, for simple DPLL designs this interface could do the job (although,
+>>>>> I still think user needs more information about the sources/outputs), but for
+>>>>> more complex ones, there should be something different, which takes care of my
+>>>>> comments regarding extra configuration needed.
+>>>>>
+>>>>
+>>>> As I already mentioned earlier, I'm open for improvements and happy to
+>>>> collaborate to cover other use cases of this subsystem from the very beginning
+>>>> of development. We can even create an open github repo to share implementation
+>>>> details together with comments if it works better for you.
+>>>>
+>>>
+>>> Sure, great! I am happy to help.
+>>> I could start working on a part for extra DPLL modes and source-priorities as
+>>> automatic mode doesn't make sense without them.
+>>>
+>>> Thank you,
+>>> Arkadiusz
+>>>
+>>
+>> Please, take a look at RFC v2, I tried to address some of the comments.
+> 
+> Yes, planning it for tomorrow.
+> 
+> Thanks,
+> Arkadiusz
+> 
+>>
+>> Thanks,
+>> Vadim
+>>
 
 Thanks,
-Kalesh
->
-> Jason
->
-> diff --git a/drivers/char/random.c b/drivers/char/random.c
-> index e3dd1dd3dd22..c25e3be10d9c 100644
-> --- a/drivers/char/random.c
-> +++ b/drivers/char/random.c
-> @@ -756,7 +756,7 @@ static int random_pm_notification(struct notifier_block *nb, unsigned long actio
->
->         if (crng_ready() && (action == PM_RESTORE_PREPARE ||
->             (action == PM_POST_SUSPEND &&
-> -            !IS_ENABLED(CONFIG_PM_AUTOSLEEP) && !IS_ENABLED(CONFIG_ANDROID)))) {
-> +            !IS_ENABLED(CONFIG_PM_AUTOSLEEP) && !pm_userspace_autosleeper_enabled))) {
->                 crng_reseed();
->                 pr_notice("crng reseeded on system resumption\n");
->         }
-> diff --git a/drivers/net/wireguard/device.c b/drivers/net/wireguard/device.c
-> index aa9a7a5970fd..1983e0fadb6e 100644
-> --- a/drivers/net/wireguard/device.c
-> +++ b/drivers/net/wireguard/device.c
-> @@ -69,7 +69,7 @@ static int wg_pm_notification(struct notifier_block *nb, unsigned long action, v
->          * its normal operation rather than as a somewhat rare event, then we
->          * don't actually want to clear keys.
->          */
-> -       if (IS_ENABLED(CONFIG_PM_AUTOSLEEP) || IS_ENABLED(CONFIG_ANDROID))
-> +       if (IS_ENABLED(CONFIG_PM_AUTOSLEEP) || pm_userspace_autosleeper_enabled)
->                 return 0;
->
->         if (action != PM_HIBERNATION_PREPARE && action != PM_SUSPEND_PREPARE)
-> diff --git a/include/linux/suspend.h b/include/linux/suspend.h
-> index 70f2921e2e70..0acff26f87b4 100644
-> --- a/include/linux/suspend.h
-> +++ b/include/linux/suspend.h
-> @@ -498,6 +498,7 @@ extern void ksys_sync_helper(void);
->  /* drivers/base/power/wakeup.c */
->  extern bool events_check_enabled;
->  extern suspend_state_t pm_suspend_target_state;
-> +extern bool pm_userspace_autosleeper_enabled;
->
->  extern bool pm_wakeup_pending(void);
->  extern void pm_system_wakeup(void);
-> @@ -537,6 +538,8 @@ static inline void pm_system_irq_wakeup(unsigned int irq_number) {}
->  static inline void lock_system_sleep(void) {}
->  static inline void unlock_system_sleep(void) {}
->
-> +#define pm_userspace_autosleeper_enabled (false)
-> +
->  #endif /* !CONFIG_PM_SLEEP */
->
->  #ifdef CONFIG_PM_SLEEP_DEBUG
-> diff --git a/kernel/power/main.c b/kernel/power/main.c
-> index e3694034b753..08f32a281010 100644
-> --- a/kernel/power/main.c
-> +++ b/kernel/power/main.c
-> @@ -120,6 +120,23 @@ static ssize_t pm_async_store(struct kobject *kobj, struct kobj_attribute *attr,
->
->  power_attr(pm_async);
->
-> +bool pm_userspace_autosleeper_enabled;
-> +
-> +static ssize_t pm_userspace_autosleeper_show(struct kobject *kobj,
-> +                               struct kobj_attribute *attr, char *buf)
-> +{
-> +       return sprintf(buf, "%d\n", pm_userspace_autosleeper_enabled);
-> +}
-> +
-> +static ssize_t pm_userspace_autosleeper_store(struct kobject *kobj,
-> +                                   struct kobj_attribute *attr,
-> +                                   const char *buf, size_t n)
-> +{
-> +       return kstrtobool(buf, &pm_userspace_autosleeper_enabled);
-> +}
-> +
-> +power_attr(pm_userspace_autosleeper);
-> +
->  #ifdef CONFIG_SUSPEND
->  static ssize_t mem_sleep_show(struct kobject *kobj, struct kobj_attribute *attr,
->                               char *buf)
-> @@ -869,6 +886,7 @@ static struct attribute * g[] = {
->  #ifdef CONFIG_PM_SLEEP
->         &pm_async_attr.attr,
->         &wakeup_count_attr.attr,
-> +       &pm_userspace_autosleeper.attr,
->  #ifdef CONFIG_SUSPEND
->         &mem_sleep_attr.attr,
->         &sync_on_suspend_attr.attr,
->
+Vadim
