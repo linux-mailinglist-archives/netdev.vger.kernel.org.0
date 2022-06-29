@@ -2,126 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BE0255FB8A
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 11:14:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DD7555FB92
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 11:16:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232269AbiF2JOA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 05:14:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54836 "EHLO
+        id S230330AbiF2JQW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 05:16:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229534AbiF2JOA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 05:14:00 -0400
-Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [217.70.183.193])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D356720F46;
-        Wed, 29 Jun 2022 02:13:57 -0700 (PDT)
+        with ESMTP id S229772AbiF2JQV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 05:16:21 -0400
+Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BD4B2C660;
+        Wed, 29 Jun 2022 02:16:20 -0700 (PDT)
 Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id AF7EA24000A;
-        Wed, 29 Jun 2022 09:13:52 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 45647C0013;
+        Wed, 29 Jun 2022 09:16:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1656494036;
+        t=1656494178;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=rDHvQvZTZ+R6+aUdOzyCj3VSYkqM3jPLAofXVQtDdKs=;
-        b=bydiXHqeu+ipQRkYLeFH2JmHxjH2WIGFKp3qA2p8qTs6a7F26ADptQeOoLq2C0Fpn6/OsY
-        RH/OZ56cmcDgYw3ABqTGhrukKF/i70oh7D2Qe54WuPO/M1hGw41LBL/j36W/ixGKt7mLGx
-        M4S3FMhE4QvMqyi5rMGcfDcTa/U2nSxTE2G1W570/nsTzP9XBnJ1SDQIizh+1WIabXS4sC
-        wkPDB1ZWxn1S9Lq9B/xveASOcGrUVdEH5ymjgnQcX7Dl/lAMR1oyoRl/0Waiq9pPvp32gZ
-        7yb621L4HpCDyzIVlZfIxTJqoXcIZx/oWa6hQTZDxv1l2yHkMluV2KTcOzSwnQ==
-From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
-        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?UTF-8?q?Miqu=C3=A8l=20Raynal?= <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>
-Subject: [PATCH net-next] dt-bindings: net: dsa: renesas,rzn1-a5psw: add interrupts description
-Date:   Wed, 29 Jun 2022 11:13:04 +0200
-Message-Id: <20220629091305.125291-1-clement.leger@bootlin.com>
-X-Mailer: git-send-email 2.36.1
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=jkmESM416SslUHNUzzLOc5OQPCjAoAiRojL4STsH4VU=;
+        b=fNliQTwONPTuoMJsnDb9UahqAmJ3jHbaFFsB4wuOrAHVu8bPD7mzobr9c1X+n3dfttWfWk
+        y/zfYDyx5s1xMMTmASN31l8o/z78PFoClLu8foJwMG3TD49WI2a4N2N5mzSKX8M7V4VExB
+        9OqVQKKyp6a6Iq341OZ+dZwPhEjaAkU0Zcbo1h/roWVKB56Bg7mGoNg0ZyeA0gb53RJUf3
+        DfekaSnXgs8EyVHBZwo8oRdKf/CVg+iZp/Ht4UY25q9qU1nBo2MZUj9xc9sMeCLYyXDIFr
+        EqzvDxqPGhtW/srfnejWTX08tgf4kftNwcQSw5gvOM4ipQG5MO/ZWiKqnYeSGg==
+Date:   Wed, 29 Jun 2022 11:15:30 +0200
+From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+To:     Yang Yingliang <yangyingliang@huawei.com>
+Cc:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-renesas-soc@vger.kernel.org>, <olteanv@gmail.com>,
+        <f.fainelli@gmail.com>, <davem@davemloft.net>
+Subject: Re: [PATCH -next v2] net: pcs-rzn1-miic: fix return value check in
+ miic_probe()
+Message-ID: <20220629111530.3b74c014@fixe.home>
+In-Reply-To: <20220628131259.3109124-1-yangyingliang@huawei.com>
+References: <20220628131259.3109124-1-yangyingliang@huawei.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Describe the switch interrupts (dlr, switch, prp, hub, pattern) which
-are connected to the GIC.
+Le Tue, 28 Jun 2022 21:12:59 +0800,
+Yang Yingliang <yangyingliang@huawei.com> a =C3=A9crit :
 
-Signed-off-by: Clément Léger <clement.leger@bootlin.com>
----
- .../bindings/net/dsa/renesas,rzn1-a5psw.yaml  | 23 +++++++++++++++++++
- 1 file changed, 23 insertions(+)
+> On failure, devm_platform_ioremap_resource() returns a ERR_PTR() value
+> and not NULL. Fix return value checking by using IS_ERR() and return
+> PTR_ERR() as error value.
+>=20
+> Fixes: 7dc54d3b8d91 ("net: pcs: add Renesas MII converter driver")
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+> ---
+> v2:
+>   change commit message as Cl=C3=A9ment suggested.
+> ---
+>  drivers/net/pcs/pcs-rzn1-miic.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/drivers/net/pcs/pcs-rzn1-miic.c b/drivers/net/pcs/pcs-rzn1-m=
+iic.c
+> index 8f5e910f443d..d896961e48cc 100644
+> --- a/drivers/net/pcs/pcs-rzn1-miic.c
+> +++ b/drivers/net/pcs/pcs-rzn1-miic.c
+> @@ -461,8 +461,8 @@ static int miic_probe(struct platform_device *pdev)
+>  	spin_lock_init(&miic->lock);
+>  	miic->dev =3D dev;
+>  	miic->base =3D devm_platform_ioremap_resource(pdev, 0);
+> -	if (!miic->base)
+> -		return -EINVAL;
+> +	if (IS_ERR(miic->base))
+> +		return PTR_ERR(miic->base);
+> =20
+>  	ret =3D devm_pm_runtime_enable(dev);
+>  	if (ret < 0)
 
-diff --git a/Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml b/Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml
-index 103b1ef5af1b..51f274c16ed1 100644
---- a/Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml
-+++ b/Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml
-@@ -26,6 +26,22 @@ properties:
-   reg:
-     maxItems: 1
- 
-+  interrupts:
-+    items:
-+      - description: DLR interrupt
-+      - description: Switch interrupt
-+      - description: PRP interrupt
-+      - description: Integrated HUB module interrupt
-+      - description: RX Pattern interrupt
-+
-+  interrupts-names:
-+    items:
-+      - const: dlr
-+      - const: switch
-+      - const: prp
-+      - const: hub
-+      - const: ptrn
-+
-   power-domains:
-     maxItems: 1
- 
-@@ -76,6 +92,7 @@ examples:
-   - |
-     #include <dt-bindings/gpio/gpio.h>
-     #include <dt-bindings/clock/r9a06g032-sysctrl.h>
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
- 
-     switch@44050000 {
-         compatible = "renesas,r9a06g032-a5psw", "renesas,rzn1-a5psw";
-@@ -83,6 +100,12 @@ examples:
-         clocks = <&sysctrl R9A06G032_HCLK_SWITCH>, <&sysctrl R9A06G032_CLK_SWITCH>;
-         clock-names = "hclk", "clk";
-         power-domains = <&sysctrl>;
-+        interrupts = <GIC_SPI 40 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 42 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 43 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 44 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 45 IRQ_TYPE_LEVEL_HIGH>;
-+        interrupts-name = "dlr", "switch", "prp", "hub", "ptrn";
- 
-         dsa,member = <0 0>;
- 
--- 
-2.36.1
+LGTM, thanks.
 
+Reviewed-by: Cl=C3=A9ment L=C3=A9ger <clement.leger@bootlin.com>
+
+--=20
+Cl=C3=A9ment L=C3=A9ger,
+Embedded Linux and Kernel engineer at Bootlin
+https://bootlin.com
