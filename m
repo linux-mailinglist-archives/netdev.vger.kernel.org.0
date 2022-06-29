@@ -2,122 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C9EA8560329
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 16:36:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97B8556038D
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 16:48:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232550AbiF2Ofd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 10:35:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38914 "EHLO
+        id S233628AbiF2OrC convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 29 Jun 2022 10:47:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232866AbiF2Ofb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 10:35:31 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD90733EB9;
-        Wed, 29 Jun 2022 07:35:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656513329; x=1688049329;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=cEqvGYYPld/OsvdtFaKN8twS+H01mWDIAjjLlNCYGoc=;
-  b=c9JYhTYO9zcaAeM97L/qUNImTq8UozRGRxQPfLcCR2KfAml28YGCX/jK
-   cVq/y1bFbPoiuD7EmwSFPiCVGBLtPY2O6nwTyK8Bu7DkmDVFcNOGBEjFF
-   sGp5+YkTJt/JOgSU2FKM9Y3EItEygdm/zjW3b6xWCk2R3wsXtdVVD9Mhb
-   3QeKyZG/8NBQGdHUIbyvLNaH8to4b0pU/9xygBPa5SQU/ZtXclPN7sExv
-   9YlzXERVNPQ9c6t9tTbNKH6vSuc7zADRQF2iit47a+VFcx/TDE4AKpWzH
-   4V9cjY8+yTQCZsRb/0ND6FMl56a2gMGWyusEf+Wk1M9m3IekHfC0zP46e
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="368357952"
-X-IronPort-AV: E=Sophos;i="5.92,231,1650956400"; 
-   d="scan'208";a="368357952"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2022 07:35:29 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,231,1650956400"; 
-   d="scan'208";a="590765185"
-Received: from boxer.igk.intel.com ([10.102.20.173])
-  by orsmga002.jf.intel.com with ESMTP; 29 Jun 2022 07:35:27 -0700
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org
-Cc:     netdev@vger.kernel.org, magnus.karlsson@intel.com,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Subject: [PATCH bpf-next 4/4] selftests: xsk: destroy BPF resources only when ctx refcount drops to 0
-Date:   Wed, 29 Jun 2022 16:34:58 +0200
-Message-Id: <20220629143458.934337-5-maciej.fijalkowski@intel.com>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20220629143458.934337-1-maciej.fijalkowski@intel.com>
-References: <20220629143458.934337-1-maciej.fijalkowski@intel.com>
+        with ESMTP id S232039AbiF2OrA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 10:47:00 -0400
+Received: from mail-qv1-f51.google.com (mail-qv1-f51.google.com [209.85.219.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1D18393FF;
+        Wed, 29 Jun 2022 07:46:56 -0700 (PDT)
+Received: by mail-qv1-f51.google.com with SMTP id cu16so25103772qvb.7;
+        Wed, 29 Jun 2022 07:46:56 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=lKCBOPrNloihbU1g4ZnMBHTpej5sTMCTVYThSbP4lGw=;
+        b=PC9JlThrQbhHwBPk3Jk/H01Pd55bdgWM9LeD1fOerfZnQjy8QGLmxt0VG2gnXssOQ3
+         UqFCnukA0M8DopB7/TCiEut1cY9iP8RHv3Xdsauem8gxdYYayr4JUQc5FFJHCvcd9FGz
+         MtWHU5O7cjdzcCLKSqKpfumoVfjMFfN/iIiyrcMTWulhp6kTsLEm+dSRRVDoOfLUpSYo
+         ngpPWV6D2F6xR2meZNth82sH5GZVJ4KN0T6B0sbIgnWeomzAtqQXqoJEJ6wEv1aAPWLm
+         KZoTpLmuR1QGL0KY+Wk0EW//U85ETRlJjDTAPyqBkX9Ox5U/1+/o2PAITNSxPmb08DEu
+         nekA==
+X-Gm-Message-State: AJIora94A2cMyQHNkyhkFqzoQ2OLVIKbhf4LShp09pQOHbBh4Y+RLakQ
+        Wx/YHM4akISLrtWMA0drCOSfIJV+Aa8VZA==
+X-Google-Smtp-Source: AGRyM1s43fyMd0KroXgg5HnVsInZDjNj+GDeg4cPT5ArtF4/b6kiLgOBt5DArEfzUzFfIT2YhLze0g==
+X-Received: by 2002:a05:622a:54b:b0:305:31e4:51fa with SMTP id m11-20020a05622a054b00b0030531e451famr2792548qtx.165.1656514015770;
+        Wed, 29 Jun 2022 07:46:55 -0700 (PDT)
+Received: from mail-yb1-f179.google.com (mail-yb1-f179.google.com. [209.85.219.179])
+        by smtp.gmail.com with ESMTPSA id b20-20020ae9eb14000000b006aee8580a37sm12975109qkg.10.2022.06.29.07.46.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 29 Jun 2022 07:46:55 -0700 (PDT)
+Received: by mail-yb1-f179.google.com with SMTP id x184so25629142ybg.12;
+        Wed, 29 Jun 2022 07:46:55 -0700 (PDT)
+X-Received: by 2002:a81:3a81:0:b0:317:7dcf:81d4 with SMTP id
+ h123-20020a813a81000000b003177dcf81d4mr4187413ywa.47.1656513525966; Wed, 29
+ Jun 2022 07:38:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220624144001.95518-1-clement.leger@bootlin.com> <20220624144001.95518-5-clement.leger@bootlin.com>
+In-Reply-To: <20220624144001.95518-5-clement.leger@bootlin.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 29 Jun 2022 16:38:33 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdXw2zuu-Q30VDF16_sLFO8eU1u8HrbxkYnKyCHK6d41hw@mail.gmail.com>
+Message-ID: <CAMuHMdXw2zuu-Q30VDF16_sLFO8eU1u8HrbxkYnKyCHK6d41hw@mail.gmail.com>
+Subject: Re: [PATCH net-next v9 04/16] dt-bindings: net: pcs: add bindings for
+ Renesas RZ/N1 MII converter
+To:     =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?UTF-8?Q?Miqu=C3=A8l_Raynal?= <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, Rob Herring <robh@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, xsk_socket__delete frees BPF resources regardless of ctx
-refcount. Xdpxceiver has a test to verify whether underlying BPF
-resources would not be wiped out after closing XSK socket that was bound
-to interface with other active sockets. From library's xsk part
-perspective it also means that the internal xsk context is shared and
-its refcount is bumped accordingly.
+On Fri, Jun 24, 2022 at 4:41 PM Clément Léger <clement.leger@bootlin.com> wrote:
+> This MII converter can be found on the RZ/N1 processor family. The MII
+> converter ports are declared as subnodes which are then referenced by
+> users of the PCS driver such as the switch.
+>
+> Signed-off-by: Clément Léger <clement.leger@bootlin.com>
+> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+> Reviewed-by: Rob Herring <robh@kernel.org>
+> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> ---
+>  .../bindings/net/pcs/renesas,rzn1-miic.yaml   | 171 ++++++++++++++++++
+>  include/dt-bindings/net/pcs-rzn1-miic.h       |  33 ++++
+>  2 files changed, 204 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/pcs/renesas,rzn1-miic.yaml
+>  create mode 100644 include/dt-bindings/net/pcs-rzn1-miic.h
 
-After a switch to loading XDP prog based on previously opened XSK
-socket, mentioned xdpxceiver test fails with:
-not ok 16 [xdpxceiver.c:swap_xsk_resources:1334]: ERROR: 9/"Bad file descriptor
+As the DT binding definitions are shared by driver and DT sources,
+I have queued this patch in renesas-devel for v5.20, too.
+Ideally, it should have been applied to a shared immutable branch.
 
-which means that in swap_xsk_resources(), xsk_socket__delete() released
-xskmap which in turn caused a failure of xsk_socket__update_xskmap().
+Gr{oetje,eeting}s,
 
-To fix this, when deleting socket, decrement ctx refcount before
-releasing BPF resources and do so only when refcount dropped to 0 which
-means there are no more active sockets for this ctx so BPF resources can
-be freed safely.
+                        Geert
 
-Fixes: 2f6324a3937f ("libbpf: Support shared umems between queues and devices")
-Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
----
- tools/testing/selftests/bpf/xsk.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-diff --git a/tools/testing/selftests/bpf/xsk.c b/tools/testing/selftests/bpf/xsk.c
-index db911127720e..95ce5cd572bb 100644
---- a/tools/testing/selftests/bpf/xsk.c
-+++ b/tools/testing/selftests/bpf/xsk.c
-@@ -1156,8 +1156,6 @@ int xsk_socket__create_shared(struct xsk_socket **xsk_ptr,
- 		goto out_mmap_tx;
- 	}
- 
--	ctx->prog_fd = -1;
--
- 	if (!(xsk->config.libbpf_flags & XSK_LIBBPF_FLAGS__INHIBIT_PROG_LOAD)) {
- 		err = __xsk_setup_xdp_prog(xsk, NULL);
- 		if (err)
-@@ -1238,7 +1236,10 @@ void xsk_socket__delete(struct xsk_socket *xsk)
- 
- 	ctx = xsk->ctx;
- 	umem = ctx->umem;
--	if (ctx->prog_fd != -1) {
-+
-+	xsk_put_ctx(ctx, true);
-+
-+	if (!ctx->refcount) {
- 		xsk_delete_bpf_maps(xsk);
- 		close(ctx->prog_fd);
- 		if (ctx->has_bpf_link)
-@@ -1257,7 +1258,6 @@ void xsk_socket__delete(struct xsk_socket *xsk)
- 		}
- 	}
- 
--	xsk_put_ctx(ctx, true);
- 
- 	umem->refcount--;
- 	/* Do not close an fd that also has an associated umem connected
--- 
-2.27.0
-
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
