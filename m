@@ -2,70 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AF1385605A1
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 18:19:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B08A5605A4
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 18:20:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231613AbiF2QTM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 12:19:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33966 "EHLO
+        id S231735AbiF2QUN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 12:20:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229649AbiF2QTL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 12:19:11 -0400
-Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BE23220F4
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 09:19:11 -0700 (PDT)
-Received: by mail-pj1-x1049.google.com with SMTP id f8-20020a17090ac28800b001ed312c6fe1so5791267pjt.8
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 09:19:11 -0700 (PDT)
+        with ESMTP id S229699AbiF2QUM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 12:20:12 -0400
+Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08728344C7
+        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 09:20:10 -0700 (PDT)
+Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-317741c86fdso153118367b3.2
+        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 09:20:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=7SL+gVI/1fryiXm08kyzMRVdUsXymda8l5P6QPOWawE=;
-        b=H3XcadEg4vciLzRz4FYeNoHZOSwjncFglokoX9llcnmukYNDhHjrIB04MiFmu7CxYz
-         w7DQanNzY6SkkhfvrLFmJQZYQavVHw870ZBd7aTe3byVVv09skv3qtPgqKOlnvhVZ02/
-         TvgePho6cduPYSwAp4/faB2iAr7nFu9MxuwzFCF7s/F1Pntxw1e//yResZoiJTrAyya2
-         J+zoNVcXW1sDERfnfj+qx0gRkaO147nKB49rFLGqIgC6IpB+hRcf24Ss6iaWVdNXKHxQ
-         7G+SHkU4Ud/2CPS5tXyFHEiYjKre9PmvEVMCrNRZboQ9mcUZzPP2mkIsfURel/Xf27Dj
-         FVxw==
+        bh=EMPWdq/I+lPKqNd/fDVbNzWWr2RoFlkpAnrXoeK2nUo=;
+        b=NB4/yScx1TfL6ixPtfgy/J5tpPwta7VfoQ2jmjdwx9gIm2wCdug0MIP3ZpsXDsBDlj
+         34Jm7SWPIZq9pbmMBbOA4ZMAVTeLtz9nKQU4EWl/Vr6tzTB3b7erIxunLKl591/AUk3y
+         QGk9wbU/p7MVnCLrMBqSGFRShEwBBep+FZtauNgfwaxM8kiStUz1/yZzi55zIDkjlKwq
+         WipptdWhAbFn3xr1OKNKUlUz6NZQHgYKAcqsmISLGPdH88zX/9NeqOls2EU3Lbj1sV32
+         QjHJDfwtFXhkwluRt52y3VV5p0aGAx223ZI71613qK3obH7BYQSCa7w3f+YXBT6n+GYe
+         5S2g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=7SL+gVI/1fryiXm08kyzMRVdUsXymda8l5P6QPOWawE=;
-        b=bessWFWexDY5Ed+mt4W3BvGE12JsVNobT7NhnlKSHwf3ajoWDI73/2OPwLIdbohx6q
-         XpSNdeeqqtQ9OMS+X983dRzudsnuSbvx7a+/fJOXMBEnmdsuIUk7UpaTpY8XGKnAW5or
-         ATGIr5uvk8S3oGonL1BB6Z4S1BJJdO2p8p9tHGkN6cOokthAYiVv3lSbKT0ka52TMQKH
-         mUprM/SWVKUXKieRDtp05x70FCC29TVepYem0pkYVJPbW3kVZsnhiVywvLPdzttVf/lb
-         SRKVGFGFhJaz3WU8apxxitFB9idJneExFQfIB6EraG5NgrhuXxQh7GXJdyKYngUBWElB
-         0m8Q==
-X-Gm-Message-State: AJIora9iwFbx9HmsosQfvtcWtrN7NxJJssT5sXrx7uBZPcnAVpWd79ra
-        HC1lUd4LJ7n3I/tDG3NGUPtvGDk=
-X-Google-Smtp-Source: AGRyM1u1W1f8DXAze5wNrV2deRxfeHXDBJqxZSrE/Dzb/pWBlmtNMjFV7O+3nTvmyiPBF4d8LWK4ilY=
-X-Received: from sdf.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5935])
- (user=sdf job=sendgmr) by 2002:a17:90a:d904:b0:1ec:730c:bcac with SMTP id
- c4-20020a17090ad90400b001ec730cbcacmr6665641pjv.93.1656519550556; Wed, 29 Jun
- 2022 09:19:10 -0700 (PDT)
-Date:   Wed, 29 Jun 2022 09:19:08 -0700
-In-Reply-To: <20220629111351.47699-1-quentin@isovalent.com>
-Message-Id: <Yrx7fFFOC0Emzorz@google.com>
-Mime-Version: 1.0
-References: <20220629111351.47699-1-quentin@isovalent.com>
-Subject: Re: [PATCH bpf-next v2] bpftool: Probe for memcg-based accounting
- before bumping rlimit
-From:   sdf@google.com
-To:     Quentin Monnet <quentin@isovalent.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, Yafang Shao <laoar.shao@gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=EMPWdq/I+lPKqNd/fDVbNzWWr2RoFlkpAnrXoeK2nUo=;
+        b=1vwWcEZkplOURFcX1xDNmTm94b5q1XvjhV0Iio/H654TRuSeMVpf01xlsVFM6EoV+W
+         oWD5lxbWiNdPfPh9sTDLRQiuWgMlRnfv128n0prRr7uzSUWlNFGdyaXCioUGRiNKt3/f
+         CQRsiqiwCAtiKzinVE/3U6JSZCvCNTARCvAoLwAwYIOo7sJWWpBT7AdrDHunxRCz9sms
+         mM+dhf+E4bgph6lC+R3oc53DmPfW61EJG5vYn/LMBY5MowCB8FLbK7Q5v5bmNCfGlKLN
+         HJBH7xfY66+vggiZYOju/xF3q3n2LQI1XESSJ9VrtBt9rgYTOpwaplJ+aZQBnKBgxD9g
+         VWhg==
+X-Gm-Message-State: AJIora8MhwXw7LFyLudNJdmpqmEFs4gkK8ZKsScFzpVcOE9/I8CocaEa
+        0Q/DKQ5EylgXs1tcpRkZUySsAa35r+h+qyscYYUqNQ==
+X-Google-Smtp-Source: AGRyM1sjfZI0HW3DtQnWfXaVj9Qvvy1yR0579oHZIZneFS4HpXPniV0tKqkxUln0qYFcOQiWfhxlB55fdK8whilV3vE=
+X-Received: by 2002:a81:e93:0:b0:317:8db7:aa8e with SMTP id
+ 141-20020a810e93000000b003178db7aa8emr4860124ywo.55.1656519609796; Wed, 29
+ Jun 2022 09:20:09 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220629093752.1935215-1-edumazet@google.com> <20220629091750.1f0dc8ed@kernel.org>
+In-Reply-To: <20220629091750.1f0dc8ed@kernel.org>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 29 Jun 2022 18:19:58 +0200
+Message-ID: <CANn89iJxAL5v0FtkaRXjDH--PeTB7MoqV1Y16YQoOgDUCNXjmw@mail.gmail.com>
+Subject: Re: [PATCH net] net: tun: do not call napi_disable() twice
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        Petar Penkov <ppenkov@aviatrix.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -73,45 +70,176 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 06/29, Quentin Monnet wrote:
-> Bpftool used to bump the memlock rlimit to make sure to be able to load
-> BPF objects. After the kernel has switched to memcg-based memory
-> accounting [0] in 5.11, bpftool has relied on libbpf to probe the system
-> for memcg-based accounting support and for raising the rlimit if
-> necessary [1]. But this was later reverted, because the probe would
-> sometimes fail, resulting in bpftool not being able to load all required
-> objects [2].
+On Wed, Jun 29, 2022 at 6:17 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Wed, 29 Jun 2022 09:37:52 +0000 Eric Dumazet wrote:
+> > syzbot reported a hang in tun_napi_disable() while RTNL is held.
+> >
+> > Because tun.c logic is complicated, I chose to:
+> >
+> > 1) rename tun->napi_enabled to tun->napi_configured
+> >
+> > 2) Add a new boolean, tracking if tun->napi is enabled or not.
+>
+> Not a huge surprise TBH :S
+>
+> Is there a repro?
 
-> Here we add a more efficient probe, in bpftool itself. We first lower
-> the rlimit to 0, then we attempt to load a BPF object (and finally reset
-> the rlimit): if the load succeeds, then memcg-based memory accounting is
-> supported.
+Yes, here it is:
 
-> This approach was earlier proposed for the probe in libbpf itself [3],
-> but given that the library may be used in multithreaded applications,
-> the probe could have undesirable consequences if one thread attempts to
-> lock kernel memory while memlock rlimit is at 0. Since bpftool is
-> single-threaded and the rlimit is process-based, this is fine to do in
-> bpftool itself.
+// autogenerated by syzkaller (https://github.com/google/syzkaller)
 
-> This probe was inspired by the similar one from the cilium/ebpf Go
-> library [4].
+#define _GNU_SOURCE
 
-> v2:
-> - Simply use sizeof(attr) instead of hardcoding a size via
->    offsetofend().
-> - Set r0 = 0 before returning in sample program.
+#include <dirent.h>
+#include <endian.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <signal.h>
+#include <stdarg.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/prctl.h>
+#include <sys/stat.h>
+#include <sys/syscall.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <time.h>
+#include <unistd.h>
 
-> [0] commit 97306be45fbe ("Merge branch 'switch to memcg-based memory  
-> accounting'")
-> [1] commit a777e18f1bcd ("bpftool: Use libbpf 1.0 API mode instead of  
-> RLIMIT_MEMLOCK")
-> [2] commit 6b4384ff1088 ("Revert "bpftool: Use libbpf 1.0 API mode  
-> instead of RLIMIT_MEMLOCK"")
-> [3]  
-> https://lore.kernel.org/bpf/20220609143614.97837-1-quentin@isovalent.com/t/#u
-> [4] https://github.com/cilium/ebpf/blob/v0.9.0/rlimit/rlimit.go#L39
+static void sleep_ms(uint64_t ms)
+{
+  usleep(ms * 1000);
+}
 
-> Cc: Stanislav Fomichev <sdf@google.com>
+static uint64_t current_time_ms(void)
+{
+  struct timespec ts;
+  if (clock_gettime(CLOCK_MONOTONIC, &ts))
+    exit(1);
+  return (uint64_t)ts.tv_sec * 1000 + (uint64_t)ts.tv_nsec / 1000000;
+}
 
-Reviewed-by: Stanislav Fomichev <sdf@google.com>
+static bool write_file(const char* file, const char* what, ...)
+{
+  char buf[1024];
+  va_list args;
+  va_start(args, what);
+  vsnprintf(buf, sizeof(buf), what, args);
+  va_end(args);
+  buf[sizeof(buf) - 1] = 0;
+  int len = strlen(buf);
+  int fd = open(file, O_WRONLY | O_CLOEXEC);
+  if (fd == -1)
+    return false;
+  if (write(fd, buf, len) != len) {
+    int err = errno;
+    close(fd);
+    errno = err;
+    return false;
+  }
+  close(fd);
+  return true;
+}
+
+static void kill_and_wait(int pid, int* status)
+{
+  kill(-pid, SIGKILL);
+  kill(pid, SIGKILL);
+  for (int i = 0; i < 100; i++) {
+    if (waitpid(-1, status, WNOHANG | __WALL) == pid)
+      return;
+    usleep(1000);
+  }
+  DIR* dir = opendir("/sys/fs/fuse/connections");
+  if (dir) {
+    for (;;) {
+      struct dirent* ent = readdir(dir);
+      if (!ent)
+        break;
+      if (strcmp(ent->d_name, ".") == 0 || strcmp(ent->d_name, "..") == 0)
+        continue;
+      char abort[300];
+      snprintf(abort, sizeof(abort), "/sys/fs/fuse/connections/%s/abort",
+               ent->d_name);
+      int fd = open(abort, O_WRONLY);
+      if (fd == -1) {
+        continue;
+      }
+      if (write(fd, abort, 1) < 0) {
+      }
+      close(fd);
+    }
+    closedir(dir);
+  } else {
+  }
+  while (waitpid(-1, status, __WALL) != pid) {
+  }
+}
+
+static void setup_test()
+{
+  prctl(PR_SET_PDEATHSIG, SIGKILL, 0, 0, 0);
+  setpgrp();
+  write_file("/proc/self/oom_score_adj", "1000");
+}
+
+static void execute_one(void);
+
+#define WAIT_FLAGS __WALL
+
+static void loop(void)
+{
+  int iter = 0;
+  for (;; iter++) {
+    int pid = fork();
+    if (pid < 0)
+      exit(1);
+    if (pid == 0) {
+      setup_test();
+      execute_one();
+      exit(0);
+    }
+    int status = 0;
+    uint64_t start = current_time_ms();
+    for (;;) {
+      if (waitpid(-1, &status, WNOHANG | WAIT_FLAGS) == pid)
+        break;
+      sleep_ms(1);
+      if (current_time_ms() - start < 5000)
+        continue;
+      kill_and_wait(pid, &status);
+      break;
+    }
+  }
+}
+
+uint64_t r[1] = {0xffffffffffffffff};
+
+void execute_one(void)
+{
+  intptr_t res = 0;
+  memcpy((void*)0x20000100, "/dev/net/tun\000", 13);
+  res = syscall(__NR_openat, 0xffffffffffffff9cul, 0x20000100ul, 0ul, 0ul);
+  if (res != -1)
+    r[0] = res;
+  memcpy((void*)0x20000040, "netpci0\000\000\000\000\000\000\000\000\000", 16);
+  *(uint16_t*)0x20000050 = 0x2512;
+  syscall(__NR_ioctl, r[0], 0x400454ca, 0x20000040ul);
+  memcpy((void*)0x200001c0, "caif0\000\000\000\000\000\000\000\000\000\000\000",
+         16);
+  *(uint16_t*)0x200001d0 = 0x400;
+  syscall(__NR_ioctl, r[0], 0x400454d9, 0x200001c0ul);
+  syscall(__NR_ioctl, r[0], 0x401054d5, 0ul);
+}
+int main(void)
+{
+  syscall(__NR_mmap, 0x1ffff000ul, 0x1000ul, 0ul, 0x32ul, -1, 0ul);
+  syscall(__NR_mmap, 0x20000000ul, 0x1000000ul, 7ul, 0x32ul, -1, 0ul);
+  syscall(__NR_mmap, 0x21000000ul, 0x1000ul, 0ul, 0x32ul, -1, 0ul);
+  loop();
+  return 0;
+}
