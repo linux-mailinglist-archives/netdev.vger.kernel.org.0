@@ -2,50 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 69B47560188
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 15:40:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 85E6A560170
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 15:36:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233241AbiF2Njk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 09:39:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42414 "EHLO
+        id S233823AbiF2NgC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 09:36:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231933AbiF2Njj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 09:39:39 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4361D15FE1;
-        Wed, 29 Jun 2022 06:39:38 -0700 (PDT)
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LY2cG4lNsz9sx7;
-        Wed, 29 Jun 2022 21:38:54 +0800 (CST)
-Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 29 Jun 2022 21:39:35 +0800
-Received: from localhost.localdomain (10.67.165.24) by
- kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 29 Jun 2022 21:39:34 +0800
-From:   Guangbin Huang <huangguangbin2@huawei.com>
-To:     <jbrouer@redhat.com>, <hawk@kernel.org>, <brouer@redhat.com>,
-        <ilias.apalodimas@linaro.org>, <davem@davemloft.net>,
-        <kuba@kernel.org>, <edumazet@google.com>, <pabeni@redhat.com>
-CC:     <lorenzo@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <bpf@vger.kernel.org>,
-        <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
-        <chenhao288@hisilicon.com>
-Subject: [PATCH net-next v2] net: page_pool: optimize page pool page allocation in NUMA scenario
-Date:   Wed, 29 Jun 2022 21:33:05 +0800
-Message-ID: <20220629133305.15012-1-huangguangbin2@huawei.com>
-X-Mailer: git-send-email 2.33.0
+        with ESMTP id S233825AbiF2NgA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 09:36:00 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C8272C12C
+        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 06:36:00 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1o6Xqa-0006SP-06; Wed, 29 Jun 2022 15:35:12 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1o6XqQ-003PNQ-Vz; Wed, 29 Jun 2022 15:35:06 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1o6XqT-001txR-NY; Wed, 29 Jun 2022 15:35:05 +0200
+Date:   Wed, 29 Jun 2022 15:35:04 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Andrey Ryabinin <ryabinin.a.a@gmail.com>
+Cc:     Wolfram Sang <wsa@kernel.org>, dri-devel@lists.freedesktop.org,
+        linux-omap@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-mtd@lists.infradead.org,
+        linux-leds@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-crypto@vger.kernel.org,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        devicetree@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-clk@vger.kernel.org, alsa-devel@alsa-project.org,
+        linux-watchdog@vger.kernel.org,
+        acpi4asus-user@lists.sourceforge.net,
+        linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org,
+        linux-usb@vger.kernel.org, platform-driver-x86@vger.kernel.org,
+        linux-integrity@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-rtc@vger.kernel.org, netdev@vger.kernel.org,
+        chrome-platform@lists.linux.dev, linux-input@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org,
+        openipmi-developer@lists.sourceforge.net,
+        linux-hwmon@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        patches@opensource.cirrus.com, UNGLinuxDriver@microchip.com,
+        linux-pwm@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-staging@lists.linux.dev
+Subject: Re: [PATCH 6/6] i2c: Make remove callback return void
+Message-ID: <20220629133504.syc6x4ptia3mnof5@pengutronix.de>
+References: <20220628140313.74984-1-u.kleine-koenig@pengutronix.de>
+ <20220628140313.74984-7-u.kleine-koenig@pengutronix.de>
+ <CAPAsAGwP4Mw_CJfsi7oapABdTBwO1HfiQux6X4UahspU74VjtQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemm600016.china.huawei.com (7.193.23.20)
-X-CFilter-Loop: Reflected
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="5z6hgi6euioj5d47"
+Content-Disposition: inline
+In-Reply-To: <CAPAsAGwP4Mw_CJfsi7oapABdTBwO1HfiQux6X4UahspU74VjtQ@mail.gmail.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -53,96 +75,76 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jie Wang <wangjie125@huawei.com>
 
-Currently NIC packet receiving performance based on page pool deteriorates
-occasionally. To analysis the causes of this problem page allocation stats
-are collected. Here are the stats when NIC rx performance deteriorates:
+--5z6hgi6euioj5d47
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-bandwidth(Gbits/s)		16.8		6.91
-rx_pp_alloc_fast		13794308	21141869
-rx_pp_alloc_slow		108625		166481
-rx_pp_alloc_slow_h		0		0
-rx_pp_alloc_empty		8192		8192
-rx_pp_alloc_refill		0		0
-rx_pp_alloc_waive		100433		158289
-rx_pp_recycle_cached		0		0
-rx_pp_recycle_cache_full	0		0
-rx_pp_recycle_ring		362400		420281
-rx_pp_recycle_ring_full		6064893		9709724
-rx_pp_recycle_released_ref	0		0
+[Dropped most people from Cc, keeping only lists]
 
-The rx_pp_alloc_waive count indicates that a large number of pages' numa
-node are inconsistent with the NIC device numa node. Therefore these pages
-can't be reused by the page pool. As a result, many new pages would be
-allocated by __page_pool_alloc_pages_slow which is time consuming. This
-causes the NIC rx performance fluctuations.
+On Wed, Jun 29, 2022 at 04:11:26PM +0300, Andrey Ryabinin wrote:
+> On 6/28/22 17:03, Uwe Kleine-K=F6nig wrote:
+> > From: Uwe Kleine-K=F6nig <uwe@kleine-koenig.org>
+> >
+> > The value returned by an i2c driver's remove function is mostly ignored.
+> > (Only an error message is printed if the value is non-zero that the
+> > error is ignored.)
+> >
+> > So change the prototype of the remove function to return no value. This
+> > way driver authors are not tempted to assume that passing an error to
+> > the upper layer is a good idea. All drivers are adapted accordingly.
+> > There is no intended change of behaviour, all callbacks were prepared to
+> > return 0 before.
+> >
+> > Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+> > ---
+>                                     | 2 +-
+> >  lib/Kconfig.kasan                                         | 1 +
+>=20
+> > diff --git a/lib/Kconfig.kasan b/lib/Kconfig.kasan
+> > index f0973da583e0..366e61639cb2 100644
+> > --- a/lib/Kconfig.kasan
+> > +++ b/lib/Kconfig.kasan
+> > @@ -149,6 +149,7 @@ config KASAN_STACK
+> >       depends on KASAN_GENERIC || KASAN_SW_TAGS
+> >       depends on !ARCH_DISABLE_KASAN_INLINE
+> >       default y if CC_IS_GCC
+> > +     depends on !ARM
+> >       help
+> >         Disables stack instrumentation and thus KASAN's ability to dete=
+ct
+> >         out-of-bounds bugs in stack variables.
+>=20
+>=20
+> What is this doing here?
 
-The main reason of huge numa mismatch pages in page pool is that page pool
-uses alloc_pages_bulk_array to allocate original pages. This function is
-not suitable for page allocation in NUMA scenario. So this patch uses
-alloc_pages_bulk_array_node which has a NUMA id input parameter to ensure
-the NUMA consistent between NIC device and allocated pages.
+Huh, that is wrong. I needed that for build testing, but it shouldn't
+have been added to the patch. I'm dropping that for the final
+submission.
 
-Repeated NIC rx performance tests are performed 40 times. NIC rx bandwidth
-is higher and more stable compared to the datas above. Here are three test
-stats, the rx_pp_alloc_waive count is zero and rx_pp_alloc_slow which
-indicates pages allocated from slow patch is relatively low.
+Thanks for spotting.
 
-bandwidth(Gbits/s)		93		93.9		93.8
-rx_pp_alloc_fast		60066264	61266386	60938254
-rx_pp_alloc_slow		16512		16517		16539
-rx_pp_alloc_slow_ho		0		0		0
-rx_pp_alloc_empty		16512		16517		16539
-rx_pp_alloc_refill		473841		481910		481585
-rx_pp_alloc_waive		0		0		0
-rx_pp_recycle_cached		0		0		0
-rx_pp_recycle_cache_full	0		0		0
-rx_pp_recycle_ring		29754145	30358243	30194023
-rx_pp_recycle_ring_full		0		0		0
-rx_pp_recycle_released_ref	0		0		0
+Best regards
+Uwe
 
-Signed-off-by: Jie Wang <wangjie125@huawei.com>
----
-v1->v2:
-1, Remove two inappropriate comments.
-2, Use NUMA_NO_NODE instead of numa_mem_id() for code maintenance.
----
- net/core/page_pool.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
 
-diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-index f18e6e771993..64cb2c617de8 100644
---- a/net/core/page_pool.c
-+++ b/net/core/page_pool.c
-@@ -377,6 +377,7 @@ static struct page *__page_pool_alloc_pages_slow(struct page_pool *pool,
- 	unsigned int pp_order = pool->p.order;
- 	struct page *page;
- 	int i, nr_pages;
-+	int pref_nid; /* preferred NUMA node */
- 
- 	/* Don't support bulk alloc for high-order pages */
- 	if (unlikely(pp_order))
-@@ -386,10 +387,18 @@ static struct page *__page_pool_alloc_pages_slow(struct page_pool *pool,
- 	if (unlikely(pool->alloc.count > 0))
- 		return pool->alloc.cache[--pool->alloc.count];
- 
-+#ifdef CONFIG_NUMA
-+	pref_nid = (pool->p.nid == NUMA_NO_NODE) ? numa_mem_id() : pool->p.nid;
-+#else
-+	/* Ignore pool->p.nid setting if !CONFIG_NUMA */
-+	pref_nid = NUMA_NO_NODE;
-+#endif
-+
- 	/* Mark empty alloc.cache slots "empty" for alloc_pages_bulk_array */
- 	memset(&pool->alloc.cache, 0, sizeof(void *) * bulk);
- 
--	nr_pages = alloc_pages_bulk_array(gfp, bulk, pool->alloc.cache);
-+	nr_pages = alloc_pages_bulk_array_node(gfp, pref_nid, bulk,
-+					       pool->alloc.cache);
- 	if (unlikely(!nr_pages))
- 		return NULL;
- 
--- 
-2.33.0
+--5z6hgi6euioj5d47
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmK8VQUACgkQwfwUeK3K
+7AkL0wf/Ra+JtsXozoGjhV4ADtJcJAo/mOIZQ6qOdPZGqHYkMvBmkEJ9zbvY4Edk
+SwYoapiHgVT4tDX56ekEGnm/x3udNUt5wugpsqDm4oAgYtbBCMEVtHbp3t/AqMp2
+sZcn0JsvUs6FVWSTomD396Pt10x0r+JrPTJVY2pwj1nUUV63/25oIT/4I77IughK
+LvQBMIesHK9damtObmRGqI5Ljz1L6SP7WgiLSEq1R/LjSeEwbURT3ijca95YO2Jv
+YyxoC7TiNJj2uJiisjl/r1T/LdGF6RpMN197XQjcvaZ0sbTZRF2vXlqp3cSyXrCG
+BbT2nohQYXjznouz9TIuBFtA0iX7SA==
+=YEZr
+-----END PGP SIGNATURE-----
+
+--5z6hgi6euioj5d47--
