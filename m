@@ -2,43 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D95855FC42
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 11:43:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E5C7F55FC58
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 11:43:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230514AbiF2Jmr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 05:42:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54712 "EHLO
+        id S233041AbiF2Jno (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 05:43:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232291AbiF2Jmq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 05:42:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 410543C73B
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 02:42:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C372961E79
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 09:42:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DF0FC34114;
-        Wed, 29 Jun 2022 09:42:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656495764;
-        bh=MEl0vg9GTCB5iXg1ZWtAa7qkI3VVbL6aXBPDXXd1xSA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ku4zM1hZMTWeMyJZKMslPkCvvXCEFAJkTIz6pDjPwdMCsf9nY7EJCeDQ8eWaGPcgH
-         xlv56tDnnqoP8pPaF+jxvZMkm3i8pUiPJqRZ2XNngSPxFJfy4ij3SuHEQBbNNgVg+z
-         mBHvvGGEPfiSRrsHisVYsn2X4N1ShnXV6+EXeZyGHgIbhMnasQng4d1zB6BEihr+GD
-         SMlED15lHbCbcIBj89X4NRo/+2FQqxMUjcR0uJjK1S5f4K2pCvQ08v/NRN5SyBjrBf
-         RTB2I4OANA9jO9icOKynxJkJNTsCSvnT+OjErgLuJM/Lp3i8t98lELrQjjY53oO2bv
-         UNwy0NTZ3lDEw==
-Date:   Wed, 29 Jun 2022 11:42:35 +0200
-From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
+        with ESMTP id S231338AbiF2Jnm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 05:43:42 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AE042C649
+        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 02:43:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=/0f0mtJY9AEVyG9cKutPtOpi9e0QBZowrNf+7r5nfHQ=; b=O9hU6gJ9Cm4QGif7+OHrsFDoK+
+        N/KBHkiZetFbU6fRkM9mVr+ZJDjpRl1uY4+K8BwYbSCtQa2aIlYQnOXYtLUXUoSLDVGiOmsMbyGYM
+        FRUPpwwozk6IL/xCy5unJV3tFKyKdGjo7OYe1v0lXKOU8lXaW9HvrCo6b6thTguKKxq568CdAeetI
+        d0nVHqbCcyJytKISetWwFzETW+gWwCV/BLQAAcG03nsqC4F9nYxpFG+jCGAunenoOikYbS3XNi7UE
+        UlTQcM3HG4dId4ZLIa84KSbtddqTKDJ23OQvD0crkGcnKJDdAbwiTkLpdgGWHRUuWOOjXiYA7plM9
+        WzN3CBXw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33086)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1o6UEI-0002mF-Ue; Wed, 29 Jun 2022 10:43:26 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1o6UEF-0005ki-OW; Wed, 29 Jun 2022 10:43:23 +0100
+Date:   Wed, 29 Jun 2022 10:43:23 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Alvin =?UTF-8?B?xaBp?= =?UTF-8?B?cHJhZ2E=?= 
-        <alsi@bang-olufsen.dk>, Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
         "David S. Miller" <davem@davemloft.net>,
         DENG Qingfang <dqfext@gmail.com>,
         Eric Dumazet <edumazet@google.com>,
@@ -51,6 +53,7 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Linus Walleij <linus.walleij@linaro.org>,
         linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org,
+        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
         Matthias Brugger <matthias.bgg@gmail.com>,
         netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
         Sean Wang <sean.wang@mediatek.com>,
@@ -59,64 +62,57 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Vladimir Oltean <olteanv@gmail.com>,
         Woojung Huh <woojung.huh@microchip.com>
 Subject: Re: [PATCH RFC net-next 0/4] net: dsa: always use phylink
-Message-ID: <20220629114235.6110eed0@thinkpad>
-In-Reply-To: <YrwcpDbmnYpfJuYM@shell.armlinux.org.uk>
+Message-ID: <YrweuzL2LYNbfvAY@shell.armlinux.org.uk>
 References: <YrWi5oBFn7vR15BH@shell.armlinux.org.uk>
-        <YrtvoRhUK+4BneYC@shell.armlinux.org.uk>
-        <Yrv8snvIChmoNPwh@lunn.ch>
-        <20220629112750.4e0ae994@thinkpad>
-        <YrwcpDbmnYpfJuYM@shell.armlinux.org.uk>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+ <YrtvoRhUK+4BneYC@shell.armlinux.org.uk>
+ <Yrv8snvIChmoNPwh@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yrv8snvIChmoNPwh@lunn.ch>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 29 Jun 2022 10:34:28 +0100
-"Russell King (Oracle)" <linux@armlinux.org.uk> wrote:
+On Wed, Jun 29, 2022 at 09:18:10AM +0200, Andrew Lunn wrote:
+> > I should point out that if a DSA port can be programmed in software to
+> > support both SGMII and 1000baseX, this will end up selecting SGMII
+> > irrespective of what the hardware was wire-strapped to and how it was
+> > initially configured. Do we believe that would be acceptable?
+> 
+> I'm pretty sure the devel b board has 1000BaseX DSA links between its
+> two switches. Since both should end up SGMII that should be O.K.
 
-> On Wed, Jun 29, 2022 at 11:27:50AM +0200, Marek Beh=C3=BAn wrote:
-> > On Wed, 29 Jun 2022 09:18:10 +0200
-> > Andrew Lunn <andrew@lunn.ch> wrote:
-> >  =20
-> > > > I should point out that if a DSA port can be programmed in software=
- to
-> > > > support both SGMII and 1000baseX, this will end up selecting SGMII
-> > > > irrespective of what the hardware was wire-strapped to and how it w=
-as
-> > > > initially configured. Do we believe that would be acceptable?   =20
-> > >=20
-> > > I'm pretty sure the devel b board has 1000BaseX DSA links between its
-> > > two switches. Since both should end up SGMII that should be O.K.
-> > >=20
-> > > Where we potentially have issues is 1000BaseX to the CPU. This is not
-> > > an issue for the Vybrid based boards, since they are fast Ethernet
-> > > only, but there are some boards with an IMX6 with 1G ethernet. I guess
-> > > they currently use 1000BaseX, and the CPU side of the link probably
-> > > has a fixed-link with phy-mode =3D 1000BaseX. So we might have an iss=
-ue
-> > > there. =20
-> >=20
-> > If one side of the link (e.g. only the CPU eth interface) has 1000base-x
-> > specified in device-tree explicitly, the code should keep it at
-> > 1000base-x for the DSA CPU port... =20
->=20
-> So does that mean that, if we don't find a phy-mode property in the cpu
-> port node, we should chase the ethernet property and check there? This
-> seems to be adding functionality that wasn't there before.
+Would such a port have a programmable C_Mode, and would it specify that
+it supports both SGMII and 1000BaseX ? Without going through a lot of
+boards and documentation for every switch, I can't say.
 
-It wasn't there before, but it would make sense IMO.
+I don't think we can come to any conclusion on what the right way to
+deal with this actually is - we don't have enough information about how
+this is used across all the platforms we have. I think we can only try
+something, get it merged into net-next, and wait to see whether anyone
+complains.
 
-1. if cpu port has explicit phy-mode, use that
-2. otherwise look at the mode defined for peer
-3. otherwise try to compute the best possible mode for both peers
+When we have a CPU or DSA port without a fixed-link, phy or sfp specified,
+I think we should:
+(a) use the phy-mode property if present, otherwise,
+(b,i) have the DSA driver return the interface mode that it wants to use
+for max speed for CPU and DSA ports.
+(b,ii) in the absence of the DSA driver returning a valid interface mode,
+we use the supported_interfaces to find an interface which gives the
+maximum speed (irrespective of duplex?) that falls within the
+mac capabilities.
 
-Marek
+If all those fail, then things will break, and we will have to wait for
+people to report that breakage. Does this sound a sane approach, or
+does anyone have any other suggestions how to solve this?
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
