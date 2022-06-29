@@ -2,115 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7908156014E
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 15:33:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A22D1560152
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 15:33:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233582AbiF2NbX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 09:31:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33900 "EHLO
+        id S233816AbiF2NcI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 09:32:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230214AbiF2NbW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 09:31:22 -0400
-Received: from out28-4.mail.aliyun.com (out28-4.mail.aliyun.com [115.124.28.4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E8D535DF1;
-        Wed, 29 Jun 2022 06:31:11 -0700 (PDT)
-X-Alimail-AntiSpam: AC=CONTINUE;BC=0.08042336|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_system_inform|0.398995-0.00148957-0.599516;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047192;MF=frank.sae@motor-comm.com;NM=1;PH=DS;RN=14;RT=14;SR=0;TI=SMTPD_---.OFYoJ3Y_1656509443;
-Received: from sunhua.motor-comm.com(mailfrom:Frank.Sae@motor-comm.com fp:SMTPD_---.OFYoJ3Y_1656509443)
-          by smtp.aliyun-inc.com;
-          Wed, 29 Jun 2022 21:31:07 +0800
-From:   Frank <Frank.Sae@motor-comm.com>
-To:     Peter Geis <pgwipeout@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     yinghong.zhang@motor-comm.com, fei.zhang@motor-comm.com,
-        hua.sun@motor-comm.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Frank <Frank.Sae@motor-comm.com>
-Subject: Re: Re: [PATCH v2] net: phy: Add driver for Motorcomm yt8521 gigabit
-Date:   Wed, 29 Jun 2022 21:30:12 +0800
-Message-Id: <20220629133012.1840-1-Frank.Sae@motor-comm.com>
-X-Mailer: git-send-email 2.31.0.windows.1
+        with ESMTP id S230214AbiF2NcH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 09:32:07 -0400
+Received: from smtpbg.qq.com (biz-43-154-54-12.mail.qq.com [43.154.54.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F82237034;
+        Wed, 29 Jun 2022 06:32:02 -0700 (PDT)
+X-QQ-mid: bizesmtp79t1656509476tvvsidqs
+Received: from localhost.localdomain ( [182.148.13.66])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Wed, 29 Jun 2022 21:31:14 +0800 (CST)
+X-QQ-SSF: 0100000000200060C000B00A0000000
+X-QQ-FEAT: 1XNERxhHvDkrposPQr1R9uI+G46sLpNhx7g2/nAcD2JgwXoFIB6qmrUCtgDBK
+        bSSrDdzaR7ncxD9lnDnRIKtbRR1AoCWlULtBM//uuIV0cEJB46Yi1w6aVCPSYP23T+C2Zb/
+        TKQt+W3oMnZfY5ERe13/7O8rB2dR8SNgxk/Tf+Gcu7bccOpJZKFG7LrXTejybK8Xx8ZlAy+
+        lqoeytznuYD2y0vKTfZ6N/KylLcr4dwm+ERycsEpDDO3MElhhro7nFsaa5AyPaG5tgYnLAe
+        XPCmGr8Lj1dBfa7/dr7naKJoYvai2U9ICBv1X8uEaa0udpGlm3kyfRLeTposrbDwPpwK5/t
+        SSuXLOh
+X-QQ-GoodBg: 0
+From:   Jilin Yuan <yuanjilin@cdjrlc.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jilin Yuan <yuanjilin@cdjrlc.com>
+Subject: [PATCH] intel/e1000e:fix repeated words in comments
+Date:   Wed, 29 Jun 2022 21:31:07 +0800
+Message-Id: <20220629133107.36642-1-yuanjilin@cdjrlc.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY
-        autolearn=ham autolearn_force=no version=3.4.6
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
+X-Spam-Status: No, score=0.4 required=5.0 tests=BAYES_00,RCVD_IN_VALIDITY_RPBL,
+        RDNS_DYNAMIC,SPF_PASS,T_SCC_BODY_TEXT_LINE,T_SPF_HELO_TEMPERROR
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The poll mode of yt8521 phy is not support utp and fiber at same time, In other
-words, only utp or fiber can be connected at one time, and you can change to
-fiber or utp at next time. so in poll mode need to do both ( utp and fiber )
-operation
+Delete the redundant word 'frames'.
 
-> > > > +int yt8521_config_aneg(struct phy_device *phydev)
-> > > > +{
-> > > > + struct yt8521_priv *priv = phydev->priv;
-> > > > + u8 polling_mode = priv->polling_mode;
-> > > > + int old_page;
-> > > > + int ret;
-> > > > +
-> > > > + old_page = yt8521_read_page_with_lock(phydev);
-> > > > + if (old_page)
-> > > > +  return old_page;
-> > > > +
-> > > > + if (polling_mode == YT8521_MODE_FIBER ||
-> > > > +     polling_mode == YT8521_MODE_POLL) {
-> > > > +  ret = yt8521_write_page_with_lock(phydev,
-> > > > +        YT8521_RSSR_FIBER_SPACE);
-> > > > +  if (ret < 0)
-> > > > +   goto err_restore_page;
-> > > > +
-> > > > +  ret = genphy_config_aneg(phydev);
-> > > > +  if (ret < 0)
-> > > > +   goto err_restore_page;
-> > > > + }
-> > > > +
-> > > > + if (polling_mode == YT8521_MODE_UTP ||
-> > > > +     polling_mode == YT8521_MODE_POLL) {
-> > > > +  ret = yt8521_write_page_with_lock(phydev,
-> > > > +        YT8521_RSSR_UTP_SPACE);
-> > > > +  if (ret < 0)
-> > > > +   goto err_restore_page;
-> > > > +
-> > > > +  ret = genphy_config_aneg(phydev);
-> > > > +  if (ret < 0)
-> > > > +   goto err_restore_page;
-> > > > + }
-> > >
-> > > Looks like this could be refactored to reduce duplication.
-> > >
-> >
-> > sure, as the reason said above, the same operation is required in both utp and
-> > fiber spaces.
-> 
-> So you can probably pull the 'core' of this function out into a
-> helper, and then call it either with YT8521_RSSR_UTP_SPACE or
-> YT8521_RSSR_FIBER_SPACE.
-> 
-> > > > + ret = !!(link_fiber | link_utp);
-> > >
-> > > Does this mean it can do both copper and fibre at the same time. And
-> > > whichever gives up first wins?
-> >
-> > Sure, the phy supports utp, fiber, and both. In the case of both, this driver
-> > supposes that fiber is of priority.
-> 
-> It is generally not that simple. Fibre, you probably want 1000BaseX,
-> unless the fibre module is actually copper, and then you want
-> SGMII. So you need something to talk to the fibre module and ask it
-> what it is. That something is phylink. Phylink does not support both
-> copper and fibre at the same time for one MAC.
+Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
+---
+ drivers/net/ethernet/intel/e1000e/mac.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Cheers and BR,
-Frank
-
+diff --git a/drivers/net/ethernet/intel/e1000e/mac.c b/drivers/net/ethernet/intel/e1000e/mac.c
+index 51512a73fdd0..5df7ad93f3d7 100644
+--- a/drivers/net/ethernet/intel/e1000e/mac.c
++++ b/drivers/net/ethernet/intel/e1000e/mac.c
+@@ -957,7 +957,7 @@ s32 e1000e_force_mac_fc(struct e1000_hw *hw)
+ 	 *      1:  Rx flow control is enabled (we can receive pause
+ 	 *          frames but not send pause frames).
+ 	 *      2:  Tx flow control is enabled (we can send pause frames
+-	 *          frames but we do not receive pause frames).
++	 *          but we do not receive pause frames).
+ 	 *      3:  Both Rx and Tx flow control (symmetric) is enabled.
+ 	 *  other:  No other values should be possible at this point.
+ 	 */
 -- 
-2.31.0.windows.1
+2.36.1
 
