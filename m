@@ -2,61 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 97DCD5604E3
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 17:50:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5F5D5604E7
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 17:50:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234031AbiF2Ps7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 11:48:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60238 "EHLO
+        id S234279AbiF2PtE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 11:49:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229885AbiF2Ps6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 11:48:58 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8599E26560;
-        Wed, 29 Jun 2022 08:48:57 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id l2so14897489pjf.1;
-        Wed, 29 Jun 2022 08:48:57 -0700 (PDT)
+        with ESMTP id S229885AbiF2PtA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 11:49:00 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CE2E1FCF6;
+        Wed, 29 Jun 2022 08:48:59 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id b12-20020a17090a6acc00b001ec2b181c98so19854699pjm.4;
+        Wed, 29 Jun 2022 08:48:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=D73YEhNsNUdQBC8mfGvv+Hmre0Iw7EBd3yOy99mT1KI=;
-        b=SZtOghqZoPkR0k5j6eMsY0boIxrZLZQ+wf+nhJHDVAanRv3mQD0Yc8nbWGDFK0cyu3
-         LApJOCgHefZWl174x6M0D4X0XVzd4rZ5DtRWJTA1p93tE3IK0DQlw+C9N0QXUi/NJlBs
-         OlNcKB5oWrQ3FKddFXdvNBiR0kdauuQW6KoPYNKkwl5t66RGubZr1OfwngtMb4sLE4nd
-         6kaK3mb5vybH9ebV5yeKeZSvBac37rwyg9Y7TtpUg6im78j6TsDLUUFVWcuGNjWf0oNK
-         vuGlfzoscWBH1B/4bSq1UsvRlt5lWyhaQwRfHZYIzBMvIGxFmhd23XVjvfDicbvU+0Lq
-         KHVg==
+        bh=yW9E9JVH5fs7X71RFKnyotPspjqZm3d0xpIXUa3OJ/A=;
+        b=Q7rsteGSBnW7ZEDalfCDVngQLqRN8/Tzx3ICFDxYPq0ldtWJitNSpcHyCkr/HrFaw0
+         sWtA7D8VNHDqUAJKn+HBUSQegd+AIMTOubG0GyJ5pNGB3wPeDjXJM0/sSqTTDxo2II6m
+         UOwZDc6TzDJkXs4PXTS7dLRtTtuln4ohuv70D1/Lrdk1//+M6MafQQwXjPfHx2kSXSUy
+         4SKEiivqPcFTKCt4njn6YVAejfTihGdQY4RW8/8MtpfD6xuLsjXNxSc9FNkdfJdWFU8g
+         l0Rz5k7+KpKiklel18Z+0tWgKEMc4GP1mOVelovmCqxQRXe2ij0pflR8/gu/iFKvY0YU
+         IyPw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=D73YEhNsNUdQBC8mfGvv+Hmre0Iw7EBd3yOy99mT1KI=;
-        b=4oVOThhFlT5e1Tu5cOUVVVecdlyrh0GRgufbAte3myOYEcb87/lbK4fDB7V4hj5yaT
-         F1Wt02eL0VkmsXyX9Ngrmch3toutu7cAo0ekPvcIj6YTeSDxy/9V8aQ9xwujxoFPP1z5
-         b0AHlFt5GpyRfVSDleUPfN+9O0aK/6hNJpCKSKIG06mBFekL3F0fJ79B2eAvqG8T4Z7i
-         JHkeiPh0AD8aKKSyOowLOOsywLxvBkj89zLiB75RrHLliw1CLfYTWJWIw3zGNCOv0I9v
-         sIvrpppK+xrpX8If+L0Z9q3RO+pyc+LfoeLrZIuhtHTyWSREAaBqaCXI0n2UKYtPqiFl
-         45hg==
-X-Gm-Message-State: AJIora9d3+T5l/IoHJCueU9bTyr13TQ/0dX+Q3Ns5je9ZIxO7HDIyJGG
-        uD1Bs+R2xxMjClPhG7akNiE=
-X-Google-Smtp-Source: AGRyM1srd/upNDgXbkDCnNQedE+NFOFi5sB16OTqnqsxmLwl9/rvL4SE7YvjUU/7lJhJ2ewtKV3lpQ==
-X-Received: by 2002:a17:90a:cb84:b0:1ea:ffd2:3075 with SMTP id a4-20020a17090acb8400b001eaffd23075mr4640427pju.106.1656517737050;
-        Wed, 29 Jun 2022 08:48:57 -0700 (PDT)
+        bh=yW9E9JVH5fs7X71RFKnyotPspjqZm3d0xpIXUa3OJ/A=;
+        b=z+3I6evEVtiVc3YImuh/P78cIMjEgdWsTuElcqX8MkjzNF/27FVHsOXSKVFbPpz+mC
+         rh8K5mjfj/JMwtkJZwlg6qpSN2fU/r94C0LR2fJqSY3RrfvH+TIKtLELNjjU2LqJcQSW
+         2jF/NnwzZTLMJUwttiUjquMIodp5zS6Evr8/5jgsm0CTMoF+7Z/gZZ+UaSGE6HmP6mL0
+         BHgAK7LYEuQ1ZEx+6ujB9eSzphVC3kLfywj0PebUvPFeVxT5XwF172OcK40ttXzeCBdK
+         QDo2mRf7dkA8SeLjd/1JCrEyJlQY9v8Z9YOj1S5PWb/Ylhz4yw7U6Bjek0iS2SOta8Lf
+         LN8w==
+X-Gm-Message-State: AJIora+j9URpOLn6pya9Bn8gKRjoQtXTVdGHrw2062dLP4VVb01N0I5A
+        LvtQEVogjmB51QH0Ik5qETg=
+X-Google-Smtp-Source: AGRyM1stN92bINXjMaKBW+pcw4z7iWvZye3Zl3CnbtfYDy2SaWR+Uveru3hWhxIglaB+T9m/WGcNxg==
+X-Received: by 2002:a17:902:b286:b0:16b:89b2:4e34 with SMTP id u6-20020a170902b28600b0016b89b24e34mr11291340plr.108.1656517739019;
+        Wed, 29 Jun 2022 08:48:59 -0700 (PDT)
 Received: from vultr.guest ([45.32.72.20])
-        by smtp.gmail.com with ESMTPSA id 1-20020a620501000000b00527d84dfa42sm2661329pff.167.2022.06.29.08.48.54
+        by smtp.gmail.com with ESMTPSA id 1-20020a620501000000b00527d84dfa42sm2661329pff.167.2022.06.29.08.48.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Jun 2022 08:48:55 -0700 (PDT)
+        Wed, 29 Jun 2022 08:48:57 -0700 (PDT)
 From:   Yafang Shao <laoar.shao@gmail.com>
 To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
         kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
         john.fastabend@gmail.com, kpsingh@kernel.org, quentin@isovalent.com
 Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Yafang Shao <laoar.shao@gmail.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>
-Subject: [PATCH bpf-next 1/4] bpf: Make non-preallocated allocation low priority
-Date:   Wed, 29 Jun 2022 15:48:29 +0000
-Message-Id: <20220629154832.56986-2-laoar.shao@gmail.com>
+        Yafang Shao <laoar.shao@gmail.com>
+Subject: [PATCH bpf-next 2/4] bpf: Warn on non-preallocated case for missed trace types
+Date:   Wed, 29 Jun 2022 15:48:30 +0000
+Message-Id: <20220629154832.56986-3-laoar.shao@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220629154832.56986-1-laoar.shao@gmail.com>
 References: <20220629154832.56986-1-laoar.shao@gmail.com>
@@ -72,65 +71,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-GFP_ATOMIC doesn't cooperate well with memcg pressure so far, especially
-if we allocate too much GFP_ATOMIC memory. For example, when we set the
-memcg limit to limit a non-preallocated bpf memory, the GFP_ATOMIC can
-easily break the memcg limit by force charge. So it is very dangerous to
-use GFP_ATOMIC in non-preallocated case. One way to make it safe is to
-remove __GFP_HIGH from GFP_ATOMIC, IOW, use (__GFP_ATOMIC |
-__GFP_KSWAPD_RECLAIM) instead, then it will be limited if we allocate
-too much memory.
-
-We introduced BPF_F_NO_PREALLOC is because full map pre-allocation is
-too memory expensive for some cases. That means removing __GFP_HIGH
-doesn't break the rule of BPF_F_NO_PREALLOC, but has the same goal with
-it-avoiding issues caused by too much memory. So let's remove it.
-
-__GFP_KSWAPD_RECLAIM doesn't cooperate well with memcg pressure neither
-currently. But the memcg code can be improved to make
-__GFP_KSWAPD_RECLAIM work well under memcg pressure.
-
-It also fixes a typo in the comment.
+BPF_PROG_TYPE_RAW_TRACEPOINT_WRITABLE and BPF_PROG_TYPE_TRACING are
+trace type as well, which may also cause unexpected memory allocation if
+we set BPF_F_NO_PREALLOC.
+Let's also warn on both of them.
 
 Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
-Cc: Roman Gushchin <roman.gushchin@linux.dev>
 ---
- kernel/bpf/hashtab.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ kernel/bpf/verifier.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
-index 17fb69c0e0dc..9d4559a1c032 100644
---- a/kernel/bpf/hashtab.c
-+++ b/kernel/bpf/hashtab.c
-@@ -61,7 +61,7 @@
-  *
-  * As regular device interrupt handlers and soft interrupts are forced into
-  * thread context, the existing code which does
-- *   spin_lock*(); alloc(GPF_ATOMIC); spin_unlock*();
-+ *   spin_lock*(); alloc(GFP_ATOMIC); spin_unlock*();
-  * just works.
-  *
-  * In theory the BPF locks could be converted to regular spinlocks as well,
-@@ -978,7 +978,8 @@ static struct htab_elem *alloc_htab_elem(struct bpf_htab *htab, void *key,
- 				goto dec_count;
- 			}
- 		l_new = bpf_map_kmalloc_node(&htab->map, htab->elem_size,
--					     GFP_ATOMIC | __GFP_NOWARN,
-+					     __GFP_ATOMIC | __GFP_NOWARN |
-+					     __GFP_KSWAPD_RECLAIM,
- 					     htab->map.numa_node);
- 		if (!l_new) {
- 			l_new = ERR_PTR(-ENOMEM);
-@@ -996,7 +997,8 @@ static struct htab_elem *alloc_htab_elem(struct bpf_htab *htab, void *key,
- 		} else {
- 			/* alloc_percpu zero-fills */
- 			pptr = bpf_map_alloc_percpu(&htab->map, size, 8,
--						    GFP_ATOMIC | __GFP_NOWARN);
-+						    __GFP_ATOMIC | __GFP_NOWARN |
-+						    __GFP_KSWAPD_RECLAIM);
- 			if (!pptr) {
- 				kfree(l_new);
- 				l_new = ERR_PTR(-ENOMEM);
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index 4938477912cd..8452e5746f59 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -12539,6 +12539,8 @@ static bool is_tracing_prog_type(enum bpf_prog_type type)
+ 	case BPF_PROG_TYPE_TRACEPOINT:
+ 	case BPF_PROG_TYPE_PERF_EVENT:
+ 	case BPF_PROG_TYPE_RAW_TRACEPOINT:
++	case BPF_PROG_TYPE_RAW_TRACEPOINT_WRITABLE:
++	case BPF_PROG_TYPE_TRACING:
+ 		return true;
+ 	default:
+ 		return false;
 -- 
 2.17.1
 
