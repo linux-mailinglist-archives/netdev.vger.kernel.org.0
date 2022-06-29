@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C744F55FB14
-	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 10:54:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD2AF55FB17
+	for <lists+netdev@lfdr.de>; Wed, 29 Jun 2022 10:54:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230229AbiF2Ix6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 04:53:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37386 "EHLO
+        id S230512AbiF2IyD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 04:54:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229897AbiF2Ix4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 04:53:56 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ABFA3B3DE
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 01:53:55 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id i8-20020a17090aee8800b001ecc929d14dso833919pjz.0
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 01:53:55 -0700 (PDT)
+        with ESMTP id S230449AbiF2IyB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 04:54:01 -0400
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DBD63BF8A
+        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 01:54:00 -0700 (PDT)
+Received: by mail-pg1-x52b.google.com with SMTP id v126so10528331pgv.11
+        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 01:54:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ztdRYmrrwDFseGrJ4VibDTAR9vIvAp47d87V542cPI0=;
-        b=d85Yv5BReGTbP35b9lpDINHK1E4gHsweaFdjjNkvBRLxdDHcy0RSTLzWhZplYQMmYK
-         Zs4w4yqHB1jkIZVEeJiieBE+hC8ggl2xnoVGDXF9yU8fyXD6mEUsDls4dYgCHFd2aBho
-         K+dgBAReL7JlS4pnPO4+ACT/P9syl8f6mxBfyfsMH1xMlkZFW09FfXiMFoWquYK+hbIr
-         eH5+iKCQnHMvGyn3qEa6fRVKCGXbzNVn4V6aA1JqW66sSed0IYKsvB9PAeri19RSNDk2
-         D+Qg2H0bOXlxEFxyLgjRQ0iiMIg+xpFggRu6Uq/6+EbtpB6gSp5OQDEZN+P89NInnKOC
-         cKUg==
+        bh=PkhFb7S17b9dGnBFHUia9x4S8zY7OAs2RMpiRBrK3Wg=;
+        b=n4yDyvwAh0ZePMBsDSl7XxsyHl8rSvWklfRG0PhR/LwJsTruj7IBPCUrPWpM7c5qqu
+         vowM0DMV9hgDTWMuLZvCQfi8OEZMYaPKTPTx3tUKOS0gbh6x67Bxh+yMNNwQEvhiyJ0v
+         9QyD2/toMbey/LxoQOvQUkceXkq1PzDV+MXmV1d/DfX2TVjovO1ib0xoMej81r7Dojo1
+         82SdBdzOOjhtgyCKrYynR4uGN7hZvuAmKROY+EIaQ1mLMm1hszT3XQYEX8kANAPXS5Kw
+         /v0CsJsA3MMkG7mnzELT0BSpf9ZdjgqIv1iS/C/qVe6RRqdugCuaEKpI2Qed3jt7efc6
+         xUIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ztdRYmrrwDFseGrJ4VibDTAR9vIvAp47d87V542cPI0=;
-        b=r02xLNHn2dhz7wvVMrbaYKfm7ZAGOkx6D5scUMJAc+AAjy+FCvBNp9hb6PS2PcNtlv
-         w+AJ8FtBdmcO6ocAFtYOb1hg+/D27mhCfs0f+wKPuTqk4CrjHoaXNzY0QlSq9SXF1CqI
-         r+EQq4+vmHxdcfJ5dTUmzIx1DngAnElL5tq/jXThRP0c8cAGlEcWxBvlLmpO3AUlQmuu
-         laBUNXXMdTXx3XqdMPDfdCLF7Foc8pYoZud//7YyvOkVdLU8usJvHScOuaUgdfmf0LX5
-         1I5qEl4wVFC0DYZYVMLoGHsoPtAONpzpocs8WcjOBcU3lsXaFlBvE/FS4eO+4oyMzde1
-         1F1g==
-X-Gm-Message-State: AJIora/YCdiAFxKKb9qeuClqi127PNsGswPDc69wAjf+RkC0xZ1u9YdG
-        F4yxSwTP0eJHAjQWGxJoZ2w=
-X-Google-Smtp-Source: AGRyM1twPrlvFrOriaSTGrfM4x1/SmRaPN9N1yo1HpXzRSwBH3iMa+kBX6hsFH2zXsIloFHlzDcJ+w==
-X-Received: by 2002:a17:903:2281:b0:16a:6604:d1d8 with SMTP id b1-20020a170903228100b0016a6604d1d8mr8007298plh.78.1656492835121;
-        Wed, 29 Jun 2022 01:53:55 -0700 (PDT)
+        bh=PkhFb7S17b9dGnBFHUia9x4S8zY7OAs2RMpiRBrK3Wg=;
+        b=p3b9W3oSFZBsPNtRKZiplP9p/c/DT+ewoOGTYBoJo41SVaDXa3mlvd6OpDRckGLfnN
+         JD0eHwJQqU3mXJO6ZlNTcKVxQPH+QOkEho/fP//mz2dLkEhhMnVrl2U+dXLWxz8NHwbB
+         417VmuWqwTIIBb1BRGaeJ7c4PIl2Im4GoXEN3BdDy5W4sCbGzM1pr3YB/CEtG92iefZ7
+         WSYDIhI8TpvaH0QVbHQ2vLH+jD3qwwydakAvChkh9MDUGuMG1tYtkNq/L5ZxJNr/IOGt
+         U3nk41uPtp5xx/4GWQoj04QzZSdwEfccH5tC5XchJtiuLjxojNQjLCAvtpkdoVPhlvTp
+         5BvQ==
+X-Gm-Message-State: AJIora9Ep2g3aqhEVK336Kjx9/MLEjtSUzbdVeIHAJ3CS/fH7RH/dqvx
+        +USkFg9o3Ei2UGs/8ayxznA=
+X-Google-Smtp-Source: AGRyM1sN9x4EEY7uLoWpZZtuPWyf7B23rDNYBf1V3Oa663YWzmvIjkmUhCu1ZCHWCRQmms1LDI6HtA==
+X-Received: by 2002:a63:f415:0:b0:408:808b:238f with SMTP id g21-20020a63f415000000b00408808b238fmr2036982pgi.469.1656492839675;
+        Wed, 29 Jun 2022 01:53:59 -0700 (PDT)
 Received: from nvm-geerzzfj.. ([103.142.140.73])
-        by smtp.gmail.com with ESMTPSA id y19-20020a17090aca9300b001e0c5da6a51sm1425724pjt.50.2022.06.29.01.53.51
+        by smtp.gmail.com with ESMTPSA id y19-20020a17090aca9300b001e0c5da6a51sm1425724pjt.50.2022.06.29.01.53.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Jun 2022 01:53:54 -0700 (PDT)
+        Wed, 29 Jun 2022 01:53:59 -0700 (PDT)
 From:   Yuwei Wang <wangyuweihx@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
         pabeni@redhat.com, daniel@iogearbox.net
 Cc:     roopa@nvidia.com, dsahern@kernel.org, qindi@staff.weibo.com,
         netdev@vger.kernel.org, Yuwei Wang <wangyuweihx@gmail.com>
-Subject: [PATCH net-next v4 1/2] sysctl: add proc_dointvec_ms_jiffies_minmax
-Date:   Wed, 29 Jun 2022 08:48:31 +0000
-Message-Id: <20220629084832.2842973-2-wangyuweihx@gmail.com>
+Subject: [PATCH net-next v4 2/2] net, neigh: introduce interval_probe_time_ms for periodic probe
+Date:   Wed, 29 Jun 2022 08:48:32 +0000
+Message-Id: <20220629084832.2842973-3-wangyuweihx@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220629084832.2842973-1-wangyuweihx@gmail.com>
 References: <20220629084832.2842973-1-wangyuweihx@gmail.com>
@@ -72,94 +72,243 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-add proc_dointvec_ms_jiffies_minmax to fit read msecs value to jiffies
-with a limited range of values
+commit ed6cd6a17896 ("net, neigh: Set lower cap for neigh_managed_work rearming")
+fixed a case when DELAY_PROBE_TIME is configured to 0, the processing of the
+system work queue hog CPU to 100%, and further more we should introduce
+a new option used by periodic probe
 
 Signed-off-by: Yuwei Wang <wangyuweihx@gmail.com>
 ---
- include/linux/sysctl.h |  2 ++
- kernel/sysctl.c        | 41 +++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 43 insertions(+)
+v4:
+- make this option configured as ms, and rename it to `interval_probe_time_ms`
+- add documentation to Documentation/networking/ip-sysctl
+- fix damaged whitespace
+- fix missing `proc_*_jiffies_minmax` on `CONFIG_PROC_SYSCTL` is not defined
+v3:
+- add limitation to prevent `INTERVAL_PROBE_TIME` to 0
+- remove `NETEVENT_INTERVAL_PROBE_TIME_UPDATE`
+- add .min to NDTPA_INTERVAL_PROBE_TIME
 
-diff --git a/include/linux/sysctl.h b/include/linux/sysctl.h
-index 80263f7cdb77..17b42ce89d3e 100644
---- a/include/linux/sysctl.h
-+++ b/include/linux/sysctl.h
-@@ -75,6 +75,8 @@ int proc_douintvec_minmax(struct ctl_table *table, int write, void *buffer,
- int proc_dou8vec_minmax(struct ctl_table *table, int write, void *buffer,
- 			size_t *lenp, loff_t *ppos);
- int proc_dointvec_jiffies(struct ctl_table *, int, void *, size_t *, loff_t *);
-+int proc_dointvec_ms_jiffies_minmax(struct ctl_table *table, int write,
-+		void *buffer, size_t *lenp, loff_t *ppos);
- int proc_dointvec_userhz_jiffies(struct ctl_table *, int, void *, size_t *,
- 		loff_t *);
- int proc_dointvec_ms_jiffies(struct ctl_table *, int, void *, size_t *,
-diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index e52b6e372c60..85c92e2c2570 100644
---- a/kernel/sysctl.c
-+++ b/kernel/sysctl.c
-@@ -1237,6 +1237,30 @@ static int do_proc_dointvec_ms_jiffies_conv(bool *negp, unsigned long *lvalp,
- 	return 0;
+ Documentation/networking/ip-sysctl.rst |  6 +++++
+ include/net/neighbour.h                |  1 +
+ include/uapi/linux/neighbour.h         |  1 +
+ include/uapi/linux/sysctl.h            | 37 +++++++++++++-------------
+ net/core/neighbour.c                   | 32 ++++++++++++++++++++--
+ net/decnet/dn_neigh.c                  |  1 +
+ net/ipv4/arp.c                         |  1 +
+ net/ipv6/ndisc.c                       |  1 +
+ 8 files changed, 60 insertions(+), 20 deletions(-)
+
+diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
+index 04216564a03c..b8604c938b4c 100644
+--- a/Documentation/networking/ip-sysctl.rst
++++ b/Documentation/networking/ip-sysctl.rst
+@@ -202,6 +202,12 @@ neigh/default/unres_qlen - INTEGER
+ 
+ 	Default: 101
+ 
++neigh/default/interval_probe_time_ms - INTEGER
++	The probe interval for neighbor entries with NTF_MANAGED flag,
++	the min value is 1.
++
++	Default: 5000
++
+ mtu_expires - INTEGER
+ 	Time, in seconds, that cached PMTU information is kept.
+ 
+diff --git a/include/net/neighbour.h b/include/net/neighbour.h
+index 87419f7f5421..9f0bab0589d9 100644
+--- a/include/net/neighbour.h
++++ b/include/net/neighbour.h
+@@ -48,6 +48,7 @@ enum {
+ 	NEIGH_VAR_RETRANS_TIME,
+ 	NEIGH_VAR_BASE_REACHABLE_TIME,
+ 	NEIGH_VAR_DELAY_PROBE_TIME,
++	NEIGH_VAR_INTERVAL_PROBE_TIME_MS,
+ 	NEIGH_VAR_GC_STALETIME,
+ 	NEIGH_VAR_QUEUE_LEN_BYTES,
+ 	NEIGH_VAR_PROXY_QLEN,
+diff --git a/include/uapi/linux/neighbour.h b/include/uapi/linux/neighbour.h
+index 39c565e460c7..a998bf761635 100644
+--- a/include/uapi/linux/neighbour.h
++++ b/include/uapi/linux/neighbour.h
+@@ -154,6 +154,7 @@ enum {
+ 	NDTPA_QUEUE_LENBYTES,		/* u32 */
+ 	NDTPA_MCAST_REPROBES,		/* u32 */
+ 	NDTPA_PAD,
++	NDTPA_INTERVAL_PROBE_TIME_MS,	/* u64, msecs */
+ 	__NDTPA_MAX
+ };
+ #define NDTPA_MAX (__NDTPA_MAX - 1)
+diff --git a/include/uapi/linux/sysctl.h b/include/uapi/linux/sysctl.h
+index 6a3b194c50fe..8981f00204db 100644
+--- a/include/uapi/linux/sysctl.h
++++ b/include/uapi/linux/sysctl.h
+@@ -584,24 +584,25 @@ enum {
+ 
+ /* /proc/sys/net/<protocol>/neigh/<dev> */
+ enum {
+-	NET_NEIGH_MCAST_SOLICIT=1,
+-	NET_NEIGH_UCAST_SOLICIT=2,
+-	NET_NEIGH_APP_SOLICIT=3,
+-	NET_NEIGH_RETRANS_TIME=4,
+-	NET_NEIGH_REACHABLE_TIME=5,
+-	NET_NEIGH_DELAY_PROBE_TIME=6,
+-	NET_NEIGH_GC_STALE_TIME=7,
+-	NET_NEIGH_UNRES_QLEN=8,
+-	NET_NEIGH_PROXY_QLEN=9,
+-	NET_NEIGH_ANYCAST_DELAY=10,
+-	NET_NEIGH_PROXY_DELAY=11,
+-	NET_NEIGH_LOCKTIME=12,
+-	NET_NEIGH_GC_INTERVAL=13,
+-	NET_NEIGH_GC_THRESH1=14,
+-	NET_NEIGH_GC_THRESH2=15,
+-	NET_NEIGH_GC_THRESH3=16,
+-	NET_NEIGH_RETRANS_TIME_MS=17,
+-	NET_NEIGH_REACHABLE_TIME_MS=18,
++	NET_NEIGH_MCAST_SOLICIT = 1,
++	NET_NEIGH_UCAST_SOLICIT = 2,
++	NET_NEIGH_APP_SOLICIT = 3,
++	NET_NEIGH_RETRANS_TIME = 4,
++	NET_NEIGH_REACHABLE_TIME = 5,
++	NET_NEIGH_DELAY_PROBE_TIME = 6,
++	NET_NEIGH_GC_STALE_TIME = 7,
++	NET_NEIGH_UNRES_QLEN = 8,
++	NET_NEIGH_PROXY_QLEN = 9,
++	NET_NEIGH_ANYCAST_DELAY = 10,
++	NET_NEIGH_PROXY_DELAY = 11,
++	NET_NEIGH_LOCKTIME = 12,
++	NET_NEIGH_GC_INTERVAL = 13,
++	NET_NEIGH_GC_THRESH1 = 14,
++	NET_NEIGH_GC_THRESH2 = 15,
++	NET_NEIGH_GC_THRESH3 = 16,
++	NET_NEIGH_RETRANS_TIME_MS = 17,
++	NET_NEIGH_REACHABLE_TIME_MS = 18,
++	NET_NEIGH_INTERVAL_PROBE_TIME_MS = 19,
+ };
+ 
+ /* /proc/sys/net/dccp */
+diff --git a/net/core/neighbour.c b/net/core/neighbour.c
+index 54625287ee5b..5715c49b5eaa 100644
+--- a/net/core/neighbour.c
++++ b/net/core/neighbour.c
+@@ -1579,7 +1579,7 @@ static void neigh_managed_work(struct work_struct *work)
+ 	list_for_each_entry(neigh, &tbl->managed_list, managed_list)
+ 		neigh_event_send_probe(neigh, NULL, false);
+ 	queue_delayed_work(system_power_efficient_wq, &tbl->managed_work,
+-			   max(NEIGH_VAR(&tbl->parms, DELAY_PROBE_TIME), HZ));
++			   NEIGH_VAR(&tbl->parms, INTERVAL_PROBE_TIME_MS));
+ 	write_unlock_bh(&tbl->lock);
  }
  
-+static int do_proc_dointvec_ms_jiffies_minmax_conv(bool *negp, unsigned long *lvalp,
-+						int *valp, int write, void *data)
-+{
-+	int tmp, ret;
-+	struct do_proc_dointvec_minmax_conv_param *param = data;
-+	/*
-+	 * If writing, first do so via a temporary local int so we can
-+	 * bounds-check it before touching *valp.
-+	 */
-+	int *ip = write ? &tmp : valp;
-+
-+	ret = do_proc_dointvec_ms_jiffies_conv(negp, lvalp, ip, write, data);
-+	if (ret)
-+		return ret;
-+
-+	if (write) {
-+		if ((param->min && *param->min > tmp) ||
-+				(param->max && *param->max < tmp))
-+			return -EINVAL;
-+		*valp = tmp;
-+	}
-+	return 0;
-+}
-+
- /**
-  * proc_dointvec_jiffies - read a vector of integers as seconds
-  * @table: the sysctl table
-@@ -1259,6 +1283,17 @@ int proc_dointvec_jiffies(struct ctl_table *table, int write,
- 		    	    do_proc_dointvec_jiffies_conv,NULL);
+@@ -2100,7 +2100,9 @@ static int neightbl_fill_parms(struct sk_buff *skb, struct neigh_parms *parms)
+ 	    nla_put_msecs(skb, NDTPA_PROXY_DELAY,
+ 			  NEIGH_VAR(parms, PROXY_DELAY), NDTPA_PAD) ||
+ 	    nla_put_msecs(skb, NDTPA_LOCKTIME,
+-			  NEIGH_VAR(parms, LOCKTIME), NDTPA_PAD))
++			  NEIGH_VAR(parms, LOCKTIME), NDTPA_PAD) ||
++	    nla_put_msecs(skb, NDTPA_INTERVAL_PROBE_TIME_MS,
++			  NEIGH_VAR(parms, INTERVAL_PROBE_TIME_MS), NDTPA_PAD))
+ 		goto nla_put_failure;
+ 	return nla_nest_end(skb, nest);
+ 
+@@ -2255,6 +2257,7 @@ static const struct nla_policy nl_ntbl_parm_policy[NDTPA_MAX+1] = {
+ 	[NDTPA_ANYCAST_DELAY]		= { .type = NLA_U64 },
+ 	[NDTPA_PROXY_DELAY]		= { .type = NLA_U64 },
+ 	[NDTPA_LOCKTIME]		= { .type = NLA_U64 },
++	[NDTPA_INTERVAL_PROBE_TIME_MS]	= { .type = NLA_U64, .min = 1 },
+ };
+ 
+ static int neightbl_set(struct sk_buff *skb, struct nlmsghdr *nlh,
+@@ -2373,6 +2376,10 @@ static int neightbl_set(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 					      nla_get_msecs(tbp[i]));
+ 				call_netevent_notifiers(NETEVENT_DELAY_PROBE_TIME_UPDATE, p);
+ 				break;
++			case NDTPA_INTERVAL_PROBE_TIME_MS:
++				NEIGH_VAR_SET(p, INTERVAL_PROBE_TIME_MS,
++					      nla_get_msecs(tbp[i]));
++				break;
+ 			case NDTPA_RETRANS_TIME:
+ 				NEIGH_VAR_SET(p, RETRANS_TIME,
+ 					      nla_get_msecs(tbp[i]));
+@@ -3562,6 +3569,22 @@ static int neigh_proc_dointvec_zero_intmax(struct ctl_table *ctl, int write,
+ 	return ret;
  }
  
-+int proc_dointvec_ms_jiffies_minmax(struct ctl_table *table, int write,
-+			  void *buffer, size_t *lenp, loff_t *ppos)
++static int neigh_proc_dointvec_ms_jiffies_positive(struct ctl_table *ctl, int write,
++						   void *buffer, size_t *lenp, loff_t *ppos)
 +{
-+	struct do_proc_dointvec_minmax_conv_param param = {
-+		.min = (int *) table->extra1,
-+		.max = (int *) table->extra2,
-+	};
-+	return do_proc_dointvec(table, write, buffer, lenp, ppos,
-+			do_proc_dointvec_ms_jiffies_minmax_conv, &param);
++	struct ctl_table tmp = *ctl;
++	int ret;
++
++	int min = msecs_to_jiffies(1);
++
++	tmp.extra1 = &min;
++	tmp.extra2 = NULL;
++
++	ret = proc_dointvec_ms_jiffies_minmax(&tmp, write, buffer, lenp, ppos);
++	neigh_proc_update(ctl, write);
++	return ret;
 +}
 +
- /**
-  * proc_dointvec_userhz_jiffies - read a vector of integers as 1/USER_HZ seconds
-  * @table: the sysctl table
-@@ -1523,6 +1558,12 @@ int proc_dointvec_jiffies(struct ctl_table *table, int write,
- 	return -ENOSYS;
- }
- 
-+int proc_dointvec_ms_jiffies_minmax(struct ctl_table *table, int write,
-+				    void *buffer, size_t *lenp, loff_t *ppos)
-+{
-+	return -ENOSYS;
-+}
-+
- int proc_dointvec_userhz_jiffies(struct ctl_table *table, int write,
- 		    void *buffer, size_t *lenp, loff_t *ppos)
+ int neigh_proc_dointvec(struct ctl_table *ctl, int write, void *buffer,
+ 			size_t *lenp, loff_t *ppos)
  {
+@@ -3658,6 +3681,9 @@ static int neigh_proc_base_reachable_time(struct ctl_table *ctl, int write,
+ #define NEIGH_SYSCTL_USERHZ_JIFFIES_ENTRY(attr, name) \
+ 	NEIGH_SYSCTL_ENTRY(attr, attr, name, 0644, neigh_proc_dointvec_userhz_jiffies)
+ 
++#define NEIGH_SYSCTL_MS_JIFFIES_POSITIVE_ENTRY(attr, name) \
++	NEIGH_SYSCTL_ENTRY(attr, attr, name, 0644, neigh_proc_dointvec_ms_jiffies_positive)
++
+ #define NEIGH_SYSCTL_MS_JIFFIES_REUSED_ENTRY(attr, data_attr, name) \
+ 	NEIGH_SYSCTL_ENTRY(attr, data_attr, name, 0644, neigh_proc_dointvec_ms_jiffies)
+ 
+@@ -3676,6 +3702,8 @@ static struct neigh_sysctl_table {
+ 		NEIGH_SYSCTL_USERHZ_JIFFIES_ENTRY(RETRANS_TIME, "retrans_time"),
+ 		NEIGH_SYSCTL_JIFFIES_ENTRY(BASE_REACHABLE_TIME, "base_reachable_time"),
+ 		NEIGH_SYSCTL_JIFFIES_ENTRY(DELAY_PROBE_TIME, "delay_first_probe_time"),
++		NEIGH_SYSCTL_MS_JIFFIES_POSITIVE_ENTRY(INTERVAL_PROBE_TIME_MS,
++						       "interval_probe_time_ms"),
+ 		NEIGH_SYSCTL_JIFFIES_ENTRY(GC_STALETIME, "gc_stale_time"),
+ 		NEIGH_SYSCTL_ZERO_INTMAX_ENTRY(QUEUE_LEN_BYTES, "unres_qlen_bytes"),
+ 		NEIGH_SYSCTL_ZERO_INTMAX_ENTRY(PROXY_QLEN, "proxy_qlen"),
+diff --git a/net/decnet/dn_neigh.c b/net/decnet/dn_neigh.c
+index fbd98ac853ea..7c569bcc0aca 100644
+--- a/net/decnet/dn_neigh.c
++++ b/net/decnet/dn_neigh.c
+@@ -94,6 +94,7 @@ struct neigh_table dn_neigh_table = {
+ 			[NEIGH_VAR_RETRANS_TIME] = 1 * HZ,
+ 			[NEIGH_VAR_BASE_REACHABLE_TIME] = 30 * HZ,
+ 			[NEIGH_VAR_DELAY_PROBE_TIME] = 5 * HZ,
++			[NEIGH_VAR_INTERVAL_PROBE_TIME_MS] = 5 * HZ,
+ 			[NEIGH_VAR_GC_STALETIME] = 60 * HZ,
+ 			[NEIGH_VAR_QUEUE_LEN_BYTES] = SK_WMEM_MAX,
+ 			[NEIGH_VAR_PROXY_QLEN] = 0,
+diff --git a/net/ipv4/arp.c b/net/ipv4/arp.c
+index ab4a5601c82a..af2f12ffc9ca 100644
+--- a/net/ipv4/arp.c
++++ b/net/ipv4/arp.c
+@@ -168,6 +168,7 @@ struct neigh_table arp_tbl = {
+ 			[NEIGH_VAR_RETRANS_TIME] = 1 * HZ,
+ 			[NEIGH_VAR_BASE_REACHABLE_TIME] = 30 * HZ,
+ 			[NEIGH_VAR_DELAY_PROBE_TIME] = 5 * HZ,
++			[NEIGH_VAR_INTERVAL_PROBE_TIME_MS] = 5 * HZ,
+ 			[NEIGH_VAR_GC_STALETIME] = 60 * HZ,
+ 			[NEIGH_VAR_QUEUE_LEN_BYTES] = SK_WMEM_MAX,
+ 			[NEIGH_VAR_PROXY_QLEN] = 64,
+diff --git a/net/ipv6/ndisc.c b/net/ipv6/ndisc.c
+index b0dfe97ea4ee..cd84cbdac0a2 100644
+--- a/net/ipv6/ndisc.c
++++ b/net/ipv6/ndisc.c
+@@ -128,6 +128,7 @@ struct neigh_table nd_tbl = {
+ 			[NEIGH_VAR_RETRANS_TIME] = ND_RETRANS_TIMER,
+ 			[NEIGH_VAR_BASE_REACHABLE_TIME] = ND_REACHABLE_TIME,
+ 			[NEIGH_VAR_DELAY_PROBE_TIME] = 5 * HZ,
++			[NEIGH_VAR_INTERVAL_PROBE_TIME_MS] = 5 * HZ,
+ 			[NEIGH_VAR_GC_STALETIME] = 60 * HZ,
+ 			[NEIGH_VAR_QUEUE_LEN_BYTES] = SK_WMEM_MAX,
+ 			[NEIGH_VAR_PROXY_QLEN] = 64,
 -- 
 2.34.1
 
