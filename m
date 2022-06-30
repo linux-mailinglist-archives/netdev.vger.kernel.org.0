@@ -2,93 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0731A561989
-	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 13:47:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8272256199A
+	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 13:51:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235156AbiF3Lqv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jun 2022 07:46:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32906 "EHLO
+        id S232732AbiF3LvP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jun 2022 07:51:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235150AbiF3Lqu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 07:46:50 -0400
-Received: from smtpbguseast2.qq.com (smtpbguseast2.qq.com [54.204.34.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C27C5A44D
-        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 04:46:48 -0700 (PDT)
-X-QQ-mid: bizesmtp78t1656589595tu32ek8s
-Received: from localhost.localdomain ( [58.240.82.166])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Thu, 30 Jun 2022 19:46:31 +0800 (CST)
-X-QQ-SSF: 01400000002000G0S000B00A0000000
-X-QQ-FEAT: Ut0pB98mtT+/43S/LX/0XKO1oFH7DNq54rVcpUXYCg38a5NPqt+Pn5EjXuROK
-        TZN5G4/wU1eyw6PKbdcUjumKmVKUWrQQPKJ72C8EaHgwqbZYpO44lyLeAB0RyC+PgJtSenM
-        QlkqAYl2ePH7UINHjca903mFupeaqTUtqyZdLixtDHxYlLZdMZe1XUYDKKXlhNoaUIKIIBx
-        MFQ3NnUxylv16Or4WdnLYGRns2XrfwIXYJkiYd1+D88/Ep2F7vUF3UG2GBLbZryaPlkvbLg
-        gUjKO/rIC1NZbgqWQpoZbuTnFUXksX1p3QjNSDgETcrDTlqqyQSwYIZXP5uhCl6x2h6R6cv
-        eocyhOnuiqdI+sl95S8set5Hmw11h7RfJCeolWXo0p8mWW0PJJ9ynAicAYE0w==
-X-QQ-GoodBg: 2
-From:   Meng Tang <tangmeng@uniontech.com>
-To:     stable@vger.kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Meng Tang <tangmeng@uniontech.com>,
-        Ping-Ke Shih <pkshih@realtek.com>,
-        masterzorag <masterzorag@gmail.com>,
-        Larry Finger <Larry.Finger@lwfinger.net>,
-        Kalle Valo <kvalo@kernel.org>
-Subject: [PATCH 5.15 2/2] rtw88: rtw8821c: enable rfe 6 devices
-Date:   Thu, 30 Jun 2022 19:46:21 +0800
-Message-Id: <20220630114621.19688-2-tangmeng@uniontech.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220630114621.19688-1-tangmeng@uniontech.com>
-References: <20220630114621.19688-1-tangmeng@uniontech.com>
+        with ESMTP id S232344AbiF3LvN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 07:51:13 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16E8233E9A;
+        Thu, 30 Jun 2022 04:51:13 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id CACD21FB06;
+        Thu, 30 Jun 2022 11:51:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1656589871; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=1THAt4Br27hQvRoXxZwOtw6kFXgYBQXcKi9yQoW6FNE=;
+        b=R2sqIPVDx+juv/vDOJmrb7O/eQiaLAvDSfkxSEV8D7AjtEfMoPEGKO2rFpMZ37ZD8UQE8Z
+        xQaOiERDWao4syg4ppDRu8pP+1W8eQntY8bfgFgMMCIqwbd+pkwWwhGg3h9xEQ8MvBtgQ8
+        avcJk79qoH5rOz5dUp3XypiI6oJMWNg=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 8B8B013A5C;
+        Thu, 30 Jun 2022 11:51:11 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id +cBsIC+OvWKOIwAAMHmgww
+        (envelope-from <oneukum@suse.com>); Thu, 30 Jun 2022 11:51:11 +0000
+From:   Oliver Neukum <oneukum@suse.com>
+To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org
+Cc:     Oliver Neukum <oneukum@suse.com>
+Subject: [PATCH] cdc-eem: always use BIT
+Date:   Thu, 30 Jun 2022 13:51:09 +0200
+Message-Id: <20220630115109.7522-1-oneukum@suse.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign4
-X-QQ-Bgrelay: 1
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,PDS_BTC_ID,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-commit e109e3617e5d563b431a52e6e2f07f0fc65a93ae upstream.
+Either you use BIT(x) or 1 << x in the same expression.
+Mixing them is ridiculous. Go to BIT()
 
-Ping-Ke Shih answered[1] a question for a user about an rtl8821ce device that
-reported RFE 6, which the driver did not support. Ping-Ke suggested a possible
-fix, but the user never reported back.
-
-A second user discovered the above thread and tested the proposed fix.
-Accordingly, I am pushing this change, even though I am not the author.
-
-[1] https://lore.kernel.org/linux-wireless/3f5e2f6eac344316b5dd518ebfea2f95@realtek.com/
-
-Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
-Reported-and-tested-by: masterzorag <masterzorag@gmail.com>
-Signed-off-by: Larry Finger <Larry.Finger@lwfinger.net>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220107024739.20967-1-Larry.Finger@lwfinger.net
-Signed-off-by: Meng Tang <tangmeng@uniontech.com>
+Signed-off-by: Oliver Neukum <oneukum@suse.com>
 ---
- drivers/net/wireless/realtek/rtw88/rtw8821c.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/usb/cdc_eem.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/realtek/rtw88/rtw8821c.c b/drivers/net/wireless/realtek/rtw88/rtw8821c.c
-index 746f6f8967d8..897da3ed2f02 100644
---- a/drivers/net/wireless/realtek/rtw88/rtw8821c.c
-+++ b/drivers/net/wireless/realtek/rtw88/rtw8821c.c
-@@ -1513,6 +1513,7 @@ static const struct rtw_rfe_def rtw8821c_rfe_defs[] = {
- 	[0] = RTW_DEF_RFE(8821c, 0, 0),
- 	[2] = RTW_DEF_RFE_EXT(8821c, 0, 0, 2),
- 	[4] = RTW_DEF_RFE_EXT(8821c, 0, 0, 2),
-+	[6] = RTW_DEF_RFE(8821c, 0, 0),
- };
- 
- static struct rtw_hw_reg rtw8821c_dig[] = {
+diff --git a/drivers/net/usb/cdc_eem.c b/drivers/net/usb/cdc_eem.c
+index 359ea0d10e59..baa9b14b1644 100644
+--- a/drivers/net/usb/cdc_eem.c
++++ b/drivers/net/usb/cdc_eem.c
+@@ -218,7 +218,7 @@ static int eem_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
+ 				if (unlikely(!skb2))
+ 					goto next;
+ 				skb_trim(skb2, len);
+-				put_unaligned_le16(BIT(15) | (1 << 11) | len,
++				put_unaligned_le16(BIT(15) | BIT(11) | len,
+ 						skb_push(skb2, 2));
+ 				eem_linkcmd(dev, skb2);
+ 				break;
 -- 
-2.20.1
-
-
+2.35.3
 
