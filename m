@@ -2,93 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 87BCB562013
-	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 18:17:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 972C656201A
+	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 18:18:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236395AbiF3QRm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jun 2022 12:17:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53784 "EHLO
+        id S235842AbiF3QSY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jun 2022 12:18:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236353AbiF3QRf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 12:17:35 -0400
-Received: from mail-il1-f170.google.com (mail-il1-f170.google.com [209.85.166.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 326F62E087;
-        Thu, 30 Jun 2022 09:17:35 -0700 (PDT)
-Received: by mail-il1-f170.google.com with SMTP id 9so12711122ill.5;
-        Thu, 30 Jun 2022 09:17:35 -0700 (PDT)
+        with ESMTP id S235207AbiF3QSX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 12:18:23 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5B321EAFD
+        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 09:18:21 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id q9so28065708wrd.8
+        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 09:18:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:from:to:subject
+         :content-transfer-encoding;
+        bh=21qz1Z80+Dw1e1d/lyl4lJ/UQsiXbri/GS0RbMTGIhk=;
+        b=A+WqKGCkpN0cSNrTRPihlfzgKU3z6Eoue95gKtPjKXZL4mvaYg+DYf6mKDMp1dzOyp
+         jjpmUFmG7Jrtx4TZcjJSq5DiWkDRLdSeROnPyTVs1gMoEYSOyHXAZwTe12YXgqCcBRIL
+         3H6kmVDC1UhOui+9U21H+LxfZDx7BJX9N0FMu35JtX4saeVcsfNEiWIJXRAkrQJht3bi
+         WsqCkyIPPDhZRj7+zXUWqYF+siphMaNS/a/fzUlu4SiQ8vxNPFgoDizzukvSfeWt+7eo
+         sSHJrJq8ji1SNKstW+jUqtyDgUJbO5qPLMrEBYwp/jVII/WLX/+/Ma8iGHXuPiScmsHP
+         vV9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=q/SFM7tlCbPG9MPt9DVFEuD2pGYii3RFWX7VVRKazOI=;
-        b=HF/wT857fNrJv3dugodIxp6CHjG5x9w8CfgZBoPB/G3nTb+ZH+CThGA7StnH25vwNq
-         AheX16MrhLAvW0QyTmHKZf2aTRS5ylYBTx9E73SMXzaHL2ou9i03bO4pSbijSSc8gkqc
-         x11OaW1kqoB4Cb9Vil530r/dlJ6N10L6Ic3IcIYhvVwczXxnHfnI73PkdOmag+1mF6zJ
-         uCfvsl0Lp7WzxFzYKGHyKDEESZ+NoTRS5aYSj+81Ss5VhUf26lHaw0AvRv3es0w5ByOK
-         ZuK4uIcNaAeGdGIUegPBcX0EGn29wYaUvnGupA9FXIIXmZ7JFF5AAuzBF6TvortdmtjO
-         XuoQ==
-X-Gm-Message-State: AJIora9UqlmMU2Ccytcok2k6DLTneNd6KeyJfj0LKMKmY29TMn9zOO4h
-        FxoWYjfqaWiWC1caPNw0suAZxmvcQg==
-X-Google-Smtp-Source: AGRyM1ug+M9kyReUNbTWDDSl6F6kAbLlRpJAtMHlaAXsWsTP0S7OgFkMXyOCqKekOQy8Ugh+oOD2Iw==
-X-Received: by 2002:a05:6e02:b24:b0:2d9:2ad3:3153 with SMTP id e4-20020a056e020b2400b002d92ad33153mr5670692ilu.208.1656605854462;
-        Thu, 30 Jun 2022 09:17:34 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id p13-20020a056638216d00b00339ea90fa80sm8677059jak.71.2022.06.30.09.17.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Jun 2022 09:17:34 -0700 (PDT)
-Received: (nullmailer pid 2830875 invoked by uid 1000);
-        Thu, 30 Jun 2022 16:17:31 -0000
-Date:   Thu, 30 Jun 2022 10:17:31 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        =?iso-8859-1?Q?Miqu=E8l?= Raynal <miquel.raynal@bootlin.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
-        Eric Dumazet <edumazet@google.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Herve Codina <herve.codina@bootlin.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>
-Subject: Re: [PATCH net-next] dt-bindings: net: dsa: renesas,rzn1-a5psw: add
- interrupts description
-Message-ID: <20220630161731.GA2830744-robh@kernel.org>
-References: <20220629091305.125291-1-clement.leger@bootlin.com>
+        h=x-gm-message-state:message-id:date:mime-version:from:to:subject
+         :content-transfer-encoding;
+        bh=21qz1Z80+Dw1e1d/lyl4lJ/UQsiXbri/GS0RbMTGIhk=;
+        b=WaKl7OjXozayenU9hYHzevVd13vpoJLEzXoAoTP1s+ofJN3vWBWjBEtszHEtIM05d6
+         BXG3FkJw0geoMt4FwAmxseuJdOAEcGdtQx/YySwW+wKf91G7mtX3zu3gU4iHxYK1CiZH
+         m8vCH1hmYgxyy/tDnEk+fv4ZirCScFSjlFuIolSfssStg/R2y4wG2IETEWz96dTSBRWW
+         YVPkIgnuoJuiozoNoph2FQ2pDMrdOCXzO8FGcmp/kQ1Vw3dPWtLfO2/59PONq/OQ9zJA
+         NJh9r1SiMXO5XkHJcOKtyjs3m1hiSijTTMOPAG/iphd6APwOdLk3FdPxPuWF/oPFKZDa
+         0/Jw==
+X-Gm-Message-State: AJIora8BGz5wWPpfhmh/XBmuQkCKTVe5OJ/NKZz/265eibikDxnRcmUY
+        CxeKphGEMUQwjwCsOacnjeeIZC9MbmO898YN
+X-Google-Smtp-Source: AGRyM1v8ICWHrCio7dakae8loHliBLnhntdeEJGyd8aIm/WXYv2mneXcjRRPVTy7N3qj7tnpN9dJtw==
+X-Received: by 2002:a05:6000:1011:b0:21d:4212:854a with SMTP id a17-20020a056000101100b0021d4212854amr1192274wrx.179.1656605900374;
+        Thu, 30 Jun 2022 09:18:20 -0700 (PDT)
+Received: from DESKTOP-DLIJ48C ([39.53.244.205])
+        by smtp.gmail.com with ESMTPSA id bd5-20020a05600c1f0500b003a02f957245sm3142891wmb.26.2022.06.30.09.18.19
+        for <netdev@vger.kernel.org>
+        (version=TLS1 cipher=ECDHE-ECDSA-AES128-SHA bits=128/128);
+        Thu, 30 Jun 2022 09:18:20 -0700 (PDT)
+Message-ID: <62bdcccc.1c69fb81.c23ab.6f92@mx.google.com>
+Date:   Thu, 30 Jun 2022 09:18:20 -0700 (PDT)
+X-Google-Original-Date: 30 Jun 2022 12:18:21 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220629091305.125291-1-clement.leger@bootlin.com>
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
+From:   rosario.crosslandestimation@gmail.com
+To:     netdev@vger.kernel.org
+Subject: Bid Estimate
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 29 Jun 2022 11:13:04 +0200, Clément Léger wrote:
-> Describe the switch interrupts (dlr, switch, prp, hub, pattern) which
-> are connected to the GIC.
-> 
-> Signed-off-by: Clément Léger <clement.leger@bootlin.com>
-> ---
->  .../bindings/net/dsa/renesas,rzn1-a5psw.yaml  | 23 +++++++++++++++++++
->  1 file changed, 23 insertions(+)
-> 
+Hi,=0D=0A=0D=0AWe provide estimation & quantities takeoff service=
+s. We are providing 98-100 accuracy in our estimates and take-off=
+s. Please tell us if you need any estimating services regarding y=
+our projects.=0D=0A=0D=0ASend over the plans and mention the exac=
+t scope of work and shortly we will get back with a proposal on w=
+hich our charges and turnaround time will be mentioned=0D=0A=0D=0A=
+You may ask for sample estimates and take-offs. Thanks.=0D=0A=0D=0A=
+Kind Regards=0D=0ARosario Woodcock=0D=0ACrossland Estimating, INC=
+=20
 
-Reviewed-by: Rob Herring <robh@kernel.org>
