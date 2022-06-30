@@ -2,78 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 972C656201A
-	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 18:18:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D71756202C
+	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 18:21:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235842AbiF3QSY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jun 2022 12:18:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55032 "EHLO
+        id S236097AbiF3QVL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jun 2022 12:21:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235207AbiF3QSX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 12:18:23 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5B321EAFD
-        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 09:18:21 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id q9so28065708wrd.8
-        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 09:18:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:from:to:subject
-         :content-transfer-encoding;
-        bh=21qz1Z80+Dw1e1d/lyl4lJ/UQsiXbri/GS0RbMTGIhk=;
-        b=A+WqKGCkpN0cSNrTRPihlfzgKU3z6Eoue95gKtPjKXZL4mvaYg+DYf6mKDMp1dzOyp
-         jjpmUFmG7Jrtx4TZcjJSq5DiWkDRLdSeROnPyTVs1gMoEYSOyHXAZwTe12YXgqCcBRIL
-         3H6kmVDC1UhOui+9U21H+LxfZDx7BJX9N0FMu35JtX4saeVcsfNEiWIJXRAkrQJht3bi
-         WsqCkyIPPDhZRj7+zXUWqYF+siphMaNS/a/fzUlu4SiQ8vxNPFgoDizzukvSfeWt+7eo
-         sSHJrJq8ji1SNKstW+jUqtyDgUJbO5qPLMrEBYwp/jVII/WLX/+/Ma8iGHXuPiScmsHP
-         vV9A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:from:to:subject
-         :content-transfer-encoding;
-        bh=21qz1Z80+Dw1e1d/lyl4lJ/UQsiXbri/GS0RbMTGIhk=;
-        b=WaKl7OjXozayenU9hYHzevVd13vpoJLEzXoAoTP1s+ofJN3vWBWjBEtszHEtIM05d6
-         BXG3FkJw0geoMt4FwAmxseuJdOAEcGdtQx/YySwW+wKf91G7mtX3zu3gU4iHxYK1CiZH
-         m8vCH1hmYgxyy/tDnEk+fv4ZirCScFSjlFuIolSfssStg/R2y4wG2IETEWz96dTSBRWW
-         YVPkIgnuoJuiozoNoph2FQ2pDMrdOCXzO8FGcmp/kQ1Vw3dPWtLfO2/59PONq/OQ9zJA
-         NJh9r1SiMXO5XkHJcOKtyjs3m1hiSijTTMOPAG/iphd6APwOdLk3FdPxPuWF/oPFKZDa
-         0/Jw==
-X-Gm-Message-State: AJIora8BGz5wWPpfhmh/XBmuQkCKTVe5OJ/NKZz/265eibikDxnRcmUY
-        CxeKphGEMUQwjwCsOacnjeeIZC9MbmO898YN
-X-Google-Smtp-Source: AGRyM1v8ICWHrCio7dakae8loHliBLnhntdeEJGyd8aIm/WXYv2mneXcjRRPVTy7N3qj7tnpN9dJtw==
-X-Received: by 2002:a05:6000:1011:b0:21d:4212:854a with SMTP id a17-20020a056000101100b0021d4212854amr1192274wrx.179.1656605900374;
-        Thu, 30 Jun 2022 09:18:20 -0700 (PDT)
-Received: from DESKTOP-DLIJ48C ([39.53.244.205])
-        by smtp.gmail.com with ESMTPSA id bd5-20020a05600c1f0500b003a02f957245sm3142891wmb.26.2022.06.30.09.18.19
-        for <netdev@vger.kernel.org>
-        (version=TLS1 cipher=ECDHE-ECDSA-AES128-SHA bits=128/128);
-        Thu, 30 Jun 2022 09:18:20 -0700 (PDT)
-Message-ID: <62bdcccc.1c69fb81.c23ab.6f92@mx.google.com>
-Date:   Thu, 30 Jun 2022 09:18:20 -0700 (PDT)
-X-Google-Original-Date: 30 Jun 2022 12:18:21 -0400
+        with ESMTP id S235314AbiF3QVJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 12:21:09 -0400
+Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0591631908;
+        Thu, 30 Jun 2022 09:21:07 -0700 (PDT)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 4B5E51BF20C;
+        Thu, 30 Jun 2022 16:21:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1656606066;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=jDaxbIWGSo+t7JTdTA4oSBuCwOAMzbzayTCjAMcuvJU=;
+        b=kJfPfMbDvnsiRLnJPjz7yWSGEv6WOUu+3PvDvXVrKX//ZKg+TMnTo+G714yIlkspCgZt+x
+        mdE9GZjhR28nilJjpy2UfuBKlm8vdknCZzyIZZGU+qo+leIIpx3V0dilRpaE4L1T4EppjD
+        egQkyyPL+Bt3ra5DSdGvvG6gFn0QEHQr56lJSq9ZgzUEAYSmufEoXu6xFstp8Bl6hoax1t
+        9XnvvBKOgXYkfNOrSoFDcBGsD42YiyGqjFZG29+gdK6fTbhXW8yMTig83jjAxwT6OkB/jx
+        e6wRYJvqqStlo2pooZc4pqvuBJfwLGYCq3eakENN/NOYN4cjyeEsRFiBVJPrbA==
+Date:   Thu, 30 Jun 2022 18:20:15 +0200
+From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?UTF-8?B?TWlxdcOobA==?= Raynal <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>
+Subject: Re: [PATCH net-next] dt-bindings: net: dsa: renesas,rzn1-a5psw: add
+ interrupts description
+Message-ID: <20220630182015.67f61f87@fixe.home>
+In-Reply-To: <20220629091305.125291-1-clement.leger@bootlin.com>
+References: <20220629091305.125291-1-clement.leger@bootlin.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-From:   rosario.crosslandestimation@gmail.com
-To:     netdev@vger.kernel.org
-Subject: Bid Estimate
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,=0D=0A=0D=0AWe provide estimation & quantities takeoff service=
-s. We are providing 98-100 accuracy in our estimates and take-off=
-s. Please tell us if you need any estimating services regarding y=
-our projects.=0D=0A=0D=0ASend over the plans and mention the exac=
-t scope of work and shortly we will get back with a proposal on w=
-hich our charges and turnaround time will be mentioned=0D=0A=0D=0A=
-You may ask for sample estimates and take-offs. Thanks.=0D=0A=0D=0A=
-Kind Regards=0D=0ARosario Woodcock=0D=0ACrossland Estimating, INC=
-=20
+Le Wed, 29 Jun 2022 11:13:04 +0200,
+Cl=C3=A9ment L=C3=A9ger <clement.leger@bootlin.com> a =C3=A9crit :
 
+> Describe the switch interrupts (dlr, switch, prp, hub, pattern) which
+> are connected to the GIC.
+>=20
+> Signed-off-by: Cl=C3=A9ment L=C3=A9ger <clement.leger@bootlin.com>
+> ---
+>  .../bindings/net/dsa/renesas,rzn1-a5psw.yaml  | 23 +++++++++++++++++++
+>  1 file changed, 23 insertions(+)
+>=20
+> diff --git a/Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw=
+.yaml b/Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml
+> index 103b1ef5af1b..51f274c16ed1 100644
+> --- a/Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml
+> +++ b/Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml
+> @@ -26,6 +26,22 @@ properties:
+>    reg:
+>      maxItems: 1
+> =20
+> +  interrupts:
+> +    items:
+> +      - description: DLR interrupt
+> +      - description: Switch interrupt
+> +      - description: PRP interrupt
+> +      - description: Integrated HUB module interrupt
+> +      - description: RX Pattern interrupt
+> +
+> +  interrupts-names:
+> +    items:
+> +      - const: dlr
+> +      - const: switch
+> +      - const: prp
+> +      - const: hub
+> +      - const: ptrn
+> +
+>    power-domains:
+>      maxItems: 1
+> =20
+> @@ -76,6 +92,7 @@ examples:
+>    - |
+>      #include <dt-bindings/gpio/gpio.h>
+>      #include <dt-bindings/clock/r9a06g032-sysctrl.h>
+> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+> =20
+>      switch@44050000 {
+>          compatible =3D "renesas,r9a06g032-a5psw", "renesas,rzn1-a5psw";
+> @@ -83,6 +100,12 @@ examples:
+>          clocks =3D <&sysctrl R9A06G032_HCLK_SWITCH>, <&sysctrl R9A06G032=
+_CLK_SWITCH>;
+>          clock-names =3D "hclk", "clk";
+>          power-domains =3D <&sysctrl>;
+> +        interrupts =3D <GIC_SPI 40 IRQ_TYPE_LEVEL_HIGH>,
+> +                     <GIC_SPI 42 IRQ_TYPE_LEVEL_HIGH>,
+> +                     <GIC_SPI 43 IRQ_TYPE_LEVEL_HIGH>,
+> +                     <GIC_SPI 44 IRQ_TYPE_LEVEL_HIGH>,
+> +                     <GIC_SPI 45 IRQ_TYPE_LEVEL_HIGH>;
+> +        interrupts-name =3D "dlr", "switch", "prp", "hub", "ptrn";
+
+Wait, there is actually a typo both here and in the property
+description, should be "interrupt-names". Was not catched by
+dt_binding_check though but probably due to the fact additionnal
+properties are allowed.
+
+> =20
+>          dsa,member =3D <0 0>;
+> =20
+
+
+--=20
+Cl=C3=A9ment L=C3=A9ger,
+Embedded Linux and Kernel engineer at Bootlin
+https://bootlin.com
