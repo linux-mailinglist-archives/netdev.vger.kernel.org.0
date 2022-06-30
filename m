@@ -2,84 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 45618561DC4
-	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 16:27:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49C67561DFB
+	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 16:33:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236899AbiF3OTQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jun 2022 10:19:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53128 "EHLO
+        id S236784AbiF3Odc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jun 2022 10:33:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237367AbiF3OSC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 10:18:02 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCA0C50736;
-        Thu, 30 Jun 2022 07:02:50 -0700 (PDT)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id CDA4C2224E;
-        Thu, 30 Jun 2022 16:02:48 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1656597769;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=3CR+PnyevN7pgniuldx+d+XwCOYJhZzOjzZDWONl6gI=;
-        b=R02lbuCh2RmzAMQ4bLQsGfBhtYPwp6ltpBggNoL4dL04NWUS8Orjjp5OQuXDY/PaDwES34
-        Q3m3VvDI/gJ/AnOzjG4eFXo+Rny4MdpjHE03aTTKU9hkRieUYMb1HGeiFNv2A0TKlSo39u
-        rIqkIEw2XnNfT/zYHQpayydWU7YxOyM=
-From:   Michael Walle <michael@walle.cc>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Michael Walle <michael@walle.cc>
-Subject: [PATCH net-next 4/4] ARM: dts: lan966x: use new microchip,lan9668-switch compatible
-Date:   Thu, 30 Jun 2022 16:02:37 +0200
-Message-Id: <20220630140237.692986-5-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220630140237.692986-1-michael@walle.cc>
-References: <20220630140237.692986-1-michael@walle.cc>
+        with ESMTP id S236985AbiF3OdQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 10:33:16 -0400
+Received: from out199-1.us.a.mail.aliyun.com (out199-1.us.a.mail.aliyun.com [47.90.199.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A0BC5C9F9;
+        Thu, 30 Jun 2022 07:16:10 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R151e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046051;MF=mqaio@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0VHtfz19_1656598514;
+Received: from 30.13.190.220(mailfrom:mqaio@linux.alibaba.com fp:SMTPD_---0VHtfz19_1656598514)
+          by smtp.aliyun-inc.com;
+          Thu, 30 Jun 2022 22:15:16 +0800
+Message-ID: <529eadf1-5c7a-2068-2932-8e75ae02e405@linux.alibaba.com>
+Date:   Thu, 30 Jun 2022 22:15:14 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.9.1
+Subject: Re: [PATCH] net: hinic: avoid kernel hung in hinic_get_stats64()
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, gustavoars@kernel.org,
+        cai.huoqing@linux.dev, Aviad Krawczyk <aviad.krawczyk@huawei.com>,
+        zhaochen6@huawei.com, netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <07736c2b7019b6883076a06129e06e8f7c5f7154.1656487154.git.mqaio@linux.alibaba.com>
+ <CANn89iLpW4zFf2ABADbMNERPFr=OrAXEMm6ZgCxYA5VpcDpYTw@mail.gmail.com>
+ <8b012bbd-a175-5699-1f26-108dd52fc5b7@linux.alibaba.com>
+ <CANn89iJ-2BTR1SfFBbNG3jSgHK-TuRE_J-Khbbednu=pWnFtmw@mail.gmail.com>
+From:   maqiao <mqaio@linux.alibaba.com>
+In-Reply-To: <CANn89iJ-2BTR1SfFBbNG3jSgHK-TuRE_J-Khbbednu=pWnFtmw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The old generic microchip,lan966x-switch compatible string was
-deprecated. Use the new one.
 
-Signed-off-by: Michael Walle <michael@walle.cc>
----
- arch/arm/boot/dts/lan966x.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/lan966x.dtsi b/arch/arm/boot/dts/lan966x.dtsi
-index 48971d80c82c..da0657c57cdf 100644
---- a/arch/arm/boot/dts/lan966x.dtsi
-+++ b/arch/arm/boot/dts/lan966x.dtsi
-@@ -85,7 +85,7 @@ soc {
- 		ranges;
- 
- 		switch: switch@e0000000 {
--			compatible = "microchip,lan966x-switch";
-+			compatible = "microchip,lan9668-switch";
- 			reg = <0xe0000000 0x0100000>,
- 			      <0xe2000000 0x0800000>;
- 			reg-names = "cpu", "gcb";
--- 
-2.30.2
-
+在 2022/6/30 下午9:59, Eric Dumazet 写道:
+> On Thu, Jun 30, 2022 at 3:57 PM maqiao <mqaio@linux.alibaba.com> wrote:
+>>
+>>
+>>
+>> 在 2022/6/30 下午6:23, Eric Dumazet 写道:
+> 
+>>> Note: The following is racy, because multiple threads can call
+>>> hinic_get_stats64() at the same time.
+>>> It needs a loop, see include/linux/u64_stats_sync.h for detail.
+>> Thanks for reminding, and I noticed that nic_tx_stats/nic_rx_stats has
+>> been protected by u64_stats_sync in update_t/rx_stats(), it seems that
+>> it's unnecessary to use spinlock in update_nic_stats().
+> 
+> It is necessary to use the spinlock to protect writers among themselves.
+Ohhh, sorry, I was wrong.
+I did not realize that seqlock cannot prevent mutil writers enter 
+critical section...
+> 
+> 
+>>
+>> I will send v2 as soon as possible, thanks.
