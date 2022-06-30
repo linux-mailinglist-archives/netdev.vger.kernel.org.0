@@ -2,100 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C29156246C
-	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 22:40:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E1CD56249E
+	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 22:52:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236613AbiF3Ukm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jun 2022 16:40:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36450 "EHLO
+        id S235499AbiF3Uwz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jun 2022 16:52:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231316AbiF3Ukl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 16:40:41 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C69B22DB;
-        Thu, 30 Jun 2022 13:40:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1656621640; x=1688157640;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=dLHwojcIwhnxNiJZmRhvdWkTN7FOsnP5rdFn+0H9dDI=;
-  b=VKHeF8RNBqZIcBwicqtq9t42AcBwiu4mh6kuKKXsu8Ssx/KBYBqFi9dc
-   phuFJjWHNzTgS0RX7eUgJH3D6rPeJkPxlfayDVHjtWFDOfz6MoGJETzsY
-   XnNurJH1j3uNp5ledT8EWNf7opWzkCRr9Q+PRHdG8SZTw5vvsuR6HqdQL
-   u4xcNw7WUE0a5XZvivGM0p7uDCmtaFT11BFiyoMM3QszT5Iw+kE368l0n
-   76M5dFLW1MebWxd4x7dp4V4LRoDt9i1C7KCcJ1+jg6HswY4fd82DTzPv0
-   psrbbbVQfX8TQwV/pzTDmtwK8dKGfrxExAh8IFEgw487z6vbXrkgUZ+1d
-   g==;
-X-IronPort-AV: E=Sophos;i="5.92,235,1650956400"; 
-   d="scan'208";a="170590192"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Jun 2022 13:40:39 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 30 Jun 2022 13:40:39 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Thu, 30 Jun 2022 13:40:39 -0700
-Date:   Thu, 30 Jun 2022 22:44:33 +0200
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Michael Walle <michael@walle.cc>
-CC:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        <UNGLinuxDriver@microchip.com>, <netdev@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next 0/4] net: lan966x: hardcode port count
-Message-ID: <20220630204433.hg2a2ws2zk5p73ld@soft-dev3-1.localhost>
-References: <20220630140237.692986-1-michael@walle.cc>
+        with ESMTP id S232936AbiF3Uwy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 16:52:54 -0400
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 211854477E;
+        Thu, 30 Jun 2022 13:52:53 -0700 (PDT)
+Received: from sslproxy01.your-server.de ([78.46.139.224])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1o719c-000GXE-SX; Thu, 30 Jun 2022 22:52:48 +0200
+Received: from [85.1.206.226] (helo=linux-3.home)
+        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1o719c-0000ps-Lc; Thu, 30 Jun 2022 22:52:48 +0200
+Subject: Re: [PATCH bpf-next 4/4] selftests: xsk: destroy BPF resources only
+ when ctx refcount drops to 0
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>
+References: <20220629143458.934337-1-maciej.fijalkowski@intel.com>
+ <20220629143458.934337-5-maciej.fijalkowski@intel.com>
+ <CAJ8uoz2Jc1=O4-BJ52QgijgD5fR3As+CXLRpeync=25hc-NDoA@mail.gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <1aa6952b-8ed5-f991-8c27-d7b7325f0929@iogearbox.net>
+Date:   Thu, 30 Jun 2022 22:52:48 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <20220630140237.692986-1-michael@walle.cc>
-X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <CAJ8uoz2Jc1=O4-BJ52QgijgD5fR3As+CXLRpeync=25hc-NDoA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.6/26589/Thu Jun 30 10:08:14 2022)
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 06/30/2022 16:02, Michael Walle wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+On 6/30/22 11:58 AM, Magnus Karlsson wrote:
+> On Wed, Jun 29, 2022 at 4:39 PM Maciej Fijalkowski
+> <maciej.fijalkowski@intel.com> wrote:
+>>
+>> Currently, xsk_socket__delete frees BPF resources regardless of ctx
+>> refcount. Xdpxceiver has a test to verify whether underlying BPF
+>> resources would not be wiped out after closing XSK socket that was bound
+>> to interface with other active sockets. From library's xsk part
+>> perspective it also means that the internal xsk context is shared and
+>> its refcount is bumped accordingly.
+>>
+>> After a switch to loading XDP prog based on previously opened XSK
+>> socket, mentioned xdpxceiver test fails with:
+>> not ok 16 [xdpxceiver.c:swap_xsk_resources:1334]: ERROR: 9/"Bad file descriptor
+>>
+>> which means that in swap_xsk_resources(), xsk_socket__delete() released
+>> xskmap which in turn caused a failure of xsk_socket__update_xskmap().
+>>
+>> To fix this, when deleting socket, decrement ctx refcount before
+>> releasing BPF resources and do so only when refcount dropped to 0 which
+>> means there are no more active sockets for this ctx so BPF resources can
+>> be freed safely.
 > 
-> Don't rely on the device tree to count the number of physical port. Instead
-> introduce a new compatible string which the driver can use to select the
-> correct port count.
+> Please fix this in libxdp too as the bug is present there also.
 > 
-> This also hardcodes the generic compatible string to 8. The rationale is
-> that this compatible string was just used for the LAN9668 for now and I'm
-> not even sure the current driver would support the LAN9662.
+> Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
 
-It works also on LAN9662, but I didn't have time to send patches for
-DTs. Then when I send patches for LAN9662, do I need to go in all dts
-files to change the compatible string for the 'switch' node?
+[...]
+>> @@ -1238,7 +1236,10 @@ void xsk_socket__delete(struct xsk_socket *xsk)
+>>
+>>          ctx = xsk->ctx;
+>>          umem = ctx->umem;
+>> -       if (ctx->prog_fd != -1) {
+>> +
+>> +       xsk_put_ctx(ctx, true);
+>> +
+>> +       if (!ctx->refcount) {
+>>                  xsk_delete_bpf_maps(xsk);
+>>                  close(ctx->prog_fd);
+>>                  if (ctx->has_bpf_link)
+>> @@ -1257,7 +1258,6 @@ void xsk_socket__delete(struct xsk_socket *xsk)
+>>                  }
+>>          }
+>>
+>> -       xsk_put_ctx(ctx, true);
+>>
+>>          umem->refcount--;
 
-> 
-> Michael Walle (4):
->   net: lan966x: hardcode the number of external ports
->   dt-bindings: net: lan966x: add specific compatible string
->   net: lan966x: add new compatible microchip,lan9668-switch
->   ARM: dts: lan966x: use new microchip,lan9668-switch compatible
-> 
->  .../net/microchip,lan966x-switch.yaml         |  5 +++-
->  arch/arm/boot/dts/lan966x.dtsi                |  2 +-
->  .../ethernet/microchip/lan966x/lan966x_main.c | 24 +++++++++++++------
->  3 files changed, 22 insertions(+), 9 deletions(-)
-> 
-> --
-> 2.30.2
-> 
-
--- 
-/Horatiu
+Applied & also fixed up the double newline. Thanks everyone!
