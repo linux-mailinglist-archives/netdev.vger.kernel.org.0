@@ -2,50 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D5675625F3
-	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 00:18:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 997D65625F5
+	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 00:18:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230410AbiF3WSJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jun 2022 18:18:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44122 "EHLO
+        id S231207AbiF3WSO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jun 2022 18:18:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230395AbiF3WSD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 18:18:03 -0400
+        with ESMTP id S231168AbiF3WSE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 18:18:04 -0400
 Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 987CB57225
-        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 15:18:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D325257256
+        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 15:18:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656627482; x=1688163482;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=p0dqqgfy8zGcMIKh3FRaJtb3/66ZiVUFsAN86DmeRho=;
-  b=IEy0bvmejhTW6uUMmcef5JQWYWeK52Ul9wngt3AHjPS9KU7FAcs4I6cp
-   b27QLZHvBBTV5YIEW9DUHOtOURvCTgu9ncSUQh/qlSBiH/VoWVPSWf8LI
-   4EiRLDf+RDQw6BMSXys2C00oIupj5AIpF2RDuMNHTXSPwB3XF1QqxTtCI
-   xjA9CEMxshr6IaJ8mPYLyUjGkNAGpfC0I7s/4lqd3PohT2FI3Nq0h3sxn
-   ZV02bGK6uiPhYsX5y+1P3XHtxwWq1LZrp/inkZBgVyZBCH7zBAUw1zEcE
-   QIVGO41rWsgqABNDkWqkL4/nbyPzIqkbmb3vWf8m8ScnulFrZOzFf/Ftk
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10394"; a="283583501"
+  t=1656627483; x=1688163483;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=lZ5vKuw10oEXYHP9I4iPemj76N36tbCMGBq9V6tz1vw=;
+  b=WcVgshoViUB9clIu40u54xYdYooNrBTPWwZ8xMqb/gyYNyOBfhMQFWqM
+   29Aad5zOFjkPrA1Vz6lyex4GhqxoQSCmXgvpXw3jdaUlCICCcoeeGZBmw
+   FPAhb04KFA8OK8YgtAbli5qLMWGv3TNAa6THAStk2+91c09LPyD8mOYUB
+   unEtchn40+7mX6GWH+Iaoomm21Q2pwfd6POpkba+Ezwi2ycUB+T7V5akS
+   7PhDeiLoscezxdzJIpWBRhj286PGuSmGFtp5SkCPtRMrebyFdHjpho+tz
+   g3J9DbiwIm2o1hU8zbQ7YKqKrtvuNNdRCUinXe5StoxtvOYagjxSotnhT
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10394"; a="283583504"
 X-IronPort-AV: E=Sophos;i="5.92,235,1650956400"; 
-   d="scan'208";a="283583501"
+   d="scan'208";a="283583504"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
   by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 15:18:02 -0700
 X-IronPort-AV: E=Sophos;i="5.92,235,1650956400"; 
-   d="scan'208";a="733804538"
+   d="scan'208";a="733804539"
 Received: from mhtran-desk5.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.212.176.78])
   by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 15:18:01 -0700
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
 To:     netdev@vger.kernel.org
-Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, matthieu.baerts@tessares.net,
-        mptcp@lists.linux.dev
-Subject: [PATCH net-next 0/4] mptcp: Updates for mem scheduling and SK_RECLAIM
-Date:   Thu, 30 Jun 2022 15:17:53 -0700
-Message-Id: <20220630221757.763751-1-mathew.j.martineau@linux.intel.com>
+Cc:     Paolo Abeni <pabeni@redhat.com>, davem@davemloft.net,
+        kuba@kernel.org, edumazet@google.com, matthieu.baerts@tessares.net,
+        mptcp@lists.linux.dev,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next 1/4] mptcp: never fetch fwd memory from the subflow
+Date:   Thu, 30 Jun 2022 15:17:54 -0700
+Message-Id: <20220630221757.763751-2-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.37.0
+In-Reply-To: <20220630221757.763751-1-mathew.j.martineau@linux.intel.com>
+References: <20220630221757.763751-1-mathew.j.martineau@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -58,28 +60,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In the "net: reduce tcp_memory_allocated inflation" series (merge commit
-e10b02ee5b6c), Eric Dumazet noted that "Removal of SK_RECLAIM_CHUNK and
-SK_RECLAIM_THRESHOLD is left to MPTCP maintainers as a follow up."
+From: Paolo Abeni <pabeni@redhat.com>
 
-Patches 1-3 align MPTCP with the above TCP changes to forward memory
-allocation, reclaim, and memory scheduling.
+The memory accounting is broken in such exceptional code
+path, and after commit 4890b686f408 ("net: keep sk->sk_forward_alloc
+as small as possible") we can't find much help there.
 
-Patch 4 removes the SK_RECLAIM_* macros as Eric requested.
+Drop the broken code.
 
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+---
+ net/mptcp/protocol.c | 11 +++--------
+ 1 file changed, 3 insertions(+), 8 deletions(-)
 
-Paolo Abeni (4):
-  mptcp: never fetch fwd memory from the subflow
-  mptcp: drop SK_RECLAIM_* macros
-  mptcp: refine memory scheduling
-  net: remove SK_RECLAIM_THRESHOLD and SK_RECLAIM_CHUNK
-
- include/net/sock.h   |  5 -----
- net/mptcp/protocol.c | 49 +++++++-------------------------------------
- 2 files changed, 7 insertions(+), 47 deletions(-)
-
-
-base-commit: b7d78b46d5e8dc77c656c13885d31e931923b915
+diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
+index e0fb9f96c45c..c67c6fc1fe04 100644
+--- a/net/mptcp/protocol.c
++++ b/net/mptcp/protocol.c
+@@ -328,15 +328,10 @@ static bool mptcp_rmem_schedule(struct sock *sk, struct sock *ssk, int size)
+ 
+ 	amt = sk_mem_pages(size);
+ 	amount = amt << PAGE_SHIFT;
+-	msk->rmem_fwd_alloc += amount;
+-	if (!__sk_mem_raise_allocated(sk, size, amt, SK_MEM_RECV)) {
+-		if (ssk->sk_forward_alloc < amount) {
+-			msk->rmem_fwd_alloc -= amount;
+-			return false;
+-		}
++	if (!__sk_mem_raise_allocated(sk, size, amt, SK_MEM_RECV))
++		return false;
+ 
+-		ssk->sk_forward_alloc -= amount;
+-	}
++	msk->rmem_fwd_alloc += amount;
+ 	return true;
+ }
+ 
 -- 
 2.37.0
 
