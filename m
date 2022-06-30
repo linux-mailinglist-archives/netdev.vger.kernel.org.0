@@ -2,97 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D2325625D2
-	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 00:08:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D5675625F3
+	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 00:18:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229650AbiF3WI3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jun 2022 18:08:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57008 "EHLO
+        id S230410AbiF3WSJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jun 2022 18:18:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229573AbiF3WI2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 18:08:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34DFE6341;
-        Thu, 30 Jun 2022 15:08:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D2AC5B82D74;
-        Thu, 30 Jun 2022 22:08:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EE37C34115;
-        Thu, 30 Jun 2022 22:08:22 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="izP8boWZ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1656626900;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=6Q4opgcj8y74lb4+vPMz7Aaz4RXLvbhbkqhgjW9tIvg=;
-        b=izP8boWZFX5fMfz/RJGlnkHtlHosnp4H5Pul/iijp/E0mA3n7tapeU2lXvgfjFgRHC5EHI
-        HG6iJ64PfQOjoSj6rup/5Vw7Jo/sEexsNUKxxrKW1hyuSTJzNglW5R4FV+q3TpYt5wpFVP
-        pT6LxXQzcgYHKnMapyx7o8SPOSZ4nSs=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 2a3c525e (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Thu, 30 Jun 2022 22:08:20 +0000 (UTC)
-Date:   Fri, 1 Jul 2022 00:08:16 +0200
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     Kalesh Singh <kaleshsingh@google.com>
-Cc:     John Stultz <jstultz@google.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Saravana Kannan <saravanak@google.com>,
-        "T.J. Mercier" <tjmercier@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        "Cc: Android Kernel" <kernel-team@android.com>,
-        Theodore Ts'o <tytso@mit.edu>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        LKML <linux-kernel@vger.kernel.org>, wireguard@lists.zx2c4.com,
-        netdev@vger.kernel.org, linux-pm@vger.kernel.org
-Subject: Re: [PATCH] pm/sleep: Add PM_USERSPACE_AUTOSLEEP Kconfig
-Message-ID: <Yr4e0FCo1l3Db4Gi@zx2c4.com>
-References: <20220630191230.235306-1-kaleshsingh@google.com>
- <Yr3+RLhpp3g9A7vb@zx2c4.com>
- <CAC_TJvdV9bU2xWpbgrQuyrr6ens9gzDnZT2UzAY6Q6ZN9p7aEw@mail.gmail.com>
- <Yr4SQVjBCilyV1na@zx2c4.com>
- <CAC_TJvdZMr7KyUe7ro7jmFT1z5Gs3YbM9dhbL5Yp-weLvd0T3g@mail.gmail.com>
+        with ESMTP id S230395AbiF3WSD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 18:18:03 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 987CB57225
+        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 15:18:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656627482; x=1688163482;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=p0dqqgfy8zGcMIKh3FRaJtb3/66ZiVUFsAN86DmeRho=;
+  b=IEy0bvmejhTW6uUMmcef5JQWYWeK52Ul9wngt3AHjPS9KU7FAcs4I6cp
+   b27QLZHvBBTV5YIEW9DUHOtOURvCTgu9ncSUQh/qlSBiH/VoWVPSWf8LI
+   4EiRLDf+RDQw6BMSXys2C00oIupj5AIpF2RDuMNHTXSPwB3XF1QqxTtCI
+   xjA9CEMxshr6IaJ8mPYLyUjGkNAGpfC0I7s/4lqd3PohT2FI3Nq0h3sxn
+   ZV02bGK6uiPhYsX5y+1P3XHtxwWq1LZrp/inkZBgVyZBCH7zBAUw1zEcE
+   QIVGO41rWsgqABNDkWqkL4/nbyPzIqkbmb3vWf8m8ScnulFrZOzFf/Ftk
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10394"; a="283583501"
+X-IronPort-AV: E=Sophos;i="5.92,235,1650956400"; 
+   d="scan'208";a="283583501"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 15:18:02 -0700
+X-IronPort-AV: E=Sophos;i="5.92,235,1650956400"; 
+   d="scan'208";a="733804538"
+Received: from mhtran-desk5.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.212.176.78])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 15:18:01 -0700
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+To:     netdev@vger.kernel.org
+Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, matthieu.baerts@tessares.net,
+        mptcp@lists.linux.dev
+Subject: [PATCH net-next 0/4] mptcp: Updates for mem scheduling and SK_RECLAIM
+Date:   Thu, 30 Jun 2022 15:17:53 -0700
+Message-Id: <20220630221757.763751-1-mathew.j.martineau@linux.intel.com>
+X-Mailer: git-send-email 2.37.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CAC_TJvdZMr7KyUe7ro7jmFT1z5Gs3YbM9dhbL5Yp-weLvd0T3g@mail.gmail.com>
-X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Kalesh,
+In the "net: reduce tcp_memory_allocated inflation" series (merge commit
+e10b02ee5b6c), Eric Dumazet noted that "Removal of SK_RECLAIM_CHUNK and
+SK_RECLAIM_THRESHOLD is left to MPTCP maintainers as a follow up."
 
-On Thu, Jun 30, 2022 at 03:02:46PM -0700, Kalesh Singh wrote:
-> I've uploaded the changes on android-mainline [1]. We'll submit there
-> once the upstream changes are finalized.
-> 
-> [1] https://android-review.googlesource.com/c/kernel/common/+/2142693/1
+Patches 1-3 align MPTCP with the above TCP changes to forward memory
+allocation, reclaim, and memory scheduling.
 
-Excellent. I think everything is all set then, at least from my
-perspective. There's a viable replacement for this usage of
-CONFIG_ANDROID, there are patches ready to go both in the kernel and on
-Android's configs, and now all we do is wait for Rafael. Great!
+Patch 4 removes the SK_RECLAIM_* macros as Eric requested.
 
-Maybe people will have opinions on the naming
-(CONFIG_PM_RAPID_USERSPACE_AUTOSLEEP vs
-CONFIG_PM_ANDROID_USERAPCE_AUTO_SLEEP vs what you have vs something else
-vs who knows), but whatever is chosen seems probably fine, as this is a
-pretty low key change since it can always be tweaked further later (it's
-not ABI).
 
-Jason
+Paolo Abeni (4):
+  mptcp: never fetch fwd memory from the subflow
+  mptcp: drop SK_RECLAIM_* macros
+  mptcp: refine memory scheduling
+  net: remove SK_RECLAIM_THRESHOLD and SK_RECLAIM_CHUNK
+
+ include/net/sock.h   |  5 -----
+ net/mptcp/protocol.c | 49 +++++++-------------------------------------
+ 2 files changed, 7 insertions(+), 47 deletions(-)
+
+
+base-commit: b7d78b46d5e8dc77c656c13885d31e931923b915
+-- 
+2.37.0
+
