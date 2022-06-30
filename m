@@ -2,72 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A1300561E11
-	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 16:36:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92E2D561E0B
+	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 16:36:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237038AbiF3Oe5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jun 2022 10:34:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40394 "EHLO
+        id S236277AbiF3OfF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jun 2022 10:35:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236180AbiF3Oej (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 10:34:39 -0400
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D4DD677EE;
-        Thu, 30 Jun 2022 07:20:35 -0700 (PDT)
-Received: by mail-pg1-x534.google.com with SMTP id e132so3062334pgc.5;
-        Thu, 30 Jun 2022 07:20:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ZoOONB+6KTZ21PhWkviaVKZOS2lsC8jyZZGjusxKNh4=;
-        b=I+iZ8i/D9epTvcx4pI6w8Gu0S7GXlt288tFF5mTuhax7rgWHyuM0WMLermz+fhgIfT
-         daxT/ECuysrwbjuj36f8fekDNkex23H9nEzzjhNPZohNlXJLLwo+91JEDHvvndTLyX9D
-         fWNSOGyBDmOy8cwm0KRFoM7ga5dHuHuBYV/pEn7co6v1RRqmVIqpRFsy4zmAcgiM2Ubw
-         WaE1KUEDaUbwvmA8xfWPG5ryXhVWgfEOtb7cp+pp1oNCoH5FDeJFOhgctxcYIq1rGIAn
-         /rfShey01ewSi8R+RpIRJs06PkZBjqm/9eIMgIYXqP/RWBlE6RSQEARj1UHWhsDF7Jn/
-         D76g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZoOONB+6KTZ21PhWkviaVKZOS2lsC8jyZZGjusxKNh4=;
-        b=vMyqV3sSCp8gwnxX+J49M3f32fs5eXCorM7aHfBcDoenBTimFMEqsXCxl6ke6YWOrh
-         rvGP0Wssm/bCsZf7Hooj3ThRsBeUsW+6ZeZg4o8O0JY+GEZc+hN7yMrB+8bGzmP8C1zR
-         RkaaH16xZMid3DJmTQKZwCV7FOnGmX1SxigKCYTujSsFVatqJBKfJEeimOE16gb+Megw
-         wQ/eOi+noIU90A6KsnkRFXjVjYLM8FnB5K3022gYVavBmOYs4Bgcp1A6xshZJ8pXgo0e
-         eL/rVfvYU00yIz1tR+uac8GX2epjEJ8bNOmp7WC6R3S9nahXAOKBXD0FEoLqTeBY+DKL
-         M3CA==
-X-Gm-Message-State: AJIora+51nSjYj4JVJoitDFASJsejgEnO24+snBsEfZAsZt7ySrbEzYu
-        3Y/yVkNNHCTGdIj9N+OiUaLThENjMxOfoBc3JQU=
-X-Google-Smtp-Source: AGRyM1ukpqNyJHnjXREZdnq7pTqkcOAhbVW7upHxfkpLBRdKhsNzSlMk6xhkG/xT8wBuQajEgx04hDVn5nnWwauz5Bc=
-X-Received: by 2002:aa7:999a:0:b0:525:6023:8c03 with SMTP id
- k26-20020aa7999a000000b0052560238c03mr16042113pfh.86.1656598835031; Thu, 30
- Jun 2022 07:20:35 -0700 (PDT)
+        with ESMTP id S232475AbiF3Oeo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 10:34:44 -0400
+Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46D3D68A1A;
+        Thu, 30 Jun 2022 07:20:45 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=mqaio@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0VHtYxCo_1656598839;
+Received: from 30.13.190.220(mailfrom:mqaio@linux.alibaba.com fp:SMTPD_---0VHtYxCo_1656598839)
+          by smtp.aliyun-inc.com;
+          Thu, 30 Jun 2022 22:20:41 +0800
+Message-ID: <446b9cf0-8f98-b176-0f35-829004746c77@linux.alibaba.com>
+Date:   Thu, 30 Jun 2022 22:20:39 +0800
 MIME-Version: 1.0
-References: <20220630093717.8664-1-magnus.karlsson@gmail.com> <fa929729-6122-195f-aa4b-e5d3fedb1887@redhat.com>
-In-Reply-To: <fa929729-6122-195f-aa4b-e5d3fedb1887@redhat.com>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Thu, 30 Jun 2022 16:20:24 +0200
-Message-ID: <CAJ8uoz2KmpVf7nkJXUsHhmOtS2Td+rMOX8-PRqzz9QxJB-tZ3g@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] selftests, bpf: remove AF_XDP samples
-To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
-Cc:     "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        bpf <bpf@vger.kernel.org>, Xdp <xdp-newbies@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.9.1
+Subject: Re: [PATCH] net: hinic: avoid kernel hung in hinic_get_stats64()
+To:     Paolo Abeni <pabeni@redhat.com>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, gustavoars@kernel.org,
+        cai.huoqing@linux.dev, aviad.krawczyk@huawei.com,
+        zhaochen6@huawei.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <07736c2b7019b6883076a06129e06e8f7c5f7154.1656487154.git.mqaio@linux.alibaba.com>
+ <64e59afe33fff04861c800853a549f7979270f79.camel@redhat.com>
+From:   maqiao <mqaio@linux.alibaba.com>
+In-Reply-To: <64e59afe33fff04861c800853a549f7979270f79.camel@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -75,57 +45,80 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 30, 2022 at 3:44 PM Jesper Dangaard Brouer
-<jbrouer@redhat.com> wrote:
->
->
-> On 30/06/2022 11.37, Magnus Karlsson wrote:
-> > From: Magnus Karlsson <magnus.karlsson@intel.com>
-> >
-> > Remove the AF_XDP samples from samples/bpf as they are dependent on
-> > the AF_XDP support in libbpf. This support has now been removed in the
-> > 1.0 release, so these samples cannot be compiled anymore. Please start
-> > to use libxdp instead. It is backwards compatible with the AF_XDP
-> > support that was offered in libbpf. New samples can be found in the
-> > various xdp-project repositories connected to libxdp and by googling.
-> >
-> > Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
->
-> Will you (or Maciej) be submitting these samples to XDP-tools[1] which
-> is the current home for libxdp or maybe BPF-examples[2] ?
->
->   [1] https://github.com/xdp-project/xdp-tools
->   [2] https://github.com/xdp-project/bpf-examples
->
-> I know Toke is ready to take over maintaining these, but we will
-> appreciate someone to open a PR with this code...
->
-> > ---
-> >   MAINTAINERS                     |    2 -
-> >   samples/bpf/Makefile            |    9 -
-> >   samples/bpf/xdpsock.h           |   19 -
-> >   samples/bpf/xdpsock_ctrl_proc.c |  190 ---
-> >   samples/bpf/xdpsock_kern.c      |   24 -
-> >   samples/bpf/xdpsock_user.c      | 2019 -------------------------------
-> >   samples/bpf/xsk_fwd.c           | 1085 -----------------
->
-> The code in samples/bpf/xsk_fwd.c is interesting, because it contains a
-> buffer memory manager, something I've seen people struggle with getting
-> right and performant (at the same time).
 
-I can push xsk_fwd to BPF-examples. Though I do think that xdpsock has
-become way too big to serve as a sample. It slowly turned into a catch
-all demonstrating every single feature of AF_XDP. We need a minimal
-example and then likely other samples for other features that should
-be demoed. So I suggest that xdpsock dies here and we start over with
-something minimal and use xsk_fwd for the forwarding and mempool
-example.
 
-Toke, I think you told me at Recipes in Paris that someone from RedHat
-was working on an example. Did I remember correctly?
+在 2022/6/30 下午5:56, Paolo Abeni 写道:
+> On Wed, 2022-06-29 at 15:28 +0800, Qiao Ma wrote:
+>> When using hinic device as a bond slave device, and reading device stats of
+>> master bond device, the kernel may hung.
+>>
+>> The kernel panic calltrace as follows:
+>> Kernel panic - not syncing: softlockup: hung tasks
+>> Call trace:
+>>    native_queued_spin_lock_slowpath+0x1ec/0x31c
+>>    dev_get_stats+0x60/0xcc
+>>    dev_seq_printf_stats+0x40/0x120
+>>    dev_seq_show+0x1c/0x40
+>>    seq_read_iter+0x3c8/0x4dc
+>>    seq_read+0xe0/0x130
+>>    proc_reg_read+0xa8/0xe0
+>>    vfs_read+0xb0/0x1d4
+>>    ksys_read+0x70/0xfc
+>>    __arm64_sys_read+0x20/0x30
+>>    el0_svc_common+0x88/0x234
+>>    do_el0_svc+0x2c/0x90
+>>    el0_svc+0x1c/0x30
+>>    el0_sync_handler+0xa8/0xb0
+>>    el0_sync+0x148/0x180
+>>
+>> And the calltrace of task that actually caused kernel hungs as follows:
+>>    __switch_to+124
+>>    __schedule+548
+>>    schedule+72
+>>    schedule_timeout+348
+>>    __down_common+188
+>>    __down+24
+>>    down+104
+>>    hinic_get_stats64+44 [hinic]
+>>    dev_get_stats+92
+>>    bond_get_stats+172 [bonding]
+>>    dev_get_stats+92
+>>    dev_seq_printf_stats+60
+>>    dev_seq_show+24
+>>    seq_read_iter+964
+>>    seq_read+220
+>>    proc_reg_read+164
+>>    vfs_read+172
+>>    ksys_read+108
+>>    __arm64_sys_read+28
+>>    el0_svc_common+132
+>>    do_el0_svc+40
+>>    el0_svc+24
+>>    el0_sync_handler+164
+>>    el0_sync+324
+>>
+>> When getting device stats from bond, kernel will call bond_get_stats().
+>> It first holds the spinlock bond->stats_lock, and then call
+>> hinic_get_stats64() to collect hinic device's stats.
+>> However, hinic_get_stats64() calls `down(&nic_dev->mgmt_lock)` to
+>> protect its critical section, which may schedule current task out.
+>> And if system is under high pressure, the task cannot be woken up
+>> immediately, which eventually triggers kernel hung panic.
+>>
+>> Fixes: edd384f682cc ("net-next/hinic: Add ethtool and stats")
+>> Signed-off-by: Qiao Ma <mqaio@linux.alibaba.com>
+> 
+> Side note: it looks like that after this patch every section protected
+> by the mgmt_lock is already under rtnl lock protection, so you could
+> probably remove the hinic specific lock (in a separate, net-next,
+> patch).
+> 
+> Please double check the above as I skimmed upon that quickly.
+Thank you, I need to carefully check each section will only be called 
+through netlink dev_get_stats().
 
-> You can get my ACK if someone commits to port this to [1] or [2], or a
-> 3rd place that have someone what will maintain this in the future.
->
-> --Jesper
->
+And I forgot to add prefix "net-next" in patch's title, forgive me...
+> 
+> Thanks,
+> 
+> Paolo
