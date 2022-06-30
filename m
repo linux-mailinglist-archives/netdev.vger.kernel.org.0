@@ -2,81 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AFD9560F93
-	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 05:29:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EC3A560F98
+	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 05:29:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231488AbiF3DSn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 23:18:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52814 "EHLO
+        id S232058AbiF3DUm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 23:20:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229479AbiF3DSh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 23:18:37 -0400
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB9AC1EEF2
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 20:18:36 -0700 (PDT)
-Received: by mail-pg1-x530.google.com with SMTP id d129so17185747pgc.9
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 20:18:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=eSjVV+7OFulr8zAbPRa6Qjx2R8k+45lODfZoNjxvcqs=;
-        b=Lx1c57tTgH+t6kB+yTTJmKIg3WS/nZHmMzUyGstTwvcXAZCJfH3roT0bo0B0D3IynA
-         gcG7w6TbBx1SDUM/juFfjpRgUiA8Hd+fK/BjudtqkKRMBXAQnNb94in8sgnquuk3UppT
-         20/aD8P8QcNKUSKW1d0CmAfy2iqsy/6K5YXkdxOExC0/0+u7MRF15OIjl55Q5SfYvK22
-         suPmypE+cChmRKEJcW8lhjhhLkyEG4EJMoRwuerD95gxjL7I5kv9EqiRqAlWrmxIWo0I
-         EtvJifffCtyQwy6j4NyRbSyLp1GdY9R82pDBYIL03ps2ko06KgqIeZ80dbeYJqWYUa5Y
-         I3+w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=eSjVV+7OFulr8zAbPRa6Qjx2R8k+45lODfZoNjxvcqs=;
-        b=RBgrgFM23XtUEPSyt6qeKXvnQh/Tysg+qWvlTXsPiL5PaabkfUE4LZChS6KLZBmYg/
-         S/GBSe1zeeOIuEK8sBotsXenkweVE3rG1o5TtCes0Ih9hD0XXjIK2EKCyTZ4p53zs5XQ
-         RE/X63cWX58GfxwGQ8AnLqh78RTy5mA3mCggOnlJ617gOFU5BgnLpUfBFcWPoCoPenEj
-         diPu1VuIjaYJFbYyMXulaDEtPfb9c0eeBUT4tHZ+zi+O2giL0Cy/yt8F3fDEllmzMav6
-         Qe4mHXWFn3EqyFYdnycebBSEtpVv6q2PMYRsVcvpYj2LBs6p4y4L2gglkckepZ93W8sl
-         2ixQ==
-X-Gm-Message-State: AJIora/vGLFk7hw37E17fOaXkJsxu3OBXDMoajtte3XnKYDrgCco5+ry
-        NzF4HwEEfDmvW+K+J1yNALg=
-X-Google-Smtp-Source: AGRyM1tfBjCLOLGDdJ/EaJd2jUDv6WrbqFKzPXB0aaD9Tfm6mUHY/UQ8UGBrb7L18FqgdgyMU1Dirw==
-X-Received: by 2002:a63:1d20:0:b0:411:9f92:43c3 with SMTP id d32-20020a631d20000000b004119f9243c3mr1506952pgd.115.1656559116369;
-        Wed, 29 Jun 2022 20:18:36 -0700 (PDT)
-Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id c20-20020a656754000000b003fcf1279c84sm11945718pgu.33.2022.06.29.20.18.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Jun 2022 20:18:35 -0700 (PDT)
-Date:   Wed, 29 Jun 2022 20:18:33 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>
-Subject: Re: [PATCH net-next] net: gianfar: add support for software TX
- timestamping
-Message-ID: <Yr0WCSQnEvh2nwjZ@hoboy.vegasvil.org>
-References: <20220629181335.3800821-1-vladimir.oltean@nxp.com>
+        with ESMTP id S232143AbiF3DUU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 23:20:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACF8140A35;
+        Wed, 29 Jun 2022 20:20:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5C432B827F9;
+        Thu, 30 Jun 2022 03:20:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 0E3D0C3411E;
+        Thu, 30 Jun 2022 03:20:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656559214;
+        bh=6j3Dl7YHO3OHtYGT4aJ+6XgyCQOD/YBJJwDRSRxfaj4=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=eZbgJ4bifC8aec4Qgay1cQWcRTpzBuk32N47JVLJX6KnCxBk8ZsWnUScZIzs1KkOO
+         tT6P9POSlyjgDZxl9DrKgL3YNiFbK3+gxA7/Mnh727mju9zUrXgY6cFW9IyQQ3DwXE
+         8IPBnY2rE3Rtv1VrTyn7HgiI9vclsl/DC8iWtZLfsyuJfd5pFqICKMnblMC0LuBewQ
+         /0TKor/m+Sc5lS2jH2mg/fX+odgKoYXsrqXxsXWWVYE+602GGH+RITcPQE3MxzJ/1k
+         Qo2XYqAgGpKU5dZHageyNsDZGOL9YdwLk+WcrHVRGqxW+307jbeStgQW5r5corpqKM
+         vvraU+980ryoA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E10A0E49BB8;
+        Thu, 30 Jun 2022 03:20:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220629181335.3800821-1-vladimir.oltean@nxp.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net 0/3] Netfilter fixes for net
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165655921391.17409.14718173715479167707.git-patchwork-notify@kernel.org>
+Date:   Thu, 30 Jun 2022 03:20:13 +0000
+References: <20220629171354.208773-1-pablo@netfilter.org>
+In-Reply-To: <20220629171354.208773-1-pablo@netfilter.org>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com
+X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 29, 2022 at 09:13:35PM +0300, Vladimir Oltean wrote:
-> These are required by certain network profiling applications in order to
-> measure delays.
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Hello:
 
-Acked-by: Richard Cochran <richardcochran@gmail.com>
+This series was applied to netdev/net.git (master)
+by Pablo Neira Ayuso <pablo@netfilter.org>:
+
+On Wed, 29 Jun 2022 19:13:51 +0200 you wrote:
+> Hi,
+> 
+> The following patchset contains Netfilter fixes for net:
+> 
+> 1) Restore set counter when one of the CPU loses race to add elements
+>    to sets.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net,1/3] netfilter: nft_dynset: restore set element counter when failing to update
+    https://git.kernel.org/netdev/net/c/05907f10e235
+  - [net,2/3] netfilter: nf_tables: avoid skb access on nf_stolen
+    https://git.kernel.org/netdev/net/c/e34b9ed96ce3
+  - [net,3/3] netfilter: br_netfilter: do not skip all hooks with 0 priority
+    https://git.kernel.org/netdev/net/c/c2577862eeb0
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
