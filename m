@@ -2,125 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ADA6B560F63
-	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 05:02:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B358560F6D
+	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 05:04:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231938AbiF3DCe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 23:02:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43278 "EHLO
+        id S229480AbiF3DEv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 23:04:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229455AbiF3DCd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 23:02:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28C62286DF;
-        Wed, 29 Jun 2022 20:02:32 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B3E806202D;
-        Thu, 30 Jun 2022 03:02:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9ADC3C3411E;
-        Thu, 30 Jun 2022 03:02:27 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="cEfq2bbY"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1656558145;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=lAxoLbADZAhu/fbtT19sYsfwjIQHx+7cL3zp8zm5ylc=;
-        b=cEfq2bbYg+E0cJPmGbfqowUlZyBsEFMB+Tx0GAvzVTKBOF7AJsVTfIV6F3UeLWUpu2xbSL
-        REcWxgdTxNMimTFAsv2fXTf8VAIjeKWpDKecdvNtTMkrU9267h6JnxgCkrxxlSMx660w+6
-        xigc6asOchBZ4Fie7h+gI+in3P0RKaw=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 44cb7fda (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Thu, 30 Jun 2022 03:02:25 +0000 (UTC)
-Date:   Thu, 30 Jun 2022 05:02:19 +0200
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     Joe Perches <joe@perches.com>
-Cc:     Kalesh Singh <kaleshsingh@google.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arve =?utf-8?B?SGrDuG5uZXbDpWc=?= <arve@android.com>,
-        Todd Kjos <tkjos@android.com>,
-        Martijn Coenen <maco@android.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Hridya Valsaraju <hridya@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Theodore Ts'o <tytso@mit.edu>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Alex Xu (Hello71)" <alex_y_xu@yahoo.ca>,
-        Paolo Abeni <pabeni@redhat.com>, Rob Herring <robh@kernel.org>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Shuah Khan <shuah@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, wireguard@lists.zx2c4.com,
-        netdev@vger.kernel.org, rcu <rcu@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>, sultan@kerneltoast.com,
-        android-kernel-team <android-kernel-team@google.com>,
-        John Stultz <jstultz@google.com>,
-        Saravana Kannan <saravanak@google.com>, rafael@kernel.org
-Subject: Re: [PATCH] remove CONFIG_ANDROID
-Message-ID: <Yr0SO0Ubi3Js7ciP@zx2c4.com>
-References: <Yrx/8UOY+J8Ao3Bd@zx2c4.com>
- <YryNQvWGVwCjJYmB@zx2c4.com>
- <Yryic4YG9X2/DJiX@google.com>
- <Yry6XvOGge2xKx/n@zx2c4.com>
- <CAC_TJve_Jk0+XD7VeSJVvJq4D9ZofnH69B4QZv2LPT4X3KNfeg@mail.gmail.com>
- <YrzaCRl9rwy9DgOC@zx2c4.com>
- <CAC_TJvcEzp+zQp50wtj4=7b6vEObpJCQYLaTLhHJCxFdk3TgPg@mail.gmail.com>
- <306dacfb29c2e38312943fa70d419f0a8d5ffe82.camel@perches.com>
- <YrzzWmQ9+uDRlO5K@zx2c4.com>
- <1a1f24707a03c2363e29ef91905e9f206fb6a0b5.camel@perches.com>
+        with ESMTP id S229455AbiF3DEu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 23:04:50 -0400
+Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 831682FFC8
+        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 20:04:49 -0700 (PDT)
+Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-3177f4ce3e2so166599137b3.5
+        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 20:04:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:sender:from:date:message-id:subject:to;
+        bh=+euL4kvAXiXF6UpvarEE11UuxUejKN5VHaeOjPcjQnY=;
+        b=XXdYcsx6g6Y2+zeZjdWPFI8tA1HD6VS7RKFfEEOfxURClqXxiE4ZpTFX+C2lCEmBfA
+         Q9nN+V707zRlb5PfNt0vJrdvXL7X31AAshbvUuSYfYUl/QUcuj1l0YZJi4AjWDRGNkf8
+         sbvneKNIwxLMX50gBV7kj4K5ECBe8VM5oWFg+scLh9ETe0pNO2oizfQ4Jui6f6YLcKo5
+         6gk7DNTI7ml/v0Ftj1J9vFjcJ2u2ZhZANaD33n4hkMB/HPrLUBeCiZ+jNMbnOrt2sD9X
+         wpALXZFyc7jlANn9rpq5m+gurnTUgeseYR2Cpkb5eMpLo5T3r+9816rK2W7sd5yVU4xv
+         IrDw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:sender:from:date
+         :message-id:subject:to;
+        bh=+euL4kvAXiXF6UpvarEE11UuxUejKN5VHaeOjPcjQnY=;
+        b=IEt2ydoNUFw3r/wQ6VHfxKnxFaSRN/NCWrLe4Gk2cXAdEhWfGyEr45Hxt7LW3/0Jlj
+         NmXy/klJJsdJExWf03qlM+s9MBXcMQtIjpiZoALCkNQFKJ/+3aMiOKGPV+tGu3xnav0a
+         ZZz+yTuIsM33KMQ95e/hN9h0p1Am+XfdcrjojdhAjJtYh6eed90L6PHX+JZDeZbtWJC3
+         RTD+XXO85pkusuPy+IjXLUghEnWNPSUqlSUKphY2yAn2NbyjZzwPc1uILN0eL1Ha4Xbk
+         8WkXfGVtlBpYOaIsVjrB7YW9HmKi/GeeB1mhyY736IixU8GkYVzUdPcZQ3/MhaGa4ttN
+         34NA==
+X-Gm-Message-State: AJIora/gxMp1meM0u+LPFPguWhL3kSpNNLgzRCH/ILi4oUf0oPb0GZhT
+        zXUEGcDjpTdurwQRvOvNoWlxu51KOlRaof79HH0=
+X-Google-Smtp-Source: AGRyM1vpZWUryGmX2Syul7itFxBtSVf9Bo+1E+e4cMCDvNvC1ZOA3g+ku2VwXSI2ex+9FInLYj0tlEdTA3VdWCEE2Yo=
+X-Received: by 2002:a0d:d7c7:0:b0:317:bfe8:4f2 with SMTP id
+ z190-20020a0dd7c7000000b00317bfe804f2mr8125251ywd.276.1656558288801; Wed, 29
+ Jun 2022 20:04:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <1a1f24707a03c2363e29ef91905e9f206fb6a0b5.camel@perches.com>
-X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Reply-To: edmondpamela60@gmail.com
+Sender: phillipcannon999@gmail.com
+Received: by 2002:a05:7010:624a:b0:2e2:347a:d6db with HTTP; Wed, 29 Jun 2022
+ 20:04:48 -0700 (PDT)
+From:   Pamela Edmond <edmondpamela60@gmail.com>
+Date:   Thu, 30 Jun 2022 03:04:48 +0000
+X-Google-Sender-Auth: EfWxCQMY5ip1C-wyzzzZ4ShODzs
+Message-ID: <CAOyhKGOcx7bj+xtTnJfF+m-jji+qTCvuj0yCb2En7s0gsT3VtQ@mail.gmail.com>
+Subject: 
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=1.1 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,FREEMAIL_REPLYTO_END_DIGIT,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
+X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 29, 2022 at 06:44:14PM -0700, Joe Perches wrote:
-> On Thu, 2022-06-30 at 02:50 +0200, Jason A. Donenfeld wrote:
-> > On Wed, Jun 29, 2022 at 05:36:57PM -0700, Joe Perches wrote:
-> > > > > +static ssize_t pm_userspace_autosleeper_show(struct kobject *kobj,
-> > > > > +                               struct kobj_attribute *attr, char *buf)
-> > > > > +{
-> > > > > +       return sprintf(buf, "%d\n", pm_userspace_autosleeper_enabled);
-> > > 
-> > > This should use sysfs_emit no?
-> > 
-> > Probably, yea. Note that I just copy and pasted a nearby function,
-> > pm_async_show, `:%s/`d the variable name, and then promptly `git diff |
-> > clip`d it and plonked it into my email. Looking at the file, it uses
-> > sprintf all over the place in this fashion. So you may want to submit a
-> > cleanup to Rafael on this if you're right about sysfs_emit() being
-> > universally preferred.
-> 
-> Perhaps:
-> 
-> (trivial refactored and added a missing newline in autosleep_show)
-> 
-> ---
->  kernel/power/main.c | 102 ++++++++++++++++++++++++++--------------------------
->  1 file changed, 52 insertions(+), 50 deletions(-)
-
-You should probably post a proper patch to the PM people. At least I'm
-not going to look at that here, as it's not really relevant at all to
-this discussion.
-
-Jason
+I seek your consent in this great opportunity.
