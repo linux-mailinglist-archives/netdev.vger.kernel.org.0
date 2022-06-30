@@ -2,216 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 46DC1562299
-	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 21:06:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA5545622B5
+	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 21:12:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236756AbiF3TFF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jun 2022 15:05:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42818 "EHLO
+        id S236863AbiF3TMs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jun 2022 15:12:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236741AbiF3TFE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 15:05:04 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9D4837A06;
-        Thu, 30 Jun 2022 12:05:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1656615902; x=1688151902;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=YN+jJ2EY32rC9QVIOpQMx3zPRDCVJOurEzUQC3z8dmk=;
-  b=cuInw13UrpMt518dgAlQel0blAMa3kIW0S78eRRr50MwDAtjZj2TcVLF
-   2srBYnTy3imW4mmUbpTC/kfU4zfrvBGG1+wal+doEoRJoVQ2jypKbhrW0
-   1J/l3tV5PxN8J2gruNQTC7EsEu56j2lpQ5SnIpA3G06T4aKnVjGepMfLD
-   KYQNzsGJMDtm3tuxX0acf74RiShUF1HylN4SO2TLzQG+ml1FKlOqDpDLY
-   uVOyZSyOBNI8fdTDaa8/rXPb7CkqJBHvwMX5TBoqu/9mMNiExATOoll1f
-   Hdj5TmfGiG5DhtcjZoK56Kk7yFXIRxo9fOUTfS9vxgkt/3FUyT9KAKzyN
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.92,235,1650956400"; 
-   d="scan'208";a="162828706"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Jun 2022 12:04:53 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 30 Jun 2022 12:04:52 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Thu, 30 Jun 2022 12:04:52 -0700
-Date:   Thu, 30 Jun 2022 21:08:46 +0200
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>
-Subject: Re: [PATCH net-next v2 0/7] net: lan966x: Add lag support
-Message-ID: <20220630190846.aqagifacrleejrjc@soft-dev3-1.localhost>
-References: <20220627201330.45219-1-horatiu.vultur@microchip.com>
- <20220629122630.qd7nsqmkxoshovhc@skbuf>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <20220629122630.qd7nsqmkxoshovhc@skbuf>
-X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S236363AbiF3TMs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 15:12:48 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1965B28E30
+        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 12:12:47 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id c10-20020a251c0a000000b00669b463d2e1so51993ybc.11
+        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 12:12:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=ThcqTcL2EK/v16TPbcx9ACYtX+c6g+PxYAfz/JDcQGs=;
+        b=UENhzz+jbEW4l84h8cZMmbOEXYbTwlSXV9VQ8f7rFL0Ztfrqrt5eiMNs9BlnxqiFU1
+         kccRNaD4buDLdaXHk8Zo69mr23KsOw5ADWsI0Lf3MnR7O7pR8Jl0ZPC0/DpJc5mfr/63
+         cmsnoRfEOdO9sBVUnpj4a4H8QONTMtoBbLQNfpdJ3NZlTQLV8dzxRGxWWewQdQBi4f5R
+         plkwj4+Qc4EQgC+HMXYGghTW27hTCxF1JdKHS1ab8tKMcshcTnDg5FwHIB4xOHFI6lIT
+         8NkGaAdeVB6UYyjsAafc0Hel3SfbBDnGNdDVbAE/eE4OGZQMdFii3kMiE22vMS7RgV+r
+         Gf5g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=ThcqTcL2EK/v16TPbcx9ACYtX+c6g+PxYAfz/JDcQGs=;
+        b=OimSNSb2VdK2kAy/zQQQyN1aor3JO6yEsHvmdm4hqTGHj3nktCj1GT4av4l0lqp6sw
+         wtQL3+HsqQ8o/y2uoYMgt4WkfSO2bu5NHV2Du/0TtzXP2dEAzZJzj8DznilJ/WH5E4w5
+         edmhLgNprEE62NxlgzBXviH9HGYKb6ROzZSFDkAZH3xnl9cG7S4rQsDB1eD67mh+ygD9
+         Z5RvbFI4cTuq0NC34zl33t+DwxW5Lh0cRypcuqorkOM7SmgrnO7bzAdEirM+C52OvJ2j
+         +/FSeCaTsMec4/u/w5yvZXUS21+RbGpvis6XtIfA7p4WDI57/wtr7Rjs9B9RQ1Y37jMy
+         v5aA==
+X-Gm-Message-State: AJIora9GFDeZHZAxmPZexyj9aERgjyx0VVjcXhByso94vegyK1SNnsuT
+        uxlW2K/g9+4Qkm34G5S7J6TPQBk+PDMUNfIcNQ==
+X-Google-Smtp-Source: AGRyM1t3Ww7PWb3WFVXoxeowZvFh7zUW/ka0FXdujSxX4keyA44O4mR1BtFfGbDknmo/m4f02C8i2nkEO9Lj5x07PQ==
+X-Received: from kaleshsingh.mtv.corp.google.com ([2620:15c:211:200:5fd:1939:78ea:dfb2])
+ (user=kaleshsingh job=sendgmr) by 2002:a25:9388:0:b0:66d:1fd9:6f73 with SMTP
+ id a8-20020a259388000000b0066d1fd96f73mr10731114ybm.147.1656616366313; Thu,
+ 30 Jun 2022 12:12:46 -0700 (PDT)
+Date:   Thu, 30 Jun 2022 19:12:29 +0000
+Message-Id: <20220630191230.235306-1-kaleshsingh@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
+Subject: [PATCH] pm/sleep: Add PM_USERSPACE_AUTOSLEEP Kconfig
+From:   Kalesh Singh <kaleshsingh@google.com>
+To:     Jason@zx2c4.com, jstultz@google.com, paulmck@kernel.org,
+        rostedt@goodmis.org, rafael@kernel.org, hch@infradead.org
+Cc:     saravanak@google.com, tjmercier@google.com, surenb@google.com,
+        kernel-team@android.com, Kalesh Singh <kaleshsingh@google.com>,
+        "Theodore Ts'o" <tytso@mit.edu>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
+        linux-kernel@vger.kernel.org, wireguard@lists.zx2c4.com,
+        netdev@vger.kernel.org, linux-pm@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 06/29/2022 12:26, Vladimir Oltean wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> 
-> Hi Horatiu,
+Systems that initiate frequent suspend/resume from userspace
+can make the kernel aware by enabling PM_USERSPACE_AUTOSLEEP
+config.
 
-Hi Vladimir,
+This allows for certain sleep-sensitive code (wireguard/rng) to
+decide on what preparatory work should be performed (or not) in
+their pm_notification callbacks.
 
-Thanks for review this and for detail explanation.
+This patch was prompted by the discussion at [1] which attempts
+to remove CONFIG_ANDROID that currently guards these code paths.
 
-> 
-> On Mon, Jun 27, 2022 at 10:13:23PM +0200, Horatiu Vultur wrote:
-> > Add lag support for lan966x.
-> > First 4 patches don't do any changes to the current behaviour, they
-> > just prepare for lag support. While the rest is to add the lag support.
-> >
-> > v1->v2:
-> > - fix the LAG PGIDs when ports go down, in this way is not
-> >   needed anymore the last patch of the series.
-> >
-> > Horatiu Vultur (7):
-> >   net: lan966x: Add reqisters used to configure lag interfaces
-> >   net: lan966x: Split lan966x_fdb_event_work
-> >   net: lan966x: Expose lan966x_switchdev_nb and
-> >     lan966x_switchdev_blocking_nb
-> >   net: lan966x: Extend lan966x_foreign_bridging_check
-> >   net: lan966x: Add lag support for lan966x.
-> >   net: lan966x: Extend FDB to support also lag
-> >   net: lan966x: Extend MAC to support also lag interfaces.
-> >
-> >  .../net/ethernet/microchip/lan966x/Makefile   |   2 +-
-> >  .../ethernet/microchip/lan966x/lan966x_fdb.c  | 153 ++++++---
-> >  .../ethernet/microchip/lan966x/lan966x_lag.c  | 322 ++++++++++++++++++
-> >  .../ethernet/microchip/lan966x/lan966x_mac.c  |  66 +++-
-> >  .../ethernet/microchip/lan966x/lan966x_main.h |  41 +++
-> >  .../ethernet/microchip/lan966x/lan966x_regs.h |  45 +++
-> >  .../microchip/lan966x/lan966x_switchdev.c     | 115 +++++--
-> >  7 files changed, 654 insertions(+), 90 deletions(-)
-> >  create mode 100644 drivers/net/ethernet/microchip/lan966x/lan966x_lag.c
-> >
-> > --
-> > 2.33.0
-> >
-> 
-> I've downloaded and applied your patches and I have some general feedback.
-> Some of it relates to changes which were not made and hence I couldn't
-> have commented on the patches themselves, so I'm posting it here.
-> 
-> 1. switchdev_bridge_port_offload() returns an error code if object
-> replay failed, or if it couldn't get the port parent id, or if the user
-> tries to join a lan966x port and a port belonging to another switchdev
-> driver to the same LAG. It would be good to propagate this error and not
-> ignore it.
+[1] https://lore.kernel.org/r/20220629150102.1582425-1-hch@lst.de/
 
-Yes, I will do that.
+Suggested-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
+---
+ drivers/char/random.c          |  4 ++--
+ drivers/net/wireguard/device.c |  3 ++-
+ kernel/power/Kconfig           | 20 ++++++++++++++++++++
+ 3 files changed, 24 insertions(+), 3 deletions(-)
 
-What about the case when the other port is not a switchdev port. For
-example:
-ip link set dev eth0 master bond0
-ip link set dev dummy master bond0
-ip link set dev bond0 master br0
+diff --git a/drivers/char/random.c b/drivers/char/random.c
+index e3dd1dd3dd22..8c90f535d149 100644
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -755,8 +755,8 @@ static int random_pm_notification(struct notifier_block *nb, unsigned long actio
+ 	spin_unlock_irqrestore(&input_pool.lock, flags);
+ 
+ 	if (crng_ready() && (action == PM_RESTORE_PREPARE ||
+-	    (action == PM_POST_SUSPEND &&
+-	     !IS_ENABLED(CONFIG_PM_AUTOSLEEP) && !IS_ENABLED(CONFIG_ANDROID)))) {
++	    (action == PM_POST_SUSPEND && !IS_ENABLED(CONFIG_PM_AUTOSLEEP) &&
++	     !IS_ENABLED(CONFIG_PM_USERSPACE_AUTOSLEEP)))) {
+ 		crng_reseed();
+ 		pr_notice("crng reseeded on system resumption\n");
+ 	}
+diff --git a/drivers/net/wireguard/device.c b/drivers/net/wireguard/device.c
+index aa9a7a5970fd..d58e9f818d3b 100644
+--- a/drivers/net/wireguard/device.c
++++ b/drivers/net/wireguard/device.c
+@@ -69,7 +69,8 @@ static int wg_pm_notification(struct notifier_block *nb, unsigned long action, v
+ 	 * its normal operation rather than as a somewhat rare event, then we
+ 	 * don't actually want to clear keys.
+ 	 */
+-	if (IS_ENABLED(CONFIG_PM_AUTOSLEEP) || IS_ENABLED(CONFIG_ANDROID))
++	if (IS_ENABLED(CONFIG_PM_AUTOSLEEP) ||
++	    IS_ENABLED(CONFIG_PM_USERSPACE_AUTOSLEEP))
+ 		return 0;
+ 
+ 	if (action != PM_HIBERNATION_PREPARE && action != PM_SUSPEND_PREPARE)
+diff --git a/kernel/power/Kconfig b/kernel/power/Kconfig
+index a12779650f15..60a1d3051cc7 100644
+--- a/kernel/power/Kconfig
++++ b/kernel/power/Kconfig
+@@ -143,6 +143,26 @@ config PM_AUTOSLEEP
+ 	Allow the kernel to trigger a system transition into a global sleep
+ 	state automatically whenever there are no active wakeup sources.
+ 
++config PM_USERSPACE_AUTOSLEEP
++	bool "Userspace opportunistic sleep"
++	depends on PM_SLEEP
++	help
++	Notify kernel of aggressive userspace autosleep power management policy.
++
++	This option changes the behavior of various sleep-sensitive code to deal
++	with frequent userspace-initiated transitions into a global sleep state.
++
++	Saying Y here, disables code paths that most users really should keep
++	enabled. In particular, only enable this if it is very common to be
++	asleep/awake for very short periods of time (<= 2 seconds).
++
++	Only platforms, such as Android, that implement opportunistic sleep from
++	a userspace power manager service should enable this option; and not
++	other machines. Therefore, you should say N here, unless you are
++	extremely certain that this is what you want. The option otherwise has
++	bad, undesirable effects, and should not be enabled just for fun.
++
++
+ config PM_WAKELOCKS
+ 	bool "User space wakeup sources interface"
+ 	depends on PM_SLEEP
 
-At the last line, I was expecting to get an error.
-
-> 
-> Side note: maybe this could help to eliminate the extra logic you need
-> to add to lan966x_foreign_bridging_check().
-> 
-> 2. lan966x_foreign_dev_check() seems wrong/misunderstood. Currently it
-> reports that a LAG upper is a foreign interface (unoffloaded). In turn,
-> this makes switchdev_lower_dev_find() not find any lan966x interface
-> beneath a LAG, and hence, __switchdev_handle_fdb_event_to_device() would
-> not recurse to the lan966x "dev" below a LAG when the "orig_dev" of an
-> FDB event is the bridge itself. Otherwise said, if you have no direct
-> lan966x port under a bridge, but just bridge -> LAG -> lan966x, you will
-> miss all local (host-filtered) FDB event notifications that you should
-> otherwise learn towards the CPU.
-
-Good observation. I have missed that case.
-
-> 
-> 3. The implementation of lan966x_lag_mac_add_entry(), with that first
-> call to lan966x_mac_del_entry(), seems a hack. Why do you need to do
-> that?
-
-Ah... that is not needed anymore. I forgot to remove it.
-
-> 
-> 4. The handling of lan966x->mac_lock seems wrong in general, not just
-> particular to this patch set. In particular, it appears to protect too
-> little in lan966x_mac_add_entry(), i.e. just the list_add_tail.
-> This makes it possible for lan966x_mac_lookup and lan966x_mac_learn to
-> be concurrent with lan966x_mac_del_entry(). In turn, this appears bad
-> first and foremost for the hardware access interface, since the MAC
-> table access is indirect, and if you allow multiple threads to
-> concurrently call lan966x_mac_select(), change the command in
-> ANA_MACACCESS, and poll for command completion, things will go sideways
-> very quickly (one command will inadvertently poll for the completion of
-> another, which inadvertently operates on the row/column selected by yet
-> a third command, all that due to improper serialization).
-
-Now that you mention it, I can see it. The following functions need to
-be updated: lan966x_mac_learn, lan966x_mac_ip_learn, lan966x_mac_forget,
-lan966x_mac_add_entry, lan966x_mac_del_entry.
-But I think this needs to be in a separate patch for net.
-
-> 
-> 5. There is a race between lan966x_fdb_lag_event_work() calling
-> lan966x_lag_first_port(), and lan966x_lag_port_leave() changing
-> port->bond = NULL. Specifically, when a lan966x port leaves a LAG, there
-> might still be deferred FDB events (add or del) which are still pending.
-> There exists a dead time during which you will ignore these, because you
-> think that the first lan966x LAG port isn't the first lan966x LAG port,
-> which will lead to a desynchronization between the bridge FDB and the
-> hardware FDB.
-> 
-> In DSA we solved this by flushing lan966x->fdb_work inside
-> lan966x_port_prechangeupper() on leave. This waits for the pending
-> events to finish, and the bridge will not emit further events.
-> It's important to do this in prechangeupper() rather than in
-> changeupper() because switchdev_handle_fdb_event_to_device() needs the
-> upper/lower relationship to still exist to function properly, and in
-> changeupper() it has already been destroyed.
-> 
-> Side note: if you flush lan966x->fdb_work, then you have an upper bound
-> for how long can lan966x_fdb_event_work be deferred. Specifically, you
-> can remove the dev_hold() and dev_put() calls, since it surely can't be
-> deferred until after the netdev is unregistered. The bounding event is
-> much quicker - the lan966x port leaves the LAG.
-
-Thanks for the observation, it would have been taken a long time to see
-this.
-
-> 
-> 6. You are missing LAG FDB migration logic in lan966x_lag_port_join().
-> Specifically, you assume that the lan966x_lag_first_port() will never
-> change, probably because you just make the switch ports join the LAG in
-> the order 1, 2, 3. But they can also join in the order 3, 2, 1.
-
-It would work, but there will be problems when the ports start to leave
-the LAG.
-It would work because all the ports under the LAG will have the same
-value in PGID_ID for DST_IDX. So if the MAC entry points to any of
-this entries will be OK. The problem is when the port leaves the LAG, if
-the MAC entry points to the port that left the LAG then is not working
-anymore.
-I will fix this in the next series.
-
-
+base-commit: 03c765b0e3b4cb5063276b086c76f7a612856a9a
 -- 
-/Horatiu
+2.37.0.rc0.161.g10f37bed90-goog
+
