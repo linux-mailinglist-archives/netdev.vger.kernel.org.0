@@ -2,110 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D6B4561A3F
-	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 14:22:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6AFE2561A48
+	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 14:25:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232953AbiF3MWc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jun 2022 08:22:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33634 "EHLO
+        id S231146AbiF3MZP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jun 2022 08:25:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234781AbiF3MWb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 08:22:31 -0400
-Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 076B71FCE5
-        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 05:22:30 -0700 (PDT)
-Received: by mail-lj1-x22b.google.com with SMTP id b19so10124781ljf.6
-        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 05:22:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version:organization
-         :content-transfer-encoding;
-        bh=0lkVA7Cku63orBznDO6uziMhTVchdeWbatsMAplzxaQ=;
-        b=j/HGQnPVRa1aLq+jK9YIafmetsueUbbAnrc3LwJphxAdQmlPvtNaBT4QIaasiSs63y
-         qNIxddi/w+JiEKWc05ab3ySE5xVHWMjJXdS4iTYlWwS8wEulIYOS+wnilzyF6tEams0w
-         fJZRLTUL2ixFrNQLmLbgEeOFyW+pi1Yb5+3Ttfc3pfA6watfLlJj9OagejodGdUQCL23
-         rgV4/n68pPnhwVdjx0lAhpbxy7csDwp5bLCILWnZCS7mZ7wFYl4OWpeC/gn0pfnyBkMr
-         v6UM740rtzJIR86RkWAMK49/2BqG/pePuESpczElAqsO62wo4ldJ+FYW00walJZXymGJ
-         9RRw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :organization:content-transfer-encoding;
-        bh=0lkVA7Cku63orBznDO6uziMhTVchdeWbatsMAplzxaQ=;
-        b=Vqcm2rnYxIiVOPuXrFHmtMF14DId+HnHVnCpURAp46ormkXlOcCM2krRVoTTkKJDjA
-         4MMHCRpeptJFLi7RDhs7imTIyicxFhSdS/CIZHKZEQJNwNTDeXH/Gf1H9HdRp+b3vQps
-         2VziTt5kfJF7pkBaM9MJMsj5a/s2A7tQDA3KvhKPi+9t3jc036qK9vVC3rvkmlAHsdIR
-         KQuaVpTMdnmFg4fRDoMLc+p1+XLb5S++q48JRzakFe3pVWI1+q2A6WTUQixA47iUXkpQ
-         5M+6e9+wAiFj8q7pOGIlU9b8XSAHbhyQQCxLAaEq00YOaG5hHhTZgPWM9wMryBnvKc7A
-         nLOA==
-X-Gm-Message-State: AJIora951hh5QLLmlbJjhuFzMynfQ/x1cY4kwxAxbWS4FqH7GxllDBXp
-        jJq5sw0NKr1StVz0ZnWbC3Y=
-X-Google-Smtp-Source: AGRyM1u8kDKYHuLcI0POCV7xNA48vUyMPNx4imReiT2pgmxcB9pDdosY9IEf2e8HTU4B/guH6o94tw==
-X-Received: by 2002:a2e:9297:0:b0:25b:10de:a17b with SMTP id d23-20020a2e9297000000b0025b10dea17bmr4899958ljh.71.1656591748349;
-        Thu, 30 Jun 2022 05:22:28 -0700 (PDT)
-Received: from wse-c0155.labs.westermo.se (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id w22-20020a2e9bd6000000b00253c8dfc4e4sm2532515ljj.101.2022.06.30.05.22.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Jun 2022 05:22:28 -0700 (PDT)
-From:   Casper Andersson <casper.casan@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Steen Hegelund <steen.hegelund@microchip.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        UNGLinuxDriver@microchip.com, netdev@vger.kernel.org
-Subject: [PATCH net] net: sparx5: mdb add/del handle non-sparx5 devices
-Date:   Thu, 30 Jun 2022 14:22:26 +0200
-Message-Id: <20220630122226.316812-1-casper.casan@gmail.com>
-X-Mailer: git-send-email 2.30.2
+        with ESMTP id S229977AbiF3MZN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 08:25:13 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E7342AE05
+        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 05:25:13 -0700 (PDT)
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25UCNKjm021329
+        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 12:25:13 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=pqOo7IEXZuN4o2GJtHjkXskjvWSpvNljjvnukPmdQyc=;
+ b=TIMVzqBHrC867hj3kwOpHZUaiQCw0FJ3PZUQSyE8hmmXGQhIWCHCmYZTZHuvySNiPEFz
+ k5olNxCtMH+6VV+TB/szIOvLB20CnAvlXvRPqQ8JoTTUvsxzARUpolIk0jhMDtNXcSab
+ Dl3GpHTbexZGqi1wbAjmNjWUMRFeeA3NIlgK/vDgzBWq0g+V5K93W+rKfhXhLd90fon6
+ O4DlL+NmAMPhz4OdQXvLSemDk+WI7NdgTKg0kskiFZ+Ojz8080ZdtGtKxfE8yMaLBmN6
+ OjEhDwJStw8M5v0rE5HvGCbl+2fCjdccHuSzIT/puhiZ8dE6x30EfapkNIHLVJHsF5x+ zg== 
+Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h1bsn00y3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 12:25:13 +0000
+Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
+        by ppma04dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25UCMPge018553
+        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 12:25:12 GMT
+Received: from b01cxnp23032.gho.pok.ibm.com (b01cxnp23032.gho.pok.ibm.com [9.57.198.27])
+        by ppma04dal.us.ibm.com with ESMTP id 3gwt0bs76q-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 12:25:12 +0000
+Received: from b01ledav005.gho.pok.ibm.com (b01ledav005.gho.pok.ibm.com [9.57.199.110])
+        by b01cxnp23032.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25UCPARf28180802
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 30 Jun 2022 12:25:10 GMT
+Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id C8022AE062;
+        Thu, 30 Jun 2022 12:25:10 +0000 (GMT)
+Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 2A7A3AE05C;
+        Thu, 30 Jun 2022 12:25:10 +0000 (GMT)
+Received: from [9.211.107.2] (unknown [9.211.107.2])
+        by b01ledav005.gho.pok.ibm.com (Postfix) with ESMTP;
+        Thu, 30 Jun 2022 12:25:10 +0000 (GMT)
+Message-ID: <6d57e9bf-8a73-ae66-eeea-c1b5d5733cf3@linux.vnet.ibm.com>
+Date:   Thu, 30 Jun 2022 07:25:09 -0500
 MIME-Version: 1.0
-Organization: Westermo Network Technologies AB
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] ibmvnic: Properly dispose of all skbs during a failover.
+Content-Language: en-US
+To:     Rick Lindsley <ricklind@us.ibm.com>, netdev@vger.kernel.org
+Cc:     bjking1@linux.ibm.com, haren@linux.ibm.com, nnac123@linux.ibm.com,
+        mmc@linux.ibm.com
+References: <20220630000317.2509347-1-ricklind@us.ibm.com>
+From:   Brian King <brking@linux.vnet.ibm.com>
+In-Reply-To: <20220630000317.2509347-1-ricklind@us.ibm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: 3mVWi54c9VdQCY-vNxZETrWt3N6IyDiy
+X-Proofpoint-GUID: 3mVWi54c9VdQCY-vNxZETrWt3N6IyDiy
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-06-30_07,2022-06-28_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ suspectscore=0 bulkscore=0 mlxscore=0 lowpriorityscore=0 phishscore=0
+ malwarescore=0 spamscore=0 impostorscore=0 adultscore=0 mlxlogscore=620
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2206300048
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When adding/deleting mdb entries on other net_devices, eg., tap
-interfaces, it should not crash.
+Reviewed-by: Brian King <brking@linux.vnet.ibm.com>
 
-Fixes: 3bacfccdcb2d
-
-Signed-off-by: Casper Andersson <casper.casan@gmail.com>
----
- drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c b/drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c
-index 3429660cd2e5..5edc8b7176c8 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c
-@@ -396,6 +396,9 @@ static int sparx5_handle_port_mdb_add(struct net_device *dev,
- 	u32 mact_entry;
- 	int res, err;
- 
-+	if (!sparx5_netdevice_check(dev))
-+		return -EOPNOTSUPP;
-+
- 	if (netif_is_bridge_master(v->obj.orig_dev)) {
- 		sparx5_mact_learn(spx5, PGID_CPU, v->addr, v->vid);
- 		return 0;
-@@ -466,6 +469,9 @@ static int sparx5_handle_port_mdb_del(struct net_device *dev,
- 	u32 mact_entry, res, pgid_entry[3];
- 	int err;
- 
-+	if (!sparx5_netdevice_check(dev))
-+		return -EOPNOTSUPP;
-+
- 	if (netif_is_bridge_master(v->obj.orig_dev)) {
- 		sparx5_mact_forget(spx5, v->addr, v->vid);
- 		return 0;
 -- 
-2.30.2
+Brian King
+Power Linux I/O
+IBM Linux Technology Center
 
