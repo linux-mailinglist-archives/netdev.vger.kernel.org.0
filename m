@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A33885616EE
-	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 11:57:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 123645616F7
+	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 11:58:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234668AbiF3J5v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jun 2022 05:57:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59100 "EHLO
+        id S230465AbiF3J6h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jun 2022 05:58:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234670AbiF3J5t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 05:57:49 -0400
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABF7D43AFB;
-        Thu, 30 Jun 2022 02:57:48 -0700 (PDT)
-Received: by mail-pf1-x42d.google.com with SMTP id i64so17645957pfc.8;
-        Thu, 30 Jun 2022 02:57:48 -0700 (PDT)
+        with ESMTP id S232776AbiF3J6g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 05:58:36 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 992AD2018A;
+        Thu, 30 Jun 2022 02:58:35 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id c4so16573651plc.8;
+        Thu, 30 Jun 2022 02:58:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=ncsyqHcViJJ4xNGmWodTdODg7NgMYoxOAe0vPdW5K18=;
-        b=pFiyyWCPgnEaKgm2kdXIGgChNq2vFIGamHlBAKxyopo5nkQZvaC0MHq9QvmyLPvMgu
-         wLDYmY9Cy7MT3Q3mpi65XOWX0LE6gJni3U0+GQIRC0y9NOUJDyyCdaXko0bMeBRo3yS6
-         0Z89fpQgX1nWZm1E8aWyDUEGk6PTOX/Z1yIEFxoGKPirBj+tb6aPZaAIVooDg+dfTaVY
-         58cKElHOWKjlcqE9wcahteTyE1N8+5AlYGy5W66R5GstHZsD7m34b3YYb7gkfIErEvNM
-         f1UDgEOWK2ISWLABlyTHGkav1xkLcg8rA5GDQC1qtaMZTfU9L0bJPU7oD8K0Dx2NEUOC
-         9L9Q==
+        bh=/xfzenFqA9Vwg5uNtj1N+nI++1QDQcQqPhoU5IckAxg=;
+        b=msdwMK2lw+/4SwF5GYAY/SoPNNUF+SgYRbNF+qVOwj3yIlHpizleeEHO3iV8m4AiJn
+         94E++qt4RzwhcFXD1CyV0CimUQYKH9M+42TmuGtjw1p5+XCLI1Lzq++3Bf8zoFWoygYh
+         dMRB0FXm972yHyl4ATX7MRBB6DxVrVK/cZkS2ahzDcAyOqL5jbfuPqjCAU09ciH1MYLn
+         Qefvoi8+lQAZQDIE8/bN9xaVy+KiMb3aO/7B0RVezoHa+5OAsuzJI9fcRncOIl2lKqum
+         53ZPdTV77qB071vCpyf+eI7rDJm9y7AkdqujlkiF8v5dMkeIccqsJz2gpCKjLwuHbD3Q
+         DtYQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=ncsyqHcViJJ4xNGmWodTdODg7NgMYoxOAe0vPdW5K18=;
-        b=4M55SFcs8DBS7er/GQfXnlmb72yPy8aXgnYDDmMbestbEflDxo7J9B+FVeQe0Gf4O0
-         V8YZa0fPNvSM3HryTUfDyxSYAsHm/oikAYvFziWWPhR3r5O13lrHkpZr64Cnv/8837ZD
-         ft2zXiU0Lu+27MMlCMZMz+L17TQeQdjLZXcy2JWBlwueaaPwE/2SR5cFufr8u/GHon75
-         l7XtvUamLHEXJq7pnG84tRNWuT+6ROSREWtvRltX6h3t7IHSEXKuvr1I11zQ6eBK7sB3
-         f2L3NrztHk2+nGxbI5wJcjDsO8qz16vRJ4Ww9kTgw2qx3YMTYfQ37BA0ydhHeVvUskO6
-         qqdQ==
-X-Gm-Message-State: AJIora+hNAibxfoqD7da0XTxcKc8/cGXyrrFv/q9+PvPQt0VlAqqGsOz
-        Ak5wqXAMNoBSSdFRVX9WuPmASXVtMvPj8yrBO1x6vxCgC452Aatf
-X-Google-Smtp-Source: AGRyM1utt5/iEtZsSWmrKvP7ceRD86RJESast4Pg4pWM6AtDLhoHG4Lz1uDGnqJuNF+5K073nr3HKdet+b/e+QjMxUg=
-X-Received: by 2002:a05:6a00:225a:b0:525:4d37:6b30 with SMTP id
- i26-20020a056a00225a00b005254d376b30mr14943061pfu.83.1656583068221; Thu, 30
- Jun 2022 02:57:48 -0700 (PDT)
+        bh=/xfzenFqA9Vwg5uNtj1N+nI++1QDQcQqPhoU5IckAxg=;
+        b=mdIVQZsJwOLf5E73agF245Qhm24/kWkv9fG4CekzgzjCVB/g0Rg7f7lAzfp6suIQNL
+         qvS/6Or944ZNbTeo3PZbZ8D4IgrAbrocwbsizUH52iMIuMmJqMELIV3EMNKtqEfRqBtU
+         okysSWvG+7ll0szUlSrEnXz3E+r6CrSBJRGAMDAn21XziC/LB4F+aEh3wDmtn9ubQmPx
+         +pVb8UM/+Z1T3ElN2N4aCHuHV9vzVa8q7aWtioEEcwddv/pQEV9vLGOUWw6ycApZuX8c
+         aRLzFzZt1IPHbEakHnJs4ICifS+aBgsQppl1PaPXcONVwLrnYPKh8qtxHhG/Wi2wJOtv
+         cvOg==
+X-Gm-Message-State: AJIora+seozoxNX4fPmLQSz8K+FfP10+sHHf1stCKngEb1qdZvnr97DG
+        25DxMYs/u7j9COYQ0vuO/fOy/D4MLLGQDHRcKJo=
+X-Google-Smtp-Source: AGRyM1sVy4VuS6f4fxi7OIVdShM1YH0oB07qwucf+3S0NXGNy+kMTMGPn/CwfQuQ6s905p5478C8MPbknaMStV/n2us=
+X-Received: by 2002:a17:90b:1651:b0:1ec:f091:3559 with SMTP id
+ il17-20020a17090b165100b001ecf0913559mr9433363pjb.206.1656583115109; Thu, 30
+ Jun 2022 02:58:35 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220629143458.934337-1-maciej.fijalkowski@intel.com> <20220629143458.934337-4-maciej.fijalkowski@intel.com>
-In-Reply-To: <20220629143458.934337-4-maciej.fijalkowski@intel.com>
+References: <20220629143458.934337-1-maciej.fijalkowski@intel.com> <20220629143458.934337-5-maciej.fijalkowski@intel.com>
+In-Reply-To: <20220629143458.934337-5-maciej.fijalkowski@intel.com>
 From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Thu, 30 Jun 2022 11:57:37 +0200
-Message-ID: <CAJ8uoz1CqxcirC-Fhfp3-dpf2U6E8PnnTTULdPqTnazQXGayQw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 3/4] selftests: xsk: verify correctness of XDP
- prog attach point
+Date:   Thu, 30 Jun 2022 11:58:24 +0200
+Message-ID: <CAJ8uoz2Jc1=O4-BJ52QgijgD5fR3As+CXLRpeync=25hc-NDoA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 4/4] selftests: xsk: destroy BPF resources only
+ when ctx refcount drops to 0
 To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -72,52 +72,68 @@ X-Mailing-List: netdev@vger.kernel.org
 On Wed, Jun 29, 2022 at 4:39 PM Maciej Fijalkowski
 <maciej.fijalkowski@intel.com> wrote:
 >
-> To prevent the case we had previously where for TEST_MODE_SKB, XDP prog
-> was attached in native mode, call bpf_xdp_query() after loading prog and
-> make sure that attach_mode is as expected.
+> Currently, xsk_socket__delete frees BPF resources regardless of ctx
+> refcount. Xdpxceiver has a test to verify whether underlying BPF
+> resources would not be wiped out after closing XSK socket that was bound
+> to interface with other active sockets. From library's xsk part
+> perspective it also means that the internal xsk context is shared and
+> its refcount is bumped accordingly.
+>
+> After a switch to loading XDP prog based on previously opened XSK
+> socket, mentioned xdpxceiver test fails with:
+> not ok 16 [xdpxceiver.c:swap_xsk_resources:1334]: ERROR: 9/"Bad file descriptor
+>
+> which means that in swap_xsk_resources(), xsk_socket__delete() released
+> xskmap which in turn caused a failure of xsk_socket__update_xskmap().
+>
+> To fix this, when deleting socket, decrement ctx refcount before
+> releasing BPF resources and do so only when refcount dropped to 0 which
+> means there are no more active sockets for this ctx so BPF resources can
+> be freed safely.
+
+Please fix this in libxdp too as the bug is present there also.
 
 Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
 
+> Fixes: 2f6324a3937f ("libbpf: Support shared umems between queues and devices")
 > Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 > ---
->  tools/testing/selftests/bpf/xdpxceiver.c | 17 +++++++++++++++++
->  1 file changed, 17 insertions(+)
+>  tools/testing/selftests/bpf/xsk.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
 >
-> diff --git a/tools/testing/selftests/bpf/xdpxceiver.c b/tools/testing/selftests/bpf/xdpxceiver.c
-> index c024aa91ea02..4c425a43e5b0 100644
-> --- a/tools/testing/selftests/bpf/xdpxceiver.c
-> +++ b/tools/testing/selftests/bpf/xdpxceiver.c
-> @@ -1085,6 +1085,7 @@ static void thread_common_ops(struct test_spec *test, struct ifobject *ifobject)
->  {
->         u64 umem_sz = ifobject->umem->num_frames * ifobject->umem->frame_size;
->         int mmap_flags = MAP_PRIVATE | MAP_ANONYMOUS | MAP_NORESERVE;
-> +       LIBBPF_OPTS(bpf_xdp_query_opts, opts);
->         int ret, ifindex;
->         void *bufs;
->         u32 i;
-> @@ -1134,6 +1135,22 @@ static void thread_common_ops(struct test_spec *test, struct ifobject *ifobject)
->         if (ret)
->                 exit_with_error(-ret);
+> diff --git a/tools/testing/selftests/bpf/xsk.c b/tools/testing/selftests/bpf/xsk.c
+> index db911127720e..95ce5cd572bb 100644
+> --- a/tools/testing/selftests/bpf/xsk.c
+> +++ b/tools/testing/selftests/bpf/xsk.c
+> @@ -1156,8 +1156,6 @@ int xsk_socket__create_shared(struct xsk_socket **xsk_ptr,
+>                 goto out_mmap_tx;
+>         }
 >
-> +       ret = bpf_xdp_query(ifindex, ifobject->xdp_flags, &opts);
-> +       if (ret)
-> +               exit_with_error(-ret);
+> -       ctx->prog_fd = -1;
+> -
+>         if (!(xsk->config.libbpf_flags & XSK_LIBBPF_FLAGS__INHIBIT_PROG_LOAD)) {
+>                 err = __xsk_setup_xdp_prog(xsk, NULL);
+>                 if (err)
+> @@ -1238,7 +1236,10 @@ void xsk_socket__delete(struct xsk_socket *xsk)
+>
+>         ctx = xsk->ctx;
+>         umem = ctx->umem;
+> -       if (ctx->prog_fd != -1) {
 > +
-> +       if (ifobject->xdp_flags & XDP_FLAGS_SKB_MODE) {
-> +               if (opts.attach_mode != XDP_ATTACHED_SKB) {
-> +                       ksft_print_msg("ERROR: [%s] XDP prog not in SKB mode\n");
-> +                       exit_with_error(-EINVAL);
-> +               }
-> +       } else if (ifobject->xdp_flags & XDP_FLAGS_DRV_MODE) {
-> +               if (opts.attach_mode != XDP_ATTACHED_DRV) {
-> +                       ksft_print_msg("ERROR: [%s] XDP prog not in DRV mode\n");
-> +                       exit_with_error(-EINVAL);
-> +               }
-> +       }
+> +       xsk_put_ctx(ctx, true);
 > +
->         ret = xsk_socket__update_xskmap(ifobject->xsk->xsk, ifobject->xsk_map_fd);
->         if (ret)
->                 exit_with_error(-ret);
+> +       if (!ctx->refcount) {
+>                 xsk_delete_bpf_maps(xsk);
+>                 close(ctx->prog_fd);
+>                 if (ctx->has_bpf_link)
+> @@ -1257,7 +1258,6 @@ void xsk_socket__delete(struct xsk_socket *xsk)
+>                 }
+>         }
+>
+> -       xsk_put_ctx(ctx, true);
+>
+>         umem->refcount--;
+>         /* Do not close an fd that also has an associated umem connected
 > --
 > 2.27.0
 >
