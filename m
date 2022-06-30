@@ -2,159 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 43F61561968
-	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 13:42:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B4766561988
+	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 13:47:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234762AbiF3Lmf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jun 2022 07:42:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56778 "EHLO
+        id S235142AbiF3Lqn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jun 2022 07:46:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235128AbiF3Lmc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 07:42:32 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7F6F58FCA;
-        Thu, 30 Jun 2022 04:42:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=pCVLDadV5ten+hI6vWRZbnBdPC+AeuTjF2D/qYD+soU=; b=URILelAHkP5sNj7GCPdqIAlP85
-        mwvBvo7cYQFudtfKq7Jpu0ifkS6tR/bsjkiNEg87fn6Keur4eVCZBcbZLL1AlXLx0oiMVMwRRtjTz
-        ucGVEQR4h4KZJNVUzHZdEuXXKsf17V5xOk3MNMmlSRcpojtU3gyJgOFN51+TtCNNNtGwFHLMCNLp6
-        WIMjOqTrMoR6mXHI8/R+tfdHgGnfuhpB0rUUTTxzYikWBNOuV9hXNRPsbiih8vMB6vHVpYQdv3FY7
-        mMhuAshVrIO6Qf/GegBaHIsZEH008S/x8aUhPNcPLhGclMW9aTWf2v0dZ+7gvBH0OK7eQ3lkBFI5n
-        7ZffnVGw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33116)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1o6sZ2-0004MZ-OK; Thu, 30 Jun 2022 12:42:28 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1o6sZ0-0006lS-Qs; Thu, 30 Jun 2022 12:42:26 +0100
-Date:   Thu, 30 Jun 2022 12:42:26 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Arun Ramadoss <arun.ramadoss@microchip.com>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>
-Subject: Re: [Patch net-next v14 11/13] net: dsa: microchip: lan937x: add
- phylink_mac_link_up support
-Message-ID: <Yr2MImcS9lzr3yx9@shell.armlinux.org.uk>
-References: <20220630102041.25555-1-arun.ramadoss@microchip.com>
- <20220630102041.25555-12-arun.ramadoss@microchip.com>
+        with ESMTP id S230171AbiF3Lqm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 07:46:42 -0400
+X-Greylist: delayed 166521 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 30 Jun 2022 04:46:41 PDT
+Received: from smtpbguseast2.qq.com (smtpbguseast2.qq.com [54.204.34.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D52958FDC
+        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 04:46:41 -0700 (PDT)
+X-QQ-mid: bizesmtp78t1656589589tuvgz5rg
+Received: from localhost.localdomain ( [58.240.82.166])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Thu, 30 Jun 2022 19:46:23 +0800 (CST)
+X-QQ-SSF: 01400000002000G0S000B00A0000000
+X-QQ-FEAT: KW3QVT31YreSECNQZBZXGPz7IqsT51g4EWvPhu8C7SBOUUi5kLMQ4+OIWZCfr
+        /qfoTuJvmM8WfyAe2VaC8t9qNZMWCr0GlgFgPEjxPOYJXoW6053qLUGWzqmMFhPy96s01LD
+        dosYsjA84JSimPvtVUIkgs6KigYUAkiHSon8bFTZ6Wa1exIzr7nMqy1K1GuTXTH9jbhMal5
+        o9PksIoBkfAgTJAHeYNpKsIBpdwdG3DS6f36ZsVs065b+kkS0KV2I0Jzb1CceAnBq3Jnqd6
+        Ji5BwNr9/YNeSuSxuLMHe/+8oLav8E6KphGiEGZ3qMbKBrD1GzBIob3WpFbw0QFcVPGZxM5
+        4ssi0wVUWCpnjILUujNkJk/cZniQW2h3P7iRR5L
+X-QQ-GoodBg: 2
+From:   Meng Tang <tangmeng@uniontech.com>
+To:     stable@vger.kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Guo-Feng Fan <vincent_fann@realtek.com>,
+        Ping-Ke Shih <pkshih@realtek.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Meng Tang <tangmeng@uniontech.com>
+Subject: [PATCH 5.15 1/2] rtw88: 8821c: support RFE type4 wifi NIC
+Date:   Thu, 30 Jun 2022 19:46:20 +0800
+Message-Id: <20220630114621.19688-1-tangmeng@uniontech.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220630102041.25555-12-arun.ramadoss@microchip.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign8
+X-QQ-Bgrelay: 1
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 30, 2022 at 03:50:39PM +0530, Arun Ramadoss wrote:
-> +static void lan937x_config_gbit(struct ksz_device *dev, bool gbit, u8 *data)
-> +{
-> +	if (gbit)
-> +		*data &= ~PORT_MII_NOT_1GBIT;
-> +	else
-> +		*data |= PORT_MII_NOT_1GBIT;
-> +}
-> +
-> +static void lan937x_config_interface(struct ksz_device *dev, int port,
-> +				     int speed, int duplex,
-> +				     bool tx_pause, bool rx_pause)
-> +{
-> +	u8 xmii_ctrl0, xmii_ctrl1;
-> +
-> +	ksz_pread8(dev, port, REG_PORT_XMII_CTRL_0, &xmii_ctrl0);
-> +	ksz_pread8(dev, port, REG_PORT_XMII_CTRL_1, &xmii_ctrl1);
-> +
-> +	switch (speed) {
-> +	case SPEED_1000:
-> +		lan937x_config_gbit(dev, true, &xmii_ctrl1);
-> +		break;
-> +	case SPEED_100:
-> +		lan937x_config_gbit(dev, false, &xmii_ctrl1);
-> +		xmii_ctrl0 |= PORT_MII_100MBIT;
-> +		break;
-> +	case SPEED_10:
-> +		lan937x_config_gbit(dev, false, &xmii_ctrl1);
-> +		xmii_ctrl0 &= ~PORT_MII_100MBIT;
-> +		break;
-> +	default:
-> +		dev_err(dev->dev, "Unsupported speed on port %d: %d\n",
-> +			port, speed);
-> +		return;
-> +	}
+From: Guo-Feng Fan <vincent_fann@realtek.com>
 
-Isn't this:
+commit b789e3fe7047296be0ccdbb7ceb0b58856053572 upstream.
 
-	if (speed == SPEED_1000)
-		xmii_ctrl1 &= ~PORT_MII_NOT_1GBIT;
-	else
-		xmii_ctrl1 |= PORT_MII_NOT_1GBIT;
+RFE type4 is a new NIC which has one RF antenna shares with BT.
+RFE type4 HW is the same as RFE type2 but attaching antenna to
+aux antenna connector.
 
-	if (speed == SPEED_100)
-		xmii_ctrl0 |= PORT_MII_100MBIT;
-	else
-		xmii_ctrl0 &= ~PORT_MII_100MBIT;
+RFE type2 attach antenna to main antenna connector.
+Load the same parameter as RFE type2 when initializing NIC.
 
-There isn't much need to validate that "speed" is correct, you've
-already told phylink that you only support 1G, 100M and 10M so you're
-not going to get called with anything except one of those.
+Signed-off-by: Guo-Feng Fan <vincent_fann@realtek.com>
+Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20210922023637.9357-1-pkshih@realtek.com
+Signed-off-by: Meng Tang <tangmeng@uniontech.com>
+---
+ drivers/net/wireless/realtek/rtw88/rtw8821c.c | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
 
-> +
-> +	if (duplex)
-> +		xmii_ctrl0 |= PORT_MII_FULL_DUPLEX;
-> +	else
-> +		xmii_ctrl0 &= ~PORT_MII_FULL_DUPLEX;
-> +
-> +	if (tx_pause)
-> +		xmii_ctrl0 |= PORT_MII_TX_FLOW_CTRL;
-> +	else
-> +		xmii_ctrl1 &= ~PORT_MII_TX_FLOW_CTRL;
-
-It seems weird to set a bit in one register and clear it in a different
-register. I suspect you mean xmii_ctrl0 here.
-
-> +
-> +	if (rx_pause)
-> +		xmii_ctrl0 |= PORT_MII_RX_FLOW_CTRL;
-> +	else
-> +		xmii_ctrl0 &= ~PORT_MII_RX_FLOW_CTRL;
-> +
-> +	ksz_pwrite8(dev, port, REG_PORT_XMII_CTRL_0, xmii_ctrl0);
-> +	ksz_pwrite8(dev, port, REG_PORT_XMII_CTRL_1, xmii_ctrl1);
-> +}
-> +
-
-Thanks!
-
+diff --git a/drivers/net/wireless/realtek/rtw88/rtw8821c.c b/drivers/net/wireless/realtek/rtw88/rtw8821c.c
+index f405f42d1c1b..746f6f8967d8 100644
+--- a/drivers/net/wireless/realtek/rtw88/rtw8821c.c
++++ b/drivers/net/wireless/realtek/rtw88/rtw8821c.c
+@@ -304,7 +304,8 @@ static void rtw8821c_set_channel_rf(struct rtw_dev *rtwdev, u8 channel, u8 bw)
+ 	if (channel <= 14) {
+ 		if (rtwdev->efuse.rfe_option == 0)
+ 			rtw8821c_switch_rf_set(rtwdev, SWITCH_TO_WLG);
+-		else if (rtwdev->efuse.rfe_option == 2)
++		else if (rtwdev->efuse.rfe_option == 2 ||
++			 rtwdev->efuse.rfe_option == 4)
+ 			rtw8821c_switch_rf_set(rtwdev, SWITCH_TO_BTG);
+ 		rtw_write_rf(rtwdev, RF_PATH_A, RF_LUTDBG, BIT(6), 0x1);
+ 		rtw_write_rf(rtwdev, RF_PATH_A, 0x64, 0xf, 0xf);
+@@ -777,6 +778,15 @@ static void rtw8821c_coex_cfg_ant_switch(struct rtw_dev *rtwdev, u8 ctrl_type,
+ 	if (switch_status == coex_dm->cur_switch_status)
+ 		return;
+ 
++	if (coex_rfe->wlg_at_btg) {
++		ctrl_type = COEX_SWITCH_CTRL_BY_BBSW;
++
++		if (coex_rfe->ant_switch_polarity)
++			pos_type = COEX_SWITCH_TO_WLA;
++		else
++			pos_type = COEX_SWITCH_TO_WLG_BT;
++	}
++
+ 	coex_dm->cur_switch_status = switch_status;
+ 
+ 	if (coex_rfe->ant_switch_diversity &&
+@@ -1502,6 +1512,7 @@ static const struct rtw_intf_phy_para_table phy_para_table_8821c = {
+ static const struct rtw_rfe_def rtw8821c_rfe_defs[] = {
+ 	[0] = RTW_DEF_RFE(8821c, 0, 0),
+ 	[2] = RTW_DEF_RFE_EXT(8821c, 0, 0, 2),
++	[4] = RTW_DEF_RFE_EXT(8821c, 0, 0, 2),
+ };
+ 
+ static struct rtw_hw_reg rtw8821c_dig[] = {
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.20.1
+
+
+
