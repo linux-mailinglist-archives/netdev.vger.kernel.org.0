@@ -2,84 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BFC2A5626E8
-	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 01:19:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 009B5562707
+	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 01:27:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232234AbiF3XNC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jun 2022 19:13:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33504 "EHLO
+        id S232215AbiF3X0k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jun 2022 19:26:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232222AbiF3XNC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 19:13:02 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7C2BC59274
-        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 16:12:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656630769;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=NJTz6TTYPiibEbFrJGuunU84ZTQOGySwDHV3J5pRPec=;
-        b=W2bxRheMoL+15+COMb56/Y5XcvJsbxhGXwI4ieZTbiCxZ2Z2Phg+qC6wg9M7GUOOvaW0ui
-        DeF90svPr7LJSm3PvgnLS3t4L/xjmY+EO69SEnNXytYulMtI2PtEF8UAIKEgKTZRGku2N1
-        Ye8PLXpf0jKv39M/X53mCf+ypPgWUuE=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-643-OLeDcKxRMl2cXRqzsg1Pyw-1; Thu, 30 Jun 2022 19:12:48 -0400
-X-MC-Unique: OLeDcKxRMl2cXRqzsg1Pyw-1
-Received: by mail-wm1-f70.google.com with SMTP id r4-20020a1c4404000000b003a02fa133ceso182042wma.2
-        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 16:12:48 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=NJTz6TTYPiibEbFrJGuunU84ZTQOGySwDHV3J5pRPec=;
-        b=bQtmdmZQr6AF1x9jJEJm+wZOZTa/YsxhWwzl51miVNE27I32TxP+3apR1tt220lPg8
-         yqIOcEy0mwONCGS9ikAW+hWziNtCO88+GXPlJxu+TVuRlUrtNir0ITD1yr+l3nUkpmyZ
-         wgV7Y7uLb8a9D2sYeeN1CTzzmUNcD7PcOSDK5Vf+8IuK8/WlbCqvfeKH56QYV8v4TqR4
-         LaI/THWGOKOzJbZDo6OH5AQwl+pcX8h1DdqVVNxn6j/0RmmUQUV5wIKBBhG2gj3dbHjF
-         34FglWEaPPF3Y08WBcv9/i/sf4FFiBXE4xyl5/K+v9dAA8khjU6KjYbhDWiO+UeLGpoo
-         OIWg==
-X-Gm-Message-State: AJIora8tsmoTYG5RdOgP7adyGZgMYOaldbykFsfEw20mOZ2IXnCI5rNe
-        AJL+txGNdF+O4yyjvlhNcbMFS4et+YXBvY1WhQR18ysROrOAV52Nw0YZbPkrx5g87xgmBilHQkk
-        n45b/W4JG9eb8LtBm
-X-Received: by 2002:a7b:cc96:0:b0:3a0:4aa0:f053 with SMTP id p22-20020a7bcc96000000b003a04aa0f053mr15132039wma.89.1656630767286;
-        Thu, 30 Jun 2022 16:12:47 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1tzGEeKpPU2QJgFZfBZfnbC6qNg00CZfwhz9y7HZ3IRo/29uWs68Y3WtOkZ3zJ7mM9fGlZ/Ow==
-X-Received: by 2002:a7b:cc96:0:b0:3a0:4aa0:f053 with SMTP id p22-20020a7bcc96000000b003a04aa0f053mr15132007wma.89.1656630767121;
-        Thu, 30 Jun 2022 16:12:47 -0700 (PDT)
-Received: from debian.home (2a01cb058d1194004161f17a6a9ad508.ipv6.abo.wanadoo.fr. [2a01:cb05:8d11:9400:4161:f17a:6a9a:d508])
-        by smtp.gmail.com with ESMTPSA id d10-20020adff2ca000000b0021a38089e99sm20545676wrp.57.2022.06.30.16.12.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Jun 2022 16:12:46 -0700 (PDT)
-Date:   Fri, 1 Jul 2022 01:12:44 +0200
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Marcin Szycik <marcin.szycik@linux.intel.com>
-Cc:     netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        davem@davemloft.net, xiyou.wangcong@gmail.com,
-        jesse.brandeburg@intel.com, gustavoars@kernel.org,
-        baowen.zheng@corigine.com, boris.sukholitko@broadcom.com,
-        edumazet@google.com, kuba@kernel.org, jhs@mojatatu.com,
-        jiri@resnulli.us, kurt@linutronix.de, pablo@netfilter.org,
-        pabeni@redhat.com, paulb@nvidia.com, simon.horman@corigine.com,
-        komachi.yoshiki@gmail.com, zhangkaiheb@126.com,
-        intel-wired-lan@lists.osuosl.org,
-        michal.swiatkowski@linux.intel.com, wojciech.drewek@intel.com,
-        alexandr.lobakin@intel.com, mostrows@earthlink.net,
-        paulus@samba.org
-Subject: Re: [RFC PATCH net-next v3 4/4] ice: Add support for PPPoE hardware
- offload
-Message-ID: <20220630231244.GC392@debian.home>
-References: <20220629143859.209028-1-marcin.szycik@linux.intel.com>
- <20220629143859.209028-5-marcin.szycik@linux.intel.com>
+        with ESMTP id S231553AbiF3X0j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 19:26:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 218D94476D;
+        Thu, 30 Jun 2022 16:26:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CE784B82D3D;
+        Thu, 30 Jun 2022 23:26:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91681C341DA;
+        Thu, 30 Jun 2022 23:26:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656631595;
+        bh=ocxWtABVoequW5YNJWHtxjCAN6pvUTRglOmXliA+RpI=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=Qi98AIkpiogBRU1SIQ0tRIDCbTH3aUhLmIwceSXkScDwXJRgoZSsHLUvO4xn/Aaco
+         jUeeJ1bfKaPPoD5NhRVnYvDv7ZJXteCeyyAcTVk2eHussC2U0xAsQizgRBBb0q143b
+         FegjCvwcXeJGM0D9K4OwnWTFftyuJNqy/fsRt4PTeKXuJzs2BuvZWQf47mcHBJ2zFS
+         QiVBk+IwIKPPurNp4TBJXnbB2mxb/ZoerePEqqTYli4zzKaVWaF/7nbwI+VJW9Rn0M
+         rjJI0pOTvoDA8U1DSfb8VACgJqhFmYGFBJhUpERO6ZqZ0i2uiu9/r5+1gdHldP6Y7H
+         ugsbpRRMOTwdQ==
+Received: by mail-ua1-f49.google.com with SMTP id l7so242492ual.9;
+        Thu, 30 Jun 2022 16:26:35 -0700 (PDT)
+X-Gm-Message-State: AJIora/ff47zuqJIg9g5I/iw+cAn4HD1zgN6N1goCfyDEo1vU6k982DW
+        TG+3LJD4XguuAcgLL0Z71mDMCAsyg8wDV6xX1w==
+X-Google-Smtp-Source: AGRyM1uzRDE+5OSb/zj34pnreLyYTDG7fKIijDdSX9upnNZPRoBKS78Ucyprll5y2N89WsffxoVjZnek2U5JH0kmp0E=
+X-Received: by 2002:ab0:244f:0:b0:37f:2985:e620 with SMTP id
+ g15-20020ab0244f000000b0037f2985e620mr6853095uan.36.1656631594258; Thu, 30
+ Jun 2022 16:26:34 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220629143859.209028-5-marcin.szycik@linux.intel.com>
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+References: <20220601070707.3946847-1-saravanak@google.com>
+ <20220601070707.3946847-2-saravanak@google.com> <YrFzK6EiVvXmzVG6@atomide.com>
+ <CAGETcx_1USPRbFKV5j00qkQ-QXJkp7=FAfnFcfiNnM4J5KF1cQ@mail.gmail.com>
+ <YrKhkmj3jCQA39X/@atomide.com> <CAGETcx_11wO-HkZ2QsBF8o1+L9L3Xe1QBQ_GzegwozxAx1i0jg@mail.gmail.com>
+ <YrQP3OZbe8aCQxKU@atomide.com> <CAGETcx9aFBzMcuOiTAEy5SJyWw3UfajZ8DVQfW2DGmzzDabZVg@mail.gmail.com>
+ <Yrlz/P6Un2fACG98@atomide.com> <CAGETcx8c+P0r6ARmhv+ERaz9zAGBOVJQu3bSDXELBycEGfkYQw@mail.gmail.com>
+In-Reply-To: <CAGETcx8c+P0r6ARmhv+ERaz9zAGBOVJQu3bSDXELBycEGfkYQw@mail.gmail.com>
+From:   Rob Herring <robh@kernel.org>
+Date:   Thu, 30 Jun 2022 17:26:22 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqJd3J6k6pRar7CkHVaaPbY7jqvzAePd8rVDisRV-dLLtg@mail.gmail.com>
+Message-ID: <CAL_JsqJd3J6k6pRar7CkHVaaPbY7jqvzAePd8rVDisRV-dLLtg@mail.gmail.com>
+Subject: Re: [PATCH v2 1/9] PM: domains: Delete usage of driver_deferred_probe_check_state()
+To:     Saravana Kannan <saravanak@google.com>
+Cc:     Tony Lindgren <tony@atomide.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Kevin Hilman <khilman@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Android Kernel Team <kernel-team@android.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "open list:THERMAL" <linux-pm@vger.kernel.org>,
+        Linux IOMMU <iommu@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Alexander Stein <alexander.stein@ew.tq-group.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -87,25 +89,85 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 29, 2022 at 04:38:59PM +0200, Marcin Szycik wrote:
-> Add support for creating PPPoE filters in switchdev mode. Add support
-> for parsing PPPoE and PPP-specific tc options: pppoe_sid and ppp_proto.
-> 
-> Example filter:
-> tc filter add dev $PF1 ingress protocol ppp_ses prio 1 flower pppoe_sid \
->     1234 ppp_proto ip skip_sw action mirred egress redirect dev $VF1_PR
-> 
-> Changes in iproute2 are required to use the new fields.
-> 
-> ICE COMMS DDP package is required to create a filter as it contains PPPoE
-> profiles. Added a warning message when loaded DDP package does not contain
-> required profiles.
-> 
-> Note: currently matching on vlan + PPPoE fields is not supported. Patch [0]
-> will add this feature.
-> 
-> [0] https://patchwork.ozlabs.org/project/intel-wired-lan/patch/20220420210048.5809-1-martyna.szapar-mudlaw@intel.com
+On Thu, Jun 30, 2022 at 5:11 PM Saravana Kannan <saravanak@google.com> wrote:
+>
+> On Mon, Jun 27, 2022 at 2:10 AM Tony Lindgren <tony@atomide.com> wrote:
+> >
+> > * Saravana Kannan <saravanak@google.com> [220623 08:17]:
+> > > On Thu, Jun 23, 2022 at 12:01 AM Tony Lindgren <tony@atomide.com> wrote:
+> > > >
+> > > > * Saravana Kannan <saravanak@google.com> [220622 19:05]:
+> > > > > On Tue, Jun 21, 2022 at 9:59 PM Tony Lindgren <tony@atomide.com> wrote:
+> > > > > > This issue is no directly related fw_devlink. It is a side effect of
+> > > > > > removing driver_deferred_probe_check_state(). We no longer return
+> > > > > > -EPROBE_DEFER at the end of driver_deferred_probe_check_state().
+> > > > >
+> > > > > Yes, I understand the issue. But driver_deferred_probe_check_state()
+> > > > > was deleted because fw_devlink=on should have short circuited the
+> > > > > probe attempt with an  -EPROBE_DEFER before reaching the bus/driver
+> > > > > probe function and hitting this -ENOENT failure. That's why I was
+> > > > > asking the other questions.
+> > > >
+> > > > OK. So where is the -EPROBE_DEFER supposed to happen without
+> > > > driver_deferred_probe_check_state() then?
+> > >
+> > > device_links_check_suppliers() call inside really_probe() would short
+> > > circuit and return an -EPROBE_DEFER if the device links are created as
+> > > expected.
+> >
+> > OK
+> >
+> > > > Hmm so I'm not seeing any supplier for the top level ocp device in
+> > > > the booting case without your patches. I see the suppliers for the
+> > > > ocp child device instances only.
+> > >
+> > > Hmmm... this is strange (that the device link isn't there), but this
+> > > is what I suspected.
+> >
+> > Yup, maybe it's because of the supplier being a device in the child
+> > interconnect for the ocp.
+>
+> Ugh... yeah, this is why the normal (not SYNC_STATE_ONLY) device link
+> isn't being created.
+>
+> So the aggregated view is something like (I had to set tabs = 4 space
+> to fit it within 80 cols):
+>
+>     ocp: ocp {         <========================= Consumer
+>         compatible = "simple-pm-bus";
+>         power-domains = <&prm_per>; <=========== Supplier ref
+>
+>                 l4_wkup: interconnect@44c00000 {
+>             compatible = "ti,am33xx-l4-wkup", "simple-pm-bus";
+>
+>             segment@200000 {  /* 0x44e00000 */
+>                 compatible = "simple-pm-bus";
+>
+>                 target-module@0 { /* 0x44e00000, ap 8 58.0 */
+>                     compatible = "ti,sysc-omap4", "ti,sysc";
+>
+>                     prcm: prcm@0 {
+>                         compatible = "ti,am3-prcm", "simple-bus";
+>
+>                         prm_per: prm@c00 { <========= Actual Supplier
+>                             compatible = "ti,am3-prm-inst", "ti,omap-prm-inst";
+>                         };
+>                     };
+>                 };
+>             };
+>         };
+>     };
+>
+> The power-domain supplier is the great-great-great-grand-child of the
+> consumer. It's not clear to me how this is valid. What does it even
+> mean?
+>
+> Rob, is this considered a valid DT?
 
-Out of curiosity, can ice direct PPPoE Session packets to different
-queues with RSS (based on the session ID)?
+Valid DT for broken h/w.
 
+So the domain must be default on and then simple-pm-bus is going to
+hold a reference to the domain preventing it from ever getting powered
+off and things seem to work. Except what happens during suspend?
+
+Rob
