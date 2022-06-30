@@ -2,96 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BD595621D7
-	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 20:13:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 281F75621D9
+	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 20:13:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236594AbiF3SNd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jun 2022 14:13:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60206 "EHLO
+        id S236167AbiF3SNo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jun 2022 14:13:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232771AbiF3SNc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 14:13:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 895CD37AB1
-        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 11:13:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3A355B82CA6
-        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 18:13:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77310C34115;
-        Thu, 30 Jun 2022 18:13:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656612808;
-        bh=AVSGvBlyUIoiPttnRLaWTrOt3eoblOMLSyOeq+0TLRU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=CZLML79AWTbH7z+sxyNCBqLNmBMwFYHg+z2tPsalTGfmQ7jIttvCOMaS+0MGIA0v3
-         OUcP9C7JBJu++OH9saH3KpNYJtciU2ktZBmF2gtU7jD7M8LYydEFTGELe29BsDfDfF
-         YcDsPVlFtHJiEGAZmlYPMMAXtQ5Vs8ex8jkNmDtdlCZvcqGNLvp84MA+m5z+vzsoLn
-         jIm/ZPggKi0IMVHgngDEXIPtxht9tRHgy9QJMTLbzqbzYjz1h3jmG1PZwcSb3Qiq1U
-         beR9qi6FVsswNrZSL/6fUixL2alFeX3OHQbbFF8jFlzwXlyrVQLjiE9bcGNTu0rzb2
-         g4fcrd8R+Yr7w==
-Date:   Thu, 30 Jun 2022 11:13:27 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Dima Chumak <dchumak@nvidia.com>
-Cc:     Jiri Pirko <jiri@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S233279AbiF3SNn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 14:13:43 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12249393F5;
+        Thu, 30 Jun 2022 11:13:42 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id fd6so27625291edb.5;
+        Thu, 30 Jun 2022 11:13:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=8glAiFvvYAhfMI+vcfTy74bCy0VAErz9qlw2gOrB7qA=;
+        b=l1r+1Vmf9q2oWvjMcHJzsqJnIeHo07Lf7an896wGvxkwuV/81/9kjyXcVpowrnWjQR
+         MebPRwlejspQtTlgWcn6o56P0UE9VvteQLMMl153TNVbdz3gnJurMJCXzIV31PI9f3Gy
+         +LsuxTKlXXI3+buzGcTM0g9BN49+68ylLEbbQovNwqhHwMFaFnB1VL8mE/Cesmwq7RWw
+         w7MHT1YsfBSOYyRXOaoseLr8ybSjV+UhnJC0OkCsWNmyGRAgpQR3e8C+LMj+4S9UO4gm
+         fm1ma4xUoIcEn6Rwa4zlti9dlk2NSt+9w82HeC4rueqqWCPMsgeEzo7+9g5osgVQ7q4W
+         x00Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=8glAiFvvYAhfMI+vcfTy74bCy0VAErz9qlw2gOrB7qA=;
+        b=AXVUwmM0aa3B4qJq9Z1N2gf4rA9Bo9OOrd/8d3XeKvHH3Kw3wRDWn0Ep6jYPIP6n0X
+         yGRKlFGKggWTYgRi1LBoTuBO2hXsrh2DWJyQSjUGwjd2LuTdVrojfq0PvQ6YlqO6cxXO
+         xQQrWHAJAWQTOc1VUW15qns1gk8snQEyfp3x532tOSyGlk/iAVF4BIUGOpzAsxuSliX2
+         u33RhkkvSiX/lofasGcn4siPa+1LMUU+COTtbPqdMl82PvVfAR07liRZcnBVT0ZfIrvW
+         6TiH1oAZKZZczPLbceBQW/L8GVAOs4pPttflGS+rA9bEWLrU0qrZZG+n4H+dvBjvhnEL
+         8etQ==
+X-Gm-Message-State: AJIora9GLg9yNwRxfs48PE9u0Iv0LFRFp3E9+RMcvSlXjIA2+Ob7LFCv
+        +IPpTjQFxLVumfy3xKIKVhs=
+X-Google-Smtp-Source: AGRyM1tRbV9myCID4do+RE+BD6VuESTf79GpY37rWF1nuOjpF2gsd4l25Fxd/4Kig/NcRnR7mdixUA==
+X-Received: by 2002:a05:6402:26d6:b0:435:ba41:dbb0 with SMTP id x22-20020a05640226d600b00435ba41dbb0mr13327972edd.242.1656612820518;
+        Thu, 30 Jun 2022 11:13:40 -0700 (PDT)
+Received: from opensuse.localnet (host-87-6-98-182.retail.telecomitalia.it. [87.6.98.182])
+        by smtp.gmail.com with ESMTPSA id p5-20020a17090653c500b00722e8c47cc9sm1833654ejo.181.2022.06.30.11.13.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 30 Jun 2022 11:13:38 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     Jesper Dangaard Brouer <hawk@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
+        Alexander Duyck <alexanderduyck@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Simon Horman <horms@verge.net.au>
-Subject: Re: [PATCH net-next 0/5] devlink rate police limiter
-Message-ID: <20220630111327.3a951e3b@kernel.org>
-In-Reply-To: <228ce203-b777-f21e-1f88-74447f2093ca@nvidia.com>
-References: <20220620152647.2498927-1-dchumak@nvidia.com>
-        <20220620130426.00818cbf@kernel.org>
-        <228ce203-b777-f21e-1f88-74447f2093ca@nvidia.com>
+        Netdev <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Ira Weiny <ira.weiny@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [Intel-wired-lan] [PATCH] ixgbe: Use kmap_local_page in ixgbe_check_lbtest_frame()
+Date:   Thu, 30 Jun 2022 20:13:37 +0200
+Message-ID: <12017329.O9o76ZdvQC@opensuse>
+In-Reply-To: <CAKgT0UfGM8nCZnnYjWPKT+JXOwVJx1xj6n7ssGi41vH4GrUy0Q@mail.gmail.com>
+References: <20220629085836.18042-1-fmdefrancesco@gmail.com> <Yr12jl1nEqqVI3TT@boxer> <CAKgT0UfGM8nCZnnYjWPKT+JXOwVJx1xj6n7ssGi41vH4GrUy0Q@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 30 Jun 2022 17:27:08 +0200 Dima Chumak wrote:
-> I've re-read more carefully the cover letter of the original 'devlink:
-> rate objects API' series by Dmytro Linkin, off of which I based my
-> patches, though my understanding still might be incomplete/incorrect
-> here.
-> 
-> It seems that TC, being ingress only, doesn't cover the full spectrum of
-> rate-limiting that's possible to achieve with devlink. TC works only
-> with representors and doesn't allow to configure "the other side of the
-> wire", where devlink port function seems to be a better match as it
-> connects directly to a VF.
+On gioved=C3=AC 30 giugno 2022 17:17:24 CEST Alexander Duyck wrote:
+> On Thu, Jun 30, 2022 at 3:10 AM Maciej Fijalkowski
+> <maciej.fijalkowski@intel.com> wrote:
+> >
+> > On Wed, Jun 29, 2022 at 10:58:36AM +0200, Fabio M. De Francesco wrote:
+> > > The use of kmap() is being deprecated in favor of kmap_local_page().
+> > >
+> > > With kmap_local_page(), the mapping is per thread, CPU local and not
+> > > globally visible. Furthermore, the mapping can be acquired from any=20
+context
+> > > (including interrupts).
+> > >
+> > > Therefore, use kmap_local_page() in ixgbe_check_lbtest_frame()=20
+because
+> > > this mapping is per thread, CPU local, and not globally visible.
+> >
+> > Hi,
+> >
+> > I'd like to ask why kmap was there in the first place and not plain
+> > page_address() ?
+> >
+> > Alex?
+>=20
+> The page_address function only works on architectures that have access
+> to all of physical memory via virtual memory addresses. The kmap
+> function is meant to take care of highmem which will need to be mapped
+> before it can be accessed.
+>=20
+> For non-highmem pages kmap just calls the page_address function.
+> https://elixir.bootlin.com/linux/latest/source/include/linux/highmem-inte=
+rnal.h#L40
 
-Right, but you are adding Rx and Tx now, IIUC, so you're venturing into
-the same "side of the wire" where tc lives.
+Please take a look at documentation (highmem.rst). I've recently reworked=20
+it and added information about kmap_local_page()
 
-> Also, for the existing devlink-rate mechanism of VF grouping, it would be
-> challenging to achieve similar functionality with TC flows, as groups don't
-> have a net device instance where flows can be attached.
+Thanks,
 
-You can share actions in TC. The hierarchical aspects may be more
-limited, not sure.
+=46abio
 
-> I want to apologize in case my proposed changes have come across as
-> being bluntly ignoring some of the pre-established agreements and
-> understandings of TC / devlink responsibility separation, it wasn't
-> intentional.
+>=20
+> Thanks,
+>=20
+> - Alex
+>=20
 
-Apologies, TBH I thought you're the same person I was arguing with last
-time.
 
-My objective is to avoid having multiple user space interfaces which 
-drivers have to (a) support and (b) reconcile. We already have the VF 
-rate limits in ip link, and in TC (which I believe is used by OvS
-offload). 
 
-I presume you have a mlx5 implementation ready, so how do you reconcile
-those 3 APIs?
+
