@@ -2,55 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 86200561AD8
-	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 15:00:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CE80561B07
+	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 15:10:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234428AbiF3NAT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jun 2022 09:00:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39790 "EHLO
+        id S234874AbiF3NJ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jun 2022 09:09:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232428AbiF3NAS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 09:00:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A208E40A15
-        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 06:00:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6DFDDB82A7D
-        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 13:00:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 0B7B8C3411E;
-        Thu, 30 Jun 2022 13:00:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656594015;
-        bh=KqA3PRzRtNZhw9rkXaDiMiuH2/lWVJBQmBD50dyRETo=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=o8Pk9aMw+ksBFHAqGooJXwLCcq1eclGXNJ43F9uvgKA16LOrtWHRMsQ4ra3jcdOUS
-         GIGhS/n0wcSaMJPZfl5/j6k+R9vox+j/zOkLMhR2+IFYqpek/V+GNSwH69dKrpkIKJ
-         Lrg9cfQANakjOK9xsmZeXjEQw3HRIvKBtjj1JZjRKfD9VfHhspEyd0QTWpdjtqa6Go
-         vb3stlVTMR4m91X2iLJAV8F2gzkhypmuzet+l7xBBgamj3NNE+qI0EaEbnEYkwPuRj
-         hX8T1xzMeH92gq6ACIsAUz2YrFFs3neZ5Vu+7P21+xaYH+evaO4vYxc96+tjQ5t4nL
-         jiW++vNqxuRCg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E1F37E49BBB;
-        Thu, 30 Jun 2022 13:00:14 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S233226AbiF3NJ4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 09:09:56 -0400
+Received: from smtpbg.qq.com (unknown [43.155.67.158])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E52062018E;
+        Thu, 30 Jun 2022 06:09:50 -0700 (PDT)
+X-QQ-mid: bizesmtp85t1656594566tf465dwr
+Received: from localhost.localdomain ( [182.148.13.66])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Thu, 30 Jun 2022 21:09:23 +0800 (CST)
+X-QQ-SSF: 0100000000200090C000B00A0000000
+X-QQ-FEAT: pqOtrSRu7rgUfzKv/youfEcgC7ibWgG5pXDp/heAIehzNCz6k4+ffbWqRLRit
+        49YVq2b4nyUuNP1rUrkC1ZTC7uARepKM68Fbd2OEbQEEJSeOxyz6O2El1pW4dMEYBm2bajv
+        Z/2U0EzcyuJeAUMI8sqPkNiefIv5rXRBTyDegvPyJcTo30LLL6Ar8utjlsB8XlsjMA8ePPd
+        0gGuicn+eN2XSfnylx8SaHm3u3OYV6x5PONsjFbFfq+Wm+B0ZBbRkVmQu3KzDnv4PbGnUmz
+        wQ5OltvUfj1VxhjZkiOx39Co6A2cOMANFNlEHkFJSqg/jb4SOQQ42XByBtLtC49GMSgHXlO
+        wlAYdZgjspItM+Ey+bSt2qy+pGivA==
+X-QQ-GoodBg: 0
+From:   Jilin Yuan <yuanjilin@cdjrlc.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jilin Yuan <yuanjilin@cdjrlc.com>
+Subject: [PATCH] ethernet/sun: fix repeated words in comments
+Date:   Thu, 30 Jun 2022 21:09:16 +0800
+Message-Id: <20220630130916.21074-1-yuanjilin@cdjrlc.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v4 0/2] net,
- neigh: introduce interval_probe_time for periodic probe
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165659401492.28302.4804695148436142310.git-patchwork-notify@kernel.org>
-Date:   Thu, 30 Jun 2022 13:00:14 +0000
-References: <20220629084832.2842973-1-wangyuweihx@gmail.com>
-In-Reply-To: <20220629084832.2842973-1-wangyuweihx@gmail.com>
-To:     Yuwei Wang <wangyuweihx@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
-        pabeni@redhat.com, daniel@iogearbox.net, roopa@nvidia.com,
-        dsahern@kernel.org, qindi@staff.weibo.com, netdev@vger.kernel.org
-X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,RDNS_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,T_SPF_HELO_TEMPERROR autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -58,30 +48,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Delete the redundant word 'the'.
+Delete the redundant word 'is'.
+Delete the redundant word 'start'.
+Delete the redundant word 'checking'.
 
-This series was applied to netdev/net-next.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
+Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
+---
+ drivers/net/ethernet/sun/cassini.c | 2 +-
+ drivers/net/ethernet/sun/cassini.h | 2 +-
+ drivers/net/ethernet/sun/ldmvsw.c  | 2 +-
+ drivers/net/ethernet/sun/sungem.c  | 2 +-
+ 4 files changed, 4 insertions(+), 4 deletions(-)
 
-On Wed, 29 Jun 2022 08:48:30 +0000 you wrote:
-> This series adds a new option `interval_probe_time_ms` in net, neigh
-> for periodic probe, and add a limitation to prevent it set to 0
-> 
-> Yuwei Wang (2):
->   sysctl: add proc_dointvec_ms_jiffies_minmax
->   net, neigh: introduce interval_probe_time_ms for periodic probe
-> 
-> [...]
-
-Here is the summary with links:
-  - [net-next,v4,1/2] sysctl: add proc_dointvec_ms_jiffies_minmax
-    https://git.kernel.org/netdev/net-next/c/c381d02b2fd5
-  - [net-next,v4,2/2] net, neigh: introduce interval_probe_time_ms for periodic probe
-    https://git.kernel.org/netdev/net-next/c/211da42eaa45
-
-You are awesome, thank you!
+diff --git a/drivers/net/ethernet/sun/cassini.c b/drivers/net/ethernet/sun/cassini.c
+index 435dc00d04e5..0b08b0e085e8 100644
+--- a/drivers/net/ethernet/sun/cassini.c
++++ b/drivers/net/ethernet/sun/cassini.c
+@@ -29,7 +29,7 @@
+  *  -- on page reclamation, the driver swaps the page with a spare page.
+  *     if that page is still in use, it frees its reference to that page,
+  *     and allocates a new page for use. otherwise, it just recycles the
+- *     the page.
++ *     page.
+  *
+  * NOTE: cassini can parse the header. however, it's not worth it
+  *       as long as the network stack requires a header copy.
+diff --git a/drivers/net/ethernet/sun/cassini.h b/drivers/net/ethernet/sun/cassini.h
+index ae5f05f03f88..2d91f4936d52 100644
+--- a/drivers/net/ethernet/sun/cassini.h
++++ b/drivers/net/ethernet/sun/cassini.h
+@@ -764,7 +764,7 @@
+  * PAUSE thresholds defined in terms of FIFO occupancy and may be translated
+  * into FIFO vacancy using RX_FIFO_SIZE. setting ON will trigger XON frames
+  * when FIFO reaches 0. OFF threshold should not be > size of RX FIFO. max
+- * value is is 0x6F.
++ * value is 0x6F.
+  * DEFAULT: 0x00078
+  */
+ #define  REG_RX_PAUSE_THRESH               0x4020  /* RX pause thresholds */
+diff --git a/drivers/net/ethernet/sun/ldmvsw.c b/drivers/net/ethernet/sun/ldmvsw.c
+index 6b59b14e74b1..0cd8493b810f 100644
+--- a/drivers/net/ethernet/sun/ldmvsw.c
++++ b/drivers/net/ethernet/sun/ldmvsw.c
+@@ -335,7 +335,7 @@ static int vsw_port_probe(struct vio_dev *vdev, const struct vio_device_id *id)
+ 	port->tsolen = 0;
+ 
+ 	/* Mark the port as belonging to ldmvsw which directs the
+-	 * the common code to use the net_device in the vnet_port
++	 * common code to use the net_device in the vnet_port
+ 	 * rather than the net_device in the vnet (which is used
+ 	 * by sunvnet). This bit is used by the VNET_PORT_TO_NET_DEVICE
+ 	 * macro.
+diff --git a/drivers/net/ethernet/sun/sungem.c b/drivers/net/ethernet/sun/sungem.c
+index 45bd89153de2..a14591b41acb 100644
+--- a/drivers/net/ethernet/sun/sungem.c
++++ b/drivers/net/ethernet/sun/sungem.c
+@@ -1088,7 +1088,7 @@ static netdev_tx_t gem_start_xmit(struct sk_buff *skb,
+ 		netif_stop_queue(dev);
+ 
+ 		/* netif_stop_queue() must be done before checking
+-		 * checking tx index in TX_BUFFS_AVAIL() below, because
++		 * tx index in TX_BUFFS_AVAIL() below, because
+ 		 * in gem_tx(), we update tx_old before checking for
+ 		 * netif_queue_stopped().
+ 		 */
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.36.1
 
