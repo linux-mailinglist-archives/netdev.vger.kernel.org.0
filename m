@@ -2,181 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F04C561EF6
-	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 17:17:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 94F7A561EF4
+	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 17:17:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235714AbiF3PRh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jun 2022 11:17:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53380 "EHLO
+        id S233132AbiF3PRW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jun 2022 11:17:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235501AbiF3PRX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 11:17:23 -0400
-Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEFE82D1D2
-        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 08:17:22 -0700 (PDT)
-Received: by mail-io1-xd2d.google.com with SMTP id k15so19424949iok.5
-        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 08:17:22 -0700 (PDT)
+        with ESMTP id S229966AbiF3PRT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 11:17:19 -0400
+Received: from mail-il1-x133.google.com (mail-il1-x133.google.com [IPv6:2607:f8b0:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EA7C32ED8
+        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 08:17:18 -0700 (PDT)
+Received: by mail-il1-x133.google.com with SMTP id f15so12129776ilj.11
+        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 08:17:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=UjN5WCjSlW6XRDQEx4W7qChY8LG6Krf9efhMPYxn9eQ=;
-        b=eMdf6L5d1qhr4EE1eKwxr+AUepysYtXrnVQSqPA2ePr2jp+PQbvPDwBkSfkngH+Avn
-         dyHEvEY45qIrBSbgOGvFlMsg1L4wAwXEYj5gqdYod50dkcKWRLXEY5z0YYrcq/JrRzEk
-         E9+3sPWB6c2BoYQy54Lur6hM+P2daS0eZrGkucK1wi0v0u0Vc3PnJJ7ucY/KWticVw9N
-         paUYCaRr4ZYyx8XwPDPqM5xXPAA0blgvL+6j14xRdx12969O2RCXoJvE0yPywp0GbW9F
-         0zTpSkwYozh+IrzRf0+bIKYiFzUb6ryrJkL4twuCNl04PBw5AnU3c3nt+nVk92M2XLyq
-         5uvQ==
+        d=gmail.com; s=20210112;
+        h=mime-version:sender:from:date:message-id:subject:to;
+        bh=eMKZayKvkcJE1NsJECMuqkGen+W+VhOA8980ZdLwenY=;
+        b=mtuSGcCVrDEtgv6G6D8vNnz8tFMqjEmEfnE0mFeY4C4TyNkDEpzPNpJcX7+z+knTlC
+         qkYxKlhCmV7DwI9LvbRNnLQ3tdtOdC0RO7qHKri/Zvw92qlCWME0Wtf3MhtZfM1Qdr0A
+         AWbtODloNnwTI2appMo0sJH8PY4hOmRO0keptJmbJ48DLcm4BmCUypm7CqcitwwqBc0p
+         NhcKp2lsG1HQh/lSlm2AxNs7XpKttICo8BHIBi+mZ2STCBhFVZpgyV1PCu5hU0bYWhDX
+         Sjug0C/TnY452jz5qBwCslUO5VixMbLWtVsXqjnumTrxnH+AfuJDHdmBcLiJU6+u9YKd
+         tKpw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UjN5WCjSlW6XRDQEx4W7qChY8LG6Krf9efhMPYxn9eQ=;
-        b=WZkAF7U66Q4vckXArOngrEOg6tt8QCSiVP4xEMEJPWon+5pLDNZzQN/GIq1O+KsVWa
-         4+TKMyqM9BmAosAAaBTkbwyd3xPzUwe3JJBBaZPvnv6qXqY/11kpddc1ZuEykkjaGCov
-         /poRpBhecMF+9YPSRq40YNlzcG14opfv4d49fbAfPgTfA07TpMAdj6QNr2pe7Vi4CEEY
-         tWF1rVmMxuO6trr6oqbB0/Lxmgo3Jd1gMaRSbvQCs49IPSmA0Xstb3KiCbzvrfz5gzwu
-         w3aa89oqeEggACmemycWyLQuEyn/DDDV6mVbLyNRXUKNRtFNdjid9dRD3w1hnElfi22o
-         viIg==
-X-Gm-Message-State: AJIora9XMY7HTvfAehI+e8Ai646/yJH9f/3K4Du19b+C9KopUWHdBVFv
-        5suzLV2XD8qh/En+iCX8o/5k/Wf/8XrSEISMeElhpfbw2lrLMw==
-X-Google-Smtp-Source: AGRyM1vBsHcJbR792fbcQ3MyyuZqf98Ww3QYisAjl7/NLnET0H9WzRM7dmoSeFfyXdH7BvgEDdpJy73v9t/EFjRepms=
-X-Received: by 2002:a05:6638:388e:b0:33c:b603:516 with SMTP id
- b14-20020a056638388e00b0033cb6030516mr5654843jav.133.1656602242135; Thu, 30
- Jun 2022 08:17:22 -0700 (PDT)
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to;
+        bh=eMKZayKvkcJE1NsJECMuqkGen+W+VhOA8980ZdLwenY=;
+        b=YnLIK4LdI+vSslvICemEbBGoHHaILB3YO4bftOol4JesucwKjR42iIrh3RtnORn92J
+         R+vLbS9F6BkU1Nn12Fa0dPjMmc38irpM0u2lRDv/m4wvpY+9tulCq7klNhRhGXZNsR8W
+         zrGjirv5wIuaZGagw30mYvF/rJIWo0ztL3iaazPEJpc40EMclAv/JNfuUP6h8f+8kptU
+         UyXkCi7qWaHnEC2kLswgX64w0s4RN3vyhz0I1kyDyAy4LN2uED0PzeeZbhfmnKlg2kBq
+         km456o9in0ltF7yFAC0dnxP2cbTifkodmKc70Wu1C8LKqv0pIyEqSmDcZBmecN55Nkk/
+         5wjg==
+X-Gm-Message-State: AJIora+G7W+r19gFjyxk34SiSYWkGyx2Y87MAjgpS3coJ4cj34x99xax
+        1V1BB8kQJbGRkctbbyDMrDLDoCFub/1kLXhDh2w=
+X-Google-Smtp-Source: AGRyM1sJ9knTDkxu8WcdL4Z6xrCHyWq560idrqTSs86BAVj0GxC7cVwaghgc2OJXczQma8+cTnNWlafC7D1q9ZCYEB8=
+X-Received: by 2002:a05:6e02:1486:b0:2da:9864:b480 with SMTP id
+ n6-20020a056e02148600b002da9864b480mr5791873ilk.70.1656602237405; Thu, 30 Jun
+ 2022 08:17:17 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220630143842.24906-1-duoming@zju.edu.cn> <CANn89iLda2oxoPQaGd9r8frAaOu1LqxmWYm2O8W4HXaGRN8tcQ@mail.gmail.com>
- <bed69ee.1e8d9.181b528391c.Coremail.duoming@zju.edu.cn>
-In-Reply-To: <bed69ee.1e8d9.181b528391c.Coremail.duoming@zju.edu.cn>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 30 Jun 2022 17:17:10 +0200
-Message-ID: <CANn89iKo-uuF-iQWrfL=pgMu7bEakWHPDAVuLvT-TZ4AujiD=w@mail.gmail.com>
-Subject: Re: [PATCH net] net: rose: fix UAF bug caused by rose_t0timer_expiry
-To:     Duoming Zhou <duoming@zju.edu.cn>
-Cc:     linux-hams@vger.kernel.org, netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Ralf Baechle <ralf@linux-mips.org>
+Sender: adamuyunusamalqwi@gmail.com
+Received: by 2002:a05:6638:32a0:0:0:0:0 with HTTP; Thu, 30 Jun 2022 08:17:16
+ -0700 (PDT)
+From:   "mydesk.ceoinfo@barclaysbank.co.uk" <nigelhiggins.md5@gmail.com>
+Date:   Thu, 30 Jun 2022 16:17:16 +0100
+X-Google-Sender-Auth: bwmIPwTSfUogJYoc-VlQuPJEwmQ
+Message-ID: <CALKLisC27imD28fMhatU=jVWJ0VRpBBaA5pOnOEtozoaLASE+A@mail.gmail.com>
+Subject: RE PAYMENT NOTIFICATION UPDATE
+To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=4.0 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        FROM_2_EMAILS_SHORT,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        SUBJ_ALL_CAPS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
+        version=3.4.6
+X-Spam-Level: ***
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 30, 2022 at 5:08 PM <duoming@zju.edu.cn> wrote:
->
-> Hello,
->
-> On Thu, 30 Jun 2022 16:44:29 +0200 Eric Dumazet wrote:
->
-> > > There are UAF bugs caused by rose_t0timer_expiry(). The
-> > > root cause is that del_timer() could not stop the timer
-> > > handler that is running and there is no synchronization.
-> > > One of the race conditions is shown below:
-> > >
-> > >     (thread 1)             |        (thread 2)
-> > >                            | rose_device_event
-> > >                            |   rose_rt_device_down
-> > >                            |     rose_remove_neigh
-> > > rose_t0timer_expiry        |       rose_stop_t0timer(rose_neigh)
-> > >   ...                      |         del_timer(&neigh->t0timer)
-> > >                            |         kfree(rose_neigh) //[1]FREE
-> > >   neigh->dce_mode //[2]USE |
-> > >
-> > > The rose_neigh is deallocated in position [1] and use in
-> > > position [2].
-> > >
-> > > The crash trace triggered by POC is like below:
-> > >
-> > > BUG: KASAN: use-after-free in expire_timers+0x144/0x320
-> > > Write of size 8 at addr ffff888009b19658 by task swapper/0/0
-> > > ...
-> > > Call Trace:
-> > >  <IRQ>
-> > >  dump_stack_lvl+0xbf/0xee
-> > >  print_address_description+0x7b/0x440
-> > >  print_report+0x101/0x230
-> > >  ? expire_timers+0x144/0x320
-> > >  kasan_report+0xed/0x120
-> > >  ? expire_timers+0x144/0x320
-> > >  expire_timers+0x144/0x320
-> > >  __run_timers+0x3ff/0x4d0
-> > >  run_timer_softirq+0x41/0x80
-> > >  __do_softirq+0x233/0x544
-> > >  ...
-> > >
-> > > This patch changes del_timer() in rose_stop_t0timer() and
-> > > rose_stop_ftimer() to del_timer_sync() in order that the
-> > > timer handler could be finished before the resources such as
-> > > rose_neigh and so on are deallocated. As a result, the UAF
-> > > bugs could be mitigated.
-> > >
-> > > Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-> > > Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-> > > ---
-> > >  net/rose/rose_link.c | 4 ++--
-> > >  1 file changed, 2 insertions(+), 2 deletions(-)
-> > >
-> > > diff --git a/net/rose/rose_link.c b/net/rose/rose_link.c
-> > > index 8b96a56d3a4..9734d1264de 100644
-> > > --- a/net/rose/rose_link.c
-> > > +++ b/net/rose/rose_link.c
-> > > @@ -54,12 +54,12 @@ static void rose_start_t0timer(struct rose_neigh *neigh)
-> > >
-> > >  void rose_stop_ftimer(struct rose_neigh *neigh)
-> > >  {
-> > > -       del_timer(&neigh->ftimer);
-> > > +       del_timer_sync(&neigh->ftimer);
-> > >  }
-> >
-> > Are you sure this is safe ?
-> >
-> > del_timer_sync() could hang if the caller holds a lock that the timer
-> > function would need to acquire.
->
-> I think this is safe. The rose_ftimer_expiry() is an empty function that is
-> shown below:
->
-> static void rose_ftimer_expiry(struct timer_list *t)
-> {
-> }
->
-> > >
-> > >  void rose_stop_t0timer(struct rose_neigh *neigh)
-> > >  {
-> > > -       del_timer(&neigh->t0timer);
-> > > +       del_timer_sync(&neigh->t0timer);
-> > >  }
-> >
-> > Same here, please explain why it is safe.
->
-> The rose_stop_t0timer() may hold "rose_node_list_lock" and "rose_neigh_list_lock",
-> but the timer handler rose_t0timer_expiry() that is shown below does not need
-> these two locks.
->
-> static void rose_t0timer_expiry(struct timer_list *t)
-> {
->         struct rose_neigh *neigh = from_timer(neigh, t, t0timer);
->
->         rose_transmit_restart_request(neigh);
->
->         neigh->dce_mode = 0;
->
->         rose_start_t0timer(neigh);
+-- 
+Congratulation!
 
-This will rearm the timer.  del_timer_sync() will not help.
+This email is a good news regarding your unpaid inheritance with the
+hope that you are alive. Detailed information awaits you when you
+answer if you are alive.
 
-Please read the comment in front of del_timer_sync(), in kernel/time/timer.c
+Yours sincerely,
 
-> }
->
-> Best regards,
-> Duoming Zhou
+Nigel Higgins, (Group Chairman),
+Barclays Bank Plc,
+Registered number: 1026167,
+1 Churchill Place, London, ENG E14 5HP,
+SWIFT Code: BARCGB21,
+Direct Telephone: +44 770 000 8965,
+WhatsApp, SMS Number: + 44 787 229 9022
+www.barclays.co.uk
