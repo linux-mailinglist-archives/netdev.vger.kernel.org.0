@@ -2,191 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B8370562719
-	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 01:31:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD780562732
+	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 01:40:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232578AbiF3XbD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jun 2022 19:31:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52548 "EHLO
+        id S231703AbiF3Xjz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jun 2022 19:39:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229531AbiF3XbC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 19:31:02 -0400
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39C2B4D160
-        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 16:31:00 -0700 (PDT)
-Received: by mail-yb1-xb2b.google.com with SMTP id r3so1131337ybr.6
-        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 16:31:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=7rzBjlWyrGCVnHojYy7aloe09Kk1ZJFyFafJ4B59izQ=;
-        b=esSzbAG9SStIKedEdEyPNCZEwWeV7CGfw2gDAyv7xNkZGiGhAKyelsjm5S6l3zYohJ
-         d/Eo0n6Mp+36R9EN/Pq2SisCS+9HoblIrvPkImxxTHiatXxbVEpvW3y/yNgVziC5uyoZ
-         vYyHIRU3pYbXRmHkZLlWk/frQQwicQxGxfoUSBXj3PLfoEnFnvnX+lQNgSCCK/G112nQ
-         +h/LHrk5XRmANsD8K55QOlIqREK2mYKCbE3t0k3EnnSD9DyzGjrrvdjT+EJJoRKX1F7X
-         eGAoOxj+hwQhHxN9wOQ0TOIBLZRRt2Qt2wLPB0KOY9Z/NrqQd5sdoLelt/izUN/UnoDM
-         mZeQ==
+        with ESMTP id S232442AbiF3Xjy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 19:39:54 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2644348817
+        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 16:39:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656632390;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=b9GVsLYDNIjnA5AzRP3UDciaV6BcKEPUnpIHk/sNuEM=;
+        b=IZjCB/fpb1ho8LGHkfGi7P3QCDmnTuUbmK7N9cgjnAz7l8+Z9fbm0y4/zhx9t9GOkXucPj
+        qq5gWb5Ju4C0aO3NCmUGR/eCfJEickqdSB28fzjTsncabVdfWAUBqD8dp3wftxtmzLZ+Cq
+        fkqfcBVwHovG8C37BGgSm7Ji4OcGh5s=
+Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
+ [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-449-t84po7nXPKC8rHacn0GkBg-1; Thu, 30 Jun 2022 19:39:48 -0400
+X-MC-Unique: t84po7nXPKC8rHacn0GkBg-1
+Received: by mail-qv1-f70.google.com with SMTP id kj4-20020a056214528400b0044399a9bb4cso1034575qvb.15
+        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 16:39:48 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=7rzBjlWyrGCVnHojYy7aloe09Kk1ZJFyFafJ4B59izQ=;
-        b=E0C/ngwEXGvXhqtehsD40SaATRn+7o48L7oDKMsiY1TW2qgNhiX2umBKJvLJxEimgT
-         Ws8p/Y8Yp5LmZQwbEP6NgYjkx6opzjEuLsS0us0eLWN9JwtPUkhCuDbi6R1OWbTuP8bA
-         OLKTf5rxA2OTb3gPEUJ9z9v1DWZzFL21mPGNeeaoLahR/5QDjIqYQBFnRpqcC7pHyzvm
-         JvjqMMPuXCFQDqWyPWu8I/4Pmd1IR8tlkpX1UGnfo1iqy8J1QlAM5n6xaIfgxM5Av9RH
-         +sqEkUdn6/txIHxsibmER9U+KTg4UbYiQcsgAMxlb7uUPd+xvjO2rvYk6XMQHsK1r8v8
-         TtQA==
-X-Gm-Message-State: AJIora93QinGBSxPEDXjOxteYrzZZ37YaozrzLQTPle7UWoXtmetdNHG
-        DWl6qIMIpPPw7UEEowGcfTP+Oovok7Zq/v70h/X6dw==
-X-Google-Smtp-Source: AGRyM1vZ35BqSkdVoL3YwWkOXOHYil4MKgDP8iAYz+Rz4wCD4ADLbbR0rsgTYZHYxiDej4wVmrVuer94e9q4LpiXAmA=
-X-Received: by 2002:a25:5bc3:0:b0:669:b722:beb8 with SMTP id
- p186-20020a255bc3000000b00669b722beb8mr12118791ybb.447.1656631859258; Thu, 30
- Jun 2022 16:30:59 -0700 (PDT)
+        bh=b9GVsLYDNIjnA5AzRP3UDciaV6BcKEPUnpIHk/sNuEM=;
+        b=YIE3D8IB0ObR7HB4lDYrwHKhDmrf3eYkEcr8jCP9Fv6NMIs21fT0PwLScsxz9sz8w8
+         KZMKQlJ1KLyxmuNUHRWKvfu7e4gHvpsHOyy4lP5LPRE2ps5o5zMXfctwdt0+MZseFgRW
+         HlKXZFAOwSfHvfq1FzHTIIxbpumHaJnNvechuyg4oihJFKMqzmLlIL0m8CSIlUZTcIjj
+         j1pxOwAE0B1hOQPITA5WD+Du+WttlQfQJMYfFUfApb4IISymHrHMCeh3kFkdly0Dxy9/
+         YvTvQhl4rScYGMnzIug4Q4nmoeqHazN7tI62Qpom6l0E5q8BjqYQS5WdN960xcVjiOMR
+         sVFg==
+X-Gm-Message-State: AJIora/640SLaAxs2PBC8Na+6nLRiSITXcdQC6T77xPo2b6BceOHbZGL
+        Yq3oztOYzHc+B45fCVz2lV7SRZq6SXXYFXcNK7coeXPKj5nGjq33ewH84ch2Klm/1/9xaCybw9L
+        tseX3PhRL/iTgel5HJ8RZDoP8J8KhQWwL
+X-Received: by 2002:a05:622a:90a:b0:31b:899:3070 with SMTP id bx10-20020a05622a090a00b0031b08993070mr10244069qtb.470.1656632388499;
+        Thu, 30 Jun 2022 16:39:48 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1v+2gxM//Gl1DZFl6EN2ARpld2eu3hEMQxpCI5Q3r1GZUtr7fZAogE+1KHvIXzDa0sfDQsYXVT6ti1sU0OHBY8=
+X-Received: by 2002:a05:622a:90a:b0:31b:899:3070 with SMTP id
+ bx10-20020a05622a090a00b0031b08993070mr10244044qtb.470.1656632388282; Thu, 30
+ Jun 2022 16:39:48 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220601070707.3946847-1-saravanak@google.com>
- <20220601070707.3946847-2-saravanak@google.com> <YrFzK6EiVvXmzVG6@atomide.com>
- <CAGETcx_1USPRbFKV5j00qkQ-QXJkp7=FAfnFcfiNnM4J5KF1cQ@mail.gmail.com>
- <YrKhkmj3jCQA39X/@atomide.com> <CAGETcx_11wO-HkZ2QsBF8o1+L9L3Xe1QBQ_GzegwozxAx1i0jg@mail.gmail.com>
- <YrQP3OZbe8aCQxKU@atomide.com> <CAGETcx9aFBzMcuOiTAEy5SJyWw3UfajZ8DVQfW2DGmzzDabZVg@mail.gmail.com>
- <Yrlz/P6Un2fACG98@atomide.com> <CAGETcx8c+P0r6ARmhv+ERaz9zAGBOVJQu3bSDXELBycEGfkYQw@mail.gmail.com>
- <CAL_JsqJd3J6k6pRar7CkHVaaPbY7jqvzAePd8rVDisRV-dLLtg@mail.gmail.com>
-In-Reply-To: <CAL_JsqJd3J6k6pRar7CkHVaaPbY7jqvzAePd8rVDisRV-dLLtg@mail.gmail.com>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Thu, 30 Jun 2022 16:30:23 -0700
-Message-ID: <CAGETcx9ZmeTyP1sJCFZ9pBbMyXeifQFohFvWN3aBPx0sSOJ2VA@mail.gmail.com>
-Subject: Re: [PATCH v2 1/9] PM: domains: Delete usage of driver_deferred_probe_check_state()
-To:     Rob Herring <robh@kernel.org>
-Cc:     Tony Lindgren <tony@atomide.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Kevin Hilman <khilman@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
+References: <20220620134018.62414-1-miquel.raynal@bootlin.com>
+ <20220620134018.62414-3-miquel.raynal@bootlin.com> <CAK-6q+jAhikJq5tp-DRx1C_7ka5M4w6EKUB_cUdagSSwP5Tk_A@mail.gmail.com>
+ <20220627104303.5392c7f6@xps-13> <CAK-6q+jYFeOyP_bvTd31av=ntJA=Qpas+v+xRDQuMNb74io2Xw@mail.gmail.com>
+ <20220628095821.36811c5c@xps-13> <CAK-6q+g=Bbj7gS5a+fSqCsB9n=xrZK-z0-Rg9dn9yFK5xpZsvw@mail.gmail.com>
+ <20220630101416.4dc42f29@xps-13> <CAK-6q+gR-+9K2LtwwVQQMmMcmmkG399jUgyd-X3Nj8xh0y+jBQ@mail.gmail.com>
+In-Reply-To: <CAK-6q+gR-+9K2LtwwVQQMmMcmmkG399jUgyd-X3Nj8xh0y+jBQ@mail.gmail.com>
+From:   Alexander Aring <aahringo@redhat.com>
+Date:   Thu, 30 Jun 2022 19:39:37 -0400
+Message-ID: <CAK-6q+hh39keuvKxfYMKknUFQMP0jkfxknp5q=VWAJrLZnzgXQ@mail.gmail.com>
+Subject: Re: [PATCH wpan-next v3 2/4] net: ieee802154: Add support for inter
+ PAN management
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
+Cc:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Android Kernel Team <kernel-team@android.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "open list:THERMAL" <linux-pm@vger.kernel.org>,
-        Linux IOMMU <iommu@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Alexander Stein <alexander.stein@ew.tq-group.com>
+        Eric Dumazet <edumazet@google.com>,
+        Network Development <netdev@vger.kernel.org>,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 30, 2022 at 4:26 PM Rob Herring <robh@kernel.org> wrote:
+Hi,
+
+On Thu, Jun 30, 2022 at 7:27 PM Alexander Aring <aahringo@redhat.com> wrote:
+...
 >
-> On Thu, Jun 30, 2022 at 5:11 PM Saravana Kannan <saravanak@google.com> wrote:
-> >
-> > On Mon, Jun 27, 2022 at 2:10 AM Tony Lindgren <tony@atomide.com> wrote:
-> > >
-> > > * Saravana Kannan <saravanak@google.com> [220623 08:17]:
-> > > > On Thu, Jun 23, 2022 at 12:01 AM Tony Lindgren <tony@atomide.com> wrote:
-> > > > >
-> > > > > * Saravana Kannan <saravanak@google.com> [220622 19:05]:
-> > > > > > On Tue, Jun 21, 2022 at 9:59 PM Tony Lindgren <tony@atomide.com> wrote:
-> > > > > > > This issue is no directly related fw_devlink. It is a side effect of
-> > > > > > > removing driver_deferred_probe_check_state(). We no longer return
-> > > > > > > -EPROBE_DEFER at the end of driver_deferred_probe_check_state().
-> > > > > >
-> > > > > > Yes, I understand the issue. But driver_deferred_probe_check_state()
-> > > > > > was deleted because fw_devlink=on should have short circuited the
-> > > > > > probe attempt with an  -EPROBE_DEFER before reaching the bus/driver
-> > > > > > probe function and hitting this -ENOENT failure. That's why I was
-> > > > > > asking the other questions.
-> > > > >
-> > > > > OK. So where is the -EPROBE_DEFER supposed to happen without
-> > > > > driver_deferred_probe_check_state() then?
-> > > >
-> > > > device_links_check_suppliers() call inside really_probe() would short
-> > > > circuit and return an -EPROBE_DEFER if the device links are created as
-> > > > expected.
-> > >
-> > > OK
-> > >
-> > > > > Hmm so I'm not seeing any supplier for the top level ocp device in
-> > > > > the booting case without your patches. I see the suppliers for the
-> > > > > ocp child device instances only.
-> > > >
-> > > > Hmmm... this is strange (that the device link isn't there), but this
-> > > > is what I suspected.
-> > >
-> > > Yup, maybe it's because of the supplier being a device in the child
-> > > interconnect for the ocp.
-> >
-> > Ugh... yeah, this is why the normal (not SYNC_STATE_ONLY) device link
-> > isn't being created.
-> >
-> > So the aggregated view is something like (I had to set tabs = 4 space
-> > to fit it within 80 cols):
-> >
-> >     ocp: ocp {         <========================= Consumer
-> >         compatible = "simple-pm-bus";
-> >         power-domains = <&prm_per>; <=========== Supplier ref
-> >
-> >                 l4_wkup: interconnect@44c00000 {
-> >             compatible = "ti,am33xx-l4-wkup", "simple-pm-bus";
-> >
-> >             segment@200000 {  /* 0x44e00000 */
-> >                 compatible = "simple-pm-bus";
-> >
-> >                 target-module@0 { /* 0x44e00000, ap 8 58.0 */
-> >                     compatible = "ti,sysc-omap4", "ti,sysc";
-> >
-> >                     prcm: prcm@0 {
-> >                         compatible = "ti,am3-prcm", "simple-bus";
-> >
-> >                         prm_per: prm@c00 { <========= Actual Supplier
-> >                             compatible = "ti,am3-prm-inst", "ti,omap-prm-inst";
-> >                         };
-> >                     };
-> >                 };
-> >             };
-> >         };
-> >     };
-> >
-> > The power-domain supplier is the great-great-great-grand-child of the
-> > consumer. It's not clear to me how this is valid. What does it even
-> > mean?
-> >
-> > Rob, is this considered a valid DT?
->
-> Valid DT for broken h/w.
+> Why not move this decision to the user as well? The kernel will wait
+> for the reason? This isn't required to be fast and the decision may
+> depend on the current pan management...
 
-I'm not sure even in that case it's valid. When the parent device is
-in reset (when the SoC is coming out of reset), there's no way the
-descendant is functional. And if the descendant is not functional, how
-is the parent device powered up? This just feels like an incorrect
-representation of the real h/w.
+to be clear here, that this will then and on some coordinator only use
+a user space daemon which manages whatever is needed for assoc/deassoc
+management e.g. how short-addresses are allocated, etc. That should
+also not be part of the kernel, if so then same strategy as we have a
+user space replacement for it?
 
-> So the domain must be default on and then simple-pm-bus is going to
-> hold a reference to the domain preventing it from ever getting powered
-> off and things seem to work. Except what happens during suspend?
+- Alex
 
-But how can simple-pm-bus even get a reference? The PM domain can't
-get added until we are well into the probe of the simple-pm-bus and
-AFAICT the genpd attach is done before the driver probe is even
-called.
-
--Saravana
