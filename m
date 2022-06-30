@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 11F5356142F
-	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 10:09:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 594B856144E
+	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 10:09:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233683AbiF3IIV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jun 2022 04:08:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33508 "EHLO
+        id S233756AbiF3IIf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jun 2022 04:08:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233800AbiF3IHy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 04:07:54 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81C9941627;
-        Thu, 30 Jun 2022 01:07:52 -0700 (PDT)
+        with ESMTP id S233744AbiF3IID (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 04:08:03 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78D6F41985;
+        Thu, 30 Jun 2022 01:07:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1656576472; x=1688112472;
+  t=1656576477; x=1688112477;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=QRztPqLPpCR+G/Am0XR/jSeACTyPFrOzNB1djYsPfM4=;
-  b=XV8NK5fJ5XHB5/aJUuPP5U9FvpKDlpHmXqr2/rLHzSKjq6RpACb2fE41
-   cxTNeAj/8osH7E2lkJwesFtP5C94vkBSLRRYO+47gKQHPhiyHoKMvQdw/
-   7itBCz7W/KOBlzGzB2wS2mVn+a/eU0WZwYUkoYQ/PkWGzlaDfJbeVed0u
-   nKKPVhTmAH7tmlm41OG5Mpx3WrWSBmT6nYwQo93eO+2P7uqRoNSTT5Bo/
-   thrCYl8enSmxoerhTlXPiXh7E/ZnNK9xBDvarq2aNn6lRN7fWAoap/tLy
-   I8UeKt9Q5MR/ZS5OgSvTuXzA0fAx5cGSmBpRMJI4UQdX5gtxDoxC5hq/A
-   g==;
+  bh=vbBZBVb8B22VRpxKb/0dz1k5O/GgdpM5EBwjjdArU6w=;
+  b=q+tqjryGI0UN6eN3MHtK3phxa1+owx9XoUok4gcVmowNRs6DBAu//tP+
+   TIhq9EMOJrjqMy8qFeWBjweL1sdR0NEWz/kB5s9iGbmVmHJ9pgVZiOtdt
+   ceMxCpCn/i/Gy3PDyngeFStpKPuBVwtcNkox/zXmPp3ipO1pBqBANyvRv
+   Z4JvVe1ODHetJ+sqpvT+rEVFxFw4XrZGr/B8wAooHgqQUVnVOdPnzRxNW
+   zkuqYij4QNTjCaDyVUmENId/tVrup+gGaJ8Cf4CztbMJKBTgo8CNqhlgc
+   bl677Eq3mST424LNk2SLo9yzpWq72+NmmZ3z0UlkY890BSwEB4XPOUAcp
+   w==;
 X-IronPort-AV: E=Sophos;i="5.92,233,1650956400"; 
-   d="scan'208";a="102426685"
+   d="scan'208";a="170217523"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Jun 2022 01:07:51 -0700
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Jun 2022 01:07:57 -0700
 Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 30 Jun 2022 01:07:51 -0700
+ 15.1.2375.17; Thu, 30 Jun 2022 01:07:55 -0700
 Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex03.mchp-main.com
  (10.10.85.151) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Thu, 30 Jun 2022 01:07:47 -0700
+ Transport; Thu, 30 Jun 2022 01:07:51 -0700
 From:   Conor Dooley <conor.dooley@microchip.com>
 To:     Michael Turquette <mturquette@baylibre.com>,
         Stephen Boyd <sboyd@kernel.org>,
@@ -57,9 +57,9 @@ CC:     Paul Walmsley <paul.walmsley@sifive.com>,
         Albert Ou <aou@eecs.berkeley.edu>, <linux-clk@vger.kernel.org>,
         <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <netdev@vger.kernel.org>, <linux-riscv@lists.infradead.org>
-Subject: [PATCH v1 06/14] net: macb: add polarfire soc reset support
-Date:   Thu, 30 Jun 2022 09:05:25 +0100
-Message-ID: <20220630080532.323731-7-conor.dooley@microchip.com>
+Subject: [PATCH v1 07/14] riscv: dts: microchip: add mpfs specific macb reset support
+Date:   Thu, 30 Jun 2022 09:05:26 +0100
+Message-ID: <20220630080532.323731-8-conor.dooley@microchip.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220630080532.323731-1-conor.dooley@microchip.com>
 References: <20220630080532.323731-1-conor.dooley@microchip.com>
@@ -76,95 +76,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-To date, the Microchip PolarFire SoC (MPFS) has been using the
-cdns,macb compatible, however the generic device does not have reset
-support. Add a new compatible & .data for MPFS to hook into the reset
-functionality added for zynqmp support (and make the zynqmp init
-function generic in the process).
+The macb on PolarFire SoC has reset support which the generic compatible
+does not use. Add the newly introduced MPFS specific compatible as the
+primary compatible to avail of this support & wire up the reset to the
+clock controllers devicetree entry.
 
 Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
 ---
- drivers/net/ethernet/cadence/macb_main.c | 25 +++++++++++++++++-------
- 1 file changed, 18 insertions(+), 7 deletions(-)
+ arch/riscv/boot/dts/microchip/mpfs.dtsi | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-index d89098f4ede8..325f0463fd42 100644
---- a/drivers/net/ethernet/cadence/macb_main.c
-+++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -4689,33 +4689,32 @@ static const struct macb_config np4_config = {
- 	.usrio = &macb_default_usrio,
- };
+diff --git a/arch/riscv/boot/dts/microchip/mpfs.dtsi b/arch/riscv/boot/dts/microchip/mpfs.dtsi
+index 8c3259134194..5a33cbf9467a 100644
+--- a/arch/riscv/boot/dts/microchip/mpfs.dtsi
++++ b/arch/riscv/boot/dts/microchip/mpfs.dtsi
+@@ -197,6 +197,7 @@ clkcfg: clkcfg@20002000 {
+ 			reg = <0x0 0x20002000 0x0 0x1000>, <0x0 0x3E001000 0x0 0x1000>;
+ 			clocks = <&refclk>;
+ 			#clock-cells = <1>;
++			#reset-cells = <1>;
+ 		};
  
--static int zynqmp_init(struct platform_device *pdev)
-+static int init_reset_optional(struct platform_device *pdev)
- {
- 	struct net_device *dev = platform_get_drvdata(pdev);
- 	struct macb *bp = netdev_priv(dev);
- 	int ret;
+ 		mmuart0: serial@20000000 {
+@@ -331,7 +332,7 @@ i2c1: i2c@2010b000 {
+ 		};
  
- 	if (bp->phy_interface == PHY_INTERFACE_MODE_SGMII) {
--		/* Ensure PS-GTR PHY device used in SGMII mode is ready */
-+		/* Ensure PHY device used in SGMII mode is ready */
- 		bp->sgmii_phy = devm_phy_optional_get(&pdev->dev, NULL);
+ 		mac0: ethernet@20110000 {
+-			compatible = "cdns,macb";
++			compatible = "microchip,mpfs-macb", "cdns,macb";
+ 			reg = <0x0 0x20110000 0x0 0x2000>;
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+@@ -340,11 +341,12 @@ mac0: ethernet@20110000 {
+ 			local-mac-address = [00 00 00 00 00 00];
+ 			clocks = <&clkcfg CLK_MAC0>, <&clkcfg CLK_AHB>;
+ 			clock-names = "pclk", "hclk";
++			resets = <&clkcfg CLK_MAC0>;
+ 			status = "disabled";
+ 		};
  
- 		if (IS_ERR(bp->sgmii_phy)) {
- 			ret = PTR_ERR(bp->sgmii_phy);
- 			dev_err_probe(&pdev->dev, ret,
--				      "failed to get PS-GTR PHY\n");
-+				      "failed to get SGMII PHY\n");
- 			return ret;
- 		}
+ 		mac1: ethernet@20112000 {
+-			compatible = "cdns,macb";
++			compatible = "microchip,mpfs-macb", "cdns,macb";
+ 			reg = <0x0 0x20112000 0x0 0x2000>;
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+@@ -353,6 +355,7 @@ mac1: ethernet@20112000 {
+ 			local-mac-address = [00 00 00 00 00 00];
+ 			clocks = <&clkcfg CLK_MAC1>, <&clkcfg CLK_AHB>;
+ 			clock-names = "pclk", "hclk";
++			resets = <&clkcfg CLK_MAC1>;
+ 			status = "disabled";
+ 		};
  
- 		ret = phy_init(bp->sgmii_phy);
- 		if (ret) {
--			dev_err(&pdev->dev, "failed to init PS-GTR PHY: %d\n",
-+			dev_err(&pdev->dev, "failed to init SGMII PHY: %d\n",
- 				ret);
- 			return ret;
- 		}
- 	}
- 
--	/* Fully reset GEM controller at hardware level using zynqmp-reset driver,
--	 * if mapped in device tree.
-+	/* Fully reset controller at hardware level if mapped in device tree
- 	 */
- 	ret = device_reset_optional(&pdev->dev);
- 	if (ret) {
-@@ -4737,7 +4736,7 @@ static const struct macb_config zynqmp_config = {
- 			MACB_CAPS_GEM_HAS_PTP | MACB_CAPS_BD_RD_PREFETCH,
- 	.dma_burst_length = 16,
- 	.clk_init = macb_clk_init,
--	.init = zynqmp_init,
-+	.init = init_reset_optional,
- 	.jumbo_max_len = 10240,
- 	.usrio = &macb_default_usrio,
- };
-@@ -4751,6 +4750,17 @@ static const struct macb_config zynq_config = {
- 	.usrio = &macb_default_usrio,
- };
- 
-+static const struct macb_config mpfs_config = {
-+	.caps = MACB_CAPS_GIGABIT_MODE_AVAILABLE |
-+			MACB_CAPS_JUMBO |
-+			MACB_CAPS_GEM_HAS_PTP,
-+	.dma_burst_length = 16,
-+	.clk_init = macb_clk_init,
-+	.init = init_reset_optional,
-+	.usrio = &macb_default_usrio,
-+	.jumbo_max_len = 10240,
-+};
-+
- static const struct macb_config sama7g5_gem_config = {
- 	.caps = MACB_CAPS_GIGABIT_MODE_AVAILABLE | MACB_CAPS_CLK_HW_CHG |
- 		MACB_CAPS_MIIONRGMII,
-@@ -4787,6 +4797,7 @@ static const struct of_device_id macb_dt_ids[] = {
- 	{ .compatible = "cdns,zynqmp-gem", .data = &zynqmp_config},
- 	{ .compatible = "cdns,zynq-gem", .data = &zynq_config },
- 	{ .compatible = "sifive,fu540-c000-gem", .data = &fu540_c000_config },
-+	{ .compatible = "microchip,mpfs-macb", .data = &mpfs_config },
- 	{ .compatible = "microchip,sama7g5-gem", .data = &sama7g5_gem_config },
- 	{ .compatible = "microchip,sama7g5-emac", .data = &sama7g5_emac_config },
- 	{ /* sentinel */ }
 -- 
 2.36.1
 
