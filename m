@@ -2,121 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 112605619B6
-	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 13:57:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 15ED4561A2C
+	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 14:17:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234077AbiF3L5H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jun 2022 07:57:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41708 "EHLO
+        id S233968AbiF3MRC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jun 2022 08:17:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235163AbiF3L5G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 07:57:06 -0400
-Received: from mail-yw1-x1130.google.com (mail-yw1-x1130.google.com [IPv6:2607:f8b0:4864:20::1130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0ABF58FF9
-        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 04:57:01 -0700 (PDT)
-Received: by mail-yw1-x1130.google.com with SMTP id 00721157ae682-3176b6ed923so176218027b3.11
-        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 04:57:01 -0700 (PDT)
+        with ESMTP id S232473AbiF3MRC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 08:17:02 -0400
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EEC120BCD
+        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 05:17:01 -0700 (PDT)
+Received: by mail-lf1-x12b.google.com with SMTP id x3so33442288lfd.2
+        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 05:17:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=T2nf43YSG2Rmj+bAJwbn+WqQ9U0uX95RW/bS0f0BEIk=;
-        b=xX22BKzLNWetYuGqacglbCbctbEFAqaw/9VSCakoyY1uZ/lUsbRrOi5MPNjNdCKQN7
-         auegeivkAV5FQ+lTQkNytjNOQrKUT15ORn8L+4LjcV4/uZT3Ecv8R4+ZE2VzN/1pkJCB
-         LTWU6L9wNQlbxiWOMY3eRQzSab60pao7/ezDEKGrL6FPkEZrhFYs3flAtJlnGJ67hw+W
-         DuugEAx86feg+q2PbjwxvDQ7IXtr/G2VXfl/TsXaUiX539ecJD45jYNRoQ5QyTV8/qgz
-         8Y5gnJ6P5kyLFyFoIGcVUWqtd/mvRLwwkDlWsR9NkgrPm0BFzV0FtoyvPPkJU/bWtbjE
-         CpQw==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=cvHubHn8nkMyaR7AQ/Z72Z9Fv4k8mQv5JsVhUdwkgQo=;
+        b=AvFYt8B/XqGGauvECbTb9nD1XSuFkBav5fYXARGexIQw5DNshsr+Y03COGqszbkg2v
+         +BKqjsMpe4U9Ialh6RWzsglPiJFZGLaH0SVk/rQDO9uGxu87mW2HEv2PAgv/WBQcF1Wq
+         UdG0A6Hvf66Hr0uRYzo9Ch1wkW/tE81hnXfssQD8b2GaPhjEdvlkQuy126WYy7muJniP
+         xgZrle/l3SsJXGk1w0GyVKMsXLxirViQCaYYTrOy3Fxd/c7/7Gbn70wVJR/w1M8uY/J6
+         96y6H2WgK13xVCv5j9ufh8LJ0SvEyj++0dwNKMcswJ7yd7NLCftoVXtDncqM4WKHEDC6
+         83Ag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=T2nf43YSG2Rmj+bAJwbn+WqQ9U0uX95RW/bS0f0BEIk=;
-        b=7oX5Ik5d2838I1rXQRMbfxFKOgaUdnuQ0fA0HTJNzPbpwvSr2xQLAdn0H82jHRk1YB
-         DOxOfILRZeBRIZ4n3oX++YhNAw4VoMJXPRIXh3L84xQ/5tdNTtFvBurrHGV9iFSKSkvV
-         BYgg9DpHfzxdmQyaX1VxKsosh+UbvN3iGc02vR10DSjtGicQgxeK4gETFq3nvmRFPwox
-         NX3TTWipZCfN05A5AuPdpmlZoM41Cye9EslGXIPiuHkV2vgi2kFxYRZzI1fSfU1I/9SZ
-         m1TKD9LTpVX33RaDuWZUHL5SKZ7WMWZ3dXcwQe8UigzE9A/hhaIvl/CK9oYc6EKEAwrF
-         PhsA==
-X-Gm-Message-State: AJIora9pjm/pJclb/cZyJs52Mrj4K0UjJ4T5zcXodulIAL//mrc27oaC
-        /wVQfF4So1QXvsSelhq6lZa58vMc+E7py1FjXH9emA==
-X-Google-Smtp-Source: AGRyM1vpjSh9Y05u4DDxMAgxG1Ha5a6O1Yp1CqeRVvx6hQ7LjjtidYeoQ5W9aC0ImR5rk487POkEk9TQdl0wKxfgqfc=
-X-Received: by 2002:a81:d05:0:b0:317:76a1:9507 with SMTP id
- 5-20020a810d05000000b0031776a19507mr10201231ywn.151.1656590220853; Thu, 30
- Jun 2022 04:57:00 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220628081709.829811-1-colin.foster@in-advantage.com>
- <20220628081709.829811-4-colin.foster@in-advantage.com> <CAHp75Vcm=Zopv2CZZFWwqgxQ_g8XqNRZB6zEcX3F4BhmcPGxFA@mail.gmail.com>
- <20220628182535.GC855398@euler> <CAHp75VejZB8Wg4tuz51r1ezLw0vawP+LNcYkmHd5FjyQTW4asA@mail.gmail.com>
-In-Reply-To: <CAHp75VejZB8Wg4tuz51r1ezLw0vawP+LNcYkmHd5FjyQTW4asA@mail.gmail.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Thu, 30 Jun 2022 13:56:49 +0200
-Message-ID: <CACRpkdbi+LmLSuqLn5=K-KvSzLrYQs2H5mwSkOVi+5xTJoZBzQ@mail.gmail.com>
-Subject: Re: [PATCH v11 net-next 3/9] pinctrl: ocelot: allow pinctrl-ocelot to
- be loaded as a module
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Colin Foster <colin.foster@in-advantage.com>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=cvHubHn8nkMyaR7AQ/Z72Z9Fv4k8mQv5JsVhUdwkgQo=;
+        b=v+revoUJ9NSj6HfSXZomEaOJsQwBw/ew5ItbH8JNugFnNMSxfK//XlfIJvRethN1Pb
+         NNuT9jXI7IY+3RJq2FnOom/ec7PfSGNiy5rO6QXU3BKHLpgDKIuvVoVTs7+xv/8xsNyj
+         jFlxLd7R64bdlVBsxQ3hLp/Ddn6j5IakRcB039Ld+Du9Wxd4ccI/Mt40vsoX7a0PPbXR
+         UVnNibMoE8KSIQjb01IRkFQgvXuofUtQqzcCx1ENxdjNfFLDfFODnXO1M+CHqdRWiq4Y
+         NZZGeGQ8A2AirQAzo0m+nGZqIvwn5cZpqMHcT7aYAJJt2qhH62inqsocprej2lXBfoxu
+         0htA==
+X-Gm-Message-State: AJIora/wms06qr5C7/cPeXB1RVDCgsELWiPwp3EsJwQiwQJSHjh9buGR
+        SFwsSD6eLxPIrAWi/W/CUYU=
+X-Google-Smtp-Source: AGRyM1voZwl7NCMC5C63oAX29+QKQb7ibUu6y2VTUJp2NHg4BS/MWgRSCl3F+G2qdbqXjMBE1ankVw==
+X-Received: by 2002:a05:6512:1151:b0:481:1988:d8e9 with SMTP id m17-20020a056512115100b004811988d8e9mr5492295lfg.338.1656591419333;
+        Thu, 30 Jun 2022 05:16:59 -0700 (PDT)
+Received: from wse-c0155 (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id e3-20020a056512090300b00477c0365b20sm3069134lft.188.2022.06.30.05.16.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 30 Jun 2022 05:16:58 -0700 (PDT)
+Date:   Thu, 30 Jun 2022 14:16:57 +0200
+From:   Casper Andersson <casper.casan@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Steen Hegelund <steen.hegelund@microchip.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
         Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Wolfram Sang <wsa@kernel.org>,
-        Terry Bowman <terry.bowman@amd.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        UNGLinuxDriver@microchip.com, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] net: sparx5: mdb add/del handle non-sparx5
+ devices
+Message-ID: <20220630121657.oc5ygvtjzhxvzaxt@wse-c0155>
+References: <20220628075546.3560083-1-casper.casan@gmail.com>
+ <195d9aeee538692a3a630bfe7ce5c040396c507b.camel@microchip.com>
+ <20220629202246.3a9d8705@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220629202246.3a9d8705@kernel.org>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 28, 2022 at 9:00 PM Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
->
-> On Tue, Jun 28, 2022 at 8:25 PM Colin Foster
-> <colin.foster@in-advantage.com> wrote:
-> > On Tue, Jun 28, 2022 at 02:53:49PM +0200, Andy Shevchenko wrote:
-> > > On Tue, Jun 28, 2022 at 10:17 AM Colin Foster
-> > > <colin.foster@in-advantage.com> wrote:
->
-> ...
->
-> > > >  builtin_platform_driver(ocelot_pinctrl_driver);
-> > >
-> > > This contradicts the logic behind this change. Perhaps you need to
-> > > move to module_platform_driver(). (Yes, I think functionally it won't
-> > > be any changes if ->remove() is not needed, but for the sake of
-> > > logical correctness...)
-> >
-> > I'll do this. Thanks.
-> >
-> > Process question: If I make this change is it typical to remove all
-> > Reviewed-By tags? I assume "yes"
->
-> I would not. This change is logical continuation and I truly believe
-> every reviewer will agree on it.
+Sorry, yes. This is supposed to go to net, not net-next. I will resubmit
+with a fixes tag.
 
-I would have to think hard to remember a single review comment from Andy
-where I didn't think "ah, yeah he's right", so definately keep mine.
+Best Regards,
+Casper
 
-Yours,
-Linus Walleij
+On 2022-06-29 20:22, Jakub Kicinski wrote:
+> On Tue, 28 Jun 2022 14:55:22 +0200 Steen Hegelund wrote:
+> > On Tue, 2022-06-28 at 09:55 +0200, Casper Andersson wrote:
+> > > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> > > 
+> > > When adding/deleting mdb entries on other net_devices, eg., tap
+> > > interfaces, it should not crash.
+> > > 
+> > > Signed-off-by: Casper Andersson <casper.casan@gmail.com>
+> >
+> > Reviewed-by: Steen Hegelund <Steen.Hegelund@microchip.com>
+> 
+> We need a Fixes tag here, when did it start crashing?
