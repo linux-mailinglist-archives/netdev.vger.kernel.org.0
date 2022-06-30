@@ -2,69 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B358560F6D
-	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 05:04:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AFD9560F93
+	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 05:29:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229480AbiF3DEv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 23:04:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45800 "EHLO
+        id S231488AbiF3DSn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 23:18:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229455AbiF3DEu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 23:04:50 -0400
-Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 831682FFC8
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 20:04:49 -0700 (PDT)
-Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-3177f4ce3e2so166599137b3.5
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 20:04:49 -0700 (PDT)
+        with ESMTP id S229479AbiF3DSh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 23:18:37 -0400
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB9AC1EEF2
+        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 20:18:36 -0700 (PDT)
+Received: by mail-pg1-x530.google.com with SMTP id d129so17185747pgc.9
+        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 20:18:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:reply-to:sender:from:date:message-id:subject:to;
-        bh=+euL4kvAXiXF6UpvarEE11UuxUejKN5VHaeOjPcjQnY=;
-        b=XXdYcsx6g6Y2+zeZjdWPFI8tA1HD6VS7RKFfEEOfxURClqXxiE4ZpTFX+C2lCEmBfA
-         Q9nN+V707zRlb5PfNt0vJrdvXL7X31AAshbvUuSYfYUl/QUcuj1l0YZJi4AjWDRGNkf8
-         sbvneKNIwxLMX50gBV7kj4K5ECBe8VM5oWFg+scLh9ETe0pNO2oizfQ4Jui6f6YLcKo5
-         6gk7DNTI7ml/v0Ftj1J9vFjcJ2u2ZhZANaD33n4hkMB/HPrLUBeCiZ+jNMbnOrt2sD9X
-         wpALXZFyc7jlANn9rpq5m+gurnTUgeseYR2Cpkb5eMpLo5T3r+9816rK2W7sd5yVU4xv
-         IrDw==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=eSjVV+7OFulr8zAbPRa6Qjx2R8k+45lODfZoNjxvcqs=;
+        b=Lx1c57tTgH+t6kB+yTTJmKIg3WS/nZHmMzUyGstTwvcXAZCJfH3roT0bo0B0D3IynA
+         gcG7w6TbBx1SDUM/juFfjpRgUiA8Hd+fK/BjudtqkKRMBXAQnNb94in8sgnquuk3UppT
+         20/aD8P8QcNKUSKW1d0CmAfy2iqsy/6K5YXkdxOExC0/0+u7MRF15OIjl55Q5SfYvK22
+         suPmypE+cChmRKEJcW8lhjhhLkyEG4EJMoRwuerD95gxjL7I5kv9EqiRqAlWrmxIWo0I
+         EtvJifffCtyQwy6j4NyRbSyLp1GdY9R82pDBYIL03ps2ko06KgqIeZ80dbeYJqWYUa5Y
+         I3+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:sender:from:date
-         :message-id:subject:to;
-        bh=+euL4kvAXiXF6UpvarEE11UuxUejKN5VHaeOjPcjQnY=;
-        b=IEt2ydoNUFw3r/wQ6VHfxKnxFaSRN/NCWrLe4Gk2cXAdEhWfGyEr45Hxt7LW3/0Jlj
-         NmXy/klJJsdJExWf03qlM+s9MBXcMQtIjpiZoALCkNQFKJ/+3aMiOKGPV+tGu3xnav0a
-         ZZz+yTuIsM33KMQ95e/hN9h0p1Am+XfdcrjojdhAjJtYh6eed90L6PHX+JZDeZbtWJC3
-         RTD+XXO85pkusuPy+IjXLUghEnWNPSUqlSUKphY2yAn2NbyjZzwPc1uILN0eL1Ha4Xbk
-         8WkXfGVtlBpYOaIsVjrB7YW9HmKi/GeeB1mhyY736IixU8GkYVzUdPcZQ3/MhaGa4ttN
-         34NA==
-X-Gm-Message-State: AJIora/gxMp1meM0u+LPFPguWhL3kSpNNLgzRCH/ILi4oUf0oPb0GZhT
-        zXUEGcDjpTdurwQRvOvNoWlxu51KOlRaof79HH0=
-X-Google-Smtp-Source: AGRyM1vpZWUryGmX2Syul7itFxBtSVf9Bo+1E+e4cMCDvNvC1ZOA3g+ku2VwXSI2ex+9FInLYj0tlEdTA3VdWCEE2Yo=
-X-Received: by 2002:a0d:d7c7:0:b0:317:bfe8:4f2 with SMTP id
- z190-20020a0dd7c7000000b00317bfe804f2mr8125251ywd.276.1656558288801; Wed, 29
- Jun 2022 20:04:48 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=eSjVV+7OFulr8zAbPRa6Qjx2R8k+45lODfZoNjxvcqs=;
+        b=RBgrgFM23XtUEPSyt6qeKXvnQh/Tysg+qWvlTXsPiL5PaabkfUE4LZChS6KLZBmYg/
+         S/GBSe1zeeOIuEK8sBotsXenkweVE3rG1o5TtCes0Ih9hD0XXjIK2EKCyTZ4p53zs5XQ
+         RE/X63cWX58GfxwGQ8AnLqh78RTy5mA3mCggOnlJ617gOFU5BgnLpUfBFcWPoCoPenEj
+         diPu1VuIjaYJFbYyMXulaDEtPfb9c0eeBUT4tHZ+zi+O2giL0Cy/yt8F3fDEllmzMav6
+         Qe4mHXWFn3EqyFYdnycebBSEtpVv6q2PMYRsVcvpYj2LBs6p4y4L2gglkckepZ93W8sl
+         2ixQ==
+X-Gm-Message-State: AJIora/vGLFk7hw37E17fOaXkJsxu3OBXDMoajtte3XnKYDrgCco5+ry
+        NzF4HwEEfDmvW+K+J1yNALg=
+X-Google-Smtp-Source: AGRyM1tfBjCLOLGDdJ/EaJd2jUDv6WrbqFKzPXB0aaD9Tfm6mUHY/UQ8UGBrb7L18FqgdgyMU1Dirw==
+X-Received: by 2002:a63:1d20:0:b0:411:9f92:43c3 with SMTP id d32-20020a631d20000000b004119f9243c3mr1506952pgd.115.1656559116369;
+        Wed, 29 Jun 2022 20:18:36 -0700 (PDT)
+Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id c20-20020a656754000000b003fcf1279c84sm11945718pgu.33.2022.06.29.20.18.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Jun 2022 20:18:35 -0700 (PDT)
+Date:   Wed, 29 Jun 2022 20:18:33 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>
+Subject: Re: [PATCH net-next] net: gianfar: add support for software TX
+ timestamping
+Message-ID: <Yr0WCSQnEvh2nwjZ@hoboy.vegasvil.org>
+References: <20220629181335.3800821-1-vladimir.oltean@nxp.com>
 MIME-Version: 1.0
-Reply-To: edmondpamela60@gmail.com
-Sender: phillipcannon999@gmail.com
-Received: by 2002:a05:7010:624a:b0:2e2:347a:d6db with HTTP; Wed, 29 Jun 2022
- 20:04:48 -0700 (PDT)
-From:   Pamela Edmond <edmondpamela60@gmail.com>
-Date:   Thu, 30 Jun 2022 03:04:48 +0000
-X-Google-Sender-Auth: EfWxCQMY5ip1C-wyzzzZ4ShODzs
-Message-ID: <CAOyhKGOcx7bj+xtTnJfF+m-jji+qTCvuj0yCb2En7s0gsT3VtQ@mail.gmail.com>
-Subject: 
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=1.1 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO_END_DIGIT,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
-X-Spam-Level: *
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220629181335.3800821-1-vladimir.oltean@nxp.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I seek your consent in this great opportunity.
+On Wed, Jun 29, 2022 at 09:13:35PM +0300, Vladimir Oltean wrote:
+> These are required by certain network profiling applications in order to
+> measure delays.
+> 
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+
+Acked-by: Richard Cochran <richardcochran@gmail.com>
