@@ -2,131 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D3E96562588
-	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 23:47:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8B1A56259F
+	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 23:53:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237144AbiF3VrJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jun 2022 17:47:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37674 "EHLO
+        id S237060AbiF3Vwp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jun 2022 17:52:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234947AbiF3VrI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 17:47:08 -0400
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FDBB53EDD;
-        Thu, 30 Jun 2022 14:47:08 -0700 (PDT)
-Received: from sslproxy04.your-server.de ([78.46.152.42])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1o7205-00061y-QU; Thu, 30 Jun 2022 23:47:01 +0200
-Received: from [85.1.206.226] (helo=linux-3.home)
-        by sslproxy04.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1o7205-000743-FL; Thu, 30 Jun 2022 23:47:01 +0200
-Subject: Re: [PATCH bpf-next 1/4] bpf: Make non-preallocated allocation low
- priority
-To:     Yafang Shao <laoar.shao@gmail.com>, ast@kernel.org,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, quentin@isovalent.com
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Roman Gushchin <roman.gushchin@linux.dev>
-References: <20220629154832.56986-1-laoar.shao@gmail.com>
- <20220629154832.56986-2-laoar.shao@gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <ede2c8ea-693d-fe70-12a2-bf8ccca97eb0@iogearbox.net>
-Date:   Thu, 30 Jun 2022 23:47:00 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        with ESMTP id S229834AbiF3Vwp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 17:52:45 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A985564C2
+        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 14:52:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656625964; x=1688161964;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=ObQunVxJ0WrA9vBydBC+pbIZ/2EB4FwMje8sOZuTTHg=;
+  b=c76e4tSnXTdjnSwU+BHD4q6m5iRuVCqivuqkbnSkWUw1rmfnpbgNiDip
+   g39GFPtBW9PFA9nHt7QKu3/W8aC5OeWq3IRSfLHILFyFeiLiuGMUHfUW9
+   amb8u9v0nxD4J7Wu0kBjrlCHOo6itl6QrBHEWPNTheo3Gogk6nSgsexDG
+   tA6VJGoW+xSmoKlxbYZGFrPsy8yLuUascCj7QNsq52tGKkhqKCjV/bbSP
+   5kc0pdtJQwuTrnzqWnCG4E3tjJhzIHSDKjtEp2z+s+p2Y8A4TP0Pk3NCM
+   q2bE3uYTruVwBW6zdtpFcpYuMJHa3cwqAazZOhpQT9+5syz3X8z6QbRCI
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10394"; a="262881758"
+X-IronPort-AV: E=Sophos;i="5.92,235,1650956400"; 
+   d="scan'208";a="262881758"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 14:52:44 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,235,1650956400"; 
+   d="scan'208";a="918221380"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by fmsmga005.fm.intel.com with ESMTP; 30 Jun 2022 14:52:43 -0700
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        sassmann@redhat.com
+Subject: [PATCH net 0/2][pull request] Intel Wired LAN Driver Updates 2022-06-30
+Date:   Thu, 30 Jun 2022 14:49:38 -0700
+Message-Id: <20220630214940.3036250-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-In-Reply-To: <20220629154832.56986-2-laoar.shao@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.6/26589/Thu Jun 30 10:08:14 2022)
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Yafang,
+This series contains updates to i40e driver only.
 
-On 6/29/22 5:48 PM, Yafang Shao wrote:
-> GFP_ATOMIC doesn't cooperate well with memcg pressure so far, especially
-> if we allocate too much GFP_ATOMIC memory. For example, when we set the
-> memcg limit to limit a non-preallocated bpf memory, the GFP_ATOMIC can
-> easily break the memcg limit by force charge. So it is very dangerous to
-> use GFP_ATOMIC in non-preallocated case. One way to make it safe is to
-> remove __GFP_HIGH from GFP_ATOMIC, IOW, use (__GFP_ATOMIC |
-> __GFP_KSWAPD_RECLAIM) instead, then it will be limited if we allocate
-> too much memory.
-> 
-> We introduced BPF_F_NO_PREALLOC is because full map pre-allocation is
-> too memory expensive for some cases. That means removing __GFP_HIGH
-> doesn't break the rule of BPF_F_NO_PREALLOC, but has the same goal with
-> it-avoiding issues caused by too much memory. So let's remove it.
-> 
-> __GFP_KSWAPD_RECLAIM doesn't cooperate well with memcg pressure neither
-> currently. But the memcg code can be improved to make
-> __GFP_KSWAPD_RECLAIM work well under memcg pressure.
+Lukasz adds reporting of packets dropped for being too large into the Rx
+dropped statistics.
 
-Ok, but could you also explain in commit desc why it's a specific problem
-to BPF hashtab?
+Norbert clears VF filter and MAC address to resolve issue with older VFs
+being unable to change their MAC address.
 
-Afaik, there is plenty of other code using GFP_ATOMIC | __GFP_NOWARN outside
-of BPF e.g. under net/, so it's a generic memcg problem?
+The following are changes since commit 58bf4db695287c4bb2a5fc9fc12c78fdd4c36894:
+  net: dsa: felix: fix race between reading PSFP stats and port stats
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue 40GbE
 
-Why are lpm trie and local storage map for BPF not affected (at least I don't
-see them covered in the patch)?
+Lukasz Cieplicki (1):
+  i40e: Fix dropped jumbo frames statistics
 
-Thanks,
-Daniel
+Norbert Zulinski (1):
+  i40e: Fix VF's MAC Address change on VM
 
-> It also fixes a typo in the comment.
-> 
-> Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
-> Cc: Roman Gushchin <roman.gushchin@linux.dev>
-> ---
->   kernel/bpf/hashtab.c | 8 +++++---
->   1 file changed, 5 insertions(+), 3 deletions(-)
-> 
-> diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
-> index 17fb69c0e0dc..9d4559a1c032 100644
-> --- a/kernel/bpf/hashtab.c
-> +++ b/kernel/bpf/hashtab.c
-> @@ -61,7 +61,7 @@
->    *
->    * As regular device interrupt handlers and soft interrupts are forced into
->    * thread context, the existing code which does
-> - *   spin_lock*(); alloc(GPF_ATOMIC); spin_unlock*();
-> + *   spin_lock*(); alloc(GFP_ATOMIC); spin_unlock*();
->    * just works.
->    *
->    * In theory the BPF locks could be converted to regular spinlocks as well,
-> @@ -978,7 +978,8 @@ static struct htab_elem *alloc_htab_elem(struct bpf_htab *htab, void *key,
->   				goto dec_count;
->   			}
->   		l_new = bpf_map_kmalloc_node(&htab->map, htab->elem_size,
-> -					     GFP_ATOMIC | __GFP_NOWARN,
-> +					     __GFP_ATOMIC | __GFP_NOWARN |
-> +					     __GFP_KSWAPD_RECLAIM,
->   					     htab->map.numa_node);
->   		if (!l_new) {
->   			l_new = ERR_PTR(-ENOMEM);
-> @@ -996,7 +997,8 @@ static struct htab_elem *alloc_htab_elem(struct bpf_htab *htab, void *key,
->   		} else {
->   			/* alloc_percpu zero-fills */
->   			pptr = bpf_map_alloc_percpu(&htab->map, size, 8,
-> -						    GFP_ATOMIC | __GFP_NOWARN);
-> +						    __GFP_ATOMIC | __GFP_NOWARN |
-> +						    __GFP_KSWAPD_RECLAIM);
->   			if (!pptr) {
->   				kfree(l_new);
->   				l_new = ERR_PTR(-ENOMEM);
-> 
+ drivers/net/ethernet/intel/i40e/i40e.h        | 16 ++++
+ drivers/net/ethernet/intel/i40e/i40e_main.c   | 73 +++++++++++++++++++
+ .../net/ethernet/intel/i40e/i40e_register.h   | 13 ++++
+ drivers/net/ethernet/intel/i40e/i40e_type.h   |  1 +
+ .../ethernet/intel/i40e/i40e_virtchnl_pf.c    |  4 +
+ 5 files changed, 107 insertions(+)
+
+-- 
+2.35.1
 
