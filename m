@@ -2,260 +2,218 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 92F7F5626C9
-	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 01:19:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FC425626A0
+	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 01:18:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231686AbiF3XKe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jun 2022 19:10:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58480 "EHLO
+        id S231972AbiF3XLC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jun 2022 19:11:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231673AbiF3XKd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 19:10:33 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3212C5927D
-        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 16:10:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656630622;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=EnyaAXgd8G1Jiycor/ytC2X3rf2YRxyQ760krhEkaYo=;
-        b=TWUfgsKJ5QYpiURR3NRpUcJ8IFXzTQMuC9qpykG09Q4Oqu6cCBshiTRrdHM5kbDfLokTmz
-        tP2ofo3qNg44syCWwrWThVKESNkIsUB0f4evfJ4sVAj1do2qyJAIYjj8yh4aWtpv85DfO4
-        HF1q/jTHlg+edgk5/mbvPbgEbWSHqaA=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-641-9CJv3Am4N5CJpUURrBIjKQ-1; Thu, 30 Jun 2022 19:10:20 -0400
-X-MC-Unique: 9CJv3Am4N5CJpUURrBIjKQ-1
-Received: by mail-wm1-f69.google.com with SMTP id be8-20020a05600c1e8800b003a069fe18ffso2099348wmb.9
-        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 16:10:20 -0700 (PDT)
+        with ESMTP id S231903AbiF3XLB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 19:11:01 -0400
+Received: from mail-yw1-x112d.google.com (mail-yw1-x112d.google.com [IPv6:2607:f8b0:4864:20::112d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55D9658FF5
+        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 16:11:00 -0700 (PDT)
+Received: by mail-yw1-x112d.google.com with SMTP id 00721157ae682-2ef5380669cso7819317b3.9
+        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 16:11:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=S1BoFOa2LtA+D+cJfjxLFr8ByDI13+RV4RpERikla2g=;
+        b=j6G/dJbFKHnQExUqH76mXhgqPp9ZcqVNcEQ+TkrRQCB4vbElxQSuQLezKQlQ7xN+VC
+         CDDzmaQeHdxlOZOCBFq//logchR7RZDvSUc+pDl0prPBWCPWEX69BjWXjPSEp2UxoX7u
+         wDKATzphl9/JUAB/pAgWFj7XeUNfrTbYLZHtGGbwPBqb4efbEEjdJtWBbMaCbpb1rcIp
+         o6T1fs6ZC9OgDeTixalEeTj3kFaVH5X1sN++K92xWyut4jEM6I+OmHfvOw0Abh1REVAc
+         VPf1701wcHq3wjBOr+BDHBnKRAl9ol09c0TNkhO+FRlji0Jcx3/ON8sPMqhei3siga1C
+         tf6g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=EnyaAXgd8G1Jiycor/ytC2X3rf2YRxyQ760krhEkaYo=;
-        b=hxSbhDZ209G49K4esOTCYoBR2tapk/V2rn99BARHAoBO80zB4vS8P1ofBoYrXTg3EA
-         YYVnvHj5gNaOOjclW/j7kpSo6I4t56pE71m8/BtaD31MalpwMXaK5NFR4vovqrrtk1kg
-         x6RtzToJ/16mv8SMkA/L//x3dCf6MMfZ5y5UOZBMbyhqcQCK637O1PukCGL5ezMbjSTY
-         gUVCFQgVEhVQ7Q9VbqElVdr7zy7+OvZYEGVs7wUP2oDXO6GOgTMJ53/wy0MTQzM9+iEP
-         Rn6FWg8QCK1Sr69dst8YEQqOrfwPXw3WxWm2NCASsPtnFS6plGiPBrFEYEwlBWvHEavB
-         SfXQ==
-X-Gm-Message-State: AJIora+tYWss/ciMHz7hoZr3LMiQVRdYIXiC/cjBOCu/wqZXChLlQCDa
-        0rfv6W2a/T7Wbe6HZj37EwLI9IEbVbQudc00f6kd0nn5BZF/A7Z5Yj9c0tzyHsp4evUjJX6MKuW
-        lAiTfwRA4+tkThU8x
-X-Received: by 2002:a05:600c:3492:b0:3a1:70dd:9a14 with SMTP id a18-20020a05600c349200b003a170dd9a14mr10651005wmq.177.1656630619479;
-        Thu, 30 Jun 2022 16:10:19 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1uk01pkc2nbFZ14+mldws4wiQLdxtDiJBxBf4NkJYbqJDFCSCJHdEErYcIXwQJBlFN8hjSvCg==
-X-Received: by 2002:a05:600c:3492:b0:3a1:70dd:9a14 with SMTP id a18-20020a05600c349200b003a170dd9a14mr10650975wmq.177.1656630619248;
-        Thu, 30 Jun 2022 16:10:19 -0700 (PDT)
-Received: from debian.home (2a01cb058d1194004161f17a6a9ad508.ipv6.abo.wanadoo.fr. [2a01:cb05:8d11:9400:4161:f17a:6a9a:d508])
-        by smtp.gmail.com with ESMTPSA id r16-20020a05600c35d000b003a0375c4f73sm8495461wmq.44.2022.06.30.16.10.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Jun 2022 16:10:18 -0700 (PDT)
-Date:   Fri, 1 Jul 2022 01:10:16 +0200
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Marcin Szycik <marcin.szycik@linux.intel.com>
-Cc:     netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        davem@davemloft.net, xiyou.wangcong@gmail.com,
-        jesse.brandeburg@intel.com, gustavoars@kernel.org,
-        baowen.zheng@corigine.com, boris.sukholitko@broadcom.com,
-        edumazet@google.com, kuba@kernel.org, jhs@mojatatu.com,
-        jiri@resnulli.us, kurt@linutronix.de, pablo@netfilter.org,
-        pabeni@redhat.com, paulb@nvidia.com, simon.horman@corigine.com,
-        komachi.yoshiki@gmail.com, zhangkaiheb@126.com,
-        intel-wired-lan@lists.osuosl.org,
-        michal.swiatkowski@linux.intel.com, wojciech.drewek@intel.com,
-        alexandr.lobakin@intel.com, mostrows@earthlink.net,
-        paulus@samba.org
-Subject: Re: [RFC PATCH net-next v3 1/4] flow_dissector: Add PPPoE dissectors
-Message-ID: <20220630231016.GA392@debian.home>
-References: <20220629143859.209028-1-marcin.szycik@linux.intel.com>
- <20220629143859.209028-2-marcin.szycik@linux.intel.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=S1BoFOa2LtA+D+cJfjxLFr8ByDI13+RV4RpERikla2g=;
+        b=WXjcywGShOjx/8wJhkyGoELw0SyoVtWKICPRjPb19LOpJiZ7TURz+JyDM4CxUTOSEo
+         P5mGJxSuUUrbyxFYZWTF+VGfDT1HZU4DLhCS+UOQiM1FgR2+UbuiB/agIb0udc6kjm1w
+         B18hJzwXCOoGhTi+b9Sx/EGTvMIr85T2r9cTS3J0jnmOLFOpspxw5KZEC/RQxKlCdzzI
+         sZyQvW6uVNnn+z8lYhfM5kKiCFjsMXqelHGl8dQ2EE9u4XbdzwWWCZJonxS4LQtZ7ZiT
+         2g0jswYzGJlT3VPnUY5DdWEn+TbezTr+plb6tBtAvhUiDUXVdhzyq6oz4MQ5qoh2fhXG
+         c2Aw==
+X-Gm-Message-State: AJIora9D+pntQlPblCcHY6qH24PNRCOHjeCx4m6XZ0QhLLnJHtHS31Am
+        DZlUyhWYoo66sHiTB6E56hc04Gh8YsR8btex3Ndo9Q==
+X-Google-Smtp-Source: AGRyM1u13ZqWwVRME+f0vAv8E2QASlU+p6PTsPGGdH/NEQ/jIY6Gn1dbdhukUneaQ15EmMWjJGOMoC+FKq768Lix/J4=
+X-Received: by 2002:a81:a095:0:b0:317:d4ce:38b6 with SMTP id
+ x143-20020a81a095000000b00317d4ce38b6mr13731218ywg.83.1656630659375; Thu, 30
+ Jun 2022 16:10:59 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220629143859.209028-2-marcin.szycik@linux.intel.com>
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220601070707.3946847-1-saravanak@google.com>
+ <20220601070707.3946847-2-saravanak@google.com> <YrFzK6EiVvXmzVG6@atomide.com>
+ <CAGETcx_1USPRbFKV5j00qkQ-QXJkp7=FAfnFcfiNnM4J5KF1cQ@mail.gmail.com>
+ <YrKhkmj3jCQA39X/@atomide.com> <CAGETcx_11wO-HkZ2QsBF8o1+L9L3Xe1QBQ_GzegwozxAx1i0jg@mail.gmail.com>
+ <YrQP3OZbe8aCQxKU@atomide.com> <CAGETcx9aFBzMcuOiTAEy5SJyWw3UfajZ8DVQfW2DGmzzDabZVg@mail.gmail.com>
+ <Yrlz/P6Un2fACG98@atomide.com>
+In-Reply-To: <Yrlz/P6Un2fACG98@atomide.com>
+From:   Saravana Kannan <saravanak@google.com>
+Date:   Thu, 30 Jun 2022 16:10:23 -0700
+Message-ID: <CAGETcx8c+P0r6ARmhv+ERaz9zAGBOVJQu3bSDXELBycEGfkYQw@mail.gmail.com>
+Subject: Re: [PATCH v2 1/9] PM: domains: Delete usage of driver_deferred_probe_check_state()
+To:     Tony Lindgren <tony@atomide.com>, Rob Herring <robh@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Kevin Hilman <khilman@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>, kernel-team@android.com,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-gpio@vger.kernel.org,
+        Alexander Stein <alexander.stein@ew.tq-group.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 29, 2022 at 04:38:56PM +0200, Marcin Szycik wrote:
-> From: Wojciech Drewek <wojciech.drewek@intel.com>
-> 
-> Allow to dissect PPPoE specific fields which are:
-> - session ID (16 bits)
-> - ppp protocol (16 bits)
-> 
-> The goal is to make the following TC command possible:
-> 
->   # tc filter add dev ens6f0 ingress prio 1 protocol ppp_ses \
->       flower \
->         pppoe_sid 12 \
->         ppp_proto ip \
->       action drop
-> 
-> Note that only PPPoE Session is supported.
-> 
-> Signed-off-by: Wojciech Drewek <wojciech.drewek@intel.com>
-> ---
-> v3: revert byte order changes in is_ppp_proto_supported from previous 
->     version, add kernel-doc for is_ppp_proto_supported
-> v2: use ntohs instead of htons in is_ppp_proto_supported
-> 
->  include/net/flow_dissector.h | 11 ++++++++
->  net/core/flow_dissector.c    | 55 ++++++++++++++++++++++++++++++++----
->  2 files changed, 60 insertions(+), 6 deletions(-)
-> 
-> diff --git a/include/net/flow_dissector.h b/include/net/flow_dissector.h
-> index a4c6057c7097..8ff40c7c3f1c 100644
-> --- a/include/net/flow_dissector.h
-> +++ b/include/net/flow_dissector.h
-> @@ -261,6 +261,16 @@ struct flow_dissector_key_num_of_vlans {
->  	u8 num_of_vlans;
->  };
->  
-> +/**
-> + * struct flow_dissector_key_pppoe:
-> + * @session_id: pppoe session id
-> + * @ppp_proto: ppp protocol
-> + */
-> +struct flow_dissector_key_pppoe {
-> +	u16 session_id;
-> +	__be16 ppp_proto;
-> +};
+On Mon, Jun 27, 2022 at 2:10 AM Tony Lindgren <tony@atomide.com> wrote:
+>
+> * Saravana Kannan <saravanak@google.com> [220623 08:17]:
+> > On Thu, Jun 23, 2022 at 12:01 AM Tony Lindgren <tony@atomide.com> wrote:
+> > >
+> > > * Saravana Kannan <saravanak@google.com> [220622 19:05]:
+> > > > On Tue, Jun 21, 2022 at 9:59 PM Tony Lindgren <tony@atomide.com> wrote:
+> > > > > This issue is no directly related fw_devlink. It is a side effect of
+> > > > > removing driver_deferred_probe_check_state(). We no longer return
+> > > > > -EPROBE_DEFER at the end of driver_deferred_probe_check_state().
+> > > >
+> > > > Yes, I understand the issue. But driver_deferred_probe_check_state()
+> > > > was deleted because fw_devlink=on should have short circuited the
+> > > > probe attempt with an  -EPROBE_DEFER before reaching the bus/driver
+> > > > probe function and hitting this -ENOENT failure. That's why I was
+> > > > asking the other questions.
+> > >
+> > > OK. So where is the -EPROBE_DEFER supposed to happen without
+> > > driver_deferred_probe_check_state() then?
+> >
+> > device_links_check_suppliers() call inside really_probe() would short
+> > circuit and return an -EPROBE_DEFER if the device links are created as
+> > expected.
+>
+> OK
+>
+> > > Hmm so I'm not seeing any supplier for the top level ocp device in
+> > > the booting case without your patches. I see the suppliers for the
+> > > ocp child device instances only.
+> >
+> > Hmmm... this is strange (that the device link isn't there), but this
+> > is what I suspected.
+>
+> Yup, maybe it's because of the supplier being a device in the child
+> interconnect for the ocp.
 
-Why isn't session_id __be16 too?
+Ugh... yeah, this is why the normal (not SYNC_STATE_ONLY) device link
+isn't being created.
 
-Also, I'm not sure I like mixing the PPPoE session ID and PPP protocol
-fields in the same structure: they're part of two different protocols.
-However, I can't anticipate any technical problem in doing so, and I
-guess there's no easy way to let the flow dissector parse the PPP
-header independently. So well, maybe we don't have choice...
+So the aggregated view is something like (I had to set tabs = 4 space
+to fit it within 80 cols):
 
->  enum flow_dissector_key_id {
->  	FLOW_DISSECTOR_KEY_CONTROL, /* struct flow_dissector_key_control */
->  	FLOW_DISSECTOR_KEY_BASIC, /* struct flow_dissector_key_basic */
-> @@ -291,6 +301,7 @@ enum flow_dissector_key_id {
->  	FLOW_DISSECTOR_KEY_CT, /* struct flow_dissector_key_ct */
->  	FLOW_DISSECTOR_KEY_HASH, /* struct flow_dissector_key_hash */
->  	FLOW_DISSECTOR_KEY_NUM_OF_VLANS, /* struct flow_dissector_key_num_of_vlans */
-> +	FLOW_DISSECTOR_KEY_PPPOE,  /* struct flow_dissector_key_pppoe */
->  
->  	FLOW_DISSECTOR_KEY_MAX,
->  };
-> diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
-> index 6aee04f75e3e..42393af477a2 100644
-> --- a/net/core/flow_dissector.c
-> +++ b/net/core/flow_dissector.c
-> @@ -895,6 +895,39 @@ bool bpf_flow_dissect(struct bpf_prog *prog, struct bpf_flow_dissector *ctx,
->  	return result == BPF_OK;
->  }
->  
-> +/**
-> + * is_ppp_proto_supported - checks if inner PPP protocol should be dissected
-> + * @proto: protocol type (PPP proto field)
-> + */
-> +static bool is_ppp_proto_supported(__be16 proto)
-> +{
-> +	switch (proto) {
-> +	case htons(PPP_AT):
-> +	case htons(PPP_IPX):
-> +	case htons(PPP_VJC_COMP):
-> +	case htons(PPP_VJC_UNCOMP):
-> +	case htons(PPP_MP):
-> +	case htons(PPP_COMPFRAG):
-> +	case htons(PPP_COMP):
-> +	case htons(PPP_MPLS_UC):
-> +	case htons(PPP_MPLS_MC):
-> +	case htons(PPP_IPCP):
-> +	case htons(PPP_ATCP):
-> +	case htons(PPP_IPXCP):
-> +	case htons(PPP_IPV6CP):
-> +	case htons(PPP_CCPFRAG):
-> +	case htons(PPP_MPLSCP):
-> +	case htons(PPP_LCP):
-> +	case htons(PPP_PAP):
-> +	case htons(PPP_LQR):
-> +	case htons(PPP_CHAP):
-> +	case htons(PPP_CBCP):
-> +		return true;
-> +	default:
-> +		return false;
-> +	}
-> +}
-> +
->  /**
->   * __skb_flow_dissect - extract the flow_keys struct and return it
->   * @net: associated network namespace, derived from @skb if NULL
-> @@ -1221,19 +1254,29 @@ bool __skb_flow_dissect(const struct net *net,
->  		}
->  
->  		nhoff += PPPOE_SES_HLEN;
-> -		switch (hdr->proto) {
-> -		case htons(PPP_IP):
-> +		if (hdr->proto == htons(PPP_IP)) {
->  			proto = htons(ETH_P_IP);
->  			fdret = FLOW_DISSECT_RET_PROTO_AGAIN;
-> -			break;
-> -		case htons(PPP_IPV6):
-> +		} else if (hdr->proto == htons(PPP_IPV6)) {
->  			proto = htons(ETH_P_IPV6);
->  			fdret = FLOW_DISSECT_RET_PROTO_AGAIN;
-> -			break;
+    ocp: ocp {         <========================= Consumer
+        compatible = "simple-pm-bus";
+        power-domains = <&prm_per>; <=========== Supplier ref
 
-1)
-Looks like you could easily handle MPLS too. Did you skip it on
-purpose? (not enough users to justify writing and maintaining
-the code?).
+                l4_wkup: interconnect@44c00000 {
+            compatible = "ti,am33xx-l4-wkup", "simple-pm-bus";
 
-I don't mean MPLS has to be supported; I'd just like to know if it was
-considered.
+            segment@200000 {  /* 0x44e00000 */
+                compatible = "simple-pm-bus";
 
-2)
-Also this whole test is a bit weak: the version, type and code fields
-must have precise values for the PPPoE Session packet to be valid.
-If either version or type is different than 1, then the packet
-advertises a new version of the protocol that we don't know how to parse
-(or most probably the packet was forged or corrupted). A non-zero code
-is also invalid.
+                target-module@0 { /* 0x44e00000, ap 8 58.0 */
+                    compatible = "ti,sysc-omap4", "ti,sysc";
 
-I know the code was already like this before your patch, but it's
-probably better to fix it before implementing hardware offload.
+                    prcm: prcm@0 {
+                        compatible = "ti,am3-prcm", "simple-bus";
 
-3)
-Finally, the PPP protocol could be compressed and stored in 1 byte
-instead of 2. This case wasn't handled before your patch, but I think
-that should be fixed too before implementing hardware offload.
+                        prm_per: prm@c00 { <========= Actual Supplier
+                            compatible = "ti,am3-prm-inst", "ti,omap-prm-inst";
+                        };
+                    };
+                };
+            };
+        };
+    };
 
-> -		default:
-> +		} else if (is_ppp_proto_supported(hdr->proto)) {
-> +			fdret = FLOW_DISSECT_RET_OUT_GOOD;
-> +		} else {
->  			fdret = FLOW_DISSECT_RET_OUT_BAD;
->  			break;
->  		}
-> +
-> +		if (dissector_uses_key(flow_dissector,
-> +				       FLOW_DISSECTOR_KEY_PPPOE)) {
-> +			struct flow_dissector_key_pppoe *key_pppoe;
-> +
-> +			key_pppoe = skb_flow_dissector_target(flow_dissector,
-> +							      FLOW_DISSECTOR_KEY_PPPOE,
-> +							      target_container);
-> +			key_pppoe->session_id = ntohs(hdr->hdr.sid);
-> +			key_pppoe->ppp_proto = hdr->proto;
-> +		}
->  		break;
->  	}
->  	case htons(ETH_P_TIPC): {
-> -- 
-> 2.35.1
-> 
+The power-domain supplier is the great-great-great-grand-child of the
+consumer. It's not clear to me how this is valid. What does it even
+mean?
 
+Rob, is this considered a valid DT?
+
+Geert, thoughts on whether this is a correct use of simple-pm-bus device?
+
+Also, how is the power domain attach/get working in this case? As far
+as I can tell, at least for "simple-pm-bus" devices, the pm domain
+attachment is happening under:
+really_probe() -> call_driver_probe -> platform_probe() ->
+dev_pm_domain_attach()
+
+So, how is the pm domain attach succeeding in the first place without
+my changes?
+
+> > Now we need to figure out why it's missing. There are only a few
+> > things that could cause this and I don't see any of those. I already
+> > checked to make sure the power domain in this instance had a proper
+> > driver with a probe() function -- if it didn't, then that's one thing
+> > that'd could have caused the missing device link. The device does seem
+> > to have a proper driver, so looks like I can rule that out.
+> >
+> > Can you point me to the dts file that corresponds to the specific
+> > board you are testing this one? I probably won't find anything, but I
+> > want to rule out some of the possibilities.
+>
+> You can use the beaglebone black dts for example, that's
+> arch/arm/boot/dts/am335x-boneblack.dts and uses am33xx.dtsi for
+> ocp interconnect with simple-pm-bus.
+>
+> > All the device link creation logic is inside drivers/base/core.c. So
+> > if you can look at the existing messages or add other stuff to figure
+> > out why the device link isn't getting created, that'd be handy. In
+> > either case, I'll continue staring at the DT and code to see what
+> > might be happening here.
+>
+> In device_links_check_suppliers() I see these ocp suppliers:
+>
+> platform ocp: device_links_check_suppliers: 1024: supplier 44e00d00.prm: link->status: 0 link->flags: 000001c0
+> platform ocp: device_links_check_suppliers: 1024: supplier 44e01000.prm: link->status: 0 link->flags: 000001c0
+> platform ocp: device_links_check_suppliers: 1024: supplier 44e00c00.prm: link->status: 0 link->flags: 000001c0
+> platform ocp: device_links_check_suppliers: 1024: supplier 44e00e00.prm: link->status: 0 link->flags: 000001c0
+> platform ocp: device_links_check_suppliers: 1024: supplier 44e01100.prm: link->status: 0 link->flags: 000001c0
+> platform ocp: device_links_check_suppliers: 1024: supplier fixedregulator0: link->status: 1 link->flags: 000001c0
+>
+> No -EPROBE_DEFER is returned in device_links_check_suppliers() for
+> 44e00c00.prm supplier for beaglebone black for example, 0 gets
+> returned.
+
+Yeah, the "1c0" flags are SYNC_STATE_ONLY device links and aren't
+relevant to the issue we are seeing. Those links are being created as
+a proxy for other descendant devices of ocp that haven't been added
+yet, but are consumers of these *.prm devices. They are mainly meant
+for correctness of sync_state() callbacks of the supplier and don't
+affect probe order. For example: target-module@56000000 is a consumer
+of prm_gfx 44e01100.prm.
+
+-Saravana
