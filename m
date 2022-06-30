@@ -2,76 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 78DAA561896
-	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 12:55:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A3E5E56189F
+	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 12:59:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233954AbiF3KzW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jun 2022 06:55:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42040 "EHLO
+        id S233795AbiF3K7F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jun 2022 06:59:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233793AbiF3KzV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 06:55:21 -0400
-Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BD844133B;
-        Thu, 30 Jun 2022 03:55:21 -0700 (PDT)
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25U84bcH015732;
-        Thu, 30 Jun 2022 03:55:01 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=pfpt0220;
- bh=2i29PaMcywSIHClBciOD80TrQpVS0dYcB/9AP/KqRl0=;
- b=hkjsntywwyYz5ikHnkgr6ed68Pshot4MbsNV5pQtycLRxQGJVPI7HJtguOpgIQzLMB1V
- DvtSCjrPOueRM4shoGkyiVFoHoGmtB4J4UWOEjhB3Y5dXFasE3d0QHQqjlUmGFGRfkiq
- dDvHgH7wiXH/3i6QctTJFeDIs2f5FUO5xsA+n8RUW02tEc63NHPCPM3iojewleLmx/KE
- liWqoevTiDlQ2X5DzcpnuRzsQyDeq+UZ9tRcrHzAPsx9Pc71Wa8XlroQPkZhoNlxtwrn
- BlC0qt3tzs5Z2PVY2jDkdBtEn6FI4/v/l2UvyrJEKDuMnw+zYbqQ0v8E45umb52OtorB SA== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3h0f85ecvu-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 30 Jun 2022 03:55:01 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 30 Jun
- 2022 03:55:00 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 30 Jun 2022 03:55:00 -0700
-Received: from localhost.localdomain (unknown [10.28.34.29])
-        by maili.marvell.com (Postfix) with ESMTP id 649D83F7066;
-        Thu, 30 Jun 2022 03:54:55 -0700 (PDT)
-From:   Shijith Thotton <sthotton@marvell.com>
-To:     Arnaud Ebalard <arno@natisbad.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Boris Brezillon <bbrezillon@kernel.org>
-CC:     Shijith Thotton <sthotton@marvell.com>,
-        <linux-crypto@vger.kernel.org>, <jerinj@marvell.com>,
-        <sgoutham@marvell.com>, Linu Cherian <lcherian@marvell.com>,
-        Geetha sowjanya <gakula@marvell.com>,
-        hariprasad <hkelam@marvell.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "open list:MARVELL OCTEONTX2 RVU ADMIN FUNCTION DRIVER" 
-        <netdev@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2] octeontx2-af: fix operand size in bitwise operation
-Date:   Thu, 30 Jun 2022 16:24:31 +0530
-Message-ID: <f4fba33fe4f89b420b4da11d51255e7cc6ea1dbf.1656586269.git.sthotton@marvell.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <6baefc0e5cddb99df98b6a96a15fbd0328b12bda.1653637964.git.sthotton@marvell.com>
-References: <6baefc0e5cddb99df98b6a96a15fbd0328b12bda.1653637964.git.sthotton@marvell.com>
+        with ESMTP id S230341AbiF3K7E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 06:59:04 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D16A142A3F
+        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 03:59:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656586742;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=u4SjDbVVWNYM18ADMvqxFYQQNU0RZaZbfLhHUkl51ig=;
+        b=OgzphNkWLKzxoAYpYv3ar4IryIB8tBL+607RriuqQzm/8Ny4fIiSBASrbnQ71+tSuL+VFl
+        xtB9QvgVa65IcggoK/0wn4E+gldTTDCuk3nPeCiTjcCBmROswN74F3Uk9VjY7tzLGzYF2L
+        vKjIyvObjXl0oMvdNohZvoZRshf367A=
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
+ [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-578-1P_0_hk4On-65SBe3wEurw-1; Thu, 30 Jun 2022 06:59:01 -0400
+X-MC-Unique: 1P_0_hk4On-65SBe3wEurw-1
+Received: by mail-qk1-f198.google.com with SMTP id m15-20020a05620a290f00b006a74cf760b2so19196871qkp.20
+        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 03:59:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=u4SjDbVVWNYM18ADMvqxFYQQNU0RZaZbfLhHUkl51ig=;
+        b=jZhREXrvR4f9dZCRBq+kfQqrC8oTW/4c9gKZFhBCpVc98aozEHs+0qzfyZaYc823+s
+         wOlMaXABaYM4rVPznrd02T8heV55brPdT6+lj6L12OP2zjuS0YaN4h1sWkzGGq5h4ldR
+         ODquwVEqz4ZeqWWTrw1hir1UI7cWqg0eto2577Ggg+yMjZ8FSCtI3ogS/q+IAcCRWLBV
+         38jvAjyFuyMOx3xzJDXTT1KQ2p5sN1Z8gXeVsBse4wMKTh4+vTcu9BELAv4uh4al9oUt
+         87bGCylNOx0maFMCDfcM7hsit5nUvuchRSHyQT6DLO4NXdvqZNr9CeXQATBFZP66gosB
+         6wXw==
+X-Gm-Message-State: AJIora/bbeWga6MRpecMOqGS8ZBtEpZZJxL+Y8rGw2xgWVT13cW3qNtc
+        TyCoLzAyIMfR0w0PpY84dqkvd4P9Mfh9oeQQgVgoMBzKc91MkhEyFHRQGqED2g959etkgZmP+C3
+        uEv6KmG6+5fjA+2yP
+X-Received: by 2002:a05:620a:4249:b0:6a8:b684:a1c6 with SMTP id w9-20020a05620a424900b006a8b684a1c6mr5671158qko.64.1656586741117;
+        Thu, 30 Jun 2022 03:59:01 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1sdcMLjk9I06I9o/rnhA8cBS87Y2V9VdLcS6owOG/4P0/PUwML68oPAoacDdDraAX6CSTrlaA==
+X-Received: by 2002:a05:620a:4249:b0:6a8:b684:a1c6 with SMTP id w9-20020a05620a424900b006a8b684a1c6mr5671153qko.64.1656586740888;
+        Thu, 30 Jun 2022 03:59:00 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-106-148.dyn.eolo.it. [146.241.106.148])
+        by smtp.gmail.com with ESMTPSA id n8-20020a05620a222800b006ab935c1563sm14397231qkh.8.2022.06.30.03.58.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 30 Jun 2022 03:59:00 -0700 (PDT)
+Message-ID: <0cddb061e2b863c9f4a652e923d0b689ec7ecd30.camel@redhat.com>
+Subject: Re: [PATCH] drivers: Remove extra commas and align them
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Li kunyu <kunyu@nfschina.com>, rajur@chelsio.com,
+        edumazet@google.com, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Thu, 30 Jun 2022 12:58:56 +0200
+In-Reply-To: <20220629083530.48186-1-kunyu@nfschina.com>
+References: <20220629083530.48186-1-kunyu@nfschina.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-GUID: wgDpD4ZzcycQxyPavz-aElEakR0df5l8
-X-Proofpoint-ORIG-GUID: wgDpD4ZzcycQxyPavz-aElEakR0df5l8
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-06-30_07,2022-06-28_01,2022-06-22_01
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -79,41 +77,23 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Made size of operands same in bitwise operations.
+On Wed, 2022-06-29 at 16:35 +0800, Li kunyu wrote:
+> There is an extra comma and space in this sentence when I read the code.
+> 
+> Signed-off-by: Li kunyu <kunyu@nfschina.com>
 
-The patch fixes the klocwork issue, operands in a bitwise operation have
-different size at line 375 and 483.
+Sorry, I'm going to be quite nitpicking on this kind of patches. Please
+try to stick to a consistent format, see Jakub guidance:
 
-Signed-off-by: Shijith Thotton <sthotton@marvell.com>
----
-v2:
-* Rebased.
+https://lore.kernel.org/all/20220623092208.1abbd9dc@kernel.org/
 
- drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+e.g.
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
-index a9da85e418a4..38bbae5d9ae0 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
-@@ -17,7 +17,7 @@
- #define	PCI_DEVID_OTX2_CPT10K_PF 0xA0F2
- 
- /* Length of initial context fetch in 128 byte words */
--#define CPT_CTX_ILEN    2
-+#define CPT_CTX_ILEN    2ULL
- 
- #define cpt_get_eng_sts(e_min, e_max, rsp, etype)                   \
- ({                                                                  \
-@@ -480,7 +480,7 @@ static int cpt_inline_ipsec_cfg_inbound(struct rvu *rvu, int blkaddr, u8 cptlf,
- 	 */
- 	if (!is_rvu_otx2(rvu)) {
- 		val = (ilog2(NIX_CHAN_CPT_X2P_MASK + 1) << 16);
--		val |= rvu->hw->cpt_chan_base;
-+		val |= (u64)rvu->hw->cpt_chan_base;
- 
- 		rvu_write64(rvu, blkaddr, CPT_AF_X2PX_LINK_CFG(0), val);
- 		rvu_write64(rvu, blkaddr, CPT_AF_X2PX_LINK_CFG(1), val);
--- 
-2.25.1
+<sub-system>: fix typo in <somewhere>
+
+Remove the repeated <what> from <somewhere>
+
+Thanks!
+
+Paolo
 
