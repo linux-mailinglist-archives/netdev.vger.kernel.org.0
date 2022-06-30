@@ -2,113 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B8EC7561F22
-	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 17:21:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 371D2561F27
+	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 17:22:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235473AbiF3PVP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jun 2022 11:21:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58466 "EHLO
+        id S235458AbiF3PVv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jun 2022 11:21:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235238AbiF3PVO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 11:21:14 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B251B381B9;
-        Thu, 30 Jun 2022 08:21:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656602473; x=1688138473;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=IV4NsOLZ4pseLjE+Zgo99/IZslsFn8JpLQVKMjQpu2s=;
-  b=mWkAN/kVzTURRBM8V4BDAg3hUO9Nu8Lm4efh9/iesXOlkTL2xcIsqzz6
-   SYnoH4yw/FF0a/VWICxdiTcCjBY9nEcMHZeNS8PKqBzmL7iELdoxGEeVL
-   cNsZD+EVGy2YJGvjbcLvSlirGpirRpzEpsHjWWcPPTk01ukVly0A5BBgS
-   Sg6W+sj+gpCBYvSg1wIkogwDN/+QDEke8MOCNy3qDHM0CSmNTdrTbHlMe
-   A3CUtHlBq6tJJ1/d6A7TESXoCrMQlCwG0fgO6MZaN4soLd3dr/dvu55Zf
-   BgVzJqWXwK45ZIGOPCd1GrvucFqMMjO4MRBAKY8Q/6L36LPa40Edag34v
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10393"; a="279923360"
-X-IronPort-AV: E=Sophos;i="5.92,234,1650956400"; 
-   d="scan'208";a="279923360"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 08:21:13 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,234,1650956400"; 
-   d="scan'208";a="918087557"
-Received: from boxer.igk.intel.com (HELO boxer) ([10.102.20.173])
-  by fmsmga005.fm.intel.com with ESMTP; 30 Jun 2022 08:21:09 -0700
-Date:   Thu, 30 Jun 2022 17:21:08 +0200
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Netdev <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Ira Weiny <ira.weiny@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [Intel-wired-lan] [PATCH] ixgbe: Use kmap_local_page in
- ixgbe_check_lbtest_frame()
-Message-ID: <Yr2/ZAYgOAGQopZJ@boxer>
-References: <20220629085836.18042-1-fmdefrancesco@gmail.com>
- <Yr12jl1nEqqVI3TT@boxer>
- <CAKgT0UfGM8nCZnnYjWPKT+JXOwVJx1xj6n7ssGi41vH4GrUy0Q@mail.gmail.com>
+        with ESMTP id S235729AbiF3PVt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 11:21:49 -0400
+Received: from novek.ru (unknown [213.148.174.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6064C3983F
+        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 08:21:47 -0700 (PDT)
+Received: from [10.120.40.106] (static-qvn-qvt-113043.business.bouyguestelecom.com [89.83.113.43])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by novek.ru (Postfix) with ESMTPSA id 2B8FA500E92;
+        Thu, 30 Jun 2022 18:20:06 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru 2B8FA500E92
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
+        t=1656602406; bh=azbLJz9lx+ReNAytpxhJDM/MYNNJHaeq9TUY+VLzcnM=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=bL5sVi3iosD0yPhnZ7/pYQ+KJ+i3I/YXKtVUp5oAlQ8GmejV6ZwmFXHUhcQQBUKdO
+         6rNZzD4qe8r9fUCsDOmUtyVti8Sa2+DKHNGPvgx6eBDCuEsVGS6BgBAGDzGxeEPrT6
+         6rjZJx4SWZsB6RVhmSScDVk5zO99MeDGN6q9/i14=
+Message-ID: <367e0ed7-1314-da6d-ee97-3ae2044e3346@novek.ru>
+Date:   Thu, 30 Jun 2022 16:21:42 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAKgT0UfGM8nCZnnYjWPKT+JXOwVJx1xj6n7ssGi41vH4GrUy0Q@mail.gmail.com>
-X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] net: tls: fix tls with sk_redirect using a BPF verdict.
+Content-Language: en-US
+To:     John Fastabend <john.fastabend@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Julien Salleyron <julien.salleyron@gmail.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Marc Vertes <mvertes@free.fr>
+References: <20220628152505.298790-1-julien.salleyron@gmail.com>
+ <20220628103424.5330e046@kernel.org> <62bbf87f16223_2181420853@john.notmuch>
+From:   Vadim Fedorenko <vfedorenko@novek.ru>
+In-Reply-To: <62bbf87f16223_2181420853@john.notmuch>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_PASS,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 30, 2022 at 08:17:24AM -0700, Alexander Duyck wrote:
-> On Thu, Jun 30, 2022 at 3:10 AM Maciej Fijalkowski
-> <maciej.fijalkowski@intel.com> wrote:
-> >
-> > On Wed, Jun 29, 2022 at 10:58:36AM +0200, Fabio M. De Francesco wrote:
-> > > The use of kmap() is being deprecated in favor of kmap_local_page().
-> > >
-> > > With kmap_local_page(), the mapping is per thread, CPU local and not
-> > > globally visible. Furthermore, the mapping can be acquired from any context
-> > > (including interrupts).
-> > >
-> > > Therefore, use kmap_local_page() in ixgbe_check_lbtest_frame() because
-> > > this mapping is per thread, CPU local, and not globally visible.
-> >
-> > Hi,
-> >
-> > I'd like to ask why kmap was there in the first place and not plain
-> > page_address() ?
-> >
-> > Alex?
+On 29.06.2022 08:00, John Fastabend wrote:
+> Jakub Kicinski wrote:
+>> On Tue, 28 Jun 2022 17:25:05 +0200 Julien Salleyron wrote:
+>>> This patch allows to use KTLS on a socket where we apply sk_redirect using a BPF
+>>> verdict program.
+>>>
 > 
-> The page_address function only works on architectures that have access
-> to all of physical memory via virtual memory addresses. The kmap
-> function is meant to take care of highmem which will need to be mapped
-> before it can be accessed.
+> You'll also need a signed-off-by.
 > 
-> For non-highmem pages kmap just calls the page_address function.
-> https://elixir.bootlin.com/linux/latest/source/include/linux/highmem-internal.h#L40
+>>> Without this patch, we see that the data received after the redirection are
+>>> decrypted but with an incorrect offset and length. It seems to us that the
+>>> offset and length are correct in the stream-parser data, but finally not applied
+>>> in the skb. We have simply applied those values to the skb.
+>>>
+>>> In the case of regular sockets, we saw a big performance improvement from
+>>> applying redirect. This is not the case now with KTLS, may be related to the
+>>> following point.
+>>
+>> It's because kTLS does a very expensive reallocation and copy for the
+>> non-zerocopy case (which currently means all of TLS 1.3). I have
+>> code almost ready to fix that (just needs to be reshuffled into
+>> upstreamable patches). Brings us up from 5.9 Gbps to 8.4 Gbps per CPU
+>> on my test box with 16k records. Probably much more than that with
+>> smaller records.
+> 
+> Also on my list open-ssl support is lacking ktls support for both
+> direction in tls1.3 iirc. We have a couple test workloads pinned on
+> 1.2 for example which really isn't great.
+>
 
-I knew the second part but not the first, thanks.
-So basically it is advised to convert the page_address() usage in similar
-loopback testing code that other Intel drivers have, I'll do that later.
+AFAIK in-kernel TLS 1.3 is supported in OpenSSL 3.0, I implemented TX part long 
+time ago and was fixing some parts while it was 3.0-alpha. Not sure about RX.
+Or are you talking about zero-copy implementation?
 
+>>
+>>> It is still necessary to perform a read operation (never triggered) from user
+>>> space despite the redirection. It makes no sense, since this read operation is
+>>> not necessary on regular sockets without KTLS.
+>>>
+>>> We do not see how to fix this problem without a change of architecture, for
+>>> example by performing TLS decrypt directly inside the BPF verdict program.
+>>>
+>>> An example program can be found at
+>>> https://github.com/juliens/ktls-bpf_redirect-example/
+>>>
+>>> Co-authored-by: Marc Vertes <mvertes@free.fr>
+>>> ---
+>>>   net/tls/tls_sw.c                           | 6 ++++++
+>>>   tools/testing/selftests/bpf/test_sockmap.c | 8 +++-----
+>>>   2 files changed, 9 insertions(+), 5 deletions(-)
+>>>
+>>> diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
+>>> index 0513f82b8537..a409f8a251db 100644
+>>> --- a/net/tls/tls_sw.c
+>>> +++ b/net/tls/tls_sw.c
+>>> @@ -1839,8 +1839,14 @@ int tls_sw_recvmsg(struct sock *sk,
+>>>   			if (bpf_strp_enabled) {
+>>>   				/* BPF may try to queue the skb */
+>>>   				__skb_unlink(skb, &ctx->rx_list);
+>>> +
+>>>   				err = sk_psock_tls_strp_read(psock, skb);
+>>> +
+>>>   				if (err != __SK_PASS) {
+>>> +                    if (err == __SK_REDIRECT) {
+>>> +                        skb->data += rxm->offset;
+>>> +                        skb->len = rxm->full_len;
+>>> +                    }
+>>
+>> IDK what this is trying to do but I certainly depends on the fact
+>> we run skb_cow_data() and is not "generally correct" :S
 > 
-> Thanks,
+> Ah also we are not handling partially consumed correctly either.
+> Seems we might pop off the skb even when we need to continue;
 > 
-> - Alex
+> Maybe look at how skb_copy_datagram_msg() goes below because it
+> fixes the skb copy up with the rxm->offset. But, also we need to
+> do this repair before sk_psock_tls_strp_read I think so that
+> the BPF program reads the correct data in all cases? I guess
+> your sample program (and selftests for that matter) just did
+> the redirect without reading the data?
+> 
+> Thanks!
+
