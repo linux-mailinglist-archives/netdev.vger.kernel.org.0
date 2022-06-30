@@ -2,49 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BB6A156191E
-	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 13:28:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B428561924
+	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 13:30:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234847AbiF3L2P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jun 2022 07:28:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41382 "EHLO
+        id S234843AbiF3L3n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jun 2022 07:29:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234843AbiF3L2J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 07:28:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3087DDEC;
-        Thu, 30 Jun 2022 04:28:07 -0700 (PDT)
+        with ESMTP id S233988AbiF3L3l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 07:29:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE9C944750;
+        Thu, 30 Jun 2022 04:29:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E3E45B82A1A;
-        Thu, 30 Jun 2022 11:28:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17DA7C34115;
-        Thu, 30 Jun 2022 11:28:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 77A3160F42;
+        Thu, 30 Jun 2022 11:29:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55CECC34115;
+        Thu, 30 Jun 2022 11:29:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656588484;
-        bh=NIK2828kMHCRILpoHQ9phPRN0eeJFygUQc2X+t1mCWk=;
+        s=korg; t=1656588579;
+        bh=6cAA7tioO8XW62gXON9ZehgKH3LZQ256fjbDgBircbU=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=rgJ51x9kOVYx445VJUF7VaC/Jwm2Lg5/K/NB2v1yrzFM/dFHleNub+TYe1DTMvzn7
-         0FowU6Rj43HUsq3ebVVSGLTcYy3vpL8x1L0JTCiNE2hUdnfH9+mOIGdxdRcBO/kcCI
-         Kmc4QAqZA44g2JmZdWl+yb7fPr9a9VCXiYyxFPrA=
-Date:   Thu, 30 Jun 2022 13:28:02 +0200
+        b=YOqvBouL7DvkCgvnCfshgWvXaZlnhU8PfNxQtZz7JzQp5ODQBm0O79gL0xOXVuulc
+         Ovy/K829ECuKEZsZlkcHYs9zXR5QK0pSjZtsnPyYMc1/ONzgsjxZ2sfQQtIrhcm5wj
+         1nts6c0cV5WuTJDete+LVeNuvtuzQqyrcwmHCg4M=
+Date:   Thu, 30 Jun 2022 13:29:37 +0200
 From:   Greg KH <gregkh@linuxfoundation.org>
 To:     Meng Tang <tangmeng@uniontech.com>
 Cc:     stable@vger.kernel.org, tony0620emma@gmail.com,
         kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Guo-Feng Fan <vincent_fann@realtek.com>,
         Ping-Ke Shih <pkshih@realtek.com>,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>
-Subject: Re: [PATCH 5.10 v2 1/3] commit 5d6651fe8583 ("rtw88: 8821c: support
- RFE type2 wifi NIC")
-Message-ID: <Yr2Iwn53KqdSSU6V@kroah.com>
+        masterzorag <masterzorag@gmail.com>,
+        Larry Finger <Larry.Finger@lwfinger.net>,
+        Kalle Valo <kvalo@kernel.org>
+Subject: Re: [PATCH 5.10 v2 3/3] commit e109e3617e5d ("rtw88: rtw8821c:
+ enable rfe 6 devices")
+Message-ID: <Yr2JIdo6254QY8nT@kroah.com>
 References: <20220628134351.4182-1-tangmeng@uniontech.com>
+ <20220628134351.4182-3-tangmeng@uniontech.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220628134351.4182-1-tangmeng@uniontech.com>
+In-Reply-To: <20220628134351.4182-3-tangmeng@uniontech.com>
 X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -55,35 +57,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 28, 2022 at 09:43:49PM +0800, Meng Tang wrote:
-> From: Guo-Feng Fan <vincent_fann@realtek.com>
+On Tue, Jun 28, 2022 at 09:43:51PM +0800, Meng Tang wrote:
+> These commits can fix the problem of wifi not loading properly. At
+> least in my 5.10 kernel environment, the following error message is
+> reported:
 > 
-> RFE type2 is a new NIC which has one RF antenna shares with BT.
-> Update phy parameter to verstion V57 to allow initial procedure
-> to load extra AGC table for sharing antenna NIC.
+> rtw_8821ce 0000:01:00.0: rfe 6 isn't supported
+> rtw_8821ce 0000:01:00.0: failed to setup chip efuse info
+> rtw_8821ce 0000:01:00.0: failed to setup chip information
 > 
-> Signed-off-by: Guo-Feng Fan <vincent_fann@realtek.com>
-> Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
-> Tested-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-> Link: https://lore.kernel.org/r/20210202055012.8296-4-pkshih@realtek.com
-> Signed-off-by: Meng Tang <tangmeng@uniontech.com>
-> ---
->  drivers/net/wireless/realtek/rtw88/main.c     |   2 +
->  drivers/net/wireless/realtek/rtw88/main.h     |   7 +
->  drivers/net/wireless/realtek/rtw88/rtw8821c.c |  47 +++
->  drivers/net/wireless/realtek/rtw88/rtw8821c.h |  14 +
->  .../wireless/realtek/rtw88/rtw8821c_table.c   | 397 ++++++++++++++++++
->  .../wireless/realtek/rtw88/rtw8821c_table.h   |   1 +
->  6 files changed, 468 insertions(+)
+> so I think that 5.10 need to merge these commits.
+> 
+> The patch 1/3 and patch 2/3 need to be merged synchronously, otherwise it
+> will cause OE and then kernel exception.
 
-How does this meet the stable kernel rules?
+This is not in the original commit log at all.  Shouldn't this be in the
+0/3 email instead?
 
-This looks like new hardware support to me, right?  What bugfix does
-this resolve for 5.10 kernels?
+And yes, this hardware is not supported in the 5.10 kernel tree, please
+move to 5.15 or newer and it will be fine.
 
-And for newer support, why can you not just move to 5.15?
-
-confused,
+thanks,
 
 greg k-h
