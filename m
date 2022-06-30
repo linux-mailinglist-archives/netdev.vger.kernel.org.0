@@ -2,54 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7ABB8560FBE
-	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 05:40:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE0E4560FC5
+	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 05:50:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231640AbiF3DkT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 23:40:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40380 "EHLO
+        id S231612AbiF3DuT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 23:50:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230386AbiF3DkT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 23:40:19 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 886BB1E3D0;
-        Wed, 29 Jun 2022 20:40:17 -0700 (PDT)
+        with ESMTP id S229449AbiF3DuS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 23:50:18 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF9FF2FFD8;
+        Wed, 29 Jun 2022 20:50:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id E0485CE1290;
-        Thu, 30 Jun 2022 03:40:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 51991C341CA;
-        Thu, 30 Jun 2022 03:40:14 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 1D89BCE12CC;
+        Thu, 30 Jun 2022 03:50:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A735C34115;
+        Thu, 30 Jun 2022 03:50:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656560414;
-        bh=GRbxPmIzfYUd0olcDNpMbJNFXHPvb4nZdiy0NGphrGM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=bhA+3/gNul4m4v+BbNir3u6UqcgU80tomzUMKByDoBDcY3OUJi8LalB3W/h9LIQRl
-         A6ThfNeqqYmz+eLEoctgnsLxBFYkt1YnirArlKxKzviYEqRfLDRXFU1WeLOSPt6nJF
-         unsGZvyEAchoILtCEmUuYyfMudSXJDihYAyoDRlNhZ1zESRWPN7pR/TTd5dFDpo4i7
-         JeCyYkclxKBKER8Pi81i7MY1bzMU9h3NiV40xXufZ/Ra6FVwSkK5tPfeqFLioYmgeK
-         r/JxNvUAFUGfaJTvujhQDlMbNErV3K5TUd+WhQ024ascFDKu2C8tREgWWCsyLRREif
-         8w15H8okvwZCw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3D31EE49BBA;
-        Thu, 30 Jun 2022 03:40:14 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1656561014;
+        bh=JPEafwGbkT01ZireQUy4if9aNorRS7SSTX6HGDu0NUU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=TumKcmgOxp/Weth9ScUf8HZhBO8Iqw8JUF2hdWw0AlKmgYUROK7VCr7y4lw65qWMA
+         Tnmj2CW1vxOy7Gw7sHp7Vu4VCUV1l5mgLzLd+a3LtLoNdpIuKcMyhQXyRIWBucwc5F
+         SP5WL36dfRbbeseRwMvuELLEihbITMLKUi33PciE/CB99HDg0zvoH5vux0OQPeAO/w
+         ow8zBGfbKxJZzzBkdMFkpNlnZM+jPzrOlfWUJvl5hlJkg44hN3EMBv96DXYBS3GU6z
+         mTV/yHoGxFhwpi8TyUZR3Ta/EWT0o5+owsSHFlnvQHR1p2IWUXnqwYhSOCrcDXHGis
+         +9sRUD9PDm4OQ==
+Date:   Wed, 29 Jun 2022 20:50:13 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Oliver Neukum <oneukum@suse.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org
+Subject: Re: [PATCH] usbnet: use each random address only once
+Message-ID: <20220629205013.6a7db024@kernel.org>
+In-Reply-To: <20220629142149.1298-1-oneukum@suse.com>
+References: <20220629142149.1298-1-oneukum@suse.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2 0/4] net: dsa: add pause stats support
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165656041424.25608.15286972215720415620.git-patchwork-notify@kernel.org>
-Date:   Thu, 30 Jun 2022 03:40:14 +0000
-References: <20220628085155.2591201-1-o.rempel@pengutronix.de>
-In-Reply-To: <20220628085155.2591201-1-o.rempel@pengutronix.de>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     woojung.huh@microchip.com, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        lukas@wunner.de, UNGLinuxDriver@microchip.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -60,39 +53,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Tue, 28 Jun 2022 10:51:51 +0200 you wrote:
-> changes v2:
-> - add Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
-> - remove packet calculation fix from ar9331 patch. It needs more fixes.
-> - add packet calculation fix for microchip
+On Wed, 29 Jun 2022 16:21:49 +0200 Oliver Neukum wrote:
+> Even random MACs should be unique to a device.
+> Get a new one each time it is used.
 > 
-> Oleksij Rempel (4):
->   net: dsa: add get_pause_stats support
->   net: dsa: ar9331: add support for pause stats
->   net: dsa: microchip: add pause stats support
->   net: dsa: microchip: count pause packets together will all other
->     packets
+> This bug is as old as the driver.
 > 
-> [...]
+> Signed-off-by: Oliver Neukum <oneukum@suse.com>
+> ---
+>  drivers/net/usb/usbnet.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/usb/usbnet.c b/drivers/net/usb/usbnet.c
+> index 02b915b1e142..a90aece93f4a 100644
+> --- a/drivers/net/usb/usbnet.c
+> +++ b/drivers/net/usb/usbnet.c
+> @@ -1797,8 +1797,11 @@ usbnet_probe (struct usb_interface *udev, const struct usb_device_id *prod)
+>  	}
+>  
+>  	/* let userspace know we have a random address */
+> -	if (ether_addr_equal(net->dev_addr, node_id))
+> +	if (ether_addr_equal(net->dev_addr, node_id)) {
+>  		net->addr_assign_type = NET_ADDR_RANDOM;
+> +		/* next device needs a new one*/
+> +		eth_random_addr(node_id);
+> +	}
+>  
+>  	if ((dev->driver_info->flags & FLAG_WLAN) != 0)
+>  		SET_NETDEV_DEVTYPE(net, &wlan_type);
 
-Here is the summary with links:
-  - [net-next,v2,1/4] net: dsa: add get_pause_stats support
-    https://git.kernel.org/netdev/net-next/c/3d410403a572
-  - [net-next,v2,2/4] net: dsa: ar9331: add support for pause stats
-    https://git.kernel.org/netdev/net-next/c/ea294f39b438
-  - [net-next,v2,3/4] net: dsa: microchip: add pause stats support
-    https://git.kernel.org/netdev/net-next/c/c4748ff6566b
-  - [net-next,v2,4/4] net: dsa: microchip: count pause packets together will all other packets
-    https://git.kernel.org/netdev/net-next/c/961d6c70d886
+Why is that node_id thing even there, can we just delete it?
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Leave the address as all-zero and check if driver filled it in with:
 
-
+	if (!is_valid_ether_addr(net->dev_addr))
+		eth_hw_addr_random(net->dev_addr);
