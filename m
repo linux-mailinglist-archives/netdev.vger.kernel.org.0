@@ -2,90 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 41B92561F3C
-	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 17:28:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EC52561F6F
+	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 17:35:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235292AbiF3P1o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jun 2022 11:27:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35844 "EHLO
+        id S235133AbiF3Pft (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jun 2022 11:35:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235827AbiF3P1Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 11:27:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 751313DDDB;
-        Thu, 30 Jun 2022 08:27:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 136AEB82B69;
-        Thu, 30 Jun 2022 15:27:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63D28C341CC;
-        Thu, 30 Jun 2022 15:27:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656602839;
-        bh=wog1/sUvgmY6uDLVMsc5jUz7VQVMS6/q4IV5RQlSZxU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=N50zFYdNUmPENViZz0U0yp1V2UcC3fjow4sbR8xUscYngRdaJ9pCG9MLm1ba2g2s6
-         pc2Ued1VYTPwhJo4VNfeTs3SrVOiESQMSoG/q6QL91RPinHcyS4o9T1hftkNVQX/qI
-         d75sseUHdJb2no6U21OozjMKelbaNAgV04x72FsYpPg6qZSuD/mgUE97p9EstCxiIy
-         pJK1J34SqJ1cTGGK3uQ+IQ+Ld+jCJCP9EnkXA9iXn24P0liNlSmlq3m/sQ1xOaO34Y
-         lP+n7ky5eR1QzvxMer0pJvUUbq8YmRPduT5lJ/4pXSGob3ByyfYXWlsIOdhjU0rgI2
-         Tj4s4iA01vIjg==
-Date:   Thu, 30 Jun 2022 08:27:18 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Hangyu Hua <hbh25y@gmail.com>, jmaloy@redhat.com,
-        ying.xue@windriver.com
-Cc:     davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        tung.q.nguyen@dektech.com.au, netdev@vger.kernel.org,
-        tipc-discussion@lists.sourceforge.net, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] net: tipc: fix possible infoleak in tipc_mon_rcv()
-Message-ID: <20220630082718.7df33430@kernel.org>
-In-Reply-To: <665de056-6ec1-e4e1-adf9-4df3e35628b7@gmail.com>
-References: <20220628083122.26942-1-hbh25y@gmail.com>
-        <20220629203118.7bdcc87f@kernel.org>
-        <665de056-6ec1-e4e1-adf9-4df3e35628b7@gmail.com>
+        with ESMTP id S235361AbiF3Pfg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 11:35:36 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B854441610
+        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 08:35:34 -0700 (PDT)
+Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25UEwSIN012320
+        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 15:35:34 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=NJ9niJTvFAV9zzPWGmns0V0h7BQz1sCAqnfcnWVy4tA=;
+ b=WO44x5+CrL+x3tSZjzbLzEFfQrXnHhYimm5nETH8RtTFOuE8IHv79Cz+BT8AZrxKOo+b
+ MgX5RX3AAZ7v1VPoWCM0qOLbW6/yL+0zmertRfABU4J2F7m1UDV8Al+4ArL7rmen7gPJ
+ WQ+gwIu7fqwR3lncwLv5AFNaRR3SRU/yeaU5JSHtNaHc7QFFF81Jw4w0Sjo6B51NdWkO
+ lgPfmnP3bKIpYtqHhoQBg84VhtMzfo3v4KXnixD02Hy4nxwBLBKj5TrNww/L+ua/L3Ny
+ mg8rXeVGsm4xCcXqvC55gt3gN0HzfuZgAKG4nNfzb8gfdYPPf1/OcwoSlYGW2QPtnp8H JQ== 
+Received: from ppma04wdc.us.ibm.com (1a.90.2fa9.ip4.static.sl-reverse.com [169.47.144.26])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h1e2ah7ju-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 15:35:33 +0000
+Received: from pps.filterd (ppma04wdc.us.ibm.com [127.0.0.1])
+        by ppma04wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25UFLJ7o001133
+        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 15:35:33 GMT
+Received: from b03cxnp08028.gho.boulder.ibm.com (b03cxnp08028.gho.boulder.ibm.com [9.17.130.20])
+        by ppma04wdc.us.ibm.com with ESMTP id 3gwt0abwcs-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 15:35:33 +0000
+Received: from b03ledav003.gho.boulder.ibm.com (b03ledav003.gho.boulder.ibm.com [9.17.130.234])
+        by b03cxnp08028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25UFZV7740829218
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 30 Jun 2022 15:35:31 GMT
+Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id A83556A047;
+        Thu, 30 Jun 2022 15:35:31 +0000 (GMT)
+Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 17D7D6A04D;
+        Thu, 30 Jun 2022 15:35:31 +0000 (GMT)
+Received: from [9.77.155.233] (unknown [9.77.155.233])
+        by b03ledav003.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Thu, 30 Jun 2022 15:35:30 +0000 (GMT)
+Message-ID: <7e3750ab-d123-1b40-ae92-0920db555475@linux.ibm.com>
+Date:   Thu, 30 Jun 2022 10:35:30 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] ibmvnic: Properly dispose of all skbs during a failover.
+Content-Language: en-US
+To:     Rick Lindsley <ricklind@us.ibm.com>, netdev@vger.kernel.org
+Cc:     bjking1@linux.ibm.com, haren@linux.ibm.com, mmc@linux.ibm.com
+References: <20220630000317.2509347-1-ricklind@us.ibm.com>
+From:   Nick Child <nnac123@linux.ibm.com>
+In-Reply-To: <20220630000317.2509347-1-ricklind@us.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: 2EjlWa0ENU8BUfFs6FuCvgglW8Qsv3zP
+X-Proofpoint-GUID: 2EjlWa0ENU8BUfFs6FuCvgglW8Qsv3zP
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-06-30_09,2022-06-28_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 clxscore=1011
+ bulkscore=0 mlxlogscore=476 priorityscore=1501 phishscore=0 adultscore=0
+ impostorscore=0 lowpriorityscore=0 malwarescore=0 spamscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2206300060
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 30 Jun 2022 17:19:21 +0800 Hangyu Hua wrote:
-> On 2022/6/30 11:31, Jakub Kicinski wrote:
-> > On Tue, 28 Jun 2022 16:31:22 +0800 Hangyu Hua wrote:  
-> >> dom_bef is use to cache current domain record only if current domain
-> >> exists. But when current domain does not exist, dom_bef will still be used
-> >> in mon_identify_lost_members. This may lead to an information leak.  
-> > 
-> > AFAICT applied_bef must be zero if peer->domain was 0, so I don't think
-> > mon_identify_lost_members() will do anything.
-> >   
-> 
-> void tipc_mon_rcv(struct net *net, void *data, u16 dlen, u32 addr,
-> 		  struct tipc_mon_state *state, int bearer_id)
-> {
-> ...
-> 	if (!dom || (dom->len < new_dlen)) {
-> 		kfree(dom);
-> 		dom = kmalloc(new_dlen, GFP_ATOMIC);	<--- [1]
-> 		peer->domain = dom;
-> 		if (!dom)
-> 			goto exit;
-> 	}
-> ...
-> }
-> 
-> peer->domain will be NULL when [1] fails. But there will not change 
-> peer->applied to 0. In this case, if tipc_mon_rcv is called again then 
-> an information leak will happen.
-
-I see, good analysis! Jon, Xue - is there a reason domain gets wiped
-on memory allocation failure? I'd think we should leave the previous
-pointer in place instead of freeing it first.
+Tested-by: Nick Child <nnac123@linux.ibm.com>
