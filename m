@@ -2,178 +2,216 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E4DA5622A8
-	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 21:08:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 46DC1562299
+	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 21:06:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235914AbiF3TI1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jun 2022 15:08:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45388 "EHLO
+        id S236756AbiF3TFF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jun 2022 15:05:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232971AbiF3TI0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 15:08:26 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 236551BE93
-        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 12:08:25 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id e40so141799eda.2
-        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 12:08:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=bUjAB1hlxseq0HISofNQZFEX0nJhIgr2Cm4sfLnRbSI=;
-        b=HiEbbZZAhzqp449ArP2yby/K5vKoX89PX/8MVJ6D1/LIyMjPgPC2TM9xhShHeENqMA
-         /VObFBymihGvpBG3qwT/daU4sTkarjp7FFYB4jDd9thpVl8ZzlGyaKVNP2dxxfkDIEpx
-         C/548CNKpRlR6m7wkV2I3Hww1xO2/nOT9vktONi9V7FlcB3xJL6mjImahKOUcR6Dr0Oa
-         0M+2eFXqnEQaXHYdhKR7jRdwjZTg/Kz5q5Za+QXlxNJbc0zKp7GRkFMA+b45cNtR5Gc0
-         tniiI/1P88N/wTBPM5vzN7VGcWTnmHUyOBZPwfdhEhX8lD7zt2pCeph44GamCcoe6Deg
-         SR/Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=bUjAB1hlxseq0HISofNQZFEX0nJhIgr2Cm4sfLnRbSI=;
-        b=ovBTuZhX26jPZ9FsJOjSkL6sKTVRbEqmzJLtlcyffyEw9QrXuiWjhkY7zjqGxjfCVc
-         4aiUkivxrSg/W8YjviEdt922wPDTxjDfrd8RM3Q28IOVytpcPPRvX3+Bp41brIhsi6d8
-         OxFRQ2ihXEKC0H6jjRAqDSTOr3Nd6z0hTptSixMafOpmj52x0eEhbEdG1UZi1Zg9qrgD
-         G2FKfAmop41Zg5A7PxWyOLpsdyoI1D146JMv9B7JMh12rManm4oV+bKYhKlPc0wu3mk9
-         R3qSSM6xkcjUVbovxCYwk0c/L6nU4vuOwuJT7SvJgarLzufGlmMklRHxEx88aPqkKOLt
-         Izew==
-X-Gm-Message-State: AJIora/bU4AkYOusEw5VqqpBJ4MHsCNRHt/QC9PrlOetBiAbkIEOlKKJ
-        njZt5naSq9KLiQ+nC4loSl9SvSzOnrxwA82vxlc=
-X-Google-Smtp-Source: AGRyM1tGsZcNQSiVGzcbuYedSHv/hHFKHmY8aHyqB+J4c/PFfIpeJpf9AudmZQM3IHRwjWGUzFx5ENqqwZVTqlCVsgM=
-X-Received: by 2002:a05:6402:5309:b0:435:6431:f9dc with SMTP id
- eo9-20020a056402530900b004356431f9dcmr13483905edb.14.1656616103506; Thu, 30
- Jun 2022 12:08:23 -0700 (PDT)
+        with ESMTP id S236741AbiF3TFE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 15:05:04 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9D4837A06;
+        Thu, 30 Jun 2022 12:05:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1656615902; x=1688151902;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=YN+jJ2EY32rC9QVIOpQMx3zPRDCVJOurEzUQC3z8dmk=;
+  b=cuInw13UrpMt518dgAlQel0blAMa3kIW0S78eRRr50MwDAtjZj2TcVLF
+   2srBYnTy3imW4mmUbpTC/kfU4zfrvBGG1+wal+doEoRJoVQ2jypKbhrW0
+   1J/l3tV5PxN8J2gruNQTC7EsEu56j2lpQ5SnIpA3G06T4aKnVjGepMfLD
+   KYQNzsGJMDtm3tuxX0acf74RiShUF1HylN4SO2TLzQG+ml1FKlOqDpDLY
+   uVOyZSyOBNI8fdTDaa8/rXPb7CkqJBHvwMX5TBoqu/9mMNiExATOoll1f
+   Hdj5TmfGiG5DhtcjZoK56Kk7yFXIRxo9fOUTfS9vxgkt/3FUyT9KAKzyN
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.92,235,1650956400"; 
+   d="scan'208";a="162828706"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Jun 2022 12:04:53 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Thu, 30 Jun 2022 12:04:52 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Thu, 30 Jun 2022 12:04:52 -0700
+Date:   Thu, 30 Jun 2022 21:08:46 +0200
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>
+Subject: Re: [PATCH net-next v2 0/7] net: lan966x: Add lag support
+Message-ID: <20220630190846.aqagifacrleejrjc@soft-dev3-1.localhost>
+References: <20220627201330.45219-1-horatiu.vultur@microchip.com>
+ <20220629122630.qd7nsqmkxoshovhc@skbuf>
 MIME-Version: 1.0
-References: <20220630062228.3453016-1-liuhangbin@gmail.com>
-In-Reply-To: <20220630062228.3453016-1-liuhangbin@gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 30 Jun 2022 12:08:11 -0700
-Message-ID: <CAEf4BzZ-gn9VmMKx8m2kEvTc--DC8Z_hvKXaw_7Q2BY-J7JQQw@mail.gmail.com>
-Subject: Re: [PATCH net] selftests/net: fix section name when using xdp_dummy.o
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     Networking <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Andrii Nakryiko <andrii@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <20220629122630.qd7nsqmkxoshovhc@skbuf>
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 29, 2022 at 11:22 PM Hangbin Liu <liuhangbin@gmail.com> wrote:
->
-> Since commit 8fffa0e3451a ("selftests/bpf: Normalize XDP section names in
-> selftests") the xdp_dummy.o's section name has changed to xdp. But some
-> tests are still using "section xdp_dummy", which make the tests failed.
-> Fix them by updating to the new section name.
->
-> Fixes: 8fffa0e3451a ("selftests/bpf: Normalize XDP section names in selftests")
-> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
-> ---
+The 06/29/2022 12:26, Vladimir Oltean wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> 
+> Hi Horatiu,
 
-Thanks for fixing this! BTW, does iproute2 support selecting programs
-by its name (not section name)? Only the program name is unique, there
-could be multiple programs with the same SEC("xdp").
+Hi Vladimir,
 
-Acked-by: Andrii Nakryiko <andrii@kernel.org>
+Thanks for review this and for detail explanation.
 
->  tools/testing/selftests/net/udpgro.sh         | 2 +-
->  tools/testing/selftests/net/udpgro_bench.sh   | 2 +-
->  tools/testing/selftests/net/udpgro_frglist.sh | 2 +-
->  tools/testing/selftests/net/udpgro_fwd.sh     | 2 +-
->  tools/testing/selftests/net/veth.sh           | 6 +++---
->  5 files changed, 7 insertions(+), 7 deletions(-)
->
-> diff --git a/tools/testing/selftests/net/udpgro.sh b/tools/testing/selftests/net/udpgro.sh
-> index f8a19f548ae9..ebbd0b282432 100755
-> --- a/tools/testing/selftests/net/udpgro.sh
-> +++ b/tools/testing/selftests/net/udpgro.sh
-> @@ -34,7 +34,7 @@ cfg_veth() {
->         ip -netns "${PEER_NS}" addr add dev veth1 192.168.1.1/24
->         ip -netns "${PEER_NS}" addr add dev veth1 2001:db8::1/64 nodad
->         ip -netns "${PEER_NS}" link set dev veth1 up
-> -       ip -n "${PEER_NS}" link set veth1 xdp object ../bpf/xdp_dummy.o section xdp_dummy
-> +       ip -n "${PEER_NS}" link set veth1 xdp object ../bpf/xdp_dummy.o section xdp
->  }
->
->  run_one() {
-> diff --git a/tools/testing/selftests/net/udpgro_bench.sh b/tools/testing/selftests/net/udpgro_bench.sh
-> index 820bc50f6b68..fad2d1a71cac 100755
-> --- a/tools/testing/selftests/net/udpgro_bench.sh
-> +++ b/tools/testing/selftests/net/udpgro_bench.sh
-> @@ -34,7 +34,7 @@ run_one() {
->         ip -netns "${PEER_NS}" addr add dev veth1 2001:db8::1/64 nodad
->         ip -netns "${PEER_NS}" link set dev veth1 up
->
-> -       ip -n "${PEER_NS}" link set veth1 xdp object ../bpf/xdp_dummy.o section xdp_dummy
-> +       ip -n "${PEER_NS}" link set veth1 xdp object ../bpf/xdp_dummy.o section xdp
->         ip netns exec "${PEER_NS}" ./udpgso_bench_rx ${rx_args} -r &
->         ip netns exec "${PEER_NS}" ./udpgso_bench_rx -t ${rx_args} -r &
->
-> diff --git a/tools/testing/selftests/net/udpgro_frglist.sh b/tools/testing/selftests/net/udpgro_frglist.sh
-> index 807b74c8fd80..832c738cc3c2 100755
-> --- a/tools/testing/selftests/net/udpgro_frglist.sh
-> +++ b/tools/testing/selftests/net/udpgro_frglist.sh
-> @@ -36,7 +36,7 @@ run_one() {
->         ip netns exec "${PEER_NS}" ethtool -K veth1 rx-gro-list on
->
->
-> -       ip -n "${PEER_NS}" link set veth1 xdp object ../bpf/xdp_dummy.o section xdp_dummy
-> +       ip -n "${PEER_NS}" link set veth1 xdp object ../bpf/xdp_dummy.o section xdp
->         tc -n "${PEER_NS}" qdisc add dev veth1 clsact
->         tc -n "${PEER_NS}" filter add dev veth1 ingress prio 4 protocol ipv6 bpf object-file ../bpf/nat6to4.o section schedcls/ingress6/nat_6  direct-action
->         tc -n "${PEER_NS}" filter add dev veth1 egress prio 4 protocol ip bpf object-file ../bpf/nat6to4.o section schedcls/egress4/snat4 direct-action
-> diff --git a/tools/testing/selftests/net/udpgro_fwd.sh b/tools/testing/selftests/net/udpgro_fwd.sh
-> index 6f05e06f6761..1bcd82e1f662 100755
-> --- a/tools/testing/selftests/net/udpgro_fwd.sh
-> +++ b/tools/testing/selftests/net/udpgro_fwd.sh
-> @@ -46,7 +46,7 @@ create_ns() {
->                 ip -n $BASE$ns addr add dev veth$ns $BM_NET_V4$ns/24
->                 ip -n $BASE$ns addr add dev veth$ns $BM_NET_V6$ns/64 nodad
->         done
-> -       ip -n $NS_DST link set veth$DST xdp object ../bpf/xdp_dummy.o section xdp_dummy 2>/dev/null
-> +       ip -n $NS_DST link set veth$DST xdp object ../bpf/xdp_dummy.o section xdp 2>/dev/null
->  }
->
->  create_vxlan_endpoint() {
-> diff --git a/tools/testing/selftests/net/veth.sh b/tools/testing/selftests/net/veth.sh
-> index 19eac3e44c06..430895d1a2b6 100755
-> --- a/tools/testing/selftests/net/veth.sh
-> +++ b/tools/testing/selftests/net/veth.sh
-> @@ -289,14 +289,14 @@ if [ $CPUS -gt 1 ]; then
->         ip netns exec $NS_SRC ethtool -L veth$SRC rx 1 tx 2 2>/dev/null
->         printf "%-60s" "bad setting: XDP with RX nr less than TX"
->         ip -n $NS_DST link set dev veth$DST xdp object ../bpf/xdp_dummy.o \
-> -               section xdp_dummy 2>/dev/null &&\
-> +               section xdp 2>/dev/null &&\
->                 echo "fail - set operation successful ?!?" || echo " ok "
->
->         # the following tests will run with multiple channels active
->         ip netns exec $NS_SRC ethtool -L veth$SRC rx 2
->         ip netns exec $NS_DST ethtool -L veth$DST rx 2
->         ip -n $NS_DST link set dev veth$DST xdp object ../bpf/xdp_dummy.o \
-> -               section xdp_dummy 2>/dev/null
-> +               section xdp 2>/dev/null
->         printf "%-60s" "bad setting: reducing RX nr below peer TX with XDP set"
->         ip netns exec $NS_DST ethtool -L veth$DST rx 1 2>/dev/null &&\
->                 echo "fail - set operation successful ?!?" || echo " ok "
-> @@ -311,7 +311,7 @@ if [ $CPUS -gt 2 ]; then
->         chk_channels "setting invalid channels nr" $DST 2 2
->  fi
->
-> -ip -n $NS_DST link set dev veth$DST xdp object ../bpf/xdp_dummy.o section xdp_dummy 2>/dev/null
-> +ip -n $NS_DST link set dev veth$DST xdp object ../bpf/xdp_dummy.o section xdp 2>/dev/null
->  chk_gro_flag "with xdp attached - gro flag" $DST on
->  chk_gro_flag "        - peer gro flag" $SRC off
->  chk_tso_flag "        - tso flag" $SRC off
-> --
-> 2.35.1
->
+> 
+> On Mon, Jun 27, 2022 at 10:13:23PM +0200, Horatiu Vultur wrote:
+> > Add lag support for lan966x.
+> > First 4 patches don't do any changes to the current behaviour, they
+> > just prepare for lag support. While the rest is to add the lag support.
+> >
+> > v1->v2:
+> > - fix the LAG PGIDs when ports go down, in this way is not
+> >   needed anymore the last patch of the series.
+> >
+> > Horatiu Vultur (7):
+> >   net: lan966x: Add reqisters used to configure lag interfaces
+> >   net: lan966x: Split lan966x_fdb_event_work
+> >   net: lan966x: Expose lan966x_switchdev_nb and
+> >     lan966x_switchdev_blocking_nb
+> >   net: lan966x: Extend lan966x_foreign_bridging_check
+> >   net: lan966x: Add lag support for lan966x.
+> >   net: lan966x: Extend FDB to support also lag
+> >   net: lan966x: Extend MAC to support also lag interfaces.
+> >
+> >  .../net/ethernet/microchip/lan966x/Makefile   |   2 +-
+> >  .../ethernet/microchip/lan966x/lan966x_fdb.c  | 153 ++++++---
+> >  .../ethernet/microchip/lan966x/lan966x_lag.c  | 322 ++++++++++++++++++
+> >  .../ethernet/microchip/lan966x/lan966x_mac.c  |  66 +++-
+> >  .../ethernet/microchip/lan966x/lan966x_main.h |  41 +++
+> >  .../ethernet/microchip/lan966x/lan966x_regs.h |  45 +++
+> >  .../microchip/lan966x/lan966x_switchdev.c     | 115 +++++--
+> >  7 files changed, 654 insertions(+), 90 deletions(-)
+> >  create mode 100644 drivers/net/ethernet/microchip/lan966x/lan966x_lag.c
+> >
+> > --
+> > 2.33.0
+> >
+> 
+> I've downloaded and applied your patches and I have some general feedback.
+> Some of it relates to changes which were not made and hence I couldn't
+> have commented on the patches themselves, so I'm posting it here.
+> 
+> 1. switchdev_bridge_port_offload() returns an error code if object
+> replay failed, or if it couldn't get the port parent id, or if the user
+> tries to join a lan966x port and a port belonging to another switchdev
+> driver to the same LAG. It would be good to propagate this error and not
+> ignore it.
+
+Yes, I will do that.
+
+What about the case when the other port is not a switchdev port. For
+example:
+ip link set dev eth0 master bond0
+ip link set dev dummy master bond0
+ip link set dev bond0 master br0
+
+At the last line, I was expecting to get an error.
+
+> 
+> Side note: maybe this could help to eliminate the extra logic you need
+> to add to lan966x_foreign_bridging_check().
+> 
+> 2. lan966x_foreign_dev_check() seems wrong/misunderstood. Currently it
+> reports that a LAG upper is a foreign interface (unoffloaded). In turn,
+> this makes switchdev_lower_dev_find() not find any lan966x interface
+> beneath a LAG, and hence, __switchdev_handle_fdb_event_to_device() would
+> not recurse to the lan966x "dev" below a LAG when the "orig_dev" of an
+> FDB event is the bridge itself. Otherwise said, if you have no direct
+> lan966x port under a bridge, but just bridge -> LAG -> lan966x, you will
+> miss all local (host-filtered) FDB event notifications that you should
+> otherwise learn towards the CPU.
+
+Good observation. I have missed that case.
+
+> 
+> 3. The implementation of lan966x_lag_mac_add_entry(), with that first
+> call to lan966x_mac_del_entry(), seems a hack. Why do you need to do
+> that?
+
+Ah... that is not needed anymore. I forgot to remove it.
+
+> 
+> 4. The handling of lan966x->mac_lock seems wrong in general, not just
+> particular to this patch set. In particular, it appears to protect too
+> little in lan966x_mac_add_entry(), i.e. just the list_add_tail.
+> This makes it possible for lan966x_mac_lookup and lan966x_mac_learn to
+> be concurrent with lan966x_mac_del_entry(). In turn, this appears bad
+> first and foremost for the hardware access interface, since the MAC
+> table access is indirect, and if you allow multiple threads to
+> concurrently call lan966x_mac_select(), change the command in
+> ANA_MACACCESS, and poll for command completion, things will go sideways
+> very quickly (one command will inadvertently poll for the completion of
+> another, which inadvertently operates on the row/column selected by yet
+> a third command, all that due to improper serialization).
+
+Now that you mention it, I can see it. The following functions need to
+be updated: lan966x_mac_learn, lan966x_mac_ip_learn, lan966x_mac_forget,
+lan966x_mac_add_entry, lan966x_mac_del_entry.
+But I think this needs to be in a separate patch for net.
+
+> 
+> 5. There is a race between lan966x_fdb_lag_event_work() calling
+> lan966x_lag_first_port(), and lan966x_lag_port_leave() changing
+> port->bond = NULL. Specifically, when a lan966x port leaves a LAG, there
+> might still be deferred FDB events (add or del) which are still pending.
+> There exists a dead time during which you will ignore these, because you
+> think that the first lan966x LAG port isn't the first lan966x LAG port,
+> which will lead to a desynchronization between the bridge FDB and the
+> hardware FDB.
+> 
+> In DSA we solved this by flushing lan966x->fdb_work inside
+> lan966x_port_prechangeupper() on leave. This waits for the pending
+> events to finish, and the bridge will not emit further events.
+> It's important to do this in prechangeupper() rather than in
+> changeupper() because switchdev_handle_fdb_event_to_device() needs the
+> upper/lower relationship to still exist to function properly, and in
+> changeupper() it has already been destroyed.
+> 
+> Side note: if you flush lan966x->fdb_work, then you have an upper bound
+> for how long can lan966x_fdb_event_work be deferred. Specifically, you
+> can remove the dev_hold() and dev_put() calls, since it surely can't be
+> deferred until after the netdev is unregistered. The bounding event is
+> much quicker - the lan966x port leaves the LAG.
+
+Thanks for the observation, it would have been taken a long time to see
+this.
+
+> 
+> 6. You are missing LAG FDB migration logic in lan966x_lag_port_join().
+> Specifically, you assume that the lan966x_lag_first_port() will never
+> change, probably because you just make the switch ports join the LAG in
+> the order 1, 2, 3. But they can also join in the order 3, 2, 1.
+
+It would work, but there will be problems when the ports start to leave
+the LAG.
+It would work because all the ports under the LAG will have the same
+value in PGID_ID for DST_IDX. So if the MAC entry points to any of
+this entries will be OK. The problem is when the port leaves the LAG, if
+the MAC entry points to the port that left the LAG then is not working
+anymore.
+I will fix this in the next series.
+
+
+-- 
+/Horatiu
