@@ -2,53 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F2E52560FCF
-	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 06:00:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A958D560FEC
+	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 06:12:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230386AbiF3EAR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jun 2022 00:00:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50820 "EHLO
+        id S230371AbiF3EKU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jun 2022 00:10:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229563AbiF3EAR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 00:00:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9BFD275C9
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 21:00:15 -0700 (PDT)
+        with ESMTP id S231158AbiF3EKQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 00:10:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFDF62FE5D;
+        Wed, 29 Jun 2022 21:10:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1CB0B620B0
-        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 04:00:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 700D1C341D5;
-        Thu, 30 Jun 2022 04:00:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8F7C1B8283B;
+        Thu, 30 Jun 2022 04:10:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 1C5D1C341C8;
+        Thu, 30 Jun 2022 04:10:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656561614;
-        bh=zjOUpzXya5RmeBNXOLVseabBAgk6bwvhB5b9jksSWyk=;
+        s=k20201202; t=1656562213;
+        bh=j5h/0V/Zafl9F7pQI8pfw0BVHw0jl1NCR9vxQNzETW8=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=c4ma77HlrTRcf69jo4Enf9SCdzid+ePK4dolv3VIhUqioKldEs6NdTGfk9/PNl8oC
-         viEK+TsKqHnVpV+UOKiFKSuo9tz5gBVgsQwcZdFjnqaeXjp4jpCa7Frjh7wL8T8RRL
-         lg5v53XHDkq9yPGGB/WyVLh/Ny1HZiQipLpQ/KoVbZWhH8fFB40aY85IaujB2vLp6z
-         3fxcAMizdsDtPeAqEbut3XbHZUzZkht5gpeW0aJ/7XBRcl7/OcLbTSjAjUzx+8iJB8
-         A1zBac+dzQnBB04F8eCHluxpbeDVH+YCOKq+I+4skTgaCxYvGiPvCBUjLh4u4GFHvk
-         DifJajxucge6g==
+        b=hiCmoLzF6gO8a24aWlRwDVoJuD/KiNx9nXKJ647KXwEZ1f+IuzKslx4wMkdxdYXKn
+         +bEbdye9zILTPecRuM1oyO6Bpj+6Y8jBTroyKrYa4Us/yUr70/Ly4hTo0rsQnXlUXm
+         gUU6rZ47V1Fut64+I7rR0c+Gl5SQ6hwDa6hf/NMe5rKD7y5GtcnI1a88vJtIHwJIvD
+         EDe36gSd8CnLOoKjnSBcycos000/xiZEPMaMU0vcR3Q7NiTIwOVvvHzpCjpt/6xyuc
+         vcxtfXN121ChjH4vq/6mxNzpReKuohHgs1wyt8E7jwMgcerIf5D/W8zV5197ZQby2l
+         UnR3A7SuF+q0g==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 57972E49F65;
-        Thu, 30 Jun 2022 04:00:14 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id ED0E9E49F65;
+        Thu, 30 Jun 2022 04:10:12 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: switchdev: add reminder near struct
- switchdev_notifier_fdb_info
+Subject: Re: [PATCH -next v2] net: pcs-rzn1-miic: fix return value check in
+ miic_probe()
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165656161435.1686.5116778553235504680.git-patchwork-notify@kernel.org>
-Date:   Thu, 30 Jun 2022 04:00:14 +0000
-References: <20220628100831.2899434-1-vladimir.oltean@nxp.com>
-In-Reply-To: <20220628100831.2899434-1-vladimir.oltean@nxp.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, jiri@resnulli.us,
-        ivecera@redhat.com, roopa@nvidia.com, razor@blackwall.org,
-        idosch@nvidia.com
+Message-Id: <165656221296.5522.12753802189388825124.git-patchwork-notify@kernel.org>
+Date:   Thu, 30 Jun 2022 04:10:12 +0000
+References: <20220628131259.3109124-1-yangyingliang@huawei.com>
+In-Reply-To: <20220628131259.3109124-1-yangyingliang@huawei.com>
+To:     Yang Yingliang <yangyingliang@huawei.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, clement.leger@bootlin.com,
+        olteanv@gmail.com, f.fainelli@gmail.com, davem@davemloft.net
 X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -64,20 +63,20 @@ Hello:
 This patch was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Tue, 28 Jun 2022 13:08:31 +0300 you wrote:
-> br_switchdev_fdb_notify() creates an on-stack FDB info variable, and
-> initializes it member by member. As such, newly added fields which are
-> not initialized by br_switchdev_fdb_notify() will contain junk bytes
-> from the stack.
+On Tue, 28 Jun 2022 21:12:59 +0800 you wrote:
+> On failure, devm_platform_ioremap_resource() returns a ERR_PTR() value
+> and not NULL. Fix return value checking by using IS_ERR() and return
+> PTR_ERR() as error value.
 > 
-> Other uses of struct switchdev_notifier_fdb_info have a struct
-> initializer which should put zeroes in the uninitialized fields.
+> Fixes: 7dc54d3b8d91 ("net: pcs: add Renesas MII converter driver")
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next] net: switchdev: add reminder near struct switchdev_notifier_fdb_info
-    https://git.kernel.org/netdev/net-next/c/3eb4a4c3442c
+  - [-next,v2] net: pcs-rzn1-miic: fix return value check in miic_probe()
+    https://git.kernel.org/netdev/net-next/c/dbc6fc7e3f76
 
 You are awesome, thank you!
 -- 
