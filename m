@@ -2,54 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EC17560EF6
-	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 04:08:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55928560EFB
+	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 04:09:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229616AbiF3CIP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Jun 2022 22:08:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34024 "EHLO
+        id S229623AbiF3CI1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Jun 2022 22:08:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229449AbiF3CIP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 22:08:15 -0400
+        with ESMTP id S230467AbiF3CIV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Jun 2022 22:08:21 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F17B411836
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 19:08:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E147B11C15
+        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 19:08:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656554893;
+        s=mimecast20190719; t=1656554899;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
         bh=rdzs+ejxlay4oS8U29luxVEbd5hmptD+SpCokSpGfUE=;
-        b=MhSwEVSmlcAXDn3T/yKvbGzXDVLhoqgzcm4mUqcDTppg7CYL7Oiri9etTHU+IFLn2ggkkM
-        HkUyD/J4+gs1a5i69n2hiBMOIqR8rIwBW3vM/Jp89xyX2cx4ycgDnjF1lFXucpxyzU+NQQ
-        lSng0rnD7YFSKRB69+TiVVHBe3N7j4A=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+        b=X+qNkKvgJ9odIBw+ckuQzyqKKo5iMPM+wHqLQqPRNmn3qwNEL/ru+SMPn8tlsKbJR6+8Nb
+        KXhzQsA3YF+udKUrecqVtbLfwvlVCQgN3kwlqoQ1acdABNM43UyMTBsdLWFnk1sJU81Ifo
+        9V6N95ACvUZOtBkyQ2uoDL/OaeAjJQ0=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-363-_hjto7RuNAajHfm7IQHkQg-1; Wed, 29 Jun 2022 22:08:11 -0400
-X-MC-Unique: _hjto7RuNAajHfm7IQHkQg-1
+ us-mta-247-Tv97MKRaPRClFVcgWokWtw-1; Wed, 29 Jun 2022 22:08:15 -0400
+X-MC-Unique: Tv97MKRaPRClFVcgWokWtw-1
 Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id DD43D85A581;
-        Thu, 30 Jun 2022 02:08:10 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7D6153C01DA3;
+        Thu, 30 Jun 2022 02:08:14 +0000 (UTC)
 Received: from localhost.localdomain (ovpn-12-189.pek2.redhat.com [10.72.12.189])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id EEFEB492C3B;
-        Thu, 30 Jun 2022 02:08:07 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 83BE3492CA3;
+        Thu, 30 Jun 2022 02:08:11 +0000 (UTC)
 From:   Jason Wang <jasowang@redhat.com>
 To:     mst@redhat.com, jasowang@redhat.com, davem@davemloft.net,
         kuba@kernel.org, virtualization@lists.linux-foundation.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Subject: [PATCH V2] virtio-net: fix the race between refill work and close
-Date:   Thu, 30 Jun 2022 10:08:04 +0800
-Message-Id: <20220630020805.74658-1-jasowang@redhat.com>
+Date:   Thu, 30 Jun 2022 10:08:05 +0800
+Message-Id: <20220630020805.74658-2-jasowang@redhat.com>
+In-Reply-To: <20220630020805.74658-1-jasowang@redhat.com>
+References: <20220630020805.74658-1-jasowang@redhat.com>
 MIME-Version: 1.0
 Content-type: text/plain
 Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
