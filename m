@@ -2,63 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 42BF55617D5
-	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 12:27:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A60415617B2
+	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 12:27:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234939AbiF3K1O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jun 2022 06:27:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34990 "EHLO
+        id S234911AbiF3K1L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jun 2022 06:27:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233879AbiF3K0z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 06:26:55 -0400
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2089.outbound.protection.outlook.com [40.107.220.89])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87215647A;
-        Thu, 30 Jun 2022 03:26:46 -0700 (PDT)
+        with ESMTP id S234707AbiF3K0y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 06:26:54 -0400
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam07on2081.outbound.protection.outlook.com [40.107.212.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FC745F58;
+        Thu, 30 Jun 2022 03:26:44 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gF4HY/Gvty08xLqOPxt3Ify2new5ECBjfX5po1yKXM/uTKTNHcsR8C0ZxyHGYFKT3eGW8RGpwNAUMdHcFJuCp14jKQNmxPbwRQR5BO8eOEMkYwL1MNX86uLdx7YMYLN/Bw7JsBz2H6NtpUH1f3LqMj7WaiSIzTX/M+RGRuPOft9pGPfD+ETQeC5WdMrU55Y3oFatz+/lcMXetKW2Y12KAoen/8s3ZmVl4Sm+7weYYNKfPO0LIKuwPSJ9ruCeFcdHIM8+HGkCyfYJtVP0RH8FvPd1knPkTjSV3FbIQnkMm+ILtshA6XhsjaqjVY0P3/7ht/yuF7qMdZqlJqVgwb2inA==
+ b=UBxuHSg+ojegcFjsX7DyUt1I4TxJX6VzZIBI95LoBadToJRkRU6YodyaIhbcvGZkztunoqLVOMWAs7Z7ypFUQdJ3jvdokTH4oYp9T+IynROYON8nqvs3r7PjV8T1FFEYHjvhSPI4BjD1BVhHrNBF7jehqUvYWa+IE+MH5DE7dKMpP+5EvoiCxNnmGvZfa2DKOLGP6eBtYZZN8mwaDjImk6Fj8Bwg8fJFTDBX7YnHZyucUOtiywZFcIKyQ/0KAYWpJ+ZibvWrawXCi/cTcU+u5DfYiAaisXQJBPvCoAcLIa9HEfX2V6LVvl+topZC70cd1JYLKhBxNOXyP/F2baD9Dg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=1IF1CK6d5+J7F2DHDnfClHruppP4hP5qBD/+lM40s54=;
- b=X3hJkYHuSLYUGsi0ELmVXjGdkk+YBuXOHqpMWIOCyJWYETWGKxhC+QnOy15khZZRtPsZdhtZgOxMb+vHW9Qk2fsdP6GxeM8zefhC6ZmeX7pY1vaG5s1wUKD7z4JJUixFLCDyTuufysMZ8JgrSUWaKKrlVW0EdTp7cBbP8MfoL63d03V8W3tEirP2KOjSohaDlTVWpneuJBiQi+Ac0czEBfpIjyjcKeIvr9J9IlAHc1yvMWGO8Df4zVnyBW5Dq53uVmkg0amKMlsY19xqnsVQmd5U4j5V6E6Q2l5Lu2SbXvzmK10mR98gz24QDrLA0e5SK8dYXGE8TcNJNXQ7gB3Ipg==
+ bh=acCF7blEo0YjpEeOeRgjmYbLma0/7FOpN21VoQVXpVI=;
+ b=OVJDRfw8bv3Tr7h2lFj6mU+GsRJanknQ1HIhhGArZKGOlo+TQE5Itl1Mnzy1c7Z/oJpU0lPZaELGXJ6PiodYtzRMwvtRsnwC2YVPX7TRWcsSRyyoh4S4l/FWlXGsgNskFIuJCUpeNSW8dEygQlErp9secLAWaLhf2S+Mz3g2X6NyVl9XhK+3Nl6piqktfAQgGf+Rn+M7fxMtSliMNNHr3dqYDNjgXP4HWW80J0NOmChAaK/39tDo2jpETmlX9X3dvQrAmV9iNWSM9HaLQpnZJVy2ieOi62a/lzAWl01ZKr7HKU3UueF0FELxi7OrQCd60c0vB4Yw42mZ/D0wvz1X1g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.236) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com; dmarc=pass
+ 12.22.5.238) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com; dmarc=pass
  (p=reject sp=reject pct=100) action=none header.from=nvidia.com; dkim=none
  (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1IF1CK6d5+J7F2DHDnfClHruppP4hP5qBD/+lM40s54=;
- b=Dk5nb/nHchUndvZwlEqUsFVXJgRK3arMMc5/n6qtEBmXyeLdf9kEx7cQNrRwqo4uhuRmO0cRnc4YR90ltL8qdiAzkgvgWO6OGpXwpu2T40D0FYfQ9MGvsvHIaP8gdF+FB3hCvB4uYDCqSLNNQR21lfTo3C1covd8ga/F2UTreWKN5CyGJXVQ5Z7La1XBSBc0GXUUvwwIBcv286tn6r0sHp00KDxq1GLv1kCa0aVjmgROOO4Z7BiB6aI1Dve1y3seAuDBlZcqNFNPESwGCeCMN9WIA1UGTT/BaQ9EbQOnfDw1Pbr1mhcOhze8zwmFdQAch6quqEyU5Yy2dsKbPnXgYw==
-Received: from DS7PR06CA0012.namprd06.prod.outlook.com (2603:10b6:8:2a::22) by
- DM6PR12MB3068.namprd12.prod.outlook.com (2603:10b6:5:3e::25) with Microsoft
+ bh=acCF7blEo0YjpEeOeRgjmYbLma0/7FOpN21VoQVXpVI=;
+ b=X4red4eZCW8nF3IHGFb09hN4fBzekPJyUxbEDp/ea9LTTYFGLvDf9G+vezg+AT+Esa8oLiVw5SgL0uU/Wd7bSu6t+jEusXhwlMExtFZFUSJ65pWQQewUrD+mOmAq8iIU+ExzHhqFo171GK+TYlBqEY/06tmDrlbrjnrNS1+prz1ItX8w4jmEeoiII6oVGC0wkYUlcfvvbnVeElTOM12hB9OwAuN+/HsalvEUWXQ9h2Tbbepe1di6jyKp0leUpNuWifxIlJNPff9zXi0gQOXUEVbxpcYQjMwijcooO2UhRXZinycXK3gisP1UV3oT1PDI9nxZmqQ2rbT6zpOGRvtP5w==
+Received: from DS7PR05CA0085.namprd05.prod.outlook.com (2603:10b6:8:56::15) by
+ DS0PR12MB6462.namprd12.prod.outlook.com (2603:10b6:8:c6::19) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5395.14; Thu, 30 Jun 2022 10:26:42 +0000
-Received: from DM6NAM11FT053.eop-nam11.prod.protection.outlook.com
- (2603:10b6:8:2a:cafe::e4) by DS7PR06CA0012.outlook.office365.com
- (2603:10b6:8:2a::22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.14 via Frontend
+ 15.20.5373.15; Thu, 30 Jun 2022 10:26:42 +0000
+Received: from DM6NAM11FT035.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:8:56:cafe::58) by DS7PR05CA0085.outlook.office365.com
+ (2603:10b6:8:56::15) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.8 via Frontend
  Transport; Thu, 30 Jun 2022 10:26:42 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.236; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.236) by
- DM6NAM11FT053.mail.protection.outlook.com (10.13.173.74) with Microsoft SMTP
+ 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.238; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.238) by
+ DM6NAM11FT035.mail.protection.outlook.com (10.13.172.100) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
  15.20.5395.14 via Frontend Transport; Thu, 30 Jun 2022 10:26:42 +0000
-Received: from drhqmail202.nvidia.com (10.126.190.181) by
- DRHQMAIL109.nvidia.com (10.27.9.19) with Microsoft SMTP Server (TLS) id
- 15.0.1497.32; Thu, 30 Jun 2022 10:26:37 +0000
 Received: from drhqmail203.nvidia.com (10.126.190.182) by
- drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
+ DRHQMAIL105.nvidia.com (10.27.9.14) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.32; Thu, 30 Jun 2022 10:26:41 +0000
+Received: from drhqmail203.nvidia.com (10.126.190.182) by
+ drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.26; Thu, 30 Jun 2022 03:26:36 -0700
+ 15.2.986.26; Thu, 30 Jun 2022 03:26:40 -0700
 Received: from vdi.nvidia.com (10.127.8.10) by mail.nvidia.com
  (10.126.190.182) with Microsoft SMTP Server id 15.2.986.26 via Frontend
- Transport; Thu, 30 Jun 2022 03:26:33 -0700
+ Transport; Thu, 30 Jun 2022 03:26:36 -0700
 From:   Yishai Hadas <yishaih@nvidia.com>
 To:     <alex.williamson@redhat.com>, <jgg@nvidia.com>
 CC:     <saeedm@nvidia.com>, <kvm@vger.kernel.org>,
@@ -66,9 +66,9 @@ CC:     <saeedm@nvidia.com>, <kvm@vger.kernel.org>,
         <kevin.tian@intel.com>, <joao.m.martins@oracle.com>,
         <leonro@nvidia.com>, <yishaih@nvidia.com>, <maorg@nvidia.com>,
         <cohuck@redhat.com>
-Subject: [PATCH vfio 03/13] net/mlx5: Introduce ifc bits for page tracker
-Date:   Thu, 30 Jun 2022 13:25:35 +0300
-Message-ID: <20220630102545.18005-4-yishaih@nvidia.com>
+Subject: [PATCH vfio 04/13] net/mlx5: Query ADV_VIRTUALIZATION capabilities
+Date:   Thu, 30 Jun 2022 13:25:36 +0300
+Message-ID: <20220630102545.18005-5-yishaih@nvidia.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20220630102545.18005-1-yishaih@nvidia.com>
 References: <20220630102545.18005-1-yishaih@nvidia.com>
@@ -77,23 +77,23 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5e499f6c-f275-4ed6-8f34-08da5a8306dc
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3068:EE_
+X-MS-Office365-Filtering-Correlation-Id: f4cba7f9-d2b6-4cab-fbe1-08da5a830697
+X-MS-TrafficTypeDiagnostic: DS0PR12MB6462:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: orhKQhERkY3H3jj/XrzMa1X8T41jk/dj3kidfz1AHkqt+0ojypVsKxL66kd5kixwRyq3Cix/3siSZAE2sjZFak0duH+C9LDxHQ8QC1KXpzEps+mYwwUhf4L2ngvbMbo6Uj4qNG0SDGG+Bj/jcz4vZ8yFQ4S04ZylvORJDEGW0DBWd49ooFZFRStF5dWo6++Pw2k1YIvizXm0PPd3NC7RIfkU8ib+7vM/imOKky7IlcmL4FEM3hRK6Pf7jY2dMo3sk9c2uTDJjj/d5CKKPcRT7LC9BQ9kDa7LpyalQWL6mS+X134Ms/7iqxyDuw2qJuADC8ycv/w62AhUhuKS17lmcsFsZw/FpcR55Ngn8ub4hllpvZSuTGSnsoojSpw7P8erW1p5l19bu47UmRP7BWmNiLBBdsTwxYEx//28zLObkTvMYH4fTO57ZRoe0A/2VkflbXEY3vOpXu/2JwqkmVkboDdUKIIbMnPKYmS09v/OAzO5GAnGAUu8+G/unY/H8+nnG8rqGB7WUWRbF4jRPNh9JmO1W1NbJeO8p5KZ1Ex5wQEMYlZGTDAjlQkCf62uCDJbQmsv0JCLlhfGGsQuZx5TqLkSDbPe3aAaQVsHr9KnFnUlyG57T3gzfdE3N1UjryBCYl0VEEZ8CZNQKJjX8gMoBDxdQ7TeoX61rTaK4c6Pdbt3CPn/8IQow2WjkyawXTRrOcOEGMWNeEptuMZ/s6OwFpTtVjFSsmya509i4sdkReUE0p37eM5OXNluqRFJvkNq5yyLATsznjvafcv6L1J6NikEhoGttccCfNAiC6JPAJ0nwU7tG1rjCkkiSYG8HNXJyOguvyESpYxioLb+exvnbM0Ijj//z2tR7zMrYucPTuw=
-X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(396003)(39860400002)(376002)(346002)(136003)(40470700004)(36840700001)(46966006)(356005)(316002)(70206006)(82310400005)(36860700001)(54906003)(4326008)(6636002)(8676002)(70586007)(82740400003)(81166007)(36756003)(110136005)(40480700001)(47076005)(41300700001)(186003)(26005)(478600001)(336012)(426003)(5660300002)(86362001)(2906002)(8936002)(1076003)(40460700003)(83380400001)(2616005)(7696005)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 90C/ZPMYZzjrhWNHJxdDNWRThaXVAHjb8s8dcFeuwnbcOSIvUgt7j4OL6q8+ggbgXMGcUu9on4W7KaltFHVuTsRTWm/28gQKo4BErYwYv9iS2kTCNYlaSLGlyHwJv2Fgkdd7Y5sL+gFHhDKgY2r2ZJjnb7IbmyUcVvBe1E7LMydkIx9PXsX5xxkNSv3LhiJHQWN+6CkW+XrT2vpx8lA9pRMm43a3z6ZTEee55fF2wEdkLFYoe5sAw/fTUQml5hbK1ZLntcDH06V5R3YImcSY3ZLgj1FXMlVSf01FDf1WrfRvT+XGLE8dSgmbPpVRiHULkcTgqTskwz6slNFKsa8FM4V4ErWC/1l31cT6ZdRdrnvZawlYVEnpt09sQuNiymLAM7w8qBqx7eERc7YynGrNU6CCxorp9AEwDtYMLJUnlwaCnmZWRc05M+paHOnuazRea9FHkKRAydyB5GKKieyi1ot8M4dOPXhCl3qyZC07Cq3JxAYOvSUA7lPzOop3YM8RNph6ZHKxFJznkSjr5FQ12K9T7gxCwpb5h/xk+IWRGlIO68DzhAYRRbsf83SBWSgx7XmhxejXMLB48m+hW0mhkP93KOtvMJpWzoR2Ap5GUjlDdks0v2ITBaK5BNZyI97mEhroKNEP4GYeVnEr06wil0hqkzkNQp7TmqoHkaB09VbcTNL8yVULt+os6qzPKytops+E9Z9imwqN8tyPEIVG3ZTQoZBdmVrxTtrxHjzdYKdl7AA0s/p+cTxg6xu/y/D6ucAlb2jzW0/2TxQ9OAChdjT+VWNNwAteSK7Q/8nAhi1QwOEUOdaabxRqA2yfYXlRK7JYdYKglzQFJyspw0ZRDYIVK9tWLhE6cVrnF/NXRQU=
+X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(396003)(376002)(136003)(39860400002)(346002)(36840700001)(40470700004)(46966006)(336012)(26005)(5660300002)(7696005)(70586007)(36756003)(8676002)(478600001)(6636002)(2616005)(110136005)(54906003)(41300700001)(82310400005)(81166007)(186003)(1076003)(8936002)(426003)(2906002)(86362001)(36860700001)(4326008)(40480700001)(40460700003)(70206006)(316002)(47076005)(82740400003)(356005)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Jun 2022 10:26:42.7273
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Jun 2022 10:26:42.2935
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5e499f6c-f275-4ed6-8f34-08da5a8306dc
+X-MS-Exchange-CrossTenant-Network-Message-Id: f4cba7f9-d2b6-4cab-fbe1-08da5a830697
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT053.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT035.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3068
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB6462
 X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
@@ -104,118 +104,75 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce ifc related stuff to enable using page tracker.
+Query ADV_VIRTUALIZATION capabilities which provide information for
+advanced virtualization related features.
 
-A page tracker is a dirty page tracking object used by the device to
-report the tracking log.
+Current capabilities refer to the page tracker object which is used for
+tracking the pages that are dirtied by the device.
 
 Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
 ---
- include/linux/mlx5/mlx5_ifc.h | 79 ++++++++++++++++++++++++++++++++++-
- 1 file changed, 78 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/fw.c   | 6 ++++++
+ drivers/net/ethernet/mellanox/mlx5/core/main.c | 1 +
+ include/linux/mlx5/device.h                    | 9 +++++++++
+ 3 files changed, 16 insertions(+)
 
-diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
-index fd7d083a34d3..b2d56fea6a09 100644
---- a/include/linux/mlx5/mlx5_ifc.h
-+++ b/include/linux/mlx5/mlx5_ifc.h
-@@ -89,6 +89,7 @@ enum {
- 	MLX5_OBJ_TYPE_VIRTIO_NET_Q = 0x000d,
- 	MLX5_OBJ_TYPE_VIRTIO_Q_COUNTERS = 0x001c,
- 	MLX5_OBJ_TYPE_MATCH_DEFINER = 0x0018,
-+	MLX5_OBJ_TYPE_PAGE_TRACK = 0x46,
- 	MLX5_OBJ_TYPE_MKEY = 0xff01,
- 	MLX5_OBJ_TYPE_QP = 0xff02,
- 	MLX5_OBJ_TYPE_PSV = 0xff03,
-@@ -1711,7 +1712,9 @@ struct mlx5_ifc_cmd_hca_cap_bits {
- 	u8         max_geneve_tlv_options[0x8];
- 	u8         reserved_at_568[0x3];
- 	u8         max_geneve_tlv_option_data_len[0x5];
--	u8         reserved_at_570[0x10];
-+	u8         reserved_at_570[0x9];
-+	u8         adv_virtualization[0x1];
-+	u8         reserved_at_57a[0x6];
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fw.c b/drivers/net/ethernet/mellanox/mlx5/core/fw.c
+index cfb8bedba512..45b9891b7947 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fw.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fw.c
+@@ -273,6 +273,12 @@ int mlx5_query_hca_caps(struct mlx5_core_dev *dev)
+ 			return err;
+ 	}
  
- 	u8	   reserved_at_580[0xb];
- 	u8	   log_max_dci_stream_channels[0x5];
-@@ -11668,4 +11671,78 @@ struct mlx5_ifc_load_vhca_state_out_bits {
- 	u8         reserved_at_40[0x40];
++	if (MLX5_CAP_GEN(dev, adv_virtualization)) {
++		err = mlx5_core_get_caps(dev, MLX5_CAP_ADV_VIRTUALIZATION);
++		if (err)
++			return err;
++	}
++
+ 	return 0;
+ }
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+index c9b4e50a593e..5ecaaee2624c 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+@@ -1432,6 +1432,7 @@ static const int types[] = {
+ 	MLX5_CAP_IPSEC,
+ 	MLX5_CAP_PORT_SELECTION,
+ 	MLX5_CAP_DEV_SHAMPO,
++	MLX5_CAP_ADV_VIRTUALIZATION,
  };
  
-+struct mlx5_ifc_adv_virtualization_cap_bits {
-+	u8         reserved_at_0[0x3];
-+	u8         pg_track_log_max_num[0x5];
-+	u8         pg_track_max_num_range[0x8];
-+	u8         pg_track_log_min_addr_space[0x8];
-+	u8         pg_track_log_max_addr_space[0x8];
+ static void mlx5_hca_caps_free(struct mlx5_core_dev *dev)
+diff --git a/include/linux/mlx5/device.h b/include/linux/mlx5/device.h
+index 604b85dd770a..96ea0c1796f8 100644
+--- a/include/linux/mlx5/device.h
++++ b/include/linux/mlx5/device.h
+@@ -1204,6 +1204,7 @@ enum mlx5_cap_type {
+ 	MLX5_CAP_DEV_SHAMPO = 0x1d,
+ 	MLX5_CAP_GENERAL_2 = 0x20,
+ 	MLX5_CAP_PORT_SELECTION = 0x25,
++	MLX5_CAP_ADV_VIRTUALIZATION = 0x26,
+ 	/* NUM OF CAP Types */
+ 	MLX5_CAP_NUM
+ };
+@@ -1369,6 +1370,14 @@ enum mlx5_qcam_feature_groups {
+ 	MLX5_GET(port_selection_cap, \
+ 		 mdev->caps.hca[MLX5_CAP_PORT_SELECTION]->max, cap)
+ 
++#define MLX5_CAP_ADV_VIRTUALIZATION(mdev, cap) \
++	MLX5_GET(adv_virtualization_cap, \
++		 mdev->caps.hca[MLX5_CAP_ADV_VIRTUALIZATION]->cur, cap)
 +
-+	u8         reserved_at_20[0x3];
-+	u8         pg_track_log_min_msg_size[0x5];
-+	u8         pg_track_log_max_msg_size[0x8];
-+	u8         pg_track_log_min_page_size[0x8];
-+	u8         pg_track_log_max_page_size[0x8];
++#define MLX5_CAP_ADV_VIRTUALIZATION_MAX(mdev, cap) \
++	MLX5_GET(adv_virtualization_cap, \
++		 mdev->caps.hca[MLX5_CAP_ADV_VIRTUALIZATION]->max, cap)
 +
-+	u8         reserved_at_40[0x7c0];
-+};
-+
-+struct mlx5_ifc_page_track_report_entry_bits {
-+	u8         dirty_address_high[0x20];
-+
-+	u8         dirty_address_low[0x20];
-+};
-+
-+enum {
-+	MLX5_PAGE_TRACK_STATE_TRACKING,
-+	MLX5_PAGE_TRACK_STATE_REPORTING,
-+	MLX5_PAGE_TRACK_STATE_ERROR,
-+};
-+
-+struct mlx5_ifc_page_track_range_bits {
-+	u8         start_address[0x40];
-+
-+	u8         length[0x40];
-+};
-+
-+struct mlx5_ifc_page_track_bits {
-+	u8         modify_field_select[0x40];
-+
-+	u8         reserved_at_40[0x10];
-+	u8         vhca_id[0x10];
-+
-+	u8         reserved_at_60[0x20];
-+
-+	u8         state[0x4];
-+	u8         track_type[0x4];
-+	u8         log_addr_space_size[0x8];
-+	u8         reserved_at_90[0x3];
-+	u8         log_page_size[0x5];
-+	u8         reserved_at_98[0x3];
-+	u8         log_msg_size[0x5];
-+
-+	u8         reserved_at_a0[0x8];
-+	u8         reporting_qpn[0x18];
-+
-+	u8         reserved_at_c0[0x18];
-+	u8         num_ranges[0x8];
-+
-+	u8         reserved_at_e0[0x20];
-+
-+	u8         range_start_address[0x40];
-+
-+	u8         length[0x40];
-+
-+	struct     mlx5_ifc_page_track_range_bits track_range[0];
-+};
-+
-+struct mlx5_ifc_create_page_track_obj_in_bits {
-+	struct mlx5_ifc_general_obj_in_cmd_hdr_bits general_obj_in_cmd_hdr;
-+	struct mlx5_ifc_page_track_bits obj_context;
-+};
-+
-+struct mlx5_ifc_modify_page_track_obj_in_bits {
-+	struct mlx5_ifc_general_obj_in_cmd_hdr_bits general_obj_in_cmd_hdr;
-+	struct mlx5_ifc_page_track_bits obj_context;
-+};
- #endif /* MLX5_IFC_H */
+ #define MLX5_CAP_FLOWTABLE_PORT_SELECTION(mdev, cap) \
+ 	MLX5_CAP_PORT_SELECTION(mdev, flow_table_properties_port_selection.cap)
+ 
 -- 
 2.18.1
 
