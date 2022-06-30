@@ -2,69 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CC113561242
+	by mail.lfdr.de (Postfix) with ESMTP id 12B17561240
 	for <lists+netdev@lfdr.de>; Thu, 30 Jun 2022 08:08:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232319AbiF3GIL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jun 2022 02:08:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51304 "EHLO
+        id S232525AbiF3GIM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jun 2022 02:08:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229479AbiF3GII (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 02:08:08 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 05B022E2
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 23:08:05 -0700 (PDT)
+        with ESMTP id S232054AbiF3GIK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 02:08:10 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5C44510EE
+        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 23:08:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656569285;
+        s=mimecast20190719; t=1656569287;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=Huizft4b5megN+LHZsenyqxTACpN6BbdhFtJNkNbRWk=;
-        b=NRVkQzMspbimpDQq1yeamJPQyYnQEnl6uDSEF1aEIaTNuoubkSOzqo0TLdk2Ro0dQy1omv
-        zrtTRAuZe8M5kQyEKh0yPIhwASzaNq7OFtwmr782/2cCiBF7SHRQly8fuTmdbPJdTiAnY+
-        VjBHZnHDbwKALlt6w0jpOBr/B34+QjU=
+        bh=8F2nUeN3UIGvhWhPwdXFRxrBpN+YKacrhMVno3b0HOE=;
+        b=DCGVpnElsO3BwLDIhZxih7UhJZkMn2Dh9W+4IX7bt1gU/c3IgR0KnGT3pYmzXPNunpxJz6
+        d2SXATDrWQ3bV6RO9N3nn1ne/BuJYqyIlS5ISg3xoxHU26a9Omz6Yz68ALRb82tKzE3tzW
+        gT8j7p+9gtvTOWhSRl0K7yrtS2nxuYM=
 Received: from mail-lj1-f199.google.com (mail-lj1-f199.google.com
  [209.85.208.199]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-523-SiSnPq8sObiWxyKTi0zwzg-1; Thu, 30 Jun 2022 02:08:02 -0400
-X-MC-Unique: SiSnPq8sObiWxyKTi0zwzg-1
-Received: by mail-lj1-f199.google.com with SMTP id i23-20020a2e9417000000b0025a739223d1so2809830ljh.4
-        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 23:08:02 -0700 (PDT)
+ us-mta-120-4ZCECy3LMwmoHD710FntEg-1; Thu, 30 Jun 2022 02:08:05 -0400
+X-MC-Unique: 4ZCECy3LMwmoHD710FntEg-1
+Received: by mail-lj1-f199.google.com with SMTP id l5-20020a2e8345000000b0025bce6dcde0so1842949ljh.12
+        for <netdev@vger.kernel.org>; Wed, 29 Jun 2022 23:08:05 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=Huizft4b5megN+LHZsenyqxTACpN6BbdhFtJNkNbRWk=;
-        b=b+RRV8Ke1UW5XGx9w169Lf6TyQo5PPILwaPB2nw0s1CiCkgqh+44XR5KfW3qRx+qzQ
-         96QcSioXd6Mfsa5FI1b0RXOQZ/Yw9Hl7CvLzBqqnghGRsF7OvXt0T3BAoT0P6I+uknxT
-         eqcvoUryHmQGcc5Ey1qmGsTEg9cWuPhT2hci2vK+6QunXiD3MXZyq9tnCrG6bA8hA4Be
-         LUsHkN9HayyWm36eACznwfbSOJEira4GdrwDYTmYhXpWMNwRJhvUkiLUZKLPD1sCNitG
-         h6IEdB+P+laLSGvf0+m0WjoqPNmtSFg7DD6xPQMuYzOgRcHcMYvjgfadnoGme1iBeMjB
-         Cbyg==
-X-Gm-Message-State: AJIora/yk3MlyYjrclzS89mPVl7V/Cv9RWdwMitY/sLC2mR4HakHKEUN
-        n66/Ri1P4Oz3pmrvHh8CQqqUkST/cgz62qc8wgrsgLWHEq3R6obv1rCm+Ge3Kp0dMalqMgJvvSV
-        NKDPSFlwdxaj8cFsboaOKzsNj6XnTj0sw
-X-Received: by 2002:ac2:51a5:0:b0:47f:79a1:5c02 with SMTP id f5-20020ac251a5000000b0047f79a15c02mr4454348lfk.575.1656569281328;
-        Wed, 29 Jun 2022 23:08:01 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1uSvw4QQdRBK/4iZ/CcyTLMfOSwTOHod2+FXhilsKg5Tz+kGG+P8P47yjnOyH8kpypV5rbVce7k78pE5S9GJ6I=
-X-Received: by 2002:ac2:51a5:0:b0:47f:79a1:5c02 with SMTP id
- f5-20020ac251a5000000b0047f79a15c02mr4454336lfk.575.1656569281122; Wed, 29
- Jun 2022 23:08:01 -0700 (PDT)
+        bh=8F2nUeN3UIGvhWhPwdXFRxrBpN+YKacrhMVno3b0HOE=;
+        b=AWgdjwOSKv/6TpB75aIm5QF3kesmBJoX0ZGArGCG1Kjq+tWXE4vj7Qu1rEYftpxdvn
+         zduUcJjOhfyRqV8wewHMO+4xqTwJBvZ6reV2ur9ijitgk0LPRNtYSf+St/+Glt52H3JU
+         y/qt68GSrTA64sz7hSJ+y4odbUn9fsWSDntqX5PdtV4SuFSVmCB0n4lrgQ+i3ZDE6UHl
+         dIlMA8NMmiXy9RGx6pMFr+/TsOcD48leAXLpPNioRzEZYnrjAnAJQH15Ua0/xWenTwtv
+         YzUElqyUDl7f9ilma8m3hYU7JoPIMQV5MPl9f/eD+DFqG4V8MnHNU4aUNc/se5eL3xsl
+         bCaQ==
+X-Gm-Message-State: AJIora+UBDI6Ff1APckY80yM7l4D9Kred8jaBO8FfbisRY+D20/kK1lw
+        o0nMPssLylBe2t7AhFOp/3fk6LO35mB7zzEUPN3QO2iJhvmIrAow6qPQih76ZlCYRxvzPoTUyNA
+        ewm5na3uIoKy3yg4uEDHI0e5sSO43HzXo
+X-Received: by 2002:a2e:9ad0:0:b0:25a:7156:26bb with SMTP id p16-20020a2e9ad0000000b0025a715626bbmr3893990ljj.141.1656569283404;
+        Wed, 29 Jun 2022 23:08:03 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1uycjpe9LzkeJnJwvQ8/m/MahJ4H/ysGKojEgms9aLE1GxSCP4NZcX8Lj7MKqEKJME0I1SUIsT2FYJTz+SKeGY=
+X-Received: by 2002:a2e:9ad0:0:b0:25a:7156:26bb with SMTP id
+ p16-20020a2e9ad0000000b0025a715626bbmr3893973ljj.141.1656569283083; Wed, 29
+ Jun 2022 23:08:03 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220630020805.74658-1-jasowang@redhat.com> <20220629195123.610eed9f@kernel.org>
-In-Reply-To: <20220629195123.610eed9f@kernel.org>
+References: <20220630020805.74658-1-jasowang@redhat.com> <1656555045.7370687-2-xuanzhuo@linux.alibaba.com>
+In-Reply-To: <1656555045.7370687-2-xuanzhuo@linux.alibaba.com>
 From:   Jason Wang <jasowang@redhat.com>
-Date:   Thu, 30 Jun 2022 14:07:50 +0800
-Message-ID: <CACGkMEs216-WJCSE7mwSHx+zmaNDJa9HCjhnRMWOpZrhJcauNg@mail.gmail.com>
+Date:   Thu, 30 Jun 2022 14:07:52 +0800
+Message-ID: <CACGkMEvMrxWRNY_NbujLsWff4zMVELr7C9CJ77k_m5OTFEe0dA@mail.gmail.com>
 Subject: Re: [PATCH V2] virtio-net: fix the race between refill work and close
-To:     Jakub Kicinski <kuba@kernel.org>
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 Cc:     mst <mst@redhat.com>, davem <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
         virtualization <virtualization@lists.linux-foundation.org>,
         netdev <netdev@vger.kernel.org>,
         linux-kernel <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+X-Spam-Status: No, score=-2.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -73,9 +74,99 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 30, 2022 at 10:51 AM Jakub Kicinski <kuba@kernel.org> wrote:
+On Thu, Jun 30, 2022 at 10:22 AM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
 >
-> On Thu, 30 Jun 2022 10:08:04 +0800 Jason Wang wrote:
+> On Thu, 30 Jun 2022 10:08:04 +0800, Jason Wang <jasowang@redhat.com> wrote:
+> > We try using cancel_delayed_work_sync() to prevent the work from
+> > enabling NAPI. This is insufficient since we don't disable the source
+> > of the refill work scheduling. This means an NAPI poll callback after
+> > cancel_delayed_work_sync() can schedule the refill work then can
+> > re-enable the NAPI that leads to use-after-free [1].
+>
+>
+> Can you explain in more detail how this happened?
+>
+> napi_disable() is normally called after cancel_delayed_work_sync(). This ensures
+> that all napi callbacks will end, and the new napi_disable() will wait.
+> There will be no re-enable napi.
+
+An rx interrupt that may come between after the cancel_delayed_work()
+but before the napi_disable(). It schedules a refill_work that may run
+after the napi_disable() in virtnet_close().
+
+>
+> So I guess the use-after-free is caused by refill_work being called after
+> dev/vi/napi is released. In this way, we can just call
+> cancel_delayed_work_sync() after napi_disalbe().
+
+So the refill_work can re-enable the NAPI when it is run after
+napi_disable() in this case.
+
+Thanks
+
+
+>
+> Thanks.
+>
+> >
+> > Since the work can enable NAPI, we can't simply disable NAPI before
+> > calling cancel_delayed_work_sync(). So fix this by introducing a
+> > dedicated boolean to control whether or not the work could be
+> > scheduled from NAPI.
+> >
+> > [1]
+> > ==================================================================
+> > BUG: KASAN: use-after-free in refill_work+0x43/0xd4
+> > Read of size 2 at addr ffff88810562c92e by task kworker/2:1/42
+> >
+> > CPU: 2 PID: 42 Comm: kworker/2:1 Not tainted 5.19.0-rc1+ #480
+> > Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.16.0-0-gd239552ce722-prebuilt.qemu.org 04/01/2014
+> > Workqueue: events refill_work
+> > Call Trace:
+> >  <TASK>
+> >  dump_stack_lvl+0x34/0x44
+> >  print_report.cold+0xbb/0x6ac
+> >  ? _printk+0xad/0xde
+> >  ? refill_work+0x43/0xd4
+> >  kasan_report+0xa8/0x130
+> >  ? refill_work+0x43/0xd4
+> >  refill_work+0x43/0xd4
+> >  process_one_work+0x43d/0x780
+> >  worker_thread+0x2a0/0x6f0
+> >  ? process_one_work+0x780/0x780
+> >  kthread+0x167/0x1a0
+> >  ? kthread_exit+0x50/0x50
+> >  ret_from_fork+0x22/0x30
+> >  </TASK>
+> > ...
+> >
+> > Fixes: b2baed69e605c ("virtio_net: set/cancel work on ndo_open/ndo_stop")
+> > Signed-off-by: Jason Wang <jasowang@redhat.com>
+> > ---
+> >  drivers/net/virtio_net.c | 38 ++++++++++++++++++++++++++++++++++++--
+> >  1 file changed, 36 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> > index db05b5e930be..21bf1e5c81ef 100644
+> > --- a/drivers/net/virtio_net.c
+> > +++ b/drivers/net/virtio_net.c
+> > @@ -251,6 +251,12 @@ struct virtnet_info {
+> >       /* Does the affinity hint is set for virtqueues? */
+> >       bool affinity_hint_set;
+> >
+> > +     /* Is refill work enabled? */
+> > +     bool refill_work_enabled;
+> > +
+> > +     /* The lock to synchronize the access to refill_work_enabled */
+> > +     spinlock_t refill_lock;
+> > +
+> >       /* CPU hotplug instances for online & dead */
+> >       struct hlist_node node;
+> >       struct hlist_node node_dead;
+> > @@ -348,6 +354,20 @@ static struct page *get_a_page(struct receive_queue *rq, gfp_t gfp_mask)
+> >       return p;
+> >  }
+> >
 > > +static void enable_refill_work(struct virtnet_info *vi)
 > > +{
 > > +     spin_lock(&vi->refill_lock);
@@ -104,31 +195,57 @@ On Thu, Jun 30, 2022 at 10:51 AM Jakub Kicinski <kuba@kernel.org> wrote:
 > > +                     if (vi->refill_work_enabled)
 > > +                             schedule_delayed_work(&vi->refill, 0);
 > > +                     spin_unlock(&vi->refill_lock);
->
-> Are you sure you can use the basic spin_lock() flavor in all cases?
-> Isn't the disable/enable called from a different context than this
-> thing here?
-
-This function will only be called in bh so it's safe.
-
->
-> The entire delayed work construct seems a little risky because the work
-> may go to sleep after disabling napi, causing large latency spikes.
-
-Yes, but it only happens on OOM.
-
-> I guess you must have a good reason no to simply reschedule the NAPI
-> and keep retrying with GFP_ATOMIC...
-
-Less pressure on the memory allocator on OOM probably, but it looks
-like an independent issue that might be optimized in the future.
-
->
-> Please add the target tree name to the subject.
-
-Ok
-
-Thanks
-
+> > +             }
+> >       }
+> >
+> >       u64_stats_update_begin(&rq->stats.syncp);
+> > @@ -1651,6 +1675,8 @@ static int virtnet_open(struct net_device *dev)
+> >       struct virtnet_info *vi = netdev_priv(dev);
+> >       int i, err;
+> >
+> > +     enable_refill_work(vi);
+> > +
+> >       for (i = 0; i < vi->max_queue_pairs; i++) {
+> >               if (i < vi->curr_queue_pairs)
+> >                       /* Make sure we have some buffers: if oom use wq. */
+> > @@ -2033,6 +2059,8 @@ static int virtnet_close(struct net_device *dev)
+> >       struct virtnet_info *vi = netdev_priv(dev);
+> >       int i;
+> >
+> > +     /* Make sure NAPI doesn't schedule refill work */
+> > +     disable_refill_work(vi);
+> >       /* Make sure refill_work doesn't re-enable napi! */
+> >       cancel_delayed_work_sync(&vi->refill);
+> >
+> > @@ -2776,6 +2804,9 @@ static void virtnet_freeze_down(struct virtio_device *vdev)
+> >       netif_tx_lock_bh(vi->dev);
+> >       netif_device_detach(vi->dev);
+> >       netif_tx_unlock_bh(vi->dev);
+> > +     /* Make sure NAPI doesn't schedule refill work */
+> > +     disable_refill_work(vi);
+> > +     /* Make sure refill_work doesn't re-enable napi! */
+> >       cancel_delayed_work_sync(&vi->refill);
+> >
+> >       if (netif_running(vi->dev)) {
+> > @@ -2799,6 +2830,8 @@ static int virtnet_restore_up(struct virtio_device *vdev)
+> >
+> >       virtio_device_ready(vdev);
+> >
+> > +     enable_refill_work(vi);
+> > +
+> >       if (netif_running(vi->dev)) {
+> >               for (i = 0; i < vi->curr_queue_pairs; i++)
+> >                       if (!try_fill_recv(vi, &vi->rq[i], GFP_KERNEL))
+> > @@ -3548,6 +3581,7 @@ static int virtnet_probe(struct virtio_device *vdev)
+> >       vdev->priv = vi;
+> >
+> >       INIT_WORK(&vi->config_work, virtnet_config_changed_work);
+> > +     spin_lock_init(&vi->refill_lock);
+> >
+> >       /* If we can receive ANY GSO packets, we must allocate large ones. */
+> >       if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO4) ||
+> > --
+> > 2.25.1
+> >
 >
 
