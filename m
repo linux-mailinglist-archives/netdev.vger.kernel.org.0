@@ -2,65 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3021E563026
-	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 11:33:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 182D4563031
+	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 11:34:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234252AbiGAJbw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Jul 2022 05:31:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50846 "EHLO
+        id S235576AbiGAJdR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Jul 2022 05:33:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233646AbiGAJbv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 05:31:51 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C3A8271273
-        for <netdev@vger.kernel.org>; Fri,  1 Jul 2022 02:31:49 -0700 (PDT)
+        with ESMTP id S236046AbiGAJdQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 05:33:16 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0FF1B1274C
+        for <netdev@vger.kernel.org>; Fri,  1 Jul 2022 02:33:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656667908;
+        s=mimecast20190719; t=1656667994;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=DCnH+p8P5O1tP//jNNfRvqUnP248atTd06tmppMrMwQ=;
-        b=IM0SpQF0kslDgvFF4O/PzgkuegygeoZkdixH9dDHVccG031kgnOtLpPvTaFXmvZLfEIk00
-        VEq3K6CHF/UIDBJOTKQ+ZgvHvC0DVocCSTWH2gDiEVROloEGyG+k54iHlcJDjiWdUSEf3u
-        ReXxonB1yWHH4ZCa9Yqawg6pC1rr8Lw=
-Received: from mail-pl1-f198.google.com (mail-pl1-f198.google.com
- [209.85.214.198]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=f5mtGmTe8EOGM3d6UvtPR8foUzN0Vd8FdOhETeQJNPM=;
+        b=Yk8gpCZLqZ/g9sNIulrU1mSb0DLD3vnyEEeIEVjfnN9qzy8hYaKw1bqlSXMLdBF1d5Ehnn
+        Sy7xRTL4a6WdGQ8tUGAxt9OyRAW+ABE1nY636uziQm2pw0272KpoqHMOAvAnJOhyF03hKA
+        KvR0bJ2DvVU7Hjg0cSoY3a91Zg0543U=
+Received: from mail-pg1-f198.google.com (mail-pg1-f198.google.com
+ [209.85.215.198]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-606-GWWz6gICPP2DIyOvlOOg2A-1; Fri, 01 Jul 2022 05:31:47 -0400
-X-MC-Unique: GWWz6gICPP2DIyOvlOOg2A-1
-Received: by mail-pl1-f198.google.com with SMTP id u14-20020a17090341ce00b0016a38ec073aso1203403ple.21
-        for <netdev@vger.kernel.org>; Fri, 01 Jul 2022 02:31:47 -0700 (PDT)
+ us-mta-481-mbGX96NiNieXezZqEp6v6Q-1; Fri, 01 Jul 2022 05:33:12 -0400
+X-MC-Unique: mbGX96NiNieXezZqEp6v6Q-1
+Received: by mail-pg1-f198.google.com with SMTP id w191-20020a6382c8000000b0040c9dc669ccso1037885pgd.16
+        for <netdev@vger.kernel.org>; Fri, 01 Jul 2022 02:33:12 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=DCnH+p8P5O1tP//jNNfRvqUnP248atTd06tmppMrMwQ=;
-        b=7rWK8KBw/8T4VUVTPod1t9VQW5dZ4dXu1rZyBiiCJ1cTk5DjHLF2T+XhoROoQxoh0D
-         HA4RVrQ5NDvZ38vsycNmwXZIc/8oqOH91aZ6BNw8fKrcPF20aBshhxTgEMpHlVriWPBv
-         GTHPI6cMm8exyY5hqLV/LL0CUoyCT9W9ZcS+nT+zrYfY38tjhqffM2wZzx1J2Ki4w1Sl
-         CL43vzuU5Nl26iIUMvixMM785ETLFrNHnA3wnOuZGAP+ItUwfegsoEWDjBmcQnv0qilW
-         O4hUlc4HmUgFwxQHJ+7pce+wUKte9Nfc/UKcn73QrXPcJ96uxAoiMLkXScmnE6qjh9El
-         E6XQ==
-X-Gm-Message-State: AJIora8ysP7VhRFIPEZ/XiXubdgjbnDFB0jCyffOMNA3wSxq4O96RQvT
-        ry01VwKNigfhSjYQ5J5BJlKLFn+eA86hF0jVSg5/E/t5w/WKOvQd+Uph4aLlL9q3OBk8MbOZ9uO
-        K996Js6gAiPE40i2q
-X-Received: by 2002:a05:6a00:3006:b0:525:266a:852e with SMTP id ay6-20020a056a00300600b00525266a852emr20298542pfb.60.1656667906367;
-        Fri, 01 Jul 2022 02:31:46 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1uKrApfLpVijt+2Yurlxy1RscauWDUj8Cy3/b4ekNnk2oyxMF7zuXLSzduxf7YrkXGtDZvHNA==
-X-Received: by 2002:a05:6a00:3006:b0:525:266a:852e with SMTP id ay6-20020a056a00300600b00525266a852emr20298498pfb.60.1656667906086;
-        Fri, 01 Jul 2022 02:31:46 -0700 (PDT)
+        bh=f5mtGmTe8EOGM3d6UvtPR8foUzN0Vd8FdOhETeQJNPM=;
+        b=br3b1caQ+8FZq+jty89JPswpHjJCQF+xSwuEmzhXX6b8WWftuN90eh8cVdL22nax/+
+         rNhGhu7h6w4bZ+jiFXmLjN9W+eIVB83RUVsAn1i6WziUkaetFEisGUzEAiOrwPR+GmNG
+         KpnLfZm75bs6RWEGQDfE3fVFUGsxKKuhGSM79cyd/46/my1KT8ieqmSZRh7CM3xhRgLH
+         Prz5yCFxAIhTmdvujT8g+bC94GqDisgITlPioveEJMMslcmpvMb6V3z1Zxm20YKDYxTq
+         RteZnlJN32Zj7DKqO3n5zmnEy/HJTxA9XPvL9U6qfdkkG9PaLMtFseVKMyGMhUfBWlvK
+         ctRQ==
+X-Gm-Message-State: AJIora9ok8tbCTZ8OvS58N/56ZEuPOkiT6UvcW7R/a3BnzopQlblB0SL
+        8yL/ivEX/cJfNynM8fjsgDDY1y9XEtTpyzLm64og2mPowSUP+uPCB8GBC09kAFJUCJ2ghgCWJv2
+        YDMCuc4LqGgtNvcOE
+X-Received: by 2002:a17:90b:4a0c:b0:1ec:d90c:601d with SMTP id kk12-20020a17090b4a0c00b001ecd90c601dmr15636519pjb.154.1656667991674;
+        Fri, 01 Jul 2022 02:33:11 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1tVe2pzm2DqVb3UijAovoeTNBz5xv7L4VqCc/Ur/3iGdxZa8PDpPNxiGPMy4N7soHRJKb82Vw==
+X-Received: by 2002:a17:90b:4a0c:b0:1ec:d90c:601d with SMTP id kk12-20020a17090b4a0c00b001ecd90c601dmr15636485pjb.154.1656667991387;
+        Fri, 01 Jul 2022 02:33:11 -0700 (PDT)
 Received: from [10.72.13.237] ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id cu7-20020a056a00448700b00525373aac7csm14994715pfb.26.2022.07.01.02.31.36
+        by smtp.gmail.com with ESMTPSA id u4-20020a170902714400b0015e8d4eb28fsm15068862plm.217.2022.07.01.02.33.01
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 01 Jul 2022 02:31:45 -0700 (PDT)
-Message-ID: <d3788739-1c7f-4f1e-a222-f83bd73c14a1@redhat.com>
-Date:   Fri, 1 Jul 2022 17:31:34 +0800
+        Fri, 01 Jul 2022 02:33:10 -0700 (PDT)
+Message-ID: <f35fdd60-8f69-6004-dd00-62e5fe8a8856@redhat.com>
+Date:   Fri, 1 Jul 2022 17:33:00 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
  Gecko/20100101 Thunderbird/91.11.0
-Subject: Re: [PATCH v11 22/40] virtio_ring: introduce virtqueue_resize()
+Subject: Re: [PATCH v11 23/40] virtio_pci: move struct virtio_pci_common_cfg
+ to virtio_pci_modern.h
 Content-Language: en-US
 To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
         virtualization@lists.linux-foundation.org
@@ -96,15 +97,15 @@ Cc:     Richard Weinberger <richard@nod.at>,
         kvm@vger.kernel.org, bpf@vger.kernel.org,
         kangjie.xu@linux.alibaba.com
 References: <20220629065656.54420-1-xuanzhuo@linux.alibaba.com>
- <20220629065656.54420-23-xuanzhuo@linux.alibaba.com>
+ <20220629065656.54420-24-xuanzhuo@linux.alibaba.com>
 From:   Jason Wang <jasowang@redhat.com>
-In-Reply-To: <20220629065656.54420-23-xuanzhuo@linux.alibaba.com>
+In-Reply-To: <20220629065656.54420-24-xuanzhuo@linux.alibaba.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -113,134 +114,99 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 在 2022/6/29 14:56, Xuan Zhuo 写道:
-> Introduce virtqueue_resize() to implement the resize of vring.
-> Based on these, the driver can dynamically adjust the size of the vring.
-> For example: ethtool -G.
+> In order to facilitate the expansion of virtio_pci_common_cfg in the
+> future, move it from uapi to virtio_pci_modern.h. In this way, we can
+> freely expand virtio_pci_common_cfg in the future.
 >
-> virtqueue_resize() implements resize based on the vq reset function. In
-> case of failure to allocate a new vring, it will give up resize and use
-> the original vring.
->
-> During this process, if the re-enable reset vq fails, the vq can no
-> longer be used. Although the probability of this situation is not high.
->
-> The parameter recycle is used to recycle the buffer that is no longer
-> used.
+> Other projects using virtio_pci_common_cfg in uapi need to maintain a
+> separate virtio_pci_common_cfg or use the offset macro defined in uapi.
 >
 > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 > ---
->   drivers/virtio/virtio_ring.c | 72 ++++++++++++++++++++++++++++++++++++
->   include/linux/virtio.h       |  3 ++
->   2 files changed, 75 insertions(+)
+>   include/linux/virtio_pci_modern.h | 26 ++++++++++++++++++++++++++
+>   include/uapi/linux/virtio_pci.h   | 26 --------------------------
+>   2 files changed, 26 insertions(+), 26 deletions(-)
 >
-> diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-> index 4860787286db..5ec43607cc15 100644
-> --- a/drivers/virtio/virtio_ring.c
-> +++ b/drivers/virtio/virtio_ring.c
-> @@ -2542,6 +2542,78 @@ struct virtqueue *vring_create_virtqueue(
->   }
->   EXPORT_SYMBOL_GPL(vring_create_virtqueue);
+> diff --git a/include/linux/virtio_pci_modern.h b/include/linux/virtio_pci_modern.h
+> index eb2bd9b4077d..c4f7ffbacb4e 100644
+> --- a/include/linux/virtio_pci_modern.h
+> +++ b/include/linux/virtio_pci_modern.h
+> @@ -5,6 +5,32 @@
+>   #include <linux/pci.h>
+>   #include <linux/virtio_pci.h>
 >   
-> +/**
-> + * virtqueue_resize - resize the vring of vq
-> + * @_vq: the struct virtqueue we're talking about.
-> + * @num: new ring num
-> + * @recycle: callback for recycle the useless buffer
-> + *
-> + * When it is really necessary to create a new vring, it will set the current vq
-> + * into the reset state. Then call the passed callback to recycle the buffer
-> + * that is no longer used. Only after the new vring is successfully created, the
-> + * old vring will be released.
-> + *
-> + * Caller must ensure we don't call this with other virtqueue operations
-> + * at the same time (except where noted).
-> + *
-> + * Returns zero or a negative error.
-> + * 0: success.
-> + * -ENOMEM: Failed to allocate a new ring, fall back to the original ring size.
-> + *  vq can still work normally
-> + * -EBUSY: Failed to sync with device, vq may not work properly
-> + * -ENOENT: Transport or device not supported
-> + * -E2BIG/-EINVAL: num error
-> + * -EPERM: Operation not permitted
-> + *
-> + */
-> +int virtqueue_resize(struct virtqueue *_vq, u32 num,
-> +		     void (*recycle)(struct virtqueue *vq, void *buf))
-> +{
-> +	struct vring_virtqueue *vq = to_vvq(_vq);
-> +	struct virtio_device *vdev = vq->vq.vdev;
-> +	bool packed;
-> +	void *buf;
-> +	int err;
+> +/* Fields in VIRTIO_PCI_CAP_COMMON_CFG: */
+> +struct virtio_pci_common_cfg {
+> +	/* About the whole device. */
+> +	__le32 device_feature_select;	/* read-write */
+> +	__le32 device_feature;		/* read-only */
+> +	__le32 guest_feature_select;	/* read-write */
+> +	__le32 guest_feature;		/* read-write */
+> +	__le16 msix_config;		/* read-write */
+> +	__le16 num_queues;		/* read-only */
+> +	__u8 device_status;		/* read-write */
+> +	__u8 config_generation;		/* read-only */
 > +
-> +	if (!vq->we_own_ring)
-> +		return -EPERM;
+> +	/* About a specific virtqueue. */
+> +	__le16 queue_select;		/* read-write */
+> +	__le16 queue_size;		/* read-write, power of 2. */
+> +	__le16 queue_msix_vector;	/* read-write */
+> +	__le16 queue_enable;		/* read-write */
+> +	__le16 queue_notify_off;	/* read-only */
+> +	__le32 queue_desc_lo;		/* read-write */
+> +	__le32 queue_desc_hi;		/* read-write */
+> +	__le32 queue_avail_lo;		/* read-write */
+> +	__le32 queue_avail_hi;		/* read-write */
+> +	__le32 queue_used_lo;		/* read-write */
+> +	__le32 queue_used_hi;		/* read-write */
+> +};
 > +
-> +	if (num > vq->vq.num_max)
-> +		return -E2BIG;
-> +
-> +	if (!num)
-> +		return -EINVAL;
-> +
-> +	packed = virtio_has_feature(vdev, VIRTIO_F_RING_PACKED) ? true : false;
+>   struct virtio_pci_modern_device {
+>   	struct pci_dev *pci_dev;
+>   
+> diff --git a/include/uapi/linux/virtio_pci.h b/include/uapi/linux/virtio_pci.h
+> index 3a86f36d7e3d..247ec42af2c8 100644
+> --- a/include/uapi/linux/virtio_pci.h
+> +++ b/include/uapi/linux/virtio_pci.h
+> @@ -140,32 +140,6 @@ struct virtio_pci_notify_cap {
+>   	__le32 notify_off_multiplier;	/* Multiplier for queue_notify_off. */
+>   };
+>   
+> -/* Fields in VIRTIO_PCI_CAP_COMMON_CFG: */
+> -struct virtio_pci_common_cfg {
+> -	/* About the whole device. */
+> -	__le32 device_feature_select;	/* read-write */
+> -	__le32 device_feature;		/* read-only */
+> -	__le32 guest_feature_select;	/* read-write */
+> -	__le32 guest_feature;		/* read-write */
+> -	__le16 msix_config;		/* read-write */
+> -	__le16 num_queues;		/* read-only */
+> -	__u8 device_status;		/* read-write */
+> -	__u8 config_generation;		/* read-only */
+> -
+> -	/* About a specific virtqueue. */
+> -	__le16 queue_select;		/* read-write */
+> -	__le16 queue_size;		/* read-write, power of 2. */
+> -	__le16 queue_msix_vector;	/* read-write */
+> -	__le16 queue_enable;		/* read-write */
+> -	__le16 queue_notify_off;	/* read-only */
+> -	__le32 queue_desc_lo;		/* read-write */
+> -	__le32 queue_desc_hi;		/* read-write */
+> -	__le32 queue_avail_lo;		/* read-write */
+> -	__le32 queue_avail_hi;		/* read-write */
+> -	__le32 queue_used_lo;		/* read-write */
+> -	__le32 queue_used_hi;		/* read-write */
+> -};
+> -
 
 
-vq->packed_ring?
-
-
-> +
-> +	if ((packed ? vq->packed.vring.num : vq->split.vring.num) == num)
-> +		return 0;
-> +
-> +	if (!vdev->config->reset_vq)
-> +		return -ENOENT;
-> +
-> +	if (!vdev->config->enable_reset_vq)
-> +		return -ENOENT;
-
-
-Not sure this is useful, e.g driver may choose to resize after a reset 
-of the device?
+I think it's better not delete those from uAPI. We can embed this struct 
+in the private virito_pci_moden.h anyhow.
 
 Thanks
 
 
-> +
-> +	err = vdev->config->reset_vq(_vq);
-> +	if (err)
-> +		return err;
-> +
-> +	while ((buf = virtqueue_detach_unused_buf(_vq)) != NULL)
-> +		recycle(_vq, buf);
-> +
-> +	if (packed)
-> +		err = virtqueue_resize_packed(_vq, num);
-> +	else
-> +		err = virtqueue_resize_split(_vq, num);
-> +
-> +	if (vdev->config->enable_reset_vq(_vq))
-> +		return -EBUSY;
-> +
-> +	return err;
-> +}
-> +EXPORT_SYMBOL_GPL(virtqueue_resize);
-> +
->   /* Only available for split ring */
->   struct virtqueue *vring_new_virtqueue(unsigned int index,
->   				      unsigned int num,
-> diff --git a/include/linux/virtio.h b/include/linux/virtio.h
-> index a82620032e43..1272566adec6 100644
-> --- a/include/linux/virtio.h
-> +++ b/include/linux/virtio.h
-> @@ -91,6 +91,9 @@ dma_addr_t virtqueue_get_desc_addr(struct virtqueue *vq);
->   dma_addr_t virtqueue_get_avail_addr(struct virtqueue *vq);
->   dma_addr_t virtqueue_get_used_addr(struct virtqueue *vq);
->   
-> +int virtqueue_resize(struct virtqueue *vq, u32 num,
-> +		     void (*recycle)(struct virtqueue *vq, void *buf));
-> +
->   /**
->    * virtio_device - representation of a device using virtio
->    * @index: unique position on the virtio bus
+>   /* Fields in VIRTIO_PCI_CAP_PCI_CFG: */
+>   struct virtio_pci_cfg_cap {
+>   	struct virtio_pci_cap cap;
 
