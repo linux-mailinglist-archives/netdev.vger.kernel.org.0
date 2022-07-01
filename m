@@ -2,75 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EBBE563A3E
-	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 21:58:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 754DE563A21
+	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 21:57:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230269AbiGATes (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Jul 2022 15:34:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49000 "EHLO
+        id S230266AbiGATwA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Jul 2022 15:52:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229570AbiGATeq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 15:34:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 514F71BE84
-        for <netdev@vger.kernel.org>; Fri,  1 Jul 2022 12:34:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E247662101
-        for <netdev@vger.kernel.org>; Fri,  1 Jul 2022 19:34:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10AE7C3411E;
-        Fri,  1 Jul 2022 19:34:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656704084;
-        bh=dEu/u9dgfs1RHHkM0fkOgtAUXU1kmpj5LCeuGMQMttI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=jdzO9DswH3WCzTLver5Ukfwgcu1y3kEayD2Udew/YpxLqyMuG4k2AmOajMU5ZhEdr
-         4DPH8fYP89C473mASb73jj2AGtVbyT+65zfdfVZIN+zQPw5pNL50WCxTc9e5gbiY7R
-         diNX+0lYiYuAaDSJrj7OeFyNvWM4YJ6bDYn9j45g2P0NWEi45kswkf41xp3EoT8VRT
-         ikHAgseGyuPYr+gGznoao+WcJDGN39lJCacnrzhVr2AcrlkYUP8A6IKP7sO5hZYzJ7
-         B0GzDZZiyWkoiJQhQeozynCH+I4ITfPubb1KENP352K5CjOGH6f1wrsi4vR1w0EvQQ
-         rSSCigcEt6dpA==
-Date:   Fri, 1 Jul 2022 21:34:35 +0200
-From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "Alvin __ipraga" <alsi@bang-olufsen.dk>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
+        with ESMTP id S229679AbiGATv7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 15:51:59 -0400
+Received: from mail-il1-f181.google.com (mail-il1-f181.google.com [209.85.166.181])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DA8225585;
+        Fri,  1 Jul 2022 12:51:56 -0700 (PDT)
+Received: by mail-il1-f181.google.com with SMTP id a7so2049554ilj.2;
+        Fri, 01 Jul 2022 12:51:56 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Y2u7piwMP8WRoOkwcLwV3edsFIFKViwRNW8iJEcQlGY=;
+        b=IfnzOe0wYxqP5ksYwQjO1vTqfKQysjpQRobGzNjwICz90uzhtr52rKfRRFEPgniek4
+         bwuH9y0mMUG6Dzm4mKXyccWsnIiixxY0XrwslMzFcYnUqU3ZXLuCTQsgkzfciHQ88dal
+         gWiICqkcXT5XCaacp3sZDX6TxjTu12sH2Ewn5WHmGFyEtzX6ttxineETfynoCGLWFFmC
+         4LfJOda7ANaNzdAhRLk/nMyqw2u7KFKldf0OlNii1XhOrPx3l8FuQ50NPCtK4ItcF9eI
+         aNt7N+ecLzYTpOTVNWXlRSTBCcRjbj4iZv4nOYwirM6ErrsuYhQU5IyYCk+mU/S9XUzD
+         EVYw==
+X-Gm-Message-State: AJIora+4+tYwWZ/wgmAr67ml2aoPOAbLSPHSAu6uqQaUTKvB+VMW+I+R
+        VZBeiRuESCL5BmxnfmDc4w==
+X-Google-Smtp-Source: AGRyM1uCzukptXkjULJiVhiY7VNc7zMOwUSsnOp3OTAKsBWSKYNlI9cw6P3IxIahkJHGCw7J8sib6w==
+X-Received: by 2002:a05:6e02:168f:b0:2da:72fc:feec with SMTP id f15-20020a056e02168f00b002da72fcfeecmr9308243ila.185.1656705115458;
+        Fri, 01 Jul 2022 12:51:55 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id e2-20020a5d9242000000b006758cc4aa76sm3276380iol.29.2022.07.01.12.51.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 01 Jul 2022 12:51:55 -0700 (PDT)
+Received: (nullmailer pid 1407947 invoked by uid 1000);
+        Fri, 01 Jul 2022 19:51:52 -0000
+Date:   Fri, 1 Jul 2022 13:51:52 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Conor Dooley <conor.dooley@microchip.com>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-clk@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        linux-kernel@vger.kernel.org,
+        Daire McNamara <daire.mcnamara@microchip.com>,
+        Paolo Abeni <pabeni@redhat.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        UNGLinuxDriver@microchip.com,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Woojung Huh <woojung.huh@microchip.com>
-Subject: Re: [PATCH RFC net-next 5/6] net: dsa: always use phylink for CPU
- and DSA ports
-Message-ID: <20220701213435.53ecdd70@thinkpad>
-In-Reply-To: <E1o6XAV-004pW2-Ct@rmk-PC.armlinux.org.uk>
-References: <YrxKdVmBzeMsVjsH@shell.armlinux.org.uk>
-        <E1o6XAV-004pW2-Ct@rmk-PC.armlinux.org.uk>
-X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Michael Turquette <mturquette@baylibre.com>,
+        Eric Dumazet <edumazet@google.com>,
+        linux-riscv@lists.infradead.org,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        devicetree@vger.kernel.org,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH v1 01/14] dt-bindings: clk: microchip: mpfs: add reset
+ controller support
+Message-ID: <20220701195152.GA1407913-robh@kernel.org>
+References: <20220630080532.323731-1-conor.dooley@microchip.com>
+ <20220630080532.323731-2-conor.dooley@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220630080532.323731-2-conor.dooley@microchip.com>
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -78,31 +79,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 29 Jun 2022 13:51:43 +0100
-"Russell King (Oracle)" <rmk+kernel@armlinux.org.uk> wrote:
+On Thu, 30 Jun 2022 09:05:20 +0100, Conor Dooley wrote:
+> The "peripheral" devices on PolarFire SoC can be put into reset, so
+> update the device tree binding to reflect the presence of a reset
+> controller.
+> 
+> Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+> ---
+>  .../bindings/clock/microchip,mpfs.yaml          | 17 +++++++++++++++--
+>  1 file changed, 15 insertions(+), 2 deletions(-)
+> 
 
-> Currently, we only use phylink for CPU and DSA ports if there is a
-> fixed-link specification, or a PHY specified. The reason for this
-> behaviour is that when neither is specified, there was no way for
-> phylink to know the link parameters.
->=20
-> Now that we have phylink_set_max_link_speed() (which has become
-> possible through the addition of mac_capabilities) we now have the
-> ability to know the maximum link speed for a specific link, and can
-> now use phylink for this case as well.
->=20
-> However, we need DSA drivers to report the interface mode being used
-> on these ports so that we can select a maximum speed appropriate for
-> the interface mode that hardware may have configured for the port.
->=20
-> This is especially important with the conversion of DSA drivers to
-> phylink_pcs, as the PCS code only gets called if we are using
-> phylink for the port.
->=20
-> Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-
-Reviewed-by: Marek Beh=C3=BAn <kabel@kernel.org>
-
-So this is the one that may break other drivers?
-
-Marek
+Reviewed-by: Rob Herring <robh@kernel.org>
