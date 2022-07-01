@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BD1F75635D5
-	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 16:39:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A84AD5635D0
+	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 16:39:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232619AbiGAOg6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Jul 2022 10:36:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56214 "EHLO
+        id S233360AbiGAOhA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Jul 2022 10:37:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232614AbiGAOgH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 10:36:07 -0400
-Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [217.70.183.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C245C42EF8;
-        Fri,  1 Jul 2022 07:31:32 -0700 (PDT)
+        with ESMTP id S231879AbiGAOgI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 10:36:08 -0400
+Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5208470E41;
+        Fri,  1 Jul 2022 07:31:34 -0700 (PDT)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id CB0E1FF80E;
-        Fri,  1 Jul 2022 14:31:29 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 8A7BAFF805;
+        Fri,  1 Jul 2022 14:31:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1656685891;
+        t=1656685892;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=9IkosSLmaRWjWduk0OBGQ/RHOhyIjPodagqLxqYK6J4=;
-        b=LQXbQGsbAy+kRhgtp4euA1y4TVkis+IShPMnLtSai4XVfs4ckHVroMx/OZIIV/jd83WoKk
-        e+oJJ1SArclpROylhhy/E+vt+c1Z4sDbJj0P3CiJ3OQExpv/2b4+u0JexYNv+bGPMjyZ2e
-        QF/M0PeojhIsuqeOfV28qExeeGmmiCMc0oKYmuA+aLAM0O/ZYEUA5cjtYXcXWD+ESQB3hT
-        dk7TpvOOP2Ptt5J9Vw/bZkItLdyxcEHC3VXKlNA2rlMCWEGQvOvSa+PZxt3zhk+Hb032QK
-        mwshKdvDyYgkvUCA5zhOjpHgpIBoUAwwWym0M9AQjJm0QvEaCWyYoqfLvsz5eA==
+        bh=1LSAcTXR6qicmezvRhlLgmcrUrtDDK9geZUwOZJlwAk=;
+        b=PeqKqg6LU1afhIBtFeBEK2gfuSydBsWEau2zrssFjDPO0ja4xUfWRZpZwdN7sDADsNyMxt
+        XapjTXFMhdlqNZSzhZl/Ro5TvUqgQNgsOeJW7PCxNmUnDzlJrFjB16xx/9kbF6i+NL33v1
+        9ML97MhOiRUR7Op9CFG/+DPpE4WKUJhisVbKncsgcqPxgiB0uklO0zZQO8VeE8jOGWqn+G
+        kWvCSyrO++xVQDutKpWZCZn9rmLM2A0mIRMBAqZcsLptmBATu6x8A65NakWlB9WeJbaNYR
+        4yeg+cgbEqHxvtGUzQKvnEZ4QFrbP0BqBbc/6/Y8zxqD3vVlULHvG9E+6NInkw==
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Alexander Aring <alex.aring@gmail.com>,
         Stefan Schmidt <stefan@datenfreihafen.org>,
@@ -43,9 +43,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Nicolas Schodet <nico@ni.fr.eu.org>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH wpan-next 18/20] ieee802154: ca8210: Flag the driver as being limited
-Date:   Fri,  1 Jul 2022 16:30:50 +0200
-Message-Id: <20220701143052.1267509-19-miquel.raynal@bootlin.com>
+Subject: [PATCH wpan-next 19/20] ieee802154: hwsim: Do not check the rtnl
+Date:   Fri,  1 Jul 2022 16:30:51 +0200
+Message-Id: <20220701143052.1267509-20-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220701143052.1267509-1-miquel.raynal@bootlin.com>
 References: <20220701143052.1267509-1-miquel.raynal@bootlin.com>
@@ -53,39 +53,38 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a hardMAC device wired to Linux 802154 softMAC
-implementation. It is a bit limited in the sense that it cannot handle
-anything else that datagrams. Let's flag it like this to prevent using
-unsupported features such as scan/beacons handling.
+There is no need to ensure the rtnl is locked when changing a driver's
+channel. This cause issues when scanning and this is the only driver
+relying on it. Just drop this dependency because it does not seem
+legitimate.
 
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
- drivers/net/ieee802154/ca8210.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ieee802154/mac802154_hwsim.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ieee802154/ca8210.c b/drivers/net/ieee802154/ca8210.c
-index 42c0b451088d..12f3564c8f8d 100644
---- a/drivers/net/ieee802154/ca8210.c
-+++ b/drivers/net/ieee802154/ca8210.c
-@@ -2943,7 +2943,8 @@ static void ca8210_hw_setup(struct ieee802154_hw *ca8210_hw)
- 	ca8210_hw->phy->flags =
- 		WPAN_PHY_FLAG_TXPOWER |
- 		WPAN_PHY_FLAG_CCA_ED_LEVEL |
--		WPAN_PHY_FLAG_CCA_MODE;
-+		WPAN_PHY_FLAG_CCA_MODE |
-+		WPAN_PHY_FLAG_DATAGRAMS_ONLY;
- }
+diff --git a/drivers/net/ieee802154/mac802154_hwsim.c b/drivers/net/ieee802154/mac802154_hwsim.c
+index 38c217bd7c82..a5b9fc2fb64c 100644
+--- a/drivers/net/ieee802154/mac802154_hwsim.c
++++ b/drivers/net/ieee802154/mac802154_hwsim.c
+@@ -100,7 +100,7 @@ static int hwsim_hw_channel(struct ieee802154_hw *hw, u8 page, u8 channel)
+ 	pib->page = page;
+ 	pib->channel = channel;
  
- /**
+-	pib_old = rtnl_dereference(phy->pib);
++	rcu_assign_pointer(pib_old, phy->pib);
+ 	rcu_assign_pointer(phy->pib, pib);
+ 	kfree_rcu(pib_old, rcu);
+ 	return 0;
 -- 
 2.34.1
 
