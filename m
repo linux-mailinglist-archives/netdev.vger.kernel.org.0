@@ -2,52 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 68EE8562967
-	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 05:11:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F338562980
+	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 05:17:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233231AbiGADKT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jun 2022 23:10:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59108 "EHLO
+        id S233976AbiGADRO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jun 2022 23:17:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231356AbiGADKS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 23:10:18 -0400
+        with ESMTP id S233948AbiGADRM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 23:17:12 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96CBF248CC;
-        Thu, 30 Jun 2022 20:10:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B10FB64D4E
+        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 20:17:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 313DF62258;
-        Fri,  1 Jul 2022 03:10:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 87430C341CF;
-        Fri,  1 Jul 2022 03:10:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D41C62198
+        for <netdev@vger.kernel.org>; Fri,  1 Jul 2022 03:17:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 717DEC34115;
+        Fri,  1 Jul 2022 03:17:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656645016;
-        bh=8HEFfIhVligP5JQR/yO4wnOtAh+8LUCK5IsLvdGG7X0=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=SV6DVu9XwkmnfNZpPePDddMcx7slU3UfnUkL5xHXiQS2X5QgnROGHIdony69yHAvE
-         2w0ZNc0gAEHvy+sB1q2D3VA6amG+t9JH+/sPQAGsHAhd1XnkfFsQFmkpKHeQSEUisQ
-         t+4niLH/zr7mVjnS1iyXxE1gIbeLp+ZJhikr5mcCTOsf3SoMFG0+XrR8yDD03s2/CM
-         6kB9VKxJpR0IxBX9jSqVZtnfO50ltCEiekcoPtHQi/8ZzrIFIOv3h5nCvoZbkIKnai
-         d8i+bBPcO/ogOYIBjVJBJNAVM0XDrzMHIEcQGbYfw4ns3sIibpYZAKm1bRaJrvH177
-         4gWt6mQ/3DoWA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 60507E49FA0;
-        Fri,  1 Jul 2022 03:10:16 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1656645430;
+        bh=biGYCsqe7IJjoIUN6ICxo1ZU1IFtuOLCZ+AsEAgycJM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=uFKsUkSFwiW6NAAH1w56etD1j+7+HZmZIouS0vDmmqgHKhUhZJwqdfUC6p9ehG6sC
+         2PCJps8KYJ/TnnUUvbpG2wFcu4a64/YLaPnvcnmXSMslfEby+aIgYHE9SLU98ekT3t
+         M2pokFg3ot64IiymcqbaoQcGJJHOZk4Gm2rWb/oUZd+6FQ22K5glNwq3069PqH+RkX
+         7F/ItNTVWGj/e05ycwbdvmNK9/MVcanW+Qy5xXU/D2Aq+AN5bZzYi/wyyJrVJZxspw
+         2U24wkdqf93C5MSn4JK6X/gHWWxDuMEIhP7y+700Be8oBdBe0FIfAriV0w/q/5l3DI
+         MVLfrDYGxKKPQ==
+Date:   Thu, 30 Jun 2022 20:17:09 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Ido Schimmel <idosch@nvidia.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, pabeni@redhat.com,
+        edumazet@google.com, petrm@nvidia.com, amcohen@nvidia.com,
+        mlxsw@nvidia.com
+Subject: Re: [PATCH net-next 01/13] mlxsw: Configure egress VID for unicast
+ FDB entries
+Message-ID: <20220630201709.6e66a1bb@kernel.org>
+In-Reply-To: <20220630082257.903759-2-idosch@nvidia.com>
+References: <20220630082257.903759-1-idosch@nvidia.com>
+        <20220630082257.903759-2-idosch@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] ethernet/emulex:fix repeated words in comments
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165664501639.21670.3293352938618990469.git-patchwork-notify@kernel.org>
-Date:   Fri, 01 Jul 2022 03:10:16 +0000
-References: <20220629123756.48860-1-yuanjilin@cdjrlc.com>
-In-Reply-To: <20220629123756.48860-1-yuanjilin@cdjrlc.com>
-To:     Jilin Yuan <yuanjilin@cdjrlc.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, ajit.khaparde@broadcom.com,
-        sriharsha.basavapatna@broadcom.com, somnath.kotur@broadcom.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -58,26 +56,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Wed, 29 Jun 2022 20:37:56 +0800 you wrote:
-> Delete the redundant word 'the'.
+On Thu, 30 Jun 2022 11:22:45 +0300 Ido Schimmel wrote:
+> From: Amit Cohen <amcohen@nvidia.com>
 > 
-> Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
-> ---
->  drivers/net/ethernet/emulex/benet/be_main.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> Using unified bridge model, firmware no longer configures the egress VID
+> "under the hood" and moves this responsibility to software.
+> 
+> For layer 2, this means that software needs to determine the egress VID
+> for both unicast (i.e., FDB) and multicast (i.e., MDB and flooding) flows.
+> 
+> Unicast FDB records and unicast LAG FDB records have new fields - "set_vid"
+> and "vid", set them. For records which point to router port, do not set
+> these fields.
 
-Here is the summary with links:
-  - ethernet/emulex:fix repeated words in comments
-    https://git.kernel.org/netdev/net-next/c/4c2d6acd765f
+clang seems to have a legitimate complaint:
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c:2928:6: warning: variable 'mlxsw_sp_port_vlan' is used uninitialized whenever 'if' condition is true [-Wsometimes-uninitialized]
+        if (mlxsw_sp_fid_is_dummy(mlxsw_sp, fid))
+            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c:2948:11: note: uninitialized use occurs here
+                                      mlxsw_sp_port_vlan->vid, adding, true);
+                                      ^~~~~~~~~~~~~~~~~~
+drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c:2928:2: note: remove the 'if' if its condition is always false
+        if (mlxsw_sp_fid_is_dummy(mlxsw_sp, fid))
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c:2923:6: warning: variable 'mlxsw_sp_port_vlan' is used uninitialized whenever 'if' condition is true [-Wsometimes-uninitialized]
+        if (!mlxsw_sp_port) {
+            ^~~~~~~~~~~~~~
+drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c:2948:11: note: uninitialized use occurs here
+                                      mlxsw_sp_port_vlan->vid, adding, true);
+                                      ^~~~~~~~~~~~~~~~~~
+drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c:2923:2: note: remove the 'if' if its condition is always false
+        if (!mlxsw_sp_port) {
+        ^~~~~~~~~~~~~~~~~~~~~
+drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c:2907:47: note: initialize the variable 'mlxsw_sp_port_vlan' to silence this warning
+        struct mlxsw_sp_port_vlan *mlxsw_sp_port_vlan;
+                                                     ^
+                                                      = NULL
