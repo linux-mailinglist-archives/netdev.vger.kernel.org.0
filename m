@@ -2,70 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B48D75630AD
-	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 11:49:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C57F5630CB
+	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 11:58:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236374AbiGAJt2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Jul 2022 05:49:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42908 "EHLO
+        id S236086AbiGAJ6F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Jul 2022 05:58:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233394AbiGAJt0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 05:49:26 -0400
-Received: from mail-oa1-x2b.google.com (mail-oa1-x2b.google.com [IPv6:2001:4860:4864:20::2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1813A7694A
-        for <netdev@vger.kernel.org>; Fri,  1 Jul 2022 02:49:24 -0700 (PDT)
-Received: by mail-oa1-x2b.google.com with SMTP id 586e51a60fabf-101ec2d6087so2864238fac.3
-        for <netdev@vger.kernel.org>; Fri, 01 Jul 2022 02:49:24 -0700 (PDT)
+        with ESMTP id S235277AbiGAJ6E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 05:58:04 -0400
+Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C859874DDC
+        for <netdev@vger.kernel.org>; Fri,  1 Jul 2022 02:58:03 -0700 (PDT)
+Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-3137316bb69so18161687b3.10
+        for <netdev@vger.kernel.org>; Fri, 01 Jul 2022 02:58:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=DMyolhHXpmu1+9rKonQ8Ub5Er3bhcnEayHaPyRlkSA4=;
-        b=GBrFvYFYOVBzzpmDHs3IrrfJPWTh6RCiSsJBTWQSl2QmDgws/O5CzbbvaoYo7P/SJf
-         cyhOGlDu6Sy/aJd1T9ENNALBTKHhubukyjTytEz5ksj1SfTpIDkxMeNNkK0i66J2J7aD
-         T22Pj2T34mGGznldlkSe4GcLvzDzzbDCAUo7xC7XmHsgEQxx4Prha3Uyr4yPd9WzTZBj
-         US+cZB51ElKLZPX1ckN42uJz3Y2Q8FOvCJ/Eq7TyFFGPJ6Pi6rl84Q2WgBKtR3UVOJtR
-         jt03u3XwJDf3PfURRZlrovDUFv44xp0ZXH7T7lRQEM3b4E/TBU4sOFbPamIb3L9f9yf1
-         kSlw==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8iWWk/hgkV8wOLDzOpBeJQKLT4DJagEdptWHyoqwqBY=;
+        b=FANPRJpiv4CVOn86XMcd9xl4Badvusn8OsWz99MIc9GZ6pHE8n1cTcTmd77FpuUQnY
+         okMMc+CCqjkQVHtZkRVLQ/HJyh3z+lG7GZ2ItFCvUMUgD97I0Mw3gw7nxx7zMNvBLYtk
+         bw2mWFqQdgPrGofIaDRFtiBFzrP4qiXzBBzce757cmFDpLteUcEQdM3Nl16clcJEBaku
+         TRjOgrpIHaC4FgJ3nFPcFb3jgPK6Z4mkfpPM9DIZLaTWDEa07yJvATR83sjYbVKQFdUy
+         526eOdlX3+6eCIKgGwuJRiSfxeuY2YH93OSGBMMPNMTiwA4Roj4rWAUH6Kb41twXoGYK
+         SLQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=DMyolhHXpmu1+9rKonQ8Ub5Er3bhcnEayHaPyRlkSA4=;
-        b=aLVTpxCpIWcRO9go6v0sUG1vFA3BKhWIA3aUIeer+x7NViCuMgrAsUm7ykrnYFtMW0
-         jIfk0yMEKWL1W/m7cxEq2qV+i+YbWEdit7ke3KSTfbB5SeYsxOLXv3sRnSBbjdL2UEVt
-         2fb4Jv7HFVqqcufU1ZULwlhNz2AfePakUGGnQkO3SDQJlJiSiuDnKjH+FDVmkkSw/ecl
-         0DUuEZyN6EoUsltYCj9MuTLkdvUUcvMm8enS44ruLDWI/MBSv5eUvA8eur49IPJR3eEw
-         eoywduzxECKXtGUjmekJ+z//zAZnAwPMeJDpp5kn0ltgOn6T3XPqp1nNlkRI+I+aOmfT
-         g3XA==
-X-Gm-Message-State: AJIora+y78d+A+RbA5vPmO+XoAu0dRB2koUY1kvIIdxbnzWxx/hWP6N7
-        F00qBRBnEsZ9EKRTipVXjTHQ5CUjRDpg8wP6WnA=
-X-Google-Smtp-Source: AGRyM1vUEnxfVBXnLthcFdYPBiJex2ydqSUkRs3JBYl50JOjTOlBaOXlFT8Lm5+/LueeNt5C1Zsv3fMm8ZXYb+a7VHM=
-X-Received: by 2002:a05:6870:8195:b0:101:9342:bf1a with SMTP id
- k21-20020a056870819500b001019342bf1amr7805666oae.149.1656668963662; Fri, 01
- Jul 2022 02:49:23 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8iWWk/hgkV8wOLDzOpBeJQKLT4DJagEdptWHyoqwqBY=;
+        b=RFcIkq2VhxgSRUv7DbXbBsYXoqSL5zOL14UzoYRsveJKqT3usGMye72Pa0TANcZeSH
+         bzKxW5A2YbLgyNsYY+EK0j27d0RMKLItLOJuvAyVdrEG90WZt3OYtuujP2HqcioxQSkG
+         7RlqRG0l04awX41jYTDfjH0Xiu0wyegLwICcyLGrvOkxGxETx7mtMFoUjeyx1dxjEjRy
+         m2Ys6UsrEZIyMPyf8cAoe1NgftsFFBxkSTDkiXa230Yuy+JuLUqZwsxXOox1QhtazwgA
+         1LK8IWqlq1LGvKozrXHIFaWi3Ny9fdOPJufF2Icm3zmPQwlwnTyiGTbaVRP3fpXk3Uft
+         zhXQ==
+X-Gm-Message-State: AJIora9jQXYScE22HnK9ObbZ9J6ikUCY9ZBYBhy7BjgLHMGRWp5BbBR/
+        z12CtsWrqUwvKdF7qK+JC1RPT023A7GHsx4baz5WUw==
+X-Google-Smtp-Source: AGRyM1veLeHzsoTk/7wuqo+G4A5bgwzl83EdSc/CE62rjHNmBQbSEr+9Q9ry1NmfYA2qehE1oXVH2Lx6yx5IUZDNUwE=
+X-Received: by 2002:a81:9b93:0:b0:317:8c9d:4c22 with SMTP id
+ s141-20020a819b93000000b003178c9d4c22mr15436316ywg.278.1656669482740; Fri, 01
+ Jul 2022 02:58:02 -0700 (PDT)
 MIME-Version: 1.0
-Received: by 2002:a05:6839:f85:0:0:0:0 with HTTP; Fri, 1 Jul 2022 02:49:23
- -0700 (PDT)
-Reply-To: fredrich.david.mail@gmail.com
-From:   Mr Fredrich David <randywoods212@gmail.com>
-Date:   Fri, 1 Jul 2022 09:49:23 +0000
-Message-ID: <CAAAmqEZoJXvR7bNFTw7wgM9EcEBmT+Vx+5RsO3evURK6PFAN0Q@mail.gmail.com>
-Subject: dcv3
-To:     undisclosed-recipients:;
+References: <20220701094256.1970076-1-johan.almbladh@anyfinetworks.com>
+In-Reply-To: <20220701094256.1970076-1-johan.almbladh@anyfinetworks.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 1 Jul 2022 11:57:51 +0200
+Message-ID: <CANn89i+FZ7t6F6tA8iFMjAzGmKkK=A+kdFpsm6ioygg5DnwT8g@mail.gmail.com>
+Subject: Re: [PATCH bpf] xdp: Fix spurious packet loss in generic XDP TX path
+To:     Johan Almbladh <johan.almbladh@anyfinetworks.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>, song@kernel.org,
+        martin.lau@linux.dev, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>, haoluo@google.com,
+        jolsa@kernel.org, bpf <bpf@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=4.3 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS,T_HK_NAME_FM_MR_MRS,T_SCC_BODY_TEXT_LINE,UNDISC_FREEM
-        autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: ****
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--In risposta alle tue email, ti scrivo per informarti che i progetti
-sono ora completati e sei stato approvato!
-Cordiali saluti,
-Signor Fredrich David
+On Fri, Jul 1, 2022 at 11:43 AM Johan Almbladh
+<johan.almbladh@anyfinetworks.com> wrote:
+>
+> The byte queue limits (BQL) mechanism is intended to move queuing from
+> the driver to the network stack in order to reduce latency caused by
+> excessive queuing in hardware. However, when transmitting or redirecting
+> a packet with XDP, the qdisc layer is bypassed and there are no
+> additional queues. Since netif_xmit_stopped() also takes BQL limits into
+> account, but without having any alternative queuing, packets are
+> silently dropped.
+>
+> This patch modifies the drop condition to only consider cases when the
+> driver itself cannot accept any more packets. This is analogous to the
+> condition in __dev_direct_xmit(). Dropped packets are also counted on
+> the device.
+
+This means XDP packets are able to starve other packets going through a qdisc,
+DDOS attacks will be more effective.
+
+in-driver-XDP use dedicated TX queues, so they do not have this
+starvation issue.
+
+This should be mentioned somewhere I guess.
+
+>
+> Signed-off-by: Johan Almbladh <johan.almbladh@anyfinetworks.com>
+> ---
+>  net/core/dev.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+>
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index 8e6f22961206..41b5d7ac5ec5 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -4875,10 +4875,12 @@ void generic_xdp_tx(struct sk_buff *skb, struct bpf_prog *xdp_prog)
+>         txq = netdev_core_pick_tx(dev, skb, NULL);
+>         cpu = smp_processor_id();
+>         HARD_TX_LOCK(dev, txq, cpu);
+> -       if (!netif_xmit_stopped(txq)) {
+> +       if (!netif_xmit_frozen_or_drv_stopped(txq)) {
+>                 rc = netdev_start_xmit(skb, dev, txq, 0);
+>                 if (dev_xmit_complete(rc))
+>                         free_skb = false;
+> +       } else {
+> +               dev_core_stats_tx_dropped_inc(dev);
+>         }
+>         HARD_TX_UNLOCK(dev, txq);
+>         if (free_skb) {
+> --
+> 2.30.2
+>
