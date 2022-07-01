@@ -2,88 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EBA4562F9D
-	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 11:14:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 866CC562F98
+	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 11:14:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235466AbiGAJOE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Jul 2022 05:14:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58294 "EHLO
+        id S234997AbiGAJNw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Jul 2022 05:13:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235277AbiGAJOD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 05:14:03 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 683C53ED20;
-        Fri,  1 Jul 2022 02:14:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=myLZG8Fxe2O1i1vWy67IytiAd7jdr/N9oCZa6x7j0I0=; b=GP62mLwq01G1gJMQGK4N5R3ehZ
-        dpxwXJclqNQfsMA+0LkxdldsKE2DPcyytkGkBrT/jaByY9FYa3mT2VVflo7pZ4iSWP0gJJhu6R/0N
-        9ZGBNiEdtdbimqRi61aReO7rF+3UX6QIUY0Uzevp2ZdZ37bcXDWuVvhK6hgrCx7BZJ5c=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1o7Cia-008v8d-Tw; Fri, 01 Jul 2022 11:13:40 +0200
-Date:   Fri, 1 Jul 2022 11:13:40 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Radhey Shyam Pandey <radhey.shyam.pandey@amd.com>
-Cc:     nicolas.ferre@microchip.com, claudiu.beznea@microchip.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        gregkh@linuxfoundation.org, rafael@kernel.org,
-        saravanak@google.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, git@amd.com
-Subject: Re: [PATCH net-next v2] net: macb: In shared MDIO usecase make MDIO
- producer ethernet node to probe first
-Message-ID: <Yr66xEMB/ORr0Xcp@lunn.ch>
-References: <1656618906-29881-1-git-send-email-radhey.shyam.pandey@amd.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1656618906-29881-1-git-send-email-radhey.shyam.pandey@amd.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S232319AbiGAJNv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 05:13:51 -0400
+Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9AA2440E68;
+        Fri,  1 Jul 2022 02:13:50 -0700 (PDT)
+Received: from localhost (unknown [127.0.0.1])
+        by mail.nfschina.com (Postfix) with ESMTP id EBAE81E80D22;
+        Fri,  1 Jul 2022 17:12:20 +0800 (CST)
+X-Virus-Scanned: amavisd-new at test.com
+Received: from mail.nfschina.com ([127.0.0.1])
+        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id KGUK4whbTKxV; Fri,  1 Jul 2022 17:12:18 +0800 (CST)
+Received: from localhost.localdomain (unknown [219.141.250.2])
+        (Authenticated sender: kunyu@nfschina.com)
+        by mail.nfschina.com (Postfix) with ESMTPA id 3E7AF1E80D21;
+        Fri,  1 Jul 2022 17:12:18 +0800 (CST)
+From:   Li kunyu <kunyu@nfschina.com>
+To:     edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        shuah@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Li kunyu <kunyu@nfschina.com>
+Subject: [PATCH] net/cmsg_sender: Remove a semicolon
+Date:   Fri,  1 Jul 2022 17:13:45 +0800
+Message-Id: <20220701091345.2816-1-kunyu@nfschina.com>
+X-Mailer: git-send-email 2.18.2
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,RDNS_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 01, 2022 at 01:25:06AM +0530, Radhey Shyam Pandey wrote:
-> In shared MDIO suspend/resume usecase for ex. with MDIO producer
-> (0xff0c0000) eth1 and MDIO consumer(0xff0b0000) eth0 there is a
-> constraint that ethernet interface(ff0c0000) MDIO bus producer
-> has to be resumed before the consumer ethernet interface(ff0b0000).
-> 
-> However above constraint is not met when GEM0(ff0b0000) is resumed first.
-> There is phy_error on GEM0 and interface becomes non-functional on resume.
-> 
-> suspend:
-> [ 46.477795] macb ff0c0000.ethernet eth1: Link is Down
-> [ 46.483058] macb ff0c0000.ethernet: gem-ptp-timer ptp clock unregistered.
-> [ 46.490097] macb ff0b0000.ethernet eth0: Link is Down
-> [ 46.495298] macb ff0b0000.ethernet: gem-ptp-timer ptp clock unregistered.
-> 
-> resume:
-> [ 46.633840] macb ff0b0000.ethernet eth0: configuring for phy/sgmii link mode
-> macb_mdio_read -> pm_runtime_get_sync(GEM1) it return -EACCES error.
-> 
-> The suspend/resume is dependent on probe order so to fix this dependency
-> ensure that MDIO producer ethernet node is always probed first followed
-> by MDIO consumer ethernet node.
-> 
-> During MDIO registration find out if MDIO bus is shared and check if MDIO
-> producer platform node(traverse by 'phy-handle' property) is bound. If not
-> bound then defer the MDIO consumer ethernet node probe. Doing it ensures
-> that in suspend/resume MDIO producer is resumed followed by MDIO consumer
-> ethernet node.
+Remove the repeated ';' from code.
 
-I don't think there is anything specific to MACB here. There are
-Freescale boards which have an MDIO bus shared by two interfaces etc.
+Signed-off-by: Li kunyu <kunyu@nfschina.com>
+---
+ tools/testing/selftests/net/cmsg_sender.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Please try to solve this in a generic way, not specific to one MAC and
-MDIO combination.
+diff --git a/tools/testing/selftests/net/cmsg_sender.c b/tools/testing/selftests/net/cmsg_sender.c
+index bc2162909a1a..75dd83e39207 100644
+--- a/tools/testing/selftests/net/cmsg_sender.c
++++ b/tools/testing/selftests/net/cmsg_sender.c
+@@ -456,7 +456,7 @@ int main(int argc, char *argv[])
+ 		buf[1] = 0;
+ 	} else if (opt.sock.type == SOCK_RAW) {
+ 		struct udphdr hdr = { 1, 2, htons(opt.size), 0 };
+-		struct sockaddr_in6 *sin6 = (void *)ai->ai_addr;;
++		struct sockaddr_in6 *sin6 = (void *)ai->ai_addr;
+ 
+ 		memcpy(buf, &hdr, sizeof(hdr));
+ 		sin6->sin6_port = htons(opt.sock.proto);
+-- 
+2.18.2
 
-     Andrew
