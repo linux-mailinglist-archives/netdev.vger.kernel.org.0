@@ -2,315 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EB70563642
-	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 16:57:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A3745563648
+	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 16:58:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233968AbiGAO5s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Jul 2022 10:57:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52924 "EHLO
+        id S231243AbiGAO63 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Jul 2022 10:58:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233933AbiGAO5k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 10:57:40 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A39635AAB;
-        Fri,  1 Jul 2022 07:57:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1656687458; x=1688223458;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=WJDGz9/OvbfrZuiibHXSknluM0ipvvuQF6SC2KRZewk=;
-  b=XpdDK/vk8HZahl9dubTFpMVGyUeh56ynki+XUP5UdytcQSWBFhfBBVHk
-   SiJ0GQZIidsYm7a1Rpv63FS1A05vbdQVZL6Ba94k/yinkeRYuvpOwLv7h
-   X8dHFzKPLm6OugWpCp1GYoqTNZIR+YliZUEaLt/fdXUPOpgjtNKbwwjTd
-   6jfAwoHTLft6gV3a2FsFtDLXdUIaO7BW2zp6j0IyZrBGapfgb7NKYAyep
-   8xXHaHpNHI0b3+oIopgFxrAh0irCFuA7J4sJj4IAOwYucne8JfY0fJlBf
-   iSLviZ8JiAqw4F+5Pc4h6Ns0/mFeGxSPqIrrXtAqzneIxCyvQMC3/D2xL
-   A==;
-X-IronPort-AV: E=Sophos;i="5.92,237,1650956400"; 
-   d="scan'208";a="166021967"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 01 Jul 2022 07:57:37 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 1 Jul 2022 07:57:37 -0700
-Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Fri, 1 Jul 2022 07:57:17 -0700
-From:   Arun Ramadoss <arun.ramadoss@microchip.com>
-To:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <bpf@vger.kernel.org>
-CC:     Woojung Huh <woojung.huh@microchip.com>,
-        <UNGLinuxDriver@microchip.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S229681AbiGAO62 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 10:58:28 -0400
+Received: from mail-yw1-x112f.google.com (mail-yw1-x112f.google.com [IPv6:2607:f8b0:4864:20::112f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D4A81CB0F
+        for <netdev@vger.kernel.org>; Fri,  1 Jul 2022 07:58:27 -0700 (PDT)
+Received: by mail-yw1-x112f.google.com with SMTP id 00721157ae682-3178acf2a92so26252427b3.6
+        for <netdev@vger.kernel.org>; Fri, 01 Jul 2022 07:58:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=anyfinetworks-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=A+uIirz6Z40RKlayzkCmwx6QqczAjb5evF+ivkFEv8M=;
+        b=ZAdMk7EdGv35WC0XPfPubzVzl+2zaLEnn1pxZXjWfHcs8fCvF5YHlWd7uFJ8F47ynP
+         fYMqdT/6Ub5AMgBAGiz1J+nh1L7+g2dyE00czBBdsq5gkrxpa0sGftdOESc3XDrALC5l
+         +2DpqaHTVcs6Z8U4teO08h45RwMg3a3JCXotTB1yWo1PHyfqATHjAVOQbZASy2v7jcEW
+         FHlzZHJeVBVhAy8+99M70xZjPLOW2+8nvIYSkvxqOrBOEKlqwg9P/kerudnY1KcwTVbN
+         +BNkttlWxVQjKlJYP0B9as3vlSY7Ho56tUFoOtQWZR5Fq7JnBJ7MBXpeRbkAascueDjR
+         1Vmg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=A+uIirz6Z40RKlayzkCmwx6QqczAjb5evF+ivkFEv8M=;
+        b=OuItxmUB4yLne3Vg693f529/6+xiHluqaTSnTOy2hFrKxbn9R9fMxE3WFq6lnZoXHB
+         77eJcJnxz2qlRiolqC0YxTztvQ6RCrGl9DhyZlEfl602fgQR2NsNgyLgSOj5DZ7tt+hE
+         RXTff1meDaWafsLM7erJy5QCj1LErkG4MO3fwDOOZf1p+clCLNtXtI66tToxn/BpWh8s
+         qOj2LPcoI1K5k1JTp6kp3CMJxU5lSoaxcEugaNiz/8UYvv3Jx9ijc47bx7JVO1XYqOCx
+         o+uDNnn80D9b20yH1b0ERIh4IjT/k3MCuWl+rbJxn+y6gdnFCiwyeAu1WMTJkUS3LnLp
+         53Sw==
+X-Gm-Message-State: AJIora8VeQfkjqcZEyiJMDlYZDXYWvOyla9mCp7G3NPhlM9NJOyXv+LX
+        liHI4ouNZnukYRRpmvIiRjLasC8dI6UdWCAY3pxMZA==
+X-Google-Smtp-Source: AGRyM1vklhtlCV9UGa1JfQODih687wjCSy9kH9Sl6nWwuug+snorhdiQ9rNausNu2/6S40BlBZRGzRb7G+PShYm80SU=
+X-Received: by 2002:a81:600a:0:b0:318:81bc:e928 with SMTP id
+ u10-20020a81600a000000b0031881bce928mr17472369ywb.119.1656687506372; Fri, 01
+ Jul 2022 07:58:26 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220701094256.1970076-1-johan.almbladh@anyfinetworks.com>
+ <CANn89i+FZ7t6F6tA8iFMjAzGmKkK=A+kdFpsm6ioygg5DnwT8g@mail.gmail.com> <73774e57-64c3-e32d-d762-1fcf64d5628c@iogearbox.net>
+In-Reply-To: <73774e57-64c3-e32d-d762-1fcf64d5628c@iogearbox.net>
+From:   Johan Almbladh <johan.almbladh@anyfinetworks.com>
+Date:   Fri, 1 Jul 2022 16:58:15 +0200
+Message-ID: <CAM1=_QR07rRTA5bdRScXnR5uA-GayXpbXAi2htX37uWwm+v9SA@mail.gmail.com>
+Subject: Re: [PATCH bpf] xdp: Fix spurious packet loss in generic XDP TX path
+To:     Daniel Borkmann <daniel@iogearbox.net>,
         Eric Dumazet <edumazet@google.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        "Rob Herring" <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        "Song Liu" <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>
-Subject: [Patch net-next v15 02/13] dt-bindings: net: dsa: dt bindings for microchip lan937x
-Date:   Fri, 1 Jul 2022 20:27:03 +0530
-Message-ID: <20220701145703.22165-1-arun.ramadoss@microchip.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220701144652.10526-1-arun.ramadoss@microchip.com>
-References: <20220701144652.10526-1-arun.ramadoss@microchip.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        John Fastabend <john.fastabend@gmail.com>, song@kernel.org,
+        martin.lau@linux.dev, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, jolsa@kernel.org,
+        bpf <bpf@vger.kernel.org>, netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+On Fri, Jul 1, 2022 at 3:29 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> On 7/1/22 11:57 AM, Eric Dumazet wrote:
+> > On Fri, Jul 1, 2022 at 11:43 AM Johan Almbladh
+> > <johan.almbladh@anyfinetworks.com> wrote:
+> >>
+> >> The byte queue limits (BQL) mechanism is intended to move queuing from
+> >> the driver to the network stack in order to reduce latency caused by
+> >> excessive queuing in hardware. However, when transmitting or redirecting
+> >> a packet with XDP, the qdisc layer is bypassed and there are no
+> >> additional queues. Since netif_xmit_stopped() also takes BQL limits into
+> >> account, but without having any alternative queuing, packets are
+> >> silently dropped.
+> >>
+> >> This patch modifies the drop condition to only consider cases when the
+> >> driver itself cannot accept any more packets. This is analogous to the
+> >> condition in __dev_direct_xmit(). Dropped packets are also counted on
+> >> the device.
+> >
+> > This means XDP packets are able to starve other packets going through a qdisc,
+> > DDOS attacks will be more effective.
+> >
+> > in-driver-XDP use dedicated TX queues, so they do not have this
+> > starvation issue.
+> >
+> > This should be mentioned somewhere I guess.
+>
+> +1, Johan, could you add this as comment and into commit description in a v2
+> of your fix? Definitely should be clarified that it's limited to generic XDP.
 
-Documentation in .yaml format and updates to the MAINTAINERS
-Also 'make dt_binding_check' is passed.
+Thanks for the review.
 
-RGMII internal delay values for the mac is retrieved from
-rx-internal-delay-ps & tx-internal-delay-ps as per the feedback from
-v3 patch series.
-https://lore.kernel.org/netdev/20210802121550.gqgbipqdvp5x76ii@skbuf/
+Daniel, I will prepare a v2 shortly.
 
-It supports only the delay value of 0ns and 2ns.
-
-Signed-off-by: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
-Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
----
- .../bindings/net/dsa/microchip,lan937x.yaml   | 192 ++++++++++++++++++
- MAINTAINERS                                   |   1 +
- 2 files changed, 193 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/net/dsa/microchip,lan937x.yaml
-
-diff --git a/Documentation/devicetree/bindings/net/dsa/microchip,lan937x.yaml b/Documentation/devicetree/bindings/net/dsa/microchip,lan937x.yaml
-new file mode 100644
-index 000000000000..630bf0f8294b
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/dsa/microchip,lan937x.yaml
-@@ -0,0 +1,192 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/net/dsa/microchip,lan937x.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: LAN937x Ethernet Switch Series Tree Bindings
-+
-+maintainers:
-+  - UNGLinuxDriver@microchip.com
-+
-+allOf:
-+  - $ref: dsa.yaml#
-+
-+properties:
-+  compatible:
-+    enum:
-+      - microchip,lan9370
-+      - microchip,lan9371
-+      - microchip,lan9372
-+      - microchip,lan9373
-+      - microchip,lan9374
-+
-+  reg:
-+    maxItems: 1
-+
-+  spi-max-frequency:
-+    maximum: 50000000
-+
-+  reset-gpios:
-+    description: Optional gpio specifier for a reset line
-+    maxItems: 1
-+
-+  mdio:
-+    $ref: /schemas/net/mdio.yaml#
-+    unevaluatedProperties: false
-+
-+patternProperties:
-+  "^(ethernet-)?ports$":
-+    patternProperties:
-+      "^(ethernet-)?port@[0-9]+$":
-+        allOf:
-+          - if:
-+              properties:
-+                phy-mode:
-+                  contains:
-+                    enum:
-+                      - rgmii
-+                      - rgmii-id
-+                      - rgmii-txid
-+                      - rgmii-rxid
-+            then:
-+              properties:
-+                rx-internal-delay-ps:
-+                  enum: [0, 2000]
-+                  default: 0
-+                tx-internal-delay-ps:
-+                  enum: [0, 2000]
-+                  default: 0
-+
-+required:
-+  - compatible
-+  - reg
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
-+
-+    macb0 {
-+            #address-cells = <1>;
-+            #size-cells = <0>;
-+
-+            fixed-link {
-+                    speed = <1000>;
-+                    full-duplex;
-+            };
-+    };
-+
-+    spi {
-+            #address-cells = <1>;
-+            #size-cells = <0>;
-+
-+            lan9374: switch@0 {
-+                    compatible = "microchip,lan9374";
-+                    reg = <0>;
-+                    spi-max-frequency = <44000000>;
-+
-+                    ethernet-ports {
-+                            #address-cells = <1>;
-+                            #size-cells = <0>;
-+
-+                            port@0 {
-+                                    reg = <0>;
-+                                    label = "lan1";
-+                                    phy-mode = "internal";
-+                                    phy-handle = <&t1phy0>;
-+                            };
-+
-+                            port@1 {
-+                                    reg = <1>;
-+                                    label = "lan2";
-+                                    phy-mode = "internal";
-+                                    phy-handle = <&t1phy1>;
-+                            };
-+
-+                            port@2 {
-+                                    reg = <2>;
-+                                    label = "lan4";
-+                                    phy-mode = "internal";
-+                                    phy-handle = <&t1phy2>;
-+                            };
-+
-+                            port@3 {
-+                                    reg = <3>;
-+                                    label = "lan6";
-+                                    phy-mode = "internal";
-+                                    phy-handle = <&t1phy3>;
-+                            };
-+
-+                            port@4 {
-+                                    reg = <4>;
-+                                    phy-mode = "rgmii";
-+                                    tx-internal-delay-ps = <2000>;
-+                                    rx-internal-delay-ps = <2000>;
-+                                    ethernet = <&macb0>;
-+
-+                                    fixed-link {
-+                                            speed = <1000>;
-+                                            full-duplex;
-+                                    };
-+                            };
-+
-+                            port@5 {
-+                                    reg = <5>;
-+                                    label = "lan7";
-+                                    phy-mode = "rgmii";
-+                                    tx-internal-delay-ps = <2000>;
-+                                    rx-internal-delay-ps = <2000>;
-+
-+                                    fixed-link {
-+                                            speed = <1000>;
-+                                            full-duplex;
-+                                    };
-+                            };
-+
-+                            port@6 {
-+                                    reg = <6>;
-+                                    label = "lan5";
-+                                    phy-mode = "internal";
-+                                    phy-handle = <&t1phy6>;
-+                            };
-+
-+                            port@7 {
-+                                    reg = <7>;
-+                                    label = "lan3";
-+                                    phy-mode = "internal";
-+                                    phy-handle = <&t1phy7>;
-+                            };
-+                    };
-+
-+                    mdio {
-+                            #address-cells = <1>;
-+                            #size-cells = <0>;
-+
-+                            t1phy0: ethernet-phy@0{
-+                                    reg = <0x0>;
-+                            };
-+
-+                            t1phy1: ethernet-phy@1{
-+                                    reg = <0x1>;
-+                            };
-+
-+                            t1phy2: ethernet-phy@2{
-+                                    reg = <0x2>;
-+                            };
-+
-+                            t1phy3: ethernet-phy@3{
-+                                    reg = <0x3>;
-+                            };
-+
-+                            t1phy6: ethernet-phy@6{
-+                                    reg = <0x6>;
-+                            };
-+
-+                            t1phy7: ethernet-phy@7{
-+                                    reg = <0x7>;
-+                            };
-+                    };
-+            };
-+    };
-diff --git a/MAINTAINERS b/MAINTAINERS
-index d99fedb48ab5..99f8a65fd79b 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -13104,6 +13104,7 @@ M:	UNGLinuxDriver@microchip.com
- L:	netdev@vger.kernel.org
- S:	Maintained
- F:	Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml
-+F:	Documentation/devicetree/bindings/net/dsa/microchip,lan937x.yaml
- F:	drivers/net/dsa/microchip/*
- F:	include/linux/platform_data/microchip-ksz.h
- F:	net/dsa/tag_ksz.c
--- 
-2.36.1
-
+Thanks,
+Johan
