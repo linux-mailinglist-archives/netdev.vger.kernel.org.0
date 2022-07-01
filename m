@@ -2,100 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 05CE1563B85
+	by mail.lfdr.de (Postfix) with ESMTP id DBF97563B88
 	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 23:15:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232310AbiGAUzP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Jul 2022 16:55:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54128 "EHLO
+        id S231139AbiGAUti (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Jul 2022 16:49:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232303AbiGAUzL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 16:55:11 -0400
-Received: from mailout1.hostsharing.net (mailout1.hostsharing.net [IPv6:2a01:37:1000::53df:5fcc:0])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A13E568A2E;
-        Fri,  1 Jul 2022 13:55:10 -0700 (PDT)
-Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
-        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
-        by mailout1.hostsharing.net (Postfix) with ESMTPS id EDCAD10192636;
-        Fri,  1 Jul 2022 22:55:08 +0200 (CEST)
-Received: from localhost (unknown [89.246.108.87])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by h08.hostsharing.net (Postfix) with ESMTPSA id BB6FC61A6B52;
-        Fri,  1 Jul 2022 22:55:08 +0200 (CEST)
-X-Mailbox-Line: From c45e311ac5b95798fe7cddd7bb834c5df83bb97e Mon Sep 17 00:00:00 2001
-Message-Id: <c45e311ac5b95798fe7cddd7bb834c5df83bb97e.1656707954.git.lukas@wunner.de>
-In-Reply-To: <cover.1656707954.git.lukas@wunner.de>
-References: <cover.1656707954.git.lukas@wunner.de>
-From:   Lukas Wunner <lukas@wunner.de>
-Date:   Fri, 1 Jul 2022 22:47:53 +0200
-Subject: [PATCH net-next v2 3/3] usbnet: smsc95xx: Clean up unnecessary
- BUG_ON() upon register access
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     netdev@vger.kernel.org, linux-usb@vger.kernel.org,
-        Steve Glendinning <steve.glendinning@shawell.net>,
-        UNGLinuxDriver@microchip.com, Oliver Neukum <oneukum@suse.com>,
-        Andre Edich <andre.edich@microchip.com>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Martyn Welch <martyn.welch@collabora.com>,
-        Gabriel Hojda <ghojda@yo2urs.ro>,
-        Christoph Fritz <chf.fritz@googlemail.com>,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-        Philipp Rosenberger <p.rosenberger@kunbus.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Ferry Toth <fntoth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Alan Stern <stern@rowland.harvard.edu>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+        with ESMTP id S229570AbiGAUth (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 16:49:37 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 939C25C9D9;
+        Fri,  1 Jul 2022 13:49:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1656708575; x=1688244575;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=UENqUwouIsclLvCQ67m4nuHbj/IlPm2/wXFF8ffxSyU=;
+  b=qqQf7B7JJtl3mlBrhWoWZpTldmDEvb6lykHn5xlNVEWl8JaZDwXX7tE8
+   WttEcr9OqRsJFYnF8caYugGiQktuPB2sMmxa4UESLZHSaHeVcGYS3700F
+   SMF4gHPFxBgEyDYl8ZiTQbo8zbIa3HF/QTw5xvAn+kRCBCKOP4nZTBm0r
+   IF15LbGaDZFrLp5Oq7agzyEtGuo2Ddr6+rm3XaRpYcPMw3PProc3skEun
+   k4+gK7wZGh4U+qNnYZ3K4e6d/atXlRtCjvodH+UPjRUy7Wmmnltr9sGCV
+   Eioz4tOdmzeBon9T4aZWSYuePymJd5FGSevFz64LB/TFDUisvSxWKAZ9B
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.92,238,1650956400"; 
+   d="scan'208";a="170745578"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 01 Jul 2022 13:49:34 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Fri, 1 Jul 2022 13:49:34 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Fri, 1 Jul 2022 13:49:32 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     <UNGLinuxDriver@microchip.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <vladimir.oltean@nxp.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH net-next v3 0/7] net: lan966x: Add lag support
+Date:   Fri, 1 Jul 2022 22:52:20 +0200
+Message-ID: <20220701205227.1337160-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.33.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-smsc95xx_read_reg() and smsc95xx_write_reg() call BUG_ON() if the
-struct usbnet pointer passed in is NULL.
+Add lag support for lan966x.
+First 4 patches don't do any changes to the current behaviour, they
+just prepare for lag support. While the rest is to add the lag support.
 
-The functions have just been amended to dereference the pointer on
-entry.  So the kernel now oopses if the pointer is NULL, eliminating
-the need for an explicit BUG_ON().
+v2->v3:
+- return error code from 'switchdev_bridge_port_offload()'
+- fix lan966x_foreign_dev_check(), it was missing lag support
+- remove lan966x_lag_mac_add_entry and lan966x_mac_del_entry as
+  they are not needed
+- fix race conditions when accessing port->bond
+- move FDB entries when a new port joins the lag if it has a lower
 
-Signed-off-by: Lukas Wunner <lukas@wunner.de>
----
- drivers/net/usb/smsc95xx.c | 4 ----
- 1 file changed, 4 deletions(-)
+v1->v2:
+- fix the LAG PGIDs when ports go down, in this way is not
+  needed anymore the last patch of the series.
 
-diff --git a/drivers/net/usb/smsc95xx.c b/drivers/net/usb/smsc95xx.c
-index 5458629cf694..bfb58c91db04 100644
---- a/drivers/net/usb/smsc95xx.c
-+++ b/drivers/net/usb/smsc95xx.c
-@@ -86,8 +86,6 @@ static int __must_check smsc95xx_read_reg(struct usbnet *dev, u32 index,
- 	int ret;
- 	int (*fn)(struct usbnet *, u8, u8, u16, u16, void *, u16);
- 
--	BUG_ON(!dev);
--
- 	if (current != pdata->pm_task)
- 		fn = usbnet_read_cmd;
- 	else
-@@ -117,8 +115,6 @@ static int __must_check smsc95xx_write_reg(struct usbnet *dev, u32 index,
- 	int ret;
- 	int (*fn)(struct usbnet *, u8, u8, u16, u16, const void *, u16);
- 
--	BUG_ON(!dev);
--
- 	if (current != pdata->pm_task)
- 		fn = usbnet_write_cmd;
- 	else
+Horatiu Vultur (7):
+  net: lan966x: Add reqisters used to configure lag interfaces
+  net: lan966x: Split lan966x_fdb_event_work
+  net: lan966x: Expose lan966x_switchdev_nb and
+    lan966x_switchdev_blocking_nb
+  net: lan966x: Extend lan966x_foreign_bridging_check
+  net: lan966x: Add lag support for lan966x.
+  net: lan966x: Extend FDB to support also lag
+  net: lan966x: Extend MAC to support also lag interfaces.
+
+ .../net/ethernet/microchip/lan966x/Makefile   |   2 +-
+ .../ethernet/microchip/lan966x/lan966x_fdb.c  | 155 +++++---
+ .../ethernet/microchip/lan966x/lan966x_lag.c  | 335 ++++++++++++++++++
+ .../ethernet/microchip/lan966x/lan966x_mac.c  |  66 +++-
+ .../ethernet/microchip/lan966x/lan966x_main.h |  38 ++
+ .../ethernet/microchip/lan966x/lan966x_regs.h |  45 +++
+ .../microchip/lan966x/lan966x_switchdev.c     | 137 +++++--
+ 7 files changed, 680 insertions(+), 98 deletions(-)
+ create mode 100644 drivers/net/ethernet/microchip/lan966x/lan966x_lag.c
+
 -- 
-2.36.1
+2.33.0
 
