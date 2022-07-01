@@ -2,99 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A554556346D
-	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 15:36:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 065EC56345D
+	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 15:29:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231548AbiGANgb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Jul 2022 09:36:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60448 "EHLO
+        id S230124AbiGAN3d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Jul 2022 09:29:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230369AbiGANg3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 09:36:29 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86B7617E28
-        for <netdev@vger.kernel.org>; Fri,  1 Jul 2022 06:36:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656682585; x=1688218585;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=PSHnAfe8LQ//2rWp6Lo496ExCrGTLYCKJo/7E2AZ/Kc=;
-  b=oGiihEIHJDFMKJ08470GASzdN1qsLtHE40pqUjx2lOF2321cxzlpEmwl
-   dXg+iQAkioLf/lto43qBUrswQYFcjh94n1yE+ojM9cRZrEID3QQx/FHDs
-   9xv7NQMJfpOxkVGRL6SLYp5dkyBcu9Hw9vEO2vaijcM1ULI//y2LXxah7
-   VAPQFqDh4M3/uaGPMDcG23feWnUXhb/Fpt0EvYHDd7tn3nlzlWymArs1k
-   adc2U7D+OVOISmj5fYD3UVC5I0bS/kwjnqf0ViSL8EXzYf+Lyqa6+fZQ9
-   lkcsU5N6YCEGoBnZyEu3OBTC5S37yZRa4YNM0VkY9MKixyQDMbLqi+k9R
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10394"; a="282682931"
-X-IronPort-AV: E=Sophos;i="5.92,237,1650956400"; 
-   d="scan'208";a="282682931"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2022 06:36:25 -0700
-X-IronPort-AV: E=Sophos;i="5.92,237,1650956400"; 
-   d="scan'208";a="648349652"
-Received: from unknown (HELO localhost.localdomain.bj.intel.com) ([10.240.193.73])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2022 06:36:23 -0700
-From:   Zhu Lingshan <lingshan.zhu@intel.com>
-To:     jasowang@redhat.com, mst@redhat.com
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        parav@nvidia.com, xieyongji@bytedance.com, gautam.dawar@amd.com,
-        Zhu Lingshan <lingshan.zhu@intel.com>
-Subject: [PATCH V3 6/6] vDPA: fix 'cast to restricted le16' warnings in vdpa.c
-Date:   Fri,  1 Jul 2022 21:28:26 +0800
-Message-Id: <20220701132826.8132-7-lingshan.zhu@intel.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220701132826.8132-1-lingshan.zhu@intel.com>
-References: <20220701132826.8132-1-lingshan.zhu@intel.com>
+        with ESMTP id S229673AbiGAN3c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 09:29:32 -0400
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 232B712AEA;
+        Fri,  1 Jul 2022 06:29:32 -0700 (PDT)
+Received: from sslproxy04.your-server.de ([78.46.152.42])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1o7Gi2-0008yQ-ME; Fri, 01 Jul 2022 15:29:22 +0200
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy04.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1o7Gi2-00059I-78; Fri, 01 Jul 2022 15:29:22 +0200
+Subject: Re: [PATCH bpf] xdp: Fix spurious packet loss in generic XDP TX path
+To:     Eric Dumazet <edumazet@google.com>,
+        Johan Almbladh <johan.almbladh@anyfinetworks.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>, song@kernel.org,
+        martin.lau@linux.dev, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>, haoluo@google.com,
+        jolsa@kernel.org, bpf <bpf@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+References: <20220701094256.1970076-1-johan.almbladh@anyfinetworks.com>
+ <CANn89i+FZ7t6F6tA8iFMjAzGmKkK=A+kdFpsm6ioygg5DnwT8g@mail.gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <73774e57-64c3-e32d-d762-1fcf64d5628c@iogearbox.net>
+Date:   Fri, 1 Jul 2022 15:29:21 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <CANn89i+FZ7t6F6tA8iFMjAzGmKkK=A+kdFpsm6ioygg5DnwT8g@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.6/26590/Fri Jul  1 09:25:21 2022)
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit fixes spars warnings: cast to restricted __le16
-in function vdpa_dev_net_config_fill() and
-vdpa_fill_stats_rec()
+On 7/1/22 11:57 AM, Eric Dumazet wrote:
+> On Fri, Jul 1, 2022 at 11:43 AM Johan Almbladh
+> <johan.almbladh@anyfinetworks.com> wrote:
+>>
+>> The byte queue limits (BQL) mechanism is intended to move queuing from
+>> the driver to the network stack in order to reduce latency caused by
+>> excessive queuing in hardware. However, when transmitting or redirecting
+>> a packet with XDP, the qdisc layer is bypassed and there are no
+>> additional queues. Since netif_xmit_stopped() also takes BQL limits into
+>> account, but without having any alternative queuing, packets are
+>> silently dropped.
+>>
+>> This patch modifies the drop condition to only consider cases when the
+>> driver itself cannot accept any more packets. This is analogous to the
+>> condition in __dev_direct_xmit(). Dropped packets are also counted on
+>> the device.
+> 
+> This means XDP packets are able to starve other packets going through a qdisc,
+> DDOS attacks will be more effective.
+> 
+> in-driver-XDP use dedicated TX queues, so they do not have this
+> starvation issue.
+> 
+> This should be mentioned somewhere I guess.
 
-Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
----
- drivers/vdpa/vdpa.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
++1, Johan, could you add this as comment and into commit description in a v2
+of your fix? Definitely should be clarified that it's limited to generic XDP.
 
-diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c
-index 846dd37f3549..ed49fe46a79e 100644
---- a/drivers/vdpa/vdpa.c
-+++ b/drivers/vdpa/vdpa.c
-@@ -825,11 +825,11 @@ static int vdpa_dev_net_config_fill(struct vdpa_device *vdev, struct sk_buff *ms
- 		    config.mac))
- 		return -EMSGSIZE;
- 
--	val_u16 = le16_to_cpu(config.status);
-+	val_u16 = __virtio16_to_cpu(true, config.status);
- 	if (nla_put_u16(msg, VDPA_ATTR_DEV_NET_STATUS, val_u16))
- 		return -EMSGSIZE;
- 
--	val_u16 = le16_to_cpu(config.mtu);
-+	val_u16 = __virtio16_to_cpu(true, config.mtu);
- 	if (nla_put_u16(msg, VDPA_ATTR_DEV_NET_CFG_MTU, val_u16))
- 		return -EMSGSIZE;
- 
-@@ -911,7 +911,7 @@ static int vdpa_fill_stats_rec(struct vdpa_device *vdev, struct sk_buff *msg,
- 	}
- 	vdpa_get_config_unlocked(vdev, 0, &config, sizeof(config));
- 
--	max_vqp = le16_to_cpu(config.max_virtqueue_pairs);
-+	max_vqp = __virtio16_to_cpu(true, config.max_virtqueue_pairs);
- 	if (nla_put_u16(msg, VDPA_ATTR_DEV_NET_CFG_MAX_VQP, max_vqp))
- 		return -EMSGSIZE;
- 
--- 
-2.31.1
-
+Thanks,
+Daniel
