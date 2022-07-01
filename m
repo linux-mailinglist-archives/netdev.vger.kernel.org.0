@@ -2,108 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B8745563CA3
-	for <lists+netdev@lfdr.de>; Sat,  2 Jul 2022 01:01:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E2B2D563CBF
+	for <lists+netdev@lfdr.de>; Sat,  2 Jul 2022 01:21:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231483AbiGAXB1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Jul 2022 19:01:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53452 "EHLO
+        id S231628AbiGAXU6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Jul 2022 19:20:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230144AbiGAXBZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 19:01:25 -0400
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 342027125C;
-        Fri,  1 Jul 2022 16:01:24 -0700 (PDT)
-Received: from 226.206.1.85.dynamic.wline.res.cust.swisscom.ch ([85.1.206.226] helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1o7Pda-0003pK-Gg; Sat, 02 Jul 2022 01:01:22 +0200
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     davem@davemloft.net
-Cc:     kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
-        daniel@iogearbox.net, ast@kernel.org, andrii@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: pull-request: bpf 2022-07-02
-Date:   Sat,  2 Jul 2022 01:01:21 +0200
-Message-Id: <20220701230121.10354-1-daniel@iogearbox.net>
-X-Mailer: git-send-email 2.21.0
+        with ESMTP id S230320AbiGAXU5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 19:20:57 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79F1071BCF;
+        Fri,  1 Jul 2022 16:20:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=8B/HM3ptEJgCCgROywH5nKBQG04ILNP2c9THBpwMy1E=; b=qiyDwZOkrvOmJOoe2FwDFbTzFM
+        K/d9ILfyE80Adsq2huKQqv752UIZTaV+hTXUS//Gcquo/ncQJr6sXzLf+OauLpeLiNkd268e3kkq6
+        uk3l6mgAFRcLLg5WVDcGJtO5DvfjaNgQ6CMhTzlQoZ/c+YzFruH6viS5XgXK+A23UW9jfL6ifivfA
+        oZs6oECzIgv/RuYmuJ9eRXH0ySFS5uCcQYKLA22Plhr5AKVsyKOTE0dcplyb2aNcA8bjuZ+gp1e20
+        e07JtJcocOG0f0dJ8nMOUPv/o/W/06KI9Eg8bd9GUE11LyOXOu0LgvQ38HTVZeWVdLuc3uubuQqZ3
+        7Rk2xVVg==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o7PwV-007P44-2w; Fri, 01 Jul 2022 23:20:55 +0000
+Date:   Fri, 1 Jul 2022 16:20:55 -0700
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Song Liu <song@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        x86@vger.kernel.org, dave.hansen@linux.intel.com,
+        rick.p.edgecombe@intel.com, kernel-team@fb.com,
+        daniel@iogearbox.net
+Subject: Re: [PATCH v5 bpf-next 1/5] module: introduce module_alloc_huge
+Message-ID: <Yr+BV+HLZikpCU42@bombadil.infradead.org>
+References: <20220624215712.3050672-1-song@kernel.org>
+ <20220624215712.3050672-2-song@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.6/26590/Fri Jul  1 09:25:21 2022)
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220624215712.3050672-2-song@kernel.org>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David, hi Jakub, hi Paolo, hi Eric,
+On Fri, Jun 24, 2022 at 02:57:08PM -0700, Song Liu wrote:
+> Introduce module_alloc_huge, which allocates huge page backed memory in
+> module memory space. The primary user of this memory is bpf_prog_pack
+> (multiple BPF programs sharing a huge page).
+> 
+> Signed-off-by: Song Liu <song@kernel.org>
 
-The following pull-request contains BPF updates for your *net* tree.
+I see mm not Cc'd. I'd like review from them.
 
-We've added 7 non-merge commits during the last 14 day(s) which contain
-a total of 6 files changed, 193 insertions(+), 86 deletions(-).
+> ---
+>  arch/x86/kernel/module.c     | 21 +++++++++++++++++++++
+>  include/linux/moduleloader.h |  5 +++++
+>  kernel/module/main.c         |  8 ++++++++
+>  3 files changed, 34 insertions(+)
+> 
+> diff --git a/arch/x86/kernel/module.c b/arch/x86/kernel/module.c
+> index b98ffcf4d250..63f6a16c70dc 100644
+> --- a/arch/x86/kernel/module.c
+> +++ b/arch/x86/kernel/module.c
+> @@ -86,6 +86,27 @@ void *module_alloc(unsigned long size)
+>  	return p;
+>  }
+>  
+> +void *module_alloc_huge(unsigned long size)
+> +{
+> +	gfp_t gfp_mask = GFP_KERNEL;
+> +	void *p;
+> +
+> +	if (PAGE_ALIGN(size) > MODULES_LEN)
+> +		return NULL;
+> +
+> +	p = __vmalloc_node_range(size, MODULE_ALIGN,
+> +				 MODULES_VADDR + get_module_load_offset(),
+> +				 MODULES_END, gfp_mask, PAGE_KERNEL,
+> +				 VM_DEFER_KMEMLEAK | VM_ALLOW_HUGE_VMAP,
+> +				 NUMA_NO_NODE, __builtin_return_address(0));
+> +	if (p && (kasan_alloc_module_shadow(p, size, gfp_mask) < 0)) {
+> +		vfree(p);
+> +		return NULL;
+> +	}
+> +
+> +	return p;
+> +}
 
-The main changes are:
+1) When things like kernel/bpf/core.c start using a module alloc it
+   is time to consider genearlizing this.
 
-1) Fix clearing of page contiguity when unmapping XSK pool, from Ivan Malov.
+2) How we free is important, and each arch does something funky for
+   this. This is not addressed here.
 
-2) Two verifier fixes around bounds data propagation, from Daniel Borkmann.
+And yes I welcome generalizing generic module_alloc() too as suggested
+before. The concern on my part is the sloppiness this enables.
 
-3) Fix fprobe sample module's parameter descriptions, from Masami Hiramatsu.
+  Luis
 
-4) General BPF maintainer entry revamp to better scale patch reviews.
-
-Please consider pulling these changes from:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
-
-Thanks a lot!
-
-Also thanks to reporters, reviewers and testers of commits in this pull-request:
-
-Hao Luo, Jiri Olsa, John Fastabend, KP Singh, Kuee K1r0a, Magnus 
-Karlsson, Martin KaFai Lau, Mykola Lysenko, Quentin Monnet, Song Liu, 
-Stanislav Fomichev, Yonghong Song
-
-----------------------------------------------------------------
-
-The following changes since commit a2b1a5d40bd12b44322c2ccd40bb0ec1699708b6:
-
-  net/sched: sch_netem: Fix arithmetic in netem_dump() for 32-bit platforms (2022-06-17 20:29:38 -0700)
-
-are available in the Git repository at:
-
-  https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git 
-
-for you to fetch changes up to a49b8ce7306cf8031361a6a4f7f6bc7a775a39c8:
-
-  bpf, selftests: Add verifier test case for jmp32's jeq/jne (2022-07-01 12:56:27 -0700)
-
-----------------------------------------------------------------
-Alexei Starovoitov (1):
-      bpf, docs: Better scale maintenance of BPF subsystem
-
-Daniel Borkmann (4):
-      bpf: Fix incorrect verifier simulation around jmp32's jeq/jne
-      bpf: Fix insufficient bounds propagation from adjust_scalar_min_max_vals
-      bpf, selftests: Add verifier test case for imm=0,umin=0,umax=1 scalar
-      bpf, selftests: Add verifier test case for jmp32's jeq/jne
-
-Ivan Malov (1):
-      xsk: Clear page contiguity bit when unmapping pool
-
-Masami Hiramatsu (Google) (1):
-      fprobe, samples: Add module parameter descriptions
-
- MAINTAINERS                                  | 115 ++++++++++++++++++++++-----
- kernel/bpf/verifier.c                        | 113 +++++++++++---------------
- net/xdp/xsk_buff_pool.c                      |   1 +
- samples/fprobe/fprobe_example.c              |   7 ++
- tools/testing/selftests/bpf/verifier/jmp32.c |  21 +++++
- tools/testing/selftests/bpf/verifier/jump.c  |  22 +++++
- 6 files changed, 193 insertions(+), 86 deletions(-)
+> +
+>  #ifdef CONFIG_X86_32
+>  int apply_relocate(Elf32_Shdr *sechdrs,
+>  		   const char *strtab,
+> diff --git a/include/linux/moduleloader.h b/include/linux/moduleloader.h
+> index 9e09d11ffe5b..d34743a88938 100644
+> --- a/include/linux/moduleloader.h
+> +++ b/include/linux/moduleloader.h
+> @@ -26,6 +26,11 @@ unsigned int arch_mod_section_prepend(struct module *mod, unsigned int section);
+>     sections.  Returns NULL on failure. */
+>  void *module_alloc(unsigned long size);
+>  
+> +/* Allocator used for allocating memory in module memory space. If size is
+> + * greater than PMD_SIZE, allow using huge pages. Returns NULL on failure.
+> + */
+> +void *module_alloc_huge(unsigned long size);
+> +
+>  /* Free memory returned from module_alloc. */
+>  void module_memfree(void *module_region);
+>  
+> diff --git a/kernel/module/main.c b/kernel/module/main.c
+> index fed58d30725d..349b2a8bd20f 100644
+> --- a/kernel/module/main.c
+> +++ b/kernel/module/main.c
+> @@ -1613,6 +1613,14 @@ void * __weak module_alloc(unsigned long size)
+>  			NUMA_NO_NODE, __builtin_return_address(0));
+>  }
+>  
+> +void * __weak module_alloc_huge(unsigned long size)
+> +{
+> +	return __vmalloc_node_range(size, 1, VMALLOC_START, VMALLOC_END,
+> +				    GFP_KERNEL, PAGE_KERNEL_EXEC,
+> +				    VM_FLUSH_RESET_PERMS | VM_ALLOW_HUGE_VMAP,
+> +				    NUMA_NO_NODE, __builtin_return_address(0));
+> +}
+> +
+>  bool __weak module_init_section(const char *name)
+>  {
+>  	return strstarts(name, ".init");
+> -- 
+> 2.30.2
+> 
