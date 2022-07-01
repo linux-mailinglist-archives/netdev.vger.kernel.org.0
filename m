@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AF1BC563B7F
-	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 23:15:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A5C8563B5C
+	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 23:15:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232039AbiGAUtz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Jul 2022 16:49:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48306 "EHLO
+        id S231781AbiGAUtx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Jul 2022 16:49:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231430AbiGAUtq (ORCPT
+        with ESMTP id S231695AbiGAUtq (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 16:49:46 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FC0D5C9F9;
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FD0860501;
         Fri,  1 Jul 2022 13:49:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
   t=1656708585; x=1688244585;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=RoXeYRz7w7kbCp0HfQAIZMkKwYe+VPebd78KGDKCp2s=;
-  b=I4z+dHWM0h5N93yzSxahEGAHYqa8lqTxmuh01Oswklp7HjTvHfi7jGEi
-   xSJq2rdjmIsOMgwNRapcWmgGNzaUjwgeiMlSaX2fO2mJA9aLJy49rPBCK
-   0T6gySRhEZyIMX47KDb93Ct0pryADfb6QMG3TCADlc/GalgMWciPMy8bs
-   0ex2VY1WLeGWAevDBubJi3ffHg7f4brlzMFStGsfaay+gtaYTmMhFTkfh
-   K5e22MK4kPOhZfH+375GWRDMlQlYWchtj5hB+fV0gisfqphowlsTjTsif
-   cZgZ5m50AD7Nn7OpPTYGM2zwwsNK1LL5IKFTf1d62Rv/H68zK7euhQxcM
-   Q==;
+  bh=cVQPQDvlP6jguFidxOFPMVy6JJUPHxvOxUOFRxni7O4=;
+  b=USX63+oufOxcXMtnBkq8j6Lqexr2KVb/1mW26+HvzkdDsssJQ612m2pN
+   vXcamILWX4iXRG2aJK2xfSLRwTq6YcoHwxPnrSd+QDL4/Sf0k4FUtr0/4
+   iSOD9oAiKu/qMSmON5K/i3o+CqifYeISR/wuQn38I/TwcR6C0f3bei3Sv
+   rfjDp2nsHF/ZNlf6U4pBo8Cp8PF/MP3fgpupJGLLUEpek3hJprgRVIBaG
+   Ha+gAG68vXdVXrp0VBJ8hMZZVCtSyqTKN7i6nkbMGnlYvE7Hu5Z3ijdb9
+   rsekdKQqcSHZCdpLCf16NaguhQRglQfNq5r9lY3P1tz1CwxjEeCDXLVxT
+   g==;
 X-IronPort-AV: E=Sophos;i="5.92,238,1650956400"; 
-   d="scan'208";a="102710198"
+   d="scan'208";a="170467272"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 01 Jul 2022 13:49:44 -0700
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 01 Jul 2022 13:49:45 -0700
 Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 1 Jul 2022 13:49:42 -0700
+ 15.1.2375.17; Fri, 1 Jul 2022 13:49:44 -0700
 Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Fri, 1 Jul 2022 13:49:39 -0700
+ 15.1.2375.17 via Frontend Transport; Fri, 1 Jul 2022 13:49:42 -0700
 From:   Horatiu Vultur <horatiu.vultur@microchip.com>
 To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
 CC:     <UNGLinuxDriver@microchip.com>, <davem@davemloft.net>,
         <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
         <vladimir.oltean@nxp.com>,
         Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next v3 3/7] net: lan966x: Expose lan966x_switchdev_nb and lan966x_switchdev_blocking_nb
-Date:   Fri, 1 Jul 2022 22:52:23 +0200
-Message-ID: <20220701205227.1337160-4-horatiu.vultur@microchip.com>
+Subject: [PATCH net-next v3 4/7] net: lan966x: Extend lan966x_foreign_bridging_check
+Date:   Fri, 1 Jul 2022 22:52:24 +0200
+Message-ID: <20220701205227.1337160-5-horatiu.vultur@microchip.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220701205227.1337160-1-horatiu.vultur@microchip.com>
 References: <20220701205227.1337160-1-horatiu.vultur@microchip.com>
@@ -63,54 +63,90 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Expose lan966x_switchdev_nb and lan966x_switchdev_blocking_nb to the
-lan966x_main.h file because they will be needed by the lag driver.
+Extend lan966x_foreign_bridging_check to check also if the upper
+interface is a lag device. Don't allow a lan966x port to be part of a
+lag if it has foreign interfaces.
 
 Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 ---
- drivers/net/ethernet/microchip/lan966x/lan966x_main.h      | 2 ++
- drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c | 6 ++----
- 2 files changed, 4 insertions(+), 4 deletions(-)
+ .../microchip/lan966x/lan966x_switchdev.c     | 32 ++++++++++++++-----
+ 1 file changed, 24 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-index 0a4f4d27eaa7..f820b1c71c47 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-@@ -296,6 +296,8 @@ struct lan966x_port {
- extern const struct phylink_mac_ops lan966x_phylink_mac_ops;
- extern const struct phylink_pcs_ops lan966x_phylink_pcs_ops;
- extern const struct ethtool_ops lan966x_ethtool_ops;
-+extern struct notifier_block lan966x_switchdev_nb __read_mostly;
-+extern struct notifier_block lan966x_switchdev_blocking_nb __read_mostly;
- 
- bool lan966x_netdevice_check(const struct net_device *dev);
- 
 diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c b/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
-index d9fc6a9a3da1..d9b3ca5f6214 100644
+index d9b3ca5f6214..fe872edfcdca 100644
 --- a/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
 +++ b/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
-@@ -6,8 +6,6 @@
- #include "lan966x_main.h"
+@@ -326,23 +326,25 @@ static int lan966x_port_prechangeupper(struct net_device *dev,
+ 	return NOTIFY_DONE;
+ }
  
- static struct notifier_block lan966x_netdevice_nb __read_mostly;
--static struct notifier_block lan966x_switchdev_nb __read_mostly;
--static struct notifier_block lan966x_switchdev_blocking_nb __read_mostly;
+-static int lan966x_foreign_bridging_check(struct net_device *bridge,
++static int lan966x_foreign_bridging_check(struct net_device *upper,
++					  bool *has_foreign,
++					  bool *seen_lan966x,
+ 					  struct netlink_ext_ack *extack)
+ {
+ 	struct lan966x *lan966x = NULL;
+-	bool has_foreign = false;
+ 	struct net_device *dev;
+ 	struct list_head *iter;
  
- static void lan966x_port_set_mcast_ip_flood(struct lan966x_port *port,
- 					    u32 pgid_ip)
-@@ -572,11 +570,11 @@ static struct notifier_block lan966x_netdevice_nb __read_mostly = {
- 	.notifier_call = lan966x_netdevice_event,
- };
+-	if (!netif_is_bridge_master(bridge))
++	if (!netif_is_bridge_master(upper) &&
++	    !netif_is_lag_master(upper))
+ 		return 0;
  
--static struct notifier_block lan966x_switchdev_nb __read_mostly = {
-+struct notifier_block lan966x_switchdev_nb __read_mostly = {
- 	.notifier_call = lan966x_switchdev_event,
- };
+-	netdev_for_each_lower_dev(bridge, dev, iter) {
++	netdev_for_each_lower_dev(upper, dev, iter) {
+ 		if (lan966x_netdevice_check(dev)) {
+ 			struct lan966x_port *port = netdev_priv(dev);
  
--static struct notifier_block lan966x_switchdev_blocking_nb __read_mostly = {
-+struct notifier_block lan966x_switchdev_blocking_nb __read_mostly = {
- 	.notifier_call = lan966x_switchdev_blocking_event,
- };
+ 			if (lan966x) {
+-				/* Bridge already has at least one port of a
++				/* Upper already has at least one port of a
+ 				 * lan966x switch inside it, check that it's
+ 				 * the same instance of the driver.
+ 				 */
+@@ -353,15 +355,24 @@ static int lan966x_foreign_bridging_check(struct net_device *bridge,
+ 				}
+ 			} else {
+ 				/* This is the first lan966x port inside this
+-				 * bridge
++				 * upper device
+ 				 */
+ 				lan966x = port->lan966x;
++				*seen_lan966x = true;
+ 			}
++		} else if (netif_is_lag_master(dev)) {
++			/* Allow to have bond interfaces that have only lan966x
++			 * devices
++			 */
++			if (lan966x_foreign_bridging_check(dev, has_foreign,
++							   seen_lan966x,
++							   extack))
++				*has_foreign = true;
+ 		} else {
+-			has_foreign = true;
++			*has_foreign = true;
+ 		}
+ 
+-		if (lan966x && has_foreign) {
++		if (*seen_lan966x && *has_foreign) {
+ 			NL_SET_ERR_MSG_MOD(extack,
+ 					   "Bridging lan966x ports with foreign interfaces disallowed");
+ 			return -EINVAL;
+@@ -374,7 +385,12 @@ static int lan966x_foreign_bridging_check(struct net_device *bridge,
+ static int lan966x_bridge_check(struct net_device *dev,
+ 				struct netdev_notifier_changeupper_info *info)
+ {
++	bool has_foreign = false;
++	bool seen_lan966x = false;
++
+ 	return lan966x_foreign_bridging_check(info->upper_dev,
++					      &has_foreign,
++					      &seen_lan966x,
+ 					      info->info.extack);
+ }
  
 -- 
 2.33.0
