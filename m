@@ -2,112 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D108562D38
-	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 09:59:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0730E562D50
+	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 10:00:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235569AbiGAH5R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Jul 2022 03:57:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54082 "EHLO
+        id S235837AbiGAH6w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Jul 2022 03:58:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235810AbiGAH5O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 03:57:14 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 374746EE97
-        for <netdev@vger.kernel.org>; Fri,  1 Jul 2022 00:57:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656662220;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=fIrKXBVyZdoDvQRp8apiHHZa1MCXdxr3bOtHIpyaBs4=;
-        b=ExnejWWeTWV2H7KO9LKHxRxBHrotI0nuYnpQcTW0YfOzKgWVmELTpN55emYNL5ERiwqJ4p
-        bRId6tO9IoRG0FiT64hmwlugGSQyBwVMDDkvc4vMrRCmf2U1K0H5bYDJ6VHiabnivD8cJy
-        8eJJy9LZVm74Ai73Tchf8ZylkjMDoi0=
-Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com
- [209.85.208.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-528-DHoJU_9lOpODNwQnCg4Qqg-1; Fri, 01 Jul 2022 03:56:59 -0400
-X-MC-Unique: DHoJU_9lOpODNwQnCg4Qqg-1
-Received: by mail-lj1-f197.google.com with SMTP id b40-20020a2ebc28000000b0025c047ea79dso198773ljf.23
-        for <netdev@vger.kernel.org>; Fri, 01 Jul 2022 00:56:59 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:message-id:date:mime-version:user-agent:cc
-         :subject:content-language:to:references:in-reply-to
-         :content-transfer-encoding;
-        bh=fIrKXBVyZdoDvQRp8apiHHZa1MCXdxr3bOtHIpyaBs4=;
-        b=Up1hbDJRQ3CCpfb8SC3pz2bcHytTSHF+bZMf9d9QsjmyGlxV4nJ0GbGGYvmNj8b6WO
-         Y+FczMtsiZDy0hRJ9gLvQ8NNdbqDIM2AoXgND3r6juvTirYyfdipLYyv5WamE7RqgZix
-         H3cLl+XKmv8GQ8Wk/hzfzL80MFjsD8nXg2s5pAuraaTcl8iDR9xdrQXzXAplOIzCsn0L
-         Le6INshcErj8zP8kyNl2H41xWvO/vQBpR8tViP8np6O82saKxqSzrTCAQS/fI8G97L1o
-         tdX54a0R3HfSjMPpRAM5hpcaE9jN+F+yfNAGaq+uVBk3LMdA+bS4xDn4XEeFTSW36nvZ
-         h1xA==
-X-Gm-Message-State: AJIora/5yirzTMT3j50oZrbcwigzSZGyiED8Pq0InkazdIhjbMiAVg6T
-        qs5Xp42gO7gXMdSG6+YRyZFH9s1CdRvgxeVOIkD0dmSGdt/KziKUzLtwLpzQsForNsSP4Hmpro9
-        6iPuM4tISc2Fek+jM
-X-Received: by 2002:a2e:8787:0:b0:25b:efd1:2064 with SMTP id n7-20020a2e8787000000b0025befd12064mr6527173lji.369.1656662218019;
-        Fri, 01 Jul 2022 00:56:58 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1vJT4/sVGIa3RjZL7cGY2WKjApKKjg8AkzsZnAqMr1q7eNiOijDvdHMIC1bGPpnOayRioNyrA==
-X-Received: by 2002:a2e:8787:0:b0:25b:efd1:2064 with SMTP id n7-20020a2e8787000000b0025befd12064mr6527159lji.369.1656662217812;
-        Fri, 01 Jul 2022 00:56:57 -0700 (PDT)
-Received: from [192.168.0.50] (87-59-106-155-cable.dk.customer.tdc.net. [87.59.106.155])
-        by smtp.gmail.com with ESMTPSA id v10-20020a2e924a000000b0025bc62c1cafsm1959760ljg.44.2022.07.01.00.56.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 01 Jul 2022 00:56:57 -0700 (PDT)
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Message-ID: <728b4c15-8114-e253-5d45-a5610882f891@redhat.com>
-Date:   Fri, 1 Jul 2022 09:56:56 +0200
+        with ESMTP id S235509AbiGAH6v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 03:58:51 -0400
+Received: from eidolon.nox.tf (eidolon.nox.tf [IPv6:2a07:2ec0:2185::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C6CA5A2F8
+        for <netdev@vger.kernel.org>; Fri,  1 Jul 2022 00:58:49 -0700 (PDT)
+Received: from [2a02:169:59c5:1:7d5c:5092:64f9:9cbc] (helo=areia)
+        by eidolon.nox.tf with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <equinox@diac24.net>)
+        id 1o7BY5-00F8pB-Pv; Fri, 01 Jul 2022 09:58:46 +0200
+Received: from equinox by areia with local (Exim 4.96)
+        (envelope-from <equinox@diac24.net>)
+        id 1o7BXi-000HAP-1y;
+        Fri, 01 Jul 2022 09:58:22 +0200
+From:   David Lamparter <equinox@diac24.net>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        David Lamparter <equinox@diac24.net>
+Subject: [PATCH resend net-next 0/2] ip6mr: implement RTM_GETROUTE for single entry
+Date:   Fri,  1 Jul 2022 09:58:03 +0200
+Message-Id: <20220701075805.65978-1-equinox@diac24.net>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220630202706.33555ad2@kernel.org>
+References: <20220630202706.33555ad2@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Cc:     brouer@redhat.com, jbrouer@redhat.com, hawk@kernel.org,
-        ilias.apalodimas@linaro.org, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, lorenzo@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, lipeng321@huawei.com, chenhao288@hisilicon.com
-Subject: Re: [PATCH net-next v2] net: page_pool: optimize page pool page
- allocation in NUMA scenario
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Guangbin Huang <huangguangbin2@huawei.com>
-References: <20220629133305.15012-1-huangguangbin2@huawei.com>
- <20220630211534.6d1c32da@kernel.org>
-In-Reply-To: <20220630211534.6d1c32da@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+[resend with a slightly random pick of Cc:s - apologies if I ended up
+choosing poorly]
 
-On 01/07/2022 06.15, Jakub Kicinski wrote:
-> On Wed, 29 Jun 2022 21:33:05 +0800 Guangbin Huang wrote:
->> +#ifdef CONFIG_NUMA
->> +	pref_nid = (pool->p.nid == NUMA_NO_NODE) ? numa_mem_id() : pool->p.nid;
->> +#else
->> +	/* Ignore pool->p.nid setting if !CONFIG_NUMA */
->> +	pref_nid = NUMA_NO_NODE;
->> +#endif
-> 
-> Please factor this out to a helper, this is a copy of the code from
-> page_pool_refill_alloc_cache() and #ifdefs are a little yuck.
-> 
+The IPv6 multicast routing code implements RTM_GETROUTE, but only for a
+dump request.  Retrieving a single MFC entry is not currently possible
+via netlink.
 
-I would say simply use 'pool->p.nid' in the call to
-alloc_pages_bulk_array_node() and drop this optimization (that was
-copy-pasted from fast-path).
+While most of the data here can also be retrieved with SIOCGETSGCNT_IN6,
+the lastused / RTA_EXPIRES is not included in the ioctl result (and we
+need it in FRR.)
 
-The optimization avoids one reading from memory compile time depending
-on CONFIG_NUMA.  It is *not* worth doing in this code path which is even
-named "slow" (__page_pool_alloc_pages_slow).
+=> Implement single-entry RTM_GETROUTE by copying and adapting the IPv4
+code.
 
---Jesper
+Tested against FRRouting's (work-in-progress) IPv6 PIM implementation.
 
+Cheers,
+
+
+-David
