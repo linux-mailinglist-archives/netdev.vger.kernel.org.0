@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E82F563A0C
-	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 21:29:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DAEC7563A3D
+	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 21:58:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232343AbiGAT3Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Jul 2022 15:29:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40912 "EHLO
+        id S229639AbiGATbj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Jul 2022 15:31:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232694AbiGAT26 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 15:28:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9B171F2
-        for <netdev@vger.kernel.org>; Fri,  1 Jul 2022 12:28:06 -0700 (PDT)
+        with ESMTP id S229572AbiGATbj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 15:31:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF58D218
+        for <netdev@vger.kernel.org>; Fri,  1 Jul 2022 12:31:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 85260B8311E
-        for <netdev@vger.kernel.org>; Fri,  1 Jul 2022 19:28:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34BD8C341C8;
-        Fri,  1 Jul 2022 19:27:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4A2E061DDD
+        for <netdev@vger.kernel.org>; Fri,  1 Jul 2022 19:31:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55C35C3411E;
+        Fri,  1 Jul 2022 19:31:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656703684;
-        bh=XFiF9O9nMK8GrdCfNShtw8oBQenyZQmibCsOZ29A9r4=;
+        s=k20201202; t=1656703897;
+        bh=2qb8vhqSSIX5gIPVYerY+osM9H3IkKn7DwTR56CMqlg=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=tkkXlGlONtnoseVjaFV48gdmxxETQ/kFmhvroW0xIWGyGNdq6KinGzwR7rPo/eFlt
-         n5WNQzZAXoy86TDSL/9svpokOVHlWCIBqwl2bkTr6JywulCjgGpRafA6Io/E5ZIGjo
-         crS/VpuaFloSOWpHgKgVAflAkCV7ZPe9HXUDxbiiUnmwxhSYmc19RdiwQYx1zmReHu
-         BAOJociFxItbUyLr5odQWvZDlQ/IPB0bIgb33/vNkc5518n7x+weSYdgZNgBT9q29j
-         vasGkL1IL9QpjkO8liZl2rEpZlVQzOlqNTkChx1yiFQnsgf8ZOF/gmi4SzkWdp1ncC
-         bBkKo4iFK6LVw==
-Date:   Fri, 1 Jul 2022 21:27:55 +0200
+        b=JBAJOMqk/toX6QQVXfsdJ/Yfyarr/eJ7izTsPsnkqk7dqpfGamryFRoF7cBp2vLsP
+         Vc64zHyQ7buTSQyYBADVB4viEVcPITSpmKV+UnneMUsJAtTO835UnESZwdq/HARF9u
+         9wFFWrnjKxcmJ1uJd55oGa9zfiTWqFYWR/OSRj4/i2lYXxQAZtCZ8g1qdDSZvSKUtJ
+         ZNPSA3M0Vi7fbGrTmtrIL2OYAPgKHynqGRGAtTu9aFPjOTuBldjnkI4GDj2cF9yhao
+         JnsY8l53UJsWeeYXTuGr80ityjHpiN/c3BNuvDv4004G5SRG2roZKxhYgUcJlO5KEV
+         vBOUTjo831QzQ==
+Date:   Fri, 1 Jul 2022 21:31:28 +0200
 From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
 To:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -58,12 +58,12 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Vladimir Oltean <olteanv@gmail.com>,
         Woojung Huh <woojung.huh@microchip.com>
-Subject: Re: [PATCH RFC net-next 3/6] net: phylink: split out interface to
- caps translation
-Message-ID: <20220701212755.156da4ff@thinkpad>
-In-Reply-To: <E1o6XAL-004pVp-36@rmk-PC.armlinux.org.uk>
+Subject: Re: [PATCH RFC net-next 4/6] net: phylink: add
+ phylink_set_max_fixed_link()
+Message-ID: <20220701213128.04adf92e@thinkpad>
+In-Reply-To: <E1o6XAQ-004pVw-7o@rmk-PC.armlinux.org.uk>
 References: <YrxKdVmBzeMsVjsH@shell.armlinux.org.uk>
-        <E1o6XAL-004pVp-36@rmk-PC.armlinux.org.uk>
+        <E1o6XAQ-004pVw-7o@rmk-PC.armlinux.org.uk>
 X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -78,16 +78,14 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 29 Jun 2022 13:51:33 +0100
+On Wed, 29 Jun 2022 13:51:38 +0100
 "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk> wrote:
 
-> phylink_get_linkmodes() translates the interface mode into a set of
-> speed and duplex capabilities which are masked with the MAC modes
-> to then derive the link modes that are available.
+> Add a function for DSA to use to configure phylink, in the absence of
+> any other configuration, to a fixed link operating at the maximum
+> supported link speed.
 >=20
-> Split out the initial transformation into a new function
-> phylink_interface_to_caps(), which will be useful when setting the
-> maximum fixed link speed.
+> This is needed so we can support phylink usage on CPU and DSA ports.
 >=20
 > Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
