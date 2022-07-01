@@ -2,162 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F23F3562C2A
-	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 08:59:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 62792562C33
+	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 09:03:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234933AbiGAG64 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Jul 2022 02:58:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58018 "EHLO
+        id S235158AbiGAHDC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Jul 2022 03:03:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233818AbiGAG6w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 02:58:52 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DF0C599D3;
-        Thu, 30 Jun 2022 23:58:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1656658731; x=1688194731;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=QRztPqLPpCR+G/Am0XR/jSeACTyPFrOzNB1djYsPfM4=;
-  b=rZldqFEmUUNZAvciG0zKNL2UhQKsI/XBE2Qe4exxurbnwYh/lxZrZ5AF
-   3dKSS6WKi21sjuhaJX3gMGTb1fZuAkczRfxMfsQJk7qqDG3KhBdDkqAj8
-   5/QadE27mcjV0m8O13UZFAWP7ALAdLkKGtbwxF3Zyhldy6AWR4nCeiPUP
-   OT2oXD1cZTiA0Y7+LYJ1GferFF4eKh+HcL9P9XpniL55POP3myCZUi/pB
-   nYZ20gPAl8IghN4ULplzvSfPS0G1ENa2It8JYyzoL/Wt5KiPRtcVbgCTp
-   lx++bfIVn4F57ty7eXMtHmhGKUxyUaXZZ59CW1uI3HWO5pAikQMOgFgzY
-   w==;
-X-IronPort-AV: E=Sophos;i="5.92,236,1650956400"; 
-   d="scan'208";a="102606166"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Jun 2022 23:58:50 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 30 Jun 2022 23:58:50 -0700
-Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Thu, 30 Jun 2022 23:58:47 -0700
-From:   Conor Dooley <conor.dooley@microchip.com>
-To:     "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S235173AbiGAHDB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 03:03:01 -0400
+Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 143ED677E0
+        for <netdev@vger.kernel.org>; Fri,  1 Jul 2022 00:02:59 -0700 (PDT)
+Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-317741c86fdso15018317b3.2
+        for <netdev@vger.kernel.org>; Fri, 01 Jul 2022 00:02:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=3Oxpr/H6WS/cbatfKxunj+Rm+HXq43uwJ9TOx0tf4pg=;
+        b=G4+aGmI06EueqwK7C5Qo4w/41Yp3wU/CWyAMnimOU3r1x56NK0xwWd5NnQsEtkPJT1
+         j1wWR6jutsCmi+xE7hxYUqJNrQrMI+GL07X5ZYgIgqDAqQnMWhF8y5nc40xNPfhYS3jC
+         0nJhLPxfL1eyodYvq4oKHJFLeueGwA5XPbFVGoQA05bmNWxXq8PGbVqamZrTZs9J6qBh
+         1fRZx/U4bPFmJBSVu1knm/cNESUDsxYs6X7kurTJA14GFNtyIPF26073epdL9z6eSE2L
+         X78efI4BN3icU+xkSEEQMO42kPgo3k8M7uVN2JrWdQyoK9p0Z0nOVmWHNbnRgASj9y0m
+         xe+Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=3Oxpr/H6WS/cbatfKxunj+Rm+HXq43uwJ9TOx0tf4pg=;
+        b=vLr2dCdINeD2Luv6F48fYpTdresIBtw3mkxhimogzZWLq+IcIruViBkSzmmS/fL7Rr
+         06Xtmr1IPrZuow2qt/rho9uwcj5X/G8DcsQgxEa73jbNPdskiOLfKS6h0xuxraCC9Vx3
+         4EXm77Dj7/J6Jtr3H1m43/i33uN2SpjB/IpSGyItZu4gv2nZ28kztJS/YRJSdWCrwweZ
+         PBLKX/8Dw830JmKp8brvGQK+m+thFV8TKsR7Ennnj4EgLD2GvoW+HSRdrDseVqF5lhXA
+         aylq2q2oAoIlhQxVK341ihyX8LUs9QP5Wi+ieLhvpOMVr80TBlDZAERw2eBoLP0+3W+1
+         kzDQ==
+X-Gm-Message-State: AJIora+5xZ8k5zp9B0nTTRdScIOX+EjLySm1Bxm4MotF+y2pVTtMIvhX
+        EEPhF4W15ao2RXKHICoiBWVirToI8uhQ//cSdNZClQ==
+X-Google-Smtp-Source: AGRyM1sjHYE6b1ihEm8EzVroyoytiPu2X1qfGuWU3WGWHfolVcCLEjpB4ZdcYExvwYNCmCj3ip+B1gZf6PvcXiQN0KE=
+X-Received: by 2002:a81:4896:0:b0:317:f767:95f8 with SMTP id
+ v144-20020a814896000000b00317f76795f8mr15214195ywa.218.1656658978077; Fri, 01
+ Jul 2022 00:02:58 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220601070707.3946847-1-saravanak@google.com>
+ <4799738.LvFx2qVVIh@steina-w> <CAGETcx_1qa=gGT4LVkyPpcA1vFM9FzuJE+0DhL_nFyg5cbFjVg@mail.gmail.com>
+ <5265491.31r3eYUQgx@steina-w>
+In-Reply-To: <5265491.31r3eYUQgx@steina-w>
+From:   Saravana Kannan <saravanak@google.com>
+Date:   Fri, 1 Jul 2022 00:02:22 -0700
+Message-ID: <CAGETcx-fLAXnG+1S4MHJwg9t7O6jj6Mp+q25bh==C_Z1CLs-mg@mail.gmail.com>
+Subject: Re: (EXT) Re: [PATCH v2 1/9] PM: domains: Delete usage of driver_deferred_probe_check_state()
+To:     Alexander Stein <alexander.stein@ew.tq-group.com>
+Cc:     Tony Lindgren <tony@atomide.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Kevin Hilman <khilman@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>
-CC:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-riscv@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        "Conor Dooley" <conor.dooley@microchip.com>
-Subject: [net-next PATCH RESEND 2/2] net: macb: add polarfire soc reset support
-Date:   Fri, 1 Jul 2022 07:58:32 +0100
-Message-ID: <20220701065831.632785-3-conor.dooley@microchip.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220701065831.632785-1-conor.dooley@microchip.com>
-References: <20220701065831.632785-1-conor.dooley@microchip.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        Linus Walleij <linus.walleij@linaro.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>, kernel-team@android.com,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-gpio@vger.kernel.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-To date, the Microchip PolarFire SoC (MPFS) has been using the
-cdns,macb compatible, however the generic device does not have reset
-support. Add a new compatible & .data for MPFS to hook into the reset
-functionality added for zynqmp support (and make the zynqmp init
-function generic in the process).
+On Thu, Jun 30, 2022 at 11:02 PM Alexander Stein
+<alexander.stein@ew.tq-group.com> wrote:
+>
+> Hi Saravana,
+>
+> Am Freitag, 1. Juli 2022, 02:37:14 CEST schrieb Saravana Kannan:
+> > On Thu, Jun 23, 2022 at 5:08 AM Alexander Stein
+> >
+> > <alexander.stein@ew.tq-group.com> wrote:
+> > > Hi,
+> > >
+> > > Am Dienstag, 21. Juni 2022, 09:28:43 CEST schrieb Tony Lindgren:
+> > > > Hi,
+> > > >
+> > > > * Saravana Kannan <saravanak@google.com> [700101 02:00]:
+> > > > > Now that fw_devlink=on by default and fw_devlink supports
+> > > > > "power-domains" property, the execution will never get to the point
+> > > > > where driver_deferred_probe_check_state() is called before the
+> > > > > supplier
+> > > > > has probed successfully or before deferred probe timeout has expired.
+> > > > >
+> > > > > So, delete the call and replace it with -ENODEV.
+> > > >
+> > > > Looks like this causes omaps to not boot in Linux next. With this
+> > > > simple-pm-bus fails to probe initially as the power-domain is not
+> > > > yet available. On platform_probe() genpd_get_from_provider() returns
+> > > > -ENOENT.
+> > > >
+> > > > Seems like other stuff is potentially broken too, any ideas on
+> > > > how to fix this?
+> > >
+> > > I think I'm hit by this as well, although I do not get a lockup.
+> > > In my case I'm using
+> > > arch/arm64/boot/dts/freescale/imx8mq-tqma8mq-mba8mx.dts and probing of
+> > > 38320000.blk-ctrl fails as the power-domain is not (yet) registed.
+> >
+> > Ok, took a look.
+> >
+> > The problem is that there are two drivers for the same device and they
+> > both initialize this device.
+> >
+> >     gpc: gpc@303a0000 {
+> >         compatible = "fsl,imx8mq-gpc";
+> >     }
+> >
+> > $ git grep -l "fsl,imx7d-gpc" -- drivers/
+> > drivers/irqchip/irq-imx-gpcv2.c
+> > drivers/soc/imx/gpcv2.c
+> >
+> > IMHO, this is a bad/broken design.
+> >
+> > So what's happening is that fw_devlink will block the probe of
+> > 38320000.blk-ctrl until 303a0000.gpc is initialized. And it stops
+> > blocking the probe of 38320000.blk-ctrl as soon as the first driver
+> > initializes the device. In this case, it's the irqchip driver.
+> >
+> > I'd recommend combining these drivers into one. Something like the
+> > patch I'm attaching (sorry for the attachment, copy-paste is mangling
+> > the tabs). Can you give it a shot please?
+>
+> I tried this patch and it delayed the driver initialization (those of UART as
+> well BTW). Unfortunately the driver fails the same way:
 
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
----
- drivers/net/ethernet/cadence/macb_main.c | 25 +++++++++++++++++-------
- 1 file changed, 18 insertions(+), 7 deletions(-)
+Thanks for testing the patch!
 
-diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-index d89098f4ede8..325f0463fd42 100644
---- a/drivers/net/ethernet/cadence/macb_main.c
-+++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -4689,33 +4689,32 @@ static const struct macb_config np4_config = {
- 	.usrio = &macb_default_usrio,
- };
- 
--static int zynqmp_init(struct platform_device *pdev)
-+static int init_reset_optional(struct platform_device *pdev)
- {
- 	struct net_device *dev = platform_get_drvdata(pdev);
- 	struct macb *bp = netdev_priv(dev);
- 	int ret;
- 
- 	if (bp->phy_interface == PHY_INTERFACE_MODE_SGMII) {
--		/* Ensure PS-GTR PHY device used in SGMII mode is ready */
-+		/* Ensure PHY device used in SGMII mode is ready */
- 		bp->sgmii_phy = devm_phy_optional_get(&pdev->dev, NULL);
- 
- 		if (IS_ERR(bp->sgmii_phy)) {
- 			ret = PTR_ERR(bp->sgmii_phy);
- 			dev_err_probe(&pdev->dev, ret,
--				      "failed to get PS-GTR PHY\n");
-+				      "failed to get SGMII PHY\n");
- 			return ret;
- 		}
- 
- 		ret = phy_init(bp->sgmii_phy);
- 		if (ret) {
--			dev_err(&pdev->dev, "failed to init PS-GTR PHY: %d\n",
-+			dev_err(&pdev->dev, "failed to init SGMII PHY: %d\n",
- 				ret);
- 			return ret;
- 		}
- 	}
- 
--	/* Fully reset GEM controller at hardware level using zynqmp-reset driver,
--	 * if mapped in device tree.
-+	/* Fully reset controller at hardware level if mapped in device tree
- 	 */
- 	ret = device_reset_optional(&pdev->dev);
- 	if (ret) {
-@@ -4737,7 +4736,7 @@ static const struct macb_config zynqmp_config = {
- 			MACB_CAPS_GEM_HAS_PTP | MACB_CAPS_BD_RD_PREFETCH,
- 	.dma_burst_length = 16,
- 	.clk_init = macb_clk_init,
--	.init = zynqmp_init,
-+	.init = init_reset_optional,
- 	.jumbo_max_len = 10240,
- 	.usrio = &macb_default_usrio,
- };
-@@ -4751,6 +4750,17 @@ static const struct macb_config zynq_config = {
- 	.usrio = &macb_default_usrio,
- };
- 
-+static const struct macb_config mpfs_config = {
-+	.caps = MACB_CAPS_GIGABIT_MODE_AVAILABLE |
-+			MACB_CAPS_JUMBO |
-+			MACB_CAPS_GEM_HAS_PTP,
-+	.dma_burst_length = 16,
-+	.clk_init = macb_clk_init,
-+	.init = init_reset_optional,
-+	.usrio = &macb_default_usrio,
-+	.jumbo_max_len = 10240,
-+};
-+
- static const struct macb_config sama7g5_gem_config = {
- 	.caps = MACB_CAPS_GIGABIT_MODE_AVAILABLE | MACB_CAPS_CLK_HW_CHG |
- 		MACB_CAPS_MIIONRGMII,
-@@ -4787,6 +4797,7 @@ static const struct of_device_id macb_dt_ids[] = {
- 	{ .compatible = "cdns,zynqmp-gem", .data = &zynqmp_config},
- 	{ .compatible = "cdns,zynq-gem", .data = &zynq_config },
- 	{ .compatible = "sifive,fu540-c000-gem", .data = &fu540_c000_config },
-+	{ .compatible = "microchip,mpfs-macb", .data = &mpfs_config },
- 	{ .compatible = "microchip,sama7g5-gem", .data = &sama7g5_gem_config },
- 	{ .compatible = "microchip,sama7g5-emac", .data = &sama7g5_emac_config },
- 	{ /* sentinel */ }
--- 
-2.36.1
+> > [    1.125253] imx8m-blk-ctrl 38320000.blk-ctrl: error -ENODEV: failed to
+> attach power domain "bus"
+>
+> More than that it even introduced some more errors:
+> > [    0.008160] irq: no irq domain found for gpc@303a0000 !
 
+So the idea behind my change was that as long as the irqchip isn't the
+root of the irqdomain (might be using the terms incorrectly) like the
+gic, you can make it a platform driver. And I was trying to hack up a
+patch that's the equivalent of platform_irqchip_probe() (which just
+ends up eventually calling the callback you use in IRQCHIP_DECLARE().
+I probably made some mistake in the quick hack that I'm sure if
+fixable.
+
+> > [    0.013251] Failed to map interrupt for
+> > /soc@0/bus@30400000/timer@306a0000
+
+However, this timer driver also uses TIMER_OF_DECLARE() which can't
+handle failure to get the IRQ (because it's can't -EPROBE_DEFER). So,
+this means, the timer driver inturn needs to be converted to a
+platform driver if it's supposed to work with the IRQCHIP_DECLARE()
+being converted to a platform driver.
+
+But that's a can of worms not worth opening. But then I remembered
+this simpler workaround will work and it is pretty much a variant of
+the workaround that's already in the gpc's irqchip driver to allow two
+drivers to probe the same device (people really should stop doing
+that).
+
+Can you drop my previous hack patch and try this instead please? I'm
+99% sure this will work.
+
+diff --git a/drivers/irqchip/irq-imx-gpcv2.c b/drivers/irqchip/irq-imx-gpcv2.c
+index b9c22f764b4d..8a0e82067924 100644
+--- a/drivers/irqchip/irq-imx-gpcv2.c
++++ b/drivers/irqchip/irq-imx-gpcv2.c
+@@ -283,6 +283,7 @@ static int __init imx_gpcv2_irqchip_init(struct
+device_node *node,
+         * later the GPC power domain driver will not be skipped.
+         */
+        of_node_clear_flag(node, OF_POPULATED);
++       fwnode_dev_initialized(domain->fwnode, false);
+        return 0;
+ }
+
+-Saravana
