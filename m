@@ -2,48 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 97C4C562A16
-	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 06:08:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 72799562A2C
+	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 06:08:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233723AbiGAEEj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Jul 2022 00:04:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46470 "EHLO
+        id S233931AbiGAEFM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Jul 2022 00:05:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234764AbiGAEER (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 00:04:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB2811EEC1
-        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 21:02:06 -0700 (PDT)
+        with ESMTP id S234814AbiGAEEj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 00:04:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 718436B817;
+        Thu, 30 Jun 2022 21:03:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ABC43B82CEF
-        for <netdev@vger.kernel.org>; Fri,  1 Jul 2022 04:02:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE0EEC341C6;
-        Fri,  1 Jul 2022 04:02:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E15B6621F4;
+        Fri,  1 Jul 2022 04:03:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E44F3C341C6;
+        Fri,  1 Jul 2022 04:03:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656648124;
-        bh=KsZMvmejxxo7OyL1FKSVs/gUuPJ56brAAuVXfm/GpzE=;
+        s=k20201202; t=1656648226;
+        bh=rqfYfhlzfGYglZZBCls7ltUMPPwFavhxj0MfN4ZQNIQ=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=a8qTTghRvaR6Qt9CnnVuKLY6CAYMhqDk0V1/JXuVFQzTmZMglcZduMFDjOe6uSACW
-         cJLPepE0QdRwvE88o1Vr0hV32ICgPuRguCD+KT5xY0/zaVc6HzNeHMPkFzx023N924
-         TeFd0oW37xC4q6G/ST0Ld4kBMBsHzD+ArLz53XGXw+hvOju7KmbvgCDWO+K5MjMMGN
-         MkioGYFuJ6VR1DY8XlGLMkDYpIHpTK7q1Go3ROAucK1INUH1CY94zXZhvdZvwt7JsT
-         KHgMzAqlHKxhFUUJjtmVJSnnCkMaQURCQB2FmPxWT30/SzS+CFE13vZJB/RX0gCXjr
-         opi6nHnw13gDA==
-Date:   Thu, 30 Jun 2022 21:02:02 -0700
+        b=dKiee9SS5lH8rMRpcCH3/5+cOe7wsREfvXf/97uAbvUBZCtkSOMUWwP6jse3PTwiG
+         zCQ0rB2+HNT+5OAsWEQVI+HQ+G4wtFNqTMBH4Mk30bmxBuDlQLe1EC/RWMozhqrQwT
+         ZebGZTNDADRuHUEc+B6KRpw9hT5UfY5dQMEHCjLHrP/24ejy5BrEMTt+ilMJUOQhN9
+         MXBiAPFCeANChePgtWJq5XO/ut7phjnVS5J+Eebt5fWnFqumT2pq8jluqb0lfvio0/
+         Uc5POqkh7lY8EsyQrHxQOWQnopn6Mdx7pD6RP4tPji7SxkZWlW4tIEQzNkl1XQqLPC
+         kyd0GqmVugYJg==
+Date:   Thu, 30 Jun 2022 21:03:44 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, pabeni@redhat.com, edumazet@google.com,
-        Lukasz Cieplicki <lukaszx.cieplicki@intel.com>,
-        netdev@vger.kernel.org, sassmann@redhat.com,
-        Jedrzej Jagielski <jedrzej.jagielski@intel.com>,
-        Gurucharan <gurucharanx.g@intel.com>
-Subject: Re: [PATCH net 1/2] i40e: Fix dropped jumbo frames statistics
-Message-ID: <20220630210202.23165f16@kernel.org>
-In-Reply-To: <20220630214940.3036250-2-anthony.l.nguyen@intel.com>
-References: <20220630214940.3036250-1-anthony.l.nguyen@intel.com>
-        <20220630214940.3036250-2-anthony.l.nguyen@intel.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     mst@redhat.com, davem@davemloft.net, edumazet@google.com,
+        pabeni@redhat.com, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        xuanzhuo@linux.alibaba.com
+Subject: Re: [PATCH net V3] virtio-net: fix the race between refill work and
+ close
+Message-ID: <20220630210344.4ab805fe@kernel.org>
+In-Reply-To: <20220701020655.86532-1-jasowang@redhat.com>
+References: <20220701020655.86532-1-jasowang@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -57,19 +56,16 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 30 Jun 2022 14:49:39 -0700 Tony Nguyen wrote:
-> From: Lukasz Cieplicki <lukaszx.cieplicki@intel.com>
+On Fri,  1 Jul 2022 10:06:55 +0800 Jason Wang wrote:
+> We try using cancel_delayed_work_sync() to prevent the work from
+> enabling NAPI. This is insufficient since we don't disable the source
+> of the refill work scheduling. This means an NAPI poll callback after
+> cancel_delayed_work_sync() can schedule the refill work then can
+> re-enable the NAPI that leads to use-after-free [1].
 > 
-> Dropped packets caused by too large frames were not included in
-> dropped RX packets statistics.
-> Issue was caused by not reading the GL_RXERR1 register. That register
-> stores count of packet which was have been dropped due to too large
-> size.
-> 
-> Fix it by reading GL_RXERR1 register for each interface.
-> 
-> Repro steps:
-> Send a packet larger than the set MTU to SUT
-> Observe rx statists: ethtool -S <interface> | grep rx | grep -v ": 0"
+> Since the work can enable NAPI, we can't simply disable NAPI before
+> calling cancel_delayed_work_sync(). So fix this by introducing a
+> dedicated boolean to control whether or not the work could be
+> scheduled from NAPI.
 
-You should count oversized frames to rx_length_errors.
+Hm, does not apply cleanly to net or Linus's tree.
