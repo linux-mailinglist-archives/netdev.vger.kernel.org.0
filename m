@@ -2,53 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DC328563BD3
-	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 23:38:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ECAD9563BD8
+	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 23:40:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231391AbiGAViK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Jul 2022 17:38:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55302 "EHLO
+        id S231435AbiGAVkP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Jul 2022 17:40:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230438AbiGAViJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 17:38:09 -0400
+        with ESMTP id S230438AbiGAVkN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 17:40:13 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE35623C
-        for <netdev@vger.kernel.org>; Fri,  1 Jul 2022 14:38:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0D92369D5;
+        Fri,  1 Jul 2022 14:40:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4C2476236E
-        for <netdev@vger.kernel.org>; Fri,  1 Jul 2022 21:38:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 210F3C3411E;
-        Fri,  1 Jul 2022 21:38:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D87B621D8;
+        Fri,  1 Jul 2022 21:40:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61B72C3411E;
+        Fri,  1 Jul 2022 21:40:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656711486;
-        bh=vlYZJE+jPSc7xyLR+NiMd5gZJF0wG22PzVbd8aUlb38=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=VG+1I1pB1aSXVPd/1m/JoD8k3uko9b36hu7UcO7OlJ1E4lb41q93dd5IkplATLUCD
-         D98ivEK8DdOUFMCxB6lXDxfW2v9X1xCbECty+b6U44tDuiXvgng4DWZy+5wC3q4x/V
-         +fPX333zcbDiZeYQqW0JRfdIdLHSXHi9VXelrmC3hDGCPvG11WKkNlyhktdrwfEVXg
-         pM9lMwHEui8KxrDcbxqvfxZzwyh/k4ZCUO2hXsMU1d07jT9kNbf8ODQgo6+qYrp94g
-         Mzzn4s083Di4TfcAFZ7RSx4YvYLUlOWYN9DuAL7xAGvXXAxGD4+P/NEqC4DvfQHDmB
-         b97ELTKkOSAwg==
-Date:   Fri, 1 Jul 2022 14:38:04 -0700
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Kuniyuki Iwashima <kuniyu@amazon.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sachin Sant <sachinp@linux.ibm.com>,
-        Leonard Crestez <cdleonard@gmail.com>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH v1 net-next] af_unix: Put a named socket in the global
- hash table.
-Message-ID: <Yr9pPJGoCDYOB3Tm@dev-arch.thelio-3990X>
-References: <20220701072519.96097-1-kuniyu@amazon.com>
+        s=k20201202; t=1656711611;
+        bh=pPgErvNCAX2U7bc3Q1SofrffghA90sAaxQVNIRgB31Q=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ZWvHYxGQzM8heCrs4N4bVXe/XXaZ19S1hzsvqvuliM7hiRtup0w5K5AsIUkUbyWJr
+         AKNUxVGz1kibVJ33MS64kW0sJZvNsKXwog4RBDDJ3mhYCyU+D0xv+U9i+KXCmRNKS4
+         RY5CjMVQYWPKoCW1uU8NmwwaqoiusVHBff0lLvkb5Eqt1nl1N41DGLqqlnqaYDVQmV
+         ulwxToGvlHwhuzUza2LoaE8aO4KNLYSCXW6MvK4is/fjkQ0i92QTyPWlta9ChtXiST
+         SVUOBOL8uotyRcZz8AgHo/iH+VPnKApG8b6j9Al1ieUMb6JsjLvo89PkWjK7CH4fJb
+         3t+HhFuWyALzA==
+Date:   Fri, 1 Jul 2022 14:40:10 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Francois Romieu <romieu@fr.zoreil.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
+        pabeni@redhat.com, corbet@lwn.net, jdmason@kudzu.us,
+        vburru@marvell.com, jiawenwu@trustnetic.com,
+        linux-doc@vger.kernel.org
+Subject: Re: [PATCH net-next] eth: remove neterion/vxge
+Message-ID: <20220701144010.5ae54364@kernel.org>
+In-Reply-To: <Yr8rC9jXtoFbUIQ+@electric-eye.fr.zoreil.com>
+References: <20220701044234.706229-1-kuba@kernel.org>
+        <Yr8rC9jXtoFbUIQ+@electric-eye.fr.zoreil.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220701072519.96097-1-kuniyu@amazon.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -59,191 +56,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 01, 2022 at 12:25:19AM -0700, Kuniyuki Iwashima wrote:
-> Commit cf2f225e2653 ("af_unix: Put a socket into a per-netns hash
-> table.") accidentally broke user API for named sockets.  A named
-> socket was able to connect() to a peer in the same mount namespace
-> even if they were in different network namespaces.
+On Fri, 1 Jul 2022 19:12:43 +0200 Francois Romieu wrote:
+> Jakub Kicinski <kuba@kernel.org> :
+> > The last meaningful change to this driver was made by Jon in 2011.
+> > As much as we'd like to believe that this is because the code is
+> > perfect the chances are nobody is using this hardware.  
 > 
-> The commit put all sockets into each per-netns hash table.  As a
-> result, connect() to a socket in a different netns failed to find
-> the peer and returned -ECONNREFUSED even when they had the same
-> mount namespace.
+> It was used with some success in 2017:
 > 
-> We can reproduce this issue by
-> 
->   Console A:
-> 
->     # python3
->     >>> from socket import *
->     >>> s = socket(AF_UNIX, SOCK_STREAM, 0)
->     >>> s.bind('test')
->     >>> s.listen(32)
-> 
->   Console B:
-> 
->     # ip netns add test
->     # ip netns exec test sh
->     # python3
->     >>> from socket import *
->     >>> s = socket(AF_UNIX, SOCK_STREAM, 0)
->     >>> s.connect('test')
-> 
-> Note when dumping sockets by sock_diag, procfs, and bpf_iter, they are
-> filtered only by netns.  In other words, sockets with different netns
-> and the same mount ns are skipped while iterating sockets.  Thus, we
-> need a fix only for finding a peer socket.
-> 
-> This patch adds a global hash table for named sockets, links them with
-> sk_bind_node, and uses it in unix_find_socket_byinode().  By doing so,
-> we can keep all sockets in per-netns hash tables and dump them easily.
-> 
-> Thank Sachin Sant and Leonard Crestez for reports, logs and a reproducer.
-> 
-> Fixes: cf2f225e2653 ("af_unix: Put a socket into a per-netns hash table.")
-> Reported-by: Sachin Sant <sachinp@linux.ibm.com>
-> Reported-by: Leonard Crestez <cdleonard@gmail.com>
-> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+> https://bugzilla.kernel.org/show_bug.cgi?id=197881
 
-I noticed that all my test systems failed to start systemd-hostnamed
-during boot, which I bisected to cf2f225e2653. This patch resolves the
-problem for me as well.
+Nice find! Quoting for the list:
 
-Tested-by: Nathan Chancellor <nathan@kernel.org>
+  vxge.ko can work nicely for kernel version 4.1 (I tried 4.1.44)
+  However, for any version beyond that (I tried 4.4, 4.8, 4.13)
+  the card can be initiated - but when I tried to do some network
+  transfer (for example, ssh) I saw something like.... 
 
-> ---
->  net/unix/af_unix.c | 47 ++++++++++++++++++++++++++++++++++++----------
->  1 file changed, 37 insertions(+), 10 deletions(-)
+  [Tx queue timeout stack trace follows]
+
+I didn't see any fixes since 2017 so the problem must still be there.
+Could be just a particular version of FW that's broken, tho.
+
+> > Because of the size of this driver there is a nontrivial maintenance
+> > cost to keeping this code around, in the last 2 years we're averaging
+> > more than 1 change a month. Some of which require nontrivial review
+> > effort, see commit 877fe9d49b74 ("Revert "drivers/net/ethernet/neterion/vxge:
+> > Fix a use-after-free bug in vxge-main.c"") for example.  
 > 
-> diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
-> index 49f6626330c3..526b872cc710 100644
-> --- a/net/unix/af_unix.c
-> +++ b/net/unix/af_unix.c
-> @@ -119,6 +119,8 @@
->  #include "scm.h"
->  
->  static atomic_long_t unix_nr_socks;
-> +static struct hlist_head bsd_socket_buckets[UNIX_HASH_SIZE / 2];
-> +static spinlock_t bsd_socket_locks[UNIX_HASH_SIZE / 2];
->  
->  /* SMP locking strategy:
->   *    hash table is protected with spinlock.
-> @@ -328,6 +330,24 @@ static void unix_insert_unbound_socket(struct net *net, struct sock *sk)
->  	spin_unlock(&net->unx.table.locks[sk->sk_hash]);
->  }
->  
-> +static void unix_insert_bsd_socket(struct sock *sk)
-> +{
-> +	spin_lock(&bsd_socket_locks[sk->sk_hash]);
-> +	sk_add_bind_node(sk, &bsd_socket_buckets[sk->sk_hash]);
-> +	spin_unlock(&bsd_socket_locks[sk->sk_hash]);
-> +}
-> +
-> +static void unix_remove_bsd_socket(struct sock *sk)
-> +{
-> +	if (!hlist_unhashed(&sk->sk_bind_node)) {
-> +		spin_lock(&bsd_socket_locks[sk->sk_hash]);
-> +		__sk_del_bind_node(sk);
-> +		spin_unlock(&bsd_socket_locks[sk->sk_hash]);
-> +
-> +		sk_node_init(&sk->sk_bind_node);
-> +	}
-> +}
-> +
->  static struct sock *__unix_find_socket_byname(struct net *net,
->  					      struct sockaddr_un *sunname,
->  					      int len, unsigned int hash)
-> @@ -358,22 +378,22 @@ static inline struct sock *unix_find_socket_byname(struct net *net,
->  	return s;
->  }
->  
-> -static struct sock *unix_find_socket_byinode(struct net *net, struct inode *i)
-> +static struct sock *unix_find_socket_byinode(struct inode *i)
->  {
->  	unsigned int hash = unix_bsd_hash(i);
->  	struct sock *s;
->  
-> -	spin_lock(&net->unx.table.locks[hash]);
-> -	sk_for_each(s, &net->unx.table.buckets[hash]) {
-> +	spin_lock(&bsd_socket_locks[hash]);
-> +	sk_for_each_bound(s, &bsd_socket_buckets[hash]) {
->  		struct dentry *dentry = unix_sk(s)->path.dentry;
->  
->  		if (dentry && d_backing_inode(dentry) == i) {
->  			sock_hold(s);
-> -			spin_unlock(&net->unx.table.locks[hash]);
-> +			spin_unlock(&bsd_socket_locks[hash]);
->  			return s;
->  		}
->  	}
-> -	spin_unlock(&net->unx.table.locks[hash]);
-> +	spin_unlock(&bsd_socket_locks[hash]);
->  	return NULL;
->  }
->  
-> @@ -577,6 +597,7 @@ static void unix_release_sock(struct sock *sk, int embrion)
->  	int state;
->  
->  	unix_remove_socket(sock_net(sk), sk);
-> +	unix_remove_bsd_socket(sk);
->  
->  	/* Clear state */
->  	unix_state_lock(sk);
-> @@ -988,8 +1009,8 @@ static int unix_release(struct socket *sock)
->  	return 0;
->  }
->  
-> -static struct sock *unix_find_bsd(struct net *net, struct sockaddr_un *sunaddr,
-> -				  int addr_len, int type)
-> +static struct sock *unix_find_bsd(struct sockaddr_un *sunaddr, int addr_len,
-> +				  int type)
->  {
->  	struct inode *inode;
->  	struct path path;
-> @@ -1010,7 +1031,7 @@ static struct sock *unix_find_bsd(struct net *net, struct sockaddr_un *sunaddr,
->  	if (!S_ISSOCK(inode->i_mode))
->  		goto path_put;
->  
-> -	sk = unix_find_socket_byinode(net, inode);
-> +	sk = unix_find_socket_byinode(inode);
->  	if (!sk)
->  		goto path_put;
->  
-> @@ -1058,7 +1079,7 @@ static struct sock *unix_find_other(struct net *net,
->  	struct sock *sk;
->  
->  	if (sunaddr->sun_path[0])
-> -		sk = unix_find_bsd(net, sunaddr, addr_len, type);
-> +		sk = unix_find_bsd(sunaddr, addr_len, type);
->  	else
->  		sk = unix_find_abstract(net, sunaddr, addr_len, type);
->  
-> @@ -1179,6 +1200,7 @@ static int unix_bind_bsd(struct sock *sk, struct sockaddr_un *sunaddr,
->  	u->path.dentry = dget(dentry);
->  	__unix_set_addr_hash(net, sk, addr, new_hash);
->  	unix_table_double_unlock(net, old_hash, new_hash);
-> +	unix_insert_bsd_socket(sk);
->  	mutex_unlock(&u->bindlock);
->  	done_path_create(&parent, dentry);
->  	return 0;
-> @@ -3682,10 +3704,15 @@ static void __init bpf_iter_register(void)
->  
->  static int __init af_unix_init(void)
->  {
-> -	int rc = -1;
-> +	int i, rc = -1;
->  
->  	BUILD_BUG_ON(sizeof(struct unix_skb_parms) > sizeof_field(struct sk_buff, cb));
->  
-> +	for (i = 0; i < UNIX_HASH_SIZE / 2; i++) {
-> +		spin_lock_init(&bsd_socket_locks[i]);
-> +		INIT_HLIST_HEAD(&bsd_socket_buckets[i]);
-> +	}
-> +
->  	rc = proto_register(&unix_dgram_proto, 1);
->  	if (rc != 0) {
->  		pr_crit("%s: Cannot create unix_sock SLAB cache!\n", __func__);
-> -- 
-> 2.30.2
+> vxge_remove() calls vxge_device_unregister().
 > 
+> vxge_device_unregister() does unregister_netdev() + ... + free_netdev().
 > 
+> vxge_remove() keeps using netdev_priv() pointer... :o/
+> 
+> Imho it is not nontrivial enough that top-level maintainers must handle it
+> but it is just mvho that maintainers handle too much low-value stuff.
+
+Ack, this particular bug is just an excuse, it can be fixed.
+
+> Regarding the unused hardware side of the problem, it's a bit sad that
+> there still is no centralized base of interested users for a given piece
+> of hardware in 2022.
+
+100%, I really wish something like that existed. I have a vague memory
+of Fedora or some other distro collecting HW data. Maybe it died because
+of privacy issues?
+
+Knowing that stuff gets used would be a great motivation. Handling all
+the academic / bot patches for stuff I think goes completely unused is
+weighing down my psyche.
