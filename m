@@ -2,113 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DC9CA563B0E
-	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 22:32:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8200A563AFA
+	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 22:32:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231542AbiGAUWo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Jul 2022 16:22:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55812 "EHLO
+        id S231620AbiGAUYR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Jul 2022 16:24:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230183AbiGAUWl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 16:22:41 -0400
-Received: from ms.lwn.net (ms.lwn.net [IPv6:2600:3c01:e000:3a1::42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87CB84D174;
-        Fri,  1 Jul 2022 13:22:40 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:281:8300:73::5f6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ms.lwn.net (Postfix) with ESMTPSA id BDCD936D;
-        Fri,  1 Jul 2022 20:22:38 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net BDCD936D
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
-        t=1656706959; bh=dxet9HAczfcZ9vu/1oL1hu5S6lHOaJx1MYQzpzQnE3w=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=c/wZEaG8r9bEzMb/9Yed5GTIwTIqapPop1mA95KPr3rBUovZudh3MzbBq4CCf2w+N
-         O5wA2ppfkxYCkT2qYzn/jocPg/WF6Un9rseV62tBWBuL8our/CBG1rvsHTx82AKtaK
-         PadBeZObcRmaPrgOdyJXbkz9sR08gVwxb40AApbU05jfYCYZdziljL8MbgOsH9rdWj
-         h8Z5rZuitWMoBgGDvgE+XvHLus3OHETunxvmSJA+s7qxDSlCCuQ0kQcBBdP75BPdWR
-         ZYJRDJhoHU1mFDZqSclmpR1UPyNV2ue6xVZftBJdFvgLnyFLshgAKX8+i1NVJWFlCj
-         /8mq64R3WoXEQ==
-From:   Jonathan Corbet <corbet@lwn.net>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        John Stultz <jstultz@google.com>
-Cc:     Kalesh Singh <kaleshsingh@google.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arve =?utf-8?B?SGrDuG5u?= =?utf-8?B?ZXbDpWc=?= 
-        <arve@android.com>, Todd Kjos <tkjos@android.com>,
-        Martijn Coenen <maco@android.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Hridya Valsaraju <hridya@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Theodore Ts'o <tytso@mit.edu>,
+        with ESMTP id S230331AbiGAUYQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 16:24:16 -0400
+Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CAB32ED5B;
+        Fri,  1 Jul 2022 13:24:13 -0700 (PDT)
+Received: by mail-yb1-xb2b.google.com with SMTP id 205so3467617ybe.3;
+        Fri, 01 Jul 2022 13:24:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/MRsD2vJA8bDPtwGkMOr5/5qFkYCaN1HrNYJP8Aooaw=;
+        b=MRMpkkkXd/AxaYKSqzVZ+JHGaNVydSScCwxeeTHy7nH9KnkQVHPCiFczxXqDZ++Eou
+         oVPL5T2xx4TJ6WrEVruW23jgn5i0TbeLnhYhbNHWvJ/WJyf7ev8SxZF2YbGAfdUj2bqR
+         BNRaRznaCwOa3BaYlKZi1g5WgSO4/Zg0olrORzny6nh9qIbQkP1FZTOltjqjit/0/vUF
+         sbk8BerO6Qd9qJj9xpU62MQ5wpEivT03M+gjvTjP0AdvLDgncvTpscUSJsa7ULEq+aKc
+         glVbZ9ngxZixwRW1/pJd4TNQON1BiMrb4owcn1YR3jIn8IJFW+EUDYQmgPdBlky6fwIs
+         93/A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/MRsD2vJA8bDPtwGkMOr5/5qFkYCaN1HrNYJP8Aooaw=;
+        b=FfyIZFlG3h28qdvwFuWaM1KzACweZp8PyTE7063p9+3F9Fy+txjx3YH2QCxzAeHyrD
+         Bir+V+HbHb2DCzVe03/BJ7uNxpQQHn8W8OZtazrL1Ob6MGwmZvk4aojZynUJgBBkiUyH
+         AD4DWsGG1CQKR0lMhLMqb/85PChuCq/6VvUovbA4hb5GCxCTHxn8gSqRKjVKhA5MFz2p
+         ZsljI1KABvIzKGdTOYVkR11oR78x5R2lAfSKcpNK8T5cIIiRL2gsLsso3zCCEGP5Cam1
+         BdMpjRqG+O1HuTa1GZ+2gPTYBnBt+UG6R8U8K70y6lzhyqJX5TflZz4VEyec3UcvrnP7
+         qXmg==
+X-Gm-Message-State: AJIora8P72FZszn/0raMeO5JMO68YLVzTYq/lwE7+PiWNfidsaVSl1VK
+        1M2iMzlqxj12vg4sd6PzquXCpDTKYWSriI2rP2c=
+X-Google-Smtp-Source: AGRyM1vq5LZzi17RwsZX1h8W1o/LdR7lMKPEJ+/xA1ayuCIn2yWQfXjsi0iDyG5el8EluNbqyOSP9Fylvctdu7Yr1Ss=
+X-Received: by 2002:a05:6902:c4:b0:64b:4677:331b with SMTP id
+ i4-20020a05690200c400b0064b4677331bmr17139233ybs.93.1656707052779; Fri, 01
+ Jul 2022 13:24:12 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220701192609.3970317-1-colin.foster@in-advantage.com> <20220701192609.3970317-2-colin.foster@in-advantage.com>
+In-Reply-To: <20220701192609.3970317-2-colin.foster@in-advantage.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Fri, 1 Jul 2022 22:23:36 +0200
+Message-ID: <CAHp75Vf0FPrUPK8F=9gMuZPUsuTbSO+AB3zfh1=uAKu6L2eemA@mail.gmail.com>
+Subject: Re: [PATCH v12 net-next 1/9] mfd: ocelot: add helper to get regmap
+ from a resource
+To:     Colin Foster <colin.foster@in-advantage.com>
+Cc:     devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        "Alex Xu (Hello71)" <alex_y_xu@yahoo.ca>,
-        Paolo Abeni <pabeni@redhat.com>, Rob Herring <robh@kernel.org>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Shuah Khan <shuah@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, wireguard@lists.zx2c4.com,
-        netdev@vger.kernel.org, rcu <rcu@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>, sultan@kerneltoast.com,
-        android-kernel-team <android-kernel-team@google.com>,
-        Saravana Kannan <saravanak@google.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>
-Subject: Re: [PATCH] remove CONFIG_ANDROID
-In-Reply-To: <YrztOqBBll66C2/n@zx2c4.com>
-References: <20220629161527.GA24978@lst.de> <Yrx8/Fyx15CTi2zq@zx2c4.com>
- <20220629163007.GA25279@lst.de> <Yrx/8UOY+J8Ao3Bd@zx2c4.com>
- <YryNQvWGVwCjJYmB@zx2c4.com> <Yryic4YG9X2/DJiX@google.com>
- <Yry6XvOGge2xKx/n@zx2c4.com>
- <CAC_TJve_Jk0+XD7VeSJVvJq4D9ZofnH69B4QZv2LPT4X3KNfeg@mail.gmail.com>
- <YrzaCRl9rwy9DgOC@zx2c4.com>
- <CANDhNCpRzzULaGmEGCbbJgVinA0pJJB-gOP9AY0Hy488n9ZStA@mail.gmail.com>
- <YrztOqBBll66C2/n@zx2c4.com>
-Date:   Fri, 01 Jul 2022 14:22:38 -0600
-Message-ID: <87a69slh0x.fsf@meer.lwn.net>
-MIME-Version: 1.0
-Content-Type: text/plain
+        Paolo Abeni <pabeni@redhat.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Wolfram Sang <wsa@kernel.org>,
+        Terry Bowman <terry.bowman@amd.com>,
+        katie.morris@in-advantage.com
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"Jason A. Donenfeld" <Jason@zx2c4.com> writes:
-
-> I guess what I have in mind is the answer to these being "yes":
-> - "Is it very common to be asleep for only 2 seconds before being woken?"
-> - "Is it very common to be awake for only 2 seconds before sleeping?"
+On Fri, Jul 1, 2022 at 9:26 PM Colin Foster
+<colin.foster@in-advantage.com> wrote:
 >
-> I think it'd be easiest to have a knob somewhere (compiletime,
-> runtime, wherever) that describes a device that exhibits those
-> properties. Then wireguard and other things will make a decision on how
-> to handle the crypto during relevant events.
+> Several ocelot-related modules are designed for MMIO / regmaps. As such,
+> they often use a combination of devm_platform_get_and_ioremap_resource and
+> devm_regmap_init_mmio.
+>
+> Operating in an MFD might be different, in that it could be memory mapped,
+> or it could be SPI, I2C... In these cases a fallback to use IORESOURCE_REG
+> instead of IORESOURCE_MEM becomes necessary.
+>
+> When this happens, there's redundant logic that needs to be implemented in
+> every driver. In order to avoid this redundancy, utilize a single function
+> that, if the MFD scenario is enabled, will perform this fallback logic.
 
-So please forgive the noise from the peanut gallery, but I do find
-myself wondering...do you really need a knob for this?  The kernel
-itself can observe how often (and for how long) the system is suspended,
-and might well be able to do the right thing without explicit input from
-user space.  If it works it would eliminate a potential configuration
-problem and also perhaps respond correctly to changing workloads.
+...
 
-For example, rather than testing a knob, avoid resetting keys on resume
-if the suspend time is less than (say) 30s?
+> +       res = platform_get_resource(pdev, IORESOURCE_MEM, index);
+> +       if (res) {
+> +               regs = devm_ioremap_resource(dev, res);
+> +               if (IS_ERR(regs))
+> +                       return ERR_CAST(regs);
 
-Educate me on what I'm missing here, please :)
+Why can't it be devm_platform_get_and_ioremap_resource() here?
 
-Thanks,
+  regs = devm_platform_get_and_ioremap_resource();
+  if (res) {
+    if (IS_ERR(regs))
+      return ERR_CAST();
+   return ...
+  }
 
-jon
+> +               return devm_regmap_init_mmio(dev, regs, config);
+> +       }
+
+...
+
+> +       return (map) ? map : ERR_PTR(-ENOENT);
+
+Too many parentheses.
+
+Also you may use short form of ternary operator:
+
+       return map ?: ERR_PTR(-ENOENT);
+
+-- 
+With Best Regards,
+Andy Shevchenko
