@@ -2,105 +2,23484 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FF04562A80
-	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 06:29:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF827562AA0
+	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 06:43:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234024AbiGAE3B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Jul 2022 00:29:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35182 "EHLO
+        id S233360AbiGAEmz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Jul 2022 00:42:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229549AbiGAE3A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 00:29:00 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8373D58FDD;
-        Thu, 30 Jun 2022 21:28:58 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id cf14so1420450edb.8;
-        Thu, 30 Jun 2022 21:28:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0O4/oNbZ3YRoOmSuse2orABsjwO93HDgN0c9nygzXkg=;
-        b=fx0uLrcSQjZTXvB8Hu09bD0L2czFcKCI1dhTczw2jK//jpIFIOw9zrjIG4Ekl3fDyg
-         tsL8YBSJEeTLOHoKvqu6m5E9DdNlfBVoib6TBMnFAuEkdc0ENq0Ck0NCfnRxRx9gcO+1
-         JIikryE5KvK84hE00FXdGwLWDJnGlYaLICN4vG/07bBvYxRtLZyd25f66gXGxII9SsT/
-         tPNEW6OaaL/Uf+g90g1mikLHkU/VrZWyynVW3ixRiqJHU+rHkNJudhFH5/f+R98yWVFx
-         5uKDF7R4AiXRhjZUajMN47RNbeXi1tmNgV1d6/2ym28LeZU9IUm11P61VEfKzbTLhCoo
-         XfAQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0O4/oNbZ3YRoOmSuse2orABsjwO93HDgN0c9nygzXkg=;
-        b=luBelySV2JtcU3G2lnCzkwozJkZhdgsOvZ+Sb660zSroeTahSSdmbbNRQLFJTlus70
-         0MhEd8pWWhRBRg01eTeoctNkVL6JmW9giJtqRF+IbiisG7zDQs4boqlPUBrfY32MmbF5
-         2zAghRcgnDbMG+ZrYIEWK/BR1DcjqD0NoubWV0IQ8rs+R0Jx88CA0lSJ7OqGm/pphow7
-         OMvz6nqdxiaaW54nbwpXbu3GlMPCGY0a/sV1FLILx2kj2Sq1pFmD8OBhpjv2A+nLxOQO
-         Ihgep8Vo2pwywkd9sIdlZ8ZCEVlDfKotuHwEeIsbMgpNmnG+s+jlySuxmyKKP/pSR+N+
-         QuJQ==
-X-Gm-Message-State: AJIora+VmHBZS+wf9xJVotik/KtK/FXRuAKprCBolhmvjhoepXo4SkmF
-        vTSq+UVQHgn4yXuea66jSaw=
-X-Google-Smtp-Source: AGRyM1veiW2EfEXKBX9p8FXLTR5ucjbaZny9cnQElotgkUzW71FChR9E1mXGinabKbKZoVmPsdt4gA==
-X-Received: by 2002:a05:6402:524d:b0:437:8d2e:c675 with SMTP id t13-20020a056402524d00b004378d2ec675mr16771826edd.65.1656649737098;
-        Thu, 30 Jun 2022 21:28:57 -0700 (PDT)
-Received: from felia.fritz.box (200116b826fa4e008c7f8ad93cf12391.dip.versatel-1u1.de. [2001:16b8:26fa:4e00:8c7f:8ad9:3cf1:2391])
-        by smtp.gmail.com with ESMTPSA id b27-20020a17090630db00b0072a72b0fe72sm1130850ejb.111.2022.06.30.21.28.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Jun 2022 21:28:56 -0700 (PDT)
-From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
-To:     Andrii Nakryiko <andrii@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>
-Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: [PATCH] MAINTAINERS: adjust XDP SOCKETS after file movement
-Date:   Fri,  1 Jul 2022 06:28:10 +0200
-Message-Id: <20220701042810.26362-1-lukas.bulwahn@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        with ESMTP id S233073AbiGAEmw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 00:42:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80AE45A45F;
+        Thu, 30 Jun 2022 21:42:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F0599B82D76;
+        Fri,  1 Jul 2022 04:42:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4A72C341C6;
+        Fri,  1 Jul 2022 04:42:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656650567;
+        bh=Vk33uIRRP92uQMAUJKDJrrtQTuhyJVkgAgU7IGfztN0=;
+        h=From:To:Cc:Subject:Date:From;
+        b=b7fdN0yLS5H/XeFSK9VfHgNbRFWClf+KBvwntObAsoJgiLv73QIVCy5nTGlXXL6wy
+         aqdBAtgyTajagNwmlpdZRXziCuHQJn2v0FtiV0wC07Du6KLvTpG2jylJ7ft4Wl8DY1
+         kWqPmzIiELU/66XoBaA9+Ct5LD4MRpIDGcBrjAObF/Vw42+Uh3wdqG93SG2VO6et8A
+         DuQplBkzP8/voFqcfrhuBAppHvW3yFyMkQ7gtBO2Hm6nFerAtHrDMn4/dP2kPM2fS+
+         /CCkcPpCitfgQC4Jrj+BIZ1gLZAVZF2JNGw4fSR2Lu84BH0uYH2PjKHSfTFsMcfYj4
+         /aIdv5Pe9oPPg==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
+        Jakub Kicinski <kuba@kernel.org>, corbet@lwn.net,
+        jdmason@kudzu.us, vburru@marvell.com, jiawenwu@trustnetic.com,
+        linux-doc@vger.kernel.org
+Subject: [PATCH net-next] eth: remove neterion/vxge
+Date:   Thu, 30 Jun 2022 21:42:34 -0700
+Message-Id: <20220701044234.706229-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-        lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit f36600634282 ("libbpf: move xsk.{c,h} into selftests/bpf") moves
-files tools/{lib => testing/selftests}/bpf/xsk.[ch], but misses to adjust
-the XDP SOCKETS (AF_XDP) section in MAINTAINERS.
+The last meaningful change to this driver was made by Jon in 2011.
+As much as we'd like to believe that this is because the code is
+perfect the chances are nobody is using this hardware.
 
-Adjust the file entry after this file movement.
+Because of the size of this driver there is a nontrivial maintenance
+cost to keeping this code around, in the last 2 years we're averaging
+more than 1 change a month. Some of which require nontrivial review
+effort, see commit 877fe9d49b74 ("Revert "drivers/net/ethernet/neterion/vxge:
+Fix a use-after-free bug in vxge-main.c"") for example.
 
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Let's try to remove this driver. In general, IMHO, we need to
+establish a clear path for shedding dead code. It will be hard
+to unless we have some experience trying to delete stuff.
+
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
-Andrii, please ack.
+CC: corbet@lwn.net
+CC: jdmason@kudzu.us
+CC: vburru@marvell.com
+CC: jiawenwu@trustnetic.com
+CC: linux-doc@vger.kernel.org
+---
+ .../device_drivers/ethernet/index.rst         |    1 -
+ .../device_drivers/ethernet/neterion/vxge.rst |  115 -
+ MAINTAINERS                                   |    3 +-
+ drivers/net/ethernet/neterion/Kconfig         |   24 -
+ drivers/net/ethernet/neterion/Makefile        |    1 -
+ drivers/net/ethernet/neterion/vxge/Makefile   |    8 -
+ .../net/ethernet/neterion/vxge/vxge-config.c  | 5099 -----------------
+ .../net/ethernet/neterion/vxge/vxge-config.h  | 2086 -------
+ .../net/ethernet/neterion/vxge/vxge-ethtool.c | 1154 ----
+ .../net/ethernet/neterion/vxge/vxge-ethtool.h |   48 -
+ .../net/ethernet/neterion/vxge/vxge-main.c    | 4808 ----------------
+ .../net/ethernet/neterion/vxge/vxge-main.h    |  516 --
+ drivers/net/ethernet/neterion/vxge/vxge-reg.h | 4636 ---------------
+ .../net/ethernet/neterion/vxge/vxge-traffic.c | 2428 --------
+ .../net/ethernet/neterion/vxge/vxge-traffic.h | 2290 --------
+ .../net/ethernet/neterion/vxge/vxge-version.h |   49 -
+ 16 files changed, 1 insertion(+), 23265 deletions(-)
+ delete mode 100644 Documentation/networking/device_drivers/ethernet/neterion/vxge.rst
+ delete mode 100644 drivers/net/ethernet/neterion/vxge/Makefile
+ delete mode 100644 drivers/net/ethernet/neterion/vxge/vxge-config.c
+ delete mode 100644 drivers/net/ethernet/neterion/vxge/vxge-config.h
+ delete mode 100644 drivers/net/ethernet/neterion/vxge/vxge-ethtool.c
+ delete mode 100644 drivers/net/ethernet/neterion/vxge/vxge-ethtool.h
+ delete mode 100644 drivers/net/ethernet/neterion/vxge/vxge-main.c
+ delete mode 100644 drivers/net/ethernet/neterion/vxge/vxge-main.h
+ delete mode 100644 drivers/net/ethernet/neterion/vxge/vxge-reg.h
+ delete mode 100644 drivers/net/ethernet/neterion/vxge/vxge-traffic.c
+ delete mode 100644 drivers/net/ethernet/neterion/vxge/vxge-traffic.h
+ delete mode 100644 drivers/net/ethernet/neterion/vxge/vxge-version.h
 
-Alexei, please pick this minor non-urgent clean-up on top of the commit above.
-
- MAINTAINERS | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
+diff --git a/Documentation/networking/device_drivers/ethernet/index.rst b/Documentation/networking/device_drivers/ethernet/index.rst
+index 2249ba010d8a..7f1777173abb 100644
+--- a/Documentation/networking/device_drivers/ethernet/index.rst
++++ b/Documentation/networking/device_drivers/ethernet/index.rst
+@@ -42,7 +42,6 @@ Device drivers for Ethernet and Ethernet-based virtual function devices.
+    mellanox/mlx5
+    microsoft/netvsc
+    neterion/s2io
+-   neterion/vxge
+    netronome/nfp
+    pensando/ionic
+    smsc/smc9
+diff --git a/Documentation/networking/device_drivers/ethernet/neterion/vxge.rst b/Documentation/networking/device_drivers/ethernet/neterion/vxge.rst
+deleted file mode 100644
+index 589c6b15c63d..000000000000
+--- a/Documentation/networking/device_drivers/ethernet/neterion/vxge.rst
++++ /dev/null
+@@ -1,115 +0,0 @@
+-.. SPDX-License-Identifier: GPL-2.0
+-
+-==============================================================================
+-Neterion's (Formerly S2io) X3100 Series 10GbE PCIe Server Adapter Linux driver
+-==============================================================================
+-
+-.. Contents
+-
+-  1) Introduction
+-  2) Features supported
+-  3) Configurable driver parameters
+-  4) Troubleshooting
+-
+-1. Introduction
+-===============
+-
+-This Linux driver supports all Neterion's X3100 series 10 GbE PCIe I/O
+-Virtualized Server adapters.
+-
+-The X3100 series supports four modes of operation, configurable via
+-firmware:
+-
+-	- Single function mode
+-	- Multi function mode
+-	- SRIOV mode
+-	- MRIOV mode
+-
+-The functions share a 10GbE link and the pci-e bus, but hardly anything else
+-inside the ASIC. Features like independent hw reset, statistics, bandwidth/
+-priority allocation and guarantees, GRO, TSO, interrupt moderation etc are
+-supported independently on each function.
+-
+-(See below for a complete list of features supported for both IPv4 and IPv6)
+-
+-2. Features supported
+-=====================
+-
+-i)   Single function mode (up to 17 queues)
+-
+-ii)  Multi function mode (up to 17 functions)
+-
+-iii) PCI-SIG's I/O Virtualization
+-
+-       - Single Root mode: v1.0 (up to 17 functions)
+-       - Multi-Root mode: v1.0 (up to 17 functions)
+-
+-iv)  Jumbo frames
+-
+-       X3100 Series supports MTU up to 9600 bytes, modifiable using
+-       ip command.
+-
+-v)   Offloads supported: (Enabled by default)
+-
+-       - Checksum offload (TCP/UDP/IP) on transmit and receive paths
+-       - TCP Segmentation Offload (TSO) on transmit path
+-       - Generic Receive Offload (GRO) on receive path
+-
+-vi)  MSI-X: (Enabled by default)
+-
+-       Resulting in noticeable performance improvement (up to 7% on certain
+-       platforms).
+-
+-vii) NAPI: (Enabled by default)
+-
+-       For better Rx interrupt moderation.
+-
+-viii)RTH (Receive Traffic Hash): (Enabled by default)
+-
+-       Receive side steering for better scaling.
+-
+-ix)  Statistics
+-
+-       Comprehensive MAC-level and software statistics displayed using
+-       "ethtool -S" option.
+-
+-x)   Multiple hardware queues: (Enabled by default)
+-
+-       Up to 17 hardware based transmit and receive data channels, with
+-       multiple steering options (transmit multiqueue enabled by default).
+-
+-3) Configurable driver parameters:
+-----------------------------------
+-
+-i)  max_config_dev
+-       Specifies maximum device functions to be enabled.
+-
+-       Valid range: 1-8
+-
+-ii) max_config_port
+-       Specifies number of ports to be enabled.
+-
+-       Valid range: 1,2
+-
+-       Default: 1
+-
+-iii) max_config_vpath
+-       Specifies maximum VPATH(s) configured for each device function.
+-
+-       Valid range: 1-17
+-
+-iv) vlan_tag_strip
+-       Enables/disables vlan tag stripping from all received tagged frames that
+-       are not replicated at the internal L2 switch.
+-
+-       Valid range: 0,1 (disabled, enabled respectively)
+-
+-       Default: 1
+-
+-v)  addr_learn_en
+-       Enable learning the mac address of the guest OS interface in
+-       virtualization environment.
+-
+-       Valid range: 0,1 (disabled, enabled respectively)
+-
+-       Default: 0
 diff --git a/MAINTAINERS b/MAINTAINERS
-index fa4bfa3d10bf..27d9e65b9a85 100644
+index 7c029ab73265..15edfa646684 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -22042,7 +22042,7 @@ F:	include/uapi/linux/xdp_diag.h
- F:	include/net/netns/xdp.h
- F:	net/xdp/
- F:	samples/bpf/xdpsock*
--F:	tools/lib/bpf/xsk*
-+F:	tools/testing/selftests/bpf/xsk*
+@@ -13720,12 +13720,11 @@ L:	netdev@vger.kernel.org
+ S:	Maintained
+ F:	net/sched/sch_netem.c
  
- XEN BLOCK SUBSYSTEM
- M:	Roger Pau Monné <roger.pau@citrix.com>
+-NETERION 10GbE DRIVERS (s2io/vxge)
++NETERION 10GbE DRIVERS (s2io)
+ M:	Jon Mason <jdmason@kudzu.us>
+ L:	netdev@vger.kernel.org
+ S:	Supported
+ F:	Documentation/networking/device_drivers/ethernet/neterion/s2io.rst
+-F:	Documentation/networking/device_drivers/ethernet/neterion/vxge.rst
+ F:	drivers/net/ethernet/neterion/
+ 
+ NETFILTER
+diff --git a/drivers/net/ethernet/neterion/Kconfig b/drivers/net/ethernet/neterion/Kconfig
+index 0c0d127906dd..09a89e72f904 100644
+--- a/drivers/net/ethernet/neterion/Kconfig
++++ b/drivers/net/ethernet/neterion/Kconfig
+@@ -32,28 +32,4 @@ config S2IO
+ 	  To compile this driver as a module, choose M here. The module
+ 	  will be called s2io.
+ 
+-config VXGE
+-	tristate "Neterion (Exar) X3100 Series 10GbE PCIe Server Adapter"
+-	depends on PCI
+-	help
+-	  This driver supports Exar Corp's X3100 Series 10 GbE PCIe
+-	  I/O Virtualized Server Adapter.  These were originally released from
+-	  Neterion, which was later acquired by Exar.  So, the adapters might be
+-	  labeled as either one, depending on its age.
+-
+-	  More specific information on configuring the driver is in
+-	  <file:Documentation/networking/device_drivers/ethernet/neterion/vxge.rst>.
+-
+-	  To compile this driver as a module, choose M here. The module
+-	  will be called vxge.
+-
+-config VXGE_DEBUG_TRACE_ALL
+-	bool "Enabling All Debug trace statements in driver"
+-	default n
+-	depends on VXGE
+-	help
+-	  Say Y here if you want to enabling all the debug trace statements in
+-	  the vxge driver. By default only few debug trace statements are
+-	  enabled.
+-
+ endif # NET_VENDOR_NETERION
+diff --git a/drivers/net/ethernet/neterion/Makefile b/drivers/net/ethernet/neterion/Makefile
+index 87ede8a47bb8..de98b4e6eff9 100644
+--- a/drivers/net/ethernet/neterion/Makefile
++++ b/drivers/net/ethernet/neterion/Makefile
+@@ -4,4 +4,3 @@
+ #
+ 
+ obj-$(CONFIG_S2IO) += s2io.o
+-obj-$(CONFIG_VXGE) += vxge/
+diff --git a/drivers/net/ethernet/neterion/vxge/Makefile b/drivers/net/ethernet/neterion/vxge/Makefile
+deleted file mode 100644
+index 0820e81ca7fb..000000000000
+--- a/drivers/net/ethernet/neterion/vxge/Makefile
++++ /dev/null
+@@ -1,8 +0,0 @@
+-# SPDX-License-Identifier: GPL-2.0-only
+-#
+-# Makefile for Exar Corp's X3100 Series 10 GbE PCIe I/O
+-# Virtualized Server Adapter linux driver
+-
+-obj-$(CONFIG_VXGE) += vxge.o
+-
+-vxge-objs := vxge-config.o vxge-traffic.o vxge-ethtool.o vxge-main.o
+diff --git a/drivers/net/ethernet/neterion/vxge/vxge-config.c b/drivers/net/ethernet/neterion/vxge/vxge-config.c
+deleted file mode 100644
+index a3204a7ef750..000000000000
+--- a/drivers/net/ethernet/neterion/vxge/vxge-config.c
++++ /dev/null
+@@ -1,5099 +0,0 @@
+-/******************************************************************************
+- * This software may be used and distributed according to the terms of
+- * the GNU General Public License (GPL), incorporated herein by reference.
+- * Drivers based on or derived from this code fall under the GPL and must
+- * retain the authorship, copyright and license notice.  This file is not
+- * a complete program and may only be used when the entire operating
+- * system is licensed under the GPL.
+- * See the file COPYING in this distribution for more information.
+- *
+- * vxge-config.c: Driver for Exar Corp's X3100 Series 10GbE PCIe I/O
+- *                Virtualized Server Adapter.
+- * Copyright(c) 2002-2010 Exar Corp.
+- ******************************************************************************/
+-#include <linux/vmalloc.h>
+-#include <linux/etherdevice.h>
+-#include <linux/io-64-nonatomic-lo-hi.h>
+-#include <linux/pci.h>
+-#include <linux/slab.h>
+-
+-#include "vxge-traffic.h"
+-#include "vxge-config.h"
+-#include "vxge-main.h"
+-
+-#define VXGE_HW_VPATH_STATS_PIO_READ(offset) {				\
+-	status = __vxge_hw_vpath_stats_access(vpath,			\
+-					      VXGE_HW_STATS_OP_READ,	\
+-					      offset,			\
+-					      &val64);			\
+-	if (status != VXGE_HW_OK)					\
+-		return status;						\
+-}
+-
+-static void
+-vxge_hw_vpath_set_zero_rx_frm_len(struct vxge_hw_vpath_reg __iomem *vp_reg)
+-{
+-	u64 val64;
+-
+-	val64 = readq(&vp_reg->rxmac_vcfg0);
+-	val64 &= ~VXGE_HW_RXMAC_VCFG0_RTS_MAX_FRM_LEN(0x3fff);
+-	writeq(val64, &vp_reg->rxmac_vcfg0);
+-	val64 = readq(&vp_reg->rxmac_vcfg0);
+-}
+-
+-/*
+- * vxge_hw_vpath_wait_receive_idle - Wait for Rx to become idle
+- */
+-int vxge_hw_vpath_wait_receive_idle(struct __vxge_hw_device *hldev, u32 vp_id)
+-{
+-	struct vxge_hw_vpath_reg __iomem *vp_reg;
+-	struct __vxge_hw_virtualpath *vpath;
+-	u64 val64, rxd_count, rxd_spat;
+-	int count = 0, total_count = 0;
+-
+-	vpath = &hldev->virtual_paths[vp_id];
+-	vp_reg = vpath->vp_reg;
+-
+-	vxge_hw_vpath_set_zero_rx_frm_len(vp_reg);
+-
+-	/* Check that the ring controller for this vpath has enough free RxDs
+-	 * to send frames to the host.  This is done by reading the
+-	 * PRC_RXD_DOORBELL_VPn register and comparing the read value to the
+-	 * RXD_SPAT value for the vpath.
+-	 */
+-	val64 = readq(&vp_reg->prc_cfg6);
+-	rxd_spat = VXGE_HW_PRC_CFG6_GET_RXD_SPAT(val64) + 1;
+-	/* Use a factor of 2 when comparing rxd_count against rxd_spat for some
+-	 * leg room.
+-	 */
+-	rxd_spat *= 2;
+-
+-	do {
+-		mdelay(1);
+-
+-		rxd_count = readq(&vp_reg->prc_rxd_doorbell);
+-
+-		/* Check that the ring controller for this vpath does
+-		 * not have any frame in its pipeline.
+-		 */
+-		val64 = readq(&vp_reg->frm_in_progress_cnt);
+-		if ((rxd_count <= rxd_spat) || (val64 > 0))
+-			count = 0;
+-		else
+-			count++;
+-		total_count++;
+-	} while ((count < VXGE_HW_MIN_SUCCESSIVE_IDLE_COUNT) &&
+-			(total_count < VXGE_HW_MAX_POLLING_COUNT));
+-
+-	if (total_count >= VXGE_HW_MAX_POLLING_COUNT)
+-		printk(KERN_ALERT "%s: Still Receiving traffic. Abort wait\n",
+-			__func__);
+-
+-	return total_count;
+-}
+-
+-/* vxge_hw_device_wait_receive_idle - This function waits until all frames
+- * stored in the frame buffer for each vpath assigned to the given
+- * function (hldev) have been sent to the host.
+- */
+-void vxge_hw_device_wait_receive_idle(struct __vxge_hw_device *hldev)
+-{
+-	int i, total_count = 0;
+-
+-	for (i = 0; i < VXGE_HW_MAX_VIRTUAL_PATHS; i++) {
+-		if (!(hldev->vpaths_deployed & vxge_mBIT(i)))
+-			continue;
+-
+-		total_count += vxge_hw_vpath_wait_receive_idle(hldev, i);
+-		if (total_count >= VXGE_HW_MAX_POLLING_COUNT)
+-			break;
+-	}
+-}
+-
+-/*
+- * __vxge_hw_device_register_poll
+- * Will poll certain register for specified amount of time.
+- * Will poll until masked bit is not cleared.
+- */
+-static enum vxge_hw_status
+-__vxge_hw_device_register_poll(void __iomem *reg, u64 mask, u32 max_millis)
+-{
+-	u64 val64;
+-	u32 i = 0;
+-
+-	udelay(10);
+-
+-	do {
+-		val64 = readq(reg);
+-		if (!(val64 & mask))
+-			return VXGE_HW_OK;
+-		udelay(100);
+-	} while (++i <= 9);
+-
+-	i = 0;
+-	do {
+-		val64 = readq(reg);
+-		if (!(val64 & mask))
+-			return VXGE_HW_OK;
+-		mdelay(1);
+-	} while (++i <= max_millis);
+-
+-	return VXGE_HW_FAIL;
+-}
+-
+-static inline enum vxge_hw_status
+-__vxge_hw_pio_mem_write64(u64 val64, void __iomem *addr,
+-			  u64 mask, u32 max_millis)
+-{
+-	__vxge_hw_pio_mem_write32_lower((u32)vxge_bVALn(val64, 32, 32), addr);
+-	wmb();
+-	__vxge_hw_pio_mem_write32_upper((u32)vxge_bVALn(val64, 0, 32), addr);
+-	wmb();
+-
+-	return __vxge_hw_device_register_poll(addr, mask, max_millis);
+-}
+-
+-static enum vxge_hw_status
+-vxge_hw_vpath_fw_api(struct __vxge_hw_virtualpath *vpath, u32 action,
+-		     u32 fw_memo, u32 offset, u64 *data0, u64 *data1,
+-		     u64 *steer_ctrl)
+-{
+-	struct vxge_hw_vpath_reg __iomem *vp_reg = vpath->vp_reg;
+-	enum vxge_hw_status status;
+-	u64 val64;
+-	u32 retry = 0, max_retry = 3;
+-
+-	spin_lock(&vpath->lock);
+-	if (!vpath->vp_open) {
+-		spin_unlock(&vpath->lock);
+-		max_retry = 100;
+-	}
+-
+-	writeq(*data0, &vp_reg->rts_access_steer_data0);
+-	writeq(*data1, &vp_reg->rts_access_steer_data1);
+-	wmb();
+-
+-	val64 = VXGE_HW_RTS_ACCESS_STEER_CTRL_ACTION(action) |
+-		VXGE_HW_RTS_ACCESS_STEER_CTRL_DATA_STRUCT_SEL(fw_memo) |
+-		VXGE_HW_RTS_ACCESS_STEER_CTRL_OFFSET(offset) |
+-		VXGE_HW_RTS_ACCESS_STEER_CTRL_STROBE |
+-		*steer_ctrl;
+-
+-	status = __vxge_hw_pio_mem_write64(val64,
+-					   &vp_reg->rts_access_steer_ctrl,
+-					   VXGE_HW_RTS_ACCESS_STEER_CTRL_STROBE,
+-					   VXGE_HW_DEF_DEVICE_POLL_MILLIS);
+-
+-	/* The __vxge_hw_device_register_poll can udelay for a significant
+-	 * amount of time, blocking other process from the CPU.  If it delays
+-	 * for ~5secs, a NMI error can occur.  A way around this is to give up
+-	 * the processor via msleep, but this is not allowed is under lock.
+-	 * So, only allow it to sleep for ~4secs if open.  Otherwise, delay for
+-	 * 1sec and sleep for 10ms until the firmware operation has completed
+-	 * or timed-out.
+-	 */
+-	while ((status != VXGE_HW_OK) && retry++ < max_retry) {
+-		if (!vpath->vp_open)
+-			msleep(20);
+-		status = __vxge_hw_device_register_poll(
+-					&vp_reg->rts_access_steer_ctrl,
+-					VXGE_HW_RTS_ACCESS_STEER_CTRL_STROBE,
+-					VXGE_HW_DEF_DEVICE_POLL_MILLIS);
+-	}
+-
+-	if (status != VXGE_HW_OK)
+-		goto out;
+-
+-	val64 = readq(&vp_reg->rts_access_steer_ctrl);
+-	if (val64 & VXGE_HW_RTS_ACCESS_STEER_CTRL_RMACJ_STATUS) {
+-		*data0 = readq(&vp_reg->rts_access_steer_data0);
+-		*data1 = readq(&vp_reg->rts_access_steer_data1);
+-		*steer_ctrl = val64;
+-	} else
+-		status = VXGE_HW_FAIL;
+-
+-out:
+-	if (vpath->vp_open)
+-		spin_unlock(&vpath->lock);
+-	return status;
+-}
+-
+-enum vxge_hw_status
+-vxge_hw_upgrade_read_version(struct __vxge_hw_device *hldev, u32 *major,
+-			     u32 *minor, u32 *build)
+-{
+-	u64 data0 = 0, data1 = 0, steer_ctrl = 0;
+-	struct __vxge_hw_virtualpath *vpath;
+-	enum vxge_hw_status status;
+-
+-	vpath = &hldev->virtual_paths[hldev->first_vp_id];
+-
+-	status = vxge_hw_vpath_fw_api(vpath,
+-				      VXGE_HW_FW_UPGRADE_ACTION,
+-				      VXGE_HW_FW_UPGRADE_MEMO,
+-				      VXGE_HW_FW_UPGRADE_OFFSET_READ,
+-				      &data0, &data1, &steer_ctrl);
+-	if (status != VXGE_HW_OK)
+-		return status;
+-
+-	*major = VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_FW_VER_MAJOR(data0);
+-	*minor = VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_FW_VER_MINOR(data0);
+-	*build = VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_FW_VER_BUILD(data0);
+-
+-	return status;
+-}
+-
+-enum vxge_hw_status vxge_hw_flash_fw(struct __vxge_hw_device *hldev)
+-{
+-	u64 data0 = 0, data1 = 0, steer_ctrl = 0;
+-	struct __vxge_hw_virtualpath *vpath;
+-	enum vxge_hw_status status;
+-	u32 ret;
+-
+-	vpath = &hldev->virtual_paths[hldev->first_vp_id];
+-
+-	status = vxge_hw_vpath_fw_api(vpath,
+-				      VXGE_HW_FW_UPGRADE_ACTION,
+-				      VXGE_HW_FW_UPGRADE_MEMO,
+-				      VXGE_HW_FW_UPGRADE_OFFSET_COMMIT,
+-				      &data0, &data1, &steer_ctrl);
+-	if (status != VXGE_HW_OK) {
+-		vxge_debug_init(VXGE_ERR, "%s: FW upgrade failed", __func__);
+-		goto exit;
+-	}
+-
+-	ret = VXGE_HW_RTS_ACCESS_STEER_CTRL_GET_ACTION(steer_ctrl) & 0x7F;
+-	if (ret != 1) {
+-		vxge_debug_init(VXGE_ERR, "%s: FW commit failed with error %d",
+-				__func__, ret);
+-		status = VXGE_HW_FAIL;
+-	}
+-
+-exit:
+-	return status;
+-}
+-
+-enum vxge_hw_status
+-vxge_update_fw_image(struct __vxge_hw_device *hldev, const u8 *fwdata, int size)
+-{
+-	u64 data0 = 0, data1 = 0, steer_ctrl = 0;
+-	struct __vxge_hw_virtualpath *vpath;
+-	enum vxge_hw_status status;
+-	int ret_code, sec_code;
+-
+-	vpath = &hldev->virtual_paths[hldev->first_vp_id];
+-
+-	/* send upgrade start command */
+-	status = vxge_hw_vpath_fw_api(vpath,
+-				      VXGE_HW_FW_UPGRADE_ACTION,
+-				      VXGE_HW_FW_UPGRADE_MEMO,
+-				      VXGE_HW_FW_UPGRADE_OFFSET_START,
+-				      &data0, &data1, &steer_ctrl);
+-	if (status != VXGE_HW_OK) {
+-		vxge_debug_init(VXGE_ERR, " %s: Upgrade start cmd failed",
+-				__func__);
+-		return status;
+-	}
+-
+-	/* Transfer fw image to adapter 16 bytes at a time */
+-	for (; size > 0; size -= VXGE_HW_FW_UPGRADE_BLK_SIZE) {
+-		steer_ctrl = 0;
+-
+-		/* The next 128bits of fwdata to be loaded onto the adapter */
+-		data0 = *((u64 *)fwdata);
+-		data1 = *((u64 *)fwdata + 1);
+-
+-		status = vxge_hw_vpath_fw_api(vpath,
+-					      VXGE_HW_FW_UPGRADE_ACTION,
+-					      VXGE_HW_FW_UPGRADE_MEMO,
+-					      VXGE_HW_FW_UPGRADE_OFFSET_SEND,
+-					      &data0, &data1, &steer_ctrl);
+-		if (status != VXGE_HW_OK) {
+-			vxge_debug_init(VXGE_ERR, "%s: Upgrade send failed",
+-					__func__);
+-			goto out;
+-		}
+-
+-		ret_code = VXGE_HW_UPGRADE_GET_RET_ERR_CODE(data0);
+-		switch (ret_code) {
+-		case VXGE_HW_FW_UPGRADE_OK:
+-			/* All OK, send next 16 bytes. */
+-			break;
+-		case VXGE_FW_UPGRADE_BYTES2SKIP:
+-			/* skip bytes in the stream */
+-			fwdata += (data0 >> 8) & 0xFFFFFFFF;
+-			break;
+-		case VXGE_HW_FW_UPGRADE_DONE:
+-			goto out;
+-		case VXGE_HW_FW_UPGRADE_ERR:
+-			sec_code = VXGE_HW_UPGRADE_GET_SEC_ERR_CODE(data0);
+-			switch (sec_code) {
+-			case VXGE_HW_FW_UPGRADE_ERR_CORRUPT_DATA_1:
+-			case VXGE_HW_FW_UPGRADE_ERR_CORRUPT_DATA_7:
+-				printk(KERN_ERR
+-				       "corrupted data from .ncf file\n");
+-				break;
+-			case VXGE_HW_FW_UPGRADE_ERR_INV_NCF_FILE_3:
+-			case VXGE_HW_FW_UPGRADE_ERR_INV_NCF_FILE_4:
+-			case VXGE_HW_FW_UPGRADE_ERR_INV_NCF_FILE_5:
+-			case VXGE_HW_FW_UPGRADE_ERR_INV_NCF_FILE_6:
+-			case VXGE_HW_FW_UPGRADE_ERR_INV_NCF_FILE_8:
+-				printk(KERN_ERR "invalid .ncf file\n");
+-				break;
+-			case VXGE_HW_FW_UPGRADE_ERR_BUFFER_OVERFLOW:
+-				printk(KERN_ERR "buffer overflow\n");
+-				break;
+-			case VXGE_HW_FW_UPGRADE_ERR_FAILED_TO_FLASH:
+-				printk(KERN_ERR "failed to flash the image\n");
+-				break;
+-			case VXGE_HW_FW_UPGRADE_ERR_GENERIC_ERROR_UNKNOWN:
+-				printk(KERN_ERR
+-				       "generic error. Unknown error type\n");
+-				break;
+-			default:
+-				printk(KERN_ERR "Unknown error of type %d\n",
+-				       sec_code);
+-				break;
+-			}
+-			status = VXGE_HW_FAIL;
+-			goto out;
+-		default:
+-			printk(KERN_ERR "Unknown FW error: %d\n", ret_code);
+-			status = VXGE_HW_FAIL;
+-			goto out;
+-		}
+-		/* point to next 16 bytes */
+-		fwdata += VXGE_HW_FW_UPGRADE_BLK_SIZE;
+-	}
+-out:
+-	return status;
+-}
+-
+-enum vxge_hw_status
+-vxge_hw_vpath_eprom_img_ver_get(struct __vxge_hw_device *hldev,
+-				struct eprom_image *img)
+-{
+-	u64 data0 = 0, data1 = 0, steer_ctrl = 0;
+-	struct __vxge_hw_virtualpath *vpath;
+-	enum vxge_hw_status status;
+-	int i;
+-
+-	vpath = &hldev->virtual_paths[hldev->first_vp_id];
+-
+-	for (i = 0; i < VXGE_HW_MAX_ROM_IMAGES; i++) {
+-		data0 = VXGE_HW_RTS_ACCESS_STEER_ROM_IMAGE_INDEX(i);
+-		data1 = steer_ctrl = 0;
+-
+-		status = vxge_hw_vpath_fw_api(vpath,
+-			VXGE_HW_FW_API_GET_EPROM_REV,
+-			VXGE_HW_RTS_ACCESS_STEER_CTRL_DATA_STRUCT_SEL_FW_MEMO,
+-			0, &data0, &data1, &steer_ctrl);
+-		if (status != VXGE_HW_OK)
+-			break;
+-
+-		img[i].is_valid = VXGE_HW_GET_EPROM_IMAGE_VALID(data0);
+-		img[i].index = VXGE_HW_GET_EPROM_IMAGE_INDEX(data0);
+-		img[i].type = VXGE_HW_GET_EPROM_IMAGE_TYPE(data0);
+-		img[i].version = VXGE_HW_GET_EPROM_IMAGE_REV(data0);
+-	}
+-
+-	return status;
+-}
+-
+-/*
+- * __vxge_hw_channel_free - Free memory allocated for channel
+- * This function deallocates memory from the channel and various arrays
+- * in the channel
+- */
+-static void __vxge_hw_channel_free(struct __vxge_hw_channel *channel)
+-{
+-	kfree(channel->work_arr);
+-	kfree(channel->free_arr);
+-	kfree(channel->reserve_arr);
+-	kfree(channel->orig_arr);
+-	kfree(channel);
+-}
+-
+-/*
+- * __vxge_hw_channel_initialize - Initialize a channel
+- * This function initializes a channel by properly setting the
+- * various references
+- */
+-static enum vxge_hw_status
+-__vxge_hw_channel_initialize(struct __vxge_hw_channel *channel)
+-{
+-	u32 i;
+-	struct __vxge_hw_virtualpath *vpath;
+-
+-	vpath = channel->vph->vpath;
+-
+-	if ((channel->reserve_arr != NULL) && (channel->orig_arr != NULL)) {
+-		for (i = 0; i < channel->length; i++)
+-			channel->orig_arr[i] = channel->reserve_arr[i];
+-	}
+-
+-	switch (channel->type) {
+-	case VXGE_HW_CHANNEL_TYPE_FIFO:
+-		vpath->fifoh = (struct __vxge_hw_fifo *)channel;
+-		channel->stats = &((struct __vxge_hw_fifo *)
+-				channel)->stats->common_stats;
+-		break;
+-	case VXGE_HW_CHANNEL_TYPE_RING:
+-		vpath->ringh = (struct __vxge_hw_ring *)channel;
+-		channel->stats = &((struct __vxge_hw_ring *)
+-				channel)->stats->common_stats;
+-		break;
+-	default:
+-		break;
+-	}
+-
+-	return VXGE_HW_OK;
+-}
+-
+-/*
+- * __vxge_hw_channel_reset - Resets a channel
+- * This function resets a channel by properly setting the various references
+- */
+-static enum vxge_hw_status
+-__vxge_hw_channel_reset(struct __vxge_hw_channel *channel)
+-{
+-	u32 i;
+-
+-	for (i = 0; i < channel->length; i++) {
+-		if (channel->reserve_arr != NULL)
+-			channel->reserve_arr[i] = channel->orig_arr[i];
+-		if (channel->free_arr != NULL)
+-			channel->free_arr[i] = NULL;
+-		if (channel->work_arr != NULL)
+-			channel->work_arr[i] = NULL;
+-	}
+-	channel->free_ptr = channel->length;
+-	channel->reserve_ptr = channel->length;
+-	channel->reserve_top = 0;
+-	channel->post_index = 0;
+-	channel->compl_index = 0;
+-
+-	return VXGE_HW_OK;
+-}
+-
+-/*
+- * __vxge_hw_device_pci_e_init
+- * Initialize certain PCI/PCI-X configuration registers
+- * with recommended values. Save config space for future hw resets.
+- */
+-static void __vxge_hw_device_pci_e_init(struct __vxge_hw_device *hldev)
+-{
+-	u16 cmd = 0;
+-
+-	/* Set the PErr Repconse bit and SERR in PCI command register. */
+-	pci_read_config_word(hldev->pdev, PCI_COMMAND, &cmd);
+-	cmd |= 0x140;
+-	pci_write_config_word(hldev->pdev, PCI_COMMAND, cmd);
+-
+-	pci_save_state(hldev->pdev);
+-}
+-
+-/* __vxge_hw_device_vpath_reset_in_prog_check - Check if vpath reset
+- * in progress
+- * This routine checks the vpath reset in progress register is turned zero
+- */
+-static enum vxge_hw_status
+-__vxge_hw_device_vpath_reset_in_prog_check(u64 __iomem *vpath_rst_in_prog)
+-{
+-	enum vxge_hw_status status;
+-	status = __vxge_hw_device_register_poll(vpath_rst_in_prog,
+-			VXGE_HW_VPATH_RST_IN_PROG_VPATH_RST_IN_PROG(0x1ffff),
+-			VXGE_HW_DEF_DEVICE_POLL_MILLIS);
+-	return status;
+-}
+-
+-/*
+- * _hw_legacy_swapper_set - Set the swapper bits for the legacy secion.
+- * Set the swapper bits appropriately for the lagacy section.
+- */
+-static enum vxge_hw_status
+-__vxge_hw_legacy_swapper_set(struct vxge_hw_legacy_reg __iomem *legacy_reg)
+-{
+-	u64 val64;
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-
+-	val64 = readq(&legacy_reg->toc_swapper_fb);
+-
+-	wmb();
+-
+-	switch (val64) {
+-	case VXGE_HW_SWAPPER_INITIAL_VALUE:
+-		return status;
+-
+-	case VXGE_HW_SWAPPER_BYTE_SWAPPED_BIT_FLIPPED:
+-		writeq(VXGE_HW_SWAPPER_READ_BYTE_SWAP_ENABLE,
+-			&legacy_reg->pifm_rd_swap_en);
+-		writeq(VXGE_HW_SWAPPER_READ_BIT_FLAP_ENABLE,
+-			&legacy_reg->pifm_rd_flip_en);
+-		writeq(VXGE_HW_SWAPPER_WRITE_BYTE_SWAP_ENABLE,
+-			&legacy_reg->pifm_wr_swap_en);
+-		writeq(VXGE_HW_SWAPPER_WRITE_BIT_FLAP_ENABLE,
+-			&legacy_reg->pifm_wr_flip_en);
+-		break;
+-
+-	case VXGE_HW_SWAPPER_BYTE_SWAPPED:
+-		writeq(VXGE_HW_SWAPPER_READ_BYTE_SWAP_ENABLE,
+-			&legacy_reg->pifm_rd_swap_en);
+-		writeq(VXGE_HW_SWAPPER_WRITE_BYTE_SWAP_ENABLE,
+-			&legacy_reg->pifm_wr_swap_en);
+-		break;
+-
+-	case VXGE_HW_SWAPPER_BIT_FLIPPED:
+-		writeq(VXGE_HW_SWAPPER_READ_BIT_FLAP_ENABLE,
+-			&legacy_reg->pifm_rd_flip_en);
+-		writeq(VXGE_HW_SWAPPER_WRITE_BIT_FLAP_ENABLE,
+-			&legacy_reg->pifm_wr_flip_en);
+-		break;
+-	}
+-
+-	wmb();
+-
+-	val64 = readq(&legacy_reg->toc_swapper_fb);
+-
+-	if (val64 != VXGE_HW_SWAPPER_INITIAL_VALUE)
+-		status = VXGE_HW_ERR_SWAPPER_CTRL;
+-
+-	return status;
+-}
+-
+-/*
+- * __vxge_hw_device_toc_get
+- * This routine sets the swapper and reads the toc pointer and returns the
+- * memory mapped address of the toc
+- */
+-static struct vxge_hw_toc_reg __iomem *
+-__vxge_hw_device_toc_get(void __iomem *bar0)
+-{
+-	u64 val64;
+-	struct vxge_hw_toc_reg __iomem *toc = NULL;
+-	enum vxge_hw_status status;
+-
+-	struct vxge_hw_legacy_reg __iomem *legacy_reg =
+-		(struct vxge_hw_legacy_reg __iomem *)bar0;
+-
+-	status = __vxge_hw_legacy_swapper_set(legacy_reg);
+-	if (status != VXGE_HW_OK)
+-		goto exit;
+-
+-	val64 =	readq(&legacy_reg->toc_first_pointer);
+-	toc = bar0 + val64;
+-exit:
+-	return toc;
+-}
+-
+-/*
+- * __vxge_hw_device_reg_addr_get
+- * This routine sets the swapper and reads the toc pointer and initializes the
+- * register location pointers in the device object. It waits until the ric is
+- * completed initializing registers.
+- */
+-static enum vxge_hw_status
+-__vxge_hw_device_reg_addr_get(struct __vxge_hw_device *hldev)
+-{
+-	u64 val64;
+-	u32 i;
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-
+-	hldev->legacy_reg = hldev->bar0;
+-
+-	hldev->toc_reg = __vxge_hw_device_toc_get(hldev->bar0);
+-	if (hldev->toc_reg  == NULL) {
+-		status = VXGE_HW_FAIL;
+-		goto exit;
+-	}
+-
+-	val64 = readq(&hldev->toc_reg->toc_common_pointer);
+-	hldev->common_reg = hldev->bar0 + val64;
+-
+-	val64 = readq(&hldev->toc_reg->toc_mrpcim_pointer);
+-	hldev->mrpcim_reg = hldev->bar0 + val64;
+-
+-	for (i = 0; i < VXGE_HW_TITAN_SRPCIM_REG_SPACES; i++) {
+-		val64 = readq(&hldev->toc_reg->toc_srpcim_pointer[i]);
+-		hldev->srpcim_reg[i] = hldev->bar0 + val64;
+-	}
+-
+-	for (i = 0; i < VXGE_HW_TITAN_VPMGMT_REG_SPACES; i++) {
+-		val64 = readq(&hldev->toc_reg->toc_vpmgmt_pointer[i]);
+-		hldev->vpmgmt_reg[i] = hldev->bar0 + val64;
+-	}
+-
+-	for (i = 0; i < VXGE_HW_TITAN_VPATH_REG_SPACES; i++) {
+-		val64 = readq(&hldev->toc_reg->toc_vpath_pointer[i]);
+-		hldev->vpath_reg[i] = hldev->bar0 + val64;
+-	}
+-
+-	val64 = readq(&hldev->toc_reg->toc_kdfc);
+-
+-	switch (VXGE_HW_TOC_GET_KDFC_INITIAL_BIR(val64)) {
+-	case 0:
+-		hldev->kdfc = hldev->bar0 + VXGE_HW_TOC_GET_KDFC_INITIAL_OFFSET(val64) ;
+-		break;
+-	default:
+-		break;
+-	}
+-
+-	status = __vxge_hw_device_vpath_reset_in_prog_check(
+-			(u64 __iomem *)&hldev->common_reg->vpath_rst_in_prog);
+-exit:
+-	return status;
+-}
+-
+-/*
+- * __vxge_hw_device_access_rights_get: Get Access Rights of the driver
+- * This routine returns the Access Rights of the driver
+- */
+-static u32
+-__vxge_hw_device_access_rights_get(u32 host_type, u32 func_id)
+-{
+-	u32 access_rights = VXGE_HW_DEVICE_ACCESS_RIGHT_VPATH;
+-
+-	switch (host_type) {
+-	case VXGE_HW_NO_MR_NO_SR_NORMAL_FUNCTION:
+-		if (func_id == 0) {
+-			access_rights |= VXGE_HW_DEVICE_ACCESS_RIGHT_MRPCIM |
+-					VXGE_HW_DEVICE_ACCESS_RIGHT_SRPCIM;
+-		}
+-		break;
+-	case VXGE_HW_MR_NO_SR_VH0_BASE_FUNCTION:
+-		access_rights |= VXGE_HW_DEVICE_ACCESS_RIGHT_MRPCIM |
+-				VXGE_HW_DEVICE_ACCESS_RIGHT_SRPCIM;
+-		break;
+-	case VXGE_HW_NO_MR_SR_VH0_FUNCTION0:
+-		access_rights |= VXGE_HW_DEVICE_ACCESS_RIGHT_MRPCIM |
+-				VXGE_HW_DEVICE_ACCESS_RIGHT_SRPCIM;
+-		break;
+-	case VXGE_HW_NO_MR_SR_VH0_VIRTUAL_FUNCTION:
+-	case VXGE_HW_SR_VH_VIRTUAL_FUNCTION:
+-	case VXGE_HW_MR_SR_VH0_INVALID_CONFIG:
+-		break;
+-	case VXGE_HW_SR_VH_FUNCTION0:
+-	case VXGE_HW_VH_NORMAL_FUNCTION:
+-		access_rights |= VXGE_HW_DEVICE_ACCESS_RIGHT_SRPCIM;
+-		break;
+-	}
+-
+-	return access_rights;
+-}
+-/*
+- * __vxge_hw_device_is_privilaged
+- * This routine checks if the device function is privilaged or not
+- */
+-
+-enum vxge_hw_status
+-__vxge_hw_device_is_privilaged(u32 host_type, u32 func_id)
+-{
+-	if (__vxge_hw_device_access_rights_get(host_type,
+-		func_id) &
+-		VXGE_HW_DEVICE_ACCESS_RIGHT_MRPCIM)
+-		return VXGE_HW_OK;
+-	else
+-		return VXGE_HW_ERR_PRIVILEGED_OPERATION;
+-}
+-
+-/*
+- * __vxge_hw_vpath_func_id_get - Get the function id of the vpath.
+- * Returns the function number of the vpath.
+- */
+-static u32
+-__vxge_hw_vpath_func_id_get(struct vxge_hw_vpmgmt_reg __iomem *vpmgmt_reg)
+-{
+-	u64 val64;
+-
+-	val64 = readq(&vpmgmt_reg->vpath_to_func_map_cfg1);
+-
+-	return
+-	 (u32)VXGE_HW_VPATH_TO_FUNC_MAP_CFG1_GET_VPATH_TO_FUNC_MAP_CFG1(val64);
+-}
+-
+-/*
+- * __vxge_hw_device_host_info_get
+- * This routine returns the host type assignments
+- */
+-static void __vxge_hw_device_host_info_get(struct __vxge_hw_device *hldev)
+-{
+-	u64 val64;
+-	u32 i;
+-
+-	val64 = readq(&hldev->common_reg->host_type_assignments);
+-
+-	hldev->host_type =
+-	   (u32)VXGE_HW_HOST_TYPE_ASSIGNMENTS_GET_HOST_TYPE_ASSIGNMENTS(val64);
+-
+-	hldev->vpath_assignments = readq(&hldev->common_reg->vpath_assignments);
+-
+-	for (i = 0; i < VXGE_HW_MAX_VIRTUAL_PATHS; i++) {
+-		if (!(hldev->vpath_assignments & vxge_mBIT(i)))
+-			continue;
+-
+-		hldev->func_id =
+-			__vxge_hw_vpath_func_id_get(hldev->vpmgmt_reg[i]);
+-
+-		hldev->access_rights = __vxge_hw_device_access_rights_get(
+-			hldev->host_type, hldev->func_id);
+-
+-		hldev->virtual_paths[i].vp_open = VXGE_HW_VP_NOT_OPEN;
+-		hldev->virtual_paths[i].vp_reg = hldev->vpath_reg[i];
+-
+-		hldev->first_vp_id = i;
+-		break;
+-	}
+-}
+-
+-/*
+- * __vxge_hw_verify_pci_e_info - Validate the pci-e link parameters such as
+- * link width and signalling rate.
+- */
+-static enum vxge_hw_status
+-__vxge_hw_verify_pci_e_info(struct __vxge_hw_device *hldev)
+-{
+-	struct pci_dev *dev = hldev->pdev;
+-	u16 lnk;
+-
+-	/* Get the negotiated link width and speed from PCI config space */
+-	pcie_capability_read_word(dev, PCI_EXP_LNKSTA, &lnk);
+-
+-	if ((lnk & PCI_EXP_LNKSTA_CLS) != 1)
+-		return VXGE_HW_ERR_INVALID_PCI_INFO;
+-
+-	switch ((lnk & PCI_EXP_LNKSTA_NLW) >> 4) {
+-	case PCIE_LNK_WIDTH_RESRV:
+-	case PCIE_LNK_X1:
+-	case PCIE_LNK_X2:
+-	case PCIE_LNK_X4:
+-	case PCIE_LNK_X8:
+-		break;
+-	default:
+-		return VXGE_HW_ERR_INVALID_PCI_INFO;
+-	}
+-
+-	return VXGE_HW_OK;
+-}
+-
+-/*
+- * __vxge_hw_device_initialize
+- * Initialize Titan-V hardware.
+- */
+-static enum vxge_hw_status
+-__vxge_hw_device_initialize(struct __vxge_hw_device *hldev)
+-{
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-
+-	if (VXGE_HW_OK == __vxge_hw_device_is_privilaged(hldev->host_type,
+-				hldev->func_id)) {
+-		/* Validate the pci-e link width and speed */
+-		status = __vxge_hw_verify_pci_e_info(hldev);
+-		if (status != VXGE_HW_OK)
+-			goto exit;
+-	}
+-
+-exit:
+-	return status;
+-}
+-
+-/*
+- * __vxge_hw_vpath_fw_ver_get - Get the fw version
+- * Returns FW Version
+- */
+-static enum vxge_hw_status
+-__vxge_hw_vpath_fw_ver_get(struct __vxge_hw_virtualpath *vpath,
+-			   struct vxge_hw_device_hw_info *hw_info)
+-{
+-	struct vxge_hw_device_version *fw_version = &hw_info->fw_version;
+-	struct vxge_hw_device_date *fw_date = &hw_info->fw_date;
+-	struct vxge_hw_device_version *flash_version = &hw_info->flash_version;
+-	struct vxge_hw_device_date *flash_date = &hw_info->flash_date;
+-	u64 data0 = 0, data1 = 0, steer_ctrl = 0;
+-	enum vxge_hw_status status;
+-
+-	status = vxge_hw_vpath_fw_api(vpath,
+-			VXGE_HW_RTS_ACCESS_STEER_CTRL_ACTION_READ_ENTRY,
+-			VXGE_HW_RTS_ACCESS_STEER_CTRL_DATA_STRUCT_SEL_FW_MEMO,
+-			0, &data0, &data1, &steer_ctrl);
+-	if (status != VXGE_HW_OK)
+-		goto exit;
+-
+-	fw_date->day =
+-	    (u32) VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_FW_VER_DAY(data0);
+-	fw_date->month =
+-	    (u32) VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_FW_VER_MONTH(data0);
+-	fw_date->year =
+-	    (u32) VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_FW_VER_YEAR(data0);
+-
+-	snprintf(fw_date->date, VXGE_HW_FW_STRLEN, "%2.2d/%2.2d/%4.4d",
+-		 fw_date->month, fw_date->day, fw_date->year);
+-
+-	fw_version->major =
+-	    (u32) VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_FW_VER_MAJOR(data0);
+-	fw_version->minor =
+-	    (u32) VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_FW_VER_MINOR(data0);
+-	fw_version->build =
+-	    (u32) VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_FW_VER_BUILD(data0);
+-
+-	snprintf(fw_version->version, VXGE_HW_FW_STRLEN, "%d.%d.%d",
+-		 fw_version->major, fw_version->minor, fw_version->build);
+-
+-	flash_date->day =
+-	    (u32) VXGE_HW_RTS_ACCESS_STEER_DATA1_GET_FLASH_VER_DAY(data1);
+-	flash_date->month =
+-	    (u32) VXGE_HW_RTS_ACCESS_STEER_DATA1_GET_FLASH_VER_MONTH(data1);
+-	flash_date->year =
+-	    (u32) VXGE_HW_RTS_ACCESS_STEER_DATA1_GET_FLASH_VER_YEAR(data1);
+-
+-	snprintf(flash_date->date, VXGE_HW_FW_STRLEN, "%2.2d/%2.2d/%4.4d",
+-		 flash_date->month, flash_date->day, flash_date->year);
+-
+-	flash_version->major =
+-	    (u32) VXGE_HW_RTS_ACCESS_STEER_DATA1_GET_FLASH_VER_MAJOR(data1);
+-	flash_version->minor =
+-	    (u32) VXGE_HW_RTS_ACCESS_STEER_DATA1_GET_FLASH_VER_MINOR(data1);
+-	flash_version->build =
+-	    (u32) VXGE_HW_RTS_ACCESS_STEER_DATA1_GET_FLASH_VER_BUILD(data1);
+-
+-	snprintf(flash_version->version, VXGE_HW_FW_STRLEN, "%d.%d.%d",
+-		 flash_version->major, flash_version->minor,
+-		 flash_version->build);
+-
+-exit:
+-	return status;
+-}
+-
+-/*
+- * __vxge_hw_vpath_card_info_get - Get the serial numbers,
+- * part number and product description.
+- */
+-static enum vxge_hw_status
+-__vxge_hw_vpath_card_info_get(struct __vxge_hw_virtualpath *vpath,
+-			      struct vxge_hw_device_hw_info *hw_info)
+-{
+-	__be64 *serial_number = (void *)hw_info->serial_number;
+-	__be64 *product_desc = (void *)hw_info->product_desc;
+-	__be64 *part_number = (void *)hw_info->part_number;
+-	enum vxge_hw_status status;
+-	u64 data0, data1 = 0, steer_ctrl = 0;
+-	u32 i, j = 0;
+-
+-	data0 = VXGE_HW_RTS_ACCESS_STEER_DATA0_MEMO_ITEM_SERIAL_NUMBER;
+-
+-	status = vxge_hw_vpath_fw_api(vpath,
+-			VXGE_HW_RTS_ACCESS_STEER_CTRL_ACTION_READ_MEMO_ENTRY,
+-			VXGE_HW_RTS_ACCESS_STEER_CTRL_DATA_STRUCT_SEL_FW_MEMO,
+-			0, &data0, &data1, &steer_ctrl);
+-	if (status != VXGE_HW_OK)
+-		return status;
+-
+-	serial_number[0] = cpu_to_be64(data0);
+-	serial_number[1] = cpu_to_be64(data1);
+-
+-	data0 = VXGE_HW_RTS_ACCESS_STEER_DATA0_MEMO_ITEM_PART_NUMBER;
+-	data1 = steer_ctrl = 0;
+-
+-	status = vxge_hw_vpath_fw_api(vpath,
+-			VXGE_HW_RTS_ACCESS_STEER_CTRL_ACTION_READ_MEMO_ENTRY,
+-			VXGE_HW_RTS_ACCESS_STEER_CTRL_DATA_STRUCT_SEL_FW_MEMO,
+-			0, &data0, &data1, &steer_ctrl);
+-	if (status != VXGE_HW_OK)
+-		return status;
+-
+-	part_number[0] = cpu_to_be64(data0);
+-	part_number[1] = cpu_to_be64(data1);
+-
+-	for (i = VXGE_HW_RTS_ACCESS_STEER_DATA0_MEMO_ITEM_DESC_0;
+-	     i <= VXGE_HW_RTS_ACCESS_STEER_DATA0_MEMO_ITEM_DESC_3; i++) {
+-		data0 = i;
+-		data1 = steer_ctrl = 0;
+-
+-		status = vxge_hw_vpath_fw_api(vpath,
+-			VXGE_HW_RTS_ACCESS_STEER_CTRL_ACTION_READ_MEMO_ENTRY,
+-			VXGE_HW_RTS_ACCESS_STEER_CTRL_DATA_STRUCT_SEL_FW_MEMO,
+-			0, &data0, &data1, &steer_ctrl);
+-		if (status != VXGE_HW_OK)
+-			return status;
+-
+-		product_desc[j++] = cpu_to_be64(data0);
+-		product_desc[j++] = cpu_to_be64(data1);
+-	}
+-
+-	return status;
+-}
+-
+-/*
+- * __vxge_hw_vpath_pci_func_mode_get - Get the pci mode
+- * Returns pci function mode
+- */
+-static enum vxge_hw_status
+-__vxge_hw_vpath_pci_func_mode_get(struct __vxge_hw_virtualpath *vpath,
+-				  struct vxge_hw_device_hw_info *hw_info)
+-{
+-	u64 data0, data1 = 0, steer_ctrl = 0;
+-	enum vxge_hw_status status;
+-
+-	data0 = 0;
+-
+-	status = vxge_hw_vpath_fw_api(vpath,
+-			VXGE_HW_FW_API_GET_FUNC_MODE,
+-			VXGE_HW_RTS_ACCESS_STEER_CTRL_DATA_STRUCT_SEL_FW_MEMO,
+-			0, &data0, &data1, &steer_ctrl);
+-	if (status != VXGE_HW_OK)
+-		return status;
+-
+-	hw_info->function_mode = VXGE_HW_GET_FUNC_MODE_VAL(data0);
+-	return status;
+-}
+-
+-/*
+- * __vxge_hw_vpath_addr_get - Get the hw address entry for this vpath
+- *               from MAC address table.
+- */
+-static enum vxge_hw_status
+-__vxge_hw_vpath_addr_get(struct __vxge_hw_virtualpath *vpath,
+-			 u8 *macaddr, u8 *macaddr_mask)
+-{
+-	u64 action = VXGE_HW_RTS_ACCESS_STEER_CTRL_ACTION_LIST_FIRST_ENTRY,
+-	    data0 = 0, data1 = 0, steer_ctrl = 0;
+-	enum vxge_hw_status status;
+-	int i;
+-
+-	do {
+-		status = vxge_hw_vpath_fw_api(vpath, action,
+-			VXGE_HW_RTS_ACCESS_STEER_CTRL_DATA_STRUCT_SEL_DA,
+-			0, &data0, &data1, &steer_ctrl);
+-		if (status != VXGE_HW_OK)
+-			goto exit;
+-
+-		data0 = VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_DA_MAC_ADDR(data0);
+-		data1 = VXGE_HW_RTS_ACCESS_STEER_DATA1_GET_DA_MAC_ADDR_MASK(
+-									data1);
+-
+-		for (i = ETH_ALEN; i > 0; i--) {
+-			macaddr[i - 1] = (u8) (data0 & 0xFF);
+-			data0 >>= 8;
+-
+-			macaddr_mask[i - 1] = (u8) (data1 & 0xFF);
+-			data1 >>= 8;
+-		}
+-
+-		action = VXGE_HW_RTS_ACCESS_STEER_CTRL_ACTION_LIST_NEXT_ENTRY;
+-		data0 = 0, data1 = 0, steer_ctrl = 0;
+-
+-	} while (!is_valid_ether_addr(macaddr));
+-exit:
+-	return status;
+-}
+-
+-/**
+- * vxge_hw_device_hw_info_get - Get the hw information
+- * @bar0: the bar
+- * @hw_info: the hw_info struct
+- *
+- * Returns the vpath mask that has the bits set for each vpath allocated
+- * for the driver, FW version information, and the first mac address for
+- * each vpath
+- */
+-enum vxge_hw_status
+-vxge_hw_device_hw_info_get(void __iomem *bar0,
+-			   struct vxge_hw_device_hw_info *hw_info)
+-{
+-	u32 i;
+-	u64 val64;
+-	struct vxge_hw_toc_reg __iomem *toc;
+-	struct vxge_hw_mrpcim_reg __iomem *mrpcim_reg;
+-	struct vxge_hw_common_reg __iomem *common_reg;
+-	struct vxge_hw_vpmgmt_reg __iomem *vpmgmt_reg;
+-	enum vxge_hw_status status;
+-	struct __vxge_hw_virtualpath vpath;
+-
+-	memset(hw_info, 0, sizeof(struct vxge_hw_device_hw_info));
+-
+-	toc = __vxge_hw_device_toc_get(bar0);
+-	if (toc == NULL) {
+-		status = VXGE_HW_ERR_CRITICAL;
+-		goto exit;
+-	}
+-
+-	val64 = readq(&toc->toc_common_pointer);
+-	common_reg = bar0 + val64;
+-
+-	status = __vxge_hw_device_vpath_reset_in_prog_check(
+-		(u64 __iomem *)&common_reg->vpath_rst_in_prog);
+-	if (status != VXGE_HW_OK)
+-		goto exit;
+-
+-	hw_info->vpath_mask = readq(&common_reg->vpath_assignments);
+-
+-	val64 = readq(&common_reg->host_type_assignments);
+-
+-	hw_info->host_type =
+-	   (u32)VXGE_HW_HOST_TYPE_ASSIGNMENTS_GET_HOST_TYPE_ASSIGNMENTS(val64);
+-
+-	for (i = 0; i < VXGE_HW_MAX_VIRTUAL_PATHS; i++) {
+-		if (!((hw_info->vpath_mask) & vxge_mBIT(i)))
+-			continue;
+-
+-		val64 = readq(&toc->toc_vpmgmt_pointer[i]);
+-
+-		vpmgmt_reg = bar0 + val64;
+-
+-		hw_info->func_id = __vxge_hw_vpath_func_id_get(vpmgmt_reg);
+-		if (__vxge_hw_device_access_rights_get(hw_info->host_type,
+-			hw_info->func_id) &
+-			VXGE_HW_DEVICE_ACCESS_RIGHT_MRPCIM) {
+-
+-			val64 = readq(&toc->toc_mrpcim_pointer);
+-
+-			mrpcim_reg = bar0 + val64;
+-
+-			writeq(0, &mrpcim_reg->xgmac_gen_fw_memo_mask);
+-			wmb();
+-		}
+-
+-		val64 = readq(&toc->toc_vpath_pointer[i]);
+-
+-		spin_lock_init(&vpath.lock);
+-		vpath.vp_reg = bar0 + val64;
+-		vpath.vp_open = VXGE_HW_VP_NOT_OPEN;
+-
+-		status = __vxge_hw_vpath_pci_func_mode_get(&vpath, hw_info);
+-		if (status != VXGE_HW_OK)
+-			goto exit;
+-
+-		status = __vxge_hw_vpath_fw_ver_get(&vpath, hw_info);
+-		if (status != VXGE_HW_OK)
+-			goto exit;
+-
+-		status = __vxge_hw_vpath_card_info_get(&vpath, hw_info);
+-		if (status != VXGE_HW_OK)
+-			goto exit;
+-
+-		break;
+-	}
+-
+-	for (i = 0; i < VXGE_HW_MAX_VIRTUAL_PATHS; i++) {
+-		if (!((hw_info->vpath_mask) & vxge_mBIT(i)))
+-			continue;
+-
+-		val64 = readq(&toc->toc_vpath_pointer[i]);
+-		vpath.vp_reg = bar0 + val64;
+-		vpath.vp_open = VXGE_HW_VP_NOT_OPEN;
+-
+-		status =  __vxge_hw_vpath_addr_get(&vpath,
+-				hw_info->mac_addrs[i],
+-				hw_info->mac_addr_masks[i]);
+-		if (status != VXGE_HW_OK)
+-			goto exit;
+-	}
+-exit:
+-	return status;
+-}
+-
+-/*
+- * __vxge_hw_blockpool_destroy - Deallocates the block pool
+- */
+-static void __vxge_hw_blockpool_destroy(struct __vxge_hw_blockpool *blockpool)
+-{
+-	struct __vxge_hw_device *hldev;
+-	struct list_head *p, *n;
+-
+-	if (!blockpool)
+-		return;
+-
+-	hldev = blockpool->hldev;
+-
+-	list_for_each_safe(p, n, &blockpool->free_block_list) {
+-		dma_unmap_single(&hldev->pdev->dev,
+-				 ((struct __vxge_hw_blockpool_entry *)p)->dma_addr,
+-				 ((struct __vxge_hw_blockpool_entry *)p)->length,
+-				 DMA_BIDIRECTIONAL);
+-
+-		vxge_os_dma_free(hldev->pdev,
+-			((struct __vxge_hw_blockpool_entry *)p)->memblock,
+-			&((struct __vxge_hw_blockpool_entry *)p)->acc_handle);
+-
+-		list_del(&((struct __vxge_hw_blockpool_entry *)p)->item);
+-		kfree(p);
+-		blockpool->pool_size--;
+-	}
+-
+-	list_for_each_safe(p, n, &blockpool->free_entry_list) {
+-		list_del(&((struct __vxge_hw_blockpool_entry *)p)->item);
+-		kfree(p);
+-	}
+-
+-	return;
+-}
+-
+-/*
+- * __vxge_hw_blockpool_create - Create block pool
+- */
+-static enum vxge_hw_status
+-__vxge_hw_blockpool_create(struct __vxge_hw_device *hldev,
+-			   struct __vxge_hw_blockpool *blockpool,
+-			   u32 pool_size,
+-			   u32 pool_max)
+-{
+-	u32 i;
+-	struct __vxge_hw_blockpool_entry *entry = NULL;
+-	void *memblock;
+-	dma_addr_t dma_addr;
+-	struct pci_dev *dma_handle;
+-	struct pci_dev *acc_handle;
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-
+-	if (blockpool == NULL) {
+-		status = VXGE_HW_FAIL;
+-		goto blockpool_create_exit;
+-	}
+-
+-	blockpool->hldev = hldev;
+-	blockpool->block_size = VXGE_HW_BLOCK_SIZE;
+-	blockpool->pool_size = 0;
+-	blockpool->pool_max = pool_max;
+-	blockpool->req_out = 0;
+-
+-	INIT_LIST_HEAD(&blockpool->free_block_list);
+-	INIT_LIST_HEAD(&blockpool->free_entry_list);
+-
+-	for (i = 0; i < pool_size + pool_max; i++) {
+-		entry = kzalloc(sizeof(struct __vxge_hw_blockpool_entry),
+-				GFP_KERNEL);
+-		if (entry == NULL) {
+-			__vxge_hw_blockpool_destroy(blockpool);
+-			status = VXGE_HW_ERR_OUT_OF_MEMORY;
+-			goto blockpool_create_exit;
+-		}
+-		list_add(&entry->item, &blockpool->free_entry_list);
+-	}
+-
+-	for (i = 0; i < pool_size; i++) {
+-		memblock = vxge_os_dma_malloc(
+-				hldev->pdev,
+-				VXGE_HW_BLOCK_SIZE,
+-				&dma_handle,
+-				&acc_handle);
+-		if (memblock == NULL) {
+-			__vxge_hw_blockpool_destroy(blockpool);
+-			status = VXGE_HW_ERR_OUT_OF_MEMORY;
+-			goto blockpool_create_exit;
+-		}
+-
+-		dma_addr = dma_map_single(&hldev->pdev->dev, memblock,
+-					  VXGE_HW_BLOCK_SIZE,
+-					  DMA_BIDIRECTIONAL);
+-		if (unlikely(dma_mapping_error(&hldev->pdev->dev, dma_addr))) {
+-			vxge_os_dma_free(hldev->pdev, memblock, &acc_handle);
+-			__vxge_hw_blockpool_destroy(blockpool);
+-			status = VXGE_HW_ERR_OUT_OF_MEMORY;
+-			goto blockpool_create_exit;
+-		}
+-
+-		if (!list_empty(&blockpool->free_entry_list))
+-			entry = (struct __vxge_hw_blockpool_entry *)
+-				list_first_entry(&blockpool->free_entry_list,
+-					struct __vxge_hw_blockpool_entry,
+-					item);
+-
+-		if (entry == NULL)
+-			entry =
+-			    kzalloc(sizeof(struct __vxge_hw_blockpool_entry),
+-					GFP_KERNEL);
+-		if (entry != NULL) {
+-			list_del(&entry->item);
+-			entry->length = VXGE_HW_BLOCK_SIZE;
+-			entry->memblock = memblock;
+-			entry->dma_addr = dma_addr;
+-			entry->acc_handle = acc_handle;
+-			entry->dma_handle = dma_handle;
+-			list_add(&entry->item,
+-					  &blockpool->free_block_list);
+-			blockpool->pool_size++;
+-		} else {
+-			__vxge_hw_blockpool_destroy(blockpool);
+-			status = VXGE_HW_ERR_OUT_OF_MEMORY;
+-			goto blockpool_create_exit;
+-		}
+-	}
+-
+-blockpool_create_exit:
+-	return status;
+-}
+-
+-/*
+- * __vxge_hw_device_fifo_config_check - Check fifo configuration.
+- * Check the fifo configuration
+- */
+-static enum vxge_hw_status
+-__vxge_hw_device_fifo_config_check(struct vxge_hw_fifo_config *fifo_config)
+-{
+-	if ((fifo_config->fifo_blocks < VXGE_HW_MIN_FIFO_BLOCKS) ||
+-	    (fifo_config->fifo_blocks > VXGE_HW_MAX_FIFO_BLOCKS))
+-		return VXGE_HW_BADCFG_FIFO_BLOCKS;
+-
+-	return VXGE_HW_OK;
+-}
+-
+-/*
+- * __vxge_hw_device_vpath_config_check - Check vpath configuration.
+- * Check the vpath configuration
+- */
+-static enum vxge_hw_status
+-__vxge_hw_device_vpath_config_check(struct vxge_hw_vp_config *vp_config)
+-{
+-	enum vxge_hw_status status;
+-
+-	if ((vp_config->min_bandwidth < VXGE_HW_VPATH_BANDWIDTH_MIN) ||
+-	    (vp_config->min_bandwidth >	VXGE_HW_VPATH_BANDWIDTH_MAX))
+-		return VXGE_HW_BADCFG_VPATH_MIN_BANDWIDTH;
+-
+-	status = __vxge_hw_device_fifo_config_check(&vp_config->fifo);
+-	if (status != VXGE_HW_OK)
+-		return status;
+-
+-	if ((vp_config->mtu != VXGE_HW_VPATH_USE_FLASH_DEFAULT_INITIAL_MTU) &&
+-		((vp_config->mtu < VXGE_HW_VPATH_MIN_INITIAL_MTU) ||
+-		(vp_config->mtu > VXGE_HW_VPATH_MAX_INITIAL_MTU)))
+-		return VXGE_HW_BADCFG_VPATH_MTU;
+-
+-	if ((vp_config->rpa_strip_vlan_tag !=
+-		VXGE_HW_VPATH_RPA_STRIP_VLAN_TAG_USE_FLASH_DEFAULT) &&
+-		(vp_config->rpa_strip_vlan_tag !=
+-		VXGE_HW_VPATH_RPA_STRIP_VLAN_TAG_ENABLE) &&
+-		(vp_config->rpa_strip_vlan_tag !=
+-		VXGE_HW_VPATH_RPA_STRIP_VLAN_TAG_DISABLE))
+-		return VXGE_HW_BADCFG_VPATH_RPA_STRIP_VLAN_TAG;
+-
+-	return VXGE_HW_OK;
+-}
+-
+-/*
+- * __vxge_hw_device_config_check - Check device configuration.
+- * Check the device configuration
+- */
+-static enum vxge_hw_status
+-__vxge_hw_device_config_check(struct vxge_hw_device_config *new_config)
+-{
+-	u32 i;
+-	enum vxge_hw_status status;
+-
+-	if ((new_config->intr_mode != VXGE_HW_INTR_MODE_IRQLINE) &&
+-	    (new_config->intr_mode != VXGE_HW_INTR_MODE_MSIX) &&
+-	    (new_config->intr_mode != VXGE_HW_INTR_MODE_MSIX_ONE_SHOT) &&
+-	    (new_config->intr_mode != VXGE_HW_INTR_MODE_DEF))
+-		return VXGE_HW_BADCFG_INTR_MODE;
+-
+-	if ((new_config->rts_mac_en != VXGE_HW_RTS_MAC_DISABLE) &&
+-	    (new_config->rts_mac_en != VXGE_HW_RTS_MAC_ENABLE))
+-		return VXGE_HW_BADCFG_RTS_MAC_EN;
+-
+-	for (i = 0; i < VXGE_HW_MAX_VIRTUAL_PATHS; i++) {
+-		status = __vxge_hw_device_vpath_config_check(
+-				&new_config->vp_config[i]);
+-		if (status != VXGE_HW_OK)
+-			return status;
+-	}
+-
+-	return VXGE_HW_OK;
+-}
+-
+-/*
+- * vxge_hw_device_initialize - Initialize Titan device.
+- * Initialize Titan device. Note that all the arguments of this public API
+- * are 'IN', including @hldev. Driver cooperates with
+- * OS to find new Titan device, locate its PCI and memory spaces.
+- *
+- * When done, the driver allocates sizeof(struct __vxge_hw_device) bytes for HW
+- * to enable the latter to perform Titan hardware initialization.
+- */
+-enum vxge_hw_status
+-vxge_hw_device_initialize(
+-	struct __vxge_hw_device **devh,
+-	struct vxge_hw_device_attr *attr,
+-	struct vxge_hw_device_config *device_config)
+-{
+-	u32 i;
+-	u32 nblocks = 0;
+-	struct __vxge_hw_device *hldev = NULL;
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-
+-	status = __vxge_hw_device_config_check(device_config);
+-	if (status != VXGE_HW_OK)
+-		goto exit;
+-
+-	hldev = vzalloc(sizeof(struct __vxge_hw_device));
+-	if (hldev == NULL) {
+-		status = VXGE_HW_ERR_OUT_OF_MEMORY;
+-		goto exit;
+-	}
+-
+-	hldev->magic = VXGE_HW_DEVICE_MAGIC;
+-
+-	vxge_hw_device_debug_set(hldev, VXGE_ERR, VXGE_COMPONENT_ALL);
+-
+-	/* apply config */
+-	memcpy(&hldev->config, device_config,
+-		sizeof(struct vxge_hw_device_config));
+-
+-	hldev->bar0 = attr->bar0;
+-	hldev->pdev = attr->pdev;
+-
+-	hldev->uld_callbacks = attr->uld_callbacks;
+-
+-	__vxge_hw_device_pci_e_init(hldev);
+-
+-	status = __vxge_hw_device_reg_addr_get(hldev);
+-	if (status != VXGE_HW_OK) {
+-		vfree(hldev);
+-		goto exit;
+-	}
+-
+-	__vxge_hw_device_host_info_get(hldev);
+-
+-	/* Incrementing for stats blocks */
+-	nblocks++;
+-
+-	for (i = 0; i < VXGE_HW_MAX_VIRTUAL_PATHS; i++) {
+-		if (!(hldev->vpath_assignments & vxge_mBIT(i)))
+-			continue;
+-
+-		if (device_config->vp_config[i].ring.enable ==
+-			VXGE_HW_RING_ENABLE)
+-			nblocks += device_config->vp_config[i].ring.ring_blocks;
+-
+-		if (device_config->vp_config[i].fifo.enable ==
+-			VXGE_HW_FIFO_ENABLE)
+-			nblocks += device_config->vp_config[i].fifo.fifo_blocks;
+-		nblocks++;
+-	}
+-
+-	if (__vxge_hw_blockpool_create(hldev,
+-		&hldev->block_pool,
+-		device_config->dma_blockpool_initial + nblocks,
+-		device_config->dma_blockpool_max + nblocks) != VXGE_HW_OK) {
+-
+-		vxge_hw_device_terminate(hldev);
+-		status = VXGE_HW_ERR_OUT_OF_MEMORY;
+-		goto exit;
+-	}
+-
+-	status = __vxge_hw_device_initialize(hldev);
+-	if (status != VXGE_HW_OK) {
+-		vxge_hw_device_terminate(hldev);
+-		goto exit;
+-	}
+-
+-	*devh = hldev;
+-exit:
+-	return status;
+-}
+-
+-/*
+- * vxge_hw_device_terminate - Terminate Titan device.
+- * Terminate HW device.
+- */
+-void
+-vxge_hw_device_terminate(struct __vxge_hw_device *hldev)
+-{
+-	vxge_assert(hldev->magic == VXGE_HW_DEVICE_MAGIC);
+-
+-	hldev->magic = VXGE_HW_DEVICE_DEAD;
+-	__vxge_hw_blockpool_destroy(&hldev->block_pool);
+-	vfree(hldev);
+-}
+-
+-/*
+- * __vxge_hw_vpath_stats_access - Get the statistics from the given location
+- *                           and offset and perform an operation
+- */
+-static enum vxge_hw_status
+-__vxge_hw_vpath_stats_access(struct __vxge_hw_virtualpath *vpath,
+-			     u32 operation, u32 offset, u64 *stat)
+-{
+-	u64 val64;
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-	struct vxge_hw_vpath_reg __iomem *vp_reg;
+-
+-	if (vpath->vp_open == VXGE_HW_VP_NOT_OPEN) {
+-		status = VXGE_HW_ERR_VPATH_NOT_OPEN;
+-		goto vpath_stats_access_exit;
+-	}
+-
+-	vp_reg = vpath->vp_reg;
+-
+-	val64 =  VXGE_HW_XMAC_STATS_ACCESS_CMD_OP(operation) |
+-		 VXGE_HW_XMAC_STATS_ACCESS_CMD_STROBE |
+-		 VXGE_HW_XMAC_STATS_ACCESS_CMD_OFFSET_SEL(offset);
+-
+-	status = __vxge_hw_pio_mem_write64(val64,
+-				&vp_reg->xmac_stats_access_cmd,
+-				VXGE_HW_XMAC_STATS_ACCESS_CMD_STROBE,
+-				vpath->hldev->config.device_poll_millis);
+-	if ((status == VXGE_HW_OK) && (operation == VXGE_HW_STATS_OP_READ))
+-		*stat = readq(&vp_reg->xmac_stats_access_data);
+-	else
+-		*stat = 0;
+-
+-vpath_stats_access_exit:
+-	return status;
+-}
+-
+-/*
+- * __vxge_hw_vpath_xmac_tx_stats_get - Get the TX Statistics of a vpath
+- */
+-static enum vxge_hw_status
+-__vxge_hw_vpath_xmac_tx_stats_get(struct __vxge_hw_virtualpath *vpath,
+-			struct vxge_hw_xmac_vpath_tx_stats *vpath_tx_stats)
+-{
+-	u64 *val64;
+-	int i;
+-	u32 offset = VXGE_HW_STATS_VPATH_TX_OFFSET;
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-
+-	val64 = (u64 *)vpath_tx_stats;
+-
+-	if (vpath->vp_open == VXGE_HW_VP_NOT_OPEN) {
+-		status = VXGE_HW_ERR_VPATH_NOT_OPEN;
+-		goto exit;
+-	}
+-
+-	for (i = 0; i < sizeof(struct vxge_hw_xmac_vpath_tx_stats) / 8; i++) {
+-		status = __vxge_hw_vpath_stats_access(vpath,
+-					VXGE_HW_STATS_OP_READ,
+-					offset, val64);
+-		if (status != VXGE_HW_OK)
+-			goto exit;
+-		offset++;
+-		val64++;
+-	}
+-exit:
+-	return status;
+-}
+-
+-/*
+- * __vxge_hw_vpath_xmac_rx_stats_get - Get the RX Statistics of a vpath
+- */
+-static enum vxge_hw_status
+-__vxge_hw_vpath_xmac_rx_stats_get(struct __vxge_hw_virtualpath *vpath,
+-			struct vxge_hw_xmac_vpath_rx_stats *vpath_rx_stats)
+-{
+-	u64 *val64;
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-	int i;
+-	u32 offset = VXGE_HW_STATS_VPATH_RX_OFFSET;
+-	val64 = (u64 *) vpath_rx_stats;
+-
+-	if (vpath->vp_open == VXGE_HW_VP_NOT_OPEN) {
+-		status = VXGE_HW_ERR_VPATH_NOT_OPEN;
+-		goto exit;
+-	}
+-	for (i = 0; i < sizeof(struct vxge_hw_xmac_vpath_rx_stats) / 8; i++) {
+-		status = __vxge_hw_vpath_stats_access(vpath,
+-					VXGE_HW_STATS_OP_READ,
+-					offset >> 3, val64);
+-		if (status != VXGE_HW_OK)
+-			goto exit;
+-
+-		offset += 8;
+-		val64++;
+-	}
+-exit:
+-	return status;
+-}
+-
+-/*
+- * __vxge_hw_vpath_stats_get - Get the vpath hw statistics.
+- */
+-static enum vxge_hw_status
+-__vxge_hw_vpath_stats_get(struct __vxge_hw_virtualpath *vpath,
+-			  struct vxge_hw_vpath_stats_hw_info *hw_stats)
+-{
+-	u64 val64;
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-	struct vxge_hw_vpath_reg __iomem *vp_reg;
+-
+-	if (vpath->vp_open == VXGE_HW_VP_NOT_OPEN) {
+-		status = VXGE_HW_ERR_VPATH_NOT_OPEN;
+-		goto exit;
+-	}
+-	vp_reg = vpath->vp_reg;
+-
+-	val64 = readq(&vp_reg->vpath_debug_stats0);
+-	hw_stats->ini_num_mwr_sent =
+-		(u32)VXGE_HW_VPATH_DEBUG_STATS0_GET_INI_NUM_MWR_SENT(val64);
+-
+-	val64 = readq(&vp_reg->vpath_debug_stats1);
+-	hw_stats->ini_num_mrd_sent =
+-		(u32)VXGE_HW_VPATH_DEBUG_STATS1_GET_INI_NUM_MRD_SENT(val64);
+-
+-	val64 = readq(&vp_reg->vpath_debug_stats2);
+-	hw_stats->ini_num_cpl_rcvd =
+-		(u32)VXGE_HW_VPATH_DEBUG_STATS2_GET_INI_NUM_CPL_RCVD(val64);
+-
+-	val64 = readq(&vp_reg->vpath_debug_stats3);
+-	hw_stats->ini_num_mwr_byte_sent =
+-		VXGE_HW_VPATH_DEBUG_STATS3_GET_INI_NUM_MWR_BYTE_SENT(val64);
+-
+-	val64 = readq(&vp_reg->vpath_debug_stats4);
+-	hw_stats->ini_num_cpl_byte_rcvd =
+-		VXGE_HW_VPATH_DEBUG_STATS4_GET_INI_NUM_CPL_BYTE_RCVD(val64);
+-
+-	val64 = readq(&vp_reg->vpath_debug_stats5);
+-	hw_stats->wrcrdtarb_xoff =
+-		(u32)VXGE_HW_VPATH_DEBUG_STATS5_GET_WRCRDTARB_XOFF(val64);
+-
+-	val64 = readq(&vp_reg->vpath_debug_stats6);
+-	hw_stats->rdcrdtarb_xoff =
+-		(u32)VXGE_HW_VPATH_DEBUG_STATS6_GET_RDCRDTARB_XOFF(val64);
+-
+-	val64 = readq(&vp_reg->vpath_genstats_count01);
+-	hw_stats->vpath_genstats_count0 =
+-	(u32)VXGE_HW_VPATH_GENSTATS_COUNT01_GET_PPIF_VPATH_GENSTATS_COUNT0(
+-		val64);
+-
+-	val64 = readq(&vp_reg->vpath_genstats_count01);
+-	hw_stats->vpath_genstats_count1 =
+-	(u32)VXGE_HW_VPATH_GENSTATS_COUNT01_GET_PPIF_VPATH_GENSTATS_COUNT1(
+-		val64);
+-
+-	val64 = readq(&vp_reg->vpath_genstats_count23);
+-	hw_stats->vpath_genstats_count2 =
+-	(u32)VXGE_HW_VPATH_GENSTATS_COUNT23_GET_PPIF_VPATH_GENSTATS_COUNT2(
+-		val64);
+-
+-	val64 = readq(&vp_reg->vpath_genstats_count01);
+-	hw_stats->vpath_genstats_count3 =
+-	(u32)VXGE_HW_VPATH_GENSTATS_COUNT23_GET_PPIF_VPATH_GENSTATS_COUNT3(
+-		val64);
+-
+-	val64 = readq(&vp_reg->vpath_genstats_count4);
+-	hw_stats->vpath_genstats_count4 =
+-	(u32)VXGE_HW_VPATH_GENSTATS_COUNT4_GET_PPIF_VPATH_GENSTATS_COUNT4(
+-		val64);
+-
+-	val64 = readq(&vp_reg->vpath_genstats_count5);
+-	hw_stats->vpath_genstats_count5 =
+-	(u32)VXGE_HW_VPATH_GENSTATS_COUNT5_GET_PPIF_VPATH_GENSTATS_COUNT5(
+-		val64);
+-
+-	status = __vxge_hw_vpath_xmac_tx_stats_get(vpath, &hw_stats->tx_stats);
+-	if (status != VXGE_HW_OK)
+-		goto exit;
+-
+-	status = __vxge_hw_vpath_xmac_rx_stats_get(vpath, &hw_stats->rx_stats);
+-	if (status != VXGE_HW_OK)
+-		goto exit;
+-
+-	VXGE_HW_VPATH_STATS_PIO_READ(
+-		VXGE_HW_STATS_VPATH_PROG_EVENT_VNUM0_OFFSET);
+-
+-	hw_stats->prog_event_vnum0 =
+-			(u32)VXGE_HW_STATS_GET_VPATH_PROG_EVENT_VNUM0(val64);
+-
+-	hw_stats->prog_event_vnum1 =
+-			(u32)VXGE_HW_STATS_GET_VPATH_PROG_EVENT_VNUM1(val64);
+-
+-	VXGE_HW_VPATH_STATS_PIO_READ(
+-		VXGE_HW_STATS_VPATH_PROG_EVENT_VNUM2_OFFSET);
+-
+-	hw_stats->prog_event_vnum2 =
+-			(u32)VXGE_HW_STATS_GET_VPATH_PROG_EVENT_VNUM2(val64);
+-
+-	hw_stats->prog_event_vnum3 =
+-			(u32)VXGE_HW_STATS_GET_VPATH_PROG_EVENT_VNUM3(val64);
+-
+-	val64 = readq(&vp_reg->rx_multi_cast_stats);
+-	hw_stats->rx_multi_cast_frame_discard =
+-		(u16)VXGE_HW_RX_MULTI_CAST_STATS_GET_FRAME_DISCARD(val64);
+-
+-	val64 = readq(&vp_reg->rx_frm_transferred);
+-	hw_stats->rx_frm_transferred =
+-		(u32)VXGE_HW_RX_FRM_TRANSFERRED_GET_RX_FRM_TRANSFERRED(val64);
+-
+-	val64 = readq(&vp_reg->rxd_returned);
+-	hw_stats->rxd_returned =
+-		(u16)VXGE_HW_RXD_RETURNED_GET_RXD_RETURNED(val64);
+-
+-	val64 = readq(&vp_reg->dbg_stats_rx_mpa);
+-	hw_stats->rx_mpa_len_fail_frms =
+-		(u16)VXGE_HW_DBG_STATS_GET_RX_MPA_LEN_FAIL_FRMS(val64);
+-	hw_stats->rx_mpa_mrk_fail_frms =
+-		(u16)VXGE_HW_DBG_STATS_GET_RX_MPA_MRK_FAIL_FRMS(val64);
+-	hw_stats->rx_mpa_crc_fail_frms =
+-		(u16)VXGE_HW_DBG_STATS_GET_RX_MPA_CRC_FAIL_FRMS(val64);
+-
+-	val64 = readq(&vp_reg->dbg_stats_rx_fau);
+-	hw_stats->rx_permitted_frms =
+-		(u16)VXGE_HW_DBG_STATS_GET_RX_FAU_RX_PERMITTED_FRMS(val64);
+-	hw_stats->rx_vp_reset_discarded_frms =
+-	(u16)VXGE_HW_DBG_STATS_GET_RX_FAU_RX_VP_RESET_DISCARDED_FRMS(val64);
+-	hw_stats->rx_wol_frms =
+-		(u16)VXGE_HW_DBG_STATS_GET_RX_FAU_RX_WOL_FRMS(val64);
+-
+-	val64 = readq(&vp_reg->tx_vp_reset_discarded_frms);
+-	hw_stats->tx_vp_reset_discarded_frms =
+-	(u16)VXGE_HW_TX_VP_RESET_DISCARDED_FRMS_GET_TX_VP_RESET_DISCARDED_FRMS(
+-		val64);
+-exit:
+-	return status;
+-}
+-
+-/*
+- * vxge_hw_device_stats_get - Get the device hw statistics.
+- * Returns the vpath h/w stats for the device.
+- */
+-enum vxge_hw_status
+-vxge_hw_device_stats_get(struct __vxge_hw_device *hldev,
+-			struct vxge_hw_device_stats_hw_info *hw_stats)
+-{
+-	u32 i;
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-
+-	for (i = 0; i < VXGE_HW_MAX_VIRTUAL_PATHS; i++) {
+-		if (!(hldev->vpaths_deployed & vxge_mBIT(i)) ||
+-			(hldev->virtual_paths[i].vp_open ==
+-				VXGE_HW_VP_NOT_OPEN))
+-			continue;
+-
+-		memcpy(hldev->virtual_paths[i].hw_stats_sav,
+-				hldev->virtual_paths[i].hw_stats,
+-				sizeof(struct vxge_hw_vpath_stats_hw_info));
+-
+-		status = __vxge_hw_vpath_stats_get(
+-			&hldev->virtual_paths[i],
+-			hldev->virtual_paths[i].hw_stats);
+-	}
+-
+-	memcpy(hw_stats, &hldev->stats.hw_dev_info_stats,
+-			sizeof(struct vxge_hw_device_stats_hw_info));
+-
+-	return status;
+-}
+-
+-/*
+- * vxge_hw_driver_stats_get - Get the device sw statistics.
+- * Returns the vpath s/w stats for the device.
+- */
+-enum vxge_hw_status vxge_hw_driver_stats_get(
+-			struct __vxge_hw_device *hldev,
+-			struct vxge_hw_device_stats_sw_info *sw_stats)
+-{
+-	memcpy(sw_stats, &hldev->stats.sw_dev_info_stats,
+-		sizeof(struct vxge_hw_device_stats_sw_info));
+-
+-	return VXGE_HW_OK;
+-}
+-
+-/*
+- * vxge_hw_mrpcim_stats_access - Access the statistics from the given location
+- *                           and offset and perform an operation
+- * Get the statistics from the given location and offset.
+- */
+-enum vxge_hw_status
+-vxge_hw_mrpcim_stats_access(struct __vxge_hw_device *hldev,
+-			    u32 operation, u32 location, u32 offset, u64 *stat)
+-{
+-	u64 val64;
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-
+-	status = __vxge_hw_device_is_privilaged(hldev->host_type,
+-			hldev->func_id);
+-	if (status != VXGE_HW_OK)
+-		goto exit;
+-
+-	val64 = VXGE_HW_XMAC_STATS_SYS_CMD_OP(operation) |
+-		VXGE_HW_XMAC_STATS_SYS_CMD_STROBE |
+-		VXGE_HW_XMAC_STATS_SYS_CMD_LOC_SEL(location) |
+-		VXGE_HW_XMAC_STATS_SYS_CMD_OFFSET_SEL(offset);
+-
+-	status = __vxge_hw_pio_mem_write64(val64,
+-				&hldev->mrpcim_reg->xmac_stats_sys_cmd,
+-				VXGE_HW_XMAC_STATS_SYS_CMD_STROBE,
+-				hldev->config.device_poll_millis);
+-
+-	if ((status == VXGE_HW_OK) && (operation == VXGE_HW_STATS_OP_READ))
+-		*stat = readq(&hldev->mrpcim_reg->xmac_stats_sys_data);
+-	else
+-		*stat = 0;
+-exit:
+-	return status;
+-}
+-
+-/*
+- * vxge_hw_device_xmac_aggr_stats_get - Get the Statistics on aggregate port
+- * Get the Statistics on aggregate port
+- */
+-static enum vxge_hw_status
+-vxge_hw_device_xmac_aggr_stats_get(struct __vxge_hw_device *hldev, u32 port,
+-				   struct vxge_hw_xmac_aggr_stats *aggr_stats)
+-{
+-	u64 *val64;
+-	int i;
+-	u32 offset = VXGE_HW_STATS_AGGRn_OFFSET;
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-
+-	val64 = (u64 *)aggr_stats;
+-
+-	status = __vxge_hw_device_is_privilaged(hldev->host_type,
+-			hldev->func_id);
+-	if (status != VXGE_HW_OK)
+-		goto exit;
+-
+-	for (i = 0; i < sizeof(struct vxge_hw_xmac_aggr_stats) / 8; i++) {
+-		status = vxge_hw_mrpcim_stats_access(hldev,
+-					VXGE_HW_STATS_OP_READ,
+-					VXGE_HW_STATS_LOC_AGGR,
+-					((offset + (104 * port)) >> 3), val64);
+-		if (status != VXGE_HW_OK)
+-			goto exit;
+-
+-		offset += 8;
+-		val64++;
+-	}
+-exit:
+-	return status;
+-}
+-
+-/*
+- * vxge_hw_device_xmac_port_stats_get - Get the Statistics on a port
+- * Get the Statistics on port
+- */
+-static enum vxge_hw_status
+-vxge_hw_device_xmac_port_stats_get(struct __vxge_hw_device *hldev, u32 port,
+-				   struct vxge_hw_xmac_port_stats *port_stats)
+-{
+-	u64 *val64;
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-	int i;
+-	u32 offset = 0x0;
+-	val64 = (u64 *) port_stats;
+-
+-	status = __vxge_hw_device_is_privilaged(hldev->host_type,
+-			hldev->func_id);
+-	if (status != VXGE_HW_OK)
+-		goto exit;
+-
+-	for (i = 0; i < sizeof(struct vxge_hw_xmac_port_stats) / 8; i++) {
+-		status = vxge_hw_mrpcim_stats_access(hldev,
+-					VXGE_HW_STATS_OP_READ,
+-					VXGE_HW_STATS_LOC_AGGR,
+-					((offset + (608 * port)) >> 3), val64);
+-		if (status != VXGE_HW_OK)
+-			goto exit;
+-
+-		offset += 8;
+-		val64++;
+-	}
+-
+-exit:
+-	return status;
+-}
+-
+-/*
+- * vxge_hw_device_xmac_stats_get - Get the XMAC Statistics
+- * Get the XMAC Statistics
+- */
+-enum vxge_hw_status
+-vxge_hw_device_xmac_stats_get(struct __vxge_hw_device *hldev,
+-			      struct vxge_hw_xmac_stats *xmac_stats)
+-{
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-	u32 i;
+-
+-	status = vxge_hw_device_xmac_aggr_stats_get(hldev,
+-					0, &xmac_stats->aggr_stats[0]);
+-	if (status != VXGE_HW_OK)
+-		goto exit;
+-
+-	status = vxge_hw_device_xmac_aggr_stats_get(hldev,
+-				1, &xmac_stats->aggr_stats[1]);
+-	if (status != VXGE_HW_OK)
+-		goto exit;
+-
+-	for (i = 0; i <= VXGE_HW_MAC_MAX_MAC_PORT_ID; i++) {
+-
+-		status = vxge_hw_device_xmac_port_stats_get(hldev,
+-					i, &xmac_stats->port_stats[i]);
+-		if (status != VXGE_HW_OK)
+-			goto exit;
+-	}
+-
+-	for (i = 0; i < VXGE_HW_MAX_VIRTUAL_PATHS; i++) {
+-
+-		if (!(hldev->vpaths_deployed & vxge_mBIT(i)))
+-			continue;
+-
+-		status = __vxge_hw_vpath_xmac_tx_stats_get(
+-					&hldev->virtual_paths[i],
+-					&xmac_stats->vpath_tx_stats[i]);
+-		if (status != VXGE_HW_OK)
+-			goto exit;
+-
+-		status = __vxge_hw_vpath_xmac_rx_stats_get(
+-					&hldev->virtual_paths[i],
+-					&xmac_stats->vpath_rx_stats[i]);
+-		if (status != VXGE_HW_OK)
+-			goto exit;
+-	}
+-exit:
+-	return status;
+-}
+-
+-/*
+- * vxge_hw_device_debug_set - Set the debug module, level and timestamp
+- * This routine is used to dynamically change the debug output
+- */
+-void vxge_hw_device_debug_set(struct __vxge_hw_device *hldev,
+-			      enum vxge_debug_level level, u32 mask)
+-{
+-	if (hldev == NULL)
+-		return;
+-
+-#if defined(VXGE_DEBUG_TRACE_MASK) || \
+-	defined(VXGE_DEBUG_ERR_MASK)
+-	hldev->debug_module_mask = mask;
+-	hldev->debug_level = level;
+-#endif
+-
+-#if defined(VXGE_DEBUG_ERR_MASK)
+-	hldev->level_err = level & VXGE_ERR;
+-#endif
+-
+-#if defined(VXGE_DEBUG_TRACE_MASK)
+-	hldev->level_trace = level & VXGE_TRACE;
+-#endif
+-}
+-
+-/*
+- * vxge_hw_device_error_level_get - Get the error level
+- * This routine returns the current error level set
+- */
+-u32 vxge_hw_device_error_level_get(struct __vxge_hw_device *hldev)
+-{
+-#if defined(VXGE_DEBUG_ERR_MASK)
+-	if (hldev == NULL)
+-		return VXGE_ERR;
+-	else
+-		return hldev->level_err;
+-#else
+-	return 0;
+-#endif
+-}
+-
+-/*
+- * vxge_hw_device_trace_level_get - Get the trace level
+- * This routine returns the current trace level set
+- */
+-u32 vxge_hw_device_trace_level_get(struct __vxge_hw_device *hldev)
+-{
+-#if defined(VXGE_DEBUG_TRACE_MASK)
+-	if (hldev == NULL)
+-		return VXGE_TRACE;
+-	else
+-		return hldev->level_trace;
+-#else
+-	return 0;
+-#endif
+-}
+-
+-/*
+- * vxge_hw_getpause_data -Pause frame frame generation and reception.
+- * Returns the Pause frame generation and reception capability of the NIC.
+- */
+-enum vxge_hw_status vxge_hw_device_getpause_data(struct __vxge_hw_device *hldev,
+-						 u32 port, u32 *tx, u32 *rx)
+-{
+-	u64 val64;
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-
+-	if ((hldev == NULL) || (hldev->magic != VXGE_HW_DEVICE_MAGIC)) {
+-		status = VXGE_HW_ERR_INVALID_DEVICE;
+-		goto exit;
+-	}
+-
+-	if (port > VXGE_HW_MAC_MAX_MAC_PORT_ID) {
+-		status = VXGE_HW_ERR_INVALID_PORT;
+-		goto exit;
+-	}
+-
+-	if (!(hldev->access_rights & VXGE_HW_DEVICE_ACCESS_RIGHT_MRPCIM)) {
+-		status = VXGE_HW_ERR_PRIVILEGED_OPERATION;
+-		goto exit;
+-	}
+-
+-	val64 = readq(&hldev->mrpcim_reg->rxmac_pause_cfg_port[port]);
+-	if (val64 & VXGE_HW_RXMAC_PAUSE_CFG_PORT_GEN_EN)
+-		*tx = 1;
+-	if (val64 & VXGE_HW_RXMAC_PAUSE_CFG_PORT_RCV_EN)
+-		*rx = 1;
+-exit:
+-	return status;
+-}
+-
+-/*
+- * vxge_hw_device_setpause_data -  set/reset pause frame generation.
+- * It can be used to set or reset Pause frame generation or reception
+- * support of the NIC.
+- */
+-enum vxge_hw_status vxge_hw_device_setpause_data(struct __vxge_hw_device *hldev,
+-						 u32 port, u32 tx, u32 rx)
+-{
+-	u64 val64;
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-
+-	if ((hldev == NULL) || (hldev->magic != VXGE_HW_DEVICE_MAGIC)) {
+-		status = VXGE_HW_ERR_INVALID_DEVICE;
+-		goto exit;
+-	}
+-
+-	if (port > VXGE_HW_MAC_MAX_MAC_PORT_ID) {
+-		status = VXGE_HW_ERR_INVALID_PORT;
+-		goto exit;
+-	}
+-
+-	status = __vxge_hw_device_is_privilaged(hldev->host_type,
+-			hldev->func_id);
+-	if (status != VXGE_HW_OK)
+-		goto exit;
+-
+-	val64 = readq(&hldev->mrpcim_reg->rxmac_pause_cfg_port[port]);
+-	if (tx)
+-		val64 |= VXGE_HW_RXMAC_PAUSE_CFG_PORT_GEN_EN;
+-	else
+-		val64 &= ~VXGE_HW_RXMAC_PAUSE_CFG_PORT_GEN_EN;
+-	if (rx)
+-		val64 |= VXGE_HW_RXMAC_PAUSE_CFG_PORT_RCV_EN;
+-	else
+-		val64 &= ~VXGE_HW_RXMAC_PAUSE_CFG_PORT_RCV_EN;
+-
+-	writeq(val64, &hldev->mrpcim_reg->rxmac_pause_cfg_port[port]);
+-exit:
+-	return status;
+-}
+-
+-u16 vxge_hw_device_link_width_get(struct __vxge_hw_device *hldev)
+-{
+-	struct pci_dev *dev = hldev->pdev;
+-	u16 lnk;
+-
+-	pcie_capability_read_word(dev, PCI_EXP_LNKSTA, &lnk);
+-	return (lnk & VXGE_HW_PCI_EXP_LNKCAP_LNK_WIDTH) >> 4;
+-}
+-
+-/*
+- * __vxge_hw_ring_block_memblock_idx - Return the memblock index
+- * This function returns the index of memory block
+- */
+-static inline u32
+-__vxge_hw_ring_block_memblock_idx(u8 *block)
+-{
+-	return (u32)*((u64 *)(block + VXGE_HW_RING_MEMBLOCK_IDX_OFFSET));
+-}
+-
+-/*
+- * __vxge_hw_ring_block_memblock_idx_set - Sets the memblock index
+- * This function sets index to a memory block
+- */
+-static inline void
+-__vxge_hw_ring_block_memblock_idx_set(u8 *block, u32 memblock_idx)
+-{
+-	*((u64 *)(block + VXGE_HW_RING_MEMBLOCK_IDX_OFFSET)) = memblock_idx;
+-}
+-
+-/*
+- * __vxge_hw_ring_block_next_pointer_set - Sets the next block pointer
+- * in RxD block
+- * Sets the next block pointer in RxD block
+- */
+-static inline void
+-__vxge_hw_ring_block_next_pointer_set(u8 *block, dma_addr_t dma_next)
+-{
+-	*((u64 *)(block + VXGE_HW_RING_NEXT_BLOCK_POINTER_OFFSET)) = dma_next;
+-}
+-
+-/*
+- * __vxge_hw_ring_first_block_address_get - Returns the dma address of the
+- *             first block
+- * Returns the dma address of the first RxD block
+- */
+-static u64 __vxge_hw_ring_first_block_address_get(struct __vxge_hw_ring *ring)
+-{
+-	struct vxge_hw_mempool_dma *dma_object;
+-
+-	dma_object = ring->mempool->memblocks_dma_arr;
+-	vxge_assert(dma_object != NULL);
+-
+-	return dma_object->addr;
+-}
+-
+-/*
+- * __vxge_hw_ring_item_dma_addr - Return the dma address of an item
+- * This function returns the dma address of a given item
+- */
+-static dma_addr_t __vxge_hw_ring_item_dma_addr(struct vxge_hw_mempool *mempoolh,
+-					       void *item)
+-{
+-	u32 memblock_idx;
+-	void *memblock;
+-	struct vxge_hw_mempool_dma *memblock_dma_object;
+-	ptrdiff_t dma_item_offset;
+-
+-	/* get owner memblock index */
+-	memblock_idx = __vxge_hw_ring_block_memblock_idx(item);
+-
+-	/* get owner memblock by memblock index */
+-	memblock = mempoolh->memblocks_arr[memblock_idx];
+-
+-	/* get memblock DMA object by memblock index */
+-	memblock_dma_object = mempoolh->memblocks_dma_arr + memblock_idx;
+-
+-	/* calculate offset in the memblock of this item */
+-	dma_item_offset = (u8 *)item - (u8 *)memblock;
+-
+-	return memblock_dma_object->addr + dma_item_offset;
+-}
+-
+-/*
+- * __vxge_hw_ring_rxdblock_link - Link the RxD blocks
+- * This function returns the dma address of a given item
+- */
+-static void __vxge_hw_ring_rxdblock_link(struct vxge_hw_mempool *mempoolh,
+-					 struct __vxge_hw_ring *ring, u32 from,
+-					 u32 to)
+-{
+-	u8 *to_item , *from_item;
+-	dma_addr_t to_dma;
+-
+-	/* get "from" RxD block */
+-	from_item = mempoolh->items_arr[from];
+-	vxge_assert(from_item);
+-
+-	/* get "to" RxD block */
+-	to_item = mempoolh->items_arr[to];
+-	vxge_assert(to_item);
+-
+-	/* return address of the beginning of previous RxD block */
+-	to_dma = __vxge_hw_ring_item_dma_addr(mempoolh, to_item);
+-
+-	/* set next pointer for this RxD block to point on
+-	 * previous item's DMA start address */
+-	__vxge_hw_ring_block_next_pointer_set(from_item, to_dma);
+-}
+-
+-/*
+- * __vxge_hw_ring_mempool_item_alloc - Allocate List blocks for RxD
+- * block callback
+- * This function is callback passed to __vxge_hw_mempool_create to create memory
+- * pool for RxD block
+- */
+-static void
+-__vxge_hw_ring_mempool_item_alloc(struct vxge_hw_mempool *mempoolh,
+-				  u32 memblock_index,
+-				  struct vxge_hw_mempool_dma *dma_object,
+-				  u32 index, u32 is_last)
+-{
+-	u32 i;
+-	void *item = mempoolh->items_arr[index];
+-	struct __vxge_hw_ring *ring =
+-		(struct __vxge_hw_ring *)mempoolh->userdata;
+-
+-	/* format rxds array */
+-	for (i = 0; i < ring->rxds_per_block; i++) {
+-		void *rxdblock_priv;
+-		void *uld_priv;
+-		struct vxge_hw_ring_rxd_1 *rxdp;
+-
+-		u32 reserve_index = ring->channel.reserve_ptr -
+-				(index * ring->rxds_per_block + i + 1);
+-		u32 memblock_item_idx;
+-
+-		ring->channel.reserve_arr[reserve_index] = ((u8 *)item) +
+-						i * ring->rxd_size;
+-
+-		/* Note: memblock_item_idx is index of the item within
+-		 *       the memblock. For instance, in case of three RxD-blocks
+-		 *       per memblock this value can be 0, 1 or 2. */
+-		rxdblock_priv = __vxge_hw_mempool_item_priv(mempoolh,
+-					memblock_index, item,
+-					&memblock_item_idx);
+-
+-		rxdp = ring->channel.reserve_arr[reserve_index];
+-
+-		uld_priv = ((u8 *)rxdblock_priv + ring->rxd_priv_size * i);
+-
+-		/* pre-format Host_Control */
+-		rxdp->host_control = (u64)(size_t)uld_priv;
+-	}
+-
+-	__vxge_hw_ring_block_memblock_idx_set(item, memblock_index);
+-
+-	if (is_last) {
+-		/* link last one with first one */
+-		__vxge_hw_ring_rxdblock_link(mempoolh, ring, index, 0);
+-	}
+-
+-	if (index > 0) {
+-		/* link this RxD block with previous one */
+-		__vxge_hw_ring_rxdblock_link(mempoolh, ring, index - 1, index);
+-	}
+-}
+-
+-/*
+- * __vxge_hw_ring_replenish - Initial replenish of RxDs
+- * This function replenishes the RxDs from reserve array to work array
+- */
+-static enum vxge_hw_status
+-vxge_hw_ring_replenish(struct __vxge_hw_ring *ring)
+-{
+-	void *rxd;
+-	struct __vxge_hw_channel *channel;
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-
+-	channel = &ring->channel;
+-
+-	while (vxge_hw_channel_dtr_count(channel) > 0) {
+-
+-		status = vxge_hw_ring_rxd_reserve(ring, &rxd);
+-
+-		vxge_assert(status == VXGE_HW_OK);
+-
+-		if (ring->rxd_init) {
+-			status = ring->rxd_init(rxd, channel->userdata);
+-			if (status != VXGE_HW_OK) {
+-				vxge_hw_ring_rxd_free(ring, rxd);
+-				goto exit;
+-			}
+-		}
+-
+-		vxge_hw_ring_rxd_post(ring, rxd);
+-	}
+-	status = VXGE_HW_OK;
+-exit:
+-	return status;
+-}
+-
+-/*
+- * __vxge_hw_channel_allocate - Allocate memory for channel
+- * This function allocates required memory for the channel and various arrays
+- * in the channel
+- */
+-static struct __vxge_hw_channel *
+-__vxge_hw_channel_allocate(struct __vxge_hw_vpath_handle *vph,
+-			   enum __vxge_hw_channel_type type,
+-			   u32 length, u32 per_dtr_space,
+-			   void *userdata)
+-{
+-	struct __vxge_hw_channel *channel;
+-	struct __vxge_hw_device *hldev;
+-	int size = 0;
+-	u32 vp_id;
+-
+-	hldev = vph->vpath->hldev;
+-	vp_id = vph->vpath->vp_id;
+-
+-	switch (type) {
+-	case VXGE_HW_CHANNEL_TYPE_FIFO:
+-		size = sizeof(struct __vxge_hw_fifo);
+-		break;
+-	case VXGE_HW_CHANNEL_TYPE_RING:
+-		size = sizeof(struct __vxge_hw_ring);
+-		break;
+-	default:
+-		break;
+-	}
+-
+-	channel = kzalloc(size, GFP_KERNEL);
+-	if (channel == NULL)
+-		goto exit0;
+-	INIT_LIST_HEAD(&channel->item);
+-
+-	channel->common_reg = hldev->common_reg;
+-	channel->first_vp_id = hldev->first_vp_id;
+-	channel->type = type;
+-	channel->devh = hldev;
+-	channel->vph = vph;
+-	channel->userdata = userdata;
+-	channel->per_dtr_space = per_dtr_space;
+-	channel->length = length;
+-	channel->vp_id = vp_id;
+-
+-	channel->work_arr = kcalloc(length, sizeof(void *), GFP_KERNEL);
+-	if (channel->work_arr == NULL)
+-		goto exit1;
+-
+-	channel->free_arr = kcalloc(length, sizeof(void *), GFP_KERNEL);
+-	if (channel->free_arr == NULL)
+-		goto exit1;
+-	channel->free_ptr = length;
+-
+-	channel->reserve_arr = kcalloc(length, sizeof(void *), GFP_KERNEL);
+-	if (channel->reserve_arr == NULL)
+-		goto exit1;
+-	channel->reserve_ptr = length;
+-	channel->reserve_top = 0;
+-
+-	channel->orig_arr = kcalloc(length, sizeof(void *), GFP_KERNEL);
+-	if (channel->orig_arr == NULL)
+-		goto exit1;
+-
+-	return channel;
+-exit1:
+-	__vxge_hw_channel_free(channel);
+-
+-exit0:
+-	return NULL;
+-}
+-
+-/*
+- * vxge_hw_blockpool_block_add - callback for vxge_os_dma_malloc_async
+- * Adds a block to block pool
+- */
+-static void vxge_hw_blockpool_block_add(struct __vxge_hw_device *devh,
+-					void *block_addr,
+-					u32 length,
+-					struct pci_dev *dma_h,
+-					struct pci_dev *acc_handle)
+-{
+-	struct __vxge_hw_blockpool *blockpool;
+-	struct __vxge_hw_blockpool_entry *entry = NULL;
+-	dma_addr_t dma_addr;
+-
+-	blockpool = &devh->block_pool;
+-
+-	if (block_addr == NULL) {
+-		blockpool->req_out--;
+-		goto exit;
+-	}
+-
+-	dma_addr = dma_map_single(&devh->pdev->dev, block_addr, length,
+-				  DMA_BIDIRECTIONAL);
+-
+-	if (unlikely(dma_mapping_error(&devh->pdev->dev, dma_addr))) {
+-		vxge_os_dma_free(devh->pdev, block_addr, &acc_handle);
+-		blockpool->req_out--;
+-		goto exit;
+-	}
+-
+-	if (!list_empty(&blockpool->free_entry_list))
+-		entry = (struct __vxge_hw_blockpool_entry *)
+-			list_first_entry(&blockpool->free_entry_list,
+-				struct __vxge_hw_blockpool_entry,
+-				item);
+-
+-	if (entry == NULL)
+-		entry =	vmalloc(sizeof(struct __vxge_hw_blockpool_entry));
+-	else
+-		list_del(&entry->item);
+-
+-	if (entry) {
+-		entry->length = length;
+-		entry->memblock = block_addr;
+-		entry->dma_addr = dma_addr;
+-		entry->acc_handle = acc_handle;
+-		entry->dma_handle = dma_h;
+-		list_add(&entry->item, &blockpool->free_block_list);
+-		blockpool->pool_size++;
+-	}
+-
+-	blockpool->req_out--;
+-
+-exit:
+-	return;
+-}
+-
+-static inline void
+-vxge_os_dma_malloc_async(struct pci_dev *pdev, void *devh, unsigned long size)
+-{
+-	void *vaddr;
+-
+-	vaddr = kmalloc(size, GFP_KERNEL | GFP_DMA);
+-	vxge_hw_blockpool_block_add(devh, vaddr, size, pdev, pdev);
+-}
+-
+-/*
+- * __vxge_hw_blockpool_blocks_add - Request additional blocks
+- */
+-static
+-void __vxge_hw_blockpool_blocks_add(struct __vxge_hw_blockpool *blockpool)
+-{
+-	u32 nreq = 0, i;
+-
+-	if ((blockpool->pool_size  +  blockpool->req_out) <
+-		VXGE_HW_MIN_DMA_BLOCK_POOL_SIZE) {
+-		nreq = VXGE_HW_INCR_DMA_BLOCK_POOL_SIZE;
+-		blockpool->req_out += nreq;
+-	}
+-
+-	for (i = 0; i < nreq; i++)
+-		vxge_os_dma_malloc_async(
+-			(blockpool->hldev)->pdev,
+-			blockpool->hldev, VXGE_HW_BLOCK_SIZE);
+-}
+-
+-/*
+- * __vxge_hw_blockpool_malloc - Allocate a memory block from pool
+- * Allocates a block of memory of given size, either from block pool
+- * or by calling vxge_os_dma_malloc()
+- */
+-static void *__vxge_hw_blockpool_malloc(struct __vxge_hw_device *devh, u32 size,
+-					struct vxge_hw_mempool_dma *dma_object)
+-{
+-	struct __vxge_hw_blockpool_entry *entry = NULL;
+-	struct __vxge_hw_blockpool  *blockpool;
+-	void *memblock = NULL;
+-
+-	blockpool = &devh->block_pool;
+-
+-	if (size != blockpool->block_size) {
+-
+-		memblock = vxge_os_dma_malloc(devh->pdev, size,
+-						&dma_object->handle,
+-						&dma_object->acc_handle);
+-
+-		if (!memblock)
+-			goto exit;
+-
+-		dma_object->addr = dma_map_single(&devh->pdev->dev, memblock,
+-						  size, DMA_BIDIRECTIONAL);
+-
+-		if (unlikely(dma_mapping_error(&devh->pdev->dev, dma_object->addr))) {
+-			vxge_os_dma_free(devh->pdev, memblock,
+-				&dma_object->acc_handle);
+-			memblock = NULL;
+-			goto exit;
+-		}
+-
+-	} else {
+-
+-		if (!list_empty(&blockpool->free_block_list))
+-			entry = (struct __vxge_hw_blockpool_entry *)
+-				list_first_entry(&blockpool->free_block_list,
+-					struct __vxge_hw_blockpool_entry,
+-					item);
+-
+-		if (entry != NULL) {
+-			list_del(&entry->item);
+-			dma_object->addr = entry->dma_addr;
+-			dma_object->handle = entry->dma_handle;
+-			dma_object->acc_handle = entry->acc_handle;
+-			memblock = entry->memblock;
+-
+-			list_add(&entry->item,
+-				&blockpool->free_entry_list);
+-			blockpool->pool_size--;
+-		}
+-
+-		if (memblock != NULL)
+-			__vxge_hw_blockpool_blocks_add(blockpool);
+-	}
+-exit:
+-	return memblock;
+-}
+-
+-/*
+- * __vxge_hw_blockpool_blocks_remove - Free additional blocks
+- */
+-static void
+-__vxge_hw_blockpool_blocks_remove(struct __vxge_hw_blockpool *blockpool)
+-{
+-	struct list_head *p, *n;
+-
+-	list_for_each_safe(p, n, &blockpool->free_block_list) {
+-
+-		if (blockpool->pool_size < blockpool->pool_max)
+-			break;
+-
+-		dma_unmap_single(&(blockpool->hldev)->pdev->dev,
+-				 ((struct __vxge_hw_blockpool_entry *)p)->dma_addr,
+-				 ((struct __vxge_hw_blockpool_entry *)p)->length,
+-				 DMA_BIDIRECTIONAL);
+-
+-		vxge_os_dma_free(
+-			(blockpool->hldev)->pdev,
+-			((struct __vxge_hw_blockpool_entry *)p)->memblock,
+-			&((struct __vxge_hw_blockpool_entry *)p)->acc_handle);
+-
+-		list_del(&((struct __vxge_hw_blockpool_entry *)p)->item);
+-
+-		list_add(p, &blockpool->free_entry_list);
+-
+-		blockpool->pool_size--;
+-
+-	}
+-}
+-
+-/*
+- * __vxge_hw_blockpool_free - Frees the memory allcoated with
+- *				__vxge_hw_blockpool_malloc
+- */
+-static void __vxge_hw_blockpool_free(struct __vxge_hw_device *devh,
+-				     void *memblock, u32 size,
+-				     struct vxge_hw_mempool_dma *dma_object)
+-{
+-	struct __vxge_hw_blockpool_entry *entry = NULL;
+-	struct __vxge_hw_blockpool  *blockpool;
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-
+-	blockpool = &devh->block_pool;
+-
+-	if (size != blockpool->block_size) {
+-		dma_unmap_single(&devh->pdev->dev, dma_object->addr, size,
+-				 DMA_BIDIRECTIONAL);
+-		vxge_os_dma_free(devh->pdev, memblock, &dma_object->acc_handle);
+-	} else {
+-
+-		if (!list_empty(&blockpool->free_entry_list))
+-			entry = (struct __vxge_hw_blockpool_entry *)
+-				list_first_entry(&blockpool->free_entry_list,
+-					struct __vxge_hw_blockpool_entry,
+-					item);
+-
+-		if (entry == NULL)
+-			entry =	vmalloc(sizeof(
+-					struct __vxge_hw_blockpool_entry));
+-		else
+-			list_del(&entry->item);
+-
+-		if (entry != NULL) {
+-			entry->length = size;
+-			entry->memblock = memblock;
+-			entry->dma_addr = dma_object->addr;
+-			entry->acc_handle = dma_object->acc_handle;
+-			entry->dma_handle = dma_object->handle;
+-			list_add(&entry->item,
+-					&blockpool->free_block_list);
+-			blockpool->pool_size++;
+-			status = VXGE_HW_OK;
+-		} else
+-			status = VXGE_HW_ERR_OUT_OF_MEMORY;
+-
+-		if (status == VXGE_HW_OK)
+-			__vxge_hw_blockpool_blocks_remove(blockpool);
+-	}
+-}
+-
+-/*
+- * vxge_hw_mempool_destroy
+- */
+-static void __vxge_hw_mempool_destroy(struct vxge_hw_mempool *mempool)
+-{
+-	u32 i, j;
+-	struct __vxge_hw_device *devh = mempool->devh;
+-
+-	for (i = 0; i < mempool->memblocks_allocated; i++) {
+-		struct vxge_hw_mempool_dma *dma_object;
+-
+-		vxge_assert(mempool->memblocks_arr[i]);
+-		vxge_assert(mempool->memblocks_dma_arr + i);
+-
+-		dma_object = mempool->memblocks_dma_arr + i;
+-
+-		for (j = 0; j < mempool->items_per_memblock; j++) {
+-			u32 index = i * mempool->items_per_memblock + j;
+-
+-			/* to skip last partially filled(if any) memblock */
+-			if (index >= mempool->items_current)
+-				break;
+-		}
+-
+-		vfree(mempool->memblocks_priv_arr[i]);
+-
+-		__vxge_hw_blockpool_free(devh, mempool->memblocks_arr[i],
+-				mempool->memblock_size, dma_object);
+-	}
+-
+-	vfree(mempool->items_arr);
+-	vfree(mempool->memblocks_dma_arr);
+-	vfree(mempool->memblocks_priv_arr);
+-	vfree(mempool->memblocks_arr);
+-	vfree(mempool);
+-}
+-
+-/*
+- * __vxge_hw_mempool_grow
+- * Will resize mempool up to %num_allocate value.
+- */
+-static enum vxge_hw_status
+-__vxge_hw_mempool_grow(struct vxge_hw_mempool *mempool, u32 num_allocate,
+-		       u32 *num_allocated)
+-{
+-	u32 i, first_time = mempool->memblocks_allocated == 0 ? 1 : 0;
+-	u32 n_items = mempool->items_per_memblock;
+-	u32 start_block_idx = mempool->memblocks_allocated;
+-	u32 end_block_idx = mempool->memblocks_allocated + num_allocate;
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-
+-	*num_allocated = 0;
+-
+-	if (end_block_idx > mempool->memblocks_max) {
+-		status = VXGE_HW_ERR_OUT_OF_MEMORY;
+-		goto exit;
+-	}
+-
+-	for (i = start_block_idx; i < end_block_idx; i++) {
+-		u32 j;
+-		u32 is_last = ((end_block_idx - 1) == i);
+-		struct vxge_hw_mempool_dma *dma_object =
+-			mempool->memblocks_dma_arr + i;
+-		void *the_memblock;
+-
+-		/* allocate memblock's private part. Each DMA memblock
+-		 * has a space allocated for item's private usage upon
+-		 * mempool's user request. Each time mempool grows, it will
+-		 * allocate new memblock and its private part at once.
+-		 * This helps to minimize memory usage a lot. */
+-		mempool->memblocks_priv_arr[i] =
+-			vzalloc(array_size(mempool->items_priv_size, n_items));
+-		if (mempool->memblocks_priv_arr[i] == NULL) {
+-			status = VXGE_HW_ERR_OUT_OF_MEMORY;
+-			goto exit;
+-		}
+-
+-		/* allocate DMA-capable memblock */
+-		mempool->memblocks_arr[i] =
+-			__vxge_hw_blockpool_malloc(mempool->devh,
+-				mempool->memblock_size, dma_object);
+-		if (mempool->memblocks_arr[i] == NULL) {
+-			vfree(mempool->memblocks_priv_arr[i]);
+-			status = VXGE_HW_ERR_OUT_OF_MEMORY;
+-			goto exit;
+-		}
+-
+-		(*num_allocated)++;
+-		mempool->memblocks_allocated++;
+-
+-		memset(mempool->memblocks_arr[i], 0, mempool->memblock_size);
+-
+-		the_memblock = mempool->memblocks_arr[i];
+-
+-		/* fill the items hash array */
+-		for (j = 0; j < n_items; j++) {
+-			u32 index = i * n_items + j;
+-
+-			if (first_time && index >= mempool->items_initial)
+-				break;
+-
+-			mempool->items_arr[index] =
+-				((char *)the_memblock + j*mempool->item_size);
+-
+-			/* let caller to do more job on each item */
+-			if (mempool->item_func_alloc != NULL)
+-				mempool->item_func_alloc(mempool, i,
+-					dma_object, index, is_last);
+-
+-			mempool->items_current = index + 1;
+-		}
+-
+-		if (first_time && mempool->items_current ==
+-					mempool->items_initial)
+-			break;
+-	}
+-exit:
+-	return status;
+-}
+-
+-/*
+- * vxge_hw_mempool_create
+- * This function will create memory pool object. Pool may grow but will
+- * never shrink. Pool consists of number of dynamically allocated blocks
+- * with size enough to hold %items_initial number of items. Memory is
+- * DMA-able but client must map/unmap before interoperating with the device.
+- */
+-static struct vxge_hw_mempool *
+-__vxge_hw_mempool_create(struct __vxge_hw_device *devh,
+-			 u32 memblock_size,
+-			 u32 item_size,
+-			 u32 items_priv_size,
+-			 u32 items_initial,
+-			 u32 items_max,
+-			 const struct vxge_hw_mempool_cbs *mp_callback,
+-			 void *userdata)
+-{
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-	u32 memblocks_to_allocate;
+-	struct vxge_hw_mempool *mempool = NULL;
+-	u32 allocated;
+-
+-	if (memblock_size < item_size) {
+-		status = VXGE_HW_FAIL;
+-		goto exit;
+-	}
+-
+-	mempool = vzalloc(sizeof(struct vxge_hw_mempool));
+-	if (mempool == NULL) {
+-		status = VXGE_HW_ERR_OUT_OF_MEMORY;
+-		goto exit;
+-	}
+-
+-	mempool->devh			= devh;
+-	mempool->memblock_size		= memblock_size;
+-	mempool->items_max		= items_max;
+-	mempool->items_initial		= items_initial;
+-	mempool->item_size		= item_size;
+-	mempool->items_priv_size	= items_priv_size;
+-	mempool->item_func_alloc	= mp_callback->item_func_alloc;
+-	mempool->userdata		= userdata;
+-
+-	mempool->memblocks_allocated = 0;
+-
+-	mempool->items_per_memblock = memblock_size / item_size;
+-
+-	mempool->memblocks_max = (items_max + mempool->items_per_memblock - 1) /
+-					mempool->items_per_memblock;
+-
+-	/* allocate array of memblocks */
+-	mempool->memblocks_arr =
+-		vzalloc(array_size(sizeof(void *), mempool->memblocks_max));
+-	if (mempool->memblocks_arr == NULL) {
+-		__vxge_hw_mempool_destroy(mempool);
+-		status = VXGE_HW_ERR_OUT_OF_MEMORY;
+-		mempool = NULL;
+-		goto exit;
+-	}
+-
+-	/* allocate array of private parts of items per memblocks */
+-	mempool->memblocks_priv_arr =
+-		vzalloc(array_size(sizeof(void *), mempool->memblocks_max));
+-	if (mempool->memblocks_priv_arr == NULL) {
+-		__vxge_hw_mempool_destroy(mempool);
+-		status = VXGE_HW_ERR_OUT_OF_MEMORY;
+-		mempool = NULL;
+-		goto exit;
+-	}
+-
+-	/* allocate array of memblocks DMA objects */
+-	mempool->memblocks_dma_arr =
+-		vzalloc(array_size(sizeof(struct vxge_hw_mempool_dma),
+-				   mempool->memblocks_max));
+-	if (mempool->memblocks_dma_arr == NULL) {
+-		__vxge_hw_mempool_destroy(mempool);
+-		status = VXGE_HW_ERR_OUT_OF_MEMORY;
+-		mempool = NULL;
+-		goto exit;
+-	}
+-
+-	/* allocate hash array of items */
+-	mempool->items_arr = vzalloc(array_size(sizeof(void *),
+-						mempool->items_max));
+-	if (mempool->items_arr == NULL) {
+-		__vxge_hw_mempool_destroy(mempool);
+-		status = VXGE_HW_ERR_OUT_OF_MEMORY;
+-		mempool = NULL;
+-		goto exit;
+-	}
+-
+-	/* calculate initial number of memblocks */
+-	memblocks_to_allocate = (mempool->items_initial +
+-				 mempool->items_per_memblock - 1) /
+-						mempool->items_per_memblock;
+-
+-	/* pre-allocate the mempool */
+-	status = __vxge_hw_mempool_grow(mempool, memblocks_to_allocate,
+-					&allocated);
+-	if (status != VXGE_HW_OK) {
+-		__vxge_hw_mempool_destroy(mempool);
+-		status = VXGE_HW_ERR_OUT_OF_MEMORY;
+-		mempool = NULL;
+-		goto exit;
+-	}
+-
+-exit:
+-	return mempool;
+-}
+-
+-/*
+- * __vxge_hw_ring_abort - Returns the RxD
+- * This function terminates the RxDs of ring
+- */
+-static enum vxge_hw_status __vxge_hw_ring_abort(struct __vxge_hw_ring *ring)
+-{
+-	void *rxdh;
+-	struct __vxge_hw_channel *channel;
+-
+-	channel = &ring->channel;
+-
+-	for (;;) {
+-		vxge_hw_channel_dtr_try_complete(channel, &rxdh);
+-
+-		if (rxdh == NULL)
+-			break;
+-
+-		vxge_hw_channel_dtr_complete(channel);
+-
+-		if (ring->rxd_term)
+-			ring->rxd_term(rxdh, VXGE_HW_RXD_STATE_POSTED,
+-				channel->userdata);
+-
+-		vxge_hw_channel_dtr_free(channel, rxdh);
+-	}
+-
+-	return VXGE_HW_OK;
+-}
+-
+-/*
+- * __vxge_hw_ring_reset - Resets the ring
+- * This function resets the ring during vpath reset operation
+- */
+-static enum vxge_hw_status __vxge_hw_ring_reset(struct __vxge_hw_ring *ring)
+-{
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-	struct __vxge_hw_channel *channel;
+-
+-	channel = &ring->channel;
+-
+-	__vxge_hw_ring_abort(ring);
+-
+-	status = __vxge_hw_channel_reset(channel);
+-
+-	if (status != VXGE_HW_OK)
+-		goto exit;
+-
+-	if (ring->rxd_init) {
+-		status = vxge_hw_ring_replenish(ring);
+-		if (status != VXGE_HW_OK)
+-			goto exit;
+-	}
+-exit:
+-	return status;
+-}
+-
+-/*
+- * __vxge_hw_ring_delete - Removes the ring
+- * This function freeup the memory pool and removes the ring
+- */
+-static enum vxge_hw_status
+-__vxge_hw_ring_delete(struct __vxge_hw_vpath_handle *vp)
+-{
+-	struct __vxge_hw_ring *ring = vp->vpath->ringh;
+-
+-	__vxge_hw_ring_abort(ring);
+-
+-	if (ring->mempool)
+-		__vxge_hw_mempool_destroy(ring->mempool);
+-
+-	vp->vpath->ringh = NULL;
+-	__vxge_hw_channel_free(&ring->channel);
+-
+-	return VXGE_HW_OK;
+-}
+-
+-/*
+- * __vxge_hw_ring_create - Create a Ring
+- * This function creates Ring and initializes it.
+- */
+-static enum vxge_hw_status
+-__vxge_hw_ring_create(struct __vxge_hw_vpath_handle *vp,
+-		      struct vxge_hw_ring_attr *attr)
+-{
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-	struct __vxge_hw_ring *ring;
+-	u32 ring_length;
+-	struct vxge_hw_ring_config *config;
+-	struct __vxge_hw_device *hldev;
+-	u32 vp_id;
+-	static const struct vxge_hw_mempool_cbs ring_mp_callback = {
+-		.item_func_alloc = __vxge_hw_ring_mempool_item_alloc,
+-	};
+-
+-	if ((vp == NULL) || (attr == NULL)) {
+-		status = VXGE_HW_FAIL;
+-		goto exit;
+-	}
+-
+-	hldev = vp->vpath->hldev;
+-	vp_id = vp->vpath->vp_id;
+-
+-	config = &hldev->config.vp_config[vp_id].ring;
+-
+-	ring_length = config->ring_blocks *
+-			vxge_hw_ring_rxds_per_block_get(config->buffer_mode);
+-
+-	ring = (struct __vxge_hw_ring *)__vxge_hw_channel_allocate(vp,
+-						VXGE_HW_CHANNEL_TYPE_RING,
+-						ring_length,
+-						attr->per_rxd_space,
+-						attr->userdata);
+-	if (ring == NULL) {
+-		status = VXGE_HW_ERR_OUT_OF_MEMORY;
+-		goto exit;
+-	}
+-
+-	vp->vpath->ringh = ring;
+-	ring->vp_id = vp_id;
+-	ring->vp_reg = vp->vpath->vp_reg;
+-	ring->common_reg = hldev->common_reg;
+-	ring->stats = &vp->vpath->sw_stats->ring_stats;
+-	ring->config = config;
+-	ring->callback = attr->callback;
+-	ring->rxd_init = attr->rxd_init;
+-	ring->rxd_term = attr->rxd_term;
+-	ring->buffer_mode = config->buffer_mode;
+-	ring->tim_rti_cfg1_saved = vp->vpath->tim_rti_cfg1_saved;
+-	ring->tim_rti_cfg3_saved = vp->vpath->tim_rti_cfg3_saved;
+-	ring->rxds_limit = config->rxds_limit;
+-
+-	ring->rxd_size = vxge_hw_ring_rxd_size_get(config->buffer_mode);
+-	ring->rxd_priv_size =
+-		sizeof(struct __vxge_hw_ring_rxd_priv) + attr->per_rxd_space;
+-	ring->per_rxd_space = attr->per_rxd_space;
+-
+-	ring->rxd_priv_size =
+-		((ring->rxd_priv_size + VXGE_CACHE_LINE_SIZE - 1) /
+-		VXGE_CACHE_LINE_SIZE) * VXGE_CACHE_LINE_SIZE;
+-
+-	/* how many RxDs can fit into one block. Depends on configured
+-	 * buffer_mode. */
+-	ring->rxds_per_block =
+-		vxge_hw_ring_rxds_per_block_get(config->buffer_mode);
+-
+-	/* calculate actual RxD block private size */
+-	ring->rxdblock_priv_size = ring->rxd_priv_size * ring->rxds_per_block;
+-	ring->mempool = __vxge_hw_mempool_create(hldev,
+-				VXGE_HW_BLOCK_SIZE,
+-				VXGE_HW_BLOCK_SIZE,
+-				ring->rxdblock_priv_size,
+-				ring->config->ring_blocks,
+-				ring->config->ring_blocks,
+-				&ring_mp_callback,
+-				ring);
+-	if (ring->mempool == NULL) {
+-		__vxge_hw_ring_delete(vp);
+-		return VXGE_HW_ERR_OUT_OF_MEMORY;
+-	}
+-
+-	status = __vxge_hw_channel_initialize(&ring->channel);
+-	if (status != VXGE_HW_OK) {
+-		__vxge_hw_ring_delete(vp);
+-		goto exit;
+-	}
+-
+-	/* Note:
+-	 * Specifying rxd_init callback means two things:
+-	 * 1) rxds need to be initialized by driver at channel-open time;
+-	 * 2) rxds need to be posted at channel-open time
+-	 *    (that's what the initial_replenish() below does)
+-	 * Currently we don't have a case when the 1) is done without the 2).
+-	 */
+-	if (ring->rxd_init) {
+-		status = vxge_hw_ring_replenish(ring);
+-		if (status != VXGE_HW_OK) {
+-			__vxge_hw_ring_delete(vp);
+-			goto exit;
+-		}
+-	}
+-
+-	/* initial replenish will increment the counter in its post() routine,
+-	 * we have to reset it */
+-	ring->stats->common_stats.usage_cnt = 0;
+-exit:
+-	return status;
+-}
+-
+-/*
+- * vxge_hw_device_config_default_get - Initialize device config with defaults.
+- * Initialize Titan device config with default values.
+- */
+-enum vxge_hw_status
+-vxge_hw_device_config_default_get(struct vxge_hw_device_config *device_config)
+-{
+-	u32 i;
+-
+-	device_config->dma_blockpool_initial =
+-					VXGE_HW_INITIAL_DMA_BLOCK_POOL_SIZE;
+-	device_config->dma_blockpool_max = VXGE_HW_MAX_DMA_BLOCK_POOL_SIZE;
+-	device_config->intr_mode = VXGE_HW_INTR_MODE_DEF;
+-	device_config->rth_en = VXGE_HW_RTH_DEFAULT;
+-	device_config->rth_it_type = VXGE_HW_RTH_IT_TYPE_DEFAULT;
+-	device_config->device_poll_millis =  VXGE_HW_DEF_DEVICE_POLL_MILLIS;
+-	device_config->rts_mac_en =  VXGE_HW_RTS_MAC_DEFAULT;
+-
+-	for (i = 0; i < VXGE_HW_MAX_VIRTUAL_PATHS; i++) {
+-		device_config->vp_config[i].vp_id = i;
+-
+-		device_config->vp_config[i].min_bandwidth =
+-				VXGE_HW_VPATH_BANDWIDTH_DEFAULT;
+-
+-		device_config->vp_config[i].ring.enable = VXGE_HW_RING_DEFAULT;
+-
+-		device_config->vp_config[i].ring.ring_blocks =
+-				VXGE_HW_DEF_RING_BLOCKS;
+-
+-		device_config->vp_config[i].ring.buffer_mode =
+-				VXGE_HW_RING_RXD_BUFFER_MODE_DEFAULT;
+-
+-		device_config->vp_config[i].ring.scatter_mode =
+-				VXGE_HW_RING_SCATTER_MODE_USE_FLASH_DEFAULT;
+-
+-		device_config->vp_config[i].ring.rxds_limit =
+-				VXGE_HW_DEF_RING_RXDS_LIMIT;
+-
+-		device_config->vp_config[i].fifo.enable = VXGE_HW_FIFO_ENABLE;
+-
+-		device_config->vp_config[i].fifo.fifo_blocks =
+-				VXGE_HW_MIN_FIFO_BLOCKS;
+-
+-		device_config->vp_config[i].fifo.max_frags =
+-				VXGE_HW_MAX_FIFO_FRAGS;
+-
+-		device_config->vp_config[i].fifo.memblock_size =
+-				VXGE_HW_DEF_FIFO_MEMBLOCK_SIZE;
+-
+-		device_config->vp_config[i].fifo.alignment_size =
+-				VXGE_HW_DEF_FIFO_ALIGNMENT_SIZE;
+-
+-		device_config->vp_config[i].fifo.intr =
+-				VXGE_HW_FIFO_QUEUE_INTR_DEFAULT;
+-
+-		device_config->vp_config[i].fifo.no_snoop_bits =
+-				VXGE_HW_FIFO_NO_SNOOP_DEFAULT;
+-		device_config->vp_config[i].tti.intr_enable =
+-				VXGE_HW_TIM_INTR_DEFAULT;
+-
+-		device_config->vp_config[i].tti.btimer_val =
+-				VXGE_HW_USE_FLASH_DEFAULT;
+-
+-		device_config->vp_config[i].tti.timer_ac_en =
+-				VXGE_HW_USE_FLASH_DEFAULT;
+-
+-		device_config->vp_config[i].tti.timer_ci_en =
+-				VXGE_HW_USE_FLASH_DEFAULT;
+-
+-		device_config->vp_config[i].tti.timer_ri_en =
+-				VXGE_HW_USE_FLASH_DEFAULT;
+-
+-		device_config->vp_config[i].tti.rtimer_val =
+-				VXGE_HW_USE_FLASH_DEFAULT;
+-
+-		device_config->vp_config[i].tti.util_sel =
+-				VXGE_HW_USE_FLASH_DEFAULT;
+-
+-		device_config->vp_config[i].tti.ltimer_val =
+-				VXGE_HW_USE_FLASH_DEFAULT;
+-
+-		device_config->vp_config[i].tti.urange_a =
+-				VXGE_HW_USE_FLASH_DEFAULT;
+-
+-		device_config->vp_config[i].tti.uec_a =
+-				VXGE_HW_USE_FLASH_DEFAULT;
+-
+-		device_config->vp_config[i].tti.urange_b =
+-				VXGE_HW_USE_FLASH_DEFAULT;
+-
+-		device_config->vp_config[i].tti.uec_b =
+-				VXGE_HW_USE_FLASH_DEFAULT;
+-
+-		device_config->vp_config[i].tti.urange_c =
+-				VXGE_HW_USE_FLASH_DEFAULT;
+-
+-		device_config->vp_config[i].tti.uec_c =
+-				VXGE_HW_USE_FLASH_DEFAULT;
+-
+-		device_config->vp_config[i].tti.uec_d =
+-				VXGE_HW_USE_FLASH_DEFAULT;
+-
+-		device_config->vp_config[i].rti.intr_enable =
+-				VXGE_HW_TIM_INTR_DEFAULT;
+-
+-		device_config->vp_config[i].rti.btimer_val =
+-				VXGE_HW_USE_FLASH_DEFAULT;
+-
+-		device_config->vp_config[i].rti.timer_ac_en =
+-				VXGE_HW_USE_FLASH_DEFAULT;
+-
+-		device_config->vp_config[i].rti.timer_ci_en =
+-				VXGE_HW_USE_FLASH_DEFAULT;
+-
+-		device_config->vp_config[i].rti.timer_ri_en =
+-				VXGE_HW_USE_FLASH_DEFAULT;
+-
+-		device_config->vp_config[i].rti.rtimer_val =
+-				VXGE_HW_USE_FLASH_DEFAULT;
+-
+-		device_config->vp_config[i].rti.util_sel =
+-				VXGE_HW_USE_FLASH_DEFAULT;
+-
+-		device_config->vp_config[i].rti.ltimer_val =
+-				VXGE_HW_USE_FLASH_DEFAULT;
+-
+-		device_config->vp_config[i].rti.urange_a =
+-				VXGE_HW_USE_FLASH_DEFAULT;
+-
+-		device_config->vp_config[i].rti.uec_a =
+-				VXGE_HW_USE_FLASH_DEFAULT;
+-
+-		device_config->vp_config[i].rti.urange_b =
+-				VXGE_HW_USE_FLASH_DEFAULT;
+-
+-		device_config->vp_config[i].rti.uec_b =
+-				VXGE_HW_USE_FLASH_DEFAULT;
+-
+-		device_config->vp_config[i].rti.urange_c =
+-				VXGE_HW_USE_FLASH_DEFAULT;
+-
+-		device_config->vp_config[i].rti.uec_c =
+-				VXGE_HW_USE_FLASH_DEFAULT;
+-
+-		device_config->vp_config[i].rti.uec_d =
+-				VXGE_HW_USE_FLASH_DEFAULT;
+-
+-		device_config->vp_config[i].mtu =
+-				VXGE_HW_VPATH_USE_FLASH_DEFAULT_INITIAL_MTU;
+-
+-		device_config->vp_config[i].rpa_strip_vlan_tag =
+-			VXGE_HW_VPATH_RPA_STRIP_VLAN_TAG_USE_FLASH_DEFAULT;
+-	}
+-
+-	return VXGE_HW_OK;
+-}
+-
+-/*
+- * __vxge_hw_vpath_swapper_set - Set the swapper bits for the vpath.
+- * Set the swapper bits appropriately for the vpath.
+- */
+-static enum vxge_hw_status
+-__vxge_hw_vpath_swapper_set(struct vxge_hw_vpath_reg __iomem *vpath_reg)
+-{
+-#ifndef __BIG_ENDIAN
+-	u64 val64;
+-
+-	val64 = readq(&vpath_reg->vpath_general_cfg1);
+-	wmb();
+-	val64 |= VXGE_HW_VPATH_GENERAL_CFG1_CTL_BYTE_SWAPEN;
+-	writeq(val64, &vpath_reg->vpath_general_cfg1);
+-	wmb();
+-#endif
+-	return VXGE_HW_OK;
+-}
+-
+-/*
+- * __vxge_hw_kdfc_swapper_set - Set the swapper bits for the kdfc.
+- * Set the swapper bits appropriately for the vpath.
+- */
+-static enum vxge_hw_status
+-__vxge_hw_kdfc_swapper_set(struct vxge_hw_legacy_reg __iomem *legacy_reg,
+-			   struct vxge_hw_vpath_reg __iomem *vpath_reg)
+-{
+-	u64 val64;
+-
+-	val64 = readq(&legacy_reg->pifm_wr_swap_en);
+-
+-	if (val64 == VXGE_HW_SWAPPER_WRITE_BYTE_SWAP_ENABLE) {
+-		val64 = readq(&vpath_reg->kdfcctl_cfg0);
+-		wmb();
+-
+-		val64 |= VXGE_HW_KDFCCTL_CFG0_BYTE_SWAPEN_FIFO0	|
+-			VXGE_HW_KDFCCTL_CFG0_BYTE_SWAPEN_FIFO1	|
+-			VXGE_HW_KDFCCTL_CFG0_BYTE_SWAPEN_FIFO2;
+-
+-		writeq(val64, &vpath_reg->kdfcctl_cfg0);
+-		wmb();
+-	}
+-
+-	return VXGE_HW_OK;
+-}
+-
+-/*
+- * vxge_hw_mgmt_reg_read - Read Titan register.
+- */
+-enum vxge_hw_status
+-vxge_hw_mgmt_reg_read(struct __vxge_hw_device *hldev,
+-		      enum vxge_hw_mgmt_reg_type type,
+-		      u32 index, u32 offset, u64 *value)
+-{
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-
+-	if ((hldev == NULL) || (hldev->magic != VXGE_HW_DEVICE_MAGIC)) {
+-		status = VXGE_HW_ERR_INVALID_DEVICE;
+-		goto exit;
+-	}
+-
+-	switch (type) {
+-	case vxge_hw_mgmt_reg_type_legacy:
+-		if (offset > sizeof(struct vxge_hw_legacy_reg) - 8) {
+-			status = VXGE_HW_ERR_INVALID_OFFSET;
+-			break;
+-		}
+-		*value = readq((void __iomem *)hldev->legacy_reg + offset);
+-		break;
+-	case vxge_hw_mgmt_reg_type_toc:
+-		if (offset > sizeof(struct vxge_hw_toc_reg) - 8) {
+-			status = VXGE_HW_ERR_INVALID_OFFSET;
+-			break;
+-		}
+-		*value = readq((void __iomem *)hldev->toc_reg + offset);
+-		break;
+-	case vxge_hw_mgmt_reg_type_common:
+-		if (offset > sizeof(struct vxge_hw_common_reg) - 8) {
+-			status = VXGE_HW_ERR_INVALID_OFFSET;
+-			break;
+-		}
+-		*value = readq((void __iomem *)hldev->common_reg + offset);
+-		break;
+-	case vxge_hw_mgmt_reg_type_mrpcim:
+-		if (!(hldev->access_rights &
+-			VXGE_HW_DEVICE_ACCESS_RIGHT_MRPCIM)) {
+-			status = VXGE_HW_ERR_PRIVILEGED_OPERATION;
+-			break;
+-		}
+-		if (offset > sizeof(struct vxge_hw_mrpcim_reg) - 8) {
+-			status = VXGE_HW_ERR_INVALID_OFFSET;
+-			break;
+-		}
+-		*value = readq((void __iomem *)hldev->mrpcim_reg + offset);
+-		break;
+-	case vxge_hw_mgmt_reg_type_srpcim:
+-		if (!(hldev->access_rights &
+-			VXGE_HW_DEVICE_ACCESS_RIGHT_SRPCIM)) {
+-			status = VXGE_HW_ERR_PRIVILEGED_OPERATION;
+-			break;
+-		}
+-		if (index > VXGE_HW_TITAN_SRPCIM_REG_SPACES - 1) {
+-			status = VXGE_HW_ERR_INVALID_INDEX;
+-			break;
+-		}
+-		if (offset > sizeof(struct vxge_hw_srpcim_reg) - 8) {
+-			status = VXGE_HW_ERR_INVALID_OFFSET;
+-			break;
+-		}
+-		*value = readq((void __iomem *)hldev->srpcim_reg[index] +
+-				offset);
+-		break;
+-	case vxge_hw_mgmt_reg_type_vpmgmt:
+-		if ((index > VXGE_HW_TITAN_VPMGMT_REG_SPACES - 1) ||
+-			(!(hldev->vpath_assignments & vxge_mBIT(index)))) {
+-			status = VXGE_HW_ERR_INVALID_INDEX;
+-			break;
+-		}
+-		if (offset > sizeof(struct vxge_hw_vpmgmt_reg) - 8) {
+-			status = VXGE_HW_ERR_INVALID_OFFSET;
+-			break;
+-		}
+-		*value = readq((void __iomem *)hldev->vpmgmt_reg[index] +
+-				offset);
+-		break;
+-	case vxge_hw_mgmt_reg_type_vpath:
+-		if ((index > VXGE_HW_TITAN_VPATH_REG_SPACES - 1) ||
+-			(!(hldev->vpath_assignments & vxge_mBIT(index)))) {
+-			status = VXGE_HW_ERR_INVALID_INDEX;
+-			break;
+-		}
+-		if (index > VXGE_HW_TITAN_VPATH_REG_SPACES - 1) {
+-			status = VXGE_HW_ERR_INVALID_INDEX;
+-			break;
+-		}
+-		if (offset > sizeof(struct vxge_hw_vpath_reg) - 8) {
+-			status = VXGE_HW_ERR_INVALID_OFFSET;
+-			break;
+-		}
+-		*value = readq((void __iomem *)hldev->vpath_reg[index] +
+-				offset);
+-		break;
+-	default:
+-		status = VXGE_HW_ERR_INVALID_TYPE;
+-		break;
+-	}
+-
+-exit:
+-	return status;
+-}
+-
+-/*
+- * vxge_hw_vpath_strip_fcs_check - Check for FCS strip.
+- */
+-enum vxge_hw_status
+-vxge_hw_vpath_strip_fcs_check(struct __vxge_hw_device *hldev, u64 vpath_mask)
+-{
+-	struct vxge_hw_vpmgmt_reg       __iomem *vpmgmt_reg;
+-	int i = 0, j = 0;
+-
+-	for (i = 0; i < VXGE_HW_MAX_VIRTUAL_PATHS; i++) {
+-		if (!((vpath_mask) & vxge_mBIT(i)))
+-			continue;
+-		vpmgmt_reg = hldev->vpmgmt_reg[i];
+-		for (j = 0; j < VXGE_HW_MAC_MAX_MAC_PORT_ID; j++) {
+-			if (readq(&vpmgmt_reg->rxmac_cfg0_port_vpmgmt_clone[j])
+-			& VXGE_HW_RXMAC_CFG0_PORT_VPMGMT_CLONE_STRIP_FCS)
+-				return VXGE_HW_FAIL;
+-		}
+-	}
+-	return VXGE_HW_OK;
+-}
+-/*
+- * vxge_hw_mgmt_reg_Write - Write Titan register.
+- */
+-enum vxge_hw_status
+-vxge_hw_mgmt_reg_write(struct __vxge_hw_device *hldev,
+-		      enum vxge_hw_mgmt_reg_type type,
+-		      u32 index, u32 offset, u64 value)
+-{
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-
+-	if ((hldev == NULL) || (hldev->magic != VXGE_HW_DEVICE_MAGIC)) {
+-		status = VXGE_HW_ERR_INVALID_DEVICE;
+-		goto exit;
+-	}
+-
+-	switch (type) {
+-	case vxge_hw_mgmt_reg_type_legacy:
+-		if (offset > sizeof(struct vxge_hw_legacy_reg) - 8) {
+-			status = VXGE_HW_ERR_INVALID_OFFSET;
+-			break;
+-		}
+-		writeq(value, (void __iomem *)hldev->legacy_reg + offset);
+-		break;
+-	case vxge_hw_mgmt_reg_type_toc:
+-		if (offset > sizeof(struct vxge_hw_toc_reg) - 8) {
+-			status = VXGE_HW_ERR_INVALID_OFFSET;
+-			break;
+-		}
+-		writeq(value, (void __iomem *)hldev->toc_reg + offset);
+-		break;
+-	case vxge_hw_mgmt_reg_type_common:
+-		if (offset > sizeof(struct vxge_hw_common_reg) - 8) {
+-			status = VXGE_HW_ERR_INVALID_OFFSET;
+-			break;
+-		}
+-		writeq(value, (void __iomem *)hldev->common_reg + offset);
+-		break;
+-	case vxge_hw_mgmt_reg_type_mrpcim:
+-		if (!(hldev->access_rights &
+-			VXGE_HW_DEVICE_ACCESS_RIGHT_MRPCIM)) {
+-			status = VXGE_HW_ERR_PRIVILEGED_OPERATION;
+-			break;
+-		}
+-		if (offset > sizeof(struct vxge_hw_mrpcim_reg) - 8) {
+-			status = VXGE_HW_ERR_INVALID_OFFSET;
+-			break;
+-		}
+-		writeq(value, (void __iomem *)hldev->mrpcim_reg + offset);
+-		break;
+-	case vxge_hw_mgmt_reg_type_srpcim:
+-		if (!(hldev->access_rights &
+-			VXGE_HW_DEVICE_ACCESS_RIGHT_SRPCIM)) {
+-			status = VXGE_HW_ERR_PRIVILEGED_OPERATION;
+-			break;
+-		}
+-		if (index > VXGE_HW_TITAN_SRPCIM_REG_SPACES - 1) {
+-			status = VXGE_HW_ERR_INVALID_INDEX;
+-			break;
+-		}
+-		if (offset > sizeof(struct vxge_hw_srpcim_reg) - 8) {
+-			status = VXGE_HW_ERR_INVALID_OFFSET;
+-			break;
+-		}
+-		writeq(value, (void __iomem *)hldev->srpcim_reg[index] +
+-			offset);
+-
+-		break;
+-	case vxge_hw_mgmt_reg_type_vpmgmt:
+-		if ((index > VXGE_HW_TITAN_VPMGMT_REG_SPACES - 1) ||
+-			(!(hldev->vpath_assignments & vxge_mBIT(index)))) {
+-			status = VXGE_HW_ERR_INVALID_INDEX;
+-			break;
+-		}
+-		if (offset > sizeof(struct vxge_hw_vpmgmt_reg) - 8) {
+-			status = VXGE_HW_ERR_INVALID_OFFSET;
+-			break;
+-		}
+-		writeq(value, (void __iomem *)hldev->vpmgmt_reg[index] +
+-			offset);
+-		break;
+-	case vxge_hw_mgmt_reg_type_vpath:
+-		if ((index > VXGE_HW_TITAN_VPATH_REG_SPACES-1) ||
+-			(!(hldev->vpath_assignments & vxge_mBIT(index)))) {
+-			status = VXGE_HW_ERR_INVALID_INDEX;
+-			break;
+-		}
+-		if (offset > sizeof(struct vxge_hw_vpath_reg) - 8) {
+-			status = VXGE_HW_ERR_INVALID_OFFSET;
+-			break;
+-		}
+-		writeq(value, (void __iomem *)hldev->vpath_reg[index] +
+-			offset);
+-		break;
+-	default:
+-		status = VXGE_HW_ERR_INVALID_TYPE;
+-		break;
+-	}
+-exit:
+-	return status;
+-}
+-
+-/*
+- * __vxge_hw_fifo_abort - Returns the TxD
+- * This function terminates the TxDs of fifo
+- */
+-static enum vxge_hw_status __vxge_hw_fifo_abort(struct __vxge_hw_fifo *fifo)
+-{
+-	void *txdlh;
+-
+-	for (;;) {
+-		vxge_hw_channel_dtr_try_complete(&fifo->channel, &txdlh);
+-
+-		if (txdlh == NULL)
+-			break;
+-
+-		vxge_hw_channel_dtr_complete(&fifo->channel);
+-
+-		if (fifo->txdl_term) {
+-			fifo->txdl_term(txdlh,
+-			VXGE_HW_TXDL_STATE_POSTED,
+-			fifo->channel.userdata);
+-		}
+-
+-		vxge_hw_channel_dtr_free(&fifo->channel, txdlh);
+-	}
+-
+-	return VXGE_HW_OK;
+-}
+-
+-/*
+- * __vxge_hw_fifo_reset - Resets the fifo
+- * This function resets the fifo during vpath reset operation
+- */
+-static enum vxge_hw_status __vxge_hw_fifo_reset(struct __vxge_hw_fifo *fifo)
+-{
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-
+-	__vxge_hw_fifo_abort(fifo);
+-	status = __vxge_hw_channel_reset(&fifo->channel);
+-
+-	return status;
+-}
+-
+-/*
+- * __vxge_hw_fifo_delete - Removes the FIFO
+- * This function freeup the memory pool and removes the FIFO
+- */
+-static enum vxge_hw_status
+-__vxge_hw_fifo_delete(struct __vxge_hw_vpath_handle *vp)
+-{
+-	struct __vxge_hw_fifo *fifo = vp->vpath->fifoh;
+-
+-	__vxge_hw_fifo_abort(fifo);
+-
+-	if (fifo->mempool)
+-		__vxge_hw_mempool_destroy(fifo->mempool);
+-
+-	vp->vpath->fifoh = NULL;
+-
+-	__vxge_hw_channel_free(&fifo->channel);
+-
+-	return VXGE_HW_OK;
+-}
+-
+-/*
+- * __vxge_hw_fifo_mempool_item_alloc - Allocate List blocks for TxD
+- * list callback
+- * This function is callback passed to __vxge_hw_mempool_create to create memory
+- * pool for TxD list
+- */
+-static void
+-__vxge_hw_fifo_mempool_item_alloc(
+-	struct vxge_hw_mempool *mempoolh,
+-	u32 memblock_index, struct vxge_hw_mempool_dma *dma_object,
+-	u32 index, u32 is_last)
+-{
+-	u32 memblock_item_idx;
+-	struct __vxge_hw_fifo_txdl_priv *txdl_priv;
+-	struct vxge_hw_fifo_txd *txdp =
+-		(struct vxge_hw_fifo_txd *)mempoolh->items_arr[index];
+-	struct __vxge_hw_fifo *fifo =
+-			(struct __vxge_hw_fifo *)mempoolh->userdata;
+-	void *memblock = mempoolh->memblocks_arr[memblock_index];
+-
+-	vxge_assert(txdp);
+-
+-	txdp->host_control = (u64) (size_t)
+-	__vxge_hw_mempool_item_priv(mempoolh, memblock_index, txdp,
+-					&memblock_item_idx);
+-
+-	txdl_priv = __vxge_hw_fifo_txdl_priv(fifo, txdp);
+-
+-	vxge_assert(txdl_priv);
+-
+-	fifo->channel.reserve_arr[fifo->channel.reserve_ptr - 1 - index] = txdp;
+-
+-	/* pre-format HW's TxDL's private */
+-	txdl_priv->dma_offset = (char *)txdp - (char *)memblock;
+-	txdl_priv->dma_addr = dma_object->addr + txdl_priv->dma_offset;
+-	txdl_priv->dma_handle = dma_object->handle;
+-	txdl_priv->memblock   = memblock;
+-	txdl_priv->first_txdp = txdp;
+-	txdl_priv->next_txdl_priv = NULL;
+-	txdl_priv->alloc_frags = 0;
+-}
+-
+-/*
+- * __vxge_hw_fifo_create - Create a FIFO
+- * This function creates FIFO and initializes it.
+- */
+-static enum vxge_hw_status
+-__vxge_hw_fifo_create(struct __vxge_hw_vpath_handle *vp,
+-		      struct vxge_hw_fifo_attr *attr)
+-{
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-	struct __vxge_hw_fifo *fifo;
+-	struct vxge_hw_fifo_config *config;
+-	u32 txdl_size, txdl_per_memblock;
+-	struct vxge_hw_mempool_cbs fifo_mp_callback;
+-	struct __vxge_hw_virtualpath *vpath;
+-
+-	if ((vp == NULL) || (attr == NULL)) {
+-		status = VXGE_HW_ERR_INVALID_HANDLE;
+-		goto exit;
+-	}
+-	vpath = vp->vpath;
+-	config = &vpath->hldev->config.vp_config[vpath->vp_id].fifo;
+-
+-	txdl_size = config->max_frags * sizeof(struct vxge_hw_fifo_txd);
+-
+-	txdl_per_memblock = config->memblock_size / txdl_size;
+-
+-	fifo = (struct __vxge_hw_fifo *)__vxge_hw_channel_allocate(vp,
+-					VXGE_HW_CHANNEL_TYPE_FIFO,
+-					config->fifo_blocks * txdl_per_memblock,
+-					attr->per_txdl_space, attr->userdata);
+-
+-	if (fifo == NULL) {
+-		status = VXGE_HW_ERR_OUT_OF_MEMORY;
+-		goto exit;
+-	}
+-
+-	vpath->fifoh = fifo;
+-	fifo->nofl_db = vpath->nofl_db;
+-
+-	fifo->vp_id = vpath->vp_id;
+-	fifo->vp_reg = vpath->vp_reg;
+-	fifo->stats = &vpath->sw_stats->fifo_stats;
+-
+-	fifo->config = config;
+-
+-	/* apply "interrupts per txdl" attribute */
+-	fifo->interrupt_type = VXGE_HW_FIFO_TXD_INT_TYPE_UTILZ;
+-	fifo->tim_tti_cfg1_saved = vpath->tim_tti_cfg1_saved;
+-	fifo->tim_tti_cfg3_saved = vpath->tim_tti_cfg3_saved;
+-
+-	if (fifo->config->intr)
+-		fifo->interrupt_type = VXGE_HW_FIFO_TXD_INT_TYPE_PER_LIST;
+-
+-	fifo->no_snoop_bits = config->no_snoop_bits;
+-
+-	/*
+-	 * FIFO memory management strategy:
+-	 *
+-	 * TxDL split into three independent parts:
+-	 *	- set of TxD's
+-	 *	- TxD HW private part
+-	 *	- driver private part
+-	 *
+-	 * Adaptative memory allocation used. i.e. Memory allocated on
+-	 * demand with the size which will fit into one memory block.
+-	 * One memory block may contain more than one TxDL.
+-	 *
+-	 * During "reserve" operations more memory can be allocated on demand
+-	 * for example due to FIFO full condition.
+-	 *
+-	 * Pool of memory memblocks never shrinks except in __vxge_hw_fifo_close
+-	 * routine which will essentially stop the channel and free resources.
+-	 */
+-
+-	/* TxDL common private size == TxDL private  +  driver private */
+-	fifo->priv_size =
+-		sizeof(struct __vxge_hw_fifo_txdl_priv) + attr->per_txdl_space;
+-	fifo->priv_size = ((fifo->priv_size  +  VXGE_CACHE_LINE_SIZE - 1) /
+-			VXGE_CACHE_LINE_SIZE) * VXGE_CACHE_LINE_SIZE;
+-
+-	fifo->per_txdl_space = attr->per_txdl_space;
+-
+-	/* recompute txdl size to be cacheline aligned */
+-	fifo->txdl_size = txdl_size;
+-	fifo->txdl_per_memblock = txdl_per_memblock;
+-
+-	fifo->txdl_term = attr->txdl_term;
+-	fifo->callback = attr->callback;
+-
+-	if (fifo->txdl_per_memblock == 0) {
+-		__vxge_hw_fifo_delete(vp);
+-		status = VXGE_HW_ERR_INVALID_BLOCK_SIZE;
+-		goto exit;
+-	}
+-
+-	fifo_mp_callback.item_func_alloc = __vxge_hw_fifo_mempool_item_alloc;
+-
+-	fifo->mempool =
+-		__vxge_hw_mempool_create(vpath->hldev,
+-			fifo->config->memblock_size,
+-			fifo->txdl_size,
+-			fifo->priv_size,
+-			(fifo->config->fifo_blocks * fifo->txdl_per_memblock),
+-			(fifo->config->fifo_blocks * fifo->txdl_per_memblock),
+-			&fifo_mp_callback,
+-			fifo);
+-
+-	if (fifo->mempool == NULL) {
+-		__vxge_hw_fifo_delete(vp);
+-		status = VXGE_HW_ERR_OUT_OF_MEMORY;
+-		goto exit;
+-	}
+-
+-	status = __vxge_hw_channel_initialize(&fifo->channel);
+-	if (status != VXGE_HW_OK) {
+-		__vxge_hw_fifo_delete(vp);
+-		goto exit;
+-	}
+-
+-	vxge_assert(fifo->channel.reserve_ptr);
+-exit:
+-	return status;
+-}
+-
+-/*
+- * __vxge_hw_vpath_pci_read - Read the content of given address
+- *                          in pci config space.
+- * Read from the vpath pci config space.
+- */
+-static enum vxge_hw_status
+-__vxge_hw_vpath_pci_read(struct __vxge_hw_virtualpath *vpath,
+-			 u32 phy_func_0, u32 offset, u32 *val)
+-{
+-	u64 val64;
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-	struct vxge_hw_vpath_reg __iomem *vp_reg = vpath->vp_reg;
+-
+-	val64 =	VXGE_HW_PCI_CONFIG_ACCESS_CFG1_ADDRESS(offset);
+-
+-	if (phy_func_0)
+-		val64 |= VXGE_HW_PCI_CONFIG_ACCESS_CFG1_SEL_FUNC0;
+-
+-	writeq(val64, &vp_reg->pci_config_access_cfg1);
+-	wmb();
+-	writeq(VXGE_HW_PCI_CONFIG_ACCESS_CFG2_REQ,
+-			&vp_reg->pci_config_access_cfg2);
+-	wmb();
+-
+-	status = __vxge_hw_device_register_poll(
+-			&vp_reg->pci_config_access_cfg2,
+-			VXGE_HW_INTR_MASK_ALL, VXGE_HW_DEF_DEVICE_POLL_MILLIS);
+-
+-	if (status != VXGE_HW_OK)
+-		goto exit;
+-
+-	val64 = readq(&vp_reg->pci_config_access_status);
+-
+-	if (val64 & VXGE_HW_PCI_CONFIG_ACCESS_STATUS_ACCESS_ERR) {
+-		status = VXGE_HW_FAIL;
+-		*val = 0;
+-	} else
+-		*val = (u32)vxge_bVALn(val64, 32, 32);
+-exit:
+-	return status;
+-}
+-
+-/**
+- * vxge_hw_device_flick_link_led - Flick (blink) link LED.
+- * @hldev: HW device.
+- * @on_off: TRUE if flickering to be on, FALSE to be off
+- *
+- * Flicker the link LED.
+- */
+-enum vxge_hw_status
+-vxge_hw_device_flick_link_led(struct __vxge_hw_device *hldev, u64 on_off)
+-{
+-	struct __vxge_hw_virtualpath *vpath;
+-	u64 data0, data1 = 0, steer_ctrl = 0;
+-	enum vxge_hw_status status;
+-
+-	if (hldev == NULL) {
+-		status = VXGE_HW_ERR_INVALID_DEVICE;
+-		goto exit;
+-	}
+-
+-	vpath = &hldev->virtual_paths[hldev->first_vp_id];
+-
+-	data0 = on_off;
+-	status = vxge_hw_vpath_fw_api(vpath,
+-			VXGE_HW_RTS_ACCESS_STEER_CTRL_ACTION_LED_CONTROL,
+-			VXGE_HW_RTS_ACCESS_STEER_CTRL_DATA_STRUCT_SEL_FW_MEMO,
+-			0, &data0, &data1, &steer_ctrl);
+-exit:
+-	return status;
+-}
+-
+-/*
+- * __vxge_hw_vpath_rts_table_get - Get the entries from RTS access tables
+- */
+-enum vxge_hw_status
+-__vxge_hw_vpath_rts_table_get(struct __vxge_hw_vpath_handle *vp,
+-			      u32 action, u32 rts_table, u32 offset,
+-			      u64 *data0, u64 *data1)
+-{
+-	enum vxge_hw_status status;
+-	u64 steer_ctrl = 0;
+-
+-	if (vp == NULL) {
+-		status = VXGE_HW_ERR_INVALID_HANDLE;
+-		goto exit;
+-	}
+-
+-	if ((rts_table ==
+-	     VXGE_HW_RTS_ACS_STEER_CTRL_DATA_STRUCT_SEL_RTH_SOLO_IT) ||
+-	    (rts_table ==
+-	     VXGE_HW_RTS_ACS_STEER_CTRL_DATA_STRUCT_SEL_RTH_MULTI_IT) ||
+-	    (rts_table ==
+-	     VXGE_HW_RTS_ACCESS_STEER_CTRL_DATA_STRUCT_SEL_RTH_MASK) ||
+-	    (rts_table ==
+-	     VXGE_HW_RTS_ACCESS_STEER_CTRL_DATA_STRUCT_SEL_RTH_KEY)) {
+-		steer_ctrl = VXGE_HW_RTS_ACCESS_STEER_CTRL_TABLE_SEL;
+-	}
+-
+-	status = vxge_hw_vpath_fw_api(vp->vpath, action, rts_table, offset,
+-				      data0, data1, &steer_ctrl);
+-	if (status != VXGE_HW_OK)
+-		goto exit;
+-
+-	if ((rts_table != VXGE_HW_RTS_ACCESS_STEER_CTRL_DATA_STRUCT_SEL_DA) &&
+-	    (rts_table !=
+-	     VXGE_HW_RTS_ACS_STEER_CTRL_DATA_STRUCT_SEL_RTH_MULTI_IT))
+-		*data1 = 0;
+-exit:
+-	return status;
+-}
+-
+-/*
+- * __vxge_hw_vpath_rts_table_set - Set the entries of RTS access tables
+- */
+-enum vxge_hw_status
+-__vxge_hw_vpath_rts_table_set(struct __vxge_hw_vpath_handle *vp, u32 action,
+-			      u32 rts_table, u32 offset, u64 steer_data0,
+-			      u64 steer_data1)
+-{
+-	u64 data0, data1 = 0, steer_ctrl = 0;
+-	enum vxge_hw_status status;
+-
+-	if (vp == NULL) {
+-		status = VXGE_HW_ERR_INVALID_HANDLE;
+-		goto exit;
+-	}
+-
+-	data0 = steer_data0;
+-
+-	if ((rts_table == VXGE_HW_RTS_ACCESS_STEER_CTRL_DATA_STRUCT_SEL_DA) ||
+-	    (rts_table ==
+-	     VXGE_HW_RTS_ACS_STEER_CTRL_DATA_STRUCT_SEL_RTH_MULTI_IT))
+-		data1 = steer_data1;
+-
+-	status = vxge_hw_vpath_fw_api(vp->vpath, action, rts_table, offset,
+-				      &data0, &data1, &steer_ctrl);
+-exit:
+-	return status;
+-}
+-
+-/*
+- * vxge_hw_vpath_rts_rth_set - Set/configure RTS hashing.
+- */
+-enum vxge_hw_status vxge_hw_vpath_rts_rth_set(
+-			struct __vxge_hw_vpath_handle *vp,
+-			enum vxge_hw_rth_algoritms algorithm,
+-			struct vxge_hw_rth_hash_types *hash_type,
+-			u16 bucket_size)
+-{
+-	u64 data0, data1;
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-
+-	if (vp == NULL) {
+-		status = VXGE_HW_ERR_INVALID_HANDLE;
+-		goto exit;
+-	}
+-
+-	status = __vxge_hw_vpath_rts_table_get(vp,
+-		     VXGE_HW_RTS_ACCESS_STEER_CTRL_ACTION_READ_ENTRY,
+-		     VXGE_HW_RTS_ACCESS_STEER_CTRL_DATA_STRUCT_SEL_RTH_GEN_CFG,
+-			0, &data0, &data1);
+-	if (status != VXGE_HW_OK)
+-		goto exit;
+-
+-	data0 &= ~(VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_GEN_BUCKET_SIZE(0xf) |
+-			VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_GEN_ALG_SEL(0x3));
+-
+-	data0 |= VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_GEN_RTH_EN |
+-	VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_GEN_BUCKET_SIZE(bucket_size) |
+-	VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_GEN_ALG_SEL(algorithm);
+-
+-	if (hash_type->hash_type_tcpipv4_en)
+-		data0 |= VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_GEN_RTH_TCP_IPV4_EN;
+-
+-	if (hash_type->hash_type_ipv4_en)
+-		data0 |= VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_GEN_RTH_IPV4_EN;
+-
+-	if (hash_type->hash_type_tcpipv6_en)
+-		data0 |= VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_GEN_RTH_TCP_IPV6_EN;
+-
+-	if (hash_type->hash_type_ipv6_en)
+-		data0 |= VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_GEN_RTH_IPV6_EN;
+-
+-	if (hash_type->hash_type_tcpipv6ex_en)
+-		data0 |=
+-		VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_GEN_RTH_TCP_IPV6_EX_EN;
+-
+-	if (hash_type->hash_type_ipv6ex_en)
+-		data0 |= VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_GEN_RTH_IPV6_EX_EN;
+-
+-	if (VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_RTH_GEN_ACTIVE_TABLE(data0))
+-		data0 &= ~VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_GEN_ACTIVE_TABLE;
+-	else
+-		data0 |= VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_GEN_ACTIVE_TABLE;
+-
+-	status = __vxge_hw_vpath_rts_table_set(vp,
+-		VXGE_HW_RTS_ACCESS_STEER_CTRL_ACTION_WRITE_ENTRY,
+-		VXGE_HW_RTS_ACCESS_STEER_CTRL_DATA_STRUCT_SEL_RTH_GEN_CFG,
+-		0, data0, 0);
+-exit:
+-	return status;
+-}
+-
+-static void
+-vxge_hw_rts_rth_data0_data1_get(u32 j, u64 *data0, u64 *data1,
+-				u16 flag, u8 *itable)
+-{
+-	switch (flag) {
+-	case 1:
+-		*data0 = VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_ITEM0_BUCKET_NUM(j)|
+-			VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_ITEM0_ENTRY_EN |
+-			VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_ITEM0_BUCKET_DATA(
+-			itable[j]);
+-		fallthrough;
+-	case 2:
+-		*data0 |=
+-			VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_ITEM1_BUCKET_NUM(j)|
+-			VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_ITEM1_ENTRY_EN |
+-			VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_ITEM1_BUCKET_DATA(
+-			itable[j]);
+-		fallthrough;
+-	case 3:
+-		*data1 = VXGE_HW_RTS_ACCESS_STEER_DATA1_RTH_ITEM0_BUCKET_NUM(j)|
+-			VXGE_HW_RTS_ACCESS_STEER_DATA1_RTH_ITEM0_ENTRY_EN |
+-			VXGE_HW_RTS_ACCESS_STEER_DATA1_RTH_ITEM0_BUCKET_DATA(
+-			itable[j]);
+-		fallthrough;
+-	case 4:
+-		*data1 |=
+-			VXGE_HW_RTS_ACCESS_STEER_DATA1_RTH_ITEM1_BUCKET_NUM(j)|
+-			VXGE_HW_RTS_ACCESS_STEER_DATA1_RTH_ITEM1_ENTRY_EN |
+-			VXGE_HW_RTS_ACCESS_STEER_DATA1_RTH_ITEM1_BUCKET_DATA(
+-			itable[j]);
+-		return;
+-	default:
+-		return;
+-	}
+-}
+-/*
+- * vxge_hw_vpath_rts_rth_itable_set - Set/configure indirection table (IT).
+- */
+-enum vxge_hw_status vxge_hw_vpath_rts_rth_itable_set(
+-			struct __vxge_hw_vpath_handle **vpath_handles,
+-			u32 vpath_count,
+-			u8 *mtable,
+-			u8 *itable,
+-			u32 itable_size)
+-{
+-	u32 i, j, action, rts_table;
+-	u64 data0;
+-	u64 data1;
+-	u32 max_entries;
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-	struct __vxge_hw_vpath_handle *vp = vpath_handles[0];
+-
+-	if (vp == NULL) {
+-		status = VXGE_HW_ERR_INVALID_HANDLE;
+-		goto exit;
+-	}
+-
+-	max_entries = (((u32)1) << itable_size);
+-
+-	if (vp->vpath->hldev->config.rth_it_type
+-				== VXGE_HW_RTH_IT_TYPE_SOLO_IT) {
+-		action = VXGE_HW_RTS_ACCESS_STEER_CTRL_ACTION_WRITE_ENTRY;
+-		rts_table =
+-			VXGE_HW_RTS_ACS_STEER_CTRL_DATA_STRUCT_SEL_RTH_SOLO_IT;
+-
+-		for (j = 0; j < max_entries; j++) {
+-
+-			data1 = 0;
+-
+-			data0 =
+-			VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_SOLO_IT_BUCKET_DATA(
+-				itable[j]);
+-
+-			status = __vxge_hw_vpath_rts_table_set(vpath_handles[0],
+-				action, rts_table, j, data0, data1);
+-
+-			if (status != VXGE_HW_OK)
+-				goto exit;
+-		}
+-
+-		for (j = 0; j < max_entries; j++) {
+-
+-			data1 = 0;
+-
+-			data0 =
+-			VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_SOLO_IT_ENTRY_EN |
+-			VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_SOLO_IT_BUCKET_DATA(
+-				itable[j]);
+-
+-			status = __vxge_hw_vpath_rts_table_set(
+-				vpath_handles[mtable[itable[j]]], action,
+-				rts_table, j, data0, data1);
+-
+-			if (status != VXGE_HW_OK)
+-				goto exit;
+-		}
+-	} else {
+-		action = VXGE_HW_RTS_ACCESS_STEER_CTRL_ACTION_WRITE_ENTRY;
+-		rts_table =
+-			VXGE_HW_RTS_ACS_STEER_CTRL_DATA_STRUCT_SEL_RTH_MULTI_IT;
+-		for (i = 0; i < vpath_count; i++) {
+-
+-			for (j = 0; j < max_entries;) {
+-
+-				data0 = 0;
+-				data1 = 0;
+-
+-				while (j < max_entries) {
+-					if (mtable[itable[j]] != i) {
+-						j++;
+-						continue;
+-					}
+-					vxge_hw_rts_rth_data0_data1_get(j,
+-						&data0, &data1, 1, itable);
+-					j++;
+-					break;
+-				}
+-
+-				while (j < max_entries) {
+-					if (mtable[itable[j]] != i) {
+-						j++;
+-						continue;
+-					}
+-					vxge_hw_rts_rth_data0_data1_get(j,
+-						&data0, &data1, 2, itable);
+-					j++;
+-					break;
+-				}
+-
+-				while (j < max_entries) {
+-					if (mtable[itable[j]] != i) {
+-						j++;
+-						continue;
+-					}
+-					vxge_hw_rts_rth_data0_data1_get(j,
+-						&data0, &data1, 3, itable);
+-					j++;
+-					break;
+-				}
+-
+-				while (j < max_entries) {
+-					if (mtable[itable[j]] != i) {
+-						j++;
+-						continue;
+-					}
+-					vxge_hw_rts_rth_data0_data1_get(j,
+-						&data0, &data1, 4, itable);
+-					j++;
+-					break;
+-				}
+-
+-				if (data0 != 0) {
+-					status = __vxge_hw_vpath_rts_table_set(
+-							vpath_handles[i],
+-							action, rts_table,
+-							0, data0, data1);
+-
+-					if (status != VXGE_HW_OK)
+-						goto exit;
+-				}
+-			}
+-		}
+-	}
+-exit:
+-	return status;
+-}
+-
+-/**
+- * vxge_hw_vpath_check_leak - Check for memory leak
+- * @ring: Handle to the ring object used for receive
+- *
+- * If PRC_RXD_DOORBELL_VPn.NEW_QW_CNT is larger or equal to
+- * PRC_CFG6_VPn.RXD_SPAT then a leak has occurred.
+- * Returns: VXGE_HW_FAIL, if leak has occurred.
+- *
+- */
+-enum vxge_hw_status
+-vxge_hw_vpath_check_leak(struct __vxge_hw_ring *ring)
+-{
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-	u64 rxd_new_count, rxd_spat;
+-
+-	if (ring == NULL)
+-		return status;
+-
+-	rxd_new_count = readl(&ring->vp_reg->prc_rxd_doorbell);
+-	rxd_spat = readq(&ring->vp_reg->prc_cfg6);
+-	rxd_spat = VXGE_HW_PRC_CFG6_RXD_SPAT(rxd_spat);
+-
+-	if (rxd_new_count >= rxd_spat)
+-		status = VXGE_HW_FAIL;
+-
+-	return status;
+-}
+-
+-/*
+- * __vxge_hw_vpath_mgmt_read
+- * This routine reads the vpath_mgmt registers
+- */
+-static enum vxge_hw_status
+-__vxge_hw_vpath_mgmt_read(
+-	struct __vxge_hw_device *hldev,
+-	struct __vxge_hw_virtualpath *vpath)
+-{
+-	u32 i, mtu = 0, max_pyld = 0;
+-	u64 val64;
+-
+-	for (i = 0; i < VXGE_HW_MAC_MAX_MAC_PORT_ID; i++) {
+-
+-		val64 = readq(&vpath->vpmgmt_reg->
+-				rxmac_cfg0_port_vpmgmt_clone[i]);
+-		max_pyld =
+-			(u32)
+-			VXGE_HW_RXMAC_CFG0_PORT_VPMGMT_CLONE_GET_MAX_PYLD_LEN
+-			(val64);
+-		if (mtu < max_pyld)
+-			mtu = max_pyld;
+-	}
+-
+-	vpath->max_mtu = mtu + VXGE_HW_MAC_HEADER_MAX_SIZE;
+-
+-	val64 = readq(&vpath->vpmgmt_reg->xmac_vsport_choices_vp);
+-
+-	for (i = 0; i < VXGE_HW_MAX_VIRTUAL_PATHS; i++) {
+-		if (val64 & vxge_mBIT(i))
+-			vpath->vsport_number = i;
+-	}
+-
+-	val64 = readq(&vpath->vpmgmt_reg->xgmac_gen_status_vpmgmt_clone);
+-
+-	if (val64 & VXGE_HW_XGMAC_GEN_STATUS_VPMGMT_CLONE_XMACJ_NTWK_OK)
+-		VXGE_HW_DEVICE_LINK_STATE_SET(vpath->hldev, VXGE_HW_LINK_UP);
+-	else
+-		VXGE_HW_DEVICE_LINK_STATE_SET(vpath->hldev, VXGE_HW_LINK_DOWN);
+-
+-	return VXGE_HW_OK;
+-}
+-
+-/*
+- * __vxge_hw_vpath_reset_check - Check if resetting the vpath completed
+- * This routine checks the vpath_rst_in_prog register to see if
+- * adapter completed the reset process for the vpath
+- */
+-static enum vxge_hw_status
+-__vxge_hw_vpath_reset_check(struct __vxge_hw_virtualpath *vpath)
+-{
+-	enum vxge_hw_status status;
+-
+-	status = __vxge_hw_device_register_poll(
+-			&vpath->hldev->common_reg->vpath_rst_in_prog,
+-			VXGE_HW_VPATH_RST_IN_PROG_VPATH_RST_IN_PROG(
+-				1 << (16 - vpath->vp_id)),
+-			vpath->hldev->config.device_poll_millis);
+-
+-	return status;
+-}
+-
+-/*
+- * __vxge_hw_vpath_reset
+- * This routine resets the vpath on the device
+- */
+-static enum vxge_hw_status
+-__vxge_hw_vpath_reset(struct __vxge_hw_device *hldev, u32 vp_id)
+-{
+-	u64 val64;
+-
+-	val64 = VXGE_HW_CMN_RSTHDLR_CFG0_SW_RESET_VPATH(1 << (16 - vp_id));
+-
+-	__vxge_hw_pio_mem_write32_upper((u32)vxge_bVALn(val64, 0, 32),
+-				&hldev->common_reg->cmn_rsthdlr_cfg0);
+-
+-	return VXGE_HW_OK;
+-}
+-
+-/*
+- * __vxge_hw_vpath_sw_reset
+- * This routine resets the vpath structures
+- */
+-static enum vxge_hw_status
+-__vxge_hw_vpath_sw_reset(struct __vxge_hw_device *hldev, u32 vp_id)
+-{
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-	struct __vxge_hw_virtualpath *vpath;
+-
+-	vpath = &hldev->virtual_paths[vp_id];
+-
+-	if (vpath->ringh) {
+-		status = __vxge_hw_ring_reset(vpath->ringh);
+-		if (status != VXGE_HW_OK)
+-			goto exit;
+-	}
+-
+-	if (vpath->fifoh)
+-		status = __vxge_hw_fifo_reset(vpath->fifoh);
+-exit:
+-	return status;
+-}
+-
+-/*
+- * __vxge_hw_vpath_prc_configure
+- * This routine configures the prc registers of virtual path using the config
+- * passed
+- */
+-static void
+-__vxge_hw_vpath_prc_configure(struct __vxge_hw_device *hldev, u32 vp_id)
+-{
+-	u64 val64;
+-	struct __vxge_hw_virtualpath *vpath;
+-	struct vxge_hw_vp_config *vp_config;
+-	struct vxge_hw_vpath_reg __iomem *vp_reg;
+-
+-	vpath = &hldev->virtual_paths[vp_id];
+-	vp_reg = vpath->vp_reg;
+-	vp_config = vpath->vp_config;
+-
+-	if (vp_config->ring.enable == VXGE_HW_RING_DISABLE)
+-		return;
+-
+-	val64 = readq(&vp_reg->prc_cfg1);
+-	val64 |= VXGE_HW_PRC_CFG1_RTI_TINT_DISABLE;
+-	writeq(val64, &vp_reg->prc_cfg1);
+-
+-	val64 = readq(&vpath->vp_reg->prc_cfg6);
+-	val64 |= VXGE_HW_PRC_CFG6_DOORBELL_MODE_EN;
+-	writeq(val64, &vpath->vp_reg->prc_cfg6);
+-
+-	val64 = readq(&vp_reg->prc_cfg7);
+-
+-	if (vpath->vp_config->ring.scatter_mode !=
+-		VXGE_HW_RING_SCATTER_MODE_USE_FLASH_DEFAULT) {
+-
+-		val64 &= ~VXGE_HW_PRC_CFG7_SCATTER_MODE(0x3);
+-
+-		switch (vpath->vp_config->ring.scatter_mode) {
+-		case VXGE_HW_RING_SCATTER_MODE_A:
+-			val64 |= VXGE_HW_PRC_CFG7_SCATTER_MODE(
+-					VXGE_HW_PRC_CFG7_SCATTER_MODE_A);
+-			break;
+-		case VXGE_HW_RING_SCATTER_MODE_B:
+-			val64 |= VXGE_HW_PRC_CFG7_SCATTER_MODE(
+-					VXGE_HW_PRC_CFG7_SCATTER_MODE_B);
+-			break;
+-		case VXGE_HW_RING_SCATTER_MODE_C:
+-			val64 |= VXGE_HW_PRC_CFG7_SCATTER_MODE(
+-					VXGE_HW_PRC_CFG7_SCATTER_MODE_C);
+-			break;
+-		}
+-	}
+-
+-	writeq(val64, &vp_reg->prc_cfg7);
+-
+-	writeq(VXGE_HW_PRC_CFG5_RXD0_ADD(
+-				__vxge_hw_ring_first_block_address_get(
+-					vpath->ringh) >> 3), &vp_reg->prc_cfg5);
+-
+-	val64 = readq(&vp_reg->prc_cfg4);
+-	val64 |= VXGE_HW_PRC_CFG4_IN_SVC;
+-	val64 &= ~VXGE_HW_PRC_CFG4_RING_MODE(0x3);
+-
+-	val64 |= VXGE_HW_PRC_CFG4_RING_MODE(
+-			VXGE_HW_PRC_CFG4_RING_MODE_ONE_BUFFER);
+-
+-	if (hldev->config.rth_en == VXGE_HW_RTH_DISABLE)
+-		val64 |= VXGE_HW_PRC_CFG4_RTH_DISABLE;
+-	else
+-		val64 &= ~VXGE_HW_PRC_CFG4_RTH_DISABLE;
+-
+-	writeq(val64, &vp_reg->prc_cfg4);
+-}
+-
+-/*
+- * __vxge_hw_vpath_kdfc_configure
+- * This routine configures the kdfc registers of virtual path using the
+- * config passed
+- */
+-static enum vxge_hw_status
+-__vxge_hw_vpath_kdfc_configure(struct __vxge_hw_device *hldev, u32 vp_id)
+-{
+-	u64 val64;
+-	u64 vpath_stride;
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-	struct __vxge_hw_virtualpath *vpath;
+-	struct vxge_hw_vpath_reg __iomem *vp_reg;
+-
+-	vpath = &hldev->virtual_paths[vp_id];
+-	vp_reg = vpath->vp_reg;
+-	status = __vxge_hw_kdfc_swapper_set(hldev->legacy_reg, vp_reg);
+-
+-	if (status != VXGE_HW_OK)
+-		goto exit;
+-
+-	val64 = readq(&vp_reg->kdfc_drbl_triplet_total);
+-
+-	vpath->max_kdfc_db =
+-		(u32)VXGE_HW_KDFC_DRBL_TRIPLET_TOTAL_GET_KDFC_MAX_SIZE(
+-			val64+1)/2;
+-
+-	if (vpath->vp_config->fifo.enable == VXGE_HW_FIFO_ENABLE) {
+-
+-		vpath->max_nofl_db = vpath->max_kdfc_db;
+-
+-		if (vpath->max_nofl_db <
+-			((vpath->vp_config->fifo.memblock_size /
+-			(vpath->vp_config->fifo.max_frags *
+-			sizeof(struct vxge_hw_fifo_txd))) *
+-			vpath->vp_config->fifo.fifo_blocks)) {
+-
+-			return VXGE_HW_BADCFG_FIFO_BLOCKS;
+-		}
+-		val64 = VXGE_HW_KDFC_FIFO_TRPL_PARTITION_LENGTH_0(
+-				(vpath->max_nofl_db*2)-1);
+-	}
+-
+-	writeq(val64, &vp_reg->kdfc_fifo_trpl_partition);
+-
+-	writeq(VXGE_HW_KDFC_FIFO_TRPL_CTRL_TRIPLET_ENABLE,
+-		&vp_reg->kdfc_fifo_trpl_ctrl);
+-
+-	val64 = readq(&vp_reg->kdfc_trpl_fifo_0_ctrl);
+-
+-	val64 &= ~(VXGE_HW_KDFC_TRPL_FIFO_0_CTRL_MODE(0x3) |
+-		   VXGE_HW_KDFC_TRPL_FIFO_0_CTRL_SELECT(0xFF));
+-
+-	val64 |= VXGE_HW_KDFC_TRPL_FIFO_0_CTRL_MODE(
+-		 VXGE_HW_KDFC_TRPL_FIFO_0_CTRL_MODE_NON_OFFLOAD_ONLY) |
+-#ifndef __BIG_ENDIAN
+-		 VXGE_HW_KDFC_TRPL_FIFO_0_CTRL_SWAP_EN |
+-#endif
+-		 VXGE_HW_KDFC_TRPL_FIFO_0_CTRL_SELECT(0);
+-
+-	writeq(val64, &vp_reg->kdfc_trpl_fifo_0_ctrl);
+-	writeq((u64)0, &vp_reg->kdfc_trpl_fifo_0_wb_address);
+-	wmb();
+-	vpath_stride = readq(&hldev->toc_reg->toc_kdfc_vpath_stride);
+-
+-	vpath->nofl_db =
+-		(struct __vxge_hw_non_offload_db_wrapper __iomem *)
+-		(hldev->kdfc + (vp_id *
+-		VXGE_HW_TOC_KDFC_VPATH_STRIDE_GET_TOC_KDFC_VPATH_STRIDE(
+-					vpath_stride)));
+-exit:
+-	return status;
+-}
+-
+-/*
+- * __vxge_hw_vpath_mac_configure
+- * This routine configures the mac of virtual path using the config passed
+- */
+-static enum vxge_hw_status
+-__vxge_hw_vpath_mac_configure(struct __vxge_hw_device *hldev, u32 vp_id)
+-{
+-	u64 val64;
+-	struct __vxge_hw_virtualpath *vpath;
+-	struct vxge_hw_vp_config *vp_config;
+-	struct vxge_hw_vpath_reg __iomem *vp_reg;
+-
+-	vpath = &hldev->virtual_paths[vp_id];
+-	vp_reg = vpath->vp_reg;
+-	vp_config = vpath->vp_config;
+-
+-	writeq(VXGE_HW_XMAC_VSPORT_CHOICE_VSPORT_NUMBER(
+-			vpath->vsport_number), &vp_reg->xmac_vsport_choice);
+-
+-	if (vp_config->ring.enable == VXGE_HW_RING_ENABLE) {
+-
+-		val64 = readq(&vp_reg->xmac_rpa_vcfg);
+-
+-		if (vp_config->rpa_strip_vlan_tag !=
+-			VXGE_HW_VPATH_RPA_STRIP_VLAN_TAG_USE_FLASH_DEFAULT) {
+-			if (vp_config->rpa_strip_vlan_tag)
+-				val64 |= VXGE_HW_XMAC_RPA_VCFG_STRIP_VLAN_TAG;
+-			else
+-				val64 &= ~VXGE_HW_XMAC_RPA_VCFG_STRIP_VLAN_TAG;
+-		}
+-
+-		writeq(val64, &vp_reg->xmac_rpa_vcfg);
+-		val64 = readq(&vp_reg->rxmac_vcfg0);
+-
+-		if (vp_config->mtu !=
+-				VXGE_HW_VPATH_USE_FLASH_DEFAULT_INITIAL_MTU) {
+-			val64 &= ~VXGE_HW_RXMAC_VCFG0_RTS_MAX_FRM_LEN(0x3fff);
+-			if ((vp_config->mtu  +
+-				VXGE_HW_MAC_HEADER_MAX_SIZE) < vpath->max_mtu)
+-				val64 |= VXGE_HW_RXMAC_VCFG0_RTS_MAX_FRM_LEN(
+-					vp_config->mtu  +
+-					VXGE_HW_MAC_HEADER_MAX_SIZE);
+-			else
+-				val64 |= VXGE_HW_RXMAC_VCFG0_RTS_MAX_FRM_LEN(
+-					vpath->max_mtu);
+-		}
+-
+-		writeq(val64, &vp_reg->rxmac_vcfg0);
+-
+-		val64 = readq(&vp_reg->rxmac_vcfg1);
+-
+-		val64 &= ~(VXGE_HW_RXMAC_VCFG1_RTS_RTH_MULTI_IT_BD_MODE(0x3) |
+-			VXGE_HW_RXMAC_VCFG1_RTS_RTH_MULTI_IT_EN_MODE);
+-
+-		if (hldev->config.rth_it_type ==
+-				VXGE_HW_RTH_IT_TYPE_MULTI_IT) {
+-			val64 |= VXGE_HW_RXMAC_VCFG1_RTS_RTH_MULTI_IT_BD_MODE(
+-				0x2) |
+-				VXGE_HW_RXMAC_VCFG1_RTS_RTH_MULTI_IT_EN_MODE;
+-		}
+-
+-		writeq(val64, &vp_reg->rxmac_vcfg1);
+-	}
+-	return VXGE_HW_OK;
+-}
+-
+-/*
+- * __vxge_hw_vpath_tim_configure
+- * This routine configures the tim registers of virtual path using the config
+- * passed
+- */
+-static enum vxge_hw_status
+-__vxge_hw_vpath_tim_configure(struct __vxge_hw_device *hldev, u32 vp_id)
+-{
+-	u64 val64;
+-	struct __vxge_hw_virtualpath *vpath;
+-	struct vxge_hw_vpath_reg __iomem *vp_reg;
+-	struct vxge_hw_vp_config *config;
+-
+-	vpath = &hldev->virtual_paths[vp_id];
+-	vp_reg = vpath->vp_reg;
+-	config = vpath->vp_config;
+-
+-	writeq(0, &vp_reg->tim_dest_addr);
+-	writeq(0, &vp_reg->tim_vpath_map);
+-	writeq(0, &vp_reg->tim_bitmap);
+-	writeq(0, &vp_reg->tim_remap);
+-
+-	if (config->ring.enable == VXGE_HW_RING_ENABLE)
+-		writeq(VXGE_HW_TIM_RING_ASSN_INT_NUM(
+-			(vp_id * VXGE_HW_MAX_INTR_PER_VP) +
+-			VXGE_HW_VPATH_INTR_RX), &vp_reg->tim_ring_assn);
+-
+-	val64 = readq(&vp_reg->tim_pci_cfg);
+-	val64 |= VXGE_HW_TIM_PCI_CFG_ADD_PAD;
+-	writeq(val64, &vp_reg->tim_pci_cfg);
+-
+-	if (config->fifo.enable == VXGE_HW_FIFO_ENABLE) {
+-
+-		val64 = readq(&vp_reg->tim_cfg1_int_num[VXGE_HW_VPATH_INTR_TX]);
+-
+-		if (config->tti.btimer_val != VXGE_HW_USE_FLASH_DEFAULT) {
+-			val64 &= ~VXGE_HW_TIM_CFG1_INT_NUM_BTIMER_VAL(
+-				0x3ffffff);
+-			val64 |= VXGE_HW_TIM_CFG1_INT_NUM_BTIMER_VAL(
+-					config->tti.btimer_val);
+-		}
+-
+-		val64 &= ~VXGE_HW_TIM_CFG1_INT_NUM_BITMP_EN;
+-
+-		if (config->tti.timer_ac_en != VXGE_HW_USE_FLASH_DEFAULT) {
+-			if (config->tti.timer_ac_en)
+-				val64 |= VXGE_HW_TIM_CFG1_INT_NUM_TIMER_AC;
+-			else
+-				val64 &= ~VXGE_HW_TIM_CFG1_INT_NUM_TIMER_AC;
+-		}
+-
+-		if (config->tti.timer_ci_en != VXGE_HW_USE_FLASH_DEFAULT) {
+-			if (config->tti.timer_ci_en)
+-				val64 |= VXGE_HW_TIM_CFG1_INT_NUM_TIMER_CI;
+-			else
+-				val64 &= ~VXGE_HW_TIM_CFG1_INT_NUM_TIMER_CI;
+-		}
+-
+-		if (config->tti.urange_a != VXGE_HW_USE_FLASH_DEFAULT) {
+-			val64 &= ~VXGE_HW_TIM_CFG1_INT_NUM_URNG_A(0x3f);
+-			val64 |= VXGE_HW_TIM_CFG1_INT_NUM_URNG_A(
+-					config->tti.urange_a);
+-		}
+-
+-		if (config->tti.urange_b != VXGE_HW_USE_FLASH_DEFAULT) {
+-			val64 &= ~VXGE_HW_TIM_CFG1_INT_NUM_URNG_B(0x3f);
+-			val64 |= VXGE_HW_TIM_CFG1_INT_NUM_URNG_B(
+-					config->tti.urange_b);
+-		}
+-
+-		if (config->tti.urange_c != VXGE_HW_USE_FLASH_DEFAULT) {
+-			val64 &= ~VXGE_HW_TIM_CFG1_INT_NUM_URNG_C(0x3f);
+-			val64 |= VXGE_HW_TIM_CFG1_INT_NUM_URNG_C(
+-					config->tti.urange_c);
+-		}
+-
+-		writeq(val64, &vp_reg->tim_cfg1_int_num[VXGE_HW_VPATH_INTR_TX]);
+-		vpath->tim_tti_cfg1_saved = val64;
+-
+-		val64 = readq(&vp_reg->tim_cfg2_int_num[VXGE_HW_VPATH_INTR_TX]);
+-
+-		if (config->tti.uec_a != VXGE_HW_USE_FLASH_DEFAULT) {
+-			val64 &= ~VXGE_HW_TIM_CFG2_INT_NUM_UEC_A(0xffff);
+-			val64 |= VXGE_HW_TIM_CFG2_INT_NUM_UEC_A(
+-						config->tti.uec_a);
+-		}
+-
+-		if (config->tti.uec_b != VXGE_HW_USE_FLASH_DEFAULT) {
+-			val64 &= ~VXGE_HW_TIM_CFG2_INT_NUM_UEC_B(0xffff);
+-			val64 |= VXGE_HW_TIM_CFG2_INT_NUM_UEC_B(
+-						config->tti.uec_b);
+-		}
+-
+-		if (config->tti.uec_c != VXGE_HW_USE_FLASH_DEFAULT) {
+-			val64 &= ~VXGE_HW_TIM_CFG2_INT_NUM_UEC_C(0xffff);
+-			val64 |= VXGE_HW_TIM_CFG2_INT_NUM_UEC_C(
+-						config->tti.uec_c);
+-		}
+-
+-		if (config->tti.uec_d != VXGE_HW_USE_FLASH_DEFAULT) {
+-			val64 &= ~VXGE_HW_TIM_CFG2_INT_NUM_UEC_D(0xffff);
+-			val64 |= VXGE_HW_TIM_CFG2_INT_NUM_UEC_D(
+-						config->tti.uec_d);
+-		}
+-
+-		writeq(val64, &vp_reg->tim_cfg2_int_num[VXGE_HW_VPATH_INTR_TX]);
+-		val64 = readq(&vp_reg->tim_cfg3_int_num[VXGE_HW_VPATH_INTR_TX]);
+-
+-		if (config->tti.timer_ri_en != VXGE_HW_USE_FLASH_DEFAULT) {
+-			if (config->tti.timer_ri_en)
+-				val64 |= VXGE_HW_TIM_CFG3_INT_NUM_TIMER_RI;
+-			else
+-				val64 &= ~VXGE_HW_TIM_CFG3_INT_NUM_TIMER_RI;
+-		}
+-
+-		if (config->tti.rtimer_val != VXGE_HW_USE_FLASH_DEFAULT) {
+-			val64 &= ~VXGE_HW_TIM_CFG3_INT_NUM_RTIMER_VAL(
+-					0x3ffffff);
+-			val64 |= VXGE_HW_TIM_CFG3_INT_NUM_RTIMER_VAL(
+-					config->tti.rtimer_val);
+-		}
+-
+-		if (config->tti.util_sel != VXGE_HW_USE_FLASH_DEFAULT) {
+-			val64 &= ~VXGE_HW_TIM_CFG3_INT_NUM_UTIL_SEL(0x3f);
+-			val64 |= VXGE_HW_TIM_CFG3_INT_NUM_UTIL_SEL(vp_id);
+-		}
+-
+-		if (config->tti.ltimer_val != VXGE_HW_USE_FLASH_DEFAULT) {
+-			val64 &= ~VXGE_HW_TIM_CFG3_INT_NUM_LTIMER_VAL(
+-					0x3ffffff);
+-			val64 |= VXGE_HW_TIM_CFG3_INT_NUM_LTIMER_VAL(
+-					config->tti.ltimer_val);
+-		}
+-
+-		writeq(val64, &vp_reg->tim_cfg3_int_num[VXGE_HW_VPATH_INTR_TX]);
+-		vpath->tim_tti_cfg3_saved = val64;
+-	}
+-
+-	if (config->ring.enable == VXGE_HW_RING_ENABLE) {
+-
+-		val64 = readq(&vp_reg->tim_cfg1_int_num[VXGE_HW_VPATH_INTR_RX]);
+-
+-		if (config->rti.btimer_val != VXGE_HW_USE_FLASH_DEFAULT) {
+-			val64 &= ~VXGE_HW_TIM_CFG1_INT_NUM_BTIMER_VAL(
+-					0x3ffffff);
+-			val64 |= VXGE_HW_TIM_CFG1_INT_NUM_BTIMER_VAL(
+-					config->rti.btimer_val);
+-		}
+-
+-		val64 &= ~VXGE_HW_TIM_CFG1_INT_NUM_BITMP_EN;
+-
+-		if (config->rti.timer_ac_en != VXGE_HW_USE_FLASH_DEFAULT) {
+-			if (config->rti.timer_ac_en)
+-				val64 |= VXGE_HW_TIM_CFG1_INT_NUM_TIMER_AC;
+-			else
+-				val64 &= ~VXGE_HW_TIM_CFG1_INT_NUM_TIMER_AC;
+-		}
+-
+-		if (config->rti.timer_ci_en != VXGE_HW_USE_FLASH_DEFAULT) {
+-			if (config->rti.timer_ci_en)
+-				val64 |= VXGE_HW_TIM_CFG1_INT_NUM_TIMER_CI;
+-			else
+-				val64 &= ~VXGE_HW_TIM_CFG1_INT_NUM_TIMER_CI;
+-		}
+-
+-		if (config->rti.urange_a != VXGE_HW_USE_FLASH_DEFAULT) {
+-			val64 &= ~VXGE_HW_TIM_CFG1_INT_NUM_URNG_A(0x3f);
+-			val64 |= VXGE_HW_TIM_CFG1_INT_NUM_URNG_A(
+-					config->rti.urange_a);
+-		}
+-
+-		if (config->rti.urange_b != VXGE_HW_USE_FLASH_DEFAULT) {
+-			val64 &= ~VXGE_HW_TIM_CFG1_INT_NUM_URNG_B(0x3f);
+-			val64 |= VXGE_HW_TIM_CFG1_INT_NUM_URNG_B(
+-					config->rti.urange_b);
+-		}
+-
+-		if (config->rti.urange_c != VXGE_HW_USE_FLASH_DEFAULT) {
+-			val64 &= ~VXGE_HW_TIM_CFG1_INT_NUM_URNG_C(0x3f);
+-			val64 |= VXGE_HW_TIM_CFG1_INT_NUM_URNG_C(
+-					config->rti.urange_c);
+-		}
+-
+-		writeq(val64, &vp_reg->tim_cfg1_int_num[VXGE_HW_VPATH_INTR_RX]);
+-		vpath->tim_rti_cfg1_saved = val64;
+-
+-		val64 = readq(&vp_reg->tim_cfg2_int_num[VXGE_HW_VPATH_INTR_RX]);
+-
+-		if (config->rti.uec_a != VXGE_HW_USE_FLASH_DEFAULT) {
+-			val64 &= ~VXGE_HW_TIM_CFG2_INT_NUM_UEC_A(0xffff);
+-			val64 |= VXGE_HW_TIM_CFG2_INT_NUM_UEC_A(
+-						config->rti.uec_a);
+-		}
+-
+-		if (config->rti.uec_b != VXGE_HW_USE_FLASH_DEFAULT) {
+-			val64 &= ~VXGE_HW_TIM_CFG2_INT_NUM_UEC_B(0xffff);
+-			val64 |= VXGE_HW_TIM_CFG2_INT_NUM_UEC_B(
+-						config->rti.uec_b);
+-		}
+-
+-		if (config->rti.uec_c != VXGE_HW_USE_FLASH_DEFAULT) {
+-			val64 &= ~VXGE_HW_TIM_CFG2_INT_NUM_UEC_C(0xffff);
+-			val64 |= VXGE_HW_TIM_CFG2_INT_NUM_UEC_C(
+-						config->rti.uec_c);
+-		}
+-
+-		if (config->rti.uec_d != VXGE_HW_USE_FLASH_DEFAULT) {
+-			val64 &= ~VXGE_HW_TIM_CFG2_INT_NUM_UEC_D(0xffff);
+-			val64 |= VXGE_HW_TIM_CFG2_INT_NUM_UEC_D(
+-						config->rti.uec_d);
+-		}
+-
+-		writeq(val64, &vp_reg->tim_cfg2_int_num[VXGE_HW_VPATH_INTR_RX]);
+-		val64 = readq(&vp_reg->tim_cfg3_int_num[VXGE_HW_VPATH_INTR_RX]);
+-
+-		if (config->rti.timer_ri_en != VXGE_HW_USE_FLASH_DEFAULT) {
+-			if (config->rti.timer_ri_en)
+-				val64 |= VXGE_HW_TIM_CFG3_INT_NUM_TIMER_RI;
+-			else
+-				val64 &= ~VXGE_HW_TIM_CFG3_INT_NUM_TIMER_RI;
+-		}
+-
+-		if (config->rti.rtimer_val != VXGE_HW_USE_FLASH_DEFAULT) {
+-			val64 &= ~VXGE_HW_TIM_CFG3_INT_NUM_RTIMER_VAL(
+-					0x3ffffff);
+-			val64 |= VXGE_HW_TIM_CFG3_INT_NUM_RTIMER_VAL(
+-					config->rti.rtimer_val);
+-		}
+-
+-		if (config->rti.util_sel != VXGE_HW_USE_FLASH_DEFAULT) {
+-			val64 &= ~VXGE_HW_TIM_CFG3_INT_NUM_UTIL_SEL(0x3f);
+-			val64 |= VXGE_HW_TIM_CFG3_INT_NUM_UTIL_SEL(vp_id);
+-		}
+-
+-		if (config->rti.ltimer_val != VXGE_HW_USE_FLASH_DEFAULT) {
+-			val64 &= ~VXGE_HW_TIM_CFG3_INT_NUM_LTIMER_VAL(
+-					0x3ffffff);
+-			val64 |= VXGE_HW_TIM_CFG3_INT_NUM_LTIMER_VAL(
+-					config->rti.ltimer_val);
+-		}
+-
+-		writeq(val64, &vp_reg->tim_cfg3_int_num[VXGE_HW_VPATH_INTR_RX]);
+-		vpath->tim_rti_cfg3_saved = val64;
+-	}
+-
+-	val64 = 0;
+-	writeq(val64, &vp_reg->tim_cfg1_int_num[VXGE_HW_VPATH_INTR_EINTA]);
+-	writeq(val64, &vp_reg->tim_cfg2_int_num[VXGE_HW_VPATH_INTR_EINTA]);
+-	writeq(val64, &vp_reg->tim_cfg3_int_num[VXGE_HW_VPATH_INTR_EINTA]);
+-	writeq(val64, &vp_reg->tim_cfg1_int_num[VXGE_HW_VPATH_INTR_BMAP]);
+-	writeq(val64, &vp_reg->tim_cfg2_int_num[VXGE_HW_VPATH_INTR_BMAP]);
+-	writeq(val64, &vp_reg->tim_cfg3_int_num[VXGE_HW_VPATH_INTR_BMAP]);
+-
+-	val64 = VXGE_HW_TIM_WRKLD_CLC_WRKLD_EVAL_PRD(150);
+-	val64 |= VXGE_HW_TIM_WRKLD_CLC_WRKLD_EVAL_DIV(0);
+-	val64 |= VXGE_HW_TIM_WRKLD_CLC_CNT_RX_TX(3);
+-	writeq(val64, &vp_reg->tim_wrkld_clc);
+-
+-	return VXGE_HW_OK;
+-}
+-
+-/*
+- * __vxge_hw_vpath_initialize
+- * This routine is the final phase of init which initializes the
+- * registers of the vpath using the configuration passed.
+- */
+-static enum vxge_hw_status
+-__vxge_hw_vpath_initialize(struct __vxge_hw_device *hldev, u32 vp_id)
+-{
+-	u64 val64;
+-	u32 val32;
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-	struct __vxge_hw_virtualpath *vpath;
+-	struct vxge_hw_vpath_reg __iomem *vp_reg;
+-
+-	vpath = &hldev->virtual_paths[vp_id];
+-
+-	if (!(hldev->vpath_assignments & vxge_mBIT(vp_id))) {
+-		status = VXGE_HW_ERR_VPATH_NOT_AVAILABLE;
+-		goto exit;
+-	}
+-	vp_reg = vpath->vp_reg;
+-
+-	status =  __vxge_hw_vpath_swapper_set(vpath->vp_reg);
+-	if (status != VXGE_HW_OK)
+-		goto exit;
+-
+-	status =  __vxge_hw_vpath_mac_configure(hldev, vp_id);
+-	if (status != VXGE_HW_OK)
+-		goto exit;
+-
+-	status =  __vxge_hw_vpath_kdfc_configure(hldev, vp_id);
+-	if (status != VXGE_HW_OK)
+-		goto exit;
+-
+-	status = __vxge_hw_vpath_tim_configure(hldev, vp_id);
+-	if (status != VXGE_HW_OK)
+-		goto exit;
+-
+-	val64 = readq(&vp_reg->rtdma_rd_optimization_ctrl);
+-
+-	/* Get MRRS value from device control */
+-	status  = __vxge_hw_vpath_pci_read(vpath, 1, 0x78, &val32);
+-	if (status == VXGE_HW_OK) {
+-		val32 = (val32 & VXGE_HW_PCI_EXP_DEVCTL_READRQ) >> 12;
+-		val64 &=
+-		    ~(VXGE_HW_RTDMA_RD_OPTIMIZATION_CTRL_FB_FILL_THRESH(7));
+-		val64 |=
+-		    VXGE_HW_RTDMA_RD_OPTIMIZATION_CTRL_FB_FILL_THRESH(val32);
+-
+-		val64 |= VXGE_HW_RTDMA_RD_OPTIMIZATION_CTRL_FB_WAIT_FOR_SPACE;
+-	}
+-
+-	val64 &= ~(VXGE_HW_RTDMA_RD_OPTIMIZATION_CTRL_FB_ADDR_BDRY(7));
+-	val64 |=
+-	    VXGE_HW_RTDMA_RD_OPTIMIZATION_CTRL_FB_ADDR_BDRY(
+-		    VXGE_HW_MAX_PAYLOAD_SIZE_512);
+-
+-	val64 |= VXGE_HW_RTDMA_RD_OPTIMIZATION_CTRL_FB_ADDR_BDRY_EN;
+-	writeq(val64, &vp_reg->rtdma_rd_optimization_ctrl);
+-
+-exit:
+-	return status;
+-}
+-
+-/*
+- * __vxge_hw_vp_terminate - Terminate Virtual Path structure
+- * This routine closes all channels it opened and freeup memory
+- */
+-static void __vxge_hw_vp_terminate(struct __vxge_hw_device *hldev, u32 vp_id)
+-{
+-	struct __vxge_hw_virtualpath *vpath;
+-
+-	vpath = &hldev->virtual_paths[vp_id];
+-
+-	if (vpath->vp_open == VXGE_HW_VP_NOT_OPEN)
+-		goto exit;
+-
+-	VXGE_HW_DEVICE_TIM_INT_MASK_RESET(vpath->hldev->tim_int_mask0,
+-		vpath->hldev->tim_int_mask1, vpath->vp_id);
+-	hldev->stats.hw_dev_info_stats.vpath_info[vpath->vp_id] = NULL;
+-
+-	/* If the whole struct __vxge_hw_virtualpath is zeroed, nothing will
+-	 * work after the interface is brought down.
+-	 */
+-	spin_lock(&vpath->lock);
+-	vpath->vp_open = VXGE_HW_VP_NOT_OPEN;
+-	spin_unlock(&vpath->lock);
+-
+-	vpath->vpmgmt_reg = NULL;
+-	vpath->nofl_db = NULL;
+-	vpath->max_mtu = 0;
+-	vpath->vsport_number = 0;
+-	vpath->max_kdfc_db = 0;
+-	vpath->max_nofl_db = 0;
+-	vpath->ringh = NULL;
+-	vpath->fifoh = NULL;
+-	memset(&vpath->vpath_handles, 0, sizeof(struct list_head));
+-	vpath->stats_block = NULL;
+-	vpath->hw_stats = NULL;
+-	vpath->hw_stats_sav = NULL;
+-	vpath->sw_stats = NULL;
+-
+-exit:
+-	return;
+-}
+-
+-/*
+- * __vxge_hw_vp_initialize - Initialize Virtual Path structure
+- * This routine is the initial phase of init which resets the vpath and
+- * initializes the software support structures.
+- */
+-static enum vxge_hw_status
+-__vxge_hw_vp_initialize(struct __vxge_hw_device *hldev, u32 vp_id,
+-			struct vxge_hw_vp_config *config)
+-{
+-	struct __vxge_hw_virtualpath *vpath;
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-
+-	if (!(hldev->vpath_assignments & vxge_mBIT(vp_id))) {
+-		status = VXGE_HW_ERR_VPATH_NOT_AVAILABLE;
+-		goto exit;
+-	}
+-
+-	vpath = &hldev->virtual_paths[vp_id];
+-
+-	spin_lock_init(&vpath->lock);
+-	vpath->vp_id = vp_id;
+-	vpath->vp_open = VXGE_HW_VP_OPEN;
+-	vpath->hldev = hldev;
+-	vpath->vp_config = config;
+-	vpath->vp_reg = hldev->vpath_reg[vp_id];
+-	vpath->vpmgmt_reg = hldev->vpmgmt_reg[vp_id];
+-
+-	__vxge_hw_vpath_reset(hldev, vp_id);
+-
+-	status = __vxge_hw_vpath_reset_check(vpath);
+-	if (status != VXGE_HW_OK) {
+-		memset(vpath, 0, sizeof(struct __vxge_hw_virtualpath));
+-		goto exit;
+-	}
+-
+-	status = __vxge_hw_vpath_mgmt_read(hldev, vpath);
+-	if (status != VXGE_HW_OK) {
+-		memset(vpath, 0, sizeof(struct __vxge_hw_virtualpath));
+-		goto exit;
+-	}
+-
+-	INIT_LIST_HEAD(&vpath->vpath_handles);
+-
+-	vpath->sw_stats = &hldev->stats.sw_dev_info_stats.vpath_info[vp_id];
+-
+-	VXGE_HW_DEVICE_TIM_INT_MASK_SET(hldev->tim_int_mask0,
+-		hldev->tim_int_mask1, vp_id);
+-
+-	status = __vxge_hw_vpath_initialize(hldev, vp_id);
+-	if (status != VXGE_HW_OK)
+-		__vxge_hw_vp_terminate(hldev, vp_id);
+-exit:
+-	return status;
+-}
+-
+-/*
+- * vxge_hw_vpath_mtu_set - Set MTU.
+- * Set new MTU value. Example, to use jumbo frames:
+- * vxge_hw_vpath_mtu_set(my_device, 9600);
+- */
+-enum vxge_hw_status
+-vxge_hw_vpath_mtu_set(struct __vxge_hw_vpath_handle *vp, u32 new_mtu)
+-{
+-	u64 val64;
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-	struct __vxge_hw_virtualpath *vpath;
+-
+-	if (vp == NULL) {
+-		status = VXGE_HW_ERR_INVALID_HANDLE;
+-		goto exit;
+-	}
+-	vpath = vp->vpath;
+-
+-	new_mtu += VXGE_HW_MAC_HEADER_MAX_SIZE;
+-
+-	if ((new_mtu < VXGE_HW_MIN_MTU) || (new_mtu > vpath->max_mtu))
+-		status = VXGE_HW_ERR_INVALID_MTU_SIZE;
+-
+-	val64 = readq(&vpath->vp_reg->rxmac_vcfg0);
+-
+-	val64 &= ~VXGE_HW_RXMAC_VCFG0_RTS_MAX_FRM_LEN(0x3fff);
+-	val64 |= VXGE_HW_RXMAC_VCFG0_RTS_MAX_FRM_LEN(new_mtu);
+-
+-	writeq(val64, &vpath->vp_reg->rxmac_vcfg0);
+-
+-	vpath->vp_config->mtu = new_mtu - VXGE_HW_MAC_HEADER_MAX_SIZE;
+-
+-exit:
+-	return status;
+-}
+-
+-/*
+- * vxge_hw_vpath_stats_enable - Enable vpath h/wstatistics.
+- * Enable the DMA vpath statistics. The function is to be called to re-enable
+- * the adapter to update stats into the host memory
+- */
+-static enum vxge_hw_status
+-vxge_hw_vpath_stats_enable(struct __vxge_hw_vpath_handle *vp)
+-{
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-	struct __vxge_hw_virtualpath *vpath;
+-
+-	vpath = vp->vpath;
+-
+-	if (vpath->vp_open == VXGE_HW_VP_NOT_OPEN) {
+-		status = VXGE_HW_ERR_VPATH_NOT_OPEN;
+-		goto exit;
+-	}
+-
+-	memcpy(vpath->hw_stats_sav, vpath->hw_stats,
+-			sizeof(struct vxge_hw_vpath_stats_hw_info));
+-
+-	status = __vxge_hw_vpath_stats_get(vpath, vpath->hw_stats);
+-exit:
+-	return status;
+-}
+-
+-/*
+- * __vxge_hw_blockpool_block_allocate - Allocates a block from block pool
+- * This function allocates a block from block pool or from the system
+- */
+-static struct __vxge_hw_blockpool_entry *
+-__vxge_hw_blockpool_block_allocate(struct __vxge_hw_device *devh, u32 size)
+-{
+-	struct __vxge_hw_blockpool_entry *entry = NULL;
+-	struct __vxge_hw_blockpool  *blockpool;
+-
+-	blockpool = &devh->block_pool;
+-
+-	if (size == blockpool->block_size) {
+-
+-		if (!list_empty(&blockpool->free_block_list))
+-			entry = (struct __vxge_hw_blockpool_entry *)
+-				list_first_entry(&blockpool->free_block_list,
+-					struct __vxge_hw_blockpool_entry,
+-					item);
+-
+-		if (entry != NULL) {
+-			list_del(&entry->item);
+-			blockpool->pool_size--;
+-		}
+-	}
+-
+-	if (entry != NULL)
+-		__vxge_hw_blockpool_blocks_add(blockpool);
+-
+-	return entry;
+-}
+-
+-/*
+- * vxge_hw_vpath_open - Open a virtual path on a given adapter
+- * This function is used to open access to virtual path of an
+- * adapter for offload, GRO operations. This function returns
+- * synchronously.
+- */
+-enum vxge_hw_status
+-vxge_hw_vpath_open(struct __vxge_hw_device *hldev,
+-		   struct vxge_hw_vpath_attr *attr,
+-		   struct __vxge_hw_vpath_handle **vpath_handle)
+-{
+-	struct __vxge_hw_virtualpath *vpath;
+-	struct __vxge_hw_vpath_handle *vp;
+-	enum vxge_hw_status status;
+-
+-	vpath = &hldev->virtual_paths[attr->vp_id];
+-
+-	if (vpath->vp_open == VXGE_HW_VP_OPEN) {
+-		status = VXGE_HW_ERR_INVALID_STATE;
+-		goto vpath_open_exit1;
+-	}
+-
+-	status = __vxge_hw_vp_initialize(hldev, attr->vp_id,
+-			&hldev->config.vp_config[attr->vp_id]);
+-	if (status != VXGE_HW_OK)
+-		goto vpath_open_exit1;
+-
+-	vp = vzalloc(sizeof(struct __vxge_hw_vpath_handle));
+-	if (vp == NULL) {
+-		status = VXGE_HW_ERR_OUT_OF_MEMORY;
+-		goto vpath_open_exit2;
+-	}
+-
+-	vp->vpath = vpath;
+-
+-	if (vpath->vp_config->fifo.enable == VXGE_HW_FIFO_ENABLE) {
+-		status = __vxge_hw_fifo_create(vp, &attr->fifo_attr);
+-		if (status != VXGE_HW_OK)
+-			goto vpath_open_exit6;
+-	}
+-
+-	if (vpath->vp_config->ring.enable == VXGE_HW_RING_ENABLE) {
+-		status = __vxge_hw_ring_create(vp, &attr->ring_attr);
+-		if (status != VXGE_HW_OK)
+-			goto vpath_open_exit7;
+-
+-		__vxge_hw_vpath_prc_configure(hldev, attr->vp_id);
+-	}
+-
+-	vpath->fifoh->tx_intr_num =
+-		(attr->vp_id * VXGE_HW_MAX_INTR_PER_VP)  +
+-			VXGE_HW_VPATH_INTR_TX;
+-
+-	vpath->stats_block = __vxge_hw_blockpool_block_allocate(hldev,
+-				VXGE_HW_BLOCK_SIZE);
+-	if (vpath->stats_block == NULL) {
+-		status = VXGE_HW_ERR_OUT_OF_MEMORY;
+-		goto vpath_open_exit8;
+-	}
+-
+-	vpath->hw_stats = vpath->stats_block->memblock;
+-	memset(vpath->hw_stats, 0,
+-		sizeof(struct vxge_hw_vpath_stats_hw_info));
+-
+-	hldev->stats.hw_dev_info_stats.vpath_info[attr->vp_id] =
+-						vpath->hw_stats;
+-
+-	vpath->hw_stats_sav =
+-		&hldev->stats.hw_dev_info_stats.vpath_info_sav[attr->vp_id];
+-	memset(vpath->hw_stats_sav, 0,
+-			sizeof(struct vxge_hw_vpath_stats_hw_info));
+-
+-	writeq(vpath->stats_block->dma_addr, &vpath->vp_reg->stats_cfg);
+-
+-	status = vxge_hw_vpath_stats_enable(vp);
+-	if (status != VXGE_HW_OK)
+-		goto vpath_open_exit8;
+-
+-	list_add(&vp->item, &vpath->vpath_handles);
+-
+-	hldev->vpaths_deployed |= vxge_mBIT(vpath->vp_id);
+-
+-	*vpath_handle = vp;
+-
+-	attr->fifo_attr.userdata = vpath->fifoh;
+-	attr->ring_attr.userdata = vpath->ringh;
+-
+-	return VXGE_HW_OK;
+-
+-vpath_open_exit8:
+-	if (vpath->ringh != NULL)
+-		__vxge_hw_ring_delete(vp);
+-vpath_open_exit7:
+-	if (vpath->fifoh != NULL)
+-		__vxge_hw_fifo_delete(vp);
+-vpath_open_exit6:
+-	vfree(vp);
+-vpath_open_exit2:
+-	__vxge_hw_vp_terminate(hldev, attr->vp_id);
+-vpath_open_exit1:
+-
+-	return status;
+-}
+-
+-/**
+- * vxge_hw_vpath_rx_doorbell_init - Close the handle got from previous vpath
+- * (vpath) open
+- * @vp: Handle got from previous vpath open
+- *
+- * This function is used to close access to virtual path opened
+- * earlier.
+- */
+-void vxge_hw_vpath_rx_doorbell_init(struct __vxge_hw_vpath_handle *vp)
+-{
+-	struct __vxge_hw_virtualpath *vpath = vp->vpath;
+-	struct __vxge_hw_ring *ring = vpath->ringh;
+-	struct vxgedev *vdev = netdev_priv(vpath->hldev->ndev);
+-	u64 new_count, val64, val164;
+-
+-	if (vdev->titan1) {
+-		new_count = readq(&vpath->vp_reg->rxdmem_size);
+-		new_count &= 0x1fff;
+-	} else
+-		new_count = ring->config->ring_blocks * VXGE_HW_BLOCK_SIZE / 8;
+-
+-	val164 = VXGE_HW_RXDMEM_SIZE_PRC_RXDMEM_SIZE(new_count);
+-
+-	writeq(VXGE_HW_PRC_RXD_DOORBELL_NEW_QW_CNT(val164),
+-		&vpath->vp_reg->prc_rxd_doorbell);
+-	readl(&vpath->vp_reg->prc_rxd_doorbell);
+-
+-	val164 /= 2;
+-	val64 = readq(&vpath->vp_reg->prc_cfg6);
+-	val64 = VXGE_HW_PRC_CFG6_RXD_SPAT(val64);
+-	val64 &= 0x1ff;
+-
+-	/*
+-	 * Each RxD is of 4 qwords
+-	 */
+-	new_count -= (val64 + 1);
+-	val64 = min(val164, new_count) / 4;
+-
+-	ring->rxds_limit = min(ring->rxds_limit, val64);
+-	if (ring->rxds_limit < 4)
+-		ring->rxds_limit = 4;
+-}
+-
+-/*
+- * __vxge_hw_blockpool_block_free - Frees a block from block pool
+- * @devh: Hal device
+- * @entry: Entry of block to be freed
+- *
+- * This function frees a block from block pool
+- */
+-static void
+-__vxge_hw_blockpool_block_free(struct __vxge_hw_device *devh,
+-			       struct __vxge_hw_blockpool_entry *entry)
+-{
+-	struct __vxge_hw_blockpool  *blockpool;
+-
+-	blockpool = &devh->block_pool;
+-
+-	if (entry->length == blockpool->block_size) {
+-		list_add(&entry->item, &blockpool->free_block_list);
+-		blockpool->pool_size++;
+-	}
+-
+-	__vxge_hw_blockpool_blocks_remove(blockpool);
+-}
+-
+-/*
+- * vxge_hw_vpath_close - Close the handle got from previous vpath (vpath) open
+- * This function is used to close access to virtual path opened
+- * earlier.
+- */
+-enum vxge_hw_status vxge_hw_vpath_close(struct __vxge_hw_vpath_handle *vp)
+-{
+-	struct __vxge_hw_virtualpath *vpath = NULL;
+-	struct __vxge_hw_device *devh = NULL;
+-	u32 vp_id = vp->vpath->vp_id;
+-	u32 is_empty = TRUE;
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-
+-	vpath = vp->vpath;
+-	devh = vpath->hldev;
+-
+-	if (vpath->vp_open == VXGE_HW_VP_NOT_OPEN) {
+-		status = VXGE_HW_ERR_VPATH_NOT_OPEN;
+-		goto vpath_close_exit;
+-	}
+-
+-	list_del(&vp->item);
+-
+-	if (!list_empty(&vpath->vpath_handles)) {
+-		list_add(&vp->item, &vpath->vpath_handles);
+-		is_empty = FALSE;
+-	}
+-
+-	if (!is_empty) {
+-		status = VXGE_HW_FAIL;
+-		goto vpath_close_exit;
+-	}
+-
+-	devh->vpaths_deployed &= ~vxge_mBIT(vp_id);
+-
+-	if (vpath->ringh != NULL)
+-		__vxge_hw_ring_delete(vp);
+-
+-	if (vpath->fifoh != NULL)
+-		__vxge_hw_fifo_delete(vp);
+-
+-	if (vpath->stats_block != NULL)
+-		__vxge_hw_blockpool_block_free(devh, vpath->stats_block);
+-
+-	vfree(vp);
+-
+-	__vxge_hw_vp_terminate(devh, vp_id);
+-
+-vpath_close_exit:
+-	return status;
+-}
+-
+-/*
+- * vxge_hw_vpath_reset - Resets vpath
+- * This function is used to request a reset of vpath
+- */
+-enum vxge_hw_status vxge_hw_vpath_reset(struct __vxge_hw_vpath_handle *vp)
+-{
+-	enum vxge_hw_status status;
+-	u32 vp_id;
+-	struct __vxge_hw_virtualpath *vpath = vp->vpath;
+-
+-	vp_id = vpath->vp_id;
+-
+-	if (vpath->vp_open == VXGE_HW_VP_NOT_OPEN) {
+-		status = VXGE_HW_ERR_VPATH_NOT_OPEN;
+-		goto exit;
+-	}
+-
+-	status = __vxge_hw_vpath_reset(vpath->hldev, vp_id);
+-	if (status == VXGE_HW_OK)
+-		vpath->sw_stats->soft_reset_cnt++;
+-exit:
+-	return status;
+-}
+-
+-/*
+- * vxge_hw_vpath_recover_from_reset - Poll for reset complete and re-initialize.
+- * This function poll's for the vpath reset completion and re initializes
+- * the vpath.
+- */
+-enum vxge_hw_status
+-vxge_hw_vpath_recover_from_reset(struct __vxge_hw_vpath_handle *vp)
+-{
+-	struct __vxge_hw_virtualpath *vpath = NULL;
+-	enum vxge_hw_status status;
+-	struct __vxge_hw_device *hldev;
+-	u32 vp_id;
+-
+-	vp_id = vp->vpath->vp_id;
+-	vpath = vp->vpath;
+-	hldev = vpath->hldev;
+-
+-	if (vpath->vp_open == VXGE_HW_VP_NOT_OPEN) {
+-		status = VXGE_HW_ERR_VPATH_NOT_OPEN;
+-		goto exit;
+-	}
+-
+-	status = __vxge_hw_vpath_reset_check(vpath);
+-	if (status != VXGE_HW_OK)
+-		goto exit;
+-
+-	status = __vxge_hw_vpath_sw_reset(hldev, vp_id);
+-	if (status != VXGE_HW_OK)
+-		goto exit;
+-
+-	status = __vxge_hw_vpath_initialize(hldev, vp_id);
+-	if (status != VXGE_HW_OK)
+-		goto exit;
+-
+-	if (vpath->ringh != NULL)
+-		__vxge_hw_vpath_prc_configure(hldev, vp_id);
+-
+-	memset(vpath->hw_stats, 0,
+-		sizeof(struct vxge_hw_vpath_stats_hw_info));
+-
+-	memset(vpath->hw_stats_sav, 0,
+-		sizeof(struct vxge_hw_vpath_stats_hw_info));
+-
+-	writeq(vpath->stats_block->dma_addr,
+-		&vpath->vp_reg->stats_cfg);
+-
+-	status = vxge_hw_vpath_stats_enable(vp);
+-
+-exit:
+-	return status;
+-}
+-
+-/*
+- * vxge_hw_vpath_enable - Enable vpath.
+- * This routine clears the vpath reset thereby enabling a vpath
+- * to start forwarding frames and generating interrupts.
+- */
+-void
+-vxge_hw_vpath_enable(struct __vxge_hw_vpath_handle *vp)
+-{
+-	struct __vxge_hw_device *hldev;
+-	u64 val64;
+-
+-	hldev = vp->vpath->hldev;
+-
+-	val64 = VXGE_HW_CMN_RSTHDLR_CFG1_CLR_VPATH_RESET(
+-		1 << (16 - vp->vpath->vp_id));
+-
+-	__vxge_hw_pio_mem_write32_upper((u32)vxge_bVALn(val64, 0, 32),
+-		&hldev->common_reg->cmn_rsthdlr_cfg1);
+-}
+diff --git a/drivers/net/ethernet/neterion/vxge/vxge-config.h b/drivers/net/ethernet/neterion/vxge/vxge-config.h
+deleted file mode 100644
+index 0cd0750484ae..000000000000
+--- a/drivers/net/ethernet/neterion/vxge/vxge-config.h
++++ /dev/null
+@@ -1,2086 +0,0 @@
+-/******************************************************************************
+- * This software may be used and distributed according to the terms of
+- * the GNU General Public License (GPL), incorporated herein by reference.
+- * Drivers based on or derived from this code fall under the GPL and must
+- * retain the authorship, copyright and license notice.  This file is not
+- * a complete program and may only be used when the entire operating
+- * system is licensed under the GPL.
+- * See the file COPYING in this distribution for more information.
+- *
+- * vxge-config.h: Driver for Exar Corp's X3100 Series 10GbE PCIe I/O
+- *                Virtualized Server Adapter.
+- * Copyright(c) 2002-2010 Exar Corp.
+- ******************************************************************************/
+-#ifndef VXGE_CONFIG_H
+-#define VXGE_CONFIG_H
+-#include <linux/hardirq.h>
+-#include <linux/list.h>
+-#include <linux/slab.h>
+-#include <asm/io.h>
+-
+-#ifndef VXGE_CACHE_LINE_SIZE
+-#define VXGE_CACHE_LINE_SIZE 128
+-#endif
+-
+-#ifndef VXGE_ALIGN
+-#define VXGE_ALIGN(adrs, size) \
+-	(((size) - (((u64)adrs) & ((size)-1))) & ((size)-1))
+-#endif
+-
+-#define VXGE_HW_MIN_MTU				ETH_MIN_MTU
+-#define VXGE_HW_MAX_MTU				9600
+-#define VXGE_HW_DEFAULT_MTU			1500
+-
+-#define VXGE_HW_MAX_ROM_IMAGES			8
+-
+-struct eprom_image {
+-	u8 is_valid:1;
+-	u8 index;
+-	u8 type;
+-	u16 version;
+-};
+-
+-#ifdef VXGE_DEBUG_ASSERT
+-/**
+- * vxge_assert
+- * @test: C-condition to check
+- * @fmt: printf like format string
+- *
+- * This function implements traditional assert. By default assertions
+- * are enabled. It can be disabled by undefining VXGE_DEBUG_ASSERT macro in
+- * compilation
+- * time.
+- */
+-#define vxge_assert(test) BUG_ON(!(test))
+-#else
+-#define vxge_assert(test)
+-#endif /* end of VXGE_DEBUG_ASSERT */
+-
+-/**
+- * enum vxge_debug_level
+- * @VXGE_NONE: debug disabled
+- * @VXGE_ERR: all errors going to be logged out
+- * @VXGE_TRACE: all errors plus all kind of verbose tracing print outs
+- *                 going to be logged out. Very noisy.
+- *
+- * This enumeration going to be used to switch between different
+- * debug levels during runtime if DEBUG macro defined during
+- * compilation. If DEBUG macro not defined than code will be
+- * compiled out.
+- */
+-enum vxge_debug_level {
+-	VXGE_NONE   = 0,
+-	VXGE_TRACE  = 1,
+-	VXGE_ERR    = 2
+-};
+-
+-#define NULL_VPID					0xFFFFFFFF
+-#ifdef CONFIG_VXGE_DEBUG_TRACE_ALL
+-#define VXGE_DEBUG_MODULE_MASK  0xffffffff
+-#define VXGE_DEBUG_TRACE_MASK   0xffffffff
+-#define VXGE_DEBUG_ERR_MASK     0xffffffff
+-#define VXGE_DEBUG_MASK         0x000001ff
+-#else
+-#define VXGE_DEBUG_MODULE_MASK  0x20000000
+-#define VXGE_DEBUG_TRACE_MASK   0x20000000
+-#define VXGE_DEBUG_ERR_MASK     0x20000000
+-#define VXGE_DEBUG_MASK         0x00000001
+-#endif
+-
+-/*
+- * @VXGE_COMPONENT_LL: do debug for vxge link layer module
+- * @VXGE_COMPONENT_ALL: activate debug for all modules with no exceptions
+- *
+- * This enumeration going to be used to distinguish modules
+- * or libraries during compilation and runtime.  Makefile must declare
+- * VXGE_DEBUG_MODULE_MASK macro and set it to proper value.
+- */
+-#define	VXGE_COMPONENT_LL				0x20000000
+-#define	VXGE_COMPONENT_ALL				0xffffffff
+-
+-#define VXGE_HW_BASE_INF	100
+-#define VXGE_HW_BASE_ERR	200
+-#define VXGE_HW_BASE_BADCFG	300
+-
+-enum vxge_hw_status {
+-	VXGE_HW_OK				  = 0,
+-	VXGE_HW_FAIL				  = 1,
+-	VXGE_HW_PENDING				  = 2,
+-	VXGE_HW_COMPLETIONS_REMAIN		  = 3,
+-
+-	VXGE_HW_INF_NO_MORE_COMPLETED_DESCRIPTORS = VXGE_HW_BASE_INF + 1,
+-	VXGE_HW_INF_OUT_OF_DESCRIPTORS		  = VXGE_HW_BASE_INF + 2,
+-
+-	VXGE_HW_ERR_INVALID_HANDLE		  = VXGE_HW_BASE_ERR + 1,
+-	VXGE_HW_ERR_OUT_OF_MEMORY		  = VXGE_HW_BASE_ERR + 2,
+-	VXGE_HW_ERR_VPATH_NOT_AVAILABLE	  	  = VXGE_HW_BASE_ERR + 3,
+-	VXGE_HW_ERR_VPATH_NOT_OPEN		  = VXGE_HW_BASE_ERR + 4,
+-	VXGE_HW_ERR_WRONG_IRQ			  = VXGE_HW_BASE_ERR + 5,
+-	VXGE_HW_ERR_SWAPPER_CTRL		  = VXGE_HW_BASE_ERR + 6,
+-	VXGE_HW_ERR_INVALID_MTU_SIZE		  = VXGE_HW_BASE_ERR + 7,
+-	VXGE_HW_ERR_INVALID_INDEX		  = VXGE_HW_BASE_ERR + 8,
+-	VXGE_HW_ERR_INVALID_TYPE		  = VXGE_HW_BASE_ERR + 9,
+-	VXGE_HW_ERR_INVALID_OFFSET		  = VXGE_HW_BASE_ERR + 10,
+-	VXGE_HW_ERR_INVALID_DEVICE		  = VXGE_HW_BASE_ERR + 11,
+-	VXGE_HW_ERR_VERSION_CONFLICT		  = VXGE_HW_BASE_ERR + 12,
+-	VXGE_HW_ERR_INVALID_PCI_INFO		  = VXGE_HW_BASE_ERR + 13,
+-	VXGE_HW_ERR_INVALID_TCODE 		  = VXGE_HW_BASE_ERR + 14,
+-	VXGE_HW_ERR_INVALID_BLOCK_SIZE		  = VXGE_HW_BASE_ERR + 15,
+-	VXGE_HW_ERR_INVALID_STATE		  = VXGE_HW_BASE_ERR + 16,
+-	VXGE_HW_ERR_PRIVILEGED_OPERATION	  = VXGE_HW_BASE_ERR + 17,
+-	VXGE_HW_ERR_INVALID_PORT 		  = VXGE_HW_BASE_ERR + 18,
+-	VXGE_HW_ERR_FIFO		 	  = VXGE_HW_BASE_ERR + 19,
+-	VXGE_HW_ERR_VPATH			  = VXGE_HW_BASE_ERR + 20,
+-	VXGE_HW_ERR_CRITICAL			  = VXGE_HW_BASE_ERR + 21,
+-	VXGE_HW_ERR_SLOT_FREEZE 		  = VXGE_HW_BASE_ERR + 22,
+-
+-	VXGE_HW_BADCFG_RING_INDICATE_MAX_PKTS	  = VXGE_HW_BASE_BADCFG + 1,
+-	VXGE_HW_BADCFG_FIFO_BLOCKS		  = VXGE_HW_BASE_BADCFG + 2,
+-	VXGE_HW_BADCFG_VPATH_MTU		  = VXGE_HW_BASE_BADCFG + 3,
+-	VXGE_HW_BADCFG_VPATH_RPA_STRIP_VLAN_TAG	  = VXGE_HW_BASE_BADCFG + 4,
+-	VXGE_HW_BADCFG_VPATH_MIN_BANDWIDTH	  = VXGE_HW_BASE_BADCFG + 5,
+-	VXGE_HW_BADCFG_INTR_MODE		  = VXGE_HW_BASE_BADCFG + 6,
+-	VXGE_HW_BADCFG_RTS_MAC_EN		  = VXGE_HW_BASE_BADCFG + 7,
+-
+-	VXGE_HW_EOF_TRACE_BUF			  = -1
+-};
+-
+-/**
+- * enum enum vxge_hw_device_link_state - Link state enumeration.
+- * @VXGE_HW_LINK_NONE: Invalid link state.
+- * @VXGE_HW_LINK_DOWN: Link is down.
+- * @VXGE_HW_LINK_UP: Link is up.
+- *
+- */
+-enum vxge_hw_device_link_state {
+-	VXGE_HW_LINK_NONE,
+-	VXGE_HW_LINK_DOWN,
+-	VXGE_HW_LINK_UP
+-};
+-
+-/**
+- * enum enum vxge_hw_fw_upgrade_code - FW upgrade return codes.
+- * @VXGE_HW_FW_UPGRADE_OK: All OK send next 16 bytes
+- * @VXGE_HW_FW_UPGRADE_DONE:  upload completed
+- * @VXGE_HW_FW_UPGRADE_ERR:  upload error
+- * @VXGE_FW_UPGRADE_BYTES2SKIP:  skip bytes in the stream
+- *
+- */
+-enum vxge_hw_fw_upgrade_code {
+-	VXGE_HW_FW_UPGRADE_OK		= 0,
+-	VXGE_HW_FW_UPGRADE_DONE		= 1,
+-	VXGE_HW_FW_UPGRADE_ERR		= 2,
+-	VXGE_FW_UPGRADE_BYTES2SKIP	= 3
+-};
+-
+-/**
+- * enum enum vxge_hw_fw_upgrade_err_code - FW upgrade error codes.
+- * @VXGE_HW_FW_UPGRADE_ERR_CORRUPT_DATA_1: corrupt data
+- * @VXGE_HW_FW_UPGRADE_ERR_BUFFER_OVERFLOW: buffer overflow
+- * @VXGE_HW_FW_UPGRADE_ERR_INV_NCF_FILE_3: invalid .ncf file
+- * @VXGE_HW_FW_UPGRADE_ERR_INV_NCF_FILE_4: invalid .ncf file
+- * @VXGE_HW_FW_UPGRADE_ERR_INV_NCF_FILE_5: invalid .ncf file
+- * @VXGE_HW_FW_UPGRADE_ERR_INV_NCF_FILE_6: invalid .ncf file
+- * @VXGE_HW_FW_UPGRADE_ERR_CORRUPT_DATA_7: corrupt data
+- * @VXGE_HW_FW_UPGRADE_ERR_INV_NCF_FILE_8: invalid .ncf file
+- * @VXGE_HW_FW_UPGRADE_ERR_GENERIC_ERROR_UNKNOWN: generic error unknown type
+- * @VXGE_HW_FW_UPGRADE_ERR_FAILED_TO_FLASH: failed to flash image check failed
+- */
+-enum vxge_hw_fw_upgrade_err_code {
+-	VXGE_HW_FW_UPGRADE_ERR_CORRUPT_DATA_1		= 1,
+-	VXGE_HW_FW_UPGRADE_ERR_BUFFER_OVERFLOW		= 2,
+-	VXGE_HW_FW_UPGRADE_ERR_INV_NCF_FILE_3		= 3,
+-	VXGE_HW_FW_UPGRADE_ERR_INV_NCF_FILE_4		= 4,
+-	VXGE_HW_FW_UPGRADE_ERR_INV_NCF_FILE_5		= 5,
+-	VXGE_HW_FW_UPGRADE_ERR_INV_NCF_FILE_6		= 6,
+-	VXGE_HW_FW_UPGRADE_ERR_CORRUPT_DATA_7		= 7,
+-	VXGE_HW_FW_UPGRADE_ERR_INV_NCF_FILE_8		= 8,
+-	VXGE_HW_FW_UPGRADE_ERR_GENERIC_ERROR_UNKNOWN	= 9,
+-	VXGE_HW_FW_UPGRADE_ERR_FAILED_TO_FLASH		= 10
+-};
+-
+-/**
+- * struct vxge_hw_device_date - Date Format
+- * @day: Day
+- * @month: Month
+- * @year: Year
+- * @date: Date in string format
+- *
+- * Structure for returning date
+- */
+-
+-#define VXGE_HW_FW_STRLEN	32
+-struct vxge_hw_device_date {
+-	u32     day;
+-	u32     month;
+-	u32     year;
+-	char    date[VXGE_HW_FW_STRLEN];
+-};
+-
+-struct vxge_hw_device_version {
+-	u32     major;
+-	u32     minor;
+-	u32     build;
+-	char    version[VXGE_HW_FW_STRLEN];
+-};
+-
+-/**
+- * struct vxge_hw_fifo_config - Configuration of fifo.
+- * @enable: Is this fifo to be commissioned
+- * @fifo_blocks: Numbers of TxDL (that is, lists of Tx descriptors)
+- * 		blocks per queue.
+- * @max_frags: Max number of Tx buffers per TxDL (that is, per single
+- *             transmit operation).
+- *             No more than 256 transmit buffers can be specified.
+- * @memblock_size: Fifo descriptors are allocated in blocks of @mem_block_size
+- *             bytes. Setting @memblock_size to page size ensures
+- *             by-page allocation of descriptors. 128K bytes is the
+- *             maximum supported block size.
+- * @alignment_size: per Tx fragment DMA-able memory used to align transmit data
+- *             (e.g., to align on a cache line).
+- * @intr: Boolean. Use 1 to generate interrupt for each completed TxDL.
+- *             Use 0 otherwise.
+- * @no_snoop_bits: If non-zero, specifies no-snoop PCI operation,
+- *             which generally improves latency of the host bridge operation
+- *             (see PCI specification). For valid values please refer
+- *             to struct vxge_hw_fifo_config{} in the driver sources.
+- * Configuration of all Titan fifos.
+- * Note: Valid (min, max) range for each attribute is specified in the body of
+- * the struct vxge_hw_fifo_config{} structure.
+- */
+-struct vxge_hw_fifo_config {
+-	u32				enable;
+-#define VXGE_HW_FIFO_ENABLE				1
+-#define VXGE_HW_FIFO_DISABLE				0
+-
+-	u32				fifo_blocks;
+-#define VXGE_HW_MIN_FIFO_BLOCKS				2
+-#define VXGE_HW_MAX_FIFO_BLOCKS				128
+-
+-	u32				max_frags;
+-#define VXGE_HW_MIN_FIFO_FRAGS				1
+-#define VXGE_HW_MAX_FIFO_FRAGS				256
+-
+-	u32				memblock_size;
+-#define VXGE_HW_MIN_FIFO_MEMBLOCK_SIZE			VXGE_HW_BLOCK_SIZE
+-#define VXGE_HW_MAX_FIFO_MEMBLOCK_SIZE			131072
+-#define VXGE_HW_DEF_FIFO_MEMBLOCK_SIZE			8096
+-
+-	u32		                alignment_size;
+-#define VXGE_HW_MIN_FIFO_ALIGNMENT_SIZE		0
+-#define VXGE_HW_MAX_FIFO_ALIGNMENT_SIZE		65536
+-#define VXGE_HW_DEF_FIFO_ALIGNMENT_SIZE		VXGE_CACHE_LINE_SIZE
+-
+-	u32		                intr;
+-#define VXGE_HW_FIFO_QUEUE_INTR_ENABLE			1
+-#define VXGE_HW_FIFO_QUEUE_INTR_DISABLE			0
+-#define VXGE_HW_FIFO_QUEUE_INTR_DEFAULT			0
+-
+-	u32				no_snoop_bits;
+-#define VXGE_HW_FIFO_NO_SNOOP_DISABLED			0
+-#define VXGE_HW_FIFO_NO_SNOOP_TXD			1
+-#define VXGE_HW_FIFO_NO_SNOOP_FRM			2
+-#define VXGE_HW_FIFO_NO_SNOOP_ALL			3
+-#define VXGE_HW_FIFO_NO_SNOOP_DEFAULT			0
+-
+-};
+-/**
+- * struct vxge_hw_ring_config - Ring configurations.
+- * @enable: Is this ring to be commissioned
+- * @ring_blocks: Numbers of RxD blocks in the ring
+- * @buffer_mode: Receive buffer mode (1, 2, 3, or 5); for details please refer
+- *             to Titan User Guide.
+- * @scatter_mode: Titan supports two receive scatter modes: A and B.
+- *             For details please refer to Titan User Guide.
+- * @rx_timer_val: The number of 32ns periods that would be counted between two
+- *             timer interrupts.
+- * @greedy_return: If Set it forces the device to return absolutely all RxD
+- *             that are consumed and still on board when a timer interrupt
+- *             triggers. If Clear, then if the device has already returned
+- *             RxD before current timer interrupt triggered and after the
+- *             previous timer interrupt triggered, then the device is not
+- *             forced to returned the rest of the consumed RxD that it has
+- *             on board which account for a byte count less than the one
+- *             programmed into PRC_CFG6.RXD_CRXDT field
+- * @rx_timer_ci: TBD
+- * @backoff_interval_us: Time (in microseconds), after which Titan
+- *             tries to download RxDs posted by the host.
+- *             Note that the "backoff" does not happen if host posts receive
+- *             descriptors in the timely fashion.
+- * Ring configuration.
+- */
+-struct vxge_hw_ring_config {
+-	u32				enable;
+-#define VXGE_HW_RING_ENABLE					1
+-#define VXGE_HW_RING_DISABLE					0
+-#define VXGE_HW_RING_DEFAULT					1
+-
+-	u32				ring_blocks;
+-#define VXGE_HW_MIN_RING_BLOCKS					1
+-#define VXGE_HW_MAX_RING_BLOCKS					128
+-#define VXGE_HW_DEF_RING_BLOCKS					2
+-
+-	u32				buffer_mode;
+-#define VXGE_HW_RING_RXD_BUFFER_MODE_1				1
+-#define VXGE_HW_RING_RXD_BUFFER_MODE_3				3
+-#define VXGE_HW_RING_RXD_BUFFER_MODE_5				5
+-#define VXGE_HW_RING_RXD_BUFFER_MODE_DEFAULT			1
+-
+-	u32				scatter_mode;
+-#define VXGE_HW_RING_SCATTER_MODE_A				0
+-#define VXGE_HW_RING_SCATTER_MODE_B				1
+-#define VXGE_HW_RING_SCATTER_MODE_C				2
+-#define VXGE_HW_RING_SCATTER_MODE_USE_FLASH_DEFAULT		0xffffffff
+-
+-	u64				rxds_limit;
+-#define VXGE_HW_DEF_RING_RXDS_LIMIT				44
+-};
+-
+-/**
+- * struct vxge_hw_vp_config - Configuration of virtual path
+- * @vp_id: Virtual Path Id
+- * @min_bandwidth: Minimum Guaranteed bandwidth
+- * @ring: See struct vxge_hw_ring_config{}.
+- * @fifo: See struct vxge_hw_fifo_config{}.
+- * @tti: Configuration of interrupt associated with Transmit.
+- *             see struct vxge_hw_tim_intr_config();
+- * @rti: Configuration of interrupt associated with Receive.
+- *              see struct vxge_hw_tim_intr_config();
+- * @mtu: mtu size used on this port.
+- * @rpa_strip_vlan_tag: Strip VLAN Tag enable/disable. Instructs the device to
+- *             remove the VLAN tag from all received tagged frames that are not
+- *             replicated at the internal L2 switch.
+- *             0 - Do not strip the VLAN tag.
+- *             1 - Strip the VLAN tag. Regardless of this setting, VLAN tags are
+- *                 always placed into the RxDMA descriptor.
+- *
+- * This structure is used by the driver to pass the configuration parameters to
+- * configure Virtual Path.
+- */
+-struct vxge_hw_vp_config {
+-	u32				vp_id;
+-
+-#define	VXGE_HW_VPATH_PRIORITY_MIN			0
+-#define	VXGE_HW_VPATH_PRIORITY_MAX			16
+-#define	VXGE_HW_VPATH_PRIORITY_DEFAULT			0
+-
+-	u32				min_bandwidth;
+-#define	VXGE_HW_VPATH_BANDWIDTH_MIN			0
+-#define	VXGE_HW_VPATH_BANDWIDTH_MAX			100
+-#define	VXGE_HW_VPATH_BANDWIDTH_DEFAULT			0
+-
+-	struct vxge_hw_ring_config		ring;
+-	struct vxge_hw_fifo_config		fifo;
+-	struct vxge_hw_tim_intr_config	tti;
+-	struct vxge_hw_tim_intr_config	rti;
+-
+-	u32				mtu;
+-#define VXGE_HW_VPATH_MIN_INITIAL_MTU			VXGE_HW_MIN_MTU
+-#define VXGE_HW_VPATH_MAX_INITIAL_MTU			VXGE_HW_MAX_MTU
+-#define VXGE_HW_VPATH_USE_FLASH_DEFAULT_INITIAL_MTU	0xffffffff
+-
+-	u32				rpa_strip_vlan_tag;
+-#define VXGE_HW_VPATH_RPA_STRIP_VLAN_TAG_ENABLE			1
+-#define VXGE_HW_VPATH_RPA_STRIP_VLAN_TAG_DISABLE		0
+-#define VXGE_HW_VPATH_RPA_STRIP_VLAN_TAG_USE_FLASH_DEFAULT	0xffffffff
+-
+-};
+-/**
+- * struct vxge_hw_device_config - Device configuration.
+- * @dma_blockpool_initial: Initial size of DMA Pool
+- * @dma_blockpool_max: Maximum blocks in DMA pool
+- * @intr_mode: Line, or MSI-X interrupt.
+- *
+- * @rth_en: Enable Receive Traffic Hashing(RTH) using IT(Indirection Table).
+- * @rth_it_type: RTH IT table programming type
+- * @rts_mac_en: Enable Receive Traffic Steering using MAC destination address
+- * @vp_config: Configuration for virtual paths
+- * @device_poll_millis: Specify the interval (in mulliseconds)
+- * 			to wait for register reads
+- *
+- * Titan configuration.
+- * Contains per-device configuration parameters, including:
+- * - stats sampling interval, etc.
+- *
+- * In addition, struct vxge_hw_device_config{} includes "subordinate"
+- * configurations, including:
+- * - fifos and rings;
+- * - MAC (done at firmware level).
+- *
+- * See Titan User Guide for more details.
+- * Note: Valid (min, max) range for each attribute is specified in the body of
+- * the struct vxge_hw_device_config{} structure. Please refer to the
+- * corresponding include file.
+- * See also: struct vxge_hw_tim_intr_config{}.
+- */
+-struct vxge_hw_device_config {
+-	u32					device_poll_millis;
+-#define VXGE_HW_MIN_DEVICE_POLL_MILLIS		1
+-#define VXGE_HW_MAX_DEVICE_POLL_MILLIS		100000
+-#define VXGE_HW_DEF_DEVICE_POLL_MILLIS		1000
+-
+-	u32					dma_blockpool_initial;
+-	u32					dma_blockpool_max;
+-#define VXGE_HW_MIN_DMA_BLOCK_POOL_SIZE		0
+-#define VXGE_HW_INITIAL_DMA_BLOCK_POOL_SIZE	0
+-#define VXGE_HW_INCR_DMA_BLOCK_POOL_SIZE	4
+-#define VXGE_HW_MAX_DMA_BLOCK_POOL_SIZE		4096
+-
+-#define	VXGE_HW_MAX_PAYLOAD_SIZE_512		2
+-
+-	u32					intr_mode:2,
+-#define VXGE_HW_INTR_MODE_IRQLINE		0
+-#define VXGE_HW_INTR_MODE_MSIX			1
+-#define VXGE_HW_INTR_MODE_MSIX_ONE_SHOT		2
+-
+-#define VXGE_HW_INTR_MODE_DEF			0
+-
+-						rth_en:1,
+-#define VXGE_HW_RTH_DISABLE			0
+-#define VXGE_HW_RTH_ENABLE			1
+-#define VXGE_HW_RTH_DEFAULT			0
+-
+-						rth_it_type:1,
+-#define VXGE_HW_RTH_IT_TYPE_SOLO_IT		0
+-#define VXGE_HW_RTH_IT_TYPE_MULTI_IT		1
+-#define VXGE_HW_RTH_IT_TYPE_DEFAULT		0
+-
+-						rts_mac_en:1,
+-#define VXGE_HW_RTS_MAC_DISABLE			0
+-#define VXGE_HW_RTS_MAC_ENABLE			1
+-#define VXGE_HW_RTS_MAC_DEFAULT			0
+-
+-						hwts_en:1;
+-#define	VXGE_HW_HWTS_DISABLE			0
+-#define	VXGE_HW_HWTS_ENABLE			1
+-#define	VXGE_HW_HWTS_DEFAULT			1
+-
+-	struct vxge_hw_vp_config vp_config[VXGE_HW_MAX_VIRTUAL_PATHS];
+-};
+-
+-/**
+- * function vxge_uld_link_up_f - Link-Up callback provided by driver.
+- * @devh: HW device handle.
+- * Link-up notification callback provided by the driver.
+- * This is one of the per-driver callbacks, see struct vxge_hw_uld_cbs{}.
+- *
+- * See also: struct vxge_hw_uld_cbs{}, vxge_uld_link_down_f{},
+- * vxge_hw_driver_initialize().
+- */
+-
+-/**
+- * function vxge_uld_link_down_f - Link-Down callback provided by
+- * driver.
+- * @devh: HW device handle.
+- *
+- * Link-Down notification callback provided by the driver.
+- * This is one of the per-driver callbacks, see struct vxge_hw_uld_cbs{}.
+- *
+- * See also: struct vxge_hw_uld_cbs{}, vxge_uld_link_up_f{},
+- * vxge_hw_driver_initialize().
+- */
+-
+-/**
+- * function vxge_uld_crit_err_f - Critical Error notification callback.
+- * @devh: HW device handle.
+- * (typically - at HW device iinitialization time).
+- * @type: Enumerated hw error, e.g.: double ECC.
+- * @serr_data: Titan status.
+- * @ext_data: Extended data. The contents depends on the @type.
+- *
+- * Link-Down notification callback provided by the driver.
+- * This is one of the per-driver callbacks, see struct vxge_hw_uld_cbs{}.
+- *
+- * See also: struct vxge_hw_uld_cbs{}, enum vxge_hw_event{},
+- * vxge_hw_driver_initialize().
+- */
+-
+-/**
+- * struct vxge_hw_uld_cbs - driver "slow-path" callbacks.
+- * @link_up: See vxge_uld_link_up_f{}.
+- * @link_down: See vxge_uld_link_down_f{}.
+- * @crit_err: See vxge_uld_crit_err_f{}.
+- *
+- * Driver slow-path (per-driver) callbacks.
+- * Implemented by driver and provided to HW via
+- * vxge_hw_driver_initialize().
+- * Note that these callbacks are not mandatory: HW will not invoke
+- * a callback if NULL is specified.
+- *
+- * See also: vxge_hw_driver_initialize().
+- */
+-struct vxge_hw_uld_cbs {
+-	void (*link_up)(struct __vxge_hw_device *devh);
+-	void (*link_down)(struct __vxge_hw_device *devh);
+-	void (*crit_err)(struct __vxge_hw_device *devh,
+-			enum vxge_hw_event type, u64 ext_data);
+-};
+-
+-/*
+- * struct __vxge_hw_blockpool_entry - Block private data structure
+- * @item: List header used to link.
+- * @length: Length of the block
+- * @memblock: Virtual address block
+- * @dma_addr: DMA Address of the block.
+- * @dma_handle: DMA handle of the block.
+- * @acc_handle: DMA acc handle
+- *
+- * Block is allocated with a header to put the blocks into list.
+- *
+- */
+-struct __vxge_hw_blockpool_entry {
+-	struct list_head	item;
+-	u32			length;
+-	void			*memblock;
+-	dma_addr_t		dma_addr;
+-	struct pci_dev 		*dma_handle;
+-	struct pci_dev 		*acc_handle;
+-};
+-
+-/*
+- * struct __vxge_hw_blockpool - Block Pool
+- * @hldev: HW device
+- * @block_size: size of each block.
+- * @Pool_size: Number of blocks in the pool
+- * @pool_max: Maximum number of blocks above which to free additional blocks
+- * @req_out: Number of block requests with OS out standing
+- * @free_block_list: List of free blocks
+- *
+- * Block pool contains the DMA blocks preallocated.
+- *
+- */
+-struct __vxge_hw_blockpool {
+-	struct __vxge_hw_device *hldev;
+-	u32				block_size;
+-	u32				pool_size;
+-	u32				pool_max;
+-	u32				req_out;
+-	struct list_head		free_block_list;
+-	struct list_head		free_entry_list;
+-};
+-
+-/*
+- * enum enum __vxge_hw_channel_type - Enumerated channel types.
+- * @VXGE_HW_CHANNEL_TYPE_UNKNOWN: Unknown channel.
+- * @VXGE_HW_CHANNEL_TYPE_FIFO: fifo.
+- * @VXGE_HW_CHANNEL_TYPE_RING: ring.
+- * @VXGE_HW_CHANNEL_TYPE_MAX: Maximum number of HW-supported
+- * (and recognized) channel types. Currently: 2.
+- *
+- * Enumerated channel types. Currently there are only two link-layer
+- * channels - Titan fifo and Titan ring. In the future the list will grow.
+- */
+-enum __vxge_hw_channel_type {
+-	VXGE_HW_CHANNEL_TYPE_UNKNOWN			= 0,
+-	VXGE_HW_CHANNEL_TYPE_FIFO			= 1,
+-	VXGE_HW_CHANNEL_TYPE_RING			= 2,
+-	VXGE_HW_CHANNEL_TYPE_MAX			= 3
+-};
+-
+-/*
+- * struct __vxge_hw_channel
+- * @item: List item; used to maintain a list of open channels.
+- * @type: Channel type. See enum vxge_hw_channel_type{}.
+- * @devh: Device handle. HW device object that contains _this_ channel.
+- * @vph: Virtual path handle. Virtual Path Object that contains _this_ channel.
+- * @length: Channel length. Currently allocated number of descriptors.
+- *          The channel length "grows" when more descriptors get allocated.
+- *          See _hw_mempool_grow.
+- * @reserve_arr: Reserve array. Contains descriptors that can be reserved
+- *               by driver for the subsequent send or receive operation.
+- *               See vxge_hw_fifo_txdl_reserve(),
+- *               vxge_hw_ring_rxd_reserve().
+- * @reserve_ptr: Current pointer in the resrve array
+- * @reserve_top: Reserve top gives the maximum number of dtrs available in
+- *          reserve array.
+- * @work_arr: Work array. Contains descriptors posted to the channel.
+- *            Note that at any point in time @work_arr contains 3 types of
+- *            descriptors:
+- *            1) posted but not yet consumed by Titan device;
+- *            2) consumed but not yet completed;
+- *            3) completed but not yet freed
+- *            (via vxge_hw_fifo_txdl_free() or vxge_hw_ring_rxd_free())
+- * @post_index: Post index. At any point in time points on the
+- *              position in the channel, which'll contain next to-be-posted
+- *              descriptor.
+- * @compl_index: Completion index. At any point in time points on the
+- *               position in the channel, which will contain next
+- *               to-be-completed descriptor.
+- * @free_arr: Free array. Contains completed descriptors that were freed
+- *            (i.e., handed over back to HW) by driver.
+- *            See vxge_hw_fifo_txdl_free(), vxge_hw_ring_rxd_free().
+- * @free_ptr: current pointer in free array
+- * @per_dtr_space: Per-descriptor space (in bytes) that channel user can utilize
+- *                 to store per-operation control information.
+- * @stats: Pointer to common statistics
+- * @userdata: Per-channel opaque (void*) user-defined context, which may be
+- *            driver object, ULP connection, etc.
+- *            Once channel is open, @userdata is passed back to user via
+- *            vxge_hw_channel_callback_f.
+- *
+- * HW channel object.
+- *
+- * See also: enum vxge_hw_channel_type{}, enum vxge_hw_channel_flag
+- */
+-struct __vxge_hw_channel {
+-	struct list_head		item;
+-	enum __vxge_hw_channel_type	type;
+-	struct __vxge_hw_device 	*devh;
+-	struct __vxge_hw_vpath_handle 	*vph;
+-	u32			length;
+-	u32			vp_id;
+-	void		**reserve_arr;
+-	u32			reserve_ptr;
+-	u32			reserve_top;
+-	void		**work_arr;
+-	u32			post_index ____cacheline_aligned;
+-	u32			compl_index ____cacheline_aligned;
+-	void		**free_arr;
+-	u32			free_ptr;
+-	void		**orig_arr;
+-	u32			per_dtr_space;
+-	void		*userdata;
+-	struct vxge_hw_common_reg	__iomem *common_reg;
+-	u32			first_vp_id;
+-	struct vxge_hw_vpath_stats_sw_common_info *stats;
+-
+-} ____cacheline_aligned;
+-
+-/*
+- * struct __vxge_hw_virtualpath - Virtual Path
+- *
+- * @vp_id: Virtual path id
+- * @vp_open: This flag specifies if vxge_hw_vp_open is called from LL Driver
+- * @hldev: Hal device
+- * @vp_config: Virtual Path Config
+- * @vp_reg: VPATH Register map address in BAR0
+- * @vpmgmt_reg: VPATH_MGMT register map address
+- * @max_mtu: Max mtu that can be supported
+- * @vsport_number: vsport attached to this vpath
+- * @max_kdfc_db: Maximum kernel mode doorbells
+- * @max_nofl_db: Maximum non offload doorbells
+- * @tx_intr_num: Interrupt Number associated with the TX
+-
+- * @ringh: Ring Queue
+- * @fifoh: FIFO Queue
+- * @vpath_handles: Virtual Path handles list
+- * @stats_block: Memory for DMAing stats
+- * @stats: Vpath statistics
+- *
+- * Virtual path structure to encapsulate the data related to a virtual path.
+- * Virtual paths are allocated by the HW upon getting configuration from the
+- * driver and inserted into the list of virtual paths.
+- */
+-struct __vxge_hw_virtualpath {
+-	u32				vp_id;
+-
+-	u32				vp_open;
+-#define VXGE_HW_VP_NOT_OPEN	0
+-#define	VXGE_HW_VP_OPEN		1
+-
+-	struct __vxge_hw_device		*hldev;
+-	struct vxge_hw_vp_config	*vp_config;
+-	struct vxge_hw_vpath_reg	__iomem *vp_reg;
+-	struct vxge_hw_vpmgmt_reg	__iomem *vpmgmt_reg;
+-	struct __vxge_hw_non_offload_db_wrapper	__iomem *nofl_db;
+-
+-	u32				max_mtu;
+-	u32				vsport_number;
+-	u32				max_kdfc_db;
+-	u32				max_nofl_db;
+-	u64				tim_tti_cfg1_saved;
+-	u64				tim_tti_cfg3_saved;
+-	u64				tim_rti_cfg1_saved;
+-	u64				tim_rti_cfg3_saved;
+-
+-	struct __vxge_hw_ring *____cacheline_aligned ringh;
+-	struct __vxge_hw_fifo *____cacheline_aligned fifoh;
+-	struct list_head		vpath_handles;
+-	struct __vxge_hw_blockpool_entry		*stats_block;
+-	struct vxge_hw_vpath_stats_hw_info	*hw_stats;
+-	struct vxge_hw_vpath_stats_hw_info	*hw_stats_sav;
+-	struct vxge_hw_vpath_stats_sw_info	*sw_stats;
+-	spinlock_t lock;
+-};
+-
+-/*
+- * struct __vxge_hw_vpath_handle - List item to store callback information
+- * @item: List head to keep the item in linked list
+- * @vpath: Virtual path to which this item belongs
+- *
+- * This structure is used to store the callback information.
+- */
+-struct __vxge_hw_vpath_handle {
+-	struct list_head	item;
+-	struct __vxge_hw_virtualpath	*vpath;
+-};
+-
+-/*
+- * struct __vxge_hw_device
+- *
+- * HW device object.
+- */
+-/**
+- * struct __vxge_hw_device  - Hal device object
+- * @magic: Magic Number
+- * @bar0: BAR0 virtual address.
+- * @pdev: Physical device handle
+- * @config: Confguration passed by the LL driver at initialization
+- * @link_state: Link state
+- *
+- * HW device object. Represents Titan adapter
+- */
+-struct __vxge_hw_device {
+-	u32				magic;
+-#define VXGE_HW_DEVICE_MAGIC		0x12345678
+-#define VXGE_HW_DEVICE_DEAD		0xDEADDEAD
+-	void __iomem			*bar0;
+-	struct pci_dev			*pdev;
+-	struct net_device		*ndev;
+-	struct vxge_hw_device_config	config;
+-	enum vxge_hw_device_link_state	link_state;
+-
+-	const struct vxge_hw_uld_cbs	*uld_callbacks;
+-
+-	u32				host_type;
+-	u32				func_id;
+-	u32				access_rights;
+-#define VXGE_HW_DEVICE_ACCESS_RIGHT_VPATH      0x1
+-#define VXGE_HW_DEVICE_ACCESS_RIGHT_SRPCIM     0x2
+-#define VXGE_HW_DEVICE_ACCESS_RIGHT_MRPCIM     0x4
+-	struct vxge_hw_legacy_reg	__iomem *legacy_reg;
+-	struct vxge_hw_toc_reg		__iomem *toc_reg;
+-	struct vxge_hw_common_reg	__iomem *common_reg;
+-	struct vxge_hw_mrpcim_reg	__iomem *mrpcim_reg;
+-	struct vxge_hw_srpcim_reg	__iomem *srpcim_reg \
+-					[VXGE_HW_TITAN_SRPCIM_REG_SPACES];
+-	struct vxge_hw_vpmgmt_reg	__iomem *vpmgmt_reg \
+-					[VXGE_HW_TITAN_VPMGMT_REG_SPACES];
+-	struct vxge_hw_vpath_reg	__iomem *vpath_reg \
+-					[VXGE_HW_TITAN_VPATH_REG_SPACES];
+-	u8				__iomem *kdfc;
+-	u8				__iomem *usdc;
+-	struct __vxge_hw_virtualpath	virtual_paths \
+-					[VXGE_HW_MAX_VIRTUAL_PATHS];
+-	u64				vpath_assignments;
+-	u64				vpaths_deployed;
+-	u32				first_vp_id;
+-	u64				tim_int_mask0[4];
+-	u32				tim_int_mask1[4];
+-
+-	struct __vxge_hw_blockpool	block_pool;
+-	struct vxge_hw_device_stats	stats;
+-	u32				debug_module_mask;
+-	u32				debug_level;
+-	u32				level_err;
+-	u32				level_trace;
+-	u16 eprom_versions[VXGE_HW_MAX_ROM_IMAGES];
+-};
+-
+-#define VXGE_HW_INFO_LEN	64
+-/**
+- * struct vxge_hw_device_hw_info - Device information
+- * @host_type: Host Type
+- * @func_id: Function Id
+- * @vpath_mask: vpath bit mask
+- * @fw_version: Firmware version
+- * @fw_date: Firmware Date
+- * @flash_version: Firmware version
+- * @flash_date: Firmware Date
+- * @mac_addrs: Mac addresses for each vpath
+- * @mac_addr_masks: Mac address masks for each vpath
+- *
+- * Returns the vpath mask that has the bits set for each vpath allocated
+- * for the driver and the first mac address for each vpath
+- */
+-struct vxge_hw_device_hw_info {
+-	u32		host_type;
+-#define VXGE_HW_NO_MR_NO_SR_NORMAL_FUNCTION			0
+-#define VXGE_HW_MR_NO_SR_VH0_BASE_FUNCTION			1
+-#define VXGE_HW_NO_MR_SR_VH0_FUNCTION0				2
+-#define VXGE_HW_NO_MR_SR_VH0_VIRTUAL_FUNCTION			3
+-#define VXGE_HW_MR_SR_VH0_INVALID_CONFIG			4
+-#define VXGE_HW_SR_VH_FUNCTION0					5
+-#define VXGE_HW_SR_VH_VIRTUAL_FUNCTION				6
+-#define VXGE_HW_VH_NORMAL_FUNCTION				7
+-	u64		function_mode;
+-#define VXGE_HW_FUNCTION_MODE_SINGLE_FUNCTION			0
+-#define VXGE_HW_FUNCTION_MODE_MULTI_FUNCTION			1
+-#define VXGE_HW_FUNCTION_MODE_SRIOV				2
+-#define VXGE_HW_FUNCTION_MODE_MRIOV				3
+-#define VXGE_HW_FUNCTION_MODE_MRIOV_8				4
+-#define VXGE_HW_FUNCTION_MODE_MULTI_FUNCTION_17			5
+-#define VXGE_HW_FUNCTION_MODE_SRIOV_8				6
+-#define VXGE_HW_FUNCTION_MODE_SRIOV_4				7
+-#define VXGE_HW_FUNCTION_MODE_MULTI_FUNCTION_2			8
+-#define VXGE_HW_FUNCTION_MODE_MULTI_FUNCTION_4			9
+-#define VXGE_HW_FUNCTION_MODE_MRIOV_4				10
+-
+-	u32		func_id;
+-	u64		vpath_mask;
+-	struct vxge_hw_device_version fw_version;
+-	struct vxge_hw_device_date    fw_date;
+-	struct vxge_hw_device_version flash_version;
+-	struct vxge_hw_device_date    flash_date;
+-	u8		serial_number[VXGE_HW_INFO_LEN];
+-	u8		part_number[VXGE_HW_INFO_LEN];
+-	u8		product_desc[VXGE_HW_INFO_LEN];
+-	u8 mac_addrs[VXGE_HW_MAX_VIRTUAL_PATHS][ETH_ALEN];
+-	u8 mac_addr_masks[VXGE_HW_MAX_VIRTUAL_PATHS][ETH_ALEN];
+-};
+-
+-/**
+- * struct vxge_hw_device_attr - Device memory spaces.
+- * @bar0: BAR0 virtual address.
+- * @pdev: PCI device object.
+- *
+- * Device memory spaces. Includes configuration, BAR0 etc. per device
+- * mapped memories. Also, includes a pointer to OS-specific PCI device object.
+- */
+-struct vxge_hw_device_attr {
+-	void __iomem		*bar0;
+-	struct pci_dev 		*pdev;
+-	const struct vxge_hw_uld_cbs *uld_callbacks;
+-};
+-
+-#define VXGE_HW_DEVICE_LINK_STATE_SET(hldev, ls)	(hldev->link_state = ls)
+-
+-#define VXGE_HW_DEVICE_TIM_INT_MASK_SET(m0, m1, i) {	\
+-	if (i < 16) {				\
+-		m0[0] |= vxge_vBIT(0x8, (i*4), 4);	\
+-		m0[1] |= vxge_vBIT(0x4, (i*4), 4);	\
+-	}			       		\
+-	else {					\
+-		m1[0] = 0x80000000;		\
+-		m1[1] = 0x40000000;		\
+-	}					\
+-}
+-
+-#define VXGE_HW_DEVICE_TIM_INT_MASK_RESET(m0, m1, i) {	\
+-	if (i < 16) {					\
+-		m0[0] &= ~vxge_vBIT(0x8, (i*4), 4);		\
+-		m0[1] &= ~vxge_vBIT(0x4, (i*4), 4);		\
+-	}						\
+-	else {						\
+-		m1[0] = 0;				\
+-		m1[1] = 0;				\
+-	}						\
+-}
+-
+-#define VXGE_HW_DEVICE_STATS_PIO_READ(loc, offset) {		\
+-	status = vxge_hw_mrpcim_stats_access(hldev, \
+-				VXGE_HW_STATS_OP_READ, \
+-				loc, \
+-				offset, \
+-				&val64);			\
+-	if (status != VXGE_HW_OK)				\
+-		return status;						\
+-}
+-
+-/*
+- * struct __vxge_hw_ring - Ring channel.
+- * @channel: Channel "base" of this ring, the common part of all HW
+- *           channels.
+- * @mempool: Memory pool, the pool from which descriptors get allocated.
+- *           (See vxge_hw_mm.h).
+- * @config: Ring configuration, part of device configuration
+- *          (see struct vxge_hw_device_config{}).
+- * @ring_length: Length of the ring
+- * @buffer_mode: 1, 3, or 5. The value specifies a receive buffer mode,
+- *          as per Titan User Guide.
+- * @rxd_size: RxD sizes for 1-, 3- or 5- buffer modes. As per Titan spec,
+- *            1-buffer mode descriptor is 32 byte long, etc.
+- * @rxd_priv_size: Per RxD size reserved (by HW) for driver to keep
+- *                 per-descriptor data (e.g., DMA handle for Solaris)
+- * @per_rxd_space: Per rxd space requested by driver
+- * @rxds_per_block: Number of descriptors per hardware-defined RxD
+- *                  block. Depends on the (1-, 3-, 5-) buffer mode.
+- * @rxdblock_priv_size: Reserved at the end of each RxD block. HW internal
+- *                      usage. Not to confuse with @rxd_priv_size.
+- * @cmpl_cnt: Completion counter. Is reset to zero upon entering the ISR.
+- * @callback: Channel completion callback. HW invokes the callback when there
+- *            are new completions on that channel. In many implementations
+- *            the @callback executes in the hw interrupt context.
+- * @rxd_init: Channel's descriptor-initialize callback.
+- *            See vxge_hw_ring_rxd_init_f{}.
+- *            If not NULL, HW invokes the callback when opening
+- *            the ring.
+- * @rxd_term: Channel's descriptor-terminate callback. If not NULL,
+- *          HW invokes the callback when closing the corresponding channel.
+- *          See also vxge_hw_channel_rxd_term_f{}.
+- * @stats: Statistics for ring
+- * Ring channel.
+- *
+- * Note: The structure is cache line aligned to better utilize
+- *       CPU cache performance.
+- */
+-struct __vxge_hw_ring {
+-	struct __vxge_hw_channel		channel;
+-	struct vxge_hw_mempool			*mempool;
+-	struct vxge_hw_vpath_reg		__iomem	*vp_reg;
+-	struct vxge_hw_common_reg		__iomem	*common_reg;
+-	u32					ring_length;
+-	u32					buffer_mode;
+-	u32					rxd_size;
+-	u32					rxd_priv_size;
+-	u32					per_rxd_space;
+-	u32					rxds_per_block;
+-	u32					rxdblock_priv_size;
+-	u32					cmpl_cnt;
+-	u32					vp_id;
+-	u32					doorbell_cnt;
+-	u32					total_db_cnt;
+-	u64					rxds_limit;
+-	u32					rtimer;
+-	u64					tim_rti_cfg1_saved;
+-	u64					tim_rti_cfg3_saved;
+-
+-	enum vxge_hw_status (*callback)(
+-			struct __vxge_hw_ring *ringh,
+-			void *rxdh,
+-			u8 t_code,
+-			void *userdata);
+-
+-	enum vxge_hw_status (*rxd_init)(
+-			void *rxdh,
+-			void *userdata);
+-
+-	void (*rxd_term)(
+-			void *rxdh,
+-			enum vxge_hw_rxd_state state,
+-			void *userdata);
+-
+-	struct vxge_hw_vpath_stats_sw_ring_info *stats	____cacheline_aligned;
+-	struct vxge_hw_ring_config		*config;
+-} ____cacheline_aligned;
+-
+-/**
+- * enum enum vxge_hw_txdl_state - Descriptor (TXDL) state.
+- * @VXGE_HW_TXDL_STATE_NONE: Invalid state.
+- * @VXGE_HW_TXDL_STATE_AVAIL: Descriptor is available for reservation.
+- * @VXGE_HW_TXDL_STATE_POSTED: Descriptor is posted for processing by the
+- * device.
+- * @VXGE_HW_TXDL_STATE_FREED: Descriptor is free and can be reused for
+- * filling-in and posting later.
+- *
+- * Titan/HW descriptor states.
+- *
+- */
+-enum vxge_hw_txdl_state {
+-	VXGE_HW_TXDL_STATE_NONE	= 0,
+-	VXGE_HW_TXDL_STATE_AVAIL	= 1,
+-	VXGE_HW_TXDL_STATE_POSTED	= 2,
+-	VXGE_HW_TXDL_STATE_FREED	= 3
+-};
+-/*
+- * struct __vxge_hw_fifo - Fifo.
+- * @channel: Channel "base" of this fifo, the common part of all HW
+- *             channels.
+- * @mempool: Memory pool, from which descriptors get allocated.
+- * @config: Fifo configuration, part of device configuration
+- *             (see struct vxge_hw_device_config{}).
+- * @interrupt_type: Interrupt type to be used
+- * @no_snoop_bits: See struct vxge_hw_fifo_config{}.
+- * @txdl_per_memblock: Number of TxDLs (TxD lists) per memblock.
+- *             on TxDL please refer to Titan UG.
+- * @txdl_size: Configured TxDL size (i.e., number of TxDs in a list), plus
+- *             per-TxDL HW private space (struct __vxge_hw_fifo_txdl_priv).
+- * @priv_size: Per-Tx descriptor space reserved for driver
+- *             usage.
+- * @per_txdl_space: Per txdl private space for the driver
+- * @callback: Fifo completion callback. HW invokes the callback when there
+- *             are new completions on that fifo. In many implementations
+- *             the @callback executes in the hw interrupt context.
+- * @txdl_term: Fifo's descriptor-terminate callback. If not NULL,
+- *             HW invokes the callback when closing the corresponding fifo.
+- *             See also vxge_hw_fifo_txdl_term_f{}.
+- * @stats: Statistics of this fifo
+- *
+- * Fifo channel.
+- * Note: The structure is cache line aligned.
+- */
+-struct __vxge_hw_fifo {
+-	struct __vxge_hw_channel		channel;
+-	struct vxge_hw_mempool			*mempool;
+-	struct vxge_hw_fifo_config		*config;
+-	struct vxge_hw_vpath_reg		__iomem *vp_reg;
+-	struct __vxge_hw_non_offload_db_wrapper	__iomem *nofl_db;
+-	u64					interrupt_type;
+-	u32					no_snoop_bits;
+-	u32					txdl_per_memblock;
+-	u32					txdl_size;
+-	u32					priv_size;
+-	u32					per_txdl_space;
+-	u32					vp_id;
+-	u32					tx_intr_num;
+-	u32					rtimer;
+-	u64					tim_tti_cfg1_saved;
+-	u64					tim_tti_cfg3_saved;
+-
+-	enum vxge_hw_status (*callback)(
+-			struct __vxge_hw_fifo *fifo_handle,
+-			void *txdlh,
+-			enum vxge_hw_fifo_tcode t_code,
+-			void *userdata,
+-			struct sk_buff ***skb_ptr,
+-			int nr_skb,
+-			int *more);
+-
+-	void (*txdl_term)(
+-			void *txdlh,
+-			enum vxge_hw_txdl_state state,
+-			void *userdata);
+-
+-	struct vxge_hw_vpath_stats_sw_fifo_info *stats ____cacheline_aligned;
+-} ____cacheline_aligned;
+-
+-/*
+- * struct __vxge_hw_fifo_txdl_priv - Transmit descriptor HW-private data.
+- * @dma_addr: DMA (mapped) address of _this_ descriptor.
+- * @dma_handle: DMA handle used to map the descriptor onto device.
+- * @dma_offset: Descriptor's offset in the memory block. HW allocates
+- *	 descriptors in memory blocks (see struct vxge_hw_fifo_config{})
+- *             Each memblock is a contiguous block of DMA-able memory.
+- * @frags: Total number of fragments (that is, contiguous data buffers)
+- * carried by this TxDL.
+- * @align_vaddr_start: Aligned virtual address start
+- * @align_vaddr: Virtual address of the per-TxDL area in memory used for
+- *             alignement. Used to place one or more mis-aligned fragments
+- * @align_dma_addr: DMA address translated from the @align_vaddr.
+- * @align_dma_handle: DMA handle that corresponds to @align_dma_addr.
+- * @align_dma_acch: DMA access handle corresponds to @align_dma_addr.
+- * @align_dma_offset: The current offset into the @align_vaddr area.
+- * Grows while filling the descriptor, gets reset.
+- * @align_used_frags: Number of fragments used.
+- * @alloc_frags: Total number of fragments allocated.
+- * @unused: TODO
+- * @next_txdl_priv: (TODO).
+- * @first_txdp: (TODO).
+- * @linked_txdl_priv: Pointer to any linked TxDL for creating contiguous
+- *             TxDL list.
+- * @txdlh: Corresponding txdlh to this TxDL.
+- * @memblock: Pointer to the TxDL memory block or memory page.
+- *             on the next send operation.
+- * @dma_object: DMA address and handle of the memory block that contains
+- *             the descriptor. This member is used only in the "checked"
+- *             version of the HW (to enforce certain assertions);
+- *             otherwise it gets compiled out.
+- * @allocated: True if the descriptor is reserved, 0 otherwise. Internal usage.
+- *
+- * Per-transmit decsriptor HW-private data. HW uses the space to keep DMA
+- * information associated with the descriptor. Note that driver can ask HW
+- * to allocate additional per-descriptor space for its own (driver-specific)
+- * purposes.
+- *
+- * See also: struct vxge_hw_ring_rxd_priv{}.
+- */
+-struct __vxge_hw_fifo_txdl_priv {
+-	dma_addr_t		dma_addr;
+-	struct pci_dev	*dma_handle;
+-	ptrdiff_t		dma_offset;
+-	u32				frags;
+-	u8				*align_vaddr_start;
+-	u8				*align_vaddr;
+-	dma_addr_t		align_dma_addr;
+-	struct pci_dev 	*align_dma_handle;
+-	struct pci_dev	*align_dma_acch;
+-	ptrdiff_t		align_dma_offset;
+-	u32				align_used_frags;
+-	u32				alloc_frags;
+-	u32				unused;
+-	struct __vxge_hw_fifo_txdl_priv	*next_txdl_priv;
+-	struct vxge_hw_fifo_txd		*first_txdp;
+-	void			*memblock;
+-};
+-
+-/*
+- * struct __vxge_hw_non_offload_db_wrapper - Non-offload Doorbell Wrapper
+- * @control_0: Bits 0 to 7 - Doorbell type.
+- *             Bits 8 to 31 - Reserved.
+- *             Bits 32 to 39 - The highest TxD in this TxDL.
+- *             Bits 40 to 47 - Reserved.
+-	*	       Bits 48 to 55 - Reserved.
+- *             Bits 56 to 63 - No snoop flags.
+- * @txdl_ptr:  The starting location of the TxDL in host memory.
+- *
+- * Created by the host and written to the adapter via PIO to a Kernel Doorbell
+- * FIFO. All non-offload doorbell wrapper fields must be written by the host as
+- * part of a doorbell write. Consumed by the adapter but is not written by the
+- * adapter.
+- */
+-struct __vxge_hw_non_offload_db_wrapper {
+-	u64		control_0;
+-#define	VXGE_HW_NODBW_GET_TYPE(ctrl0)			vxge_bVALn(ctrl0, 0, 8)
+-#define VXGE_HW_NODBW_TYPE(val) vxge_vBIT(val, 0, 8)
+-#define	VXGE_HW_NODBW_TYPE_NODBW				0
+-
+-#define	VXGE_HW_NODBW_GET_LAST_TXD_NUMBER(ctrl0)	vxge_bVALn(ctrl0, 32, 8)
+-#define VXGE_HW_NODBW_LAST_TXD_NUMBER(val) vxge_vBIT(val, 32, 8)
+-
+-#define	VXGE_HW_NODBW_GET_NO_SNOOP(ctrl0)		vxge_bVALn(ctrl0, 56, 8)
+-#define VXGE_HW_NODBW_LIST_NO_SNOOP(val) vxge_vBIT(val, 56, 8)
+-#define	VXGE_HW_NODBW_LIST_NO_SNOOP_TXD_READ_TXD0_WRITE		0x2
+-#define	VXGE_HW_NODBW_LIST_NO_SNOOP_TX_FRAME_DATA_READ		0x1
+-
+-	u64		txdl_ptr;
+-};
+-
+-/*
+- * TX Descriptor
+- */
+-
+-/**
+- * struct vxge_hw_fifo_txd - Transmit Descriptor
+- * @control_0: Bits 0 to 6 - Reserved.
+- *             Bit 7 - List Ownership. This field should be initialized
+- *             to '1' by the driver before the transmit list pointer is
+- *             written to the adapter. This field will be set to '0' by the
+- *             adapter once it has completed transmitting the frame or frames in
+- *             the list. Note - This field is only valid in TxD0. Additionally,
+- *             for multi-list sequences, the driver should not release any
+- *             buffers until the ownership of the last list in the multi-list
+- *             sequence has been returned to the host.
+- *             Bits 8 to 11 - Reserved
+- *             Bits 12 to 15 - Transfer_Code. This field is only valid in
+- *             TxD0. It is used to describe the status of the transmit data
+- *             buffer transfer. This field is always overwritten by the
+- *             adapter, so this field may be initialized to any value.
+- *             Bits 16 to 17 - Host steering. This field allows the host to
+- *             override the selection of the physical transmit port.
+- *             Attention:
+- *             Normal sounds as if learned from the switch rather than from
+- *             the aggregation algorythms.
+- *             00: Normal. Use Destination/MAC Address
+- *             lookup to determine the transmit port.
+- *             01: Send on physical Port1.
+- *             10: Send on physical Port0.
+- *	       11: Send on both ports.
+- *             Bits 18 to 21 - Reserved
+- *             Bits 22 to 23 - Gather_Code. This field is set by the host and
+- *             is used to describe how individual buffers comprise a frame.
+- *             10: First descriptor of a frame.
+- *             00: Middle of a multi-descriptor frame.
+- *             01: Last descriptor of a frame.
+- *             11: First and last descriptor of a frame (the entire frame
+- *             resides in a single buffer).
+- *             For multi-descriptor frames, the only valid gather code sequence
+- *             is {10, [00], 01}. In other words, the descriptors must be placed
+- *             in the list in the correct order.
+- *             Bits 24 to 27 - Reserved
+- *             Bits 28 to 29 - LSO_Frm_Encap. LSO Frame Encapsulation
+- *             definition. Only valid in TxD0. This field allows the host to
+- *             indicate the Ethernet encapsulation of an outbound LSO packet.
+- *             00 - classic mode (best guess)
+- *             01 - LLC
+- *             10 - SNAP
+- *             11 - DIX
+- *             If "classic mode" is selected, the adapter will attempt to
+- *             decode the frame's Ethernet encapsulation by examining the L/T
+- *             field as follows:
+- *             <= 0x05DC LLC/SNAP encoding; must examine DSAP/SSAP to determine
+- *             if packet is IPv4 or IPv6.
+- *             0x8870 Jumbo-SNAP encoding.
+- *             0x0800 IPv4 DIX encoding
+- *             0x86DD IPv6 DIX encoding
+- *             others illegal encapsulation
+- *             Bits 30 - LSO_ Flag. Large Send Offload (LSO) flag.
+- *             Set to 1 to perform segmentation offload for TCP/UDP.
+- *             This field is valid only in TxD0.
+- *             Bits 31 to 33 - Reserved.
+- *             Bits 34 to 47 - LSO_MSS. TCP/UDP LSO Maximum Segment Size
+- *             This field is meaningful only when LSO_Control is non-zero.
+- *             When LSO_Control is set to TCP_LSO, the single (possibly large)
+- *             TCP segment described by this TxDL will be sent as a series of
+- *             TCP segments each of which contains no more than LSO_MSS
+- *             payload bytes.
+- *             When LSO_Control is set to UDP_LSO, the single (possibly large)
+- *             UDP datagram described by this TxDL will be sent as a series of
+- *             UDP datagrams each of which contains no more than LSO_MSS
+- *             payload bytes.
+- *             All outgoing frames from this TxDL will have LSO_MSS bytes of UDP
+- *             or TCP payload, with the exception of the last, which will have
+- *             <= LSO_MSS bytes of payload.
+- *             Bits 48 to 63 - Buffer_Size. Number of valid bytes in the
+- *             buffer to be read by the adapter. This field is written by the
+- *             host. A value of 0 is illegal.
+- *	       Bits 32 to 63 - This value is written by the adapter upon
+- *	       completion of a UDP or TCP LSO operation and indicates the number
+- *             of UDP or TCP payload bytes that were transmitted. 0x0000 will be
+- *             returned for any non-LSO operation.
+- * @control_1: Bits 0 to 4 - Reserved.
+- *             Bit 5 - Tx_CKO_IPv4 Set to a '1' to enable IPv4 header checksum
+- *             offload. This field is only valid in the first TxD of a frame.
+- *             Bit 6 - Tx_CKO_TCP Set to a '1' to enable TCP checksum offload.
+- *             This field is only valid in the first TxD of a frame (the TxD's
+- *             gather code must be 10 or 11). The driver should only set this
+- *             bit if it can guarantee that TCP is present.
+- *             Bit 7 - Tx_CKO_UDP Set to a '1' to enable UDP checksum offload.
+- *             This field is only valid in the first TxD of a frame (the TxD's
+- *             gather code must be 10 or 11). The driver should only set this
+- *             bit if it can guarantee that UDP is present.
+- *             Bits 8 to 14 - Reserved.
+- *             Bit 15 - Tx_VLAN_Enable VLAN tag insertion flag. Set to a '1' to
+- *             instruct the adapter to insert the VLAN tag specified by the
+- *             Tx_VLAN_Tag field. This field is only valid in the first TxD of
+- *             a frame.
+- *             Bits 16 to 31 - Tx_VLAN_Tag. Variable portion of the VLAN tag
+- *             to be inserted into the frame by the adapter (the first two bytes
+- *             of a VLAN tag are always 0x8100). This field is only valid if the
+- *             Tx_VLAN_Enable field is set to '1'.
+- *             Bits 32 to 33 - Reserved.
+- *             Bits 34 to 39 - Tx_Int_Number. Indicates which Tx interrupt
+- *             number the frame associated with. This field is written by the
+- *             host. It is only valid in the first TxD of a frame.
+- *             Bits 40 to 42 - Reserved.
+- *             Bit 43 - Set to 1 to exclude the frame from bandwidth metering
+- *             functions. This field is valid only in the first TxD
+- *             of a frame.
+- *             Bits 44 to 45 - Reserved.
+- *             Bit 46 - Tx_Int_Per_List Set to a '1' to instruct the adapter to
+- *             generate an interrupt as soon as all of the frames in the list
+- *             have been transmitted. In order to have per-frame interrupts,
+- *             the driver should place a maximum of one frame per list. This
+- *             field is only valid in the first TxD of a frame.
+- *             Bit 47 - Tx_Int_Utilization Set to a '1' to instruct the adapter
+- *             to count the frame toward the utilization interrupt specified in
+- *             the Tx_Int_Number field. This field is only valid in the first
+- *             TxD of a frame.
+- *             Bits 48 to 63 - Reserved.
+- * @buffer_pointer: Buffer start address.
+- * @host_control: Host_Control.Opaque 64bit data stored by driver inside the
+- *            Titan descriptor prior to posting the latter on the fifo
+- *            via vxge_hw_fifo_txdl_post().The %host_control is returned as is
+- *            to the driver with each completed descriptor.
+- *
+- * Transmit descriptor (TxD).Fifo descriptor contains configured number
+- * (list) of TxDs. * For more details please refer to Titan User Guide,
+- * Section 5.4.2 "Transmit Descriptor (TxD) Format".
+- */
+-struct vxge_hw_fifo_txd {
+-	u64 control_0;
+-#define VXGE_HW_FIFO_TXD_LIST_OWN_ADAPTER		vxge_mBIT(7)
+-
+-#define VXGE_HW_FIFO_TXD_T_CODE_GET(ctrl0)		vxge_bVALn(ctrl0, 12, 4)
+-#define VXGE_HW_FIFO_TXD_T_CODE(val) 			vxge_vBIT(val, 12, 4)
+-#define VXGE_HW_FIFO_TXD_T_CODE_UNUSED		VXGE_HW_FIFO_T_CODE_UNUSED
+-
+-
+-#define VXGE_HW_FIFO_TXD_GATHER_CODE(val) 		vxge_vBIT(val, 22, 2)
+-#define VXGE_HW_FIFO_TXD_GATHER_CODE_FIRST	VXGE_HW_FIFO_GATHER_CODE_FIRST
+-#define VXGE_HW_FIFO_TXD_GATHER_CODE_LAST	VXGE_HW_FIFO_GATHER_CODE_LAST
+-
+-
+-#define VXGE_HW_FIFO_TXD_LSO_EN				vxge_mBIT(30)
+-
+-#define VXGE_HW_FIFO_TXD_LSO_MSS(val) 			vxge_vBIT(val, 34, 14)
+-
+-#define VXGE_HW_FIFO_TXD_BUFFER_SIZE(val) 		vxge_vBIT(val, 48, 16)
+-
+-	u64 control_1;
+-#define VXGE_HW_FIFO_TXD_TX_CKO_IPV4_EN			vxge_mBIT(5)
+-#define VXGE_HW_FIFO_TXD_TX_CKO_TCP_EN			vxge_mBIT(6)
+-#define VXGE_HW_FIFO_TXD_TX_CKO_UDP_EN			vxge_mBIT(7)
+-#define VXGE_HW_FIFO_TXD_VLAN_ENABLE			vxge_mBIT(15)
+-
+-#define VXGE_HW_FIFO_TXD_VLAN_TAG(val) 			vxge_vBIT(val, 16, 16)
+-
+-#define VXGE_HW_FIFO_TXD_INT_NUMBER(val) 		vxge_vBIT(val, 34, 6)
+-
+-#define VXGE_HW_FIFO_TXD_INT_TYPE_PER_LIST		vxge_mBIT(46)
+-#define VXGE_HW_FIFO_TXD_INT_TYPE_UTILZ			vxge_mBIT(47)
+-
+-	u64 buffer_pointer;
+-
+-	u64 host_control;
+-};
+-
+-/**
+- * struct vxge_hw_ring_rxd_1 - One buffer mode RxD for ring
+- * @host_control: This field is exclusively for host use and is "readonly"
+- *             from the adapter's perspective.
+- * @control_0:Bits 0 to 6 - RTH_Bucket get
+- *	      Bit 7 - Own Descriptor ownership bit. This bit is set to 1
+- *            by the host, and is set to 0 by the adapter.
+- *	      0 - Host owns RxD and buffer.
+- *	      1 - The adapter owns RxD and buffer.
+- *	      Bit 8 - Fast_Path_Eligible When set, indicates that the
+- *            received frame meets all of the criteria for fast path processing.
+- *            The required criteria are as follows:
+- *            !SYN &
+- *            (Transfer_Code == "Transfer OK") &
+- *            (!Is_IP_Fragment) &
+- *            ((Is_IPv4 & computed_L3_checksum == 0xFFFF) |
+- *            (Is_IPv6)) &
+- *            ((Is_TCP & computed_L4_checksum == 0xFFFF) |
+- *            (Is_UDP & (computed_L4_checksum == 0xFFFF |
+- *            computed _L4_checksum == 0x0000)))
+- *            (same meaning for all RxD buffer modes)
+- *	      Bit 9 - L3 Checksum Correct
+- *	      Bit 10 - L4 Checksum Correct
+- *	      Bit 11 - Reserved
+- *	      Bit 12 to 15 - This field is written by the adapter. It is
+- *            used to report the status of the frame transfer to the host.
+- *	      0x0 - Transfer OK
+- *	      0x4 - RDA Failure During Transfer
+- *	      0x5 - Unparseable Packet, such as unknown IPv6 header.
+- *	      0x6 - Frame integrity error (FCS or ECC).
+- *	      0x7 - Buffer Size Error. The provided buffer(s) were not
+- *                  appropriately sized and data loss occurred.
+- *	      0x8 - Internal ECC Error. RxD corrupted.
+- *	      0x9 - IPv4 Checksum error
+- *	      0xA - TCP/UDP Checksum error
+- *	      0xF - Unknown Error or Multiple Error. Indicates an
+- *               unknown problem or that more than one of transfer codes is set.
+- *	      Bit 16 - SYN The adapter sets this field to indicate that
+- *                the incoming frame contained a TCP segment with its SYN bit
+- *	          set and its ACK bit NOT set. (same meaning for all RxD buffer
+- *                modes)
+- *	      Bit 17 - Is ICMP
+- *	      Bit 18 - RTH_SPDM_HIT Set to 1 if there was a match in the
+- *                Socket Pair Direct Match Table and the frame was steered based
+- *                on SPDM.
+- *	      Bit 19 - RTH_IT_HIT Set to 1 if there was a match in the
+- *            Indirection Table and the frame was steered based on hash
+- *            indirection.
+- *	      Bit 20 to 23 - RTH_HASH_TYPE Indicates the function (hash
+- *	          type) that was used to calculate the hash.
+- *	      Bit 19 - IS_VLAN Set to '1' if the frame was/is VLAN
+- *	          tagged.
+- *	      Bit 25 to 26 - ETHER_ENCAP Reflects the Ethernet encapsulation
+- *                of the received frame.
+- *	      0x0 - Ethernet DIX
+- *	      0x1 - LLC
+- *	      0x2 - SNAP (includes Jumbo-SNAP)
+- *	      0x3 - IPX
+- *	      Bit 27 - IS_IPV4 Set to '1' if the frame contains an IPv4	packet.
+- *	      Bit 28 - IS_IPV6 Set to '1' if the frame contains an IPv6 packet.
+- *	      Bit 29 - IS_IP_FRAG Set to '1' if the frame contains a fragmented
+- *            IP packet.
+- *	      Bit 30 - IS_TCP Set to '1' if the frame contains a TCP segment.
+- *	      Bit 31 - IS_UDP Set to '1' if the frame contains a UDP message.
+- *	      Bit 32 to 47 - L3_Checksum[0:15] The IPv4 checksum value 	that
+- *            arrived with the frame. If the resulting computed IPv4 header
+- *            checksum for the frame did not produce the expected 0xFFFF value,
+- *            then the transfer code would be set to 0x9.
+- *	      Bit 48 to 63 - L4_Checksum[0:15] The TCP/UDP checksum value that
+- *            arrived with the frame. If the resulting computed TCP/UDP checksum
+- *            for the frame did not produce the expected 0xFFFF value, then the
+- *            transfer code would be set to 0xA.
+- * @control_1:Bits 0 to 1 - Reserved
+- *            Bits 2 to 15 - Buffer0_Size.This field is set by the host and
+- *            eventually overwritten by the adapter. The host writes the
+- *            available buffer size in bytes when it passes the descriptor to
+- *            the adapter. When a frame is delivered the host, the adapter
+- *            populates this field with the number of bytes written into the
+- *            buffer. The largest supported buffer is 16, 383 bytes.
+- *	      Bit 16 to 47 - RTH Hash Value 32-bit RTH hash value. Only valid if
+- *	      RTH_HASH_TYPE (Control_0, bits 20:23) is nonzero.
+- *	      Bit 48 to 63 - VLAN_Tag[0:15] The contents of the variable portion
+- *            of the VLAN tag, if one was detected by the adapter. This field is
+- *            populated even if VLAN-tag stripping is enabled.
+- * @buffer0_ptr: Pointer to buffer. This field is populated by the driver.
+- *
+- * One buffer mode RxD for ring structure
+- */
+-struct vxge_hw_ring_rxd_1 {
+-	u64 host_control;
+-	u64 control_0;
+-#define VXGE_HW_RING_RXD_RTH_BUCKET_GET(ctrl0)		vxge_bVALn(ctrl0, 0, 7)
+-
+-#define VXGE_HW_RING_RXD_LIST_OWN_ADAPTER		vxge_mBIT(7)
+-
+-#define VXGE_HW_RING_RXD_FAST_PATH_ELIGIBLE_GET(ctrl0)	vxge_bVALn(ctrl0, 8, 1)
+-
+-#define VXGE_HW_RING_RXD_L3_CKSUM_CORRECT_GET(ctrl0)	vxge_bVALn(ctrl0, 9, 1)
+-
+-#define VXGE_HW_RING_RXD_L4_CKSUM_CORRECT_GET(ctrl0)	vxge_bVALn(ctrl0, 10, 1)
+-
+-#define VXGE_HW_RING_RXD_T_CODE_GET(ctrl0)		vxge_bVALn(ctrl0, 12, 4)
+-#define VXGE_HW_RING_RXD_T_CODE(val) 			vxge_vBIT(val, 12, 4)
+-
+-#define VXGE_HW_RING_RXD_T_CODE_UNUSED		VXGE_HW_RING_T_CODE_UNUSED
+-
+-#define VXGE_HW_RING_RXD_SYN_GET(ctrl0)		vxge_bVALn(ctrl0, 16, 1)
+-
+-#define VXGE_HW_RING_RXD_IS_ICMP_GET(ctrl0)		vxge_bVALn(ctrl0, 17, 1)
+-
+-#define VXGE_HW_RING_RXD_RTH_SPDM_HIT_GET(ctrl0)	vxge_bVALn(ctrl0, 18, 1)
+-
+-#define VXGE_HW_RING_RXD_RTH_IT_HIT_GET(ctrl0)		vxge_bVALn(ctrl0, 19, 1)
+-
+-#define VXGE_HW_RING_RXD_RTH_HASH_TYPE_GET(ctrl0)	vxge_bVALn(ctrl0, 20, 4)
+-
+-#define VXGE_HW_RING_RXD_IS_VLAN_GET(ctrl0)		vxge_bVALn(ctrl0, 24, 1)
+-
+-#define VXGE_HW_RING_RXD_ETHER_ENCAP_GET(ctrl0)		vxge_bVALn(ctrl0, 25, 2)
+-
+-#define VXGE_HW_RING_RXD_FRAME_PROTO_GET(ctrl0)		vxge_bVALn(ctrl0, 27, 5)
+-
+-#define VXGE_HW_RING_RXD_L3_CKSUM_GET(ctrl0)	vxge_bVALn(ctrl0, 32, 16)
+-
+-#define VXGE_HW_RING_RXD_L4_CKSUM_GET(ctrl0)	vxge_bVALn(ctrl0, 48, 16)
+-
+-	u64 control_1;
+-
+-#define VXGE_HW_RING_RXD_1_BUFFER0_SIZE_GET(ctrl1)	vxge_bVALn(ctrl1, 2, 14)
+-#define VXGE_HW_RING_RXD_1_BUFFER0_SIZE(val) vxge_vBIT(val, 2, 14)
+-#define VXGE_HW_RING_RXD_1_BUFFER0_SIZE_MASK		vxge_vBIT(0x3FFF, 2, 14)
+-
+-#define VXGE_HW_RING_RXD_1_RTH_HASH_VAL_GET(ctrl1)    vxge_bVALn(ctrl1, 16, 32)
+-
+-#define VXGE_HW_RING_RXD_VLAN_TAG_GET(ctrl1)	vxge_bVALn(ctrl1, 48, 16)
+-
+-	u64 buffer0_ptr;
+-};
+-
+-enum vxge_hw_rth_algoritms {
+-	RTH_ALG_JENKINS = 0,
+-	RTH_ALG_MS_RSS	= 1,
+-	RTH_ALG_CRC32C	= 2
+-};
+-
+-/**
+- * struct vxge_hw_rth_hash_types - RTH hash types.
+- * @hash_type_tcpipv4_en: Enables RTH field type HashTypeTcpIPv4
+- * @hash_type_ipv4_en: Enables RTH field type HashTypeIPv4
+- * @hash_type_tcpipv6_en: Enables RTH field type HashTypeTcpIPv6
+- * @hash_type_ipv6_en: Enables RTH field type HashTypeIPv6
+- * @hash_type_tcpipv6ex_en: Enables RTH field type HashTypeTcpIPv6Ex
+- * @hash_type_ipv6ex_en: Enables RTH field type HashTypeIPv6Ex
+- *
+- * Used to pass RTH hash types to rts_rts_set.
+- *
+- * See also: vxge_hw_vpath_rts_rth_set(), vxge_hw_vpath_rts_rth_get().
+- */
+-struct vxge_hw_rth_hash_types {
+-	u8 hash_type_tcpipv4_en:1,
+-	   hash_type_ipv4_en:1,
+-	   hash_type_tcpipv6_en:1,
+-	   hash_type_ipv6_en:1,
+-	   hash_type_tcpipv6ex_en:1,
+-	   hash_type_ipv6ex_en:1;
+-};
+-
+-void vxge_hw_device_debug_set(
+-	struct __vxge_hw_device *devh,
+-	enum vxge_debug_level level,
+-	u32 mask);
+-
+-u32
+-vxge_hw_device_error_level_get(struct __vxge_hw_device *devh);
+-
+-u32
+-vxge_hw_device_trace_level_get(struct __vxge_hw_device *devh);
+-
+-/**
+- * vxge_hw_ring_rxd_size_get	- Get the size of ring descriptor.
+- * @buf_mode: Buffer mode (1, 3 or 5)
+- *
+- * This function returns the size of RxD for given buffer mode
+- */
+-static inline u32 vxge_hw_ring_rxd_size_get(u32 buf_mode)
+-{
+-	return sizeof(struct vxge_hw_ring_rxd_1);
+-}
+-
+-/**
+- * vxge_hw_ring_rxds_per_block_get - Get the number of rxds per block.
+- * @buf_mode: Buffer mode (1 buffer mode only)
+- *
+- * This function returns the number of RxD for RxD block for given buffer mode
+- */
+-static inline u32 vxge_hw_ring_rxds_per_block_get(u32 buf_mode)
+-{
+-	return (u32)((VXGE_HW_BLOCK_SIZE-16) /
+-		sizeof(struct vxge_hw_ring_rxd_1));
+-}
+-
+-/**
+- * vxge_hw_ring_rxd_1b_set - Prepare 1-buffer-mode descriptor.
+- * @rxdh: Descriptor handle.
+- * @dma_pointer: DMA address of	a single receive buffer	this descriptor
+- * should carry. Note that by the time vxge_hw_ring_rxd_1b_set is called,
+- * the receive buffer should be already mapped to the device
+- * @size: Size of the receive @dma_pointer buffer.
+- *
+- * Prepare 1-buffer-mode Rx	descriptor for posting
+- * (via	vxge_hw_ring_rxd_post()).
+- *
+- * This	inline helper-function does not	return any parameters and always
+- * succeeds.
+- *
+- */
+-static inline
+-void vxge_hw_ring_rxd_1b_set(
+-	void *rxdh,
+-	dma_addr_t dma_pointer,
+-	u32 size)
+-{
+-	struct vxge_hw_ring_rxd_1 *rxdp = (struct vxge_hw_ring_rxd_1 *)rxdh;
+-	rxdp->buffer0_ptr = dma_pointer;
+-	rxdp->control_1	&= ~VXGE_HW_RING_RXD_1_BUFFER0_SIZE_MASK;
+-	rxdp->control_1	|= VXGE_HW_RING_RXD_1_BUFFER0_SIZE(size);
+-}
+-
+-/**
+- * vxge_hw_ring_rxd_1b_get - Get data from the completed 1-buf
+- * descriptor.
+- * @vpath_handle: Virtual Path handle.
+- * @rxdh: Descriptor handle.
+- * @dma_pointer: DMA address of	a single receive buffer	this descriptor
+- * carries. Returned by HW.
+- * @pkt_length:	Length (in bytes) of the data in the buffer pointed by
+- *
+- * Retrieve protocol data from the completed 1-buffer-mode Rx descriptor.
+- * This	inline helper-function uses completed descriptor to populate receive
+- * buffer pointer and other "out" parameters. The function always succeeds.
+- *
+- */
+-static inline
+-void vxge_hw_ring_rxd_1b_get(
+-	struct __vxge_hw_ring *ring_handle,
+-	void *rxdh,
+-	u32 *pkt_length)
+-{
+-	struct vxge_hw_ring_rxd_1 *rxdp = (struct vxge_hw_ring_rxd_1 *)rxdh;
+-
+-	*pkt_length =
+-		(u32)VXGE_HW_RING_RXD_1_BUFFER0_SIZE_GET(rxdp->control_1);
+-}
+-
+-/**
+- * vxge_hw_ring_rxd_1b_info_get - Get extended information associated with
+- * a completed receive descriptor for 1b mode.
+- * @vpath_handle: Virtual Path handle.
+- * @rxdh: Descriptor handle.
+- * @rxd_info: Descriptor information
+- *
+- * Retrieve extended information associated with a completed receive descriptor.
+- *
+- */
+-static inline
+-void vxge_hw_ring_rxd_1b_info_get(
+-	struct __vxge_hw_ring *ring_handle,
+-	void *rxdh,
+-	struct vxge_hw_ring_rxd_info *rxd_info)
+-{
+-
+-	struct vxge_hw_ring_rxd_1 *rxdp = (struct vxge_hw_ring_rxd_1 *)rxdh;
+-	rxd_info->syn_flag =
+-		(u32)VXGE_HW_RING_RXD_SYN_GET(rxdp->control_0);
+-	rxd_info->is_icmp =
+-		(u32)VXGE_HW_RING_RXD_IS_ICMP_GET(rxdp->control_0);
+-	rxd_info->fast_path_eligible =
+-		(u32)VXGE_HW_RING_RXD_FAST_PATH_ELIGIBLE_GET(rxdp->control_0);
+-	rxd_info->l3_cksum_valid =
+-		(u32)VXGE_HW_RING_RXD_L3_CKSUM_CORRECT_GET(rxdp->control_0);
+-	rxd_info->l3_cksum =
+-		(u32)VXGE_HW_RING_RXD_L3_CKSUM_GET(rxdp->control_0);
+-	rxd_info->l4_cksum_valid =
+-		(u32)VXGE_HW_RING_RXD_L4_CKSUM_CORRECT_GET(rxdp->control_0);
+-	rxd_info->l4_cksum =
+-		(u32)VXGE_HW_RING_RXD_L4_CKSUM_GET(rxdp->control_0);
+-	rxd_info->frame =
+-		(u32)VXGE_HW_RING_RXD_ETHER_ENCAP_GET(rxdp->control_0);
+-	rxd_info->proto =
+-		(u32)VXGE_HW_RING_RXD_FRAME_PROTO_GET(rxdp->control_0);
+-	rxd_info->is_vlan =
+-		(u32)VXGE_HW_RING_RXD_IS_VLAN_GET(rxdp->control_0);
+-	rxd_info->vlan =
+-		(u32)VXGE_HW_RING_RXD_VLAN_TAG_GET(rxdp->control_1);
+-	rxd_info->rth_bucket =
+-		(u32)VXGE_HW_RING_RXD_RTH_BUCKET_GET(rxdp->control_0);
+-	rxd_info->rth_it_hit =
+-		(u32)VXGE_HW_RING_RXD_RTH_IT_HIT_GET(rxdp->control_0);
+-	rxd_info->rth_spdm_hit =
+-		(u32)VXGE_HW_RING_RXD_RTH_SPDM_HIT_GET(rxdp->control_0);
+-	rxd_info->rth_hash_type =
+-		(u32)VXGE_HW_RING_RXD_RTH_HASH_TYPE_GET(rxdp->control_0);
+-	rxd_info->rth_value =
+-		(u32)VXGE_HW_RING_RXD_1_RTH_HASH_VAL_GET(rxdp->control_1);
+-}
+-
+-/**
+- * vxge_hw_ring_rxd_private_get - Get driver private per-descriptor data
+- *                      of 1b mode 3b mode ring.
+- * @rxdh: Descriptor handle.
+- *
+- * Returns: private driver	info associated	with the descriptor.
+- * driver requests	per-descriptor space via vxge_hw_ring_attr.
+- *
+- */
+-static inline void *vxge_hw_ring_rxd_private_get(void *rxdh)
+-{
+-	struct vxge_hw_ring_rxd_1 *rxdp = (struct vxge_hw_ring_rxd_1 *)rxdh;
+-	return (void *)(size_t)rxdp->host_control;
+-}
+-
+-/**
+- * vxge_hw_fifo_txdl_cksum_set_bits - Offload checksum.
+- * @txdlh: Descriptor handle.
+- * @cksum_bits: Specifies which checksums are to be offloaded: IPv4,
+- *              and/or TCP and/or UDP.
+- *
+- * Ask Titan to calculate IPv4 & transport checksums for _this_ transmit
+- * descriptor.
+- * This API is part of the preparation of the transmit descriptor for posting
+- * (via vxge_hw_fifo_txdl_post()). The related "preparation" APIs include
+- * vxge_hw_fifo_txdl_mss_set(), vxge_hw_fifo_txdl_buffer_set_aligned(),
+- * and vxge_hw_fifo_txdl_buffer_set().
+- * All these APIs fill in the fields of the fifo descriptor,
+- * in accordance with the Titan specification.
+- *
+- */
+-static inline void vxge_hw_fifo_txdl_cksum_set_bits(void *txdlh, u64 cksum_bits)
+-{
+-	struct vxge_hw_fifo_txd *txdp = (struct vxge_hw_fifo_txd *)txdlh;
+-	txdp->control_1 |= cksum_bits;
+-}
+-
+-/**
+- * vxge_hw_fifo_txdl_mss_set - Set MSS.
+- * @txdlh: Descriptor handle.
+- * @mss: MSS size for _this_ TCP connection. Passed by TCP stack down to the
+- *       driver, which in turn inserts the MSS into the @txdlh.
+- *
+- * This API is part of the preparation of the transmit descriptor for posting
+- * (via vxge_hw_fifo_txdl_post()). The related "preparation" APIs include
+- * vxge_hw_fifo_txdl_buffer_set(), vxge_hw_fifo_txdl_buffer_set_aligned(),
+- * and vxge_hw_fifo_txdl_cksum_set_bits().
+- * All these APIs fill in the fields of the fifo descriptor,
+- * in accordance with the Titan specification.
+- *
+- */
+-static inline void vxge_hw_fifo_txdl_mss_set(void *txdlh, int mss)
+-{
+-	struct vxge_hw_fifo_txd *txdp = (struct vxge_hw_fifo_txd *)txdlh;
+-
+-	txdp->control_0 |= VXGE_HW_FIFO_TXD_LSO_EN;
+-	txdp->control_0 |= VXGE_HW_FIFO_TXD_LSO_MSS(mss);
+-}
+-
+-/**
+- * vxge_hw_fifo_txdl_vlan_set - Set VLAN tag.
+- * @txdlh: Descriptor handle.
+- * @vlan_tag: 16bit VLAN tag.
+- *
+- * Insert VLAN tag into specified transmit descriptor.
+- * The actual insertion of the tag into outgoing frame is done by the hardware.
+- */
+-static inline void vxge_hw_fifo_txdl_vlan_set(void *txdlh, u16 vlan_tag)
+-{
+-	struct vxge_hw_fifo_txd *txdp = (struct vxge_hw_fifo_txd *)txdlh;
+-
+-	txdp->control_1 |= VXGE_HW_FIFO_TXD_VLAN_ENABLE;
+-	txdp->control_1 |= VXGE_HW_FIFO_TXD_VLAN_TAG(vlan_tag);
+-}
+-
+-/**
+- * vxge_hw_fifo_txdl_private_get - Retrieve per-descriptor private data.
+- * @txdlh: Descriptor handle.
+- *
+- * Retrieve per-descriptor private data.
+- * Note that driver requests per-descriptor space via
+- * struct vxge_hw_fifo_attr passed to
+- * vxge_hw_vpath_open().
+- *
+- * Returns: private driver data associated with the descriptor.
+- */
+-static inline void *vxge_hw_fifo_txdl_private_get(void *txdlh)
+-{
+-	struct vxge_hw_fifo_txd *txdp  = (struct vxge_hw_fifo_txd *)txdlh;
+-
+-	return (void *)(size_t)txdp->host_control;
+-}
+-
+-/**
+- * struct vxge_hw_ring_attr - Ring open "template".
+- * @callback: Ring completion callback. HW invokes the callback when there
+- *            are new completions on that ring. In many implementations
+- *            the @callback executes in the hw interrupt context.
+- * @rxd_init: Ring's descriptor-initialize callback.
+- *            See vxge_hw_ring_rxd_init_f{}.
+- *            If not NULL, HW invokes the callback when opening
+- *            the ring.
+- * @rxd_term: Ring's descriptor-terminate callback. If not NULL,
+- *          HW invokes the callback when closing the corresponding ring.
+- *          See also vxge_hw_ring_rxd_term_f{}.
+- * @userdata: User-defined "context" of _that_ ring. Passed back to the
+- *            user as one of the @callback, @rxd_init, and @rxd_term arguments.
+- * @per_rxd_space: If specified (i.e., greater than zero): extra space
+- *              reserved by HW per each receive descriptor.
+- *              Can be used to store
+- *              and retrieve on completion, information specific
+- *              to the driver.
+- *
+- * Ring open "template". User fills the structure with ring
+- * attributes and passes it to vxge_hw_vpath_open().
+- */
+-struct vxge_hw_ring_attr {
+-	enum vxge_hw_status (*callback)(
+-			struct __vxge_hw_ring *ringh,
+-			void *rxdh,
+-			u8 t_code,
+-			void *userdata);
+-
+-	enum vxge_hw_status (*rxd_init)(
+-			void *rxdh,
+-			void *userdata);
+-
+-	void (*rxd_term)(
+-			void *rxdh,
+-			enum vxge_hw_rxd_state state,
+-			void *userdata);
+-
+-	void		*userdata;
+-	u32		per_rxd_space;
+-};
+-
+-/**
+- * function vxge_hw_fifo_callback_f - FIFO callback.
+- * @vpath_handle: Virtual path whose Fifo "containing" 1 or more completed
+- *             descriptors.
+- * @txdlh: First completed descriptor.
+- * @txdl_priv: Pointer to per txdl space allocated
+- * @t_code: Transfer code, as per Titan User Guide.
+- *          Returned by HW.
+- * @host_control: Opaque 64bit data stored by driver inside the Titan
+- *            descriptor prior to posting the latter on the fifo
+- *            via vxge_hw_fifo_txdl_post(). The @host_control is returned
+- *            as is to the driver with each completed descriptor.
+- * @userdata: Opaque per-fifo data specified at fifo open
+- *            time, via vxge_hw_vpath_open().
+- *
+- * Fifo completion callback (type declaration). A single per-fifo
+- * callback is specified at fifo open time, via
+- * vxge_hw_vpath_open(). Typically gets called as part of the processing
+- * of the Interrupt Service Routine.
+- *
+- * Fifo callback gets called by HW if, and only if, there is at least
+- * one new completion on a given fifo. Upon processing the first @txdlh driver
+- * is _supposed_ to continue consuming completions using:
+- *    - vxge_hw_fifo_txdl_next_completed()
+- *
+- * Note that failure to process new completions in a timely fashion
+- * leads to VXGE_HW_INF_OUT_OF_DESCRIPTORS condition.
+- *
+- * Non-zero @t_code means failure to process transmit descriptor.
+- *
+- * In the "transmit" case the failure could happen, for instance, when the
+- * link is down, in which case Titan completes the descriptor because it
+- * is not able to send the data out.
+- *
+- * For details please refer to Titan User Guide.
+- *
+- * See also: vxge_hw_fifo_txdl_next_completed(), vxge_hw_fifo_txdl_term_f{}.
+- */
+-/**
+- * function vxge_hw_fifo_txdl_term_f - Terminate descriptor callback.
+- * @txdlh: First completed descriptor.
+- * @txdl_priv: Pointer to per txdl space allocated
+- * @state: One of the enum vxge_hw_txdl_state{} enumerated states.
+- * @userdata: Per-fifo user data (a.k.a. context) specified at
+- * fifo open time, via vxge_hw_vpath_open().
+- *
+- * Terminate descriptor callback. Unless NULL is specified in the
+- * struct vxge_hw_fifo_attr{} structure passed to vxge_hw_vpath_open()),
+- * HW invokes the callback as part of closing fifo, prior to
+- * de-allocating the ring and associated data structures
+- * (including descriptors).
+- * driver should utilize the callback to (for instance) unmap
+- * and free DMA data buffers associated with the posted (state =
+- * VXGE_HW_TXDL_STATE_POSTED) descriptors,
+- * as well as other relevant cleanup functions.
+- *
+- * See also: struct vxge_hw_fifo_attr{}
+- */
+-/**
+- * struct vxge_hw_fifo_attr - Fifo open "template".
+- * @callback: Fifo completion callback. HW invokes the callback when there
+- *            are new completions on that fifo. In many implementations
+- *            the @callback executes in the hw interrupt context.
+- * @txdl_term: Fifo's descriptor-terminate callback. If not NULL,
+- *          HW invokes the callback when closing the corresponding fifo.
+- *          See also vxge_hw_fifo_txdl_term_f{}.
+- * @userdata: User-defined "context" of _that_ fifo. Passed back to the
+- *            user as one of the @callback, and @txdl_term arguments.
+- * @per_txdl_space: If specified (i.e., greater than zero): extra space
+- *              reserved by HW per each transmit descriptor. Can be used to
+- *              store, and retrieve on completion, information specific
+- *              to the driver.
+- *
+- * Fifo open "template". User fills the structure with fifo
+- * attributes and passes it to vxge_hw_vpath_open().
+- */
+-struct vxge_hw_fifo_attr {
+-
+-	enum vxge_hw_status (*callback)(
+-			struct __vxge_hw_fifo *fifo_handle,
+-			void *txdlh,
+-			enum vxge_hw_fifo_tcode t_code,
+-			void *userdata,
+-			struct sk_buff ***skb_ptr,
+-			int nr_skb, int *more);
+-
+-	void (*txdl_term)(
+-			void *txdlh,
+-			enum vxge_hw_txdl_state state,
+-			void *userdata);
+-
+-	void		*userdata;
+-	u32		per_txdl_space;
+-};
+-
+-/**
+- * struct vxge_hw_vpath_attr - Attributes of virtual path
+- * @vp_id: Identifier of Virtual Path
+- * @ring_attr: Attributes of ring for non-offload receive
+- * @fifo_attr: Attributes of fifo for non-offload transmit
+- *
+- * Attributes of virtual path.  This structure is passed as parameter
+- * to the vxge_hw_vpath_open() routine to set the attributes of ring and fifo.
+- */
+-struct vxge_hw_vpath_attr {
+-	u32				vp_id;
+-	struct vxge_hw_ring_attr	ring_attr;
+-	struct vxge_hw_fifo_attr	fifo_attr;
+-};
+-
+-enum vxge_hw_status vxge_hw_device_hw_info_get(
+-	void __iomem *bar0,
+-	struct vxge_hw_device_hw_info *hw_info);
+-
+-enum vxge_hw_status vxge_hw_device_config_default_get(
+-	struct vxge_hw_device_config *device_config);
+-
+-/**
+- * vxge_hw_device_link_state_get - Get link state.
+- * @devh: HW device handle.
+- *
+- * Get link state.
+- * Returns: link state.
+- */
+-static inline
+-enum vxge_hw_device_link_state vxge_hw_device_link_state_get(
+-	struct __vxge_hw_device *devh)
+-{
+-	return devh->link_state;
+-}
+-
+-void vxge_hw_device_terminate(struct __vxge_hw_device *devh);
+-
+-const u8 *
+-vxge_hw_device_serial_number_get(struct __vxge_hw_device *devh);
+-
+-u16 vxge_hw_device_link_width_get(struct __vxge_hw_device *devh);
+-
+-const u8 *
+-vxge_hw_device_product_name_get(struct __vxge_hw_device *devh);
+-
+-enum vxge_hw_status vxge_hw_device_initialize(
+-	struct __vxge_hw_device **devh,
+-	struct vxge_hw_device_attr *attr,
+-	struct vxge_hw_device_config *device_config);
+-
+-enum vxge_hw_status vxge_hw_device_getpause_data(
+-	 struct __vxge_hw_device *devh,
+-	 u32 port,
+-	 u32 *tx,
+-	 u32 *rx);
+-
+-enum vxge_hw_status vxge_hw_device_setpause_data(
+-	struct __vxge_hw_device *devh,
+-	u32 port,
+-	u32 tx,
+-	u32 rx);
+-
+-static inline void *vxge_os_dma_malloc(struct pci_dev *pdev,
+-			unsigned long size,
+-			struct pci_dev **p_dmah,
+-			struct pci_dev **p_dma_acch)
+-{
+-	void *vaddr;
+-	unsigned long misaligned = 0;
+-	int realloc_flag = 0;
+-	*p_dma_acch = *p_dmah = NULL;
+-
+-realloc:
+-	vaddr = kmalloc(size, GFP_KERNEL | GFP_DMA);
+-	if (vaddr == NULL)
+-		return vaddr;
+-	misaligned = (unsigned long)VXGE_ALIGN((unsigned long)vaddr,
+-				VXGE_CACHE_LINE_SIZE);
+-	if (realloc_flag)
+-		goto out;
+-
+-	if (misaligned) {
+-		/* misaligned, free current one and try allocating
+-		 * size + VXGE_CACHE_LINE_SIZE memory
+-		 */
+-		kfree(vaddr);
+-		size += VXGE_CACHE_LINE_SIZE;
+-		realloc_flag = 1;
+-		goto realloc;
+-	}
+-out:
+-	*(unsigned long *)p_dma_acch = misaligned;
+-	vaddr = (void *)((u8 *)vaddr + misaligned);
+-	return vaddr;
+-}
+-
+-static inline void vxge_os_dma_free(struct pci_dev *pdev, const void *vaddr,
+-			struct pci_dev **p_dma_acch)
+-{
+-	unsigned long misaligned = *(unsigned long *)p_dma_acch;
+-	u8 *tmp = (u8 *)vaddr;
+-	tmp -= misaligned;
+-	kfree((void *)tmp);
+-}
+-
+-/*
+- * __vxge_hw_mempool_item_priv - will return pointer on per item private space
+- */
+-static inline void*
+-__vxge_hw_mempool_item_priv(
+-	struct vxge_hw_mempool *mempool,
+-	u32 memblock_idx,
+-	void *item,
+-	u32 *memblock_item_idx)
+-{
+-	ptrdiff_t offset;
+-	void *memblock = mempool->memblocks_arr[memblock_idx];
+-
+-
+-	offset = (u32)((u8 *)item - (u8 *)memblock);
+-	vxge_assert(offset >= 0 && (u32)offset < mempool->memblock_size);
+-
+-	(*memblock_item_idx) = (u32) offset / mempool->item_size;
+-	vxge_assert((*memblock_item_idx) < mempool->items_per_memblock);
+-
+-	return (u8 *)mempool->memblocks_priv_arr[memblock_idx] +
+-			    (*memblock_item_idx) * mempool->items_priv_size;
+-}
+-
+-/*
+- * __vxge_hw_fifo_txdl_priv - Return the max fragments allocated
+- * for the fifo.
+- * @fifo: Fifo
+- * @txdp: Poniter to a TxD
+- */
+-static inline struct __vxge_hw_fifo_txdl_priv *
+-__vxge_hw_fifo_txdl_priv(
+-	struct __vxge_hw_fifo *fifo,
+-	struct vxge_hw_fifo_txd *txdp)
+-{
+-	return (struct __vxge_hw_fifo_txdl_priv *)
+-			(((char *)((ulong)txdp->host_control)) +
+-				fifo->per_txdl_space);
+-}
+-
+-enum vxge_hw_status vxge_hw_vpath_open(
+-	struct __vxge_hw_device *devh,
+-	struct vxge_hw_vpath_attr *attr,
+-	struct __vxge_hw_vpath_handle **vpath_handle);
+-
+-enum vxge_hw_status vxge_hw_vpath_close(
+-	struct __vxge_hw_vpath_handle *vpath_handle);
+-
+-enum vxge_hw_status
+-vxge_hw_vpath_reset(
+-	struct __vxge_hw_vpath_handle *vpath_handle);
+-
+-enum vxge_hw_status
+-vxge_hw_vpath_recover_from_reset(
+-	struct __vxge_hw_vpath_handle *vpath_handle);
+-
+-void
+-vxge_hw_vpath_enable(struct __vxge_hw_vpath_handle *vp);
+-
+-enum vxge_hw_status
+-vxge_hw_vpath_check_leak(struct __vxge_hw_ring *ringh);
+-
+-enum vxge_hw_status vxge_hw_vpath_mtu_set(
+-	struct __vxge_hw_vpath_handle *vpath_handle,
+-	u32 new_mtu);
+-
+-void
+-vxge_hw_vpath_rx_doorbell_init(struct __vxge_hw_vpath_handle *vp);
+-
+-static inline void __vxge_hw_pio_mem_write32_upper(u32 val, void __iomem *addr)
+-{
+-	writel(val, addr + 4);
+-}
+-
+-static inline void __vxge_hw_pio_mem_write32_lower(u32 val, void __iomem *addr)
+-{
+-	writel(val, addr);
+-}
+-
+-enum vxge_hw_status
+-vxge_hw_device_flick_link_led(struct __vxge_hw_device *devh, u64 on_off);
+-
+-enum vxge_hw_status
+-vxge_hw_vpath_strip_fcs_check(struct __vxge_hw_device *hldev, u64 vpath_mask);
+-
+-/**
+- * vxge_debug_ll
+- * @level: level of debug verbosity.
+- * @mask: mask for the debug
+- * @buf: Circular buffer for tracing
+- * @fmt: printf like format string
+- *
+- * Provides logging facilities. Can be customized on per-module
+- * basis or/and with debug levels. Input parameters, except
+- * module and level, are the same as posix printf. This function
+- * may be compiled out if DEBUG macro was never defined.
+- * See also: enum vxge_debug_level{}.
+- */
+-#if (VXGE_COMPONENT_LL & VXGE_DEBUG_MODULE_MASK)
+-#define vxge_debug_ll(level, mask, fmt, ...) do {			       \
+-	if ((level >= VXGE_ERR && VXGE_COMPONENT_LL & VXGE_DEBUG_ERR_MASK) ||  \
+-	    (level >= VXGE_TRACE && VXGE_COMPONENT_LL & VXGE_DEBUG_TRACE_MASK))\
+-		if ((mask & VXGE_DEBUG_MASK) == mask)			       \
+-			printk(fmt "\n", ##__VA_ARGS__);		       \
+-} while (0)
+-#else
+-#define vxge_debug_ll(level, mask, fmt, ...)
+-#endif
+-
+-enum vxge_hw_status vxge_hw_vpath_rts_rth_itable_set(
+-			struct __vxge_hw_vpath_handle **vpath_handles,
+-			u32 vpath_count,
+-			u8 *mtable,
+-			u8 *itable,
+-			u32 itable_size);
+-
+-enum vxge_hw_status vxge_hw_vpath_rts_rth_set(
+-	struct __vxge_hw_vpath_handle *vpath_handle,
+-	enum vxge_hw_rth_algoritms algorithm,
+-	struct vxge_hw_rth_hash_types *hash_type,
+-	u16 bucket_size);
+-
+-enum vxge_hw_status
+-__vxge_hw_device_is_privilaged(u32 host_type, u32 func_id);
+-
+-#define VXGE_HW_MIN_SUCCESSIVE_IDLE_COUNT 5
+-#define VXGE_HW_MAX_POLLING_COUNT 100
+-
+-void
+-vxge_hw_device_wait_receive_idle(struct __vxge_hw_device *hldev);
+-
+-enum vxge_hw_status
+-vxge_hw_upgrade_read_version(struct __vxge_hw_device *hldev, u32 *major,
+-			     u32 *minor, u32 *build);
+-
+-enum vxge_hw_status vxge_hw_flash_fw(struct __vxge_hw_device *hldev);
+-
+-enum vxge_hw_status
+-vxge_update_fw_image(struct __vxge_hw_device *hldev, const u8 *filebuf,
+-		     int size);
+-
+-enum vxge_hw_status
+-vxge_hw_vpath_eprom_img_ver_get(struct __vxge_hw_device *hldev,
+-				struct eprom_image *eprom_image_data);
+-
+-int vxge_hw_vpath_wait_receive_idle(struct __vxge_hw_device *hldev, u32 vp_id);
+-#endif
+diff --git a/drivers/net/ethernet/neterion/vxge/vxge-ethtool.c b/drivers/net/ethernet/neterion/vxge/vxge-ethtool.c
+deleted file mode 100644
+index 4d91026485ae..000000000000
+--- a/drivers/net/ethernet/neterion/vxge/vxge-ethtool.c
++++ /dev/null
+@@ -1,1154 +0,0 @@
+-/******************************************************************************
+- * This software may be used and distributed according to the terms of
+- * the GNU General Public License (GPL), incorporated herein by reference.
+- * Drivers based on or derived from this code fall under the GPL and must
+- * retain the authorship, copyright and license notice.  This file is not
+- * a complete program and may only be used when the entire operating
+- * system is licensed under the GPL.
+- * See the file COPYING in this distribution for more information.
+- *
+- * vxge-ethtool.c: Driver for Exar Corp's X3100 Series 10GbE PCIe I/O
+- *                 Virtualized Server Adapter.
+- * Copyright(c) 2002-2010 Exar Corp.
+- ******************************************************************************/
+-#include <linux/ethtool.h>
+-#include <linux/slab.h>
+-#include <linux/pci.h>
+-#include <linux/etherdevice.h>
+-
+-#include "vxge-ethtool.h"
+-
+-static const char ethtool_driver_stats_keys[][ETH_GSTRING_LEN] = {
+-	{"\n DRIVER STATISTICS"},
+-	{"vpaths_opened"},
+-	{"vpath_open_fail_cnt"},
+-	{"link_up_cnt"},
+-	{"link_down_cnt"},
+-	{"tx_frms"},
+-	{"tx_errors"},
+-	{"tx_bytes"},
+-	{"txd_not_free"},
+-	{"txd_out_of_desc"},
+-	{"rx_frms"},
+-	{"rx_errors"},
+-	{"rx_bytes"},
+-	{"rx_mcast"},
+-	{"pci_map_fail_cnt"},
+-	{"skb_alloc_fail_cnt"}
+-};
+-
+-/**
+- * vxge_ethtool_set_link_ksettings - Sets different link parameters.
+- * @dev: device pointer.
+- * @cmd: pointer to the structure with parameters given by ethtool to set
+- * link information.
+- *
+- * The function sets different link parameters provided by the user onto
+- * the NIC.
+- * Return value:
+- * 0 on success.
+- */
+-static int
+-vxge_ethtool_set_link_ksettings(struct net_device *dev,
+-				const struct ethtool_link_ksettings *cmd)
+-{
+-	/* We currently only support 10Gb/FULL */
+-	if ((cmd->base.autoneg == AUTONEG_ENABLE) ||
+-	    (cmd->base.speed != SPEED_10000) ||
+-	    (cmd->base.duplex != DUPLEX_FULL))
+-		return -EINVAL;
+-
+-	return 0;
+-}
+-
+-/**
+- * vxge_ethtool_get_link_ksettings - Return link specific information.
+- * @dev: device pointer.
+- * @cmd: pointer to the structure with parameters given by ethtool
+- * to return link information.
+- *
+- * Returns link specific information like speed, duplex etc.. to ethtool.
+- * Return value :
+- * return 0 on success.
+- */
+-static int vxge_ethtool_get_link_ksettings(struct net_device *dev,
+-					   struct ethtool_link_ksettings *cmd)
+-{
+-	ethtool_link_ksettings_zero_link_mode(cmd, supported);
+-	ethtool_link_ksettings_add_link_mode(cmd, supported, 10000baseT_Full);
+-	ethtool_link_ksettings_add_link_mode(cmd, supported, FIBRE);
+-
+-	ethtool_link_ksettings_zero_link_mode(cmd, advertising);
+-	ethtool_link_ksettings_add_link_mode(cmd, advertising, 10000baseT_Full);
+-	ethtool_link_ksettings_add_link_mode(cmd, advertising, FIBRE);
+-
+-	cmd->base.port = PORT_FIBRE;
+-
+-	if (netif_carrier_ok(dev)) {
+-		cmd->base.speed = SPEED_10000;
+-		cmd->base.duplex = DUPLEX_FULL;
+-	} else {
+-		cmd->base.speed = SPEED_UNKNOWN;
+-		cmd->base.duplex = DUPLEX_UNKNOWN;
+-	}
+-
+-	cmd->base.autoneg = AUTONEG_DISABLE;
+-	return 0;
+-}
+-
+-/**
+- * vxge_ethtool_gdrvinfo - Returns driver specific information.
+- * @dev: device pointer.
+- * @info: pointer to the structure with parameters given by ethtool to
+- * return driver information.
+- *
+- * Returns driver specefic information like name, version etc.. to ethtool.
+- */
+-static void vxge_ethtool_gdrvinfo(struct net_device *dev,
+-				  struct ethtool_drvinfo *info)
+-{
+-	struct vxgedev *vdev = netdev_priv(dev);
+-	strlcpy(info->driver, VXGE_DRIVER_NAME, sizeof(info->driver));
+-	strlcpy(info->version, DRV_VERSION, sizeof(info->version));
+-	strlcpy(info->fw_version, vdev->fw_version, sizeof(info->fw_version));
+-	strlcpy(info->bus_info, pci_name(vdev->pdev), sizeof(info->bus_info));
+-}
+-
+-/**
+- * vxge_ethtool_gregs - dumps the entire space of Titan into the buffer.
+- * @dev: device pointer.
+- * @regs: pointer to the structure with parameters given by ethtool for
+- * dumping the registers.
+- * @space: The input argument into which all the registers are dumped.
+- *
+- * Dumps the vpath register space of Titan NIC into the user given
+- * buffer area.
+- */
+-static void vxge_ethtool_gregs(struct net_device *dev,
+-			       struct ethtool_regs *regs, void *space)
+-{
+-	int index, offset;
+-	enum vxge_hw_status status;
+-	u64 reg;
+-	u64 *reg_space = (u64 *)space;
+-	struct vxgedev *vdev = netdev_priv(dev);
+-	struct __vxge_hw_device *hldev = vdev->devh;
+-
+-	regs->len = sizeof(struct vxge_hw_vpath_reg) * vdev->no_of_vpath;
+-	regs->version = vdev->pdev->subsystem_device;
+-	for (index = 0; index < vdev->no_of_vpath; index++) {
+-		for (offset = 0; offset < sizeof(struct vxge_hw_vpath_reg);
+-				offset += 8) {
+-			status = vxge_hw_mgmt_reg_read(hldev,
+-					vxge_hw_mgmt_reg_type_vpath,
+-					vdev->vpaths[index].device_id,
+-					offset, &reg);
+-			if (status != VXGE_HW_OK) {
+-				vxge_debug_init(VXGE_ERR,
+-					"%s:%d Getting reg dump Failed",
+-						__func__, __LINE__);
+-				return;
+-			}
+-			*reg_space++ = reg;
+-		}
+-	}
+-}
+-
+-/**
+- * vxge_ethtool_idnic - To physically identify the nic on the system.
+- * @dev : device pointer.
+- * @state : requested LED state
+- *
+- * Used to physically identify the NIC on the system.
+- * 0 on success
+- */
+-static int vxge_ethtool_idnic(struct net_device *dev,
+-			      enum ethtool_phys_id_state state)
+-{
+-	struct vxgedev *vdev = netdev_priv(dev);
+-	struct __vxge_hw_device *hldev = vdev->devh;
+-
+-	switch (state) {
+-	case ETHTOOL_ID_ACTIVE:
+-		vxge_hw_device_flick_link_led(hldev, VXGE_FLICKER_ON);
+-		break;
+-
+-	case ETHTOOL_ID_INACTIVE:
+-		vxge_hw_device_flick_link_led(hldev, VXGE_FLICKER_OFF);
+-		break;
+-
+-	default:
+-		return -EINVAL;
+-	}
+-
+-	return 0;
+-}
+-
+-/**
+- * vxge_ethtool_getpause_data - Pause frame frame generation and reception.
+- * @dev : device pointer.
+- * @ep : pointer to the structure with pause parameters given by ethtool.
+- * Description:
+- * Returns the Pause frame generation and reception capability of the NIC.
+- * Return value:
+- *  void
+- */
+-static void vxge_ethtool_getpause_data(struct net_device *dev,
+-				       struct ethtool_pauseparam *ep)
+-{
+-	struct vxgedev *vdev = netdev_priv(dev);
+-	struct __vxge_hw_device *hldev = vdev->devh;
+-
+-	vxge_hw_device_getpause_data(hldev, 0, &ep->tx_pause, &ep->rx_pause);
+-}
+-
+-/**
+- * vxge_ethtool_setpause_data -  set/reset pause frame generation.
+- * @dev : device pointer.
+- * @ep : pointer to the structure with pause parameters given by ethtool.
+- * Description:
+- * It can be used to set or reset Pause frame generation or reception
+- * support of the NIC.
+- * Return value:
+- * int, returns 0 on Success
+- */
+-static int vxge_ethtool_setpause_data(struct net_device *dev,
+-				      struct ethtool_pauseparam *ep)
+-{
+-	struct vxgedev *vdev = netdev_priv(dev);
+-	struct __vxge_hw_device *hldev = vdev->devh;
+-
+-	vxge_hw_device_setpause_data(hldev, 0, ep->tx_pause, ep->rx_pause);
+-
+-	vdev->config.tx_pause_enable = ep->tx_pause;
+-	vdev->config.rx_pause_enable = ep->rx_pause;
+-
+-	return 0;
+-}
+-
+-static void vxge_get_ethtool_stats(struct net_device *dev,
+-				   struct ethtool_stats *estats, u64 *tmp_stats)
+-{
+-	int j, k;
+-	enum vxge_hw_status status;
+-	enum vxge_hw_status swstatus;
+-	struct vxge_vpath *vpath = NULL;
+-	struct vxgedev *vdev = netdev_priv(dev);
+-	struct __vxge_hw_device *hldev = vdev->devh;
+-	struct vxge_hw_xmac_stats *xmac_stats;
+-	struct vxge_hw_device_stats_sw_info *sw_stats;
+-	struct vxge_hw_device_stats_hw_info *hw_stats;
+-
+-	u64 *ptr = tmp_stats;
+-
+-	memset(tmp_stats, 0,
+-		vxge_ethtool_get_sset_count(dev, ETH_SS_STATS) * sizeof(u64));
+-
+-	xmac_stats = kzalloc(sizeof(struct vxge_hw_xmac_stats), GFP_KERNEL);
+-	if (xmac_stats == NULL) {
+-		vxge_debug_init(VXGE_ERR,
+-			"%s : %d Memory Allocation failed for xmac_stats",
+-				 __func__, __LINE__);
+-		return;
+-	}
+-
+-	sw_stats = kzalloc(sizeof(struct vxge_hw_device_stats_sw_info),
+-				GFP_KERNEL);
+-	if (sw_stats == NULL) {
+-		kfree(xmac_stats);
+-		vxge_debug_init(VXGE_ERR,
+-			"%s : %d Memory Allocation failed for sw_stats",
+-			__func__, __LINE__);
+-		return;
+-	}
+-
+-	hw_stats = kzalloc(sizeof(struct vxge_hw_device_stats_hw_info),
+-				GFP_KERNEL);
+-	if (hw_stats == NULL) {
+-		kfree(xmac_stats);
+-		kfree(sw_stats);
+-		vxge_debug_init(VXGE_ERR,
+-			"%s : %d Memory Allocation failed for hw_stats",
+-			__func__, __LINE__);
+-		return;
+-	}
+-
+-	*ptr++ = 0;
+-	status = vxge_hw_device_xmac_stats_get(hldev, xmac_stats);
+-	if (status != VXGE_HW_OK) {
+-		if (status != VXGE_HW_ERR_PRIVILEGED_OPERATION) {
+-			vxge_debug_init(VXGE_ERR,
+-				"%s : %d Failure in getting xmac stats",
+-				__func__, __LINE__);
+-		}
+-	}
+-	swstatus = vxge_hw_driver_stats_get(hldev, sw_stats);
+-	if (swstatus != VXGE_HW_OK) {
+-		vxge_debug_init(VXGE_ERR,
+-			"%s : %d Failure in getting sw stats",
+-			__func__, __LINE__);
+-	}
+-
+-	status = vxge_hw_device_stats_get(hldev, hw_stats);
+-	if (status != VXGE_HW_OK) {
+-		vxge_debug_init(VXGE_ERR,
+-			"%s : %d hw_stats_get error", __func__, __LINE__);
+-	}
+-
+-	for (k = 0; k < vdev->no_of_vpath; k++) {
+-		struct vxge_hw_vpath_stats_hw_info *vpath_info;
+-
+-		vpath = &vdev->vpaths[k];
+-		j = vpath->device_id;
+-		vpath_info = hw_stats->vpath_info[j];
+-		if (!vpath_info) {
+-			memset(ptr, 0, (VXGE_HW_VPATH_TX_STATS_LEN +
+-				VXGE_HW_VPATH_RX_STATS_LEN) * sizeof(u64));
+-			ptr += (VXGE_HW_VPATH_TX_STATS_LEN +
+-				VXGE_HW_VPATH_RX_STATS_LEN);
+-			continue;
+-		}
+-
+-		*ptr++ = vpath_info->tx_stats.tx_ttl_eth_frms;
+-		*ptr++ = vpath_info->tx_stats.tx_ttl_eth_octets;
+-		*ptr++ = vpath_info->tx_stats.tx_data_octets;
+-		*ptr++ = vpath_info->tx_stats.tx_mcast_frms;
+-		*ptr++ = vpath_info->tx_stats.tx_bcast_frms;
+-		*ptr++ = vpath_info->tx_stats.tx_ucast_frms;
+-		*ptr++ = vpath_info->tx_stats.tx_tagged_frms;
+-		*ptr++ = vpath_info->tx_stats.tx_vld_ip;
+-		*ptr++ = vpath_info->tx_stats.tx_vld_ip_octets;
+-		*ptr++ = vpath_info->tx_stats.tx_icmp;
+-		*ptr++ = vpath_info->tx_stats.tx_tcp;
+-		*ptr++ = vpath_info->tx_stats.tx_rst_tcp;
+-		*ptr++ = vpath_info->tx_stats.tx_udp;
+-		*ptr++ = vpath_info->tx_stats.tx_unknown_protocol;
+-		*ptr++ = vpath_info->tx_stats.tx_lost_ip;
+-		*ptr++ = vpath_info->tx_stats.tx_parse_error;
+-		*ptr++ = vpath_info->tx_stats.tx_tcp_offload;
+-		*ptr++ = vpath_info->tx_stats.tx_retx_tcp_offload;
+-		*ptr++ = vpath_info->tx_stats.tx_lost_ip_offload;
+-		*ptr++ = vpath_info->rx_stats.rx_ttl_eth_frms;
+-		*ptr++ = vpath_info->rx_stats.rx_vld_frms;
+-		*ptr++ = vpath_info->rx_stats.rx_offload_frms;
+-		*ptr++ = vpath_info->rx_stats.rx_ttl_eth_octets;
+-		*ptr++ = vpath_info->rx_stats.rx_data_octets;
+-		*ptr++ = vpath_info->rx_stats.rx_offload_octets;
+-		*ptr++ = vpath_info->rx_stats.rx_vld_mcast_frms;
+-		*ptr++ = vpath_info->rx_stats.rx_vld_bcast_frms;
+-		*ptr++ = vpath_info->rx_stats.rx_accepted_ucast_frms;
+-		*ptr++ = vpath_info->rx_stats.rx_accepted_nucast_frms;
+-		*ptr++ = vpath_info->rx_stats.rx_tagged_frms;
+-		*ptr++ = vpath_info->rx_stats.rx_long_frms;
+-		*ptr++ = vpath_info->rx_stats.rx_usized_frms;
+-		*ptr++ = vpath_info->rx_stats.rx_osized_frms;
+-		*ptr++ = vpath_info->rx_stats.rx_frag_frms;
+-		*ptr++ = vpath_info->rx_stats.rx_jabber_frms;
+-		*ptr++ = vpath_info->rx_stats.rx_ttl_64_frms;
+-		*ptr++ = vpath_info->rx_stats.rx_ttl_65_127_frms;
+-		*ptr++ = vpath_info->rx_stats.rx_ttl_128_255_frms;
+-		*ptr++ = vpath_info->rx_stats.rx_ttl_256_511_frms;
+-		*ptr++ = vpath_info->rx_stats.rx_ttl_512_1023_frms;
+-		*ptr++ = vpath_info->rx_stats.rx_ttl_1024_1518_frms;
+-		*ptr++ = vpath_info->rx_stats.rx_ttl_1519_4095_frms;
+-		*ptr++ = vpath_info->rx_stats.rx_ttl_4096_8191_frms;
+-		*ptr++ = vpath_info->rx_stats.rx_ttl_8192_max_frms;
+-		*ptr++ = vpath_info->rx_stats.rx_ttl_gt_max_frms;
+-		*ptr++ = vpath_info->rx_stats.rx_ip;
+-		*ptr++ = vpath_info->rx_stats.rx_accepted_ip;
+-		*ptr++ = vpath_info->rx_stats.rx_ip_octets;
+-		*ptr++ = vpath_info->rx_stats.rx_err_ip;
+-		*ptr++ = vpath_info->rx_stats.rx_icmp;
+-		*ptr++ = vpath_info->rx_stats.rx_tcp;
+-		*ptr++ = vpath_info->rx_stats.rx_udp;
+-		*ptr++ = vpath_info->rx_stats.rx_err_tcp;
+-		*ptr++ = vpath_info->rx_stats.rx_lost_frms;
+-		*ptr++ = vpath_info->rx_stats.rx_lost_ip;
+-		*ptr++ = vpath_info->rx_stats.rx_lost_ip_offload;
+-		*ptr++ = vpath_info->rx_stats.rx_various_discard;
+-		*ptr++ = vpath_info->rx_stats.rx_sleep_discard;
+-		*ptr++ = vpath_info->rx_stats.rx_red_discard;
+-		*ptr++ = vpath_info->rx_stats.rx_queue_full_discard;
+-		*ptr++ = vpath_info->rx_stats.rx_mpa_ok_frms;
+-	}
+-	*ptr++ = 0;
+-	for (k = 0; k < vdev->max_config_port; k++) {
+-		*ptr++ = xmac_stats->aggr_stats[k].tx_frms;
+-		*ptr++ = xmac_stats->aggr_stats[k].tx_data_octets;
+-		*ptr++ = xmac_stats->aggr_stats[k].tx_mcast_frms;
+-		*ptr++ = xmac_stats->aggr_stats[k].tx_bcast_frms;
+-		*ptr++ = xmac_stats->aggr_stats[k].tx_discarded_frms;
+-		*ptr++ = xmac_stats->aggr_stats[k].tx_errored_frms;
+-		*ptr++ = xmac_stats->aggr_stats[k].rx_frms;
+-		*ptr++ = xmac_stats->aggr_stats[k].rx_data_octets;
+-		*ptr++ = xmac_stats->aggr_stats[k].rx_mcast_frms;
+-		*ptr++ = xmac_stats->aggr_stats[k].rx_bcast_frms;
+-		*ptr++ = xmac_stats->aggr_stats[k].rx_discarded_frms;
+-		*ptr++ = xmac_stats->aggr_stats[k].rx_errored_frms;
+-		*ptr++ = xmac_stats->aggr_stats[k].rx_unknown_slow_proto_frms;
+-	}
+-	*ptr++ = 0;
+-	for (k = 0; k < vdev->max_config_port; k++) {
+-		*ptr++ = xmac_stats->port_stats[k].tx_ttl_frms;
+-		*ptr++ = xmac_stats->port_stats[k].tx_ttl_octets;
+-		*ptr++ = xmac_stats->port_stats[k].tx_data_octets;
+-		*ptr++ = xmac_stats->port_stats[k].tx_mcast_frms;
+-		*ptr++ = xmac_stats->port_stats[k].tx_bcast_frms;
+-		*ptr++ = xmac_stats->port_stats[k].tx_ucast_frms;
+-		*ptr++ = xmac_stats->port_stats[k].tx_tagged_frms;
+-		*ptr++ = xmac_stats->port_stats[k].tx_vld_ip;
+-		*ptr++ = xmac_stats->port_stats[k].tx_vld_ip_octets;
+-		*ptr++ = xmac_stats->port_stats[k].tx_icmp;
+-		*ptr++ = xmac_stats->port_stats[k].tx_tcp;
+-		*ptr++ = xmac_stats->port_stats[k].tx_rst_tcp;
+-		*ptr++ = xmac_stats->port_stats[k].tx_udp;
+-		*ptr++ = xmac_stats->port_stats[k].tx_parse_error;
+-		*ptr++ = xmac_stats->port_stats[k].tx_unknown_protocol;
+-		*ptr++ = xmac_stats->port_stats[k].tx_pause_ctrl_frms;
+-		*ptr++ = xmac_stats->port_stats[k].tx_marker_pdu_frms;
+-		*ptr++ = xmac_stats->port_stats[k].tx_lacpdu_frms;
+-		*ptr++ = xmac_stats->port_stats[k].tx_drop_ip;
+-		*ptr++ = xmac_stats->port_stats[k].tx_marker_resp_pdu_frms;
+-		*ptr++ = xmac_stats->port_stats[k].tx_xgmii_char2_match;
+-		*ptr++ = xmac_stats->port_stats[k].tx_xgmii_char1_match;
+-		*ptr++ = xmac_stats->port_stats[k].tx_xgmii_column2_match;
+-		*ptr++ = xmac_stats->port_stats[k].tx_xgmii_column1_match;
+-		*ptr++ = xmac_stats->port_stats[k].tx_any_err_frms;
+-		*ptr++ = xmac_stats->port_stats[k].tx_drop_frms;
+-		*ptr++ = xmac_stats->port_stats[k].rx_ttl_frms;
+-		*ptr++ = xmac_stats->port_stats[k].rx_vld_frms;
+-		*ptr++ = xmac_stats->port_stats[k].rx_offload_frms;
+-		*ptr++ = xmac_stats->port_stats[k].rx_ttl_octets;
+-		*ptr++ = xmac_stats->port_stats[k].rx_data_octets;
+-		*ptr++ = xmac_stats->port_stats[k].rx_offload_octets;
+-		*ptr++ = xmac_stats->port_stats[k].rx_vld_mcast_frms;
+-		*ptr++ = xmac_stats->port_stats[k].rx_vld_bcast_frms;
+-		*ptr++ = xmac_stats->port_stats[k].rx_accepted_ucast_frms;
+-		*ptr++ = xmac_stats->port_stats[k].rx_accepted_nucast_frms;
+-		*ptr++ = xmac_stats->port_stats[k].rx_tagged_frms;
+-		*ptr++ = xmac_stats->port_stats[k].rx_long_frms;
+-		*ptr++ = xmac_stats->port_stats[k].rx_usized_frms;
+-		*ptr++ = xmac_stats->port_stats[k].rx_osized_frms;
+-		*ptr++ = xmac_stats->port_stats[k].rx_frag_frms;
+-		*ptr++ = xmac_stats->port_stats[k].rx_jabber_frms;
+-		*ptr++ = xmac_stats->port_stats[k].rx_ttl_64_frms;
+-		*ptr++ = xmac_stats->port_stats[k].rx_ttl_65_127_frms;
+-		*ptr++ = xmac_stats->port_stats[k].rx_ttl_128_255_frms;
+-		*ptr++ = xmac_stats->port_stats[k].rx_ttl_256_511_frms;
+-		*ptr++ = xmac_stats->port_stats[k].rx_ttl_512_1023_frms;
+-		*ptr++ = xmac_stats->port_stats[k].rx_ttl_1024_1518_frms;
+-		*ptr++ = xmac_stats->port_stats[k].rx_ttl_1519_4095_frms;
+-		*ptr++ = xmac_stats->port_stats[k].rx_ttl_4096_8191_frms;
+-		*ptr++ = xmac_stats->port_stats[k].rx_ttl_8192_max_frms;
+-		*ptr++ = xmac_stats->port_stats[k].rx_ttl_gt_max_frms;
+-		*ptr++ = xmac_stats->port_stats[k].rx_ip;
+-		*ptr++ = xmac_stats->port_stats[k].rx_accepted_ip;
+-		*ptr++ = xmac_stats->port_stats[k].rx_ip_octets;
+-		*ptr++ = xmac_stats->port_stats[k].rx_err_ip;
+-		*ptr++ = xmac_stats->port_stats[k].rx_icmp;
+-		*ptr++ = xmac_stats->port_stats[k].rx_tcp;
+-		*ptr++ = xmac_stats->port_stats[k].rx_udp;
+-		*ptr++ = xmac_stats->port_stats[k].rx_err_tcp;
+-		*ptr++ = xmac_stats->port_stats[k].rx_pause_count;
+-		*ptr++ = xmac_stats->port_stats[k].rx_pause_ctrl_frms;
+-		*ptr++ = xmac_stats->port_stats[k].rx_unsup_ctrl_frms;
+-		*ptr++ = xmac_stats->port_stats[k].rx_fcs_err_frms;
+-		*ptr++ = xmac_stats->port_stats[k].rx_in_rng_len_err_frms;
+-		*ptr++ = xmac_stats->port_stats[k].rx_out_rng_len_err_frms;
+-		*ptr++ = xmac_stats->port_stats[k].rx_drop_frms;
+-		*ptr++ = xmac_stats->port_stats[k].rx_discarded_frms;
+-		*ptr++ = xmac_stats->port_stats[k].rx_drop_ip;
+-		*ptr++ = xmac_stats->port_stats[k].rx_drop_udp;
+-		*ptr++ = xmac_stats->port_stats[k].rx_marker_pdu_frms;
+-		*ptr++ = xmac_stats->port_stats[k].rx_lacpdu_frms;
+-		*ptr++ = xmac_stats->port_stats[k].rx_unknown_pdu_frms;
+-		*ptr++ = xmac_stats->port_stats[k].rx_marker_resp_pdu_frms;
+-		*ptr++ = xmac_stats->port_stats[k].rx_fcs_discard;
+-		*ptr++ = xmac_stats->port_stats[k].rx_illegal_pdu_frms;
+-		*ptr++ = xmac_stats->port_stats[k].rx_switch_discard;
+-		*ptr++ = xmac_stats->port_stats[k].rx_len_discard;
+-		*ptr++ = xmac_stats->port_stats[k].rx_rpa_discard;
+-		*ptr++ = xmac_stats->port_stats[k].rx_l2_mgmt_discard;
+-		*ptr++ = xmac_stats->port_stats[k].rx_rts_discard;
+-		*ptr++ = xmac_stats->port_stats[k].rx_trash_discard;
+-		*ptr++ = xmac_stats->port_stats[k].rx_buff_full_discard;
+-		*ptr++ = xmac_stats->port_stats[k].rx_red_discard;
+-		*ptr++ = xmac_stats->port_stats[k].rx_xgmii_ctrl_err_cnt;
+-		*ptr++ = xmac_stats->port_stats[k].rx_xgmii_data_err_cnt;
+-		*ptr++ = xmac_stats->port_stats[k].rx_xgmii_char1_match;
+-		*ptr++ = xmac_stats->port_stats[k].rx_xgmii_err_sym;
+-		*ptr++ = xmac_stats->port_stats[k].rx_xgmii_column1_match;
+-		*ptr++ = xmac_stats->port_stats[k].rx_xgmii_char2_match;
+-		*ptr++ = xmac_stats->port_stats[k].rx_local_fault;
+-		*ptr++ = xmac_stats->port_stats[k].rx_xgmii_column2_match;
+-		*ptr++ = xmac_stats->port_stats[k].rx_jettison;
+-		*ptr++ = xmac_stats->port_stats[k].rx_remote_fault;
+-	}
+-
+-	*ptr++ = 0;
+-	for (k = 0; k < vdev->no_of_vpath; k++) {
+-		struct vxge_hw_vpath_stats_sw_info *vpath_info;
+-
+-		vpath = &vdev->vpaths[k];
+-		j = vpath->device_id;
+-		vpath_info = (struct vxge_hw_vpath_stats_sw_info *)
+-				&sw_stats->vpath_info[j];
+-		*ptr++ = vpath_info->soft_reset_cnt;
+-		*ptr++ = vpath_info->error_stats.unknown_alarms;
+-		*ptr++ = vpath_info->error_stats.network_sustained_fault;
+-		*ptr++ = vpath_info->error_stats.network_sustained_ok;
+-		*ptr++ = vpath_info->error_stats.kdfcctl_fifo0_overwrite;
+-		*ptr++ = vpath_info->error_stats.kdfcctl_fifo0_poison;
+-		*ptr++ = vpath_info->error_stats.kdfcctl_fifo0_dma_error;
+-		*ptr++ = vpath_info->error_stats.dblgen_fifo0_overflow;
+-		*ptr++ = vpath_info->error_stats.statsb_pif_chain_error;
+-		*ptr++ = vpath_info->error_stats.statsb_drop_timeout;
+-		*ptr++ = vpath_info->error_stats.target_illegal_access;
+-		*ptr++ = vpath_info->error_stats.ini_serr_det;
+-		*ptr++ = vpath_info->error_stats.prc_ring_bumps;
+-		*ptr++ = vpath_info->error_stats.prc_rxdcm_sc_err;
+-		*ptr++ = vpath_info->error_stats.prc_rxdcm_sc_abort;
+-		*ptr++ = vpath_info->error_stats.prc_quanta_size_err;
+-		*ptr++ = vpath_info->ring_stats.common_stats.full_cnt;
+-		*ptr++ = vpath_info->ring_stats.common_stats.usage_cnt;
+-		*ptr++ = vpath_info->ring_stats.common_stats.usage_max;
+-		*ptr++ = vpath_info->ring_stats.common_stats.
+-					reserve_free_swaps_cnt;
+-		*ptr++ = vpath_info->ring_stats.common_stats.total_compl_cnt;
+-		for (j = 0; j < VXGE_HW_DTR_MAX_T_CODE; j++)
+-			*ptr++ = vpath_info->ring_stats.rxd_t_code_err_cnt[j];
+-		*ptr++ = vpath_info->fifo_stats.common_stats.full_cnt;
+-		*ptr++ = vpath_info->fifo_stats.common_stats.usage_cnt;
+-		*ptr++ = vpath_info->fifo_stats.common_stats.usage_max;
+-		*ptr++ = vpath_info->fifo_stats.common_stats.
+-						reserve_free_swaps_cnt;
+-		*ptr++ = vpath_info->fifo_stats.common_stats.total_compl_cnt;
+-		*ptr++ = vpath_info->fifo_stats.total_posts;
+-		*ptr++ = vpath_info->fifo_stats.total_buffers;
+-		for (j = 0; j < VXGE_HW_DTR_MAX_T_CODE; j++)
+-			*ptr++ = vpath_info->fifo_stats.txd_t_code_err_cnt[j];
+-	}
+-
+-	*ptr++ = 0;
+-	for (k = 0; k < vdev->no_of_vpath; k++) {
+-		struct vxge_hw_vpath_stats_hw_info *vpath_info;
+-		vpath = &vdev->vpaths[k];
+-		j = vpath->device_id;
+-		vpath_info = hw_stats->vpath_info[j];
+-		if (!vpath_info) {
+-			memset(ptr, 0, VXGE_HW_VPATH_STATS_LEN * sizeof(u64));
+-			ptr += VXGE_HW_VPATH_STATS_LEN;
+-			continue;
+-		}
+-		*ptr++ = vpath_info->ini_num_mwr_sent;
+-		*ptr++ = vpath_info->ini_num_mrd_sent;
+-		*ptr++ = vpath_info->ini_num_cpl_rcvd;
+-		*ptr++ = vpath_info->ini_num_mwr_byte_sent;
+-		*ptr++ = vpath_info->ini_num_cpl_byte_rcvd;
+-		*ptr++ = vpath_info->wrcrdtarb_xoff;
+-		*ptr++ = vpath_info->rdcrdtarb_xoff;
+-		*ptr++ = vpath_info->vpath_genstats_count0;
+-		*ptr++ = vpath_info->vpath_genstats_count1;
+-		*ptr++ = vpath_info->vpath_genstats_count2;
+-		*ptr++ = vpath_info->vpath_genstats_count3;
+-		*ptr++ = vpath_info->vpath_genstats_count4;
+-		*ptr++ = vpath_info->vpath_genstats_count5;
+-		*ptr++ = vpath_info->prog_event_vnum0;
+-		*ptr++ = vpath_info->prog_event_vnum1;
+-		*ptr++ = vpath_info->prog_event_vnum2;
+-		*ptr++ = vpath_info->prog_event_vnum3;
+-		*ptr++ = vpath_info->rx_multi_cast_frame_discard;
+-		*ptr++ = vpath_info->rx_frm_transferred;
+-		*ptr++ = vpath_info->rxd_returned;
+-		*ptr++ = vpath_info->rx_mpa_len_fail_frms;
+-		*ptr++ = vpath_info->rx_mpa_mrk_fail_frms;
+-		*ptr++ = vpath_info->rx_mpa_crc_fail_frms;
+-		*ptr++ = vpath_info->rx_permitted_frms;
+-		*ptr++ = vpath_info->rx_vp_reset_discarded_frms;
+-		*ptr++ = vpath_info->rx_wol_frms;
+-		*ptr++ = vpath_info->tx_vp_reset_discarded_frms;
+-	}
+-
+-	*ptr++ = 0;
+-	*ptr++ = vdev->stats.vpaths_open;
+-	*ptr++ = vdev->stats.vpath_open_fail;
+-	*ptr++ = vdev->stats.link_up;
+-	*ptr++ = vdev->stats.link_down;
+-
+-	for (k = 0; k < vdev->no_of_vpath; k++) {
+-		*ptr += vdev->vpaths[k].fifo.stats.tx_frms;
+-		*(ptr + 1) += vdev->vpaths[k].fifo.stats.tx_errors;
+-		*(ptr + 2) += vdev->vpaths[k].fifo.stats.tx_bytes;
+-		*(ptr + 3) += vdev->vpaths[k].fifo.stats.txd_not_free;
+-		*(ptr + 4) += vdev->vpaths[k].fifo.stats.txd_out_of_desc;
+-		*(ptr + 5) += vdev->vpaths[k].ring.stats.rx_frms;
+-		*(ptr + 6) += vdev->vpaths[k].ring.stats.rx_errors;
+-		*(ptr + 7) += vdev->vpaths[k].ring.stats.rx_bytes;
+-		*(ptr + 8) += vdev->vpaths[k].ring.stats.rx_mcast;
+-		*(ptr + 9) += vdev->vpaths[k].fifo.stats.pci_map_fail +
+-				vdev->vpaths[k].ring.stats.pci_map_fail;
+-		*(ptr + 10) += vdev->vpaths[k].ring.stats.skb_alloc_fail;
+-	}
+-
+-	ptr += 12;
+-
+-	kfree(xmac_stats);
+-	kfree(sw_stats);
+-	kfree(hw_stats);
+-}
+-
+-static void vxge_ethtool_get_strings(struct net_device *dev, u32 stringset,
+-				     u8 *data)
+-{
+-	int stat_size = 0;
+-	int i, j;
+-	struct vxgedev *vdev = netdev_priv(dev);
+-	switch (stringset) {
+-	case ETH_SS_STATS:
+-		vxge_add_string("VPATH STATISTICS%s\t\t\t",
+-			&stat_size, data, "");
+-		for (i = 0; i < vdev->no_of_vpath; i++) {
+-			vxge_add_string("tx_ttl_eth_frms_%d\t\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("tx_ttl_eth_octects_%d\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("tx_data_octects_%d\t\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("tx_mcast_frms_%d\t\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("tx_bcast_frms_%d\t\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("tx_ucast_frms_%d\t\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("tx_tagged_frms_%d\t\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("tx_vld_ip_%d\t\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("tx_vld_ip_octects_%d\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("tx_icmp_%d\t\t\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("tx_tcp_%d\t\t\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("tx_rst_tcp_%d\t\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("tx_udp_%d\t\t\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("tx_unknown_proto_%d\t\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("tx_lost_ip_%d\t\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("tx_parse_error_%d\t\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("tx_tcp_offload_%d\t\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("tx_retx_tcp_offload_%d\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("tx_lost_ip_offload_%d\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rx_ttl_eth_frms_%d\t\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rx_vld_frms_%d\t\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rx_offload_frms_%d\t\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rx_ttl_eth_octects_%d\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rx_data_octects_%d\t\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rx_offload_octects_%d\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rx_vld_mcast_frms_%d\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rx_vld_bcast_frms_%d\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rx_accepted_ucast_frms_%d\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rx_accepted_nucast_frms_%d\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rx_tagged_frms_%d\t\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rx_long_frms_%d\t\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rx_usized_frms_%d\t\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rx_osized_frms_%d\t\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rx_frag_frms_%d\t\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rx_jabber_frms_%d\t\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rx_ttl_64_frms_%d\t\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rx_ttl_65_127_frms_%d\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rx_ttl_128_255_frms_%d\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rx_ttl_256_511_frms_%d\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rx_ttl_512_1023_frms_%d\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rx_ttl_1024_1518_frms_%d\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rx_ttl_1519_4095_frms_%d\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rx_ttl_4096_8191_frms_%d\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rx_ttl_8192_max_frms_%d\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rx_ttl_gt_max_frms_%d\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rx_ip%d\t\t\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rx_accepted_ip_%d\t\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rx_ip_octects_%d\t\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rx_err_ip_%d\t\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rx_icmp_%d\t\t\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rx_tcp_%d\t\t\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rx_udp_%d\t\t\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rx_err_tcp_%d\t\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rx_lost_frms_%d\t\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rx_lost_ip_%d\t\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rx_lost_ip_offload_%d\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rx_various_discard_%d\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rx_sleep_discard_%d\t\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rx_red_discard_%d\t\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rx_queue_full_discard_%d\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rx_mpa_ok_frms_%d\t\t\t",
+-					&stat_size, data, i);
+-		}
+-
+-		vxge_add_string("\nAGGR STATISTICS%s\t\t\t\t",
+-			&stat_size, data, "");
+-		for (i = 0; i < vdev->max_config_port; i++) {
+-			vxge_add_string("tx_frms_%d\t\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("tx_data_octects_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("tx_mcast_frms_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("tx_bcast_frms_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("tx_discarded_frms_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("tx_errored_frms_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_frms_%d\t\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_data_octects_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_mcast_frms_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_bcast_frms_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_discarded_frms_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_errored_frms_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_unknown_slow_proto_frms_%d\t",
+-				&stat_size, data, i);
+-		}
+-
+-		vxge_add_string("\nPORT STATISTICS%s\t\t\t\t",
+-			&stat_size, data, "");
+-		for (i = 0; i < vdev->max_config_port; i++) {
+-			vxge_add_string("tx_ttl_frms_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("tx_ttl_octects_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("tx_data_octects_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("tx_mcast_frms_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("tx_bcast_frms_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("tx_ucast_frms_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("tx_tagged_frms_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("tx_vld_ip_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("tx_vld_ip_octects_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("tx_icmp_%d\t\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("tx_tcp_%d\t\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("tx_rst_tcp_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("tx_udp_%d\t\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("tx_parse_error_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("tx_unknown_protocol_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("tx_pause_ctrl_frms_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("tx_marker_pdu_frms_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("tx_lacpdu_frms_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("tx_drop_ip_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("tx_marker_resp_pdu_frms_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("tx_xgmii_char2_match_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("tx_xgmii_char1_match_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("tx_xgmii_column2_match_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("tx_xgmii_column1_match_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("tx_any_err_frms_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("tx_drop_frms_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_ttl_frms_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_vld_frms_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_offload_frms_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_ttl_octects_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_data_octects_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_offload_octects_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_vld_mcast_frms_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_vld_bcast_frms_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_accepted_ucast_frms_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_accepted_nucast_frms_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_tagged_frms_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_long_frms_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_usized_frms_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_osized_frms_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_frag_frms_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_jabber_frms_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_ttl_64_frms_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_ttl_65_127_frms_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_ttl_128_255_frms_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_ttl_256_511_frms_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_ttl_512_1023_frms_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_ttl_1024_1518_frms_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_ttl_1519_4095_frms_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_ttl_4096_8191_frms_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_ttl_8192_max_frms_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_ttl_gt_max_frms_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_ip_%d\t\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_accepted_ip_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_ip_octets_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_err_ip_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_icmp_%d\t\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_tcp_%d\t\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_udp_%d\t\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_err_tcp_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_pause_count_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_pause_ctrl_frms_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_unsup_ctrl_frms_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_fcs_err_frms_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_in_rng_len_err_frms_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_out_rng_len_err_frms_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_drop_frms_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_discard_frms_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_drop_ip_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_drop_udp_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_marker_pdu_frms_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_lacpdu_frms_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_unknown_pdu_frms_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_marker_resp_pdu_frms_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_fcs_discard_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_illegal_pdu_frms_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_switch_discard_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_len_discard_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_rpa_discard_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_l2_mgmt_discard_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_rts_discard_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_trash_discard_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_buff_full_discard_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_red_discard_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_xgmii_ctrl_err_cnt_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_xgmii_data_err_cnt_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_xgmii_char1_match_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_xgmii_err_sym_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_xgmii_column1_match_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_xgmii_char2_match_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_local_fault_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_xgmii_column2_match_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_jettison_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("rx_remote_fault_%d\t\t\t",
+-				&stat_size, data, i);
+-		}
+-
+-		vxge_add_string("\n SOFTWARE STATISTICS%s\t\t\t",
+-			&stat_size, data, "");
+-		for (i = 0; i < vdev->no_of_vpath; i++) {
+-			vxge_add_string("soft_reset_cnt_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("unknown_alarms_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("network_sustained_fault_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("network_sustained_ok_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("kdfcctl_fifo0_overwrite_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("kdfcctl_fifo0_poison_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("kdfcctl_fifo0_dma_error_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("dblgen_fifo0_overflow_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("statsb_pif_chain_error_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("statsb_drop_timeout_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("target_illegal_access_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("ini_serr_det_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("prc_ring_bumps_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("prc_rxdcm_sc_err_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("prc_rxdcm_sc_abort_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("prc_quanta_size_err_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("ring_full_cnt_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("ring_usage_cnt_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("ring_usage_max_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("ring_reserve_free_swaps_cnt_%d\t",
+-				&stat_size, data, i);
+-			vxge_add_string("ring_total_compl_cnt_%d\t\t",
+-				&stat_size, data, i);
+-			for (j = 0; j < VXGE_HW_DTR_MAX_T_CODE; j++)
+-				vxge_add_string("rxd_t_code_err_cnt%d_%d\t\t",
+-					&stat_size, data, j, i);
+-			vxge_add_string("fifo_full_cnt_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("fifo_usage_cnt_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("fifo_usage_max_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("fifo_reserve_free_swaps_cnt_%d\t",
+-				&stat_size, data, i);
+-			vxge_add_string("fifo_total_compl_cnt_%d\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("fifo_total_posts_%d\t\t\t",
+-				&stat_size, data, i);
+-			vxge_add_string("fifo_total_buffers_%d\t\t",
+-				&stat_size, data, i);
+-			for (j = 0; j < VXGE_HW_DTR_MAX_T_CODE; j++)
+-				vxge_add_string("txd_t_code_err_cnt%d_%d\t\t",
+-					&stat_size, data, j, i);
+-		}
+-
+-		vxge_add_string("\n HARDWARE STATISTICS%s\t\t\t",
+-				&stat_size, data, "");
+-		for (i = 0; i < vdev->no_of_vpath; i++) {
+-			vxge_add_string("ini_num_mwr_sent_%d\t\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("ini_num_mrd_sent_%d\t\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("ini_num_cpl_rcvd_%d\t\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("ini_num_mwr_byte_sent_%d\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("ini_num_cpl_byte_rcvd_%d\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("wrcrdtarb_xoff_%d\t\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rdcrdtarb_xoff_%d\t\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("vpath_genstats_count0_%d\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("vpath_genstats_count1_%d\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("vpath_genstats_count2_%d\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("vpath_genstats_count3_%d\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("vpath_genstats_count4_%d\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("vpath_genstats_count5_%d\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("prog_event_vnum0_%d\t\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("prog_event_vnum1_%d\t\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("prog_event_vnum2_%d\t\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("prog_event_vnum3_%d\t\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rx_multi_cast_frame_discard_%d\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rx_frm_transferred_%d\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rxd_returned_%d\t\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rx_mpa_len_fail_frms_%d\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rx_mpa_mrk_fail_frms_%d\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rx_mpa_crc_fail_frms_%d\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rx_permitted_frms_%d\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rx_vp_reset_discarded_frms_%d\t",
+-					&stat_size, data, i);
+-			vxge_add_string("rx_wol_frms_%d\t\t\t",
+-					&stat_size, data, i);
+-			vxge_add_string("tx_vp_reset_discarded_frms_%d\t",
+-					&stat_size, data, i);
+-		}
+-
+-		memcpy(data + stat_size, &ethtool_driver_stats_keys,
+-			sizeof(ethtool_driver_stats_keys));
+-	}
+-}
+-
+-static int vxge_ethtool_get_regs_len(struct net_device *dev)
+-{
+-	struct vxgedev *vdev = netdev_priv(dev);
+-
+-	return sizeof(struct vxge_hw_vpath_reg) * vdev->no_of_vpath;
+-}
+-
+-static int vxge_ethtool_get_sset_count(struct net_device *dev, int sset)
+-{
+-	struct vxgedev *vdev = netdev_priv(dev);
+-
+-	switch (sset) {
+-	case ETH_SS_STATS:
+-		return VXGE_TITLE_LEN +
+-			(vdev->no_of_vpath * VXGE_HW_VPATH_STATS_LEN) +
+-			(vdev->max_config_port * VXGE_HW_AGGR_STATS_LEN) +
+-			(vdev->max_config_port * VXGE_HW_PORT_STATS_LEN) +
+-			(vdev->no_of_vpath * VXGE_HW_VPATH_TX_STATS_LEN) +
+-			(vdev->no_of_vpath * VXGE_HW_VPATH_RX_STATS_LEN) +
+-			(vdev->no_of_vpath * VXGE_SW_STATS_LEN) +
+-			DRIVER_STAT_LEN;
+-	default:
+-		return -EOPNOTSUPP;
+-	}
+-}
+-
+-static int vxge_fw_flash(struct net_device *dev, struct ethtool_flash *parms)
+-{
+-	struct vxgedev *vdev = netdev_priv(dev);
+-
+-	if (vdev->max_vpath_supported != VXGE_HW_MAX_VIRTUAL_PATHS) {
+-		printk(KERN_INFO "Single Function Mode is required to flash the"
+-		       " firmware\n");
+-		return -EINVAL;
+-	}
+-
+-	if (netif_running(dev)) {
+-		printk(KERN_INFO "Interface %s must be down to flash the "
+-		       "firmware\n", dev->name);
+-		return -EBUSY;
+-	}
+-
+-	return vxge_fw_upgrade(vdev, parms->data, 1);
+-}
+-
+-static const struct ethtool_ops vxge_ethtool_ops = {
+-	.get_drvinfo		= vxge_ethtool_gdrvinfo,
+-	.get_regs_len		= vxge_ethtool_get_regs_len,
+-	.get_regs		= vxge_ethtool_gregs,
+-	.get_link		= ethtool_op_get_link,
+-	.get_pauseparam		= vxge_ethtool_getpause_data,
+-	.set_pauseparam		= vxge_ethtool_setpause_data,
+-	.get_strings		= vxge_ethtool_get_strings,
+-	.set_phys_id		= vxge_ethtool_idnic,
+-	.get_sset_count		= vxge_ethtool_get_sset_count,
+-	.get_ethtool_stats	= vxge_get_ethtool_stats,
+-	.flash_device		= vxge_fw_flash,
+-	.get_link_ksettings	= vxge_ethtool_get_link_ksettings,
+-	.set_link_ksettings	= vxge_ethtool_set_link_ksettings,
+-};
+-
+-void vxge_initialize_ethtool_ops(struct net_device *ndev)
+-{
+-	ndev->ethtool_ops = &vxge_ethtool_ops;
+-}
+diff --git a/drivers/net/ethernet/neterion/vxge/vxge-ethtool.h b/drivers/net/ethernet/neterion/vxge/vxge-ethtool.h
+deleted file mode 100644
+index 065a2c0429a4..000000000000
+--- a/drivers/net/ethernet/neterion/vxge/vxge-ethtool.h
++++ /dev/null
+@@ -1,48 +0,0 @@
+-/******************************************************************************
+- * This software may be used and distributed according to the terms of
+- * the GNU General Public License (GPL), incorporated herein by reference.
+- * Drivers based on or derived from this code fall under the GPL and must
+- * retain the authorship, copyright and license notice.  This file is not
+- * a complete program and may only be used when the entire operating
+- * system is licensed under the GPL.
+- * See the file COPYING in this distribution for more information.
+- *
+- * vxge-ethtool.h: Driver for Exar Corp's X3100 Series 10GbE PCIe I/O
+- *                 Virtualized Server Adapter.
+- * Copyright(c) 2002-2010 Exar Corp.
+- ******************************************************************************/
+-#ifndef _VXGE_ETHTOOL_H
+-#define _VXGE_ETHTOOL_H
+-
+-#include "vxge-main.h"
+-
+-/* Ethtool related variables and Macros. */
+-static int vxge_ethtool_get_sset_count(struct net_device *dev, int sset);
+-
+-#define VXGE_TITLE_LEN			5
+-#define VXGE_HW_VPATH_STATS_LEN 	27
+-#define VXGE_HW_AGGR_STATS_LEN  	13
+-#define VXGE_HW_PORT_STATS_LEN  	94
+-#define VXGE_HW_VPATH_TX_STATS_LEN	19
+-#define VXGE_HW_VPATH_RX_STATS_LEN	42
+-#define VXGE_SW_STATS_LEN		60
+-#define VXGE_HW_STATS_LEN	(VXGE_HW_VPATH_STATS_LEN +\
+-				VXGE_HW_AGGR_STATS_LEN +\
+-				VXGE_HW_PORT_STATS_LEN +\
+-				VXGE_HW_VPATH_TX_STATS_LEN +\
+-				VXGE_HW_VPATH_RX_STATS_LEN)
+-
+-#define DRIVER_STAT_LEN (sizeof(ethtool_driver_stats_keys)/ETH_GSTRING_LEN)
+-#define STAT_LEN (VXGE_HW_STATS_LEN + DRIVER_STAT_LEN + VXGE_SW_STATS_LEN)
+-
+-/* Maximum flicker time of adapter LED */
+-#define VXGE_MAX_FLICKER_TIME (60 * HZ) /* 60 seconds */
+-#define VXGE_FLICKER_ON		1
+-#define VXGE_FLICKER_OFF	0
+-
+-#define vxge_add_string(fmt, size, buf, ...) {\
+-	snprintf(buf + *size, ETH_GSTRING_LEN, fmt, __VA_ARGS__); \
+-	*size += ETH_GSTRING_LEN; \
+-}
+-
+-#endif /*_VXGE_ETHTOOL_H*/
+diff --git a/drivers/net/ethernet/neterion/vxge/vxge-main.c b/drivers/net/ethernet/neterion/vxge/vxge-main.c
+deleted file mode 100644
+index fa5d4ddf429b..000000000000
+--- a/drivers/net/ethernet/neterion/vxge/vxge-main.c
++++ /dev/null
+@@ -1,4808 +0,0 @@
+-/******************************************************************************
+-* This software may be used and distributed according to the terms of
+-* the GNU General Public License (GPL), incorporated herein by reference.
+-* Drivers based on or derived from this code fall under the GPL and must
+-* retain the authorship, copyright and license notice.  This file is not
+-* a complete program and may only be used when the entire operating
+-* system is licensed under the GPL.
+-* See the file COPYING in this distribution for more information.
+-*
+-* vxge-main.c: Driver for Exar Corp's X3100 Series 10GbE PCIe I/O
+-*              Virtualized Server Adapter.
+-* Copyright(c) 2002-2010 Exar Corp.
+-*
+-* The module loadable parameters that are supported by the driver and a brief
+-* explanation of all the variables:
+-* vlan_tag_strip:
+-*	Strip VLAN Tag enable/disable. Instructs the device to remove
+-*	the VLAN tag from all received tagged frames that are not
+-*	replicated at the internal L2 switch.
+-*		0 - Do not strip the VLAN tag.
+-*		1 - Strip the VLAN tag.
+-*
+-* addr_learn_en:
+-*	Enable learning the mac address of the guest OS interface in
+-*	a virtualization environment.
+-*		0 - DISABLE
+-*		1 - ENABLE
+-*
+-* max_config_port:
+-*	Maximum number of port to be supported.
+-*		MIN -1 and MAX - 2
+-*
+-* max_config_vpath:
+-*	This configures the maximum no of VPATH configures for each
+-* 	device function.
+-*		MIN - 1 and MAX - 17
+-*
+-* max_config_dev:
+-*	This configures maximum no of Device function to be enabled.
+-*		MIN - 1 and MAX - 17
+-*
+-******************************************************************************/
+-
+-#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+-
+-#include <linux/bitops.h>
+-#include <linux/if_vlan.h>
+-#include <linux/interrupt.h>
+-#include <linux/pci.h>
+-#include <linux/slab.h>
+-#include <linux/tcp.h>
+-#include <net/ip.h>
+-#include <linux/netdevice.h>
+-#include <linux/etherdevice.h>
+-#include <linux/firmware.h>
+-#include <linux/net_tstamp.h>
+-#include <linux/prefetch.h>
+-#include <linux/module.h>
+-#include "vxge-main.h"
+-#include "vxge-reg.h"
+-
+-MODULE_LICENSE("Dual BSD/GPL");
+-MODULE_DESCRIPTION("Neterion's X3100 Series 10GbE PCIe I/O"
+-	"Virtualized Server Adapter");
+-
+-static const struct pci_device_id vxge_id_table[] = {
+-	{PCI_VENDOR_ID_S2IO, PCI_DEVICE_ID_TITAN_WIN, PCI_ANY_ID,
+-	PCI_ANY_ID},
+-	{PCI_VENDOR_ID_S2IO, PCI_DEVICE_ID_TITAN_UNI, PCI_ANY_ID,
+-	PCI_ANY_ID},
+-	{0}
+-};
+-
+-MODULE_DEVICE_TABLE(pci, vxge_id_table);
+-
+-VXGE_MODULE_PARAM_INT(vlan_tag_strip, VXGE_HW_VPATH_RPA_STRIP_VLAN_TAG_ENABLE);
+-VXGE_MODULE_PARAM_INT(addr_learn_en, VXGE_HW_MAC_ADDR_LEARN_DEFAULT);
+-VXGE_MODULE_PARAM_INT(max_config_port, VXGE_MAX_CONFIG_PORT);
+-VXGE_MODULE_PARAM_INT(max_config_vpath, VXGE_USE_DEFAULT);
+-VXGE_MODULE_PARAM_INT(max_mac_vpath, VXGE_MAX_MAC_ADDR_COUNT);
+-VXGE_MODULE_PARAM_INT(max_config_dev, VXGE_MAX_CONFIG_DEV);
+-
+-static u16 vpath_selector[VXGE_HW_MAX_VIRTUAL_PATHS] =
+-		{0, 1, 3, 3, 7, 7, 7, 7, 15, 15, 15, 15, 15, 15, 15, 15, 31};
+-static unsigned int bw_percentage[VXGE_HW_MAX_VIRTUAL_PATHS] =
+-	{[0 ...(VXGE_HW_MAX_VIRTUAL_PATHS - 1)] = 0xFF};
+-module_param_array(bw_percentage, uint, NULL, 0);
+-
+-static struct vxge_drv_config *driver_config;
+-static void vxge_reset_all_vpaths(struct vxgedev *vdev);
+-
+-static inline int is_vxge_card_up(struct vxgedev *vdev)
+-{
+-	return test_bit(__VXGE_STATE_CARD_UP, &vdev->state);
+-}
+-
+-static inline void VXGE_COMPLETE_VPATH_TX(struct vxge_fifo *fifo)
+-{
+-	struct sk_buff **skb_ptr = NULL;
+-	struct sk_buff **temp;
+-#define NR_SKB_COMPLETED 16
+-	struct sk_buff *completed[NR_SKB_COMPLETED];
+-	int more;
+-
+-	do {
+-		more = 0;
+-		skb_ptr = completed;
+-
+-		if (__netif_tx_trylock(fifo->txq)) {
+-			vxge_hw_vpath_poll_tx(fifo->handle, &skb_ptr,
+-						NR_SKB_COMPLETED, &more);
+-			__netif_tx_unlock(fifo->txq);
+-		}
+-
+-		/* free SKBs */
+-		for (temp = completed; temp != skb_ptr; temp++)
+-			dev_consume_skb_irq(*temp);
+-	} while (more);
+-}
+-
+-static inline void VXGE_COMPLETE_ALL_TX(struct vxgedev *vdev)
+-{
+-	int i;
+-
+-	/* Complete all transmits */
+-	for (i = 0; i < vdev->no_of_vpath; i++)
+-		VXGE_COMPLETE_VPATH_TX(&vdev->vpaths[i].fifo);
+-}
+-
+-static inline void VXGE_COMPLETE_ALL_RX(struct vxgedev *vdev)
+-{
+-	int i;
+-	struct vxge_ring *ring;
+-
+-	/* Complete all receives*/
+-	for (i = 0; i < vdev->no_of_vpath; i++) {
+-		ring = &vdev->vpaths[i].ring;
+-		vxge_hw_vpath_poll_rx(ring->handle);
+-	}
+-}
+-
+-/*
+- * vxge_callback_link_up
+- *
+- * This function is called during interrupt context to notify link up state
+- * change.
+- */
+-static void vxge_callback_link_up(struct __vxge_hw_device *hldev)
+-{
+-	struct net_device *dev = hldev->ndev;
+-	struct vxgedev *vdev = netdev_priv(dev);
+-
+-	vxge_debug_entryexit(VXGE_TRACE, "%s: %s:%d",
+-		vdev->ndev->name, __func__, __LINE__);
+-	netdev_notice(vdev->ndev, "Link Up\n");
+-	vdev->stats.link_up++;
+-
+-	netif_carrier_on(vdev->ndev);
+-	netif_tx_wake_all_queues(vdev->ndev);
+-
+-	vxge_debug_entryexit(VXGE_TRACE,
+-		"%s: %s:%d Exiting...", vdev->ndev->name, __func__, __LINE__);
+-}
+-
+-/*
+- * vxge_callback_link_down
+- *
+- * This function is called during interrupt context to notify link down state
+- * change.
+- */
+-static void vxge_callback_link_down(struct __vxge_hw_device *hldev)
+-{
+-	struct net_device *dev = hldev->ndev;
+-	struct vxgedev *vdev = netdev_priv(dev);
+-
+-	vxge_debug_entryexit(VXGE_TRACE,
+-		"%s: %s:%d", vdev->ndev->name, __func__, __LINE__);
+-	netdev_notice(vdev->ndev, "Link Down\n");
+-
+-	vdev->stats.link_down++;
+-	netif_carrier_off(vdev->ndev);
+-	netif_tx_stop_all_queues(vdev->ndev);
+-
+-	vxge_debug_entryexit(VXGE_TRACE,
+-		"%s: %s:%d Exiting...", vdev->ndev->name, __func__, __LINE__);
+-}
+-
+-/*
+- * vxge_rx_alloc
+- *
+- * Allocate SKB.
+- */
+-static struct sk_buff *
+-vxge_rx_alloc(void *dtrh, struct vxge_ring *ring, const int skb_size)
+-{
+-	struct net_device    *dev;
+-	struct sk_buff       *skb;
+-	struct vxge_rx_priv *rx_priv;
+-
+-	dev = ring->ndev;
+-	vxge_debug_entryexit(VXGE_TRACE, "%s: %s:%d",
+-		ring->ndev->name, __func__, __LINE__);
+-
+-	rx_priv = vxge_hw_ring_rxd_private_get(dtrh);
+-
+-	/* try to allocate skb first. this one may fail */
+-	skb = netdev_alloc_skb(dev, skb_size +
+-	VXGE_HW_HEADER_ETHERNET_II_802_3_ALIGN);
+-	if (skb == NULL) {
+-		vxge_debug_mem(VXGE_ERR,
+-			"%s: out of memory to allocate SKB", dev->name);
+-		ring->stats.skb_alloc_fail++;
+-		return NULL;
+-	}
+-
+-	vxge_debug_mem(VXGE_TRACE,
+-		"%s: %s:%d  Skb : 0x%p", ring->ndev->name,
+-		__func__, __LINE__, skb);
+-
+-	skb_reserve(skb, VXGE_HW_HEADER_ETHERNET_II_802_3_ALIGN);
+-
+-	rx_priv->skb = skb;
+-	rx_priv->skb_data = NULL;
+-	rx_priv->data_size = skb_size;
+-	vxge_debug_entryexit(VXGE_TRACE,
+-		"%s: %s:%d Exiting...", ring->ndev->name, __func__, __LINE__);
+-
+-	return skb;
+-}
+-
+-/*
+- * vxge_rx_map
+- */
+-static int vxge_rx_map(void *dtrh, struct vxge_ring *ring)
+-{
+-	struct vxge_rx_priv *rx_priv;
+-	dma_addr_t dma_addr;
+-
+-	vxge_debug_entryexit(VXGE_TRACE, "%s: %s:%d",
+-		ring->ndev->name, __func__, __LINE__);
+-	rx_priv = vxge_hw_ring_rxd_private_get(dtrh);
+-
+-	rx_priv->skb_data = rx_priv->skb->data;
+-	dma_addr = dma_map_single(&ring->pdev->dev, rx_priv->skb_data,
+-				  rx_priv->data_size, DMA_FROM_DEVICE);
+-
+-	if (unlikely(dma_mapping_error(&ring->pdev->dev, dma_addr))) {
+-		ring->stats.pci_map_fail++;
+-		return -EIO;
+-	}
+-	vxge_debug_mem(VXGE_TRACE,
+-		"%s: %s:%d  1 buffer mode dma_addr = 0x%llx",
+-		ring->ndev->name, __func__, __LINE__,
+-		(unsigned long long)dma_addr);
+-	vxge_hw_ring_rxd_1b_set(dtrh, dma_addr, rx_priv->data_size);
+-
+-	rx_priv->data_dma = dma_addr;
+-	vxge_debug_entryexit(VXGE_TRACE,
+-		"%s: %s:%d Exiting...", ring->ndev->name, __func__, __LINE__);
+-
+-	return 0;
+-}
+-
+-/*
+- * vxge_rx_initial_replenish
+- * Allocation of RxD as an initial replenish procedure.
+- */
+-static enum vxge_hw_status
+-vxge_rx_initial_replenish(void *dtrh, void *userdata)
+-{
+-	struct vxge_ring *ring = (struct vxge_ring *)userdata;
+-	struct vxge_rx_priv *rx_priv;
+-
+-	vxge_debug_entryexit(VXGE_TRACE, "%s: %s:%d",
+-		ring->ndev->name, __func__, __LINE__);
+-	if (vxge_rx_alloc(dtrh, ring,
+-			  VXGE_LL_MAX_FRAME_SIZE(ring->ndev)) == NULL)
+-		return VXGE_HW_FAIL;
+-
+-	if (vxge_rx_map(dtrh, ring)) {
+-		rx_priv = vxge_hw_ring_rxd_private_get(dtrh);
+-		dev_kfree_skb(rx_priv->skb);
+-
+-		return VXGE_HW_FAIL;
+-	}
+-	vxge_debug_entryexit(VXGE_TRACE,
+-		"%s: %s:%d Exiting...", ring->ndev->name, __func__, __LINE__);
+-
+-	return VXGE_HW_OK;
+-}
+-
+-static inline void
+-vxge_rx_complete(struct vxge_ring *ring, struct sk_buff *skb, u16 vlan,
+-		 int pkt_length, struct vxge_hw_ring_rxd_info *ext_info)
+-{
+-
+-	vxge_debug_entryexit(VXGE_TRACE, "%s: %s:%d",
+-			ring->ndev->name, __func__, __LINE__);
+-	skb_record_rx_queue(skb, ring->driver_id);
+-	skb->protocol = eth_type_trans(skb, ring->ndev);
+-
+-	u64_stats_update_begin(&ring->stats.syncp);
+-	ring->stats.rx_frms++;
+-	ring->stats.rx_bytes += pkt_length;
+-
+-	if (skb->pkt_type == PACKET_MULTICAST)
+-		ring->stats.rx_mcast++;
+-	u64_stats_update_end(&ring->stats.syncp);
+-
+-	vxge_debug_rx(VXGE_TRACE,
+-		"%s: %s:%d  skb protocol = %d",
+-		ring->ndev->name, __func__, __LINE__, skb->protocol);
+-
+-	if (ext_info->vlan &&
+-	    ring->vlan_tag_strip == VXGE_HW_VPATH_RPA_STRIP_VLAN_TAG_ENABLE)
+-		__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q), ext_info->vlan);
+-	napi_gro_receive(ring->napi_p, skb);
+-
+-	vxge_debug_entryexit(VXGE_TRACE,
+-		"%s: %s:%d Exiting...", ring->ndev->name, __func__, __LINE__);
+-}
+-
+-static inline void vxge_re_pre_post(void *dtr, struct vxge_ring *ring,
+-				    struct vxge_rx_priv *rx_priv)
+-{
+-	dma_sync_single_for_device(&ring->pdev->dev, rx_priv->data_dma,
+-				   rx_priv->data_size, DMA_FROM_DEVICE);
+-
+-	vxge_hw_ring_rxd_1b_set(dtr, rx_priv->data_dma, rx_priv->data_size);
+-	vxge_hw_ring_rxd_pre_post(ring->handle, dtr);
+-}
+-
+-static inline void vxge_post(int *dtr_cnt, void **first_dtr,
+-			     void *post_dtr, struct __vxge_hw_ring *ringh)
+-{
+-	int dtr_count = *dtr_cnt;
+-	if ((*dtr_cnt % VXGE_HW_RXSYNC_FREQ_CNT) == 0) {
+-		if (*first_dtr)
+-			vxge_hw_ring_rxd_post_post_wmb(ringh, *first_dtr);
+-		*first_dtr = post_dtr;
+-	} else
+-		vxge_hw_ring_rxd_post_post(ringh, post_dtr);
+-	dtr_count++;
+-	*dtr_cnt = dtr_count;
+-}
+-
+-/*
+- * vxge_rx_1b_compl
+- *
+- * If the interrupt is because of a received frame or if the receive ring
+- * contains fresh as yet un-processed frames, this function is called.
+- */
+-static enum vxge_hw_status
+-vxge_rx_1b_compl(struct __vxge_hw_ring *ringh, void *dtr,
+-		 u8 t_code, void *userdata)
+-{
+-	struct vxge_ring *ring = (struct vxge_ring *)userdata;
+-	struct net_device *dev = ring->ndev;
+-	unsigned int dma_sizes;
+-	void *first_dtr = NULL;
+-	int dtr_cnt = 0;
+-	int data_size;
+-	dma_addr_t data_dma;
+-	int pkt_length;
+-	struct sk_buff *skb;
+-	struct vxge_rx_priv *rx_priv;
+-	struct vxge_hw_ring_rxd_info ext_info;
+-	vxge_debug_entryexit(VXGE_TRACE, "%s: %s:%d",
+-		ring->ndev->name, __func__, __LINE__);
+-
+-	if (ring->budget <= 0)
+-		goto out;
+-
+-	do {
+-		prefetch((char *)dtr + L1_CACHE_BYTES);
+-		rx_priv = vxge_hw_ring_rxd_private_get(dtr);
+-		skb = rx_priv->skb;
+-		data_size = rx_priv->data_size;
+-		data_dma = rx_priv->data_dma;
+-		prefetch(rx_priv->skb_data);
+-
+-		vxge_debug_rx(VXGE_TRACE,
+-			"%s: %s:%d  skb = 0x%p",
+-			ring->ndev->name, __func__, __LINE__, skb);
+-
+-		vxge_hw_ring_rxd_1b_get(ringh, dtr, &dma_sizes);
+-		pkt_length = dma_sizes;
+-
+-		pkt_length -= ETH_FCS_LEN;
+-
+-		vxge_debug_rx(VXGE_TRACE,
+-			"%s: %s:%d  Packet Length = %d",
+-			ring->ndev->name, __func__, __LINE__, pkt_length);
+-
+-		vxge_hw_ring_rxd_1b_info_get(ringh, dtr, &ext_info);
+-
+-		/* check skb validity */
+-		vxge_assert(skb);
+-
+-		prefetch((char *)skb + L1_CACHE_BYTES);
+-		if (unlikely(t_code)) {
+-			if (vxge_hw_ring_handle_tcode(ringh, dtr, t_code) !=
+-				VXGE_HW_OK) {
+-
+-				ring->stats.rx_errors++;
+-				vxge_debug_rx(VXGE_TRACE,
+-					"%s: %s :%d Rx T_code is %d",
+-					ring->ndev->name, __func__,
+-					__LINE__, t_code);
+-
+-				/* If the t_code is not supported and if the
+-				 * t_code is other than 0x5 (unparseable packet
+-				 * such as unknown UPV6 header), Drop it !!!
+-				 */
+-				vxge_re_pre_post(dtr, ring, rx_priv);
+-
+-				vxge_post(&dtr_cnt, &first_dtr, dtr, ringh);
+-				ring->stats.rx_dropped++;
+-				continue;
+-			}
+-		}
+-
+-		if (pkt_length > VXGE_LL_RX_COPY_THRESHOLD) {
+-			if (vxge_rx_alloc(dtr, ring, data_size) != NULL) {
+-				if (!vxge_rx_map(dtr, ring)) {
+-					skb_put(skb, pkt_length);
+-
+-					dma_unmap_single(&ring->pdev->dev,
+-							 data_dma, data_size,
+-							 DMA_FROM_DEVICE);
+-
+-					vxge_hw_ring_rxd_pre_post(ringh, dtr);
+-					vxge_post(&dtr_cnt, &first_dtr, dtr,
+-						ringh);
+-				} else {
+-					dev_kfree_skb(rx_priv->skb);
+-					rx_priv->skb = skb;
+-					rx_priv->data_size = data_size;
+-					vxge_re_pre_post(dtr, ring, rx_priv);
+-
+-					vxge_post(&dtr_cnt, &first_dtr, dtr,
+-						ringh);
+-					ring->stats.rx_dropped++;
+-					break;
+-				}
+-			} else {
+-				vxge_re_pre_post(dtr, ring, rx_priv);
+-
+-				vxge_post(&dtr_cnt, &first_dtr, dtr, ringh);
+-				ring->stats.rx_dropped++;
+-				break;
+-			}
+-		} else {
+-			struct sk_buff *skb_up;
+-
+-			skb_up = netdev_alloc_skb(dev, pkt_length +
+-				VXGE_HW_HEADER_ETHERNET_II_802_3_ALIGN);
+-			if (skb_up != NULL) {
+-				skb_reserve(skb_up,
+-				    VXGE_HW_HEADER_ETHERNET_II_802_3_ALIGN);
+-
+-				dma_sync_single_for_cpu(&ring->pdev->dev,
+-							data_dma, data_size,
+-							DMA_FROM_DEVICE);
+-
+-				vxge_debug_mem(VXGE_TRACE,
+-					"%s: %s:%d  skb_up = %p",
+-					ring->ndev->name, __func__,
+-					__LINE__, skb);
+-				memcpy(skb_up->data, skb->data, pkt_length);
+-
+-				vxge_re_pre_post(dtr, ring, rx_priv);
+-
+-				vxge_post(&dtr_cnt, &first_dtr, dtr,
+-					ringh);
+-				/* will netif_rx small SKB instead */
+-				skb = skb_up;
+-				skb_put(skb, pkt_length);
+-			} else {
+-				vxge_re_pre_post(dtr, ring, rx_priv);
+-
+-				vxge_post(&dtr_cnt, &first_dtr, dtr, ringh);
+-				vxge_debug_rx(VXGE_ERR,
+-					"%s: vxge_rx_1b_compl: out of "
+-					"memory", dev->name);
+-				ring->stats.skb_alloc_fail++;
+-				break;
+-			}
+-		}
+-
+-		if ((ext_info.proto & VXGE_HW_FRAME_PROTO_TCP_OR_UDP) &&
+-		    !(ext_info.proto & VXGE_HW_FRAME_PROTO_IP_FRAG) &&
+-		    (dev->features & NETIF_F_RXCSUM) && /* Offload Rx side CSUM */
+-		    ext_info.l3_cksum == VXGE_HW_L3_CKSUM_OK &&
+-		    ext_info.l4_cksum == VXGE_HW_L4_CKSUM_OK)
+-			skb->ip_summed = CHECKSUM_UNNECESSARY;
+-		else
+-			skb_checksum_none_assert(skb);
+-
+-
+-		if (ring->rx_hwts) {
+-			struct skb_shared_hwtstamps *skb_hwts;
+-			u32 ns = *(u32 *)(skb->head + pkt_length);
+-
+-			skb_hwts = skb_hwtstamps(skb);
+-			skb_hwts->hwtstamp = ns_to_ktime(ns);
+-		}
+-
+-		/* rth_hash_type and rth_it_hit are non-zero regardless of
+-		 * whether rss is enabled.  Only the rth_value is zero/non-zero
+-		 * if rss is disabled/enabled, so key off of that.
+-		 */
+-		if (ext_info.rth_value)
+-			skb_set_hash(skb, ext_info.rth_value,
+-				     PKT_HASH_TYPE_L3);
+-
+-		vxge_rx_complete(ring, skb, ext_info.vlan,
+-			pkt_length, &ext_info);
+-
+-		ring->budget--;
+-		ring->pkts_processed++;
+-		if (!ring->budget)
+-			break;
+-
+-	} while (vxge_hw_ring_rxd_next_completed(ringh, &dtr,
+-		&t_code) == VXGE_HW_OK);
+-
+-	if (first_dtr)
+-		vxge_hw_ring_rxd_post_post_wmb(ringh, first_dtr);
+-
+-out:
+-	vxge_debug_entryexit(VXGE_TRACE,
+-				"%s:%d  Exiting...",
+-				__func__, __LINE__);
+-	return VXGE_HW_OK;
+-}
+-
+-/*
+- * vxge_xmit_compl
+- *
+- * If an interrupt was raised to indicate DMA complete of the Tx packet,
+- * this function is called. It identifies the last TxD whose buffer was
+- * freed and frees all skbs whose data have already DMA'ed into the NICs
+- * internal memory.
+- */
+-static enum vxge_hw_status
+-vxge_xmit_compl(struct __vxge_hw_fifo *fifo_hw, void *dtr,
+-		enum vxge_hw_fifo_tcode t_code, void *userdata,
+-		struct sk_buff ***skb_ptr, int nr_skb, int *more)
+-{
+-	struct vxge_fifo *fifo = (struct vxge_fifo *)userdata;
+-	struct sk_buff *skb, **done_skb = *skb_ptr;
+-	int pkt_cnt = 0;
+-
+-	vxge_debug_entryexit(VXGE_TRACE,
+-		"%s:%d Entered....", __func__, __LINE__);
+-
+-	do {
+-		int frg_cnt;
+-		skb_frag_t *frag;
+-		int i = 0, j;
+-		struct vxge_tx_priv *txd_priv =
+-			vxge_hw_fifo_txdl_private_get(dtr);
+-
+-		skb = txd_priv->skb;
+-		frg_cnt = skb_shinfo(skb)->nr_frags;
+-		frag = &skb_shinfo(skb)->frags[0];
+-
+-		vxge_debug_tx(VXGE_TRACE,
+-				"%s: %s:%d fifo_hw = %p dtr = %p "
+-				"tcode = 0x%x", fifo->ndev->name, __func__,
+-				__LINE__, fifo_hw, dtr, t_code);
+-		/* check skb validity */
+-		vxge_assert(skb);
+-		vxge_debug_tx(VXGE_TRACE,
+-			"%s: %s:%d skb = %p itxd_priv = %p frg_cnt = %d",
+-			fifo->ndev->name, __func__, __LINE__,
+-			skb, txd_priv, frg_cnt);
+-		if (unlikely(t_code)) {
+-			fifo->stats.tx_errors++;
+-			vxge_debug_tx(VXGE_ERR,
+-				"%s: tx: dtr %p completed due to "
+-				"error t_code %01x", fifo->ndev->name,
+-				dtr, t_code);
+-			vxge_hw_fifo_handle_tcode(fifo_hw, dtr, t_code);
+-		}
+-
+-		/*  for unfragmented skb */
+-		dma_unmap_single(&fifo->pdev->dev, txd_priv->dma_buffers[i++],
+-				 skb_headlen(skb), DMA_TO_DEVICE);
+-
+-		for (j = 0; j < frg_cnt; j++) {
+-			dma_unmap_page(&fifo->pdev->dev,
+-				       txd_priv->dma_buffers[i++],
+-				       skb_frag_size(frag), DMA_TO_DEVICE);
+-			frag += 1;
+-		}
+-
+-		vxge_hw_fifo_txdl_free(fifo_hw, dtr);
+-
+-		/* Updating the statistics block */
+-		u64_stats_update_begin(&fifo->stats.syncp);
+-		fifo->stats.tx_frms++;
+-		fifo->stats.tx_bytes += skb->len;
+-		u64_stats_update_end(&fifo->stats.syncp);
+-
+-		*done_skb++ = skb;
+-
+-		if (--nr_skb <= 0) {
+-			*more = 1;
+-			break;
+-		}
+-
+-		pkt_cnt++;
+-		if (pkt_cnt > fifo->indicate_max_pkts)
+-			break;
+-
+-	} while (vxge_hw_fifo_txdl_next_completed(fifo_hw,
+-				&dtr, &t_code) == VXGE_HW_OK);
+-
+-	*skb_ptr = done_skb;
+-	if (netif_tx_queue_stopped(fifo->txq))
+-		netif_tx_wake_queue(fifo->txq);
+-
+-	vxge_debug_entryexit(VXGE_TRACE,
+-				"%s: %s:%d  Exiting...",
+-				fifo->ndev->name, __func__, __LINE__);
+-	return VXGE_HW_OK;
+-}
+-
+-/* select a vpath to transmit the packet */
+-static u32 vxge_get_vpath_no(struct vxgedev *vdev, struct sk_buff *skb)
+-{
+-	u16 queue_len, counter = 0;
+-	if (skb->protocol == htons(ETH_P_IP)) {
+-		struct iphdr *ip;
+-		struct tcphdr *th;
+-
+-		ip = ip_hdr(skb);
+-
+-		if (!ip_is_fragment(ip)) {
+-			th = (struct tcphdr *)(((unsigned char *)ip) +
+-					ip->ihl*4);
+-
+-			queue_len = vdev->no_of_vpath;
+-			counter = (ntohs(th->source) +
+-				ntohs(th->dest)) &
+-				vdev->vpath_selector[queue_len - 1];
+-			if (counter >= queue_len)
+-				counter = queue_len - 1;
+-		}
+-	}
+-	return counter;
+-}
+-
+-static enum vxge_hw_status vxge_search_mac_addr_in_list(
+-	struct vxge_vpath *vpath, u64 del_mac)
+-{
+-	struct list_head *entry, *next;
+-	list_for_each_safe(entry, next, &vpath->mac_addr_list) {
+-		if (((struct vxge_mac_addrs *)entry)->macaddr == del_mac)
+-			return TRUE;
+-	}
+-	return FALSE;
+-}
+-
+-static int vxge_mac_list_add(struct vxge_vpath *vpath, struct macInfo *mac)
+-{
+-	struct vxge_mac_addrs *new_mac_entry;
+-	u8 *mac_address = NULL;
+-
+-	if (vpath->mac_addr_cnt >= VXGE_MAX_LEARN_MAC_ADDR_CNT)
+-		return TRUE;
+-
+-	new_mac_entry = kzalloc(sizeof(struct vxge_mac_addrs), GFP_ATOMIC);
+-	if (!new_mac_entry) {
+-		vxge_debug_mem(VXGE_ERR,
+-			"%s: memory allocation failed",
+-			VXGE_DRIVER_NAME);
+-		return FALSE;
+-	}
+-
+-	list_add(&new_mac_entry->item, &vpath->mac_addr_list);
+-
+-	/* Copy the new mac address to the list */
+-	mac_address = (u8 *)&new_mac_entry->macaddr;
+-	memcpy(mac_address, mac->macaddr, ETH_ALEN);
+-
+-	new_mac_entry->state = mac->state;
+-	vpath->mac_addr_cnt++;
+-
+-	if (is_multicast_ether_addr(mac->macaddr))
+-		vpath->mcast_addr_cnt++;
+-
+-	return TRUE;
+-}
+-
+-/* Add a mac address to DA table */
+-static enum vxge_hw_status
+-vxge_add_mac_addr(struct vxgedev *vdev, struct macInfo *mac)
+-{
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-	struct vxge_vpath *vpath;
+-	enum vxge_hw_vpath_mac_addr_add_mode duplicate_mode;
+-
+-	if (is_multicast_ether_addr(mac->macaddr))
+-		duplicate_mode = VXGE_HW_VPATH_MAC_ADDR_ADD_DUPLICATE;
+-	else
+-		duplicate_mode = VXGE_HW_VPATH_MAC_ADDR_REPLACE_DUPLICATE;
+-
+-	vpath = &vdev->vpaths[mac->vpath_no];
+-	status = vxge_hw_vpath_mac_addr_add(vpath->handle, mac->macaddr,
+-						mac->macmask, duplicate_mode);
+-	if (status != VXGE_HW_OK) {
+-		vxge_debug_init(VXGE_ERR,
+-			"DA config add entry failed for vpath:%d",
+-			vpath->device_id);
+-	} else
+-		if (FALSE == vxge_mac_list_add(vpath, mac))
+-			status = -EPERM;
+-
+-	return status;
+-}
+-
+-static int vxge_learn_mac(struct vxgedev *vdev, u8 *mac_header)
+-{
+-	struct macInfo mac_info;
+-	u8 *mac_address = NULL;
+-	u64 mac_addr = 0, vpath_vector = 0;
+-	int vpath_idx = 0;
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-	struct vxge_vpath *vpath = NULL;
+-
+-	mac_address = (u8 *)&mac_addr;
+-	memcpy(mac_address, mac_header, ETH_ALEN);
+-
+-	/* Is this mac address already in the list? */
+-	for (vpath_idx = 0; vpath_idx < vdev->no_of_vpath; vpath_idx++) {
+-		vpath = &vdev->vpaths[vpath_idx];
+-		if (vxge_search_mac_addr_in_list(vpath, mac_addr))
+-			return vpath_idx;
+-	}
+-
+-	memset(&mac_info, 0, sizeof(struct macInfo));
+-	memcpy(mac_info.macaddr, mac_header, ETH_ALEN);
+-
+-	/* Any vpath has room to add mac address to its da table? */
+-	for (vpath_idx = 0; vpath_idx < vdev->no_of_vpath; vpath_idx++) {
+-		vpath = &vdev->vpaths[vpath_idx];
+-		if (vpath->mac_addr_cnt < vpath->max_mac_addr_cnt) {
+-			/* Add this mac address to this vpath */
+-			mac_info.vpath_no = vpath_idx;
+-			mac_info.state = VXGE_LL_MAC_ADDR_IN_DA_TABLE;
+-			status = vxge_add_mac_addr(vdev, &mac_info);
+-			if (status != VXGE_HW_OK)
+-				return -EPERM;
+-			return vpath_idx;
+-		}
+-	}
+-
+-	mac_info.state = VXGE_LL_MAC_ADDR_IN_LIST;
+-	vpath_idx = 0;
+-	mac_info.vpath_no = vpath_idx;
+-	/* Is the first vpath already selected as catch-basin ? */
+-	vpath = &vdev->vpaths[vpath_idx];
+-	if (vpath->mac_addr_cnt > vpath->max_mac_addr_cnt) {
+-		/* Add this mac address to this vpath */
+-		if (FALSE == vxge_mac_list_add(vpath, &mac_info))
+-			return -EPERM;
+-		return vpath_idx;
+-	}
+-
+-	/* Select first vpath as catch-basin */
+-	vpath_vector = vxge_mBIT(vpath->device_id);
+-	status = vxge_hw_mgmt_reg_write(vpath->vdev->devh,
+-				vxge_hw_mgmt_reg_type_mrpcim,
+-				0,
+-				(ulong)offsetof(
+-					struct vxge_hw_mrpcim_reg,
+-					rts_mgr_cbasin_cfg),
+-				vpath_vector);
+-	if (status != VXGE_HW_OK) {
+-		vxge_debug_tx(VXGE_ERR,
+-			"%s: Unable to set the vpath-%d in catch-basin mode",
+-			VXGE_DRIVER_NAME, vpath->device_id);
+-		return -EPERM;
+-	}
+-
+-	if (FALSE == vxge_mac_list_add(vpath, &mac_info))
+-		return -EPERM;
+-
+-	return vpath_idx;
+-}
+-
+-/**
+- * vxge_xmit
+- * @skb : the socket buffer containing the Tx data.
+- * @dev : device pointer.
+- *
+- * This function is the Tx entry point of the driver. Neterion NIC supports
+- * certain protocol assist features on Tx side, namely  CSO, S/G, LSO.
+-*/
+-static netdev_tx_t
+-vxge_xmit(struct sk_buff *skb, struct net_device *dev)
+-{
+-	struct vxge_fifo *fifo = NULL;
+-	void *dtr_priv;
+-	void *dtr = NULL;
+-	struct vxgedev *vdev = NULL;
+-	enum vxge_hw_status status;
+-	int frg_cnt, first_frg_len;
+-	skb_frag_t *frag;
+-	int i = 0, j = 0, avail;
+-	u64 dma_pointer;
+-	struct vxge_tx_priv *txdl_priv = NULL;
+-	struct __vxge_hw_fifo *fifo_hw;
+-	int offload_type;
+-	int vpath_no = 0;
+-
+-	vxge_debug_entryexit(VXGE_TRACE, "%s: %s:%d",
+-			dev->name, __func__, __LINE__);
+-
+-	/* A buffer with no data will be dropped */
+-	if (unlikely(skb->len <= 0)) {
+-		vxge_debug_tx(VXGE_ERR,
+-			"%s: Buffer has no data..", dev->name);
+-		dev_kfree_skb_any(skb);
+-		return NETDEV_TX_OK;
+-	}
+-
+-	vdev = netdev_priv(dev);
+-
+-	if (unlikely(!is_vxge_card_up(vdev))) {
+-		vxge_debug_tx(VXGE_ERR,
+-			"%s: vdev not initialized", dev->name);
+-		dev_kfree_skb_any(skb);
+-		return NETDEV_TX_OK;
+-	}
+-
+-	if (vdev->config.addr_learn_en) {
+-		vpath_no = vxge_learn_mac(vdev, skb->data + ETH_ALEN);
+-		if (vpath_no == -EPERM) {
+-			vxge_debug_tx(VXGE_ERR,
+-				"%s: Failed to store the mac address",
+-				dev->name);
+-			dev_kfree_skb_any(skb);
+-			return NETDEV_TX_OK;
+-		}
+-	}
+-
+-	if (vdev->config.tx_steering_type == TX_MULTIQ_STEERING)
+-		vpath_no = skb_get_queue_mapping(skb);
+-	else if (vdev->config.tx_steering_type == TX_PORT_STEERING)
+-		vpath_no = vxge_get_vpath_no(vdev, skb);
+-
+-	vxge_debug_tx(VXGE_TRACE, "%s: vpath_no= %d", dev->name, vpath_no);
+-
+-	if (vpath_no >= vdev->no_of_vpath)
+-		vpath_no = 0;
+-
+-	fifo = &vdev->vpaths[vpath_no].fifo;
+-	fifo_hw = fifo->handle;
+-
+-	if (netif_tx_queue_stopped(fifo->txq))
+-		return NETDEV_TX_BUSY;
+-
+-	avail = vxge_hw_fifo_free_txdl_count_get(fifo_hw);
+-	if (avail == 0) {
+-		vxge_debug_tx(VXGE_ERR,
+-			"%s: No free TXDs available", dev->name);
+-		fifo->stats.txd_not_free++;
+-		goto _exit0;
+-	}
+-
+-	/* Last TXD?  Stop tx queue to avoid dropping packets.  TX
+-	 * completion will resume the queue.
+-	 */
+-	if (avail == 1)
+-		netif_tx_stop_queue(fifo->txq);
+-
+-	status = vxge_hw_fifo_txdl_reserve(fifo_hw, &dtr, &dtr_priv);
+-	if (unlikely(status != VXGE_HW_OK)) {
+-		vxge_debug_tx(VXGE_ERR,
+-		   "%s: Out of descriptors .", dev->name);
+-		fifo->stats.txd_out_of_desc++;
+-		goto _exit0;
+-	}
+-
+-	vxge_debug_tx(VXGE_TRACE,
+-		"%s: %s:%d fifo_hw = %p dtr = %p dtr_priv = %p",
+-		dev->name, __func__, __LINE__,
+-		fifo_hw, dtr, dtr_priv);
+-
+-	if (skb_vlan_tag_present(skb)) {
+-		u16 vlan_tag = skb_vlan_tag_get(skb);
+-		vxge_hw_fifo_txdl_vlan_set(dtr, vlan_tag);
+-	}
+-
+-	first_frg_len = skb_headlen(skb);
+-
+-	dma_pointer = dma_map_single(&fifo->pdev->dev, skb->data,
+-				     first_frg_len, DMA_TO_DEVICE);
+-
+-	if (unlikely(dma_mapping_error(&fifo->pdev->dev, dma_pointer))) {
+-		vxge_hw_fifo_txdl_free(fifo_hw, dtr);
+-		fifo->stats.pci_map_fail++;
+-		goto _exit0;
+-	}
+-
+-	txdl_priv = vxge_hw_fifo_txdl_private_get(dtr);
+-	txdl_priv->skb = skb;
+-	txdl_priv->dma_buffers[j] = dma_pointer;
+-
+-	frg_cnt = skb_shinfo(skb)->nr_frags;
+-	vxge_debug_tx(VXGE_TRACE,
+-			"%s: %s:%d skb = %p txdl_priv = %p "
+-			"frag_cnt = %d dma_pointer = 0x%llx", dev->name,
+-			__func__, __LINE__, skb, txdl_priv,
+-			frg_cnt, (unsigned long long)dma_pointer);
+-
+-	vxge_hw_fifo_txdl_buffer_set(fifo_hw, dtr, j++, dma_pointer,
+-		first_frg_len);
+-
+-	frag = &skb_shinfo(skb)->frags[0];
+-	for (i = 0; i < frg_cnt; i++) {
+-		/* ignore 0 length fragment */
+-		if (!skb_frag_size(frag))
+-			continue;
+-
+-		dma_pointer = (u64)skb_frag_dma_map(&fifo->pdev->dev, frag,
+-						    0, skb_frag_size(frag),
+-						    DMA_TO_DEVICE);
+-
+-		if (unlikely(dma_mapping_error(&fifo->pdev->dev, dma_pointer)))
+-			goto _exit2;
+-		vxge_debug_tx(VXGE_TRACE,
+-			"%s: %s:%d frag = %d dma_pointer = 0x%llx",
+-				dev->name, __func__, __LINE__, i,
+-				(unsigned long long)dma_pointer);
+-
+-		txdl_priv->dma_buffers[j] = dma_pointer;
+-		vxge_hw_fifo_txdl_buffer_set(fifo_hw, dtr, j++, dma_pointer,
+-					skb_frag_size(frag));
+-		frag += 1;
+-	}
+-
+-	offload_type = vxge_offload_type(skb);
+-
+-	if (offload_type & (SKB_GSO_TCPV4 | SKB_GSO_TCPV6)) {
+-		int mss = vxge_tcp_mss(skb);
+-		if (mss) {
+-			vxge_debug_tx(VXGE_TRACE, "%s: %s:%d mss = %d",
+-				dev->name, __func__, __LINE__, mss);
+-			vxge_hw_fifo_txdl_mss_set(dtr, mss);
+-		} else {
+-			vxge_assert(skb->len <=
+-				dev->mtu + VXGE_HW_MAC_HEADER_MAX_SIZE);
+-			vxge_assert(0);
+-			goto _exit1;
+-		}
+-	}
+-
+-	if (skb->ip_summed == CHECKSUM_PARTIAL)
+-		vxge_hw_fifo_txdl_cksum_set_bits(dtr,
+-					VXGE_HW_FIFO_TXD_TX_CKO_IPV4_EN |
+-					VXGE_HW_FIFO_TXD_TX_CKO_TCP_EN |
+-					VXGE_HW_FIFO_TXD_TX_CKO_UDP_EN);
+-
+-	vxge_hw_fifo_txdl_post(fifo_hw, dtr);
+-
+-	vxge_debug_entryexit(VXGE_TRACE, "%s: %s:%d  Exiting...",
+-		dev->name, __func__, __LINE__);
+-	return NETDEV_TX_OK;
+-
+-_exit2:
+-	vxge_debug_tx(VXGE_TRACE, "%s: pci_map_page failed", dev->name);
+-_exit1:
+-	j = 0;
+-	frag = &skb_shinfo(skb)->frags[0];
+-
+-	dma_unmap_single(&fifo->pdev->dev, txdl_priv->dma_buffers[j++],
+-			 skb_headlen(skb), DMA_TO_DEVICE);
+-
+-	for (; j < i; j++) {
+-		dma_unmap_page(&fifo->pdev->dev, txdl_priv->dma_buffers[j],
+-			       skb_frag_size(frag), DMA_TO_DEVICE);
+-		frag += 1;
+-	}
+-
+-	vxge_hw_fifo_txdl_free(fifo_hw, dtr);
+-_exit0:
+-	netif_tx_stop_queue(fifo->txq);
+-	dev_kfree_skb_any(skb);
+-
+-	return NETDEV_TX_OK;
+-}
+-
+-/*
+- * vxge_rx_term
+- *
+- * Function will be called by hw function to abort all outstanding receive
+- * descriptors.
+- */
+-static void
+-vxge_rx_term(void *dtrh, enum vxge_hw_rxd_state state, void *userdata)
+-{
+-	struct vxge_ring *ring = (struct vxge_ring *)userdata;
+-	struct vxge_rx_priv *rx_priv =
+-		vxge_hw_ring_rxd_private_get(dtrh);
+-
+-	vxge_debug_entryexit(VXGE_TRACE, "%s: %s:%d",
+-			ring->ndev->name, __func__, __LINE__);
+-	if (state != VXGE_HW_RXD_STATE_POSTED)
+-		return;
+-
+-	dma_unmap_single(&ring->pdev->dev, rx_priv->data_dma,
+-			 rx_priv->data_size, DMA_FROM_DEVICE);
+-
+-	dev_kfree_skb(rx_priv->skb);
+-	rx_priv->skb_data = NULL;
+-
+-	vxge_debug_entryexit(VXGE_TRACE,
+-		"%s: %s:%d  Exiting...",
+-		ring->ndev->name, __func__, __LINE__);
+-}
+-
+-/*
+- * vxge_tx_term
+- *
+- * Function will be called to abort all outstanding tx descriptors
+- */
+-static void
+-vxge_tx_term(void *dtrh, enum vxge_hw_txdl_state state, void *userdata)
+-{
+-	struct vxge_fifo *fifo = (struct vxge_fifo *)userdata;
+-	skb_frag_t *frag;
+-	int i = 0, j, frg_cnt;
+-	struct vxge_tx_priv *txd_priv = vxge_hw_fifo_txdl_private_get(dtrh);
+-	struct sk_buff *skb = txd_priv->skb;
+-
+-	vxge_debug_entryexit(VXGE_TRACE, "%s:%d", __func__, __LINE__);
+-
+-	if (state != VXGE_HW_TXDL_STATE_POSTED)
+-		return;
+-
+-	/* check skb validity */
+-	vxge_assert(skb);
+-	frg_cnt = skb_shinfo(skb)->nr_frags;
+-	frag = &skb_shinfo(skb)->frags[0];
+-
+-	/*  for unfragmented skb */
+-	dma_unmap_single(&fifo->pdev->dev, txd_priv->dma_buffers[i++],
+-			 skb_headlen(skb), DMA_TO_DEVICE);
+-
+-	for (j = 0; j < frg_cnt; j++) {
+-		dma_unmap_page(&fifo->pdev->dev, txd_priv->dma_buffers[i++],
+-			       skb_frag_size(frag), DMA_TO_DEVICE);
+-		frag += 1;
+-	}
+-
+-	dev_kfree_skb(skb);
+-
+-	vxge_debug_entryexit(VXGE_TRACE,
+-		"%s:%d  Exiting...", __func__, __LINE__);
+-}
+-
+-static int vxge_mac_list_del(struct vxge_vpath *vpath, struct macInfo *mac)
+-{
+-	struct list_head *entry, *next;
+-	u64 del_mac = 0;
+-	u8 *mac_address = (u8 *) (&del_mac);
+-
+-	/* Copy the mac address to delete from the list */
+-	memcpy(mac_address, mac->macaddr, ETH_ALEN);
+-
+-	list_for_each_safe(entry, next, &vpath->mac_addr_list) {
+-		if (((struct vxge_mac_addrs *)entry)->macaddr == del_mac) {
+-			list_del(entry);
+-			kfree(entry);
+-			vpath->mac_addr_cnt--;
+-
+-			if (is_multicast_ether_addr(mac->macaddr))
+-				vpath->mcast_addr_cnt--;
+-			return TRUE;
+-		}
+-	}
+-
+-	return FALSE;
+-}
+-
+-/* delete a mac address from DA table */
+-static enum vxge_hw_status
+-vxge_del_mac_addr(struct vxgedev *vdev, struct macInfo *mac)
+-{
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-	struct vxge_vpath *vpath;
+-
+-	vpath = &vdev->vpaths[mac->vpath_no];
+-	status = vxge_hw_vpath_mac_addr_delete(vpath->handle, mac->macaddr,
+-						mac->macmask);
+-	if (status != VXGE_HW_OK) {
+-		vxge_debug_init(VXGE_ERR,
+-			"DA config delete entry failed for vpath:%d",
+-			vpath->device_id);
+-	} else
+-		vxge_mac_list_del(vpath, mac);
+-	return status;
+-}
+-
+-/**
+- * vxge_set_multicast
+- * @dev: pointer to the device structure
+- *
+- * Entry point for multicast address enable/disable
+- * This function is a driver entry point which gets called by the kernel
+- * whenever multicast addresses must be enabled/disabled. This also gets
+- * called to set/reset promiscuous mode. Depending on the deivce flag, we
+- * determine, if multicast address must be enabled or if promiscuous mode
+- * is to be disabled etc.
+- */
+-static void vxge_set_multicast(struct net_device *dev)
+-{
+-	struct netdev_hw_addr *ha;
+-	struct vxgedev *vdev;
+-	int i, mcast_cnt = 0;
+-	struct vxge_vpath *vpath;
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-	struct macInfo mac_info;
+-	int vpath_idx = 0;
+-	struct vxge_mac_addrs *mac_entry;
+-	struct list_head *list_head;
+-	struct list_head *entry, *next;
+-	u8 *mac_address = NULL;
+-
+-	vxge_debug_entryexit(VXGE_TRACE,
+-		"%s:%d", __func__, __LINE__);
+-
+-	vdev = netdev_priv(dev);
+-
+-	if (unlikely(!is_vxge_card_up(vdev)))
+-		return;
+-
+-	if ((dev->flags & IFF_ALLMULTI) && (!vdev->all_multi_flg)) {
+-		for (i = 0; i < vdev->no_of_vpath; i++) {
+-			vpath = &vdev->vpaths[i];
+-			vxge_assert(vpath->is_open);
+-			status = vxge_hw_vpath_mcast_enable(vpath->handle);
+-			if (status != VXGE_HW_OK)
+-				vxge_debug_init(VXGE_ERR, "failed to enable "
+-						"multicast, status %d", status);
+-			vdev->all_multi_flg = 1;
+-		}
+-	} else if (!(dev->flags & IFF_ALLMULTI) && (vdev->all_multi_flg)) {
+-		for (i = 0; i < vdev->no_of_vpath; i++) {
+-			vpath = &vdev->vpaths[i];
+-			vxge_assert(vpath->is_open);
+-			status = vxge_hw_vpath_mcast_disable(vpath->handle);
+-			if (status != VXGE_HW_OK)
+-				vxge_debug_init(VXGE_ERR, "failed to disable "
+-						"multicast, status %d", status);
+-			vdev->all_multi_flg = 0;
+-		}
+-	}
+-
+-
+-	if (!vdev->config.addr_learn_en) {
+-		for (i = 0; i < vdev->no_of_vpath; i++) {
+-			vpath = &vdev->vpaths[i];
+-			vxge_assert(vpath->is_open);
+-
+-			if (dev->flags & IFF_PROMISC)
+-				status = vxge_hw_vpath_promisc_enable(
+-					vpath->handle);
+-			else
+-				status = vxge_hw_vpath_promisc_disable(
+-					vpath->handle);
+-			if (status != VXGE_HW_OK)
+-				vxge_debug_init(VXGE_ERR, "failed to %s promisc"
+-					", status %d", dev->flags&IFF_PROMISC ?
+-					"enable" : "disable", status);
+-		}
+-	}
+-
+-	memset(&mac_info, 0, sizeof(struct macInfo));
+-	/* Update individual M_CAST address list */
+-	if ((!vdev->all_multi_flg) && netdev_mc_count(dev)) {
+-		mcast_cnt = vdev->vpaths[0].mcast_addr_cnt;
+-		list_head = &vdev->vpaths[0].mac_addr_list;
+-		if ((netdev_mc_count(dev) +
+-			(vdev->vpaths[0].mac_addr_cnt - mcast_cnt)) >
+-				vdev->vpaths[0].max_mac_addr_cnt)
+-			goto _set_all_mcast;
+-
+-		/* Delete previous MC's */
+-		for (i = 0; i < mcast_cnt; i++) {
+-			list_for_each_safe(entry, next, list_head) {
+-				mac_entry = (struct vxge_mac_addrs *)entry;
+-				/* Copy the mac address to delete */
+-				mac_address = (u8 *)&mac_entry->macaddr;
+-				memcpy(mac_info.macaddr, mac_address, ETH_ALEN);
+-
+-				if (is_multicast_ether_addr(mac_info.macaddr)) {
+-					for (vpath_idx = 0; vpath_idx <
+-						vdev->no_of_vpath;
+-						vpath_idx++) {
+-						mac_info.vpath_no = vpath_idx;
+-						status = vxge_del_mac_addr(
+-								vdev,
+-								&mac_info);
+-					}
+-				}
+-			}
+-		}
+-
+-		/* Add new ones */
+-		netdev_for_each_mc_addr(ha, dev) {
+-			memcpy(mac_info.macaddr, ha->addr, ETH_ALEN);
+-			for (vpath_idx = 0; vpath_idx < vdev->no_of_vpath;
+-					vpath_idx++) {
+-				mac_info.vpath_no = vpath_idx;
+-				mac_info.state = VXGE_LL_MAC_ADDR_IN_DA_TABLE;
+-				status = vxge_add_mac_addr(vdev, &mac_info);
+-				if (status != VXGE_HW_OK) {
+-					vxge_debug_init(VXGE_ERR,
+-						"%s:%d Setting individual"
+-						"multicast address failed",
+-						__func__, __LINE__);
+-					goto _set_all_mcast;
+-				}
+-			}
+-		}
+-
+-		return;
+-_set_all_mcast:
+-		mcast_cnt = vdev->vpaths[0].mcast_addr_cnt;
+-		/* Delete previous MC's */
+-		for (i = 0; i < mcast_cnt; i++) {
+-			list_for_each_safe(entry, next, list_head) {
+-				mac_entry = (struct vxge_mac_addrs *)entry;
+-				/* Copy the mac address to delete */
+-				mac_address = (u8 *)&mac_entry->macaddr;
+-				memcpy(mac_info.macaddr, mac_address, ETH_ALEN);
+-
+-				if (is_multicast_ether_addr(mac_info.macaddr))
+-					break;
+-			}
+-
+-			for (vpath_idx = 0; vpath_idx < vdev->no_of_vpath;
+-					vpath_idx++) {
+-				mac_info.vpath_no = vpath_idx;
+-				status = vxge_del_mac_addr(vdev, &mac_info);
+-			}
+-		}
+-
+-		/* Enable all multicast */
+-		for (i = 0; i < vdev->no_of_vpath; i++) {
+-			vpath = &vdev->vpaths[i];
+-			vxge_assert(vpath->is_open);
+-
+-			status = vxge_hw_vpath_mcast_enable(vpath->handle);
+-			if (status != VXGE_HW_OK) {
+-				vxge_debug_init(VXGE_ERR,
+-					"%s:%d Enabling all multicasts failed",
+-					 __func__, __LINE__);
+-			}
+-			vdev->all_multi_flg = 1;
+-		}
+-		dev->flags |= IFF_ALLMULTI;
+-	}
+-
+-	vxge_debug_entryexit(VXGE_TRACE,
+-		"%s:%d  Exiting...", __func__, __LINE__);
+-}
+-
+-/**
+- * vxge_set_mac_addr
+- * @dev: pointer to the device structure
+- * @p: socket info
+- *
+- * Update entry "0" (default MAC addr)
+- */
+-static int vxge_set_mac_addr(struct net_device *dev, void *p)
+-{
+-	struct sockaddr *addr = p;
+-	struct vxgedev *vdev;
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-	struct macInfo mac_info_new, mac_info_old;
+-	int vpath_idx = 0;
+-
+-	vxge_debug_entryexit(VXGE_TRACE, "%s:%d", __func__, __LINE__);
+-
+-	vdev = netdev_priv(dev);
+-
+-	if (!is_valid_ether_addr(addr->sa_data))
+-		return -EINVAL;
+-
+-	memset(&mac_info_new, 0, sizeof(struct macInfo));
+-	memset(&mac_info_old, 0, sizeof(struct macInfo));
+-
+-	vxge_debug_entryexit(VXGE_TRACE, "%s:%d  Exiting...",
+-		__func__, __LINE__);
+-
+-	/* Get the old address */
+-	memcpy(mac_info_old.macaddr, dev->dev_addr, dev->addr_len);
+-
+-	/* Copy the new address */
+-	memcpy(mac_info_new.macaddr, addr->sa_data, dev->addr_len);
+-
+-	/* First delete the old mac address from all the vpaths
+-	as we can't specify the index while adding new mac address */
+-	for (vpath_idx = 0; vpath_idx < vdev->no_of_vpath; vpath_idx++) {
+-		struct vxge_vpath *vpath = &vdev->vpaths[vpath_idx];
+-		if (!vpath->is_open) {
+-			/* This can happen when this interface is added/removed
+-			to the bonding interface. Delete this station address
+-			from the linked list */
+-			vxge_mac_list_del(vpath, &mac_info_old);
+-
+-			/* Add this new address to the linked list
+-			for later restoring */
+-			vxge_mac_list_add(vpath, &mac_info_new);
+-
+-			continue;
+-		}
+-		/* Delete the station address */
+-		mac_info_old.vpath_no = vpath_idx;
+-		status = vxge_del_mac_addr(vdev, &mac_info_old);
+-	}
+-
+-	if (unlikely(!is_vxge_card_up(vdev))) {
+-		eth_hw_addr_set(dev, addr->sa_data);
+-		return VXGE_HW_OK;
+-	}
+-
+-	/* Set this mac address to all the vpaths */
+-	for (vpath_idx = 0; vpath_idx < vdev->no_of_vpath; vpath_idx++) {
+-		mac_info_new.vpath_no = vpath_idx;
+-		mac_info_new.state = VXGE_LL_MAC_ADDR_IN_DA_TABLE;
+-		status = vxge_add_mac_addr(vdev, &mac_info_new);
+-		if (status != VXGE_HW_OK)
+-			return -EINVAL;
+-	}
+-
+-	eth_hw_addr_set(dev, addr->sa_data);
+-
+-	return status;
+-}
+-
+-/*
+- * vxge_vpath_intr_enable
+- * @vdev: pointer to vdev
+- * @vp_id: vpath for which to enable the interrupts
+- *
+- * Enables the interrupts for the vpath
+-*/
+-static void vxge_vpath_intr_enable(struct vxgedev *vdev, int vp_id)
+-{
+-	struct vxge_vpath *vpath = &vdev->vpaths[vp_id];
+-	int msix_id = 0;
+-	int tim_msix_id[4] = {0, 1, 0, 0};
+-	int alarm_msix_id = VXGE_ALARM_MSIX_ID;
+-
+-	vxge_hw_vpath_intr_enable(vpath->handle);
+-
+-	if (vdev->config.intr_type == INTA)
+-		vxge_hw_vpath_inta_unmask_tx_rx(vpath->handle);
+-	else {
+-		vxge_hw_vpath_msix_set(vpath->handle, tim_msix_id,
+-			alarm_msix_id);
+-
+-		msix_id = vpath->device_id * VXGE_HW_VPATH_MSIX_ACTIVE;
+-		vxge_hw_vpath_msix_unmask(vpath->handle, msix_id);
+-		vxge_hw_vpath_msix_unmask(vpath->handle, msix_id + 1);
+-
+-		/* enable the alarm vector */
+-		msix_id = (vpath->handle->vpath->hldev->first_vp_id *
+-			VXGE_HW_VPATH_MSIX_ACTIVE) + alarm_msix_id;
+-		vxge_hw_vpath_msix_unmask(vpath->handle, msix_id);
+-	}
+-}
+-
+-/*
+- * vxge_vpath_intr_disable
+- * @vdev: pointer to vdev
+- * @vp_id: vpath for which to disable the interrupts
+- *
+- * Disables the interrupts for the vpath
+-*/
+-static void vxge_vpath_intr_disable(struct vxgedev *vdev, int vp_id)
+-{
+-	struct vxge_vpath *vpath = &vdev->vpaths[vp_id];
+-	struct __vxge_hw_device *hldev;
+-	int msix_id;
+-
+-	hldev = pci_get_drvdata(vdev->pdev);
+-
+-	vxge_hw_vpath_wait_receive_idle(hldev, vpath->device_id);
+-
+-	vxge_hw_vpath_intr_disable(vpath->handle);
+-
+-	if (vdev->config.intr_type == INTA)
+-		vxge_hw_vpath_inta_mask_tx_rx(vpath->handle);
+-	else {
+-		msix_id = vpath->device_id * VXGE_HW_VPATH_MSIX_ACTIVE;
+-		vxge_hw_vpath_msix_mask(vpath->handle, msix_id);
+-		vxge_hw_vpath_msix_mask(vpath->handle, msix_id + 1);
+-
+-		/* disable the alarm vector */
+-		msix_id = (vpath->handle->vpath->hldev->first_vp_id *
+-			VXGE_HW_VPATH_MSIX_ACTIVE) + VXGE_ALARM_MSIX_ID;
+-		vxge_hw_vpath_msix_mask(vpath->handle, msix_id);
+-	}
+-}
+-
+-/* list all mac addresses from DA table */
+-static enum vxge_hw_status
+-vxge_search_mac_addr_in_da_table(struct vxge_vpath *vpath, struct macInfo *mac)
+-{
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-	unsigned char macmask[ETH_ALEN];
+-	unsigned char macaddr[ETH_ALEN];
+-
+-	status = vxge_hw_vpath_mac_addr_get(vpath->handle,
+-				macaddr, macmask);
+-	if (status != VXGE_HW_OK) {
+-		vxge_debug_init(VXGE_ERR,
+-			"DA config list entry failed for vpath:%d",
+-			vpath->device_id);
+-		return status;
+-	}
+-
+-	while (!ether_addr_equal(mac->macaddr, macaddr)) {
+-		status = vxge_hw_vpath_mac_addr_get_next(vpath->handle,
+-				macaddr, macmask);
+-		if (status != VXGE_HW_OK)
+-			break;
+-	}
+-
+-	return status;
+-}
+-
+-/* Store all mac addresses from the list to the DA table */
+-static enum vxge_hw_status vxge_restore_vpath_mac_addr(struct vxge_vpath *vpath)
+-{
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-	struct macInfo mac_info;
+-	u8 *mac_address = NULL;
+-	struct list_head *entry, *next;
+-
+-	memset(&mac_info, 0, sizeof(struct macInfo));
+-
+-	if (vpath->is_open) {
+-		list_for_each_safe(entry, next, &vpath->mac_addr_list) {
+-			mac_address =
+-				(u8 *)&
+-				((struct vxge_mac_addrs *)entry)->macaddr;
+-			memcpy(mac_info.macaddr, mac_address, ETH_ALEN);
+-			((struct vxge_mac_addrs *)entry)->state =
+-				VXGE_LL_MAC_ADDR_IN_DA_TABLE;
+-			/* does this mac address already exist in da table? */
+-			status = vxge_search_mac_addr_in_da_table(vpath,
+-				&mac_info);
+-			if (status != VXGE_HW_OK) {
+-				/* Add this mac address to the DA table */
+-				status = vxge_hw_vpath_mac_addr_add(
+-					vpath->handle, mac_info.macaddr,
+-					mac_info.macmask,
+-				    VXGE_HW_VPATH_MAC_ADDR_ADD_DUPLICATE);
+-				if (status != VXGE_HW_OK) {
+-					vxge_debug_init(VXGE_ERR,
+-					    "DA add entry failed for vpath:%d",
+-					    vpath->device_id);
+-					((struct vxge_mac_addrs *)entry)->state
+-						= VXGE_LL_MAC_ADDR_IN_LIST;
+-				}
+-			}
+-		}
+-	}
+-
+-	return status;
+-}
+-
+-/* Store all vlan ids from the list to the vid table */
+-static enum vxge_hw_status
+-vxge_restore_vpath_vid_table(struct vxge_vpath *vpath)
+-{
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-	struct vxgedev *vdev = vpath->vdev;
+-	u16 vid;
+-
+-	if (!vpath->is_open)
+-		return status;
+-
+-	for_each_set_bit(vid, vdev->active_vlans, VLAN_N_VID)
+-		status = vxge_hw_vpath_vid_add(vpath->handle, vid);
+-
+-	return status;
+-}
+-
+-/*
+- * vxge_reset_vpath
+- * @vdev: pointer to vdev
+- * @vp_id: vpath to reset
+- *
+- * Resets the vpath
+-*/
+-static int vxge_reset_vpath(struct vxgedev *vdev, int vp_id)
+-{
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-	struct vxge_vpath *vpath = &vdev->vpaths[vp_id];
+-	int ret = 0;
+-
+-	/* check if device is down already */
+-	if (unlikely(!is_vxge_card_up(vdev)))
+-		return 0;
+-
+-	/* is device reset already scheduled */
+-	if (test_bit(__VXGE_STATE_RESET_CARD, &vdev->state))
+-		return 0;
+-
+-	if (vpath->handle) {
+-		if (vxge_hw_vpath_reset(vpath->handle) == VXGE_HW_OK) {
+-			if (is_vxge_card_up(vdev) &&
+-				vxge_hw_vpath_recover_from_reset(vpath->handle)
+-					!= VXGE_HW_OK) {
+-				vxge_debug_init(VXGE_ERR,
+-					"vxge_hw_vpath_recover_from_reset"
+-					"failed for vpath:%d", vp_id);
+-				return status;
+-			}
+-		} else {
+-			vxge_debug_init(VXGE_ERR,
+-				"vxge_hw_vpath_reset failed for"
+-				"vpath:%d", vp_id);
+-			return status;
+-		}
+-	} else
+-		return VXGE_HW_FAIL;
+-
+-	vxge_restore_vpath_mac_addr(vpath);
+-	vxge_restore_vpath_vid_table(vpath);
+-
+-	/* Enable all broadcast */
+-	vxge_hw_vpath_bcast_enable(vpath->handle);
+-
+-	/* Enable all multicast */
+-	if (vdev->all_multi_flg) {
+-		status = vxge_hw_vpath_mcast_enable(vpath->handle);
+-		if (status != VXGE_HW_OK)
+-			vxge_debug_init(VXGE_ERR,
+-				"%s:%d Enabling multicast failed",
+-				__func__, __LINE__);
+-	}
+-
+-	/* Enable the interrupts */
+-	vxge_vpath_intr_enable(vdev, vp_id);
+-
+-	smp_wmb();
+-
+-	/* Enable the flow of traffic through the vpath */
+-	vxge_hw_vpath_enable(vpath->handle);
+-
+-	smp_wmb();
+-	vxge_hw_vpath_rx_doorbell_init(vpath->handle);
+-	vpath->ring.last_status = VXGE_HW_OK;
+-
+-	/* Vpath reset done */
+-	clear_bit(vp_id, &vdev->vp_reset);
+-
+-	/* Start the vpath queue */
+-	if (netif_tx_queue_stopped(vpath->fifo.txq))
+-		netif_tx_wake_queue(vpath->fifo.txq);
+-
+-	return ret;
+-}
+-
+-/* Configure CI */
+-static void vxge_config_ci_for_tti_rti(struct vxgedev *vdev)
+-{
+-	int i = 0;
+-
+-	/* Enable CI for RTI */
+-	if (vdev->config.intr_type == MSI_X) {
+-		for (i = 0; i < vdev->no_of_vpath; i++) {
+-			struct __vxge_hw_ring *hw_ring;
+-
+-			hw_ring = vdev->vpaths[i].ring.handle;
+-			vxge_hw_vpath_dynamic_rti_ci_set(hw_ring);
+-		}
+-	}
+-
+-	/* Enable CI for TTI */
+-	for (i = 0; i < vdev->no_of_vpath; i++) {
+-		struct __vxge_hw_fifo *hw_fifo = vdev->vpaths[i].fifo.handle;
+-		vxge_hw_vpath_tti_ci_set(hw_fifo);
+-		/*
+-		 * For Inta (with or without napi), Set CI ON for only one
+-		 * vpath. (Have only one free running timer).
+-		 */
+-		if ((vdev->config.intr_type == INTA) && (i == 0))
+-			break;
+-	}
+-
+-	return;
+-}
+-
+-static int do_vxge_reset(struct vxgedev *vdev, int event)
+-{
+-	int ret = 0, vp_id, i;
+-
+-	vxge_debug_entryexit(VXGE_TRACE, "%s:%d", __func__, __LINE__);
+-
+-	if ((event == VXGE_LL_FULL_RESET) || (event == VXGE_LL_START_RESET)) {
+-		/* check if device is down already */
+-		if (unlikely(!is_vxge_card_up(vdev)))
+-			return 0;
+-
+-		/* is reset already scheduled */
+-		if (test_and_set_bit(__VXGE_STATE_RESET_CARD, &vdev->state))
+-			return 0;
+-	}
+-
+-	if (event == VXGE_LL_FULL_RESET) {
+-		netif_carrier_off(vdev->ndev);
+-
+-		/* wait for all the vpath reset to complete */
+-		for (vp_id = 0; vp_id < vdev->no_of_vpath; vp_id++) {
+-			while (test_bit(vp_id, &vdev->vp_reset))
+-				msleep(50);
+-		}
+-
+-		netif_carrier_on(vdev->ndev);
+-
+-		/* if execution mode is set to debug, don't reset the adapter */
+-		if (unlikely(vdev->exec_mode)) {
+-			vxge_debug_init(VXGE_ERR,
+-				"%s: execution mode is debug, returning..",
+-				vdev->ndev->name);
+-			clear_bit(__VXGE_STATE_CARD_UP, &vdev->state);
+-			netif_tx_stop_all_queues(vdev->ndev);
+-			return 0;
+-		}
+-	}
+-
+-	if (event == VXGE_LL_FULL_RESET) {
+-		vxge_hw_device_wait_receive_idle(vdev->devh);
+-		vxge_hw_device_intr_disable(vdev->devh);
+-
+-		switch (vdev->cric_err_event) {
+-		case VXGE_HW_EVENT_UNKNOWN:
+-			netif_tx_stop_all_queues(vdev->ndev);
+-			vxge_debug_init(VXGE_ERR,
+-				"fatal: %s: Disabling device due to"
+-				"unknown error",
+-				vdev->ndev->name);
+-			ret = -EPERM;
+-			goto out;
+-		case VXGE_HW_EVENT_RESET_START:
+-			break;
+-		case VXGE_HW_EVENT_RESET_COMPLETE:
+-		case VXGE_HW_EVENT_LINK_DOWN:
+-		case VXGE_HW_EVENT_LINK_UP:
+-		case VXGE_HW_EVENT_ALARM_CLEARED:
+-		case VXGE_HW_EVENT_ECCERR:
+-		case VXGE_HW_EVENT_MRPCIM_ECCERR:
+-			ret = -EPERM;
+-			goto out;
+-		case VXGE_HW_EVENT_FIFO_ERR:
+-		case VXGE_HW_EVENT_VPATH_ERR:
+-			break;
+-		case VXGE_HW_EVENT_CRITICAL_ERR:
+-			netif_tx_stop_all_queues(vdev->ndev);
+-			vxge_debug_init(VXGE_ERR,
+-				"fatal: %s: Disabling device due to"
+-				"serious error",
+-				vdev->ndev->name);
+-			/* SOP or device reset required */
+-			/* This event is not currently used */
+-			ret = -EPERM;
+-			goto out;
+-		case VXGE_HW_EVENT_SERR:
+-			netif_tx_stop_all_queues(vdev->ndev);
+-			vxge_debug_init(VXGE_ERR,
+-				"fatal: %s: Disabling device due to"
+-				"serious error",
+-				vdev->ndev->name);
+-			ret = -EPERM;
+-			goto out;
+-		case VXGE_HW_EVENT_SRPCIM_SERR:
+-		case VXGE_HW_EVENT_MRPCIM_SERR:
+-			ret = -EPERM;
+-			goto out;
+-		case VXGE_HW_EVENT_SLOT_FREEZE:
+-			netif_tx_stop_all_queues(vdev->ndev);
+-			vxge_debug_init(VXGE_ERR,
+-				"fatal: %s: Disabling device due to"
+-				"slot freeze",
+-				vdev->ndev->name);
+-			ret = -EPERM;
+-			goto out;
+-		default:
+-			break;
+-
+-		}
+-	}
+-
+-	if ((event == VXGE_LL_FULL_RESET) || (event == VXGE_LL_START_RESET))
+-		netif_tx_stop_all_queues(vdev->ndev);
+-
+-	if (event == VXGE_LL_FULL_RESET) {
+-		vxge_reset_all_vpaths(vdev);
+-	}
+-
+-	if (event == VXGE_LL_COMPL_RESET) {
+-		for (i = 0; i < vdev->no_of_vpath; i++)
+-			if (vdev->vpaths[i].handle) {
+-				if (vxge_hw_vpath_recover_from_reset(
+-					vdev->vpaths[i].handle)
+-						!= VXGE_HW_OK) {
+-					vxge_debug_init(VXGE_ERR,
+-						"vxge_hw_vpath_recover_"
+-						"from_reset failed for vpath: "
+-						"%d", i);
+-					ret = -EPERM;
+-					goto out;
+-				}
+-				} else {
+-					vxge_debug_init(VXGE_ERR,
+-					"vxge_hw_vpath_reset failed for "
+-						"vpath:%d", i);
+-					ret = -EPERM;
+-					goto out;
+-				}
+-	}
+-
+-	if ((event == VXGE_LL_FULL_RESET) || (event == VXGE_LL_COMPL_RESET)) {
+-		/* Reprogram the DA table with populated mac addresses */
+-		for (vp_id = 0; vp_id < vdev->no_of_vpath; vp_id++) {
+-			vxge_restore_vpath_mac_addr(&vdev->vpaths[vp_id]);
+-			vxge_restore_vpath_vid_table(&vdev->vpaths[vp_id]);
+-		}
+-
+-		/* enable vpath interrupts */
+-		for (i = 0; i < vdev->no_of_vpath; i++)
+-			vxge_vpath_intr_enable(vdev, i);
+-
+-		vxge_hw_device_intr_enable(vdev->devh);
+-
+-		smp_wmb();
+-
+-		/* Indicate card up */
+-		set_bit(__VXGE_STATE_CARD_UP, &vdev->state);
+-
+-		/* Get the traffic to flow through the vpaths */
+-		for (i = 0; i < vdev->no_of_vpath; i++) {
+-			vxge_hw_vpath_enable(vdev->vpaths[i].handle);
+-			smp_wmb();
+-			vxge_hw_vpath_rx_doorbell_init(vdev->vpaths[i].handle);
+-		}
+-
+-		netif_tx_wake_all_queues(vdev->ndev);
+-	}
+-
+-	/* configure CI */
+-	vxge_config_ci_for_tti_rti(vdev);
+-
+-out:
+-	vxge_debug_entryexit(VXGE_TRACE,
+-		"%s:%d  Exiting...", __func__, __LINE__);
+-
+-	/* Indicate reset done */
+-	if ((event == VXGE_LL_FULL_RESET) || (event == VXGE_LL_COMPL_RESET))
+-		clear_bit(__VXGE_STATE_RESET_CARD, &vdev->state);
+-	return ret;
+-}
+-
+-/*
+- * vxge_reset
+- * @vdev: pointer to ll device
+- *
+- * driver may reset the chip on events of serr, eccerr, etc
+- */
+-static void vxge_reset(struct work_struct *work)
+-{
+-	struct vxgedev *vdev = container_of(work, struct vxgedev, reset_task);
+-
+-	if (!netif_running(vdev->ndev))
+-		return;
+-
+-	do_vxge_reset(vdev, VXGE_LL_FULL_RESET);
+-}
+-
+-/**
+- * vxge_poll_msix - Receive handler when Receive Polling is used.
+- * @napi: pointer to the napi structure.
+- * @budget: Number of packets budgeted to be processed in this iteration.
+- *
+- * This function comes into picture only if Receive side is being handled
+- * through polling (called NAPI in linux). It mostly does what the normal
+- * Rx interrupt handler does in terms of descriptor and packet processing
+- * but not in an interrupt context. Also it will process a specified number
+- * of packets at most in one iteration. This value is passed down by the
+- * kernel as the function argument 'budget'.
+- */
+-static int vxge_poll_msix(struct napi_struct *napi, int budget)
+-{
+-	struct vxge_ring *ring = container_of(napi, struct vxge_ring, napi);
+-	int pkts_processed;
+-	int budget_org = budget;
+-
+-	ring->budget = budget;
+-	ring->pkts_processed = 0;
+-	vxge_hw_vpath_poll_rx(ring->handle);
+-	pkts_processed = ring->pkts_processed;
+-
+-	if (pkts_processed < budget_org) {
+-		napi_complete_done(napi, pkts_processed);
+-
+-		/* Re enable the Rx interrupts for the vpath */
+-		vxge_hw_channel_msix_unmask(
+-				(struct __vxge_hw_channel *)ring->handle,
+-				ring->rx_vector_no);
+-	}
+-
+-	/* We are copying and returning the local variable, in case if after
+-	 * clearing the msix interrupt above, if the interrupt fires right
+-	 * away which can preempt this NAPI thread */
+-	return pkts_processed;
+-}
+-
+-static int vxge_poll_inta(struct napi_struct *napi, int budget)
+-{
+-	struct vxgedev *vdev = container_of(napi, struct vxgedev, napi);
+-	int pkts_processed = 0;
+-	int i;
+-	int budget_org = budget;
+-	struct vxge_ring *ring;
+-
+-	struct __vxge_hw_device *hldev = pci_get_drvdata(vdev->pdev);
+-
+-	for (i = 0; i < vdev->no_of_vpath; i++) {
+-		ring = &vdev->vpaths[i].ring;
+-		ring->budget = budget;
+-		ring->pkts_processed = 0;
+-		vxge_hw_vpath_poll_rx(ring->handle);
+-		pkts_processed += ring->pkts_processed;
+-		budget -= ring->pkts_processed;
+-		if (budget <= 0)
+-			break;
+-	}
+-
+-	VXGE_COMPLETE_ALL_TX(vdev);
+-
+-	if (pkts_processed < budget_org) {
+-		napi_complete_done(napi, pkts_processed);
+-		/* Re enable the Rx interrupts for the ring */
+-		vxge_hw_device_unmask_all(hldev);
+-		vxge_hw_device_flush_io(hldev);
+-	}
+-
+-	return pkts_processed;
+-}
+-
+-#ifdef CONFIG_NET_POLL_CONTROLLER
+-/**
+- * vxge_netpoll - netpoll event handler entry point
+- * @dev : pointer to the device structure.
+- * Description:
+- *      This function will be called by upper layer to check for events on the
+- * interface in situations where interrupts are disabled. It is used for
+- * specific in-kernel networking tasks, such as remote consoles and kernel
+- * debugging over the network (example netdump in RedHat).
+- */
+-static void vxge_netpoll(struct net_device *dev)
+-{
+-	struct vxgedev *vdev = netdev_priv(dev);
+-	struct pci_dev *pdev = vdev->pdev;
+-	struct __vxge_hw_device *hldev = pci_get_drvdata(pdev);
+-	const int irq = pdev->irq;
+-
+-	vxge_debug_entryexit(VXGE_TRACE, "%s:%d", __func__, __LINE__);
+-
+-	if (pci_channel_offline(pdev))
+-		return;
+-
+-	disable_irq(irq);
+-	vxge_hw_device_clear_tx_rx(hldev);
+-
+-	vxge_hw_device_clear_tx_rx(hldev);
+-	VXGE_COMPLETE_ALL_RX(vdev);
+-	VXGE_COMPLETE_ALL_TX(vdev);
+-
+-	enable_irq(irq);
+-
+-	vxge_debug_entryexit(VXGE_TRACE,
+-		"%s:%d  Exiting...", __func__, __LINE__);
+-}
+-#endif
+-
+-/* RTH configuration */
+-static enum vxge_hw_status vxge_rth_configure(struct vxgedev *vdev)
+-{
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-	struct vxge_hw_rth_hash_types hash_types;
+-	u8 itable[256] = {0}; /* indirection table */
+-	u8 mtable[256] = {0}; /* CPU to vpath mapping  */
+-	int index;
+-
+-	/*
+-	 * Filling
+-	 * 	- itable with bucket numbers
+-	 * 	- mtable with bucket-to-vpath mapping
+-	 */
+-	for (index = 0; index < (1 << vdev->config.rth_bkt_sz); index++) {
+-		itable[index] = index;
+-		mtable[index] = index % vdev->no_of_vpath;
+-	}
+-
+-	/* set indirection table, bucket-to-vpath mapping */
+-	status = vxge_hw_vpath_rts_rth_itable_set(vdev->vp_handles,
+-						vdev->no_of_vpath,
+-						mtable, itable,
+-						vdev->config.rth_bkt_sz);
+-	if (status != VXGE_HW_OK) {
+-		vxge_debug_init(VXGE_ERR,
+-			"RTH indirection table configuration failed "
+-			"for vpath:%d", vdev->vpaths[0].device_id);
+-		return status;
+-	}
+-
+-	/* Fill RTH hash types */
+-	hash_types.hash_type_tcpipv4_en   = vdev->config.rth_hash_type_tcpipv4;
+-	hash_types.hash_type_ipv4_en      = vdev->config.rth_hash_type_ipv4;
+-	hash_types.hash_type_tcpipv6_en   = vdev->config.rth_hash_type_tcpipv6;
+-	hash_types.hash_type_ipv6_en      = vdev->config.rth_hash_type_ipv6;
+-	hash_types.hash_type_tcpipv6ex_en =
+-					vdev->config.rth_hash_type_tcpipv6ex;
+-	hash_types.hash_type_ipv6ex_en    = vdev->config.rth_hash_type_ipv6ex;
+-
+-	/*
+-	 * Because the itable_set() method uses the active_table field
+-	 * for the target virtual path the RTH config should be updated
+-	 * for all VPATHs. The h/w only uses the lowest numbered VPATH
+-	 * when steering frames.
+-	 */
+-	for (index = 0; index < vdev->no_of_vpath; index++) {
+-		status = vxge_hw_vpath_rts_rth_set(
+-				vdev->vpaths[index].handle,
+-				vdev->config.rth_algorithm,
+-				&hash_types,
+-				vdev->config.rth_bkt_sz);
+-		if (status != VXGE_HW_OK) {
+-			vxge_debug_init(VXGE_ERR,
+-				"RTH configuration failed for vpath:%d",
+-				vdev->vpaths[index].device_id);
+-			return status;
+-		}
+-	}
+-
+-	return status;
+-}
+-
+-/* reset vpaths */
+-static void vxge_reset_all_vpaths(struct vxgedev *vdev)
+-{
+-	struct vxge_vpath *vpath;
+-	int i;
+-
+-	for (i = 0; i < vdev->no_of_vpath; i++) {
+-		vpath = &vdev->vpaths[i];
+-		if (vpath->handle) {
+-			if (vxge_hw_vpath_reset(vpath->handle) == VXGE_HW_OK) {
+-				if (is_vxge_card_up(vdev) &&
+-					vxge_hw_vpath_recover_from_reset(
+-						vpath->handle) != VXGE_HW_OK) {
+-					vxge_debug_init(VXGE_ERR,
+-						"vxge_hw_vpath_recover_"
+-						"from_reset failed for vpath: "
+-						"%d", i);
+-					return;
+-				}
+-			} else {
+-				vxge_debug_init(VXGE_ERR,
+-					"vxge_hw_vpath_reset failed for "
+-					"vpath:%d", i);
+-				return;
+-			}
+-		}
+-	}
+-}
+-
+-/* close vpaths */
+-static void vxge_close_vpaths(struct vxgedev *vdev, int index)
+-{
+-	struct vxge_vpath *vpath;
+-	int i;
+-
+-	for (i = index; i < vdev->no_of_vpath; i++) {
+-		vpath = &vdev->vpaths[i];
+-
+-		if (vpath->handle && vpath->is_open) {
+-			vxge_hw_vpath_close(vpath->handle);
+-			vdev->stats.vpaths_open--;
+-		}
+-		vpath->is_open = 0;
+-		vpath->handle = NULL;
+-	}
+-}
+-
+-/* open vpaths */
+-static int vxge_open_vpaths(struct vxgedev *vdev)
+-{
+-	struct vxge_hw_vpath_attr attr;
+-	enum vxge_hw_status status;
+-	struct vxge_vpath *vpath;
+-	u32 vp_id = 0;
+-	int i;
+-
+-	for (i = 0; i < vdev->no_of_vpath; i++) {
+-		vpath = &vdev->vpaths[i];
+-		vxge_assert(vpath->is_configured);
+-
+-		if (!vdev->titan1) {
+-			struct vxge_hw_vp_config *vcfg;
+-			vcfg = &vdev->devh->config.vp_config[vpath->device_id];
+-
+-			vcfg->rti.urange_a = RTI_T1A_RX_URANGE_A;
+-			vcfg->rti.urange_b = RTI_T1A_RX_URANGE_B;
+-			vcfg->rti.urange_c = RTI_T1A_RX_URANGE_C;
+-			vcfg->tti.uec_a = TTI_T1A_TX_UFC_A;
+-			vcfg->tti.uec_b = TTI_T1A_TX_UFC_B;
+-			vcfg->tti.uec_c = TTI_T1A_TX_UFC_C(vdev->mtu);
+-			vcfg->tti.uec_d = TTI_T1A_TX_UFC_D(vdev->mtu);
+-			vcfg->tti.ltimer_val = VXGE_T1A_TTI_LTIMER_VAL;
+-			vcfg->tti.rtimer_val = VXGE_T1A_TTI_RTIMER_VAL;
+-		}
+-
+-		attr.vp_id = vpath->device_id;
+-		attr.fifo_attr.callback = vxge_xmit_compl;
+-		attr.fifo_attr.txdl_term = vxge_tx_term;
+-		attr.fifo_attr.per_txdl_space = sizeof(struct vxge_tx_priv);
+-		attr.fifo_attr.userdata = &vpath->fifo;
+-
+-		attr.ring_attr.callback = vxge_rx_1b_compl;
+-		attr.ring_attr.rxd_init = vxge_rx_initial_replenish;
+-		attr.ring_attr.rxd_term = vxge_rx_term;
+-		attr.ring_attr.per_rxd_space = sizeof(struct vxge_rx_priv);
+-		attr.ring_attr.userdata = &vpath->ring;
+-
+-		vpath->ring.ndev = vdev->ndev;
+-		vpath->ring.pdev = vdev->pdev;
+-
+-		status = vxge_hw_vpath_open(vdev->devh, &attr, &vpath->handle);
+-		if (status == VXGE_HW_OK) {
+-			vpath->fifo.handle =
+-			    (struct __vxge_hw_fifo *)attr.fifo_attr.userdata;
+-			vpath->ring.handle =
+-			    (struct __vxge_hw_ring *)attr.ring_attr.userdata;
+-			vpath->fifo.tx_steering_type =
+-				vdev->config.tx_steering_type;
+-			vpath->fifo.ndev = vdev->ndev;
+-			vpath->fifo.pdev = vdev->pdev;
+-
+-			u64_stats_init(&vpath->fifo.stats.syncp);
+-			u64_stats_init(&vpath->ring.stats.syncp);
+-
+-			if (vdev->config.tx_steering_type)
+-				vpath->fifo.txq =
+-					netdev_get_tx_queue(vdev->ndev, i);
+-			else
+-				vpath->fifo.txq =
+-					netdev_get_tx_queue(vdev->ndev, 0);
+-			vpath->fifo.indicate_max_pkts =
+-				vdev->config.fifo_indicate_max_pkts;
+-			vpath->fifo.tx_vector_no = 0;
+-			vpath->ring.rx_vector_no = 0;
+-			vpath->ring.rx_hwts = vdev->rx_hwts;
+-			vpath->is_open = 1;
+-			vdev->vp_handles[i] = vpath->handle;
+-			vpath->ring.vlan_tag_strip = vdev->vlan_tag_strip;
+-			vdev->stats.vpaths_open++;
+-		} else {
+-			vdev->stats.vpath_open_fail++;
+-			vxge_debug_init(VXGE_ERR, "%s: vpath: %d failed to "
+-					"open with status: %d",
+-					vdev->ndev->name, vpath->device_id,
+-					status);
+-			vxge_close_vpaths(vdev, 0);
+-			return -EPERM;
+-		}
+-
+-		vp_id = vpath->handle->vpath->vp_id;
+-		vdev->vpaths_deployed |= vxge_mBIT(vp_id);
+-	}
+-
+-	return VXGE_HW_OK;
+-}
+-
+-/**
+- *  adaptive_coalesce_tx_interrupts - Changes the interrupt coalescing
+- *  if the interrupts are not within a range
+- *  @fifo: pointer to transmit fifo structure
+- *  Description: The function changes boundary timer and restriction timer
+- *  value depends on the traffic
+- *  Return Value: None
+- */
+-static void adaptive_coalesce_tx_interrupts(struct vxge_fifo *fifo)
+-{
+-	fifo->interrupt_count++;
+-	if (time_before(fifo->jiffies + HZ / 100, jiffies)) {
+-		struct __vxge_hw_fifo *hw_fifo = fifo->handle;
+-
+-		fifo->jiffies = jiffies;
+-		if (fifo->interrupt_count > VXGE_T1A_MAX_TX_INTERRUPT_COUNT &&
+-		    hw_fifo->rtimer != VXGE_TTI_RTIMER_ADAPT_VAL) {
+-			hw_fifo->rtimer = VXGE_TTI_RTIMER_ADAPT_VAL;
+-			vxge_hw_vpath_dynamic_tti_rtimer_set(hw_fifo);
+-		} else if (hw_fifo->rtimer != 0) {
+-			hw_fifo->rtimer = 0;
+-			vxge_hw_vpath_dynamic_tti_rtimer_set(hw_fifo);
+-		}
+-		fifo->interrupt_count = 0;
+-	}
+-}
+-
+-/**
+- *  adaptive_coalesce_rx_interrupts - Changes the interrupt coalescing
+- *  if the interrupts are not within a range
+- *  @ring: pointer to receive ring structure
+- *  Description: The function increases of decreases the packet counts within
+- *  the ranges of traffic utilization, if the interrupts due to this ring are
+- *  not within a fixed range.
+- *  Return Value: Nothing
+- */
+-static void adaptive_coalesce_rx_interrupts(struct vxge_ring *ring)
+-{
+-	ring->interrupt_count++;
+-	if (time_before(ring->jiffies + HZ / 100, jiffies)) {
+-		struct __vxge_hw_ring *hw_ring = ring->handle;
+-
+-		ring->jiffies = jiffies;
+-		if (ring->interrupt_count > VXGE_T1A_MAX_INTERRUPT_COUNT &&
+-		    hw_ring->rtimer != VXGE_RTI_RTIMER_ADAPT_VAL) {
+-			hw_ring->rtimer = VXGE_RTI_RTIMER_ADAPT_VAL;
+-			vxge_hw_vpath_dynamic_rti_rtimer_set(hw_ring);
+-		} else if (hw_ring->rtimer != 0) {
+-			hw_ring->rtimer = 0;
+-			vxge_hw_vpath_dynamic_rti_rtimer_set(hw_ring);
+-		}
+-		ring->interrupt_count = 0;
+-	}
+-}
+-
+-/*
+- *  vxge_isr_napi
+- *  @irq: the irq of the device.
+- *  @dev_id: a void pointer to the hldev structure of the Titan device
+- *  @ptregs: pointer to the registers pushed on the stack.
+- *
+- *  This function is the ISR handler of the device when napi is enabled. It
+- *  identifies the reason for the interrupt and calls the relevant service
+- *  routines.
+- */
+-static irqreturn_t vxge_isr_napi(int irq, void *dev_id)
+-{
+-	struct __vxge_hw_device *hldev;
+-	u64 reason;
+-	enum vxge_hw_status status;
+-	struct vxgedev *vdev = (struct vxgedev *)dev_id;
+-
+-	vxge_debug_intr(VXGE_TRACE, "%s:%d", __func__, __LINE__);
+-
+-	hldev = pci_get_drvdata(vdev->pdev);
+-
+-	if (pci_channel_offline(vdev->pdev))
+-		return IRQ_NONE;
+-
+-	if (unlikely(!is_vxge_card_up(vdev)))
+-		return IRQ_HANDLED;
+-
+-	status = vxge_hw_device_begin_irq(hldev, vdev->exec_mode, &reason);
+-	if (status == VXGE_HW_OK) {
+-		vxge_hw_device_mask_all(hldev);
+-
+-		if (reason &
+-			VXGE_HW_TITAN_GENERAL_INT_STATUS_VPATH_TRAFFIC_INT(
+-			vdev->vpaths_deployed >>
+-			(64 - VXGE_HW_MAX_VIRTUAL_PATHS))) {
+-
+-			vxge_hw_device_clear_tx_rx(hldev);
+-			napi_schedule(&vdev->napi);
+-			vxge_debug_intr(VXGE_TRACE,
+-				"%s:%d  Exiting...", __func__, __LINE__);
+-			return IRQ_HANDLED;
+-		} else
+-			vxge_hw_device_unmask_all(hldev);
+-	} else if (unlikely((status == VXGE_HW_ERR_VPATH) ||
+-		(status == VXGE_HW_ERR_CRITICAL) ||
+-		(status == VXGE_HW_ERR_FIFO))) {
+-		vxge_hw_device_mask_all(hldev);
+-		vxge_hw_device_flush_io(hldev);
+-		return IRQ_HANDLED;
+-	} else if (unlikely(status == VXGE_HW_ERR_SLOT_FREEZE))
+-		return IRQ_HANDLED;
+-
+-	vxge_debug_intr(VXGE_TRACE, "%s:%d  Exiting...", __func__, __LINE__);
+-	return IRQ_NONE;
+-}
+-
+-static irqreturn_t vxge_tx_msix_handle(int irq, void *dev_id)
+-{
+-	struct vxge_fifo *fifo = (struct vxge_fifo *)dev_id;
+-
+-	adaptive_coalesce_tx_interrupts(fifo);
+-
+-	vxge_hw_channel_msix_mask((struct __vxge_hw_channel *)fifo->handle,
+-				  fifo->tx_vector_no);
+-
+-	vxge_hw_channel_msix_clear((struct __vxge_hw_channel *)fifo->handle,
+-				   fifo->tx_vector_no);
+-
+-	VXGE_COMPLETE_VPATH_TX(fifo);
+-
+-	vxge_hw_channel_msix_unmask((struct __vxge_hw_channel *)fifo->handle,
+-				    fifo->tx_vector_no);
+-
+-	return IRQ_HANDLED;
+-}
+-
+-static irqreturn_t vxge_rx_msix_napi_handle(int irq, void *dev_id)
+-{
+-	struct vxge_ring *ring = (struct vxge_ring *)dev_id;
+-
+-	adaptive_coalesce_rx_interrupts(ring);
+-
+-	vxge_hw_channel_msix_mask((struct __vxge_hw_channel *)ring->handle,
+-				  ring->rx_vector_no);
+-
+-	vxge_hw_channel_msix_clear((struct __vxge_hw_channel *)ring->handle,
+-				   ring->rx_vector_no);
+-
+-	napi_schedule(&ring->napi);
+-	return IRQ_HANDLED;
+-}
+-
+-static irqreturn_t
+-vxge_alarm_msix_handle(int irq, void *dev_id)
+-{
+-	int i;
+-	enum vxge_hw_status status;
+-	struct vxge_vpath *vpath = (struct vxge_vpath *)dev_id;
+-	struct vxgedev *vdev = vpath->vdev;
+-	int msix_id = (vpath->handle->vpath->vp_id *
+-		VXGE_HW_VPATH_MSIX_ACTIVE) + VXGE_ALARM_MSIX_ID;
+-
+-	for (i = 0; i < vdev->no_of_vpath; i++) {
+-		/* Reduce the chance of losing alarm interrupts by masking
+-		 * the vector. A pending bit will be set if an alarm is
+-		 * generated and on unmask the interrupt will be fired.
+-		 */
+-		vxge_hw_vpath_msix_mask(vdev->vpaths[i].handle, msix_id);
+-		vxge_hw_vpath_msix_clear(vdev->vpaths[i].handle, msix_id);
+-
+-		status = vxge_hw_vpath_alarm_process(vdev->vpaths[i].handle,
+-			vdev->exec_mode);
+-		if (status == VXGE_HW_OK) {
+-			vxge_hw_vpath_msix_unmask(vdev->vpaths[i].handle,
+-						  msix_id);
+-			continue;
+-		}
+-		vxge_debug_intr(VXGE_ERR,
+-			"%s: vxge_hw_vpath_alarm_process failed %x ",
+-			VXGE_DRIVER_NAME, status);
+-	}
+-	return IRQ_HANDLED;
+-}
+-
+-static int vxge_alloc_msix(struct vxgedev *vdev)
+-{
+-	int j, i, ret = 0;
+-	int msix_intr_vect = 0, temp;
+-	vdev->intr_cnt = 0;
+-
+-start:
+-	/* Tx/Rx MSIX Vectors count */
+-	vdev->intr_cnt = vdev->no_of_vpath * 2;
+-
+-	/* Alarm MSIX Vectors count */
+-	vdev->intr_cnt++;
+-
+-	vdev->entries = kcalloc(vdev->intr_cnt, sizeof(struct msix_entry),
+-				GFP_KERNEL);
+-	if (!vdev->entries) {
+-		vxge_debug_init(VXGE_ERR,
+-			"%s: memory allocation failed",
+-			VXGE_DRIVER_NAME);
+-		ret = -ENOMEM;
+-		goto alloc_entries_failed;
+-	}
+-
+-	vdev->vxge_entries = kcalloc(vdev->intr_cnt,
+-				     sizeof(struct vxge_msix_entry),
+-				     GFP_KERNEL);
+-	if (!vdev->vxge_entries) {
+-		vxge_debug_init(VXGE_ERR, "%s: memory allocation failed",
+-			VXGE_DRIVER_NAME);
+-		ret = -ENOMEM;
+-		goto alloc_vxge_entries_failed;
+-	}
+-
+-	for (i = 0, j = 0; i < vdev->no_of_vpath; i++) {
+-
+-		msix_intr_vect = i * VXGE_HW_VPATH_MSIX_ACTIVE;
+-
+-		/* Initialize the fifo vector */
+-		vdev->entries[j].entry = msix_intr_vect;
+-		vdev->vxge_entries[j].entry = msix_intr_vect;
+-		vdev->vxge_entries[j].in_use = 0;
+-		j++;
+-
+-		/* Initialize the ring vector */
+-		vdev->entries[j].entry = msix_intr_vect + 1;
+-		vdev->vxge_entries[j].entry = msix_intr_vect + 1;
+-		vdev->vxge_entries[j].in_use = 0;
+-		j++;
+-	}
+-
+-	/* Initialize the alarm vector */
+-	vdev->entries[j].entry = VXGE_ALARM_MSIX_ID;
+-	vdev->vxge_entries[j].entry = VXGE_ALARM_MSIX_ID;
+-	vdev->vxge_entries[j].in_use = 0;
+-
+-	ret = pci_enable_msix_range(vdev->pdev,
+-				    vdev->entries, 3, vdev->intr_cnt);
+-	if (ret < 0) {
+-		ret = -ENODEV;
+-		goto enable_msix_failed;
+-	} else if (ret < vdev->intr_cnt) {
+-		pci_disable_msix(vdev->pdev);
+-
+-		vxge_debug_init(VXGE_ERR,
+-			"%s: MSI-X enable failed for %d vectors, ret: %d",
+-			VXGE_DRIVER_NAME, vdev->intr_cnt, ret);
+-		if (max_config_vpath != VXGE_USE_DEFAULT) {
+-			ret = -ENODEV;
+-			goto enable_msix_failed;
+-		}
+-
+-		kfree(vdev->entries);
+-		kfree(vdev->vxge_entries);
+-		vdev->entries = NULL;
+-		vdev->vxge_entries = NULL;
+-		/* Try with less no of vector by reducing no of vpaths count */
+-		temp = (ret - 1)/2;
+-		vxge_close_vpaths(vdev, temp);
+-		vdev->no_of_vpath = temp;
+-		goto start;
+-	}
+-	return 0;
+-
+-enable_msix_failed:
+-	kfree(vdev->vxge_entries);
+-alloc_vxge_entries_failed:
+-	kfree(vdev->entries);
+-alloc_entries_failed:
+-	return ret;
+-}
+-
+-static int vxge_enable_msix(struct vxgedev *vdev)
+-{
+-
+-	int i, ret = 0;
+-	/* 0 - Tx, 1 - Rx  */
+-	int tim_msix_id[4] = {0, 1, 0, 0};
+-
+-	vdev->intr_cnt = 0;
+-
+-	/* allocate msix vectors */
+-	ret = vxge_alloc_msix(vdev);
+-	if (!ret) {
+-		for (i = 0; i < vdev->no_of_vpath; i++) {
+-			struct vxge_vpath *vpath = &vdev->vpaths[i];
+-
+-			/* If fifo or ring are not enabled, the MSIX vector for
+-			 * it should be set to 0.
+-			 */
+-			vpath->ring.rx_vector_no = (vpath->device_id *
+-						VXGE_HW_VPATH_MSIX_ACTIVE) + 1;
+-
+-			vpath->fifo.tx_vector_no = (vpath->device_id *
+-						VXGE_HW_VPATH_MSIX_ACTIVE);
+-
+-			vxge_hw_vpath_msix_set(vpath->handle, tim_msix_id,
+-					       VXGE_ALARM_MSIX_ID);
+-		}
+-	}
+-
+-	return ret;
+-}
+-
+-static void vxge_rem_msix_isr(struct vxgedev *vdev)
+-{
+-	int intr_cnt;
+-
+-	for (intr_cnt = 0; intr_cnt < (vdev->no_of_vpath * 2 + 1);
+-		intr_cnt++) {
+-		if (vdev->vxge_entries[intr_cnt].in_use) {
+-			free_irq(vdev->entries[intr_cnt].vector,
+-				vdev->vxge_entries[intr_cnt].arg);
+-			vdev->vxge_entries[intr_cnt].in_use = 0;
+-		}
+-	}
+-
+-	kfree(vdev->entries);
+-	kfree(vdev->vxge_entries);
+-	vdev->entries = NULL;
+-	vdev->vxge_entries = NULL;
+-
+-	if (vdev->config.intr_type == MSI_X)
+-		pci_disable_msix(vdev->pdev);
+-}
+-
+-static void vxge_rem_isr(struct vxgedev *vdev)
+-{
+-	if (IS_ENABLED(CONFIG_PCI_MSI) &&
+-	    vdev->config.intr_type == MSI_X) {
+-		vxge_rem_msix_isr(vdev);
+-	} else if (vdev->config.intr_type == INTA) {
+-			free_irq(vdev->pdev->irq, vdev);
+-	}
+-}
+-
+-static int vxge_add_isr(struct vxgedev *vdev)
+-{
+-	int ret = 0;
+-	int vp_idx = 0, intr_idx = 0, intr_cnt = 0, msix_idx = 0, irq_req = 0;
+-	int pci_fun = PCI_FUNC(vdev->pdev->devfn);
+-
+-	if (IS_ENABLED(CONFIG_PCI_MSI) && vdev->config.intr_type == MSI_X)
+-		ret = vxge_enable_msix(vdev);
+-
+-	if (ret) {
+-		vxge_debug_init(VXGE_ERR,
+-			"%s: Enabling MSI-X Failed", VXGE_DRIVER_NAME);
+-		vxge_debug_init(VXGE_ERR,
+-			"%s: Defaulting to INTA", VXGE_DRIVER_NAME);
+-		vdev->config.intr_type = INTA;
+-	}
+-
+-	if (IS_ENABLED(CONFIG_PCI_MSI) && vdev->config.intr_type == MSI_X) {
+-		for (intr_idx = 0;
+-		     intr_idx < (vdev->no_of_vpath *
+-			VXGE_HW_VPATH_MSIX_ACTIVE); intr_idx++) {
+-
+-			msix_idx = intr_idx % VXGE_HW_VPATH_MSIX_ACTIVE;
+-			irq_req = 0;
+-
+-			switch (msix_idx) {
+-			case 0:
+-				snprintf(vdev->desc[intr_cnt], VXGE_INTR_STRLEN,
+-					"%s:vxge:MSI-X %d - Tx - fn:%d vpath:%d",
+-					vdev->ndev->name,
+-					vdev->entries[intr_cnt].entry,
+-					pci_fun, vp_idx);
+-				ret = request_irq(
+-					vdev->entries[intr_cnt].vector,
+-					vxge_tx_msix_handle, 0,
+-					vdev->desc[intr_cnt],
+-					&vdev->vpaths[vp_idx].fifo);
+-				vdev->vxge_entries[intr_cnt].arg =
+-						&vdev->vpaths[vp_idx].fifo;
+-				irq_req = 1;
+-				break;
+-			case 1:
+-				snprintf(vdev->desc[intr_cnt], VXGE_INTR_STRLEN,
+-					"%s:vxge:MSI-X %d - Rx - fn:%d vpath:%d",
+-					vdev->ndev->name,
+-					vdev->entries[intr_cnt].entry,
+-					pci_fun, vp_idx);
+-				ret = request_irq(
+-					vdev->entries[intr_cnt].vector,
+-					vxge_rx_msix_napi_handle, 0,
+-					vdev->desc[intr_cnt],
+-					&vdev->vpaths[vp_idx].ring);
+-				vdev->vxge_entries[intr_cnt].arg =
+-						&vdev->vpaths[vp_idx].ring;
+-				irq_req = 1;
+-				break;
+-			}
+-
+-			if (ret) {
+-				vxge_debug_init(VXGE_ERR,
+-					"%s: MSIX - %d  Registration failed",
+-					vdev->ndev->name, intr_cnt);
+-				vxge_rem_msix_isr(vdev);
+-				vdev->config.intr_type = INTA;
+-				vxge_debug_init(VXGE_ERR,
+-					"%s: Defaulting to INTA",
+-					vdev->ndev->name);
+-				goto INTA_MODE;
+-			}
+-
+-			if (irq_req) {
+-				/* We requested for this msix interrupt */
+-				vdev->vxge_entries[intr_cnt].in_use = 1;
+-				msix_idx +=  vdev->vpaths[vp_idx].device_id *
+-					VXGE_HW_VPATH_MSIX_ACTIVE;
+-				vxge_hw_vpath_msix_unmask(
+-					vdev->vpaths[vp_idx].handle,
+-					msix_idx);
+-				intr_cnt++;
+-			}
+-
+-			/* Point to next vpath handler */
+-			if (((intr_idx + 1) % VXGE_HW_VPATH_MSIX_ACTIVE == 0) &&
+-			    (vp_idx < (vdev->no_of_vpath - 1)))
+-				vp_idx++;
+-		}
+-
+-		intr_cnt = vdev->no_of_vpath * 2;
+-		snprintf(vdev->desc[intr_cnt], VXGE_INTR_STRLEN,
+-			"%s:vxge:MSI-X %d - Alarm - fn:%d",
+-			vdev->ndev->name,
+-			vdev->entries[intr_cnt].entry,
+-			pci_fun);
+-		/* For Alarm interrupts */
+-		ret = request_irq(vdev->entries[intr_cnt].vector,
+-					vxge_alarm_msix_handle, 0,
+-					vdev->desc[intr_cnt],
+-					&vdev->vpaths[0]);
+-		if (ret) {
+-			vxge_debug_init(VXGE_ERR,
+-				"%s: MSIX - %d Registration failed",
+-				vdev->ndev->name, intr_cnt);
+-			vxge_rem_msix_isr(vdev);
+-			vdev->config.intr_type = INTA;
+-			vxge_debug_init(VXGE_ERR,
+-				"%s: Defaulting to INTA",
+-				vdev->ndev->name);
+-			goto INTA_MODE;
+-		}
+-
+-		msix_idx = (vdev->vpaths[0].handle->vpath->vp_id *
+-			VXGE_HW_VPATH_MSIX_ACTIVE) + VXGE_ALARM_MSIX_ID;
+-		vxge_hw_vpath_msix_unmask(vdev->vpaths[vp_idx].handle,
+-					msix_idx);
+-		vdev->vxge_entries[intr_cnt].in_use = 1;
+-		vdev->vxge_entries[intr_cnt].arg = &vdev->vpaths[0];
+-	}
+-
+-INTA_MODE:
+-	if (vdev->config.intr_type == INTA) {
+-		snprintf(vdev->desc[0], VXGE_INTR_STRLEN,
+-			"%s:vxge:INTA", vdev->ndev->name);
+-		vxge_hw_device_set_intr_type(vdev->devh,
+-			VXGE_HW_INTR_MODE_IRQLINE);
+-
+-		vxge_hw_vpath_tti_ci_set(vdev->vpaths[0].fifo.handle);
+-
+-		ret = request_irq((int) vdev->pdev->irq,
+-			vxge_isr_napi,
+-			IRQF_SHARED, vdev->desc[0], vdev);
+-		if (ret) {
+-			vxge_debug_init(VXGE_ERR,
+-				"%s %s-%d: ISR registration failed",
+-				VXGE_DRIVER_NAME, "IRQ", vdev->pdev->irq);
+-			return -ENODEV;
+-		}
+-		vxge_debug_init(VXGE_TRACE,
+-			"new %s-%d line allocated",
+-			"IRQ", vdev->pdev->irq);
+-	}
+-
+-	return VXGE_HW_OK;
+-}
+-
+-static void vxge_poll_vp_reset(struct timer_list *t)
+-{
+-	struct vxgedev *vdev = from_timer(vdev, t, vp_reset_timer);
+-	int i, j = 0;
+-
+-	for (i = 0; i < vdev->no_of_vpath; i++) {
+-		if (test_bit(i, &vdev->vp_reset)) {
+-			vxge_reset_vpath(vdev, i);
+-			j++;
+-		}
+-	}
+-	if (j && (vdev->config.intr_type != MSI_X)) {
+-		vxge_hw_device_unmask_all(vdev->devh);
+-		vxge_hw_device_flush_io(vdev->devh);
+-	}
+-
+-	mod_timer(&vdev->vp_reset_timer, jiffies + HZ / 2);
+-}
+-
+-static void vxge_poll_vp_lockup(struct timer_list *t)
+-{
+-	struct vxgedev *vdev = from_timer(vdev, t, vp_lockup_timer);
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-	struct vxge_vpath *vpath;
+-	struct vxge_ring *ring;
+-	int i;
+-	unsigned long rx_frms;
+-
+-	for (i = 0; i < vdev->no_of_vpath; i++) {
+-		ring = &vdev->vpaths[i].ring;
+-
+-		/* Truncated to machine word size number of frames */
+-		rx_frms = READ_ONCE(ring->stats.rx_frms);
+-
+-		/* Did this vpath received any packets */
+-		if (ring->stats.prev_rx_frms == rx_frms) {
+-			status = vxge_hw_vpath_check_leak(ring->handle);
+-
+-			/* Did it received any packets last time */
+-			if ((VXGE_HW_FAIL == status) &&
+-				(VXGE_HW_FAIL == ring->last_status)) {
+-
+-				/* schedule vpath reset */
+-				if (!test_and_set_bit(i, &vdev->vp_reset)) {
+-					vpath = &vdev->vpaths[i];
+-
+-					/* disable interrupts for this vpath */
+-					vxge_vpath_intr_disable(vdev, i);
+-
+-					/* stop the queue for this vpath */
+-					netif_tx_stop_queue(vpath->fifo.txq);
+-					continue;
+-				}
+-			}
+-		}
+-		ring->stats.prev_rx_frms = rx_frms;
+-		ring->last_status = status;
+-	}
+-
+-	/* Check every 1 milli second */
+-	mod_timer(&vdev->vp_lockup_timer, jiffies + HZ / 1000);
+-}
+-
+-static netdev_features_t vxge_fix_features(struct net_device *dev,
+-	netdev_features_t features)
+-{
+-	netdev_features_t changed = dev->features ^ features;
+-
+-	/* Enabling RTH requires some of the logic in vxge_device_register and a
+-	 * vpath reset.  Due to these restrictions, only allow modification
+-	 * while the interface is down.
+-	 */
+-	if ((changed & NETIF_F_RXHASH) && netif_running(dev))
+-		features ^= NETIF_F_RXHASH;
+-
+-	return features;
+-}
+-
+-static int vxge_set_features(struct net_device *dev, netdev_features_t features)
+-{
+-	struct vxgedev *vdev = netdev_priv(dev);
+-	netdev_features_t changed = dev->features ^ features;
+-
+-	if (!(changed & NETIF_F_RXHASH))
+-		return 0;
+-
+-	/* !netif_running() ensured by vxge_fix_features() */
+-
+-	vdev->devh->config.rth_en = !!(features & NETIF_F_RXHASH);
+-	vxge_reset_all_vpaths(vdev);
+-
+-	return 0;
+-}
+-
+-/**
+- * vxge_open
+- * @dev: pointer to the device structure.
+- *
+- * This function is the open entry point of the driver. It mainly calls a
+- * function to allocate Rx buffers and inserts them into the buffer
+- * descriptors and then enables the Rx part of the NIC.
+- * Return value: '0' on success and an appropriate (-)ve integer as
+- * defined in errno.h file on failure.
+- */
+-static int vxge_open(struct net_device *dev)
+-{
+-	enum vxge_hw_status status;
+-	struct vxgedev *vdev;
+-	struct __vxge_hw_device *hldev;
+-	struct vxge_vpath *vpath;
+-	int ret = 0;
+-	int i;
+-	u64 val64;
+-
+-	vxge_debug_entryexit(VXGE_TRACE,
+-		"%s: %s:%d", dev->name, __func__, __LINE__);
+-
+-	vdev = netdev_priv(dev);
+-	hldev = pci_get_drvdata(vdev->pdev);
+-
+-	/* make sure you have link off by default every time Nic is
+-	 * initialized */
+-	netif_carrier_off(dev);
+-
+-	/* Open VPATHs */
+-	status = vxge_open_vpaths(vdev);
+-	if (status != VXGE_HW_OK) {
+-		vxge_debug_init(VXGE_ERR,
+-			"%s: fatal: Vpath open failed", vdev->ndev->name);
+-		ret = -EPERM;
+-		goto out0;
+-	}
+-
+-	vdev->mtu = dev->mtu;
+-
+-	status = vxge_add_isr(vdev);
+-	if (status != VXGE_HW_OK) {
+-		vxge_debug_init(VXGE_ERR,
+-			"%s: fatal: ISR add failed", dev->name);
+-		ret = -EPERM;
+-		goto out1;
+-	}
+-
+-	if (vdev->config.intr_type != MSI_X) {
+-		netif_napi_add_weight(dev, &vdev->napi, vxge_poll_inta,
+-				      vdev->config.napi_weight);
+-		napi_enable(&vdev->napi);
+-		for (i = 0; i < vdev->no_of_vpath; i++) {
+-			vpath = &vdev->vpaths[i];
+-			vpath->ring.napi_p = &vdev->napi;
+-		}
+-	} else {
+-		for (i = 0; i < vdev->no_of_vpath; i++) {
+-			vpath = &vdev->vpaths[i];
+-			netif_napi_add_weight(dev, &vpath->ring.napi,
+-					      vxge_poll_msix,
+-					      vdev->config.napi_weight);
+-			napi_enable(&vpath->ring.napi);
+-			vpath->ring.napi_p = &vpath->ring.napi;
+-		}
+-	}
+-
+-	/* configure RTH */
+-	if (vdev->config.rth_steering) {
+-		status = vxge_rth_configure(vdev);
+-		if (status != VXGE_HW_OK) {
+-			vxge_debug_init(VXGE_ERR,
+-				"%s: fatal: RTH configuration failed",
+-				dev->name);
+-			ret = -EPERM;
+-			goto out2;
+-		}
+-	}
+-	printk(KERN_INFO "%s: Receive Hashing Offload %s\n", dev->name,
+-	       hldev->config.rth_en ? "enabled" : "disabled");
+-
+-	for (i = 0; i < vdev->no_of_vpath; i++) {
+-		vpath = &vdev->vpaths[i];
+-
+-		/* set initial mtu before enabling the device */
+-		status = vxge_hw_vpath_mtu_set(vpath->handle, vdev->mtu);
+-		if (status != VXGE_HW_OK) {
+-			vxge_debug_init(VXGE_ERR,
+-				"%s: fatal: can not set new MTU", dev->name);
+-			ret = -EPERM;
+-			goto out2;
+-		}
+-	}
+-
+-	VXGE_DEVICE_DEBUG_LEVEL_SET(VXGE_TRACE, VXGE_COMPONENT_LL, vdev);
+-	vxge_debug_init(vdev->level_trace,
+-		"%s: MTU is %d", vdev->ndev->name, vdev->mtu);
+-	VXGE_DEVICE_DEBUG_LEVEL_SET(VXGE_ERR, VXGE_COMPONENT_LL, vdev);
+-
+-	/* Restore the DA, VID table and also multicast and promiscuous mode
+-	 * states
+-	 */
+-	if (vdev->all_multi_flg) {
+-		for (i = 0; i < vdev->no_of_vpath; i++) {
+-			vpath = &vdev->vpaths[i];
+-			vxge_restore_vpath_mac_addr(vpath);
+-			vxge_restore_vpath_vid_table(vpath);
+-
+-			status = vxge_hw_vpath_mcast_enable(vpath->handle);
+-			if (status != VXGE_HW_OK)
+-				vxge_debug_init(VXGE_ERR,
+-					"%s:%d Enabling multicast failed",
+-					__func__, __LINE__);
+-		}
+-	}
+-
+-	/* Enable vpath to sniff all unicast/multicast traffic that not
+-	 * addressed to them. We allow promiscuous mode for PF only
+-	 */
+-
+-	val64 = 0;
+-	for (i = 0; i < VXGE_HW_MAX_VIRTUAL_PATHS; i++)
+-		val64 |= VXGE_HW_RXMAC_AUTHORIZE_ALL_ADDR_VP(i);
+-
+-	vxge_hw_mgmt_reg_write(vdev->devh,
+-		vxge_hw_mgmt_reg_type_mrpcim,
+-		0,
+-		(ulong)offsetof(struct vxge_hw_mrpcim_reg,
+-			rxmac_authorize_all_addr),
+-		val64);
+-
+-	vxge_hw_mgmt_reg_write(vdev->devh,
+-		vxge_hw_mgmt_reg_type_mrpcim,
+-		0,
+-		(ulong)offsetof(struct vxge_hw_mrpcim_reg,
+-			rxmac_authorize_all_vid),
+-		val64);
+-
+-	vxge_set_multicast(dev);
+-
+-	/* Enabling Bcast and mcast for all vpath */
+-	for (i = 0; i < vdev->no_of_vpath; i++) {
+-		vpath = &vdev->vpaths[i];
+-		status = vxge_hw_vpath_bcast_enable(vpath->handle);
+-		if (status != VXGE_HW_OK)
+-			vxge_debug_init(VXGE_ERR,
+-				"%s : Can not enable bcast for vpath "
+-				"id %d", dev->name, i);
+-		if (vdev->config.addr_learn_en) {
+-			status = vxge_hw_vpath_mcast_enable(vpath->handle);
+-			if (status != VXGE_HW_OK)
+-				vxge_debug_init(VXGE_ERR,
+-					"%s : Can not enable mcast for vpath "
+-					"id %d", dev->name, i);
+-		}
+-	}
+-
+-	vxge_hw_device_setpause_data(vdev->devh, 0,
+-		vdev->config.tx_pause_enable,
+-		vdev->config.rx_pause_enable);
+-
+-	if (vdev->vp_reset_timer.function == NULL)
+-		vxge_os_timer(&vdev->vp_reset_timer, vxge_poll_vp_reset,
+-			      HZ / 2);
+-
+-	/* There is no need to check for RxD leak and RxD lookup on Titan1A */
+-	if (vdev->titan1 && vdev->vp_lockup_timer.function == NULL)
+-		vxge_os_timer(&vdev->vp_lockup_timer, vxge_poll_vp_lockup,
+-			      HZ / 2);
+-
+-	set_bit(__VXGE_STATE_CARD_UP, &vdev->state);
+-
+-	smp_wmb();
+-
+-	if (vxge_hw_device_link_state_get(vdev->devh) == VXGE_HW_LINK_UP) {
+-		netif_carrier_on(vdev->ndev);
+-		netdev_notice(vdev->ndev, "Link Up\n");
+-		vdev->stats.link_up++;
+-	}
+-
+-	vxge_hw_device_intr_enable(vdev->devh);
+-
+-	smp_wmb();
+-
+-	for (i = 0; i < vdev->no_of_vpath; i++) {
+-		vpath = &vdev->vpaths[i];
+-
+-		vxge_hw_vpath_enable(vpath->handle);
+-		smp_wmb();
+-		vxge_hw_vpath_rx_doorbell_init(vpath->handle);
+-	}
+-
+-	netif_tx_start_all_queues(vdev->ndev);
+-
+-	/* configure CI */
+-	vxge_config_ci_for_tti_rti(vdev);
+-
+-	goto out0;
+-
+-out2:
+-	vxge_rem_isr(vdev);
+-
+-	/* Disable napi */
+-	if (vdev->config.intr_type != MSI_X)
+-		napi_disable(&vdev->napi);
+-	else {
+-		for (i = 0; i < vdev->no_of_vpath; i++)
+-			napi_disable(&vdev->vpaths[i].ring.napi);
+-	}
+-
+-out1:
+-	vxge_close_vpaths(vdev, 0);
+-out0:
+-	vxge_debug_entryexit(VXGE_TRACE,
+-				"%s: %s:%d  Exiting...",
+-				dev->name, __func__, __LINE__);
+-	return ret;
+-}
+-
+-/* Loop through the mac address list and delete all the entries */
+-static void vxge_free_mac_add_list(struct vxge_vpath *vpath)
+-{
+-
+-	struct list_head *entry, *next;
+-	if (list_empty(&vpath->mac_addr_list))
+-		return;
+-
+-	list_for_each_safe(entry, next, &vpath->mac_addr_list) {
+-		list_del(entry);
+-		kfree(entry);
+-	}
+-}
+-
+-static void vxge_napi_del_all(struct vxgedev *vdev)
+-{
+-	int i;
+-	if (vdev->config.intr_type != MSI_X)
+-		netif_napi_del(&vdev->napi);
+-	else {
+-		for (i = 0; i < vdev->no_of_vpath; i++)
+-			netif_napi_del(&vdev->vpaths[i].ring.napi);
+-	}
+-}
+-
+-static int do_vxge_close(struct net_device *dev, int do_io)
+-{
+-	enum vxge_hw_status status;
+-	struct vxgedev *vdev;
+-	struct __vxge_hw_device *hldev;
+-	int i;
+-	u64 val64, vpath_vector;
+-	vxge_debug_entryexit(VXGE_TRACE, "%s: %s:%d",
+-		dev->name, __func__, __LINE__);
+-
+-	vdev = netdev_priv(dev);
+-	hldev = pci_get_drvdata(vdev->pdev);
+-
+-	if (unlikely(!is_vxge_card_up(vdev)))
+-		return 0;
+-
+-	/* If vxge_handle_crit_err task is executing,
+-	 * wait till it completes. */
+-	while (test_and_set_bit(__VXGE_STATE_RESET_CARD, &vdev->state))
+-		msleep(50);
+-
+-	if (do_io) {
+-		/* Put the vpath back in normal mode */
+-		vpath_vector = vxge_mBIT(vdev->vpaths[0].device_id);
+-		status = vxge_hw_mgmt_reg_read(vdev->devh,
+-				vxge_hw_mgmt_reg_type_mrpcim,
+-				0,
+-				(ulong)offsetof(
+-					struct vxge_hw_mrpcim_reg,
+-					rts_mgr_cbasin_cfg),
+-				&val64);
+-		if (status == VXGE_HW_OK) {
+-			val64 &= ~vpath_vector;
+-			status = vxge_hw_mgmt_reg_write(vdev->devh,
+-					vxge_hw_mgmt_reg_type_mrpcim,
+-					0,
+-					(ulong)offsetof(
+-						struct vxge_hw_mrpcim_reg,
+-						rts_mgr_cbasin_cfg),
+-					val64);
+-		}
+-
+-		/* Remove the function 0 from promiscuous mode */
+-		vxge_hw_mgmt_reg_write(vdev->devh,
+-			vxge_hw_mgmt_reg_type_mrpcim,
+-			0,
+-			(ulong)offsetof(struct vxge_hw_mrpcim_reg,
+-				rxmac_authorize_all_addr),
+-			0);
+-
+-		vxge_hw_mgmt_reg_write(vdev->devh,
+-			vxge_hw_mgmt_reg_type_mrpcim,
+-			0,
+-			(ulong)offsetof(struct vxge_hw_mrpcim_reg,
+-				rxmac_authorize_all_vid),
+-			0);
+-
+-		smp_wmb();
+-	}
+-
+-	if (vdev->titan1)
+-		del_timer_sync(&vdev->vp_lockup_timer);
+-
+-	del_timer_sync(&vdev->vp_reset_timer);
+-
+-	if (do_io)
+-		vxge_hw_device_wait_receive_idle(hldev);
+-
+-	clear_bit(__VXGE_STATE_CARD_UP, &vdev->state);
+-
+-	/* Disable napi */
+-	if (vdev->config.intr_type != MSI_X)
+-		napi_disable(&vdev->napi);
+-	else {
+-		for (i = 0; i < vdev->no_of_vpath; i++)
+-			napi_disable(&vdev->vpaths[i].ring.napi);
+-	}
+-
+-	netif_carrier_off(vdev->ndev);
+-	netdev_notice(vdev->ndev, "Link Down\n");
+-	netif_tx_stop_all_queues(vdev->ndev);
+-
+-	/* Note that at this point xmit() is stopped by upper layer */
+-	if (do_io)
+-		vxge_hw_device_intr_disable(vdev->devh);
+-
+-	vxge_rem_isr(vdev);
+-
+-	vxge_napi_del_all(vdev);
+-
+-	if (do_io)
+-		vxge_reset_all_vpaths(vdev);
+-
+-	vxge_close_vpaths(vdev, 0);
+-
+-	vxge_debug_entryexit(VXGE_TRACE,
+-		"%s: %s:%d  Exiting...", dev->name, __func__, __LINE__);
+-
+-	clear_bit(__VXGE_STATE_RESET_CARD, &vdev->state);
+-
+-	return 0;
+-}
+-
+-/**
+- * vxge_close
+- * @dev: device pointer.
+- *
+- * This is the stop entry point of the driver. It needs to undo exactly
+- * whatever was done by the open entry point, thus it's usually referred to
+- * as the close function.Among other things this function mainly stops the
+- * Rx side of the NIC and frees all the Rx buffers in the Rx rings.
+- * Return value: '0' on success and an appropriate (-)ve integer as
+- * defined in errno.h file on failure.
+- */
+-static int vxge_close(struct net_device *dev)
+-{
+-	do_vxge_close(dev, 1);
+-	return 0;
+-}
+-
+-/**
+- * vxge_change_mtu
+- * @dev: net device pointer.
+- * @new_mtu :the new MTU size for the device.
+- *
+- * A driver entry point to change MTU size for the device. Before changing
+- * the MTU the device must be stopped.
+- */
+-static int vxge_change_mtu(struct net_device *dev, int new_mtu)
+-{
+-	struct vxgedev *vdev = netdev_priv(dev);
+-
+-	vxge_debug_entryexit(vdev->level_trace,
+-		"%s:%d", __func__, __LINE__);
+-
+-	/* check if device is down already */
+-	if (unlikely(!is_vxge_card_up(vdev))) {
+-		/* just store new value, will use later on open() */
+-		dev->mtu = new_mtu;
+-		vxge_debug_init(vdev->level_err,
+-			"%s", "device is down on MTU change");
+-		return 0;
+-	}
+-
+-	vxge_debug_init(vdev->level_trace,
+-		"trying to apply new MTU %d", new_mtu);
+-
+-	if (vxge_close(dev))
+-		return -EIO;
+-
+-	dev->mtu = new_mtu;
+-	vdev->mtu = new_mtu;
+-
+-	if (vxge_open(dev))
+-		return -EIO;
+-
+-	vxge_debug_init(vdev->level_trace,
+-		"%s: MTU changed to %d", vdev->ndev->name, new_mtu);
+-
+-	vxge_debug_entryexit(vdev->level_trace,
+-		"%s:%d  Exiting...", __func__, __LINE__);
+-
+-	return 0;
+-}
+-
+-/**
+- * vxge_get_stats64
+- * @dev: pointer to the device structure
+- * @net_stats: pointer to struct rtnl_link_stats64
+- *
+- */
+-static void
+-vxge_get_stats64(struct net_device *dev, struct rtnl_link_stats64 *net_stats)
+-{
+-	struct vxgedev *vdev = netdev_priv(dev);
+-	int k;
+-
+-	/* net_stats already zeroed by caller */
+-	for (k = 0; k < vdev->no_of_vpath; k++) {
+-		struct vxge_ring_stats *rxstats = &vdev->vpaths[k].ring.stats;
+-		struct vxge_fifo_stats *txstats = &vdev->vpaths[k].fifo.stats;
+-		unsigned int start;
+-		u64 packets, bytes, multicast;
+-
+-		do {
+-			start = u64_stats_fetch_begin_irq(&rxstats->syncp);
+-
+-			packets   = rxstats->rx_frms;
+-			multicast = rxstats->rx_mcast;
+-			bytes     = rxstats->rx_bytes;
+-		} while (u64_stats_fetch_retry_irq(&rxstats->syncp, start));
+-
+-		net_stats->rx_packets += packets;
+-		net_stats->rx_bytes += bytes;
+-		net_stats->multicast += multicast;
+-
+-		net_stats->rx_errors += rxstats->rx_errors;
+-		net_stats->rx_dropped += rxstats->rx_dropped;
+-
+-		do {
+-			start = u64_stats_fetch_begin_irq(&txstats->syncp);
+-
+-			packets = txstats->tx_frms;
+-			bytes   = txstats->tx_bytes;
+-		} while (u64_stats_fetch_retry_irq(&txstats->syncp, start));
+-
+-		net_stats->tx_packets += packets;
+-		net_stats->tx_bytes += bytes;
+-		net_stats->tx_errors += txstats->tx_errors;
+-	}
+-}
+-
+-static enum vxge_hw_status vxge_timestamp_config(struct __vxge_hw_device *devh)
+-{
+-	enum vxge_hw_status status;
+-	u64 val64;
+-
+-	/* Timestamp is passed to the driver via the FCS, therefore we
+-	 * must disable the FCS stripping by the adapter.  Since this is
+-	 * required for the driver to load (due to a hardware bug),
+-	 * there is no need to do anything special here.
+-	 */
+-	val64 = VXGE_HW_XMAC_TIMESTAMP_EN |
+-		VXGE_HW_XMAC_TIMESTAMP_USE_LINK_ID(0) |
+-		VXGE_HW_XMAC_TIMESTAMP_INTERVAL(0);
+-
+-	status = vxge_hw_mgmt_reg_write(devh,
+-					vxge_hw_mgmt_reg_type_mrpcim,
+-					0,
+-					offsetof(struct vxge_hw_mrpcim_reg,
+-						 xmac_timestamp),
+-					val64);
+-	vxge_hw_device_flush_io(devh);
+-	devh->config.hwts_en = VXGE_HW_HWTS_ENABLE;
+-	return status;
+-}
+-
+-static int vxge_hwtstamp_set(struct vxgedev *vdev, void __user *data)
+-{
+-	struct hwtstamp_config config;
+-	int i;
+-
+-	if (copy_from_user(&config, data, sizeof(config)))
+-		return -EFAULT;
+-
+-	/* Transmit HW Timestamp not supported */
+-	switch (config.tx_type) {
+-	case HWTSTAMP_TX_OFF:
+-		break;
+-	case HWTSTAMP_TX_ON:
+-	default:
+-		return -ERANGE;
+-	}
+-
+-	switch (config.rx_filter) {
+-	case HWTSTAMP_FILTER_NONE:
+-		vdev->rx_hwts = 0;
+-		config.rx_filter = HWTSTAMP_FILTER_NONE;
+-		break;
+-
+-	case HWTSTAMP_FILTER_ALL:
+-	case HWTSTAMP_FILTER_SOME:
+-	case HWTSTAMP_FILTER_PTP_V1_L4_EVENT:
+-	case HWTSTAMP_FILTER_PTP_V1_L4_SYNC:
+-	case HWTSTAMP_FILTER_PTP_V1_L4_DELAY_REQ:
+-	case HWTSTAMP_FILTER_PTP_V2_L4_EVENT:
+-	case HWTSTAMP_FILTER_PTP_V2_L4_SYNC:
+-	case HWTSTAMP_FILTER_PTP_V2_L4_DELAY_REQ:
+-	case HWTSTAMP_FILTER_PTP_V2_L2_EVENT:
+-	case HWTSTAMP_FILTER_PTP_V2_L2_SYNC:
+-	case HWTSTAMP_FILTER_PTP_V2_L2_DELAY_REQ:
+-	case HWTSTAMP_FILTER_PTP_V2_EVENT:
+-	case HWTSTAMP_FILTER_PTP_V2_SYNC:
+-	case HWTSTAMP_FILTER_PTP_V2_DELAY_REQ:
+-	case HWTSTAMP_FILTER_NTP_ALL:
+-		if (vdev->devh->config.hwts_en != VXGE_HW_HWTS_ENABLE)
+-			return -EFAULT;
+-
+-		vdev->rx_hwts = 1;
+-		config.rx_filter = HWTSTAMP_FILTER_ALL;
+-		break;
+-
+-	default:
+-		 return -ERANGE;
+-	}
+-
+-	for (i = 0; i < vdev->no_of_vpath; i++)
+-		vdev->vpaths[i].ring.rx_hwts = vdev->rx_hwts;
+-
+-	if (copy_to_user(data, &config, sizeof(config)))
+-		return -EFAULT;
+-
+-	return 0;
+-}
+-
+-static int vxge_hwtstamp_get(struct vxgedev *vdev, void __user *data)
+-{
+-	struct hwtstamp_config config;
+-
+-	config.flags = 0;
+-	config.tx_type = HWTSTAMP_TX_OFF;
+-	config.rx_filter = (vdev->rx_hwts ?
+-			    HWTSTAMP_FILTER_ALL : HWTSTAMP_FILTER_NONE);
+-
+-	if (copy_to_user(data, &config, sizeof(config)))
+-		return -EFAULT;
+-
+-	return 0;
+-}
+-
+-/**
+- * vxge_ioctl
+- * @dev: Device pointer.
+- * @rq: An IOCTL specific structure, that can contain a pointer to
+- *       a proprietary structure used to pass information to the driver.
+- * @cmd: This is used to distinguish between the different commands that
+- *       can be passed to the IOCTL functions.
+- *
+- * Entry point for the Ioctl.
+- */
+-static int vxge_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
+-{
+-	struct vxgedev *vdev = netdev_priv(dev);
+-
+-	switch (cmd) {
+-	case SIOCSHWTSTAMP:
+-		return vxge_hwtstamp_set(vdev, rq->ifr_data);
+-	case SIOCGHWTSTAMP:
+-		return vxge_hwtstamp_get(vdev, rq->ifr_data);
+-	default:
+-		return -EOPNOTSUPP;
+-	}
+-}
+-
+-/**
+- * vxge_tx_watchdog
+- * @dev: pointer to net device structure
+- * @txqueue: index of the hanging queue
+- *
+- * Watchdog for transmit side.
+- * This function is triggered if the Tx Queue is stopped
+- * for a pre-defined amount of time when the Interface is still up.
+- */
+-static void vxge_tx_watchdog(struct net_device *dev, unsigned int txqueue)
+-{
+-	struct vxgedev *vdev;
+-
+-	vxge_debug_entryexit(VXGE_TRACE, "%s:%d", __func__, __LINE__);
+-
+-	vdev = netdev_priv(dev);
+-
+-	vdev->cric_err_event = VXGE_HW_EVENT_RESET_START;
+-
+-	schedule_work(&vdev->reset_task);
+-	vxge_debug_entryexit(VXGE_TRACE,
+-		"%s:%d  Exiting...", __func__, __LINE__);
+-}
+-
+-/**
+- * vxge_vlan_rx_add_vid
+- * @dev: net device pointer.
+- * @proto: vlan protocol
+- * @vid: vid
+- *
+- * Add the vlan id to the devices vlan id table
+- */
+-static int
+-vxge_vlan_rx_add_vid(struct net_device *dev, __be16 proto, u16 vid)
+-{
+-	struct vxgedev *vdev = netdev_priv(dev);
+-	struct vxge_vpath *vpath;
+-	int vp_id;
+-
+-	/* Add these vlan to the vid table */
+-	for (vp_id = 0; vp_id < vdev->no_of_vpath; vp_id++) {
+-		vpath = &vdev->vpaths[vp_id];
+-		if (!vpath->is_open)
+-			continue;
+-		vxge_hw_vpath_vid_add(vpath->handle, vid);
+-	}
+-	set_bit(vid, vdev->active_vlans);
+-	return 0;
+-}
+-
+-/**
+- * vxge_vlan_rx_kill_vid
+- * @dev: net device pointer.
+- * @proto: vlan protocol
+- * @vid: vid
+- *
+- * Remove the vlan id from the device's vlan id table
+- */
+-static int
+-vxge_vlan_rx_kill_vid(struct net_device *dev, __be16 proto, u16 vid)
+-{
+-	struct vxgedev *vdev = netdev_priv(dev);
+-	struct vxge_vpath *vpath;
+-	int vp_id;
+-
+-	vxge_debug_entryexit(VXGE_TRACE, "%s:%d", __func__, __LINE__);
+-
+-	/* Delete this vlan from the vid table */
+-	for (vp_id = 0; vp_id < vdev->no_of_vpath; vp_id++) {
+-		vpath = &vdev->vpaths[vp_id];
+-		if (!vpath->is_open)
+-			continue;
+-		vxge_hw_vpath_vid_delete(vpath->handle, vid);
+-	}
+-	vxge_debug_entryexit(VXGE_TRACE,
+-		"%s:%d  Exiting...", __func__, __LINE__);
+-	clear_bit(vid, vdev->active_vlans);
+-	return 0;
+-}
+-
+-static const struct net_device_ops vxge_netdev_ops = {
+-	.ndo_open               = vxge_open,
+-	.ndo_stop               = vxge_close,
+-	.ndo_get_stats64        = vxge_get_stats64,
+-	.ndo_start_xmit         = vxge_xmit,
+-	.ndo_validate_addr      = eth_validate_addr,
+-	.ndo_set_rx_mode	= vxge_set_multicast,
+-	.ndo_eth_ioctl           = vxge_ioctl,
+-	.ndo_set_mac_address    = vxge_set_mac_addr,
+-	.ndo_change_mtu         = vxge_change_mtu,
+-	.ndo_fix_features	= vxge_fix_features,
+-	.ndo_set_features	= vxge_set_features,
+-	.ndo_vlan_rx_kill_vid   = vxge_vlan_rx_kill_vid,
+-	.ndo_vlan_rx_add_vid	= vxge_vlan_rx_add_vid,
+-	.ndo_tx_timeout         = vxge_tx_watchdog,
+-#ifdef CONFIG_NET_POLL_CONTROLLER
+-	.ndo_poll_controller    = vxge_netpoll,
+-#endif
+-};
+-
+-static int vxge_device_register(struct __vxge_hw_device *hldev,
+-				struct vxge_config *config,
+-				int no_of_vpath, struct vxgedev **vdev_out)
+-{
+-	struct net_device *ndev;
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-	struct vxgedev *vdev;
+-	int ret = 0, no_of_queue = 1;
+-	u64 stat;
+-
+-	*vdev_out = NULL;
+-	if (config->tx_steering_type)
+-		no_of_queue = no_of_vpath;
+-
+-	ndev = alloc_etherdev_mq(sizeof(struct vxgedev),
+-			no_of_queue);
+-	if (ndev == NULL) {
+-		vxge_debug_init(
+-			vxge_hw_device_trace_level_get(hldev),
+-		"%s : device allocation failed", __func__);
+-		ret = -ENODEV;
+-		goto _out0;
+-	}
+-
+-	vxge_debug_entryexit(
+-		vxge_hw_device_trace_level_get(hldev),
+-		"%s: %s:%d  Entering...",
+-		ndev->name, __func__, __LINE__);
+-
+-	vdev = netdev_priv(ndev);
+-	memset(vdev, 0, sizeof(struct vxgedev));
+-
+-	vdev->ndev = ndev;
+-	vdev->devh = hldev;
+-	vdev->pdev = hldev->pdev;
+-	memcpy(&vdev->config, config, sizeof(struct vxge_config));
+-	vdev->rx_hwts = 0;
+-	vdev->titan1 = (vdev->pdev->revision == VXGE_HW_TITAN1_PCI_REVISION);
+-
+-	SET_NETDEV_DEV(ndev, &vdev->pdev->dev);
+-
+-	ndev->hw_features = NETIF_F_RXCSUM | NETIF_F_SG |
+-		NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM |
+-		NETIF_F_TSO | NETIF_F_TSO6 |
+-		NETIF_F_HW_VLAN_CTAG_TX;
+-	if (vdev->config.rth_steering != NO_STEERING)
+-		ndev->hw_features |= NETIF_F_RXHASH;
+-
+-	ndev->features |= ndev->hw_features |
+-		NETIF_F_HW_VLAN_CTAG_RX | NETIF_F_HW_VLAN_CTAG_FILTER;
+-
+-
+-	ndev->netdev_ops = &vxge_netdev_ops;
+-
+-	ndev->watchdog_timeo = VXGE_LL_WATCH_DOG_TIMEOUT;
+-	INIT_WORK(&vdev->reset_task, vxge_reset);
+-
+-	vxge_initialize_ethtool_ops(ndev);
+-
+-	/* Allocate memory for vpath */
+-	vdev->vpaths = kcalloc(no_of_vpath, sizeof(struct vxge_vpath),
+-			       GFP_KERNEL);
+-	if (!vdev->vpaths) {
+-		vxge_debug_init(VXGE_ERR,
+-			"%s: vpath memory allocation failed",
+-			vdev->ndev->name);
+-		ret = -ENOMEM;
+-		goto _out1;
+-	}
+-
+-	vxge_debug_init(vxge_hw_device_trace_level_get(hldev),
+-		"%s : checksumming enabled", __func__);
+-
+-	ndev->features |= NETIF_F_HIGHDMA;
+-
+-	/* MTU range: 68 - 9600 */
+-	ndev->min_mtu = VXGE_HW_MIN_MTU;
+-	ndev->max_mtu = VXGE_HW_MAX_MTU;
+-
+-	ret = register_netdev(ndev);
+-	if (ret) {
+-		vxge_debug_init(vxge_hw_device_trace_level_get(hldev),
+-			"%s: %s : device registration failed!",
+-			ndev->name, __func__);
+-		goto _out2;
+-	}
+-
+-	/*  Set the factory defined MAC address initially */
+-	ndev->addr_len = ETH_ALEN;
+-
+-	/* Make Link state as off at this point, when the Link change
+-	 * interrupt comes the state will be automatically changed to
+-	 * the right state.
+-	 */
+-	netif_carrier_off(ndev);
+-
+-	vxge_debug_init(vxge_hw_device_trace_level_get(hldev),
+-		"%s: Ethernet device registered",
+-		ndev->name);
+-
+-	hldev->ndev = ndev;
+-	*vdev_out = vdev;
+-
+-	/* Resetting the Device stats */
+-	status = vxge_hw_mrpcim_stats_access(
+-				hldev,
+-				VXGE_HW_STATS_OP_CLEAR_ALL_STATS,
+-				0,
+-				0,
+-				&stat);
+-
+-	if (status == VXGE_HW_ERR_PRIVILEGED_OPERATION)
+-		vxge_debug_init(
+-			vxge_hw_device_trace_level_get(hldev),
+-			"%s: device stats clear returns"
+-			"VXGE_HW_ERR_PRIVILEGED_OPERATION", ndev->name);
+-
+-	vxge_debug_entryexit(vxge_hw_device_trace_level_get(hldev),
+-		"%s: %s:%d  Exiting...",
+-		ndev->name, __func__, __LINE__);
+-
+-	return ret;
+-_out2:
+-	kfree(vdev->vpaths);
+-_out1:
+-	free_netdev(ndev);
+-_out0:
+-	return ret;
+-}
+-
+-/*
+- * vxge_device_unregister
+- *
+- * This function will unregister and free network device
+- */
+-static void vxge_device_unregister(struct __vxge_hw_device *hldev)
+-{
+-	struct vxgedev *vdev;
+-	struct net_device *dev;
+-	char buf[IFNAMSIZ];
+-
+-	dev = hldev->ndev;
+-	vdev = netdev_priv(dev);
+-
+-	vxge_debug_entryexit(vdev->level_trace,	"%s: %s:%d", vdev->ndev->name,
+-			     __func__, __LINE__);
+-
+-	strlcpy(buf, dev->name, IFNAMSIZ);
+-
+-	flush_work(&vdev->reset_task);
+-
+-	/* in 2.6 will call stop() if device is up */
+-	unregister_netdev(dev);
+-
+-	kfree(vdev->vpaths);
+-
+-	vxge_debug_init(vdev->level_trace, "%s: ethernet device unregistered",
+-			buf);
+-	vxge_debug_entryexit(vdev->level_trace,	"%s: %s:%d  Exiting...", buf,
+-			     __func__, __LINE__);
+-
+-	/* we are safe to free it now */
+-	free_netdev(dev);
+-}
+-
+-/*
+- * vxge_callback_crit_err
+- *
+- * This function is called by the alarm handler in interrupt context.
+- * Driver must analyze it based on the event type.
+- */
+-static void
+-vxge_callback_crit_err(struct __vxge_hw_device *hldev,
+-			enum vxge_hw_event type, u64 vp_id)
+-{
+-	struct net_device *dev = hldev->ndev;
+-	struct vxgedev *vdev = netdev_priv(dev);
+-	struct vxge_vpath *vpath = NULL;
+-	int vpath_idx;
+-
+-	vxge_debug_entryexit(vdev->level_trace,
+-		"%s: %s:%d", vdev->ndev->name, __func__, __LINE__);
+-
+-	/* Note: This event type should be used for device wide
+-	 * indications only - Serious errors, Slot freeze and critical errors
+-	 */
+-	vdev->cric_err_event = type;
+-
+-	for (vpath_idx = 0; vpath_idx < vdev->no_of_vpath; vpath_idx++) {
+-		vpath = &vdev->vpaths[vpath_idx];
+-		if (vpath->device_id == vp_id)
+-			break;
+-	}
+-
+-	if (!test_bit(__VXGE_STATE_RESET_CARD, &vdev->state)) {
+-		if (type == VXGE_HW_EVENT_SLOT_FREEZE) {
+-			vxge_debug_init(VXGE_ERR,
+-				"%s: Slot is frozen", vdev->ndev->name);
+-		} else if (type == VXGE_HW_EVENT_SERR) {
+-			vxge_debug_init(VXGE_ERR,
+-				"%s: Encountered Serious Error",
+-				vdev->ndev->name);
+-		} else if (type == VXGE_HW_EVENT_CRITICAL_ERR)
+-			vxge_debug_init(VXGE_ERR,
+-				"%s: Encountered Critical Error",
+-				vdev->ndev->name);
+-	}
+-
+-	if ((type == VXGE_HW_EVENT_SERR) ||
+-		(type == VXGE_HW_EVENT_SLOT_FREEZE)) {
+-		if (unlikely(vdev->exec_mode))
+-			clear_bit(__VXGE_STATE_CARD_UP, &vdev->state);
+-	} else if (type == VXGE_HW_EVENT_CRITICAL_ERR) {
+-		vxge_hw_device_mask_all(hldev);
+-		if (unlikely(vdev->exec_mode))
+-			clear_bit(__VXGE_STATE_CARD_UP, &vdev->state);
+-	} else if ((type == VXGE_HW_EVENT_FIFO_ERR) ||
+-		  (type == VXGE_HW_EVENT_VPATH_ERR)) {
+-
+-		if (unlikely(vdev->exec_mode))
+-			clear_bit(__VXGE_STATE_CARD_UP, &vdev->state);
+-		else {
+-			/* check if this vpath is already set for reset */
+-			if (!test_and_set_bit(vpath_idx, &vdev->vp_reset)) {
+-
+-				/* disable interrupts for this vpath */
+-				vxge_vpath_intr_disable(vdev, vpath_idx);
+-
+-				/* stop the queue for this vpath */
+-				netif_tx_stop_queue(vpath->fifo.txq);
+-			}
+-		}
+-	}
+-
+-	vxge_debug_entryexit(vdev->level_trace,
+-		"%s: %s:%d  Exiting...",
+-		vdev->ndev->name, __func__, __LINE__);
+-}
+-
+-static void verify_bandwidth(void)
+-{
+-	int i, band_width, total = 0, equal_priority = 0;
+-
+-	/* 1. If user enters 0 for some fifo, give equal priority to all */
+-	for (i = 0; i < VXGE_HW_MAX_VIRTUAL_PATHS; i++) {
+-		if (bw_percentage[i] == 0) {
+-			equal_priority = 1;
+-			break;
+-		}
+-	}
+-
+-	if (!equal_priority) {
+-		/* 2. If sum exceeds 100, give equal priority to all */
+-		for (i = 0; i < VXGE_HW_MAX_VIRTUAL_PATHS; i++) {
+-			if (bw_percentage[i] == 0xFF)
+-				break;
+-
+-			total += bw_percentage[i];
+-			if (total > VXGE_HW_VPATH_BANDWIDTH_MAX) {
+-				equal_priority = 1;
+-				break;
+-			}
+-		}
+-	}
+-
+-	if (!equal_priority) {
+-		/* Is all the bandwidth consumed? */
+-		if (total < VXGE_HW_VPATH_BANDWIDTH_MAX) {
+-			if (i < VXGE_HW_MAX_VIRTUAL_PATHS) {
+-				/* Split rest of bw equally among next VPs*/
+-				band_width =
+-				  (VXGE_HW_VPATH_BANDWIDTH_MAX  - total) /
+-					(VXGE_HW_MAX_VIRTUAL_PATHS - i);
+-				if (band_width < 2) /* min of 2% */
+-					equal_priority = 1;
+-				else {
+-					for (; i < VXGE_HW_MAX_VIRTUAL_PATHS;
+-						i++)
+-						bw_percentage[i] =
+-							band_width;
+-				}
+-			}
+-		} else if (i < VXGE_HW_MAX_VIRTUAL_PATHS)
+-			equal_priority = 1;
+-	}
+-
+-	if (equal_priority) {
+-		vxge_debug_init(VXGE_ERR,
+-			"%s: Assigning equal bandwidth to all the vpaths",
+-			VXGE_DRIVER_NAME);
+-		bw_percentage[0] = VXGE_HW_VPATH_BANDWIDTH_MAX /
+-					VXGE_HW_MAX_VIRTUAL_PATHS;
+-		for (i = 1; i < VXGE_HW_MAX_VIRTUAL_PATHS; i++)
+-			bw_percentage[i] = bw_percentage[0];
+-	}
+-}
+-
+-/*
+- * Vpath configuration
+- */
+-static int vxge_config_vpaths(struct vxge_hw_device_config *device_config,
+-			      u64 vpath_mask, struct vxge_config *config_param)
+-{
+-	int i, no_of_vpaths = 0, default_no_vpath = 0, temp;
+-	u32 txdl_size, txdl_per_memblock;
+-
+-	temp = driver_config->vpath_per_dev;
+-	if ((driver_config->vpath_per_dev == VXGE_USE_DEFAULT) &&
+-		(max_config_dev == VXGE_MAX_CONFIG_DEV)) {
+-		/* No more CPU. Return vpath number as zero.*/
+-		if (driver_config->g_no_cpus == -1)
+-			return 0;
+-
+-		if (!driver_config->g_no_cpus)
+-			driver_config->g_no_cpus =
+-				netif_get_num_default_rss_queues();
+-
+-		driver_config->vpath_per_dev = driver_config->g_no_cpus >> 1;
+-		if (!driver_config->vpath_per_dev)
+-			driver_config->vpath_per_dev = 1;
+-
+-		for (i = 0; i < VXGE_HW_MAX_VIRTUAL_PATHS; i++)
+-			if (vxge_bVALn(vpath_mask, i, 1))
+-				default_no_vpath++;
+-
+-		if (default_no_vpath < driver_config->vpath_per_dev)
+-			driver_config->vpath_per_dev = default_no_vpath;
+-
+-		driver_config->g_no_cpus = driver_config->g_no_cpus -
+-				(driver_config->vpath_per_dev * 2);
+-		if (driver_config->g_no_cpus <= 0)
+-			driver_config->g_no_cpus = -1;
+-	}
+-
+-	if (driver_config->vpath_per_dev == 1) {
+-		vxge_debug_ll_config(VXGE_TRACE,
+-			"%s: Disable tx and rx steering, "
+-			"as single vpath is configured", VXGE_DRIVER_NAME);
+-		config_param->rth_steering = NO_STEERING;
+-		config_param->tx_steering_type = NO_STEERING;
+-		device_config->rth_en = 0;
+-	}
+-
+-	/* configure bandwidth */
+-	for (i = 0; i < VXGE_HW_MAX_VIRTUAL_PATHS; i++)
+-		device_config->vp_config[i].min_bandwidth = bw_percentage[i];
+-
+-	for (i = 0; i < VXGE_HW_MAX_VIRTUAL_PATHS; i++) {
+-		device_config->vp_config[i].vp_id = i;
+-		device_config->vp_config[i].mtu = VXGE_HW_DEFAULT_MTU;
+-		if (no_of_vpaths < driver_config->vpath_per_dev) {
+-			if (!vxge_bVALn(vpath_mask, i, 1)) {
+-				vxge_debug_ll_config(VXGE_TRACE,
+-					"%s: vpath: %d is not available",
+-					VXGE_DRIVER_NAME, i);
+-				continue;
+-			} else {
+-				vxge_debug_ll_config(VXGE_TRACE,
+-					"%s: vpath: %d available",
+-					VXGE_DRIVER_NAME, i);
+-				no_of_vpaths++;
+-			}
+-		} else {
+-			vxge_debug_ll_config(VXGE_TRACE,
+-				"%s: vpath: %d is not configured, "
+-				"max_config_vpath exceeded",
+-				VXGE_DRIVER_NAME, i);
+-			break;
+-		}
+-
+-		/* Configure Tx fifo's */
+-		device_config->vp_config[i].fifo.enable =
+-						VXGE_HW_FIFO_ENABLE;
+-		device_config->vp_config[i].fifo.max_frags =
+-				MAX_SKB_FRAGS + 1;
+-		device_config->vp_config[i].fifo.memblock_size =
+-			VXGE_HW_MIN_FIFO_MEMBLOCK_SIZE;
+-
+-		txdl_size = device_config->vp_config[i].fifo.max_frags *
+-				sizeof(struct vxge_hw_fifo_txd);
+-		txdl_per_memblock = VXGE_HW_MIN_FIFO_MEMBLOCK_SIZE / txdl_size;
+-
+-		device_config->vp_config[i].fifo.fifo_blocks =
+-			((VXGE_DEF_FIFO_LENGTH - 1) / txdl_per_memblock) + 1;
+-
+-		device_config->vp_config[i].fifo.intr =
+-				VXGE_HW_FIFO_QUEUE_INTR_DISABLE;
+-
+-		/* Configure tti properties */
+-		device_config->vp_config[i].tti.intr_enable =
+-					VXGE_HW_TIM_INTR_ENABLE;
+-
+-		device_config->vp_config[i].tti.btimer_val =
+-			(VXGE_TTI_BTIMER_VAL * 1000) / 272;
+-
+-		device_config->vp_config[i].tti.timer_ac_en =
+-				VXGE_HW_TIM_TIMER_AC_ENABLE;
+-
+-		/* For msi-x with napi (each vector has a handler of its own) -
+-		 * Set CI to OFF for all vpaths
+-		 */
+-		device_config->vp_config[i].tti.timer_ci_en =
+-			VXGE_HW_TIM_TIMER_CI_DISABLE;
+-
+-		device_config->vp_config[i].tti.timer_ri_en =
+-				VXGE_HW_TIM_TIMER_RI_DISABLE;
+-
+-		device_config->vp_config[i].tti.util_sel =
+-			VXGE_HW_TIM_UTIL_SEL_LEGACY_TX_NET_UTIL;
+-
+-		device_config->vp_config[i].tti.ltimer_val =
+-			(VXGE_TTI_LTIMER_VAL * 1000) / 272;
+-
+-		device_config->vp_config[i].tti.rtimer_val =
+-			(VXGE_TTI_RTIMER_VAL * 1000) / 272;
+-
+-		device_config->vp_config[i].tti.urange_a = TTI_TX_URANGE_A;
+-		device_config->vp_config[i].tti.urange_b = TTI_TX_URANGE_B;
+-		device_config->vp_config[i].tti.urange_c = TTI_TX_URANGE_C;
+-		device_config->vp_config[i].tti.uec_a = TTI_TX_UFC_A;
+-		device_config->vp_config[i].tti.uec_b = TTI_TX_UFC_B;
+-		device_config->vp_config[i].tti.uec_c = TTI_TX_UFC_C;
+-		device_config->vp_config[i].tti.uec_d = TTI_TX_UFC_D;
+-
+-		/* Configure Rx rings */
+-		device_config->vp_config[i].ring.enable  =
+-						VXGE_HW_RING_ENABLE;
+-
+-		device_config->vp_config[i].ring.ring_blocks  =
+-						VXGE_HW_DEF_RING_BLOCKS;
+-
+-		device_config->vp_config[i].ring.buffer_mode =
+-			VXGE_HW_RING_RXD_BUFFER_MODE_1;
+-
+-		device_config->vp_config[i].ring.rxds_limit  =
+-				VXGE_HW_DEF_RING_RXDS_LIMIT;
+-
+-		device_config->vp_config[i].ring.scatter_mode =
+-					VXGE_HW_RING_SCATTER_MODE_A;
+-
+-		/* Configure rti properties */
+-		device_config->vp_config[i].rti.intr_enable =
+-					VXGE_HW_TIM_INTR_ENABLE;
+-
+-		device_config->vp_config[i].rti.btimer_val =
+-			(VXGE_RTI_BTIMER_VAL * 1000)/272;
+-
+-		device_config->vp_config[i].rti.timer_ac_en =
+-						VXGE_HW_TIM_TIMER_AC_ENABLE;
+-
+-		device_config->vp_config[i].rti.timer_ci_en =
+-						VXGE_HW_TIM_TIMER_CI_DISABLE;
+-
+-		device_config->vp_config[i].rti.timer_ri_en =
+-						VXGE_HW_TIM_TIMER_RI_DISABLE;
+-
+-		device_config->vp_config[i].rti.util_sel =
+-				VXGE_HW_TIM_UTIL_SEL_LEGACY_RX_NET_UTIL;
+-
+-		device_config->vp_config[i].rti.urange_a =
+-						RTI_RX_URANGE_A;
+-		device_config->vp_config[i].rti.urange_b =
+-						RTI_RX_URANGE_B;
+-		device_config->vp_config[i].rti.urange_c =
+-						RTI_RX_URANGE_C;
+-		device_config->vp_config[i].rti.uec_a = RTI_RX_UFC_A;
+-		device_config->vp_config[i].rti.uec_b = RTI_RX_UFC_B;
+-		device_config->vp_config[i].rti.uec_c = RTI_RX_UFC_C;
+-		device_config->vp_config[i].rti.uec_d = RTI_RX_UFC_D;
+-
+-		device_config->vp_config[i].rti.rtimer_val =
+-			(VXGE_RTI_RTIMER_VAL * 1000) / 272;
+-
+-		device_config->vp_config[i].rti.ltimer_val =
+-			(VXGE_RTI_LTIMER_VAL * 1000) / 272;
+-
+-		device_config->vp_config[i].rpa_strip_vlan_tag =
+-			vlan_tag_strip;
+-	}
+-
+-	driver_config->vpath_per_dev = temp;
+-	return no_of_vpaths;
+-}
+-
+-/* initialize device configuratrions */
+-static void vxge_device_config_init(struct vxge_hw_device_config *device_config,
+-				    int *intr_type)
+-{
+-	/* Used for CQRQ/SRQ. */
+-	device_config->dma_blockpool_initial =
+-			VXGE_HW_INITIAL_DMA_BLOCK_POOL_SIZE;
+-
+-	device_config->dma_blockpool_max =
+-			VXGE_HW_MAX_DMA_BLOCK_POOL_SIZE;
+-
+-	if (max_mac_vpath > VXGE_MAX_MAC_ADDR_COUNT)
+-		max_mac_vpath = VXGE_MAX_MAC_ADDR_COUNT;
+-
+-	if (!IS_ENABLED(CONFIG_PCI_MSI)) {
+-		vxge_debug_init(VXGE_ERR,
+-			"%s: This Kernel does not support "
+-			"MSI-X. Defaulting to INTA", VXGE_DRIVER_NAME);
+-		*intr_type = INTA;
+-	}
+-
+-	/* Configure whether MSI-X or IRQL. */
+-	switch (*intr_type) {
+-	case INTA:
+-		device_config->intr_mode = VXGE_HW_INTR_MODE_IRQLINE;
+-		break;
+-
+-	case MSI_X:
+-		device_config->intr_mode = VXGE_HW_INTR_MODE_MSIX_ONE_SHOT;
+-		break;
+-	}
+-
+-	/* Timer period between device poll */
+-	device_config->device_poll_millis = VXGE_TIMER_DELAY;
+-
+-	/* Configure mac based steering. */
+-	device_config->rts_mac_en = addr_learn_en;
+-
+-	/* Configure Vpaths */
+-	device_config->rth_it_type = VXGE_HW_RTH_IT_TYPE_MULTI_IT;
+-
+-	vxge_debug_ll_config(VXGE_TRACE, "%s : Device Config Params ",
+-			__func__);
+-	vxge_debug_ll_config(VXGE_TRACE, "intr_mode : %d",
+-			device_config->intr_mode);
+-	vxge_debug_ll_config(VXGE_TRACE, "device_poll_millis : %d",
+-			device_config->device_poll_millis);
+-	vxge_debug_ll_config(VXGE_TRACE, "rth_en : %d",
+-			device_config->rth_en);
+-	vxge_debug_ll_config(VXGE_TRACE, "rth_it_type : %d",
+-			device_config->rth_it_type);
+-}
+-
+-static void vxge_print_parm(struct vxgedev *vdev, u64 vpath_mask)
+-{
+-	int i;
+-
+-	vxge_debug_init(VXGE_TRACE,
+-		"%s: %d Vpath(s) opened",
+-		vdev->ndev->name, vdev->no_of_vpath);
+-
+-	switch (vdev->config.intr_type) {
+-	case INTA:
+-		vxge_debug_init(VXGE_TRACE,
+-			"%s: Interrupt type INTA", vdev->ndev->name);
+-		break;
+-
+-	case MSI_X:
+-		vxge_debug_init(VXGE_TRACE,
+-			"%s: Interrupt type MSI-X", vdev->ndev->name);
+-		break;
+-	}
+-
+-	if (vdev->config.rth_steering) {
+-		vxge_debug_init(VXGE_TRACE,
+-			"%s: RTH steering enabled for TCP_IPV4",
+-			vdev->ndev->name);
+-	} else {
+-		vxge_debug_init(VXGE_TRACE,
+-			"%s: RTH steering disabled", vdev->ndev->name);
+-	}
+-
+-	switch (vdev->config.tx_steering_type) {
+-	case NO_STEERING:
+-		vxge_debug_init(VXGE_TRACE,
+-			"%s: Tx steering disabled", vdev->ndev->name);
+-		break;
+-	case TX_PRIORITY_STEERING:
+-		vxge_debug_init(VXGE_TRACE,
+-			"%s: Unsupported tx steering option",
+-			vdev->ndev->name);
+-		vxge_debug_init(VXGE_TRACE,
+-			"%s: Tx steering disabled", vdev->ndev->name);
+-		vdev->config.tx_steering_type = 0;
+-		break;
+-	case TX_VLAN_STEERING:
+-		vxge_debug_init(VXGE_TRACE,
+-			"%s: Unsupported tx steering option",
+-			vdev->ndev->name);
+-		vxge_debug_init(VXGE_TRACE,
+-			"%s: Tx steering disabled", vdev->ndev->name);
+-		vdev->config.tx_steering_type = 0;
+-		break;
+-	case TX_MULTIQ_STEERING:
+-		vxge_debug_init(VXGE_TRACE,
+-			"%s: Tx multiqueue steering enabled",
+-			vdev->ndev->name);
+-		break;
+-	case TX_PORT_STEERING:
+-		vxge_debug_init(VXGE_TRACE,
+-			"%s: Tx port steering enabled",
+-			vdev->ndev->name);
+-		break;
+-	default:
+-		vxge_debug_init(VXGE_ERR,
+-			"%s: Unsupported tx steering type",
+-			vdev->ndev->name);
+-		vxge_debug_init(VXGE_TRACE,
+-			"%s: Tx steering disabled", vdev->ndev->name);
+-		vdev->config.tx_steering_type = 0;
+-	}
+-
+-	if (vdev->config.addr_learn_en)
+-		vxge_debug_init(VXGE_TRACE,
+-			"%s: MAC Address learning enabled", vdev->ndev->name);
+-
+-	for (i = 0; i < VXGE_HW_MAX_VIRTUAL_PATHS; i++) {
+-		if (!vxge_bVALn(vpath_mask, i, 1))
+-			continue;
+-		vxge_debug_ll_config(VXGE_TRACE,
+-			"%s: MTU size - %d", vdev->ndev->name,
+-			((vdev->devh))->
+-				config.vp_config[i].mtu);
+-		vxge_debug_init(VXGE_TRACE,
+-			"%s: VLAN tag stripping %s", vdev->ndev->name,
+-			((vdev->devh))->
+-				config.vp_config[i].rpa_strip_vlan_tag
+-			? "Enabled" : "Disabled");
+-		vxge_debug_ll_config(VXGE_TRACE,
+-			"%s: Max frags : %d", vdev->ndev->name,
+-			((vdev->devh))->
+-				config.vp_config[i].fifo.max_frags);
+-		break;
+-	}
+-}
+-
+-/**
+- * vxge_pm_suspend - vxge power management suspend entry point
+- * @dev_d: device pointer
+- *
+- */
+-static int __maybe_unused vxge_pm_suspend(struct device *dev_d)
+-{
+-	return -ENOSYS;
+-}
+-/**
+- * vxge_pm_resume - vxge power management resume entry point
+- * @dev_d: device pointer
+- *
+- */
+-static int __maybe_unused vxge_pm_resume(struct device *dev_d)
+-{
+-	return -ENOSYS;
+-}
+-
+-/**
+- * vxge_io_error_detected - called when PCI error is detected
+- * @pdev: Pointer to PCI device
+- * @state: The current pci connection state
+- *
+- * This function is called after a PCI bus error affecting
+- * this device has been detected.
+- */
+-static pci_ers_result_t vxge_io_error_detected(struct pci_dev *pdev,
+-						pci_channel_state_t state)
+-{
+-	struct __vxge_hw_device *hldev = pci_get_drvdata(pdev);
+-	struct net_device *netdev = hldev->ndev;
+-
+-	netif_device_detach(netdev);
+-
+-	if (state == pci_channel_io_perm_failure)
+-		return PCI_ERS_RESULT_DISCONNECT;
+-
+-	if (netif_running(netdev)) {
+-		/* Bring down the card, while avoiding PCI I/O */
+-		do_vxge_close(netdev, 0);
+-	}
+-
+-	pci_disable_device(pdev);
+-
+-	return PCI_ERS_RESULT_NEED_RESET;
+-}
+-
+-/**
+- * vxge_io_slot_reset - called after the pci bus has been reset.
+- * @pdev: Pointer to PCI device
+- *
+- * Restart the card from scratch, as if from a cold-boot.
+- * At this point, the card has exprienced a hard reset,
+- * followed by fixups by BIOS, and has its config space
+- * set up identically to what it was at cold boot.
+- */
+-static pci_ers_result_t vxge_io_slot_reset(struct pci_dev *pdev)
+-{
+-	struct __vxge_hw_device *hldev = pci_get_drvdata(pdev);
+-	struct net_device *netdev = hldev->ndev;
+-
+-	struct vxgedev *vdev = netdev_priv(netdev);
+-
+-	if (pci_enable_device(pdev)) {
+-		netdev_err(netdev, "Cannot re-enable device after reset\n");
+-		return PCI_ERS_RESULT_DISCONNECT;
+-	}
+-
+-	pci_set_master(pdev);
+-	do_vxge_reset(vdev, VXGE_LL_FULL_RESET);
+-
+-	return PCI_ERS_RESULT_RECOVERED;
+-}
+-
+-/**
+- * vxge_io_resume - called when traffic can start flowing again.
+- * @pdev: Pointer to PCI device
+- *
+- * This callback is called when the error recovery driver tells
+- * us that its OK to resume normal operation.
+- */
+-static void vxge_io_resume(struct pci_dev *pdev)
+-{
+-	struct __vxge_hw_device *hldev = pci_get_drvdata(pdev);
+-	struct net_device *netdev = hldev->ndev;
+-
+-	if (netif_running(netdev)) {
+-		if (vxge_open(netdev)) {
+-			netdev_err(netdev,
+-				   "Can't bring device back up after reset\n");
+-			return;
+-		}
+-	}
+-
+-	netif_device_attach(netdev);
+-}
+-
+-static inline u32 vxge_get_num_vfs(u64 function_mode)
+-{
+-	u32 num_functions = 0;
+-
+-	switch (function_mode) {
+-	case VXGE_HW_FUNCTION_MODE_MULTI_FUNCTION:
+-	case VXGE_HW_FUNCTION_MODE_SRIOV_8:
+-		num_functions = 8;
+-		break;
+-	case VXGE_HW_FUNCTION_MODE_SINGLE_FUNCTION:
+-		num_functions = 1;
+-		break;
+-	case VXGE_HW_FUNCTION_MODE_SRIOV:
+-	case VXGE_HW_FUNCTION_MODE_MRIOV:
+-	case VXGE_HW_FUNCTION_MODE_MULTI_FUNCTION_17:
+-		num_functions = 17;
+-		break;
+-	case VXGE_HW_FUNCTION_MODE_SRIOV_4:
+-		num_functions = 4;
+-		break;
+-	case VXGE_HW_FUNCTION_MODE_MULTI_FUNCTION_2:
+-		num_functions = 2;
+-		break;
+-	case VXGE_HW_FUNCTION_MODE_MRIOV_8:
+-		num_functions = 8; /* TODO */
+-		break;
+-	}
+-	return num_functions;
+-}
+-
+-int vxge_fw_upgrade(struct vxgedev *vdev, char *fw_name, int override)
+-{
+-	struct __vxge_hw_device *hldev = vdev->devh;
+-	u32 maj, min, bld, cmaj, cmin, cbld;
+-	enum vxge_hw_status status;
+-	const struct firmware *fw;
+-	int ret;
+-
+-	ret = request_firmware(&fw, fw_name, &vdev->pdev->dev);
+-	if (ret) {
+-		vxge_debug_init(VXGE_ERR, "%s: Firmware file '%s' not found",
+-				VXGE_DRIVER_NAME, fw_name);
+-		goto out;
+-	}
+-
+-	/* Load the new firmware onto the adapter */
+-	status = vxge_update_fw_image(hldev, fw->data, fw->size);
+-	if (status != VXGE_HW_OK) {
+-		vxge_debug_init(VXGE_ERR,
+-				"%s: FW image download to adapter failed '%s'.",
+-				VXGE_DRIVER_NAME, fw_name);
+-		ret = -EIO;
+-		goto out;
+-	}
+-
+-	/* Read the version of the new firmware */
+-	status = vxge_hw_upgrade_read_version(hldev, &maj, &min, &bld);
+-	if (status != VXGE_HW_OK) {
+-		vxge_debug_init(VXGE_ERR,
+-				"%s: Upgrade read version failed '%s'.",
+-				VXGE_DRIVER_NAME, fw_name);
+-		ret = -EIO;
+-		goto out;
+-	}
+-
+-	cmaj = vdev->config.device_hw_info.fw_version.major;
+-	cmin = vdev->config.device_hw_info.fw_version.minor;
+-	cbld = vdev->config.device_hw_info.fw_version.build;
+-	/* It's possible the version in /lib/firmware is not the latest version.
+-	 * If so, we could get into a loop of trying to upgrade to the latest
+-	 * and flashing the older version.
+-	 */
+-	if (VXGE_FW_VER(maj, min, bld) == VXGE_FW_VER(cmaj, cmin, cbld) &&
+-	    !override) {
+-		ret = -EINVAL;
+-		goto out;
+-	}
+-
+-	printk(KERN_NOTICE "Upgrade to firmware version %d.%d.%d commencing\n",
+-	       maj, min, bld);
+-
+-	/* Flash the adapter with the new firmware */
+-	status = vxge_hw_flash_fw(hldev);
+-	if (status != VXGE_HW_OK) {
+-		vxge_debug_init(VXGE_ERR, "%s: Upgrade commit failed '%s'.",
+-				VXGE_DRIVER_NAME, fw_name);
+-		ret = -EIO;
+-		goto out;
+-	}
+-
+-	printk(KERN_NOTICE "Upgrade of firmware successful!  Adapter must be "
+-	       "hard reset before using, thus requiring a system reboot or a "
+-	       "hotplug event.\n");
+-
+-out:
+-	release_firmware(fw);
+-	return ret;
+-}
+-
+-static int vxge_probe_fw_update(struct vxgedev *vdev)
+-{
+-	u32 maj, min, bld;
+-	int ret, gpxe = 0;
+-	char *fw_name;
+-
+-	maj = vdev->config.device_hw_info.fw_version.major;
+-	min = vdev->config.device_hw_info.fw_version.minor;
+-	bld = vdev->config.device_hw_info.fw_version.build;
+-
+-	if (VXGE_FW_VER(maj, min, bld) == VXGE_CERT_FW_VER)
+-		return 0;
+-
+-	/* Ignore the build number when determining if the current firmware is
+-	 * "too new" to load the driver
+-	 */
+-	if (VXGE_FW_VER(maj, min, 0) > VXGE_CERT_FW_VER) {
+-		vxge_debug_init(VXGE_ERR, "%s: Firmware newer than last known "
+-				"version, unable to load driver\n",
+-				VXGE_DRIVER_NAME);
+-		return -EINVAL;
+-	}
+-
+-	/* Firmware 1.4.4 and older cannot be upgraded, and is too ancient to
+-	 * work with this driver.
+-	 */
+-	if (VXGE_FW_VER(maj, min, bld) <= VXGE_FW_DEAD_VER) {
+-		vxge_debug_init(VXGE_ERR, "%s: Firmware %d.%d.%d cannot be "
+-				"upgraded\n", VXGE_DRIVER_NAME, maj, min, bld);
+-		return -EINVAL;
+-	}
+-
+-	/* If file not specified, determine gPXE or not */
+-	if (VXGE_FW_VER(maj, min, bld) >= VXGE_EPROM_FW_VER) {
+-		int i;
+-		for (i = 0; i < VXGE_HW_MAX_ROM_IMAGES; i++)
+-			if (vdev->devh->eprom_versions[i]) {
+-				gpxe = 1;
+-				break;
+-			}
+-	}
+-	if (gpxe)
+-		fw_name = "vxge/X3fw-pxe.ncf";
+-	else
+-		fw_name = "vxge/X3fw.ncf";
+-
+-	ret = vxge_fw_upgrade(vdev, fw_name, 0);
+-	/* -EINVAL and -ENOENT are not fatal errors for flashing firmware on
+-	 * probe, so ignore them
+-	 */
+-	if (ret != -EINVAL && ret != -ENOENT)
+-		return -EIO;
+-	else
+-		ret = 0;
+-
+-	if (VXGE_FW_VER(VXGE_CERT_FW_VER_MAJOR, VXGE_CERT_FW_VER_MINOR, 0) >
+-	    VXGE_FW_VER(maj, min, 0)) {
+-		vxge_debug_init(VXGE_ERR, "%s: Firmware %d.%d.%d is too old to"
+-				" be used with this driver.",
+-				VXGE_DRIVER_NAME, maj, min, bld);
+-		return -EINVAL;
+-	}
+-
+-	return ret;
+-}
+-
+-static int is_sriov_initialized(struct pci_dev *pdev)
+-{
+-	int pos;
+-	u16 ctrl;
+-
+-	pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_SRIOV);
+-	if (pos) {
+-		pci_read_config_word(pdev, pos + PCI_SRIOV_CTRL, &ctrl);
+-		if (ctrl & PCI_SRIOV_CTRL_VFE)
+-			return 1;
+-	}
+-	return 0;
+-}
+-
+-static const struct vxge_hw_uld_cbs vxge_callbacks = {
+-	.link_up = vxge_callback_link_up,
+-	.link_down = vxge_callback_link_down,
+-	.crit_err = vxge_callback_crit_err,
+-};
+-
+-/**
+- * vxge_probe
+- * @pdev : structure containing the PCI related information of the device.
+- * @pre: List of PCI devices supported by the driver listed in vxge_id_table.
+- * Description:
+- * This function is called when a new PCI device gets detected and initializes
+- * it.
+- * Return value:
+- * returns 0 on success and negative on failure.
+- *
+- */
+-static int
+-vxge_probe(struct pci_dev *pdev, const struct pci_device_id *pre)
+-{
+-	struct __vxge_hw_device *hldev;
+-	enum vxge_hw_status status;
+-	int ret;
+-	u64 vpath_mask = 0;
+-	struct vxgedev *vdev;
+-	struct vxge_config *ll_config = NULL;
+-	struct vxge_hw_device_config *device_config = NULL;
+-	struct vxge_hw_device_attr attr;
+-	int i, j, no_of_vpath = 0, max_vpath_supported = 0;
+-	u8 *macaddr;
+-	struct vxge_mac_addrs *entry;
+-	static int bus = -1, device = -1;
+-	u32 host_type;
+-	u8 new_device = 0;
+-	enum vxge_hw_status is_privileged;
+-	u32 function_mode;
+-	u32 num_vfs = 0;
+-
+-	vxge_debug_entryexit(VXGE_TRACE, "%s:%d", __func__, __LINE__);
+-	attr.pdev = pdev;
+-
+-	/* In SRIOV-17 mode, functions of the same adapter
+-	 * can be deployed on different buses
+-	 */
+-	if (((bus != pdev->bus->number) || (device != PCI_SLOT(pdev->devfn))) &&
+-	    !pdev->is_virtfn)
+-		new_device = 1;
+-
+-	bus = pdev->bus->number;
+-	device = PCI_SLOT(pdev->devfn);
+-
+-	if (new_device) {
+-		if (driver_config->config_dev_cnt &&
+-		   (driver_config->config_dev_cnt !=
+-			driver_config->total_dev_cnt))
+-			vxge_debug_init(VXGE_ERR,
+-				"%s: Configured %d of %d devices",
+-				VXGE_DRIVER_NAME,
+-				driver_config->config_dev_cnt,
+-				driver_config->total_dev_cnt);
+-		driver_config->config_dev_cnt = 0;
+-		driver_config->total_dev_cnt = 0;
+-	}
+-
+-	/* Now making the CPU based no of vpath calculation
+-	 * applicable for individual functions as well.
+-	 */
+-	driver_config->g_no_cpus = 0;
+-	driver_config->vpath_per_dev = max_config_vpath;
+-
+-	driver_config->total_dev_cnt++;
+-	if (++driver_config->config_dev_cnt > max_config_dev) {
+-		ret = 0;
+-		goto _exit0;
+-	}
+-
+-	device_config = kzalloc(sizeof(struct vxge_hw_device_config),
+-		GFP_KERNEL);
+-	if (!device_config) {
+-		ret = -ENOMEM;
+-		vxge_debug_init(VXGE_ERR,
+-			"device_config : malloc failed %s %d",
+-			__FILE__, __LINE__);
+-		goto _exit0;
+-	}
+-
+-	ll_config = kzalloc(sizeof(struct vxge_config), GFP_KERNEL);
+-	if (!ll_config) {
+-		ret = -ENOMEM;
+-		vxge_debug_init(VXGE_ERR,
+-			"device_config : malloc failed %s %d",
+-			__FILE__, __LINE__);
+-		goto _exit0;
+-	}
+-	ll_config->tx_steering_type = TX_MULTIQ_STEERING;
+-	ll_config->intr_type = MSI_X;
+-	ll_config->napi_weight = NAPI_POLL_WEIGHT;
+-	ll_config->rth_steering = RTH_STEERING;
+-
+-	/* get the default configuration parameters */
+-	vxge_hw_device_config_default_get(device_config);
+-
+-	/* initialize configuration parameters */
+-	vxge_device_config_init(device_config, &ll_config->intr_type);
+-
+-	ret = pci_enable_device(pdev);
+-	if (ret) {
+-		vxge_debug_init(VXGE_ERR,
+-			"%s : can not enable PCI device", __func__);
+-		goto _exit0;
+-	}
+-
+-	if (!dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64))) {
+-		vxge_debug_ll_config(VXGE_TRACE,
+-			"%s : using 64bit DMA", __func__);
+-	} else {
+-		ret = -ENOMEM;
+-		goto _exit1;
+-	}
+-
+-	ret = pci_request_region(pdev, 0, VXGE_DRIVER_NAME);
+-	if (ret) {
+-		vxge_debug_init(VXGE_ERR,
+-			"%s : request regions failed", __func__);
+-		goto _exit1;
+-	}
+-
+-	pci_set_master(pdev);
+-
+-	attr.bar0 = pci_ioremap_bar(pdev, 0);
+-	if (!attr.bar0) {
+-		vxge_debug_init(VXGE_ERR,
+-			"%s : cannot remap io memory bar0", __func__);
+-		ret = -ENODEV;
+-		goto _exit2;
+-	}
+-	vxge_debug_ll_config(VXGE_TRACE,
+-		"pci ioremap bar0: %p:0x%llx",
+-		attr.bar0,
+-		(unsigned long long)pci_resource_start(pdev, 0));
+-
+-	status = vxge_hw_device_hw_info_get(attr.bar0,
+-			&ll_config->device_hw_info);
+-	if (status != VXGE_HW_OK) {
+-		vxge_debug_init(VXGE_ERR,
+-			"%s: Reading of hardware info failed."
+-			"Please try upgrading the firmware.", VXGE_DRIVER_NAME);
+-		ret = -EINVAL;
+-		goto _exit3;
+-	}
+-
+-	vpath_mask = ll_config->device_hw_info.vpath_mask;
+-	if (vpath_mask == 0) {
+-		vxge_debug_ll_config(VXGE_TRACE,
+-			"%s: No vpaths available in device", VXGE_DRIVER_NAME);
+-		ret = -EINVAL;
+-		goto _exit3;
+-	}
+-
+-	vxge_debug_ll_config(VXGE_TRACE,
+-		"%s:%d  Vpath mask = %llx", __func__, __LINE__,
+-		(unsigned long long)vpath_mask);
+-
+-	function_mode = ll_config->device_hw_info.function_mode;
+-	host_type = ll_config->device_hw_info.host_type;
+-	is_privileged = __vxge_hw_device_is_privilaged(host_type,
+-		ll_config->device_hw_info.func_id);
+-
+-	/* Check how many vpaths are available */
+-	for (i = 0; i < VXGE_HW_MAX_VIRTUAL_PATHS; i++) {
+-		if (!((vpath_mask) & vxge_mBIT(i)))
+-			continue;
+-		max_vpath_supported++;
+-	}
+-
+-	if (new_device)
+-		num_vfs = vxge_get_num_vfs(function_mode) - 1;
+-
+-	/* Enable SRIOV mode, if firmware has SRIOV support and if it is a PF */
+-	if (is_sriov(function_mode) && !is_sriov_initialized(pdev) &&
+-	   (ll_config->intr_type != INTA)) {
+-		ret = pci_enable_sriov(pdev, num_vfs);
+-		if (ret)
+-			vxge_debug_ll_config(VXGE_ERR,
+-				"Failed in enabling SRIOV mode: %d\n", ret);
+-			/* No need to fail out, as an error here is non-fatal */
+-	}
+-
+-	/*
+-	 * Configure vpaths and get driver configured number of vpaths
+-	 * which is less than or equal to the maximum vpaths per function.
+-	 */
+-	no_of_vpath = vxge_config_vpaths(device_config, vpath_mask, ll_config);
+-	if (!no_of_vpath) {
+-		vxge_debug_ll_config(VXGE_ERR,
+-			"%s: No more vpaths to configure", VXGE_DRIVER_NAME);
+-		ret = 0;
+-		goto _exit3;
+-	}
+-
+-	/* Setting driver callbacks */
+-	attr.uld_callbacks = &vxge_callbacks;
+-
+-	status = vxge_hw_device_initialize(&hldev, &attr, device_config);
+-	if (status != VXGE_HW_OK) {
+-		vxge_debug_init(VXGE_ERR,
+-			"Failed to initialize device (%d)", status);
+-		ret = -EINVAL;
+-		goto _exit3;
+-	}
+-
+-	if (VXGE_FW_VER(ll_config->device_hw_info.fw_version.major,
+-			ll_config->device_hw_info.fw_version.minor,
+-			ll_config->device_hw_info.fw_version.build) >=
+-	    VXGE_EPROM_FW_VER) {
+-		struct eprom_image img[VXGE_HW_MAX_ROM_IMAGES];
+-
+-		status = vxge_hw_vpath_eprom_img_ver_get(hldev, img);
+-		if (status != VXGE_HW_OK) {
+-			vxge_debug_init(VXGE_ERR, "%s: Reading of EPROM failed",
+-					VXGE_DRIVER_NAME);
+-			/* This is a non-fatal error, continue */
+-		}
+-
+-		for (i = 0; i < VXGE_HW_MAX_ROM_IMAGES; i++) {
+-			hldev->eprom_versions[i] = img[i].version;
+-			if (!img[i].is_valid)
+-				break;
+-			vxge_debug_init(VXGE_TRACE, "%s: EPROM %d, version "
+-					"%d.%d.%d.%d", VXGE_DRIVER_NAME, i,
+-					VXGE_EPROM_IMG_MAJOR(img[i].version),
+-					VXGE_EPROM_IMG_MINOR(img[i].version),
+-					VXGE_EPROM_IMG_FIX(img[i].version),
+-					VXGE_EPROM_IMG_BUILD(img[i].version));
+-		}
+-	}
+-
+-	/* if FCS stripping is not disabled in MAC fail driver load */
+-	status = vxge_hw_vpath_strip_fcs_check(hldev, vpath_mask);
+-	if (status != VXGE_HW_OK) {
+-		vxge_debug_init(VXGE_ERR, "%s: FCS stripping is enabled in MAC"
+-				" failing driver load", VXGE_DRIVER_NAME);
+-		ret = -EINVAL;
+-		goto _exit4;
+-	}
+-
+-	/* Always enable HWTS.  This will always cause the FCS to be invalid,
+-	 * due to the fact that HWTS is using the FCS as the location of the
+-	 * timestamp.  The HW FCS checking will still correctly determine if
+-	 * there is a valid checksum, and the FCS is being removed by the driver
+-	 * anyway.  So no functionality is being lost.  Since it is always
+-	 * enabled, we now simply use the ioctl call to set whether or not the
+-	 * driver should be paying attention to the HWTS.
+-	 */
+-	if (is_privileged == VXGE_HW_OK) {
+-		status = vxge_timestamp_config(hldev);
+-		if (status != VXGE_HW_OK) {
+-			vxge_debug_init(VXGE_ERR, "%s: HWTS enable failed",
+-					VXGE_DRIVER_NAME);
+-			ret = -EFAULT;
+-			goto _exit4;
+-		}
+-	}
+-
+-	vxge_hw_device_debug_set(hldev, VXGE_ERR, VXGE_COMPONENT_LL);
+-
+-	/* set private device info */
+-	pci_set_drvdata(pdev, hldev);
+-
+-	ll_config->fifo_indicate_max_pkts = VXGE_FIFO_INDICATE_MAX_PKTS;
+-	ll_config->addr_learn_en = addr_learn_en;
+-	ll_config->rth_algorithm = RTH_ALG_JENKINS;
+-	ll_config->rth_hash_type_tcpipv4 = 1;
+-	ll_config->rth_hash_type_ipv4 = 0;
+-	ll_config->rth_hash_type_tcpipv6 = 0;
+-	ll_config->rth_hash_type_ipv6 = 0;
+-	ll_config->rth_hash_type_tcpipv6ex = 0;
+-	ll_config->rth_hash_type_ipv6ex = 0;
+-	ll_config->rth_bkt_sz = RTH_BUCKET_SIZE;
+-	ll_config->tx_pause_enable = VXGE_PAUSE_CTRL_ENABLE;
+-	ll_config->rx_pause_enable = VXGE_PAUSE_CTRL_ENABLE;
+-
+-	ret = vxge_device_register(hldev, ll_config, no_of_vpath, &vdev);
+-	if (ret) {
+-		ret = -EINVAL;
+-		goto _exit4;
+-	}
+-
+-	ret = vxge_probe_fw_update(vdev);
+-	if (ret)
+-		goto _exit5;
+-
+-	vxge_hw_device_debug_set(hldev, VXGE_TRACE, VXGE_COMPONENT_LL);
+-	VXGE_COPY_DEBUG_INFO_TO_LL(vdev, vxge_hw_device_error_level_get(hldev),
+-		vxge_hw_device_trace_level_get(hldev));
+-
+-	/* set private HW device info */
+-	vdev->mtu = VXGE_HW_DEFAULT_MTU;
+-	vdev->bar0 = attr.bar0;
+-	vdev->max_vpath_supported = max_vpath_supported;
+-	vdev->no_of_vpath = no_of_vpath;
+-
+-	/* Virtual Path count */
+-	for (i = 0, j = 0; i < VXGE_HW_MAX_VIRTUAL_PATHS; i++) {
+-		if (!vxge_bVALn(vpath_mask, i, 1))
+-			continue;
+-		if (j >= vdev->no_of_vpath)
+-			break;
+-
+-		vdev->vpaths[j].is_configured = 1;
+-		vdev->vpaths[j].device_id = i;
+-		vdev->vpaths[j].ring.driver_id = j;
+-		vdev->vpaths[j].vdev = vdev;
+-		vdev->vpaths[j].max_mac_addr_cnt = max_mac_vpath;
+-		memcpy((u8 *)vdev->vpaths[j].macaddr,
+-				ll_config->device_hw_info.mac_addrs[i],
+-				ETH_ALEN);
+-
+-		/* Initialize the mac address list header */
+-		INIT_LIST_HEAD(&vdev->vpaths[j].mac_addr_list);
+-
+-		vdev->vpaths[j].mac_addr_cnt = 0;
+-		vdev->vpaths[j].mcast_addr_cnt = 0;
+-		j++;
+-	}
+-	vdev->exec_mode = VXGE_EXEC_MODE_DISABLE;
+-	vdev->max_config_port = max_config_port;
+-
+-	vdev->vlan_tag_strip = vlan_tag_strip;
+-
+-	/* map the hashing selector table to the configured vpaths */
+-	for (i = 0; i < vdev->no_of_vpath; i++)
+-		vdev->vpath_selector[i] = vpath_selector[i];
+-
+-	macaddr = (u8 *)vdev->vpaths[0].macaddr;
+-
+-	ll_config->device_hw_info.serial_number[VXGE_HW_INFO_LEN - 1] = '\0';
+-	ll_config->device_hw_info.product_desc[VXGE_HW_INFO_LEN - 1] = '\0';
+-	ll_config->device_hw_info.part_number[VXGE_HW_INFO_LEN - 1] = '\0';
+-
+-	vxge_debug_init(VXGE_TRACE, "%s: SERIAL NUMBER: %s",
+-		vdev->ndev->name, ll_config->device_hw_info.serial_number);
+-
+-	vxge_debug_init(VXGE_TRACE, "%s: PART NUMBER: %s",
+-		vdev->ndev->name, ll_config->device_hw_info.part_number);
+-
+-	vxge_debug_init(VXGE_TRACE, "%s: Neterion %s Server Adapter",
+-		vdev->ndev->name, ll_config->device_hw_info.product_desc);
+-
+-	vxge_debug_init(VXGE_TRACE, "%s: MAC ADDR: %pM",
+-		vdev->ndev->name, macaddr);
+-
+-	vxge_debug_init(VXGE_TRACE, "%s: Link Width x%d",
+-		vdev->ndev->name, vxge_hw_device_link_width_get(hldev));
+-
+-	vxge_debug_init(VXGE_TRACE,
+-		"%s: Firmware version : %s Date : %s", vdev->ndev->name,
+-		ll_config->device_hw_info.fw_version.version,
+-		ll_config->device_hw_info.fw_date.date);
+-
+-	if (new_device) {
+-		switch (ll_config->device_hw_info.function_mode) {
+-		case VXGE_HW_FUNCTION_MODE_SINGLE_FUNCTION:
+-			vxge_debug_init(VXGE_TRACE,
+-			"%s: Single Function Mode Enabled", vdev->ndev->name);
+-		break;
+-		case VXGE_HW_FUNCTION_MODE_MULTI_FUNCTION:
+-			vxge_debug_init(VXGE_TRACE,
+-			"%s: Multi Function Mode Enabled", vdev->ndev->name);
+-		break;
+-		case VXGE_HW_FUNCTION_MODE_SRIOV:
+-			vxge_debug_init(VXGE_TRACE,
+-			"%s: Single Root IOV Mode Enabled", vdev->ndev->name);
+-		break;
+-		case VXGE_HW_FUNCTION_MODE_MRIOV:
+-			vxge_debug_init(VXGE_TRACE,
+-			"%s: Multi Root IOV Mode Enabled", vdev->ndev->name);
+-		break;
+-		}
+-	}
+-
+-	vxge_print_parm(vdev, vpath_mask);
+-
+-	/* Store the fw version for ethttool option */
+-	strcpy(vdev->fw_version, ll_config->device_hw_info.fw_version.version);
+-	eth_hw_addr_set(vdev->ndev, (u8 *)vdev->vpaths[0].macaddr);
+-
+-	/* Copy the station mac address to the list */
+-	for (i = 0; i < vdev->no_of_vpath; i++) {
+-		entry =	kzalloc(sizeof(struct vxge_mac_addrs), GFP_KERNEL);
+-		if (NULL == entry) {
+-			vxge_debug_init(VXGE_ERR,
+-				"%s: mac_addr_list : memory allocation failed",
+-				vdev->ndev->name);
+-			ret = -EPERM;
+-			goto _exit6;
+-		}
+-		macaddr = (u8 *)&entry->macaddr;
+-		memcpy(macaddr, vdev->ndev->dev_addr, ETH_ALEN);
+-		list_add(&entry->item, &vdev->vpaths[i].mac_addr_list);
+-		vdev->vpaths[i].mac_addr_cnt = 1;
+-	}
+-
+-	kfree(device_config);
+-
+-	/*
+-	 * INTA is shared in multi-function mode. This is unlike the INTA
+-	 * implementation in MR mode, where each VH has its own INTA message.
+-	 * - INTA is masked (disabled) as long as at least one function sets
+-	 * its TITAN_MASK_ALL_INT.ALARM bit.
+-	 * - INTA is unmasked (enabled) when all enabled functions have cleared
+-	 * their own TITAN_MASK_ALL_INT.ALARM bit.
+-	 * The TITAN_MASK_ALL_INT ALARM & TRAFFIC bits are cleared on power up.
+-	 * Though this driver leaves the top level interrupts unmasked while
+-	 * leaving the required module interrupt bits masked on exit, there
+-	 * could be a rougue driver around that does not follow this procedure
+-	 * resulting in a failure to generate interrupts. The following code is
+-	 * present to prevent such a failure.
+-	 */
+-
+-	if (ll_config->device_hw_info.function_mode ==
+-		VXGE_HW_FUNCTION_MODE_MULTI_FUNCTION)
+-		if (vdev->config.intr_type == INTA)
+-			vxge_hw_device_unmask_all(hldev);
+-
+-	vxge_debug_entryexit(VXGE_TRACE, "%s: %s:%d  Exiting...",
+-		vdev->ndev->name, __func__, __LINE__);
+-
+-	vxge_hw_device_debug_set(hldev, VXGE_ERR, VXGE_COMPONENT_LL);
+-	VXGE_COPY_DEBUG_INFO_TO_LL(vdev, vxge_hw_device_error_level_get(hldev),
+-		vxge_hw_device_trace_level_get(hldev));
+-
+-	kfree(ll_config);
+-	return 0;
+-
+-_exit6:
+-	for (i = 0; i < vdev->no_of_vpath; i++)
+-		vxge_free_mac_add_list(&vdev->vpaths[i]);
+-_exit5:
+-	vxge_device_unregister(hldev);
+-_exit4:
+-	vxge_hw_device_terminate(hldev);
+-	pci_disable_sriov(pdev);
+-_exit3:
+-	iounmap(attr.bar0);
+-_exit2:
+-	pci_release_region(pdev, 0);
+-_exit1:
+-	pci_disable_device(pdev);
+-_exit0:
+-	kfree(ll_config);
+-	kfree(device_config);
+-	driver_config->config_dev_cnt--;
+-	driver_config->total_dev_cnt--;
+-	return ret;
+-}
+-
+-/**
+- * vxge_remove - Free the PCI device
+- * @pdev: structure containing the PCI related information of the device.
+- * Description: This function is called by the Pci subsystem to release a
+- * PCI device and free up all resource held up by the device.
+- */
+-static void vxge_remove(struct pci_dev *pdev)
+-{
+-	struct __vxge_hw_device *hldev;
+-	struct vxgedev *vdev;
+-	int i;
+-
+-	hldev = pci_get_drvdata(pdev);
+-	if (hldev == NULL)
+-		return;
+-
+-	vdev = netdev_priv(hldev->ndev);
+-
+-	vxge_debug_entryexit(vdev->level_trace,	"%s:%d", __func__, __LINE__);
+-	vxge_debug_init(vdev->level_trace, "%s : removing PCI device...",
+-			__func__);
+-
+-	for (i = 0; i < vdev->no_of_vpath; i++)
+-		vxge_free_mac_add_list(&vdev->vpaths[i]);
+-
+-	vxge_device_unregister(hldev);
+-	/* Do not call pci_disable_sriov here, as it will break child devices */
+-	vxge_hw_device_terminate(hldev);
+-	iounmap(vdev->bar0);
+-	pci_release_region(pdev, 0);
+-	pci_disable_device(pdev);
+-	driver_config->config_dev_cnt--;
+-	driver_config->total_dev_cnt--;
+-
+-	vxge_debug_init(vdev->level_trace, "%s:%d Device unregistered",
+-			__func__, __LINE__);
+-	vxge_debug_entryexit(vdev->level_trace,	"%s:%d  Exiting...", __func__,
+-			     __LINE__);
+-}
+-
+-static const struct pci_error_handlers vxge_err_handler = {
+-	.error_detected = vxge_io_error_detected,
+-	.slot_reset = vxge_io_slot_reset,
+-	.resume = vxge_io_resume,
+-};
+-
+-static SIMPLE_DEV_PM_OPS(vxge_pm_ops, vxge_pm_suspend, vxge_pm_resume);
+-
+-static struct pci_driver vxge_driver = {
+-	.name = VXGE_DRIVER_NAME,
+-	.id_table = vxge_id_table,
+-	.probe = vxge_probe,
+-	.remove = vxge_remove,
+-	.driver.pm = &vxge_pm_ops,
+-	.err_handler = &vxge_err_handler,
+-};
+-
+-static int __init
+-vxge_starter(void)
+-{
+-	int ret = 0;
+-
+-	pr_info("Copyright(c) 2002-2010 Exar Corp.\n");
+-	pr_info("Driver version: %s\n", DRV_VERSION);
+-
+-	verify_bandwidth();
+-
+-	driver_config = kzalloc(sizeof(struct vxge_drv_config), GFP_KERNEL);
+-	if (!driver_config)
+-		return -ENOMEM;
+-
+-	ret = pci_register_driver(&vxge_driver);
+-	if (ret) {
+-		kfree(driver_config);
+-		goto err;
+-	}
+-
+-	if (driver_config->config_dev_cnt &&
+-	   (driver_config->config_dev_cnt != driver_config->total_dev_cnt))
+-		vxge_debug_init(VXGE_ERR,
+-			"%s: Configured %d of %d devices",
+-			VXGE_DRIVER_NAME, driver_config->config_dev_cnt,
+-			driver_config->total_dev_cnt);
+-err:
+-	return ret;
+-}
+-
+-static void __exit
+-vxge_closer(void)
+-{
+-	pci_unregister_driver(&vxge_driver);
+-	kfree(driver_config);
+-}
+-module_init(vxge_starter);
+-module_exit(vxge_closer);
+diff --git a/drivers/net/ethernet/neterion/vxge/vxge-main.h b/drivers/net/ethernet/neterion/vxge/vxge-main.h
+deleted file mode 100644
+index da9d2c191828..000000000000
+--- a/drivers/net/ethernet/neterion/vxge/vxge-main.h
++++ /dev/null
+@@ -1,516 +0,0 @@
+-/******************************************************************************
+- * This software may be used and distributed according to the terms of
+- * the GNU General Public License (GPL), incorporated herein by reference.
+- * Drivers based on or derived from this code fall under the GPL and must
+- * retain the authorship, copyright and license notice.  This file is not
+- * a complete program and may only be used when the entire operating
+- * system is licensed under the GPL.
+- * See the file COPYING in this distribution for more information.
+- *
+- * vxge-main.h: Driver for Exar Corp's X3100 Series 10GbE PCIe I/O
+- *              Virtualized Server Adapter.
+- * Copyright(c) 2002-2010 Exar Corp.
+- ******************************************************************************/
+-#ifndef VXGE_MAIN_H
+-#define VXGE_MAIN_H
+-
+-#include "vxge-traffic.h"
+-#include "vxge-config.h"
+-#include "vxge-version.h"
+-#include <linux/list.h>
+-#include <linux/bitops.h>
+-#include <linux/if_vlan.h>
+-
+-#define VXGE_DRIVER_NAME		"vxge"
+-#define VXGE_DRIVER_VENDOR		"Neterion, Inc"
+-#define VXGE_DRIVER_FW_VERSION_MAJOR	1
+-
+-#define DRV_VERSION	VXGE_VERSION_MAJOR"."VXGE_VERSION_MINOR"."\
+-	VXGE_VERSION_FIX"."VXGE_VERSION_BUILD"-"\
+-	VXGE_VERSION_FOR
+-
+-#define PCI_DEVICE_ID_TITAN_WIN		0x5733
+-#define PCI_DEVICE_ID_TITAN_UNI		0x5833
+-#define VXGE_HW_TITAN1_PCI_REVISION	1
+-#define VXGE_HW_TITAN1A_PCI_REVISION	2
+-
+-#define	VXGE_USE_DEFAULT		0xffffffff
+-#define VXGE_HW_VPATH_MSIX_ACTIVE	4
+-#define VXGE_ALARM_MSIX_ID		2
+-#define VXGE_HW_RXSYNC_FREQ_CNT		4
+-#define VXGE_LL_WATCH_DOG_TIMEOUT	(15 * HZ)
+-#define VXGE_LL_RX_COPY_THRESHOLD	256
+-#define VXGE_DEF_FIFO_LENGTH		84
+-
+-#define NO_STEERING		0
+-#define PORT_STEERING		0x1
+-#define RTH_STEERING		0x2
+-#define RX_TOS_STEERING		0x3
+-#define RX_VLAN_STEERING	0x4
+-#define RTH_BUCKET_SIZE		4
+-
+-#define	TX_PRIORITY_STEERING	1
+-#define	TX_VLAN_STEERING	2
+-#define	TX_PORT_STEERING	3
+-#define	TX_MULTIQ_STEERING	4
+-
+-#define VXGE_HW_MAC_ADDR_LEARN_DEFAULT VXGE_HW_RTS_MAC_DISABLE
+-
+-#define VXGE_TTI_BTIMER_VAL 250000
+-
+-#define VXGE_TTI_LTIMER_VAL	1000
+-#define VXGE_T1A_TTI_LTIMER_VAL	80
+-#define VXGE_TTI_RTIMER_VAL	0
+-#define VXGE_TTI_RTIMER_ADAPT_VAL	10
+-#define VXGE_T1A_TTI_RTIMER_VAL	400
+-#define VXGE_RTI_BTIMER_VAL	250
+-#define VXGE_RTI_LTIMER_VAL	100
+-#define VXGE_RTI_RTIMER_VAL	0
+-#define VXGE_RTI_RTIMER_ADAPT_VAL	15
+-#define VXGE_FIFO_INDICATE_MAX_PKTS	VXGE_DEF_FIFO_LENGTH
+-#define VXGE_ISR_POLLING_CNT 	8
+-#define VXGE_MAX_CONFIG_DEV	0xFF
+-#define VXGE_EXEC_MODE_DISABLE	0
+-#define VXGE_EXEC_MODE_ENABLE	1
+-#define VXGE_MAX_CONFIG_PORT	1
+-#define VXGE_ALL_VID_DISABLE	0
+-#define VXGE_ALL_VID_ENABLE	1
+-#define VXGE_PAUSE_CTRL_DISABLE	0
+-#define VXGE_PAUSE_CTRL_ENABLE	1
+-
+-#define TTI_TX_URANGE_A	5
+-#define TTI_TX_URANGE_B	15
+-#define TTI_TX_URANGE_C	40
+-#define TTI_TX_UFC_A	5
+-#define TTI_TX_UFC_B	40
+-#define TTI_TX_UFC_C	60
+-#define TTI_TX_UFC_D	100
+-#define TTI_T1A_TX_UFC_A	30
+-#define TTI_T1A_TX_UFC_B	80
+-/* Slope - (max_mtu - min_mtu)/(max_mtu_ufc - min_mtu_ufc) */
+-/* Slope - 93 */
+-/* 60 - 9k Mtu, 140 - 1.5k mtu */
+-#define TTI_T1A_TX_UFC_C(mtu)	(60 + ((VXGE_HW_MAX_MTU - mtu) / 93))
+-
+-/* Slope - 37 */
+-/* 100 - 9k Mtu, 300 - 1.5k mtu */
+-#define TTI_T1A_TX_UFC_D(mtu)	(100 + ((VXGE_HW_MAX_MTU - mtu) / 37))
+-
+-
+-#define RTI_RX_URANGE_A		5
+-#define RTI_RX_URANGE_B		15
+-#define RTI_RX_URANGE_C		40
+-#define RTI_T1A_RX_URANGE_A	1
+-#define RTI_T1A_RX_URANGE_B	20
+-#define RTI_T1A_RX_URANGE_C	50
+-#define RTI_RX_UFC_A		1
+-#define RTI_RX_UFC_B		5
+-#define RTI_RX_UFC_C		10
+-#define RTI_RX_UFC_D		15
+-#define RTI_T1A_RX_UFC_B	20
+-#define RTI_T1A_RX_UFC_C	50
+-#define RTI_T1A_RX_UFC_D	60
+-
+-/*
+- * The interrupt rate is maintained at 3k per second with the moderation
+- * parameters for most traffic but not all. This is the maximum interrupt
+- * count allowed per function with INTA or per vector in the case of
+- * MSI-X in a 10 millisecond time period. Enabled only for Titan 1A.
+- */
+-#define VXGE_T1A_MAX_INTERRUPT_COUNT	100
+-#define VXGE_T1A_MAX_TX_INTERRUPT_COUNT	200
+-
+-/* Milli secs timer period */
+-#define VXGE_TIMER_DELAY		10000
+-
+-#define VXGE_LL_MAX_FRAME_SIZE(dev) ((dev)->mtu + VXGE_HW_MAC_HEADER_MAX_SIZE)
+-
+-#define is_sriov(function_mode) \
+-	((function_mode == VXGE_HW_FUNCTION_MODE_SRIOV) || \
+-	(function_mode == VXGE_HW_FUNCTION_MODE_SRIOV_8) || \
+-	(function_mode == VXGE_HW_FUNCTION_MODE_SRIOV_4))
+-
+-enum vxge_reset_event {
+-	/* reset events */
+-	VXGE_LL_VPATH_RESET	= 0,
+-	VXGE_LL_DEVICE_RESET	= 1,
+-	VXGE_LL_FULL_RESET	= 2,
+-	VXGE_LL_START_RESET	= 3,
+-	VXGE_LL_COMPL_RESET	= 4
+-};
+-/* These flags represent the devices temporary state */
+-enum vxge_device_state_t {
+-__VXGE_STATE_RESET_CARD = 0,
+-__VXGE_STATE_CARD_UP
+-};
+-
+-enum vxge_mac_addr_state {
+-	/* mac address states */
+-	VXGE_LL_MAC_ADDR_IN_LIST        = 0,
+-	VXGE_LL_MAC_ADDR_IN_DA_TABLE    = 1
+-};
+-
+-struct vxge_drv_config {
+-	int config_dev_cnt;
+-	int total_dev_cnt;
+-	int g_no_cpus;
+-	unsigned int vpath_per_dev;
+-};
+-
+-struct macInfo {
+-	unsigned char macaddr[ETH_ALEN];
+-	unsigned char macmask[ETH_ALEN];
+-	unsigned int vpath_no;
+-	enum vxge_mac_addr_state state;
+-};
+-
+-struct vxge_config {
+-	int		tx_pause_enable;
+-	int		rx_pause_enable;
+-	int		napi_weight;
+-	int		intr_type;
+-#define INTA	0
+-#define MSI	1
+-#define MSI_X	2
+-
+-	int		addr_learn_en;
+-
+-	u32		rth_steering:2,
+-			rth_algorithm:2,
+-			rth_hash_type_tcpipv4:1,
+-			rth_hash_type_ipv4:1,
+-			rth_hash_type_tcpipv6:1,
+-			rth_hash_type_ipv6:1,
+-			rth_hash_type_tcpipv6ex:1,
+-			rth_hash_type_ipv6ex:1,
+-			rth_bkt_sz:8;
+-	int		rth_jhash_golden_ratio;
+-	int		tx_steering_type;
+-	int 	fifo_indicate_max_pkts;
+-	struct vxge_hw_device_hw_info device_hw_info;
+-};
+-
+-struct vxge_msix_entry {
+-	/* Mimicing the msix_entry struct of Kernel. */
+-	u16 vector;
+-	u16 entry;
+-	u16 in_use;
+-	void *arg;
+-};
+-
+-/* Software Statistics */
+-
+-struct vxge_sw_stats {
+-
+-	/* Virtual Path */
+-	unsigned long vpaths_open;
+-	unsigned long vpath_open_fail;
+-
+-	/* Misc. */
+-	unsigned long link_up;
+-	unsigned long link_down;
+-};
+-
+-struct vxge_mac_addrs {
+-	struct list_head item;
+-	u64 macaddr;
+-	u64 macmask;
+-	enum vxge_mac_addr_state state;
+-};
+-
+-struct vxgedev;
+-
+-struct vxge_fifo_stats {
+-	struct u64_stats_sync	syncp;
+-	u64 tx_frms;
+-	u64 tx_bytes;
+-
+-	unsigned long tx_errors;
+-	unsigned long txd_not_free;
+-	unsigned long txd_out_of_desc;
+-	unsigned long pci_map_fail;
+-};
+-
+-struct vxge_fifo {
+-	struct net_device *ndev;
+-	struct pci_dev *pdev;
+-	struct __vxge_hw_fifo *handle;
+-	struct netdev_queue *txq;
+-
+-	int tx_steering_type;
+-	int indicate_max_pkts;
+-
+-	/* Adaptive interrupt moderation parameters used in T1A */
+-	unsigned long interrupt_count;
+-	unsigned long jiffies;
+-
+-	u32 tx_vector_no;
+-	/* Tx stats */
+-	struct vxge_fifo_stats stats;
+-} ____cacheline_aligned;
+-
+-struct vxge_ring_stats {
+-	struct u64_stats_sync syncp;
+-	u64 rx_frms;
+-	u64 rx_mcast;
+-	u64 rx_bytes;
+-
+-	unsigned long rx_errors;
+-	unsigned long rx_dropped;
+-	unsigned long prev_rx_frms;
+-	unsigned long pci_map_fail;
+-	unsigned long skb_alloc_fail;
+-};
+-
+-struct vxge_ring {
+-	struct net_device	*ndev;
+-	struct pci_dev		*pdev;
+-	struct __vxge_hw_ring	*handle;
+-	/* The vpath id maintained in the driver -
+-	 * 0 to 'maximum_vpaths_in_function - 1'
+-	 */
+-	int driver_id;
+-
+-	/* Adaptive interrupt moderation parameters used in T1A */
+-	unsigned long interrupt_count;
+-	unsigned long jiffies;
+-
+-	/* copy of the flag indicating whether rx_hwts is to be used */
+-	u32 rx_hwts:1;
+-
+-	int pkts_processed;
+-	int budget;
+-
+-	struct napi_struct napi;
+-	struct napi_struct *napi_p;
+-
+-#define VXGE_MAX_MAC_ADDR_COUNT		30
+-
+-	int vlan_tag_strip;
+-	u32 rx_vector_no;
+-	enum vxge_hw_status last_status;
+-
+-	/* Rx stats */
+-	struct vxge_ring_stats stats;
+-} ____cacheline_aligned;
+-
+-struct vxge_vpath {
+-	struct vxge_fifo fifo;
+-	struct vxge_ring ring;
+-
+-	struct __vxge_hw_vpath_handle *handle;
+-
+-	/* Actual vpath id for this vpath in the device - 0 to 16 */
+-	int device_id;
+-	int max_mac_addr_cnt;
+-	int is_configured;
+-	int is_open;
+-	struct vxgedev *vdev;
+-	u8 macaddr[ETH_ALEN];
+-	u8 macmask[ETH_ALEN];
+-
+-#define VXGE_MAX_LEARN_MAC_ADDR_CNT	2048
+-	/* mac addresses currently programmed into NIC */
+-	u16 mac_addr_cnt;
+-	u16 mcast_addr_cnt;
+-	struct list_head mac_addr_list;
+-
+-	u32 level_err;
+-	u32 level_trace;
+-};
+-#define VXGE_COPY_DEBUG_INFO_TO_LL(vdev, err, trace) {	\
+-	for (i = 0; i < vdev->no_of_vpath; i++) {		\
+-		vdev->vpaths[i].level_err = err;		\
+-		vdev->vpaths[i].level_trace = trace;		\
+-	}							\
+-	vdev->level_err = err;					\
+-	vdev->level_trace = trace;				\
+-}
+-
+-struct vxgedev {
+-	struct net_device	*ndev;
+-	struct pci_dev		*pdev;
+-	struct __vxge_hw_device *devh;
+-	unsigned long active_vlans[BITS_TO_LONGS(VLAN_N_VID)];
+-	int vlan_tag_strip;
+-	struct vxge_config	config;
+-	unsigned long	state;
+-
+-	/* Indicates which vpath to reset */
+-	unsigned long  vp_reset;
+-
+-	/* Timer used for polling vpath resets */
+-	struct timer_list vp_reset_timer;
+-
+-	/* Timer used for polling vpath lockup */
+-	struct timer_list vp_lockup_timer;
+-
+-	/*
+-	 * Flags to track whether device is in All Multicast
+-	 * or in promiscuous mode.
+-	 */
+-	u16		all_multi_flg;
+-
+-	/* A flag indicating whether rx_hwts is to be used or not. */
+-	u32	rx_hwts:1,
+-		titan1:1;
+-
+-	struct vxge_msix_entry *vxge_entries;
+-	struct msix_entry *entries;
+-	/*
+-	 * 4 for each vpath * 17;
+-	 * total is 68
+-	 */
+-#define	VXGE_MAX_REQUESTED_MSIX	68
+-#define VXGE_INTR_STRLEN 80
+-	char desc[VXGE_MAX_REQUESTED_MSIX][VXGE_INTR_STRLEN];
+-
+-	enum vxge_hw_event cric_err_event;
+-
+-	int max_vpath_supported;
+-	int no_of_vpath;
+-
+-	struct napi_struct napi;
+-	/* A debug option, when enabled and if error condition occurs,
+-	 * the driver will do following steps:
+-	 * - mask all interrupts
+-	 * - Not clear the source of the alarm
+-	 * - gracefully stop all I/O
+-	 * A diagnostic dump of register and stats at this point
+-	 * reveals very useful information.
+-	 */
+-	int exec_mode;
+-	int max_config_port;
+-	struct vxge_vpath	*vpaths;
+-
+-	struct __vxge_hw_vpath_handle *vp_handles[VXGE_HW_MAX_VIRTUAL_PATHS];
+-	void __iomem *bar0;
+-	struct vxge_sw_stats	stats;
+-	int		mtu;
+-	/* Below variables are used for vpath selection to transmit a packet */
+-	u8 		vpath_selector[VXGE_HW_MAX_VIRTUAL_PATHS];
+-	u64		vpaths_deployed;
+-
+-	u32 		intr_cnt;
+-	u32 		level_err;
+-	u32 		level_trace;
+-	char		fw_version[VXGE_HW_FW_STRLEN];
+-	struct work_struct reset_task;
+-};
+-
+-struct vxge_rx_priv {
+-	struct sk_buff		*skb;
+-	unsigned char		*skb_data;
+-	dma_addr_t		data_dma;
+-	dma_addr_t		data_size;
+-};
+-
+-struct vxge_tx_priv {
+-	struct sk_buff		*skb;
+-	dma_addr_t		dma_buffers[MAX_SKB_FRAGS+1];
+-};
+-
+-#define VXGE_MODULE_PARAM_INT(p, val) \
+-	static int p = val; \
+-	module_param(p, int, 0)
+-
+-static inline
+-void vxge_os_timer(struct timer_list *timer, void (*func)(struct timer_list *),
+-		   unsigned long timeout)
+-{
+-	timer_setup(timer, func, 0);
+-	mod_timer(timer, jiffies + timeout);
+-}
+-
+-void vxge_initialize_ethtool_ops(struct net_device *ndev);
+-int vxge_fw_upgrade(struct vxgedev *vdev, char *fw_name, int override);
+-
+-/* #define VXGE_DEBUG_INIT: debug for initialization functions
+- * #define VXGE_DEBUG_TX	 : debug transmit related functions
+- * #define VXGE_DEBUG_RX  : debug recevice related functions
+- * #define VXGE_DEBUG_MEM : debug memory module
+- * #define VXGE_DEBUG_LOCK: debug locks
+- * #define VXGE_DEBUG_SEM : debug semaphore
+- * #define VXGE_DEBUG_ENTRYEXIT: debug functions by adding entry exit statements
+-*/
+-#define VXGE_DEBUG_INIT		0x00000001
+-#define VXGE_DEBUG_TX		0x00000002
+-#define VXGE_DEBUG_RX		0x00000004
+-#define VXGE_DEBUG_MEM		0x00000008
+-#define VXGE_DEBUG_LOCK		0x00000010
+-#define VXGE_DEBUG_SEM		0x00000020
+-#define VXGE_DEBUG_ENTRYEXIT	0x00000040
+-#define VXGE_DEBUG_INTR		0x00000080
+-#define VXGE_DEBUG_LL_CONFIG	0x00000100
+-
+-/* Debug tracing for VXGE driver */
+-#ifndef VXGE_DEBUG_MASK
+-#define VXGE_DEBUG_MASK	0x0
+-#endif
+-
+-#if (VXGE_DEBUG_LL_CONFIG & VXGE_DEBUG_MASK)
+-#define vxge_debug_ll_config(level, fmt, ...) \
+-	vxge_debug_ll(level, VXGE_DEBUG_LL_CONFIG, fmt, ##__VA_ARGS__)
+-#else
+-#define vxge_debug_ll_config(level, fmt, ...) no_printk(fmt, ##__VA_ARGS__)
+-#endif
+-
+-#if (VXGE_DEBUG_INIT & VXGE_DEBUG_MASK)
+-#define vxge_debug_init(level, fmt, ...) \
+-	vxge_debug_ll(level, VXGE_DEBUG_INIT, fmt, ##__VA_ARGS__)
+-#else
+-#define vxge_debug_init(level, fmt, ...) no_printk(fmt, ##__VA_ARGS__)
+-#endif
+-
+-#if (VXGE_DEBUG_TX & VXGE_DEBUG_MASK)
+-#define vxge_debug_tx(level, fmt, ...) \
+-	vxge_debug_ll(level, VXGE_DEBUG_TX, fmt, ##__VA_ARGS__)
+-#else
+-#define vxge_debug_tx(level, fmt, ...) no_printk(fmt, ##__VA_ARGS__)
+-#endif
+-
+-#if (VXGE_DEBUG_RX & VXGE_DEBUG_MASK)
+-#define vxge_debug_rx(level, fmt, ...) \
+-	vxge_debug_ll(level, VXGE_DEBUG_RX, fmt, ##__VA_ARGS__)
+-#else
+-#define vxge_debug_rx(level, fmt, ...) no_printk(fmt, ##__VA_ARGS__)
+-#endif
+-
+-#if (VXGE_DEBUG_MEM & VXGE_DEBUG_MASK)
+-#define vxge_debug_mem(level, fmt, ...) \
+-	vxge_debug_ll(level, VXGE_DEBUG_MEM, fmt, ##__VA_ARGS__)
+-#else
+-#define vxge_debug_mem(level, fmt, ...) no_printk(fmt, ##__VA_ARGS__)
+-#endif
+-
+-#if (VXGE_DEBUG_ENTRYEXIT & VXGE_DEBUG_MASK)
+-#define vxge_debug_entryexit(level, fmt, ...) \
+-	vxge_debug_ll(level, VXGE_DEBUG_ENTRYEXIT, fmt, ##__VA_ARGS__)
+-#else
+-#define vxge_debug_entryexit(level, fmt, ...) no_printk(fmt, ##__VA_ARGS__)
+-#endif
+-
+-#if (VXGE_DEBUG_INTR & VXGE_DEBUG_MASK)
+-#define vxge_debug_intr(level, fmt, ...) \
+-	vxge_debug_ll(level, VXGE_DEBUG_INTR, fmt, ##__VA_ARGS__)
+-#else
+-#define vxge_debug_intr(level, fmt, ...) no_printk(fmt, ##__VA_ARGS__)
+-#endif
+-
+-#define VXGE_DEVICE_DEBUG_LEVEL_SET(level, mask, vdev) {\
+-	vxge_hw_device_debug_set((struct __vxge_hw_device  *)vdev->devh, \
+-		level, mask);\
+-	VXGE_COPY_DEBUG_INFO_TO_LL(vdev, \
+-		vxge_hw_device_error_level_get((struct __vxge_hw_device  *) \
+-			vdev->devh), \
+-		vxge_hw_device_trace_level_get((struct __vxge_hw_device  *) \
+-			vdev->devh));\
+-}
+-
+-#ifdef NETIF_F_GSO
+-#define vxge_tcp_mss(skb) (skb_shinfo(skb)->gso_size)
+-#define vxge_udp_mss(skb) (skb_shinfo(skb)->gso_size)
+-#define vxge_offload_type(skb) (skb_shinfo(skb)->gso_type)
+-#endif
+-
+-#endif
+diff --git a/drivers/net/ethernet/neterion/vxge/vxge-reg.h b/drivers/net/ethernet/neterion/vxge/vxge-reg.h
+deleted file mode 100644
+index 3e658b175947..000000000000
+--- a/drivers/net/ethernet/neterion/vxge/vxge-reg.h
++++ /dev/null
+@@ -1,4636 +0,0 @@
+-/******************************************************************************
+- * This software may be used and distributed according to the terms of
+- * the GNU General Public License (GPL), incorporated herein by reference.
+- * Drivers based on or derived from this code fall under the GPL and must
+- * retain the authorship, copyright and license notice.  This file is not
+- * a complete program and may only be used when the entire operating
+- * system is licensed under the GPL.
+- * See the file COPYING in this distribution for more information.
+- *
+- * vxge-reg.h: Driver for Exar Corp's X3100 Series 10GbE PCIe I/O Virtualized
+- *             Server Adapter.
+- * Copyright(c) 2002-2010 Exar Corp.
+- ******************************************************************************/
+-#ifndef VXGE_REG_H
+-#define VXGE_REG_H
+-
+-/*
+- * vxge_mBIT(loc) - set bit at offset
+- */
+-#define vxge_mBIT(loc)		(0x8000000000000000ULL >> (loc))
+-
+-/*
+- * vxge_vBIT(val, loc, sz) - set bits at offset
+- */
+-#define vxge_vBIT(val, loc, sz)	(((u64)(val)) << (64-(loc)-(sz)))
+-#define vxge_vBIT32(val, loc, sz)	(((u32)(val)) << (32-(loc)-(sz)))
+-
+-/*
+- * vxge_bVALn(bits, loc, n) - Get the value of n bits at location
+- */
+-#define vxge_bVALn(bits, loc, n) \
+-	((((u64)bits) >> (64-(loc+n))) & ((0x1ULL << n) - 1))
+-
+-#define	VXGE_HW_TITAN_ASIC_ID_GET_INITIAL_DEVICE_ID(bits) \
+-							vxge_bVALn(bits, 0, 16)
+-#define	VXGE_HW_TITAN_ASIC_ID_GET_INITIAL_MAJOR_REVISION(bits) \
+-							vxge_bVALn(bits, 48, 8)
+-#define	VXGE_HW_TITAN_ASIC_ID_GET_INITIAL_MINOR_REVISION(bits) \
+-							vxge_bVALn(bits, 56, 8)
+-
+-#define	VXGE_HW_VPATH_TO_FUNC_MAP_CFG1_GET_VPATH_TO_FUNC_MAP_CFG1(bits) \
+-							vxge_bVALn(bits, 3, 5)
+-#define	VXGE_HW_HOST_TYPE_ASSIGNMENTS_GET_HOST_TYPE_ASSIGNMENTS(bits) \
+-							vxge_bVALn(bits, 5, 3)
+-#define VXGE_HW_PF_SW_RESET_COMMAND				0xA5
+-
+-#define VXGE_HW_TITAN_PCICFGMGMT_REG_SPACES		17
+-#define VXGE_HW_TITAN_SRPCIM_REG_SPACES			17
+-#define VXGE_HW_TITAN_VPMGMT_REG_SPACES			17
+-#define VXGE_HW_TITAN_VPATH_REG_SPACES			17
+-
+-#define VXGE_HW_FW_API_GET_EPROM_REV			31
+-
+-#define VXGE_EPROM_IMG_MAJOR(val)		(u32) vxge_bVALn(val, 48, 4)
+-#define VXGE_EPROM_IMG_MINOR(val)		(u32) vxge_bVALn(val, 52, 4)
+-#define VXGE_EPROM_IMG_FIX(val)			(u32) vxge_bVALn(val, 56, 4)
+-#define VXGE_EPROM_IMG_BUILD(val)		(u32) vxge_bVALn(val, 60, 4)
+-
+-#define VXGE_HW_GET_EPROM_IMAGE_INDEX(val)		vxge_bVALn(val, 16, 8)
+-#define VXGE_HW_GET_EPROM_IMAGE_VALID(val)		vxge_bVALn(val, 31, 1)
+-#define VXGE_HW_GET_EPROM_IMAGE_TYPE(val)		vxge_bVALn(val, 40, 8)
+-#define VXGE_HW_GET_EPROM_IMAGE_REV(val)		vxge_bVALn(val, 48, 16)
+-#define VXGE_HW_RTS_ACCESS_STEER_ROM_IMAGE_INDEX(val)	vxge_vBIT(val, 16, 8)
+-
+-#define VXGE_HW_FW_API_GET_FUNC_MODE			29
+-#define VXGE_HW_GET_FUNC_MODE_VAL(val)			(val & 0xFF)
+-
+-#define VXGE_HW_FW_UPGRADE_MEMO				13
+-#define VXGE_HW_FW_UPGRADE_ACTION			16
+-#define VXGE_HW_FW_UPGRADE_OFFSET_START			2
+-#define VXGE_HW_FW_UPGRADE_OFFSET_SEND			3
+-#define VXGE_HW_FW_UPGRADE_OFFSET_COMMIT		4
+-#define VXGE_HW_FW_UPGRADE_OFFSET_READ			5
+-
+-#define VXGE_HW_FW_UPGRADE_BLK_SIZE			16
+-#define VXGE_HW_UPGRADE_GET_RET_ERR_CODE(val)		(val & 0xff)
+-#define VXGE_HW_UPGRADE_GET_SEC_ERR_CODE(val)		((val >> 8) & 0xff)
+-
+-#define VXGE_HW_ASIC_MODE_RESERVED				0
+-#define VXGE_HW_ASIC_MODE_NO_IOV				1
+-#define VXGE_HW_ASIC_MODE_SR_IOV				2
+-#define VXGE_HW_ASIC_MODE_MR_IOV				3
+-
+-#define	VXGE_HW_TXMAC_GEN_CFG1_TMAC_PERMA_STOP_EN		vxge_mBIT(3)
+-#define	VXGE_HW_TXMAC_GEN_CFG1_BLOCK_BCAST_TO_WIRE		vxge_mBIT(19)
+-#define	VXGE_HW_TXMAC_GEN_CFG1_BLOCK_BCAST_TO_SWITCH	vxge_mBIT(23)
+-#define	VXGE_HW_TXMAC_GEN_CFG1_HOST_APPEND_FCS			vxge_mBIT(31)
+-
+-#define	VXGE_HW_VPATH_IS_FIRST_GET_VPATH_IS_FIRST(bits)	vxge_bVALn(bits, 3, 1)
+-
+-#define	VXGE_HW_TIM_VPATH_ASSIGNMENT_GET_BMAP_ROOT(bits) \
+-						vxge_bVALn(bits, 0, 32)
+-
+-#define	VXGE_HW_RXMAC_CFG0_PORT_VPMGMT_CLONE_GET_MAX_PYLD_LEN(bits) \
+-							vxge_bVALn(bits, 50, 14)
+-
+-#define	VXGE_HW_XMAC_VSPORT_CHOICES_VP_GET_VSPORT_VECTOR(bits) \
+-							vxge_bVALn(bits, 0, 17)
+-
+-#define	VXGE_HW_XMAC_VPATH_TO_VSPORT_VPMGMT_CLONE_GET_VSPORT_NUMBER(bits) \
+-							vxge_bVALn(bits, 3, 5)
+-
+-#define	VXGE_HW_KDFC_DRBL_TRIPLET_TOTAL_GET_KDFC_MAX_SIZE(bits) \
+-							vxge_bVALn(bits, 17, 15)
+-
+-#define VXGE_HW_KDFC_TRPL_FIFO_0_CTRL_MODE_LEGACY_MODE			0
+-#define VXGE_HW_KDFC_TRPL_FIFO_0_CTRL_MODE_NON_OFFLOAD_ONLY		1
+-#define VXGE_HW_KDFC_TRPL_FIFO_0_CTRL_MODE_MULTI_OP_MODE		2
+-
+-#define VXGE_HW_KDFC_TRPL_FIFO_1_CTRL_MODE_MESSAGES_ONLY		0
+-#define VXGE_HW_KDFC_TRPL_FIFO_1_CTRL_MODE_MULTI_OP_MODE		1
+-
+-#define	VXGE_HW_TOC_GET_KDFC_INITIAL_OFFSET(val) \
+-				(val&~VXGE_HW_TOC_KDFC_INITIAL_BIR(7))
+-#define	VXGE_HW_TOC_GET_KDFC_INITIAL_BIR(val) \
+-				vxge_bVALn(val, 61, 3)
+-#define	VXGE_HW_TOC_GET_USDC_INITIAL_OFFSET(val) \
+-				(val&~VXGE_HW_TOC_USDC_INITIAL_BIR(7))
+-#define	VXGE_HW_TOC_GET_USDC_INITIAL_BIR(val) \
+-				vxge_bVALn(val, 61, 3)
+-
+-#define	VXGE_HW_TOC_KDFC_VPATH_STRIDE_GET_TOC_KDFC_VPATH_STRIDE(bits)	bits
+-#define	VXGE_HW_TOC_KDFC_FIFO_STRIDE_GET_TOC_KDFC_FIFO_STRIDE(bits)	bits
+-
+-#define	VXGE_HW_KDFC_TRPL_FIFO_OFFSET_GET_KDFC_RCTR0(bits) \
+-						vxge_bVALn(bits, 1, 15)
+-#define	VXGE_HW_KDFC_TRPL_FIFO_OFFSET_GET_KDFC_RCTR1(bits) \
+-						vxge_bVALn(bits, 17, 15)
+-#define	VXGE_HW_KDFC_TRPL_FIFO_OFFSET_GET_KDFC_RCTR2(bits) \
+-						vxge_bVALn(bits, 33, 15)
+-
+-#define VXGE_HW_KDFC_TRPL_FIFO_OFFSET_KDFC_VAPTH_NUM(val) vxge_vBIT(val, 42, 5)
+-#define VXGE_HW_KDFC_TRPL_FIFO_OFFSET_KDFC_FIFO_NUM(val) vxge_vBIT(val, 47, 2)
+-#define VXGE_HW_KDFC_TRPL_FIFO_OFFSET_KDFC_FIFO_OFFSET(val) \
+-					vxge_vBIT(val, 49, 15)
+-
+-#define VXGE_HW_PRC_CFG4_RING_MODE_ONE_BUFFER			0
+-#define VXGE_HW_PRC_CFG4_RING_MODE_THREE_BUFFER			1
+-#define VXGE_HW_PRC_CFG4_RING_MODE_FIVE_BUFFER			2
+-
+-#define VXGE_HW_PRC_CFG7_SCATTER_MODE_A				0
+-#define VXGE_HW_PRC_CFG7_SCATTER_MODE_B				2
+-#define VXGE_HW_PRC_CFG7_SCATTER_MODE_C				1
+-
+-#define VXGE_HW_RTS_MGR_STEER_CTRL_WE_READ                             0
+-#define VXGE_HW_RTS_MGR_STEER_CTRL_WE_WRITE                            1
+-
+-#define VXGE_HW_RTS_MGR_STEER_CTRL_DATA_STRUCT_SEL_DA                  0
+-#define VXGE_HW_RTS_MGR_STEER_CTRL_DATA_STRUCT_SEL_VID                 1
+-#define VXGE_HW_RTS_MGR_STEER_CTRL_DATA_STRUCT_SEL_ETYPE               2
+-#define VXGE_HW_RTS_MGR_STEER_CTRL_DATA_STRUCT_SEL_PN                  3
+-#define VXGE_HW_RTS_MGR_STEER_CTRL_DATA_STRUCT_SEL_RANGE_PN            4
+-#define VXGE_HW_RTS_MGR_STEER_CTRL_DATA_STRUCT_SEL_RTH_GEN_CFG         5
+-#define VXGE_HW_RTS_MGR_STEER_CTRL_DATA_STRUCT_SEL_RTH_SOLO_IT         6
+-#define VXGE_HW_RTS_MGR_STEER_CTRL_DATA_STRUCT_SEL_RTH_JHASH_CFG       7
+-#define VXGE_HW_RTS_MGR_STEER_CTRL_DATA_STRUCT_SEL_RTH_MASK            8
+-#define VXGE_HW_RTS_MGR_STEER_CTRL_DATA_STRUCT_SEL_RTH_KEY             9
+-#define VXGE_HW_RTS_MGR_STEER_CTRL_DATA_STRUCT_SEL_QOS                 10
+-#define VXGE_HW_RTS_MGR_STEER_CTRL_DATA_STRUCT_SEL_DS                  11
+-#define VXGE_HW_RTS_MGR_STEER_CTRL_DATA_STRUCT_SEL_RTH_MULTI_IT        12
+-#define VXGE_HW_RTS_MGR_STEER_CTRL_DATA_STRUCT_SEL_FW_VERSION          13
+-
+-#define VXGE_HW_RTS_MGR_STEER_DATA0_GET_DA_MAC_ADDR(bits) \
+-							vxge_bVALn(bits, 0, 48)
+-#define VXGE_HW_RTS_MGR_STEER_DATA0_DA_MAC_ADDR(val) vxge_vBIT(val, 0, 48)
+-
+-#define VXGE_HW_RTS_MGR_STEER_DATA1_GET_DA_MAC_ADDR_MASK(bits) \
+-							vxge_bVALn(bits, 0, 48)
+-#define VXGE_HW_RTS_MGR_STEER_DATA1_DA_MAC_ADDR_MASK(val) vxge_vBIT(val, 0, 48)
+-#define VXGE_HW_RTS_MGR_STEER_DATA1_DA_MAC_ADDR_ADD_PRIVILEGED_MODE \
+-								vxge_mBIT(54)
+-#define VXGE_HW_RTS_MGR_STEER_DATA1_GET_DA_MAC_ADDR_ADD_VPATH(bits) \
+-							vxge_bVALn(bits, 55, 5)
+-#define VXGE_HW_RTS_MGR_STEER_DATA1_DA_MAC_ADDR_ADD_VPATH(val) \
+-							vxge_vBIT(val, 55, 5)
+-#define VXGE_HW_RTS_MGR_STEER_DATA1_GET_DA_MAC_ADDR_ADD_MODE(bits) \
+-							vxge_bVALn(bits, 62, 2)
+-#define VXGE_HW_RTS_MGR_STEER_DATA1_DA_MAC_ADDR_MODE(val) vxge_vBIT(val, 62, 2)
+-
+-#define	VXGE_HW_RTS_ACCESS_STEER_CTRL_ACTION_ADD_ENTRY			0
+-#define	VXGE_HW_RTS_ACCESS_STEER_CTRL_ACTION_DELETE_ENTRY		1
+-#define	VXGE_HW_RTS_ACCESS_STEER_CTRL_ACTION_LIST_FIRST_ENTRY		2
+-#define	VXGE_HW_RTS_ACCESS_STEER_CTRL_ACTION_LIST_NEXT_ENTRY		3
+-#define	VXGE_HW_RTS_ACCESS_STEER_CTRL_ACTION_READ_ENTRY			0
+-#define	VXGE_HW_RTS_ACCESS_STEER_CTRL_ACTION_WRITE_ENTRY		1
+-#define VXGE_HW_RTS_ACCESS_STEER_CTRL_ACTION_READ_MEMO_ENTRY		3
+-#define	VXGE_HW_RTS_ACCESS_STEER_CTRL_ACTION_LED_CONTROL		4
+-#define	VXGE_HW_RTS_ACCESS_STEER_CTRL_ACTION_ALL_CLEAR			172
+-
+-#define	VXGE_HW_RTS_ACCESS_STEER_CTRL_DATA_STRUCT_SEL_DA		0
+-#define	VXGE_HW_RTS_ACCESS_STEER_CTRL_DATA_STRUCT_SEL_VID		1
+-#define	VXGE_HW_RTS_ACCESS_STEER_CTRL_DATA_STRUCT_SEL_ETYPE		2
+-#define	VXGE_HW_RTS_ACCESS_STEER_CTRL_DATA_STRUCT_SEL_PN		3
+-#define	VXGE_HW_RTS_ACCESS_STEER_CTRL_DATA_STRUCT_SEL_RTH_GEN_CFG	5
+-#define	VXGE_HW_RTS_ACS_STEER_CTRL_DATA_STRUCT_SEL_RTH_SOLO_IT		6
+-#define	VXGE_HW_RTS_ACCESS_STEER_CTRL_DATA_STRUCT_SEL_RTH_JHASH_CFG	7
+-#define	VXGE_HW_RTS_ACCESS_STEER_CTRL_DATA_STRUCT_SEL_RTH_MASK		8
+-#define	VXGE_HW_RTS_ACCESS_STEER_CTRL_DATA_STRUCT_SEL_RTH_KEY		9
+-#define	VXGE_HW_RTS_ACCESS_STEER_CTRL_DATA_STRUCT_SEL_QOS		10
+-#define	VXGE_HW_RTS_ACCESS_STEER_CTRL_DATA_STRUCT_SEL_DS		11
+-#define	VXGE_HW_RTS_ACS_STEER_CTRL_DATA_STRUCT_SEL_RTH_MULTI_IT		12
+-#define	VXGE_HW_RTS_ACCESS_STEER_CTRL_DATA_STRUCT_SEL_FW_MEMO		13
+-
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_DA_MAC_ADDR(bits) \
+-							vxge_bVALn(bits, 0, 48)
+-#define VXGE_HW_RTS_ACCESS_STEER_DATA0_DA_MAC_ADDR(val) vxge_vBIT(val, 0, 48)
+-
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_VLAN_ID(bits) vxge_bVALn(bits, 0, 12)
+-#define VXGE_HW_RTS_ACCESS_STEER_DATA0_VLAN_ID(val) vxge_vBIT(val, 0, 12)
+-
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_ETYPE(bits)	vxge_bVALn(bits, 0, 11)
+-#define VXGE_HW_RTS_ACCESS_STEER_DATA0_ETYPE(val) vxge_vBIT(val, 0, 16)
+-
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_PN_SRC_DEST_SEL(bits) \
+-							vxge_bVALn(bits, 3, 1)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_PN_SRC_DEST_SEL		vxge_mBIT(3)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_PN_TCP_UDP_SEL(bits) \
+-							vxge_bVALn(bits, 7, 1)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_PN_TCP_UDP_SEL		vxge_mBIT(7)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_PN_PORT_NUM(bits) \
+-							vxge_bVALn(bits, 8, 16)
+-#define VXGE_HW_RTS_ACCESS_STEER_DATA0_PN_PORT_NUM(val) vxge_vBIT(val, 8, 16)
+-
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_RTH_GEN_RTH_EN(bits) \
+-							vxge_bVALn(bits, 3, 1)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_GEN_RTH_EN		vxge_mBIT(3)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_RTH_GEN_BUCKET_SIZE(bits) \
+-							vxge_bVALn(bits, 4, 4)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_GEN_BUCKET_SIZE(val) \
+-							vxge_vBIT(val, 4, 4)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_RTH_GEN_ALG_SEL(bits) \
+-							vxge_bVALn(bits, 10, 2)
+-#define VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_GEN_ALG_SEL(val) \
+-							vxge_vBIT(val, 10, 2)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_GEN_ALG_SEL_JENKINS	0
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_GEN_ALG_SEL_MS_RSS	1
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_GEN_ALG_SEL_CRC32C	2
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_RTH_GEN_RTH_TCP_IPV4_EN(bits) \
+-							vxge_bVALn(bits, 15, 1)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_GEN_RTH_TCP_IPV4_EN	vxge_mBIT(15)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_RTH_GEN_RTH_IPV4_EN(bits) \
+-							vxge_bVALn(bits, 19, 1)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_GEN_RTH_IPV4_EN	vxge_mBIT(19)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_RTH_GEN_RTH_TCP_IPV6_EN(bits) \
+-							vxge_bVALn(bits, 23, 1)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_GEN_RTH_TCP_IPV6_EN	vxge_mBIT(23)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_RTH_GEN_RTH_IPV6_EN(bits) \
+-							vxge_bVALn(bits, 27, 1)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_GEN_RTH_IPV6_EN	vxge_mBIT(27)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_RTH_GEN_RTH_TCP_IPV6_EX_EN(bits) \
+-							vxge_bVALn(bits, 31, 1)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_GEN_RTH_TCP_IPV6_EX_EN vxge_mBIT(31)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_RTH_GEN_RTH_IPV6_EX_EN(bits) \
+-							vxge_bVALn(bits, 35, 1)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_GEN_RTH_IPV6_EX_EN	vxge_mBIT(35)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_RTH_GEN_ACTIVE_TABLE(bits) \
+-							vxge_bVALn(bits, 39, 1)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_GEN_ACTIVE_TABLE	vxge_mBIT(39)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_RTH_GEN_REPL_ENTRY_EN(bits) \
+-							vxge_bVALn(bits, 43, 1)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_GEN_REPL_ENTRY_EN	vxge_mBIT(43)
+-
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_RTH_SOLO_IT_ENTRY_EN(bits) \
+-							vxge_bVALn(bits, 3, 1)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_SOLO_IT_ENTRY_EN	vxge_mBIT(3)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_RTH_SOLO_IT_BUCKET_DATA(bits) \
+-							vxge_bVALn(bits, 9, 7)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_SOLO_IT_BUCKET_DATA(val) \
+-							vxge_vBIT(val, 9, 7)
+-
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_RTH_ITEM0_BUCKET_NUM(bits) \
+-							vxge_bVALn(bits, 0, 8)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_ITEM0_BUCKET_NUM(val) \
+-							vxge_vBIT(val, 0, 8)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_RTH_ITEM0_ENTRY_EN(bits) \
+-							vxge_bVALn(bits, 8, 1)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_ITEM0_ENTRY_EN	vxge_mBIT(8)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_RTH_ITEM0_BUCKET_DATA(bits) \
+-							vxge_bVALn(bits, 9, 7)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_ITEM0_BUCKET_DATA(val) \
+-							vxge_vBIT(val, 9, 7)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_RTH_ITEM1_BUCKET_NUM(bits) \
+-							vxge_bVALn(bits, 16, 8)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_ITEM1_BUCKET_NUM(val) \
+-							vxge_vBIT(val, 16, 8)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_RTH_ITEM1_ENTRY_EN(bits) \
+-							vxge_bVALn(bits, 24, 1)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_ITEM1_ENTRY_EN	vxge_mBIT(24)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_RTH_ITEM1_BUCKET_DATA(bits) \
+-							vxge_bVALn(bits, 25, 7)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_ITEM1_BUCKET_DATA(val) \
+-							vxge_vBIT(val, 25, 7)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA1_GET_RTH_ITEM0_BUCKET_NUM(bits) \
+-							vxge_bVALn(bits, 0, 8)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA1_RTH_ITEM0_BUCKET_NUM(val) \
+-							vxge_vBIT(val, 0, 8)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA1_GET_RTH_ITEM0_ENTRY_EN(bits) \
+-							vxge_bVALn(bits, 8, 1)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA1_RTH_ITEM0_ENTRY_EN	vxge_mBIT(8)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA1_GET_RTH_ITEM0_BUCKET_DATA(bits) \
+-							vxge_bVALn(bits, 9, 7)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA1_RTH_ITEM0_BUCKET_DATA(val) \
+-							vxge_vBIT(val, 9, 7)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA1_GET_RTH_ITEM1_BUCKET_NUM(bits) \
+-							vxge_bVALn(bits, 16, 8)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA1_RTH_ITEM1_BUCKET_NUM(val) \
+-							vxge_vBIT(val, 16, 8)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA1_GET_RTH_ITEM1_ENTRY_EN(bits) \
+-							vxge_bVALn(bits, 24, 1)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA1_RTH_ITEM1_ENTRY_EN	vxge_mBIT(24)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA1_GET_RTH_ITEM1_BUCKET_DATA(bits) \
+-							vxge_bVALn(bits, 25, 7)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA1_RTH_ITEM1_BUCKET_DATA(val) \
+-							vxge_vBIT(val, 25, 7)
+-
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_RTH_JHASH_CFG_GOLDEN_RATIO(bits) \
+-							vxge_bVALn(bits, 0, 32)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_JHASH_CFG_GOLDEN_RATIO(val) \
+-							vxge_vBIT(val, 0, 32)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_RTH_JHASH_CFG_INIT_VALUE(bits) \
+-							vxge_bVALn(bits, 32, 32)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_JHASH_CFG_INIT_VALUE(val) \
+-							vxge_vBIT(val, 32, 32)
+-
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_RTH_MASK_IPV6_SA_MASK(bits) \
+-							vxge_bVALn(bits, 0, 16)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_MASK_IPV6_SA_MASK(val) \
+-							vxge_vBIT(val, 0, 16)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_RTH_MASK_IPV6_DA_MASK(bits) \
+-							vxge_bVALn(bits, 16, 16)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_MASK_IPV6_DA_MASK(val) \
+-							vxge_vBIT(val, 16, 16)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_RTH_MASK_IPV4_SA_MASK(bits) \
+-							vxge_bVALn(bits, 32, 4)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_MASK_IPV4_SA_MASK(val) \
+-							vxge_vBIT(val, 32, 4)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_RTH_MASK_IPV4_DA_MASK(bits) \
+-							vxge_bVALn(bits, 36, 4)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_MASK_IPV4_DA_MASK(val) \
+-							vxge_vBIT(val, 36, 4)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_RTH_MASK_L4SP_MASK(bits) \
+-							vxge_bVALn(bits, 40, 2)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_MASK_L4SP_MASK(val) \
+-							vxge_vBIT(val, 40, 2)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_RTH_MASK_L4DP_MASK(bits) \
+-							vxge_bVALn(bits, 42, 2)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_MASK_L4DP_MASK(val) \
+-							vxge_vBIT(val, 42, 2)
+-
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_RTH_KEY_KEY(bits) \
+-							vxge_bVALn(bits, 0, 64)
+-#define VXGE_HW_RTS_ACCESS_STEER_DATA0_RTH_KEY_KEY vxge_vBIT(val, 0, 64)
+-
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_QOS_ENTRY_EN(bits) \
+-							vxge_bVALn(bits, 3, 1)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_QOS_ENTRY_EN		vxge_mBIT(3)
+-
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_DS_ENTRY_EN(bits) \
+-							vxge_bVALn(bits, 3, 1)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_DS_ENTRY_EN		vxge_mBIT(3)
+-
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA1_GET_DA_MAC_ADDR_MASK(bits) \
+-							vxge_bVALn(bits, 0, 48)
+-#define VXGE_HW_RTS_ACCESS_STEER_DATA1_DA_MAC_ADDR_MASK(val) \
+-							vxge_vBIT(val, 0, 48)
+-#define VXGE_HW_RTS_ACCESS_STEER_DATA1_DA_MAC_ADDR_MODE(val) \
+-							vxge_vBIT(val, 62, 2)
+-
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA1_GET_RTH_ITEM4_BUCKET_NUM(bits) \
+-							vxge_bVALn(bits, 0, 8)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA1_RTH_ITEM4_BUCKET_NUM(val) \
+-							vxge_vBIT(val, 0, 8)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA1_GET_RTH_ITEM4_ENTRY_EN(bits) \
+-							vxge_bVALn(bits, 8, 1)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA1_RTH_ITEM4_ENTRY_EN	vxge_mBIT(8)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA1_GET_RTH_ITEM4_BUCKET_DATA(bits) \
+-							vxge_bVALn(bits, 9, 7)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA1_RTH_ITEM4_BUCKET_DATA(val) \
+-							vxge_vBIT(val, 9, 7)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA1_GET_RTH_ITEM5_BUCKET_NUM(bits) \
+-							vxge_bVALn(bits, 16, 8)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA1_RTH_ITEM5_BUCKET_NUM(val) \
+-							vxge_vBIT(val, 16, 8)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA1_GET_RTH_ITEM5_ENTRY_EN(bits) \
+-							vxge_bVALn(bits, 24, 1)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA1_RTH_ITEM5_ENTRY_EN	vxge_mBIT(24)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA1_GET_RTH_ITEM5_BUCKET_DATA(bits) \
+-							vxge_bVALn(bits, 25, 7)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA1_RTH_ITEM5_BUCKET_DATA(val) \
+-							vxge_vBIT(val, 25, 7)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA1_GET_RTH_ITEM6_BUCKET_NUM(bits) \
+-							vxge_bVALn(bits, 32, 8)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA1_RTH_ITEM6_BUCKET_NUM(val) \
+-							vxge_vBIT(val, 32, 8)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA1_GET_RTH_ITEM6_ENTRY_EN(bits) \
+-							vxge_bVALn(bits, 40, 1)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA1_RTH_ITEM6_ENTRY_EN	vxge_mBIT(40)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA1_GET_RTH_ITEM6_BUCKET_DATA(bits) \
+-							vxge_bVALn(bits, 41, 7)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA1_RTH_ITEM6_BUCKET_DATA(val) \
+-							vxge_vBIT(val, 41, 7)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA1_GET_RTH_ITEM7_BUCKET_NUM(bits) \
+-							vxge_bVALn(bits, 48, 8)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA1_RTH_ITEM7_BUCKET_NUM(val) \
+-							vxge_vBIT(val, 48, 8)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA1_GET_RTH_ITEM7_ENTRY_EN(bits) \
+-							vxge_bVALn(bits, 56, 1)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA1_RTH_ITEM7_ENTRY_EN	vxge_mBIT(56)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA1_GET_RTH_ITEM7_BUCKET_DATA(bits) \
+-							vxge_bVALn(bits, 57, 7)
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA1_RTH_ITEM7_BUCKET_DATA(val) \
+-							vxge_vBIT(val, 57, 7)
+-
+-#define VXGE_HW_RTS_ACCESS_STEER_DATA0_MEMO_ITEM_PART_NUMBER           0
+-#define VXGE_HW_RTS_ACCESS_STEER_DATA0_MEMO_ITEM_SERIAL_NUMBER         1
+-#define VXGE_HW_RTS_ACCESS_STEER_DATA0_MEMO_ITEM_VERSION               2
+-#define VXGE_HW_RTS_ACCESS_STEER_DATA0_MEMO_ITEM_PCI_MODE              3
+-#define VXGE_HW_RTS_ACCESS_STEER_DATA0_MEMO_ITEM_DESC_0                4
+-#define VXGE_HW_RTS_ACCESS_STEER_DATA0_MEMO_ITEM_DESC_1                5
+-#define VXGE_HW_RTS_ACCESS_STEER_DATA0_MEMO_ITEM_DESC_2                6
+-#define VXGE_HW_RTS_ACCESS_STEER_DATA0_MEMO_ITEM_DESC_3                7
+-
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_LED_CONTROL_ON			1
+-#define	VXGE_HW_RTS_ACCESS_STEER_DATA0_LED_CONTROL_OFF			0
+-
+-#define VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_FW_VER_DAY(bits) \
+-							vxge_bVALn(bits, 0, 8)
+-#define VXGE_HW_RTS_ACCESS_STEER_DATA0_FW_VER_DAY(val) vxge_vBIT(val, 0, 8)
+-#define VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_FW_VER_MONTH(bits) \
+-							vxge_bVALn(bits, 8, 8)
+-#define VXGE_HW_RTS_ACCESS_STEER_DATA0_FW_VER_MONTH(val) vxge_vBIT(val, 8, 8)
+-#define VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_FW_VER_YEAR(bits) \
+-						vxge_bVALn(bits, 16, 16)
+-#define VXGE_HW_RTS_ACCESS_STEER_DATA0_FW_VER_YEAR(val) \
+-							vxge_vBIT(val, 16, 16)
+-
+-#define VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_FW_VER_MAJOR(bits) \
+-						vxge_bVALn(bits, 32, 8)
+-#define VXGE_HW_RTS_ACCESS_STEER_DATA0_FW_VER_MAJOR vxge_vBIT(val, 32, 8)
+-#define VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_FW_VER_MINOR(bits) \
+-						vxge_bVALn(bits, 40, 8)
+-#define VXGE_HW_RTS_ACCESS_STEER_DATA0_FW_VER_MINOR vxge_vBIT(val, 40, 8)
+-#define VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_FW_VER_BUILD(bits) \
+-						vxge_bVALn(bits, 48, 16)
+-#define VXGE_HW_RTS_ACCESS_STEER_DATA0_FW_VER_BUILD vxge_vBIT(val, 48, 16)
+-
+-#define VXGE_HW_RTS_ACCESS_STEER_DATA1_GET_FLASH_VER_DAY(bits) \
+-						vxge_bVALn(bits, 0, 8)
+-#define VXGE_HW_RTS_ACCESS_STEER_DATA1_FLASH_VER_DAY(val) vxge_vBIT(val, 0, 8)
+-#define VXGE_HW_RTS_ACCESS_STEER_DATA1_GET_FLASH_VER_MONTH(bits) \
+-							vxge_bVALn(bits, 8, 8)
+-#define VXGE_HW_RTS_ACCESS_STEER_DATA1_FLASH_VER_MONTH(val) vxge_vBIT(val, 8, 8)
+-#define VXGE_HW_RTS_ACCESS_STEER_DATA1_GET_FLASH_VER_YEAR(bits) \
+-							vxge_bVALn(bits, 16, 16)
+-#define VXGE_HW_RTS_ACCESS_STEER_DATA1_FLASH_VER_YEAR(val) \
+-							vxge_vBIT(val, 16, 16)
+-
+-#define VXGE_HW_RTS_ACCESS_STEER_DATA1_GET_FLASH_VER_MAJOR(bits) \
+-							vxge_bVALn(bits, 32, 8)
+-#define VXGE_HW_RTS_ACCESS_STEER_DATA1_FLASH_VER_MAJOR vxge_vBIT(val, 32, 8)
+-#define VXGE_HW_RTS_ACCESS_STEER_DATA1_GET_FLASH_VER_MINOR(bits) \
+-							vxge_bVALn(bits, 40, 8)
+-#define VXGE_HW_RTS_ACCESS_STEER_DATA1_FLASH_VER_MINOR vxge_vBIT(val, 40, 8)
+-#define VXGE_HW_RTS_ACCESS_STEER_DATA1_GET_FLASH_VER_BUILD(bits) \
+-							vxge_bVALn(bits, 48, 16)
+-#define VXGE_HW_RTS_ACCESS_STEER_DATA1_FLASH_VER_BUILD vxge_vBIT(val, 48, 16)
+-#define VXGE_HW_RTS_ACCESS_STEER_CTRL_GET_ACTION(bits) vxge_bVALn(bits, 0, 8)
+-
+-#define	VXGE_HW_SRPCIM_TO_VPATH_ALARM_REG_GET_PPIF_SRPCIM_TO_VPATH_ALARM(bits)\
+-							vxge_bVALn(bits, 0, 18)
+-
+-#define	VXGE_HW_RX_MULTI_CAST_STATS_GET_FRAME_DISCARD(bits) \
+-							vxge_bVALn(bits, 48, 16)
+-#define	VXGE_HW_RX_FRM_TRANSFERRED_GET_RX_FRM_TRANSFERRED(bits) \
+-							vxge_bVALn(bits, 32, 32)
+-#define	VXGE_HW_RXD_RETURNED_GET_RXD_RETURNED(bits)	vxge_bVALn(bits, 48, 16)
+-#define	VXGE_HW_VPATH_DEBUG_STATS0_GET_INI_NUM_MWR_SENT(bits) \
+-							vxge_bVALn(bits, 0, 32)
+-#define	VXGE_HW_VPATH_DEBUG_STATS1_GET_INI_NUM_MRD_SENT(bits) \
+-							vxge_bVALn(bits, 0, 32)
+-#define	VXGE_HW_VPATH_DEBUG_STATS2_GET_INI_NUM_CPL_RCVD(bits) \
+-							vxge_bVALn(bits, 0, 32)
+-#define	VXGE_HW_VPATH_DEBUG_STATS3_GET_INI_NUM_MWR_BYTE_SENT(bits)	(bits)
+-#define	VXGE_HW_VPATH_DEBUG_STATS4_GET_INI_NUM_CPL_BYTE_RCVD(bits)	(bits)
+-#define	VXGE_HW_VPATH_DEBUG_STATS5_GET_WRCRDTARB_XOFF(bits) \
+-							vxge_bVALn(bits, 32, 32)
+-#define	VXGE_HW_VPATH_DEBUG_STATS6_GET_RDCRDTARB_XOFF(bits) \
+-							vxge_bVALn(bits, 32, 32)
+-#define	VXGE_HW_VPATH_GENSTATS_COUNT01_GET_PPIF_VPATH_GENSTATS_COUNT1(bits) \
+-							vxge_bVALn(bits, 0, 32)
+-#define	VXGE_HW_VPATH_GENSTATS_COUNT01_GET_PPIF_VPATH_GENSTATS_COUNT0(bits) \
+-							vxge_bVALn(bits, 32, 32)
+-#define	VXGE_HW_VPATH_GENSTATS_COUNT23_GET_PPIF_VPATH_GENSTATS_COUNT3(bits) \
+-							vxge_bVALn(bits, 0, 32)
+-#define	VXGE_HW_VPATH_GENSTATS_COUNT23_GET_PPIF_VPATH_GENSTATS_COUNT2(bits) \
+-							vxge_bVALn(bits, 32, 32)
+-#define	VXGE_HW_VPATH_GENSTATS_COUNT4_GET_PPIF_VPATH_GENSTATS_COUNT4(bits) \
+-							vxge_bVALn(bits, 0, 32)
+-#define	VXGE_HW_VPATH_GENSTATS_COUNT5_GET_PPIF_VPATH_GENSTATS_COUNT5(bits) \
+-							vxge_bVALn(bits, 32, 32)
+-#define	VXGE_HW_TX_VP_RESET_DISCARDED_FRMS_GET_TX_VP_RESET_DISCARDED_FRMS(bits\
+-) vxge_bVALn(bits, 48, 16)
+-#define	VXGE_HW_DBG_STATS_GET_RX_MPA_CRC_FAIL_FRMS(bits) vxge_bVALn(bits, 0, 16)
+-#define	VXGE_HW_DBG_STATS_GET_RX_MPA_MRK_FAIL_FRMS(bits) \
+-							vxge_bVALn(bits, 16, 16)
+-#define	VXGE_HW_DBG_STATS_GET_RX_MPA_LEN_FAIL_FRMS(bits) \
+-							vxge_bVALn(bits, 32, 16)
+-#define	VXGE_HW_DBG_STATS_GET_RX_FAU_RX_WOL_FRMS(bits)	vxge_bVALn(bits, 0, 16)
+-#define	VXGE_HW_DBG_STATS_GET_RX_FAU_RX_VP_RESET_DISCARDED_FRMS(bits) \
+-							vxge_bVALn(bits, 16, 16)
+-#define	VXGE_HW_DBG_STATS_GET_RX_FAU_RX_PERMITTED_FRMS(bits) \
+-							vxge_bVALn(bits, 32, 16)
+-
+-#define	VXGE_HW_MRPCIM_DEBUG_STATS0_GET_INI_WR_DROP(bits) \
+-							vxge_bVALn(bits, 0, 32)
+-#define	VXGE_HW_MRPCIM_DEBUG_STATS0_GET_INI_RD_DROP(bits) \
+-							vxge_bVALn(bits, 32, 32)
+-#define	VXGE_HW_MRPCIM_DEBUG_STATS1_GET_VPLANE_WRCRDTARB_PH_CRDT_DEPLETED(bits\
+-) vxge_bVALn(bits, 32, 32)
+-#define	VXGE_HW_MRPCIM_DEBUG_STATS2_GET_VPLANE_WRCRDTARB_PD_CRDT_DEPLETED(bits\
+-) vxge_bVALn(bits, 32, 32)
+-#define \
+-VXGE_HW_MRPCIM_DEBUG_STATS3_GET_VPLANE_RDCRDTARB_NPH_CRDT_DEPLETED(bits) \
+-	vxge_bVALn(bits, 32, 32)
+-#define	VXGE_HW_MRPCIM_DEBUG_STATS4_GET_INI_WR_VPIN_DROP(bits) \
+-							vxge_bVALn(bits, 0, 32)
+-#define	VXGE_HW_MRPCIM_DEBUG_STATS4_GET_INI_RD_VPIN_DROP(bits) \
+-							vxge_bVALn(bits, 32, 32)
+-#define	VXGE_HW_GENSTATS_COUNT01_GET_GENSTATS_COUNT1(bits) \
+-							vxge_bVALn(bits, 0, 32)
+-#define	VXGE_HW_GENSTATS_COUNT01_GET_GENSTATS_COUNT0(bits) \
+-							vxge_bVALn(bits, 32, 32)
+-#define	VXGE_HW_GENSTATS_COUNT23_GET_GENSTATS_COUNT3(bits) \
+-							vxge_bVALn(bits, 0, 32)
+-#define	VXGE_HW_GENSTATS_COUNT23_GET_GENSTATS_COUNT2(bits) \
+-							vxge_bVALn(bits, 32, 32)
+-#define	VXGE_HW_GENSTATS_COUNT4_GET_GENSTATS_COUNT4(bits) \
+-							vxge_bVALn(bits, 32, 32)
+-#define	VXGE_HW_GENSTATS_COUNT5_GET_GENSTATS_COUNT5(bits) \
+-							vxge_bVALn(bits, 32, 32)
+-
+-#define	VXGE_HW_DEBUG_STATS0_GET_RSTDROP_MSG(bits)	vxge_bVALn(bits, 0, 32)
+-#define	VXGE_HW_DEBUG_STATS0_GET_RSTDROP_CPL(bits)	vxge_bVALn(bits, 32, 32)
+-#define	VXGE_HW_DEBUG_STATS1_GET_RSTDROP_CLIENT0(bits)	vxge_bVALn(bits, 0, 32)
+-#define	VXGE_HW_DEBUG_STATS1_GET_RSTDROP_CLIENT1(bits)	vxge_bVALn(bits, 32, 32)
+-#define	VXGE_HW_DEBUG_STATS2_GET_RSTDROP_CLIENT2(bits)	vxge_bVALn(bits, 0, 32)
+-#define	VXGE_HW_DEBUG_STATS3_GET_VPLANE_DEPL_PH(bits)	vxge_bVALn(bits, 0, 16)
+-#define	VXGE_HW_DEBUG_STATS3_GET_VPLANE_DEPL_NPH(bits)	vxge_bVALn(bits, 16, 16)
+-#define	VXGE_HW_DEBUG_STATS3_GET_VPLANE_DEPL_CPLH(bits)	vxge_bVALn(bits, 32, 16)
+-#define	VXGE_HW_DEBUG_STATS4_GET_VPLANE_DEPL_PD(bits)	vxge_bVALn(bits, 0, 16)
+-#define	VXGE_HW_DEBUG_STATS4_GET_VPLANE_DEPL_NPD(bits)	bVAL(bits, 16, 16)
+-#define	VXGE_HW_DEBUG_STATS4_GET_VPLANE_DEPL_CPLD(bits)	vxge_bVALn(bits, 32, 16)
+-
+-#define	VXGE_HW_DBG_STATS_TPA_TX_PATH_GET_TX_PERMITTED_FRMS(bits) \
+-							vxge_bVALn(bits, 32, 32)
+-
+-#define	VXGE_HW_DBG_STAT_TX_ANY_FRMS_GET_PORT0_TX_ANY_FRMS(bits) \
+-							vxge_bVALn(bits, 0, 8)
+-#define	VXGE_HW_DBG_STAT_TX_ANY_FRMS_GET_PORT1_TX_ANY_FRMS(bits) \
+-							vxge_bVALn(bits, 8, 8)
+-#define	VXGE_HW_DBG_STAT_TX_ANY_FRMS_GET_PORT2_TX_ANY_FRMS(bits) \
+-							vxge_bVALn(bits, 16, 8)
+-
+-#define	VXGE_HW_DBG_STAT_RX_ANY_FRMS_GET_PORT0_RX_ANY_FRMS(bits) \
+-							vxge_bVALn(bits, 0, 8)
+-#define	VXGE_HW_DBG_STAT_RX_ANY_FRMS_GET_PORT1_RX_ANY_FRMS(bits) \
+-							vxge_bVALn(bits, 8, 8)
+-#define	VXGE_HW_DBG_STAT_RX_ANY_FRMS_GET_PORT2_RX_ANY_FRMS(bits) \
+-							vxge_bVALn(bits, 16, 8)
+-
+-#define VXGE_HW_CONFIG_PRIV_H
+-
+-#define VXGE_HW_SWAPPER_INITIAL_VALUE			0x0123456789abcdefULL
+-#define VXGE_HW_SWAPPER_BYTE_SWAPPED			0xefcdab8967452301ULL
+-#define VXGE_HW_SWAPPER_BIT_FLIPPED			0x80c4a2e691d5b3f7ULL
+-#define VXGE_HW_SWAPPER_BYTE_SWAPPED_BIT_FLIPPED	0xf7b3d591e6a2c480ULL
+-
+-#define VXGE_HW_SWAPPER_READ_BYTE_SWAP_ENABLE		0xFFFFFFFFFFFFFFFFULL
+-#define VXGE_HW_SWAPPER_READ_BYTE_SWAP_DISABLE		0x0000000000000000ULL
+-
+-#define VXGE_HW_SWAPPER_READ_BIT_FLAP_ENABLE		0xFFFFFFFFFFFFFFFFULL
+-#define VXGE_HW_SWAPPER_READ_BIT_FLAP_DISABLE		0x0000000000000000ULL
+-
+-#define VXGE_HW_SWAPPER_WRITE_BYTE_SWAP_ENABLE		0xFFFFFFFFFFFFFFFFULL
+-#define VXGE_HW_SWAPPER_WRITE_BYTE_SWAP_DISABLE		0x0000000000000000ULL
+-
+-#define VXGE_HW_SWAPPER_WRITE_BIT_FLAP_ENABLE		0xFFFFFFFFFFFFFFFFULL
+-#define VXGE_HW_SWAPPER_WRITE_BIT_FLAP_DISABLE		0x0000000000000000ULL
+-
+-/*
+- * The registers are memory mapped and are native big-endian byte order. The
+- * little-endian hosts are handled by enabling hardware byte-swapping for
+- * register and dma operations.
+- */
+-struct vxge_hw_legacy_reg {
+-
+-	u8	unused00010[0x00010];
+-
+-/*0x00010*/	u64	toc_swapper_fb;
+-#define VXGE_HW_TOC_SWAPPER_FB_INITIAL_VAL(val) vxge_vBIT(val, 0, 64)
+-/*0x00018*/	u64	pifm_rd_swap_en;
+-#define VXGE_HW_PIFM_RD_SWAP_EN_PIFM_RD_SWAP_EN(val) vxge_vBIT(val, 0, 64)
+-/*0x00020*/	u64	pifm_rd_flip_en;
+-#define VXGE_HW_PIFM_RD_FLIP_EN_PIFM_RD_FLIP_EN(val) vxge_vBIT(val, 0, 64)
+-/*0x00028*/	u64	pifm_wr_swap_en;
+-#define VXGE_HW_PIFM_WR_SWAP_EN_PIFM_WR_SWAP_EN(val) vxge_vBIT(val, 0, 64)
+-/*0x00030*/	u64	pifm_wr_flip_en;
+-#define VXGE_HW_PIFM_WR_FLIP_EN_PIFM_WR_FLIP_EN(val) vxge_vBIT(val, 0, 64)
+-/*0x00038*/	u64	toc_first_pointer;
+-#define VXGE_HW_TOC_FIRST_POINTER_INITIAL_VAL(val) vxge_vBIT(val, 0, 64)
+-/*0x00040*/	u64	host_access_en;
+-#define VXGE_HW_HOST_ACCESS_EN_HOST_ACCESS_EN(val) vxge_vBIT(val, 0, 64)
+-
+-} __packed;
+-
+-struct vxge_hw_toc_reg {
+-
+-	u8	unused00050[0x00050];
+-
+-/*0x00050*/	u64	toc_common_pointer;
+-#define VXGE_HW_TOC_COMMON_POINTER_INITIAL_VAL(val) vxge_vBIT(val, 0, 64)
+-/*0x00058*/	u64	toc_memrepair_pointer;
+-#define VXGE_HW_TOC_MEMREPAIR_POINTER_INITIAL_VAL(val) vxge_vBIT(val, 0, 64)
+-/*0x00060*/	u64	toc_pcicfgmgmt_pointer[17];
+-#define VXGE_HW_TOC_PCICFGMGMT_POINTER_INITIAL_VAL(val) vxge_vBIT(val, 0, 64)
+-	u8	unused001e0[0x001e0-0x000e8];
+-
+-/*0x001e0*/	u64	toc_mrpcim_pointer;
+-#define VXGE_HW_TOC_MRPCIM_POINTER_INITIAL_VAL(val) vxge_vBIT(val, 0, 64)
+-/*0x001e8*/	u64	toc_srpcim_pointer[17];
+-#define VXGE_HW_TOC_SRPCIM_POINTER_INITIAL_VAL(val) vxge_vBIT(val, 0, 64)
+-	u8	unused00278[0x00278-0x00270];
+-
+-/*0x00278*/	u64	toc_vpmgmt_pointer[17];
+-#define VXGE_HW_TOC_VPMGMT_POINTER_INITIAL_VAL(val) vxge_vBIT(val, 0, 64)
+-	u8	unused00390[0x00390-0x00300];
+-
+-/*0x00390*/	u64	toc_vpath_pointer[17];
+-#define VXGE_HW_TOC_VPATH_POINTER_INITIAL_VAL(val) vxge_vBIT(val, 0, 64)
+-	u8	unused004a0[0x004a0-0x00418];
+-
+-/*0x004a0*/	u64	toc_kdfc;
+-#define VXGE_HW_TOC_KDFC_INITIAL_OFFSET(val) vxge_vBIT(val, 0, 61)
+-#define VXGE_HW_TOC_KDFC_INITIAL_BIR(val) vxge_vBIT(val, 61, 3)
+-/*0x004a8*/	u64	toc_usdc;
+-#define VXGE_HW_TOC_USDC_INITIAL_OFFSET(val) vxge_vBIT(val, 0, 61)
+-#define VXGE_HW_TOC_USDC_INITIAL_BIR(val) vxge_vBIT(val, 61, 3)
+-/*0x004b0*/	u64	toc_kdfc_vpath_stride;
+-#define	VXGE_HW_TOC_KDFC_VPATH_STRIDE_INITIAL_TOC_KDFC_VPATH_STRIDE(val) \
+-							vxge_vBIT(val, 0, 64)
+-/*0x004b8*/	u64	toc_kdfc_fifo_stride;
+-#define	VXGE_HW_TOC_KDFC_FIFO_STRIDE_INITIAL_TOC_KDFC_FIFO_STRIDE(val) \
+-							vxge_vBIT(val, 0, 64)
+-
+-} __packed;
+-
+-struct vxge_hw_common_reg {
+-
+-	u8	unused00a00[0x00a00];
+-
+-/*0x00a00*/	u64	prc_status1;
+-#define VXGE_HW_PRC_STATUS1_PRC_VP_QUIESCENT(n)	vxge_mBIT(n)
+-/*0x00a08*/	u64	rxdcm_reset_in_progress;
+-#define VXGE_HW_RXDCM_RESET_IN_PROGRESS_PRC_VP(n)	vxge_mBIT(n)
+-/*0x00a10*/	u64	replicq_flush_in_progress;
+-#define VXGE_HW_REPLICQ_FLUSH_IN_PROGRESS_NOA_VP(n)	vxge_mBIT(n)
+-/*0x00a18*/	u64	rxpe_cmds_reset_in_progress;
+-#define VXGE_HW_RXPE_CMDS_RESET_IN_PROGRESS_NOA_VP(n)	vxge_mBIT(n)
+-/*0x00a20*/	u64	mxp_cmds_reset_in_progress;
+-#define VXGE_HW_MXP_CMDS_RESET_IN_PROGRESS_NOA_VP(n)	vxge_mBIT(n)
+-/*0x00a28*/	u64	noffload_reset_in_progress;
+-#define VXGE_HW_NOFFLOAD_RESET_IN_PROGRESS_PRC_VP(n)	vxge_mBIT(n)
+-/*0x00a30*/	u64	rd_req_in_progress;
+-#define VXGE_HW_RD_REQ_IN_PROGRESS_VP(n)	vxge_mBIT(n)
+-/*0x00a38*/	u64	rd_req_outstanding;
+-#define VXGE_HW_RD_REQ_OUTSTANDING_VP(n)	vxge_mBIT(n)
+-/*0x00a40*/	u64	kdfc_reset_in_progress;
+-#define VXGE_HW_KDFC_RESET_IN_PROGRESS_NOA_VP(n)	vxge_mBIT(n)
+-	u8	unused00b00[0x00b00-0x00a48];
+-
+-/*0x00b00*/	u64	one_cfg_vp;
+-#define VXGE_HW_ONE_CFG_VP_RDY(n)	vxge_mBIT(n)
+-/*0x00b08*/	u64	one_common;
+-#define VXGE_HW_ONE_COMMON_PET_VPATH_RESET_IN_PROGRESS(n)	vxge_mBIT(n)
+-	u8	unused00b80[0x00b80-0x00b10];
+-
+-/*0x00b80*/	u64	tim_int_en;
+-#define VXGE_HW_TIM_INT_EN_TIM_VP(n)	vxge_mBIT(n)
+-/*0x00b88*/	u64	tim_set_int_en;
+-#define VXGE_HW_TIM_SET_INT_EN_VP(n)	vxge_mBIT(n)
+-/*0x00b90*/	u64	tim_clr_int_en;
+-#define VXGE_HW_TIM_CLR_INT_EN_VP(n)	vxge_mBIT(n)
+-/*0x00b98*/	u64	tim_mask_int_during_reset;
+-#define VXGE_HW_TIM_MASK_INT_DURING_RESET_VPATH(n)	vxge_mBIT(n)
+-/*0x00ba0*/	u64	tim_reset_in_progress;
+-#define VXGE_HW_TIM_RESET_IN_PROGRESS_TIM_VPATH(n)	vxge_mBIT(n)
+-/*0x00ba8*/	u64	tim_outstanding_bmap;
+-#define VXGE_HW_TIM_OUTSTANDING_BMAP_TIM_VPATH(n)	vxge_mBIT(n)
+-	u8	unused00c00[0x00c00-0x00bb0];
+-
+-/*0x00c00*/	u64	msg_reset_in_progress;
+-#define VXGE_HW_MSG_RESET_IN_PROGRESS_MSG_COMPOSITE(val) vxge_vBIT(val, 0, 17)
+-/*0x00c08*/	u64	msg_mxp_mr_ready;
+-#define VXGE_HW_MSG_MXP_MR_READY_MP_BOOTED(n)	vxge_mBIT(n)
+-/*0x00c10*/	u64	msg_uxp_mr_ready;
+-#define VXGE_HW_MSG_UXP_MR_READY_UP_BOOTED(n)	vxge_mBIT(n)
+-/*0x00c18*/	u64	msg_dmq_noni_rtl_prefetch;
+-#define VXGE_HW_MSG_DMQ_NONI_RTL_PREFETCH_BYPASS_ENABLE(n)	vxge_mBIT(n)
+-/*0x00c20*/	u64	msg_umq_rtl_bwr;
+-#define VXGE_HW_MSG_UMQ_RTL_BWR_PREFETCH_DISABLE(n)	vxge_mBIT(n)
+-	u8	unused00d00[0x00d00-0x00c28];
+-
+-/*0x00d00*/	u64	cmn_rsthdlr_cfg0;
+-#define VXGE_HW_CMN_RSTHDLR_CFG0_SW_RESET_VPATH(val) vxge_vBIT(val, 0, 17)
+-/*0x00d08*/	u64	cmn_rsthdlr_cfg1;
+-#define VXGE_HW_CMN_RSTHDLR_CFG1_CLR_VPATH_RESET(val) vxge_vBIT(val, 0, 17)
+-/*0x00d10*/	u64	cmn_rsthdlr_cfg2;
+-#define VXGE_HW_CMN_RSTHDLR_CFG2_SW_RESET_FIFO0(val) vxge_vBIT(val, 0, 17)
+-/*0x00d18*/	u64	cmn_rsthdlr_cfg3;
+-#define VXGE_HW_CMN_RSTHDLR_CFG3_SW_RESET_FIFO1(val) vxge_vBIT(val, 0, 17)
+-/*0x00d20*/	u64	cmn_rsthdlr_cfg4;
+-#define VXGE_HW_CMN_RSTHDLR_CFG4_SW_RESET_FIFO2(val) vxge_vBIT(val, 0, 17)
+-	u8	unused00d40[0x00d40-0x00d28];
+-
+-/*0x00d40*/	u64	cmn_rsthdlr_cfg8;
+-#define VXGE_HW_CMN_RSTHDLR_CFG8_INCR_VPATH_INST_NUM(val) vxge_vBIT(val, 0, 17)
+-/*0x00d48*/	u64	stats_cfg0;
+-#define VXGE_HW_STATS_CFG0_STATS_ENABLE(val) vxge_vBIT(val, 0, 17)
+-	u8	unused00da8[0x00da8-0x00d50];
+-
+-/*0x00da8*/	u64	clear_msix_mask_vect[4];
+-#define VXGE_HW_CLEAR_MSIX_MASK_VECT_CLEAR_MSIX_MASK_VECT(val) \
+-						vxge_vBIT(val, 0, 17)
+-/*0x00dc8*/	u64	set_msix_mask_vect[4];
+-#define VXGE_HW_SET_MSIX_MASK_VECT_SET_MSIX_MASK_VECT(val) vxge_vBIT(val, 0, 17)
+-/*0x00de8*/	u64	clear_msix_mask_all_vect;
+-#define	VXGE_HW_CLEAR_MSIX_MASK_ALL_VECT_CLEAR_MSIX_MASK_ALL_VECT(val)	\
+-							vxge_vBIT(val, 0, 17)
+-/*0x00df0*/	u64	set_msix_mask_all_vect;
+-#define	VXGE_HW_SET_MSIX_MASK_ALL_VECT_SET_MSIX_MASK_ALL_VECT(val) \
+-							vxge_vBIT(val, 0, 17)
+-/*0x00df8*/	u64	mask_vector[4];
+-#define VXGE_HW_MASK_VECTOR_MASK_VECTOR(val) vxge_vBIT(val, 0, 17)
+-/*0x00e18*/	u64	msix_pending_vector[4];
+-#define VXGE_HW_MSIX_PENDING_VECTOR_MSIX_PENDING_VECTOR(val) \
+-							vxge_vBIT(val, 0, 17)
+-/*0x00e38*/	u64	clr_msix_one_shot_vec[4];
+-#define	VXGE_HW_CLR_MSIX_ONE_SHOT_VEC_CLR_MSIX_ONE_SHOT_VEC(val) \
+-							vxge_vBIT(val, 0, 17)
+-/*0x00e58*/	u64	titan_asic_id;
+-#define VXGE_HW_TITAN_ASIC_ID_INITIAL_DEVICE_ID(val) vxge_vBIT(val, 0, 16)
+-#define VXGE_HW_TITAN_ASIC_ID_INITIAL_MAJOR_REVISION(val) vxge_vBIT(val, 48, 8)
+-#define VXGE_HW_TITAN_ASIC_ID_INITIAL_MINOR_REVISION(val) vxge_vBIT(val, 56, 8)
+-/*0x00e60*/	u64	titan_general_int_status;
+-#define	VXGE_HW_TITAN_GENERAL_INT_STATUS_MRPCIM_ALARM_INT	vxge_mBIT(0)
+-#define	VXGE_HW_TITAN_GENERAL_INT_STATUS_SRPCIM_ALARM_INT	vxge_mBIT(1)
+-#define	VXGE_HW_TITAN_GENERAL_INT_STATUS_VPATH_ALARM_INT	vxge_mBIT(2)
+-#define	VXGE_HW_TITAN_GENERAL_INT_STATUS_VPATH_TRAFFIC_INT(val) \
+-							vxge_vBIT(val, 3, 17)
+-	u8	unused00e70[0x00e70-0x00e68];
+-
+-/*0x00e70*/	u64	titan_mask_all_int;
+-#define	VXGE_HW_TITAN_MASK_ALL_INT_ALARM	vxge_mBIT(7)
+-#define	VXGE_HW_TITAN_MASK_ALL_INT_TRAFFIC	vxge_mBIT(15)
+-	u8	unused00e80[0x00e80-0x00e78];
+-
+-/*0x00e80*/	u64	tim_int_status0;
+-#define VXGE_HW_TIM_INT_STATUS0_TIM_INT_STATUS0(val) vxge_vBIT(val, 0, 64)
+-/*0x00e88*/	u64	tim_int_mask0;
+-#define VXGE_HW_TIM_INT_MASK0_TIM_INT_MASK0(val) vxge_vBIT(val, 0, 64)
+-/*0x00e90*/	u64	tim_int_status1;
+-#define VXGE_HW_TIM_INT_STATUS1_TIM_INT_STATUS1(val) vxge_vBIT(val, 0, 4)
+-/*0x00e98*/	u64	tim_int_mask1;
+-#define VXGE_HW_TIM_INT_MASK1_TIM_INT_MASK1(val) vxge_vBIT(val, 0, 4)
+-/*0x00ea0*/	u64	rti_int_status;
+-#define VXGE_HW_RTI_INT_STATUS_RTI_INT_STATUS(val) vxge_vBIT(val, 0, 17)
+-/*0x00ea8*/	u64	rti_int_mask;
+-#define VXGE_HW_RTI_INT_MASK_RTI_INT_MASK(val) vxge_vBIT(val, 0, 17)
+-/*0x00eb0*/	u64	adapter_status;
+-#define	VXGE_HW_ADAPTER_STATUS_RTDMA_RTDMA_READY	vxge_mBIT(0)
+-#define	VXGE_HW_ADAPTER_STATUS_WRDMA_WRDMA_READY	vxge_mBIT(1)
+-#define	VXGE_HW_ADAPTER_STATUS_KDFC_KDFC_READY	vxge_mBIT(2)
+-#define	VXGE_HW_ADAPTER_STATUS_TPA_TMAC_BUF_EMPTY	vxge_mBIT(3)
+-#define	VXGE_HW_ADAPTER_STATUS_RDCTL_PIC_QUIESCENT	vxge_mBIT(4)
+-#define	VXGE_HW_ADAPTER_STATUS_XGMAC_NETWORK_FAULT	vxge_mBIT(5)
+-#define	VXGE_HW_ADAPTER_STATUS_ROCRC_OFFLOAD_QUIESCENT	vxge_mBIT(6)
+-#define	VXGE_HW_ADAPTER_STATUS_G3IF_FB_G3IF_FB_GDDR3_READY	vxge_mBIT(7)
+-#define	VXGE_HW_ADAPTER_STATUS_G3IF_CM_G3IF_CM_GDDR3_READY	vxge_mBIT(8)
+-#define	VXGE_HW_ADAPTER_STATUS_RIC_RIC_RUNNING	vxge_mBIT(9)
+-#define	VXGE_HW_ADAPTER_STATUS_CMG_C_PLL_IN_LOCK	vxge_mBIT(10)
+-#define	VXGE_HW_ADAPTER_STATUS_XGMAC_X_PLL_IN_LOCK	vxge_mBIT(11)
+-#define	VXGE_HW_ADAPTER_STATUS_FBIF_M_PLL_IN_LOCK	vxge_mBIT(12)
+-#define VXGE_HW_ADAPTER_STATUS_PCC_PCC_IDLE(val) vxge_vBIT(val, 24, 8)
+-#define VXGE_HW_ADAPTER_STATUS_ROCRC_RC_PRC_QUIESCENT(val) vxge_vBIT(val, 44, 8)
+-/*0x00eb8*/	u64	gen_ctrl;
+-#define	VXGE_HW_GEN_CTRL_SPI_MRPCIM_WR_DIS	vxge_mBIT(0)
+-#define	VXGE_HW_GEN_CTRL_SPI_MRPCIM_RD_DIS	vxge_mBIT(1)
+-#define	VXGE_HW_GEN_CTRL_SPI_SRPCIM_WR_DIS	vxge_mBIT(2)
+-#define	VXGE_HW_GEN_CTRL_SPI_SRPCIM_RD_DIS	vxge_mBIT(3)
+-#define	VXGE_HW_GEN_CTRL_SPI_DEBUG_DIS	vxge_mBIT(4)
+-#define	VXGE_HW_GEN_CTRL_SPI_APP_LTSSM_TIMER_DIS	vxge_mBIT(5)
+-#define VXGE_HW_GEN_CTRL_SPI_NOT_USED(val) vxge_vBIT(val, 6, 4)
+-	u8	unused00ed0[0x00ed0-0x00ec0];
+-
+-/*0x00ed0*/	u64	adapter_ready;
+-#define	VXGE_HW_ADAPTER_READY_ADAPTER_READY	vxge_mBIT(63)
+-/*0x00ed8*/	u64	outstanding_read;
+-#define VXGE_HW_OUTSTANDING_READ_OUTSTANDING_READ(val) vxge_vBIT(val, 0, 17)
+-/*0x00ee0*/	u64	vpath_rst_in_prog;
+-#define VXGE_HW_VPATH_RST_IN_PROG_VPATH_RST_IN_PROG(val) vxge_vBIT(val, 0, 17)
+-/*0x00ee8*/	u64	vpath_reg_modified;
+-#define VXGE_HW_VPATH_REG_MODIFIED_VPATH_REG_MODIFIED(val) vxge_vBIT(val, 0, 17)
+-	u8	unused00fc0[0x00fc0-0x00ef0];
+-
+-/*0x00fc0*/	u64	cp_reset_in_progress;
+-#define VXGE_HW_CP_RESET_IN_PROGRESS_CP_VPATH(n)	vxge_mBIT(n)
+-	u8	unused01080[0x01080-0x00fc8];
+-
+-/*0x01080*/	u64	xgmac_ready;
+-#define VXGE_HW_XGMAC_READY_XMACJ_READY(val) vxge_vBIT(val, 0, 17)
+-	u8	unused010c0[0x010c0-0x01088];
+-
+-/*0x010c0*/	u64	fbif_ready;
+-#define VXGE_HW_FBIF_READY_FAU_READY(val) vxge_vBIT(val, 0, 17)
+-	u8	unused01100[0x01100-0x010c8];
+-
+-/*0x01100*/	u64	vplane_assignments;
+-#define VXGE_HW_VPLANE_ASSIGNMENTS_VPLANE_ASSIGNMENTS(val) vxge_vBIT(val, 3, 5)
+-/*0x01108*/	u64	vpath_assignments;
+-#define VXGE_HW_VPATH_ASSIGNMENTS_VPATH_ASSIGNMENTS(val) vxge_vBIT(val, 0, 17)
+-/*0x01110*/	u64	resource_assignments;
+-#define VXGE_HW_RESOURCE_ASSIGNMENTS_RESOURCE_ASSIGNMENTS(val) \
+-						vxge_vBIT(val, 0, 17)
+-/*0x01118*/	u64	host_type_assignments;
+-#define	VXGE_HW_HOST_TYPE_ASSIGNMENTS_HOST_TYPE_ASSIGNMENTS(val) \
+-							vxge_vBIT(val, 5, 3)
+-	u8	unused01128[0x01128-0x01120];
+-
+-/*0x01128*/	u64	max_resource_assignments;
+-#define VXGE_HW_MAX_RESOURCE_ASSIGNMENTS_PCI_MAX_VPLANE(val) \
+-							vxge_vBIT(val, 3, 5)
+-#define VXGE_HW_MAX_RESOURCE_ASSIGNMENTS_PCI_MAX_VPATHS(val) \
+-						vxge_vBIT(val, 11, 5)
+-/*0x01130*/	u64	pf_vpath_assignments;
+-#define VXGE_HW_PF_VPATH_ASSIGNMENTS_PF_VPATH_ASSIGNMENTS(val) \
+-						vxge_vBIT(val, 0, 17)
+-	u8	unused01200[0x01200-0x01138];
+-
+-/*0x01200*/	u64	rts_access_icmp;
+-#define VXGE_HW_RTS_ACCESS_ICMP_EN(val) vxge_vBIT(val, 0, 17)
+-/*0x01208*/	u64	rts_access_tcpsyn;
+-#define VXGE_HW_RTS_ACCESS_TCPSYN_EN(val) vxge_vBIT(val, 0, 17)
+-/*0x01210*/	u64	rts_access_zl4pyld;
+-#define VXGE_HW_RTS_ACCESS_ZL4PYLD_EN(val) vxge_vBIT(val, 0, 17)
+-/*0x01218*/	u64	rts_access_l4prtcl_tcp;
+-#define VXGE_HW_RTS_ACCESS_L4PRTCL_TCP_EN(val) vxge_vBIT(val, 0, 17)
+-/*0x01220*/	u64	rts_access_l4prtcl_udp;
+-#define VXGE_HW_RTS_ACCESS_L4PRTCL_UDP_EN(val) vxge_vBIT(val, 0, 17)
+-/*0x01228*/	u64	rts_access_l4prtcl_flex;
+-#define VXGE_HW_RTS_ACCESS_L4PRTCL_FLEX_EN(val) vxge_vBIT(val, 0, 17)
+-/*0x01230*/	u64	rts_access_ipfrag;
+-#define VXGE_HW_RTS_ACCESS_IPFRAG_EN(val) vxge_vBIT(val, 0, 17)
+-
+-} __packed;
+-
+-struct vxge_hw_memrepair_reg {
+-	u64	unused1;
+-	u64	unused2;
+-} __packed;
+-
+-struct vxge_hw_pcicfgmgmt_reg {
+-
+-/*0x00000*/	u64	resource_no;
+-#define	VXGE_HW_RESOURCE_NO_PFN_OR_VF	BIT(3)
+-/*0x00008*/	u64	bargrp_pf_or_vf_bar0_mask;
+-#define	VXGE_HW_BARGRP_PF_OR_VF_BAR0_MASK_BARGRP_PF_OR_VF_BAR0_MASK(val) \
+-							vxge_vBIT(val, 2, 6)
+-/*0x00010*/	u64	bargrp_pf_or_vf_bar1_mask;
+-#define	VXGE_HW_BARGRP_PF_OR_VF_BAR1_MASK_BARGRP_PF_OR_VF_BAR1_MASK(val) \
+-							vxge_vBIT(val, 2, 6)
+-/*0x00018*/	u64	bargrp_pf_or_vf_bar2_mask;
+-#define	VXGE_HW_BARGRP_PF_OR_VF_BAR2_MASK_BARGRP_PF_OR_VF_BAR2_MASK(val) \
+-							vxge_vBIT(val, 2, 6)
+-/*0x00020*/	u64	msixgrp_no;
+-#define VXGE_HW_MSIXGRP_NO_TABLE_SIZE(val) vxge_vBIT(val, 5, 11)
+-
+-} __packed;
+-
+-struct vxge_hw_mrpcim_reg {
+-/*0x00000*/	u64	g3fbct_int_status;
+-#define	VXGE_HW_G3FBCT_INT_STATUS_ERR_G3IF_INT	vxge_mBIT(0)
+-/*0x00008*/	u64	g3fbct_int_mask;
+-/*0x00010*/	u64	g3fbct_err_reg;
+-#define	VXGE_HW_G3FBCT_ERR_REG_G3IF_SM_ERR	vxge_mBIT(4)
+-#define	VXGE_HW_G3FBCT_ERR_REG_G3IF_GDDR3_DECC	vxge_mBIT(5)
+-#define	VXGE_HW_G3FBCT_ERR_REG_G3IF_GDDR3_U_DECC	vxge_mBIT(6)
+-#define	VXGE_HW_G3FBCT_ERR_REG_G3IF_CTRL_FIFO_DECC	vxge_mBIT(7)
+-#define	VXGE_HW_G3FBCT_ERR_REG_G3IF_GDDR3_SECC	vxge_mBIT(29)
+-#define	VXGE_HW_G3FBCT_ERR_REG_G3IF_GDDR3_U_SECC	vxge_mBIT(30)
+-#define	VXGE_HW_G3FBCT_ERR_REG_G3IF_CTRL_FIFO_SECC	vxge_mBIT(31)
+-/*0x00018*/	u64	g3fbct_err_mask;
+-/*0x00020*/	u64	g3fbct_err_alarm;
+-
+-	u8	unused00a00[0x00a00-0x00028];
+-
+-/*0x00a00*/	u64	wrdma_int_status;
+-#define	VXGE_HW_WRDMA_INT_STATUS_RC_ALARM_RC_INT	vxge_mBIT(0)
+-#define	VXGE_HW_WRDMA_INT_STATUS_RXDRM_SM_ERR_RXDRM_INT	vxge_mBIT(1)
+-#define	VXGE_HW_WRDMA_INT_STATUS_RXDCM_SM_ERR_RXDCM_SM_INT	vxge_mBIT(2)
+-#define	VXGE_HW_WRDMA_INT_STATUS_RXDWM_SM_ERR_RXDWM_INT	vxge_mBIT(3)
+-#define	VXGE_HW_WRDMA_INT_STATUS_RDA_ERR_RDA_INT	vxge_mBIT(6)
+-#define	VXGE_HW_WRDMA_INT_STATUS_RDA_ECC_DB_RDA_ECC_DB_INT	vxge_mBIT(8)
+-#define	VXGE_HW_WRDMA_INT_STATUS_RDA_ECC_SG_RDA_ECC_SG_INT	vxge_mBIT(9)
+-#define	VXGE_HW_WRDMA_INT_STATUS_FRF_ALARM_FRF_INT	vxge_mBIT(12)
+-#define	VXGE_HW_WRDMA_INT_STATUS_ROCRC_ALARM_ROCRC_INT	vxge_mBIT(13)
+-#define	VXGE_HW_WRDMA_INT_STATUS_WDE0_ALARM_WDE0_INT	vxge_mBIT(14)
+-#define	VXGE_HW_WRDMA_INT_STATUS_WDE1_ALARM_WDE1_INT	vxge_mBIT(15)
+-#define	VXGE_HW_WRDMA_INT_STATUS_WDE2_ALARM_WDE2_INT	vxge_mBIT(16)
+-#define	VXGE_HW_WRDMA_INT_STATUS_WDE3_ALARM_WDE3_INT	vxge_mBIT(17)
+-/*0x00a08*/	u64	wrdma_int_mask;
+-/*0x00a10*/	u64	rc_alarm_reg;
+-#define	VXGE_HW_RC_ALARM_REG_FTC_SM_ERR	vxge_mBIT(0)
+-#define	VXGE_HW_RC_ALARM_REG_FTC_SM_PHASE_ERR	vxge_mBIT(1)
+-#define	VXGE_HW_RC_ALARM_REG_BTDWM_SM_ERR	vxge_mBIT(2)
+-#define	VXGE_HW_RC_ALARM_REG_BTC_SM_ERR	vxge_mBIT(3)
+-#define	VXGE_HW_RC_ALARM_REG_BTDCM_SM_ERR	vxge_mBIT(4)
+-#define	VXGE_HW_RC_ALARM_REG_BTDRM_SM_ERR	vxge_mBIT(5)
+-#define	VXGE_HW_RC_ALARM_REG_RMM_RXD_RC_ECC_DB_ERR	vxge_mBIT(6)
+-#define	VXGE_HW_RC_ALARM_REG_RMM_RXD_RC_ECC_SG_ERR	vxge_mBIT(7)
+-#define	VXGE_HW_RC_ALARM_REG_RHS_RXD_RHS_ECC_DB_ERR	vxge_mBIT(8)
+-#define	VXGE_HW_RC_ALARM_REG_RHS_RXD_RHS_ECC_SG_ERR	vxge_mBIT(9)
+-#define	VXGE_HW_RC_ALARM_REG_RMM_SM_ERR	vxge_mBIT(10)
+-#define	VXGE_HW_RC_ALARM_REG_BTC_VPATH_MISMATCH_ERR	vxge_mBIT(12)
+-/*0x00a18*/	u64	rc_alarm_mask;
+-/*0x00a20*/	u64	rc_alarm_alarm;
+-/*0x00a28*/	u64	rxdrm_sm_err_reg;
+-#define VXGE_HW_RXDRM_SM_ERR_REG_PRC_VP(n)	vxge_mBIT(n)
+-/*0x00a30*/	u64	rxdrm_sm_err_mask;
+-/*0x00a38*/	u64	rxdrm_sm_err_alarm;
+-/*0x00a40*/	u64	rxdcm_sm_err_reg;
+-#define VXGE_HW_RXDCM_SM_ERR_REG_PRC_VP(n)	vxge_mBIT(n)
+-/*0x00a48*/	u64	rxdcm_sm_err_mask;
+-/*0x00a50*/	u64	rxdcm_sm_err_alarm;
+-/*0x00a58*/	u64	rxdwm_sm_err_reg;
+-#define VXGE_HW_RXDWM_SM_ERR_REG_PRC_VP(n)	vxge_mBIT(n)
+-/*0x00a60*/	u64	rxdwm_sm_err_mask;
+-/*0x00a68*/	u64	rxdwm_sm_err_alarm;
+-/*0x00a70*/	u64	rda_err_reg;
+-#define	VXGE_HW_RDA_ERR_REG_RDA_SM0_ERR_ALARM	vxge_mBIT(0)
+-#define	VXGE_HW_RDA_ERR_REG_RDA_MISC_ERR	vxge_mBIT(1)
+-#define	VXGE_HW_RDA_ERR_REG_RDA_PCIX_ERR	vxge_mBIT(2)
+-#define	VXGE_HW_RDA_ERR_REG_RDA_RXD_ECC_DB_ERR	vxge_mBIT(3)
+-#define	VXGE_HW_RDA_ERR_REG_RDA_FRM_ECC_DB_ERR	vxge_mBIT(4)
+-#define	VXGE_HW_RDA_ERR_REG_RDA_UQM_ECC_DB_ERR	vxge_mBIT(5)
+-#define	VXGE_HW_RDA_ERR_REG_RDA_IMM_ECC_DB_ERR	vxge_mBIT(6)
+-#define	VXGE_HW_RDA_ERR_REG_RDA_TIM_ECC_DB_ERR	vxge_mBIT(7)
+-/*0x00a78*/	u64	rda_err_mask;
+-/*0x00a80*/	u64	rda_err_alarm;
+-/*0x00a88*/	u64	rda_ecc_db_reg;
+-#define VXGE_HW_RDA_ECC_DB_REG_RDA_RXD_ERR(n)	vxge_mBIT(n)
+-/*0x00a90*/	u64	rda_ecc_db_mask;
+-/*0x00a98*/	u64	rda_ecc_db_alarm;
+-/*0x00aa0*/	u64	rda_ecc_sg_reg;
+-#define VXGE_HW_RDA_ECC_SG_REG_RDA_RXD_ERR(n)	vxge_mBIT(n)
+-/*0x00aa8*/	u64	rda_ecc_sg_mask;
+-/*0x00ab0*/	u64	rda_ecc_sg_alarm;
+-/*0x00ab8*/	u64	rqa_err_reg;
+-#define	VXGE_HW_RQA_ERR_REG_RQA_SM_ERR_ALARM	vxge_mBIT(0)
+-/*0x00ac0*/	u64	rqa_err_mask;
+-/*0x00ac8*/	u64	rqa_err_alarm;
+-/*0x00ad0*/	u64	frf_alarm_reg;
+-#define VXGE_HW_FRF_ALARM_REG_PRC_VP_FRF_SM_ERR(n)	vxge_mBIT(n)
+-/*0x00ad8*/	u64	frf_alarm_mask;
+-/*0x00ae0*/	u64	frf_alarm_alarm;
+-/*0x00ae8*/	u64	rocrc_alarm_reg;
+-#define	VXGE_HW_ROCRC_ALARM_REG_QCQ_QCC_BYP_ECC_DB	vxge_mBIT(0)
+-#define	VXGE_HW_ROCRC_ALARM_REG_QCQ_QCC_BYP_ECC_SG	vxge_mBIT(1)
+-#define	VXGE_HW_ROCRC_ALARM_REG_NOA_NMA_SM_ERR	vxge_mBIT(2)
+-#define	VXGE_HW_ROCRC_ALARM_REG_NOA_IMMM_ECC_DB	vxge_mBIT(3)
+-#define	VXGE_HW_ROCRC_ALARM_REG_NOA_IMMM_ECC_SG	vxge_mBIT(4)
+-#define	VXGE_HW_ROCRC_ALARM_REG_UDQ_UMQM_ECC_DB	vxge_mBIT(5)
+-#define	VXGE_HW_ROCRC_ALARM_REG_UDQ_UMQM_ECC_SG	vxge_mBIT(6)
+-#define	VXGE_HW_ROCRC_ALARM_REG_NOA_RCBM_ECC_DB	vxge_mBIT(11)
+-#define	VXGE_HW_ROCRC_ALARM_REG_NOA_RCBM_ECC_SG	vxge_mBIT(12)
+-#define	VXGE_HW_ROCRC_ALARM_REG_QCQ_MULTI_EGB_RSVD_ERR	vxge_mBIT(13)
+-#define	VXGE_HW_ROCRC_ALARM_REG_QCQ_MULTI_EGB_OWN_ERR	vxge_mBIT(14)
+-#define	VXGE_HW_ROCRC_ALARM_REG_QCQ_MULTI_BYP_OWN_ERR	vxge_mBIT(15)
+-#define	VXGE_HW_ROCRC_ALARM_REG_QCQ_OWN_NOT_ASSIGNED_ERR	vxge_mBIT(16)
+-#define	VXGE_HW_ROCRC_ALARM_REG_QCQ_OWN_RSVD_SYNC_ERR	vxge_mBIT(17)
+-#define	VXGE_HW_ROCRC_ALARM_REG_QCQ_LOST_EGB_ERR	vxge_mBIT(18)
+-#define	VXGE_HW_ROCRC_ALARM_REG_RCQ_BYPQ0_OVERFLOW	vxge_mBIT(19)
+-#define	VXGE_HW_ROCRC_ALARM_REG_RCQ_BYPQ1_OVERFLOW	vxge_mBIT(20)
+-#define	VXGE_HW_ROCRC_ALARM_REG_RCQ_BYPQ2_OVERFLOW	vxge_mBIT(21)
+-#define	VXGE_HW_ROCRC_ALARM_REG_NOA_WCT_CMD_FIFO_ERR	vxge_mBIT(22)
+-/*0x00af0*/	u64	rocrc_alarm_mask;
+-/*0x00af8*/	u64	rocrc_alarm_alarm;
+-/*0x00b00*/	u64	wde0_alarm_reg;
+-#define	VXGE_HW_WDE0_ALARM_REG_WDE0_DCC_SM_ERR	vxge_mBIT(0)
+-#define	VXGE_HW_WDE0_ALARM_REG_WDE0_PRM_SM_ERR	vxge_mBIT(1)
+-#define	VXGE_HW_WDE0_ALARM_REG_WDE0_CP_SM_ERR	vxge_mBIT(2)
+-#define	VXGE_HW_WDE0_ALARM_REG_WDE0_CP_CMD_ERR	vxge_mBIT(3)
+-#define	VXGE_HW_WDE0_ALARM_REG_WDE0_PCR_SM_ERR	vxge_mBIT(4)
+-/*0x00b08*/	u64	wde0_alarm_mask;
+-/*0x00b10*/	u64	wde0_alarm_alarm;
+-/*0x00b18*/	u64	wde1_alarm_reg;
+-#define	VXGE_HW_WDE1_ALARM_REG_WDE1_DCC_SM_ERR	vxge_mBIT(0)
+-#define	VXGE_HW_WDE1_ALARM_REG_WDE1_PRM_SM_ERR	vxge_mBIT(1)
+-#define	VXGE_HW_WDE1_ALARM_REG_WDE1_CP_SM_ERR	vxge_mBIT(2)
+-#define	VXGE_HW_WDE1_ALARM_REG_WDE1_CP_CMD_ERR	vxge_mBIT(3)
+-#define	VXGE_HW_WDE1_ALARM_REG_WDE1_PCR_SM_ERR	vxge_mBIT(4)
+-/*0x00b20*/	u64	wde1_alarm_mask;
+-/*0x00b28*/	u64	wde1_alarm_alarm;
+-/*0x00b30*/	u64	wde2_alarm_reg;
+-#define	VXGE_HW_WDE2_ALARM_REG_WDE2_DCC_SM_ERR	vxge_mBIT(0)
+-#define	VXGE_HW_WDE2_ALARM_REG_WDE2_PRM_SM_ERR	vxge_mBIT(1)
+-#define	VXGE_HW_WDE2_ALARM_REG_WDE2_CP_SM_ERR	vxge_mBIT(2)
+-#define	VXGE_HW_WDE2_ALARM_REG_WDE2_CP_CMD_ERR	vxge_mBIT(3)
+-#define	VXGE_HW_WDE2_ALARM_REG_WDE2_PCR_SM_ERR	vxge_mBIT(4)
+-/*0x00b38*/	u64	wde2_alarm_mask;
+-/*0x00b40*/	u64	wde2_alarm_alarm;
+-/*0x00b48*/	u64	wde3_alarm_reg;
+-#define	VXGE_HW_WDE3_ALARM_REG_WDE3_DCC_SM_ERR	vxge_mBIT(0)
+-#define	VXGE_HW_WDE3_ALARM_REG_WDE3_PRM_SM_ERR	vxge_mBIT(1)
+-#define	VXGE_HW_WDE3_ALARM_REG_WDE3_CP_SM_ERR	vxge_mBIT(2)
+-#define	VXGE_HW_WDE3_ALARM_REG_WDE3_CP_CMD_ERR	vxge_mBIT(3)
+-#define	VXGE_HW_WDE3_ALARM_REG_WDE3_PCR_SM_ERR	vxge_mBIT(4)
+-/*0x00b50*/	u64	wde3_alarm_mask;
+-/*0x00b58*/	u64	wde3_alarm_alarm;
+-
+-	u8	unused00be8[0x00be8-0x00b60];
+-
+-/*0x00be8*/	u64	rx_w_round_robin_0;
+-#define VXGE_HW_RX_W_ROUND_ROBIN_0_RX_W_PRIORITY_SS_0(val) vxge_vBIT(val, 3, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_0_RX_W_PRIORITY_SS_1(val) vxge_vBIT(val, 11, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_0_RX_W_PRIORITY_SS_2(val) vxge_vBIT(val, 19, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_0_RX_W_PRIORITY_SS_3(val) vxge_vBIT(val, 27, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_0_RX_W_PRIORITY_SS_4(val) vxge_vBIT(val, 35, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_0_RX_W_PRIORITY_SS_5(val) vxge_vBIT(val, 43, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_0_RX_W_PRIORITY_SS_6(val) vxge_vBIT(val, 51, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_0_RX_W_PRIORITY_SS_7(val) vxge_vBIT(val, 59, 5)
+-/*0x00bf0*/	u64	rx_w_round_robin_1;
+-#define VXGE_HW_RX_W_ROUND_ROBIN_1_RX_W_PRIORITY_SS_8(val) vxge_vBIT(val, 3, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_1_RX_W_PRIORITY_SS_9(val) vxge_vBIT(val, 11, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_1_RX_W_PRIORITY_SS_10(val) \
+-						vxge_vBIT(val, 19, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_1_RX_W_PRIORITY_SS_11(val) \
+-						vxge_vBIT(val, 27, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_1_RX_W_PRIORITY_SS_12(val) \
+-						vxge_vBIT(val, 35, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_1_RX_W_PRIORITY_SS_13(val) \
+-						vxge_vBIT(val, 43, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_1_RX_W_PRIORITY_SS_14(val) \
+-						vxge_vBIT(val, 51, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_1_RX_W_PRIORITY_SS_15(val) \
+-						vxge_vBIT(val, 59, 5)
+-/*0x00bf8*/	u64	rx_w_round_robin_2;
+-#define VXGE_HW_RX_W_ROUND_ROBIN_2_RX_W_PRIORITY_SS_16(val) vxge_vBIT(val, 3, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_2_RX_W_PRIORITY_SS_17(val) \
+-							vxge_vBIT(val, 11, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_2_RX_W_PRIORITY_SS_18(val) \
+-							vxge_vBIT(val, 19, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_2_RX_W_PRIORITY_SS_19(val) \
+-							vxge_vBIT(val, 27, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_2_RX_W_PRIORITY_SS_20(val) \
+-							vxge_vBIT(val, 35, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_2_RX_W_PRIORITY_SS_21(val) \
+-							vxge_vBIT(val, 43, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_2_RX_W_PRIORITY_SS_22(val) \
+-							vxge_vBIT(val, 51, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_2_RX_W_PRIORITY_SS_23(val) \
+-							vxge_vBIT(val, 59, 5)
+-/*0x00c00*/	u64	rx_w_round_robin_3;
+-#define VXGE_HW_RX_W_ROUND_ROBIN_3_RX_W_PRIORITY_SS_24(val) vxge_vBIT(val, 3, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_3_RX_W_PRIORITY_SS_25(val) \
+-							vxge_vBIT(val, 11, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_3_RX_W_PRIORITY_SS_26(val) \
+-							vxge_vBIT(val, 19, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_3_RX_W_PRIORITY_SS_27(val) \
+-							vxge_vBIT(val, 27, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_3_RX_W_PRIORITY_SS_28(val) \
+-							vxge_vBIT(val, 35, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_3_RX_W_PRIORITY_SS_29(val) \
+-							vxge_vBIT(val, 43, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_3_RX_W_PRIORITY_SS_30(val) \
+-							vxge_vBIT(val, 51, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_3_RX_W_PRIORITY_SS_31(val) \
+-							vxge_vBIT(val, 59, 5)
+-/*0x00c08*/	u64	rx_w_round_robin_4;
+-#define VXGE_HW_RX_W_ROUND_ROBIN_4_RX_W_PRIORITY_SS_32(val) vxge_vBIT(val, 3, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_4_RX_W_PRIORITY_SS_33(val) \
+-							vxge_vBIT(val, 11, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_4_RX_W_PRIORITY_SS_34(val) \
+-							vxge_vBIT(val, 19, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_4_RX_W_PRIORITY_SS_35(val) \
+-							vxge_vBIT(val, 27, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_4_RX_W_PRIORITY_SS_36(val) \
+-							vxge_vBIT(val, 35, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_4_RX_W_PRIORITY_SS_37(val) \
+-							vxge_vBIT(val, 43, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_4_RX_W_PRIORITY_SS_38(val) \
+-							vxge_vBIT(val, 51, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_4_RX_W_PRIORITY_SS_39(val) \
+-							vxge_vBIT(val, 59, 5)
+-/*0x00c10*/	u64	rx_w_round_robin_5;
+-#define VXGE_HW_RX_W_ROUND_ROBIN_5_RX_W_PRIORITY_SS_40(val) vxge_vBIT(val, 3, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_5_RX_W_PRIORITY_SS_41(val) \
+-							vxge_vBIT(val, 11, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_5_RX_W_PRIORITY_SS_42(val) \
+-							vxge_vBIT(val, 19, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_5_RX_W_PRIORITY_SS_43(val) \
+-							vxge_vBIT(val, 27, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_5_RX_W_PRIORITY_SS_44(val) \
+-							vxge_vBIT(val, 35, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_5_RX_W_PRIORITY_SS_45(val) \
+-							vxge_vBIT(val, 43, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_5_RX_W_PRIORITY_SS_46(val) \
+-							vxge_vBIT(val, 51, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_5_RX_W_PRIORITY_SS_47(val) \
+-							vxge_vBIT(val, 59, 5)
+-/*0x00c18*/	u64	rx_w_round_robin_6;
+-#define VXGE_HW_RX_W_ROUND_ROBIN_6_RX_W_PRIORITY_SS_48(val) vxge_vBIT(val, 3, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_6_RX_W_PRIORITY_SS_49(val) \
+-							vxge_vBIT(val, 11, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_6_RX_W_PRIORITY_SS_50(val) \
+-							vxge_vBIT(val, 19, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_6_RX_W_PRIORITY_SS_51(val) \
+-							vxge_vBIT(val, 27, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_6_RX_W_PRIORITY_SS_52(val) \
+-							vxge_vBIT(val, 35, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_6_RX_W_PRIORITY_SS_53(val) \
+-							vxge_vBIT(val, 43, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_6_RX_W_PRIORITY_SS_54(val) \
+-							vxge_vBIT(val, 51, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_6_RX_W_PRIORITY_SS_55(val) \
+-							vxge_vBIT(val, 59, 5)
+-/*0x00c20*/	u64	rx_w_round_robin_7;
+-#define VXGE_HW_RX_W_ROUND_ROBIN_7_RX_W_PRIORITY_SS_56(val) vxge_vBIT(val, 3, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_7_RX_W_PRIORITY_SS_57(val) \
+-							vxge_vBIT(val, 11, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_7_RX_W_PRIORITY_SS_58(val) \
+-							vxge_vBIT(val, 19, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_7_RX_W_PRIORITY_SS_59(val) \
+-							vxge_vBIT(val, 27, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_7_RX_W_PRIORITY_SS_60(val) \
+-							vxge_vBIT(val, 35, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_7_RX_W_PRIORITY_SS_61(val) \
+-							vxge_vBIT(val, 43, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_7_RX_W_PRIORITY_SS_62(val) \
+-							vxge_vBIT(val, 51, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_7_RX_W_PRIORITY_SS_63(val) \
+-							vxge_vBIT(val, 59, 5)
+-/*0x00c28*/	u64	rx_w_round_robin_8;
+-#define VXGE_HW_RX_W_ROUND_ROBIN_8_RX_W_PRIORITY_SS_64(val) vxge_vBIT(val, 3, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_8_RX_W_PRIORITY_SS_65(val) \
+-							vxge_vBIT(val, 11, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_8_RX_W_PRIORITY_SS_66(val) \
+-							vxge_vBIT(val, 19, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_8_RX_W_PRIORITY_SS_67(val) \
+-							vxge_vBIT(val, 27, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_8_RX_W_PRIORITY_SS_68(val) \
+-							vxge_vBIT(val, 35, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_8_RX_W_PRIORITY_SS_69(val) \
+-						vxge_vBIT(val, 43, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_8_RX_W_PRIORITY_SS_70(val) \
+-							vxge_vBIT(val, 51, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_8_RX_W_PRIORITY_SS_71(val) \
+-						vxge_vBIT(val, 59, 5)
+-/*0x00c30*/	u64	rx_w_round_robin_9;
+-#define VXGE_HW_RX_W_ROUND_ROBIN_9_RX_W_PRIORITY_SS_72(val) vxge_vBIT(val, 3, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_9_RX_W_PRIORITY_SS_73(val) \
+-							vxge_vBIT(val, 11, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_9_RX_W_PRIORITY_SS_74(val) \
+-							vxge_vBIT(val, 19, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_9_RX_W_PRIORITY_SS_75(val) \
+-							vxge_vBIT(val, 27, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_9_RX_W_PRIORITY_SS_76(val) \
+-							vxge_vBIT(val, 35, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_9_RX_W_PRIORITY_SS_77(val) \
+-							vxge_vBIT(val, 43, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_9_RX_W_PRIORITY_SS_78(val) \
+-							vxge_vBIT(val, 51, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_9_RX_W_PRIORITY_SS_79(val) \
+-							vxge_vBIT(val, 59, 5)
+-/*0x00c38*/	u64	rx_w_round_robin_10;
+-#define VXGE_HW_RX_W_ROUND_ROBIN_10_RX_W_PRIORITY_SS_80(val) \
+-							vxge_vBIT(val, 3, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_10_RX_W_PRIORITY_SS_81(val) \
+-							vxge_vBIT(val, 11, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_10_RX_W_PRIORITY_SS_82(val) \
+-							vxge_vBIT(val, 19, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_10_RX_W_PRIORITY_SS_83(val) \
+-							vxge_vBIT(val, 27, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_10_RX_W_PRIORITY_SS_84(val) \
+-							vxge_vBIT(val, 35, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_10_RX_W_PRIORITY_SS_85(val) \
+-							vxge_vBIT(val, 43, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_10_RX_W_PRIORITY_SS_86(val) \
+-							vxge_vBIT(val, 51, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_10_RX_W_PRIORITY_SS_87(val) \
+-							vxge_vBIT(val, 59, 5)
+-/*0x00c40*/	u64	rx_w_round_robin_11;
+-#define VXGE_HW_RX_W_ROUND_ROBIN_11_RX_W_PRIORITY_SS_88(val) \
+-							vxge_vBIT(val, 3, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_11_RX_W_PRIORITY_SS_89(val) \
+-							vxge_vBIT(val, 11, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_11_RX_W_PRIORITY_SS_90(val) \
+-							vxge_vBIT(val, 19, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_11_RX_W_PRIORITY_SS_91(val) \
+-							vxge_vBIT(val, 27, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_11_RX_W_PRIORITY_SS_92(val) \
+-							vxge_vBIT(val, 35, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_11_RX_W_PRIORITY_SS_93(val) \
+-							vxge_vBIT(val, 43, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_11_RX_W_PRIORITY_SS_94(val) \
+-							vxge_vBIT(val, 51, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_11_RX_W_PRIORITY_SS_95(val) \
+-							vxge_vBIT(val, 59, 5)
+-/*0x00c48*/	u64	rx_w_round_robin_12;
+-#define VXGE_HW_RX_W_ROUND_ROBIN_12_RX_W_PRIORITY_SS_96(val) \
+-							vxge_vBIT(val, 3, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_12_RX_W_PRIORITY_SS_97(val) \
+-							vxge_vBIT(val, 11, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_12_RX_W_PRIORITY_SS_98(val) \
+-							vxge_vBIT(val, 19, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_12_RX_W_PRIORITY_SS_99(val) \
+-							vxge_vBIT(val, 27, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_12_RX_W_PRIORITY_SS_100(val) \
+-							vxge_vBIT(val, 35, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_12_RX_W_PRIORITY_SS_101(val) \
+-							vxge_vBIT(val, 43, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_12_RX_W_PRIORITY_SS_102(val) \
+-							vxge_vBIT(val, 51, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_12_RX_W_PRIORITY_SS_103(val) \
+-							vxge_vBIT(val, 59, 5)
+-/*0x00c50*/	u64	rx_w_round_robin_13;
+-#define VXGE_HW_RX_W_ROUND_ROBIN_13_RX_W_PRIORITY_SS_104(val) \
+-							vxge_vBIT(val, 3, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_13_RX_W_PRIORITY_SS_105(val) \
+-							vxge_vBIT(val, 11, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_13_RX_W_PRIORITY_SS_106(val) \
+-							vxge_vBIT(val, 19, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_13_RX_W_PRIORITY_SS_107(val) \
+-							vxge_vBIT(val, 27, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_13_RX_W_PRIORITY_SS_108(val) \
+-							vxge_vBIT(val, 35, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_13_RX_W_PRIORITY_SS_109(val) \
+-							vxge_vBIT(val, 43, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_13_RX_W_PRIORITY_SS_110(val) \
+-							vxge_vBIT(val, 51, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_13_RX_W_PRIORITY_SS_111(val) \
+-							vxge_vBIT(val, 59, 5)
+-/*0x00c58*/	u64	rx_w_round_robin_14;
+-#define VXGE_HW_RX_W_ROUND_ROBIN_14_RX_W_PRIORITY_SS_112(val) \
+-							vxge_vBIT(val, 3, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_14_RX_W_PRIORITY_SS_113(val) \
+-							vxge_vBIT(val, 11, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_14_RX_W_PRIORITY_SS_114(val) \
+-							vxge_vBIT(val, 19, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_14_RX_W_PRIORITY_SS_115(val) \
+-							vxge_vBIT(val, 27, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_14_RX_W_PRIORITY_SS_116(val) \
+-							vxge_vBIT(val, 35, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_14_RX_W_PRIORITY_SS_117(val) \
+-							vxge_vBIT(val, 43, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_14_RX_W_PRIORITY_SS_118(val) \
+-							vxge_vBIT(val, 51, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_14_RX_W_PRIORITY_SS_119(val) \
+-							vxge_vBIT(val, 59, 5)
+-/*0x00c60*/	u64	rx_w_round_robin_15;
+-#define VXGE_HW_RX_W_ROUND_ROBIN_15_RX_W_PRIORITY_SS_120(val) \
+-							vxge_vBIT(val, 3, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_15_RX_W_PRIORITY_SS_121(val) \
+-							vxge_vBIT(val, 11, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_15_RX_W_PRIORITY_SS_122(val) \
+-							vxge_vBIT(val, 19, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_15_RX_W_PRIORITY_SS_123(val) \
+-							vxge_vBIT(val, 27, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_15_RX_W_PRIORITY_SS_124(val) \
+-							vxge_vBIT(val, 35, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_15_RX_W_PRIORITY_SS_125(val) \
+-							vxge_vBIT(val, 43, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_15_RX_W_PRIORITY_SS_126(val) \
+-							vxge_vBIT(val, 51, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_15_RX_W_PRIORITY_SS_127(val) \
+-							vxge_vBIT(val, 59, 5)
+-/*0x00c68*/	u64	rx_w_round_robin_16;
+-#define VXGE_HW_RX_W_ROUND_ROBIN_16_RX_W_PRIORITY_SS_128(val) \
+-							vxge_vBIT(val, 3, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_16_RX_W_PRIORITY_SS_129(val) \
+-							vxge_vBIT(val, 11, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_16_RX_W_PRIORITY_SS_130(val) \
+-							vxge_vBIT(val, 19, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_16_RX_W_PRIORITY_SS_131(val) \
+-							vxge_vBIT(val, 27, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_16_RX_W_PRIORITY_SS_132(val) \
+-							vxge_vBIT(val, 35, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_16_RX_W_PRIORITY_SS_133(val) \
+-							vxge_vBIT(val, 43, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_16_RX_W_PRIORITY_SS_134(val) \
+-							vxge_vBIT(val, 51, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_16_RX_W_PRIORITY_SS_135(val) \
+-							vxge_vBIT(val, 59, 5)
+-/*0x00c70*/	u64	rx_w_round_robin_17;
+-#define VXGE_HW_RX_W_ROUND_ROBIN_17_RX_W_PRIORITY_SS_136(val) \
+-							vxge_vBIT(val, 3, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_17_RX_W_PRIORITY_SS_137(val) \
+-							vxge_vBIT(val, 11, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_17_RX_W_PRIORITY_SS_138(val) \
+-							vxge_vBIT(val, 19, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_17_RX_W_PRIORITY_SS_139(val) \
+-							vxge_vBIT(val, 27, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_17_RX_W_PRIORITY_SS_140(val) \
+-							vxge_vBIT(val, 35, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_17_RX_W_PRIORITY_SS_141(val) \
+-							vxge_vBIT(val, 43, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_17_RX_W_PRIORITY_SS_142(val) \
+-							vxge_vBIT(val, 51, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_17_RX_W_PRIORITY_SS_143(val) \
+-							vxge_vBIT(val, 59, 5)
+-/*0x00c78*/	u64	rx_w_round_robin_18;
+-#define VXGE_HW_RX_W_ROUND_ROBIN_18_RX_W_PRIORITY_SS_144(val) \
+-							vxge_vBIT(val, 3, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_18_RX_W_PRIORITY_SS_145(val) \
+-							vxge_vBIT(val, 11, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_18_RX_W_PRIORITY_SS_146(val) \
+-							vxge_vBIT(val, 19, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_18_RX_W_PRIORITY_SS_147(val) \
+-							vxge_vBIT(val, 27, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_18_RX_W_PRIORITY_SS_148(val) \
+-							vxge_vBIT(val, 35, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_18_RX_W_PRIORITY_SS_149(val) \
+-							vxge_vBIT(val, 43, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_18_RX_W_PRIORITY_SS_150(val) \
+-							vxge_vBIT(val, 51, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_18_RX_W_PRIORITY_SS_151(val) \
+-							vxge_vBIT(val, 59, 5)
+-/*0x00c80*/	u64	rx_w_round_robin_19;
+-#define VXGE_HW_RX_W_ROUND_ROBIN_19_RX_W_PRIORITY_SS_152(val) \
+-							vxge_vBIT(val, 3, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_19_RX_W_PRIORITY_SS_153(val) \
+-							vxge_vBIT(val, 11, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_19_RX_W_PRIORITY_SS_154(val) \
+-							vxge_vBIT(val, 19, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_19_RX_W_PRIORITY_SS_155(val) \
+-							vxge_vBIT(val, 27, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_19_RX_W_PRIORITY_SS_156(val) \
+-							vxge_vBIT(val, 35, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_19_RX_W_PRIORITY_SS_157(val) \
+-							vxge_vBIT(val, 43, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_19_RX_W_PRIORITY_SS_158(val) \
+-							vxge_vBIT(val, 51, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_19_RX_W_PRIORITY_SS_159(val) \
+-							vxge_vBIT(val, 59, 5)
+-/*0x00c88*/	u64	rx_w_round_robin_20;
+-#define VXGE_HW_RX_W_ROUND_ROBIN_20_RX_W_PRIORITY_SS_160(val) \
+-							vxge_vBIT(val, 3, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_20_RX_W_PRIORITY_SS_161(val) \
+-							vxge_vBIT(val, 11, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_20_RX_W_PRIORITY_SS_162(val) \
+-							vxge_vBIT(val, 19, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_20_RX_W_PRIORITY_SS_163(val) \
+-							vxge_vBIT(val, 27, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_20_RX_W_PRIORITY_SS_164(val) \
+-							vxge_vBIT(val, 35, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_20_RX_W_PRIORITY_SS_165(val) \
+-							vxge_vBIT(val, 43, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_20_RX_W_PRIORITY_SS_166(val) \
+-							vxge_vBIT(val, 51, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_20_RX_W_PRIORITY_SS_167(val) \
+-							vxge_vBIT(val, 59, 5)
+-/*0x00c90*/	u64	rx_w_round_robin_21;
+-#define VXGE_HW_RX_W_ROUND_ROBIN_21_RX_W_PRIORITY_SS_168(val) \
+-							vxge_vBIT(val, 3, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_21_RX_W_PRIORITY_SS_169(val) \
+-							vxge_vBIT(val, 11, 5)
+-#define VXGE_HW_RX_W_ROUND_ROBIN_21_RX_W_PRIORITY_SS_170(val) \
+-							vxge_vBIT(val, 19, 5)
+-
+-#define VXGE_HW_WRR_RING_SERVICE_STATES			171
+-#define VXGE_HW_WRR_RING_COUNT				22
+-
+-/*0x00c98*/	u64	rx_queue_priority_0;
+-#define VXGE_HW_RX_QUEUE_PRIORITY_0_RX_Q_NUMBER_0(val) vxge_vBIT(val, 3, 5)
+-#define VXGE_HW_RX_QUEUE_PRIORITY_0_RX_Q_NUMBER_1(val) vxge_vBIT(val, 11, 5)
+-#define VXGE_HW_RX_QUEUE_PRIORITY_0_RX_Q_NUMBER_2(val) vxge_vBIT(val, 19, 5)
+-#define VXGE_HW_RX_QUEUE_PRIORITY_0_RX_Q_NUMBER_3(val) vxge_vBIT(val, 27, 5)
+-#define VXGE_HW_RX_QUEUE_PRIORITY_0_RX_Q_NUMBER_4(val) vxge_vBIT(val, 35, 5)
+-#define VXGE_HW_RX_QUEUE_PRIORITY_0_RX_Q_NUMBER_5(val) vxge_vBIT(val, 43, 5)
+-#define VXGE_HW_RX_QUEUE_PRIORITY_0_RX_Q_NUMBER_6(val) vxge_vBIT(val, 51, 5)
+-#define VXGE_HW_RX_QUEUE_PRIORITY_0_RX_Q_NUMBER_7(val) vxge_vBIT(val, 59, 5)
+-/*0x00ca0*/	u64	rx_queue_priority_1;
+-#define VXGE_HW_RX_QUEUE_PRIORITY_1_RX_Q_NUMBER_8(val) vxge_vBIT(val, 3, 5)
+-#define VXGE_HW_RX_QUEUE_PRIORITY_1_RX_Q_NUMBER_9(val) vxge_vBIT(val, 11, 5)
+-#define VXGE_HW_RX_QUEUE_PRIORITY_1_RX_Q_NUMBER_10(val) vxge_vBIT(val, 19, 5)
+-#define VXGE_HW_RX_QUEUE_PRIORITY_1_RX_Q_NUMBER_11(val) vxge_vBIT(val, 27, 5)
+-#define VXGE_HW_RX_QUEUE_PRIORITY_1_RX_Q_NUMBER_12(val) vxge_vBIT(val, 35, 5)
+-#define VXGE_HW_RX_QUEUE_PRIORITY_1_RX_Q_NUMBER_13(val) vxge_vBIT(val, 43, 5)
+-#define VXGE_HW_RX_QUEUE_PRIORITY_1_RX_Q_NUMBER_14(val) vxge_vBIT(val, 51, 5)
+-#define VXGE_HW_RX_QUEUE_PRIORITY_1_RX_Q_NUMBER_15(val) vxge_vBIT(val, 59, 5)
+-/*0x00ca8*/	u64	rx_queue_priority_2;
+-#define VXGE_HW_RX_QUEUE_PRIORITY_2_RX_Q_NUMBER_16(val) vxge_vBIT(val, 3, 5)
+-	u8	unused00cc8[0x00cc8-0x00cb0];
+-
+-/*0x00cc8*/	u64	replication_queue_priority;
+-#define	VXGE_HW_REPLICATION_QUEUE_PRIORITY_REPLICATION_QUEUE_PRIORITY(val) \
+-							vxge_vBIT(val, 59, 5)
+-/*0x00cd0*/	u64	rx_queue_select;
+-#define VXGE_HW_RX_QUEUE_SELECT_NUMBER(n)	vxge_mBIT(n)
+-#define	VXGE_HW_RX_QUEUE_SELECT_ENABLE_CODE	vxge_mBIT(15)
+-#define	VXGE_HW_RX_QUEUE_SELECT_ENABLE_HIERARCHICAL_PRTY	vxge_mBIT(23)
+-/*0x00cd8*/	u64	rqa_vpbp_ctrl;
+-#define	VXGE_HW_RQA_VPBP_CTRL_WR_XON_DIS	vxge_mBIT(15)
+-#define	VXGE_HW_RQA_VPBP_CTRL_ROCRC_DIS	vxge_mBIT(23)
+-#define	VXGE_HW_RQA_VPBP_CTRL_TXPE_DIS	vxge_mBIT(31)
+-/*0x00ce0*/	u64	rx_multi_cast_ctrl;
+-#define	VXGE_HW_RX_MULTI_CAST_CTRL_TIME_OUT_DIS	vxge_mBIT(0)
+-#define	VXGE_HW_RX_MULTI_CAST_CTRL_FRM_DROP_DIS	vxge_mBIT(1)
+-#define VXGE_HW_RX_MULTI_CAST_CTRL_NO_RXD_TIME_OUT_CNT(val) \
+-							vxge_vBIT(val, 2, 30)
+-#define VXGE_HW_RX_MULTI_CAST_CTRL_TIME_OUT_CNT(val) vxge_vBIT(val, 32, 32)
+-/*0x00ce8*/	u64	wde_prm_ctrl;
+-#define VXGE_HW_WDE_PRM_CTRL_SPAV_THRESHOLD(val) vxge_vBIT(val, 2, 10)
+-#define VXGE_HW_WDE_PRM_CTRL_SPLIT_THRESHOLD(val) vxge_vBIT(val, 18, 14)
+-#define	VXGE_HW_WDE_PRM_CTRL_SPLIT_ON_1ST_ROW	vxge_mBIT(32)
+-#define	VXGE_HW_WDE_PRM_CTRL_SPLIT_ON_ROW_BNDRY	vxge_mBIT(33)
+-#define VXGE_HW_WDE_PRM_CTRL_FB_ROW_SIZE(val) vxge_vBIT(val, 46, 2)
+-/*0x00cf0*/	u64	noa_ctrl;
+-#define VXGE_HW_NOA_CTRL_FRM_PRTY_QUOTA(val) vxge_vBIT(val, 3, 5)
+-#define VXGE_HW_NOA_CTRL_NON_FRM_PRTY_QUOTA(val) vxge_vBIT(val, 11, 5)
+-#define	VXGE_HW_NOA_CTRL_IGNORE_KDFC_IF_STATUS	vxge_mBIT(16)
+-#define VXGE_HW_NOA_CTRL_MAX_JOB_CNT_FOR_WDE0(val) vxge_vBIT(val, 37, 4)
+-#define VXGE_HW_NOA_CTRL_MAX_JOB_CNT_FOR_WDE1(val) vxge_vBIT(val, 45, 4)
+-#define VXGE_HW_NOA_CTRL_MAX_JOB_CNT_FOR_WDE2(val) vxge_vBIT(val, 53, 4)
+-#define VXGE_HW_NOA_CTRL_MAX_JOB_CNT_FOR_WDE3(val) vxge_vBIT(val, 60, 4)
+-/*0x00cf8*/	u64	phase_cfg;
+-#define	VXGE_HW_PHASE_CFG_QCC_WR_PHASE_EN	vxge_mBIT(0)
+-#define	VXGE_HW_PHASE_CFG_QCC_RD_PHASE_EN	vxge_mBIT(3)
+-#define	VXGE_HW_PHASE_CFG_IMMM_WR_PHASE_EN	vxge_mBIT(7)
+-#define	VXGE_HW_PHASE_CFG_IMMM_RD_PHASE_EN	vxge_mBIT(11)
+-#define	VXGE_HW_PHASE_CFG_UMQM_WR_PHASE_EN	vxge_mBIT(15)
+-#define	VXGE_HW_PHASE_CFG_UMQM_RD_PHASE_EN	vxge_mBIT(19)
+-#define	VXGE_HW_PHASE_CFG_RCBM_WR_PHASE_EN	vxge_mBIT(23)
+-#define	VXGE_HW_PHASE_CFG_RCBM_RD_PHASE_EN	vxge_mBIT(27)
+-#define	VXGE_HW_PHASE_CFG_RXD_RC_WR_PHASE_EN	vxge_mBIT(31)
+-#define	VXGE_HW_PHASE_CFG_RXD_RC_RD_PHASE_EN	vxge_mBIT(35)
+-#define	VXGE_HW_PHASE_CFG_RXD_RHS_WR_PHASE_EN	vxge_mBIT(39)
+-#define	VXGE_HW_PHASE_CFG_RXD_RHS_RD_PHASE_EN	vxge_mBIT(43)
+-/*0x00d00*/	u64	rcq_bypq_cfg;
+-#define VXGE_HW_RCQ_BYPQ_CFG_OVERFLOW_THRESHOLD(val) vxge_vBIT(val, 10, 22)
+-#define VXGE_HW_RCQ_BYPQ_CFG_BYP_ON_THRESHOLD(val) vxge_vBIT(val, 39, 9)
+-#define VXGE_HW_RCQ_BYPQ_CFG_BYP_OFF_THRESHOLD(val) vxge_vBIT(val, 55, 9)
+-	u8	unused00e00[0x00e00-0x00d08];
+-
+-/*0x00e00*/	u64	doorbell_int_status;
+-#define	VXGE_HW_DOORBELL_INT_STATUS_KDFC_ERR_REG_TXDMA_KDFC_INT	vxge_mBIT(7)
+-#define	VXGE_HW_DOORBELL_INT_STATUS_USDC_ERR_REG_TXDMA_USDC_INT	vxge_mBIT(15)
+-/*0x00e08*/	u64	doorbell_int_mask;
+-/*0x00e10*/	u64	kdfc_err_reg;
+-#define	VXGE_HW_KDFC_ERR_REG_KDFC_KDFC_ECC_SG_ERR	vxge_mBIT(7)
+-#define	VXGE_HW_KDFC_ERR_REG_KDFC_KDFC_ECC_DB_ERR	vxge_mBIT(15)
+-#define	VXGE_HW_KDFC_ERR_REG_KDFC_KDFC_SM_ERR_ALARM	vxge_mBIT(23)
+-#define	VXGE_HW_KDFC_ERR_REG_KDFC_KDFC_MISC_ERR_1	vxge_mBIT(32)
+-#define	VXGE_HW_KDFC_ERR_REG_KDFC_KDFC_PCIX_ERR	vxge_mBIT(39)
+-/*0x00e18*/	u64	kdfc_err_mask;
+-/*0x00e20*/	u64	kdfc_err_reg_alarm;
+-#define	VXGE_HW_KDFC_ERR_REG_ALARM_KDFC_KDFC_ECC_SG_ERR	vxge_mBIT(7)
+-#define	VXGE_HW_KDFC_ERR_REG_ALARM_KDFC_KDFC_ECC_DB_ERR	vxge_mBIT(15)
+-#define	VXGE_HW_KDFC_ERR_REG_ALARM_KDFC_KDFC_SM_ERR_ALARM	vxge_mBIT(23)
+-#define	VXGE_HW_KDFC_ERR_REG_ALARM_KDFC_KDFC_MISC_ERR_1	vxge_mBIT(32)
+-#define	VXGE_HW_KDFC_ERR_REG_ALARM_KDFC_KDFC_PCIX_ERR	vxge_mBIT(39)
+-	u8	unused00e40[0x00e40-0x00e28];
+-/*0x00e40*/	u64	kdfc_vp_partition_0;
+-#define	VXGE_HW_KDFC_VP_PARTITION_0_ENABLE	vxge_mBIT(0)
+-#define VXGE_HW_KDFC_VP_PARTITION_0_NUMBER_0(val) vxge_vBIT(val, 5, 3)
+-#define VXGE_HW_KDFC_VP_PARTITION_0_LENGTH_0(val) vxge_vBIT(val, 17, 15)
+-#define VXGE_HW_KDFC_VP_PARTITION_0_NUMBER_1(val) vxge_vBIT(val, 37, 3)
+-#define VXGE_HW_KDFC_VP_PARTITION_0_LENGTH_1(val) vxge_vBIT(val, 49, 15)
+-/*0x00e48*/	u64	kdfc_vp_partition_1;
+-#define VXGE_HW_KDFC_VP_PARTITION_1_NUMBER_2(val) vxge_vBIT(val, 5, 3)
+-#define VXGE_HW_KDFC_VP_PARTITION_1_LENGTH_2(val) vxge_vBIT(val, 17, 15)
+-#define VXGE_HW_KDFC_VP_PARTITION_1_NUMBER_3(val) vxge_vBIT(val, 37, 3)
+-#define VXGE_HW_KDFC_VP_PARTITION_1_LENGTH_3(val) vxge_vBIT(val, 49, 15)
+-/*0x00e50*/	u64	kdfc_vp_partition_2;
+-#define VXGE_HW_KDFC_VP_PARTITION_2_NUMBER_4(val) vxge_vBIT(val, 5, 3)
+-#define VXGE_HW_KDFC_VP_PARTITION_2_LENGTH_4(val) vxge_vBIT(val, 17, 15)
+-#define VXGE_HW_KDFC_VP_PARTITION_2_NUMBER_5(val) vxge_vBIT(val, 37, 3)
+-#define VXGE_HW_KDFC_VP_PARTITION_2_LENGTH_5(val) vxge_vBIT(val, 49, 15)
+-/*0x00e58*/	u64	kdfc_vp_partition_3;
+-#define VXGE_HW_KDFC_VP_PARTITION_3_NUMBER_6(val) vxge_vBIT(val, 5, 3)
+-#define VXGE_HW_KDFC_VP_PARTITION_3_LENGTH_6(val) vxge_vBIT(val, 17, 15)
+-#define VXGE_HW_KDFC_VP_PARTITION_3_NUMBER_7(val) vxge_vBIT(val, 37, 3)
+-#define VXGE_HW_KDFC_VP_PARTITION_3_LENGTH_7(val) vxge_vBIT(val, 49, 15)
+-/*0x00e60*/	u64	kdfc_vp_partition_4;
+-#define VXGE_HW_KDFC_VP_PARTITION_4_LENGTH_8(val) vxge_vBIT(val, 17, 15)
+-#define VXGE_HW_KDFC_VP_PARTITION_4_LENGTH_9(val) vxge_vBIT(val, 49, 15)
+-/*0x00e68*/	u64	kdfc_vp_partition_5;
+-#define VXGE_HW_KDFC_VP_PARTITION_5_LENGTH_10(val) vxge_vBIT(val, 17, 15)
+-#define VXGE_HW_KDFC_VP_PARTITION_5_LENGTH_11(val) vxge_vBIT(val, 49, 15)
+-/*0x00e70*/	u64	kdfc_vp_partition_6;
+-#define VXGE_HW_KDFC_VP_PARTITION_6_LENGTH_12(val) vxge_vBIT(val, 17, 15)
+-#define VXGE_HW_KDFC_VP_PARTITION_6_LENGTH_13(val) vxge_vBIT(val, 49, 15)
+-/*0x00e78*/	u64	kdfc_vp_partition_7;
+-#define VXGE_HW_KDFC_VP_PARTITION_7_LENGTH_14(val) vxge_vBIT(val, 17, 15)
+-#define VXGE_HW_KDFC_VP_PARTITION_7_LENGTH_15(val) vxge_vBIT(val, 49, 15)
+-/*0x00e80*/	u64	kdfc_vp_partition_8;
+-#define VXGE_HW_KDFC_VP_PARTITION_8_LENGTH_16(val) vxge_vBIT(val, 17, 15)
+-/*0x00e88*/	u64	kdfc_w_round_robin_0;
+-#define VXGE_HW_KDFC_W_ROUND_ROBIN_0_NUMBER_0(val) vxge_vBIT(val, 3, 5)
+-#define VXGE_HW_KDFC_W_ROUND_ROBIN_0_NUMBER_1(val) vxge_vBIT(val, 11, 5)
+-#define VXGE_HW_KDFC_W_ROUND_ROBIN_0_NUMBER_2(val) vxge_vBIT(val, 19, 5)
+-#define VXGE_HW_KDFC_W_ROUND_ROBIN_0_NUMBER_3(val) vxge_vBIT(val, 27, 5)
+-#define VXGE_HW_KDFC_W_ROUND_ROBIN_0_NUMBER_4(val) vxge_vBIT(val, 35, 5)
+-#define VXGE_HW_KDFC_W_ROUND_ROBIN_0_NUMBER_5(val) vxge_vBIT(val, 43, 5)
+-#define VXGE_HW_KDFC_W_ROUND_ROBIN_0_NUMBER_6(val) vxge_vBIT(val, 51, 5)
+-#define VXGE_HW_KDFC_W_ROUND_ROBIN_0_NUMBER_7(val) vxge_vBIT(val, 59, 5)
+-
+-	u8	unused0f28[0x0f28-0x0e90];
+-
+-/*0x00f28*/	u64	kdfc_w_round_robin_20;
+-#define VXGE_HW_KDFC_W_ROUND_ROBIN_20_NUMBER_0(val) vxge_vBIT(val, 3, 5)
+-#define VXGE_HW_KDFC_W_ROUND_ROBIN_20_NUMBER_1(val) vxge_vBIT(val, 11, 5)
+-#define VXGE_HW_KDFC_W_ROUND_ROBIN_20_NUMBER_2(val) vxge_vBIT(val, 19, 5)
+-#define VXGE_HW_KDFC_W_ROUND_ROBIN_20_NUMBER_3(val) vxge_vBIT(val, 27, 5)
+-#define VXGE_HW_KDFC_W_ROUND_ROBIN_20_NUMBER_4(val) vxge_vBIT(val, 35, 5)
+-#define VXGE_HW_KDFC_W_ROUND_ROBIN_20_NUMBER_5(val) vxge_vBIT(val, 43, 5)
+-#define VXGE_HW_KDFC_W_ROUND_ROBIN_20_NUMBER_6(val) vxge_vBIT(val, 51, 5)
+-#define VXGE_HW_KDFC_W_ROUND_ROBIN_20_NUMBER_7(val) vxge_vBIT(val, 59, 5)
+-
+-#define VXGE_HW_WRR_FIFO_COUNT				20
+-
+-	u8	unused0fc8[0x0fc8-0x0f30];
+-
+-/*0x00fc8*/	u64	kdfc_w_round_robin_40;
+-#define VXGE_HW_KDFC_W_ROUND_ROBIN_40_NUMBER_0(val) vxge_vBIT(val, 3, 5)
+-#define VXGE_HW_KDFC_W_ROUND_ROBIN_40_NUMBER_1(val) vxge_vBIT(val, 11, 5)
+-#define VXGE_HW_KDFC_W_ROUND_ROBIN_40_NUMBER_2(val) vxge_vBIT(val, 19, 5)
+-#define VXGE_HW_KDFC_W_ROUND_ROBIN_40_NUMBER_3(val) vxge_vBIT(val, 27, 5)
+-#define VXGE_HW_KDFC_W_ROUND_ROBIN_40_NUMBER_4(val) vxge_vBIT(val, 35, 5)
+-#define VXGE_HW_KDFC_W_ROUND_ROBIN_40_NUMBER_5(val) vxge_vBIT(val, 43, 5)
+-#define VXGE_HW_KDFC_W_ROUND_ROBIN_40_NUMBER_6(val) vxge_vBIT(val, 51, 5)
+-#define VXGE_HW_KDFC_W_ROUND_ROBIN_40_NUMBER_7(val) vxge_vBIT(val, 59, 5)
+-
+-	u8	unused1068[0x01068-0x0fd0];
+-
+-/*0x01068*/	u64	kdfc_entry_type_sel_0;
+-#define VXGE_HW_KDFC_ENTRY_TYPE_SEL_0_NUMBER_0(val) vxge_vBIT(val, 6, 2)
+-#define VXGE_HW_KDFC_ENTRY_TYPE_SEL_0_NUMBER_1(val) vxge_vBIT(val, 14, 2)
+-#define VXGE_HW_KDFC_ENTRY_TYPE_SEL_0_NUMBER_2(val) vxge_vBIT(val, 22, 2)
+-#define VXGE_HW_KDFC_ENTRY_TYPE_SEL_0_NUMBER_3(val) vxge_vBIT(val, 30, 2)
+-#define VXGE_HW_KDFC_ENTRY_TYPE_SEL_0_NUMBER_4(val) vxge_vBIT(val, 38, 2)
+-#define VXGE_HW_KDFC_ENTRY_TYPE_SEL_0_NUMBER_5(val) vxge_vBIT(val, 46, 2)
+-#define VXGE_HW_KDFC_ENTRY_TYPE_SEL_0_NUMBER_6(val) vxge_vBIT(val, 54, 2)
+-#define VXGE_HW_KDFC_ENTRY_TYPE_SEL_0_NUMBER_7(val) vxge_vBIT(val, 62, 2)
+-/*0x01070*/	u64	kdfc_entry_type_sel_1;
+-#define VXGE_HW_KDFC_ENTRY_TYPE_SEL_1_NUMBER_8(val) vxge_vBIT(val, 6, 2)
+-/*0x01078*/	u64	kdfc_fifo_0_ctrl;
+-#define VXGE_HW_KDFC_FIFO_0_CTRL_WRR_NUMBER(val) vxge_vBIT(val, 3, 5)
+-#define VXGE_HW_WEIGHTED_RR_SERVICE_STATES		176
+-#define VXGE_HW_WRR_FIFO_SERVICE_STATES			153
+-
+-	u8	unused1100[0x01100-0x1080];
+-
+-/*0x01100*/	u64	kdfc_fifo_17_ctrl;
+-#define VXGE_HW_KDFC_FIFO_17_CTRL_WRR_NUMBER(val) vxge_vBIT(val, 3, 5)
+-
+-	u8	unused1600[0x01600-0x1108];
+-
+-/*0x01600*/	u64	rxmac_int_status;
+-#define	VXGE_HW_RXMAC_INT_STATUS_RXMAC_GEN_ERR_RXMAC_GEN_INT	vxge_mBIT(3)
+-#define	VXGE_HW_RXMAC_INT_STATUS_RXMAC_ECC_ERR_RXMAC_ECC_INT	vxge_mBIT(7)
+-#define	VXGE_HW_RXMAC_INT_STATUS_RXMAC_VARIOUS_ERR_RXMAC_VARIOUS_INT \
+-								vxge_mBIT(11)
+-/*0x01608*/	u64	rxmac_int_mask;
+-	u8	unused01618[0x01618-0x01610];
+-
+-/*0x01618*/	u64	rxmac_gen_err_reg;
+-/*0x01620*/	u64	rxmac_gen_err_mask;
+-/*0x01628*/	u64	rxmac_gen_err_alarm;
+-/*0x01630*/	u64	rxmac_ecc_err_reg;
+-#define	VXGE_HW_RXMAC_ECC_ERR_REG_RMAC_PORT0_RMAC_RTS_PART_SG_ERR(val) \
+-							vxge_vBIT(val, 0, 4)
+-#define	VXGE_HW_RXMAC_ECC_ERR_REG_RMAC_PORT0_RMAC_RTS_PART_DB_ERR(val) \
+-							vxge_vBIT(val, 4, 4)
+-#define	VXGE_HW_RXMAC_ECC_ERR_REG_RMAC_PORT1_RMAC_RTS_PART_SG_ERR(val) \
+-							vxge_vBIT(val, 8, 4)
+-#define	VXGE_HW_RXMAC_ECC_ERR_REG_RMAC_PORT1_RMAC_RTS_PART_DB_ERR(val) \
+-							vxge_vBIT(val, 12, 4)
+-#define	VXGE_HW_RXMAC_ECC_ERR_REG_RMAC_PORT2_RMAC_RTS_PART_SG_ERR(val) \
+-							vxge_vBIT(val, 16, 4)
+-#define	VXGE_HW_RXMAC_ECC_ERR_REG_RMAC_PORT2_RMAC_RTS_PART_DB_ERR(val) \
+-							vxge_vBIT(val, 20, 4)
+-#define	VXGE_HW_RXMAC_ECC_ERR_REG_RTSJ_RMAC_DA_LKP_PRT0_SG_ERR(val) \
+-							vxge_vBIT(val, 24, 2)
+-#define	VXGE_HW_RXMAC_ECC_ERR_REG_RTSJ_RMAC_DA_LKP_PRT0_DB_ERR(val) \
+-							vxge_vBIT(val, 26, 2)
+-#define	VXGE_HW_RXMAC_ECC_ERR_REG_RTSJ_RMAC_DA_LKP_PRT1_SG_ERR(val) \
+-							vxge_vBIT(val, 28, 2)
+-#define	VXGE_HW_RXMAC_ECC_ERR_REG_RTSJ_RMAC_DA_LKP_PRT1_DB_ERR(val) \
+-							vxge_vBIT(val, 30, 2)
+-#define	VXGE_HW_RXMAC_ECC_ERR_REG_RTSJ_RMAC_VID_LKP_SG_ERR	vxge_mBIT(32)
+-#define	VXGE_HW_RXMAC_ECC_ERR_REG_RTSJ_RMAC_VID_LKP_DB_ERR	vxge_mBIT(33)
+-#define	VXGE_HW_RXMAC_ECC_ERR_REG_RTSJ_RMAC_PN_LKP_PRT0_SG_ERR	vxge_mBIT(34)
+-#define	VXGE_HW_RXMAC_ECC_ERR_REG_RTSJ_RMAC_PN_LKP_PRT0_DB_ERR	vxge_mBIT(35)
+-#define	VXGE_HW_RXMAC_ECC_ERR_REG_RTSJ_RMAC_PN_LKP_PRT1_SG_ERR	vxge_mBIT(36)
+-#define	VXGE_HW_RXMAC_ECC_ERR_REG_RTSJ_RMAC_PN_LKP_PRT1_DB_ERR	vxge_mBIT(37)
+-#define	VXGE_HW_RXMAC_ECC_ERR_REG_RTSJ_RMAC_PN_LKP_PRT2_SG_ERR	vxge_mBIT(38)
+-#define	VXGE_HW_RXMAC_ECC_ERR_REG_RTSJ_RMAC_PN_LKP_PRT2_DB_ERR	vxge_mBIT(39)
+-#define	VXGE_HW_RXMAC_ECC_ERR_REG_RTSJ_RMAC_RTH_MASK_SG_ERR(val) \
+-							vxge_vBIT(val, 40, 7)
+-#define	VXGE_HW_RXMAC_ECC_ERR_REG_RTSJ_RMAC_RTH_MASK_DB_ERR(val) \
+-							vxge_vBIT(val, 47, 7)
+-#define	VXGE_HW_RXMAC_ECC_ERR_REG_RTSJ_RMAC_RTH_LKP_SG_ERR(val) \
+-							vxge_vBIT(val, 54, 3)
+-#define	VXGE_HW_RXMAC_ECC_ERR_REG_RTSJ_RMAC_RTH_LKP_DB_ERR(val) \
+-							vxge_vBIT(val, 57, 3)
+-#define	VXGE_HW_RXMAC_ECC_ERR_REG_RTSJ_RMAC_DS_LKP_SG_ERR \
+-							vxge_mBIT(60)
+-#define	VXGE_HW_RXMAC_ECC_ERR_REG_RTSJ_RMAC_DS_LKP_DB_ERR \
+-							vxge_mBIT(61)
+-/*0x01638*/	u64	rxmac_ecc_err_mask;
+-/*0x01640*/	u64	rxmac_ecc_err_alarm;
+-/*0x01648*/	u64	rxmac_various_err_reg;
+-#define	VXGE_HW_RXMAC_VARIOUS_ERR_REG_RMAC_RMAC_PORT0_FSM_ERR	vxge_mBIT(0)
+-#define	VXGE_HW_RXMAC_VARIOUS_ERR_REG_RMAC_RMAC_PORT1_FSM_ERR	vxge_mBIT(1)
+-#define	VXGE_HW_RXMAC_VARIOUS_ERR_REG_RMAC_RMAC_PORT2_FSM_ERR	vxge_mBIT(2)
+-#define	VXGE_HW_RXMAC_VARIOUS_ERR_REG_RMACJ_RMACJ_FSM_ERR	vxge_mBIT(3)
+-/*0x01650*/	u64	rxmac_various_err_mask;
+-/*0x01658*/	u64	rxmac_various_err_alarm;
+-/*0x01660*/	u64	rxmac_gen_cfg;
+-#define	VXGE_HW_RXMAC_GEN_CFG_SCALE_RMAC_UTIL	vxge_mBIT(11)
+-/*0x01668*/	u64	rxmac_authorize_all_addr;
+-#define VXGE_HW_RXMAC_AUTHORIZE_ALL_ADDR_VP(n)	vxge_mBIT(n)
+-/*0x01670*/	u64	rxmac_authorize_all_vid;
+-#define VXGE_HW_RXMAC_AUTHORIZE_ALL_VID_VP(n)	vxge_mBIT(n)
+-	u8	unused016c0[0x016c0-0x01678];
+-
+-/*0x016c0*/	u64	rxmac_red_rate_repl_queue;
+-#define VXGE_HW_RXMAC_RED_RATE_REPL_QUEUE_CRATE_THR0(val) vxge_vBIT(val, 0, 4)
+-#define VXGE_HW_RXMAC_RED_RATE_REPL_QUEUE_CRATE_THR1(val) vxge_vBIT(val, 4, 4)
+-#define VXGE_HW_RXMAC_RED_RATE_REPL_QUEUE_CRATE_THR2(val) vxge_vBIT(val, 8, 4)
+-#define VXGE_HW_RXMAC_RED_RATE_REPL_QUEUE_CRATE_THR3(val) vxge_vBIT(val, 12, 4)
+-#define VXGE_HW_RXMAC_RED_RATE_REPL_QUEUE_FRATE_THR0(val) vxge_vBIT(val, 16, 4)
+-#define VXGE_HW_RXMAC_RED_RATE_REPL_QUEUE_FRATE_THR1(val) vxge_vBIT(val, 20, 4)
+-#define VXGE_HW_RXMAC_RED_RATE_REPL_QUEUE_FRATE_THR2(val) vxge_vBIT(val, 24, 4)
+-#define VXGE_HW_RXMAC_RED_RATE_REPL_QUEUE_FRATE_THR3(val) vxge_vBIT(val, 28, 4)
+-#define	VXGE_HW_RXMAC_RED_RATE_REPL_QUEUE_TRICKLE_EN	vxge_mBIT(35)
+-	u8	unused016e0[0x016e0-0x016c8];
+-
+-/*0x016e0*/	u64	rxmac_cfg0_port[3];
+-#define	VXGE_HW_RXMAC_CFG0_PORT_RMAC_EN	vxge_mBIT(3)
+-#define	VXGE_HW_RXMAC_CFG0_PORT_STRIP_FCS	vxge_mBIT(7)
+-#define	VXGE_HW_RXMAC_CFG0_PORT_DISCARD_PFRM	vxge_mBIT(11)
+-#define	VXGE_HW_RXMAC_CFG0_PORT_IGNORE_FCS_ERR	vxge_mBIT(15)
+-#define	VXGE_HW_RXMAC_CFG0_PORT_IGNORE_LONG_ERR	vxge_mBIT(19)
+-#define	VXGE_HW_RXMAC_CFG0_PORT_IGNORE_USIZED_ERR	vxge_mBIT(23)
+-#define	VXGE_HW_RXMAC_CFG0_PORT_IGNORE_LEN_MISMATCH	vxge_mBIT(27)
+-#define VXGE_HW_RXMAC_CFG0_PORT_MAX_PYLD_LEN(val) vxge_vBIT(val, 50, 14)
+-	u8	unused01710[0x01710-0x016f8];
+-
+-/*0x01710*/	u64	rxmac_cfg2_port[3];
+-#define	VXGE_HW_RXMAC_CFG2_PORT_PROM_EN	vxge_mBIT(3)
+-/*0x01728*/	u64	rxmac_pause_cfg_port[3];
+-#define	VXGE_HW_RXMAC_PAUSE_CFG_PORT_GEN_EN	vxge_mBIT(3)
+-#define	VXGE_HW_RXMAC_PAUSE_CFG_PORT_RCV_EN	vxge_mBIT(7)
+-#define VXGE_HW_RXMAC_PAUSE_CFG_PORT_ACCEL_SEND(val) vxge_vBIT(val, 9, 3)
+-#define	VXGE_HW_RXMAC_PAUSE_CFG_PORT_DUAL_THR	vxge_mBIT(15)
+-#define VXGE_HW_RXMAC_PAUSE_CFG_PORT_HIGH_PTIME(val) vxge_vBIT(val, 20, 16)
+-#define	VXGE_HW_RXMAC_PAUSE_CFG_PORT_IGNORE_PF_FCS_ERR	vxge_mBIT(39)
+-#define	VXGE_HW_RXMAC_PAUSE_CFG_PORT_IGNORE_PF_LEN_ERR	vxge_mBIT(43)
+-#define	VXGE_HW_RXMAC_PAUSE_CFG_PORT_LIMITER_EN	vxge_mBIT(47)
+-#define VXGE_HW_RXMAC_PAUSE_CFG_PORT_MAX_LIMIT(val) vxge_vBIT(val, 48, 8)
+-#define	VXGE_HW_RXMAC_PAUSE_CFG_PORT_PERMIT_RATEMGMT_CTRL	vxge_mBIT(59)
+-	u8	unused01758[0x01758-0x01740];
+-
+-/*0x01758*/	u64	rxmac_red_cfg0_port[3];
+-#define VXGE_HW_RXMAC_RED_CFG0_PORT_RED_EN_VP(n)	vxge_mBIT(n)
+-/*0x01770*/	u64	rxmac_red_cfg1_port[3];
+-#define	VXGE_HW_RXMAC_RED_CFG1_PORT_FINE_EN	vxge_mBIT(3)
+-#define	VXGE_HW_RXMAC_RED_CFG1_PORT_RED_EN_REPL_QUEUE	vxge_mBIT(11)
+-/*0x01788*/	u64	rxmac_red_cfg2_port[3];
+-#define VXGE_HW_RXMAC_RED_CFG2_PORT_TRICKLE_EN_VP(n)	vxge_mBIT(n)
+-/*0x017a0*/	u64	rxmac_link_util_port[3];
+-#define	VXGE_HW_RXMAC_LINK_UTIL_PORT_RMAC_RMAC_UTILIZATION(val) \
+-							vxge_vBIT(val, 1, 7)
+-#define VXGE_HW_RXMAC_LINK_UTIL_PORT_RMAC_UTIL_CFG(val) vxge_vBIT(val, 8, 4)
+-#define VXGE_HW_RXMAC_LINK_UTIL_PORT_RMAC_RMAC_FRAC_UTIL(val) \
+-							vxge_vBIT(val, 12, 4)
+-#define VXGE_HW_RXMAC_LINK_UTIL_PORT_RMAC_PKT_WEIGHT(val) vxge_vBIT(val, 16, 4)
+-#define	VXGE_HW_RXMAC_LINK_UTIL_PORT_RMAC_RMAC_SCALE_FACTOR	vxge_mBIT(23)
+-	u8	unused017d0[0x017d0-0x017b8];
+-
+-/*0x017d0*/	u64	rxmac_status_port[3];
+-#define	VXGE_HW_RXMAC_STATUS_PORT_RMAC_RX_FRM_RCVD	vxge_mBIT(3)
+-	u8	unused01800[0x01800-0x017e8];
+-
+-/*0x01800*/	u64	rxmac_rx_pa_cfg0;
+-#define	VXGE_HW_RXMAC_RX_PA_CFG0_IGNORE_FRAME_ERR	vxge_mBIT(3)
+-#define	VXGE_HW_RXMAC_RX_PA_CFG0_SUPPORT_SNAP_AB_N	vxge_mBIT(7)
+-#define	VXGE_HW_RXMAC_RX_PA_CFG0_SEARCH_FOR_HAO	vxge_mBIT(18)
+-#define	VXGE_HW_RXMAC_RX_PA_CFG0_SUPPORT_MOBILE_IPV6_HDRS	vxge_mBIT(19)
+-#define	VXGE_HW_RXMAC_RX_PA_CFG0_IPV6_STOP_SEARCHING	vxge_mBIT(23)
+-#define	VXGE_HW_RXMAC_RX_PA_CFG0_NO_PS_IF_UNKNOWN	vxge_mBIT(27)
+-#define	VXGE_HW_RXMAC_RX_PA_CFG0_SEARCH_FOR_ETYPE	vxge_mBIT(35)
+-#define	VXGE_HW_RXMAC_RX_PA_CFG0_TOSS_ANY_FRM_IF_L3_CSUM_ERR	vxge_mBIT(39)
+-#define	VXGE_HW_RXMAC_RX_PA_CFG0_TOSS_OFFLD_FRM_IF_L3_CSUM_ERR	vxge_mBIT(43)
+-#define	VXGE_HW_RXMAC_RX_PA_CFG0_TOSS_ANY_FRM_IF_L4_CSUM_ERR	vxge_mBIT(47)
+-#define	VXGE_HW_RXMAC_RX_PA_CFG0_TOSS_OFFLD_FRM_IF_L4_CSUM_ERR	vxge_mBIT(51)
+-#define	VXGE_HW_RXMAC_RX_PA_CFG0_TOSS_ANY_FRM_IF_RPA_ERR	vxge_mBIT(55)
+-#define	VXGE_HW_RXMAC_RX_PA_CFG0_TOSS_OFFLD_FRM_IF_RPA_ERR	vxge_mBIT(59)
+-#define	VXGE_HW_RXMAC_RX_PA_CFG0_JUMBO_SNAP_EN	vxge_mBIT(63)
+-/*0x01808*/	u64	rxmac_rx_pa_cfg1;
+-#define	VXGE_HW_RXMAC_RX_PA_CFG1_REPL_IPV4_TCP_INCL_PH	vxge_mBIT(3)
+-#define	VXGE_HW_RXMAC_RX_PA_CFG1_REPL_IPV6_TCP_INCL_PH	vxge_mBIT(7)
+-#define	VXGE_HW_RXMAC_RX_PA_CFG1_REPL_IPV4_UDP_INCL_PH	vxge_mBIT(11)
+-#define	VXGE_HW_RXMAC_RX_PA_CFG1_REPL_IPV6_UDP_INCL_PH	vxge_mBIT(15)
+-#define	VXGE_HW_RXMAC_RX_PA_CFG1_REPL_L4_INCL_CF	vxge_mBIT(19)
+-#define	VXGE_HW_RXMAC_RX_PA_CFG1_REPL_STRIP_VLAN_TAG	vxge_mBIT(23)
+-	u8	unused01828[0x01828-0x01810];
+-
+-/*0x01828*/	u64	rts_mgr_cfg0;
+-#define	VXGE_HW_RTS_MGR_CFG0_RTS_DP_SP_PRIORITY	vxge_mBIT(3)
+-#define VXGE_HW_RTS_MGR_CFG0_FLEX_L4PRTCL_VALUE(val) vxge_vBIT(val, 24, 8)
+-#define	VXGE_HW_RTS_MGR_CFG0_ICMP_TRASH	vxge_mBIT(35)
+-#define	VXGE_HW_RTS_MGR_CFG0_TCPSYN_TRASH	vxge_mBIT(39)
+-#define	VXGE_HW_RTS_MGR_CFG0_ZL4PYLD_TRASH	vxge_mBIT(43)
+-#define	VXGE_HW_RTS_MGR_CFG0_L4PRTCL_TCP_TRASH	vxge_mBIT(47)
+-#define	VXGE_HW_RTS_MGR_CFG0_L4PRTCL_UDP_TRASH	vxge_mBIT(51)
+-#define	VXGE_HW_RTS_MGR_CFG0_L4PRTCL_FLEX_TRASH	vxge_mBIT(55)
+-#define	VXGE_HW_RTS_MGR_CFG0_IPFRAG_TRASH	vxge_mBIT(59)
+-/*0x01830*/	u64	rts_mgr_cfg1;
+-#define	VXGE_HW_RTS_MGR_CFG1_DA_ACTIVE_TABLE	vxge_mBIT(3)
+-#define	VXGE_HW_RTS_MGR_CFG1_PN_ACTIVE_TABLE	vxge_mBIT(7)
+-/*0x01838*/	u64	rts_mgr_criteria_priority;
+-#define VXGE_HW_RTS_MGR_CRITERIA_PRIORITY_ETYPE(val) vxge_vBIT(val, 5, 3)
+-#define VXGE_HW_RTS_MGR_CRITERIA_PRIORITY_ICMP_TCPSYN(val) vxge_vBIT(val, 9, 3)
+-#define VXGE_HW_RTS_MGR_CRITERIA_PRIORITY_L4PN(val) vxge_vBIT(val, 13, 3)
+-#define VXGE_HW_RTS_MGR_CRITERIA_PRIORITY_RANGE_L4PN(val) vxge_vBIT(val, 17, 3)
+-#define VXGE_HW_RTS_MGR_CRITERIA_PRIORITY_RTH_IT(val) vxge_vBIT(val, 21, 3)
+-#define VXGE_HW_RTS_MGR_CRITERIA_PRIORITY_DS(val) vxge_vBIT(val, 25, 3)
+-#define VXGE_HW_RTS_MGR_CRITERIA_PRIORITY_QOS(val) vxge_vBIT(val, 29, 3)
+-#define VXGE_HW_RTS_MGR_CRITERIA_PRIORITY_ZL4PYLD(val) vxge_vBIT(val, 33, 3)
+-#define VXGE_HW_RTS_MGR_CRITERIA_PRIORITY_L4PRTCL(val) vxge_vBIT(val, 37, 3)
+-/*0x01840*/	u64	rts_mgr_da_pause_cfg;
+-#define VXGE_HW_RTS_MGR_DA_PAUSE_CFG_VPATH_VECTOR(val) vxge_vBIT(val, 0, 17)
+-/*0x01848*/	u64	rts_mgr_da_slow_proto_cfg;
+-#define VXGE_HW_RTS_MGR_DA_SLOW_PROTO_CFG_VPATH_VECTOR(val) \
+-							vxge_vBIT(val, 0, 17)
+-	u8	unused01890[0x01890-0x01850];
+-/*0x01890*/     u64     rts_mgr_cbasin_cfg;
+-	u8	unused01968[0x01968-0x01898];
+-
+-/*0x01968*/	u64	dbg_stat_rx_any_frms;
+-#define VXGE_HW_DBG_STAT_RX_ANY_FRMS_PORT0_RX_ANY_FRMS(val) vxge_vBIT(val, 0, 8)
+-#define VXGE_HW_DBG_STAT_RX_ANY_FRMS_PORT1_RX_ANY_FRMS(val) vxge_vBIT(val, 8, 8)
+-#define VXGE_HW_DBG_STAT_RX_ANY_FRMS_PORT2_RX_ANY_FRMS(val) \
+-							vxge_vBIT(val, 16, 8)
+-	u8	unused01a00[0x01a00-0x01970];
+-
+-/*0x01a00*/	u64	rxmac_red_rate_vp[17];
+-#define VXGE_HW_RXMAC_RED_RATE_VP_CRATE_THR0(val) vxge_vBIT(val, 0, 4)
+-#define VXGE_HW_RXMAC_RED_RATE_VP_CRATE_THR1(val) vxge_vBIT(val, 4, 4)
+-#define VXGE_HW_RXMAC_RED_RATE_VP_CRATE_THR2(val) vxge_vBIT(val, 8, 4)
+-#define VXGE_HW_RXMAC_RED_RATE_VP_CRATE_THR3(val) vxge_vBIT(val, 12, 4)
+-#define VXGE_HW_RXMAC_RED_RATE_VP_FRATE_THR0(val) vxge_vBIT(val, 16, 4)
+-#define VXGE_HW_RXMAC_RED_RATE_VP_FRATE_THR1(val) vxge_vBIT(val, 20, 4)
+-#define VXGE_HW_RXMAC_RED_RATE_VP_FRATE_THR2(val) vxge_vBIT(val, 24, 4)
+-#define VXGE_HW_RXMAC_RED_RATE_VP_FRATE_THR3(val) vxge_vBIT(val, 28, 4)
+-	u8	unused01e00[0x01e00-0x01a88];
+-
+-/*0x01e00*/	u64	xgmac_int_status;
+-#define	VXGE_HW_XGMAC_INT_STATUS_XMAC_GEN_ERR_XMAC_GEN_INT	vxge_mBIT(3)
+-#define	VXGE_HW_XGMAC_INT_STATUS_XMAC_LINK_ERR_PORT0_XMAC_LINK_INT_PORT0 \
+-								vxge_mBIT(7)
+-#define	VXGE_HW_XGMAC_INT_STATUS_XMAC_LINK_ERR_PORT1_XMAC_LINK_INT_PORT1 \
+-								vxge_mBIT(11)
+-#define	VXGE_HW_XGMAC_INT_STATUS_XGXS_GEN_ERR_XGXS_GEN_INT	vxge_mBIT(15)
+-#define	VXGE_HW_XGMAC_INT_STATUS_ASIC_NTWK_ERR_ASIC_NTWK_INT	vxge_mBIT(19)
+-#define	VXGE_HW_XGMAC_INT_STATUS_ASIC_GPIO_ERR_ASIC_GPIO_INT	vxge_mBIT(23)
+-/*0x01e08*/	u64	xgmac_int_mask;
+-/*0x01e10*/	u64	xmac_gen_err_reg;
+-#define	VXGE_HW_XMAC_GEN_ERR_REG_LAGC_LAG_PORT0_ACTOR_CHURN_DETECTED \
+-								vxge_mBIT(7)
+-#define	VXGE_HW_XMAC_GEN_ERR_REG_LAGC_LAG_PORT0_PARTNER_CHURN_DETECTED \
+-								vxge_mBIT(11)
+-#define	VXGE_HW_XMAC_GEN_ERR_REG_LAGC_LAG_PORT0_RECEIVED_LACPDU	vxge_mBIT(15)
+-#define	VXGE_HW_XMAC_GEN_ERR_REG_LAGC_LAG_PORT1_ACTOR_CHURN_DETECTED \
+-								vxge_mBIT(19)
+-#define	VXGE_HW_XMAC_GEN_ERR_REG_LAGC_LAG_PORT1_PARTNER_CHURN_DETECTED \
+-								vxge_mBIT(23)
+-#define	VXGE_HW_XMAC_GEN_ERR_REG_LAGC_LAG_PORT1_RECEIVED_LACPDU	vxge_mBIT(27)
+-#define	VXGE_HW_XMAC_GEN_ERR_REG_XLCM_LAG_FAILOVER_DETECTED	vxge_mBIT(31)
+-#define	VXGE_HW_XMAC_GEN_ERR_REG_XSTATS_RMAC_STATS_TILE0_SG_ERR(val) \
+-							vxge_vBIT(val, 40, 2)
+-#define	VXGE_HW_XMAC_GEN_ERR_REG_XSTATS_RMAC_STATS_TILE0_DB_ERR(val) \
+-							vxge_vBIT(val, 42, 2)
+-#define	VXGE_HW_XMAC_GEN_ERR_REG_XSTATS_RMAC_STATS_TILE1_SG_ERR(val) \
+-							vxge_vBIT(val, 44, 2)
+-#define	VXGE_HW_XMAC_GEN_ERR_REG_XSTATS_RMAC_STATS_TILE1_DB_ERR(val) \
+-							vxge_vBIT(val, 46, 2)
+-#define	VXGE_HW_XMAC_GEN_ERR_REG_XSTATS_RMAC_STATS_TILE2_SG_ERR(val) \
+-							vxge_vBIT(val, 48, 2)
+-#define	VXGE_HW_XMAC_GEN_ERR_REG_XSTATS_RMAC_STATS_TILE2_DB_ERR(val) \
+-							vxge_vBIT(val, 50, 2)
+-#define	VXGE_HW_XMAC_GEN_ERR_REG_XSTATS_RMAC_STATS_TILE3_SG_ERR(val) \
+-							vxge_vBIT(val, 52, 2)
+-#define	VXGE_HW_XMAC_GEN_ERR_REG_XSTATS_RMAC_STATS_TILE3_DB_ERR(val) \
+-							vxge_vBIT(val, 54, 2)
+-#define	VXGE_HW_XMAC_GEN_ERR_REG_XSTATS_RMAC_STATS_TILE4_SG_ERR(val) \
+-							vxge_vBIT(val, 56, 2)
+-#define	VXGE_HW_XMAC_GEN_ERR_REG_XSTATS_RMAC_STATS_TILE4_DB_ERR(val) \
+-							vxge_vBIT(val, 58, 2)
+-#define	VXGE_HW_XMAC_GEN_ERR_REG_XMACJ_XMAC_FSM_ERR	vxge_mBIT(63)
+-/*0x01e18*/	u64	xmac_gen_err_mask;
+-/*0x01e20*/	u64	xmac_gen_err_alarm;
+-/*0x01e28*/	u64	xmac_link_err_port0_reg;
+-#define	VXGE_HW_XMAC_LINK_ERR_PORT_REG_XMACJ_PORT_DOWN	vxge_mBIT(3)
+-#define	VXGE_HW_XMAC_LINK_ERR_PORT_REG_XMACJ_PORT_UP	vxge_mBIT(7)
+-#define	VXGE_HW_XMAC_LINK_ERR_PORT_REG_XMACJ_PORT_WENT_DOWN	vxge_mBIT(11)
+-#define	VXGE_HW_XMAC_LINK_ERR_PORT_REG_XMACJ_PORT_WENT_UP	vxge_mBIT(15)
+-#define	VXGE_HW_XMAC_LINK_ERR_PORT_REG_XMACJ_PORT_REAFFIRMED_FAULT \
+-								vxge_mBIT(19)
+-#define	VXGE_HW_XMAC_LINK_ERR_PORT_REG_XMACJ_PORT_REAFFIRMED_OK	vxge_mBIT(23)
+-#define	VXGE_HW_XMAC_LINK_ERR_PORT_REG_XMACJ_LINK_DOWN	vxge_mBIT(27)
+-#define	VXGE_HW_XMAC_LINK_ERR_PORT_REG_XMACJ_LINK_UP	vxge_mBIT(31)
+-#define	VXGE_HW_XMAC_LINK_ERR_PORT_REG_RATEMGMT_RATE_CHANGE	vxge_mBIT(35)
+-#define	VXGE_HW_XMAC_LINK_ERR_PORT_REG_RATEMGMT_LASI_INV	vxge_mBIT(39)
+-#define	VXGE_HW_XMAC_LINK_ERR_PORT_REG_XMDIO_MDIO_MGR_ACCESS_COMPLETE \
+-								vxge_mBIT(47)
+-/*0x01e30*/	u64	xmac_link_err_port0_mask;
+-/*0x01e38*/	u64	xmac_link_err_port0_alarm;
+-/*0x01e40*/	u64	xmac_link_err_port1_reg;
+-/*0x01e48*/	u64	xmac_link_err_port1_mask;
+-/*0x01e50*/	u64	xmac_link_err_port1_alarm;
+-/*0x01e58*/	u64	xgxs_gen_err_reg;
+-#define	VXGE_HW_XGXS_GEN_ERR_REG_XGXS_XGXS_FSM_ERR	vxge_mBIT(63)
+-/*0x01e60*/	u64	xgxs_gen_err_mask;
+-/*0x01e68*/	u64	xgxs_gen_err_alarm;
+-/*0x01e70*/	u64	asic_ntwk_err_reg;
+-#define	VXGE_HW_ASIC_NTWK_ERR_REG_XMACJ_NTWK_DOWN	vxge_mBIT(3)
+-#define	VXGE_HW_ASIC_NTWK_ERR_REG_XMACJ_NTWK_UP	vxge_mBIT(7)
+-#define	VXGE_HW_ASIC_NTWK_ERR_REG_XMACJ_NTWK_WENT_DOWN	vxge_mBIT(11)
+-#define	VXGE_HW_ASIC_NTWK_ERR_REG_XMACJ_NTWK_WENT_UP	vxge_mBIT(15)
+-#define	VXGE_HW_ASIC_NTWK_ERR_REG_XMACJ_NTWK_REAFFIRMED_FAULT	vxge_mBIT(19)
+-#define	VXGE_HW_ASIC_NTWK_ERR_REG_XMACJ_NTWK_REAFFIRMED_OK	vxge_mBIT(23)
+-/*0x01e78*/	u64	asic_ntwk_err_mask;
+-/*0x01e80*/	u64	asic_ntwk_err_alarm;
+-/*0x01e88*/	u64	asic_gpio_err_reg;
+-#define VXGE_HW_ASIC_GPIO_ERR_REG_XMACJ_GPIO_INT(n)	vxge_mBIT(n)
+-/*0x01e90*/	u64	asic_gpio_err_mask;
+-/*0x01e98*/	u64	asic_gpio_err_alarm;
+-/*0x01ea0*/	u64	xgmac_gen_status;
+-#define	VXGE_HW_XGMAC_GEN_STATUS_XMACJ_NTWK_OK	vxge_mBIT(3)
+-#define	VXGE_HW_XGMAC_GEN_STATUS_XMACJ_NTWK_DATA_RATE	vxge_mBIT(11)
+-/*0x01ea8*/	u64	xgmac_gen_fw_memo_status;
+-#define	VXGE_HW_XGMAC_GEN_FW_MEMO_STATUS_XMACJ_EVENTS_PENDING(val) \
+-							vxge_vBIT(val, 0, 17)
+-/*0x01eb0*/	u64	xgmac_gen_fw_memo_mask;
+-#define VXGE_HW_XGMAC_GEN_FW_MEMO_MASK_MASK(val) vxge_vBIT(val, 0, 64)
+-/*0x01eb8*/	u64	xgmac_gen_fw_vpath_to_vsport_status;
+-#define	VXGE_HW_XGMAC_GEN_FW_VPATH_TO_VSPORT_STATUS_XMACJ_EVENTS_PENDING(val) \
+-						vxge_vBIT(val, 0, 17)
+-/*0x01ec0*/	u64	xgmac_main_cfg_port[2];
+-#define	VXGE_HW_XGMAC_MAIN_CFG_PORT_PORT_EN	vxge_mBIT(3)
+-	u8	unused01f40[0x01f40-0x01ed0];
+-
+-/*0x01f40*/	u64	xmac_gen_cfg;
+-#define VXGE_HW_XMAC_GEN_CFG_RATEMGMT_MAC_RATE_SEL(val) vxge_vBIT(val, 2, 2)
+-#define	VXGE_HW_XMAC_GEN_CFG_TX_HEAD_DROP_WHEN_FAULT	vxge_mBIT(7)
+-#define	VXGE_HW_XMAC_GEN_CFG_FAULT_BEHAVIOUR	vxge_mBIT(27)
+-#define VXGE_HW_XMAC_GEN_CFG_PERIOD_NTWK_UP(val) vxge_vBIT(val, 28, 4)
+-#define VXGE_HW_XMAC_GEN_CFG_PERIOD_NTWK_DOWN(val) vxge_vBIT(val, 32, 4)
+-/*0x01f48*/	u64	xmac_timestamp;
+-#define	VXGE_HW_XMAC_TIMESTAMP_EN	vxge_mBIT(3)
+-#define VXGE_HW_XMAC_TIMESTAMP_USE_LINK_ID(val) vxge_vBIT(val, 6, 2)
+-#define VXGE_HW_XMAC_TIMESTAMP_INTERVAL(val) vxge_vBIT(val, 12, 4)
+-#define	VXGE_HW_XMAC_TIMESTAMP_TIMER_RESTART	vxge_mBIT(19)
+-#define VXGE_HW_XMAC_TIMESTAMP_XMACJ_ROLLOVER_CNT(val) vxge_vBIT(val, 32, 16)
+-/*0x01f50*/	u64	xmac_stats_gen_cfg;
+-#define VXGE_HW_XMAC_STATS_GEN_CFG_PRTAGGR_CUM_TIMER(val) vxge_vBIT(val, 4, 4)
+-#define VXGE_HW_XMAC_STATS_GEN_CFG_VPATH_CUM_TIMER(val) vxge_vBIT(val, 8, 4)
+-#define	VXGE_HW_XMAC_STATS_GEN_CFG_VLAN_HANDLING	vxge_mBIT(15)
+-/*0x01f58*/	u64	xmac_stats_sys_cmd;
+-#define VXGE_HW_XMAC_STATS_SYS_CMD_OP(val) vxge_vBIT(val, 5, 3)
+-#define	VXGE_HW_XMAC_STATS_SYS_CMD_STROBE	vxge_mBIT(15)
+-#define VXGE_HW_XMAC_STATS_SYS_CMD_LOC_SEL(val) vxge_vBIT(val, 27, 5)
+-#define VXGE_HW_XMAC_STATS_SYS_CMD_OFFSET_SEL(val) vxge_vBIT(val, 32, 8)
+-/*0x01f60*/	u64	xmac_stats_sys_data;
+-#define VXGE_HW_XMAC_STATS_SYS_DATA_XSMGR_DATA(val) vxge_vBIT(val, 0, 64)
+-	u8	unused01f80[0x01f80-0x01f68];
+-
+-/*0x01f80*/	u64	asic_ntwk_ctrl;
+-#define	VXGE_HW_ASIC_NTWK_CTRL_REQ_TEST_NTWK	vxge_mBIT(3)
+-#define	VXGE_HW_ASIC_NTWK_CTRL_PORT0_REQ_TEST_PORT	vxge_mBIT(11)
+-#define	VXGE_HW_ASIC_NTWK_CTRL_PORT1_REQ_TEST_PORT	vxge_mBIT(15)
+-/*0x01f88*/	u64	asic_ntwk_cfg_show_port_info;
+-#define VXGE_HW_ASIC_NTWK_CFG_SHOW_PORT_INFO_VP(n)	vxge_mBIT(n)
+-/*0x01f90*/	u64	asic_ntwk_cfg_port_num;
+-#define VXGE_HW_ASIC_NTWK_CFG_PORT_NUM_VP(n)	vxge_mBIT(n)
+-/*0x01f98*/	u64	xmac_cfg_port[3];
+-#define	VXGE_HW_XMAC_CFG_PORT_XGMII_LOOPBACK	vxge_mBIT(3)
+-#define	VXGE_HW_XMAC_CFG_PORT_XGMII_REVERSE_LOOPBACK	vxge_mBIT(7)
+-#define	VXGE_HW_XMAC_CFG_PORT_XGMII_TX_BEHAV	vxge_mBIT(11)
+-#define	VXGE_HW_XMAC_CFG_PORT_XGMII_RX_BEHAV	vxge_mBIT(15)
+-/*0x01fb0*/	u64	xmac_station_addr_port[2];
+-#define VXGE_HW_XMAC_STATION_ADDR_PORT_MAC_ADDR(val) vxge_vBIT(val, 0, 48)
+-	u8	unused02020[0x02020-0x01fc0];
+-
+-/*0x02020*/	u64	lag_cfg;
+-#define	VXGE_HW_LAG_CFG_EN	vxge_mBIT(3)
+-#define VXGE_HW_LAG_CFG_MODE(val) vxge_vBIT(val, 6, 2)
+-#define	VXGE_HW_LAG_CFG_TX_DISCARD_BEHAV	vxge_mBIT(11)
+-#define	VXGE_HW_LAG_CFG_RX_DISCARD_BEHAV	vxge_mBIT(15)
+-#define	VXGE_HW_LAG_CFG_PREF_INDIV_PORT_NUM	vxge_mBIT(19)
+-/*0x02028*/	u64	lag_status;
+-#define	VXGE_HW_LAG_STATUS_XLCM_WAITING_TO_FAILBACK	vxge_mBIT(3)
+-#define VXGE_HW_LAG_STATUS_XLCM_TIMER_VAL_COLD_FAILOVER(val) \
+-							vxge_vBIT(val, 8, 8)
+-/*0x02030*/	u64	lag_active_passive_cfg;
+-#define	VXGE_HW_LAG_ACTIVE_PASSIVE_CFG_HOT_STANDBY	vxge_mBIT(3)
+-#define	VXGE_HW_LAG_ACTIVE_PASSIVE_CFG_LACP_DECIDES	vxge_mBIT(7)
+-#define	VXGE_HW_LAG_ACTIVE_PASSIVE_CFG_PREF_ACTIVE_PORT_NUM	vxge_mBIT(11)
+-#define	VXGE_HW_LAG_ACTIVE_PASSIVE_CFG_AUTO_FAILBACK	vxge_mBIT(15)
+-#define	VXGE_HW_LAG_ACTIVE_PASSIVE_CFG_FAILBACK_EN	vxge_mBIT(19)
+-#define	VXGE_HW_LAG_ACTIVE_PASSIVE_CFG_COLD_FAILOVER_TIMEOUT(val) \
+-							vxge_vBIT(val, 32, 16)
+-	u8	unused02040[0x02040-0x02038];
+-
+-/*0x02040*/	u64	lag_lacp_cfg;
+-#define	VXGE_HW_LAG_LACP_CFG_EN	vxge_mBIT(3)
+-#define	VXGE_HW_LAG_LACP_CFG_LACP_BEGIN	vxge_mBIT(7)
+-#define	VXGE_HW_LAG_LACP_CFG_DISCARD_LACP	vxge_mBIT(11)
+-#define	VXGE_HW_LAG_LACP_CFG_LIBERAL_LEN_CHK	vxge_mBIT(15)
+-/*0x02048*/	u64	lag_timer_cfg_1;
+-#define VXGE_HW_LAG_TIMER_CFG_1_FAST_PER(val) vxge_vBIT(val, 0, 16)
+-#define VXGE_HW_LAG_TIMER_CFG_1_SLOW_PER(val) vxge_vBIT(val, 16, 16)
+-#define VXGE_HW_LAG_TIMER_CFG_1_SHORT_TIMEOUT(val) vxge_vBIT(val, 32, 16)
+-#define VXGE_HW_LAG_TIMER_CFG_1_LONG_TIMEOUT(val) vxge_vBIT(val, 48, 16)
+-/*0x02050*/	u64	lag_timer_cfg_2;
+-#define VXGE_HW_LAG_TIMER_CFG_2_CHURN_DET(val) vxge_vBIT(val, 0, 16)
+-#define VXGE_HW_LAG_TIMER_CFG_2_AGGR_WAIT(val) vxge_vBIT(val, 16, 16)
+-#define VXGE_HW_LAG_TIMER_CFG_2_SHORT_TIMER_SCALE(val) vxge_vBIT(val, 32, 16)
+-#define VXGE_HW_LAG_TIMER_CFG_2_LONG_TIMER_SCALE(val)  vxge_vBIT(val, 48, 16)
+-/*0x02058*/	u64	lag_sys_id;
+-#define VXGE_HW_LAG_SYS_ID_ADDR(val) vxge_vBIT(val, 0, 48)
+-#define	VXGE_HW_LAG_SYS_ID_USE_PORT_ADDR	vxge_mBIT(51)
+-#define	VXGE_HW_LAG_SYS_ID_ADDR_SEL	vxge_mBIT(55)
+-/*0x02060*/	u64	lag_sys_cfg;
+-#define VXGE_HW_LAG_SYS_CFG_SYS_PRI(val) vxge_vBIT(val, 0, 16)
+-	u8	unused02070[0x02070-0x02068];
+-
+-/*0x02070*/	u64	lag_aggr_addr_cfg[2];
+-#define VXGE_HW_LAG_AGGR_ADDR_CFG_ADDR(val) vxge_vBIT(val, 0, 48)
+-#define	VXGE_HW_LAG_AGGR_ADDR_CFG_USE_PORT_ADDR	vxge_mBIT(51)
+-#define	VXGE_HW_LAG_AGGR_ADDR_CFG_ADDR_SEL	vxge_mBIT(55)
+-/*0x02080*/	u64	lag_aggr_id_cfg[2];
+-#define VXGE_HW_LAG_AGGR_ID_CFG_ID(val) vxge_vBIT(val, 0, 16)
+-/*0x02090*/	u64	lag_aggr_admin_key[2];
+-#define VXGE_HW_LAG_AGGR_ADMIN_KEY_KEY(val) vxge_vBIT(val, 0, 16)
+-/*0x020a0*/	u64	lag_aggr_alt_admin_key;
+-#define VXGE_HW_LAG_AGGR_ALT_ADMIN_KEY_KEY(val) vxge_vBIT(val, 0, 16)
+-#define	VXGE_HW_LAG_AGGR_ALT_ADMIN_KEY_ALT_AGGR	vxge_mBIT(19)
+-/*0x020a8*/	u64	lag_aggr_oper_key[2];
+-#define VXGE_HW_LAG_AGGR_OPER_KEY_LAGC_KEY(val) vxge_vBIT(val, 0, 16)
+-/*0x020b8*/	u64	lag_aggr_partner_sys_id[2];
+-#define VXGE_HW_LAG_AGGR_PARTNER_SYS_ID_LAGC_ADDR(val) vxge_vBIT(val, 0, 48)
+-/*0x020c8*/	u64	lag_aggr_partner_info[2];
+-#define VXGE_HW_LAG_AGGR_PARTNER_INFO_LAGC_SYS_PRI(val) vxge_vBIT(val, 0, 16)
+-#define	VXGE_HW_LAG_AGGR_PARTNER_INFO_LAGC_OPER_KEY(val) \
+-						vxge_vBIT(val, 16, 16)
+-/*0x020d8*/	u64	lag_aggr_state[2];
+-#define	VXGE_HW_LAG_AGGR_STATE_LAGC_TX	vxge_mBIT(3)
+-#define	VXGE_HW_LAG_AGGR_STATE_LAGC_RX	vxge_mBIT(7)
+-#define	VXGE_HW_LAG_AGGR_STATE_LAGC_READY	vxge_mBIT(11)
+-#define	VXGE_HW_LAG_AGGR_STATE_LAGC_INDIVIDUAL	vxge_mBIT(15)
+-	u8	unused020f0[0x020f0-0x020e8];
+-
+-/*0x020f0*/	u64	lag_port_cfg[2];
+-#define	VXGE_HW_LAG_PORT_CFG_EN	vxge_mBIT(3)
+-#define	VXGE_HW_LAG_PORT_CFG_DISCARD_SLOW_PROTO	vxge_mBIT(7)
+-#define	VXGE_HW_LAG_PORT_CFG_HOST_CHOSEN_AGGR	vxge_mBIT(11)
+-#define	VXGE_HW_LAG_PORT_CFG_DISCARD_UNKNOWN_SLOW_PROTO	vxge_mBIT(15)
+-/*0x02100*/	u64	lag_port_actor_admin_cfg[2];
+-#define VXGE_HW_LAG_PORT_ACTOR_ADMIN_CFG_PORT_NUM(val) vxge_vBIT(val, 0, 16)
+-#define VXGE_HW_LAG_PORT_ACTOR_ADMIN_CFG_PORT_PRI(val) vxge_vBIT(val, 16, 16)
+-#define VXGE_HW_LAG_PORT_ACTOR_ADMIN_CFG_KEY_10G(val) vxge_vBIT(val, 32, 16)
+-#define VXGE_HW_LAG_PORT_ACTOR_ADMIN_CFG_KEY_1G(val) vxge_vBIT(val, 48, 16)
+-/*0x02110*/	u64	lag_port_actor_admin_state[2];
+-#define	VXGE_HW_LAG_PORT_ACTOR_ADMIN_STATE_LACP_ACTIVITY	vxge_mBIT(3)
+-#define	VXGE_HW_LAG_PORT_ACTOR_ADMIN_STATE_LACP_TIMEOUT	vxge_mBIT(7)
+-#define	VXGE_HW_LAG_PORT_ACTOR_ADMIN_STATE_AGGREGATION	vxge_mBIT(11)
+-#define	VXGE_HW_LAG_PORT_ACTOR_ADMIN_STATE_SYNCHRONIZATION	vxge_mBIT(15)
+-#define	VXGE_HW_LAG_PORT_ACTOR_ADMIN_STATE_COLLECTING	vxge_mBIT(19)
+-#define	VXGE_HW_LAG_PORT_ACTOR_ADMIN_STATE_DISTRIBUTING	vxge_mBIT(23)
+-#define	VXGE_HW_LAG_PORT_ACTOR_ADMIN_STATE_DEFAULTED	vxge_mBIT(27)
+-#define	VXGE_HW_LAG_PORT_ACTOR_ADMIN_STATE_EXPIRED	vxge_mBIT(31)
+-/*0x02120*/	u64	lag_port_partner_admin_sys_id[2];
+-#define VXGE_HW_LAG_PORT_PARTNER_ADMIN_SYS_ID_ADDR(val) vxge_vBIT(val, 0, 48)
+-/*0x02130*/	u64	lag_port_partner_admin_cfg[2];
+-#define VXGE_HW_LAG_PORT_PARTNER_ADMIN_CFG_SYS_PRI(val) vxge_vBIT(val, 0, 16)
+-#define VXGE_HW_LAG_PORT_PARTNER_ADMIN_CFG_KEY(val) vxge_vBIT(val, 16, 16)
+-#define	VXGE_HW_LAG_PORT_PARTNER_ADMIN_CFG_PORT_NUM(val) \
+-							vxge_vBIT(val, 32, 16)
+-#define	VXGE_HW_LAG_PORT_PARTNER_ADMIN_CFG_PORT_PRI(val) \
+-							vxge_vBIT(val, 48, 16)
+-/*0x02140*/	u64	lag_port_partner_admin_state[2];
+-#define	VXGE_HW_LAG_PORT_PARTNER_ADMIN_STATE_LACP_ACTIVITY	vxge_mBIT(3)
+-#define	VXGE_HW_LAG_PORT_PARTNER_ADMIN_STATE_LACP_TIMEOUT	vxge_mBIT(7)
+-#define	VXGE_HW_LAG_PORT_PARTNER_ADMIN_STATE_AGGREGATION	vxge_mBIT(11)
+-#define	VXGE_HW_LAG_PORT_PARTNER_ADMIN_STATE_SYNCHRONIZATION	vxge_mBIT(15)
+-#define	VXGE_HW_LAG_PORT_PARTNER_ADMIN_STATE_COLLECTING	vxge_mBIT(19)
+-#define	VXGE_HW_LAG_PORT_PARTNER_ADMIN_STATE_DISTRIBUTING	vxge_mBIT(23)
+-#define	VXGE_HW_LAG_PORT_PARTNER_ADMIN_STATE_DEFAULTED	vxge_mBIT(27)
+-#define	VXGE_HW_LAG_PORT_PARTNER_ADMIN_STATE_EXPIRED	vxge_mBIT(31)
+-/*0x02150*/	u64	lag_port_to_aggr[2];
+-#define VXGE_HW_LAG_PORT_TO_AGGR_LAGC_AGGR_ID(val) vxge_vBIT(val, 0, 16)
+-#define	VXGE_HW_LAG_PORT_TO_AGGR_LAGC_AGGR_VLD_ID	vxge_mBIT(19)
+-/*0x02160*/	u64	lag_port_actor_oper_key[2];
+-#define VXGE_HW_LAG_PORT_ACTOR_OPER_KEY_LAGC_KEY(val) vxge_vBIT(val, 0, 16)
+-/*0x02170*/	u64	lag_port_actor_oper_state[2];
+-#define	VXGE_HW_LAG_PORT_ACTOR_OPER_STATE_LAGC_LACP_ACTIVITY	vxge_mBIT(3)
+-#define	VXGE_HW_LAG_PORT_ACTOR_OPER_STATE_LAGC_LACP_TIMEOUT	vxge_mBIT(7)
+-#define	VXGE_HW_LAG_PORT_ACTOR_OPER_STATE_LAGC_AGGREGATION	vxge_mBIT(11)
+-#define	VXGE_HW_LAG_PORT_ACTOR_OPER_STATE_LAGC_SYNCHRONIZATION	vxge_mBIT(15)
+-#define	VXGE_HW_LAG_PORT_ACTOR_OPER_STATE_LAGC_COLLECTING	vxge_mBIT(19)
+-#define	VXGE_HW_LAG_PORT_ACTOR_OPER_STATE_LAGC_DISTRIBUTING	vxge_mBIT(23)
+-#define	VXGE_HW_LAG_PORT_ACTOR_OPER_STATE_LAGC_DEFAULTED	vxge_mBIT(27)
+-#define	VXGE_HW_LAG_PORT_ACTOR_OPER_STATE_LAGC_EXPIRED	vxge_mBIT(31)
+-/*0x02180*/	u64	lag_port_partner_oper_sys_id[2];
+-#define VXGE_HW_LAG_PORT_PARTNER_OPER_SYS_ID_LAGC_ADDR(val) \
+-						vxge_vBIT(val, 0, 48)
+-/*0x02190*/	u64	lag_port_partner_oper_info[2];
+-#define VXGE_HW_LAG_PORT_PARTNER_OPER_INFO_LAGC_SYS_PRI(val) \
+-						vxge_vBIT(val, 0, 16)
+-#define	VXGE_HW_LAG_PORT_PARTNER_OPER_INFO_LAGC_KEY(val) \
+-						vxge_vBIT(val, 16, 16)
+-#define	VXGE_HW_LAG_PORT_PARTNER_OPER_INFO_LAGC_PORT_NUM(val) \
+-						vxge_vBIT(val, 32, 16)
+-#define	VXGE_HW_LAG_PORT_PARTNER_OPER_INFO_LAGC_PORT_PRI(val) \
+-						vxge_vBIT(val, 48, 16)
+-/*0x021a0*/	u64	lag_port_partner_oper_state[2];
+-#define	VXGE_HW_LAG_PORT_PARTNER_OPER_STATE_LAGC_LACP_ACTIVITY	vxge_mBIT(3)
+-#define	VXGE_HW_LAG_PORT_PARTNER_OPER_STATE_LAGC_LACP_TIMEOUT	vxge_mBIT(7)
+-#define	VXGE_HW_LAG_PORT_PARTNER_OPER_STATE_LAGC_AGGREGATION	vxge_mBIT(11)
+-#define	VXGE_HW_LAG_PORT_PARTNER_OPER_STATE_LAGC_SYNCHRONIZATION \
+-								vxge_mBIT(15)
+-#define	VXGE_HW_LAG_PORT_PARTNER_OPER_STATE_LAGC_COLLECTING	vxge_mBIT(19)
+-#define	VXGE_HW_LAG_PORT_PARTNER_OPER_STATE_LAGC_DISTRIBUTING	vxge_mBIT(23)
+-#define	VXGE_HW_LAG_PORT_PARTNER_OPER_STATE_LAGC_DEFAULTED	vxge_mBIT(27)
+-#define	VXGE_HW_LAG_PORT_PARTNER_OPER_STATE_LAGC_EXPIRED	vxge_mBIT(31)
+-/*0x021b0*/	u64	lag_port_state_vars[2];
+-#define	VXGE_HW_LAG_PORT_STATE_VARS_LAGC_READY	vxge_mBIT(3)
+-#define VXGE_HW_LAG_PORT_STATE_VARS_LAGC_SELECTED(val) vxge_vBIT(val, 6, 2)
+-#define	VXGE_HW_LAG_PORT_STATE_VARS_LAGC_AGGR_NUM	vxge_mBIT(11)
+-#define	VXGE_HW_LAG_PORT_STATE_VARS_LAGC_PORT_MOVED	vxge_mBIT(15)
+-#define	VXGE_HW_LAG_PORT_STATE_VARS_LAGC_PORT_ENABLED	vxge_mBIT(18)
+-#define	VXGE_HW_LAG_PORT_STATE_VARS_LAGC_PORT_DISABLED	vxge_mBIT(19)
+-#define	VXGE_HW_LAG_PORT_STATE_VARS_LAGC_NTT	vxge_mBIT(23)
+-#define	VXGE_HW_LAG_PORT_STATE_VARS_LAGC_ACTOR_CHURN	vxge_mBIT(27)
+-#define	VXGE_HW_LAG_PORT_STATE_VARS_LAGC_PARTNER_CHURN	vxge_mBIT(31)
+-#define	VXGE_HW_LAG_PORT_STATE_VARS_LAGC_ACTOR_INFO_LEN_MISMATCH \
+-								vxge_mBIT(32)
+-#define	VXGE_HW_LAG_PORT_STATE_VARS_LAGC_PARTNER_INFO_LEN_MISMATCH \
+-								vxge_mBIT(33)
+-#define	VXGE_HW_LAG_PORT_STATE_VARS_LAGC_COLL_INFO_LEN_MISMATCH	vxge_mBIT(34)
+-#define	VXGE_HW_LAG_PORT_STATE_VARS_LAGC_TERM_INFO_LEN_MISMATCH	vxge_mBIT(35)
+-#define VXGE_HW_LAG_PORT_STATE_VARS_LAGC_RX_FSM_STATE(val) vxge_vBIT(val, 37, 3)
+-#define VXGE_HW_LAG_PORT_STATE_VARS_LAGC_MUX_FSM_STATE(val) \
+-							vxge_vBIT(val, 41, 3)
+-#define VXGE_HW_LAG_PORT_STATE_VARS_LAGC_MUX_REASON(val) vxge_vBIT(val, 44, 4)
+-#define	VXGE_HW_LAG_PORT_STATE_VARS_LAGC_ACTOR_CHURN_STATE	vxge_mBIT(54)
+-#define	VXGE_HW_LAG_PORT_STATE_VARS_LAGC_PARTNER_CHURN_STATE	vxge_mBIT(55)
+-#define	VXGE_HW_LAG_PORT_STATE_VARS_LAGC_ACTOR_CHURN_COUNT(val) \
+-							vxge_vBIT(val, 56, 4)
+-#define	VXGE_HW_LAG_PORT_STATE_VARS_LAGC_PARTNER_CHURN_COUNT(val) \
+-							vxge_vBIT(val, 60, 4)
+-/*0x021c0*/	u64	lag_port_timer_cntr[2];
+-#define VXGE_HW_LAG_PORT_TIMER_CNTR_LAGC_CURRENT_WHILE(val) vxge_vBIT(val, 0, 8)
+-#define VXGE_HW_LAG_PORT_TIMER_CNTR_LAGC_PERIODIC_WHILE(val) \
+-							vxge_vBIT(val, 8, 8)
+-#define VXGE_HW_LAG_PORT_TIMER_CNTR_LAGC_WAIT_WHILE(val) vxge_vBIT(val, 16, 8)
+-#define VXGE_HW_LAG_PORT_TIMER_CNTR_LAGC_TX_LACP(val) vxge_vBIT(val, 24, 8)
+-#define	VXGE_HW_LAG_PORT_TIMER_CNTR_LAGC_ACTOR_SYNC_TRANSITION_COUNT(val) \
+-							vxge_vBIT(val, 32, 8)
+-#define	VXGE_HW_LAG_PORT_TIMER_CNTR_LAGC_PARTNER_SYNC_TRANSITION_COUNT(val) \
+-							vxge_vBIT(val, 40, 8)
+-#define	VXGE_HW_LAG_PORT_TIMER_CNTR_LAGC_ACTOR_CHANGE_COUNT(val) \
+-							vxge_vBIT(val, 48, 8)
+-#define	VXGE_HW_LAG_PORT_TIMER_CNTR_LAGC_PARTNER_CHANGE_COUNT(val) \
+-							vxge_vBIT(val, 56, 8)
+-	u8	unused02208[0x02700-0x021d0];
+-
+-/*0x02700*/	u64	rtdma_int_status;
+-#define	VXGE_HW_RTDMA_INT_STATUS_PDA_ALARM_PDA_INT	vxge_mBIT(1)
+-#define	VXGE_HW_RTDMA_INT_STATUS_PCC_ERROR_PCC_INT	vxge_mBIT(2)
+-#define	VXGE_HW_RTDMA_INT_STATUS_LSO_ERROR_LSO_INT	vxge_mBIT(4)
+-#define	VXGE_HW_RTDMA_INT_STATUS_SM_ERROR_SM_INT	vxge_mBIT(5)
+-/*0x02708*/	u64	rtdma_int_mask;
+-/*0x02710*/	u64	pda_alarm_reg;
+-#define	VXGE_HW_PDA_ALARM_REG_PDA_HSC_FIFO_ERR	vxge_mBIT(0)
+-#define	VXGE_HW_PDA_ALARM_REG_PDA_SM_ERR	vxge_mBIT(1)
+-/*0x02718*/	u64	pda_alarm_mask;
+-/*0x02720*/	u64	pda_alarm_alarm;
+-/*0x02728*/	u64	pcc_error_reg;
+-#define VXGE_HW_PCC_ERROR_REG_PCC_PCC_FRM_BUF_SBE(n)	vxge_mBIT(n)
+-#define VXGE_HW_PCC_ERROR_REG_PCC_PCC_TXDO_SBE(n)	vxge_mBIT(n)
+-#define VXGE_HW_PCC_ERROR_REG_PCC_PCC_FRM_BUF_DBE(n)	vxge_mBIT(n)
+-#define VXGE_HW_PCC_ERROR_REG_PCC_PCC_TXDO_DBE(n)	vxge_mBIT(n)
+-#define VXGE_HW_PCC_ERROR_REG_PCC_PCC_FSM_ERR_ALARM(n)	vxge_mBIT(n)
+-#define VXGE_HW_PCC_ERROR_REG_PCC_PCC_SERR(n)	vxge_mBIT(n)
+-/*0x02730*/	u64	pcc_error_mask;
+-/*0x02738*/	u64	pcc_error_alarm;
+-/*0x02740*/	u64	lso_error_reg;
+-#define VXGE_HW_LSO_ERROR_REG_PCC_LSO_ABORT(n)	vxge_mBIT(n)
+-#define VXGE_HW_LSO_ERROR_REG_PCC_LSO_FSM_ERR_ALARM(n)	vxge_mBIT(n)
+-/*0x02748*/	u64	lso_error_mask;
+-/*0x02750*/	u64	lso_error_alarm;
+-/*0x02758*/	u64	sm_error_reg;
+-#define	VXGE_HW_SM_ERROR_REG_SM_FSM_ERR_ALARM	vxge_mBIT(15)
+-/*0x02760*/	u64	sm_error_mask;
+-/*0x02768*/	u64	sm_error_alarm;
+-
+-	u8	unused027a8[0x027a8-0x02770];
+-
+-/*0x027a8*/	u64	txd_ownership_ctrl;
+-#define	VXGE_HW_TXD_OWNERSHIP_CTRL_KEEP_OWNERSHIP	vxge_mBIT(7)
+-/*0x027b0*/	u64	pcc_cfg;
+-#define VXGE_HW_PCC_CFG_PCC_ENABLE(n)	vxge_mBIT(n)
+-#define VXGE_HW_PCC_CFG_PCC_ECC_ENABLE_N(n)	vxge_mBIT(n)
+-/*0x027b8*/	u64	pcc_control;
+-#define VXGE_HW_PCC_CONTROL_FE_ENABLE(val) vxge_vBIT(val, 6, 2)
+-#define	VXGE_HW_PCC_CONTROL_EARLY_ASSIGN_EN	vxge_mBIT(15)
+-#define	VXGE_HW_PCC_CONTROL_UNBLOCK_DB_ERR	vxge_mBIT(31)
+-/*0x027c0*/	u64	pda_status1;
+-#define VXGE_HW_PDA_STATUS1_PDA_WRAP_0_CTR(val) vxge_vBIT(val, 4, 4)
+-#define VXGE_HW_PDA_STATUS1_PDA_WRAP_1_CTR(val) vxge_vBIT(val, 12, 4)
+-#define VXGE_HW_PDA_STATUS1_PDA_WRAP_2_CTR(val) vxge_vBIT(val, 20, 4)
+-#define VXGE_HW_PDA_STATUS1_PDA_WRAP_3_CTR(val) vxge_vBIT(val, 28, 4)
+-#define VXGE_HW_PDA_STATUS1_PDA_WRAP_4_CTR(val) vxge_vBIT(val, 36, 4)
+-#define VXGE_HW_PDA_STATUS1_PDA_WRAP_5_CTR(val) vxge_vBIT(val, 44, 4)
+-#define VXGE_HW_PDA_STATUS1_PDA_WRAP_6_CTR(val) vxge_vBIT(val, 52, 4)
+-#define VXGE_HW_PDA_STATUS1_PDA_WRAP_7_CTR(val) vxge_vBIT(val, 60, 4)
+-/*0x027c8*/	u64	rtdma_bw_timer;
+-#define VXGE_HW_RTDMA_BW_TIMER_TIMER_CTRL(val) vxge_vBIT(val, 12, 4)
+-
+-	u8	unused02900[0x02900-0x027d0];
+-/*0x02900*/	u64	g3cmct_int_status;
+-#define	VXGE_HW_G3CMCT_INT_STATUS_ERR_G3IF_INT	vxge_mBIT(0)
+-/*0x02908*/	u64	g3cmct_int_mask;
+-/*0x02910*/	u64	g3cmct_err_reg;
+-#define	VXGE_HW_G3CMCT_ERR_REG_G3IF_SM_ERR	vxge_mBIT(4)
+-#define	VXGE_HW_G3CMCT_ERR_REG_G3IF_GDDR3_DECC	vxge_mBIT(5)
+-#define	VXGE_HW_G3CMCT_ERR_REG_G3IF_GDDR3_U_DECC	vxge_mBIT(6)
+-#define	VXGE_HW_G3CMCT_ERR_REG_G3IF_CTRL_FIFO_DECC	vxge_mBIT(7)
+-#define	VXGE_HW_G3CMCT_ERR_REG_G3IF_GDDR3_SECC	vxge_mBIT(29)
+-#define	VXGE_HW_G3CMCT_ERR_REG_G3IF_GDDR3_U_SECC	vxge_mBIT(30)
+-#define	VXGE_HW_G3CMCT_ERR_REG_G3IF_CTRL_FIFO_SECC	vxge_mBIT(31)
+-/*0x02918*/	u64	g3cmct_err_mask;
+-/*0x02920*/	u64	g3cmct_err_alarm;
+-	u8	unused03000[0x03000-0x02928];
+-
+-/*0x03000*/	u64	mc_int_status;
+-#define	VXGE_HW_MC_INT_STATUS_MC_ERR_MC_INT	vxge_mBIT(3)
+-#define	VXGE_HW_MC_INT_STATUS_GROCRC_ALARM_ROCRC_INT	vxge_mBIT(7)
+-#define	VXGE_HW_MC_INT_STATUS_FAU_GEN_ERR_FAU_GEN_INT	vxge_mBIT(11)
+-#define	VXGE_HW_MC_INT_STATUS_FAU_ECC_ERR_FAU_ECC_INT	vxge_mBIT(15)
+-/*0x03008*/	u64	mc_int_mask;
+-/*0x03010*/	u64	mc_err_reg;
+-#define	VXGE_HW_MC_ERR_REG_MC_XFMD_MEM_ECC_SG_ERR_A	vxge_mBIT(3)
+-#define	VXGE_HW_MC_ERR_REG_MC_XFMD_MEM_ECC_SG_ERR_B	vxge_mBIT(4)
+-#define	VXGE_HW_MC_ERR_REG_MC_G3IF_RD_FIFO_ECC_SG_ERR	vxge_mBIT(5)
+-#define	VXGE_HW_MC_ERR_REG_MC_MIRI_ECC_SG_ERR_0	vxge_mBIT(6)
+-#define	VXGE_HW_MC_ERR_REG_MC_MIRI_ECC_SG_ERR_1	vxge_mBIT(7)
+-#define	VXGE_HW_MC_ERR_REG_MC_XFMD_MEM_ECC_DB_ERR_A	vxge_mBIT(10)
+-#define	VXGE_HW_MC_ERR_REG_MC_XFMD_MEM_ECC_DB_ERR_B	vxge_mBIT(11)
+-#define	VXGE_HW_MC_ERR_REG_MC_G3IF_RD_FIFO_ECC_DB_ERR	vxge_mBIT(12)
+-#define	VXGE_HW_MC_ERR_REG_MC_MIRI_ECC_DB_ERR_0	vxge_mBIT(13)
+-#define	VXGE_HW_MC_ERR_REG_MC_MIRI_ECC_DB_ERR_1	vxge_mBIT(14)
+-#define	VXGE_HW_MC_ERR_REG_MC_SM_ERR	vxge_mBIT(15)
+-/*0x03018*/	u64	mc_err_mask;
+-/*0x03020*/	u64	mc_err_alarm;
+-/*0x03028*/	u64	grocrc_alarm_reg;
+-#define	VXGE_HW_GROCRC_ALARM_REG_XFMD_WR_FIFO_ERR	vxge_mBIT(3)
+-#define	VXGE_HW_GROCRC_ALARM_REG_WDE2MSR_RD_FIFO_ERR	vxge_mBIT(7)
+-/*0x03030*/	u64	grocrc_alarm_mask;
+-/*0x03038*/	u64	grocrc_alarm_alarm;
+-	u8	unused03100[0x03100-0x03040];
+-
+-/*0x03100*/	u64	rx_thresh_cfg_repl;
+-#define VXGE_HW_RX_THRESH_CFG_REPL_PAUSE_LOW_THR(val) vxge_vBIT(val, 0, 8)
+-#define VXGE_HW_RX_THRESH_CFG_REPL_PAUSE_HIGH_THR(val) vxge_vBIT(val, 8, 8)
+-#define VXGE_HW_RX_THRESH_CFG_REPL_RED_THR_0(val) vxge_vBIT(val, 16, 8)
+-#define VXGE_HW_RX_THRESH_CFG_REPL_RED_THR_1(val) vxge_vBIT(val, 24, 8)
+-#define VXGE_HW_RX_THRESH_CFG_REPL_RED_THR_2(val) vxge_vBIT(val, 32, 8)
+-#define VXGE_HW_RX_THRESH_CFG_REPL_RED_THR_3(val) vxge_vBIT(val, 40, 8)
+-#define	VXGE_HW_RX_THRESH_CFG_REPL_GLOBAL_WOL_EN	vxge_mBIT(62)
+-#define	VXGE_HW_RX_THRESH_CFG_REPL_EXACT_VP_MATCH_REQ	vxge_mBIT(63)
+-	u8	unused033b8[0x033b8-0x03108];
+-
+-/*0x033b8*/	u64	fbmc_ecc_cfg;
+-#define VXGE_HW_FBMC_ECC_CFG_ENABLE(val) vxge_vBIT(val, 3, 5)
+-	u8	unused03400[0x03400-0x033c0];
+-
+-/*0x03400*/	u64	pcipif_int_status;
+-#define	VXGE_HW_PCIPIF_INT_STATUS_DBECC_ERR_DBECC_ERR_INT	vxge_mBIT(3)
+-#define	VXGE_HW_PCIPIF_INT_STATUS_SBECC_ERR_SBECC_ERR_INT	vxge_mBIT(7)
+-#define	VXGE_HW_PCIPIF_INT_STATUS_GENERAL_ERR_GENERAL_ERR_INT	vxge_mBIT(11)
+-#define	VXGE_HW_PCIPIF_INT_STATUS_SRPCIM_MSG_SRPCIM_MSG_INT	vxge_mBIT(15)
+-#define	VXGE_HW_PCIPIF_INT_STATUS_MRPCIM_SPARE_R1_MRPCIM_SPARE_R1_INT \
+-								vxge_mBIT(19)
+-/*0x03408*/	u64	pcipif_int_mask;
+-/*0x03410*/	u64	dbecc_err_reg;
+-#define	VXGE_HW_DBECC_ERR_REG_PCI_RETRY_BUF_DB_ERR	vxge_mBIT(3)
+-#define	VXGE_HW_DBECC_ERR_REG_PCI_RETRY_SOT_DB_ERR	vxge_mBIT(7)
+-#define	VXGE_HW_DBECC_ERR_REG_PCI_P_HDR_DB_ERR	vxge_mBIT(11)
+-#define	VXGE_HW_DBECC_ERR_REG_PCI_P_DATA_DB_ERR	vxge_mBIT(15)
+-#define	VXGE_HW_DBECC_ERR_REG_PCI_NP_HDR_DB_ERR	vxge_mBIT(19)
+-#define	VXGE_HW_DBECC_ERR_REG_PCI_NP_DATA_DB_ERR	vxge_mBIT(23)
+-/*0x03418*/	u64	dbecc_err_mask;
+-/*0x03420*/	u64	dbecc_err_alarm;
+-/*0x03428*/	u64	sbecc_err_reg;
+-#define	VXGE_HW_SBECC_ERR_REG_PCI_RETRY_BUF_SG_ERR	vxge_mBIT(3)
+-#define	VXGE_HW_SBECC_ERR_REG_PCI_RETRY_SOT_SG_ERR	vxge_mBIT(7)
+-#define	VXGE_HW_SBECC_ERR_REG_PCI_P_HDR_SG_ERR	vxge_mBIT(11)
+-#define	VXGE_HW_SBECC_ERR_REG_PCI_P_DATA_SG_ERR	vxge_mBIT(15)
+-#define	VXGE_HW_SBECC_ERR_REG_PCI_NP_HDR_SG_ERR	vxge_mBIT(19)
+-#define	VXGE_HW_SBECC_ERR_REG_PCI_NP_DATA_SG_ERR	vxge_mBIT(23)
+-/*0x03430*/	u64	sbecc_err_mask;
+-/*0x03438*/	u64	sbecc_err_alarm;
+-/*0x03440*/	u64	general_err_reg;
+-#define	VXGE_HW_GENERAL_ERR_REG_PCI_DROPPED_ILLEGAL_CFG	vxge_mBIT(3)
+-#define	VXGE_HW_GENERAL_ERR_REG_PCI_ILLEGAL_MEM_MAP_PROG	vxge_mBIT(7)
+-#define	VXGE_HW_GENERAL_ERR_REG_PCI_LINK_RST_FSM_ERR	vxge_mBIT(11)
+-#define	VXGE_HW_GENERAL_ERR_REG_PCI_RX_ILLEGAL_TLP_VPLANE	vxge_mBIT(15)
+-#define	VXGE_HW_GENERAL_ERR_REG_PCI_TRAINING_RESET_DET	vxge_mBIT(19)
+-#define	VXGE_HW_GENERAL_ERR_REG_PCI_PCI_LINK_DOWN_DET	vxge_mBIT(23)
+-#define	VXGE_HW_GENERAL_ERR_REG_PCI_RESET_ACK_DLLP	vxge_mBIT(27)
+-/*0x03448*/	u64	general_err_mask;
+-/*0x03450*/	u64	general_err_alarm;
+-/*0x03458*/	u64	srpcim_msg_reg;
+-#define	VXGE_HW_SRPCIM_MSG_REG_SWIF_SRPCIM_TO_MRPCIM_VPLANE0_RMSG_INT \
+-								vxge_mBIT(0)
+-#define	VXGE_HW_SRPCIM_MSG_REG_SWIF_SRPCIM_TO_MRPCIM_VPLANE1_RMSG_INT \
+-								vxge_mBIT(1)
+-#define	VXGE_HW_SRPCIM_MSG_REG_SWIF_SRPCIM_TO_MRPCIM_VPLANE2_RMSG_INT \
+-								vxge_mBIT(2)
+-#define	VXGE_HW_SRPCIM_MSG_REG_SWIF_SRPCIM_TO_MRPCIM_VPLANE3_RMSG_INT \
+-								vxge_mBIT(3)
+-#define	VXGE_HW_SRPCIM_MSG_REG_SWIF_SRPCIM_TO_MRPCIM_VPLANE4_RMSG_INT \
+-								vxge_mBIT(4)
+-#define	VXGE_HW_SRPCIM_MSG_REG_SWIF_SRPCIM_TO_MRPCIM_VPLANE5_RMSG_INT \
+-								vxge_mBIT(5)
+-#define	VXGE_HW_SRPCIM_MSG_REG_SWIF_SRPCIM_TO_MRPCIM_VPLANE6_RMSG_INT \
+-								vxge_mBIT(6)
+-#define	VXGE_HW_SRPCIM_MSG_REG_SWIF_SRPCIM_TO_MRPCIM_VPLANE7_RMSG_INT \
+-								vxge_mBIT(7)
+-#define	VXGE_HW_SRPCIM_MSG_REG_SWIF_SRPCIM_TO_MRPCIM_VPLANE8_RMSG_INT \
+-								vxge_mBIT(8)
+-#define	VXGE_HW_SRPCIM_MSG_REG_SWIF_SRPCIM_TO_MRPCIM_VPLANE9_RMSG_INT \
+-								vxge_mBIT(9)
+-#define	VXGE_HW_SRPCIM_MSG_REG_SWIF_SRPCIM_TO_MRPCIM_VPLANE10_RMSG_INT \
+-								vxge_mBIT(10)
+-#define	VXGE_HW_SRPCIM_MSG_REG_SWIF_SRPCIM_TO_MRPCIM_VPLANE11_RMSG_INT \
+-								vxge_mBIT(11)
+-#define	VXGE_HW_SRPCIM_MSG_REG_SWIF_SRPCIM_TO_MRPCIM_VPLANE12_RMSG_INT \
+-								vxge_mBIT(12)
+-#define	VXGE_HW_SRPCIM_MSG_REG_SWIF_SRPCIM_TO_MRPCIM_VPLANE13_RMSG_INT \
+-								vxge_mBIT(13)
+-#define	VXGE_HW_SRPCIM_MSG_REG_SWIF_SRPCIM_TO_MRPCIM_VPLANE14_RMSG_INT \
+-								vxge_mBIT(14)
+-#define	VXGE_HW_SRPCIM_MSG_REG_SWIF_SRPCIM_TO_MRPCIM_VPLANE15_RMSG_INT \
+-								vxge_mBIT(15)
+-#define	VXGE_HW_SRPCIM_MSG_REG_SWIF_SRPCIM_TO_MRPCIM_VPLANE16_RMSG_INT \
+-								vxge_mBIT(16)
+-/*0x03460*/	u64	srpcim_msg_mask;
+-/*0x03468*/	u64	srpcim_msg_alarm;
+-	u8	unused03600[0x03600-0x03470];
+-
+-/*0x03600*/	u64	gcmg1_int_status;
+-#define	VXGE_HW_GCMG1_INT_STATUS_GSSCC_ERR_GSSCC_INT	vxge_mBIT(0)
+-#define	VXGE_HW_GCMG1_INT_STATUS_GSSC0_ERR0_GSSC0_0_INT	vxge_mBIT(1)
+-#define	VXGE_HW_GCMG1_INT_STATUS_GSSC0_ERR1_GSSC0_1_INT	vxge_mBIT(2)
+-#define	VXGE_HW_GCMG1_INT_STATUS_GSSC1_ERR0_GSSC1_0_INT	vxge_mBIT(3)
+-#define	VXGE_HW_GCMG1_INT_STATUS_GSSC1_ERR1_GSSC1_1_INT	vxge_mBIT(4)
+-#define	VXGE_HW_GCMG1_INT_STATUS_GSSC2_ERR0_GSSC2_0_INT	vxge_mBIT(5)
+-#define	VXGE_HW_GCMG1_INT_STATUS_GSSC2_ERR1_GSSC2_1_INT	vxge_mBIT(6)
+-#define	VXGE_HW_GCMG1_INT_STATUS_UQM_ERR_UQM_INT	vxge_mBIT(7)
+-#define	VXGE_HW_GCMG1_INT_STATUS_GQCC_ERR_GQCC_INT	vxge_mBIT(8)
+-/*0x03608*/	u64	gcmg1_int_mask;
+-	u8	unused03a00[0x03a00-0x03610];
+-
+-/*0x03a00*/	u64	pcmg1_int_status;
+-#define	VXGE_HW_PCMG1_INT_STATUS_PSSCC_ERR_PSSCC_INT	vxge_mBIT(0)
+-#define	VXGE_HW_PCMG1_INT_STATUS_PQCC_ERR_PQCC_INT	vxge_mBIT(1)
+-#define	VXGE_HW_PCMG1_INT_STATUS_PQCC_CQM_ERR_PQCC_CQM_INT	vxge_mBIT(2)
+-#define	VXGE_HW_PCMG1_INT_STATUS_PQCC_SQM_ERR_PQCC_SQM_INT	vxge_mBIT(3)
+-/*0x03a08*/	u64	pcmg1_int_mask;
+-	u8	unused04000[0x04000-0x03a10];
+-
+-/*0x04000*/	u64	one_int_status;
+-#define	VXGE_HW_ONE_INT_STATUS_RXPE_ERR_RXPE_INT	vxge_mBIT(7)
+-#define	VXGE_HW_ONE_INT_STATUS_TXPE_BCC_MEM_SG_ECC_ERR_TXPE_BCC_MEM_SG_ECC_INT \
+-							vxge_mBIT(13)
+-#define	VXGE_HW_ONE_INT_STATUS_TXPE_BCC_MEM_DB_ECC_ERR_TXPE_BCC_MEM_DB_ECC_INT \
+-							vxge_mBIT(14)
+-#define	VXGE_HW_ONE_INT_STATUS_TXPE_ERR_TXPE_INT	vxge_mBIT(15)
+-#define	VXGE_HW_ONE_INT_STATUS_DLM_ERR_DLM_INT	vxge_mBIT(23)
+-#define	VXGE_HW_ONE_INT_STATUS_PE_ERR_PE_INT	vxge_mBIT(31)
+-#define	VXGE_HW_ONE_INT_STATUS_RPE_ERR_RPE_INT	vxge_mBIT(39)
+-#define	VXGE_HW_ONE_INT_STATUS_RPE_FSM_ERR_RPE_FSM_INT	vxge_mBIT(47)
+-#define	VXGE_HW_ONE_INT_STATUS_OES_ERR_OES_INT	vxge_mBIT(55)
+-/*0x04008*/	u64	one_int_mask;
+-	u8	unused04818[0x04818-0x04010];
+-
+-/*0x04818*/	u64	noa_wct_ctrl;
+-#define	VXGE_HW_NOA_WCT_CTRL_VP_INT_NUM	vxge_mBIT(0)
+-/*0x04820*/	u64	rc_cfg2;
+-#define VXGE_HW_RC_CFG2_BUFF1_SIZE(val) vxge_vBIT(val, 0, 16)
+-#define VXGE_HW_RC_CFG2_BUFF2_SIZE(val) vxge_vBIT(val, 16, 16)
+-#define VXGE_HW_RC_CFG2_BUFF3_SIZE(val) vxge_vBIT(val, 32, 16)
+-#define VXGE_HW_RC_CFG2_BUFF4_SIZE(val) vxge_vBIT(val, 48, 16)
+-/*0x04828*/	u64	rc_cfg3;
+-#define VXGE_HW_RC_CFG3_BUFF5_SIZE(val) vxge_vBIT(val, 0, 16)
+-/*0x04830*/	u64	rx_multi_cast_ctrl1;
+-#define	VXGE_HW_RX_MULTI_CAST_CTRL1_ENABLE	vxge_mBIT(7)
+-#define VXGE_HW_RX_MULTI_CAST_CTRL1_DELAY_COUNT(val) vxge_vBIT(val, 11, 5)
+-/*0x04838*/	u64	rxdm_dbg_rd;
+-#define VXGE_HW_RXDM_DBG_RD_ADDR(val) vxge_vBIT(val, 0, 12)
+-#define	VXGE_HW_RXDM_DBG_RD_ENABLE	vxge_mBIT(31)
+-/*0x04840*/	u64	rxdm_dbg_rd_data;
+-#define VXGE_HW_RXDM_DBG_RD_DATA_RMC_RXDM_DBG_RD_DATA(val) vxge_vBIT(val, 0, 64)
+-/*0x04848*/	u64	rqa_top_prty_for_vh[17];
+-#define VXGE_HW_RQA_TOP_PRTY_FOR_VH_RQA_TOP_PRTY_FOR_VH(val) \
+-							vxge_vBIT(val, 59, 5)
+-	u8	unused04900[0x04900-0x048d0];
+-
+-/*0x04900*/	u64	tim_status;
+-#define	VXGE_HW_TIM_STATUS_TIM_RESET_IN_PROGRESS	vxge_mBIT(0)
+-/*0x04908*/	u64	tim_ecc_enable;
+-#define	VXGE_HW_TIM_ECC_ENABLE_VBLS_N	vxge_mBIT(7)
+-#define	VXGE_HW_TIM_ECC_ENABLE_BMAP_N	vxge_mBIT(15)
+-#define	VXGE_HW_TIM_ECC_ENABLE_BMAP_MSG_N	vxge_mBIT(23)
+-/*0x04910*/	u64	tim_bp_ctrl;
+-#define	VXGE_HW_TIM_BP_CTRL_RD_XON	vxge_mBIT(7)
+-#define	VXGE_HW_TIM_BP_CTRL_WR_XON	vxge_mBIT(15)
+-#define	VXGE_HW_TIM_BP_CTRL_ROCRC_BYP	vxge_mBIT(23)
+-/*0x04918*/	u64	tim_resource_assignment_vh[17];
+-#define VXGE_HW_TIM_RESOURCE_ASSIGNMENT_VH_BMAP_ROOT(val) vxge_vBIT(val, 0, 32)
+-/*0x049a0*/	u64	tim_bmap_mapping_vp_err[17];
+-#define VXGE_HW_TIM_BMAP_MAPPING_VP_ERR_TIM_DEST_VPATH(val) vxge_vBIT(val, 3, 5)
+-	u8	unused04b00[0x04b00-0x04a28];
+-
+-/*0x04b00*/	u64	gcmg2_int_status;
+-#define	VXGE_HW_GCMG2_INT_STATUS_GXTMC_ERR_GXTMC_INT	vxge_mBIT(7)
+-#define	VXGE_HW_GCMG2_INT_STATUS_GCP_ERR_GCP_INT	vxge_mBIT(15)
+-#define	VXGE_HW_GCMG2_INT_STATUS_CMC_ERR_CMC_INT	vxge_mBIT(23)
+-/*0x04b08*/	u64	gcmg2_int_mask;
+-/*0x04b10*/	u64	gxtmc_err_reg;
+-#define VXGE_HW_GXTMC_ERR_REG_XTMC_BDT_MEM_DB_ERR(val) vxge_vBIT(val, 0, 4)
+-#define VXGE_HW_GXTMC_ERR_REG_XTMC_BDT_MEM_SG_ERR(val) vxge_vBIT(val, 4, 4)
+-#define	VXGE_HW_GXTMC_ERR_REG_XTMC_CMC_RD_DATA_DB_ERR	vxge_mBIT(8)
+-#define	VXGE_HW_GXTMC_ERR_REG_XTMC_REQ_FIFO_ERR	vxge_mBIT(9)
+-#define	VXGE_HW_GXTMC_ERR_REG_XTMC_REQ_DATA_FIFO_ERR	vxge_mBIT(10)
+-#define	VXGE_HW_GXTMC_ERR_REG_XTMC_WR_RSP_FIFO_ERR	vxge_mBIT(11)
+-#define	VXGE_HW_GXTMC_ERR_REG_XTMC_RD_RSP_FIFO_ERR	vxge_mBIT(12)
+-#define	VXGE_HW_GXTMC_ERR_REG_XTMC_CMI_WRP_FIFO_ERR	vxge_mBIT(13)
+-#define	VXGE_HW_GXTMC_ERR_REG_XTMC_CMI_WRP_ERR	vxge_mBIT(14)
+-#define	VXGE_HW_GXTMC_ERR_REG_XTMC_CMI_RRP_FIFO_ERR	vxge_mBIT(15)
+-#define	VXGE_HW_GXTMC_ERR_REG_XTMC_CMI_RRP_ERR	vxge_mBIT(16)
+-#define	VXGE_HW_GXTMC_ERR_REG_XTMC_CMI_DATA_SM_ERR	vxge_mBIT(17)
+-#define	VXGE_HW_GXTMC_ERR_REG_XTMC_CMI_CMC0_IF_ERR	vxge_mBIT(18)
+-#define	VXGE_HW_GXTMC_ERR_REG_XTMC_BDT_CMI_ARB_SM_ERR	vxge_mBIT(19)
+-#define	VXGE_HW_GXTMC_ERR_REG_XTMC_BDT_CMI_CFC_SM_ERR	vxge_mBIT(20)
+-#define	VXGE_HW_GXTMC_ERR_REG_XTMC_BDT_CMI_DFETCH_CREDIT_OVERFLOW \
+-							vxge_mBIT(21)
+-#define	VXGE_HW_GXTMC_ERR_REG_XTMC_BDT_CMI_DFETCH_CREDIT_UNDERFLOW \
+-							vxge_mBIT(22)
+-#define	VXGE_HW_GXTMC_ERR_REG_XTMC_BDT_CMI_DFETCH_SM_ERR	vxge_mBIT(23)
+-#define	VXGE_HW_GXTMC_ERR_REG_XTMC_BDT_CMI_RCTRL_CREDIT_OVERFLOW \
+-							vxge_mBIT(24)
+-#define	VXGE_HW_GXTMC_ERR_REG_XTMC_BDT_CMI_RCTRL_CREDIT_UNDERFLOW \
+-							vxge_mBIT(25)
+-#define	VXGE_HW_GXTMC_ERR_REG_XTMC_BDT_CMI_RCTRL_SM_ERR	vxge_mBIT(26)
+-#define	VXGE_HW_GXTMC_ERR_REG_XTMC_BDT_CMI_WCOMPL_SM_ERR	vxge_mBIT(27)
+-#define	VXGE_HW_GXTMC_ERR_REG_XTMC_BDT_CMI_WCOMPL_TAG_ERR	vxge_mBIT(28)
+-#define	VXGE_HW_GXTMC_ERR_REG_XTMC_BDT_CMI_WREQ_SM_ERR	vxge_mBIT(29)
+-#define	VXGE_HW_GXTMC_ERR_REG_XTMC_BDT_CMI_WREQ_FIFO_ERR	vxge_mBIT(30)
+-#define	VXGE_HW_GXTMC_ERR_REG_XTMC_CP2BDT_RFIFO_POP_ERR	vxge_mBIT(31)
+-#define	VXGE_HW_GXTMC_ERR_REG_XTMC_XTMC_BDT_CMI_OP_ERR	vxge_mBIT(32)
+-#define	VXGE_HW_GXTMC_ERR_REG_XTMC_XTMC_BDT_DFETCH_OP_ERR	vxge_mBIT(33)
+-#define	VXGE_HW_GXTMC_ERR_REG_XTMC_XTMC_BDT_DFIFO_ERR	vxge_mBIT(34)
+-#define	VXGE_HW_GXTMC_ERR_REG_XTMC_CMI_ARB_SM_ERR	vxge_mBIT(35)
+-/*0x04b18*/	u64	gxtmc_err_mask;
+-/*0x04b20*/	u64	gxtmc_err_alarm;
+-/*0x04b28*/	u64	cmc_err_reg;
+-#define	VXGE_HW_CMC_ERR_REG_CMC_CMC_SM_ERR	vxge_mBIT(0)
+-/*0x04b30*/	u64	cmc_err_mask;
+-/*0x04b38*/	u64	cmc_err_alarm;
+-/*0x04b40*/	u64	gcp_err_reg;
+-#define	VXGE_HW_GCP_ERR_REG_CP_H2L2CP_FIFO_ERR	vxge_mBIT(0)
+-#define	VXGE_HW_GCP_ERR_REG_CP_STC2CP_FIFO_ERR	vxge_mBIT(1)
+-#define	VXGE_HW_GCP_ERR_REG_CP_STE2CP_FIFO_ERR	vxge_mBIT(2)
+-#define	VXGE_HW_GCP_ERR_REG_CP_TTE2CP_FIFO_ERR	vxge_mBIT(3)
+-/*0x04b48*/	u64	gcp_err_mask;
+-/*0x04b50*/	u64	gcp_err_alarm;
+-	u8	unused04f00[0x04f00-0x04b58];
+-
+-/*0x04f00*/	u64	pcmg2_int_status;
+-#define	VXGE_HW_PCMG2_INT_STATUS_PXTMC_ERR_PXTMC_INT	vxge_mBIT(7)
+-#define	VXGE_HW_PCMG2_INT_STATUS_CP_EXC_CP_XT_EXC_INT	vxge_mBIT(15)
+-#define	VXGE_HW_PCMG2_INT_STATUS_CP_ERR_CP_ERR_INT	vxge_mBIT(23)
+-/*0x04f08*/	u64	pcmg2_int_mask;
+-/*0x04f10*/	u64	pxtmc_err_reg;
+-#define VXGE_HW_PXTMC_ERR_REG_XTMC_XT_PIF_SRAM_DB_ERR(val) vxge_vBIT(val, 0, 2)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_MPT_REQ_FIFO_ERR	vxge_mBIT(2)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_MPT_PRSP_FIFO_ERR	vxge_mBIT(3)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_MPT_WRSP_FIFO_ERR	vxge_mBIT(4)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_UPT_REQ_FIFO_ERR	vxge_mBIT(5)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_UPT_PRSP_FIFO_ERR	vxge_mBIT(6)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_UPT_WRSP_FIFO_ERR	vxge_mBIT(7)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_CPT_REQ_FIFO_ERR	vxge_mBIT(8)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_CPT_PRSP_FIFO_ERR	vxge_mBIT(9)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_CPT_WRSP_FIFO_ERR	vxge_mBIT(10)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_REQ_FIFO_ERR	vxge_mBIT(11)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_REQ_DATA_FIFO_ERR	vxge_mBIT(12)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_WR_RSP_FIFO_ERR	vxge_mBIT(13)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_RD_RSP_FIFO_ERR	vxge_mBIT(14)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_MPT_REQ_SHADOW_ERR	vxge_mBIT(15)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_MPT_RSP_SHADOW_ERR	vxge_mBIT(16)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_UPT_REQ_SHADOW_ERR	vxge_mBIT(17)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_UPT_RSP_SHADOW_ERR	vxge_mBIT(18)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_CPT_REQ_SHADOW_ERR	vxge_mBIT(19)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_CPT_RSP_SHADOW_ERR	vxge_mBIT(20)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_XIL_SHADOW_ERR	vxge_mBIT(21)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_ARB_SHADOW_ERR	vxge_mBIT(22)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_RAM_SHADOW_ERR	vxge_mBIT(23)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_CMW_SHADOW_ERR	vxge_mBIT(24)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_CMR_SHADOW_ERR	vxge_mBIT(25)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_MPT_REQ_FSM_ERR	vxge_mBIT(26)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_MPT_RSP_FSM_ERR	vxge_mBIT(27)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_UPT_REQ_FSM_ERR	vxge_mBIT(28)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_UPT_RSP_FSM_ERR	vxge_mBIT(29)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_CPT_REQ_FSM_ERR	vxge_mBIT(30)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_CPT_RSP_FSM_ERR	vxge_mBIT(31)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_XIL_FSM_ERR	vxge_mBIT(32)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_ARB_FSM_ERR	vxge_mBIT(33)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_CMW_FSM_ERR	vxge_mBIT(34)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_CMR_FSM_ERR	vxge_mBIT(35)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_MXP_RD_PROT_ERR	vxge_mBIT(36)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_UXP_RD_PROT_ERR	vxge_mBIT(37)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_CXP_RD_PROT_ERR	vxge_mBIT(38)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_MXP_WR_PROT_ERR	vxge_mBIT(39)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_UXP_WR_PROT_ERR	vxge_mBIT(40)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_CXP_WR_PROT_ERR	vxge_mBIT(41)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_MXP_INV_ADDR_ERR	vxge_mBIT(42)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_UXP_INV_ADDR_ERR	vxge_mBIT(43)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_CXP_INV_ADDR_ERR	vxge_mBIT(44)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_MXP_RD_PROT_INFO_ERR	vxge_mBIT(45)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_UXP_RD_PROT_INFO_ERR	vxge_mBIT(46)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_CXP_RD_PROT_INFO_ERR	vxge_mBIT(47)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_MXP_WR_PROT_INFO_ERR	vxge_mBIT(48)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_UXP_WR_PROT_INFO_ERR	vxge_mBIT(49)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_CXP_WR_PROT_INFO_ERR	vxge_mBIT(50)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_MXP_INV_ADDR_INFO_ERR	vxge_mBIT(51)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_UXP_INV_ADDR_INFO_ERR	vxge_mBIT(52)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_CXP_INV_ADDR_INFO_ERR	vxge_mBIT(53)
+-#define VXGE_HW_PXTMC_ERR_REG_XTMC_XT_PIF_SRAM_SG_ERR(val) vxge_vBIT(val, 54, 2)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_CP2BDT_DFIFO_PUSH_ERR	vxge_mBIT(56)
+-#define	VXGE_HW_PXTMC_ERR_REG_XTMC_CP2BDT_RFIFO_PUSH_ERR	vxge_mBIT(57)
+-/*0x04f18*/	u64	pxtmc_err_mask;
+-/*0x04f20*/	u64	pxtmc_err_alarm;
+-/*0x04f28*/	u64	cp_err_reg;
+-#define VXGE_HW_CP_ERR_REG_CP_CP_DCACHE_SG_ERR(val) vxge_vBIT(val, 0, 8)
+-#define VXGE_HW_CP_ERR_REG_CP_CP_ICACHE_SG_ERR(val) vxge_vBIT(val, 8, 2)
+-#define	VXGE_HW_CP_ERR_REG_CP_CP_DTAG_SG_ERR	vxge_mBIT(10)
+-#define	VXGE_HW_CP_ERR_REG_CP_CP_ITAG_SG_ERR	vxge_mBIT(11)
+-#define	VXGE_HW_CP_ERR_REG_CP_CP_TRACE_SG_ERR	vxge_mBIT(12)
+-#define	VXGE_HW_CP_ERR_REG_CP_DMA2CP_SG_ERR	vxge_mBIT(13)
+-#define	VXGE_HW_CP_ERR_REG_CP_MP2CP_SG_ERR	vxge_mBIT(14)
+-#define	VXGE_HW_CP_ERR_REG_CP_QCC2CP_SG_ERR	vxge_mBIT(15)
+-#define VXGE_HW_CP_ERR_REG_CP_STC2CP_SG_ERR(val) vxge_vBIT(val, 16, 2)
+-#define VXGE_HW_CP_ERR_REG_CP_CP_DCACHE_DB_ERR(val) vxge_vBIT(val, 24, 8)
+-#define VXGE_HW_CP_ERR_REG_CP_CP_ICACHE_DB_ERR(val) vxge_vBIT(val, 32, 2)
+-#define	VXGE_HW_CP_ERR_REG_CP_CP_DTAG_DB_ERR	vxge_mBIT(34)
+-#define	VXGE_HW_CP_ERR_REG_CP_CP_ITAG_DB_ERR	vxge_mBIT(35)
+-#define	VXGE_HW_CP_ERR_REG_CP_CP_TRACE_DB_ERR	vxge_mBIT(36)
+-#define	VXGE_HW_CP_ERR_REG_CP_DMA2CP_DB_ERR	vxge_mBIT(37)
+-#define	VXGE_HW_CP_ERR_REG_CP_MP2CP_DB_ERR	vxge_mBIT(38)
+-#define	VXGE_HW_CP_ERR_REG_CP_QCC2CP_DB_ERR	vxge_mBIT(39)
+-#define VXGE_HW_CP_ERR_REG_CP_STC2CP_DB_ERR(val) vxge_vBIT(val, 40, 2)
+-#define	VXGE_HW_CP_ERR_REG_CP_H2L2CP_FIFO_ERR	vxge_mBIT(48)
+-#define	VXGE_HW_CP_ERR_REG_CP_STC2CP_FIFO_ERR	vxge_mBIT(49)
+-#define	VXGE_HW_CP_ERR_REG_CP_STE2CP_FIFO_ERR	vxge_mBIT(50)
+-#define	VXGE_HW_CP_ERR_REG_CP_TTE2CP_FIFO_ERR	vxge_mBIT(51)
+-#define	VXGE_HW_CP_ERR_REG_CP_SWIF2CP_FIFO_ERR	vxge_mBIT(52)
+-#define	VXGE_HW_CP_ERR_REG_CP_CP2DMA_FIFO_ERR	vxge_mBIT(53)
+-#define	VXGE_HW_CP_ERR_REG_CP_DAM2CP_FIFO_ERR	vxge_mBIT(54)
+-#define	VXGE_HW_CP_ERR_REG_CP_MP2CP_FIFO_ERR	vxge_mBIT(55)
+-#define	VXGE_HW_CP_ERR_REG_CP_QCC2CP_FIFO_ERR	vxge_mBIT(56)
+-#define	VXGE_HW_CP_ERR_REG_CP_DMA2CP_FIFO_ERR	vxge_mBIT(57)
+-#define	VXGE_HW_CP_ERR_REG_CP_CP_WAKE_FSM_INTEGRITY_ERR	vxge_mBIT(60)
+-#define	VXGE_HW_CP_ERR_REG_CP_CP_PMON_FSM_INTEGRITY_ERR	vxge_mBIT(61)
+-#define	VXGE_HW_CP_ERR_REG_CP_DMA_RD_SHADOW_ERR	vxge_mBIT(62)
+-#define	VXGE_HW_CP_ERR_REG_CP_PIFT_CREDIT_ERR	vxge_mBIT(63)
+-/*0x04f30*/	u64	cp_err_mask;
+-/*0x04f38*/	u64	cp_err_alarm;
+-	u8	unused04fe8[0x04f50-0x04f40];
+-
+-/*0x04f50*/	u64	cp_exc_reg;
+-#define	VXGE_HW_CP_EXC_REG_CP_CP_CAUSE_INFO_INT	vxge_mBIT(47)
+-#define	VXGE_HW_CP_EXC_REG_CP_CP_CAUSE_CRIT_INT	vxge_mBIT(55)
+-#define	VXGE_HW_CP_EXC_REG_CP_CP_SERR	vxge_mBIT(63)
+-/*0x04f58*/	u64	cp_exc_mask;
+-/*0x04f60*/	u64	cp_exc_alarm;
+-/*0x04f68*/	u64	cp_exc_cause;
+-#define VXGE_HW_CP_EXC_CAUSE_CP_CP_CAUSE(val) vxge_vBIT(val, 32, 32)
+-	u8	unused05200[0x05200-0x04f70];
+-
+-/*0x05200*/	u64	msg_int_status;
+-#define	VXGE_HW_MSG_INT_STATUS_TIM_ERR_TIM_INT	vxge_mBIT(7)
+-#define	VXGE_HW_MSG_INT_STATUS_MSG_EXC_MSG_XT_EXC_INT	vxge_mBIT(60)
+-#define	VXGE_HW_MSG_INT_STATUS_MSG_ERR3_MSG_ERR3_INT	vxge_mBIT(61)
+-#define	VXGE_HW_MSG_INT_STATUS_MSG_ERR2_MSG_ERR2_INT	vxge_mBIT(62)
+-#define	VXGE_HW_MSG_INT_STATUS_MSG_ERR_MSG_ERR_INT	vxge_mBIT(63)
+-/*0x05208*/	u64	msg_int_mask;
+-/*0x05210*/	u64	tim_err_reg;
+-#define	VXGE_HW_TIM_ERR_REG_TIM_VBLS_SG_ERR	vxge_mBIT(4)
+-#define	VXGE_HW_TIM_ERR_REG_TIM_BMAP_PA_SG_ERR	vxge_mBIT(5)
+-#define	VXGE_HW_TIM_ERR_REG_TIM_BMAP_PB_SG_ERR	vxge_mBIT(6)
+-#define	VXGE_HW_TIM_ERR_REG_TIM_BMAP_MSG_SG_ERR	vxge_mBIT(7)
+-#define	VXGE_HW_TIM_ERR_REG_TIM_VBLS_DB_ERR	vxge_mBIT(12)
+-#define	VXGE_HW_TIM_ERR_REG_TIM_BMAP_PA_DB_ERR	vxge_mBIT(13)
+-#define	VXGE_HW_TIM_ERR_REG_TIM_BMAP_PB_DB_ERR	vxge_mBIT(14)
+-#define	VXGE_HW_TIM_ERR_REG_TIM_BMAP_MSG_DB_ERR	vxge_mBIT(15)
+-#define	VXGE_HW_TIM_ERR_REG_TIM_BMAP_MEM_CNTRL_SM_ERR	vxge_mBIT(18)
+-#define	VXGE_HW_TIM_ERR_REG_TIM_BMAP_MSG_MEM_CNTRL_SM_ERR	vxge_mBIT(19)
+-#define	VXGE_HW_TIM_ERR_REG_TIM_MPIF_PCIWR_ERR	vxge_mBIT(20)
+-#define	VXGE_HW_TIM_ERR_REG_TIM_ROCRC_BMAP_UPDT_FIFO_ERR	vxge_mBIT(22)
+-#define	VXGE_HW_TIM_ERR_REG_TIM_CREATE_BMAPMSG_FIFO_ERR	vxge_mBIT(23)
+-#define	VXGE_HW_TIM_ERR_REG_TIM_ROCRCIF_MISMATCH	vxge_mBIT(46)
+-#define VXGE_HW_TIM_ERR_REG_TIM_BMAP_MAPPING_VP_ERR(n)	vxge_mBIT(n)
+-/*0x05218*/	u64	tim_err_mask;
+-/*0x05220*/	u64	tim_err_alarm;
+-/*0x05228*/	u64	msg_err_reg;
+-#define	VXGE_HW_MSG_ERR_REG_UP_UXP_WAKE_FSM_INTEGRITY_ERR	vxge_mBIT(0)
+-#define	VXGE_HW_MSG_ERR_REG_MP_MXP_WAKE_FSM_INTEGRITY_ERR	vxge_mBIT(1)
+-#define	VXGE_HW_MSG_ERR_REG_MSG_QUE_DMQ_DMA_READ_CMD_FSM_INTEGRITY_ERR \
+-								vxge_mBIT(2)
+-#define	VXGE_HW_MSG_ERR_REG_MSG_QUE_DMQ_DMA_RESP_FSM_INTEGRITY_ERR \
+-								vxge_mBIT(3)
+-#define	VXGE_HW_MSG_ERR_REG_MSG_QUE_DMQ_OWN_FSM_INTEGRITY_ERR	vxge_mBIT(4)
+-#define	VXGE_HW_MSG_ERR_REG_MSG_QUE_PDA_ACC_FSM_INTEGRITY_ERR	vxge_mBIT(5)
+-#define	VXGE_HW_MSG_ERR_REG_MP_MXP_PMON_FSM_INTEGRITY_ERR	vxge_mBIT(6)
+-#define	VXGE_HW_MSG_ERR_REG_UP_UXP_PMON_FSM_INTEGRITY_ERR	vxge_mBIT(7)
+-#define	VXGE_HW_MSG_ERR_REG_UP_UXP_DTAG_SG_ERR	vxge_mBIT(8)
+-#define	VXGE_HW_MSG_ERR_REG_UP_UXP_ITAG_SG_ERR	vxge_mBIT(10)
+-#define	VXGE_HW_MSG_ERR_REG_MP_MXP_DTAG_SG_ERR	vxge_mBIT(12)
+-#define	VXGE_HW_MSG_ERR_REG_MP_MXP_ITAG_SG_ERR	vxge_mBIT(14)
+-#define	VXGE_HW_MSG_ERR_REG_UP_UXP_TRACE_SG_ERR	vxge_mBIT(16)
+-#define	VXGE_HW_MSG_ERR_REG_MP_MXP_TRACE_SG_ERR	vxge_mBIT(17)
+-#define	VXGE_HW_MSG_ERR_REG_MSG_QUE_CMG2MSG_SG_ERR	vxge_mBIT(18)
+-#define	VXGE_HW_MSG_ERR_REG_MSG_QUE_TXPE2MSG_SG_ERR	vxge_mBIT(19)
+-#define	VXGE_HW_MSG_ERR_REG_MSG_QUE_RXPE2MSG_SG_ERR	vxge_mBIT(20)
+-#define	VXGE_HW_MSG_ERR_REG_MSG_QUE_RPE2MSG_SG_ERR	vxge_mBIT(21)
+-#define	VXGE_HW_MSG_ERR_REG_MSG_QUE_UMQ_SG_ERR	vxge_mBIT(26)
+-#define	VXGE_HW_MSG_ERR_REG_MSG_QUE_BWR_PF_SG_ERR	vxge_mBIT(27)
+-#define	VXGE_HW_MSG_ERR_REG_MSG_QUE_DMQ_ECC_SG_ERR	vxge_mBIT(29)
+-#define	VXGE_HW_MSG_ERR_REG_MSG_QUE_DMA_RESP_ECC_SG_ERR	vxge_mBIT(31)
+-#define	VXGE_HW_MSG_ERR_REG_MSG_XFMDQRY_FSM_INTEGRITY_ERR	vxge_mBIT(33)
+-#define	VXGE_HW_MSG_ERR_REG_MSG_FRMQRY_FSM_INTEGRITY_ERR	vxge_mBIT(34)
+-#define	VXGE_HW_MSG_ERR_REG_MSG_QUE_UMQ_WRITE_FSM_INTEGRITY_ERR	vxge_mBIT(35)
+-#define	VXGE_HW_MSG_ERR_REG_MSG_QUE_UMQ_BWR_PF_FSM_INTEGRITY_ERR \
+-								vxge_mBIT(36)
+-#define	VXGE_HW_MSG_ERR_REG_MSG_QUE_REG_RESP_FIFO_ERR	vxge_mBIT(38)
+-#define	VXGE_HW_MSG_ERR_REG_UP_UXP_DTAG_DB_ERR	vxge_mBIT(39)
+-#define	VXGE_HW_MSG_ERR_REG_UP_UXP_ITAG_DB_ERR	vxge_mBIT(41)
+-#define	VXGE_HW_MSG_ERR_REG_MP_MXP_DTAG_DB_ERR	vxge_mBIT(43)
+-#define	VXGE_HW_MSG_ERR_REG_MP_MXP_ITAG_DB_ERR	vxge_mBIT(45)
+-#define	VXGE_HW_MSG_ERR_REG_UP_UXP_TRACE_DB_ERR	vxge_mBIT(47)
+-#define	VXGE_HW_MSG_ERR_REG_MP_MXP_TRACE_DB_ERR	vxge_mBIT(48)
+-#define	VXGE_HW_MSG_ERR_REG_MSG_QUE_CMG2MSG_DB_ERR	vxge_mBIT(49)
+-#define	VXGE_HW_MSG_ERR_REG_MSG_QUE_TXPE2MSG_DB_ERR	vxge_mBIT(50)
+-#define	VXGE_HW_MSG_ERR_REG_MSG_QUE_RXPE2MSG_DB_ERR	vxge_mBIT(51)
+-#define	VXGE_HW_MSG_ERR_REG_MSG_QUE_RPE2MSG_DB_ERR	vxge_mBIT(52)
+-#define	VXGE_HW_MSG_ERR_REG_MSG_QUE_REG_READ_FIFO_ERR	vxge_mBIT(53)
+-#define	VXGE_HW_MSG_ERR_REG_MSG_QUE_MXP2UXP_FIFO_ERR	vxge_mBIT(54)
+-#define	VXGE_HW_MSG_ERR_REG_MSG_QUE_KDFC_SIF_FIFO_ERR	vxge_mBIT(55)
+-#define	VXGE_HW_MSG_ERR_REG_MSG_QUE_CXP2SWIF_FIFO_ERR	vxge_mBIT(56)
+-#define	VXGE_HW_MSG_ERR_REG_MSG_QUE_UMQ_DB_ERR	vxge_mBIT(57)
+-#define	VXGE_HW_MSG_ERR_REG_MSG_QUE_BWR_PF_DB_ERR	vxge_mBIT(58)
+-#define	VXGE_HW_MSG_ERR_REG_MSG_QUE_BWR_SIF_FIFO_ERR	vxge_mBIT(59)
+-#define	VXGE_HW_MSG_ERR_REG_MSG_QUE_DMQ_ECC_DB_ERR	vxge_mBIT(60)
+-#define	VXGE_HW_MSG_ERR_REG_MSG_QUE_DMA_READ_FIFO_ERR	vxge_mBIT(61)
+-#define	VXGE_HW_MSG_ERR_REG_MSG_QUE_DMA_RESP_ECC_DB_ERR	vxge_mBIT(62)
+-#define	VXGE_HW_MSG_ERR_REG_MSG_QUE_UXP2MXP_FIFO_ERR	vxge_mBIT(63)
+-/*0x05230*/	u64	msg_err_mask;
+-/*0x05238*/	u64	msg_err_alarm;
+-	u8	unused05340[0x05340-0x05240];
+-
+-/*0x05340*/	u64	msg_exc_reg;
+-#define	VXGE_HW_MSG_EXC_REG_MP_MXP_CAUSE_INFO_INT	vxge_mBIT(50)
+-#define	VXGE_HW_MSG_EXC_REG_MP_MXP_CAUSE_CRIT_INT	vxge_mBIT(51)
+-#define	VXGE_HW_MSG_EXC_REG_UP_UXP_CAUSE_INFO_INT	vxge_mBIT(54)
+-#define	VXGE_HW_MSG_EXC_REG_UP_UXP_CAUSE_CRIT_INT	vxge_mBIT(55)
+-#define	VXGE_HW_MSG_EXC_REG_MP_MXP_SERR	vxge_mBIT(62)
+-#define	VXGE_HW_MSG_EXC_REG_UP_UXP_SERR	vxge_mBIT(63)
+-/*0x05348*/	u64	msg_exc_mask;
+-/*0x05350*/	u64	msg_exc_alarm;
+-/*0x05358*/	u64	msg_exc_cause;
+-#define VXGE_HW_MSG_EXC_CAUSE_MP_MXP(val) vxge_vBIT(val, 0, 32)
+-#define VXGE_HW_MSG_EXC_CAUSE_UP_UXP(val) vxge_vBIT(val, 32, 32)
+-	u8	unused05368[0x05380-0x05360];
+-
+-/*0x05380*/	u64	msg_err2_reg;
+-#define	VXGE_HW_MSG_ERR2_REG_MSG_QUE_CMG2MSG_DISPATCH_FSM_INTEGRITY_ERR \
+-							vxge_mBIT(0)
+-#define	VXGE_HW_MSG_ERR2_REG_MSG_QUE_DMQ_DISPATCH_FSM_INTEGRITY_ERR \
+-								vxge_mBIT(1)
+-#define	VXGE_HW_MSG_ERR2_REG_MSG_QUE_SWIF_DISPATCH_FSM_INTEGRITY_ERR \
+-								vxge_mBIT(2)
+-#define	VXGE_HW_MSG_ERR2_REG_MSG_QUE_PIC_WRITE_FSM_INTEGRITY_ERR \
+-								vxge_mBIT(3)
+-#define	VXGE_HW_MSG_ERR2_REG_MSG_QUE_SWIFREG_FSM_INTEGRITY_ERR	vxge_mBIT(4)
+-#define	VXGE_HW_MSG_ERR2_REG_MSG_QUE_TIM_WRITE_FSM_INTEGRITY_ERR \
+-								vxge_mBIT(5)
+-#define	VXGE_HW_MSG_ERR2_REG_MSG_QUE_UMQ_TA_FSM_INTEGRITY_ERR	vxge_mBIT(6)
+-#define	VXGE_HW_MSG_ERR2_REG_MSG_QUE_TXPE_TA_FSM_INTEGRITY_ERR	vxge_mBIT(7)
+-#define	VXGE_HW_MSG_ERR2_REG_MSG_QUE_RXPE_TA_FSM_INTEGRITY_ERR	vxge_mBIT(8)
+-#define	VXGE_HW_MSG_ERR2_REG_MSG_QUE_SWIF_TA_FSM_INTEGRITY_ERR	vxge_mBIT(9)
+-#define	VXGE_HW_MSG_ERR2_REG_MSG_QUE_DMA_TA_FSM_INTEGRITY_ERR	vxge_mBIT(10)
+-#define	VXGE_HW_MSG_ERR2_REG_MSG_QUE_CP_TA_FSM_INTEGRITY_ERR	vxge_mBIT(11)
+-#define	VXGE_HW_MSG_ERR2_REG_MSG_QUE_LONGTERMUMQ_TA16_FSM_INTEGRITY_ERR \
+-							vxge_mBIT(12)
+-#define	VXGE_HW_MSG_ERR2_REG_MSG_QUE_LONGTERMUMQ_TA15_FSM_INTEGRITY_ERR \
+-							vxge_mBIT(13)
+-#define	VXGE_HW_MSG_ERR2_REG_MSG_QUE_LONGTERMUMQ_TA14_FSM_INTEGRITY_ERR \
+-							vxge_mBIT(14)
+-#define	VXGE_HW_MSG_ERR2_REG_MSG_QUE_LONGTERMUMQ_TA13_FSM_INTEGRITY_ERR \
+-							vxge_mBIT(15)
+-#define	VXGE_HW_MSG_ERR2_REG_MSG_QUE_LONGTERMUMQ_TA12_FSM_INTEGRITY_ERR \
+-							vxge_mBIT(16)
+-#define	VXGE_HW_MSG_ERR2_REG_MSG_QUE_LONGTERMUMQ_TA11_FSM_INTEGRITY_ERR \
+-							vxge_mBIT(17)
+-#define	VXGE_HW_MSG_ERR2_REG_MSG_QUE_LONGTERMUMQ_TA10_FSM_INTEGRITY_ERR \
+-							vxge_mBIT(18)
+-#define	VXGE_HW_MSG_ERR2_REG_MSG_QUE_LONGTERMUMQ_TA9_FSM_INTEGRITY_ERR \
+-							vxge_mBIT(19)
+-#define	VXGE_HW_MSG_ERR2_REG_MSG_QUE_LONGTERMUMQ_TA8_FSM_INTEGRITY_ERR \
+-							vxge_mBIT(20)
+-#define	VXGE_HW_MSG_ERR2_REG_MSG_QUE_LONGTERMUMQ_TA7_FSM_INTEGRITY_ERR \
+-							vxge_mBIT(21)
+-#define	VXGE_HW_MSG_ERR2_REG_MSG_QUE_LONGTERMUMQ_TA6_FSM_INTEGRITY_ERR \
+-							vxge_mBIT(22)
+-#define	VXGE_HW_MSG_ERR2_REG_MSG_QUE_LONGTERMUMQ_TA5_FSM_INTEGRITY_ERR \
+-							vxge_mBIT(23)
+-#define	VXGE_HW_MSG_ERR2_REG_MSG_QUE_LONGTERMUMQ_TA4_FSM_INTEGRITY_ERR \
+-							vxge_mBIT(24)
+-#define	VXGE_HW_MSG_ERR2_REG_MSG_QUE_LONGTERMUMQ_TA3_FSM_INTEGRITY_ERR \
+-							vxge_mBIT(25)
+-#define	VXGE_HW_MSG_ERR2_REG_MSG_QUE_LONGTERMUMQ_TA2_FSM_INTEGRITY_ERR \
+-							vxge_mBIT(26)
+-#define	VXGE_HW_MSG_ERR2_REG_MSG_QUE_LONGTERMUMQ_TA1_FSM_INTEGRITY_ERR \
+-							vxge_mBIT(27)
+-#define	VXGE_HW_MSG_ERR2_REG_MSG_QUE_LONGTERMUMQ_TA0_FSM_INTEGRITY_ERR \
+-							vxge_mBIT(28)
+-#define	VXGE_HW_MSG_ERR2_REG_MSG_QUE_FBMC_OWN_FSM_INTEGRITY_ERR	vxge_mBIT(29)
+-#define	VXGE_HW_MSG_ERR2_REG_MSG_QUE_TXPE2MSG_DISPATCH_FSM_INTEGRITY_ERR \
+-							vxge_mBIT(30)
+-#define	VXGE_HW_MSG_ERR2_REG_MSG_QUE_RXPE2MSG_DISPATCH_FSM_INTEGRITY_ERR \
+-							vxge_mBIT(31)
+-#define	VXGE_HW_MSG_ERR2_REG_MSG_QUE_RPE2MSG_DISPATCH_FSM_INTEGRITY_ERR \
+-							vxge_mBIT(32)
+-#define	VXGE_HW_MSG_ERR2_REG_MP_MP_PIFT_IF_CREDIT_CNT_ERR	vxge_mBIT(33)
+-#define	VXGE_HW_MSG_ERR2_REG_UP_UP_PIFT_IF_CREDIT_CNT_ERR	vxge_mBIT(34)
+-#define	VXGE_HW_MSG_ERR2_REG_MSG_QUE_UMQ2PIC_CMD_FIFO_ERR	vxge_mBIT(62)
+-#define	VXGE_HW_MSG_ERR2_REG_TIM_TIM2MSG_CMD_FIFO_ERR	vxge_mBIT(63)
+-/*0x05388*/	u64	msg_err2_mask;
+-/*0x05390*/	u64	msg_err2_alarm;
+-/*0x05398*/	u64	msg_err3_reg;
+-#define	VXGE_HW_MSG_ERR3_REG_UP_UXP_DCACHE_SG_ERR0	vxge_mBIT(0)
+-#define	VXGE_HW_MSG_ERR3_REG_UP_UXP_DCACHE_SG_ERR1	vxge_mBIT(1)
+-#define	VXGE_HW_MSG_ERR3_REG_UP_UXP_DCACHE_SG_ERR2	vxge_mBIT(2)
+-#define	VXGE_HW_MSG_ERR3_REG_UP_UXP_DCACHE_SG_ERR3	vxge_mBIT(3)
+-#define	VXGE_HW_MSG_ERR3_REG_UP_UXP_DCACHE_SG_ERR4	vxge_mBIT(4)
+-#define	VXGE_HW_MSG_ERR3_REG_UP_UXP_DCACHE_SG_ERR5	vxge_mBIT(5)
+-#define	VXGE_HW_MSG_ERR3_REG_UP_UXP_DCACHE_SG_ERR6	vxge_mBIT(6)
+-#define	VXGE_HW_MSG_ERR3_REG_UP_UXP_DCACHE_SG_ERR7	vxge_mBIT(7)
+-#define	VXGE_HW_MSG_ERR3_REG_UP_UXP_ICACHE_SG_ERR0	vxge_mBIT(8)
+-#define	VXGE_HW_MSG_ERR3_REG_UP_UXP_ICACHE_SG_ERR1	vxge_mBIT(9)
+-#define	VXGE_HW_MSG_ERR3_REG_MP_MXP_DCACHE_SG_ERR0	vxge_mBIT(16)
+-#define	VXGE_HW_MSG_ERR3_REG_MP_MXP_DCACHE_SG_ERR1	vxge_mBIT(17)
+-#define	VXGE_HW_MSG_ERR3_REG_MP_MXP_DCACHE_SG_ERR2	vxge_mBIT(18)
+-#define	VXGE_HW_MSG_ERR3_REG_MP_MXP_DCACHE_SG_ERR3	vxge_mBIT(19)
+-#define	VXGE_HW_MSG_ERR3_REG_MP_MXP_DCACHE_SG_ERR4	vxge_mBIT(20)
+-#define	VXGE_HW_MSG_ERR3_REG_MP_MXP_DCACHE_SG_ERR5	vxge_mBIT(21)
+-#define	VXGE_HW_MSG_ERR3_REG_MP_MXP_DCACHE_SG_ERR6	vxge_mBIT(22)
+-#define	VXGE_HW_MSG_ERR3_REG_MP_MXP_DCACHE_SG_ERR7	vxge_mBIT(23)
+-#define	VXGE_HW_MSG_ERR3_REG_MP_MXP_ICACHE_SG_ERR0	vxge_mBIT(24)
+-#define	VXGE_HW_MSG_ERR3_REG_MP_MXP_ICACHE_SG_ERR1	vxge_mBIT(25)
+-#define	VXGE_HW_MSG_ERR3_REG_UP_UXP_DCACHE_DB_ERR0	vxge_mBIT(32)
+-#define	VXGE_HW_MSG_ERR3_REG_UP_UXP_DCACHE_DB_ERR1	vxge_mBIT(33)
+-#define	VXGE_HW_MSG_ERR3_REG_UP_UXP_DCACHE_DB_ERR2	vxge_mBIT(34)
+-#define	VXGE_HW_MSG_ERR3_REG_UP_UXP_DCACHE_DB_ERR3	vxge_mBIT(35)
+-#define	VXGE_HW_MSG_ERR3_REG_UP_UXP_DCACHE_DB_ERR4	vxge_mBIT(36)
+-#define	VXGE_HW_MSG_ERR3_REG_UP_UXP_DCACHE_DB_ERR5	vxge_mBIT(37)
+-#define	VXGE_HW_MSG_ERR3_REG_UP_UXP_DCACHE_DB_ERR6	vxge_mBIT(38)
+-#define	VXGE_HW_MSG_ERR3_REG_UP_UXP_DCACHE_DB_ERR7	vxge_mBIT(39)
+-#define	VXGE_HW_MSG_ERR3_REG_UP_UXP_ICACHE_DB_ERR0	vxge_mBIT(40)
+-#define	VXGE_HW_MSG_ERR3_REG_UP_UXP_ICACHE_DB_ERR1	vxge_mBIT(41)
+-#define	VXGE_HW_MSG_ERR3_REG_MP_MXP_DCACHE_DB_ERR0	vxge_mBIT(48)
+-#define	VXGE_HW_MSG_ERR3_REG_MP_MXP_DCACHE_DB_ERR1	vxge_mBIT(49)
+-#define	VXGE_HW_MSG_ERR3_REG_MP_MXP_DCACHE_DB_ERR2	vxge_mBIT(50)
+-#define	VXGE_HW_MSG_ERR3_REG_MP_MXP_DCACHE_DB_ERR3	vxge_mBIT(51)
+-#define	VXGE_HW_MSG_ERR3_REG_MP_MXP_DCACHE_DB_ERR4	vxge_mBIT(52)
+-#define	VXGE_HW_MSG_ERR3_REG_MP_MXP_DCACHE_DB_ERR5	vxge_mBIT(53)
+-#define	VXGE_HW_MSG_ERR3_REG_MP_MXP_DCACHE_DB_ERR6	vxge_mBIT(54)
+-#define	VXGE_HW_MSG_ERR3_REG_MP_MXP_DCACHE_DB_ERR7	vxge_mBIT(55)
+-#define	VXGE_HW_MSG_ERR3_REG_MP_MXP_ICACHE_DB_ERR0	vxge_mBIT(56)
+-#define	VXGE_HW_MSG_ERR3_REG_MP_MXP_ICACHE_DB_ERR1	vxge_mBIT(57)
+-/*0x053a0*/	u64	msg_err3_mask;
+-/*0x053a8*/	u64	msg_err3_alarm;
+-	u8	unused05600[0x05600-0x053b0];
+-
+-/*0x05600*/	u64	fau_gen_err_reg;
+-#define	VXGE_HW_FAU_GEN_ERR_REG_FMPF_PORT0_PERMANENT_STOP	vxge_mBIT(3)
+-#define	VXGE_HW_FAU_GEN_ERR_REG_FMPF_PORT1_PERMANENT_STOP	vxge_mBIT(7)
+-#define	VXGE_HW_FAU_GEN_ERR_REG_FMPF_PORT2_PERMANENT_STOP	vxge_mBIT(11)
+-#define	VXGE_HW_FAU_GEN_ERR_REG_FALR_AUTO_LRO_NOTIFICATION	vxge_mBIT(15)
+-/*0x05608*/	u64	fau_gen_err_mask;
+-/*0x05610*/	u64	fau_gen_err_alarm;
+-/*0x05618*/	u64	fau_ecc_err_reg;
+-#define	VXGE_HW_FAU_ECC_ERR_REG_FAU_PORT0_FAU_MAC2F_N_SG_ERR	vxge_mBIT(0)
+-#define	VXGE_HW_FAU_ECC_ERR_REG_FAU_PORT0_FAU_MAC2F_N_DB_ERR	vxge_mBIT(1)
+-#define	VXGE_HW_FAU_ECC_ERR_REG_FAU_PORT0_FAU_MAC2F_W_SG_ERR(val) \
+-							vxge_vBIT(val, 2, 2)
+-#define	VXGE_HW_FAU_ECC_ERR_REG_FAU_PORT0_FAU_MAC2F_W_DB_ERR(val) \
+-							vxge_vBIT(val, 4, 2)
+-#define	VXGE_HW_FAU_ECC_ERR_REG_FAU_PORT1_FAU_MAC2F_N_SG_ERR	vxge_mBIT(6)
+-#define	VXGE_HW_FAU_ECC_ERR_REG_FAU_PORT1_FAU_MAC2F_N_DB_ERR	vxge_mBIT(7)
+-#define	VXGE_HW_FAU_ECC_ERR_REG_FAU_PORT1_FAU_MAC2F_W_SG_ERR(val) \
+-							vxge_vBIT(val, 8, 2)
+-#define	VXGE_HW_FAU_ECC_ERR_REG_FAU_PORT1_FAU_MAC2F_W_DB_ERR(val) \
+-							vxge_vBIT(val, 10, 2)
+-#define	VXGE_HW_FAU_ECC_ERR_REG_FAU_PORT2_FAU_MAC2F_N_SG_ERR	vxge_mBIT(12)
+-#define	VXGE_HW_FAU_ECC_ERR_REG_FAU_PORT2_FAU_MAC2F_N_DB_ERR	vxge_mBIT(13)
+-#define	VXGE_HW_FAU_ECC_ERR_REG_FAU_PORT2_FAU_MAC2F_W_SG_ERR(val) \
+-							vxge_vBIT(val, 14, 2)
+-#define	VXGE_HW_FAU_ECC_ERR_REG_FAU_PORT2_FAU_MAC2F_W_DB_ERR(val) \
+-							vxge_vBIT(val, 16, 2)
+-#define VXGE_HW_FAU_ECC_ERR_REG_FAU_FAU_XFMD_INS_SG_ERR(val) \
+-							vxge_vBIT(val, 18, 2)
+-#define VXGE_HW_FAU_ECC_ERR_REG_FAU_FAU_XFMD_INS_DB_ERR(val) \
+-							vxge_vBIT(val, 20, 2)
+-#define	VXGE_HW_FAU_ECC_ERR_REG_FAUJ_FAU_FSM_ERR	vxge_mBIT(31)
+-/*0x05620*/	u64	fau_ecc_err_mask;
+-/*0x05628*/	u64	fau_ecc_err_alarm;
+-	u8	unused05658[0x05658-0x05630];
+-/*0x05658*/	u64	fau_pa_cfg;
+-#define	VXGE_HW_FAU_PA_CFG_REPL_L4_COMP_CSUM	vxge_mBIT(3)
+-#define	VXGE_HW_FAU_PA_CFG_REPL_L3_INCL_CF	vxge_mBIT(7)
+-#define	VXGE_HW_FAU_PA_CFG_REPL_L3_COMP_CSUM	vxge_mBIT(11)
+-	u8	unused05668[0x05668-0x05660];
+-
+-/*0x05668*/	u64	dbg_stats_fau_rx_path;
+-#define	VXGE_HW_DBG_STATS_FAU_RX_PATH_RX_PERMITTED_FRMS(val) \
+-						vxge_vBIT(val, 32, 32)
+-	u8	unused056c0[0x056c0-0x05670];
+-
+-/*0x056c0*/	u64	fau_lag_cfg;
+-#define VXGE_HW_FAU_LAG_CFG_COLL_ALG(val) vxge_vBIT(val, 2, 2)
+-#define	VXGE_HW_FAU_LAG_CFG_INCR_RX_AGGR_STATS	vxge_mBIT(7)
+-	u8	unused05800[0x05800-0x056c8];
+-
+-/*0x05800*/	u64	tpa_int_status;
+-#define	VXGE_HW_TPA_INT_STATUS_ORP_ERR_ORP_INT	vxge_mBIT(15)
+-#define	VXGE_HW_TPA_INT_STATUS_PTM_ALARM_PTM_INT	vxge_mBIT(23)
+-#define	VXGE_HW_TPA_INT_STATUS_TPA_ERROR_TPA_INT	vxge_mBIT(31)
+-/*0x05808*/	u64	tpa_int_mask;
+-/*0x05810*/	u64	orp_err_reg;
+-#define	VXGE_HW_ORP_ERR_REG_ORP_FIFO_SG_ERR	vxge_mBIT(3)
+-#define	VXGE_HW_ORP_ERR_REG_ORP_FIFO_DB_ERR	vxge_mBIT(7)
+-#define	VXGE_HW_ORP_ERR_REG_ORP_XFMD_FIFO_UFLOW_ERR	vxge_mBIT(11)
+-#define	VXGE_HW_ORP_ERR_REG_ORP_FRM_FIFO_UFLOW_ERR	vxge_mBIT(15)
+-#define	VXGE_HW_ORP_ERR_REG_ORP_XFMD_RCV_FSM_ERR	vxge_mBIT(19)
+-#define	VXGE_HW_ORP_ERR_REG_ORP_OUTREAD_FSM_ERR	vxge_mBIT(23)
+-#define	VXGE_HW_ORP_ERR_REG_ORP_OUTQEM_FSM_ERR	vxge_mBIT(27)
+-#define	VXGE_HW_ORP_ERR_REG_ORP_XFMD_RCV_SHADOW_ERR	vxge_mBIT(31)
+-#define	VXGE_HW_ORP_ERR_REG_ORP_OUTREAD_SHADOW_ERR	vxge_mBIT(35)
+-#define	VXGE_HW_ORP_ERR_REG_ORP_OUTQEM_SHADOW_ERR	vxge_mBIT(39)
+-#define	VXGE_HW_ORP_ERR_REG_ORP_OUTFRM_SHADOW_ERR	vxge_mBIT(43)
+-#define	VXGE_HW_ORP_ERR_REG_ORP_OPTPRS_SHADOW_ERR	vxge_mBIT(47)
+-/*0x05818*/	u64	orp_err_mask;
+-/*0x05820*/	u64	orp_err_alarm;
+-/*0x05828*/	u64	ptm_alarm_reg;
+-#define	VXGE_HW_PTM_ALARM_REG_PTM_RDCTRL_SYNC_ERR	vxge_mBIT(3)
+-#define	VXGE_HW_PTM_ALARM_REG_PTM_RDCTRL_FIFO_ERR	vxge_mBIT(7)
+-#define	VXGE_HW_PTM_ALARM_REG_XFMD_RD_FIFO_ERR	vxge_mBIT(11)
+-#define	VXGE_HW_PTM_ALARM_REG_WDE2MSR_WR_FIFO_ERR	vxge_mBIT(15)
+-#define VXGE_HW_PTM_ALARM_REG_PTM_FRMM_ECC_DB_ERR(val) vxge_vBIT(val, 18, 2)
+-#define VXGE_HW_PTM_ALARM_REG_PTM_FRMM_ECC_SG_ERR(val) vxge_vBIT(val, 22, 2)
+-/*0x05830*/	u64	ptm_alarm_mask;
+-/*0x05838*/	u64	ptm_alarm_alarm;
+-/*0x05840*/	u64	tpa_error_reg;
+-#define	VXGE_HW_TPA_ERROR_REG_TPA_FSM_ERR_ALARM	vxge_mBIT(3)
+-#define	VXGE_HW_TPA_ERROR_REG_TPA_TPA_DA_LKUP_PRT0_DB_ERR	vxge_mBIT(7)
+-#define	VXGE_HW_TPA_ERROR_REG_TPA_TPA_DA_LKUP_PRT0_SG_ERR	vxge_mBIT(11)
+-/*0x05848*/	u64	tpa_error_mask;
+-/*0x05850*/	u64	tpa_error_alarm;
+-/*0x05858*/	u64	tpa_global_cfg;
+-#define	VXGE_HW_TPA_GLOBAL_CFG_SUPPORT_SNAP_AB_N	vxge_mBIT(7)
+-#define	VXGE_HW_TPA_GLOBAL_CFG_ECC_ENABLE_N	vxge_mBIT(35)
+-	u8	unused05868[0x05870-0x05860];
+-
+-/*0x05870*/	u64	ptm_ecc_cfg;
+-#define	VXGE_HW_PTM_ECC_CFG_PTM_FRMM_ECC_EN_N	vxge_mBIT(3)
+-/*0x05878*/	u64	ptm_phase_cfg;
+-#define	VXGE_HW_PTM_PHASE_CFG_FRMM_WR_PHASE_EN	vxge_mBIT(3)
+-#define	VXGE_HW_PTM_PHASE_CFG_FRMM_RD_PHASE_EN	vxge_mBIT(7)
+-	u8	unused05898[0x05898-0x05880];
+-
+-/*0x05898*/	u64	dbg_stats_tpa_tx_path;
+-#define	VXGE_HW_DBG_STATS_TPA_TX_PATH_TX_PERMITTED_FRMS(val) \
+-							vxge_vBIT(val, 32, 32)
+-	u8	unused05900[0x05900-0x058a0];
+-
+-/*0x05900*/	u64	tmac_int_status;
+-#define	VXGE_HW_TMAC_INT_STATUS_TXMAC_GEN_ERR_TXMAC_GEN_INT	vxge_mBIT(3)
+-#define	VXGE_HW_TMAC_INT_STATUS_TXMAC_ECC_ERR_TXMAC_ECC_INT	vxge_mBIT(7)
+-/*0x05908*/	u64	tmac_int_mask;
+-/*0x05910*/	u64	txmac_gen_err_reg;
+-#define	VXGE_HW_TXMAC_GEN_ERR_REG_TMACJ_PERMANENT_STOP	vxge_mBIT(3)
+-#define	VXGE_HW_TXMAC_GEN_ERR_REG_TMACJ_NO_VALID_VSPORT	vxge_mBIT(7)
+-/*0x05918*/	u64	txmac_gen_err_mask;
+-/*0x05920*/	u64	txmac_gen_err_alarm;
+-/*0x05928*/	u64	txmac_ecc_err_reg;
+-#define	VXGE_HW_TXMAC_ECC_ERR_REG_TMACJ_TMAC_TPA2MAC_SG_ERR	vxge_mBIT(3)
+-#define	VXGE_HW_TXMAC_ECC_ERR_REG_TMACJ_TMAC_TPA2MAC_DB_ERR	vxge_mBIT(7)
+-#define	VXGE_HW_TXMAC_ECC_ERR_REG_TMACJ_TMAC_TPA2M_SB_SG_ERR	vxge_mBIT(11)
+-#define	VXGE_HW_TXMAC_ECC_ERR_REG_TMACJ_TMAC_TPA2M_SB_DB_ERR	vxge_mBIT(15)
+-#define	VXGE_HW_TXMAC_ECC_ERR_REG_TMACJ_TMAC_TPA2M_DA_SG_ERR	vxge_mBIT(19)
+-#define	VXGE_HW_TXMAC_ECC_ERR_REG_TMACJ_TMAC_TPA2M_DA_DB_ERR	vxge_mBIT(23)
+-#define	VXGE_HW_TXMAC_ECC_ERR_REG_TMAC_TMAC_PORT0_FSM_ERR	vxge_mBIT(27)
+-#define	VXGE_HW_TXMAC_ECC_ERR_REG_TMAC_TMAC_PORT1_FSM_ERR	vxge_mBIT(31)
+-#define	VXGE_HW_TXMAC_ECC_ERR_REG_TMAC_TMAC_PORT2_FSM_ERR	vxge_mBIT(35)
+-#define	VXGE_HW_TXMAC_ECC_ERR_REG_TMACJ_TMACJ_FSM_ERR	vxge_mBIT(39)
+-/*0x05930*/	u64	txmac_ecc_err_mask;
+-/*0x05938*/	u64	txmac_ecc_err_alarm;
+-	u8	unused05978[0x05978-0x05940];
+-
+-/*0x05978*/	u64	dbg_stat_tx_any_frms;
+-#define VXGE_HW_DBG_STAT_TX_ANY_FRMS_PORT0_TX_ANY_FRMS(val) vxge_vBIT(val, 0, 8)
+-#define VXGE_HW_DBG_STAT_TX_ANY_FRMS_PORT1_TX_ANY_FRMS(val) vxge_vBIT(val, 8, 8)
+-#define VXGE_HW_DBG_STAT_TX_ANY_FRMS_PORT2_TX_ANY_FRMS(val) \
+-							vxge_vBIT(val, 16, 8)
+-	u8	unused059a0[0x059a0-0x05980];
+-
+-/*0x059a0*/	u64	txmac_link_util_port[3];
+-#define	VXGE_HW_TXMAC_LINK_UTIL_PORT_TMAC_TMAC_UTILIZATION(val) \
+-							vxge_vBIT(val, 1, 7)
+-#define VXGE_HW_TXMAC_LINK_UTIL_PORT_TMAC_UTIL_CFG(val) vxge_vBIT(val, 8, 4)
+-#define VXGE_HW_TXMAC_LINK_UTIL_PORT_TMAC_TMAC_FRAC_UTIL(val) \
+-							vxge_vBIT(val, 12, 4)
+-#define VXGE_HW_TXMAC_LINK_UTIL_PORT_TMAC_PKT_WEIGHT(val) vxge_vBIT(val, 16, 4)
+-#define	VXGE_HW_TXMAC_LINK_UTIL_PORT_TMAC_TMAC_SCALE_FACTOR	vxge_mBIT(23)
+-/*0x059b8*/	u64	txmac_cfg0_port[3];
+-#define	VXGE_HW_TXMAC_CFG0_PORT_TMAC_EN	vxge_mBIT(3)
+-#define	VXGE_HW_TXMAC_CFG0_PORT_APPEND_PAD	vxge_mBIT(7)
+-#define VXGE_HW_TXMAC_CFG0_PORT_PAD_BYTE(val) vxge_vBIT(val, 8, 8)
+-/*0x059d0*/	u64	txmac_cfg1_port[3];
+-#define VXGE_HW_TXMAC_CFG1_PORT_AVG_IPG(val) vxge_vBIT(val, 40, 8)
+-/*0x059e8*/	u64	txmac_status_port[3];
+-#define	VXGE_HW_TXMAC_STATUS_PORT_TMAC_TX_FRM_SENT	vxge_mBIT(3)
+-	u8	unused05a20[0x05a20-0x05a00];
+-
+-/*0x05a20*/	u64	lag_distrib_dest;
+-#define VXGE_HW_LAG_DISTRIB_DEST_MAP_VPATH(n)	vxge_mBIT(n)
+-/*0x05a28*/	u64	lag_marker_cfg;
+-#define	VXGE_HW_LAG_MARKER_CFG_GEN_RCVR_EN	vxge_mBIT(3)
+-#define	VXGE_HW_LAG_MARKER_CFG_RESP_EN	vxge_mBIT(7)
+-#define VXGE_HW_LAG_MARKER_CFG_RESP_TIMEOUT(val) vxge_vBIT(val, 16, 16)
+-#define	VXGE_HW_LAG_MARKER_CFG_SLOW_PROTO_MRKR_MIN_INTERVAL(val) \
+-							vxge_vBIT(val, 32, 16)
+-#define	VXGE_HW_LAG_MARKER_CFG_THROTTLE_MRKR_RESP	vxge_mBIT(51)
+-/*0x05a30*/	u64	lag_tx_cfg;
+-#define	VXGE_HW_LAG_TX_CFG_INCR_TX_AGGR_STATS	vxge_mBIT(3)
+-#define VXGE_HW_LAG_TX_CFG_DISTRIB_ALG_SEL(val) vxge_vBIT(val, 6, 2)
+-#define	VXGE_HW_LAG_TX_CFG_DISTRIB_REMAP_IF_FAIL	vxge_mBIT(11)
+-#define VXGE_HW_LAG_TX_CFG_COLL_MAX_DELAY(val) vxge_vBIT(val, 16, 16)
+-/*0x05a38*/	u64	lag_tx_status;
+-#define VXGE_HW_LAG_TX_STATUS_TLAG_TIMER_VAL_EMPTIED_LINK(val) \
+-							vxge_vBIT(val, 0, 8)
+-#define	VXGE_HW_LAG_TX_STATUS_TLAG_TIMER_VAL_SLOW_PROTO_MRKR(val) \
+-							vxge_vBIT(val, 8, 8)
+-#define	VXGE_HW_LAG_TX_STATUS_TLAG_TIMER_VAL_SLOW_PROTO_MRKRRESP(val) \
+-							vxge_vBIT(val, 16, 8)
+-	u8	unused05d48[0x05d48-0x05a40];
+-
+-/*0x05d48*/	u64	srpcim_to_mrpcim_vplane_rmsg[17];
+-#define	\
+-VXGE_HAL_SRPCIM_TO_MRPCIM_VPLANE_RMSG_SWIF_SRPCIM_TO_MRPCIM_VPLANE_RMSG(val)\
+- vxge_vBIT(val, 0, 64)
+-		u8	unused06420[0x06420-0x05dd0];
+-
+-/*0x06420*/	u64	mrpcim_to_srpcim_vplane_wmsg[17];
+-#define	VXGE_HW_MRPCIM_TO_SRPCIM_VPLANE_WMSG_MRPCIM_TO_SRPCIM_VPLANE_WMSG(val) \
+-							vxge_vBIT(val, 0, 64)
+-/*0x064a8*/	u64	mrpcim_to_srpcim_vplane_wmsg_trig[17];
+-
+-/*0x06530*/	u64	debug_stats0;
+-#define VXGE_HW_DEBUG_STATS0_RSTDROP_MSG(val) vxge_vBIT(val, 0, 32)
+-#define VXGE_HW_DEBUG_STATS0_RSTDROP_CPL(val) vxge_vBIT(val, 32, 32)
+-/*0x06538*/	u64	debug_stats1;
+-#define VXGE_HW_DEBUG_STATS1_RSTDROP_CLIENT0(val) vxge_vBIT(val, 0, 32)
+-#define VXGE_HW_DEBUG_STATS1_RSTDROP_CLIENT1(val) vxge_vBIT(val, 32, 32)
+-/*0x06540*/	u64	debug_stats2;
+-#define VXGE_HW_DEBUG_STATS2_RSTDROP_CLIENT2(val) vxge_vBIT(val, 0, 32)
+-/*0x06548*/	u64	debug_stats3_vplane[17];
+-#define VXGE_HW_DEBUG_STATS3_VPLANE_DEPL_PH(val) vxge_vBIT(val, 0, 16)
+-#define VXGE_HW_DEBUG_STATS3_VPLANE_DEPL_NPH(val) vxge_vBIT(val, 16, 16)
+-#define VXGE_HW_DEBUG_STATS3_VPLANE_DEPL_CPLH(val) vxge_vBIT(val, 32, 16)
+-/*0x065d0*/	u64	debug_stats4_vplane[17];
+-#define VXGE_HW_DEBUG_STATS4_VPLANE_DEPL_PD(val) vxge_vBIT(val, 0, 16)
+-#define VXGE_HW_DEBUG_STATS4_VPLANE_DEPL_NPD(val) vxge_vBIT(val, 16, 16)
+-#define VXGE_HW_DEBUG_STATS4_VPLANE_DEPL_CPLD(val) vxge_vBIT(val, 32, 16)
+-
+-	u8	unused07000[0x07000-0x06658];
+-
+-/*0x07000*/	u64	mrpcim_general_int_status;
+-#define	VXGE_HW_MRPCIM_GENERAL_INT_STATUS_PIC_INT	vxge_mBIT(0)
+-#define	VXGE_HW_MRPCIM_GENERAL_INT_STATUS_PCI_INT	vxge_mBIT(1)
+-#define	VXGE_HW_MRPCIM_GENERAL_INT_STATUS_RTDMA_INT	vxge_mBIT(2)
+-#define	VXGE_HW_MRPCIM_GENERAL_INT_STATUS_WRDMA_INT	vxge_mBIT(3)
+-#define	VXGE_HW_MRPCIM_GENERAL_INT_STATUS_G3CMCT_INT	vxge_mBIT(4)
+-#define	VXGE_HW_MRPCIM_GENERAL_INT_STATUS_GCMG1_INT	vxge_mBIT(5)
+-#define	VXGE_HW_MRPCIM_GENERAL_INT_STATUS_GCMG2_INT	vxge_mBIT(6)
+-#define	VXGE_HW_MRPCIM_GENERAL_INT_STATUS_GCMG3_INT	vxge_mBIT(7)
+-#define	VXGE_HW_MRPCIM_GENERAL_INT_STATUS_G3CMIFL_INT	vxge_mBIT(8)
+-#define	VXGE_HW_MRPCIM_GENERAL_INT_STATUS_G3CMIFU_INT	vxge_mBIT(9)
+-#define	VXGE_HW_MRPCIM_GENERAL_INT_STATUS_PCMG1_INT	vxge_mBIT(10)
+-#define	VXGE_HW_MRPCIM_GENERAL_INT_STATUS_PCMG2_INT	vxge_mBIT(11)
+-#define	VXGE_HW_MRPCIM_GENERAL_INT_STATUS_PCMG3_INT	vxge_mBIT(12)
+-#define	VXGE_HW_MRPCIM_GENERAL_INT_STATUS_XMAC_INT	vxge_mBIT(13)
+-#define	VXGE_HW_MRPCIM_GENERAL_INT_STATUS_RXMAC_INT	vxge_mBIT(14)
+-#define	VXGE_HW_MRPCIM_GENERAL_INT_STATUS_TMAC_INT	vxge_mBIT(15)
+-#define	VXGE_HW_MRPCIM_GENERAL_INT_STATUS_G3FBIF_INT	vxge_mBIT(16)
+-#define	VXGE_HW_MRPCIM_GENERAL_INT_STATUS_FBMC_INT	vxge_mBIT(17)
+-#define	VXGE_HW_MRPCIM_GENERAL_INT_STATUS_G3FBCT_INT	vxge_mBIT(18)
+-#define	VXGE_HW_MRPCIM_GENERAL_INT_STATUS_TPA_INT	vxge_mBIT(19)
+-#define	VXGE_HW_MRPCIM_GENERAL_INT_STATUS_DRBELL_INT	vxge_mBIT(20)
+-#define	VXGE_HW_MRPCIM_GENERAL_INT_STATUS_ONE_INT	vxge_mBIT(21)
+-#define	VXGE_HW_MRPCIM_GENERAL_INT_STATUS_MSG_INT	vxge_mBIT(22)
+-/*0x07008*/	u64	mrpcim_general_int_mask;
+-#define	VXGE_HW_MRPCIM_GENERAL_INT_MASK_PIC_INT	vxge_mBIT(0)
+-#define	VXGE_HW_MRPCIM_GENERAL_INT_MASK_PCI_INT	vxge_mBIT(1)
+-#define	VXGE_HW_MRPCIM_GENERAL_INT_MASK_RTDMA_INT	vxge_mBIT(2)
+-#define	VXGE_HW_MRPCIM_GENERAL_INT_MASK_WRDMA_INT	vxge_mBIT(3)
+-#define	VXGE_HW_MRPCIM_GENERAL_INT_MASK_G3CMCT_INT	vxge_mBIT(4)
+-#define	VXGE_HW_MRPCIM_GENERAL_INT_MASK_GCMG1_INT	vxge_mBIT(5)
+-#define	VXGE_HW_MRPCIM_GENERAL_INT_MASK_GCMG2_INT	vxge_mBIT(6)
+-#define	VXGE_HW_MRPCIM_GENERAL_INT_MASK_GCMG3_INT	vxge_mBIT(7)
+-#define	VXGE_HW_MRPCIM_GENERAL_INT_MASK_G3CMIFL_INT	vxge_mBIT(8)
+-#define	VXGE_HW_MRPCIM_GENERAL_INT_MASK_G3CMIFU_INT	vxge_mBIT(9)
+-#define	VXGE_HW_MRPCIM_GENERAL_INT_MASK_PCMG1_INT	vxge_mBIT(10)
+-#define	VXGE_HW_MRPCIM_GENERAL_INT_MASK_PCMG2_INT	vxge_mBIT(11)
+-#define	VXGE_HW_MRPCIM_GENERAL_INT_MASK_PCMG3_INT	vxge_mBIT(12)
+-#define	VXGE_HW_MRPCIM_GENERAL_INT_MASK_XMAC_INT	vxge_mBIT(13)
+-#define	VXGE_HW_MRPCIM_GENERAL_INT_MASK_RXMAC_INT	vxge_mBIT(14)
+-#define	VXGE_HW_MRPCIM_GENERAL_INT_MASK_TMAC_INT	vxge_mBIT(15)
+-#define	VXGE_HW_MRPCIM_GENERAL_INT_MASK_G3FBIF_INT	vxge_mBIT(16)
+-#define	VXGE_HW_MRPCIM_GENERAL_INT_MASK_FBMC_INT	vxge_mBIT(17)
+-#define	VXGE_HW_MRPCIM_GENERAL_INT_MASK_G3FBCT_INT	vxge_mBIT(18)
+-#define	VXGE_HW_MRPCIM_GENERAL_INT_MASK_TPA_INT	vxge_mBIT(19)
+-#define	VXGE_HW_MRPCIM_GENERAL_INT_MASK_DRBELL_INT	vxge_mBIT(20)
+-#define	VXGE_HW_MRPCIM_GENERAL_INT_MASK_ONE_INT	vxge_mBIT(21)
+-#define	VXGE_HW_MRPCIM_GENERAL_INT_MASK_MSG_INT	vxge_mBIT(22)
+-/*0x07010*/	u64	mrpcim_ppif_int_status;
+-#define	VXGE_HW_MRPCIM_PPIF_INT_STATUS_INI_ERRORS_INI_INT	vxge_mBIT(3)
+-#define	VXGE_HW_MRPCIM_PPIF_INT_STATUS_DMA_ERRORS_DMA_INT	vxge_mBIT(7)
+-#define	VXGE_HW_MRPCIM_PPIF_INT_STATUS_TGT_ERRORS_TGT_INT	vxge_mBIT(11)
+-#define	VXGE_HW_MRPCIM_PPIF_INT_STATUS_CONFIG_ERRORS_CONFIG_INT	vxge_mBIT(15)
+-#define	VXGE_HW_MRPCIM_PPIF_INT_STATUS_CRDT_ERRORS_CRDT_INT	vxge_mBIT(19)
+-#define	VXGE_HW_MRPCIM_PPIF_INT_STATUS_PLL_ERRORS_PLL_INT	vxge_mBIT(27)
+-#define	VXGE_HW_MRPCIM_PPIF_INT_STATUS_CRDT_ERRORS_VPLANE0_CRD_INT_VPLANE0_INT\
+-							vxge_mBIT(31)
+-#define	VXGE_HW_MRPCIM_PPIF_INT_STATUS_CRDT_ERRORS_VPLANE1_CRD_INT_VPLANE1_INT\
+-							vxge_mBIT(32)
+-#define	VXGE_HW_MRPCIM_PPIF_INT_STATUS_CRDT_ERRORS_VPLANE2_CRD_INT_VPLANE2_INT\
+-							vxge_mBIT(33)
+-#define	VXGE_HW_MRPCIM_PPIF_INT_STATUS_CRDT_ERRORS_VPLANE3_CRD_INT_VPLANE3_INT\
+-							vxge_mBIT(34)
+-#define	VXGE_HW_MRPCIM_PPIF_INT_STATUS_CRDT_ERRORS_VPLANE4_CRD_INT_VPLANE4_INT\
+-							vxge_mBIT(35)
+-#define	VXGE_HW_MRPCIM_PPIF_INT_STATUS_CRDT_ERRORS_VPLANE5_CRD_INT_VPLANE5_INT\
+-							vxge_mBIT(36)
+-#define	VXGE_HW_MRPCIM_PPIF_INT_STATUS_CRDT_ERRORS_VPLANE6_CRD_INT_VPLANE6_INT\
+-							vxge_mBIT(37)
+-#define	VXGE_HW_MRPCIM_PPIF_INT_STATUS_CRDT_ERRORS_VPLANE7_CRD_INT_VPLANE7_INT\
+-							vxge_mBIT(38)
+-#define	VXGE_HW_MRPCIM_PPIF_INT_STATUS_CRDT_ERRORS_VPLANE8_CRD_INT_VPLANE8_INT\
+-							vxge_mBIT(39)
+-#define	VXGE_HW_MRPCIM_PPIF_INT_STATUS_CRDT_ERRORS_VPLANE9_CRD_INT_VPLANE9_INT\
+-							vxge_mBIT(40)
+-#define \
+-VXGE_HW_MRPCIM_PPIF_INT_STATUS_CRDT_ERRORS_VPLANE10_CRD_INT_VPLANE10_INT \
+-							vxge_mBIT(41)
+-#define \
+-VXGE_HW_MRPCIM_PPIF_INT_STATUS_CRDT_ERRORS_VPLANE11_CRD_INT_VPLANE11_INT \
+-							vxge_mBIT(42)
+-#define	\
+-VXGE_HW_MRPCIM_PPIF_INT_STATUS_CRDT_ERRORS_VPLANE12_CRD_INT_VPLANE12_INT \
+-							vxge_mBIT(43)
+-#define	\
+-VXGE_HW_MRPCIM_PPIF_INT_STATUS_CRDT_ERRORS_VPLANE13_CRD_INT_VPLANE13_INT \
+-							vxge_mBIT(44)
+-#define	\
+-VXGE_HW_MRPCIM_PPIF_INT_STATUS_CRDT_ERRORS_VPLANE14_CRD_INT_VPLANE14_INT \
+-							vxge_mBIT(45)
+-#define	\
+-VXGE_HW_MRPCIM_PPIF_INT_STATUS_CRDT_ERRORS_VPLANE15_CRD_INT_VPLANE15_INT \
+-							vxge_mBIT(46)
+-#define	\
+-VXGE_HW_MRPCIM_PPIF_INT_STATUS_CRDT_ERRORS_VPLANE16_CRD_INT_VPLANE16_INT \
+-							vxge_mBIT(47)
+-#define	\
+-VXGE_HW_MRPCIM_PPIF_INT_STATUS_VPATH_TO_MRPCIM_ALARM_VPATH_TO_MRPCIM_ALARM_INT \
+-							vxge_mBIT(55)
+-/*0x07018*/	u64	mrpcim_ppif_int_mask;
+-	u8	unused07028[0x07028-0x07020];
+-
+-/*0x07028*/	u64	ini_errors_reg;
+-#define	VXGE_HW_INI_ERRORS_REG_SCPL_CPL_TIMEOUT_UNUSED_TAG	vxge_mBIT(3)
+-#define	VXGE_HW_INI_ERRORS_REG_SCPL_CPL_TIMEOUT	vxge_mBIT(7)
+-#define	VXGE_HW_INI_ERRORS_REG_DCPL_FSM_ERR	vxge_mBIT(11)
+-#define	VXGE_HW_INI_ERRORS_REG_DCPL_POISON	vxge_mBIT(12)
+-#define	VXGE_HW_INI_ERRORS_REG_DCPL_UNSUPPORTED	vxge_mBIT(15)
+-#define	VXGE_HW_INI_ERRORS_REG_DCPL_ABORT	vxge_mBIT(19)
+-#define	VXGE_HW_INI_ERRORS_REG_INI_TLP_ABORT	vxge_mBIT(23)
+-#define	VXGE_HW_INI_ERRORS_REG_INI_DLLP_ABORT	vxge_mBIT(27)
+-#define	VXGE_HW_INI_ERRORS_REG_INI_ECRC_ERR	vxge_mBIT(31)
+-#define	VXGE_HW_INI_ERRORS_REG_INI_BUF_DB_ERR	vxge_mBIT(35)
+-#define	VXGE_HW_INI_ERRORS_REG_INI_BUF_SG_ERR	vxge_mBIT(39)
+-#define	VXGE_HW_INI_ERRORS_REG_INI_DATA_OVERFLOW	vxge_mBIT(43)
+-#define	VXGE_HW_INI_ERRORS_REG_INI_HDR_OVERFLOW	vxge_mBIT(47)
+-#define	VXGE_HW_INI_ERRORS_REG_INI_MRD_SYS_DROP	vxge_mBIT(51)
+-#define	VXGE_HW_INI_ERRORS_REG_INI_MWR_SYS_DROP	vxge_mBIT(55)
+-#define	VXGE_HW_INI_ERRORS_REG_INI_MRD_CLIENT_DROP	vxge_mBIT(59)
+-#define	VXGE_HW_INI_ERRORS_REG_INI_MWR_CLIENT_DROP	vxge_mBIT(63)
+-/*0x07030*/	u64	ini_errors_mask;
+-/*0x07038*/	u64	ini_errors_alarm;
+-/*0x07040*/	u64	dma_errors_reg;
+-#define	VXGE_HW_DMA_ERRORS_REG_RDARB_FSM_ERR	vxge_mBIT(3)
+-#define	VXGE_HW_DMA_ERRORS_REG_WRARB_FSM_ERR	vxge_mBIT(7)
+-#define	VXGE_HW_DMA_ERRORS_REG_DMA_WRDMA_WR_HDR_OVERFLOW	vxge_mBIT(8)
+-#define	VXGE_HW_DMA_ERRORS_REG_DMA_WRDMA_WR_HDR_UNDERFLOW	vxge_mBIT(9)
+-#define	VXGE_HW_DMA_ERRORS_REG_DMA_WRDMA_WR_DATA_OVERFLOW	vxge_mBIT(10)
+-#define	VXGE_HW_DMA_ERRORS_REG_DMA_WRDMA_WR_DATA_UNDERFLOW	vxge_mBIT(11)
+-#define	VXGE_HW_DMA_ERRORS_REG_DMA_MSG_WR_HDR_OVERFLOW	vxge_mBIT(12)
+-#define	VXGE_HW_DMA_ERRORS_REG_DMA_MSG_WR_HDR_UNDERFLOW	vxge_mBIT(13)
+-#define	VXGE_HW_DMA_ERRORS_REG_DMA_MSG_WR_DATA_OVERFLOW	vxge_mBIT(14)
+-#define	VXGE_HW_DMA_ERRORS_REG_DMA_MSG_WR_DATA_UNDERFLOW	vxge_mBIT(15)
+-#define	VXGE_HW_DMA_ERRORS_REG_DMA_STATS_WR_HDR_OVERFLOW	vxge_mBIT(16)
+-#define	VXGE_HW_DMA_ERRORS_REG_DMA_STATS_WR_HDR_UNDERFLOW	vxge_mBIT(17)
+-#define	VXGE_HW_DMA_ERRORS_REG_DMA_STATS_WR_DATA_OVERFLOW	vxge_mBIT(18)
+-#define	VXGE_HW_DMA_ERRORS_REG_DMA_STATS_WR_DATA_UNDERFLOW	vxge_mBIT(19)
+-#define	VXGE_HW_DMA_ERRORS_REG_DMA_RTDMA_WR_HDR_OVERFLOW	vxge_mBIT(20)
+-#define	VXGE_HW_DMA_ERRORS_REG_DMA_RTDMA_WR_HDR_UNDERFLOW	vxge_mBIT(21)
+-#define	VXGE_HW_DMA_ERRORS_REG_DMA_RTDMA_WR_DATA_OVERFLOW	vxge_mBIT(22)
+-#define	VXGE_HW_DMA_ERRORS_REG_DMA_RTDMA_WR_DATA_UNDERFLOW	vxge_mBIT(23)
+-#define	VXGE_HW_DMA_ERRORS_REG_DMA_WRDMA_RD_HDR_OVERFLOW	vxge_mBIT(24)
+-#define	VXGE_HW_DMA_ERRORS_REG_DMA_WRDMA_RD_HDR_UNDERFLOW	vxge_mBIT(25)
+-#define	VXGE_HW_DMA_ERRORS_REG_DMA_RTDMA_RD_HDR_OVERFLOW	vxge_mBIT(28)
+-#define	VXGE_HW_DMA_ERRORS_REG_DMA_RTDMA_RD_HDR_UNDERFLOW	vxge_mBIT(29)
+-#define	VXGE_HW_DMA_ERRORS_REG_DBLGEN_FSM_ERR	vxge_mBIT(32)
+-#define	VXGE_HW_DMA_ERRORS_REG_DBLGEN_CREDIT_FSM_ERR	vxge_mBIT(33)
+-#define	VXGE_HW_DMA_ERRORS_REG_DBLGEN_DMA_WRR_SM_ERR	vxge_mBIT(34)
+-/*0x07048*/	u64	dma_errors_mask;
+-/*0x07050*/	u64	dma_errors_alarm;
+-/*0x07058*/	u64	tgt_errors_reg;
+-#define	VXGE_HW_TGT_ERRORS_REG_TGT_VENDOR_MSG	vxge_mBIT(0)
+-#define	VXGE_HW_TGT_ERRORS_REG_TGT_MSG_UNLOCK	vxge_mBIT(1)
+-#define	VXGE_HW_TGT_ERRORS_REG_TGT_ILLEGAL_TLP_BE	vxge_mBIT(2)
+-#define	VXGE_HW_TGT_ERRORS_REG_TGT_BOOT_WRITE	vxge_mBIT(3)
+-#define	VXGE_HW_TGT_ERRORS_REG_TGT_PIF_WR_CROSS_QWRANGE	vxge_mBIT(4)
+-#define	VXGE_HW_TGT_ERRORS_REG_TGT_PIF_READ_CROSS_QWRANGE	vxge_mBIT(5)
+-#define	VXGE_HW_TGT_ERRORS_REG_TGT_KDFC_READ	vxge_mBIT(6)
+-#define	VXGE_HW_TGT_ERRORS_REG_TGT_USDC_READ	vxge_mBIT(7)
+-#define	VXGE_HW_TGT_ERRORS_REG_TGT_USDC_WR_CROSS_QWRANGE	vxge_mBIT(8)
+-#define	VXGE_HW_TGT_ERRORS_REG_TGT_MSIX_BEYOND_RANGE	vxge_mBIT(9)
+-#define	VXGE_HW_TGT_ERRORS_REG_TGT_WR_TO_KDFC_POISON	vxge_mBIT(10)
+-#define	VXGE_HW_TGT_ERRORS_REG_TGT_WR_TO_USDC_POISON	vxge_mBIT(11)
+-#define	VXGE_HW_TGT_ERRORS_REG_TGT_WR_TO_PIF_POISON	vxge_mBIT(12)
+-#define	VXGE_HW_TGT_ERRORS_REG_TGT_WR_TO_MSIX_POISON	vxge_mBIT(13)
+-#define	VXGE_HW_TGT_ERRORS_REG_TGT_WR_TO_MRIOV_POISON	vxge_mBIT(14)
+-#define	VXGE_HW_TGT_ERRORS_REG_TGT_NOT_MEM_TLP	vxge_mBIT(15)
+-#define	VXGE_HW_TGT_ERRORS_REG_TGT_UNKNOWN_MEM_TLP	vxge_mBIT(16)
+-#define	VXGE_HW_TGT_ERRORS_REG_TGT_REQ_FSM_ERR	vxge_mBIT(17)
+-#define	VXGE_HW_TGT_ERRORS_REG_TGT_CPL_FSM_ERR	vxge_mBIT(18)
+-#define	VXGE_HW_TGT_ERRORS_REG_TGT_KDFC_PROT_ERR	vxge_mBIT(19)
+-#define	VXGE_HW_TGT_ERRORS_REG_TGT_SWIF_PROT_ERR	vxge_mBIT(20)
+-#define	VXGE_HW_TGT_ERRORS_REG_TGT_MRIOV_MEM_MAP_CFG_ERR	vxge_mBIT(21)
+-/*0x07060*/	u64	tgt_errors_mask;
+-/*0x07068*/	u64	tgt_errors_alarm;
+-/*0x07070*/	u64	config_errors_reg;
+-#define	VXGE_HW_CONFIG_ERRORS_REG_I2C_ILLEGAL_STOP_COND	vxge_mBIT(3)
+-#define	VXGE_HW_CONFIG_ERRORS_REG_I2C_ILLEGAL_START_COND	vxge_mBIT(7)
+-#define	VXGE_HW_CONFIG_ERRORS_REG_I2C_EXP_RD_CNT	vxge_mBIT(11)
+-#define	VXGE_HW_CONFIG_ERRORS_REG_I2C_EXTRA_CYCLE	vxge_mBIT(15)
+-#define	VXGE_HW_CONFIG_ERRORS_REG_I2C_MAIN_FSM_ERR	vxge_mBIT(19)
+-#define	VXGE_HW_CONFIG_ERRORS_REG_I2C_REQ_COLLISION	vxge_mBIT(23)
+-#define	VXGE_HW_CONFIG_ERRORS_REG_I2C_REG_FSM_ERR	vxge_mBIT(27)
+-#define	VXGE_HW_CONFIG_ERRORS_REG_CFGM_I2C_TIMEOUT	vxge_mBIT(31)
+-#define	VXGE_HW_CONFIG_ERRORS_REG_RIC_I2C_TIMEOUT	vxge_mBIT(35)
+-#define	VXGE_HW_CONFIG_ERRORS_REG_CFGM_FSM_ERR	vxge_mBIT(39)
+-#define	VXGE_HW_CONFIG_ERRORS_REG_RIC_FSM_ERR	vxge_mBIT(43)
+-#define	VXGE_HW_CONFIG_ERRORS_REG_PIFM_ILLEGAL_ACCESS	vxge_mBIT(47)
+-#define	VXGE_HW_CONFIG_ERRORS_REG_PIFM_TIMEOUT	vxge_mBIT(51)
+-#define	VXGE_HW_CONFIG_ERRORS_REG_PIFM_FSM_ERR	vxge_mBIT(55)
+-#define	VXGE_HW_CONFIG_ERRORS_REG_PIFM_TO_FSM_ERR	vxge_mBIT(59)
+-#define	VXGE_HW_CONFIG_ERRORS_REG_RIC_RIC_RD_TIMEOUT	vxge_mBIT(63)
+-/*0x07078*/	u64	config_errors_mask;
+-/*0x07080*/	u64	config_errors_alarm;
+-	u8	unused07090[0x07090-0x07088];
+-
+-/*0x07090*/	u64	crdt_errors_reg;
+-#define	VXGE_HW_CRDT_ERRORS_REG_WRCRDTARB_FSM_ERR	vxge_mBIT(11)
+-#define	VXGE_HW_CRDT_ERRORS_REG_WRCRDTARB_INTCTL_ILLEGAL_CRD_DEAL \
+-							vxge_mBIT(15)
+-#define	VXGE_HW_CRDT_ERRORS_REG_WRCRDTARB_PDA_ILLEGAL_CRD_DEAL	vxge_mBIT(19)
+-#define	VXGE_HW_CRDT_ERRORS_REG_WRCRDTARB_PCI_MSG_ILLEGAL_CRD_DEAL \
+-							vxge_mBIT(23)
+-#define	VXGE_HW_CRDT_ERRORS_REG_RDCRDTARB_FSM_ERR	vxge_mBIT(35)
+-#define	VXGE_HW_CRDT_ERRORS_REG_RDCRDTARB_RDA_ILLEGAL_CRD_DEAL	vxge_mBIT(39)
+-#define	VXGE_HW_CRDT_ERRORS_REG_RDCRDTARB_PDA_ILLEGAL_CRD_DEAL	vxge_mBIT(43)
+-#define	VXGE_HW_CRDT_ERRORS_REG_RDCRDTARB_DBLGEN_ILLEGAL_CRD_DEAL \
+-							vxge_mBIT(47)
+-/*0x07098*/	u64	crdt_errors_mask;
+-/*0x070a0*/	u64	crdt_errors_alarm;
+-	u8	unused070b0[0x070b0-0x070a8];
+-
+-/*0x070b0*/	u64	mrpcim_general_errors_reg;
+-#define	VXGE_HW_MRPCIM_GENERAL_ERRORS_REG_STATSB_FSM_ERR	vxge_mBIT(3)
+-#define	VXGE_HW_MRPCIM_GENERAL_ERRORS_REG_XGEN_FSM_ERR	vxge_mBIT(7)
+-#define	VXGE_HW_MRPCIM_GENERAL_ERRORS_REG_XMEM_FSM_ERR	vxge_mBIT(11)
+-#define	VXGE_HW_MRPCIM_GENERAL_ERRORS_REG_KDFCCTL_FSM_ERR	vxge_mBIT(15)
+-#define	VXGE_HW_MRPCIM_GENERAL_ERRORS_REG_MRIOVCTL_FSM_ERR	vxge_mBIT(19)
+-#define	VXGE_HW_MRPCIM_GENERAL_ERRORS_REG_SPI_FLSH_ERR	vxge_mBIT(23)
+-#define	VXGE_HW_MRPCIM_GENERAL_ERRORS_REG_SPI_IIC_ACK_ERR	vxge_mBIT(27)
+-#define	VXGE_HW_MRPCIM_GENERAL_ERRORS_REG_SPI_IIC_CHKSUM_ERR	vxge_mBIT(31)
+-#define	VXGE_HW_MRPCIM_GENERAL_ERRORS_REG_INI_SERR_DET	vxge_mBIT(35)
+-#define	VXGE_HW_MRPCIM_GENERAL_ERRORS_REG_INTCTL_MSIX_FSM_ERR	vxge_mBIT(39)
+-#define	VXGE_HW_MRPCIM_GENERAL_ERRORS_REG_INTCTL_MSI_OVERFLOW	vxge_mBIT(43)
+-#define	VXGE_HW_MRPCIM_GENERAL_ERRORS_REG_PPIF_PCI_NOT_FLUSH_DURING_SW_RESET \
+-							vxge_mBIT(47)
+-#define	VXGE_HW_MRPCIM_GENERAL_ERRORS_REG_PPIF_SW_RESET_FSM_ERR	vxge_mBIT(51)
+-/*0x070b8*/	u64	mrpcim_general_errors_mask;
+-/*0x070c0*/	u64	mrpcim_general_errors_alarm;
+-	u8	unused070d0[0x070d0-0x070c8];
+-
+-/*0x070d0*/	u64	pll_errors_reg;
+-#define	VXGE_HW_PLL_ERRORS_REG_CORE_CMG_PLL_OOL	vxge_mBIT(3)
+-#define	VXGE_HW_PLL_ERRORS_REG_CORE_FB_PLL_OOL	vxge_mBIT(7)
+-#define	VXGE_HW_PLL_ERRORS_REG_CORE_X_PLL_OOL	vxge_mBIT(11)
+-/*0x070d8*/	u64	pll_errors_mask;
+-/*0x070e0*/	u64	pll_errors_alarm;
+-/*0x070e8*/	u64	srpcim_to_mrpcim_alarm_reg;
+-#define	VXGE_HW_SRPCIM_TO_MRPCIM_ALARM_REG_PPIF_SRPCIM_TO_MRPCIM_ALARM(val) \
+-							vxge_vBIT(val, 0, 17)
+-/*0x070f0*/	u64	srpcim_to_mrpcim_alarm_mask;
+-/*0x070f8*/	u64	srpcim_to_mrpcim_alarm_alarm;
+-/*0x07100*/	u64	vpath_to_mrpcim_alarm_reg;
+-#define	VXGE_HW_VPATH_TO_MRPCIM_ALARM_REG_PPIF_VPATH_TO_MRPCIM_ALARM(val) \
+-							vxge_vBIT(val, 0, 17)
+-/*0x07108*/	u64	vpath_to_mrpcim_alarm_mask;
+-/*0x07110*/	u64	vpath_to_mrpcim_alarm_alarm;
+-	u8	unused07128[0x07128-0x07118];
+-
+-/*0x07128*/	u64	crdt_errors_vplane_reg[17];
+-#define	VXGE_HW_CRDT_ERRORS_VPLANE_REG_WRCRDTARB_P_H_CONSUME_CRDT_ERR \
+-							vxge_mBIT(3)
+-#define	VXGE_HW_CRDT_ERRORS_VPLANE_REG_WRCRDTARB_P_D_CONSUME_CRDT_ERR \
+-							vxge_mBIT(7)
+-#define	VXGE_HW_CRDT_ERRORS_VPLANE_REG_WRCRDTARB_P_H_RETURN_CRDT_ERR \
+-							vxge_mBIT(11)
+-#define	VXGE_HW_CRDT_ERRORS_VPLANE_REG_WRCRDTARB_P_D_RETURN_CRDT_ERR \
+-							vxge_mBIT(15)
+-#define	VXGE_HW_CRDT_ERRORS_VPLANE_REG_RDCRDTARB_NP_H_CONSUME_CRDT_ERR \
+-							vxge_mBIT(19)
+-#define	VXGE_HW_CRDT_ERRORS_VPLANE_REG_RDCRDTARB_NP_H_RETURN_CRDT_ERR \
+-							vxge_mBIT(23)
+-#define	VXGE_HW_CRDT_ERRORS_VPLANE_REG_RDCRDTARB_TAG_CONSUME_TAG_ERR \
+-							vxge_mBIT(27)
+-#define	VXGE_HW_CRDT_ERRORS_VPLANE_REG_RDCRDTARB_TAG_RETURN_TAG_ERR \
+-							vxge_mBIT(31)
+-/*0x07130*/	u64	crdt_errors_vplane_mask[17];
+-/*0x07138*/	u64	crdt_errors_vplane_alarm[17];
+-	u8	unused072f0[0x072f0-0x072c0];
+-
+-/*0x072f0*/	u64	mrpcim_rst_in_prog;
+-#define	VXGE_HW_MRPCIM_RST_IN_PROG_MRPCIM_RST_IN_PROG	vxge_mBIT(7)
+-/*0x072f8*/	u64	mrpcim_reg_modified;
+-#define	VXGE_HW_MRPCIM_REG_MODIFIED_MRPCIM_REG_MODIFIED	vxge_mBIT(7)
+-
+-	u8	unused07378[0x07378-0x07300];
+-
+-/*0x07378*/	u64	write_arb_pending;
+-#define	VXGE_HW_WRITE_ARB_PENDING_WRARB_WRDMA	vxge_mBIT(3)
+-#define	VXGE_HW_WRITE_ARB_PENDING_WRARB_RTDMA	vxge_mBIT(7)
+-#define	VXGE_HW_WRITE_ARB_PENDING_WRARB_MSG	vxge_mBIT(11)
+-#define	VXGE_HW_WRITE_ARB_PENDING_WRARB_STATSB	vxge_mBIT(15)
+-#define	VXGE_HW_WRITE_ARB_PENDING_WRARB_INTCTL	vxge_mBIT(19)
+-/*0x07380*/	u64	read_arb_pending;
+-#define	VXGE_HW_READ_ARB_PENDING_RDARB_WRDMA	vxge_mBIT(3)
+-#define	VXGE_HW_READ_ARB_PENDING_RDARB_RTDMA	vxge_mBIT(7)
+-#define	VXGE_HW_READ_ARB_PENDING_RDARB_DBLGEN	vxge_mBIT(11)
+-/*0x07388*/	u64	dmaif_dmadbl_pending;
+-#define	VXGE_HW_DMAIF_DMADBL_PENDING_DMAIF_WRDMA_WR	vxge_mBIT(0)
+-#define	VXGE_HW_DMAIF_DMADBL_PENDING_DMAIF_WRDMA_RD	vxge_mBIT(1)
+-#define	VXGE_HW_DMAIF_DMADBL_PENDING_DMAIF_RTDMA_WR	vxge_mBIT(2)
+-#define	VXGE_HW_DMAIF_DMADBL_PENDING_DMAIF_RTDMA_RD	vxge_mBIT(3)
+-#define	VXGE_HW_DMAIF_DMADBL_PENDING_DMAIF_MSG_WR	vxge_mBIT(4)
+-#define	VXGE_HW_DMAIF_DMADBL_PENDING_DMAIF_STATS_WR	vxge_mBIT(5)
+-#define	VXGE_HW_DMAIF_DMADBL_PENDING_DBLGEN_IN_PROG(val) \
+-							vxge_vBIT(val, 13, 51)
+-/*0x07390*/	u64	wrcrdtarb_status0_vplane[17];
+-#define	VXGE_HW_WRCRDTARB_STATUS0_VPLANE_WRCRDTARB_ABS_AVAIL_P_H(val) \
+-							vxge_vBIT(val, 0, 8)
+-/*0x07418*/	u64	wrcrdtarb_status1_vplane[17];
+-#define	VXGE_HW_WRCRDTARB_STATUS1_VPLANE_WRCRDTARB_ABS_AVAIL_P_D(val) \
+-							vxge_vBIT(val, 4, 12)
+-	u8	unused07500[0x07500-0x074a0];
+-
+-/*0x07500*/	u64	mrpcim_general_cfg1;
+-#define	VXGE_HW_MRPCIM_GENERAL_CFG1_CLEAR_SERR	vxge_mBIT(7)
+-/*0x07508*/	u64	mrpcim_general_cfg2;
+-#define	VXGE_HW_MRPCIM_GENERAL_CFG2_INS_TX_WR_TD	vxge_mBIT(3)
+-#define	VXGE_HW_MRPCIM_GENERAL_CFG2_INS_TX_RD_TD	vxge_mBIT(7)
+-#define	VXGE_HW_MRPCIM_GENERAL_CFG2_INS_TX_CPL_TD	vxge_mBIT(11)
+-#define	VXGE_HW_MRPCIM_GENERAL_CFG2_INI_TIMEOUT_EN_MWR	vxge_mBIT(15)
+-#define	VXGE_HW_MRPCIM_GENERAL_CFG2_INI_TIMEOUT_EN_MRD	vxge_mBIT(19)
+-#define	VXGE_HW_MRPCIM_GENERAL_CFG2_IGNORE_VPATH_RST_FOR_MSIX	vxge_mBIT(23)
+-#define	VXGE_HW_MRPCIM_GENERAL_CFG2_FLASH_READ_MSB	vxge_mBIT(27)
+-#define	VXGE_HW_MRPCIM_GENERAL_CFG2_DIS_HOST_PIPELINE_WR	vxge_mBIT(31)
+-#define	VXGE_HW_MRPCIM_GENERAL_CFG2_MRPCIM_STATS_ENABLE	vxge_mBIT(43)
+-#define	VXGE_HW_MRPCIM_GENERAL_CFG2_MRPCIM_STATS_MAP_TO_VPATH(val) \
+-							vxge_vBIT(val, 47, 5)
+-#define	VXGE_HW_MRPCIM_GENERAL_CFG2_EN_BLOCK_MSIX_DUE_TO_SERR	vxge_mBIT(55)
+-#define	VXGE_HW_MRPCIM_GENERAL_CFG2_FORCE_SENDING_INTA	vxge_mBIT(59)
+-#define	VXGE_HW_MRPCIM_GENERAL_CFG2_DIS_SWIF_PROT_ON_RDS	vxge_mBIT(63)
+-/*0x07510*/	u64	mrpcim_general_cfg3;
+-#define	VXGE_HW_MRPCIM_GENERAL_CFG3_PROTECTION_CA_OR_UNSUPN	vxge_mBIT(0)
+-#define	VXGE_HW_MRPCIM_GENERAL_CFG3_ILLEGAL_RD_CA_OR_UNSUPN	vxge_mBIT(3)
+-#define	VXGE_HW_MRPCIM_GENERAL_CFG3_RD_BYTE_SWAPEN	vxge_mBIT(7)
+-#define	VXGE_HW_MRPCIM_GENERAL_CFG3_RD_BIT_FLIPEN	vxge_mBIT(11)
+-#define	VXGE_HW_MRPCIM_GENERAL_CFG3_WR_BYTE_SWAPEN	vxge_mBIT(15)
+-#define	VXGE_HW_MRPCIM_GENERAL_CFG3_WR_BIT_FLIPEN	vxge_mBIT(19)
+-#define VXGE_HW_MRPCIM_GENERAL_CFG3_MR_MAX_MVFS(val) vxge_vBIT(val, 20, 16)
+-#define	VXGE_HW_MRPCIM_GENERAL_CFG3_MR_MVF_TBL_SIZE(val) \
+-							vxge_vBIT(val, 36, 16)
+-#define	VXGE_HW_MRPCIM_GENERAL_CFG3_PF0_SW_RESET_EN	vxge_mBIT(55)
+-#define VXGE_HW_MRPCIM_GENERAL_CFG3_REG_MODIFIED_CFG(val) vxge_vBIT(val, 56, 2)
+-#define	VXGE_HW_MRPCIM_GENERAL_CFG3_CPL_ECC_ENABLE_N	vxge_mBIT(59)
+-#define	VXGE_HW_MRPCIM_GENERAL_CFG3_BYPASS_DAISY_CHAIN	vxge_mBIT(63)
+-/*0x07518*/	u64	mrpcim_stats_start_host_addr;
+-#define	VXGE_HW_MRPCIM_STATS_START_HOST_ADDR_MRPCIM_STATS_START_HOST_ADDR(val)\
+-							vxge_vBIT(val, 0, 57)
+-
+-	u8	unused07950[0x07950-0x07520];
+-
+-/*0x07950*/	u64	rdcrdtarb_cfg0;
+-#define VXGE_HW_RDCRDTARB_CFG0_RDA_MAX_OUTSTANDING_RDS(val) \
+-						vxge_vBIT(val, 18, 6)
+-#define VXGE_HW_RDCRDTARB_CFG0_PDA_MAX_OUTSTANDING_RDS(val) \
+-						vxge_vBIT(val, 26, 6)
+-#define VXGE_HW_RDCRDTARB_CFG0_DBLGEN_MAX_OUTSTANDING_RDS(val) \
+-						vxge_vBIT(val, 34, 6)
+-#define VXGE_HW_RDCRDTARB_CFG0_WAIT_CNT(val) vxge_vBIT(val, 48, 4)
+-#define VXGE_HW_RDCRDTARB_CFG0_MAX_OUTSTANDING_RDS(val) vxge_vBIT(val, 54, 6)
+-#define	VXGE_HW_RDCRDTARB_CFG0_EN_XON	vxge_mBIT(63)
+-	u8	unused07be8[0x07be8-0x07958];
+-
+-/*0x07be8*/	u64	bf_sw_reset;
+-#define VXGE_HW_BF_SW_RESET_BF_SW_RESET(val) vxge_vBIT(val, 0, 8)
+-/*0x07bf0*/	u64	sw_reset_status;
+-#define	VXGE_HW_SW_RESET_STATUS_RESET_CMPLT	vxge_mBIT(7)
+-#define	VXGE_HW_SW_RESET_STATUS_INIT_CMPLT	vxge_mBIT(15)
+-	u8	unused07d30[0x07d30-0x07bf8];
+-
+-/*0x07d30*/	u64	mrpcim_debug_stats0;
+-#define VXGE_HW_MRPCIM_DEBUG_STATS0_INI_WR_DROP(val) vxge_vBIT(val, 0, 32)
+-#define VXGE_HW_MRPCIM_DEBUG_STATS0_INI_RD_DROP(val) vxge_vBIT(val, 32, 32)
+-/*0x07d38*/	u64	mrpcim_debug_stats1_vplane[17];
+-#define	VXGE_HW_MRPCIM_DEBUG_STATS1_VPLANE_WRCRDTARB_PH_CRDT_DEPLETED(val) \
+-							vxge_vBIT(val, 32, 32)
+-/*0x07dc0*/	u64	mrpcim_debug_stats2_vplane[17];
+-#define	VXGE_HW_MRPCIM_DEBUG_STATS2_VPLANE_WRCRDTARB_PD_CRDT_DEPLETED(val) \
+-							vxge_vBIT(val, 32, 32)
+-/*0x07e48*/	u64	mrpcim_debug_stats3_vplane[17];
+-#define	VXGE_HW_MRPCIM_DEBUG_STATS3_VPLANE_RDCRDTARB_NPH_CRDT_DEPLETED(val) \
+-							vxge_vBIT(val, 32, 32)
+-/*0x07ed0*/	u64	mrpcim_debug_stats4;
+-#define VXGE_HW_MRPCIM_DEBUG_STATS4_INI_WR_VPIN_DROP(val) vxge_vBIT(val, 0, 32)
+-#define	VXGE_HW_MRPCIM_DEBUG_STATS4_INI_RD_VPIN_DROP(val) \
+-							vxge_vBIT(val, 32, 32)
+-/*0x07ed8*/	u64	genstats_count01;
+-#define VXGE_HW_GENSTATS_COUNT01_GENSTATS_COUNT1(val) vxge_vBIT(val, 0, 32)
+-#define VXGE_HW_GENSTATS_COUNT01_GENSTATS_COUNT0(val) vxge_vBIT(val, 32, 32)
+-/*0x07ee0*/	u64	genstats_count23;
+-#define VXGE_HW_GENSTATS_COUNT23_GENSTATS_COUNT3(val) vxge_vBIT(val, 0, 32)
+-#define VXGE_HW_GENSTATS_COUNT23_GENSTATS_COUNT2(val) vxge_vBIT(val, 32, 32)
+-/*0x07ee8*/	u64	genstats_count4;
+-#define VXGE_HW_GENSTATS_COUNT4_GENSTATS_COUNT4(val) vxge_vBIT(val, 32, 32)
+-/*0x07ef0*/	u64	genstats_count5;
+-#define VXGE_HW_GENSTATS_COUNT5_GENSTATS_COUNT5(val) vxge_vBIT(val, 32, 32)
+-
+-	u8	unused07f08[0x07f08-0x07ef8];
+-
+-/*0x07f08*/	u64	genstats_cfg[6];
+-#define VXGE_HW_GENSTATS_CFG_DTYPE_SEL(val) vxge_vBIT(val, 3, 5)
+-#define VXGE_HW_GENSTATS_CFG_CLIENT_NO_SEL(val) vxge_vBIT(val, 9, 3)
+-#define VXGE_HW_GENSTATS_CFG_WR_RD_CPL_SEL(val) vxge_vBIT(val, 14, 2)
+-#define VXGE_HW_GENSTATS_CFG_VPATH_SEL(val) vxge_vBIT(val, 31, 17)
+-/*0x07f38*/	u64	genstat_64bit_cfg;
+-#define	VXGE_HW_GENSTAT_64BIT_CFG_EN_FOR_GENSTATS0	vxge_mBIT(3)
+-#define	VXGE_HW_GENSTAT_64BIT_CFG_EN_FOR_GENSTATS2	vxge_mBIT(7)
+-	u8	unused08000[0x08000-0x07f40];
+-/*0x08000*/	u64	gcmg3_int_status;
+-#define	VXGE_HW_GCMG3_INT_STATUS_GSTC_ERR0_GSTC0_INT	vxge_mBIT(0)
+-#define	VXGE_HW_GCMG3_INT_STATUS_GSTC_ERR1_GSTC1_INT	vxge_mBIT(1)
+-#define	VXGE_HW_GCMG3_INT_STATUS_GH2L_ERR0_GH2L0_INT	vxge_mBIT(2)
+-#define	VXGE_HW_GCMG3_INT_STATUS_GHSQ_ERR_GH2L1_INT	vxge_mBIT(3)
+-#define	VXGE_HW_GCMG3_INT_STATUS_GHSQ_ERR2_GH2L2_INT	vxge_mBIT(4)
+-#define	VXGE_HW_GCMG3_INT_STATUS_GH2L_SMERR0_GH2L3_INT	vxge_mBIT(5)
+-#define	VXGE_HW_GCMG3_INT_STATUS_GHSQ_ERR3_GH2L4_INT	vxge_mBIT(6)
+-/*0x08008*/	u64	gcmg3_int_mask;
+-	u8	unused09000[0x09000-0x8010];
+-
+-/*0x09000*/	u64	g3ifcmd_fb_int_status;
+-#define	VXGE_HW_G3IFCMD_FB_INT_STATUS_ERR_G3IF_INT	vxge_mBIT(0)
+-/*0x09008*/	u64	g3ifcmd_fb_int_mask;
+-/*0x09010*/	u64	g3ifcmd_fb_err_reg;
+-#define	VXGE_HW_G3IFCMD_FB_ERR_REG_G3IF_CK_DLL_LOCK	vxge_mBIT(6)
+-#define	VXGE_HW_G3IFCMD_FB_ERR_REG_G3IF_SM_ERR	vxge_mBIT(7)
+-#define VXGE_HW_G3IFCMD_FB_ERR_REG_G3IF_RWDQS_DLL_LOCK(val) \
+-						vxge_vBIT(val, 24, 8)
+-#define	VXGE_HW_G3IFCMD_FB_ERR_REG_G3IF_IOCAL_FAULT	vxge_mBIT(55)
+-/*0x09018*/	u64	g3ifcmd_fb_err_mask;
+-/*0x09020*/	u64	g3ifcmd_fb_err_alarm;
+-
+-	u8	unused09400[0x09400-0x09028];
+-
+-/*0x09400*/	u64	g3ifcmd_cmu_int_status;
+-#define	VXGE_HW_G3IFCMD_CMU_INT_STATUS_ERR_G3IF_INT	vxge_mBIT(0)
+-/*0x09408*/	u64	g3ifcmd_cmu_int_mask;
+-/*0x09410*/	u64	g3ifcmd_cmu_err_reg;
+-#define	VXGE_HW_G3IFCMD_CMU_ERR_REG_G3IF_CK_DLL_LOCK	vxge_mBIT(6)
+-#define	VXGE_HW_G3IFCMD_CMU_ERR_REG_G3IF_SM_ERR	vxge_mBIT(7)
+-#define VXGE_HW_G3IFCMD_CMU_ERR_REG_G3IF_RWDQS_DLL_LOCK(val) \
+-							vxge_vBIT(val, 24, 8)
+-#define	VXGE_HW_G3IFCMD_CMU_ERR_REG_G3IF_IOCAL_FAULT	vxge_mBIT(55)
+-/*0x09418*/	u64	g3ifcmd_cmu_err_mask;
+-/*0x09420*/	u64	g3ifcmd_cmu_err_alarm;
+-
+-	u8	unused09800[0x09800-0x09428];
+-
+-/*0x09800*/	u64	g3ifcmd_cml_int_status;
+-#define	VXGE_HW_G3IFCMD_CML_INT_STATUS_ERR_G3IF_INT	vxge_mBIT(0)
+-/*0x09808*/	u64	g3ifcmd_cml_int_mask;
+-/*0x09810*/	u64	g3ifcmd_cml_err_reg;
+-#define	VXGE_HW_G3IFCMD_CML_ERR_REG_G3IF_CK_DLL_LOCK	vxge_mBIT(6)
+-#define	VXGE_HW_G3IFCMD_CML_ERR_REG_G3IF_SM_ERR	vxge_mBIT(7)
+-#define VXGE_HW_G3IFCMD_CML_ERR_REG_G3IF_RWDQS_DLL_LOCK(val) \
+-						vxge_vBIT(val, 24, 8)
+-#define	VXGE_HW_G3IFCMD_CML_ERR_REG_G3IF_IOCAL_FAULT	vxge_mBIT(55)
+-/*0x09818*/	u64	g3ifcmd_cml_err_mask;
+-/*0x09820*/	u64	g3ifcmd_cml_err_alarm;
+-	u8	unused09b00[0x09b00-0x09828];
+-
+-/*0x09b00*/	u64	vpath_to_vplane_map[17];
+-#define VXGE_HW_VPATH_TO_VPLANE_MAP_VPATH_TO_VPLANE_MAP(val) \
+-							vxge_vBIT(val, 3, 5)
+-	u8	unused09c30[0x09c30-0x09b88];
+-
+-/*0x09c30*/	u64	xgxs_cfg_port[2];
+-#define VXGE_HW_XGXS_CFG_PORT_SIG_DETECT_FORCE_LOS(val) vxge_vBIT(val, 16, 4)
+-#define VXGE_HW_XGXS_CFG_PORT_SIG_DETECT_FORCE_VALID(val) vxge_vBIT(val, 20, 4)
+-#define	VXGE_HW_XGXS_CFG_PORT_SEL_INFO_0	vxge_mBIT(27)
+-#define VXGE_HW_XGXS_CFG_PORT_SEL_INFO_1(val) vxge_vBIT(val, 29, 3)
+-#define VXGE_HW_XGXS_CFG_PORT_TX_LANE0_SKEW(val) vxge_vBIT(val, 32, 4)
+-#define VXGE_HW_XGXS_CFG_PORT_TX_LANE1_SKEW(val) vxge_vBIT(val, 36, 4)
+-#define VXGE_HW_XGXS_CFG_PORT_TX_LANE2_SKEW(val) vxge_vBIT(val, 40, 4)
+-#define VXGE_HW_XGXS_CFG_PORT_TX_LANE3_SKEW(val) vxge_vBIT(val, 44, 4)
+-/*0x09c40*/	u64	xgxs_rxber_cfg_port[2];
+-#define VXGE_HW_XGXS_RXBER_CFG_PORT_INTERVAL_DUR(val) vxge_vBIT(val, 0, 4)
+-#define	VXGE_HW_XGXS_RXBER_CFG_PORT_RXGXS_INTERVAL_CNT(val) \
+-							vxge_vBIT(val, 16, 48)
+-/*0x09c50*/	u64	xgxs_rxber_status_port[2];
+-#define	VXGE_HW_XGXS_RXBER_STATUS_PORT_RXGXS_RXGXS_LANE_A_ERR_CNT(val)	\
+-							vxge_vBIT(val, 0, 16)
+-#define	VXGE_HW_XGXS_RXBER_STATUS_PORT_RXGXS_RXGXS_LANE_B_ERR_CNT(val)	\
+-							vxge_vBIT(val, 16, 16)
+-#define	VXGE_HW_XGXS_RXBER_STATUS_PORT_RXGXS_RXGXS_LANE_C_ERR_CNT(val)	\
+-							vxge_vBIT(val, 32, 16)
+-#define	VXGE_HW_XGXS_RXBER_STATUS_PORT_RXGXS_RXGXS_LANE_D_ERR_CNT(val)	\
+-							vxge_vBIT(val, 48, 16)
+-/*0x09c60*/	u64	xgxs_status_port[2];
+-#define VXGE_HW_XGXS_STATUS_PORT_XMACJ_PCS_TX_ACTIVITY(val) vxge_vBIT(val, 0, 4)
+-#define VXGE_HW_XGXS_STATUS_PORT_XMACJ_PCS_RX_ACTIVITY(val) vxge_vBIT(val, 4, 4)
+-#define	VXGE_HW_XGXS_STATUS_PORT_XMACJ_PCS_CTC_FIFO_ERR	BIT(11)
+-#define VXGE_HW_XGXS_STATUS_PORT_XMACJ_PCS_BYTE_SYNC_LOST(val) \
+-							vxge_vBIT(val, 12, 4)
+-#define VXGE_HW_XGXS_STATUS_PORT_XMACJ_PCS_CTC_ERR(val) vxge_vBIT(val, 16, 4)
+-#define	VXGE_HW_XGXS_STATUS_PORT_XMACJ_PCS_ALIGNMENT_ERR	vxge_mBIT(23)
+-#define VXGE_HW_XGXS_STATUS_PORT_XMACJ_PCS_DEC_ERR(val) vxge_vBIT(val, 24, 8)
+-#define VXGE_HW_XGXS_STATUS_PORT_XMACJ_PCS_SKIP_INS_REQ(val) \
+-							vxge_vBIT(val, 32, 4)
+-#define VXGE_HW_XGXS_STATUS_PORT_XMACJ_PCS_SKIP_DEL_REQ(val) \
+-							vxge_vBIT(val, 36, 4)
+-/*0x09c70*/	u64	xgxs_pma_reset_port[2];
+-#define VXGE_HW_XGXS_PMA_RESET_PORT_SERDES_RESET(val) vxge_vBIT(val, 0, 8)
+-	u8	unused09c90[0x09c90-0x09c80];
+-
+-/*0x09c90*/	u64	xgxs_static_cfg_port[2];
+-#define	VXGE_HW_XGXS_STATIC_CFG_PORT_FW_CTRL_SERDES	vxge_mBIT(3)
+-	u8	unused09d40[0x09d40-0x09ca0];
+-
+-/*0x09d40*/	u64	xgxs_info_port[2];
+-#define VXGE_HW_XGXS_INFO_PORT_XMACJ_INFO_0(val) vxge_vBIT(val, 0, 32)
+-#define VXGE_HW_XGXS_INFO_PORT_XMACJ_INFO_1(val) vxge_vBIT(val, 32, 32)
+-/*0x09d50*/	u64	ratemgmt_cfg_port[2];
+-#define VXGE_HW_RATEMGMT_CFG_PORT_MODE(val) vxge_vBIT(val, 2, 2)
+-#define	VXGE_HW_RATEMGMT_CFG_PORT_RATE	vxge_mBIT(7)
+-#define	VXGE_HW_RATEMGMT_CFG_PORT_FIXED_USE_FSM	vxge_mBIT(11)
+-#define	VXGE_HW_RATEMGMT_CFG_PORT_ANTP_USE_FSM	vxge_mBIT(15)
+-#define	VXGE_HW_RATEMGMT_CFG_PORT_ANBE_USE_FSM	vxge_mBIT(19)
+-/*0x09d60*/	u64	ratemgmt_status_port[2];
+-#define	VXGE_HW_RATEMGMT_STATUS_PORT_RATEMGMT_COMPLETE	vxge_mBIT(3)
+-#define	VXGE_HW_RATEMGMT_STATUS_PORT_RATEMGMT_RATE	vxge_mBIT(7)
+-#define	VXGE_HW_RATEMGMT_STATUS_PORT_RATEMGMT_MAC_MATCHES_PHY	vxge_mBIT(11)
+-	u8	unused09d80[0x09d80-0x09d70];
+-
+-/*0x09d80*/	u64	ratemgmt_fixed_cfg_port[2];
+-#define	VXGE_HW_RATEMGMT_FIXED_CFG_PORT_RESTART	vxge_mBIT(7)
+-/*0x09d90*/	u64	ratemgmt_antp_cfg_port[2];
+-#define	VXGE_HW_RATEMGMT_ANTP_CFG_PORT_RESTART	vxge_mBIT(7)
+-#define	VXGE_HW_RATEMGMT_ANTP_CFG_PORT_USE_PREAMBLE_EXT_PHY	vxge_mBIT(11)
+-#define	VXGE_HW_RATEMGMT_ANTP_CFG_PORT_USE_ACT_SEL	vxge_mBIT(15)
+-#define VXGE_HW_RATEMGMT_ANTP_CFG_PORT_T_RETRY_PHY_QUERY(val) \
+-							vxge_vBIT(val, 16, 4)
+-#define	VXGE_HW_RATEMGMT_ANTP_CFG_PORT_T_WAIT_MDIO_RESPONSE(val) \
+-							vxge_vBIT(val, 20, 4)
+-#define	VXGE_HW_RATEMGMT_ANTP_CFG_PORT_T_LDOWN_REAUTO_RESPONSE(val) \
+-							vxge_vBIT(val, 24, 4)
+-#define	VXGE_HW_RATEMGMT_ANTP_CFG_PORT_ADVERTISE_10G	vxge_mBIT(31)
+-#define	VXGE_HW_RATEMGMT_ANTP_CFG_PORT_ADVERTISE_1G	vxge_mBIT(35)
+-/*0x09da0*/	u64	ratemgmt_anbe_cfg_port[2];
+-#define	VXGE_HW_RATEMGMT_ANBE_CFG_PORT_RESTART	vxge_mBIT(7)
+-#define	VXGE_HW_RATEMGMT_ANBE_CFG_PORT_PARALLEL_DETECT_10G_KX4_ENABLE \
+-								vxge_mBIT(11)
+-#define	VXGE_HW_RATEMGMT_ANBE_CFG_PORT_PARALLEL_DETECT_1G_KX_ENABLE \
+-								vxge_mBIT(15)
+-#define VXGE_HW_RATEMGMT_ANBE_CFG_PORT_T_SYNC_10G_KX4(val) vxge_vBIT(val, 16, 4)
+-#define VXGE_HW_RATEMGMT_ANBE_CFG_PORT_T_SYNC_1G_KX(val) vxge_vBIT(val, 20, 4)
+-#define VXGE_HW_RATEMGMT_ANBE_CFG_PORT_T_DME_EXCHANGE(val) vxge_vBIT(val, 24, 4)
+-#define	VXGE_HW_RATEMGMT_ANBE_CFG_PORT_ADVERTISE_10G_KX4	vxge_mBIT(31)
+-#define	VXGE_HW_RATEMGMT_ANBE_CFG_PORT_ADVERTISE_1G_KX	vxge_mBIT(35)
+-/*0x09db0*/	u64	anbe_cfg_port[2];
+-#define VXGE_HW_ANBE_CFG_PORT_RESET_CFG_REGS(val) vxge_vBIT(val, 0, 8)
+-#define VXGE_HW_ANBE_CFG_PORT_ALIGN_10G_KX4_OVERRIDE(val) vxge_vBIT(val, 10, 2)
+-#define VXGE_HW_ANBE_CFG_PORT_SYNC_1G_KX_OVERRIDE(val) vxge_vBIT(val, 14, 2)
+-/*0x09dc0*/	u64	anbe_mgr_ctrl_port[2];
+-#define	VXGE_HW_ANBE_MGR_CTRL_PORT_WE	vxge_mBIT(3)
+-#define	VXGE_HW_ANBE_MGR_CTRL_PORT_STROBE	vxge_mBIT(7)
+-#define VXGE_HW_ANBE_MGR_CTRL_PORT_ADDR(val) vxge_vBIT(val, 15, 9)
+-#define VXGE_HW_ANBE_MGR_CTRL_PORT_DATA(val) vxge_vBIT(val, 32, 32)
+-	u8	unused09de0[0x09de0-0x09dd0];
+-
+-/*0x09de0*/	u64	anbe_fw_mstr_port[2];
+-#define	VXGE_HW_ANBE_FW_MSTR_PORT_CONNECT_BEAN_TO_SERDES	vxge_mBIT(3)
+-#define	VXGE_HW_ANBE_FW_MSTR_PORT_TX_ZEROES_TO_SERDES	vxge_mBIT(7)
+-/*0x09df0*/	u64	anbe_hwfsm_gen_status_port[2];
+-#define	VXGE_HW_ANBE_HWFSM_GEN_STATUS_PORT_RATEMGMT_CHOSE_10G_KX4_USING_PD \
+-							vxge_mBIT(3)
+-#define	VXGE_HW_ANBE_HWFSM_GEN_STATUS_PORT_RATEMGMT_CHOSE_10G_KX4_USING_DME \
+-							vxge_mBIT(7)
+-#define	VXGE_HW_ANBE_HWFSM_GEN_STATUS_PORT_RATEMGMT_CHOSE_1G_KX_USING_PD \
+-							vxge_mBIT(11)
+-#define	VXGE_HW_ANBE_HWFSM_GEN_STATUS_PORT_RATEMGMT_CHOSE_1G_KX_USING_DME \
+-							vxge_mBIT(15)
+-#define	VXGE_HW_ANBE_HWFSM_GEN_STATUS_PORT_RATEMGMT_ANBEFSM_STATE(val)	\
+-							vxge_vBIT(val, 18, 6)
+-#define	VXGE_HW_ANBE_HWFSM_GEN_STATUS_PORT_RATEMGMT_BEAN_NEXT_PAGE_RECEIVED \
+-							vxge_mBIT(27)
+-#define	VXGE_HW_ANBE_HWFSM_GEN_STATUS_PORT_RATEMGMT_BEAN_BASE_PAGE_RECEIVED \
+-							vxge_mBIT(35)
+-#define	VXGE_HW_ANBE_HWFSM_GEN_STATUS_PORT_RATEMGMT_BEAN_AUTONEG_COMPLETE \
+-							vxge_mBIT(39)
+-#define	VXGE_HW_ANBE_HWFSM_GEN_STATUS_PORT_RATEMGMT_UNEXPECTED_NP_BEFORE_BP \
+-							vxge_mBIT(43)
+-#define	\
+-VXGE_HW_ANBE_HWFSM_GEN_STATUS_PORT_RATEMGMT_UNEXPECTED_AN_COMPLETE_BEFORE_BP \
+-							vxge_mBIT(47)
+-#define	\
+-VXGE_HW_ANBE_HWFSM_GEN_STATUS_PORT_RATEMGMT_UNEXPECTED_AN_COMPLETE_BEFORE_NP \
+-vxge_mBIT(51)
+-#define	\
+-VXGE_HW_ANBE_HWFSM_GEN_STATUS_PORT_RATEMGMT_UNEXPECTED_MODE_WHEN_AN_COMPLETE \
+-							vxge_mBIT(55)
+-#define	VXGE_HW_ANBE_HWFSM_GEN_STATUS_PORT_RATEMGMT_COUNT_BP(val) \
+-							vxge_vBIT(val, 56, 4)
+-#define	VXGE_HW_ANBE_HWFSM_GEN_STATUS_PORT_RATEMGMT_COUNT_NP(val) \
+-							vxge_vBIT(val, 60, 4)
+-/*0x09e00*/	u64	anbe_hwfsm_bp_status_port[2];
+-#define	VXGE_HW_ANBE_HWFSM_BP_STATUS_PORT_RATEMGMT_BP_FEC_ENABLE \
+-							vxge_mBIT(32)
+-#define	VXGE_HW_ANBE_HWFSM_BP_STATUS_PORT_RATEMGMT_BP_FEC_ABILITY \
+-							vxge_mBIT(33)
+-#define	VXGE_HW_ANBE_HWFSM_BP_STATUS_PORT_RATEMGMT_BP_10G_KR_CAPABLE \
+-							vxge_mBIT(40)
+-#define	VXGE_HW_ANBE_HWFSM_BP_STATUS_PORT_RATEMGMT_BP_10G_KX4_CAPABLE \
+-							vxge_mBIT(41)
+-#define	VXGE_HW_ANBE_HWFSM_BP_STATUS_PORT_RATEMGMT_BP_1G_KX_CAPABLE \
+-							vxge_mBIT(42)
+-#define	VXGE_HW_ANBE_HWFSM_BP_STATUS_PORT_RATEMGMT_BP_TX_NONCE(val)	\
+-							vxge_vBIT(val, 43, 5)
+-#define	VXGE_HW_ANBE_HWFSM_BP_STATUS_PORT_RATEMGMT_BP_NP	vxge_mBIT(48)
+-#define	VXGE_HW_ANBE_HWFSM_BP_STATUS_PORT_RATEMGMT_BP_ACK	vxge_mBIT(49)
+-#define	VXGE_HW_ANBE_HWFSM_BP_STATUS_PORT_RATEMGMT_BP_REMOTE_FAULT \
+-							vxge_mBIT(50)
+-#define	VXGE_HW_ANBE_HWFSM_BP_STATUS_PORT_RATEMGMT_BP_ASM_DIR	vxge_mBIT(51)
+-#define	VXGE_HW_ANBE_HWFSM_BP_STATUS_PORT_RATEMGMT_BP_PAUSE	vxge_mBIT(53)
+-#define	VXGE_HW_ANBE_HWFSM_BP_STATUS_PORT_RATEMGMT_BP_ECHOED_NONCE(val) \
+-							vxge_vBIT(val, 54, 5)
+-#define	VXGE_HW_ANBE_HWFSM_BP_STATUS_PORT_RATEMGMT_BP_SELECTOR_FIELD(val) \
+-							vxge_vBIT(val, 59, 5)
+-/*0x09e10*/	u64	anbe_hwfsm_np_status_port[2];
+-#define	VXGE_HW_ANBE_HWFSM_NP_STATUS_PORT_RATEMGMT_NP_BITS_47_TO_32(val) \
+-							vxge_vBIT(val, 16, 16)
+-#define	VXGE_HW_ANBE_HWFSM_NP_STATUS_PORT_RATEMGMT_NP_BITS_31_TO_0(val) \
+-							vxge_vBIT(val, 32, 32)
+-	u8	unused09e30[0x09e30-0x09e20];
+-
+-/*0x09e30*/	u64	antp_gen_cfg_port[2];
+-/*0x09e40*/	u64	antp_hwfsm_gen_status_port[2];
+-#define	VXGE_HW_ANTP_HWFSM_GEN_STATUS_PORT_RATEMGMT_CHOSE_10G	vxge_mBIT(3)
+-#define	VXGE_HW_ANTP_HWFSM_GEN_STATUS_PORT_RATEMGMT_CHOSE_1G	vxge_mBIT(7)
+-#define	VXGE_HW_ANTP_HWFSM_GEN_STATUS_PORT_RATEMGMT_ANTPFSM_STATE(val)	\
+-							vxge_vBIT(val, 10, 6)
+-#define	VXGE_HW_ANTP_HWFSM_GEN_STATUS_PORT_RATEMGMT_AUTONEG_COMPLETE \
+-								vxge_mBIT(23)
+-#define	VXGE_HW_ANTP_HWFSM_GEN_STATUS_PORT_RATEMGMT_UNEXPECTED_NO_LP_XNP \
+-							vxge_mBIT(27)
+-#define	VXGE_HW_ANTP_HWFSM_GEN_STATUS_PORT_RATEMGMT_GOT_LP_XNP	vxge_mBIT(31)
+-#define	VXGE_HW_ANTP_HWFSM_GEN_STATUS_PORT_RATEMGMT_UNEXPECTED_MESSAGE_CODE \
+-							vxge_mBIT(35)
+-#define	VXGE_HW_ANTP_HWFSM_GEN_STATUS_PORT_RATEMGMT_UNEXPECTED_NO_HCD \
+-							vxge_mBIT(43)
+-#define	VXGE_HW_ANTP_HWFSM_GEN_STATUS_PORT_RATEMGMT_FOUND_HCD	vxge_mBIT(47)
+-#define	VXGE_HW_ANTP_HWFSM_GEN_STATUS_PORT_RATEMGMT_UNEXPECTED_INVALID_RATE \
+-							vxge_mBIT(51)
+-#define	VXGE_HW_ANTP_HWFSM_GEN_STATUS_PORT_RATEMGMT_VALID_RATE	vxge_mBIT(55)
+-#define	VXGE_HW_ANTP_HWFSM_GEN_STATUS_PORT_RATEMGMT_PERSISTENT_LDOWN \
+-							vxge_mBIT(59)
+-/*0x09e50*/	u64	antp_hwfsm_bp_status_port[2];
+-#define	VXGE_HW_ANTP_HWFSM_BP_STATUS_PORT_RATEMGMT_BP_NP	vxge_mBIT(0)
+-#define	VXGE_HW_ANTP_HWFSM_BP_STATUS_PORT_RATEMGMT_BP_ACK	vxge_mBIT(1)
+-#define	VXGE_HW_ANTP_HWFSM_BP_STATUS_PORT_RATEMGMT_BP_RF	vxge_mBIT(2)
+-#define	VXGE_HW_ANTP_HWFSM_BP_STATUS_PORT_RATEMGMT_BP_XNP	vxge_mBIT(3)
+-#define	VXGE_HW_ANTP_HWFSM_BP_STATUS_PORT_RATEMGMT_BP_ABILITY_FIELD(val) \
+-							vxge_vBIT(val, 4, 7)
+-#define	VXGE_HW_ANTP_HWFSM_BP_STATUS_PORT_RATEMGMT_BP_SELECTOR_FIELD(val) \
+-							vxge_vBIT(val, 11, 5)
+-/*0x09e60*/	u64	antp_hwfsm_xnp_status_port[2];
+-#define	VXGE_HW_ANTP_HWFSM_XNP_STATUS_PORT_RATEMGMT_XNP_NP	vxge_mBIT(0)
+-#define	VXGE_HW_ANTP_HWFSM_XNP_STATUS_PORT_RATEMGMT_XNP_ACK	vxge_mBIT(1)
+-#define	VXGE_HW_ANTP_HWFSM_XNP_STATUS_PORT_RATEMGMT_XNP_MP	vxge_mBIT(2)
+-#define	VXGE_HW_ANTP_HWFSM_XNP_STATUS_PORT_RATEMGMT_XNP_ACK2	vxge_mBIT(3)
+-#define	VXGE_HW_ANTP_HWFSM_XNP_STATUS_PORT_RATEMGMT_XNP_TOGGLE	vxge_mBIT(4)
+-#define	VXGE_HW_ANTP_HWFSM_XNP_STATUS_PORT_RATEMGMT_XNP_MESSAGE_CODE(val) \
+-							vxge_vBIT(val, 5, 11)
+-#define	VXGE_HW_ANTP_HWFSM_XNP_STATUS_PORT_RATEMGMT_XNP_UNF_CODE_FIELD1(val) \
+-							vxge_vBIT(val, 16, 16)
+-#define	VXGE_HW_ANTP_HWFSM_XNP_STATUS_PORT_RATEMGMT_XNP_UNF_CODE_FIELD2(val) \
+-							vxge_vBIT(val, 32, 16)
+-/*0x09e70*/	u64	mdio_mgr_access_port[2];
+-#define	VXGE_HW_MDIO_MGR_ACCESS_PORT_STROBE_ONE	BIT(3)
+-#define VXGE_HW_MDIO_MGR_ACCESS_PORT_OP_TYPE(val) vxge_vBIT(val, 5, 3)
+-#define VXGE_HW_MDIO_MGR_ACCESS_PORT_DEVAD(val) vxge_vBIT(val, 11, 5)
+-#define VXGE_HW_MDIO_MGR_ACCESS_PORT_ADDR(val) vxge_vBIT(val, 16, 16)
+-#define VXGE_HW_MDIO_MGR_ACCESS_PORT_DATA(val) vxge_vBIT(val, 32, 16)
+-#define VXGE_HW_MDIO_MGR_ACCESS_PORT_ST_PATTERN(val) vxge_vBIT(val, 49, 2)
+-#define	VXGE_HW_MDIO_MGR_ACCESS_PORT_PREAMBLE	vxge_mBIT(51)
+-#define VXGE_HW_MDIO_MGR_ACCESS_PORT_PRTAD(val) vxge_vBIT(val, 55, 5)
+-#define	VXGE_HW_MDIO_MGR_ACCESS_PORT_STROBE_TWO	vxge_mBIT(63)
+-	u8	unused0a200[0x0a200-0x09e80];
+-/*0x0a200*/	u64	xmac_vsport_choices_vh[17];
+-#define VXGE_HW_XMAC_VSPORT_CHOICES_VH_VSPORT_VECTOR(val) vxge_vBIT(val, 0, 17)
+-	u8	unused0a400[0x0a400-0x0a288];
+-
+-/*0x0a400*/	u64	rx_thresh_cfg_vp[17];
+-#define VXGE_HW_RX_THRESH_CFG_VP_PAUSE_LOW_THR(val) vxge_vBIT(val, 0, 8)
+-#define VXGE_HW_RX_THRESH_CFG_VP_PAUSE_HIGH_THR(val) vxge_vBIT(val, 8, 8)
+-#define VXGE_HW_RX_THRESH_CFG_VP_RED_THR_0(val) vxge_vBIT(val, 16, 8)
+-#define VXGE_HW_RX_THRESH_CFG_VP_RED_THR_1(val) vxge_vBIT(val, 24, 8)
+-#define VXGE_HW_RX_THRESH_CFG_VP_RED_THR_2(val) vxge_vBIT(val, 32, 8)
+-#define VXGE_HW_RX_THRESH_CFG_VP_RED_THR_3(val) vxge_vBIT(val, 40, 8)
+-	u8	unused0ac90[0x0ac90-0x0a488];
+-} __packed;
+-
+-/*VXGE_HW_SRPCIM_REGS_H*/
+-struct vxge_hw_srpcim_reg {
+-
+-/*0x00000*/	u64	tim_mr2sr_resource_assignment_vh;
+-#define	VXGE_HW_TIM_MR2SR_RESOURCE_ASSIGNMENT_VH_BMAP_ROOT(val) \
+-							vxge_vBIT(val, 0, 32)
+-	u8	unused00100[0x00100-0x00008];
+-
+-/*0x00100*/	u64	srpcim_pcipif_int_status;
+-#define	VXGE_HW_SRPCIM_PCIPIF_INT_STATUS_MRPCIM_MSG_MRPCIM_MSG_INT	BIT(3)
+-#define	VXGE_HW_SRPCIM_PCIPIF_INT_STATUS_VPATH_MSG_VPATH_MSG_INT	BIT(7)
+-#define	VXGE_HW_SRPCIM_PCIPIF_INT_STATUS_SRPCIM_SPARE_R1_SRPCIM_SPARE_R1_INT \
+-									BIT(11)
+-/*0x00108*/	u64	srpcim_pcipif_int_mask;
+-/*0x00110*/	u64	mrpcim_msg_reg;
+-#define	VXGE_HW_MRPCIM_MSG_REG_SWIF_MRPCIM_TO_SRPCIM_RMSG_INT	BIT(3)
+-/*0x00118*/	u64	mrpcim_msg_mask;
+-/*0x00120*/	u64	mrpcim_msg_alarm;
+-/*0x00128*/	u64	vpath_msg_reg;
+-#define	VXGE_HW_VPATH_MSG_REG_SWIF_VPATH0_TO_SRPCIM_RMSG_INT	BIT(0)
+-#define	VXGE_HW_VPATH_MSG_REG_SWIF_VPATH1_TO_SRPCIM_RMSG_INT	BIT(1)
+-#define	VXGE_HW_VPATH_MSG_REG_SWIF_VPATH2_TO_SRPCIM_RMSG_INT	BIT(2)
+-#define	VXGE_HW_VPATH_MSG_REG_SWIF_VPATH3_TO_SRPCIM_RMSG_INT	BIT(3)
+-#define	VXGE_HW_VPATH_MSG_REG_SWIF_VPATH4_TO_SRPCIM_RMSG_INT	BIT(4)
+-#define	VXGE_HW_VPATH_MSG_REG_SWIF_VPATH5_TO_SRPCIM_RMSG_INT	BIT(5)
+-#define	VXGE_HW_VPATH_MSG_REG_SWIF_VPATH6_TO_SRPCIM_RMSG_INT	BIT(6)
+-#define	VXGE_HW_VPATH_MSG_REG_SWIF_VPATH7_TO_SRPCIM_RMSG_INT	BIT(7)
+-#define	VXGE_HW_VPATH_MSG_REG_SWIF_VPATH8_TO_SRPCIM_RMSG_INT	BIT(8)
+-#define	VXGE_HW_VPATH_MSG_REG_SWIF_VPATH9_TO_SRPCIM_RMSG_INT	BIT(9)
+-#define	VXGE_HW_VPATH_MSG_REG_SWIF_VPATH10_TO_SRPCIM_RMSG_INT	BIT(10)
+-#define	VXGE_HW_VPATH_MSG_REG_SWIF_VPATH11_TO_SRPCIM_RMSG_INT	BIT(11)
+-#define	VXGE_HW_VPATH_MSG_REG_SWIF_VPATH12_TO_SRPCIM_RMSG_INT	BIT(12)
+-#define	VXGE_HW_VPATH_MSG_REG_SWIF_VPATH13_TO_SRPCIM_RMSG_INT	BIT(13)
+-#define	VXGE_HW_VPATH_MSG_REG_SWIF_VPATH14_TO_SRPCIM_RMSG_INT	BIT(14)
+-#define	VXGE_HW_VPATH_MSG_REG_SWIF_VPATH15_TO_SRPCIM_RMSG_INT	BIT(15)
+-#define	VXGE_HW_VPATH_MSG_REG_SWIF_VPATH16_TO_SRPCIM_RMSG_INT	BIT(16)
+-/*0x00130*/	u64	vpath_msg_mask;
+-/*0x00138*/	u64	vpath_msg_alarm;
+-	u8	unused00160[0x00160-0x00140];
+-
+-/*0x00160*/	u64	srpcim_to_mrpcim_wmsg;
+-#define	VXGE_HW_SRPCIM_TO_MRPCIM_WMSG_SRPCIM_TO_MRPCIM_WMSG(val) \
+-							vxge_vBIT(val, 0, 64)
+-/*0x00168*/	u64	srpcim_to_mrpcim_wmsg_trig;
+-#define	VXGE_HW_SRPCIM_TO_MRPCIM_WMSG_TRIG_SRPCIM_TO_MRPCIM_WMSG_TRIG	BIT(0)
+-/*0x00170*/	u64	mrpcim_to_srpcim_rmsg;
+-#define	VXGE_HW_MRPCIM_TO_SRPCIM_RMSG_SWIF_MRPCIM_TO_SRPCIM_RMSG(val) \
+-							vxge_vBIT(val, 0, 64)
+-/*0x00178*/	u64	vpath_to_srpcim_rmsg_sel;
+-#define	VXGE_HW_VPATH_TO_SRPCIM_RMSG_SEL_VPATH_TO_SRPCIM_RMSG_SEL(val) \
+-							vxge_vBIT(val, 0, 5)
+-/*0x00180*/	u64	vpath_to_srpcim_rmsg;
+-#define	VXGE_HW_VPATH_TO_SRPCIM_RMSG_SWIF_VPATH_TO_SRPCIM_RMSG(val) \
+-							vxge_vBIT(val, 0, 64)
+-	u8	unused00200[0x00200-0x00188];
+-
+-/*0x00200*/	u64	srpcim_general_int_status;
+-#define	VXGE_HW_SRPCIM_GENERAL_INT_STATUS_PIC_INT	BIT(0)
+-#define	VXGE_HW_SRPCIM_GENERAL_INT_STATUS_PCI_INT	BIT(3)
+-#define	VXGE_HW_SRPCIM_GENERAL_INT_STATUS_XMAC_INT	BIT(7)
+-	u8	unused00210[0x00210-0x00208];
+-
+-/*0x00210*/	u64	srpcim_general_int_mask;
+-#define	VXGE_HW_SRPCIM_GENERAL_INT_MASK_PIC_INT	BIT(0)
+-#define	VXGE_HW_SRPCIM_GENERAL_INT_MASK_PCI_INT	BIT(3)
+-#define	VXGE_HW_SRPCIM_GENERAL_INT_MASK_XMAC_INT	BIT(7)
+-	u8	unused00220[0x00220-0x00218];
+-
+-/*0x00220*/	u64	srpcim_ppif_int_status;
+-
+-/*0x00228*/	u64	srpcim_ppif_int_mask;
+-/*0x00230*/	u64	srpcim_gen_errors_reg;
+-#define	VXGE_HW_SRPCIM_GEN_ERRORS_REG_PCICONFIG_PF_STATUS_ERR	BIT(3)
+-#define	VXGE_HW_SRPCIM_GEN_ERRORS_REG_PCICONFIG_PF_UNCOR_ERR	BIT(7)
+-#define	VXGE_HW_SRPCIM_GEN_ERRORS_REG_PCICONFIG_PF_COR_ERR	BIT(11)
+-#define	VXGE_HW_SRPCIM_GEN_ERRORS_REG_INTCTRL_SCHED_INT	BIT(15)
+-#define	VXGE_HW_SRPCIM_GEN_ERRORS_REG_INI_SERR_DET	BIT(19)
+-#define	VXGE_HW_SRPCIM_GEN_ERRORS_REG_TGT_PF_ILLEGAL_ACCESS	BIT(23)
+-/*0x00238*/	u64	srpcim_gen_errors_mask;
+-/*0x00240*/	u64	srpcim_gen_errors_alarm;
+-/*0x00248*/	u64	mrpcim_to_srpcim_alarm_reg;
+-#define	VXGE_HW_MRPCIM_TO_SRPCIM_ALARM_REG_PPIF_MRPCIM_TO_SRPCIM_ALARM	BIT(3)
+-/*0x00250*/	u64	mrpcim_to_srpcim_alarm_mask;
+-/*0x00258*/	u64	mrpcim_to_srpcim_alarm_alarm;
+-/*0x00260*/	u64	vpath_to_srpcim_alarm_reg;
+-
+-/*0x00268*/	u64	vpath_to_srpcim_alarm_mask;
+-/*0x00270*/	u64	vpath_to_srpcim_alarm_alarm;
+-	u8	unused00280[0x00280-0x00278];
+-
+-/*0x00280*/	u64	pf_sw_reset;
+-#define VXGE_HW_PF_SW_RESET_PF_SW_RESET(val) vxge_vBIT(val, 0, 8)
+-/*0x00288*/	u64	srpcim_general_cfg1;
+-#define	VXGE_HW_SRPCIM_GENERAL_CFG1_BOOT_BYTE_SWAPEN	BIT(19)
+-#define	VXGE_HW_SRPCIM_GENERAL_CFG1_BOOT_BIT_FLIPEN	BIT(23)
+-#define	VXGE_HW_SRPCIM_GENERAL_CFG1_MSIX_ADDR_SWAPEN	BIT(27)
+-#define	VXGE_HW_SRPCIM_GENERAL_CFG1_MSIX_ADDR_FLIPEN	BIT(31)
+-#define	VXGE_HW_SRPCIM_GENERAL_CFG1_MSIX_DATA_SWAPEN	BIT(35)
+-#define	VXGE_HW_SRPCIM_GENERAL_CFG1_MSIX_DATA_FLIPEN	BIT(39)
+-/*0x00290*/	u64	srpcim_interrupt_cfg1;
+-#define VXGE_HW_SRPCIM_INTERRUPT_CFG1_ALARM_MAP_TO_MSG(val) vxge_vBIT(val, 1, 7)
+-#define VXGE_HW_SRPCIM_INTERRUPT_CFG1_TRAFFIC_CLASS(val) vxge_vBIT(val, 9, 3)
+-	u8	unused002a8[0x002a8-0x00298];
+-
+-/*0x002a8*/	u64	srpcim_clear_msix_mask;
+-#define	VXGE_HW_SRPCIM_CLEAR_MSIX_MASK_SRPCIM_CLEAR_MSIX_MASK	BIT(0)
+-/*0x002b0*/	u64	srpcim_set_msix_mask;
+-#define	VXGE_HW_SRPCIM_SET_MSIX_MASK_SRPCIM_SET_MSIX_MASK	BIT(0)
+-/*0x002b8*/	u64	srpcim_clr_msix_one_shot;
+-#define	VXGE_HW_SRPCIM_CLR_MSIX_ONE_SHOT_SRPCIM_CLR_MSIX_ONE_SHOT	BIT(0)
+-/*0x002c0*/	u64	srpcim_rst_in_prog;
+-#define	VXGE_HW_SRPCIM_RST_IN_PROG_SRPCIM_RST_IN_PROG	BIT(7)
+-/*0x002c8*/	u64	srpcim_reg_modified;
+-#define	VXGE_HW_SRPCIM_REG_MODIFIED_SRPCIM_REG_MODIFIED	BIT(7)
+-/*0x002d0*/	u64	tgt_pf_illegal_access;
+-#define VXGE_HW_TGT_PF_ILLEGAL_ACCESS_SWIF_REGION(val) vxge_vBIT(val, 1, 7)
+-/*0x002d8*/	u64	srpcim_msix_status;
+-#define	VXGE_HW_SRPCIM_MSIX_STATUS_INTCTL_SRPCIM_MSIX_MASK	BIT(3)
+-#define	VXGE_HW_SRPCIM_MSIX_STATUS_INTCTL_SRPCIM_MSIX_PENDING_VECTOR	BIT(7)
+-	u8	unused00880[0x00880-0x002e0];
+-
+-/*0x00880*/	u64	xgmac_sr_int_status;
+-#define	VXGE_HW_XGMAC_SR_INT_STATUS_ASIC_NTWK_SR_ERR_ASIC_NTWK_SR_INT	BIT(3)
+-/*0x00888*/	u64	xgmac_sr_int_mask;
+-/*0x00890*/	u64	asic_ntwk_sr_err_reg;
+-#define	VXGE_HW_ASIC_NTWK_SR_ERR_REG_XMACJ_NTWK_SUSTAINED_FAULT	BIT(3)
+-#define	VXGE_HW_ASIC_NTWK_SR_ERR_REG_XMACJ_NTWK_SUSTAINED_OK	BIT(7)
+-#define	VXGE_HW_ASIC_NTWK_SR_ERR_REG_XMACJ_NTWK_SUSTAINED_FAULT_OCCURRED \
+-									BIT(11)
+-#define	VXGE_HW_ASIC_NTWK_SR_ERR_REG_XMACJ_NTWK_SUSTAINED_OK_OCCURRED	BIT(15)
+-/*0x00898*/	u64	asic_ntwk_sr_err_mask;
+-/*0x008a0*/	u64	asic_ntwk_sr_err_alarm;
+-	u8	unused008c0[0x008c0-0x008a8];
+-
+-/*0x008c0*/	u64	xmac_vsport_choices_sr_clone;
+-#define	VXGE_HW_XMAC_VSPORT_CHOICES_SR_CLONE_VSPORT_VECTOR(val) \
+-							vxge_vBIT(val, 0, 17)
+-	u8	unused00900[0x00900-0x008c8];
+-
+-/*0x00900*/	u64	mr_rqa_top_prty_for_vh;
+-#define	VXGE_HW_MR_RQA_TOP_PRTY_FOR_VH_RQA_TOP_PRTY_FOR_VH(val) \
+-							vxge_vBIT(val, 59, 5)
+-/*0x00908*/	u64	umq_vh_data_list_empty;
+-#define	VXGE_HW_UMQ_VH_DATA_LIST_EMPTY_ROCRC_UMQ_VH_DATA_LIST_EMPTY \
+-							BIT(0)
+-/*0x00910*/	u64	wde_cfg;
+-#define	VXGE_HW_WDE_CFG_NS0_FORCE_MWB_START	BIT(0)
+-#define	VXGE_HW_WDE_CFG_NS0_FORCE_MWB_END	BIT(1)
+-#define	VXGE_HW_WDE_CFG_NS0_FORCE_QB_START	BIT(2)
+-#define	VXGE_HW_WDE_CFG_NS0_FORCE_QB_END	BIT(3)
+-#define	VXGE_HW_WDE_CFG_NS0_FORCE_MPSB_START	BIT(4)
+-#define	VXGE_HW_WDE_CFG_NS0_FORCE_MPSB_END	BIT(5)
+-#define	VXGE_HW_WDE_CFG_NS0_MWB_OPT_EN	BIT(6)
+-#define	VXGE_HW_WDE_CFG_NS0_QB_OPT_EN	BIT(7)
+-#define	VXGE_HW_WDE_CFG_NS0_MPSB_OPT_EN	BIT(8)
+-#define	VXGE_HW_WDE_CFG_NS1_FORCE_MWB_START	BIT(9)
+-#define	VXGE_HW_WDE_CFG_NS1_FORCE_MWB_END	BIT(10)
+-#define	VXGE_HW_WDE_CFG_NS1_FORCE_QB_START	BIT(11)
+-#define	VXGE_HW_WDE_CFG_NS1_FORCE_QB_END	BIT(12)
+-#define	VXGE_HW_WDE_CFG_NS1_FORCE_MPSB_START	BIT(13)
+-#define	VXGE_HW_WDE_CFG_NS1_FORCE_MPSB_END	BIT(14)
+-#define	VXGE_HW_WDE_CFG_NS1_MWB_OPT_EN	BIT(15)
+-#define	VXGE_HW_WDE_CFG_NS1_QB_OPT_EN	BIT(16)
+-#define	VXGE_HW_WDE_CFG_NS1_MPSB_OPT_EN	BIT(17)
+-#define	VXGE_HW_WDE_CFG_DISABLE_QPAD_FOR_UNALIGNED_ADDR	BIT(19)
+-#define VXGE_HW_WDE_CFG_ALIGNMENT_PREFERENCE(val) vxge_vBIT(val, 30, 2)
+-#define VXGE_HW_WDE_CFG_MEM_WORD_SIZE(val) vxge_vBIT(val, 46, 2)
+-
+-} __packed;
+-
+-/*VXGE_HW_VPMGMT_REGS_H*/
+-struct vxge_hw_vpmgmt_reg {
+-
+-	u8	unused00040[0x00040-0x00000];
+-
+-/*0x00040*/	u64	vpath_to_func_map_cfg1;
+-#define	VXGE_HW_VPATH_TO_FUNC_MAP_CFG1_VPATH_TO_FUNC_MAP_CFG1(val) \
+-							vxge_vBIT(val, 3, 5)
+-/*0x00048*/	u64	vpath_is_first;
+-#define	VXGE_HW_VPATH_IS_FIRST_VPATH_IS_FIRST	vxge_mBIT(3)
+-/*0x00050*/	u64	srpcim_to_vpath_wmsg;
+-#define	VXGE_HW_SRPCIM_TO_VPATH_WMSG_SRPCIM_TO_VPATH_WMSG(val) \
+-							vxge_vBIT(val, 0, 64)
+-/*0x00058*/	u64	srpcim_to_vpath_wmsg_trig;
+-#define	VXGE_HW_SRPCIM_TO_VPATH_WMSG_TRIG_SRPCIM_TO_VPATH_WMSG_TRIG \
+-								vxge_mBIT(0)
+-	u8	unused00100[0x00100-0x00060];
+-
+-/*0x00100*/	u64	tim_vpath_assignment;
+-#define VXGE_HW_TIM_VPATH_ASSIGNMENT_BMAP_ROOT(val) vxge_vBIT(val, 0, 32)
+-	u8	unused00140[0x00140-0x00108];
+-
+-/*0x00140*/	u64	rqa_top_prty_for_vp;
+-#define VXGE_HW_RQA_TOP_PRTY_FOR_VP_RQA_TOP_PRTY_FOR_VP(val) \
+-							vxge_vBIT(val, 59, 5)
+-	u8	unused001c0[0x001c0-0x00148];
+-
+-/*0x001c0*/	u64	rxmac_rx_pa_cfg0_vpmgmt_clone;
+-#define	VXGE_HW_RXMAC_RX_PA_CFG0_VPMGMT_CLONE_IGNORE_FRAME_ERR	vxge_mBIT(3)
+-#define	VXGE_HW_RXMAC_RX_PA_CFG0_VPMGMT_CLONE_SUPPORT_SNAP_AB_N	vxge_mBIT(7)
+-#define	VXGE_HW_RXMAC_RX_PA_CFG0_VPMGMT_CLONE_SEARCH_FOR_HAO	vxge_mBIT(18)
+-#define	VXGE_HW_RXMAC_RX_PA_CFG0_VPMGMT_CLONE_SUPPORT_MOBILE_IPV6_HDRS \
+-								vxge_mBIT(19)
+-#define	VXGE_HW_RXMAC_RX_PA_CFG0_VPMGMT_CLONE_IPV6_STOP_SEARCHING \
+-								vxge_mBIT(23)
+-#define	VXGE_HW_RXMAC_RX_PA_CFG0_VPMGMT_CLONE_NO_PS_IF_UNKNOWN	vxge_mBIT(27)
+-#define	VXGE_HW_RXMAC_RX_PA_CFG0_VPMGMT_CLONE_SEARCH_FOR_ETYPE	vxge_mBIT(35)
+-#define	VXGE_HW_RXMAC_RX_PA_CFG0_VPMGMT_CLONE_TOSS_ANY_FRM_IF_L3_CSUM_ERR \
+-								vxge_mBIT(39)
+-#define	VXGE_HW_RXMAC_RX_PA_CFG0_VPMGMT_CLONE_TOSS_OFFLD_FRM_IF_L3_CSUM_ERR \
+-								vxge_mBIT(43)
+-#define	VXGE_HW_RXMAC_RX_PA_CFG0_VPMGMT_CLONE_TOSS_ANY_FRM_IF_L4_CSUM_ERR \
+-								vxge_mBIT(47)
+-#define	VXGE_HW_RXMAC_RX_PA_CFG0_VPMGMT_CLONE_TOSS_OFFLD_FRM_IF_L4_CSUM_ERR \
+-								vxge_mBIT(51)
+-#define	VXGE_HW_RXMAC_RX_PA_CFG0_VPMGMT_CLONE_TOSS_ANY_FRM_IF_RPA_ERR \
+-								vxge_mBIT(55)
+-#define	VXGE_HW_RXMAC_RX_PA_CFG0_VPMGMT_CLONE_TOSS_OFFLD_FRM_IF_RPA_ERR \
+-								vxge_mBIT(59)
+-#define	VXGE_HW_RXMAC_RX_PA_CFG0_VPMGMT_CLONE_JUMBO_SNAP_EN	vxge_mBIT(63)
+-/*0x001c8*/	u64	rts_mgr_cfg0_vpmgmt_clone;
+-#define	VXGE_HW_RTS_MGR_CFG0_VPMGMT_CLONE_RTS_DP_SP_PRIORITY	vxge_mBIT(3)
+-#define	VXGE_HW_RTS_MGR_CFG0_VPMGMT_CLONE_FLEX_L4PRTCL_VALUE(val) \
+-							vxge_vBIT(val, 24, 8)
+-#define	VXGE_HW_RTS_MGR_CFG0_VPMGMT_CLONE_ICMP_TRASH	vxge_mBIT(35)
+-#define	VXGE_HW_RTS_MGR_CFG0_VPMGMT_CLONE_TCPSYN_TRASH	vxge_mBIT(39)
+-#define	VXGE_HW_RTS_MGR_CFG0_VPMGMT_CLONE_ZL4PYLD_TRASH	vxge_mBIT(43)
+-#define	VXGE_HW_RTS_MGR_CFG0_VPMGMT_CLONE_L4PRTCL_TCP_TRASH	vxge_mBIT(47)
+-#define	VXGE_HW_RTS_MGR_CFG0_VPMGMT_CLONE_L4PRTCL_UDP_TRASH	vxge_mBIT(51)
+-#define	VXGE_HW_RTS_MGR_CFG0_VPMGMT_CLONE_L4PRTCL_FLEX_TRASH	vxge_mBIT(55)
+-#define	VXGE_HW_RTS_MGR_CFG0_VPMGMT_CLONE_IPFRAG_TRASH	vxge_mBIT(59)
+-/*0x001d0*/	u64	rts_mgr_criteria_priority_vpmgmt_clone;
+-#define	VXGE_HW_RTS_MGR_CRITERIA_PRIORITY_VPMGMT_CLONE_ETYPE(val) \
+-							vxge_vBIT(val, 5, 3)
+-#define	VXGE_HW_RTS_MGR_CRITERIA_PRIORITY_VPMGMT_CLONE_ICMP_TCPSYN(val) \
+-							vxge_vBIT(val, 9, 3)
+-#define	VXGE_HW_RTS_MGR_CRITERIA_PRIORITY_VPMGMT_CLONE_L4PN(val) \
+-							vxge_vBIT(val, 13, 3)
+-#define	VXGE_HW_RTS_MGR_CRITERIA_PRIORITY_VPMGMT_CLONE_RANGE_L4PN(val) \
+-							vxge_vBIT(val, 17, 3)
+-#define	VXGE_HW_RTS_MGR_CRITERIA_PRIORITY_VPMGMT_CLONE_RTH_IT(val) \
+-							vxge_vBIT(val, 21, 3)
+-#define VXGE_HW_RTS_MGR_CRITERIA_PRIORITY_VPMGMT_CLONE_DS(val) \
+-							vxge_vBIT(val, 25, 3)
+-#define	VXGE_HW_RTS_MGR_CRITERIA_PRIORITY_VPMGMT_CLONE_QOS(val) \
+-							vxge_vBIT(val, 29, 3)
+-#define	VXGE_HW_RTS_MGR_CRITERIA_PRIORITY_VPMGMT_CLONE_ZL4PYLD(val) \
+-							vxge_vBIT(val, 33, 3)
+-#define	VXGE_HW_RTS_MGR_CRITERIA_PRIORITY_VPMGMT_CLONE_L4PRTCL(val) \
+-							vxge_vBIT(val, 37, 3)
+-/*0x001d8*/	u64	rxmac_cfg0_port_vpmgmt_clone[3];
+-#define	VXGE_HW_RXMAC_CFG0_PORT_VPMGMT_CLONE_RMAC_EN	vxge_mBIT(3)
+-#define	VXGE_HW_RXMAC_CFG0_PORT_VPMGMT_CLONE_STRIP_FCS	vxge_mBIT(7)
+-#define	VXGE_HW_RXMAC_CFG0_PORT_VPMGMT_CLONE_DISCARD_PFRM	vxge_mBIT(11)
+-#define	VXGE_HW_RXMAC_CFG0_PORT_VPMGMT_CLONE_IGNORE_FCS_ERR	vxge_mBIT(15)
+-#define	VXGE_HW_RXMAC_CFG0_PORT_VPMGMT_CLONE_IGNORE_LONG_ERR	vxge_mBIT(19)
+-#define	VXGE_HW_RXMAC_CFG0_PORT_VPMGMT_CLONE_IGNORE_USIZED_ERR	vxge_mBIT(23)
+-#define	VXGE_HW_RXMAC_CFG0_PORT_VPMGMT_CLONE_IGNORE_LEN_MISMATCH \
+-								vxge_mBIT(27)
+-#define	VXGE_HW_RXMAC_CFG0_PORT_VPMGMT_CLONE_MAX_PYLD_LEN(val) \
+-							vxge_vBIT(val, 50, 14)
+-/*0x001f0*/	u64	rxmac_pause_cfg_port_vpmgmt_clone[3];
+-#define	VXGE_HW_RXMAC_PAUSE_CFG_PORT_VPMGMT_CLONE_GEN_EN	vxge_mBIT(3)
+-#define	VXGE_HW_RXMAC_PAUSE_CFG_PORT_VPMGMT_CLONE_RCV_EN	vxge_mBIT(7)
+-#define	VXGE_HW_RXMAC_PAUSE_CFG_PORT_VPMGMT_CLONE_ACCEL_SEND(val) \
+-							vxge_vBIT(val, 9, 3)
+-#define	VXGE_HW_RXMAC_PAUSE_CFG_PORT_VPMGMT_CLONE_DUAL_THR	vxge_mBIT(15)
+-#define	VXGE_HW_RXMAC_PAUSE_CFG_PORT_VPMGMT_CLONE_HIGH_PTIME(val) \
+-							vxge_vBIT(val, 20, 16)
+-#define	VXGE_HW_RXMAC_PAUSE_CFG_PORT_VPMGMT_CLONE_IGNORE_PF_FCS_ERR \
+-								vxge_mBIT(39)
+-#define	VXGE_HW_RXMAC_PAUSE_CFG_PORT_VPMGMT_CLONE_IGNORE_PF_LEN_ERR \
+-								vxge_mBIT(43)
+-#define	VXGE_HW_RXMAC_PAUSE_CFG_PORT_VPMGMT_CLONE_LIMITER_EN	vxge_mBIT(47)
+-#define	VXGE_HW_RXMAC_PAUSE_CFG_PORT_VPMGMT_CLONE_MAX_LIMIT(val) \
+-							vxge_vBIT(val, 48, 8)
+-#define	VXGE_HW_RXMAC_PAUSE_CFG_PORT_VPMGMT_CLONE_PERMIT_RATEMGMT_CTRL \
+-							vxge_mBIT(59)
+-	u8	unused00240[0x00240-0x00208];
+-
+-/*0x00240*/	u64	xmac_vsport_choices_vp;
+-#define VXGE_HW_XMAC_VSPORT_CHOICES_VP_VSPORT_VECTOR(val) vxge_vBIT(val, 0, 17)
+-	u8	unused00260[0x00260-0x00248];
+-
+-/*0x00260*/	u64	xgmac_gen_status_vpmgmt_clone;
+-#define	VXGE_HW_XGMAC_GEN_STATUS_VPMGMT_CLONE_XMACJ_NTWK_OK	vxge_mBIT(3)
+-#define	VXGE_HW_XGMAC_GEN_STATUS_VPMGMT_CLONE_XMACJ_NTWK_DATA_RATE \
+-								vxge_mBIT(11)
+-/*0x00268*/	u64	xgmac_status_port_vpmgmt_clone[2];
+-#define	VXGE_HW_XGMAC_STATUS_PORT_VPMGMT_CLONE_RMAC_REMOTE_FAULT \
+-								vxge_mBIT(3)
+-#define	VXGE_HW_XGMAC_STATUS_PORT_VPMGMT_CLONE_RMAC_LOCAL_FAULT	vxge_mBIT(7)
+-#define	VXGE_HW_XGMAC_STATUS_PORT_VPMGMT_CLONE_XMACJ_MAC_PHY_LAYER_AVAIL \
+-								vxge_mBIT(11)
+-#define	VXGE_HW_XGMAC_STATUS_PORT_VPMGMT_CLONE_XMACJ_PORT_OK	vxge_mBIT(15)
+-/*0x00278*/	u64	xmac_gen_cfg_vpmgmt_clone;
+-#define	VXGE_HW_XMAC_GEN_CFG_VPMGMT_CLONE_RATEMGMT_MAC_RATE_SEL(val) \
+-							vxge_vBIT(val, 2, 2)
+-#define	VXGE_HW_XMAC_GEN_CFG_VPMGMT_CLONE_TX_HEAD_DROP_WHEN_FAULT \
+-							vxge_mBIT(7)
+-#define	VXGE_HW_XMAC_GEN_CFG_VPMGMT_CLONE_FAULT_BEHAVIOUR	vxge_mBIT(27)
+-#define VXGE_HW_XMAC_GEN_CFG_VPMGMT_CLONE_PERIOD_NTWK_UP(val) \
+-							vxge_vBIT(val, 28, 4)
+-#define	VXGE_HW_XMAC_GEN_CFG_VPMGMT_CLONE_PERIOD_NTWK_DOWN(val) \
+-							vxge_vBIT(val, 32, 4)
+-/*0x00280*/	u64	xmac_timestamp_vpmgmt_clone;
+-#define	VXGE_HW_XMAC_TIMESTAMP_VPMGMT_CLONE_EN	vxge_mBIT(3)
+-#define VXGE_HW_XMAC_TIMESTAMP_VPMGMT_CLONE_USE_LINK_ID(val) \
+-							vxge_vBIT(val, 6, 2)
+-#define VXGE_HW_XMAC_TIMESTAMP_VPMGMT_CLONE_INTERVAL(val) vxge_vBIT(val, 12, 4)
+-#define	VXGE_HW_XMAC_TIMESTAMP_VPMGMT_CLONE_TIMER_RESTART	vxge_mBIT(19)
+-#define	VXGE_HW_XMAC_TIMESTAMP_VPMGMT_CLONE_XMACJ_ROLLOVER_CNT(val) \
+-							vxge_vBIT(val, 32, 16)
+-/*0x00288*/	u64	xmac_stats_gen_cfg_vpmgmt_clone;
+-#define	VXGE_HW_XMAC_STATS_GEN_CFG_VPMGMT_CLONE_PRTAGGR_CUM_TIMER(val) \
+-							vxge_vBIT(val, 4, 4)
+-#define	VXGE_HW_XMAC_STATS_GEN_CFG_VPMGMT_CLONE_VPATH_CUM_TIMER(val) \
+-							vxge_vBIT(val, 8, 4)
+-#define	VXGE_HW_XMAC_STATS_GEN_CFG_VPMGMT_CLONE_VLAN_HANDLING	vxge_mBIT(15)
+-/*0x00290*/	u64	xmac_cfg_port_vpmgmt_clone[3];
+-#define	VXGE_HW_XMAC_CFG_PORT_VPMGMT_CLONE_XGMII_LOOPBACK	vxge_mBIT(3)
+-#define	VXGE_HW_XMAC_CFG_PORT_VPMGMT_CLONE_XGMII_REVERSE_LOOPBACK \
+-								vxge_mBIT(7)
+-#define	VXGE_HW_XMAC_CFG_PORT_VPMGMT_CLONE_XGMII_TX_BEHAV	vxge_mBIT(11)
+-#define	VXGE_HW_XMAC_CFG_PORT_VPMGMT_CLONE_XGMII_RX_BEHAV	vxge_mBIT(15)
+-	u8	unused002c0[0x002c0-0x002a8];
+-
+-/*0x002c0*/	u64	txmac_gen_cfg0_vpmgmt_clone;
+-#define	VXGE_HW_TXMAC_GEN_CFG0_VPMGMT_CLONE_CHOSEN_TX_PORT	vxge_mBIT(7)
+-/*0x002c8*/	u64	txmac_cfg0_port_vpmgmt_clone[3];
+-#define	VXGE_HW_TXMAC_CFG0_PORT_VPMGMT_CLONE_TMAC_EN	vxge_mBIT(3)
+-#define	VXGE_HW_TXMAC_CFG0_PORT_VPMGMT_CLONE_APPEND_PAD	vxge_mBIT(7)
+-#define VXGE_HW_TXMAC_CFG0_PORT_VPMGMT_CLONE_PAD_BYTE(val) vxge_vBIT(val, 8, 8)
+-	u8	unused00300[0x00300-0x002e0];
+-
+-/*0x00300*/	u64	wol_mp_crc;
+-#define VXGE_HW_WOL_MP_CRC_CRC(val) vxge_vBIT(val, 0, 32)
+-#define	VXGE_HW_WOL_MP_CRC_RC_EN	vxge_mBIT(63)
+-/*0x00308*/	u64	wol_mp_mask_a;
+-#define VXGE_HW_WOL_MP_MASK_A_MASK(val) vxge_vBIT(val, 0, 64)
+-/*0x00310*/	u64	wol_mp_mask_b;
+-#define VXGE_HW_WOL_MP_MASK_B_MASK(val) vxge_vBIT(val, 0, 64)
+-	u8	unused00360[0x00360-0x00318];
+-
+-/*0x00360*/	u64	fau_pa_cfg_vpmgmt_clone;
+-#define	VXGE_HW_FAU_PA_CFG_VPMGMT_CLONE_REPL_L4_COMP_CSUM	vxge_mBIT(3)
+-#define	VXGE_HW_FAU_PA_CFG_VPMGMT_CLONE_REPL_L3_INCL_CF	vxge_mBIT(7)
+-#define	VXGE_HW_FAU_PA_CFG_VPMGMT_CLONE_REPL_L3_COMP_CSUM	vxge_mBIT(11)
+-/*0x00368*/	u64	rx_datapath_util_vp_clone;
+-#define	VXGE_HW_RX_DATAPATH_UTIL_VP_CLONE_FAU_RX_UTILIZATION(val) \
+-							vxge_vBIT(val, 7, 9)
+-#define	VXGE_HW_RX_DATAPATH_UTIL_VP_CLONE_RX_UTIL_CFG(val) \
+-							vxge_vBIT(val, 16, 4)
+-#define	VXGE_HW_RX_DATAPATH_UTIL_VP_CLONE_FAU_RX_FRAC_UTIL(val) \
+-							vxge_vBIT(val, 20, 4)
+-#define	VXGE_HW_RX_DATAPATH_UTIL_VP_CLONE_RX_PKT_WEIGHT(val) \
+-							vxge_vBIT(val, 24, 4)
+-	u8	unused00380[0x00380-0x00370];
+-
+-/*0x00380*/	u64	tx_datapath_util_vp_clone;
+-#define	VXGE_HW_TX_DATAPATH_UTIL_VP_CLONE_TPA_TX_UTILIZATION(val) \
+-							vxge_vBIT(val, 7, 9)
+-#define	VXGE_HW_TX_DATAPATH_UTIL_VP_CLONE_TX_UTIL_CFG(val) \
+-							vxge_vBIT(val, 16, 4)
+-#define	VXGE_HW_TX_DATAPATH_UTIL_VP_CLONE_TPA_TX_FRAC_UTIL(val) \
+-							vxge_vBIT(val, 20, 4)
+-#define	VXGE_HW_TX_DATAPATH_UTIL_VP_CLONE_TX_PKT_WEIGHT(val) \
+-							vxge_vBIT(val, 24, 4)
+-
+-} __packed;
+-
+-struct vxge_hw_vpath_reg {
+-
+-	u8	unused00300[0x00300];
+-
+-/*0x00300*/	u64	usdc_vpath;
+-#define VXGE_HW_USDC_VPATH_SGRP_ASSIGN(val) vxge_vBIT(val, 0, 32)
+-	u8	unused00a00[0x00a00-0x00308];
+-
+-/*0x00a00*/	u64	wrdma_alarm_status;
+-#define	VXGE_HW_WRDMA_ALARM_STATUS_PRC_ALARM_PRC_INT	vxge_mBIT(1)
+-/*0x00a08*/	u64	wrdma_alarm_mask;
+-	u8	unused00a30[0x00a30-0x00a10];
+-
+-/*0x00a30*/	u64	prc_alarm_reg;
+-#define	VXGE_HW_PRC_ALARM_REG_PRC_RING_BUMP	vxge_mBIT(0)
+-#define	VXGE_HW_PRC_ALARM_REG_PRC_RXDCM_SC_ERR	vxge_mBIT(1)
+-#define	VXGE_HW_PRC_ALARM_REG_PRC_RXDCM_SC_ABORT	vxge_mBIT(2)
+-#define	VXGE_HW_PRC_ALARM_REG_PRC_QUANTA_SIZE_ERR	vxge_mBIT(3)
+-/*0x00a38*/	u64	prc_alarm_mask;
+-/*0x00a40*/	u64	prc_alarm_alarm;
+-/*0x00a48*/	u64	prc_cfg1;
+-#define VXGE_HW_PRC_CFG1_RX_TIMER_VAL(val) vxge_vBIT(val, 3, 29)
+-#define	VXGE_HW_PRC_CFG1_TIM_RING_BUMP_INT_ENABLE	vxge_mBIT(34)
+-#define	VXGE_HW_PRC_CFG1_RTI_TINT_DISABLE	vxge_mBIT(35)
+-#define	VXGE_HW_PRC_CFG1_GREEDY_RETURN	vxge_mBIT(36)
+-#define	VXGE_HW_PRC_CFG1_QUICK_SHOT	vxge_mBIT(37)
+-#define	VXGE_HW_PRC_CFG1_RX_TIMER_CI	vxge_mBIT(39)
+-#define VXGE_HW_PRC_CFG1_RESET_TIMER_ON_RXD_RET(val) vxge_vBIT(val, 40, 2)
+-	u8	unused00a60[0x00a60-0x00a50];
+-
+-/*0x00a60*/	u64	prc_cfg4;
+-#define	VXGE_HW_PRC_CFG4_IN_SVC	vxge_mBIT(7)
+-#define VXGE_HW_PRC_CFG4_RING_MODE(val) vxge_vBIT(val, 14, 2)
+-#define	VXGE_HW_PRC_CFG4_RXD_NO_SNOOP	vxge_mBIT(22)
+-#define	VXGE_HW_PRC_CFG4_FRM_NO_SNOOP	vxge_mBIT(23)
+-#define	VXGE_HW_PRC_CFG4_RTH_DISABLE	vxge_mBIT(31)
+-#define	VXGE_HW_PRC_CFG4_IGNORE_OWNERSHIP	vxge_mBIT(32)
+-#define	VXGE_HW_PRC_CFG4_SIGNAL_BENIGN_OVFLW	vxge_mBIT(36)
+-#define	VXGE_HW_PRC_CFG4_BIMODAL_INTERRUPT	vxge_mBIT(37)
+-#define VXGE_HW_PRC_CFG4_BACKOFF_INTERVAL(val) vxge_vBIT(val, 40, 24)
+-/*0x00a68*/	u64	prc_cfg5;
+-#define VXGE_HW_PRC_CFG5_RXD0_ADD(val) vxge_vBIT(val, 0, 61)
+-/*0x00a70*/	u64	prc_cfg6;
+-#define	VXGE_HW_PRC_CFG6_FRM_PAD_EN	vxge_mBIT(0)
+-#define	VXGE_HW_PRC_CFG6_QSIZE_ALIGNED_RXD	vxge_mBIT(2)
+-#define	VXGE_HW_PRC_CFG6_DOORBELL_MODE_EN	vxge_mBIT(5)
+-#define	VXGE_HW_PRC_CFG6_L3_CPC_TRSFR_CODE_EN	vxge_mBIT(8)
+-#define	VXGE_HW_PRC_CFG6_L4_CPC_TRSFR_CODE_EN	vxge_mBIT(9)
+-#define VXGE_HW_PRC_CFG6_RXD_CRXDT(val) vxge_vBIT(val, 23, 9)
+-#define VXGE_HW_PRC_CFG6_RXD_SPAT(val) vxge_vBIT(val, 36, 9)
+-#define VXGE_HW_PRC_CFG6_GET_RXD_SPAT(val)	vxge_bVALn(val, 36, 9)
+-/*0x00a78*/	u64	prc_cfg7;
+-#define VXGE_HW_PRC_CFG7_SCATTER_MODE(val) vxge_vBIT(val, 6, 2)
+-#define	VXGE_HW_PRC_CFG7_SMART_SCAT_EN	vxge_mBIT(11)
+-#define	VXGE_HW_PRC_CFG7_RXD_NS_CHG_EN	vxge_mBIT(12)
+-#define	VXGE_HW_PRC_CFG7_NO_HDR_SEPARATION	vxge_mBIT(14)
+-#define VXGE_HW_PRC_CFG7_RXD_BUFF_SIZE_MASK(val) vxge_vBIT(val, 20, 4)
+-#define VXGE_HW_PRC_CFG7_BUFF_SIZE0_MASK(val) vxge_vBIT(val, 27, 5)
+-/*0x00a80*/	u64	tim_dest_addr;
+-#define VXGE_HW_TIM_DEST_ADDR_TIM_DEST_ADDR(val) vxge_vBIT(val, 0, 64)
+-/*0x00a88*/	u64	prc_rxd_doorbell;
+-#define VXGE_HW_PRC_RXD_DOORBELL_NEW_QW_CNT(val) vxge_vBIT(val, 48, 16)
+-/*0x00a90*/	u64	rqa_prty_for_vp;
+-#define VXGE_HW_RQA_PRTY_FOR_VP_RQA_PRTY_FOR_VP(val) vxge_vBIT(val, 59, 5)
+-/*0x00a98*/	u64	rxdmem_size;
+-#define VXGE_HW_RXDMEM_SIZE_PRC_RXDMEM_SIZE(val) vxge_vBIT(val, 51, 13)
+-/*0x00aa0*/	u64	frm_in_progress_cnt;
+-#define	VXGE_HW_FRM_IN_PROGRESS_CNT_PRC_FRM_IN_PROGRESS_CNT(val) \
+-							vxge_vBIT(val, 59, 5)
+-/*0x00aa8*/	u64	rx_multi_cast_stats;
+-#define VXGE_HW_RX_MULTI_CAST_STATS_FRAME_DISCARD(val) vxge_vBIT(val, 48, 16)
+-/*0x00ab0*/	u64	rx_frm_transferred;
+-#define	VXGE_HW_RX_FRM_TRANSFERRED_RX_FRM_TRANSFERRED(val) \
+-							vxge_vBIT(val, 32, 32)
+-/*0x00ab8*/	u64	rxd_returned;
+-#define VXGE_HW_RXD_RETURNED_RXD_RETURNED(val) vxge_vBIT(val, 48, 16)
+-	u8	unused00c00[0x00c00-0x00ac0];
+-
+-/*0x00c00*/	u64	kdfc_fifo_trpl_partition;
+-#define VXGE_HW_KDFC_FIFO_TRPL_PARTITION_LENGTH_0(val) vxge_vBIT(val, 17, 15)
+-#define VXGE_HW_KDFC_FIFO_TRPL_PARTITION_LENGTH_1(val) vxge_vBIT(val, 33, 15)
+-#define VXGE_HW_KDFC_FIFO_TRPL_PARTITION_LENGTH_2(val) vxge_vBIT(val, 49, 15)
+-/*0x00c08*/	u64	kdfc_fifo_trpl_ctrl;
+-#define	VXGE_HW_KDFC_FIFO_TRPL_CTRL_TRIPLET_ENABLE	vxge_mBIT(7)
+-/*0x00c10*/	u64	kdfc_trpl_fifo_0_ctrl;
+-#define VXGE_HW_KDFC_TRPL_FIFO_0_CTRL_MODE(val) vxge_vBIT(val, 14, 2)
+-#define	VXGE_HW_KDFC_TRPL_FIFO_0_CTRL_FLIP_EN	vxge_mBIT(22)
+-#define	VXGE_HW_KDFC_TRPL_FIFO_0_CTRL_SWAP_EN	vxge_mBIT(23)
+-#define VXGE_HW_KDFC_TRPL_FIFO_0_CTRL_INT_CTRL(val) vxge_vBIT(val, 26, 2)
+-#define	VXGE_HW_KDFC_TRPL_FIFO_0_CTRL_CTRL_STRUC	vxge_mBIT(28)
+-#define	VXGE_HW_KDFC_TRPL_FIFO_0_CTRL_ADD_PAD	vxge_mBIT(29)
+-#define	VXGE_HW_KDFC_TRPL_FIFO_0_CTRL_NO_SNOOP	vxge_mBIT(30)
+-#define	VXGE_HW_KDFC_TRPL_FIFO_0_CTRL_RLX_ORD	vxge_mBIT(31)
+-#define VXGE_HW_KDFC_TRPL_FIFO_0_CTRL_SELECT(val) vxge_vBIT(val, 32, 8)
+-#define VXGE_HW_KDFC_TRPL_FIFO_0_CTRL_INT_NO(val) vxge_vBIT(val, 41, 7)
+-#define VXGE_HW_KDFC_TRPL_FIFO_0_CTRL_BIT_MAP(val) vxge_vBIT(val, 48, 16)
+-/*0x00c18*/	u64	kdfc_trpl_fifo_1_ctrl;
+-#define VXGE_HW_KDFC_TRPL_FIFO_1_CTRL_MODE(val) vxge_vBIT(val, 14, 2)
+-#define	VXGE_HW_KDFC_TRPL_FIFO_1_CTRL_FLIP_EN	vxge_mBIT(22)
+-#define	VXGE_HW_KDFC_TRPL_FIFO_1_CTRL_SWAP_EN	vxge_mBIT(23)
+-#define VXGE_HW_KDFC_TRPL_FIFO_1_CTRL_INT_CTRL(val) vxge_vBIT(val, 26, 2)
+-#define	VXGE_HW_KDFC_TRPL_FIFO_1_CTRL_CTRL_STRUC	vxge_mBIT(28)
+-#define	VXGE_HW_KDFC_TRPL_FIFO_1_CTRL_ADD_PAD	vxge_mBIT(29)
+-#define	VXGE_HW_KDFC_TRPL_FIFO_1_CTRL_NO_SNOOP	vxge_mBIT(30)
+-#define	VXGE_HW_KDFC_TRPL_FIFO_1_CTRL_RLX_ORD	vxge_mBIT(31)
+-#define VXGE_HW_KDFC_TRPL_FIFO_1_CTRL_SELECT(val) vxge_vBIT(val, 32, 8)
+-#define VXGE_HW_KDFC_TRPL_FIFO_1_CTRL_INT_NO(val) vxge_vBIT(val, 41, 7)
+-#define VXGE_HW_KDFC_TRPL_FIFO_1_CTRL_BIT_MAP(val) vxge_vBIT(val, 48, 16)
+-/*0x00c20*/	u64	kdfc_trpl_fifo_2_ctrl;
+-#define	VXGE_HW_KDFC_TRPL_FIFO_2_CTRL_FLIP_EN	vxge_mBIT(22)
+-#define	VXGE_HW_KDFC_TRPL_FIFO_2_CTRL_SWAP_EN	vxge_mBIT(23)
+-#define VXGE_HW_KDFC_TRPL_FIFO_2_CTRL_INT_CTRL(val) vxge_vBIT(val, 26, 2)
+-#define	VXGE_HW_KDFC_TRPL_FIFO_2_CTRL_CTRL_STRUC	vxge_mBIT(28)
+-#define	VXGE_HW_KDFC_TRPL_FIFO_2_CTRL_ADD_PAD	vxge_mBIT(29)
+-#define	VXGE_HW_KDFC_TRPL_FIFO_2_CTRL_NO_SNOOP	vxge_mBIT(30)
+-#define	VXGE_HW_KDFC_TRPL_FIFO_2_CTRL_RLX_ORD	vxge_mBIT(31)
+-#define VXGE_HW_KDFC_TRPL_FIFO_2_CTRL_SELECT(val) vxge_vBIT(val, 32, 8)
+-#define VXGE_HW_KDFC_TRPL_FIFO_2_CTRL_INT_NO(val) vxge_vBIT(val, 41, 7)
+-#define VXGE_HW_KDFC_TRPL_FIFO_2_CTRL_BIT_MAP(val) vxge_vBIT(val, 48, 16)
+-/*0x00c28*/	u64	kdfc_trpl_fifo_0_wb_address;
+-#define VXGE_HW_KDFC_TRPL_FIFO_0_WB_ADDRESS_ADD(val) vxge_vBIT(val, 0, 64)
+-/*0x00c30*/	u64	kdfc_trpl_fifo_1_wb_address;
+-#define VXGE_HW_KDFC_TRPL_FIFO_1_WB_ADDRESS_ADD(val) vxge_vBIT(val, 0, 64)
+-/*0x00c38*/	u64	kdfc_trpl_fifo_2_wb_address;
+-#define VXGE_HW_KDFC_TRPL_FIFO_2_WB_ADDRESS_ADD(val) vxge_vBIT(val, 0, 64)
+-/*0x00c40*/	u64	kdfc_trpl_fifo_offset;
+-#define VXGE_HW_KDFC_TRPL_FIFO_OFFSET_KDFC_RCTR0(val) vxge_vBIT(val, 1, 15)
+-#define VXGE_HW_KDFC_TRPL_FIFO_OFFSET_KDFC_RCTR1(val) vxge_vBIT(val, 17, 15)
+-#define VXGE_HW_KDFC_TRPL_FIFO_OFFSET_KDFC_RCTR2(val) vxge_vBIT(val, 33, 15)
+-/*0x00c48*/	u64	kdfc_drbl_triplet_total;
+-#define	VXGE_HW_KDFC_DRBL_TRIPLET_TOTAL_KDFC_MAX_SIZE(val) \
+-							vxge_vBIT(val, 17, 15)
+-	u8	unused00c60[0x00c60-0x00c50];
+-
+-/*0x00c60*/	u64	usdc_drbl_ctrl;
+-#define	VXGE_HW_USDC_DRBL_CTRL_FLIP_EN	vxge_mBIT(22)
+-#define	VXGE_HW_USDC_DRBL_CTRL_SWAP_EN	vxge_mBIT(23)
+-/*0x00c68*/	u64	usdc_vp_ready;
+-#define	VXGE_HW_USDC_VP_READY_USDC_HTN_READY	vxge_mBIT(7)
+-#define	VXGE_HW_USDC_VP_READY_USDC_SRQ_READY	vxge_mBIT(15)
+-#define	VXGE_HW_USDC_VP_READY_USDC_CQRQ_READY	vxge_mBIT(23)
+-/*0x00c70*/	u64	kdfc_status;
+-#define	VXGE_HW_KDFC_STATUS_KDFC_WRR_0_READY	vxge_mBIT(0)
+-#define	VXGE_HW_KDFC_STATUS_KDFC_WRR_1_READY	vxge_mBIT(1)
+-#define	VXGE_HW_KDFC_STATUS_KDFC_WRR_2_READY	vxge_mBIT(2)
+-	u8	unused00c80[0x00c80-0x00c78];
+-
+-/*0x00c80*/	u64	xmac_rpa_vcfg;
+-#define	VXGE_HW_XMAC_RPA_VCFG_IPV4_TCP_INCL_PH	vxge_mBIT(3)
+-#define	VXGE_HW_XMAC_RPA_VCFG_IPV6_TCP_INCL_PH	vxge_mBIT(7)
+-#define	VXGE_HW_XMAC_RPA_VCFG_IPV4_UDP_INCL_PH	vxge_mBIT(11)
+-#define	VXGE_HW_XMAC_RPA_VCFG_IPV6_UDP_INCL_PH	vxge_mBIT(15)
+-#define	VXGE_HW_XMAC_RPA_VCFG_L4_INCL_CF	vxge_mBIT(19)
+-#define	VXGE_HW_XMAC_RPA_VCFG_STRIP_VLAN_TAG	vxge_mBIT(23)
+-/*0x00c88*/	u64	rxmac_vcfg0;
+-#define VXGE_HW_RXMAC_VCFG0_RTS_MAX_FRM_LEN(val) vxge_vBIT(val, 2, 14)
+-#define	VXGE_HW_RXMAC_VCFG0_RTS_USE_MIN_LEN	vxge_mBIT(19)
+-#define VXGE_HW_RXMAC_VCFG0_RTS_MIN_FRM_LEN(val) vxge_vBIT(val, 26, 14)
+-#define	VXGE_HW_RXMAC_VCFG0_UCAST_ALL_ADDR_EN	vxge_mBIT(43)
+-#define	VXGE_HW_RXMAC_VCFG0_MCAST_ALL_ADDR_EN	vxge_mBIT(47)
+-#define	VXGE_HW_RXMAC_VCFG0_BCAST_EN	vxge_mBIT(51)
+-#define	VXGE_HW_RXMAC_VCFG0_ALL_VID_EN	vxge_mBIT(55)
+-/*0x00c90*/	u64	rxmac_vcfg1;
+-#define VXGE_HW_RXMAC_VCFG1_RTS_RTH_MULTI_IT_BD_MODE(val) vxge_vBIT(val, 42, 2)
+-#define	VXGE_HW_RXMAC_VCFG1_RTS_RTH_MULTI_IT_EN_MODE	vxge_mBIT(47)
+-#define	VXGE_HW_RXMAC_VCFG1_CONTRIB_L2_FLOW	vxge_mBIT(51)
+-/*0x00c98*/	u64	rts_access_steer_ctrl;
+-#define VXGE_HW_RTS_ACCESS_STEER_CTRL_ACTION(val) vxge_vBIT(val, 1, 7)
+-#define VXGE_HW_RTS_ACCESS_STEER_CTRL_DATA_STRUCT_SEL(val) vxge_vBIT(val, 8, 4)
+-#define	VXGE_HW_RTS_ACCESS_STEER_CTRL_STROBE	vxge_mBIT(15)
+-#define	VXGE_HW_RTS_ACCESS_STEER_CTRL_BEHAV_TBL_SEL	vxge_mBIT(23)
+-#define	VXGE_HW_RTS_ACCESS_STEER_CTRL_TABLE_SEL	vxge_mBIT(27)
+-#define	VXGE_HW_RTS_ACCESS_STEER_CTRL_RMACJ_STATUS	vxge_mBIT(0)
+-#define VXGE_HW_RTS_ACCESS_STEER_CTRL_OFFSET(val) vxge_vBIT(val, 40, 8)
+-/*0x00ca0*/	u64	rts_access_steer_data0;
+-#define VXGE_HW_RTS_ACCESS_STEER_DATA0_DATA(val) vxge_vBIT(val, 0, 64)
+-/*0x00ca8*/	u64	rts_access_steer_data1;
+-#define VXGE_HW_RTS_ACCESS_STEER_DATA1_DATA(val) vxge_vBIT(val, 0, 64)
+-	u8	unused00d00[0x00d00-0x00cb0];
+-
+-/*0x00d00*/	u64	xmac_vsport_choice;
+-#define VXGE_HW_XMAC_VSPORT_CHOICE_VSPORT_NUMBER(val) vxge_vBIT(val, 3, 5)
+-/*0x00d08*/	u64	xmac_stats_cfg;
+-/*0x00d10*/	u64	xmac_stats_access_cmd;
+-#define VXGE_HW_XMAC_STATS_ACCESS_CMD_OP(val) vxge_vBIT(val, 6, 2)
+-#define	VXGE_HW_XMAC_STATS_ACCESS_CMD_STROBE	vxge_mBIT(15)
+-#define VXGE_HW_XMAC_STATS_ACCESS_CMD_OFFSET_SEL(val) vxge_vBIT(val, 32, 8)
+-/*0x00d18*/	u64	xmac_stats_access_data;
+-#define VXGE_HW_XMAC_STATS_ACCESS_DATA_XSMGR_DATA(val) vxge_vBIT(val, 0, 64)
+-/*0x00d20*/	u64	asic_ntwk_vp_ctrl;
+-#define	VXGE_HW_ASIC_NTWK_VP_CTRL_REQ_TEST_NTWK	vxge_mBIT(3)
+-#define	VXGE_HW_ASIC_NTWK_VP_CTRL_XMACJ_SHOW_PORT_INFO	vxge_mBIT(55)
+-#define	VXGE_HW_ASIC_NTWK_VP_CTRL_XMACJ_PORT_NUM	vxge_mBIT(63)
+-	u8	unused00d30[0x00d30-0x00d28];
+-
+-/*0x00d30*/	u64	xgmac_vp_int_status;
+-#define	VXGE_HW_XGMAC_VP_INT_STATUS_ASIC_NTWK_VP_ERR_ASIC_NTWK_VP_INT \
+-								vxge_mBIT(3)
+-/*0x00d38*/	u64	xgmac_vp_int_mask;
+-/*0x00d40*/	u64	asic_ntwk_vp_err_reg;
+-#define	VXGE_HW_ASIC_NW_VP_ERR_REG_XMACJ_STN_FLT	vxge_mBIT(3)
+-#define	VXGE_HW_ASIC_NW_VP_ERR_REG_XMACJ_STN_OK	vxge_mBIT(7)
+-#define	VXGE_HW_ASIC_NW_VP_ERR_REG_XMACJ_STN_FLT_OCCURR \
+-								vxge_mBIT(11)
+-#define	VXGE_HW_ASIC_NW_VP_ERR_REG_XMACJ_STN_OK_OCCURR \
+-							vxge_mBIT(15)
+-#define	VXGE_HW_ASIC_NTWK_VP_ERR_REG_XMACJ_NTWK_REAFFIRMED_FAULT \
+-							vxge_mBIT(19)
+-#define	VXGE_HW_ASIC_NTWK_VP_ERR_REG_XMACJ_NTWK_REAFFIRMED_OK	vxge_mBIT(23)
+-/*0x00d48*/	u64	asic_ntwk_vp_err_mask;
+-/*0x00d50*/	u64	asic_ntwk_vp_err_alarm;
+-	u8	unused00d80[0x00d80-0x00d58];
+-
+-/*0x00d80*/	u64	rtdma_bw_ctrl;
+-#define	VXGE_HW_RTDMA_BW_CTRL_BW_CTRL_EN	vxge_mBIT(39)
+-#define VXGE_HW_RTDMA_BW_CTRL_DESIRED_BW(val) vxge_vBIT(val, 46, 18)
+-/*0x00d88*/	u64	rtdma_rd_optimization_ctrl;
+-#define	VXGE_HW_RTDMA_RD_OPTIMIZATION_CTRL_GEN_INT_AFTER_ABORT	vxge_mBIT(3)
+-#define VXGE_HW_RTDMA_RD_OPTIMIZATION_CTRL_PAD_MODE(val) vxge_vBIT(val, 6, 2)
+-#define VXGE_HW_RTDMA_RD_OPTIMIZATION_CTRL_PAD_PATTERN(val) vxge_vBIT(val, 8, 8)
+-#define	VXGE_HW_RTDMA_RD_OPTIMIZATION_CTRL_FB_WAIT_FOR_SPACE	vxge_mBIT(19)
+-#define VXGE_HW_PCI_EXP_DEVCTL_READRQ   0x7000  /* Max_Read_Request_Size */
+-#define VXGE_HW_RTDMA_RD_OPTIMIZATION_CTRL_FB_FILL_THRESH(val) \
+-							vxge_vBIT(val, 21, 3)
+-#define	VXGE_HW_RTDMA_RD_OPTIMIZATION_CTRL_TXD_PYLD_WMARK_EN	vxge_mBIT(28)
+-#define VXGE_HW_RTDMA_RD_OPTIMIZATION_CTRL_TXD_PYLD_WMARK(val) \
+-							vxge_vBIT(val, 29, 3)
+-#define	VXGE_HW_RTDMA_RD_OPTIMIZATION_CTRL_FB_ADDR_BDRY_EN	vxge_mBIT(35)
+-#define VXGE_HW_RTDMA_RD_OPTIMIZATION_CTRL_FB_ADDR_BDRY(val) \
+-							vxge_vBIT(val, 37, 3)
+-#define	VXGE_HW_RTDMA_RD_OPTIMIZATION_CTRL_TXD_WAIT_FOR_SPACE	vxge_mBIT(43)
+-#define	VXGE_HW_RTDMA_RD_OPTIMIZATION_CTRL_TXD_FILL_THRESH(val) \
+-							vxge_vBIT(val, 51, 5)
+-#define	VXGE_HW_RTDMA_RD_OPTIMIZATION_CTRL_TXD_ADDR_BDRY_EN	vxge_mBIT(59)
+-#define VXGE_HW_RTDMA_RD_OPTIMIZATION_CTRL_TXD_ADDR_BDRY(val) \
+-							vxge_vBIT(val, 61, 3)
+-/*0x00d90*/	u64	pda_pcc_job_monitor;
+-#define	VXGE_HW_PDA_PCC_JOB_MONITOR_PDA_PCC_JOB_STATUS	vxge_mBIT(7)
+-/*0x00d98*/	u64	tx_protocol_assist_cfg;
+-#define	VXGE_HW_TX_PROTOCOL_ASSIST_CFG_LSOV2_EN	vxge_mBIT(6)
+-#define	VXGE_HW_TX_PROTOCOL_ASSIST_CFG_IPV6_KEEP_SEARCHING	vxge_mBIT(7)
+-	u8	unused01000[0x01000-0x00da0];
+-
+-/*0x01000*/	u64	tim_cfg1_int_num[4];
+-#define VXGE_HW_TIM_CFG1_INT_NUM_BTIMER_VAL(val) vxge_vBIT(val, 6, 26)
+-#define	VXGE_HW_TIM_CFG1_INT_NUM_BITMP_EN	vxge_mBIT(35)
+-#define	VXGE_HW_TIM_CFG1_INT_NUM_TXFRM_CNT_EN	vxge_mBIT(36)
+-#define	VXGE_HW_TIM_CFG1_INT_NUM_TXD_CNT_EN	vxge_mBIT(37)
+-#define	VXGE_HW_TIM_CFG1_INT_NUM_TIMER_AC	vxge_mBIT(38)
+-#define	VXGE_HW_TIM_CFG1_INT_NUM_TIMER_CI	vxge_mBIT(39)
+-#define VXGE_HW_TIM_CFG1_INT_NUM_URNG_A(val) vxge_vBIT(val, 41, 7)
+-#define VXGE_HW_TIM_CFG1_INT_NUM_URNG_B(val) vxge_vBIT(val, 49, 7)
+-#define VXGE_HW_TIM_CFG1_INT_NUM_URNG_C(val) vxge_vBIT(val, 57, 7)
+-/*0x01020*/	u64	tim_cfg2_int_num[4];
+-#define VXGE_HW_TIM_CFG2_INT_NUM_UEC_A(val) vxge_vBIT(val, 0, 16)
+-#define VXGE_HW_TIM_CFG2_INT_NUM_UEC_B(val) vxge_vBIT(val, 16, 16)
+-#define VXGE_HW_TIM_CFG2_INT_NUM_UEC_C(val) vxge_vBIT(val, 32, 16)
+-#define VXGE_HW_TIM_CFG2_INT_NUM_UEC_D(val) vxge_vBIT(val, 48, 16)
+-/*0x01040*/	u64	tim_cfg3_int_num[4];
+-#define	VXGE_HW_TIM_CFG3_INT_NUM_TIMER_RI	vxge_mBIT(0)
+-#define VXGE_HW_TIM_CFG3_INT_NUM_RTIMER_EVENT_SF(val) vxge_vBIT(val, 1, 4)
+-#define VXGE_HW_TIM_CFG3_INT_NUM_RTIMER_VAL(val) vxge_vBIT(val, 6, 26)
+-#define VXGE_HW_TIM_CFG3_INT_NUM_UTIL_SEL(val) vxge_vBIT(val, 32, 6)
+-#define VXGE_HW_TIM_CFG3_INT_NUM_LTIMER_VAL(val) vxge_vBIT(val, 38, 26)
+-/*0x01060*/	u64	tim_wrkld_clc;
+-#define VXGE_HW_TIM_WRKLD_CLC_WRKLD_EVAL_PRD(val) vxge_vBIT(val, 0, 32)
+-#define VXGE_HW_TIM_WRKLD_CLC_WRKLD_EVAL_DIV(val) vxge_vBIT(val, 35, 5)
+-#define	VXGE_HW_TIM_WRKLD_CLC_CNT_FRM_BYTE	vxge_mBIT(40)
+-#define VXGE_HW_TIM_WRKLD_CLC_CNT_RX_TX(val) vxge_vBIT(val, 41, 2)
+-#define	VXGE_HW_TIM_WRKLD_CLC_CNT_LNK_EN	vxge_mBIT(43)
+-#define VXGE_HW_TIM_WRKLD_CLC_HOST_UTIL(val) vxge_vBIT(val, 57, 7)
+-/*0x01068*/	u64	tim_bitmap;
+-#define VXGE_HW_TIM_BITMAP_MASK(val) vxge_vBIT(val, 0, 32)
+-#define	VXGE_HW_TIM_BITMAP_LLROOT_RXD_EN	vxge_mBIT(32)
+-#define	VXGE_HW_TIM_BITMAP_LLROOT_TXD_EN	vxge_mBIT(33)
+-/*0x01070*/	u64	tim_ring_assn;
+-#define VXGE_HW_TIM_RING_ASSN_INT_NUM(val) vxge_vBIT(val, 6, 2)
+-/*0x01078*/	u64	tim_remap;
+-#define	VXGE_HW_TIM_REMAP_TX_EN	vxge_mBIT(5)
+-#define	VXGE_HW_TIM_REMAP_RX_EN	vxge_mBIT(6)
+-#define	VXGE_HW_TIM_REMAP_OFFLOAD_EN	vxge_mBIT(7)
+-#define VXGE_HW_TIM_REMAP_TO_VPATH_NUM(val) vxge_vBIT(val, 11, 5)
+-/*0x01080*/	u64	tim_vpath_map;
+-#define VXGE_HW_TIM_VPATH_MAP_BMAP_ROOT(val) vxge_vBIT(val, 0, 32)
+-/*0x01088*/	u64	tim_pci_cfg;
+-#define	VXGE_HW_TIM_PCI_CFG_ADD_PAD	vxge_mBIT(7)
+-#define	VXGE_HW_TIM_PCI_CFG_NO_SNOOP	vxge_mBIT(15)
+-#define	VXGE_HW_TIM_PCI_CFG_RELAXED	vxge_mBIT(23)
+-#define	VXGE_HW_TIM_PCI_CFG_CTL_STR	vxge_mBIT(31)
+-	u8	unused01100[0x01100-0x01090];
+-
+-/*0x01100*/	u64	sgrp_assign;
+-#define VXGE_HW_SGRP_ASSIGN_SGRP_ASSIGN(val) vxge_vBIT(val, 0, 64)
+-/*0x01108*/	u64	sgrp_aoa_and_result;
+-#define	VXGE_HW_SGRP_AOA_AND_RESULT_PET_SGRP_AOA_AND_RESULT(val) \
+-							vxge_vBIT(val, 0, 64)
+-/*0x01110*/	u64	rpe_pci_cfg;
+-#define	VXGE_HW_RPE_PCI_CFG_PAD_LRO_DATA_ENABLE	vxge_mBIT(7)
+-#define	VXGE_HW_RPE_PCI_CFG_PAD_LRO_HDR_ENABLE	vxge_mBIT(8)
+-#define	VXGE_HW_RPE_PCI_CFG_PAD_LRO_CQE_ENABLE	vxge_mBIT(9)
+-#define	VXGE_HW_RPE_PCI_CFG_PAD_NONLL_CQE_ENABLE	vxge_mBIT(10)
+-#define	VXGE_HW_RPE_PCI_CFG_PAD_BASE_LL_CQE_ENABLE	vxge_mBIT(11)
+-#define	VXGE_HW_RPE_PCI_CFG_PAD_LL_CQE_IDATA_ENABLE	vxge_mBIT(12)
+-#define	VXGE_HW_RPE_PCI_CFG_PAD_CQRQ_IR_ENABLE	vxge_mBIT(13)
+-#define	VXGE_HW_RPE_PCI_CFG_PAD_CQSQ_IR_ENABLE	vxge_mBIT(14)
+-#define	VXGE_HW_RPE_PCI_CFG_PAD_CQRR_IR_ENABLE	vxge_mBIT(15)
+-#define	VXGE_HW_RPE_PCI_CFG_NOSNOOP_DATA	vxge_mBIT(18)
+-#define	VXGE_HW_RPE_PCI_CFG_NOSNOOP_NONLL_CQE	vxge_mBIT(19)
+-#define	VXGE_HW_RPE_PCI_CFG_NOSNOOP_LL_CQE	vxge_mBIT(20)
+-#define	VXGE_HW_RPE_PCI_CFG_NOSNOOP_CQRQ_IR	vxge_mBIT(21)
+-#define	VXGE_HW_RPE_PCI_CFG_NOSNOOP_CQSQ_IR	vxge_mBIT(22)
+-#define	VXGE_HW_RPE_PCI_CFG_NOSNOOP_CQRR_IR	vxge_mBIT(23)
+-#define	VXGE_HW_RPE_PCI_CFG_RELAXED_DATA	vxge_mBIT(26)
+-#define	VXGE_HW_RPE_PCI_CFG_RELAXED_NONLL_CQE	vxge_mBIT(27)
+-#define	VXGE_HW_RPE_PCI_CFG_RELAXED_LL_CQE	vxge_mBIT(28)
+-#define	VXGE_HW_RPE_PCI_CFG_RELAXED_CQRQ_IR	vxge_mBIT(29)
+-#define	VXGE_HW_RPE_PCI_CFG_RELAXED_CQSQ_IR	vxge_mBIT(30)
+-#define	VXGE_HW_RPE_PCI_CFG_RELAXED_CQRR_IR	vxge_mBIT(31)
+-/*0x01118*/	u64	rpe_lro_cfg;
+-#define	VXGE_HW_RPE_LRO_CFG_SUPPRESS_LRO_ETH_TRLR	vxge_mBIT(7)
+-#define	VXGE_HW_RPE_LRO_CFG_ALLOW_LRO_SNAP_SNAPJUMBO_MRG	vxge_mBIT(11)
+-#define	VXGE_HW_RPE_LRO_CFG_ALLOW_LRO_LLC_LLCJUMBO_MRG	vxge_mBIT(15)
+-#define	VXGE_HW_RPE_LRO_CFG_INCL_ACK_CNT_IN_CQE	vxge_mBIT(23)
+-/*0x01120*/	u64	pe_mr2vp_ack_blk_limit;
+-#define VXGE_HW_PE_MR2VP_ACK_BLK_LIMIT_BLK_LIMIT(val) vxge_vBIT(val, 32, 32)
+-/*0x01128*/	u64	pe_mr2vp_rirr_lirr_blk_limit;
+-#define	VXGE_HW_PE_MR2VP_RIRR_LIRR_BLK_LIMIT_RIRR_BLK_LIMIT(val) \
+-							vxge_vBIT(val, 0, 32)
+-#define	VXGE_HW_PE_MR2VP_RIRR_LIRR_BLK_LIMIT_LIRR_BLK_LIMIT(val) \
+-							vxge_vBIT(val, 32, 32)
+-/*0x01130*/	u64	txpe_pci_nce_cfg;
+-#define VXGE_HW_TXPE_PCI_NCE_CFG_NCE_THRESH(val) vxge_vBIT(val, 0, 32)
+-#define	VXGE_HW_TXPE_PCI_NCE_CFG_PAD_TOWI_ENABLE	vxge_mBIT(55)
+-#define	VXGE_HW_TXPE_PCI_NCE_CFG_NOSNOOP_TOWI	vxge_mBIT(63)
+-	u8	unused01180[0x01180-0x01138];
+-
+-/*0x01180*/	u64	msg_qpad_en_cfg;
+-#define	VXGE_HW_MSG_QPAD_EN_CFG_UMQ_BWR_READ	vxge_mBIT(3)
+-#define	VXGE_HW_MSG_QPAD_EN_CFG_DMQ_BWR_READ	vxge_mBIT(7)
+-#define	VXGE_HW_MSG_QPAD_EN_CFG_MXP_GENDMA_READ	vxge_mBIT(11)
+-#define	VXGE_HW_MSG_QPAD_EN_CFG_UXP_GENDMA_READ	vxge_mBIT(15)
+-#define	VXGE_HW_MSG_QPAD_EN_CFG_UMQ_MSG_WRITE	vxge_mBIT(19)
+-#define	VXGE_HW_MSG_QPAD_EN_CFG_UMQDMQ_IR_WRITE	vxge_mBIT(23)
+-#define	VXGE_HW_MSG_QPAD_EN_CFG_MXP_GENDMA_WRITE	vxge_mBIT(27)
+-#define	VXGE_HW_MSG_QPAD_EN_CFG_UXP_GENDMA_WRITE	vxge_mBIT(31)
+-/*0x01188*/	u64	msg_pci_cfg;
+-#define	VXGE_HW_MSG_PCI_CFG_GENDMA_NO_SNOOP	vxge_mBIT(3)
+-#define	VXGE_HW_MSG_PCI_CFG_UMQDMQ_IR_NO_SNOOP	vxge_mBIT(7)
+-#define	VXGE_HW_MSG_PCI_CFG_UMQ_NO_SNOOP	vxge_mBIT(11)
+-#define	VXGE_HW_MSG_PCI_CFG_DMQ_NO_SNOOP	vxge_mBIT(15)
+-/*0x01190*/	u64	umqdmq_ir_init;
+-#define VXGE_HW_UMQDMQ_IR_INIT_HOST_WRITE_ADD(val) vxge_vBIT(val, 0, 64)
+-/*0x01198*/	u64	dmq_ir_int;
+-#define	VXGE_HW_DMQ_IR_INT_IMMED_ENABLE	vxge_mBIT(6)
+-#define	VXGE_HW_DMQ_IR_INT_EVENT_ENABLE	vxge_mBIT(7)
+-#define VXGE_HW_DMQ_IR_INT_NUMBER(val) vxge_vBIT(val, 9, 7)
+-#define VXGE_HW_DMQ_IR_INT_BITMAP(val) vxge_vBIT(val, 16, 16)
+-/*0x011a0*/	u64	dmq_bwr_init_add;
+-#define VXGE_HW_DMQ_BWR_INIT_ADD_HOST(val) vxge_vBIT(val, 0, 64)
+-/*0x011a8*/	u64	dmq_bwr_init_byte;
+-#define VXGE_HW_DMQ_BWR_INIT_BYTE_COUNT(val) vxge_vBIT(val, 0, 32)
+-/*0x011b0*/	u64	dmq_ir;
+-#define VXGE_HW_DMQ_IR_POLICY(val) vxge_vBIT(val, 0, 8)
+-/*0x011b8*/	u64	umq_int;
+-#define	VXGE_HW_UMQ_INT_IMMED_ENABLE	vxge_mBIT(6)
+-#define	VXGE_HW_UMQ_INT_EVENT_ENABLE	vxge_mBIT(7)
+-#define VXGE_HW_UMQ_INT_NUMBER(val) vxge_vBIT(val, 9, 7)
+-#define VXGE_HW_UMQ_INT_BITMAP(val) vxge_vBIT(val, 16, 16)
+-/*0x011c0*/	u64	umq_mr2vp_bwr_pfch_init;
+-#define VXGE_HW_UMQ_MR2VP_BWR_PFCH_INIT_NUMBER(val) vxge_vBIT(val, 0, 8)
+-/*0x011c8*/	u64	umq_bwr_pfch_ctrl;
+-#define	VXGE_HW_UMQ_BWR_PFCH_CTRL_POLL_EN	vxge_mBIT(3)
+-/*0x011d0*/	u64	umq_mr2vp_bwr_eol;
+-#define VXGE_HW_UMQ_MR2VP_BWR_EOL_POLL_LATENCY(val) vxge_vBIT(val, 32, 32)
+-/*0x011d8*/	u64	umq_bwr_init_add;
+-#define VXGE_HW_UMQ_BWR_INIT_ADD_HOST(val) vxge_vBIT(val, 0, 64)
+-/*0x011e0*/	u64	umq_bwr_init_byte;
+-#define VXGE_HW_UMQ_BWR_INIT_BYTE_COUNT(val) vxge_vBIT(val, 0, 32)
+-/*0x011e8*/	u64	gendma_int;
+-/*0x011f0*/	u64	umqdmq_ir_init_notify;
+-#define	VXGE_HW_UMQDMQ_IR_INIT_NOTIFY_PULSE	vxge_mBIT(3)
+-/*0x011f8*/	u64	dmq_init_notify;
+-#define	VXGE_HW_DMQ_INIT_NOTIFY_PULSE	vxge_mBIT(3)
+-/*0x01200*/	u64	umq_init_notify;
+-#define	VXGE_HW_UMQ_INIT_NOTIFY_PULSE	vxge_mBIT(3)
+-	u8	unused01380[0x01380-0x01208];
+-
+-/*0x01380*/	u64	tpa_cfg;
+-#define	VXGE_HW_TPA_CFG_IGNORE_FRAME_ERR	vxge_mBIT(3)
+-#define	VXGE_HW_TPA_CFG_IPV6_STOP_SEARCHING	vxge_mBIT(7)
+-#define	VXGE_HW_TPA_CFG_L4_PSHDR_PRESENT	vxge_mBIT(11)
+-#define	VXGE_HW_TPA_CFG_SUPPORT_MOBILE_IPV6_HDRS	vxge_mBIT(15)
+-	u8	unused01400[0x01400-0x01388];
+-
+-/*0x01400*/	u64	tx_vp_reset_discarded_frms;
+-#define	VXGE_HW_TX_VP_RESET_DISCARDED_FRMS_TX_VP_RESET_DISCARDED_FRMS(val) \
+-							vxge_vBIT(val, 48, 16)
+-	u8	unused01480[0x01480-0x01408];
+-
+-/*0x01480*/	u64	fau_rpa_vcfg;
+-#define	VXGE_HW_FAU_RPA_VCFG_L4_COMP_CSUM	vxge_mBIT(7)
+-#define	VXGE_HW_FAU_RPA_VCFG_L3_INCL_CF	vxge_mBIT(11)
+-#define	VXGE_HW_FAU_RPA_VCFG_L3_COMP_CSUM	vxge_mBIT(15)
+-	u8	unused014d0[0x014d0-0x01488];
+-
+-/*0x014d0*/	u64	dbg_stats_rx_mpa;
+-#define VXGE_HW_DBG_STATS_RX_MPA_CRC_FAIL_FRMS(val) vxge_vBIT(val, 0, 16)
+-#define VXGE_HW_DBG_STATS_RX_MPA_MRK_FAIL_FRMS(val) vxge_vBIT(val, 16, 16)
+-#define VXGE_HW_DBG_STATS_RX_MPA_LEN_FAIL_FRMS(val) vxge_vBIT(val, 32, 16)
+-/*0x014d8*/	u64	dbg_stats_rx_fau;
+-#define VXGE_HW_DBG_STATS_RX_FAU_RX_WOL_FRMS(val) vxge_vBIT(val, 0, 16)
+-#define	VXGE_HW_DBG_STATS_RX_FAU_RX_VP_RESET_DISCARDED_FRMS(val) \
+-							vxge_vBIT(val, 16, 16)
+-#define	VXGE_HW_DBG_STATS_RX_FAU_RX_PERMITTED_FRMS(val) \
+-							vxge_vBIT(val, 32, 32)
+-	u8	unused014f0[0x014f0-0x014e0];
+-
+-/*0x014f0*/	u64	fbmc_vp_rdy;
+-#define	VXGE_HW_FBMC_VP_RDY_QUEUE_SPAV_FM	vxge_mBIT(0)
+-	u8	unused01e00[0x01e00-0x014f8];
+-
+-/*0x01e00*/	u64	vpath_pcipif_int_status;
+-#define \
+-VXGE_HW_VPATH_PCIPIF_INT_STATUS_SRPCIM_MSG_TO_VPATH_SRPCIM_MSG_TO_VPATH_INT \
+-								vxge_mBIT(3)
+-#define	VXGE_HW_VPATH_PCIPIF_INT_STATUS_VPATH_SPARE_R1_VPATH_SPARE_R1_INT \
+-								vxge_mBIT(7)
+-/*0x01e08*/	u64	vpath_pcipif_int_mask;
+-	u8	unused01e20[0x01e20-0x01e10];
+-
+-/*0x01e20*/	u64	srpcim_msg_to_vpath_reg;
+-#define	VXGE_HW_SRPCIM_MSG_TO_VPATH_REG_SWIF_SRPCIM_TO_VPATH_RMSG_INT \
+-								vxge_mBIT(3)
+-/*0x01e28*/	u64	srpcim_msg_to_vpath_mask;
+-/*0x01e30*/	u64	srpcim_msg_to_vpath_alarm;
+-	u8	unused01ea0[0x01ea0-0x01e38];
+-
+-/*0x01ea0*/	u64	vpath_to_srpcim_wmsg;
+-#define VXGE_HW_VPATH_TO_SRPCIM_WMSG_VPATH_TO_SRPCIM_WMSG(val) \
+-							vxge_vBIT(val, 0, 64)
+-/*0x01ea8*/	u64	vpath_to_srpcim_wmsg_trig;
+-#define	VXGE_HW_VPATH_TO_SRPCIM_WMSG_TRIG_VPATH_TO_SRPCIM_WMSG_TRIG \
+-							vxge_mBIT(0)
+-	u8	unused02000[0x02000-0x01eb0];
+-
+-/*0x02000*/	u64	vpath_general_int_status;
+-#define	VXGE_HW_VPATH_GENERAL_INT_STATUS_PIC_INT	vxge_mBIT(3)
+-#define	VXGE_HW_VPATH_GENERAL_INT_STATUS_PCI_INT	vxge_mBIT(7)
+-#define	VXGE_HW_VPATH_GENERAL_INT_STATUS_WRDMA_INT	vxge_mBIT(15)
+-#define	VXGE_HW_VPATH_GENERAL_INT_STATUS_XMAC_INT	vxge_mBIT(19)
+-/*0x02008*/	u64	vpath_general_int_mask;
+-#define	VXGE_HW_VPATH_GENERAL_INT_MASK_PIC_INT	vxge_mBIT(3)
+-#define	VXGE_HW_VPATH_GENERAL_INT_MASK_PCI_INT	vxge_mBIT(7)
+-#define	VXGE_HW_VPATH_GENERAL_INT_MASK_WRDMA_INT	vxge_mBIT(15)
+-#define	VXGE_HW_VPATH_GENERAL_INT_MASK_XMAC_INT	vxge_mBIT(19)
+-/*0x02010*/	u64	vpath_ppif_int_status;
+-#define	VXGE_HW_VPATH_PPIF_INT_STATUS_KDFCCTL_ERRORS_KDFCCTL_INT \
+-							vxge_mBIT(3)
+-#define	VXGE_HW_VPATH_PPIF_INT_STATUS_GENERAL_ERRORS_GENERAL_INT \
+-							vxge_mBIT(7)
+-#define	VXGE_HW_VPATH_PPIF_INT_STATUS_PCI_CONFIG_ERRORS_PCI_CONFIG_INT \
+-							vxge_mBIT(11)
+-#define \
+-VXGE_HW_VPATH_PPIF_INT_STATUS_MRPCIM_TO_VPATH_ALARM_MRPCIM_TO_VPATH_ALARM_INT \
+-							vxge_mBIT(15)
+-#define \
+-VXGE_HW_VPATH_PPIF_INT_STATUS_SRPCIM_TO_VPATH_ALARM_SRPCIM_TO_VPATH_ALARM_INT \
+-							vxge_mBIT(19)
+-/*0x02018*/	u64	vpath_ppif_int_mask;
+-/*0x02020*/	u64	kdfcctl_errors_reg;
+-#define	VXGE_HW_KDFCCTL_ERRORS_REG_KDFCCTL_FIFO0_OVRWR	vxge_mBIT(3)
+-#define	VXGE_HW_KDFCCTL_ERRORS_REG_KDFCCTL_FIFO1_OVRWR	vxge_mBIT(7)
+-#define	VXGE_HW_KDFCCTL_ERRORS_REG_KDFCCTL_FIFO2_OVRWR	vxge_mBIT(11)
+-#define	VXGE_HW_KDFCCTL_ERRORS_REG_KDFCCTL_FIFO0_POISON	vxge_mBIT(15)
+-#define	VXGE_HW_KDFCCTL_ERRORS_REG_KDFCCTL_FIFO1_POISON	vxge_mBIT(19)
+-#define	VXGE_HW_KDFCCTL_ERRORS_REG_KDFCCTL_FIFO2_POISON	vxge_mBIT(23)
+-#define	VXGE_HW_KDFCCTL_ERRORS_REG_KDFCCTL_FIFO0_DMA_ERR	vxge_mBIT(31)
+-#define	VXGE_HW_KDFCCTL_ERRORS_REG_KDFCCTL_FIFO1_DMA_ERR	vxge_mBIT(35)
+-#define	VXGE_HW_KDFCCTL_ERRORS_REG_KDFCCTL_FIFO2_DMA_ERR	vxge_mBIT(39)
+-/*0x02028*/	u64	kdfcctl_errors_mask;
+-/*0x02030*/	u64	kdfcctl_errors_alarm;
+-	u8	unused02040[0x02040-0x02038];
+-
+-/*0x02040*/	u64	general_errors_reg;
+-#define	VXGE_HW_GENERAL_ERRORS_REG_DBLGEN_FIFO0_OVRFLOW	vxge_mBIT(3)
+-#define	VXGE_HW_GENERAL_ERRORS_REG_DBLGEN_FIFO1_OVRFLOW	vxge_mBIT(7)
+-#define	VXGE_HW_GENERAL_ERRORS_REG_DBLGEN_FIFO2_OVRFLOW	vxge_mBIT(11)
+-#define	VXGE_HW_GENERAL_ERRORS_REG_STATSB_PIF_CHAIN_ERR	vxge_mBIT(15)
+-#define	VXGE_HW_GENERAL_ERRORS_REG_STATSB_DROP_TIMEOUT_REQ	vxge_mBIT(19)
+-#define	VXGE_HW_GENERAL_ERRORS_REG_TGT_ILLEGAL_ACCESS	vxge_mBIT(27)
+-#define	VXGE_HW_GENERAL_ERRORS_REG_INI_SERR_DET	vxge_mBIT(31)
+-/*0x02048*/	u64	general_errors_mask;
+-/*0x02050*/	u64	general_errors_alarm;
+-/*0x02058*/	u64	pci_config_errors_reg;
+-#define	VXGE_HW_PCI_CONFIG_ERRORS_REG_PCICONFIG_STATUS_ERR	vxge_mBIT(3)
+-#define	VXGE_HW_PCI_CONFIG_ERRORS_REG_PCICONFIG_UNCOR_ERR	vxge_mBIT(7)
+-#define	VXGE_HW_PCI_CONFIG_ERRORS_REG_PCICONFIG_COR_ERR	vxge_mBIT(11)
+-/*0x02060*/	u64	pci_config_errors_mask;
+-/*0x02068*/	u64	pci_config_errors_alarm;
+-/*0x02070*/	u64	mrpcim_to_vpath_alarm_reg;
+-#define	VXGE_HW_MRPCIM_TO_VPATH_ALARM_REG_PPIF_MRPCIM_TO_VPATH_ALARM \
+-								vxge_mBIT(3)
+-/*0x02078*/	u64	mrpcim_to_vpath_alarm_mask;
+-/*0x02080*/	u64	mrpcim_to_vpath_alarm_alarm;
+-/*0x02088*/	u64	srpcim_to_vpath_alarm_reg;
+-#define	VXGE_HW_SRPCIM_TO_VPATH_ALARM_REG_PPIF_SRPCIM_TO_VPATH_ALARM(val) \
+-							vxge_vBIT(val, 0, 17)
+-/*0x02090*/	u64	srpcim_to_vpath_alarm_mask;
+-/*0x02098*/	u64	srpcim_to_vpath_alarm_alarm;
+-	u8	unused02108[0x02108-0x020a0];
+-
+-/*0x02108*/	u64	kdfcctl_status;
+-#define VXGE_HW_KDFCCTL_STATUS_KDFCCTL_FIFO0_PRES(val) vxge_vBIT(val, 0, 8)
+-#define VXGE_HW_KDFCCTL_STATUS_KDFCCTL_FIFO1_PRES(val) vxge_vBIT(val, 8, 8)
+-#define VXGE_HW_KDFCCTL_STATUS_KDFCCTL_FIFO2_PRES(val) vxge_vBIT(val, 16, 8)
+-#define VXGE_HW_KDFCCTL_STATUS_KDFCCTL_FIFO0_OVRWR(val) vxge_vBIT(val, 24, 8)
+-#define VXGE_HW_KDFCCTL_STATUS_KDFCCTL_FIFO1_OVRWR(val) vxge_vBIT(val, 32, 8)
+-#define VXGE_HW_KDFCCTL_STATUS_KDFCCTL_FIFO2_OVRWR(val) vxge_vBIT(val, 40, 8)
+-/*0x02110*/	u64	rsthdlr_status;
+-#define	VXGE_HW_RSTHDLR_STATUS_RSTHDLR_CURRENT_RESET	vxge_mBIT(3)
+-#define VXGE_HW_RSTHDLR_STATUS_RSTHDLR_CURRENT_VPIN(val) vxge_vBIT(val, 6, 2)
+-/*0x02118*/	u64	fifo0_status;
+-#define VXGE_HW_FIFO0_STATUS_DBLGEN_FIFO0_RDIDX(val) vxge_vBIT(val, 0, 12)
+-/*0x02120*/	u64	fifo1_status;
+-#define VXGE_HW_FIFO1_STATUS_DBLGEN_FIFO1_RDIDX(val) vxge_vBIT(val, 0, 12)
+-/*0x02128*/	u64	fifo2_status;
+-#define VXGE_HW_FIFO2_STATUS_DBLGEN_FIFO2_RDIDX(val) vxge_vBIT(val, 0, 12)
+-	u8	unused02158[0x02158-0x02130];
+-
+-/*0x02158*/	u64	tgt_illegal_access;
+-#define VXGE_HW_TGT_ILLEGAL_ACCESS_SWIF_REGION(val) vxge_vBIT(val, 1, 7)
+-	u8	unused02200[0x02200-0x02160];
+-
+-/*0x02200*/	u64	vpath_general_cfg1;
+-#define VXGE_HW_VPATH_GENERAL_CFG1_TC_VALUE(val) vxge_vBIT(val, 1, 3)
+-#define	VXGE_HW_VPATH_GENERAL_CFG1_DATA_BYTE_SWAPEN	vxge_mBIT(7)
+-#define	VXGE_HW_VPATH_GENERAL_CFG1_DATA_FLIPEN	vxge_mBIT(11)
+-#define	VXGE_HW_VPATH_GENERAL_CFG1_CTL_BYTE_SWAPEN	vxge_mBIT(15)
+-#define	VXGE_HW_VPATH_GENERAL_CFG1_CTL_FLIPEN	vxge_mBIT(23)
+-#define	VXGE_HW_VPATH_GENERAL_CFG1_MSIX_ADDR_SWAPEN	vxge_mBIT(51)
+-#define	VXGE_HW_VPATH_GENERAL_CFG1_MSIX_ADDR_FLIPEN	vxge_mBIT(55)
+-#define	VXGE_HW_VPATH_GENERAL_CFG1_MSIX_DATA_SWAPEN	vxge_mBIT(59)
+-#define	VXGE_HW_VPATH_GENERAL_CFG1_MSIX_DATA_FLIPEN	vxge_mBIT(63)
+-/*0x02208*/	u64	vpath_general_cfg2;
+-#define VXGE_HW_VPATH_GENERAL_CFG2_SIZE_QUANTUM(val) vxge_vBIT(val, 1, 3)
+-/*0x02210*/	u64	vpath_general_cfg3;
+-#define	VXGE_HW_VPATH_GENERAL_CFG3_IGNORE_VPATH_RST_FOR_INTA	vxge_mBIT(3)
+-	u8	unused02220[0x02220-0x02218];
+-
+-/*0x02220*/	u64	kdfcctl_cfg0;
+-#define	VXGE_HW_KDFCCTL_CFG0_BYTE_SWAPEN_FIFO0	vxge_mBIT(1)
+-#define	VXGE_HW_KDFCCTL_CFG0_BYTE_SWAPEN_FIFO1	vxge_mBIT(2)
+-#define	VXGE_HW_KDFCCTL_CFG0_BYTE_SWAPEN_FIFO2	vxge_mBIT(3)
+-#define	VXGE_HW_KDFCCTL_CFG0_BIT_FLIPEN_FIFO0	vxge_mBIT(5)
+-#define	VXGE_HW_KDFCCTL_CFG0_BIT_FLIPEN_FIFO1	vxge_mBIT(6)
+-#define	VXGE_HW_KDFCCTL_CFG0_BIT_FLIPEN_FIFO2	vxge_mBIT(7)
+-#define	VXGE_HW_KDFCCTL_CFG0_BYTE_MASK_BYTE0_FIFO0	vxge_mBIT(9)
+-#define	VXGE_HW_KDFCCTL_CFG0_BYTE_MASK_BYTE0_FIFO1	vxge_mBIT(10)
+-#define	VXGE_HW_KDFCCTL_CFG0_BYTE_MASK_BYTE0_FIFO2	vxge_mBIT(11)
+-#define	VXGE_HW_KDFCCTL_CFG0_BYTE_MASK_BYTE1_FIFO0	vxge_mBIT(13)
+-#define	VXGE_HW_KDFCCTL_CFG0_BYTE_MASK_BYTE1_FIFO1	vxge_mBIT(14)
+-#define	VXGE_HW_KDFCCTL_CFG0_BYTE_MASK_BYTE1_FIFO2	vxge_mBIT(15)
+-#define	VXGE_HW_KDFCCTL_CFG0_BYTE_MASK_BYTE2_FIFO0	vxge_mBIT(17)
+-#define	VXGE_HW_KDFCCTL_CFG0_BYTE_MASK_BYTE2_FIFO1	vxge_mBIT(18)
+-#define	VXGE_HW_KDFCCTL_CFG0_BYTE_MASK_BYTE2_FIFO2	vxge_mBIT(19)
+-#define	VXGE_HW_KDFCCTL_CFG0_BYTE_MASK_BYTE3_FIFO0	vxge_mBIT(21)
+-#define	VXGE_HW_KDFCCTL_CFG0_BYTE_MASK_BYTE3_FIFO1	vxge_mBIT(22)
+-#define	VXGE_HW_KDFCCTL_CFG0_BYTE_MASK_BYTE3_FIFO2	vxge_mBIT(23)
+-#define	VXGE_HW_KDFCCTL_CFG0_BYTE_MASK_BYTE4_FIFO0	vxge_mBIT(25)
+-#define	VXGE_HW_KDFCCTL_CFG0_BYTE_MASK_BYTE4_FIFO1	vxge_mBIT(26)
+-#define	VXGE_HW_KDFCCTL_CFG0_BYTE_MASK_BYTE4_FIFO2	vxge_mBIT(27)
+-#define	VXGE_HW_KDFCCTL_CFG0_BYTE_MASK_BYTE5_FIFO0	vxge_mBIT(29)
+-#define	VXGE_HW_KDFCCTL_CFG0_BYTE_MASK_BYTE5_FIFO1	vxge_mBIT(30)
+-#define	VXGE_HW_KDFCCTL_CFG0_BYTE_MASK_BYTE5_FIFO2	vxge_mBIT(31)
+-#define	VXGE_HW_KDFCCTL_CFG0_BYTE_MASK_BYTE6_FIFO0	vxge_mBIT(33)
+-#define	VXGE_HW_KDFCCTL_CFG0_BYTE_MASK_BYTE6_FIFO1	vxge_mBIT(34)
+-#define	VXGE_HW_KDFCCTL_CFG0_BYTE_MASK_BYTE6_FIFO2	vxge_mBIT(35)
+-#define	VXGE_HW_KDFCCTL_CFG0_BYTE_MASK_BYTE7_FIFO0	vxge_mBIT(37)
+-#define	VXGE_HW_KDFCCTL_CFG0_BYTE_MASK_BYTE7_FIFO1	vxge_mBIT(38)
+-#define	VXGE_HW_KDFCCTL_CFG0_BYTE_MASK_BYTE7_FIFO2	vxge_mBIT(39)
+-
+-	u8	unused02268[0x02268-0x02228];
+-
+-/*0x02268*/	u64	stats_cfg;
+-#define VXGE_HW_STATS_CFG_START_HOST_ADDR(val) vxge_vBIT(val, 0, 57)
+-/*0x02270*/	u64	interrupt_cfg0;
+-#define VXGE_HW_INTERRUPT_CFG0_MSIX_FOR_RXTI(val) vxge_vBIT(val, 1, 7)
+-#define VXGE_HW_INTERRUPT_CFG0_GROUP0_MSIX_FOR_TXTI(val) vxge_vBIT(val, 9, 7)
+-#define VXGE_HW_INTERRUPT_CFG0_GROUP1_MSIX_FOR_TXTI(val) vxge_vBIT(val, 17, 7)
+-#define VXGE_HW_INTERRUPT_CFG0_GROUP2_MSIX_FOR_TXTI(val) vxge_vBIT(val, 25, 7)
+-#define VXGE_HW_INTERRUPT_CFG0_GROUP3_MSIX_FOR_TXTI(val) vxge_vBIT(val, 33, 7)
+-	u8	unused02280[0x02280-0x02278];
+-
+-/*0x02280*/	u64	interrupt_cfg2;
+-#define VXGE_HW_INTERRUPT_CFG2_ALARM_MAP_TO_MSG(val) vxge_vBIT(val, 1, 7)
+-/*0x02288*/	u64	one_shot_vect0_en;
+-#define	VXGE_HW_ONE_SHOT_VECT0_EN_ONE_SHOT_VECT0_EN	vxge_mBIT(3)
+-/*0x02290*/	u64	one_shot_vect1_en;
+-#define	VXGE_HW_ONE_SHOT_VECT1_EN_ONE_SHOT_VECT1_EN	vxge_mBIT(3)
+-/*0x02298*/	u64	one_shot_vect2_en;
+-#define	VXGE_HW_ONE_SHOT_VECT2_EN_ONE_SHOT_VECT2_EN	vxge_mBIT(3)
+-/*0x022a0*/	u64	one_shot_vect3_en;
+-#define	VXGE_HW_ONE_SHOT_VECT3_EN_ONE_SHOT_VECT3_EN	vxge_mBIT(3)
+-	u8	unused022b0[0x022b0-0x022a8];
+-
+-/*0x022b0*/	u64	pci_config_access_cfg1;
+-#define VXGE_HW_PCI_CONFIG_ACCESS_CFG1_ADDRESS(val) vxge_vBIT(val, 0, 12)
+-#define	VXGE_HW_PCI_CONFIG_ACCESS_CFG1_SEL_FUNC0	vxge_mBIT(15)
+-/*0x022b8*/	u64	pci_config_access_cfg2;
+-#define	VXGE_HW_PCI_CONFIG_ACCESS_CFG2_REQ	vxge_mBIT(0)
+-/*0x022c0*/	u64	pci_config_access_status;
+-#define	VXGE_HW_PCI_CONFIG_ACCESS_STATUS_ACCESS_ERR	vxge_mBIT(0)
+-#define VXGE_HW_PCI_CONFIG_ACCESS_STATUS_DATA(val) vxge_vBIT(val, 32, 32)
+-	u8	unused02300[0x02300-0x022c8];
+-
+-/*0x02300*/	u64	vpath_debug_stats0;
+-#define VXGE_HW_VPATH_DEBUG_STATS0_INI_NUM_MWR_SENT(val) vxge_vBIT(val, 0, 32)
+-/*0x02308*/	u64	vpath_debug_stats1;
+-#define VXGE_HW_VPATH_DEBUG_STATS1_INI_NUM_MRD_SENT(val) vxge_vBIT(val, 0, 32)
+-/*0x02310*/	u64	vpath_debug_stats2;
+-#define VXGE_HW_VPATH_DEBUG_STATS2_INI_NUM_CPL_RCVD(val) vxge_vBIT(val, 0, 32)
+-/*0x02318*/	u64	vpath_debug_stats3;
+-#define VXGE_HW_VPATH_DEBUG_STATS3_INI_NUM_MWR_BYTE_SENT(val) \
+-							vxge_vBIT(val, 0, 64)
+-/*0x02320*/	u64	vpath_debug_stats4;
+-#define VXGE_HW_VPATH_DEBUG_STATS4_INI_NUM_CPL_BYTE_RCVD(val) \
+-							vxge_vBIT(val, 0, 64)
+-/*0x02328*/	u64	vpath_debug_stats5;
+-#define VXGE_HW_VPATH_DEBUG_STATS5_WRCRDTARB_XOFF(val) vxge_vBIT(val, 32, 32)
+-/*0x02330*/	u64	vpath_debug_stats6;
+-#define VXGE_HW_VPATH_DEBUG_STATS6_RDCRDTARB_XOFF(val) vxge_vBIT(val, 32, 32)
+-/*0x02338*/	u64	vpath_genstats_count01;
+-#define	VXGE_HW_VPATH_GENSTATS_COUNT01_PPIF_VPATH_GENSTATS_COUNT1(val) \
+-							vxge_vBIT(val, 0, 32)
+-#define	VXGE_HW_VPATH_GENSTATS_COUNT01_PPIF_VPATH_GENSTATS_COUNT0(val) \
+-							vxge_vBIT(val, 32, 32)
+-/*0x02340*/	u64	vpath_genstats_count23;
+-#define	VXGE_HW_VPATH_GENSTATS_COUNT23_PPIF_VPATH_GENSTATS_COUNT3(val) \
+-							vxge_vBIT(val, 0, 32)
+-#define	VXGE_HW_VPATH_GENSTATS_COUNT23_PPIF_VPATH_GENSTATS_COUNT2(val) \
+-							vxge_vBIT(val, 32, 32)
+-/*0x02348*/	u64	vpath_genstats_count4;
+-#define	VXGE_HW_VPATH_GENSTATS_COUNT4_PPIF_VPATH_GENSTATS_COUNT4(val) \
+-							vxge_vBIT(val, 32, 32)
+-/*0x02350*/	u64	vpath_genstats_count5;
+-#define	VXGE_HW_VPATH_GENSTATS_COUNT5_PPIF_VPATH_GENSTATS_COUNT5(val) \
+-							vxge_vBIT(val, 32, 32)
+-	u8	unused02648[0x02648-0x02358];
+-} __packed;
+-
+-#define VXGE_HW_EEPROM_SIZE	(0x01 << 11)
+-
+-/* Capability lists */
+-#define  VXGE_HW_PCI_EXP_LNKCAP_LNK_SPEED    0xf  /* Supported Link speeds */
+-#define  VXGE_HW_PCI_EXP_LNKCAP_LNK_WIDTH    0x3f0 /* Supported Link speeds. */
+-#define  VXGE_HW_PCI_EXP_LNKCAP_LW_RES       0x0  /* Reserved. */
+-
+-#endif
+diff --git a/drivers/net/ethernet/neterion/vxge/vxge-traffic.c b/drivers/net/ethernet/neterion/vxge/vxge-traffic.c
+deleted file mode 100644
+index ee164970b267..000000000000
+--- a/drivers/net/ethernet/neterion/vxge/vxge-traffic.c
++++ /dev/null
+@@ -1,2428 +0,0 @@
+-/******************************************************************************
+- * This software may be used and distributed according to the terms of
+- * the GNU General Public License (GPL), incorporated herein by reference.
+- * Drivers based on or derived from this code fall under the GPL and must
+- * retain the authorship, copyright and license notice.  This file is not
+- * a complete program and may only be used when the entire operating
+- * system is licensed under the GPL.
+- * See the file COPYING in this distribution for more information.
+- *
+- * vxge-traffic.c: Driver for Exar Corp's X3100 Series 10GbE PCIe I/O
+- *                 Virtualized Server Adapter.
+- * Copyright(c) 2002-2010 Exar Corp.
+- ******************************************************************************/
+-#include <linux/etherdevice.h>
+-#include <linux/io-64-nonatomic-lo-hi.h>
+-#include <linux/prefetch.h>
+-
+-#include "vxge-traffic.h"
+-#include "vxge-config.h"
+-#include "vxge-main.h"
+-
+-/*
+- * vxge_hw_vpath_intr_enable - Enable vpath interrupts.
+- * @vp: Virtual Path handle.
+- *
+- * Enable vpath interrupts. The function is to be executed the last in
+- * vpath initialization sequence.
+- *
+- * See also: vxge_hw_vpath_intr_disable()
+- */
+-enum vxge_hw_status vxge_hw_vpath_intr_enable(struct __vxge_hw_vpath_handle *vp)
+-{
+-	struct __vxge_hw_virtualpath *vpath;
+-	struct vxge_hw_vpath_reg __iomem *vp_reg;
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-	if (vp == NULL) {
+-		status = VXGE_HW_ERR_INVALID_HANDLE;
+-		goto exit;
+-	}
+-
+-	vpath = vp->vpath;
+-
+-	if (vpath->vp_open == VXGE_HW_VP_NOT_OPEN) {
+-		status = VXGE_HW_ERR_VPATH_NOT_OPEN;
+-		goto exit;
+-	}
+-
+-	vp_reg = vpath->vp_reg;
+-
+-	writeq(VXGE_HW_INTR_MASK_ALL, &vp_reg->kdfcctl_errors_reg);
+-
+-	__vxge_hw_pio_mem_write32_upper((u32)VXGE_HW_INTR_MASK_ALL,
+-			&vp_reg->general_errors_reg);
+-
+-	__vxge_hw_pio_mem_write32_upper((u32)VXGE_HW_INTR_MASK_ALL,
+-			&vp_reg->pci_config_errors_reg);
+-
+-	__vxge_hw_pio_mem_write32_upper((u32)VXGE_HW_INTR_MASK_ALL,
+-			&vp_reg->mrpcim_to_vpath_alarm_reg);
+-
+-	__vxge_hw_pio_mem_write32_upper((u32)VXGE_HW_INTR_MASK_ALL,
+-			&vp_reg->srpcim_to_vpath_alarm_reg);
+-
+-	__vxge_hw_pio_mem_write32_upper((u32)VXGE_HW_INTR_MASK_ALL,
+-			&vp_reg->vpath_ppif_int_status);
+-
+-	__vxge_hw_pio_mem_write32_upper((u32)VXGE_HW_INTR_MASK_ALL,
+-			&vp_reg->srpcim_msg_to_vpath_reg);
+-
+-	__vxge_hw_pio_mem_write32_upper((u32)VXGE_HW_INTR_MASK_ALL,
+-			&vp_reg->vpath_pcipif_int_status);
+-
+-	__vxge_hw_pio_mem_write32_upper((u32)VXGE_HW_INTR_MASK_ALL,
+-			&vp_reg->prc_alarm_reg);
+-
+-	__vxge_hw_pio_mem_write32_upper((u32)VXGE_HW_INTR_MASK_ALL,
+-			&vp_reg->wrdma_alarm_status);
+-
+-	__vxge_hw_pio_mem_write32_upper((u32)VXGE_HW_INTR_MASK_ALL,
+-			&vp_reg->asic_ntwk_vp_err_reg);
+-
+-	__vxge_hw_pio_mem_write32_upper((u32)VXGE_HW_INTR_MASK_ALL,
+-			&vp_reg->xgmac_vp_int_status);
+-
+-	readq(&vp_reg->vpath_general_int_status);
+-
+-	/* Mask unwanted interrupts */
+-
+-	__vxge_hw_pio_mem_write32_upper((u32)VXGE_HW_INTR_MASK_ALL,
+-			&vp_reg->vpath_pcipif_int_mask);
+-
+-	__vxge_hw_pio_mem_write32_upper((u32)VXGE_HW_INTR_MASK_ALL,
+-			&vp_reg->srpcim_msg_to_vpath_mask);
+-
+-	__vxge_hw_pio_mem_write32_upper((u32)VXGE_HW_INTR_MASK_ALL,
+-			&vp_reg->srpcim_to_vpath_alarm_mask);
+-
+-	__vxge_hw_pio_mem_write32_upper((u32)VXGE_HW_INTR_MASK_ALL,
+-			&vp_reg->mrpcim_to_vpath_alarm_mask);
+-
+-	__vxge_hw_pio_mem_write32_upper((u32)VXGE_HW_INTR_MASK_ALL,
+-			&vp_reg->pci_config_errors_mask);
+-
+-	/* Unmask the individual interrupts */
+-
+-	writeq((u32)vxge_bVALn((VXGE_HW_GENERAL_ERRORS_REG_DBLGEN_FIFO1_OVRFLOW|
+-		VXGE_HW_GENERAL_ERRORS_REG_DBLGEN_FIFO2_OVRFLOW|
+-		VXGE_HW_GENERAL_ERRORS_REG_STATSB_DROP_TIMEOUT_REQ|
+-		VXGE_HW_GENERAL_ERRORS_REG_STATSB_PIF_CHAIN_ERR), 0, 32),
+-		&vp_reg->general_errors_mask);
+-
+-	__vxge_hw_pio_mem_write32_upper(
+-		(u32)vxge_bVALn((VXGE_HW_KDFCCTL_ERRORS_REG_KDFCCTL_FIFO1_OVRWR|
+-		VXGE_HW_KDFCCTL_ERRORS_REG_KDFCCTL_FIFO2_OVRWR|
+-		VXGE_HW_KDFCCTL_ERRORS_REG_KDFCCTL_FIFO1_POISON|
+-		VXGE_HW_KDFCCTL_ERRORS_REG_KDFCCTL_FIFO2_POISON|
+-		VXGE_HW_KDFCCTL_ERRORS_REG_KDFCCTL_FIFO1_DMA_ERR|
+-		VXGE_HW_KDFCCTL_ERRORS_REG_KDFCCTL_FIFO2_DMA_ERR), 0, 32),
+-		&vp_reg->kdfcctl_errors_mask);
+-
+-	__vxge_hw_pio_mem_write32_upper(0, &vp_reg->vpath_ppif_int_mask);
+-
+-	__vxge_hw_pio_mem_write32_upper(
+-		(u32)vxge_bVALn(VXGE_HW_PRC_ALARM_REG_PRC_RING_BUMP, 0, 32),
+-		&vp_reg->prc_alarm_mask);
+-
+-	__vxge_hw_pio_mem_write32_upper(0, &vp_reg->wrdma_alarm_mask);
+-	__vxge_hw_pio_mem_write32_upper(0, &vp_reg->xgmac_vp_int_mask);
+-
+-	if (vpath->hldev->first_vp_id != vpath->vp_id)
+-		__vxge_hw_pio_mem_write32_upper((u32)VXGE_HW_INTR_MASK_ALL,
+-			&vp_reg->asic_ntwk_vp_err_mask);
+-	else
+-		__vxge_hw_pio_mem_write32_upper((u32)vxge_bVALn((
+-		VXGE_HW_ASIC_NTWK_VP_ERR_REG_XMACJ_NTWK_REAFFIRMED_FAULT |
+-		VXGE_HW_ASIC_NTWK_VP_ERR_REG_XMACJ_NTWK_REAFFIRMED_OK), 0, 32),
+-		&vp_reg->asic_ntwk_vp_err_mask);
+-
+-	__vxge_hw_pio_mem_write32_upper(0,
+-		&vp_reg->vpath_general_int_mask);
+-exit:
+-	return status;
+-
+-}
+-
+-/*
+- * vxge_hw_vpath_intr_disable - Disable vpath interrupts.
+- * @vp: Virtual Path handle.
+- *
+- * Disable vpath interrupts. The function is to be executed the last in
+- * vpath initialization sequence.
+- *
+- * See also: vxge_hw_vpath_intr_enable()
+- */
+-enum vxge_hw_status vxge_hw_vpath_intr_disable(
+-			struct __vxge_hw_vpath_handle *vp)
+-{
+-	struct __vxge_hw_virtualpath *vpath;
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-	struct vxge_hw_vpath_reg __iomem *vp_reg;
+-	if (vp == NULL) {
+-		status = VXGE_HW_ERR_INVALID_HANDLE;
+-		goto exit;
+-	}
+-
+-	vpath = vp->vpath;
+-
+-	if (vpath->vp_open == VXGE_HW_VP_NOT_OPEN) {
+-		status = VXGE_HW_ERR_VPATH_NOT_OPEN;
+-		goto exit;
+-	}
+-	vp_reg = vpath->vp_reg;
+-
+-	__vxge_hw_pio_mem_write32_upper(
+-		(u32)VXGE_HW_INTR_MASK_ALL,
+-		&vp_reg->vpath_general_int_mask);
+-
+-	writeq(VXGE_HW_INTR_MASK_ALL, &vp_reg->kdfcctl_errors_mask);
+-
+-	__vxge_hw_pio_mem_write32_upper((u32)VXGE_HW_INTR_MASK_ALL,
+-			&vp_reg->general_errors_mask);
+-
+-	__vxge_hw_pio_mem_write32_upper((u32)VXGE_HW_INTR_MASK_ALL,
+-			&vp_reg->pci_config_errors_mask);
+-
+-	__vxge_hw_pio_mem_write32_upper((u32)VXGE_HW_INTR_MASK_ALL,
+-			&vp_reg->mrpcim_to_vpath_alarm_mask);
+-
+-	__vxge_hw_pio_mem_write32_upper((u32)VXGE_HW_INTR_MASK_ALL,
+-			&vp_reg->srpcim_to_vpath_alarm_mask);
+-
+-	__vxge_hw_pio_mem_write32_upper((u32)VXGE_HW_INTR_MASK_ALL,
+-			&vp_reg->vpath_ppif_int_mask);
+-
+-	__vxge_hw_pio_mem_write32_upper((u32)VXGE_HW_INTR_MASK_ALL,
+-			&vp_reg->srpcim_msg_to_vpath_mask);
+-
+-	__vxge_hw_pio_mem_write32_upper((u32)VXGE_HW_INTR_MASK_ALL,
+-			&vp_reg->vpath_pcipif_int_mask);
+-
+-	__vxge_hw_pio_mem_write32_upper((u32)VXGE_HW_INTR_MASK_ALL,
+-			&vp_reg->wrdma_alarm_mask);
+-
+-	__vxge_hw_pio_mem_write32_upper((u32)VXGE_HW_INTR_MASK_ALL,
+-			&vp_reg->prc_alarm_mask);
+-
+-	__vxge_hw_pio_mem_write32_upper((u32)VXGE_HW_INTR_MASK_ALL,
+-			&vp_reg->xgmac_vp_int_mask);
+-
+-	__vxge_hw_pio_mem_write32_upper((u32)VXGE_HW_INTR_MASK_ALL,
+-			&vp_reg->asic_ntwk_vp_err_mask);
+-
+-exit:
+-	return status;
+-}
+-
+-void vxge_hw_vpath_tti_ci_set(struct __vxge_hw_fifo *fifo)
+-{
+-	struct vxge_hw_vpath_reg __iomem *vp_reg;
+-	struct vxge_hw_vp_config *config;
+-	u64 val64;
+-
+-	if (fifo->config->enable != VXGE_HW_FIFO_ENABLE)
+-		return;
+-
+-	vp_reg = fifo->vp_reg;
+-	config = container_of(fifo->config, struct vxge_hw_vp_config, fifo);
+-
+-	if (config->tti.timer_ci_en != VXGE_HW_TIM_TIMER_CI_ENABLE) {
+-		config->tti.timer_ci_en = VXGE_HW_TIM_TIMER_CI_ENABLE;
+-		val64 = readq(&vp_reg->tim_cfg1_int_num[VXGE_HW_VPATH_INTR_TX]);
+-		val64 |= VXGE_HW_TIM_CFG1_INT_NUM_TIMER_CI;
+-		fifo->tim_tti_cfg1_saved = val64;
+-		writeq(val64, &vp_reg->tim_cfg1_int_num[VXGE_HW_VPATH_INTR_TX]);
+-	}
+-}
+-
+-void vxge_hw_vpath_dynamic_rti_ci_set(struct __vxge_hw_ring *ring)
+-{
+-	u64 val64 = ring->tim_rti_cfg1_saved;
+-
+-	val64 |= VXGE_HW_TIM_CFG1_INT_NUM_TIMER_CI;
+-	ring->tim_rti_cfg1_saved = val64;
+-	writeq(val64, &ring->vp_reg->tim_cfg1_int_num[VXGE_HW_VPATH_INTR_RX]);
+-}
+-
+-void vxge_hw_vpath_dynamic_tti_rtimer_set(struct __vxge_hw_fifo *fifo)
+-{
+-	u64 val64 = fifo->tim_tti_cfg3_saved;
+-	u64 timer = (fifo->rtimer * 1000) / 272;
+-
+-	val64 &= ~VXGE_HW_TIM_CFG3_INT_NUM_RTIMER_VAL(0x3ffffff);
+-	if (timer)
+-		val64 |= VXGE_HW_TIM_CFG3_INT_NUM_RTIMER_VAL(timer) |
+-			VXGE_HW_TIM_CFG3_INT_NUM_RTIMER_EVENT_SF(5);
+-
+-	writeq(val64, &fifo->vp_reg->tim_cfg3_int_num[VXGE_HW_VPATH_INTR_TX]);
+-	/* tti_cfg3_saved is not updated again because it is
+-	 * initialized at one place only - init time.
+-	 */
+-}
+-
+-void vxge_hw_vpath_dynamic_rti_rtimer_set(struct __vxge_hw_ring *ring)
+-{
+-	u64 val64 = ring->tim_rti_cfg3_saved;
+-	u64 timer = (ring->rtimer * 1000) / 272;
+-
+-	val64 &= ~VXGE_HW_TIM_CFG3_INT_NUM_RTIMER_VAL(0x3ffffff);
+-	if (timer)
+-		val64 |= VXGE_HW_TIM_CFG3_INT_NUM_RTIMER_VAL(timer) |
+-			VXGE_HW_TIM_CFG3_INT_NUM_RTIMER_EVENT_SF(4);
+-
+-	writeq(val64, &ring->vp_reg->tim_cfg3_int_num[VXGE_HW_VPATH_INTR_RX]);
+-	/* rti_cfg3_saved is not updated again because it is
+-	 * initialized at one place only - init time.
+-	 */
+-}
+-
+-/**
+- * vxge_hw_channel_msix_mask - Mask MSIX Vector.
+- * @channel: Channel for rx or tx handle
+- * @msix_id:  MSIX ID
+- *
+- * The function masks the msix interrupt for the given msix_id
+- *
+- * Returns: 0
+- */
+-void vxge_hw_channel_msix_mask(struct __vxge_hw_channel *channel, int msix_id)
+-{
+-
+-	__vxge_hw_pio_mem_write32_upper(
+-		(u32)vxge_bVALn(vxge_mBIT(msix_id >> 2), 0, 32),
+-		&channel->common_reg->set_msix_mask_vect[msix_id%4]);
+-}
+-
+-/**
+- * vxge_hw_channel_msix_unmask - Unmask the MSIX Vector.
+- * @channel: Channel for rx or tx handle
+- * @msix_id:  MSI ID
+- *
+- * The function unmasks the msix interrupt for the given msix_id
+- *
+- * Returns: 0
+- */
+-void
+-vxge_hw_channel_msix_unmask(struct __vxge_hw_channel *channel, int msix_id)
+-{
+-
+-	__vxge_hw_pio_mem_write32_upper(
+-		(u32)vxge_bVALn(vxge_mBIT(msix_id >> 2), 0, 32),
+-		&channel->common_reg->clear_msix_mask_vect[msix_id%4]);
+-}
+-
+-/**
+- * vxge_hw_channel_msix_clear - Unmask the MSIX Vector.
+- * @channel: Channel for rx or tx handle
+- * @msix_id:  MSI ID
+- *
+- * The function unmasks the msix interrupt for the given msix_id
+- * if configured in MSIX oneshot mode
+- *
+- * Returns: 0
+- */
+-void vxge_hw_channel_msix_clear(struct __vxge_hw_channel *channel, int msix_id)
+-{
+-	__vxge_hw_pio_mem_write32_upper(
+-		(u32) vxge_bVALn(vxge_mBIT(msix_id >> 2), 0, 32),
+-		&channel->common_reg->clr_msix_one_shot_vec[msix_id % 4]);
+-}
+-
+-/**
+- * vxge_hw_device_set_intr_type - Updates the configuration
+- *		with new interrupt type.
+- * @hldev: HW device handle.
+- * @intr_mode: New interrupt type
+- */
+-u32 vxge_hw_device_set_intr_type(struct __vxge_hw_device *hldev, u32 intr_mode)
+-{
+-
+-	if ((intr_mode != VXGE_HW_INTR_MODE_IRQLINE) &&
+-	   (intr_mode != VXGE_HW_INTR_MODE_MSIX) &&
+-	   (intr_mode != VXGE_HW_INTR_MODE_MSIX_ONE_SHOT) &&
+-	   (intr_mode != VXGE_HW_INTR_MODE_DEF))
+-		intr_mode = VXGE_HW_INTR_MODE_IRQLINE;
+-
+-	hldev->config.intr_mode = intr_mode;
+-	return intr_mode;
+-}
+-
+-/**
+- * vxge_hw_device_intr_enable - Enable interrupts.
+- * @hldev: HW device handle.
+- *
+- * Enable Titan interrupts. The function is to be executed the last in
+- * Titan initialization sequence.
+- *
+- * See also: vxge_hw_device_intr_disable()
+- */
+-void vxge_hw_device_intr_enable(struct __vxge_hw_device *hldev)
+-{
+-	u32 i;
+-	u64 val64;
+-	u32 val32;
+-
+-	vxge_hw_device_mask_all(hldev);
+-
+-	for (i = 0; i < VXGE_HW_MAX_VIRTUAL_PATHS; i++) {
+-
+-		if (!(hldev->vpaths_deployed & vxge_mBIT(i)))
+-			continue;
+-
+-		vxge_hw_vpath_intr_enable(
+-			VXGE_HW_VIRTUAL_PATH_HANDLE(&hldev->virtual_paths[i]));
+-	}
+-
+-	if (hldev->config.intr_mode == VXGE_HW_INTR_MODE_IRQLINE) {
+-		val64 = hldev->tim_int_mask0[VXGE_HW_VPATH_INTR_TX] |
+-			hldev->tim_int_mask0[VXGE_HW_VPATH_INTR_RX];
+-
+-		if (val64 != 0) {
+-			writeq(val64, &hldev->common_reg->tim_int_status0);
+-
+-			writeq(~val64, &hldev->common_reg->tim_int_mask0);
+-		}
+-
+-		val32 = hldev->tim_int_mask1[VXGE_HW_VPATH_INTR_TX] |
+-			hldev->tim_int_mask1[VXGE_HW_VPATH_INTR_RX];
+-
+-		if (val32 != 0) {
+-			__vxge_hw_pio_mem_write32_upper(val32,
+-					&hldev->common_reg->tim_int_status1);
+-
+-			__vxge_hw_pio_mem_write32_upper(~val32,
+-					&hldev->common_reg->tim_int_mask1);
+-		}
+-	}
+-
+-	val64 = readq(&hldev->common_reg->titan_general_int_status);
+-
+-	vxge_hw_device_unmask_all(hldev);
+-}
+-
+-/**
+- * vxge_hw_device_intr_disable - Disable Titan interrupts.
+- * @hldev: HW device handle.
+- *
+- * Disable Titan interrupts.
+- *
+- * See also: vxge_hw_device_intr_enable()
+- */
+-void vxge_hw_device_intr_disable(struct __vxge_hw_device *hldev)
+-{
+-	u32 i;
+-
+-	vxge_hw_device_mask_all(hldev);
+-
+-	/* mask all the tim interrupts */
+-	writeq(VXGE_HW_INTR_MASK_ALL, &hldev->common_reg->tim_int_mask0);
+-	__vxge_hw_pio_mem_write32_upper(VXGE_HW_DEFAULT_32,
+-		&hldev->common_reg->tim_int_mask1);
+-
+-	for (i = 0; i < VXGE_HW_MAX_VIRTUAL_PATHS; i++) {
+-
+-		if (!(hldev->vpaths_deployed & vxge_mBIT(i)))
+-			continue;
+-
+-		vxge_hw_vpath_intr_disable(
+-			VXGE_HW_VIRTUAL_PATH_HANDLE(&hldev->virtual_paths[i]));
+-	}
+-}
+-
+-/**
+- * vxge_hw_device_mask_all - Mask all device interrupts.
+- * @hldev: HW device handle.
+- *
+- * Mask	all device interrupts.
+- *
+- * See also: vxge_hw_device_unmask_all()
+- */
+-void vxge_hw_device_mask_all(struct __vxge_hw_device *hldev)
+-{
+-	u64 val64;
+-
+-	val64 = VXGE_HW_TITAN_MASK_ALL_INT_ALARM |
+-		VXGE_HW_TITAN_MASK_ALL_INT_TRAFFIC;
+-
+-	__vxge_hw_pio_mem_write32_upper((u32)vxge_bVALn(val64, 0, 32),
+-				&hldev->common_reg->titan_mask_all_int);
+-}
+-
+-/**
+- * vxge_hw_device_unmask_all - Unmask all device interrupts.
+- * @hldev: HW device handle.
+- *
+- * Unmask all device interrupts.
+- *
+- * See also: vxge_hw_device_mask_all()
+- */
+-void vxge_hw_device_unmask_all(struct __vxge_hw_device *hldev)
+-{
+-	u64 val64 = 0;
+-
+-	if (hldev->config.intr_mode == VXGE_HW_INTR_MODE_IRQLINE)
+-		val64 =  VXGE_HW_TITAN_MASK_ALL_INT_TRAFFIC;
+-
+-	__vxge_hw_pio_mem_write32_upper((u32)vxge_bVALn(val64, 0, 32),
+-			&hldev->common_reg->titan_mask_all_int);
+-}
+-
+-/**
+- * vxge_hw_device_flush_io - Flush io writes.
+- * @hldev: HW device handle.
+- *
+- * The function	performs a read operation to flush io writes.
+- *
+- * Returns: void
+- */
+-void vxge_hw_device_flush_io(struct __vxge_hw_device *hldev)
+-{
+-	readl(&hldev->common_reg->titan_general_int_status);
+-}
+-
+-/**
+- * __vxge_hw_device_handle_error - Handle error
+- * @hldev: HW device
+- * @vp_id: Vpath Id
+- * @type: Error type. Please see enum vxge_hw_event{}
+- *
+- * Handle error.
+- */
+-static enum vxge_hw_status
+-__vxge_hw_device_handle_error(struct __vxge_hw_device *hldev, u32 vp_id,
+-			      enum vxge_hw_event type)
+-{
+-	switch (type) {
+-	case VXGE_HW_EVENT_UNKNOWN:
+-		break;
+-	case VXGE_HW_EVENT_RESET_START:
+-	case VXGE_HW_EVENT_RESET_COMPLETE:
+-	case VXGE_HW_EVENT_LINK_DOWN:
+-	case VXGE_HW_EVENT_LINK_UP:
+-		goto out;
+-	case VXGE_HW_EVENT_ALARM_CLEARED:
+-		goto out;
+-	case VXGE_HW_EVENT_ECCERR:
+-	case VXGE_HW_EVENT_MRPCIM_ECCERR:
+-		goto out;
+-	case VXGE_HW_EVENT_FIFO_ERR:
+-	case VXGE_HW_EVENT_VPATH_ERR:
+-	case VXGE_HW_EVENT_CRITICAL_ERR:
+-	case VXGE_HW_EVENT_SERR:
+-		break;
+-	case VXGE_HW_EVENT_SRPCIM_SERR:
+-	case VXGE_HW_EVENT_MRPCIM_SERR:
+-		goto out;
+-	case VXGE_HW_EVENT_SLOT_FREEZE:
+-		break;
+-	default:
+-		vxge_assert(0);
+-		goto out;
+-	}
+-
+-	/* notify driver */
+-	if (hldev->uld_callbacks->crit_err)
+-		hldev->uld_callbacks->crit_err(hldev,
+-			type, vp_id);
+-out:
+-
+-	return VXGE_HW_OK;
+-}
+-
+-/*
+- * __vxge_hw_device_handle_link_down_ind
+- * @hldev: HW device handle.
+- *
+- * Link down indication handler. The function is invoked by HW when
+- * Titan indicates that the link is down.
+- */
+-static enum vxge_hw_status
+-__vxge_hw_device_handle_link_down_ind(struct __vxge_hw_device *hldev)
+-{
+-	/*
+-	 * If the previous link state is not down, return.
+-	 */
+-	if (hldev->link_state == VXGE_HW_LINK_DOWN)
+-		goto exit;
+-
+-	hldev->link_state = VXGE_HW_LINK_DOWN;
+-
+-	/* notify driver */
+-	if (hldev->uld_callbacks->link_down)
+-		hldev->uld_callbacks->link_down(hldev);
+-exit:
+-	return VXGE_HW_OK;
+-}
+-
+-/*
+- * __vxge_hw_device_handle_link_up_ind
+- * @hldev: HW device handle.
+- *
+- * Link up indication handler. The function is invoked by HW when
+- * Titan indicates that the link is up for programmable amount of time.
+- */
+-static enum vxge_hw_status
+-__vxge_hw_device_handle_link_up_ind(struct __vxge_hw_device *hldev)
+-{
+-	/*
+-	 * If the previous link state is not down, return.
+-	 */
+-	if (hldev->link_state == VXGE_HW_LINK_UP)
+-		goto exit;
+-
+-	hldev->link_state = VXGE_HW_LINK_UP;
+-
+-	/* notify driver */
+-	if (hldev->uld_callbacks->link_up)
+-		hldev->uld_callbacks->link_up(hldev);
+-exit:
+-	return VXGE_HW_OK;
+-}
+-
+-/*
+- * __vxge_hw_vpath_alarm_process - Process Alarms.
+- * @vpath: Virtual Path.
+- * @skip_alarms: Do not clear the alarms
+- *
+- * Process vpath alarms.
+- *
+- */
+-static enum vxge_hw_status
+-__vxge_hw_vpath_alarm_process(struct __vxge_hw_virtualpath *vpath,
+-			      u32 skip_alarms)
+-{
+-	u64 val64;
+-	u64 alarm_status;
+-	u64 pic_status;
+-	struct __vxge_hw_device *hldev = NULL;
+-	enum vxge_hw_event alarm_event = VXGE_HW_EVENT_UNKNOWN;
+-	u64 mask64;
+-	struct vxge_hw_vpath_stats_sw_info *sw_stats;
+-	struct vxge_hw_vpath_reg __iomem *vp_reg;
+-
+-	if (vpath == NULL) {
+-		alarm_event = VXGE_HW_SET_LEVEL(VXGE_HW_EVENT_UNKNOWN,
+-			alarm_event);
+-		goto out2;
+-	}
+-
+-	hldev = vpath->hldev;
+-	vp_reg = vpath->vp_reg;
+-	alarm_status = readq(&vp_reg->vpath_general_int_status);
+-
+-	if (alarm_status == VXGE_HW_ALL_FOXES) {
+-		alarm_event = VXGE_HW_SET_LEVEL(VXGE_HW_EVENT_SLOT_FREEZE,
+-			alarm_event);
+-		goto out;
+-	}
+-
+-	sw_stats = vpath->sw_stats;
+-
+-	if (alarm_status & ~(
+-		VXGE_HW_VPATH_GENERAL_INT_STATUS_PIC_INT |
+-		VXGE_HW_VPATH_GENERAL_INT_STATUS_PCI_INT |
+-		VXGE_HW_VPATH_GENERAL_INT_STATUS_WRDMA_INT |
+-		VXGE_HW_VPATH_GENERAL_INT_STATUS_XMAC_INT)) {
+-		sw_stats->error_stats.unknown_alarms++;
+-
+-		alarm_event = VXGE_HW_SET_LEVEL(VXGE_HW_EVENT_UNKNOWN,
+-			alarm_event);
+-		goto out;
+-	}
+-
+-	if (alarm_status & VXGE_HW_VPATH_GENERAL_INT_STATUS_XMAC_INT) {
+-
+-		val64 = readq(&vp_reg->xgmac_vp_int_status);
+-
+-		if (val64 &
+-		VXGE_HW_XGMAC_VP_INT_STATUS_ASIC_NTWK_VP_ERR_ASIC_NTWK_VP_INT) {
+-
+-			val64 = readq(&vp_reg->asic_ntwk_vp_err_reg);
+-
+-			if (((val64 &
+-			      VXGE_HW_ASIC_NW_VP_ERR_REG_XMACJ_STN_FLT) &&
+-			     (!(val64 &
+-				VXGE_HW_ASIC_NW_VP_ERR_REG_XMACJ_STN_OK))) ||
+-			    ((val64 &
+-			     VXGE_HW_ASIC_NW_VP_ERR_REG_XMACJ_STN_FLT_OCCURR) &&
+-			     (!(val64 &
+-				VXGE_HW_ASIC_NW_VP_ERR_REG_XMACJ_STN_OK_OCCURR)
+-				     ))) {
+-				sw_stats->error_stats.network_sustained_fault++;
+-
+-				writeq(
+-				VXGE_HW_ASIC_NW_VP_ERR_REG_XMACJ_STN_FLT,
+-					&vp_reg->asic_ntwk_vp_err_mask);
+-
+-				__vxge_hw_device_handle_link_down_ind(hldev);
+-				alarm_event = VXGE_HW_SET_LEVEL(
+-					VXGE_HW_EVENT_LINK_DOWN, alarm_event);
+-			}
+-
+-			if (((val64 &
+-			      VXGE_HW_ASIC_NW_VP_ERR_REG_XMACJ_STN_OK) &&
+-			     (!(val64 &
+-				VXGE_HW_ASIC_NW_VP_ERR_REG_XMACJ_STN_FLT))) ||
+-			    ((val64 &
+-			      VXGE_HW_ASIC_NW_VP_ERR_REG_XMACJ_STN_OK_OCCURR) &&
+-			     (!(val64 &
+-				VXGE_HW_ASIC_NW_VP_ERR_REG_XMACJ_STN_FLT_OCCURR)
+-				     ))) {
+-
+-				sw_stats->error_stats.network_sustained_ok++;
+-
+-				writeq(
+-				VXGE_HW_ASIC_NW_VP_ERR_REG_XMACJ_STN_OK,
+-					&vp_reg->asic_ntwk_vp_err_mask);
+-
+-				__vxge_hw_device_handle_link_up_ind(hldev);
+-				alarm_event = VXGE_HW_SET_LEVEL(
+-					VXGE_HW_EVENT_LINK_UP, alarm_event);
+-			}
+-
+-			writeq(VXGE_HW_INTR_MASK_ALL,
+-				&vp_reg->asic_ntwk_vp_err_reg);
+-
+-			alarm_event = VXGE_HW_SET_LEVEL(
+-				VXGE_HW_EVENT_ALARM_CLEARED, alarm_event);
+-
+-			if (skip_alarms)
+-				return VXGE_HW_OK;
+-		}
+-	}
+-
+-	if (alarm_status & VXGE_HW_VPATH_GENERAL_INT_STATUS_PIC_INT) {
+-
+-		pic_status = readq(&vp_reg->vpath_ppif_int_status);
+-
+-		if (pic_status &
+-		    VXGE_HW_VPATH_PPIF_INT_STATUS_GENERAL_ERRORS_GENERAL_INT) {
+-
+-			val64 = readq(&vp_reg->general_errors_reg);
+-			mask64 = readq(&vp_reg->general_errors_mask);
+-
+-			if ((val64 &
+-				VXGE_HW_GENERAL_ERRORS_REG_INI_SERR_DET) &
+-				~mask64) {
+-				sw_stats->error_stats.ini_serr_det++;
+-
+-				alarm_event = VXGE_HW_SET_LEVEL(
+-					VXGE_HW_EVENT_SERR, alarm_event);
+-			}
+-
+-			if ((val64 &
+-			    VXGE_HW_GENERAL_ERRORS_REG_DBLGEN_FIFO0_OVRFLOW) &
+-				~mask64) {
+-				sw_stats->error_stats.dblgen_fifo0_overflow++;
+-
+-				alarm_event = VXGE_HW_SET_LEVEL(
+-					VXGE_HW_EVENT_FIFO_ERR, alarm_event);
+-			}
+-
+-			if ((val64 &
+-			    VXGE_HW_GENERAL_ERRORS_REG_STATSB_PIF_CHAIN_ERR) &
+-				~mask64)
+-				sw_stats->error_stats.statsb_pif_chain_error++;
+-
+-			if ((val64 &
+-			   VXGE_HW_GENERAL_ERRORS_REG_STATSB_DROP_TIMEOUT_REQ) &
+-				~mask64)
+-				sw_stats->error_stats.statsb_drop_timeout++;
+-
+-			if ((val64 &
+-				VXGE_HW_GENERAL_ERRORS_REG_TGT_ILLEGAL_ACCESS) &
+-				~mask64)
+-				sw_stats->error_stats.target_illegal_access++;
+-
+-			if (!skip_alarms) {
+-				writeq(VXGE_HW_INTR_MASK_ALL,
+-					&vp_reg->general_errors_reg);
+-				alarm_event = VXGE_HW_SET_LEVEL(
+-					VXGE_HW_EVENT_ALARM_CLEARED,
+-					alarm_event);
+-			}
+-		}
+-
+-		if (pic_status &
+-		    VXGE_HW_VPATH_PPIF_INT_STATUS_KDFCCTL_ERRORS_KDFCCTL_INT) {
+-
+-			val64 = readq(&vp_reg->kdfcctl_errors_reg);
+-			mask64 = readq(&vp_reg->kdfcctl_errors_mask);
+-
+-			if ((val64 &
+-			    VXGE_HW_KDFCCTL_ERRORS_REG_KDFCCTL_FIFO0_OVRWR) &
+-				~mask64) {
+-				sw_stats->error_stats.kdfcctl_fifo0_overwrite++;
+-
+-				alarm_event = VXGE_HW_SET_LEVEL(
+-					VXGE_HW_EVENT_FIFO_ERR,
+-					alarm_event);
+-			}
+-
+-			if ((val64 &
+-			    VXGE_HW_KDFCCTL_ERRORS_REG_KDFCCTL_FIFO0_POISON) &
+-				~mask64) {
+-				sw_stats->error_stats.kdfcctl_fifo0_poison++;
+-
+-				alarm_event = VXGE_HW_SET_LEVEL(
+-					VXGE_HW_EVENT_FIFO_ERR,
+-					alarm_event);
+-			}
+-
+-			if ((val64 &
+-			    VXGE_HW_KDFCCTL_ERRORS_REG_KDFCCTL_FIFO0_DMA_ERR) &
+-				~mask64) {
+-				sw_stats->error_stats.kdfcctl_fifo0_dma_error++;
+-
+-				alarm_event = VXGE_HW_SET_LEVEL(
+-					VXGE_HW_EVENT_FIFO_ERR,
+-					alarm_event);
+-			}
+-
+-			if (!skip_alarms) {
+-				writeq(VXGE_HW_INTR_MASK_ALL,
+-					&vp_reg->kdfcctl_errors_reg);
+-				alarm_event = VXGE_HW_SET_LEVEL(
+-					VXGE_HW_EVENT_ALARM_CLEARED,
+-					alarm_event);
+-			}
+-		}
+-
+-	}
+-
+-	if (alarm_status & VXGE_HW_VPATH_GENERAL_INT_STATUS_WRDMA_INT) {
+-
+-		val64 = readq(&vp_reg->wrdma_alarm_status);
+-
+-		if (val64 & VXGE_HW_WRDMA_ALARM_STATUS_PRC_ALARM_PRC_INT) {
+-
+-			val64 = readq(&vp_reg->prc_alarm_reg);
+-			mask64 = readq(&vp_reg->prc_alarm_mask);
+-
+-			if ((val64 & VXGE_HW_PRC_ALARM_REG_PRC_RING_BUMP)&
+-				~mask64)
+-				sw_stats->error_stats.prc_ring_bumps++;
+-
+-			if ((val64 & VXGE_HW_PRC_ALARM_REG_PRC_RXDCM_SC_ERR) &
+-				~mask64) {
+-				sw_stats->error_stats.prc_rxdcm_sc_err++;
+-
+-				alarm_event = VXGE_HW_SET_LEVEL(
+-					VXGE_HW_EVENT_VPATH_ERR,
+-					alarm_event);
+-			}
+-
+-			if ((val64 & VXGE_HW_PRC_ALARM_REG_PRC_RXDCM_SC_ABORT)
+-				& ~mask64) {
+-				sw_stats->error_stats.prc_rxdcm_sc_abort++;
+-
+-				alarm_event = VXGE_HW_SET_LEVEL(
+-						VXGE_HW_EVENT_VPATH_ERR,
+-						alarm_event);
+-			}
+-
+-			if ((val64 & VXGE_HW_PRC_ALARM_REG_PRC_QUANTA_SIZE_ERR)
+-				 & ~mask64) {
+-				sw_stats->error_stats.prc_quanta_size_err++;
+-
+-				alarm_event = VXGE_HW_SET_LEVEL(
+-					VXGE_HW_EVENT_VPATH_ERR,
+-					alarm_event);
+-			}
+-
+-			if (!skip_alarms) {
+-				writeq(VXGE_HW_INTR_MASK_ALL,
+-					&vp_reg->prc_alarm_reg);
+-				alarm_event = VXGE_HW_SET_LEVEL(
+-						VXGE_HW_EVENT_ALARM_CLEARED,
+-						alarm_event);
+-			}
+-		}
+-	}
+-out:
+-	hldev->stats.sw_dev_err_stats.vpath_alarms++;
+-out2:
+-	if ((alarm_event == VXGE_HW_EVENT_ALARM_CLEARED) ||
+-		(alarm_event == VXGE_HW_EVENT_UNKNOWN))
+-		return VXGE_HW_OK;
+-
+-	__vxge_hw_device_handle_error(hldev, vpath->vp_id, alarm_event);
+-
+-	if (alarm_event == VXGE_HW_EVENT_SERR)
+-		return VXGE_HW_ERR_CRITICAL;
+-
+-	return (alarm_event == VXGE_HW_EVENT_SLOT_FREEZE) ?
+-		VXGE_HW_ERR_SLOT_FREEZE :
+-		(alarm_event == VXGE_HW_EVENT_FIFO_ERR) ? VXGE_HW_ERR_FIFO :
+-		VXGE_HW_ERR_VPATH;
+-}
+-
+-/**
+- * vxge_hw_device_begin_irq - Begin IRQ processing.
+- * @hldev: HW device handle.
+- * @skip_alarms: Do not clear the alarms
+- * @reason: "Reason" for the interrupt, the value of Titan's
+- *	general_int_status register.
+- *
+- * The function	performs two actions, It first checks whether (shared IRQ) the
+- * interrupt was raised	by the device. Next, it	masks the device interrupts.
+- *
+- * Note:
+- * vxge_hw_device_begin_irq() does not flush MMIO writes through the
+- * bridge. Therefore, two back-to-back interrupts are potentially possible.
+- *
+- * Returns: 0, if the interrupt	is not "ours" (note that in this case the
+- * device remain enabled).
+- * Otherwise, vxge_hw_device_begin_irq() returns 64bit general adapter
+- * status.
+- */
+-enum vxge_hw_status vxge_hw_device_begin_irq(struct __vxge_hw_device *hldev,
+-					     u32 skip_alarms, u64 *reason)
+-{
+-	u32 i;
+-	u64 val64;
+-	u64 adapter_status;
+-	u64 vpath_mask;
+-	enum vxge_hw_status ret = VXGE_HW_OK;
+-
+-	val64 = readq(&hldev->common_reg->titan_general_int_status);
+-
+-	if (unlikely(!val64)) {
+-		/* not Titan interrupt	*/
+-		*reason	= 0;
+-		ret = VXGE_HW_ERR_WRONG_IRQ;
+-		goto exit;
+-	}
+-
+-	if (unlikely(val64 == VXGE_HW_ALL_FOXES)) {
+-
+-		adapter_status = readq(&hldev->common_reg->adapter_status);
+-
+-		if (adapter_status == VXGE_HW_ALL_FOXES) {
+-
+-			__vxge_hw_device_handle_error(hldev,
+-				NULL_VPID, VXGE_HW_EVENT_SLOT_FREEZE);
+-			*reason	= 0;
+-			ret = VXGE_HW_ERR_SLOT_FREEZE;
+-			goto exit;
+-		}
+-	}
+-
+-	hldev->stats.sw_dev_info_stats.total_intr_cnt++;
+-
+-	*reason	= val64;
+-
+-	vpath_mask = hldev->vpaths_deployed >>
+-				(64 - VXGE_HW_MAX_VIRTUAL_PATHS);
+-
+-	if (val64 &
+-	    VXGE_HW_TITAN_GENERAL_INT_STATUS_VPATH_TRAFFIC_INT(vpath_mask)) {
+-		hldev->stats.sw_dev_info_stats.traffic_intr_cnt++;
+-
+-		return VXGE_HW_OK;
+-	}
+-
+-	hldev->stats.sw_dev_info_stats.not_traffic_intr_cnt++;
+-
+-	if (unlikely(val64 &
+-			VXGE_HW_TITAN_GENERAL_INT_STATUS_VPATH_ALARM_INT)) {
+-
+-		enum vxge_hw_status error_level = VXGE_HW_OK;
+-
+-		hldev->stats.sw_dev_err_stats.vpath_alarms++;
+-
+-		for (i = 0; i < VXGE_HW_MAX_VIRTUAL_PATHS; i++) {
+-
+-			if (!(hldev->vpaths_deployed & vxge_mBIT(i)))
+-				continue;
+-
+-			ret = __vxge_hw_vpath_alarm_process(
+-				&hldev->virtual_paths[i], skip_alarms);
+-
+-			error_level = VXGE_HW_SET_LEVEL(ret, error_level);
+-
+-			if (unlikely((ret == VXGE_HW_ERR_CRITICAL) ||
+-				(ret == VXGE_HW_ERR_SLOT_FREEZE)))
+-				break;
+-		}
+-
+-		ret = error_level;
+-	}
+-exit:
+-	return ret;
+-}
+-
+-/**
+- * vxge_hw_device_clear_tx_rx - Acknowledge (that is, clear) the
+- * condition that has caused the Tx and RX interrupt.
+- * @hldev: HW device.
+- *
+- * Acknowledge (that is, clear) the condition that has caused
+- * the Tx and Rx interrupt.
+- * See also: vxge_hw_device_begin_irq(),
+- * vxge_hw_device_mask_tx_rx(), vxge_hw_device_unmask_tx_rx().
+- */
+-void vxge_hw_device_clear_tx_rx(struct __vxge_hw_device *hldev)
+-{
+-
+-	if ((hldev->tim_int_mask0[VXGE_HW_VPATH_INTR_TX] != 0) ||
+-	   (hldev->tim_int_mask0[VXGE_HW_VPATH_INTR_RX] != 0)) {
+-		writeq((hldev->tim_int_mask0[VXGE_HW_VPATH_INTR_TX] |
+-				 hldev->tim_int_mask0[VXGE_HW_VPATH_INTR_RX]),
+-				&hldev->common_reg->tim_int_status0);
+-	}
+-
+-	if ((hldev->tim_int_mask1[VXGE_HW_VPATH_INTR_TX] != 0) ||
+-	   (hldev->tim_int_mask1[VXGE_HW_VPATH_INTR_RX] != 0)) {
+-		__vxge_hw_pio_mem_write32_upper(
+-				(hldev->tim_int_mask1[VXGE_HW_VPATH_INTR_TX] |
+-				 hldev->tim_int_mask1[VXGE_HW_VPATH_INTR_RX]),
+-				&hldev->common_reg->tim_int_status1);
+-	}
+-}
+-
+-/*
+- * vxge_hw_channel_dtr_alloc - Allocate a dtr from the channel
+- * @channel: Channel
+- * @dtrh: Buffer to return the DTR pointer
+- *
+- * Allocates a dtr from the reserve array. If the reserve array is empty,
+- * it swaps the reserve and free arrays.
+- *
+- */
+-static enum vxge_hw_status
+-vxge_hw_channel_dtr_alloc(struct __vxge_hw_channel *channel, void **dtrh)
+-{
+-	if (channel->reserve_ptr - channel->reserve_top > 0) {
+-_alloc_after_swap:
+-		*dtrh =	channel->reserve_arr[--channel->reserve_ptr];
+-
+-		return VXGE_HW_OK;
+-	}
+-
+-	/* switch between empty	and full arrays	*/
+-
+-	/* the idea behind such	a design is that by having free	and reserved
+-	 * arrays separated we basically separated irq and non-irq parts.
+-	 * i.e.	no additional lock need	to be done when	we free	a resource */
+-
+-	if (channel->length - channel->free_ptr > 0) {
+-		swap(channel->reserve_arr, channel->free_arr);
+-		channel->reserve_ptr = channel->length;
+-		channel->reserve_top = channel->free_ptr;
+-		channel->free_ptr = channel->length;
+-
+-		channel->stats->reserve_free_swaps_cnt++;
+-
+-		goto _alloc_after_swap;
+-	}
+-
+-	channel->stats->full_cnt++;
+-
+-	*dtrh =	NULL;
+-	return VXGE_HW_INF_OUT_OF_DESCRIPTORS;
+-}
+-
+-/*
+- * vxge_hw_channel_dtr_post - Post a dtr to the channel
+- * @channelh: Channel
+- * @dtrh: DTR pointer
+- *
+- * Posts a dtr to work array.
+- *
+- */
+-static void
+-vxge_hw_channel_dtr_post(struct __vxge_hw_channel *channel, void *dtrh)
+-{
+-	vxge_assert(channel->work_arr[channel->post_index] == NULL);
+-
+-	channel->work_arr[channel->post_index++] = dtrh;
+-
+-	/* wrap-around */
+-	if (channel->post_index	== channel->length)
+-		channel->post_index = 0;
+-}
+-
+-/*
+- * vxge_hw_channel_dtr_try_complete - Returns next completed dtr
+- * @channel: Channel
+- * @dtr: Buffer to return the next completed DTR pointer
+- *
+- * Returns the next completed dtr with out removing it from work array
+- *
+- */
+-void
+-vxge_hw_channel_dtr_try_complete(struct __vxge_hw_channel *channel, void **dtrh)
+-{
+-	vxge_assert(channel->compl_index < channel->length);
+-
+-	*dtrh =	channel->work_arr[channel->compl_index];
+-	prefetch(*dtrh);
+-}
+-
+-/*
+- * vxge_hw_channel_dtr_complete - Removes next completed dtr from the work array
+- * @channel: Channel handle
+- *
+- * Removes the next completed dtr from work array
+- *
+- */
+-void vxge_hw_channel_dtr_complete(struct __vxge_hw_channel *channel)
+-{
+-	channel->work_arr[channel->compl_index]	= NULL;
+-
+-	/* wrap-around */
+-	if (++channel->compl_index == channel->length)
+-		channel->compl_index = 0;
+-
+-	channel->stats->total_compl_cnt++;
+-}
+-
+-/*
+- * vxge_hw_channel_dtr_free - Frees a dtr
+- * @channel: Channel handle
+- * @dtr:  DTR pointer
+- *
+- * Returns the dtr to free array
+- *
+- */
+-void vxge_hw_channel_dtr_free(struct __vxge_hw_channel *channel, void *dtrh)
+-{
+-	channel->free_arr[--channel->free_ptr] = dtrh;
+-}
+-
+-/*
+- * vxge_hw_channel_dtr_count
+- * @channel: Channel handle. Obtained via vxge_hw_channel_open().
+- *
+- * Retrieve number of DTRs available. This function can not be called
+- * from data path. ring_initial_replenishi() is the only user.
+- */
+-int vxge_hw_channel_dtr_count(struct __vxge_hw_channel *channel)
+-{
+-	return (channel->reserve_ptr - channel->reserve_top) +
+-		(channel->length - channel->free_ptr);
+-}
+-
+-/**
+- * vxge_hw_ring_rxd_reserve	- Reserve ring descriptor.
+- * @ring: Handle to the ring object used for receive
+- * @rxdh: Reserved descriptor. On success HW fills this "out" parameter
+- * with a valid handle.
+- *
+- * Reserve Rx descriptor for the subsequent filling-in driver
+- * and posting on the corresponding channel (@channelh)
+- * via vxge_hw_ring_rxd_post().
+- *
+- * Returns: VXGE_HW_OK - success.
+- * VXGE_HW_INF_OUT_OF_DESCRIPTORS - Currently no descriptors available.
+- *
+- */
+-enum vxge_hw_status vxge_hw_ring_rxd_reserve(struct __vxge_hw_ring *ring,
+-	void **rxdh)
+-{
+-	enum vxge_hw_status status;
+-	struct __vxge_hw_channel *channel;
+-
+-	channel = &ring->channel;
+-
+-	status = vxge_hw_channel_dtr_alloc(channel, rxdh);
+-
+-	if (status == VXGE_HW_OK) {
+-		struct vxge_hw_ring_rxd_1 *rxdp =
+-			(struct vxge_hw_ring_rxd_1 *)*rxdh;
+-
+-		rxdp->control_0	= rxdp->control_1 = 0;
+-	}
+-
+-	return status;
+-}
+-
+-/**
+- * vxge_hw_ring_rxd_free - Free descriptor.
+- * @ring: Handle to the ring object used for receive
+- * @rxdh: Descriptor handle.
+- *
+- * Free	the reserved descriptor. This operation is "symmetrical" to
+- * vxge_hw_ring_rxd_reserve. The "free-ing" completes the descriptor's
+- * lifecycle.
+- *
+- * After free-ing (see vxge_hw_ring_rxd_free()) the descriptor again can
+- * be:
+- *
+- * - reserved (vxge_hw_ring_rxd_reserve);
+- *
+- * - posted	(vxge_hw_ring_rxd_post);
+- *
+- * - completed (vxge_hw_ring_rxd_next_completed);
+- *
+- * - and recycled again	(vxge_hw_ring_rxd_free).
+- *
+- * For alternative state transitions and more details please refer to
+- * the design doc.
+- *
+- */
+-void vxge_hw_ring_rxd_free(struct __vxge_hw_ring *ring, void *rxdh)
+-{
+-	struct __vxge_hw_channel *channel;
+-
+-	channel = &ring->channel;
+-
+-	vxge_hw_channel_dtr_free(channel, rxdh);
+-
+-}
+-
+-/**
+- * vxge_hw_ring_rxd_pre_post - Prepare rxd and post
+- * @ring: Handle to the ring object used for receive
+- * @rxdh: Descriptor handle.
+- *
+- * This routine prepares a rxd and posts
+- */
+-void vxge_hw_ring_rxd_pre_post(struct __vxge_hw_ring *ring, void *rxdh)
+-{
+-	struct __vxge_hw_channel *channel;
+-
+-	channel = &ring->channel;
+-
+-	vxge_hw_channel_dtr_post(channel, rxdh);
+-}
+-
+-/**
+- * vxge_hw_ring_rxd_post_post - Process rxd after post.
+- * @ring: Handle to the ring object used for receive
+- * @rxdh: Descriptor handle.
+- *
+- * Processes rxd after post
+- */
+-void vxge_hw_ring_rxd_post_post(struct __vxge_hw_ring *ring, void *rxdh)
+-{
+-	struct vxge_hw_ring_rxd_1 *rxdp = (struct vxge_hw_ring_rxd_1 *)rxdh;
+-
+-	rxdp->control_0	= VXGE_HW_RING_RXD_LIST_OWN_ADAPTER;
+-
+-	if (ring->stats->common_stats.usage_cnt > 0)
+-		ring->stats->common_stats.usage_cnt--;
+-}
+-
+-/**
+- * vxge_hw_ring_rxd_post - Post descriptor on the ring.
+- * @ring: Handle to the ring object used for receive
+- * @rxdh: Descriptor obtained via vxge_hw_ring_rxd_reserve().
+- *
+- * Post	descriptor on the ring.
+- * Prior to posting the	descriptor should be filled in accordance with
+- * Host/Titan interface specification for a given service (LL, etc.).
+- *
+- */
+-void vxge_hw_ring_rxd_post(struct __vxge_hw_ring *ring, void *rxdh)
+-{
+-	struct vxge_hw_ring_rxd_1 *rxdp = (struct vxge_hw_ring_rxd_1 *)rxdh;
+-	struct __vxge_hw_channel *channel;
+-
+-	channel = &ring->channel;
+-
+-	wmb();
+-	rxdp->control_0	= VXGE_HW_RING_RXD_LIST_OWN_ADAPTER;
+-
+-	vxge_hw_channel_dtr_post(channel, rxdh);
+-
+-	if (ring->stats->common_stats.usage_cnt > 0)
+-		ring->stats->common_stats.usage_cnt--;
+-}
+-
+-/**
+- * vxge_hw_ring_rxd_post_post_wmb - Process rxd after post with memory barrier.
+- * @ring: Handle to the ring object used for receive
+- * @rxdh: Descriptor handle.
+- *
+- * Processes rxd after post with memory barrier.
+- */
+-void vxge_hw_ring_rxd_post_post_wmb(struct __vxge_hw_ring *ring, void *rxdh)
+-{
+-	wmb();
+-	vxge_hw_ring_rxd_post_post(ring, rxdh);
+-}
+-
+-/**
+- * vxge_hw_ring_rxd_next_completed - Get the _next_ completed descriptor.
+- * @ring: Handle to the ring object used for receive
+- * @rxdh: Descriptor handle. Returned by HW.
+- * @t_code:	Transfer code, as per Titan User Guide,
+- *	 Receive Descriptor Format. Returned by HW.
+- *
+- * Retrieve the	_next_ completed descriptor.
+- * HW uses ring callback (*vxge_hw_ring_callback_f) to notifiy
+- * driver of new completed descriptors. After that
+- * the driver can use vxge_hw_ring_rxd_next_completed to retrieve the rest
+- * completions (the very first completion is passed by HW via
+- * vxge_hw_ring_callback_f).
+- *
+- * Implementation-wise, the driver is free to call
+- * vxge_hw_ring_rxd_next_completed either immediately from inside the
+- * ring callback, or in a deferred fashion and separate (from HW)
+- * context.
+- *
+- * Non-zero @t_code means failure to fill-in receive buffer(s)
+- * of the descriptor.
+- * For instance, parity	error detected during the data transfer.
+- * In this case	Titan will complete the descriptor and indicate
+- * for the host	that the received data is not to be used.
+- * For details please refer to Titan User Guide.
+- *
+- * Returns: VXGE_HW_OK - success.
+- * VXGE_HW_INF_NO_MORE_COMPLETED_DESCRIPTORS - No completed descriptors
+- * are currently available for processing.
+- *
+- * See also: vxge_hw_ring_callback_f{},
+- * vxge_hw_fifo_rxd_next_completed(), enum vxge_hw_status{}.
+- */
+-enum vxge_hw_status vxge_hw_ring_rxd_next_completed(
+-	struct __vxge_hw_ring *ring, void **rxdh, u8 *t_code)
+-{
+-	struct __vxge_hw_channel *channel;
+-	struct vxge_hw_ring_rxd_1 *rxdp;
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-	u64 control_0, own;
+-
+-	channel = &ring->channel;
+-
+-	vxge_hw_channel_dtr_try_complete(channel, rxdh);
+-
+-	rxdp = *rxdh;
+-	if (rxdp == NULL) {
+-		status = VXGE_HW_INF_NO_MORE_COMPLETED_DESCRIPTORS;
+-		goto exit;
+-	}
+-
+-	control_0 = rxdp->control_0;
+-	own = control_0 & VXGE_HW_RING_RXD_LIST_OWN_ADAPTER;
+-	*t_code	= (u8)VXGE_HW_RING_RXD_T_CODE_GET(control_0);
+-
+-	/* check whether it is not the end */
+-	if (!own || *t_code == VXGE_HW_RING_T_CODE_FRM_DROP) {
+-
+-		vxge_assert((rxdp)->host_control !=
+-				0);
+-
+-		++ring->cmpl_cnt;
+-		vxge_hw_channel_dtr_complete(channel);
+-
+-		vxge_assert(*t_code != VXGE_HW_RING_RXD_T_CODE_UNUSED);
+-
+-		ring->stats->common_stats.usage_cnt++;
+-		if (ring->stats->common_stats.usage_max <
+-				ring->stats->common_stats.usage_cnt)
+-			ring->stats->common_stats.usage_max =
+-				ring->stats->common_stats.usage_cnt;
+-
+-		status = VXGE_HW_OK;
+-		goto exit;
+-	}
+-
+-	/* reset it. since we don't want to return
+-	 * garbage to the driver */
+-	*rxdh =	NULL;
+-	status = VXGE_HW_INF_NO_MORE_COMPLETED_DESCRIPTORS;
+-exit:
+-	return status;
+-}
+-
+-/**
+- * vxge_hw_ring_handle_tcode - Handle transfer code.
+- * @ring: Handle to the ring object used for receive
+- * @rxdh: Descriptor handle.
+- * @t_code: One of the enumerated (and documented in the Titan user guide)
+- * "transfer codes".
+- *
+- * Handle descriptor's transfer code. The latter comes with each completed
+- * descriptor.
+- *
+- * Returns: one of the enum vxge_hw_status{} enumerated types.
+- * VXGE_HW_OK			- for success.
+- * VXGE_HW_ERR_CRITICAL         - when encounters critical error.
+- */
+-enum vxge_hw_status vxge_hw_ring_handle_tcode(
+-	struct __vxge_hw_ring *ring, void *rxdh, u8 t_code)
+-{
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-
+-	/* If the t_code is not supported and if the
+-	 * t_code is other than 0x5 (unparseable packet
+-	 * such as unknown UPV6 header), Drop it !!!
+-	 */
+-
+-	if (t_code ==  VXGE_HW_RING_T_CODE_OK ||
+-		t_code == VXGE_HW_RING_T_CODE_L3_PKT_ERR) {
+-		status = VXGE_HW_OK;
+-		goto exit;
+-	}
+-
+-	if (t_code > VXGE_HW_RING_T_CODE_MULTI_ERR) {
+-		status = VXGE_HW_ERR_INVALID_TCODE;
+-		goto exit;
+-	}
+-
+-	ring->stats->rxd_t_code_err_cnt[t_code]++;
+-exit:
+-	return status;
+-}
+-
+-/**
+- * __vxge_hw_non_offload_db_post - Post non offload doorbell
+- *
+- * @fifo: fifohandle
+- * @txdl_ptr: The starting location of the TxDL in host memory
+- * @num_txds: The highest TxD in this TxDL (0 to 255 means 1 to 256)
+- * @no_snoop: No snoop flags
+- *
+- * This function posts a non-offload doorbell to doorbell FIFO
+- *
+- */
+-static void __vxge_hw_non_offload_db_post(struct __vxge_hw_fifo *fifo,
+-	u64 txdl_ptr, u32 num_txds, u32 no_snoop)
+-{
+-	writeq(VXGE_HW_NODBW_TYPE(VXGE_HW_NODBW_TYPE_NODBW) |
+-		VXGE_HW_NODBW_LAST_TXD_NUMBER(num_txds) |
+-		VXGE_HW_NODBW_GET_NO_SNOOP(no_snoop),
+-		&fifo->nofl_db->control_0);
+-
+-	writeq(txdl_ptr, &fifo->nofl_db->txdl_ptr);
+-}
+-
+-/**
+- * vxge_hw_fifo_free_txdl_count_get - returns the number of txdls available in
+- * the fifo
+- * @fifoh: Handle to the fifo object used for non offload send
+- */
+-u32 vxge_hw_fifo_free_txdl_count_get(struct __vxge_hw_fifo *fifoh)
+-{
+-	return vxge_hw_channel_dtr_count(&fifoh->channel);
+-}
+-
+-/**
+- * vxge_hw_fifo_txdl_reserve - Reserve fifo descriptor.
+- * @fifo: Handle to the fifo object used for non offload send
+- * @txdlh: Reserved descriptor. On success HW fills this "out" parameter
+- *        with a valid handle.
+- * @txdl_priv: Buffer to return the pointer to per txdl space
+- *
+- * Reserve a single TxDL (that is, fifo descriptor)
+- * for the subsequent filling-in by driver)
+- * and posting on the corresponding channel (@channelh)
+- * via vxge_hw_fifo_txdl_post().
+- *
+- * Note: it is the responsibility of driver to reserve multiple descriptors
+- * for lengthy (e.g., LSO) transmit operation. A single fifo descriptor
+- * carries up to configured number (fifo.max_frags) of contiguous buffers.
+- *
+- * Returns: VXGE_HW_OK - success;
+- * VXGE_HW_INF_OUT_OF_DESCRIPTORS - Currently no descriptors available
+- *
+- */
+-enum vxge_hw_status vxge_hw_fifo_txdl_reserve(
+-	struct __vxge_hw_fifo *fifo,
+-	void **txdlh, void **txdl_priv)
+-{
+-	struct __vxge_hw_channel *channel;
+-	enum vxge_hw_status status;
+-	int i;
+-
+-	channel = &fifo->channel;
+-
+-	status = vxge_hw_channel_dtr_alloc(channel, txdlh);
+-
+-	if (status == VXGE_HW_OK) {
+-		struct vxge_hw_fifo_txd *txdp =
+-			(struct vxge_hw_fifo_txd *)*txdlh;
+-		struct __vxge_hw_fifo_txdl_priv *priv;
+-
+-		priv = __vxge_hw_fifo_txdl_priv(fifo, txdp);
+-
+-		/* reset the TxDL's private */
+-		priv->align_dma_offset = 0;
+-		priv->align_vaddr_start = priv->align_vaddr;
+-		priv->align_used_frags = 0;
+-		priv->frags = 0;
+-		priv->alloc_frags = fifo->config->max_frags;
+-		priv->next_txdl_priv = NULL;
+-
+-		*txdl_priv = (void *)(size_t)txdp->host_control;
+-
+-		for (i = 0; i < fifo->config->max_frags; i++) {
+-			txdp = ((struct vxge_hw_fifo_txd *)*txdlh) + i;
+-			txdp->control_0 = txdp->control_1 = 0;
+-		}
+-	}
+-
+-	return status;
+-}
+-
+-/**
+- * vxge_hw_fifo_txdl_buffer_set - Set transmit buffer pointer in the
+- * descriptor.
+- * @fifo: Handle to the fifo object used for non offload send
+- * @txdlh: Descriptor handle.
+- * @frag_idx: Index of the data buffer in the caller's scatter-gather list
+- *            (of buffers).
+- * @dma_pointer: DMA address of the data buffer referenced by @frag_idx.
+- * @size: Size of the data buffer (in bytes).
+- *
+- * This API is part of the preparation of the transmit descriptor for posting
+- * (via vxge_hw_fifo_txdl_post()). The related "preparation" APIs include
+- * vxge_hw_fifo_txdl_mss_set() and vxge_hw_fifo_txdl_cksum_set_bits().
+- * All three APIs fill in the fields of the fifo descriptor,
+- * in accordance with the Titan specification.
+- *
+- */
+-void vxge_hw_fifo_txdl_buffer_set(struct __vxge_hw_fifo *fifo,
+-				  void *txdlh, u32 frag_idx,
+-				  dma_addr_t dma_pointer, u32 size)
+-{
+-	struct __vxge_hw_fifo_txdl_priv *txdl_priv;
+-	struct vxge_hw_fifo_txd *txdp, *txdp_last;
+-
+-	txdl_priv = __vxge_hw_fifo_txdl_priv(fifo, txdlh);
+-	txdp = (struct vxge_hw_fifo_txd *)txdlh  +  txdl_priv->frags;
+-
+-	if (frag_idx != 0)
+-		txdp->control_0 = txdp->control_1 = 0;
+-	else {
+-		txdp->control_0 |= VXGE_HW_FIFO_TXD_GATHER_CODE(
+-			VXGE_HW_FIFO_TXD_GATHER_CODE_FIRST);
+-		txdp->control_1 |= fifo->interrupt_type;
+-		txdp->control_1 |= VXGE_HW_FIFO_TXD_INT_NUMBER(
+-			fifo->tx_intr_num);
+-		if (txdl_priv->frags) {
+-			txdp_last = (struct vxge_hw_fifo_txd *)txdlh  +
+-			(txdl_priv->frags - 1);
+-			txdp_last->control_0 |= VXGE_HW_FIFO_TXD_GATHER_CODE(
+-				VXGE_HW_FIFO_TXD_GATHER_CODE_LAST);
+-		}
+-	}
+-
+-	vxge_assert(frag_idx < txdl_priv->alloc_frags);
+-
+-	txdp->buffer_pointer = (u64)dma_pointer;
+-	txdp->control_0 |= VXGE_HW_FIFO_TXD_BUFFER_SIZE(size);
+-	fifo->stats->total_buffers++;
+-	txdl_priv->frags++;
+-}
+-
+-/**
+- * vxge_hw_fifo_txdl_post - Post descriptor on the fifo channel.
+- * @fifo: Handle to the fifo object used for non offload send
+- * @txdlh: Descriptor obtained via vxge_hw_fifo_txdl_reserve()
+- *
+- * Post descriptor on the 'fifo' type channel for transmission.
+- * Prior to posting the descriptor should be filled in accordance with
+- * Host/Titan interface specification for a given service (LL, etc.).
+- *
+- */
+-void vxge_hw_fifo_txdl_post(struct __vxge_hw_fifo *fifo, void *txdlh)
+-{
+-	struct __vxge_hw_fifo_txdl_priv *txdl_priv;
+-	struct vxge_hw_fifo_txd *txdp_last;
+-	struct vxge_hw_fifo_txd *txdp_first;
+-
+-	txdl_priv = __vxge_hw_fifo_txdl_priv(fifo, txdlh);
+-	txdp_first = txdlh;
+-
+-	txdp_last = (struct vxge_hw_fifo_txd *)txdlh  +  (txdl_priv->frags - 1);
+-	txdp_last->control_0 |=
+-	      VXGE_HW_FIFO_TXD_GATHER_CODE(VXGE_HW_FIFO_TXD_GATHER_CODE_LAST);
+-	txdp_first->control_0 |= VXGE_HW_FIFO_TXD_LIST_OWN_ADAPTER;
+-
+-	vxge_hw_channel_dtr_post(&fifo->channel, txdlh);
+-
+-	__vxge_hw_non_offload_db_post(fifo,
+-		(u64)txdl_priv->dma_addr,
+-		txdl_priv->frags - 1,
+-		fifo->no_snoop_bits);
+-
+-	fifo->stats->total_posts++;
+-	fifo->stats->common_stats.usage_cnt++;
+-	if (fifo->stats->common_stats.usage_max <
+-		fifo->stats->common_stats.usage_cnt)
+-		fifo->stats->common_stats.usage_max =
+-			fifo->stats->common_stats.usage_cnt;
+-}
+-
+-/**
+- * vxge_hw_fifo_txdl_next_completed - Retrieve next completed descriptor.
+- * @fifo: Handle to the fifo object used for non offload send
+- * @txdlh: Descriptor handle. Returned by HW.
+- * @t_code: Transfer code, as per Titan User Guide,
+- *          Transmit Descriptor Format.
+- *          Returned by HW.
+- *
+- * Retrieve the _next_ completed descriptor.
+- * HW uses channel callback (*vxge_hw_channel_callback_f) to notifiy
+- * driver of new completed descriptors. After that
+- * the driver can use vxge_hw_fifo_txdl_next_completed to retrieve the rest
+- * completions (the very first completion is passed by HW via
+- * vxge_hw_channel_callback_f).
+- *
+- * Implementation-wise, the driver is free to call
+- * vxge_hw_fifo_txdl_next_completed either immediately from inside the
+- * channel callback, or in a deferred fashion and separate (from HW)
+- * context.
+- *
+- * Non-zero @t_code means failure to process the descriptor.
+- * The failure could happen, for instance, when the link is
+- * down, in which case Titan completes the descriptor because it
+- * is not able to send the data out.
+- *
+- * For details please refer to Titan User Guide.
+- *
+- * Returns: VXGE_HW_OK - success.
+- * VXGE_HW_INF_NO_MORE_COMPLETED_DESCRIPTORS - No completed descriptors
+- * are currently available for processing.
+- *
+- */
+-enum vxge_hw_status vxge_hw_fifo_txdl_next_completed(
+-	struct __vxge_hw_fifo *fifo, void **txdlh,
+-	enum vxge_hw_fifo_tcode *t_code)
+-{
+-	struct __vxge_hw_channel *channel;
+-	struct vxge_hw_fifo_txd *txdp;
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-
+-	channel = &fifo->channel;
+-
+-	vxge_hw_channel_dtr_try_complete(channel, txdlh);
+-
+-	txdp = *txdlh;
+-	if (txdp == NULL) {
+-		status = VXGE_HW_INF_NO_MORE_COMPLETED_DESCRIPTORS;
+-		goto exit;
+-	}
+-
+-	/* check whether host owns it */
+-	if (!(txdp->control_0 & VXGE_HW_FIFO_TXD_LIST_OWN_ADAPTER)) {
+-
+-		vxge_assert(txdp->host_control != 0);
+-
+-		vxge_hw_channel_dtr_complete(channel);
+-
+-		*t_code = (u8)VXGE_HW_FIFO_TXD_T_CODE_GET(txdp->control_0);
+-
+-		if (fifo->stats->common_stats.usage_cnt > 0)
+-			fifo->stats->common_stats.usage_cnt--;
+-
+-		status = VXGE_HW_OK;
+-		goto exit;
+-	}
+-
+-	/* no more completions */
+-	*txdlh = NULL;
+-	status = VXGE_HW_INF_NO_MORE_COMPLETED_DESCRIPTORS;
+-exit:
+-	return status;
+-}
+-
+-/**
+- * vxge_hw_fifo_handle_tcode - Handle transfer code.
+- * @fifo: Handle to the fifo object used for non offload send
+- * @txdlh: Descriptor handle.
+- * @t_code: One of the enumerated (and documented in the Titan user guide)
+- *          "transfer codes".
+- *
+- * Handle descriptor's transfer code. The latter comes with each completed
+- * descriptor.
+- *
+- * Returns: one of the enum vxge_hw_status{} enumerated types.
+- * VXGE_HW_OK - for success.
+- * VXGE_HW_ERR_CRITICAL - when encounters critical error.
+- */
+-enum vxge_hw_status vxge_hw_fifo_handle_tcode(struct __vxge_hw_fifo *fifo,
+-					      void *txdlh,
+-					      enum vxge_hw_fifo_tcode t_code)
+-{
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-
+-	if (((t_code & 0x7) < 0) || ((t_code & 0x7) > 0x4)) {
+-		status = VXGE_HW_ERR_INVALID_TCODE;
+-		goto exit;
+-	}
+-
+-	fifo->stats->txd_t_code_err_cnt[t_code]++;
+-exit:
+-	return status;
+-}
+-
+-/**
+- * vxge_hw_fifo_txdl_free - Free descriptor.
+- * @fifo: Handle to the fifo object used for non offload send
+- * @txdlh: Descriptor handle.
+- *
+- * Free the reserved descriptor. This operation is "symmetrical" to
+- * vxge_hw_fifo_txdl_reserve. The "free-ing" completes the descriptor's
+- * lifecycle.
+- *
+- * After free-ing (see vxge_hw_fifo_txdl_free()) the descriptor again can
+- * be:
+- *
+- * - reserved (vxge_hw_fifo_txdl_reserve);
+- *
+- * - posted (vxge_hw_fifo_txdl_post);
+- *
+- * - completed (vxge_hw_fifo_txdl_next_completed);
+- *
+- * - and recycled again (vxge_hw_fifo_txdl_free).
+- *
+- * For alternative state transitions and more details please refer to
+- * the design doc.
+- *
+- */
+-void vxge_hw_fifo_txdl_free(struct __vxge_hw_fifo *fifo, void *txdlh)
+-{
+-	struct __vxge_hw_channel *channel;
+-
+-	channel = &fifo->channel;
+-
+-	vxge_hw_channel_dtr_free(channel, txdlh);
+-}
+-
+-/**
+- * vxge_hw_vpath_mac_addr_add - Add the mac address entry for this vpath to MAC address table.
+- * @vp: Vpath handle.
+- * @macaddr: MAC address to be added for this vpath into the list
+- * @macaddr_mask: MAC address mask for macaddr
+- * @duplicate_mode: Duplicate MAC address add mode. Please see
+- *             enum vxge_hw_vpath_mac_addr_add_mode{}
+- *
+- * Adds the given mac address and mac address mask into the list for this
+- * vpath.
+- * see also: vxge_hw_vpath_mac_addr_delete, vxge_hw_vpath_mac_addr_get and
+- * vxge_hw_vpath_mac_addr_get_next
+- *
+- */
+-enum vxge_hw_status
+-vxge_hw_vpath_mac_addr_add(
+-	struct __vxge_hw_vpath_handle *vp,
+-	u8 *macaddr,
+-	u8 *macaddr_mask,
+-	enum vxge_hw_vpath_mac_addr_add_mode duplicate_mode)
+-{
+-	u32 i;
+-	u64 data1 = 0ULL;
+-	u64 data2 = 0ULL;
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-
+-	if (vp == NULL) {
+-		status = VXGE_HW_ERR_INVALID_HANDLE;
+-		goto exit;
+-	}
+-
+-	for (i = 0; i < ETH_ALEN; i++) {
+-		data1 <<= 8;
+-		data1 |= (u8)macaddr[i];
+-
+-		data2 <<= 8;
+-		data2 |= (u8)macaddr_mask[i];
+-	}
+-
+-	switch (duplicate_mode) {
+-	case VXGE_HW_VPATH_MAC_ADDR_ADD_DUPLICATE:
+-		i = 0;
+-		break;
+-	case VXGE_HW_VPATH_MAC_ADDR_DISCARD_DUPLICATE:
+-		i = 1;
+-		break;
+-	case VXGE_HW_VPATH_MAC_ADDR_REPLACE_DUPLICATE:
+-		i = 2;
+-		break;
+-	default:
+-		i = 0;
+-		break;
+-	}
+-
+-	status = __vxge_hw_vpath_rts_table_set(vp,
+-			VXGE_HW_RTS_ACCESS_STEER_CTRL_ACTION_ADD_ENTRY,
+-			VXGE_HW_RTS_ACCESS_STEER_CTRL_DATA_STRUCT_SEL_DA,
+-			0,
+-			VXGE_HW_RTS_ACCESS_STEER_DATA0_DA_MAC_ADDR(data1),
+-			VXGE_HW_RTS_ACCESS_STEER_DATA1_DA_MAC_ADDR_MASK(data2)|
+-			VXGE_HW_RTS_ACCESS_STEER_DATA1_DA_MAC_ADDR_MODE(i));
+-exit:
+-	return status;
+-}
+-
+-/**
+- * vxge_hw_vpath_mac_addr_get - Get the first mac address entry
+- * @vp: Vpath handle.
+- * @macaddr: First MAC address entry for this vpath in the list
+- * @macaddr_mask: MAC address mask for macaddr
+- *
+- * Get the first mac address entry for this vpath from MAC address table.
+- * Return: the first mac address and mac address mask in the list for this
+- * vpath.
+- * see also: vxge_hw_vpath_mac_addr_get_next
+- *
+- */
+-enum vxge_hw_status
+-vxge_hw_vpath_mac_addr_get(
+-	struct __vxge_hw_vpath_handle *vp,
+-	u8 *macaddr,
+-	u8 *macaddr_mask)
+-{
+-	u32 i;
+-	u64 data1 = 0ULL;
+-	u64 data2 = 0ULL;
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-
+-	if (vp == NULL) {
+-		status = VXGE_HW_ERR_INVALID_HANDLE;
+-		goto exit;
+-	}
+-
+-	status = __vxge_hw_vpath_rts_table_get(vp,
+-			VXGE_HW_RTS_ACCESS_STEER_CTRL_ACTION_LIST_FIRST_ENTRY,
+-			VXGE_HW_RTS_ACCESS_STEER_CTRL_DATA_STRUCT_SEL_DA,
+-			0, &data1, &data2);
+-
+-	if (status != VXGE_HW_OK)
+-		goto exit;
+-
+-	data1 = VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_DA_MAC_ADDR(data1);
+-
+-	data2 = VXGE_HW_RTS_ACCESS_STEER_DATA1_GET_DA_MAC_ADDR_MASK(data2);
+-
+-	for (i = ETH_ALEN; i > 0; i--) {
+-		macaddr[i-1] = (u8)(data1 & 0xFF);
+-		data1 >>= 8;
+-
+-		macaddr_mask[i-1] = (u8)(data2 & 0xFF);
+-		data2 >>= 8;
+-	}
+-exit:
+-	return status;
+-}
+-
+-/**
+- * vxge_hw_vpath_mac_addr_get_next - Get the next mac address entry
+- * @vp: Vpath handle.
+- * @macaddr: Next MAC address entry for this vpath in the list
+- * @macaddr_mask: MAC address mask for macaddr
+- *
+- * Get the next mac address entry for this vpath from MAC address table.
+- * Return: the next mac address and mac address mask in the list for this
+- * vpath.
+- * see also: vxge_hw_vpath_mac_addr_get
+- *
+- */
+-enum vxge_hw_status
+-vxge_hw_vpath_mac_addr_get_next(
+-	struct __vxge_hw_vpath_handle *vp,
+-	u8 *macaddr,
+-	u8 *macaddr_mask)
+-{
+-	u32 i;
+-	u64 data1 = 0ULL;
+-	u64 data2 = 0ULL;
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-
+-	if (vp == NULL) {
+-		status = VXGE_HW_ERR_INVALID_HANDLE;
+-		goto exit;
+-	}
+-
+-	status = __vxge_hw_vpath_rts_table_get(vp,
+-			VXGE_HW_RTS_ACCESS_STEER_CTRL_ACTION_LIST_NEXT_ENTRY,
+-			VXGE_HW_RTS_ACCESS_STEER_CTRL_DATA_STRUCT_SEL_DA,
+-			0, &data1, &data2);
+-
+-	if (status != VXGE_HW_OK)
+-		goto exit;
+-
+-	data1 = VXGE_HW_RTS_ACCESS_STEER_DATA0_GET_DA_MAC_ADDR(data1);
+-
+-	data2 = VXGE_HW_RTS_ACCESS_STEER_DATA1_GET_DA_MAC_ADDR_MASK(data2);
+-
+-	for (i = ETH_ALEN; i > 0; i--) {
+-		macaddr[i-1] = (u8)(data1 & 0xFF);
+-		data1 >>= 8;
+-
+-		macaddr_mask[i-1] = (u8)(data2 & 0xFF);
+-		data2 >>= 8;
+-	}
+-
+-exit:
+-	return status;
+-}
+-
+-/**
+- * vxge_hw_vpath_mac_addr_delete - Delete the mac address entry for this vpath to MAC address table.
+- * @vp: Vpath handle.
+- * @macaddr: MAC address to be added for this vpath into the list
+- * @macaddr_mask: MAC address mask for macaddr
+- *
+- * Delete the given mac address and mac address mask into the list for this
+- * vpath.
+- * see also: vxge_hw_vpath_mac_addr_add, vxge_hw_vpath_mac_addr_get and
+- * vxge_hw_vpath_mac_addr_get_next
+- *
+- */
+-enum vxge_hw_status
+-vxge_hw_vpath_mac_addr_delete(
+-	struct __vxge_hw_vpath_handle *vp,
+-	u8 *macaddr,
+-	u8 *macaddr_mask)
+-{
+-	u32 i;
+-	u64 data1 = 0ULL;
+-	u64 data2 = 0ULL;
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-
+-	if (vp == NULL) {
+-		status = VXGE_HW_ERR_INVALID_HANDLE;
+-		goto exit;
+-	}
+-
+-	for (i = 0; i < ETH_ALEN; i++) {
+-		data1 <<= 8;
+-		data1 |= (u8)macaddr[i];
+-
+-		data2 <<= 8;
+-		data2 |= (u8)macaddr_mask[i];
+-	}
+-
+-	status = __vxge_hw_vpath_rts_table_set(vp,
+-			VXGE_HW_RTS_ACCESS_STEER_CTRL_ACTION_DELETE_ENTRY,
+-			VXGE_HW_RTS_ACCESS_STEER_CTRL_DATA_STRUCT_SEL_DA,
+-			0,
+-			VXGE_HW_RTS_ACCESS_STEER_DATA0_DA_MAC_ADDR(data1),
+-			VXGE_HW_RTS_ACCESS_STEER_DATA1_DA_MAC_ADDR_MASK(data2));
+-exit:
+-	return status;
+-}
+-
+-/**
+- * vxge_hw_vpath_vid_add - Add the vlan id entry for this vpath to vlan id table.
+- * @vp: Vpath handle.
+- * @vid: vlan id to be added for this vpath into the list
+- *
+- * Adds the given vlan id into the list for this  vpath.
+- * see also: vxge_hw_vpath_vid_delete
+- *
+- */
+-enum vxge_hw_status
+-vxge_hw_vpath_vid_add(struct __vxge_hw_vpath_handle *vp, u64 vid)
+-{
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-
+-	if (vp == NULL) {
+-		status = VXGE_HW_ERR_INVALID_HANDLE;
+-		goto exit;
+-	}
+-
+-	status = __vxge_hw_vpath_rts_table_set(vp,
+-			VXGE_HW_RTS_ACCESS_STEER_CTRL_ACTION_ADD_ENTRY,
+-			VXGE_HW_RTS_ACCESS_STEER_CTRL_DATA_STRUCT_SEL_VID,
+-			0, VXGE_HW_RTS_ACCESS_STEER_DATA0_VLAN_ID(vid), 0);
+-exit:
+-	return status;
+-}
+-
+-/**
+- * vxge_hw_vpath_vid_delete - Delete the vlan id entry for this vpath
+- *               to vlan id table.
+- * @vp: Vpath handle.
+- * @vid: vlan id to be added for this vpath into the list
+- *
+- * Adds the given vlan id into the list for this  vpath.
+- * see also: vxge_hw_vpath_vid_add
+- *
+- */
+-enum vxge_hw_status
+-vxge_hw_vpath_vid_delete(struct __vxge_hw_vpath_handle *vp, u64 vid)
+-{
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-
+-	if (vp == NULL) {
+-		status = VXGE_HW_ERR_INVALID_HANDLE;
+-		goto exit;
+-	}
+-
+-	status = __vxge_hw_vpath_rts_table_set(vp,
+-			VXGE_HW_RTS_ACCESS_STEER_CTRL_ACTION_DELETE_ENTRY,
+-			VXGE_HW_RTS_ACCESS_STEER_CTRL_DATA_STRUCT_SEL_VID,
+-			0, VXGE_HW_RTS_ACCESS_STEER_DATA0_VLAN_ID(vid), 0);
+-exit:
+-	return status;
+-}
+-
+-/**
+- * vxge_hw_vpath_promisc_enable - Enable promiscuous mode.
+- * @vp: Vpath handle.
+- *
+- * Enable promiscuous mode of Titan-e operation.
+- *
+- * See also: vxge_hw_vpath_promisc_disable().
+- */
+-enum vxge_hw_status vxge_hw_vpath_promisc_enable(
+-			struct __vxge_hw_vpath_handle *vp)
+-{
+-	u64 val64;
+-	struct __vxge_hw_virtualpath *vpath;
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-
+-	if ((vp == NULL) || (vp->vpath->ringh == NULL)) {
+-		status = VXGE_HW_ERR_INVALID_HANDLE;
+-		goto exit;
+-	}
+-
+-	vpath = vp->vpath;
+-
+-	/* Enable promiscuous mode for function 0 only */
+-	if (!(vpath->hldev->access_rights &
+-		VXGE_HW_DEVICE_ACCESS_RIGHT_MRPCIM))
+-		return VXGE_HW_OK;
+-
+-	val64 = readq(&vpath->vp_reg->rxmac_vcfg0);
+-
+-	if (!(val64 & VXGE_HW_RXMAC_VCFG0_UCAST_ALL_ADDR_EN)) {
+-
+-		val64 |= VXGE_HW_RXMAC_VCFG0_UCAST_ALL_ADDR_EN |
+-			 VXGE_HW_RXMAC_VCFG0_MCAST_ALL_ADDR_EN |
+-			 VXGE_HW_RXMAC_VCFG0_BCAST_EN |
+-			 VXGE_HW_RXMAC_VCFG0_ALL_VID_EN;
+-
+-		writeq(val64, &vpath->vp_reg->rxmac_vcfg0);
+-	}
+-exit:
+-	return status;
+-}
+-
+-/**
+- * vxge_hw_vpath_promisc_disable - Disable promiscuous mode.
+- * @vp: Vpath handle.
+- *
+- * Disable promiscuous mode of Titan-e operation.
+- *
+- * See also: vxge_hw_vpath_promisc_enable().
+- */
+-enum vxge_hw_status vxge_hw_vpath_promisc_disable(
+-			struct __vxge_hw_vpath_handle *vp)
+-{
+-	u64 val64;
+-	struct __vxge_hw_virtualpath *vpath;
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-
+-	if ((vp == NULL) || (vp->vpath->ringh == NULL)) {
+-		status = VXGE_HW_ERR_INVALID_HANDLE;
+-		goto exit;
+-	}
+-
+-	vpath = vp->vpath;
+-
+-	val64 = readq(&vpath->vp_reg->rxmac_vcfg0);
+-
+-	if (val64 & VXGE_HW_RXMAC_VCFG0_UCAST_ALL_ADDR_EN) {
+-
+-		val64 &= ~(VXGE_HW_RXMAC_VCFG0_UCAST_ALL_ADDR_EN |
+-			   VXGE_HW_RXMAC_VCFG0_MCAST_ALL_ADDR_EN |
+-			   VXGE_HW_RXMAC_VCFG0_ALL_VID_EN);
+-
+-		writeq(val64, &vpath->vp_reg->rxmac_vcfg0);
+-	}
+-exit:
+-	return status;
+-}
+-
+-/*
+- * vxge_hw_vpath_bcast_enable - Enable broadcast
+- * @vp: Vpath handle.
+- *
+- * Enable receiving broadcasts.
+- */
+-enum vxge_hw_status vxge_hw_vpath_bcast_enable(
+-			struct __vxge_hw_vpath_handle *vp)
+-{
+-	u64 val64;
+-	struct __vxge_hw_virtualpath *vpath;
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-
+-	if ((vp == NULL) || (vp->vpath->ringh == NULL)) {
+-		status = VXGE_HW_ERR_INVALID_HANDLE;
+-		goto exit;
+-	}
+-
+-	vpath = vp->vpath;
+-
+-	val64 = readq(&vpath->vp_reg->rxmac_vcfg0);
+-
+-	if (!(val64 & VXGE_HW_RXMAC_VCFG0_BCAST_EN)) {
+-		val64 |= VXGE_HW_RXMAC_VCFG0_BCAST_EN;
+-		writeq(val64, &vpath->vp_reg->rxmac_vcfg0);
+-	}
+-exit:
+-	return status;
+-}
+-
+-/**
+- * vxge_hw_vpath_mcast_enable - Enable multicast addresses.
+- * @vp: Vpath handle.
+- *
+- * Enable Titan-e multicast addresses.
+- * Returns: VXGE_HW_OK on success.
+- *
+- */
+-enum vxge_hw_status vxge_hw_vpath_mcast_enable(
+-			struct __vxge_hw_vpath_handle *vp)
+-{
+-	u64 val64;
+-	struct __vxge_hw_virtualpath *vpath;
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-
+-	if ((vp == NULL) || (vp->vpath->ringh == NULL)) {
+-		status = VXGE_HW_ERR_INVALID_HANDLE;
+-		goto exit;
+-	}
+-
+-	vpath = vp->vpath;
+-
+-	val64 = readq(&vpath->vp_reg->rxmac_vcfg0);
+-
+-	if (!(val64 & VXGE_HW_RXMAC_VCFG0_MCAST_ALL_ADDR_EN)) {
+-		val64 |= VXGE_HW_RXMAC_VCFG0_MCAST_ALL_ADDR_EN;
+-		writeq(val64, &vpath->vp_reg->rxmac_vcfg0);
+-	}
+-exit:
+-	return status;
+-}
+-
+-/**
+- * vxge_hw_vpath_mcast_disable - Disable  multicast addresses.
+- * @vp: Vpath handle.
+- *
+- * Disable Titan-e multicast addresses.
+- * Returns: VXGE_HW_OK - success.
+- * VXGE_HW_ERR_INVALID_HANDLE - Invalid handle
+- *
+- */
+-enum vxge_hw_status
+-vxge_hw_vpath_mcast_disable(struct __vxge_hw_vpath_handle *vp)
+-{
+-	u64 val64;
+-	struct __vxge_hw_virtualpath *vpath;
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-
+-	if ((vp == NULL) || (vp->vpath->ringh == NULL)) {
+-		status = VXGE_HW_ERR_INVALID_HANDLE;
+-		goto exit;
+-	}
+-
+-	vpath = vp->vpath;
+-
+-	val64 = readq(&vpath->vp_reg->rxmac_vcfg0);
+-
+-	if (val64 & VXGE_HW_RXMAC_VCFG0_MCAST_ALL_ADDR_EN) {
+-		val64 &= ~VXGE_HW_RXMAC_VCFG0_MCAST_ALL_ADDR_EN;
+-		writeq(val64, &vpath->vp_reg->rxmac_vcfg0);
+-	}
+-exit:
+-	return status;
+-}
+-
+-/*
+- * vxge_hw_vpath_alarm_process - Process Alarms.
+- * @vpath: Virtual Path.
+- * @skip_alarms: Do not clear the alarms
+- *
+- * Process vpath alarms.
+- *
+- */
+-enum vxge_hw_status vxge_hw_vpath_alarm_process(
+-			struct __vxge_hw_vpath_handle *vp,
+-			u32 skip_alarms)
+-{
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-
+-	if (vp == NULL) {
+-		status = VXGE_HW_ERR_INVALID_HANDLE;
+-		goto exit;
+-	}
+-
+-	status = __vxge_hw_vpath_alarm_process(vp->vpath, skip_alarms);
+-exit:
+-	return status;
+-}
+-
+-/**
+- * vxge_hw_vpath_msix_set - Associate MSIX vectors with TIM interrupts and
+- *                            alrms
+- * @vp: Virtual Path handle.
+- * @tim_msix_id: MSIX vectors associated with VXGE_HW_MAX_INTR_PER_VP number of
+- *             interrupts(Can be repeated). If fifo or ring are not enabled
+- *             the MSIX vector for that should be set to 0
+- * @alarm_msix_id: MSIX vector for alarm.
+- *
+- * This API will associate a given MSIX vector numbers with the four TIM
+- * interrupts and alarm interrupt.
+- */
+-void
+-vxge_hw_vpath_msix_set(struct __vxge_hw_vpath_handle *vp, int *tim_msix_id,
+-		       int alarm_msix_id)
+-{
+-	u64 val64;
+-	struct __vxge_hw_virtualpath *vpath = vp->vpath;
+-	struct vxge_hw_vpath_reg __iomem *vp_reg = vpath->vp_reg;
+-	u32 vp_id = vp->vpath->vp_id;
+-
+-	val64 =  VXGE_HW_INTERRUPT_CFG0_GROUP0_MSIX_FOR_TXTI(
+-		  (vp_id * 4) + tim_msix_id[0]) |
+-		 VXGE_HW_INTERRUPT_CFG0_GROUP1_MSIX_FOR_TXTI(
+-		  (vp_id * 4) + tim_msix_id[1]);
+-
+-	writeq(val64, &vp_reg->interrupt_cfg0);
+-
+-	writeq(VXGE_HW_INTERRUPT_CFG2_ALARM_MAP_TO_MSG(
+-			(vpath->hldev->first_vp_id * 4) + alarm_msix_id),
+-			&vp_reg->interrupt_cfg2);
+-
+-	if (vpath->hldev->config.intr_mode ==
+-					VXGE_HW_INTR_MODE_MSIX_ONE_SHOT) {
+-		__vxge_hw_pio_mem_write32_upper((u32)vxge_bVALn(
+-				VXGE_HW_ONE_SHOT_VECT0_EN_ONE_SHOT_VECT0_EN,
+-				0, 32), &vp_reg->one_shot_vect0_en);
+-		__vxge_hw_pio_mem_write32_upper((u32)vxge_bVALn(
+-				VXGE_HW_ONE_SHOT_VECT1_EN_ONE_SHOT_VECT1_EN,
+-				0, 32), &vp_reg->one_shot_vect1_en);
+-		__vxge_hw_pio_mem_write32_upper((u32)vxge_bVALn(
+-				VXGE_HW_ONE_SHOT_VECT2_EN_ONE_SHOT_VECT2_EN,
+-				0, 32), &vp_reg->one_shot_vect2_en);
+-	}
+-}
+-
+-/**
+- * vxge_hw_vpath_msix_mask - Mask MSIX Vector.
+- * @vp: Virtual Path handle.
+- * @msix_id:  MSIX ID
+- *
+- * The function masks the msix interrupt for the given msix_id
+- *
+- * Returns: 0,
+- * Otherwise, VXGE_HW_ERR_WRONG_IRQ if the msix index is out of range
+- * status.
+- * See also:
+- */
+-void
+-vxge_hw_vpath_msix_mask(struct __vxge_hw_vpath_handle *vp, int msix_id)
+-{
+-	struct __vxge_hw_device *hldev = vp->vpath->hldev;
+-	__vxge_hw_pio_mem_write32_upper(
+-		(u32) vxge_bVALn(vxge_mBIT(msix_id  >> 2), 0, 32),
+-		&hldev->common_reg->set_msix_mask_vect[msix_id % 4]);
+-}
+-
+-/**
+- * vxge_hw_vpath_msix_clear - Clear MSIX Vector.
+- * @vp: Virtual Path handle.
+- * @msix_id:  MSI ID
+- *
+- * The function clears the msix interrupt for the given msix_id
+- *
+- * Returns: 0,
+- * Otherwise, VXGE_HW_ERR_WRONG_IRQ if the msix index is out of range
+- * status.
+- * See also:
+- */
+-void vxge_hw_vpath_msix_clear(struct __vxge_hw_vpath_handle *vp, int msix_id)
+-{
+-	struct __vxge_hw_device *hldev = vp->vpath->hldev;
+-
+-	if (hldev->config.intr_mode == VXGE_HW_INTR_MODE_MSIX_ONE_SHOT)
+-		__vxge_hw_pio_mem_write32_upper(
+-			(u32) vxge_bVALn(vxge_mBIT((msix_id >> 2)), 0, 32),
+-			&hldev->common_reg->clr_msix_one_shot_vec[msix_id % 4]);
+-	else
+-		__vxge_hw_pio_mem_write32_upper(
+-			(u32) vxge_bVALn(vxge_mBIT((msix_id >> 2)), 0, 32),
+-			&hldev->common_reg->clear_msix_mask_vect[msix_id % 4]);
+-}
+-
+-/**
+- * vxge_hw_vpath_msix_unmask - Unmask the MSIX Vector.
+- * @vp: Virtual Path handle.
+- * @msix_id:  MSI ID
+- *
+- * The function unmasks the msix interrupt for the given msix_id
+- *
+- * Returns: 0,
+- * Otherwise, VXGE_HW_ERR_WRONG_IRQ if the msix index is out of range
+- * status.
+- * See also:
+- */
+-void
+-vxge_hw_vpath_msix_unmask(struct __vxge_hw_vpath_handle *vp, int msix_id)
+-{
+-	struct __vxge_hw_device *hldev = vp->vpath->hldev;
+-	__vxge_hw_pio_mem_write32_upper(
+-			(u32)vxge_bVALn(vxge_mBIT(msix_id >> 2), 0, 32),
+-			&hldev->common_reg->clear_msix_mask_vect[msix_id%4]);
+-}
+-
+-/**
+- * vxge_hw_vpath_inta_mask_tx_rx - Mask Tx and Rx interrupts.
+- * @vp: Virtual Path handle.
+- *
+- * Mask Tx and Rx vpath interrupts.
+- *
+- * See also: vxge_hw_vpath_inta_mask_tx_rx()
+- */
+-void vxge_hw_vpath_inta_mask_tx_rx(struct __vxge_hw_vpath_handle *vp)
+-{
+-	u64	tim_int_mask0[4] = {[0 ...3] = 0};
+-	u32	tim_int_mask1[4] = {[0 ...3] = 0};
+-	u64	val64;
+-	struct __vxge_hw_device *hldev = vp->vpath->hldev;
+-
+-	VXGE_HW_DEVICE_TIM_INT_MASK_SET(tim_int_mask0,
+-		tim_int_mask1, vp->vpath->vp_id);
+-
+-	val64 = readq(&hldev->common_reg->tim_int_mask0);
+-
+-	if ((tim_int_mask0[VXGE_HW_VPATH_INTR_TX] != 0) ||
+-		(tim_int_mask0[VXGE_HW_VPATH_INTR_RX] != 0)) {
+-		writeq((tim_int_mask0[VXGE_HW_VPATH_INTR_TX] |
+-			tim_int_mask0[VXGE_HW_VPATH_INTR_RX] | val64),
+-			&hldev->common_reg->tim_int_mask0);
+-	}
+-
+-	val64 = readl(&hldev->common_reg->tim_int_mask1);
+-
+-	if ((tim_int_mask1[VXGE_HW_VPATH_INTR_TX] != 0) ||
+-		(tim_int_mask1[VXGE_HW_VPATH_INTR_RX] != 0)) {
+-		__vxge_hw_pio_mem_write32_upper(
+-			(tim_int_mask1[VXGE_HW_VPATH_INTR_TX] |
+-			tim_int_mask1[VXGE_HW_VPATH_INTR_RX] | val64),
+-			&hldev->common_reg->tim_int_mask1);
+-	}
+-}
+-
+-/**
+- * vxge_hw_vpath_inta_unmask_tx_rx - Unmask Tx and Rx interrupts.
+- * @vp: Virtual Path handle.
+- *
+- * Unmask Tx and Rx vpath interrupts.
+- *
+- * See also: vxge_hw_vpath_inta_mask_tx_rx()
+- */
+-void vxge_hw_vpath_inta_unmask_tx_rx(struct __vxge_hw_vpath_handle *vp)
+-{
+-	u64	tim_int_mask0[4] = {[0 ...3] = 0};
+-	u32	tim_int_mask1[4] = {[0 ...3] = 0};
+-	u64	val64;
+-	struct __vxge_hw_device *hldev = vp->vpath->hldev;
+-
+-	VXGE_HW_DEVICE_TIM_INT_MASK_SET(tim_int_mask0,
+-		tim_int_mask1, vp->vpath->vp_id);
+-
+-	val64 = readq(&hldev->common_reg->tim_int_mask0);
+-
+-	if ((tim_int_mask0[VXGE_HW_VPATH_INTR_TX] != 0) ||
+-	   (tim_int_mask0[VXGE_HW_VPATH_INTR_RX] != 0)) {
+-		writeq((~(tim_int_mask0[VXGE_HW_VPATH_INTR_TX] |
+-			tim_int_mask0[VXGE_HW_VPATH_INTR_RX])) & val64,
+-			&hldev->common_reg->tim_int_mask0);
+-	}
+-
+-	if ((tim_int_mask1[VXGE_HW_VPATH_INTR_TX] != 0) ||
+-	   (tim_int_mask1[VXGE_HW_VPATH_INTR_RX] != 0)) {
+-		__vxge_hw_pio_mem_write32_upper(
+-			(~(tim_int_mask1[VXGE_HW_VPATH_INTR_TX] |
+-			  tim_int_mask1[VXGE_HW_VPATH_INTR_RX])) & val64,
+-			&hldev->common_reg->tim_int_mask1);
+-	}
+-}
+-
+-/**
+- * vxge_hw_vpath_poll_rx - Poll Rx Virtual Path for completed
+- * descriptors and process the same.
+- * @ring: Handle to the ring object used for receive
+- *
+- * The function	polls the Rx for the completed	descriptors and	calls
+- * the driver via supplied completion	callback.
+- *
+- * Returns: VXGE_HW_OK, if the polling is completed successful.
+- * VXGE_HW_COMPLETIONS_REMAIN: There are still more completed
+- * descriptors available which are yet to be processed.
+- *
+- * See also: vxge_hw_vpath_poll_rx()
+- */
+-enum vxge_hw_status vxge_hw_vpath_poll_rx(struct __vxge_hw_ring *ring)
+-{
+-	u8 t_code;
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-	void *first_rxdh;
+-	int new_count = 0;
+-
+-	ring->cmpl_cnt = 0;
+-
+-	status = vxge_hw_ring_rxd_next_completed(ring, &first_rxdh, &t_code);
+-	if (status == VXGE_HW_OK)
+-		ring->callback(ring, first_rxdh,
+-			t_code, ring->channel.userdata);
+-
+-	if (ring->cmpl_cnt != 0) {
+-		ring->doorbell_cnt += ring->cmpl_cnt;
+-		if (ring->doorbell_cnt >= ring->rxds_limit) {
+-			/*
+-			 * Each RxD is of 4 qwords, update the number of
+-			 * qwords replenished
+-			 */
+-			new_count = (ring->doorbell_cnt * 4);
+-
+-			/* For each block add 4 more qwords */
+-			ring->total_db_cnt += ring->doorbell_cnt;
+-			if (ring->total_db_cnt >= ring->rxds_per_block) {
+-				new_count += 4;
+-				/* Reset total count */
+-				ring->total_db_cnt %= ring->rxds_per_block;
+-			}
+-			writeq(VXGE_HW_PRC_RXD_DOORBELL_NEW_QW_CNT(new_count),
+-				&ring->vp_reg->prc_rxd_doorbell);
+-			readl(&ring->common_reg->titan_general_int_status);
+-			ring->doorbell_cnt = 0;
+-		}
+-	}
+-
+-	return status;
+-}
+-
+-/**
+- * vxge_hw_vpath_poll_tx - Poll Tx for completed descriptors and process the same.
+- * @fifo: Handle to the fifo object used for non offload send
+- * @skb_ptr: pointer to skb
+- * @nr_skb: number of skbs
+- * @more: more is coming
+- *
+- * The function polls the Tx for the completed descriptors and calls
+- * the driver via supplied completion callback.
+- *
+- * Returns: VXGE_HW_OK, if the polling is completed successful.
+- * VXGE_HW_COMPLETIONS_REMAIN: There are still more completed
+- * descriptors available which are yet to be processed.
+- */
+-enum vxge_hw_status vxge_hw_vpath_poll_tx(struct __vxge_hw_fifo *fifo,
+-					struct sk_buff ***skb_ptr, int nr_skb,
+-					int *more)
+-{
+-	enum vxge_hw_fifo_tcode t_code;
+-	void *first_txdlh;
+-	enum vxge_hw_status status = VXGE_HW_OK;
+-	struct __vxge_hw_channel *channel;
+-
+-	channel = &fifo->channel;
+-
+-	status = vxge_hw_fifo_txdl_next_completed(fifo,
+-				&first_txdlh, &t_code);
+-	if (status == VXGE_HW_OK)
+-		if (fifo->callback(fifo, first_txdlh, t_code,
+-			channel->userdata, skb_ptr, nr_skb, more) != VXGE_HW_OK)
+-			status = VXGE_HW_COMPLETIONS_REMAIN;
+-
+-	return status;
+-}
+diff --git a/drivers/net/ethernet/neterion/vxge/vxge-traffic.h b/drivers/net/ethernet/neterion/vxge/vxge-traffic.h
+deleted file mode 100644
+index ba6f833bb059..000000000000
+--- a/drivers/net/ethernet/neterion/vxge/vxge-traffic.h
++++ /dev/null
+@@ -1,2290 +0,0 @@
+-/******************************************************************************
+- * This software may be used and distributed according to the terms of
+- * the GNU General Public License (GPL), incorporated herein by reference.
+- * Drivers based on or derived from this code fall under the GPL and must
+- * retain the authorship, copyright and license notice.  This file is not
+- * a complete program and may only be used when the entire operating
+- * system is licensed under the GPL.
+- * See the file COPYING in this distribution for more information.
+- *
+- * vxge-traffic.h: Driver for Exar Corp's X3100 Series 10GbE PCIe I/O
+- *                 Virtualized Server Adapter.
+- * Copyright(c) 2002-2010 Exar Corp.
+- ******************************************************************************/
+-#ifndef VXGE_TRAFFIC_H
+-#define VXGE_TRAFFIC_H
+-
+-#include "vxge-reg.h"
+-#include "vxge-version.h"
+-
+-#define VXGE_HW_DTR_MAX_T_CODE		16
+-#define VXGE_HW_ALL_FOXES		0xFFFFFFFFFFFFFFFFULL
+-#define VXGE_HW_INTR_MASK_ALL		0xFFFFFFFFFFFFFFFFULL
+-#define	VXGE_HW_MAX_VIRTUAL_PATHS	17
+-
+-#define VXGE_HW_MAC_MAX_MAC_PORT_ID	2
+-
+-#define VXGE_HW_DEFAULT_32		0xffffffff
+-/* frames sizes */
+-#define VXGE_HW_HEADER_802_2_SIZE	3
+-#define VXGE_HW_HEADER_SNAP_SIZE	5
+-#define VXGE_HW_HEADER_VLAN_SIZE	4
+-#define VXGE_HW_MAC_HEADER_MAX_SIZE \
+-			(ETH_HLEN + \
+-			VXGE_HW_HEADER_802_2_SIZE + \
+-			VXGE_HW_HEADER_VLAN_SIZE + \
+-			VXGE_HW_HEADER_SNAP_SIZE)
+-
+-/* 32bit alignments */
+-#define VXGE_HW_HEADER_ETHERNET_II_802_3_ALIGN		2
+-#define VXGE_HW_HEADER_802_2_SNAP_ALIGN			2
+-#define VXGE_HW_HEADER_802_2_ALIGN			3
+-#define VXGE_HW_HEADER_SNAP_ALIGN			1
+-
+-#define VXGE_HW_L3_CKSUM_OK				0xFFFF
+-#define VXGE_HW_L4_CKSUM_OK				0xFFFF
+-
+-/* Forward declarations */
+-struct __vxge_hw_device;
+-struct __vxge_hw_vpath_handle;
+-struct vxge_hw_vp_config;
+-struct __vxge_hw_virtualpath;
+-struct __vxge_hw_channel;
+-struct __vxge_hw_fifo;
+-struct __vxge_hw_ring;
+-struct vxge_hw_ring_attr;
+-struct vxge_hw_mempool;
+-
+-#ifndef TRUE
+-#define TRUE 1
+-#endif
+-
+-#ifndef FALSE
+-#define FALSE 0
+-#endif
+-
+-/*VXGE_HW_STATUS_H*/
+-
+-#define VXGE_HW_EVENT_BASE			0
+-#define VXGE_LL_EVENT_BASE			100
+-
+-/**
+- * enum vxge_hw_event- Enumerates slow-path HW events.
+- * @VXGE_HW_EVENT_UNKNOWN: Unknown (and invalid) event.
+- * @VXGE_HW_EVENT_SERR: Serious vpath hardware error event.
+- * @VXGE_HW_EVENT_ECCERR: vpath ECC error event.
+- * @VXGE_HW_EVENT_VPATH_ERR: Error local to the respective vpath
+- * @VXGE_HW_EVENT_FIFO_ERR: FIFO Doorbell fifo error.
+- * @VXGE_HW_EVENT_SRPCIM_SERR: srpcim hardware error event.
+- * @VXGE_HW_EVENT_MRPCIM_SERR: mrpcim hardware error event.
+- * @VXGE_HW_EVENT_MRPCIM_ECCERR: mrpcim ecc error event.
+- * @VXGE_HW_EVENT_RESET_START: Privileged entity is starting device reset
+- * @VXGE_HW_EVENT_RESET_COMPLETE: Device reset has been completed
+- * @VXGE_HW_EVENT_SLOT_FREEZE: Slot-freeze event. Driver tries to distinguish
+- * slot-freeze from the rest critical events (e.g. ECC) when it is
+- * impossible to PIO read "through" the bus, i.e. when getting all-foxes.
+- *
+- * enum vxge_hw_event enumerates slow-path HW eventis.
+- *
+- * See also: struct vxge_hw_uld_cbs{}, vxge_uld_link_up_f{},
+- * vxge_uld_link_down_f{}.
+- */
+-enum vxge_hw_event {
+-	VXGE_HW_EVENT_UNKNOWN		= 0,
+-	/* HW events */
+-	VXGE_HW_EVENT_RESET_START	= VXGE_HW_EVENT_BASE + 1,
+-	VXGE_HW_EVENT_RESET_COMPLETE	= VXGE_HW_EVENT_BASE + 2,
+-	VXGE_HW_EVENT_LINK_DOWN		= VXGE_HW_EVENT_BASE + 3,
+-	VXGE_HW_EVENT_LINK_UP		= VXGE_HW_EVENT_BASE + 4,
+-	VXGE_HW_EVENT_ALARM_CLEARED	= VXGE_HW_EVENT_BASE + 5,
+-	VXGE_HW_EVENT_ECCERR		= VXGE_HW_EVENT_BASE + 6,
+-	VXGE_HW_EVENT_MRPCIM_ECCERR	= VXGE_HW_EVENT_BASE + 7,
+-	VXGE_HW_EVENT_FIFO_ERR		= VXGE_HW_EVENT_BASE + 8,
+-	VXGE_HW_EVENT_VPATH_ERR		= VXGE_HW_EVENT_BASE + 9,
+-	VXGE_HW_EVENT_CRITICAL_ERR	= VXGE_HW_EVENT_BASE + 10,
+-	VXGE_HW_EVENT_SERR		= VXGE_HW_EVENT_BASE + 11,
+-	VXGE_HW_EVENT_SRPCIM_SERR	= VXGE_HW_EVENT_BASE + 12,
+-	VXGE_HW_EVENT_MRPCIM_SERR	= VXGE_HW_EVENT_BASE + 13,
+-	VXGE_HW_EVENT_SLOT_FREEZE	= VXGE_HW_EVENT_BASE + 14,
+-};
+-
+-#define VXGE_HW_SET_LEVEL(a, b) (((a) > (b)) ? (a) : (b))
+-
+-/*
+- * struct vxge_hw_mempool_dma - Represents DMA objects passed to the
+-	caller.
+- */
+-struct vxge_hw_mempool_dma {
+-	dma_addr_t			addr;
+-	struct pci_dev *handle;
+-	struct pci_dev *acc_handle;
+-};
+-
+-/*
+- * vxge_hw_mempool_item_f  - Mempool item alloc/free callback
+- * @mempoolh: Memory pool handle.
+- * @memblock: Address of memory block
+- * @memblock_index: Index of memory block
+- * @item: Item that gets allocated or freed.
+- * @index: Item's index in the memory pool.
+- * @is_last: True, if this item is the last one in the pool; false - otherwise.
+- * userdata: Per-pool user context.
+- *
+- * Memory pool allocation/deallocation callback.
+- */
+-
+-/*
+- * struct vxge_hw_mempool - Memory pool.
+- */
+-struct vxge_hw_mempool {
+-
+-	void (*item_func_alloc)(
+-	struct vxge_hw_mempool *mempoolh,
+-	u32			memblock_index,
+-	struct vxge_hw_mempool_dma	*dma_object,
+-	u32			index,
+-	u32			is_last);
+-
+-	void		*userdata;
+-	void		**memblocks_arr;
+-	void		**memblocks_priv_arr;
+-	struct vxge_hw_mempool_dma	*memblocks_dma_arr;
+-	struct __vxge_hw_device *devh;
+-	u32			memblock_size;
+-	u32			memblocks_max;
+-	u32			memblocks_allocated;
+-	u32			item_size;
+-	u32			items_max;
+-	u32			items_initial;
+-	u32			items_current;
+-	u32			items_per_memblock;
+-	void		**items_arr;
+-	u32			items_priv_size;
+-};
+-
+-#define	VXGE_HW_MAX_INTR_PER_VP				4
+-#define	VXGE_HW_VPATH_INTR_TX				0
+-#define	VXGE_HW_VPATH_INTR_RX				1
+-#define	VXGE_HW_VPATH_INTR_EINTA			2
+-#define	VXGE_HW_VPATH_INTR_BMAP				3
+-
+-#define VXGE_HW_BLOCK_SIZE				4096
+-
+-/**
+- * struct vxge_hw_tim_intr_config - Titan Tim interrupt configuration.
+- * @intr_enable: Set to 1, if interrupt is enabled.
+- * @btimer_val: Boundary Timer Initialization value in units of 272 ns.
+- * @timer_ac_en: Timer Automatic Cancel. 1 : Automatic Canceling Enable: when
+- *             asserted, other interrupt-generating entities will cancel the
+- *             scheduled timer interrupt.
+- * @timer_ci_en: Timer Continuous Interrupt. 1 : Continuous Interrupting Enable:
+- *             When asserted, an interrupt will be generated every time the
+- *             boundary timer expires, even if no traffic has been transmitted
+- *             on this interrupt.
+- * @timer_ri_en: Timer Consecutive (Re-) Interrupt 1 : Consecutive
+- *             (Re-) Interrupt Enable: When asserted, an interrupt will be
+- *             generated the next time the timer expires, even if no traffic has
+- *             been transmitted on this interrupt. (This will only happen once
+- *             each time that this value is written to the TIM.) This bit is
+- *             cleared by H/W at the end of the current-timer-interval when
+- *             the interrupt is triggered.
+- * @rtimer_val: Restriction Timer Initialization value in units of 272 ns.
+- * @util_sel: Utilization Selector. Selects which of the workload approximations
+- *             to use (e.g. legacy Tx utilization, Tx/Rx utilization, host
+- *             specified utilization etc.), selects one of
+- *             the 17 host configured values.
+- *             0-Virtual Path 0
+- *             1-Virtual Path 1
+- *             ...
+- *             16-Virtual Path 17
+- *             17-Legacy Tx network utilization, provided by TPA
+- *             18-Legacy Rx network utilization, provided by FAU
+- *             19-Average of legacy Rx and Tx utilization calculated from link
+- *                utilization values.
+- *             20-31-Invalid configurations
+- *             32-Host utilization for Virtual Path 0
+- *             33-Host utilization for Virtual Path 1
+- *             ...
+- *             48-Host utilization for Virtual Path 17
+- *             49-Legacy Tx network utilization, provided by TPA
+- *             50-Legacy Rx network utilization, provided by FAU
+- *             51-Average of legacy Rx and Tx utilization calculated from
+- *                link utilization values.
+- *             52-63-Invalid configurations
+- * @ltimer_val: Latency Timer Initialization Value in units of 272 ns.
+- * @txd_cnt_en: TxD Return Event Count Enable. This configuration bit when set
+- *             to 1 enables counting of TxD0 returns (signalled by PCC's),
+- *             towards utilization event count values.
+- * @urange_a: Defines the upper limit (in percent) for this utilization range
+- *             to be active. This range is considered active
+- *             if 0 = UTIL = URNG_A
+- *             and the UEC_A field (below) is non-zero.
+- * @uec_a: Utilization Event Count A. If this range is active, the adapter will
+- *             wait until UEC_A events have occurred on the interrupt before
+- *             generating an interrupt.
+- * @urange_b: Link utilization range B.
+- * @uec_b: Utilization Event Count B.
+- * @urange_c: Link utilization range C.
+- * @uec_c: Utilization Event Count C.
+- * @urange_d: Link utilization range D.
+- * @uec_d: Utilization Event Count D.
+- * Traffic Interrupt Controller Module interrupt configuration.
+- */
+-struct vxge_hw_tim_intr_config {
+-
+-	u32				intr_enable;
+-#define VXGE_HW_TIM_INTR_ENABLE				1
+-#define VXGE_HW_TIM_INTR_DISABLE				0
+-#define VXGE_HW_TIM_INTR_DEFAULT				0
+-
+-	u32				btimer_val;
+-#define VXGE_HW_MIN_TIM_BTIMER_VAL				0
+-#define VXGE_HW_MAX_TIM_BTIMER_VAL				67108864
+-#define VXGE_HW_USE_FLASH_DEFAULT				(~0)
+-
+-	u32				timer_ac_en;
+-#define VXGE_HW_TIM_TIMER_AC_ENABLE				1
+-#define VXGE_HW_TIM_TIMER_AC_DISABLE				0
+-
+-	u32				timer_ci_en;
+-#define VXGE_HW_TIM_TIMER_CI_ENABLE				1
+-#define VXGE_HW_TIM_TIMER_CI_DISABLE				0
+-
+-	u32				timer_ri_en;
+-#define VXGE_HW_TIM_TIMER_RI_ENABLE				1
+-#define VXGE_HW_TIM_TIMER_RI_DISABLE				0
+-
+-	u32				rtimer_val;
+-#define VXGE_HW_MIN_TIM_RTIMER_VAL				0
+-#define VXGE_HW_MAX_TIM_RTIMER_VAL				67108864
+-
+-	u32				util_sel;
+-#define VXGE_HW_TIM_UTIL_SEL_LEGACY_TX_NET_UTIL		17
+-#define VXGE_HW_TIM_UTIL_SEL_LEGACY_RX_NET_UTIL		18
+-#define VXGE_HW_TIM_UTIL_SEL_LEGACY_TX_RX_AVE_NET_UTIL		19
+-#define VXGE_HW_TIM_UTIL_SEL_PER_VPATH				63
+-
+-	u32				ltimer_val;
+-#define VXGE_HW_MIN_TIM_LTIMER_VAL				0
+-#define VXGE_HW_MAX_TIM_LTIMER_VAL				67108864
+-
+-	/* Line utilization interrupts */
+-	u32				urange_a;
+-#define VXGE_HW_MIN_TIM_URANGE_A				0
+-#define VXGE_HW_MAX_TIM_URANGE_A				100
+-
+-	u32				uec_a;
+-#define VXGE_HW_MIN_TIM_UEC_A					0
+-#define VXGE_HW_MAX_TIM_UEC_A					65535
+-
+-	u32				urange_b;
+-#define VXGE_HW_MIN_TIM_URANGE_B				0
+-#define VXGE_HW_MAX_TIM_URANGE_B				100
+-
+-	u32				uec_b;
+-#define VXGE_HW_MIN_TIM_UEC_B					0
+-#define VXGE_HW_MAX_TIM_UEC_B					65535
+-
+-	u32				urange_c;
+-#define VXGE_HW_MIN_TIM_URANGE_C				0
+-#define VXGE_HW_MAX_TIM_URANGE_C				100
+-
+-	u32				uec_c;
+-#define VXGE_HW_MIN_TIM_UEC_C					0
+-#define VXGE_HW_MAX_TIM_UEC_C					65535
+-
+-	u32				uec_d;
+-#define VXGE_HW_MIN_TIM_UEC_D					0
+-#define VXGE_HW_MAX_TIM_UEC_D					65535
+-};
+-
+-#define	VXGE_HW_STATS_OP_READ					0
+-#define	VXGE_HW_STATS_OP_CLEAR_STAT				1
+-#define	VXGE_HW_STATS_OP_CLEAR_ALL_VPATH_STATS			2
+-#define	VXGE_HW_STATS_OP_CLEAR_ALL_STATS_OF_LOC			2
+-#define	VXGE_HW_STATS_OP_CLEAR_ALL_STATS			3
+-
+-#define	VXGE_HW_STATS_LOC_AGGR					17
+-#define VXGE_HW_STATS_AGGRn_OFFSET				0x00720
+-
+-#define VXGE_HW_STATS_VPATH_TX_OFFSET				0x0
+-#define VXGE_HW_STATS_VPATH_RX_OFFSET				0x00090
+-
+-#define	VXGE_HW_STATS_VPATH_PROG_EVENT_VNUM0_OFFSET	   (0x001d0 >> 3)
+-#define	VXGE_HW_STATS_GET_VPATH_PROG_EVENT_VNUM0(bits) \
+-						vxge_bVALn(bits, 0, 32)
+-
+-#define	VXGE_HW_STATS_GET_VPATH_PROG_EVENT_VNUM1(bits) \
+-						vxge_bVALn(bits, 32, 32)
+-
+-#define	VXGE_HW_STATS_VPATH_PROG_EVENT_VNUM2_OFFSET	   (0x001d8 >> 3)
+-#define	VXGE_HW_STATS_GET_VPATH_PROG_EVENT_VNUM2(bits) \
+-						vxge_bVALn(bits, 0, 32)
+-
+-#define	VXGE_HW_STATS_GET_VPATH_PROG_EVENT_VNUM3(bits) \
+-						vxge_bVALn(bits, 32, 32)
+-
+-/**
+- * struct vxge_hw_xmac_aggr_stats - Per-Aggregator XMAC Statistics
+- *
+- * @tx_frms: Count of data frames transmitted on this Aggregator on all
+- *             its Aggregation ports. Does not include LACPDUs or Marker PDUs.
+- *             However, does include frames discarded by the Distribution
+- *             function.
+- * @tx_data_octets: Count of data and padding octets of frames transmitted
+- *             on this Aggregator on all its Aggregation ports. Does not include
+- *             octets of LACPDUs or Marker PDUs. However, does include octets of
+- *             frames discarded by the Distribution function.
+- * @tx_mcast_frms: Count of data frames transmitted (to a group destination
+- *             address other than the broadcast address) on this Aggregator on
+- *             all its Aggregation ports. Does not include LACPDUs or Marker
+- *             PDUs. However, does include frames discarded by the Distribution
+- *             function.
+- * @tx_bcast_frms: Count of broadcast data frames transmitted on this Aggregator
+- *             on all its Aggregation ports. Does not include LACPDUs or Marker
+- *             PDUs. However, does include frames discarded by the Distribution
+- *             function.
+- * @tx_discarded_frms: Count of data frames to be transmitted on this Aggregator
+- *             that are discarded by the Distribution function. This occurs when
+- *             conversation are allocated to different ports and have to be
+- *             flushed on old ports
+- * @tx_errored_frms: Count of data frames transmitted on this Aggregator that
+- *             experience transmission errors on its Aggregation ports.
+- * @rx_frms: Count of data frames received on this Aggregator on all its
+- *             Aggregation ports. Does not include LACPDUs or Marker PDUs.
+- *             Also, does not include frames discarded by the Collection
+- *             function.
+- * @rx_data_octets: Count of data and padding octets of frames received on this
+- *             Aggregator on all its Aggregation ports. Does not include octets
+- *             of LACPDUs or Marker PDUs. Also, does not include
+- *             octets of frames
+- *             discarded by the Collection function.
+- * @rx_mcast_frms: Count of data frames received (from a group destination
+- *             address other than the broadcast address) on this Aggregator on
+- *             all its Aggregation ports. Does not include LACPDUs or Marker
+- *             PDUs. Also, does not include frames discarded by the Collection
+- *             function.
+- * @rx_bcast_frms: Count of broadcast data frames received on this Aggregator on
+- *             all its Aggregation ports. Does not include LACPDUs or Marker
+- *             PDUs. Also, does not include frames discarded by the Collection
+- *             function.
+- * @rx_discarded_frms: Count of data frames received on this Aggregator that are
+- *             discarded by the Collection function because the Collection
+- *             function was disabled on the port which the frames are received.
+- * @rx_errored_frms: Count of data frames received on this Aggregator that are
+- *             discarded by its Aggregation ports, or are discarded by the
+- *             Collection function of the Aggregator, or that are discarded by
+- *             the Aggregator due to detection of an illegal Slow Protocols PDU.
+- * @rx_unknown_slow_proto_frms: Count of data frames received on this Aggregator
+- *             that are discarded by its Aggregation ports due to detection of
+- *             an unknown Slow Protocols PDU.
+- *
+- * Per aggregator XMAC RX statistics.
+- */
+-struct vxge_hw_xmac_aggr_stats {
+-/*0x000*/		u64	tx_frms;
+-/*0x008*/		u64	tx_data_octets;
+-/*0x010*/		u64	tx_mcast_frms;
+-/*0x018*/		u64	tx_bcast_frms;
+-/*0x020*/		u64	tx_discarded_frms;
+-/*0x028*/		u64	tx_errored_frms;
+-/*0x030*/		u64	rx_frms;
+-/*0x038*/		u64	rx_data_octets;
+-/*0x040*/		u64	rx_mcast_frms;
+-/*0x048*/		u64	rx_bcast_frms;
+-/*0x050*/		u64	rx_discarded_frms;
+-/*0x058*/		u64	rx_errored_frms;
+-/*0x060*/		u64	rx_unknown_slow_proto_frms;
+-} __packed;
+-
+-/**
+- * struct vxge_hw_xmac_port_stats - XMAC Port Statistics
+- *
+- * @tx_ttl_frms: Count of successfully transmitted MAC frames
+- * @tx_ttl_octets: Count of total octets of transmitted frames, not including
+- *            framing characters (i.e. less framing bits). To determine the
+- *            total octets of transmitted frames, including framing characters,
+- *            multiply PORTn_TX_TTL_FRMS by 8 and add it to this stat (unless
+- *            otherwise configured, this stat only counts frames that have
+- *            8 bytes of preamble for each frame). This stat can be configured
+- *            (see XMAC_STATS_GLOBAL_CFG.TTL_FRMS_HANDLING) to count everything
+- *            including the preamble octets.
+- * @tx_data_octets: Count of data and padding octets of successfully transmitted
+- *            frames.
+- * @tx_mcast_frms: Count of successfully transmitted frames to a group address
+- *            other than the broadcast address.
+- * @tx_bcast_frms: Count of successfully transmitted frames to the broadcast
+- *            group address.
+- * @tx_ucast_frms: Count of transmitted frames containing a unicast address.
+- *            Includes discarded frames that are not sent to the network.
+- * @tx_tagged_frms: Count of transmitted frames containing a VLAN tag.
+- * @tx_vld_ip: Count of transmitted IP datagrams that are passed to the network.
+- * @tx_vld_ip_octets: Count of total octets of transmitted IP datagrams that
+- *            are passed to the network.
+- * @tx_icmp: Count of transmitted ICMP messages. Includes messages not sent
+- *            due to problems within ICMP.
+- * @tx_tcp: Count of transmitted TCP segments. Does not include segments
+- *            containing retransmitted octets.
+- * @tx_rst_tcp: Count of transmitted TCP segments containing the RST flag.
+- * @tx_udp: Count of transmitted UDP datagrams.
+- * @tx_parse_error: Increments when the TPA is unable to parse a packet. This
+- *            generally occurs when a packet is corrupt somehow, including
+- *            packets that have IP version mismatches, invalid Layer 2 control
+- *            fields, etc. L3/L4 checksums are not offloaded, but the packet
+- *            is still be transmitted.
+- * @tx_unknown_protocol: Increments when the TPA encounters an unknown
+- *            protocol, such as a new IPv6 extension header, or an unsupported
+- *            Routing Type. The packet still has a checksum calculated but it
+- *            may be incorrect.
+- * @tx_pause_ctrl_frms: Count of MAC PAUSE control frames that are transmitted.
+- *            Since, the only control frames supported by this device are
+- *            PAUSE frames, this register is a count of all transmitted MAC
+- *            control frames.
+- * @tx_marker_pdu_frms: Count of Marker PDUs transmitted
+- * on this Aggregation port.
+- * @tx_lacpdu_frms: Count of LACPDUs transmitted on this Aggregation port.
+- * @tx_drop_ip: Count of transmitted IP datagrams that could not be passed to
+- *            the network. Increments because of:
+- *            1) An internal processing error
+- *            (such as an uncorrectable ECC error). 2) A frame parsing error
+- *            during IP checksum calculation.
+- * @tx_marker_resp_pdu_frms: Count of Marker Response PDUs transmitted on this
+- *            Aggregation port.
+- * @tx_xgmii_char2_match: Maintains a count of the number of transmitted XGMII
+- *            characters that match a pattern that is programmable through
+- *            register XMAC_STATS_TX_XGMII_CHAR_PORTn. By default, the pattern
+- *            is set to /T/ (i.e. the terminate character), thus the statistic
+- *            tracks the number of transmitted Terminate characters.
+- * @tx_xgmii_char1_match: Maintains a count of the number of transmitted XGMII
+- *            characters that match a pattern that is programmable through
+- *            register XMAC_STATS_TX_XGMII_CHAR_PORTn. By default, the pattern
+- *            is set to /S/ (i.e. the start character),
+- *            thus the statistic tracks
+- *            the number of transmitted Start characters.
+- * @tx_xgmii_column2_match: Maintains a count of the number of transmitted XGMII
+- *            columns that match a pattern that is programmable through register
+- *            XMAC_STATS_TX_XGMII_COLUMN2_PORTn. By default, the pattern is set
+- *            to 4 x /E/ (i.e. a column containing all error characters), thus
+- *            the statistic tracks the number of Error columns transmitted at
+- *            any time. If XMAC_STATS_TX_XGMII_BEHAV_COLUMN2_PORTn.NEAR_COL1 is
+- *            set to 1, then this stat increments when COLUMN2 is found within
+- *            'n' clocks after COLUMN1. Here, 'n' is defined by
+- *            XMAC_STATS_TX_XGMII_BEHAV_COLUMN2_PORTn.NUM_COL (if 'n' is set
+- *            to 0, then it means to search anywhere for COLUMN2).
+- * @tx_xgmii_column1_match: Maintains a count of the number of transmitted XGMII
+- *            columns that match a pattern that is programmable through register
+- *            XMAC_STATS_TX_XGMII_COLUMN1_PORTn. By default, the pattern is set
+- *            to 4 x /I/ (i.e. a column containing all idle characters),
+- *            thus the statistic tracks the number of transmitted Idle columns.
+- * @tx_any_err_frms: Count of transmitted frames containing any error that
+- *            prevents them from being passed to the network. Increments if
+- *            there is an ECC while reading the frame out of the transmit
+- *            buffer. Also increments if the transmit protocol assist (TPA)
+- *            block determines that the frame should not be sent.
+- * @tx_drop_frms: Count of frames that could not be sent for no other reason
+- *            than internal MAC processing. Increments once whenever the
+- *            transmit buffer is flushed (due to an ECC error on a memory
+- *            descriptor).
+- * @rx_ttl_frms: Count of total received MAC frames, including frames received
+- *            with frame-too-long, FCS, or length errors. This stat can be
+- *            configured (see XMAC_STATS_GLOBAL_CFG.TTL_FRMS_HANDLING) to count
+- *            everything, even "frames" as small one byte of preamble.
+- * @rx_vld_frms: Count of successfully received MAC frames. Does not include
+- *            frames received with frame-too-long, FCS, or length errors.
+- * @rx_offload_frms: Count of offloaded received frames that are passed to
+- *            the host.
+- * @rx_ttl_octets: Count of total octets of received frames, not including
+- *            framing characters (i.e. less framing bits). To determine the
+- *            total octets of received frames, including framing characters,
+- *            multiply PORTn_RX_TTL_FRMS by 8 and add it to this stat (unless
+- *            otherwise configured, this stat only counts frames that have 8
+- *            bytes of preamble for each frame). This stat can be configured
+- *            (see XMAC_STATS_GLOBAL_CFG.TTL_FRMS_HANDLING) to count everything,
+- *            even the preamble octets of "frames" as small one byte of preamble
+- * @rx_data_octets: Count of data and padding octets of successfully received
+- *            frames. Does not include frames received with frame-too-long,
+- *            FCS, or length errors.
+- * @rx_offload_octets: Count of total octets, not including framing
+- *            characters, of offloaded received frames that are passed
+- *            to the host.
+- * @rx_vld_mcast_frms: Count of successfully received MAC frames containing a
+- *	      nonbroadcast group address. Does not include frames received
+- *            with frame-too-long, FCS, or length errors.
+- * @rx_vld_bcast_frms: Count of successfully received MAC frames containing
+- *            the broadcast group address. Does not include frames received
+- *            with frame-too-long, FCS, or length errors.
+- * @rx_accepted_ucast_frms: Count of successfully received frames containing
+- *            a unicast address. Only includes frames that are passed to
+- *            the system.
+- * @rx_accepted_nucast_frms: Count of successfully received frames containing
+- *            a non-unicast (broadcast or multicast) address. Only includes
+- *            frames that are passed to the system. Could include, for instance,
+- *            non-unicast frames that contain FCS errors if the MAC_ERROR_CFG
+- *            register is set to pass FCS-errored frames to the host.
+- * @rx_tagged_frms: Count of received frames containing a VLAN tag.
+- * @rx_long_frms: Count of received frames that are longer than RX_MAX_PYLD_LEN
+- *            + 18 bytes (+ 22 bytes if VLAN-tagged).
+- * @rx_usized_frms: Count of received frames of length (including FCS, but not
+- *            framing bits) less than 64 octets, that are otherwise well-formed.
+- *            In other words, counts runts.
+- * @rx_osized_frms: Count of received frames of length (including FCS, but not
+- *            framing bits) more than 1518 octets, that are otherwise
+- *            well-formed. Note: If register XMAC_STATS_GLOBAL_CFG.VLAN_HANDLING
+- *            is set to 1, then "more than 1518 octets" becomes "more than 1518
+- *            (1522 if VLAN-tagged) octets".
+- * @rx_frag_frms: Count of received frames of length (including FCS, but not
+- *            framing bits) less than 64 octets that had bad FCS. In other
+- *            words, counts fragments.
+- * @rx_jabber_frms: Count of received frames of length (including FCS, but not
+- *            framing bits) more than 1518 octets that had bad FCS. In other
+- *            words, counts jabbers. Note: If register
+- *            XMAC_STATS_GLOBAL_CFG.VLAN_HANDLING is set to 1, then "more than
+- *            1518 octets" becomes "more than 1518 (1522 if VLAN-tagged)
+- *            octets".
+- * @rx_ttl_64_frms: Count of total received MAC frames with length (including
+- *            FCS, but not framing bits) of exactly 64 octets. Includes frames
+- *            received with frame-too-long, FCS, or length errors.
+- * @rx_ttl_65_127_frms: Count of total received MAC frames with length
+- *            (including FCS, but not framing bits) of between 65 and 127
+- *            octets inclusive. Includes frames received with frame-too-long,
+- *            FCS, or length errors.
+- * @rx_ttl_128_255_frms: Count of total received MAC frames with length
+- *            (including FCS, but not framing bits) of between 128 and 255
+- *            octets inclusive. Includes frames received with frame-too-long,
+- *            FCS, or length errors.
+- * @rx_ttl_256_511_frms: Count of total received MAC frames with length
+- *            (including FCS, but not framing bits) of between 256 and 511
+- *            octets inclusive. Includes frames received with frame-too-long,
+- *            FCS, or length errors.
+- * @rx_ttl_512_1023_frms: Count of total received MAC frames with length
+- *            (including FCS, but not framing bits) of between 512 and 1023
+- *            octets inclusive. Includes frames received with frame-too-long,
+- *            FCS, or length errors.
+- * @rx_ttl_1024_1518_frms: Count of total received MAC frames with length
+- *            (including FCS, but not framing bits) of between 1024 and 1518
+- *            octets inclusive. Includes frames received with frame-too-long,
+- *            FCS, or length errors.
+- * @rx_ttl_1519_4095_frms: Count of total received MAC frames with length
+- *            (including FCS, but not framing bits) of between 1519 and 4095
+- *            octets inclusive. Includes frames received with frame-too-long,
+- *            FCS, or length errors.
+- * @rx_ttl_4096_8191_frms: Count of total received MAC frames with length
+- *            (including FCS, but not framing bits) of between 4096 and 8191
+- *            octets inclusive. Includes frames received with frame-too-long,
+- *            FCS, or length errors.
+- * @rx_ttl_8192_max_frms: Count of total received MAC frames with length
+- *            (including FCS, but not framing bits) of between 8192 and
+- *            RX_MAX_PYLD_LEN+18 octets inclusive. Includes frames received
+- *            with frame-too-long, FCS, or length errors.
+- * @rx_ttl_gt_max_frms: Count of total received MAC frames with length
+- *            (including FCS, but not framing bits) exceeding
+- *            RX_MAX_PYLD_LEN+18 (+22 bytes if VLAN-tagged) octets inclusive.
+- *            Includes frames received with frame-too-long,
+- *            FCS, or length errors.
+- * @rx_ip: Count of received IP datagrams. Includes errored IP datagrams.
+- * @rx_accepted_ip: Count of received IP datagrams that
+- * 		are passed to the system.
+- * @rx_ip_octets: Count of number of octets in received IP datagrams. Includes
+- *            errored IP datagrams.
+- * @rx_err_ip: 	Count of received IP datagrams containing errors. For example,
+- *            bad IP checksum.
+- * @rx_icmp: Count of received ICMP messages. Includes errored ICMP messages.
+- * @rx_tcp: Count of received TCP segments. Includes errored TCP segments.
+- *            Note: This stat contains a count of all received TCP segments,
+- *            regardless of whether or not they pertain to an established
+- *            connection.
+- * @rx_udp: Count of received UDP datagrams.
+- * @rx_err_tcp: Count of received TCP segments containing errors. For example,
+- *            bad TCP checksum.
+- * @rx_pause_count: Count of number of pause quanta that the MAC has been in
+- *            the paused state. Recall, one pause quantum equates to 512
+- *            bit times.
+- * @rx_pause_ctrl_frms: Count of received MAC PAUSE control frames.
+- * @rx_unsup_ctrl_frms: Count of received MAC control frames that do not
+- *            contain the PAUSE opcode. The sum of RX_PAUSE_CTRL_FRMS and
+- *            this register is a count of all received MAC control frames.
+- *            Note: This stat may be configured to count all layer 2 errors
+- *            (i.e. length errors and FCS errors).
+- * @rx_fcs_err_frms: Count of received MAC frames that do not pass FCS. Does
+- *            not include frames received with frame-too-long or
+- *            frame-too-short error.
+- * @rx_in_rng_len_err_frms: Count of received frames with a length/type field
+- *            value between 46 (42 for VLAN-tagged frames) and 1500 (also 1500
+- *            for VLAN-tagged frames), inclusive, that does not match the
+- *            number of data octets (including pad) received. Also contains
+- *            a count of received frames with a length/type field less than
+- *            46 (42 for VLAN-tagged frames) and the number of data octets
+- *            (including pad) received is greater than 46 (42 for VLAN-tagged
+- *            frames).
+- * @rx_out_rng_len_err_frms:  Count of received frames with length/type field
+- *            between 1501 and 1535 decimal, inclusive.
+- * @rx_drop_frms: Count of received frames that could not be passed to the host.
+- *            See PORTn_RX_L2_MGMT_DISCARD, PORTn_RX_RPA_DISCARD,
+- *            PORTn_RX_TRASH_DISCARD, PORTn_RX_RTS_DISCARD, PORTn_RX_RED_DISCARD
+- *            for a list of reasons. Because the RMAC drops one frame at a time,
+- *            this stat also indicates the number of drop events.
+- * @rx_discarded_frms: Count of received frames containing
+- * 		any error that prevents
+- *            them from being passed to the system. See PORTn_RX_FCS_DISCARD,
+- *            PORTn_RX_LEN_DISCARD, and PORTn_RX_SWITCH_DISCARD for a list of
+- *            reasons.
+- * @rx_drop_ip: Count of received IP datagrams that could not be passed to the
+- *            host. See PORTn_RX_DROP_FRMS for a list of reasons.
+- * @rx_drop_udp: Count of received UDP datagrams that are not delivered to the
+- *            host. See PORTn_RX_DROP_FRMS for a list of reasons.
+- * @rx_marker_pdu_frms: Count of valid Marker PDUs received on this Aggregation
+- *            port.
+- * @rx_lacpdu_frms: Count of valid LACPDUs received on this Aggregation port.
+- * @rx_unknown_pdu_frms: Count of received frames (on this Aggregation port)
+- *            that carry the Slow Protocols EtherType, but contain an unknown
+- *            PDU. Or frames that contain the Slow Protocols group MAC address,
+- *            but do not carry the Slow Protocols EtherType.
+- * @rx_marker_resp_pdu_frms: Count of valid Marker Response PDUs received on
+- *            this Aggregation port.
+- * @rx_fcs_discard: Count of received frames that are discarded because the
+- *            FCS check failed.
+- * @rx_illegal_pdu_frms: Count of received frames (on this Aggregation port)
+- *            that carry the Slow Protocols EtherType, but contain a badly
+- *            formed PDU. Or frames that carry the Slow Protocols EtherType,
+- *            but contain an illegal value of Protocol Subtype.
+- * @rx_switch_discard: Count of received frames that are discarded by the
+- *            internal switch because they did not have an entry in the
+- *            Filtering Database. This includes frames that had an invalid
+- *            destination MAC address or VLAN ID. It also includes frames are
+- *            discarded because they did not satisfy the length requirements
+- *            of the target VPATH.
+- * @rx_len_discard: Count of received frames that are discarded because of an
+- *            invalid frame length (includes fragments, oversized frames and
+- *            mismatch between frame length and length/type field). This stat
+- *            can be configured
+- *            (see XMAC_STATS_GLOBAL_CFG.LEN_DISCARD_HANDLING).
+- * @rx_rpa_discard: Count of received frames that were discarded because the
+- *            receive protocol assist (RPA) discovered and error in the frame
+- *            or was unable to parse the frame.
+- * @rx_l2_mgmt_discard: Count of Layer 2 management frames (eg. pause frames,
+- *            Link Aggregation Control Protocol (LACP) frames, etc.) that are
+- *            discarded.
+- * @rx_rts_discard: Count of received frames that are discarded by the receive
+- *            traffic steering (RTS) logic. Includes those frame discarded
+- *            because the SSC response contradicted the switch table, because
+- *            the SSC timed out, or because the target queue could not fit the
+- *            frame.
+- * @rx_trash_discard: Count of received frames that are discarded because
+- *            receive traffic steering (RTS) steered the frame to the trash
+- *            queue.
+- * @rx_buff_full_discard: Count of received frames that are discarded because
+- *            internal buffers are full. Includes frames discarded because the
+- *            RTS logic is waiting for an SSC lookup that has no timeout bound.
+- *            Also, includes frames that are dropped because the MAC2FAU buffer
+- *            is nearly full -- this can happen if the external receive buffer
+- *            is full and the receive path is backing up.
+- * @rx_red_discard: Count of received frames that are discarded because of RED
+- *            (Random Early Discard).
+- * @rx_xgmii_ctrl_err_cnt: Maintains a count of unexpected or misplaced control
+- *            characters occurring between times of normal data transmission
+- *            (i.e. not included in RX_XGMII_DATA_ERR_CNT). This counter is
+- *            incremented when either -
+- *            1) The Reconciliation Sublayer (RS) is expecting one control
+- *               character and gets another (i.e. is expecting a Start
+- *               character, but gets another control character).
+- *            2) Start control character is not in lane 0
+- *            Only increments the count by one for each XGMII column.
+- * @rx_xgmii_data_err_cnt: Maintains a count of unexpected control characters
+- *            during normal data transmission. If the Reconciliation Sublayer
+- *            (RS) receives a control character, other than a terminate control
+- *            character, during receipt of data octets then this register is
+- *            incremented. Also increments if the start frame delimiter is not
+- *            found in the correct location. Only increments the count by one
+- *            for each XGMII column.
+- * @rx_xgmii_char1_match: Maintains a count of the number of XGMII characters
+- *            that match a pattern that is programmable through register
+- *            XMAC_STATS_RX_XGMII_CHAR_PORTn. By default, the pattern is set
+- *            to /E/ (i.e. the error character), thus the statistic tracks the
+- *            number of Error characters received at any time.
+- * @rx_xgmii_err_sym: Count of the number of symbol errors in the received
+- *            XGMII data (i.e. PHY indicates "Receive Error" on the XGMII).
+- *            Only includes symbol errors that are observed between the XGMII
+- *            Start Frame Delimiter and End Frame Delimiter, inclusive. And
+- *            only increments the count by one for each frame.
+- * @rx_xgmii_column1_match: Maintains a count of the number of XGMII columns
+- *            that match a pattern that is programmable through register
+- *            XMAC_STATS_RX_XGMII_COLUMN1_PORTn. By default, the pattern is set
+- *            to 4 x /E/ (i.e. a column containing all error characters), thus
+- *            the statistic tracks the number of Error columns received at any
+- *            time.
+- * @rx_xgmii_char2_match: Maintains a count of the number of XGMII characters
+- *            that match a pattern that is programmable through register
+- *            XMAC_STATS_RX_XGMII_CHAR_PORTn. By default, the pattern is set
+- *            to /E/ (i.e. the error character), thus the statistic tracks the
+- *            number of Error characters received at any time.
+- * @rx_local_fault: Maintains a count of the number of times that link
+- *            transitioned from "up" to "down" due to a local fault.
+- * @rx_xgmii_column2_match: Maintains a count of the number of XGMII columns
+- *            that match a pattern that is programmable through register
+- *            XMAC_STATS_RX_XGMII_COLUMN2_PORTn. By default, the pattern is set
+- *            to 4 x /E/ (i.e. a column containing all error characters), thus
+- *            the statistic tracks the number of Error columns received at any
+- *            time. If XMAC_STATS_RX_XGMII_BEHAV_COLUMN2_PORTn.NEAR_COL1 is set
+- *            to 1, then this stat increments when COLUMN2 is found within 'n'
+- *            clocks after COLUMN1. Here, 'n' is defined by
+- *            XMAC_STATS_RX_XGMII_BEHAV_COLUMN2_PORTn.NUM_COL (if 'n' is set to
+- *            0, then it means to search anywhere for COLUMN2).
+- * @rx_jettison: Count of received frames that are jettisoned because internal
+- *            buffers are full.
+- * @rx_remote_fault: Maintains a count of the number of times that link
+- *            transitioned from "up" to "down" due to a remote fault.
+- *
+- * XMAC Port Statistics.
+- */
+-struct vxge_hw_xmac_port_stats {
+-/*0x000*/		u64	tx_ttl_frms;
+-/*0x008*/		u64	tx_ttl_octets;
+-/*0x010*/		u64	tx_data_octets;
+-/*0x018*/		u64	tx_mcast_frms;
+-/*0x020*/		u64	tx_bcast_frms;
+-/*0x028*/		u64	tx_ucast_frms;
+-/*0x030*/		u64	tx_tagged_frms;
+-/*0x038*/		u64	tx_vld_ip;
+-/*0x040*/		u64	tx_vld_ip_octets;
+-/*0x048*/		u64	tx_icmp;
+-/*0x050*/		u64	tx_tcp;
+-/*0x058*/		u64	tx_rst_tcp;
+-/*0x060*/		u64	tx_udp;
+-/*0x068*/		u32	tx_parse_error;
+-/*0x06c*/		u32	tx_unknown_protocol;
+-/*0x070*/		u64	tx_pause_ctrl_frms;
+-/*0x078*/		u32	tx_marker_pdu_frms;
+-/*0x07c*/		u32	tx_lacpdu_frms;
+-/*0x080*/		u32	tx_drop_ip;
+-/*0x084*/		u32	tx_marker_resp_pdu_frms;
+-/*0x088*/		u32	tx_xgmii_char2_match;
+-/*0x08c*/		u32	tx_xgmii_char1_match;
+-/*0x090*/		u32	tx_xgmii_column2_match;
+-/*0x094*/		u32	tx_xgmii_column1_match;
+-/*0x098*/		u32	unused1;
+-/*0x09c*/		u16	tx_any_err_frms;
+-/*0x09e*/		u16	tx_drop_frms;
+-/*0x0a0*/		u64	rx_ttl_frms;
+-/*0x0a8*/		u64	rx_vld_frms;
+-/*0x0b0*/		u64	rx_offload_frms;
+-/*0x0b8*/		u64	rx_ttl_octets;
+-/*0x0c0*/		u64	rx_data_octets;
+-/*0x0c8*/		u64	rx_offload_octets;
+-/*0x0d0*/		u64	rx_vld_mcast_frms;
+-/*0x0d8*/		u64	rx_vld_bcast_frms;
+-/*0x0e0*/		u64	rx_accepted_ucast_frms;
+-/*0x0e8*/		u64	rx_accepted_nucast_frms;
+-/*0x0f0*/		u64	rx_tagged_frms;
+-/*0x0f8*/		u64	rx_long_frms;
+-/*0x100*/		u64	rx_usized_frms;
+-/*0x108*/		u64	rx_osized_frms;
+-/*0x110*/		u64	rx_frag_frms;
+-/*0x118*/		u64	rx_jabber_frms;
+-/*0x120*/		u64	rx_ttl_64_frms;
+-/*0x128*/		u64	rx_ttl_65_127_frms;
+-/*0x130*/		u64	rx_ttl_128_255_frms;
+-/*0x138*/		u64	rx_ttl_256_511_frms;
+-/*0x140*/		u64	rx_ttl_512_1023_frms;
+-/*0x148*/		u64	rx_ttl_1024_1518_frms;
+-/*0x150*/		u64	rx_ttl_1519_4095_frms;
+-/*0x158*/		u64	rx_ttl_4096_8191_frms;
+-/*0x160*/		u64	rx_ttl_8192_max_frms;
+-/*0x168*/		u64	rx_ttl_gt_max_frms;
+-/*0x170*/		u64	rx_ip;
+-/*0x178*/		u64	rx_accepted_ip;
+-/*0x180*/		u64	rx_ip_octets;
+-/*0x188*/		u64	rx_err_ip;
+-/*0x190*/		u64	rx_icmp;
+-/*0x198*/		u64	rx_tcp;
+-/*0x1a0*/		u64	rx_udp;
+-/*0x1a8*/		u64	rx_err_tcp;
+-/*0x1b0*/		u64	rx_pause_count;
+-/*0x1b8*/		u64	rx_pause_ctrl_frms;
+-/*0x1c0*/		u64	rx_unsup_ctrl_frms;
+-/*0x1c8*/		u64	rx_fcs_err_frms;
+-/*0x1d0*/		u64	rx_in_rng_len_err_frms;
+-/*0x1d8*/		u64	rx_out_rng_len_err_frms;
+-/*0x1e0*/		u64	rx_drop_frms;
+-/*0x1e8*/		u64	rx_discarded_frms;
+-/*0x1f0*/		u64	rx_drop_ip;
+-/*0x1f8*/		u64	rx_drop_udp;
+-/*0x200*/		u32	rx_marker_pdu_frms;
+-/*0x204*/		u32	rx_lacpdu_frms;
+-/*0x208*/		u32	rx_unknown_pdu_frms;
+-/*0x20c*/		u32	rx_marker_resp_pdu_frms;
+-/*0x210*/		u32	rx_fcs_discard;
+-/*0x214*/		u32	rx_illegal_pdu_frms;
+-/*0x218*/		u32	rx_switch_discard;
+-/*0x21c*/		u32	rx_len_discard;
+-/*0x220*/		u32	rx_rpa_discard;
+-/*0x224*/		u32	rx_l2_mgmt_discard;
+-/*0x228*/		u32	rx_rts_discard;
+-/*0x22c*/		u32	rx_trash_discard;
+-/*0x230*/		u32	rx_buff_full_discard;
+-/*0x234*/		u32	rx_red_discard;
+-/*0x238*/		u32	rx_xgmii_ctrl_err_cnt;
+-/*0x23c*/		u32	rx_xgmii_data_err_cnt;
+-/*0x240*/		u32	rx_xgmii_char1_match;
+-/*0x244*/		u32	rx_xgmii_err_sym;
+-/*0x248*/		u32	rx_xgmii_column1_match;
+-/*0x24c*/		u32	rx_xgmii_char2_match;
+-/*0x250*/		u32	rx_local_fault;
+-/*0x254*/		u32	rx_xgmii_column2_match;
+-/*0x258*/		u32	rx_jettison;
+-/*0x25c*/		u32	rx_remote_fault;
+-} __packed;
+-
+-/**
+- * struct vxge_hw_xmac_vpath_tx_stats - XMAC Vpath Tx Statistics
+- *
+- * @tx_ttl_eth_frms: Count of successfully transmitted MAC frames.
+- * @tx_ttl_eth_octets: Count of total octets of transmitted frames,
+- *             not including framing characters (i.e. less framing bits).
+- *             To determine the total octets of transmitted frames, including
+- *             framing characters, multiply TX_TTL_ETH_FRMS by 8 and add it to
+- *             this stat (the device always prepends 8 bytes of preamble for
+- *             each frame)
+- * @tx_data_octets: Count of data and padding octets of successfully transmitted
+- *             frames.
+- * @tx_mcast_frms: Count of successfully transmitted frames to a group address
+- *             other than the broadcast address.
+- * @tx_bcast_frms: Count of successfully transmitted frames to the broadcast
+- *             group address.
+- * @tx_ucast_frms: Count of transmitted frames containing a unicast address.
+- *             Includes discarded frames that are not sent to the network.
+- * @tx_tagged_frms: Count of transmitted frames containing a VLAN tag.
+- * @tx_vld_ip: Count of transmitted IP datagrams that are passed to the network.
+- * @tx_vld_ip_octets: Count of total octets of transmitted IP datagrams that
+- *            are passed to the network.
+- * @tx_icmp: Count of transmitted ICMP messages. Includes messages not sent due
+- *            to problems within ICMP.
+- * @tx_tcp: Count of transmitted TCP segments. Does not include segments
+- *            containing retransmitted octets.
+- * @tx_rst_tcp: Count of transmitted TCP segments containing the RST flag.
+- * @tx_udp: Count of transmitted UDP datagrams.
+- * @tx_unknown_protocol: Increments when the TPA encounters an unknown protocol,
+- *            such as a new IPv6 extension header, or an unsupported Routing
+- *            Type. The packet still has a checksum calculated but it may be
+- *            incorrect.
+- * @tx_lost_ip: Count of transmitted IP datagrams that could not be passed
+- *            to the network. Increments because of: 1) An internal processing
+- *            error (such as an uncorrectable ECC error). 2) A frame parsing
+- *            error during IP checksum calculation.
+- * @tx_parse_error: Increments when the TPA is unable to parse a packet. This
+- *            generally occurs when a packet is corrupt somehow, including
+- *            packets that have IP version mismatches, invalid Layer 2 control
+- *            fields, etc. L3/L4 checksums are not offloaded, but the packet
+- *            is still be transmitted.
+- * @tx_tcp_offload: For frames belonging to offloaded sessions only, a count
+- *            of transmitted TCP segments. Does not include segments containing
+- *            retransmitted octets.
+- * @tx_retx_tcp_offload: For frames belonging to offloaded sessions only, the
+- *            total number of segments retransmitted. Retransmitted segments
+- *            that are sourced by the host are counted by the host.
+- * @tx_lost_ip_offload: For frames belonging to offloaded sessions only, a count
+- *            of transmitted IP datagrams that could not be passed to the
+- *            network.
+- *
+- * XMAC Vpath TX Statistics.
+- */
+-struct vxge_hw_xmac_vpath_tx_stats {
+-	u64	tx_ttl_eth_frms;
+-	u64	tx_ttl_eth_octets;
+-	u64	tx_data_octets;
+-	u64	tx_mcast_frms;
+-	u64	tx_bcast_frms;
+-	u64	tx_ucast_frms;
+-	u64	tx_tagged_frms;
+-	u64	tx_vld_ip;
+-	u64	tx_vld_ip_octets;
+-	u64	tx_icmp;
+-	u64	tx_tcp;
+-	u64	tx_rst_tcp;
+-	u64	tx_udp;
+-	u32	tx_unknown_protocol;
+-	u32	tx_lost_ip;
+-	u32	unused1;
+-	u32	tx_parse_error;
+-	u64	tx_tcp_offload;
+-	u64	tx_retx_tcp_offload;
+-	u64	tx_lost_ip_offload;
+-} __packed;
+-
+-/**
+- * struct vxge_hw_xmac_vpath_rx_stats - XMAC Vpath RX Statistics
+- *
+- * @rx_ttl_eth_frms: Count of successfully received MAC frames.
+- * @rx_vld_frms: Count of successfully received MAC frames. Does not include
+- *            frames received with frame-too-long, FCS, or length errors.
+- * @rx_offload_frms: Count of offloaded received frames that are passed to
+- *            the host.
+- * @rx_ttl_eth_octets: Count of total octets of received frames, not including
+- *            framing characters (i.e. less framing bits). Only counts octets
+- *            of frames that are at least 14 bytes (18 bytes for VLAN-tagged)
+- *            before FCS. To determine the total octets of received frames,
+- *            including framing characters, multiply RX_TTL_ETH_FRMS by 8 and
+- *            add it to this stat (the stat RX_TTL_ETH_FRMS only counts frames
+- *            that have the required 8 bytes of preamble).
+- * @rx_data_octets: Count of data and padding octets of successfully received
+- *            frames. Does not include frames received with frame-too-long,
+- *            FCS, or length errors.
+- * @rx_offload_octets: Count of total octets, not including framing characters,
+- *            of offloaded received frames that are passed to the host.
+- * @rx_vld_mcast_frms: Count of successfully received MAC frames containing a
+- *            nonbroadcast group address. Does not include frames received with
+- *            frame-too-long, FCS, or length errors.
+- * @rx_vld_bcast_frms: Count of successfully received MAC frames containing the
+- *            broadcast group address. Does not include frames received with
+- *            frame-too-long, FCS, or length errors.
+- * @rx_accepted_ucast_frms: Count of successfully received frames containing
+- *            a unicast address. Only includes frames that are passed to the
+- *            system.
+- * @rx_accepted_nucast_frms: Count of successfully received frames containing
+- *            a non-unicast (broadcast or multicast) address. Only includes
+- *            frames that are passed to the system. Could include, for instance,
+- *            non-unicast frames that contain FCS errors if the MAC_ERROR_CFG
+- *            register is set to pass FCS-errored frames to the host.
+- * @rx_tagged_frms: Count of received frames containing a VLAN tag.
+- * @rx_long_frms: Count of received frames that are longer than RX_MAX_PYLD_LEN
+- *            + 18 bytes (+ 22 bytes if VLAN-tagged).
+- * @rx_usized_frms: Count of received frames of length (including FCS, but not
+- *            framing bits) less than 64 octets, that are otherwise well-formed.
+- *            In other words, counts runts.
+- * @rx_osized_frms: Count of received frames of length (including FCS, but not
+- *            framing bits) more than 1518 octets, that are otherwise
+- *            well-formed.
+- * @rx_frag_frms: Count of received frames of length (including FCS, but not
+- *            framing bits) less than 64 octets that had bad FCS.
+- *            In other words, counts fragments.
+- * @rx_jabber_frms: Count of received frames of length (including FCS, but not
+- *            framing bits) more than 1518 octets that had bad FCS. In other
+- *            words, counts jabbers.
+- * @rx_ttl_64_frms: Count of total received MAC frames with length (including
+- *            FCS, but not framing bits) of exactly 64 octets. Includes frames
+- *            received with frame-too-long, FCS, or length errors.
+- * @rx_ttl_65_127_frms: Count of total received MAC frames
+- * 		with length (including
+- *            FCS, but not framing bits) of between 65 and 127 octets inclusive.
+- *            Includes frames received with frame-too-long, FCS,
+- *            or length errors.
+- * @rx_ttl_128_255_frms: Count of total received MAC frames with length
+- *            (including FCS, but not framing bits)
+- *            of between 128 and 255 octets
+- *            inclusive. Includes frames received with frame-too-long, FCS,
+- *            or length errors.
+- * @rx_ttl_256_511_frms: Count of total received MAC frames with length
+- *            (including FCS, but not framing bits)
+- *            of between 256 and 511 octets
+- *            inclusive. Includes frames received with frame-too-long, FCS, or
+- *            length errors.
+- * @rx_ttl_512_1023_frms: Count of total received MAC frames with length
+- *            (including FCS, but not framing bits) of between 512 and 1023
+- *            octets inclusive. Includes frames received with frame-too-long,
+- *            FCS, or length errors.
+- * @rx_ttl_1024_1518_frms: Count of total received MAC frames with length
+- *            (including FCS, but not framing bits) of between 1024 and 1518
+- *            octets inclusive. Includes frames received with frame-too-long,
+- *            FCS, or length errors.
+- * @rx_ttl_1519_4095_frms: Count of total received MAC frames with length
+- *            (including FCS, but not framing bits) of between 1519 and 4095
+- *            octets inclusive. Includes frames received with frame-too-long,
+- *            FCS, or length errors.
+- * @rx_ttl_4096_8191_frms: Count of total received MAC frames with length
+- *            (including FCS, but not framing bits) of between 4096 and 8191
+- *            octets inclusive. Includes frames received with frame-too-long,
+- *            FCS, or length errors.
+- * @rx_ttl_8192_max_frms: Count of total received MAC frames with length
+- *            (including FCS, but not framing bits) of between 8192 and
+- *            RX_MAX_PYLD_LEN+18 octets inclusive. Includes frames received
+- *            with frame-too-long, FCS, or length errors.
+- * @rx_ttl_gt_max_frms: Count of total received MAC frames with length
+- *            (including FCS, but not framing bits) exceeding RX_MAX_PYLD_LEN+18
+- *            (+22 bytes if VLAN-tagged) octets inclusive. Includes frames
+- *            received with frame-too-long, FCS, or length errors.
+- * @rx_ip: Count of received IP datagrams. Includes errored IP datagrams.
+- * @rx_accepted_ip: Count of received IP datagrams that
+- * 		are passed to the system.
+- * @rx_ip_octets: Count of number of octets in received IP datagrams.
+- *            Includes errored IP datagrams.
+- * @rx_err_ip: Count of received IP datagrams containing errors. For example,
+- *            bad IP checksum.
+- * @rx_icmp: Count of received ICMP messages. Includes errored ICMP messages.
+- * @rx_tcp: Count of received TCP segments. Includes errored TCP segments.
+- *             Note: This stat contains a count of all received TCP segments,
+- *             regardless of whether or not they pertain to an established
+- *             connection.
+- * @rx_udp: Count of received UDP datagrams.
+- * @rx_err_tcp: Count of received TCP segments containing errors. For example,
+- *             bad TCP checksum.
+- * @rx_lost_frms: Count of received frames that could not be passed to the host.
+- *             See RX_QUEUE_FULL_DISCARD and RX_RED_DISCARD
+- *             for a list of reasons.
+- * @rx_lost_ip: Count of received IP datagrams that could not be passed to
+- *             the host. See RX_LOST_FRMS for a list of reasons.
+- * @rx_lost_ip_offload: For frames belonging to offloaded sessions only, a count
+- *             of received IP datagrams that could not be passed to the host.
+- *             See RX_LOST_FRMS for a list of reasons.
+- * @rx_various_discard: Count of received frames that are discarded because
+- *             the target receive queue is full.
+- * @rx_sleep_discard: Count of received frames that are discarded because the
+- *            target VPATH is asleep (a Wake-on-LAN magic packet can be used
+- *            to awaken the VPATH).
+- * @rx_red_discard: Count of received frames that are discarded because of RED
+- *            (Random Early Discard).
+- * @rx_queue_full_discard: Count of received frames that are discarded because
+- *             the target receive queue is full.
+- * @rx_mpa_ok_frms: Count of received frames that pass the MPA checks.
+- *
+- * XMAC Vpath RX Statistics.
+- */
+-struct vxge_hw_xmac_vpath_rx_stats {
+-	u64	rx_ttl_eth_frms;
+-	u64	rx_vld_frms;
+-	u64	rx_offload_frms;
+-	u64	rx_ttl_eth_octets;
+-	u64	rx_data_octets;
+-	u64	rx_offload_octets;
+-	u64	rx_vld_mcast_frms;
+-	u64	rx_vld_bcast_frms;
+-	u64	rx_accepted_ucast_frms;
+-	u64	rx_accepted_nucast_frms;
+-	u64	rx_tagged_frms;
+-	u64	rx_long_frms;
+-	u64	rx_usized_frms;
+-	u64	rx_osized_frms;
+-	u64	rx_frag_frms;
+-	u64	rx_jabber_frms;
+-	u64	rx_ttl_64_frms;
+-	u64	rx_ttl_65_127_frms;
+-	u64	rx_ttl_128_255_frms;
+-	u64	rx_ttl_256_511_frms;
+-	u64	rx_ttl_512_1023_frms;
+-	u64	rx_ttl_1024_1518_frms;
+-	u64	rx_ttl_1519_4095_frms;
+-	u64	rx_ttl_4096_8191_frms;
+-	u64	rx_ttl_8192_max_frms;
+-	u64	rx_ttl_gt_max_frms;
+-	u64	rx_ip;
+-	u64	rx_accepted_ip;
+-	u64	rx_ip_octets;
+-	u64	rx_err_ip;
+-	u64	rx_icmp;
+-	u64	rx_tcp;
+-	u64	rx_udp;
+-	u64	rx_err_tcp;
+-	u64	rx_lost_frms;
+-	u64	rx_lost_ip;
+-	u64	rx_lost_ip_offload;
+-	u16	rx_various_discard;
+-	u16	rx_sleep_discard;
+-	u16	rx_red_discard;
+-	u16	rx_queue_full_discard;
+-	u64	rx_mpa_ok_frms;
+-} __packed;
+-
+-/**
+- * struct vxge_hw_xmac_stats - XMAC Statistics
+- *
+- * @aggr_stats: Statistics on aggregate port(port 0, port 1)
+- * @port_stats: Staticstics on ports(wire 0, wire 1, lag)
+- * @vpath_tx_stats: Per vpath XMAC TX stats
+- * @vpath_rx_stats: Per vpath XMAC RX stats
+- *
+- * XMAC Statistics.
+- */
+-struct vxge_hw_xmac_stats {
+-	struct vxge_hw_xmac_aggr_stats
+-				aggr_stats[VXGE_HW_MAC_MAX_MAC_PORT_ID];
+-	struct vxge_hw_xmac_port_stats
+-				port_stats[VXGE_HW_MAC_MAX_MAC_PORT_ID+1];
+-	struct vxge_hw_xmac_vpath_tx_stats
+-				vpath_tx_stats[VXGE_HW_MAX_VIRTUAL_PATHS];
+-	struct vxge_hw_xmac_vpath_rx_stats
+-				vpath_rx_stats[VXGE_HW_MAX_VIRTUAL_PATHS];
+-};
+-
+-/**
+- * struct vxge_hw_vpath_stats_hw_info - Titan vpath hardware statistics.
+- * @ini_num_mwr_sent: The number of PCI memory writes initiated by the PIC block
+- *             for the given VPATH
+- * @ini_num_mrd_sent: The number of PCI memory reads initiated by the PIC block
+- * @ini_num_cpl_rcvd: The number of PCI read completions received by the
+- *             PIC block
+- * @ini_num_mwr_byte_sent: The number of PCI memory write bytes sent by the PIC
+- *             block to the host
+- * @ini_num_cpl_byte_rcvd: The number of PCI read completion bytes received by
+- *             the PIC block
+- * @wrcrdtarb_xoff: TBD
+- * @rdcrdtarb_xoff: TBD
+- * @vpath_genstats_count0: TBD
+- * @vpath_genstats_count1: TBD
+- * @vpath_genstats_count2: TBD
+- * @vpath_genstats_count3: TBD
+- * @vpath_genstats_count4: TBD
+- * @vpath_gennstats_count5: TBD
+- * @tx_stats: Transmit stats
+- * @rx_stats: Receive stats
+- * @prog_event_vnum1: Programmable statistic. Increments when internal logic
+- *             detects a certain event. See register
+- *             XMAC_STATS_CFG.EVENT_VNUM1_CFG for more information.
+- * @prog_event_vnum0: Programmable statistic. Increments when internal logic
+- *             detects a certain event. See register
+- *             XMAC_STATS_CFG.EVENT_VNUM0_CFG for more information.
+- * @prog_event_vnum3: Programmable statistic. Increments when internal logic
+- *             detects a certain event. See register
+- *             XMAC_STATS_CFG.EVENT_VNUM3_CFG for more information.
+- * @prog_event_vnum2: Programmable statistic. Increments when internal logic
+- *             detects a certain event. See register
+- *             XMAC_STATS_CFG.EVENT_VNUM2_CFG for more information.
+- * @rx_multi_cast_frame_discard: TBD
+- * @rx_frm_transferred: TBD
+- * @rxd_returned: TBD
+- * @rx_mpa_len_fail_frms: Count of received frames
+- * 		that fail the MPA length check
+- * @rx_mpa_mrk_fail_frms: Count of received frames
+- * 		that fail the MPA marker check
+- * @rx_mpa_crc_fail_frms: Count of received frames that fail the MPA CRC check
+- * @rx_permitted_frms: Count of frames that pass through the FAU and on to the
+- *             frame buffer (and subsequently to the host).
+- * @rx_vp_reset_discarded_frms: Count of receive frames that are discarded
+- *             because the VPATH is in reset
+- * @rx_wol_frms: Count of received "magic packet" frames. Stat increments
+- *             whenever the received frame matches the VPATH's Wake-on-LAN
+- *             signature(s) CRC.
+- * @tx_vp_reset_discarded_frms: Count of transmit frames that are discarded
+- *             because the VPATH is in reset. Includes frames that are discarded
+- *             because the current VPIN does not match that VPIN of the frame
+- *
+- * Titan vpath hardware statistics.
+- */
+-struct vxge_hw_vpath_stats_hw_info {
+-/*0x000*/	u32 ini_num_mwr_sent;
+-/*0x004*/	u32 unused1;
+-/*0x008*/	u32 ini_num_mrd_sent;
+-/*0x00c*/	u32 unused2;
+-/*0x010*/	u32 ini_num_cpl_rcvd;
+-/*0x014*/	u32 unused3;
+-/*0x018*/	u64 ini_num_mwr_byte_sent;
+-/*0x020*/	u64 ini_num_cpl_byte_rcvd;
+-/*0x028*/	u32 wrcrdtarb_xoff;
+-/*0x02c*/	u32 unused4;
+-/*0x030*/	u32 rdcrdtarb_xoff;
+-/*0x034*/	u32 unused5;
+-/*0x038*/	u32 vpath_genstats_count0;
+-/*0x03c*/	u32 vpath_genstats_count1;
+-/*0x040*/	u32 vpath_genstats_count2;
+-/*0x044*/	u32 vpath_genstats_count3;
+-/*0x048*/	u32 vpath_genstats_count4;
+-/*0x04c*/	u32 unused6;
+-/*0x050*/	u32 vpath_genstats_count5;
+-/*0x054*/	u32 unused7;
+-/*0x058*/	struct vxge_hw_xmac_vpath_tx_stats tx_stats;
+-/*0x0e8*/	struct vxge_hw_xmac_vpath_rx_stats rx_stats;
+-/*0x220*/	u64 unused9;
+-/*0x228*/	u32 prog_event_vnum1;
+-/*0x22c*/	u32 prog_event_vnum0;
+-/*0x230*/	u32 prog_event_vnum3;
+-/*0x234*/	u32 prog_event_vnum2;
+-/*0x238*/	u16 rx_multi_cast_frame_discard;
+-/*0x23a*/	u8 unused10[6];
+-/*0x240*/	u32 rx_frm_transferred;
+-/*0x244*/	u32 unused11;
+-/*0x248*/	u16 rxd_returned;
+-/*0x24a*/	u8 unused12[6];
+-/*0x252*/	u16 rx_mpa_len_fail_frms;
+-/*0x254*/	u16 rx_mpa_mrk_fail_frms;
+-/*0x256*/	u16 rx_mpa_crc_fail_frms;
+-/*0x258*/	u16 rx_permitted_frms;
+-/*0x25c*/	u64 rx_vp_reset_discarded_frms;
+-/*0x25e*/	u64 rx_wol_frms;
+-/*0x260*/	u64 tx_vp_reset_discarded_frms;
+-} __packed;
+-
+-
+-/**
+- * struct vxge_hw_device_stats_mrpcim_info - Titan mrpcim hardware statistics.
+- * @pic.ini_rd_drop  	 0x0000  	 4  	 Number of DMA reads initiated
+- *  by the adapter that were discarded because the VPATH is out of service
+- * @pic.ini_wr_drop 	0x0004 	4 	Number of DMA writes initiated by the
+- *  adapter that were discared because the VPATH is out of service
+- * @pic.wrcrdtarb_ph_crdt_depleted[vplane0] 	0x0008 	4 	Number of times
+- *  the posted header credits for upstream PCI writes were depleted
+- * @pic.wrcrdtarb_ph_crdt_depleted[vplane1] 	0x0010 	4 	Number of times
+- *  the posted header credits for upstream PCI writes were depleted
+- * @pic.wrcrdtarb_ph_crdt_depleted[vplane2] 	0x0018 	4 	Number of times
+- *  the posted header credits for upstream PCI writes were depleted
+- * @pic.wrcrdtarb_ph_crdt_depleted[vplane3] 	0x0020 	4 	Number of times
+- *  the posted header credits for upstream PCI writes were depleted
+- * @pic.wrcrdtarb_ph_crdt_depleted[vplane4] 	0x0028 	4 	Number of times
+- *  the posted header credits for upstream PCI writes were depleted
+- * @pic.wrcrdtarb_ph_crdt_depleted[vplane5] 	0x0030 	4 	Number of times
+- *  the posted header credits for upstream PCI writes were depleted
+- * @pic.wrcrdtarb_ph_crdt_depleted[vplane6] 	0x0038 	4 	Number of times
+- *  the posted header credits for upstream PCI writes were depleted
+- * @pic.wrcrdtarb_ph_crdt_depleted[vplane7] 	0x0040 	4 	Number of times
+- *  the posted header credits for upstream PCI writes were depleted
+- * @pic.wrcrdtarb_ph_crdt_depleted[vplane8] 	0x0048 	4 	Number of times
+- *  the posted header credits for upstream PCI writes were depleted
+- * @pic.wrcrdtarb_ph_crdt_depleted[vplane9] 	0x0050 	4 	Number of times
+- *  the posted header credits for upstream PCI writes were depleted
+- * @pic.wrcrdtarb_ph_crdt_depleted[vplane10] 	0x0058 	4 	Number of times
+- *  the posted header credits for upstream PCI writes were depleted
+- * @pic.wrcrdtarb_ph_crdt_depleted[vplane11] 	0x0060 	4 	Number of times
+- *  the posted header credits for upstream PCI writes were depleted
+- * @pic.wrcrdtarb_ph_crdt_depleted[vplane12] 	0x0068 	4 	Number of times
+- *  the posted header credits for upstream PCI writes were depleted
+- * @pic.wrcrdtarb_ph_crdt_depleted[vplane13] 	0x0070 	4 	Number of times
+- *  the posted header credits for upstream PCI writes were depleted
+- * @pic.wrcrdtarb_ph_crdt_depleted[vplane14] 	0x0078 	4 	Number of times
+- *  the posted header credits for upstream PCI writes were depleted
+- * @pic.wrcrdtarb_ph_crdt_depleted[vplane15] 	0x0080 	4 	Number of times
+- *  the posted header credits for upstream PCI writes were depleted
+- * @pic.wrcrdtarb_ph_crdt_depleted[vplane16] 	0x0088 	4 	Number of times
+- *  the posted header credits for upstream PCI writes were depleted
+- * @pic.wrcrdtarb_pd_crdt_depleted[vplane0] 	0x0090 	4 	Number of times
+- *  the posted data credits for upstream PCI writes were depleted
+- * @pic.wrcrdtarb_pd_crdt_depleted[vplane1] 	0x0098 	4 	Number of times
+- *  the posted data credits for upstream PCI writes were depleted
+- * @pic.wrcrdtarb_pd_crdt_depleted[vplane2] 	0x00a0 	4 	Number of times
+- *  the posted data credits for upstream PCI writes were depleted
+- * @pic.wrcrdtarb_pd_crdt_depleted[vplane3] 	0x00a8 	4 	Number of times
+- *  the posted data credits for upstream PCI writes were depleted
+- * @pic.wrcrdtarb_pd_crdt_depleted[vplane4] 	0x00b0 	4 	Number of times
+- *  the posted data credits for upstream PCI writes were depleted
+- * @pic.wrcrdtarb_pd_crdt_depleted[vplane5] 	0x00b8 	4 	Number of times
+- *  the posted data credits for upstream PCI writes were depleted
+- * @pic.wrcrdtarb_pd_crdt_depleted[vplane6] 	0x00c0 	4 	Number of times
+- *  the posted data credits for upstream PCI writes were depleted
+- * @pic.wrcrdtarb_pd_crdt_depleted[vplane7] 	0x00c8 	4 	Number of times
+- *  the posted data credits for upstream PCI writes were depleted
+- * @pic.wrcrdtarb_pd_crdt_depleted[vplane8] 	0x00d0 	4 	Number of times
+- *  the posted data credits for upstream PCI writes were depleted
+- * @pic.wrcrdtarb_pd_crdt_depleted[vplane9] 	0x00d8 	4 	Number of times
+- *  the posted data credits for upstream PCI writes were depleted
+- * @pic.wrcrdtarb_pd_crdt_depleted[vplane10] 	0x00e0 	4 	Number of times
+- *  the posted data credits for upstream PCI writes were depleted
+- * @pic.wrcrdtarb_pd_crdt_depleted[vplane11] 	0x00e8 	4 	Number of times
+- *  the posted data credits for upstream PCI writes were depleted
+- * @pic.wrcrdtarb_pd_crdt_depleted[vplane12] 	0x00f0 	4 	Number of times
+- *  the posted data credits for upstream PCI writes were depleted
+- * @pic.wrcrdtarb_pd_crdt_depleted[vplane13] 	0x00f8 	4 	Number of times
+- *  the posted data credits for upstream PCI writes were depleted
+- * @pic.wrcrdtarb_pd_crdt_depleted[vplane14] 	0x0100 	4 	Number of times
+- *  the posted data credits for upstream PCI writes were depleted
+- * @pic.wrcrdtarb_pd_crdt_depleted[vplane15] 	0x0108 	4 	Number of times
+- *  the posted data credits for upstream PCI writes were depleted
+- * @pic.wrcrdtarb_pd_crdt_depleted[vplane16] 	0x0110 	4 	Number of times
+- *  the posted data credits for upstream PCI writes were depleted
+- * @pic.rdcrdtarb_nph_crdt_depleted[vplane0] 	0x0118 	4 	Number of times
+- *  the non-posted header credits for upstream PCI reads were depleted
+- * @pic.rdcrdtarb_nph_crdt_depleted[vplane1] 	0x0120 	4 	Number of times
+- *  the non-posted header credits for upstream PCI reads were depleted
+- * @pic.rdcrdtarb_nph_crdt_depleted[vplane2] 	0x0128 	4 	Number of times
+- *  the non-posted header credits for upstream PCI reads were depleted
+- * @pic.rdcrdtarb_nph_crdt_depleted[vplane3] 	0x0130 	4 	Number of times
+- *  the non-posted header credits for upstream PCI reads were depleted
+- * @pic.rdcrdtarb_nph_crdt_depleted[vplane4] 	0x0138 	4 	Number of times
+- *  the non-posted header credits for upstream PCI reads were depleted
+- * @pic.rdcrdtarb_nph_crdt_depleted[vplane5] 	0x0140 	4 	Number of times
+- *  the non-posted header credits for upstream PCI reads were depleted
+- * @pic.rdcrdtarb_nph_crdt_depleted[vplane6] 	0x0148 	4 	Number of times
+- *  the non-posted header credits for upstream PCI reads were depleted
+- * @pic.rdcrdtarb_nph_crdt_depleted[vplane7] 	0x0150 	4 	Number of times
+- *  the non-posted header credits for upstream PCI reads were depleted
+- * @pic.rdcrdtarb_nph_crdt_depleted[vplane8] 	0x0158 	4 	Number of times
+- *  the non-posted header credits for upstream PCI reads were depleted
+- * @pic.rdcrdtarb_nph_crdt_depleted[vplane9] 	0x0160 	4 	Number of times
+- *  the non-posted header credits for upstream PCI reads were depleted
+- * @pic.rdcrdtarb_nph_crdt_depleted[vplane10] 	0x0168 	4 	Number of times
+- *  the non-posted header credits for upstream PCI reads were depleted
+- * @pic.rdcrdtarb_nph_crdt_depleted[vplane11] 	0x0170 	4 	Number of times
+- *  the non-posted header credits for upstream PCI reads were depleted
+- * @pic.rdcrdtarb_nph_crdt_depleted[vplane12] 	0x0178 	4 	Number of times
+- *  the non-posted header credits for upstream PCI reads were depleted
+- * @pic.rdcrdtarb_nph_crdt_depleted[vplane13] 	0x0180 	4 	Number of times
+- *  the non-posted header credits for upstream PCI reads were depleted
+- * @pic.rdcrdtarb_nph_crdt_depleted[vplane14] 	0x0188 	4 	Number of times
+- *  the non-posted header credits for upstream PCI reads were depleted
+- * @pic.rdcrdtarb_nph_crdt_depleted[vplane15] 	0x0190 	4 	Number of times
+- *  the non-posted header credits for upstream PCI reads were depleted
+- * @pic.rdcrdtarb_nph_crdt_depleted[vplane16] 	0x0198 	4 	Number of times
+- *  the non-posted header credits for upstream PCI reads were depleted
+- * @pic.ini_rd_vpin_drop 	0x01a0 	4 	Number of DMA reads initiated by
+- *  the adapter that were discarded because the VPATH instance number does
+- *  not match
+- * @pic.ini_wr_vpin_drop 	0x01a4 	4 	Number of DMA writes initiated
+- *  by the adapter that were discarded because the VPATH instance number
+- *  does not match
+- * @pic.genstats_count0 	0x01a8 	4 	Configurable statistic #1. Refer
+- *  to the GENSTATS0_CFG for information on configuring this statistic
+- * @pic.genstats_count1 	0x01ac 	4 	Configurable statistic #2. Refer
+- *  to the GENSTATS1_CFG for information on configuring this statistic
+- * @pic.genstats_count2 	0x01b0 	4 	Configurable statistic #3. Refer
+- *  to the GENSTATS2_CFG for information on configuring this statistic
+- * @pic.genstats_count3 	0x01b4 	4 	Configurable statistic #4. Refer
+- *  to the GENSTATS3_CFG for information on configuring this statistic
+- * @pic.genstats_count4 	0x01b8 	4 	Configurable statistic #5. Refer
+- *  to the GENSTATS4_CFG for information on configuring this statistic
+- * @pic.genstats_count5 	0x01c0 	4 	Configurable statistic #6. Refer
+- *  to the GENSTATS5_CFG for information on configuring this statistic
+- * @pci.rstdrop_cpl 	0x01c8 	4
+- * @pci.rstdrop_msg 	0x01cc 	4
+- * @pci.rstdrop_client1 	0x01d0 	4
+- * @pci.rstdrop_client0 	0x01d4 	4
+- * @pci.rstdrop_client2 	0x01d8 	4
+- * @pci.depl_cplh[vplane0] 	0x01e2 	2 	Number of times completion
+- *  header credits were depleted
+- * @pci.depl_nph[vplane0] 	0x01e4 	2 	Number of times non posted
+- *  header credits were depleted
+- * @pci.depl_ph[vplane0] 	0x01e6 	2 	Number of times the posted
+- *  header credits were depleted
+- * @pci.depl_cplh[vplane1] 	0x01ea 	2
+- * @pci.depl_nph[vplane1] 	0x01ec 	2
+- * @pci.depl_ph[vplane1] 	0x01ee 	2
+- * @pci.depl_cplh[vplane2] 	0x01f2 	2
+- * @pci.depl_nph[vplane2] 	0x01f4 	2
+- * @pci.depl_ph[vplane2] 	0x01f6 	2
+- * @pci.depl_cplh[vplane3] 	0x01fa 	2
+- * @pci.depl_nph[vplane3] 	0x01fc 	2
+- * @pci.depl_ph[vplane3] 	0x01fe 	2
+- * @pci.depl_cplh[vplane4] 	0x0202 	2
+- * @pci.depl_nph[vplane4] 	0x0204 	2
+- * @pci.depl_ph[vplane4] 	0x0206 	2
+- * @pci.depl_cplh[vplane5] 	0x020a 	2
+- * @pci.depl_nph[vplane5] 	0x020c 	2
+- * @pci.depl_ph[vplane5] 	0x020e 	2
+- * @pci.depl_cplh[vplane6] 	0x0212 	2
+- * @pci.depl_nph[vplane6] 	0x0214 	2
+- * @pci.depl_ph[vplane6] 	0x0216 	2
+- * @pci.depl_cplh[vplane7] 	0x021a 	2
+- * @pci.depl_nph[vplane7] 	0x021c 	2
+- * @pci.depl_ph[vplane7] 	0x021e 	2
+- * @pci.depl_cplh[vplane8] 	0x0222 	2
+- * @pci.depl_nph[vplane8] 	0x0224 	2
+- * @pci.depl_ph[vplane8] 	0x0226 	2
+- * @pci.depl_cplh[vplane9] 	0x022a 	2
+- * @pci.depl_nph[vplane9] 	0x022c 	2
+- * @pci.depl_ph[vplane9] 	0x022e 	2
+- * @pci.depl_cplh[vplane10] 	0x0232 	2
+- * @pci.depl_nph[vplane10] 	0x0234 	2
+- * @pci.depl_ph[vplane10] 	0x0236 	2
+- * @pci.depl_cplh[vplane11] 	0x023a 	2
+- * @pci.depl_nph[vplane11] 	0x023c 	2
+- * @pci.depl_ph[vplane11] 	0x023e 	2
+- * @pci.depl_cplh[vplane12] 	0x0242 	2
+- * @pci.depl_nph[vplane12] 	0x0244 	2
+- * @pci.depl_ph[vplane12] 	0x0246 	2
+- * @pci.depl_cplh[vplane13] 	0x024a 	2
+- * @pci.depl_nph[vplane13] 	0x024c 	2
+- * @pci.depl_ph[vplane13] 	0x024e 	2
+- * @pci.depl_cplh[vplane14] 	0x0252 	2
+- * @pci.depl_nph[vplane14] 	0x0254 	2
+- * @pci.depl_ph[vplane14] 	0x0256 	2
+- * @pci.depl_cplh[vplane15] 	0x025a 	2
+- * @pci.depl_nph[vplane15] 	0x025c 	2
+- * @pci.depl_ph[vplane15] 	0x025e 	2
+- * @pci.depl_cplh[vplane16] 	0x0262 	2
+- * @pci.depl_nph[vplane16] 	0x0264 	2
+- * @pci.depl_ph[vplane16] 	0x0266 	2
+- * @pci.depl_cpld[vplane0] 	0x026a 	2 	Number of times completion data
+- *  credits were depleted
+- * @pci.depl_npd[vplane0] 	0x026c 	2 	Number of times non posted data
+- *  credits were depleted
+- * @pci.depl_pd[vplane0] 	0x026e 	2 	Number of times the posted data
+- *  credits were depleted
+- * @pci.depl_cpld[vplane1] 	0x0272 	2
+- * @pci.depl_npd[vplane1] 	0x0274 	2
+- * @pci.depl_pd[vplane1] 	0x0276 	2
+- * @pci.depl_cpld[vplane2] 	0x027a 	2
+- * @pci.depl_npd[vplane2] 	0x027c 	2
+- * @pci.depl_pd[vplane2] 	0x027e 	2
+- * @pci.depl_cpld[vplane3] 	0x0282 	2
+- * @pci.depl_npd[vplane3] 	0x0284 	2
+- * @pci.depl_pd[vplane3] 	0x0286 	2
+- * @pci.depl_cpld[vplane4] 	0x028a 	2
+- * @pci.depl_npd[vplane4] 	0x028c 	2
+- * @pci.depl_pd[vplane4] 	0x028e 	2
+- * @pci.depl_cpld[vplane5] 	0x0292 	2
+- * @pci.depl_npd[vplane5] 	0x0294 	2
+- * @pci.depl_pd[vplane5] 	0x0296 	2
+- * @pci.depl_cpld[vplane6] 	0x029a 	2
+- * @pci.depl_npd[vplane6] 	0x029c 	2
+- * @pci.depl_pd[vplane6] 	0x029e 	2
+- * @pci.depl_cpld[vplane7] 	0x02a2 	2
+- * @pci.depl_npd[vplane7] 	0x02a4 	2
+- * @pci.depl_pd[vplane7] 	0x02a6 	2
+- * @pci.depl_cpld[vplane8] 	0x02aa 	2
+- * @pci.depl_npd[vplane8] 	0x02ac 	2
+- * @pci.depl_pd[vplane8] 	0x02ae 	2
+- * @pci.depl_cpld[vplane9] 	0x02b2 	2
+- * @pci.depl_npd[vplane9] 	0x02b4 	2
+- * @pci.depl_pd[vplane9] 	0x02b6 	2
+- * @pci.depl_cpld[vplane10] 	0x02ba 	2
+- * @pci.depl_npd[vplane10] 	0x02bc 	2
+- * @pci.depl_pd[vplane10] 	0x02be 	2
+- * @pci.depl_cpld[vplane11] 	0x02c2 	2
+- * @pci.depl_npd[vplane11] 	0x02c4 	2
+- * @pci.depl_pd[vplane11] 	0x02c6 	2
+- * @pci.depl_cpld[vplane12] 	0x02ca 	2
+- * @pci.depl_npd[vplane12] 	0x02cc 	2
+- * @pci.depl_pd[vplane12] 	0x02ce 	2
+- * @pci.depl_cpld[vplane13] 	0x02d2 	2
+- * @pci.depl_npd[vplane13] 	0x02d4 	2
+- * @pci.depl_pd[vplane13] 	0x02d6 	2
+- * @pci.depl_cpld[vplane14] 	0x02da 	2
+- * @pci.depl_npd[vplane14] 	0x02dc 	2
+- * @pci.depl_pd[vplane14] 	0x02de 	2
+- * @pci.depl_cpld[vplane15] 	0x02e2 	2
+- * @pci.depl_npd[vplane15] 	0x02e4 	2
+- * @pci.depl_pd[vplane15] 	0x02e6 	2
+- * @pci.depl_cpld[vplane16] 	0x02ea 	2
+- * @pci.depl_npd[vplane16] 	0x02ec 	2
+- * @pci.depl_pd[vplane16] 	0x02ee 	2
+- * @xgmac_port[3];
+- * @xgmac_aggr[2];
+- * @xgmac.global_prog_event_gnum0 	0x0ae0 	8 	Programmable statistic.
+- *  Increments when internal logic detects a certain event. See register
+- *  XMAC_STATS_GLOBAL_CFG.EVENT_GNUM0_CFG for more information.
+- * @xgmac.global_prog_event_gnum1 	0x0ae8 	8 	Programmable statistic.
+- *  Increments when internal logic detects a certain event. See register
+- *  XMAC_STATS_GLOBAL_CFG.EVENT_GNUM1_CFG for more information.
+- * @xgmac.orp_lro_events 	0x0af8 	8
+- * @xgmac.orp_bs_events 	0x0b00 	8
+- * @xgmac.orp_iwarp_events 	0x0b08 	8
+- * @xgmac.tx_permitted_frms 	0x0b14 	4
+- * @xgmac.port2_tx_any_frms 	0x0b1d 	1
+- * @xgmac.port1_tx_any_frms 	0x0b1e 	1
+- * @xgmac.port0_tx_any_frms 	0x0b1f 	1
+- * @xgmac.port2_rx_any_frms 	0x0b25 	1
+- * @xgmac.port1_rx_any_frms 	0x0b26 	1
+- * @xgmac.port0_rx_any_frms 	0x0b27 	1
+- *
+- * Titan mrpcim hardware statistics.
+- */
+-struct vxge_hw_device_stats_mrpcim_info {
+-/*0x0000*/	u32	pic_ini_rd_drop;
+-/*0x0004*/	u32	pic_ini_wr_drop;
+-/*0x0008*/	struct {
+-	/*0x0000*/	u32	pic_wrcrdtarb_ph_crdt_depleted;
+-	/*0x0004*/	u32	unused1;
+-		} pic_wrcrdtarb_ph_crdt_depleted_vplane[17];
+-/*0x0090*/	struct {
+-	/*0x0000*/	u32	pic_wrcrdtarb_pd_crdt_depleted;
+-	/*0x0004*/	u32	unused2;
+-		} pic_wrcrdtarb_pd_crdt_depleted_vplane[17];
+-/*0x0118*/	struct {
+-	/*0x0000*/	u32	pic_rdcrdtarb_nph_crdt_depleted;
+-	/*0x0004*/	u32	unused3;
+-		} pic_rdcrdtarb_nph_crdt_depleted_vplane[17];
+-/*0x01a0*/	u32	pic_ini_rd_vpin_drop;
+-/*0x01a4*/	u32	pic_ini_wr_vpin_drop;
+-/*0x01a8*/	u32	pic_genstats_count0;
+-/*0x01ac*/	u32	pic_genstats_count1;
+-/*0x01b0*/	u32	pic_genstats_count2;
+-/*0x01b4*/	u32	pic_genstats_count3;
+-/*0x01b8*/	u32	pic_genstats_count4;
+-/*0x01bc*/	u32	unused4;
+-/*0x01c0*/	u32	pic_genstats_count5;
+-/*0x01c4*/	u32	unused5;
+-/*0x01c8*/	u32	pci_rstdrop_cpl;
+-/*0x01cc*/	u32	pci_rstdrop_msg;
+-/*0x01d0*/	u32	pci_rstdrop_client1;
+-/*0x01d4*/	u32	pci_rstdrop_client0;
+-/*0x01d8*/	u32	pci_rstdrop_client2;
+-/*0x01dc*/	u32	unused6;
+-/*0x01e0*/	struct {
+-	/*0x0000*/	u16	unused7;
+-	/*0x0002*/	u16	pci_depl_cplh;
+-	/*0x0004*/	u16	pci_depl_nph;
+-	/*0x0006*/	u16	pci_depl_ph;
+-		} pci_depl_h_vplane[17];
+-/*0x0268*/	struct {
+-	/*0x0000*/	u16	unused8;
+-	/*0x0002*/	u16	pci_depl_cpld;
+-	/*0x0004*/	u16	pci_depl_npd;
+-	/*0x0006*/	u16	pci_depl_pd;
+-		} pci_depl_d_vplane[17];
+-/*0x02f0*/	struct vxge_hw_xmac_port_stats xgmac_port[3];
+-/*0x0a10*/	struct vxge_hw_xmac_aggr_stats xgmac_aggr[2];
+-/*0x0ae0*/	u64	xgmac_global_prog_event_gnum0;
+-/*0x0ae8*/	u64	xgmac_global_prog_event_gnum1;
+-/*0x0af0*/	u64	unused7;
+-/*0x0af8*/	u64	unused8;
+-/*0x0b00*/	u64	unused9;
+-/*0x0b08*/	u64	unused10;
+-/*0x0b10*/	u32	unused11;
+-/*0x0b14*/	u32	xgmac_tx_permitted_frms;
+-/*0x0b18*/	u32	unused12;
+-/*0x0b1c*/	u8	unused13;
+-/*0x0b1d*/	u8	xgmac_port2_tx_any_frms;
+-/*0x0b1e*/	u8	xgmac_port1_tx_any_frms;
+-/*0x0b1f*/	u8	xgmac_port0_tx_any_frms;
+-/*0x0b20*/	u32	unused14;
+-/*0x0b24*/	u8	unused15;
+-/*0x0b25*/	u8	xgmac_port2_rx_any_frms;
+-/*0x0b26*/	u8	xgmac_port1_rx_any_frms;
+-/*0x0b27*/	u8	xgmac_port0_rx_any_frms;
+-} __packed;
+-
+-/**
+- * struct vxge_hw_device_stats_hw_info - Titan hardware statistics.
+- * @vpath_info: VPath statistics
+- * @vpath_info_sav: Vpath statistics saved
+- *
+- * Titan hardware statistics.
+- */
+-struct vxge_hw_device_stats_hw_info {
+-	struct vxge_hw_vpath_stats_hw_info
+-		*vpath_info[VXGE_HW_MAX_VIRTUAL_PATHS];
+-	struct vxge_hw_vpath_stats_hw_info
+-		vpath_info_sav[VXGE_HW_MAX_VIRTUAL_PATHS];
+-};
+-
+-/**
+- * struct vxge_hw_vpath_stats_sw_common_info - HW common
+- * statistics for queues.
+- * @full_cnt: Number of times the queue was full
+- * @usage_cnt: usage count.
+- * @usage_max: Maximum usage
+- * @reserve_free_swaps_cnt: Reserve/free swap counter. Internal usage.
+- * @total_compl_cnt: Total descriptor completion count.
+- *
+- * Hw queue counters
+- * See also: struct vxge_hw_vpath_stats_sw_fifo_info{},
+- * struct vxge_hw_vpath_stats_sw_ring_info{},
+- */
+-struct vxge_hw_vpath_stats_sw_common_info {
+-	u32	full_cnt;
+-	u32	usage_cnt;
+-	u32	usage_max;
+-	u32	reserve_free_swaps_cnt;
+-	u32 total_compl_cnt;
+-};
+-
+-/**
+- * struct vxge_hw_vpath_stats_sw_fifo_info - HW fifo statistics
+- * @common_stats: Common counters for all queues
+- * @total_posts: Total number of postings on the queue.
+- * @total_buffers: Total number of buffers posted.
+- * @txd_t_code_err_cnt: Array of transmit transfer codes. The position
+- * (index) in this array reflects the transfer code type, for instance
+- * 0xA - "loss of link".
+- * Value txd_t_code_err_cnt[i] reflects the
+- * number of times the corresponding transfer code was encountered.
+- *
+- * HW fifo counters
+- * See also: struct vxge_hw_vpath_stats_sw_common_info{},
+- * struct vxge_hw_vpath_stats_sw_ring_info{},
+- */
+-struct vxge_hw_vpath_stats_sw_fifo_info {
+-	struct vxge_hw_vpath_stats_sw_common_info common_stats;
+-	u32 total_posts;
+-	u32 total_buffers;
+-	u32 txd_t_code_err_cnt[VXGE_HW_DTR_MAX_T_CODE];
+-};
+-
+-/**
+- * struct vxge_hw_vpath_stats_sw_ring_info - HW ring statistics
+- * @common_stats: Common counters for all queues
+- * @rxd_t_code_err_cnt: Array of receive transfer codes. The position
+- *             (index) in this array reflects the transfer code type,
+- *             for instance
+- *             0x7 - for "invalid receive buffer size", or 0x8 - for ECC.
+- *             Value rxd_t_code_err_cnt[i] reflects the
+- *             number of times the corresponding transfer code was encountered.
+- *
+- * HW ring counters
+- * See also: struct vxge_hw_vpath_stats_sw_common_info{},
+- * struct vxge_hw_vpath_stats_sw_fifo_info{},
+- */
+-struct vxge_hw_vpath_stats_sw_ring_info {
+-	struct vxge_hw_vpath_stats_sw_common_info common_stats;
+-	u32 rxd_t_code_err_cnt[VXGE_HW_DTR_MAX_T_CODE];
+-
+-};
+-
+-/**
+- * struct vxge_hw_vpath_stats_sw_err - HW vpath error statistics
+- * @unknown_alarms:
+- * @network_sustained_fault:
+- * @network_sustained_ok:
+- * @kdfcctl_fifo0_overwrite:
+- * @kdfcctl_fifo0_poison:
+- * @kdfcctl_fifo0_dma_error:
+- * @dblgen_fifo0_overflow:
+- * @statsb_pif_chain_error:
+- * @statsb_drop_timeout:
+- * @target_illegal_access:
+- * @ini_serr_det:
+- * @prc_ring_bumps:
+- * @prc_rxdcm_sc_err:
+- * @prc_rxdcm_sc_abort:
+- * @prc_quanta_size_err:
+- *
+- * HW vpath error statistics
+- */
+-struct vxge_hw_vpath_stats_sw_err {
+-	u32	unknown_alarms;
+-	u32	network_sustained_fault;
+-	u32	network_sustained_ok;
+-	u32	kdfcctl_fifo0_overwrite;
+-	u32	kdfcctl_fifo0_poison;
+-	u32	kdfcctl_fifo0_dma_error;
+-	u32	dblgen_fifo0_overflow;
+-	u32	statsb_pif_chain_error;
+-	u32	statsb_drop_timeout;
+-	u32	target_illegal_access;
+-	u32	ini_serr_det;
+-	u32	prc_ring_bumps;
+-	u32	prc_rxdcm_sc_err;
+-	u32	prc_rxdcm_sc_abort;
+-	u32	prc_quanta_size_err;
+-};
+-
+-/**
+- * struct vxge_hw_vpath_stats_sw_info - HW vpath sw statistics
+- * @soft_reset_cnt: Number of times soft reset is done on this vpath.
+- * @error_stats: error counters for the vpath
+- * @ring_stats: counters for ring belonging to the vpath
+- * @fifo_stats: counters for fifo belonging to the vpath
+- *
+- * HW vpath sw statistics
+- * See also: struct vxge_hw_device_info{} }.
+- */
+-struct vxge_hw_vpath_stats_sw_info {
+-	u32    soft_reset_cnt;
+-	struct vxge_hw_vpath_stats_sw_err	error_stats;
+-	struct vxge_hw_vpath_stats_sw_ring_info	ring_stats;
+-	struct vxge_hw_vpath_stats_sw_fifo_info	fifo_stats;
+-};
+-
+-/**
+- * struct vxge_hw_device_stats_sw_info - HW own per-device statistics.
+- *
+- * @not_traffic_intr_cnt: Number of times the host was interrupted
+- *                        without new completions.
+- *                        "Non-traffic interrupt counter".
+- * @traffic_intr_cnt: Number of traffic interrupts for the device.
+- * @total_intr_cnt: Total number of traffic interrupts for the device.
+- *                  @total_intr_cnt == @traffic_intr_cnt +
+- *                              @not_traffic_intr_cnt
+- * @soft_reset_cnt: Number of times soft reset is done on this device.
+- * @vpath_info: please see struct vxge_hw_vpath_stats_sw_info{}
+- * HW per-device statistics.
+- */
+-struct vxge_hw_device_stats_sw_info {
+-	u32	not_traffic_intr_cnt;
+-	u32	traffic_intr_cnt;
+-	u32	total_intr_cnt;
+-	u32	soft_reset_cnt;
+-	struct vxge_hw_vpath_stats_sw_info
+-		vpath_info[VXGE_HW_MAX_VIRTUAL_PATHS];
+-};
+-
+-/**
+- * struct vxge_hw_device_stats_sw_err - HW device error statistics.
+- * @vpath_alarms: Number of vpath alarms
+- *
+- * HW Device error stats
+- */
+-struct vxge_hw_device_stats_sw_err {
+-	u32     vpath_alarms;
+-};
+-
+-/**
+- * struct vxge_hw_device_stats - Contains HW per-device statistics,
+- * including hw.
+- * @devh: HW device handle.
+- * @dma_addr: DMA address of the %hw_info. Given to device to fill-in the stats.
+- * @hw_info_dmah: DMA handle used to map hw statistics onto the device memory
+- *                space.
+- * @hw_info_dma_acch: One more DMA handle used subsequently to free the
+- *                    DMA object. Note that this and the previous handle have
+- *                    physical meaning for Solaris; on Windows and Linux the
+- *                    corresponding value will be simply pointer to PCI device.
+- *
+- * @hw_dev_info_stats: Titan statistics maintained by the hardware.
+- * @sw_dev_info_stats: HW's "soft" device informational statistics, e.g. number
+- *                     of completions per interrupt.
+- * @sw_dev_err_stats: HW's "soft" device error statistics.
+- *
+- * Structure-container of HW per-device statistics. Note that per-channel
+- * statistics are kept in separate structures under HW's fifo and ring
+- * channels.
+- */
+-struct vxge_hw_device_stats {
+-	/* handles */
+-	struct __vxge_hw_device *devh;
+-
+-	/* HW device hardware statistics */
+-	struct vxge_hw_device_stats_hw_info	hw_dev_info_stats;
+-
+-	/* HW device "soft" stats */
+-	struct vxge_hw_device_stats_sw_err   sw_dev_err_stats;
+-	struct vxge_hw_device_stats_sw_info  sw_dev_info_stats;
+-
+-};
+-
+-enum vxge_hw_status vxge_hw_device_hw_stats_enable(
+-			struct __vxge_hw_device *devh);
+-
+-enum vxge_hw_status vxge_hw_device_stats_get(
+-			struct __vxge_hw_device *devh,
+-			struct vxge_hw_device_stats_hw_info *hw_stats);
+-
+-enum vxge_hw_status vxge_hw_driver_stats_get(
+-			struct __vxge_hw_device *devh,
+-			struct vxge_hw_device_stats_sw_info *sw_stats);
+-
+-enum vxge_hw_status vxge_hw_mrpcim_stats_enable(struct __vxge_hw_device *devh);
+-
+-enum vxge_hw_status vxge_hw_mrpcim_stats_disable(struct __vxge_hw_device *devh);
+-
+-enum vxge_hw_status
+-vxge_hw_mrpcim_stats_access(
+-	struct __vxge_hw_device *devh,
+-	u32 operation,
+-	u32 location,
+-	u32 offset,
+-	u64 *stat);
+-
+-enum vxge_hw_status
+-vxge_hw_device_xmac_stats_get(struct __vxge_hw_device *devh,
+-			      struct vxge_hw_xmac_stats *xmac_stats);
+-
+-/**
+- * enum enum vxge_hw_mgmt_reg_type - Register types.
+- *
+- * @vxge_hw_mgmt_reg_type_legacy: Legacy registers
+- * @vxge_hw_mgmt_reg_type_toc: TOC Registers
+- * @vxge_hw_mgmt_reg_type_common: Common Registers
+- * @vxge_hw_mgmt_reg_type_mrpcim: mrpcim registers
+- * @vxge_hw_mgmt_reg_type_srpcim: srpcim registers
+- * @vxge_hw_mgmt_reg_type_vpmgmt: vpath management registers
+- * @vxge_hw_mgmt_reg_type_vpath: vpath registers
+- *
+- * Register type enumaration
+- */
+-enum vxge_hw_mgmt_reg_type {
+-	vxge_hw_mgmt_reg_type_legacy = 0,
+-	vxge_hw_mgmt_reg_type_toc = 1,
+-	vxge_hw_mgmt_reg_type_common = 2,
+-	vxge_hw_mgmt_reg_type_mrpcim = 3,
+-	vxge_hw_mgmt_reg_type_srpcim = 4,
+-	vxge_hw_mgmt_reg_type_vpmgmt = 5,
+-	vxge_hw_mgmt_reg_type_vpath = 6
+-};
+-
+-enum vxge_hw_status
+-vxge_hw_mgmt_reg_read(struct __vxge_hw_device *devh,
+-		      enum vxge_hw_mgmt_reg_type type,
+-		      u32 index,
+-		      u32 offset,
+-		      u64 *value);
+-
+-enum vxge_hw_status
+-vxge_hw_mgmt_reg_write(struct __vxge_hw_device *devh,
+-		      enum vxge_hw_mgmt_reg_type type,
+-		      u32 index,
+-		      u32 offset,
+-		      u64 value);
+-
+-/**
+- * enum enum vxge_hw_rxd_state - Descriptor (RXD) state.
+- * @VXGE_HW_RXD_STATE_NONE: Invalid state.
+- * @VXGE_HW_RXD_STATE_AVAIL: Descriptor is available for reservation.
+- * @VXGE_HW_RXD_STATE_POSTED: Descriptor is posted for processing by the
+- * device.
+- * @VXGE_HW_RXD_STATE_FREED: Descriptor is free and can be reused for
+- * filling-in and posting later.
+- *
+- * Titan/HW descriptor states.
+- *
+- */
+-enum vxge_hw_rxd_state {
+-	VXGE_HW_RXD_STATE_NONE		= 0,
+-	VXGE_HW_RXD_STATE_AVAIL		= 1,
+-	VXGE_HW_RXD_STATE_POSTED	= 2,
+-	VXGE_HW_RXD_STATE_FREED		= 3
+-};
+-
+-/**
+- * struct vxge_hw_ring_rxd_info - Extended information associated with a
+- * completed ring descriptor.
+- * @syn_flag: SYN flag
+- * @is_icmp: Is ICMP
+- * @fast_path_eligible: Fast Path Eligible flag
+- * @l3_cksum: in L3 checksum is valid
+- * @l3_cksum: Result of IP checksum check (by Titan hardware).
+- *            This field containing VXGE_HW_L3_CKSUM_OK would mean that
+- *            the checksum is correct, otherwise - the datagram is
+- *            corrupted.
+- * @l4_cksum: in L4 checksum is valid
+- * @l4_cksum: Result of TCP/UDP checksum check (by Titan hardware).
+- *            This field containing VXGE_HW_L4_CKSUM_OK would mean that
+- *            the checksum is correct. Otherwise - the packet is
+- *            corrupted.
+- * @frame: Zero or more of enum vxge_hw_frame_type flags.
+- * 		See enum vxge_hw_frame_type{}.
+- * @proto: zero or more of enum vxge_hw_frame_proto flags.  Reporting bits for
+- *            various higher-layer protocols, including (but note restricted to)
+- *            TCP and UDP. See enum vxge_hw_frame_proto{}.
+- * @is_vlan: If vlan tag is valid
+- * @vlan: VLAN tag extracted from the received frame.
+- * @rth_bucket: RTH bucket
+- * @rth_it_hit: Set, If RTH hash value calculated by the Titan hardware
+- *             has a matching entry in the Indirection table.
+- * @rth_spdm_hit: Set, If RTH hash value calculated by the Titan hardware
+- *             has a matching entry in the Socket Pair Direct Match table.
+- * @rth_hash_type: RTH hash code of the function used to calculate the hash.
+- * @rth_value: Receive Traffic Hashing(RTH) hash value. Produced by Titan
+- *             hardware if RTH is enabled.
+- */
+-struct vxge_hw_ring_rxd_info {
+-	u32	syn_flag;
+-	u32	is_icmp;
+-	u32	fast_path_eligible;
+-	u32	l3_cksum_valid;
+-	u32	l3_cksum;
+-	u32	l4_cksum_valid;
+-	u32	l4_cksum;
+-	u32	frame;
+-	u32	proto;
+-	u32	is_vlan;
+-	u32	vlan;
+-	u32	rth_bucket;
+-	u32	rth_it_hit;
+-	u32	rth_spdm_hit;
+-	u32	rth_hash_type;
+-	u32	rth_value;
+-};
+-/**
+- * enum vxge_hw_ring_tcode - Transfer codes returned by adapter
+- * @VXGE_HW_RING_T_CODE_OK: Transfer ok.
+- * @VXGE_HW_RING_T_CODE_L3_CKSUM_MISMATCH: Layer 3 checksum presentation
+- *		configuration mismatch.
+- * @VXGE_HW_RING_T_CODE_L4_CKSUM_MISMATCH: Layer 4 checksum presentation
+- *		configuration mismatch.
+- * @VXGE_HW_RING_T_CODE_L3_L4_CKSUM_MISMATCH: Layer 3 and Layer 4 checksum
+- *		presentation configuration mismatch.
+- * @VXGE_HW_RING_T_CODE_L3_PKT_ERR: Layer 3 error unparseable packet,
+- *		such as unknown IPv6 header.
+- * @VXGE_HW_RING_T_CODE_L2_FRM_ERR: Layer 2 error frame integrity
+- *		error, such as FCS or ECC).
+- * @VXGE_HW_RING_T_CODE_BUF_SIZE_ERR: Buffer size error the RxD buffer(
+- *		s) were not appropriately sized and data loss occurred.
+- * @VXGE_HW_RING_T_CODE_INT_ECC_ERR: Internal ECC error RxD corrupted.
+- * @VXGE_HW_RING_T_CODE_BENIGN_OVFLOW: Benign overflow the contents of
+- *		Segment1 exceeded the capacity of Buffer1 and the remainder
+- *		was placed in Buffer2. Segment2 now starts in Buffer3.
+- *		No data loss or errors occurred.
+- * @VXGE_HW_RING_T_CODE_ZERO_LEN_BUFF: Buffer size 0 one of the RxDs
+- *		assigned buffers has a size of 0 bytes.
+- * @VXGE_HW_RING_T_CODE_FRM_DROP: Frame dropped either due to
+- *		VPath Reset or because of a VPIN mismatch.
+- * @VXGE_HW_RING_T_CODE_UNUSED: Unused
+- * @VXGE_HW_RING_T_CODE_MULTI_ERR: Multiple errors more than one
+- *		transfer code condition occurred.
+- *
+- * Transfer codes returned by adapter.
+- */
+-enum vxge_hw_ring_tcode {
+-	VXGE_HW_RING_T_CODE_OK				= 0x0,
+-	VXGE_HW_RING_T_CODE_L3_CKSUM_MISMATCH		= 0x1,
+-	VXGE_HW_RING_T_CODE_L4_CKSUM_MISMATCH		= 0x2,
+-	VXGE_HW_RING_T_CODE_L3_L4_CKSUM_MISMATCH	= 0x3,
+-	VXGE_HW_RING_T_CODE_L3_PKT_ERR			= 0x5,
+-	VXGE_HW_RING_T_CODE_L2_FRM_ERR			= 0x6,
+-	VXGE_HW_RING_T_CODE_BUF_SIZE_ERR		= 0x7,
+-	VXGE_HW_RING_T_CODE_INT_ECC_ERR			= 0x8,
+-	VXGE_HW_RING_T_CODE_BENIGN_OVFLOW		= 0x9,
+-	VXGE_HW_RING_T_CODE_ZERO_LEN_BUFF		= 0xA,
+-	VXGE_HW_RING_T_CODE_FRM_DROP			= 0xC,
+-	VXGE_HW_RING_T_CODE_UNUSED			= 0xE,
+-	VXGE_HW_RING_T_CODE_MULTI_ERR			= 0xF
+-};
+-
+-enum vxge_hw_status vxge_hw_ring_rxd_reserve(
+-	struct __vxge_hw_ring *ring_handle,
+-	void **rxdh);
+-
+-void
+-vxge_hw_ring_rxd_pre_post(
+-	struct __vxge_hw_ring *ring_handle,
+-	void *rxdh);
+-
+-void
+-vxge_hw_ring_rxd_post_post(
+-	struct __vxge_hw_ring *ring_handle,
+-	void *rxdh);
+-
+-void
+-vxge_hw_ring_rxd_post_post_wmb(
+-	struct __vxge_hw_ring *ring_handle,
+-	void *rxdh);
+-
+-void vxge_hw_ring_rxd_post(
+-	struct __vxge_hw_ring *ring_handle,
+-	void *rxdh);
+-
+-enum vxge_hw_status vxge_hw_ring_rxd_next_completed(
+-	struct __vxge_hw_ring *ring_handle,
+-	void **rxdh,
+-	u8 *t_code);
+-
+-enum vxge_hw_status vxge_hw_ring_handle_tcode(
+-	struct __vxge_hw_ring *ring_handle,
+-	void *rxdh,
+-	u8 t_code);
+-
+-void vxge_hw_ring_rxd_free(
+-	struct __vxge_hw_ring *ring_handle,
+-	void *rxdh);
+-
+-/**
+- * enum enum vxge_hw_frame_proto - Higher-layer ethernet protocols.
+- * @VXGE_HW_FRAME_PROTO_VLAN_TAGGED: VLAN.
+- * @VXGE_HW_FRAME_PROTO_IPV4: IPv4.
+- * @VXGE_HW_FRAME_PROTO_IPV6: IPv6.
+- * @VXGE_HW_FRAME_PROTO_IP_FRAG: IP fragmented.
+- * @VXGE_HW_FRAME_PROTO_TCP: TCP.
+- * @VXGE_HW_FRAME_PROTO_UDP: UDP.
+- * @VXGE_HW_FRAME_PROTO_TCP_OR_UDP: TCP or UDP.
+- *
+- * Higher layer ethernet protocols and options.
+- */
+-enum vxge_hw_frame_proto {
+-	VXGE_HW_FRAME_PROTO_VLAN_TAGGED = 0x80,
+-	VXGE_HW_FRAME_PROTO_IPV4		= 0x10,
+-	VXGE_HW_FRAME_PROTO_IPV6		= 0x08,
+-	VXGE_HW_FRAME_PROTO_IP_FRAG		= 0x04,
+-	VXGE_HW_FRAME_PROTO_TCP			= 0x02,
+-	VXGE_HW_FRAME_PROTO_UDP			= 0x01,
+-	VXGE_HW_FRAME_PROTO_TCP_OR_UDP	= (VXGE_HW_FRAME_PROTO_TCP | \
+-						   VXGE_HW_FRAME_PROTO_UDP)
+-};
+-
+-/**
+- * enum enum vxge_hw_fifo_gather_code - Gather codes used in fifo TxD
+- * @VXGE_HW_FIFO_GATHER_CODE_FIRST: First TxDL
+- * @VXGE_HW_FIFO_GATHER_CODE_MIDDLE: Middle TxDL
+- * @VXGE_HW_FIFO_GATHER_CODE_LAST: Last TxDL
+- * @VXGE_HW_FIFO_GATHER_CODE_FIRST_LAST: First and Last TxDL.
+- *
+- * These gather codes are used to indicate the position of a TxD in a TxD list
+- */
+-enum vxge_hw_fifo_gather_code {
+-	VXGE_HW_FIFO_GATHER_CODE_FIRST		= 0x2,
+-	VXGE_HW_FIFO_GATHER_CODE_MIDDLE		= 0x0,
+-	VXGE_HW_FIFO_GATHER_CODE_LAST		= 0x1,
+-	VXGE_HW_FIFO_GATHER_CODE_FIRST_LAST	= 0x3
+-};
+-
+-/**
+- * enum enum vxge_hw_fifo_tcode - tcodes used in fifo
+- * @VXGE_HW_FIFO_T_CODE_OK: Transfer OK
+- * @VXGE_HW_FIFO_T_CODE_PCI_READ_CORRUPT: PCI read transaction (either TxD or
+- *             frame data) returned with corrupt data.
+- * @VXGE_HW_FIFO_T_CODE_PCI_READ_FAIL:PCI read transaction was returned
+- *             with no data.
+- * @VXGE_HW_FIFO_T_CODE_INVALID_MSS: The host attempted to send either a
+- *             frame or LSO MSS that was too long (>9800B).
+- * @VXGE_HW_FIFO_T_CODE_LSO_ERROR: Error detected during TCP/UDP Large Send
+-	*	       Offload operation, due to improper header template,
+-	*	       unsupported protocol, etc.
+- * @VXGE_HW_FIFO_T_CODE_UNUSED: Unused
+- * @VXGE_HW_FIFO_T_CODE_MULTI_ERROR: Set to 1 by the adapter if multiple
+- *             data buffer transfer errors are encountered (see below).
+- *             Otherwise it is set to 0.
+- *
+- * These tcodes are returned in various API for TxD status
+- */
+-enum vxge_hw_fifo_tcode {
+-	VXGE_HW_FIFO_T_CODE_OK			= 0x0,
+-	VXGE_HW_FIFO_T_CODE_PCI_READ_CORRUPT	= 0x1,
+-	VXGE_HW_FIFO_T_CODE_PCI_READ_FAIL	= 0x2,
+-	VXGE_HW_FIFO_T_CODE_INVALID_MSS		= 0x3,
+-	VXGE_HW_FIFO_T_CODE_LSO_ERROR		= 0x4,
+-	VXGE_HW_FIFO_T_CODE_UNUSED		= 0x7,
+-	VXGE_HW_FIFO_T_CODE_MULTI_ERROR		= 0x8
+-};
+-
+-enum vxge_hw_status vxge_hw_fifo_txdl_reserve(
+-	struct __vxge_hw_fifo *fifoh,
+-	void **txdlh,
+-	void **txdl_priv);
+-
+-void vxge_hw_fifo_txdl_buffer_set(
+-			struct __vxge_hw_fifo *fifo_handle,
+-			void *txdlh,
+-			u32 frag_idx,
+-			dma_addr_t dma_pointer,
+-			u32 size);
+-
+-void vxge_hw_fifo_txdl_post(
+-			struct __vxge_hw_fifo *fifo_handle,
+-			void *txdlh);
+-
+-u32 vxge_hw_fifo_free_txdl_count_get(
+-			struct __vxge_hw_fifo *fifo_handle);
+-
+-enum vxge_hw_status vxge_hw_fifo_txdl_next_completed(
+-	struct __vxge_hw_fifo *fifoh,
+-	void **txdlh,
+-	enum vxge_hw_fifo_tcode *t_code);
+-
+-enum vxge_hw_status vxge_hw_fifo_handle_tcode(
+-	struct __vxge_hw_fifo *fifoh,
+-	void *txdlh,
+-	enum vxge_hw_fifo_tcode t_code);
+-
+-void vxge_hw_fifo_txdl_free(
+-	struct __vxge_hw_fifo *fifoh,
+-	void *txdlh);
+-
+-/*
+- * Device
+- */
+-
+-#define VXGE_HW_RING_NEXT_BLOCK_POINTER_OFFSET	(VXGE_HW_BLOCK_SIZE-8)
+-#define VXGE_HW_RING_MEMBLOCK_IDX_OFFSET		(VXGE_HW_BLOCK_SIZE-16)
+-
+-/*
+- * struct __vxge_hw_ring_rxd_priv - Receive descriptor HW-private data.
+- * @dma_addr: DMA (mapped) address of _this_ descriptor.
+- * @dma_handle: DMA handle used to map the descriptor onto device.
+- * @dma_offset: Descriptor's offset in the memory block. HW allocates
+- *              descriptors in memory blocks of %VXGE_HW_BLOCK_SIZE
+- *              bytes. Each memblock is contiguous DMA-able memory. Each
+- *              memblock contains 1 or more 4KB RxD blocks visible to the
+- *              Titan hardware.
+- * @dma_object: DMA address and handle of the memory block that contains
+- *              the descriptor. This member is used only in the "checked"
+- *              version of the HW (to enforce certain assertions);
+- *              otherwise it gets compiled out.
+- * @allocated: True if the descriptor is reserved, 0 otherwise. Internal usage.
+- *
+- * Per-receive decsriptor HW-private data. HW uses the space to keep DMA
+- * information associated with the descriptor. Note that driver can ask HW
+- * to allocate additional per-descriptor space for its own (driver-specific)
+- * purposes.
+- */
+-struct __vxge_hw_ring_rxd_priv {
+-	dma_addr_t	dma_addr;
+-	struct pci_dev *dma_handle;
+-	ptrdiff_t	dma_offset;
+-#ifdef VXGE_DEBUG_ASSERT
+-	struct vxge_hw_mempool_dma	*dma_object;
+-#endif
+-};
+-
+-struct vxge_hw_mempool_cbs {
+-	void (*item_func_alloc)(
+-			struct vxge_hw_mempool *mempoolh,
+-			u32			memblock_index,
+-			struct vxge_hw_mempool_dma	*dma_object,
+-			u32			index,
+-			u32			is_last);
+-};
+-
+-#define VXGE_HW_VIRTUAL_PATH_HANDLE(vpath)				\
+-		((struct __vxge_hw_vpath_handle *)(vpath)->vpath_handles.next)
+-
+-enum vxge_hw_status
+-__vxge_hw_vpath_rts_table_get(
+-	struct __vxge_hw_vpath_handle *vpath_handle,
+-	u32			action,
+-	u32			rts_table,
+-	u32			offset,
+-	u64			*data1,
+-	u64			*data2);
+-
+-enum vxge_hw_status
+-__vxge_hw_vpath_rts_table_set(
+-	struct __vxge_hw_vpath_handle *vpath_handle,
+-	u32			action,
+-	u32			rts_table,
+-	u32			offset,
+-	u64			data1,
+-	u64			data2);
+-
+-enum vxge_hw_status
+-__vxge_hw_vpath_enable(
+-	struct __vxge_hw_device *devh,
+-	u32			vp_id);
+-
+-void vxge_hw_device_intr_enable(
+-	struct __vxge_hw_device *devh);
+-
+-u32 vxge_hw_device_set_intr_type(struct __vxge_hw_device *devh, u32 intr_mode);
+-
+-void vxge_hw_device_intr_disable(
+-	struct __vxge_hw_device *devh);
+-
+-void vxge_hw_device_mask_all(
+-	struct __vxge_hw_device *devh);
+-
+-void vxge_hw_device_unmask_all(
+-	struct __vxge_hw_device *devh);
+-
+-enum vxge_hw_status vxge_hw_device_begin_irq(
+-	struct __vxge_hw_device *devh,
+-	u32 skip_alarms,
+-	u64 *reason);
+-
+-void vxge_hw_device_clear_tx_rx(
+-	struct __vxge_hw_device *devh);
+-
+-/*
+- *  Virtual Paths
+- */
+-
+-void vxge_hw_vpath_dynamic_rti_rtimer_set(struct __vxge_hw_ring *ring);
+-
+-void vxge_hw_vpath_dynamic_tti_rtimer_set(struct __vxge_hw_fifo *fifo);
+-
+-u32 vxge_hw_vpath_id(
+-	struct __vxge_hw_vpath_handle *vpath_handle);
+-
+-enum vxge_hw_vpath_mac_addr_add_mode {
+-	VXGE_HW_VPATH_MAC_ADDR_ADD_DUPLICATE = 0,
+-	VXGE_HW_VPATH_MAC_ADDR_DISCARD_DUPLICATE = 1,
+-	VXGE_HW_VPATH_MAC_ADDR_REPLACE_DUPLICATE = 2
+-};
+-
+-enum vxge_hw_status
+-vxge_hw_vpath_mac_addr_add(
+-	struct __vxge_hw_vpath_handle *vpath_handle,
+-	u8 *macaddr,
+-	u8 *macaddr_mask,
+-	enum vxge_hw_vpath_mac_addr_add_mode duplicate_mode);
+-
+-enum vxge_hw_status
+-vxge_hw_vpath_mac_addr_get(
+-	struct __vxge_hw_vpath_handle *vpath_handle,
+-	u8 *macaddr,
+-	u8 *macaddr_mask);
+-
+-enum vxge_hw_status
+-vxge_hw_vpath_mac_addr_get_next(
+-	struct __vxge_hw_vpath_handle *vpath_handle,
+-	u8 *macaddr,
+-	u8 *macaddr_mask);
+-
+-enum vxge_hw_status
+-vxge_hw_vpath_mac_addr_delete(
+-	struct __vxge_hw_vpath_handle *vpath_handle,
+-	u8 *macaddr,
+-	u8 *macaddr_mask);
+-
+-enum vxge_hw_status
+-vxge_hw_vpath_vid_add(
+-	struct __vxge_hw_vpath_handle *vpath_handle,
+-	u64			vid);
+-
+-enum vxge_hw_status
+-vxge_hw_vpath_vid_delete(
+-	struct __vxge_hw_vpath_handle *vpath_handle,
+-	u64			vid);
+-
+-enum vxge_hw_status
+-vxge_hw_vpath_etype_add(
+-	struct __vxge_hw_vpath_handle *vpath_handle,
+-	u64			etype);
+-
+-enum vxge_hw_status
+-vxge_hw_vpath_etype_get(
+-	struct __vxge_hw_vpath_handle *vpath_handle,
+-	u64			*etype);
+-
+-enum vxge_hw_status
+-vxge_hw_vpath_etype_get_next(
+-	struct __vxge_hw_vpath_handle *vpath_handle,
+-	u64			*etype);
+-
+-enum vxge_hw_status
+-vxge_hw_vpath_etype_delete(
+-	struct __vxge_hw_vpath_handle *vpath_handle,
+-	u64			etype);
+-
+-enum vxge_hw_status vxge_hw_vpath_promisc_enable(
+-	struct __vxge_hw_vpath_handle *vpath_handle);
+-
+-enum vxge_hw_status vxge_hw_vpath_promisc_disable(
+-	struct __vxge_hw_vpath_handle *vpath_handle);
+-
+-enum vxge_hw_status vxge_hw_vpath_bcast_enable(
+-	struct __vxge_hw_vpath_handle *vpath_handle);
+-
+-enum vxge_hw_status vxge_hw_vpath_mcast_enable(
+-	struct __vxge_hw_vpath_handle *vpath_handle);
+-
+-enum vxge_hw_status vxge_hw_vpath_mcast_disable(
+-	struct __vxge_hw_vpath_handle *vpath_handle);
+-
+-enum vxge_hw_status vxge_hw_vpath_poll_rx(
+-	struct __vxge_hw_ring *ringh);
+-
+-enum vxge_hw_status vxge_hw_vpath_poll_tx(
+-	struct __vxge_hw_fifo *fifoh,
+-	struct sk_buff ***skb_ptr, int nr_skb, int *more);
+-
+-enum vxge_hw_status vxge_hw_vpath_alarm_process(
+-	struct __vxge_hw_vpath_handle *vpath_handle,
+-	u32 skip_alarms);
+-
+-void
+-vxge_hw_vpath_msix_set(struct __vxge_hw_vpath_handle *vpath_handle,
+-		       int *tim_msix_id, int alarm_msix_id);
+-
+-void
+-vxge_hw_vpath_msix_mask(struct __vxge_hw_vpath_handle *vpath_handle,
+-			int msix_id);
+-
+-void vxge_hw_vpath_msix_clear(struct __vxge_hw_vpath_handle *vp, int msix_id);
+-
+-void vxge_hw_device_flush_io(struct __vxge_hw_device *devh);
+-
+-void
+-vxge_hw_vpath_msix_unmask(struct __vxge_hw_vpath_handle *vpath_handle,
+-			  int msix_id);
+-
+-enum vxge_hw_status vxge_hw_vpath_intr_enable(
+-				struct __vxge_hw_vpath_handle *vpath_handle);
+-
+-enum vxge_hw_status vxge_hw_vpath_intr_disable(
+-				struct __vxge_hw_vpath_handle *vpath_handle);
+-
+-void vxge_hw_vpath_inta_mask_tx_rx(
+-	struct __vxge_hw_vpath_handle *vpath_handle);
+-
+-void vxge_hw_vpath_inta_unmask_tx_rx(
+-	struct __vxge_hw_vpath_handle *vpath_handle);
+-
+-void
+-vxge_hw_channel_msix_mask(struct __vxge_hw_channel *channelh, int msix_id);
+-
+-void
+-vxge_hw_channel_msix_unmask(struct __vxge_hw_channel *channelh, int msix_id);
+-
+-void
+-vxge_hw_channel_msix_clear(struct __vxge_hw_channel *channelh, int msix_id);
+-
+-void
+-vxge_hw_channel_dtr_try_complete(struct __vxge_hw_channel *channel,
+-				 void **dtrh);
+-
+-void
+-vxge_hw_channel_dtr_complete(struct __vxge_hw_channel *channel);
+-
+-void
+-vxge_hw_channel_dtr_free(struct __vxge_hw_channel *channel, void *dtrh);
+-
+-int
+-vxge_hw_channel_dtr_count(struct __vxge_hw_channel *channel);
+-
+-void vxge_hw_vpath_tti_ci_set(struct __vxge_hw_fifo *fifo);
+-
+-void vxge_hw_vpath_dynamic_rti_ci_set(struct __vxge_hw_ring *ring);
+-
+-#endif
+diff --git a/drivers/net/ethernet/neterion/vxge/vxge-version.h b/drivers/net/ethernet/neterion/vxge/vxge-version.h
+deleted file mode 100644
+index b9efa28bab3e..000000000000
+--- a/drivers/net/ethernet/neterion/vxge/vxge-version.h
++++ /dev/null
+@@ -1,49 +0,0 @@
+-/******************************************************************************
+- * This software may be used and distributed according to the terms of
+- * the GNU General Public License (GPL), incorporated herein by reference.
+- * Drivers based on or derived from this code fall under the GPL and must
+- * retain the authorship, copyright and license notice.  This file is not
+- * a complete program and may only be used when the entire operating
+- * system is licensed under the GPL.
+- * See the file COPYING in this distribution for more information.
+- *
+- * vxge-version.h: Driver for Exar Corp's X3100 Series 10GbE PCIe I/O
+- *                 Virtualized Server Adapter.
+- * Copyright(c) 2002-2010 Exar Corp.
+- ******************************************************************************/
+-#ifndef VXGE_VERSION_H
+-#define VXGE_VERSION_H
+-
+-#define VXGE_VERSION_MAJOR	"2"
+-#define VXGE_VERSION_MINOR	"5"
+-#define VXGE_VERSION_FIX	"3"
+-#define VXGE_VERSION_BUILD	"22640"
+-#define VXGE_VERSION_FOR	"k"
+-
+-#define VXGE_FW_VER(maj, min, bld) (((maj) << 16) + ((min) << 8) + (bld))
+-
+-#define VXGE_DEAD_FW_VER_MAJOR	1
+-#define VXGE_DEAD_FW_VER_MINOR	4
+-#define VXGE_DEAD_FW_VER_BUILD	4
+-
+-#define VXGE_FW_DEAD_VER VXGE_FW_VER(VXGE_DEAD_FW_VER_MAJOR, \
+-				     VXGE_DEAD_FW_VER_MINOR, \
+-				     VXGE_DEAD_FW_VER_BUILD)
+-
+-#define VXGE_EPROM_FW_VER_MAJOR	1
+-#define VXGE_EPROM_FW_VER_MINOR	6
+-#define VXGE_EPROM_FW_VER_BUILD	1
+-
+-#define VXGE_EPROM_FW_VER VXGE_FW_VER(VXGE_EPROM_FW_VER_MAJOR, \
+-				      VXGE_EPROM_FW_VER_MINOR, \
+-				      VXGE_EPROM_FW_VER_BUILD)
+-
+-#define VXGE_CERT_FW_VER_MAJOR	1
+-#define VXGE_CERT_FW_VER_MINOR	8
+-#define VXGE_CERT_FW_VER_BUILD	1
+-
+-#define VXGE_CERT_FW_VER VXGE_FW_VER(VXGE_CERT_FW_VER_MAJOR, \
+-				     VXGE_CERT_FW_VER_MINOR, \
+-				     VXGE_CERT_FW_VER_BUILD)
+-
+-#endif
 -- 
-2.17.1
+2.36.1
 
