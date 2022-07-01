@@ -2,231 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 79E17563395
-	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 14:41:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BBD155633A5
+	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 14:45:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235708AbiGAMlr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Jul 2022 08:41:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40382 "EHLO
+        id S236427AbiGAMpg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Jul 2022 08:45:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235679AbiGAMlq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 08:41:46 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1A63A403D0
-        for <netdev@vger.kernel.org>; Fri,  1 Jul 2022 05:41:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656679300;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=o3gY8Y5UYdPpN54/a6touCU5SVfDsdz3NaUMVHi2oAs=;
-        b=JCNB1mbapCDJqR/xwsBZwtw39l1cqo4Xi9QGVuNgiWS/zxFDAxeJcS6Tm/4/8MA4am4WzL
-        5I9IOBgCjFmCKoTGJ0YMnsDhWeIX8czZXuZeiglIHcoI/e2Y8BN1aWeAme+lV7T9Sc+36n
-        RVFHGqGCaBeiVgpVdumlDbzf5GCJwoo=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-62-oDMuceyKMs28saJ3Wuyuig-1; Fri, 01 Jul 2022 08:41:39 -0400
-X-MC-Unique: oDMuceyKMs28saJ3Wuyuig-1
-Received: by mail-wm1-f69.google.com with SMTP id j35-20020a05600c1c2300b003a167dfa0ecso1356359wms.5
-        for <netdev@vger.kernel.org>; Fri, 01 Jul 2022 05:41:39 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=o3gY8Y5UYdPpN54/a6touCU5SVfDsdz3NaUMVHi2oAs=;
-        b=lX8/L63YIRdjDocTL7xF68jTjZp+y55SBYmFIArOp4abgJTbBYg5NEY/6pE6V/qMUT
-         0aB/HiD1E+411nIbyTyCOdtgSPrxJ/F4+8b4P6xWfI8Vh+MWn1di5qRQei37YyPicrIS
-         DaDAuMlSC6nVuQ7lC4/hRCGeSCiLNoKM9KVhQ+0xipLbH1a/6oUP5QJ2o8VavXxb+dmI
-         ULnMQnqWKjqolkt9P6dRgnjdNDsW2Z1NiwdJ39tdu4ayK7+38wvT1pGZQOBFyU1VkE4R
-         GDgQOAb4r83Xw3zWKK6QaL4RyR8anLW4iS98/jXODf6X4K941CuKgDAQXX6xra6eeVLF
-         Z2pQ==
-X-Gm-Message-State: AJIora8X8OIqApDJu2LdMCATJE/ZpQIseSkcwNAxbxMS7O6BhCBNbvSa
-        znZYsvd78asldfOhc65GnAZfxAlid5Nah5t3DUO8wfWm5kLfYRIuSdMasxYVFlux4izF6LeVbZp
-        Iw4Zv9klxGUtaL0Xu
-X-Received: by 2002:a05:600c:154f:b0:3a0:54f9:4388 with SMTP id f15-20020a05600c154f00b003a054f94388mr15620854wmg.16.1656679297888;
-        Fri, 01 Jul 2022 05:41:37 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1vgdC8gWbOXAxOYoLXChRELY3YnmUdXS3/+2QWssNOB7zQ/plmFSx8GLyuo1tdTE9k0/w7+PQ==
-X-Received: by 2002:a05:600c:154f:b0:3a0:54f9:4388 with SMTP id f15-20020a05600c154f00b003a054f94388mr15620780wmg.16.1656679297199;
-        Fri, 01 Jul 2022 05:41:37 -0700 (PDT)
-Received: from debian.home (2a01cb058d1194004161f17a6a9ad508.ipv6.abo.wanadoo.fr. [2a01:cb05:8d11:9400:4161:f17a:6a9a:d508])
-        by smtp.gmail.com with ESMTPSA id x10-20020a5d54ca000000b0021b85664636sm21770332wrv.16.2022.07.01.05.41.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Jul 2022 05:41:35 -0700 (PDT)
-Date:   Fri, 1 Jul 2022 14:41:33 +0200
-From:   Guillaume Nault <gnault@redhat.com>
-To:     "Drewek, Wojciech" <wojciech.drewek@intel.com>
-Cc:     Marcin Szycik <marcin.szycik@linux.intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
-        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
-        "gustavoars@kernel.org" <gustavoars@kernel.org>,
-        "baowen.zheng@corigine.com" <baowen.zheng@corigine.com>,
-        "boris.sukholitko@broadcom.com" <boris.sukholitko@broadcom.com>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "jhs@mojatatu.com" <jhs@mojatatu.com>,
-        "jiri@resnulli.us" <jiri@resnulli.us>,
-        "kurt@linutronix.de" <kurt@linutronix.de>,
-        "pablo@netfilter.org" <pablo@netfilter.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "paulb@nvidia.com" <paulb@nvidia.com>,
-        "simon.horman@corigine.com" <simon.horman@corigine.com>,
-        "komachi.yoshiki@gmail.com" <komachi.yoshiki@gmail.com>,
-        "zhangkaiheb@126.com" <zhangkaiheb@126.com>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "michal.swiatkowski@linux.intel.com" 
-        <michal.swiatkowski@linux.intel.com>,
-        "Lobakin, Alexandr" <alexandr.lobakin@intel.com>,
-        "mostrows@earthlink.net" <mostrows@earthlink.net>,
-        "paulus@samba.org" <paulus@samba.org>
-Subject: Re: [RFC PATCH net-next v3 1/4] flow_dissector: Add PPPoE dissectors
-Message-ID: <20220701124133.GA10226@debian.home>
-References: <20220629143859.209028-1-marcin.szycik@linux.intel.com>
- <20220629143859.209028-2-marcin.szycik@linux.intel.com>
- <20220630231016.GA392@debian.home>
- <MW4PR11MB5776F1388A0EFB83990120CDFDBD9@MW4PR11MB5776.namprd11.prod.outlook.com>
+        with ESMTP id S236428AbiGAMpf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 08:45:35 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99CA72B263;
+        Fri,  1 Jul 2022 05:45:34 -0700 (PDT)
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 261CcQVB025997;
+        Fri, 1 Jul 2022 12:45:26 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=ijW8+X9I6GEhQsMMJAQpxBegezU8N6QyHu3cA/a0ot8=;
+ b=OfUuyLktyDHR3zeqUqAk/uIsnnUfm1NRTVXlIDVbg2CsJRzuk+3tJd/72tumuf+1L0cy
+ bq4455JBaAUHaIGbIBM6cLWJrQTmZoekZsIkGm4dV/EdNueht35eT44EcCh+kiJtVzZg
+ 5gzkiwOM3EDV5+wJ2avaHGsfLHNyKAObLG5fxSwAxkaKUn2Gau8zJe9WoQdG5h8at5d2
+ ZYVjxtVTTr4rEThPxkmDRH6SP6raUSnp02phokH1itwU4Q3AMHcROA5Q0d49Pms8dFLV
+ BIfkNtJjPTWCe+18Zj/lHYrgLx+VD2OsJeZVpklXiQCf0w2D1nuHwM3Ur+YeTq9wqwBr Lg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h20up8rfa-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 01 Jul 2022 12:45:26 +0000
+Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 261CciKQ027971;
+        Fri, 1 Jul 2022 12:45:26 GMT
+Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h20up8reu-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 01 Jul 2022 12:45:26 +0000
+Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
+        by ppma02dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 261CaO9C002123;
+        Fri, 1 Jul 2022 12:45:25 GMT
+Received: from b01cxnp22034.gho.pok.ibm.com (b01cxnp22034.gho.pok.ibm.com [9.57.198.24])
+        by ppma02dal.us.ibm.com with ESMTP id 3gwt0bbgp8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 01 Jul 2022 12:45:25 +0000
+Received: from b01ledav004.gho.pok.ibm.com (b01ledav004.gho.pok.ibm.com [9.57.199.109])
+        by b01cxnp22034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 261CjOhq62915008
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 1 Jul 2022 12:45:24 GMT
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 5382F112061;
+        Fri,  1 Jul 2022 12:45:24 +0000 (GMT)
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 05BFC112065;
+        Fri,  1 Jul 2022 12:45:22 +0000 (GMT)
+Received: from [9.163.16.104] (unknown [9.163.16.104])
+        by b01ledav004.gho.pok.ibm.com (Postfix) with ESMTP;
+        Fri,  1 Jul 2022 12:45:21 +0000 (GMT)
+Message-ID: <00aeafda-ed23-1066-c0b0-d8fb7f8ec2d2@linux.ibm.com>
+Date:   Fri, 1 Jul 2022 14:45:20 +0200
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.10.0
+Subject: Re: [PATCH net-next v2] net/smc: align the connect behaviour with TCP
+To:     Guangguan Wang <guangguan.wang@linux.alibaba.com>
+Cc:     davem@davemloft.net, Karsten Graul <kgraul@linux.ibm.com>,
+        liuyacan@corp.netease.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com
+References: <26d43c65-1f23-5b83-6377-3327854387c4@linux.ibm.com>
+ <20220524125725.951315-1-liuyacan@corp.netease.com>
+ <3bb9366d-f271-a603-a280-b70ae2d59c00@linux.ibm.com>
+ <8a15e288-4534-501c-8b3d-c235ae93238f@linux.ibm.com>
+ <d2195919-1cae-b667-c137-8398848fa43b@linux.alibaba.com>
+ <fcac3b0c-db51-7221-d41a-0207144f131c@linux.ibm.com>
+ <3e801eb5-6305-aa87-43a6-98f591d7d55c@linux.alibaba.com>
+From:   Wenjia Zhang <wenjia@linux.ibm.com>
+In-Reply-To: <3e801eb5-6305-aa87-43a6-98f591d7d55c@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: cu5U6BG5Ne_od5wBs9Jz-jFPB43Ue_um
+X-Proofpoint-ORIG-GUID: EOrAQk_hgoVK8TSqrNob6FXGYG36jRSX
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <MW4PR11MB5776F1388A0EFB83990120CDFDBD9@MW4PR11MB5776.namprd11.prod.outlook.com>
-X-Spam-Status: No, score=-2.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-01_07,2022-06-28_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 clxscore=1015
+ mlxscore=0 lowpriorityscore=0 spamscore=0 adultscore=0 mlxlogscore=999
+ bulkscore=0 phishscore=0 priorityscore=1501 malwarescore=0 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2204290000
+ definitions=main-2207010048
+X-Spam-Status: No, score=0.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H2,
+        SCC_BODY_URI_ONLY,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 01, 2022 at 10:53:51AM +0000, Drewek, Wojciech wrote:
-> > > +/**
-> > > + * struct flow_dissector_key_pppoe:
-> > > + * @session_id: pppoe session id
-> > > + * @ppp_proto: ppp protocol
-> > > + */
-> > > +struct flow_dissector_key_pppoe {
-> > > +	u16 session_id;
-> > > +	__be16 ppp_proto;
-> > > +};
-> > 
-> > Why isn't session_id __be16 too?
+
+
+On 01.07.22 04:03, Guangguan Wang wrote:
 > 
-> I've got general impression that storing protocols values
-> in big endian is a standard through out the code and other values like vlan_id
-> don't have to be stored in big endian, but maybe it's just my illusion :)
-> I can change that in v3.
-
-I don't know of any written rule, but looking at other keys, every
-protocol field is stored with the endianess used on the wire. Only
-metadata are stored in host byte order. For flow_dissector_key_vlan,
-vlan_id is a bit special since it's only 12 bits long, but other vlan
-fields are stored in big endian (vlan_tci is __be16 for example). And
-vlan ids are special for another reason too: they're also metadata
-stored in skbuffs because of vlan hardware offload.
-
-But PPPoE Session Id is clearly read from the packet header, where it's
-stored in network byte order.
-
-> > Also, I'm not sure I like mixing the PPPoE session ID and PPP protocol
-> > fields in the same structure: they're part of two different protocols.
-> > However, I can't anticipate any technical problem in doing so, and I
-> > guess there's no easy way to let the flow dissector parse the PPP
-> > header independently. So well, maybe we don't have choice...
 > 
-> We are not planning to match on other fields from PPP protocol so
-> separate structure just for it is not needed I guess.
-
-FTR, I believe it's okay to take this shortcut but for different
-reasons:
-
- * When transported over PPPoE, PPP frames are not supposed to have
-   address and control fields. Therefore, in this case, the PPP header
-   is limitted to the protocol field, so the dissector key would never
-   have to be extended.
-
- * It's unlikely enough that we'd ever have any other protocol
-   transporting PPP frames to implement in the flow dissector.
-   Therefore, independent PPP dissection code probably won't be needed
-   (even if one wants to add support for L2TP or PPTP in the flow
-   dissector, that probably should be done with tunnel metadata, like
-   VXLAN).
-
- * We have gotos for jumping to "network" or "transport" header dissection
-   (proto_again and ip_proto_again), but no place to restart at the "link"
-   header and no way to tell what type of link layer header we're
-   requesting to parse (Ethernet or PPP).
-
-For all these reasons, I believe your approach is an acceptable
-shortcut. But I don't buy the "let's limit the flow dissector to what
-we plan to support in ice" argument.
-
-> > > @@ -1221,19 +1254,29 @@ bool __skb_flow_dissect(const struct net *net,
-> > >  		}
-> > >
-> > >  		nhoff += PPPOE_SES_HLEN;
-> > > -		switch (hdr->proto) {
-> > > -		case htons(PPP_IP):
-> > > +		if (hdr->proto == htons(PPP_IP)) {
-> > >  			proto = htons(ETH_P_IP);
-> > >  			fdret = FLOW_DISSECT_RET_PROTO_AGAIN;
-> > > -			break;
-> > > -		case htons(PPP_IPV6):
-> > > +		} else if (hdr->proto == htons(PPP_IPV6)) {
-> > >  			proto = htons(ETH_P_IPV6);
-> > >  			fdret = FLOW_DISSECT_RET_PROTO_AGAIN;
-> > > -			break;
-> > 
-> > 1)
-> > Looks like you could easily handle MPLS too. Did you skip it on
-> > purpose? (not enough users to justify writing and maintaining
-> > the code?).
-> > 
-> > I don't mean MPLS has to be supported; I'd just like to know if it was
-> > considered.
+> On 2022/7/1 04:16, Wenjia Zhang wrote:
+>>
+>>
+>> On 30.06.22 16:29, Guangguan Wang wrote:
+>>> I'm so sorry I missed the last emails for this discussion.
+>>>
+>>> Yes, commit (86434744) is the trigger of the problem described in
+>>> https://lore.kernel.org/linux-s390/45a19f8b-1b64-3459-c28c-aebab4fd8f1e@linux.alibaba.com/#t  .
+>>>
+>>> And I have tested just remove the following lines from smc_connection() can solve the above problem.
+>>> if (smc->use_fallback)
+>>>        goto out;
+>>>
+>>> I aggree that partly reverting the commit (86434744) is a better solution.
+>>>
+>>> Thanks,
+>>> Guangguan Wang
+>> Thank you for your effort!
+>> Would you like to revert this patch? We'll revert the commit (86434744) partly.
 > 
-> Yes, exactly as you write, not enough users, but I can see thet MPLS should
-> be easy to implement so I'll include it in the next version.
-
-Okay.
-
-> > 2)
-> > Also this whole test is a bit weak: the version, type and code fields
-> > must have precise values for the PPPoE Session packet to be valid.
-> > If either version or type is different than 1, then the packet
-> > advertises a new version of the protocol that we don't know how to parse
-> > (or most probably the packet was forged or corrupted). A non-zero code
-> > is also invalid.
-> > 
-> > I know the code was already like this before your patch, but it's
-> > probably better to fix it before implementing hardware offload.
+> Did you mean revert commit (3aba1030)?
+> Sorry, I think I led to a misunderstanding. I mean commit (86434744) is the trigger of the problem I replied
+> in email https://lore.kernel.org/linux-s390/45a19f8b-1b64-3459-c28c-aebab4fd8f1e@linux.alibaba.com/#t, not
+> the problem that commit (3aba1030) resolved for.
 > 
-> Sure, I'll add packet validation in next version.
-
-Great!
-
-> > 3)
-> > Finally, the PPP protocol could be compressed and stored in 1 byte
-> > instead of 2. This case wasn't handled before your patch, but I think
-> > that should be fixed too before implementing hardware offload.
+> So I think the final solution is to remove the following lines from smc_connection() based on the current code.
+> if (smc->use_fallback) {
+> 	sock->state = rc ? SS_CONNECTING : SS_CONNECTED;
+> 	goto out;
+> }
 > 
-> We faced that issue but we couldn't find out what indicates
-> when ppp protocol is stored in 1 byte instead of 2.
-
-That depends on the least significant bit of the first byte. If it's 0
-then the next byte is also part of the protocol field. If it's one,
-the protocol is "compressed" (that is the high order 0x00 byte has been
-stripped and we're left with only the least significant byte).
-
-This is explained more formally in RFC 1661 section 2 (PPP Encapsulation):
-  https://datatracker.ietf.org/doc/html/rfc1661#section-2
-
-and section 6.5 (Protocol-Field-Compression (PFC)):
-  https://datatracker.ietf.org/doc/html/rfc1661#section-6.5
-
-There should be no reason to use this old PPP feature with PPPoE, but
-it's still valid (even though it breaks IP header alignment).
-
+> Thanks,
+> Guangguan Wang
+That would be also ok for us, thanks!
