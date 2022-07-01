@@ -2,64 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F18FB5638CB
+	by mail.lfdr.de (Postfix) with ESMTP id 8728D5638CA
 	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 19:58:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231349AbiGARxu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Jul 2022 13:53:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57172 "EHLO
+        id S230029AbiGAR4X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Jul 2022 13:56:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230238AbiGARxs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 13:53:48 -0400
-Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::228])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 786B73AA5B;
-        Fri,  1 Jul 2022 10:53:46 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id A9EF71BF205;
-        Fri,  1 Jul 2022 17:53:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1656698024;
+        with ESMTP id S229508AbiGAR4W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 13:56:22 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEBB53ED32
+        for <netdev@vger.kernel.org>; Fri,  1 Jul 2022 10:56:21 -0700 (PDT)
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1656698179;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding;
-        bh=ANua7sLiiWlgviVfQqW0rs1+s39N6me9FtrJ3TzFU+Q=;
-        b=b91HGovyZaZ4+ncVRPP+QBF+8oGYi1ZQXtxudn2Sxr+1uN/wRFdlErQV2LmWXw+JT+NnMz
-        AU0fLIUo73TQGKqfhNGBeCr22YHmsaEbOYewSVRmDAHEs3rd+PVT0kNunpNdRJ087nPEQ+
-        RJBfZRetpREigqqFglaoxL+HCdMvqHZ7SqSdPLt6UKbzQpQpzULCTDIbp6ZN0ltuZAIBba
-        A7v6TeCRjyPyo+ddytUjkqyQZTWM5tBQLGcE4PqX2xW/mAQSkKUGkL2Ul1U4XKd6t7qx0p
-        8KdW56jAKDAkIlHBSRXHAlXG7f6yk6AQqH13FUZr6bAAFoEhXkxhaAtNfa7uwg==
-From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+        bh=vS24F5YGdPOPAx/Pa+4KPZKtNneEwZGgUbh+g+22ueQ=;
+        b=kz/YLEIjpjTGGgYhskoQxylOEjz/GqRjHN+5Iln0ukr9xjE2yE+EoRVoj9/1rEzXfCB7Cx
+        1PhtsldB42upsoEOF2c4WmqZZgd2xkn3CWVYyB5Ng32U6/LSHAJH5jrLJ2rrqf6nKOyNan
+        zCCg1NzIK4DtMAiHjxmvXtX0VacEo1OBBVexBNr455ilf/FW+kiiO3lCOAqoPkUQKiUSxL
+        m/FsNtaSx+99Ok8H9NrErSVnhxqCHspJAsu5wz1OLMAm57iK0+OdDVtb0xlfF8Wbqv1SYH
+        OfOn1GzVtCOwZsXbHpzOIqhvCcQQ/1SaSgnbsZDl2M4jfe2gkPoQQTYE/ZNy5w==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1656698179;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=vS24F5YGdPOPAx/Pa+4KPZKtNneEwZGgUbh+g+22ueQ=;
+        b=Ga1NO5thY5grMrNkl23zCLDlS4PS1xvpFfAhbBrIE3v+d0/3C6MrOU0JQhxlhRsi60Xqeg
+        CGofPaS0r1I1XtCw==
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
-        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?UTF-8?q?Miqu=C3=A8l=20Raynal?= <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        Rob Herring <robh@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH net-next v3] dt-bindings: net: dsa: renesas,rzn1-a5psw: add interrupts description
-Date:   Fri,  1 Jul 2022 19:52:31 +0200
-Message-Id: <20220701175231.6889-1-clement.leger@bootlin.com>
-X-Mailer: git-send-email 2.36.1
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        Kurt Kanzenbach <kurt@linutronix.de>
+Subject: [PATCH net-next] net: phy: broadcom: Add support for BCM53128 internal PHYs
+Date:   Fri,  1 Jul 2022 19:56:06 +0200
+Message-Id: <20220701175606.22586-1-kurt@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
         SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -68,70 +60,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Describe the switch interrupts (dlr, switch, prp, hub, pattern) which
-are connected to the GIC.
+Add support for BCM53128 internal PHYs. These support interrupts as well as
+statistics. Therefore, enable the Broadcom PHY driver for them.
 
-Signed-off-by: Clément Léger <clement.leger@bootlin.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Tested on BCM53128 switch using the mainline b53 DSA driver.
+
+Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
 ---
-Changes in V3:
- - Renamed a few interrupt description with Geert suggestions.
+ drivers/net/phy/broadcom.c | 15 +++++++++++++++
+ include/linux/brcmphy.h    |  1 +
+ 2 files changed, 16 insertions(+)
 
-Changes in V2:
- - Fix typo in interrupt-names property.
-
- .../bindings/net/dsa/renesas,rzn1-a5psw.yaml  | 23 +++++++++++++++++++
- 1 file changed, 23 insertions(+)
-
-diff --git a/Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml b/Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml
-index 103b1ef5af1b..4d428f5ad044 100644
---- a/Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml
-+++ b/Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml
-@@ -26,6 +26,22 @@ properties:
-   reg:
-     maxItems: 1
- 
-+  interrupts:
-+    items:
-+      - description: Device Level Ring (DLR) interrupt
-+      - description: Switch interrupt
-+      - description: Parallel Redundancy Protocol (PRP) interrupt
-+      - description: Integrated HUB module interrupt
-+      - description: Receive Pattern Match interrupt
-+
-+  interrupt-names:
-+    items:
-+      - const: dlr
-+      - const: switch
-+      - const: prp
-+      - const: hub
-+      - const: ptrn
-+
-   power-domains:
-     maxItems: 1
- 
-@@ -76,6 +92,7 @@ examples:
-   - |
-     #include <dt-bindings/gpio/gpio.h>
-     #include <dt-bindings/clock/r9a06g032-sysctrl.h>
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
- 
-     switch@44050000 {
-         compatible = "renesas,r9a06g032-a5psw", "renesas,rzn1-a5psw";
-@@ -83,6 +100,12 @@ examples:
-         clocks = <&sysctrl R9A06G032_HCLK_SWITCH>, <&sysctrl R9A06G032_CLK_SWITCH>;
-         clock-names = "hclk", "clk";
-         power-domains = <&sysctrl>;
-+        interrupts = <GIC_SPI 40 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 42 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 43 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 44 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 45 IRQ_TYPE_LEVEL_HIGH>;
-+        interrupt-names = "dlr", "switch", "prp", "hub", "ptrn";
- 
-         dsa,member = <0 0>;
- 
+diff --git a/drivers/net/phy/broadcom.c b/drivers/net/phy/broadcom.c
+index 876bc45ede60..31fbcdddc9ad 100644
+--- a/drivers/net/phy/broadcom.c
++++ b/drivers/net/phy/broadcom.c
+@@ -1066,6 +1066,20 @@ static struct phy_driver broadcom_drivers[] = {
+ 	.config_intr	= bcm_phy_config_intr,
+ 	.handle_interrupt = bcm_phy_handle_interrupt,
+ 	.link_change_notify	= bcm54xx_link_change_notify,
++}, {
++	.phy_id		= PHY_ID_BCM53128,
++	.phy_id_mask	= 0xfffffff0,
++	.name		= "Broadcom BCM53128",
++	.flags		= PHY_IS_INTERNAL,
++	/* PHY_GBIT_FEATURES */
++	.get_sset_count	= bcm_phy_get_sset_count,
++	.get_strings	= bcm_phy_get_strings,
++	.get_stats	= bcm54xx_get_stats,
++	.probe		= bcm54xx_phy_probe,
++	.config_init	= bcm54xx_config_init,
++	.config_intr	= bcm_phy_config_intr,
++	.handle_interrupt = bcm_phy_handle_interrupt,
++	.link_change_notify	= bcm54xx_link_change_notify,
+ }, {
+ 	.phy_id         = PHY_ID_BCM89610,
+ 	.phy_id_mask    = 0xfffffff0,
+@@ -1102,6 +1116,7 @@ static struct mdio_device_id __maybe_unused broadcom_tbl[] = {
+ 	{ PHY_ID_BCM5241, 0xfffffff0 },
+ 	{ PHY_ID_BCM5395, 0xfffffff0 },
+ 	{ PHY_ID_BCM53125, 0xfffffff0 },
++	{ PHY_ID_BCM53128, 0xfffffff0 },
+ 	{ PHY_ID_BCM89610, 0xfffffff0 },
+ 	{ }
+ };
+diff --git a/include/linux/brcmphy.h b/include/linux/brcmphy.h
+index 747fad264033..6ff567ece34a 100644
+--- a/include/linux/brcmphy.h
++++ b/include/linux/brcmphy.h
+@@ -16,6 +16,7 @@
+ #define PHY_ID_BCM5481			0x0143bca0
+ #define PHY_ID_BCM5395			0x0143bcf0
+ #define PHY_ID_BCM53125			0x03625f20
++#define PHY_ID_BCM53128			0x03625e10
+ #define PHY_ID_BCM54810			0x03625d00
+ #define PHY_ID_BCM54811			0x03625cc0
+ #define PHY_ID_BCM5482			0x0143bcb0
 -- 
-2.36.1
+2.30.2
 
