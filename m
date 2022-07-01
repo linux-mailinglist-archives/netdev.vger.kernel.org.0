@@ -2,163 +2,246 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 571BC562C75
-	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 09:19:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AAA6562C8C
+	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 09:25:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233804AbiGAHSw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Jul 2022 03:18:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46510 "EHLO
+        id S234716AbiGAHZv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Jul 2022 03:25:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231552AbiGAHSv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 03:18:51 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6474E39149
-        for <netdev@vger.kernel.org>; Fri,  1 Jul 2022 00:18:50 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1o7AvF-0004E3-67; Fri, 01 Jul 2022 09:18:37 +0200
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1o7AvD-0003ME-DV; Fri, 01 Jul 2022 09:18:35 +0200
-Date:   Fri, 1 Jul 2022 09:18:35 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S234703AbiGAHZu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 03:25:50 -0400
+Received: from smtp-fw-80007.amazon.com (smtp-fw-80007.amazon.com [99.78.197.218])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDF626B826
+        for <netdev@vger.kernel.org>; Fri,  1 Jul 2022 00:25:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1656660348; x=1688196348;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=szx0AmLfo/rUPo6X3ZIw8170BFM+H9tnr0bzzTSOhxI=;
+  b=LtDtgKiVcevmn+eJq4usouuMFFmHPG4vjSlcSkvqyA2RgcF0dkpDS/99
+   JpTsHTuCQXwgb+2INRp7LzsHN9onneEOtkt9EnLi5WR7qTHmocZCQXwmL
+   weWAs11Yqss7YuymBW+nL9blhCxcvWJQfuWtpT6/CjaX7ilYUqDVseLdK
+   w=;
+X-IronPort-AV: E=Sophos;i="5.92,236,1650931200"; 
+   d="scan'208";a="103897939"
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-2a-6a4112b2.us-west-2.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP; 01 Jul 2022 07:25:33 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-pdx-2a-6a4112b2.us-west-2.amazon.com (Postfix) with ESMTPS id D1B254C0072;
+        Fri,  1 Jul 2022 07:25:32 +0000 (UTC)
+Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.36; Fri, 1 Jul 2022 07:25:32 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.162.50) by
+ EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.36; Fri, 1 Jul 2022 07:25:29 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v1 1/1] net: dsa: sja1105: silent spi_device_id
- warnings
-Message-ID: <20220701071835.GC951@pengutronix.de>
-References: <20220630071013.1710594-1-o.rempel@pengutronix.de>
- <20220630161059.jnmladythszbh7py@skbuf>
+        Paolo Abeni <pabeni@redhat.com>
+CC:     Sachin Sant <sachinp@linux.ibm.com>,
+        Leonard Crestez <cdleonard@gmail.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "Kuniyuki Iwashima" <kuni1840@gmail.com>, <netdev@vger.kernel.org>
+Subject: [PATCH v1 net-next] af_unix: Put a named socket in the global hash table.
+Date:   Fri, 1 Jul 2022 00:25:19 -0700
+Message-ID: <20220701072519.96097-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220630161059.jnmladythszbh7py@skbuf>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.162.50]
+X-ClientProxiedBy: EX13D24UWB004.ant.amazon.com (10.43.161.4) To
+ EX13D04ANC001.ant.amazon.com (10.43.157.89)
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 30, 2022 at 07:10:59PM +0300, Vladimir Oltean wrote:
-> On Thu, Jun 30, 2022 at 09:10:13AM +0200, Oleksij Rempel wrote:
-> > Add spi_device_id entries to silent following warnings:
-> >  SPI driver sja1105 has no spi_device_id for nxp,sja1105e
-> >  SPI driver sja1105 has no spi_device_id for nxp,sja1105t
-> >  SPI driver sja1105 has no spi_device_id for nxp,sja1105p
-> >  SPI driver sja1105 has no spi_device_id for nxp,sja1105q
-> >  SPI driver sja1105 has no spi_device_id for nxp,sja1105r
-> >  SPI driver sja1105 has no spi_device_id for nxp,sja1105s
-> >  SPI driver sja1105 has no spi_device_id for nxp,sja1110a
-> >  SPI driver sja1105 has no spi_device_id for nxp,sja1110b
-> >  SPI driver sja1105 has no spi_device_id for nxp,sja1110c
-> >  SPI driver sja1105 has no spi_device_id for nxp,sja1110d
-> > 
-> > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> > ---
-> >  drivers/net/dsa/sja1105/sja1105_main.c | 16 ++++++++++++++++
-> >  1 file changed, 16 insertions(+)
-> > 
-> > diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-> > index b253e27bcfb4..b03d0d0c3dbf 100644
-> > --- a/drivers/net/dsa/sja1105/sja1105_main.c
-> > +++ b/drivers/net/dsa/sja1105/sja1105_main.c
-> > @@ -3382,12 +3382,28 @@ static const struct of_device_id sja1105_dt_ids[] = {
-> >  };
-> >  MODULE_DEVICE_TABLE(of, sja1105_dt_ids);
-> >  
-> > +static const struct spi_device_id sja1105_spi_ids[] = {
-> > +	{ "sja1105e" },
-> > +	{ "sja1105t" },
-> > +	{ "sja1105p" },
-> > +	{ "sja1105q" },
-> > +	{ "sja1105r" },
-> > +	{ "sja1105s" },
-> > +	{ "sja1110a" },
-> > +	{ "sja1110b" },
-> > +	{ "sja1110c" },
-> > +	{ "sja1110d" },
-> > +	{ },
-> > +};
-> > +MODULE_DEVICE_TABLE(spi, sja1105_spi_ids);
-> > +
-> >  static struct spi_driver sja1105_driver = {
-> >  	.driver = {
-> >  		.name  = "sja1105",
-> >  		.owner = THIS_MODULE,
-> >  		.of_match_table = of_match_ptr(sja1105_dt_ids),
-> >  	},
-> > +	.id_table = sja1105_spi_ids,
-> >  	.probe  = sja1105_probe,
-> >  	.remove = sja1105_remove,
-> >  	.shutdown = sja1105_shutdown,
-> > -- 
-> > 2.30.2
-> > 
-> 
-> Do we also need these?
-> 
-> MODULE_ALIAS("spi:sja1105e");
-> MODULE_ALIAS("spi:sja1105t");
-> MODULE_ALIAS("spi:sja1105p");
-> MODULE_ALIAS("spi:sja1105q");
-> MODULE_ALIAS("spi:sja1105r");
-> MODULE_ALIAS("spi:sja1105s");
-> MODULE_ALIAS("spi:sja1110a");
-> MODULE_ALIAS("spi:sja1110b");
-> MODULE_ALIAS("spi:sja1110c");
-> MODULE_ALIAS("spi:sja1110d");
+Commit cf2f225e2653 ("af_unix: Put a socket into a per-netns hash
+table.") accidentally broke user API for named sockets.  A named
+socket was able to connect() to a peer in the same mount namespace
+even if they were in different network namespaces.
 
-No, it is not needed. With this patch modinfo will show this additional
-aliases:
-alias:          spi:sja1110d
-alias:          spi:sja1110c
-alias:          spi:sja1110b
-alias:          spi:sja1110a
-alias:          spi:sja1105s
-alias:          spi:sja1105r
-alias:          spi:sja1105q
-alias:          spi:sja1105p
-alias:          spi:sja1105t
-alias:          spi:sja1105e
+The commit put all sockets into each per-netns hash table.  As a
+result, connect() to a socket in a different netns failed to find
+the peer and returned -ECONNREFUSED even when they had the same
+mount namespace.
 
-This seems to be enough for properly working module auto loading.
+We can reproduce this issue by
 
-> To be honest I don't do much testing with modules at all, so I'm not
-> sure if udev-based module loading is broken or not. I remember becoming
-> vaguely curious after commit 5fa6863ba692 ("spi: Check we have a
-> spi_device_id for each DT compatible"), and I did some basic testing
-> without the spi_device_id table and MODULE_ALIASes, and it appeared that
-> udev could still autoload the sja1105 kernel module just fine.
-> So I'm not really sure what's broken.
+  Console A:
 
-Without this patch, module is not automatically loaded on my testing
-system.
+    # python3
+    >>> from socket import *
+    >>> s = socket(AF_UNIX, SOCK_STREAM, 0)
+    >>> s.bind('test')
+    >>> s.listen(32)
 
-Regards,
-Oleksij
+  Console B:
+
+    # ip netns add test
+    # ip netns exec test sh
+    # python3
+    >>> from socket import *
+    >>> s = socket(AF_UNIX, SOCK_STREAM, 0)
+    >>> s.connect('test')
+
+Note when dumping sockets by sock_diag, procfs, and bpf_iter, they are
+filtered only by netns.  In other words, sockets with different netns
+and the same mount ns are skipped while iterating sockets.  Thus, we
+need a fix only for finding a peer socket.
+
+This patch adds a global hash table for named sockets, links them with
+sk_bind_node, and uses it in unix_find_socket_byinode().  By doing so,
+we can keep all sockets in per-netns hash tables and dump them easily.
+
+Thank Sachin Sant and Leonard Crestez for reports, logs and a reproducer.
+
+Fixes: cf2f225e2653 ("af_unix: Put a socket into a per-netns hash table.")
+Reported-by: Sachin Sant <sachinp@linux.ibm.com>
+Reported-by: Leonard Crestez <cdleonard@gmail.com>
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+---
+ net/unix/af_unix.c | 47 ++++++++++++++++++++++++++++++++++++----------
+ 1 file changed, 37 insertions(+), 10 deletions(-)
+
+diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
+index 49f6626330c3..526b872cc710 100644
+--- a/net/unix/af_unix.c
++++ b/net/unix/af_unix.c
+@@ -119,6 +119,8 @@
+ #include "scm.h"
+ 
+ static atomic_long_t unix_nr_socks;
++static struct hlist_head bsd_socket_buckets[UNIX_HASH_SIZE / 2];
++static spinlock_t bsd_socket_locks[UNIX_HASH_SIZE / 2];
+ 
+ /* SMP locking strategy:
+  *    hash table is protected with spinlock.
+@@ -328,6 +330,24 @@ static void unix_insert_unbound_socket(struct net *net, struct sock *sk)
+ 	spin_unlock(&net->unx.table.locks[sk->sk_hash]);
+ }
+ 
++static void unix_insert_bsd_socket(struct sock *sk)
++{
++	spin_lock(&bsd_socket_locks[sk->sk_hash]);
++	sk_add_bind_node(sk, &bsd_socket_buckets[sk->sk_hash]);
++	spin_unlock(&bsd_socket_locks[sk->sk_hash]);
++}
++
++static void unix_remove_bsd_socket(struct sock *sk)
++{
++	if (!hlist_unhashed(&sk->sk_bind_node)) {
++		spin_lock(&bsd_socket_locks[sk->sk_hash]);
++		__sk_del_bind_node(sk);
++		spin_unlock(&bsd_socket_locks[sk->sk_hash]);
++
++		sk_node_init(&sk->sk_bind_node);
++	}
++}
++
+ static struct sock *__unix_find_socket_byname(struct net *net,
+ 					      struct sockaddr_un *sunname,
+ 					      int len, unsigned int hash)
+@@ -358,22 +378,22 @@ static inline struct sock *unix_find_socket_byname(struct net *net,
+ 	return s;
+ }
+ 
+-static struct sock *unix_find_socket_byinode(struct net *net, struct inode *i)
++static struct sock *unix_find_socket_byinode(struct inode *i)
+ {
+ 	unsigned int hash = unix_bsd_hash(i);
+ 	struct sock *s;
+ 
+-	spin_lock(&net->unx.table.locks[hash]);
+-	sk_for_each(s, &net->unx.table.buckets[hash]) {
++	spin_lock(&bsd_socket_locks[hash]);
++	sk_for_each_bound(s, &bsd_socket_buckets[hash]) {
+ 		struct dentry *dentry = unix_sk(s)->path.dentry;
+ 
+ 		if (dentry && d_backing_inode(dentry) == i) {
+ 			sock_hold(s);
+-			spin_unlock(&net->unx.table.locks[hash]);
++			spin_unlock(&bsd_socket_locks[hash]);
+ 			return s;
+ 		}
+ 	}
+-	spin_unlock(&net->unx.table.locks[hash]);
++	spin_unlock(&bsd_socket_locks[hash]);
+ 	return NULL;
+ }
+ 
+@@ -577,6 +597,7 @@ static void unix_release_sock(struct sock *sk, int embrion)
+ 	int state;
+ 
+ 	unix_remove_socket(sock_net(sk), sk);
++	unix_remove_bsd_socket(sk);
+ 
+ 	/* Clear state */
+ 	unix_state_lock(sk);
+@@ -988,8 +1009,8 @@ static int unix_release(struct socket *sock)
+ 	return 0;
+ }
+ 
+-static struct sock *unix_find_bsd(struct net *net, struct sockaddr_un *sunaddr,
+-				  int addr_len, int type)
++static struct sock *unix_find_bsd(struct sockaddr_un *sunaddr, int addr_len,
++				  int type)
+ {
+ 	struct inode *inode;
+ 	struct path path;
+@@ -1010,7 +1031,7 @@ static struct sock *unix_find_bsd(struct net *net, struct sockaddr_un *sunaddr,
+ 	if (!S_ISSOCK(inode->i_mode))
+ 		goto path_put;
+ 
+-	sk = unix_find_socket_byinode(net, inode);
++	sk = unix_find_socket_byinode(inode);
+ 	if (!sk)
+ 		goto path_put;
+ 
+@@ -1058,7 +1079,7 @@ static struct sock *unix_find_other(struct net *net,
+ 	struct sock *sk;
+ 
+ 	if (sunaddr->sun_path[0])
+-		sk = unix_find_bsd(net, sunaddr, addr_len, type);
++		sk = unix_find_bsd(sunaddr, addr_len, type);
+ 	else
+ 		sk = unix_find_abstract(net, sunaddr, addr_len, type);
+ 
+@@ -1179,6 +1200,7 @@ static int unix_bind_bsd(struct sock *sk, struct sockaddr_un *sunaddr,
+ 	u->path.dentry = dget(dentry);
+ 	__unix_set_addr_hash(net, sk, addr, new_hash);
+ 	unix_table_double_unlock(net, old_hash, new_hash);
++	unix_insert_bsd_socket(sk);
+ 	mutex_unlock(&u->bindlock);
+ 	done_path_create(&parent, dentry);
+ 	return 0;
+@@ -3682,10 +3704,15 @@ static void __init bpf_iter_register(void)
+ 
+ static int __init af_unix_init(void)
+ {
+-	int rc = -1;
++	int i, rc = -1;
+ 
+ 	BUILD_BUG_ON(sizeof(struct unix_skb_parms) > sizeof_field(struct sk_buff, cb));
+ 
++	for (i = 0; i < UNIX_HASH_SIZE / 2; i++) {
++		spin_lock_init(&bsd_socket_locks[i]);
++		INIT_HLIST_HEAD(&bsd_socket_buckets[i]);
++	}
++
+ 	rc = proto_register(&unix_dgram_proto, 1);
+ 	if (rc != 0) {
+ 		pr_crit("%s: Cannot create unix_sock SLAB cache!\n", __func__);
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+2.30.2
+
