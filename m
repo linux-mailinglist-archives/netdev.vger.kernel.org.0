@@ -2,39 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0730E562D50
-	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 10:00:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EE1B562D45
+	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 10:00:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235837AbiGAH6w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Jul 2022 03:58:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56970 "EHLO
+        id S235855AbiGAH65 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Jul 2022 03:58:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235509AbiGAH6v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 03:58:51 -0400
+        with ESMTP id S235845AbiGAH64 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 03:58:56 -0400
 Received: from eidolon.nox.tf (eidolon.nox.tf [IPv6:2a07:2ec0:2185::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C6CA5A2F8
-        for <netdev@vger.kernel.org>; Fri,  1 Jul 2022 00:58:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E82706EE8B
+        for <netdev@vger.kernel.org>; Fri,  1 Jul 2022 00:58:54 -0700 (PDT)
 Received: from [2a02:169:59c5:1:7d5c:5092:64f9:9cbc] (helo=areia)
         by eidolon.nox.tf with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <equinox@diac24.net>)
-        id 1o7BY5-00F8pB-Pv; Fri, 01 Jul 2022 09:58:46 +0200
+        id 1o7BYC-00F8tH-Sk; Fri, 01 Jul 2022 09:58:53 +0200
 Received: from equinox by areia with local (Exim 4.96)
         (envelope-from <equinox@diac24.net>)
-        id 1o7BXi-000HAP-1y;
-        Fri, 01 Jul 2022 09:58:22 +0200
+        id 1o7BXq-000HAT-1u;
+        Fri, 01 Jul 2022 09:58:30 +0200
 From:   David Lamparter <equinox@diac24.net>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
         David Ahern <dsahern@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         David Lamparter <equinox@diac24.net>
-Subject: [PATCH resend net-next 0/2] ip6mr: implement RTM_GETROUTE for single entry
-Date:   Fri,  1 Jul 2022 09:58:03 +0200
-Message-Id: <20220701075805.65978-1-equinox@diac24.net>
+Subject: [PATCH net-next 1/2] ipv6: make rtm_ipv6_policy available
+Date:   Fri,  1 Jul 2022 09:58:04 +0200
+Message-Id: <20220701075805.65978-2-equinox@diac24.net>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220630202706.33555ad2@kernel.org>
+In-Reply-To: <20220701075805.65978-1-equinox@diac24.net>
 References: <20220630202706.33555ad2@kernel.org>
+ <20220701075805.65978-1-equinox@diac24.net>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
@@ -46,23 +47,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[resend with a slightly random pick of Cc:s - apologies if I ended up
-choosing poorly]
+... so ip6mr.c can use it too (as it is in IPv4.)
 
-The IPv6 multicast routing code implements RTM_GETROUTE, but only for a
-dump request.  Retrieving a single MFC entry is not currently possible
-via netlink.
+Signed-off-by: David Lamparter <equinox@diac24.net>
+---
 
-While most of the data here can also be retrieved with SIOCGETSGCNT_IN6,
-the lastused / RTA_EXPIRES is not included in the ioctl result (and we
-need it in FRR.)
+1:1 analog to IPv4, where rtm_ipv4_policy is exposed for pretty exactly
+the same thing.  IPv6 just got away with not using this across file
+boundaries so far.
 
-=> Implement single-entry RTM_GETROUTE by copying and adapting the IPv4
-code.
+---
+ include/net/ip6_fib.h | 1 +
+ net/ipv6/route.c      | 2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
 
-Tested against FRRouting's (work-in-progress) IPv6 PIM implementation.
+diff --git a/include/net/ip6_fib.h b/include/net/ip6_fib.h
+index 6268963d9599..a12fedea97de 100644
+--- a/include/net/ip6_fib.h
++++ b/include/net/ip6_fib.h
+@@ -483,6 +483,7 @@ void rt6_get_prefsrc(const struct rt6_info *rt, struct in6_addr *addr)
+ 	rcu_read_unlock();
+ }
+ 
++extern const struct nla_policy rtm_ipv6_policy[];
+ int fib6_nh_init(struct net *net, struct fib6_nh *fib6_nh,
+ 		 struct fib6_config *cfg, gfp_t gfp_flags,
+ 		 struct netlink_ext_ack *extack);
+diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+index 1d6f75eef4bd..26c7b31abe96 100644
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -4964,7 +4964,7 @@ void rt6_mtu_change(struct net_device *dev, unsigned int mtu)
+ 	fib6_clean_all(dev_net(dev), rt6_mtu_change_route, &arg);
+ }
+ 
+-static const struct nla_policy rtm_ipv6_policy[RTA_MAX+1] = {
++const struct nla_policy rtm_ipv6_policy[RTA_MAX+1] = {
+ 	[RTA_UNSPEC]		= { .strict_start_type = RTA_DPORT + 1 },
+ 	[RTA_GATEWAY]           = { .len = sizeof(struct in6_addr) },
+ 	[RTA_PREFSRC]		= { .len = sizeof(struct in6_addr) },
+-- 
+2.36.1
 
-Cheers,
-
-
--David
