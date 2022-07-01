@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6699E56346F
-	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 15:36:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CFDD563472
+	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 15:36:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231466AbiGANgY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Jul 2022 09:36:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60280 "EHLO
+        id S231470AbiGANga (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Jul 2022 09:36:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231429AbiGANgV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 09:36:21 -0400
+        with ESMTP id S231426AbiGANgX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 09:36:23 -0400
 Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D200A17589
-        for <netdev@vger.kernel.org>; Fri,  1 Jul 2022 06:36:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45BF21706B
+        for <netdev@vger.kernel.org>; Fri,  1 Jul 2022 06:36:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656682580; x=1688218580;
+  t=1656682583; x=1688218583;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=V6w/dAG4EE5bDzyLtgiiTv060y/2l8ouvlrLcz0KnS0=;
-  b=SeE2x/kLRXmMJPZa3SkDbtIVcB6L9n0XZiSN/5exBIiVKfHags9EtZ2b
-   hPvTNBRqG5INlIlZsniClEaODbpp/GlVZisRB8sQ92EOJB9BXZkUnEeM+
-   yRpI9jABjLzT/UeulMLb1TAWpuYjfgj1giOUGfFMZstw/tAbf15E/PDLp
-   u6keFmsacNN16QsK0VW3KiANWR40xnWifURLhP1BKNuVIcOS1PZ2bgOgR
-   xCDSvJx8aiX6erA3j7kcTcmWZzKL5ydiqkkraNNlGtN3OFnwG7ZjpdIGu
-   azkTjPabup7L6X182FflwZmXwQaHNA/uEJIfNh7Yf5/2idYRF6+aqwu/6
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10394"; a="282682917"
+  bh=nA6aAOQL4jOKPW3ch4cEZ/9/EOxMkwzBotlCyalcNDE=;
+  b=QluRVHLF9U2Zk20os52ZI0mxLXks51sqmBQ8TPHBM+tQEH29bVtLK/9A
+   9+FeXYel5LcOlZdWfcdqnZy/yXK1a0ZopC0n4I5pEb4euRR0NgT9kK8zo
+   2LCK2qxB2KErK2j3t6cErFw64jmd7xed0RbD0FRBzjZOvS5tW76So21B9
+   E00dQ1cIpzyMMdPxhaMw1/20Pn1T4oDB+ylfrRSFFU2h7tROlSijrOf4f
+   5lvqqXVQ9w05foO6yzwCZpWdN31mPMlKGp+zCGuW562Oam5WLREHRxV3u
+   yCmZjbOjHEogpgTsNwcHVFm75r0OzLMAqlOTnMugMwqBaWVY+/w1DmbtU
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10394"; a="282682924"
 X-IronPort-AV: E=Sophos;i="5.92,237,1650956400"; 
-   d="scan'208";a="282682917"
+   d="scan'208";a="282682924"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2022 06:36:20 -0700
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2022 06:36:23 -0700
 X-IronPort-AV: E=Sophos;i="5.92,237,1650956400"; 
-   d="scan'208";a="648349643"
+   d="scan'208";a="648349647"
 Received: from unknown (HELO localhost.localdomain.bj.intel.com) ([10.240.193.73])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2022 06:36:18 -0700
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2022 06:36:20 -0700
 From:   Zhu Lingshan <lingshan.zhu@intel.com>
 To:     jasowang@redhat.com, mst@redhat.com
 Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
         parav@nvidia.com, xieyongji@bytedance.com, gautam.dawar@amd.com,
         Zhu Lingshan <lingshan.zhu@intel.com>
-Subject: [PATCH V3 4/6] vDPA: !FEATURES_OK should not block querying device config space
-Date:   Fri,  1 Jul 2022 21:28:24 +0800
-Message-Id: <20220701132826.8132-5-lingshan.zhu@intel.com>
+Subject: [PATCH V3 5/6] vDPA: answer num of queue pairs = 1 to userspace when VIRTIO_NET_F_MQ == 0
+Date:   Fri,  1 Jul 2022 21:28:25 +0800
+Message-Id: <20220701132826.8132-6-lingshan.zhu@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220701132826.8132-1-lingshan.zhu@intel.com>
 References: <20220701132826.8132-1-lingshan.zhu@intel.com>
@@ -59,46 +59,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Users may want to query the config space of a vDPA device,
-to choose a appropriate one for a certain guest. This means the
-users need to read the config space before FEATURES_OK, and
-the existence of config space contents does not depend on
-FEATURES_OK.
+If VIRTIO_NET_F_MQ == 0, the virtio device should have one queue pair,
+so when userspace querying queue pair numbers, it should return mq=1
+than zero.
 
-The spec says:
-The device MUST allow reading of any device-specific configuration
-field before FEATURES_OK is set by the driver. This includes
-fields which are conditional on feature bits, as long as those
-feature bits are offered by the device.
+Function vdpa_dev_net_config_fill() fills the attributions of the
+vDPA devices, so that it should call vdpa_dev_net_mq_config_fill()
+so the parameter in vdpa_dev_net_mq_config_fill()
+should be feature_device than feature_driver for the
+vDPA devices themselves
 
-Fixes: 30ef7a8ac8a07 (vdpa: Read device configuration only if FEATURES_OK)
+Before this change, when MQ = 0, iproute2 output:
+$vdpa dev config show vdpa0
+vdpa0: mac 00:e8:ca:11:be:05 link up link_announce false
+max_vq_pairs 0 mtu 1500
+
+After applying this commit, when MQ = 0, iproute2 output:
+$vdpa dev config show vdpa0
+vdpa0: mac 00:e8:ca:11:be:05 link up link_announce false
+max_vq_pairs 1 mtu 1500
+
+Fixes: a64917bc2e9b (vdpa: Provide interface to read driver features)
 Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
 ---
- drivers/vdpa/vdpa.c | 8 --------
- 1 file changed, 8 deletions(-)
+ drivers/vdpa/vdpa.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c
-index 9b0e39b2f022..d76b22b2f7ae 100644
+index d76b22b2f7ae..846dd37f3549 100644
 --- a/drivers/vdpa/vdpa.c
 +++ b/drivers/vdpa/vdpa.c
-@@ -851,17 +851,9 @@ vdpa_dev_config_fill(struct vdpa_device *vdev, struct sk_buff *msg, u32 portid,
- {
- 	u32 device_id;
- 	void *hdr;
--	u8 status;
- 	int err;
+@@ -806,9 +806,10 @@ static int vdpa_dev_net_mq_config_fill(struct vdpa_device *vdev,
+ 	u16 val_u16;
  
- 	down_read(&vdev->cf_lock);
--	status = vdev->config->get_status(vdev);
--	if (!(status & VIRTIO_CONFIG_S_FEATURES_OK)) {
--		NL_SET_ERR_MSG_MOD(extack, "Features negotiation not completed");
--		err = -EAGAIN;
--		goto out;
--	}
--
- 	hdr = genlmsg_put(msg, portid, seq, &vdpa_nl_family, flags,
- 			  VDPA_CMD_DEV_CONFIG_GET);
- 	if (!hdr) {
+ 	if ((features & BIT_ULL(VIRTIO_NET_F_MQ)) == 0)
+-		return 0;
++		val_u16 = 1;
++	else
++		val_u16 = __virtio16_to_cpu(true, config->max_virtqueue_pairs);
+ 
+-	val_u16 = le16_to_cpu(config->max_virtqueue_pairs);
+ 	return nla_put_u16(msg, VDPA_ATTR_DEV_NET_CFG_MAX_VQP, val_u16);
+ }
+ 
+@@ -842,7 +843,7 @@ static int vdpa_dev_net_config_fill(struct vdpa_device *vdev, struct sk_buff *ms
+ 			      VDPA_ATTR_PAD))
+ 		return -EMSGSIZE;
+ 
+-	return vdpa_dev_net_mq_config_fill(vdev, msg, features_driver, &config);
++	return vdpa_dev_net_mq_config_fill(vdev, msg, features_device, &config);
+ }
+ 
+ static int
 -- 
 2.31.1
 
