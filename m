@@ -2,294 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 02628563B80
-	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 23:15:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 330ED563B8C
+	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 23:15:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231836AbiGAUt6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Jul 2022 16:49:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48338 "EHLO
+        id S231253AbiGAUx4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Jul 2022 16:53:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231901AbiGAUty (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 16:49:54 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA06A64D42;
-        Fri,  1 Jul 2022 13:49:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1656708592; x=1688244592;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=qhl6Dcdzsdz9fgMpC6yAuKXTHwpvtn5Na6XPPtoBL3Y=;
-  b=QFin4jhQNIOOfHzJs1WwVAONP9gWazp73mP6BPSLl0BdMDDloIlSOviL
-   cNZ2tiG3HFT+y2BoYDojaGSvG16CkUtyyy60hINuX0WAzEY+USFKa+E8n
-   gXq+Zjsq0p1+6jxftyt0gjNxqcpS06p+ZP+r9LtHnqczI1VATFJ5ioUoX
-   OuERHH4g7M2dbTpRhAnKEfwomtx7C3y6sGW6b0q1gpw0x4whzYxvki9rE
-   9zoK7VilKcYM7XQj0CcyhkTBfbnLJbKYGE293A6XLdUT2MHNQXdYfNNK5
-   Sntz5fjp/+9p6wFkvhf6B7S4UtG0LiM9t6bcKauY1dPtNBAsGGIlLb5Z3
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.92,238,1650956400"; 
-   d="scan'208";a="102710237"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 01 Jul 2022 13:49:51 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 1 Jul 2022 13:49:51 -0700
-Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Fri, 1 Jul 2022 13:49:49 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     <UNGLinuxDriver@microchip.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <vladimir.oltean@nxp.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next v3 7/7] net: lan966x: Extend MAC to support also lag interfaces.
-Date:   Fri, 1 Jul 2022 22:52:27 +0200
-Message-ID: <20220701205227.1337160-8-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220701205227.1337160-1-horatiu.vultur@microchip.com>
-References: <20220701205227.1337160-1-horatiu.vultur@microchip.com>
+        with ESMTP id S229541AbiGAUxz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 16:53:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9139D31914;
+        Fri,  1 Jul 2022 13:53:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 383F2B83202;
+        Fri,  1 Jul 2022 20:53:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E896C3411E;
+        Fri,  1 Jul 2022 20:53:47 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="WVCDR+HX"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1656708825;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=JJUgAvEg59n4qTslnzMARg0Z7Fq1XNYlppr5mzNAEqY=;
+        b=WVCDR+HXhx1XepQGWMhNtkhfpF4VuKMPP6hDrrkRVJxJJgKwabfBDrQXToI77SR9UXBm3F
+        kLVpx3RB9+LYbBp2zHoJ97qA3TEMKLwsAvbGJdF3Zt4r0pmUB7vdHkgPGYFRu+T6oyyoSK
+        VAYIk/Cx+c27Cg+gExj3m+nb5RQIEeQ=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id b51dea0b (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Fri, 1 Jul 2022 20:53:44 +0000 (UTC)
+Date:   Fri, 1 Jul 2022 22:53:36 +0200
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     Jonathan Corbet <corbet@lwn.net>
+Cc:     John Stultz <jstultz@google.com>,
+        Kalesh Singh <kaleshsingh@google.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Arve =?utf-8?B?SGrDuG5uZXbDpWc=?= <arve@android.com>,
+        Todd Kjos <tkjos@android.com>,
+        Martijn Coenen <maco@android.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Hridya Valsaraju <hridya@google.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Theodore Ts'o <tytso@mit.edu>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Alex Xu (Hello71)" <alex_y_xu@yahoo.ca>,
+        Paolo Abeni <pabeni@redhat.com>, Rob Herring <robh@kernel.org>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Shuah Khan <shuah@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, wireguard@lists.zx2c4.com,
+        netdev@vger.kernel.org, rcu <rcu@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>, sultan@kerneltoast.com,
+        android-kernel-team <android-kernel-team@google.com>,
+        Saravana Kannan <saravanak@google.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>
+Subject: Re: [PATCH] remove CONFIG_ANDROID
+Message-ID: <Yr9e0JnUbu93Qq1p@zx2c4.com>
+References: <20220629163007.GA25279@lst.de>
+ <Yrx/8UOY+J8Ao3Bd@zx2c4.com>
+ <YryNQvWGVwCjJYmB@zx2c4.com>
+ <Yryic4YG9X2/DJiX@google.com>
+ <Yry6XvOGge2xKx/n@zx2c4.com>
+ <CAC_TJve_Jk0+XD7VeSJVvJq4D9ZofnH69B4QZv2LPT4X3KNfeg@mail.gmail.com>
+ <YrzaCRl9rwy9DgOC@zx2c4.com>
+ <CANDhNCpRzzULaGmEGCbbJgVinA0pJJB-gOP9AY0Hy488n9ZStA@mail.gmail.com>
+ <YrztOqBBll66C2/n@zx2c4.com>
+ <87a69slh0x.fsf@meer.lwn.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <87a69slh0x.fsf@meer.lwn.net>
+X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Extend MAC support to support also lag interfaces:
-1. In case an entry is learned on a port that is part of lag interface,
-   then notify the upper layers that the entry is learned on the bond
-   interface
-2. If a port leaves the bond and the port is the first port in the lag
-   group, then it is required to update all MAC entries to change the
-   destination port.
+Hi Jon,
 
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
----
- .../ethernet/microchip/lan966x/lan966x_lag.c  | 26 ++++++++
- .../ethernet/microchip/lan966x/lan966x_mac.c  | 66 ++++++++++++++++---
- .../ethernet/microchip/lan966x/lan966x_main.h |  5 ++
- 3 files changed, 89 insertions(+), 8 deletions(-)
+On Fri, Jul 01, 2022 at 02:22:38PM -0600, Jonathan Corbet wrote:
+> So please forgive the noise from the peanut gallery
 
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_lag.c b/drivers/net/ethernet/microchip/lan966x/lan966x_lag.c
-index 8fd62611cfa4..35c11a4a3dbe 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_lag.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_lag.c
-@@ -123,8 +123,14 @@ int lan966x_lag_port_join(struct lan966x_port *port,
- {
- 	struct lan966x *lan966x = port->lan966x;
- 	struct net_device *dev = port->dev;
-+	u32 lag_id = -1;
-+	u32 bond_mask;
- 	int err;
- 
-+	bond_mask = lan966x_lag_get_mask(lan966x, bond);
-+	if (bond_mask)
-+		lag_id = __ffs(bond_mask);
-+
- 	port->bond = bond;
- 	lan966x_lag_update_ids(lan966x);
- 
-@@ -137,6 +143,12 @@ int lan966x_lag_port_join(struct lan966x_port *port,
- 
- 	lan966x_port_stp_state_set(port, br_port_get_stp_state(brport_dev));
- 
-+	if (lan966x_lag_first_port(port->bond, port->dev) &&
-+	    lag_id != -1)
-+		lan966x_mac_lag_replace_port_entry(lan966x,
-+						   lan966x->ports[lag_id],
-+						   port);
-+
- 	return 0;
- 
- out:
-@@ -149,6 +161,20 @@ int lan966x_lag_port_join(struct lan966x_port *port,
- void lan966x_lag_port_leave(struct lan966x_port *port, struct net_device *bond)
- {
- 	struct lan966x *lan966x = port->lan966x;
-+	u32 bond_mask;
-+	u32 lag_id;
-+
-+	if (lan966x_lag_first_port(port->bond, port->dev)) {
-+		bond_mask = lan966x_lag_get_mask(lan966x, port->bond);
-+		bond_mask &= ~BIT(port->chip_port);
-+		if (bond_mask) {
-+			lag_id = __ffs(bond_mask);
-+			lan966x_mac_lag_replace_port_entry(lan966x, port,
-+							   lan966x->ports[lag_id]);
-+		} else {
-+			lan966x_mac_lag_remove_port_entry(lan966x, port);
-+		}
-+	}
- 
- 	port->bond = NULL;
- 	lan966x_lag_update_ids(lan966x);
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c b/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c
-index 005e56ea5da1..3348453d89df 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c
-@@ -22,6 +22,7 @@ struct lan966x_mac_entry {
- 	u16 vid;
- 	u16 port_index;
- 	int row;
-+	bool lag;
- };
- 
- struct lan966x_mac_raw_entry {
-@@ -156,8 +157,9 @@ void lan966x_mac_init(struct lan966x *lan966x)
- 	INIT_LIST_HEAD(&lan966x->mac_entries);
- }
- 
--static struct lan966x_mac_entry *lan966x_mac_alloc_entry(const unsigned char *mac,
--							 u16 vid, u16 port_index)
-+static struct lan966x_mac_entry *lan966x_mac_alloc_entry(struct lan966x_port *port,
-+							 const unsigned char *mac,
-+							 u16 vid)
- {
- 	struct lan966x_mac_entry *mac_entry;
- 
-@@ -167,8 +169,9 @@ static struct lan966x_mac_entry *lan966x_mac_alloc_entry(const unsigned char *ma
- 
- 	memcpy(mac_entry->mac, mac, ETH_ALEN);
- 	mac_entry->vid = vid;
--	mac_entry->port_index = port_index;
-+	mac_entry->port_index = port->chip_port;
- 	mac_entry->row = LAN966X_MAC_INVALID_ROW;
-+	mac_entry->lag = port->bond ? true : false;
- 	return mac_entry;
- }
- 
-@@ -245,7 +248,7 @@ int lan966x_mac_add_entry(struct lan966x *lan966x, struct lan966x_port *port,
- 		return lan966x_mac_learn(lan966x, port->chip_port,
- 					 addr, vid, ENTRYTYPE_LOCKED);
- 
--	mac_entry = lan966x_mac_alloc_entry(addr, vid, port->chip_port);
-+	mac_entry = lan966x_mac_alloc_entry(port, addr, vid);
- 	if (!mac_entry)
- 		return -ENOMEM;
- 
-@@ -254,7 +257,8 @@ int lan966x_mac_add_entry(struct lan966x *lan966x, struct lan966x_port *port,
- 	spin_unlock(&lan966x->mac_lock);
- 
- 	lan966x_mac_learn(lan966x, port->chip_port, addr, vid, ENTRYTYPE_LOCKED);
--	lan966x_fdb_call_notifiers(SWITCHDEV_FDB_OFFLOADED, addr, vid, port->dev);
-+	lan966x_fdb_call_notifiers(SWITCHDEV_FDB_OFFLOADED, addr, vid,
-+				   port->bond ?: port->dev);
- 
- 	return 0;
- }
-@@ -281,6 +285,48 @@ int lan966x_mac_del_entry(struct lan966x *lan966x, const unsigned char *addr,
- 	return 0;
- }
- 
-+void lan966x_mac_lag_replace_port_entry(struct lan966x *lan966x,
-+					struct lan966x_port *src,
-+					struct lan966x_port *dst)
-+{
-+	struct lan966x_mac_entry *mac_entry;
-+
-+	spin_lock(&lan966x->mac_lock);
-+	list_for_each_entry(mac_entry, &lan966x->mac_entries, list) {
-+		if (mac_entry->port_index == src->chip_port &&
-+		    mac_entry->lag) {
-+			lan966x_mac_forget(lan966x, mac_entry->mac, mac_entry->vid,
-+					   ENTRYTYPE_LOCKED);
-+
-+			lan966x_mac_learn(lan966x, dst->chip_port,
-+					  mac_entry->mac, mac_entry->vid,
-+					  ENTRYTYPE_LOCKED);
-+			mac_entry->port_index = dst->chip_port;
-+		}
-+	}
-+	spin_unlock(&lan966x->mac_lock);
-+}
-+
-+void lan966x_mac_lag_remove_port_entry(struct lan966x *lan966x,
-+				       struct lan966x_port *src)
-+{
-+	struct lan966x_mac_entry *mac_entry, *tmp;
-+
-+	spin_lock(&lan966x->mac_lock);
-+	list_for_each_entry_safe(mac_entry, tmp, &lan966x->mac_entries,
-+				 list) {
-+		if (mac_entry->port_index == src->chip_port &&
-+		    mac_entry->lag) {
-+			lan966x_mac_forget(lan966x, mac_entry->mac, mac_entry->vid,
-+					   ENTRYTYPE_LOCKED);
-+
-+			list_del(&mac_entry->list);
-+			kfree(mac_entry);
-+		}
-+	}
-+	spin_unlock(&lan966x->mac_lock);
-+}
-+
- void lan966x_mac_purge_entries(struct lan966x *lan966x)
- {
- 	struct lan966x_mac_entry *mac_entry, *tmp;
-@@ -325,6 +371,7 @@ static void lan966x_mac_irq_process(struct lan966x *lan966x, u32 row,
- {
- 	struct lan966x_mac_entry *mac_entry, *tmp;
- 	unsigned char mac[ETH_ALEN] __aligned(2);
-+	struct lan966x_port *port;
- 	u32 dest_idx;
- 	u32 column;
- 	u16 vid;
-@@ -366,9 +413,10 @@ static void lan966x_mac_irq_process(struct lan966x *lan966x, u32 row,
- 			 * anymore in the HW and remove the entry from the SW
- 			 * list
- 			 */
-+			port = lan966x->ports[mac_entry->port_index];
- 			lan966x_mac_notifiers(SWITCHDEV_FDB_DEL_TO_BRIDGE,
- 					      mac_entry->mac, mac_entry->vid,
--					      lan966x->ports[mac_entry->port_index]->dev);
-+					      port->bond ?: port->dev);
- 
- 			list_del(&mac_entry->list);
- 			kfree(mac_entry);
-@@ -396,7 +444,8 @@ static void lan966x_mac_irq_process(struct lan966x *lan966x, u32 row,
- 		if (WARN_ON(dest_idx >= lan966x->num_phys_ports))
- 			continue;
- 
--		mac_entry = lan966x_mac_alloc_entry(mac, vid, dest_idx);
-+		port = lan966x->ports[dest_idx];
-+		mac_entry = lan966x_mac_alloc_entry(port, mac, vid);
- 		if (!mac_entry)
- 			return;
- 
-@@ -407,7 +456,8 @@ static void lan966x_mac_irq_process(struct lan966x *lan966x, u32 row,
- 		spin_unlock(&lan966x->mac_lock);
- 
- 		lan966x_mac_notifiers(SWITCHDEV_FDB_ADD_TO_BRIDGE,
--				      mac, vid, lan966x->ports[dest_idx]->dev);
-+				      mac, vid,
-+				      port->bond ?: port->dev);
- 	}
- }
- 
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-index 35c713c87661..ca35cc95c661 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-@@ -349,6 +349,11 @@ int lan966x_mac_add_entry(struct lan966x *lan966x,
- 			  struct lan966x_port *port,
- 			  const unsigned char *addr,
- 			  u16 vid);
-+void lan966x_mac_lag_replace_port_entry(struct lan966x *lan966x,
-+					struct lan966x_port *src,
-+					struct lan966x_port *dst);
-+void lan966x_mac_lag_remove_port_entry(struct lan966x *lan966x,
-+				       struct lan966x_port *src);
- void lan966x_mac_purge_entries(struct lan966x *lan966x);
- irqreturn_t lan966x_mac_irq_handler(struct lan966x *lan966x);
- 
--- 
-2.33.0
+Yuh oh, I sure hope this isn't newsworthy for LWN. This has already
+consumed me for two days...
 
+> myself wondering...do you really need a knob for this?  The kernel
+> itself can observe how often (and for how long) the system is suspended,
+> and might well be able to do the right thing without explicit input from
+> user space.  If it works it would eliminate a potential configuration
+> problem and also perhaps respond correctly to changing workloads.
+> 
+> For example, rather than testing a knob, avoid resetting keys on resume
+> if the suspend time is less than (say) 30s?
+> 
+> Educate me on what I'm missing here, please :)
+
+What you're missing is that wireguard needs to do this before going to
+sleep, not when waking up, because one of the objectives is forward
+secrecy. See
+https://git.zx2c4.com/wireguard-linux/tree/drivers/net/wireguard/device.c#n63
+
+	if (IS_ENABLED(CONFIG_PM_AUTOSLEEP) || IS_ENABLED(CONFIG_ANDROID))
+		return 0;
+	if (action != PM_HIBERNATION_PREPARE && action != PM_SUSPEND_PREPARE)
+		return 0;
+	[...]
+	wg_noise_handshake_clear(&peer->handshake);
+	wg_noise_keypairs_clear(&peer->keypairs);
+
+Somebody asked the same question on wgml here -
+https://lore.kernel.org/wireguard/CAHmME9p2OYSTX2C5M0faKtw2N8jiyohvRqnAPKa=e7BWynF7fQ@mail.gmail.com/T/
+- and then eventually suggested that I should wake up computers from
+sleep to clear that memory. No way jose.
+
+Anyway, this matter has been resolved in this thread here:
+https://lore.kernel.org/lkml/20220630191230.235306-1-kaleshsingh@google.com/T/
+And this Android change:
+https://android-review.googlesource.com/c/kernel/common/+/2142693/1
+Resulting in these two commits landing in Greg's tree:
+https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/char-misc.git/commit/?id=261e224d6a5c43e2bb8a07b7662f9b4ec425cfec
+https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/char-misc.git/commit/?id=1045a06724f322ed61f1ffb994427c7bdbe64647
+So hopefully this thread can come to an end and I can get back to work.
+
+Jason
