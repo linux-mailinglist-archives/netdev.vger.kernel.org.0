@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A80455630D7
-	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 11:59:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 791FF5630D3
+	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 11:59:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229508AbiGAJ7e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Jul 2022 05:59:34 -0400
+        id S234346AbiGAJ7g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Jul 2022 05:59:36 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234346AbiGAJ7b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 05:59:31 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69A6A71BF0
-        for <netdev@vger.kernel.org>; Fri,  1 Jul 2022 02:59:30 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id z41so2315715ede.1
-        for <netdev@vger.kernel.org>; Fri, 01 Jul 2022 02:59:30 -0700 (PDT)
+        with ESMTP id S229638AbiGAJ7d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 05:59:33 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF9CD58FC8
+        for <netdev@vger.kernel.org>; Fri,  1 Jul 2022 02:59:31 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id o25so3136492ejm.3
+        for <netdev@vger.kernel.org>; Fri, 01 Jul 2022 02:59:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=k+1kh73qPqurRHWbKKVu98io15cDFmP3DMcz791PA0E=;
-        b=Ryg3tgAz/ahlFAs9KZLOS8XntIJ+n/+9KF3A06wNpc6y0rv/sOHDKLjkJkpsojsjZ7
-         /x/hBxt4kCl+Pilsa08PQVm5OCrNWu0W5+PXljDV8u2ZuKPSuiaIpRHmNw4KVv89BlZ8
-         F26e71M71IPCMkg/vug5dsYWkX4aq/k7TKYKrBXqFsEkmSyHHYJ4Egj2VEQeAyQ6VGGZ
-         rIVhFKpwXRaVj436+6xj7l3nEu9q29E6fDlIM6H7qeo85Un388b+aUj5svOoqM8Dx/5q
-         yBA37DUxEpnT14+Q4lPdvk99a5LZ6O4Duee92QiGFn70ANE1TenU3lj8na5nwO1YcJzH
-         NHHA==
+        bh=jC5TGMHuzDR4UggSsCXw2A6RZ1JvL6ydOH8TZ8J3Mjo=;
+        b=wOGizbDKUQ4AjCL9LY/5je9wfsHBTAdk7mh+l8331U/xAYdJ0CngAha379C8UXXiVt
+         /4uM9C6NOJozHxektrRuJym/ZQN1eeDLitSR0UuAfp6hKhbogLasQwZfxP2P2e+nWwvE
+         fbUlxetWcWp2PhjcCbXQtTyyZArKVBtRB0YkuiRA0ETG2/loOUrxTYKiA0SKzZAZclPB
+         wV7SCtgDPJ349s8qvhjvSf0Hj91w2YS0M9x3Uo5iZrAkz8bDrYbC5aMCxvSpIc9LSuUM
+         JkNZPi1TaTGiYfg5s49V8jlG0b54r7bA5W6SF3xVa53uIERxEzYRvtYgL6bK/VZ0F8p+
+         9h9Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=k+1kh73qPqurRHWbKKVu98io15cDFmP3DMcz791PA0E=;
-        b=nSLd+2C1u35dDt0t4PPqvHR3BlgWlcPO6rVxkXehVtnO2aParA70wQZml+MqND6x05
-         FPXBScEdia5D79aWm5m5d7Xa4MfGZD2lf5vKpQQtggac87UGAQzBZlOKtEQqsCnhNNy1
-         x+i93wO24fa/sN90oYGij2UsMFwAuIG7fxeKGxxzK5blW47L1UDM2H/efun2gCxtXA5y
-         8C7upNSYnhy/3x6I6t5to+JDM0WNFkfHMiBaT72tPlQcVE24kxSnRe6kkmeJ60uRs7KJ
-         vM/Gf/aR1XycZJZ3Q0CCneLThjGKa1SXeNxgTH38Q8EXxdVCSNHe37stEDH20P1C9wqU
-         U2wA==
-X-Gm-Message-State: AJIora+mnCaugrGiWibsYEZq/CWAvOWdSdzB3erkgiuH54a8ZZl80sot
-        AFNM6AWx+JovCZBPnchv0ugFCZE9jN0gDVds
-X-Google-Smtp-Source: AGRyM1sJRyHj0PnGvINLmLdGK9nek+s+GWq8lVRu23rj3zw7g7NxoT/3+CugAQFkySn6UeMpYQIcnw==
-X-Received: by 2002:a05:6402:3551:b0:435:a397:4e9b with SMTP id f17-20020a056402355100b00435a3974e9bmr18269941edd.175.1656669569030;
-        Fri, 01 Jul 2022 02:59:29 -0700 (PDT)
+        bh=jC5TGMHuzDR4UggSsCXw2A6RZ1JvL6ydOH8TZ8J3Mjo=;
+        b=FT0ZI2kvFlN1t2wy3J4q8jNIi8dGVD69NHu3BkBcobFbZwvjfzFuAkJYLlTLvMRgMj
+         V9qBURxlO/0mF72LrN2ZZJ2HBx9RwLH2GkI4c3vprwD5kwpSLykmx9349jkhh/+iVazP
+         R9p2Xi0au7CIe1h0a/Bn5+gOVqim/LGpy23gxEbL+Mt6eDhmB7zsOpWlhVKcwwaHxO/h
+         13eXKSgBXbeqV/CjpVO17Hat9eTCO/NPUpW/QLwuBAFuSJe1tDLEAg9nh7x/axE8odbY
+         TV7eO7LZinSege0Q26SS3+m0KajwA+53DIsqVpgTqGf5jWxNpKJzLhkDnvjXMaikixno
+         tjlg==
+X-Gm-Message-State: AJIora+fan1GNzvWJFUWaclTJp4nH6cn1QT2oBJgmqItNFVVI5hYHFO2
+        Fkngj4KDx9WhMf24VWuKh3oY+wlI8PBsN8Yw
+X-Google-Smtp-Source: AGRyM1uPbtccZT/0yJ20aqAcb7tAdK3/IVvaw1pyysmN/ssHO5WR3nbFPpnQe0PTFTxUThdXV+4gkg==
+X-Received: by 2002:a17:906:49d4:b0:6d6:e5ec:9a23 with SMTP id w20-20020a17090649d400b006d6e5ec9a23mr14197815ejv.79.1656669570274;
+        Fri, 01 Jul 2022 02:59:30 -0700 (PDT)
 Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id c1-20020a056402158100b004357dca07cdsm14880143edv.88.2022.07.01.02.59.28
+        by smtp.gmail.com with ESMTPSA id k25-20020aa7d8d9000000b004356c18b2b9sm14758516eds.44.2022.07.01.02.59.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Jul 2022 02:59:28 -0700 (PDT)
+        Fri, 01 Jul 2022 02:59:29 -0700 (PDT)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com, mlxsw@nvidia.com, saeedm@nvidia.com,
         moshe@nvidia.com
-Subject: [patch net-next 1/3] net: devlink: move unlocked function prototypes alongside the locked ones
-Date:   Fri,  1 Jul 2022 11:59:24 +0200
-Message-Id: <20220701095926.1191660-2-jiri@resnulli.us>
+Subject: [patch net-next 2/3] net: devlink: call lockdep_assert_held() for devlink->lock directly
+Date:   Fri,  1 Jul 2022 11:59:25 +0200
+Message-Id: <20220701095926.1191660-3-jiri@resnulli.us>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220701095926.1191660-1-jiri@resnulli.us>
 References: <20220701095926.1191660-1-jiri@resnulli.us>
@@ -71,61 +71,46 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@nvidia.com>
 
-Maintain the same order as it is in devlink.c for function prototypes.
-The most of the locked variants would very likely soon be removed
-and the unlocked version would be the only one.
+In devlink.c there is direct access to whole struct devlink so there is
+no need to use helper. So obey the customs and work with lock directly
+avoiding helpers which might obfuscate things a bit.
 
 Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 ---
- include/net/devlink.h | 16 +++++++---------
- 1 file changed, 7 insertions(+), 9 deletions(-)
+ net/core/devlink.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/include/net/devlink.h b/include/net/devlink.h
-index b8f54a8e9c82..edbfe6daa3b5 100644
---- a/include/net/devlink.h
-+++ b/include/net/devlink.h
-@@ -1520,15 +1520,6 @@ void devl_unlock(struct devlink *devlink);
- void devl_assert_locked(struct devlink *devlink);
- bool devl_lock_is_held(struct devlink *devlink);
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index 25b481dd1709..a7477addbd59 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -10185,7 +10185,7 @@ int devl_rate_leaf_create(struct devlink_port *devlink_port, void *priv)
+ 	struct devlink *devlink = devlink_port->devlink;
+ 	struct devlink_rate *devlink_rate;
  
--int devl_port_register(struct devlink *devlink,
--		       struct devlink_port *devlink_port,
--		       unsigned int port_index);
--void devl_port_unregister(struct devlink_port *devlink_port);
--
--int devl_rate_leaf_create(struct devlink_port *port, void *priv);
--void devl_rate_leaf_destroy(struct devlink_port *devlink_port);
--void devl_rate_nodes_destroy(struct devlink *devlink);
--
- struct ib_device;
+-	devl_assert_locked(devlink_port->devlink);
++	lockdep_assert_held(&devlink_port->devlink->lock);
  
- struct net *devlink_net(const struct devlink *devlink);
-@@ -1550,9 +1541,13 @@ void devlink_set_features(struct devlink *devlink, u64 features);
- void devlink_register(struct devlink *devlink);
- void devlink_unregister(struct devlink *devlink);
- void devlink_free(struct devlink *devlink);
-+int devl_port_register(struct devlink *devlink,
-+		       struct devlink_port *devlink_port,
-+		       unsigned int port_index);
- int devlink_port_register(struct devlink *devlink,
- 			  struct devlink_port *devlink_port,
- 			  unsigned int port_index);
-+void devl_port_unregister(struct devlink_port *devlink_port);
- void devlink_port_unregister(struct devlink_port *devlink_port);
- void devlink_port_type_eth_set(struct devlink_port *devlink_port,
- 			       struct net_device *netdev);
-@@ -1568,8 +1563,11 @@ void devlink_port_attrs_pci_vf_set(struct devlink_port *devlink_port, u32 contro
- void devlink_port_attrs_pci_sf_set(struct devlink_port *devlink_port,
- 				   u32 controller, u16 pf, u32 sf,
- 				   bool external);
-+int devl_rate_leaf_create(struct devlink_port *port, void *priv);
- int devlink_rate_leaf_create(struct devlink_port *port, void *priv);
-+void devl_rate_leaf_destroy(struct devlink_port *devlink_port);
- void devlink_rate_leaf_destroy(struct devlink_port *devlink_port);
-+void devl_rate_nodes_destroy(struct devlink *devlink);
- void devlink_rate_nodes_destroy(struct devlink *devlink);
- void devlink_port_linecard_set(struct devlink_port *devlink_port,
- 			       struct devlink_linecard *linecard);
+ 	if (WARN_ON(devlink_port->devlink_rate))
+ 		return -EBUSY;
+@@ -10224,7 +10224,7 @@ void devl_rate_leaf_destroy(struct devlink_port *devlink_port)
+ {
+ 	struct devlink_rate *devlink_rate = devlink_port->devlink_rate;
+ 
+-	devl_assert_locked(devlink_port->devlink);
++	lockdep_assert_held(&devlink_port->devlink->lock);
+ 	if (!devlink_rate)
+ 		return;
+ 
+@@ -10270,7 +10270,7 @@ void devl_rate_nodes_destroy(struct devlink *devlink)
+ 	static struct devlink_rate *devlink_rate, *tmp;
+ 	const struct devlink_ops *ops = devlink->ops;
+ 
+-	devl_assert_locked(devlink);
++	lockdep_assert_held(&devlink->lock);
+ 
+ 	list_for_each_entry(devlink_rate, &devlink->rate_list, list) {
+ 		if (!devlink_rate->parent)
 -- 
 2.35.3
 
