@@ -2,84 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 51438563B22
-	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 22:32:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC9CA563B0E
+	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 22:32:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231891AbiGAUVg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Jul 2022 16:21:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55088 "EHLO
+        id S231542AbiGAUWo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Jul 2022 16:22:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230194AbiGAUVf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 16:21:35 -0400
-Received: from mail-io1-f43.google.com (mail-io1-f43.google.com [209.85.166.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D60EA3B542;
-        Fri,  1 Jul 2022 13:21:34 -0700 (PDT)
-Received: by mail-io1-f43.google.com with SMTP id p128so3329420iof.1;
-        Fri, 01 Jul 2022 13:21:34 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=x0tbuo5st4idBI23tWtiFcOGiGqnqdTdNrO12I1u6mw=;
-        b=rzX5D/wPzZcAF7HEAGMicWhWa0OqNczBb+TSLOHQSomLGs/MLC7eR9E1zuAuYof1Om
-         14DiYhLGLV1GrsV2P2H9XXlsEnlbH4EYw8ul98vcrC33oFteSUqUJbVsVhFD413LLDse
-         DbZKhxkxOByHhc+g2QBQw9xH2FPghpUJwrvRNYNtYAwJq3W07tq1jFbHyczBgADJaFaH
-         BCXdLglS6kY8wDQbdTbN5sWDEasapgJyv78gDWGEz9fVzWNY0j+8RHBNyl5yDANgzDct
-         KHtHfy7L5zKRMjWInZ2Hp10n/SM2e8VxVervBaeuc/vbOtVOz5XoAptRwFbGMH4anx9S
-         mqGA==
-X-Gm-Message-State: AJIora8DRINIYiAKv38yyKQ3xAh7P/cZMgejYx9+n3vZkslxq/iSeyyN
-        xgTtEKigrtPvt3IH7PJKXA==
-X-Google-Smtp-Source: AGRyM1sh6iqL6VFnZp1Deu8xXkJM6thegM5ZDmojm43S2jm0iAW6aMBCC36S5AT0zAMshycO/N+rQA==
-X-Received: by 2002:a05:6638:1686:b0:33e:9977:2e1f with SMTP id f6-20020a056638168600b0033e99772e1fmr3975605jat.7.1656706894172;
-        Fri, 01 Jul 2022 13:21:34 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id y41-20020a02952c000000b00339e1b107d9sm10166587jah.60.2022.07.01.13.21.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Jul 2022 13:21:33 -0700 (PDT)
-Received: (nullmailer pid 1457047 invoked by uid 1000);
-        Fri, 01 Jul 2022 20:21:31 -0000
-Date:   Fri, 1 Jul 2022 14:21:31 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Divya Koppera <Divya.Koppera@microchip.com>
-Cc:     linux@armlinux.org.uk, hkallweit1@gmail.com, pabeni@redhat.com,
-        Madhuri.Sripada@microchip.com, andrew@lunn.ch,
-        linux-kernel@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        devicetree@vger.kernel.org, UNGLinuxDriver@microchip.com,
-        robh+dt@kernel.org, netdev@vger.kernel.org, kuba@kernel.org,
-        edumazet@google.com, davem@davemloft.net
-Subject: Re: [PATCH v3 net-next 1/2] dt-bindings: net: Updated
- micrel,led-mode for LAN8814 PHY
-Message-ID: <20220701202131.GA1456987-robh@kernel.org>
-References: <20220701035709.10829-1-Divya.Koppera@microchip.com>
- <20220701035709.10829-2-Divya.Koppera@microchip.com>
+        with ESMTP id S230183AbiGAUWl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 16:22:41 -0400
+Received: from ms.lwn.net (ms.lwn.net [IPv6:2600:3c01:e000:3a1::42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87CB84D174;
+        Fri,  1 Jul 2022 13:22:40 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:281:8300:73::5f6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ms.lwn.net (Postfix) with ESMTPSA id BDCD936D;
+        Fri,  1 Jul 2022 20:22:38 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net BDCD936D
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
+        t=1656706959; bh=dxet9HAczfcZ9vu/1oL1hu5S6lHOaJx1MYQzpzQnE3w=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=c/wZEaG8r9bEzMb/9Yed5GTIwTIqapPop1mA95KPr3rBUovZudh3MzbBq4CCf2w+N
+         O5wA2ppfkxYCkT2qYzn/jocPg/WF6Un9rseV62tBWBuL8our/CBG1rvsHTx82AKtaK
+         PadBeZObcRmaPrgOdyJXbkz9sR08gVwxb40AApbU05jfYCYZdziljL8MbgOsH9rdWj
+         h8Z5rZuitWMoBgGDvgE+XvHLus3OHETunxvmSJA+s7qxDSlCCuQ0kQcBBdP75BPdWR
+         ZYJRDJhoHU1mFDZqSclmpR1UPyNV2ue6xVZftBJdFvgLnyFLshgAKX8+i1NVJWFlCj
+         /8mq64R3WoXEQ==
+From:   Jonathan Corbet <corbet@lwn.net>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        John Stultz <jstultz@google.com>
+Cc:     Kalesh Singh <kaleshsingh@google.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Arve =?utf-8?B?SGrDuG5u?= =?utf-8?B?ZXbDpWc=?= 
+        <arve@android.com>, Todd Kjos <tkjos@android.com>,
+        Martijn Coenen <maco@android.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Hridya Valsaraju <hridya@google.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Theodore Ts'o <tytso@mit.edu>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Alex Xu (Hello71)" <alex_y_xu@yahoo.ca>,
+        Paolo Abeni <pabeni@redhat.com>, Rob Herring <robh@kernel.org>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Shuah Khan <shuah@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, wireguard@lists.zx2c4.com,
+        netdev@vger.kernel.org, rcu <rcu@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>, sultan@kerneltoast.com,
+        android-kernel-team <android-kernel-team@google.com>,
+        Saravana Kannan <saravanak@google.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>
+Subject: Re: [PATCH] remove CONFIG_ANDROID
+In-Reply-To: <YrztOqBBll66C2/n@zx2c4.com>
+References: <20220629161527.GA24978@lst.de> <Yrx8/Fyx15CTi2zq@zx2c4.com>
+ <20220629163007.GA25279@lst.de> <Yrx/8UOY+J8Ao3Bd@zx2c4.com>
+ <YryNQvWGVwCjJYmB@zx2c4.com> <Yryic4YG9X2/DJiX@google.com>
+ <Yry6XvOGge2xKx/n@zx2c4.com>
+ <CAC_TJve_Jk0+XD7VeSJVvJq4D9ZofnH69B4QZv2LPT4X3KNfeg@mail.gmail.com>
+ <YrzaCRl9rwy9DgOC@zx2c4.com>
+ <CANDhNCpRzzULaGmEGCbbJgVinA0pJJB-gOP9AY0Hy488n9ZStA@mail.gmail.com>
+ <YrztOqBBll66C2/n@zx2c4.com>
+Date:   Fri, 01 Jul 2022 14:22:38 -0600
+Message-ID: <87a69slh0x.fsf@meer.lwn.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220701035709.10829-2-Divya.Koppera@microchip.com>
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 01 Jul 2022 09:27:08 +0530, Divya Koppera wrote:
-> Enable led-mode configuration for LAN8814 phy
-> 
-> Signed-off-by: Divya Koppera <Divya.Koppera@microchip.com>
-> ---
-> v2 -> v3:
-> - No change
-> 
-> v1 -> v2:
-> - Updated micrel,led-mode property for LAN8814 PHY
-> ---
->  Documentation/devicetree/bindings/net/micrel.txt | 1 +
->  1 file changed, 1 insertion(+)
-> 
+"Jason A. Donenfeld" <Jason@zx2c4.com> writes:
 
-Acked-by: Rob Herring <robh@kernel.org>
+> I guess what I have in mind is the answer to these being "yes":
+> - "Is it very common to be asleep for only 2 seconds before being woken?"
+> - "Is it very common to be awake for only 2 seconds before sleeping?"
+>
+> I think it'd be easiest to have a knob somewhere (compiletime,
+> runtime, wherever) that describes a device that exhibits those
+> properties. Then wireguard and other things will make a decision on how
+> to handle the crypto during relevant events.
+
+So please forgive the noise from the peanut gallery, but I do find
+myself wondering...do you really need a knob for this?  The kernel
+itself can observe how often (and for how long) the system is suspended,
+and might well be able to do the right thing without explicit input from
+user space.  If it works it would eliminate a potential configuration
+problem and also perhaps respond correctly to changing workloads.
+
+For example, rather than testing a knob, avoid resetting keys on resume
+if the suspend time is less than (say) 30s?
+
+Educate me on what I'm missing here, please :)
+
+Thanks,
+
+jon
