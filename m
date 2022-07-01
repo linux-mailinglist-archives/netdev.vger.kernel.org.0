@@ -2,138 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DDF71563B36
-	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 22:49:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A46A563B38
+	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 22:49:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231946AbiGAUm2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Jul 2022 16:42:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42780 "EHLO
+        id S229968AbiGAUsA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Jul 2022 16:48:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231253AbiGAUmY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 16:42:24 -0400
-Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6983D5A2F6;
-        Fri,  1 Jul 2022 13:42:23 -0700 (PDT)
-Received: by mail-yb1-xb34.google.com with SMTP id d145so2757156ybh.1;
-        Fri, 01 Jul 2022 13:42:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Yp9XN4S+Opt5OiPcD1GcnJhSinyAA39zjfk4/yaqO8s=;
-        b=SSa3GZ+C8FrgSyg1dfnwW60dlyF0osSJcGZGmfieTSZO8LN1tTnuBZvrpmznVl6l5B
-         IgQmQe4055mdbiFozpxMvnggCiMyc7NOrvfm29fp9LbuZ5i5ON/B8m2J5GXb5vWVA6c0
-         RewnXDqM8bApuZzbq6JtS4ZDUAhrXph9cYmjL7knYaBXHm/BBAXDwNZa1cdzz/6Ej2IG
-         Nz7sdgqorS24+OA2LMNycsTyc5r3QxbSzQCNOBWWKXmM0MNeZkST886/Rkqe5ab/udOX
-         y+NeJom41Oze0ooJeXmmFQBDfTWqcBjfimdSVuFjjTTbaXAuFIg3+jp92fXuR96azOE4
-         e51Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Yp9XN4S+Opt5OiPcD1GcnJhSinyAA39zjfk4/yaqO8s=;
-        b=3kmXpcnAPO8TLXIAZG2/bOiI5Ax9fmc76lE3ztVEsoS82Vu9ngW4oDDBWJL7RZdum1
-         iBL53yxOu6F7V4+3J30WDx7sZIoHwbjYfEPbQqjVFFrl8a8FTcTYx6pQvNPhWngSHdxD
-         g1oybV9ym5KtC3WhHecJMkGbTl/a+hjP/o79Xr3gb4jQPiKpX7bS/iJR7Rm9JNqJzokJ
-         0boBA6yZXXL0B4F3vBpWAuBl2uNqYtub8lGl8KEY+1K3pYNyMdmZOCWH1TSfdf8MCRlx
-         nHd6z8Tpyz0x8kgKzbgTo64ClHb2ATWB4v4byXdNkgRCOKKiQKQiC0DyG7b8omGh2VZz
-         lWdw==
-X-Gm-Message-State: AJIora8rAQge/vk2uq3brrtRSmSCU2kDk51BDz7KrmQ33Pu851+TVBSa
-        7225rCYsNnAVn2RxLjQiIkReX4dniGd+tb8TMf4=
-X-Google-Smtp-Source: AGRyM1ubWJCx0SPiTeTHy1XH1UrTXqKhbiuskgaTbILYM9h0vFVUsY93Ykxv678H610M89IRqGuslFj82aLn/+EiSQg=
-X-Received: by 2002:a05:6902:1142:b0:66d:999a:81a7 with SMTP id
- p2-20020a056902114200b0066d999a81a7mr13475371ybu.460.1656708142638; Fri, 01
- Jul 2022 13:42:22 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220701192609.3970317-1-colin.foster@in-advantage.com>
- <20220701192609.3970317-2-colin.foster@in-advantage.com> <CAHp75Vf0FPrUPK8F=9gMuZPUsuTbSO+AB3zfh1=uAKu6L2eemA@mail.gmail.com>
- <20220701203453.GB3327062@euler>
-In-Reply-To: <20220701203453.GB3327062@euler>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 1 Jul 2022 22:41:43 +0200
-Message-ID: <CAHp75Ve1AVtNsmCrBr8XCcm2fJnKYQhF98v49OD8Y4kBUzb0-w@mail.gmail.com>
-Subject: Re: [PATCH v12 net-next 1/9] mfd: ocelot: add helper to get regmap
- from a resource
-To:     Colin Foster <colin.foster@in-advantage.com>
-Cc:     devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S229570AbiGAUsA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 16:48:00 -0400
+Received: from mailout3.hostsharing.net (mailout3.hostsharing.net [IPv6:2a01:4f8:150:2161:1:b009:f236:0])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8EBD5C977;
+        Fri,  1 Jul 2022 13:47:57 -0700 (PDT)
+Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
+         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
+        by mailout3.hostsharing.net (Postfix) with ESMTPS id C8CAD102DFB85;
+        Fri,  1 Jul 2022 22:47:55 +0200 (CEST)
+Received: from localhost (unknown [89.246.108.87])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by h08.hostsharing.net (Postfix) with ESMTPSA id 6FC6861A6B50;
+        Fri,  1 Jul 2022 22:47:55 +0200 (CEST)
+X-Mailbox-Line: From c45e311ac5b95798fe7cddd7bb834c5df83bb97e Mon Sep 17 00:00:00 2001
+Message-Id: <cover.1656707954.git.lukas@wunner.de>
+From:   Lukas Wunner <lukas@wunner.de>
+Date:   Fri, 1 Jul 2022 22:47:50 +0200
+Subject: [PATCH net-next v2 0/3] Deadlock no more in LAN95xx
+To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Wolfram Sang <wsa@kernel.org>,
-        Terry Bowman <terry.bowman@amd.com>,
-        katie.morris@in-advantage.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        Eric Dumazet <edumazet@google.com>
+Cc:     netdev@vger.kernel.org, linux-usb@vger.kernel.org,
+        Steve Glendinning <steve.glendinning@shawell.net>,
+        UNGLinuxDriver@microchip.com, Oliver Neukum <oneukum@suse.com>,
+        Andre Edich <andre.edich@microchip.com>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Martyn Welch <martyn.welch@collabora.com>,
+        Gabriel Hojda <ghojda@yo2urs.ro>,
+        Christoph Fritz <chf.fritz@googlemail.com>,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        Philipp Rosenberger <p.rosenberger@kunbus.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Ferry Toth <fntoth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Alan Stern <stern@rowland.harvard.edu>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 1, 2022 at 10:35 PM Colin Foster
-<colin.foster@in-advantage.com> wrote:
-> On Fri, Jul 01, 2022 at 10:23:36PM +0200, Andy Shevchenko wrote:
-> > On Fri, Jul 1, 2022 at 9:26 PM Colin Foster
-> > <colin.foster@in-advantage.com> wrote:
+Second attempt at fixing a runtime resume deadlock in the LAN95xx USB driver:
 
-...
+In short, the driver isn't using the "nopm" register accessors in portions
+of its runtime resume path, causing a deadlock.  I'm fixing that by
+auto-detecting whether nopm accessors shall be used, instead of
+having to explicitly call them wherever it's necessary.
+As a byproduct, code size shrinks significantly (see diffstat below).
 
-> > > +       res = platform_get_resource(pdev, IORESOURCE_MEM, index);
-> > > +       if (res) {
-> > > +               regs = devm_ioremap_resource(dev, res);
-> > > +               if (IS_ERR(regs))
-> > > +                       return ERR_CAST(regs);
-> >
-> > Why can't it be devm_platform_get_and_ioremap_resource() here?
->
-> It can... but it invokes prints of "invalid resource" during
-> initialization.
->
-> Here it was implied that I should break the function call out:
-> https://patchwork.kernel.org/project/netdevbpf/patch/20220628081709.829811-2-colin.foster@in-advantage.com/#24917551
+Back in April I submitted a first attempt which was rejected by Alan Stern:
+https://lore.kernel.org/all/6710d8c18ff54139cdc538763ba544187c5a0cee.1651041411.git.lukas@wunner.de/
 
-Perhaps a comment in the code, so nobody will try to optimize this in
-the future.
+That approach only detected whether a PM callback is running concurrently,
+not whether the access is performed by the PM callback.  I've come up with
+a different approach which should resolve the objection (see patch [1/3]).
 
-> > > +               return devm_regmap_init_mmio(dev, regs, config);
-> > > +       }
+Thanks!
 
-...
+Lukas Wunner (3):
+  usbnet: smsc95xx: Fix deadlock on runtime resume
+  usbnet: smsc95xx: Clean up nopm handling
+  usbnet: smsc95xx: Clean up unnecessary BUG_ON() upon register access
 
-> > > +       return (map) ? map : ERR_PTR(-ENOENT);
-> >
-> > Too many parentheses.
-> >
-> > Also you may use short form of ternary operator:
-> >
-> >        return map ?: ERR_PTR(-ENOENT);
->
-> Agreed, and I didn't know about that operator. When Vladimir suggested
-> it I thought it was a typo. I should've known better.
-
-It's easy to remember by thinking of
-
-"X ?: Y" as "X _or_ Y".
+ drivers/net/usb/smsc95xx.c | 202 ++++++++++++++++---------------------
+ 1 file changed, 86 insertions(+), 116 deletions(-)
 
 -- 
-With Best Regards,
-Andy Shevchenko
+2.36.1
+
