@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B7ADC563C31
-	for <lists+netdev@lfdr.de>; Sat,  2 Jul 2022 00:08:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27360563C35
+	for <lists+netdev@lfdr.de>; Sat,  2 Jul 2022 00:12:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230077AbiGAWIE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Jul 2022 18:08:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47634 "EHLO
+        id S229606AbiGAWMz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Jul 2022 18:12:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229508AbiGAWID (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 18:08:03 -0400
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2047.outbound.protection.outlook.com [40.107.93.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA93461D52
-        for <netdev@vger.kernel.org>; Fri,  1 Jul 2022 15:08:02 -0700 (PDT)
+        with ESMTP id S229496AbiGAWMy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 18:12:54 -0400
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2058.outbound.protection.outlook.com [40.107.237.58])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA40C675A4
+        for <netdev@vger.kernel.org>; Fri,  1 Jul 2022 15:12:51 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Su2PjpK2ifOFJbfq/ApiMXf7UqKAfFcKDe2QTeIx2FWAdHQsp0fRgowTAITUEYMKhLxkgkpmUtb99asAUtkp9Y3XmbCftCvoTofz9klt8UHKVb0Xhjhzz9FJLcJwGP6UOoWJa8VTO2LDL3ExFRNZ9WHz7i21LKVnKdJqSp68eXX90KHrRzP1Ph2lsOMTddDfH2GyQhGcOGZ6ckgs7QIKq9S+z9SJN524bMWC63NdPPvntTzzvSOMX/yRj2LK6DNEgrWPNcMv6FMWl0JG8VKMjfMTMAO8K1AbNwX6S9yCLnHbli/nHGWMHtOVC1aZP+3NzMowXt1jrRFDl+ptgemGJA==
+ b=P6tXhKGoZbr4XeP4EQ1ybYIy72GZE40DjbqkoMO/Lynwefseu7cQCLrHifXBq53v7yHJKpkydyo5NfiTObnkucW5L28zY5dvMGT5fewQALk7rb/URYASgjhz8XYt/C8WieoEz2wSEdRQZdWBif0KbhFXgRXJFDsokM+z3jhErpOukbo7c6SaS+c5TeOpCtkpnzEAP/qWe6rl8HUuQtgHGZ7I+fJpV++zmW7WL8uC9zmyslAYwqGi3W/6A+GDeYYJ339l/g9T3Hf4+NAg+1QG+/L+MV/k0u/gacem6eqLosGNnUm6KH7RVGqO8ldaDUJt6C6wRrVhfrNslhcCN+4eIg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=KowlBwQf/GROEKoHqgXYX7FGWvyeuXWp7TiWh9Y43RM=;
- b=NKYX7nz34/WWRmu3KD26F70YiQdR3D7ughPQZGsD4PsiESkm227+qNhDJNapNYGidUHkxKVN+FKUEaffnrawqFhAyVbCuG9wyOFY2RPuDMS30rl8ZC17TwJgLUOr/WftfQxr/rdnCG02dLOBkoHNAubwln/0H2ENfzPTOxkfDmilHMQ866hDxMjo9xXYTEamU82wAfrRPR8BVlPyacVLn8hVmy6rp+muh+YbvbdarEbI2N62JJyCGr/0+N2Wjd8TO5GRoAyYoaXHYv7MkXylUemkcj4LFHwC2XNC9wZYof0x5oAMHwyzronZswNszjv4RSX/QGeUfcENhNVVYQWsrQ==
+ bh=zef8L3Cw5hnJpkeAERTSLFRdgyuuiATe+oJy22ymd6w=;
+ b=NgoLuUCnIxgNx0PRQD468QIRMxDfdqjTORkLmTeTPfkTIvD55cIPTfCoUuq2SQionGxYSrBJ5ELg0bdw7QMs1Oe90tTyiSnCw9uBMTGScNqNG6bGdra9LhJ108vuR0BnCbhrlWC3oj+/Ws1/Uy7fuJ0zTWa3hezBlTLnpEnvmGBmdtuMEiVnT8dTLNgp444HiOohl22jpF07ZdH6YtbQ6G33g3q2Maiz2mKDDyxcueRr9FiaO5UCRiMx5kQ/f+gyEAAKJ6M02OqBZA852WOIW8Qgnd28uSQn0e/hDrAnX3nLouXwyXHSFTqh1lwMVskjzW3kxjguJ3EdCSgmZjL3oA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KowlBwQf/GROEKoHqgXYX7FGWvyeuXWp7TiWh9Y43RM=;
- b=N5mAbvH4bTSkyh82BGInc+V/8omtmUMv1YLQhtXuZWc1zPLql0RgGJoHyIT/EA10AxPMS5mCWAsFomXwLnxuwt1rszYieQzZBQUVdW4sBsxbeHzt624aW/EOtafWpbBZLRgoCJb/1eh5yUIOA1V1KJOG7EKVFLCLuE3DWqgneCEN5MD6asao5IVfIeQp47ctpw3r5rPN2h35JeOm/XD7UQEY4NiaEXhu3lvx2l6zPVA2TgVbrf9SUSnM+bf8e2sSUfCqrsI0mh1HtOt3wnZI7xBwMUyfam5BN1qTNGryqlX51bT6s/z01WiJkDCEjf43ForSBJafxmfFrRFMR/IMTg==
+ bh=zef8L3Cw5hnJpkeAERTSLFRdgyuuiATe+oJy22ymd6w=;
+ b=cVEDxhXmbX22l61UvbZZpy9aAUEODQgYKgNJ6o7IL+FZNTd1A1J03ej+QZZmmWBLja6eb0W/NAeTpc+BxNI2owIpu1oF2qCne9UE/nBJSFkjaVkctN+I5+gN0Y5FaA2PsTsKOMI5e2PK8AKq0iuMV+xsMc/Vee5oqIiI6LlmTmKHSeJmeNR5dU1k5hIC/+mGmKGI0vaeyjWtSRhFuMEs33HY3FLopLTsIBLg09gSloMx1/bGnrWQebHEfQmRExgt4qsTMX9o7fFG9DoO1T6eJkDfW19eISzKXkCbvoAf0OF+ioOI8GX6mIsDMf/QE9iGG6PTKr6w9WAomCUFhD/rIA==
 Received: from PH0PR12MB5481.namprd12.prod.outlook.com (2603:10b6:510:d4::15)
- by BYAPR12MB2677.namprd12.prod.outlook.com (2603:10b6:a03:69::26) with
+ by DM6PR12MB4959.namprd12.prod.outlook.com (2603:10b6:5:208::16) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.15; Fri, 1 Jul
- 2022 22:07:59 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.14; Fri, 1 Jul
+ 2022 22:12:49 +0000
 Received: from PH0PR12MB5481.namprd12.prod.outlook.com
  ([fe80::544b:6e21:453e:d3d6]) by PH0PR12MB5481.namprd12.prod.outlook.com
  ([fe80::544b:6e21:453e:d3d6%9]) with mapi id 15.20.5395.017; Fri, 1 Jul 2022
- 22:07:59 +0000
+ 22:12:49 +0000
 From:   Parav Pandit <parav@nvidia.com>
 To:     Zhu Lingshan <lingshan.zhu@intel.com>,
         "jasowang@redhat.com" <jasowang@redhat.com>,
@@ -47,16 +47,16 @@ CC:     "virtualization@lists.linux-foundation.org"
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "xieyongji@bytedance.com" <xieyongji@bytedance.com>,
         "gautam.dawar@amd.com" <gautam.dawar@amd.com>
-Subject: RE: [PATCH V3 5/6] vDPA: answer num of queue pairs = 1 to userspace
- when VIRTIO_NET_F_MQ == 0
-Thread-Topic: [PATCH V3 5/6] vDPA: answer num of queue pairs = 1 to userspace
- when VIRTIO_NET_F_MQ == 0
-Thread-Index: AQHYjU+OpP/4aLhN20eCCMO4rbOEoq1qElog
-Date:   Fri, 1 Jul 2022 22:07:59 +0000
-Message-ID: <PH0PR12MB548173B9511FD3941E2D5F64DCBD9@PH0PR12MB5481.namprd12.prod.outlook.com>
+Subject: RE: [PATCH V3 4/6] vDPA: !FEATURES_OK should not block querying
+ device config space
+Thread-Topic: [PATCH V3 4/6] vDPA: !FEATURES_OK should not block querying
+ device config space
+Thread-Index: AQHYjU+N2FCBvYoo1k6WRMs2o5YCL61qFA6A
+Date:   Fri, 1 Jul 2022 22:12:49 +0000
+Message-ID: <PH0PR12MB548190DE76CC64E56DA2DF13DCBD9@PH0PR12MB5481.namprd12.prod.outlook.com>
 References: <20220701132826.8132-1-lingshan.zhu@intel.com>
- <20220701132826.8132-6-lingshan.zhu@intel.com>
-In-Reply-To: <20220701132826.8132-6-lingshan.zhu@intel.com>
+ <20220701132826.8132-5-lingshan.zhu@intel.com>
+In-Reply-To: <20220701132826.8132-5-lingshan.zhu@intel.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -64,55 +64,55 @@ X-MS-TNEF-Correlator:
 authentication-results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: a0cf26a3-675a-43ca-fd69-08da5bae2902
-x-ms-traffictypediagnostic: BYAPR12MB2677:EE_
+x-ms-office365-filtering-correlation-id: 30526226-4ac8-462b-10bc-08da5baed5d7
+x-ms-traffictypediagnostic: DM6PR12MB4959:EE_
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 4SoVgryz5LCUsGxmcJBpbufETux/3a0Yl8yHSC7DcYUlVE1+4S72bQ/xAtvE7VBCqOmv3Wr0i6e/UiLdwwPPIwqaXcz7NAxAXN2P30xk2m7Vcif2k3Q4VMRHImazg9DVIG2LhdDIs+1SQhZWSdkJjDHo72FoISY9rSRHqPECWs/CYWj+3MUiSgrTqzDmWUfSVIpTV4ncjE+6ZSFpaL+pXFE+MzrzXWV9B/7duMYFjYWtUBMjaVfbJlk53jhJog+dKnX32MI9PKTFsIZNfNcZwLWLUaY+ZjFi4OzNJ4ej9cYIyqx4w2DtKzPgQGnqfgQOnMfMnh6By1y76DnTp2kvhOfOOjopZenjS+IQzYJ7DK3DNskjB3ln+oJbxtwz8iHzYtve4NqYuHeCrTZD/7P3DpbzSGsTz+4nqqOgHdpJpRaZdp839xaPJJ0R6JHXaJ97uW0OqKXoSyrG9zBwWPMS110UEYcHo1XIf4xg3KfbO3aotY7GqnpEcFlbdEgu9inXIPe3Uzte4sv+uHmzbIKWupX1C1ki8UtKhZDrefMqbkbDzQOHIHd3urt2ya77rCCBZ24qn1oO04kwhe2Ije1B6u0RetbAuD8Mdyl4+hMwFcsRiOL0farweP57GgrBoznzgAAKh2tsZENsd8H4IItECedGlxlXPd7FoybNNMc99fu57CxmSR21par/lwvH3vlf2ZWdAaklVrC7lqvwI3R/E0kS/9pbVOgPNPRw3Ysn76j03FTzNVKh3LjSrQl8foVccSOPjP3O+82gp1K3guZu4SG24WNu5ttaUjnlVY2Z1Z+0b0XJFe5f1nwbj+Mmj6eM
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(39860400002)(136003)(346002)(366004)(396003)(2906002)(8936002)(38100700002)(5660300002)(76116006)(6506007)(26005)(478600001)(52536014)(33656002)(9686003)(41300700001)(7696005)(83380400001)(316002)(55016003)(86362001)(110136005)(66556008)(54906003)(66476007)(64756008)(4326008)(38070700005)(186003)(66446008)(71200400001)(8676002)(66946007)(122000001);DIR:OUT;SFP:1101;
+x-microsoft-antispam-message-info: +RYbQlcTg0J4Hb0eoNy8lonR+hoqtzwsQDhBqOlVhgupCnJVSK3bIz7fzrhrc5n0WBkie11UBguL7PefHeDSkjGdGFCZeCMDXyR8JAMYf27rkOyGPyg/QEaNccgGcCWckESA0YYVD7zVAvcRr4Az+v5H0d3DK1ybsvIlNfwM8zAc9sZuiv4ROpNa1j2gfagKbRuQE/i8GZy1RIQukvf41InwWwEmqSFlkp274UVhri3g+bRJ0BGxZlAzFrSClzbYChmPRdl6DZ7wklLuUbaVNswQdZL3CagdEYnuZ4h3/aNa1PJU64IMELICuOYdGyZeBWOAKozgMDCxe6IrgwdrNcfJLP40a7vUmm8Rr/xKUEjUmm8OOyiAar0egY3GhNnRGAiznWYIv7xu5g0jn+CkfnYjya3nYoPaEsC/0TWqs1dPhIYcrvJ3nfaMVxMuJNdpnckczZuINJCmEOVequVaBuypek7Dmcp7/zxT7L1bXenFuzMMGp+Yk4AFt/8W/3u3InPyQZ+eVSX1tFScKHYCQLUZmzfOrjxnkJIRsKsQsxKThol5paJb6c802d59/E27q58RiatYPbfpBt42lTBR67x/oZ73pDvy5QWzXDM2AvvR8kY6y7wDtCoQnS27DIxGsaylcGrPjnVVlW2ZvtIbzIVRMkKf8hoIneDq1wzec8+gxLuoRiaJpS4fbl5lHZmfbwHMHCZQwi2e5pPySovyEkOGpX8gSw1PkXxMgygP2rvRayDc4eXr23fdTWd4x/xd5BB1OsgJGoCL28VhUixBaF2kghcgIPG519kAyGpfvOKryrN804R7PEtx9uRbdpXy
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(346002)(396003)(366004)(39860400002)(136003)(26005)(9686003)(83380400001)(478600001)(55016003)(71200400001)(2906002)(52536014)(8936002)(5660300002)(33656002)(7696005)(6506007)(41300700001)(8676002)(54906003)(86362001)(316002)(66446008)(64756008)(122000001)(4326008)(66476007)(38070700005)(110136005)(76116006)(38100700002)(66946007)(66556008)(186003);DIR:OUT;SFP:1101;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?keuFRjbQDV4JiLommJmKsBfWofBNCz4J1wHK2g/pJqthlFYA2eXbWU9aZL5j?=
- =?us-ascii?Q?zu3i+nyfZtwZZmM+hr4D5ligjpFavxwnKThJRiqND21hA8ulPbXHCV95/Mmj?=
- =?us-ascii?Q?TvkB5fORsXDY/dnz8n9N4PnXCpDQvB3vDWz4lHax7Hp1xkY96sjAuC78Cv3a?=
- =?us-ascii?Q?Ob/DzWRoYR1gaYqu1rlJ1BsgzRI2U5CzgVyDSvVXYmbplgCHXmX9tYGil9ol?=
- =?us-ascii?Q?AoilPqm8/1YzBJG5UwCDBuJJLyD8t9i7skHBZcuPNquulGOWw+Njp8bWhdDy?=
- =?us-ascii?Q?z9faJBrgw4J2mntALaOGk+MfIKw2X1/goVESxffgCKpmTVPzPv8ZsnD1HFw+?=
- =?us-ascii?Q?G5avcI1uRn91TuhbQYA475bDMixR7Y6pZ7yiZQkSeQC+0yvlgr/uno5iieU7?=
- =?us-ascii?Q?FexT0pSQrgkcTgNqdDLBO6Do+AE5LNv7f8mrV0Au97ZpZdTuUBQ/Xz6fJ9vi?=
- =?us-ascii?Q?IS8k1xGG0IMghsepdIBp2S0OSBQfFrxpkw64F7FuT3d1nN4NsBzOyzHPP91I?=
- =?us-ascii?Q?KWHKs1odHJI5tsnGzOkwkXB/8xftp7TdfDb4y6Dn7HqyIFL2UgWo8SJ/J4Hr?=
- =?us-ascii?Q?YOMnRGBvcr/A8k0O9GvkLRdrxkXcAezEMiAVeVlW8XUsI3DP0FGyr9bCYgc8?=
- =?us-ascii?Q?no925nDqk8VoHcTpR+GZ7F/fD6ildkIyYO4vbJjo2FwTFx49YPPsc5xFUwpR?=
- =?us-ascii?Q?78F1s/WrdI/ISqFSQarZwEAcLroOMXXYJwxKGSwoBOQPzrF2BNuB9/zhrrhp?=
- =?us-ascii?Q?UWyhUiVKQK5lh3JYqfE6e1RchbYazjkLqOX144+b1+JV0BT5/op+iF5ENzrg?=
- =?us-ascii?Q?ZI2YGTAG13njSq+JH9apUh003zNfPgM/sbyl6awPXuNQbsjPZPz1yVAg10/6?=
- =?us-ascii?Q?lYj+SWLbjsiEbQbmKlm4M67pD8+8RUTCFlPxXabRI+gqC2SCcsOqiGD0D30Q?=
- =?us-ascii?Q?1NWde746iu2pYk0hPt6PRyf/7CAdAhdvo+aPM9QHXSsnvOI/HvBtO8YNDxaM?=
- =?us-ascii?Q?Dg2uO/bgWFHPZQ+9V4sNLEzzNqBXHFW386P2rg4drKJVg/RFASQlnh6waq5d?=
- =?us-ascii?Q?qkLvkzSSti/FOoo+Rkyv3BmA7JuM7d2U5k5xXXFVlcPYkimA5O+b88Hp0Hs+?=
- =?us-ascii?Q?F69InkQqwd/iH/1avSK325uxRi8niTFb8ZMoHD/cl1yOxLMwalr1yHYVCEg0?=
- =?us-ascii?Q?MZ0zEMO1R9aOjFg2JM0nplVgoYQQXjYgRuN0LJldql9xrtPbQpuMvOx3QLjc?=
- =?us-ascii?Q?flKoNjghrS8eQD1+OIzuJF9tyhBJXnAq8VbnbZYH5YZndsstIBnaNAqmw4cp?=
- =?us-ascii?Q?R5C3zBYA+JRZ3UDEsZRjzFj3rD+55a617F9IhQWV470eTQ7vwzF3CpNjjLs7?=
- =?us-ascii?Q?JF216mF/NluSOEQXULVqFSCOg6eDdnWfB+Cy9gwzyyLMnGR2fgUHbPJTIpZK?=
- =?us-ascii?Q?UJVq/EkVVfL49eeTk1qeO1m9ALTFb52Ub7hx82D1PNjygCJ4IDS3MVe/WulE?=
- =?us-ascii?Q?Jp2r7+A+LCAxELsAFtQTQUgjffr4LEbJzouysvIzoZHp1t5AygTV/JOVTb+s?=
- =?us-ascii?Q?5gb4R53HeZZXQpa6Zgw=3D?=
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?n6UCmHGHX1Foi+z/vgXPMnLWlHyVEjykihBa6Iw3UoD7+0vQYjFzW+4UHyLZ?=
+ =?us-ascii?Q?GS+wjicSBHZIAFHqwpUIu1Ngm5UKaOs75irAKDURdd7+OXGJeGCq2k35/F+y?=
+ =?us-ascii?Q?x9YtmVTqsSqkBN9iSL9ElPmKNxAITiap/q7wy/FL6VWxsN4W+xtkZ3UNba39?=
+ =?us-ascii?Q?a7VreTo5VK3hsaNdmtnx3Zwv5N3Cm/YU7UKQnRtTF6rl1Cq5XI1OyBUMSZX0?=
+ =?us-ascii?Q?/fa8C0Q7fdHmFi/ukMZXdZAMEy2FQ13bVmDijrDrfrCk2ddc7uXQYQ6Iic4Z?=
+ =?us-ascii?Q?oGM8uffNULQAdH6a4yIEvPakA+vgkVrAaTOd9ZTINVh2bH4nl7xSbH2fkNqJ?=
+ =?us-ascii?Q?iiCXIhAwHyLCxdNkKsdQgViWjia3/WTyL5Toc4QdyLW9vcaRNCfNpA+3sRNX?=
+ =?us-ascii?Q?xc3MjWymXcYRc66R8v02GsDz05h0I/Il56f+evATVLuetqc3DgFKp9CY2Srn?=
+ =?us-ascii?Q?Pt4QcVz5a181dIyB+K8EDYkUvi611lff6luBZkoEl2VVXKzhFGuYF2NwMCOz?=
+ =?us-ascii?Q?awUdAVLf3rt0LyfuGYp68EVJZjI0RAB4M27SID+QrmX4x5iyliS1e2huXh+x?=
+ =?us-ascii?Q?u7NHII27hj0wfDl1nQ7ZdqV/3DqI8WxxC2rjN1oin+EcuAa8fkekjEdEePWU?=
+ =?us-ascii?Q?ddx0EmqkM/J34Ok/wLx9JMGZjFSwpskm0cd2l32EBqyU0sxFqLJfBxi5LmVP?=
+ =?us-ascii?Q?ZZv4dyGCqD5CnNrdmaTBbr/EGuXlrVHKgEp5Ms6J6N22ukqWhUIwP6XF9iRV?=
+ =?us-ascii?Q?UdfxkzewWQ7oeEeyFtJwQleB4xc4LbPw8+ECrsb0Fjn74jUnUwQZSLdXfCv2?=
+ =?us-ascii?Q?WLziX3plifc2hwpzV5DRVMG7umnVj05CzYPaBrRXiaGjQOnuF8XIKUNHx/5E?=
+ =?us-ascii?Q?KKuey4inYMxs57IQlXtMHgleIrgoEWBmSiVOcewT4ZrIE/4aMhKnX6A1zNIi?=
+ =?us-ascii?Q?CN6l1p0zP4/rB38J3pianFSFidEXRXuYbGLHpFG9bSj/93V38RSfxs9lOCgN?=
+ =?us-ascii?Q?OLWm3bBq/+y5zuQGrbTdru/KOfPKu/AYrt2NxRQJ7YkNULa85MKkHmw4MeVi?=
+ =?us-ascii?Q?rdhhZ3gQvL6QZYTU/ksd9htm3FJ8bXLEs2ug4B9bI5iE3Rw7toLZw7yFz26N?=
+ =?us-ascii?Q?JY89SnwogIvEcuLkd7Yvd87+Kt7hKgb8Tz4M9eq6c3cJP4c49qdpVE1SLW0s?=
+ =?us-ascii?Q?pkwtNLIIN50DOZ25ZMiDSbMs/kXV8j0N7e6ksrWPjaJxAjpDSXP1XqKr09fR?=
+ =?us-ascii?Q?iGW4y9P3zIlJdzEKbOklqvIN5EIQF6nCZfx+14XNVdp60olblOj9PMoBsNgA?=
+ =?us-ascii?Q?l6ASWELMglPFlJ0TmIIEaCWk3TEG9tTE2umVp5exn7+1j0CMxc5c/kz7+hrY?=
+ =?us-ascii?Q?aRdHiM88ha0X1UqeEFoo6CVsASY9S6GfyfBX7i977AtVBFrgg9j0khMGQSAe?=
+ =?us-ascii?Q?Ys6H0RbK94dJ6kAtyrlCthJA+zjp3j/X4MllVQe+soHvXge4yECQIAys6zHv?=
+ =?us-ascii?Q?KSDN3gmmyNIhJeYkHO2X6apcJe2F4liS3UIHEbOnuSCHSObLeLwjGTT7CVVy?=
+ =?us-ascii?Q?3bg7SqN2wOzbPP5gR4A=3D?=
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: Nvidia.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a0cf26a3-675a-43ca-fd69-08da5bae2902
-X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Jul 2022 22:07:59.6532
+X-MS-Exchange-CrossTenant-Network-Message-Id: 30526226-4ac8-462b-10bc-08da5baed5d7
+X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Jul 2022 22:12:49.6112
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ku+9dR6G6/HFavolS6OI9piGGj++eJtmCr3XdzwLvlFM+9m+0akeOqTBb4y1vie3LUQN0K5vAhu8fbJ19/PazQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB2677
+X-MS-Exchange-CrossTenant-userprincipalname: 18m6Rdru9XudnA5hlYUs3AXO/6k291Xt9jD4HTY5MhyGD8y6+jFNN+4eHSlfeh45aW3FXb2GkBGlLuzB9i8uRQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4959
 X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
@@ -127,77 +127,62 @@ X-Mailing-List: netdev@vger.kernel.org
 
 > From: Zhu Lingshan <lingshan.zhu@intel.com>
 > Sent: Friday, July 1, 2022 9:28 AM
-> If VIRTIO_NET_F_MQ =3D=3D 0, the virtio device should have one queue pair=
-, so
-> when userspace querying queue pair numbers, it should return mq=3D1 than
-> zero.
 >=20
-> Function vdpa_dev_net_config_fill() fills the attributions of the vDPA
-> devices, so that it should call vdpa_dev_net_mq_config_fill() so the
-> parameter in vdpa_dev_net_mq_config_fill() should be feature_device than
-> feature_driver for the vDPA devices themselves
+> Users may want to query the config space of a vDPA device, to choose a
+> appropriate one for a certain guest. This means the users need to read th=
+e
+> config space before FEATURES_OK, and the existence of config space
+> contents does not depend on FEATURES_OK.
 >=20
-> Before this change, when MQ =3D 0, iproute2 output:
-> $vdpa dev config show vdpa0
-> vdpa0: mac 00:e8:ca:11:be:05 link up link_announce false max_vq_pairs 0
-> mtu 1500
->
-The fix belongs to user space.
-When a feature bit _MQ is not negotiated, vdpa kernel space will not add at=
-tribute VDPA_ATTR_DEV_NET_CFG_MAX_VQP.
-When such attribute is not returned by kernel, max_vq_pairs should not be s=
-hown by the iproute2.
+> The spec says:
+> The device MUST allow reading of any device-specific configuration field
+> before FEATURES_OK is set by the driver. This includes fields which are
+> conditional on feature bits, as long as those feature bits are offered by=
+ the
+> device.
+>=20
+> Fixes: 30ef7a8ac8a07 (vdpa: Read device configuration only if FEATURES_OK=
+)
+Fix is fine, but fixes tag needs correction described below.
 
-We have many config space fields that depend on the feature bits and some o=
-f them do not have any defaults.
-To keep consistency of existence of config space fields among all, we don't=
- want to show default like below.
+Above commit id is 13 letters should be 12.
+And=20
+It should be in format
+Fixes: 30ef7a8ac8a0 ("vdpa: Read device configuration only if FEATURES_OK")
 
-Please fix the iproute2 to not print max_vq_pairs when it is not returned b=
-y the kernel.
-=20
-> After applying this commit, when MQ =3D 0, iproute2 output:
-> $vdpa dev config show vdpa0
-> vdpa0: mac 00:e8:ca:11:be:05 link up link_announce false max_vq_pairs 1
-> mtu 1500
->=20
-> Fixes: a64917bc2e9b (vdpa: Provide interface to read driver features)
+Please use checkpatch.pl script before posting the patches to catch these e=
+rrors.
+There is a bot that looks at the fixes tag and identifies the right kernel =
+version to apply this fix.
+
 > Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
 > ---
->  drivers/vdpa/vdpa.c | 7 ++++---
->  1 file changed, 4 insertions(+), 3 deletions(-)
+>  drivers/vdpa/vdpa.c | 8 --------
+>  1 file changed, 8 deletions(-)
 >=20
 > diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c index
-> d76b22b2f7ae..846dd37f3549 100644
+> 9b0e39b2f022..d76b22b2f7ae 100644
 > --- a/drivers/vdpa/vdpa.c
 > +++ b/drivers/vdpa/vdpa.c
-> @@ -806,9 +806,10 @@ static int vdpa_dev_net_mq_config_fill(struct
-> vdpa_device *vdev,
->  	u16 val_u16;
+> @@ -851,17 +851,9 @@ vdpa_dev_config_fill(struct vdpa_device *vdev,
+> struct sk_buff *msg, u32 portid,  {
+>  	u32 device_id;
+>  	void *hdr;
+> -	u8 status;
+>  	int err;
 >=20
->  	if ((features & BIT_ULL(VIRTIO_NET_F_MQ)) =3D=3D 0)
-> -		return 0;
-> +		val_u16 =3D 1;
-> +	else
-> +		val_u16 =3D __virtio16_to_cpu(true, config-
-> >max_virtqueue_pairs);
->=20
-> -	val_u16 =3D le16_to_cpu(config->max_virtqueue_pairs);
->  	return nla_put_u16(msg, VDPA_ATTR_DEV_NET_CFG_MAX_VQP,
-> val_u16);  }
->=20
-> @@ -842,7 +843,7 @@ static int vdpa_dev_net_config_fill(struct
-> vdpa_device *vdev, struct sk_buff *ms
->  			      VDPA_ATTR_PAD))
->  		return -EMSGSIZE;
->=20
-> -	return vdpa_dev_net_mq_config_fill(vdev, msg, features_driver,
-> &config);
-> +	return vdpa_dev_net_mq_config_fill(vdev, msg, features_device,
-> +&config);
->  }
->=20
->  static int
+>  	down_read(&vdev->cf_lock);
+> -	status =3D vdev->config->get_status(vdev);
+> -	if (!(status & VIRTIO_CONFIG_S_FEATURES_OK)) {
+> -		NL_SET_ERR_MSG_MOD(extack, "Features negotiation not
+> completed");
+> -		err =3D -EAGAIN;
+> -		goto out;
+> -	}
+> -
+>  	hdr =3D genlmsg_put(msg, portid, seq, &vdpa_nl_family, flags,
+>  			  VDPA_CMD_DEV_CONFIG_GET);
+>  	if (!hdr) {
 > --
 > 2.31.1
 
