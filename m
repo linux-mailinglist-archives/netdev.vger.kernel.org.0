@@ -2,129 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C57F5630CB
-	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 11:58:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F58D5630D6
+	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 11:59:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236086AbiGAJ6F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Jul 2022 05:58:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49136 "EHLO
+        id S233002AbiGAJ7f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Jul 2022 05:59:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235277AbiGAJ6E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 05:58:04 -0400
-Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C859874DDC
-        for <netdev@vger.kernel.org>; Fri,  1 Jul 2022 02:58:03 -0700 (PDT)
-Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-3137316bb69so18161687b3.10
-        for <netdev@vger.kernel.org>; Fri, 01 Jul 2022 02:58:03 -0700 (PDT)
+        with ESMTP id S234149AbiGAJ7b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 05:59:31 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AABB6B279
+        for <netdev@vger.kernel.org>; Fri,  1 Jul 2022 02:59:29 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id e40so2308857eda.2
+        for <netdev@vger.kernel.org>; Fri, 01 Jul 2022 02:59:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8iWWk/hgkV8wOLDzOpBeJQKLT4DJagEdptWHyoqwqBY=;
-        b=FANPRJpiv4CVOn86XMcd9xl4Badvusn8OsWz99MIc9GZ6pHE8n1cTcTmd77FpuUQnY
-         okMMc+CCqjkQVHtZkRVLQ/HJyh3z+lG7GZ2ItFCvUMUgD97I0Mw3gw7nxx7zMNvBLYtk
-         bw2mWFqQdgPrGofIaDRFtiBFzrP4qiXzBBzce757cmFDpLteUcEQdM3Nl16clcJEBaku
-         TRjOgrpIHaC4FgJ3nFPcFb3jgPK6Z4mkfpPM9DIZLaTWDEa07yJvATR83sjYbVKQFdUy
-         526eOdlX3+6eCIKgGwuJRiSfxeuY2YH93OSGBMMPNMTiwA4Roj4rWAUH6Kb41twXoGYK
-         SLQQ==
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ri98ypmJZ7g2CKn/e80LNMmoZ2ulVGc4ehtOZllBYMU=;
+        b=bbDWPrRKyZc2b6AqsEGpsOoYN9YazcT55BaCjA9A9AluOARxueUmRmWGf1CMFEsmLI
+         MsYmnUl2jpX0vLABH9Rskz/+C6ag4BuPby91bQyk84DQWnj2O6IFzw2gKImTVG/bzagl
+         Tt2onzhyUFv4Vn7Y3ZE25ozbfB9LgLDMX8m5HtS2qSlZn8jBTH+IywPoinUqT7u3ElsE
+         jBqpWF+NCp/LTzyveQmKtYJ8HGQMF/CEm8Q2NNgddRF6rKRbSCcwEfhry6J+IFOOLrjA
+         sF75QvSyLcbVJ2FVhPiOUCoafPB6JqDFX9BGJSRFi0abV8PGC7vEHxjDNq4kbNR4pCWM
+         Bavw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8iWWk/hgkV8wOLDzOpBeJQKLT4DJagEdptWHyoqwqBY=;
-        b=RFcIkq2VhxgSRUv7DbXbBsYXoqSL5zOL14UzoYRsveJKqT3usGMye72Pa0TANcZeSH
-         bzKxW5A2YbLgyNsYY+EK0j27d0RMKLItLOJuvAyVdrEG90WZt3OYtuujP2HqcioxQSkG
-         7RlqRG0l04awX41jYTDfjH0Xiu0wyegLwICcyLGrvOkxGxETx7mtMFoUjeyx1dxjEjRy
-         m2Ys6UsrEZIyMPyf8cAoe1NgftsFFBxkSTDkiXa230Yuy+JuLUqZwsxXOox1QhtazwgA
-         1LK8IWqlq1LGvKozrXHIFaWi3Ny9fdOPJufF2Icm3zmPQwlwnTyiGTbaVRP3fpXk3Uft
-         zhXQ==
-X-Gm-Message-State: AJIora9jQXYScE22HnK9ObbZ9J6ikUCY9ZBYBhy7BjgLHMGRWp5BbBR/
-        z12CtsWrqUwvKdF7qK+JC1RPT023A7GHsx4baz5WUw==
-X-Google-Smtp-Source: AGRyM1veLeHzsoTk/7wuqo+G4A5bgwzl83EdSc/CE62rjHNmBQbSEr+9Q9ry1NmfYA2qehE1oXVH2Lx6yx5IUZDNUwE=
-X-Received: by 2002:a81:9b93:0:b0:317:8c9d:4c22 with SMTP id
- s141-20020a819b93000000b003178c9d4c22mr15436316ywg.278.1656669482740; Fri, 01
- Jul 2022 02:58:02 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ri98ypmJZ7g2CKn/e80LNMmoZ2ulVGc4ehtOZllBYMU=;
+        b=XjmnAyE0AatSZ5opU0oBdqsP/AieLVnDpjS1llfW8rLynsbxEYioMHtZl7Ab8pCN2T
+         NZ8C8CB+0NtxpBV5LfGu4bo3jqzxtSfZ9LoBn1Q9s2Z3qLWgfw5tR0POxGteEXXfGB1n
+         2YFBw8ciMyerPMTjuzPxSV5+0Vf9cnzLE69PO/vKl/FwAxo8sQCf0WADkL/VTsS2rytn
+         oLsQSMao/1tO18a+zfln5TCi50IvQ4DIRGie2yrnJq8mTiAar6L1go2SMW8ACO6w1CQ+
+         +JYZTJLA7mO2VVo9LmlTuv0asdhgAeJYBc2nnJfpnyy3quZx6HwHUTcE6auOGMIBTQRw
+         w0vg==
+X-Gm-Message-State: AJIora84sr796S4uZDyYzXJWOT4g1iFLfC8Gq04x//WYwD9PJkJpHnWH
+        iJi4oaDrlc9/mANmSRjGiMwT9Ygtv2xIb6cM
+X-Google-Smtp-Source: AGRyM1tjLUZp3NhqBDClqw5K5I1u6rWRksEVC+SJWzuYgKIkNg+Y5+YQaDkjPhufZwnjNsDaVjNCfg==
+X-Received: by 2002:a05:6402:c95:b0:435:8113:1276 with SMTP id cm21-20020a0564020c9500b0043581131276mr17782292edb.193.1656669567747;
+        Fri, 01 Jul 2022 02:59:27 -0700 (PDT)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id n6-20020a509346000000b004319b12371asm15051253eda.47.2022.07.01.02.59.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 01 Jul 2022 02:59:27 -0700 (PDT)
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, mlxsw@nvidia.com, saeedm@nvidia.com,
+        moshe@nvidia.com
+Subject: [patch net-next 0/3] net: devlink: devl_* cosmetic fixes
+Date:   Fri,  1 Jul 2022 11:59:23 +0200
+Message-Id: <20220701095926.1191660-1-jiri@resnulli.us>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-References: <20220701094256.1970076-1-johan.almbladh@anyfinetworks.com>
-In-Reply-To: <20220701094256.1970076-1-johan.almbladh@anyfinetworks.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 1 Jul 2022 11:57:51 +0200
-Message-ID: <CANn89i+FZ7t6F6tA8iFMjAzGmKkK=A+kdFpsm6ioygg5DnwT8g@mail.gmail.com>
-Subject: Re: [PATCH bpf] xdp: Fix spurious packet loss in generic XDP TX path
-To:     Johan Almbladh <johan.almbladh@anyfinetworks.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>, song@kernel.org,
-        martin.lau@linux.dev, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>, haoluo@google.com,
-        jolsa@kernel.org, bpf <bpf@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 1, 2022 at 11:43 AM Johan Almbladh
-<johan.almbladh@anyfinetworks.com> wrote:
->
-> The byte queue limits (BQL) mechanism is intended to move queuing from
-> the driver to the network stack in order to reduce latency caused by
-> excessive queuing in hardware. However, when transmitting or redirecting
-> a packet with XDP, the qdisc layer is bypassed and there are no
-> additional queues. Since netif_xmit_stopped() also takes BQL limits into
-> account, but without having any alternative queuing, packets are
-> silently dropped.
->
-> This patch modifies the drop condition to only consider cases when the
-> driver itself cannot accept any more packets. This is analogous to the
-> condition in __dev_direct_xmit(). Dropped packets are also counted on
-> the device.
+From: Jiri Pirko <jiri@nvidia.com>
 
-This means XDP packets are able to starve other packets going through a qdisc,
-DDOS attacks will be more effective.
+Hi. This patches just fixes some small cosmetic issues of devl_* related
+functions which I found on the way.
 
-in-driver-XDP use dedicated TX queues, so they do not have this
-starvation issue.
+Jiri Pirko (3):
+  net: devlink: move unlocked function prototypes alongside the locked
+    ones
+  net: devlink: call lockdep_assert_held() for devlink->lock directly
+  net: devlink: fix unlocked vs locked functions descriptions
 
-This should be mentioned somewhere I guess.
+ include/net/devlink.h | 16 +++++++---------
+ net/core/devlink.c    | 42 +++++++++++++++++++++++++++++++++++++++---
+ 2 files changed, 46 insertions(+), 12 deletions(-)
 
->
-> Signed-off-by: Johan Almbladh <johan.almbladh@anyfinetworks.com>
-> ---
->  net/core/dev.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
->
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index 8e6f22961206..41b5d7ac5ec5 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -4875,10 +4875,12 @@ void generic_xdp_tx(struct sk_buff *skb, struct bpf_prog *xdp_prog)
->         txq = netdev_core_pick_tx(dev, skb, NULL);
->         cpu = smp_processor_id();
->         HARD_TX_LOCK(dev, txq, cpu);
-> -       if (!netif_xmit_stopped(txq)) {
-> +       if (!netif_xmit_frozen_or_drv_stopped(txq)) {
->                 rc = netdev_start_xmit(skb, dev, txq, 0);
->                 if (dev_xmit_complete(rc))
->                         free_skb = false;
-> +       } else {
-> +               dev_core_stats_tx_dropped_inc(dev);
->         }
->         HARD_TX_UNLOCK(dev, txq);
->         if (free_skb) {
-> --
-> 2.30.2
->
+-- 
+2.35.3
+
