@@ -2,73 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A0DCF563444
-	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 15:21:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF526563470
+	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 15:36:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230291AbiGANVE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Jul 2022 09:21:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48532 "EHLO
+        id S231298AbiGANgO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Jul 2022 09:36:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229632AbiGANVE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 09:21:04 -0400
-X-Greylist: delayed 206 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 01 Jul 2022 06:21:02 PDT
-Received: from eidolon.nox.tf (eidolon.nox.tf [IPv6:2a07:2ec0:2185::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EEAB5C9F9;
-        Fri,  1 Jul 2022 06:21:02 -0700 (PDT)
-Received: from equinox by eidolon.nox.tf with local (Exim 4.94.2)
-        (envelope-from <equinox@diac24.net>)
-        id 1o7GWa-00GsJJ-Lp; Fri, 01 Jul 2022 15:17:33 +0200
-Date:   Fri, 1 Jul 2022 15:17:32 +0200
-From:   David Lamparter <equinox@diac24.net>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        corbet@lwn.net, linux-doc@vger.kernel.org
-Subject: Re: [PATCH net-next] eth: remove neterion/vxge
-Message-ID: <Yr7z7HU2Z79pMrM0@eidolon.nox.tf>
-References: <20220701044234.706229-1-kuba@kernel.org>
- <Yr7NpQz6/esZAiZv@nanopsycho>
+        with ESMTP id S231297AbiGANgM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 09:36:12 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E5EE167F6
+        for <netdev@vger.kernel.org>; Fri,  1 Jul 2022 06:36:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656682572; x=1688218572;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=6M2sA4npi1sIDwroPfK9FVMXkK6RXhu2tDfJY4yxkIA=;
+  b=lTTGhKg4AuWVszZHm0MaDv6E3a8DWT36AaPvC18ualouK/LUTgQxDrnJ
+   EJZnZjoy7dDRz8Y/OBe4lvpTPEFOohgOnhI3qznfLka4CsFIrRb2OVfD8
+   yAc80TD1jcHPNTTgozp3j1oaVF3wZRswBUmoGrmzAkZ7Z1SSclB+lBE5G
+   Z/aCmhmuk9K0cvJfK0lNT/O3ikysLH8OyqIXMpO2z/b5GkFtahgHaIKnc
+   7aIs04zMW3J4UMXKhn5/34yKsIN7AjiAnseDOin/RC6hgM5RzQh278Jpp
+   41LPgGugB6miP81TvQ5rXXD3rr5+mcU4YBZozUQ79uwC7v0+DgS9NSMjl
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10394"; a="282682884"
+X-IronPort-AV: E=Sophos;i="5.92,237,1650956400"; 
+   d="scan'208";a="282682884"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2022 06:36:12 -0700
+X-IronPort-AV: E=Sophos;i="5.92,237,1650956400"; 
+   d="scan'208";a="648349599"
+Received: from unknown (HELO localhost.localdomain.bj.intel.com) ([10.240.193.73])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2022 06:36:10 -0700
+From:   Zhu Lingshan <lingshan.zhu@intel.com>
+To:     jasowang@redhat.com, mst@redhat.com
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        parav@nvidia.com, xieyongji@bytedance.com, gautam.dawar@amd.com,
+        Zhu Lingshan <lingshan.zhu@intel.com>
+Subject: [PATCH V3 0/6] ifcvf/vDPA: support query device config space through netlink
+Date:   Fri,  1 Jul 2022 21:28:20 +0800
+Message-Id: <20220701132826.8132-1-lingshan.zhu@intel.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yr7NpQz6/esZAiZv@nanopsycho>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[culled Cc:]
+This series allows userspace to query device config space of vDPA
+devices and the management devices through netlink,
+to get multi-queue, feature bits
 
-On Fri, Jul 01, 2022 at 12:34:13PM +0200, Jiri Pirko wrote:
-> Fri, Jul 01, 2022 at 06:42:34AM CEST, kuba@kernel.org wrote:
-> >The last meaningful change to this driver was made by Jon in 2011.
-> >As much as we'd like to believe that this is because the code is
-> >perfect the chances are nobody is using this hardware.
-> 
-> Hmm, I can understand what for driver for HW that is no longer
-> developed, the driver changes might be very minimal. The fact that the
-> code does not change for years does not mean that there are users of
-> this NIC which this patch would break :/
+This series has introduced a new netlink attr
+VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES, this should be used to query
+features of vDPA  devices than the management device.
 
-As a "reference datapoint", I'm a user that was affected by the removal
-of the Mellanox SwitchX-2 driver about a year ago.  But that was a bit
-different since the driver was apparently rather incomplete (I don't
-know the details, was still messing around to even get things going.)
+Please help review.
 
-(FWIW my use case is in giving old hardware a second life, in this case
-completely throwing away the PowerPC control board from Mellanox SX6000
-series switches and replacing it with a new custom CPU board...  I might
-well be the only person interested in that driver.
+Thanks!
+Zhu Lingshan
 
-> Isn't there some obsoletion scheme globally applied to kernel device
-> support? I would expect something like that.
+Changes from V2:
+Add fixes tags(Parva)
 
-I have the same question - didn't see any such policy but didn't look
-particularly hard.  But would like to avoid putting time into making
-something work just to have the kernel driver yanked shortly after :)
+Changes from V1:
+(1) Use __virito16_to_cpu(true, xxx) for the le16 casting(Jason)
+(2) Add a comment in ifcvf_get_config_size(), to explain
+why we should return the minimum value of
+sizeof(struct virtio_net_config) and the onboard
+cap size(Jason)
+(3) Introduced a new attr VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES
+(4) Show the changes of iproute2 output before and after 5/6 patch(Jason)
+(5) Fix cast warning in vdpa_fill_stats_rec() 
 
+Zhu Lingshan (6):
+  vDPA/ifcvf: get_config_size should return a value no greater than dev
+    implementation
+  vDPA/ifcvf: support userspace to query features and MQ of a management
+    device
+  vDPA: allow userspace to query features of a vDPA device
+  vDPA: !FEATURES_OK should not block querying device config space
+  vDPA: answer num of queue pairs = 1 to userspace when VIRTIO_NET_F_MQ
+    == 0
+  vDPA: fix 'cast to restricted le16' warnings in vdpa.c
 
--David
+ drivers/vdpa/ifcvf/ifcvf_base.c | 25 +++++++++++++++++++++++--
+ drivers/vdpa/ifcvf/ifcvf_base.h |  3 +++
+ drivers/vdpa/ifcvf/ifcvf_main.c |  3 +++
+ drivers/vdpa/vdpa.c             | 32 +++++++++++++++-----------------
+ include/uapi/linux/vdpa.h       |  1 +
+ 5 files changed, 45 insertions(+), 19 deletions(-)
+
+-- 
+2.31.1
+
