@@ -2,71 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 955955633FB
-	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 15:04:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC97E563430
+	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 15:14:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236143AbiGANEp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Jul 2022 09:04:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33512 "EHLO
+        id S236766AbiGANNx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Jul 2022 09:13:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234347AbiGANEn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 09:04:43 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98EB91DA7D;
-        Fri,  1 Jul 2022 06:04:42 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id r20so3179510wra.1;
-        Fri, 01 Jul 2022 06:04:42 -0700 (PDT)
+        with ESMTP id S232001AbiGANNw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 09:13:52 -0400
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12EBF44A1D;
+        Fri,  1 Jul 2022 06:13:49 -0700 (PDT)
+Received: by mail-pg1-x529.google.com with SMTP id g4so2396079pgc.1;
+        Fri, 01 Jul 2022 06:13:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6yQ/Ybxs/FeC8Yf6z24bF3+durgoCtXEuKWYb2rjDmE=;
-        b=gWYDht32suKdgvkpxu9xwdi10igo9pi6gutPFiT71MmtnfgNW8yC6mlF8qE1F2KAR2
-         iYYdBQnFRoRq7HGSJc5QI3uau1prmX7g04fpfrjz5PnrYI0SCEDucsNTGdkxqHcyTMhk
-         jx6KnpyFVIGdlgeAiCzQ/o8j52h+icPwVVFMHf2R7nBSX0ftLMrhGD7UKaYs8pB989hI
-         9fTQCUwIiAxE04REZI7mlWJoGYQ1uPgSuiut19nrrZSv5+YGNHoDCUzQfXU4qoTxHEk8
-         dmyeekEEe5Y0Y9YN7ZSTl3ZSaiWCd4m44Xi8C41HKFdnPw1ixxo7PSHYuB3C64k50F8J
-         lRfw==
+         :cc:content-transfer-encoding;
+        bh=uuZ9PUmfOj4BndQIme+wRqpcIrzyVDnqBNHxIE6tjL0=;
+        b=jK8Kdgwm6UeOa8FHlIgXUuXCakQLgPoeST98OFJQk6zqp2XC86OJ5bz7hHn90Bh7n6
+         LofWkaARprzyu4hFUapMGVjIJS5RrzE6pQ1GTIlgmblf6VAh8sjqT4N95dq/avI/rNvM
+         6z0HIIo9P/GgTieOWMQeQShkM3bwNEQTlDeMdXR2xaixTiRR9Qis+mpHNieTesmdJSct
+         XsgeD/y8j/koVIwFJYwtwobUolY0L3Qw27mZDM9ZH3vPU8usbfX+5EStRpuxgvbfu5uM
+         zthEEz5HGRpcNeI5QdchfJlhLMTtmZHPhOtL3cgapgYzLeUXwLrHjdNFzzbVzVpbO6if
+         CUYw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6yQ/Ybxs/FeC8Yf6z24bF3+durgoCtXEuKWYb2rjDmE=;
-        b=ZYhWkGSkkYT079jN2e/Ifba95ftW7KRUesDwduX/MHxcRMo6Nb65mykak0qfglPs+H
-         9+zBce9P5KJVWlCfFfSjRunX7zttCjGR9Fy03iSmJM5z1sbEgHORl6nFT/XAHBNpk46r
-         +erGlQAgeQ1fjZIa1QKPIyGFGNsVRQLgGsZtmBzd4ZoIRMM8LB5IAAC/Bwtvi5nrNWRP
-         yytyD97UmZpKxQqgrP+xfGtnjYSarQdopX+5rMfYH2vbWKsjSzeEuROgry6oqSpFRDfh
-         +TkfpF8i+T6QnUva76sFL7Hg4Snkwii6p6D+5LeADzLJ5RPFhok1HRcsJhsiREoCspPC
-         68qQ==
-X-Gm-Message-State: AJIora9fD2HBtOjP23q7UgdjmOKmis5gWFqPR+f+spXAF31esj0a0iD3
-        hnksEPC87NYF5QndMkf12aDOvhnxXmdurTDLcI+63Rdw
-X-Google-Smtp-Source: AGRyM1t+emToFrYDmuWYvx+MVwKCifekSLnhwn1uxzrflbVgjLMp3ozOKDPETXGgNbhkevCNj5srktfuY1pOMTWgXbM=
-X-Received: by 2002:a5d:5108:0:b0:21b:964d:3241 with SMTP id
- s8-20020a5d5108000000b0021b964d3241mr13664236wrt.532.1656680681089; Fri, 01
- Jul 2022 06:04:41 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=uuZ9PUmfOj4BndQIme+wRqpcIrzyVDnqBNHxIE6tjL0=;
+        b=HOM8Ydmf/4aF6VBkS9K/JH+C+DD6hu0dKSSBZR7GBUZeYxltv0eCXbuS3oCDNsH9fn
+         AZe5vqOEGCQ+B1BOsV3ahD4Df6L+klStPnjgI1LQu0FT4gzm89kDwSdKjhdYIQ//j9Nh
+         Bs3CVPGM+riy3ooY0/VgkQ4d+XA6jzIO+eL4q5LV3AOVEQLv6Jr9BwhdlucE1mQDdQNh
+         5P+bILfHloxw8lNYEUl1JZ27CAkIhrhL/c9Yfu83vuMJnZ2C5hI3fE909w0HOUulrl2X
+         jf+gR6qaLjidWxjWwAmd0hDVFAJqwq/GPwTDHssv3bGHasKvT8akM85fI35GV/lrXkj8
+         h8ng==
+X-Gm-Message-State: AJIora/44FntjIHxm5VhUPOkXuPwqY/lMsTObmHwHDHgIbC16rZpLAeb
+        993/8WlooZESbCNpNUTcpIaGxHEwSw9VcsxOE0g=
+X-Google-Smtp-Source: AGRyM1veESKzjKxU/8xARq15ZnhaDZr0aHpCdrEm4ggqP5YOwHEp2FsOJBnzNpOf3ozSSZULi7Kss7gR15qLuEYPBzo=
+X-Received: by 2002:aa7:999a:0:b0:525:6023:8c03 with SMTP id
+ k26-20020aa7999a000000b0052560238c03mr21204987pfh.86.1656681228125; Fri, 01
+ Jul 2022 06:13:48 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220630093717.8664-1-magnus.karlsson@gmail.com>
- <fa929729-6122-195f-aa4b-e5d3fedb1887@redhat.com> <CAJ8uoz2KmpVf7nkJXUsHhmOtS2Td+rMOX8-PRqzz9QxJB-tZ3g@mail.gmail.com>
-In-Reply-To: <CAJ8uoz2KmpVf7nkJXUsHhmOtS2Td+rMOX8-PRqzz9QxJB-tZ3g@mail.gmail.com>
-From:   Srivats P <pstavirs@gmail.com>
-Date:   Fri, 1 Jul 2022 18:34:01 +0530
-Message-ID: <CANzUK58FPeKa_b36=9Wnb2g7fVppmMGBnjORb-dkZUZk3mvp8A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] selftests, bpf: remove AF_XDP samples
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>
-Cc:     Jesper Dangaard Brouer <jbrouer@redhat.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
+References: <20220701042810.26362-1-lukas.bulwahn@gmail.com> <Yr7mcjRq57laZGEY@boxer>
+In-Reply-To: <Yr7mcjRq57laZGEY@boxer>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Fri, 1 Jul 2022 15:13:36 +0200
+Message-ID: <CAJ8uoz16yGJqYX2xOcczTGKFnG4joh8+f1uPGMAP4rmm3feYDQ@mail.gmail.com>
+Subject: Re: [PATCH] MAINTAINERS: adjust XDP SOCKETS after file movement
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Cc:     Lukas Bulwahn <lukas.bulwahn@gmail.com>,
         Andrii Nakryiko <andrii@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        bpf <bpf@vger.kernel.org>, Xdp <xdp-newbies@vger.kernel.org>
+        Alexei Starovoitov <ast@kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, kernel-janitors@vger.kernel.org,
+        open list <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -77,16 +72,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> I can push xsk_fwd to BPF-examples. Though I do think that xdpsock has
-> become way too big to serve as a sample. It slowly turned into a catch
-> all demonstrating every single feature of AF_XDP. We need a minimal
-> example and then likely other samples for other features that should
-> be demoed. So I suggest that xdpsock dies here and we start over with
-> something minimal and use xsk_fwd for the forwarding and mempool
-> example.
+On Fri, Jul 1, 2022 at 2:38 PM Maciej Fijalkowski
+<maciej.fijalkowski@intel.com> wrote:
+>
+> On Fri, Jul 01, 2022 at 06:28:10AM +0200, Lukas Bulwahn wrote:
+> > Commit f36600634282 ("libbpf: move xsk.{c,h} into selftests/bpf") moves
+> > files tools/{lib =3D> testing/selftests}/bpf/xsk.[ch], but misses to ad=
+just
+> > the XDP SOCKETS (AF_XDP) section in MAINTAINERS.
+> >
+> > Adjust the file entry after this file movement.
+> >
+> > Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+> > ---
+> > Andrii, please ack.
+> >
+> > Alexei, please pick this minor non-urgent clean-up on top of the commit=
+ above.
+> >
+> >  MAINTAINERS | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/MAINTAINERS b/MAINTAINERS
+> > index fa4bfa3d10bf..27d9e65b9a85 100644
+> > --- a/MAINTAINERS
+> > +++ b/MAINTAINERS
+> > @@ -22042,7 +22042,7 @@ F:    include/uapi/linux/xdp_diag.h
+> >  F:   include/net/netns/xdp.h
+> >  F:   net/xdp/
+> >  F:   samples/bpf/xdpsock*
+> > -F:   tools/lib/bpf/xsk*
+> > +F:   tools/testing/selftests/bpf/xsk*
+>
+> Magnus, this doesn't cover xdpxceiver.
+> How about we move the lib part and xdpxceiver part to a dedicated
+> directory? Or would it be too nested from main dir POV?
 
-As an AF_XDP user, I want to say that I often refer to xdpsock to
-understand how to use a feature - it is very useful especially when
-there's a lack of good AF_XDP documentation.
+Or we can just call everything we add xsk* something?
 
-Srivats
+> >
+> >  XEN BLOCK SUBSYSTEM
+> >  M:   Roger Pau Monn=C3=A9 <roger.pau@citrix.com>
+> > --
+> > 2.17.1
+> >
