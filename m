@@ -2,56 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 66A82563B31
-	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 22:49:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DDF71563B36
+	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 22:49:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231575AbiGAUj0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Jul 2022 16:39:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41214 "EHLO
+        id S231946AbiGAUm2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Jul 2022 16:42:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230497AbiGAUjZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 16:39:25 -0400
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 694935A2D9;
-        Fri,  1 Jul 2022 13:39:24 -0700 (PDT)
-Received: by mail-yb1-xb2e.google.com with SMTP id o19so5977830ybg.2;
-        Fri, 01 Jul 2022 13:39:24 -0700 (PDT)
+        with ESMTP id S231253AbiGAUmY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 16:42:24 -0400
+Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6983D5A2F6;
+        Fri,  1 Jul 2022 13:42:23 -0700 (PDT)
+Received: by mail-yb1-xb34.google.com with SMTP id d145so2757156ybh.1;
+        Fri, 01 Jul 2022 13:42:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=Vmpdhz2MZms21RljAHKQJe5ukt7DpuDeSaFEOMnP2tg=;
-        b=OHthEuiGA0aw0q3wK0vCa25L6+8RrWXc+L3SxWr/oP5eTN+QlIlRI4dCxxuWyn7cWi
-         BXjq76rdjYJdx/oOOWcAnPikEXvJrSqeOB31Me2F0asjXUGMTrrxbmJlb8caVC1Up9m8
-         vpyOEY/h+2nphaFjowQnRxgO2BPNfsBJ5mMxRH8cwygRLznaSbhvRW9mf4MnHVvyNm+2
-         o34c0T3JpNjpFgQlFId/4mZaa89u7cRCdtNDX06Cw6IwEuOvWYipi9itXyfn6rfB2D58
-         JnIpLj01BuGh8F/bPRfj/Cdc+ntjq7mwMya/W0DoUVLEZ/imHP2C+TcPpvuw9vIMxqnk
-         XGnQ==
+        bh=Yp9XN4S+Opt5OiPcD1GcnJhSinyAA39zjfk4/yaqO8s=;
+        b=SSa3GZ+C8FrgSyg1dfnwW60dlyF0osSJcGZGmfieTSZO8LN1tTnuBZvrpmznVl6l5B
+         IgQmQe4055mdbiFozpxMvnggCiMyc7NOrvfm29fp9LbuZ5i5ON/B8m2J5GXb5vWVA6c0
+         RewnXDqM8bApuZzbq6JtS4ZDUAhrXph9cYmjL7knYaBXHm/BBAXDwNZa1cdzz/6Ej2IG
+         Nz7sdgqorS24+OA2LMNycsTyc5r3QxbSzQCNOBWWKXmM0MNeZkST886/Rkqe5ab/udOX
+         y+NeJom41Oze0ooJeXmmFQBDfTWqcBjfimdSVuFjjTTbaXAuFIg3+jp92fXuR96azOE4
+         e51Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=Vmpdhz2MZms21RljAHKQJe5ukt7DpuDeSaFEOMnP2tg=;
-        b=xIxpfmLHFFKkZ7s5Vw5WCkGrlzjfMZSOcmVCPn5FfqpJCp3INMqLaMYaTCvSdiYO0W
-         kXvD9alcnjRkdNNjOb7QJwdI3QP8Y6cz2RB0ztlNgLeUqz1+PMBAVze7tvOmt+LMwlGX
-         H3gjI8hbSYgjfVUusMOPG/yTO2LDrUt+y2NTWpAndhMvZAdgAdpNZamak9p/ZP5Om96l
-         zowwagS0lM4qOpqtBXBv2kNqGyJ7xB55QNjCfo9wrMuCWVtNP3WdPFfxdlP4jgUEo3t3
-         XmT7WYP5j+MufnBIcr5Qt3w/PxyBIMxda0mq/LcUC9tgzN8NqDIr5rRbWd0jcoyZnKCa
-         lT0w==
-X-Gm-Message-State: AJIora8Z/bv+qU8IqRXIybKipKir8GcbIfzfm/nRh80shrIEO554PtDo
-        pS5h4fOsuCtduE5Sa891P0sPWkNZGn2rJCk+N50=
-X-Google-Smtp-Source: AGRyM1s9GkQeoOpM7XRM53cmXQcpT2TUqqfoQ84USYGIHTmRiZZvIGJtxxuk/hTDOlq7xtWIbORPd5VLYeOoPYsmbE0=
-X-Received: by 2002:a05:6902:10c9:b0:668:e27c:8f7 with SMTP id
- w9-20020a05690210c900b00668e27c08f7mr17229851ybu.128.1656707963560; Fri, 01
- Jul 2022 13:39:23 -0700 (PDT)
+        bh=Yp9XN4S+Opt5OiPcD1GcnJhSinyAA39zjfk4/yaqO8s=;
+        b=3kmXpcnAPO8TLXIAZG2/bOiI5Ax9fmc76lE3ztVEsoS82Vu9ngW4oDDBWJL7RZdum1
+         iBL53yxOu6F7V4+3J30WDx7sZIoHwbjYfEPbQqjVFFrl8a8FTcTYx6pQvNPhWngSHdxD
+         g1oybV9ym5KtC3WhHecJMkGbTl/a+hjP/o79Xr3gb4jQPiKpX7bS/iJR7Rm9JNqJzokJ
+         0boBA6yZXXL0B4F3vBpWAuBl2uNqYtub8lGl8KEY+1K3pYNyMdmZOCWH1TSfdf8MCRlx
+         nHd6z8Tpyz0x8kgKzbgTo64ClHb2ATWB4v4byXdNkgRCOKKiQKQiC0DyG7b8omGh2VZz
+         lWdw==
+X-Gm-Message-State: AJIora8rAQge/vk2uq3brrtRSmSCU2kDk51BDz7KrmQ33Pu851+TVBSa
+        7225rCYsNnAVn2RxLjQiIkReX4dniGd+tb8TMf4=
+X-Google-Smtp-Source: AGRyM1ubWJCx0SPiTeTHy1XH1UrTXqKhbiuskgaTbILYM9h0vFVUsY93Ykxv678H610M89IRqGuslFj82aLn/+EiSQg=
+X-Received: by 2002:a05:6902:1142:b0:66d:999a:81a7 with SMTP id
+ p2-20020a056902114200b0066d999a81a7mr13475371ybu.460.1656708142638; Fri, 01
+ Jul 2022 13:42:22 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220701192609.3970317-1-colin.foster@in-advantage.com> <20220701192609.3970317-10-colin.foster@in-advantage.com>
-In-Reply-To: <20220701192609.3970317-10-colin.foster@in-advantage.com>
+References: <20220701192609.3970317-1-colin.foster@in-advantage.com>
+ <20220701192609.3970317-2-colin.foster@in-advantage.com> <CAHp75Vf0FPrUPK8F=9gMuZPUsuTbSO+AB3zfh1=uAKu6L2eemA@mail.gmail.com>
+ <20220701203453.GB3327062@euler>
+In-Reply-To: <20220701203453.GB3327062@euler>
 From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 1 Jul 2022 22:38:46 +0200
-Message-ID: <CAHp75VcfKS9Y+T5LPRk0SFHJCGarJ2wS2gwii=a+1it03S+_Og@mail.gmail.com>
-Subject: Re: [PATCH v12 net-next 9/9] mfd: ocelot: add support for the vsc7512
- chip via spi
+Date:   Fri, 1 Jul 2022 22:41:43 +0200
+Message-ID: <CAHp75Ve1AVtNsmCrBr8XCcm2fJnKYQhF98v49OD8Y4kBUzb0-w@mail.gmail.com>
+Subject: Re: [PATCH v12 net-next 1/9] mfd: ocelot: add helper to get regmap
+ from a resource
 To:     Colin Foster <colin.foster@in-advantage.com>
 Cc:     devicetree <devicetree@vger.kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
@@ -87,139 +89,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 1, 2022 at 9:26 PM Colin Foster
+On Fri, Jul 1, 2022 at 10:35 PM Colin Foster
 <colin.foster@in-advantage.com> wrote:
+> On Fri, Jul 01, 2022 at 10:23:36PM +0200, Andy Shevchenko wrote:
+> > On Fri, Jul 1, 2022 at 9:26 PM Colin Foster
+> > <colin.foster@in-advantage.com> wrote:
+
+...
+
+> > > +       res = platform_get_resource(pdev, IORESOURCE_MEM, index);
+> > > +       if (res) {
+> > > +               regs = devm_ioremap_resource(dev, res);
+> > > +               if (IS_ERR(regs))
+> > > +                       return ERR_CAST(regs);
+> >
+> > Why can't it be devm_platform_get_and_ioremap_resource() here?
 >
-> The VSC7512 is a networking chip that contains several peripherals. Many of
-> these peripherals are currently supported by the VSC7513 and VSC7514 chips,
-> but those run on an internal CPU. The VSC7512 lacks this CPU, and must be
-> controlled externally.
+> It can... but it invokes prints of "invalid resource" during
+> initialization.
 >
-> Utilize the existing drivers by referencing the chip as an MFD. Add support
-> for the two MDIO buses, the internal phys, pinctrl, and serial GPIO.
+> Here it was implied that I should break the function call out:
+> https://patchwork.kernel.org/project/netdevbpf/patch/20220628081709.829811-2-colin.foster@in-advantage.com/#24917551
+
+Perhaps a comment in the code, so nobody will try to optimize this in
+the future.
+
+> > > +               return devm_regmap_init_mmio(dev, regs, config);
+> > > +       }
 
 ...
 
-> +config MFD_OCELOT
-> +       tristate "Microsemi Ocelot External Control Support"
-> +       depends on SPI_MASTER
-> +       select MFD_CORE
-> +       select REGMAP_SPI
-> +       help
-> +         Ocelot is a family of networking chips that support multiple ethernet
-> +         and fibre interfaces. In addition to networking, they contain several
-> +         other functions, including pinctrl, MDIO, and communication with
-> +         external chips. While some chips have an internal processor capable of
-> +         running an OS, others don't. All chips can be controlled externally
-> +         through different interfaces, including SPI, I2C, and PCIe.
-> +
-> +         Say yes here to add support for Ocelot chips (VSC7511, VSC7512,
-> +         VSC7513, VSC7514) controlled externally.
-> +
-> +         If unsure, say N.
+> > > +       return (map) ? map : ERR_PTR(-ENOENT);
+> >
+> > Too many parentheses.
+> >
+> > Also you may use short form of ternary operator:
+> >
+> >        return map ?: ERR_PTR(-ENOENT);
+>
+> Agreed, and I didn't know about that operator. When Vladimir suggested
+> it I thought it was a typo. I should've known better.
 
-What will be the module name?
+It's easy to remember by thinking of
 
-...
-
-It misses a few inclusions, like kernel.h for ARRAY_SIZE() and types.h
-for booleans.
-
-> +#include <linux/mfd/core.h>
-> +#include <linux/mfd/ocelot.h>
-> +#include <linux/module.h>
-> +#include <linux/regmap.h>
-
-+ blank line?
-
-> +#include <soc/mscc/ocelot.h>
-
-...
-
-> +#define GCB_SOFT_RST                   0x0008
-> +
-> +#define SOFT_CHIP_RST                  0x1
-
-It's not clear what these values are: register offsets? Bit fields of
-the hardware registers? Commands to some IPC?
-
-> +#define VSC7512_GCB_RST_SLEEP          100
-> +#define VSC7512_GCB_RST_TIMEOUT                100000
-
-Missed units in both cases.
-
-...
-
-
-> +static int ocelot_gcb_chip_rst_status(struct ocelot_ddata *ddata)
-> +{
-> +       int val, err;
-> +
-> +       err = regmap_read(ddata->gcb_regmap, GCB_SOFT_RST, &val);
-> +       if (err)
-
-> +               val = -1;
-
-Can be returned directly. Why not a proper error code, btw?
-
-> +       return val;
-> +}
-
-...
-
-> +#include <linux/iopoll.h>
-
-What for? Maybe it should be ioport.h ?
-
-
-...
-
-> +       static const u8 dummy_buf[16] = {0};
-
-On stack for DMA?! Hmm...
-...
-
-> +       err = spi_setup(spi);
-> +       if (err < 0) {
-> +               return dev_err_probe(&spi->dev, err,
-> +                                    "Error performing SPI setup\n");
-> +       }
-
-{} are not needed.
-
-...
-
-> +       err = ocelot_spi_initialize(dev);
-> +       if (err) {
-> +               return dev_err_probe(dev, err,
-> +                                    "Error initializing SPI bus after reset\n");
-> +       }
-
-{} are not needed.
-
-> +       err = ocelot_core_init(dev);
-> +       if (err < 0) {
-
-Ditto.
-
-> +               return dev_err_probe(dev, err,
-> +                                    "Error initializing Ocelot core\n");
-
-> +               return err;
-
-Dead code.
-
-> +       }
-
-...
-
-> +#include <asm/byteorder.h>
-
-You missed a lot of forward declarations that are used in this file.
-
-Like
-
-struct spi_device;
+"X ?: Y" as "X _or_ Y".
 
 -- 
 With Best Regards,
