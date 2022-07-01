@@ -2,246 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AAA6562C8C
-	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 09:25:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18A23562CA1
+	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 09:30:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234716AbiGAHZv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Jul 2022 03:25:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52036 "EHLO
+        id S234807AbiGAHap (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Jul 2022 03:30:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234703AbiGAHZu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 03:25:50 -0400
-Received: from smtp-fw-80007.amazon.com (smtp-fw-80007.amazon.com [99.78.197.218])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDF626B826
-        for <netdev@vger.kernel.org>; Fri,  1 Jul 2022 00:25:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1656660348; x=1688196348;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=szx0AmLfo/rUPo6X3ZIw8170BFM+H9tnr0bzzTSOhxI=;
-  b=LtDtgKiVcevmn+eJq4usouuMFFmHPG4vjSlcSkvqyA2RgcF0dkpDS/99
-   JpTsHTuCQXwgb+2INRp7LzsHN9onneEOtkt9EnLi5WR7qTHmocZCQXwmL
-   weWAs11Yqss7YuymBW+nL9blhCxcvWJQfuWtpT6/CjaX7ilYUqDVseLdK
-   w=;
-X-IronPort-AV: E=Sophos;i="5.92,236,1650931200"; 
-   d="scan'208";a="103897939"
-Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-2a-6a4112b2.us-west-2.amazon.com) ([10.25.36.214])
-  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP; 01 Jul 2022 07:25:33 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-pdx-2a-6a4112b2.us-west-2.amazon.com (Postfix) with ESMTPS id D1B254C0072;
-        Fri,  1 Jul 2022 07:25:32 +0000 (UTC)
-Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.36; Fri, 1 Jul 2022 07:25:32 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.162.50) by
- EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.36; Fri, 1 Jul 2022 07:25:29 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S230523AbiGAHan (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 03:30:43 -0400
+Received: from mail-qv1-f46.google.com (mail-qv1-f46.google.com [209.85.219.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAED36B816;
+        Fri,  1 Jul 2022 00:30:42 -0700 (PDT)
+Received: by mail-qv1-f46.google.com with SMTP id cs6so3346520qvb.6;
+        Fri, 01 Jul 2022 00:30:42 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YU1XddcO32RLHJVgcyV4xbGLKtUqtr7Z4CGj+gDtTi4=;
+        b=VkpdRWCRntWC8WiwirkMoru7TKi6USC/NtwS2PZ4hGyli2lDhw88rAPX4qj4kNGy92
+         bOPCi/3NfuwYw+ZD5l58OlDRV6TBSm3nrzyJhYe5YtnavvxB7Er4qj9B2enXoxKffNML
+         8LdlKKoAP7lHt6RHVfftT2Y5CrXXwDA2Pgk/0B2I7zZDT8Ncsr2oeXznWIHoQH0i53R3
+         dNtRAndUEnchZtHYhrfZPp9PSKz6x24/m26Y1xR2MF7TANjABtMAyFVVmyEV8x//UjmM
+         qZYummJcpHySLdxM6tSQ+dwlkbl9IVN/Ot+1Mj4AcSYQcLDVOcDwb2tZuYwe50b4YCUS
+         2YOQ==
+X-Gm-Message-State: AJIora+5XdTQQ+EqLTpeKUXj5kJBtCODY43VrAiMkEpfQ7g9x7pLiOka
+        APBsfPt+osBwL7vz47kbMC4iqDl/18eB3A==
+X-Google-Smtp-Source: AGRyM1uPm/dzjQeUTCuNo2BRTxrRYx2CQxjdWBttFkrF/KcFFazSri6wYThC+6RMF6XK/5fp9CMW4g==
+X-Received: by 2002:a05:622a:3ce:b0:305:2667:5103 with SMTP id k14-20020a05622a03ce00b0030526675103mr11208027qtx.7.1656660641568;
+        Fri, 01 Jul 2022 00:30:41 -0700 (PDT)
+Received: from mail-yw1-f171.google.com (mail-yw1-f171.google.com. [209.85.128.171])
+        by smtp.gmail.com with ESMTPSA id v2-20020a05622a130200b00304e47b9602sm15428507qtk.9.2022.07.01.00.30.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 01 Jul 2022 00:30:40 -0700 (PDT)
+Received: by mail-yw1-f171.google.com with SMTP id 00721157ae682-31780ad7535so15241047b3.8;
+        Fri, 01 Jul 2022 00:30:39 -0700 (PDT)
+X-Received: by 2002:a0d:c787:0:b0:31b:a963:e1de with SMTP id
+ j129-20020a0dc787000000b0031ba963e1demr15110386ywd.283.1656660639601; Fri, 01
+ Jul 2022 00:30:39 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220601070707.3946847-1-saravanak@google.com>
+ <20220601070707.3946847-2-saravanak@google.com> <YrFzK6EiVvXmzVG6@atomide.com>
+ <4799738.LvFx2qVVIh@steina-w> <CAGETcx_1qa=gGT4LVkyPpcA1vFM9FzuJE+0DhL_nFyg5cbFjVg@mail.gmail.com>
+In-Reply-To: <CAGETcx_1qa=gGT4LVkyPpcA1vFM9FzuJE+0DhL_nFyg5cbFjVg@mail.gmail.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Fri, 1 Jul 2022 09:30:28 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdUJbWtTvDdtJGcDKfdULA+uqo_HGaiOz4p2UjszAJtsRQ@mail.gmail.com>
+Message-ID: <CAMuHMdUJbWtTvDdtJGcDKfdULA+uqo_HGaiOz4p2UjszAJtsRQ@mail.gmail.com>
+Subject: Re: [PATCH v2 1/9] PM: domains: Delete usage of driver_deferred_probe_check_state()
+To:     Saravana Kannan <saravanak@google.com>
+Cc:     Alexander Stein <alexander.stein@ew.tq-group.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Kevin Hilman <khilman@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-CC:     Sachin Sant <sachinp@linux.ibm.com>,
-        Leonard Crestez <cdleonard@gmail.com>,
-        Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "Kuniyuki Iwashima" <kuni1840@gmail.com>, <netdev@vger.kernel.org>
-Subject: [PATCH v1 net-next] af_unix: Put a named socket in the global hash table.
-Date:   Fri, 1 Jul 2022 00:25:19 -0700
-Message-ID: <20220701072519.96097-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.162.50]
-X-ClientProxiedBy: EX13D24UWB004.ant.amazon.com (10.43.161.4) To
- EX13D04ANC001.ant.amazon.com (10.43.157.89)
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Android Kernel Team <kernel-team@android.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        Linux IOMMU <iommu@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit cf2f225e2653 ("af_unix: Put a socket into a per-netns hash
-table.") accidentally broke user API for named sockets.  A named
-socket was able to connect() to a peer in the same mount namespace
-even if they were in different network namespaces.
+Hi Saravana,
 
-The commit put all sockets into each per-netns hash table.  As a
-result, connect() to a socket in a different netns failed to find
-the peer and returned -ECONNREFUSED even when they had the same
-mount namespace.
+On Fri, Jul 1, 2022 at 2:37 AM Saravana Kannan <saravanak@google.com> wrote:
+> On Thu, Jun 23, 2022 at 5:08 AM Alexander Stein
+> <alexander.stein@ew.tq-group.com> wrote:
+> > Am Dienstag, 21. Juni 2022, 09:28:43 CEST schrieb Tony Lindgren:
 
-We can reproduce this issue by
+> > > * Saravana Kannan <saravanak@google.com> [700101 02:00]:
+> > > > Now that fw_devlink=on by default and fw_devlink supports
+> > > > "power-domains" property, the execution will never get to the point
+> > > > where driver_deferred_probe_check_state() is called before the supplier
+> > > > has probed successfully or before deferred probe timeout has expired.
+> > > >
+> > > > So, delete the call and replace it with -ENODEV.
+> > >
+> > > Looks like this causes omaps to not boot in Linux next. With this
+> > > simple-pm-bus fails to probe initially as the power-domain is not
+> > > yet available. On platform_probe() genpd_get_from_provider() returns
+> > > -ENOENT.
+> > >
+> > > Seems like other stuff is potentially broken too, any ideas on
+> > > how to fix this?
+> >
+> > I think I'm hit by this as well, although I do not get a lockup.
+> > In my case I'm using arch/arm64/boot/dts/freescale/imx8mq-tqma8mq-mba8mx.dts
+> > and probing of 38320000.blk-ctrl fails as the power-domain is not (yet)
+> > registed.
+>
+> Ok, took a look.
+>
+> The problem is that there are two drivers for the same device and they
+> both initialize this device.
+>
+>     gpc: gpc@303a0000 {
+>         compatible = "fsl,imx8mq-gpc";
+>     }
+>
+> $ git grep -l "fsl,imx7d-gpc" -- drivers/
+> drivers/irqchip/irq-imx-gpcv2.c
+> drivers/soc/imx/gpcv2.c
 
-  Console A:
+You missed the "driver" in arch/arm/mach-imx/src.c ;-)
 
-    # python3
-    >>> from socket import *
-    >>> s = socket(AF_UNIX, SOCK_STREAM, 0)
-    >>> s.bind('test')
-    >>> s.listen(32)
+Gr{oetje,eeting}s,
 
-  Console B:
+                        Geert
 
-    # ip netns add test
-    # ip netns exec test sh
-    # python3
-    >>> from socket import *
-    >>> s = socket(AF_UNIX, SOCK_STREAM, 0)
-    >>> s.connect('test')
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-Note when dumping sockets by sock_diag, procfs, and bpf_iter, they are
-filtered only by netns.  In other words, sockets with different netns
-and the same mount ns are skipped while iterating sockets.  Thus, we
-need a fix only for finding a peer socket.
-
-This patch adds a global hash table for named sockets, links them with
-sk_bind_node, and uses it in unix_find_socket_byinode().  By doing so,
-we can keep all sockets in per-netns hash tables and dump them easily.
-
-Thank Sachin Sant and Leonard Crestez for reports, logs and a reproducer.
-
-Fixes: cf2f225e2653 ("af_unix: Put a socket into a per-netns hash table.")
-Reported-by: Sachin Sant <sachinp@linux.ibm.com>
-Reported-by: Leonard Crestez <cdleonard@gmail.com>
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
----
- net/unix/af_unix.c | 47 ++++++++++++++++++++++++++++++++++++----------
- 1 file changed, 37 insertions(+), 10 deletions(-)
-
-diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
-index 49f6626330c3..526b872cc710 100644
---- a/net/unix/af_unix.c
-+++ b/net/unix/af_unix.c
-@@ -119,6 +119,8 @@
- #include "scm.h"
- 
- static atomic_long_t unix_nr_socks;
-+static struct hlist_head bsd_socket_buckets[UNIX_HASH_SIZE / 2];
-+static spinlock_t bsd_socket_locks[UNIX_HASH_SIZE / 2];
- 
- /* SMP locking strategy:
-  *    hash table is protected with spinlock.
-@@ -328,6 +330,24 @@ static void unix_insert_unbound_socket(struct net *net, struct sock *sk)
- 	spin_unlock(&net->unx.table.locks[sk->sk_hash]);
- }
- 
-+static void unix_insert_bsd_socket(struct sock *sk)
-+{
-+	spin_lock(&bsd_socket_locks[sk->sk_hash]);
-+	sk_add_bind_node(sk, &bsd_socket_buckets[sk->sk_hash]);
-+	spin_unlock(&bsd_socket_locks[sk->sk_hash]);
-+}
-+
-+static void unix_remove_bsd_socket(struct sock *sk)
-+{
-+	if (!hlist_unhashed(&sk->sk_bind_node)) {
-+		spin_lock(&bsd_socket_locks[sk->sk_hash]);
-+		__sk_del_bind_node(sk);
-+		spin_unlock(&bsd_socket_locks[sk->sk_hash]);
-+
-+		sk_node_init(&sk->sk_bind_node);
-+	}
-+}
-+
- static struct sock *__unix_find_socket_byname(struct net *net,
- 					      struct sockaddr_un *sunname,
- 					      int len, unsigned int hash)
-@@ -358,22 +378,22 @@ static inline struct sock *unix_find_socket_byname(struct net *net,
- 	return s;
- }
- 
--static struct sock *unix_find_socket_byinode(struct net *net, struct inode *i)
-+static struct sock *unix_find_socket_byinode(struct inode *i)
- {
- 	unsigned int hash = unix_bsd_hash(i);
- 	struct sock *s;
- 
--	spin_lock(&net->unx.table.locks[hash]);
--	sk_for_each(s, &net->unx.table.buckets[hash]) {
-+	spin_lock(&bsd_socket_locks[hash]);
-+	sk_for_each_bound(s, &bsd_socket_buckets[hash]) {
- 		struct dentry *dentry = unix_sk(s)->path.dentry;
- 
- 		if (dentry && d_backing_inode(dentry) == i) {
- 			sock_hold(s);
--			spin_unlock(&net->unx.table.locks[hash]);
-+			spin_unlock(&bsd_socket_locks[hash]);
- 			return s;
- 		}
- 	}
--	spin_unlock(&net->unx.table.locks[hash]);
-+	spin_unlock(&bsd_socket_locks[hash]);
- 	return NULL;
- }
- 
-@@ -577,6 +597,7 @@ static void unix_release_sock(struct sock *sk, int embrion)
- 	int state;
- 
- 	unix_remove_socket(sock_net(sk), sk);
-+	unix_remove_bsd_socket(sk);
- 
- 	/* Clear state */
- 	unix_state_lock(sk);
-@@ -988,8 +1009,8 @@ static int unix_release(struct socket *sock)
- 	return 0;
- }
- 
--static struct sock *unix_find_bsd(struct net *net, struct sockaddr_un *sunaddr,
--				  int addr_len, int type)
-+static struct sock *unix_find_bsd(struct sockaddr_un *sunaddr, int addr_len,
-+				  int type)
- {
- 	struct inode *inode;
- 	struct path path;
-@@ -1010,7 +1031,7 @@ static struct sock *unix_find_bsd(struct net *net, struct sockaddr_un *sunaddr,
- 	if (!S_ISSOCK(inode->i_mode))
- 		goto path_put;
- 
--	sk = unix_find_socket_byinode(net, inode);
-+	sk = unix_find_socket_byinode(inode);
- 	if (!sk)
- 		goto path_put;
- 
-@@ -1058,7 +1079,7 @@ static struct sock *unix_find_other(struct net *net,
- 	struct sock *sk;
- 
- 	if (sunaddr->sun_path[0])
--		sk = unix_find_bsd(net, sunaddr, addr_len, type);
-+		sk = unix_find_bsd(sunaddr, addr_len, type);
- 	else
- 		sk = unix_find_abstract(net, sunaddr, addr_len, type);
- 
-@@ -1179,6 +1200,7 @@ static int unix_bind_bsd(struct sock *sk, struct sockaddr_un *sunaddr,
- 	u->path.dentry = dget(dentry);
- 	__unix_set_addr_hash(net, sk, addr, new_hash);
- 	unix_table_double_unlock(net, old_hash, new_hash);
-+	unix_insert_bsd_socket(sk);
- 	mutex_unlock(&u->bindlock);
- 	done_path_create(&parent, dentry);
- 	return 0;
-@@ -3682,10 +3704,15 @@ static void __init bpf_iter_register(void)
- 
- static int __init af_unix_init(void)
- {
--	int rc = -1;
-+	int i, rc = -1;
- 
- 	BUILD_BUG_ON(sizeof(struct unix_skb_parms) > sizeof_field(struct sk_buff, cb));
- 
-+	for (i = 0; i < UNIX_HASH_SIZE / 2; i++) {
-+		spin_lock_init(&bsd_socket_locks[i]);
-+		INIT_HLIST_HEAD(&bsd_socket_buckets[i]);
-+	}
-+
- 	rc = proto_register(&unix_dgram_proto, 1);
- 	if (rc != 0) {
- 		pr_crit("%s: Cannot create unix_sock SLAB cache!\n", __func__);
--- 
-2.30.2
-
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
