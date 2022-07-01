@@ -2,199 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 62792562C33
-	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 09:03:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 63FC7562C61
+	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 09:12:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235158AbiGAHDC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Jul 2022 03:03:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60986 "EHLO
+        id S233731AbiGAHL7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Jul 2022 03:11:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235173AbiGAHDB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 03:03:01 -0400
-Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 143ED677E0
-        for <netdev@vger.kernel.org>; Fri,  1 Jul 2022 00:02:59 -0700 (PDT)
-Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-317741c86fdso15018317b3.2
-        for <netdev@vger.kernel.org>; Fri, 01 Jul 2022 00:02:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3Oxpr/H6WS/cbatfKxunj+Rm+HXq43uwJ9TOx0tf4pg=;
-        b=G4+aGmI06EueqwK7C5Qo4w/41Yp3wU/CWyAMnimOU3r1x56NK0xwWd5NnQsEtkPJT1
-         j1wWR6jutsCmi+xE7hxYUqJNrQrMI+GL07X5ZYgIgqDAqQnMWhF8y5nc40xNPfhYS3jC
-         0nJhLPxfL1eyodYvq4oKHJFLeueGwA5XPbFVGoQA05bmNWxXq8PGbVqamZrTZs9J6qBh
-         1fRZx/U4bPFmJBSVu1knm/cNESUDsxYs6X7kurTJA14GFNtyIPF26073epdL9z6eSE2L
-         X78efI4BN3icU+xkSEEQMO42kPgo3k8M7uVN2JrWdQyoK9p0Z0nOVmWHNbnRgASj9y0m
-         xe+Q==
+        with ESMTP id S234668AbiGAHL5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 03:11:57 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D0F9568A2B
+        for <netdev@vger.kernel.org>; Fri,  1 Jul 2022 00:11:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656659515;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=bhpqJ1SJvKpelaCb4CbN+m8twbhunlhXJ55DqPwFTvM=;
+        b=OLbWpxqBFE50ld906isg7MnJnKI+b2r8jyMW2+dGFbE+2jeXR5E8sBlNBR8bVfjc1eHm2B
+        BrelU1Jebx4ulEloUHZPdmUpVIUgNIyNyUA2h8Z7Ts1Z69utqc6i6VHQTYI+qvCJ05CQ9N
+        JPbOOnwzrMEqSEoW7ks66uM6vF3Bk2Q=
+Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
+ [209.85.208.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-404-zu3B9CAJPY6dAoS4Ap84xg-1; Fri, 01 Jul 2022 03:11:53 -0400
+X-MC-Unique: zu3B9CAJPY6dAoS4Ap84xg-1
+Received: by mail-lj1-f200.google.com with SMTP id k2-20020a2e8882000000b0025a96a32388so211376lji.13
+        for <netdev@vger.kernel.org>; Fri, 01 Jul 2022 00:11:53 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3Oxpr/H6WS/cbatfKxunj+Rm+HXq43uwJ9TOx0tf4pg=;
-        b=vLr2dCdINeD2Luv6F48fYpTdresIBtw3mkxhimogzZWLq+IcIruViBkSzmmS/fL7Rr
-         06Xtmr1IPrZuow2qt/rho9uwcj5X/G8DcsQgxEa73jbNPdskiOLfKS6h0xuxraCC9Vx3
-         4EXm77Dj7/J6Jtr3H1m43/i33uN2SpjB/IpSGyItZu4gv2nZ28kztJS/YRJSdWCrwweZ
-         PBLKX/8Dw830JmKp8brvGQK+m+thFV8TKsR7Ennnj4EgLD2GvoW+HSRdrDseVqF5lhXA
-         aylq2q2oAoIlhQxVK341ihyX8LUs9QP5Wi+ieLhvpOMVr80TBlDZAERw2eBoLP0+3W+1
-         kzDQ==
-X-Gm-Message-State: AJIora+5xZ8k5zp9B0nTTRdScIOX+EjLySm1Bxm4MotF+y2pVTtMIvhX
-        EEPhF4W15ao2RXKHICoiBWVirToI8uhQ//cSdNZClQ==
-X-Google-Smtp-Source: AGRyM1sjHYE6b1ihEm8EzVroyoytiPu2X1qfGuWU3WGWHfolVcCLEjpB4ZdcYExvwYNCmCj3ip+B1gZf6PvcXiQN0KE=
-X-Received: by 2002:a81:4896:0:b0:317:f767:95f8 with SMTP id
- v144-20020a814896000000b00317f76795f8mr15214195ywa.218.1656658978077; Fri, 01
- Jul 2022 00:02:58 -0700 (PDT)
+        h=x-gm-message-state:from:message-id:date:mime-version:user-agent:cc
+         :subject:content-language:to:references:in-reply-to
+         :content-transfer-encoding;
+        bh=bhpqJ1SJvKpelaCb4CbN+m8twbhunlhXJ55DqPwFTvM=;
+        b=zM5fUn3RkQ0L6RBtqTwgiBeHSOosJMJUkvNil2J7/GaHnLoh27bBtN0DkhEU8rgW6v
+         gDkIm4i+vEw7wuDOhzQBizuI64NVGrkOxO3fnjr033Kk5OQL0HFrKPtTuSmokeodNOCT
+         GC6TBai/FsWqls73fWGKHGiblyoNSTuOpBC1R14128DCC4zKp+fnbAgEGJNi5Cpu02qo
+         BSf1cgStpUCGXgup2Xo0+a2vFg3XkISvHYLZrwY9S7YMaQpcwkN4269iFq45Pcf9NGiC
+         TLkd/HCkDhEI5LsmmCEajrtChHbYBxzE1HbSLE2zJMiD7PrPJ3S6F/iFGO1SaMq29Ob9
+         LbKw==
+X-Gm-Message-State: AJIora8YOFhePSCl/NuKW3cjFDhEQRoxnjN5GRxItIqjFqsE6H62PGrY
+        zXa+O9QY7L22dajBiCy8iKY+/GMfFvCh9SGPPQH41pww8Oiap9toCQabWnx0ryRItqNNKHCRAB4
+        JU9cHpu5fqORFO+9d
+X-Received: by 2002:ac2:55ba:0:b0:47f:a02c:d98d with SMTP id y26-20020ac255ba000000b0047fa02cd98dmr7749246lfg.620.1656659512312;
+        Fri, 01 Jul 2022 00:11:52 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1ubBOAK6tjjdc8FVzvJs8S3xwhfQIRP1ivQvdj7qZrmnKp9NUvey36zU5GoqI0qAIKBK/YSXQ==
+X-Received: by 2002:ac2:55ba:0:b0:47f:a02c:d98d with SMTP id y26-20020ac255ba000000b0047fa02cd98dmr7749238lfg.620.1656659512078;
+        Fri, 01 Jul 2022 00:11:52 -0700 (PDT)
+Received: from [192.168.0.50] (87-59-106-155-cable.dk.customer.tdc.net. [87.59.106.155])
+        by smtp.gmail.com with ESMTPSA id m10-20020a19710a000000b0047f68b11329sm3477322lfc.266.2022.07.01.00.11.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 01 Jul 2022 00:11:51 -0700 (PDT)
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
+Message-ID: <e863a394-a2af-505b-5c5c-cbf8b4a1819f@redhat.com>
+Date:   Fri, 1 Jul 2022 09:11:50 +0200
 MIME-Version: 1.0
-References: <20220601070707.3946847-1-saravanak@google.com>
- <4799738.LvFx2qVVIh@steina-w> <CAGETcx_1qa=gGT4LVkyPpcA1vFM9FzuJE+0DhL_nFyg5cbFjVg@mail.gmail.com>
- <5265491.31r3eYUQgx@steina-w>
-In-Reply-To: <5265491.31r3eYUQgx@steina-w>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Fri, 1 Jul 2022 00:02:22 -0700
-Message-ID: <CAGETcx-fLAXnG+1S4MHJwg9t7O6jj6Mp+q25bh==C_Z1CLs-mg@mail.gmail.com>
-Subject: Re: (EXT) Re: [PATCH v2 1/9] PM: domains: Delete usage of driver_deferred_probe_check_state()
-To:     Alexander Stein <alexander.stein@ew.tq-group.com>
-Cc:     Tony Lindgren <tony@atomide.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Kevin Hilman <khilman@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>, kernel-team@android.com,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-gpio@vger.kernel.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Cc:     brouer@redhat.com, doshir@vmware.com, jbrouer@redhat.com,
+        lorenzo.bianconi@redhat.com, gyang@vmware.com,
+        William Tu <tuc@vmware.com>
+Subject: Re: [RFC PATCH 1/2] vmxnet3: Add basic XDP support.
+Content-Language: en-US
+To:     William Tu <u9012063@gmail.com>, netdev@vger.kernel.org
+References: <20220629014927.2123-1-u9012063@gmail.com>
+In-Reply-To: <20220629014927.2123-1-u9012063@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 30, 2022 at 11:02 PM Alexander Stein
-<alexander.stein@ew.tq-group.com> wrote:
->
-> Hi Saravana,
->
-> Am Freitag, 1. Juli 2022, 02:37:14 CEST schrieb Saravana Kannan:
-> > On Thu, Jun 23, 2022 at 5:08 AM Alexander Stein
-> >
-> > <alexander.stein@ew.tq-group.com> wrote:
-> > > Hi,
-> > >
-> > > Am Dienstag, 21. Juni 2022, 09:28:43 CEST schrieb Tony Lindgren:
-> > > > Hi,
-> > > >
-> > > > * Saravana Kannan <saravanak@google.com> [700101 02:00]:
-> > > > > Now that fw_devlink=on by default and fw_devlink supports
-> > > > > "power-domains" property, the execution will never get to the point
-> > > > > where driver_deferred_probe_check_state() is called before the
-> > > > > supplier
-> > > > > has probed successfully or before deferred probe timeout has expired.
-> > > > >
-> > > > > So, delete the call and replace it with -ENODEV.
-> > > >
-> > > > Looks like this causes omaps to not boot in Linux next. With this
-> > > > simple-pm-bus fails to probe initially as the power-domain is not
-> > > > yet available. On platform_probe() genpd_get_from_provider() returns
-> > > > -ENOENT.
-> > > >
-> > > > Seems like other stuff is potentially broken too, any ideas on
-> > > > how to fix this?
-> > >
-> > > I think I'm hit by this as well, although I do not get a lockup.
-> > > In my case I'm using
-> > > arch/arm64/boot/dts/freescale/imx8mq-tqma8mq-mba8mx.dts and probing of
-> > > 38320000.blk-ctrl fails as the power-domain is not (yet) registed.
-> >
-> > Ok, took a look.
-> >
-> > The problem is that there are two drivers for the same device and they
-> > both initialize this device.
-> >
-> >     gpc: gpc@303a0000 {
-> >         compatible = "fsl,imx8mq-gpc";
-> >     }
-> >
-> > $ git grep -l "fsl,imx7d-gpc" -- drivers/
-> > drivers/irqchip/irq-imx-gpcv2.c
-> > drivers/soc/imx/gpcv2.c
-> >
-> > IMHO, this is a bad/broken design.
-> >
-> > So what's happening is that fw_devlink will block the probe of
-> > 38320000.blk-ctrl until 303a0000.gpc is initialized. And it stops
-> > blocking the probe of 38320000.blk-ctrl as soon as the first driver
-> > initializes the device. In this case, it's the irqchip driver.
-> >
-> > I'd recommend combining these drivers into one. Something like the
-> > patch I'm attaching (sorry for the attachment, copy-paste is mangling
-> > the tabs). Can you give it a shot please?
->
-> I tried this patch and it delayed the driver initialization (those of UART as
-> well BTW). Unfortunately the driver fails the same way:
 
-Thanks for testing the patch!
+On 29/06/2022 03.49, William Tu wrote:
+> The patch adds native-mode XDP support: XDP_DROP, XDP_PASS, and XDP_TX.
+> The vmxnet3 rx consists of three rings: r0, r1, and dataring.
+> Buffers at r0 are allocated using alloc_skb APIs and dma mapped to the
+> ring's descriptor. If LRO is enabled and packet size is larger than
+> 3K, VMXNET3_MAX_SKB_BUF_SIZE, then r1 is used to mapped the rest of
+> the buffer larger than VMXNET3_MAX_SKB_BUF_SIZE. Each buffer in r1 is
+> allocated using alloc_page. So for LRO packets, the payload will be
+> in one buffer from r0 and multiple from r1, for non-LRO packets,
+> only one descriptor in r0 is used for packet size less than 3k.
+> 
+[...]
+> 
+> Need Feebacks:
+[...]
 
-> > [    1.125253] imx8m-blk-ctrl 38320000.blk-ctrl: error -ENODEV: failed to
-> attach power domain "bus"
->
-> More than that it even introduced some more errors:
-> > [    0.008160] irq: no irq domain found for gpc@303a0000 !
+> e. I should be able to move the run_xdp before the
+>     netdev_alloc_skb_ip_align() in vmxnet3_rq_rx_complete
+>     so avoiding the skb allocation overhead.
 
-So the idea behind my change was that as long as the irqchip isn't the
-root of the irqdomain (might be using the terms incorrectly) like the
-gic, you can make it a platform driver. And I was trying to hack up a
-patch that's the equivalent of platform_irqchip_probe() (which just
-ends up eventually calling the callback you use in IRQCHIP_DECLARE().
-I probably made some mistake in the quick hack that I'm sure if
-fixable.
+Yes please!
 
-> > [    0.013251] Failed to map interrupt for
-> > /soc@0/bus@30400000/timer@306a0000
+Generally speaking the approach of allocating an SKB and then afterwards
+invoking XDP BPF-prog goes against the principle of native-XDP.
 
-However, this timer driver also uses TIMER_OF_DECLARE() which can't
-handle failure to get the IRQ (because it's can't -EPROBE_DEFER). So,
-this means, the timer driver inturn needs to be converted to a
-platform driver if it's supposed to work with the IRQCHIP_DECLARE()
-being converted to a platform driver.
+[...]> Signed-off-by: William Tu <tuc@vmware.com>
+> ---
+>   drivers/net/vmxnet3/vmxnet3_drv.c     | 360 +++++++++++++++++++++++++-
+>   drivers/net/vmxnet3/vmxnet3_ethtool.c |  10 +
+>   drivers/net/vmxnet3/vmxnet3_int.h     |  16 ++
+>   3 files changed, 382 insertions(+), 4 deletions(-)
+> 
 
-But that's a can of worms not worth opening. But then I remembered
-this simpler workaround will work and it is pretty much a variant of
-the workaround that's already in the gpc's irqchip driver to allow two
-drivers to probe the same device (people really should stop doing
-that).
+--Jesper
+(sorry for the short feedback)
 
-Can you drop my previous hack patch and try this instead please? I'm
-99% sure this will work.
-
-diff --git a/drivers/irqchip/irq-imx-gpcv2.c b/drivers/irqchip/irq-imx-gpcv2.c
-index b9c22f764b4d..8a0e82067924 100644
---- a/drivers/irqchip/irq-imx-gpcv2.c
-+++ b/drivers/irqchip/irq-imx-gpcv2.c
-@@ -283,6 +283,7 @@ static int __init imx_gpcv2_irqchip_init(struct
-device_node *node,
-         * later the GPC power domain driver will not be skipped.
-         */
-        of_node_clear_flag(node, OF_POPULATED);
-+       fwnode_dev_initialized(domain->fwnode, false);
-        return 0;
- }
-
--Saravana
