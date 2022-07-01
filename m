@@ -2,76 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 754DE563A21
-	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 21:57:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE679563AA0
+	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 22:12:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230266AbiGATwA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Jul 2022 15:52:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59546 "EHLO
+        id S231919AbiGAUBb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Jul 2022 16:01:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229679AbiGATv7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 15:51:59 -0400
-Received: from mail-il1-f181.google.com (mail-il1-f181.google.com [209.85.166.181])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DA8225585;
-        Fri,  1 Jul 2022 12:51:56 -0700 (PDT)
-Received: by mail-il1-f181.google.com with SMTP id a7so2049554ilj.2;
-        Fri, 01 Jul 2022 12:51:56 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Y2u7piwMP8WRoOkwcLwV3edsFIFKViwRNW8iJEcQlGY=;
-        b=IfnzOe0wYxqP5ksYwQjO1vTqfKQysjpQRobGzNjwICz90uzhtr52rKfRRFEPgniek4
-         bwuH9y0mMUG6Dzm4mKXyccWsnIiixxY0XrwslMzFcYnUqU3ZXLuCTQsgkzfciHQ88dal
-         gWiICqkcXT5XCaacp3sZDX6TxjTu12sH2Ewn5WHmGFyEtzX6ttxineETfynoCGLWFFmC
-         4LfJOda7ANaNzdAhRLk/nMyqw2u7KFKldf0OlNii1XhOrPx3l8FuQ50NPCtK4ItcF9eI
-         aNt7N+ecLzYTpOTVNWXlRSTBCcRjbj4iZv4nOYwirM6ErrsuYhQU5IyYCk+mU/S9XUzD
-         EVYw==
-X-Gm-Message-State: AJIora+4+tYwWZ/wgmAr67ml2aoPOAbLSPHSAu6uqQaUTKvB+VMW+I+R
-        VZBeiRuESCL5BmxnfmDc4w==
-X-Google-Smtp-Source: AGRyM1uCzukptXkjULJiVhiY7VNc7zMOwUSsnOp3OTAKsBWSKYNlI9cw6P3IxIahkJHGCw7J8sib6w==
-X-Received: by 2002:a05:6e02:168f:b0:2da:72fc:feec with SMTP id f15-20020a056e02168f00b002da72fcfeecmr9308243ila.185.1656705115458;
-        Fri, 01 Jul 2022 12:51:55 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id e2-20020a5d9242000000b006758cc4aa76sm3276380iol.29.2022.07.01.12.51.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Jul 2022 12:51:55 -0700 (PDT)
-Received: (nullmailer pid 1407947 invoked by uid 1000);
-        Fri, 01 Jul 2022 19:51:52 -0000
-Date:   Fri, 1 Jul 2022 13:51:52 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Conor Dooley <conor.dooley@microchip.com>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-clk@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        linux-kernel@vger.kernel.org,
-        Daire McNamara <daire.mcnamara@microchip.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
+        with ESMTP id S231892AbiGAUB3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 16:01:29 -0400
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EABA44D165;
+        Fri,  1 Jul 2022 13:01:26 -0700 (PDT)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1o7MpC-00040v-4C; Fri, 01 Jul 2022 22:01:10 +0200
+Date:   Fri, 1 Jul 2022 22:01:10 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     Kajetan Puchalski <kajetan.puchalski@arm.com>
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        linux-riscv@lists.infradead.org,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        devicetree@vger.kernel.org,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>, netdev@vger.kernel.org
-Subject: Re: [PATCH v1 01/14] dt-bindings: clk: microchip: mpfs: add reset
- controller support
-Message-ID: <20220701195152.GA1407913-robh@kernel.org>
-References: <20220630080532.323731-1-conor.dooley@microchip.com>
- <20220630080532.323731-2-conor.dooley@microchip.com>
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Mel Gorman <mgorman@suse.de>,
+        lukasz.luba@arm.com, dietmar.eggemann@arm.com,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, stable@vger.kernel.org,
+        regressions@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [Regression] stress-ng udp-flood causes kernel panic on Ampere
+ Altra
+Message-ID: <20220701200110.GA15144@breakpoint.cc>
+References: <Yr7WTfd6AVTQkLjI@e126311.manchester.arm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220630080532.323731-2-conor.dooley@microchip.com>
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+In-Reply-To: <Yr7WTfd6AVTQkLjI@e126311.manchester.arm.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -79,15 +49,23 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 30 Jun 2022 09:05:20 +0100, Conor Dooley wrote:
-> The "peripheral" devices on PolarFire SoC can be put into reset, so
-> update the device tree binding to reflect the presence of a reset
-> controller.
+Kajetan Puchalski <kajetan.puchalski@arm.com> wrote:
+> While running the udp-flood test from stress-ng on Ampere Altra (Mt.
+> Jade platform) I encountered a kernel panic caused by NULL pointer
+> dereference within nf_conntrack.
 > 
-> Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
-> ---
->  .../bindings/clock/microchip,mpfs.yaml          | 17 +++++++++++++++--
->  1 file changed, 15 insertions(+), 2 deletions(-)
-> 
+> The issue is present in the latest mainline (5.19-rc4), latest stable
+> (5.18.8), as well as multiple older stable versions. The last working
+> stable version I found was 5.15.40.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Do I need a special setup for conntrack?
+
+No crashes after more than one hour of stress-ng on
+1. 4 core amd64 Fedora 5.17 kernel
+2. 16 core amd64, linux stable 5.17.15
+3. 12 core intel, Fedora 5.18 kernel
+4. 3 core aarch64 vm, 5.18.7-200.fc36.aarch64
+
+I used standard firewalld ruleset for all of these and manually tuned
+conntrack settings to make sure the early evict path (as per backtrace)
+gets exercised.
