@@ -2,325 +2,281 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7363E5627D4
-	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 02:50:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB700562839
+	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 03:28:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231547AbiGAAuY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jun 2022 20:50:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47062 "EHLO
+        id S232732AbiGAB0z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jun 2022 21:26:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231478AbiGAAuW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 20:50:22 -0400
-Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D095A2BB10;
-        Thu, 30 Jun 2022 17:50:17 -0700 (PDT)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id CC2301BF208;
-        Fri,  1 Jul 2022 00:50:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1656636616;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=c/kcoYTnNnzhOWM1MqioMlk5A13WMz4E/rfcuidnbwM=;
-        b=n4jR9AFNGXEIcqmpmuKLGfcqPewrc0SE4fMpGLI6YGQteq7SjAkfhfU6JxazhbW5UBbfQ2
-        WlwJMqtWz7V5ggm2MSuKr2sK2wGERLBMZU2F08sYFOak2m8h9fKm6RK05KhtBUIoNzqb5+
-        bx5cus+sI98JpS52YReI5TjrKBOSCFgPU4LP6TPGGoO4QKW2xwmFQJ4PoMS+aa1PHX4Ddb
-        gtMPbKwTzxa/1qoNtSellDPedY5/PSvd/pVXWKDSYVXdmU0jAOSzoWzEp6IC94l5gWtdoR
-        sUWSyitr+CTX0rJnbw5/t/3hhuQYLl5avdqYCG6xHhG9Hb2PsOQcsuZIjCYnaw==
-Date:   Fri, 1 Jul 2022 02:50:12 +0200
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Alexander Aring <aahringo@redhat.com>
-Cc:     Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        with ESMTP id S229689AbiGAB0x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 21:26:53 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E94F75A478
+        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 18:26:51 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id u131-20020a254789000000b0066c8beed1e2so746586yba.16
+        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 18:26:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=enThZq3GNhnkWKPd/daPanpJOP+0ijq4hNHtFP2b8Uo=;
+        b=ZGHrQo8oKcs/1MxqUV66WuroIOiuRhyDQTe/h9dNu56quZHoJH2GUaDbRl2ttRwgEe
+         SWqVcY/Veo5jphceJDpwMYzMdOJ0QXdCPktWf948t9BiLW5nmwSSwTlpJciNH3VIewIt
+         3ASh6A26F+KmkZttZjFaUnZEb4Vdr+50D/q0gexLqMMmpJA7NpBHgj2jcBkr1ZyXcHXM
+         U6Xnoa3WH+ep5XzMHbrLnEz24W5g5SeejVYD0NuN3ckqaoVAfjVlh+5k/BsS4sAB5hq6
+         ohdGwKO24kRPaNPr4udjwZ2k4/3lgZFaY78w+9+WaY8oo3hWqIQJ8JqaHbOBVz/YVY0e
+         BS/A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=enThZq3GNhnkWKPd/daPanpJOP+0ijq4hNHtFP2b8Uo=;
+        b=JvndIxiWU+N+3bK0lUuR+Y2tCF+jovVcHe090jPCHXh4vi77+GZ7H76SDS2vdRrVgZ
+         j+N/Nux5pO53P+SjHZ7z20k9C0gCsvLLooV+oNC1KDA4vA4LugmGAJY5WaY466uooY6a
+         SwG2rHB+4wc4AzbuWq+/OQuvZJuyXth5EoVEs1Vo2v+FGYQLKXS4mKAULMjaRyLctelB
+         YIH8B33A8n6X4uLGt0szMBfceltI53ZmUryBMRKcHfmr4nW2sTwwDtvmGFHCS0yCpAeM
+         FIXnjoA6vQOCMI9/tbJTkjpLlV0qP0UQFhmhRJ71MKcs5bYBnpe+rjxsBSmIfzUduYRz
+         TnsA==
+X-Gm-Message-State: AJIora/0vbwqOb9O8EkDNug0yOYnYe+ifmWHjPykv+PDI+DjQeVzHOYh
+        ODuiIw2sob9p9LTZKl53p+urfyQcoltduF8=
+X-Google-Smtp-Source: AGRyM1uVtkICZeFb41qzlKfYUlr23L197fZnFh7B1zLJMqch7Nth1saNWtsGGUH9YN1+Q9+ZxuB5n3WOpcD3GoA=
+X-Received: from saravanak.san.corp.google.com ([2620:15c:2d:3:3973:d0f0:34a8:bf61])
+ (user=saravanak job=sendgmr) by 2002:a25:4b02:0:b0:66c:8709:44d1 with SMTP id
+ y2-20020a254b02000000b0066c870944d1mr12352911yba.602.1656638811027; Thu, 30
+ Jun 2022 18:26:51 -0700 (PDT)
+Date:   Thu, 30 Jun 2022 18:26:38 -0700
+Message-Id: <20220701012647.2007122-1-saravanak@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
+Subject: [PATCH v2 0/2] Fix console probe delay when stdout-path isn't set
+From:   Saravana Kannan <saravanak@google.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        Al Cooper <alcooperx@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Tobias Klauser <tklauser@distanz.ch>,
+        Russell King <linux@armlinux.org.uk>,
+        Vineet Gupta <vgupta@kernel.org>,
+        Richard Genoud <richard.genoud@gmail.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Alexander Shiyan <shc_work@mail.ru>,
+        Baruch Siach <baruch@tkos.co.il>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Karol Gugala <kgugala@antmicro.com>,
+        Mateusz Holenko <mholenko@antmicro.com>,
+        Gabriel Somlo <gsomlo@gmail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Taichi Sugaya <sugaya.taichi@socionext.com>,
+        Takao Orito <orito.takao@socionext.com>,
+        Liviu Dudau <liviu.dudau@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Pali Rohar <pali@kernel.org>,
+        Andreas Farber <afaerber@suse.de>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Laxman Dewangan <ldewangan@nvidia.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Baolin Wang <baolin.wang7@gmail.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        Patrice Chotard <patrice.chotard@foss.st.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Network Development <netdev@vger.kernel.org>,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH wpan-next v3 2/4] net: ieee802154: Add support for inter
- PAN management
-Message-ID: <20220701025012.5dd38c81@xps-13>
-In-Reply-To: <CAK-6q+gR-+9K2LtwwVQQMmMcmmkG399jUgyd-X3Nj8xh0y+jBQ@mail.gmail.com>
-References: <20220620134018.62414-1-miquel.raynal@bootlin.com>
-        <20220620134018.62414-3-miquel.raynal@bootlin.com>
-        <CAK-6q+jAhikJq5tp-DRx1C_7ka5M4w6EKUB_cUdagSSwP5Tk_A@mail.gmail.com>
-        <20220627104303.5392c7f6@xps-13>
-        <CAK-6q+jYFeOyP_bvTd31av=ntJA=Qpas+v+xRDQuMNb74io2Xw@mail.gmail.com>
-        <20220628095821.36811c5c@xps-13>
-        <CAK-6q+g=Bbj7gS5a+fSqCsB9n=xrZK-z0-Rg9dn9yFK5xpZsvw@mail.gmail.com>
-        <20220630101416.4dc42f29@xps-13>
-        <CAK-6q+gR-+9K2LtwwVQQMmMcmmkG399jUgyd-X3Nj8xh0y+jBQ@mail.gmail.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+        Hammer Hsieh <hammerh0314@gmail.com>,
+        Peter Korsgaard <jacmet@sunsite.dk>,
+        Timur Tabi <timur@kernel.org>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Saravana Kannan <saravanak@google.com>
+Cc:     Rob Herring <robh@kernel.org>, sascha hauer <sha@pengutronix.de>,
+        peng fan <peng.fan@nxp.com>, kevin hilman <khilman@kernel.org>,
+        ulf hansson <ulf.hansson@linaro.org>,
+        len brown <len.brown@intel.com>, pavel machek <pavel@ucw.cz>,
+        joerg roedel <joro@8bytes.org>, will deacon <will@kernel.org>,
+        andrew lunn <andrew@lunn.ch>,
+        heiner kallweit <hkallweit1@gmail.com>,
+        eric dumazet <edumazet@google.com>,
+        jakub kicinski <kuba@kernel.org>,
+        paolo abeni <pabeni@redhat.com>,
+        linus walleij <linus.walleij@linaro.org>,
+        hideaki yoshifuji <yoshfuji@linux-ipv6.org>,
+        david ahern <dsahern@kernel.org>, kernel-team@android.com,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org,
+        linux-rpi-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-tegra@vger.kernel.org,
+        linux-snps-arc@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+        linux-actions@lists.infradead.org,
+        linux-unisoc@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        sparclinux@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alexander,
+These patches are on top of driver-core-next.
 
-aahringo@redhat.com wrote on Thu, 30 Jun 2022 19:27:49 -0400:
+Even if stdout-path isn't set in DT, this patch should take console
+probe times back to how they were before the deferred_probe_timeout
+clean up series[1].
 
-> Hi,
->=20
-> On Thu, Jun 30, 2022 at 4:14 AM Miquel Raynal <miquel.raynal@bootlin.com>=
- wrote:
-> >
-> > Hi Alexander,
-> >
-> > aahringo@redhat.com wrote on Wed, 29 Jun 2022 21:40:14 -0400:
-> > =20
-> > > Hi,
-> > >
-> > > On Tue, Jun 28, 2022 at 3:58 AM Miquel Raynal <miquel.raynal@bootlin.=
-com> wrote: =20
-> > > >
-> > > > Hi Alexander,
-> > > >
-> > > > aahringo@redhat.com wrote on Mon, 27 Jun 2022 21:32:08 -0400:
-> > > > =20
-> > > > > Hi,
-> > > > >
-> > > > > On Mon, Jun 27, 2022 at 4:43 AM Miquel Raynal <miquel.raynal@boot=
-lin.com> wrote: =20
-> > > > > >
-> > > > > > Hi Alexander,
-> > > > > >
-> > > > > > aahringo@redhat.com wrote on Sat, 25 Jun 2022 22:29:08 -0400:
-> > > > > > =20
-> > > > > > > Hi,
-> > > > > > >
-> > > > > > > On Mon, Jun 20, 2022 at 10:26 AM Miquel Raynal
-> > > > > > > <miquel.raynal@bootlin.com> wrote: =20
-> > > > > > > >
-> > > > > > > > Let's introduce the basics for defining PANs:
-> > > > > > > > - structures defining a PAN
-> > > > > > > > - helpers for PAN registration
-> > > > > > > > - helpers discarding old PANs
-> > > > > > > > =20
-> > > > > > >
-> > > > > > > I think the whole pan management can/should be stored in user=
- space by
-> > > > > > > a daemon running in background. =20
-> > > > > >
-> > > > > > We need both, and currently:
-> > > > > > - while the scan is happening, the kernel saves all the discove=
-red PANs
-> > > > > > - the kernel PAN list can be dumped (and also flushed) asynchro=
-nously by
-> > > > > >   the userspace
-> > > > > >
-> > > > > > IOW the userspace is responsible of keeping its own list of PAN=
-s in
-> > > > > > sync with what the kernel discovers, so at any moment it can as=
-k the
-> > > > > > kernel what it has in memory, it can be done during a scan or a=
-fter. It
-> > > > > > can request a new scan to update the entries, or flush the kern=
-el list.
-> > > > > > The scan operation is always requested by the user anyway, it's=
- not
-> > > > > > something happening in the background.
-> > > > > > =20
-> > > > >
-> > > > > I don't see what advantage it has to keep the discovered pan in t=
-he
-> > > > > kernel. You can do everything with a start/stop/pan discovered ev=
-ent. =20
-> > > >
-> > > > I think the main reason is to be much more user friendly. Keeping t=
-rack
-> > > > of the known PANs in the kernel matters because when you start work=
-ing
-> > > > with 802.15.4 you won't blindly use a daemon (if there is any) and =
-will
-> > > > use test apps like iwpan which are stateless. Re-doing a scan on de=
-mand
-> > > > just takes ages (from seconds to minutes, depending on the beacon
-> > > > order).
-> > > > =20
-> > >
-> > > I can see that things should work "out-of the box" and we are already
-> > > doing it by manual setting pan_id, etc. However, doing it in an
-> > > automatic way there exists a lot of "interpretation" about how you
-> > > want to handle it (doesn't matter if this is what the spec says or
-> > > not)... moving it to user space will offload it to the user.
-> > > =20
-> > > > Aside from this non technical reason, I also had in mind to retrieve
-> > > > values gathered from the beacons (and stored in the PAN descriptors=
-) to
-> > > > know more about the devices when eg. listing associations, like
-> > > > registering the short address of a coordinator. I don't yet know how
-> > > > useful this is TBH.
-> > > > =20
-> > > > > It also has more advantages as you can look for a specific pan and
-> > > > > stop afterwards. At the end the daemon has everything that the ke=
-rnel
-> > > > > also has, as you said it's in sync.
-> > > > > =20
-> > > > > > > This can be a network manager as it
-> > > > > > > listens to netlink events as "detect PAN xy" and stores it and
-> > > > > > > offers it in their list to associate with it. =20
-> > > > > >
-> > > > > > There are events produced, yes. But really, this is not somethi=
-ng we
-> > > > > > actually need. The user requests a scan over a given range, whe=
-n the
-> > > > > > scan is over it looks at the list and decides which PAN it
-> > > > > > wants to associate with, and through which coordinator (95% of =
-the
-> > > > > > scenarii).
-> > > > > > =20
-> > > > >
-> > > > > This isn't either a kernel job to decide which pan it will be
-> > > > > associated with. =20
-> > > >
-> > > > Yes, "it looks at the list and decides" referred to "the user".
-> > > > =20
-> > > > > > > We need somewhere to draw a line and I guess the line is "Is =
-this
-> > > > > > > information used e.g. as any lookup or something in the hot p=
-ath", I
-> > > > > > > don't see this currently... =20
-> > > > > >
-> > > > > > Each PAN descriptor is like 20 bytes, so that's why I don't fee=
-l back
-> > > > > > keeping them, I think it's easier to be able to serve the list =
-of PANs
-> > > > > > upon request rather than only forwarding events and not being a=
-ble to
-> > > > > > retrieve the list a second time (at least during the developmen=
-t).
-> > > > > > =20
-> > > > >
-> > > > > This has nothing to do with memory.
-> > > > > =20
-> > > > > > Overall I feel like this part is still a little bit blurry beca=
-use it
-> > > > > > has currently no user, perhaps I should send the next series wh=
-ich
-> > > > > > actually makes the current series useful.
-> > > > > > =20
-> > > > >
-> > > > > Will it get more used than caching entries in the kernel for user
-> > > > > space? Please also no in-kernel association feature. =20
-> > > >
-> > > > I am aligned on this.
-> > > > =20
-> > >
-> > > I am sorry I am not sure what that means. =20
-> >
-> > I was referring to the "no in-kernel association feature".
-> >
-> > There is however one situation which I _had_ to be handled in the
-> > kernel: other devices asking for being associated or disassociated. In
-> > the case of the disassociation, the receiving device is only notified
-> > and cannot refuse the disassociation. For the association however,
-> > the device receiving the association request has to make a decision.
-> > There are three possible outcomes:
-> > - accepting
-> > - refusing because the PAN is at capacity
-> > - refusing because the device is blacklisted =20
->=20
-> Why not move this decision to the user as well? The kernel will wait
-> for the reason? This isn't required to be fast and the decision may
-> depend on the current pan management...
+v1->v2:
+- Fixed the accidental change that Tobias pointed out.
+- Added Tested-by tag
 
-I've opted out for the simplest option, which is allowing X devices
-being associated, X being manageable by the user. For now I'll keep
-this very simple approach, I propose we add this filtering feature
-later?
+[1] - https://lore.kernel.org/lkml/20220601070707.3946847-1-saravanak@google.com/
 
-> > For now I've only implemented the first reason, because it's much
-> > easier and only requires a maximum device number variable, set by the
-> > user. For the second reason, it requires handling a
-> > whitelist/blacklist, I don't plan to implement this for now, but that
-> > should not impact the rest of the code. I'll let that to other
-> > developers, or future-me, perhaps :-). Anyhow, you can kick-out devices
-> > at any time anyway if needed with a disassociation notification
-> > controlled by the user.
-> > =20
-> > > > > We can maybe agree to that point to put it under
-> > > > > IEEE802154_NL802154_EXPERIMENTAL config, as soon as we have some
-> > > > > _open_ user space program ready we will drop this feature again...
-> > > > > this program will show that there is no magic about it. =20
-> > > >
-> > > > Yeah, do you want to move all the code scan/beacon/pan/association =
-code
-> > > > under EXPERIMENTAL sections? Or is it just the PAN management logic=
-? =20
-> > >
-> > > Yes, why not. But as I can see there exists two categories of
-> > > introducing your netlink api:
-> > >
-> > > 1. API candidates which are very likely to become stable
-> > > 2. API candidates which we want to remove when we have a user
-> > > replacement for it (will probably never go stable)
-> > >
-> > > The 2. should be defining _after_ the 1. In the "big" netlink API
-> > > enums of EXPERIMENTAL sections. =20
-> >
-> > Yeah, got it.
-> > =20
-> > > Also you should provide for 2. some kind of ifdef/functions dummy/etc.
-> > > that it's easy to remove from the kernel when we have a user
-> > > replacement for it.
-> > > I hope that is fine for everybody.
-> > >
-> > > I try to find solutions here, I don't see a reason for putting this
-> > > pan management into the kernel... whereas I appreciate the effort
-> > > which is done here and will not force you to write some user space
-> > > software that does this job. From my point of view I can't accept this
-> > > functionality in the kernel "yet". =20
-> >
-> > I've already spent a couple of days reworking all that part, I've
-> > dropped most of the in-kernel PAN management, which means:
-> > - when a new coordinator gets discovered (beacon received), if the mac
-> >   was scanning then it calls a generic function from the cfg layer to
-> >   advertise this pan.
-> > - the cfg layer will send a NL message to the user with all the
-> >   important information
-> > - BUT the cfg layer will also keep in memory the beacon information for
-> >   the time of the scan (only), to avoid polluting the user with the same
-> >   information over and over again, this seems a necessary step to me,
-> >   because otherwise if you track on the same channel two coordinators
-> >   not emitting at the same pace, you might end up with 100 user
-> >   notifications, for just 2 devices. I think this is the kernel duty to
-> >   filter out identical beacons.
-> > =20
->=20
-> Okay, I am sure if somebody complains about such kernel behaviour and
-> has a good argument to switch back... we still can do it.
+-Saravana
 
-Great!
+cc: Rob Herring <robh@kernel.org>
+cc: sascha hauer <sha@pengutronix.de>
+cc: peng fan <peng.fan@nxp.com>
+cc: kevin hilman <khilman@kernel.org>
+cc: ulf hansson <ulf.hansson@linaro.org>
+cc: len brown <len.brown@intel.com>
+cc: pavel machek <pavel@ucw.cz>
+cc: joerg roedel <joro@8bytes.org>
+cc: will deacon <will@kernel.org>
+cc: andrew lunn <andrew@lunn.ch>
+cc: heiner kallweit <hkallweit1@gmail.com>
+cc: russell king <linux@armlinux.org.uk>
+cc: "david s. miller" <davem@davemloft.net>
+cc: eric dumazet <edumazet@google.com>
+cc: jakub kicinski <kuba@kernel.org>
+cc: paolo abeni <pabeni@redhat.com>
+cc: linus walleij <linus.walleij@linaro.org>
+cc: hideaki yoshifuji <yoshfuji@linux-ipv6.org>
+cc: david ahern <dsahern@kernel.org>
+cc: kernel-team@android.com
+cc: linux-kernel@vger.kernel.org
+cc: linux-pm@vger.kernel.org
+cc: iommu@lists.linux-foundation.org
+cc: netdev@vger.kernel.org
+cc: linux-gpio@vger.kernel.org
+Cc: kernel@pengutronix.de
 
->=20
-> > I _will_ send a v4, including the scanning part this time by the end of
-> > the week, I need to settle everything down, ensure it still works and
-> > clean the branch.
-> > =20
->=20
-> ok.
->=20
-> - Alex
->=20
+Saravana Kannan (2):
+  driver core: Add probe_no_timeout flag for drivers
+  serial: Set probe_no_timeout for all DT based drivers
 
+ drivers/base/base.h                         |  1 +
+ drivers/base/core.c                         |  7 +++++++
+ drivers/base/dd.c                           |  3 +++
+ drivers/tty/ehv_bytechan.c                  |  1 +
+ drivers/tty/goldfish.c                      |  1 +
+ drivers/tty/hvc/hvc_opal.c                  |  1 +
+ drivers/tty/serial/8250/8250_aspeed_vuart.c |  1 +
+ drivers/tty/serial/8250/8250_bcm2835aux.c   |  1 +
+ drivers/tty/serial/8250/8250_bcm7271.c      |  1 +
+ drivers/tty/serial/8250/8250_dw.c           |  1 +
+ drivers/tty/serial/8250/8250_em.c           |  1 +
+ drivers/tty/serial/8250/8250_ingenic.c      |  1 +
+ drivers/tty/serial/8250/8250_lpc18xx.c      |  1 +
+ drivers/tty/serial/8250/8250_mtk.c          |  1 +
+ drivers/tty/serial/8250/8250_of.c           |  1 +
+ drivers/tty/serial/8250/8250_omap.c         |  1 +
+ drivers/tty/serial/8250/8250_pxa.c          |  1 +
+ drivers/tty/serial/8250/8250_tegra.c        |  1 +
+ drivers/tty/serial/8250/8250_uniphier.c     |  1 +
+ drivers/tty/serial/altera_jtaguart.c        |  1 +
+ drivers/tty/serial/altera_uart.c            |  1 +
+ drivers/tty/serial/amba-pl011.c             |  1 +
+ drivers/tty/serial/apbuart.c                |  1 +
+ drivers/tty/serial/ar933x_uart.c            |  1 +
+ drivers/tty/serial/arc_uart.c               |  1 +
+ drivers/tty/serial/atmel_serial.c           |  1 +
+ drivers/tty/serial/bcm63xx_uart.c           |  1 +
+ drivers/tty/serial/clps711x.c               |  1 +
+ drivers/tty/serial/cpm_uart/cpm_uart_core.c |  1 +
+ drivers/tty/serial/digicolor-usart.c        |  1 +
+ drivers/tty/serial/fsl_linflexuart.c        |  1 +
+ drivers/tty/serial/fsl_lpuart.c             |  1 +
+ drivers/tty/serial/imx.c                    |  1 +
+ drivers/tty/serial/lantiq.c                 |  1 +
+ drivers/tty/serial/liteuart.c               |  1 +
+ drivers/tty/serial/lpc32xx_hs.c             |  1 +
+ drivers/tty/serial/max310x.c                |  1 +
+ drivers/tty/serial/meson_uart.c             |  1 +
+ drivers/tty/serial/milbeaut_usio.c          |  1 +
+ drivers/tty/serial/mpc52xx_uart.c           |  1 +
+ drivers/tty/serial/mps2-uart.c              |  1 +
+ drivers/tty/serial/msm_serial.c             |  1 +
+ drivers/tty/serial/mvebu-uart.c             |  1 +
+ drivers/tty/serial/mxs-auart.c              |  1 +
+ drivers/tty/serial/omap-serial.c            |  1 +
+ drivers/tty/serial/owl-uart.c               |  1 +
+ drivers/tty/serial/pic32_uart.c             |  1 +
+ drivers/tty/serial/pmac_zilog.c             |  1 +
+ drivers/tty/serial/pxa.c                    |  1 +
+ drivers/tty/serial/qcom_geni_serial.c       |  1 +
+ drivers/tty/serial/rda-uart.c               |  1 +
+ drivers/tty/serial/samsung_tty.c            |  1 +
+ drivers/tty/serial/sc16is7xx.c              |  1 +
+ drivers/tty/serial/serial-tegra.c           |  1 +
+ drivers/tty/serial/sh-sci.c                 |  1 +
+ drivers/tty/serial/sifive.c                 |  1 +
+ drivers/tty/serial/sprd_serial.c            |  1 +
+ drivers/tty/serial/st-asc.c                 |  1 +
+ drivers/tty/serial/stm32-usart.c            |  1 +
+ drivers/tty/serial/sunhv.c                  |  1 +
+ drivers/tty/serial/sunplus-uart.c           |  1 +
+ drivers/tty/serial/sunsab.c                 |  1 +
+ drivers/tty/serial/sunsu.c                  |  1 +
+ drivers/tty/serial/sunzilog.c               |  1 +
+ drivers/tty/serial/tegra-tcu.c              |  1 +
+ drivers/tty/serial/uartlite.c               |  1 +
+ drivers/tty/serial/ucc_uart.c               |  1 +
+ drivers/tty/serial/vt8500_serial.c          |  1 +
+ drivers/tty/serial/xilinx_uartps.c          |  1 +
+ include/linux/device.h                      |  7 +++++++
+ include/linux/device/driver.h               | 11 +++++++++++
+ 71 files changed, 95 insertions(+)
 
-Thanks,
-Miqu=C3=A8l
+-- 
+2.37.0.rc0.161.g10f37bed90-goog
+
