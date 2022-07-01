@@ -2,44 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 86B5C562E46
-	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 10:31:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 662F2562E6D
+	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 10:36:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233921AbiGAIbf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Jul 2022 04:31:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36924 "EHLO
+        id S236686AbiGAIgQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Jul 2022 04:36:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229680AbiGAIbe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 04:31:34 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10A08B49;
-        Fri,  1 Jul 2022 01:31:34 -0700 (PDT)
-Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LZ7g62QdhzkWvL;
-        Fri,  1 Jul 2022 16:30:10 +0800 (CST)
-Received: from huawei.com (10.175.112.208) by kwepemi500012.china.huawei.com
- (7.221.188.12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 1 Jul
- 2022 16:31:31 +0800
-From:   Xu Qiang <xuqiang36@huawei.com>
-To:     <srini.raju@purelifi.com>, <kvalo@kernel.org>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>
-CC:     <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <xuqiang36@huawei.com>,
-        <rui.xiang@huawei.com>
-Subject: [PATCH v2 -next] wifi: plfxlc: Use eth_zero_addr() to assign zero address
-Date:   Fri, 1 Jul 2022 08:29:35 +0000
-Message-ID: <20220701082935.110924-1-xuqiang36@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        with ESMTP id S236548AbiGAIf6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 04:35:58 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D29F72EFF
+        for <netdev@vger.kernel.org>; Fri,  1 Jul 2022 01:35:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656664544; x=1688200544;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=5/0TiTQBCeOznX2uGmvgRSYJCRcfQlVH1AK7l3tTnZQ=;
+  b=PtK5j4Wy7+AJVFs1B7tQf2iWXWt1/ns81pwSXiEXZo4wMO+4QXZGe+3e
+   P3HNvzMPCIVmjIfAWq2gZQWxYSaz4TXVQustvCi/QVk+LW7bWeD011Z5V
+   4gDK7PCbb+pEZ4/tYi1qksVYXod8ZonvNYg+c6O5EirNWwdmzp4//XHhG
+   ygiZlOrUi8H/80FgMayydiw9Fz6unxIi5iw6KGTim2+OKo0bmXAlAmxqy
+   btx2b+JRqK/bjPzGUxWt1LkWgxBEmu/wq3dTqgSefy1RNjM7wuY2WUHBT
+   eTQoLS19b2HUn9ALQ3GagT5jjQRqOj7pMA2XcGyuQzRDyCAGFNNg4paWI
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10394"; a="281354144"
+X-IronPort-AV: E=Sophos;i="5.92,236,1650956400"; 
+   d="scan'208";a="281354144"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2022 01:35:25 -0700
+X-IronPort-AV: E=Sophos;i="5.92,236,1650956400"; 
+   d="scan'208";a="681320747"
+Received: from unknown (HELO s240.localdomain) ([10.237.94.19])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2022 01:35:23 -0700
+From:   Piotr Skajewski <piotrx.skajewski@intel.com>
+To:     kuba@kernel.org
+Cc:     anthony.l.nguyen@intel.com, davem@davemloft.net,
+        edumazet@google.com, konrad0.jankowski@intel.com,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        piotrx.skajewski@intel.com
+Subject: Re: [PATCH net 1/1] ixgbe: Add locking to prevent panic when setting sriov_numvfs to zero
+Date:   Fri,  1 Jul 2022 10:31:28 +0200
+Message-Id: <20220701083128.11707-1-piotrx.skajewski@intel.com>
+X-Mailer: git-send-email 2.35.0.rc0
+In-Reply-To: <20220630081134.48b9bb53@kernel.org>
+References: <20220630081134.48b9bb53@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.112.208]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- kwepemi500012.china.huawei.com (7.221.188.12)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -47,29 +60,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Using eth_zero_addr() to assign zero address instead of memset().
+On Thu, 30 Jun 2022 08:11:34 -0700 Jakub Kicinski wrote:
+> On Thu, 30 Jun 2022 12:08:39 +0200 Piotr Skajewski wrote:
+> > On Tue, 28 Jun 2022 10:27:07 -0700 Jakub Kicinski wrote:
+> > > On Tue, 28 Jun 2022 09:53:46 -0700 Tony Nguyen wrote:  
+> > > > +	spin_lock_irqsave(&adapter->vfs_lock, flags);
+> > > > +
+> > > >  	/* set num VFs to 0 to prevent access to vfinfo */
+> > > >  	adapter->num_vfs = 0;
+> > > >  
+> > > > @@ -228,6 +231,8 @@ int ixgbe_disable_sriov(struct ixgbe_adapter *adapter)
+> > > >  	kfree(adapter->mv_list);
+> > > >  	adapter->mv_list = NULL;
+> > > >  
+> > > > +	spin_unlock_irqrestore(&adapter->vfs_lock, flags);  
+> > >
+> > > There's a pci_dev_put() in there, are you sure it won't sleep?  
+> > 
+> > Thank Jakub for your notice, during development we were aware about this
+> > and tests we've made on this particular case, did not report any problems
+> > that could be related to might_sleep in conjunction with spinlock.
+> 
+> To be on the safe side how about we protect adapter->num_vfs instead 
+> of adapter->vfinfo ?
+> 
+> You can hold the lock just around setting adapter->num_vfs to zero,
+> and then inside ixgbe_msg_task() you don't have to add the new if()
+> because the loop bound is already adapter->num_vfs.
+> 
+> Smaller change, and safer.
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Xu Qiang <xuqiang36@huawei.com>
----
-v2:
-- fix typo in commit log
- drivers/net/wireless/purelifi/plfxlc/usb.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/wireless/purelifi/plfxlc/usb.c b/drivers/net/wireless/purelifi/plfxlc/usb.c
-index 8519cf0adfff..39e54b3787d6 100644
---- a/drivers/net/wireless/purelifi/plfxlc/usb.c
-+++ b/drivers/net/wireless/purelifi/plfxlc/usb.c
-@@ -562,7 +562,7 @@ static void sta_queue_cleanup_timer_callb(struct timer_list *t)
- 		if (tx->station[sidx].flag & STATION_HEARTBEAT_FLAG) {
- 			tx->station[sidx].flag ^= STATION_HEARTBEAT_FLAG;
- 		} else {
--			memset(tx->station[sidx].mac, 0, ETH_ALEN);
-+			eth_zero_addr(tx->station[sidx].mac);
- 			tx->station[sidx].flag = 0;
- 		}
- 	}
--- 
-2.17.1
-
+Yes sounds good, I will test it and prepare the patch.
