@@ -2,47 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F338562980
-	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 05:17:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CAC4A562984
+	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 05:21:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233976AbiGADRO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Jun 2022 23:17:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36612 "EHLO
+        id S234002AbiGADT3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Jun 2022 23:19:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233948AbiGADRM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 23:17:12 -0400
+        with ESMTP id S233948AbiGADT2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Jun 2022 23:19:28 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B10FB64D4E
-        for <netdev@vger.kernel.org>; Thu, 30 Jun 2022 20:17:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 903DA5924D;
+        Thu, 30 Jun 2022 20:19:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D41C62198
-        for <netdev@vger.kernel.org>; Fri,  1 Jul 2022 03:17:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 717DEC34115;
-        Fri,  1 Jul 2022 03:17:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A3156226C;
+        Fri,  1 Jul 2022 03:19:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 427FAC34115;
+        Fri,  1 Jul 2022 03:19:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656645430;
-        bh=biGYCsqe7IJjoIUN6ICxo1ZU1IFtuOLCZ+AsEAgycJM=;
+        s=k20201202; t=1656645566;
+        bh=Wu4LyrwBIXBMGUuBfkoa+RPX9Idpr9pjdu3wscaPnds=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=uFKsUkSFwiW6NAAH1w56etD1j+7+HZmZIouS0vDmmqgHKhUhZJwqdfUC6p9ehG6sC
-         2PCJps8KYJ/TnnUUvbpG2wFcu4a64/YLaPnvcnmXSMslfEby+aIgYHE9SLU98ekT3t
-         M2pokFg3ot64IiymcqbaoQcGJJHOZk4Gm2rWb/oUZd+6FQ22K5glNwq3069PqH+RkX
-         7F/ItNTVWGj/e05ycwbdvmNK9/MVcanW+Qy5xXU/D2Aq+AN5bZzYi/wyyJrVJZxspw
-         2U24wkdqf93C5MSn4JK6X/gHWWxDuMEIhP7y+700Be8oBdBe0FIfAriV0w/q/5l3DI
-         MVLfrDYGxKKPQ==
-Date:   Thu, 30 Jun 2022 20:17:09 -0700
+        b=kgjbyh3i2XIZ19rO5ftMUoo8DPoFt2NWUdxvGlsmAaXugcR3qu11845WpDRfFxu9N
+         NphLmbEYKPN7RAhY4zdSxlrWPpItAeReSRkddycSl9vHE9EtfDKYv5c0yTVJLhkbVK
+         dsYWwL70m1KFJ7QPGb/r2k3oy84quFaOd1k1DrM/KWc+lJU48K8LKIFj887vfRyAFS
+         qtXE2AAh4HQIRBNCBTsQHbY59DOz+XeGRtyhxg7csjDm2NPO+P2G9n91vEBfEgRgvW
+         iF3fnVkD/Qbz027/8x1d2B1pJdpaUK9Fj6yUiKBLhktrbQFV3RjQsSTbm3y7Axfpv9
+         mNV5SqCtiUSbw==
+Date:   Thu, 30 Jun 2022 20:19:25 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Ido Schimmel <idosch@nvidia.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, pabeni@redhat.com,
-        edumazet@google.com, petrm@nvidia.com, amcohen@nvidia.com,
-        mlxsw@nvidia.com
-Subject: Re: [PATCH net-next 01/13] mlxsw: Configure egress VID for unicast
- FDB entries
-Message-ID: <20220630201709.6e66a1bb@kernel.org>
-In-Reply-To: <20220630082257.903759-2-idosch@nvidia.com>
-References: <20220630082257.903759-1-idosch@nvidia.com>
-        <20220630082257.903759-2-idosch@nvidia.com>
+To:     Jianglei Nie <niejianglei2021@163.com>
+Cc:     irusskikh@marvell.com, davem@davemloft.net, edumazet@google.com,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: atlantic: fix potential memory leak in
+ aq_ndev_close()
+Message-ID: <20220630201925.4138ab9c@kernel.org>
+In-Reply-To: <20220629175645.2163510-1-niejianglei2021@163.com>
+References: <20220629175645.2163510-1-niejianglei2021@163.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -56,40 +55,13 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 30 Jun 2022 11:22:45 +0300 Ido Schimmel wrote:
-> From: Amit Cohen <amcohen@nvidia.com>
-> 
-> Using unified bridge model, firmware no longer configures the egress VID
-> "under the hood" and moves this responsibility to software.
-> 
-> For layer 2, this means that software needs to determine the egress VID
-> for both unicast (i.e., FDB) and multicast (i.e., MDB and flooding) flows.
-> 
-> Unicast FDB records and unicast LAG FDB records have new fields - "set_vid"
-> and "vid", set them. For records which point to router port, do not set
-> these fields.
+On Thu, 30 Jun 2022 01:56:45 +0800 Jianglei Nie wrote:
+>  	err = aq_nic_stop(aq_nic);
+> -	if (err < 0)
+> -		goto err_exit;
+>  	aq_nic_deinit(aq_nic, true);
+>  
+>  err_exit:
 
-clang seems to have a legitimate complaint:
-
-drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c:2928:6: warning: variable 'mlxsw_sp_port_vlan' is used uninitialized whenever 'if' condition is true [-Wsometimes-uninitialized]
-        if (mlxsw_sp_fid_is_dummy(mlxsw_sp, fid))
-            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c:2948:11: note: uninitialized use occurs here
-                                      mlxsw_sp_port_vlan->vid, adding, true);
-                                      ^~~~~~~~~~~~~~~~~~
-drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c:2928:2: note: remove the 'if' if its condition is always false
-        if (mlxsw_sp_fid_is_dummy(mlxsw_sp, fid))
-        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c:2923:6: warning: variable 'mlxsw_sp_port_vlan' is used uninitialized whenever 'if' condition is true [-Wsometimes-uninitialized]
-        if (!mlxsw_sp_port) {
-            ^~~~~~~~~~~~~~
-drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c:2948:11: note: uninitialized use occurs here
-                                      mlxsw_sp_port_vlan->vid, adding, true);
-                                      ^~~~~~~~~~~~~~~~~~
-drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c:2923:2: note: remove the 'if' if its condition is always false
-        if (!mlxsw_sp_port) {
-        ^~~~~~~~~~~~~~~~~~~~~
-drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c:2907:47: note: initialize the variable 'mlxsw_sp_port_vlan' to silence this warning
-        struct mlxsw_sp_port_vlan *mlxsw_sp_port_vlan;
-                                                     ^
-                                                      = NULL
+label is now unused, please make sure you build test your changes with
+W=1
