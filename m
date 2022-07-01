@@ -2,76 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E2D58563704
-	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 17:37:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D55E563725
+	for <lists+netdev@lfdr.de>; Fri,  1 Jul 2022 17:45:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231200AbiGAPg6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Jul 2022 11:36:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34096 "EHLO
+        id S229559AbiGAPpJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Jul 2022 11:45:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230090AbiGAPgu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 11:36:50 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4546939BA4;
-        Fri,  1 Jul 2022 08:36:47 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id pk21so4776980ejb.2;
-        Fri, 01 Jul 2022 08:36:47 -0700 (PDT)
+        with ESMTP id S229906AbiGAPpI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 11:45:08 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAC9F2E688
+        for <netdev@vger.kernel.org>; Fri,  1 Jul 2022 08:45:07 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id c6-20020a17090abf0600b001eee794a478so6808190pjs.1
+        for <netdev@vger.kernel.org>; Fri, 01 Jul 2022 08:45:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=kVWP9v9nuRHyTkGEYSrcvx5uXVMOYJJ1wNoS0VDXg9k=;
-        b=SqZhVjf7YNNWixNsKmBLY6iXajXocLtajbIf7Rwa4/DgzXmfZOf929koyVGp5a4cJM
-         9rrisSEADI6F7uCEphtjMSxcfpYNk6hkQn7MYGwsnEJI42VB5gSdrHMeISl1m0u/uNbM
-         FKmTJpDjug72jjNeo2v6vGUKbrRVU6PK9rTE7g6l/txGHCOGAsbNNk3zbSU9w/LpDtbQ
-         Qz0foezAvyKetuqKHK/Epagqzwa+luCiiN6hbGSzAqzVloMh5MoCcakiImRU8hb+v4tP
-         LIlhFcBX1UfLysKyB5fLC+xNhn/ly0jvmTgqbw6LSKbR909kFJAWzGLH8VnoYHpd3R6d
-         tXeQ==
+        bh=4kL2J3waI1/HipljLlbESi16CzaasBnMD53my+eWr+Q=;
+        b=oUQjrU57BYd4TEclijhVgVa7fuexssMPx1jo+mofihv0bkTaosbqn2WRcic8By7aOi
+         QBuzm/qPlFZAcgfZmR05iaeSv4m6fJIgB9SODx7YH5tVyxNQanTdv6fpG0JEbMmtpHSz
+         aodQGKYG8Riiwwym5LyUpw9mq/X23CWWg8evHStFxuE3pAHSj5XEiFJ09Ohw8ejv2+Ba
+         DN/rQxhUCiXGvzt1Q/chr23qhRkg2zvDjC9ejI4M9v+OlXRAZ1cIMNek63lWfCQLmQIt
+         qHGhuLHsRD5EBzFxUnOEKsFLtR/tTEkahUPcbZk+eO0z89TabrkazyriTvXkcKCosq2s
+         UZbQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=kVWP9v9nuRHyTkGEYSrcvx5uXVMOYJJ1wNoS0VDXg9k=;
-        b=YKq8NJhHKbzPHz3BY36bJNlM9UQCfncHPgFHcTpxauBwqmWbXa7U5UBHv6XK8B4FIt
-         kJd3AdUwblEUSOPIlbrWHg4ghyD6MXOGiY77pQ1DpTgy2OY5gPhI6GCj74I4DfD87+0n
-         P0kN+gqDYU+PijmcnLtrcGyJoMImQOvFJOJX0IcwXk7EINu7pKx/7sHFuGLPrtHyzyem
-         yj1z9rnFgxrg2ak/4UJYiQzjz8oxVoKOk8LntY+3bK2+wr0F2xsRzPPeCuyxyAV32fzB
-         E1gSZNb4ckrK0Fy0Gl/fZJVPkOPpKa9XQR4r7MnQtZ6YJO5NCCL+oap1wa1QinGO+N40
-         cMmA==
-X-Gm-Message-State: AJIora95TztoNYBtbQegTcYwzOkNHYIdbrw5pY84kwrARFJlIWnH9x1w
-        y0U3/M9T4NweWWv+u1UN1v8=
-X-Google-Smtp-Source: AGRyM1sbuKQmRTnINPADgbGRg8JQE2qKqhXWTCOypWUscwCJZKjHhyoe3fG2hqQGXqGDHtdjsw8lJA==
-X-Received: by 2002:a17:907:628a:b0:6fe:526c:ebc with SMTP id nd10-20020a170907628a00b006fe526c0ebcmr14194125ejc.531.1656689805755;
-        Fri, 01 Jul 2022 08:36:45 -0700 (PDT)
-Received: from opensuse.localnet (host-79-53-109-127.retail.telecomitalia.it. [79.53.109.127])
-        by smtp.gmail.com with ESMTPSA id c12-20020a170906d18c00b00727c6da69besm3853562ejz.38.2022.07.01.08.36.42
+        bh=4kL2J3waI1/HipljLlbESi16CzaasBnMD53my+eWr+Q=;
+        b=eu4JWos0Ny/y1Na1xzmj7FEq04suWLXe0H9ZJPPYdd7VyvoOJMCO/j+f9SXE1MFFAb
+         e63VPMYi8yW9TRwv+KyLbFtGi6kFc5dnXwyAtYpWC36rzdFI/YKAP9WyIuhDlbsQX6dO
+         +Xx1kRSRDCa9a1loSbd26IfZlBMy7U9J6coMx8nesCxRIensIAP+B4nf/GGfnj83o9R5
+         wNm0QbBXKqJpQQYF1sXeMDatiY74fKTYpw1T55pjBAgbmGVi81kS4c4FRetXi4iFhBRx
+         CMYc756IAOcxwFuxtw7+nFhzDn8HL5Qo51boFDP9nj2i9awBdpGzJ3PGgms9ZF9vbxi4
+         ZEdg==
+X-Gm-Message-State: AJIora8K+PIfrCXzGPT2JuVRKlMtHHbbOuPqKRcuR7hY4drgKLbYElz3
+        v9hvhJ+zWhyQoJfRx1hs6NDBdiweNYd0NjxXC92Kt7XN
+X-Google-Smtp-Source: AGRyM1uDMbt0oGWcL80QGM0InpfQUCVtCl2ZY+DtmgonmMTZrXjzNCOQ9hndu1PZl7O+W/GjYQJSGA==
+X-Received: by 2002:a17:90a:dc82:b0:1ea:c77d:c9a4 with SMTP id j2-20020a17090adc8200b001eac77dc9a4mr19702806pjv.197.1656690307249;
+        Fri, 01 Jul 2022 08:45:07 -0700 (PDT)
+Received: from sewookseo1.c.googlers.com.com (174.71.80.34.bc.googleusercontent.com. [34.80.71.174])
+        by smtp.gmail.com with ESMTPSA id r20-20020a170902c7d400b001678898ad06sm15514141pla.47.2022.07.01.08.45.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Jul 2022 08:36:44 -0700 (PDT)
-From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Ira Weiny <ira.weiny@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [Intel-wired-lan] [PATCH] ixgbe: Use kmap_local_page in ixgbe_check_lbtest_frame()
-Date:   Fri, 01 Jul 2022 17:36:42 +0200
-Message-ID: <2834855.e9J7NaK4W3@opensuse>
-In-Reply-To: <CAKgT0UfThk3MLcE38wQu5+2Qy7Ld2px-2WJgnD+2xbDsA8iEEw@mail.gmail.com>
-References: <20220629085836.18042-1-fmdefrancesco@gmail.com> <2254584.ElGaqSPkdT@opensuse> <CAKgT0UfThk3MLcE38wQu5+2Qy7Ld2px-2WJgnD+2xbDsA8iEEw@mail.gmail.com>
+        Fri, 01 Jul 2022 08:45:06 -0700 (PDT)
+From:   Sewook Seo <ssewook@gmail.com>
+To:     Sewook Seo <sewookseo@google.com>
+Cc:     Linux Network Development Mailing List <netdev@vger.kernel.org>,
+        "David S . Miller " <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Sehee Lee <seheele@google.com>
+Subject: [PATCH v2] net-tcp: Find dst with sk's xfrm policy not ctl_sk
+Date:   Fri,  1 Jul 2022 15:44:13 +0000
+Message-Id: <20220701154413.868096-1-ssewook@gmail.com>
+X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
+In-Reply-To: <20220621202240.4182683-1-ssewook@gmail.com>
+References: <20220621202240.4182683-1-ssewook@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -82,117 +77,111 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On gioved=C3=AC 30 giugno 2022 23:59:23 CEST Alexander Duyck wrote:
-> On Thu, Jun 30, 2022 at 11:18 AM Fabio M. De Francesco
-> <fmdefrancesco@gmail.com> wrote:
-> >
-> > On gioved=C3=AC 30 giugno 2022 18:09:18 CEST Alexander Duyck wrote:
-> > > On Thu, Jun 30, 2022 at 8:25 AM Eric Dumazet <edumazet@google.com>=20
-wrote:
-> > > >
-> > > > On Thu, Jun 30, 2022 at 5:17 PM Alexander Duyck
-> > > > <alexander.duyck@gmail.com> wrote:
-> > > > >
-> > > > > On Thu, Jun 30, 2022 at 3:10 AM Maciej Fijalkowski
-> > > > > <maciej.fijalkowski@intel.com> wrote:
-> > > > > >
-> > > > > > On Wed, Jun 29, 2022 at 10:58:36AM +0200, Fabio M. De Francesco
-> > wrote:
-> > > > > > > The use of kmap() is being deprecated in favor of
-> > kmap_local_page().
-> > > > > > >
-> > > > > > > With kmap_local_page(), the mapping is per thread, CPU local=
-=20
-and
-> > not
-> > > > > > > globally visible. Furthermore, the mapping can be acquired=20
-from
-> > any context
-> > > > > > > (including interrupts).
-> > > > > > >
-> > > > > > > Therefore, use kmap_local_page() in=20
-ixgbe_check_lbtest_frame()
-> > because
-> > > > > > > this mapping is per thread, CPU local, and not globally=20
-visible.
-> > > > > >
-> > > > > > Hi,
-> > > > > >
-> > > > > > I'd like to ask why kmap was there in the first place and not=20
-plain
-> > > > > > page_address() ?
-> > > > > >
-> > > > > > Alex?
-> > > > >
-> > > > > The page_address function only works on architectures that have
-> > access
-> > > > > to all of physical memory via virtual memory addresses. The kmap
-> > > > > function is meant to take care of highmem which will need to be
-> > mapped
-> > > > > before it can be accessed.
-> > > > >
-> > > > > For non-highmem pages kmap just calls the page_address function.
-> > > > > https://elixir.bootlin.com/linux/latest/source/include/linux/
-highmem-internal.h#L40
-> > > >
-> > > >
-> > > > Sure, but drivers/net/ethernet/intel/ixgbe/ixgbe_main.c is=20
-allocating
-> > > > pages that are not highmem ?
-> > > >
-> > > > This kmap() does not seem needed.
-> > >
-> > > Good point. So odds are page_address is fine to use. Actually there=20
-is
-> > > a note to that effect in ixgbe_pull_tail.
-> > >
-> > > As such we could probably go through and update igb, and several of
-> > > the other Intel drivers as well.
-> > >
-> > > - Alex
-> > >
-> > I don't know this code, however I know kmap*().
-> >
-> > I assumed that, if author used kmap(), there was possibility that the=20
-page
-> > came from highmem.
-> >
-> > In that case kmap_local_page() looks correct here.
-> >
-> > However, now I read that that page _cannot_ come from highmem.=20
-Therefore,
-> > page_address() would suffice.
-> >
-> > If you all want I can replace kmap() / kunmap() with a "plain"
-> > page_address(). Please let me know.
-> >
-> > Thanks,
-> >
-> > Fabio
->=20
-> Replacing it with just page_address() should be fine. Back when I
-> wrote the code I didn't realize that GFP_ATOMIC pages weren't
-> allocated from highmem so I suspect I just used kmap since it was the
-> way to cover all the bases.
->=20
-> Thanks,
->=20
-> - Alex
->=20
+From: sewookseo <sewookseo@google.com>
 
-OK, I'm about to prepare another patch with page_address() (obviously, this=
-=20
-should be discarded).
+If we set XFRM security policy by calling setsockopt with option
+IPV6_XFRM_POLICY, the policy will be stored in 'sock_policy' in 'sock'
+struct. However tcp_v6_send_response doesn't look up dst_entry with the
+actual socket but looks up with tcp control socket. This may cause a
+problem that a RST packet is sent without ESP encryption & peer's TCP
+socket can't receive it.
+This patch will make the function look up dest_entry with actual socket,
+if the socket has XFRM policy(sock_policy), so that the TCP response
+packet via this function can be encrypted, & aligned on the encrypted
+TCP socket.
 
-Last thing... Is that page allocated with dma_pool_alloc() at
-ixgbe/ixgbe_fcoe.c:196? Somewhere else?
+Tested: We encountered this problem when a TCP socket which is encrypted
+in ESP transport mode encryption, receives challenge ACK at SYN_SENT
+state. After receiving challenge ACK, TCP needs to send RST to
+establish the socket at next SYN try. But the RST was not encrypted &
+peer TCP socket still remains on ESTABLISHED state.
+So we verified this with test step as below.
+[Test step]
+1. Making a TCP state mismatch between client(IDLE) & server(ESTABLISHED).
+2. Client tries a new connection on the same TCP ports(src & dst).
+3. Server will return challenge ACK instead of SYN,ACK.
+4. Client will send RST to server to clear the SOCKET.
+5. Client will retransmit SYN to server on the same TCP ports.
+[Expected result]
+The TCP connection should be established.
 
-Thanks,
+Effort: net-tcp
+Cc: Maciej Żenczykowski <maze@google.com>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Steffen Klassert <steffen.klassert@secunet.com>
+Cc: Sehee Lee <seheele@google.com>
+Signed-off-by: Sewook Seo <sewookseo@google.com>
+---
+Changelog since v1:
+- Remove unnecessary null check of sk at ip_output.c
+  Narrow down patch scope: sending RST at SYN_SENT state
+  Remove unnecessay condition to call xfrm_sk_free_policy()
+  Verified at KASAN build
 
-=46abio
+ net/ipv4/ip_output.c | 7 ++++++-
+ net/ipv4/tcp_ipv4.c  | 5 +++++
+ net/ipv6/tcp_ipv6.c  | 7 ++++++-
+ 3 files changed, 17 insertions(+), 2 deletions(-)
 
-P.S.: Can you say something about how pages are allocated in intel/e1000=20
-and in intel/e1000e? I see that those drivers use kmap_atomic().
-
-
+diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
+index 00b4bf26fd93..1da430c8fee2 100644
+--- a/net/ipv4/ip_output.c
++++ b/net/ipv4/ip_output.c
+@@ -1704,7 +1704,12 @@ void ip_send_unicast_reply(struct sock *sk, struct sk_buff *skb,
+ 			   tcp_hdr(skb)->source, tcp_hdr(skb)->dest,
+ 			   arg->uid);
+ 	security_skb_classify_flow(skb, flowi4_to_flowi_common(&fl4));
+-	rt = ip_route_output_key(net, &fl4);
++#ifdef CONFIG_XFRM
++	if (sk->sk_policy[XFRM_POLICY_OUT])
++		rt = ip_route_output_flow(net, &fl4, sk);
++	else
++#endif
++		rt = ip_route_output_key(net, &fl4);
+ 	if (IS_ERR(rt))
+ 		return;
+ 
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index fda811a5251f..459669f9e13f 100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -819,6 +819,10 @@ static void tcp_v4_send_reset(const struct sock *sk, struct sk_buff *skb)
+ 		ctl_sk->sk_priority = (sk->sk_state == TCP_TIME_WAIT) ?
+ 				   inet_twsk(sk)->tw_priority : sk->sk_priority;
+ 		transmit_time = tcp_transmit_time(sk);
++#ifdef CONFIG_XFRM
++		if (sk->sk_policy[XFRM_POLICY_OUT] && sk->sk_state == TCP_SYN_SENT)
++			xfrm_sk_clone_policy(ctl_sk, sk);
++#endif
+ 	}
+ 	ip_send_unicast_reply(ctl_sk,
+ 			      skb, &TCP_SKB_CB(skb)->header.h4.opt,
+@@ -827,6 +831,7 @@ static void tcp_v4_send_reset(const struct sock *sk, struct sk_buff *skb)
+ 			      transmit_time);
+ 
+ 	ctl_sk->sk_mark = 0;
++	xfrm_sk_free_policy(ctl_sk);
+ 	sock_net_set(ctl_sk, &init_net);
+ 	__TCP_INC_STATS(net, TCP_MIB_OUTSEGS);
+ 	__TCP_INC_STATS(net, TCP_MIB_OUTRSTS);
+diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
+index c72448ba6dc9..453452f87a7c 100644
+--- a/net/ipv6/tcp_ipv6.c
++++ b/net/ipv6/tcp_ipv6.c
+@@ -952,7 +952,12 @@ static void tcp_v6_send_response(const struct sock *sk, struct sk_buff *skb, u32
+ 	 * Underlying function will use this to retrieve the network
+ 	 * namespace
+ 	 */
+-	dst = ip6_dst_lookup_flow(sock_net(ctl_sk), ctl_sk, &fl6, NULL);
++#ifdef CONFIG_XFRM
++	if (sk && sk->sk_policy[XFRM_POLICY_OUT] && sk->sk_state == TCP_SYN_SENT && rst)
++		dst = ip6_dst_lookup_flow(net, sk, &fl6, NULL);  /* Get dst with sk's XFRM policy */
++	else
++#endif
++		dst = ip6_dst_lookup_flow(sock_net(ctl_sk), ctl_sk, &fl6, NULL);
+ 	if (!IS_ERR(dst)) {
+ 		skb_dst_set(buff, dst);
+ 		ip6_xmit(ctl_sk, buff, &fl6, fl6.flowi6_mark, NULL,
+-- 
+2.37.0.rc0.161.g10f37bed90-goog
 
