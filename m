@@ -2,148 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5381F564095
-	for <lists+netdev@lfdr.de>; Sat,  2 Jul 2022 16:02:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C16A56409D
+	for <lists+netdev@lfdr.de>; Sat,  2 Jul 2022 16:07:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232099AbiGBOCW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Jul 2022 10:02:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48772 "EHLO
+        id S229592AbiGBOHY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Jul 2022 10:07:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231459AbiGBOCK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Jul 2022 10:02:10 -0400
-Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A9C1FBF56;
-        Sat,  2 Jul 2022 07:02:07 -0700 (PDT)
-X-IronPort-AV: E=Sophos;i="5.92,240,1650898800"; 
-   d="scan'208";a="124846520"
-Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-  by relmlie5.idc.renesas.com with ESMTP; 02 Jul 2022 23:02:07 +0900
-Received: from localhost.localdomain (unknown [10.226.92.2])
-        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 8793E43676A8;
-        Sat,  2 Jul 2022 23:02:03 +0900 (JST)
-From:   Biju Das <biju.das.jz@bp.renesas.com>
-To:     Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Biju Das <biju.das.jz@bp.renesas.com>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>,
-        linux-renesas-soc@vger.kernel.org
-Subject: [PATCH 6/6] can: sja1000: Add support for RZ/N1 SJA1000 CAN Controller
-Date:   Sat,  2 Jul 2022 15:01:30 +0100
-Message-Id: <20220702140130.218409-7-biju.das.jz@bp.renesas.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220702140130.218409-1-biju.das.jz@bp.renesas.com>
-References: <20220702140130.218409-1-biju.das.jz@bp.renesas.com>
+        with ESMTP id S229491AbiGBOHX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Jul 2022 10:07:23 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34A80E0E0
+        for <netdev@vger.kernel.org>; Sat,  2 Jul 2022 07:07:21 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id j21so8345977lfe.1
+        for <netdev@vger.kernel.org>; Sat, 02 Jul 2022 07:07:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=pSKuz9BJS/Qwel4yBJUKsJP++c1z8gtIosTtEbMtN5I=;
+        b=V5RYFH0CYEv37XW44OczMvVlU+WsjUIeMziTLDEA7/2IdeUnyS1qNzC2RxeSnniNnT
+         fv+hG26KeVkmv1L4Ux0qrhvEVeFOcH7Q1aWvS7igyDYBsqfyDgrGosRn5nsFaozdbTTz
+         AJDQCy3noBeZMwY3g/fBN1ZrBJJlnXGpO+f6jkBdAg/W07G/jmLToDoq3iy4Y7aTKsr8
+         B3jszz07Zbd7wtVCH7gdCqbFABQaFgxIjD8sDFzM92EFAXhbcaY+SR0BsuBqQDHV2YWq
+         2eGbdt7+01V2QKO/fK90rPW84kMGVDhrmqCdEGfTxRkdSDnRctdGffSI5CiJ3XA6yP9K
+         7pLg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=pSKuz9BJS/Qwel4yBJUKsJP++c1z8gtIosTtEbMtN5I=;
+        b=b4XjV/h6VsR0p/DLj3lqTqsouUJKkjvbgv53c+vTk8B/Z9asIdPZKu59gvJ4GWIbd6
+         sziqL6tIXBB4F8V2MgC3E5xeO7u0qitdt105d7Wkl/eiJIRhrnTmNHaBTI69V7EXDHsf
+         56PwOuP50zKkBOPzu8QfgwypuFNDZppMV1DU+9FE43s6fz9sEtHLRNPfSndA47O+XG5O
+         +Z5xdWcEwcuEYjXpqyn9Y/dtlhdg49K8jHeqAp5YGyt3yJ6GRPnVELeIYTUgfTuHw2qU
+         wlnffgd/x15fZWo49fIZ3Mx3cVsP+vzVjkArByLxdTG50d/wAvw7uHdEf+eyUmVtF5l1
+         JgEw==
+X-Gm-Message-State: AJIora+M+G8z63jlWSLr4sjzi/awe21m9IyTlu5vE2R/qp0mg3HG/jZC
+        Ebu/xsN8tVat0RcR01jh1Lj++tspJ2H/+H9kFtc=
+X-Google-Smtp-Source: AGRyM1tZjUTtqoGvhDilyIio0L12d4/eoQy0jaw/WpvNF1xanE5QP+qQg/wQDneCAY1srrT1KYd0BJZAoHaMH8Yr/Pg=
+X-Received: by 2002:a05:6512:2312:b0:47f:6f22:a054 with SMTP id
+ o18-20020a056512231200b0047f6f22a054mr11899773lfu.287.1656770839589; Sat, 02
+ Jul 2022 07:07:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Received: by 2002:a05:651c:1143:0:0:0:0 with HTTP; Sat, 2 Jul 2022 07:07:18
+ -0700 (PDT)
+Reply-To: davidnelson7702626@gmail.com
+From:   Emile Agboyibor <emileagboyibor02@gmail.com>
+Date:   Sat, 2 Jul 2022 14:07:18 +0000
+Message-ID: <CA+rznj29kmtG9Y-qXFOT5U-OrgZfvfJwoRWfLKPym-kNvLRbjA@mail.gmail.com>
+Subject: 
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=4.5 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        UNDISC_FREEM autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: ****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The SJA1000 CAN controller on RZ/N1 SoC has some differences compared
-to others like it has no clock divider register (CDR) support and it has
-no HW loopback(HW doesn't see tx messages on rx).
-
-This patch adds support for RZ/N1 SJA1000 CAN Controller.
-
-Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
----
- drivers/net/can/sja1000/sja1000_platform.c | 34 ++++++++++++++++++----
- 1 file changed, 29 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/net/can/sja1000/sja1000_platform.c b/drivers/net/can/sja1000/sja1000_platform.c
-index 5f3d362e0da5..8e63af76a013 100644
---- a/drivers/net/can/sja1000/sja1000_platform.c
-+++ b/drivers/net/can/sja1000/sja1000_platform.c
-@@ -14,6 +14,7 @@
- #include <linux/irq.h>
- #include <linux/can/dev.h>
- #include <linux/can/platform/sja1000.h>
-+#include <linux/clk.h>
- #include <linux/io.h>
- #include <linux/of.h>
- #include <linux/of_device.h>
-@@ -103,6 +104,11 @@ static void sp_technologic_init(struct sja1000_priv *priv, struct device_node *o
- 	spin_lock_init(&tp->io_lock);
- }
- 
-+static void sp_rzn1_init(struct sja1000_priv *priv, struct device_node *of)
-+{
-+	priv->flags = SJA1000_NO_CDR_REG_QUIRK | SJA1000_NO_HW_LOOPBACK_QUIRK;
-+}
-+
- static void sp_populate(struct sja1000_priv *priv,
- 			struct sja1000_platform_data *pdata,
- 			unsigned long resource_mem_flags)
-@@ -153,11 +159,13 @@ static void sp_populate_of(struct sja1000_priv *priv, struct device_node *of)
- 		priv->write_reg = sp_write_reg8;
- 	}
- 
--	err = of_property_read_u32(of, "nxp,external-clock-frequency", &prop);
--	if (!err)
--		priv->can.clock.freq = prop / 2;
--	else
--		priv->can.clock.freq = SP_CAN_CLOCK; /* default */
-+	if (!priv->can.clock.freq) {
-+		err = of_property_read_u32(of, "nxp,external-clock-frequency", &prop);
-+		if (!err)
-+			priv->can.clock.freq = prop / 2;
-+		else
-+			priv->can.clock.freq = SP_CAN_CLOCK; /* default */
-+	}
- 
- 	err = of_property_read_u32(of, "nxp,tx-output-mode", &prop);
- 	if (!err)
-@@ -192,8 +200,13 @@ static struct sja1000_of_data technologic_data = {
- 	.init = sp_technologic_init,
- };
- 
-+static struct sja1000_of_data renesas_data = {
-+	.init = sp_rzn1_init,
-+};
-+
- static const struct of_device_id sp_of_table[] = {
- 	{ .compatible = "nxp,sja1000", .data = NULL, },
-+	{ .compatible = "renesas,rzn1-sja1000", .data = &renesas_data, },
- 	{ .compatible = "technologic,sja1000", .data = &technologic_data, },
- 	{ /* sentinel */ },
- };
-@@ -210,6 +223,7 @@ static int sp_probe(struct platform_device *pdev)
- 	struct device_node *of = pdev->dev.of_node;
- 	const struct sja1000_of_data *of_data = NULL;
- 	size_t priv_sz = 0;
-+	struct clk *clk;
- 
- 	pdata = dev_get_platdata(&pdev->dev);
- 	if (!pdata && !of) {
-@@ -262,6 +276,16 @@ static int sp_probe(struct platform_device *pdev)
- 	priv->reg_base = addr;
- 
- 	if (of) {
-+		clk = devm_clk_get_optional(&pdev->dev, "can_clk");
-+		if (IS_ERR(clk))
-+			return dev_err_probe(&pdev->dev, PTR_ERR(clk), "no CAN clk");
-+
-+		if (clk) {
-+			priv->can.clock.freq  = clk_get_rate(clk) / 2;
-+			if (!priv->can.clock.freq)
-+				return dev_err_probe(&pdev->dev, -EINVAL, "Zero CAN clk rate");
-+		}
-+
- 		sp_populate_of(priv, of);
- 
- 		if (of_data && of_data->init)
--- 
-2.25.1
-
+Hello friend, I want to send money to you to enable me invest in your
+country get back to me if you are interested.
