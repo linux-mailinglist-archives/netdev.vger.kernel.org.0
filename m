@@ -2,268 +2,278 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 654D45641C2
-	for <lists+netdev@lfdr.de>; Sat,  2 Jul 2022 19:05:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 16DA95641E9
+	for <lists+netdev@lfdr.de>; Sat,  2 Jul 2022 19:41:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232439AbiGBRFP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Jul 2022 13:05:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56318 "EHLO
+        id S232272AbiGBRku (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Jul 2022 13:40:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232432AbiGBRFL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Jul 2022 13:05:11 -0400
-Received: from JPN01-OS0-obe.outbound.protection.outlook.com (mail-os0jpn01on2118.outbound.protection.outlook.com [40.107.113.118])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C815ADFEC;
-        Sat,  2 Jul 2022 10:05:08 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=S8y7UYcLOo2lNpIlrpbHgd+jawjASmI0LWYXdXDY4sjMsLfXEOS+JpLzsgNOnzVnTmUAi+UH221U3AP1Ev5cW3wmNYsyQyveUkdcXeLseuazj+Xy7jgsaekeX3dnrOYZjDfNXO7zM7LFOG2ET3Dn+SiGfZlwXinBnxOM2v+IEZ8qx6G70Y+6+A7/i1CzJPDZH8wFNDPzuEL3HGPA+ZDOVVcRgjo+ph+AoIA0oGZNoI5HOwwH0VqTuIHeVjg3mDPDlCMzlXmZ+DGKWSyMnkk2QFxB93wnGLnRnVT0ZpUFJHZ1aGrMrs+RGiGiZFq6GHJJwMQxPbiuY+1VuvB20QKK1Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=1LXyPMlmIyNsGP+6cxwZaAhL3xL5BZz1KXbtW+3MiP0=;
- b=RBZtucMQtWvI+ufxVgef7y1DZRiq4Adr5TQO2R3ohe78j0uopGTD8qNkSb0JuIa2GcFjRvPBWQw43YxBDZJepUemc7ccro+jrcUwZCyZT4eFxo2BiG+ka0ULagM8BiqiUJXd7nHEub47ngQ2i33LuOh1cnAo91fUc4KzaPO5OdsLHTkB6lJ+L1il9v/0yVWFywf5LO49DAlATXplxxJFWT4xaJYFvxfTnTzJYRvWGVb8Tn00B7Hvg1thvHIj2fdk16bHoEW9YJjDV+qRq/oKKRnhtBy6+YUQtMGGQdZ4Mn6G7cuL2mJVfwN9PMn1pdDayiMuQxx8Vp7llFY7avqgUQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=bp.renesas.com; dmarc=pass action=none
- header.from=bp.renesas.com; dkim=pass header.d=bp.renesas.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bp.renesas.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1LXyPMlmIyNsGP+6cxwZaAhL3xL5BZz1KXbtW+3MiP0=;
- b=Pwt8bCsgfhP82xElwIGK0PmAtVbgEjDg0t3wzlzbKioUI24TcB8L6O1Ox8zhczsQlMz0gcJ5OwHpd4i7bHhuAsPZhZYdlPj6Ycmc/gFYHib2C8VxXCemvpZ4aw8l4KHLMy+32cVTN56/qJlxUHjhnqBE+ZGucIkn61nbLQ+wEHw=
-Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com (2603:1096:604:bb::5)
- by TYCPR01MB9435.jpnprd01.prod.outlook.com (2603:1096:400:190::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.17; Sat, 2 Jul
- 2022 17:05:05 +0000
-Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com
- ([fe80::dc06:eb07:874:ecce]) by OS0PR01MB5922.jpnprd01.prod.outlook.com
- ([fe80::dc06:eb07:874:ecce%9]) with mapi id 15.20.5395.018; Sat, 2 Jul 2022
- 17:05:04 +0000
-From:   Biju Das <biju.das.jz@bp.renesas.com>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-CC:     Wolfgang Grandegger <wg@grandegger.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        =?utf-8?B?U3RlZmFuIE3DpHRqZQ==?= <stefan.maetje@esd.eu>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>
-Subject: RE: [PATCH 3/6] can: sja1000: Add Quirks for RZ/N1 SJA1000 CAN
- controller
-Thread-Topic: [PATCH 3/6] can: sja1000: Add Quirks for RZ/N1 SJA1000 CAN
- controller
-Thread-Index: AQHYjhxJkDEGx2ebfk6KgFA2HnT7JK1rRqoAgAAHoPA=
-Date:   Sat, 2 Jul 2022 17:05:04 +0000
-Message-ID: <OS0PR01MB592276019B677172CC2E079186BC9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-References: <20220702140130.218409-1-biju.das.jz@bp.renesas.com>
- <20220702140130.218409-4-biju.das.jz@bp.renesas.com>
- <20220702163322.pmw46uucdciilvcf@pengutronix.de>
-In-Reply-To: <20220702163322.pmw46uucdciilvcf@pengutronix.de>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=bp.renesas.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: dd4dfc10-7baa-4513-777f-08da5c4d01f2
-x-ms-traffictypediagnostic: TYCPR01MB9435:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 1js/Uqd/GP8LD15oFjGbW3A/LXG6bmo2vUpENLLUgpPoAH/6YrGWJds8ceUWJGa2gIaDM03PWgHkeVPHtJ8dw4gSn1TYbQZDL2ZX51FuXhJWixPLquIQzSw4Wz2dDN0mhpAtGJoK2lKfIEvjx+0we1WeuwM8DIxUm9WXzGXeVQHzSRAZx0pI5ZtFpQifSeiydhZ9bsivE/jj57NUtHdfGMvFoeraT90Q0D6kCQBt4DxTXy3tsxNqYkm2Vbp8IcNTVfTLiz3X2sM35XaNH9ECcU+1yb3IAUZGSl5eS85t8Ot0UND+GvsJNjY3LELfZe5nig8gC+v+9Siq/Bxio2lah0DznaiAP+FdY1xkSRjdnBG4XYBvKF5jFzVqxRDbghUsGeTlBvbyc1cirJR6FHn6Lq0Jrtxgx0VCnFBJIl/zYQ5UzXdTQEvlxyw/35Ygd9JjzKjBvPsslI8UHDbjoaX0d3TRcTiw6znx5jxdutflnJ116DtoQ6gXzfzW4V8mwuFRx43Mb3m/WBgfQSJmV17jIP4HElh/HtZZ7NVQUYLd6MB2eLczHRC7qPNtsk4pBnwsH7uFhDteAkM4AVout+psudGOXgvwnaGGFRjSf/WmMp61i8ZPDxflW9mT2MEzGnl8BJ2M/Wl+pLFLH1pmLeI857Wil9QoQaOhqMUbeRD4SfWbhg1bVV0dnUS4Wo1rT2zyM3fArWpMXpOtWzJdwn7OBhnWVNybY0OmCO1oFiMe4+bZHZeE0j77Vlgkdsp0BMRGoPfymOwncyCYqaxuV+j4P3IWsyW844hfhUTAvkrnE+d+3igRFe4eMb127voTp8IF
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OS0PR01MB5922.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(366004)(396003)(376002)(136003)(39860400002)(38100700002)(66946007)(8676002)(76116006)(83380400001)(4326008)(38070700005)(478600001)(122000001)(186003)(6506007)(7696005)(52536014)(7416002)(86362001)(53546011)(9686003)(41300700001)(26005)(8936002)(5660300002)(64756008)(66446008)(316002)(71200400001)(55016003)(2906002)(54906003)(66476007)(66556008)(6916009)(33656002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?N3I3RUhZaC9EZnRhSUVSNWNwOHI3TVMzeGc2ZjdYNUNleTU3djNOeUpZeEp5?=
- =?utf-8?B?bFJqcVFOWXFJMmZlSVYxZ0VkWkdXUVE0SzNwV2VEL0czbHNNRlJNU251WjA4?=
- =?utf-8?B?anNGTmM2d3BPNUJuQzcxRXBITW84T2w4S0dNQlZUejBuVnF1aFVhbGd3Nmdu?=
- =?utf-8?B?Z3RtZllXMzN1dExnb0JqNXloMCt4MUlTMDNTRzBGVnhsN09hOWRYWXUyWjF2?=
- =?utf-8?B?eTBvbWRyWTJ2UkJpb20zbzdtZG5lVlZZckNlMkJHVm42VTlabHBpeFhBV0JM?=
- =?utf-8?B?TFZnL2huN0hMcEYwQmZ6NjVhY296b1Q3bWVFSGRyM1k4MkJ3Y1BSTHZ2cWxu?=
- =?utf-8?B?djVVRXdFV0NEbHRvbkxVNHZkUVY2MmNINFBCVzNBdU1FY3lhZkkwM1BpZ3B2?=
- =?utf-8?B?WUJKRnRvZXdlaVRCQ0t3dUFaMThkS3hmbTcvanNVKzR5Rm5HaEc4U0lDR1lZ?=
- =?utf-8?B?YXNud2dTbnBha2twWFVCM2R5bEZzT3NEeWxUc2M4a3loMFUzNk0rQVhoS3Fq?=
- =?utf-8?B?bUFIMlJWaldrRSt3RDk4Q2JQSitYM0kzbHhsVnc5SUg5ckNPR3RiNVFjOHVp?=
- =?utf-8?B?NDh3RGU3VC93cSsyWlZ6cDVJL1ZLbHVLUnhFM2kzZlRyamplSDE4eWNkSHk1?=
- =?utf-8?B?Zjl0L1o3YmM3c3g2L1pyVVNUUXBuQnJMTTllWWdSZERraFBvcTJuN0phdE14?=
- =?utf-8?B?eHRqZXlNSFU1d2pzU3BNZHgvUWJWNzlBVmVYd284Qzg2elZGZmliTmQvRHZv?=
- =?utf-8?B?SjZ0K25VRjVIVUdPUzBvYkRoSnJUdlI4RTZCRGVoOFJ4enlhWitCZVdkK25m?=
- =?utf-8?B?NjlQUG94Y004SCtoa245S0p1cXp3V1JEKzBlQ3dWcFB0aEd2QXZMREszZGpj?=
- =?utf-8?B?TTVhUmtRZ242cE5BUC9IQmtYcHFpRGt4aEZzenBXUFpaL3VQNmFKV21HdUlm?=
- =?utf-8?B?eEVEbmhtWlQ0UlowNlgvTXFjQXN4Qk5RVDVNNjU5MkJlenZWSnVkT0s0SjhF?=
- =?utf-8?B?bzBNNFZiYWU1c0kvTGpucnRrd3FiRjFHVTNOZDVod0JQcTZIZGttTzY3bm9r?=
- =?utf-8?B?UXNpRXV3ejM5Q2xwelNUZFBwb3Z3Y29XcUpiZzE3NVJ6U1B1eTJPNzI2Ynha?=
- =?utf-8?B?cmlPUFFOaXRoZHQ3Z2ZzcHIrMEdyci9RZTVDVFI2QjdhQksrTnpuUFFPMTF3?=
- =?utf-8?B?R2NDKy9Rc2k3OXRsRXlpTm9aYmJWU3k4TnN4VlNMb1FMeEZxTkZPR1lJdkxN?=
- =?utf-8?B?anhianhFcGM3dzRsQ2xuaGlVc2FsZ3RZYThNaEtrOHpXS1pKVUJ6Tmk3U1VJ?=
- =?utf-8?B?cGZxZ21BN1JoTEkyQkYrMnRhV2VLTnE0TThJZEpYdU1RSDRSd3dmVUM3Qldz?=
- =?utf-8?B?MlhacEFCOUdveXhaL0VySmUxQmdzbk1PbXVFUUpPL1ZQM3BpcVVUZzdoM21y?=
- =?utf-8?B?QmJ2TG9aNWxJUThnMVIzRGxoOVQyN0N4SmgwT2h1NEhxTThnQS9YUEFqMmpl?=
- =?utf-8?B?OHJTcHVmN08vL2pkZGVTSHozRURvTHZKdWlYVkVEM1dQWVMzTHdPY1RVTzhP?=
- =?utf-8?B?MVRYK1F1cFA0dGhSeE9GcUZDbWtBZ2Rrc2F4eEhQSGVuaWQwS0lZbkNVTmVP?=
- =?utf-8?B?ejl0WHJvb1FQVTBZSjhaemZseHpaVzh5ZlRhU3VJbGNDbGlpd3pvZkJXUVhO?=
- =?utf-8?B?NU5Mb296U2Z4QTVPSGNuS29hVFdBenpEUnh0dDh5ek5RdTRDTmk5b3RBUVVH?=
- =?utf-8?B?djV1SW5zUnpzYWM2anpQSklSZ2FDWVN0S3htY2NkT1BqYzhMWDRFZzhIb2hI?=
- =?utf-8?B?aS81aVZkNXYvV3hnTjFBeGc0czkxOVRWdEgxQVpDa3l5NWRUcGxOclZqaGxn?=
- =?utf-8?B?T09GRnYxWHBzWUFXVGpLTmpGZDFDSzRTWWhTVkFTR2NvU0FhMFE1SHlOSFUw?=
- =?utf-8?B?U2NGb2NaaDFNOHdkWWx2eFN0anAyQlRKV0xGTGFORWxyUnF1YlZZVkZVMHho?=
- =?utf-8?B?eFc1R2p4a29nUXpFSE9QV09lZmxRc2Y5TTVQSEZRTFhQNjlwQUhGajlYek54?=
- =?utf-8?B?OUE3MVNIU2t0OUdiQ3l0SlB6ZGtrK0F0czdHRCs1UUJwMUtCZXpYRnhRYlRO?=
- =?utf-8?Q?7csoRawmqPvAZzKLKjUf73gVs?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        with ESMTP id S231938AbiGBRkt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Jul 2022 13:40:49 -0400
+Received: from smtp-out.kfki.hu (smtp-out.kfki.hu [148.6.0.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0CEDE037;
+        Sat,  2 Jul 2022 10:40:47 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by smtp0.kfki.hu (Postfix) with ESMTP id 603A067400C9;
+        Sat,  2 Jul 2022 19:40:40 +0200 (CEST)
+X-Virus-Scanned: Debian amavisd-new at smtp0.kfki.hu
+Received: from smtp0.kfki.hu ([127.0.0.1])
+        by localhost (smtp0.kfki.hu [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP; Sat,  2 Jul 2022 19:40:38 +0200 (CEST)
+Received: from localhost.kfki.hu (host-94-248-211-146.kabelnet.hu [94.248.211.146])
+        (Authenticated sender: kadlecsik.jozsef@wigner.hu)
+        by smtp0.kfki.hu (Postfix) with ESMTPSA id 9BD6767400C7;
+        Sat,  2 Jul 2022 19:40:35 +0200 (CEST)
+Received: by localhost.kfki.hu (Postfix, from userid 1000)
+        id 4FA9F3C1C41; Sat,  2 Jul 2022 19:40:35 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by localhost.kfki.hu (Postfix) with ESMTP id 4D60D3C1789;
+        Sat,  2 Jul 2022 19:40:35 +0200 (CEST)
+Date:   Sat, 2 Jul 2022 19:40:35 +0200 (CEST)
+From:   Jozsef Kadlecsik <kadlec@netfilter.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+cc:     "U'ren, Aaron" <Aaron.U'ren@sony.com>,
+        Thorsten Leemhuis <regressions@leemhuis.info>,
+        "McLean, Patrick" <Patrick.Mclean@sony.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        "netfilter-devel@vger.kernel.org" <netfilter-devel@vger.kernel.org>,
+        "Brown, Russell" <Russell.Brown@sony.com>,
+        "Rueger, Manuel" <manuel.rueger@sony.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
+        Florian Westphal <fw@strlen.de>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: Intermittent performance regression related to ipset between
+ 5.10 and 5.15
+In-Reply-To: <20220630110443.100f8aa9@kernel.org>
+Message-ID: <d44d3522-ac1f-a1e-ddf6-312c7b25d685@netfilter.org>
+References: <BY5PR13MB3604D24C813A042A114B639DEE109@BY5PR13MB3604.namprd13.prod.outlook.com> <5e56c644-2311-c094-e099-cfe0d574703b@leemhuis.info> <c28ed507-168e-e725-dddd-b81fadaf6aa5@leemhuis.info> <b1bfbc2f-2a91-9d20-434d-395491994de@netfilter.org>
+ <96e12c14-eb6d-ae07-916b-7785f9558c67@leemhuis.info> <DM6PR13MB3098E6B746264B4F96D9F743C8C39@DM6PR13MB3098.namprd13.prod.outlook.com> <2d9479bd-93bd-0cf1-9bc9-591ab3b2bdec@leemhuis.info> <6f6070ff-b50-1488-7e9-322be08f35b9@netfilter.org>
+ <871bc2cb-ae4b-bc2a-1bd8-1315288957c3@leemhuis.info> <DM6PR13MB309846DD4673636DF440000EC8BA9@DM6PR13MB3098.namprd13.prod.outlook.com> <20220630110443.100f8aa9@kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: bp.renesas.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: OS0PR01MB5922.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: dd4dfc10-7baa-4513-777f-08da5c4d01f2
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Jul 2022 17:05:04.0626
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: E5VHAc/DYI4jVudLA6gsm39XOLrhbYiRKX+BxDpL3XmfGkdX07+0Nlja9VSX6COnfb0ysqlni5Bhz/Iv/ZI9LblvxD5L7gfk8dug1z/TO68=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYCPR01MB9435
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: multipart/mixed; boundary="8323328-1126082976-1656783635=:2522"
+X-deepspam: 20ham 14%
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgTWFyYywNCg0KVGhhbmtzIGZvciB0aGUgZmVlZGJhY2suDQoNCj4gU3ViamVjdDogUmU6IFtQ
-QVRDSCAzLzZdIGNhbjogc2phMTAwMDogQWRkIFF1aXJrcyBmb3IgUlovTjEgU0pBMTAwMCBDQU4N
-Cj4gY29udHJvbGxlcg0KPiANCj4gT24gMDIuMDcuMjAyMiAxNTowMToyNywgQmlqdSBEYXMgd3Jv
-dGU6DQo+ID4gQ2hhcHRlciA2LjUuMTYgb2YgdGhlIFJaL04xIFBlcmlwaGVyYWwgTWFudWFsIG1l
-bnRpb25zIHRoZSBiZWxvdw0KPiA+IGRpZmZlcmVuY2VzIGNvbXBhcmVkIHRvIHRoZSByZWZlcmVu
-Y2UgUGhpbGlwcyBTSkExMDAwIGRldmljZS4NCj4gPg0KPiA+IEhhbmRsaW5nIG9mIFRyYW5zbWl0
-dGVkIE1lc3NhZ2VzOg0KPiA+ICAqIFRoZSBDQU4gY29udHJvbGxlciBkb2VzIG5vdCBjb3B5IHRy
-YW5zbWl0dGVkIG1lc3NhZ2VzIHRvIHRoZQ0KPiByZWNlaXZlDQo+ID4gICAgYnVmZmVyLCB1bmxp
-a2UgdGhlIHJlZmVyZW5jZSBkZXZpY2UuDQo+IA0KPiBUaGlzIGlzIHNvbWV0aGluZyBkaWZmZXJl
-bnQgdGhhbi4uLi4NCj4gDQo+ID4gIGludCByZWdpc3Rlcl9zamExMDAwZGV2KHN0cnVjdCBuZXRf
-ZGV2aWNlICpkZXYpICB7DQo+ID4gKwlzdHJ1Y3Qgc2phMTAwMF9wcml2ICpwcml2ID0gbmV0ZGV2
-X3ByaXYoZGV2KTsNCj4gPiAgCWludCByZXQ7DQo+ID4NCj4gPiAgCWlmICghc2phMTAwMF9wcm9i
-ZV9jaGlwKGRldikpDQo+ID4gIAkJcmV0dXJuIC1FTk9ERVY7DQo+ID4NCj4gPiAtCWRldi0+Zmxh
-Z3MgfD0gSUZGX0VDSE87CS8qIHdlIHN1cHBvcnQgbG9jYWwgZWNobyAqLw0KPiA+ICsJaWYgKCEo
-cHJpdi0+ZmxhZ3MgJiBTSkExMDAwX05PX0hXX0xPT1BCQUNLX1FVSVJLKSkNCj4gPiArCQlkZXYt
-PmZsYWdzIHw9IElGRl9FQ0hPOwkvKiB3ZSBzdXBwb3J0IGxvY2FsIGVjaG8gKi8NCj4gDQo+IC4u
-LiB0aGUgSUZGX0VDSE8uDQo+IA0KPiBJRkZfRUNITyBzZXQgbWVhbnMgdGhlIGRyaXZlciBjYWxz
-IGNhbl9wdXRfZWNob19za2IoKSBiZWZvcmUgVFggYW5kDQo+IGNhbl9nZXRfZWNob19za2IoKSBh
-ZnRlciBUWCBjb21wbGV0ZSBpbnRlcnJ1cHQuDQoNCk9LLg0KDQo+IA0KPiB8IGlycXJldHVybl90
-IHNqYTEwMDBfaW50ZXJydXB0KGludCBpcnEsIHZvaWQgKmRldl9pZCkNCj4gWy4uLl0NCj4gfCAJ
-d2hpbGUgKChpc3JjID0gcHJpdi0+cmVhZF9yZWcocHJpdiwgU0pBMTAwMF9JUikpICYmDQo+IHwg
-CSAgICAgICAobiA8IFNKQTEwMDBfTUFYX0lSUSkpIHsNCj4gfA0KPiB8IAkJc3RhdHVzID0gcHJp
-di0+cmVhZF9yZWcocHJpdiwgU0pBMTAwMF9TUik7DQo+IHwgCQkvKiBjaGVjayBmb3IgYWJzZW50
-IGNvbnRyb2xsZXIgZHVlIHRvIGh3IHVucGx1ZyAqLw0KPiB8IAkJaWYgKHN0YXR1cyA9PSAweEZG
-ICYmIHNqYTEwMDBfaXNfYWJzZW50KHByaXYpKQ0KPiB8IAkJCWdvdG8gb3V0Ow0KPiB8DQo+IHwg
-CQlpZiAoaXNyYyAmIElSUV9XVUkpDQo+IHwgCQkJbmV0ZGV2X3dhcm4oZGV2LCAid2FrZXVwIGlu
-dGVycnVwdFxuIik7DQo+IHwNCj4gfCAJCWlmIChpc3JjICYgSVJRX1RJKSB7DQo+IHwgCQkJLyog
-dHJhbnNtaXNzaW9uIGJ1ZmZlciByZWxlYXNlZCAqLw0KPiB8IAkJCWlmIChwcml2LT5jYW4uY3Ry
-bG1vZGUgJiBDQU5fQ1RSTE1PREVfT05FX1NIT1QgJiYNCj4gfCAJCQkgICAgIShzdGF0dXMgJiBT
-Ul9UQ1MpKSB7DQo+IHwgCQkJCXN0YXRzLT50eF9lcnJvcnMrKzsNCj4gfCAJCQkJY2FuX2ZyZWVf
-ZWNob19za2IoZGV2LCAwLCBOVUxMKTsNCj4gfCAJCQl9IGVsc2Ugew0KPiANCj4gUGxlYXNlIGFk
-ZCBhIG5ldGRldl9pbmZvKCkgZm9yIGRlYnVnZ2luZyBhbmQgdmVyaWZ5IHRoYXQgeW91IGdldCBh
-IFRYDQo+IGNvbXBsZXRlIElSUS4NCg0KSSBoYXZlIHB1dCBwcmludHMgYW5kIEkgY29uZmlybSBJ
-IGdldCBUeCBjb21wbGV0ZSBJUlEuDQoNCi0tLSBhL2RyaXZlcnMvbmV0L2Nhbi9zamExMDAwL3Nq
-YTEwMDAuYw0KKysrIGIvZHJpdmVycy9uZXQvY2FuL3NqYTEwMDAvc2phMTAwMC5jDQpAQCAtNTI2
-LDYgKzUyNiw3IEBAIGlycXJldHVybl90IHNqYTEwMDBfaW50ZXJydXB0KGludCBpcnEsIHZvaWQg
-KmRldl9pZCkNCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgc3RhdHMtPnR4X2Vycm9y
-cysrOw0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBjYW5fZnJlZV9lY2hvX3NrYihk
-ZXYsIDAsIE5VTEwpOw0KICAgICAgICAgICAgICAgICAgICAgICAgfSBlbHNlIHsNCisgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgbmV0ZGV2X2luZm8oZGV2LCIjIyMjIENvbXBsZXRlZCBt
-ZXNzYWdlIGluIElSUSIpOw0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAvKiB0cmFu
-c21pc3Npb24gY29tcGxldGUgKi8NCg0Kcm9vdEByem4xZDQwMC1kYjovcnpuMV90ZXN0cy9saW51
-eCMgLi90ZXN0LWNhbi5zaA0KVGVzdGluZyBzZW5kaW5nIGZyb20gY2FuMCB0byBjYW4xIGF0IDEw
-MDAwMCBicHMNClsgICAzMC4wMzI3NTddIHNqYTEwMDBfcGxhdGZvcm0gNTIxMDUwMDAuY2FuIGNh
-bjE6IHNldHRpbmcgQlRSMD0weDBlIEJUUjE9MHgxYw0KWyAgIDMwLjA2MjEyM10gSVB2NjogQURE
-UkNPTkYoTkVUREVWX0NIQU5HRSk6IGNhbjE6IGxpbmsgYmVjb21lcyByZWFkeQ0KWyAgIDMwLjEy
-ODcyOV0gc2phMTAwMF9wbGF0Zm9ybSA1MjEwNDAwMC5jYW4gY2FuMDogc2V0dGluZyBCVFIwPTB4
-MGUgQlRSMT0weDFjDQpbICAgMzEuMTMwMjMyXSBJUHY2OiBBRERSQ09ORihORVRERVZfQ0hBTkdF
-KTogY2FuMDogbGluayBiZWNvbWVzIHJlYWR5DQpbICAgMzIuMjM3OTk4XSBzamExMDAwX3BsYXRm
-b3JtIDUyMTA0MDAwLmNhbiBjYW4wOiAjIyMjIENvbXBsZXRlZCBtZXNzYWdlIGluIElSUQ0KWyAg
-IDMyLjI0Njc3NF0gc2phMTAwMF9wbGF0Zm9ybSA1MjEwNDAwMC5jYW4gY2FuMDogIyMjIyBDb21w
-bGV0ZWQgbWVzc2FnZSBpbiBJUlENCi4uLi4NCi4uLi4uDQpbICAgMzMuMjEwODA5XSBzamExMDAw
-X3BsYXRmb3JtIDUyMTA0MDAwLmNhbiBjYW4wOiAjIyMjIENvbXBsZXRlZCBtZXNzYWdlIGluIElS
-UQ0KWyAgIDMzLjIyMTI3Ml0gc2phMTAwMF9wbGF0Zm9ybSA1MjEwNDAwMC5jYW4gY2FuMDogIyMj
-IyBDb21wbGV0ZWQgbWVzc2FnZSBpbiBJUlENClRlc3Rpbmcgc2VuZGluZyBmcm9tIGNhbjAgdG8g
-Y2FuMSBhdCA1MDAwMDAgYnBzDQpbICAgMzMuMzY2ODYyXSBzamExMDAwX3BsYXRmb3JtIDUyMTA1
-MDAwLmNhbiBjYW4xOiBzZXR0aW5nIEJUUjA9MHgwMiBCVFIxPTB4MWMNClsgICAzMy40NTU4Mjld
-IHNqYTEwMDBfcGxhdGZvcm0gNTIxMDQwMDAuY2FuIGNhbjA6IHNldHRpbmcgQlRSMD0weDAyIEJU
-UjE9MHgxYw0KWyAgIDM1LjU0NjU0NF0gc2phMTAwMF9wbGF0Zm9ybSA1MjEwNDAwMC5jYW4gY2Fu
-MDogIyMjIyBDb21wbGV0ZWQgbWVzc2FnZSBpbiBJUlENClsgICAzNS41NTQ0ODddIHNqYTEwMDBf
-cGxhdGZvcm0gNTIxMDQwMDAuY2FuIGNhbjA6ICMjIyMgQ29tcGxldGVkIG1lc3NhZ2UgaW4gSVJR
-DQpbICAgMzUuNTYyMzIyXSBzamExMDAwX3BsYXRmb3JtIDUyMTA0MDAwLmNhbiBjYW4wOiAjIyMj
-IENvbXBsZXRlZCBtZXNzYWdlIGluIElSUQ0KLi4uLi4NClsgICAzNi41MjA0MzNdIHNqYTEwMDBf
-cGxhdGZvcm0gNTIxMDQwMDAuY2FuIGNhbjA6ICMjIyMgQ29tcGxldGVkIG1lc3NhZ2UgaW4gSVJR
-DQpbICAgMzYuNTMwMzc2XSBzamExMDAwX3BsYXRmb3JtIDUyMTA0MDAwLmNhbiBjYW4wOiAjIyMj
-IENvbXBsZXRlZCBtZXNzYWdlIGluIElSUQ0KVGVzdGluZyBzZW5kaW5nIGZyb20gY2FuMCB0byBj
-YW4xIGF0IDEwMDAwMDAgYnBzDQpbICAgMzYuNjY3ODg3XSBzamExMDAwX3BsYXRmb3JtIDUyMTA1
-MDAwLmNhbiBjYW4xOiBzZXR0aW5nIEJUUjA9MHgwMSBCVFIxPTB4MjcNClsgICAzNi43NTk1NjFd
-IHNqYTEwMDBfcGxhdGZvcm0gNTIxMDQwMDAuY2FuIGNhbjA6IHNldHRpbmcgQlRSMD0weDAxIEJU
-UjE9MHgyNw0KWyAgIDM4Ljg0OTQ1OV0gc2phMTAwMF9wbGF0Zm9ybSA1MjEwNDAwMC5jYW4gY2Fu
-MDogIyMjIyBDb21wbGV0ZWQgbWVzc2FnZSBpbiBJUlENClsgICAzOC44NTcxMThdIHNqYTEwMDBf
-cGxhdGZvcm0gNTIxMDQwMDAuY2FuIGNhbjA6ICMjIyMgQ29tcGxldGVkIG1lc3NhZ2UgaW4gSVJR
-DQpbICAgMzguODY0NjExXSBzamExMDAwX3BsYXRmb3JtIDUyMTA0MDAwLmNhbiBjYW4wOiAjIyMj
-IENvbXBsZXRlZCBtZXNzYWdlIGluIElSUQ0KLi4uLg0KWyAgIDM5LjgzMDI4NF0gc2phMTAwMF9w
-bGF0Zm9ybSA1MjEwNDAwMC5jYW4gY2FuMDogIyMjIyBDb21wbGV0ZWQgbWVzc2FnZSBpbiBJUlEN
-CnJvb3RAcnpuMWQ0MDAtZGI6L3J6bjFfdGVzdHMvbGludXgjIGNhdCAvcHJvYy9pbnRlcnJ1cHRz
-IHwgZ3JlcCBjYW4NCiAzNTogICAgICAgIDMwMCAgICAgICAgICAwIEdJQy0wIDEyNyBMZXZlbCAg
-ICAgY2FuMA0KIDM2OiAgICAgICAgMzAwICAgICAgICAgIDAgR0lDLTAgMTI4IExldmVsICAgICBj
-YW4xDQpyb290QHJ6bjFkNDAwLWRiOi9yem4xX3Rlc3RzL2xpbnV4IyAuL3Rlc3QtY2FuLnNoIGNh
-bjEgY2FuMA0KVGVzdGluZyBzZW5kaW5nIGZyb20gY2FuMSB0byBjYW4wIGF0IDEwMDAwMCBicHMN
-ClsgIDExMS45NzI4MTVdIHNqYTEwMDBfcGxhdGZvcm0gNTIxMDQwMDAuY2FuIGNhbjA6IHNldHRp
-bmcgQlRSMD0weDBlIEJUUjE9MHgxYw0KWyAgMTEyLjA2NDYyMl0gc2phMTAwMF9wbGF0Zm9ybSA1
-MjEwNTAwMC5jYW4gY2FuMTogc2V0dGluZyBCVFIwPTB4MGUgQlRSMT0weDFjDQpbICAxMTQuMTU5
-Nzk4XSBzamExMDAwX3BsYXRmb3JtIDUyMTA1MDAwLmNhbiBjYW4xOiAjIyMjIENvbXBsZXRlZCBt
-ZXNzYWdlIGluIElSUQ0KWyAgMTE0LjE2ODM2MV0gc2phMTAwMF9wbGF0Zm9ybSA1MjEwNTAwMC5j
-YW4gY2FuMTogIyMjIyBDb21wbGV0ZWQgbWVzc2FnZSBpbiBJUlENCi4uLi4uDQpbICAxMTUuMTQx
-NDM3XSBzamExMDAwX3BsYXRmb3JtIDUyMTA1MDAwLmNhbiBjYW4xOiAjIyMjIENvbXBsZXRlZCBt
-ZXNzYWdlIGluIElSUQ0KVGVzdGluZyBzZW5kaW5nIGZyb20gY2FuMSB0byBjYW4wIGF0IDUwMDAw
-MCBicHMNClsgIDExNS4yNzIzMjNdIHNqYTEwMDBfcGxhdGZvcm0gNTIxMDQwMDAuY2FuIGNhbjA6
-IHNldHRpbmcgQlRSMD0weDAyIEJUUjE9MHgxYw0KWyAgMTE1LjM2NTAwOF0gc2phMTAwMF9wbGF0
-Zm9ybSA1MjEwNTAwMC5jYW4gY2FuMTogc2V0dGluZyBCVFIwPTB4MDIgQlRSMT0weDFjDQpbICAx
-MTcuNDQ1MTg3XSBzamExMDAwX3BsYXRmb3JtIDUyMTA1MDAwLmNhbiBjYW4xOiAjIyMjIENvbXBs
-ZXRlZCBtZXNzYWdlIGluIElSUQ0KWyAgMTE3LjQ2MDQ4OV0gc2phMTAwMF9wbGF0Zm9ybSA1MjEw
-NTAwMC5jYW4gY2FuMTogIyMjIyBDb21wbGV0ZWQgbWVzc2FnZSBpbiBJUlENClsgIDExNy40NzA1
-NzRdIHNqYTEwMDBfcGxhdGZvcm0gNTIxMDUwMDAuY2FuIGNhbjE6ICMjIyMgQ29tcGxldGVkIG1l
-c3NhZ2UgaW4gSVJRDQouLi4uDQpbICAxMTguNDMwNDQyXSBzamExMDAwX3BsYXRmb3JtIDUyMTA1
-MDAwLmNhbiBjYW4xOiAjIyMjIENvbXBsZXRlZCBtZXNzYWdlIGluIElSUQ0KWyAgMTE4LjQ0MDM4
-MV0gc2phMTAwMF9wbGF0Zm9ybSA1MjEwNTAwMC5jYW4gY2FuMTogIyMjIyBDb21wbGV0ZWQgbWVz
-c2FnZSBpbiBJUlENClRlc3Rpbmcgc2VuZGluZyBmcm9tIGNhbjEgdG8gY2FuMCBhdCAxMDAwMDAw
-IGJwcw0KWyAgMTE4LjU2NDk4MV0gc2phMTAwMF9wbGF0Zm9ybSA1MjEwNDAwMC5jYW4gY2FuMDog
-c2V0dGluZyBCVFIwPTB4MDEgQlRSMT0weDI3DQpbICAxMTguNjU1MTAwXSBzamExMDAwX3BsYXRm
-b3JtIDUyMTA1MDAwLmNhbiBjYW4xOiBzZXR0aW5nIEJUUjA9MHgwMSBCVFIxPTB4MjcNClsgIDEy
-MC43MzE4ODJdIHNqYTEwMDBfcGxhdGZvcm0gNTIxMDUwMDAuY2FuIGNhbjE6ICMjIyMgQ29tcGxl
-dGVkIG1lc3NhZ2UgaW4gSVJRDQpbICAxMjAuNzQwNjA1XSBzamExMDAwX3BsYXRmb3JtIDUyMTA1
-MDAwLmNhbiBjYW4xOiAjIyMjIENvbXBsZXRlZCBtZXNzYWdlIGluIElSUQ0KLi4uDQpbICAxMjEu
-NzEwMjc0XSBzamExMDAwX3BsYXRmb3JtIDUyMTA1MDAwLmNhbiBjYW4xOiAjIyMjIENvbXBsZXRl
-ZCBtZXNzYWdlIGluIElSUQ0KWyAgMTIxLjcyMDM3MF0gc2phMTAwMF9wbGF0Zm9ybSA1MjEwNTAw
-MC5jYW4gY2FuMTogIyMjIyBDb21wbGV0ZWQgbWVzc2FnZSBpbiBJUlENCnJvb3RAcnpuMWQ0MDAt
-ZGI6L3J6bjFfdGVzdHMvbGludXgjcm9vdEByem4xZDQwMC1kYjovcnpuMV90ZXN0cy9saW51eCMg
-Y2F0IC9wcm9jL2ludGVycnVwdHMgfCBncmVwIGNhbg0KIDM1OiAgICAgICAgNjAwICAgICAgICAg
-IDAgR0lDLTAgMTI3IExldmVsICAgICBjYW4wDQogMzY6ICAgICAgICA2MDAgICAgICAgICAgMCBH
-SUMtMCAxMjggTGV2ZWwgICAgIGNhbjENCg0KDQo+IA0KPiB8IAkJCQkvKiB0cmFuc21pc3Npb24g
-Y29tcGxldGUgKi8NCj4gfCAJCQkJc3RhdHMtPnR4X2J5dGVzICs9IGNhbl9nZXRfZWNob19za2Io
-ZGV2LCAwLA0KPiBOVUxMKTsNCj4gfCAJCQkJc3RhdHMtPnR4X3BhY2tldHMrKzsNCj4gfCAJCQl9
-DQo+IHwgCQkJbmV0aWZfd2FrZV9xdWV1ZShkZXYpOw0KPiB8IAkJfQ0KPiANCj4gDQo+IElmIHlv
-dXIgaGFyZHdhcmUgZG9lc24ndCBzdXBwb3J0IGhhcmR3YXJlIGxvb3BiYWNrIChjb25maWd1cmVk
-IHZpYQ0KPiBDTURfU1JSKToNCg0KQnV0IG91ciBIVyBzdXBwb3J0cywgQ01EX1NSUi4NCg0KYjQg
-YkNhbl9TUlIgU2VsZiBSZWNlcHRpb24gUmVxdWVzdA0KMTogU2V0IHdoZW4gYSBtZXNzYWdlIGlz
-IHRvIGJlIHRyYW5zbWl0dGVkIGFuZCByZWNlaXZlZCBzaW11bHRhbmVvdXNseQ0KW0NvbmRpdGlv
-biBvZiDigJxDbGVhcmVkIHRvIDDigJ1dDQril48gU29mdHdhcmUgUmVzZXQgKFNldCDigJwx4oCd
-IGluIGJDYW5fUk0pDQril48gU3dpdGNoIHRvIOKAnEJ1cyBPZmbigJ0gKFNldCDigJwx4oCdIGlu
-IGJDYW5fQlMpDQoNCkNoZWVycywNCkJpanUNCg0KPiANCj4gfCAJaWYgKHByaXYtPmNhbi5jdHJs
-bW9kZSAmIENBTl9DVFJMTU9ERV9MT09QQkFDSykNCj4gfCAJCWNtZF9yZWdfdmFsIHw9IENNRF9T
-UlI7DQo+IHwgCWVsc2UNCj4gfCAJCWNtZF9yZWdfdmFsIHw9IENNRF9UUjsNCj4gDQo+IHRoZW4g
-ZG9uJ3Qgc2V0IENBTl9DVFJMTU9ERV9MT09QQkFDSyBpbiBwcml2LT5jYW4uY3RybG1vZGVfc3Vw
-cG9ydGVkLg0KDQoNCg0K
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
+
+--8323328-1126082976-1656783635=:2522
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+Hi,
+
+On Thu, 30 Jun 2022, Jakub Kicinski wrote:
+
+> Sounds like you're pretty close to figuring this out! Can you check=20
+> if the user space is intentionally setting IPSET_ATTR_INITVAL?
+> Either that or IPSET_ATTR_GC was not as "unused" as initially thought.
+
+IPSET_ATTR_GC was really unused. It was an old remnant from the time when=
+=20
+ipset userspace-kernel communication was through set/getsockopt. However,=
+=20
+when it was migrated to netlink, just the symbol was kept but it was not=20
+used either with the userspace tool or the kernel.
+
+Aaron, could you send me how to reproduce the issue? I have no idea how=20
+that patch could be the reason. Setting/getting/using IPSET_ATTR_INITVAL=20
+is totally independent from listing iptables rules. But if you have got a=
+=20
+reproducer then I can dig into it.
+
+Best regards,
+Jozsef
+
+> Testing something like this could be a useful data point:
+>=20
+> diff --git a/include/uapi/linux/netfilter/ipset/ip_set.h b/include/uapi=
+/linux/netfilter/ipset/ip_set.h
+> index 6397d75899bc..7caf9b53d2a7 100644
+> --- a/include/uapi/linux/netfilter/ipset/ip_set.h
+> +++ b/include/uapi/linux/netfilter/ipset/ip_set.h
+> @@ -92,7 +92,7 @@ enum {
+>  	/* Reserve empty slots */
+>  	IPSET_ATTR_CADT_MAX =3D 16,
+>  	/* Create-only specific attributes */
+> -	IPSET_ATTR_INITVAL,	/* was unused IPSET_ATTR_GC */
+> +	IPSET_ATTR_GC,
+>  	IPSET_ATTR_HASHSIZE,
+>  	IPSET_ATTR_MAXELEM,
+>  	IPSET_ATTR_NETMASK,
+> @@ -104,6 +104,8 @@ enum {
+>  	IPSET_ATTR_REFERENCES,
+>  	IPSET_ATTR_MEMSIZE,
+> =20
+> +	IPSET_ATTR_INITVAL,
+> +
+>  	__IPSET_ATTR_CREATE_MAX,
+>  };
+>  #define IPSET_ATTR_CREATE_MAX	(__IPSET_ATTR_CREATE_MAX - 1)
+>=20
+>=20
+> On Thu, 30 Jun 2022 14:59:14 +0000 U'ren, Aaron wrote:
+> > Thorsten / Jozsef -
+> >=20
+> > Thanks for continuing to follow up! I'm sorry that this has moved so =
+slow, it has taken us a bit to find the time to fully track this issue do=
+wn, however, I think that we have figured out enough to make some more fo=
+rward progress on this issue.
+> >=20
+> > Jozsef, thanks for your insight into what is happening between those =
+system calls. In regards to your question about wait/wound mutex debuggin=
+g possibly being enabled, I can tell you that we definitely don't have th=
+at enabled on any of our regular machines. While we were debugging we did=
+ turn on quite a few debug options to help us try and track this issue do=
+wn and it is very possible that the strace that was taken that started of=
+f this email was taken on a machine that did have that debug option enabl=
+ed. Either way though, the root issue occurs on hosts that definitely do =
+not have wait/wound mutex debugging enabled.
+> >=20
+> > The good news is that we finally got one of our development environme=
+nts into a state where we could reliably reproduce the performance issue =
+across reboots. This was a win because it meant that we were able to do a=
+ full bisect of the kernel and were able to tell relatively quickly wheth=
+er or not the issue was present in the test kernels.
+> >=20
+> > After bisecting for 3 days, I have been able to narrow it down to a s=
+ingle commit: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/li=
+nux.git/commit/?id=3D3976ca101990ca11ddf51f38bec7b86c19d0ca6f (netfilter:=
+ ipset: Expose the initval hash parameter to userspace)
+> >=20
+> > I'm at a bit of a loss as to why this would cause such severe perform=
+ance regressions, but I've proved it out multiple times now. I've even ch=
+ecked out a fresh version of the 5.15 kernel that we've been deploying wi=
+th just this single commit reverted and found that the performance proble=
+ms are completely resolved.
+> >=20
+> > I'm hoping that maybe Jozsef will have some more insight into why thi=
+s seemingly innocuous commit causes such larger performance issues for us=
+? If you have any additional patches or other things that you would like =
+us to test I will try to leave our environment in its current state for t=
+he next couple of days so that we can do so.
+> >=20
+> > -Aaron
+> >=20
+> > From: Thorsten Leemhuis <regressions@leemhuis.info>
+> > Date: Monday, June 20, 2022 at 2:16 AM
+> > To: U'ren, Aaron <Aaron.U'ren@sony.com>
+> > Cc: McLean, Patrick <Patrick.Mclean@sony.com>, Pablo Neira Ayuso <pab=
+lo@netfilter.org>, netfilter-devel@vger.kernel.org <netfilter-devel@vger.=
+kernel.org>, Brown, Russell <Russell.Brown@sony.com>, Rueger, Manuel <man=
+uel.rueger@sony.com>, linux-kernel@vger.kernel.org <linux-kernel@vger.ker=
+nel.org>, regressions@lists.linux.dev <regressions@lists.linux.dev>, Flor=
+ian Westphal <fw@strlen.de>, netdev@vger.kernel.org <netdev@vger.kernel.o=
+rg>, Jozsef Kadlecsik <kadlec@netfilter.org>
+> > Subject: Re: Intermittent performance regression related to ipset bet=
+ween 5.10 and 5.15
+> > On 31.05.22 09:41, Jozsef Kadlecsik wrote:
+> > > On Mon, 30 May 2022, Thorsten Leemhuis wrote: =20
+> > >> On 04.05.22 21:37, U'ren, Aaron wrote: =20
+> >  [...] =20
+> > >=20
+> > > Every set lookups behind "iptables" needs two getsockopt() calls: y=
+ou can=20
+> > > see them in the strace logs. The first one check the internal proto=
+col=20
+> > > number of ipset and the second one verifies/gets the processed set =
+(it's=20
+> > > an extension to iptables and therefore there's no internal state to=
+ save=20
+> > > the protocol version number). =20
+> >=20
+> > Hi Aaron! Did any of the suggestions from Jozsef help to track down t=
+he
+> > root case? I have this issue on the list of tracked regressions and
+> > wonder what the status is. Or can I mark this as resolved?
+> >=20
+> > Side note: this is not a "something breaks" regressions and it seems =
+to
+> > progress slowly, so I'm putting it on the backburner:
+> >=20
+> > #regzbot backburner: performance regression where the culprit is hard=
+ to
+> > track down
+> >=20
+> > Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' h=
+at)
+> >=20
+> > P.S.: As the Linux kernel's regression tracker I deal with a lot of
+> > reports and sometimes miss something important when writing mails lik=
+e
+> > this. If that's the case here, don't hesitate to tell me in a public
+> > reply, it's in everyone's interest to set the public record straight.
+> >=20
+> >  [...] =20
+> > >=20
+> > > In your strace log
+> > >=20
+> > > 0.000024 getsockopt(4, SOL_IP, 0x53 /* IP_??? */, "\0\1\0\0\7\0\0\0=
+", [8]) =3D 0 <0.000024>
+> > > 0.000046 getsockopt(4, SOL_IP, 0x53 /* IP_??? */, "\7\0\0\0\7\0\0\0=
+KUBE-DST-VBH27M7NWLDOZIE"..., [40]) =3D 0 <0.1$
+> > > 0.109456 close(4)=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 =3D 0 <0.000022>
+> > >=20
+> > > the only things which happen in the second sockopt function are to =
+lock=20
+> > > the NFNL_SUBSYS_IPSET mutex, walk the array of the sets, compare th=
+e=20
+> > > setname, save the result in the case of a match and unlock the mute=
+x.=20
+> > > Nothing complicated, no deep, multi-level function calls. Just a fe=
+w line=20
+> > > of codes which haven't changed.
+> > >=20
+> > > The only thing which can slow down the processing is the mutex hand=
+ling.=20
+> > > Don't you have accidentally wait/wound mutex debugging enabled in t=
+he=20
+> > > kernel? If not, then bisecting the mutex related patches might help=
+.
+> > >=20
+> > > You wrote that flushing tables or ipsets didn't seem to help. That=20
+> > > literally meant flushing i.e. the sets were emptied but not destroy=
+ed? Did=20
+> > > you try both destroying or flushing?
+> > >  =20
+> > >> Jozsef, I still have this issue on my list of tracked regressions =
+and it
+> > >> looks like nothing happens since above mail (or did I miss it?). C=
+ould
+> > >> you maybe provide some guidance to Aaron to get us all closer to t=
+he
+> > >> root of the problem? =20
+> > >=20
+> > > I really hope it's an accidentally enabled debugging option in the =
+kernel.=20
+> > > Otherwise bisecting could help to uncover the issue.
+> > >=20
+> > > Best regards,
+> > > Jozsef
+> > >  =20
+> > >> P.S.: As the Linux kernel's regression tracker I deal with a lot o=
+f
+> > >> reports and sometimes miss something important when writing mails =
+like
+> > >> this. If that's the case here, don't hesitate to tell me in a publ=
+ic
+> > >> reply, it's in everyone's interest to set the public record straig=
+ht.
+>=20
+
+-
+E-mail  : kadlec@blackhole.kfki.hu, kadlecsik.jozsef@wigner.hu
+PGP key : https://wigner.hu/~kadlec/pgp_public_key.txt
+Address : Wigner Research Centre for Physics
+          H-1525 Budapest 114, POB. 49, Hungary
+--8323328-1126082976-1656783635=:2522--
