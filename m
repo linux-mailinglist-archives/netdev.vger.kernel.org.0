@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E799F56414F
-	for <lists+netdev@lfdr.de>; Sat,  2 Jul 2022 18:12:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B75E2564156
+	for <lists+netdev@lfdr.de>; Sat,  2 Jul 2022 18:14:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231282AbiGBQMM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Jul 2022 12:12:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59422 "EHLO
+        id S232356AbiGBQOV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Jul 2022 12:14:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231243AbiGBQMK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Jul 2022 12:12:10 -0400
+        with ESMTP id S232272AbiGBQOU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Jul 2022 12:14:20 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2F55E0B8
-        for <netdev@vger.kernel.org>; Sat,  2 Jul 2022 09:12:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05F0DE0EC
+        for <netdev@vger.kernel.org>; Sat,  2 Jul 2022 09:14:20 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1o7fik-0002zG-SK; Sat, 02 Jul 2022 18:11:46 +0200
+        id 1o7fkx-0003BA-8Q; Sat, 02 Jul 2022 18:14:03 +0200
 Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
         (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 138CBA5964;
-        Sat,  2 Jul 2022 16:11:41 +0000 (UTC)
-Date:   Sat, 2 Jul 2022 18:11:41 +0200
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 867A6A5969;
+        Sat,  2 Jul 2022 16:14:00 +0000 (UTC)
+Date:   Sat, 2 Jul 2022 18:13:59 +0200
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     Biju Das <biju.das.jz@bp.renesas.com>
 Cc:     Wolfgang Grandegger <wg@grandegger.com>,
@@ -42,15 +42,14 @@ Cc:     Wolfgang Grandegger <wg@grandegger.com>,
         Chris Paterson <Chris.Paterson2@renesas.com>,
         Biju Das <biju.das@bp.renesas.com>,
         linux-renesas-soc@vger.kernel.org
-Subject: Re: [PATCH 1/6] dt-bindings: can: sja1000: Convert to json-schema
-Message-ID: <20220702161141.cfeemj2hobei2z4k@pengutronix.de>
+Subject: Re: [PATCH 0/6] Add support for RZ/N1 SJA1000 CAN controller
+Message-ID: <20220702161359.dy64er2lkrueyzh7@pengutronix.de>
 References: <20220702140130.218409-1-biju.das.jz@bp.renesas.com>
- <20220702140130.218409-2-biju.das.jz@bp.renesas.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="kg7mrcpo3dm2jeux"
+        protocol="application/pgp-signature"; boundary="e5v2drfk7z245owm"
 Content-Disposition: inline
-In-Reply-To: <20220702140130.218409-2-biju.das.jz@bp.renesas.com>
+In-Reply-To: <20220702140130.218409-1-biju.das.jz@bp.renesas.com>
 X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
 X-SA-Exim-Mail-From: mkl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
@@ -65,48 +64,20 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---kg7mrcpo3dm2jeux
+--e5v2drfk7z245owm
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On 02.07.2022 15:01:25, Biju Das wrote:
-> Convert the NXP SJA1000 CAN Controller Device Tree binding
-> documentation to json-schema.
+On 02.07.2022 15:01:24, Biju Das wrote:
+> This patch series aims to add support for RZ/N1 SJA1000 CAN controller.
 >=20
-> Update the example to match reality.
->=20
-> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-> ---
->  .../bindings/net/can/nxp,sja1000.yaml         | 106 ++++++++++++++++++
->  .../devicetree/bindings/net/can/sja1000.txt   |  58 ----------
->  2 files changed, 106 insertions(+), 58 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/net/can/nxp,sja1000=
-=2Eyaml
->  delete mode 100644 Documentation/devicetree/bindings/net/can/sja1000.txt
->=20
-> diff --git a/Documentation/devicetree/bindings/net/can/nxp,sja1000.yaml b=
-/Documentation/devicetree/bindings/net/can/nxp,sja1000.yaml
-> new file mode 100644
-> index 000000000000..91d0f1b25d10
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/net/can/nxp,sja1000.yaml
-> @@ -0,0 +1,106 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/net/can/nxp,sja1000.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Memory mapped SJA1000 CAN controller from NXP (formerly Philips)
-> +
-> +maintainers:
-> +  - Wolfgang Grandegger <wg@grandegger.com>
+> The SJA1000 CAN controller on RZ/N1 SoC has some differences compared
+> to others like it has no clock divider register (CDR) support and it has
+> no HW loopback(HW doesn't see tx messages on rx), so introduced a new
+               ^^^
 
-Please add:
-
-allOf:
-  - $ref: can-controller.yaml#
+please add a space here.
 
 Marc
 
@@ -116,19 +87,19 @@ Embedded Linux                   | https://www.pengutronix.de  |
 Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
 Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
---kg7mrcpo3dm2jeux
+--e5v2drfk7z245owm
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmLAbjoACgkQrX5LkNig
-010c0wf/TU+eiTGp7fNfKgBWIZhVVz+u0Pouz0Dz8z8hN5QZn0x3lnTDlt6Nx3IK
-55uSlIJxSkdGX87XpoZ1KdGHJiN/r3GCm6eQGPBz1BmPmjXE2/Oy7EQwy5dyaKpt
-f8eJC2nbAe6U/7DixxA6XlOvoh6qyRpkS7qXlc4CnxRHlEFYYcFBVH7pdrZCFMBy
-RLeuKhyepu/QD5bCZetfjHrfHYQy2CB7nh5/EUVeR2hV3Kpww5kRnNeA0zRdUktz
-n5NZ8+QWIniJEXu+YChdCOnztqZ6ljHbJctO3a7L2gf/uh7j8etY+vY4CpQQs9On
-RSvNn4wxuRxtCncrDRO4/Op+E0QQuQ==
-=YVj9
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmLAbsUACgkQrX5LkNig
+010y/gf+IQzZgWL7TmLZ7VFp6MGb1/3J4o98S3yKAz/q1z6YhKMuIr7dyEjTwZ4R
+DAs1ggOpAMO5sr8d9v1Vviq9tWVaS4dkEtde30FSkcjlqoAx3GUKH9cWlAibvpau
+dlHMTcxyUiLl4CC7q3S5H863X9HjYrUGJTwnEYgKXh+X7tJm0IlPVrZugCodb/5o
+WwrNa+3P/bzcKTPR1CAKxE9FWBQLDcQKMQ3b95m2KnTQ0dDpP4MRvD7tzeMQI76k
+rxbgo2tgEs1K7qFIPsbgyyd10Dk/7wNv8t7Ao898z+zmA2a6dZPitYIsmoiYmeVp
+s13YQx6+JgwFZTB/O9NV+47ugf9TvQ==
+=Be/H
 -----END PGP SIGNATURE-----
 
---kg7mrcpo3dm2jeux--
+--e5v2drfk7z245owm--
