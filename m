@@ -2,269 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C7F5563F7A
-	for <lists+netdev@lfdr.de>; Sat,  2 Jul 2022 12:31:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FC46563F7E
+	for <lists+netdev@lfdr.de>; Sat,  2 Jul 2022 12:40:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231967AbiGBKan (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Jul 2022 06:30:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49226 "EHLO
+        id S232151AbiGBKjm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Jul 2022 06:39:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229838AbiGBKam (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Jul 2022 06:30:42 -0400
-Received: from nautica.notk.org (ipv6.notk.org [IPv6:2001:41d0:1:7a93::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC5A2E08C;
-        Sat,  2 Jul 2022 03:30:40 -0700 (PDT)
-Received: by nautica.notk.org (Postfix, from userid 108)
-        id 63EF5C01B; Sat,  2 Jul 2022 12:30:38 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1656757838; bh=1lvkdSCyaOdC8y9a9ToTo+fuywFSxMu4CL9YLxCzz9U=;
-        h=From:To:Cc:Subject:Date:From;
-        b=bDGC7bSFCBO6Z7S2x/mbEYaOHk36xpAgzg/FhiiUshicKw0wOc37TvDImLMjfiWYY
-         AURV6dSffe8+0B7wcTiVzwsUI+i/UN04ekylrVBDSQYcvB1dP1kwGPfbk/iHhrsnDk
-         E8ObgOOrCOWCsMzhDeGhQAVRQKEXFv4bQMTex3CPisere5LgzclglKeRZPGTdD9HQz
-         5qK+l/Y9ay9phVNsgU8S8MgfOvt5ukli/DjMUAH4AQu8UfQiPVsK8QBiVgMNhkVVor
-         XLTCnt/gX8WzMYZEXun1tUHW80phJFVIUHLaA+nExUeUNn2L2kf3H/qg1YmZo2y705
-         O+W9ltgOz86RA==
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-        lindbergh.monkeyblade.net
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
-Received: from odin.codewreck.org (localhost [127.0.0.1])
-        by nautica.notk.org (Postfix) with ESMTPS id 48608C009;
-        Sat,  2 Jul 2022 12:30:35 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1656757837; bh=1lvkdSCyaOdC8y9a9ToTo+fuywFSxMu4CL9YLxCzz9U=;
-        h=From:To:Cc:Subject:Date:From;
-        b=l+L5hQqC9nwzlYkfp4AIT3VA2iScmNXVLM4B1lkDUr2apIjeO12ZgqonqC9yA809M
-         OkIYJL2/zPX3kOBCvS7G0E1hPQs9o2IvaWuk7Wy9QIV7uswS3OAEuZlaIxh7GV1Uy6
-         PU2gF6C5DV7EeJtcifOUGRtcNbX8Z6HAmyttKIp6BR3vcwL+rAZOrYT7AVbeoy3WOg
-         uebfweJgllIMPb25MfabOjDSIyzbNfTBJTw0/3shH7qEls34oB3FhGXYUap1NHgc9f
-         KU5Q0MGvqe1afcqr4gdTRgXETigTLR0SP/oQXHEI3Ad2hfNFj9gzgL4d4cH7P+dd0G
-         QoBURDP0diNlQ==
-Received: from localhost (odin.codewreck.org [local])
-        by odin.codewreck.org (OpenSMTPD) with ESMTPA id 671de57d;
-        Sat, 2 Jul 2022 10:30:32 +0000 (UTC)
-From:   Dominique Martinet <asmadeus@codewreck.org>
-To:     Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>
-Cc:     Christian Schoenebeck <linux_oss@crudebyte.com>,
-        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Dominique Martinet <asmadeus@codewreck.org>
-Subject: [PATCH v3] 9p fid refcount: add a 9p_fid_ref tracepoint
-Date:   Sat,  2 Jul 2022 19:29:14 +0900
-Message-Id: <20220702102913.2164800-1-asmadeus@codewreck.org>
-X-Mailer: git-send-email 2.36.1
+        with ESMTP id S229592AbiGBKjl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Jul 2022 06:39:41 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C434D13D6F
+        for <netdev@vger.kernel.org>; Sat,  2 Jul 2022 03:39:40 -0700 (PDT)
+Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 262ARsbN011841
+        for <netdev@vger.kernel.org>; Sat, 2 Jul 2022 10:39:40 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=TVWhu1NRm9Hd7/sr/nHZvOUgCbVjrzDz92U9PZCOLdU=;
+ b=bnMnJxq0/IsxwPmctznLPJpELwnNGT3/+yZKZxHWOGg+yA+psh0lDJS4dyY52Em64jY0
+ r1E6VTU2M5aGG6IgEQwjRWzf8uwQzL4BZFLcHBiMWCNaiLN0At62i+WyXTdyrv7ysrrd
+ 42xUs9pflDLdQmKaVitIRTUBPdukkcIhqJCBRkfgFH9ZgEboSTfJfAMAX4oh5Pl1ORig
+ Ip8QfhmqxNxgtzCIXy/Yss7xZvoBbqXsE43jUoiyzAbOGfNTDqbTgWIQll1AtMdzRVw6
+ cEGRMWTbf4bc6CQ2FoXnDeJmeiuiLEZ5bYTARrSko4zk7KdVbpQCPN0u8BYWqf8OrMcm TA== 
+Received: from ppma04wdc.us.ibm.com (1a.90.2fa9.ip4.static.sl-reverse.com [169.47.144.26])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h2m9rg7p8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Sat, 02 Jul 2022 10:39:40 +0000
+Received: from pps.filterd (ppma04wdc.us.ibm.com [127.0.0.1])
+        by ppma04wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 262AZRmP003016
+        for <netdev@vger.kernel.org>; Sat, 2 Jul 2022 10:39:39 GMT
+Received: from b03cxnp08026.gho.boulder.ibm.com (b03cxnp08026.gho.boulder.ibm.com [9.17.130.18])
+        by ppma04wdc.us.ibm.com with ESMTP id 3h2dn91mkp-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Sat, 02 Jul 2022 10:39:38 +0000
+Received: from b03ledav006.gho.boulder.ibm.com (b03ledav006.gho.boulder.ibm.com [9.17.130.237])
+        by b03cxnp08026.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 262AdboT32178628
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sat, 2 Jul 2022 10:39:37 GMT
+Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id C77A4C606D;
+        Sat,  2 Jul 2022 10:39:37 +0000 (GMT)
+Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 9094AC6057;
+        Sat,  2 Jul 2022 10:39:36 +0000 (GMT)
+Received: from fledgling.ibm.com.com (unknown [9.65.244.101])
+        by b03ledav006.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Sat,  2 Jul 2022 10:39:36 +0000 (GMT)
+From:   Rick Lindsley <ricklind@us.ibm.com>
+To:     netdev@vger.kernel.org
+Cc:     bjking1@linux.ibm.com, haren@linux.ibm.com, nnac123@linux.ibm.com,
+        mmc@linux.ibm.com, ricklind@linux.ibm.com
+Subject: [PATCH net v2] ibmvnic: Properly dispose of all skbs during a failover.
+Date:   Sat,  2 Jul 2022 03:37:12 -0700
+Message-Id: <20220702103711.4036357-1-ricklind@us.ibm.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: 9DvHRkwKdpSsZiKZmFj1Z-7w42g68Ki5
+X-Proofpoint-GUID: 9DvHRkwKdpSsZiKZmFj1Z-7w42g68Ki5
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-02_07,2022-06-28_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=928
+ lowpriorityscore=0 bulkscore=0 suspectscore=0 clxscore=1015
+ priorityscore=1501 adultscore=0 impostorscore=0 mlxscore=0 phishscore=0
+ spamscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2207020047
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+        lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds a tracepoint event for 9p fid lifecycle tracing: when a fid
-is created, its reference count increased/decreased, and freed.
-The new 9p_fid_ref tracepoint should help anyone wishing to debug any
-fid problem such as missing clunk (destroy) or use-after-free.
+During a reset, there may have been transmits in flight that are no
+longer valid and cannot be fulfilled.  Resetting and clearing the
+queues is insufficient; each skb also needs to be explicitly freed
+so that upper levels are not left waiting for confirmation of a
+transmit that will never happen.  If this happens frequently enough,
+the apparent backlog will cause TCP to begin "congestion control"
+unnecessarily, culminating in permanently decreased throughput.
 
-Link: https://lkml.kernel.org/r/20220612085330.1451496-6-asmadeus@codewreck.org
-Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
+Fixes: d7c0ef36bde03 ("ibmvnic: Free and re-allocate scrqs when tx/rx scrqs change")
+Tested-by: Nick Child <nnac123@linux.ibm.com>
+Reviewed-by: Brian King <brking@linux.vnet.ibm.com>
+Signed-off-by: Rick Lindsley <ricklind@us.ibm.com>
 ---
+ drivers/net/ethernet/ibm/ibmvnic.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-Just resending this single patch of the series as it's the only one
-without a review tag.
-
-Steven, is it ok to carry it in my tree as is or do I need blessings
-from you or Ingo?
-(it depends on the previous patch so I'd carry it in my tree anyway,
-but would be more comfortable with a reviewed-by tag)
-
-
-v2 -> v3:
- - added EXPORT_TRACEPOINT_SYMBOL(9p_fid_ref) to have this work when
-   built as module
-
-v1 -> v2:
- - added rationale to commit message
- - adjusted to use DECLARE_TRACEPOINT + tracepoint_enable() in header
-
- include/net/9p/client.h   | 13 +++++++++++
- include/trace/events/9p.h | 48 +++++++++++++++++++++++++++++++++++++++
- net/9p/client.c           | 20 +++++++++++++++-
- 3 files changed, 80 insertions(+), 1 deletion(-)
-
-diff --git a/include/net/9p/client.h b/include/net/9p/client.h
-index eabb53992350..8f629f1df865 100644
---- a/include/net/9p/client.h
-+++ b/include/net/9p/client.h
-@@ -11,6 +11,7 @@
- 
- #include <linux/utsname.h>
- #include <linux/idr.h>
-+#include <linux/tracepoint-defs.h>
- 
- /* Number of requests per row */
- #define P9_ROW_MAXTAG 255
-@@ -237,6 +238,12 @@ static inline int p9_req_try_get(struct p9_req_t *r)
- 
- int p9_req_put(struct p9_req_t *r);
- 
-+/* We cannot have the real tracepoints in header files,
-+ * use a wrapper function */
-+DECLARE_TRACEPOINT(9p_fid_ref);
-+void do_trace_9p_fid_get(struct p9_fid *fid);
-+void do_trace_9p_fid_put(struct p9_fid *fid);
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
+index 7e7fe5bdf1f8..5ab7c0f81e9a 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.c
++++ b/drivers/net/ethernet/ibm/ibmvnic.c
+@@ -5981,6 +5981,15 @@ static int ibmvnic_reset_init(struct ibmvnic_adapter *adapter, bool reset)
+ 			release_sub_crqs(adapter, 0);
+ 			rc = init_sub_crqs(adapter);
+ 		} else {
++			/* no need to reinitialize completely, but we do
++			 * need to clean up transmits that were in flight
++			 * when we processed the reset.  Failure to do so
++			 * will confound the upper layer, usually TCP, by
++			 * creating the illusion of transmits that are
++			 * awaiting completion.
++			 */
++			clean_tx_pools(adapter);
 +
- /* fid reference counting helpers:
-  *  - fids used for any length of time should always be referenced through
-  *    p9_fid_get(), and released with p9_fid_put()
-@@ -249,6 +256,9 @@ int p9_req_put(struct p9_req_t *r);
-  */
- static inline struct p9_fid *p9_fid_get(struct p9_fid *fid)
- {
-+	if (tracepoint_enabled(9p_fid_ref))
-+		do_trace_9p_fid_get(fid);
-+
- 	refcount_inc(&fid->count);
- 
- 	return fid;
-@@ -259,6 +269,9 @@ static inline int p9_fid_put(struct p9_fid *fid)
- 	if (!fid || IS_ERR(fid))
- 		return 0;
- 
-+	if (tracepoint_enabled(9p_fid_ref))
-+		do_trace_9p_fid_put(fid);
-+
- 	if (!refcount_dec_and_test(&fid->count))
- 		return 0;
- 
-diff --git a/include/trace/events/9p.h b/include/trace/events/9p.h
-index 78c5608a1648..4dfa6d7f83ba 100644
---- a/include/trace/events/9p.h
-+++ b/include/trace/events/9p.h
-@@ -77,6 +77,13 @@
- 		EM( P9_TWSTAT,		"P9_TWSTAT" )			\
- 		EMe(P9_RWSTAT,		"P9_RWSTAT" )
- 
-+
-+#define P9_FID_REFTYPE							\
-+		EM( P9_FID_REF_CREATE,	"create " )			\
-+		EM( P9_FID_REF_GET,	"get    " )			\
-+		EM( P9_FID_REF_PUT,	"put    " )			\
-+		EMe(P9_FID_REF_DESTROY,	"destroy" )
-+
- /* Define EM() to export the enums to userspace via TRACE_DEFINE_ENUM() */
- #undef EM
- #undef EMe
-@@ -84,6 +91,21 @@
- #define EMe(a, b)	TRACE_DEFINE_ENUM(a);
- 
- P9_MSG_T
-+P9_FID_REFTYPE
-+
-+/* And also use EM/EMe to define helper enums -- once */
-+#ifndef __9P_DECLARE_TRACE_ENUMS_ONLY_ONCE
-+#define __9P_DECLARE_TRACE_ENUMS_ONLY_ONCE
-+#undef EM
-+#undef EMe
-+#define EM(a, b)	a,
-+#define EMe(a, b)	a
-+
-+enum p9_fid_reftype {
-+	P9_FID_REFTYPE
-+} __mode(byte);
-+
-+#endif
- 
- /*
-  * Now redefine the EM() and EMe() macros to map the enums to the strings
-@@ -96,6 +118,8 @@ P9_MSG_T
- 
- #define show_9p_op(type)						\
- 	__print_symbolic(type, P9_MSG_T)
-+#define show_9p_fid_reftype(type)					\
-+	__print_symbolic(type, P9_FID_REFTYPE)
- 
- TRACE_EVENT(9p_client_req,
- 	    TP_PROTO(struct p9_client *clnt, int8_t type, int tag),
-@@ -168,6 +192,30 @@ TRACE_EVENT(9p_protocol_dump,
- 		      __entry->tag, 0, __entry->line, 16, __entry->line + 16)
-  );
- 
-+
-+TRACE_EVENT(9p_fid_ref,
-+	    TP_PROTO(struct p9_fid *fid, __u8 type),
-+
-+	    TP_ARGS(fid, type),
-+
-+	    TP_STRUCT__entry(
-+		    __field(	int,	fid		)
-+		    __field(	int,	refcount	)
-+		    __field(	__u8, type	)
-+		    ),
-+
-+	    TP_fast_assign(
-+		    __entry->fid = fid->fid;
-+		    __entry->refcount = refcount_read(&fid->count);
-+		    __entry->type = type;
-+		    ),
-+
-+	    TP_printk("%s fid %d, refcount %d",
-+		      show_9p_fid_reftype(__entry->type),
-+		      __entry->fid, __entry->refcount)
-+);
-+
-+
- #endif /* _TRACE_9P_H */
- 
- /* This part must be outside protection */
-diff --git a/net/9p/client.c b/net/9p/client.c
-index f3eb280c7d9d..dfe8beb864fc 100644
---- a/net/9p/client.c
-+++ b/net/9p/client.c
-@@ -907,8 +907,10 @@ static struct p9_fid *p9_fid_create(struct p9_client *clnt)
- 			    GFP_NOWAIT);
- 	spin_unlock_irq(&clnt->lock);
- 	idr_preload_end();
--	if (!ret)
-+	if (!ret) {
-+		trace_9p_fid_ref(fid, P9_FID_REF_CREATE);
- 		return fid;
-+	}
- 
- 	kfree(fid);
- 	return NULL;
-@@ -920,6 +922,7 @@ static void p9_fid_destroy(struct p9_fid *fid)
- 	unsigned long flags;
- 
- 	p9_debug(P9_DEBUG_FID, "fid %d\n", fid->fid);
-+	trace_9p_fid_ref(fid, P9_FID_REF_DESTROY);
- 	clnt = fid->clnt;
- 	spin_lock_irqsave(&clnt->lock, flags);
- 	idr_remove(&clnt->fids, fid->fid);
-@@ -928,6 +931,21 @@ static void p9_fid_destroy(struct p9_fid *fid)
- 	kfree(fid);
- }
- 
-+/* We also need to export tracepoint symbols for tracepoint_enabled() */
-+EXPORT_TRACEPOINT_SYMBOL(9p_fid_ref);
-+
-+void do_trace_9p_fid_get(struct p9_fid *fid)
-+{
-+	trace_9p_fid_ref(fid, P9_FID_REF_GET);
-+}
-+EXPORT_SYMBOL(do_trace_9p_fid_get);
-+
-+void do_trace_9p_fid_put(struct p9_fid *fid)
-+{
-+	trace_9p_fid_ref(fid, P9_FID_REF_PUT);
-+}
-+EXPORT_SYMBOL(do_trace_9p_fid_put);
-+
- static int p9_client_version(struct p9_client *c)
- {
- 	int err = 0;
+ 			rc = reset_sub_crq_queues(adapter);
+ 		}
+ 	} else {
 -- 
-2.35.1
+2.31.1
 
