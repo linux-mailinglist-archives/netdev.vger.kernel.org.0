@@ -2,82 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D2CE56411F
-	for <lists+netdev@lfdr.de>; Sat,  2 Jul 2022 17:40:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06CC4564131
+	for <lists+netdev@lfdr.de>; Sat,  2 Jul 2022 17:49:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232222AbiGBPkU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Jul 2022 11:40:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42886 "EHLO
+        id S231958AbiGBPs6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Jul 2022 11:48:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232184AbiGBPkR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Jul 2022 11:40:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D633EDF73
-        for <netdev@vger.kernel.org>; Sat,  2 Jul 2022 08:40:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7D79460FA3
-        for <netdev@vger.kernel.org>; Sat,  2 Jul 2022 15:40:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D44A3C341CD;
-        Sat,  2 Jul 2022 15:40:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656776415;
-        bh=0oQmlUbRHcCGhWXW1bN7QmX15/fK8qehy0LahyRw/Uk=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=HEg8bSiQg2ra3rKgsh/L2SqnJVWftJpKLJP+mxA/ybh/D8uRo/VBfx0ZsmviO+4nA
-         XdG9LuSkRz/Vd66rM1IWWNu1+ro11FM1WhpLS3Y+IS5eNSXMC9OeY80f+R2fSC7C8F
-         d4TXPc6Of5/XcFtKc3BxxUWOlRi09Ci8bUsdkfvscPQOPHFOOBCJ3sMHCCUgN7tzEa
-         4Fazzcnp9/a9k5bxdMjCr0ttf70ZzpVZPypgnv8tUZaPNZp9zar/57g3sD5hzhYebi
-         yR8nUJLeaqs9bJ+OQ/KScles4cKDSXMxrIk0kiFIkZVw7bNGw9KB6fJDTPLSYdBj25
-         cD03YFVmeoSlA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id BADA7E49BBA;
-        Sat,  2 Jul 2022 15:40:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S230213AbiGBPs5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Jul 2022 11:48:57 -0400
+Received: from smtp-fw-80006.amazon.com (smtp-fw-80006.amazon.com [99.78.197.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04419EE02
+        for <netdev@vger.kernel.org>; Sat,  2 Jul 2022 08:48:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1656776935; x=1688312935;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=CLx4RCyN+0bqefjYr8Eey9RmL+wE3D1XbvH6SIt9BRU=;
+  b=eMJOj9KB9wsCXR8BSvBuC/liAHxgGf+aYoQB8fHiWS/zrndpFSvLkVMG
+   Z/sFPXLXnaSqqUlbQBk+TaoQRv9q5pkZkxRl23CNYbGUY3sZyg+KeIDFv
+   UCg385Fq10R56O0/Z3oq8Z9vQ6E7YWHADCs9Scd5pwrSw+Uw6BxRNHOv7
+   4=;
+X-IronPort-AV: E=Sophos;i="5.92,240,1650931200"; 
+   d="scan'208";a="104222416"
+Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-iad-1d-10222bbc.us-east-1.amazon.com) ([10.25.36.210])
+  by smtp-border-fw-80006.pdx80.corp.amazon.com with ESMTP; 02 Jul 2022 15:48:40 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-iad-1d-10222bbc.us-east-1.amazon.com (Postfix) with ESMTPS id 36D561A0051;
+        Sat,  2 Jul 2022 15:48:39 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.36; Sat, 2 Jul 2022 15:48:38 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.161.39) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.9;
+ Sat, 2 Jul 2022 15:48:35 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+CC:     Sachin Sant <sachinp@linux.ibm.com>,
+        Leonard Crestez <cdleonard@gmail.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        "Kuniyuki Iwashima" <kuniyu@amazon.com>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>,
+        <netdev@vger.kernel.org>
+Subject: [PATCH v3 net-next 0/2] af_unix: Fix regression by the per-netns hash table series.
+Date:   Sat, 2 Jul 2022 08:48:16 -0700
+Message-ID: <20220702154818.66761-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: add skb_[inner_]tcp_all_headers helpers
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165677641576.21073.8745144025583761368.git-patchwork-notify@kernel.org>
-Date:   Sat, 02 Jul 2022 15:40:15 +0000
-References: <20220630150750.3247281-1-edumazet@google.com>
-In-Reply-To: <20220630150750.3247281-1-edumazet@google.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, eric.dumazet@gmail.com
-X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [10.43.161.39]
+X-ClientProxiedBy: EX13D03UWA001.ant.amazon.com (10.43.160.141) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+The series 6dd4142fb5a9 ("Merge branch 'af_unix-per-netns-socket-hash'")
+replaced a global hash table with per-netns tables, which caused regression
+reported in the links below. [0][1]
 
-This patch was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+When a pathname socket is visible, any socket with the same type has to be
+able to connect to it even in different netns.  The series puts all sockets
+into each namespace's hash table, making it impossible to look up a visible
+socket in different netns.
 
-On Thu, 30 Jun 2022 15:07:50 +0000 you wrote:
-> Most drivers use "skb_transport_offset(skb) + tcp_hdrlen(skb)"
-> to compute headers length for a TCP packet, but others
-> use more convoluted (but equivalent) ways.
-> 
-> Add skb_tcp_all_headers() and skb_inner_tcp_all_headers()
-> helpers to harmonize this a bit.
-> 
-> [...]
+On the other hand, while dumping sockets, they are filtered by netns.  To
+keep such code simple, let's add a new global hash table only for pathname
+sockets and link them with sk_bind_node.  Then we can keep all sockets in
+each per-netns table and look up pathname sockets via the global table.
 
-Here is the summary with links:
-  - [net-next] net: add skb_[inner_]tcp_all_headers helpers
-    https://git.kernel.org/netdev/net-next/c/504148fedb85
+[0]: https://lore.kernel.org/netdev/B2AA3091-796D-475E-9A11-0021996E1C00@linux.ibm.com/
+[1]: https://lore.kernel.org/netdev/5fb8d86f-b633-7552-8ba9-41e42f07c02a@gmail.com/
 
-You are awesome, thank you!
+
+Changes:
+  v3:
+    * 1st: Update changelog s/named/pathname/
+    * 2nd: Fix checkpatch.pl CHECK by --strict option
+
+  v2: https://lore.kernel.org/netdev/20220702014447.93746-1-kuniyu@amazon.com/
+    * Add selftest
+
+  v1: https://lore.kernel.org/netdev/20220701072519.96097-1-kuniyu@amazon.com/
+
+
+Kuniyuki Iwashima (2):
+  af_unix: Put pathname sockets in the global hash table.
+  selftests: net: af_unix: Test connect() with different netns.
+
+ net/unix/af_unix.c                            |  47 ++++--
+ tools/testing/selftests/net/.gitignore        |   1 +
+ tools/testing/selftests/net/af_unix/Makefile  |   3 +-
+ .../selftests/net/af_unix/unix_connect.c      | 149 ++++++++++++++++++
+ 4 files changed, 189 insertions(+), 11 deletions(-)
+ create mode 100644 tools/testing/selftests/net/af_unix/unix_connect.c
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.30.2
 
