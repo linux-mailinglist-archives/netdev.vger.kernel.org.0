@@ -2,410 +2,215 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 76E955642C9
-	for <lists+netdev@lfdr.de>; Sat,  2 Jul 2022 22:57:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD04C564330
+	for <lists+netdev@lfdr.de>; Sun,  3 Jul 2022 01:12:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230211AbiGBU5M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Jul 2022 16:57:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55478 "EHLO
+        id S229689AbiGBWyA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Jul 2022 18:54:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbiGBU5L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Jul 2022 16:57:11 -0400
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4E60CE2C;
-        Sat,  2 Jul 2022 13:57:09 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1o7kAd-0000y7-Fo; Sat, 02 Jul 2022 22:56:51 +0200
-Date:   Sat, 2 Jul 2022 22:56:51 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     Kajetan Puchalski <kajetan.puchalski@arm.com>
-Cc:     Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Mel Gorman <mgorman@suse.de>,
-        lukasz.luba@arm.com, dietmar.eggemann@arm.com,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, stable@vger.kernel.org,
-        regressions@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [Regression] stress-ng udp-flood causes kernel panic on Ampere
- Altra
-Message-ID: <20220702205651.GB15144@breakpoint.cc>
-References: <Yr7WTfd6AVTQkLjI@e126311.manchester.arm.com>
- <20220701200110.GA15144@breakpoint.cc>
- <YsAnPhPfWRjpkdmn@e126311.manchester.arm.com>
+        with ESMTP id S229436AbiGBWx7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Jul 2022 18:53:59 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1966B6437;
+        Sat,  2 Jul 2022 15:53:58 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id mf9so10333089ejb.0;
+        Sat, 02 Jul 2022 15:53:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=V7Q6p/6qylL0QYHVO+jT6zOCTgkvVY1VVcxdCzpdUIE=;
+        b=cxkVTjuYtxNb9f4pPMx8krGexbqyxNDF1m39W8/uekyo3nEY+Wd243nhkZblqydEvY
+         N4yJbzSTadaU0J7gNVgIUYdMwPZo03lzXDu4KUcNn3wt2T+kabJvyX15aqI8wLRoYb1l
+         T/cdTY6BrIJoKJ0GmgQjZ5WMs+QEfrSEhPAgq/8RZ9qNyS5BnZSsLesab4HkiGV3GzNu
+         uiMB6xnvhWYb2YuWMukZIqbNjqHZ/TLKOHO3DfYgh350UE6+xdhOieWrqAl6kRt8C0a2
+         v5EQ7OwYyYUwwZ/OiQ2gQriNOyDYG8IkyD3sF2cViC/5Kn+HYtTCwEP7xlnN45LsCslh
+         Jt/g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=V7Q6p/6qylL0QYHVO+jT6zOCTgkvVY1VVcxdCzpdUIE=;
+        b=2ZNMQCDzHB0hB/WGE3LzcvJXy14AMLkaNm/xTF248iXrP6n7ZkYQ8BE14PS5P2hECn
+         JtsYOaF7lHnRvM5deVHY5DMOYNAGU6Xzrs8lLO1xUvsHn0Xt8pVqvcBQRbSs+TTzmR/O
+         w2BIbfSdkvWNdUp026UB7bNjs1PSpYpTPBV5ApW838Y7yCt0kDXRkZotv/OxAtWaIGRY
+         5eiGO5LpInI/gnulLVgkNPjjGtBeeeHFgE427S+zSYh4WNU1rdPiRUEKrZKAX1h+m/k/
+         Gl08DjdfvLb1iQKufaO714gRj2f03Z+exPvudEoCrSJvk30XSp4+tl74NYKN8kCK6OES
+         O/3A==
+X-Gm-Message-State: AJIora9C8D9XN8oOhX3fsNR4EpLyu4QNb4s3GnWCJdFo1tzqCn/UdYYx
+        DXLuF1Zv1vEVbANPqs5ne9rYbaRfwVkHImEFpqo=
+X-Google-Smtp-Source: AGRyM1vMji9ljIoDCw1DS/oZkN2ByiDepNSHSRR+zDVscyXCeSh8tlYMSCI80ld0mAlJKKZmqS6gM4X4rVcGM2AeKzU=
+X-Received: by 2002:a17:906:3f51:b0:712:3945:8c0d with SMTP id
+ f17-20020a1709063f5100b0071239458c0dmr20950953ejj.302.1656802436586; Sat, 02
+ Jul 2022 15:53:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="CE+1k2dSO48ffgeK"
-Content-Disposition: inline
-In-Reply-To: <YsAnPhPfWRjpkdmn@e126311.manchester.arm.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220630212703.3280485-1-martin.blumenstingl@googlemail.com>
+ <20220701130157.bwepfw2oeco6teyv@skbuf> <CAFBinCDqgQ1WWWPmfXykeZPsiwLNu+fPg6nCN7TMNNR_JL3gxQ@mail.gmail.com>
+ <20220702185652.dpzrxuitacqp6m3t@skbuf>
+In-Reply-To: <20220702185652.dpzrxuitacqp6m3t@skbuf>
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date:   Sun, 3 Jul 2022 00:53:45 +0200
+Message-ID: <CAFBinCC7s7adM38JUkroCV3q7t7fJBu6r9zULfpOqR9L5NeWyg@mail.gmail.com>
+Subject: Re: [PATCH net v1] net: dsa: lantiq_gswip: Fix FDB add/remove on the
+ CPU port
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Hauke Mehrtens <hauke@hauke-m.de>, netdev@vger.kernel.org,
+        andrew@lunn.ch, vivien.didelot@gmail.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Vladimir,
 
---CE+1k2dSO48ffgeK
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-Kajetan Puchalski <kajetan.puchalski@arm.com> wrote:
-> On Fri, Jul 01, 2022 at 10:01:10PM +0200, Florian Westphal wrote:
-> > Kajetan Puchalski <kajetan.puchalski@arm.com> wrote:
-> > > While running the udp-flood test from stress-ng on Ampere Altra (Mt.
-> > > Jade platform) I encountered a kernel panic caused by NULL pointer
-> > > dereference within nf_conntrack.
-> > > 
-> > > The issue is present in the latest mainline (5.19-rc4), latest stable
-> > > (5.18.8), as well as multiple older stable versions. The last working
-> > > stable version I found was 5.15.40.
-> > 
-> > Do I need a special setup for conntrack?
-> 
-> I don't think there was any special setup involved, the config I started
-> from was a generic distribution config and I didn't change any
-> networking-specific options. In case that's helpful here's the .config I
-> used.
-> 
-> https://pastebin.com/Bb2wttdx
-> 
-> > 
-> > No crashes after more than one hour of stress-ng on
-> > 1. 4 core amd64 Fedora 5.17 kernel
-> > 2. 16 core amd64, linux stable 5.17.15
-> > 3. 12 core intel, Fedora 5.18 kernel
-> > 4. 3 core aarch64 vm, 5.18.7-200.fc36.aarch64
-> > 
-> 
-> That would make sense, from further experiments I ran it somehow seems
-> to be related to the number of workers being spawned by stress-ng along
-> with the CPUs/cores involved.
+On Sat, Jul 2, 2022 at 8:56 PM Vladimir Oltean <olteanv@gmail.com> wrote:
 >
-> For instance, running the test with <=25 workers (--udp-flood 25 etc.)
-> results in the test running fine for at least 15 minutes.
+> On Sat, Jul 02, 2022 at 07:43:11PM +0200, Martin Blumenstingl wrote:
+> > Hi Vladimir,
+> >
+> > On Fri, Jul 1, 2022 at 3:02 PM Vladimir Oltean <olteanv@gmail.com> wrote:
+> > [...]
+> > > > Use FID 0 (which is also the "default" FID) when adding/removing an FDB
+> > > > entry for the CPU port.
+> > >
+> > > What does "default" FID even mean, and why is the default FID relevant?
+> > The GSW140 datasheet [0] (which is for a newer IP than the one we are
+> > targeting currently with the GSWIP driver - but I am not aware of any
+> > older datasheets)
+>
+> Thanks for the document! Really useful.
+Great that this helps. Whenever you hear me contradicting statements
+from that datasheet then please let me know. There have been subtle
+changes between the different versions of the IP, so I may have to
+double check with the vendor driver to see if things still apply to
+older versions.
 
-Ok.  I will let it run for longer on the machines I have access to.
+> > page 78 mentions: "By default the FID is zero and all entries belong
+> > to shared VLAN learning."
+>
+> Not talking about the hardware defaults when it's obvious the driver
+> changes those, in an attempt to comply to Linux networking expectations...
+>
+> > > In any case, I recommend you to first set up a test bench where you
+> > > actually see a difference between packets being flooded to the CPU vs
+> > > matching an FDB entry targeting it. Then read up a bit what the provided
+> > > dsa_db argument wants from port_fdb_add(). This conversation with Alvin
+> > > should explain a few things.
+> > > https://patchwork.kernel.org/project/netdevbpf/cover/20220302191417.1288145-1-vladimir.oltean@nxp.com/#24763870
+> > I previously asked Hauke whether the RX tag (net/dsa/tag_gswip.c) has
+> > some bit to indicate whether traffic is flooded - but to his knowledge
+> > the switch doesn't provide this information.
+>
+> Yeah, you generally won't find quite that level of detail even in more
+> advanced switches. Not that you need it...
+>
+> > So I am not sure what I can do in this case - do you have any pointers for me?
+>
+> Yes, I do.
+>
+> gswip_setup has:
+>
+>         /* Default unknown Broadcast/Multicast/Unicast port maps */
+>         gswip_switch_w(priv, BIT(cpu_port), GSWIP_PCE_PMAP1);
+>         gswip_switch_w(priv, BIT(cpu_port), GSWIP_PCE_PMAP2);
+>         gswip_switch_w(priv, BIT(cpu_port), GSWIP_PCE_PMAP3); <- replace BIT(cpu_port) with 0
+>
+> If you can no longer ping, it means that flooding was how packets
+> reached the system.
+I tried this but I can still ping OpenWrt's br-lan IP.
 
-In mean time, you could test attached patch, its simple s/refcount_/atomic_/
-in nf_conntrack.
+I zero'ed the GSWIP_PCE_PMAP2 register (which according to the
+documentation is used for L2 multicast/broadcast flooding) as well,
+which changes the behavior:
+- once the br-lan (IP address: 192.168.1.14) interface is brought up
+it cannot be ping'ed from a device connected to one of the switch
+ports ("Destination Host Unreachable")
+- I can ping a device connected to the switch from within OpenWrt
+(meaning: ping from the CPU port to a device with IP 192.168.1.100 on
+one of the switch port works)
+- once I start the ping from within OpenWrt I immediately get replies
+from OpenWrt to the other device
 
-If mainline (patch vs. HEAD 69cb6c6556ad89620547318439) crashes for you
-but works with attached patch someone who understands aarch64 memory ordering
-would have to look more closely at refcount_XXX functions to see where they
-might differ from atomic_ ones.
+ping log:
+    [similar messages omitted, only the icmp_seq is different]
+    From 192.168.1.100 icmp_seq=87 Destination Host Unreachable
+    [this is when I start "ping 192.168.1.100" from within OpenWrt)
+    64 bytes from 192.168.1.14: icmp_seq=88 ttl=64 time=3016 ms
+    64 bytes from 192.168.1.14: icmp_seq=89 ttl=64 time=2002 ms
+    64 bytes from 192.168.1.14: icmp_seq=90 ttl=64 time=989 ms
+    64 bytes from 192.168.1.14: icmp_seq=91 ttl=64 time=0.379 ms
 
-If it still crashes, please try below hunk in addition, although I don't see
-how it would make a difference.
+I made sure that the changes from my patch are not applied:
+# dmesg | grep " to fdb: -22" | wc -l
+9
 
-This is the one spot where the original conversion replaced atomic_inc()
-with refcount_set(), this is on allocation, refcount is expected to be 0 so
-refcount_inc() triggers a warning hinting at a use-after free.
+Also in case it's relevant: I added some printk's to
+gswip_port_fdb_dump() (because I don't know how to differentiate
+"hardware FDB" from "software FDB" entries in "bridge fdb show brport
+lan1"):
+The switch seems to learn the CPU port's MAC address automatically -
+even before I issue "ping 192.168.1.100" (most likely due to something
+in OpenWrt accessing the network).
+The "static" flag is not set though (which is expected I think).
 
-diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
---- a/net/netfilter/nf_conntrack_core.c
-+++ b/net/netfilter/nf_conntrack_core.c
-@@ -1776,7 +1776,7 @@ init_conntrack(struct net *net, struct nf_conn *tmpl,
-                __nf_ct_try_assign_helper(ct, tmpl, GFP_ATOMIC);
- 
-        /* Now it is going to be associated with an sk_buff, set refcount to 1. */
--       atomic_set(&ct->ct_general.use, 1);
-+       atomic_inc(&ct->ct_general.use);
- 
-        if (exp) {
-                if (exp->expectfn)
+As a side-note: I think the comment is partially incorrect. At least
+for the GSWIP IP revision which the driver is targeting,
+GSWIP_PCE_PMAP1 is for the "monitoring" port. My understanding is that
+this "monitoring port" is used with port mirroring (which the hardware
+supports but we don't implement in the driver yet).
 
---CE+1k2dSO48ffgeK
-Content-Type: text/x-diff; charset=us-ascii
-Content-Disposition: attachment; filename="0001-netfilter-conntrack-revert-to-atomic_t-api.patch"
-
-From 4234018dff486bdc30f4fe4625c8da1a8e30c2f6 Mon Sep 17 00:00:00 2001
-From: Florian Westphal <fw@strlen.de>
-Date: Sat, 2 Jul 2022 22:42:57 +0200
-Subject: [PATCH 1/1] netfilter: conntrack: revert to atomic_t api
-
-Just for testing.
----
- include/linux/netfilter/nf_conntrack_common.h |  6 ++---
- include/net/netfilter/nf_conntrack.h          |  2 +-
- net/netfilter/nf_conntrack_core.c             | 24 +++++++++----------
- net/netfilter/nf_conntrack_expect.c           |  2 +-
- net/netfilter/nf_conntrack_netlink.c          |  6 ++---
- net/netfilter/nf_conntrack_standalone.c       |  4 ++--
- net/netfilter/nf_flow_table_core.c            |  2 +-
- net/netfilter/nft_ct.c                        |  4 ++--
- net/netfilter/xt_CT.c                         |  2 +-
- 9 files changed, 26 insertions(+), 26 deletions(-)
-
-diff --git a/include/linux/netfilter/nf_conntrack_common.h b/include/linux/netfilter/nf_conntrack_common.h
-index 2770db2fa080..48a78944182d 100644
---- a/include/linux/netfilter/nf_conntrack_common.h
-+++ b/include/linux/netfilter/nf_conntrack_common.h
-@@ -25,7 +25,7 @@ struct ip_conntrack_stat {
- #define NFCT_PTRMASK	~(NFCT_INFOMASK)
- 
- struct nf_conntrack {
--	refcount_t use;
-+	atomic_t use;
- };
- 
- void nf_conntrack_destroy(struct nf_conntrack *nfct);
-@@ -33,13 +33,13 @@ void nf_conntrack_destroy(struct nf_conntrack *nfct);
- /* like nf_ct_put, but without module dependency on nf_conntrack */
- static inline void nf_conntrack_put(struct nf_conntrack *nfct)
- {
--	if (nfct && refcount_dec_and_test(&nfct->use))
-+	if (nfct && atomic_dec_and_test(&nfct->use))
- 		nf_conntrack_destroy(nfct);
- }
- static inline void nf_conntrack_get(struct nf_conntrack *nfct)
- {
- 	if (nfct)
--		refcount_inc(&nfct->use);
-+		atomic_inc(&nfct->use);
- }
- 
- #endif /* _NF_CONNTRACK_COMMON_H */
-diff --git a/include/net/netfilter/nf_conntrack.h b/include/net/netfilter/nf_conntrack.h
-index a32be8aa7ed2..9fab0c8835bb 100644
---- a/include/net/netfilter/nf_conntrack.h
-+++ b/include/net/netfilter/nf_conntrack.h
-@@ -180,7 +180,7 @@ void nf_ct_destroy(struct nf_conntrack *nfct);
- /* decrement reference count on a conntrack */
- static inline void nf_ct_put(struct nf_conn *ct)
- {
--	if (ct && refcount_dec_and_test(&ct->ct_general.use))
-+	if (ct && atomic_dec_and_test(&ct->ct_general.use))
- 		nf_ct_destroy(&ct->ct_general);
- }
- 
-diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
-index 082a2fd8d85b..4469e49d78a7 100644
---- a/net/netfilter/nf_conntrack_core.c
-+++ b/net/netfilter/nf_conntrack_core.c
-@@ -554,7 +554,7 @@ struct nf_conn *nf_ct_tmpl_alloc(struct net *net,
- 	tmpl->status = IPS_TEMPLATE;
- 	write_pnet(&tmpl->ct_net, net);
- 	nf_ct_zone_add(tmpl, zone);
--	refcount_set(&tmpl->ct_general.use, 1);
-+	atomic_set(&tmpl->ct_general.use, 1);
- 
- 	return tmpl;
- }
-@@ -586,7 +586,7 @@ void nf_ct_destroy(struct nf_conntrack *nfct)
- 	struct nf_conn *ct = (struct nf_conn *)nfct;
- 
- 	pr_debug("%s(%p)\n", __func__, ct);
--	WARN_ON(refcount_read(&nfct->use) != 0);
-+	WARN_ON(atomic_read(&nfct->use) != 0);
- 
- 	if (unlikely(nf_ct_is_template(ct))) {
- 		nf_ct_tmpl_free(ct);
-@@ -726,7 +726,7 @@ nf_ct_match(const struct nf_conn *ct1, const struct nf_conn *ct2)
- /* caller must hold rcu readlock and none of the nf_conntrack_locks */
- static void nf_ct_gc_expired(struct nf_conn *ct)
- {
--	if (!refcount_inc_not_zero(&ct->ct_general.use))
-+	if (!atomic_inc_not_zero(&ct->ct_general.use))
- 		return;
- 
- 	if (nf_ct_should_gc(ct))
-@@ -794,7 +794,7 @@ __nf_conntrack_find_get(struct net *net, const struct nf_conntrack_zone *zone,
- 		 * in, try to obtain a reference and re-check tuple
- 		 */
- 		ct = nf_ct_tuplehash_to_ctrack(h);
--		if (likely(refcount_inc_not_zero(&ct->ct_general.use))) {
-+		if (likely(atomic_inc_not_zero(&ct->ct_general.use))) {
- 			if (likely(nf_ct_key_equal(h, tuple, zone, net)))
- 				goto found;
- 
-@@ -923,7 +923,7 @@ nf_conntrack_hash_check_insert(struct nf_conn *ct)
- 
- 	smp_wmb();
- 	/* The caller holds a reference to this object */
--	refcount_set(&ct->ct_general.use, 2);
-+	atomic_set(&ct->ct_general.use, 2);
- 	__nf_conntrack_hash_insert(ct, hash, reply_hash);
- 	nf_conntrack_double_unlock(hash, reply_hash);
- 	NF_CT_STAT_INC(net, insert);
-@@ -981,7 +981,7 @@ static void __nf_conntrack_insert_prepare(struct nf_conn *ct)
- {
- 	struct nf_conn_tstamp *tstamp;
- 
--	refcount_inc(&ct->ct_general.use);
-+	atomic_inc(&ct->ct_general.use);
- 
- 	/* set conntrack timestamp, if enabled. */
- 	tstamp = nf_conn_tstamp_find(ct);
-@@ -1384,7 +1384,7 @@ static unsigned int early_drop_list(struct net *net,
- 		    nf_ct_is_dying(tmp))
- 			continue;
- 
--		if (!refcount_inc_not_zero(&tmp->ct_general.use))
-+		if (!atomic_inc_not_zero(&tmp->ct_general.use))
- 			continue;
- 
- 		/* kill only if still in same netns -- might have moved due to
-@@ -1533,7 +1533,7 @@ static void gc_worker(struct work_struct *work)
- 				continue;
- 
- 			/* need to take reference to avoid possible races */
--			if (!refcount_inc_not_zero(&tmp->ct_general.use))
-+			if (!atomic_inc_not_zero(&tmp->ct_general.use))
- 				continue;
- 
- 			if (gc_worker_skip_ct(tmp)) {
-@@ -1640,7 +1640,7 @@ __nf_conntrack_alloc(struct net *net,
- 	/* Because we use RCU lookups, we set ct_general.use to zero before
- 	 * this is inserted in any list.
- 	 */
--	refcount_set(&ct->ct_general.use, 0);
-+	atomic_set(&ct->ct_general.use, 0);
- 	return ct;
- out:
- 	atomic_dec(&cnet->count);
-@@ -1665,7 +1665,7 @@ void nf_conntrack_free(struct nf_conn *ct)
- 	/* A freed object has refcnt == 0, that's
- 	 * the golden rule for SLAB_TYPESAFE_BY_RCU
- 	 */
--	WARN_ON(refcount_read(&ct->ct_general.use) != 0);
-+	WARN_ON(atomic_read(&ct->ct_general.use) != 0);
- 
- 	if (ct->status & IPS_SRC_NAT_DONE) {
- 		const struct nf_nat_hook *nat_hook;
-@@ -1776,7 +1776,7 @@ init_conntrack(struct net *net, struct nf_conn *tmpl,
- 		__nf_ct_try_assign_helper(ct, tmpl, GFP_ATOMIC);
- 
- 	/* Now it is going to be associated with an sk_buff, set refcount to 1. */
--	refcount_set(&ct->ct_general.use, 1);
-+	atomic_set(&ct->ct_general.use, 1);
- 
- 	if (exp) {
- 		if (exp->expectfn)
-@@ -2390,7 +2390,7 @@ get_next_corpse(int (*iter)(struct nf_conn *i, void *data),
- 
- 	return NULL;
- found:
--	refcount_inc(&ct->ct_general.use);
-+	atomic_inc(&ct->ct_general.use);
- 	spin_unlock(lockp);
- 	local_bh_enable();
- 	return ct;
-diff --git a/net/netfilter/nf_conntrack_expect.c b/net/netfilter/nf_conntrack_expect.c
-index 96948e98ec53..84cb05eae410 100644
---- a/net/netfilter/nf_conntrack_expect.c
-+++ b/net/netfilter/nf_conntrack_expect.c
-@@ -208,7 +208,7 @@ nf_ct_find_expectation(struct net *net,
- 	 * can be sure the ct cannot disappear underneath.
- 	 */
- 	if (unlikely(nf_ct_is_dying(exp->master) ||
--		     !refcount_inc_not_zero(&exp->master->ct_general.use)))
-+		     !atomic_inc_not_zero(&exp->master->ct_general.use)))
- 		return NULL;
- 
- 	if (exp->flags & NF_CT_EXPECT_PERMANENT) {
-diff --git a/net/netfilter/nf_conntrack_netlink.c b/net/netfilter/nf_conntrack_netlink.c
-index 722af5e309ba..d5de0e580e6c 100644
---- a/net/netfilter/nf_conntrack_netlink.c
-+++ b/net/netfilter/nf_conntrack_netlink.c
-@@ -514,7 +514,7 @@ static int ctnetlink_dump_id(struct sk_buff *skb, const struct nf_conn *ct)
- 
- static int ctnetlink_dump_use(struct sk_buff *skb, const struct nf_conn *ct)
- {
--	if (nla_put_be32(skb, CTA_USE, htonl(refcount_read(&ct->ct_general.use))))
-+	if (nla_put_be32(skb, CTA_USE, htonl(atomic_read(&ct->ct_general.use))))
- 		goto nla_put_failure;
- 	return 0;
- 
-@@ -1204,7 +1204,7 @@ ctnetlink_dump_table(struct sk_buff *skb, struct netlink_callback *cb)
- 			ct = nf_ct_tuplehash_to_ctrack(h);
- 			if (nf_ct_is_expired(ct)) {
- 				if (i < ARRAY_SIZE(nf_ct_evict) &&
--				    refcount_inc_not_zero(&ct->ct_general.use))
-+				    atomic_inc_not_zero(&ct->ct_general.use))
- 					nf_ct_evict[i++] = ct;
- 				continue;
- 			}
-@@ -1747,7 +1747,7 @@ static int ctnetlink_dump_one_entry(struct sk_buff *skb,
- 				  NFNL_MSG_TYPE(cb->nlh->nlmsg_type),
- 				  ct, dying, 0);
- 	if (res < 0) {
--		if (!refcount_inc_not_zero(&ct->ct_general.use))
-+		if (!atomic_inc_not_zero(&ct->ct_general.use))
- 			return 0;
- 
- 		ctx->last = ct;
-diff --git a/net/netfilter/nf_conntrack_standalone.c b/net/netfilter/nf_conntrack_standalone.c
-index 6ad7bbc90d38..badd3f219533 100644
---- a/net/netfilter/nf_conntrack_standalone.c
-+++ b/net/netfilter/nf_conntrack_standalone.c
-@@ -303,7 +303,7 @@ static int ct_seq_show(struct seq_file *s, void *v)
- 	int ret = 0;
- 
- 	WARN_ON(!ct);
--	if (unlikely(!refcount_inc_not_zero(&ct->ct_general.use)))
-+	if (unlikely(!atomic_inc_not_zero(&ct->ct_general.use)))
- 		return 0;
- 
- 	if (nf_ct_should_gc(ct)) {
-@@ -370,7 +370,7 @@ static int ct_seq_show(struct seq_file *s, void *v)
- 	ct_show_zone(s, ct, NF_CT_DEFAULT_ZONE_DIR);
- 	ct_show_delta_time(s, ct);
- 
--	seq_printf(s, "use=%u\n", refcount_read(&ct->ct_general.use));
-+	seq_printf(s, "use=%u\n", atomic_read(&ct->ct_general.use));
- 
- 	if (seq_has_overflowed(s))
- 		goto release;
-diff --git a/net/netfilter/nf_flow_table_core.c b/net/netfilter/nf_flow_table_core.c
-index f2def06d1070..8b3f91a60ba2 100644
---- a/net/netfilter/nf_flow_table_core.c
-+++ b/net/netfilter/nf_flow_table_core.c
-@@ -54,7 +54,7 @@ struct flow_offload *flow_offload_alloc(struct nf_conn *ct)
- 	struct flow_offload *flow;
- 
- 	if (unlikely(nf_ct_is_dying(ct) ||
--	    !refcount_inc_not_zero(&ct->ct_general.use)))
-+	    !atomic_inc_not_zero(&ct->ct_general.use)))
- 		return NULL;
- 
- 	flow = kzalloc(sizeof(*flow), GFP_ATOMIC);
-diff --git a/net/netfilter/nft_ct.c b/net/netfilter/nft_ct.c
-index d8e1614918a1..1b6ead61a8f1 100644
---- a/net/netfilter/nft_ct.c
-+++ b/net/netfilter/nft_ct.c
-@@ -260,8 +260,8 @@ static void nft_ct_set_zone_eval(const struct nft_expr *expr,
- 
- 	ct = this_cpu_read(nft_ct_pcpu_template);
- 
--	if (likely(refcount_read(&ct->ct_general.use) == 1)) {
--		refcount_inc(&ct->ct_general.use);
-+	if (likely(atomic_read(&ct->ct_general.use) == 1)) {
-+		atomic_inc(&ct->ct_general.use);
- 		nf_ct_zone_add(ct, &zone);
- 	} else {
- 		/* previous skb got queued to userspace, allocate temporary
-diff --git a/net/netfilter/xt_CT.c b/net/netfilter/xt_CT.c
-index 267757b0392a..cf2f8c1d4fb5 100644
---- a/net/netfilter/xt_CT.c
-+++ b/net/netfilter/xt_CT.c
-@@ -24,7 +24,7 @@ static inline int xt_ct_target(struct sk_buff *skb, struct nf_conn *ct)
- 		return XT_CONTINUE;
- 
- 	if (ct) {
--		refcount_inc(&ct->ct_general.use);
-+		atomic_inc(&ct->ct_general.use);
- 		nf_ct_set(skb, ct, IP_CT_NEW);
- 	} else {
- 		nf_ct_set(skb, ct, IP_CT_UNTRACKED);
--- 
-2.35.1
+> It appears that what goes on is interesting.
+> The switch is configured to flood traffic that's unknown to the FDB only
+> to the CPU (notably not to other bridged ports).
+> In software, the packet reaches tag_gswip.c, where unlike the majority
+> of other DSA tagging protocols, we do not call dsa_default_offload_fwd_mark(skb).
+> Then, the packet reaches the software bridge, and the switch has
+> informed the bridge (via skb->offload_fwd_mark == 0) that the packet
+> hasn't been already flooded in hardware, so the software bridge needs to
+> do it (only if necessary, of course).
+>
+> The software bridge floods the packet according to its own FDB. In your
+> case, the software bridge recognizes the MAC DA of the packet as being
+> equal to the MAC address of br0 itself, and so, it doesn't flood it,
+> just terminates it locally. This is true whether or not the switch
+> learned that address in its FDB on the CPU port.
+>
+> > Also apologies if all of this is very obvious. So far I have only been
+> > working on the xMII part of Ethernet drivers, meaning: I am totally
+> > new to the FDB part.
+> >
+> > > Then have a patch (set) lifting the "return -EINVAL" from gswip *properly*.
+> > > And only then do we get to ask the questions "how bad are things for
+> > > linux-5.18.y? how bad are they for linux-5.15.y? what do we need to do?".
+> > agreed
+> >
+> >
+> > Thanks again for your time and all these valuable hints Vladimir!
+> > Martin
+> >
+> >
+> > [0] https://assets.maxlinear.com/web/documents/617930_gsw140_ds_rev1.11.pdf
+>
+> So if I'm right, the state of facts is quite "not broken" (quite the
+> other way around, I'm really impressed), although there are still
+> improvements to be made. Flooding could be offloaded to hardware, then
+> flooding to CPU could be turned off and controlled via port promiscuity.
+> This would save quite a few CPU cycles.
+Hearing that things are not horribly broken is great!
+Also saving a few CPU cycles would be awesome since this SoCs has a
+500MHz MIPS 34Kc core with two VPEs (meaning: one core which supports
+SMT - or "HT" as known in the Intel world). So any CPU cycle that can
+be saved helps
 
 
---CE+1k2dSO48ffgeK--
+Best regards,
+Martin
