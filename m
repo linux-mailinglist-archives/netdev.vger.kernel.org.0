@@ -2,68 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CE50564133
-	for <lists+netdev@lfdr.de>; Sat,  2 Jul 2022 17:49:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF89A56413C
+	for <lists+netdev@lfdr.de>; Sat,  2 Jul 2022 18:00:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232019AbiGBPtQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Jul 2022 11:49:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48978 "EHLO
+        id S232307AbiGBP6M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Jul 2022 11:58:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232221AbiGBPtP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Jul 2022 11:49:15 -0400
-Received: from smtp-fw-6002.amazon.com (smtp-fw-6002.amazon.com [52.95.49.90])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E679F5A5
-        for <netdev@vger.kernel.org>; Sat,  2 Jul 2022 08:49:13 -0700 (PDT)
+        with ESMTP id S232221AbiGBP6L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Jul 2022 11:58:11 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BCA8B7CA
+        for <netdev@vger.kernel.org>; Sat,  2 Jul 2022 08:58:09 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id d2so9146241ejy.1
+        for <netdev@vger.kernel.org>; Sat, 02 Jul 2022 08:58:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1656776953; x=1688312953;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=ST7zNywcgpFc+lKZlgjpcX+5kAI9xpTS9tMUy6dJOn8=;
-  b=ZLvLeOLMIBNrKlMrhj6KqDniLin9bUoAIMfIXwdoixt42d4lOg/AxP0Q
-   Hx6UBzPpt5cfLFZPqYXVeT1MQ0cKnADZ5VAAz76+CgJGhT8sMyAdf0rHz
-   d6klPEfrHcTwD2YIzgIk6Cvzo4pn0zrR3FhQj2CCYrbGnJvsn5aMestBR
-   I=;
-X-IronPort-AV: E=Sophos;i="5.92,240,1650931200"; 
-   d="scan'208";a="217501368"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-iad-1e-26daedd8.us-east-1.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-6002.iad6.amazon.com with ESMTP; 02 Jul 2022 15:49:12 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
-        by email-inbound-relay-iad-1e-26daedd8.us-east-1.amazon.com (Postfix) with ESMTPS id CE87F8155F;
-        Sat,  2 Jul 2022 15:49:10 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.36; Sat, 2 Jul 2022 15:49:09 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.161.39) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.9;
- Sat, 2 Jul 2022 15:49:06 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-CC:     Sachin Sant <sachinp@linux.ibm.com>,
-        Leonard Crestez <cdleonard@gmail.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        "Kuniyuki Iwashima" <kuniyu@amazon.com>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>,
-        <netdev@vger.kernel.org>
-Subject: [PATCH v3 net-next 2/2] selftests: net: af_unix: Test connect() with different netns.
-Date:   Sat, 2 Jul 2022 08:48:18 -0700
-Message-ID: <20220702154818.66761-3-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220702154818.66761-1-kuniyu@amazon.com>
-References: <20220702154818.66761-1-kuniyu@amazon.com>
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=LqTLNuT6chM3Pa1YncL1xGiDwO6ESZi6O9GCGne55J8=;
+        b=1Nx/eC8GexkmAImR6c6m0xxvvLhe6cTDbwFLqOa74oVIcR3JKu1+eeG6FYmKYoxJee
+         lpfzQ0AMoMlNU2CYjAXwyuXOLZwVuQ5C1rKRZb4ju4ZH/hAQ34MNbRZCQnuJmCjgCVrg
+         uQd60bSrE//eOuot0VZbgcfwI3KlTfYBSp/sYf/8mXA0in5ZwBIoF9wgrq3PRotiswB/
+         Bkn/2xtluSfMrn92TNNwbaBwfvAo620UWxfqNjn1k8OV2KnvF8gwJlFSZb41a2CrqUBM
+         Tvq2CSdPtISixeDXT9/moOnVs61SM892QdFUkq8oQCG1FJvce3i9et3AUlFcjiplhxbC
+         GCwA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=LqTLNuT6chM3Pa1YncL1xGiDwO6ESZi6O9GCGne55J8=;
+        b=HqVEMzqID30n13AEkuM9Z7gcLKNRQnfjelmKrBVOxEqFLFYPfAD7rAlQrHM8C7QMLs
+         uKIRYjE1b6gcDH3p5BV1wgVw/O1n2bMRgCj08BFY39EApttR7+VO7J5hKzNcO5guVPqW
+         IriPNOCyuCWonh1rL7GTf2zYvD7chNWUzVzl6AOrWJARB9EpUBVn+iHbUkySZalLBgA2
+         JOHdoTRwPnOQsC09wLa4ryvkoeYPoG8pVGsZSmRNiNFjpYS7k0oupSwgYaz9QAlr73do
+         7zzBGG/I2jAT5uheKA1ImUVCXXfdV7gP46N1xD281hE1j8huGeOKoxMoj1JvJl2k4KdH
+         oOtQ==
+X-Gm-Message-State: AJIora8HpO6GxmCTYkO40RT9mJc1UfKnd5t4MxKCK4kzZHvVGsdUU7fl
+        Zm2XMUYQvjp/jmHGq+s5aeKH8A==
+X-Google-Smtp-Source: AGRyM1vp40QRAMlLeo/GHi2khqXgGtcbpxRxhmO82tZAZrdNXQiWCG93kh+cV2Vm2iVEC1oqJGYWtg==
+X-Received: by 2002:a17:907:778a:b0:70c:d67:578e with SMTP id ky10-20020a170907778a00b0070c0d67578emr19216986ejc.696.1656777487866;
+        Sat, 02 Jul 2022 08:58:07 -0700 (PDT)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id q25-20020a17090676d900b0072ab06bf296sm445187ejn.23.2022.07.02.08.58.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 02 Jul 2022 08:58:07 -0700 (PDT)
+Date:   Sat, 2 Jul 2022 17:58:06 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, pabeni@redhat.com,
+        edumazet@google.com, mlxsw@nvidia.com, saeedm@nvidia.com,
+        moshe@nvidia.com
+Subject: Re: [patch net-next 2/3] net: devlink: call lockdep_assert_held()
+ for devlink->lock directly
+Message-ID: <YsBrDhZuV4j3uCk3@nanopsycho>
+References: <20220701095926.1191660-1-jiri@resnulli.us>
+ <20220701095926.1191660-3-jiri@resnulli.us>
+ <20220701093316.410157f3@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.161.39]
-X-ClientProxiedBy: EX13D03UWA001.ant.amazon.com (10.43.160.141) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220701093316.410157f3@kernel.org>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,198 +72,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch add a test that checks connect()ivity between two sockets:
+Fri, Jul 01, 2022 at 06:33:16PM CEST, kuba@kernel.org wrote:
+>On Fri,  1 Jul 2022 11:59:25 +0200 Jiri Pirko wrote:
+>> In devlink.c there is direct access to whole struct devlink so there is
+>> no need to use helper. So obey the customs and work with lock directly
+>> avoiding helpers which might obfuscate things a bit.
+>
+>> diff --git a/net/core/devlink.c b/net/core/devlink.c
+>> index 25b481dd1709..a7477addbd59 100644
+>> --- a/net/core/devlink.c
+>> +++ b/net/core/devlink.c
+>> @@ -10185,7 +10185,7 @@ int devl_rate_leaf_create(struct devlink_port *devlink_port, void *priv)
+>>  	struct devlink *devlink = devlink_port->devlink;
+>>  	struct devlink_rate *devlink_rate;
+>>  
+>> -	devl_assert_locked(devlink_port->devlink);
+>> +	lockdep_assert_held(&devlink_port->devlink->lock);
+>
+>I don't understand why. Do we use lockdep asserts directly on rtnl_mutex
+>in rtnetlink.c?
 
-    unnamed socket -> bound socket
-                      * SOCK_STREAM or SOCK_DGRAM
-                      * pathname or abstract
-                      * same or different netns
+Well:
 
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
----
-v3: Fix CHECK by checkpatch.pl --strict
-v2: Add selftest
----
- tools/testing/selftests/net/.gitignore        |   1 +
- tools/testing/selftests/net/af_unix/Makefile  |   3 +-
- .../selftests/net/af_unix/unix_connect.c      | 149 ++++++++++++++++++
- 3 files changed, 152 insertions(+), 1 deletion(-)
- create mode 100644 tools/testing/selftests/net/af_unix/unix_connect.c
-
-diff --git a/tools/testing/selftests/net/.gitignore b/tools/testing/selftests/net/.gitignore
-index a29f79618934..1257baa79286 100644
---- a/tools/testing/selftests/net/.gitignore
-+++ b/tools/testing/selftests/net/.gitignore
-@@ -37,3 +37,4 @@ gro
- ioam6_parser
- toeplitz
- cmsg_sender
-+unix_connect
-\ No newline at end of file
-diff --git a/tools/testing/selftests/net/af_unix/Makefile b/tools/testing/selftests/net/af_unix/Makefile
-index df341648f818..969620ae9928 100644
---- a/tools/testing/selftests/net/af_unix/Makefile
-+++ b/tools/testing/selftests/net/af_unix/Makefile
-@@ -1,2 +1,3 @@
--TEST_GEN_PROGS := test_unix_oob
-+TEST_GEN_PROGS := test_unix_oob unix_connect
-+
- include ../../lib.mk
-diff --git a/tools/testing/selftests/net/af_unix/unix_connect.c b/tools/testing/selftests/net/af_unix/unix_connect.c
-new file mode 100644
-index 000000000000..157e44ef7f37
---- /dev/null
-+++ b/tools/testing/selftests/net/af_unix/unix_connect.c
-@@ -0,0 +1,149 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#define _GNU_SOURCE
-+#include <sched.h>
-+
-+#include <stdio.h>
-+#include <unistd.h>
-+
-+#include <sys/socket.h>
-+#include <sys/un.h>
-+
-+#include "../../kselftest_harness.h"
-+
-+FIXTURE(unix_connect)
-+{
-+	int server, client;
-+	int family;
-+};
-+
-+FIXTURE_VARIANT(unix_connect)
-+{
-+	int type;
-+	char sun_path[8];
-+	int len;
-+	int flags;
-+	int err;
-+};
-+
-+FIXTURE_VARIANT_ADD(unix_connect, stream_pathname)
-+{
-+	.type = SOCK_STREAM,
-+	.sun_path = "test",
-+	.len = 4 + 1,
-+	.flags = 0,
-+	.err = 0,
-+};
-+
-+FIXTURE_VARIANT_ADD(unix_connect, stream_abstract)
-+{
-+	.type = SOCK_STREAM,
-+	.sun_path = "\0test",
-+	.len = 5,
-+	.flags = 0,
-+	.err = 0,
-+};
-+
-+FIXTURE_VARIANT_ADD(unix_connect, stream_pathname_netns)
-+{
-+	.type = SOCK_STREAM,
-+	.sun_path = "test",
-+	.len = 4 + 1,
-+	.flags = CLONE_NEWNET,
-+	.err = 0,
-+};
-+
-+FIXTURE_VARIANT_ADD(unix_connect, stream_abstract_netns)
-+{
-+	.type = SOCK_STREAM,
-+	.sun_path = "\0test",
-+	.len = 5,
-+	.flags = CLONE_NEWNET,
-+	.err = ECONNREFUSED,
-+};
-+
-+FIXTURE_VARIANT_ADD(unix_connect, dgram_pathname)
-+{
-+	.type = SOCK_DGRAM,
-+	.sun_path = "test",
-+	.len = 4 + 1,
-+	.flags = 0,
-+	.err = 0,
-+};
-+
-+FIXTURE_VARIANT_ADD(unix_connect, dgram_abstract)
-+{
-+	.type = SOCK_DGRAM,
-+	.sun_path = "\0test",
-+	.len = 5,
-+	.flags = 0,
-+	.err = 0,
-+};
-+
-+FIXTURE_VARIANT_ADD(unix_connect, dgram_pathname_netns)
-+{
-+	.type = SOCK_DGRAM,
-+	.sun_path = "test",
-+	.len = 4 + 1,
-+	.flags = CLONE_NEWNET,
-+	.err = 0,
-+};
-+
-+FIXTURE_VARIANT_ADD(unix_connect, dgram_abstract_netns)
-+{
-+	.type = SOCK_DGRAM,
-+	.sun_path = "\0test",
-+	.len = 5,
-+	.flags = CLONE_NEWNET,
-+	.err = ECONNREFUSED,
-+};
-+
-+FIXTURE_SETUP(unix_connect)
-+{
-+	self->family = AF_UNIX;
-+}
-+
-+FIXTURE_TEARDOWN(unix_connect)
-+{
-+	close(self->server);
-+	close(self->client);
-+
-+	if (variant->sun_path[0])
-+		remove("test");
-+}
-+
-+#define offsetof(type, member) ((size_t)&((type *)0)->(member))
-+
-+TEST_F(unix_connect, test)
-+{
-+	socklen_t addrlen;
-+	struct sockaddr_un addr = {
-+		.sun_family = self->family,
-+	};
-+	int err;
-+
-+	self->server = socket(self->family, variant->type, 0);
-+	ASSERT_NE(-1, self->server);
-+
-+	addrlen = offsetof(struct sockaddr_un, sun_path) + variant->len;
-+	memcpy(&addr.sun_path, variant->sun_path, variant->len);
-+
-+	err = bind(self->server, (struct sockaddr *)&addr, addrlen);
-+	ASSERT_EQ(0, err);
-+
-+	if (variant->type == SOCK_STREAM) {
-+		err = listen(self->server, 32);
-+		ASSERT_EQ(0, err);
-+	}
-+
-+	err = unshare(variant->flags);
-+	ASSERT_EQ(0, err);
-+
-+	self->client = socket(self->family, variant->type, 0);
-+	ASSERT_LT(0, self->client);
-+
-+	err = connect(self->client, (struct sockaddr *)&addr, addrlen);
-+	ASSERT_EQ(variant->err, err == -1 ? errno : 0);
-+}
-+
-+TEST_HARNESS_MAIN
--- 
-2.30.2
-
+1) it's been a long time policy not to use helpers for locks if not
+   needed. There reason is that the reader has easier job in seeing what
+   the code is doing. And here, it is not needed to use helper (we can
+   access the containing struct)
+2) lock/unlock for devlink->lock is done here w/o helpers as well
+3) there is really no gain of using helper here.
+4) rtnl_mutex is probably not good example, it has a lot of ancient
+   history behind it.
