@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B75E2564156
-	for <lists+netdev@lfdr.de>; Sat,  2 Jul 2022 18:14:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF50F56415A
+	for <lists+netdev@lfdr.de>; Sat,  2 Jul 2022 18:15:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232356AbiGBQOV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Jul 2022 12:14:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33016 "EHLO
+        id S232365AbiGBQPF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Jul 2022 12:15:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232272AbiGBQOU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Jul 2022 12:14:20 -0400
+        with ESMTP id S232300AbiGBQPE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Jul 2022 12:15:04 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05F0DE0EC
-        for <netdev@vger.kernel.org>; Sat,  2 Jul 2022 09:14:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B360AE0FE
+        for <netdev@vger.kernel.org>; Sat,  2 Jul 2022 09:15:03 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1o7fkx-0003BA-8Q; Sat, 02 Jul 2022 18:14:03 +0200
+        id 1o7flf-0003Eu-FG; Sat, 02 Jul 2022 18:14:47 +0200
 Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
         (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 867A6A5969;
-        Sat,  2 Jul 2022 16:14:00 +0000 (UTC)
-Date:   Sat, 2 Jul 2022 18:13:59 +0200
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 9AB00A596E;
+        Sat,  2 Jul 2022 16:14:45 +0000 (UTC)
+Date:   Sat, 2 Jul 2022 18:14:45 +0200
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     Biju Das <biju.das.jz@bp.renesas.com>
 Cc:     Wolfgang Grandegger <wg@grandegger.com>,
@@ -42,14 +42,16 @@ Cc:     Wolfgang Grandegger <wg@grandegger.com>,
         Chris Paterson <Chris.Paterson2@renesas.com>,
         Biju Das <biju.das@bp.renesas.com>,
         linux-renesas-soc@vger.kernel.org
-Subject: Re: [PATCH 0/6] Add support for RZ/N1 SJA1000 CAN controller
-Message-ID: <20220702161359.dy64er2lkrueyzh7@pengutronix.de>
+Subject: Re: [PATCH 2/6] dt-bindings: can: nxp,sja1000: Document RZ/N1{D,S}
+ support
+Message-ID: <20220702161445.lwiumlsj6wumyein@pengutronix.de>
 References: <20220702140130.218409-1-biju.das.jz@bp.renesas.com>
+ <20220702140130.218409-3-biju.das.jz@bp.renesas.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="e5v2drfk7z245owm"
+        protocol="application/pgp-signature"; boundary="s27sukapqayuwrca"
 Content-Disposition: inline
-In-Reply-To: <20220702140130.218409-1-biju.das.jz@bp.renesas.com>
+In-Reply-To: <20220702140130.218409-3-biju.das.jz@bp.renesas.com>
 X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
 X-SA-Exim-Mail-From: mkl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
@@ -64,20 +66,78 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---e5v2drfk7z245owm
+--s27sukapqayuwrca
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On 02.07.2022 15:01:24, Biju Das wrote:
-> This patch series aims to add support for RZ/N1 SJA1000 CAN controller.
+On 02.07.2022 15:01:26, Biju Das wrote:
+> Add CAN binding documentation for Renesas RZ/N1 SoC.
 >=20
 > The SJA1000 CAN controller on RZ/N1 SoC has some differences compared
 > to others like it has no clock divider register (CDR) support and it has
 > no HW loopback(HW doesn't see tx messages on rx), so introduced a new
                ^^^
 
-please add a space here.
+please add space.
+
+> compatible 'renesas,rzn1-sja1000' to handle these differences.
+>=20
+> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+> ---
+>  .../bindings/net/can/nxp,sja1000.yaml         | 22 +++++++++++++++++++
+>  1 file changed, 22 insertions(+)
+>=20
+> diff --git a/Documentation/devicetree/bindings/net/can/nxp,sja1000.yaml b=
+/Documentation/devicetree/bindings/net/can/nxp,sja1000.yaml
+> index 91d0f1b25d10..d0d374b979ec 100644
+> --- a/Documentation/devicetree/bindings/net/can/nxp,sja1000.yaml
+> +++ b/Documentation/devicetree/bindings/net/can/nxp,sja1000.yaml
+> @@ -16,6 +16,12 @@ properties:
+>          const: nxp,sja1000
+>        - description: Technologic Systems SJA1000 CAN Controller
+>          const: technologic,sja1000
+> +      - description: Renesas RZ/N1 SJA1000 CAN Controller
+> +        items:
+> +          - enum:
+> +              - renesas,r9a06g032-sja1000 # RZ/N1D
+> +              - renesas,r9a06g033-sja1000 # RZ/N1S
+> +          - const: renesas,rzn1-sja1000 # RZ/N1
+> =20
+>    reg:
+>      maxItems: 1
+> @@ -23,6 +29,12 @@ properties:
+>    interrupts:
+>      maxItems: 1
+> =20
+> +  clocks:
+> +    maxItems: 1
+> +
+> +  clock-names:
+> +    const: can_clk
+> +
+>    reg-io-width:
+>      $ref: /schemas/types.yaml#/definitions/uint32
+>      description: I/O register width (in bytes) implemented by this device
+> @@ -91,6 +103,16 @@ allOf:
+>        required:
+>          - reg-io-width
+> =20
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          contains:
+> +            const: renesas,rzn1-sja1000
+> +    then:
+> +      required:
+> +        - clocks
+> +        - clock-names
+> +
+>  unevaluatedProperties: false
+> =20
+>  examples:
+
+Can you add an example, too?
 
 Marc
 
@@ -87,19 +147,19 @@ Embedded Linux                   | https://www.pengutronix.de  |
 Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
 Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
---e5v2drfk7z245owm
+--s27sukapqayuwrca
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmLAbsUACgkQrX5LkNig
-010y/gf+IQzZgWL7TmLZ7VFp6MGb1/3J4o98S3yKAz/q1z6YhKMuIr7dyEjTwZ4R
-DAs1ggOpAMO5sr8d9v1Vviq9tWVaS4dkEtde30FSkcjlqoAx3GUKH9cWlAibvpau
-dlHMTcxyUiLl4CC7q3S5H863X9HjYrUGJTwnEYgKXh+X7tJm0IlPVrZugCodb/5o
-WwrNa+3P/bzcKTPR1CAKxE9FWBQLDcQKMQ3b95m2KnTQ0dDpP4MRvD7tzeMQI76k
-rxbgo2tgEs1K7qFIPsbgyyd10Dk/7wNv8t7Ao898z+zmA2a6dZPitYIsmoiYmeVp
-s13YQx6+JgwFZTB/O9NV+47ugf9TvQ==
-=Be/H
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmLAbvIACgkQrX5LkNig
+012iEAf/YHDy/iS30EuC+6cT2SUMaXoYcwBbbAi5DOJWNfvy3R7pte6t9ts/GzRX
+HJww+bDBOUjRUeKg4XL7QZJfvq7JFq2masS52XKoZshGxbVMoaia5DVTkQ1eW6Yj
+8abH7MEphxll8LTWx3ZSUHbje1nuZBVBR7T1p0bFxGkeqzgwLcJmZ4Bf11LgfT6N
+w1TAHgEF/q4ub9AurMfDQbL1c+wqD+/0QkEAT2WXmFsgpsjsbR6XICvIO39kd5xb
+5sFrImDy7IsCR8CFdURTK9X0oO5dwJzn0qWUeyTUWi15N2Svd4mg3vHfaYljtW9X
+ZIK5HSU/r9EtCcJBFU23AytCAQCWTw==
+=x+Mg
 -----END PGP SIGNATURE-----
 
---e5v2drfk7z245owm--
+--s27sukapqayuwrca--
