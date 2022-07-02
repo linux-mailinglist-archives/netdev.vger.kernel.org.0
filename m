@@ -2,86 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4387656413D
-	for <lists+netdev@lfdr.de>; Sat,  2 Jul 2022 18:00:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E799F56414F
+	for <lists+netdev@lfdr.de>; Sat,  2 Jul 2022 18:12:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232335AbiGBP7U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Jul 2022 11:59:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52950 "EHLO
+        id S231282AbiGBQMM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Jul 2022 12:12:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232336AbiGBP7T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Jul 2022 11:59:19 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7BD4BC2E
-        for <netdev@vger.kernel.org>; Sat,  2 Jul 2022 08:59:18 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id q6so9045524eji.13
-        for <netdev@vger.kernel.org>; Sat, 02 Jul 2022 08:59:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Zu87SdJXqRm3fqzawG/X8olpzVQrP5DI7IILYqr7ICE=;
-        b=3SV0GCYhCQdw6EzJvdotwzNYVyf1y9VFjUNHCNWXY2qMXAzdZ8VBSWo36WmfSM8/Ov
-         Swpf2H27Tr/mLrN9RUqBPgBm28rCsWwhqFPJ2LXeVqcOuAKtgIJE2KADbpDGC+AFP9JM
-         yo+PWORVob1ZJJIEkdutJg5pAYAatkQ9itcD1GgSpKddbApiHzB3CMNfWv0h3KSiUq9I
-         Bjil8qCR3JfEpToVBV7n6rIr826+8yHIgtha8E5Ba+KBunEAJ7fq51PR2opAOchf9VeN
-         EEwt8bYhMIe+v7A9cH4YeKhD7DNVaYYEQdrehxf9Bg4+2YkfYyc/J/HyD0Ecig2PlgUc
-         XvbA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Zu87SdJXqRm3fqzawG/X8olpzVQrP5DI7IILYqr7ICE=;
-        b=7O/tkjLO9qhvHoECh8BPpkn2jWzrMQ6txdCdIAM0HW818ZP264ertZ1/S0Yp/aqvA9
-         124ysNyn/gjZ12Lqv/LkzIK0Yq2+b06uXKIvTuceyGpVXo62ttVAOzCdUqY/mWdFmtAf
-         3t8F1HG/ejgG6cz4Gnm/0T25zL9J4RWoHXtSJI8zbtqEjVsjQUp3N7HavJlWqkUDIWoI
-         BAqLGlXHetWx5lyNUcIYShf58fzJYKZq64iDtZY+gho9dvu7AhazgSgmNXsvJiT051ef
-         /RJAcW8eEpPaCv3Z2PWn959OoWm0CW2FNq5CZEvIy/Vkm04XHpqpE5T/sA+G4zCBPhhd
-         HvtA==
-X-Gm-Message-State: AJIora9dHmyccgjHhT0YejncX6Pycx1xVRlyYwg3mC9iedZIA795e6W+
-        tRbRTm/hQuAOEWZ75Uhs8bVcoQ==
-X-Google-Smtp-Source: AGRyM1sIJ8wbAD0rKoFHTR59MEW2UClqHX1wwWQL9VgN7KKj4rwHmB0zwPRuRtMrAdLU7NH2nzeNkA==
-X-Received: by 2002:a17:906:149:b0:712:c9:7981 with SMTP id 9-20020a170906014900b0071200c97981mr19215326ejh.218.1656777557275;
-        Sat, 02 Jul 2022 08:59:17 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id k14-20020aa7c04e000000b00431962fe5d4sm17230613edo.77.2022.07.02.08.59.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 02 Jul 2022 08:59:16 -0700 (PDT)
-Date:   Sat, 2 Jul 2022 17:59:15 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, pabeni@redhat.com,
-        edumazet@google.com, mlxsw@nvidia.com, saeedm@nvidia.com,
-        moshe@nvidia.com
-Subject: Re: [patch net-next v2 2/3] net: devlink: call lockdep_assert_held()
- for devlink->lock directly
-Message-ID: <YsBrUxF4ZDMMK7li@nanopsycho>
-References: <20220701164007.1243684-1-jiri@resnulli.us>
- <20220701164007.1243684-3-jiri@resnulli.us>
- <20220701201021.400a5a83@kernel.org>
+        with ESMTP id S231243AbiGBQMK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Jul 2022 12:12:10 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2F55E0B8
+        for <netdev@vger.kernel.org>; Sat,  2 Jul 2022 09:12:09 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1o7fik-0002zG-SK; Sat, 02 Jul 2022 18:11:46 +0200
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 138CBA5964;
+        Sat,  2 Jul 2022 16:11:41 +0000 (UTC)
+Date:   Sat, 2 Jul 2022 18:11:41 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Biju Das <biju.das.jz@bp.renesas.com>
+Cc:     Wolfgang Grandegger <wg@grandegger.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>,
+        linux-renesas-soc@vger.kernel.org
+Subject: Re: [PATCH 1/6] dt-bindings: can: sja1000: Convert to json-schema
+Message-ID: <20220702161141.cfeemj2hobei2z4k@pengutronix.de>
+References: <20220702140130.218409-1-biju.das.jz@bp.renesas.com>
+ <20220702140130.218409-2-biju.das.jz@bp.renesas.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="kg7mrcpo3dm2jeux"
 Content-Disposition: inline
-In-Reply-To: <20220701201021.400a5a83@kernel.org>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220702140130.218409-2-biju.das.jz@bp.renesas.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sat, Jul 02, 2022 at 05:10:21AM CEST, kuba@kernel.org wrote:
->On Fri,  1 Jul 2022 18:40:06 +0200 Jiri Pirko wrote:
->> In devlink.c there is direct access to whole struct devlink so there is
->> no need to use helper. So obey the customs and work with lock directly
->> avoiding helpers which might obfuscate things a bit.
->
->I think you sent this as / before I replied to all the patches.
 
-Sorry.
+--kg7mrcpo3dm2jeux
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
->Still not sure what the basis for the custom is.
+On 02.07.2022 15:01:25, Biju Das wrote:
+> Convert the NXP SJA1000 CAN Controller Device Tree binding
+> documentation to json-schema.
+>=20
+> Update the example to match reality.
+>=20
+> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+> ---
+>  .../bindings/net/can/nxp,sja1000.yaml         | 106 ++++++++++++++++++
+>  .../devicetree/bindings/net/can/sja1000.txt   |  58 ----------
+>  2 files changed, 106 insertions(+), 58 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/net/can/nxp,sja1000=
+=2Eyaml
+>  delete mode 100644 Documentation/devicetree/bindings/net/can/sja1000.txt
+>=20
+> diff --git a/Documentation/devicetree/bindings/net/can/nxp,sja1000.yaml b=
+/Documentation/devicetree/bindings/net/can/nxp,sja1000.yaml
+> new file mode 100644
+> index 000000000000..91d0f1b25d10
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/can/nxp,sja1000.yaml
+> @@ -0,0 +1,106 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/net/can/nxp,sja1000.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Memory mapped SJA1000 CAN controller from NXP (formerly Philips)
+> +
+> +maintainers:
+> +  - Wolfgang Grandegger <wg@grandegger.com>
 
-Please see the reply to your comment of this patch in v1. Thanks!
+Please add:
+
+allOf:
+  - $ref: can-controller.yaml#
+
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--kg7mrcpo3dm2jeux
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmLAbjoACgkQrX5LkNig
+010c0wf/TU+eiTGp7fNfKgBWIZhVVz+u0Pouz0Dz8z8hN5QZn0x3lnTDlt6Nx3IK
+55uSlIJxSkdGX87XpoZ1KdGHJiN/r3GCm6eQGPBz1BmPmjXE2/Oy7EQwy5dyaKpt
+f8eJC2nbAe6U/7DixxA6XlOvoh6qyRpkS7qXlc4CnxRHlEFYYcFBVH7pdrZCFMBy
+RLeuKhyepu/QD5bCZetfjHrfHYQy2CB7nh5/EUVeR2hV3Kpww5kRnNeA0zRdUktz
+n5NZ8+QWIniJEXu+YChdCOnztqZ6ljHbJctO3a7L2gf/uh7j8etY+vY4CpQQs9On
+RSvNn4wxuRxtCncrDRO4/Op+E0QQuQ==
+=YVj9
+-----END PGP SIGNATURE-----
+
+--kg7mrcpo3dm2jeux--
