@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A7CF356424C
-	for <lists+netdev@lfdr.de>; Sat,  2 Jul 2022 21:04:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BAAB656424F
+	for <lists+netdev@lfdr.de>; Sat,  2 Jul 2022 21:04:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229508AbiGBTEa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Jul 2022 15:04:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56434 "EHLO
+        id S232418AbiGBTEg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Jul 2022 15:04:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231316AbiGBTE2 (ORCPT
+        with ESMTP id S231865AbiGBTE2 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sat, 2 Jul 2022 15:04:28 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABA9BBC1A
-        for <netdev@vger.kernel.org>; Sat,  2 Jul 2022 12:04:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 739FF9FE6
+        for <netdev@vger.kernel.org>; Sat,  2 Jul 2022 12:04:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 30A57B808C1
-        for <netdev@vger.kernel.org>; Sat,  2 Jul 2022 19:04:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAF5CC34114;
-        Sat,  2 Jul 2022 19:04:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 066A8B808C2
+        for <netdev@vger.kernel.org>; Sat,  2 Jul 2022 19:04:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B02A3C341C8;
+        Sat,  2 Jul 2022 19:04:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656788663;
-        bh=BaJsDAH7CMNafJB3kvKUM0GvZDrlJ2Q2BFbT62JYv20=;
+        s=k20201202; t=1656788664;
+        bh=wxJUrxFgsI74QjlbkC0rjKL0UzQg+ml8KAKhayW9Ujc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=T+zs4vqc5kHYa0N6pYY1oOoerxixdmprMRmyOJC1m6uv+FoQZe5Zrcw5BW+C9H+n6
-         pzCC6axV490B5VHKpD+rd/9NgJobmIm01w+x8+t4sjmSGiPndG4OlJkAUVIRLG1+Zh
-         OMsHypR5mX63HA/4sQeaKJL676IPj4cX5f4eimJNiiVxV3/EfT4l0atrGC98vMAZ1H
-         a/QxTudXfdTHzZqv7s0nH6YLRj27C0nOq1r7SQkSoW8we2Wd5icNW2Kide64RMc5b7
-         YdPU8eXGD/tY3l2ncVy2/Pb1IRtEOAMosUblMI2zZoYh5Sux9cTz6DWd1fx8jCBcDa
-         JXQZC/nEjW+FQ==
+        b=nLP5D1HAbWaNOTYIUmm9djmx5TPPNmd0C7f6K363aWho6DXSPsP4kPMOY/EBhaV3K
+         a7eZR9TNnJ08hHnlTJ5sCwub2qhffwuHM1omG0M6Ys4iZtacw76854vSiO5NmDnVOj
+         lrm+h9v1fRbtv88fNt7tsJNXhKRcGPBBKeWjUJ+LQuKuxy2ne9Cjv5DU40RNN8H0/V
+         tpLWX/I7cYuCGI5YBlMUds+3u1qjdLYthrSMs4jNdVUjV51xDdYZRInTyGPil580F2
+         q56aT3k92ek7KF4ARL7akU0EKeAtdtHKTx4YpocayWmmO2JcJ93n+kexS1XLuH1m9R
+         ljZbFuLjZfuGQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -39,9 +39,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Chris Mi <cmi@nvidia.com>, Mark Bloch <mbloch@nvidia.com>,
         Roi Dayan <roid@nvidia.com>
-Subject: [net-next v2 03/15] net/mlx5: E-switch, Introduce flag to indicate if vport acl namespace is created
-Date:   Sat,  2 Jul 2022 12:02:01 -0700
-Message-Id: <20220702190213.80858-4-saeed@kernel.org>
+Subject: [net-next v2 04/15] net/mlx5: E-switch, Introduce flag to indicate if fdb table is created
+Date:   Sat,  2 Jul 2022 12:02:02 -0700
+Message-Id: <20220702190213.80858-5-saeed@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220702190213.80858-1-saeed@kernel.org>
 References: <20220702190213.80858-1-saeed@kernel.org>
@@ -59,63 +59,67 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Chris Mi <cmi@nvidia.com>
 
-Eswitch vport acl namespace is needed when loading vfs. There is
-no need to free and reallocate it when switching eswitch mode.
-Introduce flag to indicate if it is created or not. When needed,
-create it. Only free it when the driver is unloaded or in bare
-metal mode.
+Introduce flag to indicate if fdb table is created as a pre-step
+to prepare for removing dependency between sriov and eswitch mode
+in the downstream patches.
 
 Signed-off-by: Chris Mi <cmi@nvidia.com>
 Reviewed-by: Mark Bloch <mbloch@nvidia.com>
 Reviewed-by: Roi Dayan <roid@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/eswitch.c | 5 +++++
- drivers/net/ethernet/mellanox/mlx5/core/eswitch.h | 1 +
- 2 files changed, 6 insertions(+)
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.c | 3 +++
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.h | 9 +++++++++
+ 2 files changed, 12 insertions(+)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
-index 3e662e389be4..823bfcff7846 100644
+index 823bfcff7846..b9a3473f5672 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
-@@ -1186,6 +1186,9 @@ static int mlx5_esw_acls_ns_init(struct mlx5_eswitch *esw)
- 	int total_vports;
- 	int err;
+@@ -1274,6 +1274,8 @@ int mlx5_eswitch_enable_locked(struct mlx5_eswitch *esw, int mode, int num_vfs)
+ 	if (err)
+ 		goto abort;
  
-+	if (esw->flags & MLX5_ESWITCH_VPORT_ACL_NS_CREATED)
-+		return 0;
++	esw->fdb_table.flags |= MLX5_ESW_FDB_CREATED;
 +
- 	total_vports = mlx5_eswitch_get_total_vports(dev);
+ 	mlx5_eswitch_event_handlers_register(esw);
  
- 	if (MLX5_CAP_ESW_EGRESS_ACL(dev, ft_support)) {
-@@ -1203,6 +1206,7 @@ static int mlx5_esw_acls_ns_init(struct mlx5_eswitch *esw)
- 	} else {
- 		esw_warn(dev, "ingress ACL is not supported by FW\n");
- 	}
-+	esw->flags |= MLX5_ESWITCH_VPORT_ACL_NS_CREATED;
- 	return 0;
+ 	esw_info(esw->dev, "Enable: mode(%s), nvfs(%d), active vports(%d)\n",
+@@ -1356,6 +1358,7 @@ void mlx5_eswitch_disable_locked(struct mlx5_eswitch *esw, bool clear_vf)
  
- err:
-@@ -1215,6 +1219,7 @@ static void mlx5_esw_acls_ns_cleanup(struct mlx5_eswitch *esw)
- {
- 	struct mlx5_core_dev *dev = esw->dev;
+ 	mlx5_eswitch_event_handlers_unregister(esw);
  
-+	esw->flags &= ~MLX5_ESWITCH_VPORT_ACL_NS_CREATED;
- 	if (MLX5_CAP_ESW_INGRESS_ACL(dev, ft_support))
- 		mlx5_fs_ingress_acls_cleanup(dev);
- 	if (MLX5_CAP_ESW_EGRESS_ACL(dev, ft_support))
++	esw->fdb_table.flags &= ~MLX5_ESW_FDB_CREATED;
+ 	if (esw->mode == MLX5_ESWITCH_LEGACY)
+ 		esw_legacy_disable(esw);
+ 	else if (esw->mode == MLX5_ESWITCH_OFFLOADS)
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
-index 2754a732914d..a08f5315d768 100644
+index a08f5315d768..a9ba0e324834 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
-@@ -282,6 +282,7 @@ struct mlx5_esw_functions {
- enum {
- 	MLX5_ESWITCH_VPORT_MATCH_METADATA = BIT(0),
- 	MLX5_ESWITCH_REG_C1_LOOPBACK_ENABLED = BIT(1),
-+	MLX5_ESWITCH_VPORT_ACL_NS_CREATED = BIT(2),
- };
+@@ -287,6 +287,10 @@ enum {
  
  struct mlx5_esw_bridge_offloads;
+ 
++enum {
++	MLX5_ESW_FDB_CREATED = BIT(0),
++};
++
+ struct mlx5_eswitch {
+ 	struct mlx5_core_dev    *dev;
+ 	struct mlx5_nb          nb;
+@@ -576,6 +580,11 @@ mlx5_esw_devlink_port_index_to_vport_num(unsigned int dl_port_index)
+ 	return dl_port_index & 0xffff;
+ }
+ 
++static inline bool mlx5_esw_is_fdb_created(struct mlx5_eswitch *esw)
++{
++	return esw->fdb_table.flags & MLX5_ESW_FDB_CREATED;
++}
++
+ /* TODO: This mlx5e_tc function shouldn't be called by eswitch */
+ void mlx5e_tc_clean_fdb_peer_flows(struct mlx5_eswitch *esw);
+ 
 -- 
 2.36.1
 
