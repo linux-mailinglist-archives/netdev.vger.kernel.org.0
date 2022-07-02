@@ -2,46 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 53CD4564239
-	for <lists+netdev@lfdr.de>; Sat,  2 Jul 2022 20:59:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AB57564242
+	for <lists+netdev@lfdr.de>; Sat,  2 Jul 2022 21:01:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230393AbiGBS7y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Jul 2022 14:59:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52786 "EHLO
+        id S232235AbiGBTBO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Jul 2022 15:01:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230085AbiGBS7v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Jul 2022 14:59:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2335D62EF
-        for <netdev@vger.kernel.org>; Sat,  2 Jul 2022 11:59:51 -0700 (PDT)
+        with ESMTP id S229668AbiGBTBN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Jul 2022 15:01:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B965463E5;
+        Sat,  2 Jul 2022 12:01:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B49A460FD4
-        for <netdev@vger.kernel.org>; Sat,  2 Jul 2022 18:59:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C28FCC341CA;
-        Sat,  2 Jul 2022 18:59:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6B4B9B80882;
+        Sat,  2 Jul 2022 19:01:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D18AFC34114;
+        Sat,  2 Jul 2022 19:01:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656788390;
-        bh=lWse9WIHVMysF6eHjD8tXr7RJlMfXVChVWRWh1nUWac=;
+        s=k20201202; t=1656788470;
+        bh=HnMLOMngzYmCfv9EoA0IJZhKk3NgHhd9m1LNgCBIWS4=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=tzjJ1k/AQab3StGhiV87UFFFkesJRji7dgdP+CT/qSOdCRe72+SIGVWwr2Wfg+I9+
-         drvqi50S9fuil1K9ZGgIdAFcJXdbJnkfII0YmIJrsbur70YT5o67nTMqEL/UFYns4v
-         UecMh6kqHBm303emZhHBRy6mWMFu51jQaNYmR7+QlYeCrLajcF//ABz+ip/f9Q4b25
-         6oL5Fi8jSgiRcLQOijuj6uuaVy7UDbusQwO0AQ1hSy8cGTAPBzQLl2S27vpw1mvZUx
-         SFwpGID+qlG5CDPF4OAD8k0j42nEjjZFP0zWXqH+Lj3uGyc64dCk3YI6goRopqyamy
-         j8RGdzQlcm0TQ==
-Date:   Sat, 2 Jul 2022 11:59:48 -0700
+        b=NgaX6wCFSwp+Ev/pL19Xb7/YByiLCukMuQAUwJVLOtjvQBUUE+xOHCj1/UgJ/0uaN
+         QvjPByZv8zCljFvQk6+YQCyBD3jAZAdQQyKAdHdD+xrwsOmxboUf6/4he2yYCBGTPP
+         1wYKW0OS7+X6hqWQMSSeex38CEBdbtsq6ojiZdZN/kPFkyRu3KcmtpnhuG2RuY8MRd
+         MB0lMhtMV9r3Yusv8Kqw7biNmmP9zSnecxvQZ2KsurVZWKpn1NwemPaysET5t1GFI4
+         sl02Zl97IVj+s5JjGZqGDgGSvD1U+QGiXD6Ot0Q/jATK+tn9G2pG9n8MHHqK3Tou2c
+         T2xFVllkI8M/Q==
+Date:   Sat, 2 Jul 2022 12:01:08 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Hugues ANGUELKOV <hanguelkov@randorisec.fr>
-Cc:     netdev@vger.kernel.org, security@kernel.org, pablo@netfilter.org,
-        kadlec@netfilter.org, fw@strlen.de, davy <davy@randorisec.fr>,
-        amongodin@randorisec.fr, torvalds@linuxfoundation.org
-Subject: Re: [PATCH v1] netfilter: nf_tables: fix nft_set_elem_init heap
- buffer overflow
-Message-ID: <20220702115948.5de8b1e0@kernel.org>
-In-Reply-To: <271d4a36-2212-5bce-5efb-f5bad53fa49e@randorisec.fr>
-References: <271d4a36-2212-5bce-5efb-f5bad53fa49e@randorisec.fr>
+To:     duoming@zju.edu.cn
+Cc:     linux-hams@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, ralf@linux-mips.org,
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com
+Subject: Re: [PATCH v4] net: rose: fix null-ptr-deref caused by
+ rose_kill_by_neigh
+Message-ID: <20220702120108.32985427@kernel.org>
+In-Reply-To: <1bbd2137.23c51.181bdcb792f.Coremail.duoming@zju.edu.cn>
+References: <20220629104941.26351-1-duoming@zju.edu.cn>
+        <20220701194155.5bd61e58@kernel.org>
+        <1bbd2137.23c51.181bdcb792f.Coremail.duoming@zju.edu.cn>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -55,43 +57,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 2 Jul 2022 19:59:11 +0200 Hugues ANGUELKOV wrote:
-> From d91007a18140e02a1f12c9627058a019fe55b8e6 Mon Sep 17 00:00:00 2001
-> From: Arthur Mongodin <amongodin@randorisec.fr>
-> Date: Sat, 2 Jul 2022 17:11:48 +0200
-> Subject: [PATCH v1] netfilter: nf_tables: fix nft_set_elem_init heap buffer
->  overflow
-
-You have the headers twice, you may want to trim them or use git
-send-email if v2 is needed.
-
-> The length used for the memcpy in nft_set_elem_init may exceed the bound
-> of the allocated object due to a weak check in nft_setelem_parse_data.
-> As a user can add an element with a data type NFT_DATA_VERDICT to a set
-> with a data type different of NFT_DATA_VERDICT, then the comparison on the
-> data type of the element allows to avoid the comparaison on the data length
-> This fix forces the length comparison in nft_setelem_parse_data by removing
-> the check for NFT_DATA_VERDICT type.
-
-> Fixes: fdb9c405e35b ("netfilter: nf_tables: allow up to 64 bytes in the set element data area")
-> Signed-off-by: Arthur Mongodin <amongodin@randorisec.fr>
-> ---
->  net/netfilter/nf_tables_api.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+On Sat, 2 Jul 2022 15:23:57 +0800 (GMT+08:00) duoming@zju.edu.cn wrote:
+> > On Wed, 29 Jun 2022 18:49:41 +0800 Duoming Zhou wrote:  
+> > > When the link layer connection is broken, the rose->neighbour is
+> > > set to null. But rose->neighbour could be used by rose_connection()
+> > > and rose_release() later, because there is no synchronization among
+> > > them. As a result, the null-ptr-deref bugs will happen.
+> > > 
+> > > One of the null-ptr-deref bugs is shown below:
+> > > 
+> > >     (thread 1)                  |        (thread 2)
+> > >                                 |  rose_connect
+> > > rose_kill_by_neigh              |    lock_sock(sk)
+> > >   spin_lock_bh(&rose_list_lock) |    if (!rose->neighbour)
+> > >   rose->neighbour = NULL;//(1)  |
+> > >                                 |    rose->neighbour->use++;//(2)  
+> >   
+> > >  		if (rose->neighbour == neigh) {  
+> > 
+> > Why is it okay to perform this comparison without the socket lock,
+> > if we need a socket lock to clear it? Looks like rose_kill_by_neigh()
+> > is not guaranteed to clear all the uses of a neighbor.  
 > 
-> diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-> index 51144fc66889..07845f211f3e 100644
-> --- a/net/netfilter/nf_tables_api.c
-> +++ b/net/netfilter/nf_tables_api.c
-> @@ -5219,7 +5219,7 @@ static int nft_setelem_parse_data(struct nft_ctx *ctx, struct nft_set *set,
->  	if (err < 0)
->  		return err;
->  
-> -	if (desc->type != NFT_DATA_VERDICT && desc->len != set->dlen) {
-> +	if (desc->len != set->dlen) {
+> I am sorry, the comparision should also be protected with socket lock.
+> The rose_kill_by_neigh() only clear the neighbor that is passed as
+> parameter of rose_kill_by_neigh(). 
 
-Looking at the commit under fixes it seems like it changes the check
-from desc->type != ... to set->type != ...
+Don't think that's possible, you'd have to drop the neigh lock every
+time.
 
-Seems like either the bug is even older or the fix should be to go back
-to checking set->type. Prolly the former?
+> > > +			sock_hold(s);
+> > > +			spin_unlock_bh(&rose_list_lock);
+> > > +			lock_sock(s);
+> > >  			rose_disconnect(s, ENETUNREACH, ROSE_OUT_OF_ORDER, 0);
+> > >  			rose->neighbour->use--;  
+> > 
+> > What protects the use counter?  
+> 
+> The use coounter is protected by socket lock.
+
+Which one, the neigh object can be shared by multiple sockets, no?
