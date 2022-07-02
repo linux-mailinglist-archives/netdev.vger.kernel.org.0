@@ -2,47 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A227563DE4
-	for <lists+netdev@lfdr.de>; Sat,  2 Jul 2022 05:12:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 95EEF563DF2
+	for <lists+netdev@lfdr.de>; Sat,  2 Jul 2022 05:20:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230483AbiGBDMQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Jul 2022 23:12:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44840 "EHLO
+        id S231892AbiGBDUV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Jul 2022 23:20:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229486AbiGBDMP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 23:12:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 515DC3B3C5
-        for <netdev@vger.kernel.org>; Fri,  1 Jul 2022 20:12:14 -0700 (PDT)
+        with ESMTP id S231732AbiGBDUS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jul 2022 23:20:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB10D33360;
+        Fri,  1 Jul 2022 20:20:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D5BB461C61
-        for <netdev@vger.kernel.org>; Sat,  2 Jul 2022 03:12:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B919C341CD;
-        Sat,  2 Jul 2022 03:12:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 97DC5B832BC;
+        Sat,  2 Jul 2022 03:20:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 3A34BC341CA;
+        Sat,  2 Jul 2022 03:20:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656731533;
-        bh=8qW7/9bymYNMXNeUGiKbK2wLEQjO6vrd2L5oEkUmEtc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=L76DhhAdR3Gka7TGaWeJQZmGTS+KNGhjUc70egkBH7kxZi+tGUAhOYV/NiVhE57eV
-         KBdYUBMW0Cz3wQBo+bGx+11mtvqkvq2a0nAa8IYZ3H7+oIj4rV37/jbj9ysC99Q5Dq
-         xJlcvBUa04Ya9dLymcoXu6ieHbrtnh2ddabJa6Et5y3zmVcB2pga/VM6yh0MD7ETSk
-         j/4RiNVillgnZK3yp+eHHaVYQUFZ8SRmT0q15uxX6bNAg8oCFVDP7lkMiQs61iWo+n
-         xtLOK+7OhFyNpK+Kw3PBmuKq3PnwdNSxIpDo9QfhNttNvRsilOps9H5O7QfPL7HX4n
-         /lX+FY9HRqIxg==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        andrew@lunn.ch, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net v2 3/3] docs: netdev: add a cheat sheet for the rules
-Date:   Fri,  1 Jul 2022 20:12:09 -0700
-Message-Id: <20220702031209.790535-4-kuba@kernel.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220702031209.790535-1-kuba@kernel.org>
-References: <20220702031209.790535-1-kuba@kernel.org>
+        s=k20201202; t=1656732014;
+        bh=68rh7ufA452Dl9v8RHxzSzIT5CpzEUwnlnm8j9L2xxc=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=akJY5CGQZhV7FVcWbHN0/wJmxfuLBWRNs49DbU7CjE5GLGEXq/9fa9rFNXwhv2RSV
+         vk+fcds/ZXS5Q6qBgeH5cWNY/ByqNZAh3o04YMVyZZ2pDXH7LL7tzWPPEWnWs8UJ5D
+         T01j+0kYzwtFIH58FT+VV03Bg4vMYpiu2PmiDwvvBfyEhTkAHAyBxdGVte/CBZLkjk
+         kNTH4Kl3+x3m7beard0l8/PspYA3YIJKwfEDNdv+eH7JdsH28K4h764mca9+dP2tqJ
+         gesMvy/ZGwX4rqEhEqHxAY7dFIDljMW3PuC84QUCQ5Y63HByZyCKVHzXJjRboIbACL
+         RcM5RZIkFxwNA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1EB38E49FA0;
+        Sat,  2 Jul 2022 03:20:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Subject: Re: pull-request: bpf 2022-07-02
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165673201412.6297.7979220898548456738.git-patchwork-notify@kernel.org>
+Date:   Sat, 02 Jul 2022 03:20:14 +0000
+References: <20220701230121.10354-1-daniel@iogearbox.net>
+In-Reply-To: <20220701230121.10354-1-daniel@iogearbox.net>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, ast@kernel.org, andrii@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
 X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -53,35 +57,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Summarize the rules we see broken most often and which may
-be less familiar to kernel devs who are used to working outside
-of netdev.
+Hello:
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
- Documentation/process/maintainer-netdev.rst | 9 +++++++++
- 1 file changed, 9 insertions(+)
+This pull request was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-diff --git a/Documentation/process/maintainer-netdev.rst b/Documentation/process/maintainer-netdev.rst
-index 8a9dae7a0524..d14007081595 100644
---- a/Documentation/process/maintainer-netdev.rst
-+++ b/Documentation/process/maintainer-netdev.rst
-@@ -6,6 +6,15 @@
- netdev FAQ
- ==========
- 
-+tl;dr
-+-----
-+
-+ - designate your patch to a tree - ``[PATCH net]`` or ``[PATCH net-next]``
-+ - for fixes the ``Fixes:`` tag is required, regardless of the tree
-+ - don't post large series (> 15 patches), break them up
-+ - don't repost your patches within one 24h period
-+ - reverse xmas tree
-+
- What is netdev?
- ---------------
- It is a mailing list for all network-related Linux stuff.  This
+On Sat,  2 Jul 2022 01:01:21 +0200 you wrote:
+> Hi David, hi Jakub, hi Paolo, hi Eric,
+> 
+> The following pull-request contains BPF updates for your *net* tree.
+> 
+> We've added 7 non-merge commits during the last 14 day(s) which contain
+> a total of 6 files changed, 193 insertions(+), 86 deletions(-).
+> 
+> [...]
+
+Here is the summary with links:
+  - pull-request: bpf 2022-07-02
+    https://git.kernel.org/netdev/net/c/bc38fae3a68b
+
+You are awesome, thank you!
 -- 
-2.36.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
