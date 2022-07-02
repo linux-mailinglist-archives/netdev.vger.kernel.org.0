@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F06C056424D
-	for <lists+netdev@lfdr.de>; Sat,  2 Jul 2022 21:04:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4479956424E
+	for <lists+netdev@lfdr.de>; Sat,  2 Jul 2022 21:04:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232399AbiGBTEZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Jul 2022 15:04:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56350 "EHLO
+        id S230132AbiGBTE1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Jul 2022 15:04:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232369AbiGBTEY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Jul 2022 15:04:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDAA7B49D
-        for <netdev@vger.kernel.org>; Sat,  2 Jul 2022 12:04:22 -0700 (PDT)
+        with ESMTP id S232404AbiGBTE0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Jul 2022 15:04:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E23C99FE6
+        for <netdev@vger.kernel.org>; Sat,  2 Jul 2022 12:04:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A18B61007
-        for <netdev@vger.kernel.org>; Sat,  2 Jul 2022 19:04:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D46FEC341C8;
-        Sat,  2 Jul 2022 19:04:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7B2B361009
+        for <netdev@vger.kernel.org>; Sat,  2 Jul 2022 19:04:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB2CAC34114;
+        Sat,  2 Jul 2022 19:04:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656788661;
-        bh=/WvcUZuc8DnF4KU5hTlcikg/2yfB6tFkV8JOmw8QLG0=;
+        s=k20201202; t=1656788662;
+        bh=3soJmCJASKSCZTg9s1elNH66wYrZVSwGCi9T+opLlS8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MKlGIDgx9xWnyzXY96MXBhk9O7AGUmEZx7LLnZcj+KXY5uyoLpCMgOld0YZ8OC3GK
-         29JtSEBQjwqdz2zLCZlcMk1P1AmbFRPHZMOWeTXDS2toPnGjiglm0xW360PkYwTE+0
-         15i5Lvge7EnIM8MwK7I64EZEYUgrr4I/mostOA5HaxbSx4ZdDXuID+J56Dx7yoFKsb
-         7X4e0uHZ5bkSqsdU3f6EZL9kp7+vEZFlMjdLVv1mOHA1bdtvIg/tVh1xdorgJQn5pW
-         8FA4Qtgbezmc96PTv9+ftxaS1R1GPWWDaN30LnzZSIfGZXa0vsFmVXc8uffPaHRdQO
-         CV8MLP75RIScQ==
+        b=CTVrWWG8fXlP7ISX8sMSMh+d5Q3oICsqlg3DV1KLavr9yy5KDWBDIN6Fm75igZnjb
+         7tkH0yAaZMo6o+tduTov/kdceln+nNI2cO7OaXZMb/+NMUag0/RLS54j9eujPGFbbT
+         PtlKSSiURmT8QJjW6kdcb6iGApNNkZhS33gyTX14KDkcFAwZlQmpoYqFKMIcoETmRA
+         cFRTZ+T6e0YxBiafXh925cRvJ9SOBknxnDS0pcE5wn6ha73sMd0plgYXTTQ4Zda1z/
+         pA+6R56YBe0btwoEw/DDhoP6+wq3aKMq3DmMJfuBzBLVI6V93kEehFg0rQSSWYan4K
+         2fKBtId6OI/Ew==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Leon Romanovsky <leonro@nvidia.com>
-Subject: [net-next v2 01/15] net/mlx5: Delete ipsec_fs header file as not used
-Date:   Sat,  2 Jul 2022 12:01:59 -0700
-Message-Id: <20220702190213.80858-2-saeed@kernel.org>
+        Dan Carpenter <dan.carpenter@oracle.com>
+Subject: [net-next v2 02/15] net/mlx5: delete dead code in mlx5_esw_unlock()
+Date:   Sat,  2 Jul 2022 12:02:00 -0700
+Message-Id: <20220702190213.80858-3-saeed@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220702190213.80858-1-saeed@kernel.org>
 References: <20220702190213.80858-1-saeed@kernel.org>
@@ -56,44 +56,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Leon Romanovsky <leonro@nvidia.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-ipsec_fs.h is not used and can be safely deleted.
+Smatch complains about this function:
 
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+    drivers/net/ethernet/mellanox/mlx5/core/eswitch.c:2000 mlx5_esw_unlock()
+    warn: inconsistent returns '&esw->mode_lock'.
+
+Before commit ec2fa47d7b98 ("net/mlx5: Lag, use lag lock") there
+used to be a matching mlx5_esw_lock() function and the lock and
+unlock functions were symmetric.  But now we take the lock
+unconditionally and must unlock unconditionally as well.
+
+As near as I can tell this is dead code and can just be deleted.
+
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../mellanox/mlx5/core/en_accel/ipsec_fs.h    | 21 -------------------
- 1 file changed, 21 deletions(-)
- delete mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.h
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.h
-deleted file mode 100644
-index e4eeb2ba21c7..000000000000
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.h
-+++ /dev/null
-@@ -1,21 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
--/* Copyright (c) 2020, Mellanox Technologies inc. All rights reserved. */
--
--#ifndef __MLX5_IPSEC_STEERING_H__
--#define __MLX5_IPSEC_STEERING_H__
--
--#include "en.h"
--#include "ipsec.h"
--#include "ipsec_offload.h"
--#include "en/fs.h"
--
--void mlx5e_accel_ipsec_fs_cleanup(struct mlx5e_ipsec *ipsec);
--int mlx5e_accel_ipsec_fs_init(struct mlx5e_ipsec *ipsec);
--int mlx5e_accel_ipsec_fs_add_rule(struct mlx5e_priv *priv,
--				  struct mlx5_accel_esp_xfrm_attrs *attrs,
--				  u32 ipsec_obj_id,
--				  struct mlx5e_ipsec_rule *ipsec_rule);
--void mlx5e_accel_ipsec_fs_del_rule(struct mlx5e_priv *priv,
--				   struct mlx5_accel_esp_xfrm_attrs *attrs,
--				   struct mlx5e_ipsec_rule *ipsec_rule);
--#endif /* __MLX5_IPSEC_STEERING_H__ */
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
+index 719ef26d23c0..3e662e389be4 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
+@@ -1995,8 +1995,6 @@ int mlx5_esw_try_lock(struct mlx5_eswitch *esw)
+  */
+ void mlx5_esw_unlock(struct mlx5_eswitch *esw)
+ {
+-	if (!mlx5_esw_allowed(esw))
+-		return;
+ 	up_write(&esw->mode_lock);
+ }
+ 
 -- 
 2.36.1
 
