@@ -2,45 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 03683564252
+	by mail.lfdr.de (Postfix) with ESMTP id 95A0B564254
 	for <lists+netdev@lfdr.de>; Sat,  2 Jul 2022 21:05:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232525AbiGBTEu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Jul 2022 15:04:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56966 "EHLO
+        id S232528AbiGBTEw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Jul 2022 15:04:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232419AbiGBTEo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Jul 2022 15:04:44 -0400
+        with ESMTP id S232466AbiGBTEp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Jul 2022 15:04:45 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 485FCE0AD
-        for <netdev@vger.kernel.org>; Sat,  2 Jul 2022 12:04:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CD5FE0C2
+        for <netdev@vger.kernel.org>; Sat,  2 Jul 2022 12:04:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D1E996100F
-        for <netdev@vger.kernel.org>; Sat,  2 Jul 2022 19:04:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EFD2C34114;
-        Sat,  2 Jul 2022 19:04:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B537561011
+        for <netdev@vger.kernel.org>; Sat,  2 Jul 2022 19:04:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 126A0C34114;
+        Sat,  2 Jul 2022 19:04:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656788671;
-        bh=XHUYsCCMhqBh9m6KaakY0BjOIkZzzWhR75XGFuUQP1A=;
+        s=k20201202; t=1656788672;
+        bh=ZrjWM2qW356MwM1p3B8FAmMsZ4SVlUo6ghpw46gnEnc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZYtZaFyhJt3Oix+G0kayCBt/NEv6VyugM5Z4uVnZiYAyY5SGS7YsWgZAC5hYWOU65
-         +lSGvMXKbnZ/zSFdTVYn6RHI6G/CY8z3vAcrscUIeeNCdnyysrGi1L6IUiOBzrSY4Y
-         /wDgtA8cDpVPEyI09RL7820v4jagHafKDsvnGQIIJMI/ZGzIiEGpdqWu3COs3Qqisu
-         q6tmNJ0KlcVAtrmniKJF3khO93UhQQ3aN1d19xANVonrqYwf9yZiLtlZFMRo3XlcWN
-         9mkGQfsrhSjrMJw9Xg68DHQN7T833FWhFgaD9svVNlpwdAjKqlkGwCk/aZgMhFoBf3
-         Ow+SgEFrdLJ1Q==
+        b=FSwOTkDmBTx0FSIOnXIsLZckXcUw06ujiPuxX8rBoaJ7Z7iYUvfezYYuOuDByP3H8
+         q2rkIsHqBwWWnjJACqDzoGQ6J0WsT1XmQvvoW9HvaDkO4agSTI13fAP3dZE9ayQdcX
+         T+LaL3+JCYWhWZ9+zgHeRkjRQF+HZVErkI/nrLtF1qlwdFNzeLD0uLqMkNivD51uRM
+         jiKYuVNteYbF9PG7Tmk8UYBsPhFQ25YUR2UW9sxLlkheYtSD9MdFdWLzgwHpIQaei1
+         SEZruMbxfV0a/HLMd4rnvxdHSnJWt+kUXRtCWA0Lbh7UBRa9oCBZn8+tuIcgkAFzT/
+         Z0hLRDDlAjeGg==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Jianbo Liu <jianbol@nvidia.com>, Roi Dayan <roid@nvidia.com>
-Subject: [net-next v2 11/15] net/mlx5e: Get or put meter by the index of tc police action
-Date:   Sat,  2 Jul 2022 12:02:09 -0700
-Message-Id: <20220702190213.80858-12-saeed@kernel.org>
+        Jianbo Liu <jianbol@nvidia.com>, Roi Dayan <roid@nvidia.com>,
+        Ariel Levkovich <lariel@nvidia.com>
+Subject: [net-next v2 12/15] net/mlx5e: Add generic macros to use metadata register mapping
+Date:   Sat,  2 Jul 2022 12:02:10 -0700
+Message-Id: <20220702190213.80858-13-saeed@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220702190213.80858-1-saeed@kernel.org>
 References: <20220702190213.80858-1-saeed@kernel.org>
@@ -58,324 +59,98 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jianbo Liu <jianbol@nvidia.com>
 
-Add functions to create and destroy flow meter aso object.
-This object only supports the range allocation. 64 objects are
-allocated at a time, and there are two meters in each object.
-Usually only one meter is allocated for a flow, so bitmap is used
-to manage these 128 meters.
-
-TC police action is mapped to hardware meter. As the index is unique
-for each police action, add APIs to allocate or free hardware meter by
-the index. If the meter is already created, increment its refcnt,
-otherwise create new one. If police action has different parameters,
-update hardware meter accordingly.
+There are many definitions to get bits and mask for different types of
+metadata register mapping, add generic macros to unify them.
 
 Signed-off-by: Jianbo Liu <jianbol@nvidia.com>
 Reviewed-by: Roi Dayan <roid@nvidia.com>
+Reviewed-by: Ariel Levkovich <lariel@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../ethernet/mellanox/mlx5/core/en/tc/meter.c | 213 ++++++++++++++++++
- .../ethernet/mellanox/mlx5/core/en/tc/meter.h |  13 ++
- 2 files changed, 226 insertions(+)
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_act.c | 6 +++---
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c       | 4 ++--
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h       | 6 ++----
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c          | 2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.h          | 4 ++++
+ 5 files changed, 12 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c
-index f2c03797f2b0..e406651a1dc2 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c
-@@ -4,6 +4,7 @@
- #include "lib/aso.h"
- #include "en/tc/post_act.h"
- #include "meter.h"
-+#include "en/tc_priv.h"
- 
- #define MLX5_START_COLOR_SHIFT 28
- #define MLX5_METER_MODE_SHIFT 24
-@@ -21,6 +22,14 @@
- #define MLX5_MAX_CBS ((0x100ULL << 0x1F) - 1)
- #define MLX5_MAX_HW_CBS 0x7FFFFFFF
- 
-+struct mlx5e_flow_meter_aso_obj {
-+	struct list_head entry;
-+	int base_id;
-+	int total_meters;
-+
-+	unsigned long meters_map[0]; /* must be at the end of this struct */
-+};
-+
- struct mlx5e_flow_meters {
- 	enum mlx5_flow_namespace_type ns_type;
- 	struct mlx5_aso *aso;
-@@ -28,6 +37,12 @@ struct mlx5e_flow_meters {
- 	int log_granularity;
- 	u32 pdn;
- 
-+	DECLARE_HASHTABLE(hashtbl, 8);
-+
-+	struct mutex sync_lock; /* protect flow meter operations */
-+	struct list_head partial_list;
-+	struct list_head full_list;
-+
- 	struct mlx5_core_dev *mdev;
- 	struct mlx5e_post_act *post_act;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_act.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_act.c
+index dea137dd744b..2093cc2b0d48 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_act.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_act.c
+@@ -22,9 +22,9 @@ struct mlx5e_post_act_handle {
+ 	u32 id;
  };
-@@ -177,6 +192,200 @@ mlx5e_tc_meter_modify(struct mlx5_core_dev *mdev,
- 	return err;
+ 
+-#define MLX5_POST_ACTION_BITS (mlx5e_tc_attr_to_reg_mappings[FTEID_TO_REG].mlen)
+-#define MLX5_POST_ACTION_MAX GENMASK(MLX5_POST_ACTION_BITS - 1, 0)
+-#define MLX5_POST_ACTION_MASK MLX5_POST_ACTION_MAX
++#define MLX5_POST_ACTION_BITS MLX5_REG_MAPPING_MBITS(FTEID_TO_REG)
++#define MLX5_POST_ACTION_MASK MLX5_REG_MAPPING_MASK(FTEID_TO_REG)
++#define MLX5_POST_ACTION_MAX MLX5_POST_ACTION_MASK
+ 
+ struct mlx5e_post_act *
+ mlx5e_tc_post_act_init(struct mlx5e_priv *priv, struct mlx5_fs_chains *chains,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
+index 25f51f80a9b4..af959fadbecf 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
+@@ -36,8 +36,8 @@
+ #define MLX5_CT_STATE_RELATED_BIT BIT(5)
+ #define MLX5_CT_STATE_INVALID_BIT BIT(6)
+ 
+-#define MLX5_CT_LABELS_BITS (mlx5e_tc_attr_to_reg_mappings[LABELS_TO_REG].mlen)
+-#define MLX5_CT_LABELS_MASK GENMASK(MLX5_CT_LABELS_BITS - 1, 0)
++#define MLX5_CT_LABELS_BITS MLX5_REG_MAPPING_MBITS(LABELS_TO_REG)
++#define MLX5_CT_LABELS_MASK MLX5_REG_MAPPING_MASK(LABELS_TO_REG)
+ 
+ /* Statically allocate modify actions for
+  * ipv6 and port nat (5) + tuple fields (4) + nic mode zone restore (1) = 10.
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h
+index 00a3ba862afb..6a9933925c4f 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h
+@@ -84,10 +84,8 @@ struct mlx5_ct_attr {
+ 	.mlen = ESW_ZONE_ID_BITS,\
  }
  
-+static int
-+mlx5e_flow_meter_create_aso_obj(struct mlx5e_flow_meters *flow_meters, int *obj_id)
-+{
-+	u32 in[MLX5_ST_SZ_DW(create_flow_meter_aso_obj_in)] = {};
-+	u32 out[MLX5_ST_SZ_DW(general_obj_out_cmd_hdr)];
-+	struct mlx5_core_dev *mdev = flow_meters->mdev;
-+	void *obj;
-+	int err;
-+
-+	MLX5_SET(general_obj_in_cmd_hdr, in, opcode, MLX5_CMD_OP_CREATE_GENERAL_OBJECT);
-+	MLX5_SET(general_obj_in_cmd_hdr, in, obj_type,
-+		 MLX5_GENERAL_OBJECT_TYPES_FLOW_METER_ASO);
-+	MLX5_SET(general_obj_in_cmd_hdr, in, log_obj_range, flow_meters->log_granularity);
-+
-+	obj = MLX5_ADDR_OF(create_flow_meter_aso_obj_in, in, flow_meter_aso_obj);
-+	MLX5_SET(flow_meter_aso_obj, obj, meter_aso_access_pd, flow_meters->pdn);
-+
-+	err = mlx5_cmd_exec(mdev, in, sizeof(in), out, sizeof(out));
-+	if (!err) {
-+		*obj_id = MLX5_GET(general_obj_out_cmd_hdr, out, obj_id);
-+		mlx5_core_dbg(mdev, "flow meter aso obj(0x%x) created\n", *obj_id);
-+	}
-+
-+	return err;
-+}
-+
-+static void
-+mlx5e_flow_meter_destroy_aso_obj(struct mlx5_core_dev *mdev, u32 obj_id)
-+{
-+	u32 in[MLX5_ST_SZ_DW(general_obj_in_cmd_hdr)] = {};
-+	u32 out[MLX5_ST_SZ_DW(general_obj_out_cmd_hdr)];
-+
-+	MLX5_SET(general_obj_in_cmd_hdr, in, opcode, MLX5_CMD_OP_DESTROY_GENERAL_OBJECT);
-+	MLX5_SET(general_obj_in_cmd_hdr, in, obj_type,
-+		 MLX5_GENERAL_OBJECT_TYPES_FLOW_METER_ASO);
-+	MLX5_SET(general_obj_in_cmd_hdr, in, obj_id, obj_id);
-+
-+	mlx5_cmd_exec(mdev, in, sizeof(in), out, sizeof(out));
-+	mlx5_core_dbg(mdev, "flow meter aso obj(0x%x) destroyed\n", obj_id);
-+}
-+
-+static struct mlx5e_flow_meter_handle *
-+__mlx5e_flow_meter_alloc(struct mlx5e_flow_meters *flow_meters)
-+{
-+	struct mlx5_core_dev *mdev = flow_meters->mdev;
-+	struct mlx5e_flow_meter_aso_obj *meters_obj;
-+	struct mlx5e_flow_meter_handle *meter;
-+	int err, pos, total;
-+	u32 id;
-+
-+	meter = kzalloc(sizeof(*meter), GFP_KERNEL);
-+	if (!meter)
-+		return ERR_PTR(-ENOMEM);
-+
-+	meters_obj = list_first_entry_or_null(&flow_meters->partial_list,
-+					      struct mlx5e_flow_meter_aso_obj,
-+					      entry);
-+	/* 2 meters in one object */
-+	total = 1 << (flow_meters->log_granularity + 1);
-+	if (!meters_obj) {
-+		err = mlx5e_flow_meter_create_aso_obj(flow_meters, &id);
-+		if (err) {
-+			mlx5_core_err(mdev, "Failed to create flow meter ASO object\n");
-+			goto err_create;
-+		}
-+
-+		meters_obj = kzalloc(sizeof(*meters_obj) + BITS_TO_BYTES(total),
-+				     GFP_KERNEL);
-+		if (!meters_obj) {
-+			err = -ENOMEM;
-+			goto err_mem;
-+		}
-+
-+		meters_obj->base_id = id;
-+		meters_obj->total_meters = total;
-+		list_add(&meters_obj->entry, &flow_meters->partial_list);
-+		pos = 0;
-+	} else {
-+		pos = find_first_zero_bit(meters_obj->meters_map, total);
-+		if (bitmap_weight(meters_obj->meters_map, total) == total - 1) {
-+			list_del(&meters_obj->entry);
-+			list_add(&meters_obj->entry, &flow_meters->full_list);
-+		}
-+	}
-+
-+	bitmap_set(meters_obj->meters_map, pos, 1);
-+	meter->flow_meters = flow_meters;
-+	meter->meters_obj = meters_obj;
-+	meter->obj_id = meters_obj->base_id + pos / 2;
-+	meter->idx = pos % 2;
-+
-+	mlx5_core_dbg(mdev, "flow meter allocated, obj_id=0x%x, index=%d\n",
-+		      meter->obj_id, meter->idx);
-+
-+	return meter;
-+
-+err_mem:
-+	mlx5e_flow_meter_destroy_aso_obj(mdev, id);
-+err_create:
-+	kfree(meter);
-+	return ERR_PTR(err);
-+}
-+
-+static void
-+__mlx5e_flow_meter_free(struct mlx5e_flow_meter_handle *meter)
-+{
-+	struct mlx5e_flow_meters *flow_meters = meter->flow_meters;
-+	struct mlx5_core_dev *mdev = flow_meters->mdev;
-+	struct mlx5e_flow_meter_aso_obj *meters_obj;
-+	int n, pos;
-+
-+	meters_obj = meter->meters_obj;
-+	pos = (meter->obj_id - meters_obj->base_id) * 2 + meter->idx;
-+	bitmap_clear(meters_obj->meters_map, pos, 1);
-+	n = bitmap_weight(meters_obj->meters_map, meters_obj->total_meters);
-+	if (n == 0) {
-+		list_del(&meters_obj->entry);
-+		mlx5e_flow_meter_destroy_aso_obj(mdev, meters_obj->base_id);
-+		kfree(meters_obj);
-+	} else if (n == meters_obj->total_meters - 1) {
-+		list_del(&meters_obj->entry);
-+		list_add(&meters_obj->entry, &flow_meters->partial_list);
-+	}
-+
-+	mlx5_core_dbg(mdev, "flow meter freed, obj_id=0x%x, index=%d\n",
-+		      meter->obj_id, meter->idx);
-+	kfree(meter);
-+}
-+
-+struct mlx5e_flow_meter_handle *
-+mlx5e_tc_meter_get(struct mlx5_core_dev *mdev, struct mlx5e_flow_meter_params *params)
-+{
-+	struct mlx5e_flow_meters *flow_meters;
-+	struct mlx5e_flow_meter_handle *meter;
-+	int err;
-+
-+	flow_meters = mlx5e_get_flow_meters(mdev);
-+	if (!flow_meters)
-+		return ERR_PTR(-EOPNOTSUPP);
-+
-+	mutex_lock(&flow_meters->sync_lock);
-+	hash_for_each_possible(flow_meters->hashtbl, meter, hlist, params->index)
-+		if (meter->params.index == params->index)
-+			goto add_ref;
-+
-+	meter = __mlx5e_flow_meter_alloc(flow_meters);
-+	if (IS_ERR(meter)) {
-+		err = PTR_ERR(meter);
-+		goto err_alloc;
-+	}
-+
-+	hash_add(flow_meters->hashtbl, &meter->hlist, params->index);
-+	meter->params.index = params->index;
-+
-+add_ref:
-+	meter->refcnt++;
-+
-+	if (meter->params.mode != params->mode || meter->params.rate != params->rate ||
-+	    meter->params.burst != params->burst) {
-+		err = mlx5e_tc_meter_modify(mdev, meter, params);
-+		if (err)
-+			goto err_update;
-+
-+		meter->params.mode = params->mode;
-+		meter->params.rate = params->rate;
-+		meter->params.burst = params->burst;
-+	}
-+
-+	mutex_unlock(&flow_meters->sync_lock);
-+	return meter;
-+
-+err_update:
-+	if (--meter->refcnt == 0) {
-+		hash_del(&meter->hlist);
-+		__mlx5e_flow_meter_free(meter);
-+	}
-+err_alloc:
-+	mutex_unlock(&flow_meters->sync_lock);
-+	return ERR_PTR(err);
-+}
-+
-+void
-+mlx5e_tc_meter_put(struct mlx5e_flow_meter_handle *meter)
-+{
-+	struct mlx5e_flow_meters *flow_meters = meter->flow_meters;
-+
-+	mutex_lock(&flow_meters->sync_lock);
-+	if (--meter->refcnt == 0) {
-+		hash_del(&meter->hlist);
-+		__mlx5e_flow_meter_free(meter);
-+	}
-+	mutex_unlock(&flow_meters->sync_lock);
-+}
-+
- struct mlx5e_flow_meters *
- mlx5e_flow_meters_init(struct mlx5e_priv *priv,
- 		       enum mlx5_flow_namespace_type ns_type,
-@@ -213,6 +422,10 @@ mlx5e_flow_meters_init(struct mlx5e_priv *priv,
- 		goto err_sq;
- 	}
+-#define REG_MAPPING_MLEN(reg) (mlx5e_tc_attr_to_reg_mappings[reg].mlen)
+-#define REG_MAPPING_MOFFSET(reg) (mlx5e_tc_attr_to_reg_mappings[reg].moffset)
+-#define MLX5_CT_ZONE_BITS (mlx5e_tc_attr_to_reg_mappings[ZONE_TO_REG].mlen)
+-#define MLX5_CT_ZONE_MASK GENMASK(MLX5_CT_ZONE_BITS - 1, 0)
++#define MLX5_CT_ZONE_BITS MLX5_REG_MAPPING_MBITS(ZONE_TO_REG)
++#define MLX5_CT_ZONE_MASK MLX5_REG_MAPPING_MASK(ZONE_TO_REG)
  
-+	mutex_init(&flow_meters->sync_lock);
-+	INIT_LIST_HEAD(&flow_meters->partial_list);
-+	INIT_LIST_HEAD(&flow_meters->full_list);
+ #if IS_ENABLED(CONFIG_MLX5_TC_CT)
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+index 31b59f6b3f4c..24ff87a0c20f 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+@@ -5086,7 +5086,7 @@ bool mlx5e_tc_update_skb(struct mlx5_cqe64 *cqe,
+ 
+ 		tc_skb_ext->chain = chain;
+ 
+-		zone_restore_id = (reg_b >> REG_MAPPING_MOFFSET(NIC_ZONE_RESTORE_TO_REG)) &
++		zone_restore_id = (reg_b >> MLX5_REG_MAPPING_MOFFSET(NIC_ZONE_RESTORE_TO_REG)) &
+ 			ESW_ZONE_ID_MASK;
+ 
+ 		if (!mlx5e_tc_ct_restore_flow(tc->ct, skb,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
+index 140b01d4d083..ea12a8bbc7e3 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
+@@ -242,6 +242,10 @@ struct mlx5e_tc_attr_to_reg_mapping {
+ 
+ extern struct mlx5e_tc_attr_to_reg_mapping mlx5e_tc_attr_to_reg_mappings[];
+ 
++#define MLX5_REG_MAPPING_MOFFSET(reg_id) (mlx5e_tc_attr_to_reg_mappings[reg_id].moffset)
++#define MLX5_REG_MAPPING_MBITS(reg_id) (mlx5e_tc_attr_to_reg_mappings[reg_id].mlen)
++#define MLX5_REG_MAPPING_MASK(reg_id) (GENMASK(mlx5e_tc_attr_to_reg_mappings[reg_id].mlen - 1, 0))
 +
- 	flow_meters->ns_type = ns_type;
- 	flow_meters->mdev = mdev;
- 	flow_meters->post_act = post_act;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.h b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.h
-index 0153509e729e..36c8a417dd87 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.h
-@@ -4,6 +4,7 @@
- #ifndef __MLX5_EN_FLOW_METER_H__
- #define __MLX5_EN_FLOW_METER_H__
+ bool mlx5e_is_valid_eswitch_fwd_dev(struct mlx5e_priv *priv,
+ 				    struct net_device *out_dev);
  
-+struct mlx5e_flow_meter_aso_obj;
- struct mlx5e_flow_meters;
- 
- enum mlx5e_flow_meter_mode {
-@@ -13,14 +14,21 @@ enum mlx5e_flow_meter_mode {
- 
- struct mlx5e_flow_meter_params {
- 	enum mlx5e_flow_meter_mode mode;
-+	 /* police action index */
-+	u32 index;
- 	u64 rate;
- 	u64 burst;
- };
- 
- struct mlx5e_flow_meter_handle {
- 	struct mlx5e_flow_meters *flow_meters;
-+	struct mlx5e_flow_meter_aso_obj *meters_obj;
- 	u32 obj_id;
- 	u8 idx;
-+
-+	int refcnt;
-+	struct hlist_node hlist;
-+	struct mlx5e_flow_meter_params params;
- };
- 
- int
-@@ -28,6 +36,11 @@ mlx5e_tc_meter_modify(struct mlx5_core_dev *mdev,
- 		      struct mlx5e_flow_meter_handle *meter,
- 		      struct mlx5e_flow_meter_params *meter_params);
- 
-+struct mlx5e_flow_meter_handle *
-+mlx5e_tc_meter_get(struct mlx5_core_dev *mdev, struct mlx5e_flow_meter_params *params);
-+void
-+mlx5e_tc_meter_put(struct mlx5e_flow_meter_handle *meter);
-+
- struct mlx5e_flow_meters *
- mlx5e_flow_meters_init(struct mlx5e_priv *priv,
- 		       enum mlx5_flow_namespace_type ns_type,
 -- 
 2.36.1
 
