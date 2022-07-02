@@ -2,365 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A8C2564251
-	for <lists+netdev@lfdr.de>; Sat,  2 Jul 2022 21:05:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CEC0E564261
+	for <lists+netdev@lfdr.de>; Sat,  2 Jul 2022 21:10:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232492AbiGBTFP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Jul 2022 15:05:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56556 "EHLO
+        id S232392AbiGBTKe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Jul 2022 15:10:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232496AbiGBTEq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Jul 2022 15:04:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEBCBDEA3
-        for <netdev@vger.kernel.org>; Sat,  2 Jul 2022 12:04:35 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 750F060BB5
-        for <netdev@vger.kernel.org>; Sat,  2 Jul 2022 19:04:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDDA3C34114;
-        Sat,  2 Jul 2022 19:04:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656788674;
-        bh=5/0+v/iH9vIKZl9EGWrst091xRurLAoPlJh0Zr9wjmo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Df17n6mopxFcQUE4mAy8tzkSkvP/HOTzzOMI866FP7jWmNEitUS2h8hPsoF+l8WrC
-         uIVAYAttumR1FyFrvhG28lOonRLAQbKOfW2Wf4YAwPhuYkECsJ5YHMETq4CVvPEd+t
-         g6ty3uihT/Z5SWY9bgoy8xC7XreB9C1r8HRnTtyL/rwN8pBjuSLF0mvEfXSw5rrb8w
-         /idobZRPy+pPTNjIQsrb9sKD4pl/7pZa/Eki4Jhch27zkBV7AJnDv1GL68FwODGHB3
-         M55Nj5awVWP78orcmxGKNJK1kuMzm9T1oNxo54sIE5m01kPmQeT84wGza0goSOwRfY
-         noEbfy1VtXABQ==
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Jianbo Liu <jianbol@nvidia.com>, Roi Dayan <roid@nvidia.com>,
-        Ariel Levkovich <lariel@nvidia.com>
-Subject: [net-next v2 15/15] net/mlx5e: TC, Support offloading police action
-Date:   Sat,  2 Jul 2022 12:02:13 -0700
-Message-Id: <20220702190213.80858-16-saeed@kernel.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220702190213.80858-1-saeed@kernel.org>
-References: <20220702190213.80858-1-saeed@kernel.org>
+        with ESMTP id S229476AbiGBTKe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Jul 2022 15:10:34 -0400
+Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6EFD1E00A;
+        Sat,  2 Jul 2022 12:10:33 -0700 (PDT)
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
+        pabeni@redhat.com, edumazet@google.com
+Subject: [PATCH net 0/2] Netfilter fixes for net
+Date:   Sat,  2 Jul 2022 21:10:26 +0200
+Message-Id: <20220702191029.238563-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jianbo Liu <jianbol@nvidia.com>
+Hi,
 
-Add parsing support by implementing struct mlx5e_tc_act for police
-action.
+The following patchset contains Netfilter fixes for net:
 
-TC rule with police actions is broken down into several rules in
-different tables. One rule with the original match in the original
-flow table, which set fte_id, do metering, and jump to the post_meter
-table. If there are more police actions, more rules are created for
-each of them. Besides, a last rule is created in the end.
+1) Insufficient validation of element datatype and length in
+   nft_setelem_parse_data(). At least commit 7d7402642eaf updates
+   maximum element data area up to 64 bytes when only 16 bytes
+   where supported at the time. Support for larger element size
+   came later in fdb9c405e35b though. Picking this older commit
+   as Fixes: tag to be safe than sorry.
 
-In post_meter table, there are two pre-defined rules, one is to drop
-packet if its packet color is RED, the other is to jump back to
-post_act table. As fte_id is updated before jumping, the rule for next
-meter is matched to do another round of metering (if there are
-multiple meters in the flow rule). Otherwise, last fte_id is matched
-and do the original actions.
+2) Memleak in pipapo destroy path, reproducible when transaction
+   in aborted. This is already triggering in the existing netfilter
+   test infrastructure since more recent new tests are covering this
+   path.
 
-Signed-off-by: Jianbo Liu <jianbol@nvidia.com>
-Reviewed-by: Roi Dayan <roid@nvidia.com>
-Reviewed-by: Ariel Levkovich <lariel@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
----
- .../net/ethernet/mellanox/mlx5/core/Makefile  |  2 +-
- .../mellanox/mlx5/core/en/tc/act/act.c        |  2 +-
- .../mellanox/mlx5/core/en/tc/act/act.h        |  1 +
- .../mellanox/mlx5/core/en/tc/act/police.c     | 61 +++++++++++++++++++
- .../ethernet/mellanox/mlx5/core/en/tc/meter.c |  6 ++
- .../ethernet/mellanox/mlx5/core/en/tc/meter.h |  9 +++
- .../ethernet/mellanox/mlx5/core/en/tc_priv.h  |  4 ++
- .../net/ethernet/mellanox/mlx5/core/en_tc.c   | 42 ++++++++++++-
- .../net/ethernet/mellanox/mlx5/core/en_tc.h   |  2 +
- 9 files changed, 124 insertions(+), 5 deletions(-)
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/police.c
+Please, pull these changes from:
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/Makefile b/drivers/net/ethernet/mellanox/mlx5/core/Makefile
-index 7c33512e2512..5dadc2fce7ee 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/Makefile
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/Makefile
-@@ -54,7 +54,7 @@ mlx5_core-$(CONFIG_MLX5_CLS_ACT)     += en/tc/act/act.o en/tc/act/drop.o en/tc/a
- 					en/tc/act/vlan.o en/tc/act/vlan_mangle.o en/tc/act/mpls.o \
- 					en/tc/act/mirred.o en/tc/act/mirred_nic.o \
- 					en/tc/act/ct.o en/tc/act/sample.o en/tc/act/ptype.o \
--					en/tc/act/redirect_ingress.o
-+					en/tc/act/redirect_ingress.o en/tc/act/police.o
- 
- ifneq ($(CONFIG_MLX5_TC_CT),)
- 	mlx5_core-y			     += en/tc_ct.o en/tc/ct_fs_dmfs.o
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.c
-index c66aff41374f..305fde62a78d 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.c
-@@ -30,7 +30,7 @@ static struct mlx5e_tc_act *tc_acts_fdb[NUM_FLOW_ACTIONS] = {
- 	NULL, /* FLOW_ACTION_WAKE, */
- 	NULL, /* FLOW_ACTION_QUEUE, */
- 	&mlx5e_tc_act_sample,
--	NULL, /* FLOW_ACTION_POLICE, */
-+	&mlx5e_tc_act_police,
- 	&mlx5e_tc_act_ct,
- 	NULL, /* FLOW_ACTION_CT_METADATA, */
- 	&mlx5e_tc_act_mpls_push,
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.h b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.h
-index f027beba7096..095ff8ef80e2 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.h
-@@ -76,6 +76,7 @@ extern struct mlx5e_tc_act mlx5e_tc_act_ct;
- extern struct mlx5e_tc_act mlx5e_tc_act_sample;
- extern struct mlx5e_tc_act mlx5e_tc_act_ptype;
- extern struct mlx5e_tc_act mlx5e_tc_act_redirect_ingress;
-+extern struct mlx5e_tc_act mlx5e_tc_act_police;
- 
- struct mlx5e_tc_act *
- mlx5e_tc_act_get(enum flow_action_id act_id,
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/police.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/police.c
-new file mode 100644
-index 000000000000..ab32fe6a2e57
---- /dev/null
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/police.c
-@@ -0,0 +1,61 @@
-+// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-+// Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
-+
-+#include "act.h"
-+#include "en/tc_priv.h"
-+
-+static bool
-+tc_act_can_offload_police(struct mlx5e_tc_act_parse_state *parse_state,
-+			  const struct flow_action_entry *act,
-+			  int act_index,
-+			  struct mlx5_flow_attr *attr)
-+{
-+	if (mlx5e_policer_validate(parse_state->flow_action, act,
-+				   parse_state->extack))
-+		return false;
-+
-+	return !!mlx5e_get_flow_meters(parse_state->flow->priv->mdev);
-+}
-+
-+static int
-+tc_act_parse_police(struct mlx5e_tc_act_parse_state *parse_state,
-+		    const struct flow_action_entry *act,
-+		    struct mlx5e_priv *priv,
-+		    struct mlx5_flow_attr *attr)
-+{
-+	struct mlx5e_flow_meter_params *params;
-+
-+	params = &attr->meter_attr.params;
-+	params->index = act->hw_index;
-+	if (act->police.rate_bytes_ps) {
-+		params->mode = MLX5_RATE_LIMIT_BPS;
-+		/* change rate to bits per second */
-+		params->rate = act->police.rate_bytes_ps << 3;
-+		params->burst = act->police.burst;
-+	} else if (act->police.rate_pkt_ps) {
-+		params->mode = MLX5_RATE_LIMIT_PPS;
-+		params->rate = act->police.rate_pkt_ps;
-+		params->burst = act->police.burst_pkt;
-+	} else {
-+		return -EOPNOTSUPP;
-+	}
-+
-+	attr->action |= MLX5_FLOW_CONTEXT_ACTION_EXECUTE_ASO;
-+	attr->exe_aso_type = MLX5_EXE_ASO_FLOW_METER;
-+
-+	return 0;
-+}
-+
-+static bool
-+tc_act_is_multi_table_act_police(struct mlx5e_priv *priv,
-+				 const struct flow_action_entry *act,
-+				 struct mlx5_flow_attr *attr)
-+{
-+	return true;
-+}
-+
-+struct mlx5e_tc_act mlx5e_tc_act_police = {
-+	.can_offload = tc_act_can_offload_police,
-+	.parse_action = tc_act_parse_police,
-+	.is_multi_table_act = tc_act_is_multi_table_act_police,
-+};
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c
-index d847181a6c37..28962b2134c7 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c
-@@ -389,6 +389,12 @@ mlx5e_tc_meter_put(struct mlx5e_flow_meter_handle *meter)
- 	mutex_unlock(&flow_meters->sync_lock);
- }
- 
-+struct mlx5_flow_table *
-+mlx5e_tc_meter_get_post_meter_ft(struct mlx5e_flow_meters *flow_meters)
-+{
-+	return mlx5e_post_meter_get_ft(flow_meters->post_meter);
-+}
-+
- struct mlx5e_flow_meters *
- mlx5e_flow_meters_init(struct mlx5e_priv *priv,
- 		       enum mlx5_flow_namespace_type ns_type,
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.h b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.h
-index 36c8a417dd87..78885db5dc7d 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.h
-@@ -6,6 +6,7 @@
- 
- struct mlx5e_flow_meter_aso_obj;
- struct mlx5e_flow_meters;
-+struct mlx5_flow_attr;
- 
- enum mlx5e_flow_meter_mode {
- 	MLX5_RATE_LIMIT_BPS,
-@@ -31,6 +32,11 @@ struct mlx5e_flow_meter_handle {
- 	struct mlx5e_flow_meter_params params;
- };
- 
-+struct mlx5e_meter_attr {
-+	struct mlx5e_flow_meter_params params;
-+	struct mlx5e_flow_meter_handle *meter;
-+};
-+
- int
- mlx5e_tc_meter_modify(struct mlx5_core_dev *mdev,
- 		      struct mlx5e_flow_meter_handle *meter,
-@@ -41,6 +47,9 @@ mlx5e_tc_meter_get(struct mlx5_core_dev *mdev, struct mlx5e_flow_meter_params *p
- void
- mlx5e_tc_meter_put(struct mlx5e_flow_meter_handle *meter);
- 
-+struct mlx5_flow_table *
-+mlx5e_tc_meter_get_post_meter_ft(struct mlx5e_flow_meters *flow_meters);
-+
- struct mlx5e_flow_meters *
- mlx5e_flow_meters_init(struct mlx5e_priv *priv,
- 		       enum mlx5_flow_namespace_type ns_type,
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_priv.h b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_priv.h
-index bb7a6549cd66..d2bdfd6872bc 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_priv.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_priv.h
-@@ -208,4 +208,8 @@ struct mlx5e_flow_meters *mlx5e_get_flow_meters(struct mlx5_core_dev *dev);
- void *mlx5e_get_match_headers_value(u32 flags, struct mlx5_flow_spec *spec);
- void *mlx5e_get_match_headers_criteria(u32 flags, struct mlx5_flow_spec *spec);
- 
-+int mlx5e_policer_validate(const struct flow_action *action,
-+			   const struct flow_action_entry *act,
-+			   struct netlink_ext_ack *extack);
-+
- #endif /* __MLX5_EN_TC_PRIV_H__ */
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-index fd2bcd5a03e1..5596d561a07f 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -345,12 +345,39 @@ mlx5_tc_rule_delete(struct mlx5e_priv *priv,
- 	mlx5e_del_offloaded_nic_rule(priv, rule, attr);
- }
- 
-+static bool
-+is_flow_meter_action(struct mlx5_flow_attr *attr)
-+{
-+	return ((attr->action & MLX5_FLOW_CONTEXT_ACTION_EXECUTE_ASO) &&
-+		(attr->exe_aso_type == MLX5_EXE_ASO_FLOW_METER));
-+}
-+
-+static int
-+mlx5e_tc_add_flow_meter(struct mlx5e_priv *priv,
-+			struct mlx5_flow_attr *attr)
-+{
-+	struct mlx5e_flow_meter_handle *meter;
-+
-+	meter = mlx5e_tc_meter_get(priv->mdev, &attr->meter_attr.params);
-+	if (IS_ERR(meter)) {
-+		mlx5_core_err(priv->mdev, "Failed to get flow meter\n");
-+		return PTR_ERR(meter);
-+	}
-+
-+	attr->meter_attr.meter = meter;
-+	attr->dest_ft = mlx5e_tc_meter_get_post_meter_ft(meter->flow_meters);
-+	attr->action |= MLX5_FLOW_CONTEXT_ACTION_FWD_DEST;
-+
-+	return 0;
-+}
-+
- struct mlx5_flow_handle *
- mlx5e_tc_rule_offload(struct mlx5e_priv *priv,
- 		      struct mlx5_flow_spec *spec,
- 		      struct mlx5_flow_attr *attr)
- {
- 	struct mlx5_eswitch *esw = priv->mdev->priv.eswitch;
-+	int err;
- 
- 	if (attr->flags & MLX5_ATTR_FLAG_CT) {
- 		struct mlx5e_tc_mod_hdr_acts *mod_hdr_acts =
-@@ -367,6 +394,12 @@ mlx5e_tc_rule_offload(struct mlx5e_priv *priv,
- 	if (attr->flags & MLX5_ATTR_FLAG_SAMPLE)
- 		return mlx5e_tc_sample_offload(get_sample_priv(priv), spec, attr);
- 
-+	if (is_flow_meter_action(attr)) {
-+		err = mlx5e_tc_add_flow_meter(priv, attr);
-+		if (err)
-+			return ERR_PTR(err);
-+	}
-+
- 	return mlx5_eswitch_add_offloaded_rule(esw, spec, attr);
- }
- 
-@@ -393,6 +426,9 @@ mlx5e_tc_rule_unoffload(struct mlx5e_priv *priv,
- 	}
- 
- 	mlx5_eswitch_del_offloaded_rule(esw, rule, attr);
-+
-+	if (attr->meter_attr.meter)
-+		mlx5e_tc_meter_put(attr->meter_attr.meter);
- }
- 
- int
-@@ -4545,9 +4581,9 @@ static int apply_police_params(struct mlx5e_priv *priv, u64 rate,
- 	return err;
- }
- 
--static int mlx5e_policer_validate(const struct flow_action *action,
--				  const struct flow_action_entry *act,
--				  struct netlink_ext_ack *extack)
-+int mlx5e_policer_validate(const struct flow_action *action,
-+			   const struct flow_action_entry *act,
-+			   struct netlink_ext_ack *extack)
- {
- 	if (act->police.exceed.act_id != FLOW_ACTION_DROP) {
- 		NL_SET_ERR_MSG_MOD(extack,
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
-index 941e0143577a..517f2252b5ff 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
-@@ -72,6 +72,7 @@ struct mlx5_flow_attr {
- 	struct mlx5_modify_hdr *modify_hdr;
- 	struct mlx5_ct_attr ct_attr;
- 	struct mlx5e_sample_attr sample_attr;
-+	struct mlx5e_meter_attr meter_attr;
- 	struct mlx5e_tc_flow_parse_attr *parse_attr;
- 	u32 chain;
- 	u16 prio;
-@@ -84,6 +85,7 @@ struct mlx5_flow_attr {
- 	u8 tun_ip_version;
- 	int tunnel_id; /* mapped tunnel id */
- 	u32 flags;
-+	u32 exe_aso_type;
- 	struct list_head list;
- 	struct mlx5e_post_act_handle *post_act_handle;
- 	struct {
--- 
-2.36.1
+  git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf.git
 
+Thanks.
+
+----------------------------------------------------------------
+
+The following changes since commit f8ebb3ac881b17712e1d5967c97ab1806b16d3d6:
+
+  net: usb: ax88179_178a: Fix packet receiving (2022-06-30 10:41:57 +0200)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf.git HEAD
+
+for you to fetch changes up to 9827a0e6e23bf43003cd3d5b7fb11baf59a35e1e:
+
+  netfilter: nft_set_pipapo: release elements in clone from abort path (2022-07-02 21:04:19 +0200)
+
+----------------------------------------------------------------
+Pablo Neira Ayuso (2):
+      netfilter: nf_tables: stricter validation of element data
+      netfilter: nft_set_pipapo: release elements in clone from abort path
+
+ net/netfilter/nf_tables_api.c  |  9 +++++++-
+ net/netfilter/nft_set_pipapo.c | 48 +++++++++++++++++++++++++++++-------------
+ 2 files changed, 41 insertions(+), 16 deletions(-)
