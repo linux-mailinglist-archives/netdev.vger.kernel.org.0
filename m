@@ -2,121 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C5305640ED
-	for <lists+netdev@lfdr.de>; Sat,  2 Jul 2022 17:16:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B72C05640EC
+	for <lists+netdev@lfdr.de>; Sat,  2 Jul 2022 17:16:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231882AbiGBPJe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Jul 2022 11:09:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56238 "EHLO
+        id S232180AbiGBPKa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Jul 2022 11:10:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230213AbiGBPJe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Jul 2022 11:09:34 -0400
-Received: from mail-vs1-xe29.google.com (mail-vs1-xe29.google.com [IPv6:2607:f8b0:4864:20::e29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CAE1BE2E;
-        Sat,  2 Jul 2022 08:09:33 -0700 (PDT)
-Received: by mail-vs1-xe29.google.com with SMTP id o190so4985203vsc.5;
-        Sat, 02 Jul 2022 08:09:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=69eVPdFYnzRvWh41cd+F05Rdb0UdGv5MYeKeXlwbdCI=;
-        b=ncF9SexWr3pMy9O2KiRgghtqWRh4FO0R0SwmEQeGBNk//scgtIKEWHBcedOzvhvbP5
-         3jJ31G3tfkDGBn9s1HGxCHmTKj6Tb7EY6oDjFubTo/E7/bbdBo/qWoEymgR9/QlnJcaX
-         cUR6FqxSVwe7lQnMRngUkMHupxBBz9jDhnAAlTpHkCOULRqhKqJDrL2/adJa5gOiPnr6
-         BgskCr9AmEGRBGyGI4fXo+iP+C3Tc1F9bmpHDnK5k9o25AGVCS5lqnN7ko5uZ/txJDwU
-         4Foubnmq2VK9kmNm3FPfzg2zTCm1+f287ZUQHJ/DhJ+yvIzLKurtCZrdyxpdHZG/h96A
-         kljg==
+        with ESMTP id S229970AbiGBPK3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Jul 2022 11:10:29 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9F397BE2E
+        for <netdev@vger.kernel.org>; Sat,  2 Jul 2022 08:10:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656774626;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=Cqp43LfXGvDDWLcjAcU0nNREspk+kElXMNXTMGJ8P1E=;
+        b=F4lMUD5Wdfss+DZQLPqBh8Q7SInh8hHg2JCKe+XwVxakh6iQaOC7umpSMWP8BYoybLLOBN
+        6Cv2bewxGzYJdXKMyyy0NuuzeZQVHdUuw5l2HRPKRQ/LFamv+hRdSig6kf3Nsfqu7o2EDp
+        dxy+4lxjO51ssVql53afbRd4m/E3kpg=
+Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
+ [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-321-fR454ZqTNHGLiTcXPyJXZQ-1; Sat, 02 Jul 2022 11:10:25 -0400
+X-MC-Unique: fR454ZqTNHGLiTcXPyJXZQ-1
+Received: by mail-qt1-f198.google.com with SMTP id d4-20020ac86144000000b00319586f86fcso2809776qtm.16
+        for <netdev@vger.kernel.org>; Sat, 02 Jul 2022 08:10:25 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=69eVPdFYnzRvWh41cd+F05Rdb0UdGv5MYeKeXlwbdCI=;
-        b=ErgFJqHL5f/a9oVDaoaPnj7JPsVubZIVA2zVARt5ehr2hTOlzlcnCqxwdfQGS5Rymg
-         7AxCqDfhtoSpD3Xi0A77daGOxpqyjwe24p+yKXp7Q+2OywH2zJImvPvih8pkufk8K+Ja
-         nOAd5JJDHK389WfYKy0oY5FoB0mkLkxlywq21+Up/ijLfMHaUrR9ql51JTyNNEWIAFvk
-         WjJsgTfdhYkvjcFcYodQ4C0NnqI+ST+hwWpKv+qFjIXf3B20sUTgWM+54EJ2GEAaMhmo
-         /xgN82qSJ0AZugOtAVcP4AUk5BApyTWtN3d2vNyQcgyxrHMOFXRqjiZh+CDN6ohlytPf
-         YCdA==
-X-Gm-Message-State: AJIora8SRQr7+pZtjqbhxi/sbjShxIfGwC3Hko5YWP/kBLmi8VPo295k
-        DKZhP91lzHhc6JTs9+lCmpyymZZdqANU7FnL9Fl/Xh6G2pw=
-X-Google-Smtp-Source: AGRyM1sh6Lon2Hld9nBWtF478yyMHyAhP6cynuZWZ5lOtWJK98sMbtKOUeVd5IgRDMGaYk0b+n7CrUmoPN7HLNaz8cw=
-X-Received: by 2002:a67:1945:0:b0:355:ab65:9db3 with SMTP id
- 66-20020a671945000000b00355ab659db3mr14137704vsz.22.1656774571464; Sat, 02
- Jul 2022 08:09:31 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Cqp43LfXGvDDWLcjAcU0nNREspk+kElXMNXTMGJ8P1E=;
+        b=e8c20qdfSauCkW7JPLmmQmme/1y307mBk5xcyJO6fLPtio08Ln/bWo8nd8BJ16i2Aq
+         oduWnW7R/cndtG868qeNyhH6QyZIY/Zh9Nt2CC0MeDkUnAbblAkQMY4SHqkoW9Y2EcWV
+         7/JlbjzbmlbeX4YGqMi7vqPg42GEq7UGcbSv6cDfMJUcdQSrNpWp8PZq+gywuh6Ssf0L
+         gPrq+qMt1rBCawfPPyaKEtyT2WHAQxu1YpdB38Chpq92oSlpahNu63qYI9Xk+vUzGG57
+         8n8GpAhWUTUj8Z8d1IA7LEuDixKbIrRjGfOIHouTb46rpGH/XHYVRVpAcUOJ2wIKWBjh
+         47zQ==
+X-Gm-Message-State: AJIora/CFU06AKk1RYYnGi47tbrsOqIri108DJauT/umhRpToV8rVTO5
+        njFeYUT2E5iHL8LWKxmV/TxtGPmzixqUH2a+TK3rChulTVJCv/ZPcTeiU4dIWe34p9oYWyEkBrC
+        Y3p3wf1+55KsVVg1s
+X-Received: by 2002:ac8:5816:0:b0:31d:4178:5fd0 with SMTP id g22-20020ac85816000000b0031d41785fd0mr1632053qtg.253.1656774624772;
+        Sat, 02 Jul 2022 08:10:24 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1vl3/Ai5Vps6cqyXNHSW43QW8v5SfQxKSachr4YHT8JFyALP6kBEa7qly/qiC2VBYhdMdg8Gg==
+X-Received: by 2002:ac8:5816:0:b0:31d:4178:5fd0 with SMTP id g22-20020ac85816000000b0031d41785fd0mr1632016qtg.253.1656774624536;
+        Sat, 02 Jul 2022 08:10:24 -0700 (PDT)
+Received: from dell-per740-01.7a2m.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id hh10-20020a05622a618a00b003154e7466casm16292230qtb.51.2022.07.02.08.10.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 02 Jul 2022 08:10:23 -0700 (PDT)
+From:   Tom Rix <trix@redhat.com>
+To:     gregory.greenman@intel.com, kvalo@kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        nathan@kernel.org, ndesaulniers@google.com,
+        luciano.coelho@intel.com, ayala.barazani@intel.com,
+        miriam.rachel.korenblit@intel.com, johannes.berg@intel.com,
+        matt.chen@intel.com
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
+        Tom Rix <trix@redhat.com>
+Subject: [PATCH] iwlwifi: mvm: return an error if setting tbl_rev fails
+Date:   Sat,  2 Jul 2022 11:10:20 -0400
+Message-Id: <20220702151020.2524220-1-trix@redhat.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-References: <20220629154832.56986-1-laoar.shao@gmail.com> <20220629154832.56986-2-laoar.shao@gmail.com>
- <ede2c8ea-693d-fe70-12a2-bf8ccca97eb0@iogearbox.net> <Yr/GGj+yCD8dZJbp@castle>
-In-Reply-To: <Yr/GGj+yCD8dZJbp@castle>
-From:   Yafang Shao <laoar.shao@gmail.com>
-Date:   Sat, 2 Jul 2022 23:08:54 +0800
-Message-ID: <CALOAHbA0sft0M8ibrOrxxT4WwL5ExTWyQc3L6sj6nD47-xHQPQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/4] bpf: Make non-preallocated allocation low priority
-To:     Roman Gushchin <roman.gushchin@linux.dev>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Quentin Monnet <quentin@isovalent.com>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jul 2, 2022 at 12:14 PM Roman Gushchin <roman.gushchin@linux.dev> wrote:
->
-> On Thu, Jun 30, 2022 at 11:47:00PM +0200, Daniel Borkmann wrote:
-> > Hi Yafang,
-> >
-> > On 6/29/22 5:48 PM, Yafang Shao wrote:
-> > > GFP_ATOMIC doesn't cooperate well with memcg pressure so far, especially
-> > > if we allocate too much GFP_ATOMIC memory. For example, when we set the
-> > > memcg limit to limit a non-preallocated bpf memory, the GFP_ATOMIC can
-> > > easily break the memcg limit by force charge. So it is very dangerous to
-> > > use GFP_ATOMIC in non-preallocated case. One way to make it safe is to
-> > > remove __GFP_HIGH from GFP_ATOMIC, IOW, use (__GFP_ATOMIC |
-> > > __GFP_KSWAPD_RECLAIM) instead, then it will be limited if we allocate
-> > > too much memory.
-> > >
-> > > We introduced BPF_F_NO_PREALLOC is because full map pre-allocation is
-> > > too memory expensive for some cases. That means removing __GFP_HIGH
-> > > doesn't break the rule of BPF_F_NO_PREALLOC, but has the same goal with
-> > > it-avoiding issues caused by too much memory. So let's remove it.
-> > >
-> > > __GFP_KSWAPD_RECLAIM doesn't cooperate well with memcg pressure neither
-> > > currently. But the memcg code can be improved to make
-> > > __GFP_KSWAPD_RECLAIM work well under memcg pressure.
-> >
-> > Ok, but could you also explain in commit desc why it's a specific problem
-> > to BPF hashtab?
-> >
-> > Afaik, there is plenty of other code using GFP_ATOMIC | __GFP_NOWARN outside
-> > of BPF e.g. under net/, so it's a generic memcg problem?
->
-> I'd be careful here and not change it all together.
->
-> __GFP_NOWARN might be used to suppress warnings which otherwise would be too
-> verbose and disruptive (especially if we talk about /net allocations in
-> conjunction with netconsole) and might not mean a low/lower priority.
->
-> > Why are lpm trie and local storage map for BPF not affected (at least I don't
-> > see them covered in the patch)?
->
-> Yes, it would be nice to fix this consistently over the bpf code.
-> Yafang, would you mind to fix it too?
->
+clang static analysis reports
+drivers/net/wireless/intel/iwlwifi/fw/acpi.c:1048:17: warning: Assigned value is garbage or undefined [core.uninitialized.Assign]
+        fwrt->ppag_ver = tbl_rev;
+                       ^ ~~~~~~~
+tbl_rev is optionaly set by a series of calls to iwl_acpi_get_wifi_pkg()
+and then jumping to the read_table when a call is successful.  The
+error case when all the call fails is not handled.  On all failed,
+the code flow falls through to the read_table label.  Add an error
+handler for the all fail case.
 
-I will fix it.
+Fixes: e8e10a37c51c ("iwlwifi: acpi: move ppag code from mvm to fw/acpi")
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+ drivers/net/wireless/intel/iwlwifi/fw/acpi.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
+diff --git a/drivers/net/wireless/intel/iwlwifi/fw/acpi.c b/drivers/net/wireless/intel/iwlwifi/fw/acpi.c
+index e6d64152c81a..1ef1e26c3206 100644
+--- a/drivers/net/wireless/intel/iwlwifi/fw/acpi.c
++++ b/drivers/net/wireless/intel/iwlwifi/fw/acpi.c
+@@ -1044,6 +1044,9 @@ int iwl_acpi_get_ppag_table(struct iwl_fw_runtime *fwrt)
+ 		goto read_table;
+ 	}
+ 
++	ret = -EINVAL;
++	goto out_free;
++
+ read_table:
+ 	fwrt->ppag_ver = tbl_rev;
+ 	flags = &wifi_pkg->package.elements[1];
 -- 
-Regards
-Yafang
+2.27.0
+
