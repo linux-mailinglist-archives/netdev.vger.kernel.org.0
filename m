@@ -2,55 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E2B2E564971
-	for <lists+netdev@lfdr.de>; Sun,  3 Jul 2022 21:08:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49CDE5649A3
+	for <lists+netdev@lfdr.de>; Sun,  3 Jul 2022 21:51:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229937AbiGCTIW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Jul 2022 15:08:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39264 "EHLO
+        id S229986AbiGCTv3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Jul 2022 15:51:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232905AbiGCTHi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 Jul 2022 15:07:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87E2E240
-        for <netdev@vger.kernel.org>; Sun,  3 Jul 2022 12:07:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 30D49B80BEB
-        for <netdev@vger.kernel.org>; Sun,  3 Jul 2022 19:07:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 976EAC341C6;
-        Sun,  3 Jul 2022 19:07:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656875254;
-        bh=/3BCI/eAgkQbdDCYF0CpQ3+lKQCP4tF9lzj1Pyd2Bk0=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=SsCYhJ4NxefmAYLCJbxJmC+3pZaP6dsS+2ybgpVz2NpXWY4WJfu4l55C4t9fgJ5hF
-         WDaUoWC2zNxWeDMeLanBlRvNxAlRQ1aeAGcCDQaH/Gr1wFnxaaUodd/fte37uDcuDj
-         kY5RwdIVBrw2sk8i+Xw1fSoIuNRcTV/ESvrhPCJrCmCoxg7JDMCPjjBjzxqoQ1XVvh
-         OGEVkSHnyEkkhtpBR6TKe/ynLCdUDgPl+CpRffOPMDCAkuhVnws3ZjkIBbXScrXCIr
-         l5D6NPz8S0Dh7ITXwP8b/RmQageDZ5QGzUY6C53UAU14iSeX/9Yu/+BQHID9DYt24d
-         G+6Hemd5QdVGA==
-Message-ID: <0d18f6a3-78da-2dee-d715-39a043870eec@kernel.org>
-Date:   Sun, 3 Jul 2022 13:07:33 -0600
+        with ESMTP id S229549AbiGCTv2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 Jul 2022 15:51:28 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E312EB7;
+        Sun,  3 Jul 2022 12:51:26 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id pk21so13364294ejb.2;
+        Sun, 03 Jul 2022 12:51:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=onHiE085umurs2Ia7yNhkMPRjch81x5DVPVGIjclApc=;
+        b=lqYs6Owxf+xwD4BujbUx5L/JW93fFfkv402JQnsd2Ivmy7YKUKxpvbI13wVAZ1EQL0
+         SHWUFaEibPQ2r7wb2CdZ883hnnBsk489Wp0s6T5uWV4il5mkSGHFFfvSZ7d/libskyDp
+         8KClxqMHJYwncccjdmmhM1YdParV1mBg9qRtiRHQPvFX5OhJ10JaKtscZntWNuUd9gjZ
+         vuX6Hf/pm3mefC4xLpai0hfK8EaC4XCDqgeYVUpB5qUCFEgyqsNcbLYmex8Rzh1zFBif
+         5uJVJ7UhF9oxvP/ofPt1G3gaDmhnktDi8oFqMzFOPt/LDXHwmTCyHsQfabXg1eNTCT5C
+         Yn8Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=onHiE085umurs2Ia7yNhkMPRjch81x5DVPVGIjclApc=;
+        b=4wBJtjiX60uYnxyo3yzFxwZXCWCmMkwMRRZoSLokN5EkUGqnaXZiZeANUHbEGoYQ/v
+         7N5N4p2nYJJMgiZwPfIx9LuqufcGTQ+AsWCT7wuU9l31O+ygJ1LvQ5251X70LVN19CDV
+         kDQLQoZW8BsZDdwitHnfmVuiTeGMeCEPemA7nO1PFgVtYokWoVOAbAj9i00FihYeo6ml
+         /GjfVlSrWBLZGt7BVRWisIATaz2F9weaywIv6tth1DxYjnm92D97lj1YodYjXQgBoAXd
+         fSicZCgm8xHltVnLT+Wzdv1NtqPMEmUtLnQ4CQrUEvlHITjCsHLaEL7Uc01cxbq8HAnS
+         Yh8Q==
+X-Gm-Message-State: AJIora/Z/h9Y38i173mXScz3YhwPtgK7yU+6T2/oO3fJYRvNm9TMumTv
+        KsLRwu0zGT4T2vdj/oY7dk4=
+X-Google-Smtp-Source: AGRyM1s4ubghOPGD9ZnkBdEkwpz2WOQrAV8Bai4xYSIbBHGk/AT51c/k9LA1hUG/2nIgngadyHoc3w==
+X-Received: by 2002:a17:907:eaa:b0:726:a3ab:f000 with SMTP id ho42-20020a1709070eaa00b00726a3abf000mr25958139ejc.382.1656877884654;
+        Sun, 03 Jul 2022 12:51:24 -0700 (PDT)
+Received: from localhost.localdomain ([2a04:241e:502:a080:adb9:a498:761a:afd0])
+        by smtp.gmail.com with ESMTPSA id f26-20020a056402005a00b004358f6e0570sm19201254edu.17.2022.07.03.12.51.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 03 Jul 2022 12:51:24 -0700 (PDT)
+From:   Leonard Crestez <cdleonard@gmail.com>
+To:     Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Muhammad Usama Anjum <usama.anjum@collabora.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH RFC] tcp: diag: Also support for FIN_WAIT1 sockets for tcp_abort()
+Date:   Sun,  3 Jul 2022 22:51:03 +0300
+Message-Id: <338ea07266aedd2e416a830ab3fe8f4224d07a30.1656877534.git.cdleonard@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.11.0
-Subject: Re: [PATCH net-next 2/2] net: ip6mr: add RTM_GETROUTE netlink op
-Content-Language: en-US
-To:     David Lamparter <equinox@diac24.net>, netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>
-References: <20220630202706.33555ad2@kernel.org>
- <20220701075805.65978-1-equinox@diac24.net>
- <20220701075805.65978-3-equinox@diac24.net>
-From:   David Ahern <dsahern@kernel.org>
-In-Reply-To: <20220701075805.65978-3-equinox@diac24.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -58,43 +72,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/1/22 1:58 AM, David Lamparter wrote:
-> @@ -2510,6 +2512,121 @@ static void mrt6msg_netlink_event(const struct mr_table *mrt, struct sk_buff *pk
->  	rtnl_set_sk_err(net, RTNLGRP_IPV6_MROUTE_R, -ENOBUFS);
->  }
->  
-> +static int ip6mr_rtm_valid_getroute_req(struct sk_buff *skb,
-> +					const struct nlmsghdr *nlh,
-> +					struct nlattr **tb,
-> +					struct netlink_ext_ack *extack)
-> +{
-> +	struct rtmsg *rtm;
-> +	int i, err;
-> +
-> +	if (nlh->nlmsg_len < nlmsg_msg_size(sizeof(*rtm))) {
-> +		NL_SET_ERR_MSG(extack, "ipv6: Invalid header for multicast route get request");
-> +		return -EINVAL;
-> +	}
-> +
-> +	if (!netlink_strict_get_check(skb))
-> +		return nlmsg_parse_deprecated(nlh, sizeof(*rtm), tb, RTA_MAX,
-> +					      rtm_ipv6_policy, extack);
+Aborting tcp connections via ss -K doesn't work in TCP_FIN_WAIT1 state,
+this happens because the SOCK_DEAD flag is set. Fix by ignoring that flag
+for this special case.
 
-Since this is new code, it always operates in strict mode.
+Signed-off-by: Leonard Crestez <cdleonard@gmail.com>
 
-> +
-> +	rtm = nlmsg_data(nlh);
-> +	if ((rtm->rtm_src_len && rtm->rtm_src_len != 128) ||
-> +	    (rtm->rtm_dst_len && rtm->rtm_dst_len != 128) ||
-> +	    rtm->rtm_tos || rtm->rtm_table || rtm->rtm_protocol ||
-> +	    rtm->rtm_scope || rtm->rtm_type || rtm->rtm_flags) {
-> +		NL_SET_ERR_MSG(extack, "ipv6: Invalid values in header for multicast route get request");
-> +		return -EINVAL;
-> +	}
-> +
-> +	err = nlmsg_parse_deprecated_strict(nlh, sizeof(*rtm), tb, RTA_MAX,
-> +					    rtm_ipv6_policy, extack);
+---
+ net/ipv4/tcp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-nlmsg_parse here.
+I tested that this fixes the problem but not certain about correctness.
 
+Support for TCP_TIME_WAIT was added recently but it doesn't fix
+TCP_FIN_WAIT1.
+
+See: https://lore.kernel.org/netdev/20220627121038.226500-1-edumazet@google.com/
+
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index d9dd998fdb76..215e7d3fed13 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -4661,11 +4661,11 @@ int tcp_abort(struct sock *sk, int err)
+ 
+ 	/* Don't race with BH socket closes such as inet_csk_listen_stop. */
+ 	local_bh_disable();
+ 	bh_lock_sock(sk);
+ 
+-	if (!sock_flag(sk, SOCK_DEAD)) {
++	if (sk->sk_state == TCP_FIN_WAIT1 || !sock_flag(sk, SOCK_DEAD)) {
+ 		sk->sk_err = err;
+ 		/* This barrier is coupled with smp_rmb() in tcp_poll() */
+ 		smp_wmb();
+ 		sk_error_report(sk);
+ 		if (tcp_need_reset(sk->sk_state))
+-- 
+2.25.1
 
