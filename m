@@ -2,66 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DE86E5645BB
+	by mail.lfdr.de (Postfix) with ESMTP id 965835645BA
 	for <lists+netdev@lfdr.de>; Sun,  3 Jul 2022 10:25:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230045AbiGCIOj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Jul 2022 04:14:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36898 "EHLO
+        id S231727AbiGCIRW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Jul 2022 04:17:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231366AbiGCIOi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 Jul 2022 04:14:38 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0368565DB
-        for <netdev@vger.kernel.org>; Sun,  3 Jul 2022 01:14:36 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1o7ukG-0000kC-99; Sun, 03 Jul 2022 10:14:20 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1o7uk9-0048UC-IY; Sun, 03 Jul 2022 10:14:17 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1o7ukC-002h2n-7I; Sun, 03 Jul 2022 10:14:16 +0200
-Date:   Sun, 3 Jul 2022 10:14:12 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Biju Das <biju.das.jz@bp.renesas.com>
-Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>,
-        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 6/6] can: sja1000: Add support for RZ/N1 SJA1000 CAN
- Controller
-Message-ID: <20220703081412.75t6w5lgt4n3tup2@pengutronix.de>
-References: <20220702140130.218409-1-biju.das.jz@bp.renesas.com>
- <20220702140130.218409-7-biju.das.jz@bp.renesas.com>
- <20220702164018.ztizq3ftto4lsabr@pengutronix.de>
- <OS0PR01MB592277E660F0DAC3A614A7C286BF9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+        with ESMTP id S231703AbiGCIRV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 Jul 2022 04:17:21 -0400
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2FD365D4
+        for <netdev@vger.kernel.org>; Sun,  3 Jul 2022 01:17:20 -0700 (PDT)
+Received: by mail-io1-f69.google.com with SMTP id o6-20020a5eda46000000b00674f9e7e8b4so4103331iop.1
+        for <netdev@vger.kernel.org>; Sun, 03 Jul 2022 01:17:20 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=SzlLQk1R/qcx7ZiQnec3Uu+bcDKiSvEHURxfQ3755Do=;
+        b=51b0uf5Tv+fyD5PiL4+zfeCn8l1O9/n8a0eSs3tuZt/05NR572SWwx7nQk2sfMcPKF
+         3wqsWKg/Ye2yiVUXuAaVy4tubhzUrNG+GNbEGtl5Pda8+xk7TnG/gf5/e6TKndByzYeS
+         vSIWBHIKRQbNea87RKMTitAu8r7DQSzhmzcqKWpl3CSI/nBtKYt9j+xMK5eYIg1GPCmb
+         vr8lULoQPMXnDD5hG4Fei0z2cipVCZtl1IsROdLud1mdsEil/WodujjMIaD8fS7qxg6W
+         OfD/adyEOz88kriE+i1aaepq6ZBXa+c05r5lYjzTPyYKFzaiFsGIOdu7Gk7LqwpY+DVR
+         +NHw==
+X-Gm-Message-State: AJIora+5ezouf9ZhBu/M1j/y0TxVNSQJH8oyvt8qR4fZA8MkIa0GVz8o
+        FY4EboCmEHETlVr9kGuhfP9SDxFpbOJMKb77TrNMTPuiIg3c
+X-Google-Smtp-Source: AGRyM1tmeoQrz3/WMsfm9sIhBrtJZ02EP25Nm/FsSbdAeoDQGRDI8L5TmQjlIEyjVysGCGr8Ehlo8dPq5XXewB8G/l+EgT22+T3S
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="fx47dwq5sofzh2mk"
-Content-Disposition: inline
-In-Reply-To: <OS0PR01MB592277E660F0DAC3A614A7C286BF9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+X-Received: by 2002:a05:6638:248d:b0:33c:dc25:bf1b with SMTP id
+ x13-20020a056638248d00b0033cdc25bf1bmr11303036jat.247.1656836240209; Sun, 03
+ Jul 2022 01:17:20 -0700 (PDT)
+Date:   Sun, 03 Jul 2022 01:17:20 -0700
+In-Reply-To: <0000000000007646bd05d7f81943@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000008c7b8f05e2e23f36@google.com>
+Subject: Re: [syzbot] kernel BUG in __text_poke
+From:   syzbot <syzbot+87f65c75f4a72db05445@syzkaller.appspotmail.com>
+To:     alexei.starovoitov@gmail.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, hpa@zytor.com, jgross@suse.com,
+        jpoimboe@kernel.org, jpoimboe@redhat.com,
+        linux-kernel@vger.kernel.org, mingo@redhat.com,
+        netdev@vger.kernel.org, peterz@infradead.org, song@kernel.org,
+        syzkaller-bugs@googlegroups.com, tglx@linutronix.de, x86@kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -69,90 +58,77 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+syzbot has found a reproducer for the following issue on:
 
---fx47dwq5sofzh2mk
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+HEAD commit:    d28b25a62a47 selftests/net: fix section name when using xd..
+git tree:       bpf
+console+strace: https://syzkaller.appspot.com/x/log.txt?x=11582697f00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=833001d0819ddbc9
+dashboard link: https://syzkaller.appspot.com/bug?extid=87f65c75f4a72db05445
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14281c84080000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=102d6448080000
 
-On Sun, Jul 03, 2022 at 07:15:16AM +0000, Biju Das wrote:
-> Hi Marc and Uwe,
->=20
-> > Subject: Re: [PATCH 6/6] can: sja1000: Add support for RZ/N1 SJA1000 CAN
-> > Controller
-> >=20
-> > On 02.07.2022 15:01:30, Biju Das wrote:
-> > > The SJA1000 CAN controller on RZ/N1 SoC has some differences compared
-> > > to others like it has no clock divider register (CDR) support and it
-> > > has no HW loopback(HW doesn't see tx messages on rx).
-> > >
-> > > This patch adds support for RZ/N1 SJA1000 CAN Controller.
-> > >
-> > > Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-> > > ---
-> > >  drivers/net/can/sja1000/sja1000_platform.c | 34
-> > > ++++++++++++++++++----
-> > >  1 file changed, 29 insertions(+), 5 deletions(-)
-> > >
-> > > diff --git a/drivers/net/can/sja1000/sja1000_platform.c
-> > > b/drivers/net/can/sja1000/sja1000_platform.c
-> > > index 5f3d362e0da5..8e63af76a013 100644
-> > > --- a/drivers/net/can/sja1000/sja1000_platform.c
-> > > +++ b/drivers/net/can/sja1000/sja1000_platform.c
-> > [...]
-> > > @@ -262,6 +276,16 @@ static int sp_probe(struct platform_device *pdev)
-> > >  	priv->reg_base =3D addr;
-> > >
-> > >  	if (of) {
-> > > +		clk =3D devm_clk_get_optional(&pdev->dev, "can_clk");
-> > > +		if (IS_ERR(clk))
-> > > +			return dev_err_probe(&pdev->dev, PTR_ERR(clk), "no CAN
-> > clk");
-> > > +
-> > > +		if (clk) {
-> > > +			priv->can.clock.freq  =3D clk_get_rate(clk) / 2;
-> > > +			if (!priv->can.clock.freq)
-> > > +				return dev_err_probe(&pdev->dev, -EINVAL, "Zero
-> > CAN clk rate");
-> > > +		}
-> >=20
-> > There's no clk_prepare_enable in the driver. You might go the quick and
-> > dirty way an enable the clock right here. IIRC there's a new convenience
-> > function to get and enable a clock, managed bei devm. Uwe (Cc'ed) can
-> > point you in the right direction.
->=20
->  + clk
->=20
-> As per the patch history devm version for clk_prepare_enable is rejected[=
-1], so the individual drivers implemented the same using devm_add_action_or=
-_reset [2].
-> So shall I implement devm version here as well?
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+87f65c75f4a72db05445@syzkaller.appspotmail.com
 
-You want to make use of 7ef9651e9792b08eb310c6beb202cbc947f43cab (which
-is currently in next). If you cherry-pick this to an older kernel
-version, make sure to also pick
-8b3d743fc9e2542822826890b482afabf0e7522a.
+------------[ cut here ]------------
+kernel BUG at arch/x86/kernel/alternative.c:1041!
+invalid opcode: 0000 [#1] PREEMPT SMP KASAN
+CPU: 1 PID: 3688 Comm: syz-executor292 Not tainted 5.19.0-rc4-syzkaller-00118-gd28b25a62a47 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 06/29/2022
+RIP: 0010:__text_poke+0x348/0x8e0 arch/x86/kernel/alternative.c:1041
+Code: c3 0f 86 2c fe ff ff 49 8d bc 24 00 10 00 00 e8 6e 6b 8d 00 48 89 44 24 30 48 85 db 74 0c 48 83 7c 24 30 00 0f 85 1b fe ff ff <0f> 0b 48 b8 00 f0 ff ff ff ff 0f 00 49 21 c0 48 85 db 0f 85 bf 02
+RSP: 0018:ffffc900032cf540 EFLAGS: 00010246
+RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: ffff888018503b00 RSI: ffffffff81b97e83 RDI: 0000000000000005
+RBP: 0000000000000004 R08: 0000000000000005 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000001 R12: ffffffffa0000fc0
+R13: 0000000000000004 R14: 0000000000000fc4 R15: 0000000000002000
+FS:  0000555556bcb300(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000000002000cf3d CR3: 000000001d6a5000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ text_poke_copy+0x6d/0xa0 arch/x86/kernel/alternative.c:1186
+ bpf_arch_text_copy+0x21/0x40 arch/x86/net/bpf_jit_comp.c:2491
+ bpf_jit_binary_pack_alloc+0x8fd/0x990 kernel/bpf/core.c:1118
+ bpf_int_jit_compile+0x53a/0x13e0 arch/x86/net/bpf_jit_comp.c:2422
+ jit_subprogs kernel/bpf/verifier.c:13562 [inline]
+ fixup_call_args kernel/bpf/verifier.c:13693 [inline]
+ bpf_check+0x6e45/0xbbc0 kernel/bpf/verifier.c:15044
+ bpf_prog_load+0xfb2/0x2250 kernel/bpf/syscall.c:2575
+ __sys_bpf+0x11a1/0x5700 kernel/bpf/syscall.c:4917
+ __do_sys_bpf kernel/bpf/syscall.c:5021 [inline]
+ __se_sys_bpf kernel/bpf/syscall.c:5019 [inline]
+ __x64_sys_bpf+0x75/0xb0 kernel/bpf/syscall.c:5019
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
+RIP: 0033:0x7fe82c3681f9
+Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 b1 14 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffe743b9ed8 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
+RAX: ffffffffffffffda RBX: 0000000000000002 RCX: 00007fe82c3681f9
+RDX: 0000000000000070 RSI: 0000000020000440 RDI: 0000000000000005
+RBP: 00007ffe743b9ef0 R08: 0000000000000002 R09: 0000000000000001
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000003
+R13: 431bde82d7b634db R14: 0000000000000000 R15: 0000000000000000
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:__text_poke+0x348/0x8e0 arch/x86/kernel/alternative.c:1041
+Code: c3 0f 86 2c fe ff ff 49 8d bc 24 00 10 00 00 e8 6e 6b 8d 00 48 89 44 24 30 48 85 db 74 0c 48 83 7c 24 30 00 0f 85 1b fe ff ff <0f> 0b 48 b8 00 f0 ff ff ff ff 0f 00 49 21 c0 48 85 db 0f 85 bf 02
+RSP: 0018:ffffc900032cf540 EFLAGS: 00010246
+RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: ffff888018503b00 RSI: ffffffff81b97e83 RDI: 0000000000000005
+RBP: 0000000000000004 R08: 0000000000000005 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000001 R12: ffffffffa0000fc0
+R13: 0000000000000004 R14: 0000000000000fc4 R15: 0000000000002000
+FS:  0000555556bcb300(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000000002000cf3d CR3: 000000001d6a5000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---fx47dwq5sofzh2mk
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmLBT9IACgkQwfwUeK3K
-7Alptgf/SWE8eashOILFfLmPuRKFKypJmOjW7PCEqdYeTQ/d2XK0WtqvmzgYDTjm
-Vjvna6c/6jmEE0bVCVQ90n+0KIHQ4n8D3IGXBvrEjF809xp5BPeO82qChKwjZ7lk
-vm9fDLj3Wy2PS7sNn7D0nIjQKt/HafqAAclKSIQU3xWWeZjuiL+zBCbn2ttYOoJ2
-jPUSwFQ9NYR9uoRnvWdTrlPXLuD0o/h7Czf9bNeuEclZ+KoDulqh4Pll11ipYZ1q
-C/yvoJa8B9UDVyzflKPkdwZBqaF89DXMh2NtUnCy+XgGQDSwdvBDLg4S94iCzIe6
-zVS779Af/9w5w/PB0SO17B0dcjqs9A==
-=UInt
------END PGP SIGNATURE-----
-
---fx47dwq5sofzh2mk--
