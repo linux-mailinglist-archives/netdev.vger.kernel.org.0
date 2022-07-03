@@ -2,86 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 27A365643B5
-	for <lists+netdev@lfdr.de>; Sun,  3 Jul 2022 05:26:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 601FE5644C4
+	for <lists+netdev@lfdr.de>; Sun,  3 Jul 2022 06:36:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230411AbiGCD0b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Jul 2022 23:26:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43718 "EHLO
+        id S231728AbiGCEgd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Jul 2022 00:36:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229486AbiGCD02 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Jul 2022 23:26:28 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCF1B9FC3;
-        Sat,  2 Jul 2022 20:26:22 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id fz10so139247pjb.2;
-        Sat, 02 Jul 2022 20:26:22 -0700 (PDT)
+        with ESMTP id S229994AbiGCEgc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 Jul 2022 00:36:32 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1A3B65F6
+        for <netdev@vger.kernel.org>; Sat,  2 Jul 2022 21:36:31 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id n12so6154076pfq.0
+        for <netdev@vger.kernel.org>; Sat, 02 Jul 2022 21:36:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=/LE3/OvnxwC10hHaqp2JoOJSN7rfZOpUu2WCyCiyCz4=;
-        b=Augt3VIV/iWcoU+DHx6Yl7vroOm9Hwz+XtZe2jvyXkhsx95p/JLAo0xcEd6ix1ZIVf
-         qIfg68MUyw+xLjl2gBsPYsbv6l3jY94RzOJD92gb6rxdLTyy5Av/dXPYvA/EXIhLOtLz
-         svOqPB75mbgpDTnbuNTXc8rdS2DrehpRBgIiYcfLEACt56jQqPD4OYEXOr+iSon97xBH
-         KYxD4XfgTiHC/xmDNEPOFfPpT2EHhts4G6H0Pm0fJr3aoQ7VOuwkBeKtFwd1B4K1k9D/
-         GdNdQLrWNIKMTC9YgyvhuIjL+GirhGz9Rbn2DEPjhAWabLVNFd+wt0MxRzds1x2rF4/L
-         8aeg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=62ArhUP2zvYk+YsKHQYjwxVWsBvV25s5/UZPMyRsAAc=;
+        b=WlEpV01Y/J4m3R5hP0hra2jrY+hkcyzmFOg4h9nik7WtD1n/kU/teSPKgHG+i6KvW4
+         t8BDxIQwlQSxVvenyuYGjWuOH2yzhSHMOTzQJOjL5u5A55do5kO+7ZqCKkLjkhLCIY2I
+         fF7NJD/OFWMdTQANsc797Ms7GAAbPKppWTpwY7HT4Ieub+iPl8azNm79QTahEm/S0pbB
+         kezBw7JNdNwZaBl/tjKUfcvbMaIoJ3G9RcOwVrX/jf2dLdMAj1HaunFIqEJpDQs4qiot
+         Q/Iij+MQHWjiox0Y2V3vh5ykyKVflvUUWZOmPaTyDuG5tt7s2+2awEOatGNUtVHG46Xv
+         ifVQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=/LE3/OvnxwC10hHaqp2JoOJSN7rfZOpUu2WCyCiyCz4=;
-        b=hSqHn4/XX/P/1YE7EvPtr7Y+Gdsa1DIREWmnADK9NoQy99dUPWRtADeOmp8jV5NVib
-         WBnRteh9EbmYjsDyBRgK8MiOR/LL3MxloBDohF3ox6rX4Ywo29ftvJkN0cTn84sWVVP4
-         evQ/7KuPFaoOm6FTu1uGu6I4xfvA0YhJzAftMKvnnOMhvyMr+B+rSXsMCAuMHgDTUq0a
-         D60ZfydIqmFzEmlgQ99aOyFFJ66m35ObaZ2GcAZoDMLIiTzcRoL06Qy/4yrpQ0pkevKi
-         OrInWrB1W2JRoNrczCaKDgYwbnqHFMS7bK1d1RvhMkjJURkI2ulbJ1mbG3IgRfR4mwHX
-         tBtA==
-X-Gm-Message-State: AJIora9XIOW8cd/kwEIuBr8xZHO3SqObbMGFfCEDNVp09OqOPg7BXXUf
-        ScwRSq1f3RsApXnEAA2R9+hy4tQUFJpMcg==
-X-Google-Smtp-Source: AGRyM1v/qGK0NX2/G7uiSvuhmywhBxQ+rRzGPCB7tQOWN8p4Gfx3qW4Qvkfllc0ImMReMYjkXPk5jA==
-X-Received: by 2002:a17:903:2c6:b0:16a:276a:ad81 with SMTP id s6-20020a17090302c600b0016a276aad81mr29074812plk.65.1656818782428;
-        Sat, 02 Jul 2022 20:26:22 -0700 (PDT)
-Received: from debian.me (subs32-116-206-28-33.three.co.id. [116.206.28.33])
-        by smtp.gmail.com with ESMTPSA id u17-20020a170902e81100b0016a0db8c5b4sm1866809plg.156.2022.07.02.20.26.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 02 Jul 2022 20:26:21 -0700 (PDT)
-Received: by debian.me (Postfix, from userid 1000)
-        id EA78810390C; Sun,  3 Jul 2022 10:26:16 +0700 (WIB)
-Date:   Sun, 3 Jul 2022 10:26:16 +0700
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Theodore Ts'o <tytso@mit.edu>,
-        Alasdair Kergon <agk@redhat.com>,
-        Andreas Dilger <adilger.kernel@dilger.ca>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        Dipen Patel <dipenp@nvidia.com>,
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=62ArhUP2zvYk+YsKHQYjwxVWsBvV25s5/UZPMyRsAAc=;
+        b=sZLjQts3IyPWxUnVz8HjjVtTAN9B8So7kelGUxLJixVqke5IX/exBQymzNWqkc9XOl
+         I1EMe2zhelQaFQAP1DK89B/MEPeOhCgYIoHF/3uecrjNt5yI3sP6QmCR+vaG/JYUWCnY
+         8CossGPwVdbKBkfxtf6xlo8elbfKUjJhjGj78PG35HR2zFBV1xow1YTjSbpxdozBpDCe
+         Xh4F1Z33oYRjckt4H9bvuZvnwvxFwp3oBJypzUoRcfigCwriNXxoez3Me9NJt1bbvKMA
+         FgHz708Erw/HivZSNGDVaJdNK9w4zyybQWLXGkjGz/ubg4YVoITKE2n7TCJ77jdV81CF
+         LV+Q==
+X-Gm-Message-State: AJIora8P4Ku4GJAU71v/SQC4aAvaB9LaXhzw0WD0EauElTjtgBZdkeSK
+        2caU7REbeD2xLqYtIuj07llbcBpVFstcpRfxslw=
+X-Google-Smtp-Source: AGRyM1v046EQA+y6P/P4TZNE8YH7JNPwG2IODBj0EzVD7TSGFAiJGgEVzVaH3fjlmc94nwbnBgiGrLN/xQzX7uUN6F4=
+X-Received: by 2002:a65:4587:0:b0:40d:2136:8690 with SMTP id
+ o7-20020a654587000000b0040d21368690mr19335146pgq.402.1656822991317; Sat, 02
+ Jul 2022 21:36:31 -0700 (PDT)
+MIME-Version: 1.0
+References: <1656106465-26544-1-git-send-email-quic_subashab@quicinc.com>
+ <YroGx7Wd2BQ28PjA@pop-os.localdomain> <ad6f3fbc-9996-6fa7-2015-01832b013c98@quicinc.com>
+In-Reply-To: <ad6f3fbc-9996-6fa7-2015-01832b013c98@quicinc.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Sat, 2 Jul 2022 21:36:19 -0700
+Message-ID: <CAM_iQpVXs5npkommaZzTTvoPKyjhpPL3ws5DtFGvG+_yYVX4dA@mail.gmail.com>
+Subject: Re: [PATCH net-next v2] net: Print hashed skb addresses for all net
+ and qdisc events
+To:     "Subash Abhinov Kasiviswanathan (KS)" <quic_subashab@quicinc.com>
+Cc:     David Miller <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Mike Snitzer <snitzer@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Takashi Iwai <tiwai@suse.com>,
-        Gwendal Grignou <gwendal@chromium.org>,
-        alsa-devel@alsa-project.org, dm-devel@redhat.com,
-        kunit-dev@googlegroups.com, kvm@vger.kernel.org,
-        linux-ext4@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH 00/12] Fix several documentation build warnings with
- Sphinx 2.4.4
-Message-ID: <YsEMWDYCdjxiUZ1P@debian.me>
-References: <cover.1656759988.git.mchehab@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <cover.1656759988.git.mchehab@kernel.org>
+        Paolo Abeni <pabeni@redhat.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        quic_jzenner@quicinc.com, "Cong Wang ." <cong.wang@bytedance.com>,
+        Qitao Xu <qitao.xu@bytedance.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Sean Tranchetti <quic_stranche@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -92,47 +76,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jul 02, 2022 at 12:07:32PM +0100, Mauro Carvalho Chehab wrote:
-> This series is against next-20220701. It fixes several warnings
-> that are currently produced while building html docs.
-> 
-> Each patch in this series is independent from the others, as
-> each one touches a different file.
-> 
-> Mauro Carvalho Chehab (12):
->   docs: ext4: blockmap.rst: fix a broken table
->   docs: tegra194-hte.rst: don't include gpiolib.c twice
->   docs: device-mapper: add a blank line at writecache.rst
->   docs: PCI: pci-vntb-function.rst: Properly include ascii artwork
->   docs: PCI: pci-vntb-howto.rst: fix a title markup
->   docs: virt: kvm: fix a title markup at api.rst
->   docs: ABI: sysfs-bus-nvdimm
->   kunit: test.h: fix a kernel-doc markup
->   net: mac80211: fix a kernel-doc markup
->   docs: alsa: alsa-driver-api.rst: remove a kernel-doc file
->   docs: arm: index.rst: add google/chromebook-boot-flow
->   docs: leds: index.rst: add leds-qcom-lpg to it
-> 
+On Mon, Jun 27, 2022 at 12:49 PM Subash Abhinov Kasiviswanathan (KS)
+<quic_subashab@quicinc.com> wrote:
+>
+>
+>
+> On 6/27/2022 1:36 PM, Cong Wang wrote:
+> > On Fri, Jun 24, 2022 at 03:34:25PM -0600, Subash Abhinov Kasiviswanathan wrote:
+> >> The following commits added support for printing the real address-
+> >> 65875073eddd ("net: use %px to print skb address in trace_netif_receive_skb")
+> >> 70713dddf3d2 ("net_sched: introduce tracepoint trace_qdisc_enqueue()")
+> >> 851f36e40962 ("net_sched: use %px to print skb address in trace_qdisc_dequeue()")
+> >>
+> >> However, tracing the packet traversal shows a mix of hashes and real
+> >> addresses. Pasting a sample trace for reference-
+> >>
+> >> ping-14249   [002] .....  3424.046612: netif_rx_entry: dev=lo napi_id=0x3 queue_mapping=0
+> >> skbaddr=00000000dcbed83e vlan_tagged=0 vlan_proto=0x0000 vlan_tci=0x0000 protocol=0x0800
+> >> ip_summed=0 hash=0x00000000 l4_hash=0 len=84 data_len=0 truesize=768 mac_header_valid=1
+> >> mac_header=-14 nr_frags=0 gso_size=0 gso_type=0x0
+> >> ping-14249   [002] .....  3424.046615: netif_rx: dev=lo skbaddr=ffffff888e5d1000 len=84
+> >>
+> >> Switch the trace print formats to %p for all the events to have a
+> >> consistent format of printing the hashed addresses in all cases.
+> >>
+> >
+> > This is obscured...
+> >
+> > What exactly is the inconsistency here? Both are apparently hex, from
+> > user's point of view. The only difference is one is an apparently
+> > invalid kernel address, the other is not. This difference only matters
+> > when you try to dereference it, but I don't think you should do it here,
+> > this is not a raw tracepoint at all. You can always use raw tracepoints
+> > to dereference it without even bothering whatever we print.
+> >
+> > Thanks.
+>
+> Matching skbs addresses (in a particular format) helps to track the
+> packet traversal timings / delays in processing.
 
-Hi Mauro,
+So... how didn't you notice the duplicated addresses with hashed ones?
+It is 100% reproducible to see duplicates with hashed ones.
 
-Thanks for cleaning up these warning above. However, I have already
-submitted some of these cleanups (pending reviews or integration):
-
-[1]: https://lore.kernel.org/linux-doc/20220702042350.23187-1-bagasdotme@gmail.com/
-[2]: https://lore.kernel.org/linux-doc/20220612000125.9777-1-bagasdotme@gmail.com/
-[3]: https://lore.kernel.org/linux-doc/20220627095151.19339-1-bagasdotme@gmail.com/
-[4]: https://lore.kernel.org/linux-doc/20220627082928.11239-1-bagasdotme@gmail.com/
-
-There's still a warning left:
-
-Documentation/ABI/testing/sysfs-bus-iio-sx9324:2: WARNING: Unexpected indentation.
-
-But I think the Date: field that triggered the warning above looks OK.
-
-Regardless of that, the build successed.
-
-Reviewed-by: Bagas Sanjaya <bagasdotme@gmail.com>
-
--- 
-An old man doll... just what I always wanted! - Clara
+Thanks.
