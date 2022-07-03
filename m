@@ -2,51 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4337956457E
-	for <lists+netdev@lfdr.de>; Sun,  3 Jul 2022 09:02:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4281E564588
+	for <lists+netdev@lfdr.de>; Sun,  3 Jul 2022 09:16:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229980AbiGCHCY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Jul 2022 03:02:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33012 "EHLO
+        id S231538AbiGCHPY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Jul 2022 03:15:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231372AbiGCHCX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 Jul 2022 03:02:23 -0400
-Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EAF865AF
-        for <netdev@vger.kernel.org>; Sun,  3 Jul 2022 00:02:21 -0700 (PDT)
-Received: by mail-io1-f71.google.com with SMTP id n4-20020a5d8244000000b0067566682c09so4018427ioo.13
-        for <netdev@vger.kernel.org>; Sun, 03 Jul 2022 00:02:21 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=YCaEkM3HdICacjQiuv8ERZIO67c8Cq3dSbpHJKI1BmA=;
-        b=aozR88/vc2YYSbAc+qcJlUMt7yXtAsh0VQ0c6mC5sllvDf8he5/tZYMH0Yxf7ObXFS
-         QXMu7/bklVjrwC6/uearM42Z+dQhRjnvPz3i2UZGSBRNH/bJg8HaraTYz1QBMlwBt/9K
-         0K2duTAqOLOBrlm8q6GaCPLqehG61VlfAr8RPqA85/7+ekxrkwxkk0+/XHAVHlRie8Eq
-         +IJY/zCDAYHfNG4lsqbmLA2HEa4nTLAQpqkNnJb7OrX6BBY6eWBRLIr9tk+grXFX8HK8
-         VQBRYFi+KUUbvdNGUZgJfN7r1GFmNPz+WdPsYLkim/S0C17lKU8pbXNmvihCAOALJrGF
-         oONA==
-X-Gm-Message-State: AJIora8iruIsvtnuP1MSERP+hwrq1pppk24HKkwikAgH5ktu55mHom7F
-        TxjvheV84I1C+37O8BO0k9tGMmsU9UCYkSwfs3W6sjkiFACv
-X-Google-Smtp-Source: AGRyM1sW0Goh1i0p3k/+IR2Zdw8Uis3hkU96QVdx8vWIav3seczT10dGPRNunFYJZdQG5MCUART34VI2WuSgZ09+xvijOGKNPFDv
+        with ESMTP id S230309AbiGCHPW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 Jul 2022 03:15:22 -0400
+Received: from JPN01-OS0-obe.outbound.protection.outlook.com (mail-os0jpn01on2115.outbound.protection.outlook.com [40.107.113.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8628E654C;
+        Sun,  3 Jul 2022 00:15:21 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=npOp/AgHb/JhFWP+UU8APUVT2sPjBI9Vu5LLSAeRyc5SwI4FkiH4TTbtCTeVizqHuBE/ckwisVTboGs0K+64cXlYkEI5TlG7/OxsoBSg6bcLttN/UjH/K5/RDHSA4v1qCfFHv3rvKtyRPMnuks31LfI3KMOQJt0PC5kku9Ssz4UEJD1uT506O8iKLl3M7BWehH8bwAKnyX31xHBAXHNvGd3vgFvoh32a35wOMeB+eiOrQZVth1xsKiQusPkmQ78UpnNb2QpNX7iNvixhGL6dL6q7uT7NS4O2Eny6yLzzoIhB6qjZE0GgvTeC/6GOYIyHme64BaY1xWbdeBdyjuAONA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=L4/LzHcHpmw8+AjcaYPmsTGIeALX2olHx7dDneVpnuA=;
+ b=gLqAdpQU2qMBv5gl6zGBYc3dMxhXRMSKPq4x0/98Nl9R34vVB9tib+zmr4YU4AWSQqgZQHSM4TZGvc4y6YTPp8Q4CNLau+JSTj6gln0gk0joUFxqe6rTd7msX05DccnkDse7K95IBM5Ds4pKqt9wW6yW3ItXxYY0iePRH79lDJcl8lYNhH61albA0N/+e2+PBhWecIOV1+t3smjIjFdyXsav6D2RyFz35uAUk0Y9OI59za0veBoof3GnwdZeGKRTnXqhpC7mN9G3JyGMBodCqdJTnLbLExZRL2vARLXR653WlBGOe+tbb5LnJdi5OWTcfolnRxECeQPGkYc8RPWVlA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=bp.renesas.com; dmarc=pass action=none
+ header.from=bp.renesas.com; dkim=pass header.d=bp.renesas.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bp.renesas.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=L4/LzHcHpmw8+AjcaYPmsTGIeALX2olHx7dDneVpnuA=;
+ b=VNBlsQWQ4NUi0Y8T/cQXQEzy4MaSOIR2qcacuZMO5T6YmeFxKvQV8ZJCbpgltX7+/F9e6kzGDy2DL1RICQxbxYmoCexLNe9xMMv3cbNzSXxtmNRB2LtTmjZLTkvPDthf+auvybFY3C74sf8Up9ArROyncHjuMHI1tpmhD8idWcs=
+Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com (2603:1096:604:bb::5)
+ by TYCPR01MB6624.jpnprd01.prod.outlook.com (2603:1096:400:9b::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.14; Sun, 3 Jul
+ 2022 07:15:18 +0000
+Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com
+ ([fe80::dc06:eb07:874:ecce]) by OS0PR01MB5922.jpnprd01.prod.outlook.com
+ ([fe80::dc06:eb07:874:ecce%9]) with mapi id 15.20.5395.019; Sun, 3 Jul 2022
+ 07:15:16 +0000
+From:   Biju Das <biju.das.jz@bp.renesas.com>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+CC:     Wolfgang Grandegger <wg@grandegger.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>,
+        "ukl@pengutronix.de" <ukl@pengutronix.de>,
+        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH 6/6] can: sja1000: Add support for RZ/N1 SJA1000 CAN
+ Controller
+Thread-Topic: [PATCH 6/6] can: sja1000: Add support for RZ/N1 SJA1000 CAN
+ Controller
+Thread-Index: AQHYjhxRAU4FS3w2jke6iP64ezr8Wa1rSJoAgADvqqA=
+Date:   Sun, 3 Jul 2022 07:15:16 +0000
+Message-ID: <OS0PR01MB592277E660F0DAC3A614A7C286BF9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+References: <20220702140130.218409-1-biju.das.jz@bp.renesas.com>
+ <20220702140130.218409-7-biju.das.jz@bp.renesas.com>
+ <20220702164018.ztizq3ftto4lsabr@pengutronix.de>
+In-Reply-To: <20220702164018.ztizq3ftto4lsabr@pengutronix.de>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=bp.renesas.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 10566c42-c1e2-4276-b320-08da5cc3c7d2
+x-ms-traffictypediagnostic: TYCPR01MB6624:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: XqzpbGItpQM7TMlCyuNLRdGJy4uQxQusLfm+qZb5Baf+kz7IMEl6+sEUjeeTUcdUDbvKSQTMq7mMUVWmlbq6aJMqwAzPI2lQ1joH+aeMfef02rMi3XXkZO86ShPCshxcRP3TQobhqTOkiXqA9LFVGSShJOcvm5ycyqjBKvqKeXUmJlAF1/ktpuuh+zv4i+cTWL+3quY4UP7VPN5XPW8intYhVg1URaCcflyVjOR5CTLejK7cWOdT+4sGXrYXC99UEz6jh2pyoRYDch0cAwzmkIiFF0sfY6/jbrMjQRY6/J3jwDUulTeSTMEucimjysLlBvuRXAi035qcXprgUqlkSBaTP3CigDtUsSv5D8zUxwd6UX3oHXjncKfOeHjPFrMlOdM4PUEimd38b49KAirjyOGXE/9vgO/fjRc7wJ0WO/5Qj8J3LKKNYVHkuIoIT+sjybqwpr7MVi6pzVBdo5HGAJJYd4GUEVHbL9gvl95Lh7LJ9AioUQRq9JCplbeIedcjQWwAlgh0PazEEvk63k/V0VqsoKm7/82Kp96IFk3e714JJ3agjLnqtaYDZWo9N9IzpCyIBqIgYzS2upZzkFJM1HrshFMfP3mec4wTfIQyhiWjTPiBZehQHR3g6gEEc3C9VDLwlgZy9p8Ejmaa+Cj9fl3nBtR0GOytzP6mavZCZiVyIu9mUYMRud2Ytxp3rNUG0zq7didYNJGMi/SeWr6TnG53IQjZPeWKjRJxUuG0vrsMlOaKNzL2h2i5vrEuyy+h5FnKkldBQaSOCfOBGznbuUoeijfbiY0qK/nxChyL691hnaDSkl9DIzBA+ZmV3lqe8D+H+NWZd0u5VgxXg1Qf8rptePL+9yxnwSGQMTVu8yw=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OS0PR01MB5922.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(396003)(39860400002)(136003)(346002)(376002)(86362001)(7416002)(66946007)(71200400001)(53546011)(38100700002)(316002)(54906003)(6916009)(6506007)(7696005)(55016003)(33656002)(41300700001)(9686003)(83380400001)(26005)(186003)(478600001)(52536014)(64756008)(66476007)(66446008)(4326008)(5660300002)(8676002)(76116006)(122000001)(966005)(8936002)(66556008)(2906002)(38070700005);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?YjN6eGpwR3J5YVhCaWc3NlhnbnJ1MFc4NkR0YjI4VWdxTHptYlFwMFREUkhy?=
+ =?utf-8?B?YVlzc01RR2Zzekd2VlYvNVdaQWkyWFZBbnp6VWxtZmxUUEJ2T2YrQnNmS3Vx?=
+ =?utf-8?B?TFphQlRscXNMMW9jTVBjVVBIRkVvVGVnMUlFbjkzcFFYYzZxVE5ud2tFc1Vj?=
+ =?utf-8?B?WS9Ub1Q3bDBKaHhQdERISnJSa0VHY1VtaWhGWHRVMUJpM0dqVGtVTm5BSEZM?=
+ =?utf-8?B?WGk0NWpFMElSbWNJV0lvNzh4eUxqckFrcU5lRnlGaFBibjRsWEYwanVtbFZB?=
+ =?utf-8?B?NlRhS2loV29BTmEwZ05GOUhzV0JmeGtrUy9KQUdqR1lYU0JhVHR1Y1lJQzBB?=
+ =?utf-8?B?OVBZalFOczdMbnQvZ21WVnI1MDU2Y3lZNVZDOGxDMktTUjBXcFZpTjZLT3dS?=
+ =?utf-8?B?SVgwM242eThPeXpmUDBOWW0wWFVFTkRreHVHdllvdkVmbW1VRUxJT3lMS1J1?=
+ =?utf-8?B?NE9rSG9QdUZUS241c3JuOER3ZDhYeXR5KzRzUTZPd0pJOC80djg2WWZXSDNj?=
+ =?utf-8?B?OHVDZFBMWnA3UjBHcktqT25IRTNua2NQREhFOFd1Q1ZCZ2JoNUJzb3h2QS8r?=
+ =?utf-8?B?OVRRdm5wTDVZWHJwc2N1K1pZUy9kc2dyMzBmeHJJK3NXcTQwTk9NNFBlcVNa?=
+ =?utf-8?B?dEJaZUt5bXROQ2NyNndTM3VWSEJvUURhOGxhY0NSSHJNaUJQNnRLWnU4VG4r?=
+ =?utf-8?B?SGFqdThDMzBkb2cvM245MFVUNzRtaEF5N0xSaXpVUkxpN3kzamJsaFRHaHRy?=
+ =?utf-8?B?WDdlTXJ4WFYrbFhWTHRQMGJhR2lvbFQ5Ulo5ZFhyZXh6Z3dpUStPVFB1MVJS?=
+ =?utf-8?B?SDcrOEFoS2hXOFo1OFJvdWl1NS9GSmMySy9VMmJLdXczbURPV05GQ25sR2Fp?=
+ =?utf-8?B?bmZBdzVpZWt3NDlmck1HT25GaGhTRUIzOXd4SzlHZ0NVRmkySTJSQThqSC8z?=
+ =?utf-8?B?WFh5SkpSeFk5Uk9iVzZUK0VVUUwzdzd1V1dwWC83M0FVN3I4M3BLNWJhUHQ5?=
+ =?utf-8?B?cVJPTGkzQmhEdEZVRFpnUGdQQVlrOFM0QVhCeGVQUDRlQndTR3V1eTMzbjFT?=
+ =?utf-8?B?WDZycjMyL2kzaTdGL04xMUJ2SFNDT1hpcW5MMGw5SVhiVEFtd0V5OWlVVjg5?=
+ =?utf-8?B?Q2RkYWxYNGk3Z0dyVkJjdHpWeFlpTktxUlFCM00yUXJkTXFReWxnNDh1NXVy?=
+ =?utf-8?B?ZzFWVmZuNExYR3J2bUlKUVdNSEt2SWJTZm1TbnlkYUdWRXZXcmlBaVhPMDhs?=
+ =?utf-8?B?SU5LbnNOT2lJTWNBbjd5eFpYWXU4M245alZmKzJCcEo3aGczSUg4RStqbjZ3?=
+ =?utf-8?B?b0dnZW96dnV3RHVIWmx2S3h2VXZHd29MMTdHdjB6QlNtS2J1TjRQMHJRU1Ru?=
+ =?utf-8?B?SitkcGZCOG85cFlmQlM5RXdNMkNHSDVxQW5RdkdKR080RWR1OEtsN2h4QndS?=
+ =?utf-8?B?UGo0ZVU2VUo1NVl6YkdLQzVNZVdScDMxeW1yUlFBenlCT3NEeU1QTFg3M2Yv?=
+ =?utf-8?B?U1RJbm9NYjY0U3Y1S2hBdUpnSGdNY2FyRnVoVUo2a2M0MXFNdFg2U2hCeWRY?=
+ =?utf-8?B?bFdzZkFKSFZjR0JCODdLQUZmK3RSVmp1TDVxaElMblVOSENlVlMvUk5IazN1?=
+ =?utf-8?B?eDF5WTVvZmVWKzlNVXREWVA5RGhETnBYYmxyNklveWRjRjcwWUZNOFM4YnNV?=
+ =?utf-8?B?NnBneXJYM2tJRlVhOGdXT0tDSGM2RENNNWRrVWU0bEhhTWFDTEpJelBwaTlK?=
+ =?utf-8?B?TThXdm5kTEpWRzE3RFRscWdkdzdPRkdDU0RPR1lvd0lqK2NveVJzcHlrcEZM?=
+ =?utf-8?B?OXNMdVFvUU9EUlBseFMzUUw0Mk94dVhJcE1RWUlMR0lCYUl5dTcxMXlXVWtI?=
+ =?utf-8?B?QUt6SExKa0JEM2hDZDBseituQVFJVWRjVkJYclBqVjA3eEZyaHVlOXJTcStY?=
+ =?utf-8?B?bk5rNm01bjJxR3l2RENuQWk1YjBtQVh5QTFpTXVPeWVCbHhqMzRndUY1dVU0?=
+ =?utf-8?B?dmdOWXZ3MDB3WnFZTlc4YjZYaU1jWlYvUkdScDlLNnVOT3VwNXd1SFY5anFr?=
+ =?utf-8?B?QnhiUFFJSWx3U1g0UHc5L3ZhbW9BUTh1SEZjTllmNUZhcE9rNnBKUUE5eUNx?=
+ =?utf-8?B?OHdHY0h2VmZkUlhMajlkcWxWNkRPUzRPNmd6VXgzQVFkZmRCZTR0M1BtUFc2?=
+ =?utf-8?B?cmc9PQ==?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-Received: by 2002:a02:a78c:0:b0:339:ed30:1a3e with SMTP id
- e12-20020a02a78c000000b00339ed301a3emr13854952jaj.0.1656831740859; Sun, 03
- Jul 2022 00:02:20 -0700 (PDT)
-Date:   Sun, 03 Jul 2022 00:02:20 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000005ddbc405e2e133e7@google.com>
-Subject: [syzbot] KASAN: slab-out-of-bounds Write in ip6_mc_hdr
-From:   syzbot <syzbot+a7f5cbe0f4682a059a8e@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, dsahern@kernel.org, edumazet@google.com,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+X-OriginatorOrg: bp.renesas.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: OS0PR01MB5922.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 10566c42-c1e2-4276-b320-08da5cc3c7d2
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Jul 2022 07:15:16.6886
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: SMqQNoFbC/DHgp5hyz53llZIwJ0402E08hEBiZL+mcmIBlP7/PsOXfvNjtYAoiH6DxgfXYXzSwm4WvqBeemUn6+HBRWI8CmWcCLqeN/xadY=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYCPR01MB6624
+X-Spam-Status: No, score=-0.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,URI_DOTEDU autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -54,148 +142,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-
-syzbot found the following issue on:
-
-HEAD commit:    d521bc0a0f7c Merge branch 'mlxsw-unified-bridge-conversion..
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=119c8ae0080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=3822ec9aaf800dfb
-dashboard link: https://syzkaller.appspot.com/bug?extid=a7f5cbe0f4682a059a8e
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14c34c18080000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16fac6c0080000
-
-Bisection is inconclusive: the issue happens on the oldest tested release.
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11e69790080000
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=13e69790080000
-console output: https://syzkaller.appspot.com/x/log.txt?x=15e69790080000
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+a7f5cbe0f4682a059a8e@syzkaller.appspotmail.com
-
-==================================================================
-BUG: KASAN: slab-out-of-bounds in ip6_flow_hdr include/net/ipv6.h:1007 [inline]
-BUG: KASAN: slab-out-of-bounds in ip6_mc_hdr.constprop.0+0x4ec/0x5c0 net/ipv6/mcast.c:1715
-Write of size 4 at addr ffff888023d32fe0 by task kworker/1:3/2939
-
-CPU: 1 PID: 2939 Comm: kworker/1:3 Not tainted 5.19.0-rc3-syzkaller-00644-gd521bc0a0f7c #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: mld mld_ifc_work
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- print_address_description.constprop.0.cold+0xeb/0x495 mm/kasan/report.c:313
- print_report mm/kasan/report.c:429 [inline]
- kasan_report.cold+0xf4/0x1c6 mm/kasan/report.c:491
- ip6_flow_hdr include/net/ipv6.h:1007 [inline]
- ip6_mc_hdr.constprop.0+0x4ec/0x5c0 net/ipv6/mcast.c:1715
- mld_newpack.isra.0+0x3c0/0x770 net/ipv6/mcast.c:1763
- add_grhead+0x295/0x340 net/ipv6/mcast.c:1849
- add_grec+0x1082/0x1560 net/ipv6/mcast.c:1987
- mld_send_cr net/ipv6/mcast.c:2113 [inline]
- mld_ifc_work+0x452/0xdc0 net/ipv6/mcast.c:2651
- process_one_work+0x996/0x1610 kernel/workqueue.c:2289
- worker_thread+0x665/0x1080 kernel/workqueue.c:2436
- kthread+0x2e9/0x3a0 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:302
- </TASK>
-
-Allocated by task 2991:
- kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
- kasan_set_track mm/kasan/common.c:45 [inline]
- set_alloc_info mm/kasan/common.c:436 [inline]
- ____kasan_kmalloc mm/kasan/common.c:515 [inline]
- ____kasan_kmalloc mm/kasan/common.c:474 [inline]
- __kasan_kmalloc+0xa9/0xd0 mm/kasan/common.c:524
- kmalloc include/linux/slab.h:605 [inline]
- kzalloc include/linux/slab.h:733 [inline]
- tomoyo_encode2.part.0+0xe9/0x3a0 security/tomoyo/realpath.c:45
- tomoyo_encode2 security/tomoyo/realpath.c:31 [inline]
- tomoyo_encode+0x28/0x50 security/tomoyo/realpath.c:80
- tomoyo_realpath_from_path+0x186/0x620 security/tomoyo/realpath.c:288
- tomoyo_get_realpath security/tomoyo/file.c:151 [inline]
- tomoyo_path_perm+0x21b/0x400 security/tomoyo/file.c:822
- security_inode_getattr+0xcf/0x140 security/security.c:1344
- vfs_getattr fs/stat.c:157 [inline]
- vfs_statx+0x16a/0x390 fs/stat.c:232
- vfs_fstatat+0x8c/0xb0 fs/stat.c:255
- __do_sys_newfstatat+0x91/0x110 fs/stat.c:425
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x46/0xb0
-
-The buggy address belongs to the object at ffff888023d32f80
- which belongs to the cache kmalloc-64 of size 64
-The buggy address is located 32 bytes to the right of
- 64-byte region [ffff888023d32f80, ffff888023d32fc0)
-
-The buggy address belongs to the physical page:
-page:ffffea00008f4c80 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x23d32
-flags: 0xfff00000000200(slab|node=0|zone=1|lastcpupid=0x7ff)
-raw: 00fff00000000200 ffffea000097dec0 dead000000000003 ffff888011841640
-raw: 0000000000000000 0000000080200020 00000001ffffffff 0000000000000000
-page dumped because: kasan: bad access detected
-page_owner tracks the page as allocated
-page last allocated via order 0, migratetype Unmovable, gfp_mask 0x12cc0(GFP_KERNEL|__GFP_NOWARN|__GFP_NORETRY), pid 47, tgid 47 (kworker/u4:3), ts 9452910565, free_ts 9450274699
- prep_new_page mm/page_alloc.c:2456 [inline]
- get_page_from_freelist+0x1290/0x3b70 mm/page_alloc.c:4198
- __alloc_pages+0x1c7/0x510 mm/page_alloc.c:5426
- alloc_pages+0x1aa/0x310 mm/mempolicy.c:2272
- alloc_slab_page mm/slub.c:1824 [inline]
- allocate_slab+0x26c/0x3c0 mm/slub.c:1969
- new_slab mm/slub.c:2029 [inline]
- ___slab_alloc+0x9c4/0xe20 mm/slub.c:3031
- __slab_alloc.constprop.0+0x4d/0xa0 mm/slub.c:3118
- slab_alloc_node mm/slub.c:3209 [inline]
- __kmalloc_node+0x2cb/0x390 mm/slub.c:4490
- kmalloc_node include/linux/slab.h:623 [inline]
- __vmalloc_area_node mm/vmalloc.c:2981 [inline]
- __vmalloc_node_range+0xa40/0x13e0 mm/vmalloc.c:3165
- alloc_thread_stack_node kernel/fork.c:312 [inline]
- dup_task_struct kernel/fork.c:977 [inline]
- copy_process+0x156e/0x7020 kernel/fork.c:2071
- kernel_clone+0xe7/0xab0 kernel/fork.c:2655
- user_mode_thread+0xad/0xe0 kernel/fork.c:2724
- call_usermodehelper_exec_work kernel/umh.c:174 [inline]
- call_usermodehelper_exec_work+0xcc/0x180 kernel/umh.c:160
- process_one_work+0x996/0x1610 kernel/workqueue.c:2289
- worker_thread+0x665/0x1080 kernel/workqueue.c:2436
- kthread+0x2e9/0x3a0 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:302
-page last free stack trace:
- reset_page_owner include/linux/page_owner.h:24 [inline]
- free_pages_prepare mm/page_alloc.c:1371 [inline]
- free_pcp_prepare+0x549/0xd20 mm/page_alloc.c:1421
- free_unref_page_prepare mm/page_alloc.c:3343 [inline]
- free_unref_page+0x19/0x6a0 mm/page_alloc.c:3438
- __vunmap+0x85d/0xd30 mm/vmalloc.c:2665
- free_work+0x58/0x70 mm/vmalloc.c:97
- process_one_work+0x996/0x1610 kernel/workqueue.c:2289
- worker_thread+0x665/0x1080 kernel/workqueue.c:2436
- kthread+0x2e9/0x3a0 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:302
-
-Memory state around the buggy address:
- ffff888023d32e80: 00 00 00 00 00 00 00 00 fc fc fc fc fc fc fc fc
- ffff888023d32f00: 00 00 00 00 00 00 00 00 fc fc fc fc fc fc fc fc
->ffff888023d32f80: 00 00 00 00 00 00 00 00 fc fc fc fc fc fc fc fc
-                                                       ^
- ffff888023d33000: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- ffff888023d33080: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-==================================================================
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+SGkgTWFyYyBhbmQgVXdlLA0KDQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggNi82XSBjYW46IHNqYTEw
+MDA6IEFkZCBzdXBwb3J0IGZvciBSWi9OMSBTSkExMDAwIENBTg0KPiBDb250cm9sbGVyDQo+IA0K
+PiBPbiAwMi4wNy4yMDIyIDE1OjAxOjMwLCBCaWp1IERhcyB3cm90ZToNCj4gPiBUaGUgU0pBMTAw
+MCBDQU4gY29udHJvbGxlciBvbiBSWi9OMSBTb0MgaGFzIHNvbWUgZGlmZmVyZW5jZXMgY29tcGFy
+ZWQNCj4gPiB0byBvdGhlcnMgbGlrZSBpdCBoYXMgbm8gY2xvY2sgZGl2aWRlciByZWdpc3RlciAo
+Q0RSKSBzdXBwb3J0IGFuZCBpdA0KPiA+IGhhcyBubyBIVyBsb29wYmFjayhIVyBkb2Vzbid0IHNl
+ZSB0eCBtZXNzYWdlcyBvbiByeCkuDQo+ID4NCj4gPiBUaGlzIHBhdGNoIGFkZHMgc3VwcG9ydCBm
+b3IgUlovTjEgU0pBMTAwMCBDQU4gQ29udHJvbGxlci4NCj4gPg0KPiA+IFNpZ25lZC1vZmYtYnk6
+IEJpanUgRGFzIDxiaWp1LmRhcy5qekBicC5yZW5lc2FzLmNvbT4NCj4gPiAtLS0NCj4gPiAgZHJp
+dmVycy9uZXQvY2FuL3NqYTEwMDAvc2phMTAwMF9wbGF0Zm9ybS5jIHwgMzQNCj4gPiArKysrKysr
+KysrKysrKysrKystLS0tDQo+ID4gIDEgZmlsZSBjaGFuZ2VkLCAyOSBpbnNlcnRpb25zKCspLCA1
+IGRlbGV0aW9ucygtKQ0KPiA+DQo+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2Nhbi9zamEx
+MDAwL3NqYTEwMDBfcGxhdGZvcm0uYw0KPiA+IGIvZHJpdmVycy9uZXQvY2FuL3NqYTEwMDAvc2ph
+MTAwMF9wbGF0Zm9ybS5jDQo+ID4gaW5kZXggNWYzZDM2MmUwZGE1Li44ZTYzYWY3NmEwMTMgMTAw
+NjQ0DQo+ID4gLS0tIGEvZHJpdmVycy9uZXQvY2FuL3NqYTEwMDAvc2phMTAwMF9wbGF0Zm9ybS5j
+DQo+ID4gKysrIGIvZHJpdmVycy9uZXQvY2FuL3NqYTEwMDAvc2phMTAwMF9wbGF0Zm9ybS5jDQo+
+IFsuLi5dDQo+ID4gQEAgLTI2Miw2ICsyNzYsMTYgQEAgc3RhdGljIGludCBzcF9wcm9iZShzdHJ1
+Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2KQ0KPiA+ICAJcHJpdi0+cmVnX2Jhc2UgPSBhZGRyOw0K
+PiA+DQo+ID4gIAlpZiAob2YpIHsNCj4gPiArCQljbGsgPSBkZXZtX2Nsa19nZXRfb3B0aW9uYWwo
+JnBkZXYtPmRldiwgImNhbl9jbGsiKTsNCj4gPiArCQlpZiAoSVNfRVJSKGNsaykpDQo+ID4gKwkJ
+CXJldHVybiBkZXZfZXJyX3Byb2JlKCZwZGV2LT5kZXYsIFBUUl9FUlIoY2xrKSwgIm5vIENBTg0K
+PiBjbGsiKTsNCj4gPiArDQo+ID4gKwkJaWYgKGNsaykgew0KPiA+ICsJCQlwcml2LT5jYW4uY2xv
+Y2suZnJlcSAgPSBjbGtfZ2V0X3JhdGUoY2xrKSAvIDI7DQo+ID4gKwkJCWlmICghcHJpdi0+Y2Fu
+LmNsb2NrLmZyZXEpDQo+ID4gKwkJCQlyZXR1cm4gZGV2X2Vycl9wcm9iZSgmcGRldi0+ZGV2LCAt
+RUlOVkFMLCAiWmVybw0KPiBDQU4gY2xrIHJhdGUiKTsNCj4gPiArCQl9DQo+IA0KPiBUaGVyZSdz
+IG5vIGNsa19wcmVwYXJlX2VuYWJsZSBpbiB0aGUgZHJpdmVyLiBZb3UgbWlnaHQgZ28gdGhlIHF1
+aWNrIGFuZA0KPiBkaXJ0eSB3YXkgYW4gZW5hYmxlIHRoZSBjbG9jayByaWdodCBoZXJlLiBJSVJD
+IHRoZXJlJ3MgYSBuZXcgY29udmVuaWVuY2UNCj4gZnVuY3Rpb24gdG8gZ2V0IGFuZCBlbmFibGUg
+YSBjbG9jaywgbWFuYWdlZCBiZWkgZGV2bS4gVXdlIChDYydlZCkgY2FuDQo+IHBvaW50IHlvdSBp
+biB0aGUgcmlnaHQgZGlyZWN0aW9uLg0KDQogKyBjbGsNCg0KQXMgcGVyIHRoZSBwYXRjaCBoaXN0
+b3J5IGRldm0gdmVyc2lvbiBmb3IgY2xrX3ByZXBhcmVfZW5hYmxlIGlzIHJlamVjdGVkWzFdLCBz
+byB0aGUgaW5kaXZpZHVhbCBkcml2ZXJzIGltcGxlbWVudGVkIHRoZSBzYW1lIHVzaW5nIGRldm1f
+YWRkX2FjdGlvbl9vcl9yZXNldCBbMl0uDQpTbyBzaGFsbCBJIGltcGxlbWVudCBkZXZtIHZlcnNp
+b24gaGVyZSBhcyB3ZWxsPw0KDQpbMV1odHRwczovL2xrbWwuaXUuZWR1L2h5cGVybWFpbC9saW51
+eC9rZXJuZWwvMjEwMy4xLzAxNTU2Lmh0bWwNCg0KWzJdIGh0dHBzOi8vZWxpeGlyLmJvb3RsaW4u
+Y29tL2xpbnV4L3Y1LjE5LXJjNC9zb3VyY2UvZHJpdmVycy9uZXQvZXRoZXJuZXQvc3RtaWNyby9z
+dG1tYWMvZHdtYWMtbWVzb244Yi5jI0wyNjYNCg0KQ2hlZXJzLA0KQmlqdQ0K
