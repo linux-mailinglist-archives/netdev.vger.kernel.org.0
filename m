@@ -2,100 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BE4D656474C
-	for <lists+netdev@lfdr.de>; Sun,  3 Jul 2022 14:48:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A866A564760
+	for <lists+netdev@lfdr.de>; Sun,  3 Jul 2022 15:09:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231169AbiGCMsM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Jul 2022 08:48:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48682 "EHLO
+        id S232270AbiGCNJs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Jul 2022 09:09:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229739AbiGCMsM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 Jul 2022 08:48:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80DD65FF4;
-        Sun,  3 Jul 2022 05:48:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 19BE7612DC;
-        Sun,  3 Jul 2022 12:48:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D831C341C6;
-        Sun,  3 Jul 2022 12:48:09 +0000 (UTC)
-Date:   Sun, 3 Jul 2022 08:48:08 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Dominique Martinet <asmadeus@codewreck.org>
-Cc:     Ingo Molnar <mingo@redhat.com>,
-        Christian Schoenebeck <linux_oss@crudebyte.com>,
-        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] 9p fid refcount: add a 9p_fid_ref tracepoint
-Message-ID: <20220703084808.1d6a9989@rorschach.local.home>
-In-Reply-To: <20220702102913.2164800-1-asmadeus@codewreck.org>
-References: <20220702102913.2164800-1-asmadeus@codewreck.org>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        with ESMTP id S229550AbiGCNJs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 Jul 2022 09:09:48 -0400
+Received: from smtp.gentoo.org (smtp.gentoo.org [IPv6:2001:470:ea4a:1:5054:ff:fec7:86e4])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85CDC6350;
+        Sun,  3 Jul 2022 06:09:44 -0700 (PDT)
+From:   Yixun Lan <dlan@gentoo.org>
+To:     Palmer Dabbelt <palmer@dabbelt.com>,
+        linux-riscv@lists.infradead.org
+Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Yixun Lan <dlan@gentoo.org>
+Subject: [PATCH] RISC-V/bpf: Enable bpf_probe_read{, str}()
+Date:   Sun,  3 Jul 2022 21:09:24 +0800
+Message-Id: <20220703130924.57240-1-dlan@gentoo.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat,  2 Jul 2022 19:29:14 +0900
-Dominique Martinet <asmadeus@codewreck.org> wrote:
+Enable this option to fix a bcc error in RISC-V platform
 
-> This adds a tracepoint event for 9p fid lifecycle tracing: when a fid
-> is created, its reference count increased/decreased, and freed.
-> The new 9p_fid_ref tracepoint should help anyone wishing to debug any
-> fid problem such as missing clunk (destroy) or use-after-free.
-> 
-> Link: https://lkml.kernel.org/r/20220612085330.1451496-6-asmadeus@codewreck.org
-> Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
-> ---
-> 
-> Just resending this single patch of the series as it's the only one
-> without a review tag.
-> 
-> Steven, is it ok to carry it in my tree as is or do I need blessings
-> from you or Ingo?
+And, the error shows as follows:
 
-The addition of trace events do belong to the maintainers of where the
-trace events go.
+~ # runqlen
+WARNING: This target JIT is not designed for the host you are running. \
+If bad things happen, please choose a different -march switch.
+bpf: Failed to load program: Invalid argument
+0: R1=ctx(off=0,imm=0) R10=fp0
+0: (85) call bpf_get_current_task#35          ; R0_w=scalar()
+1: (b7) r6 = 0                        ; R6_w=0
+2: (7b) *(u64 *)(r10 -8) = r6         ; R6_w=P0 R10=fp0 fp-8_w=00000000
+3: (07) r0 += 312                     ; R0_w=scalar()
+4: (bf) r1 = r10                      ; R1_w=fp0 R10=fp0
+5: (07) r1 += -8                      ; R1_w=fp-8
+6: (b7) r2 = 8                        ; R2_w=8
+7: (bf) r3 = r0                       ; R0_w=scalar(id=1) R3_w=scalar(id=1)
+8: (85) call bpf_probe_read#4
+unknown func bpf_probe_read#4
+processed 9 insns (limit 1000000) max_states_per_insn 0 total_states 0 peak_states 0 mark_read 0
 
-> (it depends on the previous patch so I'd carry it in my tree anyway,
-> but would be more comfortable with a reviewed-by tag)
+Traceback (most recent call last):
+  File "/usr/lib/python-exec/python3.9/runqlen", line 187, in <module>
+    b.attach_perf_event(ev_type=PerfType.SOFTWARE,
+  File "/usr/lib/python3.9/site-packages/bcc/__init__.py", line 1228, in attach_perf_event
+    fn = self.load_func(fn_name, BPF.PERF_EVENT)
+  File "/usr/lib/python3.9/site-packages/bcc/__init__.py", line 522, in load_func
+    raise Exception("Failed to load BPF program %s: %s" %
+Exception: Failed to load BPF program b'do_perf_event': Invalid argument
 
-Yes, I prefer people Cc me on trace events just so that I can catch
-mistakes or find better ways to accomplish what is trying to be done.
+Signed-off-by: Yixun Lan <dlan@gentoo.org>
+---
+ arch/riscv/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-Especially for something that does changes like this patch, which are
-not just the trivial TRACE_EVENT() trace_*() procedure. Thanks for
-Cc'ing me.
+diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
+index 32ffef9f6e5b4..da0016f1be6ce 100644
+--- a/arch/riscv/Kconfig
++++ b/arch/riscv/Kconfig
+@@ -25,6 +25,7 @@ config RISCV
+ 	select ARCH_HAS_GIGANTIC_PAGE
+ 	select ARCH_HAS_KCOV
+ 	select ARCH_HAS_MMIOWB
++	select ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE
+ 	select ARCH_HAS_PTE_SPECIAL
+ 	select ARCH_HAS_SET_DIRECT_MAP if MMU
+ 	select ARCH_HAS_SET_MEMORY if MMU
+-- 
+2.35.1
 
-> 
-> 
-> v2 -> v3:
->  - added EXPORT_TRACEPOINT_SYMBOL(9p_fid_ref) to have this work when
->    built as module
-> 
-> v1 -> v2:
->  - added rationale to commit message
->  - adjusted to use DECLARE_TRACEPOINT + tracepoint_enable() in header
-> 
->  include/net/9p/client.h   | 13 +++++++++++
->  include/trace/events/9p.h | 48 +++++++++++++++++++++++++++++++++++++++
->  net/9p/client.c           | 20 +++++++++++++++-
->  3 files changed, 80 insertions(+), 1 deletion(-)
-> 
-
-The rest looks fine.
-
-For the tracing point of view:
-
-Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-
--- Steve
