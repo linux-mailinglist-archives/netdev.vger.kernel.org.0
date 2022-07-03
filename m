@@ -2,67 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E34515644D5
-	for <lists+netdev@lfdr.de>; Sun,  3 Jul 2022 06:43:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B99DD56452C
+	for <lists+netdev@lfdr.de>; Sun,  3 Jul 2022 07:29:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229994AbiGCEne (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Jul 2022 00:43:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60906 "EHLO
+        id S230419AbiGCFZI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Jul 2022 01:25:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229902AbiGCEnd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 Jul 2022 00:43:33 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D00863C5
-        for <netdev@vger.kernel.org>; Sat,  2 Jul 2022 21:43:32 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id x1-20020a17090abc8100b001ec7f8a51f5so10371892pjr.0
-        for <netdev@vger.kernel.org>; Sat, 02 Jul 2022 21:43:32 -0700 (PDT)
+        with ESMTP id S229711AbiGCFZF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 Jul 2022 01:25:05 -0400
+Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59CAF65B7;
+        Sat,  2 Jul 2022 22:25:04 -0700 (PDT)
+Received: by mail-io1-xd42.google.com with SMTP id u20so5878964iob.8;
+        Sat, 02 Jul 2022 22:25:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=Qs7BMNe2vh/Hl5mZuFlxI1rw3KRPw+Sod4ZQ4Os/vNs=;
-        b=nSKFvMh54BIiiNfujs3O6HHzF5iyTRi/CldkBAu7egV6HARrHaNEObF9WO/oP5vo6h
-         lozITYHmglXlIr4Alyd9mJYvLSDTaZzkXJ3NWg/c8lf+lDl4wTyH9NJRXYaXEUIJNgKj
-         5zxLqn2rCWegXSCf7XTQ9jB+uMWcYw9L2Ee1yPBzoOPgPIpS4zgMGF703USIwQCjVO5f
-         RIsihpPNJ82byiK7mwLb8ZcTkEhgMkeOCvFXrlVpIg++akDvPMirAlJ9jQy2sg4Lj965
-         f9jbrTSqc53S0pgXU7zCCjy932uTJbL1ndsaFukmHQ5V1qkJalWDiPygPBk4MDRqdFX0
-         kvsA==
+        bh=3HK4FIkMME7ZTlM2PzRYa6D9QnahAXeNs3vGXTyYa7k=;
+        b=A/Q7P6AuSXIR9xFWwKATffVwqcsQ9jv1DytdFzmEb+kP4vs7QWD9lot7u3Cr4jqXIV
+         40NAlvTwzGV1Mzhe7tpFMej6ApJERvZ73R6wiPuBtiiRNb9vtWUThXZgfHfnmsrYkY5+
+         xKlbOpFi4Z0Q4Dvj2Jll8oDCGLOqnHrGKFa7oQtcFe45B/SuaEJ1pwAU9DoimPXVXzII
+         mvMUccrVCrIFp8pIaaUmP/ETUrEPhrsSedLzeaKlAIhNLSKDNUApB3LltZWoVkeGzek5
+         y9Esbrt2TkoNGYPz+iywwMaW8pW0IG7fvY3eHzu1ffCUkJvdc5h1MCsHse5ZzRw4Q5Jp
+         T15w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=Qs7BMNe2vh/Hl5mZuFlxI1rw3KRPw+Sod4ZQ4Os/vNs=;
-        b=qpvrg3I+CYG3m+hZDDEZukUblILQV7OADuEGn5VeMsYZb8O+S07okbZ+4oYj6JtE+t
-         i7xIVCuHPBDlMzuUuJYMAhMR152hN+xWNOQkuEKi/35VuBN5YMtbKeuPqcAx726COil7
-         FFG61gHaKxwn8aVh3vNWmuVxvc2+nZ/a9ROcr3eor1y2M8WhTq+9Cd9i0C8y1ixh43v2
-         CmpYEeOWqzWLlHkiCQv/RX6aPkfO7ylnmpUKS4o529EIbguGbU7GwMtAPCC12CHK3Wm0
-         Wm7RzsYxnLwDhRMYd38EbtLfDtLtTWDvSpJCkpfjCvMvFI9Zdk1I1xBCELSEubUwlLtH
-         NijQ==
-X-Gm-Message-State: AJIora8dUxBbHzXQxdi/6AAc30VopEAggf0lCEVJmC9EI/732nrFhoKV
-        s2jdY712HbWVIVqRyShWb9C5W+qSf4H12SKidC0=
-X-Google-Smtp-Source: AGRyM1uZ283eESVhTocAl5yi65kS5NEny6noCbmhXGkQ5IZunIQB+rP+/S0Bnj2n8j8iwCC5yTDTlCQotV3+uBsGPeQ=
-X-Received: by 2002:a17:902:d50c:b0:16b:a1fb:c71e with SMTP id
- b12-20020a170902d50c00b0016ba1fbc71emr21149229plg.140.1656823411887; Sat, 02
- Jul 2022 21:43:31 -0700 (PDT)
+        bh=3HK4FIkMME7ZTlM2PzRYa6D9QnahAXeNs3vGXTyYa7k=;
+        b=fAPKZIWSs+1WCEn7DkuOmTE7XM+3c0bvE5HA355v1q7JLBeQwiMPQhKsb90cfdCaeH
+         taQmxbT/Wqk6zceyVSUKiDKEMCnrqTIVR7Dgc+dJy2D7EcGZHGgJmb82/I+2AVO5Oo7w
+         YOxW/YXsJ4pz7RFeP96qzalQ2oVpbRpltavV6lohdT/WbaA8Zt48v0b4aN/ADY7ZK1lE
+         QvVqZ+Ylk1lRPxf41cNJWqG7QHj7Qf9+9R+jvFCdi3A96XQgFv+8J7UUitqzNGf+58Bz
+         4c6EVsAY2xGaB9vBv11gQWwGHy0OGb+VqQfBRgQntVg52PzcPCNEaU6vwQXsZ47MpwKB
+         feNQ==
+X-Gm-Message-State: AJIora87OkPBXjQcRdjj/LkOUYP/VaSNC3UndZx0IrT1/bGfkMiWAiXb
+        A1LuH2ytfbDthPkR7KZ53y4DV0sR9TLQSZl1LAc=
+X-Google-Smtp-Source: AGRyM1vRhLJ4eHeXdcYhvoSVdvgNc/t2+D/qhSYhSMXF5Vy7NwaWfeLwQwan9Qg3zplL4fO0sGG+LEJH/5iDSh3Kwyw=
+X-Received: by 2002:a05:6638:f81:b0:33c:5393:c0ff with SMTP id
+ h1-20020a0566380f8100b0033c5393c0ffmr13997565jal.231.1656825903468; Sat, 02
+ Jul 2022 22:25:03 -0700 (PDT)
 MIME-Version: 1.0
-References: <1656050956-9762-1-git-send-email-quic_subashab@quicinc.com>
- <CANn89iJ_HBEkiU3ToAjcv_KHz3f77DJpycKcU=74X3rNst-V6g@mail.gmail.com>
- <YroEC3NV3d1yTnqi@pop-os.localdomain> <CANn89i+X4+w91MwZNW7qsb9dK3W0s72iehh5Kkb077ApTis_Vg@mail.gmail.com>
- <CAM_iQpXF4cvuMe3yM_G2Xzab_3Q_D1oUcfchaAZE6cYNcMoe9Q@mail.gmail.com> <CANn89iKRU6QDfmRa=YikyGHjC=v-8RepTWHtHPMQivAqP=gt2Q@mail.gmail.com>
-In-Reply-To: <CANn89iKRU6QDfmRa=YikyGHjC=v-8RepTWHtHPMQivAqP=gt2Q@mail.gmail.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Sat, 2 Jul 2022 21:43:20 -0700
-Message-ID: <CAM_iQpU9f4XmvPve5ex_ya6Xqugxo3RTm1f08uquBmJz+qbKBQ@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: Print real skb addresses for all net events
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Subash Abhinov Kasiviswanathan <quic_subashab@quicinc.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        netdev <netdev@vger.kernel.org>, quic_jzenner@quicinc.com,
-        Cong Wang <cong.wang@bytedance.com>,
-        Qitao Xu <qitao.xu@bytedance.com>,
-        Sean Tranchetti <quic_stranche@quicinc.com>
+References: <20220623192637.3866852-1-memxor@gmail.com> <20220623192637.3866852-2-memxor@gmail.com>
+ <20220629032304.h5ck7tizbfehiwut@macbook-pro-3.dhcp.thefacebook.com>
+In-Reply-To: <20220629032304.h5ck7tizbfehiwut@macbook-pro-3.dhcp.thefacebook.com>
+From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Date:   Sun, 3 Jul 2022 10:54:23 +0530
+Message-ID: <CAP01T77fsU8u6GP+HXfQQ_gdu+kp3Am1+Ao-mNYULjDazHs38Q@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v5 1/8] bpf: Add support for forcing kfunc args
+ to be referenced
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     bpf@vger.kernel.org, Yonghong Song <yhs@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
@@ -74,12 +75,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 12:46 PM Eric Dumazet <edumazet@google.com> wrote:
+On Wed, 29 Jun 2022 at 08:53, Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
 >
-> We have ways for developers : no_hash_pointers
+> On Fri, Jun 24, 2022 at 12:56:30AM +0530, Kumar Kartikeya Dwivedi wrote:
+> > Similar to how we detect mem, size pairs in kfunc, teach verifier to
+> > treat __ref suffix on argument name to imply that it must be a
+> > referenced pointer when passed to kfunc. This is required to ensure that
+> > kfunc that operate on some object only work on acquired pointers and not
+> > normal PTR_TO_BTF_ID with same type which can be obtained by pointer
+> > walking. Release functions need not specify such suffix on release
+> > arguments as they are already expected to receive one referenced
+> > argument.
+> >
+> > Note that we use strict type matching when a __ref suffix is present on
+> > the argument.
+> ...
+> > +             /* Check if argument must be a referenced pointer, args + i has
+> > +              * been verified to be a pointer (after skipping modifiers).
+> > +              */
+> > +             arg_ref = is_kfunc_arg_ref(btf, args + i);
+> > +             if (is_kfunc && arg_ref && !reg->ref_obj_id) {
+> > +                     bpf_log(log, "R%d must be referenced\n", regno);
+> > +                     return -EINVAL;
+> > +             }
+> > +
+>
+> imo this suffix will be confusing to use.
+> If I understand the intent the __ref should only be used
+> in acquire (and other) kfuncs that also do release.
+> Adding __ref to actual release kfunc will be a nop.
+> It will be checked, but it's not necessary.
+>
+> At the end
+> +struct nf_conn *bpf_ct_insert_entry(struct nf_conn___init *nfct__ref)
+> will behave like kptr_xchg with exception that kptr_xchg takes any btf_id
+> while here it's fixed.
+>
+> The code:
+>  if (rel && reg->ref_obj_id)
+>         arg_type |= OBJ_RELEASE;
+> should probably be updated with '|| arg_ref'
+> to make sure reg->off == 0 ?
+> That looks like a small bug.
+>
 
-I have no idea why you keep generalizing this topic to all pointers.
+Indeed, I missed that. Thanks for catching it.
 
-You have to realize no one even argues about any other pointers
-than just skb's. You must be kidding when you suggest to disable
-all hash pointers when people only want skb.
+> But stepping back... why __ref is needed ?
+> We can add bpf_ct_insert_entry to acq and rel sets and it should work?
+> I'm assuming you're doing the orthogonal cleanup of resolve_btfid,
+> so we will have a single kfunc set where bpf_ct_insert_entry will
+> have both acq and rel flags.
+> I'm surely missing something.
+
+It is needed to prevent the case where someone might do:
+ct = bpf_xdp_ct_alloc(...);
+bpf_ct_set_timeout(ct->master, ...);
+
+Or just obtain PTR_TO_BTF_ID by pointer walking and try to pass it in
+to bpf_ct_set_timeout.
+
+__ref allows an argument on a non-release kfunc to have checks like a
+release argument, i.e. refcounted, reg->off == 0 (var_off is already
+checked to be 0), so use the original pointer that was obtained from
+an acquire kfunc. As you noted, it isn't strictly needed on release
+kfunc (like bpf_ct_insert_entry) because the same checks happen for it
+anyway. But both timeout and status helpers should use it if they
+"operate" on the acquired ct (from alloc, insert, or lookup).
