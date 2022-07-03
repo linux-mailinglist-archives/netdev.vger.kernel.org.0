@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 628FD5646DA
-	for <lists+netdev@lfdr.de>; Sun,  3 Jul 2022 12:47:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D3B85646DF
+	for <lists+netdev@lfdr.de>; Sun,  3 Jul 2022 12:47:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232411AbiGCKrq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Jul 2022 06:47:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52232 "EHLO
+        id S232596AbiGCKr5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Jul 2022 06:47:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232431AbiGCKrh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 Jul 2022 06:47:37 -0400
+        with ESMTP id S232450AbiGCKrj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 Jul 2022 06:47:39 -0400
 Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7467BAE56;
-        Sun,  3 Jul 2022 03:47:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7FD71A1BC;
+        Sun,  3 Jul 2022 03:47:35 -0700 (PDT)
 X-IronPort-AV: E=Sophos;i="5.92,241,1650898800"; 
-   d="scan'208";a="126488408"
+   d="scan'208";a="126488412"
 Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-  by relmlie6.idc.renesas.com with ESMTP; 03 Jul 2022 19:47:30 +0900
+  by relmlie6.idc.renesas.com with ESMTP; 03 Jul 2022 19:47:34 +0900
 Received: from localhost.localdomain (unknown [10.226.92.2])
-        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 2B67A427AC5C;
-        Sun,  3 Jul 2022 19:47:24 +0900 (JST)
+        by relmlir6.idc.renesas.com (Postfix) with ESMTP id B6228427AD01;
+        Sun,  3 Jul 2022 19:47:30 +0900 (JST)
 From:   Biju Das <biju.das.jz@bp.renesas.com>
 To:     Wolfgang Grandegger <wg@grandegger.com>,
         Marc Kleine-Budde <mkl@pengutronix.de>,
@@ -28,20 +28,17 @@ To:     Wolfgang Grandegger <wg@grandegger.com>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>
-Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
-        =?UTF-8?q?Stefan=20M=C3=A4tje?= <stefan.maetje@esd.eu>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+Cc:     Biju Das <biju.das.jz@bp.renesas.com>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
         Geert Uytterhoeven <geert+renesas@glider.be>,
         Chris Paterson <Chris.Paterson2@renesas.com>,
         Biju Das <biju.das@bp.renesas.com>,
         linux-renesas-soc@vger.kernel.org
-Subject: [PATCH v2 3/6] can: sja1000: Add Quirk for RZ/N1 SJA1000 CAN controller
-Date:   Sun,  3 Jul 2022 11:47:02 +0100
-Message-Id: <20220703104705.341070-4-biju.das.jz@bp.renesas.com>
+Subject: [PATCH v2 4/6] can: sja1000: Use device_get_match_data to get device data
+Date:   Sun,  3 Jul 2022 11:47:03 +0100
+Message-Id: <20220703104705.341070-5-biju.das.jz@bp.renesas.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220703104705.341070-1-biju.das.jz@bp.renesas.com>
 References: <20220703104705.341070-1-biju.das.jz@bp.renesas.com>
@@ -56,68 +53,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As per Chapter 6.5.16 of the RZ/N1 Peripheral Manual, The SJA1000
-CAN controller does not support Clock Divider Register compared to
-the reference Philips SJA1000 device.
-
-This patch adds a device quirk to handle this difference.
+This patch replaces of_match_device->device_get_match_data
+to get pointer to device data.
 
 Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
 ---
 v1->v2:
- * Updated commit description
- * Removed the quirk macro SJA1000_NO_HW_LOOPBACK_QUIRK
- * Added prefix SJA1000_QUIRK_* for quirk macro.
+ * Replaced of_device_get_match_data->device_get_match_data.
 ---
- drivers/net/can/sja1000/sja1000.c | 13 ++++++++-----
- drivers/net/can/sja1000/sja1000.h |  3 ++-
- 2 files changed, 10 insertions(+), 6 deletions(-)
+ drivers/net/can/sja1000/sja1000_platform.c | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/can/sja1000/sja1000.c b/drivers/net/can/sja1000/sja1000.c
-index 2e7638f98cf1..e9c55f5aa3c3 100644
---- a/drivers/net/can/sja1000/sja1000.c
-+++ b/drivers/net/can/sja1000/sja1000.c
-@@ -183,8 +183,9 @@ static void chipset_init(struct net_device *dev)
- {
- 	struct sja1000_priv *priv = netdev_priv(dev);
+diff --git a/drivers/net/can/sja1000/sja1000_platform.c b/drivers/net/can/sja1000/sja1000_platform.c
+index f9ec7bd8dfac..0b78568f5286 100644
+--- a/drivers/net/can/sja1000/sja1000_platform.c
++++ b/drivers/net/can/sja1000/sja1000_platform.c
+@@ -210,7 +210,6 @@ static int sp_probe(struct platform_device *pdev)
+ 	struct resource *res_mem, *res_irq = NULL;
+ 	struct sja1000_platform_data *pdata;
+ 	struct device_node *of = pdev->dev.of_node;
+-	const struct of_device_id *of_id;
+ 	const struct sja1000_of_data *of_data = NULL;
+ 	size_t priv_sz = 0;
  
--	/* set clock divider and output control register */
--	priv->write_reg(priv, SJA1000_CDR, priv->cdr | CDR_PELICAN);
-+	if (!(priv->flags & SJA1000_QUIRK_NO_CDR_REG))
-+		/* set clock divider and output control register */
-+		priv->write_reg(priv, SJA1000_CDR, priv->cdr | CDR_PELICAN);
+@@ -243,11 +242,9 @@ static int sp_probe(struct platform_device *pdev)
+ 			return -ENODEV;
+ 	}
  
- 	/* set acceptance filter (accept all) */
- 	priv->write_reg(priv, SJA1000_ACCC0, 0x00);
-@@ -208,9 +209,11 @@ static void sja1000_start(struct net_device *dev)
- 	if (priv->can.state != CAN_STATE_STOPPED)
- 		set_reset_mode(dev);
+-	of_id = of_match_device(sp_of_table, &pdev->dev);
+-	if (of_id && of_id->data) {
+-		of_data = of_id->data;
++	of_data = device_get_match_data(&pdev->dev);
++	if (of_data)
+ 		priv_sz = of_data->priv_sz;
+-	}
  
--	/* Initialize chip if uninitialized at this stage */
--	if (!(priv->read_reg(priv, SJA1000_CDR) & CDR_PELICAN))
--		chipset_init(dev);
-+	if (!(priv->flags & SJA1000_QUIRK_NO_CDR_REG)) {
-+		/* Initialize chip if uninitialized at this stage */
-+		if (!(priv->read_reg(priv, SJA1000_CDR) & CDR_PELICAN))
-+			chipset_init(dev);
-+	}
- 
- 	/* Clear error counters and error code capture */
- 	priv->write_reg(priv, SJA1000_TXERR, 0x0);
-diff --git a/drivers/net/can/sja1000/sja1000.h b/drivers/net/can/sja1000/sja1000.h
-index 9d46398f8154..7f736f1df547 100644
---- a/drivers/net/can/sja1000/sja1000.h
-+++ b/drivers/net/can/sja1000/sja1000.h
-@@ -145,7 +145,8 @@
- /*
-  * Flags for sja1000priv.flags
-  */
--#define SJA1000_CUSTOM_IRQ_HANDLER 0x1
-+#define SJA1000_CUSTOM_IRQ_HANDLER	BIT(0)
-+#define SJA1000_QUIRK_NO_CDR_REG	BIT(1)
- 
- /*
-  * SJA1000 private data structure
+ 	dev = alloc_sja1000dev(priv_sz);
+ 	if (!dev)
 -- 
 2.25.1
 
