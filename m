@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1089B5646AE
-	for <lists+netdev@lfdr.de>; Sun,  3 Jul 2022 12:26:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66C245646B1
+	for <lists+netdev@lfdr.de>; Sun,  3 Jul 2022 12:26:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232316AbiGCK0U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Jul 2022 06:26:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42234 "EHLO
+        id S232206AbiGCK0W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Jul 2022 06:26:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231969AbiGCK0K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 Jul 2022 06:26:10 -0400
+        with ESMTP id S232012AbiGCK0M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 Jul 2022 06:26:12 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C9CA63B0
-        for <netdev@vger.kernel.org>; Sun,  3 Jul 2022 03:26:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EC06631A
+        for <netdev@vger.kernel.org>; Sun,  3 Jul 2022 03:26:11 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1o7wno-0006B6-Bq
-        for netdev@vger.kernel.org; Sun, 03 Jul 2022 12:26:08 +0200
+        id 1o7wnp-0006C1-Q6
+        for netdev@vger.kernel.org; Sun, 03 Jul 2022 12:26:09 +0200
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id 60199A69CA
+        by bjornoya.blackshift.org (Postfix) with SMTP id 6EB95A69D0
         for <netdev@vger.kernel.org>; Sun,  3 Jul 2022 10:14:37 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id AA9B9A69A3;
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id B92A6A69A4;
         Sun,  3 Jul 2022 10:14:36 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 9dcfd5a2;
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 99863f2f;
         Sun, 3 Jul 2022 10:14:31 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
@@ -39,9 +39,9 @@ Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
         Dario Binacchi <dario.binacchi@amarulasolutions.com>,
         Jeroen Hofstee <jhofstee@victronenergy.com>,
         Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH net-next 09/15] can: slcan: allow to send commands to the adapter
-Date:   Sun,  3 Jul 2022 12:14:23 +0200
-Message-Id: <20220703101430.1306048-10-mkl@pengutronix.de>
+Subject: [PATCH net-next 10/15] can: slcan: set bitrate by CAN device driver API
+Date:   Sun,  3 Jul 2022 12:14:24 +0200
+Message-Id: <20220703101430.1306048-11-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220703101430.1306048-1-mkl@pengutronix.de>
 References: <20220703101430.1306048-1-mkl@pengutronix.de>
@@ -62,105 +62,106 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Dario Binacchi <dario.binacchi@amarulasolutions.com>
 
-This is a preparation patch for the upcoming support to change the
-bitrate via ip tool, reset the adapter error states via the ethtool API
-and, more generally, send commands to the adapter.
+It allows to set the bitrate via ip tool, as it happens for the other
+CAN device drivers. It still remains possible to set the bitrate via
+slcand or slcan_attach utilities. In case the ip tool is used, the
+driver will send the serial command to the adapter.
 
-Since the close command (i. e. "C\r") will be sent in the ndo_stop()
-where netif_running() returns false, a new flag bit (i. e. SLF_XCMD) for
-serial transmission has to be added.
-
-Link: https://lore.kernel.org/all/20220628163137.413025-7-dario.binacchi@amarulasolutions.com
+Link: https://lore.kernel.org/all/20220628163137.413025-8-dario.binacchi@amarulasolutions.com
 Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
 Tested-by: Jeroen Hofstee <jhofstee@victronenergy.com>
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- drivers/net/can/slcan.c | 46 ++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 45 insertions(+), 1 deletion(-)
+ drivers/net/can/slcan.c | 41 ++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 38 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/can/slcan.c b/drivers/net/can/slcan.c
-index bf84698f1a81..dfccf8d6c9a5 100644
+index dfccf8d6c9a5..74033e2d7097 100644
 --- a/drivers/net/can/slcan.c
 +++ b/drivers/net/can/slcan.c
-@@ -97,6 +97,9 @@ struct slcan {
- 	unsigned long		flags;		/* Flag values/ mode etc     */
- #define SLF_INUSE		0		/* Channel in use            */
- #define SLF_ERROR		1               /* Parity, etc. error        */
-+#define SLF_XCMD		2               /* Command transmission      */
-+	wait_queue_head_t       xcmd_wait;      /* Wait queue for commands   */
-+						/* transmission              */
- };
+@@ -104,6 +104,11 @@ struct slcan {
  
  static struct net_device **slcan_devs;
-@@ -314,12 +317,22 @@ static void slcan_transmit(struct work_struct *work)
  
- 	spin_lock_bh(&sl->lock);
- 	/* First make sure we're connected. */
--	if (!sl->tty || sl->magic != SLCAN_MAGIC || !netif_running(sl->dev)) {
-+	if (!sl->tty || sl->magic != SLCAN_MAGIC ||
-+	    (unlikely(!netif_running(sl->dev)) &&
-+	     likely(!test_bit(SLF_XCMD, &sl->flags)))) {
- 		spin_unlock_bh(&sl->lock);
- 		return;
++static const u32 slcan_bitrate_const[] = {
++	10000, 20000, 50000, 100000, 125000,
++	250000, 500000, 800000, 1000000
++};
++
+  /************************************************************************
+   *			SLCAN ENCAPSULATION FORMAT			 *
+   ************************************************************************/
+@@ -439,6 +444,9 @@ static int slc_close(struct net_device *dev)
+ 	netif_stop_queue(dev);
+ 	close_candev(dev);
+ 	sl->can.state = CAN_STATE_STOPPED;
++	if (sl->can.bittiming.bitrate == CAN_BITRATE_UNKNOWN)
++		sl->can.bittiming.bitrate = CAN_BITRATE_UNSET;
++
+ 	sl->rcount   = 0;
+ 	sl->xleft    = 0;
+ 	spin_unlock_bh(&sl->lock);
+@@ -450,7 +458,8 @@ static int slc_close(struct net_device *dev)
+ static int slc_open(struct net_device *dev)
+ {
+ 	struct slcan *sl = netdev_priv(dev);
+-	int err;
++	unsigned char cmd[SLC_MTU];
++	int err, s;
+ 
+ 	if (sl->tty == NULL)
+ 		return -ENODEV;
+@@ -460,15 +469,39 @@ static int slc_open(struct net_device *dev)
+ 	 * can.bittiming.bitrate is CAN_BITRATE_UNSET (0), causing
+ 	 * open_candev() to fail. So let's set to a fake value.
+ 	 */
+-	sl->can.bittiming.bitrate = CAN_BITRATE_UNKNOWN;
++	if (sl->can.bittiming.bitrate == CAN_BITRATE_UNSET)
++		sl->can.bittiming.bitrate = CAN_BITRATE_UNKNOWN;
++
+ 	err = open_candev(dev);
+ 	if (err) {
+ 		netdev_err(dev, "failed to open can device\n");
+ 		return err;
  	}
  
- 	if (sl->xleft <= 0)  {
-+		if (unlikely(test_bit(SLF_XCMD, &sl->flags))) {
-+			clear_bit(SLF_XCMD, &sl->flags);
-+			clear_bit(TTY_DO_WRITE_WAKEUP, &sl->tty->flags);
-+			spin_unlock_bh(&sl->lock);
-+			wake_up(&sl->xcmd_wait);
-+			return;
+-	sl->can.state = CAN_STATE_ERROR_ACTIVE;
+ 	sl->flags &= BIT(SLF_INUSE);
++
++	if (sl->can.bittiming.bitrate != CAN_BITRATE_UNKNOWN) {
++		for (s = 0; s < ARRAY_SIZE(slcan_bitrate_const); s++) {
++			if (sl->can.bittiming.bitrate == slcan_bitrate_const[s])
++				break;
 +		}
 +
- 		/* Now serial buffer is almost free & we can start
- 		 * transmission of another packet */
- 		sl->dev->stats.tx_packets++;
-@@ -383,6 +396,36 @@ static netdev_tx_t slc_xmit(struct sk_buff *skb, struct net_device *dev)
-  *   Routines looking at netdevice side.
-  ******************************************/
- 
-+static int slcan_transmit_cmd(struct slcan *sl, const unsigned char *cmd)
-+{
-+	int ret, actual, n;
++		/* The CAN framework has already validate the bitrate value,
++		 * so we can avoid to check if `s' has been properly set.
++		 */
 +
-+	spin_lock(&sl->lock);
-+	if (!sl->tty) {
-+		spin_unlock(&sl->lock);
-+		return -ENODEV;
++		snprintf(cmd, sizeof(cmd), "C\rS%d\r", s);
++		err = slcan_transmit_cmd(sl, cmd);
++		if (err) {
++			netdev_err(dev,
++				   "failed to send bitrate command 'C\\rS%d\\r'\n",
++				   s);
++			close_candev(dev);
++			return err;
++		}
 +	}
 +
-+	n = snprintf(sl->xbuff, sizeof(sl->xbuff), "%s", cmd);
-+	set_bit(TTY_DO_WRITE_WAKEUP, &sl->tty->flags);
-+	actual = sl->tty->ops->write(sl->tty, sl->xbuff, n);
-+	sl->xleft = n - actual;
-+	sl->xhead = sl->xbuff + actual;
-+	set_bit(SLF_XCMD, &sl->flags);
-+	spin_unlock(&sl->lock);
-+	ret = wait_event_interruptible_timeout(sl->xcmd_wait,
-+					       !test_bit(SLF_XCMD, &sl->flags),
-+					       HZ);
-+	clear_bit(SLF_XCMD, &sl->flags);
-+	if (ret == -ERESTARTSYS)
-+		return ret;
-+
-+	if (ret == 0)
-+		return -ETIMEDOUT;
-+
-+	return 0;
-+}
-+
- /* Netdevice UP -> DOWN routine */
- static int slc_close(struct net_device *dev)
- {
-@@ -540,6 +583,7 @@ static struct slcan *slc_alloc(void)
++	sl->can.state = CAN_STATE_ERROR_ACTIVE;
+ 	netif_start_queue(dev);
+ 	return 0;
+ }
+@@ -581,6 +614,8 @@ static struct slcan *slc_alloc(void)
+ 	/* Initialize channel control data */
+ 	sl->magic = SLCAN_MAGIC;
  	sl->dev	= dev;
++	sl->can.bitrate_const = slcan_bitrate_const;
++	sl->can.bitrate_const_cnt = ARRAY_SIZE(slcan_bitrate_const);
  	spin_lock_init(&sl->lock);
  	INIT_WORK(&sl->tx_work, slcan_transmit);
-+	init_waitqueue_head(&sl->xcmd_wait);
- 	slcan_devs[i] = dev;
- 
- 	return sl;
+ 	init_waitqueue_head(&sl->xcmd_wait);
 -- 
 2.35.1
 
