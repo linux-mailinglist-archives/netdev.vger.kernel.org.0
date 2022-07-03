@@ -2,165 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 65DAB56458D
-	for <lists+netdev@lfdr.de>; Sun,  3 Jul 2022 09:25:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6AE8A564592
+	for <lists+netdev@lfdr.de>; Sun,  3 Jul 2022 09:37:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231611AbiGCHX0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Jul 2022 03:23:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41658 "EHLO
+        id S231596AbiGCHhB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Jul 2022 03:37:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231608AbiGCHXY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 Jul 2022 03:23:24 -0400
-Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5177B5F4F
-        for <netdev@vger.kernel.org>; Sun,  3 Jul 2022 00:23:22 -0700 (PDT)
-Received: by mail-io1-f70.google.com with SMTP id x2-20020a6bda02000000b0067590503c08so4016579iob.5
-        for <netdev@vger.kernel.org>; Sun, 03 Jul 2022 00:23:22 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=a2uI9KLquXajc5Uhxt1Ev4JBY9PbkZ6Xt4aQBhCyNVQ=;
-        b=2Ruuy9H5TKiIF03KozTzkcYrTwaLmzFDcwcYK6VbtO+v/ixYBcgCwSb5s2EUNaTAoA
-         z9w2QjAhe1InO4aozQAjAadlPNPBL/3x2TNooJveQK7+pxVCAxQfAgQpgUaqNZbmcMPR
-         JRVpUNk0eboLmgSnGFrI0ow7Vj3odlQSdu+Dhex3Wqil3Krhc5q+Jx77xncUFfi1BEyh
-         Zlrwdul+T+qLNbbwc/3gbCK5EznBJEVYwPw9LweMPD6Q+xfpBcdfBoPe6AhLtsAU36Nb
-         PUpJXG0ddoZE/m+qeT5Bx1Mll8zXPHBOiupl8tbMzJYdiP2CK62s4LtIyQZQ2rTGuL+A
-         yYrA==
-X-Gm-Message-State: AJIora9o6qmJRRq3sdtZpSaWkRl/Z79QTIuOdJX8ipzLY6Ir1CAB4+OA
-        v6trKrKQh5WQoAy6h4W2FGmnf+ctgsXSEl1eHFVvHLoy4b12
-X-Google-Smtp-Source: AGRyM1uZ/fArPWzkvq94pqmfvmcruQtyXE9yowiCg+kaajqsbCPkFwuNisbGAC0spqN3tcH9JdTZkJUDJ8xIYjKLLz0q9L2ux5wm
+        with ESMTP id S229562AbiGCHhA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 Jul 2022 03:37:00 -0400
+Received: from EUR02-VE1-obe.outbound.protection.outlook.com (mail-eopbgr20088.outbound.protection.outlook.com [40.107.2.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48CCD9FEF;
+        Sun,  3 Jul 2022 00:36:57 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=oENGByudOZV3s15vMnfPYpGKJrfRmIQ27MZ+CHPtxYTLU8XW+PvSaFUe+tTTNrUCoDW/oq9H2CWUUgSLRTlYu6KotGeKZGwBuAfIn4VeKx/XWADZXhCaA77y0Kz4JMMYSP6Pkev5bYrvjQAzTLB9sqNPVZ6qaHNsqIi0tL5S1N+Im/zvVLPYEXZIyABIHoKRvZyyfdeBXEUaFVwdFdhT2q0pRyqrpXVXzPx/KJcDZVTZzT9jNB7uTdqKiyUlsUvZ27YP9fxIz6ook6UdYp7EUMzemYwrGZP1x1zilZYxNx7UQYCQGK4ymAaW1SoCMPlPmBAqfcS/3ivaNjaUzjoyYg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=WJs1N43RVO8aqaIdpIGt161PaDKGvyh/cDXPDpnyo4k=;
+ b=IwMuhT8HQ5YVAk1xzaQZPxaNVIsnGNaXWfqKsWAdaYnnirCU17um7UI9qC25fAfoTDaMz/RHkYOOILLSmrV3ooqJeEpH3Szja5Ht9RR+csJhCKJyObP6k87l6Lt1faIW86W5F716+j7k2p+RyPnQwG8+kB4ZpbqGRnRjsLilFzHFhK/QzWQJaXnqYhzwup8ctoWsLnaHcnn1smv5pJGYwzGEPYrmzGdMV2LHRHQF+iLy7gIdGTpi5VO2k9uC81BC8M5TuzEO7+pYmXeyX0LzjYyvmyLD+cplFlzPWGgfJO4V/4iCyH/c9onsAE/4DScRyS1ocwMkc6J/F+ju+eGM5g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=WJs1N43RVO8aqaIdpIGt161PaDKGvyh/cDXPDpnyo4k=;
+ b=mSk67/cU98iDdMfsaF0CxoTOMygVFJeJk144P0zsOWlwjAgQ6o8UVM3zDvrtKoy5148HvK4pGOpZxuwk8sD0pFKg/m3lzIx/i8mOPbIEI1OB5uVjVO10gpJIPqPezjsk78tHjw47YTFDnHbMBFz+zCHFxfJv9qxgYEVVM7J+2sc=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by AM6PR0402MB3877.eurprd04.prod.outlook.com (2603:10a6:209:1d::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.19; Sun, 3 Jul
+ 2022 07:36:54 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::71b7:8ed1:e4e0:3857]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::71b7:8ed1:e4e0:3857%4]) with mapi id 15.20.5395.019; Sun, 3 Jul 2022
+ 07:36:53 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
+        Petr Machata <petrm@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        linux-kselftest@vger.kernel.org
+Subject: [PATCH net 0/3] Fix bridge_vlan_aware.sh and bridge_vlan_unaware.sh with IFF_UNICAST_FLT
+Date:   Sun,  3 Jul 2022 10:36:23 +0300
+Message-Id: <20220703073626.937785-1-vladimir.oltean@nxp.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: FR0P281CA0018.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:15::23) To VI1PR04MB5136.eurprd04.prod.outlook.com
+ (2603:10a6:803:55::19)
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:358d:b0:339:f213:275 with SMTP id
- v13-20020a056638358d00b00339f2130275mr14402641jal.250.1656833001683; Sun, 03
- Jul 2022 00:23:21 -0700 (PDT)
-Date:   Sun, 03 Jul 2022 00:23:21 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000008481dc05e2e17e7d@google.com>
-Subject: [syzbot] BUG: unable to handle kernel paging request in bpf_prog_ADDR_F
-From:   syzbot <syzbot+66d306fee539916084c2@syzkaller.appspotmail.com>
-To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, davem@davemloft.net, hawk@kernel.org,
-        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
-        kuba@kernel.org, linux-kernel@vger.kernel.org, mingo@redhat.com,
-        netdev@vger.kernel.org, rostedt@goodmis.org, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: c7387f4a-928f-4ff1-4642-08da5cc6cca8
+X-MS-TrafficTypeDiagnostic: AM6PR0402MB3877:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: GxJsZcZJaLVbVQKENbEQNj7E/b8hvlem1B2xxVAJB0M+vKezjrhDzK6af5DCiqS9nxmW0YonAtjG01cujYyfe5nWWzKFc4Pc+QWGRHgNmejh4Iokqw7tHy35IQxyOwZOEZ7QvLPrHA0+u8bnKP52gPc4zuCLBZn5q788Qm1BjOzPk7GU0+nK+VuVXsZLg6ElXIAHi4JyB6j52hRKJaKulhJa9sOoHLcerA413iQJubMOOoSEoTANUe0AeRApQf1gIALX/iKrVacT135NjXFhK0L7Zk9KGBQ9sB8KNpePmBl0O/59PfqqvQ0TSp2X4V/jProy6OFeqGpcabV3kNgAc+aL5QemUPThZV0aeagn5udRB55PPOolKEknKeVvhdQFShaNK8jyCoQyIVpa6QwsfVRrejwWPeSjjsqc0eHsbJ2CVB/VVrFMbc1vl/PbQxSzVKhMyNiA7iwO30Q1fY1/CP8tU/jOxMAwv/KqdQAlJiReb5rNSyVDNHKAhyUNE9+w84260cjQBdtj9RoHklHlUg98C9dkmHJ7tFDtI5h0+iyTgI4hnLHcfnhVqpAxvEQKufJbCO3NojxNIs3kPV67rYeMocsnlwg++iRCmuxzzA3rmoYPbmGVNpc7AFHVJD0c7HeKtOhfngkuKxUxjlnX4m0I/YvqXJQltewJQ5Mo8i5pY0SdJZ91Ane/wGXLJ32HoYc/XDahGEHIcJpvPJGBe4lIK5WjOobCy4C1Oo2NvtjIX/rtZrhEoGkNkGsozN+Q/qmP6DCcCmqKh9d8QyutXXgK9QYliW/n77YL1YHKaMKnXe51m8IQ8euxwBLCtlxo
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(396003)(346002)(376002)(136003)(39860400002)(2616005)(1076003)(5660300002)(8936002)(6916009)(54906003)(4326008)(8676002)(86362001)(316002)(66476007)(66556008)(66946007)(6506007)(41300700001)(6666004)(6512007)(26005)(38100700002)(52116002)(38350700002)(6486002)(478600001)(83380400001)(2906002)(4744005)(44832011)(36756003)(186003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?vCgWUKTHS6IbOowoLGingHnSMSNikSSFjDc6pMzyGcJnAducslsl/NmxvLBm?=
+ =?us-ascii?Q?xJbo6NGS2jrSt+HoKd8xqJoicGZucOh0FCPnnukRuJfqLsHNrv3rLYmhyx5A?=
+ =?us-ascii?Q?G6ji4Py94DaK5XmHeHeENAtVORNYrSbIBuetuVRZie5zNy7442YgHCmvAXay?=
+ =?us-ascii?Q?HQciKzrdsleMC5QAK9bL9jwy3t9TtgD+O31YB59ys78REf8McM1dNK8sZ/fG?=
+ =?us-ascii?Q?WvPhPj/lCgOKw8QQbgMND/tkEepTS5m+frqPguop1U5GAJHrRaDs5V1cvv+j?=
+ =?us-ascii?Q?4M4C+wBdKmMh0+eh0yD/HvyV3d2npv27yR37Pn1/at0yMlSwXrF0GnMYXl8G?=
+ =?us-ascii?Q?Wxnf1Bed/IjhYiwP0YO3k4W2TthHG7DeKp9eVbOq2uKSPJFiK2Ond//pAe3r?=
+ =?us-ascii?Q?7zXuWLLeN3Gr+4ffoZjJte8gnuMRoPMYi6HzI3JEOqYdbVKsKiuCWZSkN3nU?=
+ =?us-ascii?Q?APUocH9byfXS9ymD8+gL0hDGRMrUaA0J/qSiZFExCMEpElsoo/8AJ/ADpGFL?=
+ =?us-ascii?Q?UZrgmUPWwS2oLpcLtQj9hszwS9POasuu+15BcYTl8Nivb5ak1jSTDyZMj7FH?=
+ =?us-ascii?Q?/iEKlCOqvKodFAkNBV7tRugzaNGv7pChpmjlnCeuIrfzsylvvxR01dXuE7Kb?=
+ =?us-ascii?Q?xFbWIpMrV05pSPrit9+n5Y6pphrlFg+wL1D2ei4vbBfZVVmronSCZsTL307d?=
+ =?us-ascii?Q?H5FjglOewUDCBw/F1Fkwt6nxrE1auT4lUMG2kG8nJQGv+iRc4K8B8UOv10zI?=
+ =?us-ascii?Q?O0gn6xCc5tPYpoPB/j1PDmvyuHb1sRvQ1bSFBLWkxPJ7IZfwLpzxj8sHI25m?=
+ =?us-ascii?Q?24wK8rrpBWhQvkI7L1uUYGPNf1wUT5EwDWxGo1OUzr1Fs4ZekORYSk3hqbfe?=
+ =?us-ascii?Q?DZK8/+eAiDIInAt+pCkU5Z8ItvjIgn3mGI+mDtn2UHifJzsciJufGCd4aa+G?=
+ =?us-ascii?Q?3GAAIctxLBbY+t47gFmcsn72ilvXok7AMSKKaU+NLfMUzHbjZbyIBK4jPBXV?=
+ =?us-ascii?Q?gyFQ0otqlUUGofTynWDw3LJ/K3NYKgjcnX6C3DpyHY2fUl1H461FwaYn9k3J?=
+ =?us-ascii?Q?dXH0+Q62Oj5qLJ9R0abp2AJb7sx2ZUXV3ISPaYv5FfPymbf+Cv8+EK942KXE?=
+ =?us-ascii?Q?9Jn3alRao+XF26eL8l66NzyCkw9ogPwb75bO5YRS4NVyC5hUubHZGZOizxio?=
+ =?us-ascii?Q?hk8UgeRgjVeIxsHTkEp3ViNZiN0ABDqK2TBXDO/LxYOCajrrNeUAu0QtM814?=
+ =?us-ascii?Q?oH5H4LMiL3fXlEpb4nO5mQCjM7vj9hmbWv/b8qhRU4XeL/sPRn4Vh9YECGZX?=
+ =?us-ascii?Q?ZUi7I1mfeL9kA/3iR6gwMcdMIJes/b6JmKYOGm1NmSQSltuU509449aOcouB?=
+ =?us-ascii?Q?BE8NGRv/rKb84c2epi44Xt2o1kga+8qouUICqZCNZ3nFwNPUQVG4WF8xplrV?=
+ =?us-ascii?Q?Cy7qqoV1iyGWzEgnuj7EV4mqRZB6Py//ZU9k1ZjH4o6iCq2A95CZUak3KW8f?=
+ =?us-ascii?Q?45ssJxSVak+YW1/RlUpD1/60pquRoEEaJcy9sMdIZfGcfb6GH1E4YVNJqZje?=
+ =?us-ascii?Q?4JyMLSi3wYRHrEM1SsSP+aDCzDTokwG96J8B6RiQmCNTbO2MXyWLb7JVck8Y?=
+ =?us-ascii?Q?5A=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c7387f4a-928f-4ff1-4642-08da5cc6cca8
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Jul 2022 07:36:53.6331
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Xr/ZYhcREXSPmkaAk+OYjOb3PzXPEfuQaxmJtVocna9G2AYIOHhDrRWI6kUeTlqZTcX9A3aRwP56infv8s08Jw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR0402MB3877
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Make sure that h1 and h2 don't drop packets with a random MAC DA, which
+otherwise confuses these selftests. Also, fix an incorrect error message
+found during those failures.
 
-syzbot found the following issue on:
+Vladimir Oltean (3):
+  selftests: forwarding: fix flood_unicast_test when h2 supports
+    IFF_UNICAST_FLT
+  selftests: forwarding: fix learning_test when h1 supports
+    IFF_UNICAST_FLT
+  selftests: forwarding: fix error message in learning_test
 
-HEAD commit:    179a93f74b29 fprobe, samples: Add module parameter descrip..
-git tree:       bpf
-console output: https://syzkaller.appspot.com/x/log.txt?x=17bc8604080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=70e1a4d352a3c6ae
-dashboard link: https://syzkaller.appspot.com/bug?extid=66d306fee539916084c2
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+ tools/testing/selftests/net/forwarding/lib.sh | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-Unfortunately, I don't have any reproducer for this issue yet.
+-- 
+2.25.1
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+66d306fee539916084c2@syzkaller.appspotmail.com
-
-BUG: unable to handle page fault for address: ffffffffa0000a18
-#PF: supervisor instruction fetch in kernel mode
-#PF: error_code(0x0010) - not-present page
-PGD ba8f067 P4D ba8f067 PUD ba90063 PMD 1451e6067 PTE 0
-Oops: 0010 [#1] PREEMPT SMP KASAN
-CPU: 0 PID: 10814 Comm: syz-executor.2 Not tainted 5.19.0-rc2-syzkaller-00122-g179a93f74b29 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:bpf_prog_9d4bccaf8ccaf0dc_F+0x0/0xd
-Code: Unable to access opcode bytes at RIP 0xffffffffa00009ee.
-RSP: 0018:ffffc90003517250 EFLAGS: 00010046
-RAX: dffffc0000000000 RBX: ffffc90003563000 RCX: 0000000000000000
-RDX: 1ffff920006ac606 RSI: ffffc90003563048 RDI: 00000000ffff8880
-RBP: ffffc90003517258 R08: 0000000000000001 R09: 0000000000000000
-R10: 0000000000000001 R11: 0000000000000001 R12: 0000000000000001
-R13: ffff88802403bb00 R14: ffff88802fa60000 R15: 0000000000000001
-FS:  00007f63ca616700(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: ffffffffa00009ee CR3: 000000002f068000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- bpf_dispatcher_nop_func include/linux/bpf.h:869 [inline]
- __bpf_prog_run include/linux/filter.h:628 [inline]
- bpf_prog_run include/linux/filter.h:635 [inline]
- __bpf_trace_run kernel/trace/bpf_trace.c:2046 [inline]
- bpf_trace_run4+0x124/0x360 kernel/trace/bpf_trace.c:2085
- __bpf_trace_sched_switch+0x115/0x160 include/trace/events/sched.h:222
- __traceiter_sched_switch+0x68/0xb0 include/trace/events/sched.h:222
- trace_sched_switch include/trace/events/sched.h:222 [inline]
- __schedule+0x145b/0x4b30 kernel/sched/core.c:6425
- preempt_schedule_common+0x45/0xc0 kernel/sched/core.c:6593
- preempt_schedule_thunk+0x16/0x18 arch/x86/entry/thunk_64.S:35
- __raw_spin_unlock include/linux/spinlock_api_smp.h:143 [inline]
- _raw_spin_unlock+0x36/0x40 kernel/locking/spinlock.c:186
- spin_unlock include/linux/spinlock.h:389 [inline]
- __cond_resched_lock+0x93/0xe0 kernel/sched/core.c:8270
- __purge_vmap_area_lazy+0x976/0x1c50 mm/vmalloc.c:1728
- _vm_unmap_aliases.part.0+0x3f0/0x500 mm/vmalloc.c:2125
- _vm_unmap_aliases mm/vmalloc.c:2099 [inline]
- vm_remove_mappings mm/vmalloc.c:2624 [inline]
- __vunmap+0x6d5/0xd30 mm/vmalloc.c:2651
- __vfree+0x3c/0xd0 mm/vmalloc.c:2713
- vfree+0x5a/0x90 mm/vmalloc.c:2744
- bpf_jit_binary_free kernel/bpf/core.c:1080 [inline]
- bpf_jit_free+0x21a/0x2b0 kernel/bpf/core.c:1203
- jit_subprogs kernel/bpf/verifier.c:13683 [inline]
- fixup_call_args kernel/bpf/verifier.c:13712 [inline]
- bpf_check+0x71ab/0xbbc0 kernel/bpf/verifier.c:15063
- bpf_prog_load+0xfb2/0x2250 kernel/bpf/syscall.c:2575
- __sys_bpf+0x11a1/0x5700 kernel/bpf/syscall.c:4917
- __do_sys_bpf kernel/bpf/syscall.c:5021 [inline]
- __se_sys_bpf kernel/bpf/syscall.c:5019 [inline]
- __x64_sys_bpf+0x75/0xb0 kernel/bpf/syscall.c:5019
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x46/0xb0
-RIP: 0033:0x7f63c9489109
-Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f63ca616168 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
-RAX: ffffffffffffffda RBX: 00007f63c959c030 RCX: 00007f63c9489109
-RDX: 0000000000000070 RSI: 0000000020000440 RDI: 0000000000000005
-RBP: 00007f63c94e305d R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007ffde158863f R14: 00007f63ca616300 R15: 0000000000022000
- </TASK>
-Modules linked in:
-CR2: ffffffffa0000a18
----[ end trace 0000000000000000 ]---
-RIP: 0010:bpf_prog_9d4bccaf8ccaf0dc_F+0x0/0xd
-Code: Unable to access opcode bytes at RIP 0xffffffffa00009ee.
-RSP: 0018:ffffc90003517250 EFLAGS: 00010046
-
-RAX: dffffc0000000000 RBX: ffffc90003563000 RCX: 0000000000000000
-RDX: 1ffff920006ac606 RSI: ffffc90003563048 RDI: 00000000ffff8880
-RBP: ffffc90003517258 R08: 0000000000000001 R09: 0000000000000000
-R10: 0000000000000001 R11: 0000000000000001 R12: 0000000000000001
-R13: ffff88802403bb00 R14: ffff88802fa60000 R15: 0000000000000001
-FS:  00007f63ca616700(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: ffffffffa00009ee CR3: 000000002f068000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
