@@ -2,123 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EBF6E564386
-	for <lists+netdev@lfdr.de>; Sun,  3 Jul 2022 02:43:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EA8C5643A0
+	for <lists+netdev@lfdr.de>; Sun,  3 Jul 2022 05:03:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230323AbiGCAnd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Jul 2022 20:43:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40086 "EHLO
+        id S229998AbiGCDCT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Jul 2022 23:02:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229688AbiGCAnc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Jul 2022 20:43:32 -0400
-Received: from azure-sdnproxy-3.icoremail.net (azure-sdnproxy.icoremail.net [20.232.28.96])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id C1663B1EE;
-        Sat,  2 Jul 2022 17:43:29 -0700 (PDT)
-Received: by ajax-webmail-mail-app4 (Coremail) ; Sun, 3 Jul 2022 08:43:10
- +0800 (GMT+08:00)
-X-Originating-IP: [221.192.179.62]
-Date:   Sun, 3 Jul 2022 08:43:10 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   duoming@zju.edu.cn
-To:     "Jakub Kicinski" <kuba@kernel.org>
-Cc:     linux-hams@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, ralf@linux-mips.org,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com
-Subject: Re: [PATCH v4] net: rose: fix null-ptr-deref caused by
- rose_kill_by_neigh
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
- Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
-In-Reply-To: <20220702120108.32985427@kernel.org>
-References: <20220629104941.26351-1-duoming@zju.edu.cn>
- <20220701194155.5bd61e58@kernel.org>
- <1bbd2137.23c51.181bdcb792f.Coremail.duoming@zju.edu.cn>
- <20220702120108.32985427@kernel.org>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        with ESMTP id S229486AbiGCDCS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Jul 2022 23:02:18 -0400
+Received: from wout2-smtp.messagingengine.com (wout2-smtp.messagingengine.com [64.147.123.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E257658F;
+        Sat,  2 Jul 2022 20:02:16 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.west.internal (Postfix) with ESMTP id 08D7C320024A;
+        Sat,  2 Jul 2022 23:02:12 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute2.internal (MEProxy); Sat, 02 Jul 2022 23:02:14 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=anarazel.de; h=
+        cc:cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm2; t=1656817332; x=1656903732; bh=7AKJuzsinJ
+        qtMyImb2EF1FXvx4qWYBiZUiMMR+YJV5w=; b=MKvjDYTy8LvWquKxl2eb7Jwv0M
+        hlEXviOSScMt+MAlo5Sx+TaerCZjQ0HYx3UsY9U7lLDaT5sOjjDfskfYICvcxxGY
+        62TlAC1M718uniJNwC4Q/rd/VxDfF3XlyMTGY+LCrqn7ryzoo8gFKcJ5r4Ise5CT
+        sETRIjJ0FbfWMixyRHr89m/bJ5pE99T4k0iMM+JEnvHSlbU5L5MXh1khsyIkORpY
+        gBIzcdqxUjJ0L62fjh7tMUkcJmzOpxqs3g8X2krkq4i1vc6l3AUSjacobUSEYWoN
+        d5da0FAUdRaoddwjFlxXu6jUPggCbZTvrLfExvQ0pdzh2WstkuhaZut5ZB9g==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm2; t=1656817332; x=1656903732; bh=7AKJuzsinJqtMyImb2EF1FXvx4qW
+        YBiZUiMMR+YJV5w=; b=LgqCI7fBBaCKDWxrnPNfy1zNXSEjFxxXS9tqQuOdI+is
+        DGkrIurcfzRsRohYbn/yHG7cpO1kLW6NQadFBPmYF6rlkfX6FJJB63yp8gk1KjFa
+        7f+sQAxUw9qSXCxlNPNJB7ktqzUNFslOZ7ayn5YuXRW2F2hs5bn7YhfKkudsXxRf
+        sTbKbRKChyg3jmQFbHVmcDcsD1zZH1qN4xJUmuhp+DBSs37Az53EPUHJoHJ7Po/h
+        kNJa5o+jvq8Nz1Urq647aHHnlsTlNhQyEVKlVQkQ3lVtrmZYyo8+XXrRwN99zDpo
+        ZbrbllrqFFOcauw38CJYxrlvt7jgCnizVnE76IKBjQ==
+X-ME-Sender: <xms:swbBYjJ0Fw6w6_AAyRQEUSALrHVHuko54OLgr5V1Mq82da4YE-JmBw>
+    <xme:swbBYnKBb9QwXxql10xkBht9RIDoly2wk7IUTGQ2AoRrgN-nTOktBnY4bQ8CGrBqR
+    CrhBaiVy7HSARWieg>
+X-ME-Received: <xmr:swbBYrvhPsrJZFmq_u1O0fHD-ApqEwIAMVQCtrHdSMwvoM3xCuSACX7RT8Fnh-kK-TaEcuCgWPsVMlx2-NiRpSnCm_rvdt43wOvptYFRffhCsQzf526T-T--i0ZZ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudehiedgieejucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvfevuffkfhggtggujgesthdtredttddtvdenucfhrhhomheptehnughr
+    vghsucfhrhgvuhhnugcuoegrnhgurhgvshesrghnrghrrgiivghlrdguvgeqnecuggftrf
+    grthhtvghrnhepvdfffeevhfetveffgeeiteefhfdtvdffjeevhfeuteegleduheetvedu
+    ieettddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomh
+    eprghnughrvghssegrnhgrrhgriigvlhdruggv
+X-ME-Proxy: <xmx:swbBYsaK2yLHO8XqG8L9_3bwQnoTu0n9xhCzpjTyu02o5gXvtXTFAw>
+    <xmx:swbBYqa-8_T1-5FuaMmf7mB14H7u8IvDkmB2uEsiR41fEh13F6VG3w>
+    <xmx:swbBYgDt_36TZ7coT0OA9hUoqwGVz9JpljrSINHHZ19hMq733Zfr6Q>
+    <xmx:tAbBYnRG_0xcwjVqBsDDjPDTBXBjzNyMzdZLGpEnAKMoA-xj-aBjxw>
+Feedback-ID: id4a34324:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sat,
+ 2 Jul 2022 23:02:11 -0400 (EDT)
+Date:   Sat, 2 Jul 2022 20:02:10 -0700
+From:   Andres Freund <andres@anarazel.de>
+To:     Song Liu <song@kernel.org>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, kernel-team@fb.com, peterz@infradead.org,
+        x86@kernel.org, iii@linux.ibm.com, Song Liu <songliubraving@fb.com>
+Subject: Re: [PATCH v9 bpf-next 9/9] bpf, x86_64: use
+ bpf_jit_binary_pack_alloc
+Message-ID: <20220703030210.pmjft7qc2eajzi6c@alap3.anarazel.de>
+References: <20220204185742.271030-1-song@kernel.org>
+ <20220204185742.271030-10-song@kernel.org>
 MIME-Version: 1.0
-Message-ID: <194120ff.22ed2.181c182e706.Coremail.duoming@zju.edu.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: cS_KCgC3COEf5sBi5IkHAw--.64853W
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgkAAVZdtagNRwACsU
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220204185742.271030-10-song@kernel.org>
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGVsbG8sCgpPbiBTYXQsIDIgSnVsIDIwMjIgMTI6MDE6MDggLTA3MDAgSmFrdWIgS2ljaW5za2kg
-d3JvdGU6Cgo+IE9uIFNhdCwgMiBKdWwgMjAyMiAxNToyMzo1NyArMDgwMCAoR01UKzA4OjAwKSBk
-dW9taW5nQHpqdS5lZHUuY24gd3JvdGU6Cj4gPiA+IE9uIFdlZCwgMjkgSnVuIDIwMjIgMTg6NDk6
-NDEgKzA4MDAgRHVvbWluZyBaaG91IHdyb3RlOiAgCj4gPiA+ID4gV2hlbiB0aGUgbGluayBsYXll
-ciBjb25uZWN0aW9uIGlzIGJyb2tlbiwgdGhlIHJvc2UtPm5laWdoYm91ciBpcwo+ID4gPiA+IHNl
-dCB0byBudWxsLiBCdXQgcm9zZS0+bmVpZ2hib3VyIGNvdWxkIGJlIHVzZWQgYnkgcm9zZV9jb25u
-ZWN0aW9uKCkKPiA+ID4gPiBhbmQgcm9zZV9yZWxlYXNlKCkgbGF0ZXIsIGJlY2F1c2UgdGhlcmUg
-aXMgbm8gc3luY2hyb25pemF0aW9uIGFtb25nCj4gPiA+ID4gdGhlbS4gQXMgYSByZXN1bHQsIHRo
-ZSBudWxsLXB0ci1kZXJlZiBidWdzIHdpbGwgaGFwcGVuLgo+ID4gPiA+IAo+ID4gPiA+IE9uZSBv
-ZiB0aGUgbnVsbC1wdHItZGVyZWYgYnVncyBpcyBzaG93biBiZWxvdzoKPiA+ID4gPiAKPiA+ID4g
-PiAgICAgKHRocmVhZCAxKSAgICAgICAgICAgICAgICAgIHwgICAgICAgICh0aHJlYWQgMikKPiA+
-ID4gPiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgIHJvc2VfY29ubmVjdAo+ID4g
-PiA+IHJvc2Vfa2lsbF9ieV9uZWlnaCAgICAgICAgICAgICAgfCAgICBsb2NrX3NvY2soc2spCj4g
-PiA+ID4gICBzcGluX2xvY2tfYmgoJnJvc2VfbGlzdF9sb2NrKSB8ICAgIGlmICghcm9zZS0+bmVp
-Z2hib3VyKQo+ID4gPiA+ICAgcm9zZS0+bmVpZ2hib3VyID0gTlVMTDsvLygxKSAgfAo+ID4gPiA+
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgICByb3NlLT5uZWlnaGJvdXItPnVz
-ZSsrOy8vKDIpICAKPiA+ID4gICAKPiA+ID4gPiAgCQlpZiAocm9zZS0+bmVpZ2hib3VyID09IG5l
-aWdoKSB7ICAKPiA+ID4gCj4gPiA+IFdoeSBpcyBpdCBva2F5IHRvIHBlcmZvcm0gdGhpcyBjb21w
-YXJpc29uIHdpdGhvdXQgdGhlIHNvY2tldCBsb2NrLAo+ID4gPiBpZiB3ZSBuZWVkIGEgc29ja2V0
-IGxvY2sgdG8gY2xlYXIgaXQ/IExvb2tzIGxpa2Ugcm9zZV9raWxsX2J5X25laWdoKCkKPiA+ID4g
-aXMgbm90IGd1YXJhbnRlZWQgdG8gY2xlYXIgYWxsIHRoZSB1c2VzIG9mIGEgbmVpZ2hib3IuICAK
-PiA+IAo+ID4gSSBhbSBzb3JyeSwgdGhlIGNvbXBhcmlzaW9uIHNob3VsZCBhbHNvIGJlIHByb3Rl
-Y3RlZCB3aXRoIHNvY2tldCBsb2NrLgo+ID4gVGhlIHJvc2Vfa2lsbF9ieV9uZWlnaCgpIG9ubHkg
-Y2xlYXIgdGhlIG5laWdoYm9yIHRoYXQgaXMgcGFzc2VkIGFzCj4gPiBwYXJhbWV0ZXIgb2Ygcm9z
-ZV9raWxsX2J5X25laWdoKCkuIAo+IAo+IERvbid0IHRoaW5rIHRoYXQncyBwb3NzaWJsZSwgeW91
-J2QgaGF2ZSB0byBkcm9wIHRoZSBuZWlnaCBsb2NrIGV2ZXJ5Cj4gdGltZS4KClRoZSBuZWlnaGJv
-dXIgaXMgY2xlYXJlZCBpbiB0d28gc2l0dWF0aW9ucy4KCigxKSBXaGVuIHRoZSByb3NlIGRldmlj
-ZSBpcyBkb3duLCB0aGUgcm9zZV9saW5rX2RldmljZV9kb3duKCkgdHJhdmVyc2VzCnRoZSByb3Nl
-X25laWdoX2xpc3QgYW5kIHVzZXMgdGhlIHJvc2Vfa2lsbF9ieV9uZWlnaCgpIHRvIGNsZWFyIHRo
-ZQpuZWlnaGJvcnMgb2YgdGhlIGRldmljZS4KCnZvaWQgcm9zZV9saW5rX2RldmljZV9kb3duKHN0
-cnVjdCBuZXRfZGV2aWNlICpkZXYpCnsKCXN0cnVjdCByb3NlX25laWdoICpyb3NlX25laWdoOwoK
-CWZvciAocm9zZV9uZWlnaCA9IHJvc2VfbmVpZ2hfbGlzdDsgcm9zZV9uZWlnaCAhPSBOVUxMOyBy
-b3NlX25laWdoID0gcm9zZV9uZWlnaC0+bmV4dCkgewoJCWlmIChyb3NlX25laWdoLT5kZXYgPT0g
-ZGV2KSB7CgkJCXJvc2VfZGVsX3JvdXRlX2J5X25laWdoKHJvc2VfbmVpZ2gpOwoJCQlyb3NlX2tp
-bGxfYnlfbmVpZ2gocm9zZV9uZWlnaCk7CgkJfQoJfQp9CgpodHRwczovL2VsaXhpci5ib290bGlu
-LmNvbS9saW51eC92NS4xOS1yYzQvc291cmNlL25ldC9yb3NlL3Jvc2Vfcm91dGUuYyNMODM5Cgoo
-MikgV2hlbiB0aGUgbGV2ZWwgMiBsaW5rIGhhcyB0aW1lZCBvdXQsIHRoZSByb3NlX2xpbmtfZmFp
-bGVkKCkgY2FsbHMgcm9zZV9raWxsX2J5X25laWdoKCkKdG8gY2xlYXIgdGhlIHJvc2VfbmVpZ2gu
-CgpodHRwczovL2VsaXhpci5ib290bGluLmNvbS9saW51eC92NS4xOS1yYzQvc291cmNlL25ldC9y
-b3NlL3Jvc2Vfcm91dGUuYyNMODEzCgo+ID4gPiA+ICsJCQlzb2NrX2hvbGQocyk7Cj4gPiA+ID4g
-KwkJCXNwaW5fdW5sb2NrX2JoKCZyb3NlX2xpc3RfbG9jayk7Cj4gPiA+ID4gKwkJCWxvY2tfc29j
-ayhzKTsKPiA+ID4gPiAgCQkJcm9zZV9kaXNjb25uZWN0KHMsIEVORVRVTlJFQUNILCBST1NFX09V
-VF9PRl9PUkRFUiwgMCk7Cj4gPiA+ID4gIAkJCXJvc2UtPm5laWdoYm91ci0+dXNlLS07ICAKPiA+
-ID4gCj4gPiA+IFdoYXQgcHJvdGVjdHMgdGhlIHVzZSBjb3VudGVyPyAgCj4gPiAKPiA+IFRoZSB1
-c2UgY291bnRlciBpcyBwcm90ZWN0ZWQgYnkgc29ja2V0IGxvY2suCj4gCj4gV2hpY2ggb25lLCB0
-aGUgbmVpZ2ggb2JqZWN0IGNhbiBiZSBzaGFyZWQgYnkgbXVsdGlwbGUgc29ja2V0cywgbm8/CgpU
-aGUgc2tfZm9yX2VhY2goKSB0cmF2ZXJzZXMgdGhlIHJvc2VfbGlzdCBhbmQgdXNlcyB0aGUgbG9j
-ayBvZiB0aGUgc29ja2V0IHRoYXQgaXMgZXh0cmFjdGVkCmZyb20gdGhlIHJvc2VfbGlzdCB0byBw
-cm90ZWN0IHRoZSB1c2UgY291bnRlci4KCmRpZmYgLS1naXQgYS9uZXQvcm9zZS9hZl9yb3NlLmMg
-Yi9uZXQvcm9zZS9hZl9yb3NlLmMKaW5kZXggYmYyZDk4NmE2YmMuLjZkNTA4OGIwMzBhIDEwMDY0
-NAotLS0gYS9uZXQvcm9zZS9hZl9yb3NlLmMKKysrIGIvbmV0L3Jvc2UvYWZfcm9zZS5jCkBAIC0x
-NjUsMTQgKzE2NSwyNiBAQCB2b2lkIHJvc2Vfa2lsbF9ieV9uZWlnaChzdHJ1Y3Qgcm9zZV9uZWln
-aCAqbmVpZ2gpCiAgICAgICAgc3RydWN0IHNvY2sgKnM7CiAKICAgICAgICBzcGluX2xvY2tfYmgo
-JnJvc2VfbGlzdF9sb2NrKTsKK2FnYWluOgogICAgICAgIHNrX2Zvcl9lYWNoKHMsICZyb3NlX2xp
-c3QpIHsKICAgICAgICAgICAgICAgIHN0cnVjdCByb3NlX3NvY2sgKnJvc2UgPSByb3NlX3NrKHMp
-OwogCisgICAgICAgICAgICAgICBzb2NrX2hvbGQocyk7CisgICAgICAgICAgICAgICBzcGluX3Vu
-bG9ja19iaCgmcm9zZV9saXN0X2xvY2spOworICAgICAgICAgICAgICAgbG9ja19zb2NrKHMpOwog
-ICAgICAgICAgICAgICAgaWYgKHJvc2UtPm5laWdoYm91ciA9PSBuZWlnaCkgewogICAgICAgICAg
-ICAgICAgICAgICAgICByb3NlX2Rpc2Nvbm5lY3QocywgRU5FVFVOUkVBQ0gsIFJPU0VfT1VUX09G
-X09SREVSLCAwKTsKICAgICAgICAgICAgICAgICAgICAgICAgcm9zZS0+bmVpZ2hib3VyLT51c2Ut
-LTsKICAgICAgICAgICAgICAgICAgICAgICAgcm9zZS0+bmVpZ2hib3VyID0gTlVMTDsKKyAgICAg
-ICAgICAgICAgICAgICAgICAgcmVsZWFzZV9zb2NrKHMpOworICAgICAgICAgICAgICAgICAgICAg
-ICBzb2NrX3B1dChzKTsKKyAgICAgICAgICAgICAgICAgICAgICAgc3Bpbl9sb2NrX2JoKCZyb3Nl
-X2xpc3RfbG9jayk7CisgICAgICAgICAgICAgICAgICAgICAgIGdvdG8gYWdhaW47CiAgICAgICAg
-ICAgICAgICB9CisgICAgICAgICAgICAgICByZWxlYXNlX3NvY2socyk7CisgICAgICAgICAgICAg
-ICBzb2NrX3B1dChzKTsKKyAgICAgICAgICAgICAgIHNwaW5fbG9ja19iaCgmcm9zZV9saXN0X2xv
-Y2spOworICAgICAgICAgICAgICAgZ290byBhZ2FpbjsKICAgICAgICB9CiAgICAgICAgc3Bpbl91
-bmxvY2tfYmgoJnJvc2VfbGlzdF9sb2NrKTsKIH0KCkJlc3QgcmVnYXJkcywKRHVvbWluZyBaaG91
+Hi,
 
+On 2022-02-04 10:57:42 -0800, Song Liu wrote:
+> From: Song Liu <songliubraving@fb.com>
+> 
+> Use bpf_jit_binary_pack_alloc in x86_64 jit. The jit engine first writes
+> the program to the rw buffer. When the jit is done, the program is copied
+> to the final location with bpf_jit_binary_pack_finalize.
+> 
+> Note that we need to do bpf_tail_call_direct_fixup after finalize.
+> Therefore, the text_live = false logic in __bpf_arch_text_poke is no
+> longer needed.
+
+I think this broke bpf_jit_enable = 2. I just tried to use that, to verify I
+didn't break tools/bpf/bpf_jit_disasm, and I just see output like
+
+Jul 02 18:34:40 awork3 kernel: flen=142 proglen=735 pass=5 image=00000000d076e0db from=sshd pid=440127
+Jul 02 18:34:40 awork3 kernel: JIT code: 00000000: cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc
+Jul 02 18:34:40 awork3 kernel: JIT code: 00000010: cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc
+Jul 02 18:34:40 awork3 kernel: JIT code: 00000020: cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc
+Jul 02 18:34:40 awork3 kernel: JIT code: 00000030: cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc
+...
+
+while bpftool keeps showing reasonable content. The 'cc' content only started
+with a later commit, but I think this is the commit that broke bpf_jit_enable
+== 2.
+
+At the time bpf_jit_dump() is called bpf_jit_binary_pack_alloc() pointed image to
+ro_header->image, but that's not yet written to, because
+bpf_jit_binary_pack_finalize() hasn't been called.
+
+Greetings,
+
+Andres Freund
