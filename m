@@ -2,109 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D153564FB9
-	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 10:28:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83B3C564FCC
+	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 10:35:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232266AbiGDI2D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jul 2022 04:28:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38094 "EHLO
+        id S233332AbiGDIfZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Jul 2022 04:35:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233278AbiGDI2C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 04:28:02 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31062B1DA
-        for <netdev@vger.kernel.org>; Mon,  4 Jul 2022 01:28:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656923282; x=1688459282;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=1Jl1/QYdQy4gTteXenR4N4cevWANLr+exdqRiqeiCxM=;
-  b=KgRq3SR9BuEyKFJKhaaqHJCNw2b66Sn7phpptO2LyIzwnEHWRBN9+Dl1
-   ofQm9nNWkhMeg02vf21JNLeoz2Dximim6IE0pZ7oHS5SXTOBWixbkbg9w
-   riOMyvXFoSkiiGSRwhwmwjaJzcmsAoio1zbAMv98z7kruY1LfjpcJl5Uo
-   DBZw3DegbnXe5wl+7nSlm0kfOzzLUzp8PnxdzKKDaI9A4JaInR8CEh/me
-   8ure7CQIHqSbtJZtdlqx/fSoKPzJj+PdGo2JDHpyfa2YlPLjMSZCIrKsL
-   QAItCeWMUY87YyB6Mv9VBlzRmfwTHxWLjYdgbbBockNV3ydo4lZXiqjg2
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10397"; a="283800240"
-X-IronPort-AV: E=Sophos;i="5.92,243,1650956400"; 
-   d="scan'208";a="283800240"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2022 01:28:01 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,243,1650956400"; 
-   d="scan'208";a="567095308"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 04 Jul 2022 01:28:00 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o8HR1-000HiZ-CL;
-        Mon, 04 Jul 2022 08:27:59 +0000
-Date:   Mon, 4 Jul 2022 16:27:54 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jianbo Liu <jianbol@nvidia.com>
-Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>,
-        Ariel Levkovich <lariel@nvidia.com>
-Subject: [net-next:master 681/702]
- meter.c:(.text.mlx5e_tc_meter_modify+0x32c): undefined reference to
- `__udivdi3'
-Message-ID: <202207041653.sy0phH8z-lkp@intel.com>
+        with ESMTP id S231497AbiGDIfY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 04:35:24 -0400
+Received: from eidolon.nox.tf (eidolon.nox.tf [IPv6:2a07:2ec0:2185::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CC185FB2
+        for <netdev@vger.kernel.org>; Mon,  4 Jul 2022 01:35:23 -0700 (PDT)
+Received: from equinox by eidolon.nox.tf with local (Exim 4.94.2)
+        (envelope-from <equinox@diac24.net>)
+        id 1o8HY8-003LOT-7j; Mon, 04 Jul 2022 10:35:20 +0200
+Date:   Mon, 4 Jul 2022 10:35:20 +0200
+From:   David Lamparter <equinox@diac24.net>
+To:     David Ahern <dsahern@kernel.org>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 2/2] net: ip6mr: add RTM_GETROUTE netlink op
+Message-ID: <YsKmSMPRoUHeejCS@eidolon.nox.tf>
+References: <20220630202706.33555ad2@kernel.org>
+ <20220701075805.65978-1-equinox@diac24.net>
+ <20220701075805.65978-3-equinox@diac24.net>
+ <0d18f6a3-78da-2dee-d715-39a043870eec@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-X-Spam-Status: No, score=-5.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <0d18f6a3-78da-2dee-d715-39a043870eec@kernel.org>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git master
-head:   d0bf1fe6454e976e39bc1524b9159fa2c0fcf321
-commit: 6ddac26cf7633766e4e59d513d81f6fd5afa6fcd [681/702] net/mlx5e: Add support to modify hardware flow meter parameters
-config: mips-allyesconfig (https://download.01.org/0day-ci/archive/20220704/202207041653.sy0phH8z-lkp@intel.com/config)
-compiler: mips-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git/commit/?id=6ddac26cf7633766e4e59d513d81f6fd5afa6fcd
-        git remote add net-next https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git
-        git fetch --no-tags net-next master
-        git checkout 6ddac26cf7633766e4e59d513d81f6fd5afa6fcd
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash
+On Sun, Jul 03, 2022 at 01:07:33PM -0600, David Ahern wrote:
+> On 7/1/22 1:58 AM, David Lamparter wrote:
+[...]
+> > +	if (!netlink_strict_get_check(skb))
+> > +		return nlmsg_parse_deprecated(nlh, sizeof(*rtm), tb, RTA_MAX,
+> > +					      rtm_ipv6_policy, extack);
+>
+> Since this is new code, it always operates in strict mode.
+>
+[...]
+> > +	err = nlmsg_parse_deprecated_strict(nlh, sizeof(*rtm), tb, RTA_MAX,
+> > +					    rtm_ipv6_policy, extack);
+>
+> nlmsg_parse here.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Thanks for the feedback!  I've fixed the code, am currently retesting,
+and will post a v2 shortly.
 
-All errors (new ones prefixed by >>):
 
-   arch/mips/kernel/head.o: in function `kernel_entry':
-   (.ref.text+0xac): relocation truncated to fit: R_MIPS_26 against `start_kernel'
-   init/main.o: in function `set_reset_devices':
-   main.c:(.init.text+0x20): relocation truncated to fit: R_MIPS_26 against `_mcount'
-   main.c:(.init.text+0x30): relocation truncated to fit: R_MIPS_26 against `__sanitizer_cov_trace_pc'
-   init/main.o: in function `debug_kernel':
-   main.c:(.init.text+0xa4): relocation truncated to fit: R_MIPS_26 against `_mcount'
-   main.c:(.init.text+0xb4): relocation truncated to fit: R_MIPS_26 against `__sanitizer_cov_trace_pc'
-   init/main.o: in function `quiet_kernel':
-   main.c:(.init.text+0x128): relocation truncated to fit: R_MIPS_26 against `_mcount'
-   main.c:(.init.text+0x138): relocation truncated to fit: R_MIPS_26 against `__sanitizer_cov_trace_pc'
-   init/main.o: in function `warn_bootconfig':
-   main.c:(.init.text+0x1ac): relocation truncated to fit: R_MIPS_26 against `_mcount'
-   main.c:(.init.text+0x1bc): relocation truncated to fit: R_MIPS_26 against `__sanitizer_cov_trace_pc'
-   init/main.o: in function `init_setup':
-   main.c:(.init.text+0x238): relocation truncated to fit: R_MIPS_26 against `_mcount'
-   main.c:(.init.text+0x258): additional relocation overflows omitted from the output
-   mips-linux-ld: drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.o: in function `mlx5e_tc_meter_modify':
->> meter.c:(.text.mlx5e_tc_meter_modify+0x32c): undefined reference to `__udivdi3'
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+-David / equi
