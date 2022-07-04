@@ -2,158 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 27C78565D91
-	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 20:44:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 32132565DB2
+	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 21:03:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229556AbiGDSoN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jul 2022 14:44:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45154 "EHLO
+        id S234028AbiGDTDI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Jul 2022 15:03:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229595AbiGDSoM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 14:44:12 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F1C6EAE56
-        for <netdev@vger.kernel.org>; Mon,  4 Jul 2022 11:44:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656960251;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=/XeGRpP6ZId+7T6ByVHweuCJUQTeXWvQUlmQR22hrw0=;
-        b=OZ7QxvGlf04MKXihXxE4xpriIvjho6cvRkH1ubv2f1stqyWcnqqVJsTGUNG4n3Vj0CVQ9a
-        Aa0kYwHFEcVd2Unoj+oUW2MqUFNbyqg4fhicmdTbKmKrF3/iCDYZ9U1OBsUqv0QuAIMmtO
-        3JxMrFN9XDQ/dSo43JtF+5iWAY1/1b8=
-Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com
- [209.85.167.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-19-A8wgzCzNPlWqQ9s6EJyQvQ-1; Mon, 04 Jul 2022 14:44:09 -0400
-X-MC-Unique: A8wgzCzNPlWqQ9s6EJyQvQ-1
-Received: by mail-lf1-f69.google.com with SMTP id p2-20020a05651212c200b004814102d512so3285769lfg.1
-        for <netdev@vger.kernel.org>; Mon, 04 Jul 2022 11:44:09 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:message-id:date:mime-version:user-agent:cc
-         :subject:content-language:to:references:in-reply-to
-         :content-transfer-encoding;
-        bh=/XeGRpP6ZId+7T6ByVHweuCJUQTeXWvQUlmQR22hrw0=;
-        b=FrjeL0IGvJ0r3kOClRha1KnQvjWRsKz64Q+UuYKn3s/tQ4DFuQM+WXBMjJ8yb+lyz6
-         XubYl1kdYMr4cZAsz+Of1LO8P4Hw8YARI/MmhyrbFz1gz7cU1DV8wRLOrxVvhINywdXJ
-         UeBukC8h1Caux8magEEpOzX8Tw9MoheANKJ/+XbTPIj22yizIEouHHrtyc3z0xhjW2dL
-         fjMqekrCoFxlbRgyOhIgvEk0DlCKTuryt+/AAJ5oY80tyWKBrRm2jPJf1Aqu4C/AxKgE
-         2229EITRlGvVMqciRCG2un4b/h6UJ3xyJQ3wFR94IDc2BfyDncf5IMk9jqVtl7W1S8MD
-         NP0A==
-X-Gm-Message-State: AJIora9DiT2SQJyTI2NNzFhr8wSu3ggH/2Zjg12ne2MAORsGCONTcxib
-        96fxtPGVn3LOA2lSy2spBcjwCVLy9LTPRtbyOh3A+DWpuU7gOvdejtiAUn6giWwAACi47fL6ABf
-        wEdN5NtkgIJKuIYpy
-X-Received: by 2002:a2e:a786:0:b0:25b:c51a:2c0b with SMTP id c6-20020a2ea786000000b0025bc51a2c0bmr17302937ljf.215.1656960248339;
-        Mon, 04 Jul 2022 11:44:08 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1sUjZDQTJKS/cC/EbwD6uXZ8y+pFvj472qgkIKZD5nHhQ69eebfOBxPU6CyfijqaCYd1r2I6g==
-X-Received: by 2002:a2e:a786:0:b0:25b:c51a:2c0b with SMTP id c6-20020a2ea786000000b0025bc51a2c0bmr17302926ljf.215.1656960248133;
-        Mon, 04 Jul 2022 11:44:08 -0700 (PDT)
-Received: from [192.168.0.50] (87-59-106-155-cable.dk.customer.tdc.net. [87.59.106.155])
-        by smtp.gmail.com with ESMTPSA id c2-20020ac25f62000000b00478f3fe716asm5254746lfc.200.2022.07.04.11.44.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 04 Jul 2022 11:44:07 -0700 (PDT)
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Message-ID: <263b8398-01fa-a8df-09d9-69bd8e49bc1e@redhat.com>
-Date:   Mon, 4 Jul 2022 20:44:06 +0200
+        with ESMTP id S229494AbiGDTDH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 15:03:07 -0400
+Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-eopbgr60059.outbound.protection.outlook.com [40.107.6.59])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 091B46471;
+        Mon,  4 Jul 2022 12:03:07 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=C8nE4kHyg7Y8GZxSC/wXPu++r5/VDpajboHFTANMWevNj4kYLg5PccEKo6C99jyVLaj19+0/sZcuCjj2tKkSFyL1o/LPw3MvN+WL4LskgOkMoqgA54smC7lFsIAJfzMmFoItf9THmnUoIo5jw+Fstdod4GHzxrdGkJI9PaoeBgNkkMF5tWJ5ydWBn1R9rat5EqBQwJoc4WAJAf1CRkRwN6RhBg8xhQDBWvS3j1SQzm1Oxyo69Io41KEPU7ohBXdkicBJktasst0Laq5NVQAc8JKS51hsuQlQKIt/JwjC4bnBau+NmIaYCgSnLjISL2rfPOBGOvryeO3c1cV1FDmANA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=segmNNjJPcKSKfDQNEd7+1fcdg25B01imJzDChAIt9Y=;
+ b=QiOW4WdIoFdTyJY+XcxwdGegAYx4Kv++6C5IqLVSVl03IlnIGhGsIlausxRf0TEjn4r8yUjyBdWIwdOwa/nTs3h27pZA7FTWXa5w5KImCDjklHS+zUdknJW8YYPegFSbAv8MmL8ycZPjdhmQ4LC4bCYH1RfOAp14opnVesnt5U+rUt1fmsCa5VIWrWgVzqIQozHcN6Le9SUxVnRzcydJI1Xcm/AbUxsEmeUsXgPqpnw0fqJaUErYMNeIVCZiPtqovG/yhgC+TgrV6/Ia/KC29RvJ68Oo/XPpO7O0ME8UDhgkVElxCgeQilXCUgpiTSY/4GwAykRh03tRalGbotfrEg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=segmNNjJPcKSKfDQNEd7+1fcdg25B01imJzDChAIt9Y=;
+ b=HaLYSTwbN1/Q7bv5T/0eb5D9EY4xR6M8UXlggEGqVEoQnbHxJXuhqJ1Ge1m7nJlSc6DuPkdJ5E0Zy5C2Ifu+Q/+B1P0z/o9lzvBDpqdL7Vy6v4oNr6UgLoCvRnNm/SCsgx15Cmci3cQ2rqgLKOofCR8BwGKTiInk1dil4+J+kdc=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by AM5PR0401MB2483.eurprd04.prod.outlook.com (2603:10a6:203:35::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.21; Mon, 4 Jul
+ 2022 19:03:04 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::71b7:8ed1:e4e0:3857]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::71b7:8ed1:e4e0:3857%4]) with mapi id 15.20.5395.019; Mon, 4 Jul 2022
+ 19:02:58 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Maxim Kochetkov <fido_max@inbox.ru>,
+        Colin Foster <colin.foster@in-advantage.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 1/2] net: sched: provide shim definitions for taprio_offload_{get,free}
+Date:   Mon,  4 Jul 2022 22:02:40 +0300
+Message-Id: <20220704190241.1288847-1-vladimir.oltean@nxp.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: VI1P18901CA0023.EURP189.PROD.OUTLOOK.COM
+ (2603:10a6:801::33) To VI1PR04MB5136.eurprd04.prod.outlook.com
+ (2603:10a6:803:55::19)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Cc:     brouer@redhat.com, "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        bpf <bpf@vger.kernel.org>, Xdp <xdp-newbies@vger.kernel.org>
-Subject: Re: [PATCH bpf-next] selftests, bpf: remove AF_XDP samples
-Content-Language: en-US
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>,
-        Jesper Dangaard Brouer <jbrouer@redhat.com>
-References: <20220630093717.8664-1-magnus.karlsson@gmail.com>
- <fa929729-6122-195f-aa4b-e5d3fedb1887@redhat.com>
- <CAJ8uoz2KmpVf7nkJXUsHhmOtS2Td+rMOX8-PRqzz9QxJB-tZ3g@mail.gmail.com>
-In-Reply-To: <CAJ8uoz2KmpVf7nkJXUsHhmOtS2Td+rMOX8-PRqzz9QxJB-tZ3g@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: e4b5e65c-a6c8-4e89-1824-08da5defcf42
+X-MS-TrafficTypeDiagnostic: AM5PR0401MB2483:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: XqvyVK2xY31ORh/p3IyGfgvXkzs9vTcwjHQFIWiWsJQDxDBReH3oHDZsym7/sMmlOwi7IKARillVUTTghOo14wDf7Mgg1j8WPOVL5MrW6M+9/Wzm/uldnMKh9pa7B4QcmqUbx6fMHIxg6hcofNDxOgoUL7HibTyquSwaFKd4fqCEJoMtvfa0+DPOfz1whUhyXu5NGgbdTdVPP9Mk8IWi3aHGeeuO3OlxZQHnrg7txRxEDLeUpTRqEhak+K3v2UtQFH4K308pmF6fPbjAN3N4x8P3TPlG+wC2mznYpbNSJYpZRplCuzlKZ64hMWorfrsFj3sPTBkTEJbL+hvOkUJUHBA4H2xEfD+NVc7hF9fxGSzY5vTuDOgKO5UL3B9oBeQRf+lVu6/0nEt6iUaul91vS4Cx8hdVSABq98PQvo45PsBggPh4VaI79J6VKq8eTtgM/rVrSPU/utBrx/mpwvUHB5Yq1c34RY8rVVghSAnrYP/MrPk1pr+kGDVcbnkTklRJ2As4yiijJPVdExamjdxdHGR3KDmwg9sPYH1YjjGHwDbZSWOAyY8U+coesIO0oxhRRgsKXzLRBJSProJvX/3+Ob9NFUIMWBX9vctxNHOAIECN39nBgnkkAq/OQcyHd1VDWNhSCNZiWuLAbwY9KI1xSIS5dXhwKXEjMkeJlDGlDkYgtaUVD0Q327o8LwGyan9Df6BmARGskA4N7MGYj4elPb0UsAA/T0UJH4GvGXg92awxHFRfe2LIWI1OBRXiZfNJEQSIuSQVP5kfAbOyajOR2Dck7UwnTPOlXuTsapqERRXgG+14TIoYgL+XV6myG8gb
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(366004)(39860400002)(396003)(376002)(346002)(316002)(38350700002)(38100700002)(44832011)(7416002)(36756003)(54906003)(6916009)(6512007)(26005)(2906002)(41300700001)(6486002)(8676002)(4326008)(186003)(66476007)(66946007)(66556008)(5660300002)(8936002)(52116002)(478600001)(2616005)(1076003)(6666004)(6506007)(86362001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?4DiNUU6/eUYgzindNOEvLNyvjd8zCEwfw6u6RU69Szi5vUdGeUUFq/gNdk+1?=
+ =?us-ascii?Q?qanO6x+vbxG0WwV2yOrKFt6io9LIj3kg2zx83uu2nwy439AsKDqQHgzviceE?=
+ =?us-ascii?Q?cXJ+DzqWmrJLsXm5IdeK1ISn0FB2Y/PqpMZqmmpscT8JjtB248e9Hi4YxiHs?=
+ =?us-ascii?Q?SyNUuM5J8Y55hmMHZX8lX/y8Q74DkPIzxkGE71geDOiz8GtU41erm0WOvfa4?=
+ =?us-ascii?Q?c/gaWDAGnAzP4JySkrHfOJYxIX9h66qLdM0gizPgIJSH4dcn9zytgBiREOWk?=
+ =?us-ascii?Q?4Um2WitK2Yy4NSHwImnKnT8cC8cNRLOAZY0tFL1wvwD5s4wBTYV5FeVWdcHm?=
+ =?us-ascii?Q?IOEIw0UfBvXoQQ+vM2U20FrFv2cbRRyNOhusTEV3mrqNGJQ+w+1gY5Ei72nL?=
+ =?us-ascii?Q?gjU4+ST2cIobocOmhbg7GERyJhPOTItpCYwRrS/wD18jziur0bnj9Lem5GgD?=
+ =?us-ascii?Q?rkZOQH1L/KmkTRrQ9R/lxw2ziDRH1e3VpQFu2jbmCeW5KLXqvXDwZLZRIiYp?=
+ =?us-ascii?Q?tcRSFZ7sD/+e99NBPKZkhKSo+6RmO6B0eO4gAtH2/+7vEXgoreQBJDKxV5Z2?=
+ =?us-ascii?Q?T1TU32zfiOOtWNKEPtFKa7kwOX+GbQZRTgBLU/bNPmSlDdAO7kQtLfFMSUmT?=
+ =?us-ascii?Q?q0ZFbbJiNtn6myiWpvPCyZ0tG0C9hRzRW/kFZwVmb2SepGa77eeLtXYqE11i?=
+ =?us-ascii?Q?BWKcNa3w78ngVvXMTpTJIkhF74oqnmDV8t0TfASVt4P5ubUpnwtg3OXzhsXh?=
+ =?us-ascii?Q?7jln4yRs7McMLxlc/C+bOmsghJCRYn6ITiFgc7vhPX3QvetkBu3d224p80xa?=
+ =?us-ascii?Q?5K+esDhN2I1baGwj0zSo6LpP/mV/H2nNb3OepuEBWiYexWtws3zNgQw5ejmo?=
+ =?us-ascii?Q?5jeej4XuLggBBND/iFMmkk1e7hHHxwEjnHrSdtz4MPedTMt7iPZDtV0Mf9n/?=
+ =?us-ascii?Q?iDw87b3rM4LQ9URqwXEpHOjUiOfcz8jDHGy5JX1eMqgzBL+kOxxrKRSwxdQB?=
+ =?us-ascii?Q?zP2Q5/Gb3E/GrSTKHSwtX8a0aNuhrK8AaJyQvriiSHjpjVUpl3bCfWivayoW?=
+ =?us-ascii?Q?z9t/DhGa5/Ep+/0AHkYMm7vhVfFhkqFsjr5tcP2vr0ZPi3s7blbiexHNIjE9?=
+ =?us-ascii?Q?mfXZSyABwtflPWrT3PEPSY0yAwXABWYyujDr/hOp8WsuGneXdZcign8GMMKq?=
+ =?us-ascii?Q?Ax4CluxLsi6GnL9r/2/83zekkiksBHg6Ex/KZ+bS6mjrbgb+6cRkFX5uHTHn?=
+ =?us-ascii?Q?xUc+NAr3QD+MP9CKdkHttwjnNtA2DSHa9lcoMXZ6e9ZMJFb7hDvZZ0np6qHY?=
+ =?us-ascii?Q?Da7dAxrI7yPZMrdztvGcTGrihCP/iHoFpOgINZbiUNXLcbU6GczIErX5mtgr?=
+ =?us-ascii?Q?tmNsCAM6wdUBPPWE1zwja2EvN8SchPdvq+xGKZy9Q0Uk7k8CxbR9Kt8hT4V3?=
+ =?us-ascii?Q?or8X6Mrn8Hltmq39KoNE0+tD9zBeCKAsjhMlG9+i6a0c19nLsV3NmVSo0R1m?=
+ =?us-ascii?Q?Hvwv7bjZ6095H3vo1v/6aLrk7BYfpxIDEm9PU6Y7VnhVZgSBEmXsS1RM6UOF?=
+ =?us-ascii?Q?qI/1Est7DwrJ+Im5D8U3IC0M+X9l2w64qWQ3AGpOTU30Gw9ek2GH1caFSkaa?=
+ =?us-ascii?Q?tw=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e4b5e65c-a6c8-4e89-1824-08da5defcf42
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Jul 2022 19:02:58.4316
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Vh4ozCWLjEkgQWQn4qxkyXWqJeenQWltc5D9SKC/hdYreedtawH9vLpzbAaUizXTVoJr7+puECDV/90mghH6Pw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM5PR0401MB2483
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+All callers of taprio_offload_get() and taprio_offload_free() prior to
+the blamed commit are conditionally compiled based on CONFIG_NET_SCH_TAPRIO.
 
+felix_vsc9959.c is different; it provides vsc9959_qos_port_tas_set()
+even when taprio is compiled out.
 
-On 30/06/2022 16.20, Magnus Karlsson wrote:
-> On Thu, Jun 30, 2022 at 3:44 PM Jesper Dangaard Brouer
-> <jbrouer@redhat.com> wrote:
->>
->>
->> On 30/06/2022 11.37, Magnus Karlsson wrote:
->>> From: Magnus Karlsson <magnus.karlsson@intel.com>
->>>
->>> Remove the AF_XDP samples from samples/bpf as they are dependent on
->>> the AF_XDP support in libbpf. This support has now been removed in the
->>> 1.0 release, so these samples cannot be compiled anymore. Please start
->>> to use libxdp instead. It is backwards compatible with the AF_XDP
->>> support that was offered in libbpf. New samples can be found in the
->>> various xdp-project repositories connected to libxdp and by googling.
->>>
->>> Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
->>
->> Will you (or Maciej) be submitting these samples to XDP-tools[1] which
->> is the current home for libxdp or maybe BPF-examples[2] ?
->>
->>    [1] https://github.com/xdp-project/xdp-tools
->>    [2] https://github.com/xdp-project/bpf-examples
->>
->> I know Toke is ready to take over maintaining these, but we will
->> appreciate someone to open a PR with this code...
->>
->>> ---
->>>    MAINTAINERS                     |    2 -
->>>    samples/bpf/Makefile            |    9 -
->>>    samples/bpf/xdpsock.h           |   19 -
->>>    samples/bpf/xdpsock_ctrl_proc.c |  190 ---
->>>    samples/bpf/xdpsock_kern.c      |   24 -
->>>    samples/bpf/xdpsock_user.c      | 2019 -------------------------------
->>>    samples/bpf/xsk_fwd.c           | 1085 -----------------
->>
->> The code in samples/bpf/xsk_fwd.c is interesting, because it contains a
->> buffer memory manager, something I've seen people struggle with getting
->> right and performant (at the same time).
-> 
-> I can push xsk_fwd to BPF-examples. Though I do think that xdpsock has
-> become way too big to serve as a sample. It slowly turned into a catch
-> all demonstrating every single feature of AF_XDP. We need a minimal
-> example and then likely other samples for other features that should
-> be demoed. So I suggest that xdpsock dies here and we start over with
-> something minimal and use xsk_fwd for the forwarding and mempool
-> example.
+Provide shim definitions for the functions exported by taprio so that
+felix_vsc9959.c is able to compile. vsc9959_qos_port_tas_set() in that
+case is dead code anyway, and ocelot_port->taprio remains NULL, which is
+fine for the rest of the logic.
 
-I trust that we in bpf-examples[0] will see a PR with this from 
-you/Intel, so:
+Fixes: 1c9017e44af2 ("net: dsa: felix: keep reference on entire tc-taprio config")
+Reported-by: Colin Foster <colin.foster@in-advantage.com>
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+ include/net/pkt_sched.h | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
-Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
-
-
-> Toke, I think you told me at Recipes in Paris that someone from RedHat
-> was working on an example. Did I remember correctly?
-> 
->> You can get my ACK if someone commits to port this to [1] or [2], or a
->> 3rd place that have someone what will maintain this in the future.
->>
-
-[0] https://github.com/xdp-project/bpf-examples/
+diff --git a/include/net/pkt_sched.h b/include/net/pkt_sched.h
+index 44a35531952e..3372a1f67cf4 100644
+--- a/include/net/pkt_sched.h
++++ b/include/net/pkt_sched.h
+@@ -173,11 +173,28 @@ struct tc_taprio_qopt_offload {
+ 	struct tc_taprio_sched_entry entries[];
+ };
+ 
++#if IS_ENABLED(CONFIG_NET_SCH_TAPRIO)
++
+ /* Reference counting */
+ struct tc_taprio_qopt_offload *taprio_offload_get(struct tc_taprio_qopt_offload
+ 						  *offload);
+ void taprio_offload_free(struct tc_taprio_qopt_offload *offload);
+ 
++#else
++
++/* Reference counting */
++static inline struct tc_taprio_qopt_offload *
++taprio_offload_get(struct tc_taprio_qopt_offload *offload)
++{
++	return NULL;
++}
++
++static inline void taprio_offload_free(struct tc_taprio_qopt_offload *offload)
++{
++}
++
++#endif
++
+ /* Ensure skb_mstamp_ns, which might have been populated with the txtime, is
+  * not mistaken for a software timestamp, because this will otherwise prevent
+  * the dispatch of hardware timestamps to the socket.
+-- 
+2.25.1
 
