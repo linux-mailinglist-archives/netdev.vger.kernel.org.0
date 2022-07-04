@@ -2,117 +2,224 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D588564B9B
-	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 04:20:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9796D564BA9
+	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 04:22:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230061AbiGDCUX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Jul 2022 22:20:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50340 "EHLO
+        id S230260AbiGDCWr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Jul 2022 22:22:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229461AbiGDCUU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 Jul 2022 22:20:20 -0400
-Received: from smtp.gentoo.org (woodpecker.gentoo.org [IPv6:2001:470:ea4a:1:5054:ff:fec7:86e4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0C716353;
-        Sun,  3 Jul 2022 19:20:19 -0700 (PDT)
-Date:   Mon, 4 Jul 2022 10:20:05 +0800
-From:   Yixun Lan <dlan@gentoo.org>
-To:     Conor Dooley <mail@conchuod.ie>
-Cc:     Palmer Dabbelt <palmer@dabbelt.com>,
-        linux-riscv@lists.infradead.org,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
+        with ESMTP id S229502AbiGDCWq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 Jul 2022 22:22:46 -0400
+Received: from out30-54.freemail.mail.aliyun.com (out30-54.freemail.mail.aliyun.com [115.124.30.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C02CA64FE;
+        Sun,  3 Jul 2022 19:22:44 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R281e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046060;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=36;SR=0;TI=SMTPD_---0VIE1rLs_1656901358;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VIE1rLs_1656901358)
+          by smtp.aliyun-inc.com;
+          Mon, 04 Jul 2022 10:22:39 +0800
+Message-ID: <1656901259.0328152-3-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH v11 22/40] virtio_ring: introduce virtqueue_resize()
+Date:   Mon, 4 Jul 2022 10:20:59 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        Vadim Pasternak <vadimp@nvidia.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Eric Farman <farman@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
         John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH] RISC-V/bpf: Enable bpf_probe_read{, str}()
-Message-ID: <YsJOVZU1gPo3KzdB@ofant>
-References: <20220703130924.57240-1-dlan@gentoo.org>
- <c373eec7-2cc4-a41d-916c-f073aba5494b@conchuod.ie>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c373eec7-2cc4-a41d-916c-f073aba5494b@conchuod.ie>
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        linux-um@lists.infradead.org, netdev@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
+        kvm@vger.kernel.org, bpf@vger.kernel.org,
+        kangjie.xu@linux.alibaba.com,
+        virtualization@lists.linux-foundation.org
+References: <20220629065656.54420-1-xuanzhuo@linux.alibaba.com>
+ <20220629065656.54420-23-xuanzhuo@linux.alibaba.com>
+ <d3788739-1c7f-4f1e-a222-f83bd73c14a1@redhat.com>
+In-Reply-To: <d3788739-1c7f-4f1e-a222-f83bd73c14a1@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Conor Dooley:
-
-On 14:12 Sun 03 Jul     , Conor Dooley wrote:
-> On 03/07/2022 14:09, Yixun Lan wrote:
-> > Enable this option to fix a bcc error in RISC-V platform
-> > 
-> > And, the error shows as follows:
-> > 
-> > ~ # runqlen
-> > WARNING: This target JIT is not designed for the host you are running. \
-> > If bad things happen, please choose a different -march switch.
-> > bpf: Failed to load program: Invalid argument
-> > 0: R1=ctx(off=0,imm=0) R10=fp0
-> > 0: (85) call bpf_get_current_task#35          ; R0_w=scalar()
-> > 1: (b7) r6 = 0                        ; R6_w=0
-> > 2: (7b) *(u64 *)(r10 -8) = r6         ; R6_w=P0 R10=fp0 fp-8_w=00000000
-> > 3: (07) r0 += 312                     ; R0_w=scalar()
-> > 4: (bf) r1 = r10                      ; R1_w=fp0 R10=fp0
-> > 5: (07) r1 += -8                      ; R1_w=fp-8
-> > 6: (b7) r2 = 8                        ; R2_w=8
-> > 7: (bf) r3 = r0                       ; R0_w=scalar(id=1) R3_w=scalar(id=1)
-> > 8: (85) call bpf_probe_read#4
-> > unknown func bpf_probe_read#4
-> > processed 9 insns (limit 1000000) max_states_per_insn 0 total_states 0 peak_states 0 mark_read 0
-> > 
-> > Traceback (most recent call last):
-> >   File "/usr/lib/python-exec/python3.9/runqlen", line 187, in <module>
-> >     b.attach_perf_event(ev_type=PerfType.SOFTWARE,
-> >   File "/usr/lib/python3.9/site-packages/bcc/__init__.py", line 1228, in attach_perf_event
-> >     fn = self.load_func(fn_name, BPF.PERF_EVENT)
-> >   File "/usr/lib/python3.9/site-packages/bcc/__init__.py", line 522, in load_func
-> >     raise Exception("Failed to load BPF program %s: %s" %
-> > Exception: Failed to load BPF program b'do_perf_event': Invalid argument
-> > 
-> > Signed-off-by: Yixun Lan <dlan@gentoo.org>
-> 
-> Do you know what commit this fixes?
-> Thanks,
-> Conor.
-> 
-
-I think this is effectively broken for RISC-V 64 at the commit:
- 0ebeea8ca8a4: bpf: Restrict bpf_probe_read{, str}() only to archs where they work
-
-However, the bcc tools haven't got BPF support for RISC-V at that time,
-so no one noticed it
-
-I can add a Fixes tag if you think it's a proper way
-
+On Fri, 1 Jul 2022 17:31:34 +0800, Jason Wang <jasowang@redhat.com> wrote:
+>
+> =E5=9C=A8 2022/6/29 14:56, Xuan Zhuo =E5=86=99=E9=81=93:
+> > Introduce virtqueue_resize() to implement the resize of vring.
+> > Based on these, the driver can dynamically adjust the size of the vring.
+> > For example: ethtool -G.
+> >
+> > virtqueue_resize() implements resize based on the vq reset function. In
+> > case of failure to allocate a new vring, it will give up resize and use
+> > the original vring.
+> >
+> > During this process, if the re-enable reset vq fails, the vq can no
+> > longer be used. Although the probability of this situation is not high.
+> >
+> > The parameter recycle is used to recycle the buffer that is no longer
+> > used.
+> >
+> > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 > > ---
-> >  arch/riscv/Kconfig | 1 +
-> >  1 file changed, 1 insertion(+)
-> > 
-> > diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
-> > index 32ffef9f6e5b4..da0016f1be6ce 100644
-> > --- a/arch/riscv/Kconfig
-> > +++ b/arch/riscv/Kconfig
-> > @@ -25,6 +25,7 @@ config RISCV
-> >  	select ARCH_HAS_GIGANTIC_PAGE
-> >  	select ARCH_HAS_KCOV
-> >  	select ARCH_HAS_MMIOWB
-> > +	select ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE
-> >  	select ARCH_HAS_PTE_SPECIAL
-> >  	select ARCH_HAS_SET_DIRECT_MAP if MMU
-> >  	select ARCH_HAS_SET_MEMORY if MMU
+> >   drivers/virtio/virtio_ring.c | 72 ++++++++++++++++++++++++++++++++++++
+> >   include/linux/virtio.h       |  3 ++
+> >   2 files changed, 75 insertions(+)
+> >
+> > diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
+> > index 4860787286db..5ec43607cc15 100644
+> > --- a/drivers/virtio/virtio_ring.c
+> > +++ b/drivers/virtio/virtio_ring.c
+> > @@ -2542,6 +2542,78 @@ struct virtqueue *vring_create_virtqueue(
+> >   }
+> >   EXPORT_SYMBOL_GPL(vring_create_virtqueue);
+> >
+> > +/**
+> > + * virtqueue_resize - resize the vring of vq
+> > + * @_vq: the struct virtqueue we're talking about.
+> > + * @num: new ring num
+> > + * @recycle: callback for recycle the useless buffer
+> > + *
+> > + * When it is really necessary to create a new vring, it will set the =
+current vq
+> > + * into the reset state. Then call the passed callback to recycle the =
+buffer
+> > + * that is no longer used. Only after the new vring is successfully cr=
+eated, the
+> > + * old vring will be released.
+> > + *
+> > + * Caller must ensure we don't call this with other virtqueue operatio=
+ns
+> > + * at the same time (except where noted).
+> > + *
+> > + * Returns zero or a negative error.
+> > + * 0: success.
+> > + * -ENOMEM: Failed to allocate a new ring, fall back to the original r=
+ing size.
+> > + *  vq can still work normally
+> > + * -EBUSY: Failed to sync with device, vq may not work properly
+> > + * -ENOENT: Transport or device not supported
+> > + * -E2BIG/-EINVAL: num error
+> > + * -EPERM: Operation not permitted
+> > + *
+> > + */
+> > +int virtqueue_resize(struct virtqueue *_vq, u32 num,
+> > +		     void (*recycle)(struct virtqueue *vq, void *buf))
+> > +{
+> > +	struct vring_virtqueue *vq =3D to_vvq(_vq);
+> > +	struct virtio_device *vdev =3D vq->vq.vdev;
+> > +	bool packed;
+> > +	void *buf;
+> > +	int err;
+> > +
+> > +	if (!vq->we_own_ring)
+> > +		return -EPERM;
+> > +
+> > +	if (num > vq->vq.num_max)
+> > +		return -E2BIG;
+> > +
+> > +	if (!num)
+> > +		return -EINVAL;
+> > +
+> > +	packed =3D virtio_has_feature(vdev, VIRTIO_F_RING_PACKED) ? true : fa=
+lse;
+>
+>
+> vq->packed_ring?
 
--- 
-Yixun Lan (dlan)
-Gentoo Linux Developer
-GPG Key ID AABEFD55
+Will fix.
+
+>
+>
+> > +
+> > +	if ((packed ? vq->packed.vring.num : vq->split.vring.num) =3D=3D num)
+> > +		return 0;
+> > +
+> > +	if (!vdev->config->reset_vq)
+> > +		return -ENOENT;
+> > +
+> > +	if (!vdev->config->enable_reset_vq)
+> > +		return -ENOENT;
+>
+>
+> Not sure this is useful, e.g driver may choose to resize after a reset
+> of the device?
+
+There may be some misunderstandings, this is to check whether the transport=
+ has
+set the callback enable_reset_vq().
+
+Thanks.
+
+
+>
+> Thanks
+>
+>
+> > +
+> > +	err =3D vdev->config->reset_vq(_vq);
+> > +	if (err)
+> > +		return err;
+> > +
+> > +	while ((buf =3D virtqueue_detach_unused_buf(_vq)) !=3D NULL)
+> > +		recycle(_vq, buf);
+> > +
+> > +	if (packed)
+> > +		err =3D virtqueue_resize_packed(_vq, num);
+> > +	else
+> > +		err =3D virtqueue_resize_split(_vq, num);
+> > +
+> > +	if (vdev->config->enable_reset_vq(_vq))
+> > +		return -EBUSY;
+> > +
+> > +	return err;
+> > +}
+> > +EXPORT_SYMBOL_GPL(virtqueue_resize);
+> > +
+> >   /* Only available for split ring */
+> >   struct virtqueue *vring_new_virtqueue(unsigned int index,
+> >   				      unsigned int num,
+> > diff --git a/include/linux/virtio.h b/include/linux/virtio.h
+> > index a82620032e43..1272566adec6 100644
+> > --- a/include/linux/virtio.h
+> > +++ b/include/linux/virtio.h
+> > @@ -91,6 +91,9 @@ dma_addr_t virtqueue_get_desc_addr(struct virtqueue *=
+vq);
+> >   dma_addr_t virtqueue_get_avail_addr(struct virtqueue *vq);
+> >   dma_addr_t virtqueue_get_used_addr(struct virtqueue *vq);
+> >
+> > +int virtqueue_resize(struct virtqueue *vq, u32 num,
+> > +		     void (*recycle)(struct virtqueue *vq, void *buf));
+> > +
+> >   /**
+> >    * virtio_device - representation of a device using virtio
+> >    * @index: unique position on the virtio bus
+>
