@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 198115658FE
-	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 16:55:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E804456590A
+	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 16:56:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234825AbiGDOyk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jul 2022 10:54:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50744 "EHLO
+        id S234017AbiGDOzJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Jul 2022 10:55:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234782AbiGDOyj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 10:54:39 -0400
+        with ESMTP id S234923AbiGDOyw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 10:54:52 -0400
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 32E0D316;
-        Mon,  4 Jul 2022 07:54:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8F12FBFC;
+        Mon,  4 Jul 2022 07:54:50 -0700 (PDT)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2633123A;
-        Mon,  4 Jul 2022 07:54:38 -0700 (PDT)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A188CD6E;
+        Mon,  4 Jul 2022 07:54:50 -0700 (PDT)
 Received: from e124483.cambridge.arm.com (e124483.cambridge.arm.com [10.1.29.145])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id E3A633F792;
-        Mon,  4 Jul 2022 07:54:33 -0700 (PDT)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 834FB3F792;
+        Mon,  4 Jul 2022 07:54:46 -0700 (PDT)
 From:   Andrew Kilroy <andrew.kilroy@arm.com>
 To:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
         acme@kernel.org
@@ -34,10 +34,12 @@ Cc:     Andrew Kilroy <andrew.kilroy@arm.com>,
         KP Singh <kpsingh@kernel.org>, Tom Rix <trix@redhat.com>,
         linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
         bpf@vger.kernel.org, llvm@lists.linux.dev
-Subject: [PATCH 0/8] Perf stack unwinding with pointer authentication
-Date:   Mon,  4 Jul 2022 15:53:24 +0100
-Message-Id: <20220704145333.22557-1-andrew.kilroy@arm.com>
+Subject: [PATCH 1/8] perf arm64: Send pointer auth masks to ring buffer
+Date:   Mon,  4 Jul 2022 15:53:25 +0100
+Message-Id: <20220704145333.22557-2-andrew.kilroy@arm.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220704145333.22557-1-andrew.kilroy@arm.com>
+References: <20220704145333.22557-1-andrew.kilroy@arm.com>
 X-Spam-Status: No, score=-6.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
@@ -47,114 +49,264 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch series addresses issues that perf has when attempting to show
-userspace stacks in the presence of pointer authentication on arm64.
+Perf report cannot produce callgraphs using dwarf on arm64 where pointer
+authentication is enabled.  This is because libunwind and libdw cannot
+unmangle instruction pointers that have a pointer authentication code
+(PAC) embedded in them.
 
-Depending on whether libunwind or libdw is used, perf incorrectly
-displays the userspace stack in 'perf report --stdio'.  With libunwind,
-only the leaf function is shown.
+libunwind and libdw need to be given an instruction mask which they can
+use to arrive at the correct return address that does not contain the
+PAC.
 
-            |
-            ---0x200000004005bf
-               0x200000004005bf
-               my_leaf_function
+The bits in the return address that contain the PAC can differ by
+process, so this patch adds a new sample field PERF_SAMPLE_ARCH_1
+to allow the kernel to send the masks up to userspace perf.
 
-With libdw, only the leaf function is shown even though there are
-callers in the application.
+This field can be used in a architecture specific fashion, but on
+aarch64, it contains the ptrauth mask information.
 
-            |
-            ---my_leaf_function
-
-
-The reason perf cannot show the stack upon a perf report --stdio is
-because the unwinders are given instruction pointers which contain a
-pointer authentication code (PAC).  For the libraries to correctly
-unwind, they need to know which bits of the instruction pointer to turn
-off.
-
-The kernel exposes the set of PAC bits via the NT_ARM_PAC_MASK regset.
-It is expected that this may vary per-task in future. The kernel also
-exposes which pointer authentication keys are enabled via the
-NT_ARM_PAC_ENABLED_KEYS regset, and this can change dynamically. These
-are per-task state which perf would need to sample.
-
-It's not always feasible for perf to acquire these regsets via ptrace.
-When sampling system-wide or with inherited events this may require a
-large volume of ptrace requests, and by the time the perf tool processes
-a sample for a task, that task might already have terminated.
-
-Instead, these patches allow this state to be sampled into the perf
-ringbuffer, where it can be consumed more easily by the perf tool.
-
-The first patch changes the kernel to send the authentication PAC masks
-to userspace perf via the perf ring buffer.  This is published in the
-sample, using a new sample field PERF_SAMPLE_ARCH_1.
-
-The subsequent patches are changes to userspace perf to
-
-1) request the PERF_SAMPLE_ARCH_1
-2) supply the instruction mask to libunwind
-3) ensure perf can cope with an older kernel that does not know about
-   the PERF_SAMPLE_ARCH_1 sample field.
-4) checks if the version of libunwind has the capability to accept
-   an instruction mask from perf and if so enable the feature.
-
-These changes depend on a change to libunwind, that is yet to be
-released, although the patch has been merged.
-
-  https://github.com/libunwind/libunwind/pull/360
-
-
-Andrew Kilroy (6):
-  perf arm64: Send pointer auth masks to ring buffer
-  perf evsel: Do not request ptrauth sample field if not supported
-  perf tools: arm64: Read ptrauth data from kernel
-  perf libunwind: Feature check for libunwind ptrauth callback
-  perf libunwind: arm64 pointer authentication
-  perf tools: Print ptrauth struct in perf report
-
-German Gomez (2):
-  perf test: Update arm64 tests to expect ptrauth masks
-  perf test arm64: Test unwinding with PACs on gcc & clang compilers
-
- arch/arm64/include/asm/arch_sample_data.h     |  38 ++++++
- arch/arm64/kernel/Makefile                    |   2 +-
- arch/arm64/kernel/arch_sample_data.c          |  37 ++++++
- include/linux/perf_event.h                    |  24 ++++
- include/uapi/linux/perf_event.h               |   5 +-
- kernel/events/core.c                          |  35 ++++++
- tools/build/Makefile.feature                  |   2 +
- tools/build/feature/Makefile                  |   4 +
- tools/build/feature/test-all.c                |   5 +
- .../feature/test-libunwind-arm64-ptrauth.c    |  26 ++++
- tools/include/uapi/linux/perf_event.h         |   5 +-
- tools/perf/Makefile.config                    |  10 ++
- tools/perf/Makefile.perf                      |   1 +
- tools/perf/tests/Build                        |   1 +
- tools/perf/tests/arm_unwind_pac.c             | 113 ++++++++++++++++++
- tools/perf/tests/arm_unwind_pac.sh            |  57 +++++++++
- tools/perf/tests/attr/README                  |   1 +
- .../attr/test-record-graph-default-aarch64    |   3 +-
- tools/perf/tests/attr/test-record-graph-dwarf |   1 +
- .../attr/test-record-graph-dwarf-aarch64      |  13 ++
- .../tests/attr/test-record-graph-fp-aarch64   |   3 +-
- tools/perf/tests/builtin-test.c               |   1 +
- tools/perf/tests/sample-parsing.c             |   2 +-
- tools/perf/tests/tests.h                      |   1 +
- tools/perf/util/event.h                       |   8 ++
- tools/perf/util/evsel.c                       |  64 ++++++++++
- tools/perf/util/evsel.h                       |   1 +
- tools/perf/util/perf_event_attr_fprintf.c     |   2 +-
- tools/perf/util/session.c                     |  15 +++
- tools/perf/util/unwind-libunwind-local.c      |  12 ++
- 30 files changed, 485 insertions(+), 7 deletions(-)
+Signed-off-by: Andrew Kilroy <andrew.kilroy@arm.com>
+---
+ arch/arm64/include/asm/arch_sample_data.h | 38 +++++++++++++++++++++++
+ arch/arm64/kernel/Makefile                |  2 +-
+ arch/arm64/kernel/arch_sample_data.c      | 37 ++++++++++++++++++++++
+ include/linux/perf_event.h                | 24 ++++++++++++++
+ include/uapi/linux/perf_event.h           |  5 ++-
+ kernel/events/core.c                      | 35 +++++++++++++++++++++
+ 6 files changed, 139 insertions(+), 2 deletions(-)
  create mode 100644 arch/arm64/include/asm/arch_sample_data.h
  create mode 100644 arch/arm64/kernel/arch_sample_data.c
- create mode 100644 tools/build/feature/test-libunwind-arm64-ptrauth.c
- create mode 100644 tools/perf/tests/arm_unwind_pac.c
- create mode 100755 tools/perf/tests/arm_unwind_pac.sh
- create mode 100644 tools/perf/tests/attr/test-record-graph-dwarf-aarch64
 
+diff --git a/arch/arm64/include/asm/arch_sample_data.h b/arch/arm64/include/asm/arch_sample_data.h
+new file mode 100644
+index 000000000000..83fda293b1fc
+--- /dev/null
++++ b/arch/arm64/include/asm/arch_sample_data.h
+@@ -0,0 +1,38 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++
++#ifndef _ASM_ARCH_SAMPLE_DATA_H
++#define _ASM_ARCH_SAMPLE_DATA_H
++
++#include <linux/types.h>
++
++/*
++ * Structure holding masks to help userspace stack unwinding
++ * in the presence of arm64 pointer authentication.
++ */
++struct ptrauth_info {
++	/*
++	 * Bits 0, 1, 2, 3, 4 may be set to on, to indicate which keys are being used
++	 * The APIAKEY, APIBKEY, APDAKEY, APDBKEY, or the APGAKEY respectively.
++	 * Where all bits are off, pointer authentication is not in use for the
++	 * process.
++	 */
++	u64 enabled_keys;
++
++	/*
++	 * The on bits represent which bits in an instruction pointer
++	 * constitute the pointer authentication code.
++	 */
++	u64 insn_mask;
++
++	/*
++	 * The on bits represent which bits in a data pointer constitute the
++	 * pointer authentication code.
++	 */
++	u64 data_mask;
++};
++
++struct arch_sample_data {
++	struct ptrauth_info ptrauth;
++};
++
++#endif
+diff --git a/arch/arm64/kernel/Makefile b/arch/arm64/kernel/Makefile
+index fa7981d0d917..843c6e0e2393 100644
+--- a/arch/arm64/kernel/Makefile
++++ b/arch/arm64/kernel/Makefile
+@@ -44,7 +44,7 @@ obj-$(CONFIG_KUSER_HELPERS)		+= kuser32.o
+ obj-$(CONFIG_FUNCTION_TRACER)		+= ftrace.o entry-ftrace.o
+ obj-$(CONFIG_MODULES)			+= module.o
+ obj-$(CONFIG_ARM64_MODULE_PLTS)		+= module-plts.o
+-obj-$(CONFIG_PERF_EVENTS)		+= perf_regs.o perf_callchain.o
++obj-$(CONFIG_PERF_EVENTS)		+= perf_regs.o perf_callchain.o arch_sample_data.o
+ obj-$(CONFIG_HW_PERF_EVENTS)		+= perf_event.o
+ obj-$(CONFIG_HAVE_HW_BREAKPOINT)	+= hw_breakpoint.o
+ obj-$(CONFIG_CPU_PM)			+= sleep.o suspend.o
+diff --git a/arch/arm64/kernel/arch_sample_data.c b/arch/arm64/kernel/arch_sample_data.c
+new file mode 100644
+index 000000000000..2d47e8db0dbe
+--- /dev/null
++++ b/arch/arm64/kernel/arch_sample_data.c
+@@ -0,0 +1,37 @@
++// SPDX-License-Identifier: GPL-2.0
++
++#include <asm/arch_sample_data.h>
++#include <linux/perf_event.h>
++
++inline void perf_output_sample_arch_1(struct perf_output_handle *handle,
++				      struct perf_event_header *header,
++				      struct perf_sample_data *data,
++				      struct perf_event *event)
++{
++	perf_output_put(handle, data->arch.ptrauth.enabled_keys);
++	perf_output_put(handle, data->arch.ptrauth.insn_mask);
++	perf_output_put(handle, data->arch.ptrauth.data_mask);
++}
++
++inline void perf_prepare_sample_arch_1(struct perf_event_header *header,
++				       struct perf_sample_data *data,
++				       struct perf_event *event,
++				       struct pt_regs *regs)
++{
++	struct task_struct *task = current;
++	int keys_result = ptrauth_get_enabled_keys(task);
++	u64 user_pac_mask = keys_result > 0 ? ptrauth_user_pac_mask() : 0;
++
++	data->arch.ptrauth.enabled_keys = keys_result > 0 ? keys_result : 0;
++	data->arch.ptrauth.insn_mask = user_pac_mask;
++	data->arch.ptrauth.data_mask = user_pac_mask;
++
++	header->size += (3 * sizeof(u64));
++}
++
++inline int perf_event_open_request_arch_1(void)
++{
++	return 0;
++}
++
++
+diff --git a/include/linux/perf_event.h b/include/linux/perf_event.h
+index da759560eec5..8a99942989ce 100644
+--- a/include/linux/perf_event.h
++++ b/include/linux/perf_event.h
+@@ -999,6 +999,29 @@ int perf_event_read_local(struct perf_event *event, u64 *value,
+ extern u64 perf_event_read_value(struct perf_event *event,
+ 				 u64 *enabled, u64 *running);
+ 
++void perf_output_sample_arch_1(struct perf_output_handle *handle,
++			       struct perf_event_header *header,
++			       struct perf_sample_data *data,
++			       struct perf_event *event);
++
++void perf_prepare_sample_arch_1(struct perf_event_header *header,
++				struct perf_sample_data *data,
++				struct perf_event *event,
++				struct pt_regs *regs);
++
++int perf_event_open_request_arch_1(void);
++
++#if IS_ENABLED(CONFIG_ARM64)
++
++#define HAS_ARCH_SAMPLE_DATA
++#include <asm/arch_sample_data.h>
++
++#endif
++
++#ifndef HAS_ARCH_SAMPLE_DATA
++struct arch_sample_data {
++};
++#endif
+ 
+ struct perf_sample_data {
+ 	/*
+@@ -1041,6 +1064,7 @@ struct perf_sample_data {
+ 	u64				cgroup;
+ 	u64				data_page_size;
+ 	u64				code_page_size;
++	struct arch_sample_data		arch;
+ } ____cacheline_aligned;
+ 
+ /* default value for data source */
+diff --git a/include/uapi/linux/perf_event.h b/include/uapi/linux/perf_event.h
+index d37629dbad72..821bf5ff6a19 100644
+--- a/include/uapi/linux/perf_event.h
++++ b/include/uapi/linux/perf_event.h
+@@ -162,12 +162,15 @@ enum perf_event_sample_format {
+ 	PERF_SAMPLE_DATA_PAGE_SIZE		= 1U << 22,
+ 	PERF_SAMPLE_CODE_PAGE_SIZE		= 1U << 23,
+ 	PERF_SAMPLE_WEIGHT_STRUCT		= 1U << 24,
++	PERF_SAMPLE_ARCH_1			= 1U << 25,
+ 
+-	PERF_SAMPLE_MAX = 1U << 25,		/* non-ABI */
++	PERF_SAMPLE_MAX = 1U << 26,		/* non-ABI */
+ 
+ 	__PERF_SAMPLE_CALLCHAIN_EARLY		= 1ULL << 63, /* non-ABI; internal use */
+ };
+ 
++#define PERF_SAMPLE_ARM64_PTRAUTH PERF_SAMPLE_ARCH_1
++
+ #define PERF_SAMPLE_WEIGHT_TYPE	(PERF_SAMPLE_WEIGHT | PERF_SAMPLE_WEIGHT_STRUCT)
+ /*
+  * values to program into branch_sample_type when PERF_SAMPLE_BRANCH is set
+diff --git a/kernel/events/core.c b/kernel/events/core.c
+index 80782cddb1da..89ab8120f4f0 100644
+--- a/kernel/events/core.c
++++ b/kernel/events/core.c
+@@ -6957,6 +6957,29 @@ static inline bool perf_sample_save_hw_index(struct perf_event *event)
+ 	return event->attr.branch_sample_type & PERF_SAMPLE_BRANCH_HW_INDEX;
+ }
+ 
++#ifndef HAS_ARCH_SAMPLE_DATA
++
++inline void perf_output_sample_arch_1(struct perf_output_handle *handle __maybe_unused,
++				      struct perf_event_header *header __maybe_unused,
++				      struct perf_sample_data *data __maybe_unused,
++				      struct perf_event *event __maybe_unused)
++{
++}
++
++inline void perf_prepare_sample_arch_1(struct perf_event_header *header __maybe_unused,
++				       struct perf_sample_data *data __maybe_unused,
++				       struct perf_event *event __maybe_unused,
++				       struct pt_regs *regs __maybe_unused)
++{
++}
++
++inline int perf_event_open_request_arch_1(void)
++{
++	return -EINVAL;
++}
++
++#endif
++
+ void perf_output_sample(struct perf_output_handle *handle,
+ 			struct perf_event_header *header,
+ 			struct perf_sample_data *data,
+@@ -7125,6 +7148,9 @@ void perf_output_sample(struct perf_output_handle *handle,
+ 			perf_aux_sample_output(event, handle, data);
+ 	}
+ 
++	if (sample_type & PERF_SAMPLE_ARCH_1)
++		perf_output_sample_arch_1(handle, header, data, event);
++
+ 	if (!event->attr.watermark) {
+ 		int wakeup_events = event->attr.wakeup_events;
+ 
+@@ -7427,6 +7453,9 @@ void perf_prepare_sample(struct perf_event_header *header,
+ 	if (sample_type & PERF_SAMPLE_CODE_PAGE_SIZE)
+ 		data->code_page_size = perf_get_page_size(data->ip);
+ 
++	if (sample_type & PERF_SAMPLE_ARCH_1)
++		perf_prepare_sample_arch_1(header, data, event, regs);
++
+ 	if (sample_type & PERF_SAMPLE_AUX) {
+ 		u64 size;
+ 
+@@ -12074,6 +12103,12 @@ SYSCALL_DEFINE5(perf_event_open,
+ 			return err;
+ 	}
+ 
++	if (attr.sample_type & PERF_SAMPLE_ARCH_1) {
++		err = perf_event_open_request_arch_1();
++		if (err)
++			return err;
++	}
++
+ 	/*
+ 	 * In cgroup mode, the pid argument is used to pass the fd
+ 	 * opened to the cgroup directory in cgroupfs. The cpu argument
 -- 
 2.17.1
 
