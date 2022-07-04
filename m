@@ -2,84 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C2575653D0
-	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 13:38:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B32D1565409
+	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 13:47:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233291AbiGDLg5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jul 2022 07:36:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47784 "EHLO
+        id S233555AbiGDLqJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Jul 2022 07:46:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234416AbiGDLgY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 07:36:24 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9EAA11A10;
-        Mon,  4 Jul 2022 04:36:16 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Lc3fP5lSQz4xdP;
-        Mon,  4 Jul 2022 21:36:13 +1000 (AEST)
-From:   Michael Ellerman <patch-notifications@ellerman.id.au>
-To:     bpf@vger.kernel.org, Hari Bathini <hbathini@linux.ibm.com>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>
-Cc:     Jordan Niethe <jniethe5@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Yonghong Song <yhs@fb.com>,
-        "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
-        netdev@vger.kernel.org, John Fastabend <john.fastabend@gmail.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        KP Singh <kpsingh@kernel.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Song Liu <songliubraving@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Russell Currey <ruscur@russell.cc>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>
-In-Reply-To: <20220610155552.25892-1-hbathini@linux.ibm.com>
-References: <20220610155552.25892-1-hbathini@linux.ibm.com>
-Subject: Re: [PATCH v2 0/5] Atomics support for eBPF on powerpc
-Message-Id: <165693443908.9954.12279962376383575979.b4-ty@ellerman.id.au>
-Date:   Mon, 04 Jul 2022 21:33:59 +1000
+        with ESMTP id S232519AbiGDLqI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 07:46:08 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E70911146B;
+        Mon,  4 Jul 2022 04:46:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1656935164; x=1688471164;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=bSictZZlQk8kvD6FBfESakih6SXoepE+d4RIMig+lpo=;
+  b=pXxG92xcd8hyUF/aEWzopEQKw+jfJzasopq5vlt1v/+mm1o55eYOr5yI
+   Z1+qowp/tGxaTB8N2vdhW7WdO6gM8HSvJ+KSmN5NoHtxin6rtHFCKvRa+
+   v5u4efGrCekR8Kfwt4NfT2XdaeBRy9OBv3ZgtFW9+vs3xDFZy9VwoByQJ
+   lVb0wfm07QwH9cYMzKcWr71Q7uVWPKXKc9ztxsCLZaa+bvYdRZ2HwSI80
+   N+mpn4waG+rbde4M7811ElakIQ7Bu59/ymGPzeqpUGb+SGPXSVKPwSoFu
+   5JiD4pFR4H7t3QVKBdPgnpbBFElKz3GJfLZWrt5dcdH7/BAmRHEDTFnzP
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.92,243,1650956400"; 
+   d="scan'208";a="102905894"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Jul 2022 04:46:03 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Mon, 4 Jul 2022 04:46:03 -0700
+Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Mon, 4 Jul 2022 04:46:00 -0700
+From:   Conor Dooley <conor.dooley@microchip.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+CC:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-riscv@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+        "Conor Dooley" <conor.dooley@microchip.com>
+Subject: [net-next PATCH v2 0/5] PolarFire SoC macb reset support
+Date:   Mon, 4 Jul 2022 12:45:07 +0100
+Message-ID: <20220704114511.1892332-1-conor.dooley@microchip.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-5.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 10 Jun 2022 21:25:47 +0530, Hari Bathini wrote:
-> This patchset adds atomic operations to the eBPF instruction set on
-> powerpc. The instructions that are added here can be summarised with
-> this list of kernel operations for ppc64:
-> 
-> * atomic[64]_[fetch_]add
-> * atomic[64]_[fetch_]and
-> * atomic[64]_[fetch_]or
-> * atomic[64]_[fetch_]xor
-> * atomic[64]_xchg
-> * atomic[64]_cmpxchg
-> 
-> [...]
+Hey all,
+Jakub requested that these patches be split off from the series
+adding the reset controller itself that I sent ~yesterday~ last
+week [0].
 
-Applied to powerpc/next.
+The Cadence MACBs on PolarFire SoC (MPFS) have reset capability and are
+compatible with the zynqmp's init function. I have removed the zynqmp
+specific comments from that function & renamed it to reflect what it
+does, since it is no longer zynqmp only.
 
-[1/5] bpf ppc64: add support for BPF_ATOMIC bitwise operations
-      https://git.kernel.org/powerpc/c/65112709115f48f16d7082bcabf173d08622e69f
-[2/5] bpf ppc64: add support for atomic fetch operations
-      https://git.kernel.org/powerpc/c/dbe6e2456fb0263a5a961a92836d2cebdbca979c
-[3/5] bpf ppc64: Add instructions for atomic_[cmp]xchg
-      https://git.kernel.org/powerpc/c/1e82dfaa7819f03f0b0022be7ca15bbc83090da1
-[4/5] bpf ppc32: add support for BPF_ATOMIC bitwise operations
-      https://git.kernel.org/powerpc/c/aea7ef8a82c0ea13ff20b65ff2edf8a38a17eda8
-[5/5] bpf ppc32: Add instructions for atomic_[cmp]xchg
-      https://git.kernel.org/powerpc/c/2d9206b227434912582049c49af1085660fa1e50
+MPFS's MACB had previously used the generic binding, so I also added
+the required specific binding.
 
-cheers
+For v2, I noticed some low hanging cleanup fruit so there are extra
+patches added for that:
+moving the init function out of the config structs, aligning the
+alignment of the zynqmp & default config structs with the other dozen
+or so structs & simplifing the error paths to use dev_err_probe().
+
+Feel free to apply as many or as few of those as you like.
+
+Thanks,
+Conor.
+
+Changes since v1:
+- added the 3 aforementioned cleanup patches
+- fixed two stylistic complaints from Claudiu
+
+Conor Dooley (5):
+  dt-bindings: net: cdns,macb: document polarfire soc's macb
+  net: macb: add polarfire soc reset support
+  net: macb: unify macb_config alignment style
+  net: macb: simplify error paths in init_reset_optional()
+  net: macb: sort init_reset_optional() with other init()s
+
+ .../devicetree/bindings/net/cdns,macb.yaml    |   1 +
+ drivers/net/ethernet/cadence/macb_main.c      | 106 +++++++++---------
+ 2 files changed, 56 insertions(+), 51 deletions(-)
+
+-- 
+2.36.1
+
