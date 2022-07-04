@@ -2,98 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 369B1565268
-	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 12:33:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 50B2D565282
+	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 12:39:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233715AbiGDKdH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jul 2022 06:33:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57702 "EHLO
+        id S234226AbiGDKjA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Jul 2022 06:39:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233501AbiGDKdG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 06:33:06 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70415DF9D
-        for <netdev@vger.kernel.org>; Mon,  4 Jul 2022 03:33:05 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id fw3so15927457ejc.10
-        for <netdev@vger.kernel.org>; Mon, 04 Jul 2022 03:33:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=6Wj87YaxYO/pynZWsS9SuS5fRYRtHj/q6P5VHFbekcg=;
-        b=hHKaBdrQ6fJzL+ZL80h+cgSUCPd7+qjDIzGZh8ZWXaChkI5ruA0hp/l+FutHmw9JoV
-         W0Ju8bPTVp3GHKVT62HFG73xi017s5mw3lBMxF75N78qHcsgGQv2bqrAj2T5IZkuLRs0
-         SiZRY1f2gYqNP7Bm0x86EyLaekNUeVbtUK7WX7p46lcGYODJTm7vzvtBgL8sILSDYoU7
-         mTBcJDP4eDs4crZZH2zeDnE3W4M6D6uTY/KhJZv/S7ehDHhZMCAokUixesEVWtGT8mps
-         F/BE/qrRiaHtdoRFoE4sXEQtWZG2GpR7A59NNr7EhzOE1LlCAOIYGddTa9T9qupo/uu8
-         s3aw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=6Wj87YaxYO/pynZWsS9SuS5fRYRtHj/q6P5VHFbekcg=;
-        b=k46y71rCzLOGWtJR2Ga6Ana5YOUp/h8eI49dHj9ij+qsJOhXNZMGnBSc6EaLejJ/Ic
-         bNq4+ZJ8Oy7aHE703/y0IdG5W/MbhxupET2CnulmYmm25ofgLwA0KmpR2FZ9eZBPqGVI
-         V9894jdwhQKjVLAWoSm6HlqQcQ/uEIvc9LZDGc8IFNduDc1RYk8vJUVO8xoLpZ0HpwP4
-         L8zxIP2fEKB5spo8R83t9Mz2cQUrYNsrJlmM/KKGCtr4ll3ag4Wbpw7U60S7O7U4Qy7c
-         iKLjNDLGFtmzZIraIPleAAF/SB6K2v1NFkT5XQE5XvIiDo0nmSjh+fnX0zIjHGUbmjI8
-         A8hw==
-X-Gm-Message-State: AJIora8+Gh7th2wCTCvS7I0zaq541wv0QLnegRcWVpiPkn/ylwJJjbPf
-        E24BDFbboXcdnI+N/ndpt9/vDg==
-X-Google-Smtp-Source: AGRyM1vj6eWksKadqFD0/n9jE3teDazJGledsxiH91AYbeqgMPTaRoHxC9NTg8B8zmoTjCDFh48tJA==
-X-Received: by 2002:a17:907:1c18:b0:72a:3945:c1b2 with SMTP id nc24-20020a1709071c1800b0072a3945c1b2mr25693220ejc.604.1656930783896;
-        Mon, 04 Jul 2022 03:33:03 -0700 (PDT)
-Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
-        by smtp.gmail.com with ESMTPSA id k13-20020a170906a38d00b006fed787478asm14169345ejz.92.2022.07.04.03.33.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 04 Jul 2022 03:33:03 -0700 (PDT)
-Message-ID: <c33c78f8-2be0-07bf-222b-9fae70f9ba32@blackwall.org>
-Date:   Mon, 4 Jul 2022 13:33:01 +0300
+        with ESMTP id S233105AbiGDKi6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 06:38:58 -0400
+Received: from eidolon.nox.tf (eidolon.nox.tf [IPv6:2a07:2ec0:2185::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1524E9FDF
+        for <netdev@vger.kernel.org>; Mon,  4 Jul 2022 03:38:57 -0700 (PDT)
+Received: from equinox by eidolon.nox.tf with local (Exim 4.94.2)
+        (envelope-from <equinox@diac24.net>)
+        id 1o8JTi-0041tb-3H; Mon, 04 Jul 2022 12:38:54 +0200
+Date:   Mon, 4 Jul 2022 12:38:54 +0200
+From:   David Lamparter <equinox@diac24.net>
+To:     Nikolay Aleksandrov <razor@blackwall.org>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: [PATCH net-next v2] net: ip6mr: add RTM_GETROUTE netlink op
+Message-ID: <YsLDPnuC6dlROlj3@eidolon.nox.tf>
+References: <20220630202706.33555ad2@kernel.org>
+ <20220704095845.365359-1-equinox@diac24.net>
+ <80dd41cc-5ff2-f27f-3764-841acf008237@blackwall.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH net-next] selftest: net: bridge mdb add/del entry to port
- that is down
-Content-Language: en-US
-To:     Casper Andersson <casper.casan@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
-        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        Roopa Prabhu <roopa@nvidia.com>,
-        "bridge@lists.linux-foundation.org" 
-        <bridge@lists.linux-foundation.org>
-References: <20220701144350.2034989-1-casper.casan@gmail.com>
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <20220701144350.2034989-1-casper.casan@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <80dd41cc-5ff2-f27f-3764-841acf008237@blackwall.org>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 01/07/2022 17:43, Casper Andersson wrote:
-> Tests that permanent mdb entries can be added/deleted on ports with state down.
+On Mon, Jul 04, 2022 at 01:22:36PM +0300, Nikolay Aleksandrov wrote:
+> On 04/07/2022 12:58, David Lamparter wrote:
+> > +const struct nla_policy rtm_ipv6_mr_policy[RTA_MAX + 1] = {
+> > +	[RTA_UNSPEC]		= { .strict_start_type = RTA_UNSPEC },
 > 
-> Signed-off-by: Casper Andersson <casper.casan@gmail.com>
-> ---
-> This feature was implemented recently and a selftest was suggested:
-> https://lore.kernel.org/netdev/20220614063223.zvtrdrh7pbkv3b4v@wse-c0155/
+> I don't think you need to add RTA_UNSPEC, nlmsg_parse() would reject
+> it due to NL_VALIDATE_STRICT
+
+Will remove it.
+
+> > +	if (nlh->nlmsg_len < nlmsg_msg_size(sizeof(*rtm))) {
+> > +		NL_SET_ERR_MSG(extack, "ipv6: Invalid header for multicast route get request");
+> > +		return -EINVAL;
+> > +	}
 > 
+> I think you can drop this check if you...
+> 
+> > +
+> > +	rtm = nlmsg_data(nlh);
+> > +	if ((rtm->rtm_src_len && rtm->rtm_src_len != 128) ||
+> > +	    (rtm->rtm_dst_len && rtm->rtm_dst_len != 128) ||
+> > +	    rtm->rtm_tos || rtm->rtm_table || rtm->rtm_protocol ||
+> > +	    rtm->rtm_scope || rtm->rtm_type || rtm->rtm_flags) {
+> > +		NL_SET_ERR_MSG(extack,
+> > +			       "ipv6: Invalid values in header for multicast route get request");
+> > +		return -EINVAL;
+> > +	}
+> 
+> ...move these after nlmsg_parse() because it already does the hdrlen
+> check for you
 
-Indeed, please CC the people who have suggested it and the bridge
-maintainers next time. :)
+Indeed it does.  Moving it down.
 
-That being said, thank you for the selftest!
+[...]
+> > +	/* rtm_ipv6_mr_policy does not list other attributes right now, but
+> > +	 * future changes may reuse rtm_ipv6_mr_policy with adding further
+> > +	 * attrs.  Enforce the subset.
+> > +	 */
+> > +	for (i = 0; i <= RTA_MAX; i++) {
+> > +		if (!tb[i])
+> > +			continue;
+> > +
+> > +		switch (i) {
+> > +		case RTA_SRC:
+> > +		case RTA_DST:
+> > +		case RTA_TABLE:
+> > +			break;
+> > +		default:
+> > +			NL_SET_ERR_MSG_ATTR(extack, tb[i],
+> > +					    "ipv6: Unsupported attribute in multicast route get request");
+> > +			return -EINVAL;
+> > +		}
+> > +	}
+> 
+> I think you can skip this loop as well, nlmsg_parse() shouldn't allow attributes that
+> don't have policy defined when policy is provided (i.e. they should show up as NLA_UNSPEC
+> and you should get "Error: Unknown attribute type.").
 
-Cheers,
- Nik
+I left it in with the comment above:
+
+> > +	/* rtm_ipv6_mr_policy does not list other attributes right now, but
+> > +	 * future changes may reuse rtm_ipv6_mr_policy with adding further
+> > +	 * attrs.  Enforce the subset.
+> > +	 */
+
+... to try and avoid silently starting to accept more attributes if/when
+future patches add other netlink operations reusing the same policy but
+with adding new attributes.
+
+But I don't feel particularly about this - shall I remove it?  (just
+confirming with the rationale above)
+
+> > +	struct net *net = sock_net(in_skb->sk);
+> > +	struct nlattr *tb[RTA_MAX + 1];
+> > +	struct sk_buff *skb = NULL;
+> > +	struct mfc6_cache *cache;
+> > +	struct mr_table *mrt;
+> > +	struct in6_addr src = {}, grp = {};
+> 
+> reverse xmas tree order
+
+Ah.  Wasn't aware of that coding style aspect.  Fixing.
+
+Thanks for the review!
 
 
+-David/equi
