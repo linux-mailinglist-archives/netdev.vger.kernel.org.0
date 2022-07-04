@@ -2,228 +2,260 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DCA3564E52
-	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 09:09:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E4CB2564E7C
+	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 09:14:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233241AbiGDHI0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jul 2022 03:08:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37686 "EHLO
+        id S229693AbiGDHO3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Jul 2022 03:14:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232982AbiGDHIF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 03:08:05 -0400
-Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71CE0958F;
-        Mon,  4 Jul 2022 00:07:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1656918475; x=1688454475;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=AgnZ/0GTsI5N0Vyb3VmA0aulIyEF8kyx7iX2ZYUNwqY=;
-  b=fI6PIOcCNHbueT+UWd4e8oeNh64huXABoRcBiayGlgaAHgxauL7Jou8c
-   SeEuYKRhvKoqJUsitl8F7gVGEN/Txos9m/as6NABcR8Zoi6YtUPZRh71m
-   cexVjuZU+cg9FiKuEumI0D4jOV8yULYaf1A8HHtQuwIyEoWa0zK4JJEyn
-   y4zvUO5L7Zvk0TKXnp9bcxpJAfAcnTRL0AB+p00eBX9BFjGJC3tlrQAli
-   ecj1y7sZtYlK4De5ODGRrZjJd1s5RbDvrenBbyVcIevFVdMaeMBvAIdCx
-   WeerA93nTOf+4rByiy0Enhf9hmO5OnDZC9bC2MqW8ddV8LBnJuekilEZw
-   w==;
-X-IronPort-AV: E=Sophos;i="5.92,243,1650924000"; 
-   d="scan'208";a="24825060"
-Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
-  by mx1-pgp.tq-group.com with ESMTP; 04 Jul 2022 09:07:52 +0200
-Received: from mx1.tq-group.com ([192.168.6.7])
-  by tq-pgp-pr1.tq-net.de (PGP Universal service);
-  Mon, 04 Jul 2022 09:07:52 +0200
-X-PGP-Universal: processed;
-        by tq-pgp-pr1.tq-net.de on Mon, 04 Jul 2022 09:07:52 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1656918472; x=1688454472;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=AgnZ/0GTsI5N0Vyb3VmA0aulIyEF8kyx7iX2ZYUNwqY=;
-  b=LDsL/qkgTLzLCiPw0J1xSWUct9sHyZrn+x98rgSroq34z+NFujNwgraa
-   cq1AbZNacqmgfIS3WcoWHUGz0pf3QZvd+UR5qyDOfUODNyR9g+UdqTJSz
-   H7qUPSd+RW8A1BUbFQNrAYR9nfOdFhQuMqrkmAjDEE9UH8tHhIsG3fJ6Y
-   FVPSBOHKjmmGquzgpSVNx0vt/WECg3USZVHgWZ3p34RIYbLqrfwqNFGeT
-   ekkBex+cCC0951V4IKOqgDWDqqMCgPhCvxXuMQJzxBbU/1ODpLglwlkKv
-   5oC5SqlB3Ue39Dgh9nt2YTZw3swiPA6vJei+ZVfZT964Seidcqdvez+rj
-   A==;
-X-IronPort-AV: E=Sophos;i="5.92,243,1650924000"; 
-   d="scan'208";a="24825059"
-Received: from vtuxmail01.tq-net.de ([10.115.0.20])
-  by mx1.tq-group.com with ESMTP; 04 Jul 2022 09:07:51 +0200
-Received: from steina-w.localnet (unknown [10.123.49.12])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by vtuxmail01.tq-net.de (Postfix) with ESMTPSA id 6A945280071;
-        Mon,  4 Jul 2022 09:07:51 +0200 (CEST)
-From:   Alexander Stein <alexander.stein@ew.tq-group.com>
-To:     Saravana Kannan <saravanak@google.com>
-Cc:     Tony Lindgren <tony@atomide.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Kevin Hilman <khilman@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S233132AbiGDHO2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 03:14:28 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 478F525D0
+        for <netdev@vger.kernel.org>; Mon,  4 Jul 2022 00:14:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656918866;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=PVTHS1ZmH+V40UZeEp3beBk5LSH440YhC3MlV0TsXgg=;
+        b=aW+gJvcEZ+Vkiv7cMox2WgfXa9pz+GHjIQGSfIypRkwRBqW+VR3V21LoBpurdj5ZT7Bfy9
+        HfxLSRA9I22ynT8NR829iOeO+ncjmnt0+zoe9YIHWDvMbMN2c/tlwathyIAt8bA96eniVY
+        AYnH3BF0mMs1t0Ab70WnJcaP3UrAfyA=
+Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com
+ [209.85.167.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-47-aE7lpL4zP32h47fxo_kZKQ-1; Mon, 04 Jul 2022 03:14:23 -0400
+X-MC-Unique: aE7lpL4zP32h47fxo_kZKQ-1
+Received: by mail-lf1-f70.google.com with SMTP id q22-20020a0565123a9600b0047f6b8e1babso2768433lfu.21
+        for <netdev@vger.kernel.org>; Mon, 04 Jul 2022 00:14:22 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=PVTHS1ZmH+V40UZeEp3beBk5LSH440YhC3MlV0TsXgg=;
+        b=K22iuYZEMrCYLzyVzj9zcQA2qCgffXsYGUVKuHZAvS4yj2yXHaGrmVe+CMTRBJNAFb
+         Zch2ObA+3/4vwMuqWpyNrNQ3mNBwx69Wj3X3egav4iHc/P/8mVic+or3GMQY6v3YBGa0
+         LDK73phvL+zGiHfa4J6OSW3rC05aZo0CEKxqmNuicY8Mdmde30LEBp9eSy/BmPnpbqkI
+         Gl4GCPIUNth58+FWBz0L7l8mcTw7wwC8bFP+xhGMMMzAjnfHqV6rG/u0bfGDcvbYveCQ
+         eNciN6460TcwKtkVry2nbwRjoMIDMU5Gz7XgCUjN3iWVqpAm4/5yAV7X8pIrTHG3m1C0
+         8ezQ==
+X-Gm-Message-State: AJIora+eySTvWeuwZtqilAj5jLzokVVkPnNnXuqVmXdHL3+PN7vuKg4W
+        Lk3QlHrRQLmfC4UAId+jAIZqNs/O7aNK9BQ4q/wgmSfwGBwwoKw1fHAPcsv4C7VRGa7vY2tVxUS
+        6Q+fThA5DDjQ54S8PvhRuym0DiIGpxcXh
+X-Received: by 2002:ac2:51a5:0:b0:47f:79a1:5c02 with SMTP id f5-20020ac251a5000000b0047f79a15c02mr17575382lfk.575.1656918859907;
+        Mon, 04 Jul 2022 00:14:19 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1st9OtbMb2bdAIcQAsqbqDqoOOn+3D0TXfeZJarxhdYFG9SQaOWqqLQRjRU/lhGsZfI6R5iZYM6ZVes5RTMDn8=
+X-Received: by 2002:ac2:51a5:0:b0:47f:79a1:5c02 with SMTP id
+ f5-20020ac251a5000000b0047f79a15c02mr17575344lfk.575.1656918859025; Mon, 04
+ Jul 2022 00:14:19 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220704041948.13212-1-jasowang@redhat.com> <20220704021656-mutt-send-email-mst@kernel.org>
+ <CACGkMEsOy6kgaj+Q0vYxDBy7JEd=DUm7KLKo7AjGCi2ay5ciKQ@mail.gmail.com> <20220704030124-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20220704030124-mutt-send-email-mst@kernel.org>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Mon, 4 Jul 2022 15:14:07 +0800
+Message-ID: <CACGkMEvi-CT6c7qqTPh7-Vqr-2gGdX6G1FP52hqQFL3q0r=tOg@mail.gmail.com>
+Subject: Re: [PATCH net V4] virtio-net: fix the race between refill work and close
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     davem <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>, kernel-team@android.com,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-gpio@vger.kernel.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: (EXT) Re: (EXT) Re: [PATCH v2 1/9] PM: domains: Delete usage of driver_deferred_probe_check_state()
-Date:   Mon, 04 Jul 2022 09:07:48 +0200
-Message-ID: <5717577.DvuYhMxLoT@steina-w>
-Organization: TQ-Systems GmbH
-In-Reply-To: <CAGETcx-fLAXnG+1S4MHJwg9t7O6jj6Mp+q25bh==C_Z1CLs-mg@mail.gmail.com>
-References: <20220601070707.3946847-1-saravanak@google.com> <5265491.31r3eYUQgx@steina-w> <CAGETcx-fLAXnG+1S4MHJwg9t7O6jj6Mp+q25bh==C_Z1CLs-mg@mail.gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am Freitag, 1. Juli 2022, 09:02:22 CEST schrieb Saravana Kannan:
-> On Thu, Jun 30, 2022 at 11:02 PM Alexander Stein
-> 
-> <alexander.stein@ew.tq-group.com> wrote:
-> > Hi Saravana,
-> > 
-> > Am Freitag, 1. Juli 2022, 02:37:14 CEST schrieb Saravana Kannan:
-> > > On Thu, Jun 23, 2022 at 5:08 AM Alexander Stein
-> > > 
-> > > <alexander.stein@ew.tq-group.com> wrote:
-> > > > Hi,
-> > > > 
-> > > > Am Dienstag, 21. Juni 2022, 09:28:43 CEST schrieb Tony Lindgren:
-> > > > > Hi,
-> > > > > 
-> > > > > * Saravana Kannan <saravanak@google.com> [700101 02:00]:
-> > > > > > Now that fw_devlink=on by default and fw_devlink supports
-> > > > > > "power-domains" property, the execution will never get to the
-> > > > > > point
-> > > > > > where driver_deferred_probe_check_state() is called before the
-> > > > > > supplier
-> > > > > > has probed successfully or before deferred probe timeout has
-> > > > > > expired.
-> > > > > > 
-> > > > > > So, delete the call and replace it with -ENODEV.
-> > > > > 
-> > > > > Looks like this causes omaps to not boot in Linux next. With this
-> > > > > simple-pm-bus fails to probe initially as the power-domain is not
-> > > > > yet available. On platform_probe() genpd_get_from_provider() returns
-> > > > > -ENOENT.
-> > > > > 
-> > > > > Seems like other stuff is potentially broken too, any ideas on
-> > > > > how to fix this?
-> > > > 
-> > > > I think I'm hit by this as well, although I do not get a lockup.
-> > > > In my case I'm using
-> > > > arch/arm64/boot/dts/freescale/imx8mq-tqma8mq-mba8mx.dts and probing of
-> > > > 38320000.blk-ctrl fails as the power-domain is not (yet) registed.
-> > > 
-> > > Ok, took a look.
-> > > 
-> > > The problem is that there are two drivers for the same device and they
-> > > both initialize this device.
-> > > 
-> > >     gpc: gpc@303a0000 {
-> > >     
-> > >         compatible = "fsl,imx8mq-gpc";
-> > >     
-> > >     }
-> > > 
-> > > $ git grep -l "fsl,imx7d-gpc" -- drivers/
-> > > drivers/irqchip/irq-imx-gpcv2.c
-> > > drivers/soc/imx/gpcv2.c
-> > > 
-> > > IMHO, this is a bad/broken design.
-> > > 
-> > > So what's happening is that fw_devlink will block the probe of
-> > > 38320000.blk-ctrl until 303a0000.gpc is initialized. And it stops
-> > > blocking the probe of 38320000.blk-ctrl as soon as the first driver
-> > > initializes the device. In this case, it's the irqchip driver.
-> > > 
-> > > I'd recommend combining these drivers into one. Something like the
-> > > patch I'm attaching (sorry for the attachment, copy-paste is mangling
-> > > the tabs). Can you give it a shot please?
-> > 
-> > I tried this patch and it delayed the driver initialization (those of UART
-> > as
-> > well BTW). Unfortunately the driver fails the same way:
-> Thanks for testing the patch!
-> 
-> > > [    1.125253] imx8m-blk-ctrl 38320000.blk-ctrl: error -ENODEV: failed
-> > > to
-> > 
-> > attach power domain "bus"
-> > 
-> > More than that it even introduced some more errors:
-> > > [    0.008160] irq: no irq domain found for gpc@303a0000 !
-> 
-> So the idea behind my change was that as long as the irqchip isn't the
-> root of the irqdomain (might be using the terms incorrectly) like the
-> gic, you can make it a platform driver. And I was trying to hack up a
-> patch that's the equivalent of platform_irqchip_probe() (which just
-> ends up eventually calling the callback you use in IRQCHIP_DECLARE().
-> I probably made some mistake in the quick hack that I'm sure if
-> fixable.
-> 
-> > > [    0.013251] Failed to map interrupt for
-> > > /soc@0/bus@30400000/timer@306a0000
-> 
-> However, this timer driver also uses TIMER_OF_DECLARE() which can't
-> handle failure to get the IRQ (because it's can't -EPROBE_DEFER). So,
-> this means, the timer driver inturn needs to be converted to a
-> platform driver if it's supposed to work with the IRQCHIP_DECLARE()
-> being converted to a platform driver.
-> 
-> But that's a can of worms not worth opening. But then I remembered
-> this simpler workaround will work and it is pretty much a variant of
-> the workaround that's already in the gpc's irqchip driver to allow two
-> drivers to probe the same device (people really should stop doing
-> that).
-> 
-> Can you drop my previous hack patch and try this instead please? I'm
-> 99% sure this will work.
-> 
-> diff --git a/drivers/irqchip/irq-imx-gpcv2.c
-> b/drivers/irqchip/irq-imx-gpcv2.c index b9c22f764b4d..8a0e82067924 100644
-> --- a/drivers/irqchip/irq-imx-gpcv2.c
-> +++ b/drivers/irqchip/irq-imx-gpcv2.c
-> @@ -283,6 +283,7 @@ static int __init imx_gpcv2_irqchip_init(struct
-> device_node *node,
->          * later the GPC power domain driver will not be skipped.
->          */
->         of_node_clear_flag(node, OF_POPULATED);
-> +       fwnode_dev_initialized(domain->fwnode, false);
->         return 0;
->  }
+On Mon, Jul 4, 2022 at 3:03 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+>
+> On Mon, Jul 04, 2022 at 02:32:45PM +0800, Jason Wang wrote:
+> > On Mon, Jul 4, 2022 at 2:19 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+> > >
+> > > On Mon, Jul 04, 2022 at 12:19:48PM +0800, Jason Wang wrote:
+> > > > We try using cancel_delayed_work_sync() to prevent the work from
+> > > > enabling NAPI. This is insufficient since we don't disable the source
+> > > > of the refill work scheduling. This means an NAPI poll callback after
+> > > > cancel_delayed_work_sync() can schedule the refill work then can
+> > > > re-enable the NAPI that leads to use-after-free [1].
+> > > >
+> > > > Since the work can enable NAPI, we can't simply disable NAPI before
+> > > > calling cancel_delayed_work_sync(). So fix this by introducing a
+> > > > dedicated boolean to control whether or not the work could be
+> > > > scheduled from NAPI.
+> > > >
+> > > > [1]
+> > > > ==================================================================
+> > > > BUG: KASAN: use-after-free in refill_work+0x43/0xd4
+> > > > Read of size 2 at addr ffff88810562c92e by task kworker/2:1/42
+> > > >
+> > > > CPU: 2 PID: 42 Comm: kworker/2:1 Not tainted 5.19.0-rc1+ #480
+> > > > Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.16.0-0-gd239552ce722-prebuilt.qemu.org 04/01/2014
+> > > > Workqueue: events refill_work
+> > > > Call Trace:
+> > > >  <TASK>
+> > > >  dump_stack_lvl+0x34/0x44
+> > > >  print_report.cold+0xbb/0x6ac
+> > > >  ? _printk+0xad/0xde
+> > > >  ? refill_work+0x43/0xd4
+> > > >  kasan_report+0xa8/0x130
+> > > >  ? refill_work+0x43/0xd4
+> > > >  refill_work+0x43/0xd4
+> > > >  process_one_work+0x43d/0x780
+> > > >  worker_thread+0x2a0/0x6f0
+> > > >  ? process_one_work+0x780/0x780
+> > > >  kthread+0x167/0x1a0
+> > > >  ? kthread_exit+0x50/0x50
+> > > >  ret_from_fork+0x22/0x30
+> > > >  </TASK>
+> > > > ...
+> > > >
+> > > > Fixes: b2baed69e605c ("virtio_net: set/cancel work on ndo_open/ndo_stop")
+> > > > Signed-off-by: Jason Wang <jasowang@redhat.com>
+> > > > ---
+> > > > Changes since V3:
+> > > > - rebase to -net
+> > > > Changes since V2:
+> > > > - use spin_unlock()/lock_bh() in open/stop to synchronize with bh
+> > > > Changes since V1:
+> > > > - Tweak the changelog
+> > > > ---
+> > > >  drivers/net/virtio_net.c | 35 +++++++++++++++++++++++++++++++++--
+> > > >  1 file changed, 33 insertions(+), 2 deletions(-)
+> > > >
+> > > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> > > > index 356cf8dd4164..68430d7923ac 100644
+> > > > --- a/drivers/net/virtio_net.c
+> > > > +++ b/drivers/net/virtio_net.c
+> > > > @@ -251,6 +251,12 @@ struct virtnet_info {
+> > > >       /* Does the affinity hint is set for virtqueues? */
+> > > >       bool affinity_hint_set;
+> > > >
+> > > > +     /* Is refill work enabled? */
+> > >
+> > > refilling enabled
+> >
+> > I think it should be reill work, we try refill first, if fail we
+> > schedule the work:
+> >
+> >                 if (!try_fill_recv(vi, rq, GFP_ATOMIC))
+> >                         schedule_delayed_work(&vi->refill, 0);
+> >
+> > Thanks
+>
+> maybe "delayed refill"? It's not "work" it's a work struct.
+> I'm trying to be consistent with:
+>         /* Work struct for refilling if we run low on memory. */
+>         struct delayed_work refill;
 
-Just to be sure here, I tried this patch on top of next-20220701 but 
-unfortunately this doesn't fix the original problem either. The timer errors 
-are gone though.
-The probe of imx8m-blk-ctrl got slightly delayed (from 0.74 to 0.90s printk 
-time) but results in the identical error message.
+Ok, that's fine.
 
-Best regards,
-Alexander
+Will post a new version.
 
+Thanks
 
+>
+>
+> > >
+> > > > +     bool refill_work_enabled;
+> > >
+> > >
+> > > refill_work -> refill?
+> > >
+> > > > +
+> > > > +     /* The lock to synchronize the access to refill_work_enabled */
+> > >
+> > > .. and refill
+> > >
+> > > And maybe put these field near the refill field.
+> > >
+> > > > +     spinlock_t refill_lock;
+> > > > +
+> > > >       /* CPU hotplug instances for online & dead */
+> > > >       struct hlist_node node;
+> > > >       struct hlist_node node_dead;
+> > > > @@ -348,6 +354,20 @@ static struct page *get_a_page(struct receive_queue *rq, gfp_t gfp_mask)
+> > > >       return p;
+> > > >  }
+> > > >
+> > > > +static void enable_refill_work(struct virtnet_info *vi)
+> > > > +{
+> > > > +     spin_lock_bh(&vi->refill_lock);
+> > > > +     vi->refill_work_enabled = true;
+> > > > +     spin_unlock_bh(&vi->refill_lock);
+> > > > +}
+> > > > +
+> > > > +static void disable_refill_work(struct virtnet_info *vi)
+> > > > +{
+> > > > +     spin_lock_bh(&vi->refill_lock);
+> > > > +     vi->refill_work_enabled = false;
+> > > > +     spin_unlock_bh(&vi->refill_lock);
+> > > > +}
+> > > > +
+> > > >  static void virtqueue_napi_schedule(struct napi_struct *napi,
+> > > >                                   struct virtqueue *vq)
+> > > >  {
+> > > > @@ -1527,8 +1547,12 @@ static int virtnet_receive(struct receive_queue *rq, int budget,
+> > > >       }
+> > > >
+> > > >       if (rq->vq->num_free > min((unsigned int)budget, virtqueue_get_vring_size(rq->vq)) / 2) {
+> > > > -             if (!try_fill_recv(vi, rq, GFP_ATOMIC))
+> > > > -                     schedule_delayed_work(&vi->refill, 0);
+> > > > +             if (!try_fill_recv(vi, rq, GFP_ATOMIC)) {
+> > > > +                     spin_lock(&vi->refill_lock);
+> > > > +                     if (vi->refill_work_enabled)
+> > > > +                             schedule_delayed_work(&vi->refill, 0);
+> > > > +                     spin_unlock(&vi->refill_lock);
+> > > > +             }
+> > > >       }
+> > > >
+> > > >       u64_stats_update_begin(&rq->stats.syncp);
+> > > > @@ -1651,6 +1675,8 @@ static int virtnet_open(struct net_device *dev)
+> > > >       struct virtnet_info *vi = netdev_priv(dev);
+> > > >       int i, err;
+> > > >
+> > > > +     enable_refill_work(vi);
+> > > > +
+> > > >       for (i = 0; i < vi->max_queue_pairs; i++) {
+> > > >               if (i < vi->curr_queue_pairs)
+> > > >                       /* Make sure we have some buffers: if oom use wq. */
+> > > > @@ -2033,6 +2059,8 @@ static int virtnet_close(struct net_device *dev)
+> > > >       struct virtnet_info *vi = netdev_priv(dev);
+> > > >       int i;
+> > > >
+> > > > +     /* Make sure NAPI doesn't schedule refill work */
+> > > > +     disable_refill_work(vi);
+> > > >       /* Make sure refill_work doesn't re-enable napi! */
+> > > >       cancel_delayed_work_sync(&vi->refill);
+> > > >
+> > > > @@ -2792,6 +2820,8 @@ static int virtnet_restore_up(struct virtio_device *vdev)
+> > > >
+> > > >       virtio_device_ready(vdev);
+> > > >
+> > > > +     enable_refill_work(vi);
+> > > > +
+> > > >       if (netif_running(vi->dev)) {
+> > > >               err = virtnet_open(vi->dev);
+> > > >               if (err)
+> > > > @@ -3535,6 +3565,7 @@ static int virtnet_probe(struct virtio_device *vdev)
+> > > >       vdev->priv = vi;
+> > > >
+> > > >       INIT_WORK(&vi->config_work, virtnet_config_changed_work);
+> > > > +     spin_lock_init(&vi->refill_lock);
+> > > >
+> > > >       /* If we can receive ANY GSO packets, we must allocate large ones. */
+> > > >       if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO4) ||
+> > > > --
+> > > > 2.25.1
+> > >
+>
 
