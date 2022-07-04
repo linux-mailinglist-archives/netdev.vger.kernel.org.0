@@ -2,256 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E9C2564E29
-	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 09:03:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 25A07564E34
+	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 09:04:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233086AbiGDHDX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jul 2022 03:03:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34218 "EHLO
+        id S233041AbiGDHEj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Jul 2022 03:04:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233056AbiGDHDT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 03:03:19 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4A51F63C8
-        for <netdev@vger.kernel.org>; Mon,  4 Jul 2022 00:03:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656918196;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=dbMjjAZXWJpAVIpo7B4exIkMNlsj/klWOact/FA3tfw=;
-        b=c8K5f45RrFYdo0+UpwzfEsycIM5xn4o1Bl2QwZJvnl1+fRSNV4HzzGFN3DsTnFke8nt+c+
-        ov5ajNQI0HuvrnSfr8dOyMWUk7XTicBDsrA3vRrs4MoHjTc2oeaquHw+TN9O1KYj6iqntL
-        EZVCslKVp+dXyfekyVTw4Oh2FbRU/0s=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-326-WR7TgtlhNcGC-wXSgcQfLA-1; Mon, 04 Jul 2022 03:03:15 -0400
-X-MC-Unique: WR7TgtlhNcGC-wXSgcQfLA-1
-Received: by mail-ed1-f70.google.com with SMTP id x21-20020a05640226d500b00435bd7f9367so6573787edd.8
-        for <netdev@vger.kernel.org>; Mon, 04 Jul 2022 00:03:15 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=dbMjjAZXWJpAVIpo7B4exIkMNlsj/klWOact/FA3tfw=;
-        b=MyzJGK76Slml9nBpcOPg9IbqRtEbySfqdpzni6JQHGH4ALKhb1bECF4FSY6f8R8oN2
-         33SXTXrI/mM+a/kC1ImMKamJZmtdFaJtwOSSddDxJdkkd+8JDlqQj+lrf7PA3gxR1W5G
-         5OvreheVsPnh8iRIgxBNnZlTbvRJVYqCEcTdMBCHOnjzzNnyC+iy6ay10sy+q3Bbx34q
-         sldi3g1nWk5gJuSuHfUbfNZzRxBaXRO6ApmeBMR/JmSIo+AXTiNyER4fCW5lP2DBOJAN
-         /SQcRG5Gwh7T/Mz1fjqzfmwLUnoHtv93TMMBm5c3eEFfrS8O1ohE/6cR4yFGsfbp3FuL
-         y6Fw==
-X-Gm-Message-State: AJIora+wozgP8gTBBrxEmCi3FUHRXzXuRoKHgNzjufynyoQDAiIDpmOs
-        iRUtcgIc13Xr274C4nSrCIlOyA5WLvthTow4bXUo/PFKloIwFrLsxPrx0OVEX9aYRCpoeFJdEOC
-        wrGhQZWfF3AJxG6ow
-X-Received: by 2002:a17:906:cc47:b0:72a:95bf:2749 with SMTP id mm7-20020a170906cc4700b0072a95bf2749mr13345721ejb.204.1656918193213;
-        Mon, 04 Jul 2022 00:03:13 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1uFUbcMqG+3NKA/v47zZ900Hz/GxevZvwo2m/XCrH9k9CLGuwfFOxSS6CtmlxQvaIN3VxGa7Q==
-X-Received: by 2002:a17:906:cc47:b0:72a:95bf:2749 with SMTP id mm7-20020a170906cc4700b0072a95bf2749mr13345706ejb.204.1656918192899;
-        Mon, 04 Jul 2022 00:03:12 -0700 (PDT)
-Received: from redhat.com ([2.55.3.188])
-        by smtp.gmail.com with ESMTPSA id u6-20020a170906780600b006fef557bb7asm13791488ejm.80.2022.07.04.00.03.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Jul 2022 00:03:12 -0700 (PDT)
-Date:   Mon, 4 Jul 2022 03:03:07 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     davem <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net V4] virtio-net: fix the race between refill work and
- close
-Message-ID: <20220704030124-mutt-send-email-mst@kernel.org>
-References: <20220704041948.13212-1-jasowang@redhat.com>
- <20220704021656-mutt-send-email-mst@kernel.org>
- <CACGkMEsOy6kgaj+Q0vYxDBy7JEd=DUm7KLKo7AjGCi2ay5ciKQ@mail.gmail.com>
+        with ESMTP id S230297AbiGDHEi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 03:04:38 -0400
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2080.outbound.protection.outlook.com [40.107.237.80])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DFA51A0;
+        Mon,  4 Jul 2022 00:04:37 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=kg4Qq4a0c42os8lZWkWYxWlnuTZ47sR6Fny5pAmJjv6p5tDo9+A54qIL3lU57v7AyKwSXkpWtmLkQPEoBX39TaSK3R4Yrp9AMuUYQ1qPlJVXBBSuv2g6U+XDNfN/9tkgIDn7ZmEmvuats3Cb/ghBywKVeFN1cV1aGBj+AI6ujWcK6oFRGFHPyih76A7Tvr5kTLWPxkg+YC1VFImzizdyfAZG2RiPibIVCUu4zA4YI+6GBc1Up15LOcaTo8rx9K6VJXUW9zkZJanbJ3fR3SzUFBBCepaEmdrDJPQAMHb0mhOYjINtZdlzx1xXl3RWZjDbeMbdj17AJd0xtX1zwP3+Ww==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=XE3AH+HjgoQMymQl5iIm2mGl8v3jjxdIbky4kpdAtko=;
+ b=XF/0APkakof2ZUtMsJlDb0aaVLd9relRIn/PTE2xFGMIPEOwOD7KvDJbCjzJaU1bg+mNjx+sPxsrs1SY4s8U0mAAq4tlj9ki4/HIQlSi853B5LmS0ZaPV8umEcPqgVPZi4UPbtqTZ5QDIV0eMl/TSC37ishDsr7XFfUR/iBKEPRoObWgW666UaLCihgYNepOObfGJQOoGnkFkcOTTNw6rkPSI0owXB/gMwLLHEzZELnJKgiwcEblqLc8kNu5fzqGPUv+CQNlmw7BgtttELaxsfFfO4Feil+UXvcgdGA1hGRqA0w6WPACUpZatInGAfc3zhTanI3WBYIFfyUOqKFP6g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=synaptics.com; dmarc=pass action=none
+ header.from=synaptics.com; dkim=pass header.d=synaptics.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=Synaptics.onmicrosoft.com; s=selector2-Synaptics-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=XE3AH+HjgoQMymQl5iIm2mGl8v3jjxdIbky4kpdAtko=;
+ b=e/GZL6DXFrFywnzhN34zTKVeeotyBMW4zVb/bv9aowmpU0PgMr7tU86Ul4k/vxaQwe8C1F5OV+j4WMVabJrPURqqGP/tqZ2vavu7pZ3eKBb53riMxXhVviYkLAyQethbMbYx7Y5HhILALN6tnVm89jLNCzBXWJpT/udoGmTV3IM=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=synaptics.com;
+Received: from SJ0PR03MB6533.namprd03.prod.outlook.com (2603:10b6:a03:386::12)
+ by BL1PR03MB6088.namprd03.prod.outlook.com (2603:10b6:208:311::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.15; Mon, 4 Jul
+ 2022 07:04:35 +0000
+Received: from SJ0PR03MB6533.namprd03.prod.outlook.com
+ ([fe80::d52:5cb7:8c3b:f666]) by SJ0PR03MB6533.namprd03.prod.outlook.com
+ ([fe80::d52:5cb7:8c3b:f666%6]) with mapi id 15.20.5395.020; Mon, 4 Jul 2022
+ 07:04:28 +0000
+From:   =?UTF-8?q?=C5=81ukasz=20Spintzyk?= <lukasz.spintzyk@synaptics.com>
+To:     netdev@vger.kernel.org
+Cc:     linux-usb@vger.kernel.org, oliver@neukum.org, kuba@kernel.org,
+        ppd-posix@synaptics.com
+Subject: [PATCH 0/2] DisplayLink USB-ethernet improvements
+Date:   Mon,  4 Jul 2022 09:04:05 +0200
+Message-Id: <20220704070407.45618-1-lukasz.spintzyk@synaptics.com>
+X-Mailer: git-send-email 2.36.1
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: BEXP281CA0013.DEUP281.PROD.OUTLOOK.COM (2603:10a6:b10::23)
+ To SJ0PR03MB6533.namprd03.prod.outlook.com (2603:10b6:a03:386::12)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACGkMEsOy6kgaj+Q0vYxDBy7JEd=DUm7KLKo7AjGCi2ay5ciKQ@mail.gmail.com>
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 4be881c6-c2f0-4777-8355-08da5d8b6fb7
+X-MS-TrafficTypeDiagnostic: BL1PR03MB6088:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: XPGtUKoE8opqmhGjOppS+Fl6l2LS3j/LJNMfnAeLLaZ+iPrxscEIbTLJNy785fEl3pjPFPnT2HInRZQtM16F76Bf2tJDP0Jdfaheigl/7Ek2NYUTKM07639J0B57bY+Xx48HN4OodkihnSs0CTx4PPpZcOLqU9A37T7rhz9pjHu99KQEXChnRILgEPucoxRo3tXcb3h2pOtdqwD+PJN/Qjnx3VaUymfpyNSgKEW0D6d9F8nAnmnTruLzNIRbS0s3u+FWSnPl+C/W57f7Iv+ILU3dEzOrCDcpNLnsz4Cc3/KuLgpq1yDtLjbXgGbzpqYE1YI7b2D0Youbk7OMuxlK2LG+94Pjs3NOkiXnf6B56LVLAwPZEKT6C10yP7DiEZ/kN1+wRrzVAN0UHvZsamW3Qd54ApWX6JCKnFbH5pWuaRFHqfmVQDOUsP4dP1s6ADaFQhdlMRKr9piYiV21RmmMV9zuHPg3Ic8+6lcYxUlLvhiAk5QNoStMQ/UGGqOeP1axET+7ZNp6lqNxs5zF+tUucBZ92byZS/OwT3PbAd63ANpZcxMsyFDapljXsP48OxrmOs9bIbhQJBdcktwen47GRJ+IZ+4d57J7Ark6u+UegcP3f68F9KbrSEmUgPupW3jtOLjF9jFok9IiK1ysP3A8pvoy3cA0qR263gajdNtPKecukFqmWUrY+d4Ga/VgV5sUxg3V/akK8+EZJgf/5wXdpCGClWSOdsBZuxmIT+pxglU+i8oKvi0tLBRHn8iV9f3+dHcZwfYmqBgfRnvPcJKTW8UtEhDB/+y/yeC9krpARDo+EUExWXLgwhfpolSvV4Pf
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR03MB6533.namprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(376002)(346002)(366004)(136003)(396003)(39850400004)(8936002)(66946007)(4326008)(38350700002)(38100700002)(41300700001)(4744005)(316002)(36756003)(6916009)(186003)(6506007)(52116002)(107886003)(2616005)(2906002)(6486002)(83380400001)(478600001)(6512007)(86362001)(8676002)(66476007)(6666004)(5660300002)(66556008)(1076003)(26005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?NCtBVGQ2VWt3ZkJYMTlqeFFnS3J5MzdZTUhpUzB0eG5DVnhJODdzNFhRbTQz?=
+ =?utf-8?B?c1h4MGVhaGYrU0p5d20rSnZwOG9SaEdiYUhTeDJobWhFRDVPMFlKSjU5ZWox?=
+ =?utf-8?B?d2htM3MrUExNbzFwaWIyMDB1dVpKNStKU1pmMnJWS2U2WlFhcTZnMU5vUjlH?=
+ =?utf-8?B?VWJqY3dBTkhseFVlYnlLYit3MzVmS04rK1NVVE1tSUY4NGg5Y2FSSWlZMHBv?=
+ =?utf-8?B?enZ4UE5wUFg4a0tRVHpzTW1yd1dUa3NDTEM3WVJtMkFhZmNZbVNEMDdqaHg3?=
+ =?utf-8?B?MVpMK0pDbXZlTTVYUkdUV08zUjdwcC94SThEdG9OK3NZNlJNUlR0WEF1S08v?=
+ =?utf-8?B?dWcvSHBqUVlNckYvUFEyRm9QL1BSM3ZjbFpTWUQ5a2lHRVZoTGJHYi83L0RV?=
+ =?utf-8?B?b1owUjdnTWtlcFhORTMyYmJaVjQ3RHdsNTBWK3h4MzE2c25sbGVvWTlYVDZF?=
+ =?utf-8?B?bnlTdWV3WnpQMmEwK2ZPKzQ3dUFQYm5ubjVFVStabnBvTDlucWFnVzYxcmtT?=
+ =?utf-8?B?UzRuNXk0QTFDRWcvbkN4U24remwwSW1Td2lVTlhWQ0dRejAya3F4bjVra1R4?=
+ =?utf-8?B?elYwc3FCZ2w2YTZGSm5ZMy8xczFWV2xQUld0SGcvZmpwZkoweHNYQjZCYUZZ?=
+ =?utf-8?B?ckRLMGVObjgyS0RwQ3JSSXptYzR6bVNqbkM5Q3RmdkdUMkQvanE1c1Q4UE1n?=
+ =?utf-8?B?cHpWVVZQcThrZUpUMGd1NmQ1YU9zQnNuTTNObkViMU5EclRqbkdTUEs3UVYv?=
+ =?utf-8?B?TDN1aTVpcHlMcjkrNEttNWQ1RE5iSU9xb28xM1NYSWI5Tm1WbXBabmdEdGE4?=
+ =?utf-8?B?dVlWc1pvbVdVRW9iTXpXUjlkY3psMTR0bkJzUlZwR3ZYOFRXcWJEYnJJYzFN?=
+ =?utf-8?B?TTJuViswUVpiSUV6YXB1djAzcWhDcFhQV0NCck8rOHg0Nks3eUdzVFhrMkNY?=
+ =?utf-8?B?UFFJdEVXS1p0S3JqNDZCeGd2WHVhQ2t4UWpyVFB2ODJzQldiK2JCcUZSSjZ3?=
+ =?utf-8?B?aWpQTHczQUxZUHUzUlFhV3JLcUE3WnZoenZkSTlLcTFtMzVxeWc3bWxPcFRR?=
+ =?utf-8?B?RTh6aHZxYmtHQ3Jzb3lCQUJqYXVxQUFkRGRvcGwzYkNCOC9ROVl1MlBKQUZt?=
+ =?utf-8?B?QXpsYTVIRjBKcFhzQWZWSThNTTRxbzZYZTB6aXZTSnJtakVYRVVrSTJPZitD?=
+ =?utf-8?B?YUoyMk54ZnpoaFpkWFF6cERJMUE0S1JlcGFRQ2UyVmwzY0p6WGJuekxMRHZv?=
+ =?utf-8?B?a3IvRmsvemJ5MkV3R2g3enlISnRlTFpET2dnRTdyMHhkZkJ3ZVVSQWZTYnN5?=
+ =?utf-8?B?NkxFNEIxeldJdFh6K0ZkeUlEdWdONFc3Q1AyZ0lzS0Myb092VkhkU2poYlht?=
+ =?utf-8?B?RHIramhuTnZraUR6RlJGUXpRUDZtalZxRXlwZmtFY1lzWkE2eERpbkdPY0M2?=
+ =?utf-8?B?bXF3T2d0cWpMK2h5SG9hNHRVM01FT3piTWNxK0xLNExoZWNQMFY3L3lFdDRz?=
+ =?utf-8?B?TG9VVHN6WFk5akxrZFdIWVBhL0ZtSlY2aFZSVU5YQVVaczEvVkVnNzczM05O?=
+ =?utf-8?B?a3d2ZTloVG1TNyt5azZzRWRJTzZOVnBVSlhid2pYS2VVbTFpaUZ4ald0MG1W?=
+ =?utf-8?B?bzgxdUNyTFoxREFOeHdQZGdPMDJnVDA5RzB1b3BoT0FMR1hBMVBLeTBtY3l6?=
+ =?utf-8?B?NWJONmU5L2tsZE5kR0J5UEZqaTI0bEJJTW1qeGEyaWVCdFNSdDFPYjFHRGhV?=
+ =?utf-8?B?VGRHWElvUVRDOUFZb2NiYUtzYmhzOGNlZWQrbTV3V3U4WkExdnFNQjZzMG00?=
+ =?utf-8?B?ME4wa0lSRWNjT2RPVG5YNVNOTGlacndWUnljZnZGYWFUeHppWUFJRGdiZHUz?=
+ =?utf-8?B?SCtBNWxDNlBDdVFVQ3FLVjFPcFc1Z2tvbnNRc2JrNGZWYVB2RkFjZDAwZ1pH?=
+ =?utf-8?B?WUVRVHRYNXFZaGFsZ3orVXBqejQ4M3l4RFVjUFdOcVY4WVFBZGRDeEhsTjNH?=
+ =?utf-8?B?QXdIa0xQVk1KZGRDbVZsQTZ4TnpNZXBjOW1CWnFkakttYmMxUVBJdjJNeXA5?=
+ =?utf-8?B?cnRjdU5wWlhOQUY5T3UzYTJJTkZTYlFQRHU5V2MxUy84cHhSWG8yOVpzV25W?=
+ =?utf-8?Q?tHZS3vB5nG3/lKWgzuBJHUs1j?=
+X-OriginatorOrg: synaptics.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4be881c6-c2f0-4777-8355-08da5d8b6fb7
+X-MS-Exchange-CrossTenant-AuthSource: SJ0PR03MB6533.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Jul 2022 07:04:28.6087
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 335d1fbc-2124-4173-9863-17e7051a2a0e
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: xFLf74WqLlIhHv1nxIfnYN3RSO+D55W+C1KsMdnpk6lQkW7uAhsn2oQc0AqX9Cx87NY1a6cwivqIAVe0K5/bbA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR03MB6088
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 04, 2022 at 02:32:45PM +0800, Jason Wang wrote:
-> On Mon, Jul 4, 2022 at 2:19 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> >
-> > On Mon, Jul 04, 2022 at 12:19:48PM +0800, Jason Wang wrote:
-> > > We try using cancel_delayed_work_sync() to prevent the work from
-> > > enabling NAPI. This is insufficient since we don't disable the source
-> > > of the refill work scheduling. This means an NAPI poll callback after
-> > > cancel_delayed_work_sync() can schedule the refill work then can
-> > > re-enable the NAPI that leads to use-after-free [1].
-> > >
-> > > Since the work can enable NAPI, we can't simply disable NAPI before
-> > > calling cancel_delayed_work_sync(). So fix this by introducing a
-> > > dedicated boolean to control whether or not the work could be
-> > > scheduled from NAPI.
-> > >
-> > > [1]
-> > > ==================================================================
-> > > BUG: KASAN: use-after-free in refill_work+0x43/0xd4
-> > > Read of size 2 at addr ffff88810562c92e by task kworker/2:1/42
-> > >
-> > > CPU: 2 PID: 42 Comm: kworker/2:1 Not tainted 5.19.0-rc1+ #480
-> > > Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.16.0-0-gd239552ce722-prebuilt.qemu.org 04/01/2014
-> > > Workqueue: events refill_work
-> > > Call Trace:
-> > >  <TASK>
-> > >  dump_stack_lvl+0x34/0x44
-> > >  print_report.cold+0xbb/0x6ac
-> > >  ? _printk+0xad/0xde
-> > >  ? refill_work+0x43/0xd4
-> > >  kasan_report+0xa8/0x130
-> > >  ? refill_work+0x43/0xd4
-> > >  refill_work+0x43/0xd4
-> > >  process_one_work+0x43d/0x780
-> > >  worker_thread+0x2a0/0x6f0
-> > >  ? process_one_work+0x780/0x780
-> > >  kthread+0x167/0x1a0
-> > >  ? kthread_exit+0x50/0x50
-> > >  ret_from_fork+0x22/0x30
-> > >  </TASK>
-> > > ...
-> > >
-> > > Fixes: b2baed69e605c ("virtio_net: set/cancel work on ndo_open/ndo_stop")
-> > > Signed-off-by: Jason Wang <jasowang@redhat.com>
-> > > ---
-> > > Changes since V3:
-> > > - rebase to -net
-> > > Changes since V2:
-> > > - use spin_unlock()/lock_bh() in open/stop to synchronize with bh
-> > > Changes since V1:
-> > > - Tweak the changelog
-> > > ---
-> > >  drivers/net/virtio_net.c | 35 +++++++++++++++++++++++++++++++++--
-> > >  1 file changed, 33 insertions(+), 2 deletions(-)
-> > >
-> > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > > index 356cf8dd4164..68430d7923ac 100644
-> > > --- a/drivers/net/virtio_net.c
-> > > +++ b/drivers/net/virtio_net.c
-> > > @@ -251,6 +251,12 @@ struct virtnet_info {
-> > >       /* Does the affinity hint is set for virtqueues? */
-> > >       bool affinity_hint_set;
-> > >
-> > > +     /* Is refill work enabled? */
-> >
-> > refilling enabled
-> 
-> I think it should be reill work, we try refill first, if fail we
-> schedule the work:
-> 
->                 if (!try_fill_recv(vi, rq, GFP_ATOMIC))
->                         schedule_delayed_work(&vi->refill, 0);
-> 
-> Thanks
+Hi all,
 
-maybe "delayed refill"? It's not "work" it's a work struct.
-I'm trying to be consistent with:
-        /* Work struct for refilling if we run low on memory. */
-        struct delayed_work refill;
+I am resending that two changes again.
+
+This are two patches to cdc_ncm driver used in our DisplayLink USB docking stations.
+They are independent, however both of them are improving performance and stability so it matches Windows experience.
+
+It is improving the experience for users of millions of DisplayLink-based docking stations that are in the wild.
+That tweaks of NTB TX/RX results in approximately 4-5x available bandwidth improvement in extreme cases.
 
 
-> >
-> > > +     bool refill_work_enabled;
-> >
-> >
-> > refill_work -> refill?
-> >
-> > > +
-> > > +     /* The lock to synchronize the access to refill_work_enabled */
-> >
-> > .. and refill
-> >
-> > And maybe put these field near the refill field.
-> >
-> > > +     spinlock_t refill_lock;
-> > > +
-> > >       /* CPU hotplug instances for online & dead */
-> > >       struct hlist_node node;
-> > >       struct hlist_node node_dead;
-> > > @@ -348,6 +354,20 @@ static struct page *get_a_page(struct receive_queue *rq, gfp_t gfp_mask)
-> > >       return p;
-> > >  }
-> > >
-> > > +static void enable_refill_work(struct virtnet_info *vi)
-> > > +{
-> > > +     spin_lock_bh(&vi->refill_lock);
-> > > +     vi->refill_work_enabled = true;
-> > > +     spin_unlock_bh(&vi->refill_lock);
-> > > +}
-> > > +
-> > > +static void disable_refill_work(struct virtnet_info *vi)
-> > > +{
-> > > +     spin_lock_bh(&vi->refill_lock);
-> > > +     vi->refill_work_enabled = false;
-> > > +     spin_unlock_bh(&vi->refill_lock);
-> > > +}
-> > > +
-> > >  static void virtqueue_napi_schedule(struct napi_struct *napi,
-> > >                                   struct virtqueue *vq)
-> > >  {
-> > > @@ -1527,8 +1547,12 @@ static int virtnet_receive(struct receive_queue *rq, int budget,
-> > >       }
-> > >
-> > >       if (rq->vq->num_free > min((unsigned int)budget, virtqueue_get_vring_size(rq->vq)) / 2) {
-> > > -             if (!try_fill_recv(vi, rq, GFP_ATOMIC))
-> > > -                     schedule_delayed_work(&vi->refill, 0);
-> > > +             if (!try_fill_recv(vi, rq, GFP_ATOMIC)) {
-> > > +                     spin_lock(&vi->refill_lock);
-> > > +                     if (vi->refill_work_enabled)
-> > > +                             schedule_delayed_work(&vi->refill, 0);
-> > > +                     spin_unlock(&vi->refill_lock);
-> > > +             }
-> > >       }
-> > >
-> > >       u64_stats_update_begin(&rq->stats.syncp);
-> > > @@ -1651,6 +1675,8 @@ static int virtnet_open(struct net_device *dev)
-> > >       struct virtnet_info *vi = netdev_priv(dev);
-> > >       int i, err;
-> > >
-> > > +     enable_refill_work(vi);
-> > > +
-> > >       for (i = 0; i < vi->max_queue_pairs; i++) {
-> > >               if (i < vi->curr_queue_pairs)
-> > >                       /* Make sure we have some buffers: if oom use wq. */
-> > > @@ -2033,6 +2059,8 @@ static int virtnet_close(struct net_device *dev)
-> > >       struct virtnet_info *vi = netdev_priv(dev);
-> > >       int i;
-> > >
-> > > +     /* Make sure NAPI doesn't schedule refill work */
-> > > +     disable_refill_work(vi);
-> > >       /* Make sure refill_work doesn't re-enable napi! */
-> > >       cancel_delayed_work_sync(&vi->refill);
-> > >
-> > > @@ -2792,6 +2820,8 @@ static int virtnet_restore_up(struct virtio_device *vdev)
-> > >
-> > >       virtio_device_ready(vdev);
-> > >
-> > > +     enable_refill_work(vi);
-> > > +
-> > >       if (netif_running(vi->dev)) {
-> > >               err = virtnet_open(vi->dev);
-> > >               if (err)
-> > > @@ -3535,6 +3565,7 @@ static int virtnet_probe(struct virtio_device *vdev)
-> > >       vdev->priv = vi;
-> > >
-> > >       INIT_WORK(&vi->config_work, virtnet_config_changed_work);
-> > > +     spin_lock_init(&vi->refill_lock);
-> > >
-> > >       /* If we can receive ANY GSO packets, we must allocate large ones. */
-> > >       if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO4) ||
-> > > --
-> > > 2.25.1
-> >
+Please take a look. 
+
+Regards,
+Łukasz Spintzyk 
+
+Software Developer at Synaptics Inc.
+
+
+Dominik Czerwik (1):
+  net/cdc_ncm: Enable ZLP for DisplayLink ethernet devices
+
+Łukasz Spintzyk (1):
+  net/cdc_ncm: Increase NTB max RX/TX values to 64kb
+
+ drivers/net/usb/cdc_ncm.c   | 24 ++++++++++++++++++++++++
+ include/linux/usb/cdc_ncm.h |  4 ++--
+ 2 files changed, 26 insertions(+), 2 deletions(-)
+
+-- 
+2.36.1
 
