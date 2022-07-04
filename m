@@ -2,135 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 01E7C5658E0
-	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 16:45:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 198115658FE
+	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 16:55:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233104AbiGDOpS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jul 2022 10:45:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43944 "EHLO
+        id S234825AbiGDOyk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Jul 2022 10:54:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232665AbiGDOpR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 10:45:17 -0400
-Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73393DEC5;
-        Mon,  4 Jul 2022 07:45:16 -0700 (PDT)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.nyi.internal (Postfix) with ESMTP id C2E805C00F1;
-        Mon,  4 Jul 2022 10:45:13 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Mon, 04 Jul 2022 10:45:13 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm2; t=1656945913; x=1657032313; bh=kiuUXP9ruD
-        zX/H0U1Opg7S+HL8Nwn2O6feuWWww2TO4=; b=QA2OLOKyOBFRusDhl9mmNwZb6o
-        qxge9lI5rigPx1QsWatQc74ZxstjhysejvajmJ8sY2WMbaLF28oPDW7OMFsp/Fk8
-        3N7KRPuS5t+vd9jLC7eVWcAtzbmEw5aaJaLrBo3RyyhGk5fnjMfg/mISCFaIYsXp
-        PkDGPxyuflPNi6my528G3t85JLVaTAQQayMBDDiuhS/lHoRKbUrUHR9g5mOiFhUM
-        7XKRbQjf6AZ9/S+Tkna+Te9cBjq1OEExVIhTmD8ETuht4AEVSf5yxQHXv5mOt5ag
-        oB8ta2ZGyi3N+OTVSc4XKagymb1tlxK8nGvX+URcHmXgHTaRU6ISXanidtIA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; t=1656945913; x=1657032313; bh=kiuUXP9ruDzX/H0U1Opg7S+HL8Nw
-        n2O6feuWWww2TO4=; b=g6iH//tTnVpTiTSyMRF2uyIH77k4q4GKZIH4fEZACcU7
-        tOyb7cDDjZV55G+FDofI0jPvMcQyxpIk4PcBfOKHFiT50sdHBWKSomJ2rW2wctJT
-        LzW/cPAzLIkpahRl3IAK+2PTV5Vru2oI6tCgpTxEEw46N/zBNfJHmMXVh5oNjRb7
-        xOTz3BOWvdK2l7AaC+LEF4BJLaJiykT1Akah6p3SN4plSrOqVxWabn3N5uDzVxpa
-        USaKYR7fZX+D+tecTHx/UppfUWLkDob21fC1OY/ndZr8TH6UvqLD6fPEKcYcXAwy
-        D1CM9tu6C6Y7uvsNl7EyX/ow9+OApDalr/EB4MoC7g==
-X-ME-Sender: <xms:-PzCYpjBsflADCw884SlFZZRQnYVV9joT34RTngmATYpcjgSm7D5Qw>
-    <xme:-PzCYuAZtJQmR1FZXrHrj57NPxNIat4IksH9nuZb8db9XnnQcRfDl1Ld9kOBHp8-I
-    PVkPVKXR3HRNw>
-X-ME-Received: <xmr:-PzCYpGczjHSjJGmFHelMXgRwyYkcIELrqcPMLRSQKHnRo2fnxwioDe5V9R4UixouWJjPlhuY5pOziTA7TPT0kp9R-8h6LTN>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudehledgkeduucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvfevuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepifhrvghg
-    ucfmjfcuoehgrhgvgheskhhrohgrhhdrtghomheqnecuggftrfgrthhtvghrnhepgeehue
-    ehgfdtledutdelkeefgeejteegieekheefudeiffdvudeffeelvedttddvnecuffhomhgr
-    ihhnpehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmh
-    epmhgrihhlfhhrohhmpehgrhgvgheskhhrohgrhhdrtghomh
-X-ME-Proxy: <xmx:-PzCYuRbMi7PjRArRzDhouviAp6SXA1GgmPPm3UxLCy6SRH-w5WXXg>
-    <xmx:-PzCYmy8c5SMzj3iWg3a8prT-BJT8-mbGA3JtKfiUt1_OVjdEP4cdg>
-    <xmx:-PzCYk7eBg0h_V-GL1DY7W7a3BSWgKbUZ0wO2Glz1TMaQV8081Fz4A>
-    <xmx:-fzCYrIG5e__rPiBqJQxYRnH4xqN_zYR4OVKWWay3_uLkQOo0RFrpA>
-Feedback-ID: i787e41f1:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 4 Jul 2022 10:45:12 -0400 (EDT)
-Date:   Mon, 4 Jul 2022 16:45:10 +0200
-From:   Greg KH <greg@kroah.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     stable@vger.kernel.org, edumazet@google.com,
-        netdev@vger.kernel.org, Ilya Maximets <i.maximets@ovn.org>,
-        Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>
-Subject: Re: [PATCH stable 5.15] tcp: add a missing nf_reset_ct() in 3WHS
- handling
-Message-ID: <YsL89hdkaK9AOtDy@kroah.com>
-References: <20220701014101.684813-1-kuba@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220701014101.684813-1-kuba@kernel.org>
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+        with ESMTP id S234782AbiGDOyj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 10:54:39 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 32E0D316;
+        Mon,  4 Jul 2022 07:54:38 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2633123A;
+        Mon,  4 Jul 2022 07:54:38 -0700 (PDT)
+Received: from e124483.cambridge.arm.com (e124483.cambridge.arm.com [10.1.29.145])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id E3A633F792;
+        Mon,  4 Jul 2022 07:54:33 -0700 (PDT)
+From:   Andrew Kilroy <andrew.kilroy@arm.com>
+To:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        acme@kernel.org
+Cc:     Andrew Kilroy <andrew.kilroy@arm.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Tom Rix <trix@redhat.com>,
+        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, llvm@lists.linux.dev
+Subject: [PATCH 0/8] Perf stack unwinding with pointer authentication
+Date:   Mon,  4 Jul 2022 15:53:24 +0100
+Message-Id: <20220704145333.22557-1-andrew.kilroy@arm.com>
+X-Mailer: git-send-email 2.17.1
+X-Spam-Status: No, score=-6.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 30, 2022 at 06:41:01PM -0700, Jakub Kicinski wrote:
-> From: Eric Dumazet <edumazet@google.com>
-> 
-> commit 6f0012e35160cd08a53e46e3b3bbf724b92dfe68 upstream.
-> 
-> When the third packet of 3WHS connection establishment
-> contains payload, it is added into socket receive queue
-> without the XFRM check and the drop of connection tracking
-> context.
-> 
-> This means that if the data is left unread in the socket
-> receive queue, conntrack module can not be unloaded.
-> 
-> As most applications usually reads the incoming data
-> immediately after accept(), bug has been hiding for
-> quite a long time.
-> 
-> Commit 68822bdf76f1 ("net: generalize skb freeing
-> deferral to per-cpu lists") exposed this bug because
-> even if the application reads this data, the skb
-> with nfct state could stay in a per-cpu cache for
-> an arbitrary time, if said cpu no longer process RX softirqs.
-> 
-> Many thanks to Ilya Maximets for reporting this issue,
-> and for testing various patches:
-> https://lore.kernel.org/netdev/20220619003919.394622-1-i.maximets@ovn.org/
-> 
-> Note that I also added a missing xfrm4_policy_check() call,
-> although this is probably not a big issue, as the SYN
-> packet should have been dropped earlier.
-> 
-> Fixes: b59c270104f0 ("[NETFILTER]: Keep conntrack reference until IPsec policy checks are done")
-> Reported-by: Ilya Maximets <i.maximets@ovn.org>
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: Florian Westphal <fw@strlen.de>
-> Cc: Pablo Neira Ayuso <pablo@netfilter.org>
-> Cc: Steffen Klassert <steffen.klassert@secunet.com>
-> Tested-by: Ilya Maximets <i.maximets@ovn.org>
-> Reviewed-by: Ilya Maximets <i.maximets@ovn.org>
-> Link: https://lore.kernel.org/r/20220623050436.1290307-1-edumazet@google.com
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
->  net/ipv4/tcp_ipv4.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
+This patch series addresses issues that perf has when attempting to show
+userspace stacks in the presence of pointer authentication on arm64.
 
-Now queued up, thanks.
+Depending on whether libunwind or libdw is used, perf incorrectly
+displays the userspace stack in 'perf report --stdio'.  With libunwind,
+only the leaf function is shown.
 
-greg k-h
+            |
+            ---0x200000004005bf
+               0x200000004005bf
+               my_leaf_function
+
+With libdw, only the leaf function is shown even though there are
+callers in the application.
+
+            |
+            ---my_leaf_function
+
+
+The reason perf cannot show the stack upon a perf report --stdio is
+because the unwinders are given instruction pointers which contain a
+pointer authentication code (PAC).  For the libraries to correctly
+unwind, they need to know which bits of the instruction pointer to turn
+off.
+
+The kernel exposes the set of PAC bits via the NT_ARM_PAC_MASK regset.
+It is expected that this may vary per-task in future. The kernel also
+exposes which pointer authentication keys are enabled via the
+NT_ARM_PAC_ENABLED_KEYS regset, and this can change dynamically. These
+are per-task state which perf would need to sample.
+
+It's not always feasible for perf to acquire these regsets via ptrace.
+When sampling system-wide or with inherited events this may require a
+large volume of ptrace requests, and by the time the perf tool processes
+a sample for a task, that task might already have terminated.
+
+Instead, these patches allow this state to be sampled into the perf
+ringbuffer, where it can be consumed more easily by the perf tool.
+
+The first patch changes the kernel to send the authentication PAC masks
+to userspace perf via the perf ring buffer.  This is published in the
+sample, using a new sample field PERF_SAMPLE_ARCH_1.
+
+The subsequent patches are changes to userspace perf to
+
+1) request the PERF_SAMPLE_ARCH_1
+2) supply the instruction mask to libunwind
+3) ensure perf can cope with an older kernel that does not know about
+   the PERF_SAMPLE_ARCH_1 sample field.
+4) checks if the version of libunwind has the capability to accept
+   an instruction mask from perf and if so enable the feature.
+
+These changes depend on a change to libunwind, that is yet to be
+released, although the patch has been merged.
+
+  https://github.com/libunwind/libunwind/pull/360
+
+
+Andrew Kilroy (6):
+  perf arm64: Send pointer auth masks to ring buffer
+  perf evsel: Do not request ptrauth sample field if not supported
+  perf tools: arm64: Read ptrauth data from kernel
+  perf libunwind: Feature check for libunwind ptrauth callback
+  perf libunwind: arm64 pointer authentication
+  perf tools: Print ptrauth struct in perf report
+
+German Gomez (2):
+  perf test: Update arm64 tests to expect ptrauth masks
+  perf test arm64: Test unwinding with PACs on gcc & clang compilers
+
+ arch/arm64/include/asm/arch_sample_data.h     |  38 ++++++
+ arch/arm64/kernel/Makefile                    |   2 +-
+ arch/arm64/kernel/arch_sample_data.c          |  37 ++++++
+ include/linux/perf_event.h                    |  24 ++++
+ include/uapi/linux/perf_event.h               |   5 +-
+ kernel/events/core.c                          |  35 ++++++
+ tools/build/Makefile.feature                  |   2 +
+ tools/build/feature/Makefile                  |   4 +
+ tools/build/feature/test-all.c                |   5 +
+ .../feature/test-libunwind-arm64-ptrauth.c    |  26 ++++
+ tools/include/uapi/linux/perf_event.h         |   5 +-
+ tools/perf/Makefile.config                    |  10 ++
+ tools/perf/Makefile.perf                      |   1 +
+ tools/perf/tests/Build                        |   1 +
+ tools/perf/tests/arm_unwind_pac.c             | 113 ++++++++++++++++++
+ tools/perf/tests/arm_unwind_pac.sh            |  57 +++++++++
+ tools/perf/tests/attr/README                  |   1 +
+ .../attr/test-record-graph-default-aarch64    |   3 +-
+ tools/perf/tests/attr/test-record-graph-dwarf |   1 +
+ .../attr/test-record-graph-dwarf-aarch64      |  13 ++
+ .../tests/attr/test-record-graph-fp-aarch64   |   3 +-
+ tools/perf/tests/builtin-test.c               |   1 +
+ tools/perf/tests/sample-parsing.c             |   2 +-
+ tools/perf/tests/tests.h                      |   1 +
+ tools/perf/util/event.h                       |   8 ++
+ tools/perf/util/evsel.c                       |  64 ++++++++++
+ tools/perf/util/evsel.h                       |   1 +
+ tools/perf/util/perf_event_attr_fprintf.c     |   2 +-
+ tools/perf/util/session.c                     |  15 +++
+ tools/perf/util/unwind-libunwind-local.c      |  12 ++
+ 30 files changed, 485 insertions(+), 7 deletions(-)
+ create mode 100644 arch/arm64/include/asm/arch_sample_data.h
+ create mode 100644 arch/arm64/kernel/arch_sample_data.c
+ create mode 100644 tools/build/feature/test-libunwind-arm64-ptrauth.c
+ create mode 100644 tools/perf/tests/arm_unwind_pac.c
+ create mode 100755 tools/perf/tests/arm_unwind_pac.sh
+ create mode 100644 tools/perf/tests/attr/test-record-graph-dwarf-aarch64
+
+-- 
+2.17.1
+
