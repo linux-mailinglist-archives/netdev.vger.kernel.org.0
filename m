@@ -2,37 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 63F3F565DE1
-	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 21:16:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 182C7565DF3
+	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 21:24:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234721AbiGDTQQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jul 2022 15:16:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34366 "EHLO
+        id S230520AbiGDTY4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Jul 2022 15:24:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234707AbiGDTQO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 15:16:14 -0400
-Received: from smtp.smtpout.orange.fr (smtp05.smtpout.orange.fr [80.12.242.127])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C152ECE33
-        for <netdev@vger.kernel.org>; Mon,  4 Jul 2022 12:16:13 -0700 (PDT)
+        with ESMTP id S231127AbiGDTYz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 15:24:55 -0400
+Received: from smtp.smtpout.orange.fr (smtp09.smtpout.orange.fr [80.12.242.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A1AFCE25
+        for <netdev@vger.kernel.org>; Mon,  4 Jul 2022 12:24:53 -0700 (PDT)
 Received: from pop-os.home ([90.11.190.129])
         by smtp.orange.fr with ESMTPA
-        id 8RYIoSrT0ZDzU8RYJoUC9X; Mon, 04 Jul 2022 21:16:12 +0200
+        id 8RgdopqG9OXCy8Rgeoi3li; Mon, 04 Jul 2022 21:24:51 +0200
 X-ME-Helo: pop-os.home
 X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Mon, 04 Jul 2022 21:16:12 +0200
+X-ME-Date: Mon, 04 Jul 2022 21:24:51 +0200
 X-ME-IP: 90.11.190.129
 From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     Johannes Berg <johannes@sipsolutions.net>,
+To:     Simon Horman <horms@verge.net.au>, Julian Anastasov <ja@ssi.bg>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>
 Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
         Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH] wifi: mac80211: Use the bitmap API to allocate bitmaps
-Date:   Mon,  4 Jul 2022 21:16:09 +0200
-Message-Id: <dfb438a6a199ee4c95081fa01bd758fd30e50931.1656962156.git.christophe.jaillet@wanadoo.fr>
+        netdev@vger.kernel.org, lvs-devel@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org
+Subject: [PATCH] netfilter: ipvs: Use the bitmap API to allocate bitmaps
+Date:   Mon,  4 Jul 2022 21:24:46 +0200
+Message-Id: <420d8b70560e8711726ff639f0a55364e212ff26.1656962678.git.christophe.jaillet@wanadoo.fr>
 X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -51,32 +55,32 @@ It is less verbose and it improves the semantic.
 
 Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 ---
- net/mac80211/mesh_plink.c | 5 ++---
+ net/netfilter/ipvs/ip_vs_mh.c | 5 ++---
  1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/net/mac80211/mesh_plink.c b/net/mac80211/mesh_plink.c
-index 55bed9ce98fe..d67011745048 100644
---- a/net/mac80211/mesh_plink.c
-+++ b/net/mac80211/mesh_plink.c
-@@ -477,8 +477,7 @@ static int mesh_allocate_aid(struct ieee80211_sub_if_data *sdata)
- 	unsigned long *aid_map;
- 	int aid;
+diff --git a/net/netfilter/ipvs/ip_vs_mh.c b/net/netfilter/ipvs/ip_vs_mh.c
+index da0280cec506..e3d7f5c879ce 100644
+--- a/net/netfilter/ipvs/ip_vs_mh.c
++++ b/net/netfilter/ipvs/ip_vs_mh.c
+@@ -174,8 +174,7 @@ static int ip_vs_mh_populate(struct ip_vs_mh_state *s,
+ 		return 0;
+ 	}
  
--	aid_map = kcalloc(BITS_TO_LONGS(IEEE80211_MAX_AID + 1),
--			  sizeof(*aid_map), GFP_KERNEL);
-+	aid_map = bitmap_zalloc(IEEE80211_MAX_AID + 1, GFP_KERNEL);
- 	if (!aid_map)
+-	table = kcalloc(BITS_TO_LONGS(IP_VS_MH_TAB_SIZE),
+-			sizeof(unsigned long), GFP_KERNEL);
++	table = bitmap_zalloc(IP_VS_MH_TAB_SIZE, GFP_KERNEL);
+ 	if (!table)
  		return -ENOMEM;
  
-@@ -491,7 +490,7 @@ static int mesh_allocate_aid(struct ieee80211_sub_if_data *sdata)
- 	rcu_read_unlock();
+@@ -227,7 +226,7 @@ static int ip_vs_mh_populate(struct ip_vs_mh_state *s,
+ 	}
  
- 	aid = find_first_zero_bit(aid_map, IEEE80211_MAX_AID + 1);
--	kfree(aid_map);
-+	bitmap_free(aid_map);
+ out:
+-	kfree(table);
++	bitmap_free(table);
+ 	return 0;
+ }
  
- 	if (aid > IEEE80211_MAX_AID)
- 		return -ENOBUFS;
 -- 
 2.34.1
 
