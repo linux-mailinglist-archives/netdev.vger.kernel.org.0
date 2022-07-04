@@ -2,206 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E0BA1565047
-	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 11:05:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D23CC565058
+	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 11:07:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233489AbiGDJEZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jul 2022 05:04:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35348 "EHLO
+        id S233583AbiGDJHn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Jul 2022 05:07:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231810AbiGDJEY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 05:04:24 -0400
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62F142DEC;
-        Mon,  4 Jul 2022 02:04:23 -0700 (PDT)
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1o8I0C-000CXw-PX; Mon, 04 Jul 2022 11:04:20 +0200
-Received: from [85.1.206.226] (helo=linux-3.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1o8I0C-000TNe-8p; Mon, 04 Jul 2022 11:04:20 +0200
-Subject: Re: [syzbot] KASAN: vmalloc-out-of-bounds Read in bpf_jit_free
-To:     syzbot <syzbot+2f649ec6d2eea1495a8f@syzkaller.appspotmail.com>,
-        andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-        davem@davemloft.net, dvyukov@google.com, hawk@kernel.org,
-        john.fastabend@gmail.com, kafai@fb.com, kernel-team@fb.com,
-        kpsingh@kernel.org, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, nogikh@google.com,
-        patchwork-bot@kernel.org, song@kernel.org, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, yhs@fb.com
-References: <0000000000002cb7d405e2e1f886@google.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <7a5eea26-e379-dfa3-b606-c6a841a2c5fb@iogearbox.net>
-Date:   Mon, 4 Jul 2022 11:04:19 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
-MIME-Version: 1.0
-In-Reply-To: <0000000000002cb7d405e2e1f886@google.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+        with ESMTP id S233664AbiGDJHg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 05:07:36 -0400
+Received: from JPN01-OS0-obe.outbound.protection.outlook.com (mail-os0jpn01on2091.outbound.protection.outlook.com [40.107.113.91])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C03EB86C;
+        Mon,  4 Jul 2022 02:07:35 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=no/2VsbpUOmhr87YkoBzV34FVLEdH+OSh+6vwfkoMQFjlDSgj0CcVbPSh6gPpXGjStaraDZfmcxbiMCeO+/bsOkxX025/YGSWfR38Fs0AOCcTtlnik3WpCIIcjIR5/1HiKuWdVQZhqSHV2YhZqX1z9lL5JH67Ayv0Xva89kAdnXwKthTcx3bTVSbPoY2g3E2yBwHG4BjcLE3zByHzh7pCFB8yGCOZPEddgOZx0ZsvdqSGOybgI0ZYlk2odUcWwUyE6Yu016a8RYrX1WJOZmNlY6ETJhI3DUS8iqdRGWPNGI7uE7DGoLzuxUQpBMHw1rFDBBThbRh5AiEuqA8ygpArw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=NFTWVA1hyIyLB31AijeQofJSuCuC/OKJMKiSXgbLsZc=;
+ b=WZCLcdGNfau2c2WdqtFZI3sZdStuapGptGw7OWu8elo7KLH7O88v1QZFEBSbV8g3Awse6fYk2vazW/3yCkCzV2khACU418D5te34HSN1xnnbtjF42UXgH+EKoa7RC4Y0dZb/rzanq3bI48bT54qM1P1gPy2Q+hGLi9r76nTS/sQ3KY8xzIohLXPuNr47olghl8lxVvWwoxVjUPnstRBDe79dvcDUSjOUasQnLnaB/Bb8scKtnYuMj5sLoNJMdRtLz3LVWsrSpATdxWAFqZs+viZeIEWXITwyiCwlbFgw7KU4otOpiMUz8JeY7UhurlK98/sJk8QY+s4bhZpQdjKMDQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=bp.renesas.com; dmarc=pass action=none
+ header.from=bp.renesas.com; dkim=pass header.d=bp.renesas.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bp.renesas.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=NFTWVA1hyIyLB31AijeQofJSuCuC/OKJMKiSXgbLsZc=;
+ b=NaGujkDu7oyILzuy1eGi0nd8KqpShYVTJqK2PAynAcw23lFnzAc4ueLW54j0KiAnTBy3ILOKeQiI4cuGMxW6ai0ybVSLdMFH0IiLdEp2aKXfi9p3DELUPoS54FW2TXmb78rmBOsNoevtezUmB3h/Mvrbv3qNi/pdSeq3/2UwIrc=
+Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com (2603:1096:604:bb::5)
+ by TYWPR01MB9608.jpnprd01.prod.outlook.com (2603:1096:400:19b::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.15; Mon, 4 Jul
+ 2022 09:07:32 +0000
+Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com
+ ([fe80::dc06:eb07:874:ecce]) by OS0PR01MB5922.jpnprd01.prod.outlook.com
+ ([fe80::dc06:eb07:874:ecce%9]) with mapi id 15.20.5395.020; Mon, 4 Jul 2022
+ 09:07:32 +0000
+From:   Biju Das <biju.das.jz@bp.renesas.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+CC:     "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        =?utf-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>
+Subject: RE: [PATCH v3 2/6] dt-bindings: can: nxp,sja1000: Document RZ/N1{D,S}
+ support
+Thread-Topic: [PATCH v3 2/6] dt-bindings: can: nxp,sja1000: Document
+ RZ/N1{D,S} support
+Thread-Index: AQHYj3rIHPLTRXfLGUKasqPYhC0+kq1t5p0AgAAESuA=
+Date:   Mon, 4 Jul 2022 09:07:32 +0000
+Message-ID: <OS0PR01MB59228BC544D31FB0761D463E86BE9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+References: <20220704075032.383700-1-biju.das.jz@bp.renesas.com>
+ <20220704075032.383700-3-biju.das.jz@bp.renesas.com>
+ <9124be7e-2512-da31-631f-e74ae8c3175c@linaro.org>
+In-Reply-To: <9124be7e-2512-da31-631f-e74ae8c3175c@linaro.org>
+Accept-Language: en-GB, en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.6/26593/Mon Jul  4 09:28:57 2022)
-X-Spam-Status: No, score=0.6 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=bp.renesas.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 242eb8db-b764-4748-71c0-08da5d9ca0d8
+x-ms-traffictypediagnostic: TYWPR01MB9608:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: IZYEW6oe0xWGGI9f0am95U8R34QF4+bfiPYlJt37GDNwHelrPYXCdoU8VPUVQ7bGG31ooK464GqXdtOwGCsRfYBzDKqW3oyqYrOxMUZ/vTYQIlO9VfDPx/85s4a5sQ5u7eqfSR6fWVtYfLPSHM7NPM/81EE3tUPS0FrrnQqmnp33KC6+zRegR4wIoIVSIRfP8wKkLGY6I7pw7LwdcS31BHadfU5TTvJP98cw+cf1RccOfyEauVXZittLifN1v0PPSosMw4VCRPb8M287gzUllvo9EOL3KwfKmY0E9c5zxvcQfTH07uteS76cUPgO4ik0qRs4lYZYHwufLcBjfrQyjv5AHhwQhjZxC2ZYPiRODsb8ZrN7g1C/PYmaPgfz/QnFmDfxGn+Fb/4b5UTh2eld/UDK4yKzQJZs6aHosMdrJoE6R/tuF3FNTF6UnwQUQsliGRsK4V1I10323cjsxohTW6sXWK5lzisEF96wtWQT84CsFdBIJaokURNmdBpbv5TwiuqZZPtJq8RzmL/Elz/CkqJR2wlsurS4bIxrCIyqcbU76ythAstRDFNmHGeGj9mfL0rvNUDhs7wO4f2Rbp7OMescjf46hDf2uaVnUQP525m76TSJdByNkI6Bo+NxDlINuXAEiZpbYfO6OMg/56t1oHnm3QfCvZO7sXLgPWBQ3ZULq2+lKoKr467ogFDlFJrwRgw1bhRsTxDKiZoNwWsQ4DLCzipdM3I9Z2hqw+m5bdwmJtHQ/l4iMQnSSdCJCrxa1Zu6XZcPx/lD8Xf5hUCzc1bO5MLKeqELcnjPwghvraNLNhuaSC1gFmnoNZOt/vOL
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OS0PR01MB5922.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(346002)(366004)(396003)(376002)(136003)(54906003)(52536014)(9686003)(7416002)(7696005)(26005)(53546011)(6506007)(5660300002)(8936002)(86362001)(38070700005)(110136005)(76116006)(66556008)(66446008)(71200400001)(66946007)(4326008)(64756008)(8676002)(66476007)(316002)(41300700001)(122000001)(478600001)(186003)(55016003)(33656002)(2906002)(38100700002)(83380400001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?RkpjY2JjbVNWd2VFZEhBbjlGMHlvNStYWmNTQndJZTF3U3pVTm1RY3NaeHJD?=
+ =?utf-8?B?REdINU5qdzFuTEl4QzNlYzVQRDZKWkRTUEZwMTZqOXhJQ201c1FvRmRjTDhu?=
+ =?utf-8?B?Vml0MU9nYWYzL1pRMnlKS2ZhVHNVZDhsenFGdkpCbG1wcDJabjlndngrOVBE?=
+ =?utf-8?B?eCtRaXEwWW5yVTFCQTd2VlMrVUpqbmdOQXpRa3NBUU5VNjJEaEVqb3BzdDB3?=
+ =?utf-8?B?RWxXb2YwU0JiS1YyVnZGdE1WUmRCNVU1SDBJODQxbk1lSzdGSFJpeUMxcEJp?=
+ =?utf-8?B?RUZ1SnZsYmkwUWhNNjJvY0trbEFnQit3OTBxL21jN3BGU1NIdWdESmRXMXBP?=
+ =?utf-8?B?eW92amo5UThycFZJVXZlT2lQcG95cE95b0Zha3kwMk1kTDg0TytvMS9vQ3Nx?=
+ =?utf-8?B?RTZxaGt0Uk5RWVNXSkNUa3d4YTVaR0NsbmQyYVZtVkdPSVBzc2hpSG0rMTRG?=
+ =?utf-8?B?WUJuQ1d4bEpqQ3pHU0xyUHdORHg0OXZNbmZVcWF5Y3QvcTRUWGsxdFZwWm1a?=
+ =?utf-8?B?bmNOVkVMN2FUakZuTUVNK0pxczF3UDRkdmQ4d3RjY0czUkgwY0F1dlFQVm54?=
+ =?utf-8?B?MlFlT1UxZVhtczA0Vm01VXJWWkQvUmprQ3dhakptOFAybURqYlpxbXJuWjNj?=
+ =?utf-8?B?MG1mKzBaaHl4bHVibjNnTzJkQXpOdjlDRHFMQXUxc3VIbFlzUTVPbEl0dVlp?=
+ =?utf-8?B?ZWRBRU5vdEM4L3RZOUErQkZrczQ0WkZqazNteVVadWRoZXZQTU1rdzNkR2hr?=
+ =?utf-8?B?eUZ4VG9yZG15Z0dVTHA0UDQvbEtmUHNuSnFYeVpOREgwWmVDcUM4Q2RWdFpJ?=
+ =?utf-8?B?UlAyemFSaVBKQVRWODJpZWYyV2xGQ1paN1JBcWNDYmhEdmNYS2RHTzRqdERZ?=
+ =?utf-8?B?cUpzVkZKK1lRbU9kR2JZTEVlSkgwbisrTXl0NDlCNUFBM3Z1L0I0amkyT1Ft?=
+ =?utf-8?B?QlJFUjd2Mm9mdlVFYTNrWTJQSi9VRzhGbWNLSkhlMEpveE9QOU0zSTBzTjJV?=
+ =?utf-8?B?NTc0Qm52cjVVY0tva0hRZDVyVXdJaFFoY3N6aTU2eDBpNytKN3ZWUVB0a2gr?=
+ =?utf-8?B?SFMzY2lJT1A5SDRrN3FBay9IU2hHV2tPaEJwWFBhSVVER1RmTGNkWTNxSEpz?=
+ =?utf-8?B?QmV6OE1kckdCYmkrb2ROS3RiOVVhYTRlZEQwd0VDa2tGeG03R2gvaHhXV0Jk?=
+ =?utf-8?B?Nk1zYzZUVXJPdVBpOFBTN1UxT1htM2VrOTBBQWFWQ0ExeGZobEpkdjNiQU16?=
+ =?utf-8?B?eFFRaG83RUZPQWRRUkg4L0hndGNBcDVkd1hjTlczOW1UTE52SVVSS0dVQkFY?=
+ =?utf-8?B?aEhCVnVURjgvelZrak0yMkZBREV6bWxabm05a1JZVjlON1N6SjFYcTBoWko2?=
+ =?utf-8?B?OSsrU25Zbm9LWW9XVnpEWjRNZmZTNWlWcWxlMml3YTRtU3FGL242Z1FQQ0wr?=
+ =?utf-8?B?VkdDbExyUWFZRUxCR1pLUHV0elhpZzMzZHJBeWdXb2ovWlFINDRLTHppNWM4?=
+ =?utf-8?B?TDgzSis1eUVLY2t5U09OUDBFcEtSd1cvclVadEh0VnhhVnZlcVpWUGRUTFFm?=
+ =?utf-8?B?cG5nNDg2bWJZQThNN1A5ZXFrYnNZbW5NZnREVWJsbFk3SkROY1Q0em01RVRJ?=
+ =?utf-8?B?Wi9kMHEyMGJlTTBlWk5qcXFnbitidFM4RVlSS2RmVUZTMHNxM1ZVOEVqcWRj?=
+ =?utf-8?B?UUtVK2w2RitycTdoR0hWT1RScFZiMUFOM295cFJjMlIwRmNnSk9RVkhUeDFz?=
+ =?utf-8?B?bndzNzcybE51MDhvUUVMWURBbWFoTmlzRnR6eXBBelNaOFM0eHFqVVhFRS94?=
+ =?utf-8?B?bERKdDJwbzBCUWtOMWxiWUlsUnNyZUVhODFiakYySHlhb0RsdDEvSFpNRWlN?=
+ =?utf-8?B?bzB5Y2xOWFp3djEyUGxpc3NMREpoTjBIOGNLeGUweGFjaFBYczFocjFxL1Jm?=
+ =?utf-8?B?SmtQQVN3T0FCbGRHeDR2RjJZb1dSUVV2cVFrYlJsaUY4T0xrQ0xlaGdjbEpC?=
+ =?utf-8?B?WXdzK1VkSzdDazZjc0I4ci9oV3h6R3Ivb0JIS2NvWGxPMDNpU3hPRUhWd0lX?=
+ =?utf-8?B?ZDFmaEZIYW5rSFNWWDBoV0ZxZmZpUklRT29lYitlUWwra2xSdWpIOW9HdDNJ?=
+ =?utf-8?B?a2svNVlOdmQ4VDJsMllZRjAzSXU4WllrWmlxMXFQdEdRQWRRRU1SNERxdzlD?=
+ =?utf-8?B?Wmc9PQ==?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: bp.renesas.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: OS0PR01MB5922.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 242eb8db-b764-4748-71c0-08da5d9ca0d8
+X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Jul 2022 09:07:32.0542
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: QneK8BJB5shucJ34SV+tMPRNHoZfHAbLC5CqkWFb6eQbOyTug3JbXEVjJoEruuHmkJ+2UKR+2PhxHDpTsQ02j6SKed12fcrCZ7pDLhhJytU=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYWPR01MB9608
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/3/22 9:57 AM, syzbot wrote:
-> syzbot has found a reproducer for the following issue on:
-
-Song, ptal, thanks.
-
-> HEAD commit:    b0d93b44641a selftests/bpf: Skip lsm_cgroup when we don't ..
-> git tree:       bpf-next
-> console output: https://syzkaller.appspot.com/x/log.txt?x=10c495e0080000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=70e1a4d352a3c6ae
-> dashboard link: https://syzkaller.appspot.com/bug?extid=2f649ec6d2eea1495a8f
-> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11a10a58080000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16ab8cb8080000
-
-Looks like this time syzbot found a repro at least, so this should help making progress.
-
-https://lore.kernel.org/bpf/0000000000002cb7d405e2e1f886@google.com/T/#t
-
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+2f649ec6d2eea1495a8f@syzkaller.appspotmail.com
-> 
-> ==================================================================
-> BUG: KASAN: vmalloc-out-of-bounds in bpf_jit_binary_free kernel/bpf/core.c:1081 [inline]
-> BUG: KASAN: vmalloc-out-of-bounds in bpf_jit_free+0x26c/0x2b0 kernel/bpf/core.c:1206
-> Read of size 4 at addr ffffffffa0000000 by task syz-executor334/3608
-> 
-> CPU: 0 PID: 3608 Comm: syz-executor334 Not tainted 5.19.0-rc2-syzkaller-00498-gb0d93b44641a #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 06/29/2022
-> Call Trace:
->   <TASK>
->   __dump_stack lib/dump_stack.c:88 [inline]
->   dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
->   print_address_description.constprop.0.cold+0xf/0x495 mm/kasan/report.c:313
->   print_report mm/kasan/report.c:429 [inline]
->   kasan_report.cold+0xf4/0x1c6 mm/kasan/report.c:491
->   bpf_jit_binary_free kernel/bpf/core.c:1081 [inline]
->   bpf_jit_free+0x26c/0x2b0 kernel/bpf/core.c:1206
->   jit_subprogs kernel/bpf/verifier.c:13767 [inline]
->   fixup_call_args kernel/bpf/verifier.c:13796 [inline]
->   bpf_check+0x7035/0xb040 kernel/bpf/verifier.c:15287
->   bpf_prog_load+0xfb2/0x2250 kernel/bpf/syscall.c:2575
->   __sys_bpf+0x11a1/0x5790 kernel/bpf/syscall.c:4934
->   __do_sys_bpf kernel/bpf/syscall.c:5038 [inline]
->   __se_sys_bpf kernel/bpf/syscall.c:5036 [inline]
->   __x64_sys_bpf+0x75/0xb0 kernel/bpf/syscall.c:5036
->   do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->   do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
->   entry_SYSCALL_64_after_hwframe+0x46/0xb0
-> RIP: 0033:0x7fe5b823e209
-> Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 b1 14 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-> RSP: 002b:00007ffc68d718c8 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
-> RAX: ffffffffffffffda RBX: 0000000000000002 RCX: 00007fe5b823e209
-> RDX: 0000000000000070 RSI: 0000000020000440 RDI: 0000000000000005
-> RBP: 00007ffc68d718e0 R08: 0000000000000002 R09: 0000000000000001
-> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000003
-> R13: 431bde82d7b634db R14: 0000000000000000 R15: 0000000000000000
->   </TASK>
-> 
-> Memory state around the buggy address:
-> BUG: unable to handle page fault for address: fffffbfff3ffffe0
-> #PF: supervisor read access in kernel mode
-> #PF: error_code(0x0000) - not-present page
-> PGD 23ffe4067 P4D 23ffe4067 PUD 23ffe3067 PMD 0
-> Oops: 0000 [#1] PREEMPT SMP KASAN
-> CPU: 0 PID: 3608 Comm: syz-executor334 Not tainted 5.19.0-rc2-syzkaller-00498-gb0d93b44641a #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 06/29/2022
-> RIP: 0010:memcpy_erms+0x6/0x10 arch/x86/lib/memcpy_64.S:55
-> Code: cc cc cc cc eb 1e 0f 1f 00 48 89 f8 48 89 d1 48 c1 e9 03 83 e2 07 f3 48 a5 89 d1 f3 a4 c3 66 0f 1f 44 00 00 48 89 f8 48 89 d1 <f3> a4 c3 0f 1f 80 00 00 00 00 48 89 f8 48 83 fa 20 72 7e 40 38 fe
-> RSP: 0018:ffffc9000215f7b8 EFLAGS: 00010082
-> RAX: ffffc9000215f7c4 RBX: ffffffff9fffff00 RCX: 0000000000000010
-> RDX: 0000000000000010 RSI: fffffbfff3ffffe0 RDI: ffffc9000215f7c4
-> RBP: ffffffffa0000000 R08: 0000000000000007 R09: 0000000000000000
-> R10: 0000000000000014 R11: 0000000000000001 R12: 00000000fffffffe
-> R13: ffffffff9fffff80 R14: ffff888025745880 R15: 0000000000000282
-> FS:  0000555555ac7300(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: fffffbfff3ffffe0 CR3: 000000007dc79000 CR4: 00000000003506f0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> Call Trace:
->   <TASK>
->   print_memory_metadata+0x5a/0xdf mm/kasan/report.c:404
->   print_report mm/kasan/report.c:430 [inline]
->   kasan_report.cold+0xfe/0x1c6 mm/kasan/report.c:491
->   bpf_jit_binary_free kernel/bpf/core.c:1081 [inline]
->   bpf_jit_free+0x26c/0x2b0 kernel/bpf/core.c:1206
->   jit_subprogs kernel/bpf/verifier.c:13767 [inline]
->   fixup_call_args kernel/bpf/verifier.c:13796 [inline]
->   bpf_check+0x7035/0xb040 kernel/bpf/verifier.c:15287
->   bpf_prog_load+0xfb2/0x2250 kernel/bpf/syscall.c:2575
->   __sys_bpf+0x11a1/0x5790 kernel/bpf/syscall.c:4934
->   __do_sys_bpf kernel/bpf/syscall.c:5038 [inline]
->   __se_sys_bpf kernel/bpf/syscall.c:5036 [inline]
->   __x64_sys_bpf+0x75/0xb0 kernel/bpf/syscall.c:5036
->   do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->   do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
->   entry_SYSCALL_64_after_hwframe+0x46/0xb0
-> RIP: 0033:0x7fe5b823e209
-> Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 b1 14 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-> RSP: 002b:00007ffc68d718c8 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
-> RAX: ffffffffffffffda RBX: 0000000000000002 RCX: 00007fe5b823e209
-> RDX: 0000000000000070 RSI: 0000000020000440 RDI: 0000000000000005
-> RBP: 00007ffc68d718e0 R08: 0000000000000002 R09: 0000000000000001
-> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000003
-> R13: 431bde82d7b634db R14: 0000000000000000 R15: 0000000000000000
->   </TASK>
-> Modules linked in:
-> CR2: fffffbfff3ffffe0
-> ---[ end trace 0000000000000000 ]---
-> RIP: 0010:memcpy_erms+0x6/0x10 arch/x86/lib/memcpy_64.S:55
-> Code: cc cc cc cc eb 1e 0f 1f 00 48 89 f8 48 89 d1 48 c1 e9 03 83 e2 07 f3 48 a5 89 d1 f3 a4 c3 66 0f 1f 44 00 00 48 89 f8 48 89 d1 <f3> a4 c3 0f 1f 80 00 00 00 00 48 89 f8 48 83 fa 20 72 7e 40 38 fe
-> RSP: 0018:ffffc9000215f7b8 EFLAGS: 00010082
-> RAX: ffffc9000215f7c4 RBX: ffffffff9fffff00 RCX: 0000000000000010
-> RDX: 0000000000000010 RSI: fffffbfff3ffffe0 RDI: ffffc9000215f7c4
-> RBP: ffffffffa0000000 R08: 0000000000000007 R09: 0000000000000000
-> R10: 0000000000000014 R11: 0000000000000001 R12: 00000000fffffffe
-> R13: ffffffff9fffff80 R14: ffff888025745880 R15: 0000000000000282
-> FS:  0000555555ac7300(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: fffffbfff3ffffe0 CR3: 000000007dc79000 CR4: 00000000003506f0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> ----------------
-> Code disassembly (best guess):
->     0:	cc                   	int3
->     1:	cc                   	int3
->     2:	cc                   	int3
->     3:	cc                   	int3
->     4:	eb 1e                	jmp    0x24
->     6:	0f 1f 00             	nopl   (%rax)
->     9:	48 89 f8             	mov    %rdi,%rax
->     c:	48 89 d1             	mov    %rdx,%rcx
->     f:	48 c1 e9 03          	shr    $0x3,%rcx
->    13:	83 e2 07             	and    $0x7,%edx
->    16:	f3 48 a5             	rep movsq %ds:(%rsi),%es:(%rdi)
->    19:	89 d1                	mov    %edx,%ecx
->    1b:	f3 a4                	rep movsb %ds:(%rsi),%es:(%rdi)
->    1d:	c3                   	retq
->    1e:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
->    24:	48 89 f8             	mov    %rdi,%rax
->    27:	48 89 d1             	mov    %rdx,%rcx
-> * 2a:	f3 a4                	rep movsb %ds:(%rsi),%es:(%rdi) <-- trapping instruction
->    2c:	c3                   	retq
->    2d:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
->    34:	48 89 f8             	mov    %rdi,%rax
->    37:	48 83 fa 20          	cmp    $0x20,%rdx
->    3b:	72 7e                	jb     0xbb
->    3d:	40 38 fe             	cmp    %dil,%sil
-> 
-
+SGkgS3J6eXN6dG9mLA0KDQpUaGFua3MgZm9yIHRoZSBmZWVkYmFjay4NCg0KPiBTdWJqZWN0OiBS
+ZTogW1BBVENIIHYzIDIvNl0gZHQtYmluZGluZ3M6IGNhbjogbnhwLHNqYTEwMDA6IERvY3VtZW50
+DQo+IFJaL04xe0QsU30gc3VwcG9ydA0KPiANCj4gT24gMDQvMDcvMjAyMiAwOTo1MCwgQmlqdSBE
+YXMgd3JvdGU6DQo+ID4gQWRkIENBTiBiaW5kaW5nIGRvY3VtZW50YXRpb24gZm9yIFJlbmVzYXMg
+UlovTjEgU29DLg0KPiA+DQo+ID4gVGhlIFNKQTEwMDAgQ0FOIGNvbnRyb2xsZXIgb24gUlovTjEg
+U29DIGhhcyBzb21lIGRpZmZlcmVuY2VzIGNvbXBhcmVkDQo+ID4gdG8gb3RoZXJzIGxpa2UgaXQg
+aGFzIG5vIGNsb2NrIGRpdmlkZXIgcmVnaXN0ZXIgKENEUikgc3VwcG9ydCBhbmQgaXQNCj4gPiBo
+YXMgbm8gSFcgbG9vcGJhY2sgKEhXIGRvZXNuJ3Qgc2VlIHR4IG1lc3NhZ2VzIG9uIHJ4KSwgc28g
+aW50cm9kdWNlZCBhDQo+ID4gbmV3IGNvbXBhdGlibGUgJ3JlbmVzYXMscnpuMS1zamExMDAwJyB0
+byBoYW5kbGUgdGhlc2UgZGlmZmVyZW5jZXMuDQo+ID4NCj4gPiBTaWduZWQtb2ZmLWJ5OiBCaWp1
+IERhcyA8YmlqdS5kYXMuanpAYnAucmVuZXNhcy5jb20+DQo+ID4gLS0tDQo+ID4gdjItPnYzOg0K
+PiA+ICAqIEFkZGVkIHJlZy1pby13aWR0aCBpcyByZXF1aXJlZCBwcm9wZXJ0eSBmb3IgcmVuZXNh
+cyxyem4xLXNqYTEwMDAuDQo+ID4gdjEtPnYyOg0KPiA+ICAqIFVwZGF0ZWQgY29tbWl0IGRlc2Ny
+aXB0aW9uLg0KPiA+ICAqIEFkZGVkIGFuIGV4YW1wbGUgZm9yIFJaL04xRCBTSkExMDAwIHVzYWdl
+DQo+ID4gLS0tDQo+ID4gIC4uLi9iaW5kaW5ncy9uZXQvY2FuL254cCxzamExMDAwLnlhbWwgICAg
+ICAgICB8IDM1ICsrKysrKysrKysrKysrKysrKysNCj4gPiAgMSBmaWxlIGNoYW5nZWQsIDM1IGlu
+c2VydGlvbnMoKykNCj4gPg0KPiA+IGRpZmYgLS1naXQNCj4gPiBhL0RvY3VtZW50YXRpb24vZGV2
+aWNldHJlZS9iaW5kaW5ncy9uZXQvY2FuL254cCxzamExMDAwLnlhbWwNCj4gPiBiL0RvY3VtZW50
+YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9uZXQvY2FuL254cCxzamExMDAwLnlhbWwNCj4gPiBp
+bmRleCBkMzQwNjAyMjZlNGUuLjE2Nzg2NDc1ZWFlMyAxMDA2NDQNCj4gPiAtLS0gYS9Eb2N1bWVu
+dGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvbmV0L2Nhbi9ueHAsc2phMTAwMC55YW1sDQo+ID4g
+KysrIGIvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL25ldC9jYW4vbnhwLHNqYTEw
+MDAueWFtbA0KPiA+IEBAIC0xOSw2ICsxOSwxNiBAQCBhbGxPZjoNCj4gPiAgICAgIHRoZW46DQo+
+ID4gICAgICAgIHJlcXVpcmVkOg0KPiA+ICAgICAgICAgIC0gcmVnLWlvLXdpZHRoDQo+ID4gKyAg
+LSBpZjoNCj4gPiArICAgICAgcHJvcGVydGllczoNCj4gPiArICAgICAgICBjb21wYXRpYmxlOg0K
+PiA+ICsgICAgICAgICAgY29udGFpbnM6DQo+ID4gKyAgICAgICAgICAgIGNvbnN0OiByZW5lc2Fz
+LHJ6bjEtc2phMTAwMA0KPiA+ICsgICAgdGhlbjoNCj4gPiArICAgICAgcmVxdWlyZWQ6DQo+ID4g
+KyAgICAgICAgLSBjbG9ja3MNCj4gPiArICAgICAgICAtIGNsb2NrLW5hbWVzDQo+ID4gKyAgICAg
+ICAgLSByZWctaW8td2lkdGgNCj4gPg0KPiA+ICBwcm9wZXJ0aWVzOg0KPiA+ICAgIGNvbXBhdGli
+bGU6DQo+ID4gQEAgLTI3LDYgKzM3LDEyIEBAIHByb3BlcnRpZXM6DQo+ID4gICAgICAgICAgY29u
+c3Q6IG54cCxzamExMDAwDQo+ID4gICAgICAgIC0gZGVzY3JpcHRpb246IFRlY2hub2xvZ2ljIFN5
+c3RlbXMgU0pBMTAwMCBDQU4gQ29udHJvbGxlcg0KPiA+ICAgICAgICAgIGNvbnN0OiB0ZWNobm9s
+b2dpYyxzamExMDAwDQo+ID4gKyAgICAgIC0gZGVzY3JpcHRpb246IFJlbmVzYXMgUlovTjEgU0pB
+MTAwMCBDQU4gQ29udHJvbGxlcg0KPiA+ICsgICAgICAgIGl0ZW1zOg0KPiA+ICsgICAgICAgICAg
+LSBlbnVtOg0KPiA+ICsgICAgICAgICAgICAgIC0gcmVuZXNhcyxyOWEwNmcwMzItc2phMTAwMCAj
+IFJaL04xRA0KPiA+ICsgICAgICAgICAgICAgIC0gcmVuZXNhcyxyOWEwNmcwMzMtc2phMTAwMCAj
+IFJaL04xUw0KPiA+ICsgICAgICAgICAgLSBjb25zdDogcmVuZXNhcyxyem4xLXNqYTEwMDAgIyBS
+Wi9OMQ0KPiANCj4gVGhpcyBleHBsYWlucyB1c2FnZSBvZiBvbmVPZiwgYnV0IHN0aWxsIGVhcmxp
+ZXIgZW50cmllcyBzaG91bGQgYmUganVzdCBhbg0KPiBlbnVtLg0KDQpPSy4NCg0KPiANCj4gPg0K
+PiA+ICAgIHJlZzoNCj4gPiAgICAgIG1heEl0ZW1zOiAxDQo+ID4gQEAgLTM0LDYgKzUwLDEyIEBA
+IHByb3BlcnRpZXM6DQo+ID4gICAgaW50ZXJydXB0czoNCj4gPiAgICAgIG1heEl0ZW1zOiAxDQo+
+ID4NCj4gPiArICBjbG9ja3M6DQo+ID4gKyAgICBtYXhJdGVtczogMQ0KPiA+ICsNCj4gPiArICBj
+bG9jay1uYW1lczoNCj4gPiArICAgIGNvbnN0OiBjYW5fY2xrDQo+IA0KPiBTa2lwIGVudGlyZSBj
+bG9jay1uYW1lcy4gRG9lcyBub3QgYnJpbmcgYW55IGluZm9ybWF0aW9uLCBlc3BlY2lhbGx5IHRo
+YXQNCj4gbmFtZSBpcyBvYnZpb3VzLg0KDQpZZXMsIHRydWUgZm9yIHNpbmdsZSBjbG9jaywgY2xv
+Y2stbmFtZXMgZG9lc24ndCBtYWtlIGFueSB2YWx1ZS4NCldpbGwgZHJvcCBpdC4NCg0KPiANCj4g
+PiArDQo+ID4gICAgcmVnLWlvLXdpZHRoOg0KPiA+ICAgICAgJHJlZjogL3NjaGVtYXMvdHlwZXMu
+eWFtbCMvZGVmaW5pdGlvbnMvdWludDMyDQo+ID4gICAgICBkZXNjcmlwdGlvbjogSS9PIHJlZ2lz
+dGVyIHdpZHRoIChpbiBieXRlcykgaW1wbGVtZW50ZWQgYnkgdGhpcw0KPiA+IGRldmljZSBAQCAt
+MTAxLDMgKzEyMywxNiBAQCBleGFtcGxlczoNCj4gPiAgICAgICAgICAgICAgbnhwLHR4LW91dHB1
+dC1jb25maWcgPSA8MHgwNj47DQo+ID4gICAgICAgICAgICAgIG54cCxleHRlcm5hbC1jbG9jay1m
+cmVxdWVuY3kgPSA8MjQwMDAwMDA+Ow0KPiA+ICAgICAgfTsNCj4gPiArDQo+ID4gKyAgLSB8DQo+
+ID4gKyAgICAjaW5jbHVkZSA8ZHQtYmluZGluZ3MvaW50ZXJydXB0LWNvbnRyb2xsZXIvYXJtLWdp
+Yy5oPg0KPiA+ICsgICAgI2luY2x1ZGUgPGR0LWJpbmRpbmdzL2Nsb2NrL3I5YTA2ZzAzMi1zeXNj
+dHJsLmg+DQo+ID4gKw0KPiA+ICsgICAgY2FuQDUyMTA0MDAwIHsNCj4gPiArICAgICAgICAgICAg
+Y29tcGF0aWJsZSA9DQo+ID4gKyAicmVuZXNhcyxyOWEwNmcwMzItc2phMTAwMCIsInJlbmVzYXMs
+cnpuMS1zamExMDAwIjsNCj4gDQo+IE1pc3Npbmcgc3BhY2UgYWZ0ZXIgLA0KT0suDQoNCj4gDQo+
+IFdyb25nIGluZGVudGF0aW9uLg0KDQpBcyB5b3Ugc3VnZ2VzdGVkIGluIHRoZSBwcmV2aW91cyBw
+YXRjaCwgd2lsbCBtYWtlIDQgc3BhY2VzIGluZGVudGF0aW9uIGZvciBleGFtcGxlcy4NCg0KQ2hl
+ZXJzLA0KQmlqdQ0K
