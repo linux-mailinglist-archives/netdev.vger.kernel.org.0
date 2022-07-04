@@ -2,295 +2,224 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 891F05650A7
-	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 11:24:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CBA35650B6
+	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 11:26:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233274AbiGDJXv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jul 2022 05:23:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49258 "EHLO
+        id S231744AbiGDJ0e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Jul 2022 05:26:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230098AbiGDJXu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 05:23:50 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7FF3656D;
-        Mon,  4 Jul 2022 02:23:47 -0700 (PDT)
-Received: from fraeml710-chm.china.huawei.com (unknown [172.18.147.201])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Lc0cl6Pvnz67x0m;
-        Mon,  4 Jul 2022 17:19:35 +0800 (CST)
-Received: from lhreml745-chm.china.huawei.com (10.201.108.195) by
- fraeml710-chm.china.huawei.com (10.206.15.59) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 4 Jul 2022 11:23:45 +0200
-Received: from [10.122.132.241] (10.122.132.241) by
- lhreml745-chm.china.huawei.com (10.201.108.195) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 4 Jul 2022 10:23:44 +0100
-Message-ID: <5bc000ac-3761-7128-1dc9-f7179fcb2164@huawei.com>
-Date:   Mon, 4 Jul 2022 12:23:43 +0300
+        with ESMTP id S231339AbiGDJ0c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 05:26:32 -0400
+Received: from JPN01-TYC-obe.outbound.protection.outlook.com (mail-tycjpn01on2116.outbound.protection.outlook.com [40.107.114.116])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E869DBC3D;
+        Mon,  4 Jul 2022 02:26:30 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=XGjgbqFH+fGFFR9dCDxUW4JS9gvAXH5qbksJ11i1ACq88gghypAwj6ZJZ1rQL7CIjpd1ZG1/i9+/+JU7cybbJPBUVc1q/iEF2Hl9aDcC39KV3mT+qPg4SRpMtBGVAnmP1EA/MZdMECqHXapcTFGoksk/KggKMotvlxVnoSnK0OFJJFykqP5JaJz8oEqRcquKz3A4u38n4EiMjmP6zYdhwfMNYQ56YQEiutSU9/gKHGxJXrJExbxEmzUv9IckAks9at1krxoNgc05LPa7eSwVvY77XWI8dIdq9DVpHVUJc+E9QtviX4Y7Mbi/b7P64b7wHP3i7v6kyXTlFbwTZSjWjQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=OZTpWwYo4JJ51f8go0FLOf+qV2ze2QOW7qh7mTBsFYQ=;
+ b=hT8faKLSWJcIIBIxZNY4jW7TVzzABMbDOjfV2wAZofyo8JMZ74OkQndBATAgGnv5+JhNyRoXnIgrj9JHAhxOyTDxGY1M020GdXIbYQtnEowQgCFZsd4+boNz/D3VgwJeFPEQjUZaJerj2+53qb2F+Yyugtshw+i8JqjBvEtE97OIpXRS+dRhUg231Hzjrt9mxadD252RbXrdAXF3z2y/rGl9mQPveXTAhfdMiC5BirORir8UaU32vp8t/rQXpee63kCLgVds7BIdYJQrL7rgrqmClv8NyPbAWjGGk79+8AmkIrO+nIGZvJ4kmDPP6KrX+qZZNReUEEl8MDQQBLIHUw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=bp.renesas.com; dmarc=pass action=none
+ header.from=bp.renesas.com; dkim=pass header.d=bp.renesas.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bp.renesas.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=OZTpWwYo4JJ51f8go0FLOf+qV2ze2QOW7qh7mTBsFYQ=;
+ b=aRJgBjp7tbtP2pmTzgFctO9W/EkKtmUhKt9ypR9KMvHmUK/1RsLiNP8xRA54nugeKSaIKcZOjSDTL5lRkJiprPO6WISC48OQcsBOMdwjGCZyD7iZhVCuZilVY46y89UCJKH0clXm1X2J4wX7yWuEaAay0xg9bMYUFON1MvHZVhc=
+Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com (2603:1096:604:bb::5)
+ by TY2PR01MB4569.jpnprd01.prod.outlook.com (2603:1096:404:110::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.17; Mon, 4 Jul
+ 2022 09:26:28 +0000
+Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com
+ ([fe80::dc06:eb07:874:ecce]) by OS0PR01MB5922.jpnprd01.prod.outlook.com
+ ([fe80::dc06:eb07:874:ecce%9]) with mapi id 15.20.5395.020; Mon, 4 Jul 2022
+ 09:26:28 +0000
+From:   Biju Das <biju.das.jz@bp.renesas.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+CC:     "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        =?iso-8859-1?Q?Uwe_Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>
+Subject: RE: [PATCH v3 1/6] dt-bindings: can: sja1000: Convert to json-schema
+Thread-Topic: [PATCH v3 1/6] dt-bindings: can: sja1000: Convert to json-schema
+Thread-Index: AQHYj3rFeZoOr/6TGk2WlkP02UFvdK1t5gwAgAAB4DCAAARmgIAAA7eg
+Date:   Mon, 4 Jul 2022 09:26:28 +0000
+Message-ID: <OS0PR01MB5922969554D0FA70D2F323D886BE9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+References: <20220704075032.383700-1-biju.das.jz@bp.renesas.com>
+ <20220704075032.383700-2-biju.das.jz@bp.renesas.com>
+ <ed032ae8-6a2b-b79f-d42a-6e96fe53a0d7@linaro.org>
+ <OS0PR01MB5922ECBBEFF973867CC23B2786BE9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+ <404a0146-5e74-b0df-6e1a-c6a689e2c858@linaro.org>
+In-Reply-To: <404a0146-5e74-b0df-6e1a-c6a689e2c858@linaro.org>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=bp.renesas.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 98ee79e6-1801-4c96-f73a-08da5d9f45ec
+x-ms-traffictypediagnostic: TY2PR01MB4569:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: dJW8FarpqM4eWfLEeuw58fzNQ4+0HZf6RPCJyzTtA/JiX7Cus4SWqYZttoTy0GhJUJcZrQR4EvXw0gHiYP0bPUeNsjNNUlv/X0DDRVIW4fYn/NhjP+dVgNeHqtIbcTO5Rf6Am1BrFomMu1Z7h+kU3U78s5iWCtIEr41xZHUe7XQynAS/T+xF00q6Geid/ttXBAClTIaAAmrl4I8vx4+p1u/339KvHPtmVB3ae9woNJdGCFllFpGYq5inSm3bk2Rl0W2gBsW4D8IoCXhN7R7VY5sFIJUWfhZ/sOMvkEbuN/oVh90IGAVGmTQkxoxO9mO712IfQH5LKaZp1bcZ2XnH86Ba3k39KbKQVNhjVyUD9ZVBVRHZk6bDH3NjUOxf1BK+EBd2921q6FJdTzG2NqHKSBhFIKG098NgV4FFoRjqa6GyVAKaxqof9r/Jzlf/NsnN017WUXSLBb80iZvYfZiRosiy9WkhkkW9EPMcXj87vOpZY636cEd5IS3KNZW64KaMOo1Rt8intzOlcX7T8GBAtZ3+JW8qqAHOByE94AAWBACs1YSzXSe0XgoQQoqr8GbJRSLkxwUHxte7PUyTHfr/0d073SHCkT0s88t+E9oqR4tPNKrCv9VsRUPbdM/roISWZq88Bts5s4aLN1b3E5FEcCe2ir5kKEcYeAJeSdk1eHm7Xv4reA3UoOzrYcYjPASrslqPER81DiaJITvgAqfGQ4JrQADqRFrCXfJbKG6yX3XIlxX3W7hBvFRf22KfaLF2E4E0NZhVM/J1Odw30h3J/21yeNzNkLKW3elVAaoXtzZgy6x/WJ6bv3GcfIuL/nbm
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OS0PR01MB5922.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(39860400002)(346002)(396003)(376002)(366004)(71200400001)(41300700001)(83380400001)(9686003)(26005)(55016003)(86362001)(33656002)(478600001)(8936002)(52536014)(76116006)(66946007)(38100700002)(66476007)(66556008)(110136005)(66446008)(7416002)(2906002)(7696005)(316002)(186003)(53546011)(6506007)(122000001)(54906003)(4326008)(64756008)(38070700005)(8676002)(5660300002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?Gj9UMzTFu9xPeWiRGI4IVYOK8cSBiV2uS682wlb/Yhe0AhvDeQKU5Y6KIE?=
+ =?iso-8859-1?Q?ez27Xwno7HDTPs8Yp1TJC2+f2KymisRg6PGblU5nLI+DuzZP96NNJ/vsIi?=
+ =?iso-8859-1?Q?eJwiFTOh2yNRBh/sQJTUYozl9nhbC9Y8aoAmwpgnWyy6AZNkRM95AP8p2i?=
+ =?iso-8859-1?Q?3VMOal4V7qAGkldV2wWvCKDrPRBVv/OUqzihYlwkTGaQxKa28jpqyZRmN4?=
+ =?iso-8859-1?Q?IUczgUZIg1XfVCCElDj28tgIH+HbWsBXMoxiEZDi1rKiXdVJTXJk1hro7t?=
+ =?iso-8859-1?Q?NyUquWrHdrbpmcabc7wCeAMGsbpL//mo3LUhI41N20wt9oLt2Ltok3tV94?=
+ =?iso-8859-1?Q?9NV3KG/xdShOdNg0HZorHt714FXbdouqo90fmpsqWkDcrJiRIDJs6YOKSs?=
+ =?iso-8859-1?Q?2u0L9Ym0LCbenzedAR+xmjo6Dmq6mvme4PozFSVbGSWBHZUk5on2xGU4D/?=
+ =?iso-8859-1?Q?tOgcGwSLIvQsWSBc3MlBW1TCqH2gZtiHcivUB06ftI57OdH/VaoAr4pIxo?=
+ =?iso-8859-1?Q?d1Wdcoytj2g3YUS3VNshQB+rksO6AtplXXGnpxUPGOWrtmsbknXr6Iixle?=
+ =?iso-8859-1?Q?U+wU3nPzLyzmAnKUU1x1sA3CPPAFhM/Xg30687Wbz9ryL8+yV9OGWCNFfE?=
+ =?iso-8859-1?Q?xakwqBHiCeW9t8yCC2Q36hScBx2O8XxtB+HTzwV46u7oFiEqLxEd9q7yVL?=
+ =?iso-8859-1?Q?NfnIyeLNMvIHI1xeZrWaB8kLqnzmlCrh/bIQHOpJpjCbRWvcAYkXJ6jyrO?=
+ =?iso-8859-1?Q?AAkp1CGNvamkK494kQD/il2RxxqlYFW5+1r2zCwrSbj0RMINRRuK1p8mvQ?=
+ =?iso-8859-1?Q?tk8cnps87XROWRP2UJodPDkQg21TIFalQjj5wlgTypd1O97q8V8en9PHV9?=
+ =?iso-8859-1?Q?3TAN3Vk41zZ15I3GHv81AYOJ/Z08AqkJCB/Jd9wMea+I0skHp7CWWP5+71?=
+ =?iso-8859-1?Q?flbGL4J/23+11qazjyYi4qDkCrNgnlDmu6w74Y+F/eExe3tOYaqygwBefx?=
+ =?iso-8859-1?Q?uMQAPRnsdO1qCL3aMWj6ZurcRNpqmML9SHoT0lo5b6jJ4w6JvBjI1r0Dnf?=
+ =?iso-8859-1?Q?xzid//GXxwV9TKAL6+Nm6G3cD+4jp3iPp+4vFHV5C9OlFUpwxfT+g5Kosi?=
+ =?iso-8859-1?Q?wBVlSF+9ZkfxlXxZC0Dgm04DYfej61wZai0HJcPhlnveXGERoqbieUsVpE?=
+ =?iso-8859-1?Q?Emr4lzRWAHVk3DiS8aWEKNGTSdFiR37r+qD8fqqcjWMl1iAoPL5VDcudsb?=
+ =?iso-8859-1?Q?CZmHgPat1g2/12lt65NJ+ATceVyo5eUdROA/Wg6ozIlVZaYZGU9hvyHYv9?=
+ =?iso-8859-1?Q?b0/55qBvxUGNPGpR4/q5TMFkJCDIGxv1hBbR0bWxzJlCQocxmUy3VTlUZG?=
+ =?iso-8859-1?Q?jFownkdWKXmy7Vnl+lHqC5jbqReuL7lCK7k//IgUKRhCXkM7udMm8iUHia?=
+ =?iso-8859-1?Q?+WO78IaOwN9ebsd+wBKNy+SWwFGHCnPueQPNK2afBzJ/xJYcsWIzL5th42?=
+ =?iso-8859-1?Q?7s22NWIpCQOnp7YvD0ziupza/P60yes+B6Y+8XrtZaH4QldOhf2zbiqCI2?=
+ =?iso-8859-1?Q?iIIwa/ZMLSWCzaOjJbylhoCin2P+gFmJuwpsOOYWBppu9Y5n8tsfDSS+kn?=
+ =?iso-8859-1?Q?vsFYiXSGHKRXSt459bm7/qiQN6CJSZPPLcX9wUYjyPQsNv56DvOfF2Zg?=
+ =?iso-8859-1?Q?=3D=3D?=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH v6 01/17] landlock: renames access mask
-Content-Language: ru
-To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-CC:     <willemdebruijn.kernel@gmail.com>,
-        <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <netfilter-devel@vger.kernel.org>, <yusongping@huawei.com>,
-        <anton.sirazetdinov@huawei.com>
-References: <20220621082313.3330667-1-konstantin.meskhidze@huawei.com>
- <20220621082313.3330667-2-konstantin.meskhidze@huawei.com>
- <09f25976-e1a6-02af-e8ca-6feef0cdebec@digikod.net>
-From:   "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
-In-Reply-To: <09f25976-e1a6-02af-e8ca-6feef0cdebec@digikod.net>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.122.132.241]
-X-ClientProxiedBy: lhreml754-chm.china.huawei.com (10.201.108.204) To
- lhreml745-chm.china.huawei.com (10.201.108.195)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-OriginatorOrg: bp.renesas.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: OS0PR01MB5922.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 98ee79e6-1801-4c96-f73a-08da5d9f45ec
+X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Jul 2022 09:26:28.0374
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: vCQkfMsb+0nQH4dRGrhapZU8WM31f8TzeE4p226U6uI7GxgbHJLZUIKOC5b63bIU5GEFc8gxdUh8zcza+59Tqmvv8aStEeBrloTcwFz3ZZY=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TY2PR01MB4569
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Krzysztof,
 
+Thanks for the feedback.
 
-7/1/2022 8:08 PM, Mickaël Salaün пишет:
-> 
-> On 21/06/2022 10:22, Konstantin Meskhidze wrote:
->> To support network type rules,
->> this modification extends and renames
->> ruleset's access masks.
->> This patch adds filesystem helper functions
->> to set and get filesystem mask. Also the
->> modification adds a helper structure
->> landlock_access_mask to support managing
->> multiple access mask.
-> 
-> Please use a text-width of 72 columns for all commit messages. You can
-> also split them into paragraphs.
-> 
-   Ok. I will rewrite all commits' messages. Thanks.
->> 
->> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
->> ---
->> 
->> Changes since v5:
->> * Changes access_mask_t to u32.
->> * Formats code with clang-format-14.
->> 
->> Changes since v4:
->> * Deletes struct landlock_access_mask.
->> 
->> Changes since v3:
->> * Splits commit.
->> * Adds get_mask, set_mask helpers for filesystem.
->> * Adds new struct landlock_access_mask.
->> 
->> ---
->>   security/landlock/fs.c       |  7 ++++---
->>   security/landlock/ruleset.c  | 18 +++++++++---------
->>   security/landlock/ruleset.h  | 25 ++++++++++++++++++++-----
->>   security/landlock/syscalls.c |  7 ++++---
->>   4 files changed, 37 insertions(+), 20 deletions(-)
->> 
->> diff --git a/security/landlock/fs.c b/security/landlock/fs.c
->> index ec5a6247cd3e..e6da08ed99d1 100644
->> --- a/security/landlock/fs.c
->> +++ b/security/landlock/fs.c
->> @@ -167,7 +167,8 @@ int landlock_append_fs_rule(struct landlock_ruleset *const ruleset,
->>   		return -EINVAL;
->> 
->>   	/* Transforms relative access rights to absolute ones. */
->> -	access_rights |= LANDLOCK_MASK_ACCESS_FS & ~ruleset->fs_access_masks[0];
->> +	access_rights |= LANDLOCK_MASK_ACCESS_FS &
->> +			 ~landlock_get_fs_access_mask(ruleset, 0);
->>   	object = get_inode_object(d_backing_inode(path->dentry));
->>   	if (IS_ERR(object))
->>   		return PTR_ERR(object);
->> @@ -286,7 +287,7 @@ get_handled_accesses(const struct landlock_ruleset *const domain)
->> 
->>   		for (layer_level = 0; layer_level < domain->num_layers;
->>   		     layer_level++) {
->> -			if (domain->fs_access_masks[layer_level] &
->> +			if (landlock_get_fs_access_mask(domain, layer_level) &
->>   			    BIT_ULL(access_bit)) {
->>   				access_dom |= BIT_ULL(access_bit);
->>   				break;
->> @@ -316,7 +317,7 @@ init_layer_masks(const struct landlock_ruleset *const domain,
->> 
->>   		for_each_set_bit(access_bit, &access_req,
->>   				 ARRAY_SIZE(*layer_masks)) {
->> -			if (domain->fs_access_masks[layer_level] &
->> +			if (landlock_get_fs_access_mask(domain, layer_level) &
->>   			    BIT_ULL(access_bit)) {
->>   				(*layer_masks)[access_bit] |=
->>   					BIT_ULL(layer_level);
->> diff --git a/security/landlock/ruleset.c b/security/landlock/ruleset.c
->> index 996484f98bfd..a3fd58d01f09 100644
->> --- a/security/landlock/ruleset.c
->> +++ b/security/landlock/ruleset.c
->> @@ -29,7 +29,7 @@ static struct landlock_ruleset *create_ruleset(const u32 num_layers)
->>   	struct landlock_ruleset *new_ruleset;
->> 
->>   	new_ruleset =
->> -		kzalloc(struct_size(new_ruleset, fs_access_masks, num_layers),
->> +		kzalloc(struct_size(new_ruleset, access_masks, num_layers),
->>   			GFP_KERNEL_ACCOUNT);
->>   	if (!new_ruleset)
->>   		return ERR_PTR(-ENOMEM);
->> @@ -40,22 +40,22 @@ static struct landlock_ruleset *create_ruleset(const u32 num_layers)
->>   	/*
->>   	 * hierarchy = NULL
->>   	 * num_rules = 0
->> -	 * fs_access_masks[] = 0
->> +	 * access_masks[] = 0
->>   	 */
->>   	return new_ruleset;
->>   }
->> 
->>   struct landlock_ruleset *
->> -landlock_create_ruleset(const access_mask_t fs_access_mask)
->> +landlock_create_ruleset(const access_mask_t access_mask)
->>   {
->>   	struct landlock_ruleset *new_ruleset;
->> 
->>   	/* Informs about useless ruleset. */
->> -	if (!fs_access_mask)
->> +	if (!access_mask)
->>   		return ERR_PTR(-ENOMSG);
->>   	new_ruleset = create_ruleset(1);
->>   	if (!IS_ERR(new_ruleset))
->> -		new_ruleset->fs_access_masks[0] = fs_access_mask;
->> +		landlock_set_fs_access_mask(new_ruleset, access_mask, 0);
->>   	return new_ruleset;
->>   }
->> 
->> @@ -117,7 +117,7 @@ static void build_check_ruleset(void)
->>   		.num_rules = ~0,
->>   		.num_layers = ~0,
->>   	};
->> -	typeof(ruleset.fs_access_masks[0]) fs_access_mask = ~0;
->> +	typeof(ruleset.access_masks[0]) fs_access_mask = ~0;
->> 
->>   	BUILD_BUG_ON(ruleset.num_rules < LANDLOCK_MAX_NUM_RULES);
->>   	BUILD_BUG_ON(ruleset.num_layers < LANDLOCK_MAX_NUM_LAYERS);
->> @@ -281,7 +281,7 @@ static int merge_ruleset(struct landlock_ruleset *const dst,
->>   		err = -EINVAL;
->>   		goto out_unlock;
->>   	}
->> -	dst->fs_access_masks[dst->num_layers - 1] = src->fs_access_masks[0];
->> +	dst->access_masks[dst->num_layers - 1] = src->access_masks[0];
->> 
->>   	/* Merges the @src tree. */
->>   	rbtree_postorder_for_each_entry_safe(walker_rule, next_rule, &src->root,
->> @@ -340,8 +340,8 @@ static int inherit_ruleset(struct landlock_ruleset *const parent,
->>   		goto out_unlock;
->>   	}
->>   	/* Copies the parent layer stack and leaves a space for the new layer. */
->> -	memcpy(child->fs_access_masks, parent->fs_access_masks,
->> -	       flex_array_size(parent, fs_access_masks, parent->num_layers));
->> +	memcpy(child->access_masks, parent->access_masks,
->> +	       flex_array_size(parent, access_masks, parent->num_layers));
->> 
->>   	if (WARN_ON_ONCE(!parent->hierarchy)) {
->>   		err = -EINVAL;
->> diff --git a/security/landlock/ruleset.h b/security/landlock/ruleset.h
->> index d43231b783e4..bd7ab39859bf 100644
->> --- a/security/landlock/ruleset.h
->> +++ b/security/landlock/ruleset.h
->> @@ -19,7 +19,7 @@
->>   #include "limits.h"
->>   #include "object.h"
->> 
->> -typedef u16 access_mask_t;
->> +typedef u32 access_mask_t;
->>   /* Makes sure all filesystem access rights can be stored. */
->>   static_assert(BITS_PER_TYPE(access_mask_t) >= LANDLOCK_NUM_ACCESS_FS);
->>   /* Makes sure for_each_set_bit() and for_each_clear_bit() calls are OK. */
->> @@ -110,7 +110,7 @@ struct landlock_ruleset {
->>   		 * section.  This is only used by
->>   		 * landlock_put_ruleset_deferred() when @usage reaches zero.
->>   		 * The fields @lock, @usage, @num_rules, @num_layers and
->> -		 * @fs_access_masks are then unused.
->> +		 * @access_masks are then unused.
->>   		 */
->>   		struct work_struct work_free;
->>   		struct {
->> @@ -137,7 +137,7 @@ struct landlock_ruleset {
->>   			 */
->>   			u32 num_layers;
->>   			/**
->> -			 * @fs_access_masks: Contains the subset of filesystem
->> +			 * @access_masks: Contains the subset of filesystem
->>   			 * actions that are restricted by a ruleset.  A domain
->>   			 * saves all layers of merged rulesets in a stack
->>   			 * (FAM), starting from the first layer to the last
->> @@ -148,13 +148,13 @@ struct landlock_ruleset {
->>   			 * layers are set once and never changed for the
->>   			 * lifetime of the ruleset.
->>   			 */
->> -			access_mask_t fs_access_masks[];
->> +			access_mask_t access_masks[];
->>   		};
->>   	};
->>   };
->> 
->>   struct landlock_ruleset *
->> -landlock_create_ruleset(const access_mask_t fs_access_mask);
->> +landlock_create_ruleset(const access_mask_t access_mask);
->> 
->>   void landlock_put_ruleset(struct landlock_ruleset *const ruleset);
->>   void landlock_put_ruleset_deferred(struct landlock_ruleset *const ruleset);
->> @@ -177,4 +177,19 @@ static inline void landlock_get_ruleset(struct landlock_ruleset *const ruleset)
->>   		refcount_inc(&ruleset->usage);
->>   }
->> 
->> +/* A helper function to set a filesystem mask. */
->> +static inline void
->> +landlock_set_fs_access_mask(struct landlock_ruleset *ruleset,
->> +			    const access_mask_t access_maskset, u16 mask_level)
->> +{
->> +	ruleset->access_masks[mask_level] = access_maskset;
->> +}
->> +
->> +/* A helper function to get a filesystem mask. */
->> +static inline u32
-> 
-> You need to use access_mask_t everywhere, including here.
-> 
-   I got it. Will fix it. Thanks.
+> Subject: Re: [PATCH v3 1/6] dt-bindings: can: sja1000: Convert to json-
+> schema
+>=20
+> On 04/07/2022 11:03, Biju Das wrote:
+> > Hi Krystof,
+> >
+> > Thanks for the feedback.
+> >
+> >> Subject: Re: [PATCH v3 1/6] dt-bindings: can: sja1000: Convert to
+> >> json- schema
+> >>
+> >> On 04/07/2022 09:50, Biju Das wrote:
+> >>> Convert the NXP SJA1000 CAN Controller Device Tree binding
+> >>> documentation to json-schema.
+> >>>
+> >>> Update the example to match reality.
+> >>>
+> >>> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+> >>> ---
+> >>> v2->v3:
+> >>>  * Added reg-io-width is a required property for technologic,sja1000
+> >>>  * Removed enum type from nxp,tx-output-config and updated the
+> >> description
+> >>>    for combination of TX0 and TX1.
+> >>>  * Updated the example
+> >>> v1->v2:
+> >>>  * Moved $ref: can-controller.yaml# to top along with if conditional
+> >>> to
+> >>> =A0 =A0avoid multiple mapping issues with the if conditional in the
+> >> subsequent
+> >>>    patch.
+> >>> ---
+> >>>  .../bindings/net/can/nxp,sja1000.yaml         | 103
+> ++++++++++++++++++
+> >>>  .../devicetree/bindings/net/can/sja1000.txt   |  58 ----------
+> >>>  2 files changed, 103 insertions(+), 58 deletions(-)  create mode
+> >>> 100644 Documentation/devicetree/bindings/net/can/nxp,sja1000.yaml
+> >>>  delete mode 100644
+> >>> Documentation/devicetree/bindings/net/can/sja1000.txt
+> >>>
+> >>> diff --git
+> >>> a/Documentation/devicetree/bindings/net/can/nxp,sja1000.yaml
+> >>> b/Documentation/devicetree/bindings/net/can/nxp,sja1000.yaml
+> >>> new file mode 100644
+> >>> index 000000000000..d34060226e4e
+> >>> --- /dev/null
+> >>> +++ b/Documentation/devicetree/bindings/net/can/nxp,sja1000.yaml
+> >>> @@ -0,0 +1,103 @@
+> >>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) %YAML 1.2
+> >>> +---
+> >>> +$id:
+> >>> +
+> >>> +title: Memory mapped SJA1000 CAN controller from NXP (formerly
+> >>> +Philips)
+> >>> +
+> >>> +maintainers:
+> >>> +  - Wolfgang Grandegger <wg@grandegger.com>
+> >>> +
+> >>> +allOf:
+> >>> +  - $ref: can-controller.yaml#
+> >>> +  - if:
+> >>
+> >> The advice of moving it up was not correct. The allOf containing ref
+> >> and if:then goes to place like in example-schema, so before
+> >> additional/unevaluatedProperties at the bottom.
+> >>
+> >> Please do not introduce some inconsistent style.
+> >
+> > There are some examples like[1], where allOf is at the top.
+> > [1]
+=3DMw4Fhkri5BLK1Cqg8Wd1EKkbe0xDg%2Fnbl0JSd5j6Kmo%3D&amp;reser
+> > ved=3D0
+>=20
+> And they are wrong. There is always some incorrect code in the kernel,
+> but that's not argument to do it in incorrect way. The coding style is
+> here expressed in example-schema, so use this as an argument.
 
->> +landlock_get_fs_access_mask(const struct landlock_ruleset *ruleset,
->> +			    u16 mask_level)
->> +{
->> +	return ruleset->access_masks[mask_level];
->> +}
->>   #endif /* _SECURITY_LANDLOCK_RULESET_H */
->> diff --git a/security/landlock/syscalls.c b/security/landlock/syscalls.c
->> index 735a0865ea11..5836736ce9d7 100644
->> --- a/security/landlock/syscalls.c
->> +++ b/security/landlock/syscalls.c
->> @@ -346,10 +346,11 @@ SYSCALL_DEFINE4(landlock_add_rule, const int, ruleset_fd,
->>   	}
->>   	/*
->>   	 * Checks that allowed_access matches the @ruleset constraints
->> -	 * (ruleset->fs_access_masks[0] is automatically upgraded to 64-bits).
->> +	 * (ruleset->access_masks[0] is automatically upgraded to 64-bits).
->>   	 */
->> -	if ((path_beneath_attr.allowed_access | ruleset->fs_access_masks[0]) !=
->> -	    ruleset->fs_access_masks[0]) {
->> +	if ((path_beneath_attr.allowed_access |
->> +	     landlock_get_fs_access_mask(ruleset, 0)) !=
->> +	    landlock_get_fs_access_mask(ruleset, 0)) {
->>   		err = -EINVAL;
->>   		goto out_put_ruleset;
->>   	}
->> --
->> 2.25.1
->> 
-> .
+OK. Will stick to example-schema as coding style.
+
+Cheers,
+Biju
+
