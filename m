@@ -2,317 +2,232 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 231BA564D92
-	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 08:14:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D82AE564DA1
+	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 08:20:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232778AbiGDGOT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jul 2022 02:14:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37218 "EHLO
+        id S232839AbiGDGT3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Jul 2022 02:19:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232752AbiGDGOQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 02:14:16 -0400
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2087.outbound.protection.outlook.com [40.107.101.87])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D990764C
-        for <netdev@vger.kernel.org>; Sun,  3 Jul 2022 23:14:14 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RtMklhGbsflpmnyF57gD/LoJMxILzGPeCgNSqV7ggbtwYkIANQfZzgEuE2t6hemAAr0thBL+lwTNr4fj1+ZMsgLtpXJyJuYwNeqbaGzzPa1sxQ8fQ4uzUx/pacnKDRXhtUFLlyCu+xCUugsuB0qmefSZmcJIXY53hMJG0PfweGfTEYWaLX/r7icHcwgFrEo5d0DN96PX9aBO+yqPYnPpms2iuzZ+k2Z6G7A14U2KUrtMoCzrfUke7EwWZ2r+VRIPLPMf9hgH0/9jG652RYprpfht1TUQwgVXuoJIT9FqVrOGgwxwLNwcAyS+eUOP7tEJduoy3YW8aj6Scj0Ex08bAA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=LCHPoWPLn1qzvU8wqWsXK/cUBrFzl0jSLOpNkKzk6Mo=;
- b=EG9zPq5peVdbLVV89/XUDwNTGCzJPONFao+Z4jz2hu+/kU7VByMVkc/efTl1jn+YzU5dEvFKhytwUdCeK0NjFDKFKXJllhIg6lOONxtei/bh+OiFDBkIi06NnvHEshgcZ1/AH0jzN3dGeXoXVw9p0TeqXfahjkj1jLnRlQzKFr/Kv5gKF721QW6Lm6tCjZHRXsLAFVx5d0IDUf6HArfxmgNHLdxzTV1RoS8/CBO/YHJhB1W9VpqXCE8PiPSqeefVFRoIa4BM3zS6EZCd1CjnTKa9Tnty1inp/guAHet/jOIKhoijmMbLYXW01C9XRS6Fbdn8YQCvh24ltJw8s+kIng==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=LCHPoWPLn1qzvU8wqWsXK/cUBrFzl0jSLOpNkKzk6Mo=;
- b=oniCxHr6GdJ5JYOhXOxO1htsDU5kcDshEHGm5jt4gO5052qEl+EwmFXxSzr76CW8YTyoPSOCcp/qvnXrvUrSW9+YU/w/6WvJqoBepVeqRkfdIQS1xdEuCUC3VS1b2YQFbOsD1fTlk3XoPL7a4zQVwNfysvpEkKx3nUjGJ7+qYsuLKnrDnMLrq18Qal4EaGP1Qjp4aJwCHNAwmy3lblvQn8G5VihCrJeXaZyX3dSq93zeEAdn3sGWxsCmMenlqlGCHgKG7DUzEGyhxOuQr50M5QKAh18/EOKGVk6WpXj7+d0Z3uZv7ummzZnuQDOvQ9XDVLUrM8Ksh10yNBKrtH5Lrw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
- by CY4PR12MB1862.namprd12.prod.outlook.com (2603:10b6:903:121::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.19; Mon, 4 Jul
- 2022 06:14:13 +0000
-Received: from CY5PR12MB6179.namprd12.prod.outlook.com
- ([fe80::611c:e609:d343:aa34]) by CY5PR12MB6179.namprd12.prod.outlook.com
- ([fe80::611c:e609:d343:aa34%7]) with mapi id 15.20.5395.020; Mon, 4 Jul 2022
- 06:14:13 +0000
-From:   Ido Schimmel <idosch@nvidia.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, petrm@nvidia.com, amcohen@nvidia.com,
-        mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next v2 13/13] mlxsw: spectrum_fid: Remove '_ub_' indication from structures and defines
-Date:   Mon,  4 Jul 2022 09:11:39 +0300
-Message-Id: <20220704061139.1208770-14-idosch@nvidia.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220704061139.1208770-1-idosch@nvidia.com>
-References: <20220704061139.1208770-1-idosch@nvidia.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: VI1PR0501CA0028.eurprd05.prod.outlook.com
- (2603:10a6:800:60::14) To CY5PR12MB6179.namprd12.prod.outlook.com
- (2603:10b6:930:24::22)
+        with ESMTP id S232068AbiGDGTZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 02:19:25 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 830D05FAA
+        for <netdev@vger.kernel.org>; Sun,  3 Jul 2022 23:19:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656915563;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Li8ThBWAqJMFEkzTAJ9iYj5JlWkGm0J0qjrPjZmAGdc=;
+        b=e/UjD/6g/jDB6tF/2DS1NQlqVy9JPHYy7derFlXnfPmN9SC/EvtKpT+w3VHimMV5IrvSXQ
+        +6xR11FPyeZRx+2Y/uGgudeIqVPJtPeyDxdb/CxQptrKrIaS3XpdCuaJW7j85u2Y0TmeN3
+        0wdYyn3+XJ0UAgDj1X1ckx/nNvS3NEc=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-235-3Zy1xgpoPhiseM-jk4Hluw-1; Mon, 04 Jul 2022 02:19:21 -0400
+X-MC-Unique: 3Zy1xgpoPhiseM-jk4Hluw-1
+Received: by mail-wr1-f72.google.com with SMTP id f20-20020adfc994000000b0021d4aca9d0eso1070200wrh.0
+        for <netdev@vger.kernel.org>; Sun, 03 Jul 2022 23:19:21 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Li8ThBWAqJMFEkzTAJ9iYj5JlWkGm0J0qjrPjZmAGdc=;
+        b=Dg+X91CySnPEdodLzlEfbg46zcStYXqH6xkHPRJcmhKW1m4xaRM111UoYDCeKR9Xnd
+         phPG2C/HUBQZDEHh8y9g7OINAQwPcP7RLQaW40cljyhQ+3FmCvtUIvYrW4OLJ/Czta8z
+         AokPqo1eoKRHMvxM6PHYghBfkPdaxCIn+01K5kxXTdUojeBMF90kRSa2bfvFWKfsqv/T
+         oK3i1miRVpdzx6Tw6T2mx+j/RigYuI8b3V1nBDRrgpVeD2KoJ7UQcYA/RHZ9Rocxj7HH
+         oS0G5Auard2h/QO6p53/IRMCsfZ5HKk8KnbaNdrSAf5zl8CCuA9m7D7p01dy0m3jxJU/
+         ln7A==
+X-Gm-Message-State: AJIora8kVhuUrb0nRHyGeWdTvezsAM1gH9ILwCMFOcaGEWWdTxx431kk
+        r5YmSu6SAB5Vy2VsbnLLblVqYzXFrj+6clBqny1mzfodLlFYdFLaMazwM5oj4y9ZM6Je5qzI2oP
+        6LUruqyjD+PFBWfga
+X-Received: by 2002:a7b:c381:0:b0:3a2:aef9:8dc8 with SMTP id s1-20020a7bc381000000b003a2aef98dc8mr2099565wmj.51.1656915559062;
+        Sun, 03 Jul 2022 23:19:19 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1vb8OWaxZMEaK1FVxHFS5+2MNbMSus77mjJpPRtJuXLL43LelWqsLqpI6jq4oBd0BpiXnOj2A==
+X-Received: by 2002:a7b:c381:0:b0:3a2:aef9:8dc8 with SMTP id s1-20020a7bc381000000b003a2aef98dc8mr2099547wmj.51.1656915558801;
+        Sun, 03 Jul 2022 23:19:18 -0700 (PDT)
+Received: from redhat.com ([2.55.35.209])
+        by smtp.gmail.com with ESMTPSA id i8-20020a05600c354800b0039c4e2ff7cfsm15276865wmq.43.2022.07.03.23.19.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 03 Jul 2022 23:19:18 -0700 (PDT)
+Date:   Mon, 4 Jul 2022 02:19:14 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net V4] virtio-net: fix the race between refill work and
+ close
+Message-ID: <20220704021656-mutt-send-email-mst@kernel.org>
+References: <20220704041948.13212-1-jasowang@redhat.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d43eb05d-e7be-4249-0546-08da5d846a5a
-X-MS-TrafficTypeDiagnostic: CY4PR12MB1862:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: QAF8YFIj/kBIFGMOXue/gR+vJa7kPUkT9ByVOmFNiRIwQpf2yXGRYnLWr1sNxZs0WpqMOmBsJtRvYvsVObzK2KdqofhJLI0d8kV5dBTJEZTYcRBI/S0GeTr47sx9sQHucqI+pkMOz1/WY5PWkY/NLOlphqUy3XlKdoz+ZNz6AMlpA3ZNxwq2uQoiZ/awLeHrFHA2oG+YkrDTdsCguz2LrN8Yc8K/T1zzYfWHdNwQVAw/vNpkVGrInIEk0ayxKZ/EbPSvBlbC2S38Tu3U7OZf1ax2eX5VEoeXEQfncWI3AR8xRfaAzaBJWVJ1I9CRj/Xef1GhilkicIF8LAOm0b5PuIFbMtZLb5cmptuYNzbIxd3sX8OBki0jDF7t7lHdEhxdAEznmwxJpjdVTKFlUxq0CQ5bfJyQyCMrS59KJSP4EV6TJGzpX7u+bzKc79jL3w2rDawFKbeVLqcmnv/PJjww4Rx1whS6hEYBckbD01or/G3n3Df2DP0m0t29EC5vne3W9QH/BycTau/O/rrNkJUgQLZRxgt3I6qdoVYihztfgl/j1jrbCxOQTLDFy4kuQRi0B+ZPvgoLTpbs8VlnFCO9NCTUXKN+9NDejLp7wOrcqQwL2SxGlLfBWmYUOzTiGqEN9SZJ4CIjS0HkqIgl99dXbbo3jv/ceti6wRnRqg9BVgLj8x3OUo5AYRB2zUYBDPo13TKg9comODzPeB//M6ujIlzDvKQwHLcDJmAwj5Mz9uvXv5bTkkWsIoOCvb4zV6yDM0DwunaaZNz0ggtW++3xoA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(366004)(136003)(376002)(396003)(346002)(2616005)(38100700002)(66946007)(4326008)(8676002)(66476007)(66556008)(478600001)(6486002)(316002)(6916009)(26005)(6512007)(86362001)(41300700001)(6506007)(6666004)(8936002)(83380400001)(36756003)(2906002)(5660300002)(1076003)(107886003)(186003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?rCMFuVwA6ipbGrnqypxd+/k3hBi6DeAFOa1HS++K/X28GjEixlbcfZvtbHrA?=
- =?us-ascii?Q?DdQHFT5qVbK7ULRFjLiZjGA/haC1ZMQf0dOPtM9oy5WEcdd873EQb/0vTVMp?=
- =?us-ascii?Q?KgU7wBO7TrVk/datiknH8yGxOz+uV5WlezoTShn9Pcoz07PbGDA1w1M355t7?=
- =?us-ascii?Q?hF0v3viqAiKymqCZpTGwvOq3rjlQoWyO/PprdgqeeB4LqD6HfPHWITd1XYPX?=
- =?us-ascii?Q?k6rVREkHceSPsgiQ8ztS/GhwxSIwE+IK5Cq5vsXG1ezoWktIEEACIgY7qKfG?=
- =?us-ascii?Q?i3VMVHoyS4Kdk02lcZmxqcq0tws6A2MplCxKdeWCed+zYk6iIpcqMs9s4R3s?=
- =?us-ascii?Q?9aM7ONqHp6IbjmMYgfDOzMghmTRUgvcbnpr0MCrKGQa1JBWVURkTuDIhLp+5?=
- =?us-ascii?Q?ypSt2GDVqemp9NXSc5tT+0PaagJkzU+ZuRzCIDQVIT8pYE/E5c4fFpMjvko0?=
- =?us-ascii?Q?amBFl420l9uLUWKp5vdL/eNfM9GB10gu16j/oGgj5OJG6TEPofqVEW0t5JCh?=
- =?us-ascii?Q?LpoPiFBt5HMDBz0nwB8lBKoEUVh9YgF1rvW5hPC7S1LI5j4XOUjsqjNQ+xCB?=
- =?us-ascii?Q?bRrjc4y3Z6Ao5g/D6JTnpGHrqC7GvTIm6rsufabpMrxWcrI5BvsXddL5woxa?=
- =?us-ascii?Q?x9K6Hi9tYu0Ly+iyy38JBzY+1FJ6Q57l4XUdC+ticEzh3ouKsTi6N+mwOlA3?=
- =?us-ascii?Q?kzOjkelEBVRK4upKuuZwA23LoGZGpn9ifbpPMHVNKANRf/0j1MgN1Y8qmMpX?=
- =?us-ascii?Q?AsNaa3jFqlDoGZGNvCVHAESLUZsILnDuzRp9cBwP/xmPwuNcOU6DKLgWdWc8?=
- =?us-ascii?Q?yxHykZFXpkFYVighBVGqlWWBnM2so+HP7sIjZJIrFX64poBHXWU2W71P4yfp?=
- =?us-ascii?Q?JHTdplGxz7YWJ8vXmBhWgv5GIGbBYCRsqBgzDdy7OsfbqLmBuSOOZD38EOmx?=
- =?us-ascii?Q?sXnnPv3q8LhcKNy0ogN4D8u4EClMV9JYmBcx3W1A2itQMC5NOlK1dw5LigN+?=
- =?us-ascii?Q?BKp6e0EQ1fJBdIwV656NtjK6qhRpdyaZ3VUnT+vy6/3Q9nrYieOatOQfdogn?=
- =?us-ascii?Q?MNnymL9Kco4sDs2mbKDBin+rHxM2+4TKQnYYNdJeB5kvzTL8QNsMB/PeyDIY?=
- =?us-ascii?Q?OnmJyLgT9xPFD80K6SD1eN93OPUiWuR5h5e1W3897RpMHamB9QdkZ+aw7IcL?=
- =?us-ascii?Q?khtuNQkY8c3GfCY/LQfG7l7hCYOb5uVM9uEIk1nhcUT3XdvqJcx2MzGDrkn9?=
- =?us-ascii?Q?Wgj1QpVbzpRYXf2QKbKBhhH6NQg41aHi1WYVbSL4l7r1O2HOimzGm9WiIavf?=
- =?us-ascii?Q?cR5DIRu0yl9HF93aezd9Xa9EXXa4lVpcu7Z/5WC0MWBXYFEtBtGK13rRE4Dk?=
- =?us-ascii?Q?fwjK3vM5D4oU2C/AfNc4xZD75xWSOqmLmUyzof8T8wzzyztnJGxjFHexvfP8?=
- =?us-ascii?Q?x7W2tzj0fwCBgcL76WFaviwg4of4t74po09pgP/weq+RhBVzK4ObgCi2Hi/Z?=
- =?us-ascii?Q?UcPtqAhgc1IOafJ1hOctkgULeGe6WQLLnnU/VxrUq/I+MhQVxAqBhMOdJxau?=
- =?us-ascii?Q?KdrrmuW6Dh9pTi0blU1ys9UIGeVDp8Miq2N7aABA?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d43eb05d-e7be-4249-0546-08da5d846a5a
-X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Jul 2022 06:14:12.9884
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 4KWudLq9oeknIaQ9+iJFUSQHyq2TYaLDNcYJcaXSALTuf14pOENdFIkktooW/hj3/n4pTA2NWIjp26Op5Iz00g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR12MB1862
-X-Spam-Status: No, score=-2.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220704041948.13212-1-jasowang@redhat.com>
+X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Amit Cohen <amcohen@nvidia.com>
+On Mon, Jul 04, 2022 at 12:19:48PM +0800, Jason Wang wrote:
+> We try using cancel_delayed_work_sync() to prevent the work from
+> enabling NAPI. This is insufficient since we don't disable the source
+> of the refill work scheduling. This means an NAPI poll callback after
+> cancel_delayed_work_sync() can schedule the refill work then can
+> re-enable the NAPI that leads to use-after-free [1].
+> 
+> Since the work can enable NAPI, we can't simply disable NAPI before
+> calling cancel_delayed_work_sync(). So fix this by introducing a
+> dedicated boolean to control whether or not the work could be
+> scheduled from NAPI.
+> 
+> [1]
+> ==================================================================
+> BUG: KASAN: use-after-free in refill_work+0x43/0xd4
+> Read of size 2 at addr ffff88810562c92e by task kworker/2:1/42
+> 
+> CPU: 2 PID: 42 Comm: kworker/2:1 Not tainted 5.19.0-rc1+ #480
+> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.16.0-0-gd239552ce722-prebuilt.qemu.org 04/01/2014
+> Workqueue: events refill_work
+> Call Trace:
+>  <TASK>
+>  dump_stack_lvl+0x34/0x44
+>  print_report.cold+0xbb/0x6ac
+>  ? _printk+0xad/0xde
+>  ? refill_work+0x43/0xd4
+>  kasan_report+0xa8/0x130
+>  ? refill_work+0x43/0xd4
+>  refill_work+0x43/0xd4
+>  process_one_work+0x43d/0x780
+>  worker_thread+0x2a0/0x6f0
+>  ? process_one_work+0x780/0x780
+>  kthread+0x167/0x1a0
+>  ? kthread_exit+0x50/0x50
+>  ret_from_fork+0x22/0x30
+>  </TASK>
+> ...
+> 
+> Fixes: b2baed69e605c ("virtio_net: set/cancel work on ndo_open/ndo_stop")
+> Signed-off-by: Jason Wang <jasowang@redhat.com>
+> ---
+> Changes since V3:
+> - rebase to -net
+> Changes since V2:
+> - use spin_unlock()/lock_bh() in open/stop to synchronize with bh
+> Changes since V1:
+> - Tweak the changelog
+> ---
+>  drivers/net/virtio_net.c | 35 +++++++++++++++++++++++++++++++++--
+>  1 file changed, 33 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index 356cf8dd4164..68430d7923ac 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -251,6 +251,12 @@ struct virtnet_info {
+>  	/* Does the affinity hint is set for virtqueues? */
+>  	bool affinity_hint_set;
+>  
+> +	/* Is refill work enabled? */
 
-Some structures and defines were added with '_ub_' indication, as there
-were equivalent objects for the legacy model.
+refilling enabled
 
-Now when the legacy model is not used anymore, remove the '_ub_'
-indication.
+> +	bool refill_work_enabled;
 
-Signed-off-by: Amit Cohen <amcohen@nvidia.com>
-Reviewed-by: Petr Machata <petrm@nvidia.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
----
- .../ethernet/mellanox/mlxsw/spectrum_fid.c    | 94 +++++++++----------
- 1 file changed, 47 insertions(+), 47 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_fid.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_fid.c
-index da581a792009..045a24cacfa5 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_fid.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_fid.c
-@@ -1077,11 +1077,11 @@ static const struct mlxsw_sp_fid_ops mlxsw_sp_fid_8021d_ops = {
- };
- 
- #define MLXSW_SP_FID_8021Q_MAX (VLAN_N_VID - 2)
--#define MLXSW_SP_FID_RFID_UB_MAX (11 * 1024)
-+#define MLXSW_SP_FID_RFID_MAX (11 * 1024)
- #define MLXSW_SP_FID_8021Q_PGT_BASE 0
- #define MLXSW_SP_FID_8021D_PGT_BASE (3 * MLXSW_SP_FID_8021Q_MAX)
- 
--static const struct mlxsw_sp_flood_table mlxsw_sp_fid_8021d_ub_flood_tables[] = {
-+static const struct mlxsw_sp_flood_table mlxsw_sp_fid_8021d_flood_tables[] = {
- 	{
- 		.packet_type	= MLXSW_SP_FLOOD_TYPE_UC,
- 		.table_type	= MLXSW_REG_SFGC_TABLE_TYPE_FID_OFFSET,
-@@ -1416,30 +1416,30 @@ static const struct mlxsw_sp_fid_ops mlxsw_sp_fid_8021q_ops = {
- };
- 
- /* There are 4K-2 802.1Q FIDs */
--#define MLXSW_SP_FID_8021Q_UB_START	1 /* FID 0 is reserved. */
--#define MLXSW_SP_FID_8021Q_UB_END	(MLXSW_SP_FID_8021Q_UB_START + \
-+#define MLXSW_SP_FID_8021Q_START	1 /* FID 0 is reserved. */
-+#define MLXSW_SP_FID_8021Q_END		(MLXSW_SP_FID_8021Q_START + \
- 					 MLXSW_SP_FID_8021Q_MAX - 1)
- 
- /* There are 1K 802.1D FIDs */
--#define MLXSW_SP_FID_8021D_UB_START	(MLXSW_SP_FID_8021Q_UB_END + 1)
--#define MLXSW_SP_FID_8021D_UB_END	(MLXSW_SP_FID_8021D_UB_START + \
-+#define MLXSW_SP_FID_8021D_START	(MLXSW_SP_FID_8021Q_END + 1)
-+#define MLXSW_SP_FID_8021D_END		(MLXSW_SP_FID_8021D_START + \
- 					 MLXSW_SP_FID_8021D_MAX - 1)
- 
- /* There is one dummy FID */
--#define MLXSW_SP_FID_DUMMY_UB		(MLXSW_SP_FID_8021D_UB_END + 1)
-+#define MLXSW_SP_FID_DUMMY		(MLXSW_SP_FID_8021D_END + 1)
- 
- /* There are 11K rFIDs */
--#define MLXSW_SP_RFID_UB_START		(MLXSW_SP_FID_DUMMY_UB + 1)
--#define MLXSW_SP_RFID_UB_END		(MLXSW_SP_RFID_UB_START + \
--					 MLXSW_SP_FID_RFID_UB_MAX - 1)
-+#define MLXSW_SP_RFID_START		(MLXSW_SP_FID_DUMMY + 1)
-+#define MLXSW_SP_RFID_END		(MLXSW_SP_RFID_START + \
-+					 MLXSW_SP_FID_RFID_MAX - 1)
- 
--static const struct mlxsw_sp_fid_family mlxsw_sp1_fid_8021q_ub_family = {
-+static const struct mlxsw_sp_fid_family mlxsw_sp1_fid_8021q_family = {
- 	.type			= MLXSW_SP_FID_TYPE_8021Q,
- 	.fid_size		= sizeof(struct mlxsw_sp_fid_8021q),
--	.start_index		= MLXSW_SP_FID_8021Q_UB_START,
--	.end_index		= MLXSW_SP_FID_8021Q_UB_END,
--	.flood_tables		= mlxsw_sp_fid_8021d_ub_flood_tables,
--	.nr_flood_tables	= ARRAY_SIZE(mlxsw_sp_fid_8021d_ub_flood_tables),
-+	.start_index		= MLXSW_SP_FID_8021Q_START,
-+	.end_index		= MLXSW_SP_FID_8021Q_END,
-+	.flood_tables		= mlxsw_sp_fid_8021d_flood_tables,
-+	.nr_flood_tables	= ARRAY_SIZE(mlxsw_sp_fid_8021d_flood_tables),
- 	.rif_type		= MLXSW_SP_RIF_TYPE_VLAN,
- 	.ops			= &mlxsw_sp_fid_8021q_ops,
- 	.flood_rsp              = false,
-@@ -1448,13 +1448,13 @@ static const struct mlxsw_sp_fid_family mlxsw_sp1_fid_8021q_ub_family = {
- 	.smpe_index_valid	= false,
- };
- 
--static const struct mlxsw_sp_fid_family mlxsw_sp1_fid_8021d_ub_family = {
-+static const struct mlxsw_sp_fid_family mlxsw_sp1_fid_8021d_family = {
- 	.type			= MLXSW_SP_FID_TYPE_8021D,
- 	.fid_size		= sizeof(struct mlxsw_sp_fid_8021d),
--	.start_index		= MLXSW_SP_FID_8021D_UB_START,
--	.end_index		= MLXSW_SP_FID_8021D_UB_END,
--	.flood_tables		= mlxsw_sp_fid_8021d_ub_flood_tables,
--	.nr_flood_tables	= ARRAY_SIZE(mlxsw_sp_fid_8021d_ub_flood_tables),
-+	.start_index		= MLXSW_SP_FID_8021D_START,
-+	.end_index		= MLXSW_SP_FID_8021D_END,
-+	.flood_tables		= mlxsw_sp_fid_8021d_flood_tables,
-+	.nr_flood_tables	= ARRAY_SIZE(mlxsw_sp_fid_8021d_flood_tables),
- 	.rif_type		= MLXSW_SP_RIF_TYPE_FID,
- 	.ops			= &mlxsw_sp_fid_8021d_ops,
- 	.bridge_type            = MLXSW_REG_BRIDGE_TYPE_1,
-@@ -1462,20 +1462,20 @@ static const struct mlxsw_sp_fid_family mlxsw_sp1_fid_8021d_ub_family = {
- 	.smpe_index_valid       = false,
- };
- 
--static const struct mlxsw_sp_fid_family mlxsw_sp1_fid_dummy_ub_family = {
-+static const struct mlxsw_sp_fid_family mlxsw_sp1_fid_dummy_family = {
- 	.type			= MLXSW_SP_FID_TYPE_DUMMY,
- 	.fid_size		= sizeof(struct mlxsw_sp_fid),
--	.start_index		= MLXSW_SP_FID_DUMMY_UB,
--	.end_index		= MLXSW_SP_FID_DUMMY_UB,
-+	.start_index		= MLXSW_SP_FID_DUMMY,
-+	.end_index		= MLXSW_SP_FID_DUMMY,
- 	.ops			= &mlxsw_sp_fid_dummy_ops,
- 	.smpe_index_valid       = false,
- };
- 
--static const struct mlxsw_sp_fid_family mlxsw_sp_fid_rfid_ub_family = {
-+static const struct mlxsw_sp_fid_family mlxsw_sp_fid_rfid_family = {
- 	.type			= MLXSW_SP_FID_TYPE_RFID,
- 	.fid_size		= sizeof(struct mlxsw_sp_fid),
--	.start_index		= MLXSW_SP_RFID_UB_START,
--	.end_index		= MLXSW_SP_RFID_UB_END,
-+	.start_index		= MLXSW_SP_RFID_START,
-+	.end_index		= MLXSW_SP_RFID_END,
- 	.rif_type		= MLXSW_SP_RIF_TYPE_SUBPORT,
- 	.ops			= &mlxsw_sp_fid_rfid_ops,
- 	.flood_rsp              = true,
-@@ -1483,19 +1483,19 @@ static const struct mlxsw_sp_fid_family mlxsw_sp_fid_rfid_ub_family = {
- };
- 
- const struct mlxsw_sp_fid_family *mlxsw_sp1_fid_family_arr[] = {
--	[MLXSW_SP_FID_TYPE_8021Q]	= &mlxsw_sp1_fid_8021q_ub_family,
--	[MLXSW_SP_FID_TYPE_8021D]	= &mlxsw_sp1_fid_8021d_ub_family,
--	[MLXSW_SP_FID_TYPE_DUMMY]	= &mlxsw_sp1_fid_dummy_ub_family,
--	[MLXSW_SP_FID_TYPE_RFID]	= &mlxsw_sp_fid_rfid_ub_family,
-+	[MLXSW_SP_FID_TYPE_8021Q]	= &mlxsw_sp1_fid_8021q_family,
-+	[MLXSW_SP_FID_TYPE_8021D]	= &mlxsw_sp1_fid_8021d_family,
-+	[MLXSW_SP_FID_TYPE_DUMMY]	= &mlxsw_sp1_fid_dummy_family,
-+	[MLXSW_SP_FID_TYPE_RFID]	= &mlxsw_sp_fid_rfid_family,
- };
- 
--static const struct mlxsw_sp_fid_family mlxsw_sp2_fid_8021q_ub_family = {
-+static const struct mlxsw_sp_fid_family mlxsw_sp2_fid_8021q_family = {
- 	.type			= MLXSW_SP_FID_TYPE_8021Q,
- 	.fid_size		= sizeof(struct mlxsw_sp_fid_8021q),
--	.start_index		= MLXSW_SP_FID_8021Q_UB_START,
--	.end_index		= MLXSW_SP_FID_8021Q_UB_END,
--	.flood_tables		= mlxsw_sp_fid_8021d_ub_flood_tables,
--	.nr_flood_tables	= ARRAY_SIZE(mlxsw_sp_fid_8021d_ub_flood_tables),
-+	.start_index		= MLXSW_SP_FID_8021Q_START,
-+	.end_index		= MLXSW_SP_FID_8021Q_END,
-+	.flood_tables		= mlxsw_sp_fid_8021d_flood_tables,
-+	.nr_flood_tables	= ARRAY_SIZE(mlxsw_sp_fid_8021d_flood_tables),
- 	.rif_type		= MLXSW_SP_RIF_TYPE_VLAN,
- 	.ops			= &mlxsw_sp_fid_8021q_ops,
- 	.flood_rsp              = false,
-@@ -1504,13 +1504,13 @@ static const struct mlxsw_sp_fid_family mlxsw_sp2_fid_8021q_ub_family = {
- 	.smpe_index_valid	= true,
- };
- 
--static const struct mlxsw_sp_fid_family mlxsw_sp2_fid_8021d_ub_family = {
-+static const struct mlxsw_sp_fid_family mlxsw_sp2_fid_8021d_family = {
- 	.type			= MLXSW_SP_FID_TYPE_8021D,
- 	.fid_size		= sizeof(struct mlxsw_sp_fid_8021d),
--	.start_index		= MLXSW_SP_FID_8021D_UB_START,
--	.end_index		= MLXSW_SP_FID_8021D_UB_END,
--	.flood_tables		= mlxsw_sp_fid_8021d_ub_flood_tables,
--	.nr_flood_tables	= ARRAY_SIZE(mlxsw_sp_fid_8021d_ub_flood_tables),
-+	.start_index		= MLXSW_SP_FID_8021D_START,
-+	.end_index		= MLXSW_SP_FID_8021D_END,
-+	.flood_tables		= mlxsw_sp_fid_8021d_flood_tables,
-+	.nr_flood_tables	= ARRAY_SIZE(mlxsw_sp_fid_8021d_flood_tables),
- 	.rif_type		= MLXSW_SP_RIF_TYPE_FID,
- 	.ops			= &mlxsw_sp_fid_8021d_ops,
- 	.bridge_type            = MLXSW_REG_BRIDGE_TYPE_1,
-@@ -1518,20 +1518,20 @@ static const struct mlxsw_sp_fid_family mlxsw_sp2_fid_8021d_ub_family = {
- 	.smpe_index_valid       = true,
- };
- 
--static const struct mlxsw_sp_fid_family mlxsw_sp2_fid_dummy_ub_family = {
-+static const struct mlxsw_sp_fid_family mlxsw_sp2_fid_dummy_family = {
- 	.type			= MLXSW_SP_FID_TYPE_DUMMY,
- 	.fid_size		= sizeof(struct mlxsw_sp_fid),
--	.start_index		= MLXSW_SP_FID_DUMMY_UB,
--	.end_index		= MLXSW_SP_FID_DUMMY_UB,
-+	.start_index		= MLXSW_SP_FID_DUMMY,
-+	.end_index		= MLXSW_SP_FID_DUMMY,
- 	.ops			= &mlxsw_sp_fid_dummy_ops,
- 	.smpe_index_valid       = false,
- };
- 
- const struct mlxsw_sp_fid_family *mlxsw_sp2_fid_family_arr[] = {
--	[MLXSW_SP_FID_TYPE_8021Q]	= &mlxsw_sp2_fid_8021q_ub_family,
--	[MLXSW_SP_FID_TYPE_8021D]	= &mlxsw_sp2_fid_8021d_ub_family,
--	[MLXSW_SP_FID_TYPE_DUMMY]	= &mlxsw_sp2_fid_dummy_ub_family,
--	[MLXSW_SP_FID_TYPE_RFID]	= &mlxsw_sp_fid_rfid_ub_family,
-+	[MLXSW_SP_FID_TYPE_8021Q]	= &mlxsw_sp2_fid_8021q_family,
-+	[MLXSW_SP_FID_TYPE_8021D]	= &mlxsw_sp2_fid_8021d_family,
-+	[MLXSW_SP_FID_TYPE_DUMMY]	= &mlxsw_sp2_fid_dummy_family,
-+	[MLXSW_SP_FID_TYPE_RFID]	= &mlxsw_sp_fid_rfid_family,
- };
- 
- static struct mlxsw_sp_fid *mlxsw_sp_fid_lookup(struct mlxsw_sp *mlxsw_sp,
--- 
-2.36.1
+refill_work -> refill?
+
+> +
+> +	/* The lock to synchronize the access to refill_work_enabled */
+
+.. and refill
+
+And maybe put these field near the refill field.
+
+> +	spinlock_t refill_lock;
+> +
+>  	/* CPU hotplug instances for online & dead */
+>  	struct hlist_node node;
+>  	struct hlist_node node_dead;
+> @@ -348,6 +354,20 @@ static struct page *get_a_page(struct receive_queue *rq, gfp_t gfp_mask)
+>  	return p;
+>  }
+>  
+> +static void enable_refill_work(struct virtnet_info *vi)
+> +{
+> +	spin_lock_bh(&vi->refill_lock);
+> +	vi->refill_work_enabled = true;
+> +	spin_unlock_bh(&vi->refill_lock);
+> +}
+> +
+> +static void disable_refill_work(struct virtnet_info *vi)
+> +{
+> +	spin_lock_bh(&vi->refill_lock);
+> +	vi->refill_work_enabled = false;
+> +	spin_unlock_bh(&vi->refill_lock);
+> +}
+> +
+>  static void virtqueue_napi_schedule(struct napi_struct *napi,
+>  				    struct virtqueue *vq)
+>  {
+> @@ -1527,8 +1547,12 @@ static int virtnet_receive(struct receive_queue *rq, int budget,
+>  	}
+>  
+>  	if (rq->vq->num_free > min((unsigned int)budget, virtqueue_get_vring_size(rq->vq)) / 2) {
+> -		if (!try_fill_recv(vi, rq, GFP_ATOMIC))
+> -			schedule_delayed_work(&vi->refill, 0);
+> +		if (!try_fill_recv(vi, rq, GFP_ATOMIC)) {
+> +			spin_lock(&vi->refill_lock);
+> +			if (vi->refill_work_enabled)
+> +				schedule_delayed_work(&vi->refill, 0);
+> +			spin_unlock(&vi->refill_lock);
+> +		}
+>  	}
+>  
+>  	u64_stats_update_begin(&rq->stats.syncp);
+> @@ -1651,6 +1675,8 @@ static int virtnet_open(struct net_device *dev)
+>  	struct virtnet_info *vi = netdev_priv(dev);
+>  	int i, err;
+>  
+> +	enable_refill_work(vi);
+> +
+>  	for (i = 0; i < vi->max_queue_pairs; i++) {
+>  		if (i < vi->curr_queue_pairs)
+>  			/* Make sure we have some buffers: if oom use wq. */
+> @@ -2033,6 +2059,8 @@ static int virtnet_close(struct net_device *dev)
+>  	struct virtnet_info *vi = netdev_priv(dev);
+>  	int i;
+>  
+> +	/* Make sure NAPI doesn't schedule refill work */
+> +	disable_refill_work(vi);
+>  	/* Make sure refill_work doesn't re-enable napi! */
+>  	cancel_delayed_work_sync(&vi->refill);
+>  
+> @@ -2792,6 +2820,8 @@ static int virtnet_restore_up(struct virtio_device *vdev)
+>  
+>  	virtio_device_ready(vdev);
+>  
+> +	enable_refill_work(vi);
+> +
+>  	if (netif_running(vi->dev)) {
+>  		err = virtnet_open(vi->dev);
+>  		if (err)
+> @@ -3535,6 +3565,7 @@ static int virtnet_probe(struct virtio_device *vdev)
+>  	vdev->priv = vi;
+>  
+>  	INIT_WORK(&vi->config_work, virtnet_config_changed_work);
+> +	spin_lock_init(&vi->refill_lock);
+>  
+>  	/* If we can receive ANY GSO packets, we must allocate large ones. */
+>  	if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO4) ||
+> -- 
+> 2.25.1
 
