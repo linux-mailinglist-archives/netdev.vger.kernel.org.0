@@ -2,139 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B9322565FBF
-	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 01:35:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4740A565FC5
+	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 01:53:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230027AbiGDXfD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jul 2022 19:35:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34520 "EHLO
+        id S230149AbiGDXxX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Jul 2022 19:53:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229554AbiGDXfC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 19:35:02 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D75C2BC3;
-        Mon,  4 Jul 2022 16:35:01 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id eq6so13255545edb.6;
-        Mon, 04 Jul 2022 16:35:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=T8S0l8y9d8Axnt5vHKcfa4KW+KyScMqV4sAI/irB22c=;
-        b=djDAMtpfqnkI0WF6TGgtPkzlMpfSoeYlDDNgE6j8sY8HpSm54gda2piV9ltBSZrvg3
-         SSVuf/WyApMz/hclgRyNMOcNCDZtVwvIq2TtoIiNI2s+tX81GatXIUojo/l3YWSolpBY
-         gwU9xw+DXKp2ogpRNzU9EflHjuuB57+a6C7CETy68HMOiOWi95UhQ38UeBIQMsV7pprY
-         VkUYDQ4iAiJH3oVYQpyl4elEWWi87xUp9C/yOvLpnQl7Ud4vDGgOuyfA1zQpMhq5fhab
-         2hMTgk6TGlNTf90/1polYojoeDDayil6EdQ95g0HNeKZScgKOtzAmSw3eLyk+kDES6m2
-         lqGQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=T8S0l8y9d8Axnt5vHKcfa4KW+KyScMqV4sAI/irB22c=;
-        b=iXCKmW2KpApsozVcVGZLos5aqL6g1M+j43+p3Qmt3p16C/sPdkEWHoNxWwjRNfE857
-         yJHDLfVN7fhXzCSnMUzXFXMJVpfaOigOuor0b/x5aEMAoylcJPVBQFB9ury1s003w+/A
-         Q6L4TVmPiPFRvOoETWkW4xakpMrdTHpNZ/mDK4iTfYq3gU6HG7/mq1G8Hkp2HQG/9vy3
-         02BjhSM1uH2jPjS/QXMfluEsfJEkfJkLR2JOdTFXUxYSpdzffe69oEo46NpTzx7Pm7Tr
-         QJ3oQxlcDh49GCU0wI4zeD785MQ/S93GMwae/dyY57H5T3y9didcSdW42vba/1hNcPrF
-         5a1g==
-X-Gm-Message-State: AJIora+/1SyEng4JMzPFAChnwYvMsowkk1AJkDQidvxVas7Pgli2AeOX
-        bjUyBaS/w91T4unUtcL8aMP0oDF+9pfalDiE
-X-Google-Smtp-Source: AGRyM1uodonDapeOyqMZ310HkDK2VMS5hY2SPriOX5HIFT6St6SrPc+6yDST4p88DwqpSBQcwPISPA==
-X-Received: by 2002:a05:6402:249d:b0:437:8622:6de8 with SMTP id q29-20020a056402249d00b0043786226de8mr42730595eda.113.1656977699772;
-        Mon, 04 Jul 2022 16:34:59 -0700 (PDT)
-Received: from skbuf ([188.25.231.173])
-        by smtp.gmail.com with ESMTPSA id s8-20020a508dc8000000b00435c10b5daesm21554012edh.34.2022.07.04.16.34.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Jul 2022 16:34:58 -0700 (PDT)
-Date:   Tue, 5 Jul 2022 02:34:57 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     stable@vger.kernel.org, Doug Berger <opendmb@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        andrew@lunn.ch
-Subject: Re: [PATCH stable 4.9] net: dsa: bcm_sf2: force pause link settings
-Message-ID: <20220704233457.tgnenjn3ct6us75i@skbuf>
-References: <20220704153510.3859649-1-f.fainelli@gmail.com>
+        with ESMTP id S229456AbiGDXxV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 19:53:21 -0400
+Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 031AFA19B;
+        Mon,  4 Jul 2022 16:53:18 -0700 (PDT)
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailout.nyi.internal (Postfix) with ESMTP id 8CF495C0058;
+        Mon,  4 Jul 2022 19:53:16 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute1.internal (MEProxy); Mon, 04 Jul 2022 19:53:16 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
+        cc:cc:content-transfer-encoding:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm3; t=1656978796; x=
+        1657065196; bh=hRtV2tmxTGHWgaE1iVcT0zpQrqZDg6gyLKB2wVgW0vo=; b=T
+        vhe3/lISntp8F4XP10zGlS+kat7MmJH/hcrB1wPhiXE2yPbUq3AUBkplSOAAzYKu
+        OAKNvFBynSC0pnA1X4KBFVc/Q+g9SU80G+bolLDkBslrWSd/TkBiZMwedh/wiUMk
+        sYttwA3KodMA+mgu2GNkgvNPxyf5q9c7s2ufaT1uk4DtLREkxL/ZZ4DaOMT/Vkvz
+        frev+0D9JTxhhfL+towmLTOTQ2g2urWbTjtvgVU0RD43AW8shxIubjEy1zZbP6Ic
+        QFdGUTIaKejzyoUbwUAYDVbJXyiPg6zLhuSPEnarJK6D64CxR3zHDn9TEsECEJ87
+        gtAK2lYaAoJQlJcEnSjBg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:feedback-id:feedback-id:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1656978796; x=
+        1657065196; bh=hRtV2tmxTGHWgaE1iVcT0zpQrqZDg6gyLKB2wVgW0vo=; b=j
+        X610wJ0G2bO43nBljf1hmO06Mn4aR3fOwFPm99EJzjr34y8T4/S/YtIhvGFQxL/i
+        jP6i6EvYgwPL7Vl0LL4RkG2o7Ib6o412GO0ZidVeDu1rsDtOAu1tU/3bSsmcDYmC
+        C+mMW6I9hJVtJE52k1JXDEyjovJMKwdaaYME354ktbOvin0JF0B+vRqF5UN/6buN
+        pYCsyxlLbLqiLwSk/+2Eu+eEDHSErVwFw87qZ2LT7t/G7yTq3JAsA9F+zrDoSc8h
+        pNrUo3O4v6kkIzKy6y8fuMqnuCq0tWNRqBjHHMrll6s+CbCUqUZvN8zApXWQE8yY
+        4j1fvpowiL85gzAy3f89w==
+X-ME-Sender: <xms:bH3DYqD0bLia9ca-mTcv-wDabTy0hD7sTEWuqCtoQ77MG_03wU-Kkw>
+    <xme:bH3DYkgEovVE12p5tHBhDKhlPxERzkQg5zUymkaDQYrGjmS0RsLhMBUvJAya40XUn
+    rEbERk6hZtVoQctkw>
+X-ME-Received: <xmr:bH3DYtnalH8DVwiEKcU0jL_tnEA52T-1R17_NxQszlVPwem_8wIn3IJfZnC1y1dR2O_LWrQyqfVDbKumU_mW-GoRXvfkw-Nr6gkxlKxTIxrPkk1U8p6eXEFHTw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudeitddgvdegucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepuffvvehfhffkffgfgggjtgfgsehtjeertddtfeejnecuhfhrohhmpefurghm
+    uhgvlhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenuc
+    ggtffrrghtthgvrhhnpefftdevkedvgeekueeutefgteffieelvedukeeuhfehledvhfei
+    tdehudfhudehhfenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfh
+    hrohhmpehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhg
+X-ME-Proxy: <xmx:bH3DYoyQ70HyDHpizunZF_V6yfKDZuOVes9evuJwjTuH6dLfY1u5ew>
+    <xmx:bH3DYvQXMjRtHUzHU_--LXfFvDRkqonl3FGFmnblCSXUgEu9KamYPQ>
+    <xmx:bH3DYjYHsGhSQLWcu9XUe0bmr5x1KbB7FZ-tyN42-jlNzHQTdl0k6g>
+    <xmx:bH3DYtC3M8W4qfl0raLoFOPsTYKch2tTcY4HA_op_db5-nWCMGFw8Q>
+Feedback-ID: i0ad843c9:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 4 Jul 2022 19:53:15 -0400 (EDT)
+Subject: Re: [PATCH v12 1/7] dt-bindings: arm: sunxi: Add H616 EMAC compatible
+To:     Andre Przywara <andre.przywara@arm.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+References: <20220701112453.2310722-1-andre.przywara@arm.com>
+ <20220701112453.2310722-2-andre.przywara@arm.com>
+From:   Samuel Holland <samuel@sholland.org>
+Message-ID: <b2661412-5fce-a20d-c7c4-6df58efdb930@sholland.org>
+Date:   Mon, 4 Jul 2022 18:53:14 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
+In-Reply-To: <20220701112453.2310722-2-andre.przywara@arm.com>
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220704153510.3859649-1-f.fainelli@gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Florian,
-
-On Mon, Jul 04, 2022 at 08:35:07AM -0700, Florian Fainelli wrote:
-> From: Doug Berger <opendmb@gmail.com>
+On 7/1/22 6:24 AM, Andre Przywara wrote:
+> The Allwinner H616 contains an "EMAC" Ethernet MAC compatible to the A64
+> version.
 > 
-> commit 7c97bc0128b2eecc703106112679a69d446d1a12 upstream
+> Add it to the list of compatible strings.
 > 
-> The pause settings reported by the PHY should also be applied to the GMII port
-> status override otherwise the switch will not generate pause frames towards the
-> link partner despite the advertisement saying otherwise.
-> 
-> Fixes: 246d7f773c13 ("net: dsa: add Broadcom SF2 switch driver")
-> Signed-off-by: Doug Berger <opendmb@gmail.com>
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+> Signed-off-by: Andre Przywara <andre.przywara@arm.com>
 > ---
->  drivers/net/dsa/bcm_sf2.c | 5 +++++
->  1 file changed, 5 insertions(+)
+>  .../devicetree/bindings/net/allwinner,sun8i-a83t-emac.yaml       | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> diff --git a/drivers/net/dsa/bcm_sf2.c b/drivers/net/dsa/bcm_sf2.c
-> index 40b3adf7ad99..03f38c36e188 100644
-> --- a/drivers/net/dsa/bcm_sf2.c
-> +++ b/drivers/net/dsa/bcm_sf2.c
-> @@ -671,6 +671,11 @@ static void bcm_sf2_sw_adjust_link(struct dsa_switch *ds, int port,
->  		reg |= LINK_STS;
->  	if (phydev->duplex == DUPLEX_FULL)
->  		reg |= DUPLX_MODE;
-> +	if (phydev->pause) {
-> +		if (phydev->asym_pause)
-> +			reg |= TXFLOW_CNTL;
-> +		reg |= RXFLOW_CNTL;
-> +	}
+> diff --git a/Documentation/devicetree/bindings/net/allwinner,sun8i-a83t-emac.yaml b/Documentation/devicetree/bindings/net/allwinner,sun8i-a83t-emac.yaml
+> index 6a4831fd3616c..87f1306831cc9 100644
+> --- a/Documentation/devicetree/bindings/net/allwinner,sun8i-a83t-emac.yaml
+> +++ b/Documentation/devicetree/bindings/net/allwinner,sun8i-a83t-emac.yaml
+> @@ -22,6 +22,7 @@ properties:
+>            - enum:
+>                - allwinner,sun20i-d1-emac
+>                - allwinner,sun50i-h6-emac
+> +              - allwinner,sun50i-h616-emac
 
-Is this correct? phydev->pause and phydev->asym_pause keep the Pause and
-Asym_Pause bits advertised by the link partner. In other words, in this
-manual resolution you are ignoring what the local switch port has
-advertised.
+The H616 manual has register fields for an internal PHY, like H3. Are these not
+hooked up for either EMAC?
 
-To give you an example (I'm looking at the infamous Table 28B–3—Pause
-resolution from IEEE 802.3).
+Regards,
+Samuel
 
-Your logic, simplified, says: enable TXFLOW_CNTL as local device
-resolution iff the link partner advertised PAUSE=1 && ASM_DIR=1, and
-RXFLOW_CNTL if the link partner advertised PAUSE=1 at all.
-
-The most trivial counter-example is if we (local device) advertise
-PAUSE=0 ASM_DIR=0 (this can be achieved with ethtool rx off tx off).
-That is one way to rig the negotiated flow control to off/off regardless
-of what the link partner has advertised. But your logic would enable
-local capabilities just because the link partner said so, ignoring what
-was advertised here.
-
-Another example is if the local station advertises PAUSE=1, ASM_DIR=1,
-and remote PAUSE=0, ASM_DIR=1. According to IEEE, the link partners
-should agree on "rx on tx off" for the local system, and "tx on rx off"
-for the link partner. But your logic does not even enter the first "if"
-condition, because phydev->pause (link partner's PAUSE advertisement) is
-0. So neither TXFLOW_CNTL nor RXFLOW_CNTL will be enabled locally,
-despite the expectation and what is printed by phy_print_status().
-
+>            - const: allwinner,sun50i-a64-emac
 >  
->  	core_writel(priv, reg, CORE_STS_OVERRIDE_GMIIP_PORT(port));
->  
-> -- 
-> 2.25.1
+>    reg:
 > 
+
