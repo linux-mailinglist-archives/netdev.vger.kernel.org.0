@@ -2,107 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B34CD564D94
+	by mail.lfdr.de (Postfix) with ESMTP id 6B140564D93
 	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 08:14:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231462AbiGDGNx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jul 2022 02:13:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36748 "EHLO
+        id S232726AbiGDGN7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Jul 2022 02:13:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232651AbiGDGNv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 02:13:51 -0400
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2054.outbound.protection.outlook.com [40.107.237.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E182A6336
-        for <netdev@vger.kernel.org>; Sun,  3 Jul 2022 23:13:49 -0700 (PDT)
+        with ESMTP id S232707AbiGDGN5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 02:13:57 -0400
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2082.outbound.protection.outlook.com [40.107.101.82])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1D1F6261
+        for <netdev@vger.kernel.org>; Sun,  3 Jul 2022 23:13:54 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RiRKC0vn2tF9O/sAz3R7seiQLgZpP7tX6KJWOwgRTObH4LVHDK9HRUtwJDY59G2pvFXhvm9Vi0B5IYcuVzJiaGTePc9IPlHlVwhHdiaxMGM2IMSkv8cUBkBsa6+Ia7Eu72XGy6X/t3NJLx9Hk+GfmvIHCdeW/3aOmV7gUYI44GUGy8rxuSJQbvmjvYj1AFaOc7jpp8R5bQsKAJR43kQB4ZPci+MEzv8YJ/NscfGAGjMf8TYqAovgHHLTm5wFqv72Lk6IO1vXVoi48VXwQ3fR90OtM0YqnZbdgEWxgtt/TpcJ6BiboZRn7mSo8L99XagtYpGojk5kbNUA/QC/ZHFDVA==
+ b=fFWXGLj54UAAwiPfQhDhEdEP95Ena8NLBuYnz6/rBVMCsFhZXKE+mPe5J7PYaQVzSH5gf8kKWkqtOZm3Orv8lvAcxvcybnVAbF4ac30Y39pv5NBK3cMP84H4LQfG68gIUuVRs43o0CbSXtQDQ6a0eSsFerMbThPMhKYfs7RipRZKEAiB5Tl+SJg4XANNgnRVJ3SR6j6UnaLILvb1iX7cRnlSfQR1d+7C9LVpN5uBOjfP6HUTl5A08pw5hCdAwthjK1G1WCQAoIxwM2xL7eMOhG+rMZJ80pZillL06QywplFAGtOEyfFdYfXBr9Jh4BmYdOG2reN/ESiL8O7Yjdb6Aw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=fyRskEfZK0YuJy7KV/OaxIbV00lTh2jHHThWtumQbDQ=;
- b=dlgVCNR+KoeSwDrtVxgcJzUuMITaGqsZbWnDUasqi8w41uKmiEuUIUfuosH4SVkXFq+E6cUUXYavBsHUd5FVoawTU9FZSA1i2ZxfW5uyhtrhwhCT8K85IcDLY5RtIXOlUAW1RjbhhhzPrso93LeuqrLi7zc9fcCnQ28f4rQrj4o60Nsrs4ERN4w3EdE5eKGHTJXNghkQjshT9v0c1mGSSGEMFd99eJXIsWGLXwGE3hJWYBd3EyQVhy8mWLKxGw5exmonqXugCrmKtbGrxiC5+qSsZDF2S941u9KbWLd7NVh96cBivnvzs0GcLcaCu7kxs125QZRTQrBA2Eo1jwfkgA==
+ bh=pAY9bdJrKQVa9FYFtogwrVTSIUhBUBzO15JNbcf5CuY=;
+ b=bT3lmF2nURBrSGDcCe4IfVH3wrP8v36i7TAtJYhR8dj8DpjDBTMF3TKVEiohVX0p02j1LEVHKct+Q6DdwQBwj2SMSvYKhronD4ZkYCF5I4OLPgoTX0i2e5muhLbjPfF4Ek8pZnb2zHUyJ7TNxmLXwMF3YvJ9XE3ftFSjwi7Az/T/2g4bKO5BHcGpCxFm11R+q0/WMhioEO2dP3sTU4cSWz/WFuc3rg3IlRPVwyh5fNtk4Q0N8Cl9YEKx7l30L/C3uWPZKSnUpZCyoOgcuVN6OlnXCsiGwqJycgxZdXmksY4xwz3BJFdgFRJ8HRPrSKQfsrEOd2qUoKEJ16mBblhKkQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fyRskEfZK0YuJy7KV/OaxIbV00lTh2jHHThWtumQbDQ=;
- b=iMgRsfokJoRSmFYegaX0jWwFKnv4BWMIZCDqRhio3ciEEMXrngsQJ2vaO6v5ny9JWEVIiUFD92dkA6O6GW67OqP6vdtiRdxNHuW/RdpTLiuNF3d0ZYZnck6ezDrVv7bZuXUVn8CY4f3WV5GvrZnVa7/gFsAsGya47lG8z3aY4NlvMsZSt+MBMw20SS94bsQ3zO1P6WtXYw6tR27NuMy9SF6zMOtRHBEYD4EroQfEG3+dBKl39MlcbJwYK4gs1kC8qwzZkGh9OIECbq4mPnTOAk/4dFxmLxZ6E5ijv5gSKU8QzoENYU7+EolEYsbtZ9xlJbLGo8F7LE/SP310YLJszg==
+ bh=pAY9bdJrKQVa9FYFtogwrVTSIUhBUBzO15JNbcf5CuY=;
+ b=L6zTiJz8COMAr2SEZbrrpBRhDn3gIdX79NST8hB13g/rrhoqqwy0GvYzCiixiui2BV69eJDuvFwr3FdRlshOez9GBKsl4AOqXF1Lr6hD1SLQkaMuRuY9AK+MEA2+uW1cWw9CS3KgXgpCLTWdF7sb/DfruIoOzBWFNmNxVj2AsGJaCkNs0QWXDXqA1RY4aMNixgZimXm2i6cw02qzIix3LadPKZc7QbyCaE292eaYDxjCrttLZatpyzHQrV66pTSwCNKAaV/PhHORJReyZ5lajMhl9pW887hGMC4fScKOAGiYcZxdn0pColM92w7wytiDvzYJ5YW5MkBRGv5Nk95ceQ==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
  by CY4PR12MB1862.namprd12.prod.outlook.com (2603:10b6:903:121::8) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.19; Mon, 4 Jul
- 2022 06:13:47 +0000
+ 2022 06:13:53 +0000
 Received: from CY5PR12MB6179.namprd12.prod.outlook.com
  ([fe80::611c:e609:d343:aa34]) by CY5PR12MB6179.namprd12.prod.outlook.com
  ([fe80::611c:e609:d343:aa34%7]) with mapi id 15.20.5395.020; Mon, 4 Jul 2022
- 06:13:47 +0000
+ 06:13:53 +0000
 From:   Ido Schimmel <idosch@nvidia.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com, petrm@nvidia.com, amcohen@nvidia.com,
         mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next v2 09/13] mlxsw: Add support for 802.1Q FID family
-Date:   Mon,  4 Jul 2022 09:11:35 +0300
-Message-Id: <20220704061139.1208770-10-idosch@nvidia.com>
+Subject: [PATCH net-next v2 10/13] mlxsw: Add ubridge to config profile
+Date:   Mon,  4 Jul 2022 09:11:36 +0300
+Message-Id: <20220704061139.1208770-11-idosch@nvidia.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220704061139.1208770-1-idosch@nvidia.com>
 References: <20220704061139.1208770-1-idosch@nvidia.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: VI1PR0701CA0070.eurprd07.prod.outlook.com
- (2603:10a6:800:5f::32) To CY5PR12MB6179.namprd12.prod.outlook.com
+X-ClientProxiedBy: VI1PR0502CA0018.eurprd05.prod.outlook.com
+ (2603:10a6:803:1::31) To CY5PR12MB6179.namprd12.prod.outlook.com
  (2603:10b6:930:24::22)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 52a8664b-4453-43ae-2772-08da5d845b51
+X-MS-Office365-Filtering-Correlation-Id: 153c2177-28aa-4c0f-f9c0-08da5d845eb4
 X-MS-TrafficTypeDiagnostic: CY4PR12MB1862:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: UGTjHPJOmGeW5M1LWNHNFRYvvK8x9bfibGAaAWAUUzHdgmC2pI6JYhzhZFD05ZgWbbsdjz1Q3M0zySAwWaBAt/ibNuEi/kqTXu7SBAKCkF3IKh3F32cSXoZBCDgrJYN9C0dNvWiPKnCVfp7lLOD9zO81SZ/SE7E9Dq1bk1Bn48S17Gb2BVVGsVSlJdzpEBz8DlHK39T58qxu3m71OErM61xLgitLH8hmKcfPqwlF6SgMZlr10Y/Pw3Pc/KCUFn6mMxlxBW5uZRAh7DAn+9MqiXHQiK4aNKCSrzua/B2OMpzdFjwJ4nKUB5kC6NbV0CzM32Ii4TFKBNABxMFWVc+dkVMwWTzbcMiLVH28UU1G/6HPr1jYnBczR+GN0WfZqTA+mTSi7TYTOQEDwkYKlNlpt0c1si+Ki9BfWsw6s36tTZYICA1p0O30EQlBwtmiRPZp02BaH2fLbnO7JY5krscZea3xpGR6cwUM1pFvUVfHR5jaVdbuQLDdh8LLZSwJcWrOtOrM+YuiaM5hYEyYhejLLLaaxEr5ayC/n2rMuSdSTyBtKkSyl182FokE9yTFaUBfH0g0IZsj7rgV4xaWTH7r2fZhkzv81ArVJxa5iWGWtiuHnX4rkN+66hg4KRDsBs4E7f2OHpTNt4peMlQ1AnuNwD7O0mW17ptwTjbZnUVAhYpNVkPHqS9fRmVjzXD5WDyCBv8hQjxnx3HoliVdKeKJNuOPSUHopbHK7Ysvaz85/eIedhFZLaz3xsXlNO6DsPA3YV8xMHHmTYP/71chj9hAmy770MotLiPjRel9EQckLXJpB5mPMIX9AJC7CpFN3OyB
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(366004)(136003)(376002)(396003)(346002)(2616005)(38100700002)(66946007)(4326008)(8676002)(66476007)(66556008)(478600001)(6486002)(316002)(6916009)(26005)(6512007)(86362001)(41300700001)(6506007)(6666004)(8936002)(83380400001)(36756003)(66574015)(30864003)(2906002)(5660300002)(1076003)(107886003)(186003)(309714004);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: A+ExuJVigmd9VwLkrKpcwsFAbzx3CAxOU91SnuXscHLrAStFLFxvnzLCkkjEo3AUTesqC7/y3eOhUZ/Ue3ptcmvh+7Xqm7dUVgZSgNP4bwifVuKFEtkRD0MUbsetOT8Uwv0uaAAkfF6W1+E6IKCah0CDegkoc3tX7lek+mCw6HI1Gj/0TDeJAx0xItkg1eG3DCp8BEZx8TiYUCx+i9iCLyN6NVA+4WmdWzh+C9kS+XJcCA1KZOpEBTAs5Rq75h2j/Zv6rSLC4J3Xv/xdkCDRz2WIyCS//nmTTvMIoMQqQeRaRAryvX3YxLnxht13HtSWyq6Jn9HluTB+SCCMZfN2GxfEOMLvinZ7P8RuZyRoEp//bpBV1CkxzBzdlPs7INeKPSemwsfELR8hBzJ9sRkp8wT2eZz6BOinAUw+DKjDdar42UefAluRyZYN5BkeD98y5vHFIHzgibGbZMsZrUp0SfNLCSJGKyByqJSQ5Q3OoH5+p60nYm7n/IDhzGEbQYidT1DsaMAvBIupulzbTTWmcpd/U3oOC7zjac9+BJtawyDD+62q2e9mLa/7LxHA2PECjesrkurS6Q90jws+BJargGtJgVShmTl3/pluBGua+S7m1z00LigC2Cj2wPLsuSd775L5ZrBDmmXjKs+N4qRK8R5xQcmxhrbwC1kZUBnX2+g7oF5tJwuw6U9gcN63kERlY3Mp59hTWyajxfFOsrm6h4IWCGpqzJ6EHqIoSy7v4gZ9193FSrSovz6mr/iEc6nCheBlhcGcuJ1XeTF0BAOppg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(366004)(136003)(376002)(396003)(346002)(2616005)(38100700002)(66946007)(4326008)(8676002)(66476007)(66556008)(478600001)(6486002)(316002)(6916009)(26005)(6512007)(86362001)(41300700001)(6506007)(6666004)(8936002)(83380400001)(36756003)(2906002)(5660300002)(1076003)(107886003)(186003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?sMoRlKKlu03ueFBaXiTWnXR5fEF86juIlcwcmlnfPfoQCOMqakYDg1w00++D?=
- =?us-ascii?Q?5BC0/3YD/Q2ZuMpBOnmIJRq9KkHomkiNcFgeFBy4ThWywiOKdKQb081L7tIM?=
- =?us-ascii?Q?vncH5mMfLfMSfZIH3xQUYXZ/5f1TqQFFVwveaafgKy+wvG4hQNpua2mVsX0N?=
- =?us-ascii?Q?JYqleiHVWfgSIkNXLU9rcSvcKfnC27VLjSSO7aoG9ldE81gJqnQuIF3a5fc7?=
- =?us-ascii?Q?6NEloDTAOXJZX1iY4y2kX8OpLoxbTg8Ih18Nyr6LzWMiUnHV+7suPlLzo643?=
- =?us-ascii?Q?gntuf58i8zdwOGW/HD7VL1FJ+DxERPQQm8SfpCQebDolkAIWyW9dCJiR5aUD?=
- =?us-ascii?Q?mFBxP2Y1363VIS1v4YpTvIESiumiwtuTXbmZilEGRyPcwoG6GHJuZFPk/Cu0?=
- =?us-ascii?Q?8UCaVy5s4sc+pH9yz4ShpNkKe7P3U548focJYgYSdHgzX2L0OIzovmUh8XLQ?=
- =?us-ascii?Q?KMy1ah8tWZzHDNh0XwbqL3+WleSu94Z91I0Un6CcoCCtmLEp8xCAHZXJutuA?=
- =?us-ascii?Q?LBbavp1qSZTtTuhSFq+pmXx2JtB1QPCR06JWecBcVJQVGzP4MK4/q7jE+SA1?=
- =?us-ascii?Q?+78L8lfmeVJVp+7e6MlaRuQv+pkkTZO0DEBFz8ZRJYCo7i5XgZQph8+B5jPT?=
- =?us-ascii?Q?u1ekRgxvnA1PgIsaZK4YzRoB7+HFpBrbGRGIhxORKGnQR1LeGVVPTtCqY+d6?=
- =?us-ascii?Q?7UTtRXgDMW5d/LVUVvc09UdGa35g1VylUSfsOz3GopGz0rxo8PaWAvzSj+tc?=
- =?us-ascii?Q?9c/OU+fRQ7BlZTShNmCOGV4KzN73d2JnkyUCAmwIduzY0fm0xlxqorwNo/w5?=
- =?us-ascii?Q?lJDT2uJVz1TJNlPt2eMtSmUr8P1UeIlV2LZgxZLbwFucC45Ixm3zrK819aoy?=
- =?us-ascii?Q?F8JB8h23soQW/ZNQG5gt9qbjubUdsupT/MqdlZVujJg2K70LS5SF5BPEwHNV?=
- =?us-ascii?Q?VlH+Ei/GYtg/NmaFqCLE5Iuz73u/SH2YknSR5SsQv4Tm39IdOb2r/32UCLyB?=
- =?us-ascii?Q?g7jkyzXVNrpgzqTWenmO/Wh/dUrht8UCz/StyoDGNRQnbKE771GERZuDahif?=
- =?us-ascii?Q?GCnI3zLGx9NVh7S7i2J+kHf8fjew7fnNgkqJoLM3J/TuDvRexuj4aTe3S5zC?=
- =?us-ascii?Q?+DN05+dkhcqp1QtHpSXluLTu82I/splYZ5S4R1ffx/P02DEZyfTmifYOfh+6?=
- =?us-ascii?Q?aA7tN6tvtcIaefoTdCJa2bCHiMjRaElaTyM6Xdwgv5uM7Fw1mXOLgUXVdrtc?=
- =?us-ascii?Q?ni/Fi5y875AAalrw+dmx54AzCwFGj1q8y7IFuupNWrbEyNJMt/puFgV8GkW5?=
- =?us-ascii?Q?L6TtktLC57kmjw6oj2EjOYcvYk7O65fTrKXlJ6RHo9JlDjxhAAjnvg9pUiPl?=
- =?us-ascii?Q?l4Z0feK1OfFgI/Ai2JMUq+sZbPYbj6axueEKmMcSU3QJqT91jLBtcLI9hvBi?=
- =?us-ascii?Q?kfmyDbiwIkWcpGw/x8rghT6w4VUcXK+yemwDeFNLx6e3Zwv4BtpNToFiIqz6?=
- =?us-ascii?Q?UdqXM+RBE6gajLxxPXRXQC+7uLKT47WJ9QSwP9MorAataNIGSQLTSpTS6xWr?=
- =?us-ascii?Q?dLOxNWTHUWNelEKbe/kCaCcCQrrEELcYICYqVVGy?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?EXteTBYhMcpo45IEEYBS5c5JS4OPdK+SN+wrqiJkHdF1YnjAGFQnOpvqxYJ3?=
+ =?us-ascii?Q?RvGR8X3XoHCvee9uNXaNeCYMSgv5pYTlFE9Zuo9SvMNSXGlslGu5Q/tK3HiF?=
+ =?us-ascii?Q?ZmU7kTP1lTqVJuirI0Z4S2lVORm6Z5bmY4VqxzVmFxK8+E3aPtu4CQkAuGXX?=
+ =?us-ascii?Q?6Mbvhl6Rv4JeAOTD295ypWOY8Vp7kha1f+Mwk/plX3RuMmrGU0zLRfxXi0Rn?=
+ =?us-ascii?Q?+CoEbDGeavhw7D2lTvHFGkpRz7C1U4VzjMvLNFBnXcLdEfUXxOB4IZDXdLtQ?=
+ =?us-ascii?Q?yAN6f9Hy49bzDbXg4syn+m+pMlSgENaqntc4H7Av6yzfT9P9ekOwMfXD5Dq3?=
+ =?us-ascii?Q?q07+PwT3uRBIZgMK2z3u0wEe1fFMfRzlsIoc6BpmFhdD+TZbTgT0DZvCSlyR?=
+ =?us-ascii?Q?s1m+aONTFsoTNCz1XII5J9GpZm4hcDxv3aDs0njekjJsmg3zrpxfgerz4mWp?=
+ =?us-ascii?Q?alYiOKPpAaPVWVIFXo8a0SAALa1N6ezD5nCc8OyvAUArEfIjZ3p79hOmRfxY?=
+ =?us-ascii?Q?uaMCae/kCktVi0dusZqLzfKUWP9ZJbQeBBNpJk/oRn/h4qM0Dh7/6i/4KTeB?=
+ =?us-ascii?Q?dgxWBwd1AYbwrkdYULpqcL05XiU92B9Q1MSOIAvb6ezB7Z/oO+HUSmC3RX0D?=
+ =?us-ascii?Q?xRvyjUMRUmlxyhdoloIWgu02PDy4HC+C8taDU/Jh9/F64Ff86FcdDEK/hKka?=
+ =?us-ascii?Q?oRepPIEM8VpfjSPDM4GUwCDf/NaE/vC2OyDVtUqx+cIIFXmXb3siwul5G+uy?=
+ =?us-ascii?Q?ksz/kbRwz5hh2+MI1Gqn/xKJ664oxfqxnLkEFr88iN17JZAZRkaia+5EZHgH?=
+ =?us-ascii?Q?Zp9tWf4rEyFWxYbm3UiORWgBRtBCgJ/APY6M/4F27rzpo1IaKoRXiZttXEqh?=
+ =?us-ascii?Q?nAX+d3uAFxrsT0fTkZFSMyDV6CUly9MV5V/fEnklKrcIPmKvF+MBbdyQUCeZ?=
+ =?us-ascii?Q?V8CQ66LBOVSfLMR7EmqL2mYDxFabpmsgdZZZoIR8/m5hFPi4tdz99h2yrrFo?=
+ =?us-ascii?Q?vutmvIs4/65Um+v0k7tNocG6XOTPYLuz0ZaTFlbvY4+lcXX4klI2tWtLA2p9?=
+ =?us-ascii?Q?HmLA4orjsHW1gwYuNOXBhOG9YuYyes9xOV8pDuJWQBEpiUSnVnlClpDEl9vZ?=
+ =?us-ascii?Q?dpL395hFfntr3gVTFLQekIL+hnjuNefbsa/s9HDDCl1nLiYXskSPDYpmCOsl?=
+ =?us-ascii?Q?egYEUmqC+2O0Lml05ldxwzKoDi6KJd+J/waewIOCXjsvXJ8zNL8qLLaM3k8v?=
+ =?us-ascii?Q?KuIn+br6HOFUIeOq7po/438MxjfRmjJSQnPyEH0u4krfqeO1TEQoCZ5Y7J0R?=
+ =?us-ascii?Q?pLtDUBK/2/vx3gVNIZjH+C9MidRvQoU2swSfTe7Ebxi3RDKtY5evit53WiHY?=
+ =?us-ascii?Q?MbPHhwuX00tZJBSF8bqdCHSaPCzwP2PeZCJhp4d2q4lHQGQ3j70DrUq4VzIV?=
+ =?us-ascii?Q?Cr13JSqV2CIf5rSREe1TdNxBYVSv46z8GtnyQc2xL3AqRjEdzBjkFiQEpyiT?=
+ =?us-ascii?Q?oKIOj4VsHT51PTVakKbYq3/qMbU/s1qXlBdeNXqx+4yJnJguzM1N07JC5c/C?=
+ =?us-ascii?Q?HXN07xG0mYiM6c+XfrqTSUAB0sRREENZqIRLR6Jk?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 52a8664b-4453-43ae-2772-08da5d845b51
+X-MS-Exchange-CrossTenant-Network-Message-Id: 153c2177-28aa-4c0f-f9c0-08da5d845eb4
 X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Jul 2022 06:13:47.6395
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Jul 2022 06:13:53.3269
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ght/Y0eeBu5RkuTNql6Qu1pNQFpY96Q+IgEpTd7skAIdBq6IJe1iV2ZbmEW9X+jLFpluvdNImFQLQIxoJg/TvQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: 28+VD81Nc8lA09ZqQPxu68ekDDKR5aXnTApccDV+hzNcjLzCRHphk4UyJEH6LhLY/u/7yQuvyakcWfs6MfxtZQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR12MB1862
 X-Spam-Status: No, score=-2.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
@@ -116,358 +116,86 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Amit Cohen <amcohen@nvidia.com>
 
-Using the legacy bridge model, there is no VID classification at egress
-for 802.1Q FIDs, which means that the VID is maintained.
-
-This behavior cause the limitation that 802.1Q FIDs cannot work with VXLAN.
-This limitation stems from the fact that a decapsulated VXLAN packet should
-not contain a VLAN tag. If such a packet was to egress from a local port
-using a 802.1Q FID, it would "maintain" its VLAN on egress, which is no
-VLAN at all.
-
-Currently 802.1Q FIDs are emulated in mlxsw driver using 802.1D FIDs. Using
-unified bridge model, there is a FID->VID mapping, so it is possible to
-stop emulating 802.1Q FIDs.
-
-The main changes are:
-1. Use 'SFGC.bridge_type' = 0, to separate between 802.1Q FIDs and
-   802.1D FIDs.
-2. Use VLAN RIF instead of the emulated one (VLAN_EMU which is emulated
-   using FID RIF).
-3. Create VID->FID mapping when the FID is created. Then when a new port
-   is mapped to the FID, if it not in virtual mode, no new mapping is
-   needed. Save the new port in 'port_vid_list', to be able to update a
-   RIF in all {Port, VID}->FID mappings in case that the port will be in
-   virtual mode later.
-4. Add a dedicated operation function per FID family to update RIF for
-   VID->FID mappings. For 802.1d and rFID families, just return. For
-   802.1q family, handle the global mapping which is created for new 802.1q
-   FID.
+The unified bridge model is enabled via the CONFIG_PROFILE command
+during driver initialization. Add the definition of the relevant fields
+to the command's payload in preparation for unified bridge enablement.
 
 Signed-off-by: Amit Cohen <amcohen@nvidia.com>
 Reviewed-by: Petr Machata <petrm@nvidia.com>
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- .../ethernet/mellanox/mlxsw/spectrum_fid.c    | 192 +++++++++++++++++-
- .../ethernet/mellanox/mlxsw/spectrum_router.c |   3 +-
- 2 files changed, 193 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/mellanox/mlxsw/cmd.h  | 13 +++++++++++++
+ drivers/net/ethernet/mellanox/mlxsw/core.h |  2 ++
+ drivers/net/ethernet/mellanox/mlxsw/pci.c  |  5 +++++
+ 3 files changed, 20 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_fid.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_fid.c
-index 9dca74bbabb4..385deef75eed 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_fid.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_fid.c
-@@ -94,6 +94,8 @@ struct mlxsw_sp_fid_ops {
- 	void (*nve_flood_index_clear)(struct mlxsw_sp_fid *fid);
- 	void (*fdb_clear_offload)(const struct mlxsw_sp_fid *fid,
- 				  const struct net_device *nve_dev);
-+	int (*vid_to_fid_rif_update)(const struct mlxsw_sp_fid *fid,
-+				     const struct mlxsw_sp_rif *rif);
- };
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/cmd.h b/drivers/net/ethernet/mellanox/mlxsw/cmd.h
+index 8a89c2773294..666d6b6e4dbf 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/cmd.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/cmd.h
+@@ -633,6 +633,12 @@ MLXSW_ITEM32(cmd_mbox, config_profile,
+  */
+ MLXSW_ITEM32(cmd_mbox, config_profile, set_ar_sec, 0x0C, 15, 1);
  
- struct mlxsw_sp_fid_family {
-@@ -433,10 +435,15 @@ u16 mlxsw_sp_fid_8021q_vid(const struct mlxsw_sp_fid *fid)
++/* cmd_mbox_config_set_ubridge
++ * Capability bit. Setting a bit to 1 configures the profile
++ * according to the mailbox contents.
++ */
++MLXSW_ITEM32(cmd_mbox, config_profile, set_ubridge, 0x0C, 22, 1);
++
+ /* cmd_mbox_config_set_kvd_linear_size
+  * Capability bit. Setting a bit to 1 configures the profile
+  * according to the mailbox contents.
+@@ -792,6 +798,13 @@ MLXSW_ITEM32(cmd_mbox, config_profile, adaptive_routing_group_cap, 0x4C, 0, 16);
+  */
+ MLXSW_ITEM32(cmd_mbox, config_profile, arn, 0x50, 31, 1);
  
- static void mlxsw_sp_fid_8021q_setup(struct mlxsw_sp_fid *fid, const void *arg)
- {
-+	struct mlxsw_sp *mlxsw_sp = fid->fid_family->mlxsw_sp;
- 	u16 vid = *(u16 *) arg;
- 
- 	mlxsw_sp_fid_8021q_fid(fid)->vid = vid;
--	fid->fid_offset = 0;
++/* cmd_mbox_config_profile_ubridge
++ * Unified Bridge
++ * 0 - non unified bridge
++ * 1 - unified bridge
++ */
++MLXSW_ITEM32(cmd_mbox, config_profile, ubridge, 0x50, 4, 1);
 +
-+	if (mlxsw_sp->ubridge)
-+		fid->fid_offset = fid->fid_index - fid->fid_family->start_index;
-+	else
-+		fid->fid_offset = 0;
- }
- 
- static enum mlxsw_reg_sfmr_op mlxsw_sp_sfmr_op(bool valid)
-@@ -532,6 +539,35 @@ static int mlxsw_sp_fid_vni_to_fid_rif_update(const struct mlxsw_sp_fid *fid,
- 	return mlxsw_sp_fid_vni_to_fid_map(fid, rif, fid->vni_valid);
- }
- 
-+static int
-+mlxsw_sp_fid_vid_to_fid_map(const struct mlxsw_sp_fid *fid, u16 vid, bool valid,
-+			    const struct mlxsw_sp_rif *rif)
-+{
-+	struct mlxsw_sp *mlxsw_sp = fid->fid_family->mlxsw_sp;
-+	char svfa_pl[MLXSW_REG_SVFA_LEN];
-+	bool irif_valid;
-+	u16 irif_index;
-+
-+	irif_valid = !!rif;
-+	irif_index = rif ? mlxsw_sp_rif_index(rif) : 0;
-+
-+	mlxsw_reg_svfa_vid_pack(svfa_pl, valid, fid->fid_index, vid, irif_valid,
-+				irif_index);
-+	return mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(svfa), svfa_pl);
-+}
-+
-+static int
-+mlxsw_sp_fid_8021q_vid_to_fid_rif_update(const struct mlxsw_sp_fid *fid,
-+					 const struct mlxsw_sp_rif *rif)
-+{
-+	struct mlxsw_sp_fid_8021q *fid_8021q = mlxsw_sp_fid_8021q_fid(fid);
-+
-+	/* Update the global VID => FID mapping we created when the FID was
-+	 * configured.
-+	 */
-+	return mlxsw_sp_fid_vid_to_fid_map(fid, fid_8021q->vid, true, rif);
-+}
-+
- static int
- mlxsw_sp_fid_port_vid_to_fid_rif_update_one(const struct mlxsw_sp_fid *fid,
- 					    struct mlxsw_sp_fid_port_vid *pv,
-@@ -555,6 +591,10 @@ static int mlxsw_sp_fid_vid_to_fid_rif_set(const struct mlxsw_sp_fid *fid,
- 	u16 irif_index;
- 	int err;
- 
-+	err = fid->fid_family->ops->vid_to_fid_rif_update(fid, rif);
-+	if (err)
-+		return err;
-+
- 	irif_index = mlxsw_sp_rif_index(rif);
- 
- 	list_for_each_entry(pv, &fid->port_vid_list, list) {
-@@ -582,6 +622,7 @@ static int mlxsw_sp_fid_vid_to_fid_rif_set(const struct mlxsw_sp_fid *fid,
- 		mlxsw_sp_fid_port_vid_to_fid_rif_update_one(fid, pv, false, 0);
+ /* cmd_mbox_config_kvd_linear_size
+  * KVD Linear Size
+  * Valid for Spectrum only
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.h b/drivers/net/ethernet/mellanox/mlxsw/core.h
+index d1e8b8b8d0c1..a3491ef2aa7e 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/core.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/core.h
+@@ -295,6 +295,7 @@ struct mlxsw_config_profile {
+ 		used_max_pkey:1,
+ 		used_ar_sec:1,
+ 		used_adaptive_routing_group_cap:1,
++		used_ubridge:1,
+ 		used_kvd_sizes:1;
+ 	u8	max_vepa_channels;
+ 	u16	max_mid;
+@@ -314,6 +315,7 @@ struct mlxsw_config_profile {
+ 	u8	ar_sec;
+ 	u16	adaptive_routing_group_cap;
+ 	u8	arn;
++	u8	ubridge;
+ 	u32	kvd_linear_size;
+ 	u8	kvd_hash_single_parts;
+ 	u8	kvd_hash_double_parts;
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/pci.c b/drivers/net/ethernet/mellanox/mlxsw/pci.c
+index 4687dabaaf09..41f0f68bc911 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/pci.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/pci.c
+@@ -1235,6 +1235,11 @@ static int mlxsw_pci_config_profile(struct mlxsw_pci *mlxsw_pci, char *mbox,
+ 		mlxsw_cmd_mbox_config_profile_adaptive_routing_group_cap_set(
+ 			mbox, profile->adaptive_routing_group_cap);
  	}
- 
-+	fid->fid_family->ops->vid_to_fid_rif_update(fid, NULL);
- 	return err;
- }
- 
-@@ -599,6 +640,8 @@ static void mlxsw_sp_fid_vid_to_fid_rif_unset(const struct mlxsw_sp_fid *fid)
- 
- 		mlxsw_sp_fid_port_vid_to_fid_rif_update_one(fid, pv, false, 0);
- 	}
-+
-+	fid->fid_family->ops->vid_to_fid_rif_update(fid, NULL);
- }
- 
- static int mlxsw_sp_fid_reiv_handle(struct mlxsw_sp_fid *fid, u16 rif_index,
-@@ -1078,6 +1121,13 @@ mlxsw_sp_fid_8021d_fdb_clear_offload(const struct mlxsw_sp_fid *fid,
- 	br_fdb_clear_offload(nve_dev, 0);
- }
- 
-+static int
-+mlxsw_sp_fid_8021d_vid_to_fid_rif_update(const struct mlxsw_sp_fid *fid,
-+					 const struct mlxsw_sp_rif *rif)
-+{
-+	return 0;
-+}
-+
- static const struct mlxsw_sp_fid_ops mlxsw_sp_fid_8021d_ops = {
- 	.setup			= mlxsw_sp_fid_8021d_setup,
- 	.configure		= mlxsw_sp_fid_8021d_configure,
-@@ -1092,6 +1142,7 @@ static const struct mlxsw_sp_fid_ops mlxsw_sp_fid_8021d_ops = {
- 	.nve_flood_index_set	= mlxsw_sp_fid_8021d_nve_flood_index_set,
- 	.nve_flood_index_clear	= mlxsw_sp_fid_8021d_nve_flood_index_clear,
- 	.fdb_clear_offload	= mlxsw_sp_fid_8021d_fdb_clear_offload,
-+	.vid_to_fid_rif_update  = mlxsw_sp_fid_8021d_vid_to_fid_rif_update,
- };
- 
- #define MLXSW_SP_FID_8021Q_MAX (VLAN_N_VID - 2)
-@@ -1341,6 +1392,13 @@ static void mlxsw_sp_fid_rfid_nve_flood_index_clear(struct mlxsw_sp_fid *fid)
- 	WARN_ON_ONCE(1);
- }
- 
-+static int
-+mlxsw_sp_fid_rfid_vid_to_fid_rif_update(const struct mlxsw_sp_fid *fid,
-+					const struct mlxsw_sp_rif *rif)
-+{
-+	return 0;
-+}
-+
- static const struct mlxsw_sp_fid_ops mlxsw_sp_fid_rfid_ops = {
- 	.setup			= mlxsw_sp_fid_rfid_setup,
- 	.configure		= mlxsw_sp_fid_rfid_configure,
-@@ -1353,6 +1411,7 @@ static const struct mlxsw_sp_fid_ops mlxsw_sp_fid_rfid_ops = {
- 	.vni_clear		= mlxsw_sp_fid_rfid_vni_clear,
- 	.nve_flood_index_set	= mlxsw_sp_fid_rfid_nve_flood_index_set,
- 	.nve_flood_index_clear	= mlxsw_sp_fid_rfid_nve_flood_index_clear,
-+	.vid_to_fid_rif_update  = mlxsw_sp_fid_rfid_vid_to_fid_rif_update,
- };
- 
- #define MLXSW_SP_RFID_BASE	(15 * 1024)
-@@ -1437,6 +1496,103 @@ static const struct mlxsw_sp_fid_family mlxsw_sp_fid_dummy_family = {
- 	.ops			= &mlxsw_sp_fid_dummy_ops,
- };
- 
-+static int mlxsw_sp_fid_8021q_configure(struct mlxsw_sp_fid *fid)
-+{
-+	struct mlxsw_sp_fid_8021q *fid_8021q = mlxsw_sp_fid_8021q_fid(fid);
-+	int err;
-+
-+	err = mlxsw_sp_fid_op(fid, true);
-+	if (err)
-+		return err;
-+
-+	err = mlxsw_sp_fid_vid_to_fid_map(fid, fid_8021q->vid, true, fid->rif);
-+	if (err)
-+		goto err_vid_to_fid_map;
-+
-+	return 0;
-+
-+err_vid_to_fid_map:
-+	mlxsw_sp_fid_op(fid, false);
-+	return err;
-+}
-+
-+static void mlxsw_sp_fid_8021q_deconfigure(struct mlxsw_sp_fid *fid)
-+{
-+	struct mlxsw_sp_fid_8021q *fid_8021q = mlxsw_sp_fid_8021q_fid(fid);
-+
-+	if (fid->vni_valid)
-+		mlxsw_sp_nve_fid_disable(fid->fid_family->mlxsw_sp, fid);
-+
-+	mlxsw_sp_fid_vid_to_fid_map(fid, fid_8021q->vid, false, NULL);
-+	mlxsw_sp_fid_op(fid, false);
-+}
-+
-+static int mlxsw_sp_fid_8021q_port_vid_map(struct mlxsw_sp_fid *fid,
-+					   struct mlxsw_sp_port *mlxsw_sp_port,
-+					   u16 vid)
-+{
-+	struct mlxsw_sp *mlxsw_sp = mlxsw_sp_port->mlxsw_sp;
-+	u8 local_port = mlxsw_sp_port->local_port;
-+	int err;
-+
-+	/* In case there are no {Port, VID} => FID mappings on the port,
-+	 * we can use the global VID => FID mapping we created when the
-+	 * FID was configured, otherwise, configure new mapping.
-+	 */
-+	if (mlxsw_sp->fid_core->port_fid_mappings[local_port]) {
-+		err =  __mlxsw_sp_fid_port_vid_map(fid, local_port, vid, true);
-+		if (err)
-+			return err;
++	if (profile->used_ubridge) {
++		mlxsw_cmd_mbox_config_profile_set_ubridge_set(mbox, 1);
++		mlxsw_cmd_mbox_config_profile_ubridge_set(mbox,
++							  profile->ubridge);
 +	}
-+
-+	err = mlxsw_sp_fid_evid_map(fid, local_port, vid, true);
-+	if (err)
-+		goto err_fid_evid_map;
-+
-+	err = mlxsw_sp_fid_port_vid_list_add(fid, mlxsw_sp_port->local_port,
-+					     vid);
-+	if (err)
-+		goto err_port_vid_list_add;
-+
-+	return 0;
-+
-+err_port_vid_list_add:
-+	 mlxsw_sp_fid_evid_map(fid, local_port, vid, false);
-+err_fid_evid_map:
-+	if (mlxsw_sp->fid_core->port_fid_mappings[local_port])
-+		__mlxsw_sp_fid_port_vid_map(fid, local_port, vid, false);
-+	return err;
-+}
-+
-+static void
-+mlxsw_sp_fid_8021q_port_vid_unmap(struct mlxsw_sp_fid *fid,
-+				  struct mlxsw_sp_port *mlxsw_sp_port, u16 vid)
-+{
-+	struct mlxsw_sp *mlxsw_sp = mlxsw_sp_port->mlxsw_sp;
-+	u8 local_port = mlxsw_sp_port->local_port;
-+
-+	mlxsw_sp_fid_port_vid_list_del(fid, mlxsw_sp_port->local_port, vid);
-+	mlxsw_sp_fid_evid_map(fid, local_port, vid, false);
-+	if (mlxsw_sp->fid_core->port_fid_mappings[local_port])
-+		__mlxsw_sp_fid_port_vid_map(fid, local_port, vid, false);
-+}
-+
-+static const struct mlxsw_sp_fid_ops mlxsw_sp_fid_8021q_ops = {
-+	.setup			= mlxsw_sp_fid_8021q_setup,
-+	.configure		= mlxsw_sp_fid_8021q_configure,
-+	.deconfigure		= mlxsw_sp_fid_8021q_deconfigure,
-+	.index_alloc		= mlxsw_sp_fid_8021d_index_alloc,
-+	.compare		= mlxsw_sp_fid_8021q_compare,
-+	.port_vid_map		= mlxsw_sp_fid_8021q_port_vid_map,
-+	.port_vid_unmap		= mlxsw_sp_fid_8021q_port_vid_unmap,
-+	.vni_set		= mlxsw_sp_fid_8021d_vni_set,
-+	.vni_clear		= mlxsw_sp_fid_8021d_vni_clear,
-+	.nve_flood_index_set	= mlxsw_sp_fid_8021d_nve_flood_index_set,
-+	.nve_flood_index_clear	= mlxsw_sp_fid_8021d_nve_flood_index_clear,
-+	.fdb_clear_offload	= mlxsw_sp_fid_8021q_fdb_clear_offload,
-+	.vid_to_fid_rif_update  = mlxsw_sp_fid_8021q_vid_to_fid_rif_update,
-+};
-+
- /* There are 4K-2 802.1Q FIDs */
- #define MLXSW_SP_FID_8021Q_UB_START	1 /* FID 0 is reserved. */
- #define MLXSW_SP_FID_8021Q_UB_END	(MLXSW_SP_FID_8021Q_UB_START + \
-@@ -1455,6 +1611,22 @@ static const struct mlxsw_sp_fid_family mlxsw_sp_fid_dummy_family = {
- #define MLXSW_SP_RFID_UB_END		(MLXSW_SP_RFID_UB_START + \
- 					 MLXSW_SP_FID_RFID_UB_MAX - 1)
- 
-+static const struct mlxsw_sp_fid_family mlxsw_sp1_fid_8021q_ub_family = {
-+	.type			= MLXSW_SP_FID_TYPE_8021Q_UB,
-+	.fid_size		= sizeof(struct mlxsw_sp_fid_8021q),
-+	.start_index		= MLXSW_SP_FID_8021Q_UB_START,
-+	.end_index		= MLXSW_SP_FID_8021Q_UB_END,
-+	.flood_tables		= mlxsw_sp_fid_8021d_ub_flood_tables,
-+	.nr_flood_tables	= ARRAY_SIZE(mlxsw_sp_fid_8021d_ub_flood_tables),
-+	.rif_type		= MLXSW_SP_RIF_TYPE_VLAN,
-+	.ops			= &mlxsw_sp_fid_8021q_ops,
-+	.flood_rsp              = false,
-+	.bridge_type            = MLXSW_REG_BRIDGE_TYPE_0,
-+	.pgt_base		= MLXSW_SP_FID_8021Q_PGT_BASE,
-+	.smpe_index_valid	= false,
-+	.ubridge                = true,
-+};
-+
- static const struct mlxsw_sp_fid_family mlxsw_sp1_fid_8021d_ub_family = {
- 	.type			= MLXSW_SP_FID_TYPE_8021D_UB,
- 	.fid_size		= sizeof(struct mlxsw_sp_fid_8021d),
-@@ -1498,11 +1670,28 @@ const struct mlxsw_sp_fid_family *mlxsw_sp1_fid_family_arr[] = {
- 	[MLXSW_SP_FID_TYPE_RFID]	= &mlxsw_sp_fid_rfid_family,
- 	[MLXSW_SP_FID_TYPE_DUMMY]	= &mlxsw_sp_fid_dummy_family,
- 
-+	[MLXSW_SP_FID_TYPE_8021Q_UB]	= &mlxsw_sp1_fid_8021q_ub_family,
- 	[MLXSW_SP_FID_TYPE_8021D_UB]	= &mlxsw_sp1_fid_8021d_ub_family,
- 	[MLXSW_SP_FID_TYPE_DUMMY_UB]	= &mlxsw_sp1_fid_dummy_ub_family,
- 	[MLXSW_SP_FID_TYPE_RFID_UB]	= &mlxsw_sp_fid_rfid_ub_family,
- };
- 
-+static const struct mlxsw_sp_fid_family mlxsw_sp2_fid_8021q_ub_family = {
-+	.type			= MLXSW_SP_FID_TYPE_8021Q_UB,
-+	.fid_size		= sizeof(struct mlxsw_sp_fid_8021q),
-+	.start_index		= MLXSW_SP_FID_8021Q_UB_START,
-+	.end_index		= MLXSW_SP_FID_8021Q_UB_END,
-+	.flood_tables		= mlxsw_sp_fid_8021d_ub_flood_tables,
-+	.nr_flood_tables	= ARRAY_SIZE(mlxsw_sp_fid_8021d_ub_flood_tables),
-+	.rif_type		= MLXSW_SP_RIF_TYPE_VLAN,
-+	.ops			= &mlxsw_sp_fid_8021q_ops,
-+	.flood_rsp              = false,
-+	.bridge_type            = MLXSW_REG_BRIDGE_TYPE_0,
-+	.pgt_base		= MLXSW_SP_FID_8021Q_PGT_BASE,
-+	.smpe_index_valid	= true,
-+	.ubridge                = true,
-+};
-+
- static const struct mlxsw_sp_fid_family mlxsw_sp2_fid_8021d_ub_family = {
- 	.type			= MLXSW_SP_FID_TYPE_8021D_UB,
- 	.fid_size		= sizeof(struct mlxsw_sp_fid_8021d),
-@@ -1534,6 +1723,7 @@ const struct mlxsw_sp_fid_family *mlxsw_sp2_fid_family_arr[] = {
- 	[MLXSW_SP_FID_TYPE_RFID]	= &mlxsw_sp_fid_rfid_family,
- 	[MLXSW_SP_FID_TYPE_DUMMY]	= &mlxsw_sp_fid_dummy_family,
- 
-+	[MLXSW_SP_FID_TYPE_8021Q_UB]	= &mlxsw_sp2_fid_8021q_ub_family,
- 	[MLXSW_SP_FID_TYPE_8021D_UB]	= &mlxsw_sp2_fid_8021d_ub_family,
- 	[MLXSW_SP_FID_TYPE_DUMMY_UB]	= &mlxsw_sp2_fid_dummy_ub_family,
- 	[MLXSW_SP_FID_TYPE_RFID_UB]	= &mlxsw_sp_fid_rfid_ub_family,
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-index 7186f6a33685..aeaba07c17b0 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-@@ -7730,7 +7730,8 @@ u16 mlxsw_sp_rif_vid(struct mlxsw_sp *mlxsw_sp, const struct net_device *dev)
- 	/* We only return the VID for VLAN RIFs. Otherwise we return an
- 	 * invalid value (0).
- 	 */
--	if (rif->ops->type != MLXSW_SP_RIF_TYPE_VLAN_EMU)
-+	if (rif->ops->type != MLXSW_SP_RIF_TYPE_VLAN_EMU &&
-+	    rif->ops->type != MLXSW_SP_RIF_TYPE_VLAN)
- 		goto out;
- 
- 	vid = mlxsw_sp_fid_8021q_vid(rif->fid);
+ 	if (profile->used_kvd_sizes && MLXSW_RES_VALID(res, KVD_SIZE)) {
+ 		err = mlxsw_pci_profile_get_kvd_sizes(mlxsw_pci, profile, res);
+ 		if (err)
 -- 
 2.36.1
 
