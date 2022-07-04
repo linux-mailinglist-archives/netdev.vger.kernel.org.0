@@ -2,103 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2968E564F21
-	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 09:54:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AA8F564F45
+	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 10:06:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231806AbiGDHyp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jul 2022 03:54:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41756 "EHLO
+        id S232864AbiGDIF6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Jul 2022 04:05:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229710AbiGDHyo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 03:54:44 -0400
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C81619FE2;
-        Mon,  4 Jul 2022 00:54:43 -0700 (PDT)
-Received: by mail-wm1-x332.google.com with SMTP id l40-20020a05600c1d2800b003a18adff308so5149061wms.5;
-        Mon, 04 Jul 2022 00:54:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kBt8UkN3aWCTiSF8Lh8xZQRr6v5h00YtDHTaqSFljec=;
-        b=cC7gFTPZu/aPJz87RZe/z5TpXDPurO2A6Cb/+oswtY3Sx2RhvcCJBPKJ/+T2UF17J1
-         RBMUfv1aH45VHiF5kxJprtroCBFRVGeGdSdeApWbVy7NJryexftlPSVOR+aZTfDNcScP
-         FL0egZZgY9fTZaAka+QZ/S6AwirONIg1sycBSUdTAVi18Q/q4ojoXEPnCuJbE6UOJJsd
-         okRmwOIlFkHHVuCSV0qwt1rdwRwk1JEuTgJsazs3DSjIfZxNyZCcCcLBTC/ISt8Fcioc
-         r+YKMeRKDYfSIV0PCSYSlUYta8wsU8jgiqsefwiPxfIpGzd1FocS4pOAW3vC0jxUtQNJ
-         KSQg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kBt8UkN3aWCTiSF8Lh8xZQRr6v5h00YtDHTaqSFljec=;
-        b=zYKCGTUe9fuX1dBg2ASlxG9Wc28uKhB9one4nh0tAe8Gi+4o8Hv2XgiiF9b1SlLhv2
-         pE3eE2/q54ZXVg+Nv5lwiKhCL2Dz0bIic+CRNvlq9r+lmfxyA9qQr1FXIPveAUTEHRcX
-         A1dYzORZccRUTzhjXqa7nDjQo7qmCqvG8rIhJ9NhpKcRJPybJyNuStfMIuVpSieuEDsf
-         4OH521iBKdrP6/T70c7q7nN2jab42GzCA3sD//dbeVVRZURGmk/nwZKnwzA7byVzjMD7
-         gIXoG2tdbpVV9c+hv2xdbJ+wqw8bGfVn+q30NHHScsDg38+5ovH64XnNUtf9xTugPKxn
-         WLgQ==
-X-Gm-Message-State: AJIora+5RZtAPoBfRz2ISSwy8rAn64w0DcNHRzHtZXUnuGwAXeDZVYAm
-        CBMFb57SLnH38q6o7YWgKX8BoMMfMWzMGd8UzrA=
-X-Google-Smtp-Source: AGRyM1tbwq5EsVddzD4ybXz0zJM+EtGcKfP76YCqwP4/9Q5UwkGkjPekVIXrT0y3XzQLeRWbRQnkzHnvn1Gwxl91xVU=
-X-Received: by 2002:a05:600c:4f81:b0:3a1:a8e7:235b with SMTP id
- n1-20020a05600c4f8100b003a1a8e7235bmr4385163wmq.149.1656921282262; Mon, 04
- Jul 2022 00:54:42 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220630111634.610320-1-hans@kapio-technology.com>
- <Yr2LFI1dx6Oc7QBo@shredder> <CAKUejP6LTFuw7d_1C18VvxXDuYaboD-PvSkk_ANSFjjfhyDGkg@mail.gmail.com>
- <Yr778K/7L7Wqwws2@shredder> <CAKUejP5w0Dn8y9gyDryNYy7LOUytqZsG+qqqC8JhRcvyC13=hQ@mail.gmail.com>
- <Yr8oPba83rpJE3GV@shredder> <CAKUejP4_05E0hfFp-ceXLgPuid=MwrAoHyQ-nYE3qx3Tisb4uA@mail.gmail.com>
- <YsE+hreRa0REAG3g@shredder>
-In-Reply-To: <YsE+hreRa0REAG3g@shredder>
-From:   Hans S <schultz.hans@gmail.com>
-Date:   Mon, 4 Jul 2022 09:54:31 +0200
-Message-ID: <CAKUejP4H4yKu6LaLUUUWypt7EPuYDK-5UdUDHPF8F2U5hGnzOQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v1 1/1] net: bridge: ensure that link-local
- traffic cannot unlock a locked port
-To:     Ido Schimmel <idosch@nvidia.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+        with ESMTP id S229658AbiGDIF5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 04:05:57 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF157AE6B;
+        Mon,  4 Jul 2022 01:05:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=7GygIGXSxd6G3xyvobd2JqTIHJupQX3Y87RpFsQ4vZE=; b=wTE5Tj5gEMqfk1bsGMtyh1A8nu
+        RjUCm3MRYXUEyXKEIFtB6rcKYnKcUSRWqGWQKW8rFu2Ksh1vJYNlhKiy5cIT8TAYw/vbISJ9wM4iU
+        M2awCTocsP9EnPLMbRg3EwhNxTdeQOGBBD1fA0c7EYWhlyegs3G4haf+Ob67xhZBvLl8=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1o8H5H-009G8M-Fv; Mon, 04 Jul 2022 10:05:31 +0200
+Date:   Mon, 4 Jul 2022 10:05:31 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Andre Przywara <andre.przywara@arm.com>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Hans Schultz <schultz.hans+netdev@gmail.com>,
-        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
-        linux-kselftest@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Jernej Skrabec <jernej.skrabec@gmail.com>
+Subject: Re: [PATCH] net: phy: mdio: add clock support for PHYs
+Message-ID: <YsKfSxSVQX8JyzmY@lunn.ch>
+References: <20220704004533.17762-1-andre.przywara@arm.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220704004533.17762-1-andre.przywara@arm.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->
-> IIUC, with mv88e6xxx, when the port is locked and learning is disabled:
->
-> 1. You do not get miss violation interrupts. Meaning, you can't report
-> 'locked' entries to the bridge driver.
->
-> 2. You do not get aged-out interrupts. Meaning, you can't tell the
-> bridge driver to remove aged-out entries.
->
-> My point is that this should happen regardless if learning is enabled on
-> the bridge driver or not. Just make sure it is always enabled in
-> mv88e6xxx when the port is locked. Learning in the bridge driver itself
-> can be off, thereby eliminating the need to disable learning from
-> link-local packets.
+> +static int mdiobus_register_clock(struct mdio_device *mdiodev)
+> +{
+> +	struct clk *clk;
+> +
+> +	clk = devm_clk_get_optional(&mdiodev->dev, NULL);
+> +	if (IS_ERR(clk))
+> +		return PTR_ERR(clk);
 
-So you suggest that we enable learning in the driver when locking the
-port and document that learning should be turned off from user space
-before locking the port?
+How does this interact with the clock code of the micrel and smsc
+drivers?
+
+Please document this clock in the binding, ethernet-phy.yaml.
+
+> diff --git a/drivers/net/phy/mdio_device.c b/drivers/net/phy/mdio_device.c
+> index 250742ffdfd9..e8424a46a81e 100644
+> --- a/drivers/net/phy/mdio_device.c
+> +++ b/drivers/net/phy/mdio_device.c
+> @@ -6,6 +6,7 @@
+>  
+>  #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+>  
+> +#include <linux/clk.h>
+>  #include <linux/delay.h>
+>  #include <linux/errno.h>
+>  #include <linux/gpio.h>
+> @@ -136,6 +137,14 @@ void mdio_device_reset(struct mdio_device *mdiodev, int value)
+>  }
+>  EXPORT_SYMBOL(mdio_device_reset);
+>  
+> +static void mdio_device_toggle_clock(struct mdio_device *mdiodev, int value)
+
+Not sure this is the best name, you are not toggling the clock, you
+are toggling the clock gate. And you are not really toggling it, since
+you pass value.
+
+    Andrew
