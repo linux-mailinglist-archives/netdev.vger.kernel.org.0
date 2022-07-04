@@ -2,67 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EAB4956522A
-	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 12:27:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 369B1565268
+	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 12:33:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234432AbiGDKXz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jul 2022 06:23:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45874 "EHLO
+        id S233715AbiGDKdH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Jul 2022 06:33:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234702AbiGDKXD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 06:23:03 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC7B5218F
-        for <netdev@vger.kernel.org>; Mon,  4 Jul 2022 03:22:39 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id mf9so16007873ejb.0
-        for <netdev@vger.kernel.org>; Mon, 04 Jul 2022 03:22:39 -0700 (PDT)
+        with ESMTP id S233501AbiGDKdG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 06:33:06 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70415DF9D
+        for <netdev@vger.kernel.org>; Mon,  4 Jul 2022 03:33:05 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id fw3so15927457ejc.10
+        for <netdev@vger.kernel.org>; Mon, 04 Jul 2022 03:33:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=blackwall-org.20210112.gappssmtp.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=99c+tB+4XXEOKJova0DNTDWOXfHZyhXjztEGCxi3OCs=;
-        b=7dv5ybsMe66950lto9c2K9T/umRiMdybWkmNzSqf/Bf/xFFDHZ5ljJK8KuCbgnUiUw
-         byVf0Ox8dgHfTP8ThGw/ykMtivR2X0jphvK/RpdKp63uAgSPxumMcMFlsliWxUPbVQOw
-         SVrZIHgQqdAf677amWuigiGZsG95t+ZHQIk/2iQ9KJ0wdaJG7ksG9Y9Zs5EoClO+H26N
-         p0ndBIzwLk9zHnSMInX9b9bbe3n1bYcmj/qPhxM0inT50HIP4Ecd4WWmd33mjhDExfh0
-         wNJu3qB/Z2pquwnsrii9Is1FvRzPLDKdyG8xLHur9QsJY+bTNWUSrqOASItaJK8NQRc/
-         j2yQ==
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=6Wj87YaxYO/pynZWsS9SuS5fRYRtHj/q6P5VHFbekcg=;
+        b=hHKaBdrQ6fJzL+ZL80h+cgSUCPd7+qjDIzGZh8ZWXaChkI5ruA0hp/l+FutHmw9JoV
+         W0Ju8bPTVp3GHKVT62HFG73xi017s5mw3lBMxF75N78qHcsgGQv2bqrAj2T5IZkuLRs0
+         SiZRY1f2gYqNP7Bm0x86EyLaekNUeVbtUK7WX7p46lcGYODJTm7vzvtBgL8sILSDYoU7
+         mTBcJDP4eDs4crZZH2zeDnE3W4M6D6uTY/KhJZv/S7ehDHhZMCAokUixesEVWtGT8mps
+         F/BE/qrRiaHtdoRFoE4sXEQtWZG2GpR7A59NNr7EhzOE1LlCAOIYGddTa9T9qupo/uu8
+         s3aw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+         :content-language:to:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=99c+tB+4XXEOKJova0DNTDWOXfHZyhXjztEGCxi3OCs=;
-        b=21JiQolykikD6YNWiUs4k1kbAtmfvzTICCH/0zqhq5qsoA0sJwO9oljM5dw87AzLyY
-         yd9eClPw80I9eTWMfrpQt5v4hMViXqam2F4yXsrLwEcH2kJsJOgEUbSZKGLS0DuQIZTj
-         xR5kt2by1M2zxBxqGqwOPH+q2MEOobNOJ949MEJusgAAWRn0Nl26sKBgcfNRVVTJkyd3
-         WgoOnoRNYMAvRzCdUW4aBCjSwwU++3OqPMKZuZJ6xS4t0Dxbqz+8M/ZMnskW245sa4y3
-         iGRAXs93SkeX5nA+2gkCCXg28nShZUSEUva0tRaKH4cyIAyF/s6+7JtJJFJAuoRxgBhm
-         4NnQ==
-X-Gm-Message-State: AJIora8IPc8ZRMqmvcUw7IoA0Mf3y+gepgfGYQ47UoeiCS5erwDO1zLN
-        B4xRtwrrOtjch/UN10Tva0Tv6gCWJVR/r/35
-X-Google-Smtp-Source: AGRyM1v8Tl4IbX0HQV4/hMFlMSk7QGZWoENOjM2YaH3QjV0vkwW9dT8/rD2wyijFg+vjGLHO2pazRg==
-X-Received: by 2002:a17:906:58cf:b0:726:97db:4f6d with SMTP id e15-20020a17090658cf00b0072697db4f6dmr27873012ejs.261.1656930158343;
-        Mon, 04 Jul 2022 03:22:38 -0700 (PDT)
+        bh=6Wj87YaxYO/pynZWsS9SuS5fRYRtHj/q6P5VHFbekcg=;
+        b=k46y71rCzLOGWtJR2Ga6Ana5YOUp/h8eI49dHj9ij+qsJOhXNZMGnBSc6EaLejJ/Ic
+         bNq4+ZJ8Oy7aHE703/y0IdG5W/MbhxupET2CnulmYmm25ofgLwA0KmpR2FZ9eZBPqGVI
+         V9894jdwhQKjVLAWoSm6HlqQcQ/uEIvc9LZDGc8IFNduDc1RYk8vJUVO8xoLpZ0HpwP4
+         L8zxIP2fEKB5spo8R83t9Mz2cQUrYNsrJlmM/KKGCtr4ll3ag4Wbpw7U60S7O7U4Qy7c
+         iKLjNDLGFtmzZIraIPleAAF/SB6K2v1NFkT5XQE5XvIiDo0nmSjh+fnX0zIjHGUbmjI8
+         A8hw==
+X-Gm-Message-State: AJIora8+Gh7th2wCTCvS7I0zaq541wv0QLnegRcWVpiPkn/ylwJJjbPf
+        E24BDFbboXcdnI+N/ndpt9/vDg==
+X-Google-Smtp-Source: AGRyM1vj6eWksKadqFD0/n9jE3teDazJGledsxiH91AYbeqgMPTaRoHxC9NTg8B8zmoTjCDFh48tJA==
+X-Received: by 2002:a17:907:1c18:b0:72a:3945:c1b2 with SMTP id nc24-20020a1709071c1800b0072a3945c1b2mr25693220ejc.604.1656930783896;
+        Mon, 04 Jul 2022 03:33:03 -0700 (PDT)
 Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
-        by smtp.gmail.com with ESMTPSA id fi9-20020a170906da0900b00722e5b234basm14086359ejb.179.2022.07.04.03.22.37
+        by smtp.gmail.com with ESMTPSA id k13-20020a170906a38d00b006fed787478asm14169345ejz.92.2022.07.04.03.33.02
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 04 Jul 2022 03:22:37 -0700 (PDT)
-Message-ID: <80dd41cc-5ff2-f27f-3764-841acf008237@blackwall.org>
-Date:   Mon, 4 Jul 2022 13:22:36 +0300
+        Mon, 04 Jul 2022 03:33:03 -0700 (PDT)
+Message-ID: <c33c78f8-2be0-07bf-222b-9fae70f9ba32@blackwall.org>
+Date:   Mon, 4 Jul 2022 13:33:01 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.10.0
-Subject: Re: [PATCH net-next v2] net: ip6mr: add RTM_GETROUTE netlink op
+Subject: Re: [PATCH net-next] selftest: net: bridge mdb add/del entry to port
+ that is down
 Content-Language: en-US
-To:     David Lamparter <equinox@diac24.net>, netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>
-References: <20220630202706.33555ad2@kernel.org>
- <20220704095845.365359-1-equinox@diac24.net>
+To:     Casper Andersson <casper.casan@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
+        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        Roopa Prabhu <roopa@nvidia.com>,
+        "bridge@lists.linux-foundation.org" 
+        <bridge@lists.linux-foundation.org>
+References: <20220701144350.2034989-1-casper.casan@gmail.com>
 From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <20220704095845.365359-1-equinox@diac24.net>
+In-Reply-To: <20220701144350.2034989-1-casper.casan@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -74,196 +79,21 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 04/07/2022 12:58, David Lamparter wrote:
-> The IPv6 multicast routing code previously implemented only the dump
-> variant of RTM_GETROUTE.  Implement single MFC item retrieval by copying
-> and adapting the respective IPv4 code.
+On 01/07/2022 17:43, Casper Andersson wrote:
+> Tests that permanent mdb entries can be added/deleted on ports with state down.
 > 
-> Tested against FRRouting's IPv6 PIM stack.
-> 
-> Signed-off-by: David Lamparter <equinox@diac24.net>
-> Cc: David Ahern <dsahern@kernel.org>
+> Signed-off-by: Casper Andersson <casper.casan@gmail.com>
 > ---
+> This feature was implemented recently and a selftest was suggested:
+> https://lore.kernel.org/netdev/20220614063223.zvtrdrh7pbkv3b4v@wse-c0155/
 > 
-> v2: changeover to strict netlink attribute parsing.  Doing so actually
-> exposed a bunch of other issues, first and foremost that rtm_ipv6_policy
-> does not have RTA_SRC or RTA_DST.  This made reusing that policy rather
-> pointless so I changed it to use a separate rtm_ipv6_mr_policy.
-> 
-> Thanks again dsahern@ for the feedback on the previous version!
-> 
-> ---
->  net/ipv6/ip6mr.c | 128 ++++++++++++++++++++++++++++++++++++++++++++++-
->  1 file changed, 127 insertions(+), 1 deletion(-)
-> 
-> diff --git a/net/ipv6/ip6mr.c b/net/ipv6/ip6mr.c
-> index ec6e1509fc7c..95dc366a2d9b 100644
-> --- a/net/ipv6/ip6mr.c
-> +++ b/net/ipv6/ip6mr.c
-> @@ -95,6 +95,8 @@ static int ip6mr_cache_report(const struct mr_table *mrt, struct sk_buff *pkt,
->  static void mr6_netlink_event(struct mr_table *mrt, struct mfc6_cache *mfc,
->  			      int cmd);
->  static void mrt6msg_netlink_event(const struct mr_table *mrt, struct sk_buff *pkt);
-> +static int ip6mr_rtm_getroute(struct sk_buff *in_skb, struct nlmsghdr *nlh,
-> +			      struct netlink_ext_ack *extack);
->  static int ip6mr_rtm_dumproute(struct sk_buff *skb,
->  			       struct netlink_callback *cb);
->  static void mroute_clean_tables(struct mr_table *mrt, int flags);
-> @@ -1390,7 +1392,7 @@ int __init ip6_mr_init(void)
->  	}
->  #endif
->  	err = rtnl_register_module(THIS_MODULE, RTNL_FAMILY_IP6MR, RTM_GETROUTE,
-> -				   NULL, ip6mr_rtm_dumproute, 0);
-> +				   ip6mr_rtm_getroute, ip6mr_rtm_dumproute, 0);
->  	if (err == 0)
->  		return 0;
->  
-> @@ -2510,6 +2512,130 @@ static void mrt6msg_netlink_event(const struct mr_table *mrt, struct sk_buff *pk
->  	rtnl_set_sk_err(net, RTNLGRP_IPV6_MROUTE_R, -ENOBUFS);
->  }
->  
-> +const struct nla_policy rtm_ipv6_mr_policy[RTA_MAX + 1] = {
-> +	[RTA_UNSPEC]		= { .strict_start_type = RTA_UNSPEC },
 
-I don't think you need to add RTA_UNSPEC, nlmsg_parse() would reject it due to NL_VALIDATE_STRICT
+Indeed, please CC the people who have suggested it and the bridge
+maintainers next time. :)
 
-> +	[RTA_SRC]		= NLA_POLICY_EXACT_LEN(sizeof(struct in6_addr)),
-> +	[RTA_DST]		= NLA_POLICY_EXACT_LEN(sizeof(struct in6_addr)),
-> +	[RTA_TABLE]		= { .type = NLA_U32 },
-> +};
-> +
-> +static int ip6mr_rtm_valid_getroute_req(struct sk_buff *skb,
-> +					const struct nlmsghdr *nlh,
-> +					struct nlattr **tb,
-> +					struct netlink_ext_ack *extack)
-> +{
-> +	struct rtmsg *rtm;
-> +	int i, err;
-> +
-> +	if (nlh->nlmsg_len < nlmsg_msg_size(sizeof(*rtm))) {
-> +		NL_SET_ERR_MSG(extack, "ipv6: Invalid header for multicast route get request");
-> +		return -EINVAL;
-> +	}
+That being said, thank you for the selftest!
 
-I think you can drop this check if you...
+Cheers,
+ Nik
 
-> +
-> +	rtm = nlmsg_data(nlh);
-> +	if ((rtm->rtm_src_len && rtm->rtm_src_len != 128) ||
-> +	    (rtm->rtm_dst_len && rtm->rtm_dst_len != 128) ||
-> +	    rtm->rtm_tos || rtm->rtm_table || rtm->rtm_protocol ||
-> +	    rtm->rtm_scope || rtm->rtm_type || rtm->rtm_flags) {
-> +		NL_SET_ERR_MSG(extack,
-> +			       "ipv6: Invalid values in header for multicast route get request");
-> +		return -EINVAL;
-> +	}
-
-...move these after nlmsg_parse() because it already does the hdrlen check for you
-
-> +
-> +	err = nlmsg_parse(nlh, sizeof(*rtm), tb, RTA_MAX, rtm_ipv6_mr_policy,
-> +			  extack);
-> +	if (err)
-> +		return err;
-> +
-> +	if ((tb[RTA_SRC] && !rtm->rtm_src_len) ||
-> +	    (tb[RTA_DST] && !rtm->rtm_dst_len)) {
-> +		NL_SET_ERR_MSG(extack, "ipv6: rtm_src_len and rtm_dst_len must be 128 for IPv6");
-> +		return -EINVAL;
-> +	}
-> +
-> +	/* rtm_ipv6_mr_policy does not list other attributes right now, but
-> +	 * future changes may reuse rtm_ipv6_mr_policy with adding further
-> +	 * attrs.  Enforce the subset.
-> +	 */
-> +	for (i = 0; i <= RTA_MAX; i++) {
-> +		if (!tb[i])
-> +			continue;
-> +
-> +		switch (i) {
-> +		case RTA_SRC:
-> +		case RTA_DST:
-> +		case RTA_TABLE:
-> +			break;
-> +		default:
-> +			NL_SET_ERR_MSG_ATTR(extack, tb[i],
-> +					    "ipv6: Unsupported attribute in multicast route get request");
-> +			return -EINVAL;
-> +		}
-> +	}
-
-I think you can skip this loop as well, nlmsg_parse() shouldn't allow attributes that
-don't have policy defined when policy is provided (i.e. they should show up as NLA_UNSPEC
-and you should get "Error: Unknown attribute type.").
-
-> +
-> +	return 0;
-> +}
-> +
-> +static int ip6mr_rtm_getroute(struct sk_buff *in_skb, struct nlmsghdr *nlh,
-> +			      struct netlink_ext_ack *extack)
-> +{
-> +	struct net *net = sock_net(in_skb->sk);
-> +	struct nlattr *tb[RTA_MAX + 1];
-> +	struct sk_buff *skb = NULL;
-> +	struct mfc6_cache *cache;
-> +	struct mr_table *mrt;
-> +	struct in6_addr src = {}, grp = {};
-
-reverse xmas tree order
-
-> +	u32 tableid;
-> +	int err;
-> +
-> +	err = ip6mr_rtm_valid_getroute_req(in_skb, nlh, tb, extack);
-> +	if (err < 0)
-> +		goto errout;
-> +
-> +	if (tb[RTA_SRC])
-> +		src = nla_get_in6_addr(tb[RTA_SRC]);
-> +	if (tb[RTA_DST])
-> +		grp = nla_get_in6_addr(tb[RTA_DST]);
-> +	tableid = tb[RTA_TABLE] ? nla_get_u32(tb[RTA_TABLE]) : 0;
-> +
-> +	mrt = ip6mr_get_table(net, tableid ? tableid : RT_TABLE_DEFAULT);
-> +	if (!mrt) {
-> +		NL_SET_ERR_MSG_MOD(extack, "ipv6 MR table does not exist");
-> +		err = -ENOENT;
-> +		goto errout_free;
-> +	}
-> +
-> +	/* entries are added/deleted only under RTNL */
-> +	rcu_read_lock();
-> +	cache = ip6mr_cache_find(mrt, &src, &grp);
-> +	rcu_read_unlock();
-> +	if (!cache) {
-> +		NL_SET_ERR_MSG_MOD(extack, "ipv6 MR cache entry not found");
-> +		err = -ENOENT;
-> +		goto errout_free;
-> +	}
-> +
-> +	skb = nlmsg_new(mr6_msgsize(false, mrt->maxvif), GFP_KERNEL);
-> +	if (!skb) {
-> +		err = -ENOBUFS;
-> +		goto errout_free;
-> +	}
-> +
-> +	err = ip6mr_fill_mroute(mrt, skb, NETLINK_CB(in_skb).portid,
-> +				nlh->nlmsg_seq, cache, RTM_NEWROUTE, 0);
-> +	if (err < 0)
-> +		goto errout_free;
-> +
-> +	err = rtnl_unicast(skb, net, NETLINK_CB(in_skb).portid);
-> +
-> +errout:
-> +	return err;
-> +
-> +errout_free:
-> +	kfree_skb(skb);
-> +	goto errout;
-> +}
-> +
->  static int ip6mr_rtm_dumproute(struct sk_buff *skb, struct netlink_callback *cb)
->  {
->  	const struct nlmsghdr *nlh = cb->nlh;
 
