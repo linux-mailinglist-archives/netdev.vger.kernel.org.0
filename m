@@ -2,117 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A8BCA56582A
-	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 16:01:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FAF9565834
+	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 16:04:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233213AbiGDOBp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jul 2022 10:01:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37664 "EHLO
+        id S233782AbiGDODc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Jul 2022 10:03:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229448AbiGDOBh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 10:01:37 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E297AB1D7;
-        Mon,  4 Jul 2022 07:01:36 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id v14so13641190wra.5;
-        Mon, 04 Jul 2022 07:01:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0RwqG+scDxa5sBRqSdCikrVrH/DlHuQpNG6BogojNcw=;
-        b=odnnTUp/LoUmKOUyIJo7vEDZ9yAuctYKOVpNuGmulrP9ucSUIzulweZaGGyx5FAYjS
-         pKtpKxi4+NqK+MuIKSu9ZSW3m5/J4CZD6x12SiuRNc6W268Bu7bBLJedQSHalLOH3Dni
-         /gb6Juv9w3rHsvJs7EYOlL7HBPp+qP8HHhDiIWrqC70++0qmzhrOY0dZd8xJqIFFTi1d
-         GkOERF7j+9cILgoS2NHfS5QT0eU6lR/yhdvYRtMYRy9tXXaOcBsHeHsQacSPAJubQ+Jv
-         Z0JebS6MOLja+VT6KCC3MFDQkpbg2heGJIdBA1Pl7CUgL5ungJ1Q1Ed3BEzeIHHWe9AU
-         NvnA==
+        with ESMTP id S234592AbiGDOD0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 10:03:26 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 695FF2BF8
+        for <netdev@vger.kernel.org>; Mon,  4 Jul 2022 07:03:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656943404;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZtaBQODHPPVn6REl9k6DTx3SbqX1zxC4sBAevPzx3v0=;
+        b=TfIMG9QHSLoJSeOxNBh8YDnvWnBZGkNV5kioNJlQlNEYp/l342xshZFg2+ROlLVAbu4B0C
+        hkV1Vt8CQSZeUIRTK3tACZxF6IAE6yshO3YgCJv7YFrucyvhoYAUc/OLWJK1f8cWdaKoEN
+        BdCXoCV5XZSF87WYpiJQ9Gi5G496+Rg=
+Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
+ [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-548-fwEx62P2PMmn3wejUmYtsQ-1; Mon, 04 Jul 2022 10:03:23 -0400
+X-MC-Unique: fwEx62P2PMmn3wejUmYtsQ-1
+Received: by mail-qk1-f199.google.com with SMTP id bk12-20020a05620a1a0c00b006b194656099so8813501qkb.5
+        for <netdev@vger.kernel.org>; Mon, 04 Jul 2022 07:03:22 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=0RwqG+scDxa5sBRqSdCikrVrH/DlHuQpNG6BogojNcw=;
-        b=ySMs09g5awH0MPHsCyP36pwzglULLh4DOOujaX7Jl88UwUmtAceI7ocrP1oJKv6utN
-         DgUyUEHCFWurgIcq9xqudsafXB4CeXLR5jVPvW79nd8qV6fAqDNWX0o+mHs2fK2zJLoL
-         A6/wFyuM+ksw4A8MBQrOKSsSts090GXoBoegEZPZKMMIj8zwrZj9G8G4a53UEMENwtCw
-         ryPOUabJO8U5A3FCM7UtgOVCMxZqvVnm3LcyYplOyw1ik3iCvISk/rkHtr6o8ytz8GE1
-         5QJERkkwZQ08M/c0ApcYvasj4+SOLsno2Dg+XnLiDJ0kiMloRTsCyooMlgz+ZQmmHkcG
-         AmEA==
-X-Gm-Message-State: AJIora+bYKnOt5tbF8QiqK7ppqYuyNlzb2ih87uLLYi48ZsxMGUqW9eZ
-        KD7K6VFkta8b9mqQEywoPYU=
-X-Google-Smtp-Source: AGRyM1smRSj3Ife5KLTAkAievRyKaIgwIO/zIdO2R0orYgNnwofMXGR9OfYzMd2s/lnJBQ5AknUp2w==
-X-Received: by 2002:a05:6000:1887:b0:21d:33c1:efd6 with SMTP id a7-20020a056000188700b0021d33c1efd6mr23299338wri.134.1656943295318;
-        Mon, 04 Jul 2022 07:01:35 -0700 (PDT)
-Received: from localhost.localdomain (host-79-53-109-127.retail.telecomitalia.it. [79.53.109.127])
-        by smtp.gmail.com with ESMTPSA id f7-20020a0560001b0700b0021d68e1fd42sm3963147wrz.89.2022.07.04.07.01.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Jul 2022 07:01:33 -0700 (PDT)
-From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org
-Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>
-Subject: [PATCH] ixgbe: Don't call kmap() on page allocated with GFP_ATOMIC
-Date:   Mon,  4 Jul 2022 16:01:29 +0200
-Message-Id: <20220704140129.6463-1-fmdefrancesco@gmail.com>
-X-Mailer: git-send-email 2.36.1
+        bh=ZtaBQODHPPVn6REl9k6DTx3SbqX1zxC4sBAevPzx3v0=;
+        b=tyHU1FjbnHcVBzMXMFzK0gzJuP55NmAyf6deM02ASBYEQPkq4S30HT3CKijFzhaRCX
+         uW+7xUYFyIHJqkeRpO4GEJNLuxTmILzf7KFxkDIrdRqSb3DSXEe2ZgN/d8UxvYhov8oO
+         9A4uk48IqUdQblD4lJ9Y1zHsvW7IUdh4NbhDDCEpK8wNrWu8xqtjcQHRb1sTpjueAD7o
+         UrUGCDn3rvdJKzxGkS+Rshy7sW+b2fnKjxZZIyeSNkhu0wo6eaL3ANqbP7ZadNZ0H8Bc
+         DPodlEF1FMACB1JMaEWupclbj2cUtg3SoY/WS2tK3Z1ssHy/ZFeGv6UHeUBJ0OGKjETC
+         uHqg==
+X-Gm-Message-State: AJIora80g5LuN7OPzCTtiKxzOEtbcUezGq+V5MplNn7E9Sii2aLU289b
+        Zp1cl0n9rQceZ92lOJ0GcvrE+LDxLpL2cfVlAWtnLu7H/Gno6U5AimnfScvc7FSR/0zC9r79GSC
+        HdaXiXh7hWNGAe20y
+X-Received: by 2002:a05:620a:854:b0:6af:306c:faff with SMTP id u20-20020a05620a085400b006af306cfaffmr19558447qku.641.1656943402528;
+        Mon, 04 Jul 2022 07:03:22 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1uQcQaf/QdU2bbuYDjTc7wwIrgdx0iCMl526MN+QPFNIQaG9+Pq+FP7Bs45+Tr8HApzVnCbrg==
+X-Received: by 2002:a05:620a:854:b0:6af:306c:faff with SMTP id u20-20020a05620a085400b006af306cfaffmr19558409qku.641.1656943402211;
+        Mon, 04 Jul 2022 07:03:22 -0700 (PDT)
+Received: from [10.0.0.96] ([24.225.241.171])
+        by smtp.gmail.com with ESMTPSA id bm14-20020a05620a198e00b006b2849cdd37sm4188998qkb.113.2022.07.04.07.03.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 04 Jul 2022 07:03:21 -0700 (PDT)
+Message-ID: <fc255ca5-0171-1bae-18a1-4feb6cbf4b3c@redhat.com>
+Date:   Mon, 4 Jul 2022 10:03:20 -0400
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH] net: tipc: fix possible infoleak in tipc_mon_rcv()
+Content-Language: en-US
+To:     Hangyu Hua <hbh25y@gmail.com>, ying.xue@windriver.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, tipc-discussion@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org
+References: <20220628025921.14767-1-hbh25y@gmail.com>
+From:   Jon Maloy <jmaloy@redhat.com>
+In-Reply-To: <20220628025921.14767-1-hbh25y@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Pages allocated with GFP_ATOMIC cannot come from Highmem. This is why
-there is no need to call kmap() on them.
 
-Therefore, don't call kmap() on rx_buffer->page() and instead use a
-plain page_address() to get the kernel address.
 
-Suggested-by: Ira Weiny <ira.weiny@intel.com>
-Suggested-by: Alexander Duyck <alexander.duyck@gmail.com>
-Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
----
- drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c
-index 628d0eb0599f..71196fd92f81 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c
-@@ -1966,15 +1966,13 @@ static bool ixgbe_check_lbtest_frame(struct ixgbe_rx_buffer *rx_buffer,
- 
- 	frame_size >>= 1;
- 
--	data = kmap(rx_buffer->page) + rx_buffer->page_offset;
-+	data = page_address(rx_buffer->page) + rx_buffer->page_offset;
- 
- 	if (data[3] != 0xFF ||
- 	    data[frame_size + 10] != 0xBE ||
- 	    data[frame_size + 12] != 0xAF)
- 		match = false;
- 
--	kunmap(rx_buffer->page);
--
- 	return match;
- }
- 
--- 
-2.36.1
+On 6/27/22 22:59, Hangyu Hua wrote:
+> dom_bef is use to cache current domain record only if current domain
+> exists. But when current domain does not exist, dom_bef will still be used
+> in mon_identify_lost_members. This may lead to an information leak.
+>
+> Fix this by adding a memset before using dom_bef.
+>
+> Fixes: 35c55c9877f8 ("tipc: add neighbor monitoring framework")
+> Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+> ---
+>   net/tipc/monitor.c | 1 +
+>   1 file changed, 1 insertion(+)
+>
+> diff --git a/net/tipc/monitor.c b/net/tipc/monitor.c
+> index 2f4d23238a7e..67084e5aa15c 100644
+> --- a/net/tipc/monitor.c
+> +++ b/net/tipc/monitor.c
+> @@ -534,6 +534,7 @@ void tipc_mon_rcv(struct net *net, void *data, u16 dlen, u32 addr,
+>   	state->peer_gen = new_gen;
+>   
+>   	/* Cache current domain record for later use */
+> +	memset(&dom_bef, 0, sizeof(dom_bef));
+>   	dom_bef.member_cnt = 0;
+>   	dom = peer->domain;
+>   	if (dom)
+Acked-by: Jon Maloy <jmaloy@redhat.com>
 
