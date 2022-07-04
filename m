@@ -2,152 +2,306 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A3892564FEF
-	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 10:44:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 684DB564FFA
+	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 10:47:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232911AbiGDIog (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jul 2022 04:44:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47196 "EHLO
+        id S231671AbiGDIqP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Jul 2022 04:46:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230233AbiGDIoe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 04:44:34 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8C16B7FD
-        for <netdev@vger.kernel.org>; Mon,  4 Jul 2022 01:44:33 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id w2-20020a25ef42000000b0066d68be3fbcso7248725ybm.13
-        for <netdev@vger.kernel.org>; Mon, 04 Jul 2022 01:44:33 -0700 (PDT)
+        with ESMTP id S231544AbiGDIqO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 04:46:14 -0400
+Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED657B7FC
+        for <netdev@vger.kernel.org>; Mon,  4 Jul 2022 01:46:11 -0700 (PDT)
+Received: by mail-lj1-x234.google.com with SMTP id l7so9472130ljj.4
+        for <netdev@vger.kernel.org>; Mon, 04 Jul 2022 01:46:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=auOTRbYq5IQ7VGf4mWr9uR5suqYTHw8ybacsAeqMeSw=;
-        b=EZ9yu2ay5nqh0vsC0uyJNu9nOdm3bB0199Ud/DYqT+taW8LG3i/cnllUoM/dkfb2MQ
-         bOVGPXfRj0/NTRTKQDHR1N1ThJUg/6EuzwVzqEowKJ03n5sQ2+ZkdgHGpATbspYkEXcv
-         Ow9GV9cLgYl3xQIFhTIbXyIVqKIXzsNplEINpylCBw064LjvNjiGaWVS3XdqayAu6Bxu
-         AQSepfMTEchYZLSui8/QWEvyxpNxcUAQk5B1OPp1OR7gt/GAHZ6BaYJiHK1IkKitQPSz
-         aM0T679uRunB3hfsEkXuU0F8RXK+xrMWqfIYpbfbFbRPYxuSj4xD6yNwg4RIfIanzYS5
-         WJcw==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=xJucMBBVgLFaDWx/IxVDD7JFEiYSXfSNtLyo4IJhtmw=;
+        b=Jly84Hez17nHBBCyIwtgxEzZmasK3vuTBTvn17TPq/mEtvjIQVAfXkHZzNlUtB8CD6
+         tO3v0QANG6qxyXhGc30vPx2Vptn8h1KDS2t+FKSEmdSG9FBpIw93KEOusq2Z01w5r+Q7
+         iQB8dhdn/iqtqtq/AzyuGLAOyPagwed7qKXmZZDNuO6XPX0gq43iOVg75xW/T1Sbzm0D
+         ii05EkckmpW9G3zYbnSSbMcturY1ccDz8oqRUZnzM0ieLXcEcsyaOKIMH8t3VlyGmE9K
+         RlaJQ1O5djj1dmgfcGgVnhcGFJYgPL9zF12x3nTMEHspdvaQ3NLilNcIXznmYy0GNNeq
+         kkAg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=auOTRbYq5IQ7VGf4mWr9uR5suqYTHw8ybacsAeqMeSw=;
-        b=il3IpHxIdbQyJPqo3oV1kMGodPw2cyxa6penMcxDiab57R9mLIkHNLyz1g+KjZXUq5
-         mXlqvcIcSUvZTBuqMVP9UMsgvOpNLVMy6YmTMdjn28PqfZ8Ya/V0akO+UnOQAj/Jdtou
-         kT2Rm5h58H/u+JghKYgIdwNcC/RffZU3CGmnljLyCH+LbeRRDuspK5UV82Xkt41bDXxu
-         eKyTVyLfo9/Yn2S/XTqiGL6NqWToYbH2NHcOKyaJsjb6Fh1o/FkzXoXh9cowEVPWKrI2
-         KOYcj/kJ20eSN6pktS3P0QjsjsRMZeNrXqWomp3O1uqEY571QvNX4gArTLc/c1nD2E/3
-         lBeg==
-X-Gm-Message-State: AJIora/ifpRrG78yT0762Qn8zgYkNu27f4OO0FuIx9U+hLT6Ybc3O0xC
-        gTxENSc5Doc19R7TnPMmSeVEaXOKAEKi
-X-Google-Smtp-Source: AGRyM1uK0OrarQn4Is+pvY7wtJypAuIfqiih90NjOUib0E6p65n3J3/suHZswDlCDVuN6+5Xpy9bEyv9xHYN
-X-Received: from jeongik.seo.corp.google.com ([2401:fa00:d:11:b90:150b:7488:26ea])
- (user=jeongik job=sendgmr) by 2002:a25:9ac9:0:b0:66e:4531:d3aa with SMTP id
- t9-20020a259ac9000000b0066e4531d3aamr5178728ybo.182.1656924273211; Mon, 04
- Jul 2022 01:44:33 -0700 (PDT)
-Date:   Mon,  4 Jul 2022 17:43:54 +0900
-Message-Id: <20220704084354.3556326-1-jeongik@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
-Subject: [PATCH v1] wifi: mac80211_hwsim: fix race condition in pending packet
-From:   Jeongik Cha <jeongik@google.com>
-To:     Johannes Berg <johannes@sipsolutions.net>,
-        Kalle Valo <kvalo@kernel.org>,
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=xJucMBBVgLFaDWx/IxVDD7JFEiYSXfSNtLyo4IJhtmw=;
+        b=uo+qRPGWmyYQQSnXV6jGbl8Y2aJYYKZBFrTPJ9ff3WtHhhbxsCy8uJSU8nBfViB7UF
+         YyfuiaV9AV/eDn19O7ZarLv9DvLUgVYQrVqw6pTji/c70r1ogfg8tNVrZEJJm0dvL/eS
+         BQ0DVWJCdM/A/2qo8MbikPiS/b7GfVJruILJvhTT9M2L0To9YfmCzOYD3QcoDaA9oMd2
+         Cl+f5v8HxC58cK/atNV+UU6ozdKhPaxUAm/Zm/hx3g5R74gwo/RQQyifElJiWMuD4N6T
+         adsf+S07H48X04UCkitbpv4PgnDcc4vTYIjLLpONkMxpWKBhP+YVAvs2dex/CDSDn0bI
+         urDw==
+X-Gm-Message-State: AJIora80T6gw/AGJXq0/Q2OyY5sZfKDOidHfMrSPSy8+lUelt1qnsEGE
+        Z/H8knuD7hDgKf5YrNEwsxNR7A==
+X-Google-Smtp-Source: AGRyM1vMhMoNUqEc1UYrBjtEnTzvDBBi8UxHplKkyyv+BsID5o7X0JEB8oxggGxlwGfsDSBE47wD5Q==
+X-Received: by 2002:a05:651c:4d0:b0:25b:b6f4:ae2d with SMTP id e16-20020a05651c04d000b0025bb6f4ae2dmr15906578lji.472.1656924370247;
+        Mon, 04 Jul 2022 01:46:10 -0700 (PDT)
+Received: from [192.168.1.52] ([84.20.121.239])
+        by smtp.gmail.com with ESMTPSA id be37-20020a05651c172500b0025d19a2677asm970416ljb.76.2022.07.04.01.46.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 04 Jul 2022 01:46:09 -0700 (PDT)
+Message-ID: <ed032ae8-6a2b-b79f-d42a-6e96fe53a0d7@linaro.org>
+Date:   Mon, 4 Jul 2022 10:46:08 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v3 1/6] dt-bindings: can: sja1000: Convert to json-schema
+Content-Language: en-US
+To:     Biju Das <biju.das.jz@bp.renesas.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     adelva@google.com, kernel-team@android.com, jaeman@google.com,
-        Jeongik Cha <jeongik@google.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org,
+        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>,
+        linux-renesas-soc@vger.kernel.org
+References: <20220704075032.383700-1-biju.das.jz@bp.renesas.com>
+ <20220704075032.383700-2-biju.das.jz@bp.renesas.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220704075032.383700-2-biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A pending packet uses a cookie as an unique key, but it can be duplicated
-because it didn't use atomic operators.
+On 04/07/2022 09:50, Biju Das wrote:
+> Convert the NXP SJA1000 CAN Controller Device Tree binding
+> documentation to json-schema.
+> 
+> Update the example to match reality.
+> 
+> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+> ---
+> v2->v3:
+>  * Added reg-io-width is a required property for technologic,sja1000
+>  * Removed enum type from nxp,tx-output-config and updated the description
+>    for combination of TX0 and TX1.
+>  * Updated the example
+> v1->v2:
+>  * Moved $ref: can-controller.yaml# to top along with if conditional to
+>    avoid multiple mapping issues with the if conditional in the subsequent
+>    patch.
+> ---
+>  .../bindings/net/can/nxp,sja1000.yaml         | 103 ++++++++++++++++++
+>  .../devicetree/bindings/net/can/sja1000.txt   |  58 ----------
+>  2 files changed, 103 insertions(+), 58 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/net/can/nxp,sja1000.yaml
+>  delete mode 100644 Documentation/devicetree/bindings/net/can/sja1000.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/net/can/nxp,sja1000.yaml b/Documentation/devicetree/bindings/net/can/nxp,sja1000.yaml
+> new file mode 100644
+> index 000000000000..d34060226e4e
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/can/nxp,sja1000.yaml
+> @@ -0,0 +1,103 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/net/can/nxp,sja1000.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Memory mapped SJA1000 CAN controller from NXP (formerly Philips)
+> +
+> +maintainers:
+> +  - Wolfgang Grandegger <wg@grandegger.com>
+> +
+> +allOf:
+> +  - $ref: can-controller.yaml#
+> +  - if:
 
-And also, a pending packet can be null in hwsim_tx_info_frame_received_nl
-due to race condition with mac80211_hwsim_stop.
+The advice of moving it up was not correct. The allOf containing ref and
+if:then goes to place like in example-schema, so before
+additional/unevaluatedProperties at the bottom.
 
-For this,
- * Use an atomic type and operator for a cookie
- * Add a lock around the loop for pending packets
+Please do not introduce some inconsistent style.
 
-Signed-off-by: Jeongik Cha <jeongik@google.com>
----
- drivers/net/wireless/mac80211_hwsim.c | 14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
+> +      properties:
+> +        compatible:
+> +          contains:
+> +            const: technologic,sja1000
+> +    then:
+> +      required:
+> +        - reg-io-width
+> +
+> +properties:
+> +  compatible:
+> +    oneOf:
+> +      - description: NXP SJA1000 CAN Controller
+> +        const: nxp,sja1000
+> +      - description: Technologic Systems SJA1000 CAN Controller
+> +        const: technologic,sja1000
 
-diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wireless/mac80211_hwsim.c
-index c5bb97b381cf..ea006248ffcd 100644
---- a/drivers/net/wireless/mac80211_hwsim.c
-+++ b/drivers/net/wireless/mac80211_hwsim.c
-@@ -687,7 +687,7 @@ struct mac80211_hwsim_data {
- 	bool ps_poll_pending;
- 	struct dentry *debugfs;
- 
--	uintptr_t pending_cookie;
-+	atomic64_t pending_cookie;
- 	struct sk_buff_head pending;	/* packets pending */
- 	/*
- 	 * Only radios in the same group can communicate together (the
-@@ -1358,7 +1358,7 @@ static void mac80211_hwsim_tx_frame_nl(struct ieee80211_hw *hw,
- 	int i;
- 	struct hwsim_tx_rate tx_attempts[IEEE80211_TX_MAX_RATES];
- 	struct hwsim_tx_rate_flag tx_attempts_flags[IEEE80211_TX_MAX_RATES];
--	uintptr_t cookie;
-+	u64 cookie;
- 
- 	if (data->ps != PS_DISABLED)
- 		hdr->frame_control |= cpu_to_le16(IEEE80211_FCTL_PM);
-@@ -1427,8 +1427,7 @@ static void mac80211_hwsim_tx_frame_nl(struct ieee80211_hw *hw,
- 		goto nla_put_failure;
- 
- 	/* We create a cookie to identify this skb */
--	data->pending_cookie++;
--	cookie = data->pending_cookie;
-+	cookie = (u64)atomic64_inc_return(&data->pending_cookie);
- 	info->rate_driver_data[0] = (void *)cookie;
- 	if (nla_put_u64_64bit(skb, HWSIM_ATTR_COOKIE, cookie, HWSIM_ATTR_PAD))
- 		goto nla_put_failure;
-@@ -4178,6 +4177,7 @@ static int hwsim_tx_info_frame_received_nl(struct sk_buff *skb_2,
- 	const u8 *src;
- 	unsigned int hwsim_flags;
- 	int i;
-+	unsigned long flags;
- 	bool found = false;
- 
- 	if (!info->attrs[HWSIM_ATTR_ADDR_TRANSMITTER] ||
-@@ -4205,18 +4205,20 @@ static int hwsim_tx_info_frame_received_nl(struct sk_buff *skb_2,
- 	}
- 
- 	/* look for the skb matching the cookie passed back from user */
-+	spin_lock_irqsave(&data2->pending.lock, flags);
- 	skb_queue_walk_safe(&data2->pending, skb, tmp) {
- 		u64 skb_cookie;
- 
- 		txi = IEEE80211_SKB_CB(skb);
--		skb_cookie = (u64)(uintptr_t)txi->rate_driver_data[0];
-+		skb_cookie = (u64)txi->rate_driver_data[0];
- 
- 		if (skb_cookie == ret_skb_cookie) {
--			skb_unlink(skb, &data2->pending);
-+			__skb_unlink(skb, &data2->pending);
- 			found = true;
- 			break;
- 		}
- 	}
-+	spin_unlock_irqrestore(&data2->pending.lock, flags);
- 
- 	/* not found */
- 	if (!found)
--- 
-2.37.0.rc0.161.g10f37bed90-goog
+Entire entry should be just enum. Descriptions do not bring any
+information - they copy compatible.
 
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  reg-io-width:
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    description: I/O register width (in bytes) implemented by this device
+> +    default: 1
+> +    enum: [ 1, 2, 4 ]
+> +
+> +  nxp,external-clock-frequency:
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    default: 16000000
+> +    description: |
+> +      Frequency of the external oscillator clock in Hz.
+> +      The internal clock frequency used by the SJA1000 is half of that value.
+> +
+> +  nxp,tx-output-mode:
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    enum: [ 0, 1, 2, 3 ]
+> +    default: 1
+> +    description: |
+> +      operation mode of the TX output control logic. Valid values are:
+> +        <0x0> : bi-phase output mode
+> +        <0x1> : normal output mode (default)
+> +        <0x2> : test output mode
+> +        <0x3> : clock output mode
+
+Use decimal values, just like in enum.
+
+> +
+> +  nxp,tx-output-config:
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    default: 0x02
+> +    description: |
+> +      TX output pin configuration. Valid values are any one of the below
+> +      or combination of TX0 and TX1:
+> +        <0x01> : TX0 invert
+> +        <0x02> : TX0 pull-down (default)
+> +        <0x04> : TX0 pull-up
+> +        <0x06> : TX0 push-pull
+> +        <0x08> : TX1 invert
+> +        <0x10> : TX1 pull-down
+> +        <0x20> : TX1 pull-up
+> +        <0x30> : TX1 push-pull
+> +
+> +  nxp,clock-out-frequency:
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    description: |
+> +      clock frequency in Hz on the CLKOUT pin.
+> +      If not specified or if the specified value is 0, the CLKOUT pin
+> +      will be disabled.
+> +
+> +  nxp,no-comparator-bypass:
+> +    type: boolean
+> +    description: Allows to disable the CAN input comparator.
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - interrupts
+> +
+> +unevaluatedProperties: false
+> +
+> +examples:
+> +  - |
+> +    can@1a000 {
+> +            compatible = "technologic,sja1000";
+
+Unusual indentation. Use 4 spaces for the DTS example.
+
+> +            reg = <0x1a000 0x100>;
+> +            interrupts = <1>;
+> +            reg-io-width = <2>;
+> +            nxp,tx-output-config = <0x06>;
+> +            nxp,external-clock-frequency = <24000000>;
+> +    };
+> diff --git a/Documentation/devicetree/bindings/net/can/sja1000.txt b/Documentation/devicetree/bindings/net/can/sja1000.txt
+> deleted file mode 100644
+> index ac3160eca96a..000000000000
+> --- a/Documentation/devicetree/bindings/net/can/sja1000.txt
+> +++ /dev/null
+> @@ -1,58 +0,0 @@
+> -Memory mapped SJA1000 CAN controller from NXP (formerly Philips)
+> -
+> -Required properties:
+> -
+> -- compatible : should be one of "nxp,sja1000", "technologic,sja1000".
+> -
+> -- reg : should specify the chip select, address offset and size required
+> -	to map the registers of the SJA1000. The size is usually 0x80.
+> -
+> -- interrupts: property with a value describing the interrupt source
+> -	(number and sensitivity) required for the SJA1000.
+> -
+> -Optional properties:
+> -
+> -- reg-io-width : Specify the size (in bytes) of the IO accesses that
+> -	should be performed on the device.  Valid value is 1, 2 or 4.
+> -	This property is ignored for technologic version.
+> -	Default to 1 (8 bits).
+> -
+> -- nxp,external-clock-frequency : Frequency of the external oscillator
+> -	clock in Hz. Note that the internal clock frequency used by the
+> -	SJA1000 is half of that value. If not specified, a default value
+> -	of 16000000 (16 MHz) is used.
+> -
+> -- nxp,tx-output-mode : operation mode of the TX output control logic:
+> -	<0x0> : bi-phase output mode
+> -	<0x1> : normal output mode (default)
+> -	<0x2> : test output mode
+> -	<0x3> : clock output mode
+> -
+> -- nxp,tx-output-config : TX output pin configuration:
+> -	<0x01> : TX0 invert
+> -	<0x02> : TX0 pull-down (default)
+> -	<0x04> : TX0 pull-up
+> -	<0x06> : TX0 push-pull
+> -	<0x08> : TX1 invert
+> -	<0x10> : TX1 pull-down
+> -	<0x20> : TX1 pull-up
+> -	<0x30> : TX1 push-pull
+> -
+> -- nxp,clock-out-frequency : clock frequency in Hz on the CLKOUT pin.
+> -	If not specified or if the specified value is 0, the CLKOUT pin
+> -	will be disabled.
+> -
+> -- nxp,no-comparator-bypass : Allows to disable the CAN input comparator.
+> -
+> -For further information, please have a look to the SJA1000 data sheet.
+> -
+> -Examples:
+> -
+> -can@3,100 {
+> -	compatible = "nxp,sja1000";
+> -	reg = <3 0x100 0x80>;
+> -	interrupts = <2 0>;
+> -	interrupt-parent = <&mpic>;
+> -	nxp,external-clock-frequency = <16000000>;
+> -};
+> -
+
+
+Best regards,
+Krzysztof
