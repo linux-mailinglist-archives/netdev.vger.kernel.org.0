@@ -2,84 +2,268 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F71556521D
-	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 12:23:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EAB4956522A
+	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 12:27:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234395AbiGDKWR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jul 2022 06:22:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44582 "EHLO
+        id S234432AbiGDKXz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Jul 2022 06:23:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229848AbiGDKVr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 06:21:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46A601A5
-        for <netdev@vger.kernel.org>; Mon,  4 Jul 2022 03:20:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E6749B80E88
-        for <netdev@vger.kernel.org>; Mon,  4 Jul 2022 10:20:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 9F8F6C3411E;
-        Mon,  4 Jul 2022 10:20:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656930012;
-        bh=zbrMMXb+EM4eoStMJShecXPYQXb8nOzu2BGAKNnp9Ls=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=JKtO82IksueGzj6c3DCZtB/jse6MprUmdX32ugklyNy9/DAZET/bKKXre7a7JUSTK
-         IdReaLdRfBZdVIdgR5xZYf0eEnzrUGiZYVPhWcA7NLQ2b+W+1QOukL6En99Wt9wJGo
-         shkKSFtfUQjUrYN21oL8947X/+Doly4epJ8kjrBrCsG/6nVsYNBhi0G/SadV4lLeFr
-         hls5PsO9QK7bEVha6DA8+7zXecyZ80PyL5V+UDidDsrXpv/NrOJ1YjtFSakNLjtU3X
-         s60bPL05qgSV3pN7yD/GR+LoYgUoNRqljEXg1e0Jf2S6mr9VUjQCyrjLyaus/0JCMa
-         sOsw63JeN/SFQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 888FEE45BDE;
-        Mon,  4 Jul 2022 10:20:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S234702AbiGDKXD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 06:23:03 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC7B5218F
+        for <netdev@vger.kernel.org>; Mon,  4 Jul 2022 03:22:39 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id mf9so16007873ejb.0
+        for <netdev@vger.kernel.org>; Mon, 04 Jul 2022 03:22:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=99c+tB+4XXEOKJova0DNTDWOXfHZyhXjztEGCxi3OCs=;
+        b=7dv5ybsMe66950lto9c2K9T/umRiMdybWkmNzSqf/Bf/xFFDHZ5ljJK8KuCbgnUiUw
+         byVf0Ox8dgHfTP8ThGw/ykMtivR2X0jphvK/RpdKp63uAgSPxumMcMFlsliWxUPbVQOw
+         SVrZIHgQqdAf677amWuigiGZsG95t+ZHQIk/2iQ9KJ0wdaJG7ksG9Y9Zs5EoClO+H26N
+         p0ndBIzwLk9zHnSMInX9b9bbe3n1bYcmj/qPhxM0inT50HIP4Ecd4WWmd33mjhDExfh0
+         wNJu3qB/Z2pquwnsrii9Is1FvRzPLDKdyG8xLHur9QsJY+bTNWUSrqOASItaJK8NQRc/
+         j2yQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=99c+tB+4XXEOKJova0DNTDWOXfHZyhXjztEGCxi3OCs=;
+        b=21JiQolykikD6YNWiUs4k1kbAtmfvzTICCH/0zqhq5qsoA0sJwO9oljM5dw87AzLyY
+         yd9eClPw80I9eTWMfrpQt5v4hMViXqam2F4yXsrLwEcH2kJsJOgEUbSZKGLS0DuQIZTj
+         xR5kt2by1M2zxBxqGqwOPH+q2MEOobNOJ949MEJusgAAWRn0Nl26sKBgcfNRVVTJkyd3
+         WgoOnoRNYMAvRzCdUW4aBCjSwwU++3OqPMKZuZJ6xS4t0Dxbqz+8M/ZMnskW245sa4y3
+         iGRAXs93SkeX5nA+2gkCCXg28nShZUSEUva0tRaKH4cyIAyF/s6+7JtJJFJAuoRxgBhm
+         4NnQ==
+X-Gm-Message-State: AJIora8IPc8ZRMqmvcUw7IoA0Mf3y+gepgfGYQ47UoeiCS5erwDO1zLN
+        B4xRtwrrOtjch/UN10Tva0Tv6gCWJVR/r/35
+X-Google-Smtp-Source: AGRyM1v8Tl4IbX0HQV4/hMFlMSk7QGZWoENOjM2YaH3QjV0vkwW9dT8/rD2wyijFg+vjGLHO2pazRg==
+X-Received: by 2002:a17:906:58cf:b0:726:97db:4f6d with SMTP id e15-20020a17090658cf00b0072697db4f6dmr27873012ejs.261.1656930158343;
+        Mon, 04 Jul 2022 03:22:38 -0700 (PDT)
+Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
+        by smtp.gmail.com with ESMTPSA id fi9-20020a170906da0900b00722e5b234basm14086359ejb.179.2022.07.04.03.22.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 04 Jul 2022 03:22:37 -0700 (PDT)
+Message-ID: <80dd41cc-5ff2-f27f-3764-841acf008237@blackwall.org>
+Date:   Mon, 4 Jul 2022 13:22:36 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v2] ibmvnic: Properly dispose of all skbs during a
- failover.
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165693001255.5222.4741080488026243148.git-patchwork-notify@kernel.org>
-Date:   Mon, 04 Jul 2022 10:20:12 +0000
-References: <20220702103711.4036357-1-ricklind@us.ibm.com>
-In-Reply-To: <20220702103711.4036357-1-ricklind@us.ibm.com>
-To:     Rick Lindsley <ricklind@us.ibm.com>
-Cc:     netdev@vger.kernel.org, bjking1@linux.ibm.com, haren@linux.ibm.com,
-        nnac123@linux.ibm.com, mmc@linux.ibm.com, ricklind@linux.ibm.com
-X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH net-next v2] net: ip6mr: add RTM_GETROUTE netlink op
+Content-Language: en-US
+To:     David Lamparter <equinox@diac24.net>, netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>
+References: <20220630202706.33555ad2@kernel.org>
+ <20220704095845.365359-1-equinox@diac24.net>
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+In-Reply-To: <20220704095845.365359-1-equinox@diac24.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Sat,  2 Jul 2022 03:37:12 -0700 you wrote:
-> During a reset, there may have been transmits in flight that are no
-> longer valid and cannot be fulfilled.  Resetting and clearing the
-> queues is insufficient; each skb also needs to be explicitly freed
-> so that upper levels are not left waiting for confirmation of a
-> transmit that will never happen.  If this happens frequently enough,
-> the apparent backlog will cause TCP to begin "congestion control"
-> unnecessarily, culminating in permanently decreased throughput.
+On 04/07/2022 12:58, David Lamparter wrote:
+> The IPv6 multicast routing code previously implemented only the dump
+> variant of RTM_GETROUTE.  Implement single MFC item retrieval by copying
+> and adapting the respective IPv4 code.
 > 
-> [...]
+> Tested against FRRouting's IPv6 PIM stack.
+> 
+> Signed-off-by: David Lamparter <equinox@diac24.net>
+> Cc: David Ahern <dsahern@kernel.org>
+> ---
+> 
+> v2: changeover to strict netlink attribute parsing.  Doing so actually
+> exposed a bunch of other issues, first and foremost that rtm_ipv6_policy
+> does not have RTA_SRC or RTA_DST.  This made reusing that policy rather
+> pointless so I changed it to use a separate rtm_ipv6_mr_policy.
+> 
+> Thanks again dsahern@ for the feedback on the previous version!
+> 
+> ---
+>  net/ipv6/ip6mr.c | 128 ++++++++++++++++++++++++++++++++++++++++++++++-
+>  1 file changed, 127 insertions(+), 1 deletion(-)
+> 
+> diff --git a/net/ipv6/ip6mr.c b/net/ipv6/ip6mr.c
+> index ec6e1509fc7c..95dc366a2d9b 100644
+> --- a/net/ipv6/ip6mr.c
+> +++ b/net/ipv6/ip6mr.c
+> @@ -95,6 +95,8 @@ static int ip6mr_cache_report(const struct mr_table *mrt, struct sk_buff *pkt,
+>  static void mr6_netlink_event(struct mr_table *mrt, struct mfc6_cache *mfc,
+>  			      int cmd);
+>  static void mrt6msg_netlink_event(const struct mr_table *mrt, struct sk_buff *pkt);
+> +static int ip6mr_rtm_getroute(struct sk_buff *in_skb, struct nlmsghdr *nlh,
+> +			      struct netlink_ext_ack *extack);
+>  static int ip6mr_rtm_dumproute(struct sk_buff *skb,
+>  			       struct netlink_callback *cb);
+>  static void mroute_clean_tables(struct mr_table *mrt, int flags);
+> @@ -1390,7 +1392,7 @@ int __init ip6_mr_init(void)
+>  	}
+>  #endif
+>  	err = rtnl_register_module(THIS_MODULE, RTNL_FAMILY_IP6MR, RTM_GETROUTE,
+> -				   NULL, ip6mr_rtm_dumproute, 0);
+> +				   ip6mr_rtm_getroute, ip6mr_rtm_dumproute, 0);
+>  	if (err == 0)
+>  		return 0;
+>  
+> @@ -2510,6 +2512,130 @@ static void mrt6msg_netlink_event(const struct mr_table *mrt, struct sk_buff *pk
+>  	rtnl_set_sk_err(net, RTNLGRP_IPV6_MROUTE_R, -ENOBUFS);
+>  }
+>  
+> +const struct nla_policy rtm_ipv6_mr_policy[RTA_MAX + 1] = {
+> +	[RTA_UNSPEC]		= { .strict_start_type = RTA_UNSPEC },
 
-Here is the summary with links:
-  - [net,v2] ibmvnic: Properly dispose of all skbs during a failover.
-    https://git.kernel.org/netdev/net/c/1b18f09d31cf
+I don't think you need to add RTA_UNSPEC, nlmsg_parse() would reject it due to NL_VALIDATE_STRICT
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> +	[RTA_SRC]		= NLA_POLICY_EXACT_LEN(sizeof(struct in6_addr)),
+> +	[RTA_DST]		= NLA_POLICY_EXACT_LEN(sizeof(struct in6_addr)),
+> +	[RTA_TABLE]		= { .type = NLA_U32 },
+> +};
+> +
+> +static int ip6mr_rtm_valid_getroute_req(struct sk_buff *skb,
+> +					const struct nlmsghdr *nlh,
+> +					struct nlattr **tb,
+> +					struct netlink_ext_ack *extack)
+> +{
+> +	struct rtmsg *rtm;
+> +	int i, err;
+> +
+> +	if (nlh->nlmsg_len < nlmsg_msg_size(sizeof(*rtm))) {
+> +		NL_SET_ERR_MSG(extack, "ipv6: Invalid header for multicast route get request");
+> +		return -EINVAL;
+> +	}
 
+I think you can drop this check if you...
+
+> +
+> +	rtm = nlmsg_data(nlh);
+> +	if ((rtm->rtm_src_len && rtm->rtm_src_len != 128) ||
+> +	    (rtm->rtm_dst_len && rtm->rtm_dst_len != 128) ||
+> +	    rtm->rtm_tos || rtm->rtm_table || rtm->rtm_protocol ||
+> +	    rtm->rtm_scope || rtm->rtm_type || rtm->rtm_flags) {
+> +		NL_SET_ERR_MSG(extack,
+> +			       "ipv6: Invalid values in header for multicast route get request");
+> +		return -EINVAL;
+> +	}
+
+...move these after nlmsg_parse() because it already does the hdrlen check for you
+
+> +
+> +	err = nlmsg_parse(nlh, sizeof(*rtm), tb, RTA_MAX, rtm_ipv6_mr_policy,
+> +			  extack);
+> +	if (err)
+> +		return err;
+> +
+> +	if ((tb[RTA_SRC] && !rtm->rtm_src_len) ||
+> +	    (tb[RTA_DST] && !rtm->rtm_dst_len)) {
+> +		NL_SET_ERR_MSG(extack, "ipv6: rtm_src_len and rtm_dst_len must be 128 for IPv6");
+> +		return -EINVAL;
+> +	}
+> +
+> +	/* rtm_ipv6_mr_policy does not list other attributes right now, but
+> +	 * future changes may reuse rtm_ipv6_mr_policy with adding further
+> +	 * attrs.  Enforce the subset.
+> +	 */
+> +	for (i = 0; i <= RTA_MAX; i++) {
+> +		if (!tb[i])
+> +			continue;
+> +
+> +		switch (i) {
+> +		case RTA_SRC:
+> +		case RTA_DST:
+> +		case RTA_TABLE:
+> +			break;
+> +		default:
+> +			NL_SET_ERR_MSG_ATTR(extack, tb[i],
+> +					    "ipv6: Unsupported attribute in multicast route get request");
+> +			return -EINVAL;
+> +		}
+> +	}
+
+I think you can skip this loop as well, nlmsg_parse() shouldn't allow attributes that
+don't have policy defined when policy is provided (i.e. they should show up as NLA_UNSPEC
+and you should get "Error: Unknown attribute type.").
+
+> +
+> +	return 0;
+> +}
+> +
+> +static int ip6mr_rtm_getroute(struct sk_buff *in_skb, struct nlmsghdr *nlh,
+> +			      struct netlink_ext_ack *extack)
+> +{
+> +	struct net *net = sock_net(in_skb->sk);
+> +	struct nlattr *tb[RTA_MAX + 1];
+> +	struct sk_buff *skb = NULL;
+> +	struct mfc6_cache *cache;
+> +	struct mr_table *mrt;
+> +	struct in6_addr src = {}, grp = {};
+
+reverse xmas tree order
+
+> +	u32 tableid;
+> +	int err;
+> +
+> +	err = ip6mr_rtm_valid_getroute_req(in_skb, nlh, tb, extack);
+> +	if (err < 0)
+> +		goto errout;
+> +
+> +	if (tb[RTA_SRC])
+> +		src = nla_get_in6_addr(tb[RTA_SRC]);
+> +	if (tb[RTA_DST])
+> +		grp = nla_get_in6_addr(tb[RTA_DST]);
+> +	tableid = tb[RTA_TABLE] ? nla_get_u32(tb[RTA_TABLE]) : 0;
+> +
+> +	mrt = ip6mr_get_table(net, tableid ? tableid : RT_TABLE_DEFAULT);
+> +	if (!mrt) {
+> +		NL_SET_ERR_MSG_MOD(extack, "ipv6 MR table does not exist");
+> +		err = -ENOENT;
+> +		goto errout_free;
+> +	}
+> +
+> +	/* entries are added/deleted only under RTNL */
+> +	rcu_read_lock();
+> +	cache = ip6mr_cache_find(mrt, &src, &grp);
+> +	rcu_read_unlock();
+> +	if (!cache) {
+> +		NL_SET_ERR_MSG_MOD(extack, "ipv6 MR cache entry not found");
+> +		err = -ENOENT;
+> +		goto errout_free;
+> +	}
+> +
+> +	skb = nlmsg_new(mr6_msgsize(false, mrt->maxvif), GFP_KERNEL);
+> +	if (!skb) {
+> +		err = -ENOBUFS;
+> +		goto errout_free;
+> +	}
+> +
+> +	err = ip6mr_fill_mroute(mrt, skb, NETLINK_CB(in_skb).portid,
+> +				nlh->nlmsg_seq, cache, RTM_NEWROUTE, 0);
+> +	if (err < 0)
+> +		goto errout_free;
+> +
+> +	err = rtnl_unicast(skb, net, NETLINK_CB(in_skb).portid);
+> +
+> +errout:
+> +	return err;
+> +
+> +errout_free:
+> +	kfree_skb(skb);
+> +	goto errout;
+> +}
+> +
+>  static int ip6mr_rtm_dumproute(struct sk_buff *skb, struct netlink_callback *cb)
+>  {
+>  	const struct nlmsghdr *nlh = cb->nlh;
 
