@@ -2,146 +2,224 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2174E56516B
-	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 11:55:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E7DE356519F
+	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 12:03:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233930AbiGDJzI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jul 2022 05:55:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48380 "EHLO
+        id S234092AbiGDKAu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Jul 2022 06:00:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233444AbiGDJzH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 05:55:07 -0400
-Received: from mail-yb1-f171.google.com (mail-yb1-f171.google.com [209.85.219.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 854DDDEA4;
-        Mon,  4 Jul 2022 02:55:06 -0700 (PDT)
-Received: by mail-yb1-f171.google.com with SMTP id l11so15909795ybu.13;
-        Mon, 04 Jul 2022 02:55:06 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=qiAOeDd02KCwRxop5BcVi801h68pbKkqNWQWg7cA2XA=;
-        b=iV1Jlg/K9s4uWWldlpzhcMVTNx7UkkBkxW3E+LdCbtQV8POfQoCublV01gg6MxVHpM
-         ZJrhIlmkKqX4EIKnMFEZW6oEBijEuNo0HwJWHovySu5RvCmbEs9gk4c60FoByCzZ1WZt
-         W8+WvyM2U6r24ajkefPfFKULaNfBxtb9QnbczP/tyv/Qy5CtCFxIKBdz5EJVooovpaKf
-         9SkXB38lNs7pzPMY+EegUhxWngLlLiNB4bNdRp3jzXHbPLfPKkFSeU+KHwpxrwcqXtBL
-         8T4/ohc2pq0AZAMAzboL0CGXGKL7JRIgkZlaijZb1XuEltSHGJhHqK46ufAhCx7xzaBF
-         P4GQ==
-X-Gm-Message-State: AJIora+YUEbQlxxPsFehIWY2QVAz3aV+SJAeAHwbYxBj+v/Lc5Xcie7k
-        dKaFhMYeaipAmp1Mb/Lj11Qps8yzm9/LWrmnxxU=
-X-Google-Smtp-Source: AGRyM1tdWHftRuodpqw5nFQTrouLh5EhATjgxCSNc2ZsrXegndnEhhwr4M0M5Cn0n08MB66Pc1lhhussY1MavazIXXA=
-X-Received: by 2002:a25:b74a:0:b0:66a:775d:a257 with SMTP id
- e10-20020a25b74a000000b0066a775da257mr30253834ybm.381.1656928505755; Mon, 04
- Jul 2022 02:55:05 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220704075032.383700-1-biju.das.jz@bp.renesas.com> <20220704075032.383700-4-biju.das.jz@bp.renesas.com>
-In-Reply-To: <20220704075032.383700-4-biju.das.jz@bp.renesas.com>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Mon, 4 Jul 2022 18:54:54 +0900
-Message-ID: <CAMZ6RqLr=eO_LFRtoDcd0eOr_JyX8eTJwsnqtg_veO_wNBN8Eg@mail.gmail.com>
-Subject: Re: [PATCH v3 3/6] can: sja1000: Add Quirk for RZ/N1 SJA1000 CAN controller
-To:     Biju Das <biju.das.jz@bp.renesas.com>
-Cc:     Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S234056AbiGDKAo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 06:00:44 -0400
+Received: from eidolon.nox.tf (eidolon.nox.tf [IPv6:2a07:2ec0:2185::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68737DEE5
+        for <netdev@vger.kernel.org>; Mon,  4 Jul 2022 03:00:42 -0700 (PDT)
+Received: from [2a02:169:59c5:1:59b0:f83e:10e9:3237] (helo=areia)
+        by eidolon.nox.tf with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <equinox@diac24.net>)
+        id 1o8Ish-003m1L-94; Mon, 04 Jul 2022 12:00:39 +0200
+Received: from equinox by areia with local (Exim 4.96)
+        (envelope-from <equinox@diac24.net>)
+        id 1o8IsK-001X6a-1O;
+        Mon, 04 Jul 2022 12:00:16 +0200
+From:   David Lamparter <equinox@diac24.net>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        David Ahern <dsahern@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        =?UTF-8?Q?Stefan_M=C3=A4tje?= <stefan.maetje@esd.eu>,
-        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>,
-        linux-renesas-soc@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+        David Lamparter <equinox@diac24.net>
+Subject: [PATCH net-next v2] net: ip6mr: add RTM_GETROUTE netlink op
+Date:   Mon,  4 Jul 2022 11:58:45 +0200
+Message-Id: <20220704095845.365359-1-equinox@diac24.net>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220630202706.33555ad2@kernel.org>
+References: <20220630202706.33555ad2@kernel.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Biju,
+The IPv6 multicast routing code previously implemented only the dump
+variant of RTM_GETROUTE.  Implement single MFC item retrieval by copying
+and adapting the respective IPv4 code.
 
-I gave a quick look to your series. Nothing odd to me, I just have a
-single nitpick.
+Tested against FRRouting's IPv6 PIM stack.
 
-On Mon. 4 juil. 2022 at 16:51, Biju Das <biju.das.jz@bp.renesas.com> wrote:
-> As per Chapter 6.5.16 of the RZ/N1 Peripheral Manual, The SJA1000
-> CAN controller does not support Clock Divider Register compared to
-> the reference Philips SJA1000 device.
->
-> This patch adds a device quirk to handle this difference.
->
-> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-> ---
-> v2->v3:
->  * No Change
-> v1->v2:
->  * Updated commit description
->  * Removed the quirk macro SJA1000_NO_HW_LOOPBACK_QUIRK
->  * Added prefix SJA1000_QUIRK_* for quirk macro.
-> ---
->  drivers/net/can/sja1000/sja1000.c | 13 ++++++++-----
->  drivers/net/can/sja1000/sja1000.h |  3 ++-
->  2 files changed, 10 insertions(+), 6 deletions(-)
->
-> diff --git a/drivers/net/can/sja1000/sja1000.c b/drivers/net/can/sja1000/sja1000.c
-> index 2e7638f98cf1..e9c55f5aa3c3 100644
-> --- a/drivers/net/can/sja1000/sja1000.c
-> +++ b/drivers/net/can/sja1000/sja1000.c
-> @@ -183,8 +183,9 @@ static void chipset_init(struct net_device *dev)
->  {
->         struct sja1000_priv *priv = netdev_priv(dev);
->
-> -       /* set clock divider and output control register */
-> -       priv->write_reg(priv, SJA1000_CDR, priv->cdr | CDR_PELICAN);
-> +       if (!(priv->flags & SJA1000_QUIRK_NO_CDR_REG))
-> +               /* set clock divider and output control register */
-> +               priv->write_reg(priv, SJA1000_CDR, priv->cdr | CDR_PELICAN);
->
->         /* set acceptance filter (accept all) */
->         priv->write_reg(priv, SJA1000_ACCC0, 0x00);
-> @@ -208,9 +209,11 @@ static void sja1000_start(struct net_device *dev)
->         if (priv->can.state != CAN_STATE_STOPPED)
->                 set_reset_mode(dev);
->
-> -       /* Initialize chip if uninitialized at this stage */
-> -       if (!(priv->read_reg(priv, SJA1000_CDR) & CDR_PELICAN))
-> -               chipset_init(dev);
-> +       if (!(priv->flags & SJA1000_QUIRK_NO_CDR_REG)) {
-> +               /* Initialize chip if uninitialized at this stage */
-> +               if (!(priv->read_reg(priv, SJA1000_CDR) & CDR_PELICAN))
+Signed-off-by: David Lamparter <equinox@diac24.net>
+Cc: David Ahern <dsahern@kernel.org>
+---
 
-You can combine the two if in one:
+v2: changeover to strict netlink attribute parsing.  Doing so actually
+exposed a bunch of other issues, first and foremost that rtm_ipv6_policy
+does not have RTA_SRC or RTA_DST.  This made reusing that policy rather
+pointless so I changed it to use a separate rtm_ipv6_mr_policy.
 
-|        /* Initialize chip if uninitialized at this stage */
-|        if (!(priv->flags & SJA1000_QUIRK_NO_CDR_REG ||
-|              priv->read_reg(priv, SJA1000_CDR) & CDR_PELICAN))
-|                chipset_init(dev);
+Thanks again dsahern@ for the feedback on the previous version!
 
-> +                       chipset_init(dev);
-> +       }
->
->         /* Clear error counters and error code capture */
->         priv->write_reg(priv, SJA1000_TXERR, 0x0);
-> diff --git a/drivers/net/can/sja1000/sja1000.h b/drivers/net/can/sja1000/sja1000.h
-> index 9d46398f8154..7f736f1df547 100644
-> --- a/drivers/net/can/sja1000/sja1000.h
-> +++ b/drivers/net/can/sja1000/sja1000.h
-> @@ -145,7 +145,8 @@
->  /*
->   * Flags for sja1000priv.flags
->   */
-> -#define SJA1000_CUSTOM_IRQ_HANDLER 0x1
-> +#define SJA1000_CUSTOM_IRQ_HANDLER     BIT(0)
-> +#define SJA1000_QUIRK_NO_CDR_REG       BIT(1)
->
->  /*
->   * SJA1000 private data structure
+---
+ net/ipv6/ip6mr.c | 128 ++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 127 insertions(+), 1 deletion(-)
+
+diff --git a/net/ipv6/ip6mr.c b/net/ipv6/ip6mr.c
+index ec6e1509fc7c..95dc366a2d9b 100644
+--- a/net/ipv6/ip6mr.c
++++ b/net/ipv6/ip6mr.c
+@@ -95,6 +95,8 @@ static int ip6mr_cache_report(const struct mr_table *mrt, struct sk_buff *pkt,
+ static void mr6_netlink_event(struct mr_table *mrt, struct mfc6_cache *mfc,
+ 			      int cmd);
+ static void mrt6msg_netlink_event(const struct mr_table *mrt, struct sk_buff *pkt);
++static int ip6mr_rtm_getroute(struct sk_buff *in_skb, struct nlmsghdr *nlh,
++			      struct netlink_ext_ack *extack);
+ static int ip6mr_rtm_dumproute(struct sk_buff *skb,
+ 			       struct netlink_callback *cb);
+ static void mroute_clean_tables(struct mr_table *mrt, int flags);
+@@ -1390,7 +1392,7 @@ int __init ip6_mr_init(void)
+ 	}
+ #endif
+ 	err = rtnl_register_module(THIS_MODULE, RTNL_FAMILY_IP6MR, RTM_GETROUTE,
+-				   NULL, ip6mr_rtm_dumproute, 0);
++				   ip6mr_rtm_getroute, ip6mr_rtm_dumproute, 0);
+ 	if (err == 0)
+ 		return 0;
+ 
+@@ -2510,6 +2512,130 @@ static void mrt6msg_netlink_event(const struct mr_table *mrt, struct sk_buff *pk
+ 	rtnl_set_sk_err(net, RTNLGRP_IPV6_MROUTE_R, -ENOBUFS);
+ }
+ 
++const struct nla_policy rtm_ipv6_mr_policy[RTA_MAX + 1] = {
++	[RTA_UNSPEC]		= { .strict_start_type = RTA_UNSPEC },
++	[RTA_SRC]		= NLA_POLICY_EXACT_LEN(sizeof(struct in6_addr)),
++	[RTA_DST]		= NLA_POLICY_EXACT_LEN(sizeof(struct in6_addr)),
++	[RTA_TABLE]		= { .type = NLA_U32 },
++};
++
++static int ip6mr_rtm_valid_getroute_req(struct sk_buff *skb,
++					const struct nlmsghdr *nlh,
++					struct nlattr **tb,
++					struct netlink_ext_ack *extack)
++{
++	struct rtmsg *rtm;
++	int i, err;
++
++	if (nlh->nlmsg_len < nlmsg_msg_size(sizeof(*rtm))) {
++		NL_SET_ERR_MSG(extack, "ipv6: Invalid header for multicast route get request");
++		return -EINVAL;
++	}
++
++	rtm = nlmsg_data(nlh);
++	if ((rtm->rtm_src_len && rtm->rtm_src_len != 128) ||
++	    (rtm->rtm_dst_len && rtm->rtm_dst_len != 128) ||
++	    rtm->rtm_tos || rtm->rtm_table || rtm->rtm_protocol ||
++	    rtm->rtm_scope || rtm->rtm_type || rtm->rtm_flags) {
++		NL_SET_ERR_MSG(extack,
++			       "ipv6: Invalid values in header for multicast route get request");
++		return -EINVAL;
++	}
++
++	err = nlmsg_parse(nlh, sizeof(*rtm), tb, RTA_MAX, rtm_ipv6_mr_policy,
++			  extack);
++	if (err)
++		return err;
++
++	if ((tb[RTA_SRC] && !rtm->rtm_src_len) ||
++	    (tb[RTA_DST] && !rtm->rtm_dst_len)) {
++		NL_SET_ERR_MSG(extack, "ipv6: rtm_src_len and rtm_dst_len must be 128 for IPv6");
++		return -EINVAL;
++	}
++
++	/* rtm_ipv6_mr_policy does not list other attributes right now, but
++	 * future changes may reuse rtm_ipv6_mr_policy with adding further
++	 * attrs.  Enforce the subset.
++	 */
++	for (i = 0; i <= RTA_MAX; i++) {
++		if (!tb[i])
++			continue;
++
++		switch (i) {
++		case RTA_SRC:
++		case RTA_DST:
++		case RTA_TABLE:
++			break;
++		default:
++			NL_SET_ERR_MSG_ATTR(extack, tb[i],
++					    "ipv6: Unsupported attribute in multicast route get request");
++			return -EINVAL;
++		}
++	}
++
++	return 0;
++}
++
++static int ip6mr_rtm_getroute(struct sk_buff *in_skb, struct nlmsghdr *nlh,
++			      struct netlink_ext_ack *extack)
++{
++	struct net *net = sock_net(in_skb->sk);
++	struct nlattr *tb[RTA_MAX + 1];
++	struct sk_buff *skb = NULL;
++	struct mfc6_cache *cache;
++	struct mr_table *mrt;
++	struct in6_addr src = {}, grp = {};
++	u32 tableid;
++	int err;
++
++	err = ip6mr_rtm_valid_getroute_req(in_skb, nlh, tb, extack);
++	if (err < 0)
++		goto errout;
++
++	if (tb[RTA_SRC])
++		src = nla_get_in6_addr(tb[RTA_SRC]);
++	if (tb[RTA_DST])
++		grp = nla_get_in6_addr(tb[RTA_DST]);
++	tableid = tb[RTA_TABLE] ? nla_get_u32(tb[RTA_TABLE]) : 0;
++
++	mrt = ip6mr_get_table(net, tableid ? tableid : RT_TABLE_DEFAULT);
++	if (!mrt) {
++		NL_SET_ERR_MSG_MOD(extack, "ipv6 MR table does not exist");
++		err = -ENOENT;
++		goto errout_free;
++	}
++
++	/* entries are added/deleted only under RTNL */
++	rcu_read_lock();
++	cache = ip6mr_cache_find(mrt, &src, &grp);
++	rcu_read_unlock();
++	if (!cache) {
++		NL_SET_ERR_MSG_MOD(extack, "ipv6 MR cache entry not found");
++		err = -ENOENT;
++		goto errout_free;
++	}
++
++	skb = nlmsg_new(mr6_msgsize(false, mrt->maxvif), GFP_KERNEL);
++	if (!skb) {
++		err = -ENOBUFS;
++		goto errout_free;
++	}
++
++	err = ip6mr_fill_mroute(mrt, skb, NETLINK_CB(in_skb).portid,
++				nlh->nlmsg_seq, cache, RTM_NEWROUTE, 0);
++	if (err < 0)
++		goto errout_free;
++
++	err = rtnl_unicast(skb, net, NETLINK_CB(in_skb).portid);
++
++errout:
++	return err;
++
++errout_free:
++	kfree_skb(skb);
++	goto errout;
++}
++
+ static int ip6mr_rtm_dumproute(struct sk_buff *skb, struct netlink_callback *cb)
+ {
+ 	const struct nlmsghdr *nlh = cb->nlh;
+-- 
+2.36.1
+
