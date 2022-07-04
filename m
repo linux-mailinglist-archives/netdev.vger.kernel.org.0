@@ -2,167 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BE07F564F18
-	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 09:54:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2968E564F21
+	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 09:54:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233043AbiGDHvY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jul 2022 03:51:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38612 "EHLO
+        id S231806AbiGDHyp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Jul 2022 03:54:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233044AbiGDHvN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 03:51:13 -0400
-Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B8494A45F;
-        Mon,  4 Jul 2022 00:51:10 -0700 (PDT)
-X-IronPort-AV: E=Sophos;i="5.92,243,1650898800"; 
-   d="scan'208";a="124987849"
-Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-  by relmlie5.idc.renesas.com with ESMTP; 04 Jul 2022 16:51:10 +0900
-Received: from localhost.localdomain (unknown [10.226.92.214])
-        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 4BD0D4230B2A;
-        Mon,  4 Jul 2022 16:51:06 +0900 (JST)
-From:   Biju Das <biju.das.jz@bp.renesas.com>
-To:     Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Biju Das <biju.das.jz@bp.renesas.com>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>,
-        linux-renesas-soc@vger.kernel.org
-Subject: [PATCH v3 6/6] can: sja1000: Add support for RZ/N1 SJA1000 CAN Controller
-Date:   Mon,  4 Jul 2022 08:50:32 +0100
-Message-Id: <20220704075032.383700-7-biju.das.jz@bp.renesas.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220704075032.383700-1-biju.das.jz@bp.renesas.com>
-References: <20220704075032.383700-1-biju.das.jz@bp.renesas.com>
+        with ESMTP id S229710AbiGDHyo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 03:54:44 -0400
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C81619FE2;
+        Mon,  4 Jul 2022 00:54:43 -0700 (PDT)
+Received: by mail-wm1-x332.google.com with SMTP id l40-20020a05600c1d2800b003a18adff308so5149061wms.5;
+        Mon, 04 Jul 2022 00:54:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=kBt8UkN3aWCTiSF8Lh8xZQRr6v5h00YtDHTaqSFljec=;
+        b=cC7gFTPZu/aPJz87RZe/z5TpXDPurO2A6Cb/+oswtY3Sx2RhvcCJBPKJ/+T2UF17J1
+         RBMUfv1aH45VHiF5kxJprtroCBFRVGeGdSdeApWbVy7NJryexftlPSVOR+aZTfDNcScP
+         FL0egZZgY9fTZaAka+QZ/S6AwirONIg1sycBSUdTAVi18Q/q4ojoXEPnCuJbE6UOJJsd
+         okRmwOIlFkHHVuCSV0qwt1rdwRwk1JEuTgJsazs3DSjIfZxNyZCcCcLBTC/ISt8Fcioc
+         r+YKMeRKDYfSIV0PCSYSlUYta8wsU8jgiqsefwiPxfIpGzd1FocS4pOAW3vC0jxUtQNJ
+         KSQg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=kBt8UkN3aWCTiSF8Lh8xZQRr6v5h00YtDHTaqSFljec=;
+        b=zYKCGTUe9fuX1dBg2ASlxG9Wc28uKhB9one4nh0tAe8Gi+4o8Hv2XgiiF9b1SlLhv2
+         pE3eE2/q54ZXVg+Nv5lwiKhCL2Dz0bIic+CRNvlq9r+lmfxyA9qQr1FXIPveAUTEHRcX
+         A1dYzORZccRUTzhjXqa7nDjQo7qmCqvG8rIhJ9NhpKcRJPybJyNuStfMIuVpSieuEDsf
+         4OH521iBKdrP6/T70c7q7nN2jab42GzCA3sD//dbeVVRZURGmk/nwZKnwzA7byVzjMD7
+         gIXoG2tdbpVV9c+hv2xdbJ+wqw8bGfVn+q30NHHScsDg38+5ovH64XnNUtf9xTugPKxn
+         WLgQ==
+X-Gm-Message-State: AJIora+5RZtAPoBfRz2ISSwy8rAn64w0DcNHRzHtZXUnuGwAXeDZVYAm
+        CBMFb57SLnH38q6o7YWgKX8BoMMfMWzMGd8UzrA=
+X-Google-Smtp-Source: AGRyM1tbwq5EsVddzD4ybXz0zJM+EtGcKfP76YCqwP4/9Q5UwkGkjPekVIXrT0y3XzQLeRWbRQnkzHnvn1Gwxl91xVU=
+X-Received: by 2002:a05:600c:4f81:b0:3a1:a8e7:235b with SMTP id
+ n1-20020a05600c4f8100b003a1a8e7235bmr4385163wmq.149.1656921282262; Mon, 04
+ Jul 2022 00:54:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+References: <20220630111634.610320-1-hans@kapio-technology.com>
+ <Yr2LFI1dx6Oc7QBo@shredder> <CAKUejP6LTFuw7d_1C18VvxXDuYaboD-PvSkk_ANSFjjfhyDGkg@mail.gmail.com>
+ <Yr778K/7L7Wqwws2@shredder> <CAKUejP5w0Dn8y9gyDryNYy7LOUytqZsG+qqqC8JhRcvyC13=hQ@mail.gmail.com>
+ <Yr8oPba83rpJE3GV@shredder> <CAKUejP4_05E0hfFp-ceXLgPuid=MwrAoHyQ-nYE3qx3Tisb4uA@mail.gmail.com>
+ <YsE+hreRa0REAG3g@shredder>
+In-Reply-To: <YsE+hreRa0REAG3g@shredder>
+From:   Hans S <schultz.hans@gmail.com>
+Date:   Mon, 4 Jul 2022 09:54:31 +0200
+Message-ID: <CAKUejP4H4yKu6LaLUUUWypt7EPuYDK-5UdUDHPF8F2U5hGnzOQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v1 1/1] net: bridge: ensure that link-local
+ traffic cannot unlock a locked port
+To:     Ido Schimmel <idosch@nvidia.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Hans Schultz <schultz.hans+netdev@gmail.com>,
+        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
+        linux-kselftest@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The SJA1000 CAN controller on RZ/N1 SoC has no clock divider register
-(CDR) support compared to others.
+>
+> IIUC, with mv88e6xxx, when the port is locked and learning is disabled:
+>
+> 1. You do not get miss violation interrupts. Meaning, you can't report
+> 'locked' entries to the bridge driver.
+>
+> 2. You do not get aged-out interrupts. Meaning, you can't tell the
+> bridge driver to remove aged-out entries.
+>
+> My point is that this should happen regardless if learning is enabled on
+> the bridge driver or not. Just make sure it is always enabled in
+> mv88e6xxx when the port is locked. Learning in the bridge driver itself
+> can be off, thereby eliminating the need to disable learning from
+> link-local packets.
 
-This patch adds support for RZ/N1 SJA1000 CAN Controller.
-
-Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
----
-v2->v3:
- * No change.
-v1->v2:
- * Updated commit description as SJA1000_NO_HW_LOOPBACK_QUIRK is removed
- * Added error handling on clk error path
- * Started using "devm_clk_get_optional_enabled" for clk get,prepare and enable.
----
- drivers/net/can/sja1000/sja1000_platform.c | 38 +++++++++++++++++++---
- 1 file changed, 33 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/net/can/sja1000/sja1000_platform.c b/drivers/net/can/sja1000/sja1000_platform.c
-index 81bc741905fd..757fdb5da191 100644
---- a/drivers/net/can/sja1000/sja1000_platform.c
-+++ b/drivers/net/can/sja1000/sja1000_platform.c
-@@ -14,6 +14,7 @@
- #include <linux/irq.h>
- #include <linux/can/dev.h>
- #include <linux/can/platform/sja1000.h>
-+#include <linux/clk.h>
- #include <linux/io.h>
- #include <linux/of.h>
- #include <linux/of_device.h>
-@@ -103,6 +104,11 @@ static void sp_technologic_init(struct sja1000_priv *priv, struct device_node *o
- 	spin_lock_init(&tp->io_lock);
- }
- 
-+static void sp_rzn1_init(struct sja1000_priv *priv, struct device_node *of)
-+{
-+	priv->flags = SJA1000_QUIRK_NO_CDR_REG;
-+}
-+
- static void sp_populate(struct sja1000_priv *priv,
- 			struct sja1000_platform_data *pdata,
- 			unsigned long resource_mem_flags)
-@@ -153,11 +159,13 @@ static void sp_populate_of(struct sja1000_priv *priv, struct device_node *of)
- 		priv->write_reg = sp_write_reg8;
- 	}
- 
--	err = of_property_read_u32(of, "nxp,external-clock-frequency", &prop);
--	if (!err)
--		priv->can.clock.freq = prop / 2;
--	else
--		priv->can.clock.freq = SP_CAN_CLOCK; /* default */
-+	if (!priv->can.clock.freq) {
-+		err = of_property_read_u32(of, "nxp,external-clock-frequency", &prop);
-+		if (!err)
-+			priv->can.clock.freq = prop / 2;
-+		else
-+			priv->can.clock.freq = SP_CAN_CLOCK; /* default */
-+	}
- 
- 	err = of_property_read_u32(of, "nxp,tx-output-mode", &prop);
- 	if (!err)
-@@ -192,8 +200,13 @@ static struct sja1000_of_data technologic_data = {
- 	.init = sp_technologic_init,
- };
- 
-+static struct sja1000_of_data renesas_data = {
-+	.init = sp_rzn1_init,
-+};
-+
- static const struct of_device_id sp_of_table[] = {
- 	{ .compatible = "nxp,sja1000", .data = NULL, },
-+	{ .compatible = "renesas,rzn1-sja1000", .data = &renesas_data, },
- 	{ .compatible = "technologic,sja1000", .data = &technologic_data, },
- 	{ /* sentinel */ },
- };
-@@ -210,6 +223,7 @@ static int sp_probe(struct platform_device *pdev)
- 	struct device_node *of = pdev->dev.of_node;
- 	const struct sja1000_of_data *of_data = NULL;
- 	size_t priv_sz = 0;
-+	struct clk *clk;
- 
- 	pdata = dev_get_platdata(&pdev->dev);
- 	if (!pdata && !of) {
-@@ -234,6 +248,11 @@ static int sp_probe(struct platform_device *pdev)
- 		irq = platform_get_irq(pdev, 0);
- 		if (irq < 0)
- 			return irq;
-+
-+		clk = devm_clk_get_optional_enabled(&pdev->dev, "can_clk");
-+		if (IS_ERR(clk))
-+			return dev_err_probe(&pdev->dev, PTR_ERR(clk),
-+					     "CAN clk operation failed");
- 	} else {
- 		res_irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
- 		if (!res_irq)
-@@ -262,6 +281,15 @@ static int sp_probe(struct platform_device *pdev)
- 	priv->reg_base = addr;
- 
- 	if (of) {
-+		if (clk) {
-+			priv->can.clock.freq  = clk_get_rate(clk) / 2;
-+			if (!priv->can.clock.freq) {
-+				err = -EINVAL;
-+				dev_err(&pdev->dev, "Zero CAN clk rate");
-+				goto exit_free;
-+			}
-+		}
-+
- 		sp_populate_of(priv, of);
- 
- 		if (of_data && of_data->init)
--- 
-2.25.1
-
+So you suggest that we enable learning in the driver when locking the
+port and document that learning should be turned off from user space
+before locking the port?
