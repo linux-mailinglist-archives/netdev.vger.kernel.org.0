@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 96EDD564B6F
-	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 04:04:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 93FC3564BA0
+	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 04:21:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229939AbiGDCEv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Jul 2022 22:04:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41144 "EHLO
+        id S231304AbiGDCUx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Jul 2022 22:20:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229505AbiGDCEu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 Jul 2022 22:04:50 -0400
-Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5809538BB;
-        Sun,  3 Jul 2022 19:04:47 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R981e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046060;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=36;SR=0;TI=SMTPD_---0VIDpTgv_1656900279;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VIDpTgv_1656900279)
+        with ESMTP id S229648AbiGDCUw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 Jul 2022 22:20:52 -0400
+Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6CF86401;
+        Sun,  3 Jul 2022 19:20:49 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046060;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=36;SR=0;TI=SMTPD_---0VIEJAfc_1656901242;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VIEJAfc_1656901242)
           by smtp.aliyun-inc.com;
-          Mon, 04 Jul 2022 10:04:40 +0800
-Message-ID: <1656900267.44917-1-xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH v11 09/40] virtio_ring: split: extract the logic of alloc state and extra
-Date:   Mon, 4 Jul 2022 10:04:27 +0800
+          Mon, 04 Jul 2022 10:20:43 +0800
+Message-ID: <1656900812.860175-2-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH v11 21/40] virtio_ring: packed: introduce virtqueue_resize_packed()
+Date:   Mon, 4 Jul 2022 10:13:32 +0800
 From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 To:     Jason Wang <jasowang@redhat.com>
 Cc:     Richard Weinberger <richard@nod.at>,
@@ -56,9 +56,9 @@ Cc:     Richard Weinberger <richard@nod.at>,
         kangjie.xu@linux.alibaba.com,
         virtualization@lists.linux-foundation.org
 References: <20220629065656.54420-1-xuanzhuo@linux.alibaba.com>
- <20220629065656.54420-10-xuanzhuo@linux.alibaba.com>
- <c4d24e5c-1a3e-e577-462e-c9ebde90d659@redhat.com>
-In-Reply-To: <c4d24e5c-1a3e-e577-462e-c9ebde90d659@redhat.com>
+ <20220629065656.54420-22-xuanzhuo@linux.alibaba.com>
+ <de7cf56d-acbd-1a2b-2226-a9fdd89afb78@redhat.com>
+In-Reply-To: <de7cf56d-acbd-1a2b-2226-a9fdd89afb78@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
@@ -71,158 +71,101 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 1 Jul 2022 16:55:05 +0800, Jason Wang <jasowang@redhat.com> wrote:
+On Fri, 1 Jul 2022 17:27:48 +0800, Jason Wang <jasowang@redhat.com> wrote:
 >
 > =E5=9C=A8 2022/6/29 14:56, Xuan Zhuo =E5=86=99=E9=81=93:
-> > Separate the logic of creating desc_state, desc_extra, and subsequent
-> > patches will call it independently.
+> > virtio ring packed supports resize.
 > >
-> > Since only the structure vring is passed into __vring_new_virtqueue(),
-> > when creating the function vring_alloc_state_extra_split(), we prefer to
-> > use vring_virtqueue_split as a parameter, and it will be more convenient
-> > to pass vring_virtqueue_split to some subsequent functions.
+> > Only after the new vring is successfully allocated based on the new num,
+> > we will release the old vring. In any case, an error is returned,
+> > indicating that the vring still points to the old vring.
 > >
-> > So a new vring_virtqueue_split variable is added in
-> > __vring_new_virtqueue().
+> > In the case of an error, re-initialize(by virtqueue_reinit_packed()) the
+> > virtqueue to ensure that the vring can be used.
 > >
 > > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 > > ---
-> >   drivers/virtio/virtio_ring.c | 58 +++++++++++++++++++++++++-----------
-> >   1 file changed, 40 insertions(+), 18 deletions(-)
+> >   drivers/virtio/virtio_ring.c | 29 +++++++++++++++++++++++++++++
+> >   1 file changed, 29 insertions(+)
 > >
 > > diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-> > index a9ceb9c16c54..cedd340d6db7 100644
+> > index 650f701a5480..4860787286db 100644
 > > --- a/drivers/virtio/virtio_ring.c
 > > +++ b/drivers/virtio/virtio_ring.c
-> > @@ -204,6 +204,7 @@ struct vring_virtqueue {
-> >   #endif
-> >   };
-> >
-> > +static struct vring_desc_extra *vring_alloc_desc_extra(unsigned int nu=
-m);
-> >
-> >   /*
-> >    * Helpers.
-> > @@ -939,6 +940,32 @@ static void *virtqueue_detach_unused_buf_split(str=
-uct virtqueue *_vq)
+> > @@ -2042,6 +2042,35 @@ static struct virtqueue *vring_create_virtqueue_=
+packed(
 > >   	return NULL;
 > >   }
 > >
-> > +static int vring_alloc_state_extra_split(struct vring_virtqueue_split =
-*vring)
+> > +static int virtqueue_resize_packed(struct virtqueue *_vq, u32 num)
 > > +{
-> > +	struct vring_desc_state_split *state;
-> > +	struct vring_desc_extra *extra;
-> > +	u32 num =3D vring->vring.num;
+> > +	struct vring_virtqueue_packed vring =3D {};
+> > +	struct vring_virtqueue *vq =3D to_vvq(_vq);
+> > +	struct virtio_device *vdev =3D _vq->vdev;
+> > +	int err;
 > > +
-> > +	state =3D kmalloc_array(num, sizeof(struct vring_desc_state_split), G=
-FP_KERNEL);
-> > +	if (!state)
-> > +		goto err_state;
+> > +	if (vring_alloc_queue_packed(&vring, vdev, num))
+> > +		goto err_ring;
 > > +
-> > +	extra =3D vring_alloc_desc_extra(num);
-> > +	if (!extra)
-> > +		goto err_extra;
+> > +	err =3D vring_alloc_state_extra_packed(&vring);
+> > +	if (err)
+> > +		goto err_state_extra;
 > > +
-> > +	memset(state, 0, num * sizeof(struct vring_desc_state_split));
+> > +	vring_free(&vq->vq);
 > > +
-> > +	vring->desc_state =3D state;
-> > +	vring->desc_extra =3D extra;
+> > +	virtqueue_init(vq, vring.vring.num);
+> > +	virtqueue_vring_attach_packed(vq, &vring);
+> > +	virtqueue_vring_init_packed(vq);
+> > +
 > > +	return 0;
 > > +
-> > +err_extra:
-> > +	kfree(state);
-> > +err_state:
-> > +	return -ENOMEM;
-> > +}
-> > +
-> >   static void vring_free_split(struct vring_virtqueue_split *vring,
-> >   			     struct virtio_device *vdev)
-> >   {
-> > @@ -2224,7 +2251,7 @@ EXPORT_SYMBOL_GPL(vring_interrupt);
-> >
-> >   /* Only available for split ring */
-> >   struct virtqueue *__vring_new_virtqueue(unsigned int index,
-> > -					struct vring vring,
-> > +					struct vring _vring,
-> >   					struct virtio_device *vdev,
-> >   					bool weak_barriers,
-> >   					bool context,
-> > @@ -2232,7 +2259,9 @@ struct virtqueue *__vring_new_virtqueue(unsigned =
-int index,
-> >   					void (*callback)(struct virtqueue *),
-> >   					const char *name)
-> >   {
-> > +	struct vring_virtqueue_split vring =3D {};
+> > +err_state_extra:
+> > +	vring_free_packed(&vring, vdev);
+> > +err_ring:
+> > +	virtqueue_reinit_packed(vq);
 >
 >
-> Nit: to reduce the change-set, let's use vring_split here?
+> So desc_state and desc_extra has been freed vring_free_packed() when
+> vring_alloc_state_extra_packed() fails. We might get use-after-free here?
 
-Will fix.
+vring_free_packed() frees the temporary structure vring. It does not affect
+desc_state and desc_extra of vq. So it is safe.
+
+>
+> Actually, I think for resize we need
+>
+> 1) detach old
+> 2) allocate new
+> 3) if 2) succeed, attach new otherwise attach old
+
+
+The implementation is now:
+
+1. allocate new
+2. free old (detach old)
+3. attach new
+
+error:
+1. free temporary
+2. reinit old
+
+Do you think this is ok? We need to add a new variable to save the old vrin=
+g in
+the process you mentioned, there is not much difference in other.
 
 Thanks.
 
 
 >
-> Other looks good.
+> This seems more clearer than the current logic?
 >
 > Thanks
 >
 >
-> >   	struct vring_virtqueue *vq;
-> > +	int err;
+> > +	return -ENOMEM;
+> > +}
+> > +
 > >
-> >   	if (virtio_has_feature(vdev, VIRTIO_F_RING_PACKED))
-> >   		return NULL;
-> > @@ -2261,7 +2290,7 @@ struct virtqueue *__vring_new_virtqueue(unsigned =
-int index,
-> >   	vq->split.queue_dma_addr =3D 0;
-> >   	vq->split.queue_size_in_bytes =3D 0;
-> >
-> > -	vq->split.vring =3D vring;
-> > +	vq->split.vring =3D _vring;
-> >   	vq->split.avail_flags_shadow =3D 0;
-> >   	vq->split.avail_idx_shadow =3D 0;
-> >
-> > @@ -2273,30 +2302,23 @@ struct virtqueue *__vring_new_virtqueue(unsigne=
-d int index,
-> >   					vq->split.avail_flags_shadow);
-> >   	}
-> >
-> > -	vq->split.desc_state =3D kmalloc_array(vring.num,
-> > -			sizeof(struct vring_desc_state_split), GFP_KERNEL);
-> > -	if (!vq->split.desc_state)
-> > -		goto err_state;
-> > +	vring.vring =3D _vring;
-> >
-> > -	vq->split.desc_extra =3D vring_alloc_desc_extra(vring.num);
-> > -	if (!vq->split.desc_extra)
-> > -		goto err_extra;
-> > +	err =3D vring_alloc_state_extra_split(&vring);
-> > +	if (err) {
-> > +		kfree(vq);
-> > +		return NULL;
-> > +	}
-> >
-> > -	memset(vq->split.desc_state, 0, vring.num *
-> > -			sizeof(struct vring_desc_state_split));
-> > +	vq->split.desc_state =3D vring.desc_state;
-> > +	vq->split.desc_extra =3D vring.desc_extra;
-> >
-> > -	virtqueue_init(vq, vq->split.vring.num);
-> > +	virtqueue_init(vq, vring.vring.num);
-> >
-> >   	spin_lock(&vdev->vqs_list_lock);
-> >   	list_add_tail(&vq->vq.list, &vdev->vqs);
-> >   	spin_unlock(&vdev->vqs_list_lock);
-> >   	return &vq->vq;
-> > -
-> > -err_extra:
-> > -	kfree(vq->split.desc_state);
-> > -err_state:
-> > -	kfree(vq);
-> > -	return NULL;
-> >   }
-> >   EXPORT_SYMBOL_GPL(__vring_new_virtqueue);
-> >
+> >   /*
+> >    * Generic functions and exported symbols.
 >
