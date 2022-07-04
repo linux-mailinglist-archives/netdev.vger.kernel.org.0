@@ -2,119 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D3FC656507E
-	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 11:12:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A0DE56508E
+	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 11:15:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229628AbiGDJMQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jul 2022 05:12:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41996 "EHLO
+        id S233670AbiGDJP0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Jul 2022 05:15:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232979AbiGDJMO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 05:12:14 -0400
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DA4DA1B4
-        for <netdev@vger.kernel.org>; Mon,  4 Jul 2022 02:12:13 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id f39so14715383lfv.3
-        for <netdev@vger.kernel.org>; Mon, 04 Jul 2022 02:12:13 -0700 (PDT)
+        with ESMTP id S233695AbiGDJPY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 05:15:24 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 426C8BF47
+        for <netdev@vger.kernel.org>; Mon,  4 Jul 2022 02:15:23 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id dn9so10329972ejc.7
+        for <netdev@vger.kernel.org>; Mon, 04 Jul 2022 02:15:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=sMtVrpezShBuwcHrneDKoHxgcFVzeJwm+MAWXmI0nU0=;
-        b=mNZIydifEE1JBpfDgkjlLPbKlyOUQeRSUqQa6CQLT9OF8XkeW/ZJ4oYcDIqK/5MlYf
-         r1XNVgLhiovGfrpwGprmRTWiisNvOjAzP2kq33ajN18dz3zZhNKo7ISuB7HaRTi3Ygrp
-         iw7+oZdHsM4ZrtCpzwPmZ0xJQKlOrVOBatiOWp21Mh7CjiPesSfSaxx9GU1txYSPDfxi
-         hXpREtW03SMrXzu5ba0AdD9f9e86mFDiv9XsPpSV5Zq9hW6VnO57um+FTB+THdSWBKHv
-         cyhlUics8AQB6hAa8fIltFEQVJjsTJR76zKCC8woVm6EG/V87ORn1IVp74H9olw33EjD
-         GLSA==
+        d=gmail.com; s=20210112;
+        h=from:message-id:date:mime-version:user-agent:content-language:to:cc
+         :references:subject:in-reply-to:content-transfer-encoding;
+        bh=AB3t+ekJ3pBs6U2toAhBKi00RANfOFepTROE1N+GqPg=;
+        b=EpJgKn0FSWWRzsQt8bGSva03q3cwN0eWhO1ppGXLtW2V7+1NkRzsSfVSlFQGvp30QR
+         27EfAa/EgKFbPHhkM6xSXniUnGwPXegAqkKk9IOakeZ3fm3XJHQLSkJ81ILYos54uL/S
+         h65aZx+yubjrMymMgV8h6VP9dRmlT6KMGLE6Hbbr03RTJBKLBExZsPlXFOc9BwI6Opuu
+         TFtoN+rPBuBpftEPxTIn20zHjzVc415mikV36h7dzNmwZWs8vqfFuggO5oIlP5VUkv2e
+         g0cXXb8f9R0ll59xr3R4vF+x9z3USmAEzsPLWcuLicqOqEu0fc0q96D26qIGfgghPuUb
+         jKpw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:subject:in-reply-to
          :content-transfer-encoding;
-        bh=sMtVrpezShBuwcHrneDKoHxgcFVzeJwm+MAWXmI0nU0=;
-        b=VE9VCNWvvwd/nnWqz+GiCuxp+/YSDg9qpP4rAnhlEo8FV1gxREAIA8BNRRx5Ye7f2S
-         vvvnJld2zxB9BHLkrMg0y0AR+AXX8QrSgrGpMxJu0X4SPQmC9ED+KFV3OQ8Ngy7gMo7H
-         tkPJhwjAAR7SsuiHBqI/1R+26QFfCVF21OLnLxCc1KAjguuq8EZ727xfckExGgtlosDR
-         zP27DscLpufxTv9WWlE4lWqm7vUndt8mf8Ybt+eRqohal4RZlu6zL4scoxcs+8rNyHG9
-         4UrRFdjQCfcwUTVM1Q/Nxad6TibILfij53KwfZ/KJ3XtJGtWNGvFJ/WNnv3OPaiN3bOe
-         0/wg==
-X-Gm-Message-State: AJIora8xkCDEtPxfDLqmGhGrxm/R+ybvRU98ulsWb6qmKgiKUGPD2NKk
-        E2PLyB5naZ1MOI/P58v4tUlbEA==
-X-Google-Smtp-Source: AGRyM1vDjFRe/KRpPzDWJe4ostTBzue/9izXe/wL6YMqW/loMLucg9g2bltguu+0oMfcBHrPwHwzWw==
-X-Received: by 2002:a05:6512:2254:b0:481:4eab:7e39 with SMTP id i20-20020a056512225400b004814eab7e39mr13673738lfu.468.1656925931437;
-        Mon, 04 Jul 2022 02:12:11 -0700 (PDT)
-Received: from [192.168.1.52] ([84.20.121.239])
-        by smtp.gmail.com with ESMTPSA id y9-20020a196409000000b00481541fb42asm2077966lfb.308.2022.07.04.02.12.09
+        bh=AB3t+ekJ3pBs6U2toAhBKi00RANfOFepTROE1N+GqPg=;
+        b=I24p4grMG67d4cc4NxhIqtQb53k2hcRzXFS8h6c/4Z3YR211S4aXyMdw4q8l2f8Wgx
+         phF/YPZ05dUgYAcuiFpripjkS6+mBkivNZmVU6ObRTQ1zNar065y3UGHUFtIcZK+Z7Cn
+         TRAUQjTvHkYy8OCsLgnIfErbTuTqT9YnR6QmQNIzfBedU1golNhtFIB/X7AMKJOVUH50
+         NOwcUPi6grK0sGf2tZncCGyuJfwCacM25NgcUN4fOzyTXM86OHU2UTEbIOzIl1GmhWMr
+         BMvsXrjjEOtAUMxqU3vrSAQ5kI03Ds2PrG83awv33mZWoSt6sivWdE22zs7URtscT7vV
+         r4ow==
+X-Gm-Message-State: AJIora/5y3VdcHqMgYOFbJ8XRQxAIRNDmtyz8PnY1+GCR+UyijKsAA1f
+        qedoHOZLF9ICciW3xRfvvnUy4u1YDavlw98o
+X-Google-Smtp-Source: AGRyM1s3MhmYQ+iswFOlUQfyRJLMlBoe6EsDSBRdpF/ItqcglT4yb0locaXG/4c9eHd7FZYIFPTbxw==
+X-Received: by 2002:a17:906:4ccc:b0:6fe:9155:47ae with SMTP id q12-20020a1709064ccc00b006fe915547aemr26977640ejt.246.1656926121536;
+        Mon, 04 Jul 2022 02:15:21 -0700 (PDT)
+Received: from ?IPV6:2a01:c23:c593:4a00:757b:3889:a69a:fae4? (dynamic-2a01-0c23-c593-4a00-757b-3889-a69a-fae4.c23.pool.telefonica.de. [2a01:c23:c593:4a00:757b:3889:a69a:fae4])
+        by smtp.googlemail.com with ESMTPSA id s27-20020a170906355b00b00702d8b37a03sm13986381eja.17.2022.07.04.02.15.20
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 04 Jul 2022 02:12:10 -0700 (PDT)
-Message-ID: <ef7e501a-b351-77f9-c4f7-74ab10283ed6@linaro.org>
-Date:   Mon, 4 Jul 2022 11:12:09 +0200
+        Mon, 04 Jul 2022 02:15:21 -0700 (PDT)
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+X-Google-Original-From: Heiner Kallweit <hkallweit1@googlemail.com>
+Message-ID: <26745304-2c23-ae26-9cb9-2cf1fa5422ac@googlemail.com>
+Date:   Mon, 4 Jul 2022 11:15:15 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 1/3] dt-bings: net: fsl,fec: update compatible item
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
 Content-Language: en-US
-To:     Wei Fang <wei.fang@nxp.com>, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        shawnguo@kernel.org, s.hauer@pengutronix.de
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
-        festevam@gmail.com, linux-imx@nxp.com, peng.fan@nxp.com,
-        ping.bai@nxp.com, sudeep.holla@arm.com,
-        linux-arm-kernel@lists.infradead.org, aisheng.dong@nxp.com
-References: <20220704101056.24821-1-wei.fang@nxp.com>
- <20220704101056.24821-2-wei.fang@nxp.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220704101056.24821-2-wei.fang@nxp.com>
+To:     Francois Romieu <romieu@fr.zoreil.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Erhard F." <erhard_f@mailbox.org>
+References: <ee150b21-7415-dd3f-6785-0163fd150493@googlemail.com>
+ <YsI6bEFtM+2uK492@electric-eye.fr.zoreil.com>
+Subject: Re: [PATCH net] r8169: fix accessing unset transport header
+In-Reply-To: <YsI6bEFtM+2uK492@electric-eye.fr.zoreil.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 04/07/2022 12:10, Wei Fang wrote:
-> Add compatible item for i.MX8ULP platform.
-
-Wrong subject prefix (dt-bindings).
-
-Wrong subject contents - do not use some generic sentences like "update
-X", just write what you are doing or what you want to achieve. For example:
-dt-bindings: net: fsl,fec: add i.MX8 ULP FEC
-
+On 04.07.2022 02:55, Francois Romieu wrote:
+> Heiner Kallweit <hkallweit1@gmail.com> :
+>> 66e4c8d95008 ("net: warn if transport header was not set") added
+>> a check that triggers a warning in r8169, see [0].
+>>
+>> [0] https://bugzilla.kernel.org/show_bug.cgi?id=216157
+>>
+>> Fixes: 8d520b4de3ed ("r8169: work around RTL8125 UDP hw bug")
+>> Reported-by: Erhard F. <erhard_f@mailbox.org>
+>> Tested-by: Erhard F. <erhard_f@mailbox.org>
+>> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 > 
-> Signed-off-by: Wei Fang <wei.fang@nxp.com>
-> ---
->  Documentation/devicetree/bindings/net/fsl,fec.yaml | 4 ++++
->  1 file changed, 4 insertions(+)
+> /me wonders...
 > 
-> diff --git a/Documentation/devicetree/bindings/net/fsl,fec.yaml b/Documentation/devicetree/bindings/net/fsl,fec.yaml
-> index daa2f79a294f..6642c246951b 100644
-> --- a/Documentation/devicetree/bindings/net/fsl,fec.yaml
-> +++ b/Documentation/devicetree/bindings/net/fsl,fec.yaml
-> @@ -40,6 +40,10 @@ properties:
->            - enum:
->                - fsl,imx7d-fec
->            - const: fsl,imx6sx-fec
-> +      - items:
-> +          - enum:
-> +              - fsl,imx8ulp-fec
-> +          - const: fsl,imx6ul-fec
+> - bz216157 experiences a (2nd) warning because the rtl8169_tso_csum_v2
+>   ARP path shares the factored read of the (unset) transport offset
+>   but said ARP path does not use the transport offset.
+>   -> ok, the warning is mostly harmless. 
+> 
+> - rtl8169_tso_csum_v2 non-ARP paths own WARN_ON_ONCE will always
+>   complain before Eric's transport specific warning triggers.
+>   -> ok, the warning is redundant.
+> 
+> - rtl8169_features_check
+> 
+>> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+>> index 3098d6672..1b7fdb4f0 100644
+>> --- a/drivers/net/ethernet/realtek/r8169_main.c
+>> +++ b/drivers/net/ethernet/realtek/r8169_main.c
+> [...]
+>> @@ -4402,14 +4401,13 @@ static netdev_features_t rtl8169_features_check(struct sk_buff *skb,
+>>  						struct net_device *dev,
+>>  						netdev_features_t features)
+>>  {
+>> -	int transport_offset = skb_transport_offset(skb);
+>>  	struct rtl8169_private *tp = netdev_priv(dev);
+>>  
+>>  	if (skb_is_gso(skb)) {
+>>  		if (tp->mac_version == RTL_GIGA_MAC_VER_34)
+>>  			features = rtl8168evl_fix_tso(skb, features);
+>>  
+>> -		if (transport_offset > GTTCPHO_MAX &&
+>> +		if (skb_transport_offset(skb) > GTTCPHO_MAX &&
+>>  		    rtl_chip_supports_csum_v2(tp))
+>>  			features &= ~NETIF_F_ALL_TSO;
+>>  	} else if (skb->ip_summed == CHECKSUM_PARTIAL) {
+>> @@ -4420,7 +4418,7 @@ static netdev_features_t rtl8169_features_check(struct sk_buff *skb,
+>>  		if (rtl_quirk_packet_padto(tp, skb))
+>>  			features &= ~NETIF_F_CSUM_MASK;
+>>  
+>> -		if (transport_offset > TCPHO_MAX &&
+>> +		if (skb_transport_offset(skb) > TCPHO_MAX &&
+>>  		    rtl_chip_supports_csum_v2(tp))
+>>  			features &= ~NETIF_F_CSUM_MASK;
+>>  	}
+> 
+> Neither skb_is_gso nor CHECKSUM_PARTIAL implies a transport header so the
+> warning may still trigger, right ?
+>
 
-This is wrong.  fsl,imx6ul-fec has to be followed by fsl,imx6q-fec. I
-think someone made similar mistakes earlier so this is a mess.
+I'm not an expert here, and due to missing chip documentation I can't say
+whether the chip could handle hw csumming correctly w/o transport header.
+I'd see whether we get more reports of this warning. If yes, then maybe
+we should use skb_transport_header_was_set() explicitly and disable
+hw csumming if there's no transport header.
 
->        - items:
->            - const: fsl,imx8mq-fec
->            - const: fsl,imx6sx-fec
-
-
-Best regards,
-Krzysztof
+> Btw it's a bit unexpected to see a "Fixes" tag related to a RTL8125 bug as
+> well as a "Tested-by" by the bugzilla submitter when the dmesg included in
+> bz216157 exibits a RTL8168e/8111e.
+> 
+The Fixes tag refers to the latest change to the affected code, therefore
+it comes a little unexpected, right.
