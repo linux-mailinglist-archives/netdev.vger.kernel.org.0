@@ -2,133 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E533565C95
-	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 19:07:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA10B565C9F
+	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 19:14:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233786AbiGDRHf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jul 2022 13:07:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54336 "EHLO
+        id S230064AbiGDROD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Jul 2022 13:14:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233770AbiGDRHf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 13:07:35 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2DEBDE9B
-        for <netdev@vger.kernel.org>; Mon,  4 Jul 2022 10:07:32 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id o31-20020a17090a0a2200b001ef7bd037bbso4865202pjo.0
-        for <netdev@vger.kernel.org>; Mon, 04 Jul 2022 10:07:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=FQYIl11jCmutJSFsGCRHWKl8aCgMm60l+ID7p/t0erA=;
-        b=4lGtAay5tuUapOtu9Jgm1IqtGYIqmb+KRUo8N5A3PgGBhYpid6SrDjqGTVlL7lVIP2
-         KNNPK3Yi1GjJFhHzBpIJvK8EsvvRldNAQibgRTqNuxvrf1DCP1UMF0LfhJ2DFd1gh3xj
-         nPkMeD4kaXphC7Lv1AWql2EooBvy0O4/fbDqjluj4w2cLgB12Jc7rLYXQdkWXzT5eDsn
-         FHR3bjOzO9zubB/Y82GQbHQjbd7msKU8lJm2EJid+JfIQbMytLCZzFp/vdyLOfpI29It
-         GDQw+F/W1rWl9UFBvu5u9SPqhBihnm8cv8cZixz9o/cMq37OG3NaPbhlocVAS7F4iztN
-         lFEA==
+        with ESMTP id S229887AbiGDROB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 13:14:01 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 47DC965D6
+        for <netdev@vger.kernel.org>; Mon,  4 Jul 2022 10:13:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656954838;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=dNFZBk2MReDVOF2gT6UYM02hb0KdZvS6at3FbBoI3pM=;
+        b=PArGwWa2AIQ6Ws1O5kEobm8vkhA56MI4clSOkzrGxO95KE2Gq1cwLIstvzQBcdcLp5J0gv
+        gOvoUeytuZne1cFZtZVvRzkMet/xX64+OEELCNHWKn+ET7JdnoEp9yx3pQwdI7eW1buQGq
+        4D3EiAop7tfEcvq85JflVW/9YC2DXMU=
+Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com
+ [209.85.167.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-124-hJALR_8yPbWL32CgEovPaA-1; Mon, 04 Jul 2022 13:13:57 -0400
+X-MC-Unique: hJALR_8yPbWL32CgEovPaA-1
+Received: by mail-lf1-f72.google.com with SMTP id j3-20020a05651231c300b00482a2d17bd3so1551762lfe.9
+        for <netdev@vger.kernel.org>; Mon, 04 Jul 2022 10:13:56 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=FQYIl11jCmutJSFsGCRHWKl8aCgMm60l+ID7p/t0erA=;
-        b=nUfkKKlL6bcHDIiKOOcrv0AwQFDj7soIoHMRDjUyJN3MR4OHLi6W60XQJbBUdPU63c
-         xufkJuOluImN1KjrNjSt0+v7qkUzelMNa+EJNFNu6BxKfxo/z1cxy+PeE+QIOj8/Eehz
-         UtlbTwXLbJzPRXK+/Odtv+mcYWEzkoPiBJSNphv/HdPrEc5VAoodEmyBJA68CSiICTXh
-         I0oLTqQ/FnAtxx6JyKYk0B/HXlDc034jq/mZ6Q3LSv1RDi4FrOeCtMPblYMH+P9cxFjV
-         zNrx65IoNPVr9LIcyH9zUZPaO6q1scjl02WSNAbQGBBbZRFQeWH/VouWtuwgxIod5PhI
-         2IkQ==
-X-Gm-Message-State: AJIora/98yQwFtOZmWtZQO2F83UtniTTJYjF/LBQ1PDownSpGwrEQki/
-        epPRksAxS3dez86X3kJ3h0FPp3Ok8abRv2P7
-X-Google-Smtp-Source: AGRyM1uHd7n71X56wONmD4wmM8TSuVadVxRy40PDbeXLiCUOg9NwXNzGCcXvivuRx/+eG9NpaUOZQg==
-X-Received: by 2002:a17:902:7596:b0:16a:3bea:11eb with SMTP id j22-20020a170902759600b0016a3bea11ebmr37214612pll.154.1656954452469;
-        Mon, 04 Jul 2022 10:07:32 -0700 (PDT)
-Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
-        by smtp.gmail.com with ESMTPSA id a3-20020aa780c3000000b0050dc76281f8sm21194706pfn.210.2022.07.04.10.07.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Jul 2022 10:07:32 -0700 (PDT)
-Date:   Mon, 4 Jul 2022 10:07:29 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>
-Cc:     Petr Machata <petrm@nvidia.com>, David Ahern <dsahern@gmail.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-Subject: Re: Report: iproute2 build broken?
-Message-ID: <20220704100729.570bc39b@hermes.local>
-In-Reply-To: <CAM0EoMkWjOYRuJx3ebY-cQr5odJekwCtxeM5_Cmu1G4vxZ5dpw@mail.gmail.com>
-References: <CAM0EoMkWjOYRuJx3ebY-cQr5odJekwCtxeM5_Cmu1G4vxZ5dpw@mail.gmail.com>
+        h=x-gm-message-state:from:message-id:date:mime-version:user-agent:cc
+         :subject:content-language:to:references:in-reply-to
+         :content-transfer-encoding;
+        bh=dNFZBk2MReDVOF2gT6UYM02hb0KdZvS6at3FbBoI3pM=;
+        b=HgFNRT78c3SbnX2Tit9AA7cqYnYXTk5+aFRbGm26IWVqJjS5V1hPsDRJ4zng1PyImc
+         wEGSXog7Bsd6/hAZg71hWDysxr7XqgZsJnJxKsCkTSvHrc4nck4TnZFYazeujWPaFZ81
+         szFMNsUSr0d36NEkuqS9BggPb/4btAr5Ln1inxboWYRoGm0fgvy9t0RzWy92kqcVNJ2n
+         mSzcFklOInXozgnco6RPhzMzqmN5FZDUgkw6Vsh+8va9ulgVzthcuxANXTHr3VoPWH/Y
+         bFtWsMfSuAEVBDHZwmmT389NVitVFU8KwhMtYxL3q8fQQBNw8XNa1oVQ73r6Xumed9XS
+         Ru/w==
+X-Gm-Message-State: AJIora/wzQ2EoQuNQXSriSMwZHNPQjMNaqRZr4jBZ+gK1hGvxtC1ql/9
+        Pmn9vRi36rNQ+Y7BkVm9jdo14+xL6Kcs0H94qx6KHt9rRTs7YrgX5p9TO5j4t6hsvPg71+tBup/
+        QL8m6+jIaT8UR0YJu
+X-Received: by 2002:a2e:b751:0:b0:25b:da59:96b9 with SMTP id k17-20020a2eb751000000b0025bda5996b9mr16564759ljo.176.1656954835698;
+        Mon, 04 Jul 2022 10:13:55 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1tHu1DJfF7/r9dEXd50aOLye631DC1z4l08yWjIoREL+G9uEz5rjyOO5svoU/MfRlDuSC4GRQ==
+X-Received: by 2002:a2e:b751:0:b0:25b:da59:96b9 with SMTP id k17-20020a2eb751000000b0025bda5996b9mr16564722ljo.176.1656954835371;
+        Mon, 04 Jul 2022 10:13:55 -0700 (PDT)
+Received: from [192.168.0.50] (87-59-106-155-cable.dk.customer.tdc.net. [87.59.106.155])
+        by smtp.gmail.com with ESMTPSA id j13-20020ac253ad000000b0047f7f4cb583sm5200739lfh.288.2022.07.04.10.13.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 04 Jul 2022 10:13:54 -0700 (PDT)
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
+Message-ID: <0cd3fd67-e179-7c27-a74f-255a05359941@redhat.com>
+Date:   Mon, 4 Jul 2022 19:13:53 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Cc:     brouer@redhat.com, John Fastabend <john.fastabend@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Larysa Zaremba <larysa.zaremba@intel.com>,
+        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Yajun Deng <yajun.deng@linux.dev>,
+        Willem de Bruijn <willemb@google.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        xdp-hints@xdp-project.net
+Subject: Re: [xdp-hints] Re: [PATCH RFC bpf-next 00/52] bpf, xdp: introduce
+ and use Generic Hints/metadata
+Content-Language: en-US
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>
+References: <20220628194812.1453059-1-alexandr.lobakin@intel.com>
+ <62bbedf07f44a_2181420830@john.notmuch> <87iloja8ly.fsf@toke.dk>
+ <20220704154440.7567-1-alexandr.lobakin@intel.com>
+In-Reply-To: <20220704154440.7567-1-alexandr.lobakin@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 4 Jul 2022 11:51:39 -0400
-Jamal Hadi Salim <jhs@mojatatu.com> wrote:
 
-> I have to admit i am being lazy here digging into the
-> root cause but normally iproute2 should just build
-> standalone regardless especially when it is a stable
-> version:
->=20
-> $ cat include/version.h
-> static const char version[] =3D "5.18.0";
->=20
-> $make
-> ..
-> ....
-> .....
->   CC       iplink_bond.o
-> iplink_bond.c:935:10: error: initializer element is not constant
->   .desc =3D ipstats_stat_desc_bond_tmpl_lacp,
->           ^
-> iplink_bond.c:935:10: note: (near initialization for
-> =E2=80=98ipstats_stat_desc_xstats_bond_lacp.desc=E2=80=99)
-> iplink_bond.c:957:10: error: initializer element is not constant
->   .desc =3D ipstats_stat_desc_bond_tmpl_lacp,
->           ^
-> iplink_bond.c:957:10: note: (near initialization for
-> =E2=80=98ipstats_stat_desc_xstats_slave_bond_lacp.desc=E2=80=99)
-> ../config.mk:40: recipe for target 'iplink_bond.o' failed
-> make[1]: *** [iplink_bond.o] Error 1
-> Makefile:77: recipe for target 'all' failed
-> make: *** [all] Error 2
->=20
-> There's more if you fix that one given a whole lot
-> of dependencies
->=20
-> cheers,
-> jamal
+On 04/07/2022 17.44, Alexander Lobakin wrote:
+>> Agreed. This incremental approach is basically what Jesper's
+>> simultaneous series makes a start on, AFAICT? Would be nice if y'all
+>> could converge the efforts :) >
+> I don't know why at some point Jesper decided to go on his own as he
+> for sure was using our tree as a base for some time, dunno what
+> happened then. Regarding these two particular submissions, I didn't
+> see Jesper's RFC when sending mine, only after when I went to read
+> some stuff.
+> 
 
+Well, I have written to you (offlist) that the git tree didn't compile,
+so I had a hard time getting it into a working state.  We had a
+ping-pong of stuff to fix, but it wasn't and you basically told me to
+switch to using LLVM to compile your kernel tree, I was not interested
+in doing that.
 
-Fixed in main by:
+I have looked at the code in your GitHub tree, and decided that it was
+an over-engineered approach IMHO.  Also simply being 52 commits deep
+without having posted this incrementally upstream were also a
+non-starter for me, as this isn't the way-to-work upstream.
 
+To get the ball rolling, I have implemented the base XDP-hints support
+here[1] with only 9 patches (including support for two drivers).
 
-commit 11e41a635cfab54e8e02fbff2a03715467e77ae9
-Author: Petr Machata <petrm@nvidia.com>
-Date:   Tue May 31 13:35:48 2022 +0200
+IMHO we need to start out small and not intermix these huge refactoring
+patches.  E.g. I'm not convinced renaming net/{core/xdp.c => bpf/core.c}
+is an improvement.
 
-    ip: Convert non-constant initializers to macros
-   =20
-    As per the C standard, "expressions in an initializer for an object that
-    has static or thread storage duration shall be constant expressions".
-    Aggregate objects are not constant expressions. Newer GCC doesn't mind,=
- but
-    older GCC and LLVM do.
-   =20
-    Therefore convert to a macro. And since all these macros will look very
-    similar, extract a generic helper, IPSTATS_STAT_DESC_XSTATS_LEAF, which
-    takes the leaf name as an argument and initializes the rest as appropri=
-ate
-    for an xstats descriptor.
-   =20
-    Reported-by: Stephen Hemminger <stephen@networkplumber.org>
-    Signed-off-by: Petr Machata <petrm@nvidia.com>
-    Reviewed-by: Ido Schimmel <idosch@nvidia.com>
-    Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
+-Jesper
+
+[1] 
+https://lore.kernel.org/bpf/165643378969.449467.13237011812569188299.stgit@firesoul/
 
