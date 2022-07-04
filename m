@@ -2,54 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C470565075
-	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 11:10:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3FC656507E
+	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 11:12:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232655AbiGDJKV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jul 2022 05:10:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40820 "EHLO
+        id S229628AbiGDJMQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Jul 2022 05:12:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231808AbiGDJKU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 05:10:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2A2E1D2
-        for <netdev@vger.kernel.org>; Mon,  4 Jul 2022 02:10:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 658EFB80E13
-        for <netdev@vger.kernel.org>; Mon,  4 Jul 2022 09:10:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 359BFC341CE;
-        Mon,  4 Jul 2022 09:10:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656925816;
-        bh=mDnAMix83Z+3VeBq3bb5W/Eb3xniNM1AHSjlo27x7oU=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=PO1ZWdb1/MUR4lZ6KOeeUbdAbJpfJai8eT/pFg8WAIZa3mJWV7gy1LMH86tzm3vJf
-         QwYIN65aid3c3li6bJxxXLYPUaekoIDaRHEClIhLj0d/C5+TqzNOB16nLIOVyJKLEy
-         lRkotfPVMQUP3q4XQmY5fv8wtkUDoQzeePrgYT34h+xuDb4ja8nZtMh7NyLShzgqgp
-         iBTTVpyVBLZUuj/CseChM5QzYUAe+l/pFctorRbgI2cJ1jaXiqhcu1nMNfpo+OpjS0
-         1gtjjvqbM+31IZchoUe1TeEUuxRJzEXVCZRPdpArbEt6dqmjqKi09rqTE7Lo6NH6cB
-         csdhaAcUrZb6w==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1CFEBE45BDE;
-        Mon,  4 Jul 2022 09:10:16 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S232979AbiGDJMO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 05:12:14 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DA4DA1B4
+        for <netdev@vger.kernel.org>; Mon,  4 Jul 2022 02:12:13 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id f39so14715383lfv.3
+        for <netdev@vger.kernel.org>; Mon, 04 Jul 2022 02:12:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=sMtVrpezShBuwcHrneDKoHxgcFVzeJwm+MAWXmI0nU0=;
+        b=mNZIydifEE1JBpfDgkjlLPbKlyOUQeRSUqQa6CQLT9OF8XkeW/ZJ4oYcDIqK/5MlYf
+         r1XNVgLhiovGfrpwGprmRTWiisNvOjAzP2kq33ajN18dz3zZhNKo7ISuB7HaRTi3Ygrp
+         iw7+oZdHsM4ZrtCpzwPmZ0xJQKlOrVOBatiOWp21Mh7CjiPesSfSaxx9GU1txYSPDfxi
+         hXpREtW03SMrXzu5ba0AdD9f9e86mFDiv9XsPpSV5Zq9hW6VnO57um+FTB+THdSWBKHv
+         cyhlUics8AQB6hAa8fIltFEQVJjsTJR76zKCC8woVm6EG/V87ORn1IVp74H9olw33EjD
+         GLSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=sMtVrpezShBuwcHrneDKoHxgcFVzeJwm+MAWXmI0nU0=;
+        b=VE9VCNWvvwd/nnWqz+GiCuxp+/YSDg9qpP4rAnhlEo8FV1gxREAIA8BNRRx5Ye7f2S
+         vvvnJld2zxB9BHLkrMg0y0AR+AXX8QrSgrGpMxJu0X4SPQmC9ED+KFV3OQ8Ngy7gMo7H
+         tkPJhwjAAR7SsuiHBqI/1R+26QFfCVF21OLnLxCc1KAjguuq8EZ727xfckExGgtlosDR
+         zP27DscLpufxTv9WWlE4lWqm7vUndt8mf8Ybt+eRqohal4RZlu6zL4scoxcs+8rNyHG9
+         4UrRFdjQCfcwUTVM1Q/Nxad6TibILfij53KwfZ/KJ3XtJGtWNGvFJ/WNnv3OPaiN3bOe
+         0/wg==
+X-Gm-Message-State: AJIora8xkCDEtPxfDLqmGhGrxm/R+ybvRU98ulsWb6qmKgiKUGPD2NKk
+        E2PLyB5naZ1MOI/P58v4tUlbEA==
+X-Google-Smtp-Source: AGRyM1vDjFRe/KRpPzDWJe4ostTBzue/9izXe/wL6YMqW/loMLucg9g2bltguu+0oMfcBHrPwHwzWw==
+X-Received: by 2002:a05:6512:2254:b0:481:4eab:7e39 with SMTP id i20-20020a056512225400b004814eab7e39mr13673738lfu.468.1656925931437;
+        Mon, 04 Jul 2022 02:12:11 -0700 (PDT)
+Received: from [192.168.1.52] ([84.20.121.239])
+        by smtp.gmail.com with ESMTPSA id y9-20020a196409000000b00481541fb42asm2077966lfb.308.2022.07.04.02.12.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 04 Jul 2022 02:12:10 -0700 (PDT)
+Message-ID: <ef7e501a-b351-77f9-c4f7-74ab10283ed6@linaro.org>
+Date:   Mon, 4 Jul 2022 11:12:09 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2 00/13] mlxsw: Unified bridge conversion - part 6/6
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165692581610.32669.14651472023440335107.git-patchwork-notify@kernel.org>
-Date:   Mon, 04 Jul 2022 09:10:16 +0000
-References: <20220704061139.1208770-1-idosch@nvidia.com>
-In-Reply-To: <20220704061139.1208770-1-idosch@nvidia.com>
-To:     Ido Schimmel <idosch@nvidia.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, edumazet@google.com, petrm@nvidia.com,
-        amcohen@nvidia.com, mlxsw@nvidia.com
-X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 1/3] dt-bings: net: fsl,fec: update compatible item
+Content-Language: en-US
+To:     Wei Fang <wei.fang@nxp.com>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
+        festevam@gmail.com, linux-imx@nxp.com, peng.fan@nxp.com,
+        ping.bai@nxp.com, sudeep.holla@arm.com,
+        linux-arm-kernel@lists.infradead.org, aisheng.dong@nxp.com
+References: <20220704101056.24821-1-wei.fang@nxp.com>
+ <20220704101056.24821-2-wei.fang@nxp.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220704101056.24821-2-wei.fang@nxp.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,53 +80,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On 04/07/2022 12:10, Wei Fang wrote:
+> Add compatible item for i.MX8ULP platform.
 
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+Wrong subject prefix (dt-bindings).
 
-On Mon,  4 Jul 2022 09:11:26 +0300 you wrote:
-> This is the sixth and final part of the conversion of mlxsw to the
-> unified bridge model. It transitions the last bits of functionality that
-> were under firmware's responsibility in the legacy model to the driver.
-> The last patches flip the driver to the unified bridge model and clean
-> up code that was used to make the conversion easier to review.
+Wrong subject contents - do not use some generic sentences like "update
+X", just write what you are doing or what you want to achieve. For example:
+dt-bindings: net: fsl,fec: add i.MX8 ULP FEC
+
 > 
-> Patchset overview:
+> Signed-off-by: Wei Fang <wei.fang@nxp.com>
+> ---
+>  Documentation/devicetree/bindings/net/fsl,fec.yaml | 4 ++++
+>  1 file changed, 4 insertions(+)
 > 
-> [...]
+> diff --git a/Documentation/devicetree/bindings/net/fsl,fec.yaml b/Documentation/devicetree/bindings/net/fsl,fec.yaml
+> index daa2f79a294f..6642c246951b 100644
+> --- a/Documentation/devicetree/bindings/net/fsl,fec.yaml
+> +++ b/Documentation/devicetree/bindings/net/fsl,fec.yaml
+> @@ -40,6 +40,10 @@ properties:
+>            - enum:
+>                - fsl,imx7d-fec
+>            - const: fsl,imx6sx-fec
+> +      - items:
+> +          - enum:
+> +              - fsl,imx8ulp-fec
+> +          - const: fsl,imx6ul-fec
 
-Here is the summary with links:
-  - [net-next,v2,01/13] mlxsw: Configure egress VID for unicast FDB entries
-    https://git.kernel.org/netdev/net-next/c/53d7ae53d807
-  - [net-next,v2,02/13] mlxsw: spectrum_fid: Configure VNI to FID classification
-    https://git.kernel.org/netdev/net-next/c/8cfc7f7707c1
-  - [net-next,v2,03/13] mlxsw: Configure ingress RIF classification
-    https://git.kernel.org/netdev/net-next/c/fea20547d5b5
-  - [net-next,v2,04/13] mlxsw: spectrum_fid: Configure layer 3 egress VID classification
-    https://git.kernel.org/netdev/net-next/c/d4b464d20bc1
-  - [net-next,v2,05/13] mlxsw: spectrum_router: Do not configure VID for sub-port RIFs
-    https://git.kernel.org/netdev/net-next/c/2c3ae763eb70
-  - [net-next,v2,06/13] mlxsw: Configure egress FID classification after routing
-    https://git.kernel.org/netdev/net-next/c/058de325a4fb
-  - [net-next,v2,07/13] mlxsw: Add support for VLAN RIFs
-    https://git.kernel.org/netdev/net-next/c/662761d8987d
-  - [net-next,v2,08/13] mlxsw: Add new FID families for unified bridge model
-    https://git.kernel.org/netdev/net-next/c/d4324e3194c7
-  - [net-next,v2,09/13] mlxsw: Add support for 802.1Q FID family
-    https://git.kernel.org/netdev/net-next/c/bf73904f5fba
-  - [net-next,v2,10/13] mlxsw: Add ubridge to config profile
-    https://git.kernel.org/netdev/net-next/c/e9cf8990faea
-  - [net-next,v2,11/13] mlxsw: Enable unified bridge model
-    https://git.kernel.org/netdev/net-next/c/77b7f83d5c25
-  - [net-next,v2,12/13] mlxsw: spectrum_fid: Remove flood_index() from FID operation structure
-    https://git.kernel.org/netdev/net-next/c/8928fd47782c
-  - [net-next,v2,13/13] mlxsw: spectrum_fid: Remove '_ub_' indication from structures and defines
-    https://git.kernel.org/netdev/net-next/c/88840d697f6e
+This is wrong.  fsl,imx6ul-fec has to be followed by fsl,imx6q-fec. I
+think someone made similar mistakes earlier so this is a mess.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+>        - items:
+>            - const: fsl,imx8mq-fec
+>            - const: fsl,imx6sx-fec
 
 
+Best regards,
+Krzysztof
