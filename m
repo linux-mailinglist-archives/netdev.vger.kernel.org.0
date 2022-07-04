@@ -2,201 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9129D564CC3
-	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 06:47:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD99C564D65
+	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 07:44:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230114AbiGDEqx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jul 2022 00:46:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56494 "EHLO
+        id S233000AbiGDFoK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Jul 2022 01:44:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229477AbiGDEqw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 00:46:52 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AE82763BC
-        for <netdev@vger.kernel.org>; Sun,  3 Jul 2022 21:46:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656910009;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=eVLTlK2cLdRIb6wwURVfoHDHENc0Sq+A4u8ZtgUepwk=;
-        b=SXZ/JS074HTb4RQmbeUUjvc4j7jCQmraS0DJqSzonem2mYB5WkySfiriZXxdS76cwIZ5I5
-        oa15w38B0mM9RTKIZ8gj+ibmjc1hT3F0ZikSalCf5YcRmjqhGp5H9UIfHfwK2VGMGNGtko
-        MW1NgFUYp7dDpsu2fHvyuOPvZM2k+SA=
-Received: from mail-pg1-f200.google.com (mail-pg1-f200.google.com
- [209.85.215.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-22-KO0qtqlyNrCYSS3q-Ful8g-1; Mon, 04 Jul 2022 00:46:47 -0400
-X-MC-Unique: KO0qtqlyNrCYSS3q-Ful8g-1
-Received: by mail-pg1-f200.google.com with SMTP id d66-20020a636845000000b0040a88edd9c1so3509641pgc.13
-        for <netdev@vger.kernel.org>; Sun, 03 Jul 2022 21:46:47 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=eVLTlK2cLdRIb6wwURVfoHDHENc0Sq+A4u8ZtgUepwk=;
-        b=eEMTMTQeXZ6TzQLs3Sa/GaIw/jWZpr/JpWG82yvmapUaEBotBjcq+oNRqobWGVMcs5
-         3fdK03d7OmUNMtF7CvdAAv8Law/GwHzUNrRFRTGy94OWCB2Wh1KatYw/eJIuMG/jrUEI
-         cClHHoT8+DEYC+IJTvA1xXdjcVmxgSOf1dMXJ5UI/+hHrOGC/zMHAUS/e+farcyTELwf
-         AmSwCmhtVcWFXah7Oyi4tTVun21moUTEecGGxbGcEzxj6p6u6FbXq/BdiruGE8vBaRFi
-         W10d4tVEOmRcb0G/x2bPnhBstsSoLEADfI5o6WOBx+jojaEYko9MI/t5sKaErz44NW0C
-         rNVg==
-X-Gm-Message-State: AJIora/mATnD68Tv/5vIQ1fOeoltK9q0jbiCG5c8YhaHUOlPPkNqfUVa
-        IDMVYdHeO/hL9jBeNm3xQJ9r4pNbilrQKaeh9/c9uuZc6bENKisgkCqVQ9eK+M8q+sGtFdZMTGz
-        KFsIh2lrXiCpEAj4v
-X-Received: by 2002:a17:90a:408f:b0:1e3:23a:2370 with SMTP id l15-20020a17090a408f00b001e3023a2370mr32620799pjg.84.1656910006507;
-        Sun, 03 Jul 2022 21:46:46 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1v6hfJy7wsXAEMzEbQxIUAgQMSBvJ5aR8WrcJqPjNTC/a9X/urokyGR00sXwPo5/IcLXxDHNg==
-X-Received: by 2002:a17:90a:408f:b0:1e3:23a:2370 with SMTP id l15-20020a17090a408f00b001e3023a2370mr32620777pjg.84.1656910006218;
-        Sun, 03 Jul 2022 21:46:46 -0700 (PDT)
-Received: from [10.72.13.251] ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id g194-20020a6252cb000000b00527d84df6a6sm10937482pfb.208.2022.07.03.21.46.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 03 Jul 2022 21:46:45 -0700 (PDT)
-Message-ID: <e8479441-78d2-8b39-c5ad-6729b79a2f35@redhat.com>
-Date:   Mon, 4 Jul 2022 12:46:40 +0800
+        with ESMTP id S233165AbiGDFnj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 01:43:39 -0400
+Received: from wout5-smtp.messagingengine.com (wout5-smtp.messagingengine.com [64.147.123.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F42FAE6A
+        for <netdev@vger.kernel.org>; Sun,  3 Jul 2022 22:42:08 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.west.internal (Postfix) with ESMTP id CBEEB32002B6;
+        Mon,  4 Jul 2022 01:42:05 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute2.internal (MEProxy); Mon, 04 Jul 2022 01:42:06 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=traverse.com.au;
+         h=cc:cc:content-transfer-encoding:date:date:from:from
+        :in-reply-to:message-id:mime-version:reply-to:sender:subject
+        :subject:to:to; s=fm1; t=1656913325; x=1656999725; bh=cx8X+tzk7v
+        HlkNZDVEf9vl6BG9/TB+itb5hcacBmGvQ=; b=G4DpBiJpXgz/K7RghmKoAbPzuq
+        7qIkSCU7QPH+G9W3AfORDsWuF6VhXLmZIks9eBFHw6kRQ4B9ZE7Ti+UdyDwPtZ/7
+        Voc+AiPqWsndvMIql2hpZn5lO8wAGBJbLnHTX7YGJtUR+T6NKdWOYoKK/gjgndj4
+        js5dVLAxW1nZb8NZy9bCBf9NaVXBBdOMSb+1BcaxLdUG4d0QDL5iKn9peozZgc6T
+        oiMxQ+O1FoJnLc8amNWVhsBtgl3Ec7dnSb8F8MVYL1+ntxybEX6EPPizk/tnrD+8
+        LNIHRVu2Vh8FX7DvXmD7Ai11eTTO+3DFf2Bm0EvsNfzD6x08KLu0gzZIt6wA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
+        :feedback-id:feedback-id:from:from:in-reply-to:message-id
+        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=
+        1656913325; x=1656999725; bh=cx8X+tzk7vHlkNZDVEf9vl6BG9/TB+itb5h
+        cacBmGvQ=; b=WKsbodaVlnkx3aZL5hWHgEjKo5Vf/8IThilC2vmRBXTjB7uXpVe
+        8QscUoFOMb8Ajnf0ADbSBZ95j5OHqXxeRdmaM5ZQ3EMsKt50SIAounhnSyXfZEYi
+        caWyudiHZHRHZMJs6kivmfQcsnzgxowttX/cc1gAnpnQyYQty98upBMn/mmHExdW
+        4+0iS3pa2Iqpgq+rAhCSa2hG2xbS76vbgx3HwF0BshKqeSs5yZOGMQ0nPZNZEE+L
+        ypYtsNmyWlucuqula4SaykRcH4xB5eQ6ulq2PUDKBA7fIjjpQrXrWZBWxKyAT392
+        S+acrklnBquPYgMog2Oqpi4a7Z3tjyztgqA==
+X-ME-Sender: <xms:rH3CYiRXpQe7Jaj8hikRVCACG_oA9im1NIcTlM0mBOAIFwQPEd96pQ>
+    <xme:rH3CYnyO1qLEHEdWW6pq9CDsMmI1UbFfE2KP5GsS4AaTfCvpwivZrO4tfuR1A59N3
+    ma2C6dK7mjy-hvD8C4>
+X-ME-Received: <xmr:rH3CYv1qDvOlpaLKuDIULthXVVcS3b6MNun1k6KdmgBFsh7lU7Gaf_-C0gbggJqZLaIba9r3ofnSySyCXIYuA61xkjz0ucX8n-bOPvf_sIWSaUIQIls8lU7AXUOmfAo>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudehkedgleejucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhephffvvefufffkofgggfestdekredtredttdenucfhrhhomhepofgrthhhvgif
+    ucfotgeurhhiuggvuceomhgrthhtsehtrhgrvhgvrhhsvgdrtghomhdrrghuqeenucggtf
+    frrghtthgvrhhnpefgveduleeikeffgfffleekfedviefhvdegueeijeegheduhfeltefg
+    tdeuffefueenucffohhmrghinhepghhithhlrggsrdgtohhmpdhgihhthhhusgdrtghomh
+    enucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehmrght
+    thesthhrrghvvghrshgvrdgtohhmrdgruh
+X-ME-Proxy: <xmx:rH3CYuBHYr1K31iSuZoE4KH2nLAvbjrF5AICswotyn8x0bDDn5-l7g>
+    <xmx:rH3CYrieL67KIWTcyG4MdJMH4vZIneeIIL3-wlqPd8AAzGmAHeGgBA>
+    <xmx:rH3CYqqAZlXY-eHQkMFGc-fFFsNBy7mNYFLZUY_LuBmlMJ0XytZ4nQ>
+    <xmx:rX3CYjZvBhOHiR7jBMxseBD8LQJ3md2umcnu7gdaPfvd0YpTnPRRDA>
+Feedback-ID: i426947f3:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 4 Jul 2022 01:42:03 -0400 (EDT)
+From:   Mathew McBride <matt@traverse.com.au>
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     netdev@vger.kernel.org, Mathew McBride <matt@traverse.com.au>
+Subject: [PATCH ethtool 0/2] Add JSON support for SFP EEPROM dump
+Date:   Mon,  4 Jul 2022 05:41:12 +0000
+Message-Id: <20220704054114.22582-1-matt@traverse.com.au>
+X-Mailer: git-send-email 2.30.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.11.0
-Subject: Re: [PATCH V3 3/6] vDPA: allow userspace to query features of a vDPA
- device
-Content-Language: en-US
-To:     Parav Pandit <parav@nvidia.com>,
-        Zhu Lingshan <lingshan.zhu@intel.com>,
-        "mst@redhat.com" <mst@redhat.com>
-Cc:     "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "xieyongji@bytedance.com" <xieyongji@bytedance.com>,
-        "gautam.dawar@amd.com" <gautam.dawar@amd.com>
-References: <20220701132826.8132-1-lingshan.zhu@intel.com>
- <20220701132826.8132-4-lingshan.zhu@intel.com>
- <PH0PR12MB5481AEB53864F35A79AAD7F5DCBD9@PH0PR12MB5481.namprd12.prod.outlook.com>
-From:   Jason Wang <jasowang@redhat.com>
-In-Reply-To: <PH0PR12MB5481AEB53864F35A79AAD7F5DCBD9@PH0PR12MB5481.namprd12.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This patch adds JSON output support to ethtool's -m option,
+useful for presenting transceiver module option in a web interface.
 
-在 2022/7/2 06:02, Parav Pandit 写道:
->
->> From: Zhu Lingshan <lingshan.zhu@intel.com>
->> Sent: Friday, July 1, 2022 9:28 AM
->>
->> This commit adds a new vDPA netlink attribution
->> VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES. Userspace can query
->> features of vDPA devices through this new attr.
->>
->> Fixes: a64917bc2e9b vdpa: (Provide interface to read driver feature)
-> Missing the "" in the line.
-> I reviewed the patches again.
->
-> However, this is not the fix.
-> A fix cannot add a new UAPI.
->
-> Code is already considering negotiated driver features to return the device config space.
-> Hence it is fine.
->
-> This patch intents to provide device features to user space.
-> First what vdpa device are capable of, are already returned by features attribute on the management device.
-> This is done in commit [1].
->
-> The only reason to have it is, when one management device indicates that feature is supported, but device may end up not supporting this feature if such feature is shared with other devices on same physical device.
-> For example all VFs may not be symmetric after large number of them are in use. In such case features bit of management device can differ (more features) than the vdpa device of this VF.
-> Hence, showing on the device is useful.
->
-> As mentioned before in V2, commit [1] has wrongly named the attribute to VDPA_ATTR_DEV_SUPPORTED_FEATURES.
-> It should have been, VDPA_ATTR_DEV_MGMTDEV_SUPPORTED_FEATURES.
-> Because it is in UAPI, and since we don't want to break compilation of iproute2,
-> It cannot be renamed anymore.
->
-> Given that, we do not want to start trend of naming device attributes with additional _VDPA_ to it as done in this patch.
-> Error in commit [1] was exception.
->
-> Hence, please reuse VDPA_ATTR_DEV_SUPPORTED_FEATURES to return for device features too.
+An example frontend can be found here, for OpenWrt's LuCI:
+https://gitlab.com/traversetech/muvirt-feed/-/tree/master/sfp-diagnostics-luci
 
+You can find samples of the output, plus a screenshot here:
+10GBASE-LR SFP:
+https://gitlab.com/-/snippets/2364354
+1/10GBASE-LR dual mode SFP
+https://gist.github.com/mcbridematt/7921c795c4835afa807d8f83cc132401
 
-This will probably break or confuse the existing userspace?
+I have tried to make the JSON format easy to consume by including both
+the original field values and full text descriptions, so any consumer
+of the JSON output doesn't need to replicate ethtool's rendering logic.
 
-Thanks
+I'm open to any suggestions on how the structure of the JSON output
+could be improved.
 
+Mathew McBride (2):
+  ethtool: add JSON output to --module-info
+  ethtool: remove restriction on ioctl commands having JSON output
 
->
-> Secondly, you need output example for showing device features in the commit log.
->
-> 3rd, please drop the fixes tag as new capability is not a fix.
->
-> [1] cd2629f6df1c ("vdpa: Support reporting max device capabilities ")
->
->> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
->> ---
->>   drivers/vdpa/vdpa.c       | 13 +++++++++----
->>   include/uapi/linux/vdpa.h |  1 +
->>   2 files changed, 10 insertions(+), 4 deletions(-)
->>
->> diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c index
->> ebf2f363fbe7..9b0e39b2f022 100644
->> --- a/drivers/vdpa/vdpa.c
->> +++ b/drivers/vdpa/vdpa.c
->> @@ -815,7 +815,7 @@ static int vdpa_dev_net_mq_config_fill(struct
->> vdpa_device *vdev,  static int vdpa_dev_net_config_fill(struct vdpa_device
->> *vdev, struct sk_buff *msg)  {
->>   	struct virtio_net_config config = {};
->> -	u64 features;
->> +	u64 features_device, features_driver;
->>   	u16 val_u16;
->>
->>   	vdpa_get_config_unlocked(vdev, 0, &config, sizeof(config)); @@ -
->> 832,12 +832,17 @@ static int vdpa_dev_net_config_fill(struct vdpa_device
->> *vdev, struct sk_buff *ms
->>   	if (nla_put_u16(msg, VDPA_ATTR_DEV_NET_CFG_MTU, val_u16))
->>   		return -EMSGSIZE;
->>
->> -	features = vdev->config->get_driver_features(vdev);
->> -	if (nla_put_u64_64bit(msg,
->> VDPA_ATTR_DEV_NEGOTIATED_FEATURES, features,
->> +	features_driver = vdev->config->get_driver_features(vdev);
->> +	if (nla_put_u64_64bit(msg,
->> VDPA_ATTR_DEV_NEGOTIATED_FEATURES, features_driver,
->> +			      VDPA_ATTR_PAD))
->> +		return -EMSGSIZE;
->> +
->> +	features_device = vdev->config->get_device_features(vdev);
->> +	if (nla_put_u64_64bit(msg,
->> VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES,
->> +features_device,
->>   			      VDPA_ATTR_PAD))
->>   		return -EMSGSIZE;
->>
->> -	return vdpa_dev_net_mq_config_fill(vdev, msg, features, &config);
->> +	return vdpa_dev_net_mq_config_fill(vdev, msg, features_driver,
->> +&config);
->>   }
->>
->>   static int
->> diff --git a/include/uapi/linux/vdpa.h b/include/uapi/linux/vdpa.h index
->> 25c55cab3d7c..39f1c3d7c112 100644
->> --- a/include/uapi/linux/vdpa.h
->> +++ b/include/uapi/linux/vdpa.h
->> @@ -47,6 +47,7 @@ enum vdpa_attr {
->>   	VDPA_ATTR_DEV_NEGOTIATED_FEATURES,	/* u64 */
->>   	VDPA_ATTR_DEV_MGMTDEV_MAX_VQS,		/* u32 */
->>   	VDPA_ATTR_DEV_SUPPORTED_FEATURES,	/* u64 */
->> +	VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES,	/* u64 */
->>
->>   	VDPA_ATTR_DEV_QUEUE_INDEX,              /* u32 */
->>   	VDPA_ATTR_DEV_VENDOR_ATTR_NAME,		/* string */
->> --
->> 2.31.1
+ ethtool.c    |   8 +-
+ sff-common.c | 213 +++++++++++++++--------
+ sff-common.h |  17 +-
+ sfpdiag.c    |  64 ++++++-
+ sfpid.c      | 478 +++++++++++++++++++++++++++++++--------------------
+ 5 files changed, 522 insertions(+), 258 deletions(-)
+
+-- 
+2.30.1
 
