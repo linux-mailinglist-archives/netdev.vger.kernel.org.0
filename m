@@ -2,96 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 51E88565E9C
+	by mail.lfdr.de (Postfix) with ESMTP id 9B5A7565E9D
 	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 22:45:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232192AbiGDUpm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jul 2022 16:45:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48002 "EHLO
+        id S232318AbiGDUpq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Jul 2022 16:45:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229655AbiGDUpl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 16:45:41 -0400
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2057.outbound.protection.outlook.com [40.107.101.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5639D2630
-        for <netdev@vger.kernel.org>; Mon,  4 Jul 2022 13:45:40 -0700 (PDT)
+        with ESMTP id S229655AbiGDUpo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 16:45:44 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2065.outbound.protection.outlook.com [40.107.220.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3399B2630
+        for <netdev@vger.kernel.org>; Mon,  4 Jul 2022 13:45:43 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=B4/AJiYRnY8ASexmRVYUcmSV8lIQkTiKNKgtMMwH/RFDv1boCWRxhIDeDjwHhn9kgLoAPTZYkvMUJKRS3ng/5S+BtxQTmlbGZuvpJOqLjojlLTLQ3bjQzvgFGlMJ0ap6LOCLXGQoZBBsHtmUPPyVMrCjt3U9ywqqpAwEIbvSyBf40heKmacRyoRuHKJPg1wWljcvoou5bZVCYUcD+Bnp9XHyCt7eibxCmc1XI1qOTCOUdTTyYiP98tmmuKZeN71GUA8bV01AG3E06zRIXIDS+oMFMvrwcbLclZ6HP1jewQQiXPe6eCcJtkVkzYUjrc4P9+NGypzpg48jgxNrEbEaQA==
+ b=ixOdQmAp73/ujWpTKmwLtswkojT5jT+I0ToUwEmqZk8Fv79HbGshwHHNw5AX+TgL31QF3ePZzbkYYN/bcC05xrXlbKfH0bHnpVaB+U/wk4tAXmXZAIVuq7PbheJRMaLJdleOnLKyzDetFix4z+mQudEGS8c97TztZCdJeurbs2hQRKpC34rPCH3ulo47eSVO/4exhrGVEiAJ6lM90NosU2N3lY2HfJXDT/SNJrkAcZtWzLK8UKEtorBoLyOfxANyis98RuKvlkPbnn4AMJjXxfY+DAbNqh3jyKq6ArspxH/GCX72EB8WR4F79eYYwLExdwNUkyCGc4GT5FWI78BD8g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=J/+KBxE7GIioyul8xOUTp/69jPG0AHvQzVGvJH5Il+c=;
- b=WfujmhIrzn0PGGA/XDErXIRe6s4faR5yt9mBEQVZ5DbXB7EVwQCvSCyyOt76hLw8IauFCkUikwi4GdSfIYUbgZAo3uKAksnnvJFfM815F8YhmNfihoLC7ua58+kfMrhjh40h2ZDEPNAyM0MZm03DhEiIjB37aYjp/WnZrybG95nAdKACuCCTc6m5SAo8TbeR650wF5/WYgK4MHomGBt7DjXIOD4rsSsQ+7gm8JkiUb/rWYiIqDtZCCg/v/64DW+UwjWAFgbOiLAlnPSxKDXN4SgLx1maYnjJtQqWxW1G0BQ0C/aIifSO6wCFnQ+k5SfJCkVZ3Q0JAkXJs6IJ4+tRGw==
+ bh=29Y/mdOUer6RehseOtWrvi+EtRNA+M8mGwcrpK2WeY4=;
+ b=K+fhtks0Su3+iKNicxIRPR7kAO6Pw2iJXkB2aogWPsq3+yhQYb8+xaWWOOPaxOILz4yufkG4JqnJKwuAQmYv6BUYizvEmglofq4Fpp5N/Ldc4pwLChd8RSwyPfErHeDr4XvHWgJOUXJIIKSTwYwlAnx0tf2lphZlIc1oLGCWV6xRJd7ORTv1Q5PtcpT1nd4+UtdEhp+xjqIVwVFUZ4SfesuhDTM8ubod28M5+z44CBTFREbOFprRrG7V6qRck/1VB6KUsOS3UcniHoH/bE8VykCgIud8TFs/r4no6hEUYZgfUKEA+FuzFIPIuY3+28Ful4Ac5CRTX2DYPYNcX1c88Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.235) smtp.rcpttodomain=mojatatu.com smtp.mailfrom=nvidia.com;
+ 12.22.5.238) smtp.rcpttodomain=mojatatu.com smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=J/+KBxE7GIioyul8xOUTp/69jPG0AHvQzVGvJH5Il+c=;
- b=i9Zt7H2yQhfX7fmbssIApOA77sUmfQnr0bONaIv2gfJrI7DeD+HtM8U/WtJ9hgXrwlpUUCXYfm5AKaxZ12eMQrQj/LrLf+j0PymiYc3k2YAQEQ3IQy+akCEoGNCGXA051OFgLacPrprGcST1RHZwr8tgYWar8bKTvJBN2zkI71zuqPxlzKR7/OFCUWROxWX42HpRiQr6F5FrRiWyligeGRmVfZpKbiP3bC+tCmHszzyQ05IvlLp8qikn3xe4IDmXGKXOxDab/rCvOJ+wft/i6d1z3vgiOSmYXmHv+xHNB5ewqe1hjUy/Fq94/pe/osxUYpe84GeifIzGtaL3TsLS8w==
-Received: from MWHPR18CA0050.namprd18.prod.outlook.com (2603:10b6:300:39::12)
- by CH0PR12MB5204.namprd12.prod.outlook.com (2603:10b6:610:bb::11) with
+ bh=29Y/mdOUer6RehseOtWrvi+EtRNA+M8mGwcrpK2WeY4=;
+ b=NQexOPUnPnvNwy1s3t7tmWTEAPTRkuy49a+7GHCK0VSeDd10a1I4tKVsBJGcaZp6IKn0Om+LCmRvRHTGbSylOqaPF5uehNRwZIpgGEyaQAx00wo5g45uD1KTpEMOcOWYD2xutIVsAezZFTGfr+DHPApo1x1SzgUjTHKW98vfkDsijLqBKuEwNQ3+0uQapXVHOFjTVBBOjVLMBgvHmP62GkEKbzkJShfTkEiS4ye0pCIZF8SXerhMKDrMrwB7qklaZOkf84vKYtPG+fxygbWr1xLmUT1ly7WMu7Kvyvk5cR2Fblia6Ti3L0VgfbThkHzBCqsLZEcWvq7hKzfKQY2uMw==
+Received: from MW4PR03CA0130.namprd03.prod.outlook.com (2603:10b6:303:8c::15)
+ by DM6PR12MB4420.namprd12.prod.outlook.com (2603:10b6:5:2a7::8) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.15; Mon, 4 Jul
- 2022 20:45:38 +0000
-Received: from CO1NAM11FT055.eop-nam11.prod.protection.outlook.com
- (2603:10b6:300:39:cafe::c4) by MWHPR18CA0050.outlook.office365.com
- (2603:10b6:300:39::12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.21 via Frontend
- Transport; Mon, 4 Jul 2022 20:45:38 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.14; Mon, 4 Jul
+ 2022 20:45:41 +0000
+Received: from CO1NAM11FT012.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:8c:cafe::f4) by MW4PR03CA0130.outlook.office365.com
+ (2603:10b6:303:8c::15) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.14 via Frontend
+ Transport; Mon, 4 Jul 2022 20:45:41 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.235; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.235) by
- CO1NAM11FT055.mail.protection.outlook.com (10.13.175.129) with Microsoft SMTP
+ 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.238; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.238) by
+ CO1NAM11FT012.mail.protection.outlook.com (10.13.175.192) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5395.14 via Frontend Transport; Mon, 4 Jul 2022 20:45:37 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL107.nvidia.com
- (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Mon, 4 Jul
- 2022 20:45:37 +0000
+ 15.20.5395.14 via Frontend Transport; Mon, 4 Jul 2022 20:45:41 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL105.nvidia.com
+ (10.27.9.14) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Mon, 4 Jul
+ 2022 20:45:40 +0000
 Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail201.nvidia.com
  (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Mon, 4 Jul 2022
- 13:45:36 -0700
+ 13:45:40 -0700
 Received: from vdi.nvidia.com (10.127.8.14) by mail.nvidia.com (10.129.68.6)
  with Microsoft SMTP Server id 15.2.986.26 via Frontend Transport; Mon, 4 Jul
- 2022 13:45:33 -0700
+ 2022 13:45:37 -0700
 From:   Vlad Buslov <vladbu@nvidia.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>, <saeedm@nvidia.com>
 CC:     <jianbol@nvidia.com>, <idosch@nvidia.com>,
         <xiyou.wangcong@gmail.com>, <jhs@mojatatu.com>, <jiri@resnulli.us>,
         <netdev@vger.kernel.org>, <maord@nvidia.com>,
         Vlad Buslov <vladbu@nvidia.com>
-Subject: [PATCH net 0/2] Fix police 'continue' action offload
-Date:   Mon, 4 Jul 2022 22:44:03 +0200
-Message-ID: <20220704204405.2563457-1-vladbu@nvidia.com>
+Subject: [PATCH net 1/2] net/sched: act_police: allow 'continue' action offload
+Date:   Mon, 4 Jul 2022 22:44:04 +0200
+Message-ID: <20220704204405.2563457-2-vladbu@nvidia.com>
 X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220704204405.2563457-1-vladbu@nvidia.com>
+References: <20220704204405.2563457-1-vladbu@nvidia.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 847474a6-cbde-498b-d3a2-08da5dfe26c4
-X-MS-TrafficTypeDiagnostic: CH0PR12MB5204:EE_
+X-MS-Office365-Filtering-Correlation-Id: 52784aa3-d11f-45db-7820-08da5dfe28c3
+X-MS-TrafficTypeDiagnostic: DM6PR12MB4420:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: AWHrtC+p4Aof+jeDp++JqtFDJF1QQp2Qw+nExoDOzekOhPjSwTF1X2NQ31Aya17j5cCAYIefWxoI9yku3Nuh/rsq7ypOOHtI3uWCR6nIA1owaZOA8DlWOEUIEKg+tP+CL/zbWz853sA/FT1YFwRPcIlrkFUVw8G5s0FerGv0Ljr9Yv+oixaSc1V6KADHCBYpB8jZPxdcOLH62iW3jf/WHCAW6KQJ5bo2PvJwtShJyeJrqTc+6Wokbi9hNQVpF5Dc2YnUF68MoFEvoJL0LLiGeDSwCgILzcZYt+1COvm9OAzy09fJMuIDHHbUFdi7Mj8XDqmoz9rdnBVhisgd4djb8/7e+DH2l4AwrimHiIOXMEHEU6fh+NQf8oxPIwrLFUcNkmQYR2x/HzuRNmYvaLEP2Z25zWr115biIKnwxg4CCRLrPp7GEsfppYfCo+dRKIYaCvEeGfSson45OPuOQqSdD34JoR6M+LT4b0RAhPhRrlchLq6Mg9XBXqo6ie9J1P5K4RMLAChskqE6W0TTheSETM7sABxwJyhgGCltqVMWxnv6TlVKbC1u2VhDhLC4znx2dQkX1THeWJrfJzJTO030v4WvvZf2o7HuA3kOgCRCibSFWNVTeeMKP/3hKhKHrcO54+tO2T5FJl15kkxWZwkSb2hCH1ybdS4u6HAJhD7ojLvHca21aNIbYzWhtjy0kWuCH6L1teLcDPY/GnwrcVgAmeg2r7LX1fiZGVnIeZ/LfeD3W+Wf+t2qF6oGqpZg/3WJJ6RaxiS1nIQjsAfu7GEoht+eQoGiZRoNKw38MZSD98Q/FwFmj1rUYZSd3/fmk9izIDJFWau8JjgtZ5rODIjFvnJoP1/F68MfqBMPa6AXD1U=
-X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(346002)(39860400002)(396003)(136003)(376002)(46966006)(36840700001)(40470700004)(478600001)(54906003)(6636002)(2906002)(36756003)(6666004)(110136005)(316002)(70586007)(8936002)(7696005)(70206006)(5660300002)(86362001)(4744005)(2616005)(4326008)(8676002)(356005)(36860700001)(26005)(81166007)(1076003)(107886003)(336012)(426003)(186003)(47076005)(83380400001)(82310400005)(40480700001)(41300700001)(82740400003)(40460700003)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: DU9wB9+nWhV4xRD1ZSot4iezUd34KYFH/sUppEHIG6Qa0cTgOuatdPL8oSeBZQf4Bg9lLHUHKMW38BwvUpqw76zQGGJ0ZEhw/PXozJNEEnxqZIQuRorKdvEH8RyobdUf68Gu5GLZWLqSuJMQpnVw2piAeqwEwaVE0NT2hj8f/CkhoDyNqt7RdXvN5pHJpwd3V86yTDyi6VZ7mxO9kh2xn1YW81VMFVFZu6G9V9li2AcO2dfal1Zj0elgz5X+2lkYQ1/8i0I4CUJ0IpRGJJgt2GtCFghp364aVB/ZvY2Ae5VKDFgawxiqfyNOjgYGlwwUGjYGWSuXkte7TjySCG+NUtExpHkljnF2qJ6DPlgyldI5EDxS886zD/PtIGUsNNnecBogmghqP+L1DgB2Xm8dvtvAZ4XnOkCBmPE+m0TpzOxeZJ62eqICit3WQVk6fnh+Yc+pzDcW76mrl3svNSE9fMt1fql25il7+7Du3y7AhlABftBffRQafW9iL1XLKmXXkpclpgD0y31to4tQObVrYnWcBNCw3JW8rYNOW4EoeO6bC4VdCVQvOgKsCiZi5cIii0qPFI/L9FeRxMiHMhixEZ1XsHqSLfMIegnquTvVj4rivdoEi/gaHrnM9mCdUJHhZJJ0D1cXr/HTK28uOUhuIJBBJmbZ9Qn+oVIR9qitiVCZ7cw3beW28iCUZFlEBuzSamd10fhMY8nruxPSCSpuzPKV17SmkrqiYPzSwRRIub+/OOsVSBvBiAidALAQegT2vJX5VprHouRPRYCGntdcBL0LLnuuGEsDYsOCN+BXNvmpwHJiWO6qC0Xd7SVjb7RUcIiQnJU9q13lLacL4M6UoHGNRFRLaeWbp6+lpraPe88=
+X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(376002)(396003)(136003)(346002)(39860400002)(40470700004)(36840700001)(46966006)(5660300002)(36860700001)(86362001)(81166007)(107886003)(336012)(426003)(186003)(47076005)(83380400001)(356005)(36756003)(2616005)(1076003)(82740400003)(8936002)(478600001)(26005)(7696005)(110136005)(54906003)(6636002)(41300700001)(316002)(70586007)(70206006)(2906002)(40480700001)(8676002)(6666004)(4326008)(40460700003)(82310400005)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Jul 2022 20:45:37.8762
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Jul 2022 20:45:41.2071
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 847474a6-cbde-498b-d3a2-08da5dfe26c4
+X-MS-Exchange-CrossTenant-Network-Message-Id: 52784aa3-d11f-45db-7820-08da5dfe28c3
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT055.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT012.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR12MB5204
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4420
 X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
@@ -102,20 +104,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-TC act_police with 'continue' action had been supported by mlx5 matchall
-classifier offload implementation for some time. However, 'continue' was
-assumed implicitly and recently got broken in multiple places. Fix it in
-both TC hardware offload validation code and mlx5 driver.
+Offloading police with action TC_ACT_UNSPEC was erroneously disabled even
+though it was supported by mlx5 matchall offload implementation, which
+didn't verify the action type but instead assumed that any single police
+action attached to matchall classifier is a 'continue' action. Lack of
+action type check made it non-obvious what mlx5 matchall implementation
+actually supports and caused implementers and reviewers of referenced
+commits to disallow it as a part of improved validation code.
 
-Vlad Buslov (2):
-  net/sched: act_police: allow 'continue' action offload
-  net/mlx5e: Fix matchall police parameters validation
+Fixes: b8cd5831c61c ("net: flow_offload: add tc police action parameters")
+Fixes: b50e462bc22d ("net/sched: act_police: Add extack messages for offload failure")
+Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+Tested-by: Ido Schimmel <idosch@nvidia.com>
+---
+ include/net/flow_offload.h | 1 +
+ net/sched/act_police.c     | 2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
 
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 13 ++++++-------
- include/net/flow_offload.h                      |  1 +
- net/sched/act_police.c                          |  2 +-
- 3 files changed, 8 insertions(+), 8 deletions(-)
-
+diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
+index 6484095a8c01..7ac313858037 100644
+--- a/include/net/flow_offload.h
++++ b/include/net/flow_offload.h
+@@ -152,6 +152,7 @@ enum flow_action_id {
+ 	FLOW_ACTION_PIPE,
+ 	FLOW_ACTION_VLAN_PUSH_ETH,
+ 	FLOW_ACTION_VLAN_POP_ETH,
++	FLOW_ACTION_CONTINUE,
+ 	NUM_FLOW_ACTIONS,
+ };
+ 
+diff --git a/net/sched/act_police.c b/net/sched/act_police.c
+index 79c8901f66ab..b759628a47c2 100644
+--- a/net/sched/act_police.c
++++ b/net/sched/act_police.c
+@@ -442,7 +442,7 @@ static int tcf_police_act_to_flow_act(int tc_act, u32 *extval,
+ 		act_id = FLOW_ACTION_JUMP;
+ 		*extval = tc_act & TC_ACT_EXT_VAL_MASK;
+ 	} else if (tc_act == TC_ACT_UNSPEC) {
+-		NL_SET_ERR_MSG_MOD(extack, "Offload not supported when conform/exceed action is \"continue\"");
++		act_id = FLOW_ACTION_CONTINUE;
+ 	} else {
+ 		NL_SET_ERR_MSG_MOD(extack, "Unsupported conform/exceed action offload");
+ 	}
 -- 
 2.36.1
 
