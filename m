@@ -2,85 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F785565115
-	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 11:40:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C9401565119
+	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 11:42:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233798AbiGDJkR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jul 2022 05:40:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36148 "EHLO
+        id S233899AbiGDJl4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Jul 2022 05:41:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229765AbiGDJkQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 05:40:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F088B21A4
-        for <netdev@vger.kernel.org>; Mon,  4 Jul 2022 02:40:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8658061414
-        for <netdev@vger.kernel.org>; Mon,  4 Jul 2022 09:40:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E25B5C341CA;
-        Mon,  4 Jul 2022 09:40:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656927614;
-        bh=B5MaxqKOU4L4Y/leFdcY1ZKe7qkud51naZaUOnZt8Zc=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=om7ExKmulsp2R1jPEcUlvQQMlDeOfucT7DN1DM7Q557SmG2F03Zxo7AZ+NJMQDwNN
-         yOd8YgKQka2f6QK4y8e/cAZpnOYQ3mwattrqG6y7yTXfZllNuL7kGqzKOM3gxfu+cK
-         O/MO69SbKftU9hyqnx/ZJHV0Ns2Dmx6YwtoDBypnZWFz3ZGDqo0xsFvaZBJVUbK1+n
-         YvLmYZi/aX4V99skQRGikcr1FuJLI0RGyQDnyeCukMDFqzoyiXVctLh6WAJOHXgCUQ
-         qlXmEfjnX3CdtBfHCErVUhRaib7prDXPz1SJhLqWqTD0A1Zx1V7MaIm+Egz/R5PU9e
-         28trfhmiIpoYQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C77B7E45BDB;
-        Mon,  4 Jul 2022 09:40:14 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S233728AbiGDJly (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 05:41:54 -0400
+Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29FF221A4
+        for <netdev@vger.kernel.org>; Mon,  4 Jul 2022 02:41:54 -0700 (PDT)
+Received: by mail-yb1-xb43.google.com with SMTP id l11so15857079ybu.13
+        for <netdev@vger.kernel.org>; Mon, 04 Jul 2022 02:41:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=E61+1ZXk0XLFmLKS8+LHaQBAQCUVSplsnRDmkf+keqM=;
+        b=HwmD0BhIo6ti1mMi843J31iYChs0hZkaK9LwA5MjHkH+g6XD/4Rti6GozSKvYXH31g
+         oTXAF+AiiuuQS6WY3MpFbDgs5Mf29He7LQ6fP2KPoSDY+hS2JFG9C8yLS8wEEbn+jJ+G
+         AdgqKpr247KAAmvNzPtlaI3NkvkthhcBkuIFRz0sFLAJX1CEKMvbb4R4pG2Z6A35bbhY
+         0h+efV+ENy7CFSa4zk9cTKaC0ez3mQ5uTTx78eJ9YfCtRfkooPWQXzx4InFxWu5oCmxF
+         CzeUgL16bDgAA8hr7eXWzGPy2qdoffveB1syMwfEhCTQsjQNEYiNwYofYn34uRMhhYEo
+         23Jw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=E61+1ZXk0XLFmLKS8+LHaQBAQCUVSplsnRDmkf+keqM=;
+        b=XsEuYYq/yIevPgtpRpSmyBehd25pJSy1bBfBfhkOppKYlMKJOCjSBes8EofzolhA1G
+         R1K+V5KO9iqbW+OCWg9C38tAuhF638V+YqlFS/tgpjyOFBJGE9dqoBdVdU+YzxAJa6wv
+         YOA9I/UDHz+NUjvbIf43gC0vWNXVmrQOOY/13yP1wKytWl3foYEpSNze3PckRyDo8q2g
+         BvMUlA12FtDLx0VvzJ4yi4ryRC6jvMixRwTBL2ZC8CD+jtQ6wqyyp/7X0ykwiPJlkZxC
+         N9PF1G9X+yopWIkMHFsQZDck5dZtNCgWGvPDwftflaXa0sxNNntcYP328tqaG+ZO45wv
+         DedQ==
+X-Gm-Message-State: AJIora9zmhTNffFx6OUKOH05TmjxkkLjyHb4gLcV0UB+zDdayVJI1OPu
+        LPpg9dce6B9wZQ3Tor6mI0RT5aFzCYPktXCsUx8=
+X-Google-Smtp-Source: AGRyM1vSseOq3PVCCTmPDq1SnuYVVoD3YFlKyHh/vRS52PnZATUIt2E9H3V6+38vfzSA5qvRXbS76B9CtmsYICUSmuY=
+X-Received: by 2002:a5b:cd0:0:b0:668:f06d:df60 with SMTP id
+ e16-20020a5b0cd0000000b00668f06ddf60mr32349590ybr.191.1656927713039; Mon, 04
+ Jul 2022 02:41:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: phy: broadcom: Add support for BCM53128
- internal PHYs
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165692761481.15750.8517791391616718062.git-patchwork-notify@kernel.org>
-Date:   Mon, 04 Jul 2022 09:40:14 +0000
-References: <20220701175606.22586-1-kurt@linutronix.de>
-In-Reply-To: <20220701175606.22586-1-kurt@linutronix.de>
-To:     Kurt Kanzenbach <kurt@linutronix.de>
-Cc:     f.fainelli@gmail.com, bcm-kernel-feedback-list@broadcom.com,
-        andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org
-X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Received: by 2002:a05:7010:5286:b0:2e2:3648:8c0d with HTTP; Mon, 4 Jul 2022
+ 02:41:52 -0700 (PDT)
+Reply-To: hj505432@gmail.com
+From:   "Barrister. Ben Waidhofer" <musamuhammadyusuf2@gmail.com>
+Date:   Mon, 4 Jul 2022 02:41:52 -0700
+Message-ID: <CAEfE=vGObnNjRG38nuCz3fDRmNF=jfL_urf=eOTNCjosPuP8=g@mail.gmail.com>
+Subject: Investment offer
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=4.9 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        UNDISC_FREEM autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: ****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Fri,  1 Jul 2022 19:56:06 +0200 you wrote:
-> Add support for BCM53128 internal PHYs. These support interrupts as well as
-> statistics. Therefore, enable the Broadcom PHY driver for them.
-> 
-> Tested on BCM53128 switch using the mainline b53 DSA driver.
-> 
-> Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
-> 
-> [...]
-
-Here is the summary with links:
-  - [net-next] net: phy: broadcom: Add support for BCM53128 internal PHYs
-    https://git.kernel.org/netdev/net-next/c/39bfb3c12d79
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+                                                 Barrister. Ben Waidhofer.
+                                                    Chambers & Partners.
+                                                       42 Parker Street
+                                                            London
+                                                         WC2B 5PQ.
 
 
+......I am the above named person from the stated law firm in London. I act
+for Mr. Andrew Walker, a former loyalist and a personal Friend to the
+President of Russia Vladimir Putin presently in London; he flew into
+the UK months ago before the invasion of Ukraine by Russian government.
+The sum of $3.5b was deposited in a Private bank in Switzerland for
+the procurement of MIC war equipment from North Korea to fight the
+war, but he has decided to back out of the initial plan to divert part
+of the fund for investment in a viable venture.
+
+There is a need for a matured and trusted individual or corporate
+organization to receive part of the fund. All the needed documentation
+will be perfected here in London.
+
+You are at liberty to respond for more detail.
+
+Thanks.
+Regards,
+Barrister. Ben Waidhofer
