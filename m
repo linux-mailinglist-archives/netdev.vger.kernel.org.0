@@ -2,55 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D37D564C62
-	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 06:20:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A748B564CB3
+	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 06:40:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231261AbiGDEUD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jul 2022 00:20:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45726 "EHLO
+        id S229740AbiGDEjx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Jul 2022 00:39:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229501AbiGDEUB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 00:20:01 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 857082BF4
-        for <netdev@vger.kernel.org>; Sun,  3 Jul 2022 21:20:00 -0700 (PDT)
+        with ESMTP id S229655AbiGDEjv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 00:39:51 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B73922BF2
+        for <netdev@vger.kernel.org>; Sun,  3 Jul 2022 21:39:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656908399;
+        s=mimecast20190719; t=1656909589;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=y22z2RUZ3NgYrPGiKnWlsecCXQj+o4MeykcBKY+qCEI=;
-        b=UVxf+DaBc6XUoNBT1OcitgYm02f1jsCSflGZNaRLALkE+Hg9zalj1s6YpH48/ep3MggzNO
-        BlWjrNvmmlpwOfi5TOR59jtoOU/ItD7Bi0tZh68nI9JYVW5w/X7v2FFgXd3bXccBEob+NM
-        N268zZ9TWJiuGhoGw4BavfCC15bcFWU=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+         in-reply-to:in-reply-to:references:references;
+        bh=34NQkLuDu70RYtu7A5zt/ESnLEXxvA0x7SQgJUnytlU=;
+        b=Y0pVW41/J1XQzJPYlDA/l73+RXTdlgAuFssON9b28hFS05HjS/blcdyOZAw622znoyv/pD
+        Zvj2xR0hgLj9erKvVLPBPDz4AbbbIE6qqy8twjI2sEKEEjINEp0GqvmrPgUurNgFJgWaqW
+        M3edZgKNHcllD3Xmar1yZOgASWOqhkE=
+Received: from mail-lj1-f198.google.com (mail-lj1-f198.google.com
+ [209.85.208.198]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-6-PLh6vuKwPnKomflJ2Yfg3w-1; Mon, 04 Jul 2022 00:19:55 -0400
-X-MC-Unique: PLh6vuKwPnKomflJ2Yfg3w-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C8387811E75;
-        Mon,  4 Jul 2022 04:19:54 +0000 (UTC)
-Received: from localhost.localdomain (ovpn-13-251.pek2.redhat.com [10.72.13.251])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 29F0340C1241;
-        Mon,  4 Jul 2022 04:19:50 +0000 (UTC)
-From:   Jason Wang <jasowang@redhat.com>
-To:     mst@redhat.com, jasowang@redhat.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net V4] virtio-net: fix the race between refill work and close
-Date:   Mon,  4 Jul 2022 12:19:48 +0800
-Message-Id: <20220704041948.13212-1-jasowang@redhat.com>
+ us-mta-205-0gXgSyaXOZaEGob_1SSGwQ-1; Mon, 04 Jul 2022 00:39:48 -0400
+X-MC-Unique: 0gXgSyaXOZaEGob_1SSGwQ-1
+Received: by mail-lj1-f198.google.com with SMTP id w23-20020a2e9bd7000000b0025bd31b7fe7so2402410ljj.16
+        for <netdev@vger.kernel.org>; Sun, 03 Jul 2022 21:39:48 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=34NQkLuDu70RYtu7A5zt/ESnLEXxvA0x7SQgJUnytlU=;
+        b=AQ1tu4T3NrC0/9fs5edv7Q6COZGCuzwXSGOsovL+1zmILiusv9xkpqJrVaeLknNW70
+         upVyJLntX2Ul+xSJZrmhYa+vnaLVkw8VvaWoZhpgZPwBAVSmXYMvxcMC2Uzoe3/ZniHL
+         ESUZgfaknnwPGkS+/m0sQ/1In0Pck3wflijLozo9eVpL7wgErpNRmwRyJFTT/V8VR03H
+         XZo+I6p45dkAsoKVnqQr96BCNwsQJy2l7I+A6g/Li5geUtHpOlZObuZYaNH7yU6TCk1K
+         7UTzNz/iZLzHUxYu9rrFEyhWrr7TN3rEv586b9GQRLrSAVIAo4JSKCkI7nY+THkRjiiY
+         2VtQ==
+X-Gm-Message-State: AJIora+noNJ2VTR+uE5L76eJrxnPXaU8fQ0HP8kydlYwUSLGgt993Kjk
+        PQNC9cPqm/X42DaTbR74TdNgeFiPe014m0//skF2yo6gF4cmYITEQvxoTatf/2guWvQeJsJagne
+        CdIwZKP9ynnw+wJMPAPksBlgxBr3N7VAE
+X-Received: by 2002:a05:6512:b0d:b0:481:5cb4:cf1e with SMTP id w13-20020a0565120b0d00b004815cb4cf1emr10153637lfu.442.1656909586924;
+        Sun, 03 Jul 2022 21:39:46 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1sbGuL+fn0YCwy3PFvwHzJchJaTph3jj60D8dfYlVR8XTdiZAzAbGETkaVrvpPHFEGBOLc9W/txx60ltVFAKow=
+X-Received: by 2002:a05:6512:b0d:b0:481:5cb4:cf1e with SMTP id
+ w13-20020a0565120b0d00b004815cb4cf1emr10153626lfu.442.1656909586743; Sun, 03
+ Jul 2022 21:39:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+References: <20220701132826.8132-1-lingshan.zhu@intel.com> <20220701132826.8132-2-lingshan.zhu@intel.com>
+In-Reply-To: <20220701132826.8132-2-lingshan.zhu@intel.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Mon, 4 Jul 2022 12:39:35 +0800
+Message-ID: <CACGkMEvGo2urfPriS3f6dCxT+41KJ0E-KUd4-GvUrX81BVy8Og@mail.gmail.com>
+Subject: Re: [PATCH V3 1/6] vDPA/ifcvf: get_config_size should return a value
+ no greater than dev implementation
+To:     Zhu Lingshan <lingshan.zhu@intel.com>
+Cc:     mst <mst@redhat.com>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>, Parav Pandit <parav@nvidia.com>,
+        Yongji Xie <xieyongji@bytedance.com>,
+        "Dawar, Gautam" <gautam.dawar@amd.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -58,144 +75,81 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We try using cancel_delayed_work_sync() to prevent the work from
-enabling NAPI. This is insufficient since we don't disable the source
-of the refill work scheduling. This means an NAPI poll callback after
-cancel_delayed_work_sync() can schedule the refill work then can
-re-enable the NAPI that leads to use-after-free [1].
+On Fri, Jul 1, 2022 at 9:36 PM Zhu Lingshan <lingshan.zhu@intel.com> wrote:
+>
+> ifcvf_get_config_size() should return a virtio device type specific value,
+> however the ret_value should not be greater than the onboard size of
+> the device implementation. E.g., for virtio_net, config_size should be
+> the minimum value of sizeof(struct virtio_net_config) and the onboard
+> cap size.
 
-Since the work can enable NAPI, we can't simply disable NAPI before
-calling cancel_delayed_work_sync(). So fix this by introducing a
-dedicated boolean to control whether or not the work could be
-scheduled from NAPI.
+Rethink of this, I wonder what's the value of exposing device
+implementation details to users? Anyhow the parent is in charge of
+"emulating" config space accessing.
 
-[1]
-==================================================================
-BUG: KASAN: use-after-free in refill_work+0x43/0xd4
-Read of size 2 at addr ffff88810562c92e by task kworker/2:1/42
+If we do this, it's probably a blocker for cross vendor stuff.
 
-CPU: 2 PID: 42 Comm: kworker/2:1 Not tainted 5.19.0-rc1+ #480
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.16.0-0-gd239552ce722-prebuilt.qemu.org 04/01/2014
-Workqueue: events refill_work
-Call Trace:
- <TASK>
- dump_stack_lvl+0x34/0x44
- print_report.cold+0xbb/0x6ac
- ? _printk+0xad/0xde
- ? refill_work+0x43/0xd4
- kasan_report+0xa8/0x130
- ? refill_work+0x43/0xd4
- refill_work+0x43/0xd4
- process_one_work+0x43d/0x780
- worker_thread+0x2a0/0x6f0
- ? process_one_work+0x780/0x780
- kthread+0x167/0x1a0
- ? kthread_exit+0x50/0x50
- ret_from_fork+0x22/0x30
- </TASK>
-...
+Thanks
 
-Fixes: b2baed69e605c ("virtio_net: set/cancel work on ndo_open/ndo_stop")
-Signed-off-by: Jason Wang <jasowang@redhat.com>
----
-Changes since V3:
-- rebase to -net
-Changes since V2:
-- use spin_unlock()/lock_bh() in open/stop to synchronize with bh
-Changes since V1:
-- Tweak the changelog
----
- drivers/net/virtio_net.c | 35 +++++++++++++++++++++++++++++++++--
- 1 file changed, 33 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index 356cf8dd4164..68430d7923ac 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -251,6 +251,12 @@ struct virtnet_info {
- 	/* Does the affinity hint is set for virtqueues? */
- 	bool affinity_hint_set;
- 
-+	/* Is refill work enabled? */
-+	bool refill_work_enabled;
-+
-+	/* The lock to synchronize the access to refill_work_enabled */
-+	spinlock_t refill_lock;
-+
- 	/* CPU hotplug instances for online & dead */
- 	struct hlist_node node;
- 	struct hlist_node node_dead;
-@@ -348,6 +354,20 @@ static struct page *get_a_page(struct receive_queue *rq, gfp_t gfp_mask)
- 	return p;
- }
- 
-+static void enable_refill_work(struct virtnet_info *vi)
-+{
-+	spin_lock_bh(&vi->refill_lock);
-+	vi->refill_work_enabled = true;
-+	spin_unlock_bh(&vi->refill_lock);
-+}
-+
-+static void disable_refill_work(struct virtnet_info *vi)
-+{
-+	spin_lock_bh(&vi->refill_lock);
-+	vi->refill_work_enabled = false;
-+	spin_unlock_bh(&vi->refill_lock);
-+}
-+
- static void virtqueue_napi_schedule(struct napi_struct *napi,
- 				    struct virtqueue *vq)
- {
-@@ -1527,8 +1547,12 @@ static int virtnet_receive(struct receive_queue *rq, int budget,
- 	}
- 
- 	if (rq->vq->num_free > min((unsigned int)budget, virtqueue_get_vring_size(rq->vq)) / 2) {
--		if (!try_fill_recv(vi, rq, GFP_ATOMIC))
--			schedule_delayed_work(&vi->refill, 0);
-+		if (!try_fill_recv(vi, rq, GFP_ATOMIC)) {
-+			spin_lock(&vi->refill_lock);
-+			if (vi->refill_work_enabled)
-+				schedule_delayed_work(&vi->refill, 0);
-+			spin_unlock(&vi->refill_lock);
-+		}
- 	}
- 
- 	u64_stats_update_begin(&rq->stats.syncp);
-@@ -1651,6 +1675,8 @@ static int virtnet_open(struct net_device *dev)
- 	struct virtnet_info *vi = netdev_priv(dev);
- 	int i, err;
- 
-+	enable_refill_work(vi);
-+
- 	for (i = 0; i < vi->max_queue_pairs; i++) {
- 		if (i < vi->curr_queue_pairs)
- 			/* Make sure we have some buffers: if oom use wq. */
-@@ -2033,6 +2059,8 @@ static int virtnet_close(struct net_device *dev)
- 	struct virtnet_info *vi = netdev_priv(dev);
- 	int i;
- 
-+	/* Make sure NAPI doesn't schedule refill work */
-+	disable_refill_work(vi);
- 	/* Make sure refill_work doesn't re-enable napi! */
- 	cancel_delayed_work_sync(&vi->refill);
- 
-@@ -2792,6 +2820,8 @@ static int virtnet_restore_up(struct virtio_device *vdev)
- 
- 	virtio_device_ready(vdev);
- 
-+	enable_refill_work(vi);
-+
- 	if (netif_running(vi->dev)) {
- 		err = virtnet_open(vi->dev);
- 		if (err)
-@@ -3535,6 +3565,7 @@ static int virtnet_probe(struct virtio_device *vdev)
- 	vdev->priv = vi;
- 
- 	INIT_WORK(&vi->config_work, virtnet_config_changed_work);
-+	spin_lock_init(&vi->refill_lock);
- 
- 	/* If we can receive ANY GSO packets, we must allocate large ones. */
- 	if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO4) ||
--- 
-2.25.1
+>
+> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+> ---
+>  drivers/vdpa/ifcvf/ifcvf_base.c | 13 +++++++++++--
+>  drivers/vdpa/ifcvf/ifcvf_base.h |  2 ++
+>  2 files changed, 13 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/vdpa/ifcvf/ifcvf_base.c b/drivers/vdpa/ifcvf/ifcvf_base.c
+> index 48c4dadb0c7c..fb957b57941e 100644
+> --- a/drivers/vdpa/ifcvf/ifcvf_base.c
+> +++ b/drivers/vdpa/ifcvf/ifcvf_base.c
+> @@ -128,6 +128,7 @@ int ifcvf_init_hw(struct ifcvf_hw *hw, struct pci_dev *pdev)
+>                         break;
+>                 case VIRTIO_PCI_CAP_DEVICE_CFG:
+>                         hw->dev_cfg = get_cap_addr(hw, &cap);
+> +                       hw->cap_dev_config_size = le32_to_cpu(cap.length);
+>                         IFCVF_DBG(pdev, "hw->dev_cfg = %p\n", hw->dev_cfg);
+>                         break;
+>                 }
+> @@ -233,15 +234,23 @@ int ifcvf_verify_min_features(struct ifcvf_hw *hw, u64 features)
+>  u32 ifcvf_get_config_size(struct ifcvf_hw *hw)
+>  {
+>         struct ifcvf_adapter *adapter;
+> +       u32 net_config_size = sizeof(struct virtio_net_config);
+> +       u32 blk_config_size = sizeof(struct virtio_blk_config);
+> +       u32 cap_size = hw->cap_dev_config_size;
+>         u32 config_size;
+>
+>         adapter = vf_to_adapter(hw);
+> +       /* If the onboard device config space size is greater than
+> +        * the size of struct virtio_net/blk_config, only the spec
+> +        * implementing contents size is returned, this is very
+> +        * unlikely, defensive programming.
+> +        */
+>         switch (hw->dev_type) {
+>         case VIRTIO_ID_NET:
+> -               config_size = sizeof(struct virtio_net_config);
+> +               config_size = cap_size >= net_config_size ? net_config_size : cap_size;
+>                 break;
+>         case VIRTIO_ID_BLOCK:
+> -               config_size = sizeof(struct virtio_blk_config);
+> +               config_size = cap_size >= blk_config_size ? blk_config_size : cap_size;
+>                 break;
+>         default:
+>                 config_size = 0;
+> diff --git a/drivers/vdpa/ifcvf/ifcvf_base.h b/drivers/vdpa/ifcvf/ifcvf_base.h
+> index 115b61f4924b..f5563f665cc6 100644
+> --- a/drivers/vdpa/ifcvf/ifcvf_base.h
+> +++ b/drivers/vdpa/ifcvf/ifcvf_base.h
+> @@ -87,6 +87,8 @@ struct ifcvf_hw {
+>         int config_irq;
+>         int vqs_reused_irq;
+>         u16 nr_vring;
+> +       /* VIRTIO_PCI_CAP_DEVICE_CFG size */
+> +       u32 cap_dev_config_size;
+>  };
+>
+>  struct ifcvf_adapter {
+> --
+> 2.31.1
+>
 
