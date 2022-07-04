@@ -2,381 +2,295 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 149375650A3
-	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 11:22:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 891F05650A7
+	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 11:24:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233192AbiGDJWj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jul 2022 05:22:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48124 "EHLO
+        id S233274AbiGDJXv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Jul 2022 05:23:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233650AbiGDJWb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 05:22:31 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 93469AE60;
-        Mon,  4 Jul 2022 02:22:29 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A16B523A;
-        Mon,  4 Jul 2022 02:22:29 -0700 (PDT)
-Received: from e126311.manchester.arm.com (unknown [10.57.71.6])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1572B3F792;
-        Mon,  4 Jul 2022 02:22:26 -0700 (PDT)
-Date:   Mon, 4 Jul 2022 10:22:20 +0100
-From:   Kajetan Puchalski <kajetan.puchalski@arm.com>
-To:     Florian Westphal <fw@strlen.de>
-Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Mel Gorman <mgorman@suse.de>,
-        lukasz.luba@arm.com, dietmar.eggemann@arm.com,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, stable@vger.kernel.org,
-        regressions@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [Regression] stress-ng udp-flood causes kernel panic on Ampere
- Altra
-Message-ID: <YsKxTAaIgvKMfOoU@e126311.manchester.arm.com>
-References: <Yr7WTfd6AVTQkLjI@e126311.manchester.arm.com>
- <20220701200110.GA15144@breakpoint.cc>
- <YsAnPhPfWRjpkdmn@e126311.manchester.arm.com>
- <20220702205651.GB15144@breakpoint.cc>
+        with ESMTP id S230098AbiGDJXu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 05:23:50 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7FF3656D;
+        Mon,  4 Jul 2022 02:23:47 -0700 (PDT)
+Received: from fraeml710-chm.china.huawei.com (unknown [172.18.147.201])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Lc0cl6Pvnz67x0m;
+        Mon,  4 Jul 2022 17:19:35 +0800 (CST)
+Received: from lhreml745-chm.china.huawei.com (10.201.108.195) by
+ fraeml710-chm.china.huawei.com (10.206.15.59) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 4 Jul 2022 11:23:45 +0200
+Received: from [10.122.132.241] (10.122.132.241) by
+ lhreml745-chm.china.huawei.com (10.201.108.195) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 4 Jul 2022 10:23:44 +0100
+Message-ID: <5bc000ac-3761-7128-1dc9-f7179fcb2164@huawei.com>
+Date:   Mon, 4 Jul 2022 12:23:43 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220702205651.GB15144@breakpoint.cc>
-X-Spam-Status: No, score=-6.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH v6 01/17] landlock: renames access mask
+Content-Language: ru
+To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+CC:     <willemdebruijn.kernel@gmail.com>,
+        <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <netfilter-devel@vger.kernel.org>, <yusongping@huawei.com>,
+        <anton.sirazetdinov@huawei.com>
+References: <20220621082313.3330667-1-konstantin.meskhidze@huawei.com>
+ <20220621082313.3330667-2-konstantin.meskhidze@huawei.com>
+ <09f25976-e1a6-02af-e8ca-6feef0cdebec@digikod.net>
+From:   "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
+In-Reply-To: <09f25976-e1a6-02af-e8ca-6feef0cdebec@digikod.net>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.122.132.241]
+X-ClientProxiedBy: lhreml754-chm.china.huawei.com (10.201.108.204) To
+ lhreml745-chm.china.huawei.com (10.201.108.195)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jul 02, 2022 at 10:56:51PM +0200, Florian Westphal wrote:
-> > That would make sense, from further experiments I ran it somehow seems
-> > to be related to the number of workers being spawned by stress-ng along
-> > with the CPUs/cores involved.
-> >
-> > For instance, running the test with <=25 workers (--udp-flood 25 etc.)
-> > results in the test running fine for at least 15 minutes.
-> 
-> Ok.  I will let it run for longer on the machines I have access to.
-> 
-> In mean time, you could test attached patch, its simple s/refcount_/atomic_/
-> in nf_conntrack.
-> 
-> If mainline (patch vs. HEAD 69cb6c6556ad89620547318439) crashes for you
-> but works with attached patch someone who understands aarch64 memory ordering
-> would have to look more closely at refcount_XXX functions to see where they
-> might differ from atomic_ ones.
 
-I can confirm that the patch seems to solve the issue.
-With it applied on top of the 5.19-rc5 tag the test runs fine for at
-least 15 minutes which was not the case before so it looks like it is
-that aarch64 memory ordering problem.
 
+7/1/2022 8:08 PM, Mickaël Salaün пишет:
 > 
-> If it still crashes, please try below hunk in addition, although I don't see
-> how it would make a difference.
+> On 21/06/2022 10:22, Konstantin Meskhidze wrote:
+>> To support network type rules,
+>> this modification extends and renames
+>> ruleset's access masks.
+>> This patch adds filesystem helper functions
+>> to set and get filesystem mask. Also the
+>> modification adds a helper structure
+>> landlock_access_mask to support managing
+>> multiple access mask.
 > 
-> This is the one spot where the original conversion replaced atomic_inc()
-> with refcount_set(), this is on allocation, refcount is expected to be 0 so
-> refcount_inc() triggers a warning hinting at a use-after free.
+> Please use a text-width of 72 columns for all commit messages. You can
+> also split them into paragraphs.
 > 
-> diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
-> --- a/net/netfilter/nf_conntrack_core.c
-> +++ b/net/netfilter/nf_conntrack_core.c
-> @@ -1776,7 +1776,7 @@ init_conntrack(struct net *net, struct nf_conn *tmpl,
->                 __nf_ct_try_assign_helper(ct, tmpl, GFP_ATOMIC);
->  
->         /* Now it is going to be associated with an sk_buff, set refcount to 1. */
-> -       atomic_set(&ct->ct_general.use, 1);
-> +       atomic_inc(&ct->ct_general.use);
->  
->         if (exp) {
->                 if (exp->expectfn)
+   Ok. I will rewrite all commits' messages. Thanks.
+>> 
+>> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+>> ---
+>> 
+>> Changes since v5:
+>> * Changes access_mask_t to u32.
+>> * Formats code with clang-format-14.
+>> 
+>> Changes since v4:
+>> * Deletes struct landlock_access_mask.
+>> 
+>> Changes since v3:
+>> * Splits commit.
+>> * Adds get_mask, set_mask helpers for filesystem.
+>> * Adds new struct landlock_access_mask.
+>> 
+>> ---
+>>   security/landlock/fs.c       |  7 ++++---
+>>   security/landlock/ruleset.c  | 18 +++++++++---------
+>>   security/landlock/ruleset.h  | 25 ++++++++++++++++++++-----
+>>   security/landlock/syscalls.c |  7 ++++---
+>>   4 files changed, 37 insertions(+), 20 deletions(-)
+>> 
+>> diff --git a/security/landlock/fs.c b/security/landlock/fs.c
+>> index ec5a6247cd3e..e6da08ed99d1 100644
+>> --- a/security/landlock/fs.c
+>> +++ b/security/landlock/fs.c
+>> @@ -167,7 +167,8 @@ int landlock_append_fs_rule(struct landlock_ruleset *const ruleset,
+>>   		return -EINVAL;
+>> 
+>>   	/* Transforms relative access rights to absolute ones. */
+>> -	access_rights |= LANDLOCK_MASK_ACCESS_FS & ~ruleset->fs_access_masks[0];
+>> +	access_rights |= LANDLOCK_MASK_ACCESS_FS &
+>> +			 ~landlock_get_fs_access_mask(ruleset, 0);
+>>   	object = get_inode_object(d_backing_inode(path->dentry));
+>>   	if (IS_ERR(object))
+>>   		return PTR_ERR(object);
+>> @@ -286,7 +287,7 @@ get_handled_accesses(const struct landlock_ruleset *const domain)
+>> 
+>>   		for (layer_level = 0; layer_level < domain->num_layers;
+>>   		     layer_level++) {
+>> -			if (domain->fs_access_masks[layer_level] &
+>> +			if (landlock_get_fs_access_mask(domain, layer_level) &
+>>   			    BIT_ULL(access_bit)) {
+>>   				access_dom |= BIT_ULL(access_bit);
+>>   				break;
+>> @@ -316,7 +317,7 @@ init_layer_masks(const struct landlock_ruleset *const domain,
+>> 
+>>   		for_each_set_bit(access_bit, &access_req,
+>>   				 ARRAY_SIZE(*layer_masks)) {
+>> -			if (domain->fs_access_masks[layer_level] &
+>> +			if (landlock_get_fs_access_mask(domain, layer_level) &
+>>   			    BIT_ULL(access_bit)) {
+>>   				(*layer_masks)[access_bit] |=
+>>   					BIT_ULL(layer_level);
+>> diff --git a/security/landlock/ruleset.c b/security/landlock/ruleset.c
+>> index 996484f98bfd..a3fd58d01f09 100644
+>> --- a/security/landlock/ruleset.c
+>> +++ b/security/landlock/ruleset.c
+>> @@ -29,7 +29,7 @@ static struct landlock_ruleset *create_ruleset(const u32 num_layers)
+>>   	struct landlock_ruleset *new_ruleset;
+>> 
+>>   	new_ruleset =
+>> -		kzalloc(struct_size(new_ruleset, fs_access_masks, num_layers),
+>> +		kzalloc(struct_size(new_ruleset, access_masks, num_layers),
+>>   			GFP_KERNEL_ACCOUNT);
+>>   	if (!new_ruleset)
+>>   		return ERR_PTR(-ENOMEM);
+>> @@ -40,22 +40,22 @@ static struct landlock_ruleset *create_ruleset(const u32 num_layers)
+>>   	/*
+>>   	 * hierarchy = NULL
+>>   	 * num_rules = 0
+>> -	 * fs_access_masks[] = 0
+>> +	 * access_masks[] = 0
+>>   	 */
+>>   	return new_ruleset;
+>>   }
+>> 
+>>   struct landlock_ruleset *
+>> -landlock_create_ruleset(const access_mask_t fs_access_mask)
+>> +landlock_create_ruleset(const access_mask_t access_mask)
+>>   {
+>>   	struct landlock_ruleset *new_ruleset;
+>> 
+>>   	/* Informs about useless ruleset. */
+>> -	if (!fs_access_mask)
+>> +	if (!access_mask)
+>>   		return ERR_PTR(-ENOMSG);
+>>   	new_ruleset = create_ruleset(1);
+>>   	if (!IS_ERR(new_ruleset))
+>> -		new_ruleset->fs_access_masks[0] = fs_access_mask;
+>> +		landlock_set_fs_access_mask(new_ruleset, access_mask, 0);
+>>   	return new_ruleset;
+>>   }
+>> 
+>> @@ -117,7 +117,7 @@ static void build_check_ruleset(void)
+>>   		.num_rules = ~0,
+>>   		.num_layers = ~0,
+>>   	};
+>> -	typeof(ruleset.fs_access_masks[0]) fs_access_mask = ~0;
+>> +	typeof(ruleset.access_masks[0]) fs_access_mask = ~0;
+>> 
+>>   	BUILD_BUG_ON(ruleset.num_rules < LANDLOCK_MAX_NUM_RULES);
+>>   	BUILD_BUG_ON(ruleset.num_layers < LANDLOCK_MAX_NUM_LAYERS);
+>> @@ -281,7 +281,7 @@ static int merge_ruleset(struct landlock_ruleset *const dst,
+>>   		err = -EINVAL;
+>>   		goto out_unlock;
+>>   	}
+>> -	dst->fs_access_masks[dst->num_layers - 1] = src->fs_access_masks[0];
+>> +	dst->access_masks[dst->num_layers - 1] = src->access_masks[0];
+>> 
+>>   	/* Merges the @src tree. */
+>>   	rbtree_postorder_for_each_entry_safe(walker_rule, next_rule, &src->root,
+>> @@ -340,8 +340,8 @@ static int inherit_ruleset(struct landlock_ruleset *const parent,
+>>   		goto out_unlock;
+>>   	}
+>>   	/* Copies the parent layer stack and leaves a space for the new layer. */
+>> -	memcpy(child->fs_access_masks, parent->fs_access_masks,
+>> -	       flex_array_size(parent, fs_access_masks, parent->num_layers));
+>> +	memcpy(child->access_masks, parent->access_masks,
+>> +	       flex_array_size(parent, access_masks, parent->num_layers));
+>> 
+>>   	if (WARN_ON_ONCE(!parent->hierarchy)) {
+>>   		err = -EINVAL;
+>> diff --git a/security/landlock/ruleset.h b/security/landlock/ruleset.h
+>> index d43231b783e4..bd7ab39859bf 100644
+>> --- a/security/landlock/ruleset.h
+>> +++ b/security/landlock/ruleset.h
+>> @@ -19,7 +19,7 @@
+>>   #include "limits.h"
+>>   #include "object.h"
+>> 
+>> -typedef u16 access_mask_t;
+>> +typedef u32 access_mask_t;
+>>   /* Makes sure all filesystem access rights can be stored. */
+>>   static_assert(BITS_PER_TYPE(access_mask_t) >= LANDLOCK_NUM_ACCESS_FS);
+>>   /* Makes sure for_each_set_bit() and for_each_clear_bit() calls are OK. */
+>> @@ -110,7 +110,7 @@ struct landlock_ruleset {
+>>   		 * section.  This is only used by
+>>   		 * landlock_put_ruleset_deferred() when @usage reaches zero.
+>>   		 * The fields @lock, @usage, @num_rules, @num_layers and
+>> -		 * @fs_access_masks are then unused.
+>> +		 * @access_masks are then unused.
+>>   		 */
+>>   		struct work_struct work_free;
+>>   		struct {
+>> @@ -137,7 +137,7 @@ struct landlock_ruleset {
+>>   			 */
+>>   			u32 num_layers;
+>>   			/**
+>> -			 * @fs_access_masks: Contains the subset of filesystem
+>> +			 * @access_masks: Contains the subset of filesystem
+>>   			 * actions that are restricted by a ruleset.  A domain
+>>   			 * saves all layers of merged rulesets in a stack
+>>   			 * (FAM), starting from the first layer to the last
+>> @@ -148,13 +148,13 @@ struct landlock_ruleset {
+>>   			 * layers are set once and never changed for the
+>>   			 * lifetime of the ruleset.
+>>   			 */
+>> -			access_mask_t fs_access_masks[];
+>> +			access_mask_t access_masks[];
+>>   		};
+>>   	};
+>>   };
+>> 
+>>   struct landlock_ruleset *
+>> -landlock_create_ruleset(const access_mask_t fs_access_mask);
+>> +landlock_create_ruleset(const access_mask_t access_mask);
+>> 
+>>   void landlock_put_ruleset(struct landlock_ruleset *const ruleset);
+>>   void landlock_put_ruleset_deferred(struct landlock_ruleset *const ruleset);
+>> @@ -177,4 +177,19 @@ static inline void landlock_get_ruleset(struct landlock_ruleset *const ruleset)
+>>   		refcount_inc(&ruleset->usage);
+>>   }
+>> 
+>> +/* A helper function to set a filesystem mask. */
+>> +static inline void
+>> +landlock_set_fs_access_mask(struct landlock_ruleset *ruleset,
+>> +			    const access_mask_t access_maskset, u16 mask_level)
+>> +{
+>> +	ruleset->access_masks[mask_level] = access_maskset;
+>> +}
+>> +
+>> +/* A helper function to get a filesystem mask. */
+>> +static inline u32
+> 
+> You need to use access_mask_t everywhere, including here.
+> 
+   I got it. Will fix it. Thanks.
 
-> From 4234018dff486bdc30f4fe4625c8da1a8e30c2f6 Mon Sep 17 00:00:00 2001
-> From: Florian Westphal <fw@strlen.de>
-> Date: Sat, 2 Jul 2022 22:42:57 +0200
-> Subject: [PATCH 1/1] netfilter: conntrack: revert to atomic_t api
-> 
-> Just for testing.
-> ---
->  include/linux/netfilter/nf_conntrack_common.h |  6 ++---
->  include/net/netfilter/nf_conntrack.h          |  2 +-
->  net/netfilter/nf_conntrack_core.c             | 24 +++++++++----------
->  net/netfilter/nf_conntrack_expect.c           |  2 +-
->  net/netfilter/nf_conntrack_netlink.c          |  6 ++---
->  net/netfilter/nf_conntrack_standalone.c       |  4 ++--
->  net/netfilter/nf_flow_table_core.c            |  2 +-
->  net/netfilter/nft_ct.c                        |  4 ++--
->  net/netfilter/xt_CT.c                         |  2 +-
->  9 files changed, 26 insertions(+), 26 deletions(-)
-> 
-> diff --git a/include/linux/netfilter/nf_conntrack_common.h b/include/linux/netfilter/nf_conntrack_common.h
-> index 2770db2fa080..48a78944182d 100644
-> --- a/include/linux/netfilter/nf_conntrack_common.h
-> +++ b/include/linux/netfilter/nf_conntrack_common.h
-> @@ -25,7 +25,7 @@ struct ip_conntrack_stat {
->  #define NFCT_PTRMASK	~(NFCT_INFOMASK)
->  
->  struct nf_conntrack {
-> -	refcount_t use;
-> +	atomic_t use;
->  };
->  
->  void nf_conntrack_destroy(struct nf_conntrack *nfct);
-> @@ -33,13 +33,13 @@ void nf_conntrack_destroy(struct nf_conntrack *nfct);
->  /* like nf_ct_put, but without module dependency on nf_conntrack */
->  static inline void nf_conntrack_put(struct nf_conntrack *nfct)
->  {
-> -	if (nfct && refcount_dec_and_test(&nfct->use))
-> +	if (nfct && atomic_dec_and_test(&nfct->use))
->  		nf_conntrack_destroy(nfct);
->  }
->  static inline void nf_conntrack_get(struct nf_conntrack *nfct)
->  {
->  	if (nfct)
-> -		refcount_inc(&nfct->use);
-> +		atomic_inc(&nfct->use);
->  }
->  
->  #endif /* _NF_CONNTRACK_COMMON_H */
-> diff --git a/include/net/netfilter/nf_conntrack.h b/include/net/netfilter/nf_conntrack.h
-> index a32be8aa7ed2..9fab0c8835bb 100644
-> --- a/include/net/netfilter/nf_conntrack.h
-> +++ b/include/net/netfilter/nf_conntrack.h
-> @@ -180,7 +180,7 @@ void nf_ct_destroy(struct nf_conntrack *nfct);
->  /* decrement reference count on a conntrack */
->  static inline void nf_ct_put(struct nf_conn *ct)
->  {
-> -	if (ct && refcount_dec_and_test(&ct->ct_general.use))
-> +	if (ct && atomic_dec_and_test(&ct->ct_general.use))
->  		nf_ct_destroy(&ct->ct_general);
->  }
->  
-> diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
-> index 082a2fd8d85b..4469e49d78a7 100644
-> --- a/net/netfilter/nf_conntrack_core.c
-> +++ b/net/netfilter/nf_conntrack_core.c
-> @@ -554,7 +554,7 @@ struct nf_conn *nf_ct_tmpl_alloc(struct net *net,
->  	tmpl->status = IPS_TEMPLATE;
->  	write_pnet(&tmpl->ct_net, net);
->  	nf_ct_zone_add(tmpl, zone);
-> -	refcount_set(&tmpl->ct_general.use, 1);
-> +	atomic_set(&tmpl->ct_general.use, 1);
->  
->  	return tmpl;
->  }
-> @@ -586,7 +586,7 @@ void nf_ct_destroy(struct nf_conntrack *nfct)
->  	struct nf_conn *ct = (struct nf_conn *)nfct;
->  
->  	pr_debug("%s(%p)\n", __func__, ct);
-> -	WARN_ON(refcount_read(&nfct->use) != 0);
-> +	WARN_ON(atomic_read(&nfct->use) != 0);
->  
->  	if (unlikely(nf_ct_is_template(ct))) {
->  		nf_ct_tmpl_free(ct);
-> @@ -726,7 +726,7 @@ nf_ct_match(const struct nf_conn *ct1, const struct nf_conn *ct2)
->  /* caller must hold rcu readlock and none of the nf_conntrack_locks */
->  static void nf_ct_gc_expired(struct nf_conn *ct)
->  {
-> -	if (!refcount_inc_not_zero(&ct->ct_general.use))
-> +	if (!atomic_inc_not_zero(&ct->ct_general.use))
->  		return;
->  
->  	if (nf_ct_should_gc(ct))
-> @@ -794,7 +794,7 @@ __nf_conntrack_find_get(struct net *net, const struct nf_conntrack_zone *zone,
->  		 * in, try to obtain a reference and re-check tuple
->  		 */
->  		ct = nf_ct_tuplehash_to_ctrack(h);
-> -		if (likely(refcount_inc_not_zero(&ct->ct_general.use))) {
-> +		if (likely(atomic_inc_not_zero(&ct->ct_general.use))) {
->  			if (likely(nf_ct_key_equal(h, tuple, zone, net)))
->  				goto found;
->  
-> @@ -923,7 +923,7 @@ nf_conntrack_hash_check_insert(struct nf_conn *ct)
->  
->  	smp_wmb();
->  	/* The caller holds a reference to this object */
-> -	refcount_set(&ct->ct_general.use, 2);
-> +	atomic_set(&ct->ct_general.use, 2);
->  	__nf_conntrack_hash_insert(ct, hash, reply_hash);
->  	nf_conntrack_double_unlock(hash, reply_hash);
->  	NF_CT_STAT_INC(net, insert);
-> @@ -981,7 +981,7 @@ static void __nf_conntrack_insert_prepare(struct nf_conn *ct)
->  {
->  	struct nf_conn_tstamp *tstamp;
->  
-> -	refcount_inc(&ct->ct_general.use);
-> +	atomic_inc(&ct->ct_general.use);
->  
->  	/* set conntrack timestamp, if enabled. */
->  	tstamp = nf_conn_tstamp_find(ct);
-> @@ -1384,7 +1384,7 @@ static unsigned int early_drop_list(struct net *net,
->  		    nf_ct_is_dying(tmp))
->  			continue;
->  
-> -		if (!refcount_inc_not_zero(&tmp->ct_general.use))
-> +		if (!atomic_inc_not_zero(&tmp->ct_general.use))
->  			continue;
->  
->  		/* kill only if still in same netns -- might have moved due to
-> @@ -1533,7 +1533,7 @@ static void gc_worker(struct work_struct *work)
->  				continue;
->  
->  			/* need to take reference to avoid possible races */
-> -			if (!refcount_inc_not_zero(&tmp->ct_general.use))
-> +			if (!atomic_inc_not_zero(&tmp->ct_general.use))
->  				continue;
->  
->  			if (gc_worker_skip_ct(tmp)) {
-> @@ -1640,7 +1640,7 @@ __nf_conntrack_alloc(struct net *net,
->  	/* Because we use RCU lookups, we set ct_general.use to zero before
->  	 * this is inserted in any list.
->  	 */
-> -	refcount_set(&ct->ct_general.use, 0);
-> +	atomic_set(&ct->ct_general.use, 0);
->  	return ct;
->  out:
->  	atomic_dec(&cnet->count);
-> @@ -1665,7 +1665,7 @@ void nf_conntrack_free(struct nf_conn *ct)
->  	/* A freed object has refcnt == 0, that's
->  	 * the golden rule for SLAB_TYPESAFE_BY_RCU
->  	 */
-> -	WARN_ON(refcount_read(&ct->ct_general.use) != 0);
-> +	WARN_ON(atomic_read(&ct->ct_general.use) != 0);
->  
->  	if (ct->status & IPS_SRC_NAT_DONE) {
->  		const struct nf_nat_hook *nat_hook;
-> @@ -1776,7 +1776,7 @@ init_conntrack(struct net *net, struct nf_conn *tmpl,
->  		__nf_ct_try_assign_helper(ct, tmpl, GFP_ATOMIC);
->  
->  	/* Now it is going to be associated with an sk_buff, set refcount to 1. */
-> -	refcount_set(&ct->ct_general.use, 1);
-> +	atomic_set(&ct->ct_general.use, 1);
->  
->  	if (exp) {
->  		if (exp->expectfn)
-> @@ -2390,7 +2390,7 @@ get_next_corpse(int (*iter)(struct nf_conn *i, void *data),
->  
->  	return NULL;
->  found:
-> -	refcount_inc(&ct->ct_general.use);
-> +	atomic_inc(&ct->ct_general.use);
->  	spin_unlock(lockp);
->  	local_bh_enable();
->  	return ct;
-> diff --git a/net/netfilter/nf_conntrack_expect.c b/net/netfilter/nf_conntrack_expect.c
-> index 96948e98ec53..84cb05eae410 100644
-> --- a/net/netfilter/nf_conntrack_expect.c
-> +++ b/net/netfilter/nf_conntrack_expect.c
-> @@ -208,7 +208,7 @@ nf_ct_find_expectation(struct net *net,
->  	 * can be sure the ct cannot disappear underneath.
->  	 */
->  	if (unlikely(nf_ct_is_dying(exp->master) ||
-> -		     !refcount_inc_not_zero(&exp->master->ct_general.use)))
-> +		     !atomic_inc_not_zero(&exp->master->ct_general.use)))
->  		return NULL;
->  
->  	if (exp->flags & NF_CT_EXPECT_PERMANENT) {
-> diff --git a/net/netfilter/nf_conntrack_netlink.c b/net/netfilter/nf_conntrack_netlink.c
-> index 722af5e309ba..d5de0e580e6c 100644
-> --- a/net/netfilter/nf_conntrack_netlink.c
-> +++ b/net/netfilter/nf_conntrack_netlink.c
-> @@ -514,7 +514,7 @@ static int ctnetlink_dump_id(struct sk_buff *skb, const struct nf_conn *ct)
->  
->  static int ctnetlink_dump_use(struct sk_buff *skb, const struct nf_conn *ct)
->  {
-> -	if (nla_put_be32(skb, CTA_USE, htonl(refcount_read(&ct->ct_general.use))))
-> +	if (nla_put_be32(skb, CTA_USE, htonl(atomic_read(&ct->ct_general.use))))
->  		goto nla_put_failure;
->  	return 0;
->  
-> @@ -1204,7 +1204,7 @@ ctnetlink_dump_table(struct sk_buff *skb, struct netlink_callback *cb)
->  			ct = nf_ct_tuplehash_to_ctrack(h);
->  			if (nf_ct_is_expired(ct)) {
->  				if (i < ARRAY_SIZE(nf_ct_evict) &&
-> -				    refcount_inc_not_zero(&ct->ct_general.use))
-> +				    atomic_inc_not_zero(&ct->ct_general.use))
->  					nf_ct_evict[i++] = ct;
->  				continue;
->  			}
-> @@ -1747,7 +1747,7 @@ static int ctnetlink_dump_one_entry(struct sk_buff *skb,
->  				  NFNL_MSG_TYPE(cb->nlh->nlmsg_type),
->  				  ct, dying, 0);
->  	if (res < 0) {
-> -		if (!refcount_inc_not_zero(&ct->ct_general.use))
-> +		if (!atomic_inc_not_zero(&ct->ct_general.use))
->  			return 0;
->  
->  		ctx->last = ct;
-> diff --git a/net/netfilter/nf_conntrack_standalone.c b/net/netfilter/nf_conntrack_standalone.c
-> index 6ad7bbc90d38..badd3f219533 100644
-> --- a/net/netfilter/nf_conntrack_standalone.c
-> +++ b/net/netfilter/nf_conntrack_standalone.c
-> @@ -303,7 +303,7 @@ static int ct_seq_show(struct seq_file *s, void *v)
->  	int ret = 0;
->  
->  	WARN_ON(!ct);
-> -	if (unlikely(!refcount_inc_not_zero(&ct->ct_general.use)))
-> +	if (unlikely(!atomic_inc_not_zero(&ct->ct_general.use)))
->  		return 0;
->  
->  	if (nf_ct_should_gc(ct)) {
-> @@ -370,7 +370,7 @@ static int ct_seq_show(struct seq_file *s, void *v)
->  	ct_show_zone(s, ct, NF_CT_DEFAULT_ZONE_DIR);
->  	ct_show_delta_time(s, ct);
->  
-> -	seq_printf(s, "use=%u\n", refcount_read(&ct->ct_general.use));
-> +	seq_printf(s, "use=%u\n", atomic_read(&ct->ct_general.use));
->  
->  	if (seq_has_overflowed(s))
->  		goto release;
-> diff --git a/net/netfilter/nf_flow_table_core.c b/net/netfilter/nf_flow_table_core.c
-> index f2def06d1070..8b3f91a60ba2 100644
-> --- a/net/netfilter/nf_flow_table_core.c
-> +++ b/net/netfilter/nf_flow_table_core.c
-> @@ -54,7 +54,7 @@ struct flow_offload *flow_offload_alloc(struct nf_conn *ct)
->  	struct flow_offload *flow;
->  
->  	if (unlikely(nf_ct_is_dying(ct) ||
-> -	    !refcount_inc_not_zero(&ct->ct_general.use)))
-> +	    !atomic_inc_not_zero(&ct->ct_general.use)))
->  		return NULL;
->  
->  	flow = kzalloc(sizeof(*flow), GFP_ATOMIC);
-> diff --git a/net/netfilter/nft_ct.c b/net/netfilter/nft_ct.c
-> index d8e1614918a1..1b6ead61a8f1 100644
-> --- a/net/netfilter/nft_ct.c
-> +++ b/net/netfilter/nft_ct.c
-> @@ -260,8 +260,8 @@ static void nft_ct_set_zone_eval(const struct nft_expr *expr,
->  
->  	ct = this_cpu_read(nft_ct_pcpu_template);
->  
-> -	if (likely(refcount_read(&ct->ct_general.use) == 1)) {
-> -		refcount_inc(&ct->ct_general.use);
-> +	if (likely(atomic_read(&ct->ct_general.use) == 1)) {
-> +		atomic_inc(&ct->ct_general.use);
->  		nf_ct_zone_add(ct, &zone);
->  	} else {
->  		/* previous skb got queued to userspace, allocate temporary
-> diff --git a/net/netfilter/xt_CT.c b/net/netfilter/xt_CT.c
-> index 267757b0392a..cf2f8c1d4fb5 100644
-> --- a/net/netfilter/xt_CT.c
-> +++ b/net/netfilter/xt_CT.c
-> @@ -24,7 +24,7 @@ static inline int xt_ct_target(struct sk_buff *skb, struct nf_conn *ct)
->  		return XT_CONTINUE;
->  
->  	if (ct) {
-> -		refcount_inc(&ct->ct_general.use);
-> +		atomic_inc(&ct->ct_general.use);
->  		nf_ct_set(skb, ct, IP_CT_NEW);
->  	} else {
->  		nf_ct_set(skb, ct, IP_CT_UNTRACKED);
-> -- 
-> 2.35.1
-> 
-
+>> +landlock_get_fs_access_mask(const struct landlock_ruleset *ruleset,
+>> +			    u16 mask_level)
+>> +{
+>> +	return ruleset->access_masks[mask_level];
+>> +}
+>>   #endif /* _SECURITY_LANDLOCK_RULESET_H */
+>> diff --git a/security/landlock/syscalls.c b/security/landlock/syscalls.c
+>> index 735a0865ea11..5836736ce9d7 100644
+>> --- a/security/landlock/syscalls.c
+>> +++ b/security/landlock/syscalls.c
+>> @@ -346,10 +346,11 @@ SYSCALL_DEFINE4(landlock_add_rule, const int, ruleset_fd,
+>>   	}
+>>   	/*
+>>   	 * Checks that allowed_access matches the @ruleset constraints
+>> -	 * (ruleset->fs_access_masks[0] is automatically upgraded to 64-bits).
+>> +	 * (ruleset->access_masks[0] is automatically upgraded to 64-bits).
+>>   	 */
+>> -	if ((path_beneath_attr.allowed_access | ruleset->fs_access_masks[0]) !=
+>> -	    ruleset->fs_access_masks[0]) {
+>> +	if ((path_beneath_attr.allowed_access |
+>> +	     landlock_get_fs_access_mask(ruleset, 0)) !=
+>> +	    landlock_get_fs_access_mask(ruleset, 0)) {
+>>   		err = -EINVAL;
+>>   		goto out_put_ruleset;
+>>   	}
+>> --
+>> 2.25.1
+>> 
+> .
