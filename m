@@ -2,108 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 63904565DD0
-	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 21:09:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DCF3565DD5
+	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 21:11:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234290AbiGDTJR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jul 2022 15:09:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58846 "EHLO
+        id S233711AbiGDTLS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Jul 2022 15:11:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234528AbiGDTJD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 15:09:03 -0400
-Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CF911E4;
-        Mon,  4 Jul 2022 12:09:03 -0700 (PDT)
-Received: by mail-il1-x135.google.com with SMTP id p9so6040739ilj.7;
-        Mon, 04 Jul 2022 12:09:03 -0700 (PDT)
+        with ESMTP id S232141AbiGDTLR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 15:11:17 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60EDA1E4
+        for <netdev@vger.kernel.org>; Mon,  4 Jul 2022 12:11:15 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id o4so14663029wrh.3
+        for <netdev@vger.kernel.org>; Mon, 04 Jul 2022 12:11:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=URkacvLwOCim4ro6sjuoVvqr16Vge8XHF6pKruCveU8=;
-        b=W7K0TqoaiiMG8G9pHOGU4jkvfJDJ0eru9aSqSlATDmhoaPMeRNCd/vTaJxn7dS4E24
-         iEdsDuzJv/HRg5MbHxV8QhjQvw7oyDRVcpNXRtjXzhi/2w0wD0lUAZLr3fqqGiqak2Kh
-         wKDdVF87sk0uZpI9ovKBLCPp1c6fV7cs3cpdYjsjg3eNGH8Ut79ab6k/+OCOUdOrXj7S
-         6C29v9vIj5nBlNGwSx7V0Rz2B2aAbOlkWBgLYa+G++6ORoxRdP63tnYuVKTD73Fly7jx
-         R+FU9vjYS7E0cGSe8sbp7xdXqMFFOs9YGiJ2uWaGHATPjUfqzve4qawwzF5Dl0z8ws5q
-         cIeQ==
+        h=from:message-id:date:mime-version:user-agent:content-language:to:cc
+         :references:subject:in-reply-to:content-transfer-encoding;
+        bh=qJIlytN/QcTsbPfybqHa6iRT4Jp0Fcepg0LwkcQfAGc=;
+        b=RGCv8X1siogvZpI44Gx4o0jGtw18bdnxpO25OPCPsnplDO0bAJ/ARqIsRr49s8Lzli
+         e/NU0ZYh7xXAwVQD6Xm8+oE9g9qqoT5tNOmdxGoVEFiFTnJgc09rk6UHqcOblO7Tj+tZ
+         oKyyPvVABLQcC826LNGjZXPSRebYFA+xRxjkNiZC+bf1I1gM8Tr2YqcJf64tzjtPVS2E
+         bg2jea6fSz81tiGKMrI/TofiST/ZHUYu4SC0ZJl1ZrnWD96uTFHaLdPsQ6qHNAj6tfEs
+         IcuoZvSeaUI/ZceRVpWgA61MT0usKVeJHMTGXbwXeL3ZKiRyYw8a1Fb1Ev0+inT3LBgT
+         sF8w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:subject:in-reply-to
          :content-transfer-encoding;
-        bh=URkacvLwOCim4ro6sjuoVvqr16Vge8XHF6pKruCveU8=;
-        b=mmcjPQ8cafDbNu2dKyDhQ3O1/HeTdI1VrYyeh8sYQWiAOMIQHWBeyRXgBiYR2uu7xl
-         Ixma9S8eyRsoF1ZcEzTGRi5zAWw1fQaQaw+deInlURpIxsH8c9d4Wab2Zgl2xUbjRjjS
-         8l/x0JP/QIdLw3OjpRXa8qHA9kpamWB4TKnGG/odR/go5z0zIx8ZxXEGF7JXZMtwinWc
-         M5jzoBsaApw4O+SSjVLqvyOn5zrnJe9Pi/2GzzBQ+DDrFCM7CJVQauXO3ITKP53JNlZZ
-         VPD9GBy0GooH8KInJVOLdYVCS4PfV9eq2jMrvvpciNkMU/m8k0XNVxwG/MfVtp4dKOss
-         RMcA==
-X-Gm-Message-State: AJIora85AwxtZ3sYQUzB1xY+O8TdIVPZdW6/pCqw3wthNwZSAJDaalF+
-        pSL9SRR27Lud+ScIzbRo401xmPw0zNQ=
-X-Google-Smtp-Source: AGRyM1ux6bLb1uwTnLkLYYHQoho8dXnSpDtJ53TL3Cd1y1agZxelqlO8ZFsAMAB91g3npZ8/n5g8xw==
-X-Received: by 2002:a05:6e02:1c07:b0:2d9:5fa0:f5d3 with SMTP id l7-20020a056e021c0700b002d95fa0f5d3mr17772939ilh.134.1656961742523;
-        Mon, 04 Jul 2022 12:09:02 -0700 (PDT)
-Received: from ?IPV6:2601:284:8200:b700:89c9:fb3c:ea5:5615? ([2601:284:8200:b700:89c9:fb3c:ea5:5615])
-        by smtp.googlemail.com with ESMTPSA id w1-20020a5ed601000000b00675305c58bdsm11466627iom.18.2022.07.04.12.09.01
+        bh=qJIlytN/QcTsbPfybqHa6iRT4Jp0Fcepg0LwkcQfAGc=;
+        b=tc62SeWJFJ5qypJ0ArOhyEM/+BqF3li2+hnUT0GWUlcrlGopl0Z+3ilBOiqawxHsYa
+         2B8phoZPJhRhYiSp2HXcL8CTpmM4QevtcDBocL4tGnM+MIrfCAmpp6sHN8ci4hbzz5tG
+         kK3CtSrxCQtcV7b+AwEKFySEbKq0GXuqWmPIqMzbbg2k/crxkqDa8dJAVh8eOz5OaU5S
+         B0mAHAYKhg4waVp9ECfDMDU9VwxTN+hx45GXZym74sWMrEvgnoHEr7zpQrIKFRy5QkfK
+         q1r3alCXME/xIs5t6jZny6FCREt4o6JgmcMJLmd4y78KSjp1KTcdewnchUHznnMkmG/M
+         dY4w==
+X-Gm-Message-State: AJIora/HN38ay8XRvQKLf8nRw+EkK8ahJM9iqESozAKRozTZE8aqGAcG
+        SDkPrZdf4nyP5x60iPbXWQA=
+X-Google-Smtp-Source: AGRyM1vOQ8mmPQxNZ6BSDGrTTr5++obcugtONpVHEMhCiLSvaMJ27wvjFHntt1cCuS/ODBRE1o9wEA==
+X-Received: by 2002:a5d:55cd:0:b0:21d:6d9d:2c4e with SMTP id i13-20020a5d55cd000000b0021d6d9d2c4emr3647037wrw.544.1656961873783;
+        Mon, 04 Jul 2022 12:11:13 -0700 (PDT)
+Received: from ?IPV6:2a01:c23:bd68:6b00:d1d3:12d2:dd53:88a9? (dynamic-2a01-0c23-bd68-6b00-d1d3-12d2-dd53-88a9.c23.pool.telefonica.de. [2a01:c23:bd68:6b00:d1d3:12d2:dd53:88a9])
+        by smtp.googlemail.com with ESMTPSA id r5-20020a05600c320500b0039db500714fsm19424704wmp.6.2022.07.04.12.11.12
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 04 Jul 2022 12:09:02 -0700 (PDT)
-Message-ID: <38135333-b277-1b1b-8346-1da2e1f114a7@gmail.com>
-Date:   Mon, 4 Jul 2022 13:09:01 -0600
+        Mon, 04 Jul 2022 12:11:13 -0700 (PDT)
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+X-Google-Original-From: Heiner Kallweit <hkallweit1@googlemail.com>
+Message-ID: <0c3da9d8-20fb-81ef-23a6-ab88921cf0d2@googlemail.com>
+Date:   Mon, 4 Jul 2022 21:10:56 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.11.0
-Subject: Re: [PATCH v2] tracing/ipv4/ipv6: Use static array for name field in
- fib*_lookup_table event
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
 Content-Language: en-US
-To:     Steven Rostedt <rostedt@goodmis.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>
-References: <20220704091436.3705edbf@rorschach.local.home>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <20220704091436.3705edbf@rorschach.local.home>
+To:     Francois Romieu <romieu@fr.zoreil.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Erhard F." <erhard_f@mailbox.org>
+References: <ee150b21-7415-dd3f-6785-0163fd150493@googlemail.com>
+ <YsI6bEFtM+2uK492@electric-eye.fr.zoreil.com>
+ <26745304-2c23-ae26-9cb9-2cf1fa5422ac@googlemail.com>
+ <YsMJ3foj4v57xPF0@electric-eye.fr.zoreil.com>
+Subject: Re: [PATCH net] r8169: fix accessing unset transport header
+In-Reply-To: <YsMJ3foj4v57xPF0@electric-eye.fr.zoreil.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/4/22 7:14 AM, Steven Rostedt wrote:
-> From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
+On 04.07.2022 17:40, Francois Romieu wrote:
+> Heiner Kallweit <hkallweit1@gmail.com> :
+>> On 04.07.2022 02:55, Francois Romieu wrote:
+>>> Heiner Kallweit <hkallweit1@gmail.com> :
+>>>> +++ b/drivers/net/ethernet/realtek/r8169_main.c
+>>> [...]
+>>>> @@ -4420,7 +4418,7 @@ static netdev_features_t rtl8169_features_check(struct sk_buff *skb,
+>>>>  		if (rtl_quirk_packet_padto(tp, skb))
+>>>>  			features &= ~NETIF_F_CSUM_MASK;
+>>>>  
+>>>> -		if (transport_offset > TCPHO_MAX &&
+>>>> +		if (skb_transport_offset(skb) > TCPHO_MAX &&
+>>>>  		    rtl_chip_supports_csum_v2(tp))
+>>>>  			features &= ~NETIF_F_CSUM_MASK;
+>>>>  	}
+>>>
+>>> Neither skb_is_gso nor CHECKSUM_PARTIAL implies a transport header so the
+>>> warning may still trigger, right ?
+>>
+>> I'm not an expert here, and due to missing chip documentation I can't say
+>> whether the chip could handle hw csumming correctly w/o transport header.
+>> I'd see whether we get more reports of this warning. If yes, then maybe
+>> we should use skb_transport_header_was_set() explicitly and disable
+>> hw csumming if there's no transport header.
 > 
-> The fib_lookup_table and fib6_lookup_table events declare name as a
-> dynamic_array, but also give it a fixed size, which defeats the purpose of
-> the dynamic array, especially since the dynamic array also includes meta
-> data in the event to specify its size.
+> (some sleep later)
 > 
-> Since the size of the name is at most 16 bytes (defined by IFNAMSIZ),
-> it is not worth spending the effort to determine the size of the string.
+> I had forgotten the NETIF_F_* stuff in the r8169 driver. :o/
 > 
-> Just use a fixed size array and copy into it. This will save 4 bytes that
-> are used for the meta data that saves the size and position of a dynamic
-> array, and even slightly speed up the event processing.
+> So, yes, ignore this point.
 > 
-> Cc: David Ahern <dsahern@gmail.com>
-> Cc: David S. Miller <davem@davemloft.net>
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-> ---
-> Changes since v1: https://lkml.kernel.org/r/20220703102359.30f12e39@rorschach.local.home
->  - Just use a fixed size array instead of calculating the
->    size needed for the dynamic allocation.
+>>> Btw it's a bit unexpected to see a "Fixes" tag related to a RTL8125 bug as
+>>> well as a "Tested-by" by the bugzilla submitter when the dmesg included in
+>>> bz216157 exibits a RTL8168e/8111e.
+>>>
+>> The Fixes tag refers to the latest change to the affected code, therefore
+>> it comes a little unexpected, right.
 > 
->  include/trace/events/fib.h  | 6 +++---
->  include/trace/events/fib6.h | 8 ++++----
->  2 files changed, 7 insertions(+), 7 deletions(-)
+> ?
+> 
+> 8d520b4de3ed does not change the affected code.
 > 
 
-Reviewed-by: David Ahern <dsahern@kernel.org>
+This chunk of 8d520b4de3ed 
 
+@@ -4128,9 +4183,10 @@ static bool rtl8169_tso_csum_v2(struct rtl8169_private *tp,
+ 
+ 		opts[1] |= transport_offset << TCPHO_SHIFT;
+ 	} else {
+-		if (unlikely(skb->len < ETH_ZLEN && rtl_test_hw_pad_bug(tp)))
+-			/* eth_skb_pad would free the skb on error */
+-			return !__skb_put_padto(skb, ETH_ZLEN, false);
++		unsigned int padto = rtl_quirk_packet_padto(tp, skb);
++
++		/* skb_padto would free the skb on error */
++		return !__skb_put_padto(skb, padto, false);
+ 	}
+ 
+ 	return true;
+
+changes the context for this part of the patch. Therefore the patch wouldn't
+apply cleanly.
+
+
+@@ -4235,7 +4234,7 @@ static bool rtl8169_tso_csum_v2(struct rtl8169_private *tp,
+ 		else
+ 			WARN_ON_ONCE(1);
+ 
+-		opts[1] |= transport_offset << TCPHO_SHIFT;
++		opts[1] |= skb_transport_offset(skb) << TCPHO_SHIFT;
+ 	} else {
+ 		unsigned int padto = rtl_quirk_packet_padto(tp, skb);
+ 
+
+
+> Eric's unset transport offset detection debug code would have produced the
+> same output with the parent of the "Fixes" commit id:
+> 
+
+I know, but due to the fact that the warnings are harmless and the new check
+doesn't exist in earlier versions, I think we can omit these kernel versions.
+
+> $ git cat-file -p 8d520b4de3ed^:drivers/net/ethernet/realtek/r8169_main.c | grep -A4 -B1 -E 'rtl8169_features_check'
+> 
+> static netdev_features_t rtl8169_features_check(struct sk_buff *skb,
+> 						struct net_device *dev,
+> 						netdev_features_t features)
+> {
+> 	int transport_offset = skb_transport_offset(skb);
+> --
+> 	.ndo_start_xmit		= rtl8169_start_xmit,
+> 	.ndo_features_check	= rtl8169_features_check,
+> 	.ndo_tx_timeout		= rtl8169_tx_timeout,
+> 	.ndo_validate_addr	= eth_validate_addr,
+> 	.ndo_change_mtu		= rtl8169_change_mtu,
+> 	.ndo_fix_features	= rtl8169_fix_features,
+> 
+> 
+> -> 8d520b4de3ed does not modify the first
+> 'int transport_offset = skb_transport_offset(skb);' statement and neither
+> does it modify the code path to rtl8169_features_check 
+> 
+> 8d520b4de3ed actually removes some logical path towards rtl8169_tso_csum_v2
+> but it does not change (nor does it break) the relevant code:
+> 
+> $ git cat-file -p 8d520b4de3ed^:drivers/net/ethernet/realtek/r8169_main.c | grep -A3 -B1 -E 'bool rtl8169_tso_csum_v2'
+> 
+> static bool rtl8169_tso_csum_v2(struct rtl8169_private *tp,
+> 				struct sk_buff *skb, u32 *opts)
+> {
+> 	u32 transport_offset = (u32)skb_transport_offset(skb);
+> 
+> 
 
