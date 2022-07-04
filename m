@@ -2,86 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CAC3C565D7D
-	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 20:26:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27C78565D91
+	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 20:44:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231177AbiGDS0Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jul 2022 14:26:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38168 "EHLO
+        id S229556AbiGDSoN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Jul 2022 14:44:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230054AbiGDS0X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 14:26:23 -0400
+        with ESMTP id S229595AbiGDSoM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 14:44:12 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CB5B82AD1
-        for <netdev@vger.kernel.org>; Mon,  4 Jul 2022 11:26:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F1C6EAE56
+        for <netdev@vger.kernel.org>; Mon,  4 Jul 2022 11:44:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656959180;
+        s=mimecast20190719; t=1656960251;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=PnHE1Fmm3dD20/PWMICE8P40a11Tvt3NNjhIvetHMKs=;
-        b=dMROpZQXPgP7FUfW8pPQBOi2ydZpyFNczgJXPeamZGrg3vxACo2U2ABsovJMsf/5w0oMD0
-        qHWrQ/I+F71ycrVjsZWdtyumqt457FUbfTiqpl4K1bXTEA3+Bt3YEUF6E9xsVb6ebSRFdx
-        YK+EpTdUqVlPn/zpsNlHVSr0LBkxkXI=
-Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
- [209.85.167.71]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=/XeGRpP6ZId+7T6ByVHweuCJUQTeXWvQUlmQR22hrw0=;
+        b=OZ7QxvGlf04MKXihXxE4xpriIvjho6cvRkH1ubv2f1stqyWcnqqVJsTGUNG4n3Vj0CVQ9a
+        Aa0kYwHFEcVd2Unoj+oUW2MqUFNbyqg4fhicmdTbKmKrF3/iCDYZ9U1OBsUqv0QuAIMmtO
+        3JxMrFN9XDQ/dSo43JtF+5iWAY1/1b8=
+Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com
+ [209.85.167.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-669-iZPXazR4M5e9bH_vxYNhmQ-1; Mon, 04 Jul 2022 14:26:19 -0400
-X-MC-Unique: iZPXazR4M5e9bH_vxYNhmQ-1
-Received: by mail-lf1-f71.google.com with SMTP id bp15-20020a056512158f00b0047f603e5f92so3316888lfb.20
-        for <netdev@vger.kernel.org>; Mon, 04 Jul 2022 11:26:19 -0700 (PDT)
+ us-mta-19-A8wgzCzNPlWqQ9s6EJyQvQ-1; Mon, 04 Jul 2022 14:44:09 -0400
+X-MC-Unique: A8wgzCzNPlWqQ9s6EJyQvQ-1
+Received: by mail-lf1-f69.google.com with SMTP id p2-20020a05651212c200b004814102d512so3285769lfg.1
+        for <netdev@vger.kernel.org>; Mon, 04 Jul 2022 11:44:09 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:message-id:date:mime-version:user-agent:cc
          :subject:content-language:to:references:in-reply-to
          :content-transfer-encoding;
-        bh=PnHE1Fmm3dD20/PWMICE8P40a11Tvt3NNjhIvetHMKs=;
-        b=Hkszabi5ByQR8Y1NxwhAW6Mprg+jPdTPSHXP4Gqf+4XgkfAMAwPq0Hd0C4+EB77rr/
-         uhxdYpWLosu9eOti9blSCeiLzTIfVWRpV1JxhG9k911sVGBtVRV1q8ZkKIIqQ3QybpES
-         OUAcc2D76CB5W/zfbght0dXLbk0kcEpmXs07Ws66aGXeEqkZTe/Tx7xW1svlFjlqQhkK
-         kCiRqCN2KWBlpnH0RN3/s9eMqexQGfjBtva2+I/QDw9A91TRa+g+Eq3WDqdNQ0sZJrCT
-         3/iCi2ELyL9y/Uufq5CQh6/zNQSZyqufnP6X1n69hYk+ggQvj5lmHMGFQ3zeK4qZ9FIa
-         Zz+A==
-X-Gm-Message-State: AJIora8Aa6hk2rbMAGa6uPqFvWixBIyaS/AM1t0xMtQqzxYjzXEWmlYa
-        jlP4U1PN+gOlkvxnIPdcUmSvZId3zuvBZByQopjoycNp9Ue+lhs/uJ7Gj+AqoqaFMBEmigGdF7y
-        MpKb9bRahElPBLm74
-X-Received: by 2002:a2e:bf27:0:b0:246:7ed6:33b0 with SMTP id c39-20020a2ebf27000000b002467ed633b0mr18205726ljr.167.1656959178030;
-        Mon, 04 Jul 2022 11:26:18 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1tAcT1V6ZC9TJlTz3gqpYB/0gVILKOCboMNrd6sk9hCWdcja7d6UyTIl9BqZhEQjLo/O2JEbA==
-X-Received: by 2002:a2e:bf27:0:b0:246:7ed6:33b0 with SMTP id c39-20020a2ebf27000000b002467ed633b0mr18205718ljr.167.1656959177737;
-        Mon, 04 Jul 2022 11:26:17 -0700 (PDT)
+        bh=/XeGRpP6ZId+7T6ByVHweuCJUQTeXWvQUlmQR22hrw0=;
+        b=FrjeL0IGvJ0r3kOClRha1KnQvjWRsKz64Q+UuYKn3s/tQ4DFuQM+WXBMjJ8yb+lyz6
+         XubYl1kdYMr4cZAsz+Of1LO8P4Hw8YARI/MmhyrbFz1gz7cU1DV8wRLOrxVvhINywdXJ
+         UeBukC8h1Caux8magEEpOzX8Tw9MoheANKJ/+XbTPIj22yizIEouHHrtyc3z0xhjW2dL
+         fjMqekrCoFxlbRgyOhIgvEk0DlCKTuryt+/AAJ5oY80tyWKBrRm2jPJf1Aqu4C/AxKgE
+         2229EITRlGvVMqciRCG2un4b/h6UJ3xyJQ3wFR94IDc2BfyDncf5IMk9jqVtl7W1S8MD
+         NP0A==
+X-Gm-Message-State: AJIora9DiT2SQJyTI2NNzFhr8wSu3ggH/2Zjg12ne2MAORsGCONTcxib
+        96fxtPGVn3LOA2lSy2spBcjwCVLy9LTPRtbyOh3A+DWpuU7gOvdejtiAUn6giWwAACi47fL6ABf
+        wEdN5NtkgIJKuIYpy
+X-Received: by 2002:a2e:a786:0:b0:25b:c51a:2c0b with SMTP id c6-20020a2ea786000000b0025bc51a2c0bmr17302937ljf.215.1656960248339;
+        Mon, 04 Jul 2022 11:44:08 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1sUjZDQTJKS/cC/EbwD6uXZ8y+pFvj472qgkIKZD5nHhQ69eebfOBxPU6CyfijqaCYd1r2I6g==
+X-Received: by 2002:a2e:a786:0:b0:25b:c51a:2c0b with SMTP id c6-20020a2ea786000000b0025bc51a2c0bmr17302926ljf.215.1656960248133;
+        Mon, 04 Jul 2022 11:44:08 -0700 (PDT)
 Received: from [192.168.0.50] (87-59-106-155-cable.dk.customer.tdc.net. [87.59.106.155])
-        by smtp.gmail.com with ESMTPSA id c2-20020ac25f62000000b00478f3fe716asm5248002lfc.200.2022.07.04.11.26.15
+        by smtp.gmail.com with ESMTPSA id c2-20020ac25f62000000b00478f3fe716asm5254746lfc.200.2022.07.04.11.44.06
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 04 Jul 2022 11:26:16 -0700 (PDT)
+        Mon, 04 Jul 2022 11:44:07 -0700 (PDT)
 From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
 X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Message-ID: <b8085a4d-5ede-3cc0-a177-ad97fe08ce25@redhat.com>
-Date:   Mon, 4 Jul 2022 20:26:15 +0200
+Message-ID: <263b8398-01fa-a8df-09d9-69bd8e49bc1e@redhat.com>
+Date:   Mon, 4 Jul 2022 20:44:06 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.10.0
-Cc:     brouer@redhat.com,
-        "xdp-hints@xdp-project.net" <xdp-hints@xdp-project.net>,
-        "Lobakin, Alexandr" <alexandr.lobakin@intel.com>
-Subject: Re: [PATCH RFC bpf-next 5/9] xdp: controlling XDP-hints from BPF-prog
- via helper
-Content-Language: en-US
-To:     "Zaremba, Larysa" <larysa.zaremba@intel.com>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Jesper Dangaard Brouer <jbrouer@redhat.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+Cc:     brouer@redhat.com, "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
         Andrii Nakryiko <andrii@kernel.org>,
-        Netdev <netdev@vger.kernel.org>
-References: <DM4PR11MB54718267242004151337602F97BE9@DM4PR11MB5471.namprd11.prod.outlook.com>
-In-Reply-To: <DM4PR11MB54718267242004151337602F97BE9@DM4PR11MB5471.namprd11.prod.outlook.com>
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        bpf <bpf@vger.kernel.org>, Xdp <xdp-newbies@vger.kernel.org>
+Subject: Re: [PATCH bpf-next] selftests, bpf: remove AF_XDP samples
+Content-Language: en-US
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Jesper Dangaard Brouer <jbrouer@redhat.com>
+References: <20220630093717.8664-1-magnus.karlsson@gmail.com>
+ <fa929729-6122-195f-aa4b-e5d3fedb1887@redhat.com>
+ <CAJ8uoz2KmpVf7nkJXUsHhmOtS2Td+rMOX8-PRqzz9QxJB-tZ3g@mail.gmail.com>
+In-Reply-To: <CAJ8uoz2KmpVf7nkJXUsHhmOtS2Td+rMOX8-PRqzz9QxJB-tZ3g@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
         RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -90,113 +95,65 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 04/07/2022 13.00, Zaremba, Larysa wrote:
-> Toke Høiland-Jørgensen <toke@redhat.com> writes:
+On 30/06/2022 16.20, Magnus Karlsson wrote:
+> On Thu, Jun 30, 2022 at 3:44 PM Jesper Dangaard Brouer
+> <jbrouer@redhat.com> wrote:
 >>
->> Jesper Dangaard Brouer <jbrouer@redhat.com> writes:
 >>
->>> On 29/06/2022 16.20, Toke Høiland-Jørgensen wrote:
->>>> Jesper Dangaard Brouer <brouer@redhat.com> writes:
->>>>
->>>>> XDP BPF-prog's need a way to interact with the XDP-hints. This
->>>>> patch introduces a BPF-helper function, that allow XDP BPF-prog's
->>>>> to interact with the XDP-hints.
->>>>>
->>>>> BPF-prog can query if any XDP-hints have been setup and if this is
->>>>> compatible with the xdp_hints_common struct. If XDP-hints are
->>>>> available the BPF "origin" is returned (see enum
->>>>> xdp_hints_btf_origin) as BTF can come from different sources or
->>>>> origins e.g. vmlinux, module or local.
->>>>
->>>> I'm not sure I quite understand what this origin is supposed to be
->>>> good for?
+>> On 30/06/2022 11.37, Magnus Karlsson wrote:
+>>> From: Magnus Karlsson <magnus.karlsson@intel.com>
 >>>
->>> Some background info on BTF is needed here: BTF_ID numbers are not
->>> globally unique identifiers, thus we need to know where it originate
->>> from, to make it unique (as we store this BTF_ID in XDP-hints).
+>>> Remove the AF_XDP samples from samples/bpf as they are dependent on
+>>> the AF_XDP support in libbpf. This support has now been removed in the
+>>> 1.0 release, so these samples cannot be compiled anymore. Please start
+>>> to use libxdp instead. It is backwards compatible with the AF_XDP
+>>> support that was offered in libbpf. New samples can be found in the
+>>> various xdp-project repositories connected to libxdp and by googling.
 >>>
->>> There is a connection between origin "vmlinux" and "module", which
->>> is that vmlinux will start at ID=1 and end at a max ID number.
->>> Modules refer to ID's in "vmlinux", and for this to work, they will
->>> shift their own numbering to start after ID=max-vmlinux-id.
->>>
->>> Origin "local" is for BTF information stored in the BPF-ELF object file.
->>> Their numbering starts at ID=1.  The use-case is that a BPF-prog
->>> want to extend the kernel drivers BTF-layout, and e.g. add a
->>> RX-timestamp like [1].  Then BPF-prog can check if it knows module's
->>> BTF_ID and then extend via bpf_xdp_adjust_meta, and update BTF_ID in
->>> XDP-hints and call the helper (I introduced) marking this as origin
->>> "local" for kernel to know this is no-longer origin "module".
+>>> Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
 >>
->> Right, I realise that :)
+>> Will you (or Maciej) be submitting these samples to XDP-tools[1] which
+>> is the current home for libxdp or maybe BPF-examples[2] ?
 >>
->> My point was that just knowing "this is a BTF ID coming from a module"
->> is not terribly useful; you could already figure that out by just
->> looking at the ID and seeing if it's larger than the maximum ID in vmlinux BTF.
+>>    [1] https://github.com/xdp-project/xdp-tools
+>>    [2] https://github.com/xdp-project/bpf-examples
 >>
->> Rather, what we need is a way to identify *which* module the BTF ID
->> comes from; and luckily, the kernel assigns a unique ID to every BTF
->> *object* as well as to each type ID within that object. These can be
->> dumped by bpftool:
+>> I know Toke is ready to take over maintaining these, but we will
+>> appreciate someone to open a PR with this code...
 >>
->> # bpftool btf
->> bpftool btf
->> [sudo] password for alrua:
->> 1: name [vmlinux]  size 4800187B
->> 2: name [serio]  size 2588B
->> 3: name [i8042]  size 11786B
->> 4: name [rng_core]  size 8184B
->> [...]
->> 2062: name <anon>  size 36965B
->> 	pids bpftool(547298)
+>>> ---
+>>>    MAINTAINERS                     |    2 -
+>>>    samples/bpf/Makefile            |    9 -
+>>>    samples/bpf/xdpsock.h           |   19 -
+>>>    samples/bpf/xdpsock_ctrl_proc.c |  190 ---
+>>>    samples/bpf/xdpsock_kern.c      |   24 -
+>>>    samples/bpf/xdpsock_user.c      | 2019 -------------------------------
+>>>    samples/bpf/xsk_fwd.c           | 1085 -----------------
 >>
->> IDs 2-4 are module BTF objects, and that last one is the ID of a BTF
->> object loaded along with a BPF program by bpftool itself... So we *do*
->> in fact have a unique ID, by combining the BTF object ID with the type
->> ID; this is what Alexander is proposing to put into the xdp-hints
->> struct as well (combining the two IDs into a single u64).
-
-Thanks for the explanation. I think I understand it now, and I agree
-that we should extend/combining the two IDs into a single u64.
-
-To Andrii, what is the right terminology when talking about these two
-different BTF-ID's:
-
-- BTF object ID and BTF type ID?
-
-- Where BTF *object* ID are the IDs we see above from 'bpftool btf',
-   where vmlinux=1 and module's IDs will start after 1.
-
-- Where BTF *type* ID are the IDs the individual data "types" within a
-   BTF "object" (e.g. struct xdp_hints_common that BPF-prog's can get
-   via calling bpf_core_type_id_kernel()).
-
-
-> That's correct, concept was previously discussed [1]. The ID of BTF object wasn't
-> exposed in CO-RE allocations though, we've changed it in the first 4 patches.
-> The main logic is in "libbpf: factor out BTF loading from load_module_btfs()"
-> and "libbpf: patch module BTF ID into BPF insns".
+>> The code in samples/bpf/xsk_fwd.c is interesting, because it contains a
+>> buffer memory manager, something I've seen people struggle with getting
+>> right and performant (at the same time).
 > 
-> We have a sample that wasn't included eventually, but can possibly
-> give a general understanding of our approach [2].
+> I can push xsk_fwd to BPF-examples. Though I do think that xdpsock has
+> become way too big to serve as a sample. It slowly turned into a catch
+> all demonstrating every single feature of AF_XDP. We need a minimal
+> example and then likely other samples for other features that should
+> be demoed. So I suggest that xdpsock dies here and we start over with
+> something minimal and use xsk_fwd for the forwarding and mempool
+> example.
+
+I trust that we in bpf-examples[0] will see a PR with this from 
+you/Intel, so:
+
+Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+
+
+> Toke, I think you told me at Recipes in Paris that someone from RedHat
+> was working on an example. Did I remember correctly?
 > 
-> [1] https://lore.kernel.org/all/CAEf4BzZO=7MKWfx2OCwEc+sKkfPZYzaELuobi4q5p1bOKk4AQQ@mail.gmail.com/
-> [2] https://github.com/alobakin/linux/pull/16/files#diff-c5983904cbe0c280453d59e8a1eefb56c67018c38d5da0c1122abc86225fc7c9
-> 
-(appreciate the links)
+>> You can get my ACK if someone commits to port this to [1] or [2], or a
+>> 3rd place that have someone what will maintain this in the future.
+>>
 
-I wonder how these BTF object IDs gets resolved for my "local" category?
-(Origin "local" is for BTF information stored in the BPF-ELF object file)
-
-Note: For "local" BTF type IDs BPF-prog resolve these via
-bpf_core_type_id_local() (why I choose the term "local").
-
---Jesper
-
-p.s. For unknown reasons lore.kernel.org did match Larysa's reply with 
-the patchset thread here[3].
-
-  [3] 
-https://lore.kernel.org/bpf/165643378969.449467.13237011812569188299.stgit@firesoul/#r
-
+[0] https://github.com/xdp-project/bpf-examples/
 
