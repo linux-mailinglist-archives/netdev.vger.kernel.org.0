@@ -2,222 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BBDF2564C47
-	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 06:02:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D37D564C62
+	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 06:20:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229445AbiGDECy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jul 2022 00:02:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37362 "EHLO
+        id S231261AbiGDEUD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Jul 2022 00:20:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229473AbiGDECw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 00:02:52 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C294B6343
-        for <netdev@vger.kernel.org>; Sun,  3 Jul 2022 21:02:51 -0700 (PDT)
+        with ESMTP id S229501AbiGDEUB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 00:20:01 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 857082BF4
+        for <netdev@vger.kernel.org>; Sun,  3 Jul 2022 21:20:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656907370;
+        s=mimecast20190719; t=1656908399;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=HDvcxMkTKOE3YDsEGpILSgl3XDOYTursfKJU9/dGAhI=;
-        b=DpUlngRqASM9pQUdnX2Zf8w4cVClqvzSCDdRpFmsEJhuD04Uo1NujMtf31x35kktljAqfC
-        UZ9n78Rll6+4uqrS4u4h3O7F5YdISRKVLDfsVrfjJHTj6nfhqvkgQSHMsxdIJEHOUSb7hU
-        mv2PcItBy+2D8zpi40XfSKBEf4i1uII=
-Received: from mail-pl1-f198.google.com (mail-pl1-f198.google.com
- [209.85.214.198]) by relay.mimecast.com with ESMTP with STARTTLS
+         content-transfer-encoding:content-transfer-encoding;
+        bh=y22z2RUZ3NgYrPGiKnWlsecCXQj+o4MeykcBKY+qCEI=;
+        b=UVxf+DaBc6XUoNBT1OcitgYm02f1jsCSflGZNaRLALkE+Hg9zalj1s6YpH48/ep3MggzNO
+        BlWjrNvmmlpwOfi5TOR59jtoOU/ItD7Bi0tZh68nI9JYVW5w/X7v2FFgXd3bXccBEob+NM
+        N268zZ9TWJiuGhoGw4BavfCC15bcFWU=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-1-2H5IGuvQNsS0bAvRTs7iEA-1; Mon, 04 Jul 2022 00:02:48 -0400
-X-MC-Unique: 2H5IGuvQNsS0bAvRTs7iEA-1
-Received: by mail-pl1-f198.google.com with SMTP id f13-20020a170902ce8d00b0016a408cbf3bso4431404plg.7
-        for <netdev@vger.kernel.org>; Sun, 03 Jul 2022 21:02:48 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=HDvcxMkTKOE3YDsEGpILSgl3XDOYTursfKJU9/dGAhI=;
-        b=aQKTt4IyA+7H2h4SSaoBWfFYLDlLtrH22oKEkY7/9coUlzapxq1haqO7wKN7Rk6XyS
-         1Zjgutj1+pKvRfhTfU8fxEcBmy9wcV8dijisP/obi3Lr2VbZwFnZn+16+X/8lHML9f6Z
-         JNQ/WRWrB77dehCKVlmRKeRDdYPEHtN71rxZj00ezOPIRgIZIu7KZEuyagSw6SnnnSQA
-         NBumTL3Q/dZyiY13yr8E8soCR8FwIk+UCi2PPfj4yK4ShFiHz9GGoGKTe9W0y/1VzXnk
-         jtEqnqzlChwMHVkQ9lLS0BfdV9bRZ0VtmeemJ4JINlmPYRff9BoJwj1wVZO6CfddzxFE
-         t3xw==
-X-Gm-Message-State: AJIora+8E1OlkrhIgWb8314aPWBjvg3PUly7ocB19LltvvD5bOsXVx56
-        23DJ3ij0Nc+8yd1U7GYDkMvNN3gPrgRrf5AvD4J8Zx9577w5mEIfDT7E0PitwgD3ys6lDjZH8xw
-        m9ZaaOlgUOOGV39ln
-X-Received: by 2002:a17:902:7604:b0:16a:f36d:73f3 with SMTP id k4-20020a170902760400b0016af36d73f3mr33910504pll.170.1656907367257;
-        Sun, 03 Jul 2022 21:02:47 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1uxDno/Wbd/PRnmg2ukyIktZ4uuSCmlyYFX7x8EioNmBJfd4eulRHgxbl4Lai6a6wYdtHVs8g==
-X-Received: by 2002:a17:902:7604:b0:16a:f36d:73f3 with SMTP id k4-20020a170902760400b0016af36d73f3mr33910464pll.170.1656907366984;
-        Sun, 03 Jul 2022 21:02:46 -0700 (PDT)
-Received: from [10.72.13.251] ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id w16-20020aa79a10000000b0051ba90d55acsm20008816pfj.207.2022.07.03.21.02.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 03 Jul 2022 21:02:46 -0700 (PDT)
-Message-ID: <fd85439f-8c94-e4f9-8500-811b3cf4c9ed@redhat.com>
-Date:   Mon, 4 Jul 2022 12:02:35 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.11.0
-Subject: Re: [PATCH v11 21/40] virtio_ring: packed: introduce
- virtqueue_resize_packed()
-Content-Language: en-US
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc:     Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Vadim Pasternak <vadimp@nvidia.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Eric Farman <farman@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        linux-um@lists.infradead.org, netdev@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
-        kvm@vger.kernel.org, bpf@vger.kernel.org,
-        kangjie.xu@linux.alibaba.com,
-        virtualization@lists.linux-foundation.org
-References: <20220629065656.54420-1-xuanzhuo@linux.alibaba.com>
- <20220629065656.54420-22-xuanzhuo@linux.alibaba.com>
- <de7cf56d-acbd-1a2b-2226-a9fdd89afb78@redhat.com>
- <1656900812.860175-2-xuanzhuo@linux.alibaba.com>
+ us-mta-6-PLh6vuKwPnKomflJ2Yfg3w-1; Mon, 04 Jul 2022 00:19:55 -0400
+X-MC-Unique: PLh6vuKwPnKomflJ2Yfg3w-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C8387811E75;
+        Mon,  4 Jul 2022 04:19:54 +0000 (UTC)
+Received: from localhost.localdomain (ovpn-13-251.pek2.redhat.com [10.72.13.251])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 29F0340C1241;
+        Mon,  4 Jul 2022 04:19:50 +0000 (UTC)
 From:   Jason Wang <jasowang@redhat.com>
-In-Reply-To: <1656900812.860175-2-xuanzhuo@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     mst@redhat.com, jasowang@redhat.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net V4] virtio-net: fix the race between refill work and close
+Date:   Mon,  4 Jul 2022 12:19:48 +0800
+Message-Id: <20220704041948.13212-1-jasowang@redhat.com>
+MIME-Version: 1.0
+Content-type: text/plain
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+We try using cancel_delayed_work_sync() to prevent the work from
+enabling NAPI. This is insufficient since we don't disable the source
+of the refill work scheduling. This means an NAPI poll callback after
+cancel_delayed_work_sync() can schedule the refill work then can
+re-enable the NAPI that leads to use-after-free [1].
 
-在 2022/7/4 10:13, Xuan Zhuo 写道:
-> On Fri, 1 Jul 2022 17:27:48 +0800, Jason Wang <jasowang@redhat.com> wrote:
->> 在 2022/6/29 14:56, Xuan Zhuo 写道:
->>> virtio ring packed supports resize.
->>>
->>> Only after the new vring is successfully allocated based on the new num,
->>> we will release the old vring. In any case, an error is returned,
->>> indicating that the vring still points to the old vring.
->>>
->>> In the case of an error, re-initialize(by virtqueue_reinit_packed()) the
->>> virtqueue to ensure that the vring can be used.
->>>
->>> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
->>> ---
->>>    drivers/virtio/virtio_ring.c | 29 +++++++++++++++++++++++++++++
->>>    1 file changed, 29 insertions(+)
->>>
->>> diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
->>> index 650f701a5480..4860787286db 100644
->>> --- a/drivers/virtio/virtio_ring.c
->>> +++ b/drivers/virtio/virtio_ring.c
->>> @@ -2042,6 +2042,35 @@ static struct virtqueue *vring_create_virtqueue_packed(
->>>    	return NULL;
->>>    }
->>>
->>> +static int virtqueue_resize_packed(struct virtqueue *_vq, u32 num)
->>> +{
->>> +	struct vring_virtqueue_packed vring = {};
->>> +	struct vring_virtqueue *vq = to_vvq(_vq);
->>> +	struct virtio_device *vdev = _vq->vdev;
->>> +	int err;
->>> +
->>> +	if (vring_alloc_queue_packed(&vring, vdev, num))
->>> +		goto err_ring;
->>> +
->>> +	err = vring_alloc_state_extra_packed(&vring);
->>> +	if (err)
->>> +		goto err_state_extra;
->>> +
->>> +	vring_free(&vq->vq);
->>> +
->>> +	virtqueue_init(vq, vring.vring.num);
->>> +	virtqueue_vring_attach_packed(vq, &vring);
->>> +	virtqueue_vring_init_packed(vq);
->>> +
->>> +	return 0;
->>> +
->>> +err_state_extra:
->>> +	vring_free_packed(&vring, vdev);
->>> +err_ring:
->>> +	virtqueue_reinit_packed(vq);
->>
->> So desc_state and desc_extra has been freed vring_free_packed() when
->> vring_alloc_state_extra_packed() fails. We might get use-after-free here?
-> vring_free_packed() frees the temporary structure vring. It does not affect
-> desc_state and desc_extra of vq. So it is safe.
+Since the work can enable NAPI, we can't simply disable NAPI before
+calling cancel_delayed_work_sync(). So fix this by introducing a
+dedicated boolean to control whether or not the work could be
+scheduled from NAPI.
 
+[1]
+==================================================================
+BUG: KASAN: use-after-free in refill_work+0x43/0xd4
+Read of size 2 at addr ffff88810562c92e by task kworker/2:1/42
 
-You are right.
+CPU: 2 PID: 42 Comm: kworker/2:1 Not tainted 5.19.0-rc1+ #480
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.16.0-0-gd239552ce722-prebuilt.qemu.org 04/01/2014
+Workqueue: events refill_work
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0x34/0x44
+ print_report.cold+0xbb/0x6ac
+ ? _printk+0xad/0xde
+ ? refill_work+0x43/0xd4
+ kasan_report+0xa8/0x130
+ ? refill_work+0x43/0xd4
+ refill_work+0x43/0xd4
+ process_one_work+0x43d/0x780
+ worker_thread+0x2a0/0x6f0
+ ? process_one_work+0x780/0x780
+ kthread+0x167/0x1a0
+ ? kthread_exit+0x50/0x50
+ ret_from_fork+0x22/0x30
+ </TASK>
+...
 
+Fixes: b2baed69e605c ("virtio_net: set/cancel work on ndo_open/ndo_stop")
+Signed-off-by: Jason Wang <jasowang@redhat.com>
+---
+Changes since V3:
+- rebase to -net
+Changes since V2:
+- use spin_unlock()/lock_bh() in open/stop to synchronize with bh
+Changes since V1:
+- Tweak the changelog
+---
+ drivers/net/virtio_net.c | 35 +++++++++++++++++++++++++++++++++--
+ 1 file changed, 33 insertions(+), 2 deletions(-)
 
->
->> Actually, I think for resize we need
->>
->> 1) detach old
->> 2) allocate new
->> 3) if 2) succeed, attach new otherwise attach old
->
-> The implementation is now:
->
-> 1. allocate new
-> 2. free old (detach old)
-> 3. attach new
->
-> error:
-> 1. free temporary
-> 2. reinit old
->
-> Do you think this is ok? We need to add a new variable to save the old vring in
-> the process you mentioned, there is not much difference in other.
-
-
-Yes, I think the code is fine. But I'd suggest to rename "vring" to 
-"vring_packed", this simplify the reviewers.
-
-Other than this, you can add:
-
-Acked-by: Jason Wang <jasowang@redhat.com>
-
-
->
-> Thanks.
->
->
->> This seems more clearer than the current logic?
->>
->> Thanks
->>
->>
->>> +	return -ENOMEM;
->>> +}
->>> +
->>>
->>>    /*
->>>     * Generic functions and exported symbols.
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index 356cf8dd4164..68430d7923ac 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -251,6 +251,12 @@ struct virtnet_info {
+ 	/* Does the affinity hint is set for virtqueues? */
+ 	bool affinity_hint_set;
+ 
++	/* Is refill work enabled? */
++	bool refill_work_enabled;
++
++	/* The lock to synchronize the access to refill_work_enabled */
++	spinlock_t refill_lock;
++
+ 	/* CPU hotplug instances for online & dead */
+ 	struct hlist_node node;
+ 	struct hlist_node node_dead;
+@@ -348,6 +354,20 @@ static struct page *get_a_page(struct receive_queue *rq, gfp_t gfp_mask)
+ 	return p;
+ }
+ 
++static void enable_refill_work(struct virtnet_info *vi)
++{
++	spin_lock_bh(&vi->refill_lock);
++	vi->refill_work_enabled = true;
++	spin_unlock_bh(&vi->refill_lock);
++}
++
++static void disable_refill_work(struct virtnet_info *vi)
++{
++	spin_lock_bh(&vi->refill_lock);
++	vi->refill_work_enabled = false;
++	spin_unlock_bh(&vi->refill_lock);
++}
++
+ static void virtqueue_napi_schedule(struct napi_struct *napi,
+ 				    struct virtqueue *vq)
+ {
+@@ -1527,8 +1547,12 @@ static int virtnet_receive(struct receive_queue *rq, int budget,
+ 	}
+ 
+ 	if (rq->vq->num_free > min((unsigned int)budget, virtqueue_get_vring_size(rq->vq)) / 2) {
+-		if (!try_fill_recv(vi, rq, GFP_ATOMIC))
+-			schedule_delayed_work(&vi->refill, 0);
++		if (!try_fill_recv(vi, rq, GFP_ATOMIC)) {
++			spin_lock(&vi->refill_lock);
++			if (vi->refill_work_enabled)
++				schedule_delayed_work(&vi->refill, 0);
++			spin_unlock(&vi->refill_lock);
++		}
+ 	}
+ 
+ 	u64_stats_update_begin(&rq->stats.syncp);
+@@ -1651,6 +1675,8 @@ static int virtnet_open(struct net_device *dev)
+ 	struct virtnet_info *vi = netdev_priv(dev);
+ 	int i, err;
+ 
++	enable_refill_work(vi);
++
+ 	for (i = 0; i < vi->max_queue_pairs; i++) {
+ 		if (i < vi->curr_queue_pairs)
+ 			/* Make sure we have some buffers: if oom use wq. */
+@@ -2033,6 +2059,8 @@ static int virtnet_close(struct net_device *dev)
+ 	struct virtnet_info *vi = netdev_priv(dev);
+ 	int i;
+ 
++	/* Make sure NAPI doesn't schedule refill work */
++	disable_refill_work(vi);
+ 	/* Make sure refill_work doesn't re-enable napi! */
+ 	cancel_delayed_work_sync(&vi->refill);
+ 
+@@ -2792,6 +2820,8 @@ static int virtnet_restore_up(struct virtio_device *vdev)
+ 
+ 	virtio_device_ready(vdev);
+ 
++	enable_refill_work(vi);
++
+ 	if (netif_running(vi->dev)) {
+ 		err = virtnet_open(vi->dev);
+ 		if (err)
+@@ -3535,6 +3565,7 @@ static int virtnet_probe(struct virtio_device *vdev)
+ 	vdev->priv = vi;
+ 
+ 	INIT_WORK(&vi->config_work, virtnet_config_changed_work);
++	spin_lock_init(&vi->refill_lock);
+ 
+ 	/* If we can receive ANY GSO packets, we must allocate large ones. */
+ 	if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO4) ||
+-- 
+2.25.1
 
