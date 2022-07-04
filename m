@@ -2,85 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 80162565001
-	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 10:49:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F3454565012
+	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 10:53:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232901AbiGDIsR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jul 2022 04:48:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50998 "EHLO
+        id S230317AbiGDIxL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Jul 2022 04:53:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231755AbiGDIsP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 04:48:15 -0400
-Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5B81BC37
-        for <netdev@vger.kernel.org>; Mon,  4 Jul 2022 01:48:13 -0700 (PDT)
-Received: by mail-lj1-x22a.google.com with SMTP id s14so10239565ljs.3
-        for <netdev@vger.kernel.org>; Mon, 04 Jul 2022 01:48:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=x6YrgXdgJuHk96zcSzLx5P4aQNGafp08HahAVfIDvNQ=;
-        b=U0FVCyUbDjv6hJgDnDNGA6Y7OeR1Js9TKaIMudF2r2B0L7NoaBcQP5uIp+Y06Sw6hp
-         Ej7EHr5wPEjxx3m8Pd9KFOrPDLo+8Des31+ApwZ5gjkfhTPCo2T31XXOeeXuWp2nf3Yj
-         ftaM62EC6xJN8UJffIfIFTvPTtsAU701ed6OeSU5tlgCYXys4GlQI2x0YgBhGQsd8lA4
-         kDgU8H+r4txu5xLAI7kRanu5ew4VNY3A38NkBiXr4+WTY4IfmIENVYD6kadQx2Z7gT9P
-         q3cyx/2V0n2dh/sqnxx1dOR8BG6TcWqf/9qAKcMPiSBFjgYXQAYPgCA5FUc7FN9BOTM5
-         8NJQ==
+        with ESMTP id S229848AbiGDIxK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 04:53:10 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 62F02B87F
+        for <netdev@vger.kernel.org>; Mon,  4 Jul 2022 01:53:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656924784;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=qbVXSgisY5AaoNPEQrLMmraosP7prZp3JNPIrzB+8Vg=;
+        b=PqW3lJ6BEN+5G0Cdy+0aG1romgilbrWT/sf7gafYoDXZHgcTP2NCuU3rZfDcZQJ3RunY+R
+        IEqf97rsMh9zmM/yHOtQPB96PvqoUEEusfhvSlnbFRfXPW1z0ekAFdpRFPE+i3/zknOMA5
+        3FrIHzBZi9PT0fhf2LqTBdd1FLxi13M=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-5-9H25yzhxMGOt1iXFOTqUnQ-1; Mon, 04 Jul 2022 04:53:02 -0400
+X-MC-Unique: 9H25yzhxMGOt1iXFOTqUnQ-1
+Received: by mail-ed1-f71.google.com with SMTP id y18-20020a056402441200b0043564cdf765so6809673eda.11
+        for <netdev@vger.kernel.org>; Mon, 04 Jul 2022 01:53:02 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=x6YrgXdgJuHk96zcSzLx5P4aQNGafp08HahAVfIDvNQ=;
-        b=BeJ5obZLho+Bnl17a9p9yPNIADF8bHPGllWehA5/agEC4HYpevyZ+XGiGDCZjrN0tD
-         he8W0r73NsK/SXHRIwmtLZS2h0acAeEXYc+3MdArXRNC38hc5w53Ix0ovKwdeEUe6UXU
-         U+AH8kfdfXP+/0RcXQrjV9z0+QcOh611sIqUAckFw0FX0Xz0aWdDGzGsa3cAJr6CruxA
-         vn/PZbAbtXkGi9c3LO4SkK98mlhlrd7vbYEW7Zw6IuAUnu4IrjYv3q2h3E3r6RtoH8Xo
-         sw3Hjz0jboPv1zJDQBWZLbBmT9HwPMxvu0EDaEkVmjBZOAiKi+2CUtuJfgcOr71+LVF7
-         eUkQ==
-X-Gm-Message-State: AJIora9IueK7UwOrLZ2nT/nkk47xRDRBssyzKoSnp9RVWM3DZOmig2rD
-        /b8Yk9C2yhN76zjU3GfYY7aYpA==
-X-Google-Smtp-Source: AGRyM1ugMP7vXlWpCyPYsCILvvEMOBppXRlOIsGBTBGpK5YsaS1Q7c7VXr62syPXM3cr/3QOlaCv/w==
-X-Received: by 2002:a2e:bd13:0:b0:244:da2f:ff4d with SMTP id n19-20020a2ebd13000000b00244da2fff4dmr15361779ljq.213.1656924492053;
-        Mon, 04 Jul 2022 01:48:12 -0700 (PDT)
-Received: from [192.168.1.52] ([84.20.121.239])
-        by smtp.gmail.com with ESMTPSA id 8-20020ac25f08000000b00478f1bd611csm5027189lfq.284.2022.07.04.01.48.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 04 Jul 2022 01:48:11 -0700 (PDT)
-Message-ID: <9124be7e-2512-da31-631f-e74ae8c3175c@linaro.org>
-Date:   Mon, 4 Jul 2022 10:48:10 +0200
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=qbVXSgisY5AaoNPEQrLMmraosP7prZp3JNPIrzB+8Vg=;
+        b=dnac0az6sxCOU2Cp0INloxRrq4a/TawWjSHqpQQH3zJ7aOzCkHwr/ycEYexeWrymc2
+         FihiWCDrIbqk9nNke/bRJmFsPB1qDbo3hBJmjSpRI1Ik9JeHqNucY9POk9+IOrs5+iEc
+         lpHiJEvkCJiub0NHny16LopBLsLAC2DKlJ7fw5TZwKKvDshMzDrlVoMevEE8MoAYge6F
+         g7MZpCO0dHIrrVhZNtGuXPsFJncaQyAp1zEqCWytLlB0EuRT3VJOzfjzHspUIJ5X7kfa
+         IVjfn2RUwuOSJAZKrcF9IweujR6mdq11ffO/fBz/UQ0kgA3jN9rK7TSq4sbCUvBmaDAp
+         hjJA==
+X-Gm-Message-State: AJIora9ky3t7t6edRxNq2MhNY43Fl4a2rrYZsv8sLpAuFu8Uu0ZakrWS
+        XQF8U6+9L7x27VUyhIRSGfDQI2Alys/ZfUwSXCbC12wOFpVEBpLoUXSgBEcUCUDQ2VXYrgRBtck
+        K835B6/l1AoeB5TV0
+X-Received: by 2002:a05:6402:15a:b0:431:71b9:86f3 with SMTP id s26-20020a056402015a00b0043171b986f3mr36401032edu.249.1656924780884;
+        Mon, 04 Jul 2022 01:53:00 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1vTidClko4q95fUuzrkACeMQxysRX5CdJQRf4uacqDZMo8xNc83r+hqmdeB0EHH8h0+Vw5QKw==
+X-Received: by 2002:a05:6402:15a:b0:431:71b9:86f3 with SMTP id s26-20020a056402015a00b0043171b986f3mr36401009edu.249.1656924780667;
+        Mon, 04 Jul 2022 01:53:00 -0700 (PDT)
+Received: from redhat.com ([2.55.35.209])
+        by smtp.gmail.com with ESMTPSA id fg8-20020a056402548800b0043a3f52418asm2252759edb.18.2022.07.04.01.52.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Jul 2022 01:53:00 -0700 (PDT)
+Date:   Mon, 4 Jul 2022 04:52:55 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        xuanzhuo@linux.alibaba.com
+Subject: Re: [PATCH net V5] virtio-net: fix the race between refill work and
+ close
+Message-ID: <20220704045034-mutt-send-email-mst@kernel.org>
+References: <20220704074859.16912-1-jasowang@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v3 2/6] dt-bindings: can: nxp,sja1000: Document RZ/N1{D,S}
- support
-Content-Language: en-US
-To:     Biju Das <biju.das.jz@bp.renesas.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org,
-        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>,
-        linux-renesas-soc@vger.kernel.org
-References: <20220704075032.383700-1-biju.das.jz@bp.renesas.com>
- <20220704075032.383700-3-biju.das.jz@bp.renesas.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220704075032.383700-3-biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220704074859.16912-1-jasowang@redhat.com>
+X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -88,103 +78,163 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 04/07/2022 09:50, Biju Das wrote:
-> Add CAN binding documentation for Renesas RZ/N1 SoC.
+On Mon, Jul 04, 2022 at 03:48:59PM +0800, Jason Wang wrote:
+> We try using cancel_delayed_work_sync() to prevent the work from
+> enabling NAPI. This is insufficient since we don't disable the source
+> of the refill work scheduling. This means an NAPI poll callback after
+> cancel_delayed_work_sync() can schedule the refill work then can
+> re-enable the NAPI that leads to use-after-free [1].
 > 
-> The SJA1000 CAN controller on RZ/N1 SoC has some differences compared
-> to others like it has no clock divider register (CDR) support and it has
-> no HW loopback (HW doesn't see tx messages on rx), so introduced a new
-> compatible 'renesas,rzn1-sja1000' to handle these differences.
+> Since the work can enable NAPI, we can't simply disable NAPI before
+> calling cancel_delayed_work_sync(). So fix this by introducing a
+> dedicated boolean to control whether or not the work could be
+> scheduled from NAPI.
 > 
-> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+> [1]
+> ==================================================================
+> BUG: KASAN: use-after-free in refill_work+0x43/0xd4
+> Read of size 2 at addr ffff88810562c92e by task kworker/2:1/42
+> 
+> CPU: 2 PID: 42 Comm: kworker/2:1 Not tainted 5.19.0-rc1+ #480
+> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.16.0-0-gd239552ce722-prebuilt.qemu.org 04/01/2014
+> Workqueue: events refill_work
+> Call Trace:
+>  <TASK>
+>  dump_stack_lvl+0x34/0x44
+>  print_report.cold+0xbb/0x6ac
+>  ? _printk+0xad/0xde
+>  ? refill_work+0x43/0xd4
+>  kasan_report+0xa8/0x130
+>  ? refill_work+0x43/0xd4
+>  refill_work+0x43/0xd4
+>  process_one_work+0x43d/0x780
+>  worker_thread+0x2a0/0x6f0
+>  ? process_one_work+0x780/0x780
+>  kthread+0x167/0x1a0
+>  ? kthread_exit+0x50/0x50
+>  ret_from_fork+0x22/0x30
+>  </TASK>
+> ...
+> 
+> Fixes: b2baed69e605c ("virtio_net: set/cancel work on ndo_open/ndo_stop")
+> Signed-off-by: Jason Wang <jasowang@redhat.com>
+
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+
 > ---
-> v2->v3:
->  * Added reg-io-width is required property for renesas,rzn1-sja1000.
-> v1->v2:
->  * Updated commit description.
->  * Added an example for RZ/N1D SJA1000 usage
+> Changes since V4:
+> - Tweak the variable name (using delayed_refill)
+> Changes since V3:
+> - rebase to -net
+> Changes since V2:
+> - use spin_unlock()/lock_bh() in open/stop to synchronize with bh
+> Changes since V1:
+> - Tweak the changelog
 > ---
->  .../bindings/net/can/nxp,sja1000.yaml         | 35 +++++++++++++++++++
->  1 file changed, 35 insertions(+)
+>  drivers/net/virtio_net.c | 35 +++++++++++++++++++++++++++++++++--
+>  1 file changed, 33 insertions(+), 2 deletions(-)
 > 
-> diff --git a/Documentation/devicetree/bindings/net/can/nxp,sja1000.yaml b/Documentation/devicetree/bindings/net/can/nxp,sja1000.yaml
-> index d34060226e4e..16786475eae3 100644
-> --- a/Documentation/devicetree/bindings/net/can/nxp,sja1000.yaml
-> +++ b/Documentation/devicetree/bindings/net/can/nxp,sja1000.yaml
-> @@ -19,6 +19,16 @@ allOf:
->      then:
->        required:
->          - reg-io-width
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            const: renesas,rzn1-sja1000
-> +    then:
-> +      required:
-> +        - clocks
-> +        - clock-names
-> +        - reg-io-width
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index 356cf8dd4164..b9ac4431becb 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -245,6 +245,12 @@ struct virtnet_info {
+>  	/* Work struct for refilling if we run low on memory. */
+
+let's update this comment to "for delayed refilling" for consistency
+
+>  	struct delayed_work refill;
 >  
->  properties:
->    compatible:
-> @@ -27,6 +37,12 @@ properties:
->          const: nxp,sja1000
->        - description: Technologic Systems SJA1000 CAN Controller
->          const: technologic,sja1000
-> +      - description: Renesas RZ/N1 SJA1000 CAN Controller
-> +        items:
-> +          - enum:
-> +              - renesas,r9a06g032-sja1000 # RZ/N1D
-> +              - renesas,r9a06g033-sja1000 # RZ/N1S
-> +          - const: renesas,rzn1-sja1000 # RZ/N1
+> +	/* Is delayed refill enabled? */
+> +	bool delayed_refill_enabled;
 
-This explains usage of oneOf, but still earlier entries should be just
-an enum.
 
+I would keep the name refill_enabled, refill refers to the field "refill"
+above.
+
+> +
+> +	/* The lock to synchronize the access to delayed_refill_enabled */
+
+add:
+
+... and to refill
+
+> +	spinlock_t refill_lock;
+> +
+>  	/* Work struct for config space updates */
+>  	struct work_struct config_work;
 >  
->    reg:
->      maxItems: 1
-> @@ -34,6 +50,12 @@ properties:
->    interrupts:
->      maxItems: 1
+> @@ -348,6 +354,20 @@ static struct page *get_a_page(struct receive_queue *rq, gfp_t gfp_mask)
+>  	return p;
+>  }
 >  
-> +  clocks:
-> +    maxItems: 1
+> +static void enable_delayed_refill(struct virtnet_info *vi)
+> +{
+> +	spin_lock_bh(&vi->refill_lock);
+> +	vi->delayed_refill_enabled = true;
+> +	spin_unlock_bh(&vi->refill_lock);
+> +}
 > +
-> +  clock-names:
-> +    const: can_clk
-
-Skip entire clock-names. Does not bring any information, especially that
-name is obvious.
-
+> +static void disable_delayed_refill(struct virtnet_info *vi)
+> +{
+> +	spin_lock_bh(&vi->refill_lock);
+> +	vi->delayed_refill_enabled = false;
+> +	spin_unlock_bh(&vi->refill_lock);
+> +}
 > +
->    reg-io-width:
->      $ref: /schemas/types.yaml#/definitions/uint32
->      description: I/O register width (in bytes) implemented by this device
-> @@ -101,3 +123,16 @@ examples:
->              nxp,tx-output-config = <0x06>;
->              nxp,external-clock-frequency = <24000000>;
->      };
+>  static void virtqueue_napi_schedule(struct napi_struct *napi,
+>  				    struct virtqueue *vq)
+>  {
+> @@ -1527,8 +1547,12 @@ static int virtnet_receive(struct receive_queue *rq, int budget,
+>  	}
+>  
+>  	if (rq->vq->num_free > min((unsigned int)budget, virtqueue_get_vring_size(rq->vq)) / 2) {
+> -		if (!try_fill_recv(vi, rq, GFP_ATOMIC))
+> -			schedule_delayed_work(&vi->refill, 0);
+> +		if (!try_fill_recv(vi, rq, GFP_ATOMIC)) {
+> +			spin_lock(&vi->refill_lock);
+> +			if (vi->delayed_refill_enabled)
+> +				schedule_delayed_work(&vi->refill, 0);
+> +			spin_unlock(&vi->refill_lock);
+> +		}
+>  	}
+>  
+>  	u64_stats_update_begin(&rq->stats.syncp);
+> @@ -1651,6 +1675,8 @@ static int virtnet_open(struct net_device *dev)
+>  	struct virtnet_info *vi = netdev_priv(dev);
+>  	int i, err;
+>  
+> +	enable_delayed_refill(vi);
 > +
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
-> +    #include <dt-bindings/clock/r9a06g032-sysctrl.h>
+>  	for (i = 0; i < vi->max_queue_pairs; i++) {
+>  		if (i < vi->curr_queue_pairs)
+>  			/* Make sure we have some buffers: if oom use wq. */
+> @@ -2033,6 +2059,8 @@ static int virtnet_close(struct net_device *dev)
+>  	struct virtnet_info *vi = netdev_priv(dev);
+>  	int i;
+>  
+> +	/* Make sure NAPI doesn't schedule refill work */
+> +	disable_delayed_refill(vi);
+>  	/* Make sure refill_work doesn't re-enable napi! */
+>  	cancel_delayed_work_sync(&vi->refill);
+>  
+> @@ -2792,6 +2820,8 @@ static int virtnet_restore_up(struct virtio_device *vdev)
+>  
+>  	virtio_device_ready(vdev);
+>  
+> +	enable_delayed_refill(vi);
 > +
-> +    can@52104000 {
-> +            compatible = "renesas,r9a06g032-sja1000","renesas,rzn1-sja1000";
+>  	if (netif_running(vi->dev)) {
+>  		err = virtnet_open(vi->dev);
+>  		if (err)
+> @@ -3535,6 +3565,7 @@ static int virtnet_probe(struct virtio_device *vdev)
+>  	vdev->priv = vi;
+>  
+>  	INIT_WORK(&vi->config_work, virtnet_config_changed_work);
+> +	spin_lock_init(&vi->refill_lock);
+>  
+>  	/* If we can receive ANY GSO packets, we must allocate large ones. */
+>  	if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO4) ||
+> -- 
+> 2.25.1
 
-Missing space after ,
-
-Wrong indentation.
-
-> +            reg = <0x52104000 0x800>;
-> +            reg-io-width = <4>;
-> +            interrupts = <GIC_SPI 95 IRQ_TYPE_LEVEL_HIGH>;
-> +            clocks = <&sysctrl R9A06G032_HCLK_CAN0>;
-> +            clock-names = "can_clk";
-> +    };
-
-
-Best regards,
-Krzysztof
