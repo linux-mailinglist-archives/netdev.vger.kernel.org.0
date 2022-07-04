@@ -2,186 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C861F564AF9
-	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 02:46:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D5D8564AFE
+	for <lists+netdev@lfdr.de>; Mon,  4 Jul 2022 02:57:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230101AbiGDAq3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Jul 2022 20:46:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58666 "EHLO
+        id S229653AbiGDA4s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Jul 2022 20:56:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229484AbiGDAq1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 Jul 2022 20:46:27 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 437AA2BDB;
-        Sun,  3 Jul 2022 17:46:26 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3086123A;
-        Sun,  3 Jul 2022 17:46:26 -0700 (PDT)
-Received: from slackpad.fritz.box (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BD8563F70D;
-        Sun,  3 Jul 2022 17:46:23 -0700 (PDT)
-From:   Andre Przywara <andre.przywara@arm.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        Jernej Skrabec <jernej.skrabec@gmail.com>
-Subject: [PATCH] net: phy: mdio: add clock support for PHYs
-Date:   Mon,  4 Jul 2022 01:45:33 +0100
-Message-Id: <20220704004533.17762-1-andre.przywara@arm.com>
-X-Mailer: git-send-email 2.35.3
+        with ESMTP id S229450AbiGDA4p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 Jul 2022 20:56:45 -0400
+Received: from violet.fr.zoreil.com (violet.fr.zoreil.com [IPv6:2001:4b98:dc0:41:216:3eff:fe56:8398])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBB315F91
+        for <netdev@vger.kernel.org>; Sun,  3 Jul 2022 17:56:42 -0700 (PDT)
+Received: from violet.fr.zoreil.com ([127.0.0.1])
+        by violet.fr.zoreil.com (8.17.1/8.17.1) with ESMTP id 2640tBqD1000301;
+        Mon, 4 Jul 2022 02:55:11 +0200
+DKIM-Filter: OpenDKIM Filter v2.11.0 violet.fr.zoreil.com 2640tBqD1000301
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fr.zoreil.com;
+        s=v20220413; t=1656896111;
+        bh=he/yC7NPe9lpEcWw0OsoUIWcPyaZt1fCNFhW8X/QIMc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=fiYulR9F7RX0GVmn9DckQjkMYmjLgGz/Oyobrw+qeXBawGNH2hsq3KaBET4EU7JuK
+         jqIfF41SJyqwL7sr8ONWhK3fAE6xrE8v5RPfeLASn/JKTbYjDO8emLtcphtrmVT/r2
+         6Pq7OdOlxEm+VA/EB+znTUq3Dn+aXYC8iDENr75s=
+Received: (from romieu@localhost)
+        by violet.fr.zoreil.com (8.17.1/8.17.1/Submit) id 2640t9vi1000300;
+        Mon, 4 Jul 2022 02:55:09 +0200
+Date:   Mon, 4 Jul 2022 02:55:08 +0200
+From:   Francois Romieu <romieu@fr.zoreil.com>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Erhard F." <erhard_f@mailbox.org>
+Subject: Re: [PATCH net] r8169: fix accessing unset transport header
+Message-ID: <YsI6bEFtM+2uK492@electric-eye.fr.zoreil.com>
+References: <ee150b21-7415-dd3f-6785-0163fd150493@googlemail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-6.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ee150b21-7415-dd3f-6785-0163fd150493@googlemail.com>
+X-Organisation: Land of Sunshine Inc.
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-So far the generic Ethernet PHY subsystem supports PHYs having a reset
-line, which needs to be de-asserted before the PHY can be used. This
-corresponds to an "RST" pin on most external PHY chips.
-But most PHY chips also need an external clock signal, which may feed
-some internal PLL, and/or is used to drive the internal logic. In many
-systems this clock signal is provided by a fixed crystal oscillator, so
-is of no particular interest to software.
+Heiner Kallweit <hkallweit1@gmail.com> :
+> 66e4c8d95008 ("net: warn if transport header was not set") added
+> a check that triggers a warning in r8169, see [0].
+> 
+> [0] https://bugzilla.kernel.org/show_bug.cgi?id=216157
+> 
+> Fixes: 8d520b4de3ed ("r8169: work around RTL8125 UDP hw bug")
+> Reported-by: Erhard F. <erhard_f@mailbox.org>
+> Tested-by: Erhard F. <erhard_f@mailbox.org>
+> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 
-However some systems use a more complex clock source, or try to save a
-few pennies by avoiding the crystal. The X-Powers AC200 mixed signal PHY
-chip, for instance, uses a software-controlled clock gate, and the
-Lindenis V5 development board drives its RTL8211 PHY via a clock pin
-on the SoC.
+/me wonders...
 
-On those systems the clock source needs to be actively enabled by
-software, before the PHY can be used. To support those machines, add a
-struct clk, populate it from firmware tables, and enable or disable it
-when needed, similar to toggling the reset line.
+- bz216157 experiences a (2nd) warning because the rtl8169_tso_csum_v2
+  ARP path shares the factored read of the (unset) transport offset
+  but said ARP path does not use the transport offset.
+  -> ok, the warning is mostly harmless. 
 
-In contrast to exclusive reset lines, calls to clock_disable() need to
-be balanced with calls to clock_enable() before, also the gate is
-supposed to be initially disabled. This means we cannot treat it exactly
-the same as the reset line, but have to skip the initial handling, and
-just enable or disable the gate in the probe and remove handlers.
+- rtl8169_tso_csum_v2 non-ARP paths own WARN_ON_ONCE will always
+  complain before Eric's transport specific warning triggers.
+  -> ok, the warning is redundant.
 
-Signed-off-by: Andre Przywara <andre.przywara@arm.com>
----
- drivers/net/phy/mdio_bus.c    | 18 ++++++++++++++++++
- drivers/net/phy/mdio_device.c | 12 ++++++++++++
- include/linux/mdio.h          |  1 +
- 3 files changed, 31 insertions(+)
+- rtl8169_features_check
 
-diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
-index 8a2dbe849866..5cf84f92dab4 100644
---- a/drivers/net/phy/mdio_bus.c
-+++ b/drivers/net/phy/mdio_bus.c
-@@ -8,6 +8,7 @@
- 
- #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
- 
-+#include <linux/clk.h>
- #include <linux/delay.h>
- #include <linux/device.h>
- #include <linux/errno.h>
-@@ -67,6 +68,19 @@ static int mdiobus_register_reset(struct mdio_device *mdiodev)
- 	return 0;
- }
- 
-+static int mdiobus_register_clock(struct mdio_device *mdiodev)
-+{
-+	struct clk *clk;
-+
-+	clk = devm_clk_get_optional(&mdiodev->dev, NULL);
-+	if (IS_ERR(clk))
-+		return PTR_ERR(clk);
-+
-+	mdiodev->clk = clk;
-+
-+	return 0;
-+}
-+
- int mdiobus_register_device(struct mdio_device *mdiodev)
- {
- 	int err;
-@@ -83,6 +97,10 @@ int mdiobus_register_device(struct mdio_device *mdiodev)
- 		if (err)
- 			return err;
- 
-+		err = mdiobus_register_clock(mdiodev);
-+		if (err)
-+			return err;
-+
- 		/* Assert the reset signal */
- 		mdio_device_reset(mdiodev, 1);
- 	}
-diff --git a/drivers/net/phy/mdio_device.c b/drivers/net/phy/mdio_device.c
-index 250742ffdfd9..e8424a46a81e 100644
---- a/drivers/net/phy/mdio_device.c
-+++ b/drivers/net/phy/mdio_device.c
-@@ -6,6 +6,7 @@
- 
- #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
- 
-+#include <linux/clk.h>
- #include <linux/delay.h>
- #include <linux/errno.h>
- #include <linux/gpio.h>
-@@ -136,6 +137,14 @@ void mdio_device_reset(struct mdio_device *mdiodev, int value)
- }
- EXPORT_SYMBOL(mdio_device_reset);
- 
-+static void mdio_device_toggle_clock(struct mdio_device *mdiodev, int value)
-+{
-+	if (value)
-+		clk_prepare_enable(mdiodev->clk);
-+	else
-+		clk_disable_unprepare(mdiodev->clk);
-+}
-+
- /**
-  * mdio_probe - probe an MDIO device
-  * @dev: device to probe
-@@ -152,11 +161,13 @@ static int mdio_probe(struct device *dev)
- 
- 	/* Deassert the reset signal */
- 	mdio_device_reset(mdiodev, 0);
-+	mdio_device_toggle_clock(mdiodev, 1);
- 
- 	if (mdiodrv->probe) {
- 		err = mdiodrv->probe(mdiodev);
- 		if (err) {
- 			/* Assert the reset signal */
-+			mdio_device_toggle_clock(mdiodev, 0);
- 			mdio_device_reset(mdiodev, 1);
- 		}
- 	}
-@@ -174,6 +185,7 @@ static int mdio_remove(struct device *dev)
- 		mdiodrv->remove(mdiodev);
- 
- 	/* Assert the reset signal */
-+	mdio_device_toggle_clock(mdiodev, 0);
- 	mdio_device_reset(mdiodev, 1);
- 
- 	return 0;
-diff --git a/include/linux/mdio.h b/include/linux/mdio.h
-index 00177567cfef..95c13bdb312b 100644
---- a/include/linux/mdio.h
-+++ b/include/linux/mdio.h
-@@ -50,6 +50,7 @@ struct mdio_device {
- 	struct reset_control *reset_ctrl;
- 	unsigned int reset_assert_delay;
- 	unsigned int reset_deassert_delay;
-+	struct clk *clk;
- };
- 
- static inline struct mdio_device *to_mdio_device(const struct device *dev)
+> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+> index 3098d6672..1b7fdb4f0 100644
+> --- a/drivers/net/ethernet/realtek/r8169_main.c
+> +++ b/drivers/net/ethernet/realtek/r8169_main.c
+[...]
+> @@ -4402,14 +4401,13 @@ static netdev_features_t rtl8169_features_check(struct sk_buff *skb,
+>  						struct net_device *dev,
+>  						netdev_features_t features)
+>  {
+> -	int transport_offset = skb_transport_offset(skb);
+>  	struct rtl8169_private *tp = netdev_priv(dev);
+>  
+>  	if (skb_is_gso(skb)) {
+>  		if (tp->mac_version == RTL_GIGA_MAC_VER_34)
+>  			features = rtl8168evl_fix_tso(skb, features);
+>  
+> -		if (transport_offset > GTTCPHO_MAX &&
+> +		if (skb_transport_offset(skb) > GTTCPHO_MAX &&
+>  		    rtl_chip_supports_csum_v2(tp))
+>  			features &= ~NETIF_F_ALL_TSO;
+>  	} else if (skb->ip_summed == CHECKSUM_PARTIAL) {
+> @@ -4420,7 +4418,7 @@ static netdev_features_t rtl8169_features_check(struct sk_buff *skb,
+>  		if (rtl_quirk_packet_padto(tp, skb))
+>  			features &= ~NETIF_F_CSUM_MASK;
+>  
+> -		if (transport_offset > TCPHO_MAX &&
+> +		if (skb_transport_offset(skb) > TCPHO_MAX &&
+>  		    rtl_chip_supports_csum_v2(tp))
+>  			features &= ~NETIF_F_CSUM_MASK;
+>  	}
+
+Neither skb_is_gso nor CHECKSUM_PARTIAL implies a transport header so the
+warning may still trigger, right ?
+
+Btw it's a bit unexpected to see a "Fixes" tag related to a RTL8125 bug as
+well as a "Tested-by" by the bugzilla submitter when the dmesg included in
+bz216157 exibits a RTL8168e/8111e.
+
 -- 
-2.35.3
-
+Ueimor
