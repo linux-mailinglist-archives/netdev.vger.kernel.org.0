@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E16645660E1
-	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 04:02:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61254566122
+	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 04:23:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234285AbiGECBz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jul 2022 22:01:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39026 "EHLO
+        id S234358AbiGECXL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Jul 2022 22:23:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229453AbiGECBy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 22:01:54 -0400
-Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE34A5FA0;
-        Mon,  4 Jul 2022 19:01:51 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R611e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=36;SR=0;TI=SMTPD_---0VIPVqL._1656986505;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VIPVqL._1656986505)
+        with ESMTP id S231329AbiGECXK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jul 2022 22:23:10 -0400
+Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20B6B12639;
+        Mon,  4 Jul 2022 19:23:07 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=36;SR=0;TI=SMTPD_---0VIPtdPZ_1656987780;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VIPtdPZ_1656987780)
           by smtp.aliyun-inc.com;
-          Tue, 05 Jul 2022 10:01:46 +0800
-Message-ID: <1656986432.1164997-2-xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH v11 39/40] virtio_net: support tx queue resize
-Date:   Tue, 5 Jul 2022 10:00:32 +0800
+          Tue, 05 Jul 2022 10:23:01 +0800
+Message-ID: <1656987177.3209145-3-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH v11 08/40] virtio_ring: split: extract the logic of alloc queue
+Date:   Tue, 5 Jul 2022 10:12:57 +0800
 From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 To:     Jason Wang <jasowang@redhat.com>
 Cc:     Richard Weinberger <richard@nod.at>,
@@ -56,9 +56,11 @@ Cc:     Richard Weinberger <richard@nod.at>,
         kangjie.xu@linux.alibaba.com,
         virtualization@lists.linux-foundation.org
 References: <20220629065656.54420-1-xuanzhuo@linux.alibaba.com>
- <20220629065656.54420-40-xuanzhuo@linux.alibaba.com>
- <102d3b83-1ae9-a59a-16ce-251c22b7afb0@redhat.com>
-In-Reply-To: <102d3b83-1ae9-a59a-16ce-251c22b7afb0@redhat.com>
+ <20220629065656.54420-9-xuanzhuo@linux.alibaba.com>
+ <3e36e44f-1f37-ad02-eb89-833a0856ec4e@redhat.com>
+ <1656665158.0036178-3-xuanzhuo@linux.alibaba.com>
+ <6daca7fd-ae2a-cd0c-2030-3c6e503a3200@redhat.com>
+In-Reply-To: <6daca7fd-ae2a-cd0c-2030-3c6e503a3200@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
@@ -71,86 +73,222 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 4 Jul 2022 11:45:52 +0800, Jason Wang <jasowang@redhat.com> wrote:
+On Mon, 4 Jul 2022 11:59:03 +0800, Jason Wang <jasowang@redhat.com> wrote:
 >
-> =E5=9C=A8 2022/6/29 14:56, Xuan Zhuo =E5=86=99=E9=81=93:
-> > This patch implements the resize function of the tx queues.
-> > Based on this function, it is possible to modify the ring num of the
-> > queue.
+> =E5=9C=A8 2022/7/1 16:45, Xuan Zhuo =E5=86=99=E9=81=93:
+> > On Fri, 1 Jul 2022 16:26:25 +0800, Jason Wang <jasowang@redhat.com> wro=
+te:
+> >> =E5=9C=A8 2022/6/29 14:56, Xuan Zhuo =E5=86=99=E9=81=93:
+> >>> Separate the logic of split to create vring queue.
+> >>>
+> >>> This feature is required for subsequent virtuqueue reset vring.
+> >>>
+> >>> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> >>> ---
+> >>>    drivers/virtio/virtio_ring.c | 68 ++++++++++++++++++++++----------=
+----
+> >>>    1 file changed, 42 insertions(+), 26 deletions(-)
+> >>>
+> >>> diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_rin=
+g.c
+> >>> index 49d61e412dc6..a9ceb9c16c54 100644
+> >>> --- a/drivers/virtio/virtio_ring.c
+> >>> +++ b/drivers/virtio/virtio_ring.c
+> >>> @@ -949,28 +949,19 @@ static void vring_free_split(struct vring_virtq=
+ueue_split *vring,
+> >>>    	kfree(vring->desc_extra);
+> >>>    }
+> >>>
+> >>> -static struct virtqueue *vring_create_virtqueue_split(
+> >>> -	unsigned int index,
+> >>> -	unsigned int num,
+> >>> -	unsigned int vring_align,
+> >>> -	struct virtio_device *vdev,
+> >>> -	bool weak_barriers,
+> >>> -	bool may_reduce_num,
+> >>> -	bool context,
+> >>> -	bool (*notify)(struct virtqueue *),
+> >>> -	void (*callback)(struct virtqueue *),
+> >>> -	const char *name)
+> >>> +static int vring_alloc_queue_split(struct vring_virtqueue_split *vri=
+ng,
+> >>> +				   struct virtio_device *vdev,
+> >>> +				   u32 num,
+> >>> +				   unsigned int vring_align,
+> >>> +				   bool may_reduce_num)
+> >>>    {
+> >>> -	struct virtqueue *vq;
+> >>>    	void *queue =3D NULL;
+> >>>    	dma_addr_t dma_addr;
+> >>> -	size_t queue_size_in_bytes;
+> >>> -	struct vring vring;
+> >>>
+> >>>    	/* We assume num is a power of 2. */
+> >>>    	if (num & (num - 1)) {
+> >>>    		dev_warn(&vdev->dev, "Bad virtqueue length %u\n", num);
+> >>> -		return NULL;
+> >>> +		return -EINVAL;
+> >>>    	}
+> >>>
+> >>>    	/* TODO: allocate each queue chunk individually */
+> >>> @@ -981,11 +972,11 @@ static struct virtqueue *vring_create_virtqueue=
+_split(
+> >>>    		if (queue)
+> >>>    			break;
+> >>>    		if (!may_reduce_num)
+> >>> -			return NULL;
+> >>> +			return -ENOMEM;
+> >>>    	}
+> >>>
+> >>>    	if (!num)
+> >>> -		return NULL;
+> >>> +		return -ENOMEM;
+> >>>
+> >>>    	if (!queue) {
+> >>>    		/* Try to get a single page. You are my only hope! */
+> >>> @@ -993,21 +984,46 @@ static struct virtqueue *vring_create_virtqueue=
+_split(
+> >>>    					  &dma_addr, GFP_KERNEL|__GFP_ZERO);
+> >>>    	}
+> >>>    	if (!queue)
+> >>> -		return NULL;
+> >>> +		return -ENOMEM;
+> >>> +
+> >>> +	vring_init(&vring->vring, num, queue, vring_align);
+> >>>
+> >>> -	queue_size_in_bytes =3D vring_size(num, vring_align);
+> >>> -	vring_init(&vring, num, queue, vring_align);
+> >>> +	vring->queue_dma_addr =3D dma_addr;
+> >>> +	vring->queue_size_in_bytes =3D vring_size(num, vring_align);
+> >>> +
+> >>> +	return 0;
+> >>> +}
+> >>> +
+> >>> +static struct virtqueue *vring_create_virtqueue_split(
+> >>> +	unsigned int index,
+> >>> +	unsigned int num,
+> >>> +	unsigned int vring_align,
+> >>> +	struct virtio_device *vdev,
+> >>> +	bool weak_barriers,
+> >>> +	bool may_reduce_num,
+> >>> +	bool context,
+> >>> +	bool (*notify)(struct virtqueue *),
+> >>> +	void (*callback)(struct virtqueue *),
+> >>> +	const char *name)
+> >>> +{
+> >>> +	struct vring_virtqueue_split vring =3D {};
+> >>> +	struct virtqueue *vq;
+> >>> +	int err;
+> >>> +
+> >>> +	err =3D vring_alloc_queue_split(&vring, vdev, num, vring_align,
+> >>> +				      may_reduce_num);
+> >>> +	if (err)
+> >>> +		return NULL;
+> >>>
+> >>> -	vq =3D __vring_new_virtqueue(index, vring, vdev, weak_barriers, con=
+text,
+> >>> -				   notify, callback, name);
+> >>> +	vq =3D __vring_new_virtqueue(index, vring.vring, vdev, weak_barrier=
+s,
+> >>> +				   context, notify, callback, name);
+> >>>    	if (!vq) {
+> >>> -		vring_free_queue(vdev, queue_size_in_bytes, queue,
+> >>> -				 dma_addr);
+> >>> +		vring_free_split(&vring, vdev);
+> >>>    		return NULL;
+> >>>    	}
+> >>>
+> >>> -	to_vvq(vq)->split.queue_dma_addr =3D dma_addr;
+> >>> -	to_vvq(vq)->split.queue_size_in_bytes =3D queue_size_in_bytes;
+> >>> +	to_vvq(vq)->split.queue_dma_addr =3D vring.queue_dma_addr;
+> >>
+> >> Nit: having two queue_dma_addr seems redundant (so did queue_size_in_b=
+ytes).
+> > two?
 > >
-> > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> > ---
-> >   drivers/net/virtio_net.c | 48 ++++++++++++++++++++++++++++++++++++++++
-> >   1 file changed, 48 insertions(+)
+> > Where is the problem I don't understand?
 > >
-> > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > index 6ab16fd193e5..fd358462f802 100644
-> > --- a/drivers/net/virtio_net.c
-> > +++ b/drivers/net/virtio_net.c
-> > @@ -135,6 +135,9 @@ struct send_queue {
-> >   	struct virtnet_sq_stats stats;
-> >
-> >   	struct napi_struct napi;
-> > +
-> > +	/* Record whether sq is in reset state. */
-> > +	bool reset;
-> >   };
-> >
-> >   /* Internal representation of a receive virtqueue */
-> > @@ -279,6 +282,7 @@ struct padded_vnet_hdr {
-> >   };
-> >
-> >   static void virtnet_rq_free_unused_buf(struct virtqueue *vq, void *bu=
-f);
-> > +static void virtnet_sq_free_unused_buf(struct virtqueue *vq, void *buf=
-);
-> >
-> >   static bool is_xdp_frame(void *ptr)
-> >   {
-> > @@ -1603,6 +1607,11 @@ static void virtnet_poll_cleantx(struct receive_=
-queue *rq)
-> >   		return;
-> >
-> >   	if (__netif_tx_trylock(txq)) {
-> > +		if (READ_ONCE(sq->reset)) {
-> > +			__netif_tx_unlock(txq);
-> > +			return;
-> > +		}
-> > +
-> >   		do {
-> >   			virtqueue_disable_cb(sq->vq);
-> >   			free_old_xmit_skbs(sq, true);
-> > @@ -1868,6 +1877,45 @@ static int virtnet_rx_resize(struct virtnet_info=
- *vi,
-> >   	return err;
-> >   }
-> >
-> > +static int virtnet_tx_resize(struct virtnet_info *vi,
-> > +			     struct send_queue *sq, u32 ring_num)
-> > +{
-> > +	struct netdev_queue *txq;
-> > +	int err, qindex;
-> > +
-> > +	qindex =3D sq - vi->sq;
-> > +
-> > +	virtnet_napi_tx_disable(&sq->napi);
-> > +
-> > +	txq =3D netdev_get_tx_queue(vi->dev, qindex);
-> > +
-> > +	/* 1. wait all ximt complete
-> > +	 * 2. fix the race of netif_stop_subqueue() vs netif_start_subqueue()
-> > +	 */
-> > +	__netif_tx_lock_bh(txq);
-> > +
-> > +	/* Prevent rx poll from accessing sq. */
-> > +	WRITE_ONCE(sq->reset, true);
+> > Thanks.
 >
 >
-> Can we simply disable RX NAPI here?
+> I meant we had:
+>
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 vring.vring =3D _vring;
+>
+> in __vring_new_virtqueue().
+>
+> This means we'd better initialize vring fully before that?
+>
+> E.g
+>
+> vring.queue_dma_addr =3D dma_addr;
+>
+> ...
+>
+> __vring_new_virtqueue()
 
-Disable rx napi is indeed a simple solution. But I hope that when dealing w=
-ith
-tx, it will not affect rx.
+oh, my bad, maybe the repeated use of the name "vring" led to a
+misunderstanding.
+
+What is passed to __vring_new_virtqueue is the structure struct vring
+
+struct vring {
+	unsigned int num;
+
+	vring_desc_t *desc;
+
+	vring_avail_t *avail;
+
+	vring_used_t *used;
+};
+
+And what contains queue_dma_addr is our newly split structure struct
+vring_virtqueue_split
+
+struct vring_virtqueue_split {
+	/* Actual memory layout for this queue. */
+	struct vring vring;
+
+	/* Last written value to avail->flags */
+	u16 avail_flags_shadow;
+
+	/*
+	 * Last written value to avail->idx in
+	 * guest byte order.
+	 */
+	u16 avail_idx_shadow;
+
+	/* Per-descriptor state. */
+	struct vring_desc_state_split *desc_state;
+	struct vring_desc_extra *desc_extra;
+
+	/* DMA address and size information */
+	dma_addr_t queue_dma_addr;
+	size_t queue_size_in_bytes;
+
+	/*
+	 * The parameters for creating vrings are reserved for creating new
+	 * vring.
+	 */
+	u32 vring_align;
+	bool may_reduce_num;
+};
+
+We have no way to pass queue_dma_addr into __vring_new_virtqueue. But for t=
+he
+uniformity of the interface, I create a temporary struct vring_virtqueue_sp=
+lit
+vring_split(your suggestion) in __vring_new_virtqueue. Then assign the pass=
+ed
+in struct vring to it
+
+	vring.vring =3D _vring.
+
+So here vring is an empty temporary variable.
+
+As you have replied in other patches, my re-use of the name vring is a mist=
+ake,
+I will change some places to vring_split and vring_packed.
 
 Thanks.
 
@@ -159,29 +297,12 @@ Thanks.
 > Thanks
 >
 >
-> > +
-> > +	/* Prevent the upper layer from trying to send packets. */
-> > +	netif_stop_subqueue(vi->dev, qindex);
-> > +
-> > +	__netif_tx_unlock_bh(txq);
-> > +
-> > +	err =3D virtqueue_resize(sq->vq, ring_num, virtnet_sq_free_unused_buf=
-);
-> > +	if (err)
-> > +		netdev_err(vi->dev, "resize tx fail: tx queue index: %d err: %d\n", =
-qindex, err);
-> > +
-> > +	/* Memory barrier before set reset and start subqueue. */
-> > +	smp_mb();
-> > +
-> > +	WRITE_ONCE(sq->reset, false);
-> > +	netif_tx_wake_queue(txq);
-> > +
-> > +	virtnet_napi_tx_enable(vi, sq->vq, &sq->napi);
-> > +	return err;
-> > +}
-> > +
-> >   /*
-> >    * Send command via the control virtqueue and check status.  Commands
-> >    * supported by the hypervisor, as indicated by feature bits, should
+> >
+> >> Thanks
+> >>
+> >>
+> >>> +	to_vvq(vq)->split.queue_size_in_bytes =3D vring.queue_size_in_bytes;
+> >>>    	to_vvq(vq)->we_own_ring =3D true;
+> >>>
+> >>>    	return vq;
 >
