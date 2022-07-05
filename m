@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D130B5671EE
-	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 17:04:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B5545671F7
+	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 17:05:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231308AbiGEPCT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jul 2022 11:02:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53108 "EHLO
+        id S229602AbiGEPCo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jul 2022 11:02:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231821AbiGEPCE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 11:02:04 -0400
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 129D61572F;
-        Tue,  5 Jul 2022 08:01:59 -0700 (PDT)
-Received: by mail-wm1-x329.google.com with SMTP id r81-20020a1c4454000000b003a0297a61ddso9891323wma.2;
-        Tue, 05 Jul 2022 08:01:58 -0700 (PDT)
+        with ESMTP id S232410AbiGEPCO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 11:02:14 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B42515FF2;
+        Tue,  5 Jul 2022 08:02:01 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id v14so17965305wra.5;
+        Tue, 05 Jul 2022 08:02:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=+E9HBSea0QLQi12+8hra9Imm7sGSrMpugcSoqydPq9A=;
-        b=Utu6Up9oHePrJ9TGWq9tGqID2WUD4EUiHe8B6aGw6FR86OOrkeX/VRHCltmuY0Q4kD
-         4k5gH4ghw1J8FKkvsiWSpsHsWSn6WpjZ3M1X/7VpAkvp5CumDUSh8Sv6Dw7JpvTCnPNa
-         Z2yzPproSeTdUZWgPJQgQxI/TuY+zGjKJBflgZPp9Pwm25CrQ+rfauF3JSKOXczv2Kxc
-         2fM+vEKM0DNb8LuxhXAM5FkyNZbNBb9sJNxfYMAJ1MeUuVuSQAMp81uBO0c2wgNHYPmJ
-         wOOqlEfUMTjFtuAvv49qTVGaQpNvLh7V5PiFHwhlC9Y9fXnnHi26Ooa5DHr9BhJ5S9cc
-         Mffw==
+        bh=GzLsAsxy95Fx76UEZFPuQaGwMf2vIR+G+ARPeYpyXs4=;
+        b=UtZqPl6VuQcFKVyoE0m4M/ucDCoYfxGDoydFFTFdz8JcqeSF5qHI56kr0FmSCRmKQV
+         Y05fIA5HjqzAilH2s3+vQTKL8iweuJoqI1X6qyQVBvh0RrhBouebHr9CA0a/fRau3cz3
+         fE4hjvSdDLe2lrc+ce78EouI3mDI3sONIS0l1Qq8lxkoOesTg5SPX3tjyRbj1WYbT7jX
+         zKNPxJ/q7T8pTNf7Z4icOTZfjOn/DBxelt/9z3uUf3GkOsaSlWfavoEDrzYF3U8SN8Rr
+         3eJPo8sjGIcyWgiMo7ZqkzoIkCBKM8HfxRwT9C899dG3YBzlzvP5aMKPZ6oNN+p+GdBY
+         SNvg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=+E9HBSea0QLQi12+8hra9Imm7sGSrMpugcSoqydPq9A=;
-        b=H43bVEFfzBJrm3mBNEGYqY8ymgRlON7osh9TGl8HdaR+XvCN/MtoEnKpEXjFb9Fwpy
-         Grn80+a+U7wH9euZLxTdy8QRFnoUrhJipLbqJw6uUhscDV4XoWhE+LfMTtBhV8fPoK40
-         xk+oPuzkvxwswUdhAK4VHEgfiGy/arGppXlbSL/rc49mY+yKIZx0uMgugrov3//msukS
-         S92mBKBvGRUakl06NUgejihMmTe5X9HXmwgm88Q1dhwXsP6EKoXGNFR+Cz3NpTZfnteT
-         CKo3zZL7LL3XNWOo1FMy2nDbjG9VvnDqYRl4lvjlQDcBWPs6dql7SMpRjPhy2sUFqnxa
-         tylw==
-X-Gm-Message-State: AJIora8ss68Y5choTUvF9H1PhP3aWn2kXRukTLbDhT1HIv8nCAjb9bWE
-        i/JncKmT3H8f44kFnbAAqMGeC7FVl4IM8A==
-X-Google-Smtp-Source: AGRyM1sVB6IM/YBuOlaNi9NmHKjqagwpO6IOclnO9H3x3nV4J4wLpsBSdF59jxp8dZjAVeQMhGXMwQ==
-X-Received: by 2002:a05:600c:4282:b0:3a0:2ddf:4df2 with SMTP id v2-20020a05600c428200b003a02ddf4df2mr39083450wmc.119.1657033318344;
-        Tue, 05 Jul 2022 08:01:58 -0700 (PDT)
+        bh=GzLsAsxy95Fx76UEZFPuQaGwMf2vIR+G+ARPeYpyXs4=;
+        b=xHVGyNFS4bHobXWdxl/5o3Fs91XYie2TSmNxwLESLBUm9T3lA7xP5PMpv6UHKM0Kc2
+         /YF3BqIU2xkjiEsTxX73mK8Z71CyNEXIrPMbrOEeL7+wqFy5tq8qmpplrX0mNYwreOo2
+         zw9s9JLV8Vedn6e0XTDxzx7r/Pt0ukhod/AqQ68O1GDs8cOsxHfF5MSdBjdcKUmJgGzy
+         psY5WRBUNvAgx67tlFzajUHQH3p3J4yaNCSqr/YUUsHRvQeo55mV6AgWYA+s6thkgdJ2
+         BmYED5Wr5vC7oYbgou0KI7HMjnQt+Ge82c214KnMxME7VilRyCs93YEs+BphRU7yxqsx
+         reAQ==
+X-Gm-Message-State: AJIora/VkQydiLvUwD6nSrORbLFgKK3ooYDvFpMuDdWUlk2ncUTsQyhH
+        yYGTTYUuYUSAIuTikovwGV340WADbM7A4A==
+X-Google-Smtp-Source: AGRyM1uLLTELWeUDiGk8a+3owFmoMQvgcLMkMVHcxwokk6AYmB+pAUhin1uHsB1AHeKR5c0qfvcZsA==
+X-Received: by 2002:a05:6000:1861:b0:21b:a8a2:858d with SMTP id d1-20020a056000186100b0021ba8a2858dmr33600051wri.53.1657033319713;
+        Tue, 05 Jul 2022 08:01:59 -0700 (PDT)
 Received: from 127.0.0.1localhost (188.28.125.106.threembb.co.uk. [188.28.125.106])
-        by smtp.gmail.com with ESMTPSA id k27-20020adfd23b000000b0021d728d687asm2518200wrh.36.2022.07.05.08.01.57
+        by smtp.gmail.com with ESMTPSA id k27-20020adfd23b000000b0021d728d687asm2518200wrh.36.2022.07.05.08.01.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Jul 2022 08:01:57 -0700 (PDT)
+        Tue, 05 Jul 2022 08:01:59 -0700 (PDT)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     io-uring@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
@@ -56,9 +56,9 @@ Cc:     "David S . Miller" <davem@davemloft.net>,
         Willem de Bruijn <willemb@google.com>,
         Jens Axboe <axboe@kernel.dk>, David Ahern <dsahern@kernel.org>,
         kernel-team@fb.com, Pavel Begunkov <asml.silence@gmail.com>
-Subject: [PATCH net-next v3 09/25] ipv4/udp: support zc with managed data
-Date:   Tue,  5 Jul 2022 16:01:09 +0100
-Message-Id: <bf422eaa053b981ecf525e3c6d6c939f8d5a5a1d.1656318994.git.asml.silence@gmail.com>
+Subject: [PATCH net-next v3 10/25] ipv6/udp: support zc with managed data
+Date:   Tue,  5 Jul 2022 16:01:10 +0100
+Message-Id: <74c0f3cf7ff2464b0025a590ce9e716adb350be7.1656318994.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1656318994.git.asml.silence@gmail.com>
 References: <cover.1656318994.git.asml.silence@gmail.com>
@@ -74,21 +74,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Teach ipv4/udp about managed data. Make it recognise and use
-msg->msg_ubuf, and also set/propagate SKBFL_MANAGED_FRAG_REFS
-down to skb_zerocopy_iter_dgram().
+Just as with ipv4/udp make ipv6/udp to take advantage of managed data
+and propagate SKBFL_MANAGED_FRAG_REFS to skb_zerocopy_iter_dgram().
 
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 ---
- net/ipv4/ip_output.c | 57 +++++++++++++++++++++++++++++++++-----------
+ net/ipv6/ip6_output.c | 57 ++++++++++++++++++++++++++++++++-----------
  1 file changed, 43 insertions(+), 14 deletions(-)
 
-diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
-index 581d1e233260..3fd1bf675598 100644
---- a/net/ipv4/ip_output.c
-+++ b/net/ipv4/ip_output.c
-@@ -1017,18 +1017,35 @@ static int __ip_append_data(struct sock *sk,
- 	    (!exthdrlen || (rt->dst.dev->features & NETIF_F_HW_ESP_TX_CSUM)))
+diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
+index fc74ce3ed8cc..34eb3b5da5e2 100644
+--- a/net/ipv6/ip6_output.c
++++ b/net/ipv6/ip6_output.c
+@@ -1542,18 +1542,35 @@ static int __ip6_append_data(struct sock *sk,
+ 	    rt->dst.dev->features & (NETIF_F_IPV6_CSUM | NETIF_F_HW_CSUM))
  		csummode = CHECKSUM_PARTIAL;
  
 -	if (flags & MSG_ZEROCOPY && length && sock_flag(sk, SOCK_ZEROCOPY)) {
@@ -135,7 +134,7 @@ index 581d1e233260..3fd1bf675598 100644
  		}
  	}
  
-@@ -1192,13 +1209,14 @@ static int __ip_append_data(struct sock *sk,
+@@ -1747,13 +1764,14 @@ static int __ip6_append_data(struct sock *sk,
  				err = -EFAULT;
  				goto error;
  			}
@@ -151,7 +150,7 @@ index 581d1e233260..3fd1bf675598 100644
  			if (!skb_can_coalesce(skb, i, pfrag->page,
  					      pfrag->offset)) {
  				err = -EMSGSIZE;
-@@ -1223,7 +1241,18 @@ static int __ip_append_data(struct sock *sk,
+@@ -1778,7 +1796,18 @@ static int __ip6_append_data(struct sock *sk,
  			skb->truesize += copy;
  			wmem_alloc_delta += copy;
  		} else {
