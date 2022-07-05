@@ -2,197 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 38AE3566FCF
-	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 15:49:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A605A566F7B
+	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 15:41:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233036AbiGENtm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jul 2022 09:49:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37790 "EHLO
+        id S232777AbiGENkj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jul 2022 09:40:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230470AbiGENtD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 09:49:03 -0400
-X-Greylist: delayed 1237 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 05 Jul 2022 06:20:47 PDT
-Received: from refb01.tmes.trendmicro.eu (refb01.tmes.trendmicro.eu [18.185.115.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 535D4220C7;
-        Tue,  5 Jul 2022 06:20:47 -0700 (PDT)
-Received: from 104.47.0.55_.trendmicro.com (unknown [172.21.19.51])
-        by refb01.tmes.trendmicro.eu (Postfix) with ESMTPS id 15168102F887E;
-        Tue,  5 Jul 2022 13:00:11 +0000 (UTC)
-Received: from 104.47.0.55_.trendmicro.com (unknown [172.21.167.194])
-        by repost01.tmes.trendmicro.eu (Postfix) with SMTP id 89F6310000C40;
-        Tue,  5 Jul 2022 13:00:08 +0000 (UTC)
-X-TM-MAIL-RECEIVED-TIME: 1657026006.714000
-X-TM-MAIL-UUID: bb9cbeab-c09d-458b-b057-a55f020b030e
-Received: from EUR01-HE1-obe.outbound.protection.outlook.com (unknown [104.47.0.55])
-        by repre01.tmes.trendmicro.eu (Trend Micro Email Security) with ESMTPS id AE6441008F089;
-        Tue,  5 Jul 2022 13:00:06 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HgwcrkLTwdrPSXCARIZu6Eo2igmnZlcbDqO8LolVf1WPHTWYzEUMjk7mLDU/KIB4cxlyVtIVz5w17flPFtvTPf+Hs0h26IKdTclCPuGtPf2ev8SCyRhL2shDlTJrX0R1J9fs7e7HGVtEO9Eqp4MoS5CUddiL8DrEip5unOUcjUMadueerilOXT919+voNUmvS1LicXmwoairzqv1BcK8sYtOr9cDMoGBRU3H1DIZFchrpx0sUhtMXk634h3Vn5ocETIdnXA+33bhgwhGIvZ9bXbz7z79jU3I4QP1IQeyGGJ2kp9xpSRIxAJ7w0cau1ykbwlmqmiooFzgmBBIzaHLfw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=N4In53M6i4y4lWT0YhqY5MdGnlfRbI42Ey0MaO6pZKU=;
- b=e2tTQ/ZLTxa4i9A3NZGfJV+fmjIUYElG3A8I5fuwDtMYPCSQabpyfwvk7kAxR7lOIMp2O2hCiWCEMf/27aEXONUJAB5YDCs54fzR9jTx8DAu3FUPdLqNO/r24OBGHq7Kot9Xygu2AF6+ZkT6tlYPmfCSKEnjS1Nv83HV4qhEwvx44TJ5lqGVPu7+gzZ0Eteu6HzMIA7P0lrKO8Ltei8fIPHM+basDIJWldT5aSVStbg1iwnqV2Yet1vq7exPkJQammfwTT3UfoLzIjslZRUHCS7XRUOMJjPZulH5Vo3075PuWy3AQSxqy4AurfJKnSDdPM6ZJfobMeHIe8awSO2GGw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 217.66.60.4) smtp.rcpttodomain=davemloft.net smtp.mailfrom=opensynergy.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=opensynergy.com;
- dkim=none (message not signed); arc=none
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 217.66.60.4)
- smtp.mailfrom=opensynergy.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=opensynergy.com;
-Received-SPF: Pass (protection.outlook.com: domain of opensynergy.com
- designates 217.66.60.4 as permitted sender) receiver=protection.outlook.com;
- client-ip=217.66.60.4; helo=SR-MAIL-03.open-synergy.com; pr=C
-From:   Vasyl Vavrychuk <vasyl.vavrychuk@opensynergy.com>
-To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-bluetooth@vger.kernel.org,
-        Max Krummenacher <max.oss.09@gmail.com>,
-        Francesco Dolcini <francesco.dolcini@toradex.com>,
-        =?UTF-8?q?Mateusz=20Jo=C5=84czyk?= <mat.jonczyk@o2.pl>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        max.krummenacher@toradex.com
-Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Vasyl Vavrychuk <vasyl.vavrychuk@opensynergy.com>
-Subject: [PATCH] Bluetooth: core: Fix deadlock due to `cancel_work_sync(&hdev->power_on)` from hci_power_on_sync.
-Date:   Tue,  5 Jul 2022 15:59:31 +0300
-Message-Id: <20220705125931.3601-1-vasyl.vavrychuk@opensynergy.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220614181706.26513-1-max.oss.09@gmail.com>
-References: <20220614181706.26513-1-max.oss.09@gmail.com>
+        with ESMTP id S229565AbiGENkU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 09:40:20 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2638B9FE03;
+        Tue,  5 Jul 2022 06:01:27 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id h23so21446499ejj.12;
+        Tue, 05 Jul 2022 06:01:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=uXbdRIl5DzPqCBpkjfmAYzOPOvQhWBeO3fgrDd46Stc=;
+        b=RSLvcXnZdh41tMK3A2h1Y+CAwnI5xlcprV5yeyh/tOU6V7KGfWqaaXJk3fHHk4AViG
+         9/pmvB50xQzC35QJyyu75tLydGjD/0lxmjTLuKk0gvBBXsM7grav0+KBve22d9wIY28c
+         MedTuHfMaMky6Gz5fpIYanN3scLauCwM4VlfQaCbBwb1uctqn7OoPESE1gNQLyOgdio4
+         jdmvr39SGgo1c6GTsL6Z7p2/BvAays06D1r55mCrMs8k6zjbDNNCmul+Ai55AArRRAdn
+         Ba9dYvYVBmBA3WumR6Xk4VIQIenn7pzEspXlLgAx53kExAWYYi0hBVgzHs10xjzOrVSc
+         R6tA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=uXbdRIl5DzPqCBpkjfmAYzOPOvQhWBeO3fgrDd46Stc=;
+        b=bGIcIf7cI/3+aC/ECUzSoKNbQVRGnVn12tM0uNQzykCl9eCxrbMM2SoSGnTsVLO0yh
+         O3spEfMuF631xVHRCDnoQ2vpHsTgWs2HOEFm91FQZ+4Rdh+bNcdjQPHVg2H2Ny+2tMsi
+         7TbJh5alDnv2Ai08z+w9mElgX8aMHVEKMLcyjvlbwlr9W8NEHqWwNnBWp35s2zxR9g0F
+         DL0lMU/pnE3F10xxMgKEqDLgDzbkVhE84Lsf+tODv6fybPyVoeORzsDuJh5h2MqQ8Ax1
+         B5IwC3wg/JucunJ8WBUx4bMhbskf6lfE1VvbmfKh2/y90btHXt/24jVlFyepsxdGiyDV
+         AeSg==
+X-Gm-Message-State: AJIora/t1acQT8efZETR/ec65ZNNQZQ0DFa7EVA3xJhQscQ0GimSQH3a
+        b3sb4CNJylCJfilejxgOSzU=
+X-Google-Smtp-Source: AGRyM1tyXt75C0imlO+ODXhX4VOUWgsDA8ADYBrg8+NFoNxS3ufFXHp7GbNPqFefRLS3p1AKYawfBg==
+X-Received: by 2002:a17:907:60cc:b0:722:e564:eb11 with SMTP id hv12-20020a17090760cc00b00722e564eb11mr33325255ejc.736.1657026086139;
+        Tue, 05 Jul 2022 06:01:26 -0700 (PDT)
+Received: from ?IPV6:2a04:241e:502:a09c:8f3:2ee8:92a4:9ada? ([2a04:241e:502:a09c:8f3:2ee8:92a4:9ada])
+        by smtp.gmail.com with ESMTPSA id p5-20020a17090653c500b00722e8c47cc9sm8072612ejo.181.2022.07.05.06.01.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Jul 2022 06:01:25 -0700 (PDT)
+Message-ID: <324c9844-1ecb-60c0-c976-16627dff1815@gmail.com>
+Date:   Tue, 5 Jul 2022 16:01:23 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-Content-Type: text/plain
-X-MS-Office365-Filtering-Correlation-Id: 1d595ac2-6eb6-4ea3-3f30-08da5e864645
-X-MS-TrafficTypeDiagnostic: PA4PR04MB7727:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: vMsV4LJ8lEfuXd6lNB1gGPso7DN3kPnMOG1auOKbqIMokp3LePG8/zQV66KOfEFgZ6nEt0uJw0vlFjSS3YVGHZnE9CkwrWWDn8rPP1onsky8P1bVw04WfVBBEGFW7qH3mbtSJ2VI2bE5QB0jiAmXuheObpqdBK0K7+MvJND1veR5E0M7Ed8e9EutmZi+LBmC9Fu/jVNrCtIgJOpNTYwhwBTspWWIqRiVLhD/luO6DPMrFUI/+GfOObGbZLLGmmLd1PAqMmocnn1uV9960uhN+Nuqn8x8bHg6y89HF/tFJI3+PZPua8wE1hwhQGD0JMnESKJfzj20qvG2zqxAn/0zmYBs48RYkUMuOBt4ggg8UGKCUDLpZf+rvUomW9umBJmM9wIbLFHYYtjWsZoEoGC2+HtEkBr3PYpvp/5x71ydvV+7J0QJ6prZwpENu3cwCAfY2JrfEZ4t+Ue1xs5n4Qs9GVXeanroWPEJ17YqxEH5FaGpeJvZaEdeGLf2pxFAnFNVN0lfgUmt3U7y3HKRK09XYzV7/LKqyp4xeYdP09sJp3Hzx3W/nw4mt43XE6rJH2k5SrfqhynhUdIGRg5jt8j6S2ZGIdj8U/Gw/ZlVEy9ofi2i9l8KbElNZpg8sOZGIsTAk+I0RN9vjU6eFgH3yQCMaGUB/YGu/Xi81ajbXk1sN3DjB5MvM/FcQrfeidFzhGfOn4W3p8lBT7G8ABWVkfzMznMbME65PTjNinj9/V+UqRUYbqjIX6xc3CGLSKaOOz8pW7zgrSiBn0YbAjdhdbiIuUWbIYKgR4lvvFUjL5Z+cKZ1QLNgI+L1RgZpW0+XlQC5fbxOxvZpfQEZ6TM9AtyV1A==
-X-Forefront-Antispam-Report: CIP:217.66.60.4;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SR-MAIL-03.open-synergy.com;PTR:mx1.opensynergy.com;CAT:NONE;SFS:(13230016)(376002)(39840400004)(136003)(346002)(396003)(36840700001)(46966006)(2906002)(1076003)(186003)(107886003)(26005)(336012)(83380400001)(2616005)(40480700001)(36860700001)(36756003)(41300700001)(82310400005)(54906003)(110136005)(44832011)(7416002)(478600001)(81166007)(5660300002)(8936002)(966005)(8676002)(70586007)(70206006)(4326008)(47076005)(316002)(42186006)(86362001)(81973001);DIR:OUT;SFP:1102;
-X-OriginatorOrg: opensynergy.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jul 2022 13:00:02.3293
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1d595ac2-6eb6-4ea3-3f30-08da5e864645
-X-MS-Exchange-CrossTenant-Id: 800fae25-9b1b-4edc-993d-c939c4e84a64
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=800fae25-9b1b-4edc-993d-c939c4e84a64;Ip=[217.66.60.4];Helo=[SR-MAIL-03.open-synergy.com]
-X-MS-Exchange-CrossTenant-AuthSource: AM6EUR05FT055.eop-eur05.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA4PR04MB7727
-X-TM-AS-ERS: 104.47.0.55-0.0.0.0
-X-TMASE-Version: StarCloud-1.3-9.0.1004-26996.007
-X-TMASE-Result: 10--10.482100-4.000000
-X-TMASE-MatchedRID: hDt2nT7GHlPoSitJVour/f7FEhWgo0y8iK5qg1cmsr+dkHRvBVgJZmfL
-        KEW7qlsHqUirzUPTZU8RXOKWV2pRUD3rUpOWwerc/kFj+75tvQwd7wYwkPJ/mh8DRANMiqtikrI
-        9/WPu3jf68qduCW2JnM/NY1zQKKD4skLtspCGs70zOazjYfBb8Y0KoZnZ6F+XsMZG2pUzAfOyuh
-        piqaRnanAm0uKJEVsP5erpc6fZVyrfytYpCSLCzr9A3Bl1/DcVUmlK22ARBaHCkJHfGKxhL7+Ih
-        mgj6NxWiAaG2YvsCOK12HagvbwDji/7QU2czuUNA9lly13c/gFHyz3bB5kG50z5vzLEGq8DSebk
-        8lenLCkkrfB4Sxx5OjKVinSQfz+2RGPq1SoWksB+yskgwrfsC30tCKdnhB58FMkUvzgg/cUqzDt
-        2+ewmfO0d84ZRbF3AIAcCikR3vq/ZKrIEyWvT574TNGUN4s+AaKip7hpHodOcWpgypYPMbtdt5+
-        WoqbOB
-X-TMASE-XGENCLOUD: c53241e7-22e2-4b84-95f7-0e1209b093b6-0-0-200-0
-X-TM-Deliver-Signature: 8AE3E450CD76EE7D70593E6C79C1DA51
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=opensynergy.com;
-        s=TM-DKIM-20210503141657; t=1657026008;
-        bh=/mzkp2obN17YX5X2aYRTHkUYlkv9Lt075UpXK6TxCjo=; l=3043;
-        h=From:To:Date;
-        b=v8uQMikK0XKPHj2iHngFpC7c7Xrmb3DRgVP2ad8XJudMOk7z/shAMZSLeijq4dSby
-         C3tZJzxHtVumf9nqr9d/u8VjW712PODZY0MIBWBxRqeNsNoTnVSGuOstAEu+iaQlKf
-         qDWFlsq3e4RYrjczxtIStNk8gM/yc89H/W+Hnix/rTY0Z9W7lyhn51W9mJv5cGMBDl
-         ak32o3lt5xD/zjbkPCFb+Sl+2qcsgEtG4xbHD2xHFyhpe/ivTc+ewnoZ9NlrxinJax
-         sd7TfuvcUryaFus8K66+erkXKOCp/tozHDOrVL9kbJ/W8S48cteW3fldyLO87obN49
-         EIuzg81MBRXuw==
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] net: Shrink sock.sk_err sk_err_soft to u16 from int
+Content-Language: en-US
+To:     Paolo Abeni <pabeni@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Soheil Hassas Yeganeh <soheil@google.com>,
+        Wei Wang <weiwan@google.com>,
+        Joanne Koong <joannelkoong@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <74c6f54cd3869258f4c83b46d9e5b95f7f0dab4b.1656878516.git.cdleonard@gmail.com>
+ <248071bc915140d8c58669b288c15c731407fa76.camel@redhat.com>
+From:   Leonard Crestez <cdleonard@gmail.com>
+In-Reply-To: <248071bc915140d8c58669b288c15c731407fa76.camel@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-`cancel_work_sync(&hdev->power_on)` was moved to hci_dev_close_sync in
-commit [1] to ensure that power_on work is canceled after HCI interface
-down.
+On 7/5/22 13:31, Paolo Abeni wrote:
+> On Sun, 2022-07-03 at 23:06 +0300, Leonard Crestez wrote:
+>> These fields hold positive errno values which are limited by
+>> ERRNO_MAX=4095 so 16 bits is more than enough.
+>>
+>> They are also always positive; setting them to a negative errno value
+>> can result in falsely reporting a successful read/write of incorrect
+>> size.
+>>
+>> Signed-off-by: Leonard Crestez <cdleonard@gmail.com>
+>> ---
+>>   include/net/sock.h | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> I ran some relatively complex tests without noticing issues but some corner
+>> case where this breaks might exist.
+> 
+> Could you please explain in length the rationale behind this change?
+> 
+> Note that this additionally changes the struct sock binary layout,
+> which in turn in quite relevant for high speed data transfer.
 
-But, in certain cases power_on work function may call hci_dev_close_sync
-itself: hci_power_on -> hci_dev_do_close -> hci_dev_close_sync ->
-cancel_work_sync(&hdev->power_on), causing deadlock. In particular, this
-happens when device is rfkilled on boot. To avoid deadlock, move
-power_on work canceling out of hci_dev_do_close/hci_dev_close_sync.
+The rationale is that shrinking structs is almost always better. I know 
+that due to various roundings it likely won't actually impact memory 
+consumption unless accumulated with other size reductions.
 
-Deadlock introduced by commit [1] was reported in [2,3] as broken
-suspend. Suspend did not work because `hdev->req_lock` held as result of
-`power_on` work deadlock. In fact, other BT features were not working.
-It was not observed when testing [1] since it was verified without
-rfkill in place.
+These sk_err fields don't seem to be in a particularly "hot" area so I 
+don't think it will impact performance.
 
-NOTE: It is not needed to cancel power_on work from other places where
-hci_dev_do_close/hci_dev_close_sync is called in case:
-* Requests were serialized due to `hdev->req_workqueue`. The power_on
-work is first in that workqueue.
-* hci_rfkill_set_block which won't close device anyway until HCI_SETUP
-is on.
-* hci_sock_release which runs after hci_sock_bind which ensures
-HCI_SETUP was cleared.
+My expectation is that after a socket error is reported the socket will 
+likely be closed so that there will be very few writes to this field.
 
-As result, behaviour is the same as in pre-dd06ed7 commit, except
-power_on work cancel added to hci_dev_close.
-
-[1]: commit dd06ed7ad057 ("Bluetooth: core: Fix missing power_on work cancel on HCI close")
-[2]: https://lore.kernel.org/lkml/20220614181706.26513-1-max.oss.09@gmail.com/
-[2]: https://lore.kernel.org/lkml/1236061d-95dd-c3ad-a38f-2dae7aae51ef@o2.pl/
-
-Fixes: commit dd06ed7ad057 ("Bluetooth: core: Fix missing power_on work cancel on HCI close")
-Signed-off-by: Vasyl Vavrychuk <vasyl.vavrychuk@opensynergy.com>
-Reported-by: Max Krummenacher <max.krummenacher@toradex.com>
-Reported-by: Mateusz Jonczyk <mat.jonczyk@o2.pl>
----
- net/bluetooth/hci_core.c | 3 +++
- net/bluetooth/hci_sync.c | 1 -
- 2 files changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index 59a5c1341c26..a0f99baafd35 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -571,6 +571,7 @@ int hci_dev_close(__u16 dev)
- 		goto done;
- 	}
- 
-+	cancel_work_sync(&hdev->power_on);
- 	if (hci_dev_test_and_clear_flag(hdev, HCI_AUTO_OFF))
- 		cancel_delayed_work(&hdev->power_off);
- 
-@@ -2675,6 +2676,8 @@ void hci_unregister_dev(struct hci_dev *hdev)
- 	list_del(&hdev->list);
- 	write_unlock(&hci_dev_list_lock);
- 
-+	cancel_work_sync(&hdev->power_on);
-+
- 	hci_cmd_sync_clear(hdev);
- 
- 	if (!test_bit(HCI_QUIRK_NO_SUSPEND_NOTIFIER, &hdev->quirks))
-diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
-index 286d6767f017..1739e8cb3291 100644
---- a/net/bluetooth/hci_sync.c
-+++ b/net/bluetooth/hci_sync.c
-@@ -4088,7 +4088,6 @@ int hci_dev_close_sync(struct hci_dev *hdev)
- 
- 	bt_dev_dbg(hdev, "");
- 
--	cancel_work_sync(&hdev->power_on);
- 	cancel_delayed_work(&hdev->power_off);
- 	cancel_delayed_work(&hdev->ncmd_timer);
- 
--- 
-2.30.2
-
+--
+Regards,
+Leonard
