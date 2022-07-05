@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F8975675CD
+	by mail.lfdr.de (Postfix) with ESMTP id C8F5E5675CE
 	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 19:32:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232754AbiGERcI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jul 2022 13:32:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54536 "EHLO
+        id S232710AbiGERcK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jul 2022 13:32:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232800AbiGERcF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 13:32:05 -0400
+        with ESMTP id S232762AbiGERcI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 13:32:08 -0400
 Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2042.outbound.protection.outlook.com [40.107.104.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2087FE5A
-        for <netdev@vger.kernel.org>; Tue,  5 Jul 2022 10:32:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20025186C1
+        for <netdev@vger.kernel.org>; Tue,  5 Jul 2022 10:32:06 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ggwvaGc7Gv+imtBbxb5N2VZyoEuQxn7E1OLNizkd/5vVgUey0FlOsvMrQXlrB+utpRBt4OYzcDU6XJyqShfGJcEy/6sTKG666C8mcac0bPMSAHdRXbDg0oGJ7t+d+OoSWHIX5waHC//sMX6trb92P53GwmU0lQfwuWF6SQxj2R/S8h+zLEPRIbi8KhQEdpTWw4hBfUbXFvoz3O2zE/7SLCPVAWGttOGlCUPE+01LE2moDAXZAT6GPdWLAlhMjDxOVU3pJhMlWs6eMjx/YBb80ZPH3/wXZQLbc425nyTuRMP6Ma4D5b9aGAg+Umnb8II+jn/WYrI5MSVIMKcZCLNPrA==
+ b=GJJ4nMxG18ON04MJkFQBgFJnfGFOpo1p0zafIKtr3lbd3U504NGaW0VcWKiYBmembmz4/ZGy/OSYtdBVC/wO5vpmJ1c5qPVmuDagxIg6LvRjQoEzKHq43sniZDk0PJSPnuPNwItxBCB15jFU6SgFmSAwIro5vmhKFmbyZBefuyv+DLMZgQiMuzbQhzH+84o/dQ2eK/bBw9Rn9w0u5WjXd3V8gCLe5pf7XJP4BpVrMpaLXMGVQc+DL1FGc/ZAplrQVo9loUXzi3Cn3/NWiPa1NflUghTH3fLcTzg0kQDLdYdUycB6KXbUZ0NajljNYib9MXzTcbYno9l4LvRhuiRZWQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=VJGXx4t1n4yCFfAiuOxQaY8JNWf9IT6XSw+MErEvM0o=;
- b=V9jjWMymZRaA1On/BLaPAsSzZTC5oh4meqQJ62uRkPUajaS0lbTTSScwKor6ZqtOc+7clbMiudPS+AIBztNFUoCCUB5u8eXyPsRUeLLeOSYD9IqAWgOzYDRnEgtPeCz/yESq+/4K5SabctkC0Mv3ZNfcSCL9aLGLG+rQWt8kMB2F6+hBCClHjkF5rMrim5uds6auZ9rCXHpBZO6+eH2MTNreClg5IDTE147j/xseEq4Cw+PR0fYCvxbbocNXjRkzeN/SDCurPibUbaCjDgV2v8hLmUZfp1s0c7S42Xq5yH0tkkzKDAUy53wMcK42I5//wAuDyGWTphebRF7TY/MhyQ==
+ bh=zKW1o96QgqFt+5OkdUuRn4ZVoGWnUo3uJHNh7lyHl6s=;
+ b=cRSU4l0CDMDJEmQhWyHf2VDcws4lz9x/RCroU67b4m7w8NR09qFvpfwoTaqZYz9ns+v73ZkMstE4JTH3VbH8zqqNgabW65yaAkAS8Rd2GtSdryZX/EgR9qY7mHAX7hsG4c/puNasws5fy8XEnzOnSgxRfbQ+4VNMYDbJV/zYoZez+w4HTxNweDv3eOAm1S5A5H245q8anMcgti03PCB45745iUsIuSvtk7c+8VsTfqN2Nx8h9JJHJWOeZHJtNbsUC6rPeTAAJBNoQcnbzxjH1IQiGKwd9mw50W8YO8CA028IwSD4a9bxjqQfzwcN98N1D74MJU0DgrZ6QLwOTXaqdA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VJGXx4t1n4yCFfAiuOxQaY8JNWf9IT6XSw+MErEvM0o=;
- b=stqtbczjpciJ4Tl8ExWH0QQQ4JyLMRYtsJFstOvjMfRB1ivxg458sAwEZs0dbJpnG1dQ2aff4Lu2fQ+eF6IL5AgkuQEMB0VZiPaENFZED1k8cAs7D6biqHYdi8fZCh788P0/dk2WByLDg5ArYlZdUK2GcTtwiRw/+kiXDmfnTJE=
+ bh=zKW1o96QgqFt+5OkdUuRn4ZVoGWnUo3uJHNh7lyHl6s=;
+ b=gKky5W9eyXGF8NBjqYLNp5ERszJcgrgpGt1n3Ga9gboDqaby5ic0RBw3d5B5c1PF0l8fGwRV+mVvMU5ISEvZLBqUDFO13o8gtnROS8mEsOvObLtbgtrpA7L1hJ578Bpy9zR37WkRPhIAAWPHR36m5a1pm2TiN78QGGI4nOoqn9Y=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by DB7PR04MB4251.eurprd04.prod.outlook.com (2603:10a6:5:28::26) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.21; Tue, 5 Jul
- 2022 17:32:03 +0000
+ 2022 17:32:04 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::71b7:8ed1:e4e0:3857]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::71b7:8ed1:e4e0:3857%4]) with mapi id 15.20.5395.021; Tue, 5 Jul 2022
- 17:32:02 +0000
+ 17:32:04 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -58,10 +58,12 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Arun Ramadoss <arun.ramadoss@microchip.com>,
         Hauke Mehrtens <hauke@hauke-m.de>,
         Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [RFC PATCH net-next 0/3] Delete ds->configure_vlan_while_not_filtering
-Date:   Tue,  5 Jul 2022 20:31:11 +0300
-Message-Id: <20220705173114.2004386-1-vladimir.oltean@nxp.com>
+Subject: [RFC PATCH net-next 1/3] selftests: forwarding: add a vlan_deletion test to bridge_vlan_unaware
+Date:   Tue,  5 Jul 2022 20:31:12 +0300
+Message-Id: <20220705173114.2004386-2-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220705173114.2004386-1-vladimir.oltean@nxp.com>
+References: <20220705173114.2004386-1-vladimir.oltean@nxp.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: FR3P281CA0057.DEUP281.PROD.OUTLOOK.COM
@@ -69,52 +71,52 @@ X-ClientProxiedBy: FR3P281CA0057.DEUP281.PROD.OUTLOOK.COM
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d8c55c0f-bedc-4f56-fd53-08da5eac45e7
+X-MS-Office365-Filtering-Correlation-Id: 3c3cca22-ca79-4cfc-c883-08da5eac46b9
 X-MS-TrafficTypeDiagnostic: DB7PR04MB4251:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: lUE2/rfWGT/UGBqw5+jtyB1peEFQPpxnI5GCxhrNgeTA4Vaj1OiY7+rbD+qqQD+YuVlWQAKH401sHdG1DHWU1JWrRJlwT7LNZO+pFyI3++yiUI4Zojf/6htlGumbpMCDmzFecwv8zWNEx6leKnp26cEInM1sZ9g6Kl/aRjuxJNZCK0mI5JeNIlVHTsLwv2wG4miUVeYqegmtY7HDdu0nHvK1QYQOT9ONxfBfm6osvUoeVJD2LWM7Nkt1EFrFv8Rk3NpLTbLgU8KLF3DRDOAQdy1SM9rhXXqVXyqtdEeiMSIAfryR8BEtmMeWHzy3dqYLYEchTDYhwYUt4d95pdqZ4v3nov3NOOyPc3UDbJJD2Zr9txUIAAlg86qKm428mMGcOUexTZ4Cme08euKh++5Yc+fq+IhRB0TEq/9NIQ05VDZRfo1RWV/LlBf6B9Zduk2lUFG3nsKT/9U0KGPHoOfV6D5szmg53PEnNJKkQ00jonMT26xqKY6UJsae0qPEiWtSEQZmSgJarJjTdz1w9yY9IlWE5VFlBOurn5uDNfzuUrkuyYZO0nfsWYXlE7xgNd9f+Kuf+rL9GTcmbamHr9gfDvku1JAqutQA/bk6lynKd62YEHdBAsnVvvxMzFzLP/pr5CtxovwofwYgjH4TSFGTu73mFwVrqObGyxYcSnKdx+RYwRvoqZu9bo8LtxeNDwnvjxW1K9LCx4nMhE49hmnq0TrLHdH7T1pYx59SKlO4pXN06dLGot1Mtlwi+2SDF+im+v/RY0gdCEP/CdZxwirqPJDifte4fwHnRgXvxmSMG3HKdVCEhAgdXZaXcdUE8reqH6V8JXr7lfNplPU5IlbT/8pE0gd93tJJ2SoFsoA8DJMIKxp0KGr6sAQBfe5uvhVy
+X-Microsoft-Antispam-Message-Info: jKMQO4UzMFc5JgRSJEppbidpYvY1Nz0SbblX2lKOHeq/zOg5SZXG6aeqcBqdp1bm7fgLdxY5/tbNQKv7XpYIfVsW0q5SBuw7//5p98prvfljhledXKPjjg+fq3C2d6Vq2RkoUQduHuwldR+rN7Gq8NKZBwYuuXykbpHluLq1ntTGn33b2E3weX3UVGGcvk7RBP8B6jApKryuQAdzbWll9+yv5kX9eHJqp49HvUrQUPNPycmeWLXPakCubpARDFB6zxxKjE2mEUry0lAQpJEnA+ph5hRLA3uTOb7OHpfF9fbIWNcUCxPqItiYEn6JazoNwokh5FxbHqIypORDFOZmEgNKSPOZS0njS3ssyZXtkAOBMuTBN5BydmE7ewHRkIO+SpqNsTciNawvv0hscjaYDSso2Zv4lIbF7p/uknMiqhqnZEmBp2WiGCh+9+s4PCMZkJH9oWqjCNNBcFUBT/yX9zdajXoF2anpgBndNGvlgD3u4b/wVP/IYHs8Q/4UyUFxEF5MjhvjoNPAEhPDFAh94OAlfYWkDCKHxQC9PRHsMTzM3kRDP0uyYpqZ58nBzlt/7ohixS/70aandWH40+BmAyTKZ42NInDvYOujBAaL1qdTHxanYghERAdjI5HjlTwA7h1D5bMp/cF41dVD0S93+bCHddJPws8pGSisNOvjzxzMVhpdmrU8tOedWM3O+uVHaHvxsyTeYvC50EG+P96gol2oPgQRc8S6z+pnjOrHVDVN1BtvMrjd+c7a82LeNimoYJ966Sfn+WcxPRMpX2JvXHFAt4wV21CDYZUKvJ0Lj8zVs0Nw6KoopwYtoKYCSyGLNCVZAVek9h47dYrfufg/LA==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(396003)(366004)(376002)(346002)(136003)(8676002)(4326008)(66946007)(66556008)(1076003)(478600001)(66476007)(6486002)(186003)(6666004)(52116002)(6506007)(41300700001)(2616005)(54906003)(6916009)(83380400001)(316002)(26005)(966005)(86362001)(6512007)(2906002)(38100700002)(38350700002)(36756003)(8936002)(7416002)(5660300002)(44832011);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?z0Ju6HHLKKKqtJEJKcTYy+SVVT5YZAXnZkc0Hldko4e4WfnyrWn/098uLvxB?=
- =?us-ascii?Q?NJaJEzJ6OgAEHDasZU/hHE1f/MbSM0zb1Pc4HmzKjunhqWiVyNIdHZqEBEm+?=
- =?us-ascii?Q?QrZQA3oQeZqrp+I9Y8cUHROb3ZGnq2HuR4mPC2tBXS8CAZWxB9+wzOE4zAjF?=
- =?us-ascii?Q?87BtMraPo+GYtfva8gwMkXDEMz461/rnJDpxsIIymvI3mo0Vd4dH9zwTHA4K?=
- =?us-ascii?Q?LXcaU+5CVWFolOxnoVGuQu9HTilsJcTo6uT/hyWJ/GoJG7KUX7gdHrI4zGuf?=
- =?us-ascii?Q?YfdoupBDkmrxQFrMNCGCkUL8sBf0b9mb+7j47J83wtgeWoEWW50YyUwYw4A6?=
- =?us-ascii?Q?hvOykBhl0jBmouekpphjg0esL61nXFJzr5gJraZJGaH6bsgr4YVNEqs/G1QG?=
- =?us-ascii?Q?iKHjkNyXyUvxk5CYOfO95ekPV1mmuaOg0A9R/2p46CkaojZ5mrsfEjCQVmuU?=
- =?us-ascii?Q?D0VZkbwOYq6hgQGNtG/BVYBU14Fb/ZDtZy6ZBzaUOLL+TlPWiA4QuokHtil4?=
- =?us-ascii?Q?HrjLbGNQfCaSurknLblZIY1u8Lulbitn6iybvYK2BmcDh2QO83IUx+NOLuuY?=
- =?us-ascii?Q?fxG/fq3BfRMfOeH+mSWpgYBmQiOgG47ZNkuSIXtkKkEKtZlT+Ql3/ix/3N/w?=
- =?us-ascii?Q?NC4dAutnt4dxCFlo8ZMZgn6dlIjpG3cIMKnoLfsEMjPmDxpYDCJ36C+9F77/?=
- =?us-ascii?Q?KxMaggU6fDuGOFILjaCYjOMlLO8FZiv2bWVAJOVBUbCvcQHhMw7/R2zMQbx4?=
- =?us-ascii?Q?/a3RCIgNPX/z6PlMUXksIgBhMqIgiBKegqAeEcRuhvqVni8U/hVpDk4KSU6U?=
- =?us-ascii?Q?2950qJ1mtxyf/mm4IpgkRu+d+mNeLQO/7H7ciHXiNl6wRRXPfEsyPWih/eAJ?=
- =?us-ascii?Q?ww5eOp6ECs/6TpY/+zkTF7WLKAY1eJSyOFEmdFdTQtj+gJ4YjBckz2khv0KE?=
- =?us-ascii?Q?CAC3m2zbULhtX5IkNBsLfA9DZ+4vdSudEGiUoXxLg7Uos9wlG5Ep5vQOF01q?=
- =?us-ascii?Q?QWJyZSm8PktbU4xig65Vazv+d/yvNZFNl66eMZOB/jTEEO3GQojGv366Q8pK?=
- =?us-ascii?Q?8FfY21/Jm1+2CTjZ4EK4vgId6Zuq8J8fJIhe1jaINla9TXM8fne+8h5y8iaf?=
- =?us-ascii?Q?G1QzH+xnbbxygESFiC231IBor4WN/QEekoUzsgYSoh4f9NMyfQHdSvf680/J?=
- =?us-ascii?Q?k1EYXhTTidOiqLMhphwLc6nJeqcPhXC3FrGJzZE3p5Nxb7qHsRnfZV5+0RWH?=
- =?us-ascii?Q?tD7ta8T5oBAuTIZdjZUCQvSYD4q4vgUbtdaatk7IHBgDiH0GClYrQ8wPwXmN?=
- =?us-ascii?Q?LYcuam+VZBtGnB1GBafo2/K2F4knx1rips00BXe4QdgJ7CNpt1EV9hVExV7+?=
- =?us-ascii?Q?DKXg4rcJBGUuYgK+rFknxKxflbetwwCpiPWkmsCInjbV0W4efKp3kmqdM4YO?=
- =?us-ascii?Q?isoGBiRvyGiOinTusPlOCnJps/QCwzBFhdWRcQtgan6fsfP2DgaIe/Tg7IcT?=
- =?us-ascii?Q?k8vLM2ea5P8bsiMtYaIA1mzumrNRIN35JaK8OFJoAgRetJsbR9rB3FEapHD7?=
- =?us-ascii?Q?/JG8Z7Zkb+ofS5lZ0m6uiOtU1+fam6GH93v6fk9RC+2tyDa1hInXixCQQSBe?=
- =?us-ascii?Q?Sg=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?zM1X98wjyx+ibrl6yZ+rLO+7ncI3f4xv9kKdyPx74/v0zRugbtlMpZlb/RFV?=
+ =?us-ascii?Q?V1NYo5H2tUGAczIvIXPToKcSueA4hEcZsfVANjJvaAhJAS4pZ8ACFar1c8EA?=
+ =?us-ascii?Q?xz1f+QMLifwhi7NQrr9BQ0kkJCivpJ0roIjdBB2fYTz1WnXpA4qqChxJM8dZ?=
+ =?us-ascii?Q?4n/Kbp6MjXL7IuFFbVq3Q9ZO7LOQW/3lG54GG5Fklz1Q/ECKYmmbC8/xXODO?=
+ =?us-ascii?Q?5bJg9IauIwTd+XErJ+r0ASYA4yiS8MJaDzc85SLHOpZ69IEFLyywZ04BE4f6?=
+ =?us-ascii?Q?WALXsWPOMuLuCJY5EL+plsUavDVDMnBoS/HWmZCSyrAwEek/WHHMeknj8EdY?=
+ =?us-ascii?Q?GOpdR507DPhaw7Nm9ojhhb2WeUsM6ot5f3LPiNeMpWyyRjxLiuYqScutLZjI?=
+ =?us-ascii?Q?L48Y/8Kp+Yhyjpe4fJqDX6orp3nRq7Z6c1ntMz8wVi+jsN+4fwp+fn26YJp2?=
+ =?us-ascii?Q?ksVMQ2ZDeatn4z4RlEl5hf+/pQ0QEhnHp26ItnCr7r8DWkg3V2OJvrIHQuUv?=
+ =?us-ascii?Q?b6zJwo/fAUVzPr7zKgoSrLAYyFtqz2OqvrlN4dJVA6XTkYjlnNOSXBezXRjC?=
+ =?us-ascii?Q?RnMx6X9iJSZXltP8aQjyl8xZwogCkAXO5vLElh5MLh7wSUqex0Rmi1/MzCxr?=
+ =?us-ascii?Q?9H2HTWn5IuDMLMKV3U0UHXwn0Iojq16FEno7fTpQE+BtxdZWPB1HH4fItynD?=
+ =?us-ascii?Q?8et9bCPoszwu5yiSoXy82LsZG8qSnYQWA9l/6mDkL/JHwvbIQHnE3e83kSaw?=
+ =?us-ascii?Q?T0OifseBF4m/xHpb2PAWi4A20xZbh6LNYuFf4yuJf51As5B6Uimn4PaAmHkC?=
+ =?us-ascii?Q?E4l/HwQQbIUQ+0UcYm6j/5RFikCVIDl6G4wFXzKHJdglnBAfjAsKXM9jc+yf?=
+ =?us-ascii?Q?r9y+htsCAS7Gl6hD1KDbauEFVem7ezkn8Lbnqb2FBCVOL+W24l343iBSl0nf?=
+ =?us-ascii?Q?EDFj2XaQVCQoYlBPTs+MytbSeKQNGa1vquYYuhCX/DDn2kqbH0DCCYbbC3Iq?=
+ =?us-ascii?Q?FL1RA5xrHRamO+wsoF3R1WQvNJ8E5QP+eVXnvR5vD/hgNT/c1zLCBqrBbzfo?=
+ =?us-ascii?Q?QUwuRvFUkGcX9udEQLV61UHEVqgXxgbSm4Xee5sYB4tZT7XLFzlbZyUW0JKn?=
+ =?us-ascii?Q?mHdLggUujmKWz4j3sjEvKCtrh2oTzG6iRb/3+09AJCY0EoosD6gHv9e8DLHW?=
+ =?us-ascii?Q?XC/4aIu305ElciFrcQz+cxjLQXXsmTo2BCqWISGr3R3UVX/tz8YuYJMls5se?=
+ =?us-ascii?Q?aDDICkJAIxh/C6cP7bC7lnm1v6iA36uNKfSbJYrM4KC1e+RarGcRnCjgF6l+?=
+ =?us-ascii?Q?YNDk5RMDE+mLsvVlmASzVVB6efiPO3htVp6bBzA0gNBNUv3wXw+E7D7+Ovg9?=
+ =?us-ascii?Q?w2I8J8lGzM69/yrMQkfIYWp4KNbDLhqG8SLVtQdF6FVQeTDRX1mKYblnlSKD?=
+ =?us-ascii?Q?Lmmz78gyhrPdmJ8BoWR/HN1ASgpBbievnJR9Cj4d8HcTtuSrxNWJUIc0zo6d?=
+ =?us-ascii?Q?B1xOvlSY6YJDb1qLH4eZeYl3/3S17uv4nXuhPHNL+Blfpm6bjqgXAM/9msdL?=
+ =?us-ascii?Q?goWolROu6kDnnE7xKdR7g2U+717afJPMMOZ7ltyGARFdWDZTdgTqar5ypPa6?=
+ =?us-ascii?Q?ZQ=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d8c55c0f-bedc-4f56-fd53-08da5eac45e7
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3c3cca22-ca79-4cfc-c883-08da5eac46b9
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jul 2022 17:32:02.8751
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jul 2022 17:32:04.2031
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 33Ykm7q8OXyBBFFLNBw3DdoNUJUShqR4LG0vTvj+Ol91jfl94StMfymj5LIeZFCuAONbEjHp/ePt/JEtCFg4lw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: l4RnyCGKwbvVZL6wMsMdtXCdqyS0o/1JJArSIRRcRjATPWNC1xM7q5qfoWYJcgpBU+Td+vsnAGf4n64v75nILQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB4251
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -126,50 +128,122 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Even though this isn't documented explicitly, we have told driver
-writers on different occasions (mainly during review) that
-ds->configure_vlan_while_not_filtering is an option which ideally should
-not exist, is opt-in, that we should work towards deleting it, and new
-drivers should not opt into it.
+Historically, DSA drivers have seen problems with the model in which
+bridge VLANs work, particularly with them being offloaded to switchdev
+asynchronously relative to when they become active (vlan_filtering=1).
 
-However, what seems to be happening is that new drivers still seem to be
-able to slip through the cracks and get introduced with the VLAN
-skipping legacy behavior.
+This switchdev API peculiarity was papered over by commit 2ea7a679ca2a
+("net: dsa: Don't add vlans when vlan filtering is disabled"), which
+introduced other problems, fixed by commit 54a0ed0df496 ("net: dsa:
+provide an option for drivers to always receive bridge VLANs") through
+an opt-in ds->configure_vlan_while_not_filtering bool (which later
+became an opt-out).
 
-Such is the case of the Microchip LAN937x, which was merged in v15,
-after being taken over by Arun Ramadoss from Prasanna Vengateshan.
-https://patchwork.kernel.org/project/netdevbpf/cover/20220701144652.10526-1-arun.ramadoss@microchip.com/
+The point is that some DSA drivers still skip VLAN configuration while
+VLAN-unaware, and there is a desire to get rid of that behavior.
 
-I had asked Prasanna to remove the deprecated option from existing KSZ
-drivers:
-https://patchwork.kernel.org/project/netdevbpf/patch/20210723173108.459770-11-prasanna.vengateshan@microchip.com/#24351125
-and yet somehow, how we are in the situation that after Arun's KSZ
-driver refactoring to use more common code, the quirks are common too,
-including ds->configure_vlan_while_not_filtering being inherited by the
-new LAN937x driver.
+It's hard to deduce from the wording "at least one corner case" what
+Andrew saw, but my best guess is that there is a discrepancy of meaning
+between bridge pvid and hardware port pvid which caused breakage.
 
-Maybe the problem was that I wasn't specific enough about what should be
-done to move forward, so this patch set attempts to be a more concrete
-step. I've created a selftest that captures what I believe to be the
-essence of the workaround, and I'd like to ask maintainers with access
-to KSZ and to GSWIP hardware to test it and to propose fixes.
+On one side, the Linux bridge with vlan_filtering=0 is completely
+VLAN-unaware, and will accept and process a packet the same way
+irrespective of the VLAN groups on the ports or the bridge itself
+(there may not even be a pvid, and this makes no difference).
 
-Vladimir Oltean (3):
-  selftests: forwarding: add a vlan_deletion test to bridge_vlan_unaware
-  net: dsa: ar9331: remove ds->configure_vlan_while_not_filtering
-  net: dsa: never skip VLAN configuration
+On the other hand, DSA switches still do VLAN processing internally,
+even with vlan_filtering disabled, but they are expected to classify all
+packets to the port pvid. That pvid shouldn't be confused with the
+bridge pvid, and there lies the problem.
 
- drivers/net/dsa/lantiq_gswip.c                |  2 --
- drivers/net/dsa/microchip/ksz_common.c        |  2 --
- drivers/net/dsa/qca/ar9331.c                  |  2 --
- include/net/dsa.h                             |  7 ------
- net/dsa/dsa2.c                                |  2 --
- net/dsa/dsa_priv.h                            |  1 -
- net/dsa/port.c                                | 14 -----------
- net/dsa/slave.c                               | 22 +---------------
+When a switch port is under a VLAN-unaware bridge, the hardware pvid
+must be explicitly managed by the driver to classify all received
+packets to it, regardless of bridge VLAN groups. When under a VLAN-aware
+bridge, the hardware pvid must be synchronized to the bridge port pvid.
+To do this correctly, the pattern is unfortunately a bit complicated,
+and involves hooking the pvid change logic into quite a few places
+(the ones that change the input variables which determine the value to
+use as hardware pvid for a port). See mv88e6xxx_port_commit_pvid(),
+sja1105_commit_pvid(), ocelot_port_set_pvid() etc.
+
+The point is that not all drivers used to do that, especially in older
+kernels. If a driver is to blindly program a bridge pvid VLAN received
+from switchdev while it's VLAN-unaware, this might in turn change the
+hardware pvid used by a VLAN-unaware bridge port, which might result in
+packet loss depending which other ports have that pvid too (in that same
+note, it might also go unnoticed).
+
+To capture that condition, it is sufficient to take a VLAN-unaware
+bridge and change the [VLAN-aware] bridge pvid on a single port, to a
+VID that isn't present on any other port. This shouldn't have absolutely
+any effect on packet classification or forwarding. However, broken
+drivers will take the bait, and change their PVID to 3, causing packet
+loss.
+
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+In case you see some apparently unrelated failures reported by
+bridge_vlan_unaware.sh, it's good to be aware of some fixes sent earlier
+this week to "net", which are hence absent from net-next currently:
+https://patchwork.kernel.org/project/netdevbpf/cover/20220703073626.937785-1-vladimir.oltean@nxp.com/
+
  .../net/forwarding/bridge_vlan_unaware.sh     | 25 ++++++++++++++++---
- 9 files changed, 23 insertions(+), 54 deletions(-)
+ 1 file changed, 22 insertions(+), 3 deletions(-)
 
+diff --git a/tools/testing/selftests/net/forwarding/bridge_vlan_unaware.sh b/tools/testing/selftests/net/forwarding/bridge_vlan_unaware.sh
+index 1c8a26046589..2b5700b61ffa 100755
+--- a/tools/testing/selftests/net/forwarding/bridge_vlan_unaware.sh
++++ b/tools/testing/selftests/net/forwarding/bridge_vlan_unaware.sh
+@@ -1,7 +1,7 @@
+ #!/bin/bash
+ # SPDX-License-Identifier: GPL-2.0
+ 
+-ALL_TESTS="ping_ipv4 ping_ipv6 learning flooding"
++ALL_TESTS="ping_ipv4 ping_ipv6 learning flooding pvid_change"
+ NUM_NETIFS=4
+ source lib.sh
+ 
+@@ -77,12 +77,16 @@ cleanup()
+ 
+ ping_ipv4()
+ {
+-	ping_test $h1 192.0.2.2
++	local msg=$1
++
++	ping_test $h1 192.0.2.2 "$msg"
+ }
+ 
+ ping_ipv6()
+ {
+-	ping6_test $h1 2001:db8:1::2
++	local msg=$1
++
++	ping6_test $h1 2001:db8:1::2 "$msg"
+ }
+ 
+ learning()
+@@ -95,6 +99,21 @@ flooding()
+ 	flood_test $swp2 $h1 $h2
+ }
+ 
++pvid_change()
++{
++	# Test that the changing of the VLAN-aware PVID does not affect
++	# VLAN-unaware forwarding
++	bridge vlan add vid 3 dev $swp1 pvid untagged
++
++	ping_ipv4 " with bridge port $swp1 PVID changed"
++	ping_ipv6 " with bridge port $swp1 PVID changed"
++
++	bridge vlan del vid 3 dev $swp1
++
++	ping_ipv4 " with bridge port $swp1 PVID deleted"
++	ping_ipv6 " with bridge port $swp1 PVID deleted"
++}
++
+ trap cleanup EXIT
+ 
+ setup_prepare
 -- 
 2.25.1
 
