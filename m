@@ -2,58 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 72436567988
-	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 23:50:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 904475679C6
+	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 23:55:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232579AbiGEVuR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jul 2022 17:50:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37954 "EHLO
+        id S230248AbiGEVzc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jul 2022 17:55:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229974AbiGEVuQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 17:50:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0105F2AE9;
-        Tue,  5 Jul 2022 14:50:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1DF9961CF4;
-        Tue,  5 Jul 2022 21:50:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 6FE91C341CB;
-        Tue,  5 Jul 2022 21:50:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657057813;
-        bh=L+i1nEUDeFfTV1alPccsdJXl82/LOZYPtDeD9hQnN1Q=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=LFDWrrejLl4UZuC6wY1S6+EUa/jUlLFm89X0JSu40/yrxJAtdhSLnk/THEvHXuT0U
-         aWxSprZEhypegt/yo3dqSIrd52ujt6BDxzRLw0ucTRWF9m6SS+boRP6+VH/LqKOAnQ
-         NC1ZyOIQ2l2iZdDdAGHOtLf0mYHj1uB2ylw6zYZevSg5j5CpvVzhXpVyWcPeCRtpTe
-         5gky4x2WGUJjHhFuKGdrzJlqCfmz2jLxVK4LFECt5Tc6xLN0AvmQSUVlvp6ml4GQzv
-         eUUQshoIvFFrO/EoSPG2OmKIIUVHBRhKSrA5cF1LqnWJp6/NNy8SIVMERaEiAyDgYH
-         yMH8VqOG3KFBw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3CB1AE45BD8;
-        Tue,  5 Jul 2022 21:50:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229452AbiGEVz3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 17:55:29 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA650CF4;
+        Tue,  5 Jul 2022 14:55:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1657058125; x=1688594125;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=VEi1co6rpJ5a8g+H6DoDMEmae0EzGQxH1pWxICwqPSw=;
+  b=lK/83tdY7T60esk/NSehauzkXwSau40XcaMkT4Dhe+49hUy3RYn/7VCd
+   B+ZPh750cTdAczK58FOyt7tofuMlkN/6EOhMs2ul3ssakVfNSX/Rl4ZXO
+   9b5xGQL8pqZh/FQOkQXw3zf2tNAuOO9140ghzGF9TavcPNl0+9DHCvR6+
+   ZqPzARvll+/rkOiiFHyODj5lQ2PsLgzJ84ywD+el+fS4Eu0jbg4xuKg06
+   Lf2bdMk/5utm6WnnsWy1Lm5po54MYxLAoxohDw38w8RbDSNR1LWCP6tAS
+   f4weprB97ovxEtEIdOfTt6jDsQDENI2gJllPl7t1IC28NCGWIMTjv8QLH
+   w==;
+X-IronPort-AV: E=Sophos;i="5.92,248,1650956400"; 
+   d="scan'208";a="166504484"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 05 Jul 2022 14:55:21 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Tue, 5 Jul 2022 14:55:20 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex04.mchp-main.com
+ (10.10.85.152) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Tue, 5 Jul 2022 14:55:20 -0700
+Date:   Tue, 5 Jul 2022 23:59:18 +0200
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>
+Subject: Re: [PATCH net-next v3 2/7] net: lan966x: Split
+ lan966x_fdb_event_work
+Message-ID: <20220705215918.uwcp4yco5fn3fdex@soft-dev3-1.localhost>
+References: <20220701205227.1337160-1-horatiu.vultur@microchip.com>
+ <20220701205227.1337160-3-horatiu.vultur@microchip.com>
+ <20220702140834.gyqmtmaru6ecdamb@skbuf>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] Bluetooth: core: Fix deadlock due to
- `cancel_work_sync(&hdev->power_on)` from hci_power_on_sync.
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165705781323.1977.3304816866885746199.git-patchwork-notify@kernel.org>
-Date:   Tue, 05 Jul 2022 21:50:13 +0000
-References: <20220705125931.3601-1-vasyl.vavrychuk@opensynergy.com>
-In-Reply-To: <20220705125931.3601-1-vasyl.vavrychuk@opensynergy.com>
-To:     Vasyl Vavrychuk <vasyl.vavrychuk@opensynergy.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-bluetooth@vger.kernel.org, max.oss.09@gmail.com,
-        francesco.dolcini@toradex.com, mat.jonczyk@o2.pl, kuba@kernel.org,
-        marcel@holtmann.org, max.krummenacher@toradex.com,
-        johan.hedberg@gmail.com, luiz.dentz@gmail.com, davem@davemloft.net,
-        pabeni@redhat.com, edumazet@google.com
-X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <20220702140834.gyqmtmaru6ecdamb@skbuf>
+X-Spam-Status: No, score=-5.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -61,31 +68,93 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (master)
-by Luiz Augusto von Dentz <luiz.von.dentz@intel.com>:
-
-On Tue,  5 Jul 2022 15:59:31 +0300 you wrote:
-> `cancel_work_sync(&hdev->power_on)` was moved to hci_dev_close_sync in
-> commit [1] to ensure that power_on work is canceled after HCI interface
-> down.
+The 07/02/2022 14:08, Vladimir Oltean wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
 > 
-> But, in certain cases power_on work function may call hci_dev_close_sync
-> itself: hci_power_on -> hci_dev_do_close -> hci_dev_close_sync ->
-> cancel_work_sync(&hdev->power_on), causing deadlock. In particular, this
-> happens when device is rfkilled on boot. To avoid deadlock, move
-> power_on work canceling out of hci_dev_do_close/hci_dev_close_sync.
+> On Fri, Jul 01, 2022 at 10:52:22PM +0200, Horatiu Vultur wrote:
+> > Split the function lan966x_fdb_event_work. One case for when the
+> > orig_dev is a bridge and one case when orig_dev is lan966x port.
+> > This is preparation for lag support. There is no functional change.
+> >
+> > Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+> > ---
 > 
-> [...]
+> > -static void lan966x_fdb_event_work(struct work_struct *work)
+> > +void lan966x_fdb_flush_workqueue(struct lan966x *lan966x)
+> > +{
+> > +     flush_workqueue(lan966x->fdb_work);
+> > +}
+> > +
+> 
+> > diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c b/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
+> > index df2bee678559..d9fc6a9a3da1 100644
+> > --- a/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
+> > +++ b/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
+> > @@ -320,9 +320,10 @@ static int lan966x_port_prechangeupper(struct net_device *dev,
+> >  {
+> >       struct lan966x_port *port = netdev_priv(dev);
+> >
+> > -     if (netif_is_bridge_master(info->upper_dev) && !info->linking)
+> > -             switchdev_bridge_port_unoffload(port->dev, port,
+> > -                                             NULL, NULL);
+> > +     if (netif_is_bridge_master(info->upper_dev) && !info->linking) {
+> > +             switchdev_bridge_port_unoffload(port->dev, port, NULL, NULL);
+> > +             lan966x_fdb_flush_workqueue(port->lan966x);
+> > +     }
+> 
+> Very curious as to why you decided to stuff this change in here.
+> There was no functional change in v2, now there is. And it's a change
+> you might need to come back to later (probably sooner than you'd like),
+> since the flushing of the workqueue is susceptible to causing deadlocks
+> if done improperly - let's see how you blame a commit that was only
+> supposed to move code, in that case ;)
 
-Here is the summary with links:
-  - Bluetooth: core: Fix deadlock due to `cancel_work_sync(&hdev->power_on)` from hci_power_on_sync.
-    https://git.kernel.org/netdev/net/c/e36bea6e78ab
+There is a functional change here and I forgot to change the commit
+message for this.
+> 
+> The deadlock that I'm talking about comes from the fact that
+> lan966x_port_prechangeupper() runs with rtnl_lock() held. So the code of
+> the flushed workqueue item must not hold rtnl_lock(), or any other lock
+> that is blocked by the rtnl_lock(). Otherwise, the flushing will wait
+> for a workqueue item to complete, that in turn waits to acquire the
+> rtnl_lock, which is held by the thread waiting the workqueue to complete.
+> 
+> Analyzing your code, lan966x_mac_notifiers() takes rtnl_lock().
+> That is taken from threaded interrupt context - lan966x_mac_irq_process(),
+> but is a sub-lock of spin_lock(&lan966x->mac_lock).
+> 
+> There are 2 problems with that already: rtnl_lock() is a mutex => can
+> sleep, but &lan966x->mac_lock is a spin lock => is atomic. You can't
+> take rtnl_lock() from atomic context. Lockdep and/or CONFIG_DEBUG_ATOMIC_SLEEP
+> will tell you so much.
+> 
+> The second problem is the lock ordering inversion that this causes.
+> There exists a threaded IRQ which takes the locks in the order mac_lock
+> -> rtnl_lock, and there exists this new fdb_flush_workqueue which takes
+> the locks in the order rtnl_lock -> mac_lock. If they run at the same
+> time, kaboom. Again, lockdep will tell you as much.
+> 
+> I'm sorry, but you need to solve the existing locking problems with the
+> code first.
 
-You are awesome, thank you!
+As I see it, there 2 'different problems' which both have the same root
+cause, the usage of the lan966x->mac_lock:
+1. One is with lan966x_mac_notifiers and lan966x_mac_irq_process, which
+is an issue on net. And this needs a separate patch.
+2. Second is introduced by flushing the workqueue.
+
+I am pretty sure I have run with CONFIG_DEBUG_ATOMIC_SLEEP but I
+couldn't see any errors/warnings.
+
+So let me start by fixing first issue on net.
+
+> 
+> >
+> >       return NOTIFY_DONE;
+> >  }
+> > --
+> > 2.33.0
+> >
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+/Horatiu
