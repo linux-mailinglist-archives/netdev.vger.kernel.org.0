@@ -2,105 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 30362566472
-	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 10:00:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27EE25664A1
+	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 10:00:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229985AbiGEH5i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jul 2022 03:57:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50082 "EHLO
+        id S229560AbiGEH7a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jul 2022 03:59:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229933AbiGEH5Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 03:57:24 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1F09E13DD2
-        for <netdev@vger.kernel.org>; Tue,  5 Jul 2022 00:57:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657007843;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=4XBDh+zEGZ5o8UoLa4apznuCuZsaSPIlgF8wyp0KnIE=;
-        b=USyDPH6nSSUdN+Y8ccHfL4h+iL9lDxz4Ci8IfgLkVSaebZiH4xTgeJUZdkJNm6V8cl+Vqb
-        WFYy1eEjgYHWu4bjIBq5MuMCuckULZxfUTTmBHuux32jBUgE3bZMqmgOBHVhAC0mUWod4y
-        MvgYX+Tmyuwt5udRPDVv/lJijX28Flo=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-561-LdeO78MvNZOMqZOdOBG1NQ-1; Tue, 05 Jul 2022 03:57:19 -0400
-X-MC-Unique: LdeO78MvNZOMqZOdOBG1NQ-1
-Received: by mail-wr1-f72.google.com with SMTP id q12-20020adfab0c000000b0021d6dcb51e8so681058wrc.13
-        for <netdev@vger.kernel.org>; Tue, 05 Jul 2022 00:57:19 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=4XBDh+zEGZ5o8UoLa4apznuCuZsaSPIlgF8wyp0KnIE=;
-        b=gjYR/8WnxMg55IiG0fbNEjAjWIp4xsYZh8a7sj+9mC3gHnAVI2/3M+rDvtGaRdrjIS
-         wSb7TjLQH+zz3ZyBsD0Z7slAOZdSlDxC4n34/0LILWjEEoth49OxEGO3e0FvpkX75SYO
-         jyZSUIwvvzCrqFkzgvRtry5Ru6FiNo5dhGBM9S85Z04H4fLl1evcS6LPrcIyQk4RDZzg
-         iVbvkK02yGYT1QdHOb+L+Ao4PGM7p5dW0M3eXEZg7/1lxo6ewI89Oi6VkHFtfv/ORnrF
-         G4xvuDyOf0uJ07mmV5uOtCjcof6BnKc8dv7tZr0+3fAjf2vKM3wrOhrgFGV3efgzKo/k
-         ikMw==
-X-Gm-Message-State: AJIora9NF61DOuFmbtHo0UtsrW6JF+v0OwdKaX9kSVVQAtuxJ0fBdbRS
-        bEKQuCRvCwrXalUKroStqXZtwLMnDSHMfs757x1zJBwpQdzB3JczYezhaPqp18+gy7tTmOwr/PG
-        Gekwr748EKAupOhag
-X-Received: by 2002:a5d:4b87:0:b0:21d:7019:80c6 with SMTP id b7-20020a5d4b87000000b0021d701980c6mr3246010wrt.234.1657007838739;
-        Tue, 05 Jul 2022 00:57:18 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1srZ5SgK6E6X/MdfrwnMv5KGU1tZEV2rfNlBcEfHAkMazjJ9cSQP1jpGmMWi0WEfAfQaOVapg==
-X-Received: by 2002:a5d:4b87:0:b0:21d:7019:80c6 with SMTP id b7-20020a5d4b87000000b0021d701980c6mr3245999wrt.234.1657007838565;
-        Tue, 05 Jul 2022 00:57:18 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-106-148.dyn.eolo.it. [146.241.106.148])
-        by smtp.gmail.com with ESMTPSA id l3-20020a1c7903000000b003a04962ad3esm18896002wme.31.2022.07.05.00.57.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Jul 2022 00:57:18 -0700 (PDT)
-Message-ID: <8d19ca4c115784346ad30f8581ee93436f1f3043.camel@redhat.com>
-Subject: Re: [PATCH net-next] net/mlx5: fix 32bit build
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jianbo Liu <jianbol@nvidia.com>, Roi Dayan <roid@nvidia.com>,
-        Ariel Levkovich <lariel@nvidia.com>
-Date:   Tue, 05 Jul 2022 09:57:17 +0200
-In-Reply-To: <20220705073928.22icbhqtc4gvak6j@sx1>
-References: <ecb00ddd1197b4f8a4882090206bd2eee1eb8b5b.1657005206.git.pabeni@redhat.com>
-         <20220705073928.22icbhqtc4gvak6j@sx1>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        with ESMTP id S229552AbiGEH73 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 03:59:29 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 281D5C54
+        for <netdev@vger.kernel.org>; Tue,  5 Jul 2022 00:59:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657007969; x=1688543969;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=wgZbjkl7iEwhh1nH1cDv9zk6egu4mDdo1DzPARfkOCY=;
+  b=G6G1F65CpNQSP7PuyqTIsiBKYn4Q8wfFb8pC9lKUv0e0AV26WDaHvvN7
+   JtZ87GsqORe+6zPWkQjPXa9qLfbrl43K2k0XLbW4pOBnfZ/l5nYBxJGTP
+   1vonF5lShq4PEwRkkeDdgw6Omnr736oWlItLKjfwSql67MMgU+snobgyf
+   MGyB8Fb9yQMSgXcZBxDEfk0JPnt3py1nAQ7kbpQni+YcCdMUnwk36RfDx
+   SaGLI16lE0v7Sv2XsdagXl9nOYGMVYkHgTo6st0wdY3/YDk/vY3pDMR0J
+   w8Poj0EhhltTizHJvQDOME85K3b0D9NfRw0AETGqF+zwyn0sZxeMPidX9
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10398"; a="308823728"
+X-IronPort-AV: E=Sophos;i="5.92,245,1650956400"; 
+   d="scan'208";a="308823728"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 00:59:27 -0700
+X-IronPort-AV: E=Sophos;i="5.92,245,1650956400"; 
+   d="scan'208";a="649997707"
+Received: from lingshan-mobl.ccr.corp.intel.com (HELO [10.238.130.254]) ([10.238.130.254])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 00:59:25 -0700
+Message-ID: <1e1e5f8c-d20e-4e54-5fc0-e12a7ba818a3@intel.com>
+Date:   Tue, 5 Jul 2022 15:59:23 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.11.0
+Subject: Re: [PATCH V3 3/6] vDPA: allow userspace to query features of a vDPA
+ device
+Content-Language: en-US
+To:     Parav Pandit <parav@nvidia.com>, Jason Wang <jasowang@redhat.com>,
+        "mst@redhat.com" <mst@redhat.com>
+Cc:     "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "xieyongji@bytedance.com" <xieyongji@bytedance.com>,
+        "gautam.dawar@amd.com" <gautam.dawar@amd.com>
+References: <20220701132826.8132-1-lingshan.zhu@intel.com>
+ <20220701132826.8132-4-lingshan.zhu@intel.com>
+ <PH0PR12MB5481AEB53864F35A79AAD7F5DCBD9@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <e8479441-78d2-8b39-c5ad-6729b79a2f35@redhat.com>
+ <PH0PR12MB54817FD9E0D8469857438F95DCBE9@PH0PR12MB5481.namprd12.prod.outlook.com>
+From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
+In-Reply-To: <PH0PR12MB54817FD9E0D8469857438F95DCBE9@PH0PR12MB5481.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2022-07-05 at 00:39 -0700, Saeed Mahameed wrote:
-> On 05 Jul 09:17, Paolo Abeni wrote:
-> > We can't use the division operator on 64 bits integers, that breaks
-> > 32 bits build. Instead use the relevant helper.
-> > 
-> > Fixes: 6ddac26cf763 ("net/mlx5e: Add support to modify hardware flow meter parameters")
-> > Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-> 
-> Acked-by: Saeed Mahameed <saeedm@nvidia.com>
-> 
-> sorry for the mess. I sent v2 too soon, forgot to squash the 2nd fix to it.
 
-No problems, it happens. 
 
-Unless someone raises some concerns soon, I'm going to merge this one
-well before the usual 24h staging time, to keep PW and the tree okish.
+On 7/4/2022 8:53 PM, Parav Pandit wrote:
+>> From: Jason Wang <jasowang@redhat.com>
+>> Sent: Monday, July 4, 2022 12:47 AM
+>>
+>>
+>> 在 2022/7/2 06:02, Parav Pandit 写道:
+>>>> From: Zhu Lingshan <lingshan.zhu@intel.com>
+>>>> Sent: Friday, July 1, 2022 9:28 AM
+>>>>
+>>>> This commit adds a new vDPA netlink attribution
+>>>> VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES. Userspace can query
+>> features
+>>>> of vDPA devices through this new attr.
+>>>>
+>>>> Fixes: a64917bc2e9b vdpa: (Provide interface to read driver feature)
+>>> Missing the "" in the line.
+>>> I reviewed the patches again.
+>>>
+>>> However, this is not the fix.
+>>> A fix cannot add a new UAPI.
+>>>
+>>> Code is already considering negotiated driver features to return the device
+>> config space.
+>>> Hence it is fine.
+>>>
+>>> This patch intents to provide device features to user space.
+>>> First what vdpa device are capable of, are already returned by features
+>> attribute on the management device.
+>>> This is done in commit [1].
+>>>
+>>> The only reason to have it is, when one management device indicates that
+>> feature is supported, but device may end up not supporting this feature if
+>> such feature is shared with other devices on same physical device.
+>>> For example all VFs may not be symmetric after large number of them are
+>> in use. In such case features bit of management device can differ (more
+>> features) than the vdpa device of this VF.
+>>> Hence, showing on the device is useful.
+>>>
+>>> As mentioned before in V2, commit [1] has wrongly named the attribute to
+>> VDPA_ATTR_DEV_SUPPORTED_FEATURES.
+>>> It should have been,
+>> VDPA_ATTR_DEV_MGMTDEV_SUPPORTED_FEATURES.
+>>> Because it is in UAPI, and since we don't want to break compilation of
+>>> iproute2, It cannot be renamed anymore.
+>>>
+>>> Given that, we do not want to start trend of naming device attributes with
+>> additional _VDPA_ to it as done in this patch.
+>>> Error in commit [1] was exception.
+>>>
+>>> Hence, please reuse VDPA_ATTR_DEV_SUPPORTED_FEATURES to return
+>> for device features too.
+>>
+>>
+>> This will probably break or confuse the existing userspace?
+>>
+> It shouldn't break, because its new attribute on the device.
+> All attributes are per command, so old one will not be confused either.
+A netlink attr should has its own and unique purpose, that's why we 
+don't need locks for the attrs, only one consumer and only one producer.
+I am afraid re-using (for both management device and the vDPA device) 
+the attr VDPA_ATTR_DEV_SUPPORTED_FEATURES would lead to new race condition.
+E.g., There are possibilities of querying FEATURES of a management 
+device and a vDPA device simultaneously, or can there be a syncing issue 
+in a tick?
 
-Cheers,
+IMHO, I don't see any advantages of re-using this attr.
 
-Paolo
+Thanks,
+Zhu Lingshan
 
