@@ -2,193 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 213DF56654A
-	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 10:44:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BD06566552
+	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 10:44:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230510AbiGEIn7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jul 2022 04:43:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48664 "EHLO
+        id S230464AbiGEIor (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jul 2022 04:44:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229925AbiGEInx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 04:43:53 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A97D51088
-        for <netdev@vger.kernel.org>; Tue,  5 Jul 2022 01:43:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657010630;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=kZy/nxlcdzOmZXOvcCR//qWGLqmbIlGg7XXJRIbpjK0=;
-        b=cPDxGVWhY3B0gKdY3WYL0WffsWdyHrTYD6GMuxLIruIGoNMV2NzYanKRnzgymaCL1/4QWv
-        uORCS6ABzYOWZQxImUkRCtZgLlLHNnjuZg8nMxUKUl9yLyHTr8dakqETuhtho+xxkvZFFX
-        8srY50pe54LmeN8lJZkRVUljaBEtdrk=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-210-J-LrbsPHOOy8ohOijVTt7A-1; Tue, 05 Jul 2022 04:43:47 -0400
-X-MC-Unique: J-LrbsPHOOy8ohOijVTt7A-1
-Received: by mail-wr1-f69.google.com with SMTP id o1-20020adfba01000000b0021b90bd28d2so1737042wrg.14
-        for <netdev@vger.kernel.org>; Tue, 05 Jul 2022 01:43:47 -0700 (PDT)
+        with ESMTP id S230095AbiGEIoq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 04:44:46 -0400
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95F47DECC
+        for <netdev@vger.kernel.org>; Tue,  5 Jul 2022 01:44:44 -0700 (PDT)
+Received: by mail-yb1-xb2e.google.com with SMTP id o2so15354853yba.7
+        for <netdev@vger.kernel.org>; Tue, 05 Jul 2022 01:44:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2nqg94hUDjf5VEy31mCYebRLyQWKOgGJpJElSft6kJk=;
+        b=oVdJFaZLt6iik+gYVPoDhE3E0/T/qMpp81wNqUxEUTmekiaqU9ynpZ0mDpnp2WD8cV
+         1XxBK2Tr40GZWioBld+i2V2kPexOZDXUouMVZ8Ta2CmvZ6vewWiUjnGTEovIbce1WKpR
+         nRulH13G0QJpSAV8IrG/vyGQL8xWb2qk/6ax3FTz3YAu5ngRNie2xDTdyn/3wo8LdI4n
+         4XMCNJA3C+XzvqbqeIqouGJjzVPFaCYGN7b0gBNrXW2dEfwZAh5IeAKq/qf7jDjP6DxQ
+         sJuscQX3dxs/MUyavOF2DrQo82K7EPd+OrV7QEVmkdbS/+lXRLFYmWGyqUhmElgGNChc
+         XHOg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=kZy/nxlcdzOmZXOvcCR//qWGLqmbIlGg7XXJRIbpjK0=;
-        b=I9A+wzvlb27+CSdYyZLSVQZ7NVsitDbkXtM18iLE0Vi6k8Pbv9NMUYEDBPbUlRjh4H
-         hhJZ9c2l8a5EvnnpfP4bXG3b9zq+SmuhFFu5nb0IbcZ8BpIsqy5/vw6hhNbcnH79IcEU
-         v76+aXAtio6HNOsJQ0qEYpUUogCdbq13FOBZNyf9npG7k6qQ0YArxPqw+ZE2IjbFPXI9
-         dEylVilvNPcwl4Wm8P4YiEQxHBUeKv4U3fGgNWxz0tNMRmUWyOn6QoZ8my2Vi2MtQeCo
-         6MS37QrYV4Th0ciH6ogosEWYXh5k9qcBg4D7TndMFbpGQxY5/xDQp3V2v34730cg0cRS
-         8NVA==
-X-Gm-Message-State: AJIora/DfYjDpBjXuSEJAgDbfokBvqTcsIcNIRyD22K12F2x40S3tA3Q
-        g7Wmd4anFhtea2/NjPkZlCoQHvQylqU4MT9Qdexkly0pw8QLrQ1653bzXxold4HziTfGfpzCLFt
-        2VswVxRgnS4FfbFrC
-X-Received: by 2002:a1c:f60f:0:b0:3a0:3e0c:1de1 with SMTP id w15-20020a1cf60f000000b003a03e0c1de1mr38133788wmc.56.1657010626599;
-        Tue, 05 Jul 2022 01:43:46 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1sHSdV9V2Ob02J3vbepG5ut1Vo9w3OUeEPmUiF13gGLPKO52cGyqadYgkGQJvykeI1zhkowZQ==
-X-Received: by 2002:a1c:f60f:0:b0:3a0:3e0c:1de1 with SMTP id w15-20020a1cf60f000000b003a03e0c1de1mr38133775wmc.56.1657010626385;
-        Tue, 05 Jul 2022 01:43:46 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-106-148.dyn.eolo.it. [146.241.106.148])
-        by smtp.gmail.com with ESMTPSA id w8-20020a1cf608000000b0039c5a765388sm22308049wmc.28.2022.07.05.01.43.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Jul 2022 01:43:45 -0700 (PDT)
-Message-ID: <4a95703c5c1a09e3ed1a64ddf83e65e222326214.camel@redhat.com>
-Subject: Re: [PATCH net v5] net: rose: fix null-ptr-deref caused by
- rose_kill_by_neigh
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Duoming Zhou <duoming@zju.edu.cn>, linux-hams@vger.kernel.org
-Cc:     ralf@linux-mips.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Tue, 05 Jul 2022 10:43:44 +0200
-In-Reply-To: <20220702075718.25121-1-duoming@zju.edu.cn>
-References: <20220702075718.25121-1-duoming@zju.edu.cn>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2nqg94hUDjf5VEy31mCYebRLyQWKOgGJpJElSft6kJk=;
+        b=ukNQGvpbFXoh0RdMXy074IaqC6mBIbwk99sEqlGGNdyzNa2b3/HTp38ZlcDYzE7w+E
+         J+GKqaEDjAXOHR625NDRcn9ofIYOi2wZ71FQlthpgMluTBzhYp0N2+4zfh7OielmMqD7
+         6p+1tuHM1FA99Ab5riqdRPSduAG48r879ccasM5dd0LegraUkz7cSvQpK06IUS8K/h5Y
+         3TV/gEIYqR3cjbZY2vtCKTmDnb1LjDpymHKOZ1MoMGpQnU/W8acIDyXLsdQMfAKos2gh
+         TiVyGc8LkjsorrQZ1JtydHF5Pq4tftGR+7MYESTW4ZWxhZv6PW/eOA1CXnOkK6xU/Vf8
+         94OA==
+X-Gm-Message-State: AJIora+n/tZOjXOg+3sNTfPFcB52kFN7MMx/TFBO8YB/ApieYaLMq+2s
+        e+6/5qamlDWvzNsVqPZHs9zi0UIKrWk1Xm3HtRoZcA==
+X-Google-Smtp-Source: AGRyM1s3KR9timt0Nv154BBVjZtVup9YxTIdAuMg5rdc0L5tuSQBdw4qLUFuMUr86cFiFJimYkgebSO//Pbzv6BbJEU=
+X-Received: by 2002:a25:abce:0:b0:66e:38e8:d286 with SMTP id
+ v72-20020a25abce000000b0066e38e8d286mr12961807ybi.447.1657010683689; Tue, 05
+ Jul 2022 01:44:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+References: <YrQP3OZbe8aCQxKU@atomide.com> <CAGETcx9aFBzMcuOiTAEy5SJyWw3UfajZ8DVQfW2DGmzzDabZVg@mail.gmail.com>
+ <Yrlz/P6Un2fACG98@atomide.com> <CAGETcx8c+P0r6ARmhv+ERaz9zAGBOVJQu3bSDXELBycEGfkYQw@mail.gmail.com>
+ <CAL_JsqJd3J6k6pRar7CkHVaaPbY7jqvzAePd8rVDisRV-dLLtg@mail.gmail.com>
+ <CAGETcx9ZmeTyP1sJCFZ9pBbMyXeifQFohFvWN3aBPx0sSOJ2VA@mail.gmail.com>
+ <Yr6HQOtS4ctUYm9m@atomide.com> <Yr6QUzdoFWv/eAI6@atomide.com>
+ <CAGETcx-0bStPx8sF3BtcJFiu74NwiB0btTQ+xx_B=8B37TEb8w@mail.gmail.com>
+ <CAGETcx-Yp2JKgCNfaGD0SzZg9F2Xnu8A3zXmV5=WX1hY7uR=0g@mail.gmail.com>
+ <20220701150848.75eeprptmb5beip7@bogus> <CAGETcx_Y-9WBeRwf22v3NSuY8PGpPrTxtx_uBqe_Q7rD6mEQMQ@mail.gmail.com>
+In-Reply-To: <CAGETcx_Y-9WBeRwf22v3NSuY8PGpPrTxtx_uBqe_Q7rD6mEQMQ@mail.gmail.com>
+From:   Saravana Kannan <saravanak@google.com>
+Date:   Tue, 5 Jul 2022 01:44:07 -0700
+Message-ID: <CAGETcx8hECfU9-rXpXnnB5m4HcTBJVKNuG77FjhpqRcBkOOotw@mail.gmail.com>
+Subject: Re: [PATCH v2 1/9] PM: domains: Delete usage of driver_deferred_probe_check_state()
+To:     Sudeep Holla <sudeep.holla@arm.com>
+Cc:     Tony Lindgren <tony@atomide.com>, Rob Herring <robh@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Kevin Hilman <khilman@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Android Kernel Team <kernel-team@android.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "open list:THERMAL" <linux-pm@vger.kernel.org>,
+        Linux IOMMU <iommu@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Alexander Stein <alexander.stein@ew.tq-group.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 2022-07-02 at 15:57 +0800, Duoming Zhou wrote:
-> When the link layer connection is broken, the rose->neighbour is
-> set to null. But rose->neighbour could be used by rose_connection()
-> and rose_release() later, because there is no synchronization among
-> them. As a result, the null-ptr-deref bugs will happen.
-> 
-> One of the null-ptr-deref bugs is shown below:
-> 
->     (thread 1)                  |        (thread 2)
->                                 |  rose_connect
-> rose_kill_by_neigh              |    lock_sock(sk)
->   spin_lock_bh(&rose_list_lock) |    if (!rose->neighbour)
->   rose->neighbour = NULL;//(1)  |
->                                 |    rose->neighbour->use++;//(2)
-> 
-> The rose->neighbour is set to null in position (1) and dereferenced
-> in position (2).
-> 
-> The KASAN report triggered by POC is shown below:
-> 
-> KASAN: null-ptr-deref in range [0x0000000000000028-0x000000000000002f]
-> ...
-> RIP: 0010:rose_connect+0x6c2/0xf30
-> RSP: 0018:ffff88800ab47d60 EFLAGS: 00000206
-> RAX: 0000000000000005 RBX: 000000000000002a RCX: 0000000000000000
-> RDX: ffff88800ab38000 RSI: ffff88800ab47e48 RDI: ffff88800ab38309
-> RBP: dffffc0000000000 R08: 0000000000000000 R09: ffffed1001567062
-> R10: dfffe91001567063 R11: 1ffff11001567061 R12: 1ffff11000d17cd0
-> R13: ffff8880068be680 R14: 0000000000000002 R15: 1ffff11000d17cd0
-> ...
-> Call Trace:
->   <TASK>
->   ? __local_bh_enable_ip+0x54/0x80
->   ? selinux_netlbl_socket_connect+0x26/0x30
->   ? rose_bind+0x5b0/0x5b0
->   __sys_connect+0x216/0x280
->   __x64_sys_connect+0x71/0x80
->   do_syscall_64+0x43/0x90
->   entry_SYSCALL_64_after_hwframe+0x46/0xb0
-> 
-> This patch adds lock_sock() in rose_kill_by_neigh() in order to
-> synchronize with rose_connect() and rose_release().
-> 
-> Meanwhile, this patch adds sock_hold() protected by rose_list_lock
-> that could synchronize with rose_remove_socket() in order to mitigate
-> UAF bug caused by lock_sock() we add.
-> 
-> What's more, there is no need using rose_neigh_list_lock to protect
-> rose_kill_by_neigh(). Because we have already used rose_neigh_list_lock
-> to protect the state change of rose_neigh in rose_link_failed(), which
-> is well synchronized.
-> 
-> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-> Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-> ---
-> Changes in v5:
->   - v5: Use socket lock to protect comparison in rose_kill_by_neigh.
-> 
->  net/rose/af_rose.c    | 12 ++++++++++++
->  net/rose/rose_route.c |  2 ++
->  2 files changed, 14 insertions(+)
-> 
-> diff --git a/net/rose/af_rose.c b/net/rose/af_rose.c
-> index bf2d986a6bc..6d5088b030a 100644
-> --- a/net/rose/af_rose.c
-> +++ b/net/rose/af_rose.c
-> @@ -165,14 +165,26 @@ void rose_kill_by_neigh(struct rose_neigh *neigh)
->  	struct sock *s;
->  
->  	spin_lock_bh(&rose_list_lock);
-> +again:
->  	sk_for_each(s, &rose_list) {
->  		struct rose_sock *rose = rose_sk(s);
->  
-> +		sock_hold(s);
-> +		spin_unlock_bh(&rose_list_lock);
-> +		lock_sock(s);
->  		if (rose->neighbour == neigh) {
->  			rose_disconnect(s, ENETUNREACH, ROSE_OUT_OF_ORDER, 0);
->  			rose->neighbour->use--;
+On Fri, Jul 1, 2022 at 12:13 PM Saravana Kannan <saravanak@google.com> wrote:
+>
+> On Fri, Jul 1, 2022 at 8:08 AM Sudeep Holla <sudeep.holla@arm.com> wrote:
+> >
+> > Hi, Saravana,
+> >
+> > On Fri, Jul 01, 2022 at 01:26:12AM -0700, Saravana Kannan wrote:
+> >
+> > [...]
+> >
+> > > Can you check if this hack helps? If so, then I can think about
+> > > whether we can pick it up without breaking everything else. Copy-paste
+> > > tab mess up warning.
+> >
+> > Sorry for jumping in late and not even sure if this is right thread.
+> > I have not bisected anything yet, but I am seeing issues on my Juno R2
+> > with SCMI enabled power domains and Coresight AMBA devices.
+> >
+> > OF: amba_device_add() failed (-19) for /etf@20010000
+> > OF: amba_device_add() failed (-19) for /tpiu@20030000
+> > OF: amba_device_add() failed (-19) for /funnel@20040000
+> > OF: amba_device_add() failed (-19) for /etr@20070000
+> > OF: amba_device_add() failed (-19) for /stm@20100000
+> > OF: amba_device_add() failed (-19) for /replicator@20120000
+> > OF: amba_device_add() failed (-19) for /cpu-debug@22010000
+> > OF: amba_device_add() failed (-19) for /etm@22040000
+> > OF: amba_device_add() failed (-19) for /cti@22020000
+> > OF: amba_device_add() failed (-19) for /funnel@220c0000
+> > OF: amba_device_add() failed (-19) for /cpu-debug@22110000
+> > OF: amba_device_add() failed (-19) for /etm@22140000
+> > OF: amba_device_add() failed (-19) for /cti@22120000
+> > OF: amba_device_add() failed (-19) for /cpu-debug@23010000
+> > OF: amba_device_add() failed (-19) for /etm@23040000
+> > OF: amba_device_add() failed (-19) for /cti@23020000
+> > OF: amba_device_add() failed (-19) for /funnel@230c0000
+> > OF: amba_device_add() failed (-19) for /cpu-debug@23110000
+> > OF: amba_device_add() failed (-19) for /etm@23140000
+> > OF: amba_device_add() failed (-19) for /cti@23120000
+> > OF: amba_device_add() failed (-19) for /cpu-debug@23210000
+> > OF: amba_device_add() failed (-19) for /etm@23240000
+> > OF: amba_device_add() failed (-19) for /cti@23220000
+> > OF: amba_device_add() failed (-19) for /cpu-debug@23310000
+> > OF: amba_device_add() failed (-19) for /etm@23340000
+> > OF: amba_device_add() failed (-19) for /cti@23320000
+> > OF: amba_device_add() failed (-19) for /cti@20020000
+> > OF: amba_device_add() failed (-19) for /cti@20110000
+> > OF: amba_device_add() failed (-19) for /funnel@20130000
+> > OF: amba_device_add() failed (-19) for /etf@20140000
+> > OF: amba_device_add() failed (-19) for /funnel@20150000
+> > OF: amba_device_add() failed (-19) for /cti@20160000
+> >
+> > These are working fine with deferred probe in the mainline.
+> > I tried the hack you have suggested here(rather Tony's version),
+>
+> Thanks for trying that.
+>
+> > also
+> > tried with fw_devlink=0 and fw_devlink=1
+>
+> 0 and 1 aren't valid input to fw_devlink. But yeah, I don't expect
+> disabling it to make anything better.
+>
+> > && fw_devlink.strict=0
+> > No change in the behaviour.
+> >
+> > The DTS are in arch/arm64/boot/dts/arm/juno-*-scmi.dts and there
+> > coresight devices are mostly in juno-cs-r1r2.dtsi
+>
+> Thanks
+>
+> > Let me know if there is anything obvious or you want me to bisect which
+> > means I need more time. I can do that next week.
+>
+> I'll let you know once I poke at the DTS. We need to figure out why
+> fw_devlink wasn't blocking these from getting to the error (same as in
+> Tony's case). But since these are amba devices, I think I have some
+> guesses.
+>
+> This is an old series that had some issues in some cases and I haven't
+> gotten around to looking at it. You can give that a shot if you can
+> apply it to a recent tree.
+> https://lore.kernel.org/lkml/20210304195101.3843496-1-saravanak@google.com/
 
-Note that the code can held different socket lock while updating
-'neighbour->use'. That really means that such updates can really race
-each other, with bad results.
+I rebased it to driver-core-next and tested the patch  (for
+correctness, not with your issue though). I'm fairly sure it should
+help with your issue. Can you give it a shot please?
 
-I think the only safe way out is using an atomic_t for 'neighbour->use'
-(likely a refcount_t would be a better option).
+https://lore.kernel.org/lkml/20220705083934.3974140-1-saravanak@google.com/T/#u
 
-All the above deserves a separate patch IMHO.
+-Saravana
 
->  			rose->neighbour = NULL;
-> +			release_sock(s);
-> +			sock_put(s);
-> +			spin_lock_bh(&rose_list_lock);
-> +			goto again;
-
-This chunk is dup of the following lines, it could be dropped...
-
->  		}
-> +		release_sock(s);
-> +		sock_put(s);
-> +		spin_lock_bh(&rose_list_lock);
-> +		goto again;
-
-... if this would be correct, which apparently is not.
-
-What happens when 'rose->neighbour' is different from 'neigh' for first
-socket in rose_list?
-
-Cheers,
-
-Paolo
-
+>
+> After looking at that old patch again, I think I know what's going on.
+> For normal devices, the pm domain attach happens AFTER the device is
+> added and fw_devlink has had a chance to set up device links. And if
+> the suppliers aren't ready, really_probe() won't get as far as
+> dev_pm_domain_attach(). But for amba, the clock and pm domain
+> suppliers are "grabbed" before adding the device.
+>
+> So with that old patch + always returning -EPROBE_DEFER in
+> amba_device_add() if amba_read_periphid() fails should fix your issue.
+>
+> -Saravana
