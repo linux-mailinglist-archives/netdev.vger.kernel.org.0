@@ -2,64 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 744EB5670EE
-	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 16:24:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE0E45670E5
+	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 16:23:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231329AbiGEOYZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jul 2022 10:24:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48338 "EHLO
+        id S233324AbiGEOXf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jul 2022 10:23:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232919AbiGEOW4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 10:22:56 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5665E6;
-        Tue,  5 Jul 2022 07:22:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657030975; x=1688566975;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=KxZS7Eqzucz3GLlm0/QQmLH1mpSw1o0eLbsqaMILkQs=;
-  b=MgP6iRUPhVY8An5k4jNthWre4LakCC9yyz/ZKpXXdMnjuC2vY+LFlY2y
-   57RhPPmc1iDKbbCcTINken1BeigND1PdF3WTH8DyBcB23XuHL1YG2GCI3
-   O2DO4cS+fjzZlsoieJUlpLqWAH3i0KBp7Ux90Xb9lBT350O1AY7iVTFtl
-   zOwKufi9WAxjU0f5XeW1Qjwsm9in3HxnHoPNxbsviFCXRiFnr+m557BXB
-   nHqJsMMgw2OiH2xWrAndG6CAVThqjaBcTN5XSdqR8IXVjWCYOpr9M6GhX
-   3RpQlM0T46lvwVVkjxdIvHcKWEEFuMekeRy9FKuAOajdBB724q1yVwSHB
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10398"; a="283393624"
-X-IronPort-AV: E=Sophos;i="5.92,247,1650956400"; 
-   d="scan'208";a="283393624"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 07:22:55 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,247,1650956400"; 
-   d="scan'208";a="919738743"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 05 Jul 2022 07:22:52 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o8jS0-000JA5-55;
-        Tue, 05 Jul 2022 14:22:52 +0000
-Date:   Tue, 5 Jul 2022 22:22:08 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Yishai Hadas <yishaih@nvidia.com>, alex.williamson@redhat.com,
-        jgg@nvidia.com
-Cc:     kbuild-all@lists.01.org, saeedm@nvidia.com, kvm@vger.kernel.org,
-        netdev@vger.kernel.org, kuba@kernel.org, kevin.tian@intel.com,
-        joao.m.martins@oracle.com, leonro@nvidia.com, yishaih@nvidia.com,
-        maorg@nvidia.com, cohuck@redhat.com
-Subject: Re: [PATCH V1 vfio 06/11] vfio: Introduce the DMA logging feature
- support
-Message-ID: <202207052211.ARFEDBEi-lkp@intel.com>
-References: <20220705102740.29337-7-yishaih@nvidia.com>
+        with ESMTP id S232279AbiGEOXa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 10:23:30 -0400
+Received: from smtp-relay-canonical-1.canonical.com (smtp-relay-canonical-1.canonical.com [185.125.188.121])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D0C1D63;
+        Tue,  5 Jul 2022 07:23:26 -0700 (PDT)
+Received: from HP-EliteBook-840-G7.. (1-171-254-213.dynamic-ip.hinet.net [1.171.254.213])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 537E63F389;
+        Tue,  5 Jul 2022 14:23:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1657031003;
+        bh=D7jfmHe4bt9PCua6BTFCgsjFghH+nyLn06Td3cD4oK0=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=mgThJ7cNdLY5Y8uO22gtyzPoWHBPdbIyKVEe5tL57gyTtFkM3HLqaCUxBQcrm8SPf
+         5H8SkP/ymS7Uh39mcIvA3Twa7bvBPqbhLYkzyCww5+1yOxD15YrkWW2H2S/6kbt20i
+         7p4uOX3agWr+2BZAzlTC+2cYL2kJ7IbRp5n1Xo4bCvzPkDxfOByNJjjnImd1hH8q/r
+         LbhI7JZLZXSyCZhyCBgFhKYTPNyKEUi3Pw+fla2/PenURmdAqoVHD/S6HO4G8ifwGV
+         9mV6amqHocMSQPw6EJiH0VH2tQaR6fFbV6IGfDBOCgzUZwaslBqtw9342gKCjqcWx/
+         TQ6Ls9APibIWQ==
+From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
+To:     nbd@nbd.name, lorenzo@kernel.org, ryder.lee@mediatek.com,
+        shayne.chen@mediatek.com, sean.wang@mediatek.com, kvalo@kernel.org
+Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Deren Wu <deren.wu@mediatek.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] mt76: mt7921: Let PCI core handle power state and use pm_sleep_ptr()
+Date:   Tue,  5 Jul 2022 22:23:04 +0800
+Message-Id: <20220705142305.50292-1-kai.heng.feng@canonical.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220705102740.29337-7-yishaih@nvidia.com>
-X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-5.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -67,46 +60,93 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Yishai,
+PCI power state and wakeup are already handled by PCI core, so it's not
+necessary to handle them in the driver.
 
-I love your patch! Yet something to improve:
+Also switch to use pm_sleep_ptr() to remove #ifdef guard.
 
-[auto build test ERROR on awilliam-vfio/next]
-[also build test ERROR on next-20220705]
-[cannot apply to linus/master v5.19-rc5]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+---
+ .../net/wireless/mediatek/mt76/mt7921/pci.c   | 25 ++++++-------------
+ 1 file changed, 7 insertions(+), 18 deletions(-)
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Yishai-Hadas/Add-device-DMA-logging-support-for-mlx5-driver/20220705-183119
-base:   https://github.com/awilliam/linux-vfio.git next
-config: m68k-randconfig-r035-20220703 (https://download.01.org/0day-ci/archive/20220705/202207052211.ARFEDBEi-lkp@intel.com/config)
-compiler: m68k-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/12299d61a80f6adf70a2e76b8f4721f3b7bcd95a
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Yishai-Hadas/Add-device-DMA-logging-support-for-mlx5-driver/20220705-183119
-        git checkout 12299d61a80f6adf70a2e76b8f4721f3b7bcd95a
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   m68k-linux-ld: arch/m68k/kernel/machine_kexec.o: in function `machine_kexec':
-   machine_kexec.c:(.text+0x58): undefined reference to `m68k_mmutype'
-   m68k-linux-ld: machine_kexec.c:(.text+0x60): undefined reference to `m68k_cputype'
-   m68k-linux-ld: arch/m68k/kernel/relocate_kernel.o:(.m68k_fixup+0x0): undefined reference to `M68K_FIXUP_MEMOFFSET'
-   m68k-linux-ld: arch/m68k/kernel/relocate_kernel.o:(.m68k_fixup+0x8): undefined reference to `M68K_FIXUP_MEMOFFSET'
-   m68k-linux-ld: drivers/vfio/vfio_main.o: in function `vfio_ioctl_device_feature_logging_start':
-   vfio_main.c:(.text+0x105e): undefined reference to `interval_tree_iter_first'
->> m68k-linux-ld: vfio_main.c:(.text+0x1074): undefined reference to `interval_tree_insert'
-
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/pci.c b/drivers/net/wireless/mediatek/mt76/mt7921/pci.c
+index b5fb22b8e0869..b73699f80533a 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/pci.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/pci.c
+@@ -359,9 +359,9 @@ static void mt7921_pci_remove(struct pci_dev *pdev)
+ 	pci_free_irq_vectors(pdev);
+ }
+ 
+-#ifdef CONFIG_PM
+-static int mt7921_pci_suspend(struct pci_dev *pdev, pm_message_t state)
++static int mt7921_pci_suspend(struct device *device)
+ {
++	struct pci_dev *pdev = to_pci_dev(device);
+ 	struct mt76_dev *mdev = pci_get_drvdata(pdev);
+ 	struct mt7921_dev *dev = container_of(mdev, struct mt7921_dev, mt76);
+ 	struct mt76_connac_pm *pm = &dev->pm;
+@@ -391,8 +391,6 @@ static int mt7921_pci_suspend(struct pci_dev *pdev, pm_message_t state)
+ 		napi_disable(&mdev->napi[i]);
+ 	}
+ 
+-	pci_enable_wake(pdev, pci_choose_state(pdev, state), true);
+-
+ 	/* wait until dma is idle  */
+ 	mt76_poll(dev, MT_WFDMA0_GLO_CFG,
+ 		  MT_WFDMA0_GLO_CFG_TX_DMA_BUSY |
+@@ -412,8 +410,6 @@ static int mt7921_pci_suspend(struct pci_dev *pdev, pm_message_t state)
+ 	if (err)
+ 		goto restore_napi;
+ 
+-	pci_save_state(pdev);
+-	err = pci_set_power_state(pdev, pci_choose_state(pdev, state));
+ 	if (err)
+ 		goto restore_napi;
+ 
+@@ -436,19 +432,14 @@ static int mt7921_pci_suspend(struct pci_dev *pdev, pm_message_t state)
+ 	return err;
+ }
+ 
+-static int mt7921_pci_resume(struct pci_dev *pdev)
++static int mt7921_pci_resume(struct device *device)
+ {
++	struct pci_dev *pdev = to_pci_dev(device);
+ 	struct mt76_dev *mdev = pci_get_drvdata(pdev);
+ 	struct mt7921_dev *dev = container_of(mdev, struct mt7921_dev, mt76);
+ 	struct mt76_connac_pm *pm = &dev->pm;
+ 	int i, err;
+ 
+-	err = pci_set_power_state(pdev, PCI_D0);
+-	if (err)
+-		return err;
+-
+-	pci_restore_state(pdev);
+-
+ 	err = mt7921_mcu_drv_pmctrl(dev);
+ 	if (err < 0)
+ 		return err;
+@@ -488,17 +479,15 @@ static int mt7921_pci_resume(struct pci_dev *pdev)
+ 
+ 	return err;
+ }
+-#endif /* CONFIG_PM */
++
++static DEFINE_SIMPLE_DEV_PM_OPS(mt7921_pm_ops, mt7921_pci_suspend, mt7921_pci_resume);
+ 
+ struct pci_driver mt7921_pci_driver = {
+ 	.name		= KBUILD_MODNAME,
+ 	.id_table	= mt7921_pci_device_table,
+ 	.probe		= mt7921_pci_probe,
+ 	.remove		= mt7921_pci_remove,
+-#ifdef CONFIG_PM
+-	.suspend	= mt7921_pci_suspend,
+-	.resume		= mt7921_pci_resume,
+-#endif /* CONFIG_PM */
++	.driver.pm	= pm_sleep_ptr(&mt7921_pm_ops),
+ };
+ 
+ module_pci_driver(mt7921_pci_driver);
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.36.1
+
