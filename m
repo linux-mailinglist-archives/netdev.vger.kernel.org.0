@@ -2,99 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F788567813
-	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 21:52:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9748256782A
+	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 22:05:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230050AbiGETww (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jul 2022 15:52:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48918 "EHLO
+        id S229565AbiGEUFE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jul 2022 16:05:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229516AbiGETwv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 15:52:51 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43F0A1CB10;
-        Tue,  5 Jul 2022 12:52:49 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id r14so13240029wrg.1;
-        Tue, 05 Jul 2022 12:52:49 -0700 (PDT)
+        with ESMTP id S231416AbiGEUFD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 16:05:03 -0400
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CE7C167FB
+        for <netdev@vger.kernel.org>; Tue,  5 Jul 2022 13:05:00 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id r81-20020a1c4454000000b003a0297a61ddso10376437wma.2
+        for <netdev@vger.kernel.org>; Tue, 05 Jul 2022 13:05:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/doxS0i6Wxlf3MlQXzvD1rRavf5pbzG6RAdOF/mnCY4=;
-        b=ArexrY44HStoCcsS43la3guKBJ49QQtWvjH+cMc4ug5p3cyvHU5Dyaoyou9wlV98lU
-         t1rdtTH4PtO7TMcNN3JUzkdb1mY7LFdrvCuiKfl0rDvV/VcSVMPYlnvaUHFk2NaJPCU4
-         XkEjrVKV/65CCHIOXVBkO09lya86ZtlmV/BpPBKLJ74qfJwHi4Zrfq3tvmc7/4RH2UYt
-         hxGmVomn9hiIriN8+Zquy93JmujHo2e5lF+3IgxY8MUhetFqIv4HrlJNoowHBBmWt6+J
-         QCZ7STtbE+6h60ougeY8ry/e/Rya28iXXXF1KY0QwxW2WTCTZUW5zIvZBRylRhYfvIQg
-         JULw==
+        d=isovalent-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=W+9ND9gGDdv03MueNmUboLKE7fp+u4ZOtfMBglb+qFM=;
+        b=MSjFFclrhQB6GcyXKubNcqzLwyOc83+SKMLlqYJnE2Ki2a7LHlP6I7OkFEWusLaXls
+         95mLE2/hkX1bODVhwxAylRgMoIiZ9KHTRC+1QO6CeGa8P3y4Y3KzuD2k8A9191sAuUAq
+         rdqJRLr1jcX/ufMOcWTtlvfjhHazK8Ps+k+qAvP+drnP/P1/51GA80g3cHr3VkSwJUr+
+         J6zLY+2JAJuFcYSP9n9nwhFBoM5x+t14o0BQKzZCKuolmwyxpFZc3+BxH6WgbzSs8Q2N
+         LAZDpjWosmRI6x9JPWkjlEPiGRu1e0Ko9cmrflBA2sgqEbaW2WJmVmAZwYiqmjPc/Lqp
+         m2Xw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/doxS0i6Wxlf3MlQXzvD1rRavf5pbzG6RAdOF/mnCY4=;
-        b=A7sTYKXASJ/2hZbu6DNRmZ4+/GBoctFgKLPCtwV6aGpF2av/KLxHvqGhfCJYKt3Xoc
-         QpWTjawkBNsmHgOel5xNGl7/NVat3hIoO8z1LGwqMycJEn2O1ziA2NM14gFSZDWQvDMl
-         AWwNLErjPUuhoSJ55nuh04sAkRO4/biA2TR6c5n4Bb9BIW05+60dAonu9aBVh/DAS+vh
-         Dfo1nxGaxCoHiLnPiAE/bDzGJNrigtjEd63qQU/ZBkOhGXB+X9T//t28BQK/zM/VQPKP
-         L1PgjXerkPnC6Y3q3Cn3zwGa4B5Mvbu6myqxDuwtdWQj6bFO4AYDfyb9fVr3KHJH1Chr
-         WEGA==
-X-Gm-Message-State: AJIora+8h4NAr9EIkUbsxtxmWBpE7zr7WQe7LQGGSVqEU1UvisWmeXbb
-        Ksy4NOZhItxMDKiprRS9Ke+/FyS8S8f/gBAsgIg=
-X-Google-Smtp-Source: AGRyM1v7ifsufKfy5Jeo+13iCkt+psbaynIFUU7eS3NIGXvLiFM9Ug8mRV/eLUpjyCfhBiEIOSJYh7GFnTe629aUmb0=
-X-Received: by 2002:a5d:5703:0:b0:21d:6c55:4986 with SMTP id
- a3-20020a5d5703000000b0021d6c554986mr10402402wrv.455.1657050767617; Tue, 05
- Jul 2022 12:52:47 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220704140129.6463-1-fmdefrancesco@gmail.com> <YsSBR5nJovFMHGcB@iweiny-desk3>
-In-Reply-To: <YsSBR5nJovFMHGcB@iweiny-desk3>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Tue, 5 Jul 2022 12:52:36 -0700
-Message-ID: <CAKgT0UcGvjczCZXBS_OunwnZ5Xc7ytDRqjpymiXQni0ugrdmug@mail.gmail.com>
-Subject: Re: [PATCH] ixgbe: Don't call kmap() on page allocated with GFP_ATOMIC
-To:     Ira Weiny <ira.weiny@intel.com>
-Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=W+9ND9gGDdv03MueNmUboLKE7fp+u4ZOtfMBglb+qFM=;
+        b=3Jn1rdo7qc1OSOLlly8ilu61ezUzWHXukHwvAYjiGQ5lY1TAheFajFxrD8+i5cGfJg
+         sVbscJ6NTrzPzNLEprMOshoOpuM3VFPU9ZnrAwYI/3mpYfIWGUAmxuXTLG6gh4mw6J3C
+         amXFGkCsD2WgsV/795QVya7tmZpxddNGpasU9ebZavQYty6xRtm6VjXAGf7QWZudxkIr
+         rt6XPN5yqzbUyQp8331bazzikrydnJHyBcP2ieScsHs5gOttMs5dF9f0EIwuxn5DWbBX
+         vfGzYJyI26mnfavNL5OBVuM/sFGYHOqCBAVMPJc1omitX+KmCioSEsg8NEjwXxiPLhYq
+         c9UA==
+X-Gm-Message-State: AJIora81/JqA2Ddpd7kWiWkInalQe0nTnV8hA0XWXau7TPLiWoAyRjCG
+        lbofuEBR/bj+vsnr03ryvkP2MA==
+X-Google-Smtp-Source: AGRyM1sTO0BLYQsF5GZRzZkMwHEe/+p1FooN2FbYJgy1KdEvaM53Gf77cf2KD6EYaT/HMNc2uaM9mw==
+X-Received: by 2002:a05:600c:1d94:b0:3a0:4e09:122f with SMTP id p20-20020a05600c1d9400b003a04e09122fmr40462903wms.190.1657051499044;
+        Tue, 05 Jul 2022 13:04:59 -0700 (PDT)
+Received: from harfang.fritz.box ([51.155.200.13])
+        by smtp.gmail.com with ESMTPSA id az38-20020a05600c602600b003a0323463absm23552144wmb.45.2022.07.05.13.04.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Jul 2022 13:04:58 -0700 (PDT)
+From:   Quentin Monnet <quentin@isovalent.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
+        Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
-        Netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        KP Singh <kpsingh@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, Quentin Monnet <quentin@isovalent.com>
+Subject: [PATCH bpf-next] bpftool: Remove zlib feature test from Makefile
+Date:   Tue,  5 Jul 2022 21:04:56 +0100
+Message-Id: <20220705200456.285943-1-quentin@isovalent.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 5, 2022 at 11:22 AM Ira Weiny <ira.weiny@intel.com> wrote:
->
-> On Mon, Jul 04, 2022 at 04:01:29PM +0200, Fabio M. De Francesco wrote:
-> > Pages allocated with GFP_ATOMIC cannot come from Highmem. This is why
-> > there is no need to call kmap() on them.
->
-> I'm still not 100% sure where this page gets allocated but AFAICT it is
-> allocated in ixgbe_alloc_mapped_page() which calls dev_alloc_pages() for the
-> allocation which is where the GFP_ATOMIC is specified.
->
-> I think I would add this detail here.
->
-> That said, and assuming my analysis is correct, the code looks fine so:
+The feature test to detect the availability of zlib in bpftool's
+Makefile does not bring much. The library is not optional: it may or may
+not be required along libbfd for disassembling instructions, but in any
+case it is necessary to build feature.o or even libbpf, on which bpftool
+depends.
 
-Yeah, this is actually called out in other spots in the buffer
-cleaning path. This is just something I had overlooked and left in
-place back a few refactors ago.. :-)
+If we remove the feature test, we lose the nicely formatted error
+message, but we get a compiler error about "zlib.h: No such file or
+directory", which is equally informative. Let's get rid of the test.
 
-https://elixir.bootlin.com/linux/latest/source/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c#L1795
+Suggested-by: Andrii Nakryiko <andrii@kernel.org>
+Signed-off-by: Quentin Monnet <quentin@isovalent.com>
+---
+ tools/bpf/bpftool/Makefile | 9 ++-------
+ 1 file changed, 2 insertions(+), 7 deletions(-)
 
-Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
+diff --git a/tools/bpf/bpftool/Makefile b/tools/bpf/bpftool/Makefile
+index c19e0e4c41bd..e64b81e1c1ba 100644
+--- a/tools/bpf/bpftool/Makefile
++++ b/tools/bpf/bpftool/Makefile
+@@ -93,9 +93,9 @@ INSTALL ?= install
+ RM ?= rm -f
+ 
+ FEATURE_USER = .bpftool
+-FEATURE_TESTS = libbfd disassembler-four-args zlib libcap \
++FEATURE_TESTS = libbfd disassembler-four-args libcap \
+ 	clang-bpf-co-re
+-FEATURE_DISPLAY = libbfd disassembler-four-args zlib libcap \
++FEATURE_DISPLAY = libbfd disassembler-four-args libcap \
+ 	clang-bpf-co-re
+ 
+ check_feat := 1
+@@ -204,11 +204,6 @@ $(BOOTSTRAP_OUTPUT)disasm.o: $(srctree)/kernel/bpf/disasm.c
+ $(OUTPUT)disasm.o: $(srctree)/kernel/bpf/disasm.c
+ 	$(QUIET_CC)$(CC) $(CFLAGS) -c -MMD $< -o $@
+ 
+-$(OUTPUT)feature.o:
+-ifneq ($(feature-zlib), 1)
+-	$(error "No zlib found")
+-endif
+-
+ $(BPFTOOL_BOOTSTRAP): $(BOOTSTRAP_OBJS) $(LIBBPF_BOOTSTRAP)
+ 	$(QUIET_LINK)$(HOSTCC) $(HOST_CFLAGS) $(LDFLAGS) $(BOOTSTRAP_OBJS) $(LIBS_BOOTSTRAP) -o $@
+ 
+-- 
+2.34.1
+
