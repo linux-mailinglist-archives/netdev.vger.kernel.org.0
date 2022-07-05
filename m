@@ -2,82 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A88D566505
-	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 10:28:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 213DF56654A
+	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 10:44:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229935AbiGEIZ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jul 2022 04:25:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37460 "EHLO
+        id S230510AbiGEIn7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jul 2022 04:43:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229892AbiGEIZz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 04:25:55 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5D00B1E9
-        for <netdev@vger.kernel.org>; Tue,  5 Jul 2022 01:25:53 -0700 (PDT)
+        with ESMTP id S229925AbiGEInx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 04:43:53 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A97D51088
+        for <netdev@vger.kernel.org>; Tue,  5 Jul 2022 01:43:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657009552;
+        s=mimecast20190719; t=1657010630;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=xAcs4uI2D9ndZkKQdA+a/49FdnR9QR+eumc/VDmA6z0=;
-        b=IwS91fWv7iO5bP1vaLUoQd8wf9OWARojoGZjmxxOXobUl39JuQekbUDxRQZgWxSd8X3AP7
-        aXZXjBp5y7UBYF66IxVJoP8ytKFFj5/zI+CbF/CqMHQzOFjBK+hnwpiAat64APRFn6cnzB
-        pPF2QvzBrGx0LTsIjlpUXWT3CEaD9ec=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=kZy/nxlcdzOmZXOvcCR//qWGLqmbIlGg7XXJRIbpjK0=;
+        b=cPDxGVWhY3B0gKdY3WYL0WffsWdyHrTYD6GMuxLIruIGoNMV2NzYanKRnzgymaCL1/4QWv
+        uORCS6ABzYOWZQxImUkRCtZgLlLHNnjuZg8nMxUKUl9yLyHTr8dakqETuhtho+xxkvZFFX
+        8srY50pe54LmeN8lJZkRVUljaBEtdrk=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-53-9TLzcW5PNAa_GpZY_P2NaA-1; Tue, 05 Jul 2022 04:25:50 -0400
-X-MC-Unique: 9TLzcW5PNAa_GpZY_P2NaA-1
-Received: by mail-wm1-f72.google.com with SMTP id bg6-20020a05600c3c8600b003a03d5d19e4so6468301wmb.1
-        for <netdev@vger.kernel.org>; Tue, 05 Jul 2022 01:25:50 -0700 (PDT)
+ us-mta-210-J-LrbsPHOOy8ohOijVTt7A-1; Tue, 05 Jul 2022 04:43:47 -0400
+X-MC-Unique: J-LrbsPHOOy8ohOijVTt7A-1
+Received: by mail-wr1-f69.google.com with SMTP id o1-20020adfba01000000b0021b90bd28d2so1737042wrg.14
+        for <netdev@vger.kernel.org>; Tue, 05 Jul 2022 01:43:47 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
          :references:user-agent:mime-version:content-transfer-encoding;
-        bh=xAcs4uI2D9ndZkKQdA+a/49FdnR9QR+eumc/VDmA6z0=;
-        b=HdQJgwPX+lQfZCas+lTlFnIQAX40WC7h0I+geygsrWLyLOkOaEpNtnzcpzkAnjDbIK
-         a0DBhRC5TpiYmXcNT+VOuo7j+pfQra/3s/CAHxQkP63UcicjnkPqGwCGrGe3gUNwjQD8
-         s1CI2xV9COuDsB6dMSAMTzJjjHU7HRiHszx4XooNar0qhddfjkL78Xi301G768bdnLhu
-         pNBCjK/9tCmzurcsEF4buCxq7OcXjWWV4L9CU3+wKDn03Qz6QLy4ia3sW0Sp8EiAw5lx
-         VXFhv5ZPD7JidhDXfDArc3TqEJeURi9+ph91Iqu7R/kZ3ufng91ZR8GIPUEbRQMqwVTg
-         Di3g==
-X-Gm-Message-State: AJIora/2F+vBP+OwF0ZRhDRqVHL6kUN1YgaRB5NR+JR76ty0NGcggJkP
-        ecakHhC+cPhUTd5E+/DQUfbvI6dbulr54XU8asIRwys5T6HFfDhXV7EVn0SMfzxofHe74W5nvfk
-        h/YUxNdUwl78WLEc+
-X-Received: by 2002:a5d:4382:0:b0:21b:8c03:639f with SMTP id i2-20020a5d4382000000b0021b8c03639fmr31398635wrq.406.1657009549658;
-        Tue, 05 Jul 2022 01:25:49 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1vWtkjq8AjSeGOvuG6SZGB7iTMzsl14ms9EYp0tO9xmVGRVz86gratsuVxdCGmqGDDBRyDFCg==
-X-Received: by 2002:a5d:4382:0:b0:21b:8c03:639f with SMTP id i2-20020a5d4382000000b0021b8c03639fmr31398610wrq.406.1657009549406;
-        Tue, 05 Jul 2022 01:25:49 -0700 (PDT)
+        bh=kZy/nxlcdzOmZXOvcCR//qWGLqmbIlGg7XXJRIbpjK0=;
+        b=I9A+wzvlb27+CSdYyZLSVQZ7NVsitDbkXtM18iLE0Vi6k8Pbv9NMUYEDBPbUlRjh4H
+         hhJZ9c2l8a5EvnnpfP4bXG3b9zq+SmuhFFu5nb0IbcZ8BpIsqy5/vw6hhNbcnH79IcEU
+         v76+aXAtio6HNOsJQ0qEYpUUogCdbq13FOBZNyf9npG7k6qQ0YArxPqw+ZE2IjbFPXI9
+         dEylVilvNPcwl4Wm8P4YiEQxHBUeKv4U3fGgNWxz0tNMRmUWyOn6QoZ8my2Vi2MtQeCo
+         6MS37QrYV4Th0ciH6ogosEWYXh5k9qcBg4D7TndMFbpGQxY5/xDQp3V2v34730cg0cRS
+         8NVA==
+X-Gm-Message-State: AJIora/DfYjDpBjXuSEJAgDbfokBvqTcsIcNIRyD22K12F2x40S3tA3Q
+        g7Wmd4anFhtea2/NjPkZlCoQHvQylqU4MT9Qdexkly0pw8QLrQ1653bzXxold4HziTfGfpzCLFt
+        2VswVxRgnS4FfbFrC
+X-Received: by 2002:a1c:f60f:0:b0:3a0:3e0c:1de1 with SMTP id w15-20020a1cf60f000000b003a03e0c1de1mr38133788wmc.56.1657010626599;
+        Tue, 05 Jul 2022 01:43:46 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1sHSdV9V2Ob02J3vbepG5ut1Vo9w3OUeEPmUiF13gGLPKO52cGyqadYgkGQJvykeI1zhkowZQ==
+X-Received: by 2002:a1c:f60f:0:b0:3a0:3e0c:1de1 with SMTP id w15-20020a1cf60f000000b003a03e0c1de1mr38133775wmc.56.1657010626385;
+        Tue, 05 Jul 2022 01:43:46 -0700 (PDT)
 Received: from gerbillo.redhat.com (146-241-106-148.dyn.eolo.it. [146.241.106.148])
-        by smtp.gmail.com with ESMTPSA id d10-20020adff2ca000000b0021a38089e99sm32208030wrp.57.2022.07.05.01.25.48
+        by smtp.gmail.com with ESMTPSA id w8-20020a1cf608000000b0039c5a765388sm22308049wmc.28.2022.07.05.01.43.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Jul 2022 01:25:48 -0700 (PDT)
-Message-ID: <7dc20590ff5ab471a6cd94a6cc63bb2459782706.camel@redhat.com>
-Subject: Re: [PATCH v2] net-tcp: Find dst with sk's xfrm policy not ctl_sk
+        Tue, 05 Jul 2022 01:43:45 -0700 (PDT)
+Message-ID: <4a95703c5c1a09e3ed1a64ddf83e65e222326214.camel@redhat.com>
+Subject: Re: [PATCH net v5] net: rose: fix null-ptr-deref caused by
+ rose_kill_by_neigh
 From:   Paolo Abeni <pabeni@redhat.com>
-To:     Sewook Seo <ssewook@gmail.com>, Sewook Seo <sewookseo@google.com>
-Cc:     Linux Network Development Mailing List <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maciej =?UTF-8?Q?=C5=BBenczykowski?= <maze@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Sehee Lee <seheele@google.com>
-Date:   Tue, 05 Jul 2022 10:25:47 +0200
-In-Reply-To: <20220701154413.868096-1-ssewook@gmail.com>
-References: <20220621202240.4182683-1-ssewook@gmail.com>
-         <20220701154413.868096-1-ssewook@gmail.com>
+To:     Duoming Zhou <duoming@zju.edu.cn>, linux-hams@vger.kernel.org
+Cc:     ralf@linux-mips.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Tue, 05 Jul 2022 10:43:44 +0200
+In-Reply-To: <20220702075718.25121-1-duoming@zju.edu.cn>
+References: <20220702075718.25121-1-duoming@zju.edu.cn>
 Content-Type: text/plain; charset="UTF-8"
 User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -85,98 +79,116 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-
-On Fri, 2022-07-01 at 15:44 +0000, Sewook Seo wrote:
-> From: sewookseo <sewookseo@google.com>
+On Sat, 2022-07-02 at 15:57 +0800, Duoming Zhou wrote:
+> When the link layer connection is broken, the rose->neighbour is
+> set to null. But rose->neighbour could be used by rose_connection()
+> and rose_release() later, because there is no synchronization among
+> them. As a result, the null-ptr-deref bugs will happen.
 > 
-> If we set XFRM security policy by calling setsockopt with option
-> IPV6_XFRM_POLICY, the policy will be stored in 'sock_policy' in 'sock'
-> struct. However tcp_v6_send_response doesn't look up dst_entry with the
-> actual socket but looks up with tcp control socket. This may cause a
-> problem that a RST packet is sent without ESP encryption & peer's TCP
-> socket can't receive it.
-> This patch will make the function look up dest_entry with actual socket,
-> if the socket has XFRM policy(sock_policy), so that the TCP response
-> packet via this function can be encrypted, & aligned on the encrypted
-> TCP socket.
+> One of the null-ptr-deref bugs is shown below:
 > 
-> Tested: We encountered this problem when a TCP socket which is encrypted
-> in ESP transport mode encryption, receives challenge ACK at SYN_SENT
-> state. After receiving challenge ACK, TCP needs to send RST to
-> establish the socket at next SYN try. But the RST was not encrypted &
-> peer TCP socket still remains on ESTABLISHED state.
-> So we verified this with test step as below.
-> [Test step]
-> 1. Making a TCP state mismatch between client(IDLE) & server(ESTABLISHED).
-> 2. Client tries a new connection on the same TCP ports(src & dst).
-> 3. Server will return challenge ACK instead of SYN,ACK.
-> 4. Client will send RST to server to clear the SOCKET.
-> 5. Client will retransmit SYN to server on the same TCP ports.
-> [Expected result]
-> The TCP connection should be established.
+>     (thread 1)                  |        (thread 2)
+>                                 |  rose_connect
+> rose_kill_by_neigh              |    lock_sock(sk)
+>   spin_lock_bh(&rose_list_lock) |    if (!rose->neighbour)
+>   rose->neighbour = NULL;//(1)  |
+>                                 |    rose->neighbour->use++;//(2)
 > 
-> Effort: net-tcp
-
-This looks like a stray "internal" tag?
-
-> Cc: Maciej Żenczykowski <maze@google.com>
-> Cc: Eric Dumazet <edumazet@google.com>
-> Cc: Steffen Klassert <steffen.klassert@secunet.com>
-> Cc: Sehee Lee <seheele@google.com>
-> Signed-off-by: Sewook Seo <sewookseo@google.com>
-
-Is this targeting -net -or -net-next? IMHO this could land in either
-trees. If you are targting net, please add a suitable Fixes: tag.
-
-
+> The rose->neighbour is set to null in position (1) and dereferenced
+> in position (2).
+> 
+> The KASAN report triggered by POC is shown below:
+> 
+> KASAN: null-ptr-deref in range [0x0000000000000028-0x000000000000002f]
+> ...
+> RIP: 0010:rose_connect+0x6c2/0xf30
+> RSP: 0018:ffff88800ab47d60 EFLAGS: 00000206
+> RAX: 0000000000000005 RBX: 000000000000002a RCX: 0000000000000000
+> RDX: ffff88800ab38000 RSI: ffff88800ab47e48 RDI: ffff88800ab38309
+> RBP: dffffc0000000000 R08: 0000000000000000 R09: ffffed1001567062
+> R10: dfffe91001567063 R11: 1ffff11001567061 R12: 1ffff11000d17cd0
+> R13: ffff8880068be680 R14: 0000000000000002 R15: 1ffff11000d17cd0
+> ...
+> Call Trace:
+>   <TASK>
+>   ? __local_bh_enable_ip+0x54/0x80
+>   ? selinux_netlbl_socket_connect+0x26/0x30
+>   ? rose_bind+0x5b0/0x5b0
+>   __sys_connect+0x216/0x280
+>   __x64_sys_connect+0x71/0x80
+>   do_syscall_64+0x43/0x90
+>   entry_SYSCALL_64_after_hwframe+0x46/0xb0
+> 
+> This patch adds lock_sock() in rose_kill_by_neigh() in order to
+> synchronize with rose_connect() and rose_release().
+> 
+> Meanwhile, this patch adds sock_hold() protected by rose_list_lock
+> that could synchronize with rose_remove_socket() in order to mitigate
+> UAF bug caused by lock_sock() we add.
+> 
+> What's more, there is no need using rose_neigh_list_lock to protect
+> rose_kill_by_neigh(). Because we have already used rose_neigh_list_lock
+> to protect the state change of rose_neigh in rose_link_failed(), which
+> is well synchronized.
+> 
+> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+> Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
 > ---
-> Changelog since v1:
-> - Remove unnecessary null check of sk at ip_output.c
->   Narrow down patch scope: sending RST at SYN_SENT state
->   Remove unnecessay condition to call xfrm_sk_free_policy()
->   Verified at KASAN build
+> Changes in v5:
+>   - v5: Use socket lock to protect comparison in rose_kill_by_neigh.
 > 
->  net/ipv4/ip_output.c | 7 ++++++-
->  net/ipv4/tcp_ipv4.c  | 5 +++++
->  net/ipv6/tcp_ipv6.c  | 7 ++++++-
->  3 files changed, 17 insertions(+), 2 deletions(-)
+>  net/rose/af_rose.c    | 12 ++++++++++++
+>  net/rose/rose_route.c |  2 ++
+>  2 files changed, 14 insertions(+)
 > 
-> diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
-> index 00b4bf26fd93..1da430c8fee2 100644
-> --- a/net/ipv4/ip_output.c
-> +++ b/net/ipv4/ip_output.c
-> @@ -1704,7 +1704,12 @@ void ip_send_unicast_reply(struct sock *sk, struct sk_buff *skb,
->  			   tcp_hdr(skb)->source, tcp_hdr(skb)->dest,
->  			   arg->uid);
->  	security_skb_classify_flow(skb, flowi4_to_flowi_common(&fl4));
-> -	rt = ip_route_output_key(net, &fl4);
-> +#ifdef CONFIG_XFRM
-> +	if (sk->sk_policy[XFRM_POLICY_OUT])
-> +		rt = ip_route_output_flow(net, &fl4, sk);
-> +	else
-> +#endif
-> +		rt = ip_route_output_key(net, &fl4);
->  	if (IS_ERR(rt))
->  		return;
+> diff --git a/net/rose/af_rose.c b/net/rose/af_rose.c
+> index bf2d986a6bc..6d5088b030a 100644
+> --- a/net/rose/af_rose.c
+> +++ b/net/rose/af_rose.c
+> @@ -165,14 +165,26 @@ void rose_kill_by_neigh(struct rose_neigh *neigh)
+>  	struct sock *s;
 >  
-> diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-> index fda811a5251f..459669f9e13f 100644
-> --- a/net/ipv4/tcp_ipv4.c
-> +++ b/net/ipv4/tcp_ipv4.c
-> @@ -819,6 +819,10 @@ static void tcp_v4_send_reset(const struct sock *sk, struct sk_buff *skb)
->  		ctl_sk->sk_priority = (sk->sk_state == TCP_TIME_WAIT) ?
->  				   inet_twsk(sk)->tw_priority : sk->sk_priority;
->  		transmit_time = tcp_transmit_time(sk);
-> +#ifdef CONFIG_XFRM
-> +		if (sk->sk_policy[XFRM_POLICY_OUT] && sk->sk_state == TCP_SYN_SENT)
-> +			xfrm_sk_clone_policy(ctl_sk, sk);
-> +#endif
+>  	spin_lock_bh(&rose_list_lock);
+> +again:
+>  	sk_for_each(s, &rose_list) {
+>  		struct rose_sock *rose = rose_sk(s);
+>  
+> +		sock_hold(s);
+> +		spin_unlock_bh(&rose_list_lock);
+> +		lock_sock(s);
+>  		if (rose->neighbour == neigh) {
+>  			rose_disconnect(s, ENETUNREACH, ROSE_OUT_OF_ORDER, 0);
+>  			rose->neighbour->use--;
 
-It looks like the cloned policy will be overwrited by later resets and
-possibly leaked? nobody calls xfrm_sk_free_policy() on the old policy.
+Note that the code can held different socket lock while updating
+'neighbour->use'. That really means that such updates can really race
+each other, with bad results.
 
-Thanks!
+I think the only safe way out is using an atomic_t for 'neighbour->use'
+(likely a refcount_t would be a better option).
+
+All the above deserves a separate patch IMHO.
+
+>  			rose->neighbour = NULL;
+> +			release_sock(s);
+> +			sock_put(s);
+> +			spin_lock_bh(&rose_list_lock);
+> +			goto again;
+
+This chunk is dup of the following lines, it could be dropped...
+
+>  		}
+> +		release_sock(s);
+> +		sock_put(s);
+> +		spin_lock_bh(&rose_list_lock);
+> +		goto again;
+
+... if this would be correct, which apparently is not.
+
+What happens when 'rose->neighbour' is different from 'neigh' for first
+socket in rose_list?
+
+Cheers,
 
 Paolo
 
