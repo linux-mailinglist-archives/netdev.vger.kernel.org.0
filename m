@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 106C456771B
-	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 21:03:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10DD856771E
+	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 21:04:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233163AbiGETDo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jul 2022 15:03:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36096 "EHLO
+        id S232643AbiGETEB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jul 2022 15:04:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233148AbiGETDn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 15:03:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74FAF1EED9;
-        Tue,  5 Jul 2022 12:03:42 -0700 (PDT)
+        with ESMTP id S232494AbiGETD5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 15:03:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69616CE1C;
+        Tue,  5 Jul 2022 12:03:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E1A2161A9D;
-        Tue,  5 Jul 2022 19:03:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4F37C341CD;
-        Tue,  5 Jul 2022 19:03:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 16306B8191D;
+        Tue,  5 Jul 2022 19:03:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8322EC341C7;
+        Tue,  5 Jul 2022 19:03:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657047821;
-        bh=twXRGeflIiQLxPwsyCeS4+rA2mqh/YP2Rp+Kgb+cTUc=;
+        s=k20201202; t=1657047833;
+        bh=y72XdUI/sjSXjaw9WSqjzwHIIFgTvSXemkRNtZGBq5s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=T+RnlzTolVuNxH7C1F4MFa1JcC/xxUDroV2a0SS2HP2LR4WmSF7UFNxsyQHYn+ozn
-         73bmDKGF9KiRAf1fyg3FFyIN1Tvcusw7CQzJgT9mhOu+RnlQc8PguDMp5+HMN8voFh
-         qaMX80bq0f6/eqMaE/+b7rJqpoKh2xZX8XYmRqvjP/MqUyWS2OUIXtyo0+YfyJRjWm
-         9prqOZRoiXjMhj0pOyM6hxdQ9VHub53OpzBF0XwN4MI1ShL3PrKLtPnlKkDOptdlSO
-         AQB37CS2IRzeWM8qhlwCy5qHzD48JgWdCroIAaoxOtlZbSCsWTLcUbZ8da0xmO2e36
-         BMGvJp7kzFQBQ==
+        b=Jo4nf14tx155OTzX1S9ukdTXYuPoTwaPn2rQnrBSNSsFHoheyiIdEJVZf+SDy0lhZ
+         RERz0L5LkK/HkryqsgYQixqesGGnI4Gq2D+pT6Itb+dZwNJG7JyNlcgKgKWM47rlL1
+         aAMoRIjM0mbMY0Sj3tFjYThcnLkAN9eOpgSxkrAL7II93kuMkaGNCqjIsTaAD9Y1Rf
+         LssJK02gK2OXFCtKmPBL0ZtgCUxheDiE0t1/OXyX9/2U0YThhyhRAmHy3fKVQjODzL
+         Ob3BOqAJXgyLljJaQQ72LirvZ2Hti5HGdfdIKvQe0RvsMaxXxj3chnKmqrB1fnGlRb
+         jouTQaNxtrhHw==
 From:   Jiri Olsa <jolsa@kernel.org>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -43,9 +43,9 @@ Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         Masami Hiramatsu <mhiramat@kernel.org>,
         Martynas Pumputis <m@lambda.lt>,
         Yutaro Hayakawa <yutaro.hayakawa@isovalent.com>
-Subject: [PATCH RFC bpf-next 2/4] bpf: Use given function address for trampoline ip arg
-Date:   Tue,  5 Jul 2022 21:03:06 +0200
-Message-Id: <20220705190308.1063813-3-jolsa@kernel.org>
+Subject: [PATCH RFC bpf-next 3/4] selftests/bpf: Disable kprobe attach test with offset for CONFIG_X86_KERNEL_IBT
+Date:   Tue,  5 Jul 2022 21:03:07 +0200
+Message-Id: <20220705190308.1063813-4-jolsa@kernel.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220705190308.1063813-1-jolsa@kernel.org>
 References: <20220705190308.1063813-1-jolsa@kernel.org>
@@ -61,50 +61,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Using function address given at the generation time as the trampline
-ip argument. This way we don't need to read the ip from the stack and
-care about CONFIG_X86_KERNEL_IBT option.
+Attach like 'kprobe/bpf_fentry_test6+0x5' will fail to attach
+when CONFIG_X86_KERNEL_IBT option is enabled because of the
+endbr instruction at the function entry.
+
+We would need to do manual attach with offset calculation based
+on the CONFIG_X86_KERNEL_IBT option, which does not seem worth
+the effort to me.
+
+Disabling these test when CONFIG_X86_KERNEL_IBT is enabled.
 
 Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 ---
- arch/x86/net/bpf_jit_comp.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ .../bpf/prog_tests/get_func_ip_test.c         | 25 +++++++++++++++----
+ 1 file changed, 20 insertions(+), 5 deletions(-)
 
-diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
-index 2f460c67f9c7..1d23dd51a42f 100644
---- a/arch/x86/net/bpf_jit_comp.c
-+++ b/arch/x86/net/bpf_jit_comp.c
-@@ -2015,13 +2015,14 @@ static bool is_valid_bpf_tramp_flags(unsigned int flags)
- int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *image_end,
- 				const struct btf_func_model *m, u32 flags,
- 				struct bpf_tramp_links *tlinks,
--				void *orig_call)
-+				void *func_addr)
+diff --git a/tools/testing/selftests/bpf/prog_tests/get_func_ip_test.c b/tools/testing/selftests/bpf/prog_tests/get_func_ip_test.c
+index 938dbd4d7c2f..cb0b78fb29df 100644
+--- a/tools/testing/selftests/bpf/prog_tests/get_func_ip_test.c
++++ b/tools/testing/selftests/bpf/prog_tests/get_func_ip_test.c
+@@ -2,6 +2,24 @@
+ #include <test_progs.h>
+ #include "get_func_ip_test.skel.h"
+ 
++/* assume IBT is enabled when kernel configs are not available */
++#ifdef HAVE_GENHDR
++# include "autoconf.h"
++#else
++#  define CONFIG_X86_KERNEL_IBT 1
++#endif
++
++/* test6 and test7 are x86_64 specific because of the instruction
++ * offset, disabling it for all other archs
++ *
++ * CONFIG_X86_KERNEL_IBT adds endbr instruction at function entry,
++ * so disabling test6 and test7, because the offset is hardcoded
++ * in program section
++ */
++#if !defined(__x86_64__) || defined(CONFIG_X86_KERNEL_IBT)
++#define DISABLE_OFFSET_ATTACH 1
++#endif
++
+ void test_get_func_ip_test(void)
  {
- 	int ret, i, nr_args = m->nr_args;
- 	int regs_off, ip_off, args_off, stack_size = nr_args * 8, run_ctx_off;
- 	struct bpf_tramp_links *fentry = &tlinks[BPF_TRAMP_FENTRY];
- 	struct bpf_tramp_links *fexit = &tlinks[BPF_TRAMP_FEXIT];
- 	struct bpf_tramp_links *fmod_ret = &tlinks[BPF_TRAMP_MODIFY_RETURN];
-+	void *orig_call = func_addr;
- 	u8 **branches = NULL;
- 	u8 *prog;
- 	bool save_ret;
-@@ -2097,12 +2098,10 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
+ 	struct get_func_ip_test *skel = NULL;
+@@ -12,10 +30,7 @@ void test_get_func_ip_test(void)
+ 	if (!ASSERT_OK_PTR(skel, "get_func_ip_test__open"))
+ 		return;
  
- 	if (flags & BPF_TRAMP_F_IP_ARG) {
- 		/* Store IP address of the traced function:
--		 * mov rax, QWORD PTR [rbp + 8]
--		 * sub rax, X86_PATCH_SIZE
-+		 * mov rax, func_addr
- 		 * mov QWORD PTR [rbp - ip_off], rax
- 		 */
--		emit_ldx(&prog, BPF_DW, BPF_REG_0, BPF_REG_FP, 8);
--		EMIT4(0x48, 0x83, 0xe8, X86_PATCH_SIZE);
-+		emit_mov_imm64(&prog, BPF_REG_0, (long) func_addr >> 32, (u32) (long) func_addr);
- 		emit_stx(&prog, BPF_DW, BPF_REG_FP, BPF_REG_0, -ip_off);
- 	}
- 
+-	/* test6 is x86_64 specifc because of the instruction
+-	 * offset, disabling it for all other archs
+-	 */
+-#ifndef __x86_64__
++#if defined(DISABLE_OFFSET_ATTACH)
+ 	bpf_program__set_autoload(skel->progs.test6, false);
+ 	bpf_program__set_autoload(skel->progs.test7, false);
+ #endif
+@@ -43,7 +58,7 @@ void test_get_func_ip_test(void)
+ 	ASSERT_EQ(skel->bss->test3_result, 1, "test3_result");
+ 	ASSERT_EQ(skel->bss->test4_result, 1, "test4_result");
+ 	ASSERT_EQ(skel->bss->test5_result, 1, "test5_result");
+-#ifdef __x86_64__
++#if !defined(DISABLE_OFFSET_ATTACH)
+ 	ASSERT_EQ(skel->bss->test6_result, 1, "test6_result");
+ 	ASSERT_EQ(skel->bss->test7_result, 1, "test7_result");
+ #endif
 -- 
 2.35.3
 
