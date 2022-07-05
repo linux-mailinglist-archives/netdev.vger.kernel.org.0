@@ -2,108 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A9D6567801
-	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 21:49:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8388B567803
+	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 21:50:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232995AbiGETtN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jul 2022 15:49:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45966 "EHLO
+        id S231883AbiGETub (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jul 2022 15:50:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230079AbiGETtL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 15:49:11 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B8021D3;
-        Tue,  5 Jul 2022 12:49:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=ONPWuHGAM6kWNFap3DXPBrwE41N3WuQAN/EYPstEIcM=; b=LgkaiVQa6B8YDlpE26jrvbc4Vh
-        FPJfILIydT2k1fCP+6v0qOZXrb6dcK6NzD1fDwr0D25lLfApKwXaHg8uJq6Ob3VdK972eJW3UjUuX
-        DWcpP+xhZYMxT4pkhBeISJKQ9hyrymziBESry2GIuhi4BM9+ini6zgoeUX4HZipSP8E0=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1o8oXa-009PZu-CM; Tue, 05 Jul 2022 21:48:58 +0200
-Date:   Tue, 5 Jul 2022 21:48:58 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Saravana Kannan <saravanak@google.com>
-Cc:     "Pandey, Radhey Shyam" <radhey.shyam.pandey@amd.com>,
-        "nicolas.ferre@microchip.com" <nicolas.ferre@microchip.com>,
-        "claudiu.beznea@microchip.com" <claudiu.beznea@microchip.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "rafael@kernel.org" <rafael@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "git (AMD-Xilinx)" <git@amd.com>
-Subject: Re: [PATCH net-next v2] net: macb: In shared MDIO usecase make MDIO
- producer ethernet node to probe first
-Message-ID: <YsSVqknDQxdWqfds@lunn.ch>
-References: <1656618906-29881-1-git-send-email-radhey.shyam.pandey@amd.com>
- <Yr66xEMB/ORr0Xcp@lunn.ch>
- <MN0PR12MB59531DFD084FA947084D91B6B7819@MN0PR12MB5953.namprd12.prod.outlook.com>
- <CAGETcx_BUR3EPDLgp9v0Uk9N=8BtYRjFyhpJTQa9kEMHtkgdwQ@mail.gmail.com>
+        with ESMTP id S229550AbiGETub (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 15:50:31 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A10B1D3;
+        Tue,  5 Jul 2022 12:50:30 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id n12so12508256pfq.0;
+        Tue, 05 Jul 2022 12:50:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=37SdVu/I0AZorgpaKaU7xxUX/U/C9pM7788+cOvGxXo=;
+        b=bP9AV1g4jXU7AaBQbqDeTt8A40XBQK+TrOXr7haMW0Z5QFg/THYEnIK0oYr9L94YYM
+         X8OKch06J5dTr6kixfYy/af5QJqjFhtxL0mtMiYgOi6Ror8vzt1axavDbB6IOujayZyn
+         mEj04GvEZ6fVCBI08D5mCo4CQq785hV8v9DlrZ28yf94CLJd6FyP6azjYTjRlH8e0aYn
+         ik/xEUzsI8HAEsZAvAKpqDYil8AwsjSJHeAQtUOv6e+e04/W49DjSlFoYTporfV08Xlb
+         a8EfJ2rcHqX2IletPO2hNvthIWSdxK9fY/UbS1VAmIg43NAf9/Fhq7xpQt42O/zBAbb8
+         KadQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=37SdVu/I0AZorgpaKaU7xxUX/U/C9pM7788+cOvGxXo=;
+        b=g6x8csPfKSDE/8TVSD1+ozPgoNub03JVbe0MG5g6l1JlztoAmZ0+Yaj8I3jR9Q6b51
+         ro+2fYUfBhPi2w/aYs8Jgw586N/VdqRrTgIAVH8NjSu5LxRXkAhPCmX0tNGZ6QiRq+DA
+         7E7Ri+huP9JjJAIR+rKHTO2Op8YMCwMwJ7/71DbD7bm9NaQWFhBln78elBNdojGsw++E
+         SnQPl0bXHyLS4wd4itGyB4rz/fzu8BrChoQrCpQYteQMYqgbkc34tci1A8ayRbP33sC7
+         EHFaetcUjUzqwi1g05ttXBUh8DvSRLCm6Lr4F3tYUImVRh0ynjqvtvV2dn+wE889Xioq
+         lGCw==
+X-Gm-Message-State: AJIora+pys5m6breIOuKcFQMbhBXRq+P8MouHABrnc5UHm+ziWiSRbUG
+        FkYko6cnuaZ5jtjply0j4xxFHOgnAv6vmxOs
+X-Google-Smtp-Source: AGRyM1s5YB3qHl69kOMEJZ015jOq3FOyorbYcGTuq2C8q05wm/FDscHTaWVxBsgIuQISAPKtkec0hw==
+X-Received: by 2002:a63:a112:0:b0:40c:450e:b1ad with SMTP id b18-20020a63a112000000b0040c450eb1admr31468801pgf.493.1657050629579;
+        Tue, 05 Jul 2022 12:50:29 -0700 (PDT)
+Received: from octofox.hsd1.ca.comcast.net ([2601:641:401:1d20:3caa:449f:1bc2:21eb])
+        by smtp.gmail.com with ESMTPSA id nk3-20020a17090b194300b001ef8407f6d2sm5848777pjb.46.2022.07.05.12.50.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Jul 2022 12:50:28 -0700 (PDT)
+From:   Max Filippov <jcmvbkbc@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     linux-next@vger.kernel.org, netdev@vger.kernel.org,
+        Jianbo Liu <jianbol@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Ariel Levkovich <lariel@nvidia.com>,
+        Roi Dayan <roid@nvidia.com>, Leon Romanovsky <leon@kernel.org>,
+        Max Filippov <jcmvbkbc@gmail.com>
+Subject: [PATCH] net/mlx5e: use div64_u64 for long division
+Date:   Tue,  5 Jul 2022 12:50:25 -0700
+Message-Id: <20220705195025.3348953-1-jcmvbkbc@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAGETcx_BUR3EPDLgp9v0Uk9N=8BtYRjFyhpJTQa9kEMHtkgdwQ@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=0.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        FROM_LOCAL_NOVOWEL,HK_RANDOM_ENVFROM,HK_RANDOM_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > Thanks for the review.  I want to get your thoughts on the outline of
-> > the generic solution. Is the current approach fine and we can extend it
-> > for all shared MDIO use cases/ or do we see any limitations?
-> >
-> > a) Figure out if the MDIO bus is shared.  (new binding or reuse existing)
-> > b) If the MDIO bus is shared based on DT property then figure out if the
-> > MDIO producer platform device is probed. If not, defer MDIO consumer
-> > MDIO bus registration.
-> 
-> Radhey,
-> 
-> I think Andrew added me because he's pointing you towards fw_devlink.
-> 
-> Andrew,
-> 
-> I have intentionally not added phy-handle support to fw_devlink
-> because it would also prevent the generic driver from binding/cause
-> issues with DSA. I have some high level ideas on fixing that but
-> haven't gotten around to it yet.
+This fixes the following build error on 32-bit architectures visible in
+linux-next:
 
-I took a quick look at macb, and i think it is actually broken in
-other ways. If you where to use NFS root, i suspect it would also
-fail.
+  ERROR: modpost: "__divdi3" [drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.ko] undefined!
+  ERROR: modpost: "__udivdi3" [drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.ko] undefined!
 
-This also has nothing to do with shared MDIO busses as such. All it
-requires is some other MDIO bus, not the MACs own MDIO bus.
+Fixes: 6ddac26cf763 ("net/mlx5e: Add support to modify hardware flow meter parameters")
+Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
+---
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-It is also that we cannot return -EPROBE_DEFER when trying to connect
-the PHY, because it is not performed in the context of the probe, but
-the open.
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c
+index 28962b2134c7..81e7fe819017 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c
+@@ -1,6 +1,7 @@
+ // SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
+ // Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+ 
++#include <asm/div64.h>
+ #include "lib/aso.h"
+ #include "en/tc/post_act.h"
+ #include "meter.h"
+@@ -61,7 +62,7 @@ mlx5e_flow_meter_cir_calc(u64 cir, u8 *man, u8 *exp)
+ 		m = cir << e;
+ 		if ((s64)m < 0) /* overflow */
+ 			break;
+-		m /= MLX5_CONST_CIR;
++		m = div64_u64(m, MLX5_CONST_CIR);
+ 		if (m > 0xFF) /* man width 8 bit */
+ 			continue;
+ 		_cir = MLX5_CALC_CIR(m, e);
+-- 
+2.30.2
 
-fw_dewlink might help solve this, bit it is not going to be easy. We
-can also split this into two problems;
-
-1) probe time
-2) suspend/resume
-
-macb does seem to probe, for most use cases. So we can probably ignore
-that for now. So we can concentrate on suspend/resume. You say
-suspend/resume is based on probe order. So it must build some sort of
-tree. Can we make phy_attach_direct add an additional link to this
-tree when a MAC device is link to a PHY? Is this what
-device_link_add() is about?
-
-     Andrew
