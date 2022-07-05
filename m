@@ -2,391 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0291B5668AD
+	by mail.lfdr.de (Postfix) with ESMTP id 18D755668AE
 	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 12:54:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232888AbiGEKyv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jul 2022 06:54:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43394 "EHLO
+        id S232858AbiGEKyt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jul 2022 06:54:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231702AbiGEKyO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 06:54:14 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 43BE315718;
-        Tue,  5 Jul 2022 03:53:34 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 593052B;
-        Tue,  5 Jul 2022 03:53:34 -0700 (PDT)
-Received: from e126311.manchester.arm.com (unknown [10.57.72.26])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 595A83F792;
+        with ESMTP id S232098AbiGEKyN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 06:54:13 -0400
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2066.outbound.protection.outlook.com [40.107.101.66])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AAC2BF44;
         Tue,  5 Jul 2022 03:53:31 -0700 (PDT)
-Date:   Tue, 5 Jul 2022 11:53:22 +0100
-From:   Kajetan Puchalski <kajetan.puchalski@arm.com>
-To:     Florian Westphal <fw@strlen.de>
-Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        "David S. Miller" <davem@davemloft.net>,
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=OVNpo21wlejsWDNfpDBwV5ZnpKIGCje+bWxRdiVI24L8o5Aj6J8chUcU7Vro+gr0Vnj7FETonxGhWszd9k9CaARU9zANq1KuTw2ymljbWQvMm/FqJeS0pEgugJw5Em7TbvgDnTHQM78GgPv+DMcWagThT/AW8MNpfsU8OK8KgbUFV8gFbZV9fETxuNCP7UQsA+J+OlvfeY7D9ISvB/2JfmZds3hz64rCUowAI9k0TAl31y89zXsmopVStUP7H+OibzmLAO0saEWwtbydLbul82hz2vfPygbnZezvrC8lmU/R4Gx2qQKEh378TkukFi5Neoi3JYAimeuQi5LN0EZodw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=lBQBrhz++joxqgzrUQcfMu8iuhZOzwr9XKqzzet0pZY=;
+ b=muXWn3C8L3ExWRJ7L5hq+qnBdUQjvXAO/FsNhuM4KUo5w8eY5n+O9+HjS2QRWi34ZUELKb5k8/Q3GKWhovB31uS4kunuVTL0vOf8Fsxe7/Fv8OAbi58/ewaz8VypatJ6tVATLkQ/Nykrgg3wjUrAc4TvevtaGX8g0NPSo1hLxR2ikx10NATk8poc4S4faVBcvq2UM9CFz2R3Lz9834TYPQrMK5RlXfoRvXohIrN3MfLI5dl6/EMuEjVQ/CL9e2I3OM+dVU9mBc+vIXTioFzWiVn9qlfQX0+s6IfvlsKq9jmTK9XUdywtcCFgdaJhz71WTzHt84w1bAJBNSNseiXufQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=lBQBrhz++joxqgzrUQcfMu8iuhZOzwr9XKqzzet0pZY=;
+ b=VQnO00TdvZH4BWWQP9y0+TGXnGQ32Uske9UYvI4gYIlZns5WVdo6Gra1lt+BfhQjylkaWDd2Gbzq8IV9RZZ2OFOHzB2h1Oz6UQEl4tBeTRN+mlwLqZ2wRTe5vg0rjH/7wDw6U6CDDDogd1GC617e22qgZutiNo5Z/HFwuM7hWDMxPzgKaDMeydMRVMZK80fIR8P8O4i/oRZslYOBJTLcRoP4Yu0hbbf0YZJkGGx9Rw4Fdh20pYSZNbIsErjBZTRScR5JXjLETFuUrl2dfHCvHkBJq4PZ1Qef9J5JDMOIqE/83PpdCSedQWR3ikFb2HCDGi26bXukDgieRkaO7N8L2w==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
+ by MN2PR12MB4189.namprd12.prod.outlook.com (2603:10b6:208:1d8::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.14; Tue, 5 Jul
+ 2022 10:53:30 +0000
+Received: from CY5PR12MB6179.namprd12.prod.outlook.com
+ ([fe80::611c:e609:d343:aa34]) by CY5PR12MB6179.namprd12.prod.outlook.com
+ ([fe80::611c:e609:d343:aa34%7]) with mapi id 15.20.5395.021; Tue, 5 Jul 2022
+ 10:53:30 +0000
+Date:   Tue, 5 Jul 2022 13:53:24 +0300
+From:   Ido Schimmel <idosch@nvidia.com>
+To:     Hans S <schultz.hans@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Mel Gorman <mgorman@suse.de>,
-        lukasz.luba@arm.com, dietmar.eggemann@arm.com,
-        mark.rutland@arm.com, will@kernel.org, mark.brown@arm.com,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, stable@vger.kernel.org,
-        regressions@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [Regression] stress-ng udp-flood causes kernel panic on Ampere
- Altra
-Message-ID: <YsQYIoJK3iqJ68Tq@e126311.manchester.arm.com>
-References: <Yr7WTfd6AVTQkLjI@e126311.manchester.arm.com>
- <20220701200110.GA15144@breakpoint.cc>
- <YsAnPhPfWRjpkdmn@e126311.manchester.arm.com>
- <20220702205651.GB15144@breakpoint.cc>
- <YsKxTAaIgvKMfOoU@e126311.manchester.arm.com>
- <YsLGoU7q5hP67TJJ@e126311.manchester.arm.com>
-MIME-Version: 1.0
+        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Hans Schultz <schultz.hans+netdev@gmail.com>,
+        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
+        linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH net-next v1 1/1] net: bridge: ensure that link-local
+ traffic cannot unlock a locked port
+Message-ID: <YsQYJElDK8DBHYz8@shredder>
+References: <Yr2LFI1dx6Oc7QBo@shredder>
+ <CAKUejP6LTFuw7d_1C18VvxXDuYaboD-PvSkk_ANSFjjfhyDGkg@mail.gmail.com>
+ <Yr778K/7L7Wqwws2@shredder>
+ <CAKUejP5w0Dn8y9gyDryNYy7LOUytqZsG+qqqC8JhRcvyC13=hQ@mail.gmail.com>
+ <Yr8oPba83rpJE3GV@shredder>
+ <CAKUejP4_05E0hfFp-ceXLgPuid=MwrAoHyQ-nYE3qx3Tisb4uA@mail.gmail.com>
+ <YsE+hreRa0REAG3g@shredder>
+ <CAKUejP4H4yKu6LaLUUUWypt7EPuYDK-5UdUDHPF8F2U5hGnzOQ@mail.gmail.com>
+ <YsLILMpLI3alAj+1@shredder>
+ <CAKUejP5=eNyAso=MW2nb2o=OKMaysmWUJ-zqLcerPg6EzsQVYQ@mail.gmail.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YsLGoU7q5hP67TJJ@e126311.manchester.arm.com>
-X-Spam-Status: No, score=-6.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <CAKUejP5=eNyAso=MW2nb2o=OKMaysmWUJ-zqLcerPg6EzsQVYQ@mail.gmail.com>
+X-ClientProxiedBy: LO2P265CA0035.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:61::23) To CY5PR12MB6179.namprd12.prod.outlook.com
+ (2603:10b6:930:24::22)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 8c8230df-bf3d-4dfe-72e2-08da5e7498c6
+X-MS-TrafficTypeDiagnostic: MN2PR12MB4189:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: z/Pln/pCxH3B96pH4hl1YU1AXgj2K+VHdM0VCFjfIMplDReoHuR9UJ++KW6vvR216Gk+rf24o65uVQn9675DYlhNvGq3qfNKuLlh+/2Rp/uvBgUZ7W4sXrXZFlahz09CtDbflPKEt5OAmiAbwu9B0RY287rMpFsefRIdl0Xc+9DXicZLB4wWF0Hobl2d3oq+Ec1sBwues4aVVirw9gOcVUEvhmNQET1B3k6ZbMXiomHKytj47n2tgx17gfGwJdWPoR8dYKIRz28DACKCYMI9rrwaCbrFWMOXRV9COOanc2u3/UyTuOFUY80EmOBnMjyJ6XwcoyYBxef0PbmxMJE2jInk9l7w1lQTQTaunaxDgwr0Zbac4l//dP7JCjmN0aJpS7USq4+ITFxTQb2qK4F1Grogoet7w9elr2Pb8Dejbtj1vVIDcZlQHzSzjrDWFhPU2NDvOWOkPI85mhiiv8ohhaIbNgwkXN3X3Q7IJq1xqZdjvWTyhMubTR/Ee86+fW8AZHd3YXnpTS0FMbrY2LZ5WMcmYhCdOSNcDcJqpsKnqtLV6P2c9USwgeSroOU6MDMKlNpTnoce5H7ulOlkLw96LClLHyhp3EPPbG8wwI5J5ViM1R3YixeytLQv24bNYne0f+1uyMKkBorBOhzqh+flwInTULE2fp4lHOyXdZ52dAQKEkRvA2FXmBQ5c/eHtPhqpnOnBmrSeUGes1KLmXjSjVEtoh8+QKMfcaiyO4ed6CUV/ccypVG9ypMms4zghO1b
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(7916004)(136003)(366004)(396003)(376002)(346002)(39860400002)(83380400001)(186003)(66946007)(66556008)(66476007)(8676002)(4326008)(478600001)(86362001)(6486002)(7416002)(8936002)(5660300002)(26005)(9686003)(6512007)(38100700002)(6666004)(41300700001)(53546011)(2906002)(6506007)(33716001)(54906003)(6916009)(316002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ZryG6fiRt66xlCvk9PO1OlcwSG4P7ZU3hcHmbZlhXoD18ky3fJatdl5jxRTI?=
+ =?us-ascii?Q?/1XcBviQ7LhcE4kmrvAeYpn85rZ+dbsDQuytD/Jt1xPFA+WYiZqz4QkpxLz4?=
+ =?us-ascii?Q?iEnWGpHTY748GXysDdEJFj0i86UQgrUmsdjvIhj07N48rmWBLepsnEsMW1+Q?=
+ =?us-ascii?Q?JBoxlMUiQ6w6huwK0lzw0/O111ocIHzk9Xo2NB1iyJD63BYiLkZFXzCyhgPZ?=
+ =?us-ascii?Q?cG8dN/g/pgjf70dyObcpudzsi5KwuOj5fDNUNowSusXBmOVg3nc4en5tbZAi?=
+ =?us-ascii?Q?r9+a6MJTti/HQLDuOBVo+DLd+ovF4Y/LX95ZfScHRef3VvFaDWP4h+s5nt2F?=
+ =?us-ascii?Q?ITZKOWg73FvOrvpwVaXjLM3o488CUGy3AqYjjIXrU8bqDLUWhKUTC/ausM04?=
+ =?us-ascii?Q?/mwkSUPzZpldpj56fO9G3JFBNvlRNSiv+T3pXmZTAEb8p1GA83ZX1KMJ8HQS?=
+ =?us-ascii?Q?ayt/YXCn7DygkGHEG3Eb8gBKqHTGU3jl05K+5K2HeyldFf8nXwkmogAbY0jE?=
+ =?us-ascii?Q?TlCfRl3kmj+BaLHzPGaGtqR1SrSasCTKEknGNBIoTCgWSIqeroQeK93bQ3ci?=
+ =?us-ascii?Q?YJKfVMEchKdsMXEM/zvx5MRjdKxZe3uLRsMRyhoDy8sMjCziBguiI2kCWVxf?=
+ =?us-ascii?Q?I8p4QFEv1GWXL4kwlJ3TX07XV9YrLdHv0hfYe5NbVn/Y5kLrOaSkZGbXkcLW?=
+ =?us-ascii?Q?PzYF3aLcsDnsQo0rSCOGiujPtNPoQd4tw/09SvfDuT45rWlQvkOBOz/6ZqUp?=
+ =?us-ascii?Q?oFn4zb3HArtYxNcah678lHkdwIjVJ6ic8SNYEemjAHqvLFQsIcumrq/oWPgp?=
+ =?us-ascii?Q?CgeS1zZi7dIN+2dkxkNNbYO704WWD4om75t0G1IQXkK+6T7rWF6tlpVUl2ya?=
+ =?us-ascii?Q?znMOg4wJLhDhO88uovfbjzXY7oF7DkmYCr5D/kbx77I58nueCYLdt0JBEoYU?=
+ =?us-ascii?Q?6eaLqE8PnKeiBaneiF/iTUfehnUPdiqkTMpw5W7jrNuqt+QNSepZ3jNes9Ea?=
+ =?us-ascii?Q?QQAsX+ZClAJibby2aGq7yaBvbTrogC0K9VeMSajcstMSqjCBPfNVrPw1fYGd?=
+ =?us-ascii?Q?MWz1OOmMtB6wF3m6c3vkf3jofT9+asdk/W92yZDAtPFI4qJxsT0gqr/ZJP71?=
+ =?us-ascii?Q?rZXSO/WFy+slmlPTaIGZI1YgOFKe32Xamrz/d+oJQL5eqg6JpSR0Zmm9zoZB?=
+ =?us-ascii?Q?WCPONQHgxofsLoy5eeojxr4ieB5i4FXDyP7pMqO4YoE2i9iS+VFdpdpqxnF4?=
+ =?us-ascii?Q?vT/rqXoi2DIV6fnCkm5IL5LcfTufYXC2qun5omFecV2xo9/CYTw2YskeRT+l?=
+ =?us-ascii?Q?yVErXwZ/Kz4xOhfJYZJ2M4TCXIY73MGpBPsSC1kaqbb0rlEdB5X02oyyCb/N?=
+ =?us-ascii?Q?Ngc2/iutwfFzjlN96UUHGpfSqXwI6qFzqG5DNxTida9U9A04gBjCa8oq86oL?=
+ =?us-ascii?Q?wBJv3g/NqLLTptU+zmJLcc5AA5zbxZW7KXA/hpL+7aOSxZnzucM6aO6niIu4?=
+ =?us-ascii?Q?Bqf9eKAdrZMPR/KFHnj+vYgIdzWY23NTSyGDvlZ9w6Ielo4wvb05cE/ER8Ba?=
+ =?us-ascii?Q?iJV99FG6eqEpjG0WCfhGhtzbhph9UuxcxqR2Z1W4?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8c8230df-bf3d-4dfe-72e2-08da5e7498c6
+X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jul 2022 10:53:30.2454
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Rgf2Nuf4PqWKNfiD6LAAZsstYbx3XaL0FMqb9XCcVDjs0Rq88Jqs+8h7eZOWvxt3icf+/uFlcY3X9pXwZE9XYw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4189
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 04, 2022 at 10:22:24AM +0100, Kajetan Puchalski wrote:
-> On Sat, Jul 02, 2022 at 10:56:51PM +0200, Florian Westphal wrote:
-> > > That would make sense, from further experiments I ran it somehow seems
-> > > to be related to the number of workers being spawned by stress-ng along
-> > > with the CPUs/cores involved.
+On Mon, Jul 04, 2022 at 04:36:12PM +0200, Hans S wrote:
+> On Mon, Jul 4, 2022 at 1:00 PM Ido Schimmel <idosch@nvidia.com> wrote:
+> >
+> > On Mon, Jul 04, 2022 at 09:54:31AM +0200, Hans S wrote:
+> > > >
+> > > > IIUC, with mv88e6xxx, when the port is locked and learning is disabled:
+> > > >
+> > > > 1. You do not get miss violation interrupts. Meaning, you can't report
+> > > > 'locked' entries to the bridge driver.
+> > > >
+> > > > 2. You do not get aged-out interrupts. Meaning, you can't tell the
+> > > > bridge driver to remove aged-out entries.
+> > > >
+> > > > My point is that this should happen regardless if learning is enabled on
+> > > > the bridge driver or not. Just make sure it is always enabled in
+> > > > mv88e6xxx when the port is locked. Learning in the bridge driver itself
+> > > > can be off, thereby eliminating the need to disable learning from
+> > > > link-local packets.
 > > >
-> > > For instance, running the test with <=25 workers (--udp-flood 25 etc.)
-> > > results in the test running fine for at least 15 minutes.
-> > 
-> > Ok.  I will let it run for longer on the machines I have access to.
-> > 
-> > In mean time, you could test attached patch, its simple s/refcount_/atomic_/
-> > in nf_conntrack.
-> > 
-> > If mainline (patch vs. HEAD 69cb6c6556ad89620547318439) crashes for you
-> > but works with attached patch someone who understands aarch64 memory ordering
-> > would have to look more closely at refcount_XXX functions to see where they
-> > might differ from atomic_ ones.
+> > > So you suggest that we enable learning in the driver when locking the
+> > > port and document that learning should be turned off from user space
+> > > before locking the port?
+> >
+> > Yes. Ideally, the bridge driver would reject configurations where
+> > learning is enabled and the port is locked, but it might be too late for
+> > that. It would be good to add a note in the man page that learning
+> > should be disabled when the port is locked to avoid "unlocking" the port
+> > by accident.
 > 
-> I can confirm that the patch seems to solve the issue.
-> With it applied on top of the 5.19-rc5 tag the test runs fine for at
-> least 15 minutes which was not the case before so it looks like it is
-> that aarch64 memory ordering problem.
+> Well you cannot unlock the port by either enabling or disabling
+> learning after the port is locked, but Mac-Auth and refreshing might
+> not work. I clarify just so that no-one gets confused.
 
-I'm CCing some people who should be able to help with aarch64 memory
-ordering, maybe they could take a look.
+I was referring to the fact that if learning is enabled, a host can
+populate the FDB with whatever MAC it wants by crafting a link-local
+packet with this MAC as SA. Subsequent packets with this MAC as SA will
+pass the locking check in the bridge driver.
 
-(re-sending due to a typo in CC, sorry for duplicate emails!)
+> I can do so that the driver returns -EINVAL if learning is on when
+> locking the port, but that would of course only be for mv88e6xxx...
 
-> 
-> > 
-> > If it still crashes, please try below hunk in addition, although I don't see
-> > how it would make a difference.
-> > 
-> > This is the one spot where the original conversion replaced atomic_inc()
-> > with refcount_set(), this is on allocation, refcount is expected to be 0 so
-> > refcount_inc() triggers a warning hinting at a use-after free.
-> > 
-> > diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
-> > --- a/net/netfilter/nf_conntrack_core.c
-> > +++ b/net/netfilter/nf_conntrack_core.c
-> > @@ -1776,7 +1776,7 @@ init_conntrack(struct net *net, struct nf_conn *tmpl,
-> >                 __nf_ct_try_assign_helper(ct, tmpl, GFP_ATOMIC);
-> >  
-> >         /* Now it is going to be associated with an sk_buff, set refcount to 1. */
-> > -       atomic_set(&ct->ct_general.use, 1);
-> > +       atomic_inc(&ct->ct_general.use);
-> >  
-> >         if (exp) {
-> >                 if (exp->expectfn)
-> 
-> > From 4234018dff486bdc30f4fe4625c8da1a8e30c2f6 Mon Sep 17 00:00:00 2001
-> > From: Florian Westphal <fw@strlen.de>
-> > Date: Sat, 2 Jul 2022 22:42:57 +0200
-> > Subject: [PATCH 1/1] netfilter: conntrack: revert to atomic_t api
-> > 
-> > Just for testing.
-> > ---
-> >  include/linux/netfilter/nf_conntrack_common.h |  6 ++---
-> >  include/net/netfilter/nf_conntrack.h          |  2 +-
-> >  net/netfilter/nf_conntrack_core.c             | 24 +++++++++----------
-> >  net/netfilter/nf_conntrack_expect.c           |  2 +-
-> >  net/netfilter/nf_conntrack_netlink.c          |  6 ++---
-> >  net/netfilter/nf_conntrack_standalone.c       |  4 ++--
-> >  net/netfilter/nf_flow_table_core.c            |  2 +-
-> >  net/netfilter/nft_ct.c                        |  4 ++--
-> >  net/netfilter/xt_CT.c                         |  2 +-
-> >  9 files changed, 26 insertions(+), 26 deletions(-)
-> > 
-> > diff --git a/include/linux/netfilter/nf_conntrack_common.h b/include/linux/netfilter/nf_conntrack_common.h
-> > index 2770db2fa080..48a78944182d 100644
-> > --- a/include/linux/netfilter/nf_conntrack_common.h
-> > +++ b/include/linux/netfilter/nf_conntrack_common.h
-> > @@ -25,7 +25,7 @@ struct ip_conntrack_stat {
-> >  #define NFCT_PTRMASK	~(NFCT_INFOMASK)
-> >  
-> >  struct nf_conntrack {
-> > -	refcount_t use;
-> > +	atomic_t use;
-> >  };
-> >  
-> >  void nf_conntrack_destroy(struct nf_conntrack *nfct);
-> > @@ -33,13 +33,13 @@ void nf_conntrack_destroy(struct nf_conntrack *nfct);
-> >  /* like nf_ct_put, but without module dependency on nf_conntrack */
-> >  static inline void nf_conntrack_put(struct nf_conntrack *nfct)
-> >  {
-> > -	if (nfct && refcount_dec_and_test(&nfct->use))
-> > +	if (nfct && atomic_dec_and_test(&nfct->use))
-> >  		nf_conntrack_destroy(nfct);
-> >  }
-> >  static inline void nf_conntrack_get(struct nf_conntrack *nfct)
-> >  {
-> >  	if (nfct)
-> > -		refcount_inc(&nfct->use);
-> > +		atomic_inc(&nfct->use);
-> >  }
-> >  
-> >  #endif /* _NF_CONNTRACK_COMMON_H */
-> > diff --git a/include/net/netfilter/nf_conntrack.h b/include/net/netfilter/nf_conntrack.h
-> > index a32be8aa7ed2..9fab0c8835bb 100644
-> > --- a/include/net/netfilter/nf_conntrack.h
-> > +++ b/include/net/netfilter/nf_conntrack.h
-> > @@ -180,7 +180,7 @@ void nf_ct_destroy(struct nf_conntrack *nfct);
-> >  /* decrement reference count on a conntrack */
-> >  static inline void nf_ct_put(struct nf_conn *ct)
-> >  {
-> > -	if (ct && refcount_dec_and_test(&ct->ct_general.use))
-> > +	if (ct && atomic_dec_and_test(&ct->ct_general.use))
-> >  		nf_ct_destroy(&ct->ct_general);
-> >  }
-> >  
-> > diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
-> > index 082a2fd8d85b..4469e49d78a7 100644
-> > --- a/net/netfilter/nf_conntrack_core.c
-> > +++ b/net/netfilter/nf_conntrack_core.c
-> > @@ -554,7 +554,7 @@ struct nf_conn *nf_ct_tmpl_alloc(struct net *net,
-> >  	tmpl->status = IPS_TEMPLATE;
-> >  	write_pnet(&tmpl->ct_net, net);
-> >  	nf_ct_zone_add(tmpl, zone);
-> > -	refcount_set(&tmpl->ct_general.use, 1);
-> > +	atomic_set(&tmpl->ct_general.use, 1);
-> >  
-> >  	return tmpl;
-> >  }
-> > @@ -586,7 +586,7 @@ void nf_ct_destroy(struct nf_conntrack *nfct)
-> >  	struct nf_conn *ct = (struct nf_conn *)nfct;
-> >  
-> >  	pr_debug("%s(%p)\n", __func__, ct);
-> > -	WARN_ON(refcount_read(&nfct->use) != 0);
-> > +	WARN_ON(atomic_read(&nfct->use) != 0);
-> >  
-> >  	if (unlikely(nf_ct_is_template(ct))) {
-> >  		nf_ct_tmpl_free(ct);
-> > @@ -726,7 +726,7 @@ nf_ct_match(const struct nf_conn *ct1, const struct nf_conn *ct2)
-> >  /* caller must hold rcu readlock and none of the nf_conntrack_locks */
-> >  static void nf_ct_gc_expired(struct nf_conn *ct)
-> >  {
-> > -	if (!refcount_inc_not_zero(&ct->ct_general.use))
-> > +	if (!atomic_inc_not_zero(&ct->ct_general.use))
-> >  		return;
-> >  
-> >  	if (nf_ct_should_gc(ct))
-> > @@ -794,7 +794,7 @@ __nf_conntrack_find_get(struct net *net, const struct nf_conntrack_zone *zone,
-> >  		 * in, try to obtain a reference and re-check tuple
-> >  		 */
-> >  		ct = nf_ct_tuplehash_to_ctrack(h);
-> > -		if (likely(refcount_inc_not_zero(&ct->ct_general.use))) {
-> > +		if (likely(atomic_inc_not_zero(&ct->ct_general.use))) {
-> >  			if (likely(nf_ct_key_equal(h, tuple, zone, net)))
-> >  				goto found;
-> >  
-> > @@ -923,7 +923,7 @@ nf_conntrack_hash_check_insert(struct nf_conn *ct)
-> >  
-> >  	smp_wmb();
-> >  	/* The caller holds a reference to this object */
-> > -	refcount_set(&ct->ct_general.use, 2);
-> > +	atomic_set(&ct->ct_general.use, 2);
-> >  	__nf_conntrack_hash_insert(ct, hash, reply_hash);
-> >  	nf_conntrack_double_unlock(hash, reply_hash);
-> >  	NF_CT_STAT_INC(net, insert);
-> > @@ -981,7 +981,7 @@ static void __nf_conntrack_insert_prepare(struct nf_conn *ct)
-> >  {
-> >  	struct nf_conn_tstamp *tstamp;
-> >  
-> > -	refcount_inc(&ct->ct_general.use);
-> > +	atomic_inc(&ct->ct_general.use);
-> >  
-> >  	/* set conntrack timestamp, if enabled. */
-> >  	tstamp = nf_conn_tstamp_find(ct);
-> > @@ -1384,7 +1384,7 @@ static unsigned int early_drop_list(struct net *net,
-> >  		    nf_ct_is_dying(tmp))
-> >  			continue;
-> >  
-> > -		if (!refcount_inc_not_zero(&tmp->ct_general.use))
-> > +		if (!atomic_inc_not_zero(&tmp->ct_general.use))
-> >  			continue;
-> >  
-> >  		/* kill only if still in same netns -- might have moved due to
-> > @@ -1533,7 +1533,7 @@ static void gc_worker(struct work_struct *work)
-> >  				continue;
-> >  
-> >  			/* need to take reference to avoid possible races */
-> > -			if (!refcount_inc_not_zero(&tmp->ct_general.use))
-> > +			if (!atomic_inc_not_zero(&tmp->ct_general.use))
-> >  				continue;
-> >  
-> >  			if (gc_worker_skip_ct(tmp)) {
-> > @@ -1640,7 +1640,7 @@ __nf_conntrack_alloc(struct net *net,
-> >  	/* Because we use RCU lookups, we set ct_general.use to zero before
-> >  	 * this is inserted in any list.
-> >  	 */
-> > -	refcount_set(&ct->ct_general.use, 0);
-> > +	atomic_set(&ct->ct_general.use, 0);
-> >  	return ct;
-> >  out:
-> >  	atomic_dec(&cnet->count);
-> > @@ -1665,7 +1665,7 @@ void nf_conntrack_free(struct nf_conn *ct)
-> >  	/* A freed object has refcnt == 0, that's
-> >  	 * the golden rule for SLAB_TYPESAFE_BY_RCU
-> >  	 */
-> > -	WARN_ON(refcount_read(&ct->ct_general.use) != 0);
-> > +	WARN_ON(atomic_read(&ct->ct_general.use) != 0);
-> >  
-> >  	if (ct->status & IPS_SRC_NAT_DONE) {
-> >  		const struct nf_nat_hook *nat_hook;
-> > @@ -1776,7 +1776,7 @@ init_conntrack(struct net *net, struct nf_conn *tmpl,
-> >  		__nf_ct_try_assign_helper(ct, tmpl, GFP_ATOMIC);
-> >  
-> >  	/* Now it is going to be associated with an sk_buff, set refcount to 1. */
-> > -	refcount_set(&ct->ct_general.use, 1);
-> > +	atomic_set(&ct->ct_general.use, 1);
-> >  
-> >  	if (exp) {
-> >  		if (exp->expectfn)
-> > @@ -2390,7 +2390,7 @@ get_next_corpse(int (*iter)(struct nf_conn *i, void *data),
-> >  
-> >  	return NULL;
-> >  found:
-> > -	refcount_inc(&ct->ct_general.use);
-> > +	atomic_inc(&ct->ct_general.use);
-> >  	spin_unlock(lockp);
-> >  	local_bh_enable();
-> >  	return ct;
-> > diff --git a/net/netfilter/nf_conntrack_expect.c b/net/netfilter/nf_conntrack_expect.c
-> > index 96948e98ec53..84cb05eae410 100644
-> > --- a/net/netfilter/nf_conntrack_expect.c
-> > +++ b/net/netfilter/nf_conntrack_expect.c
-> > @@ -208,7 +208,7 @@ nf_ct_find_expectation(struct net *net,
-> >  	 * can be sure the ct cannot disappear underneath.
-> >  	 */
-> >  	if (unlikely(nf_ct_is_dying(exp->master) ||
-> > -		     !refcount_inc_not_zero(&exp->master->ct_general.use)))
-> > +		     !atomic_inc_not_zero(&exp->master->ct_general.use)))
-> >  		return NULL;
-> >  
-> >  	if (exp->flags & NF_CT_EXPECT_PERMANENT) {
-> > diff --git a/net/netfilter/nf_conntrack_netlink.c b/net/netfilter/nf_conntrack_netlink.c
-> > index 722af5e309ba..d5de0e580e6c 100644
-> > --- a/net/netfilter/nf_conntrack_netlink.c
-> > +++ b/net/netfilter/nf_conntrack_netlink.c
-> > @@ -514,7 +514,7 @@ static int ctnetlink_dump_id(struct sk_buff *skb, const struct nf_conn *ct)
-> >  
-> >  static int ctnetlink_dump_use(struct sk_buff *skb, const struct nf_conn *ct)
-> >  {
-> > -	if (nla_put_be32(skb, CTA_USE, htonl(refcount_read(&ct->ct_general.use))))
-> > +	if (nla_put_be32(skb, CTA_USE, htonl(atomic_read(&ct->ct_general.use))))
-> >  		goto nla_put_failure;
-> >  	return 0;
-> >  
-> > @@ -1204,7 +1204,7 @@ ctnetlink_dump_table(struct sk_buff *skb, struct netlink_callback *cb)
-> >  			ct = nf_ct_tuplehash_to_ctrack(h);
-> >  			if (nf_ct_is_expired(ct)) {
-> >  				if (i < ARRAY_SIZE(nf_ct_evict) &&
-> > -				    refcount_inc_not_zero(&ct->ct_general.use))
-> > +				    atomic_inc_not_zero(&ct->ct_general.use))
-> >  					nf_ct_evict[i++] = ct;
-> >  				continue;
-> >  			}
-> > @@ -1747,7 +1747,7 @@ static int ctnetlink_dump_one_entry(struct sk_buff *skb,
-> >  				  NFNL_MSG_TYPE(cb->nlh->nlmsg_type),
-> >  				  ct, dying, 0);
-> >  	if (res < 0) {
-> > -		if (!refcount_inc_not_zero(&ct->ct_general.use))
-> > +		if (!atomic_inc_not_zero(&ct->ct_general.use))
-> >  			return 0;
-> >  
-> >  		ctx->last = ct;
-> > diff --git a/net/netfilter/nf_conntrack_standalone.c b/net/netfilter/nf_conntrack_standalone.c
-> > index 6ad7bbc90d38..badd3f219533 100644
-> > --- a/net/netfilter/nf_conntrack_standalone.c
-> > +++ b/net/netfilter/nf_conntrack_standalone.c
-> > @@ -303,7 +303,7 @@ static int ct_seq_show(struct seq_file *s, void *v)
-> >  	int ret = 0;
-> >  
-> >  	WARN_ON(!ct);
-> > -	if (unlikely(!refcount_inc_not_zero(&ct->ct_general.use)))
-> > +	if (unlikely(!atomic_inc_not_zero(&ct->ct_general.use)))
-> >  		return 0;
-> >  
-> >  	if (nf_ct_should_gc(ct)) {
-> > @@ -370,7 +370,7 @@ static int ct_seq_show(struct seq_file *s, void *v)
-> >  	ct_show_zone(s, ct, NF_CT_DEFAULT_ZONE_DIR);
-> >  	ct_show_delta_time(s, ct);
-> >  
-> > -	seq_printf(s, "use=%u\n", refcount_read(&ct->ct_general.use));
-> > +	seq_printf(s, "use=%u\n", atomic_read(&ct->ct_general.use));
-> >  
-> >  	if (seq_has_overflowed(s))
-> >  		goto release;
-> > diff --git a/net/netfilter/nf_flow_table_core.c b/net/netfilter/nf_flow_table_core.c
-> > index f2def06d1070..8b3f91a60ba2 100644
-> > --- a/net/netfilter/nf_flow_table_core.c
-> > +++ b/net/netfilter/nf_flow_table_core.c
-> > @@ -54,7 +54,7 @@ struct flow_offload *flow_offload_alloc(struct nf_conn *ct)
-> >  	struct flow_offload *flow;
-> >  
-> >  	if (unlikely(nf_ct_is_dying(ct) ||
-> > -	    !refcount_inc_not_zero(&ct->ct_general.use)))
-> > +	    !atomic_inc_not_zero(&ct->ct_general.use)))
-> >  		return NULL;
-> >  
-> >  	flow = kzalloc(sizeof(*flow), GFP_ATOMIC);
-> > diff --git a/net/netfilter/nft_ct.c b/net/netfilter/nft_ct.c
-> > index d8e1614918a1..1b6ead61a8f1 100644
-> > --- a/net/netfilter/nft_ct.c
-> > +++ b/net/netfilter/nft_ct.c
-> > @@ -260,8 +260,8 @@ static void nft_ct_set_zone_eval(const struct nft_expr *expr,
-> >  
-> >  	ct = this_cpu_read(nft_ct_pcpu_template);
-> >  
-> > -	if (likely(refcount_read(&ct->ct_general.use) == 1)) {
-> > -		refcount_inc(&ct->ct_general.use);
-> > +	if (likely(atomic_read(&ct->ct_general.use) == 1)) {
-> > +		atomic_inc(&ct->ct_general.use);
-> >  		nf_ct_zone_add(ct, &zone);
-> >  	} else {
-> >  		/* previous skb got queued to userspace, allocate temporary
-> > diff --git a/net/netfilter/xt_CT.c b/net/netfilter/xt_CT.c
-> > index 267757b0392a..cf2f8c1d4fb5 100644
-> > --- a/net/netfilter/xt_CT.c
-> > +++ b/net/netfilter/xt_CT.c
-> > @@ -24,7 +24,7 @@ static inline int xt_ct_target(struct sk_buff *skb, struct nf_conn *ct)
-> >  		return XT_CONTINUE;
-> >  
-> >  	if (ct) {
-> > -		refcount_inc(&ct->ct_general.use);
-> > +		atomic_inc(&ct->ct_general.use);
-> >  		nf_ct_set(skb, ct, IP_CT_NEW);
-> >  	} else {
-> >  		nf_ct_set(skb, ct, IP_CT_UNTRACKED);
-> > -- 
-> > 2.35.1
-> > 
-> 
+Working around this issue in the mv88e6xxx driver is the correct thing
+to do, IMO. We avoid leaking this implementation detail (i.e., forcing
+learning to be enabled) to user space, which in turn helps us avoid
+working around issues created by it (this patch, for example).
