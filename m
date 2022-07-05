@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 927A25671F0
-	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 17:04:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F44A5671D2
+	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 17:04:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230182AbiGEPCV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jul 2022 11:02:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52970 "EHLO
+        id S232554AbiGEPCR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jul 2022 11:02:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232161AbiGEPB7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 11:01:59 -0400
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C968C1582D;
-        Tue,  5 Jul 2022 08:01:57 -0700 (PDT)
-Received: by mail-wm1-x32d.google.com with SMTP id n185so7199349wmn.4;
-        Tue, 05 Jul 2022 08:01:57 -0700 (PDT)
+        with ESMTP id S231337AbiGEPCE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 11:02:04 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 010AF15A2A;
+        Tue,  5 Jul 2022 08:01:58 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id q9so17960415wrd.8;
+        Tue, 05 Jul 2022 08:01:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=444AasoIjcG70+nERpDu52ztpjjLs2LzhKg2x6YMB6U=;
-        b=f3gYRqX5nVoGRNzWh42VpCUHEYoASYcoraNM09PKq6uUpWC9LdJswEjuKG53v22GKc
-         0MD49/dzwvF+CAOQsekNj1dcL5MDACaemPMHzz6D5rgPdwnRFo2wjIQiM66uCzwvjcGh
-         HfgLyfjcABeWpJxSxMD3bil1SaCjh3KOg+l5iXvTww88RivKqTMjCQpIovk6PUOYDf2x
-         8PV5LdZrCobG59M7poitj8tsmRrwzkcSsA9/qPHLKe/XxB1tCB6shw5XIH1V34NEx0cT
-         tZOhON6kHJKwEsCTwHU0hFzC4YzNfcT+MgGGbneke+PguecXnA0SSAhV0oJsxlyIhlBT
-         2Y5A==
+        bh=p9WO85kcK3aAv/etCUIOEoECnFGVfOx8cNxht2BIvVM=;
+        b=CI7e5TdX+dYyE/mbEe4ytqljwSIM3/33pze+KIqSLLhgaZvPFeVzg5UH/mwNeqxgJI
+         sRzBNcUGKQIyjOs6ru70yOBjRwemZHuXVlAvBHEjGGzQ9xXT9LHRJBgWGXUf0mBNAmPM
+         xCNZtTZpFaM+TgPbaIBteAnum7EBcGhJKdD0ALmV5ZKaF2Rww7eBf/tf5+NyFJ2fUwi1
+         7E5KTjKXvEVTWIfNNMywdK0kPXqHnLryp3g0y/jy9dkvGjb/LPJgEHzbjTEIXyyAkyWJ
+         0NUOX9M1w/R94/wGsu3wPCyRiquBPwhE+kmuAJfFMT99IG5881yxy9fhU0NthOG3DScw
+         EfJw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=444AasoIjcG70+nERpDu52ztpjjLs2LzhKg2x6YMB6U=;
-        b=4b7/APf9reJsiclwiaTDg0KAvgHz4Rw8/veBtQF13yXlutpOINmTIHGDxaqEmwHlHU
-         mwM329UL+zpJVLTOvrUOHikCo5jZGzMfw/QLpXyS7rdRf4QZNEcocskByMpymjfx5+GU
-         y234opE0TpdiluYbbAYmExMMKSm89KnKWjt3fpZTZRxtdq+ZMqwE352CEcgYlZPnd1fW
-         sbRX57ThgoSwfAQ6ODUwIvOA1kLdUyna8v73xLt7KOuPUgyCndmPSXd6aJ/M/MY2KRSS
-         6flCtRLji36s6XZC5fm03om4wKp5lNPkeAR1NiZ10pvUvZuQ3Ing/xwBrVvsAhXIdUkL
-         wGEg==
-X-Gm-Message-State: AJIora+yO/H6xtd7zNoxptfBPzoYyQR7t3rDaTWcha/2MVSIJE7yiCKY
-        z3aZKwb+vffQESWZJlB4cFcE9AOBPex9Qg==
-X-Google-Smtp-Source: AGRyM1tl+xxus7ISOtrStGl5Jb6Id/jUsAT5Gel6Db0EkOREXG4KiRAHmpLu+nTNrx6XF+EnDRmDqw==
-X-Received: by 2002:a05:600c:3ca2:b0:3a0:1825:2e6b with SMTP id bg34-20020a05600c3ca200b003a018252e6bmr38704300wmb.132.1657033315746;
-        Tue, 05 Jul 2022 08:01:55 -0700 (PDT)
+        bh=p9WO85kcK3aAv/etCUIOEoECnFGVfOx8cNxht2BIvVM=;
+        b=Siu4RXrDzFQazELvN7tdQ1j2s2Y8nctMORxUpU/CUdcVSHjUF/3UABD68HIc95WAnF
+         //bq8y2od0Icaa0yygfFVkwHumkzn+J+I8o1ozO9CHj8gmkkJKt/5NZXWvg4VUzQLbR7
+         dAakVJg+ywVIr3nkOolrO8YIVsGHwwfqEFHTCEF7yfNhiLoIsp1gb8DDNTAS0pGa/Zai
+         sKMvtEKM43BI4zQvBucxwuHFZaGmFpmpezQbEshO6m5BZBV+C51zv0E8964TRNi8BNoj
+         pPW3/BjeUtCGbC+bSX4y4qGhCs82fpSEWjH5Dc1bP7nGOKJovvyOAhV4LivvqOMq69K6
+         tTlw==
+X-Gm-Message-State: AJIora+bIBZGepcxL0EzMOQy8n4+7qzwdJs9OD6kPME9XwkGq0r9fcDM
+        WKRR1B8+COSnPkGsBHXAWZ/bXoll+vq3Xg==
+X-Google-Smtp-Source: AGRyM1tRZ7p7U5wZ/XqQmsWYqPvARkMaVbzOGMkv0lpdmFP+8f89/DJaH4m3Um2Ip3lP0MxP5GvAaw==
+X-Received: by 2002:a05:6000:1f0b:b0:21d:6dae:7d04 with SMTP id bv11-20020a0560001f0b00b0021d6dae7d04mr8271951wrb.414.1657033316935;
+        Tue, 05 Jul 2022 08:01:56 -0700 (PDT)
 Received: from 127.0.0.1localhost (188.28.125.106.threembb.co.uk. [188.28.125.106])
-        by smtp.gmail.com with ESMTPSA id k27-20020adfd23b000000b0021d728d687asm2518200wrh.36.2022.07.05.08.01.54
+        by smtp.gmail.com with ESMTPSA id k27-20020adfd23b000000b0021d728d687asm2518200wrh.36.2022.07.05.08.01.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Jul 2022 08:01:55 -0700 (PDT)
+        Tue, 05 Jul 2022 08:01:56 -0700 (PDT)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     io-uring@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
@@ -56,9 +56,9 @@ Cc:     "David S . Miller" <davem@davemloft.net>,
         Willem de Bruijn <willemb@google.com>,
         Jens Axboe <axboe@kernel.dk>, David Ahern <dsahern@kernel.org>,
         kernel-team@fb.com, Pavel Begunkov <asml.silence@gmail.com>
-Subject: [PATCH net-next v3 07/25] net: don't track pfmemalloc for managed frags
-Date:   Tue,  5 Jul 2022 16:01:07 +0100
-Message-Id: <2f699cf7f534df23ed1fe51f88bf832706f215f2.1656318994.git.asml.silence@gmail.com>
+Subject: [PATCH net-next v3 08/25] skbuff: don't mix ubuf_info of different types
+Date:   Tue,  5 Jul 2022 16:01:08 +0100
+Message-Id: <8499c042b59474f9969a5a3d3417a0abc07350ae.1656318994.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1656318994.git.asml.silence@gmail.com>
 References: <cover.1656318994.git.asml.silence@gmail.com>
@@ -74,91 +74,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Managed pages contain pinned userspace pages and controlled by upper
-layers, there is no need in tracking skb->pfmemalloc for them.
+We should not append MSG_ZEROCOPY requests to skbuff with non
+MSG_ZEROCOPY ubuf_info, they are not compatible.
 
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 ---
- include/linux/skbuff.h | 28 +++++++++++++++++-----------
- net/core/datagram.c    |  7 +++++--
- 2 files changed, 22 insertions(+), 13 deletions(-)
+ net/core/skbuff.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 712168c21736..2d5badd4b9ff 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -2549,6 +2549,22 @@ static inline unsigned int skb_pagelen(const struct sk_buff *skb)
- 	return skb_headlen(skb) + __skb_pagelen(skb);
- }
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 71870def129c..7e6fcb3cd817 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -1222,6 +1222,10 @@ struct ubuf_info *msg_zerocopy_realloc(struct sock *sk, size_t size,
+ 		const u32 byte_limit = 1 << 19;		/* limit to a few TSO */
+ 		u32 bytelen, next;
  
-+static inline void __skb_fill_page_desc_noacc(struct skb_shared_info *shinfo,
-+					      int i, struct page *page,
-+					      int off, int size)
-+{
-+	skb_frag_t *frag = &shinfo->frags[i];
++		/* there might be non MSG_ZEROCOPY users */
++		if (uarg->callback != msg_zerocopy_callback)
++			return NULL;
 +
-+	/*
-+	 * Propagate page pfmemalloc to the skb if we can. The problem is
-+	 * that not all callers have unique ownership of the page but rely
-+	 * on page_is_pfmemalloc doing the right thing(tm).
-+	 */
-+	frag->bv_page		  = page;
-+	frag->bv_offset		  = off;
-+	skb_frag_size_set(frag, size);
-+}
-+
- /**
-  * __skb_fill_page_desc - initialise a paged fragment in an skb
-  * @skb: buffer containing fragment to be initialised
-@@ -2565,17 +2581,7 @@ static inline unsigned int skb_pagelen(const struct sk_buff *skb)
- static inline void __skb_fill_page_desc(struct sk_buff *skb, int i,
- 					struct page *page, int off, int size)
- {
--	skb_frag_t *frag = &skb_shinfo(skb)->frags[i];
--
--	/*
--	 * Propagate page pfmemalloc to the skb if we can. The problem is
--	 * that not all callers have unique ownership of the page but rely
--	 * on page_is_pfmemalloc doing the right thing(tm).
--	 */
--	frag->bv_page		  = page;
--	frag->bv_offset		  = off;
--	skb_frag_size_set(frag, size);
--
-+	__skb_fill_page_desc_noacc(skb_shinfo(skb), i, page, off, size);
- 	page = compound_head(page);
- 	if (page_is_pfmemalloc(page))
- 		skb->pfmemalloc	= true;
-diff --git a/net/core/datagram.c b/net/core/datagram.c
-index a93c05156f56..3c913a6342ad 100644
---- a/net/core/datagram.c
-+++ b/net/core/datagram.c
-@@ -616,7 +616,8 @@ EXPORT_SYMBOL(skb_copy_datagram_from_iter);
- static int __zerocopy_sg_from_bvec(struct sock *sk, struct sk_buff *skb,
- 				   struct iov_iter *from, size_t length)
- {
--	int frag = skb_shinfo(skb)->nr_frags;
-+	struct skb_shared_info *shinfo = skb_shinfo(skb);
-+	int frag = shinfo->nr_frags;
- 	int ret = 0;
- 	struct bvec_iter bi;
- 	ssize_t copied = 0;
-@@ -631,12 +632,14 @@ static int __zerocopy_sg_from_bvec(struct sock *sk, struct sk_buff *skb,
- 
- 		copied += v.bv_len;
- 		truesize += PAGE_ALIGN(v.bv_len + v.bv_offset);
--		skb_fill_page_desc(skb, frag++, v.bv_page, v.bv_offset, v.bv_len);
-+		__skb_fill_page_desc_noacc(shinfo, frag++, v.bv_page,
-+					   v.bv_offset, v.bv_len);
- 		bvec_iter_advance_single(from->bvec, &bi, v.bv_len);
- 	}
- 	if (bi.bi_size)
- 		ret = -EMSGSIZE;
- 
-+	shinfo->nr_frags = frag;
- 	from->bvec += bi.bi_idx;
- 	from->nr_segs -= bi.bi_idx;
- 	from->count = bi.bi_size;
+ 		/* realloc only when socket is locked (TCP, UDP cork),
+ 		 * so uarg->len and sk_zckey access is serialized
+ 		 */
 -- 
 2.36.1
 
