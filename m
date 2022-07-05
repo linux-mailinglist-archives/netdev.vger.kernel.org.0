@@ -2,70 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5854956682E
-	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 12:38:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FD7C56687F
+	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 12:49:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232369AbiGEKi3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jul 2022 06:38:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59500 "EHLO
+        id S231950AbiGEKtz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jul 2022 06:49:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232126AbiGEKhX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 06:37:23 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6179140E2
-        for <netdev@vger.kernel.org>; Tue,  5 Jul 2022 03:37:19 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1o8fuq-0001LC-19; Tue, 05 Jul 2022 12:36:24 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1o8fue-004XxA-J7; Tue, 05 Jul 2022 12:36:16 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1o8fuh-0038F6-8t; Tue, 05 Jul 2022 12:36:15 +0200
-Date:   Tue, 5 Jul 2022 12:36:15 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Jean Delvare <jdelvare@suse.de>
-Cc:     Wolfram Sang <wsa@kernel.org>, Guenter Roeck <groeck@chromium.org>,
-        linux-i2c@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linuxppc-dev@lists.ozlabs.org,
-        openipmi-developer@lists.sourceforge.net,
-        linux-integrity@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-gpio@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, chrome-platform@lists.linux.dev,
-        linux-rpi-kernel@lists.infradead.org, linux-input@vger.kernel.org,
-        linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-leds@vger.kernel.org, linux-media@vger.kernel.org,
-        patches@opensource.cirrus.com, alsa-devel@alsa-project.org,
-        linux-omap@vger.kernel.org, linux-mtd@lists.infradead.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org,
-        acpi4asus-user@lists.sourceforge.net, linux-pm@vger.kernel.org,
-        linux-pwm@vger.kernel.org, linux-rtc@vger.kernel.org,
-        linux-staging@lists.linux.dev, linux-serial@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        linux-watchdog@vger.kernel.org, kasan-dev@googlegroups.com,
-        linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH 6/6] i2c: Make remove callback return void
-Message-ID: <20220705103615.ceeq7rku53x743ps@pengutronix.de>
-References: <20220628140313.74984-1-u.kleine-koenig@pengutronix.de>
- <20220628140313.74984-7-u.kleine-koenig@pengutronix.de>
- <20220705120852.049dc235@endymion.delvare>
+        with ESMTP id S229853AbiGEKtw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 06:49:52 -0400
+Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B6216570;
+        Tue,  5 Jul 2022 03:49:51 -0700 (PDT)
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 264MMtr8032125;
+        Tue, 5 Jul 2022 03:49:39 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=pfpt0220; bh=3T8cVMF9jMNz98b/gbgituSqVWv5rIRFxggjD3KvqFc=;
+ b=UEMcP6LCL8+6L74PIIvTdMMcrODZ2KW7accrIaauWSLbr89yT8e3HN3l13I2SozK4V9O
+ qS+ixxunWPpXbRwTcshAanAdJh1xJ25dzMgzLRQ0z86+MKCoYpbe8DY7tD4hgLaXTLOw
+ 2Vg9kmz5QW03TVN3mbULbhr33JPNUCkgu/vhiRgUjszLYkHaWXBhUM+tsDtKj6PC+vnv
+ S51SNjR3Q3q1xnKopoTy/Gh6TPzX5UgI7g104ynLyrUbH2rNxe93xpkkHp39qOVHi/eG
+ XiBLTdYGtMoiH9z7PPfQ0A1BRFjLQYytExN2R+hSQdbHPVCGxkG0S/a/OMVatekOSAku cw== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3h2nhnrnup-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Tue, 05 Jul 2022 03:49:39 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 5 Jul
+ 2022 03:49:36 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
+ Transport; Tue, 5 Jul 2022 03:49:36 -0700
+Received: from IPBU-BLR-SERVER1.marvell.com (IPBU-BLR-SERVER1.marvell.com [10.28.8.41])
+        by maili.marvell.com (Postfix) with ESMTP id 8C0EF3F7040;
+        Tue,  5 Jul 2022 03:49:34 -0700 (PDT)
+From:   Ratheesh Kannoth <rkannoth@marvell.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <sgoutham@marvell.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        Ratheesh Kannoth <rkannoth@marvell.com>
+Subject: [PATCH 00/12] *** Exact Match Table and Field hash ***
+Date:   Tue, 5 Jul 2022 16:19:11 +0530
+Message-ID: <20220705104923.2113935-1-rkannoth@marvell.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="gut2agzhpaayxotv"
-Content-Disposition: inline
-In-Reply-To: <20220705120852.049dc235@endymion.delvare>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: sO_I6BXDFmwniOps0uX22B_abBkhgECB
+X-Proofpoint-GUID: sO_I6BXDFmwniOps0uX22B_abBkhgECB
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-05_08,2022-06-28_01,2022-06-22_01
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -73,90 +65,127 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+*** Exact match table and Field hash support for CN10KB silicon ***
 
---gut2agzhpaayxotv
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Ratheesh Kannoth (11):
 
-On Tue, Jul 05, 2022 at 12:08:52PM +0200, Jean Delvare wrote:
-> On Tue, 28 Jun 2022 16:03:12 +0200, Uwe Kleine-K=F6nig wrote:
-> > From: Uwe Kleine-K=F6nig <uwe@kleine-koenig.org>
-> >=20
-> > The value returned by an i2c driver's remove function is mostly ignored.
-> > (Only an error message is printed if the value is non-zero that the
-> > error is ignored.)
-> >=20
-> > So change the prototype of the remove function to return no value. This
-> > way driver authors are not tempted to assume that passing an error to
-> > the upper layer is a good idea. All drivers are adapted accordingly.
-> > There is no intended change of behaviour, all callbacks were prepared to
-> > return 0 before.
-> >=20
-> > Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
-> > ---
->=20
-> That's a huge change for a relatively small benefit, but if this is
-> approved by the I2C core maintainer then fine with me. For:
+These patch series enables exact match table in CN10KB silicon. Legacy
+silicon used NPC mcam to do packet fields/channel matching for NPC rules.
+NPC mcam resources exahausted as customer use case increased.
+Supporting many DMAC filter becomes a challenge, as RPM based filter
+count is less. Exact match table has 4way 2K entry table and a 32 entry
+fully associative cam table. Second table is to handle hash
+table collision overflows in 4way 2K entry table. Enabling exact match table
+results in KEX key to be appended with Hit/Miss status. This can be used
+to match in NPC mcam for a more generic rule and drop those packets than
+having DMAC drop rules for each DMAC entry in NPC mcam.
 
-Agreed, it's huge. The benefit isn't really measureable, the motivation
-is to improve the situation for driver authors who with the change
-cannot make wrong assumptions about what to return in .remove(). During
-the preparation this uncovered a few bugs. See for example
-bbc126ae381cf0a27822c1f822d0aeed74cc40d9.
+  octeontx2-af: Exact match support
+  octeontx2-af: Exact match scan from kex profile
+  octeontx2-af: devlink configuration support
+  octeontx2-af: FLR handler for exact match table.
+  octeontx2-af: Drop rules for NPC MCAM
+  octeontx2-af: Debugsfs support for exact match.
+  octeontx2: Modify mbox request and response structures
+  octeontx2-af: Wrapper functions for mac addr add/del/update/reset
+  octeontx2-af: Invoke exact match functions if supported
+  octeontx2-pf: Add support for exact match table.
+  octeontx2-af: Enable Exact match flag in kex profile
 
-> >  drivers/hwmon/adc128d818.c                                | 4 +---
-> >  drivers/hwmon/adt7470.c                                   | 3 +--
-> >  drivers/hwmon/asb100.c                                    | 6 ++----
-> >  drivers/hwmon/asc7621.c                                   | 4 +---
-> >  drivers/hwmon/dme1737.c                                   | 4 +---
-> >  drivers/hwmon/f75375s.c                                   | 5 ++---
-> >  drivers/hwmon/fschmd.c                                    | 6 ++----
-> >  drivers/hwmon/ftsteutates.c                               | 3 +--
-> >  drivers/hwmon/ina209.c                                    | 4 +---
-> >  drivers/hwmon/ina3221.c                                   | 4 +---
-> >  drivers/hwmon/jc42.c                                      | 3 +--
-> >  drivers/hwmon/mcp3021.c                                   | 4 +---
-> >  drivers/hwmon/occ/p8_i2c.c                                | 4 +---
-> >  drivers/hwmon/pcf8591.c                                   | 3 +--
-> >  drivers/hwmon/smm665.c                                    | 3 +--
-> >  drivers/hwmon/tps23861.c                                  | 4 +---
-> >  drivers/hwmon/w83781d.c                                   | 4 +---
-> >  drivers/hwmon/w83791d.c                                   | 6 ++----
-> >  drivers/hwmon/w83792d.c                                   | 6 ++----
-> >  drivers/hwmon/w83793.c                                    | 6 ++----
-> >  drivers/hwmon/w83795.c                                    | 4 +---
-> >  drivers/hwmon/w83l785ts.c                                 | 6 ++----
-> >  drivers/i2c/i2c-core-base.c                               | 6 +-----
-> >  drivers/i2c/i2c-slave-eeprom.c                            | 4 +---
-> >  drivers/i2c/i2c-slave-testunit.c                          | 3 +--
-> >  drivers/i2c/i2c-smbus.c                                   | 3 +--
-> >  drivers/i2c/muxes/i2c-mux-ltc4306.c                       | 4 +---
-> >  drivers/i2c/muxes/i2c-mux-pca9541.c                       | 3 +--
-> >  drivers/i2c/muxes/i2c-mux-pca954x.c                       | 3 +--
->=20
-> Reviewed-by: Jean Delvare <jdelvare@suse.de>
+Suman Ghosh (1):
 
-Thanks
-Uwe
+CN10KB variant of CN10K series of silicons supports
+a new feature where in a large protocol field
+(eg 128bit IPv6 DIP) can be condensed into a small
+hashed 32bit data. This saves a lot of space in MCAM key
+and allows user to add more protocol fields into the filter.
+A max of two such protocol data can be hashed.
+This patch adds support for hashing IPv6 SIP and/or DIP.
 
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+  octeontx2-af: Support to hash reduce of actual field into MCAM key
 
---gut2agzhpaayxotv
-Content-Type: application/pgp-signature; name="signature.asc"
+ .../ethernet/marvell/octeontx2/af/Makefile    |    2 +-
+ First patch in the series "octeontx2-af: Support to hash reduce of actual field into MCAM key"
+ introduced new C file. Makefile is modified to compile the same.
 
------BEGIN PGP SIGNATURE-----
+ .../net/ethernet/marvell/octeontx2/af/mbox.h  |   41 +-
+ Mbox request and response structures requires modification. RPM based DMAC filter can be modified at any location
+ in the RPM filter table as entry's location has no relation to content. But for NPC exact match's 2K, 4way table
+ is based on hash. This means that modification of an entry may fail if hash mismatches. In these cases, we need
+ to delete existing entry and create a new entry in a different slot determined by hash value. This index has to
+ be returned to caller.
 
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmLEFBwACgkQwfwUeK3K
-7AkavggAgLmynakXX/rOF4Jwy2OuBXH29kecKqPd6xj4yHsu3ggy8kd/hlU4jJib
-vV0H9ioq69hhMqjme5AHJJsueLFi/t/iwuQwuWUKluCBBlx0RXBsVx8qxV7A0uWa
-mdKU3ApPaN7y0cS1jccdN7ydsL3H2ayzIwfQuNqx1G3P/uqXfkusV0fjwQ/rQct3
-qs4t2/QiHUd0tStlGw2eSKxp1z5KRrDMstK17fiZSsw/SYoMyldV8Ame6+gaxx0X
-e93FqM5jj67ovjD3jJanfOwI5vesu4+szu4GK6vHRWvpsieHsSeyS+GNgfM5oLA7
-iguZ0rauzy0je3hrHuKgp1maJ59ibQ==
-=fYiS
------END PGP SIGNATURE-----
+ .../net/ethernet/marvell/octeontx2/af/npc.h   |   25 +
+ New data types (enums and macros) for this feature.
 
---gut2agzhpaayxotv--
+ .../marvell/octeontx2/af/npc_profile.h        |    5 +-
+ Kex profile changes to add exact match HIT bit in the Key. Inorder to accommodate this nibble, NPC_PARSE_NIBBLE_ERRCODE
+ is deleted as it is not used.
+
+ .../net/ethernet/marvell/octeontx2/af/rvu.c   |   17 +
+ Exact match HW capability flag is initialized to false. FLR handler changes to invoke rvu_npc_exact_reset()
+ to free all exact match resources in case of interface reset.
+
+ .../net/ethernet/marvell/octeontx2/af/rvu.h   |   24 +-
+ Exact match table info is defined in rvu_hwinfo structure. This table structure is heap allocated and maintains
+ all information about available/free/allocated resources.
+
+ .../ethernet/marvell/octeontx2/af/rvu_cgx.c   |   41 +-
+ As of today, RPM based DMAC filter is configured upon user command. Each of these mbox handler is trapped and
+ checked for NPC exact match support. If support is enabled, invokes Exact match API instead of RPM dmac based calls.
+
+ .../marvell/octeontx2/af/rvu_debugfs.c        |  179 ++
+ Three debugfs entries would be created if Exact match table is supported.
+	1. exact_entries : List out npc exact match entries
+	2. exact_info : Info related exact match tables (mem and cam table)
+	3. exact_drop_cnt: Drop packet counter for each NPC mcam drop rule.
+
+ .../marvell/octeontx2/af/rvu_devlink.c        |   71 +-
+ Devlink provides flexibility to user to switch to RPM based DMAC filters on CN10KB silicon. Please note that
+ devlink command fails if user added DMAC filters prior to devlink command to disable exact match table.
+
+ .../ethernet/marvell/octeontx2/af/rvu_nix.c   |    7 +
+ Promiscous mode enable must disable this Exact match table based drop rule on NPC mcam. set rx mode routine
+ calls enable/disable corresponding NPC exact drop rule when promiscous mode is toggled.
+
+ .../ethernet/marvell/octeontx2/af/rvu_npc.c   |   51 +-
+ APIs to reserve NPC mcam entries. This is used to reserve and configure NPC drop rules.
+
+ .../marvell/octeontx2/af/rvu_npc_fs.c         |  162 +-
+ For each PF, there is a drop rule installed in NPC mcam. This installation is done during rvu probe itself.
+ Drop rule has multicast and broadcast bits turned off. This means that broadcast and multicast packets will
+ never get dropped irrespective of NPC exact match table. This rule action is drop if exact table match bit
+ 0 and channel is matched. This means if there is no hit is exact match table and channel match, packets will
+ be dropped.
+
+ .../marvell/octeontx2/af/rvu_npc_fs.h         |   17 +
+ Function declarations.
+
+ .../marvell/octeontx2/af/rvu_npc_hash.c       | 1958 +++++++++++++++++
+ New file added. This file implements add/del/update to exact match table,
+ probing of the feature and invokes function to install drop ruleis in NPC mcam.
+
+ .../marvell/octeontx2/af/rvu_npc_hash.h       |  233 ++
+ function declarations for rvu_npc_hash.c
+
+ .../ethernet/marvell/octeontx2/af/rvu_reg.h   |   15 +
+ Register access macros for NPC exact match.
+
+ .../marvell/octeontx2/nic/otx2_common.h       |   10 +-
+ Since NPC exact match table has more entries than RPM DMAC filter, size of bmap_to_dmacindex is
+ increased from 8 to 32bit. Maximum number of dmac entries available also increased (increased the size of bitmap)
+
+ .../marvell/octeontx2/nic/otx2_dmac_flt.c     |   46 +-
+ .../marvell/octeontx2/nic/otx2_flows.c        |   40 +-
+ .../ethernet/marvell/octeontx2/nic/otx2_pf.c  |    2 +-
+ Above change in marvell/octeontx2/nic/otx2_common.h, require corresponding modification in these 3 C files.
+ Please note that we need to modify/change existing entry index as mentioned in description of
+ net/ethernet/marvell/octeontx2/af/mbox.h in this cover letter.
+
+ 20 files changed, 2879 insertions(+), 67 deletions(-)
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.h
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.h
+
+--
+2.25.1
