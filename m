@@ -2,68 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 27EE25664A1
-	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 10:00:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DCBB75664F6
+	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 10:25:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229560AbiGEH7a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jul 2022 03:59:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52028 "EHLO
+        id S229960AbiGEIX5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jul 2022 04:23:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229552AbiGEH73 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 03:59:29 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 281D5C54
-        for <netdev@vger.kernel.org>; Tue,  5 Jul 2022 00:59:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657007969; x=1688543969;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=wgZbjkl7iEwhh1nH1cDv9zk6egu4mDdo1DzPARfkOCY=;
-  b=G6G1F65CpNQSP7PuyqTIsiBKYn4Q8wfFb8pC9lKUv0e0AV26WDaHvvN7
-   JtZ87GsqORe+6zPWkQjPXa9qLfbrl43K2k0XLbW4pOBnfZ/l5nYBxJGTP
-   1vonF5lShq4PEwRkkeDdgw6Omnr736oWlItLKjfwSql67MMgU+snobgyf
-   MGyB8Fb9yQMSgXcZBxDEfk0JPnt3py1nAQ7kbpQni+YcCdMUnwk36RfDx
-   SaGLI16lE0v7Sv2XsdagXl9nOYGMVYkHgTo6st0wdY3/YDk/vY3pDMR0J
-   w8Poj0EhhltTizHJvQDOME85K3b0D9NfRw0AETGqF+zwyn0sZxeMPidX9
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10398"; a="308823728"
-X-IronPort-AV: E=Sophos;i="5.92,245,1650956400"; 
-   d="scan'208";a="308823728"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 00:59:27 -0700
-X-IronPort-AV: E=Sophos;i="5.92,245,1650956400"; 
-   d="scan'208";a="649997707"
-Received: from lingshan-mobl.ccr.corp.intel.com (HELO [10.238.130.254]) ([10.238.130.254])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 00:59:25 -0700
-Message-ID: <1e1e5f8c-d20e-4e54-5fc0-e12a7ba818a3@intel.com>
-Date:   Tue, 5 Jul 2022 15:59:23 +0800
+        with ESMTP id S229844AbiGEIXz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 04:23:55 -0400
+Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B5F5C70
+        for <netdev@vger.kernel.org>; Tue,  5 Jul 2022 01:23:54 -0700 (PDT)
+Received: by mail-lj1-x234.google.com with SMTP id o10so2911899ljj.13
+        for <netdev@vger.kernel.org>; Tue, 05 Jul 2022 01:23:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=anyfinetworks-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=nm4GWncx/H7UbY0657xwuVdYq5JG1QruNhlsI4qkLAs=;
+        b=YS4a5WDDY6+mYy03sUjXRRWvWYQiFv7DWe888KPRMUPvweym264/F30f9Esq98+G0Z
+         bDDq05ZFNHMRRsPVYGcJSnEVvJBf56ulA7bnfa2W2u8R4fZl/Xhn2Ep5sue9GevdAmbY
+         r2ErBcEjLVMvCzoA35c94A3/UHJ/aELEoBYolXv+3EFVD7d9Fk6KVYStZIm+BdauupYE
+         XF9y54XB0np9K/HiFGC/DAMGSxhjSUvOTZvOnDikPAk23BefF5nA/UaMSuVkVOFrEEN3
+         FyDOACkLh9b9JTrT3vT0JiLPXAD1ClnnmgK8l3FDM7oKcpeZPT3plBRv15v66LaWyLXj
+         GYlw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=nm4GWncx/H7UbY0657xwuVdYq5JG1QruNhlsI4qkLAs=;
+        b=0AGtmp49lWAPn15iua3PDN1bhkdyffLXWi48M8TP2hhnoAOdZ2bjkrby5c1Hq7dj3T
+         2Tjj2yZ9V/CBMF0/+THhoHjXmFjDL0FiY3p2R0DTSAquO9cGmJuE6X/6sNsp3C0rz5Qo
+         eKDIhqR5FDQriji2LhIhWyNH7un1PBxt8LkmjJOe0fbX4gnE6MMwewapetvfBRI0y1Xn
+         GCuXU9/jVhaF+hMs0xRe4elaT8k6SiPxISbTeEJTy4ug7Fox+C/dDzP6sWIzqE9KNBmO
+         NkCjCyTIYPiCcO9PQX4hU1/l3dWrHYyCuX3hBicDRG8wgyzbiRjv9VuU1Piajyl5XhDM
+         eAYw==
+X-Gm-Message-State: AJIora9df40kaXMVt+fyj/zbefogtXl+EhwhFdQj+TJJdr2gK34YBp4U
+        FB+8+70DF9tTXFMnpwGfHCj9aw==
+X-Google-Smtp-Source: AGRyM1soPHci+b7CH9FJb3u37LBINSfpUxKsSDyGYFvOI1twDP1j1eyteRfnHe4JSLb10OmwP5E2TQ==
+X-Received: by 2002:a2e:918f:0:b0:25a:7164:f408 with SMTP id f15-20020a2e918f000000b0025a7164f408mr19004646ljg.523.1657009432615;
+        Tue, 05 Jul 2022 01:23:52 -0700 (PDT)
+Received: from anpc2.lan ([62.119.107.74])
+        by smtp.gmail.com with ESMTPSA id a12-20020ac25e6c000000b0047f878aba7fsm5514733lfr.110.2022.07.05.01.23.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Jul 2022 01:23:52 -0700 (PDT)
+From:   Johan Almbladh <johan.almbladh@anyfinetworks.com>
+To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, hawk@kernel.org, john.fastabend@gmail.com
+Cc:     song@kernel.org, martin.lau@linux.dev, yhs@fb.com,
+        kpsingh@kernel.org, sdf@google.com, haoluo@google.com,
+        jolsa@kernel.org, Freysteinn.Alfredsson@kau.se, toke@redhat.com,
+        bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Johan Almbladh <johan.almbladh@anyfinetworks.com>
+Subject: [PATCH bpf v3] xdp: Fix spurious packet loss in generic XDP TX path
+Date:   Tue,  5 Jul 2022 10:23:45 +0200
+Message-Id: <20220705082345.2494312-1-johan.almbladh@anyfinetworks.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220701151200.2033129-1-johan.almbladh@anyfinetworks.com>
+References: <20220701151200.2033129-1-johan.almbladh@anyfinetworks.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.11.0
-Subject: Re: [PATCH V3 3/6] vDPA: allow userspace to query features of a vDPA
- device
-Content-Language: en-US
-To:     Parav Pandit <parav@nvidia.com>, Jason Wang <jasowang@redhat.com>,
-        "mst@redhat.com" <mst@redhat.com>
-Cc:     "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "xieyongji@bytedance.com" <xieyongji@bytedance.com>,
-        "gautam.dawar@amd.com" <gautam.dawar@amd.com>
-References: <20220701132826.8132-1-lingshan.zhu@intel.com>
- <20220701132826.8132-4-lingshan.zhu@intel.com>
- <PH0PR12MB5481AEB53864F35A79AAD7F5DCBD9@PH0PR12MB5481.namprd12.prod.outlook.com>
- <e8479441-78d2-8b39-c5ad-6729b79a2f35@redhat.com>
- <PH0PR12MB54817FD9E0D8469857438F95DCBE9@PH0PR12MB5481.namprd12.prod.outlook.com>
-From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
-In-Reply-To: <PH0PR12MB54817FD9E0D8469857438F95DCBE9@PH0PR12MB5481.namprd12.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,75 +74,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The byte queue limits (BQL) mechanism is intended to move queuing from
+the driver to the network stack in order to reduce latency caused by
+excessive queuing in hardware. However, when transmitting or redirecting
+a packet using generic XDP, the qdisc layer is bypassed and there are no
+additional queues. Since netif_xmit_stopped() also takes BQL limits into
+account, but without having any alternative queuing, packets are
+silently dropped.
 
+This patch modifies the drop condition to only consider cases when the
+driver itself cannot accept any more packets. This is analogous to the
+condition in __dev_direct_xmit(). Dropped packets are also counted on
+the device.
 
-On 7/4/2022 8:53 PM, Parav Pandit wrote:
->> From: Jason Wang <jasowang@redhat.com>
->> Sent: Monday, July 4, 2022 12:47 AM
->>
->>
->> 在 2022/7/2 06:02, Parav Pandit 写道:
->>>> From: Zhu Lingshan <lingshan.zhu@intel.com>
->>>> Sent: Friday, July 1, 2022 9:28 AM
->>>>
->>>> This commit adds a new vDPA netlink attribution
->>>> VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES. Userspace can query
->> features
->>>> of vDPA devices through this new attr.
->>>>
->>>> Fixes: a64917bc2e9b vdpa: (Provide interface to read driver feature)
->>> Missing the "" in the line.
->>> I reviewed the patches again.
->>>
->>> However, this is not the fix.
->>> A fix cannot add a new UAPI.
->>>
->>> Code is already considering negotiated driver features to return the device
->> config space.
->>> Hence it is fine.
->>>
->>> This patch intents to provide device features to user space.
->>> First what vdpa device are capable of, are already returned by features
->> attribute on the management device.
->>> This is done in commit [1].
->>>
->>> The only reason to have it is, when one management device indicates that
->> feature is supported, but device may end up not supporting this feature if
->> such feature is shared with other devices on same physical device.
->>> For example all VFs may not be symmetric after large number of them are
->> in use. In such case features bit of management device can differ (more
->> features) than the vdpa device of this VF.
->>> Hence, showing on the device is useful.
->>>
->>> As mentioned before in V2, commit [1] has wrongly named the attribute to
->> VDPA_ATTR_DEV_SUPPORTED_FEATURES.
->>> It should have been,
->> VDPA_ATTR_DEV_MGMTDEV_SUPPORTED_FEATURES.
->>> Because it is in UAPI, and since we don't want to break compilation of
->>> iproute2, It cannot be renamed anymore.
->>>
->>> Given that, we do not want to start trend of naming device attributes with
->> additional _VDPA_ to it as done in this patch.
->>> Error in commit [1] was exception.
->>>
->>> Hence, please reuse VDPA_ATTR_DEV_SUPPORTED_FEATURES to return
->> for device features too.
->>
->>
->> This will probably break or confuse the existing userspace?
->>
-> It shouldn't break, because its new attribute on the device.
-> All attributes are per command, so old one will not be confused either.
-A netlink attr should has its own and unique purpose, that's why we 
-don't need locks for the attrs, only one consumer and only one producer.
-I am afraid re-using (for both management device and the vDPA device) 
-the attr VDPA_ATTR_DEV_SUPPORTED_FEATURES would lead to new race condition.
-E.g., There are possibilities of querying FEATURES of a management 
-device and a vDPA device simultaneously, or can there be a syncing issue 
-in a tick?
+Bypassing the qdisc layer in the generic XDP TX path means that XDP
+packets are able to starve other packets going through a qdisc, and
+DDOS attacks will be more effective. In-driver-XDP use dedicated TX
+queues, so they do not have this starvation issue.
 
-IMHO, I don't see any advantages of re-using this attr.
+Signed-off-by: Johan Almbladh <johan.almbladh@anyfinetworks.com>
+---
+ net/core/dev.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-Thanks,
-Zhu Lingshan
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 8e6f22961206..30a1603a7225 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -4863,7 +4863,10 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
+ }
+ 
+ /* When doing generic XDP we have to bypass the qdisc layer and the
+- * network taps in order to match in-driver-XDP behavior.
++ * network taps in order to match in-driver-XDP behavior. This also means
++ * that XDP packets are able to starve other packets going through a qdisc,
++ * and DDOS attacks will be more effective. In-driver-XDP use dedicated TX
++ * queues, so they do not have this starvation issue.
+  */
+ void generic_xdp_tx(struct sk_buff *skb, struct bpf_prog *xdp_prog)
+ {
+@@ -4875,7 +4878,7 @@ void generic_xdp_tx(struct sk_buff *skb, struct bpf_prog *xdp_prog)
+ 	txq = netdev_core_pick_tx(dev, skb, NULL);
+ 	cpu = smp_processor_id();
+ 	HARD_TX_LOCK(dev, txq, cpu);
+-	if (!netif_xmit_stopped(txq)) {
++	if (!netif_xmit_frozen_or_drv_stopped(txq)) {
+ 		rc = netdev_start_xmit(skb, dev, txq, 0);
+ 		if (dev_xmit_complete(rc))
+ 			free_skb = false;
+@@ -4883,6 +4886,7 @@ void generic_xdp_tx(struct sk_buff *skb, struct bpf_prog *xdp_prog)
+ 	HARD_TX_UNLOCK(dev, txq);
+ 	if (free_skb) {
+ 		trace_xdp_exception(dev, xdp_prog, XDP_TX);
++		dev_core_stats_tx_dropped_inc(dev);
+ 		kfree_skb(skb);
+ 	}
+ }
+-- 
+2.30.2
 
