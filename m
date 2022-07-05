@@ -2,75 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 715CF566B99
-	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 14:09:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 62E62566ED5
+	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 15:00:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234102AbiGEMJQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jul 2022 08:09:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53282 "EHLO
+        id S230343AbiGENAc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jul 2022 09:00:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235150AbiGEMIh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 08:08:37 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 02010186EF
-        for <netdev@vger.kernel.org>; Tue,  5 Jul 2022 05:07:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657022874;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=rtU/kjgULaXwcfy8e9s7Yd/T+aye61K0bMduomyl2x8=;
-        b=ET8aILWa/kDf21auaaZsqvrfavaQc+pcj4IOjSzXbtR5VtSQS4O2Dphs5zfApiwu5f6un7
-        GylpZWdDNnUQJ9jdE03EnjhQ+gprUo2F8LXR7Gk1Ohz4DSm9oZCpummFGgI6N2U0pshxrA
-        cmjTpZ5dP8nzvRlqbfqrnUT7kqseHcE=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-92-7Ak-kYg9ND2PDHynedkCuA-1; Tue, 05 Jul 2022 08:07:53 -0400
-X-MC-Unique: 7Ak-kYg9ND2PDHynedkCuA-1
-Received: by mail-ed1-f72.google.com with SMTP id g7-20020a056402424700b00435ac9c7a8bso9185912edb.14
-        for <netdev@vger.kernel.org>; Tue, 05 Jul 2022 05:07:52 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rtU/kjgULaXwcfy8e9s7Yd/T+aye61K0bMduomyl2x8=;
-        b=7W3EQIPzZ1oMatbkfygTwvyrfiU5TGMmXgw6zq8sPVQnJ9dYU2Ekd8svABgY+u+mgM
-         NZBeGCpk2II29ZNmJ8A+jF4R9ZqmkElgBakVadATZTrs8Q/OoYTTeeRHxroHbaUrgEU/
-         tnD82Pi5zBERXtOCotjfP2fqg9bJJgZFXu0N7MQuJkKwM2OrVKfVOgVmQMKLoCZJtDu/
-         L0IE4HtIvH5t5MZw8zFrpZwbCx20EXZvdaEGZ1EOcZXqltr9wjm9reQQGU0OZzhfN5es
-         BayMt6kyuSQccdeBZKOBx3lPB0QKr3iEF9FzATs5HhUaaULUBpYUCzPEuzoV3sYlG3aU
-         /oxA==
-X-Gm-Message-State: AJIora+P/K3aV+uMAQbpJ1EPiTTloUHD9AuRQnZhECCkOcohBi+dihrr
-        6mPRmLNQvQqo0C1RWDpHpFvCGqNCbSdzbgZNLqRLFNt9eM6AhiHNuVVmXMtDbkYlhZQbMkKcZUP
-        XhaX/YifI1kyKUXWjFoARRUtHdDBRTrS0
-X-Received: by 2002:a17:907:60cb:b0:726:a69a:c7a with SMTP id hv11-20020a17090760cb00b00726a69a0c7amr34652268ejc.156.1657022871631;
-        Tue, 05 Jul 2022 05:07:51 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1uhvLESVkJqLMUVkS1+sqRcYMDYYv/DpSqkaUqCJgY9nCI7teVnX7sRGbX5NjXfak1s0+Cw2DXmD+gxM4e1w/E=
-X-Received: by 2002:a17:907:60cb:b0:726:a69a:c7a with SMTP id
- hv11-20020a17090760cb00b00726a69a0c7amr34652242ejc.156.1657022871395; Tue, 05
- Jul 2022 05:07:51 -0700 (PDT)
+        with ESMTP id S231708AbiGEM73 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 08:59:29 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C08D6193F5;
+        Tue,  5 Jul 2022 05:29:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657024147; x=1688560147;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=8FlJh0epwKQ67CHp0E3CBrim4PYDVOsRrhLi+D6nts8=;
+  b=bQzeTaRheEfWdES2Gydl7h3out8cOyuO3Q0pGgm+o+hs8BHVjsz11Wqf
+   15bzvBe9N8GCyC5iYtKJfgxO0TN2xTXN7uGmpB5pkauVofRqh23wSV13g
+   71TL/WIjMZc4EyETQSQgF47mIs4fwTYEteMF94wZISwJ6he9wEYR1A4i/
+   wr+eFxTOX8TMoQkdF/7xZfAe6ggo8FezGwyzGcZ5cpQeQf6xb6zXa0InJ
+   bAJ9UGZ1AK2KxieZlw/WCWcZHq1TWJ65U/bOhnSlcPPqhfxxVv9Tpzm+p
+   EbKWbH6aC28+Iifa529LJ2Z4hyH4mtTEudNlV+Y3qo3xJsNPQym2U//DC
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10398"; a="284452646"
+X-IronPort-AV: E=Sophos;i="5.92,245,1650956400"; 
+   d="scan'208";a="284452646"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 05:27:44 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,245,1650956400"; 
+   d="scan'208";a="660538993"
+Received: from boxer.igk.intel.com (HELO boxer) ([10.102.20.173])
+  by fmsmga004.fm.intel.com with ESMTP; 05 Jul 2022 05:27:42 -0700
+Date:   Tue, 5 Jul 2022 14:27:41 +0200
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, kernel-janitors@vger.kernel.org,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] MAINTAINERS: adjust XDP SOCKETS after file movement
+Message-ID: <YsQuPS1p/2AiJQh/@boxer>
+References: <20220701042810.26362-1-lukas.bulwahn@gmail.com>
+ <Yr7mcjRq57laZGEY@boxer>
+ <CAJ8uoz16yGJqYX2xOcczTGKFnG4joh8+f1uPGMAP4rmm3feYDQ@mail.gmail.com>
+ <Yr78Md1Nqpj+peO0@boxer>
+ <c9c2d7b3-7d29-252d-6070-77d562ee4c3b@iogearbox.net>
 MIME-Version: 1.0
-References: <20220704191535.76006-1-vdronov@redhat.com> <YsOKj/GE2Mb2UsYa@zx2c4.com>
- <YsOY/eWq7gRjXJK1@zx2c4.com>
-In-Reply-To: <YsOY/eWq7gRjXJK1@zx2c4.com>
-From:   Vlad Dronov <vdronov@redhat.com>
-Date:   Tue, 5 Jul 2022 14:07:40 +0200
-Message-ID: <CAMusb+RLB6-oz10yp9Cdigt0TeJ_85M30bH8snZaeM2CyvUiYA@mail.gmail.com>
-Subject: Re: [PATCH] wireguard: Kconfig: select CRYPTO_CHACHA_S390
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Harald Freudenberger <freude@linux.ibm.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        wireguard@lists.zx2c4.com, netdev@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c9c2d7b3-7d29-252d-6070-77d562ee4c3b@iogearbox.net>
+X-Spam-Status: No, score=-5.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -78,51 +70,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Tue, Jul 05, 2022 at 02:01:06PM +0200, Daniel Borkmann wrote:
+> On 7/1/22 3:52 PM, Maciej Fijalkowski wrote:
+> > On Fri, Jul 01, 2022 at 03:13:36PM +0200, Magnus Karlsson wrote:
+> > > On Fri, Jul 1, 2022 at 2:38 PM Maciej Fijalkowski
+> > > <maciej.fijalkowski@intel.com> wrote:
+> > > > 
+> > > > On Fri, Jul 01, 2022 at 06:28:10AM +0200, Lukas Bulwahn wrote:
+> > > > > Commit f36600634282 ("libbpf: move xsk.{c,h} into selftests/bpf") moves
+> > > > > files tools/{lib => testing/selftests}/bpf/xsk.[ch], but misses to adjust
+> > > > > the XDP SOCKETS (AF_XDP) section in MAINTAINERS.
+> > > > > 
+> > > > > Adjust the file entry after this file movement.
+> > > > > 
+> > > > > Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+> > > > > ---
+> > > > > Andrii, please ack.
+> > > > > 
+> > > > > Alexei, please pick this minor non-urgent clean-up on top of the commit above.
+> > > > > 
+> > > > >   MAINTAINERS | 2 +-
+> > > > >   1 file changed, 1 insertion(+), 1 deletion(-)
+> > > > > 
+> > > > > diff --git a/MAINTAINERS b/MAINTAINERS
+> > > > > index fa4bfa3d10bf..27d9e65b9a85 100644
+> > > > > --- a/MAINTAINERS
+> > > > > +++ b/MAINTAINERS
+> > > > > @@ -22042,7 +22042,7 @@ F:    include/uapi/linux/xdp_diag.h
+> > > > >   F:   include/net/netns/xdp.h
+> > > > >   F:   net/xdp/
+> > > > >   F:   samples/bpf/xdpsock*
+> > > > > -F:   tools/lib/bpf/xsk*
+> > > > > +F:   tools/testing/selftests/bpf/xsk*
+> > > > 
+> > > > Magnus, this doesn't cover xdpxceiver.
+> > > > How about we move the lib part and xdpxceiver part to a dedicated
+> > > > directory? Or would it be too nested from main dir POV?
+> > > 
+> > > Or we can just call everything we add xsk* something?
+> > 
+> > No strong feelings. test_xsk.sh probably also needs to be addressed.
+> > That's why I proposed dedicated dir.
+> 
+> Could one of you follow-up on this for bpf-next tree? Maybe for selftests something
+> similar as in case of the XDP entry could work.
 
-On Tue, Jul 5, 2022 at 3:51 AM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
->
-> On Tue, Jul 05, 2022 at 02:49:19AM +0200, Jason A. Donenfeld wrote:
-> > Hi Vladis,
-> >
-> > On Mon, Jul 04, 2022 at 09:15:35PM +0200, Vladis Dronov wrote:
-> > > Select the new implementation of CHACHA20 for S390 when available,
-> > > it is faster than the generic software implementation.
-> > >
-> > > Reported-by: kernel test robot <lkp@intel.com>
-> > > Link: https://lore.kernel.org/linux-kernel/202207030630.6SZVkrWf-lkp@intel.com/
-> > > Signed-off-by: Vladis Dronov <vdronov@redhat.com>
-> > > ... skip ...
-> >
-> > Thanks for the patch. Queued up as:
-> > https://git.zx2c4.com/wireguard-linux/commit/?id=1b4ab028730cd00c144eaa51160865504b780961
-> >
-> > I'll include this in my series to net.git soon.
+Yes, sorry. Let's do:
 
-Thanks a ton, Jason!
-Most appreciated.
+F:	tools/testing/selftests/bpf/*xsk*
 
-> This actually leads to a minor problem:
->
->   WARNING: unmet direct dependencies detected for CRYPTO_CHACHA_S390
->     Depends on [n]: CRYPTO [=y] && CRYPTO_HW [=n] && S390 [=y]
->
-> This is of course harmless, since this doesn't *actually* depend on
-> CRYPTO_HW. In fact, the dependency on CRYPTO_HW is entirely a mistake
-> here that was repeated a few times. I cleaned this up and fixed it in
-> this patch:
->
->     https://lore.kernel.org/linux-crypto/20220705014653.111335-1-Jason@zx2c4.com/
->
-> So hopefully Herbert will take that for 5.19 and then we'll be all set
-> here.
->
-> Jason
+then s/xdpxceiver/xskxceiver. I can send a follow-up and add Lukas as a
+reporter.
 
-Whoa, that's... funny. Honestly, I was always wondering why CRYPTO_CHACHA_S390
-and friends live in drivers/crypto/Kconfig. Now I know why. The patch
-looks great, thank you.
+Sounds good?
 
-Best regards,
-Vladis Dronov | Red Hat, Inc. | The Core Kernel | Senior Software Engineer
-
+> 
+> Thanks,
+> Daniel
