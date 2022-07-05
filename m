@@ -2,64 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E7C465676A6
-	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 20:39:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 034575676AB
+	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 20:39:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231644AbiGESi4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jul 2022 14:38:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44160 "EHLO
+        id S232959AbiGESjR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jul 2022 14:39:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231959AbiGESiz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 14:38:55 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C770413F5B;
-        Tue,  5 Jul 2022 11:38:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657046333; x=1688582333;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=pFb9nPw68TFCIeyeBjL+zv4wyN7xTCporTHN050htS0=;
-  b=nb+YiyrDeWP5DSLW4xjDbNN7GqNos3id8gpToabaA4zrlaZdFRqNeEpR
-   QRRTwcmfJGsmtdaQ4Dp6bMMXQfrHwGvXW34ARyTWC1FpQdM62tMvsv3pt
-   ze7OGHem+0XeHTS1vzRoaVD7SO3FmpXwI4vDfUqNScH0jU2pyf0tKVFv7
-   BT5MAofEfGbLr/Sp1rA/YHp+NDxDRlqEBA6qc0Mtqofw8FQy+bIaXDCXQ
-   dU9lQsJNmG+xMXYMwl1MiYtHNJKXWoHosgSBx5MctHGhVvI3mUaDI3/7b
-   0SGDFPbDlTwCyH3IdKbUEZgDak+txcRiGmAprjct7OEuPO+YfkR0RXzSD
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10399"; a="263228882"
-X-IronPort-AV: E=Sophos;i="5.92,247,1650956400"; 
-   d="scan'208";a="263228882"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 11:38:53 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,247,1650956400"; 
-   d="scan'208";a="839231123"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by fmsmga006.fm.intel.com with ESMTP; 05 Jul 2022 11:38:51 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o8nRi-000JTl-K3;
-        Tue, 05 Jul 2022 18:38:50 +0000
-Date:   Wed, 6 Jul 2022 02:38:37 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, UNGLinuxDriver@microchip.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, vladimir.oltean@nxp.com,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: Re: [PATCH net-next v3 5/7] net: lan966x: Add lag support for
- lan966x.
-Message-ID: <202207060247.0TIpleTV-lkp@intel.com>
-References: <20220701205227.1337160-6-horatiu.vultur@microchip.com>
+        with ESMTP id S232803AbiGESjP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 14:39:15 -0400
+Received: from mx-out.tlen.pl (mx-out.tlen.pl [193.222.135.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87F721EEEF
+        for <netdev@vger.kernel.org>; Tue,  5 Jul 2022 11:39:02 -0700 (PDT)
+Received: (wp-smtpd smtp.tlen.pl 8985 invoked from network); 5 Jul 2022 20:38:58 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=o2.pl; s=1024a;
+          t=1657046338; bh=WWwtFu5inTGYYHR/P6xpZs+1V1TpiM1KVqGs6QWQJP4=;
+          h=Subject:To:Cc:From;
+          b=r0ig7VGT6CmM+AW0kQSIPZOUUY77GPXcRzY9cQdeZwaExr8ASpSw++z4W5Unf3viy
+           CLf5mkqTzrRMI38RuY14xKAhN68AZj60y1VKq9h0U00kTHtEGbtc9HBP8iPtJ20BPr
+           9QjNzQh3HO288IrQ18p9/CLeXcx69+NezqM3jLl0=
+Received: from aafi210.neoplus.adsl.tpnet.pl (HELO [192.168.1.22]) (mat.jonczyk@o2.pl@[83.4.138.210])
+          (envelope-sender <mat.jonczyk@o2.pl>)
+          by smtp.tlen.pl (WP-SMTPD) with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP
+          for <vasyl.vavrychuk@opensynergy.com>; 5 Jul 2022 20:38:58 +0200
+Message-ID: <494b21fb-896e-5c80-ff53-b5f914663736@o2.pl>
+Date:   Tue, 5 Jul 2022 20:38:48 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220701205227.1337160-6-horatiu.vultur@microchip.com>
-X-Spam-Status: No, score=-5.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.0
+Subject: Re: [PATCH] Bluetooth: core: Fix deadlock due to
+ `cancel_work_sync(&hdev->power_on)` from hci_power_on_sync.
+Content-Language: en-GB
+To:     Vasyl Vavrychuk <vasyl.vavrychuk@opensynergy.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-bluetooth@vger.kernel.org,
+        Max Krummenacher <max.oss.09@gmail.com>,
+        Francesco Dolcini <francesco.dolcini@toradex.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        max.krummenacher@toradex.com
+Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>
+References: <20220614181706.26513-1-max.oss.09@gmail.com>
+ <20220705125931.3601-1-vasyl.vavrychuk@opensynergy.com>
+From:   =?UTF-8?Q?Mateusz_Jo=c5=84czyk?= <mat.jonczyk@o2.pl>
+In-Reply-To: <20220705125931.3601-1-vasyl.vavrychuk@opensynergy.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-WP-MailID: ea507a630c026762668487bc76baf600
+X-WP-AV: skaner antywirusowy Poczty o2
+X-WP-SPAM: NO 000000A [IRNk]                               
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -67,70 +65,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Horatiu,
+W dniu 5.07.2022 o 14:59, Vasyl Vavrychuk pisze:
+> `cancel_work_sync(&hdev->power_on)` was moved to hci_dev_close_sync in
+> commit [1] to ensure that power_on work is canceled after HCI interface
+> down.
+>
+> But, in certain cases power_on work function may call hci_dev_close_sync
+> itself: hci_power_on -> hci_dev_do_close -> hci_dev_close_sync ->
+> cancel_work_sync(&hdev->power_on), causing deadlock. In particular, this
+> happens when device is rfkilled on boot. To avoid deadlock, move
+> power_on work canceling out of hci_dev_do_close/hci_dev_close_sync.
+>
+> Deadlock introduced by commit [1] was reported in [2,3] as broken
+> suspend. Suspend did not work because `hdev->req_lock` held as result of
+> `power_on` work deadlock. In fact, other BT features were not working.
+> It was not observed when testing [1] since it was verified without
+> rfkill in place.
+>
+> NOTE: It is not needed to cancel power_on work from other places where
+> hci_dev_do_close/hci_dev_close_sync is called in case:
+> * Requests were serialized due to `hdev->req_workqueue`. The power_on
+> work is first in that workqueue.
+> * hci_rfkill_set_block which won't close device anyway until HCI_SETUP
+> is on.
+> * hci_sock_release which runs after hci_sock_bind which ensures
+> HCI_SETUP was cleared.
+>
+> As result, behaviour is the same as in pre-dd06ed7 commit, except
+> power_on work cancel added to hci_dev_close.
+>
+> [1]: commit dd06ed7ad057 ("Bluetooth: core: Fix missing power_on work cancel on HCI close")
+> [2]: https://lore.kernel.org/lkml/20220614181706.26513-1-max.oss.09@gmail.com/
+> [2]: https://lore.kernel.org/lkml/1236061d-95dd-c3ad-a38f-2dae7aae51ef@o2.pl/
+>
+> Fixes: commit dd06ed7ad057 ("Bluetooth: core: Fix missing power_on work cancel on HCI close")
+> Signed-off-by: Vasyl Vavrychuk <vasyl.vavrychuk@opensynergy.com>
+> Reported-by: Max Krummenacher <max.krummenacher@toradex.com>
+> Reported-by: Mateusz Jonczyk <mat.jonczyk@o2.pl>
 
-I love your patch! Yet something to improve:
+Works well: suspend (with bluetooth on and also off), hibernation, sending files, rfkill.
 
-[auto build test ERROR on net-next/master]
+Thank you.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Horatiu-Vultur/net-lan966x-Add-lag-support/20220702-045154
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git dbdd9a28e1406ab8218a69e60f10a168b968c81d
-config: powerpc-randconfig-r012-20220703 (https://download.01.org/0day-ci/archive/20220706/202207060247.0TIpleTV-lkp@intel.com/config)
-compiler: powerpc-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/a531636c4ccc3d4528016f83627b2e4677e83e59
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Horatiu-Vultur/net-lan966x-Add-lag-support/20220702-045154
-        git checkout a531636c4ccc3d4528016f83627b2e4677e83e59
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=powerpc SHELL=/bin/bash
+Reported-and-tested-by: Mateusz Jończyk <mat.jonczyk@o2.pl>
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Greetings,
 
-All errors (new ones prefixed by >>):
+Mateusz Jończyk
 
-   powerpc-linux-ld: drivers/net/ethernet/microchip/lan966x/lan966x_lag.o: in function `lan966x_lag_port_join':
->> drivers/net/ethernet/microchip/lan966x/lan966x_lag.c:138: undefined reference to `br_port_get_stp_state'
-
-
-vim +138 drivers/net/ethernet/microchip/lan966x/lan966x_lag.c
-
-   118	
-   119	int lan966x_lag_port_join(struct lan966x_port *port,
-   120				  struct net_device *brport_dev,
-   121				  struct net_device *bond,
-   122				  struct netlink_ext_ack *extack)
-   123	{
-   124		struct lan966x *lan966x = port->lan966x;
-   125		struct net_device *dev = port->dev;
-   126		int err;
-   127	
-   128		port->bond = bond;
-   129		lan966x_lag_update_ids(lan966x);
-   130	
-   131		err = switchdev_bridge_port_offload(brport_dev, dev, port,
-   132						    &lan966x_switchdev_nb,
-   133						    &lan966x_switchdev_blocking_nb,
-   134						    false, extack);
-   135		if (err)
-   136			goto out;
-   137	
- > 138		lan966x_port_stp_state_set(port, br_port_get_stp_state(brport_dev));
-   139	
-   140		return 0;
-   141	
-   142	out:
-   143		port->bond = NULL;
-   144		lan966x_lag_update_ids(lan966x);
-   145	
-   146		return err;
-   147	}
-   148	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
