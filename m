@@ -2,109 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8388B567803
-	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 21:50:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F788567813
+	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 21:52:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231883AbiGETub (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jul 2022 15:50:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46708 "EHLO
+        id S230050AbiGETww (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jul 2022 15:52:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229550AbiGETub (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 15:50:31 -0400
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A10B1D3;
-        Tue,  5 Jul 2022 12:50:30 -0700 (PDT)
-Received: by mail-pf1-x42b.google.com with SMTP id n12so12508256pfq.0;
-        Tue, 05 Jul 2022 12:50:30 -0700 (PDT)
+        with ESMTP id S229516AbiGETwv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 15:52:51 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43F0A1CB10;
+        Tue,  5 Jul 2022 12:52:49 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id r14so13240029wrg.1;
+        Tue, 05 Jul 2022 12:52:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=37SdVu/I0AZorgpaKaU7xxUX/U/C9pM7788+cOvGxXo=;
-        b=bP9AV1g4jXU7AaBQbqDeTt8A40XBQK+TrOXr7haMW0Z5QFg/THYEnIK0oYr9L94YYM
-         X8OKch06J5dTr6kixfYy/af5QJqjFhtxL0mtMiYgOi6Ror8vzt1axavDbB6IOujayZyn
-         mEj04GvEZ6fVCBI08D5mCo4CQq785hV8v9DlrZ28yf94CLJd6FyP6azjYTjRlH8e0aYn
-         ik/xEUzsI8HAEsZAvAKpqDYil8AwsjSJHeAQtUOv6e+e04/W49DjSlFoYTporfV08Xlb
-         a8EfJ2rcHqX2IletPO2hNvthIWSdxK9fY/UbS1VAmIg43NAf9/Fhq7xpQt42O/zBAbb8
-         KadQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/doxS0i6Wxlf3MlQXzvD1rRavf5pbzG6RAdOF/mnCY4=;
+        b=ArexrY44HStoCcsS43la3guKBJ49QQtWvjH+cMc4ug5p3cyvHU5Dyaoyou9wlV98lU
+         t1rdtTH4PtO7TMcNN3JUzkdb1mY7LFdrvCuiKfl0rDvV/VcSVMPYlnvaUHFk2NaJPCU4
+         XkEjrVKV/65CCHIOXVBkO09lya86ZtlmV/BpPBKLJ74qfJwHi4Zrfq3tvmc7/4RH2UYt
+         hxGmVomn9hiIriN8+Zquy93JmujHo2e5lF+3IgxY8MUhetFqIv4HrlJNoowHBBmWt6+J
+         QCZ7STtbE+6h60ougeY8ry/e/Rya28iXXXF1KY0QwxW2WTCTZUW5zIvZBRylRhYfvIQg
+         JULw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=37SdVu/I0AZorgpaKaU7xxUX/U/C9pM7788+cOvGxXo=;
-        b=g6x8csPfKSDE/8TVSD1+ozPgoNub03JVbe0MG5g6l1JlztoAmZ0+Yaj8I3jR9Q6b51
-         ro+2fYUfBhPi2w/aYs8Jgw586N/VdqRrTgIAVH8NjSu5LxRXkAhPCmX0tNGZ6QiRq+DA
-         7E7Ri+huP9JjJAIR+rKHTO2Op8YMCwMwJ7/71DbD7bm9NaQWFhBln78elBNdojGsw++E
-         SnQPl0bXHyLS4wd4itGyB4rz/fzu8BrChoQrCpQYteQMYqgbkc34tci1A8ayRbP33sC7
-         EHFaetcUjUzqwi1g05ttXBUh8DvSRLCm6Lr4F3tYUImVRh0ynjqvtvV2dn+wE889Xioq
-         lGCw==
-X-Gm-Message-State: AJIora+pys5m6breIOuKcFQMbhBXRq+P8MouHABrnc5UHm+ziWiSRbUG
-        FkYko6cnuaZ5jtjply0j4xxFHOgnAv6vmxOs
-X-Google-Smtp-Source: AGRyM1s5YB3qHl69kOMEJZ015jOq3FOyorbYcGTuq2C8q05wm/FDscHTaWVxBsgIuQISAPKtkec0hw==
-X-Received: by 2002:a63:a112:0:b0:40c:450e:b1ad with SMTP id b18-20020a63a112000000b0040c450eb1admr31468801pgf.493.1657050629579;
-        Tue, 05 Jul 2022 12:50:29 -0700 (PDT)
-Received: from octofox.hsd1.ca.comcast.net ([2601:641:401:1d20:3caa:449f:1bc2:21eb])
-        by smtp.gmail.com with ESMTPSA id nk3-20020a17090b194300b001ef8407f6d2sm5848777pjb.46.2022.07.05.12.50.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Jul 2022 12:50:28 -0700 (PDT)
-From:   Max Filippov <jcmvbkbc@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     linux-next@vger.kernel.org, netdev@vger.kernel.org,
-        Jianbo Liu <jianbol@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Ariel Levkovich <lariel@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>, Leon Romanovsky <leon@kernel.org>,
-        Max Filippov <jcmvbkbc@gmail.com>
-Subject: [PATCH] net/mlx5e: use div64_u64 for long division
-Date:   Tue,  5 Jul 2022 12:50:25 -0700
-Message-Id: <20220705195025.3348953-1-jcmvbkbc@gmail.com>
-X-Mailer: git-send-email 2.30.2
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/doxS0i6Wxlf3MlQXzvD1rRavf5pbzG6RAdOF/mnCY4=;
+        b=A7sTYKXASJ/2hZbu6DNRmZ4+/GBoctFgKLPCtwV6aGpF2av/KLxHvqGhfCJYKt3Xoc
+         QpWTjawkBNsmHgOel5xNGl7/NVat3hIoO8z1LGwqMycJEn2O1ziA2NM14gFSZDWQvDMl
+         AWwNLErjPUuhoSJ55nuh04sAkRO4/biA2TR6c5n4Bb9BIW05+60dAonu9aBVh/DAS+vh
+         Dfo1nxGaxCoHiLnPiAE/bDzGJNrigtjEd63qQU/ZBkOhGXB+X9T//t28BQK/zM/VQPKP
+         L1PgjXerkPnC6Y3q3Cn3zwGa4B5Mvbu6myqxDuwtdWQj6bFO4AYDfyb9fVr3KHJH1Chr
+         WEGA==
+X-Gm-Message-State: AJIora+8h4NAr9EIkUbsxtxmWBpE7zr7WQe7LQGGSVqEU1UvisWmeXbb
+        Ksy4NOZhItxMDKiprRS9Ke+/FyS8S8f/gBAsgIg=
+X-Google-Smtp-Source: AGRyM1v7ifsufKfy5Jeo+13iCkt+psbaynIFUU7eS3NIGXvLiFM9Ug8mRV/eLUpjyCfhBiEIOSJYh7GFnTe629aUmb0=
+X-Received: by 2002:a5d:5703:0:b0:21d:6c55:4986 with SMTP id
+ a3-20020a5d5703000000b0021d6c554986mr10402402wrv.455.1657050767617; Tue, 05
+ Jul 2022 12:52:47 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=0.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+References: <20220704140129.6463-1-fmdefrancesco@gmail.com> <YsSBR5nJovFMHGcB@iweiny-desk3>
+In-Reply-To: <YsSBR5nJovFMHGcB@iweiny-desk3>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Tue, 5 Jul 2022 12:52:36 -0700
+Message-ID: <CAKgT0UcGvjczCZXBS_OunwnZ5Xc7ytDRqjpymiXQni0ugrdmug@mail.gmail.com>
+Subject: Re: [PATCH] ixgbe: Don't call kmap() on page allocated with GFP_ATOMIC
+To:     Ira Weiny <ira.weiny@intel.com>
+Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
+        Netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        FROM_LOCAL_NOVOWEL,HK_RANDOM_ENVFROM,HK_RANDOM_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This fixes the following build error on 32-bit architectures visible in
-linux-next:
+On Tue, Jul 5, 2022 at 11:22 AM Ira Weiny <ira.weiny@intel.com> wrote:
+>
+> On Mon, Jul 04, 2022 at 04:01:29PM +0200, Fabio M. De Francesco wrote:
+> > Pages allocated with GFP_ATOMIC cannot come from Highmem. This is why
+> > there is no need to call kmap() on them.
+>
+> I'm still not 100% sure where this page gets allocated but AFAICT it is
+> allocated in ixgbe_alloc_mapped_page() which calls dev_alloc_pages() for the
+> allocation which is where the GFP_ATOMIC is specified.
+>
+> I think I would add this detail here.
+>
+> That said, and assuming my analysis is correct, the code looks fine so:
 
-  ERROR: modpost: "__divdi3" [drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.ko] undefined!
-  ERROR: modpost: "__udivdi3" [drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.ko] undefined!
+Yeah, this is actually called out in other spots in the buffer
+cleaning path. This is just something I had overlooked and left in
+place back a few refactors ago.. :-)
 
-Fixes: 6ddac26cf763 ("net/mlx5e: Add support to modify hardware flow meter parameters")
-Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+https://elixir.bootlin.com/linux/latest/source/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c#L1795
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c
-index 28962b2134c7..81e7fe819017 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/meter.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
- // Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
- 
-+#include <asm/div64.h>
- #include "lib/aso.h"
- #include "en/tc/post_act.h"
- #include "meter.h"
-@@ -61,7 +62,7 @@ mlx5e_flow_meter_cir_calc(u64 cir, u8 *man, u8 *exp)
- 		m = cir << e;
- 		if ((s64)m < 0) /* overflow */
- 			break;
--		m /= MLX5_CONST_CIR;
-+		m = div64_u64(m, MLX5_CONST_CIR);
- 		if (m > 0xFF) /* man width 8 bit */
- 			continue;
- 		_cir = MLX5_CALC_CIR(m, e);
--- 
-2.30.2
-
+Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
