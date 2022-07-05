@@ -2,73 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 692E356628D
-	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 06:59:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C8A0E566295
+	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 07:03:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229483AbiGEE7l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jul 2022 00:59:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60752 "EHLO
+        id S229555AbiGEFDi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jul 2022 01:03:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229448AbiGEE7l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 00:59:41 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DE65BC02;
-        Mon,  4 Jul 2022 21:59:40 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id q82so3249686pgq.6;
-        Mon, 04 Jul 2022 21:59:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=qfnX+ERB9BGD1FSxfWo8C5WVWTr9j0KzyIVwQielrBY=;
-        b=C4E595EbYpg6Wy3cVUItkjNufxZ8CoTfOKXvo4XyMkiGFCjsZ4+mnzTbcwgmMm5ys7
-         5QFGRAJgkDXyBvxvw2MsJfXKZSwZ3CDjsOIoYYkp5WrmwCT8kxo1GPsOPh/SjuPZJQqD
-         lcNMxA/WtdezUHp0PRwR+/FenCkjMmua9h0IKkPhZHpWj/tWbcFp2oJ01JqI52SJVhlz
-         CEsEYl5qSiElInL60T56WviA6UN6XniPaNAjmOlbtjz0BAHXLaXx5rW3uAB6MVH/LrTJ
-         gQjD1/ND40tMx/FvXHNlshx52Xk2jLmt/P4GSG5xcJRYQT1pDJAf7gzmLqrjVucD3uKu
-         Rj0w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=qfnX+ERB9BGD1FSxfWo8C5WVWTr9j0KzyIVwQielrBY=;
-        b=R1WeXs5QYO1XWuRa9zAahAO0cxaUN8mse33gpac+3Lh+aZyThetJNwuXJGxE+mC8I2
-         usTDxVxVDI8NqJQrrD16ecNkYRmWIQEz7Md+6MIGgLoEKu15r6tSa6QmUaELOjAIL4XF
-         8PB2Oy6hXmWHmcov9INWjet/RJWalMJy9eOlP4/8vORY0QqfcJZNmuRVK12niTXFM1oY
-         t3LXOo5avczcsu/mci5oYtYc8GurpvtxFnqpodhoBqxbyhfrO3CY9JsH1jknYcvIzRb0
-         5CRaxTh2BpiIRpVkOZXltf8q/NxFZpuKpoIYQvy8rZMeo+mA5Pt8Aa9pI3XFHzSdPEWb
-         MXUA==
-X-Gm-Message-State: AJIora98hQzfz9h8uSaOTxheQ4IXO8ObabWLa0ca0wZMxqn22DifmQ/e
-        libElozcNeXhNsd85HB7Qzbs/NLh8Qb9fA==
-X-Google-Smtp-Source: AGRyM1u19Dk1iBAD0qS21FTRYfRud95dlLy3UXG+hoj+0YqYR3ShunFkKSaw6VyrLxbvZoVC5Mw3ng==
-X-Received: by 2002:a65:49c5:0:b0:412:6e3e:bd91 with SMTP id t5-20020a6549c5000000b004126e3ebd91mr2220208pgs.221.1656997179826;
-        Mon, 04 Jul 2022 21:59:39 -0700 (PDT)
-Received: from Negi ([68.181.16.243])
-        by smtp.gmail.com with ESMTPSA id t17-20020a170902e85100b00162529828aesm22409691plg.109.2022.07.04.21.59.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Jul 2022 21:59:39 -0700 (PDT)
-Date:   Mon, 4 Jul 2022 21:59:38 -0700
-From:   Soumya Negi <soumya.negi97@gmail.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
-        syzbot+9d567e08d3970bfd8271@syzkaller.appspotmail.com,
-        syzkaller-bugs@googlegroups.com,
-        Xiaolong Huang <butterflyhuangxx@gmail.com>,
-        stable@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: Test patch for KASAN: global-out-of-bounds Read in
- detach_capi_ctr
-Message-ID: <20220705045938.GA19781@Negi>
-References: <CAHH-VXdqp0ZGKyJWE76zdyKwhv104JRA8ujUY5NoYO47HC9XWQ@mail.gmail.com>
- <20220704112619.GZ16517@kadam>
- <YsLU6XL1HBnQR79P@kroah.com>
+        with ESMTP id S229453AbiGEFDh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 01:03:37 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C13BC5FBE;
+        Mon,  4 Jul 2022 22:03:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656997412; x=1688533412;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=0sKczz/MzrkciaGHBhWNdrcBmOzdmGmWF8CNerI1VBk=;
+  b=J7V4aPS53MmoQJre70udgVB1s6En49xD3hUAuTu3oNNw0LtPtNI8vryF
+   XZ4Y0VlzEVML0dX3+ArCrnOijESmP8T90CSiAOaCyZRw9KPTOWmSrd1PR
+   RT7sdh+TFTJFvC1DzyGn3ivkpf+QWr8Xgl8QlTSL/m5we3h8TuDD7wVwv
+   k1poGYIL+W/3YI9mPZaMPFvkrrXJhYmc4Y25QIeJKZlaar1JUCYsLoEIf
+   47+AL0FS3KnRGCZjlbcXP34S1ylzw9VxMRuwgscl47QyMN2mMR0NnEURc
+   yvLvHjHHYYe0TLesNAAM9bcd0qLadJBE0a9Yz1kpErcz10iUcnk9kq3Yy
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10398"; a="272028247"
+X-IronPort-AV: E=Sophos;i="5.92,245,1650956400"; 
+   d="scan'208";a="272028247"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2022 22:03:32 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,245,1650956400"; 
+   d="scan'208";a="625312910"
+Received: from shbuild999.sh.intel.com (HELO localhost) ([10.239.146.138])
+  by orsmga001.jf.intel.com with ESMTP; 04 Jul 2022 22:03:26 -0700
+Date:   Tue, 5 Jul 2022 13:03:26 +0800
+From:   Feng Tang <feng.tang@intel.com>
+To:     Roman Gushchin <roman.gushchin@linux.dev>
+Cc:     Shakeel Butt <shakeelb@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Linux MM <linux-mm@kvack.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Xin Long <lucien.xin@gmail.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        kernel test robot <oliver.sang@intel.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        network dev <netdev@vger.kernel.org>,
+        linux-s390@vger.kernel.org, MPTCP Upstream <mptcp@lists.linux.dev>,
+        "linux-sctp @ vger . kernel . org" <linux-sctp@vger.kernel.org>,
+        lkp@lists.01.org, kbuild test robot <lkp@intel.com>,
+        Huang Ying <ying.huang@intel.com>,
+        Xing Zhengjun <zhengjun.xing@linux.intel.com>,
+        Yin Fengwei <fengwei.yin@intel.com>, Ying Xu <yinxu@redhat.com>
+Subject: Re: [net] 4890b686f4: netperf.Throughput_Mbps -69.4% regression
+Message-ID: <20220705050326.GF62281@shbuild999.sh.intel.com>
+References: <20220627023812.GA29314@shbuild999.sh.intel.com>
+ <CANn89i+6NPujMyiQxriZRt6vhv6hNrAntXxi1uOhJ0SSqnJ47w@mail.gmail.com>
+ <20220627123415.GA32052@shbuild999.sh.intel.com>
+ <CANn89iJAoYCebNbXpNMXRoDUkFMhg9QagetVU9NZUq+GnLMgqQ@mail.gmail.com>
+ <20220627144822.GA20878@shbuild999.sh.intel.com>
+ <CANn89iLSWm-c4XE79rUsxzOp3VwXVDhOEPTQnWgeQ48UwM=u7Q@mail.gmail.com>
+ <20220628034926.GA69004@shbuild999.sh.intel.com>
+ <CALvZod71Fti8yLC08mdpDk-TLYJVyfVVauWSj1zk=BhN1-GPdA@mail.gmail.com>
+ <20220703104353.GB62281@shbuild999.sh.intel.com>
+ <YsIeYzEuj95PWMWO@castle>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <YsLU6XL1HBnQR79P@kroah.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YsIeYzEuj95PWMWO@castle>
+X-Spam-Status: No, score=-5.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,47 +87,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 04, 2022 at 01:54:17PM +0200, Greg KH wrote:
-> On Mon, Jul 04, 2022 at 02:26:19PM +0300, Dan Carpenter wrote:
+On Sun, Jul 03, 2022 at 03:55:31PM -0700, Roman Gushchin wrote:
+> On Sun, Jul 03, 2022 at 06:43:53PM +0800, Feng Tang wrote:
+> > Hi Shakeel,
 > > 
-> > On Fri, Jul 01, 2022 at 06:08:29AM -0700, Soumya Negi wrote:
-> > > #syz test: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
-> > > 3f8a27f9e27bd78604c0709224cec0ec85a8b106
+> > On Fri, Jul 01, 2022 at 08:47:29AM -0700, Shakeel Butt wrote:
+> > > On Mon, Jun 27, 2022 at 8:49 PM Feng Tang <feng.tang@intel.com> wrote:
+> > > > I just tested it, it does perform better (the 4th is with your patch),
+> > > > some perf-profile data is also listed.
+> > > >
+> > > >  7c80b038d23e1f4c 4890b686f4088c90432149bd6de 332b589c49656a45881bca4ecc0 e719635902654380b23ffce908d
+> > > > ---------------- --------------------------- --------------------------- ---------------------------
+> > > >      15722           -69.5%       4792           -40.8%       9300           -27.9%      11341        netperf.Throughput_Mbps
+> > > >
+> > > >       0.00            +0.3        0.26 ±  5%      +0.5        0.51            +1.3        1.27 ±  2%pp.self.__sk_mem_raise_allocated
+> > > >       0.00            +0.3        0.32 ± 15%      +1.7        1.74 ±  2%      +0.4        0.40 ±  2%  pp.self.propagate_protected_usage
+> > > >       0.00            +0.8        0.82 ±  7%      +0.9        0.90            +0.8        0.84        pp.self.__mod_memcg_state
+> > > >       0.00            +1.2        1.24 ±  4%      +1.0        1.01            +1.4        1.44        pp.self.try_charge_memcg
+> > > >       0.00            +2.1        2.06            +2.1        2.13            +2.1        2.11        pp.self.page_counter_uncharge
+> > > >       0.00            +2.1        2.14 ±  4%      +2.7        2.71            +2.6        2.60 ±  2%  pp.self.page_counter_try_charge
+> > > >       1.12 ±  4%      +3.1        4.24            +1.1        2.22            +1.4        2.51        pp.self.native_queued_spin_lock_slowpath
+> > > >       0.28 ±  9%      +3.8        4.06 ±  4%      +0.2        0.48            +0.4        0.68        pp.self.sctp_eat_data
+> > > >       0.00            +8.2        8.23            +0.8        0.83            +1.3        1.26        pp.self.__sk_mem_reduce_allocated
+> > > >
+> > > > And the size of 'mem_cgroup' is increased from 4224 Bytes to 4608.
 > > > 
-> > > -- 
-> > > You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
-> > > To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
-> > > To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/CAHH-VXdqp0ZGKyJWE76zdyKwhv104JRA8ujUY5NoYO47HC9XWQ%40mail.gmail.com.
+> > > Hi Feng, can you please try two more configurations? Take Eric's patch
+> > > of adding ____cacheline_aligned_in_smp in page_counter and for first
+> > > increase MEMCG_CHARGE_BATCH to 64 and for second increase it to 128.
+> > > Basically batch increases combined with Eric's patch.
 > > 
-> > > From 3aa5aaffef64a5574cbdb3f5c985bc25b612140c Mon Sep 17 00:00:00 2001
-> > > From: Soumya Negi <soumya.negi97@gmail.com>
-> > > Date: Fri, 1 Jul 2022 04:52:17 -0700
-> > > Subject: [PATCH] isdn: capi: Add check for controller count in
-> > >  detach_capi_ctr()
-> > > 
-> > > Fixes Syzbot bug:
-> > > https://syzkaller.appspot.com/bug?id=14f4820fbd379105a71fdee357b0759b90587a4e
-> > > 
-> > > This patch checks whether any ISDN devices are registered before unregistering
-> > > a CAPI controller(device). Without the check, the controller struct capi_str
-> > > results in out-of-bounds access bugs to other CAPI data strucures in
-> > > detach_capri_ctr() as seen in the bug report.
-> > > 
-> > 
-> > This bug was already fixed by commit 1f3e2e97c003 ("isdn: cpai: check
-> > ctr->cnr to avoid array index out of bound").
-> > 
-> > It just needs to be backported.  Unfortunately there was no Fixes tag so
-> > it wasn't picked up.  Also I'm not sure how backports work in netdev.
+> > With increasing batch to 128, the regression could be reduced to -12.4%.
 > 
-> That commit has already been backported quite a while ago and is in the
-> following releases:
-> 	4.4.290 4.9.288 4.14.253 4.19.214 5.4.156 5.10.76 5.14.15 5.15
-> 
+> If we're going to bump it, I wonder if we should scale it dynamically depending
+> on the size of the memory cgroup?
+ 
+I think it makes sense, or also make it a configurable parameter? From 
+the test reports of 0Day, these charging/counting play critical role
+in performance (easy to see up to 60% performance effect). If user only
+wants memcg for isolating things or doesn't care charging/stats, these
+seem to be extra taxes.
 
-Thanks for letting me know. Is there a way I can check whether an open
-syzbot bug already has a fix as in this case? Right now I am thinking
-of running the reproducer on linux-next as well before starting on a
-bug.
+For bumping to 64 or 128, universal improvement is expected with the
+only concern of accuracy.
 
--Soumya
+Thanks,
+Feng
+
+> Thanks!
