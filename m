@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 16E64567963
-	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 23:32:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C933656795D
+	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 23:32:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232122AbiGEVce (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jul 2022 17:32:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56980 "EHLO
+        id S231539AbiGEVcc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jul 2022 17:32:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231304AbiGEVc1 (ORCPT
+        with ESMTP id S231382AbiGEVc1 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 17:32:27 -0400
 Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A29EA14D03
-        for <netdev@vger.kernel.org>; Tue,  5 Jul 2022 14:32:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4E2A15A31
+        for <netdev@vger.kernel.org>; Tue,  5 Jul 2022 14:32:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657056744; x=1688592744;
+  t=1657056745; x=1688592745;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=xP1R2dfNPz3sq6+PHPca6seQip9vwHvi5wQWkEIwRBI=;
-  b=NVTy01Fw0xCxOcSv+ZwE+wDzG25448XkTYhBXAV24RzIxaJeVIBEaeEF
-   vpcYJy9ucuSQaexPX2GQ7lwqsIP8pnUWoDPC1CRpjkrjwT/Kt8bk0ujUh
-   7vNiwJR8R1pk1W+iTc8WVrkccASTLsUs0pipBhB61/VYW/T53pxFqH69A
-   J9notIlGUeNAChwKGCjf3MlJuCa3E5z3Q1MsONrqiVdLMlS5J42UDtDcV
-   onKOpZXdLRcAaGQ8ZlmeX8t6Kxyk8bvs6YUHqP4ROWPuYG/K9yDesfiJR
-   SqUvhYqZVuojuGUpU0oxaKx+6dgNx0Wlafbb0981Ndk7sHEeVUh9jJep/
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10399"; a="284633932"
+  bh=a2vfLDIU1Y8R3v+h0jDohycCBGEae5albz97uSQfIr4=;
+  b=dmGls7HaEaCbl+HjhXwv2FXDNKblQQw5Er8bhJ5F4c/N/PKegyYmwT0w
+   0X6uaTSJSlBZNXB8T4a/d6liydnjOlH8Q6WAWasfUINtSdYI1lr2MzwKO
+   eCFdOrOIMnTxHBKpspV1cN503+h4ra1nYlgeGmyiEJ0G8ckBIQU7eHQoN
+   H8zZCAMx/RLBG+nauFRxSKOQ3D8rgCvADwyJsdUeVmPEJR/28oZG6hC1E
+   ErwkTVp/uvUnzD1n5pjXbr7/XN20OOqqGMWL/qyZ+Zl7xuCn4AR4Zf+ao
+   Wnn2RDpK4b1Lt8mNygDDpCympXBAUQarzT+IuHJKi/Evi81lDgy7begRu
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10399"; a="284633935"
 X-IronPort-AV: E=Sophos;i="5.92,247,1650956400"; 
-   d="scan'208";a="284633932"
+   d="scan'208";a="284633935"
 Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 14:32:22 -0700
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 14:32:23 -0700
 X-IronPort-AV: E=Sophos;i="5.92,247,1650956400"; 
-   d="scan'208";a="590558748"
+   d="scan'208";a="590558751"
 Received: from rcenter-mobl.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.209.17.169])
   by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 14:32:22 -0700
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
@@ -43,9 +43,9 @@ Cc:     Kishen Maloor <kishen.maloor@intel.com>, davem@davemloft.net,
         fw@strlen.de, geliang.tang@suse.com, matthieu.baerts@tessares.net,
         mptcp@lists.linux.dev,
         Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net 4/7] mptcp: netlink: issue MP_PRIO signals from userspace PMs
-Date:   Tue,  5 Jul 2022 14:32:14 -0700
-Message-Id: <20220705213217.146898-5-mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net 5/7] selftests: mptcp: userspace PM support for MP_PRIO signals
+Date:   Tue,  5 Jul 2022 14:32:15 -0700
+Message-Id: <20220705213217.146898-6-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220705213217.146898-1-mathew.j.martineau@linux.intel.com>
 References: <20220705213217.146898-1-mathew.j.martineau@linux.intel.com>
@@ -63,167 +63,182 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Kishen Maloor <kishen.maloor@intel.com>
 
-This change updates MPTCP_PM_CMD_SET_FLAGS to allow userspace PMs
-to issue MP_PRIO signals over a specific subflow selected by
-the connection token, local and remote address+port.
+This change updates the testing sample (pm_nl_ctl) to exercise
+the updated MPTCP_PM_CMD_SET_FLAGS command for userspace PMs to
+issue MP_PRIO signals over the selected subflow.
 
-Closes: https://github.com/multipath-tcp/mptcp_net-next/issues/286
-Fixes: 702c2f646d42 ("mptcp: netlink: allow userspace-driven subflow establishment")
+E.g. ./pm_nl_ctl set 10.0.1.2 port 47234 flags backup token 823274047 rip 10.0.1.1 rport 50003
+
+userspace_pm.sh has a new selftest that invokes this command.
+
+Fixes: 259a834fadda ("selftests: mptcp: functional tests for the userspace PM type")
 Acked-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Kishen Maloor <kishen.maloor@intel.com>
 Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 ---
- net/mptcp/pm_netlink.c   | 30 +++++++++++++++++++++++++-----
- net/mptcp/pm_userspace.c | 30 ++++++++++++++++++++++++++++++
- net/mptcp/protocol.h     |  8 +++++++-
- 3 files changed, 62 insertions(+), 6 deletions(-)
+ tools/testing/selftests/net/mptcp/pm_nl_ctl.c | 73 ++++++++++++++++++-
+ .../selftests/net/mptcp/userspace_pm.sh       | 32 ++++++++
+ 2 files changed, 103 insertions(+), 2 deletions(-)
 
-diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
-index ca86c88f89e0..2da251dd7c00 100644
---- a/net/mptcp/pm_netlink.c
-+++ b/net/mptcp/pm_netlink.c
-@@ -717,9 +717,10 @@ void mptcp_pm_nl_addr_send_ack(struct mptcp_sock *msk)
- 	}
- }
+diff --git a/tools/testing/selftests/net/mptcp/pm_nl_ctl.c b/tools/testing/selftests/net/mptcp/pm_nl_ctl.c
+index 6a2f4b981e1d..cb79f0719e3b 100644
+--- a/tools/testing/selftests/net/mptcp/pm_nl_ctl.c
++++ b/tools/testing/selftests/net/mptcp/pm_nl_ctl.c
+@@ -39,7 +39,7 @@ static void syntax(char *argv[])
+ 	fprintf(stderr, "\tdsf lip <local-ip> lport <local-port> rip <remote-ip> rport <remote-port> token <token>\n");
+ 	fprintf(stderr, "\tdel <id> [<ip>]\n");
+ 	fprintf(stderr, "\tget <id>\n");
+-	fprintf(stderr, "\tset [<ip>] [id <nr>] flags [no]backup|[no]fullmesh [port <nr>]\n");
++	fprintf(stderr, "\tset [<ip>] [id <nr>] flags [no]backup|[no]fullmesh [port <nr>] [token <token>] [rip <ip>] [rport <port>]\n");
+ 	fprintf(stderr, "\tflush\n");
+ 	fprintf(stderr, "\tdump\n");
+ 	fprintf(stderr, "\tlimits [<rcv addr max> <subflow max>]\n");
+@@ -1279,7 +1279,10 @@ int set_flags(int fd, int pm_family, int argc, char *argv[])
+ 	struct rtattr *rta, *nest;
+ 	struct nlmsghdr *nh;
+ 	u_int32_t flags = 0;
++	u_int32_t token = 0;
++	u_int16_t rport = 0;
+ 	u_int16_t family;
++	void *rip = NULL;
+ 	int nest_start;
+ 	int use_id = 0;
+ 	u_int8_t id;
+@@ -1339,7 +1342,13 @@ int set_flags(int fd, int pm_family, int argc, char *argv[])
+ 		error(1, 0, " missing flags keyword");
  
--static int mptcp_pm_nl_mp_prio_send_ack(struct mptcp_sock *msk,
--					struct mptcp_addr_info *addr,
--					u8 bkup)
-+int mptcp_pm_nl_mp_prio_send_ack(struct mptcp_sock *msk,
-+				 struct mptcp_addr_info *addr,
-+				 struct mptcp_addr_info *rem,
-+				 u8 bkup)
- {
- 	struct mptcp_subflow_context *subflow;
- 
-@@ -727,13 +728,19 @@ static int mptcp_pm_nl_mp_prio_send_ack(struct mptcp_sock *msk,
- 
- 	mptcp_for_each_subflow(msk, subflow) {
- 		struct sock *ssk = mptcp_subflow_tcp_sock(subflow);
--		struct mptcp_addr_info local;
-+		struct mptcp_addr_info local, remote;
- 		bool slow;
- 
- 		local_address((struct sock_common *)ssk, &local);
- 		if (!mptcp_addresses_equal(&local, addr, addr->port))
- 			continue;
- 
-+		if (rem && rem->family != AF_UNSPEC) {
-+			remote_address((struct sock_common *)ssk, &remote);
-+			if (!mptcp_addresses_equal(&remote, rem, rem->port))
-+				continue;
-+		}
+ 	for (; arg < argc; arg++) {
+-		if (!strcmp(argv[arg], "flags")) {
++		if (!strcmp(argv[arg], "token")) {
++			if (++arg >= argc)
++				error(1, 0, " missing token value");
 +
- 		slow = lock_sock_fast(ssk);
- 		if (subflow->backup != bkup)
- 			msk->last_snd = NULL;
-@@ -1837,7 +1844,7 @@ static int mptcp_nl_set_flags(struct net *net,
++			/* token */
++			token = atoi(argv[arg]);
++		} else if (!strcmp(argv[arg], "flags")) {
+ 			char *tok, *str;
  
- 		lock_sock(sk);
- 		if (changed & MPTCP_PM_ADDR_FLAG_BACKUP)
--			ret = mptcp_pm_nl_mp_prio_send_ack(msk, addr, bkup);
-+			ret = mptcp_pm_nl_mp_prio_send_ack(msk, addr, NULL, bkup);
- 		if (changed & MPTCP_PM_ADDR_FLAG_FULLMESH)
- 			mptcp_pm_nl_fullmesh(msk, addr);
- 		release_sock(sk);
-@@ -1853,6 +1860,9 @@ static int mptcp_nl_set_flags(struct net *net,
- static int mptcp_nl_cmd_set_flags(struct sk_buff *skb, struct genl_info *info)
- {
- 	struct mptcp_pm_addr_entry addr = { .addr = { .family = AF_UNSPEC }, }, *entry;
-+	struct mptcp_pm_addr_entry remote = { .addr = { .family = AF_UNSPEC }, };
-+	struct nlattr *attr_rem = info->attrs[MPTCP_PM_ATTR_ADDR_REMOTE];
-+	struct nlattr *token = info->attrs[MPTCP_PM_ATTR_TOKEN];
- 	struct nlattr *attr = info->attrs[MPTCP_PM_ATTR_ADDR];
- 	struct pm_nl_pernet *pernet = genl_info_pm_nl(info);
- 	u8 changed, mask = MPTCP_PM_ADDR_FLAG_BACKUP |
-@@ -1865,6 +1875,12 @@ static int mptcp_nl_cmd_set_flags(struct sk_buff *skb, struct genl_info *info)
- 	if (ret < 0)
- 		return ret;
+ 			/* flags */
+@@ -1378,12 +1387,72 @@ int set_flags(int fd, int pm_family, int argc, char *argv[])
+ 			rta->rta_len = RTA_LENGTH(2);
+ 			memcpy(RTA_DATA(rta), &port, 2);
+ 			off += NLMSG_ALIGN(rta->rta_len);
++		} else if (!strcmp(argv[arg], "rport")) {
++			if (++arg >= argc)
++				error(1, 0, " missing remote port");
++
++			rport = atoi(argv[arg]);
++		} else if (!strcmp(argv[arg], "rip")) {
++			if (++arg >= argc)
++				error(1, 0, " missing remote ip");
++
++			rip = argv[arg];
+ 		} else {
+ 			error(1, 0, "unknown keyword %s", argv[arg]);
+ 		}
+ 	}
+ 	nest->rta_len = off - nest_start;
  
-+	if (attr_rem) {
-+		ret = mptcp_pm_parse_entry(attr_rem, info, false, &remote);
-+		if (ret < 0)
-+			return ret;
++	/* token */
++	if (token) {
++		rta = (void *)(data + off);
++		rta->rta_type = MPTCP_PM_ATTR_TOKEN;
++		rta->rta_len = RTA_LENGTH(4);
++		memcpy(RTA_DATA(rta), &token, 4);
++		off += NLMSG_ALIGN(rta->rta_len);
 +	}
 +
- 	if (addr.flags & MPTCP_PM_ADDR_FLAG_BACKUP)
- 		bkup = 1;
- 	if (addr.addr.family == AF_UNSPEC) {
-@@ -1873,6 +1889,10 @@ static int mptcp_nl_cmd_set_flags(struct sk_buff *skb, struct genl_info *info)
- 			return -EOPNOTSUPP;
- 	}
- 
-+	if (token)
-+		return mptcp_userspace_pm_set_flags(sock_net(skb->sk),
-+						    token, &addr, &remote, bkup);
++	/* remote addr/port */
++	if (rip) {
++		nest_start = off;
++		nest = (void *)(data + off);
++		nest->rta_type = NLA_F_NESTED | MPTCP_PM_ATTR_ADDR_REMOTE;
++		nest->rta_len = RTA_LENGTH(0);
++		off += NLMSG_ALIGN(nest->rta_len);
 +
- 	spin_lock_bh(&pernet->lock);
- 	entry = __lookup_addr(pernet, &addr.addr, lookup_by_id);
- 	if (!entry) {
-diff --git a/net/mptcp/pm_userspace.c b/net/mptcp/pm_userspace.c
-index 26212bebc5ed..51e2f066d54f 100644
---- a/net/mptcp/pm_userspace.c
-+++ b/net/mptcp/pm_userspace.c
-@@ -420,3 +420,33 @@ int mptcp_nl_cmd_sf_destroy(struct sk_buff *skb, struct genl_info *info)
- 	sock_put((struct sock *)msk);
- 	return err;
++		/* addr data */
++		rta = (void *)(data + off);
++		if (inet_pton(AF_INET, rip, RTA_DATA(rta))) {
++			family = AF_INET;
++			rta->rta_type = MPTCP_PM_ADDR_ATTR_ADDR4;
++			rta->rta_len = RTA_LENGTH(4);
++		} else if (inet_pton(AF_INET6, rip, RTA_DATA(rta))) {
++			family = AF_INET6;
++			rta->rta_type = MPTCP_PM_ADDR_ATTR_ADDR6;
++			rta->rta_len = RTA_LENGTH(16);
++		} else {
++			error(1, errno, "can't parse ip %s", (char *)rip);
++		}
++		off += NLMSG_ALIGN(rta->rta_len);
++
++		/* family */
++		rta = (void *)(data + off);
++		rta->rta_type = MPTCP_PM_ADDR_ATTR_FAMILY;
++		rta->rta_len = RTA_LENGTH(2);
++		memcpy(RTA_DATA(rta), &family, 2);
++		off += NLMSG_ALIGN(rta->rta_len);
++
++		if (rport) {
++			rta = (void *)(data + off);
++			rta->rta_type = MPTCP_PM_ADDR_ATTR_PORT;
++			rta->rta_len = RTA_LENGTH(2);
++			memcpy(RTA_DATA(rta), &rport, 2);
++			off += NLMSG_ALIGN(rta->rta_len);
++		}
++
++		nest->rta_len = off - nest_start;
++	}
++
+ 	do_nl_req(fd, nh, off, 0);
+ 	return 0;
  }
-+
-+int mptcp_userspace_pm_set_flags(struct net *net, struct nlattr *token,
-+				 struct mptcp_pm_addr_entry *loc,
-+				 struct mptcp_pm_addr_entry *rem, u8 bkup)
+diff --git a/tools/testing/selftests/net/mptcp/userspace_pm.sh b/tools/testing/selftests/net/mptcp/userspace_pm.sh
+index 78d0bb640b11..abe3d4ebe554 100755
+--- a/tools/testing/selftests/net/mptcp/userspace_pm.sh
++++ b/tools/testing/selftests/net/mptcp/userspace_pm.sh
+@@ -770,10 +770,42 @@ test_subflows()
+ 	rm -f "$evts"
+ }
+ 
++test_prio()
 +{
-+	struct mptcp_sock *msk;
-+	int ret = -EINVAL;
-+	u32 token_val;
++	local count
 +
-+	token_val = nla_get_u32(token);
++	# Send MP_PRIO signal from client to server machine
++	ip netns exec "$ns2" ./pm_nl_ctl set 10.0.1.2 port "$client4_port" flags backup token "$client4_token" rip 10.0.1.1 rport "$server4_port"
++	sleep 0.5
 +
-+	msk = mptcp_token_get_sock(net, token_val);
-+	if (!msk)
-+		return ret;
++	# Check TX
++	stdbuf -o0 -e0 printf "MP_PRIO TX                                                 \t"
++	count=$(ip netns exec "$ns2" nstat -as | grep MPTcpExtMPPrioTx | awk '{print $2}')
++	[ -z "$count" ] && count=0
++	if [ $count != 1 ]; then
++		stdbuf -o0 -e0 printf "[FAIL]\n"
++		exit 1
++	else
++		stdbuf -o0 -e0 printf "[OK]\n"
++	fi
 +
-+	if (!mptcp_pm_is_userspace(msk))
-+		goto set_flags_err;
-+
-+	if (loc->addr.family == AF_UNSPEC ||
-+	    rem->addr.family == AF_UNSPEC)
-+		goto set_flags_err;
-+
-+	lock_sock((struct sock *)msk);
-+	ret = mptcp_pm_nl_mp_prio_send_ack(msk, &loc->addr, &rem->addr, bkup);
-+	release_sock((struct sock *)msk);
-+
-+set_flags_err:
-+	sock_put((struct sock *)msk);
-+	return ret;
++	# Check RX
++	stdbuf -o0 -e0 printf "MP_PRIO RX                                                 \t"
++	count=$(ip netns exec "$ns1" nstat -as | grep MPTcpExtMPPrioRx | awk '{print $2}')
++	[ -z "$count" ] && count=0
++	if [ $count != 1 ]; then
++		stdbuf -o0 -e0 printf "[FAIL]\n"
++		exit 1
++	else
++		stdbuf -o0 -e0 printf "[OK]\n"
++	fi
 +}
-diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
-index 033c995772dc..480c5320b86e 100644
---- a/net/mptcp/protocol.h
-+++ b/net/mptcp/protocol.h
-@@ -772,6 +772,10 @@ void mptcp_pm_rm_addr_received(struct mptcp_sock *msk,
- 			       const struct mptcp_rm_list *rm_list);
- void mptcp_pm_mp_prio_received(struct sock *sk, u8 bkup);
- void mptcp_pm_mp_fail_received(struct sock *sk, u64 fail_seq);
-+int mptcp_pm_nl_mp_prio_send_ack(struct mptcp_sock *msk,
-+				 struct mptcp_addr_info *addr,
-+				 struct mptcp_addr_info *rem,
-+				 u8 bkup);
- bool mptcp_pm_alloc_anno_list(struct mptcp_sock *msk,
- 			      const struct mptcp_pm_addr_entry *entry);
- void mptcp_pm_free_anno_list(struct mptcp_sock *msk);
-@@ -788,7 +792,9 @@ int mptcp_pm_get_flags_and_ifindex_by_id(struct mptcp_sock *msk,
- int mptcp_userspace_pm_get_flags_and_ifindex_by_id(struct mptcp_sock *msk,
- 						   unsigned int id,
- 						   u8 *flags, int *ifindex);
--
-+int mptcp_userspace_pm_set_flags(struct net *net, struct nlattr *token,
-+				 struct mptcp_pm_addr_entry *loc,
-+				 struct mptcp_pm_addr_entry *rem, u8 bkup);
- int mptcp_pm_announce_addr(struct mptcp_sock *msk,
- 			   const struct mptcp_addr_info *addr,
- 			   bool echo);
++
+ make_connection
+ make_connection "v6"
+ test_announce
+ test_remove
+ test_subflows
++test_prio
+ 
+ exit 0
 -- 
 2.37.0
 
