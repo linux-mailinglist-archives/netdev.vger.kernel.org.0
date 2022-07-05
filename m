@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 10DD856771E
-	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 21:04:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C7A6567729
+	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 21:04:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232643AbiGETEB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jul 2022 15:04:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36400 "EHLO
+        id S233218AbiGETEM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jul 2022 15:04:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232494AbiGETD5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 15:03:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69616CE1C;
-        Tue,  5 Jul 2022 12:03:56 -0700 (PDT)
+        with ESMTP id S232064AbiGETEJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 15:04:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEEAD13D02;
+        Tue,  5 Jul 2022 12:04:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 16306B8191D;
-        Tue,  5 Jul 2022 19:03:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8322EC341C7;
-        Tue,  5 Jul 2022 19:03:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 893DDB8191A;
+        Tue,  5 Jul 2022 19:04:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B99ADC341CB;
+        Tue,  5 Jul 2022 19:04:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657047833;
-        bh=y72XdUI/sjSXjaw9WSqjzwHIIFgTvSXemkRNtZGBq5s=;
+        s=k20201202; t=1657047846;
+        bh=W3eA1geUi+YV4d0T8w/+tOwQe0Ftku7vR7YDIhjsfSw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Jo4nf14tx155OTzX1S9ukdTXYuPoTwaPn2rQnrBSNSsFHoheyiIdEJVZf+SDy0lhZ
-         RERz0L5LkK/HkryqsgYQixqesGGnI4Gq2D+pT6Itb+dZwNJG7JyNlcgKgKWM47rlL1
-         aAMoRIjM0mbMY0Sj3tFjYThcnLkAN9eOpgSxkrAL7II93kuMkaGNCqjIsTaAD9Y1Rf
-         LssJK02gK2OXFCtKmPBL0ZtgCUxheDiE0t1/OXyX9/2U0YThhyhRAmHy3fKVQjODzL
-         Ob3BOqAJXgyLljJaQQ72LirvZ2Hti5HGdfdIKvQe0RvsMaxXxj3chnKmqrB1fnGlRb
-         jouTQaNxtrhHw==
+        b=KvVuE5bIQZGv3r56mXfWlKh5zOdx/BQ9qPfUxbrnS7nVhdwN/E4vNXKc+C8eR+AHr
+         fUeLSKAjuwX1G951b34nxgTi8y83FwGl4uY8y13JHhKjc2Kn3wYtJfiNvSix4SegRF
+         Q75/6qe9X2KcNnQqSrTVyNbo7/7g168XDU3kJ7SvlIi/97vIFrIMj9WSE16mO7W16w
+         hNRqOxo8uOt+jAN6PyY8w93/HCCTc8WYc0lELaDxE8rgae8yPKgsXBtLGW7AFrznua
+         hXyC9myf+4JHKiZgBdADHYNVR+Au16EH/qpcQhHCxkG3uwZzUkONGF2VGf+785BmJn
+         PvL9MEdUi4ZJQ==
 From:   Jiri Olsa <jolsa@kernel.org>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -43,9 +43,9 @@ Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         Masami Hiramatsu <mhiramat@kernel.org>,
         Martynas Pumputis <m@lambda.lt>,
         Yutaro Hayakawa <yutaro.hayakawa@isovalent.com>
-Subject: [PATCH RFC bpf-next 3/4] selftests/bpf: Disable kprobe attach test with offset for CONFIG_X86_KERNEL_IBT
-Date:   Tue,  5 Jul 2022 21:03:07 +0200
-Message-Id: <20220705190308.1063813-4-jolsa@kernel.org>
+Subject: [PATCH RFC bpf-next 4/4] selftests/bpf: Fix kprobe get_func_ip tests for CONFIG_X86_KERNEL_IBT
+Date:   Tue,  5 Jul 2022 21:03:08 +0200
+Message-Id: <20220705190308.1063813-5-jolsa@kernel.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220705190308.1063813-1-jolsa@kernel.org>
 References: <20220705190308.1063813-1-jolsa@kernel.org>
@@ -61,71 +61,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Attach like 'kprobe/bpf_fentry_test6+0x5' will fail to attach
-when CONFIG_X86_KERNEL_IBT option is enabled because of the
-endbr instruction at the function entry.
-
-We would need to do manual attach with offset calculation based
-on the CONFIG_X86_KERNEL_IBT option, which does not seem worth
-the effort to me.
-
-Disabling these test when CONFIG_X86_KERNEL_IBT is enabled.
+The kprobe can be placed anywhere and user must be aware
+of the underlying instructions. Therefore fixing just
+the bpf program to 'fix' the address to match the actual
+function address when CONFIG_X86_KERNEL_IBT is enabled.
 
 Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 ---
- .../bpf/prog_tests/get_func_ip_test.c         | 25 +++++++++++++++----
- 1 file changed, 20 insertions(+), 5 deletions(-)
+ tools/testing/selftests/bpf/progs/get_func_ip_test.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/get_func_ip_test.c b/tools/testing/selftests/bpf/prog_tests/get_func_ip_test.c
-index 938dbd4d7c2f..cb0b78fb29df 100644
---- a/tools/testing/selftests/bpf/prog_tests/get_func_ip_test.c
-+++ b/tools/testing/selftests/bpf/prog_tests/get_func_ip_test.c
-@@ -2,6 +2,24 @@
- #include <test_progs.h>
- #include "get_func_ip_test.skel.h"
+diff --git a/tools/testing/selftests/bpf/progs/get_func_ip_test.c b/tools/testing/selftests/bpf/progs/get_func_ip_test.c
+index a587aeca5ae0..220d56b7c1dc 100644
+--- a/tools/testing/selftests/bpf/progs/get_func_ip_test.c
++++ b/tools/testing/selftests/bpf/progs/get_func_ip_test.c
+@@ -2,6 +2,7 @@
+ #include <linux/bpf.h>
+ #include <bpf/bpf_helpers.h>
+ #include <bpf/bpf_tracing.h>
++#include <stdbool.h>
  
-+/* assume IBT is enabled when kernel configs are not available */
-+#ifdef HAVE_GENHDR
-+# include "autoconf.h"
-+#else
-+#  define CONFIG_X86_KERNEL_IBT 1
-+#endif
+ char _license[] SEC("license") = "GPL";
+ 
+@@ -13,6 +14,8 @@ extern const void bpf_modify_return_test __ksym;
+ extern const void bpf_fentry_test6 __ksym;
+ extern const void bpf_fentry_test7 __ksym;
+ 
++extern bool CONFIG_X86_KERNEL_IBT __kconfig __weak;
 +
-+/* test6 and test7 are x86_64 specific because of the instruction
-+ * offset, disabling it for all other archs
-+ *
-+ * CONFIG_X86_KERNEL_IBT adds endbr instruction at function entry,
-+ * so disabling test6 and test7, because the offset is hardcoded
-+ * in program section
-+ */
-+#if !defined(__x86_64__) || defined(CONFIG_X86_KERNEL_IBT)
-+#define DISABLE_OFFSET_ATTACH 1
-+#endif
-+
- void test_get_func_ip_test(void)
+ __u64 test1_result = 0;
+ SEC("fentry/bpf_fentry_test1")
+ int BPF_PROG(test1, int a)
+@@ -37,7 +40,7 @@ __u64 test3_result = 0;
+ SEC("kprobe/bpf_fentry_test3")
+ int test3(struct pt_regs *ctx)
  {
- 	struct get_func_ip_test *skel = NULL;
-@@ -12,10 +30,7 @@ void test_get_func_ip_test(void)
- 	if (!ASSERT_OK_PTR(skel, "get_func_ip_test__open"))
- 		return;
+-	__u64 addr = bpf_get_func_ip(ctx);
++	__u64 addr = bpf_get_func_ip(ctx) - (CONFIG_X86_KERNEL_IBT ? 4 : 0);
  
--	/* test6 is x86_64 specifc because of the instruction
--	 * offset, disabling it for all other archs
--	 */
--#ifndef __x86_64__
-+#if defined(DISABLE_OFFSET_ATTACH)
- 	bpf_program__set_autoload(skel->progs.test6, false);
- 	bpf_program__set_autoload(skel->progs.test7, false);
- #endif
-@@ -43,7 +58,7 @@ void test_get_func_ip_test(void)
- 	ASSERT_EQ(skel->bss->test3_result, 1, "test3_result");
- 	ASSERT_EQ(skel->bss->test4_result, 1, "test4_result");
- 	ASSERT_EQ(skel->bss->test5_result, 1, "test5_result");
--#ifdef __x86_64__
-+#if !defined(DISABLE_OFFSET_ATTACH)
- 	ASSERT_EQ(skel->bss->test6_result, 1, "test6_result");
- 	ASSERT_EQ(skel->bss->test7_result, 1, "test7_result");
- #endif
+ 	test3_result = (const void *) addr == &bpf_fentry_test3;
+ 	return 0;
+@@ -47,7 +50,7 @@ __u64 test4_result = 0;
+ SEC("kretprobe/bpf_fentry_test4")
+ int BPF_KRETPROBE(test4)
+ {
+-	__u64 addr = bpf_get_func_ip(ctx);
++	__u64 addr = bpf_get_func_ip(ctx) - (CONFIG_X86_KERNEL_IBT ? 4 : 0);
+ 
+ 	test4_result = (const void *) addr == &bpf_fentry_test4;
+ 	return 0;
 -- 
 2.35.3
 
