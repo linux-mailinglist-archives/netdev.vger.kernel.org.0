@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C9E1D566682
-	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 11:48:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1D02566686
+	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 11:48:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230226AbiGEJsT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jul 2022 05:48:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37558 "EHLO
+        id S231269AbiGEJse (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jul 2022 05:48:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231208AbiGEJsS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 05:48:18 -0400
+        with ESMTP id S231264AbiGEJsc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 05:48:32 -0400
 Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19B8DF585
-        for <netdev@vger.kernel.org>; Tue,  5 Jul 2022 02:48:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4925D25C3
+        for <netdev@vger.kernel.org>; Tue,  5 Jul 2022 02:48:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
         Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
         In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
         Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=2vpFj5+cCf6+YKlfaS7Vv6Bok0gpSkUhdwMT7QAC2mQ=; b=nHbCbkzcOZaRkjGTacW6KVLP6N
-        iZsBzPFj8MZR+BdSn8GQiTpiYi6ktSLFe+TL6Bo9yBHE2RQpZQYSyad7Vie51KnpW1ZxUFptAIQhh
-        plJ/T5f+68AyYnlgS7LStTXKBXTOb1dQk0Bkgh6tSz3V3XqEcCzAFxgHgBdNUderxiD5PxBNVMfh1
-        IUMtDpmdjDIDPH3+Ro3jrtdqpXPP2Hb6RI3l3FraIhbRafvbHuAhQ778Mcf4WUAQV3XnSSMcRRjhu
-        SizoqT2C5zmrZx6TLL48UajT7hNHkb2JmFRaIBi+8U3oBKd+kQ07QMFr5Z1l/3mpI5Wf+/RfX5gSB
-        K+a+tVlw==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:60654 helo=rmk-PC.armlinux.org.uk)
+        bh=VeDQ3f9B7pR3qloIC/BpOn9WMCHG9Pe+77zRp0FsYcs=; b=XT32XUR3NiZcke+Nt3JEezWGsg
+        tkLKGQ/pGttWrvps/f00EGG7AOjkxtGOqmT1VP0UrxygLIT6WNKo5Z21GCjoMqpGCif27L/vP+WAJ
+        8Qn/5HtDN/mePBCTkrt1TsIlrq701fjyWq8MrrflvQYW4my3uNTr15G1MsRffAcZnSTexwhTA2Taa
+        jxPjdb2QK9I1BxRYoeD/BzlxjGHpC7obPGp2m61FXnqs48cAJQVcEDVJqbXfp5Izjqo89qCNt3JRu
+        2r1m5mH6rBQrq2e42dteWGpi5iAehQ4cqybxF5cFLfy36zuGxHqGQvS7sg/RLg7I78e+N1oDeT7Lb
+        w5YvKYQw==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:60656 helo=rmk-PC.armlinux.org.uk)
         by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <rmk@armlinux.org.uk>)
-        id 1o8fA3-00013t-7a; Tue, 05 Jul 2022 10:48:03 +0100
+        id 1o8fA9-00014Q-OT; Tue, 05 Jul 2022 10:48:10 +0100
 Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
         (envelope-from <rmk@rmk-PC.armlinux.org.uk>)
-        id 1o8fA2-0059aI-EN; Tue, 05 Jul 2022 10:48:02 +0100
+        id 1o8fA7-0059aO-K8; Tue, 05 Jul 2022 10:48:07 +0100
 In-Reply-To: <YsQIjC7UpcGWJovx@shell.armlinux.org.uk>
 References: <YsQIjC7UpcGWJovx@shell.armlinux.org.uk>
 From:   "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
@@ -62,15 +62,15 @@ Cc:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
         Vladimir Oltean <olteanv@gmail.com>,
         Woojung Huh <woojung.huh@microchip.com>,
         Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
-Subject: [PATCH RFC net-next 4/5] net: phylink: add
- phylink_set_max_fixed_link()
+Subject: [PATCH RFC net-next 5/5] net: dsa: always use phylink for CPU and DSA
+ ports
 MIME-Version: 1.0
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1o8fA2-0059aI-EN@rmk-PC.armlinux.org.uk>
+Message-Id: <E1o8fA7-0059aO-K8@rmk-PC.armlinux.org.uk>
 Sender: Russell King <rmk@armlinux.org.uk>
-Date:   Tue, 05 Jul 2022 10:48:02 +0100
+Date:   Tue, 05 Jul 2022 10:48:07 +0100
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
@@ -80,175 +80,314 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a function for DSA to use to configure phylink, in the absence of
-any other configuration, to a fixed link operating at the maximum
-supported link speed.
+Currently, we only use phylink for CPU and DSA ports if there is a
+fixed-link specification, or a PHY specified. The reason for this
+behaviour is that when neither is specified, there was no way for
+phylink to know the link parameters.
 
-This is needed so we can support phylink usage on CPU and DSA ports.
+Now that we have phylink_set_max_link_speed() (which has become
+possible through the addition of mac_capabilities) we now have the
+ability to know the maximum link speed for a specific link, and can
+use phylink for this case as well.
 
-We use the default interface that the DSA driver provides (if any)
-otherwise we attempt to find the first supported interface that gives
-the maximum speed for the link.
+However, we need all DSA drivers to provide mac_capabilities for this
+to work, and either report the default interface to be used for a port
+or have filled in supported_interfaces, so that we can select a maximum
+speed appropriate for the interface mode that hardware may have
+configured for the port. Any drivers that do not meet these
+requirements are likely to break.
+
+This is especially important with the conversion of DSA drivers to
+phylink_pcs, as the PCS code only gets called if we are using
+phylink for the port.
 
 Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 ---
- drivers/net/phy/phylink.c | 119 ++++++++++++++++++++++++++++++++++++++
- include/linux/phylink.h   |   5 ++
- 2 files changed, 124 insertions(+)
+ drivers/net/dsa/mv88e6xxx/chip.c | 50 ++++----------------------------
+ drivers/net/dsa/mv88e6xxx/chip.h |  3 --
+ drivers/net/dsa/mv88e6xxx/port.c | 32 --------------------
+ drivers/net/dsa/mv88e6xxx/port.h |  5 ----
+ net/dsa/port.c                   | 24 ++++++++-------
+ 5 files changed, 18 insertions(+), 96 deletions(-)
 
-diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-index 2069fc902e19..7ed3b2c3a359 100644
---- a/drivers/net/phy/phylink.c
-+++ b/drivers/net/phy/phylink.c
-@@ -1333,6 +1333,125 @@ void phylink_destroy(struct phylink *pl)
- }
- EXPORT_SYMBOL_GPL(phylink_destroy);
- 
-+static struct {
-+	unsigned long fd_mask;
-+	unsigned long hd_mask;
-+	int speed;
-+} phylink_caps_speeds[] = {
-+	{ MAC_400000FD, 0,          SPEED_400000 },
-+	{ MAC_200000FD, 0,          SPEED_200000 },
-+	{ MAC_100000FD, 0,          SPEED_100000 },
-+	{ MAC_56000FD,  0,          SPEED_56000  },
-+	{ MAC_50000FD,  0,          SPEED_50000  },
-+	{ MAC_40000FD,  0,          SPEED_40000  },
-+	{ MAC_25000FD,  0,          SPEED_40000  },
-+	{ MAC_20000FD,  0,          SPEED_20000  },
-+	{ MAC_10000FD,  0,          SPEED_10000  },
-+	{ MAC_5000FD,   0,          SPEED_5000   },
-+	{ MAC_2500FD,   0,          SPEED_2500   },
-+	{ MAC_1000FD,   MAC_1000HD, SPEED_1000   },
-+	{ MAC_100FD,    MAC_100HD,  SPEED_100    },
-+	{ MAC_10FD,     MAC_10HD,   SPEED_10     },
-+};
-+
-+/**
-+ * phylink_set_max_fixed_link() - set a fixed link configuration for phylink
-+ * @pl: a pointer to a &struct phylink returned from phylink_create()
-+ *
-+ * Set a maximum speed fixed-link configuration for the chosen interface
-+ * mode and MAC capabilities for the phylink instance. If the interface mode
-+ * is PHY_INTERFACE_MODE_NA, then search the supported interfaces bitmap for
-+ * the first interface that gives the fastest supported speed.
-+ *
-+ * This is only valid for use immediately after phylink_create(). Must not
-+ * be used at any other time.
-+ *
-+ * The user must have initialised mac_capabilities and set a valid interface.
-+ */
-+int phylink_set_max_fixed_link(struct phylink *pl)
-+{
-+	phy_interface_t intf, interface;
-+	unsigned long caps, max_caps;
-+	unsigned long *interfaces;
-+	int speed, duplex;
-+	int i;
-+
-+	interface = pl->link_interface;
-+
-+	phylink_dbg(pl, "sif=%*pbl if=%d(%s) cap=%lx\n",
-+		    (int)PHY_INTERFACE_MODE_MAX,
-+		    pl->config->supported_interfaces,
-+		    interface, phy_modes(interface),
-+		    pl->config->mac_capabilities);
-+
-+	/* If we are not in PHY mode, or have a PHY, or have a SFP bus,
-+	 * then we must not default to a fixed link.
-+	 */
-+	if (pl->cfg_link_an_mode != MLO_AN_PHY || pl->phydev || pl->sfp_bus)
-+		return -EBUSY;
-+
-+	if (interface != PHY_INTERFACE_MODE_NA) {
-+		/* Get the speed/duplex capabilities and reduce according to the
-+		 * specified interface mode.
-+		 */
-+		caps = pl->config->mac_capabilities;
-+		caps &= phylink_interface_to_caps(interface);
-+	} else {
-+		interfaces = pl->config->supported_interfaces;
-+		max_caps = 0;
-+
-+		/* Find the supported interface mode which gives the maximum
-+		 * speed.
-+		 */
-+		for_each_set_bit(intf, interfaces, PHY_INTERFACE_MODE_MAX) {
-+			caps = pl->config->mac_capabilities;
-+			caps &= phylink_interface_to_caps(intf);
-+			if (caps > max_caps) {
-+				max_caps = caps;
-+				interface = intf;
-+			}
-+		}
-+
-+		caps = max_caps;
-+	}
-+
-+	caps &= ~(MAC_SYM_PAUSE | MAC_ASYM_PAUSE);
-+
-+	/* If there are no capabilities, then we are not using this default. */
-+	if (!caps)
-+		return -EINVAL;
-+
-+	/* Decode to fastest speed and duplex */
-+	duplex = DUPLEX_UNKNOWN;
-+	speed = SPEED_UNKNOWN;
-+	for (i = 0; i < ARRAY_SIZE(phylink_caps_speeds); i++) {
-+		if (caps & phylink_caps_speeds[i].fd_mask) {
-+			duplex = DUPLEX_FULL;
-+			speed = phylink_caps_speeds[i].speed;
-+			break;
-+		} else if (caps & phylink_caps_speeds[i].hd_mask) {
-+			duplex = DUPLEX_HALF;
-+			speed = phylink_caps_speeds[i].speed;
-+			break;
-+		}
-+	}
-+
-+	/* If we didn't find anything, bail. */
-+	if (speed == SPEED_UNKNOWN)
-+		return -EINVAL;
-+
-+	pl->link_interface = interface;
-+	pl->link_config.interface = interface;
-+	pl->link_config.speed = speed;
-+	pl->link_config.duplex = duplex;
-+	pl->link_config.link = 1;
-+	pl->cfg_link_an_mode = MLO_AN_FIXED;
-+	pl->cur_link_an_mode = MLO_AN_FIXED;
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(phylink_set_max_fixed_link);
-+
- static void phylink_phy_change(struct phy_device *phydev, bool up)
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index 877407bc09de..7fd89239a7a7 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -3315,9 +3315,8 @@ static int mv88e6xxx_setup_port(struct mv88e6xxx_chip *chip, int port)
  {
- 	struct phylink *pl = phydev->phylink;
-diff --git a/include/linux/phylink.h b/include/linux/phylink.h
-index 6d06896fc20d..9e2fb476d19c 100644
---- a/include/linux/phylink.h
-+++ b/include/linux/phylink.h
-@@ -23,6 +23,9 @@ enum {
+ 	struct device_node *phy_handle = NULL;
+ 	struct dsa_switch *ds = chip->ds;
+-	phy_interface_t mode;
+ 	struct dsa_port *dp;
+-	int tx_amp, speed;
++	int tx_amp;
+ 	int err;
+ 	u16 reg;
  
- 	MAC_SYM_PAUSE	= BIT(0),
- 	MAC_ASYM_PAUSE	= BIT(1),
-+	/* These speed bits must be sorted according to speed for
-+	 * phylink_set_max_fixed_link()
-+	 */
- 	MAC_10HD	= BIT(2),
- 	MAC_10FD	= BIT(3),
- 	MAC_10		= MAC_10HD | MAC_10FD,
-@@ -529,6 +532,8 @@ struct phylink *phylink_create(struct phylink_config *, struct fwnode_handle *,
- 			       const struct phylink_mac_ops *mac_ops);
- void phylink_destroy(struct phylink *);
+@@ -3326,40 +3325,10 @@ static int mv88e6xxx_setup_port(struct mv88e6xxx_chip *chip, int port)
  
-+int phylink_set_max_fixed_link(struct phylink *pl);
+ 	dp = dsa_to_port(ds, port);
+ 
+-	/* MAC Forcing register: don't force link, speed, duplex or flow control
+-	 * state to any particular values on physical ports, but force the CPU
+-	 * port and all DSA ports to their maximum bandwidth and full duplex.
+-	 */
+-	if (dsa_is_cpu_port(ds, port) || dsa_is_dsa_port(ds, port)) {
+-		unsigned long caps = dp->pl_config.mac_capabilities;
+-
+-		if (chip->info->ops->port_max_speed_mode)
+-			mode = chip->info->ops->port_max_speed_mode(port);
+-		else
+-			mode = PHY_INTERFACE_MODE_NA;
+-
+-		if (caps & MAC_10000FD)
+-			speed = SPEED_10000;
+-		else if (caps & MAC_5000FD)
+-			speed = SPEED_5000;
+-		else if (caps & MAC_2500FD)
+-			speed = SPEED_2500;
+-		else if (caps & MAC_1000)
+-			speed = SPEED_1000;
+-		else if (caps & MAC_100)
+-			speed = SPEED_100;
+-		else
+-			speed = SPEED_10;
+-
+-		err = mv88e6xxx_port_setup_mac(chip, port, LINK_FORCED_UP,
+-					       speed, DUPLEX_FULL,
+-					       PAUSE_OFF, mode);
+-	} else {
+-		err = mv88e6xxx_port_setup_mac(chip, port, LINK_UNFORCED,
+-					       SPEED_UNFORCED, DUPLEX_UNFORCED,
+-					       PAUSE_ON,
+-					       PHY_INTERFACE_MODE_NA);
+-	}
++	err = mv88e6xxx_port_setup_mac(chip, port, LINK_UNFORCED,
++				       SPEED_UNFORCED, DUPLEX_UNFORCED,
++				       PAUSE_ON,
++				       PHY_INTERFACE_MODE_NA);
+ 	if (err)
+ 		return err;
+ 
+@@ -4307,7 +4276,6 @@ static const struct mv88e6xxx_ops mv88e6141_ops = {
+ 	.port_sync_link = mv88e6xxx_port_sync_link,
+ 	.port_set_rgmii_delay = mv88e6390_port_set_rgmii_delay,
+ 	.port_set_speed_duplex = mv88e6341_port_set_speed_duplex,
+-	.port_max_speed_mode = mv88e6341_port_max_speed_mode,
+ 	.port_tag_remap = mv88e6095_port_tag_remap,
+ 	.port_set_policy = mv88e6352_port_set_policy,
+ 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
+@@ -4700,7 +4668,6 @@ static const struct mv88e6xxx_ops mv88e6190_ops = {
+ 	.port_sync_link = mv88e6xxx_port_sync_link,
+ 	.port_set_rgmii_delay = mv88e6390_port_set_rgmii_delay,
+ 	.port_set_speed_duplex = mv88e6390_port_set_speed_duplex,
+-	.port_max_speed_mode = mv88e6390_port_max_speed_mode,
+ 	.port_tag_remap = mv88e6390_port_tag_remap,
+ 	.port_set_policy = mv88e6352_port_set_policy,
+ 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
+@@ -4763,7 +4730,6 @@ static const struct mv88e6xxx_ops mv88e6190x_ops = {
+ 	.port_sync_link = mv88e6xxx_port_sync_link,
+ 	.port_set_rgmii_delay = mv88e6390_port_set_rgmii_delay,
+ 	.port_set_speed_duplex = mv88e6390x_port_set_speed_duplex,
+-	.port_max_speed_mode = mv88e6390x_port_max_speed_mode,
+ 	.port_tag_remap = mv88e6390_port_tag_remap,
+ 	.port_set_policy = mv88e6352_port_set_policy,
+ 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
+@@ -4826,7 +4792,6 @@ static const struct mv88e6xxx_ops mv88e6191_ops = {
+ 	.port_sync_link = mv88e6xxx_port_sync_link,
+ 	.port_set_rgmii_delay = mv88e6390_port_set_rgmii_delay,
+ 	.port_set_speed_duplex = mv88e6390_port_set_speed_duplex,
+-	.port_max_speed_mode = mv88e6390_port_max_speed_mode,
+ 	.port_tag_remap = mv88e6390_port_tag_remap,
+ 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
+ 	.port_set_ucast_flood = mv88e6352_port_set_ucast_flood,
+@@ -4991,7 +4956,6 @@ static const struct mv88e6xxx_ops mv88e6290_ops = {
+ 	.port_sync_link = mv88e6xxx_port_sync_link,
+ 	.port_set_rgmii_delay = mv88e6390_port_set_rgmii_delay,
+ 	.port_set_speed_duplex = mv88e6390_port_set_speed_duplex,
+-	.port_max_speed_mode = mv88e6390_port_max_speed_mode,
+ 	.port_tag_remap = mv88e6390_port_tag_remap,
+ 	.port_set_policy = mv88e6352_port_set_policy,
+ 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
+@@ -5142,7 +5106,6 @@ static const struct mv88e6xxx_ops mv88e6341_ops = {
+ 	.port_sync_link = mv88e6xxx_port_sync_link,
+ 	.port_set_rgmii_delay = mv88e6390_port_set_rgmii_delay,
+ 	.port_set_speed_duplex = mv88e6341_port_set_speed_duplex,
+-	.port_max_speed_mode = mv88e6341_port_max_speed_mode,
+ 	.port_tag_remap = mv88e6095_port_tag_remap,
+ 	.port_set_policy = mv88e6352_port_set_policy,
+ 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
+@@ -5365,7 +5328,6 @@ static const struct mv88e6xxx_ops mv88e6390_ops = {
+ 	.port_sync_link = mv88e6xxx_port_sync_link,
+ 	.port_set_rgmii_delay = mv88e6390_port_set_rgmii_delay,
+ 	.port_set_speed_duplex = mv88e6390_port_set_speed_duplex,
+-	.port_max_speed_mode = mv88e6390_port_max_speed_mode,
+ 	.port_tag_remap = mv88e6390_port_tag_remap,
+ 	.port_set_policy = mv88e6352_port_set_policy,
+ 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
+@@ -5432,7 +5394,6 @@ static const struct mv88e6xxx_ops mv88e6390x_ops = {
+ 	.port_sync_link = mv88e6xxx_port_sync_link,
+ 	.port_set_rgmii_delay = mv88e6390_port_set_rgmii_delay,
+ 	.port_set_speed_duplex = mv88e6390x_port_set_speed_duplex,
+-	.port_max_speed_mode = mv88e6390x_port_max_speed_mode,
+ 	.port_tag_remap = mv88e6390_port_tag_remap,
+ 	.port_set_policy = mv88e6352_port_set_policy,
+ 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
+@@ -5498,7 +5459,6 @@ static const struct mv88e6xxx_ops mv88e6393x_ops = {
+ 	.port_sync_link = mv88e6xxx_port_sync_link,
+ 	.port_set_rgmii_delay = mv88e6390_port_set_rgmii_delay,
+ 	.port_set_speed_duplex = mv88e6393x_port_set_speed_duplex,
+-	.port_max_speed_mode = mv88e6393x_port_max_speed_mode,
+ 	.port_tag_remap = mv88e6390_port_tag_remap,
+ 	.port_set_policy = mv88e6393x_port_set_policy,
+ 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
+index 4518c17c1b9b..a3b7cfe3eb23 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.h
++++ b/drivers/net/dsa/mv88e6xxx/chip.h
+@@ -502,9 +502,6 @@ struct mv88e6xxx_ops {
+ 	int (*port_set_speed_duplex)(struct mv88e6xxx_chip *chip, int port,
+ 				     int speed, int duplex);
+ 
+-	/* What interface mode should be used for maximum speed? */
+-	phy_interface_t (*port_max_speed_mode)(int port);
+-
+ 	int (*port_tag_remap)(struct mv88e6xxx_chip *chip, int port);
+ 
+ 	int (*port_set_policy)(struct mv88e6xxx_chip *chip, int port,
+diff --git a/drivers/net/dsa/mv88e6xxx/port.c b/drivers/net/dsa/mv88e6xxx/port.c
+index 90c55f23b7c9..47e21f3c437a 100644
+--- a/drivers/net/dsa/mv88e6xxx/port.c
++++ b/drivers/net/dsa/mv88e6xxx/port.c
+@@ -333,14 +333,6 @@ int mv88e6341_port_set_speed_duplex(struct mv88e6xxx_chip *chip, int port,
+ 					       duplex);
+ }
+ 
+-phy_interface_t mv88e6341_port_max_speed_mode(int port)
+-{
+-	if (port == 5)
+-		return PHY_INTERFACE_MODE_2500BASEX;
+-
+-	return PHY_INTERFACE_MODE_NA;
+-}
+-
+ /* Support 10, 100, 200, 1000 Mbps (e.g. 88E6352 family) */
+ int mv88e6352_port_set_speed_duplex(struct mv88e6xxx_chip *chip, int port,
+ 				    int speed, int duplex)
+@@ -372,14 +364,6 @@ int mv88e6390_port_set_speed_duplex(struct mv88e6xxx_chip *chip, int port,
+ 					       duplex);
+ }
+ 
+-phy_interface_t mv88e6390_port_max_speed_mode(int port)
+-{
+-	if (port == 9 || port == 10)
+-		return PHY_INTERFACE_MODE_2500BASEX;
+-
+-	return PHY_INTERFACE_MODE_NA;
+-}
+-
+ /* Support 10, 100, 200, 1000, 2500, 10000 Mbps (e.g. 88E6190X) */
+ int mv88e6390x_port_set_speed_duplex(struct mv88e6xxx_chip *chip, int port,
+ 				     int speed, int duplex)
+@@ -394,14 +378,6 @@ int mv88e6390x_port_set_speed_duplex(struct mv88e6xxx_chip *chip, int port,
+ 					       duplex);
+ }
+ 
+-phy_interface_t mv88e6390x_port_max_speed_mode(int port)
+-{
+-	if (port == 9 || port == 10)
+-		return PHY_INTERFACE_MODE_XAUI;
+-
+-	return PHY_INTERFACE_MODE_NA;
+-}
+-
+ /* Support 10, 100, 200, 1000, 2500, 5000, 10000 Mbps (e.g. 88E6393X)
+  * Function mv88e6xxx_port_set_speed_duplex() can't be used as the register
+  * values for speeds 2500 & 5000 conflict.
+@@ -491,14 +467,6 @@ int mv88e6393x_port_set_speed_duplex(struct mv88e6xxx_chip *chip, int port,
+ 	return 0;
+ }
+ 
+-phy_interface_t mv88e6393x_port_max_speed_mode(int port)
+-{
+-	if (port == 0 || port == 9 || port == 10)
+-		return PHY_INTERFACE_MODE_10GBASER;
+-
+-	return PHY_INTERFACE_MODE_NA;
+-}
+-
+ static int mv88e6xxx_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
+ 				    phy_interface_t mode, bool force)
+ {
+diff --git a/drivers/net/dsa/mv88e6xxx/port.h b/drivers/net/dsa/mv88e6xxx/port.h
+index cb04243f37c1..2a5741a44e97 100644
+--- a/drivers/net/dsa/mv88e6xxx/port.h
++++ b/drivers/net/dsa/mv88e6xxx/port.h
+@@ -357,11 +357,6 @@ int mv88e6390x_port_set_speed_duplex(struct mv88e6xxx_chip *chip, int port,
+ int mv88e6393x_port_set_speed_duplex(struct mv88e6xxx_chip *chip, int port,
+ 				     int speed, int duplex);
+ 
+-phy_interface_t mv88e6341_port_max_speed_mode(int port);
+-phy_interface_t mv88e6390_port_max_speed_mode(int port);
+-phy_interface_t mv88e6390x_port_max_speed_mode(int port);
+-phy_interface_t mv88e6393x_port_max_speed_mode(int port);
+-
+ int mv88e6xxx_port_set_state(struct mv88e6xxx_chip *chip, int port, u8 state);
+ 
+ int mv88e6xxx_port_set_vlan_map(struct mv88e6xxx_chip *chip, int port, u16 map);
+diff --git a/net/dsa/port.c b/net/dsa/port.c
+index 35b4e1f8dc05..34487e62eb03 100644
+--- a/net/dsa/port.c
++++ b/net/dsa/port.c
+@@ -1525,6 +1525,7 @@ int dsa_port_phylink_create(struct dsa_port *dp)
+ {
+ 	struct dsa_switch *ds = dp->ds;
+ 	phy_interface_t mode, def_mode;
++	struct device_node *phy_np;
+ 	int err;
+ 
+ 	/* Presence of phylink_mac_link_state or phylink_mac_an_restart is
+@@ -1559,6 +1560,13 @@ int dsa_port_phylink_create(struct dsa_port *dp)
+ 		return PTR_ERR(dp->pl);
+ 	}
+ 
++	if (dp->type == DSA_PORT_TYPE_CPU || dp->type == DSA_PORT_TYPE_DSA) {
++		phy_np = of_parse_phandle(dp->dn, "phy-handle", 0);
++		of_node_put(phy_np);
++		if (!phy_np)
++			err = phylink_set_max_fixed_link(dp->pl);
++	}
 +
- int phylink_connect_phy(struct phylink *, struct phy_device *);
- int phylink_of_phy_connect(struct phylink *, struct device_node *, u32 flags);
- int phylink_fwnode_phy_connect(struct phylink *pl,
+ 	return 0;
+ }
+ 
+@@ -1663,20 +1671,14 @@ static int dsa_port_phylink_register(struct dsa_port *dp)
+ int dsa_port_link_register_of(struct dsa_port *dp)
+ {
+ 	struct dsa_switch *ds = dp->ds;
+-	struct device_node *phy_np;
+ 	int port = dp->index;
+ 
+ 	if (!ds->ops->adjust_link) {
+-		phy_np = of_parse_phandle(dp->dn, "phy-handle", 0);
+-		if (of_phy_is_fixed_link(dp->dn) || phy_np) {
+-			if (ds->ops->phylink_mac_link_down)
+-				ds->ops->phylink_mac_link_down(ds, port,
+-					MLO_AN_FIXED, PHY_INTERFACE_MODE_NA);
+-			of_node_put(phy_np);
+-			return dsa_port_phylink_register(dp);
+-		}
+-		of_node_put(phy_np);
+-		return 0;
++		if (ds->ops->phylink_mac_link_down)
++			ds->ops->phylink_mac_link_down(ds, port,
++				MLO_AN_FIXED, PHY_INTERFACE_MODE_NA);
++
++		return dsa_port_phylink_register(dp);
+ 	}
+ 
+ 	dev_warn(ds->dev,
 -- 
 2.30.2
 
