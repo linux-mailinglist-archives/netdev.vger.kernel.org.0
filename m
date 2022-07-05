@@ -2,88 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D504566719
-	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 11:52:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C987566722
+	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 11:56:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229908AbiGEJwu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jul 2022 05:52:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39028 "EHLO
+        id S232442AbiGEJzg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jul 2022 05:55:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232699AbiGEJvu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 05:51:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88F3710FD3
-        for <netdev@vger.kernel.org>; Tue,  5 Jul 2022 02:50:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BF41161909
-        for <netdev@vger.kernel.org>; Tue,  5 Jul 2022 09:50:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 23BD9C341CD;
-        Tue,  5 Jul 2022 09:50:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657014613;
-        bh=k61uqolNxIjeK79iWs8CIegjVDS0PkU2oGRQI7f/I6Y=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=CA8QmbccCRa/s/vXGyZkiH41cRFp70sYf9UUcO8ZUgZDkZInPI3IoFduwVexu806R
-         BlJxTyLHavB2mQxXdYlA/B14NS89W7E/FgW4NzFP6xXYEcopGcvFYgrTZ3bRmWjmAo
-         w/H3CA+c1x9E0Zce4p/nLE83QcjtoeYtXNc2Ex1GLvyt2LaPd5dr03qF1oLPjnBgAp
-         9UY2fYTAncsiX2/plJiijFxfqUJQUH6s6MQOTeRTr7pdliWwUKgz8ClJHCdsf4POTb
-         qcgHqTnhnwV+6r5Hh8wkJNhrLlszRp2p8IC2yXcBkTZTvsldMGVLaqSjNv0XkqI0rF
-         Zvdr7uUbTRO3A==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0B5CAE45BD8;
-        Tue,  5 Jul 2022 09:50:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S232400AbiGEJzT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 05:55:19 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16331266B
+        for <netdev@vger.kernel.org>; Tue,  5 Jul 2022 02:54:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657014860; x=1688550860;
+  h=message-id:date:mime-version:subject:from:to:cc:
+   references:in-reply-to:content-transfer-encoding;
+  bh=gIcwHGzRZyNR/0x67X3V9Z1F/C2CvuH2v4w728BkwJg=;
+  b=Xi7XKi6Uj2noZTHRiah1mpDn8Xk1VoLCh5azQMdWn9ehhVqniy8WTvKZ
+   NAphCj1qqzs5lIasWYizHprclSvagRY7zTzSw83pHofiDLT30axZwwLQx
+   w4Z80mPditUDOr+Q+V+TMxe7MowgOVomgsGNBk9mJZ/VHq4fh+hWqLeLz
+   hMGtVSn7asUc4tHwAqXEdx/WpzHivSeph8WqoeRSDBde1hYOdrrmG0Ion
+   ma7Mk84mON5/TqbqcgXWw1SltydZs9KQUTufrMWaEuXQTHVj/1+1tt5QG
+   6ZdtI3YS9Jskn7fYOc0FWnrCsdcZ6/sfaXCCNAtAOv48pKVvpf4C2ChH3
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10398"; a="308850019"
+X-IronPort-AV: E=Sophos;i="5.92,245,1650956400"; 
+   d="scan'208";a="308850019"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 02:54:19 -0700
+X-IronPort-AV: E=Sophos;i="5.92,245,1650956400"; 
+   d="scan'208";a="682458557"
+Received: from mszycik-mobl.ger.corp.intel.com (HELO [10.249.130.161]) ([10.249.130.161])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 02:54:14 -0700
+Message-ID: <7aa3a974-6575-ade6-b863-feb25736ec0f@linux.intel.com>
+Date:   Tue, 5 Jul 2022 11:54:08 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v3 net-next 0/2] af_unix: Fix regression by the per-netns hash
- table series.
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165701461304.24093.2789797407907036384.git-patchwork-notify@kernel.org>
-Date:   Tue, 05 Jul 2022 09:50:13 +0000
-References: <20220702154818.66761-1-kuniyu@amazon.com>
-In-Reply-To: <20220702154818.66761-1-kuniyu@amazon.com>
-To:     Kuniyuki Iwashima <kuniyu@amazon.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, sachinp@linux.ibm.com, cdleonard@gmail.com,
-        nathan@kernel.org, kuni1840@gmail.com, netdev@vger.kernel.org
-X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [RFC PATCH net-next v3 4/4] ice: Add support for PPPoE hardware
+ offload
+Content-Language: en-US
+From:   Marcin Szycik <marcin.szycik@linux.intel.com>
+To:     Guillaume Nault <gnault@redhat.com>
+Cc:     netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
+        davem@davemloft.net, xiyou.wangcong@gmail.com,
+        jesse.brandeburg@intel.com, gustavoars@kernel.org,
+        baowen.zheng@corigine.com, boris.sukholitko@broadcom.com,
+        edumazet@google.com, kuba@kernel.org, jhs@mojatatu.com,
+        jiri@resnulli.us, kurt@linutronix.de, pablo@netfilter.org,
+        pabeni@redhat.com, paulb@nvidia.com, simon.horman@corigine.com,
+        komachi.yoshiki@gmail.com, zhangkaiheb@126.com,
+        intel-wired-lan@lists.osuosl.org,
+        michal.swiatkowski@linux.intel.com, wojciech.drewek@intel.com,
+        alexandr.lobakin@intel.com, mostrows@earthlink.net,
+        paulus@samba.org
+References: <20220629143859.209028-1-marcin.szycik@linux.intel.com>
+ <20220629143859.209028-5-marcin.szycik@linux.intel.com>
+ <20220630231244.GC392@debian.home>
+ <7a706a7e-d3bd-b4da-fa68-2cabf3e75871@linux.intel.com>
+In-Reply-To: <7a706a7e-d3bd-b4da-fa68-2cabf3e75871@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_HI,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
 
-This series was applied to netdev/net-next.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
 
-On Sat, 2 Jul 2022 08:48:16 -0700 you wrote:
-> The series 6dd4142fb5a9 ("Merge branch 'af_unix-per-netns-socket-hash'")
-> replaced a global hash table with per-netns tables, which caused regression
-> reported in the links below. [0][1]
+On 01-Jul-22 18:12, Marcin Szycik wrote:
 > 
-> When a pathname socket is visible, any socket with the same type has to be
-> able to connect to it even in different netns.  The series puts all sockets
-> into each namespace's hash table, making it impossible to look up a visible
-> socket in different netns.
 > 
-> [...]
+> On 01-Jul-22 01:12, Guillaume Nault wrote:
+>> On Wed, Jun 29, 2022 at 04:38:59PM +0200, Marcin Szycik wrote:
+>>> Add support for creating PPPoE filters in switchdev mode. Add support
+>>> for parsing PPPoE and PPP-specific tc options: pppoe_sid and ppp_proto.
+>>>
+>>> Example filter:
+>>> tc filter add dev $PF1 ingress protocol ppp_ses prio 1 flower pppoe_sid \
+>>>     1234 ppp_proto ip skip_sw action mirred egress redirect dev $VF1_PR
+>>>
+>>> Changes in iproute2 are required to use the new fields.
+>>>
+>>> ICE COMMS DDP package is required to create a filter as it contains PPPoE
+>>> profiles. Added a warning message when loaded DDP package does not contain
+>>> required profiles.
+>>>
+>>> Note: currently matching on vlan + PPPoE fields is not supported. Patch [0]
+>>> will add this feature.
+>>>
+>>> [0] https://patchwork.ozlabs.org/project/intel-wired-lan/patch/20220420210048.5809-1-martyna.szapar-mudlaw@intel.com
+>>
+>> Out of curiosity, can ice direct PPPoE Session packets to different
+>> queues with RSS (based on the session ID)?
+> 
+> Hardware should support it, but I'm not sure if it's possible with the current driver and how to configure it. I'll try to find out.
 
-Here is the summary with links:
-  - [v3,net-next,1/2] af_unix: Put pathname sockets in the global hash table.
-    https://git.kernel.org/netdev/net-next/c/51bae889fe11
-  - [v3,net-next,2/2] selftests: net: af_unix: Test connect() with different netns.
-    https://git.kernel.org/netdev/net-next/c/e95ab1d85289
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+From what I understand, currently it's not possible to configure RSS for PPPoE session id, because ethtool does not support PPPoE.
