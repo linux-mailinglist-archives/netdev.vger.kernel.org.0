@@ -2,79 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ABD1556795B
-	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 23:30:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91D0756795F
+	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 23:32:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231215AbiGEVaF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jul 2022 17:30:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56188 "EHLO
+        id S230028AbiGEVcX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jul 2022 17:32:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229492AbiGEVaE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 17:30:04 -0400
-Received: from mail-io1-f43.google.com (mail-io1-f43.google.com [209.85.166.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D820B92;
-        Tue,  5 Jul 2022 14:30:03 -0700 (PDT)
-Received: by mail-io1-f43.google.com with SMTP id z191so12381817iof.6;
-        Tue, 05 Jul 2022 14:30:03 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=GG1TaxPEH084yANxHAVT8rDvfERSSgkpujDEy9BUhjg=;
-        b=eNG6kUDgC9YLxfgkYlYxEPIldIPMBVfJn8e7oZmuIDWi1X6T/vdYMiRoa6B9FZQa5g
-         qFFpJjjsw2mIklq1/7Fgca6CzdejU1evFDJOufyIM27yXWq5yE2GOPe70acbN1N2kOrE
-         rNcc9jtvG2+oAM/nep2ApP+PkZtbyoUsvNL6GtDLUaTWhv0Gt3jl3LrwMpQQ74z3SBWH
-         kUIvblQhaseuKglpP0pcHPe+RwthW8rA0Q/Fr2R689zBiS3jfY7rDP0b/D1C17kfyw/F
-         BL5JVhrBaV4wCNpxHs20RRvk8NFKYbttIr7FIN6GP+a0c7GJoAfYBSZqNpAgC/g3ZANr
-         41Ng==
-X-Gm-Message-State: AJIora+ignDDU5g4PUm0H+LvFOjKkzEmq3K1BQrMKQVGYW7Kkjn3G+sc
-        3j07aVFsYmxSJ254F/bQutgxEIsnhA==
-X-Google-Smtp-Source: AGRyM1sbx5XIOr7a8+UyrQtQEzd9v6gqI013zxRiYadBZ6rOvFNPa1+D6olRq1rRWA3KgAhoW6Dhug==
-X-Received: by 2002:a05:6638:3043:b0:314:7ce2:4a6e with SMTP id u3-20020a056638304300b003147ce24a6emr22641145jak.258.1657056602728;
-        Tue, 05 Jul 2022 14:30:02 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id c35-20020a023b23000000b00339e158bd3esm15014511jaa.38.2022.07.05.14.30.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Jul 2022 14:30:02 -0700 (PDT)
-Received: (nullmailer pid 2674163 invoked by uid 1000);
-        Tue, 05 Jul 2022 21:30:01 -0000
-Date:   Tue, 5 Jul 2022 15:30:01 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Ioana Ciornei <ioana.ciornei@nxp.com>
-Cc:     linux@armlinux.org.uk, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        edumazet@google.com, pabeni@redhat.com, robh+dt@kernel.org
-Subject: Re: [PATCH v2 net-next 2/4] dt-bindings: net: sff,sfp: rename
- example dt nodes to be more generic
-Message-ID: <20220705213001.GA2674108-robh@kernel.org>
-References: <20220704134604.13626-1-ioana.ciornei@nxp.com>
- <20220704134604.13626-3-ioana.ciornei@nxp.com>
+        with ESMTP id S229492AbiGEVcX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 17:32:23 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BBB910DB
+        for <netdev@vger.kernel.org>; Tue,  5 Jul 2022 14:32:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657056742; x=1688592742;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=vTj5n/IVqMNnpXG7LhYZtb5VGdMLg/9nX8w5ofJkR0M=;
+  b=Guypm6Y0zIEyiGKAfwm2MV8k3yy5ORJZkv13c1+iryw7pDAD1fsWlU0g
+   k7nc/PAUEY8FGOCbUr6staBH/W9mQpxZTiGJJ8TZZliMNIpoAnUXK2QFF
+   s3GNouBpUubKVt3f0CSI959IR5N6MY82evyVWe5RxslAYXoDs6y2iJeg/
+   1FwZZS9VBRW6xwuAWNQb8nZicD+laqmrHgRqGCIrWWPT6bi1W9Fb+s7hr
+   zI3FktTvGM5EvpjIAfuyiRI/0vuiFHQh5kVQuzNgrEGtXBloFKispN9xd
+   VCTsG70WiMBSTP+/eaXFZYq5yoPWr3oadZ35nn2OrSD14ePSpQWOPmUbx
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10399"; a="284633917"
+X-IronPort-AV: E=Sophos;i="5.92,247,1650956400"; 
+   d="scan'208";a="284633917"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 14:32:22 -0700
+X-IronPort-AV: E=Sophos;i="5.92,247,1650956400"; 
+   d="scan'208";a="590558740"
+Received: from rcenter-mobl.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.209.17.169])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 14:32:22 -0700
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+To:     netdev@vger.kernel.org
+Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, fw@strlen.de, geliang.tang@suse.com,
+        matthieu.baerts@tessares.net, mptcp@lists.linux.dev
+Subject: [PATCH net 0/7] mptcp: Path manager fixes for 5.19
+Date:   Tue,  5 Jul 2022 14:32:10 -0700
+Message-Id: <20220705213217.146898-1-mathew.j.martineau@linux.intel.com>
+X-Mailer: git-send-email 2.37.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220704134604.13626-3-ioana.ciornei@nxp.com>
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 04 Jul 2022 16:46:02 +0300, Ioana Ciornei wrote:
-> Rename the dt nodes shown in the sff,sfp.yaml examples so that they are
-> generic and not really tied to a specific platform.
-> 
-> Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
-> ---
-> Changes in v2:
->  - new patch
-> 
->  .../devicetree/bindings/net/sff,sfp.yaml       | 18 +++++++++---------
->  1 file changed, 9 insertions(+), 9 deletions(-)
-> 
+The MPTCP userspace path manager is new in 5.19, and these patches fix
+some issues in that new code.
 
-Acked-by: Rob Herring <robh@kernel.org>
+Patches 1-3 fix path manager locking issues.
+
+Patches 4 and 5 allow userspace path managers to change priority of
+established subflows using the existing MPTCP_PM_CMD_SET_FLAGS generic
+netlink command. Includes corresponding self test update.
+
+Patches 6 and 7 fix accounting of available endpoint IDs and the
+MPTCP_MIB_RMSUBFLOW counter.
+
+Geliang Tang (1):
+  mptcp: update MIB_RMSUBFLOW in cmd_sf_destroy
+
+Kishen Maloor (2):
+  mptcp: netlink: issue MP_PRIO signals from userspace PMs
+  selftests: mptcp: userspace PM support for MP_PRIO signals
+
+Mat Martineau (2):
+  mptcp: Avoid acquiring PM lock for subflow priority changes
+  mptcp: Acquire the subflow socket lock before modifying MP_PRIO flags
+
+Paolo Abeni (2):
+  mptcp: fix locking in mptcp_nl_cmd_sf_destroy()
+  mptcp: fix local endpoint accounting
+
+ net/mptcp/options.c                           |  3 +
+ net/mptcp/pm_netlink.c                        | 46 ++++++++----
+ net/mptcp/pm_userspace.c                      | 51 +++++++++----
+ net/mptcp/protocol.c                          |  9 ++-
+ net/mptcp/protocol.h                          |  9 ++-
+ tools/testing/selftests/net/mptcp/pm_nl_ctl.c | 73 ++++++++++++++++++-
+ .../selftests/net/mptcp/userspace_pm.sh       | 32 ++++++++
+ 7 files changed, 192 insertions(+), 31 deletions(-)
+
+
+base-commit: 029cc0963412c4f989d2731759ce4578f7e1a667
+-- 
+2.37.0
+
