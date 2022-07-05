@@ -2,95 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 64792567851
-	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 22:26:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B25DD567856
+	for <lists+netdev@lfdr.de>; Tue,  5 Jul 2022 22:27:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230436AbiGEU0U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jul 2022 16:26:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38770 "EHLO
+        id S230161AbiGEU1F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jul 2022 16:27:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230353AbiGEU0T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 16:26:19 -0400
-Received: from mail-io1-f44.google.com (mail-io1-f44.google.com [209.85.166.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CB8219C1A;
-        Tue,  5 Jul 2022 13:26:18 -0700 (PDT)
-Received: by mail-io1-f44.google.com with SMTP id z191so12231771iof.6;
-        Tue, 05 Jul 2022 13:26:18 -0700 (PDT)
+        with ESMTP id S229872AbiGEU1E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 16:27:04 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32DFB19C04;
+        Tue,  5 Jul 2022 13:27:03 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id y14-20020a17090a644e00b001ef775f7118so9769022pjm.2;
+        Tue, 05 Jul 2022 13:27:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4I/vTUX5/VX521F5N8ofDJR9PHwj5AGCwWWyLQBWNyU=;
+        b=ok0BgEqQmI6FnWWvJQKvLaVsAC0SNtK+qdzMA8rmadg4we4PNa3OK6ZqUjEUJxebi1
+         0OR0ufr1y+KJNh5Rs3Tr3DFQD06T+6vg74eAyZIMUUP3jXgvVBOl57EnbI1IxFDOTrqy
+         bs//Qo4EXHP1D55KEMNWaFO/7oG6XMuEbJtQgFhrAFKatmsuAEDe4oceA2uHgiDpy2Vr
+         mzgh8tyxGks8KcpZRQpM+XFE/QdIwugWDXpb71WtbudqJ/Uldq9Zi9uI5UujnetnokUP
+         8Kw8QxCrE0tXPmlifsYfkQOjebolWD/N/cnJO41ebeccNqaYkcXc2zfMIxOZDGHANg3J
+         gOcg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=U4ORPXljghFVXRLJ4HcI8OKhjci+DLidUJVIyQ8TPR8=;
-        b=GNUWNyTGONtUFZCwlaN+B13LgteM/2ctKqMfCHDCOBRMlMcsbJURZX+lCzEJHWifZd
-         IXYVzuQyy5lYW5MIHIL5Y2km4LPEMiWrGhCzORWtUKkJkG1iO80y9Y6PlLWvuPByLbkj
-         F2eHcR3u+1tEJYLoGhSn2Xr9Quc4tILh4eyNRjNNj3Q+ZhbEUuDOLuT+lhc+19B7c77B
-         8cftwiaEqpThQqO7MI4SFY+7oceBy2jcQdWMEaty6Mf+TesZyVBCeNfqvlZ29rVW+/12
-         Vn0u9KZowuhDdxgpkx12AbjTjhJ2W4VeonV6UErtyCL2cyqTnqiWcPGYGa/V/iwEMicH
-         RFyQ==
-X-Gm-Message-State: AJIora955oKq5nGAkQWDMQO/VJ6EWWRbHQwTfCvhOFISEbd8LGhHzSiy
-        PEkHxr4R6MboA8guL1/xWg==
-X-Google-Smtp-Source: AGRyM1tF5HJFkp560JBrGfhqcZzrtiL2A8SPtpsQcsMwQOokpnrLPZpx1wJn1hY9obUjQbYLVe769Q==
-X-Received: by 2002:a05:6638:25c9:b0:33e:f47f:f248 with SMTP id u9-20020a05663825c900b0033ef47ff248mr2389894jat.51.1657052777505;
-        Tue, 05 Jul 2022 13:26:17 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id i6-20020a056e020d8600b002d90ac862b6sm13543470ilj.55.2022.07.05.13.26.15
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4I/vTUX5/VX521F5N8ofDJR9PHwj5AGCwWWyLQBWNyU=;
+        b=IAACA4uO+6dm75pytCkKDysAXA2vEnMGkBSJrkOw3CmCnRcs3SQD3VSa+9cS82zGRx
+         rMv58rZVyehOWSlN6Z6o8piadDRcinGozKKV8ecrbjiM1liCdQyW6Nn+dvaUubJQ4y2i
+         t62jHUc+syT15nJxsR3imIGLxTXbHsf8HVfRdmhZf5TlA4kewRBo/416IBKwhVRc/ePo
+         PWfphdKLwk8sPV4gCi9tB4I9YfxSBhVBc/BCVGiBYf13vum+S6lCAROPBULdqFPGzl3U
+         zXUAMZUM/GhzMg1lDnhHFHkDC1STu3Jo7r14WMuMURwpfDmMwKzlnmymAJdHyRmtnDzf
+         6Jmw==
+X-Gm-Message-State: AJIora+jXjZgKodLmf/39HVpQHVbR77QglPDwbil3H1tIp8sZ/0I/KrX
+        PjYqi1p9DanA6QAJsaUgW7+0KuCWkagzog==
+X-Google-Smtp-Source: AGRyM1uwDtLWN/wn3Mse1jNB9FnsmxRZcwVHH5moijxgBaZ2cQpFyw54PM3pS+MUGSmwkGoGXD2S1w==
+X-Received: by 2002:a17:90b:390c:b0:1ec:ae13:c5aa with SMTP id ob12-20020a17090b390c00b001ecae13c5aamr45144367pjb.64.1657052822616;
+        Tue, 05 Jul 2022 13:27:02 -0700 (PDT)
+Received: from lvondent-mobl4.. (c-71-56-157-77.hsd1.or.comcast.net. [71.56.157.77])
+        by smtp.gmail.com with ESMTPSA id m10-20020a170902f64a00b0016bf01394e1sm2380879plg.124.2022.07.05.13.27.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Jul 2022 13:26:17 -0700 (PDT)
-Received: (nullmailer pid 2566768 invoked by uid 1000);
-        Tue, 05 Jul 2022 20:26:14 -0000
-Date:   Tue, 5 Jul 2022 14:26:14 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Colin Foster <colin.foster@in-advantage.com>
-Cc:     Rob Herring <robh+dt@kernel.org>, Lee Jones <lee.jones@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>, katie.morris@in-advantage.com,
-        Wolfram Sang <wsa@kernel.org>,
-        Terry Bowman <terry.bowman@amd.com>,
-        UNGLinuxDriver@microchip.com,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Eric Dumazet <edumazet@google.com>
-Subject: Re: [PATCH v12 net-next 8/9] dt-bindings: mfd: ocelot: add bindings
- for VSC7512
-Message-ID: <20220705202614.GA2566714-robh@kernel.org>
-References: <20220701192609.3970317-1-colin.foster@in-advantage.com>
- <20220701192609.3970317-9-colin.foster@in-advantage.com>
+        Tue, 05 Jul 2022 13:27:02 -0700 (PDT)
+From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: pull request: bluetooth 2022-07-05
+Date:   Tue,  5 Jul 2022 13:27:00 -0700
+Message-Id: <20220705202700.1689796-1-luiz.dentz@gmail.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220701192609.3970317-9-colin.foster@in-advantage.com>
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 01 Jul 2022 12:26:08 -0700, Colin Foster wrote:
-> Add devicetree bindings for SPI-controlled Ocelot chips, specifically the
-> VSC7512.
-> 
-> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
-> ---
->  .../devicetree/bindings/mfd/mscc,ocelot.yaml  | 160 ++++++++++++++++++
->  MAINTAINERS                                   |   1 +
->  2 files changed, 161 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/mfd/mscc,ocelot.yaml
-> 
+The following changes since commit 029cc0963412c4f989d2731759ce4578f7e1a667:
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+  Merge branch 'fix-bridge_vlan_aware-sh-and-bridge_vlan_unaware-sh-with-iff_unicast_flt' (2022-07-05 11:52:35 +0200)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth.git tags/for-net-2022-07-05
+
+for you to fetch changes up to e36bea6e78ab2b6c9c7396972fee231eae551cfc:
+
+  Bluetooth: core: Fix deadlock on hci_power_on_sync. (2022-07-05 13:20:03 -0700)
+
+----------------------------------------------------------------
+bluetooth pull request for net:
+
+ - Fix deadlock when powering on.
+
+----------------------------------------------------------------
+Vasyl Vavrychuk (1):
+      Bluetooth: core: Fix deadlock on hci_power_on_sync.
+
+ net/bluetooth/hci_core.c | 3 +++
+ net/bluetooth/hci_sync.c | 1 -
+ 2 files changed, 3 insertions(+), 1 deletion(-)
