@@ -2,158 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B71D2568ADD
-	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 16:07:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B489568ADF
+	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 16:07:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229760AbiGFOHG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jul 2022 10:07:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35976 "EHLO
+        id S231311AbiGFOHd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jul 2022 10:07:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229557AbiGFOHG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 10:07:06 -0400
-Received: from mail-il1-x12f.google.com (mail-il1-x12f.google.com [IPv6:2607:f8b0:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E28E5B9A;
-        Wed,  6 Jul 2022 07:07:04 -0700 (PDT)
-Received: by mail-il1-x12f.google.com with SMTP id z3so3993333ilz.5;
-        Wed, 06 Jul 2022 07:07:04 -0700 (PDT)
+        with ESMTP id S229780AbiGFOHc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 10:07:32 -0400
+Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EC8D13D54
+        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 07:07:31 -0700 (PDT)
+Received: by mail-yb1-xb2d.google.com with SMTP id e69so20926663ybh.2
+        for <netdev@vger.kernel.org>; Wed, 06 Jul 2022 07:07:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=HKcelWJsUXG+18Nwfg8eobymoMxt5y7xTMcV4rJ4jIM=;
-        b=K14oQmdverp2DzpSpOp8APkZITqbUnfMthYycoeQdvUqVvI/bcgfwOelE2yS5C4Le5
-         /XnH0L1tHXo/jcrD7mi+2jQzXHbBwN1pK3c3xMYg1toLwQrDDoW1JNbzISpvuVdNP+7y
-         SNuTPobiRWsw66eGtxZzgmbSjpPd1FzwcSXb5qurfhCTyNYzN+iFvAYUlVS7TILU+idv
-         WELv3ji7pTZGxOCNEhHYeNOAg87od0Mdj8A6dvkjFApQRnOoNkq+OUcj+/AzGMuQTMix
-         FQbEebbmq9xZecUXbleGzSS/OrtSwD/2/EjEKYPXANsr96w3qYZJcCLUpyDorY2Q7IZ2
-         aHYQ==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=j0ENyPdPKZXwGz5eJQ3ds5ewITLKdJ4nBN8Y+yiBJOE=;
+        b=bHoiH/K7Nv+Lr1LUtMhPBAfCZ7pnMjY5jEwpN7wVceagFH/hwyUWe7KFlAcDXXJd5J
+         g3SE8YWRZ1y/FPxHWROzxgNaIvz3ueXg1nAAuhjFPnkngy6eXj5CytcXmW0fxS3MdnVL
+         x01hWFppktJpbgaQdbfotgG8oJId1/tBAnnLhkLwQ+6JhmWHx7Ji7qeTxksRleBpLqRK
+         rJ13nAveaaPavJIXmol4d5CegkWB7zuc49XbyAFu7ECSE7odQs/0+8IQD9NAaitWzkEP
+         hkPRMNi5GHTSzKMpnEBHdrqKXROK94NdF+POkstkQunqEY3xUzgD8UPvKn3Mm9t8NzvT
+         VvFQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=HKcelWJsUXG+18Nwfg8eobymoMxt5y7xTMcV4rJ4jIM=;
-        b=D5xES1tokNFJntcHwP1wLek81KbHUa4cMHr6b5r9pJA6XEfs3qBJ0IZXB19NjehDwJ
-         KDYZIwLlWzUhYrDuOKboHQF6t9mfKKVJIWpdq4DTiRtizbICVLkdtRYgXEO4Z+Uf96Wu
-         wn1KPRFKAEOaizAGdGMMgjBtaH86xYFugkSth48mQTNY9JGWQviAED4WElxNjV2sRz1K
-         krEmsRToqIMyplJ4T46R1sHJcRE+DLWi6Klhu09NdA35in5tD4cGkgPL3CJxNyMTrW6i
-         jGr5+mMwlBKjVIq0ec8F4C0A3Petq8R8Sk9VV5tASXymyNBe2ibAOivOMApGUiOHcKVU
-         o0jA==
-X-Gm-Message-State: AJIora8P1mxyPLVTQP9gqmGy7QNNx5lXumavnKaPdfJdScZhUZzcH+Nt
-        L8z1J8ozgrHxV0YVIOnk4wr0nQ9T1utp+g==
-X-Google-Smtp-Source: AGRyM1tR72Fw7RUjiJaTyk+us/gqsZAWL/OtbmF8MaVczaEhDTDIcshgMbsvUxoACdjtb1nTNSeubA==
-X-Received: by 2002:a92:c242:0:b0:2dc:2df2:a3d1 with SMTP id k2-20020a92c242000000b002dc2df2a3d1mr3788217ilo.111.1657116423548;
-        Wed, 06 Jul 2022 07:07:03 -0700 (PDT)
-Received: from james-x399.localdomain (71-218-105-222.hlrn.qwest.net. [71.218.105.222])
-        by smtp.gmail.com with ESMTPSA id t8-20020a5d8848000000b0067276ff71b4sm16756034ios.44.2022.07.06.07.07.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 07:07:02 -0700 (PDT)
-From:   James Hilliard <james.hilliard1@gmail.com>
-To:     bpf@vger.kernel.org
-Cc:     James Hilliard <james.hilliard1@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
-Subject: [PATCH] bpf/scripts: Generate GCC compatible helpers
-Date:   Wed,  6 Jul 2022 08:06:23 -0600
-Message-Id: <20220706140623.2917858-1-james.hilliard1@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=j0ENyPdPKZXwGz5eJQ3ds5ewITLKdJ4nBN8Y+yiBJOE=;
+        b=rizvRvQrlqu+H+7kxIUqlGnke3cKTITuzH/ltgTOv9IwZONuWTvKrHNZp+5tdsmzK9
+         xUqkxHLpDdI1vWZf9I48YYhgAqD9KEaX3Uqz4rmg7i+DmYGdnaMRtvLGCPGwkD0tYcZ5
+         RVP83U0UsD2TjIaLoGzL6nIkIRry33jGzC5Y1NNXXDWmhZlC1amZBDpxHkLMR71gKevm
+         7zj/mMx29n0l+toL6ZrbxEp1zAXom8SUW7ecqrX9PjmQUfJXedF6XRBl31zJomdSWYBT
+         5aQD5sPjZ1P0twbuz7M2gnSSqmm049IkpZ+2eljqsFkAWO/zkHPKmuDGEFeIk1JkyWxt
+         MR+g==
+X-Gm-Message-State: AJIora9VY0NC4THxV4wR31Qkr5upXnTwCjMPIg1Xy+djajtEHMOL/ATt
+        80fl6LfVFAb8mAV98WlsI8FQvpiPmga9Hrgsp7u6Zomw4urzVQ==
+X-Google-Smtp-Source: AGRyM1u2irXR8287sy9xI2iDlMtIEXP2RFys3kkdSjKn0I3DKoab1wNcrMCuPSiuV9H1EyzTU9uh62quAnuh+9DCq8c=
+X-Received: by 2002:a25:7455:0:b0:66e:2daf:8924 with SMTP id
+ p82-20020a257455000000b0066e2daf8924mr24222994ybc.427.1657116450413; Wed, 06
+ Jul 2022 07:07:30 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220621202240.4182683-1-ssewook@gmail.com> <20220701154413.868096-1-ssewook@gmail.com>
+ <7dc20590ff5ab471a6cd94a6cc63bb2459782706.camel@redhat.com>
+ <CAM2q-ny=r-U-6n6F+02QON1B8NHJ5TZrrOa7x3CAfkrUtRWnwQ@mail.gmail.com> <2c4816a4f5fbd5c8f4f6ad194114d567830de72d.camel@redhat.com>
+In-Reply-To: <2c4816a4f5fbd5c8f4f6ad194114d567830de72d.camel@redhat.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 6 Jul 2022 16:07:19 +0200
+Message-ID: <CANn89iLfvNVW=x27HXawWYVXy2rjtRXYEtaRdP41WvSoQ4LrLA@mail.gmail.com>
+Subject: Re: [PATCH v2] net-tcp: Find dst with sk's xfrm policy not ctl_sk
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     =?UTF-8?B?7ISc7IS47Jqx?= <ssewook@gmail.com>,
+        Sewook Seo <sewookseo@google.com>,
+        Linux Network Development Mailing List 
+        <netdev@vger.kernel.org>, "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Sehee Lee <seheele@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The current bpf_helper_defs.h helpers are llvm specific and don't work
-correctly with gcc.
+On Wed, Jul 6, 2022 at 4:02 PM Paolo Abeni <pabeni@redhat.com> wrote:
+>
+>
+> Hello,
+> On Wed, 2022-07-06 at 03:10 +0000, =EC=84=9C=EC=84=B8=EC=9A=B1 wrote:
+> > On Tue, Jul 5, 2022 at 5:25 PM Paolo Abeni <pabeni@redhat.com> wrote:
+> > > If you are targting net, please add a suitable Fixes: tag.
+> > I'm targeting net-next, and will update the subject.
+> >
+> > > It looks like the cloned policy will be overwrited by later resets an=
+d
+> > > possibly leaked? nobody calls xfrm_sk_free_policy() on the old policy
+>
+> > Is it possible that a later reset overwrites sk_ctl's sk_policy? I
+> > thought ctl_sk is a percpu variable and it's preempted. Maybe I might
+> > miss something, please let me know if my understanding is wrong.
+>
+> I mean: what happesn when there are 2 tcp_v4_send_reset() on the same
+> CPU (with different sk argument)?
 
-Generate gcc compatible headers based on the format in bpf-helpers.h.
+This is not possible, because we block BH
 
-See:
-https://github.com/gcc-mirror/gcc/blob/releases/gcc-12.1.0/gcc/config/bpf/bpf-helpers.h#L24-L27
+local_bh_disable();
+ctl_sk =3D this_cpu_read(ipv4_tcp_sk);
+...
+<write over tcl_sk>
+local_bh_enable();
 
-Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
----
- scripts/bpf_doc.py | 43 ++++++++++++++++++++++++++-----------------
- 1 file changed, 26 insertions(+), 17 deletions(-)
 
-diff --git a/scripts/bpf_doc.py b/scripts/bpf_doc.py
-index a0ec321469bd..36fb400a5731 100755
---- a/scripts/bpf_doc.py
-+++ b/scripts/bpf_doc.py
-@@ -739,6 +739,24 @@ class PrinterHelpers(Printer):
- 
-     seen_helpers = set()
- 
-+    def print_args(self, proto):
-+        comma = ''
-+        for i, a in enumerate(proto['args']):
-+            t = a['type']
-+            n = a['name']
-+            if proto['name'] in self.overloaded_helpers and i == 0:
-+                    t = 'void'
-+                    n = 'ctx'
-+            one_arg = '{}{}'.format(comma, self.map_type(t))
-+            if n:
-+                if a['star']:
-+                    one_arg += ' {}'.format(a['star'])
-+                else:
-+                    one_arg += ' '
-+                one_arg += '{}'.format(n)
-+            comma = ', '
-+            print(one_arg, end='')
-+
-     def print_one(self, helper):
-         proto = helper.proto_break_down()
- 
-@@ -762,26 +780,17 @@ class PrinterHelpers(Printer):
-                 print(' *{}{}'.format(' \t' if line else '', line))
- 
-         print(' */')
-+        print('#if __GNUC__ && !__clang__')
-+        print('%s %s%s(' % (self.map_type(proto['ret_type']),
-+                                      proto['ret_star'], proto['name']), end='')
-+        self.print_args(proto)
-+        print(') __attribute__((kernel_helper(%d)));' % len(self.seen_helpers))
-+        print('#else')
-         print('static %s %s(*%s)(' % (self.map_type(proto['ret_type']),
-                                       proto['ret_star'], proto['name']), end='')
--        comma = ''
--        for i, a in enumerate(proto['args']):
--            t = a['type']
--            n = a['name']
--            if proto['name'] in self.overloaded_helpers and i == 0:
--                    t = 'void'
--                    n = 'ctx'
--            one_arg = '{}{}'.format(comma, self.map_type(t))
--            if n:
--                if a['star']:
--                    one_arg += ' {}'.format(a['star'])
--                else:
--                    one_arg += ' '
--                one_arg += '{}'.format(n)
--            comma = ', '
--            print(one_arg, end='')
--
-+        self.print_args(proto)
-         print(') = (void *) %d;' % len(self.seen_helpers))
-+        print('#endif')
-         print('')
- 
- ###############################################################################
--- 
-2.34.1
-
+>
+> It looks like that after the first call to xfrm_sk_clone_policy(),
+> sk_ctl->sk_policy will be set to the newly allocated (cloned) policy.
+>
+> The next call will first clear the sk_ctl->sk_policy - without freeing
+> the old value - and later set it again.
+>
+> It looks like a memory leak. Am I missing something?
+>
+> Thanks!
+>
+> Paolo
+>
