@@ -2,55 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 953F6568E6E
-	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 17:55:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C87AB568F56
+	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 18:41:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233024AbiGFPzn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jul 2022 11:55:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53286 "EHLO
+        id S232959AbiGFQl1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jul 2022 12:41:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232280AbiGFPzl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 11:55:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A2122E9;
-        Wed,  6 Jul 2022 08:55:41 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BAAC66206E;
-        Wed,  6 Jul 2022 15:55:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A657C3411C;
-        Wed,  6 Jul 2022 15:55:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657122940;
-        bh=aA4JALtTjKfWpGQsJjku07uWAxF2Bd6rRbc4dnHeKfM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=h8iJ3KGWzblrvf0KV7G2zKHGi056n0Og5GrRvhY4FbPR1YPYo1dfV7xySBaKFmBmq
-         8x0+c7szTMAEyuvB26IeeXdfFGd/+kd7nwoalbOtQJGD8aayWlKZK23jkPH6vaM4KU
-         BTbmtIcP0tRsxBKxsSEQJ01nr3ICrMxJFabzD36M=
-Date:   Wed, 6 Jul 2022 17:55:37 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Christian Marangi <ansuelsmth@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [net-next PATCH RFC] net: dsa: qca8k: move driver to qca dir
-Message-ID: <YsWwebvaTcsERXGq@kroah.com>
-References: <20220630134606.25847-1-ansuelsmth@gmail.com>
- <20220706153904.jtu2qxczjjcgcoty@skbuf>
+        with ESMTP id S231990AbiGFQl0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 12:41:26 -0400
+X-Greylist: delayed 1791 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 06 Jul 2022 09:41:25 PDT
+Received: from mx08-0057a101.pphosted.com (mx08-0057a101.pphosted.com [185.183.31.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3EE71D31E
+        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 09:41:25 -0700 (PDT)
+Received: from pps.filterd (m0214196.ppops.net [127.0.0.1])
+        by mx07-0057a101.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2667L2HQ012353;
+        Wed, 6 Jul 2022 18:01:25 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=westermo.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=12052020; bh=xbZt/QN8NoPfTPY59kA+cN+jOThglCveIz09DPZUCa0=;
+ b=lGYnj3rXNSBrlfP/L0x56M0ed1Vl0LGmOalHQ0SHPMWI6uRyOI1S22Cq31zCmrav23Em
+ obTqD42Sy3h64pA8+oum3//UAPdXQUj1/dz/9PZS/Sxspgx2gytds4U+WHbArydl2lHV
+ kR8vBZS3bM4spSYPeZVBv1AKAgUlEXykUs+OgT8x07CbHXW1AI20wwsWSWBJ6A7FAqkv
+ LV1OG6LgeiraVY1Y4BWt5aLI/Oo4X/bIzIGo+6aB7ny488U3UuO88iR52t1Zvhd7VFdz
+ ibnpMzfHJfWM0nOsLmGBpyKrUi4fbNb7/OfdejNYyLKUpUE1AsH6qAqXLamo6cN9nvrf tw== 
+Received: from mail.beijerelectronics.com ([195.67.87.131])
+        by mx07-0057a101.pphosted.com (PPS) with ESMTPS id 3h4ubyrwtn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Wed, 06 Jul 2022 18:01:24 +0200
+Received: from Orpheus.nch.westermo.com (172.29.100.2) by
+ EX01GLOBAL.beijerelectronics.com (10.101.10.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id
+ 15.1.2375.17; Wed, 6 Jul 2022 18:01:23 +0200
+From:   Matthias May <matthias.may@westermo.com>
+To:     <netdev@vger.kernel.org>
+CC:     <davem@davemloft.net>, <yoshfuji@linux-ipv6.org>,
+        <dsahern@kernel.org>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <linux-kernel@vger.kernel.org>,
+        Matthias May <matthias.may@westermo.com>
+Subject: [PATCH net-next v2] ip_tunnel: allow to inherit from VLAN encapsulated IP frames
+Date:   Wed, 6 Jul 2022 18:00:22 +0200
+Message-ID: <20220706160021.10710-1-matthias.may@westermo.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220706153904.jtu2qxczjjcgcoty@skbuf>
-X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [172.29.100.2]
+X-ClientProxiedBy: wsevst-s0023.westermo.com (192.168.130.120) To
+ EX01GLOBAL.beijerelectronics.com (10.101.10.25)
+X-Proofpoint-GUID: SswlMR5Y5zZsk8tlMIimxaubmOl0nNzO
+X-Proofpoint-ORIG-GUID: SswlMR5Y5zZsk8tlMIimxaubmOl0nNzO
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -58,56 +62,91 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 06, 2022 at 06:39:04PM +0300, Vladimir Oltean wrote:
-> On Thu, Jun 30, 2022 at 03:46:06PM +0200, Christian Marangi wrote:
-> > Move qca8k driver to qca dir in preparation for code split and
-> > introduction of ipq4019 switch based on qca8k.
-> > 
-> > Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-> > ---
-> > 
-> > Posting this as a RFC to discuss the problems of such change.
-> > 
-> > This is needed as in the next future the qca8k driver will be split
-> > to a common code. This needs to be done as the ipq4019 is based on qca8k
-> > but will have some additional configuration thing and other phylink
-> > handling so it will require different setup function. Aside from these
-> > difference almost all the regs are the same of qca8k.
-> > 
-> > For this reason keeping the driver in the generic dsa dir would create
-> > some caos and I think it would be better to move it the dedicated qca
-> > dir.
-> > 
-> > This will for sure creates some problems with backporting patch.
-> > 
-> > So the question is... Is this change acceptable or we are cursed to
-> > keeping this driver in the generic dsa directory?
-> > 
-> > Additional bonus question, since the ethernet part still requires some
-> > time to get merged, wonder if it's possible to send the code split with
-> > qca8k as the only user (currently) and later just add the relevant
-> > ipq4019 changes.
-> > 
-> > (this ideally is to prepare stuff and not send a big scary series when
-> > it's time to send ipq4019 changes)
-> 
-> I think we discussed this before. You can make the driver migration but
-> you need to be willing to manually backport bug fixes if/when the stable
-> team reports that backporting to a certain kernel failed. It has been
-> done before, see commit a9770eac511a ("net: mdio: Move MDIO drivers into
-> a new subdirectory") as an example. I think "git cherry-pick" has magic
-> to detect file movement, while "git am" doesn't. Here I'm not 100%
-> certain which command is used to backport to stable. If it's by cherry
-> picking it shouldn't even require manual intervention.
+The current code allows to inherit the TOS, TTL, DF from the payload
+when skb->protocol is ETH_P_IP or ETH_P_IPV6.
+However when the payload is VLAN encapsulated (e.g because the tunnel
+is of type GRETAP), then this inheriting does not work, because the
+visible skb->protocol is of type ETH_P_8021Q.
 
-People move files around in the kernel all the time, it's not a big deal
-and should never be an issue (i.e. don't worry about stable backports.)
-Normally we can handle the move easily, and if not, we will punt to the
-developer and ask if they want to do the backport if they feel it is
-necessary.
+Add a check on ETH_P_8021Q and subsequently check the payload protocol.
 
-So this should not be an issue for anything here.
+Signed-off-by: Matthias May <matthias.may@westermo.com>
+---
+v1 -> v2:
+ - Add support for ETH_P_8021AD as suggested by Jakub Kicinski.
+---
+ net/ipv4/ip_tunnel.c | 22 ++++++++++++++--------
+ 1 file changed, 14 insertions(+), 8 deletions(-)
 
-thanks,
+diff --git a/net/ipv4/ip_tunnel.c b/net/ipv4/ip_tunnel.c
+index 94017a8c3994..bdcc0f1e83c8 100644
+--- a/net/ipv4/ip_tunnel.c
++++ b/net/ipv4/ip_tunnel.c
+@@ -648,6 +648,13 @@ void ip_tunnel_xmit(struct sk_buff *skb, struct net_device *dev,
+ 	u8 tos, ttl;
+ 	__be32 dst;
+ 	__be16 df;
++	__be16 *payload_protocol;
++
++	if (skb->protocol == htons(ETH_P_8021Q) ||
++	    skb->protocol == htons(ETH_P_8021AD))
++		payload_protocol = (__be16 *)(skb->head + skb->network_header - 2);
++	else
++		payload_protocol = &skb->protocol;
+ 
+ 	inner_iph = (const struct iphdr *)skb_inner_network_header(skb);
+ 	connected = (tunnel->parms.iph.daddr != 0);
+@@ -670,13 +677,12 @@ void ip_tunnel_xmit(struct sk_buff *skb, struct net_device *dev,
+ 			dst = tun_info->key.u.ipv4.dst;
+ 			md = true;
+ 			connected = true;
+-		}
+-		else if (skb->protocol == htons(ETH_P_IP)) {
++		} else if (*payload_protocol == htons(ETH_P_IP)) {
+ 			rt = skb_rtable(skb);
+ 			dst = rt_nexthop(rt, inner_iph->daddr);
+ 		}
+ #if IS_ENABLED(CONFIG_IPV6)
+-		else if (skb->protocol == htons(ETH_P_IPV6)) {
++		else if (*payload_protocol == htons(ETH_P_IPV6)) {
+ 			const struct in6_addr *addr6;
+ 			struct neighbour *neigh;
+ 			bool do_tx_error_icmp;
+@@ -716,10 +722,10 @@ void ip_tunnel_xmit(struct sk_buff *skb, struct net_device *dev,
+ 	tos = tnl_params->tos;
+ 	if (tos & 0x1) {
+ 		tos &= ~0x1;
+-		if (skb->protocol == htons(ETH_P_IP)) {
++		if (*payload_protocol == htons(ETH_P_IP)) {
+ 			tos = inner_iph->tos;
+ 			connected = false;
+-		} else if (skb->protocol == htons(ETH_P_IPV6)) {
++		} else if (*payload_protocol == htons(ETH_P_IPV6)) {
+ 			tos = ipv6_get_dsfield((const struct ipv6hdr *)inner_iph);
+ 			connected = false;
+ 		}
+@@ -765,7 +771,7 @@ void ip_tunnel_xmit(struct sk_buff *skb, struct net_device *dev,
+ 	}
+ 
+ 	df = tnl_params->frag_off;
+-	if (skb->protocol == htons(ETH_P_IP) && !tunnel->ignore_df)
++	if (*payload_protocol == htons(ETH_P_IP) && !tunnel->ignore_df)
+ 		df |= (inner_iph->frag_off & htons(IP_DF));
+ 
+ 	if (tnl_update_pmtu(dev, skb, rt, df, inner_iph, 0, 0, false)) {
+@@ -786,10 +792,10 @@ void ip_tunnel_xmit(struct sk_buff *skb, struct net_device *dev,
+ 	tos = ip_tunnel_ecn_encap(tos, inner_iph, skb);
+ 	ttl = tnl_params->ttl;
+ 	if (ttl == 0) {
+-		if (skb->protocol == htons(ETH_P_IP))
++		if (*payload_protocol == htons(ETH_P_IP))
+ 			ttl = inner_iph->ttl;
+ #if IS_ENABLED(CONFIG_IPV6)
+-		else if (skb->protocol == htons(ETH_P_IPV6))
++		else if (*payload_protocol == htons(ETH_P_IPV6))
+ 			ttl = ((const struct ipv6hdr *)inner_iph)->hop_limit;
+ #endif
+ 		else
+-- 
+2.35.1
 
-greg k-h
