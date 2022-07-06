@@ -2,47 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F1005568DE6
-	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 17:45:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D0F5E568D72
+	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 17:44:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234337AbiGFPfd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jul 2022 11:35:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44150 "EHLO
+        id S234360AbiGFPfx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jul 2022 11:35:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234140AbiGFPev (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 11:34:51 -0400
+        with ESMTP id S233956AbiGFPfN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 11:35:13 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB1452A41F;
-        Wed,  6 Jul 2022 08:33:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D367E2A43B;
+        Wed,  6 Jul 2022 08:33:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 470D7B81D96;
-        Wed,  6 Jul 2022 15:33:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF38EC385A2;
-        Wed,  6 Jul 2022 15:33:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4213EB81D97;
+        Wed,  6 Jul 2022 15:33:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44F62C341CA;
+        Wed,  6 Jul 2022 15:33:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657121588;
-        bh=bAIRwr6BEm+EAGgJYiIeXfINsAsI8XaB6jUr0p/oxfg=;
+        s=k20201202; t=1657121591;
+        bh=xGghK/000nkzlwE1Ow+hHRRrqU5Gk5XuDqiFw+ahnJU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vLWPvqc2U7rJZku/O76T6EtHsNbeppHxjPgWZss8EWpMI4DPB5NAjwMydJhDVSXAp
-         VRywHfnHwpgA4vRPVd1ejk5rW2rJYqxyZk8jOn3VePzD5cLhoz55/hpVP+Sz2diuhP
-         bKkeh8FKFs5vukqqOOLXcGPgn62LFJosge6D8VIaq+hDvTT2LiOn5J+krdTubFndHr
-         q1ljWUW0H+rAqDyOPTyHcxTTZV1Ow/Dm8qEk4WwUFPdk2SP/488RUJTIjVHLDl3GCA
-         rRU2fwbnykJ5YxArwAl5b/17jykftckjmh324Az1gle2FfVQOVwXFwseBx8HRRM3P0
-         tQQ9nUv2UPY3g==
+        b=FBd7NheMp9ckJdnloWwK4eMBHfpIOk4gCkw4wk6ocZg35Ech2sKQA277KXxRLrw7u
+         8z1MZdD6KS0KbC5srgeUYxC1hQa7XcHS21mp3ovhc0zTwbg1M4sPJnY8I0HvU35B5y
+         Kb5265SmVv+lqDtOUwMKKiOjy2choReURELk/Yub72jwC99eyOb1N13EKphnHbmod7
+         vzWQ65d7IzBDSObBUIwtNNcz1Gi18TwwikAuTL8Kypb2+ngqfGfdBM/80mqXfeov6Q
+         f5jLvR2/upYJL9fuN740ZGCPevtFGD+gtz+tZI09aHbUKc6Y6Nw7dT8wSIuIZ4HBQk
+         13+YFF/5lECiw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Hangyu Hua <hbh25y@gmail.com>,
-        Tung Nguyen <tung.q.nguyen@dektech.com.au>,
+Cc:     Michael Walle <michael@walle.cc>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, jmaloy@redhat.com,
-        ying.xue@windriver.com, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        tipc-discussion@lists.sourceforge.net
-Subject: [PATCH AUTOSEL 5.10 07/11] net: tipc: fix possible refcount leak in tipc_sk_create()
-Date:   Wed,  6 Jul 2022 11:32:52 -0400
-Message-Id: <20220706153256.1598411-7-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 08/11] NFC: nxp-nci: don't print header length mismatch on i2c error
+Date:   Wed,  6 Jul 2022 11:32:53 -0400
+Message-Id: <20220706153256.1598411-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220706153256.1598411-1-sashal@kernel.org>
 References: <20220706153256.1598411-1-sashal@kernel.org>
@@ -60,32 +57,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Michael Walle <michael@walle.cc>
 
-[ Upstream commit 00aff3590fc0a73bddd3b743863c14e76fd35c0c ]
+[ Upstream commit 9577fc5fdc8b07b891709af6453545db405e24ad ]
 
-Free sk in case tipc_sk_insert() fails.
+Don't print a misleading header length mismatch error if the i2c call
+returns an error. Instead just return the error code without any error
+message.
 
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Reviewed-by: Tung Nguyen <tung.q.nguyen@dektech.com.au>
+Signed-off-by: Michael Walle <michael@walle.cc>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/tipc/socket.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/nfc/nxp-nci/i2c.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/net/tipc/socket.c b/net/tipc/socket.c
-index 42283dc6c5b7..38256aabf4f1 100644
---- a/net/tipc/socket.c
-+++ b/net/tipc/socket.c
-@@ -489,6 +489,7 @@ static int tipc_sk_create(struct net *net, struct socket *sock,
- 	sock_init_data(sock, sk);
- 	tipc_set_sk_state(sk, TIPC_OPEN);
- 	if (tipc_sk_insert(tsk)) {
-+		sk_free(sk);
- 		pr_warn("Socket create failed; port number exhausted\n");
- 		return -EINVAL;
- 	}
+diff --git a/drivers/nfc/nxp-nci/i2c.c b/drivers/nfc/nxp-nci/i2c.c
+index 9f60e4dc5a90..a45064b3389c 100644
+--- a/drivers/nfc/nxp-nci/i2c.c
++++ b/drivers/nfc/nxp-nci/i2c.c
+@@ -122,7 +122,9 @@ static int nxp_nci_i2c_fw_read(struct nxp_nci_i2c_phy *phy,
+ 	skb_put_data(*skb, &header, NXP_NCI_FW_HDR_LEN);
+ 
+ 	r = i2c_master_recv(client, skb_put(*skb, frame_len), frame_len);
+-	if (r != frame_len) {
++	if (r < 0) {
++		goto fw_read_exit_free_skb;
++	} else if (r != frame_len) {
+ 		nfc_err(&client->dev,
+ 			"Invalid frame length: %u (expected %zu)\n",
+ 			r, frame_len);
+@@ -163,7 +165,9 @@ static int nxp_nci_i2c_nci_read(struct nxp_nci_i2c_phy *phy,
+ 	skb_put_data(*skb, (void *)&header, NCI_CTRL_HDR_SIZE);
+ 
+ 	r = i2c_master_recv(client, skb_put(*skb, header.plen), header.plen);
+-	if (r != header.plen) {
++	if (r < 0) {
++		goto nci_read_exit_free_skb;
++	} else if (r != header.plen) {
+ 		nfc_err(&client->dev,
+ 			"Invalid frame payload length: %u (expected %u)\n",
+ 			r, header.plen);
 -- 
 2.35.1
 
