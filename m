@@ -2,122 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E626568EFC
-	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 18:22:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F09E568F06
+	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 18:25:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233342AbiGFQVf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jul 2022 12:21:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48368 "EHLO
+        id S233630AbiGFQYr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jul 2022 12:24:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232523AbiGFQVe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 12:21:34 -0400
-Received: from mint-fitpc2.mph.net (unknown [81.168.73.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F134413D1E
-        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 09:21:30 -0700 (PDT)
-Received: from palantir17.mph.net (unknown [192.168.0.4])
-        by mint-fitpc2.mph.net (Postfix) with ESMTP id 4DFA63201DA;
-        Wed,  6 Jul 2022 17:21:30 +0100 (BST)
-Received: from localhost ([::1] helo=palantir17.mph.net)
-        by palantir17.mph.net with esmtp (Exim 4.95)
-        (envelope-from <habetsm.xilinx@gmail.com>)
-        id 1o97mH-0001ie-Im;
-        Wed, 06 Jul 2022 17:21:25 +0100
-Subject: [PATCH net-next 2/2] sfc: Implement change of BAR configuration
-From:   Martin Habets <habetsm.xilinx@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com
-Cc:     netdev@vger.kernel.org, ecree.xilinx@gmail.com
-Date:   Wed, 06 Jul 2022 17:21:25 +0100
-Message-ID: <165712448547.6549.16558323295042569801.stgit@palantir17.mph.net>
-In-Reply-To: <165712441387.6549.4915238154843073311.stgit@palantir17.mph.net>
-References: <165712441387.6549.4915238154843073311.stgit@palantir17.mph.net>
-User-Agent: StGit/0.19
+        with ESMTP id S229723AbiGFQYn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 12:24:43 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B8CA21246
+        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 09:24:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=mD6FbA7vYl8p5caB6U3kajFbupuuP7isVoBZ2yXtdBE=; b=HJ2Rx3Ktvhc8W7Xp7bEM34kZ80
+        YYKJMsVog6jtD9PDr0iJKqyVXeeaUMq9h1uhzFfIO0+gqc5JOYeEn4QsaBWvqKqmpjec3LCUDXvOI
+        awjJvnH/82ddtStu7EByFQzcaMArjl0JqDcrevQY7VaowcCMkMgXUKk8RBu1fnUe0FxtXll4xnHbT
+        XzgUBlAHY8o6d/QPcZ22vCBX388+xJhwMmPFVIdXK686H6kBQOAJMVkPJyMcGftJ/NIHNwaxMW9nD
+        AaUVdjSMD2xnNsRp6GZEM2aP0MbTAaPowH2Stku89wpoaPTAINdnjnPHtBgiZpbdmGuNAO6C+4iUD
+        aaAZKPqg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33206)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1o97p2-0002ow-7R; Wed, 06 Jul 2022 17:24:16 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1o97ov-0004Tc-KK; Wed, 06 Jul 2022 17:24:09 +0100
+Date:   Wed, 6 Jul 2022 17:24:09 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Alvin __ipraga <alsi@bang-olufsen.dk>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        UNGLinuxDriver@microchip.com,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
+Subject: Re: [PATCH RFC net-next 5/5] net: dsa: always use phylink for CPU
+ and DSA ports
+Message-ID: <YsW3KSeeQBiWQOz/@shell.armlinux.org.uk>
+References: <YsQIjC7UpcGWJovx@shell.armlinux.org.uk>
+ <E1o8fA7-0059aO-K8@rmk-PC.armlinux.org.uk>
+ <20220706102621.hfubvn3wa6wlw735@skbuf>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=1.7 required=5.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-        FORGED_GMAIL_RCVD,FREEMAIL_FROM,KHOP_HELO_FCRDNS,MAY_BE_FORGED,
-        NML_ADSP_CUSTOM_MED,SPF_SOFTFAIL,T_SCC_BODY_TEXT_LINE,
-        T_SPF_HELO_TEMPERROR autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: *
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220706102621.hfubvn3wa6wlw735@skbuf>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Placeholders are added for vDPA. These will be assigned with
-a later patch.
+On Wed, Jul 06, 2022 at 01:26:21PM +0300, Vladimir Oltean wrote:
+> Hello,
+> 
+> On Tue, Jul 05, 2022 at 10:48:07AM +0100, Russell King (Oracle) wrote:
+> > diff --git a/net/dsa/port.c b/net/dsa/port.c
+> > index 35b4e1f8dc05..34487e62eb03 100644
+> > --- a/net/dsa/port.c
+> > +++ b/net/dsa/port.c
+> > @@ -1525,6 +1525,7 @@ int dsa_port_phylink_create(struct dsa_port *dp)
+> >  {
+> >  	struct dsa_switch *ds = dp->ds;
+> >  	phy_interface_t mode, def_mode;
+> > +	struct device_node *phy_np;
+> >  	int err;
+> >  
+> >  	/* Presence of phylink_mac_link_state or phylink_mac_an_restart is
+> > @@ -1559,6 +1560,13 @@ int dsa_port_phylink_create(struct dsa_port *dp)
+> >  		return PTR_ERR(dp->pl);
+> >  	}
+> >  
+> > +	if (dp->type == DSA_PORT_TYPE_CPU || dp->type == DSA_PORT_TYPE_DSA) {
+> > +		phy_np = of_parse_phandle(dp->dn, "phy-handle", 0);
+> > +		of_node_put(phy_np);
+> > +		if (!phy_np)
+> > +			err = phylink_set_max_fixed_link(dp->pl);
+> 
+> Can we please limit phylink_set_max_link_speed() to just the CPU ports
+> where a fixed-link property is also missing, not just a phy-handle?
+> Although to be entirely correct, we can also have MLO_AN_INBAND, which
+> wouldn't be covered by these 2 checks and would still represent a valid
+> DT binding.
 
-Signed-off-by: Martin Habets <habetsm.xilinx@gmail.com>
----
- drivers/net/ethernet/sfc/ef100_nic.c |   39 ++++++++++++++++++++++++++++++++--
- 1 file changed, 37 insertions(+), 2 deletions(-)
+phylink_set_max_fixed_link() already excludes itself:
 
-diff --git a/drivers/net/ethernet/sfc/ef100_nic.c b/drivers/net/ethernet/sfc/ef100_nic.c
-index 218db3cb31eb..ce4b7b4e705e 100644
---- a/drivers/net/ethernet/sfc/ef100_nic.c
-+++ b/drivers/net/ethernet/sfc/ef100_nic.c
-@@ -704,7 +704,25 @@ static unsigned int efx_ef100_recycle_ring_size(const struct efx_nic *efx)
- 	return 10 * EFX_RECYCLE_RING_SIZE_10G;
- }
- 
--/* BAR configuration */
-+/* BAR configuration.
-+ * To change BAR configuration we tear down the current configuration (which
-+ * leaves the hardware in the PROBED state), and then initialise the new
-+ * BAR state.
-+ */
-+static struct {
-+	int (*init)(struct efx_probe_data *probe_data);
-+	void (*fini)(struct efx_probe_data *probe_data);
-+} bar_config_std[] = {
-+	[EF100_BAR_CONFIG_EF100] = {
-+		.init = ef100_probe_netdev,
-+		.fini = ef100_remove_netdev
-+	},
-+	[EF100_BAR_CONFIG_VDPA] = {
-+		.init = NULL,	/* TODO: assign these */
-+		.fini = NULL
-+	},
-+};
-+
- static ssize_t bar_config_show(struct device *dev,
- 			       struct device_attribute *attr, char *buf_out)
- {
-@@ -732,7 +750,9 @@ static ssize_t bar_config_store(struct device *dev,
- {
- 	struct efx_nic *efx = pci_get_drvdata(to_pci_dev(dev));
- 	struct ef100_nic_data *nic_data = efx->nic_data;
--	enum ef100_bar_config new_config;
-+	enum ef100_bar_config new_config, old_config;
-+	struct efx_probe_data *probe_data;
-+	int rc;
- 
- 	if (!strncasecmp(buf, "ef100", min_t(size_t, count, 5)))
- 		new_config = EF100_BAR_CONFIG_EF100;
-@@ -741,7 +761,22 @@ static ssize_t bar_config_store(struct device *dev,
- 	else
- 		return -EIO;
- 
-+	old_config = nic_data->bar_config;
-+	if (new_config == old_config)
-+		return count;
-+
-+	probe_data = container_of(efx, struct efx_probe_data, efx);
-+	if (bar_config_std[old_config].fini)
-+		bar_config_std[old_config].fini(probe_data);
-+
- 	nic_data->bar_config = new_config;
-+	if (bar_config_std[new_config].init) {
-+		rc = bar_config_std[new_config].init(probe_data);
-+		if (rc)
-+			return rc;
-+	}
-+
-+	pci_info(efx->pci_dev, "BAR configuration changed to %s", buf);
- 	return count;
- }
- 
+        if (pl->cfg_link_an_mode != MLO_AN_PHY || pl->phydev || pl->sfp_bus)
+                return -EBUSY;
 
+intentionally so that if there is anything specified for the port, be
+that a fixed link or in-band, then phylink_set_max_fixed_link() errors
+out with -EBUSY.
 
+The only case that it can't detect is if there is a PHY that may be
+added to phylink at a later time, and that is what the check above
+is for.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
