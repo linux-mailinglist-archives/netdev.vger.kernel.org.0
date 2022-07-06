@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 474B8569469
-	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 23:33:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F3497569479
+	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 23:34:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233999AbiGFVdE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jul 2022 17:33:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54474 "EHLO
+        id S232370AbiGFVdG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jul 2022 17:33:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232789AbiGFVdD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 17:33:03 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9CBC27145;
-        Wed,  6 Jul 2022 14:33:02 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id a5so9065015wrx.12;
-        Wed, 06 Jul 2022 14:33:02 -0700 (PDT)
+        with ESMTP id S232789AbiGFVdF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 17:33:05 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75B1C27145;
+        Wed,  6 Jul 2022 14:33:04 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id bk26so8686511wrb.11;
+        Wed, 06 Jul 2022 14:33:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=YQeQaOxN0HB5D1bNCZjbAOQZZcj64PzWtyy+r30Dm8c=;
-        b=WuFLcy1Hg4DsPSzvy+6YrFfBLxA5xaf3ppnoxfgbBEW6QbeL1kDYDQnTo5qcm1vB9Z
-         O83SvNb6/uip9toZa0Zf3cA5pxYMwA7DZLDxUh2C4np1gKAqJKapKL6QBtVf/OhPLwbq
-         GGRPF6ZuEq0Wwaco5O9LPOKJxp3FECQULxewqZHZyHUswvE9k0xR5uimb5LAtcP+8/eL
-         1DqHPFnMgCGv4gbjGFIobM13dpiNSOQIin481ZznFcWmRGUHLEPLI4f/Dz4OWYRMEstd
-         Qrlbx7QbrUL9Efs67PYUlHH4CBzHNBmnTysM6/nm+qLggFP56T+XVnuPo6C8HA9KCKV4
-         m93A==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Fg/phBGKhZr7UrHQOPXuoLQtqwIeUVgaOU3TILEF07Q=;
+        b=VL+ggLiQ9rzXiwBSovopuHxOXFel3Xhv127KxNiPzpYMOUJGAq+aC25L3/C2QxYPt8
+         s7r3wWaozRrfkZiwdDg3GQBXS/H75PEcXUmFh0ChuFF+3SSP3Hx5L3JkAsWcA/hUL9kx
+         Y3zFnDEJbukzWApw1yYlwXS73Ds71s0tvUjmt70PR62inqOFeQmibnDEWomQAc+s9Ecr
+         urZ1N24xEILx87Rxw7s9lAQ6DKF2D20GRm/0JCfTxpqBWopBoNikhutdYSy2LErSNKVA
+         bvrcrJtujRmjOaZ3JzlnPM0ml5yiUu7h69htmTzz8qQuIA1EVS/ubOPxR7bDRWdelgc3
+         SXPQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=YQeQaOxN0HB5D1bNCZjbAOQZZcj64PzWtyy+r30Dm8c=;
-        b=MjBD5+Y2lDjtfbwXvnhBFNcRQ/N4RzgnPfqZDZME9lpExTA9tIWrA72dNr3VqKTrdE
-         Dh57KDRWjTMMFVsj1lO56cXISuptb3AeW5OZ7/NFNESoWyXK0loZeXgnBk7HQN+SDSRP
-         IPaAVrtlncsvo4KYjp3LRRunaKXwU+3OmChU2IQJJ1X769bc6cFREsz3mZyNMm9F6rfO
-         hz49Shd5WXmVfFLz3dXxYP/IFmGMbGwaprGcea1ayI6MB5IWcGTT5IobzAarEk14hRET
-         eVwE+nso03un6gz4y+v8iBA4/ZPglyFLPTthbUQbQlXl3FfIGwmTn4OnGdzm2BIPe4e8
-         aybg==
-X-Gm-Message-State: AJIora9tR4s8vKaJGNp1Qx/bikYbCJaaPaDdEpUuKaTXZQZ0wYHHY1Fe
-        qb1reSQ+xe0v3FlANkgOkdg=
-X-Google-Smtp-Source: AGRyM1tT2Ajo9DNZEZO6q5sT1Mzgz1311qX7qiOPP8scOSLsAMCDE3jaro3Vtkaz9IoRl1mgOD3c2A==
-X-Received: by 2002:a05:6000:100f:b0:21d:779f:fa87 with SMTP id a15-20020a056000100f00b0021d779ffa87mr8308831wrx.291.1657143181298;
-        Wed, 06 Jul 2022 14:33:01 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Fg/phBGKhZr7UrHQOPXuoLQtqwIeUVgaOU3TILEF07Q=;
+        b=o6LDYY8x9ff380qtV9V9UneRIWve5XeGLyHRZFWq+c9XVCSXdcBZbF/c7Ab6XNe5s3
+         XnXrxxEBwqxJDyF4LdI02wspYITnC9C/wu3bX7AqTS3Jt+C7eE/60YeF05tjmnARnMle
+         Hiv+3LH6Nyv6Q+rpE5xUzE9WpCLbMKMIwMJfZw1BMWi8q7cTw9P3odQDRx7Du8BADeEB
+         l/C2VPsT4TaPmsg9sThl2oAL5alOvI1J/es/2WO3sr/uqosi+47LOmj/N7MPN81TrFl1
+         2Eho3DdeGXnqyxuVXixieOeSP8ey1ruCVgwTElMD2wlNDjbMLRnWNbsaXZ1j/kYFtNGS
+         8Cmg==
+X-Gm-Message-State: AJIora9cIlpwflEnYPNKtPszQWC43m0gR/OBiiciosVCX2B5AIX13eC3
+        xPRXoLySjaIsbTtjBxI2HNw=
+X-Google-Smtp-Source: AGRyM1uysZZkfTar5qcs0P2RtQiH2zA7twOcPZSQdqOuscQRra/ocxGsMPqKorDoXbhv6GmCUB05Rg==
+X-Received: by 2002:adf:f9ce:0:b0:21d:68b7:e7af with SMTP id w14-20020adff9ce000000b0021d68b7e7afmr18658227wrr.236.1657143183028;
+        Wed, 06 Jul 2022 14:33:03 -0700 (PDT)
 Received: from localhost (p200300e41f12c800f22f74fffe1f3a53.dip0.t-ipconnect.de. [2003:e4:1f12:c800:f22f:74ff:fe1f:3a53])
-        by smtp.gmail.com with ESMTPSA id r16-20020a05600c35d000b003a0375c4f73sm27237705wmq.44.2022.07.06.14.33.00
+        by smtp.gmail.com with ESMTPSA id bd16-20020a05600c1f1000b003a18ecfcd8csm18092287wmb.19.2022.07.06.14.33.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 14:33:00 -0700 (PDT)
+        Wed, 06 Jul 2022 14:33:02 -0700 (PDT)
 From:   Thierry Reding <thierry.reding@gmail.com>
 To:     Thierry Reding <thierry.reding@gmail.com>
 Cc:     Jon Hunter <jonathanh@nvidia.com>,
@@ -58,11 +58,14 @@ Cc:     Jon Hunter <jonathanh@nvidia.com>,
         Paolo Abeni <pabeni@redhat.com>,
         Bhadram Varka <vbhadram@nvidia.com>,
         devicetree@vger.kernel.org, linux-tegra@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH v3 0/9] tegra: Add support for MGBE controller
-Date:   Wed,  6 Jul 2022 23:32:46 +0200
-Message-Id: <20220706213255.1473069-1-thierry.reding@gmail.com>
+        netdev@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v3 1/9] dt-bindings: power: Add Tegra234 MGBE power domains
+Date:   Wed,  6 Jul 2022 23:32:47 +0200
+Message-Id: <20220706213255.1473069-2-thierry.reding@gmail.com>
 X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220706213255.1473069-1-thierry.reding@gmail.com>
+References: <20220706213255.1473069-1-thierry.reding@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -77,66 +80,27 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Thierry Reding <treding@nvidia.com>
 
-Hi everyone,
+Add power domain IDs for the four Multi-Gigabit Ethernet (MGBE) power
+partitions found on NVIDIA Tegra234.
 
-This series adds support for the MGBE Ethernet controller that can be
-found on Tegra234 SoCs.
+Signed-off-by: Bhadram Varka <vbhadram@nvidia.com>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Thierry Reding <treding@nvidia.com>
+---
+ include/dt-bindings/power/tegra234-powergate.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-Despite what I said earlier, I've decided to include patches 1-4 here
-to make it a little easier for patchwork (and related tooling) to detect
-this as a subsequent series. I do have those patches in the Tegra tree
-already with the Acked-bys from Krzysztof, though, so no need to go
-through those again.
-
-Hopefully the DT bindings are all good now. I've run them through the
-dt_binding_check target and verified that the DTS changes in this series
-also validate correctly. I've left the interrupt-names property in and
-added the additional (optional) macsec-ns and macsec interrupts to
-illustrate why we need the "common" interrupt. Hopefully that now
-clarifies things.
-
-In addition to patches 1-4 I plan to apply patches 5-8 to the Tegra tree
-as well once the DT bindings have been reviewed and finalized. Patch 9
-can go through the net-next tree independently since there are no
-dependencies.
-
-Changes in v3:
-- address remaining review comments on DT bindings
-
-Changes in v2:
-- address some review comments on DT bindings
-
-Thierry
-
-Bhadram Varka (3):
-  dt-bindings: net: Add Tegra234 MGBE
-  arm64: defconfig: Enable Tegra MGBE driver
-  stmmac: tegra: Add MGBE support
-
-Thierry Reding (6):
-  dt-bindings: power: Add Tegra234 MGBE power domains
-  dt-bindings: Add Tegra234 MGBE clocks and resets
-  dt-bindings: memory: Add Tegra234 MGBE memory clients
-  memory: tegra: Add MGBE memory clients for Tegra234
-  arm64: tegra: Add MGBE nodes on Tegra234
-  arm64: tegra: Enable MGBE on Jetson AGX Orin Developer Kit
-
- .../bindings/net/nvidia,tegra234-mgbe.yaml    | 169 ++++++++++
- .../nvidia/tegra234-p3737-0000+p3701-0000.dts |  21 ++
- arch/arm64/boot/dts/nvidia/tegra234.dtsi      | 136 ++++++++
- arch/arm64/configs/defconfig                  |   1 +
- drivers/memory/tegra/tegra234.c               |  80 +++++
- drivers/net/ethernet/stmicro/stmmac/Kconfig   |   6 +
- drivers/net/ethernet/stmicro/stmmac/Makefile  |   1 +
- .../net/ethernet/stmicro/stmmac/dwmac-tegra.c | 290 ++++++++++++++++++
- include/dt-bindings/clock/tegra234-clock.h    | 101 ++++++
- include/dt-bindings/memory/tegra234-mc.h      |  20 ++
- .../dt-bindings/power/tegra234-powergate.h    |   1 +
- include/dt-bindings/reset/tegra234-reset.h    |   8 +
- 12 files changed, 834 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/net/nvidia,tegra234-mgbe.yaml
- create mode 100644 drivers/net/ethernet/stmicro/stmmac/dwmac-tegra.c
-
+diff --git a/include/dt-bindings/power/tegra234-powergate.h b/include/dt-bindings/power/tegra234-powergate.h
+index f610eee9bce8..df1d4dd8dcf3 100644
+--- a/include/dt-bindings/power/tegra234-powergate.h
++++ b/include/dt-bindings/power/tegra234-powergate.h
+@@ -18,5 +18,6 @@
+ #define TEGRA234_POWER_DOMAIN_MGBEA	17U
+ #define TEGRA234_POWER_DOMAIN_MGBEB	18U
+ #define TEGRA234_POWER_DOMAIN_MGBEC	19U
++#define TEGRA234_POWER_DOMAIN_MGBED	20U
+ 
+ #endif
 -- 
 2.36.1
 
