@@ -2,87 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BB65A568220
-	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 10:53:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AFAAB56822E
+	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 10:56:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231206AbiGFIxZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jul 2022 04:53:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34906 "EHLO
+        id S232440AbiGFI4H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jul 2022 04:56:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230320AbiGFIxY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 04:53:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B9951031
-        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 01:53:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A4CE361982
-        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 08:53:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB63BC3411C;
-        Wed,  6 Jul 2022 08:53:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657097603;
-        bh=yjuzLjU/h/GeFnQv04wH2hwMrCaxWGVVryFGtKPZSR4=;
-        h=From:To:Cc:Subject:Date:From;
-        b=LoDdrGsV/9ihCVLBZdvB6IXcmd5kBmlu91Zw9RqdDOjZE2T9h0/7kKaJVE/HS4o4F
-         p7bQVwb9yuAQA8rH1BWt5AjydkHDK7Q75kaRcOJX6Wo5GphWIkdVwRmriKZAk+RYro
-         XRQmPP/4UgcvZ742vXrNeJ0SKDC+HODnOXVLBVaodlnE2+U8tepjg6mvSYc/6yHq7b
-         WWwVWMLJbQuE8h+rTVnzGdlubra0r/Do1+r+CovhTepjKylmmA21GKepZ11yd67k2O
-         d1tBW0VGdF/iyr+OBWBiAMENsInzv8no4sBRL2HZ+05LBIGHtuhAFnn5asCerm4Gmf
-         XyuxyW9nIueRA==
-From:   Antoine Tenart <atenart@kernel.org>
-To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com
-Cc:     Antoine Tenart <atenart@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH net-next] Documentation: add a description for net.core.high_order_alloc_disable
-Date:   Wed,  6 Jul 2022 10:53:20 +0200
-Message-Id: <20220706085320.17581-1-atenart@kernel.org>
-X-Mailer: git-send-email 2.36.1
+        with ESMTP id S232426AbiGFI4G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 04:56:06 -0400
+Received: from m1564.mail.126.com (m1564.mail.126.com [220.181.15.64])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0480B237CC
+        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 01:56:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=7A14I
+        vJ3BlG4gNz1oUQXUNteQRyd88hui/pA/Ss2GWw=; b=j5DNZ2HGQou+iylqgWek+
+        a0SHhOj6gJOAt788/a52GO/L7KVaf3svY63XLJOhvPEgY/6QWjMbbeGVbdhB242d
+        xdINGu9pRBbbBgrr2xXccjJjPfFVbTb3BEJxLfdD3n4Bxqc9i63CVYv/ALDGVbDB
+        5qYj9pi2ZJ+7XTntO0VpjA=
+Received: from windhl$126.com ( [124.16.139.61] ) by ajax-webmail-wmsvr64
+ (Coremail) ; Wed, 6 Jul 2022 16:55:37 +0800 (CST)
+X-Originating-IP: [124.16.139.61]
+Date:   Wed, 6 Jul 2022 16:55:37 +0800 (CST)
+From:   "Liang He" <windhl@126.com>
+To:     "Jakub Kicinski" <kuba@kernel.org>
+Cc:     davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        netdev@vger.kernel.org
+Subject: Re:Re: [PATCH] ftgmac100: Hold reference returned by
+ of_get_child_by_name()
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20220113(9671e152)
+ Copyright (c) 2002-2022 www.mailtech.cn 126com
+In-Reply-To: <20220705184805.2619caca@kernel.org>
+References: <20220704151819.279513-1-windhl@126.com>
+ <20220705184805.2619caca@kernel.org>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=GBK
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Message-ID: <41ae7b8e.5fda.181d2b8d4ff.Coremail.windhl@126.com>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: QMqowAAXJnIKTsVi7KZGAA--.62378W
+X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbi2hs2F1uwMWnlzQACs5
+X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_INVALID,
+        DKIM_SIGNED,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A description is missing for the net.core.high_order_alloc_disable
-option in admin-guide/sysctl/net.rst ; add it. The above sysctl option
-was introduced by commit ce27ec60648d ("net: add high_order_alloc_disable
-sysctl/static key").
-
-Cc: Eric Dumazet <edumazet@google.com>
-Signed-off-by: Antoine Tenart <atenart@kernel.org>
----
- Documentation/admin-guide/sysctl/net.rst | 10 ++++++++++
- 1 file changed, 10 insertions(+)
-
-diff --git a/Documentation/admin-guide/sysctl/net.rst b/Documentation/admin-guide/sysctl/net.rst
-index fcd650bdbc7e..85ab83411359 100644
---- a/Documentation/admin-guide/sysctl/net.rst
-+++ b/Documentation/admin-guide/sysctl/net.rst
-@@ -391,6 +391,16 @@ GRO has decided not to coalesce, it is placed on a per-NAPI list. This
- list is then passed to the stack when the number of segments reaches the
- gro_normal_batch limit.
- 
-+high_order_alloc_disable
-+------------------------
-+
-+By default the allocator for page frags tries to use high order pages (order-3
-+on x86). While the default behavior gives good results in most cases, some users
-+might hit a contention in page allocations/freeing. This allows to opt-in for
-+order-0 allocation instead.
-+
-+Default: 0
-+
- 2. /proc/sys/net/unix - Parameters for Unix domain sockets
- ----------------------------------------------------------
- 
--- 
-2.36.1
-
+CgoKQXQgMjAyMi0wNy0wNiAwOTo0ODowNSwgIkpha3ViIEtpY2luc2tpIiA8a3ViYUBrZXJuZWwu
+b3JnPiB3cm90ZToKPk9uIE1vbiwgIDQgSnVsIDIwMjIgMjM6MTg6MTkgKzA4MDAgTGlhbmcgSGUg
+d3JvdGU6Cj4+IEluIGZ0Z21hYzEwMF9wcm9iZSgpLCB3ZSBzaG91bGQgaG9sZCB0aGUgcmVmZXJu
+ZWNlIHJldHVybmVkIGJ5Cj4+IG9mX2dldF9jaGlsZF9ieV9uYW1lKCkgYW5kIHVzZSBpdCB0byBj
+YWxsIG9mX25vZGVfcHV0KCkgZm9yCj4+IHJlZmVyZW5jZSBiYWxhbmNlLgo+PiAKPj4gU2lnbmVk
+LW9mZi1ieTogTGlhbmcgSGUgPHdpbmRobEAxMjYuY29tPgo+PiAtLS0KPj4gIGRyaXZlcnMvbmV0
+L2V0aGVybmV0L2ZhcmFkYXkvZnRnbWFjMTAwLmMgfCA2ICsrKystLQo+PiAgMSBmaWxlIGNoYW5n
+ZWQsIDQgaW5zZXJ0aW9ucygrKSwgMiBkZWxldGlvbnMoLSkKPj4gCj4+IGRpZmYgLS1naXQgYS9k
+cml2ZXJzL25ldC9ldGhlcm5ldC9mYXJhZGF5L2Z0Z21hYzEwMC5jIGIvZHJpdmVycy9uZXQvZXRo
+ZXJuZXQvZmFyYWRheS9mdGdtYWMxMDAuYwo+PiBpbmRleCA1MjMxODE4OTQzYzYuLmU1MGJkN2Jl
+YjA5YiAxMDA2NDQKPj4gLS0tIGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvZmFyYWRheS9mdGdtYWMx
+MDAuYwo+PiArKysgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9mYXJhZGF5L2Z0Z21hYzEwMC5jCj4+
+IEBAIC0xNzcwLDcgKzE3NzAsNyBAQCBzdGF0aWMgaW50IGZ0Z21hYzEwMF9wcm9iZShzdHJ1Y3Qg
+cGxhdGZvcm1fZGV2aWNlICpwZGV2KQo+PiAgCWludCBpcnE7Cj4+ICAJc3RydWN0IG5ldF9kZXZp
+Y2UgKm5ldGRldjsKPj4gIAlzdHJ1Y3QgZnRnbWFjMTAwICpwcml2Owo+PiAtCXN0cnVjdCBkZXZp
+Y2Vfbm9kZSAqbnA7Cj4+ICsJc3RydWN0IGRldmljZV9ub2RlICpucCwgKmNoaWxkX25wOwo+PiAg
+CWludCBlcnIgPSAwOwo+PiAgCj4+ICAJcmVzID0gcGxhdGZvcm1fZ2V0X3Jlc291cmNlKHBkZXYs
+IElPUkVTT1VSQ0VfTUVNLCAwKTsKPj4gQEAgLTE4ODMsNyArMTg4Myw3IEBAIHN0YXRpYyBpbnQg
+ZnRnbWFjMTAwX3Byb2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpCj4+ICAKPj4gIAkJ
+LyogRGlzcGxheSB3aGF0IHdlIGZvdW5kICovCj4+ICAJCXBoeV9hdHRhY2hlZF9pbmZvKHBoeSk7
+Cj4+IC0JfSBlbHNlIGlmIChucCAmJiAhb2ZfZ2V0X2NoaWxkX2J5X25hbWUobnAsICJtZGlvIikp
+IHsKPj4gKwl9IGVsc2UgaWYgKG5wICYmICEoY2hpbGRfbnAgPSBvZl9nZXRfY2hpbGRfYnlfbmFt
+ZShucCwgIm1kaW8iKSkpIHsKPj4gIAkJLyogU3VwcG9ydCBsZWdhY3kgQVNQRUVEIGRldmljZXRy
+ZWUgZGVzY3JpcHRpb25zIHRoYXQgZGVjcmliZSBhCj4+ICAJCSAqIE1BQyB3aXRoIGFuIGVtYmVk
+ZGVkIE1ESU8gY29udHJvbGxlciBidXQgaGF2ZSBubyAibWRpbyIKPj4gIAkJICogY2hpbGQgbm9k
+ZS4gQXV0b21hdGljYWxseSBzY2FuIHRoZSBNRElPIGJ1cyBmb3IgYXZhaWxhYmxlCj4+IEBAIC0x
+OTAxLDYgKzE5MDEsOCBAQCBzdGF0aWMgaW50IGZ0Z21hYzEwMF9wcm9iZShzdHJ1Y3QgcGxhdGZv
+cm1fZGV2aWNlICpwZGV2KQo+PiAgCQl9Cj4+ICAKPj4gIAl9Cj4+ICsJaWYgKGNoaWxkX25wKQo+
+PiArCQlvZl9ub2RlX3B1dChjaGlsZF9ucCk7Cj4KPlNpbmNlIHdlIGRvbid0IGNhcmUgYWJvdXQg
+dGhlIHZhbHVlIG9mIHRoZSBub2RlIHdlIHNob3VsZCBhZGQgYSBoZWxwZXIKPndoaWNoIGNoZWNr
+cyBmb3IgcHJlc2VuY2Ugb2YgdGhlIG5vZGUgYW5kIHJlbGVhc2VzIHRoZSByZWZlcmVuY2UsCj5y
+YXRoZXIgdGhhbiBoYXZlIHRvIGRvIHRoYXQgaW4gdGhpcyBsYXJnZSBmdW5jdGlvbi4KPgo+UGxl
+YXNlIGFsc28gYWRkIGEgRml4ZXMgdGFnLgoKCkhpLCBKYWt1YiwKCkNhbiB5b3UgdGVsbCBtZSB3
+aGVyZSB0byBhZGQgc3VjaCBoZWxwZXI/Cgp5b3UgbWVhbiBhZGQgYSBoZWxwZXIgaW4gb2YuaCBm
+b3IgY29tbW9uIHVzYXNnZSBvciBqdXN0IGFkZCBpdCBpbiB0aGlzIGZpbGU/CgpUaGFua3MsCgpM
+aWFuZwo=
