@@ -2,145 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 110BC568A05
-	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 15:50:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92987568A83
+	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 16:01:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233785AbiGFNue (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jul 2022 09:50:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50060 "EHLO
+        id S233621AbiGFOBe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jul 2022 10:01:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233505AbiGFNuc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 09:50:32 -0400
-Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58CBD17E21
-        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 06:50:30 -0700 (PDT)
-Received: by mail-io1-f72.google.com with SMTP id t11-20020a6bdb0b000000b00674fd106c0cso8201172ioc.16
-        for <netdev@vger.kernel.org>; Wed, 06 Jul 2022 06:50:30 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=/ObOq9i9PCetyXNMRRQQc3PnpcFrRWKHOKNFDzXth8Y=;
-        b=YncqFkCC6HW+wsIUEFH1pVWwBgBn0q8deflqFIoDC0w1v2PtF+gvJx1ZwoUFoyGtdl
-         8A7LkzXFQoGP4B4Ju/YoEeqAioDZlXqPnPcPUOY7uwJVIlPuyQ5SNK7D5dJBv6adVwuv
-         XUXMvnNkegte37+w6uNsj/15+NFRh2bGwySUUeU+CwVVeramUKYj6WX0MtLYQ+FVyeA0
-         9Fqc70DEg4nUuYcti0UW88qCtyYuoI7L2JPVh4TvLvghp8sV0fi0KYqI9yDU2tWsTylU
-         hq7rvYj8tASJ9ITld6pwea+km6lWAMcSLBqZFw70XgIwQKAwSh5B5fmqDJvgvaEhrwFv
-         RuJQ==
-X-Gm-Message-State: AJIora/IMgzqOkJjSvw7vEnFzmBZ7oWBzeqxoGAr/yNRDLIJ9yeEwgrk
-        /6pd8/fsl/9f3fViZEZwvVqF9BnDY8mFuS8gu9WBx6YlOsHq
-X-Google-Smtp-Source: AGRyM1t8ImqiOaezDVWfmn71B5bWPJmtE7RGKYf8NvS+4MvTHQWU7NFxK6JSI/aZP8jNglYcDkuuX7ysnkVPsDJTdt5a0d+pHI7U
+        with ESMTP id S233210AbiGFOBY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 10:01:24 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58E371AF0E;
+        Wed,  6 Jul 2022 07:01:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=ouRvW6OEP3qkY26xFcBJ9tiIR5hvG8wwzWSrM+uEL/I=; b=r22GQMcjL2cTA+cmoNxVKQaYIQ
+        dwhyEH3B7jMmYNkgOavl/Jkw8ahF4pUqGA50knBcMnA+T7sUrrZ34FNLk4CpwNXFlmdCBQuXuMgC6
+        AwUQVVNBvUsYsvtg7SJXC+mM8yy+m6Yfn9zYum2In+mCHyjoDJoEwkrrZFDQZ6zu2qEi08X4EGXjG
+        nqFhc+W39vckzfBqTLqNhD57KglAOvtgqwC9xCwGrEpzefP77PX2X4XR0rU0k/TUHqxUt8Hfpbgu0
+        VA0+lOt3y9ds9A8wP/CLThg+mPx0CMIJgQ3BWj69BlplgxU6U7cObaHqud6BY2yAxc6mtQbeVyZWS
+        MeY41few==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o95aN-001hHB-5i; Wed, 06 Jul 2022 14:00:59 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 727A9300779;
+        Wed,  6 Jul 2022 16:00:58 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 53F5E201E7FAD; Wed,  6 Jul 2022 16:00:58 +0200 (CEST)
+Date:   Wed, 6 Jul 2022 16:00:58 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Will Deacon <will@kernel.org>
+Cc:     Florian Westphal <fw@strlen.de>,
+        Kajetan Puchalski <kajetan.puchalski@arm.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Mel Gorman <mgorman@suse.de>,
+        lukasz.luba@arm.com, dietmar.eggemann@arm.com,
+        mark.rutland@arm.com, broonie@kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, stable@vger.kernel.org,
+        regressions@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [Regression] stress-ng udp-flood causes kernel panic on Ampere
+ Altra
+Message-ID: <YsWVmrMA6aFE8oDr@hirez.programming.kicks-ass.net>
+References: <20220702205651.GB15144@breakpoint.cc>
+ <YsKxTAaIgvKMfOoU@e126311.manchester.arm.com>
+ <YsLGoU7q5hP67TJJ@e126311.manchester.arm.com>
+ <YsQYIoJK3iqJ68Tq@e126311.manchester.arm.com>
+ <20220705105749.GA711@willie-the-truck>
+ <20220705110724.GB711@willie-the-truck>
+ <20220705112449.GA931@willie-the-truck>
+ <YsVmbOqzACeo1rO4@e126311.manchester.arm.com>
+ <20220706120201.GA7996@breakpoint.cc>
+ <20220706122246.GI2403@willie-the-truck>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:16cc:b0:2da:b7b7:a7ab with SMTP id
- 12-20020a056e0216cc00b002dab7b7a7abmr24967520ilx.114.1657115429712; Wed, 06
- Jul 2022 06:50:29 -0700 (PDT)
-Date:   Wed, 06 Jul 2022 06:50:29 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000008a396105e32340b3@google.com>
-Subject: [syzbot] WARNING in notifier_chain_register
-From:   syzbot <syzbot+5214f8dac5863061e37c@syzkaller.appspotmail.com>
-To:     bigeasy@linutronix.de, bp@suse.de, davem@davemloft.net,
-        dmitry.osipenko@collabora.com, edumazet@google.com,
-        johan.hedberg@gmail.com, kuba@kernel.org,
-        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
-        luiz.dentz@gmail.com, marcel@holtmann.org, mirq-linux@rere.qmqm.pl,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        rafael.j.wysocki@intel.com, stern@rowland.harvard.edu,
-        syzkaller-bugs@googlegroups.com, vasyl.vavrychuk@opensynergy.com,
-        vschneid@redhat.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220706122246.GI2403@willie-the-truck>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Wed, Jul 06, 2022 at 01:22:50PM +0100, Will Deacon wrote:
 
-syzbot found the following issue on:
+> > @@ -300,6 +300,9 @@ static inline bool nf_ct_is_expired(const struct nf_conn *ct)
+> >  /* use after obtaining a reference count */
+> >  static inline bool nf_ct_should_gc(const struct nf_conn *ct)
+> >  {
+> > +	/* ->status and ->timeout loads must happen after refcount increase */
+> > +	smp_rmb();
+> 
+> Sorry I didn't suggest this earlier, but if all of these smp_rmb()s are
+> for upgrading the ordering from refcount_inc_not_zero() then you should
+> use smp_acquire__after_ctrl_dep() instead. It's the same under the hood,
+> but it illustrates what's going on a bit better.
 
-HEAD commit:    cb71b93c2dc3 Add linux-next specific files for 20220628
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=168bb25bf00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=badbc1adb2d582eb
-dashboard link: https://syzkaller.appspot.com/bug?extid=5214f8dac5863061e37c
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13915d68080000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13dee200080000
+But in that case if had better also be near an actual condition,
+otherwise things become too murky for words :/
 
-The issue was bisected to:
+That is, why is this sprinkled all over instead of right after
+an successfull refcount_inc_not_zero() ?
 
-commit ff7f2926114d3a50f5ffe461a9bce8d761748da5
-Author: Vasyl Vavrychuk <vasyl.vavrychuk@opensynergy.com>
-Date:   Tue Apr 26 08:18:23 2022 +0000
+Code like:
 
-    Bluetooth: core: Fix missing power_on work cancel on HCI close
+	if (!refcount_inc_not_zero())
+		return;
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=15ea8982080000
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=17ea8982080000
-console output: https://syzkaller.appspot.com/x/log.txt?x=13ea8982080000
+	smp_acquire__after_ctrl_dep();
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+5214f8dac5863061e37c@syzkaller.appspotmail.com
-Fixes: ff7f2926114d ("Bluetooth: core: Fix missing power_on work cancel on HCI close")
+is fairly self-evident, whereas encountering an
+smp_acquire__after_ctrl_dep() in a different function, completely
+unrelated to any condition is quite crazy.
 
-------------[ cut here ]------------
-notifier callback hci_suspend_notifier already registered
-WARNING: CPU: 1 PID: 3898 at kernel/notifier.c:28 notifier_chain_register kernel/notifier.c:28 [inline]
-WARNING: CPU: 1 PID: 3898 at kernel/notifier.c:28 notifier_chain_register+0x156/0x210 kernel/notifier.c:22
-Modules linked in:
-CPU: 1 PID: 3898 Comm: syz-executor172 Not tainted 5.19.0-rc4-next-20220628-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 06/29/2022
-RIP: 0010:notifier_chain_register kernel/notifier.c:28 [inline]
-RIP: 0010:notifier_chain_register+0x156/0x210 kernel/notifier.c:22
-Code: 89 ea 48 b8 00 00 00 00 00 fc ff df 48 c1 ea 03 80 3c 02 00 0f 85 a5 00 00 00 49 8b 75 00 48 c7 c7 c0 d0 cb 89 e8 14 f5 e3 07 <0f> 0b 41 bc ef ff ff ff e8 5d 6f 2a 00 44 89 e0 48 83 c4 18 5b 5d
-RSP: 0018:ffffc9000367fca8 EFLAGS: 00010286
-RAX: 0000000000000000 RBX: ffff88807ae11180 RCX: 0000000000000000
-RDX: ffff888076fa3a80 RSI: ffffffff81610608 RDI: fffff520006cff87
-RBP: 0000000000000000 R08: 0000000000000005 R09: 0000000000000000
-R10: 0000000080000000 R11: 0000000000000001 R12: 0000000000000000
-R13: ffff88807ae11180 R14: ffff88801bb79188 R15: dffffc0000000000
-FS:  0000555556682300(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fe4d8d866e8 CR3: 0000000070960000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- __blocking_notifier_chain_register kernel/notifier.c:266 [inline]
- blocking_notifier_chain_register+0x6f/0xc0 kernel/notifier.c:284
- hci_register_suspend_notifier net/bluetooth/hci_core.c:2752 [inline]
- hci_register_suspend_notifier+0x9d/0xc0 net/bluetooth/hci_core.c:2746
- hci_sock_bind+0x141a/0x1630 net/bluetooth/hci_sock.c:1234
- __sys_bind+0x1e9/0x250 net/socket.c:1776
- __do_sys_bind net/socket.c:1787 [inline]
- __se_sys_bind net/socket.c:1785 [inline]
- __x64_sys_bind+0x6f/0xb0 net/socket.c:1785
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x46/0xb0
-RIP: 0033:0x7fe4d8d314a9
-Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 d1 15 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffe5c71ae28 EFLAGS: 00000246 ORIG_RAX: 0000000000000031
-RAX: ffffffffffffffda RBX: 0000000000000004 RCX: 00007fe4d8d314a9
-RDX: 0000000000000006 RSI: 0000000020000240 RDI: 0000000000000004
-RBP: 0000000000000003 R08: 0000000000000150 R09: 0000000000000150
-R10: 0000000000000000 R11: 0000000000000246 R12: 00005555566822b8
-R13: 0000000000000011 R14: 00007ffe5c71ae90 R15: 00007ffe5c71ae48
- </TASK>
+> > @@ -1775,6 +1784,16 @@ init_conntrack(struct net *net, struct nf_conn *tmpl,
+> >  	if (!exp)
+> >  		__nf_ct_try_assign_helper(ct, tmpl, GFP_ATOMIC);
+> >  
+> > +	/* Other CPU might have obtained a pointer to this object before it was
+> > +	 * released.  Because refcount is 0, refcount_inc_not_zero() will fail.
+> > +	 *
+> > +	 * After refcount_set(1) it will succeed; ensure that zeroing of
+> > +	 * ct->status and the correct ct->net pointer are visible; else other
+> > +	 * core might observe CONFIRMED bit which means the entry is valid and
+> > +	 * in the hash table, but its not (anymore).
+> > +	 */
+> > +	smp_wmb();
+> > +
+> >  	/* Now it is going to be associated with an sk_buff, set refcount to 1. */
+> >  	refcount_set(&ct->ct_general.use, 1);
+> 
+> Ideally that refcount_set() would be a release, but this is definitely
+> (ab)using refcount_t in way that isn't anticipated by the API! It looks
+> like a similar pattern exists in net/core/sock.c as well, so I wonder if
+> it's worth extending the API.
+> 
+> Peter, what do you think?
 
+Bah; you have reminded me that I have a fairly sizable amount of
+refcount patches from when Linus complained about it last that don't
+seem to have gone anywhere :/
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+Anyway, I suppose we could do a refcount_set_release(), but it had
+better get a fairly big comment on how you're on your own if you use it.
