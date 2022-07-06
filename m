@@ -2,93 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DC43568072
-	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 09:49:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F7AB56807E
+	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 09:53:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231720AbiGFHtd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jul 2022 03:49:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36986 "EHLO
+        id S231173AbiGFHxN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jul 2022 03:53:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230359AbiGFHtd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 03:49:33 -0400
-Received: from mail-m972.mail.163.com (mail-m972.mail.163.com [123.126.97.2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8786922B3C;
-        Wed,  6 Jul 2022 00:49:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=I8+m1
-        YAsVZ4gl1y1umKlRTUNyEHJgsOKvTyV1H7WmOY=; b=j9NkHPTE9z+Curz/JVKVq
-        kue+1kmDGWK21Rqd2/5h7I6ui4Kx8hvL5/hX7Fy/n2aRzBAfds0qZy/2CvNxCR7m
-        9AeCYvqaZvx/UNfLPX6ny5fmF8zcH59S8uLbz8UaBUAC5XucDdqD6N3a906bLSNe
-        aZYWETGJh4LkIBYUzt2OHg=
-Received: from localhost.localdomain (unknown [123.112.69.106])
-        by smtp2 (Coremail) with SMTP id GtxpCgAHhyNhPsViyC90Ng--.47709S4;
-        Wed, 06 Jul 2022 15:49:01 +0800 (CST)
-From:   Jianglei Nie <niejianglei2021@163.com>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jianglei Nie <niejianglei2021@163.com>
-Subject: [PATCH] net: macsec: fix potential resource leak in macsec_add_rxsa() and macsec_add_txsa()
-Date:   Wed,  6 Jul 2022 15:48:26 +0800
-Message-Id: <20220706074826.2254689-1-niejianglei2021@163.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S230244AbiGFHxN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 03:53:13 -0400
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 203D222BCA;
+        Wed,  6 Jul 2022 00:53:12 -0700 (PDT)
+Received: by mail-wm1-x336.google.com with SMTP id o19-20020a05600c4fd300b003a0489f414cso8482298wmq.4;
+        Wed, 06 Jul 2022 00:53:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=a0nXdiIhp5hpiKJM0T0v/8E9SNniFeIuey83M+NyOqo=;
+        b=oUXZgJ0PbFDJwqHv2skq9OYSLrNvRjMt3jfFXSqnJQ2oKwzdSXzNnN54utgNCysLP0
+         B7Met4KCksl8aXZ/onP98+FrrnJtw1tU1vgJdXM/RDo8o1bUPbWweA/wvbVLek0pYVqu
+         CsBeinpZ3G1bmd94HKe6HMNP2BqN53KSaz6wNkRLlv2JLx4AdoDEdYc5dNY9bby0Lm+F
+         EFILv1s54I2oLMLuR8rVe5WX5NFQPmwaZUfUDh0tSZzt/09WokcsAmKnPRSEg1hgMCZE
+         rzOLTz4De4YtM67KyoRArSLRVT1CtfCNparIqR+90GkrJw7OjVZzznHioG/VwKdVis6S
+         +/OA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :in-reply-to;
+        bh=a0nXdiIhp5hpiKJM0T0v/8E9SNniFeIuey83M+NyOqo=;
+        b=kATH8Qm+GzAeTPGPqNQM9fzuKEZiAWIbGcdM0FBIZ3PiIH/MNvB9yjN74Ro6Wj6xcC
+         NRRDs3t9zlzelqTrVbJmRhbDS1MxmXp93o+83M65DpUDAp/l5TfV613QGPfj6ZN4yXUY
+         IA6NGj4yBWGiVBWnSjCk9erjYmIZf2+peb+SGBDUfqWn7x1c8tO1Tzve9DQxMDOhpy0N
+         51oCAS4aaEuvZr6tyszr4f3TjlFrL9b26fpRa1FWtSMYvih0fQbya2W7brR6I/equooQ
+         SvumnDgDpFrfvQxUkn3Cac7kisGU7eWgWvlYhbCr9KJk703BjjxVJbUByDsCbD40cP8P
+         H36w==
+X-Gm-Message-State: AJIora9yffqi1uqYxERtYLg6EFaued8z+ZQR3/uhLFk9iFRWLEN3DJ8E
+        9JSY8JiX08eia7VL6/ydRvw=
+X-Google-Smtp-Source: AGRyM1ucMvrmrckFEIpDrHtIqRL56U3uObNXjqMWzzF0QLJ1C3fGV4CbirI/qN6rcwZOo1E+k017Pw==
+X-Received: by 2002:a05:600c:4e51:b0:3a0:4e8d:1e44 with SMTP id e17-20020a05600c4e5100b003a04e8d1e44mr41719990wmq.105.1657093990659;
+        Wed, 06 Jul 2022 00:53:10 -0700 (PDT)
+Received: from gmail.com ([81.168.73.77])
+        by smtp.gmail.com with ESMTPSA id n30-20020a05600c501e00b0039c454067ddsm25228583wmr.15.2022.07.06.00.53.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Jul 2022 00:53:09 -0700 (PDT)
+Date:   Wed, 6 Jul 2022 08:53:06 +0100
+From:   Martin Habets <habetsm.xilinx@gmail.com>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     Edward Cree <ecree.xilinx@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH] sfc/siena: Use the bitmap API to allocate bitmaps
+Message-ID: <YsU/YpqzeV/77Ay7@gmail.com>
+Mail-Followup-To: Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <717ba530215f4d7ce9fedcc73d98dba1f70d7f71.1657049636.git.christophe.jaillet@wanadoo.fr>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: GtxpCgAHhyNhPsViyC90Ng--.47709S4
-X-Coremail-Antispam: 1Uf129KBjvJXoW7Ar4rWF4fCF17Zw1xZr43ZFb_yoW8Jw4Dpa
-        15ZwsrCF1qqrWI93ZrCw4UWF1rXayUtryagry7C3yfua4kJw1rWFy0kFyI9Fy5AryxGF48
-        ZrWvyr47AFn8C37anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zRhqXJUUUUU=
-X-Originating-IP: [123.112.69.106]
-X-CM-SenderInfo: xqlhyxxdqjzvrlsqjii6rwjhhfrp/1tbiPgs2jFxBtJroWQAAsN
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <717ba530215f4d7ce9fedcc73d98dba1f70d7f71.1657049636.git.christophe.jaillet@wanadoo.fr>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-init_rx_sa() allocates relevant resource for rx_sa->stats and rx_sa->
-key.tfm with alloc_percpu() and macsec_alloc_tfm(). When some error
-occurs after init_rx_sa() is called in macsec_add_rxsa(), the function
-released rx_sa with kfree() without releasing rx_sa->stats and rx_sa->
-key.tfm, which will lead to a resource leak.
+Please use "PATCH net-next" in these kind of patches for netdev.
+See Documentation/process/maintainer-netdev.rst
 
-We should call macsec_rxsa_put() instead of kfree() to decrease the ref
-count of rx_sa and release the relevant resource if the refcount is 0.
-The same bug exists in macsec_add_txsa() for tx_sa as well. This patch
-fixes the above two bugs.
+On Tue, Jul 05, 2022 at 09:34:08PM +0200, Christophe JAILLET wrote:
+> Use bitmap_zalloc()/bitmap_free() instead of hand-writing them.
+> 
+> It is less verbose and it improves the semantic.
+> 
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
----
- drivers/net/macsec.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Acked-by: Martin Habets <habetsm.xilinx@gmail.com>
 
-diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
-index 817577e713d7..ac3ff624a8dd 100644
---- a/drivers/net/macsec.c
-+++ b/drivers/net/macsec.c
-@@ -1842,7 +1842,7 @@ static int macsec_add_rxsa(struct sk_buff *skb, struct genl_info *info)
- 	return 0;
- 
- cleanup:
--	kfree(rx_sa);
-+	macsec_rxsa_put(rx_sa);
- 	rtnl_unlock();
- 	return err;
- }
-@@ -2085,7 +2085,7 @@ static int macsec_add_txsa(struct sk_buff *skb, struct genl_info *info)
- 
- cleanup:
- 	secy->operational = was_operational;
--	kfree(tx_sa);
-+	macsec_txsa_put(tx_sa);
- 	rtnl_unlock();
- 	return err;
- }
--- 
-2.25.1
-
+> ---
+>  drivers/net/ethernet/sfc/siena/farch.c | 6 ++----
+>  1 file changed, 2 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/sfc/siena/farch.c b/drivers/net/ethernet/sfc/siena/farch.c
+> index cce23803c652..89ccd65c978b 100644
+> --- a/drivers/net/ethernet/sfc/siena/farch.c
+> +++ b/drivers/net/ethernet/sfc/siena/farch.c
+> @@ -2778,7 +2778,7 @@ void efx_farch_filter_table_remove(struct efx_nic *efx)
+>  	enum efx_farch_filter_table_id table_id;
+>  
+>  	for (table_id = 0; table_id < EFX_FARCH_FILTER_TABLE_COUNT; table_id++) {
+> -		kfree(state->table[table_id].used_bitmap);
+> +		bitmap_free(state->table[table_id].used_bitmap);
+>  		vfree(state->table[table_id].spec);
+>  	}
+>  	kfree(state);
+> @@ -2822,9 +2822,7 @@ int efx_farch_filter_table_probe(struct efx_nic *efx)
+>  		table = &state->table[table_id];
+>  		if (table->size == 0)
+>  			continue;
+> -		table->used_bitmap = kcalloc(BITS_TO_LONGS(table->size),
+> -					     sizeof(unsigned long),
+> -					     GFP_KERNEL);
+> +		table->used_bitmap = bitmap_zalloc(table->size, GFP_KERNEL);
+>  		if (!table->used_bitmap)
+>  			goto fail;
+>  		table->spec = vzalloc(array_size(sizeof(*table->spec),
+> -- 
+> 2.34.1
