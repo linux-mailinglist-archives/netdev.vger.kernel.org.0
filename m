@@ -2,44 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D0F5E568D72
-	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 17:44:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E7A71568D7B
+	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 17:44:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234360AbiGFPfx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jul 2022 11:35:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44584 "EHLO
+        id S234373AbiGFPfy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jul 2022 11:35:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233956AbiGFPfN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 11:35:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D367E2A43B;
-        Wed,  6 Jul 2022 08:33:13 -0700 (PDT)
+        with ESMTP id S234314AbiGFPfO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 11:35:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C51AE2A717;
+        Wed,  6 Jul 2022 08:33:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4213EB81D97;
-        Wed,  6 Jul 2022 15:33:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44F62C341CA;
-        Wed,  6 Jul 2022 15:33:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 04A3061FB9;
+        Wed,  6 Jul 2022 15:33:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 305BFC341D2;
+        Wed,  6 Jul 2022 15:33:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657121591;
-        bh=xGghK/000nkzlwE1Ow+hHRRrqU5Gk5XuDqiFw+ahnJU=;
+        s=k20201202; t=1657121595;
+        bh=tDavWp/OijAssTT8TolwZcclYl6hiOCLRtRXjqj/hW8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FBd7NheMp9ckJdnloWwK4eMBHfpIOk4gCkw4wk6ocZg35Ech2sKQA277KXxRLrw7u
-         8z1MZdD6KS0KbC5srgeUYxC1hQa7XcHS21mp3ovhc0zTwbg1M4sPJnY8I0HvU35B5y
-         Kb5265SmVv+lqDtOUwMKKiOjy2choReURELk/Yub72jwC99eyOb1N13EKphnHbmod7
-         vzWQ65d7IzBDSObBUIwtNNcz1Gi18TwwikAuTL8Kypb2+ngqfGfdBM/80mqXfeov6Q
-         f5jLvR2/upYJL9fuN740ZGCPevtFGD+gtz+tZI09aHbUKc6Y6Nw7dT8wSIuIZ4HBQk
-         13+YFF/5lECiw==
+        b=L9Fr3gLIY4qsalRz35DcoBW8kFJvh/jk+BQInmYnDwrP/c+a9C7PVVu/IUbtT/69Z
+         HP/RrBITiDujKLEWlJCZES4BF1tKSxikHU5ypTo3lYexKO/aZ57SQby0j1+uMbX5yP
+         GI28cqbx+JDLcnQbAbQ0sk4JSGMOxeCXm/mldvASZ3kG3qxT70+Ec45241MhwdIxg8
+         WbenujcdRchrDXchnahyUG5UUU01mIFfK8u4CRpR1ksb58dKGk/BNzJ5ic1pCOLTKz
+         aZlzIsJ2FCijcJjoFFYpRIt5jYKgXOhQ+0wue8cpGlDHbyJoL0iKxdlfpw5qxvBkxi
+         afah+pTSzimrA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Michael Walle <michael@walle.cc>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 08/11] NFC: nxp-nci: don't print header length mismatch on i2c error
-Date:   Wed,  6 Jul 2022 11:32:53 -0400
-Message-Id: <20220706153256.1598411-8-sashal@kernel.org>
+Cc:     Jianglei Nie <niejianglei2021@163.com>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
+        andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 11/11] net: sfp: fix memory leak in sfp_probe()
+Date:   Wed,  6 Jul 2022 11:32:56 -0400
+Message-Id: <20220706153256.1598411-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220706153256.1598411-1-sashal@kernel.org>
 References: <20220706153256.1598411-1-sashal@kernel.org>
@@ -57,48 +59,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Michael Walle <michael@walle.cc>
+From: Jianglei Nie <niejianglei2021@163.com>
 
-[ Upstream commit 9577fc5fdc8b07b891709af6453545db405e24ad ]
+[ Upstream commit 0a18d802d65cf662644fd1d369c86d84a5630652 ]
 
-Don't print a misleading header length mismatch error if the i2c call
-returns an error. Instead just return the error code without any error
-message.
+sfp_probe() allocates a memory chunk from sfp with sfp_alloc(). When
+devm_add_action() fails, sfp is not freed, which leads to a memory leak.
 
-Signed-off-by: Michael Walle <michael@walle.cc>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+We should use devm_add_action_or_reset() instead of devm_add_action().
+
+Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Link: https://lore.kernel.org/r/20220629075550.2152003-1-niejianglei2021@163.com
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nfc/nxp-nci/i2c.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/net/phy/sfp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/nfc/nxp-nci/i2c.c b/drivers/nfc/nxp-nci/i2c.c
-index 9f60e4dc5a90..a45064b3389c 100644
---- a/drivers/nfc/nxp-nci/i2c.c
-+++ b/drivers/nfc/nxp-nci/i2c.c
-@@ -122,7 +122,9 @@ static int nxp_nci_i2c_fw_read(struct nxp_nci_i2c_phy *phy,
- 	skb_put_data(*skb, &header, NXP_NCI_FW_HDR_LEN);
+diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
+index 96068e0d841a..dcbe278086dc 100644
+--- a/drivers/net/phy/sfp.c
++++ b/drivers/net/phy/sfp.c
+@@ -2427,7 +2427,7 @@ static int sfp_probe(struct platform_device *pdev)
  
- 	r = i2c_master_recv(client, skb_put(*skb, frame_len), frame_len);
--	if (r != frame_len) {
-+	if (r < 0) {
-+		goto fw_read_exit_free_skb;
-+	} else if (r != frame_len) {
- 		nfc_err(&client->dev,
- 			"Invalid frame length: %u (expected %zu)\n",
- 			r, frame_len);
-@@ -163,7 +165,9 @@ static int nxp_nci_i2c_nci_read(struct nxp_nci_i2c_phy *phy,
- 	skb_put_data(*skb, (void *)&header, NCI_CTRL_HDR_SIZE);
+ 	platform_set_drvdata(pdev, sfp);
  
- 	r = i2c_master_recv(client, skb_put(*skb, header.plen), header.plen);
--	if (r != header.plen) {
-+	if (r < 0) {
-+		goto nci_read_exit_free_skb;
-+	} else if (r != header.plen) {
- 		nfc_err(&client->dev,
- 			"Invalid frame payload length: %u (expected %u)\n",
- 			r, header.plen);
+-	err = devm_add_action(sfp->dev, sfp_cleanup, sfp);
++	err = devm_add_action_or_reset(sfp->dev, sfp_cleanup, sfp);
+ 	if (err < 0)
+ 		return err;
+ 
 -- 
 2.35.1
 
