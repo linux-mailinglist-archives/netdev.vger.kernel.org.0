@@ -2,82 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 42EC156822C
-	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 10:56:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F2D1256832A
+	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 11:17:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232332AbiGFI4F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jul 2022 04:56:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36078 "EHLO
+        id S232151AbiGFJN1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jul 2022 05:13:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230320AbiGFI4F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 04:56:05 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1562F2497D;
-        Wed,  6 Jul 2022 01:56:04 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id e40so18387575eda.2;
-        Wed, 06 Jul 2022 01:56:04 -0700 (PDT)
+        with ESMTP id S232926AbiGFJM0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 05:12:26 -0400
+Received: from mail-qk1-x736.google.com (mail-qk1-x736.google.com [IPv6:2607:f8b0:4864:20::736])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01274237CE;
+        Wed,  6 Jul 2022 02:09:27 -0700 (PDT)
+Received: by mail-qk1-x736.google.com with SMTP id v6so10587165qkh.2;
+        Wed, 06 Jul 2022 02:09:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=TiSbYoSDE0lMlfqj+l2CCSMOXHr+cfG4LYMnjViLfKg=;
-        b=iZgloJtbC+6whSU9AepPlzjoWEwtuEoHIfHnGtNlQ4C7UtGfnEEmVwBmNUQ+hp8QPE
-         srctWeLgf/fotpb89l8rI9lg4mQnr87w7+3vinjVE3RJNZRD0kzVD+wvsw7UaK+t8/s1
-         st8AI91D07QbVN2WkuVWV8CPl3yJX9BZwJFdkx0W5TdbJV2D1CKOCqCSvlq6wN6RqaPf
-         UUjR7td8tkJqcXdBiPbDT5qzW5f7hWK/dJbmdUy1js1wwVwqnvzOz88LxLXf05GrHzur
-         AKLeY/3k9Tub41UOdBMxbshm3a3Agu7xGvCJZt+FuehosHVD+1D5nfFrAlxRw5PKNxdD
-         XPoQ==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=vxiJQMa2a6ScrGhpzgzV+Tp/u0829jq0BqEczNesPFg=;
+        b=o5doXy6hGI66V3VIS5tzxrBUc2XInriDflyet203f8a6lpypa36zQtQtV2M0B4mN+m
+         LyUa6Hlr7zBWOwlrlfa/Vmk6gFSzsJnnGqRdjOURDPzefqTJzGgVi+M1iDn7QSNcAbwA
+         ZxmYxzAO0vicXMCMAgZxEFcshx+08cRa+aeyZ76nqJw6mhaXWtXQ7BDS1XsPjnaO4Fi8
+         nGQl10+JvuZiY+LJv5uglQFkyzzUHGpxG0A4EE+T56VRjncNJDhhjrH8CdXyrUxJ2SMw
+         eJvghUk/u1iSD923K7V3eWGwg+3PkhBgjFdskqMbDORqT/Y4TCKYYgW1IpAKEkWC3VON
+         AfdA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=TiSbYoSDE0lMlfqj+l2CCSMOXHr+cfG4LYMnjViLfKg=;
-        b=7zOHLWKAPXgGCodGXBfeno64XrpFtSqM2ngQxGuB/S9tfbuqZcSiLMM1LSlZfWtonN
-         JoVXvXJKR/jpswYL2sgkC6TcT+iLhQaPagGVSXojKRFCCq/d8JGdbF3sAzZFjoOw1aAX
-         bXzt/kuLUIAf/q1/NzdMPSow4cBjCyyvHndK572UbA2fTJFJ6r039zkOtN8JaoLj9Fc/
-         RX9LiyEpWgqdCQTgw3nxtvzJx2h+5nnJqwWjF/IWntcw8Xt/B4UtuGI5v6bm5xqmBtjM
-         rmCirfQgw61LN3413VnP4z9omVywWYVWd/1dtrTOWKG34WwyHvnFYTGr1TuEQ6AukDdd
-         9lMQ==
-X-Gm-Message-State: AJIora9kbQ609EjCdC8LD2XfDFhQJmKzfHK5CB6g5DoeiupSWQd72gkW
-        qgX7Nlyamr98WiWQHv9MbrM=
-X-Google-Smtp-Source: AGRyM1sX+A6RqHnQ5QmWzoiAncEiL9RQsnExvWaj8wwcC2AJnUx5vD9KmRmIFnuBHDzZTV1CprW1Hw==
-X-Received: by 2002:aa7:ce8a:0:b0:43a:7b0e:9950 with SMTP id y10-20020aa7ce8a000000b0043a7b0e9950mr9208313edv.58.1657097762610;
-        Wed, 06 Jul 2022 01:56:02 -0700 (PDT)
-Received: from skbuf ([188.26.185.61])
-        by smtp.gmail.com with ESMTPSA id i10-20020a170906698a00b00705fa7087bbsm17260818ejr.142.2022.07.06.01.56.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 01:56:01 -0700 (PDT)
-Date:   Wed, 6 Jul 2022 11:55:59 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Hans S <schultz.hans@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Hans Schultz <schultz.hans+netdev@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH V3 net-next 3/4] net: dsa: mv88e6xxx: mac-auth/MAB
- implementation
-Message-ID: <20220706085559.oyvzijcikivemfkg@skbuf>
-References: <20220524152144.40527-1-schultz.hans+netdev@gmail.com>
- <20220524152144.40527-4-schultz.hans+netdev@gmail.com>
- <20220627180557.xnxud7d6ol22lexb@skbuf>
- <CAKUejP7ugMB9d3MVX3m9Brw12_ocFoT+nuJJucYdQH70kzC7=w@mail.gmail.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=vxiJQMa2a6ScrGhpzgzV+Tp/u0829jq0BqEczNesPFg=;
+        b=SD8I+IZCzfXFRPmcZBCAmqHEpxLTNeRJbi96OotCHk/C7Sd8QH5FL301bsMeIebgFA
+         uubc65uOnKGk9rByKtlugtNnaPBLvKFZHSyUWnP31Munbtiq3my3XFBwdPYq4Yo+K/TB
+         Q8wRv8oH5Qgpkx07Gh9di4DsQHtZaqremqt8DrhLhaiRf2EFff3Y+PiAccwyqU7XH1RL
+         BLvkK9OqaMv2cBCXvPTPMRY8BPqBCLdZ0gRrSTHs6KbYWXPGxgmwRVszWwGxtgwUvrko
+         Uyd/DenHC3zZWW4VFkEFOwP6On3JsATcvdXPcPefT6egkKa2q8NYJHAwqCiY/zUqHguy
+         YuyA==
+X-Gm-Message-State: AJIora9n3pb6rNk5fie+U6FG5orwgBY2w71keH1623dJxCOhhWCRpoDw
+        wZCWKIEitSGPHIjMqTIis8E=
+X-Google-Smtp-Source: AGRyM1u05qeTfN+/HiKZW7k0MqRT9HazAjC+mvjUvYovZJgAZylA2VnE3JRJMa+53lspajs/Ln8Qjw==
+X-Received: by 2002:a05:620a:254d:b0:6ab:84b8:25eb with SMTP id s13-20020a05620a254d00b006ab84b825ebmr26293265qko.383.1657098566068;
+        Wed, 06 Jul 2022 02:09:26 -0700 (PDT)
+Received: from [10.176.68.61] ([192.19.148.250])
+        by smtp.gmail.com with ESMTPSA id a21-20020a05620a16d500b006a7502d0070sm27504807qkn.21.2022.07.06.02.09.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Jul 2022 02:09:25 -0700 (PDT)
+Message-ID: <0aa190fb-b761-6114-93c0-347aa5950a2e@gmail.com>
+Date:   Wed, 6 Jul 2022 11:09:22 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAKUejP7ugMB9d3MVX3m9Brw12_ocFoT+nuJJucYdQH70kzC7=w@mail.gmail.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 04/13] tracing/brcm: Use the new __vstring() helper
+Content-Language: en-US
+To:     Steven Rostedt <rostedt@goodmis.org>,
+        kernel test robot <lkp@intel.com>
+Cc:     linux-kernel@vger.kernel.org, kbuild-all@lists.01.org,
+        Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org
+References: <20220705224749.622796175@goodmis.org>
+ <202207061019.0zRrehFH-lkp@intel.com>
+ <20220705225049.665db869@gandalf.local.home>
+From:   Arend Van Spriel <aspriel@gmail.com>
+In-Reply-To: <20220705225049.665db869@gandalf.local.home>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -86,105 +87,199 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 28, 2022 at 02:26:43PM +0200, Hans S wrote:
-> > Dumb question: if you only flush the locked entries at fast age if the
-> > port is locked, then what happens with the existing locked entries if
-> > the port becomes unlocked before an FDB flush takes place?
-> > Shouldn't mv88e6xxx_port_set_lock() call mv88e6xxx_atu_locked_entry_flush()
-> > too?
+On 7/6/2022 4:50 AM, Steven Rostedt wrote:
+> On Wed, 6 Jul 2022 10:35:50 +0800
+> kernel test robot <lkp@intel.com> wrote:
 > 
-> That was my first thought too, but the way the flags are handled with the mask etc, does so that
-> mv88e6xxx_port_set_lock() is called when other flags change. It could be done by the transition
-> from locked->unlocked by checking if the port is locked already.
-
-Why does mv88e6xxx_port_set_lock() get called when other flags change?
-
-> On the other hand, the timers will timeout and the entries will be removed anyhow.
-
-> > > +static void mv88e6xxx_atu_locked_entry_timer_work(struct atu_locked_entry *ale)
-> >
-> > Please find a more adequate name for this function.
+>> Hi Steven,
+>>
+>> Thank you for the patch! Perhaps something to improve:
+>>
+>> [auto build test WARNING on rostedt-trace/for-next]
+>> [also build test WARNING on wireless-next/main wireless/main linus/master v5.19-rc5 next-20220705]
+>> [If your patch is applied to the wrong git tree, kindly drop us a note.
+>> And when submitting patch, we suggest to use '--base' as documented in
+>> https://git-scm.com/docs/git-format-patch]
+>>
 > 
-> Any suggestions?
-
-Not sure. It depends on whether you leave just the logic to delete a
-locked ATU entry, or also the switchdev FDB_DEL_TO_BRIDGE notifier.
-In any case, pick a name that reflects what it does. Something with
-locked_entry_delete() can't be too wrong.
-
-> > From the discussion with Ido and Nikolay I get the impression that
-> > you're not doing the right thing here either, notifying a
-> > SWITCHDEV_FDB_DEL_TO_BRIDGE from what is effectively the
-> > SWITCHDEV_FDB_DEL_TO_DEVICE handler (port_fdb_del).
 > 
-> Hmm, my experience tells me that much is opposite the normal
-> conventions when dealing with
-> locked ports, as there was never switchdev notifications from the
-> driver to the bridge before, but
-> that is needed to keep ATU and FDB entries in sync.
-
-On delete you mean? So the bridge signals switchdev a deletion of a
-locked FDB entry (as I pointed out, this function gets indirectly called
-from port_fdb_del), but it won't get deleted until switchdev signals it
-back, is what you're saying?
-
-> > Why is the rtnl_unlock() outside the switch statement but the rtnl_lock() inside?
-> > Not to mention, the dsa_port_to_bridge_port() call needs to be under rtnl_lock().
+>> If you fix the issue, kindly add following tag where applicable
+>> Reported-by: kernel test robot <lkp@intel.com>
+>>
+>> All warnings (new ones prefixed by >>):
 > 
-> Just a small optimization as I also have another case of the switch
-> (only one switch case if
-> you didn't notice) belonging to the next patch set regarding dynamic
-> ATU entries.
-
-What kind of optimization are you even talking about? Please get rid of
-coding patterns like this, sorry.
-
-> > Please, no "if (chiplock) mutex_lock()" hacks. Just lockdep_assert_held(&chip->reg_lock),
-> > which serves both for documentation and for validation purposes, ensure
-> > the lock is always taken at the caller (which in this case is super easy)
-> > and move on.
+> OK, let's look at all the warnings.
 > 
-> As I am calling the function in if statement checks, it would make
-> that code more messy, while with
-> this approach the function can be called from anywhere. I also looked
-> at having two functions, with
-> one being a wrapper function taking the lock and calling the other...
-
-There are many functions in mv88e6xxx that require the reg_lock to be
-held, there's nothing new or special here.
-
-> >
-> > > +
-> > > +     if (mv88e6xxx_port_read(chip, port, MV88E6XXX_PORT_CTL0, &reg))
-> > > +             goto out;
-> >
-> > It would be good to actually propagate the error to the caller and
-> > "locked" via a pass-by-reference bool pointer argument, not just say
-> > that I/O errors mean that the port is unlocked.
+>>
+>>     In file included from include/trace/define_trace.h:102,
+>>                      from drivers/net/wireless/broadcom/brcm80211/brcmfmac/tracepoint.h:133,
+>>                      from drivers/net/wireless/broadcom/brcm80211/brcmfmac/tracepoint.c:12:
+>>     drivers/net/wireless/broadcom/brcm80211/brcmfmac/./tracepoint.h: In function 'trace_event_get_offsets_brcmf_err':
+>>>> include/trace/trace_events.h:261:16: warning: function 'trace_event_get_offsets_brcmf_err' might be a candidate for 'gnu_printf' format attribute [-Wsuggest-attribute=format]
 > 
-> Again the wish to be able to call it from if statement checks,.
+>   1. "might be a candidate for 'gnu_printf' format attribute"
 > 
-> > > +     reg &= MV88E6XXX_PORT_ASSOC_VECTOR_PAV_MASK;
-> > > +     if (locked) {
-> > > +             reg |= MV88E6XXX_PORT_ASSOC_VECTOR_IGNORE_WRONG |
-> > > +                     MV88E6XXX_PORT_ASSOC_VECTOR_LOCKED_PORT |
-> > > +                     MV88E6XXX_PORT_ASSOC_VECTOR_INT_AGE_OUT |
-> > > +                     MV88E6XXX_PORT_ASSOC_VECTOR_HOLD_AT_1;
-> >
-> > I'd suggest aligning these macros vertically.
+>>       261 |         struct trace_event_raw_##call __maybe_unused *entry;            \
+>>           |                ^~~~~~~~~~~~~~~~
+>>     include/trace/trace_events.h:40:9: note: in expansion of macro 'DECLARE_EVENT_CLASS'
+>>        40 |         DECLARE_EVENT_CLASS(name,                              \
+>>           |         ^~~~~~~~~~~~~~~~~~~
+>>     drivers/net/wireless/broadcom/brcm80211/brcmfmac/./tracepoint.h:31:1: note: in expansion of macro 'TRACE_EVENT'
+>>        31 | TRACE_EVENT(brcmf_err,
+>>           | ^~~~~~~~~~~
+>>     drivers/net/wireless/broadcom/brcm80211/brcmfmac/./tracepoint.h: In function 'trace_event_get_offsets_brcmf_dbg':
+>>>> include/trace/trace_events.h:261:16: warning: function 'trace_event_get_offsets_brcmf_dbg' might be a candidate for 'gnu_printf' format attribute [-Wsuggest-attribute=format]
 > 
-> They are according to the Linux kernel coding standard wrt indentation afaik.
+>   2. "might be a candidate for 'gnu_printf' format attribute"
+> 
+>>       261 |         struct trace_event_raw_##call __maybe_unused *entry;            \
+>>           |                ^~~~~~~~~~~~~~~~
+>>     include/trace/trace_events.h:40:9: note: in expansion of macro 'DECLARE_EVENT_CLASS'
+>>        40 |         DECLARE_EVENT_CLASS(name,                              \
+>>           |         ^~~~~~~~~~~~~~~~~~~
+>>     drivers/net/wireless/broadcom/brcm80211/brcmfmac/./tracepoint.h:45:1: note: in expansion of macro 'TRACE_EVENT'
+>>        45 | TRACE_EVENT(brcmf_dbg,
+>>           | ^~~~~~~~~~~
+>>     In file included from include/trace/define_trace.h:102,
+>>                      from drivers/net/wireless/broadcom/brcm80211/brcmfmac/tracepoint.h:133,
+>>                      from drivers/net/wireless/broadcom/brcm80211/brcmfmac/tracepoint.c:12:
+>>     drivers/net/wireless/broadcom/brcm80211/brcmfmac/./tracepoint.h: In function 'trace_event_raw_event_brcmf_err':
+>>     include/trace/trace_events.h:386:16: warning: function 'trace_event_raw_event_brcmf_err' might be a candidate for 'gnu_printf' format attribute [-Wsuggest-attribute=format]
+> 
+>   3. "might be a candidate for 'gnu_printf' format attribute"
+> 
+>>       386 |         struct trace_event_raw_##call *entry;                           \
+>>           |                ^~~~~~~~~~~~~~~~
+>>     include/trace/trace_events.h:40:9: note: in expansion of macro 'DECLARE_EVENT_CLASS'
+>>        40 |         DECLARE_EVENT_CLASS(name,                              \
+>>           |         ^~~~~~~~~~~~~~~~~~~
+>>     drivers/net/wireless/broadcom/brcm80211/brcmfmac/./tracepoint.h:31:1: note: in expansion of macro 'TRACE_EVENT'
+>>        31 | TRACE_EVENT(brcmf_err,
+>>           | ^~~~~~~~~~~
+>>     drivers/net/wireless/broadcom/brcm80211/brcmfmac/./tracepoint.h: In function 'trace_event_raw_event_brcmf_dbg':
+>>     include/trace/trace_events.h:386:16: warning: function 'trace_event_raw_event_brcmf_dbg' might be a candidate for 'gnu_printf' format attribute [-Wsuggest-attribute=format]
+> 
+>   4. "might be a candidate for 'gnu_printf' format attribute"
+> 
+>>       386 |         struct trace_event_raw_##call *entry;                           \
+>>           |                ^~~~~~~~~~~~~~~~
+>>     include/trace/trace_events.h:40:9: note: in expansion of macro 'DECLARE_EVENT_CLASS'
+>>        40 |         DECLARE_EVENT_CLASS(name,                              \
+>>           |         ^~~~~~~~~~~~~~~~~~~
+>>     drivers/net/wireless/broadcom/brcm80211/brcmfmac/./tracepoint.h:45:1: note: in expansion of macro 'TRACE_EVENT'
+>>        45 | TRACE_EVENT(brcmf_dbg,
+>>           | ^~~~~~~~~~~
+>>     In file included from include/trace/define_trace.h:103,
+>>                      from drivers/net/wireless/broadcom/brcm80211/brcmfmac/tracepoint.h:133,
+>>                      from drivers/net/wireless/broadcom/brcm80211/brcmfmac/tracepoint.c:12:
+>>     drivers/net/wireless/broadcom/brcm80211/brcmfmac/./tracepoint.h: In function 'perf_trace_brcmf_err':
+>>     include/trace/perf.h:64:16: warning: function 'perf_trace_brcmf_err' might be a candidate for 'gnu_printf' format attribute [-Wsuggest-attribute=format]
+> 
+>   5. "might be a candidate for 'gnu_printf' format attribute"
+> 
+>>        64 |         struct hlist_head *head;                                        \
+>>           |                ^~~~~~~~~~
+>>     include/trace/trace_events.h:40:9: note: in expansion of macro 'DECLARE_EVENT_CLASS'
+>>        40 |         DECLARE_EVENT_CLASS(name,                              \
+>>           |         ^~~~~~~~~~~~~~~~~~~
+>>     drivers/net/wireless/broadcom/brcm80211/brcmfmac/./tracepoint.h:31:1: note: in expansion of macro 'TRACE_EVENT'
+>>        31 | TRACE_EVENT(brcmf_err,
+>>           | ^~~~~~~~~~~
+>>     drivers/net/wireless/broadcom/brcm80211/brcmfmac/./tracepoint.h: In function 'perf_trace_brcmf_dbg':
+>>     include/trace/perf.h:64:16: warning: function 'perf_trace_brcmf_dbg' might be a candidate for 'gnu_printf' format attribute [-Wsuggest-attribute=format]
+> 
+>   6. "might be a candidate for 'gnu_printf' format attribute"
+> 
+>>        64 |         struct hlist_head *head;                                        \
+>>           |                ^~~~~~~~~~
+>>     include/trace/trace_events.h:40:9: note: in expansion of macro 'DECLARE_EVENT_CLASS'
+>>        40 |         DECLARE_EVENT_CLASS(name,                              \
+>>           |         ^~~~~~~~~~~~~~~~~~~
+>>     drivers/net/wireless/broadcom/brcm80211/brcmfmac/./tracepoint.h:45:1: note: in expansion of macro 'TRACE_EVENT'
+>>        45 | TRACE_EVENT(brcmf_dbg,
+>>           | ^~~~~~~~~~~
+>> --
+>>     In file included from include/trace/define_trace.h:102,
+>>                      from drivers/net/wireless/broadcom/brcm80211/brcmsmac/brcms_trace_brcmsmac_msg.h:82,
+>>                      from drivers/net/wireless/broadcom/brcm80211/brcmsmac/brcms_trace_events.h:38,
+>>                      from drivers/net/wireless/broadcom/brcm80211/brcmsmac/brcms_trace_events.c:22:
+>>     drivers/net/wireless/broadcom/brcm80211/brcmsmac/./brcms_trace_brcmsmac_msg.h: In function 'trace_event_get_offsets_brcms_dbg':
+>>>> include/trace/trace_events.h:261:16: warning: function 'trace_event_get_offsets_brcms_dbg' might be a candidate for 'gnu_printf' format attribute [-Wsuggest-attribute=format]
+> 
+>   7. "might be a candidate for 'gnu_printf' format attribute"
+> 
+>>       261 |         struct trace_event_raw_##call __maybe_unused *entry;            \
+>>           |                ^~~~~~~~~~~~~~~~
+>>     include/trace/trace_events.h:40:9: note: in expansion of macro 'DECLARE_EVENT_CLASS'
+>>        40 |         DECLARE_EVENT_CLASS(name,                              \
+>>           |         ^~~~~~~~~~~~~~~~~~~
+>>     drivers/net/wireless/broadcom/brcm80211/brcmsmac/./brcms_trace_brcmsmac_msg.h:59:1: note: in expansion of macro 'TRACE_EVENT'
+>>        59 | TRACE_EVENT(brcms_dbg,
+>>           | ^~~~~~~~~~~
+>>     In file included from include/trace/define_trace.h:102,
+>>                      from drivers/net/wireless/broadcom/brcm80211/brcmsmac/brcms_trace_brcmsmac_msg.h:82,
+>>                      from drivers/net/wireless/broadcom/brcm80211/brcmsmac/brcms_trace_events.h:38,
+>>                      from drivers/net/wireless/broadcom/brcm80211/brcmsmac/brcms_trace_events.c:22:
+>>     drivers/net/wireless/broadcom/brcm80211/brcmsmac/./brcms_trace_brcmsmac_msg.h: In function 'trace_event_raw_event_brcms_dbg':
+>>     include/trace/trace_events.h:386:16: warning: function 'trace_event_raw_event_brcms_dbg' might be a candidate for 'gnu_printf' format attribute [-Wsuggest-attribute=format]
+> 
+>   8. "might be a candidate for 'gnu_printf' format attribute"
+> 
+> 
+>>       386 |         struct trace_event_raw_##call *entry;                           \
+>>           |                ^~~~~~~~~~~~~~~~
+>>     include/trace/trace_events.h:40:9: note: in expansion of macro 'DECLARE_EVENT_CLASS'
+>>        40 |         DECLARE_EVENT_CLASS(name,                              \
+>>           |         ^~~~~~~~~~~~~~~~~~~
+>>     drivers/net/wireless/broadcom/brcm80211/brcmsmac/./brcms_trace_brcmsmac_msg.h:59:1: note: in expansion of macro 'TRACE_EVENT'
+>>        59 | TRACE_EVENT(brcms_dbg,
+>>           | ^~~~~~~~~~~
+>>     In file included from include/trace/define_trace.h:103,
+>>                      from drivers/net/wireless/broadcom/brcm80211/brcmsmac/brcms_trace_brcmsmac_msg.h:82,
+>>                      from drivers/net/wireless/broadcom/brcm80211/brcmsmac/brcms_trace_events.h:38,
+>>                      from drivers/net/wireless/broadcom/brcm80211/brcmsmac/brcms_trace_events.c:22:
+>>     drivers/net/wireless/broadcom/brcm80211/brcmsmac/./brcms_trace_brcmsmac_msg.h: In function 'perf_trace_brcms_dbg':
+>>     include/trace/perf.h:64:16: warning: function 'perf_trace_brcms_dbg' might be a candidate for 'gnu_printf' format attribute [-Wsuggest-attribute=format]
+> 
+>   9. "might be a candidate for 'gnu_printf' format attribute"
+> 
+>>        64 |         struct hlist_head *head;                                        \
+>>           |                ^~~~~~~~~~
+>>     include/trace/trace_events.h:40:9: note: in expansion of macro 'DECLARE_EVENT_CLASS'
+>>        40 |         DECLARE_EVENT_CLASS(name,                              \
+>>           |         ^~~~~~~~~~~~~~~~~~~
+>>     drivers/net/wireless/broadcom/brcm80211/brcmsmac/./brcms_trace_brcmsmac_msg.h:59:1: note: in expansion of macro 'TRACE_EVENT'
+>>        59 | TRACE_EVENT(brcms_dbg,
+>>           | ^~~~~~~~~~~
+>>
+>>
+>> vim +261 include/trace/trace_events.h
+>>
+>> 55de2c0b5610cb include/trace/trace_events.h Masami Hiramatsu         2021-11-22  253
+>> 091ad3658e3c76 include/trace/ftrace.h       Ingo Molnar              2009-11-26  254  #undef DECLARE_EVENT_CLASS
+>> 091ad3658e3c76 include/trace/ftrace.h       Ingo Molnar              2009-11-26  255  #define DECLARE_EVENT_CLASS(call, proto, args, tstruct, assign, print)	\
+>> d0ee8f4a1f5f3d include/trace/trace_events.h Steven Rostedt (Red Hat  2015-05-13  256) static inline notrace int trace_event_get_offsets_##call(		\
+>> 62323a148fbeb0 include/trace/trace_events.h Steven Rostedt (Red Hat  2015-05-13  257) 	struct trace_event_data_offsets_##call *__data_offsets, proto)	\
+>> 7fcb7c472f455d include/trace/ftrace.h       Li Zefan                 2009-06-01  258  {									\
+>> 7fcb7c472f455d include/trace/ftrace.h       Li Zefan                 2009-06-01  259  	int __data_size = 0;						\
+>> 114e7b52dee69c include/trace/ftrace.h       Filipe Brandenburger     2014-02-28  260  	int __maybe_unused __item_length;				\
+>> a7237765730a10 include/trace/trace_events.h Steven Rostedt (Red Hat  2015-05-13 @261) 	struct trace_event_raw_##call __maybe_unused *entry;		\
+>> 7fcb7c472f455d include/trace/ftrace.h       Li Zefan                 2009-06-01  262  									\
+>> 7fcb7c472f455d include/trace/ftrace.h       Li Zefan                 2009-06-01  263  	tstruct;							\
+>> 7fcb7c472f455d include/trace/ftrace.h       Li Zefan                 2009-06-01  264  									\
+>> 7fcb7c472f455d include/trace/ftrace.h       Li Zefan                 2009-06-01  265  	return __data_size;						\
+>> 7fcb7c472f455d include/trace/ftrace.h       Li Zefan                 2009-06-01  266  }
+>> 7fcb7c472f455d include/trace/ftrace.h       Li Zefan                 2009-06-01  267
+>>
+> 
+> Really? 9 warnings about something that *MIGHT* be a candidate for
+> gnu_printf format attribute?  This is a macro that expanded into something
+> that could possibly use the printf format, but is nested deep in macro
+> magic.
+> 
+> Can we please shut this up?
 
-Compare:
+Need a vote? Here it is: +1
 
-		reg |= MV88E6XXX_PORT_ASSOC_VECTOR_IGNORE_WRONG |
-			MV88E6XXX_PORT_ASSOC_VECTOR_LOCKED_PORT |
-			MV88E6XXX_PORT_ASSOC_VECTOR_INT_AGE_OUT |
-			MV88E6XXX_PORT_ASSOC_VECTOR_HOLD_AT_1;
-
-with:
-
-		reg |= MV88E6XXX_PORT_ASSOC_VECTOR_IGNORE_WRONG |
-		       MV88E6XXX_PORT_ASSOC_VECTOR_LOCKED_PORT |
-		       MV88E6XXX_PORT_ASSOC_VECTOR_INT_AGE_OUT |
-		       MV88E6XXX_PORT_ASSOC_VECTOR_HOLD_AT_1;
+Regards,
+Arend
