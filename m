@@ -2,73 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 56A68568BB1
-	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 16:52:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 012E5568C0F
+	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 17:00:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232070AbiGFOwG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jul 2022 10:52:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40434 "EHLO
+        id S233522AbiGFPAF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jul 2022 11:00:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232052AbiGFOwG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 10:52:06 -0400
-Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54B7F240A2
-        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 07:52:05 -0700 (PDT)
-Received: by mail-io1-xd2d.google.com with SMTP id h85so14227712iof.4
-        for <netdev@vger.kernel.org>; Wed, 06 Jul 2022 07:52:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=vz7bGcbu6VI9fdcubfgmH8CBRCMJeBRh3Dv5Ph65+ww=;
-        b=JjJg/ZZaTBbzoILaUuoHTwfexr018N4SXOQl2kukw3Gv8hJA6WZ/a6XkyySukoaZEf
-         tYc9hf7jeyxQ1kXc1YMZmAFE9vMQO0ADpCAnrU0pMwdrPwG/4Gc4AmCofF/1DwuxxI/u
-         v5jDOg1BEk7o4nuFIvomhJ0m2Eo7Vk2MchAYUZztl9BcsBd49JQyRXmDyERnmsrci9Nq
-         bMolesC7PqzHhoz5N/FI58DLCmgOBu8rSlSbAJhoPAZKmIVZ68IU2OVs2RQL9NONgrVU
-         gdjg+zSn70rnPJB4zkDn3tHIFLc/GMdkxg/XaN/LmXxxM1+Ltu03qoeuHUEW1JFbUeug
-         NJEQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=vz7bGcbu6VI9fdcubfgmH8CBRCMJeBRh3Dv5Ph65+ww=;
-        b=t4SdCpsKggwAZrPx48PozMwwlDs92RvvmxBbf4vsueV6tP6Ceufo71+cENs9jNmqe9
-         wPVicAGcpvZidSIqFZb/+rs7sntZoUpg9dsOhCrM+jkOHKajtnQdp7irbIgaiRTu200Z
-         CUesnsbq8RLe7ES4O1SOL2knxQSIUtzK2xfQXh4LOldFDyN+1gwyGQGzXZvDcOmNSvdX
-         LStmEhyYoDv8LJBmgVAGCDJLO+tEoZliMmY3d3tl6dHBoD59Es5nlhWNuOgYpJgZJS5U
-         OnzzMmgYhaOpiwDxqLD6zmprN/uRCe+JCnwuR7QpTAt3CmkIM9C03MkMdliWKC7AD7qv
-         1frQ==
-X-Gm-Message-State: AJIora/V2jnpYCQLvmyvc/eoll1PgZTOU50ilyGtGrNgE31kQm6zMMO2
-        EQ9eZ+HV0BJq6Sj7tyoCAAI=
-X-Google-Smtp-Source: AGRyM1taTtVH1k5lkrC7lQpy29WPtqMwc4pAqWPtQ/zqP69bCnu1flBqZPmVt+9zfAh6KV9TS1bn4g==
-X-Received: by 2002:a02:638b:0:b0:33f:c9f:5772 with SMTP id j133-20020a02638b000000b0033f0c9f5772mr1401262jac.104.1657119124537;
-        Wed, 06 Jul 2022 07:52:04 -0700 (PDT)
-Received: from ?IPV6:2601:282:800:dc80:341e:8c4d:12df:40ce? ([2601:282:800:dc80:341e:8c4d:12df:40ce])
-        by smtp.googlemail.com with ESMTPSA id q19-20020a056e02097300b002dc14d4c312sm3241877ilt.53.2022.07.06.07.52.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Jul 2022 07:52:04 -0700 (PDT)
-Message-ID: <7b05b0f5-130d-8c4b-a954-c6dfad97a073@gmail.com>
-Date:   Wed, 6 Jul 2022 08:52:02 -0600
+        with ESMTP id S233040AbiGFPAE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 11:00:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D724252A5
+        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 08:00:03 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 060EAB81D4C
+        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 15:00:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 497C6C341C6;
+        Wed,  6 Jul 2022 15:00:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657119600;
+        bh=4zEq8wxOZye+2sH4DJQIkdmlggQtJVHshXMnVKIvaIA=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=HELIzoT/hLiyElXtaVHhcNOJBYWmZ2pp9O3tHpzI+nBv7hPPulGMTh/ob6LlMeGWB
+         UR+LDdwmFnpNCZr2N2djPqcX7HmtZ8lPFinFmQoQLqT0c47NLCBaTEqJj0Qrry6Qy9
+         igGSw5TfWS4ztvZLMdRdFhjHbKrMeBqyZLNuQePzairXrzB61T0hzfb/IYL1D+cQni
+         rkzQVgi4FgB3e/MImv2UJc4c2RzFIVypFtbgoI5YC1mLg6+ncPDK3OCbbVnCCFR+Gp
+         OPGAra1oEsVvggwXux6TUIr74zCmgmqx6SoUkRveQzRXyig5C3OlPKzjpFh2tZ2w8R
+         60Z063+8oDx+Q==
+Message-ID: <00116bab-22c5-0bce-d82b-a10eb95e7daa@kernel.org>
+Date:   Wed, 6 Jul 2022 08:59:58 -0600
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
  Gecko/20100101 Thunderbird/91.11.0
-Subject: Re: [PATCH iproute2-next v2] ip: Fix rx_otherhost_dropped support
+Subject: Re: [PATCH v3 net-next] net: Find dst with sk's xfrm policy not
+ ctl_sk
 Content-Language: en-US
-To:     Petr Machata <petrm@nvidia.com>
-Cc:     netdev@vger.kernel.org,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Itay Aveksis <itayav@nvidia.com>
-References: <4148bef3a4e4f259aa9fa7936062a4416a035fec.1656411498.git.petrm@nvidia.com>
- <7a9cc617-c903-d9e7-9120-649a3bab86c6@gmail.com> <87sfnes96v.fsf@nvidia.com>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <87sfnes96v.fsf@nvidia.com>
+To:     Eric Dumazet <edumazet@google.com>, Sewook Seo <ssewook@gmail.com>
+Cc:     Sewook Seo <sewookseo@google.com>,
+        Linux Network Development Mailing List 
+        <netdev@vger.kernel.org>, "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        =?UTF-8?Q?Maciej_=c5=bbenczykowski?= <maze@google.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Sehee Lee <seheele@google.com>
+References: <20220621202240.4182683-1-ssewook@gmail.com>
+ <20220706063243.2782818-1-ssewook@gmail.com>
+ <CANn89iJiod_=AGbKM=-5cGvDQjUzxLm88Zg6UU2T8Mvj6nAcOQ@mail.gmail.com>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <CANn89iJiod_=AGbKM=-5cGvDQjUzxLm88Zg6UU2T8Mvj6nAcOQ@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,36 +66,96 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/6/22 6:42 AM, Petr Machata wrote:
-> 
-> David Ahern <dsahern@gmail.com> writes:
-> 
->> On 6/28/22 4:19 AM, Petr Machata wrote:
->>> The commit cited below added a new column to print_stats64(). However it
->>> then updated only one size_columns() call site, neglecting to update the
->>> remaining three. As a result, in those not-updated invocations,
->>> size_columns() now accesses a vararg argument that is not being passed,
->>> which is undefined behavior.
->>>
->>> Fixes: cebf67a35d8a ("show rx_otherehost_dropped stat in ip link show")
->>> CC: Tariq Toukan <tariqt@nvidia.com>
->>> CC: Itay Aveksis <itayav@nvidia.com>
->>> Signed-off-by: Petr Machata <petrm@nvidia.com>
->>> ---
->>>
->>> Notes:
->>>     v2:
->>>     - Adjust to changes in the "32-bit quantity" patch
->>>     - Tweak the commit message for clarity
->>>
->>>  ip/ipaddress.c | 8 +++++---
->>>  1 file changed, 5 insertions(+), 3 deletions(-)
->>>
+On 7/6/22 1:19 AM, Eric Dumazet wrote:
+> On Wed, Jul 6, 2022 at 8:34 AM Sewook Seo <ssewook@gmail.com> wrote:
 >>
->> I merged main into next and now this one needs to be rebased.
+>> From: sewookseo <sewookseo@google.com>
+>>
+>> If we set XFRM security policy by calling setsockopt with option
+>> IPV6_XFRM_POLICY, the policy will be stored in 'sock_policy' in 'sock'
+>> struct. However tcp_v6_send_response doesn't look up dst_entry with the
+>> actual socket but looks up with tcp control socket. This may cause a
+>> problem that a RST packet is sent without ESP encryption & peer's TCP
+>> socket can't receive it.
+>> This patch will make the function look up dest_entry with actual socket,
+>> if the socket has XFRM policy(sock_policy), so that the TCP response
+>> packet via this function can be encrypted, & aligned on the encrypted
+>> TCP socket.
+>>
+>> Tested: We encountered this problem when a TCP socket which is encrypted
+>> in ESP transport mode encryption, receives challenge ACK at SYN_SENT
+>> state. After receiving challenge ACK, TCP needs to send RST to
+>> establish the socket at next SYN try. But the RST was not encrypted &
+>> peer TCP socket still remains on ESTABLISHED state.
+>> So we verified this with test step as below.
+>> [Test step]
+>> 1. Making a TCP state mismatch between client(IDLE) & server(ESTABLISHED).
+>> 2. Client tries a new connection on the same TCP ports(src & dst).
+>> 3. Server will return challenge ACK instead of SYN,ACK.
+>> 4. Client will send RST to server to clear the SOCKET.
+>> 5. Client will retransmit SYN to server on the same TCP ports.
+>> [Expected result]
+>> The TCP connection should be established.
+>>
+>> Effort: net
 > 
-> The issue is that this depends on 329fda186156 ("ip: Fix size_columns()
-> invocation that passes a 32-bit quantity"), which got to net only
-> yesterday. When it's merged to next, this patch should apply cleanly.
+> Please remove this Effort: tag, this is not appropriate for upstream patches.
+> 
+>> Cc: Maciej Żenczykowski <maze@google.com>
+>> Cc: Eric Dumazet <edumazet@google.com>
+>> Cc: Steffen Klassert <steffen.klassert@secunet.com>
+>> Cc: Sehee Lee <seheele@google.com>
+>> Signed-off-by: Sewook Seo <sewookseo@google.com>
+>> ---
+>>  net/ipv4/ip_output.c | 7 ++++++-
+>>  net/ipv4/tcp_ipv4.c  | 5 +++++
+>>  net/ipv6/tcp_ipv6.c  | 7 ++++++-
+>>  3 files changed, 17 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
+>> index 00b4bf26fd93..1da430c8fee2 100644
+>> --- a/net/ipv4/ip_output.c
+>> +++ b/net/ipv4/ip_output.c
+>> @@ -1704,7 +1704,12 @@ void ip_send_unicast_reply(struct sock *sk, struct sk_buff *skb,
+>>                            tcp_hdr(skb)->source, tcp_hdr(skb)->dest,
+>>                            arg->uid);
+>>         security_skb_classify_flow(skb, flowi4_to_flowi_common(&fl4));
+>> -       rt = ip_route_output_key(net, &fl4);
+>> +#ifdef CONFIG_XFRM
+>> +       if (sk->sk_policy[XFRM_POLICY_OUT])
+>> +               rt = ip_route_output_flow(net, &fl4, sk);
+>> +       else
+>> +#endif
+>> +               rt = ip_route_output_key(net, &fl4);
+> 
+> I really do not like adding more #ifdef
+> 
+> What happens if we simply use :
+> 
+>       rt = ip_route_output_flow(net, &fl4, sk);
+> 
 
-ah, merged again and applied.
+That should be fine - and simpler solution.
+
+
+>> diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
+>> index c72448ba6dc9..8b8819c3d2c2 100644
+>> --- a/net/ipv6/tcp_ipv6.c
+>> +++ b/net/ipv6/tcp_ipv6.c
+>> @@ -952,7 +952,12 @@ static void tcp_v6_send_response(const struct sock *sk, struct sk_buff *skb, u32
+>>          * Underlying function will use this to retrieve the network
+>>          * namespace
+>>          */
+>> -       dst = ip6_dst_lookup_flow(sock_net(ctl_sk), ctl_sk, &fl6, NULL);
+>> +#ifdef CONFIG_XFRM
+>> +       if (sk && sk->sk_policy[XFRM_POLICY_OUT] && sk_fullsock(sk))
+>> +               dst = ip6_dst_lookup_flow(net, sk, &fl6, NULL);  /* Get dst with sk's XFRM policy */
+>> +       else
+>> +#endif
+>> +               dst = ip6_dst_lookup_flow(sock_net(ctl_sk), ctl_sk, &fl6, NULL);
+> 
+> and then:
+> 
+>      dst = ip6_dst_lookup_flow(net, sk, &fl6, NULL);
+
+same here.
