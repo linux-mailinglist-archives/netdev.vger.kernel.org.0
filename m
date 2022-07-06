@@ -2,112 +2,232 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C2EA6568E89
-	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 18:01:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86A88568E99
+	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 18:04:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233630AbiGFQBU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jul 2022 12:01:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58134 "EHLO
+        id S233954AbiGFQEX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jul 2022 12:04:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233460AbiGFQBS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 12:01:18 -0400
-Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2778D21810
-        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 09:01:17 -0700 (PDT)
-Received: by mail-qt1-x82a.google.com with SMTP id k14so18830088qtm.3
-        for <netdev@vger.kernel.org>; Wed, 06 Jul 2022 09:01:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=maine.edu; s=google;
-        h=from:date:to:cc:subject:in-reply-to:message-id:references
-         :mime-version;
-        bh=hXDY2u6jMg7vkEvggtI5AB4RBXe4Hbw6rSIH74WebXE=;
-        b=fFIEN8uCmrBxStKbvR2C6opnu9SDffnpYZ+kJERJiNZersQBDv+uoadi13EglEGxWg
-         HoFTNiT4e6IHnxvBchc3s4ewz2IbR9r7iiFfrVUD52TAoDdPaXCKU+vxV6I/v3ItbvSj
-         spKsCGG/3NLbXVr3k6P9DPEvh5mzv1l0in1zE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:date:to:cc:subject:in-reply-to:message-id
-         :references:mime-version;
-        bh=hXDY2u6jMg7vkEvggtI5AB4RBXe4Hbw6rSIH74WebXE=;
-        b=mNX1nnelqXBpNxdEs19kCcF6B6W+y+kYpuz7JvekNmag3EocY5BfpO3M3tmQVRdBB1
-         wAcUVbIHcKQsKFqVBCJlqD1K3yjebisPlhhpUrcnc1GvTITGVDMP5NPcSyT/bRiVvhBs
-         NYcUiiED3kXO8jRXYlr3MmmIpEGz2bb8OFPASXW5DooyEEgCxzIboEm5Hnl2UHvQ/6gP
-         DzrCmqUnI9pI5wzVwLsqhDCs47Fnse43NWb6iqrQNz2HnYNP+ul0Y0hs2s4LTbgx0ztR
-         0WKa6dW0fBQ/4Qp1XMfXtgPerElCZWTRnabvqpo4dpGyQSEz9KJkcvfb8mMdzdvnjROY
-         zStQ==
-X-Gm-Message-State: AJIora87ZFzU7iWdKd2CnQKfXQUuC4awXFaNucI5vo9sWc0Hr67Axzs4
-        RwFMU4pVUv3nKH0rkXXIgLcVAw==
-X-Google-Smtp-Source: AGRyM1tbV9pEZEk3QSLJdDZqYDNgt+v0pheI01GB3Bv4jXB/ILGSjVhSfmfEpc4K/E6wOBk9JjZ31Q==
-X-Received: by 2002:a05:6214:1ccd:b0:46e:7427:2626 with SMTP id g13-20020a0562141ccd00b0046e74272626mr38233187qvd.101.1657123275539;
-        Wed, 06 Jul 2022 09:01:15 -0700 (PDT)
-Received: from macbook-air.local (weaver.eece.maine.edu. [130.111.218.23])
-        by smtp.gmail.com with ESMTPSA id bp32-20020a05620a45a000b006a67d257499sm26186666qkb.56.2022.07.06.09.01.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 09:01:15 -0700 (PDT)
-From:   Vince Weaver <vincent.weaver@maine.edu>
-X-Google-Original-From: Vince Weaver <vince@maine.edu>
-Date:   Wed, 6 Jul 2022 12:01:11 -0400 (EDT)
-To:     Andrew Kilroy <andrew.kilroy@arm.com>
-cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        acme@kernel.org, Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Tom Rix <trix@redhat.com>,
-        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, llvm@lists.linux.dev
-Subject: Re: [PATCH 2/8] perf evsel: Do not request ptrauth sample field if
- not supported
-In-Reply-To: <20220704145333.22557-3-andrew.kilroy@arm.com>
-Message-ID: <d67dff7-73c3-e5a-eb7b-f132e8f565cc@maine.edu>
-References: <20220704145333.22557-1-andrew.kilroy@arm.com> <20220704145333.22557-3-andrew.kilroy@arm.com>
+        with ESMTP id S233786AbiGFQEW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 12:04:22 -0400
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37D7A17586;
+        Wed,  6 Jul 2022 09:04:20 -0700 (PDT)
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1o97VG-0003Og-IK; Wed, 06 Jul 2022 18:03:50 +0200
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1o97VG-000V92-4d; Wed, 06 Jul 2022 18:03:50 +0200
+Subject: Re: [PATCH v6 4/5] bpf: Add bpf_verify_pkcs7_signature() helper
+To:     Roberto Sassu <roberto.sassu@huawei.com>, ast@kernel.org,
+        andrii@kernel.org, kpsingh@kernel.org, john.fastabend@gmail.com,
+        songliubraving@fb.com, kafai@fb.com, yhs@fb.com,
+        dhowells@redhat.com
+Cc:     keyrings@vger.kernel.org, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-security-module@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220628122750.1895107-1-roberto.sassu@huawei.com>
+ <20220628122750.1895107-5-roberto.sassu@huawei.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <903b1b6c-b0fd-d624-a24b-5983d8d661b7@iogearbox.net>
+Date:   Wed, 6 Jul 2022 18:03:49 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20220628122750.1895107-5-roberto.sassu@huawei.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.6/26595/Wed Jul  6 09:53:23 2022)
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 4 Jul 2022, Andrew Kilroy wrote:
-
-> A subsequent patch alters perf to perf_event_open with the
-> PERF_SAMPLE_ARCH_1 bit on.
+On 6/28/22 2:27 PM, Roberto Sassu wrote:
+> Add the bpf_verify_pkcs7_signature() helper, to give eBPF security modules
+> the ability to check the validity of a signature against supplied data, by
+> using user-provided or system-provided keys as trust anchor.
 > 
-> This patch deals with the case where the kernel does not know about the
-> PERF_SAMPLE_ARCH_1 bit, and does not know to send the pointer
-> authentication masks.  In this case the perf_event_open system call
-> returns -EINVAL (-22) and perf exits with an error.
+> The new helper makes it possible to enforce mandatory policies, as eBPF
+> programs might be allowed to make security decisions only based on data
+> sources the system administrator approves.
 > 
-> This patch causes userspace process to re-attempt the perf_event_open
-> system call but without asking for the PERF_SAMPLE_ARCH_1 sample
-> field, allowing the perf_event_open system call to succeed.
+> The caller should provide both the data to be verified and the signature as
+> eBPF dynamic pointers (to minimize the number of parameters).
+> 
+> The caller should also provide a trusted keyring serial, together with key
+> lookup-specific flags, to determine which keys can be used for signature
+> verification. Alternatively, the caller could specify zero as serial value
+> (not valid, serials must be positive), and provide instead a special
+> keyring ID.
+> 
+> Key lookup flags are defined in include/linux/key.h and can be: 1, to
+> request that special keyrings be created if referred to directly; 2 to
+> permit partially constructed keys to be found.
+> 
+> Special IDs are defined in include/linux/verification.h and can be: 0 for
+> the primary keyring (immutable keyring of system keys); 1 for both the
+> primary and secondary keyring (where keys can be added only if they are
+> vouched for by existing keys in those keyrings); 2 for the platform keyring
+> (primarily used by the integrity subsystem to verify a kexec'ed kerned
+> image and, possibly, the initramfs signature).
+> 
+> Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
+> Reported-by: kernel test robot <lkp@intel.com> (cast warning)
 
-So in this case you are leaking ARM64-specific info into the generic 
-perf_event_open() call?  Is there any way the kernel could implement this 
-without userspace having to deal with the issue?
+nit: Given this a new feature not a fix to existing code, there is no need to
+      add the above reported-by from kbuild bot.
 
-There are a few recent ARM64 perf_event related patches that are pushing 
-ARM specific interfaces into the generic code, with the apparent 
-assumption that it will just be implemented in the userspace perf tool.  
-However there are a number of outside-the-kernel codebases that also use 
-perf_event_open() and it seems a bit onerous if all of them have to start 
-adding a lot of extra ARM64-specific code, especially because as far as I 
-can tell there haven't been any documentation patches included for the 
-Makefile.
+> ---
+>   include/uapi/linux/bpf.h       | 24 +++++++++++++
+>   kernel/bpf/bpf_lsm.c           | 63 ++++++++++++++++++++++++++++++++++
+>   tools/include/uapi/linux/bpf.h | 24 +++++++++++++
+>   3 files changed, 111 insertions(+)
+> 
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index e81362891596..b4f5ad863281 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -5325,6 +5325,29 @@ union bpf_attr {
+>    *		**-EACCES** if the SYN cookie is not valid.
+>    *
+>    *		**-EPROTONOSUPPORT** if CONFIG_IPV6 is not builtin.
+> + *
+> + * long bpf_verify_pkcs7_signature(struct bpf_dynptr *data_ptr, struct bpf_dynptr *sig_ptr, u32 trusted_keyring_serial, unsigned long lookup_flags, unsigned long trusted_keyring_id)
 
-The other recent change that's annoying for userspace is the addition of 
-the ARM-specific /proc/sys/kernel/perf_user_access that duplicates 
-functionality found in /sys/devices/cpu/rdpmc
+nit: for the args instead of ulong, just do u64
 
-Vince Weaver
-vincent.weaver@maine.edu
+> + *	Description
+> + *		Verify the PKCS#7 signature *sig_ptr* against the supplied
+> + *		*data_ptr* with keys in a keyring with serial
+> + *		*trusted_keyring_serial*, searched with *lookup_flags*, if the
+> + *		parameter value is positive, or alternatively in a keyring with
+> + *		special ID *trusted_keyring_id* if *trusted_keyring_serial* is
+> + *		zero.
+> + *
+> + *		*lookup_flags* are defined in include/linux/key.h and can be: 1,
+> + *		to request that special keyrings be created if referred to
+> + *		directly; 2 to permit partially constructed keys to be found.
+> + *
+> + *		Special IDs are defined in include/linux/verification.h and can
+> + *		be: 0 for the primary keyring (immutable keyring of system
+> + *		keys); 1 for both the primary and secondary keyring (where keys
+> + *		can be added only if they are vouched for by existing keys in
+> + *		those keyrings); 2 for the platform keyring (primarily used by
+> + *		the integrity subsystem to verify a kexec'ed kerned image and,
+> + *		possibly, the initramfs signature).
+> + *	Return
+> + *		0 on success, a negative value on error.
+>    */
+>   #define __BPF_FUNC_MAPPER(FN)		\
+>   	FN(unspec),			\
+> @@ -5535,6 +5558,7 @@ union bpf_attr {
+>   	FN(tcp_raw_gen_syncookie_ipv6),	\
+>   	FN(tcp_raw_check_syncookie_ipv4),	\
+>   	FN(tcp_raw_check_syncookie_ipv6),	\
+> +	FN(verify_pkcs7_signature),	\
+
+(Needs rebase)
+
+>   	/* */
+>   
+>   /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+> diff --git a/kernel/bpf/bpf_lsm.c b/kernel/bpf/bpf_lsm.c
+> index c1351df9f7ee..401bda01ad84 100644
+> --- a/kernel/bpf/bpf_lsm.c
+> +++ b/kernel/bpf/bpf_lsm.c
+> @@ -16,6 +16,8 @@
+>   #include <linux/bpf_local_storage.h>
+>   #include <linux/btf_ids.h>
+>   #include <linux/ima.h>
+> +#include <linux/verification.h>
+> +#include <linux/key.h>
+>   
+>   /* For every LSM hook that allows attachment of BPF programs, declare a nop
+>    * function where a BPF program can be attached.
+> @@ -132,6 +134,62 @@ static const struct bpf_func_proto bpf_get_attach_cookie_proto = {
+>   	.arg1_type	= ARG_PTR_TO_CTX,
+>   };
+>   
+> +#ifdef CONFIG_SYSTEM_DATA_VERIFICATION
+> +BPF_CALL_5(bpf_verify_pkcs7_signature, struct bpf_dynptr_kern *, data_ptr,
+> +	   struct bpf_dynptr_kern *, sig_ptr, u32, trusted_keyring_serial,
+> +	   unsigned long, lookup_flags, unsigned long, trusted_keyring_id)
+> +{
+> +	key_ref_t trusted_keyring_ref;
+> +	struct key *trusted_keyring;
+> +	int ret;
+> +
+> +	/* Keep in sync with defs in include/linux/key.h. */
+> +	if (lookup_flags > KEY_LOOKUP_PARTIAL)
+> +		return -EINVAL;
+
+iiuc, the KEY_LOOKUP_* is a mask, so you could also combine the two, e.g.
+KEY_LOOKUP_CREATE | KEY_LOOKUP_PARTIAL. I haven't seen you mentioning anything
+specific on why it is not allowed. What's the rationale, if it's intentional
+if should probably be documented?
+
+At minimum I also think the helper description needs to be improved for people
+to understand enough w/o reading through the kernel source, e.g. wrt lookup_flags
+since I haven't seen it in your selftests either ... when does a user need to
+use the given flags.
+
+nit: when both trusted_keyring_serial and trusted_keyring_id are passed to the
+helper, then this should be rejected as invalid argument? (Kind of feels a bit
+like we're cramming two things in one helper.. KP, thoughts? :))
+
+> +	/* Keep in sync with defs in include/linux/verification.h. */
+> +	if (trusted_keyring_id > (unsigned long)VERIFY_USE_PLATFORM_KEYRING)
+> +		return -EINVAL;
+> +
+> +	if (trusted_keyring_serial) {
+> +		trusted_keyring_ref = lookup_user_key(trusted_keyring_serial,
+> +						      lookup_flags,
+> +						      KEY_NEED_SEARCH);
+> +		if (IS_ERR(trusted_keyring_ref))
+> +			return PTR_ERR(trusted_keyring_ref);
+> +
+> +		trusted_keyring = key_ref_to_ptr(trusted_keyring_ref);
+> +		goto verify;
+> +	}
+> +
+> +	trusted_keyring = (struct key *)trusted_keyring_id;
+> +verify:
+> +	ret = verify_pkcs7_signature(data_ptr->data,
+> +				     bpf_dynptr_get_size(data_ptr),
+> +				     sig_ptr->data,
+> +				     bpf_dynptr_get_size(sig_ptr),
+> +				     trusted_keyring,
+> +				     VERIFYING_UNSPECIFIED_SIGNATURE, NULL,
+> +				     NULL);
+> +	if (trusted_keyring_serial)
+> +		key_put(trusted_keyring);
+> +
+> +	return ret;
+> +}
+> +
+> +static const struct bpf_func_proto bpf_verify_pkcs7_signature_proto = {
+> +	.func		= bpf_verify_pkcs7_signature,
+> +	.gpl_only	= false,
+> +	.ret_type	= RET_INTEGER,
+> +	.arg1_type	= ARG_PTR_TO_DYNPTR | DYNPTR_TYPE_LOCAL,
+> +	.arg2_type	= ARG_PTR_TO_DYNPTR | DYNPTR_TYPE_LOCAL,
+> +	.arg3_type	= ARG_ANYTHING,
+> +	.arg4_type	= ARG_ANYTHING,
+> +	.arg5_type	= ARG_ANYTHING,
+> +	.allowed	= bpf_ima_inode_hash_allowed,
+> +};
+> +#endif /* CONFIG_SYSTEM_DATA_VERIFICATION */
+> +
