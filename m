@@ -2,98 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 497FD567B9D
-	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 03:44:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AF55567BA7
+	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 03:48:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230018AbiGFBoB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jul 2022 21:44:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42134 "EHLO
+        id S230168AbiGFBsK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jul 2022 21:48:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229492AbiGFBoA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 21:44:00 -0400
-Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 203D8A471;
-        Tue,  5 Jul 2022 18:44:00 -0700 (PDT)
-Received: by mail-io1-xd2d.google.com with SMTP id p128so12800965iof.1;
-        Tue, 05 Jul 2022 18:44:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=9M+eP8kZKrYzfAAuegT2HypltPw65L06W86icoY0R3A=;
-        b=E+O6eYpDENEiZDGw2MCgh5roJjO5vL5MaF+OMHlD2thS9YGxwQcugwvKvFeJi+ylu8
-         4uG1os++6YEwv8wFHLlKDeVe+3u9pwvMMzIAQejN9WUgsOf/NoFFyALhGNqfSV6Uvk0h
-         dd4TApngiw0pvgmDZQMXo5TnW68iGAANH4O9RM5uNaOGRNV6Hcm6QDzcYvjy3qaAV0fy
-         8Dz2dknv0LfIAEqYe2Isalv4cVeCA9bAGvN1ozAJsDUXs2WnPAaUj7C4ul08uVqaDSOB
-         NuO9yIP4fEFgFOojqeDZfaVZfa4E7TJGxF6uqIbANgjVZEI180zV95hae19VbrAkHV75
-         9seA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=9M+eP8kZKrYzfAAuegT2HypltPw65L06W86icoY0R3A=;
-        b=eHTALOtw3EondYDsDHsmqByrXMAqro5k44rf3qEtZBq42mWi4umIfsX21E49jxAXUd
-         EmDzWUOMnA03Jhw120B9Azc6QSONSQQWhzyyGrDGCXOjTn13q07iNPOMU4uGNt5aumNx
-         69BuNeuLPpksP+MindJLvlxUoVomYimTgAAd7fq9Uu1za7XWx9xqTo/mPt/BTw++xpAN
-         I5Ecttffowpc6hKOmmmkCm5CrPKALUFDxOglmguXindzjzX4CR7B8WB+30q75Vr56ENe
-         1uhc1PiPMUC8+XOGKdYWfxVSCjuiWE74Wf4TG1mTorh01D+luHXlcLq98rQ3Hkgayetw
-         mNDw==
-X-Gm-Message-State: AJIora8ACq0ey4K9JjRyfRupwtYA2p6AUvFwWnjVNpy6eJ382rNpaNN9
-        ExrPPXkx+AHU+ElQKhqHCLY0LmULkhA=
-X-Google-Smtp-Source: AGRyM1uENejtTd6rMYqMq9k5aDEY84ONBnwplfH7iccm9wmHN1kqfPp1hFw5ge/owP6Rqmu82T+WLw==
-X-Received: by 2002:a05:6602:4:b0:674:2761:fd0e with SMTP id b4-20020a056602000400b006742761fd0emr20412149ioa.75.1657071839570;
-        Tue, 05 Jul 2022 18:43:59 -0700 (PDT)
-Received: from ?IPV6:2601:282:800:dc80:341e:8c4d:12df:40ce? ([2601:282:800:dc80:341e:8c4d:12df:40ce])
-        by smtp.googlemail.com with ESMTPSA id x11-20020a0566380cab00b00335c432c4b9sm15287399jad.136.2022.07.05.18.43.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Jul 2022 18:43:59 -0700 (PDT)
-Message-ID: <8eef927e-27e0-83d0-24a2-20732608788e@gmail.com>
-Date:   Tue, 5 Jul 2022 19:43:58 -0600
+        with ESMTP id S229941AbiGFBsJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 21:48:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21654A471
+        for <netdev@vger.kernel.org>; Tue,  5 Jul 2022 18:48:08 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AEC416185C
+        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 01:48:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D68E7C341C7;
+        Wed,  6 Jul 2022 01:48:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657072087;
+        bh=Tj6Zpxo5zlrJolN+uD+IS7pTthQr1Qj3FDA9XIY/Bgw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ffhciezYhrNfAaYGSqfIYHm/igBp10tSmwJJk9Dv11Du0LurFL+KLpVrtnAwNDyTt
+         yWb645XMblym1zKux8dwcIQE+xqT02ILd7n8XGiSadYjl2wX4MzQqSbATcfSUHoM10
+         U5OVYlQB+GFm4Z5gY9cWA70eGpRihOC3JxX/foqd6FVSFWK3WfyqmMUPYn1y47UYPo
+         onJwodxbiv6VVDreb8dotIgndDdGkYtj5BE9fWn5kCKk8SXt8PAkKepq0mNDJh5ca6
+         MzXaiDZQfkYm4WkiU539/lGVg1kJ+2WlzoPQoeL2OGJ3+w03HDJ1A+r2SKqOx+cfmP
+         1pueH/4CELugQ==
+Date:   Tue, 5 Jul 2022 18:48:05 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Liang He <windhl@126.com>
+Cc:     davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH] ftgmac100: Hold reference returned by
+ of_get_child_by_name()
+Message-ID: <20220705184805.2619caca@kernel.org>
+In-Reply-To: <20220704151819.279513-1-windhl@126.com>
+References: <20220704151819.279513-1-windhl@126.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.11.0
-Subject: Re: [PATCH] neighbor: tracing: Have neigh_create event use __string()
-Content-Language: en-US
-To:     Steven Rostedt <rostedt@goodmis.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-References: <20220705183741.35387e3f@rorschach.local.home>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <20220705183741.35387e3f@rorschach.local.home>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/5/22 4:37 PM, Steven Rostedt wrote:
-> From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
+On Mon,  4 Jul 2022 23:18:19 +0800 Liang He wrote:
+> In ftgmac100_probe(), we should hold the refernece returned by
+> of_get_child_by_name() and use it to call of_node_put() for
+> reference balance.
 > 
-> The dev field of the neigh_create event uses __dynamic_array() with a
-> fixed size, which defeats the purpose of __dynamic_array(). Looking at the
-> logic, as it already uses __assign_str(), just use the same logic in
-> __string to create the size needed. It appears that because "dev" can be
-> NULL, it needs the check. But __string() can have the same checks as
-> __assign_str() so use them there too.
-> 
-> Cc: David Ahern <dsahern@gmail.com>
-> Cc: David S. Miller <davem@davemloft.net>
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+> Signed-off-by: Liang He <windhl@126.com>
 > ---
+>  drivers/net/ethernet/faraday/ftgmac100.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
 > 
-> [ This is simpler logic than the fib* events, so I figured just
->   convert to __string() instead of a static __array() ]
-> 
+> diff --git a/drivers/net/ethernet/faraday/ftgmac100.c b/drivers/net/ethernet/faraday/ftgmac100.c
+> index 5231818943c6..e50bd7beb09b 100644
+> --- a/drivers/net/ethernet/faraday/ftgmac100.c
+> +++ b/drivers/net/ethernet/faraday/ftgmac100.c
+> @@ -1770,7 +1770,7 @@ static int ftgmac100_probe(struct platform_device *pdev)
+>  	int irq;
+>  	struct net_device *netdev;
+>  	struct ftgmac100 *priv;
+> -	struct device_node *np;
+> +	struct device_node *np, *child_np;
+>  	int err = 0;
+>  
+>  	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> @@ -1883,7 +1883,7 @@ static int ftgmac100_probe(struct platform_device *pdev)
+>  
+>  		/* Display what we found */
+>  		phy_attached_info(phy);
+> -	} else if (np && !of_get_child_by_name(np, "mdio")) {
+> +	} else if (np && !(child_np = of_get_child_by_name(np, "mdio"))) {
+>  		/* Support legacy ASPEED devicetree descriptions that decribe a
+>  		 * MAC with an embedded MDIO controller but have no "mdio"
+>  		 * child node. Automatically scan the MDIO bus for available
+> @@ -1901,6 +1901,8 @@ static int ftgmac100_probe(struct platform_device *pdev)
+>  		}
+>  
+>  	}
+> +	if (child_np)
+> +		of_node_put(child_np);
 
-agreed.
+Since we don't care about the value of the node we should add a helper
+which checks for presence of the node and releases the reference,
+rather than have to do that in this large function.
 
-Reviewed-by: David Ahern <dsahern@kernel.org>
-
+Please also add a Fixes tag.
