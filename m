@@ -2,50 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C77C568E63
-	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 17:54:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 953F6568E6E
+	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 17:55:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234196AbiGFPyk convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 6 Jul 2022 11:54:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51872 "EHLO
+        id S233024AbiGFPzn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jul 2022 11:55:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231280AbiGFPyX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 11:54:23 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D33FB10AB
-        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 08:54:21 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-149-WXRw_waaN9Wb-VDZWhrQPw-1; Wed, 06 Jul 2022 16:54:19 +0100
-X-MC-Unique: WXRw_waaN9Wb-VDZWhrQPw-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.36; Wed, 6 Jul 2022 16:54:18 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.036; Wed, 6 Jul 2022 16:54:18 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: rawip: delayed and mis-sequenced transmits
-Thread-Topic: rawip: delayed and mis-sequenced transmits
-Thread-Index: AdiRRdPsy1CkLIz2RqC6CNg1z+fBBw==
-Date:   Wed, 6 Jul 2022 15:54:18 +0000
-Message-ID: <433be56da42f4ab2b7722c1caed3a747@AcuMS.aculab.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        with ESMTP id S232280AbiGFPzl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 11:55:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A2122E9;
+        Wed,  6 Jul 2022 08:55:41 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BAAC66206E;
+        Wed,  6 Jul 2022 15:55:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A657C3411C;
+        Wed,  6 Jul 2022 15:55:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1657122940;
+        bh=aA4JALtTjKfWpGQsJjku07uWAxF2Bd6rRbc4dnHeKfM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=h8iJ3KGWzblrvf0KV7G2zKHGi056n0Og5GrRvhY4FbPR1YPYo1dfV7xySBaKFmBmq
+         8x0+c7szTMAEyuvB26IeeXdfFGd/+kd7nwoalbOtQJGD8aayWlKZK23jkPH6vaM4KU
+         BTbmtIcP0tRsxBKxsSEQJ01nr3ICrMxJFabzD36M=
+Date:   Wed, 6 Jul 2022 17:55:37 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Christian Marangi <ansuelsmth@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Jens Axboe <axboe@kernel.dk>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [net-next PATCH RFC] net: dsa: qca8k: move driver to qca dir
+Message-ID: <YsWwebvaTcsERXGq@kroah.com>
+References: <20220630134606.25847-1-ansuelsmth@gmail.com>
+ <20220706153904.jtu2qxczjjcgcoty@skbuf>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220706153904.jtu2qxczjjcgcoty@skbuf>
+X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -54,57 +58,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I'm seeing some UDP packets being significantly delayed (even 200ms)
-and then being received immediately after another packet.
-During the delay other packets are received on the same UDP socket.
-The receiving program is very simple - so the problem must be
-with the sender.
+On Wed, Jul 06, 2022 at 06:39:04PM +0300, Vladimir Oltean wrote:
+> On Thu, Jun 30, 2022 at 03:46:06PM +0200, Christian Marangi wrote:
+> > Move qca8k driver to qca dir in preparation for code split and
+> > introduction of ipq4019 switch based on qca8k.
+> > 
+> > Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+> > ---
+> > 
+> > Posting this as a RFC to discuss the problems of such change.
+> > 
+> > This is needed as in the next future the qca8k driver will be split
+> > to a common code. This needs to be done as the ipq4019 is based on qca8k
+> > but will have some additional configuration thing and other phylink
+> > handling so it will require different setup function. Aside from these
+> > difference almost all the regs are the same of qca8k.
+> > 
+> > For this reason keeping the driver in the generic dsa dir would create
+> > some caos and I think it would be better to move it the dedicated qca
+> > dir.
+> > 
+> > This will for sure creates some problems with backporting patch.
+> > 
+> > So the question is... Is this change acceptable or we are cursed to
+> > keeping this driver in the generic dsa directory?
+> > 
+> > Additional bonus question, since the ethernet part still requires some
+> > time to get merged, wonder if it's possible to send the code split with
+> > qca8k as the only user (currently) and later just add the relevant
+> > ipq4019 changes.
+> > 
+> > (this ideally is to prepare stuff and not send a big scary series when
+> > it's time to send ipq4019 changes)
+> 
+> I think we discussed this before. You can make the driver migration but
+> you need to be willing to manually backport bug fixes if/when the stable
+> team reports that backporting to a certain kernel failed. It has been
+> done before, see commit a9770eac511a ("net: mdio: Move MDIO drivers into
+> a new subdirectory") as an example. I think "git cherry-pick" has magic
+> to detect file movement, while "git am" doesn't. Here I'm not 100%
+> certain which command is used to backport to stable. If it's by cherry
+> picking it shouldn't even require manual intervention.
 
-The sender is designed to send a lot of packets, but in this case
-two packets are sent every 20ms.
-While the two packets have the same UDP port numbers, they are
-different application data streams.
+People move files around in the kernel all the time, it's not a big deal
+and should never be an issue (i.e. don't worry about stable backports.)
+Normally we can handle the move easily, and if not, we will punt to the
+developer and ask if they want to do the backport if they feel it is
+necessary.
 
-The sender has a lot of threads that can send packets, each uses
-a single 'rawip' socket (to avoid contention on the socket lock).
-It is pretty random (but heavily biased) which threads actually send
-the packets.
-However it is pretty much certain that the two sends will be done
-by different threads at almost exactly the same time.
+So this should not be an issue for anything here.
 
-I've not yet tried to find where the packets get queued, never
-mind why. But my best guess is they are stuck on a queue
-associated with the sending socket.
+thanks,
 
-But the only reason I can see for a queue on the socket is to
-allow the socket lock be dropped while a packet is passed to
-the ethernet driver.
-So a send from a second thread would queue a packet and it would
-be picked up when the earlier transmit completes.
-This is actually consistent with what I'm seeing - the end of tx
-picks up a packet that was queued earlier.
-But in my case the packet was queued much, much earlier.
-And the earlier send was done by the same thread.
-
-So what I think must be happening is that contention further
-down the protocol stack is causing the packet be queued on the
-sending socket instead of (probably) the qdisc layer.
-
-Usually tx packets (seem to) get queued in the qdisc layer and
-collected when the thread currently doing a tx setup returns
-from the ethernet driver.
-So I'm not at all sure why, at least sometimes, packets are
-being queued on the socket.
-
-I have got 'threaded napi' enabled (to avoid losing rx packets)
-but nothing unusual is enabled on the tx side.
-Ethernet is tg3 - single tx ring.
-
-Anyone any ideas before I start digging through the kernel code?
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
-
+greg k-h
