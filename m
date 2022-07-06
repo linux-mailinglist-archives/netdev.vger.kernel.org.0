@@ -2,106 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 695835695A0
-	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 01:09:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 140095695A2
+	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 01:11:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233846AbiGFXJQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jul 2022 19:09:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56960 "EHLO
+        id S234077AbiGFXLr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jul 2022 19:11:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233168AbiGFXJP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 19:09:15 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6714E1BE88
-        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 16:09:14 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id y4-20020a25b9c4000000b0066e573fb0fcso6037946ybj.21
-        for <netdev@vger.kernel.org>; Wed, 06 Jul 2022 16:09:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=BL8nemdk5jEzjtFa4MSk1HVUJ0DaNKbCAoFg6fYn++s=;
-        b=bglLJQL0h0LHXKQkfXprS+IpuekCyezknrwX1b1oldcSMzxc5+EEJF3XGtp3A/3t0A
-         n+UK7hqnSo2sXYyAXnzGeqP5+z7VVWjBmiN77PQlDj3puZvNQR2CkJg+FZyoC0dzAQjZ
-         xLBRB1+8NZx7VNI4Jz+h2fcGfm34nzXCE5Q7gzTeFvc4X1LCLceKuet9sGBsWFYPOHKj
-         OpScw7YhRBAsM4+Z7ZZvHau/4fQPGNPWHheGQjbLFXTGAPmrQPmo1gMLc3NVP18LlLIT
-         GSc2YM+56q4+EPWoJ7rw7pUqpPEBwAbjI8S4g4/g52pqsd4QHGppIoZ/4YhFj5OYSTtp
-         cj2A==
+        with ESMTP id S230029AbiGFXLp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 19:11:45 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 860671CFC2
+        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 16:11:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657149103;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=HIFp6H7U8H4zLlvFPiQ4cosgxwJdUp4h1jCTeNzWHAk=;
+        b=KreyBUbvT6USHcQnio8D8S1xNBcaNB+SE+Soa10Ic4cO29trlh6fQ6xxN8MUJrg81ouPxS
+        H665JhUaDk/G3ZQeFKUIoDGQnhqEK8YARmUN8Tm6qk9ERN+rqGysdcEXqnqX6/iiEoAMLc
+        kaRTCQorShOlXZ9aXJxsesWvYnO92xs=
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com
+ [209.85.166.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-270-B811iVv-M46ajnpbyqS2QA-1; Wed, 06 Jul 2022 19:11:40 -0400
+X-MC-Unique: B811iVv-M46ajnpbyqS2QA-1
+Received: by mail-il1-f198.google.com with SMTP id h5-20020a056e021b8500b002d8f50441a2so8460994ili.13
+        for <netdev@vger.kernel.org>; Wed, 06 Jul 2022 16:11:40 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=BL8nemdk5jEzjtFa4MSk1HVUJ0DaNKbCAoFg6fYn++s=;
-        b=MiQ8bs7R6rSeJ+0YvQVDseRx8GucQor0Z0XafQJFm25pX9LSDwl9rFptLNUd/0exth
-         8iTlUWVJtBzQg97hfQh+z4pl13bhgouAeaSp21qiT5HSkI5DSrrUn1gkYa944MoGl8hh
-         isVS6y8vRH7BfDztfLu7KXpu6keXfxXw6MMqc0mbXnP57kFlFObWw3y3GuTl6jrTCSGr
-         dzKgNDu57PH9hkqAwZarivzrJFJO3b8bTSoLRXMHCy0ClZnYFNqW3HvrIKXdUW+uQpcM
-         5jfQTgURe4dJgHKQzsYARMX/d0QkAdUUO3WUgF6Nkq4C49ZY9fMGGDahXknkJkNEDQf0
-         7jKw==
-X-Gm-Message-State: AJIora8QJA/sBbixx+NXqFrfRSAUQXJDL2d0jjrjCXqgOthayUDl56ab
-        0uQaKh+8TzL+pKo6IMl5CPqZmwTs+QU5arI/vg==
-X-Google-Smtp-Source: AGRyM1txsNJpY89zwG+BQrlq4nx6igRgprquPYja0YIDI7rQxI9toEk3RzABG7zH+vtUrGf6FLMYfUagNFNB7tZ6Kw==
-X-Received: from justinstitt.mtv.corp.google.com ([2620:15c:211:202:aab2:e000:4b5a:a767])
- (user=justinstitt job=sendgmr) by 2002:a0d:d387:0:b0:31c:d2e1:9277 with SMTP
- id v129-20020a0dd387000000b0031cd2e19277mr11472480ywd.421.1657148953698; Wed,
- 06 Jul 2022 16:09:13 -0700 (PDT)
-Date:   Wed,  6 Jul 2022 16:08:33 -0700
-Message-Id: <20220706230833.535238-1-justinstitt@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
-Subject: [PATCH] net: l2tp: fix clang -Wformat warning
-From:   Justin Stitt <justinstitt@google.com>
-To:     James Chapman <jchapman@katalix.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
-        Justin Stitt <justinstitt@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=HIFp6H7U8H4zLlvFPiQ4cosgxwJdUp4h1jCTeNzWHAk=;
+        b=F9vFVdG00S8FAQ2HAVbkp/r2H4qgobf0P8Ya9RAaLZs6eJwVpjZxyboAnHNiHlBp4g
+         p9pHYMQlo0PAMncp9iUz3ADf8LiO0wXpSB0pHgVDPyJWqsn5pjaKJdCFNOkk+9PgOmPg
+         6pXYvh3wfWfu2WWsj5Cly0jhrf1XiM/fPVVXzhcGdEUe9qM7mjLPI59CeFFrGaUES9+N
+         WLSiNGWiVh8DaAL4EHXC1SYLQqjRd7rVXM+A6ACsyNqQN/ZGrvTcnn9ccAkSh48RMlcu
+         KY7KeA4cGCIBOwg8LLAB0/HBj8xstFrBTFybDbyxyX8Few42H+0voPC3mFH0ykl5FL+Z
+         z0Fw==
+X-Gm-Message-State: AJIora+sbYQrEmdxOIM7rciYnIxU5F4Ci90zwa2sAZW4UgIK96zi5A8z
+        uS3Yu0T862PP/IPNm+ygZL/NP95/wFuBoeinhhFofLwryz4MByy9WoU0Aj7wUyYfKVVOp2F3nrc
+        +h1qJtK2vl+gL5HrM
+X-Received: by 2002:a6b:c941:0:b0:672:734f:d05f with SMTP id z62-20020a6bc941000000b00672734fd05fmr21700439iof.87.1657149099768;
+        Wed, 06 Jul 2022 16:11:39 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1sUYXLuk3UWGNawVyOpx/TmaNJ2nFfBX9aQU/SF56aO/Kg2TRfjIV+nR5aoaDdS7GE946l1hw==
+X-Received: by 2002:a6b:c941:0:b0:672:734f:d05f with SMTP id z62-20020a6bc941000000b00672734fd05fmr21700422iof.87.1657149099536;
+        Wed, 06 Jul 2022 16:11:39 -0700 (PDT)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id u125-20020a022383000000b0033ebbb649fasm5678501jau.101.2022.07.06.16.11.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Jul 2022 16:11:39 -0700 (PDT)
+Date:   Wed, 6 Jul 2022 17:11:37 -0600
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Yishai Hadas <yishaih@nvidia.com>
+Cc:     <jgg@nvidia.com>, <saeedm@nvidia.com>, <kvm@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <kuba@kernel.org>,
+        <kevin.tian@intel.com>, <joao.m.martins@oracle.com>,
+        <leonro@nvidia.com>, <maorg@nvidia.com>, <cohuck@redhat.com>
+Subject: Re: [PATCH V1 vfio 03/11] vfio: Introduce DMA logging uAPIs
+Message-ID: <20220706171137.47e4aa10.alex.williamson@redhat.com>
+In-Reply-To: <20220705102740.29337-4-yishaih@nvidia.com>
+References: <20220705102740.29337-1-yishaih@nvidia.com>
+        <20220705102740.29337-4-yishaih@nvidia.com>
+Organization: Red Hat
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When building with clang we encounter this warning:
-| net/l2tp/l2tp_ppp.c:1557:6: error: format specifies type 'unsigned
-| short' but the argument has type 'u32' (aka 'unsigned int')
-| [-Werror,-Wformat] session->nr, session->ns,
+On Tue, 5 Jul 2022 13:27:32 +0300
+Yishai Hadas <yishaih@nvidia.com> wrote:
 
-Both session->nr and session->ns are of type u32. The format specifier
-previously used is `%hu` which would truncate our unsigned integer from
-32 to 16 bits. This doesn't seem like intended behavior, if it is then
-perhaps we need to consider suppressing the warning with pragma clauses.
+> DMA logging allows a device to internally record what DMAs the device is
+> initiating and report them back to userspace. It is part of the VFIO
+> migration infrastructure that allows implementing dirty page tracking
+> during the pre copy phase of live migration. Only DMA WRITEs are logged,
+> and this API is not connected to VFIO_DEVICE_FEATURE_MIG_DEVICE_STATE.
+> 
+> This patch introduces the DMA logging involved uAPIs.
+> 
+> It uses the FEATURE ioctl with its GET/SET/PROBE options as of below.
+> 
+> It exposes a PROBE option to detect if the device supports DMA logging.
+> It exposes a SET option to start device DMA logging in given IOVAs
+> ranges.
+> It exposes a SET option to stop device DMA logging that was previously
+> started.
+> It exposes a GET option to read back and clear the device DMA log.
+> 
+> Extra details exist as part of vfio.h per a specific option.
+> 
+> Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>  include/uapi/linux/vfio.h | 79 +++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 79 insertions(+)
+> 
+> diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
+> index 733a1cddde30..81475c3e7c92 100644
+> --- a/include/uapi/linux/vfio.h
+> +++ b/include/uapi/linux/vfio.h
+> @@ -986,6 +986,85 @@ enum vfio_device_mig_state {
+>  	VFIO_DEVICE_STATE_RUNNING_P2P = 5,
+>  };
+>  
+> +/*
+> + * Upon VFIO_DEVICE_FEATURE_SET start device DMA logging.
+> + * VFIO_DEVICE_FEATURE_PROBE can be used to detect if the device supports
+> + * DMA logging.
+> + *
+> + * DMA logging allows a device to internally record what DMAs the device is
+> + * initiating and report them back to userspace. It is part of the VFIO
+> + * migration infrastructure that allows implementing dirty page tracking
+> + * during the pre copy phase of live migration. Only DMA WRITEs are logged,
+> + * and this API is not connected to VFIO_DEVICE_FEATURE_MIG_DEVICE_STATE.
+> + *
+> + * When DMA logging is started a range of IOVAs to monitor is provided and the
+> + * device can optimize its logging to cover only the IOVA range given. Each
+> + * DMA that the device initiates inside the range will be logged by the device
+> + * for later retrieval.
+> + *
+> + * page_size is an input that hints what tracking granularity the device
+> + * should try to achieve. If the device cannot do the hinted page size then it
+> + * should pick the next closest page size it supports. On output the device
+> + * will return the page size it selected.
+> + *
+> + * ranges is a pointer to an array of
+> + * struct vfio_device_feature_dma_logging_range.
+> + */
+> +struct vfio_device_feature_dma_logging_control {
+> +	__aligned_u64 page_size;
+> +	__u32 num_ranges;
+> +	__u32 __reserved;
+> +	__aligned_u64 ranges;
+> +};
 
-This patch should get us closer to the goal of enabling the -Wformat
-flag for Clang builds.
+num_ranges probably has a limit below 2^32-1, is it device specific?
+How does the user learn the limit?
 
-Link: https://github.com/ClangBuiltLinux/linux/issues/378
-Signed-off-by: Justin Stitt <justinstitt@google.com>
----
- net/l2tp/l2tp_ppp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Presumably new ranges cannot be added while logging is already enabled,
+should we build this limitation into the uAPI or might some devices
+have the ability to dynamically add and remove logging ranges?  Thanks,
 
-diff --git a/net/l2tp/l2tp_ppp.c b/net/l2tp/l2tp_ppp.c
-index 8be1fdc68a0b..db2e584c625e 100644
---- a/net/l2tp/l2tp_ppp.c
-+++ b/net/l2tp/l2tp_ppp.c
-@@ -1553,7 +1553,7 @@ static void pppol2tp_seq_session_show(struct seq_file *m, void *v)
- 		   session->lns_mode ? "LNS" : "LAC",
- 		   0,
- 		   jiffies_to_msecs(session->reorder_timeout));
--	seq_printf(m, "   %hu/%hu %ld/%ld/%ld %ld/%ld/%ld\n",
-+	seq_printf(m, "   %u/%u %ld/%ld/%ld %ld/%ld/%ld\n",
- 		   session->nr, session->ns,
- 		   atomic_long_read(&session->stats.tx_packets),
- 		   atomic_long_read(&session->stats.tx_bytes),
--- 
-2.37.0.rc0.161.g10f37bed90-goog
+Alex
+
+> +
+> +struct vfio_device_feature_dma_logging_range {
+> +	__aligned_u64 iova;
+> +	__aligned_u64 length;
+> +};
+> +
+> +#define VFIO_DEVICE_FEATURE_DMA_LOGGING_START 3
+> +
+> +/*
+> + * Upon VFIO_DEVICE_FEATURE_SET stop device DMA logging that was started
+> + * by VFIO_DEVICE_FEATURE_DMA_LOGGING_START
+> + */
+> +#define VFIO_DEVICE_FEATURE_DMA_LOGGING_STOP 4
+> +
+> +/*
+> + * Upon VFIO_DEVICE_FEATURE_GET read back and clear the device DMA log
+> + *
+> + * Query the device's DMA log for written pages within the given IOVA range.
+> + * During querying the log is cleared for the IOVA range.
+> + *
+> + * bitmap is a pointer to an array of u64s that will hold the output bitmap
+> + * with 1 bit reporting a page_size unit of IOVA. The mapping of IOVA to bits
+> + * is given by:
+> + *  bitmap[(addr - iova)/page_size] & (1ULL << (addr % 64))
+> + *
+> + * The input page_size can be any power of two value and does not have to
+> + * match the value given to VFIO_DEVICE_FEATURE_DMA_LOGGING_START. The driver
+> + * will format its internal logging to match the reporting page size, possibly
+> + * by replicating bits if the internal page size is lower than requested.
+> + *
+> + * Bits will be updated in bitmap using atomic or to allow userspace to
+> + * combine bitmaps from multiple trackers together. Therefore userspace must
+> + * zero the bitmap before doing any reports.
+> + *
+> + * If any error is returned userspace should assume that the dirty log is
+> + * corrupted and restart.
+> + *
+> + * If DMA logging is not enabled, an error will be returned.
+> + *
+> + */
+> +struct vfio_device_feature_dma_logging_report {
+> +	__aligned_u64 iova;
+> +	__aligned_u64 length;
+> +	__aligned_u64 page_size;
+> +	__aligned_u64 bitmap;
+> +};
+> +
+> +#define VFIO_DEVICE_FEATURE_DMA_LOGGING_REPORT 5
+> +
+>  /* -------- API for Type1 VFIO IOMMU -------- */
+>  
+>  /**
 
