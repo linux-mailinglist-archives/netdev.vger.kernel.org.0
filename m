@@ -2,58 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B55C569221
-	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 20:49:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7FB1569254
+	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 21:05:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233846AbiGFSsz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jul 2022 14:48:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59780 "EHLO
+        id S233685AbiGFTFi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jul 2022 15:05:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230472AbiGFSsx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 14:48:53 -0400
-Received: from proxima.lasnet.de (proxima.lasnet.de [IPv6:2a01:4f8:121:31eb:3::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA6C41F2DE;
-        Wed,  6 Jul 2022 11:48:51 -0700 (PDT)
-Received: from [IPv6:2a01:c23:9553:2700:569c:b316:2406:eb4c] (dynamic-2a01-0c23-9553-2700-569c-b316-2406-eb4c.c23.pool.telefonica.de [IPv6:2a01:c23:9553:2700:569c:b316:2406:eb4c])
+        with ESMTP id S232935AbiGFTFh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 15:05:37 -0400
+Received: from mout-p-202.mailbox.org (mout-p-202.mailbox.org [80.241.56.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 114131DA49
+        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 12:05:34 -0700 (PDT)
+Received: from smtp102.mailbox.org (smtp102.mailbox.org [10.196.197.102])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        (Authenticated sender: jluebbe@lasnet.de)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id F3EA5C0373;
-        Wed,  6 Jul 2022 20:48:48 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lasnet.de; s=2021;
-        t=1657133329;
+        by mout-p-202.mailbox.org (Postfix) with ESMTPS id 4LdTWs17Ljz9sWt;
+        Wed,  6 Jul 2022 21:05:29 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hauke-m.de; s=MBO0001;
+        t=1657134329;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Q1N88M69xDw45XQpZsRsQu5rF1MU+rMW1YQ0tIbUWkM=;
-        b=pTxEw9xvEo8NmFgytApBz58B51c7rSRlcJd/LGcOr5Xa0NpxIcqsBL1Mn9oILQipdn0ZF+
-        xLTeG04YGQSVrDohQrniIkm0DbTT6+W3IuuxqV3kSWPLB5Gfrz9TzdBhpx5+O/n2YkASvl
-        9Ouwb01iWqRXXGxCs3mtZZYVYzdbkQ6vm81QH9hmLD0LdYrCIbqqC0uhQ55gxFqKEhnnw4
-        sYAk+uT0TOxdLyaafrxtdJU7z+SZCHja/r5podGM6R8ZHiCiKxN170xL1pk1UKjk8hJK10
-        RZsGDgDTzRzPor8Yq9H9x6NNaYJzXtvCEZXR/yWSJCeocgXqFF3vBE+mZerwtg==
-Message-ID: <a32428fa0f3811c25912cd313a6fe1fb4f0a4fac.camel@lasnet.de>
-Subject: Re: [REGRESSION] connection timeout with routes to VRF
-From:   Jan Luebbe <jluebbe@lasnet.de>
-To:     Mike Manning <mvrmanning@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Robert Shearman <robertshearman@gmail.com>,
-        Andy Roulin <aroulin@nvidia.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        regressions@lists.linux.dev,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Date:   Wed, 06 Jul 2022 20:49:27 +0200
-In-Reply-To: <940fa370-08ce-1d39-d5cc-51de8e853b47@gmail.com>
-References: <a54c149aed38fded2d3b5fdb1a6c89e36a083b74.camel@lasnet.de>
-         <6410890e-333d-5f0e-52f2-1041667c80f8@kernel.org>
-         <940fa370-08ce-1d39-d5cc-51de8e853b47@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.3-1 
+        bh=sLxuyklC0Z7iml/ksSQYe1DeafX43pbTIjDNNAg5waQ=;
+        b=H+ddahvO/iCAE4BAUNiDslqXdPqRz80YgzRdqppXb4q4W726+hz2cl3mcRFbKWuZRr3ta3
+        hPLVvw3gB4g1laCKHc1hZHA48Myufd14c9BvHdtaGp/F32CQkFVRIs5leYaoeR03doB1X3
+        lMbzLBxl+qO+dXDUcebcOkQRW9Pv+sx7F7BJ19+P3aE0HPPhdRGA9fJB+9IgkrkJ03169D
+        4XtLbTCi/8zNwIqLiQ4N+L4xK4kw/fqsxxXMYXDq8HgUljemIXUcYWJQX4yBD/TdLuyDNO
+        s5drMOe8CYMGAf0eF84ha+K1weIoq8XBvfRNkZwb/S0FRxrwlxrfp4jaGKca+Q==
+Message-ID: <4ec0461c-0000-ff8c-4368-5d68d70b894e@hauke-m.de>
+Date:   Wed, 6 Jul 2022 21:05:22 +0200
 MIME-Version: 1.0
+Content-Language: en-US
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        =?UTF-8?Q?Alvin_=c5=a0ipraga?= <alsi@bang-olufsen.dk>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        UNGLinuxDriver@microchip.com,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Woojung Huh <woojung.huh@microchip.com>
+References: <YsQIjC7UpcGWJovx@shell.armlinux.org.uk>
+ <7fe6b661-06b9-96dd-e064-1db23a9eaae7@gmail.com>
+ <20220706101459.tahby2xpm3e7okjz@skbuf>
+ <d65824fc-a139-0430-5550-481dd202ad34@gmail.com>
+From:   Hauke Mehrtens <hauke@hauke-m.de>
+Subject: Re: [PATCH RFC net-next v2 0/5] net: dsa: always use phylink
+In-Reply-To: <d65824fc-a139-0430-5550-481dd202ad34@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
         SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -62,114 +79,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 2022-06-26 at 21:06 +0100, Mike Manning wrote:
-...
-> Andy Roulin suggested the same fix to the same problem a few weeks back.
-> Let's do it along with a test case in fcnl-test.sh which covers all of
-> these vrf permutations.
+On 7/6/22 18:27, Florian Fainelli wrote:
+> On 7/6/22 03:14, Vladimir Oltean wrote:
+>> Hi Florian,
+>>
+>> On Tue, Jul 05, 2022 at 09:42:33AM -0700, Florian Fainelli wrote:
+>>> On 7/5/22 02:46, Russell King (Oracle) wrote:
+>>>> A new revision of the series which incorporates changes that Marek
+>>>> suggested. Specifically, the changes are:
+>>>>
+>>>> 1. Patch 2 - use the phylink_get_caps method in mv88e6xxx to get the
+>>>>      default interface rather than re-using port_max_speed_mode()
+>>>>
+>>>> 2. Patch 4 - if no default interface is provided, use the supported
+>>>>      interface mask to search for the first interface that gives the
+>>>>      fastest speed.
+>>>>
+>>>> 3. Patch 5 - now also removes the port_max_speed_mode() method
+>>>
+>>> This was tested with bcm_sf2.c and b53_srab.b and did not cause 
+>>> regressions,
+>>> however we do have a 'fixed-link' property for the CPU port (always 
+>>> have had
+>>> one), so there was no regression expected.
+>>
+>> What about arch/arm/boot/dts/bcm47189-tenda-ac9.dts?
 > 
-Reverting 3c82a21f4320 would remove isolation between the default and other VRFs
-needed when no VRF route leaking has been configured between these: there may be
-unintended leaking of packets arriving on a device enslaved to an l3mdev due to
-the potential match on an unbound socket.
+> You found one of the devices that I do not have access to and did not 
+> test, thanks. We do expect to run the port at 2GBits/sec on these 
+> devices however there is no "official" way to advertise that a port can 
+> run at 2Gbits/sec, as this is not even a "sanctioned" speed. I do have a 
+> similar device however, so let me run some more tests, we won't see a 
+> regression however since we do not use the NATP accelerator which would 
+> be the reason to run the port at 2Gbits/sec.
 
-Thanks for the explanation.
+I will try this change on some devices with the lantiq gswip driver at 
+the weekend.
 
-VRF route leaking requires routes to be present for both ingress and egress
-VRFs,
-the testcase shown only has a route from default to red VRF. The implicit return
-path from red to default VRF due to match on unbound socket is no longer
-present.
+On the SoC supported by the lantiq gswip driver the switch is integrated 
+in the SoC and there is a internal link with more than 1GBit/s 
+connecting the switch to the rest of the system. I think it is also 
+around 2GBit/s. We can not configure the interface speed or many other 
+interface settings for the link between the switch and the CPU. How 
+should the device tree ideally look for this setup?
 
-
-If there is a better configuration that makes this work in the general case
-without a change to the kernel, we'd be happy as well.
-
-In our full setup, the outbound TCP connection (from the default VRF) gets a
-local IP from the interface enslaved to the VRF. Before 3c82a21f4320, this would
-simply work.
-
-How would the return path route from the red VRF to the default VRF look in that
-case?
-
-Match on unbound socket in all VRFs and not only in the default VRF should be
-possible by setting this option (see
-https://www.kernel.org/doc/Documentation/networking/vrf.txt):
-
-
-Do you mean unbound as in listening socket not bound to an IP with bind()? Or as
-in a socket in the default VRF?
-
-sysctl net.ipv4.tcp_l3mdev_accept=1
-
-
-The sysctl docs sound like this should only apply to listening sockets. In this
-case, we have an unconnected outbound socket.
-
-However, for this to work a change similar to the following is needed (I have
-shown the change to the macro for consistency with above, it is now an inline
-fn):
-
-
-I can also test on master and only used the macro form only because I wasn't
-completely sure how to translate it to the inline function form.
-
----
- include/net/inet_hashtables.h |   10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
-
---- a/include/net/inet_hashtables.h
-+++ b/include/net/inet_hashtables.h
-@@ -300,9 +300,8 @@
- #define INET_MATCH(__sk, __net, __cookie, __saddr, __daddr, __ports, __dif,
-__sdif) \
-        (((__sk)->sk_portpair == (__ports))                     &&      \
-         ((__sk)->sk_addrpair == (__cookie))                    &&      \
--        (((__sk)->sk_bound_dev_if == (__dif))                  ||      \
--         ((__sk)->sk_bound_dev_if == (__sdif)))                &&      \
--        net_eq(sock_net(__sk), (__net)))
-+        net_eq(sock_net(__sk), (__net))                        &&      \
-+        inet_sk_bound_dev_eq((__net), (__sk)->sk_bound_dev_if, (__dif),
-(__sdif)))
- #else /* 32-bit arch */
- #define INET_ADDR_COOKIE(__name, __saddr, __daddr) \
-        const int __name __deprecated __attribute__((unused))
-@@ -311,9 +310,8 @@
-        (((__sk)->sk_portpair == (__ports))             &&              \
-         ((__sk)->sk_daddr      == (__saddr))           &&              \
-         ((__sk)->sk_rcv_saddr  == (__daddr))           &&              \
--        (((__sk)->sk_bound_dev_if == (__dif))          ||              \
--         ((__sk)->sk_bound_dev_if == (__sdif)))        &&              \
--        net_eq(sock_net(__sk), (__net)))
-+        net_eq(sock_net(__sk), (__net))                &&              \
-+        inet_sk_bound_dev_eq((__net), (__sk)->sk_bound_dev_if, (__dif),
-(__sdif)))
- #endif /* 64-bit arch */
-
- /* Sockets in TCP_CLOSE state are _always_ taken out of the hash, so we need
-
-I can confirm that this gets my testcase working with 
-net.ipv4.tcp_l3mdev_accept=1.
-
-This is to get the testcase to pass, I will leave it to others to comment on
-the testcase validity in terms of testing forwarding using commands on 1 device.
-
-So a network-namespace-based testcase would be preferred? We used the simple
-setup because it seemed easier to understand.
-
-The series that 3c82a21f4320 is part of were introduced into the kernel in 2018
-by the Vyatta team, who regularly run an extensive test suite for routing
-protocols
-for VRF functionality incl. all combinations of route leaking between default
-and
-other VRFs, so there is no known issue in this regard. I will attempt to reach
-out
-to them so as to advise them of this thread.
-
-Are these testcases public? Perhaps I could use them find a better configuration
-that handles our use-case.
-
-Thanks,
-
-Jan
-
+Hauke
