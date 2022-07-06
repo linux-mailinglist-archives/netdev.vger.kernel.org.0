@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A82A567C53
-	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 05:10:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BF85567C54
+	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 05:11:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229891AbiGFDJf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jul 2022 23:09:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59082 "EHLO
+        id S230404AbiGFDKl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jul 2022 23:10:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229682AbiGFDJe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 23:09:34 -0400
-Received: from mail-oa1-x2e.google.com (mail-oa1-x2e.google.com [IPv6:2001:4860:4864:20::2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97BB215FEB
-        for <netdev@vger.kernel.org>; Tue,  5 Jul 2022 20:09:33 -0700 (PDT)
-Received: by mail-oa1-x2e.google.com with SMTP id 586e51a60fabf-10c0430e27dso8287955fac.4
-        for <netdev@vger.kernel.org>; Tue, 05 Jul 2022 20:09:33 -0700 (PDT)
+        with ESMTP id S230144AbiGFDKj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 23:10:39 -0400
+Received: from mail-ot1-x331.google.com (mail-ot1-x331.google.com [IPv6:2607:f8b0:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABB4715FEC
+        for <netdev@vger.kernel.org>; Tue,  5 Jul 2022 20:10:38 -0700 (PDT)
+Received: by mail-ot1-x331.google.com with SMTP id s13-20020a0568301e0d00b00616ad12fee7so10987131otr.10
+        for <netdev@vger.kernel.org>; Tue, 05 Jul 2022 20:10:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=hfdpYpPYr5Sw3mkaogR1dD4RrcU3jm14Bt/5X4wxunU=;
-        b=HCJQyz7CUOHrTldTsdMwCDVhTu+tR85KDgeMq41f1BAI2/WEQC2T7iGUD0Hd3h9bSG
-         WfK2YoaN9vCZrSUZviDaCtaD2Ay4lWU5/FWRXriK5xoIgjdkWqzxDc3AKdM6VwFf4oXZ
-         G6vwNP1zy4u+9m2SS6Va3xEw/tz9+oOhn8rziTYkA28sClNYu1hegkZvlwZw9n5c+pLc
-         imz3PKQoPvl7IU0u2ci1wmLtIkxNHjbpuGh4vqjrkeGpuJFiy6W9waM5WMD0stC2ctoK
-         LLjEZQB1MKlbMHByrHmVI0eZJUsJ3utUcnLzDSwSvFWRUHXXqPwjOty2R/IVQNFEpR/T
-         31UA==
+        bh=roblXUFI4rmHsNuICVZrIAGR7CM9ikQUh0nA4chr0yU=;
+        b=ZTXRg1KsfmQy9fLxGuduzeuZjLKGuJ72UaztG6Aruj5nQ+a67YFLoWBqjz222hDx/I
+         8J66sv63kvFwlTG2nYgIpmtYyYTVngMl+VHNBPSC1Cudmugz9tHYjs47UEa+eA3krI9G
+         SXO8TkWjqckmh/nwlZI2cASFZOvDyo9xaRbBYZRTSswTo6JwfhbhSnrylesRaJZ4x/Ll
+         UzDscpwfO2CDlSA0QcFu6AY4+IMILsOBZv3Oe3lY4QqK/urSidxwk1ubuQijThkZ3jhq
+         syuA13LeruiXcLkA01sssbE/KsvfCn/XF7RbEE5kERY+ObdB39R02aPbUbRgbRgdCVB0
+         AHPA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=hfdpYpPYr5Sw3mkaogR1dD4RrcU3jm14Bt/5X4wxunU=;
-        b=ab3lnFYWtJvC5A/lpSLS81GhPelozA3+3Yxvcv8z2i2SFOgLlendVwQNkgb96qGBSG
-         UpfhARMklyc3U/Qpdq2NNw1aREnmgjlL48dGiGhs5X9+k7554JrMu4Hnl6FK1ah2YorW
-         dhdyo+oTISsnLSGVZfymxzO/SJqnjuYen7JhD811KdnS8EohEPj2+ja/nDxBGo8DGl+p
-         sH6iZAO8Nm/tp5Cn2bXolPwc5QAte4C3fHWkPQuztONAEpYN/hATR1B5zZfhXM3NK+cY
-         gdm7IM4xYTuUW2WBiZel3ZkTCKCTnMJQ7Lm50d1el5tUXrdD0iryGNJlpnQjb0fioYEe
-         33kg==
-X-Gm-Message-State: AJIora/OVZcKu7dUIx3Tro9Pphlk1naRbDpEnPEBON70nU9ZI0s2B2ev
-        b2xhkivfRuIhoIIaX2RM4hGhpkDRFzoWB5eEsQ0=
-X-Google-Smtp-Source: AGRyM1tpD1/2qSFZvA3avMIdgOmdRLX1t209CzUWwmVMCKLsyG3J9azQOy4kCQUx1sKU5BVIcfYe2xZPIZ/LclDJYMc=
-X-Received: by 2002:a05:6870:4625:b0:fe:4636:cf73 with SMTP id
- z37-20020a056870462500b000fe4636cf73mr22362725oao.278.1657076972947; Tue, 05
- Jul 2022 20:09:32 -0700 (PDT)
+        bh=roblXUFI4rmHsNuICVZrIAGR7CM9ikQUh0nA4chr0yU=;
+        b=dVnXUwwwKhE3QurMBwbbAyNGPkYHUAH3ZhSJrRp7IrPjMpXNu3KfjCXF5l8I/oEqCd
+         QDKg8Sn0WO0nqGQ0jwzIUgqhGQbcR01aTFEDtCsgJAQOlgdTJPSh1yr6eEQfq+UxZOkX
+         oyDeKtxv/b+bwmjQu+tazopEPIzLynNLbOOt44xCTPx1Q3za89/nZrQwShUQrM7/MaAP
+         FwLyAPJG4Mffu8sgvaxjtEuW2Zo2ihfdgQHoUb9YesXqQ/pefzBR5v3liLA7SQCTJJmE
+         /68mqQZBxAKVoAjIEd3hKlWw8Ng8NHFjlU1hhpJEw5UOWZJw92HNauaxsJqqeO5N50Va
+         toog==
+X-Gm-Message-State: AJIora9uUxffCiG9FDFdKlW6cvAGPyRw7lCwxoJ+qRl6UgOUWnPZyUAf
+        3baBdAfGWvNxd728RecGTyvKFOQTkpxH7/+X5V4=
+X-Google-Smtp-Source: AGRyM1u3zmXhYITIIchaI5dBL3di0h8zlCDeYBZsVb9jLx/bgtwVOFpMSsp+rgDOf+cY4eXV4k4pNdoQgayDw8kzThg=
+X-Received: by 2002:a05:6830:3149:b0:616:e81f:fe20 with SMTP id
+ c9-20020a056830314900b00616e81ffe20mr16943439ots.301.1657077038054; Tue, 05
+ Jul 2022 20:10:38 -0700 (PDT)
 MIME-Version: 1.0
 References: <20220621202240.4182683-1-ssewook@gmail.com> <20220701154413.868096-1-ssewook@gmail.com>
- <CANn89iKLuTgp7QpWB7F7gp5_nNvdOXY_Zp9xmLJMpz2kpEaHDw@mail.gmail.com>
-In-Reply-To: <CANn89iKLuTgp7QpWB7F7gp5_nNvdOXY_Zp9xmLJMpz2kpEaHDw@mail.gmail.com>
+ <7dc20590ff5ab471a6cd94a6cc63bb2459782706.camel@redhat.com>
+In-Reply-To: <7dc20590ff5ab471a6cd94a6cc63bb2459782706.camel@redhat.com>
 From:   =?UTF-8?B?7ISc7IS47Jqx?= <ssewook@gmail.com>
-Date:   Wed, 6 Jul 2022 03:09:21 +0000
-Message-ID: <CAM2q-nywFcsSusDviy+orpSYd1pidNWs82YQcmo_q=YfBuTthQ@mail.gmail.com>
+Date:   Wed, 6 Jul 2022 03:10:27 +0000
+Message-ID: <CAM2q-ny=r-U-6n6F+02QON1B8NHJ5TZrrOa7x3CAfkrUtRWnwQ@mail.gmail.com>
 Subject: Re: [PATCH v2] net-tcp: Find dst with sk's xfrm policy not ctl_sk
-To:     Eric Dumazet <edumazet@google.com>
+To:     Paolo Abeni <pabeni@redhat.com>
 Cc:     Sewook Seo <sewookseo@google.com>,
         Linux Network Development Mailing List 
         <netdev@vger.kernel.org>, "David S . Miller" <davem@davemloft.net>,
@@ -60,6 +60,7 @@ Cc:     Sewook Seo <sewookseo@google.com>,
         David Ahern <dsahern@kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
         =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>,
+        Eric Dumazet <edumazet@google.com>,
         Steffen Klassert <steffen.klassert@secunet.com>,
         Sehee Lee <seheele@google.com>
 Content-Type: text/plain; charset="UTF-8"
@@ -74,38 +75,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi, Eric.
+Hi, Paolo.
 
-Thanks for your review.
+ If you are targting net, please add a suitable Fixes: tag.
+ > I'm targeting net-next, and will update the subject.
 
- if (IS_ENABLED(CONFIG_XFRM) && sk->sk_policy[XFRM_POLICY_OUT])
- --> This causes a compile error when CONFIG_XFRM is disabled.
-ldd: /usr/bin/ld: No such file or directory
-net/ipv4/ip_output.c:1739:37: error: no member named 'sk_policy' in
-'struct sock'
-        if (IS_ENABLED(CONFIG_XFRM) && sk->sk_policy[XFRM_POLICY_OUT])
-I think we need to use preprocessor directives at here.
-Is there any reason to use #if than #ifdef?  Then I will modify it to use #=
-if.
-    #if IS_ENABLED(CONFIG_XFRM) or #if defined(CONFIG_XFRM)
-
-The reason I added the condition only for the state 'TCP_SYN_SENT' is
-that I just intended to limit
-the scope of the patch to the issue scenario(RST packet following
-challenge ACK is not ESP encapsulated)
-so that we can have at least a difference as before.
-I also agree with you about using sk_fullsock() instead of SYN_SENT
-check. will update the patch soon.
+It looks like the cloned policy will be overwrited by later resets and
+possibly leaked? nobody calls xfrm_sk_free_policy() on the old policy.
+> Is it possible that a later reset overwrites sk_ctl's sk_policy? I though=
+t ctl_sk is a percpu variable and it's preempted. Maybe I might miss someth=
+ing, please let me know if my understanding is wrong.
 
 Thanks.
-Sewook.
 
 
-2022=EB=85=84 7=EC=9B=94 5=EC=9D=BC (=ED=99=94) =EC=98=A4=EC=A0=84 9:04, Er=
-ic Dumazet <edumazet@google.com>=EB=8B=98=EC=9D=B4 =EC=9E=91=EC=84=B1:
+2022=EB=85=84 7=EC=9B=94 5=EC=9D=BC (=ED=99=94) =EC=98=A4=EC=A0=84 8:25, Pa=
+olo Abeni <pabeni@redhat.com>=EB=8B=98=EC=9D=B4 =EC=9E=91=EC=84=B1:
 >
-> On Fri, Jul 1, 2022 at 5:45 PM Sewook Seo <ssewook@gmail.com> wrote:
-> >
+> Hello,
+>
+> On Fri, 2022-07-01 at 15:44 +0000, Sewook Seo wrote:
 > > From: sewookseo <sewookseo@google.com>
 > >
 > > If we set XFRM security policy by calling setsockopt with option
@@ -138,11 +127,19 @@ D).
 > > The TCP connection should be established.
 > >
 > > Effort: net-tcp
+>
+> This looks like a stray "internal" tag?
+>
 > > Cc: Maciej =C5=BBenczykowski <maze@google.com>
 > > Cc: Eric Dumazet <edumazet@google.com>
 > > Cc: Steffen Klassert <steffen.klassert@secunet.com>
 > > Cc: Sehee Lee <seheele@google.com>
 > > Signed-off-by: Sewook Seo <sewookseo@google.com>
+>
+> Is this targeting -net -or -net-next? IMHO this could land in either
+> trees. If you are targting net, please add a suitable Fixes: tag.
+>
+>
 > > ---
 > > Changelog since v1:
 > > - Remove unnecessary null check of sk at ip_output.c
@@ -161,28 +158,18 @@ D).
 > > +++ b/net/ipv4/ip_output.c
 > > @@ -1704,7 +1704,12 @@ void ip_send_unicast_reply(struct sock *sk, stru=
 ct sk_buff *skb,
-> >                            tcp_hdr(skb)->source, tcp_hdr(skb)->dest,
-> >                            arg->uid);
-> >         security_skb_classify_flow(skb, flowi4_to_flowi_common(&fl4));
-> > -       rt =3D ip_route_output_key(net, &fl4);
->
-> Please avoid these #ifdef ?
->
-> You probably can write something like
->
->      if (IS_ENABLED(CONFIG_XFRM) && sk->sk_policy[XFRM_POLICY_OUT])
->          rt =3D ip_route_output_flow(net, &fl4, sk);
->     else
->           rt =3D ip_route_output_key(net, &fl4);
->
+> >                          tcp_hdr(skb)->source, tcp_hdr(skb)->dest,
+> >                          arg->uid);
+> >       security_skb_classify_flow(skb, flowi4_to_flowi_common(&fl4));
+> > -     rt =3D ip_route_output_key(net, &fl4);
 > > +#ifdef CONFIG_XFRM
-> > +       if (sk->sk_policy[XFRM_POLICY_OUT])
-> > +               rt =3D ip_route_output_flow(net, &fl4, sk);
-> > +       else
+> > +     if (sk->sk_policy[XFRM_POLICY_OUT])
+> > +             rt =3D ip_route_output_flow(net, &fl4, sk);
+> > +     else
 > > +#endif
-> > +               rt =3D ip_route_output_key(net, &fl4);
-> >         if (IS_ERR(rt))
-> >                 return;
+> > +             rt =3D ip_route_output_key(net, &fl4);
+> >       if (IS_ERR(rt))
+> >               return;
 > >
 > > diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
 > > index fda811a5251f..459669f9e13f 100644
@@ -190,59 +177,21 @@ ct sk_buff *skb,
 > > +++ b/net/ipv4/tcp_ipv4.c
 > > @@ -819,6 +819,10 @@ static void tcp_v4_send_reset(const struct sock *s=
 k, struct sk_buff *skb)
-> >                 ctl_sk->sk_priority =3D (sk->sk_state =3D=3D TCP_TIME_W=
-AIT) ?
-> >                                    inet_twsk(sk)->tw_priority : sk->sk_=
-priority;
-> >                 transmit_time =3D tcp_transmit_time(sk);
+> >               ctl_sk->sk_priority =3D (sk->sk_state =3D=3D TCP_TIME_WAI=
+T) ?
+> >                                  inet_twsk(sk)->tw_priority : sk->sk_pr=
+iority;
+> >               transmit_time =3D tcp_transmit_time(sk);
 > > +#ifdef CONFIG_XFRM
-> > +               if (sk->sk_policy[XFRM_POLICY_OUT] && sk->sk_state =3D=
-=3D TCP_SYN_SENT)
-> > +                       xfrm_sk_clone_policy(ctl_sk, sk);
+> > +             if (sk->sk_policy[XFRM_POLICY_OUT] && sk->sk_state =3D=3D=
+ TCP_SYN_SENT)
+> > +                     xfrm_sk_clone_policy(ctl_sk, sk);
 > > +#endif
-> >         }
-> >         ip_send_unicast_reply(ctl_sk,
-> >                               skb, &TCP_SKB_CB(skb)->header.h4.opt,
-> > @@ -827,6 +831,7 @@ static void tcp_v4_send_reset(const struct sock *sk=
-, struct sk_buff *skb)
-> >                               transmit_time);
-> >
-> >         ctl_sk->sk_mark =3D 0;
-> > +       xfrm_sk_free_policy(ctl_sk);
-> >         sock_net_set(ctl_sk, &init_net);
-> >         __TCP_INC_STATS(net, TCP_MIB_OUTSEGS);
-> >         __TCP_INC_STATS(net, TCP_MIB_OUTRSTS);
-> > diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-> > index c72448ba6dc9..453452f87a7c 100644
-> > --- a/net/ipv6/tcp_ipv6.c
-> > +++ b/net/ipv6/tcp_ipv6.c
-> > @@ -952,7 +952,12 @@ static void tcp_v6_send_response(const struct sock=
- *sk, struct sk_buff *skb, u32
-> >          * Underlying function will use this to retrieve the network
-> >          * namespace
-> >          */
-> > -       dst =3D ip6_dst_lookup_flow(sock_net(ctl_sk), ctl_sk, &fl6, NUL=
-L);
-> > +#ifdef CONFIG_XFRM
-> > +       if (sk && sk->sk_policy[XFRM_POLICY_OUT] && sk->sk_state =3D=3D=
- TCP_SYN_SENT && rst)
 >
+> It looks like the cloned policy will be overwrited by later resets and
+> possibly leaked? nobody calls xfrm_sk_free_policy() on the old policy.
 >
-> Why not using sk_fullsock(sk)  instead of 'sk->sk_state =3D=3D TCP_SYN_SE=
-NT' ?
+> Thanks!
 >
-> sk_fullsock() is really telling us if we can use sk as a full socket,
-> and this is all we need to know when reviewing this code.
+> Paolo
 >
-> > +               dst =3D ip6_dst_lookup_flow(net, sk, &fl6, NULL);  /* G=
-et dst with sk's XFRM policy */
-> > +       else
-> > +#endif
-> > +               dst =3D ip6_dst_lookup_flow(sock_net(ctl_sk), ctl_sk, &=
-fl6, NULL);
-> >         if (!IS_ERR(dst)) {
-> >                 skb_dst_set(buff, dst);
-> >                 ip6_xmit(ctl_sk, buff, &fl6, fl6.flowi6_mark, NULL,
-> > --
-> > 2.37.0.rc0.161.g10f37bed90-goog
-> >
