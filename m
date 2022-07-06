@@ -2,144 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BBD84569346
-	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 22:26:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C036569358
+	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 22:31:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234214AbiGFUZs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jul 2022 16:25:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35638 "EHLO
+        id S233944AbiGFUbI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jul 2022 16:31:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234025AbiGFUZc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 16:25:32 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1471D2AE13
-        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 13:25:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=+52E+897hAC2yZGYmow7KzbKd9/5gHAo6CPMam//ys8=; b=q298a3vttxqTHLlptz8A64hgsG
-        HNFlMBaLw35ZQPBB4mZrZMpEUkcn+HueFDAtHxUZuP+Db2omve3HUjGv336GMO+T6HazzNfgFe/pA
-        yI4vwPYaASMFgVPJTUbKngcwCIojrc0n63/V+sjicJcBOC7tNG4diNphdlUgxwIVIf5Wiz3vNJNHT
-        TSrTkOhVwcZgdae9GYhBqHelQm3LHKxJXSjMVvH/1m5Rko8vvwmgG3VB7oklgVPSHzh9xEpjoyyjw
-        gTv4pt9KPTVCTxQ0aM+GoRbmnj4oyinvsTzPAQSNE/ukCz8f6Qyxq6tzLmLKlVJPI357PXXiFtloj
-        w2L2Ec6g==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33210)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1o9BZx-000387-FO; Wed, 06 Jul 2022 21:24:57 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1o9BZr-0004cc-Kg; Wed, 06 Jul 2022 21:24:51 +0100
-Date:   Wed, 6 Jul 2022 21:24:51 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Hauke Mehrtens <hauke@hauke-m.de>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        George McCollister <george.mccollister@gmail.com>,
+        with ESMTP id S233519AbiGFUbG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 16:31:06 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2152624947;
+        Wed,  6 Jul 2022 13:31:06 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id y4so7322763edc.4;
+        Wed, 06 Jul 2022 13:31:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=1v5gM944L5tDj/Xu6xRU9MCTrntk7X6mN2H+Xf8Tb/c=;
+        b=qG4bTw8eCoArv/oT+Be43zAigsJBgPo7mTt2RyL0WrhGXREGSbk4MJ2BYoXorg2lp3
+         8kJYJmWxpNpiUfzC1mN9AGcj0wwVed+8FYIlFGeXQ5g8V0WVcg1rwPIl3JNAFOSE74zI
+         ntFATBrx9VtCo1ycasWlBMtiLPtDyWAcHnx8JwNXUtC7LSBFOlZWHNhFcyHbgSEppkgZ
+         wXy7EzDku1EDmCPclXUQDdlacoiJCqyhtWDVVJcNI5MQiqugGDoNRk1lk095xq36nBmx
+         3wjcQwWnm1RHire4BY0miaEX0pqxZkO5X1fYHn5z+31GmAAgd4w3HYIpjU7eShn+kKiS
+         La2w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=1v5gM944L5tDj/Xu6xRU9MCTrntk7X6mN2H+Xf8Tb/c=;
+        b=l68Ghdp8m1O95DhCOmtjbGfUgj3qj2xRZYrpRbxa84PkZTWLVLeUb9IW7P7bHiFML0
+         LAM++Q10iuHe7o7nhspVaAnI9deRkf1oDw2f3fRZIZaCdGErVUBJd3lnxXFPOA8iPu8G
+         TtgKrrkSaVICRUDiyj4MezFG/xo6GaLBIRIRxXRLtk8Nbk+mRUs18GBPW6DBAygiFE0+
+         s1mmmd54zgG0GNp9CaXIpIjz14EUX8rtrNP90UqWC0s43urIMN4IV8+PScxkYFL2jgrw
+         JD0HeD+hMnqx85Snj3q8yDtqrKvx1W9i7jd3ePsiMAqIOQSA+QAxFs8K4MUK81E2t9rC
+         gWkA==
+X-Gm-Message-State: AJIora8NQkM5bRSebTxA4uPxH9lgv9gdCiK6QHxymqev6emW6TVL6wPj
+        ALq1Zh5tNPfyfrpmNY677oYr24h5xnrt+UtU
+X-Google-Smtp-Source: AGRyM1u7SLtcpQcpbwX6KU+tRmd96YFXMbAyX6uUWtrnbxjA6PRM0XlvfmDxsuxny120zaWR4MEfbA==
+X-Received: by 2002:a05:6402:90a:b0:439:c144:24cd with SMTP id g10-20020a056402090a00b00439c14424cdmr33657507edz.209.1657139464674;
+        Wed, 06 Jul 2022 13:31:04 -0700 (PDT)
+Received: from skbuf ([188.26.185.61])
+        by smtp.gmail.com with ESMTPSA id f3-20020a170906138300b006fe9209a9edsm17628444ejc.128.2022.07.06.13.31.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Jul 2022 13:31:04 -0700 (PDT)
+Date:   Wed, 6 Jul 2022 23:31:02 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     stable@vger.kernel.org, Doug Berger <opendmb@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        UNGLinuxDriver@microchip.com,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Woojung Huh <woojung.huh@microchip.com>
-Subject: Re: [PATCH RFC net-next v2 0/5] net: dsa: always use phylink
-Message-ID: <YsXvk/GlFtswFyvk@shell.armlinux.org.uk>
-References: <YsQIjC7UpcGWJovx@shell.armlinux.org.uk>
- <7fe6b661-06b9-96dd-e064-1db23a9eaae7@gmail.com>
- <20220706101459.tahby2xpm3e7okjz@skbuf>
- <d65824fc-a139-0430-5550-481dd202ad34@gmail.com>
- <4ec0461c-0000-ff8c-4368-5d68d70b894e@hauke-m.de>
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        andrew@lunn.ch
+Subject: Re: [PATCH stable 4.9 v2] net: dsa: bcm_sf2: force pause link
+ settings
+Message-ID: <20220706203102.6pd5fac7tkyi4idz@skbuf>
+References: <20220706192455.56001-1-f.fainelli@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <4ec0461c-0000-ff8c-4368-5d68d70b894e@hauke-m.de>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+In-Reply-To: <20220706192455.56001-1-f.fainelli@gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 06, 2022 at 09:05:22PM +0200, Hauke Mehrtens wrote:
-> On 7/6/22 18:27, Florian Fainelli wrote:
-> > On 7/6/22 03:14, Vladimir Oltean wrote:
-> > > Hi Florian,
-> > > 
-> > > On Tue, Jul 05, 2022 at 09:42:33AM -0700, Florian Fainelli wrote:
-> > > > On 7/5/22 02:46, Russell King (Oracle) wrote:
-> > > > > A new revision of the series which incorporates changes that Marek
-> > > > > suggested. Specifically, the changes are:
-> > > > > 
-> > > > > 1. Patch 2 - use the phylink_get_caps method in mv88e6xxx to get the
-> > > > >      default interface rather than re-using port_max_speed_mode()
-> > > > > 
-> > > > > 2. Patch 4 - if no default interface is provided, use the supported
-> > > > >      interface mask to search for the first interface that gives the
-> > > > >      fastest speed.
-> > > > > 
-> > > > > 3. Patch 5 - now also removes the port_max_speed_mode() method
-> > > > 
-> > > > This was tested with bcm_sf2.c and b53_srab.b and did not cause
-> > > > regressions,
-> > > > however we do have a 'fixed-link' property for the CPU port
-> > > > (always have had
-> > > > one), so there was no regression expected.
-> > > 
-> > > What about arch/arm/boot/dts/bcm47189-tenda-ac9.dts?
-> > 
-> > You found one of the devices that I do not have access to and did not
-> > test, thanks. We do expect to run the port at 2GBits/sec on these
-> > devices however there is no "official" way to advertise that a port can
-> > run at 2Gbits/sec, as this is not even a "sanctioned" speed. I do have a
-> > similar device however, so let me run some more tests, we won't see a
-> > regression however since we do not use the NATP accelerator which would
-> > be the reason to run the port at 2Gbits/sec.
+Hi Florian,
+
+On Wed, Jul 06, 2022 at 12:24:54PM -0700, Florian Fainelli wrote:
+> From: Doug Berger <opendmb@gmail.com>
 > 
-> I will try this change on some devices with the lantiq gswip driver at the
-> weekend.
+> commit 7c97bc0128b2eecc703106112679a69d446d1a12 upstream
 > 
-> On the SoC supported by the lantiq gswip driver the switch is integrated in
-> the SoC and there is a internal link with more than 1GBit/s connecting the
-> switch to the rest of the system. I think it is also around 2GBit/s. We can
-> not configure the interface speed or many other interface settings for the
-> link between the switch and the CPU. How should the device tree ideally look
-> for this setup?
+> The pause settings reported by the PHY should also be applied to the
+> GMII port status override otherwise the switch will not generate pause
+> frames towards the link partner despite the advertisement saying
+> otherwise.
+> 
+> Fixes: 246d7f773c13 ("net: dsa: add Broadcom SF2 switch driver")
+> Signed-off-by: Doug Berger <opendmb@gmail.com>
+> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+> Link: https://lore.kernel.org/r/20220623030204.1966851-1-f.fainelli@gmail.com
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+> Changes in v2:
+> 
+> - use both local and remote advertisement to determine when to apply
+>   flow control settings
+> 
+>  drivers/net/dsa/bcm_sf2.c | 16 ++++++++++++++++
+>  1 file changed, 16 insertions(+)
+> 
+> diff --git a/drivers/net/dsa/bcm_sf2.c b/drivers/net/dsa/bcm_sf2.c
+> index 40b3adf7ad99..562b5eb23d90 100644
+> --- a/drivers/net/dsa/bcm_sf2.c
+> +++ b/drivers/net/dsa/bcm_sf2.c
+> @@ -600,7 +600,9 @@ static void bcm_sf2_sw_adjust_link(struct dsa_switch *ds, int port,
+>  	struct bcm_sf2_priv *priv = bcm_sf2_to_priv(ds);
+>  	struct ethtool_eee *p = &priv->port_sts[port].eee;
+>  	u32 id_mode_dis = 0, port_mode;
+> +	u16 lcl_adv = 0, rmt_adv = 0;
+>  	const char *str = NULL;
+> +	u8 flowctrl = 0;
+>  	u32 reg;
+>  
+>  	switch (phydev->interface) {
+> @@ -667,10 +669,24 @@ static void bcm_sf2_sw_adjust_link(struct dsa_switch *ds, int port,
+>  		break;
+>  	}
+>  
+> +	if (phydev->pause)
+> +		rmt_adv = LPA_PAUSE_CAP;
+> +	if (phydev->asym_pause)
+> +		rmt_adv |= LPA_PAUSE_ASYM;
+> +	if (phydev->advertising & ADVERTISED_Pause)
+> +		lcl_adv = ADVERTISE_PAUSE_CAP;
+> +	if (phydev->advertising & ADVERTISED_Asym_Pause)
+> +		lcl_adv |= ADVERTISE_PAUSE_ASYM;
+> +	flowctrl = mii_resolve_flowctrl_fdx(lcl_adv, rmt_adv);
 
-I think this falls into Andrew's "don't specify anything" category,
-which means that we should default to the maximum speed for the
-port - which is in this case quite clearly fixed at whatever the
-internal link actually is.
+IEEE 802.3 says "The PAUSE function shall be enabled according to Table
+28Bâ€“3 only if the highest common denominator is a full duplex technology."
 
-From the get_caps() function, the fastest speed apparently supported is
-1Gbps. I'm guessing the CPU port is one of ports 2..5 on xrx200 and
-1..5 on xrx300 - in which case, PHY_INTERFACE_MODE_INTERNAL is likely
-to be selected, which seems appropriate given what you've said above.
-(PHY_INTERFACE_MODE_INTERNAL will be the first interface type found
-that will give the highest speed as it permits any speed given in the
-mac_capabilities.)
+> +
+>  	if (phydev->link)
+>  		reg |= LINK_STS;
+>  	if (phydev->duplex == DUPLEX_FULL)
+>  		reg |= DUPLX_MODE;
+> +	if (flowctrl & FLOW_CTRL_TX)
+> +		reg |= TXFLOW_CNTL;
+> +	if (flowctrl & FLOW_CTRL_RX)
+> +		reg |= RXFLOW_CNTL;
+>  
+>  	core_writel(priv, reg, CORE_STS_OVERRIDE_GMIIP_PORT(port));
+>  
+> -- 
+> 2.25.1
+> 
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
