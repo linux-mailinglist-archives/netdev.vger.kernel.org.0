@@ -2,58 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 012E5568C0F
-	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 17:00:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FE3D568C68
+	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 17:11:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233522AbiGFPAF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jul 2022 11:00:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46890 "EHLO
+        id S233117AbiGFPLQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jul 2022 11:11:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233040AbiGFPAE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 11:00:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D724252A5
-        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 08:00:03 -0700 (PDT)
+        with ESMTP id S232706AbiGFPLP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 11:11:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAD3865D7;
+        Wed,  6 Jul 2022 08:11:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 060EAB81D4C
-        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 15:00:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 497C6C341C6;
-        Wed,  6 Jul 2022 15:00:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 55C7061F97;
+        Wed,  6 Jul 2022 15:11:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41565C3411C;
+        Wed,  6 Jul 2022 15:11:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657119600;
-        bh=4zEq8wxOZye+2sH4DJQIkdmlggQtJVHshXMnVKIvaIA=;
+        s=k20201202; t=1657120273;
+        bh=0t4+0NuMhuKyhwYE96uObn+Fn7wgjaM3o2VchjRzaXs=;
         h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=HELIzoT/hLiyElXtaVHhcNOJBYWmZ2pp9O3tHpzI+nBv7hPPulGMTh/ob6LlMeGWB
-         UR+LDdwmFnpNCZr2N2djPqcX7HmtZ8lPFinFmQoQLqT0c47NLCBaTEqJj0Qrry6Qy9
-         igGSw5TfWS4ztvZLMdRdFhjHbKrMeBqyZLNuQePzairXrzB61T0hzfb/IYL1D+cQni
-         rkzQVgi4FgB3e/MImv2UJc4c2RzFIVypFtbgoI5YC1mLg6+ncPDK3OCbbVnCCFR+Gp
-         OPGAra1oEsVvggwXux6TUIr74zCmgmqx6SoUkRveQzRXyig5C3OlPKzjpFh2tZ2w8R
-         60Z063+8oDx+Q==
-Message-ID: <00116bab-22c5-0bce-d82b-a10eb95e7daa@kernel.org>
-Date:   Wed, 6 Jul 2022 08:59:58 -0600
+        b=gw8mON+xl+eQZmkqxAgwIhnso4d59umDNj6K4PGfjWW/FO0S61A6g52NhqKfboWoS
+         JQUCnAHe5SqBTSHrQWH+CEkJ3yb07oIOsID5bF4XYGrdOZENOIAsUoFGf+QW9atfa9
+         Y/vG3j6mnbZqtXUkIwWeLV7LHiDRJ7LNmXhVeUSbrrbR7Vqm/90nH1OgeBkDrwcNZE
+         Mc6L1vNr7YJ0uNRcNaTrDhQsePdrHASKZQRhXulpN6a2b+8kWJq/KhlWIUDWwMRGzz
+         VUOQaki583qvQmgazlzxIRrtsRyWB0XPo8+U6Xkv9beaG6CB1t5blrx2GfgUTa5EFO
+         Fz7rZOVR3YfwA==
+Message-ID: <f335b268-7334-372a-2993-03259e1b90a5@kernel.org>
+Date:   Wed, 6 Jul 2022 09:11:11 -0600
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
  Gecko/20100101 Thunderbird/91.11.0
-Subject: Re: [PATCH v3 net-next] net: Find dst with sk's xfrm policy not
- ctl_sk
+Subject: Re: [RFC net-next v3 05/29] net: bvec specific path in
+ zerocopy_sg_from_iter
 Content-Language: en-US
-To:     Eric Dumazet <edumazet@google.com>, Sewook Seo <ssewook@gmail.com>
-Cc:     Sewook Seo <sewookseo@google.com>,
-        Linux Network Development Mailing List 
-        <netdev@vger.kernel.org>, "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+To:     Pavel Begunkov <asml.silence@gmail.com>
+Cc:     io-uring@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        =?UTF-8?Q?Maciej_=c5=bbenczykowski?= <maze@google.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Sehee Lee <seheele@google.com>
-References: <20220621202240.4182683-1-ssewook@gmail.com>
- <20220706063243.2782818-1-ssewook@gmail.com>
- <CANn89iJiod_=AGbKM=-5cGvDQjUzxLm88Zg6UU2T8Mvj6nAcOQ@mail.gmail.com>
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Jens Axboe <axboe@kernel.dk>, kernel-team@fb.com
+References: <cover.1653992701.git.asml.silence@gmail.com>
+ <5143111391e771dc97237e2a5e6a74223ef8f15f.1653992701.git.asml.silence@gmail.com>
+ <20220628225204.GA27554@u2004-local>
+ <2840ec03-1d2b-f9c8-f215-61430f758925@gmail.com>
+ <ee35a179-e9a1-39c7-d054-40b10ca9a1f3@kernel.org>
+ <e453322f-bf33-d7c5-26c2-06896fb1a691@gmail.com>
+ <6943e4a8-0b19-c35a-d6e5-9329dc03cc3e@gmail.com>
 From:   David Ahern <dsahern@kernel.org>
-In-Reply-To: <CANn89iJiod_=AGbKM=-5cGvDQjUzxLm88Zg6UU2T8Mvj6nAcOQ@mail.gmail.com>
+In-Reply-To: <6943e4a8-0b19-c35a-d6e5-9329dc03cc3e@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -66,96 +68,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/6/22 1:19 AM, Eric Dumazet wrote:
-> On Wed, Jul 6, 2022 at 8:34 AM Sewook Seo <ssewook@gmail.com> wrote:
+On 7/5/22 4:09 PM, Pavel Begunkov wrote:
+> On 7/5/22 15:03, Pavel Begunkov wrote:
+>> On 7/5/22 03:28, David Ahern wrote:
+>>> On 7/4/22 7:31 AM, Pavel Begunkov wrote:
+>>>> If the series is going to be picked up for 5.20, how about we delay
+>>>> this one for 5.21? I'll have time to think about it (maybe moving
+>>>> the skb managed flag setup inside?), and will anyway need to send
+>>>> some omitted patches then.
+>>>>
+>>>
+>>> I think it reads better for io_uring and future extensions for io_uring
+>>> to contain the optimized bvec iter handler and setting the managed flag.
+>>> Too many disjointed assumptions the way the code is now. By pulling that
+>>> into io_uring, core code does not make assumptions that "managed" means
+>>> bvec and no page references - rather that is embedded in the code that
+>>> cares.
 >>
->> From: sewookseo <sewookseo@google.com>
->>
->> If we set XFRM security policy by calling setsockopt with option
->> IPV6_XFRM_POLICY, the policy will be stored in 'sock_policy' in 'sock'
->> struct. However tcp_v6_send_response doesn't look up dst_entry with the
->> actual socket but looks up with tcp control socket. This may cause a
->> problem that a RST packet is sent without ESP encryption & peer's TCP
->> socket can't receive it.
->> This patch will make the function look up dest_entry with actual socket,
->> if the socket has XFRM policy(sock_policy), so that the TCP response
->> packet via this function can be encrypted, & aligned on the encrypted
->> TCP socket.
->>
->> Tested: We encountered this problem when a TCP socket which is encrypted
->> in ESP transport mode encryption, receives challenge ACK at SYN_SENT
->> state. After receiving challenge ACK, TCP needs to send RST to
->> establish the socket at next SYN try. But the RST was not encrypted &
->> peer TCP socket still remains on ESTABLISHED state.
->> So we verified this with test step as below.
->> [Test step]
->> 1. Making a TCP state mismatch between client(IDLE) & server(ESTABLISHED).
->> 2. Client tries a new connection on the same TCP ports(src & dst).
->> 3. Server will return challenge ACK instead of SYN,ACK.
->> 4. Client will send RST to server to clear the SOCKET.
->> 5. Client will retransmit SYN to server on the same TCP ports.
->> [Expected result]
->> The TCP connection should be established.
->>
->> Effort: net
-> 
-> Please remove this Effort: tag, this is not appropriate for upstream patches.
-> 
->> Cc: Maciej Żenczykowski <maze@google.com>
->> Cc: Eric Dumazet <edumazet@google.com>
->> Cc: Steffen Klassert <steffen.klassert@secunet.com>
->> Cc: Sehee Lee <seheele@google.com>
->> Signed-off-by: Sewook Seo <sewookseo@google.com>
->> ---
->>  net/ipv4/ip_output.c | 7 ++++++-
->>  net/ipv4/tcp_ipv4.c  | 5 +++++
->>  net/ipv6/tcp_ipv6.c  | 7 ++++++-
->>  3 files changed, 17 insertions(+), 2 deletions(-)
->>
->> diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
->> index 00b4bf26fd93..1da430c8fee2 100644
->> --- a/net/ipv4/ip_output.c
->> +++ b/net/ipv4/ip_output.c
->> @@ -1704,7 +1704,12 @@ void ip_send_unicast_reply(struct sock *sk, struct sk_buff *skb,
->>                            tcp_hdr(skb)->source, tcp_hdr(skb)->dest,
->>                            arg->uid);
->>         security_skb_classify_flow(skb, flowi4_to_flowi_common(&fl4));
->> -       rt = ip_route_output_key(net, &fl4);
->> +#ifdef CONFIG_XFRM
->> +       if (sk->sk_policy[XFRM_POLICY_OUT])
->> +               rt = ip_route_output_flow(net, &fl4, sk);
->> +       else
->> +#endif
->> +               rt = ip_route_output_key(net, &fl4);
-> 
-> I really do not like adding more #ifdef
-> 
-> What happens if we simply use :
-> 
->       rt = ip_route_output_flow(net, &fl4, sk);
-> 
+>> Core code would still need to know when to remove the skb's managed
+>> flag, e.g. in case of mixing. Can be worked out but with assumptions,
+>> which doesn't look better that it currently is. I'll post a 5.20
+>> rebased version and will iron it out on the way then.
 
-That should be fine - and simpler solution.
+Sure. My comment was that MANAGED means something else (not core code)
+manages the page references on the skb frags. That flag does not need to
+be linked to a customized bvec.
 
+> @@ -66,16 +68,13 @@ struct msghdr {
+>      };
+>      bool        msg_control_is_user : 1;
+>      bool        msg_get_inq : 1;/* return INQ after receive */
+> -    /*
+> -     * The data pages are pinned and won't be released before ->msg_ubuf
+> -     * is released. ->msg_iter should point to a bvec and ->msg_ubuf has
+> -     * to be non-NULL.
+> -     */
+> -    bool        msg_managed_data : 1;
+>      unsigned int    msg_flags;    /* flags on received message */
+>      __kernel_size_t    msg_controllen;    /* ancillary data buffer
+> length */
+>      struct kiocb    *msg_iocb;    /* ptr to iocb for async requests */
+>      struct ubuf_info *msg_ubuf;
+> +
+> +    int (*sg_from_iter)(struct sock *sk, struct sk_buff *skb,
+> +                struct iov_iter *from, size_t length);
+>  };
+>  
 
->> diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
->> index c72448ba6dc9..8b8819c3d2c2 100644
->> --- a/net/ipv6/tcp_ipv6.c
->> +++ b/net/ipv6/tcp_ipv6.c
->> @@ -952,7 +952,12 @@ static void tcp_v6_send_response(const struct sock *sk, struct sk_buff *skb, u32
->>          * Underlying function will use this to retrieve the network
->>          * namespace
->>          */
->> -       dst = ip6_dst_lookup_flow(sock_net(ctl_sk), ctl_sk, &fl6, NULL);
->> +#ifdef CONFIG_XFRM
->> +       if (sk && sk->sk_policy[XFRM_POLICY_OUT] && sk_fullsock(sk))
->> +               dst = ip6_dst_lookup_flow(net, sk, &fl6, NULL);  /* Get dst with sk's XFRM policy */
->> +       else
->> +#endif
->> +               dst = ip6_dst_lookup_flow(sock_net(ctl_sk), ctl_sk, &fl6, NULL);
-> 
-> and then:
-> 
->      dst = ip6_dst_lookup_flow(net, sk, &fl6, NULL);
-
-same here.
+Putting in msghdr works too. I chose ubuf_info because it is directly
+related to the ZC path, but that struct is getting tight on space.
