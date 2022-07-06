@@ -2,76 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FA16568E06
-	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 17:51:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D43B8568E16
+	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 17:51:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234457AbiGFPp0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jul 2022 11:45:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41260 "EHLO
+        id S234610AbiGFPpt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jul 2022 11:45:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232014AbiGFPpK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 11:45:10 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C53382AE25;
-        Wed,  6 Jul 2022 08:38:40 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id z12so13011928wrq.7;
-        Wed, 06 Jul 2022 08:38:40 -0700 (PDT)
+        with ESMTP id S234494AbiGFPpa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 11:45:30 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CEBC31367;
+        Wed,  6 Jul 2022 08:39:08 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id u12so27752950eja.8;
+        Wed, 06 Jul 2022 08:39:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ZWNwOHmzSgkdv+jrzNwG3Jf3HDC0HOWhdAu3xXOwiQw=;
-        b=UEc387REzaegIG1aRLLdB1AzsmZrVh+gNiHXsWTjXhdaIXBEbre+rDmlWSOlAA1Vld
-         n0Fi365KWeLYSBX+ZvnFHrszQbK0H3fENyDsVj1hNCs1nA60BSBR2hEDFNqr5DQRjKky
-         dQKlek0AHq7Iep3BhUVCSwjiS+C95AgzcEwlAsJQvMVK2qZDZM1KmmTjrIw1aetJCxLn
-         9L0cwUYbN20ajoFd3P7SpdD0MsHuxGIv6DPo+SgijUWVjFMnK9PPyc3BzzpQLmRv+gnh
-         BqfJl560A56QoLNEj+y/JpdM6c5AO2jOgPr1mZ33w/p+3qq1lggpAA1ynHhqol0/4hZO
-         yzWQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=UpB4V/X0i/RXIT4mM23nTV8Xeo9GU4ipcxDVNsDMRIk=;
+        b=dUCVMshO8wJSmXpVerdRgpYex6b0rIdo5vd/3+6FSG+YKemn5QEvv8R7V7+bOfJ1rc
+         12zvTezkM6yR6wUSkwRz3jFbxkrj4+SNrFSbVm8p+iQnSsXfIRWhKdAkQDe3pKPoqV0F
+         9kObq2zi178giYn40XUsjkCU4GJWMk1XjvwrrkN7OMlVqD86fH9fibXUrHdZ6e36vcKP
+         6rmOV66uC5T2h0Oeo8FUoThDj/JRfPu+PwLz8Ewxl+pBEO6MlHqlYKuKfZLeLENlB1Rj
+         uPvsJhNeavL6CbFm2RpErePydYPp5/rWExW7jyxaVZNmUug6Fx9stbwQGV6K7k4Rg7wJ
+         OhOA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZWNwOHmzSgkdv+jrzNwG3Jf3HDC0HOWhdAu3xXOwiQw=;
-        b=SVuQaTEkWXEs9nwIReLUzHz977rrNVkKOEqKcndmm6E5uJKlLGjJfJ6CXyBzjggKG3
-         RV0cgpCjuaINEPbXUBDMtlt+KaCB/bTsz5AypRgpptDw3brARRbvHM4qNsyuevZxit/m
-         6QU2KD1ir911RSQVt3LGDkWgtR3VOYteORmWGVtyslPyEr3YTn0kCN6CGbQ3gQHFIHsy
-         D6IgKyxp9Bf8NE1Lyh5LrzPP6wMI6p8/fclH2CREWJjj6+4lXyI/r0YxEVHBqxXy+z54
-         lo20skgGtq1QDTv/G/JLPmrTseJ8cIy4iygIkUMduA/2RfkZVDWJCg+gXqo+xILu7+dl
-         dvgg==
-X-Gm-Message-State: AJIora/56UErg1NeLEetGOtWXeCETaS0GPUOPmhFIJksx9si9MUa+ZgN
-        KgjT1+BuMYpd9H9tQW8Gqne7aCagnH8GIUmfUzI=
-X-Google-Smtp-Source: AGRyM1tWbkdJLQwaPNSG7jQaW5G50wxV4D0b+agnSC53ENlTz2jqAxvQnOtgOf4+htM/ZiWXgwIJJcdjoxwI5t17fq0=
-X-Received: by 2002:adf:dc0d:0:b0:21d:ea5:710f with SMTP id
- t13-20020adfdc0d000000b0021d0ea5710fmr38132877wri.48.1657121919107; Wed, 06
- Jul 2022 08:38:39 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220524152144.40527-1-schultz.hans+netdev@gmail.com>
- <20220524152144.40527-4-schultz.hans+netdev@gmail.com> <20220627180557.xnxud7d6ol22lexb@skbuf>
- <CAKUejP7ugMB9d3MVX3m9Brw12_ocFoT+nuJJucYdQH70kzC7=w@mail.gmail.com>
- <20220706085559.oyvzijcikivemfkg@skbuf> <CAKUejP7gmULyrjqd3b3PiWwi7TJzF4HNuEbmAf25Cqh3w7a1mw@mail.gmail.com>
- <20220706143339.iuwi23ktk53ihhb6@skbuf>
-In-Reply-To: <20220706143339.iuwi23ktk53ihhb6@skbuf>
-From:   Hans S <schultz.hans@gmail.com>
-Date:   Wed, 6 Jul 2022 17:38:27 +0200
-Message-ID: <CAKUejP6NG_X-Bh_xeA2y4Wru2=pxgHaRMdsvMu8NATNxPVeQ7A@mail.gmail.com>
-Subject: Re: [PATCH V3 net-next 3/4] net: dsa: mv88e6xxx: mac-auth/MAB implementation
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Hans Schultz <schultz.hans+netdev@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=UpB4V/X0i/RXIT4mM23nTV8Xeo9GU4ipcxDVNsDMRIk=;
+        b=6o2fwtFUPkwsKgky2aaahGXCkOhQn5qDIh0fStMNil/G28JuUA+B/Y0eWtEf4z0IOH
+         uLLq+WGbVWe4TYDdRg3Iwy5kGCLq4lOR16MwioEphSv/nEho3VKX6xywhubntryQmd1V
+         /ojioXgd6M4TtBWdSOMKdkh2D1lYQnr/uREDJGiLuIku/+WREV7+Pj+fRKy9Knx2npfl
+         edUwdL/JfLB9HEu6hqP0yORBsQ270FBupDymvmfA9DTaDJaDllVQbYDrNpIDDo+vzsMS
+         tb3k8MUa1e+3HvNnjPNNy3UCfMuIw4DXvhsPa5kcnfIomBfNBQr0MvW9ThSQ9GKDUzkz
+         X0gQ==
+X-Gm-Message-State: AJIora/Q7vI7/uJ2DbnRdB+pRiGEX9rIjWXyy2ES1AxHFdUum3qQyl1U
+        HSWWqw8BGTVd3PsTE5RR2cymoCH5BWc01dpO
+X-Google-Smtp-Source: AGRyM1uhb1KQuofOv9C4q0pwxUFVNmJwOKVNdXS9cNw3e6pbR0GR1HBhX/NPCIf/6WewJE7FNRRNEw==
+X-Received: by 2002:a17:906:77c8:b0:722:e753:fbbe with SMTP id m8-20020a17090677c800b00722e753fbbemr38469079ejn.692.1657121946479;
+        Wed, 06 Jul 2022 08:39:06 -0700 (PDT)
+Received: from skbuf ([188.26.185.61])
+        by smtp.gmail.com with ESMTPSA id hb10-20020a170906b88a00b007266185ca67sm15425197ejb.150.2022.07.06.08.39.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Jul 2022 08:39:05 -0700 (PDT)
+Date:   Wed, 6 Jul 2022 18:39:04 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Christian Marangi <ansuelsmth@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Jens Axboe <axboe@kernel.dk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [net-next PATCH RFC] net: dsa: qca8k: move driver to qca dir
+Message-ID: <20220706153904.jtu2qxczjjcgcoty@skbuf>
+References: <20220630134606.25847-1-ansuelsmth@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220630134606.25847-1-ansuelsmth@gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -82,129 +76,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 6, 2022 at 4:33 PM Vladimir Oltean <olteanv@gmail.com> wrote:
->
-> > >> @@ -919,6 +920,9 @@ static void mv88e6xxx_mac_link_down(struct dsa_switch *ds, int port,
-> > >>       if (err)
-> > >>               dev_err(chip->dev,
-> > >>                       "p%d: failed to force MAC link down\n", port);
-> > >> +     else
-> > >> +             if (mv88e6xxx_port_is_locked(chip, port, true))
-> > >> +                     mv88e6xxx_atu_locked_entry_flush(ds, port);
-> > >
-> > >This is superfluous, is it not? The bridge will transition a port whose
-> > >link goes down to BR_STATE_DISABLED, which will make dsa_port_set_state()
-> > >fast-age the dynamic FDB entries on the port, which you've already
-> > >handled below.
-> >
-> > I removed this code, but then on link down the locked entries were not
-> > cleared out. Something not as thought?
->
-> What was the port's STP state before the link down event, and did it
-> change after the link down?
+On Thu, Jun 30, 2022 at 03:46:06PM +0200, Christian Marangi wrote:
+> Move qca8k driver to qca dir in preparation for code split and
+> introduction of ipq4019 switch based on qca8k.
+> 
+> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+> ---
+> 
+> Posting this as a RFC to discuss the problems of such change.
+> 
+> This is needed as in the next future the qca8k driver will be split
+> to a common code. This needs to be done as the ipq4019 is based on qca8k
+> but will have some additional configuration thing and other phylink
+> handling so it will require different setup function. Aside from these
+> difference almost all the regs are the same of qca8k.
+> 
+> For this reason keeping the driver in the generic dsa dir would create
+> some caos and I think it would be better to move it the dedicated qca
+> dir.
+> 
+> This will for sure creates some problems with backporting patch.
+> 
+> So the question is... Is this change acceptable or we are cursed to
+> keeping this driver in the generic dsa directory?
+> 
+> Additional bonus question, since the ethernet part still requires some
+> time to get merged, wonder if it's possible to send the code split with
+> qca8k as the only user (currently) and later just add the relevant
+> ipq4019 changes.
+> 
+> (this ideally is to prepare stuff and not send a big scary series when
+> it's time to send ipq4019 changes)
 
-The stp state is FORWARDING.
-
->
-> If the STP state wasn't LEARNING or FORWARDING, there weren't supposed
-> to be dynamic FDB entries on the port in the first place, so DSA says
-> there's nothing to flush, and doesn't call dsa_port_fast_age().
-> Are there dynamic FDB entries being installed on a port that isn't
-> in a state that's supposed to learn? I guess the answer is yes.
-> Is that what you want, or should the locked entries be recorded only in
-> the LEARNING or FORWARDING states, otherwise discarded?
->
-Learning is off as has been discussed, and I do want the locked
-entries to be dynamic in the sense that the driver removes them after
-the system ageing time has passed.
-
->
-> What you actually want to say is: "mv88e6xxx_port_set_lock() is also
-> called when the DSA port joins a bridge, due to the switchdev attribute
-> replay logic present in dsa_port_switchdev_sync_attrs()".
->
-> Which, by the way, is logic that you've added yourself, in commit
-> b9e8b58fd2cb ("net: dsa: Include BR_PORT_LOCKED in the list of synced
-> brport flags") ;)
->
-> You are free to return early from mv88e6xxx_port_set_lock() if nothing has
-> changed. The DSA layer doesn't keep track of the locked state of the
-> port so it cannot deduce whether propagating to the switch driver is
-> necessary or not.
->
-
-I think I can safely call mv88e6xxx_atu_locked_entry_flush() from
-mv88e6xxx_port_set_lock() when locked is off as the port setup for the
-respective port must have been completed successfully.
-
-> > When added they are added with bridge FDB flags: extern_learn offload
-> > locked, with a SWITCHDEV_FDB_ADD_TO_BRIDGE event. So they are owned by
-> > the driver.
-> > When the driver deletes the locked entry the bridge FDB entry is
-> > removes by the SWITCHDEV_FDB_DEL_TO_BRIDGE event from the driver. That
-> > seems quite fair?
->
-> I'm just pointing out that you left other (probably unintended) code
-> paths for which the SWITCHDEV_FDB_DEL_TO_BRIDGE notifier is quite
-> useless. I haven't yet looked at your newest revision to see what
-> changed there.
->
-
-I guess I should add a boolean to tell if
-mv88e6xxx_atu_locked_entry_purge() should send a notification or not.
-So that port_fdb_del() will not cause a SWITCHDEV_FDB_DEL_TO_BRIDGE
-event.
-
-> > > > > Why is the rtnl_unlock() outside the switch statement but the rtnl_lock() inside?
-> > > > > Not to mention, the dsa_port_to_bridge_port() call needs to be under rtnl_lock().
-> > > >
-> > > > Just a small optimization as I also have another case of the switch
-> > > > (only one switch case if
-> > > > you didn't notice) belonging to the next patch set regarding dynamic
-> > > > ATU entries.
-> > >
-> > > What kind of optimization are you even talking about? Please get rid of
-> > > coding patterns like this, sorry.
-> > >
-> > Right!
->
-> Right what? I'm genuinely curious what optimization are you talking about.
->
-
-I am just confirming that what you wrote is correct, e.g. the
-"Right!". So I have fixed that. :-)
-
->
-> Just out of curiosity, are you even trying, are you looking at the
-> difference using a monospace font?
->
-> > Another issue...
-> >
-> > I have removed the timers as they are superfluous and now just use the
-> > worker and jiffies. But I have found that the whole ageing time seems
-> > to be broken on the 5.17 kernel I am running. I don't know if it has
-> > been fixed, but the ageing timeout is supposed to be given in seconds.
-> > Here is the output from various functions after the command "ip link
-> > set dev br0 type bridge ageing_time 1500" (that is nominally 1500
-> > seconds according to man page!):
-> >
-> > dsa_switch_ageing_time: ageing_time 10000, ageing_time_min 1000,
-> > ageing_time_max 3825000
-> > mv88e6xxx_set_ageing_time: set ageing time to 10000
-> > br0: failed (err=-34) to set attribute (id=6)
-> > dsa_switch_ageing_time: ageing_time 15000, ageing_time_min 1000,
-> > ageing_time_max 3825000
-> > mv88e6xxx_set_ageing_time: set ageing time to 15000
-> >
-> > The 15000 set corresponds to 150 seconds! (I hardcoded the dsa
-> > ageing_time_min to 1000)
->
-> Are you talking about this known problem, that the ageing time values in
-> seconds need to be scaled up by a factor of USER_HZ when passed to the
-> kernel?
-> https://www.spinics.net/lists/netdev/msg672070.html
-> https://www.spinics.net/lists/netdev/msg567332.html
-
-It might be so, but there is another factor 10 which might be
-regarding topology change as I understand. If I want a ageing timeout
-of say 15 or 30 seconds, that hardly seems possible?
+I think we discussed this before. You can make the driver migration but
+you need to be willing to manually backport bug fixes if/when the stable
+team reports that backporting to a certain kernel failed. It has been
+done before, see commit a9770eac511a ("net: mdio: Move MDIO drivers into
+a new subdirectory") as an example. I think "git cherry-pick" has magic
+to detect file movement, while "git am" doesn't. Here I'm not 100%
+certain which command is used to backport to stable. If it's by cherry
+picking it shouldn't even require manual intervention.
