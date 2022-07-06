@@ -2,83 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B00BC567BB0
-	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 03:52:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B08B5567BDA
+	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 04:28:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229983AbiGFBwo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jul 2022 21:52:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45894 "EHLO
+        id S230310AbiGFC2t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jul 2022 22:28:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230001AbiGFBwn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 21:52:43 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4045B1838E;
-        Tue,  5 Jul 2022 18:52:41 -0700 (PDT)
-Received: from canpemm100008.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Ld2Wz2DWGzTgDQ;
-        Wed,  6 Jul 2022 09:49:03 +0800 (CST)
-Received: from dggpeml500026.china.huawei.com (7.185.36.106) by
- canpemm100008.china.huawei.com (7.192.104.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 6 Jul 2022 09:52:39 +0800
-Received: from dggpeml500026.china.huawei.com ([7.185.36.106]) by
- dggpeml500026.china.huawei.com ([7.185.36.106]) with mapi id 15.01.2375.024;
- Wed, 6 Jul 2022 09:52:38 +0800
-From:   shaozhengchao <shaozhengchao@huawei.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "jhs@mojatatu.com" <jhs@mojatatu.com>,
-        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
-        "jiri@resnulli.us" <jiri@resnulli.us>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "weiyongjun (A)" <weiyongjun1@huawei.com>,
-        yuehaibing <yuehaibing@huawei.com>
-Subject: =?gb2312?B?tPC4tDogW1BBVENIIG5ldC1uZXh0XSBuZXQvc2NoZWQ6IHJlbW92ZSByZXR1?=
- =?gb2312?B?cm4gdmFsdWUgb2YgdW5yZWdpc3Rlcl90Y2ZfcHJvdG9fb3Bz?=
-Thread-Topic: [PATCH net-next] net/sched: remove return value of
- unregister_tcf_proto_ops
-Thread-Index: AQHYj6L3NBuAhRfXIUOUGl4H1lu4uq1wDi8AgACHmPA=
-Date:   Wed, 6 Jul 2022 01:52:38 +0000
-Message-ID: <a92ed8b2b01e499b986ad7b9b0fe93a8@huawei.com>
-References: <20220704124322.355211-1-shaozhengchao@huawei.com>
- <20220705184326.649a4e04@kernel.org>
-In-Reply-To: <20220705184326.649a4e04@kernel.org>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.174.178.66]
-Content-Type: text/plain; charset="gb2312"
+        with ESMTP id S229507AbiGFC2t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 22:28:49 -0400
+X-Greylist: delayed 1810 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 05 Jul 2022 19:28:47 PDT
+Received: from m151.mail.126.com (m151.mail.126.com [220.181.15.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EED6514D32
+        for <netdev@vger.kernel.org>; Tue,  5 Jul 2022 19:28:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=O1B4v
+        rgAFSDLxpVaIrzvoe0+ZnBX7pPBHPpuErzLDoM=; b=jVsVSzstpCxraN2yMurid
+        YHgJN8bM5QYqAsk+MIViqsAfRml8JQfP3tjWVZhdKawCART+sFC83P0/TSdKF+zT
+        pVCIUPtm6uZsB0GNRaVdu3al+WUr2yhoNHJxl/YJdkteRsvRWxSUNKkLGZFfIp/b
+        /3AGc8X8nmLF1TAx2zCOuk=
+Received: from windhl$126.com ( [124.16.139.61] ) by ajax-webmail-wmsvr1
+ (Coremail) ; Wed, 6 Jul 2022 09:58:05 +0800 (CST)
+X-Originating-IP: [124.16.139.61]
+Date:   Wed, 6 Jul 2022 09:58:05 +0800 (CST)
+From:   "Liang He" <windhl@126.com>
+To:     "Jakub Kicinski" <kuba@kernel.org>
+Cc:     davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        netdev@vger.kernel.org
+Subject: Re:Re: [PATCH] ftgmac100: Hold reference returned by
+ of_get_child_by_name()
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20220113(9671e152)
+ Copyright (c) 2002-2022 www.mailtech.cn 126com
+In-Reply-To: <20220705184805.2619caca@kernel.org>
+References: <20220704151819.279513-1-windhl@126.com>
+ <20220705184805.2619caca@kernel.org>
 Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=GBK
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Message-ID: <4e08cbb6.b57.181d13a9035.Coremail.windhl@126.com>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: AcqowACnwLAu7MRijWsfAA--.60171W
+X-CM-SenderInfo: hzlqvxbo6rjloofrz/xtbBGgE2F1-HZchpLwADsK
+X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_INVALID,
+        DKIM_SIGNED,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQotLS0tLdPKvP7Urbz+LS0tLS0NCreivP7IyzogSmFrdWIgS2ljaW5za2kgW21haWx0bzprdWJh
-QGtlcm5lbC5vcmddIA0Kt6LLzcqxvOQ6IDIwMjLE6jfUwjbI1SA5OjQzDQrK1bz+yMs6IHNoYW96
-aGVuZ2NoYW8gPHNoYW96aGVuZ2NoYW9AaHVhd2VpLmNvbT4NCrOty806IGxpbnV4LWtlcm5lbEB2
-Z2VyLmtlcm5lbC5vcmc7IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc7IGpoc0Btb2phdGF0dS5jb207
-IHhpeW91Lndhbmdjb25nQGdtYWlsLmNvbTsgamlyaUByZXNudWxsaS51czsgZGF2ZW1AZGF2ZW1s
-b2Z0Lm5ldDsgZWR1bWF6ZXRAZ29vZ2xlLmNvbTsgcGFiZW5pQHJlZGhhdC5jb207IHdlaXlvbmdq
-dW4gKEEpIDx3ZWl5b25nanVuMUBodWF3ZWkuY29tPjsgeXVlaGFpYmluZyA8eXVlaGFpYmluZ0Bo
-dWF3ZWkuY29tPg0K1vfM4jogUmU6IFtQQVRDSCBuZXQtbmV4dF0gbmV0L3NjaGVkOiByZW1vdmUg
-cmV0dXJuIHZhbHVlIG9mIHVucmVnaXN0ZXJfdGNmX3Byb3RvX29wcw0KDQpPbiBNb24sIDQgSnVs
-IDIwMjIgMjA6NDM6MjIgKzA4MDAgWmhlbmdjaGFvIFNoYW8gd3JvdGU6DQo+IFJldHVybiB2YWx1
-ZSBvZiB1bnJlZ2lzdGVyX3RjZl9wcm90b19vcHMgaXMgdXNlbGVzcywgcmVtb3ZlIGl0Lg0KDQpz
-L3VzZWxlc3MvdW51c2VkLyA/DQoNClNob3VsZCB3ZSBhZGQgYSBXQVJOIGlmIHRoZSBvcHMgZ2V0
-dGluZyByZW1vdmVkIGNhbid0IGJlIGZvdW5kIG9yIHRoZXJlIGFyZSBjYWxsZXJzIHdoaWNoIGRl
-cGVuZCBvbiBoYW5kbGluZyB1bnJlZ2lzdGVyZWQgb3BzIHdpdGhvdXQgYSB3YXJuaW5nPw0KDQpI
-aSBKYWt1YiBLaWNpbnNraToNCglUaGFuayB5b3UgZm9yIHlvdXIgYXBwbHkuIFRoaXMgcGF0Y2gg
-ZG9lcyBqdXN0IHJlbW92ZSB0aGUgcmV0dXJuIHZhbHVlIGFuZCBjaGFuZ2UgdGhlIGZ1bmN0aW9u
-IHR5cGUgZnJvbSBpbnQgdG8gdm9pZC4gSXQgZG9lc24ndCByZW1vdmUgdGhlIGZ1bmN0aW9uLg0K
-DQpaaGVuZ2NoYW8gU2hhbw0K
+CgoKQXQgMjAyMi0wNy0wNiAwOTo0ODowNSwgIkpha3ViIEtpY2luc2tpIiA8a3ViYUBrZXJuZWwu
+b3JnPiB3cm90ZToKPk9uIE1vbiwgIDQgSnVsIDIwMjIgMjM6MTg6MTkgKzA4MDAgTGlhbmcgSGUg
+d3JvdGU6Cj4+IEluIGZ0Z21hYzEwMF9wcm9iZSgpLCB3ZSBzaG91bGQgaG9sZCB0aGUgcmVmZXJu
+ZWNlIHJldHVybmVkIGJ5Cj4+IG9mX2dldF9jaGlsZF9ieV9uYW1lKCkgYW5kIHVzZSBpdCB0byBj
+YWxsIG9mX25vZGVfcHV0KCkgZm9yCj4+IHJlZmVyZW5jZSBiYWxhbmNlLgo+PiAKPj4gU2lnbmVk
+LW9mZi1ieTogTGlhbmcgSGUgPHdpbmRobEAxMjYuY29tPgo+PiAtLS0KPj4gIGRyaXZlcnMvbmV0
+L2V0aGVybmV0L2ZhcmFkYXkvZnRnbWFjMTAwLmMgfCA2ICsrKystLQo+PiAgMSBmaWxlIGNoYW5n
+ZWQsIDQgaW5zZXJ0aW9ucygrKSwgMiBkZWxldGlvbnMoLSkKPj4gCj4+IGRpZmYgLS1naXQgYS9k
+cml2ZXJzL25ldC9ldGhlcm5ldC9mYXJhZGF5L2Z0Z21hYzEwMC5jIGIvZHJpdmVycy9uZXQvZXRo
+ZXJuZXQvZmFyYWRheS9mdGdtYWMxMDAuYwo+PiBpbmRleCA1MjMxODE4OTQzYzYuLmU1MGJkN2Jl
+YjA5YiAxMDA2NDQKPj4gLS0tIGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvZmFyYWRheS9mdGdtYWMx
+MDAuYwo+PiArKysgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9mYXJhZGF5L2Z0Z21hYzEwMC5jCj4+
+IEBAIC0xNzcwLDcgKzE3NzAsNyBAQCBzdGF0aWMgaW50IGZ0Z21hYzEwMF9wcm9iZShzdHJ1Y3Qg
+cGxhdGZvcm1fZGV2aWNlICpwZGV2KQo+PiAgCWludCBpcnE7Cj4+ICAJc3RydWN0IG5ldF9kZXZp
+Y2UgKm5ldGRldjsKPj4gIAlzdHJ1Y3QgZnRnbWFjMTAwICpwcml2Owo+PiAtCXN0cnVjdCBkZXZp
+Y2Vfbm9kZSAqbnA7Cj4+ICsJc3RydWN0IGRldmljZV9ub2RlICpucCwgKmNoaWxkX25wOwo+PiAg
+CWludCBlcnIgPSAwOwo+PiAgCj4+ICAJcmVzID0gcGxhdGZvcm1fZ2V0X3Jlc291cmNlKHBkZXYs
+IElPUkVTT1VSQ0VfTUVNLCAwKTsKPj4gQEAgLTE4ODMsNyArMTg4Myw3IEBAIHN0YXRpYyBpbnQg
+ZnRnbWFjMTAwX3Byb2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpCj4+ICAKPj4gIAkJ
+LyogRGlzcGxheSB3aGF0IHdlIGZvdW5kICovCj4+ICAJCXBoeV9hdHRhY2hlZF9pbmZvKHBoeSk7
+Cj4+IC0JfSBlbHNlIGlmIChucCAmJiAhb2ZfZ2V0X2NoaWxkX2J5X25hbWUobnAsICJtZGlvIikp
+IHsKPj4gKwl9IGVsc2UgaWYgKG5wICYmICEoY2hpbGRfbnAgPSBvZl9nZXRfY2hpbGRfYnlfbmFt
+ZShucCwgIm1kaW8iKSkpIHsKPj4gIAkJLyogU3VwcG9ydCBsZWdhY3kgQVNQRUVEIGRldmljZXRy
+ZWUgZGVzY3JpcHRpb25zIHRoYXQgZGVjcmliZSBhCj4+ICAJCSAqIE1BQyB3aXRoIGFuIGVtYmVk
+ZGVkIE1ESU8gY29udHJvbGxlciBidXQgaGF2ZSBubyAibWRpbyIKPj4gIAkJICogY2hpbGQgbm9k
+ZS4gQXV0b21hdGljYWxseSBzY2FuIHRoZSBNRElPIGJ1cyBmb3IgYXZhaWxhYmxlCj4+IEBAIC0x
+OTAxLDYgKzE5MDEsOCBAQCBzdGF0aWMgaW50IGZ0Z21hYzEwMF9wcm9iZShzdHJ1Y3QgcGxhdGZv
+cm1fZGV2aWNlICpwZGV2KQo+PiAgCQl9Cj4+ICAKPj4gIAl9Cj4+ICsJaWYgKGNoaWxkX25wKQo+
+PiArCQlvZl9ub2RlX3B1dChjaGlsZF9ucCk7Cj4KPlNpbmNlIHdlIGRvbid0IGNhcmUgYWJvdXQg
+dGhlIHZhbHVlIG9mIHRoZSBub2RlIHdlIHNob3VsZCBhZGQgYSBoZWxwZXIKPndoaWNoIGNoZWNr
+cyBmb3IgcHJlc2VuY2Ugb2YgdGhlIG5vZGUgYW5kIHJlbGVhc2VzIHRoZSByZWZlcmVuY2UsCj5y
+YXRoZXIgdGhhbiBoYXZlIHRvIGRvIHRoYXQgaW4gdGhpcyBsYXJnZSBmdW5jdGlvbi4KPgoKVGhh
+bmtzLCBJIHdpbGwgdHJ5IGl0LgoKPlBsZWFzZSBhbHNvIGFkZCBhIEZpeGVzIHRhZy4KClNvcnJ5
+LCBJIG1pc3MgdGhlIGZpeCB0YWcuCgoK
