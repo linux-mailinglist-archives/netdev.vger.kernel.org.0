@@ -2,180 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DED27567C90
-	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 05:36:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 357C6567C91
+	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 05:38:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229861AbiGFDgJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jul 2022 23:36:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43374 "EHLO
+        id S229995AbiGFDiD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jul 2022 23:38:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229733AbiGFDgI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 23:36:08 -0400
-Received: from EUR03-AM5-obe.outbound.protection.outlook.com (mail-eopbgr30137.outbound.protection.outlook.com [40.107.3.137])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2284A1CFE4
-        for <netdev@vger.kernel.org>; Tue,  5 Jul 2022 20:36:05 -0700 (PDT)
+        with ESMTP id S229480AbiGFDiC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 23:38:02 -0400
+Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D35865D5;
+        Tue,  5 Jul 2022 20:38:01 -0700 (PDT)
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2660SddE030829;
+        Tue, 5 Jul 2022 20:37:37 -0700
+Received: from nam04-dm6-obe.outbound.protection.outlook.com (mail-dm6nam04lp2049.outbound.protection.outlook.com [104.47.73.49])
+        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3h4yvr0h5g-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 05 Jul 2022 20:37:37 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ot17fTpFBygte1Nhv4HHI/L+aokHwsTTPC85tnrZzFYi2OnGNRrj6or6wKsyguQW7MvVMxslMD4z1AsulMMMp6MystuUcLnksQpgrgOvppXlBsVjM70K/nox6QKXh3NWCRf7KPJPRsBnfJckD9rxVl3Dh9k5O3rkINul32nn8RHOny0XG7A8R34rNcY4F6O321O6+qQ50CqwbTInMjjz7dSz0XQleacsK48nGCNyKbUcB5J/dqWmwrY+kwuNf554oqGTCaRydfGNJeYp9GP/0QNBH5VCoEI4zv7RasSCPUG7HgnXcPpzJndC7rsJq5w19THmWMPcR4RnLrbYkNdEYw==
+ b=aeyf1nAjnuIL5JnG2kWyQi4YNunXyc0YKiUFg4CWLfFjjlO7cBG+pG+ruPEGeYwaAWMtpbD2z3D/qQVxQ6ftbQsl97S5VLoqE11aHg/iDaArPDAOrBNkFUQj3I62wLkeqEQpz7KAu3J4oS6laRMaziFZnIJkkrXGQCprmzFQoKrAsV+GhTPEdORMrdmaBclCSNELjJckxTt84NzShaUvRB6mYVaROZwQiTo7x71v5LfhMLBnchzB9X9zWnFeTdS5ae3Ona4++WJ0JF90McjDF8M7qEJJCRVjrs8p1ZmMDwrHQ7GRZoHv4f+AjWHoGC6E7lWmiV6exDt0JDnBex/7pw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Vf5qoqUhjsH8H9g+JNwZ1Iy9tTzsFlelHq5kREQuk0k=;
- b=geQfkVX8kn6SVLXKHkyRl1lq20B/65ZNn7yEIEd3KhUCZMdN7hpY4WYr1O6D1dkbh59xjRIq+mIi24jE+3NLTRszCuXdIfPRk8iMchf+sMYYAKwrFQxUdYO4XDw7JWei2RIMYGVc7BY7hmNp21L2KOorv6WuMnmSmMT5kxXQb+llbCat9IQLhbuyRTudezLXaefsvl8bmtOoCQE0/8adkBrVMO2Kso0vOy297Qsi8suvpJy/FuosRoZt6KG3z7ihyGOOZIDfshOkrf5Iu5YxWyW49a0YowCt0CsP1aDGBXZteyMdqqCWWWbX7erGSwqDS/63jEg4uotiYp7i423Mrg==
+ bh=2lS5fMYmE2G7df10DgmpPuWeiwCbx2/PHzZlDN81yGs=;
+ b=YjCHx7nObCqt3JJcaJoabnPsXClS92aTRHMZS1TCv/1Sk4rk8NlsT7YaDAI/jyy81cVS8WThjBweUm3TM4BxK2ncwfs+/53tVEzTHAMtrxsxb0mYw2BACHrJHD0VkH8FDt5or5go8O04VsNEm64T7qWwl7XYEY0sIdJc9fARxzk4nS3MNqkzJwzTzfE9TJAmPpykCotrOVoktoXq28Ofk2si3/TS9u5DlljO8mwtHE9mpOC+WPLM7cUnKxBCQug3WzuKlW0LkMlfnFF/ZO0B1qg3OgxoKL6u1Q7ur+ThXgqqb0pEeyWbMxPMANua+/2XKeMq84M3Wtfw64fXBaPheQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=dektech.com.au; dmarc=pass action=none
- header.from=dektech.com.au; dkim=pass header.d=dektech.com.au; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dektech.com.au;
- s=selector2;
+ smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
+ dkim=pass header.d=marvell.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Vf5qoqUhjsH8H9g+JNwZ1Iy9tTzsFlelHq5kREQuk0k=;
- b=yK7f1isRChBKlUDzY6gxxQ6USxgzQyXZmukO/GCrMRQcXx71Mvd5wlq4lx1riaKnqAOzBGZh+blPOBH2b7ZdZO79WpI62born7D36iigu/Cwxue6RmccTiQQkG09hZKjtTlArH6XyiULZS+ZdGI0hCKSneNrQsauIqaw2RGLM3U=
-Received: from PA4PR05MB7647.eurprd05.prod.outlook.com (2603:10a6:102:fb::12)
- by AM6PR05MB5781.eurprd05.prod.outlook.com (2603:10a6:20b:95::32) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.21; Wed, 6 Jul
- 2022 03:36:01 +0000
-Received: from PA4PR05MB7647.eurprd05.prod.outlook.com
- ([fe80::a167:e9b9:97aa:21b5]) by PA4PR05MB7647.eurprd05.prod.outlook.com
- ([fe80::a167:e9b9:97aa:21b5%3]) with mapi id 15.20.5395.021; Wed, 6 Jul 2022
- 03:36:01 +0000
-From:   Hoang Huu Le <hoang.h.le@dektech.com.au>
+ bh=2lS5fMYmE2G7df10DgmpPuWeiwCbx2/PHzZlDN81yGs=;
+ b=OjUvJ4vsk2EgNmGeRJKJv7KB/5hhQCABRFXfMgt8dsRHVuDfYg5JhvivbgH/InrkHQS+qMcWVrSu7YAuBOHHFZrZgbBdZCM6PDWJa+Pe/FGDcBR1UC9oM3ff8hFteQF3yQW6JdFr6+wFMOfDTtUdq228znoCJWOCHtf782i7sjc=
+Received: from MWHPR1801MB1918.namprd18.prod.outlook.com
+ (2603:10b6:301:68::33) by BL1PR18MB4376.namprd18.prod.outlook.com
+ (2603:10b6:208:314::5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.22; Wed, 6 Jul
+ 2022 03:37:35 +0000
+Received: from MWHPR1801MB1918.namprd18.prod.outlook.com
+ ([fe80::a569:9c2d:1fff:6e58]) by MWHPR1801MB1918.namprd18.prod.outlook.com
+ ([fe80::a569:9c2d:1fff:6e58%6]) with mapi id 15.20.5395.021; Wed, 6 Jul 2022
+ 03:37:35 +0000
+From:   Ratheesh Kannoth <rkannoth@marvell.com>
 To:     Jakub Kicinski <kuba@kernel.org>
-CC:     "jmaloy@redhat.com" <jmaloy@redhat.com>,
-        "maloy@donjonn.com" <maloy@donjonn.com>,
-        "ying.xue@windriver.com" <ying.xue@windriver.com>,
-        Tung Quang Nguyen <tung.q.nguyen@dektech.com.au>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "tipc-discussion@lists.sourceforge.net" 
-        <tipc-discussion@lists.sourceforge.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
         "davem@davemloft.net" <davem@davemloft.net>,
-        "syzbot+a73d24a22eeeebe5f244@syzkaller.appspotmail.com" 
-        <syzbot+a73d24a22eeeebe5f244@syzkaller.appspotmail.com>
-Subject: RE: [net-next] tipc: fix uninit-value in
- tipc_nl_node_reset_link_stats
-Thread-Topic: [net-next] tipc: fix uninit-value in
- tipc_nl_node_reset_link_stats
-Thread-Index: AQHYkAlSSclZSgjtNEOK9uF4aO1nwK1wlhEAgAAbL4A=
-Date:   Wed, 6 Jul 2022 03:36:01 +0000
-Message-ID: <PA4PR05MB76476F5513C4A5BD18EEA237F1809@PA4PR05MB7647.eurprd05.prod.outlook.com>
-References: <20220705005058.3971-1-hoang.h.le@dektech.com.au>
- <20220705185238.1c287512@kernel.org>
-In-Reply-To: <20220705185238.1c287512@kernel.org>
+        "edumazet@google.com" <edumazet@google.com>,
+        "pabeni@redhat.com" <pabeni@redhat.com>
+Subject: RE: [EXT] Re: [PATCH 02/12] octeontx2-af: Exact match support
+Thread-Topic: [EXT] Re: [PATCH 02/12] octeontx2-af: Exact match support
+Thread-Index: AQHYkFzy4oXwuByJ7EyEyusgDH15Iq1wkBoAgAAg7kA=
+Date:   Wed, 6 Jul 2022 03:37:34 +0000
+Message-ID: <MWHPR1801MB1918173CD1371C60D96D9EE4D3809@MWHPR1801MB1918.namprd18.prod.outlook.com>
+References: <20220705104923.2113935-1-rkannoth@marvell.com>
+        <20220705104923.2113935-3-rkannoth@marvell.com>
+ <20220705183338.375b948d@kernel.org>
+In-Reply-To: <20220705183338.375b948d@kernel.org>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=dektech.com.au;
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: ecfe0268-aead-4dd7-1d45-08da5f00a5f3
-x-ms-traffictypediagnostic: AM6PR05MB5781:EE_
+x-ms-office365-filtering-correlation-id: 5ee52c73-2bd7-4bc0-86be-08da5f00dd90
+x-ms-traffictypediagnostic: BL1PR18MB4376:EE_
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: QbTJTeqREIZ07Vkj6AHEOhi0nhQOw6EweDcb5VP+/I/jZCGkvT2qQ5sz7qd712v2DspcjRMzNC48qC7JEjlcKar0zOiL07UhjBX9pwtmpKQwVVP7qFPBnx6Lzrbb4qtnF1K3JQrV2edJPN8o8njbm/d/Dv8PkTqlF3S3glUK08LAZJDQ3K+MG883+0WxNSKeYclmnQx5DiZCO5BajiNQsli/ar3pRywJ5xIfaClRQSZUqeMbzd9qRZOWqA/MYxZ6mPzASY9oab1hrFokiN/CrC03dtkYh3rL9AL9fuPOeAeaRyaci9Ye2oQDk//lt4/IOGELXEnTcHPKovldUa+iGdoVSJTTbVaP9h7ZB9nehvFMYO3mcMHa4JBFM8IyUiTHqLmX0OTFexqWyr/uvdM8O7MPnixIe8YIqXF8klsgb1zqkm4nNYdMAwU0fK7xPsQN4ik1go8ITcWcnt1sR/AgB2u72jglyTa4fAHDcD6HCRGssgDk8MGwU/FmYlR/x+zKGrOfraR2EHumdh31j4Nt3lZHe+vVYaOp+7QG0ZOKlwq5oJ4ODsxGrnBaQ9Q91pxBSzy0w/A+/s8lBy0Qr7L3dUxUHNK0zKmonQtru8AXLSiXSjFw7emDaEVOuy1Ft6zRgjuxzG2zals4np3ingFXjYcWrP7u3ZKvCli4960IBJUtIehM6EIwaqsWLjuue5/IroLIlHx16Vb1S8yMm9Wdv2eudUscWL/Mmk3lN4RpgtuSMlX5DT73ogQ0BCbF/F/OzkdRG5EhmP8IkdOMHtL28p/xPZf4agptndOW1xrlVhSnNNmbm5DRiM47yxRNy/nU
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PA4PR05MB7647.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(376002)(366004)(136003)(346002)(39850400004)(396003)(38070700005)(6916009)(54906003)(316002)(122000001)(86362001)(8936002)(7416002)(5660300002)(83380400001)(55016003)(66556008)(8676002)(4326008)(76116006)(66476007)(64756008)(66946007)(52536014)(26005)(9686003)(66446008)(186003)(38100700002)(478600001)(71200400001)(55236004)(53546011)(7696005)(6506007)(41300700001)(2906002)(33656002);DIR:OUT;SFP:1102;
+x-microsoft-antispam-message-info: Cx5EDp3oduRAZYDTbT1mxnP0xXDQVpmd0UqzKy4r9t/dQ31J1Jq9zHTs7csAVeUDzEy7ZY0d7Kg+aQMY5C+ipbTG2s1geVGJWxc7mLr8z51gV/o4+BqQ3Dd2BTksN1RjEl4WdMHSUcKgXARteEupAqb8abGhqzcacQy0a2UxHTbW1LjM7igJaRMdfWUMQIB7CIyiMQMuKzTxPddWEtc6Q221yq3QTlScQbTei4NHkh48P710xevAkm/BSdcbHfjVdeeoLDInFpPzHzIPmQKAkLAukVTdrnAOflVNSREkELAMFEkz6CsuaWHORmcjhx2uYJrkBAtWZawsqfFq+eKhV/glm4/xZSltAmF+NkxGo+ZsgRmitCYluZb3MP1k8+2tktYJErKVtpNEQAMCxETocOQauiTafAPkmBgJrPli3HKTt5a2Sn3dO0dsZKsCbz/lM3AINhfaothZ7q6/dNJnvghCBzzQ+WGqJ6qdCke6Td5Fkc7bn7rnuIYCJA3VIIskpTzUDrb+OmP9GZSXD3klIFSuDeuq9lyx/UIK+ygqYTVETzvvB2yzic0ehbiLhlPO7dfchhHJuW9ZunMXVbZoYXY5JdNfBkjuG5VQSTD8O3hY8STzoG1kJcAkJhErh8QakKyGpZO0RGOlUj4nCVKV9Jwk8xEMie8ptgeIOXzupJlM7+wbrtZRRhynjCo0f6GnUD93DSlHnZheesOucqQTpYLYYV75hHPoEz1pAdoWcjq7znDhn6mTrjzyudb4S+1NqJ/fdjLWESbyZfCvsuetd0EcLdeDITjrimXX513pnQNt1H1WcIKHnp7XQ4PjiliQ
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1801MB1918.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(346002)(136003)(39860400002)(366004)(396003)(4744005)(2906002)(55016003)(86362001)(478600001)(71200400001)(53546011)(122000001)(186003)(6506007)(7696005)(26005)(38100700002)(66476007)(66556008)(76116006)(66946007)(66446008)(64756008)(9686003)(4326008)(8676002)(33656002)(52536014)(316002)(8936002)(41300700001)(54906003)(5660300002)(6916009)(38070700005);DIR:OUT;SFP:1101;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?EDKeLjEZqZcRXsGmMna3bgr4+Iz7hp4TSbfJGuhgUwq/wLEAS6o+X/uE03Ku?=
- =?us-ascii?Q?bfx5zSoLYAaVj3gxpwwAmsll9VL1CpaNymwCObeSqTJcKeIAJnlgc3sXbwdt?=
- =?us-ascii?Q?Kyl6D51F/QJht+B1AAPl0UcsLYahFHDtcO41SgbHyEiSwr+7Z9RMxPqpOfFD?=
- =?us-ascii?Q?SJ1kNuCQ/F8n7POSVG89/a4jsx+yCjk4OxvrqJQI6AyY5Bn3a+1wXghp7nWn?=
- =?us-ascii?Q?Hy11LFxPhYKJzD+8Wym7ZX53y+nEG4fxM7QeV5+I2XUKk5ODmM973BrNfd7U?=
- =?us-ascii?Q?Cj0AvkiAba1R7T5tVWAsW6lvkxlOx2/1iKkfJ1kd4gQmF6WUeQU4ML1M3XuX?=
- =?us-ascii?Q?ZO81VUgEMTIxIwnxXlTLSapYN5+Ek2GQLrwXOdwep+YwybfHspl3Q/+RE8zS?=
- =?us-ascii?Q?UOAE5F8Tf/1U8MRLQ8pfkm7SbbAvvYIwJqTUjkWZcwHenQZ1T2W1CJGNVkQo?=
- =?us-ascii?Q?D2BMEJMOhqtA5MJSkUhChppMV+gtP1hFK8ExLLtqan7YtwVRUcKNxNs9U8LI?=
- =?us-ascii?Q?HC8r05oZTpW7X7whKhv288H3toLyYVebHxPPcc//+YkaIT8OUWzcbdvDibmi?=
- =?us-ascii?Q?WOU8viZaIH8o+5bT2w/iIwD89XOu0iAsPvLxTOlzBtLCBnDEOlnjmSzmL5yK?=
- =?us-ascii?Q?yCyixvnetAe/JSlxb40LIiQwK6ue+XOodV0W9+AJ5juaLkfsWc4TiwOIQcuP?=
- =?us-ascii?Q?niiTiG8f0kskgiqU9WoC5iFB41OagAfy8UiEpsHV3f2Xzgzkyo2dooyVh+r9?=
- =?us-ascii?Q?yYpGyT2f7KqrJSP6JA1KO+ByCAS5+e14j4QNGRvcK2Fh02CTHMJa6F0bvG/x?=
- =?us-ascii?Q?TBP75ApSmV3ILlJpWsJDScIveTKeikQpbZ/Z/CJmIvS6JkhayTj8cqcRWcNT?=
- =?us-ascii?Q?azrUBaHE252QTVGdbKGyfHpXbYK59eG5T8WGNpL/TzdEaxd3fDmyx8hbxJ9F?=
- =?us-ascii?Q?5XqkkCo7418EJDV5oEJy2aHobBqoZ9kwJXwcEjMeLCG/qd3ojwOT6bATfeuX?=
- =?us-ascii?Q?8a6ezXaxwlMvaKmWDyE1DfWU1/Ti2OSovdX7fMZULr24ZZPUoVb+3pCkDYyY?=
- =?us-ascii?Q?smV4JRSwsCue4HnA8l5tUWzzqDNDVLYphG0cABwPd+PTtERKxNX2SPGdfhRO?=
- =?us-ascii?Q?G2fAF1akci1nIm0bKoevIMlg9lRdhH1TbezhTpZ2hKBqR3K15eyNaWuPjnsm?=
- =?us-ascii?Q?HlfaLIL7cxe5RbfBwGG7yN4zgjGPJeK41Zec7d4hl/n1v31dSIy9Kq48tRg3?=
- =?us-ascii?Q?pcrhltyyLwywIvDxhyXGSxfXhoouw7EuWKLCpqvPQtayoToVN8DuxEX1wxwj?=
- =?us-ascii?Q?D7rIndL74CFOX/bj2jVzp4VWNwY/uPhgsfyB8S3cGXiAqf+WmJAAAB3wPKnv?=
- =?us-ascii?Q?NQkEOG1B19vHREG0KBiP1PJBosidqmOJ3rq0r68bzMQsjV4Z4WNpC77b9YtN?=
- =?us-ascii?Q?GTHyhy5vb2BOJ5+KqLWaB2lq6ukmA/q05Zxao1Q+Hz5yaeh2w56kPV0HUfZH?=
- =?us-ascii?Q?0+Rgjgpxk8Kprgy1OaYLPVp/ASQsFt0w2YdUM0Uak1806tUuLPUjzoZF9abN?=
- =?us-ascii?Q?HUFsFWXFgysrg0IYIJSZapcK5LWryNpZNLIuN9Fl?=
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?gnIIhkPIpiZC8z+nxT+8tHJA8zlY7KNClPN9YhfWHEz/Te/7ZJK0LfXpCMpY?=
+ =?us-ascii?Q?tB3hJUDNSHx1nD2M5lw/+Ee53H33DpNspfu8filPJqQSBN9avVRmSnjaTDIi?=
+ =?us-ascii?Q?6FvSfL7ZigoIKQOPVdBhXIwJK5fmd9gdQZ7rAn3IPWJBjAjKOaVm1YurN1dj?=
+ =?us-ascii?Q?96eA6w2zaNHyjLRSUYqHt1dWQP+Z8Sa/ckayYZztGsVeURyg9Czk2QY22W9F?=
+ =?us-ascii?Q?t9i0Ksi2HZJKKfH+4MZdZcONxwrKoe07w+rlll7e0upxGs4rshkvYbZQjGvT?=
+ =?us-ascii?Q?BpdJK7GE8uL6daXTCCAxRj4D5s2Ap2sAoysx2SXjB28Hcp2IvSwreYhu++Yn?=
+ =?us-ascii?Q?nZSmcEYEwkpsiyeOyNaIX5DjxyMTG/R5JQ5TC9XO7QGT4fclAxvgKWcSom05?=
+ =?us-ascii?Q?XwHnc5JKxHRwRowJzJeR8FjlYTU1BOot5Ntp/ARtTpc4AZRO3Xv9R8UfQEsR?=
+ =?us-ascii?Q?U25My0FTr9DYiGF9sHQk87JqLmPtwBEpalF9YlksoQx0skbOuSF6kx2KdKow?=
+ =?us-ascii?Q?/PG5sTnawDxa8OgM+fg7daYCBVoqsnvw7azJiroGsWIxbKPjVeMmbbjsNIz/?=
+ =?us-ascii?Q?fUdfyTeKA5aKMlHi50tkN9EgzN+sv4zBhJPEkYp0g9pHwoOkxC4ZNGf/QWvQ?=
+ =?us-ascii?Q?LMt0bBDglSdQiCNnorGCLGz6SvkKf0m8J/126pQP+nAKUoUwS17/QGcjTDUB?=
+ =?us-ascii?Q?pvegxmW8XzCGS7zAFgpAg5Nr7MZMq32T0b4ea0yuTR1pnjrqN/gxBnUig6J9?=
+ =?us-ascii?Q?8UCNkn56oP90cdbMMXUfJzUQO5xXbaipqSqU8fhY6Q+n5vS3ldydaV0HJb2S?=
+ =?us-ascii?Q?ShpluaYBIEGuklCFNOvu2DOpucouREojH/gO/daQhEEk0L2oa8hz2gx7A8Ae?=
+ =?us-ascii?Q?9t3Vjvve3YdE9ChJNa7Dwhj1fDm52MQz41MG8iaAAq4O5CsR+usZbwv/8SBU?=
+ =?us-ascii?Q?m5Eq3l+N9jlIo0CoPHxHsReOaj7Tfiw2xeZtlEJtRX6p6UkL0nwuqaWthTp2?=
+ =?us-ascii?Q?4NDDBMP62tLqe8EMeVXVKUdLlFLqe21eYHunbwmE5wH50VrWmnm6Y1M10l+A?=
+ =?us-ascii?Q?jmn+8qufUCnlcfP/7SfjjhKMUBPeZ7B5g3L6JQcz6oIc8jcU03CdHMX3AEtf?=
+ =?us-ascii?Q?TZ2qHxsiZ3b4QN4JVcvqmNXRDxn0LlAbb5ubkT8/sWXZkZPWeb+RTh1jZpn+?=
+ =?us-ascii?Q?DyEZyi/BjkOlbT8sXRYIhFkdmxQMlwHkqldTzTZacpy9+LUFQOlpCBxkfN4K?=
+ =?us-ascii?Q?fW8KyqQ2IxKcQlszmgaRufTbv7KP+WNIH1cZedIzo89oHA2+wDiTwHcIdZHs?=
+ =?us-ascii?Q?j/msN3+/tiH9FrExqxJi/m6i6Luy6OHnp3kWzXJtwRjVOH/LZaCbB/2yvRZQ?=
+ =?us-ascii?Q?V++kcERxF5AkyU4bSxnBVgdGBiA40FQHq4RHs8PjP+ZMx3Z6dqAg2T6KhGDM?=
+ =?us-ascii?Q?cziVAduJ7HazWaMWIFLWHdmZtVp6Pwzu/Afbp517uNyr8N7LVp+jUGjq15Cd?=
+ =?us-ascii?Q?2n0eYC2NRIMtqUifBnBc6a1mWD6YUos7fgkXbJMy0WntQGslAWMA10uwkW77?=
+ =?us-ascii?Q?sE/3H6qHpwXor3sritfBYTyC53UlH9j44xqASwb1?=
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-OriginatorOrg: dektech.com.au
+X-OriginatorOrg: marvell.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PA4PR05MB7647.eurprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ecfe0268-aead-4dd7-1d45-08da5f00a5f3
-X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Jul 2022 03:36:01.4533
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1801MB1918.namprd18.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5ee52c73-2bd7-4bc0-86be-08da5f00dd90
+X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Jul 2022 03:37:34.7752
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 1957ea50-0dd8-4360-8db0-c9530df996b2
+X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: MtLCMB83je6C3XV+WpbC+9xyIgk4qPtMQ22d3NJcuDFCkC6EgYPVJ+kPydVCMhhSHcDqGSg8dLvABY00e0eoHagaTFwyXpYUfB/z6nduUEA=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR05MB5781
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-userprincipalname: dzYndVWuuLw/JIojZEQpcum0Ts/l9miRu+hOauoyRpO8ueFarzJWurgKLtdZztJLWL/mTS3GBLGmwJEuizN6hQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR18MB4376
+X-Proofpoint-GUID: 7u_hkCjHdk69I-evLtVaU7tYkT1qnDZ7
+X-Proofpoint-ORIG-GUID: 7u_hkCjHdk69I-evLtVaU7tYkT1qnDZ7
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-06_02,2022-06-28_01,2022-06-22_01
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Jakub Kicinski <kuba@kernel.org>=20
+Sent: Wednesday, July 6, 2022 7:04 AM
+To: Ratheesh Kannoth <rkannoth@marvell.com>
+Cc: netdev@vger.kernel.org; linux-kernel@vger.kernel.org; Sunil Kovvuri Gou=
+tham <sgoutham@marvell.com>; davem@davemloft.net; edumazet@google.com; pabe=
+ni@redhat.com
+Subject: [EXT] Re: [PATCH 02/12] octeontx2-af: Exact match support
+On Tue, 5 Jul 2022 16:19:13 +0530 Ratheesh Kannoth wrote:
+> Change-Id: Id9f72c1d9e08b44eef45b67e52fe2fd2a0e7e535
 
-> -----Original Message-----
-> From: Jakub Kicinski <kuba@kernel.org>
-> Sent: Wednesday, July 6, 2022 8:53 AM
-> To: Hoang Huu Le <hoang.h.le@dektech.com.au>
-> Cc: jmaloy@redhat.com; maloy@donjonn.com; ying.xue@windriver.com; Tung Qu=
-ang Nguyen <tung.q.nguyen@dektech.com.au>;
-> pabeni@redhat.com; edumazet@google.com; tipc-discussion@lists.sourceforge=
-.net; netdev@vger.kernel.org;
-> davem@davemloft.net; syzbot+a73d24a22eeeebe5f244@syzkaller.appspotmail.co=
-m
-> Subject: Re: [net-next] tipc: fix uninit-value in tipc_nl_node_reset_link=
-_stats
->=20
-> On Tue,  5 Jul 2022 07:50:57 +0700 Hoang Le wrote:
-> > Reported-by: syzbot+a73d24a22eeeebe5f244@syzkaller.appspotmail.com
-> > Acked-by: Jon Maloy <jmaloy@redhat.com>
-> > Signed-off-by: Hoang Le <hoang.h.le@dektech.com.au>
->=20
-> Can we get a Fixes tag please?
->=20
-> > diff --git a/net/tipc/node.c b/net/tipc/node.c
-> > index b48d97cbbe29..23419a599471 100644
-> > --- a/net/tipc/node.c
-> > +++ b/net/tipc/node.c
-> > @@ -2561,6 +2561,7 @@ int tipc_nl_node_reset_link_stats(struct sk_buff =
-*skb, struct genl_info *info)
-> >  	struct net *net =3D sock_net(skb->sk);
-> >  	struct tipc_net *tn =3D tipc_net(net);
-> >  	struct tipc_link_entry *le;
-> > +	int len;
-> >
-> >  	if (!info->attrs[TIPC_NLA_LINK])
-> >  		return -EINVAL;
-> > @@ -2574,7 +2575,14 @@ int tipc_nl_node_reset_link_stats(struct sk_buff=
- *skb, struct genl_info *info)
-> >  	if (!attrs[TIPC_NLA_LINK_NAME])
-> >  		return -EINVAL;
-> >
-> > +	len =3D nla_len(attrs[TIPC_NLA_LINK_NAME]);
-> > +	if (len <=3D 0)
-> > +		return -EINVAL;
-> > +
-> >  	link_name =3D nla_data(attrs[TIPC_NLA_LINK_NAME]);
-> > +	len =3D min_t(int, len, TIPC_MAX_LINK_NAME);
-> > +	if (!memchr(link_name, '\0', len))
-> > +		return -EINVAL;
->=20
-> Should we just change the netlink policy for this attribute to
-> NLA_NUL_STRING, then?
-I recognize this is redundant check. I will post v2 into net.
+>Please drop the change ids
+Done. Removed change ids from all patches.
+
+
