@@ -2,179 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B0C585694B1
-	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 23:50:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F30455694FD
+	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 00:05:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233962AbiGFVuj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jul 2022 17:50:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37900 "EHLO
+        id S232143AbiGFWEh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jul 2022 18:04:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233419AbiGFVuh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 17:50:37 -0400
-Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AB5A1A810;
-        Wed,  6 Jul 2022 14:50:37 -0700 (PDT)
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 266L6kX4018409;
-        Wed, 6 Jul 2022 14:50:36 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : mime-version; s=facebook;
- bh=TEj04unjBrxztJfHJHtmyG6T99Qhe0N42r4PaXy/Dpc=;
- b=kYoTGtcEcTzLINI+T1vp5x23SN/fJJzbJgBk1YqT+btusmqx2ediVD7wxiFxgq6iff7w
- w/EnQoyy/aZOdw4hkVzCG3JFWzeRvUfNeU/k6No7cu09fNnQtbEH/Kyh132Ae5ZkGLrt
- VZutQgeijjYma4OQQ2Q1qG4RW8qLak2ozK4= 
-Received: from nam11-co1-obe.outbound.protection.outlook.com (mail-co1nam11lp2172.outbound.protection.outlook.com [104.47.56.172])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3h4uaqha7u-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 06 Jul 2022 14:50:36 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OwIBpq7CqhFRjF5soArIQFC9uwDTlEOQs4YEJxBCCMiDhqWRBbPdk1swtvQnO7Z/BZEQu+dnISGD8CsmYxm45wHRaTtghBqVS/dz/rOgFuw2HnzgRFLN6v81mVzhxk6PT1NgfykS6WrmCqT3tiFxcvpYOOQMVkzCPDmC0AfiGvw+RjpEpiX8DUxEsnwuETJ8HDanp3GOOh/87VGeBXugBqtk2/wTqBwp4bOh+FAyALgAUz3Hl/9B01L3IA0dNqmt5+cwnNMs/Uklw0ho0U55UrQPN/15ATVu4CGRTMPE5vAcFdS3J2FEObTtDj3uyydBLwN/kSmzRQ18eMIAOWQi8Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=TEj04unjBrxztJfHJHtmyG6T99Qhe0N42r4PaXy/Dpc=;
- b=gonpQ8T6lEQv0XcU/F6lG9y0aj4ttLukNCuLk0LeTHkJ8HbebiJetTlguOQGKsBD8yL0t+p58eGjYx8jUYQkMgLpKk4CpBnArQXv+WBE7RnuvREoCBjGFzpom/jjt1Hhe5g6/q7MAI6ncIsVO5tqPwfaW5nF5LY2IZZx9YdBnn7/57Bk6Kn/f+9TPgYETraAjPm+VOvVsqBujXod+x0oqHGuhY2zI+XERvOSZJ/3uNT2RSx6bhl+NqrOu1Zggv8er9ROJGXJ10ZybERlTiXZdMKSE/RwtPzfGwSYnQu3C0muwhPuybKguDNWJqCsFZJkcd0WH64xjpcycZmHYWyGuw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Received: from SA1PR15MB5109.namprd15.prod.outlook.com (2603:10b6:806:1dc::10)
- by MWHPR15MB1245.namprd15.prod.outlook.com (2603:10b6:320:23::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.16; Wed, 6 Jul
- 2022 21:50:34 +0000
-Received: from SA1PR15MB5109.namprd15.prod.outlook.com
- ([fe80::e8cd:89e9:95b6:e19a]) by SA1PR15MB5109.namprd15.prod.outlook.com
- ([fe80::e8cd:89e9:95b6:e19a%7]) with mapi id 15.20.5417.016; Wed, 6 Jul 2022
- 21:50:34 +0000
-From:   Song Liu <songliubraving@fb.com>
-To:     Steven Rostedt <rostedt@goodmis.org>
-CC:     Song Liu <song@kernel.org>, Networking <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Kernel Team <Kernel-team@fb.com>,
-        "jolsa@kernel.org" <jolsa@kernel.org>,
-        "mhiramat@kernel.org" <mhiramat@kernel.org>
-Subject: Re: [PATCH v2 bpf-next 5/5] bpf: trampoline: support
- FTRACE_OPS_FL_SHARE_IPMODIFY
-Thread-Topic: [PATCH v2 bpf-next 5/5] bpf: trampoline: support
- FTRACE_OPS_FL_SHARE_IPMODIFY
-Thread-Index: AQHYdrj21zA3ifq/PEC7Yw0zyJbSw61x8o6AgAAhSYCAAADUgIAAAriA
-Date:   Wed, 6 Jul 2022 21:50:34 +0000
-Message-ID: <C319735F-9782-4AA4-AF63-A110A43E5597@fb.com>
-References: <20220602193706.2607681-1-song@kernel.org>
- <20220602193706.2607681-6-song@kernel.org>
- <20220706153843.37584b5b@gandalf.local.home>
- <DC04E081-8320-4A39-A058-D0E33F202625@fb.com>
- <20220706174049.6c60250f@gandalf.local.home>
-In-Reply-To: <20220706174049.6c60250f@gandalf.local.home>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3696.100.31)
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 83df15a3-2414-4913-1e99-08da5f998df9
-x-ms-traffictypediagnostic: MWHPR15MB1245:EE_
-x-fb-source: Internal
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Si++ieD39762QwF9G42oqVSM/jJiTwxqA08dPqMVOBoX9uhDBTJtEtdlHIZnoGWmWuryPm1eOPgbGRIOrCeXjhRg9oYkItzc9dMourAuXtBjWnc9AWv+2zncWaqt0mkKhlwZU4JDoFiJSMgkRhyggFfPZzOM27c8+ddV9hQGPcEnRAi2cnWaPAUWcZLzBH/S9If3uZs20zlINBsQHIYu+dsW4rtHppNQpkVGZG+ZyUsZ55tQ9OVKSLmmoShI06KTO3zlvXDkuNgxzCxXDL6dq3fbJMbFcaQKQBDu2oSpu8Y8letkWRZtk51JhUGVqMm45+YOOHw0t7nZTQTl2RTt8zFhwDETwIl1KWYRxjGfRFDEVepSEFDywVb2SH3KFQzy+wv4Oo6wDXbfGuH5WLBR+ojfPM6ou1ikk1at9o/Fy7YqQrC08Ik3grdmHm7yXdLcriqPiPNImFmtgT7dmIRcJXU3kv8SB0NZo4LdP0G+QVQVmZsrakMXjCbaAKi7E6hFziAA/w+pG12V1RATH8RNlXwYcXwkqvwqdDpoOZYeZTBamJT1vSQ3dgG9E1Eh87a0MDg44OGTuBAA/ZiPQENtouS3fJYG5dF553XUrQBl1EqRddtc9KJmtkps8ukSaCPHLITc7t49klEt1y77pX76cPQGudv1NtKHH1mRjaLlAIvqZJ9SPD8amQz1GB2BI8kClP2mCTCtcW4KSQdxHat+tllEpF9fkkltuFuDDc9oxJkn9Fhcpp7D2gKk3Dz3++KvKNlyAaf+bt/W1xRdTj2VbhaGxHG7noo1gZ+L5FPp2INj4swtZvIpFro88QcugRZ0aP1fF/Hh9KvhjofaS0KhgSCeKgzjJjofgWvXZBI7+eU=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR15MB5109.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(136003)(396003)(346002)(39860400002)(376002)(38070700005)(122000001)(83380400001)(38100700002)(54906003)(316002)(71200400001)(5660300002)(8936002)(91956017)(76116006)(8676002)(7416002)(4326008)(66556008)(64756008)(2616005)(66446008)(6512007)(66946007)(66476007)(6486002)(478600001)(6506007)(53546011)(41300700001)(2906002)(33656002)(6916009)(36756003)(186003)(86362001)(45980500001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?ye2PAEKpC1hJhlzbLgQZ6omisXH+ekfcvWF0ylWBohG1fbUd0mo5XR0QFpUi?=
- =?us-ascii?Q?oNCZmz1cEfaR7BEaTnLIlQSvWxYkdqTzoCSy0/oyWiDhlJuSIOJXtWv4mguJ?=
- =?us-ascii?Q?lbolJqm6HQyTkYYVt5UOjjLdjz2GuhM8HaX9iOz+6mH/z72M4uOhqY3FZO3S?=
- =?us-ascii?Q?b1J8Q8LuCm0YaGKFqKTn0Q/8BADVAt9LoRhwJrPmVUNlX5BsiRLGhJrZmqsd?=
- =?us-ascii?Q?fcM8kOENVJSJbe2b3+afyOtztPiqvwSEiGKV8WRMxTBeBRkpyozza6KP/JuR?=
- =?us-ascii?Q?2Y8NeQbB7axoGNxC/cXjkxor/ieJSy9Y5zHeRcuYhpwt4XNptydVejmNTOdG?=
- =?us-ascii?Q?yGR3DxsCAC9tJeg328gdB1MYmK8kgslJBhpHZX+PDIG0eelJr0QnU6eAPAW7?=
- =?us-ascii?Q?6Mzue3HJkZVC21gdEFVGtNGqaYq7VMLU8Naez7ZDtZMtWlCzIxhum5DQEE+J?=
- =?us-ascii?Q?d78QQlxWHc+2a2BWO2JSRWOAf7yqAlZmSd7FX6t4XqaPKItdZj+/2Oqbx3jP?=
- =?us-ascii?Q?WsJEj1XCU95fk4n1xrnKly7N9uFpwQ9qXgoF27r5ElRlXpdimlJgCcL358EW?=
- =?us-ascii?Q?TJTvYRNswxy+CiJ2BO7ay2yIMCpd8FrjsPUV2CA/ZIG+FZ5UYhx+Q7tDyWad?=
- =?us-ascii?Q?jy2V4hRjhatb3U7f2Kz+iRUxaklq4fjtczlzACwJj213mMXzRK9dCA4iMLAr?=
- =?us-ascii?Q?t3f5SJI1qLNDstGdJ4CcRiRg7ZQ55rfnjLmP9YykwVOokin88rvkWrc5rXAV?=
- =?us-ascii?Q?68nsEjRBjyr2CzI8/U0nEDrKGG8+5/fnmvhJnexFe+Bm6DMA9ZI8u5Zu+A/Y?=
- =?us-ascii?Q?0sumIoxeCRePL921kYmVuZ7Gr+ZVnzC/+EBZD0rNKRW5iRY4G7l0UzkgCjUG?=
- =?us-ascii?Q?DfNpuDCoWT7RE5JSVpBqYJ9AYp1xWzLJEvv7ZYUAHX6ILkz/BRuTC2QeImuY?=
- =?us-ascii?Q?gR+cRyZBilWqrnlG/XMtueDM8zBP2rvP6ka1/Ke67f6KO83eI218kAR11D6M?=
- =?us-ascii?Q?vLwoFbVw2EqAN2AZFI+g5Gs/8C5KiWxZ5znrC4igPQbuF2r94naYx3GbrSYL?=
- =?us-ascii?Q?nnntdu9mpRYjUtPj6Zs9JIEImKaYuP/lnuSoxcGE1BlW+/RjwAXC4snQcjI5?=
- =?us-ascii?Q?v5M/sUmIKPp13qa8oL+kWekKGK7fxBQ/jGo4EagShWgjYbE3QFDPhojth7Kk?=
- =?us-ascii?Q?G8k/PvP6lCwOUdvfPuL7bqgIV+8wKQgOTK6cRKUNFJlend3VGvPer3vPExTL?=
- =?us-ascii?Q?dnEiWixGX4ExUz+Inte1zb4/655PF6OJkaB9jk55hq4EkAfcXcZ+I5JPyRiQ?=
- =?us-ascii?Q?PhFicMIEdqppEgi7izFA4HlcS15iE3rBtAUxzsOTC5RPfWskffRhqvyj42YF?=
- =?us-ascii?Q?zKPYn/GMlIk3XFQJsqAqgnNEde4vA1OIY+rSwV1B0wR0aALCJ47ZnklGSYdG?=
- =?us-ascii?Q?IdNgSGmloEMWbO+JQFk39vZBJGXrVHET6UXyrVV6r3NWlqEpv3r6G29IC71z?=
- =?us-ascii?Q?os74XyvPiwietfjN4hKZXa7dcpJ/OXEaRKKnaIuI1V/C95yyuENp3cCT6HGh?=
- =?us-ascii?Q?RxLbkr7FGV/ch1OBUkk3TByVKMOAarnHxInk17Rp2HdNvAcOKeE/j+e7Ve9A?=
- =?us-ascii?Q?mCfzvS+zNLl60P5eE3fW1eQ=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <1DD1D6FE5341A24CBC15BE93C3995DD4@namprd15.prod.outlook.com>
+        with ESMTP id S231168AbiGFWEg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 18:04:36 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4639F313;
+        Wed,  6 Jul 2022 15:04:35 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id r18so20906293edb.9;
+        Wed, 06 Jul 2022 15:04:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=0pjXsxvLXJt+LczILSuc8kU8VcrSNLSdV+Rd2QZM5OQ=;
+        b=GIEwVfojKqzA+1f2K4ZPZw1u+zJ3Jt9weYZQmVyITDvrU2DUT22qo9VTWzbyzQuxB5
+         +zdB4awjGcqzbxGw88I2xYMsF89axmsYfdfkNuolCa/IE5Q3pg4a27u0EwxVCnCquYBe
+         x96wSC+D02ADQLkAhwaNi0Q76eQhYVIX7bUo9SVD8yO+i2rUDZoEwbt5hUd3O+l3qL1g
+         iF5+OkjXjsGKuBuvLUF4VA+DDpVsDp/hX+p5Y6p92HHlkG/GjWJnI0HPdv7VSTRqh0L0
+         71j8VquTl03RcjChBigYnTav842qp40AMijBvAC36Jpyufx4cgXseSL8GYpBlmJiXCKa
+         27hQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0pjXsxvLXJt+LczILSuc8kU8VcrSNLSdV+Rd2QZM5OQ=;
+        b=KhVjjwSB3qEoqKkNDu4F9b3Jhb/BkK3CSHlqmCHPW7STVCcPEGvK/vis/63XleC1Gh
+         of+5OeLDLha94iVOosJTtQeQQxD5fVqu9s2JyqsYyKeuvMT88MjHgDoT5YYeb9nN4Rx1
+         iFooSFaQD0PNNCMrxgPTyUqJj0Nw81JNqonQpoJKNog7DhM1I9yPbk1TAneCZMdeQ3Px
+         Kz6//WnyW2I1siEpEBsqp6aVKtz05TjkY9Lg1U+9qWcxUKHP74/nMfI/iPEqF6lAvwA+
+         lSKSC9tiQXXMWVk4w8FIh/HMKPgirVtRjtwM1ctKBZYE3V0hNPgtzLzgnlDajGEzbpsD
+         P4Iw==
+X-Gm-Message-State: AJIora9e4iJdyUgamajGjNtdm7mlxDgVYVEC6Sus0zmTZ2PRc8rvnxfg
+        /qyU4fSLU/AjcxWC3i4wbRnssuxb0UlT8g81UwA=
+X-Google-Smtp-Source: AGRyM1uQnqEkBbigqrn3tC3CaactZ/5IxP7JiFu10XXKH8OviJwPszxWuCftJsUNxRy63LxTVtWRw3WdxXHRD1U4oC0=
+X-Received: by 2002:a05:6402:2398:b0:435:9685:1581 with SMTP id
+ j24-20020a056402239800b0043596851581mr57275419eda.333.1657145073767; Wed, 06
+ Jul 2022 15:04:33 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: fb.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SA1PR15MB5109.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 83df15a3-2414-4913-1e99-08da5f998df9
-X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Jul 2022 21:50:34.2582
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 6TgFhub6/qBJfrGLBNtWMhNqerbMeF/U+i936YiXS+5dWVnVb5ODUszX1/pDgGbVwpS+alilgr/QGXahwDMRsA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1245
-X-Proofpoint-GUID: 4sC_hQA7t8i-3fI8jqcPMwxODdk8iaQx
-X-Proofpoint-ORIG-GUID: 4sC_hQA7t8i-3fI8jqcPMwxODdk8iaQx
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-06_12,2022-06-28_01,2022-06-22_01
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220623192637.3866852-1-memxor@gmail.com> <20220623192637.3866852-2-memxor@gmail.com>
+ <20220629032304.h5ck7tizbfehiwut@macbook-pro-3.dhcp.thefacebook.com>
+ <CAP01T77fsU8u6GP+HXfQQ_gdu+kp3Am1+Ao-mNYULjDazHs38Q@mail.gmail.com>
+ <CAP01T75cVLehQbkE3LLwSG5wVecNz0FH9QZpmzoqs-e8YKpGtg@mail.gmail.com>
+ <20220706184436.mf7oeexxfwswgdqf@MacBook-Pro-3.local> <CAP01T75-EZfdBx+W+6pV0vDDD3Qi07KVLsFTupPfptTyAFxx1Q@mail.gmail.com>
+ <20220706212903.az2mtqodtzmn2gwq@MacBook-Pro-3.local>
+In-Reply-To: <20220706212903.az2mtqodtzmn2gwq@MacBook-Pro-3.local>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Wed, 6 Jul 2022 15:04:22 -0700
+Message-ID: <CAADnVQJsAfjFwgoiWdsmuWBi9BX7eaCw8Tpe7sd=HPG4QQck1A@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v5 1/8] bpf: Add support for forcing kfunc args
+ to be referenced
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Yonghong Song <yhs@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        netfilter-devel <netfilter-devel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Jul 6, 2022 at 2:29 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Thu, Jul 07, 2022 at 12:51:15AM +0530, Kumar Kartikeya Dwivedi wrote:
+> > On Thu, 7 Jul 2022 at 00:14, Alexei Starovoitov
+> > <alexei.starovoitov@gmail.com> wrote:
+> > >
+> > > On Sun, Jul 03, 2022 at 11:04:22AM +0530, Kumar Kartikeya Dwivedi wrote:
+> > > > On Sun, 3 Jul 2022 at 10:54, Kumar Kartikeya Dwivedi <memxor@gmail.com> wrote:
+> > > > >
+> > > > > On Wed, 29 Jun 2022 at 08:53, Alexei Starovoitov
+> > > > > <alexei.starovoitov@gmail.com> wrote:
+> > > > > >
+> > > > > > On Fri, Jun 24, 2022 at 12:56:30AM +0530, Kumar Kartikeya Dwivedi wrote:
+> > > > > > > Similar to how we detect mem, size pairs in kfunc, teach verifier to
+> > > > > > > treat __ref suffix on argument name to imply that it must be a
+> > > > > > > referenced pointer when passed to kfunc. This is required to ensure that
+> > > > > > > kfunc that operate on some object only work on acquired pointers and not
+> > > > > > > normal PTR_TO_BTF_ID with same type which can be obtained by pointer
+> > > > > > > walking. Release functions need not specify such suffix on release
+> > > > > > > arguments as they are already expected to receive one referenced
+> > > > > > > argument.
+> > > > > > >
+> > > > > > > Note that we use strict type matching when a __ref suffix is present on
+> > > > > > > the argument.
+> > > > > > ...
+> > > > > > > +             /* Check if argument must be a referenced pointer, args + i has
+> > > > > > > +              * been verified to be a pointer (after skipping modifiers).
+> > > > > > > +              */
+> > > > > > > +             arg_ref = is_kfunc_arg_ref(btf, args + i);
+> > > > > > > +             if (is_kfunc && arg_ref && !reg->ref_obj_id) {
+> > > > > > > +                     bpf_log(log, "R%d must be referenced\n", regno);
+> > > > > > > +                     return -EINVAL;
+> > > > > > > +             }
+> > > > > > > +
+> > > > > >
+> > > > > > imo this suffix will be confusing to use.
+> > > > > > If I understand the intent the __ref should only be used
+> > > > > > in acquire (and other) kfuncs that also do release.
+> > > > > > Adding __ref to actual release kfunc will be a nop.
+> > > > > > It will be checked, but it's not necessary.
+> > > > > >
+> > > > > > At the end
+> > > > > > +struct nf_conn *bpf_ct_insert_entry(struct nf_conn___init *nfct__ref)
+> > > > > > will behave like kptr_xchg with exception that kptr_xchg takes any btf_id
+> > > > > > while here it's fixed.
+> > > > > >
+> > > > > > The code:
+> > > > > >  if (rel && reg->ref_obj_id)
+> > > > > >         arg_type |= OBJ_RELEASE;
+> > > > > > should probably be updated with '|| arg_ref'
+> > > > > > to make sure reg->off == 0 ?
+> > > > > > That looks like a small bug.
+> > > > > >
+> > > > >
+> > > > > Indeed, I missed that. Thanks for catching it.
+> > > > >
+> > > > > > But stepping back... why __ref is needed ?
+> > > > > > We can add bpf_ct_insert_entry to acq and rel sets and it should work?
+> > > > > > I'm assuming you're doing the orthogonal cleanup of resolve_btfid,
+> > > > > > so we will have a single kfunc set where bpf_ct_insert_entry will
+> > > > > > have both acq and rel flags.
+> > > > > > I'm surely missing something.
+> > > > >
+> > > > > It is needed to prevent the case where someone might do:
+> > > > > ct = bpf_xdp_ct_alloc(...);
+> > > > > bpf_ct_set_timeout(ct->master, ...);
+> > > > >
+> > > >
+> > > > A better illustration is probably bpf_xdp_ct_lookup and
+> > > > bpf_ct_change_timeout, since here the type for ct->master won't match
+> > > > with bpf_ct_set_timeout, but the point is the same.
+> > >
+> > > Sorry, I'm still not following.
+> > > Didn't we make pointer walking 'untrusted' so ct->master cannot be
+> > > passed into any kfunc?
+> > >
+> >
+> > I don't believe that is the case, it is only true for kptrs loaded
+> > from BPF maps (that too those with BPF_LDX, not the ones with
+> > kptr_xchg). There we had a chance to do things differently. For normal
+> > PTR_TO_BTF_ID obtained from kfuncs/BPF helpers, there is no untrusted
+> > flag set on them, nor is it set when walking them.
+> >
+> > I also think we discussed switching to this mode, by making many cases
+> > untrusted by default, and using annotation to allow cases, making
+> > pointers trusted at one level (like args for tracing/lsm progs, but
+> > next deref becomes untrusted), but admittedly it may not cover enough
+> > ground, and you didn't like it much either, so I stopped pursuing it.
+>
+> Ahh. Now I remember. Thanks for reminding :)
+> Could you please summarize this thread and add all of it as a big comment
+> in the source code next to __ref handling to explain the motivation
+> and an example on when and how this __ref suffix should be used.
+> Otherwise somebody, like me, will forget the context soon.
+>
+> I was thinking of better name than __ref, but couldn't come up with one.
+> __ref fits this use case the best.
 
+Actually, maybe a kfunc flag will be better?
+Like REF_ARGS
+that would apply to all arguments of the kfunc
+(not only those with __ref suffix).
 
-> On Jul 6, 2022, at 2:40 PM, Steven Rostedt <rostedt@goodmis.org> wrote:
-> 
-> On Wed, 6 Jul 2022 21:37:52 +0000
-> Song Liu <songliubraving@fb.com> wrote:
-> 
->>> Can you comment here that returning -EAGAIN will not cause this to repeat.
->>> That it will change things where the next try will not return -EGAIN?  
->> 
->> Hmm.. this is not the guarantee here. This conflict is a real race condition 
->> that an IPMODIFY function (i.e. livepatch) is being registered at the same time 
->> when something else, for example bpftrace, is updating the BPF trampoline. 
->> 
->> This EAGAIN will propagate to the user of the IPMODIFY function (i.e. livepatch),
->> and we need to retry there. In the case of livepatch, the retry is initiated 
->> from user space. 
-> 
-> We need to be careful here then. If there's a userspace application that
-> runs at real-time and does a:
-> 
-> 	do {
-> 		errno = 0;
-> 		regsiter_bpf();
-> 	} while (errno != -EAGAIN);
-> 
-> it could in theory preempt the owner of the lock and never make any
-> progress.
+We have three types of ptr_btf_id:
+- ref counted
+- untrusted
+- old legacy that we cannot be break due to backward compat
 
-We can probably workaround this with some trick on tr->indirect_call. However, 
-I don't think this is a real concern from livepatch side. We have seen many 
-other issues that cause live patch to fail and requires retry. This race 
-condition in theory shouldn't cause real world issues. 
+In the future we'll probably be adding new kfuncs where we'd want
+every argument to be trusted. In our naming convention these are
+the refcounted ptr_to_btf_id that come from lookup-like kfuncs.
+To consume them in the release kfunc they have to be refcounted,
+but non-release kfunc (like set_timeout) also want a trusted ptr.
+So the simple way of describe the intent would be:
+BTF_ID(func, bpf_ct_release, RELEASE)
+BTF_ID(func, bpf_ct_set_timeout, REF_ARGS)
 
-Thanks,
-Song
+or maybe TRUSTED_ARGS would be a better flag name.
+wdyt?
