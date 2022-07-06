@@ -2,170 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 49254568680
-	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 13:15:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6424F5686A0
+	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 13:18:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231347AbiGFLPD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jul 2022 07:15:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52300 "EHLO
+        id S232647AbiGFLSw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jul 2022 07:18:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229531AbiGFLPC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 07:15:02 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1498E2EE
-        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 04:15:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657106101; x=1688642101;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=c6uUdvhC8o/s0B8Lu/JdCtZlQm/LBontoqG4zpeohM0=;
-  b=RcICbtxJC/KDZABbA6yYDShOrnp509nPLDU4B1q1d0yZ1IQC6iPS04qs
-   /kYjEnxYFoQJGB1Io0hd9kGK1s4YLzpqEX9sBgXBP3K2bucCci7g6NXnT
-   Z/i3dHryuVJvU9Zu9HvGJe8aDtkLLX31U/Q/LWUXTCqKHyXflWnSgB7Eu
-   Euv/3oHTGyi9mWnzqMoLbKHldne9PziusNzck4BuWqAsUXbSVQqV9YcHT
-   4Qh+GXP0BxjriL6mGNOZ3CL6vrDjwaxaMdPqs9V86DcSdaK5fdsyLQTk8
-   nrT+NNesNgLZyvzt9QuhPagA/LUvIBgj9WYRHSY+D/pFwuxLPVJsFxbky
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10399"; a="345403295"
-X-IronPort-AV: E=Sophos;i="5.92,249,1650956400"; 
-   d="scan'208";a="345403295"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 04:15:00 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,249,1650956400"; 
-   d="scan'208";a="920125963"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 06 Jul 2022 04:14:59 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o92zi-000KVH-QX;
-        Wed, 06 Jul 2022 11:14:58 +0000
-Date:   Wed, 6 Jul 2022 19:14:28 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Ratheesh Kannoth <rkannoth@marvell.com>
-Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org
-Subject: [net-next:master 9/16]
- drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c:1080:14: warning:
- variable 'rc' set but not used
-Message-ID: <202207061918.lo2TMG5P-lkp@intel.com>
+        with ESMTP id S231251AbiGFLSw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 07:18:52 -0400
+Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B0B827CC9;
+        Wed,  6 Jul 2022 04:18:51 -0700 (PDT)
+Received: by mail-io1-xd2c.google.com with SMTP id h85so13699197iof.4;
+        Wed, 06 Jul 2022 04:18:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=YdXK1jK8c8JK2srQZ8sIWVLkb+7MN9opgC2hRcRTaT4=;
+        b=nWkxCI/k0gDvr7oZrHkWCo9r1JpeN4/gxMjUlk3SwC+dMO4ARWv1irbXFYDpkp/eAR
+         h7yrf00uUJJcQNUwDp3cbITl2wiZQeGiRrA4PgOEac7i/tlIXG3UUUy7WWiQ5g3JEXkA
+         Xww/8awsvPNnvkqkU91T5+mcWYexfgXOrSPgkU6S4fIJqOV67r49pRwD1X8FTqojINSU
+         cOAuIr19hhyMcDTBwC5DXqJuMAzwssq01aQxWK2orrOATFPAvH/+WnYYTCpOUlBvzLWe
+         luhGvccPzI6G0Q8EwfrUhvUxzNjPcYtuXZn7p+IYwiUxT2fIWy7X3Va++LOg0y3Twx6Z
+         /igA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=YdXK1jK8c8JK2srQZ8sIWVLkb+7MN9opgC2hRcRTaT4=;
+        b=zrjem1stJh/+G7xB2ovZzqv5XuT7uUO1ZhvNJjdZW/gixyaje1OTQoZ92JUuM1BP6u
+         JMQ6FMK9IAKzXDjO/vc/L2wJyAFTUHRfiXkV9Q8/86O/WtGq3420o+RFc1bFdZXO7hJs
+         2xXgUlunwvNNz64BRkPqphMO1SWMGLZ6l9zQD/JCs2MGz6JWmuPNs2j0Nsto1+H3Vx1O
+         q/o+LlGPhIqLC8TEBs6lhtmMoCvzZzMqaR+tMjdETVBu3heLypnNzXTyztOm7GTTbBz6
+         dqTTXnSYNAQaLb5KQ/ckcnd6HwDj+wL9LjYVtAot6X11RpngnkiSb/ACoZo0p7IMNZFP
+         5HMQ==
+X-Gm-Message-State: AJIora/4lcLvIy3yxgpFWNx5rS/7XWQjAWJBX200T75bsuh61a6pJlt9
+        jlwecjq6BdPBcj2Bm7/fiqR+xWx6XB8JqA==
+X-Google-Smtp-Source: AGRyM1uhWw4+wzUqCL+KdwojcloAAYRs5Qfcm7vB75vI4RpA+Tce05Mz6gGKSuCdxhcTyX1zE/nrbQ==
+X-Received: by 2002:a05:6638:19c3:b0:33c:9d05:444a with SMTP id bi3-20020a05663819c300b0033c9d05444amr25095151jab.307.1657106330835;
+        Wed, 06 Jul 2022 04:18:50 -0700 (PDT)
+Received: from james-x399.localdomain (71-218-105-222.hlrn.qwest.net. [71.218.105.222])
+        by smtp.gmail.com with ESMTPSA id b16-20020a02a590000000b0033f020640dasm812114jam.54.2022.07.06.04.18.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Jul 2022 04:18:50 -0700 (PDT)
+From:   James Hilliard <james.hilliard1@gmail.com>
+To:     bpf@vger.kernel.org
+Cc:     James Hilliard <james.hilliard1@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v4] libbpf: disable SEC pragma macro on GCC
+Date:   Wed,  6 Jul 2022 05:18:38 -0600
+Message-Id: <20220706111839.1247911-1-james.hilliard1@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Spam-Status: No, score=-5.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git master
-head:   2ef8e39f58f08589ab035223c2687830c0eba30f
-commit: c6238bc0614d3bafa5f491a065584b2e5ba6194a [9/16] octeontx2-af: Drop rules for NPC MCAM
-config: alpha-allyesconfig (https://download.01.org/0day-ci/archive/20220706/202207061918.lo2TMG5P-lkp@intel.com/config)
-compiler: alpha-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git/commit/?id=c6238bc0614d3bafa5f491a065584b2e5ba6194a
-        git remote add net-next https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git
-        git fetch --no-tags net-next master
-        git checkout c6238bc0614d3bafa5f491a065584b2e5ba6194a
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=alpha SHELL=/bin/bash drivers/net/ethernet/marvell/octeontx2/af/
+It seems the gcc preprocessor breaks with pragmas when surrounding
+__attribute__.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Disable these pragmas on GCC due to upstream bugs see:
+https://gcc.gnu.org/bugzilla/show_bug.cgi?id=55578
+https://gcc.gnu.org/bugzilla/show_bug.cgi?id=90400
 
-All warnings (new ones prefixed by >>):
+Fixes errors like:
+error: expected identifier or '(' before '#pragma'
+  106 | SEC("cgroup/bind6")
+      | ^~~
 
-   drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c:388:5: warning: no previous prototype for 'rvu_exact_calculate_hash' [-Wmissing-prototypes]
-     388 | u32 rvu_exact_calculate_hash(struct rvu *rvu, u16 chan, u16 ctype, u8 *mac,
-         |     ^~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c: In function 'rvu_npc_exact_get_drop_rule_info':
->> drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c:1080:14: warning: variable 'rc' set but not used [-Wunused-but-set-variable]
-    1080 |         bool rc;
-         |              ^~
-   drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c: At top level:
-   drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c:1248:5: warning: no previous prototype for 'rvu_npc_exact_add_table_entry' [-Wmissing-prototypes]
-    1248 | int rvu_npc_exact_add_table_entry(struct rvu *rvu, u8 cgx_id, u8 lmac_id, u8 *mac,
-         |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c: In function 'rvu_npc_exact_add_table_entry':
-   drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c:1254:33: warning: variable 'table' set but not used [-Wunused-but-set-variable]
-    1254 |         struct npc_exact_table *table;
-         |                                 ^~~~~
-   drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c: At top level:
-   drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c:1320:5: warning: no previous prototype for 'rvu_npc_exact_update_table_entry' [-Wmissing-prototypes]
-    1320 | int rvu_npc_exact_update_table_entry(struct rvu *rvu, u8 cgx_id, u8 lmac_id,
-         |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+error: expected '=', ',', ';', 'asm' or '__attribute__' before '#pragma'
+  114 | char _license[] SEC("license") = "GPL";
+      | ^~~
 
+Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
+---
+Changes v3 -> v4:
+  - disable SEC pragmas entirely on GCC
+Changes v2 -> v3:
+  - just fix SEC pragma
+Changes v1 -> v2:
+  - replace typeof with __typeof__ instead of changing pragma macros
+---
+ tools/lib/bpf/bpf_helpers.h | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-vim +/rc +1080 drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c
-
-  1062	
-  1063	/**
-  1064	 *	rvu_npc_exact_get_drop_rule_info - Get drop rule information.
-  1065	 *      @rvu: resource virtualization unit.
-  1066	 *	@intf_type: Interface type (CGX, SDP or LBK)
-  1067	 *	@cgx_id: CGX identifier.
-  1068	 *	@lmac_id: LMAC identifier.
-  1069	 *	@drop_mcam_idx: NPC mcam drop rule index.
-  1070	 *	@val: Channel value.
-  1071	 *	@mask: Channel mask.
-  1072	 *	@pcifunc: pcifunc of interface corresponding to the drop rule.
-  1073	 */
-  1074	static bool rvu_npc_exact_get_drop_rule_info(struct rvu *rvu, u8 intf_type, u8 cgx_id,
-  1075						     u8 lmac_id, u32 *drop_mcam_idx, u64 *val,
-  1076						     u64 *mask, u16 *pcifunc)
-  1077	{
-  1078		struct npc_exact_table *table;
-  1079		u64 chan_val, chan_mask;
-> 1080		bool rc;
-  1081		int i;
-  1082	
-  1083		table = rvu->hw->table;
-  1084	
-  1085		if (intf_type != NIX_INTF_TYPE_CGX) {
-  1086			dev_err(rvu->dev, "%s: No drop rule for LBK/SDP mode\n", __func__);
-  1087			return false;
-  1088		}
-  1089	
-  1090		rc = rvu_npc_exact_calc_drop_rule_chan_and_mask(rvu, intf_type, cgx_id,
-  1091								lmac_id, &chan_val, &chan_mask);
-  1092	
-  1093		for (i = 0; i < NPC_MCAM_DROP_RULE_MAX; i++) {
-  1094			if (!table->drop_rule_map[i].valid)
-  1095				break;
-  1096	
-  1097			if (table->drop_rule_map[i].chan_val != (u16)chan_val)
-  1098				continue;
-  1099	
-  1100			if (val)
-  1101				*val = table->drop_rule_map[i].chan_val;
-  1102			if (mask)
-  1103				*mask = table->drop_rule_map[i].chan_mask;
-  1104			if (pcifunc)
-  1105				*pcifunc = table->drop_rule_map[i].pcifunc;
-  1106	
-  1107			*drop_mcam_idx = i;
-  1108			return true;
-  1109		}
-  1110	
-  1111		if (i == NPC_MCAM_DROP_RULE_MAX) {
-  1112			dev_err(rvu->dev, "%s: drop mcam rule index (%d) >= NPC_MCAM_DROP_RULE_MAX\n",
-  1113				__func__, *drop_mcam_idx);
-  1114			return false;
-  1115		}
-  1116	
-  1117		dev_err(rvu->dev, "%s: Could not retrieve for cgx=%d, lmac=%d\n",
-  1118			__func__, cgx_id, lmac_id);
-  1119		return false;
-  1120	}
-  1121	
-
+diff --git a/tools/lib/bpf/bpf_helpers.h b/tools/lib/bpf/bpf_helpers.h
+index fb04eaf367f1..7349b16b8e2f 100644
+--- a/tools/lib/bpf/bpf_helpers.h
++++ b/tools/lib/bpf/bpf_helpers.h
+@@ -22,12 +22,25 @@
+  * To allow use of SEC() with externs (e.g., for extern .maps declarations),
+  * make sure __attribute__((unused)) doesn't trigger compilation warning.
+  */
++#if __GNUC__ && !__clang__
++
++/*
++ * Pragma macros are broken on GCC
++ * https://gcc.gnu.org/bugzilla/show_bug.cgi?id=55578
++ * https://gcc.gnu.org/bugzilla/show_bug.cgi?id=90400
++ */
++#define SEC(name) __attribute__((section(name), used))
++
++#else
++
+ #define SEC(name) \
+ 	_Pragma("GCC diagnostic push")					    \
+ 	_Pragma("GCC diagnostic ignored \"-Wignored-attributes\"")	    \
+ 	__attribute__((section(name), used))				    \
+ 	_Pragma("GCC diagnostic pop")					    \
+ 
++#endif
++
+ /* Avoid 'linux/stddef.h' definition of '__always_inline'. */
+ #undef __always_inline
+ #define __always_inline inline __attribute__((always_inline))
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.34.1
+
