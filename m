@@ -2,211 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A75E56867B
-	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 13:12:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49254568680
+	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 13:15:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230420AbiGFLMr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jul 2022 07:12:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50752 "EHLO
+        id S231347AbiGFLPD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jul 2022 07:15:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229531AbiGFLMp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 07:12:45 -0400
-Received: from EUR03-AM5-obe.outbound.protection.outlook.com (mail-eopbgr30052.outbound.protection.outlook.com [40.107.3.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9078527CEF
-        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 04:12:43 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZMlyAnQF5dUkY0lBcbvhWY9qY+z7w9shO5sNFAxXMmjIGWzvs6F90AWZRbg372S2j/AUxZMsmyaiTShw2YM4sRInyhUUTdeDtzgvjTKOCL4282smu2B/eOwT9+yKNGkYV3l//zMgS8pjNr7Ld9BaV5z+C+GLE/InF4US5UvGVlYs5WY7Z//M0It6fNl3u6iQ9Ej8y/erlHy56YkcdYvSWpMGVuIEh4v4xtmUO5gzcoP5idTKj/Prc4bhwQA4a3fPbP2DmzNZkAJAv7JkngxP4lUSKXby929rkhHB+92ilodB6yF++bL/igi4HHpLLHSVueiKqiu/CoO5qrVCeHfzrQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=jsQQJFdVEr8TAxyz5L+bicAwizWK5FChH08cbeECGY4=;
- b=iXBoSSBvqUokg69Q1jcG3VjqxyGUVfnp7wfzgYLDIUmFKpHsEhBpkhWkXa59z8bLbtcK2YX7zO62yHhFTxMARndDkzmUcCvui3VItFMMBDrIC2LQpD+JAV3k9HigE/mzQES4pd+ynNs+dV81hmNjiX3xBRPAMbdDAUGUZtGUOERLVn5SAFeEqtnYQomiuKxbDhfA5qTjDPjeKxnPrbUA2D/MrVNdIqyR45j4wDsrL5r8R22eTr0juLm8G7MNCh6VXczE3OcL1h3AuLwQddXtXUmQ5TK5g0Anv0bF7jaIwvv/rzRdORLl6Mijo7yohQd+TD62njZX/HaDyMnmTzJmzQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jsQQJFdVEr8TAxyz5L+bicAwizWK5FChH08cbeECGY4=;
- b=DFlJIGSxbeNazO7boTp8MZcwZKQ/pE0PCvrPBMJUp1Iwuotxzcgc7Yurb835pTgBpftq7LoCDOksriDxRhT8CY3hzcyDD4qmabrdin9PvIclKtxZQsws/NBFlkhCcWDVaXNugeQFGP7ZusQgnmMUxbf3Cw9V8VoYN9lcC1ugQX0=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by AM0PR04MB6609.eurprd04.prod.outlook.com (2603:10a6:208:16c::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.20; Wed, 6 Jul
- 2022 11:12:41 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::71b7:8ed1:e4e0:3857]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::71b7:8ed1:e4e0:3857%4]) with mapi id 15.20.5395.021; Wed, 6 Jul 2022
- 11:12:40 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     "Arun.Ramadoss@microchip.com" <Arun.Ramadoss@microchip.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        "petrm@nvidia.com" <petrm@nvidia.com>,
-        "idosch@nvidia.com" <idosch@nvidia.com>,
-        "linux@rempel-privat.de" <linux@rempel-privat.de>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "hauke@hauke-m.de" <hauke@hauke-m.de>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "martin.blumenstingl@googlemail.com" 
-        <martin.blumenstingl@googlemail.com>,
-        "Woojung.Huh@microchip.com" <Woojung.Huh@microchip.com>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Subject: Re: [RFC PATCH net-next 3/3] net: dsa: never skip VLAN configuration
-Thread-Topic: [RFC PATCH net-next 3/3] net: dsa: never skip VLAN configuration
-Thread-Index: AQHYkJUlP4ikIJ+Lb0SIV36lnP8Hwa1xK40AgAAF5IA=
-Date:   Wed, 6 Jul 2022 11:12:40 +0000
-Message-ID: <20220706111239.n6sjggkebyrsu6x3@skbuf>
-References: <20220705173114.2004386-1-vladimir.oltean@nxp.com>
- <20220705173114.2004386-4-vladimir.oltean@nxp.com>
- <e681971641d53b830a7aeafb9e88a3ac059915c5.camel@microchip.com>
-In-Reply-To: <e681971641d53b830a7aeafb9e88a3ac059915c5.camel@microchip.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 5a390f43-5ac7-43f6-749c-08da5f407149
-x-ms-traffictypediagnostic: AM0PR04MB6609:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: MGhRs6B4bDdzdbT2+UOgVKDXxUBFTKaA9uLzjvNmEN61+hKuqt4UmqQzFDHaYSzr59emf+UjdhCtGyAs3pBMykt9EO2nHH0mTrF43LBPODcXbFRIF5Xbcn2onkBo2ZnFbAz02EHnoK2Kp9t67oFMB6nQqhxTh6zvrS0/tydPZw6HFyKGQr7kN5AHMK6qEew8e4xbPRTZD8xMO05AYXJMKsS0yY4yHw9Gz2DHd7p9UxrdJsBoWkRQzAu5U1tMohm5aNZf15J0wnpL2HOQUIAGU95D6Junw1fFGHncb2fGoVnxpNdHwY8Dmv6VeZD/jaung0gkpuYPDqhvW8Meg4Xlib3TatTJIV9inYRzB/YEnLmf8rogR9k/FZfULi5DyXrwhxsxGwPlFhfvNk28rKrPVZp0hBQT0Nn1iScmJnd1UqXkP962j1wLGFfqDtsMBQOlzGf1Bflbpiy246VmaIhoUSrlOdpC3cUV4wnEIlQwZIIBIQqciKshTQYxKtDkYnVsnloFhkne9SKUjTxFgOlpMD2FVHAeBlMeDsrqbJ4tGZ88O3wYc7ccR3LpqPFC3RYd6lXzX8Edc9lvv85/pMvnLJLrp1YdLXo1j2SR/T5vd1IPv7qDfbGmJr4JLUGQwLekv512vlsIhFmINbJx9MHZjSH0b02DDi4AA3lVzqtjzaHBz2vDxVcgV1sWqQMSjfLAhe5Sv/R/y/tO1X9efkUGI2cOX2zXmFwAG4depHUkTkOTz9r3rjM8Ko3G58cQKre28pjgZp8R3RLw+OVGmpscKUx4GLyuVJhIqN0azL4RUpASvQIMCg7SwQ/L7Gguj7vK
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(7916004)(366004)(39860400002)(396003)(136003)(346002)(376002)(41300700001)(38070700005)(122000001)(1076003)(5660300002)(44832011)(6512007)(26005)(9686003)(6506007)(71200400001)(8936002)(478600001)(66476007)(7416002)(186003)(83380400001)(2906002)(91956017)(86362001)(38100700002)(6916009)(66556008)(54906003)(8676002)(33716001)(64756008)(66446008)(316002)(4326008)(66946007)(6486002)(76116006);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?kpvNsPD7Ks9G0RKbcG7hzEs5zwHiw17NTXWGRmwf4+DIAjleGkQEvDyj8luA?=
- =?us-ascii?Q?NV3HuVgSINNCCRmNMUg1KQsuJk3QbinJm8tiBSrWycyUjMP+ugW6Osm29aBG?=
- =?us-ascii?Q?MslXln+ci0+/0DIdgxLa3hYTGvBh+VJ/XFdaxpu0y1FDj8XADmNMObj7jFn0?=
- =?us-ascii?Q?MDt/Hzmf3vi5nw3JV0vYhujX3MM6METY9uNFwKUPShtxPfHNWo3kuql+Zlu4?=
- =?us-ascii?Q?+PKQ15vHB3j2XLjcSOyn8LLduddDmNTxit/FgOpyzJxqcUS0DnkmKamvcWtf?=
- =?us-ascii?Q?97wjwTc0lNRLKl7mMtB+KaMvwEmzQap0p+0W6S4xMQnKc0bC2noVr7GiIRNe?=
- =?us-ascii?Q?SerXOwn19VMTkvjIaK46zGMlgH6Z40xOmKOofEf3aLPcdGbfBFeS/8PMjN4M?=
- =?us-ascii?Q?Ftt+NUiuwS+Q7eaBlHD/D07+aktemZ3oNHqrBpU/Kj/X84o/Vp0L6kLeD4JS?=
- =?us-ascii?Q?0T1sBFyRBGPQ5mwvNfG+Pm0gbuTjUZYS9LEUAeKnia/DO2xZ+npn/BUzV2CK?=
- =?us-ascii?Q?KI0lRv7aispS8e0QXDCqgGWI++E0KgngmCQfS+UGKG78EWD78CrT8WxnNj8e?=
- =?us-ascii?Q?QZt3pLKMTtv5hBg/ymDdA4NXfTzEVh+dx2pmnhU7hGYudu/XnB7rUznWNcnv?=
- =?us-ascii?Q?r6+rEgSukMszdwwkRi8UIb2fiBe3m+0VRi27cVs5dqDmRBgkvRU0hD3aqxy1?=
- =?us-ascii?Q?EYiJB6gCtlF7UdisaQk1E/zDwpKX6o28cNVa4hUE/XUqPy6+79d9LTTc0Fdc?=
- =?us-ascii?Q?ZVI7JzfhD0+6+UMAuqhLGH2U/PF35gRq1S6jy3XcNR8/jIaNiUFVrhNK/v1V?=
- =?us-ascii?Q?q2637eXQVvmvcK2aoKSJo+pP6UlcKlAAwJP9vyeiM4IN2UpPLNZN7j4VvLLD?=
- =?us-ascii?Q?Qyc3vMTgOtwX2GZ7ilgvGZ4ExksXBnBs2J3gHCmH5K1V2U3CuWZBfbbaEzjb?=
- =?us-ascii?Q?uye5GikBeS8QmPLwLO1JCMs2JrwtpSDnYDciVOvVfioNiwYCK/7GqsK98rIw?=
- =?us-ascii?Q?ow/1cpx3icyGS0UNG6dy3y2LpugFIrvgUEKxSAqw3r3YMVHiZwTFZdYNh7aQ?=
- =?us-ascii?Q?cJaJ4goyA5IpehxQGosKEjkgF3Yj3931aljFAi6yFmDkTlCp3IqWMjJMZ6SX?=
- =?us-ascii?Q?iTZ5a+lQL5LASMa+ILJxsqB+5K8AmGnswzmQT116obBynPNsvT4FmeRF/oOj?=
- =?us-ascii?Q?NmG/K/KbelekkUjkx/94cy5C4CSNZMFY8d08KCVvZvky9wNVrodnk65A2TCd?=
- =?us-ascii?Q?IoidcrCMprFu9rcr8Uopt81Kpw20da/MJE6sFUKNgakp4iXu8xnjxGXTCvwJ?=
- =?us-ascii?Q?l0Bx1K+cvatNM328XdD/o9ARxVPUU0DTeztv92CFRgC28/bFRSCohirgBfHU?=
- =?us-ascii?Q?3puL0ua1e11RCIyfJMcMBhSIUG27dPIkAK311xb034maomUN1/nxSaSPaHw+?=
- =?us-ascii?Q?EMv3/2mN++yDHgnbBMc+9m20AZuWvM1Ena1ew3OxGQZs52oTYPXa2IcDfiIL?=
- =?us-ascii?Q?Ummt8iwiPaKF5t8D2j/BfOTdBjKm4CNciILgqXF4xgbbrYRjVkppszbNBs6F?=
- =?us-ascii?Q?orI4q6WbEpEUQFa4qXBFOLeoVuAtv3JsP8S+FOTc42nOF0aYUG+lsYYWValQ?=
- =?us-ascii?Q?5A=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <C4F0969431C7944182BD46F360BBC356@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S229531AbiGFLPC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 07:15:02 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1498E2EE
+        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 04:15:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657106101; x=1688642101;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=c6uUdvhC8o/s0B8Lu/JdCtZlQm/LBontoqG4zpeohM0=;
+  b=RcICbtxJC/KDZABbA6yYDShOrnp509nPLDU4B1q1d0yZ1IQC6iPS04qs
+   /kYjEnxYFoQJGB1Io0hd9kGK1s4YLzpqEX9sBgXBP3K2bucCci7g6NXnT
+   Z/i3dHryuVJvU9Zu9HvGJe8aDtkLLX31U/Q/LWUXTCqKHyXflWnSgB7Eu
+   Euv/3oHTGyi9mWnzqMoLbKHldne9PziusNzck4BuWqAsUXbSVQqV9YcHT
+   4Qh+GXP0BxjriL6mGNOZ3CL6vrDjwaxaMdPqs9V86DcSdaK5fdsyLQTk8
+   nrT+NNesNgLZyvzt9QuhPagA/LUvIBgj9WYRHSY+D/pFwuxLPVJsFxbky
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10399"; a="345403295"
+X-IronPort-AV: E=Sophos;i="5.92,249,1650956400"; 
+   d="scan'208";a="345403295"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 04:15:00 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,249,1650956400"; 
+   d="scan'208";a="920125963"
+Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
+  by fmsmga005.fm.intel.com with ESMTP; 06 Jul 2022 04:14:59 -0700
+Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o92zi-000KVH-QX;
+        Wed, 06 Jul 2022 11:14:58 +0000
+Date:   Wed, 6 Jul 2022 19:14:28 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Ratheesh Kannoth <rkannoth@marvell.com>
+Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org
+Subject: [net-next:master 9/16]
+ drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c:1080:14: warning:
+ variable 'rc' set but not used
+Message-ID: <202207061918.lo2TMG5P-lkp@intel.com>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5a390f43-5ac7-43f6-749c-08da5f407149
-X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Jul 2022 11:12:40.9062
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 9YEMOZlevJVDUrQKXkKWdNIGgnxTdyQPKFJZ25nyWHoJKezghDZCeD0qPnlt6EGWuC44J3CTSRJewYaltSWUAw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB6609
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Spam-Status: No, score=-5.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Arun,
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git master
+head:   2ef8e39f58f08589ab035223c2687830c0eba30f
+commit: c6238bc0614d3bafa5f491a065584b2e5ba6194a [9/16] octeontx2-af: Drop rules for NPC MCAM
+config: alpha-allyesconfig (https://download.01.org/0day-ci/archive/20220706/202207061918.lo2TMG5P-lkp@intel.com/config)
+compiler: alpha-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git/commit/?id=c6238bc0614d3bafa5f491a065584b2e5ba6194a
+        git remote add net-next https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git
+        git fetch --no-tags net-next master
+        git checkout c6238bc0614d3bafa5f491a065584b2e5ba6194a
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=alpha SHELL=/bin/bash drivers/net/ethernet/marvell/octeontx2/af/
 
-On Wed, Jul 06, 2022 at 10:51:34AM +0000, Arun.Ramadoss@microchip.com wrote=
-:
-> Hi Vladimir,
->=20
-> On Tue, 2022-07-05 at 20:31 +0300, Vladimir Oltean wrote:
-> > - For ksz9477, REG_PORT_DEFAULT_VID seems to be only modified by the
-> >   bridge VLAN add/del handlers, so there is no logic to update it on
-> >   VLAN awareness change. I don't know exactly how the switch behaves
-> >   after ksz9477_port_vlan_filtering() is called with "false".
-> >   If packets are classified to the REG_PORT_DEFAULT_VID, then it is
-> >   broken. Similar thing can be said for KSZ8.
->=20
-> When ksz9477_port_vlan_filtering is set to false, then it clears the
-> 802.1Q vlan enable bit in the switch. So the packets are not classified
-> based on vlan tag. Only if the vlan bit is set, packets are classified
-> based on pvid.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-So bit 7 of the global Switch Lookup Engine Control 0 Register says:
+All warnings (new ones prefixed by >>):
 
-802.1Q VLAN Enable
-This is the master enable for VLAN forwarding and filtering. Note that the
-VLAN Table must be set up before VLAN mode is enabled.
-1 =3D VLAN mode enabled
-0 =3D VLAN mode disabled
+   drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c:388:5: warning: no previous prototype for 'rvu_exact_calculate_hash' [-Wmissing-prototypes]
+     388 | u32 rvu_exact_calculate_hash(struct rvu *rvu, u16 chan, u16 ctype, u8 *mac,
+         |     ^~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c: In function 'rvu_npc_exact_get_drop_rule_info':
+>> drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c:1080:14: warning: variable 'rc' set but not used [-Wunused-but-set-variable]
+    1080 |         bool rc;
+         |              ^~
+   drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c: At top level:
+   drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c:1248:5: warning: no previous prototype for 'rvu_npc_exact_add_table_entry' [-Wmissing-prototypes]
+    1248 | int rvu_npc_exact_add_table_entry(struct rvu *rvu, u8 cgx_id, u8 lmac_id, u8 *mac,
+         |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c: In function 'rvu_npc_exact_add_table_entry':
+   drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c:1254:33: warning: variable 'table' set but not used [-Wunused-but-set-variable]
+    1254 |         struct npc_exact_table *table;
+         |                                 ^~~~~
+   drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c: At top level:
+   drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c:1320:5: warning: no previous prototype for 'rvu_npc_exact_update_table_entry' [-Wmissing-prototypes]
+    1320 | int rvu_npc_exact_update_table_entry(struct rvu *rvu, u8 cgx_id, u8 lmac_id,
+         |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-I'm not completely clear, personally, from the chosen wording.
 
-More interesting is the definition for the Port Control 1 Register,
-where it says
+vim +/rc +1080 drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c
 
-Port VLAN Membership
-Each bit corresponds to a device port. This feature does not utilize VLAN
-tags or the VLAN Table, and is unrelated to tag-based VLAN functions. Also
-refer to bit 1 in the Queue Management Control 0 Register.
-Bit 0 is for port 1
-Bit 1 is for port 2, etc.
-1 =3D Frames may be forwarded to the corresponding port
-0 =3D Frames are blocked from being forwarded to corresponding port
+  1062	
+  1063	/**
+  1064	 *	rvu_npc_exact_get_drop_rule_info - Get drop rule information.
+  1065	 *      @rvu: resource virtualization unit.
+  1066	 *	@intf_type: Interface type (CGX, SDP or LBK)
+  1067	 *	@cgx_id: CGX identifier.
+  1068	 *	@lmac_id: LMAC identifier.
+  1069	 *	@drop_mcam_idx: NPC mcam drop rule index.
+  1070	 *	@val: Channel value.
+  1071	 *	@mask: Channel mask.
+  1072	 *	@pcifunc: pcifunc of interface corresponding to the drop rule.
+  1073	 */
+  1074	static bool rvu_npc_exact_get_drop_rule_info(struct rvu *rvu, u8 intf_type, u8 cgx_id,
+  1075						     u8 lmac_id, u32 *drop_mcam_idx, u64 *val,
+  1076						     u64 *mask, u16 *pcifunc)
+  1077	{
+  1078		struct npc_exact_table *table;
+  1079		u64 chan_val, chan_mask;
+> 1080		bool rc;
+  1081		int i;
+  1082	
+  1083		table = rvu->hw->table;
+  1084	
+  1085		if (intf_type != NIX_INTF_TYPE_CGX) {
+  1086			dev_err(rvu->dev, "%s: No drop rule for LBK/SDP mode\n", __func__);
+  1087			return false;
+  1088		}
+  1089	
+  1090		rc = rvu_npc_exact_calc_drop_rule_chan_and_mask(rvu, intf_type, cgx_id,
+  1091								lmac_id, &chan_val, &chan_mask);
+  1092	
+  1093		for (i = 0; i < NPC_MCAM_DROP_RULE_MAX; i++) {
+  1094			if (!table->drop_rule_map[i].valid)
+  1095				break;
+  1096	
+  1097			if (table->drop_rule_map[i].chan_val != (u16)chan_val)
+  1098				continue;
+  1099	
+  1100			if (val)
+  1101				*val = table->drop_rule_map[i].chan_val;
+  1102			if (mask)
+  1103				*mask = table->drop_rule_map[i].chan_mask;
+  1104			if (pcifunc)
+  1105				*pcifunc = table->drop_rule_map[i].pcifunc;
+  1106	
+  1107			*drop_mcam_idx = i;
+  1108			return true;
+  1109		}
+  1110	
+  1111		if (i == NPC_MCAM_DROP_RULE_MAX) {
+  1112			dev_err(rvu->dev, "%s: drop mcam rule index (%d) >= NPC_MCAM_DROP_RULE_MAX\n",
+  1113				__func__, *drop_mcam_idx);
+  1114			return false;
+  1115		}
+  1116	
+  1117		dev_err(rvu->dev, "%s: Could not retrieve for cgx=%d, lmac=%d\n",
+  1118			__func__, cgx_id, lmac_id);
+  1119		return false;
+  1120	}
+  1121	
 
-So you may be right, if the VLAN mode is disabled, the packet is
-forwarded within the "port VLAN". It would be good to check,
-nonetheless.
-
-> > In any case, see commit 8b6836d82470 ("net: dsa: mv88e6xxx: keep the
-> > pvid at 0 when VLAN-unaware") for an example of how to deal with the
-> > problem, and test pvid_change() in
-> > tools/testing/selftests/drivers/net/dsa/bridge_vlan_unaware.sh for
-> > how
-> > to check whether the driver behaves correctly. I don't have the
-> > hardware
-> > to test any changes.
->=20
-> I can test it and report the observation. But I haven't run the
-> selftests before. I looked in the scripts today, but couldn't find out
-> how to compile it as part of kernel and program it to the target &
-> test. I infer that, this scripts should be run on target (I have
-> SAMA5D3 + KSZ9477) with 4 switch ports. Can you guide me on testing
-> this.
-
-To be honest I've no idea how to run the kselftests "correctly" either,
-I just rsync -avr tools/testing/selftests/ root@<board-ip>:selftests/,
-then install the packages I need (running the selftest usually shows
-what those are), then run the test itself:
-
-$ cd selftests/drivers/net/dsa/ocelot
-$ ./bridge_vlan_unaware.sh lan1 lan2 lan3 lan4
-
-The topology for most of these selftests is pretty standard. There are 2
-host interfaces $h1 and $h2 (the first and the last one), and 2 switch
-interfaces $swp1 and $swp2 (the middle 2). There is supposed to be a
-loopback cable between $h1 and $swp1, and a cable between $swp2 and $h2.
-The $h1 and $h2 can be any physical Ethernet interfaces, $swp1 and $swp2
-need to be switchdev.=
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
