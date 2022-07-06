@@ -2,163 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C276E56920E
-	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 20:44:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B55C569221
+	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 20:49:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233850AbiGFSom (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jul 2022 14:44:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56472 "EHLO
+        id S233846AbiGFSsz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jul 2022 14:48:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231715AbiGFSok (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 14:44:40 -0400
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F40DD10E9;
-        Wed,  6 Jul 2022 11:44:39 -0700 (PDT)
-Received: by mail-pg1-x532.google.com with SMTP id z14so14738892pgh.0;
-        Wed, 06 Jul 2022 11:44:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=QBWnTGtWCIRK/R2Rxz0hgC6/YznGaVDZLzOauaR/k/s=;
-        b=WOD/8yZgRdtFPzBVVcE5rYoZy5KfnhmXEnQS9Et8gKO8Zjs/YhpFh73qtgXUM5Fo0e
-         2nP6Shv/maiRuRPdGqfhf1tQWKbyOxBv13hOOzskoSviImgwzmvoLtGtDuuvj74hZRNY
-         eM3aDa/Pt38iPYHyQVAGXrlW20nwRKnCB6lXDRJuwHeYRXBe+oz1HoLOFs6Zhz00QTkl
-         TQyR0ax+kc526qC40A356K4ZO3axf6B7To/HUu8bgflGITLsDc99asZxEgT1ZV96OTM7
-         pH24yvN/IAaGgjBAg4ArBqwYhX9pUOCzk13RTMvqtAdixZq5sDT8SAAbie3GUHTYSO2P
-         DSOA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=QBWnTGtWCIRK/R2Rxz0hgC6/YznGaVDZLzOauaR/k/s=;
-        b=bhPt+2zUPm5dZvD9nlKorTKn3ux+DgIjdb4WIGuPQyIevoRMkCuIEx8Kag59V0xAxh
-         EROBzM0oKPcvCCz3xATP1ccNMPMn3PrVQ7dFbqgV2k5yD2L9ErdF5LxJt6evbKMmsXbI
-         E4gp7s2D8tgBfSbKik0oKfkyHIv9ewjf1lie2NqISV3ZWsiclZXExrkFIsSr+3LjaIAe
-         RzZilLHvoA9HHzk7GRNad86LfzeiIpHEThtKjgqNd9dTiXw2kNUvu8QRfOKM/poYzeVn
-         2aGZPZwRSet/hT4O0I4RDkPio7W+hgO7VpDaROpscBdY7nLU6ebGllT5cwuelqITdJIc
-         rGyw==
-X-Gm-Message-State: AJIora9BCt4Jj5Kq8LeDgkKhw3C0vx4cyT6sjM227TirkmFZEObbuymZ
-        QLEz3tnbQ2fUvRJneXioyGI=
-X-Google-Smtp-Source: AGRyM1v8v1EviJzZooNw3rpihssTxo2CaorRno8GIJ+dHmIaf7vPw7fxAXRcaU4DCCNya66oFF1IvQ==
-X-Received: by 2002:a65:684a:0:b0:412:78ef:7f87 with SMTP id q10-20020a65684a000000b0041278ef7f87mr7820901pgt.61.1657133079430;
-        Wed, 06 Jul 2022 11:44:39 -0700 (PDT)
-Received: from MacBook-Pro-3.local ([2620:10d:c090:500::2:8597])
-        by smtp.gmail.com with ESMTPSA id a9-20020aa78649000000b0052531985e3esm25240083pfo.22.2022.07.06.11.44.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 11:44:38 -0700 (PDT)
-Date:   Wed, 6 Jul 2022 11:44:36 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc:     bpf@vger.kernel.org, Yonghong Song <yhs@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org
-Subject: Re: [PATCH bpf-next v5 1/8] bpf: Add support for forcing kfunc args
- to be referenced
-Message-ID: <20220706184436.mf7oeexxfwswgdqf@MacBook-Pro-3.local>
-References: <20220623192637.3866852-1-memxor@gmail.com>
- <20220623192637.3866852-2-memxor@gmail.com>
- <20220629032304.h5ck7tizbfehiwut@macbook-pro-3.dhcp.thefacebook.com>
- <CAP01T77fsU8u6GP+HXfQQ_gdu+kp3Am1+Ao-mNYULjDazHs38Q@mail.gmail.com>
- <CAP01T75cVLehQbkE3LLwSG5wVecNz0FH9QZpmzoqs-e8YKpGtg@mail.gmail.com>
+        with ESMTP id S230472AbiGFSsx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 14:48:53 -0400
+Received: from proxima.lasnet.de (proxima.lasnet.de [IPv6:2a01:4f8:121:31eb:3::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA6C41F2DE;
+        Wed,  6 Jul 2022 11:48:51 -0700 (PDT)
+Received: from [IPv6:2a01:c23:9553:2700:569c:b316:2406:eb4c] (dynamic-2a01-0c23-9553-2700-569c-b316-2406-eb4c.c23.pool.telefonica.de [IPv6:2a01:c23:9553:2700:569c:b316:2406:eb4c])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: jluebbe@lasnet.de)
+        by proxima.lasnet.de (Postfix) with ESMTPSA id F3EA5C0373;
+        Wed,  6 Jul 2022 20:48:48 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lasnet.de; s=2021;
+        t=1657133329;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Q1N88M69xDw45XQpZsRsQu5rF1MU+rMW1YQ0tIbUWkM=;
+        b=pTxEw9xvEo8NmFgytApBz58B51c7rSRlcJd/LGcOr5Xa0NpxIcqsBL1Mn9oILQipdn0ZF+
+        xLTeG04YGQSVrDohQrniIkm0DbTT6+W3IuuxqV3kSWPLB5Gfrz9TzdBhpx5+O/n2YkASvl
+        9Ouwb01iWqRXXGxCs3mtZZYVYzdbkQ6vm81QH9hmLD0LdYrCIbqqC0uhQ55gxFqKEhnnw4
+        sYAk+uT0TOxdLyaafrxtdJU7z+SZCHja/r5podGM6R8ZHiCiKxN170xL1pk1UKjk8hJK10
+        RZsGDgDTzRzPor8Yq9H9x6NNaYJzXtvCEZXR/yWSJCeocgXqFF3vBE+mZerwtg==
+Message-ID: <a32428fa0f3811c25912cd313a6fe1fb4f0a4fac.camel@lasnet.de>
+Subject: Re: [REGRESSION] connection timeout with routes to VRF
+From:   Jan Luebbe <jluebbe@lasnet.de>
+To:     Mike Manning <mvrmanning@gmail.com>,
+        David Ahern <dsahern@kernel.org>,
+        Robert Shearman <robertshearman@gmail.com>,
+        Andy Roulin <aroulin@nvidia.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        regressions@lists.linux.dev,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Date:   Wed, 06 Jul 2022 20:49:27 +0200
+In-Reply-To: <940fa370-08ce-1d39-d5cc-51de8e853b47@gmail.com>
+References: <a54c149aed38fded2d3b5fdb1a6c89e36a083b74.camel@lasnet.de>
+         <6410890e-333d-5f0e-52f2-1041667c80f8@kernel.org>
+         <940fa370-08ce-1d39-d5cc-51de8e853b47@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.3-1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAP01T75cVLehQbkE3LLwSG5wVecNz0FH9QZpmzoqs-e8YKpGtg@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jul 03, 2022 at 11:04:22AM +0530, Kumar Kartikeya Dwivedi wrote:
-> On Sun, 3 Jul 2022 at 10:54, Kumar Kartikeya Dwivedi <memxor@gmail.com> wrote:
-> >
-> > On Wed, 29 Jun 2022 at 08:53, Alexei Starovoitov
-> > <alexei.starovoitov@gmail.com> wrote:
-> > >
-> > > On Fri, Jun 24, 2022 at 12:56:30AM +0530, Kumar Kartikeya Dwivedi wrote:
-> > > > Similar to how we detect mem, size pairs in kfunc, teach verifier to
-> > > > treat __ref suffix on argument name to imply that it must be a
-> > > > referenced pointer when passed to kfunc. This is required to ensure that
-> > > > kfunc that operate on some object only work on acquired pointers and not
-> > > > normal PTR_TO_BTF_ID with same type which can be obtained by pointer
-> > > > walking. Release functions need not specify such suffix on release
-> > > > arguments as they are already expected to receive one referenced
-> > > > argument.
-> > > >
-> > > > Note that we use strict type matching when a __ref suffix is present on
-> > > > the argument.
-> > > ...
-> > > > +             /* Check if argument must be a referenced pointer, args + i has
-> > > > +              * been verified to be a pointer (after skipping modifiers).
-> > > > +              */
-> > > > +             arg_ref = is_kfunc_arg_ref(btf, args + i);
-> > > > +             if (is_kfunc && arg_ref && !reg->ref_obj_id) {
-> > > > +                     bpf_log(log, "R%d must be referenced\n", regno);
-> > > > +                     return -EINVAL;
-> > > > +             }
-> > > > +
-> > >
-> > > imo this suffix will be confusing to use.
-> > > If I understand the intent the __ref should only be used
-> > > in acquire (and other) kfuncs that also do release.
-> > > Adding __ref to actual release kfunc will be a nop.
-> > > It will be checked, but it's not necessary.
-> > >
-> > > At the end
-> > > +struct nf_conn *bpf_ct_insert_entry(struct nf_conn___init *nfct__ref)
-> > > will behave like kptr_xchg with exception that kptr_xchg takes any btf_id
-> > > while here it's fixed.
-> > >
-> > > The code:
-> > >  if (rel && reg->ref_obj_id)
-> > >         arg_type |= OBJ_RELEASE;
-> > > should probably be updated with '|| arg_ref'
-> > > to make sure reg->off == 0 ?
-> > > That looks like a small bug.
-> > >
-> >
-> > Indeed, I missed that. Thanks for catching it.
-> >
-> > > But stepping back... why __ref is needed ?
-> > > We can add bpf_ct_insert_entry to acq and rel sets and it should work?
-> > > I'm assuming you're doing the orthogonal cleanup of resolve_btfid,
-> > > so we will have a single kfunc set where bpf_ct_insert_entry will
-> > > have both acq and rel flags.
-> > > I'm surely missing something.
-> >
-> > It is needed to prevent the case where someone might do:
-> > ct = bpf_xdp_ct_alloc(...);
-> > bpf_ct_set_timeout(ct->master, ...);
-> >
+On Sun, 2022-06-26 at 21:06 +0100, Mike Manning wrote:
+...
+> Andy Roulin suggested the same fix to the same problem a few weeks back.
+> Let's do it along with a test case in fcnl-test.sh which covers all of
+> these vrf permutations.
 > 
-> A better illustration is probably bpf_xdp_ct_lookup and
-> bpf_ct_change_timeout, since here the type for ct->master won't match
-> with bpf_ct_set_timeout, but the point is the same.
+Reverting 3c82a21f4320 would remove isolation between the default and other VRFs
+needed when no VRF route leaking has been configured between these: there may be
+unintended leaking of packets arriving on a device enslaved to an l3mdev due to
+the potential match on an unbound socket.
 
-Sorry, I'm still not following.
-Didn't we make pointer walking 'untrusted' so ct->master cannot be
-passed into any kfunc?
+Thanks for the explanation.
 
-> > Or just obtain PTR_TO_BTF_ID by pointer walking and try to pass it in
-> > to bpf_ct_set_timeout.
-> >
-> > __ref allows an argument on a non-release kfunc to have checks like a
-> > release argument, i.e. refcounted, reg->off == 0 (var_off is already
-> > checked to be 0), so use the original pointer that was obtained from
-> > an acquire kfunc. As you noted, it isn't strictly needed on release
-> > kfunc (like bpf_ct_insert_entry) because the same checks happen for it
-> > anyway. But both timeout and status helpers should use it if they
-> > "operate" on the acquired ct (from alloc, insert, or lookup).
+VRF route leaking requires routes to be present for both ingress and egress
+VRFs,
+the testcase shown only has a route from default to red VRF. The implicit return
+path from red to default VRF due to match on unbound socket is no longer
+present.
+
+
+If there is a better configuration that makes this work in the general case
+without a change to the kernel, we'd be happy as well.
+
+In our full setup, the outbound TCP connection (from the default VRF) gets a
+local IP from the interface enslaved to the VRF. Before 3c82a21f4320, this would
+simply work.
+
+How would the return path route from the red VRF to the default VRF look in that
+case?
+
+Match on unbound socket in all VRFs and not only in the default VRF should be
+possible by setting this option (see
+https://www.kernel.org/doc/Documentation/networking/vrf.txt):
+
+
+Do you mean unbound as in listening socket not bound to an IP with bind()? Or as
+in a socket in the default VRF?
+
+sysctl net.ipv4.tcp_l3mdev_accept=1
+
+
+The sysctl docs sound like this should only apply to listening sockets. In this
+case, we have an unconnected outbound socket.
+
+However, for this to work a change similar to the following is needed (I have
+shown the change to the macro for consistency with above, it is now an inline
+fn):
+
+
+I can also test on master and only used the macro form only because I wasn't
+completely sure how to translate it to the inline function form.
+
+---
+ include/net/inet_hashtables.h |   10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
+
+--- a/include/net/inet_hashtables.h
++++ b/include/net/inet_hashtables.h
+@@ -300,9 +300,8 @@
+ #define INET_MATCH(__sk, __net, __cookie, __saddr, __daddr, __ports, __dif,
+__sdif) \
+        (((__sk)->sk_portpair == (__ports))                     &&      \
+         ((__sk)->sk_addrpair == (__cookie))                    &&      \
+-        (((__sk)->sk_bound_dev_if == (__dif))                  ||      \
+-         ((__sk)->sk_bound_dev_if == (__sdif)))                &&      \
+-        net_eq(sock_net(__sk), (__net)))
++        net_eq(sock_net(__sk), (__net))                        &&      \
++        inet_sk_bound_dev_eq((__net), (__sk)->sk_bound_dev_if, (__dif),
+(__sdif)))
+ #else /* 32-bit arch */
+ #define INET_ADDR_COOKIE(__name, __saddr, __daddr) \
+        const int __name __deprecated __attribute__((unused))
+@@ -311,9 +310,8 @@
+        (((__sk)->sk_portpair == (__ports))             &&              \
+         ((__sk)->sk_daddr      == (__saddr))           &&              \
+         ((__sk)->sk_rcv_saddr  == (__daddr))           &&              \
+-        (((__sk)->sk_bound_dev_if == (__dif))          ||              \
+-         ((__sk)->sk_bound_dev_if == (__sdif)))        &&              \
+-        net_eq(sock_net(__sk), (__net)))
++        net_eq(sock_net(__sk), (__net))                &&              \
++        inet_sk_bound_dev_eq((__net), (__sk)->sk_bound_dev_if, (__dif),
+(__sdif)))
+ #endif /* 64-bit arch */
+
+ /* Sockets in TCP_CLOSE state are _always_ taken out of the hash, so we need
+
+I can confirm that this gets my testcase working with 
+net.ipv4.tcp_l3mdev_accept=1.
+
+This is to get the testcase to pass, I will leave it to others to comment on
+the testcase validity in terms of testing forwarding using commands on 1 device.
+
+So a network-namespace-based testcase would be preferred? We used the simple
+setup because it seemed easier to understand.
+
+The series that 3c82a21f4320 is part of were introduced into the kernel in 2018
+by the Vyatta team, who regularly run an extensive test suite for routing
+protocols
+for VRF functionality incl. all combinations of route leaking between default
+and
+other VRFs, so there is no known issue in this regard. I will attempt to reach
+out
+to them so as to advise them of this thread.
+
+Are these testcases public? Perhaps I could use them find a better configuration
+that handles our use-case.
+
+Thanks,
+
+Jan
+
