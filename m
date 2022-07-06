@@ -2,478 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A57356862E
-	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 12:53:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EEB6456863D
+	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 12:56:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231831AbiGFKxs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jul 2022 06:53:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37636 "EHLO
+        id S233239AbiGFKzz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jul 2022 06:55:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233147AbiGFKxr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 06:53:47 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31FCD27B2F
-        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 03:53:44 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id cl1so21505364wrb.4
-        for <netdev@vger.kernel.org>; Wed, 06 Jul 2022 03:53:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=+p/4sekWheWdbGIovM0EKfWut/d2MmPvCx5j78VW0Vs=;
-        b=rXldJeWVAwZytiPiHVi1BAjtiAFO4lS3mLt9IX7NcreiMLklVm5nuj5Uig5SKiFb5b
-         S1xNuDFdy0EiIINahHtwOJNRHPPzZlyBKl5C1yFwJAapLu7reu6rKJfJ1iw78eSveo20
-         QWA8uQnYuvMuTt71mYPYlmt0UZDyNFYExPf8GrKeijuRoQ8htT1APLBwkGlUdTRUMyil
-         FkbJ7vKWKpwH0ZEa5bq7TYooTjT0Jb/78M1I+AprGItcMZykwhQMY+U3ijRaHyJHexj5
-         CH5Qxz7QX89rZKUyTgmscg7x0jfnd9hr5S5Iwp/C+IZFXn1N86Fi6mpAfVWA/UL38Zqq
-         GVDA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=+p/4sekWheWdbGIovM0EKfWut/d2MmPvCx5j78VW0Vs=;
-        b=AootmxlvssBStSl2SmqMnDYThadqofdGXt80WPohoVfsvYO2nUCZwFCuK0BnjusvDN
-         bQw5eiTquYJPPZ8hL51+PWFMQIObcyFGMHnBFlpiBCObUHtWO8n/uomMpir9VRMA+KfW
-         1Wsdst0B46KsreWf+mSlkEl+1Ifsswz2jk0+PJ5Iinx0ZQan3NWjs6geeo4deGQHL/J8
-         Zdz698oWDyPnE3TFedJ6s4wPTFKAg+u70BvB5yHRc50Mnmc1W3iFQFnJvTDKHg+sPcgC
-         aWeI24r2HmNizoRyB16G0SV8DvN4gU7ScV1YJ4i/OC+1Bwn5L7yBM377aJBPQiFGHg5x
-         NTRQ==
-X-Gm-Message-State: AJIora+jtecwe/mH9o9XD1BDeKlwP5D49mXHViF4rTDOp59Iwl9sqSue
-        8jNXM2k5qzYsRvp+zAQ8muNx/Q==
-X-Google-Smtp-Source: AGRyM1sVpr33P2lGME5nAB3rmW5C4qG2GBBItyEacEYV04dU0Z8Luz6mWEWOSjhPRu9n+W5O4KKXZw==
-X-Received: by 2002:a5d:448e:0:b0:21b:887f:23f with SMTP id j14-20020a5d448e000000b0021b887f023fmr37162663wrq.240.1657104822588;
-        Wed, 06 Jul 2022 03:53:42 -0700 (PDT)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id d21-20020a1c7315000000b003a02cbf862esm24990019wmb.13.2022.07.06.03.53.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 03:53:42 -0700 (PDT)
-Date:   Wed, 6 Jul 2022 11:53:40 +0100
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        LKML <linux-kernel@vger.kernel.org>, stable@kernel.org,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: [RESEND 1/1] Bluetooth: Use chan_list_lock to protect the whole
- put/destroy invokation
-Message-ID: <YsVptCjpzHjR8Scv@google.com>
-References: <20220622082716.478486-1-lee.jones@linaro.org>
- <CANn89iK-uFP6Swgc0ZeEC38UsuywJ3wbybSNouH202Wa7X7Tzg@mail.gmail.com>
- <CABBYNZ+C=MQ7577Fr5_W8tQ4iWRSDBSiC4fkRBY3x=9ph+YAzA@mail.gmail.com>
- <CABBYNZLysdh3NFK+G8=NUQ=G=hvS8X0PdMp=bVqiwPDPCAokmg@mail.gmail.com>
- <YrxvgIiWuFVlXBaQ@google.com>
- <CABBYNZJFSxk9=3Gj7jOj__s=iJGmhrZ=CA7Mb74_-Y0sg+N40g@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+        with ESMTP id S233214AbiGFKzx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 06:55:53 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E94127CE3
+        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 03:55:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657104952; x=1688640952;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=9mBUj7eqa2RZZWpO2sG1fUj4JovC09R0HTglTwbRtQA=;
+  b=f1FP4kw82JDkjHtJ370+vU/0uKsJFjJI88Sa7s9vgR4wzEdrQO19Sgv5
+   IkuKe4m/X63d62+hbX9yzLBE9inZuu2MONppsVKnzxl96j8R+WL4tHaTj
+   keykE/HzB1MjlzFT2lAbDkyS2FMnVF3KJI7DKYBx4PdBTRfxpukFZHt8R
+   Std4NnaUs6GLXcY4JiJZBD0C4O8sqFgYklwFJ8a6VFikb/vc+Axu1kInf
+   zFtLsUq4shA7aW9DFwa8zBwRuTTG2TrrCh4Muubu+aygWcy4NtAZTR+Rv
+   B4AmUvNd0MShLwKqO/ESZA3rUC+vfmAYPbXTaQAZ+uQFfXBTOpzsMG8je
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10399"; a="370032323"
+X-IronPort-AV: E=Sophos;i="5.92,249,1650956400"; 
+   d="scan'208";a="370032323"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 03:54:30 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,249,1650956400"; 
+   d="scan'208";a="650613066"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by fmsmga008.fm.intel.com with ESMTP; 06 Jul 2022 03:54:20 -0700
+Received: from fmsmsx602.amr.corp.intel.com (10.18.126.82) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Wed, 6 Jul 2022 03:54:20 -0700
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27 via Frontend Transport; Wed, 6 Jul 2022 03:54:20 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.104)
+ by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.27; Wed, 6 Jul 2022 03:54:20 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=m4DuCIps+YuEK8cgy4Yp+RD2iRkzRCCChL2vCk6x0K9SVFlA2ToQNebqhCKYXeB0z0tal/tERP4aKj0Q/SgkqxX1uFQKDFaoOBYJrOa1gucA/2ftxxOL235Tx5U0pB+6oOGZEtV1ZU5zwnABZ4Jpsuilmok0a769fwiS/XXYk3Lz0K65ZMXspMnM+8ASc4S74x2YpyHKfkjZ81bR5WIptDprqawpHy7lyPnlhrcqk9/NsSm6EqiCjLwy1uBELcZtvOvcW7/fpKEx5kLXonS0u7OLLpDr7NkCVrCXba191p9L+cjEyit+F1KQxaBYdClnBQUMJ8xxGjGvd7K+guoEZA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=JLszalAVnqiFOuQAmgRMzEvnlRMFA0597rRu60vt6Mg=;
+ b=iH3jfjWevsNb6udlHGgt1k6u/5QF4pwTUYUQ9MZRzGLY5fv6DI0CPj+tVMGjH875pnfLm/+4Z1dYj0rofbFChpdXb2wUQIJq4tcA30W1ChSFqwStW+ecD7RNLjaKybRucSqotxm+EF23bZmeuXTYAaiGftzwWIRd1yRYOiCqN+JRxutffwlQQUHApCgW2jd0wqchaE8qPMCpONTnm41omsqxW5sGb28u9U9Vz/37fGDDlqi+JjmrsMbsh8yC6G2ZlWCUmGDuRqUseIXdlh2/40gbqPNVJEwDld1N6dm21IMUec43s5/It01AqgVUwd7WQNumMl4frHZPyRNQOuXGuw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from CO6PR11MB5603.namprd11.prod.outlook.com (2603:10b6:5:35c::12)
+ by DM6PR11MB4265.namprd11.prod.outlook.com (2603:10b6:5:1de::30) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.18; Wed, 6 Jul
+ 2022 10:54:18 +0000
+Received: from CO6PR11MB5603.namprd11.prod.outlook.com
+ ([fe80::5008:4f0:1078:7ba3]) by CO6PR11MB5603.namprd11.prod.outlook.com
+ ([fe80::5008:4f0:1078:7ba3%7]) with mapi id 15.20.5395.022; Wed, 6 Jul 2022
+ 10:54:18 +0000
+Message-ID: <ec6bfee4-cf0f-c5c1-a7b3-726d7e3c6d33@intel.com>
+Date:   Wed, 6 Jul 2022 12:54:12 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [RFC] ice: Reconfigure tx scheduling for SR-IOV
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, Dima Chumak <dchumak@nvidia.com>,
+        "Maxim Mikityanskiy" <maximmi@nvidia.com>,
+        "Knitter, Konrad" <konrad.knitter@intel.com>
+References: <20220704114513.2958937-1-michal.wilczynski@intel.com>
+ <20220705151505.7a4757ae@kernel.org>
+From:   "Wilczynski, Michal" <michal.wilczynski@intel.com>
+In-Reply-To: <20220705151505.7a4757ae@kernel.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CABBYNZJFSxk9=3Gj7jOj__s=iJGmhrZ=CA7Mb74_-Y0sg+N40g@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-ClientProxiedBy: AS9PR07CA0006.eurprd07.prod.outlook.com
+ (2603:10a6:20b:46c::7) To CO6PR11MB5603.namprd11.prod.outlook.com
+ (2603:10b6:5:35c::12)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 4b24c209-ed6a-446f-8c52-08da5f3de025
+X-MS-TrafficTypeDiagnostic: DM6PR11MB4265:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Sv/OCSUhhfeEqdNyiMSNKj8UlaZDGBSS2d/s5G28mDq7WToJaamvRfp5YxG4bWbobJ2VEGbd7XoVAfR1KzF/BJqXT8VyREVK2yN1Ean3pjq4+bJm7i2AYZ+x1b/U+ArVW4DYdfJ4BxwyNrdwVFRQE63p0lgKA8iK/kgAA0olV8VyPiD9952iyOr3bSBUe5VgtaEg5eoLeSeKluDdkVT54RSvRJ8LqFSlOJkopuuVIf82kwxzXxoVuRkHbYUGut4lftfk9FZUTbZt5AQAz1fFnj1cQBfxQBxQBY1y7kde8vahyYCAxdxCvxIaBKzo+bfg3xmzpLvzlhT4+CeMLcAEHyYG6yRLdFd8fQjRC2TRYzV0M1qgzoKPoUzZdcW3Jt0Bba8Gq0413y/CtEDKJ58Onw1TLbvLrgT2q6cyB8as5pOipoCNRZFzEhQoLW3olAPjFGwfsb/xOC725wbejV8kFnrzFSavFF/6I9SAvrQeGoGJKv7t/GxKEDhq85E5+COLTgvgT+yw5/AgiEE7h0TX6BFNd/AXWFoMUyzYexUc67THgsvQsWwWu6lgEfq/AtAkeJtbDIr/foCRjB7CK/QZyv3v78auieMpijraiBB1MAfAcQpdVWrL+OJ0kM2kJLVChPIFq1L7Ozy+vRhuOgUqcp1LXpNPWFD2R+y9QBuwPytd9edf18UOWfaiwXjwMfEbTFzjwotHTesWm3QIKS2gGSCwDdZRs7A1U93LiHL1pUvijIg8nXz5uO5j2ejnEH6JWkAWuauCriSHcDuA1LAtuRoOvSvqMw3BlmqPeviGl3s6yaI/o3sZO9AiPRglRsVXMliXPYgWb0DPAuqk8sYw9+hMoiVlTEBp4yfxAzPoSL53bVyeo/dr1HonyWJ5XCl7
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO6PR11MB5603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(396003)(346002)(376002)(39860400002)(366004)(136003)(36756003)(26005)(6506007)(6486002)(2616005)(6512007)(186003)(83380400001)(107886003)(478600001)(53546011)(38100700002)(2906002)(82960400001)(31686004)(966005)(4326008)(8676002)(66476007)(66556008)(66946007)(54906003)(86362001)(41300700001)(8936002)(5660300002)(31696002)(6666004)(6916009)(316002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?N1VMVHRqTkIremlCWDlwcFRJTGNtUFVzeFArU1VRcS9GOGloRVZYUDV5US9w?=
+ =?utf-8?B?UURDNUtUT2QvRklYd3JJS3N4UkdiN2c3cjFUWmw2MmZGMGVJSTNlOGJnayth?=
+ =?utf-8?B?WFg4cnRqQVQzT2xEMkJsckJTSEZ0WWU2dVVCUUdKS2prbVZoVGJlSDJkamlO?=
+ =?utf-8?B?K0owOEZMLy9WUUxEZHYvS0JKMXdjRzk3dklwOHJ6ejZ6NkJsbW95RkVwNDdE?=
+ =?utf-8?B?TUJHSkMvc3ZXVFFzMTl0UEtyaTJHbnhwaGwvNkQxNmdqSzRxWWd1bmlLR0pM?=
+ =?utf-8?B?V2cwT2xtMGRSaUhhMGFBVGhEeVlpWGV6VUF5NXZNdzRRdDBtaTJOZmN3elNs?=
+ =?utf-8?B?L1FJdXJCVmNpc1FXYmdwRHRJQjlPRDJQc0JGVEFQc1ZBMXRxcmFBeWpyUDcz?=
+ =?utf-8?B?eGFha3RLV2k0Rld4ZUlMdlJncm1hVUhPdjJ0TnNNNUg0SmVwaHFvS3F2Nmor?=
+ =?utf-8?B?YTZ6U3JMMDFST2ZNZXUvcE5xbWZ1aTB4T3RVUS9LSTBDaFAzdHdiVlRkbTIz?=
+ =?utf-8?B?amlXZ0VQM0dvMHNnYldxYU4zK2tZckdNQ1dqRkZ3U1FYYTNhVjY4aTlQODdC?=
+ =?utf-8?B?MmhpSXR4VGsvc3RlcmxDUGg4NXhSVUZZTkhOUnlmRCttOUZrNlhFaFRjUE56?=
+ =?utf-8?B?OHIwNWNSbit5WDN5eUlZK09PR0dmV04vWlY4MjBJbU5sQXRPM3dqbWRjbGE1?=
+ =?utf-8?B?Nm9MSFEzN2JNd25lT2ZNWDJRN0paS0lNdFdXNGNla01xZzNKNE1salpuaWhh?=
+ =?utf-8?B?VnhXN2NPWTlsM2NYUDlTYm1wVnRDM0M1bXlMTmw3dDBvYTlSNWVIakdOWmly?=
+ =?utf-8?B?cHN6azhndkNINGRkSHpNYThMQXp6Y3JGS29YQ2tZRnpsaVNlanBQWXZBc2t2?=
+ =?utf-8?B?MzN3QVBESTlhY2JjWmhZbGxmd0hINXJrYWtWNHBGOTkwN3NWVzdhbVcvWkNh?=
+ =?utf-8?B?dDRNTTdGZStqd0lvSThxZlRhR0IwdGd5Z0FwM1NVTGp4R3JUVVVjWnM2NXY1?=
+ =?utf-8?B?cUFpa0taTVFEQVA1K2R3dnpLanFMWVVHU3k4NjI2czBTaXZDT2JjZmlGYllq?=
+ =?utf-8?B?ODYzY05CRTlUa2xONldCb1k5TFhxVWpnOHUzYzNhNEFCNWVYQkJwTUxoVHps?=
+ =?utf-8?B?UHFOMW1VN3o1ZmZnazVnSSt2YmRMYnJjcGJqTnJQSUYyS3p6ZG0wTEFtdUwx?=
+ =?utf-8?B?eEgrYndHSzdxVnBqRHlvK0xrRTdJOWQ0T202bzNhSWl2azgrMmp4cWxjYk5S?=
+ =?utf-8?B?c2luQThzZ1pUakRqZGNEQ3UxSkxQWWk4Mjgyam10bVFpMFhhajY5YVBtRFRt?=
+ =?utf-8?B?bVg0TVF3TVB0ZTlyWklRUWgyemtLU2crdTNkVWM5Mm5NTmVPek1TMW1yYmE4?=
+ =?utf-8?B?azJqNDE3aE5KdkJNWmV4T3g5My8rYkVMaVk5UmRnb2hTV0JjdVcyNFhrRE9a?=
+ =?utf-8?B?SWpWcStiRjBoQ00zQ2J3Q3ZFMjRGQTJScENpU3E5dVQxZWUrdFJ4ZjN3eHFz?=
+ =?utf-8?B?ZHFlNlJyTEJXN0J5akYyUHc2V1ZPT044ZXZMNzZoWlhKdDRRSW02U2Vhb3FY?=
+ =?utf-8?B?NjNHQi9obHBvL3pwdmprZklvTmM4Q28rSGNUWHJ0SFp4T1RabnNZN09aQXJ6?=
+ =?utf-8?B?c2VvZTZUQmVTdTVJMFpodkFVUUpIRDEvazhoUFlmaWxoRnlVWlB1aHAwM2Yz?=
+ =?utf-8?B?ZEtIWWRTcTJlc0RFbnJxTFZwWlhZSmlsR3YyMXptTFRHOTZPci9yejRwMkVy?=
+ =?utf-8?B?WWtMZGpRLyt3QTAwUzY0b0tYdk1lTVFtQWpoWkpKajRZSExKWWFUZnFFZ1dP?=
+ =?utf-8?B?NEJ5eGk2OGEycGpDTU4rbzRSdDVIajZUMmpWNEw0bUNjaE0wOEU4azZHMXhZ?=
+ =?utf-8?B?VlI2TXo5T2hOY3dIeVR3QWRseG10dHV0MDF5MTdRSGh0eHgxZGZmZ29XMGp4?=
+ =?utf-8?B?eUJ3OG9HV2NzaXovOTZubUxvWmlIUkk2S21UbU9SUnlNa0VlU3dwWVJQMHNh?=
+ =?utf-8?B?QUFsOHBiaXBIWUg1UzZRS0w1enhiMEFJMlB3YTJtWFJBaTJ2djRoRGV4di8r?=
+ =?utf-8?B?Y2dmaGl0VVQ4cDZpWmlzSjFhRjdRUzJ6QWlIRjdsQUdWc3JnZ0o5QU11NVpz?=
+ =?utf-8?B?bW5mVkpJRDdlUjcvRWdMTWdNMEo3Rjk3T0pSeThMcGUxbnNCUjFsbVFUTGt3?=
+ =?utf-8?B?ZEE9PQ==?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4b24c209-ed6a-446f-8c52-08da5f3de025
+X-MS-Exchange-CrossTenant-AuthSource: CO6PR11MB5603.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jul 2022 10:54:18.7216
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: pwkfblrnhRLrJetOqV08owVR7h12NM6Gu8D0c88vIVqOIDmshlnINT29jSaDmKBGc239tZ8FDeUb4eBOZ6IJ8XTkk9pNZCYjIJ8P3NG1AXw=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB4265
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-5.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 05 Jul 2022, Luiz Augusto von Dentz wrote:
+Hi,
 
-> Hi Lee,
-> 
-> On Wed, Jun 29, 2022 at 8:28 AM Lee Jones <lee.jones@linaro.org> wrote:
-> >
-> > On Tue, 28 Jun 2022, Luiz Augusto von Dentz wrote:
-> >
-> > > Hi Eric, Lee,
-> > >
-> > > On Mon, Jun 27, 2022 at 4:39 PM Luiz Augusto von Dentz
-> > > <luiz.dentz@gmail.com> wrote:
-> > > >
-> > > > Hi Eric, Lee,
-> > > >
-> > > > On Mon, Jun 27, 2022 at 7:41 AM Eric Dumazet <edumazet@google.com> wrote:
-> > > > >
-> > > > > On Wed, Jun 22, 2022 at 10:27 AM Lee Jones <lee.jones@linaro.org> wrote:
-> > > > > >
-> > > > > > This change prevents a use-after-free caused by one of the worker
-> > > > > > threads starting up (see below) *after* the final channel reference
-> > > > > > has been put() during sock_close() but *before* the references to the
-> > > > > > channel have been destroyed.
-> > > > > >
-> > > > > >   refcount_t: increment on 0; use-after-free.
-> > > > > >   BUG: KASAN: use-after-free in refcount_dec_and_test+0x20/0xd0
-> > > > > >   Read of size 4 at addr ffffffc114f5bf18 by task kworker/u17:14/705
-> > > > > >
-> > > > > >   CPU: 4 PID: 705 Comm: kworker/u17:14 Tainted: G S      W       4.14.234-00003-g1fb6d0bd49a4-dirty #28
-> > > > > >   Hardware name: Qualcomm Technologies, Inc. SM8150 V2 PM8150 Google Inc. MSM sm8150 Flame DVT (DT)
-> > > > > >   Workqueue: hci0 hci_rx_work
-> > > > > >   Call trace:
-> > > > > >    dump_backtrace+0x0/0x378
-> > > > > >    show_stack+0x20/0x2c
-> > > > > >    dump_stack+0x124/0x148
-> > > > > >    print_address_description+0x80/0x2e8
-> > > > > >    __kasan_report+0x168/0x188
-> > > > > >    kasan_report+0x10/0x18
-> > > > > >    __asan_load4+0x84/0x8c
-> > > > > >    refcount_dec_and_test+0x20/0xd0
-> > > > > >    l2cap_chan_put+0x48/0x12c
-> > > > > >    l2cap_recv_frame+0x4770/0x6550
-> > > > > >    l2cap_recv_acldata+0x44c/0x7a4
-> > > > > >    hci_acldata_packet+0x100/0x188
-> > > > > >    hci_rx_work+0x178/0x23c
-> > > > > >    process_one_work+0x35c/0x95c
-> > > > > >    worker_thread+0x4cc/0x960
-> > > > > >    kthread+0x1a8/0x1c4
-> > > > > >    ret_from_fork+0x10/0x18
-> > > > > >
-> > > > > > Cc: stable@kernel.org
-> > > > >
-> > > > > When was the bug added ? (Fixes: tag please)
-> > > > >
-> > > > > > Cc: Marcel Holtmann <marcel@holtmann.org>
-> > > > > > Cc: Johan Hedberg <johan.hedberg@gmail.com>
-> > > > > > Cc: Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-> > > > > > Cc: "David S. Miller" <davem@davemloft.net>
-> > > > > > Cc: Eric Dumazet <edumazet@google.com>
-> > > > > > Cc: Jakub Kicinski <kuba@kernel.org>
-> > > > > > Cc: Paolo Abeni <pabeni@redhat.com>
-> > > > > > Cc: linux-bluetooth@vger.kernel.org
-> > > > > > Cc: netdev@vger.kernel.org
-> > > > > > Signed-off-by: Lee Jones <lee.jones@linaro.org>
-> > > > > > ---
-> > > > > >  net/bluetooth/l2cap_core.c | 4 ++--
-> > > > > >  1 file changed, 2 insertions(+), 2 deletions(-)
-> > > > > >
-> > > > > > diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
-> > > > > > index ae78490ecd3d4..82279c5919fd8 100644
-> > > > > > --- a/net/bluetooth/l2cap_core.c
-> > > > > > +++ b/net/bluetooth/l2cap_core.c
-> > > > > > @@ -483,9 +483,7 @@ static void l2cap_chan_destroy(struct kref *kref)
-> > > > > >
-> > > > > >         BT_DBG("chan %p", chan);
-> > > > > >
-> > > > > > -       write_lock(&chan_list_lock);
-> > > > > >         list_del(&chan->global_l);
-> > > > > > -       write_unlock(&chan_list_lock);
-> > > > > >
-> > > > > >         kfree(chan);
-> > > > > >  }
-> > > > > > @@ -501,7 +499,9 @@ void l2cap_chan_put(struct l2cap_chan *c)
-> > > > > >  {
-> > > > > >         BT_DBG("chan %p orig refcnt %u", c, kref_read(&c->kref));
-> > > > > >
-> > > > > > +       write_lock(&chan_list_lock);
-> > > > > >         kref_put(&c->kref, l2cap_chan_destroy);
-> > > > > > +       write_unlock(&chan_list_lock);
-> > > > > >  }
-> > > > > >  EXPORT_SYMBOL_GPL(l2cap_chan_put);
-> > > > > >
-> > > > > >
-> > > > >
-> > > > > I do not think this patch is correct.
-> > > > >
-> > > > > a kref does not need to be protected by a write lock.
-> > > > >
-> > > > > This might shuffle things enough to work around a particular repro you have.
-> > > > >
-> > > > > If the patch was correct why not protect kref_get() sides ?
-> > > > >
-> > > > > Before the &hdev->rx_work is scheduled (queue_work(hdev->workqueue,
-> > > > > &hdev->rx_work),
-> > > > > a reference must be taken.
-> > > > >
-> > > > > Then this reference must be released at the end of hci_rx_work() or
-> > > > > when hdev->workqueue
-> > > > > is canceled.
-> > > > >
-> > > > > This refcount is not needed _if_ the workqueue is properly canceled at
-> > > > > device dismantle,
-> > > > > in a synchronous way.
-> > > > >
-> > > > > I do not see this hdev->rx_work being canceled, maybe this is the real issue.
-> > > > >
-> > > > > There is a call to drain_workqueue() but this is not enough I think,
-> > > > > because hci_recv_frame()
-> > > > > can re-arm
-> > > > >    queue_work(hdev->workqueue, &hdev->rx_work);
-> > > >
-> > > > I suspect this likely a refcount problem, we do l2cap_get_chan_by_scid:
-> > > >
-> > > > /* Find channel with given SCID.
-> > > >  * Returns locked channel. */
-> > > > static struct l2cap_chan *l2cap_get_chan_by_scid(struct l2cap_conn
-> > > > *conn, u16 cid)
-> > > >
-> > > > So we return a locked channel but that doesn't prevent another thread
-> > > > to call l2cap_chan_put which doesn't care about l2cap_chan_lock so
-> > > > perhaps we actually need to host a reference while we have the lock,
-> > > > at least we do something like that on l2cap_sock.c:
-> > > >
-> > > > l2cap_chan_hold(chan);
-> > > > l2cap_chan_lock(chan);
-> > > >
-> > > > __clear_chan_timer(chan);
-> > > > l2cap_chan_close(chan, ECONNRESET);
-> > > > l2cap_sock_kill(sk);
-> > > >
-> > > > l2cap_chan_unlock(chan);
-> > > > l2cap_chan_put(chan);
-> > >
-> > > Perhaps something like this:
-> >
-> > I'm struggling to apply this for test:
-> >
-> >   "error: corrupt patch at line 6"
-> 
-> Check with the attached patch.
+Thank you for your e-mail.
 
-With the patch applied:
+I considered using devlink-rate, and it seems like a good fit. However 
+we would also
 
-[  188.825418][   T75] refcount_t: addition on 0; use-after-free.
-[  188.825418][   T75] refcount_t: addition on 0; use-after-free.
-[  188.840629][   T75] WARNING: CPU: 5 PID: 75 at lib/refcount.c:25 refcount_warn_saturate+0x147/0x1b0
-[  188.840629][   T75] WARNING: CPU: 5 PID: 75 at lib/refcount.c:25 refcount_warn_saturate+0x147/0x1b0
-[  188.862642][   T75] Modules linked in:
-[  188.862642][   T75] Modules linked in:
-[  188.871686][   T75] CPU: 5 PID: 75 Comm: kworker/u17:0 Not tainted 5.18.0-00005-gc3401a7ad65f #8
-[  188.871686][   T75] CPU: 5 PID: 75 Comm: kworker/u17:0 Not tainted 5.18.0-00005-gc3401a7ad65f #8
-[  188.892806][   T75] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.0-debian-1.16.0-4 04/01/2014
-[  188.892806][   T75] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.0-debian-1.16.0-4 04/01/2014
-[  188.917398][   T75] Workqueue: hci0 hci_rx_work
-[  188.917398][   T75] Workqueue: hci0 hci_rx_work
-[  188.928515][   T75] RIP: 0010:refcount_warn_saturate+0x147/0x1b0
-[  188.928515][   T75] RIP: 0010:refcount_warn_saturate+0x147/0x1b0
-[  188.943176][   T75] Code: c7 e0 a1 70 85 31 c0 e8 d7 c2 e8 fe 0f 0b eb a1 e8 fe 33 15 ff c6 05 f9 e2 a5 04 01 48 c7 c7 80 a2 70 80
-[  188.943176][   T75] Code: c7 e0 a1 70 85 31 c0 e8 d7 c2 e8 fe 0f 0b eb a1 e8 fe 33 15 ff c6 05 f9 e2 a5 04 01 48 c7 c7 80 a2 70 80
-[  188.990053][   T75] RSP: 0018:ffffc9000156f800 EFLAGS: 00010246
-[  188.990053][   T75] RSP: 0018:ffffc9000156f800 EFLAGS: 00010246
-[  189.004337][   T75] RAX: 118d918bf1a47e00 RBX: 0000000000000002 RCX: ffff8881130ce000
-[  189.004337][   T75] RAX: 118d918bf1a47e00 RBX: 0000000000000002 RCX: ffff8881130ce000
-[  189.023131][   T75] RDX: 0000000000000000 RSI: 0000000000000001 RDI: 0000000000000000
-[  189.023131][   T75] RDX: 0000000000000000 RSI: 0000000000000001 RDI: 0000000000000000
-[  189.042044][   T75] RBP: ffffc9000156f810 R08: ffffffff81574218 R09: ffffed107de165d1
-[  189.042044][   T75] RBP: ffffc9000156f810 R08: ffffffff81574218 R09: ffffed107de165d1
-[  189.060967][   T75] R10: ffffed107de165d1 R11: 0000000000000000 R12: 1ffff920002adf10
-[  189.060967][   T75] R10: ffffed107de165d1 R11: 0000000000000000 R12: 1ffff920002adf10
-[  189.079650][   T75] R13: dffffc0000000000 R14: 0000000000000002 R15: ffff888139224818
-[  189.079650][   T75] R13: dffffc0000000000 R14: 0000000000000002 R15: ffff888139224818
-[  189.098573][   T75] FS:  0000000000000000(0000) GS:ffff8883ef080000(0000) knlGS:0000000000000000
-[  189.098573][   T75] FS:  0000000000000000(0000) GS:ffff8883ef080000(0000) knlGS:0000000000000000
-[  189.119604][   T75] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  189.119604][   T75] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  189.135313][   T75] CR2: 00000000004a2e98 CR3: 000000000680f000 CR4: 0000000000350ea0
-[  189.135313][   T75] CR2: 00000000004a2e98 CR3: 000000000680f000 CR4: 0000000000350ea0
-[  189.154165][   T75] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[  189.154165][   T75] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[  189.173465][   T75] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[  189.173465][   T75] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[  189.192075][   T75] Call Trace:
-[  189.192075][   T75] Call Trace:
-[  189.199853][   T75]  <TASK>
-[  189.199853][   T75]  <TASK>
-[  189.206820][   T75]  l2cap_global_chan_by_psm+0x55a/0x5a0
-[  189.206820][   T75]  l2cap_global_chan_by_psm+0x55a/0x5a0
-[  189.219891][   T75]  ? l2cap_connect+0x12c0/0x12c0
-[  189.219891][   T75]  ? l2cap_connect+0x12c0/0x12c0
-[  189.231602][   T75]  ? __kfree_skb+0x13e/0x1c0
-[  189.231602][   T75]  ? __kfree_skb+0x13e/0x1c0
-[  189.242612][   T75]  ? l2cap_recv_frame+0xf5c/0x95c0
-[  189.242612][   T75]  ? l2cap_recv_frame+0xf5c/0x95c0
-[  189.254714][   T75]  ? skb_pull+0xde/0x150
-[  189.254714][   T75]  ? skb_pull+0xde/0x150
-[  189.264776][   T75]  l2cap_recv_frame+0x5bd/0x95c0
-[  189.264776][   T75]  l2cap_recv_frame+0x5bd/0x95c0
-[  189.276329][   T75]  ? debug_smp_processor_id+0x1c/0x20
-[  189.276329][   T75]  ? debug_smp_processor_id+0x1c/0x20
-[  189.288985][   T75]  ? update_cfs_rq_load_avg+0x412/0x4f0
-[  189.288985][   T75]  ? update_cfs_rq_load_avg+0x412/0x4f0
-[  189.302202][   T75]  ? l2cap_recv_acldata+0x1a60/0x1a60
-[  189.302202][   T75]  ? l2cap_recv_acldata+0x1a60/0x1a60
-[  189.314998][   T75]  ? __kasan_check_write+0x14/0x20
-[  189.314998][   T75]  ? __kasan_check_write+0x14/0x20
-[  189.326877][   T75]  ? __switch_to+0x617/0x1060
-[  189.326877][   T75]  ? __switch_to+0x617/0x1060
-[  189.337858][   T75]  ? __kasan_check_write+0x14/0x20
-[  189.337858][   T75]  ? __kasan_check_write+0x14/0x20
-[  189.349712][   T75]  ? _raw_spin_lock_irqsave+0xdc/0x1f0
-[  189.349712][   T75]  ? _raw_spin_lock_irqsave+0xdc/0x1f0
-[  189.362793][   T75]  ? compat_start_thread+0x20/0x20
-[  189.362793][   T75]  ? compat_start_thread+0x20/0x20
-[  189.375316][   T75]  l2cap_recv_acldata+0x5c9/0x1a60
-[  189.375316][   T75]  l2cap_recv_acldata+0x5c9/0x1a60
-[  189.387262][   T75]  ? hci_connect_sco+0x9b0/0x9b0
-[  189.387262][   T75]  ? hci_connect_sco+0x9b0/0x9b0
-[  189.398857][   T75]  hci_rx_work+0x54b/0x750
-[  189.398857][   T75]  hci_rx_work+0x54b/0x750
-[  189.409172][   T75]  process_one_work+0x6eb/0x1080
-[  189.409172][   T75]  process_one_work+0x6eb/0x1080
-[  189.420829][   T75]  worker_thread+0xb2b/0x13d0
-[  189.420829][   T75]  worker_thread+0xb2b/0x13d0
-[  189.431922][   T75]  kthread+0x2b1/0x2d0
-[  189.431922][   T75]  kthread+0x2b1/0x2d0
-[  189.441724][   T75]  ? process_one_work+0x1080/0x1080
-[  189.441724][   T75]  ? process_one_work+0x1080/0x1080
-[  189.454559][   T75]  ? kthread_blkcg+0xd0/0xd0
-[  189.454559][   T75]  ? kthread_blkcg+0xd0/0xd0
-[  189.465457][   T75]  ret_from_fork+0x1f/0x30
-[  189.465457][   T75]  ret_from_fork+0x1f/0x30
-[  189.475777][   T75]  </TASK>
-[  189.475777][   T75]  </TASK>
-[  189.482907][   T75] ---[ end trace 0000000000000000 ]---
-[  189.482907][   T75] ---[ end trace 0000000000000000 ]---
-[  189.496567][   T75] ------------[ cut here ]------------
-[  189.496567][   T75] ------------[ cut here ]------------
-[  189.510250][   T75] refcount_t: underflow; use-after-free.
-[  189.510250][   T75] refcount_t: underflow; use-after-free.
+need support for rate-limiting for individual queues on the VF. 
+Currently we have
 
-> From 88cf6b4f2b0c9ed0bd7ef3b0d38574b412264609 Mon Sep 17 00:00:00 2001
-> From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-> Date: Tue, 28 Jun 2022 15:46:04 -0700
-> Subject: [PATCH] Bluetooth: L2CAP: WIP
-> 
-> Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-> ---
->  net/bluetooth/l2cap_core.c | 25 +++++++++++++++++++------
->  1 file changed, 19 insertions(+), 6 deletions(-)
-> 
-> diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
-> index 09ecaf556de5..359fb1ce4372 100644
-> --- a/net/bluetooth/l2cap_core.c
-> +++ b/net/bluetooth/l2cap_core.c
-> @@ -111,7 +111,8 @@ static struct l2cap_chan *__l2cap_get_chan_by_scid(struct l2cap_conn *conn,
->  }
->  
->  /* Find channel with given SCID.
-> - * Returns locked channel. */
-> + * Returns a reference locked channel.
-> + */
->  static struct l2cap_chan *l2cap_get_chan_by_scid(struct l2cap_conn *conn,
->  						 u16 cid)
->  {
-> @@ -119,15 +120,17 @@ static struct l2cap_chan *l2cap_get_chan_by_scid(struct l2cap_conn *conn,
->  
->  	mutex_lock(&conn->chan_lock);
->  	c = __l2cap_get_chan_by_scid(conn, cid);
-> -	if (c)
-> +	if (c) {
-> +		l2cap_chan_hold(c);
->  		l2cap_chan_lock(c);
-> +	}
->  	mutex_unlock(&conn->chan_lock);
->  
->  	return c;
->  }
->  
->  /* Find channel with given DCID.
-> - * Returns locked channel.
-> + * Returns a reference locked channel.
->   */
->  static struct l2cap_chan *l2cap_get_chan_by_dcid(struct l2cap_conn *conn,
->  						 u16 cid)
-> @@ -136,8 +139,10 @@ static struct l2cap_chan *l2cap_get_chan_by_dcid(struct l2cap_conn *conn,
->  
->  	mutex_lock(&conn->chan_lock);
->  	c = __l2cap_get_chan_by_dcid(conn, cid);
-> -	if (c)
-> +	if (c) {
-> +		l2cap_chan_hold(c);
->  		l2cap_chan_lock(c);
-> +	}
->  	mutex_unlock(&conn->chan_lock);
->  
->  	return c;
-> @@ -4464,6 +4469,7 @@ static inline int l2cap_config_req(struct l2cap_conn *conn,
->  
->  unlock:
->  	l2cap_chan_unlock(chan);
-> +	l2cap_chan_put(chan);
->  	return err;
->  }
->  
-> @@ -4578,6 +4584,7 @@ static inline int l2cap_config_rsp(struct l2cap_conn *conn,
->  
->  done:
->  	l2cap_chan_unlock(chan);
-> +	l2cap_chan_put(chan);
->  	return err;
->  }
->  
-> @@ -5305,6 +5312,7 @@ static inline int l2cap_move_channel_req(struct l2cap_conn *conn,
->  	l2cap_send_move_chan_rsp(chan, result);
->  
->  	l2cap_chan_unlock(chan);
-> +	l2cap_chan_put(chan);
->  
->  	return 0;
->  }
-> @@ -5397,6 +5405,7 @@ static void l2cap_move_continue(struct l2cap_conn *conn, u16 icid, u16 result)
->  	}
->  
->  	l2cap_chan_unlock(chan);
-> +	l2cap_chan_put(chan);
->  }
->  
->  static void l2cap_move_fail(struct l2cap_conn *conn, u8 ident, u16 icid,
-> @@ -5489,6 +5498,7 @@ static int l2cap_move_channel_confirm(struct l2cap_conn *conn,
->  	l2cap_send_move_chan_cfm_rsp(conn, cmd->ident, icid);
->  
->  	l2cap_chan_unlock(chan);
-> +	l2cap_chan_put(chan);
->  
->  	return 0;
->  }
-> @@ -5524,6 +5534,7 @@ static inline int l2cap_move_channel_confirm_rsp(struct l2cap_conn *conn,
->  	}
->  
->  	l2cap_chan_unlock(chan);
-> +	l2cap_chan_put(chan);
->  
->  	return 0;
->  }
-> @@ -5896,12 +5907,11 @@ static inline int l2cap_le_credits(struct l2cap_conn *conn,
->  	if (credits > max_credits) {
->  		BT_ERR("LE credits overflow");
->  		l2cap_send_disconn_req(chan, ECONNRESET);
-> -		l2cap_chan_unlock(chan);
->  
->  		/* Return 0 so that we don't trigger an unnecessary
->  		 * command reject packet.
->  		 */
-> -		return 0;
-> +		goto unlock;
->  	}
->  
->  	chan->tx_credits += credits;
-> @@ -5912,7 +5922,9 @@ static inline int l2cap_le_credits(struct l2cap_conn *conn,
->  	if (chan->tx_credits)
->  		chan->ops->resume(chan);
->  
-> +unlock:
->  	l2cap_chan_unlock(chan);
-> +	l2cap_chan_put(chan);
->  
->  	return 0;
->  }
-> @@ -7598,6 +7610,7 @@ static void l2cap_data_channel(struct l2cap_conn *conn, u16 cid,
->  
->  done:
->  	l2cap_chan_unlock(chan);
-> +	l2cap_chan_put(chan);
->  }
->  
->  static void l2cap_conless_channel(struct l2cap_conn *conn, __le16 psm,
+two types of rate objects in devlink-rate: leaf and node. Would adding a 
+third one - queue be accepted ?
+
+Also we might want to add some other object rate parameters to currently 
+existing ones, for
+
+example 'priority'.
 
 
--- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+If this sounds acceptable I will work on the patch and submit it as 
+soon, as it's ready.
+
+
+Thanks,
+
+Michał
+
+
+On 7/6/2022 12:15 AM, Jakub Kicinski wrote:
+> On Mon,  4 Jul 2022 13:45:13 +0200 Michal Wilczynski wrote:
+>> If we were to follow normal flow, we would now use tc-filter family of
+>> commands to direct types of interesting traffic to the correct nodes.
+>> That is NOT the case in this implementation. In this POC, meaningful
+>> classid number identifies scheduling node. Number of qdisc handle is a
+>> queue number in a PF space. Reason for this - we want to support ALL
+>> queues on the card including SR-IOV ones that are assigned to VF
+>> netdevs.
+> Have you looked at the devlink rate API? It should do what you need.
+> Dima has been working on extending that API recently you may want to
+> compare notes with him as well:
+>
+> https://lore.kernel.org/all/20220620152647.2498927-1-dchumak@nvidia.com/
