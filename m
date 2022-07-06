@@ -2,88 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 080C0568BA8
-	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 16:50:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A2544568BAB
+	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 16:50:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232413AbiGFOuV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jul 2022 10:50:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39440 "EHLO
+        id S232907AbiGFOuq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jul 2022 10:50:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231687AbiGFOuU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 10:50:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 612D01B791;
-        Wed,  6 Jul 2022 07:50:19 -0700 (PDT)
+        with ESMTP id S232070AbiGFOuo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 10:50:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A04ED240B0;
+        Wed,  6 Jul 2022 07:50:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 15AECB81D4C;
-        Wed,  6 Jul 2022 14:50:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id A1AEBC341C6;
-        Wed,  6 Jul 2022 14:50:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657119016;
-        bh=9+gEuSSfLtAJkYuFFcnjKhneT43FC8KvqeBrFBYo8ak=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=OfSIk0dSe6L9sBRc487uvZVmAbJLtYtsFFDESi9QoXKdeLrxywwLJQgqz89CITTZ0
-         elqfdFIFlm1rkVgPzWgn2TGBNYsQAehcRqw3SOMr14uJU1qgc9esR+EzMjxiP3xVjF
-         s3P0TK3zQs2iJCrnxyn9Hi62NAQmyWjQI5R+bIr6zMg1+UEpTKfVm1Z/lsP9jZCACb
-         quWR6SxpiyOW49NFfxnZOIvWVK7xm0QOthuUJaqmFKSPsWlKxncFltkz4fJIePsKnV
-         m1ezYp3VFXMuUlm/dyINjrAOihqNCm0LM6YhWiQLYGeF2VjvAyssVzRqOntR6cJCv6
-         +OX5XzPXbDxNw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 74F71E45BD9;
-        Wed,  6 Jul 2022 14:50:16 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2B83661E8E;
+        Wed,  6 Jul 2022 14:50:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEA7EC3411C;
+        Wed,  6 Jul 2022 14:50:41 +0000 (UTC)
+Date:   Wed, 6 Jul 2022 10:50:40 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     Neil Horman <nhorman@tuxdriver.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>
+Subject: [PATCH] net: sock: tracing: Fix sock_exceed_buf_limit not to
+ dereference stale pointer
+Message-ID: <20220706105040.54fc03b0@gandalf.local.home>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf v3] xdp: Fix spurious packet loss in generic XDP TX path
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165711901647.17272.10488298931417432170.git-patchwork-notify@kernel.org>
-Date:   Wed, 06 Jul 2022 14:50:16 +0000
-References: <20220705082345.2494312-1-johan.almbladh@anyfinetworks.com>
-In-Reply-To: <20220705082345.2494312-1-johan.almbladh@anyfinetworks.com>
-To:     Johan Almbladh <johan.almbladh@anyfinetworks.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, hawk@kernel.org, john.fastabend@gmail.com,
-        song@kernel.org, martin.lau@linux.dev, yhs@fb.com,
-        kpsingh@kernel.org, sdf@google.com, haoluo@google.com,
-        jolsa@kernel.org, Freysteinn.Alfredsson@kau.se, toke@redhat.com,
-        bpf@vger.kernel.org, netdev@vger.kernel.org
-X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
 
-This patch was applied to bpf/bpf.git (master)
-by Daniel Borkmann <daniel@iogearbox.net>:
+The trace event sock_exceed_buf_limit saves the prot->sysctl_mem pointer
+and then dereferences it in the TP_printk() portion. This is unsafe as the
+TP_printk() portion is executed at the time the buffer is read. That is,
+it can be seconds, minutes, days, months, even years later. If the proto
+is freed, then this dereference will can also lead to a kernel crash.
 
-On Tue,  5 Jul 2022 10:23:45 +0200 you wrote:
-> The byte queue limits (BQL) mechanism is intended to move queuing from
-> the driver to the network stack in order to reduce latency caused by
-> excessive queuing in hardware. However, when transmitting or redirecting
-> a packet using generic XDP, the qdisc layer is bypassed and there are no
-> additional queues. Since netif_xmit_stopped() also takes BQL limits into
-> account, but without having any alternative queuing, packets are
-> silently dropped.
-> 
-> [...]
+Instead, save the sysctl_mem array into the ring buffer and have the
+TP_printk() reference that instead. This is the proper and safe way to
+read pointers in trace events.
 
-Here is the summary with links:
-  - [bpf,v3] xdp: Fix spurious packet loss in generic XDP TX path
-    https://git.kernel.org/bpf/bpf/c/1fd6e5675336
+Link: https://lore.kernel.org/all/20220706052130.16368-12-kuniyu@amazon.com/
 
-You are awesome, thank you!
+Cc: stable@vger.kernel.org
+Fixes: 3847ce32aea9f ("core: add tracepoints for queueing skb to rcvbuf")
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+---
+ include/trace/events/sock.h | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/include/trace/events/sock.h b/include/trace/events/sock.h
+index 12c315782766..777ee6cbe933 100644
+--- a/include/trace/events/sock.h
++++ b/include/trace/events/sock.h
+@@ -98,7 +98,7 @@ TRACE_EVENT(sock_exceed_buf_limit,
+ 
+ 	TP_STRUCT__entry(
+ 		__array(char, name, 32)
+-		__field(long *, sysctl_mem)
++		__array(long, sysctl_mem, 3)
+ 		__field(long, allocated)
+ 		__field(int, sysctl_rmem)
+ 		__field(int, rmem_alloc)
+@@ -110,7 +110,9 @@ TRACE_EVENT(sock_exceed_buf_limit,
+ 
+ 	TP_fast_assign(
+ 		strncpy(__entry->name, prot->name, 32);
+-		__entry->sysctl_mem = prot->sysctl_mem;
++		__entry->sysctl_mem[0] = READ_ONCE(prot->sysctl_mem[0]);
++		__entry->sysctl_mem[1] = READ_ONCE(prot->sysctl_mem[1]);
++		__entry->sysctl_mem[2] = READ_ONCE(prot->sysctl_mem[2]);
+ 		__entry->allocated = allocated;
+ 		__entry->sysctl_rmem = sk_get_rmem0(sk, prot);
+ 		__entry->rmem_alloc = atomic_read(&sk->sk_rmem_alloc);
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.35.1
 
