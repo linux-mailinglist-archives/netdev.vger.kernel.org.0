@@ -2,333 +2,478 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 307C0568622
-	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 12:51:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A57356862E
+	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 12:53:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232317AbiGFKvl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jul 2022 06:51:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35976 "EHLO
+        id S231831AbiGFKxs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jul 2022 06:53:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229647AbiGFKvk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 06:51:40 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5CD5248F5
-        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 03:51:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1657104698; x=1688640698;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-id:content-transfer-encoding:
-   mime-version;
-  bh=VsaV9LoWNIZx6nAbk4HKU0qI/beGmQNvTXyA4IDBlFM=;
-  b=Ggg3hYJcMvK4GQhC0HOFYn1PYOGLlx/7CqKaQ3IkpX3erolN9M4BRIph
-   ejIBVgywijk30n2YNOAHYaiVTaMvP7GAF7IK1dJMJnzWMvgGlnjkxl6IE
-   U1xh0ZvLXCekgDQ2tt3z2HFFHaVrwEJhn085oATqZN8o5dZc35dpg/Qdp
-   zlWplMBBYkRuCmZ8AiMN0l2J8oHECcm+AK6cXU5vwCXKYOV4QMo93bvuo
-   H4E4XGmmpH2rAPjZZi304VaO0F6QNBGdvuOG/4zsy9P01NGnnr16rz5CI
-   x2CGlSlbdkDbS5RlCcBPE9rZ0Fi+JEYCGquUfBSdjH5iMLYgvZ3IMwpYU
-   w==;
-X-IronPort-AV: E=Sophos;i="5.92,249,1650956400"; 
-   d="scan'208";a="170980434"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 06 Jul 2022 03:51:37 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 6 Jul 2022 03:51:37 -0700
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (10.10.215.89) by
- email.microchip.com (10.10.87.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17 via Frontend Transport; Wed, 6 Jul 2022 03:51:37 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=moJCdyLT1EoDKz+JoqHatspfnIuLvzzz8ePQrLAVcvk5ahBXRvAWCg/MXJpwWjZo2ycXBmG55oWh/SyMELgzdXEjIxZJezr4h7xuBlMoqoImqRCir5yyPvaU7vEe/6g/2WFXH8/w1S8OklwAtDZovRyqu0KPrmqDT8/Tm6PfPIELDP/05mVj5sAnRD4RtBdP2iksYh/LYdEv4BFueTLEhjB38BS81nEFMYcNJo5ufwJOMa2k1X/jU5pSZWqjSk5L4HAXlPLv35tKHx3zYwle1FWcltwpM/EA1huA+1QVFwww6vgPPdwa/uaGXWB4lATaMdaEdCqphsUm2Bsj69wm4Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=VsaV9LoWNIZx6nAbk4HKU0qI/beGmQNvTXyA4IDBlFM=;
- b=gvdZ2lBDWj3qoaTXnoV/w+obf1qd3h70h0ILq8FBwLwzo3Lq/jG7pzz+VSE/17nrYCjyxlDbSoE/Cg8D5gVO3BejO9UShqAu+TntcXQHETJtH1J3PwqXHhQUDWJAvRyYHl+Ly7AT1BPzVa1Rdy9N5kUe31d1OmJsCeyyLEI6/LHzU57UOSRl+MsspBclKaZDK9KVXwDLfjv0THsIgNeB62mmFc5ZXEwM/ti5tRKhmjIqvCTOKlXDFROi1skoH2MsHFe7WghG0g6CspFP9ogp8WM8CbxN23p/Z6pmHaIxHqCwNoV5RSDGfnDmxipu2doY7CpOeA6tRJglzhfsZLaBxw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microchip.com; dmarc=pass action=none
- header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+        with ESMTP id S233147AbiGFKxr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 06:53:47 -0400
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31FCD27B2F
+        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 03:53:44 -0700 (PDT)
+Received: by mail-wr1-x429.google.com with SMTP id cl1so21505364wrb.4
+        for <netdev@vger.kernel.org>; Wed, 06 Jul 2022 03:53:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=microchiptechnology.onmicrosoft.com;
- s=selector2-microchiptechnology-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VsaV9LoWNIZx6nAbk4HKU0qI/beGmQNvTXyA4IDBlFM=;
- b=mtcKGmC91C3eoqi2vRMnwB5O6hN8+TQHjpYAbn5EMhTAgV4FBTYaq7HVpy55ffmb1B8cgA3s3YU23/YNKKguswIaqLoZ+uooXyOUfJN2b0aFywS2tOB1Z560RIi7aqN6g5ExbFktMvDq1H5HOi6Ys21ksbj/2e+4RCNKhCNr8AU=
-Received: from DM5PR11MB0076.namprd11.prod.outlook.com (2603:10b6:4:6b::28) by
- CY4PR1101MB2279.namprd11.prod.outlook.com (2603:10b6:910:17::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.18; Wed, 6 Jul
- 2022 10:51:35 +0000
-Received: from DM5PR11MB0076.namprd11.prod.outlook.com
- ([fe80::a4d9:eecb:f93e:7df0]) by DM5PR11MB0076.namprd11.prod.outlook.com
- ([fe80::a4d9:eecb:f93e:7df0%6]) with mapi id 15.20.5395.021; Wed, 6 Jul 2022
- 10:51:34 +0000
-From:   <Arun.Ramadoss@microchip.com>
-To:     <netdev@vger.kernel.org>, <vladimir.oltean@nxp.com>
-CC:     <claudiu.manoil@nxp.com>, <alexandre.belloni@bootlin.com>,
-        <UNGLinuxDriver@microchip.com>, <andrew@lunn.ch>,
-        <vivien.didelot@gmail.com>, <petrm@nvidia.com>,
-        <idosch@nvidia.com>, <linux@rempel-privat.de>,
-        <f.fainelli@gmail.com>, <hauke@hauke-m.de>,
-        <xiaoliang.yang_1@nxp.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <edumazet@google.com>, <martin.blumenstingl@googlemail.com>,
-        <Woojung.Huh@microchip.com>, <davem@davemloft.net>
-Subject: Re: [RFC PATCH net-next 3/3] net: dsa: never skip VLAN configuration
-Thread-Topic: [RFC PATCH net-next 3/3] net: dsa: never skip VLAN configuration
-Thread-Index: AQHYkJVA+iLppAy/uE2cW1NrBQONVa1xK4uA
-Date:   Wed, 6 Jul 2022 10:51:34 +0000
-Message-ID: <e681971641d53b830a7aeafb9e88a3ac059915c5.camel@microchip.com>
-References: <20220705173114.2004386-1-vladimir.oltean@nxp.com>
-         <20220705173114.2004386-4-vladimir.oltean@nxp.com>
-In-Reply-To: <20220705173114.2004386-4-vladimir.oltean@nxp.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microchip.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 41fa2099-0b38-44ba-a178-08da5f3d7ea5
-x-ms-traffictypediagnostic: CY4PR1101MB2279:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: EWRXZkM04m0ecL/e8tFs5i+XRScLXPK9nrMk6EIgc6XHB47PY4ARzBCIpM3eDp7zvBOXz+MU7QXqDMt2JWz9/bu/pdXTBpwNmnbIXurUPsG0+Z7k69U4mHbNxQIgHry+1bOVhZoQSuPALRuhA+pmHWCx8KF9YhBy3Gc+Cg3sPUBFx7iPAaxh+XVNoxJcLZuNqs0KQufVafoGB56KPuB9m5NhZ42f39HLI49WtX/cINwp+E9akArD6ll4h4m23nZ5sk8b/JDBbdkuPuv19Wy8C+2x9KqmWu7UCRfsU+YOjha6z4ME/vadZfSqO2WCxiR84XA4+A/UohfRl7WP1e8HId12wLTmJWN9Yln3NsQVLAKfGVjJLycZkztA5YfBVEqzCUKiYSEP3XtUx0myTDPWfgpTQ5mV334W8zFeEBPn7on51izQ758/bcc5ZkjNRdVZZxNNC2AD7NjRlV6c0bCk0eT3nttHI59Ed2+eM86Uv+EZGITQxK9U2MplVfxy2ybWwL311+Sy/MwYnCW74zwY3V88wymYUG494RXvbo4XrjMa2HLMhxWNPmMvnaoMKKFHVJVHK5jiCOL4gP0iD0nmvtlO5DDnA9Ypl5mm/dofUGKHkdrr/SN38xPezO8h6tepFNB/uUCBQ9Q2TCCbwPSXLS1RtO5qalCsDUuJj/WKwrIPQ0j/JYf8/wWgMnmamNQ2TH6Yl0PdaNcvPOX20LcFQiK4Ka9pvn+fD21/pAnASI+Dapp0R2JyUR8ScsbepnYOl1k133g2/mn/Wlp2Qew3ehw0XhbDAvr84jvq9DR1x618ZYvlNvUzcjfWOhLPH7oUq5ng+TGZfXtSl/1sieGWuw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR11MB0076.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(366004)(39860400002)(396003)(376002)(346002)(136003)(186003)(2616005)(38070700005)(38100700002)(122000001)(36756003)(316002)(54906003)(91956017)(8676002)(4326008)(83380400001)(71200400001)(64756008)(66446008)(110136005)(66476007)(66946007)(76116006)(66556008)(6486002)(5660300002)(8936002)(86362001)(6506007)(7416002)(478600001)(6512007)(41300700001)(2906002)(26005)(99106002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?NlNYWXkydzM5YWVGc21DNXdqbllpNFMxZGc4c0x3WWNsdEY3d0gxbjhzYzdt?=
- =?utf-8?B?dVV4NFFDWjVmNGwzMjloNGdLZHN5VFRUZkpNY09nOFlqb2V3VGtGMHdOTlF5?=
- =?utf-8?B?RzVrTEdUck5EbkErMnJvbGNjb1YzVzN4eDByTmR6eFRNVVcrS2RXcUw2Um9p?=
- =?utf-8?B?ZmRUb2JHc1dxSlk4MjNweGN3NUtzNU8rejNtakRza2x5Y2tNdW9zb3lkTFhQ?=
- =?utf-8?B?K3NSeXBjM0VmaDBacDZiLzlGcE1JbTNTQnVYeS9Gc25pODV5S0w4bElPOEJX?=
- =?utf-8?B?SDI2cHpsUHdOYUN0aHZrdjVicHZMWEJyZGYxYm1hZDNJczR6MmVaQTMwdDNr?=
- =?utf-8?B?S0FUZmFJVGhsdEsyaExGVDRnWWljU0dSbDZVd3hacXpxZytsQjRSUkxkNWdD?=
- =?utf-8?B?RjlNb0JNaHdMM3hYVVFhUjRnOUFYWWU4RlZJcmUrbk8xbElqU2pqL085c0xw?=
- =?utf-8?B?YUhqN0F1TVJzVndFWkx2Y2xhUjFLbkJGOEsxNWFhTXhYakVPdm9pVjFIa3dX?=
- =?utf-8?B?WFQ1UWg4Y0dueXF3c2ZvMCtybXBQSXNBSTRKVDRmOG1YcmNKNkJzV0dyWExG?=
- =?utf-8?B?OG0ybmhBVFhhMWEyZE9wUHdkRGVnYWtTeXJxVVQ3YXZuQm45a252OFlmYngw?=
- =?utf-8?B?UWUxNjgvUXkwbWJOTG51OXFUY3gyQ0JLekx6WlVMZ09aUUhDMENMU0FMblNE?=
- =?utf-8?B?aUtMaDFMeTVpUU9naVdPbW5iSXBING5yeWtiREVYZitpb3lEeWw1RWVBMkdN?=
- =?utf-8?B?NDd4Z0pXQ0VXcDk1S0ZxYU03ZHY3aUhPd1EzNUcyOW1hN1dRMHNkeHoxWXNE?=
- =?utf-8?B?aHBRSk9ETmxDdTUvV2RFWWdtWFExWXM3T3NPZ3FFZTQwbHRHU0FhMEpSRHRQ?=
- =?utf-8?B?VGhjZ3NIRlJ5VVVRZ3RmR1NmcE8zNG11Ni9wTVJvRTU1Y01UdytxQTdxcjNL?=
- =?utf-8?B?QWFwVVp3YnU5UENJZzA3YlVsWGV6VENRYjIzUk1zOUROdVBoakMrcmlxSEdt?=
- =?utf-8?B?VTEwZXVLNkE5SmNzWUpDdzRiWlh6a3ZiSjhrYkM1QjVsM0JVb21sVENjUEFR?=
- =?utf-8?B?NVAvYTlTdnExdjhSR1JkODA1T1ZsTVhmWFdwY04vbjltUXFSUWVPUjFCREpr?=
- =?utf-8?B?d3JxSFh0eW9iWDI2elF0MHhEcGVrNyt6aUp0akkxOTJyZkhUNy96Qk5TSlMv?=
- =?utf-8?B?cW82ZG1zNWVKQmZ1KzQwSG1aZ3NTVzdCZG90elNxUStTWU9tcXcreWdteTMr?=
- =?utf-8?B?a051dlptWkx4a2JLNjdZYTJyQmNHYjlGTzAwR3M3dUNEL1k1aVN1anFRZ2ZU?=
- =?utf-8?B?TWxaNXAxSnBJZENjQUUybnl0b2R0QlNLdytiWERnVnFVZHZxMUhxQTZvV1lQ?=
- =?utf-8?B?WlUrWFRuaEI0VzRRNWUxU1l5L1l0cEZMcjYyWndDVmgzRmhrcm5qZjc2QlR3?=
- =?utf-8?B?SGNDZXRJTmFVbDNqbTZ4MU5Vem9DMFpnUndtREJaUVdBaFJJbFRZVWhZK2RS?=
- =?utf-8?B?K245UFhpc2Y2SE0reWgxZWhyTDFSekM4UzlBY2RzR0NHK0JORDZMRlN5RUdS?=
- =?utf-8?B?K0YrTTNKVmNQdlF5eC9mdFJIMmtPeTBKdWp4Vk5RYVRmTEZEcjNQbkNvNmxl?=
- =?utf-8?B?RGNNR1lUVGdFK3NzM3h1QzQwalhLc0xiRzRxK3d5OEZtOVMvV2djYUJ1Rmxz?=
- =?utf-8?B?THVpNkNuRm9mR0JCS3J0bXJoTXNzRnJQNFNlNGhFNUt1UWpST3hzQkRXWUZ1?=
- =?utf-8?B?TW5QdzFZOE1aNjl2L3QrdlYvVVAvQ3BtOEZLZ05ndTRYeDRSUTRFZndSN3lU?=
- =?utf-8?B?WGdXM1NibU81Mm9PYkwyVTA4c25FZm9CamNZUjVLcTBBNGQyV1ZuRjgwd2pC?=
- =?utf-8?B?a003TEsyNE1NTUhDY210Uk9lZVRlVUloMjBPUTREeW8vbzhxQmFtZFdwMzVv?=
- =?utf-8?B?S29GYkkwc1pWSUxpTSt3WmNrN0c2VitxNHNML25PM2N4YlE2dHVSemJaQjI0?=
- =?utf-8?B?Ni8vdmdTL3BpSW1hMGcvTmF6Tngvek81YnhxN1ZDdEkvdEFaRFNMUG5kVC9V?=
- =?utf-8?B?RWkrMWZDZWJxNUdoc1RmNHRJRVdYa0FJOENyMVVEenF5RWc4SnhINlNnQkRI?=
- =?utf-8?B?SzZqQ2krVGhvTUVYd0hodUxsMHpEbmVTRk9HUmdqdzRvVU94OXdnVnNvbzIz?=
- =?utf-8?Q?Ubycs0s8i9Wym6ujIYLQoCg=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <4A8A7C44E189E749ACEBD83A3B68BDE0@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=+p/4sekWheWdbGIovM0EKfWut/d2MmPvCx5j78VW0Vs=;
+        b=rXldJeWVAwZytiPiHVi1BAjtiAFO4lS3mLt9IX7NcreiMLklVm5nuj5Uig5SKiFb5b
+         S1xNuDFdy0EiIINahHtwOJNRHPPzZlyBKl5C1yFwJAapLu7reu6rKJfJ1iw78eSveo20
+         QWA8uQnYuvMuTt71mYPYlmt0UZDyNFYExPf8GrKeijuRoQ8htT1APLBwkGlUdTRUMyil
+         FkbJ7vKWKpwH0ZEa5bq7TYooTjT0Jb/78M1I+AprGItcMZykwhQMY+U3ijRaHyJHexj5
+         CH5Qxz7QX89rZKUyTgmscg7x0jfnd9hr5S5Iwp/C+IZFXn1N86Fi6mpAfVWA/UL38Zqq
+         GVDA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=+p/4sekWheWdbGIovM0EKfWut/d2MmPvCx5j78VW0Vs=;
+        b=AootmxlvssBStSl2SmqMnDYThadqofdGXt80WPohoVfsvYO2nUCZwFCuK0BnjusvDN
+         bQw5eiTquYJPPZ8hL51+PWFMQIObcyFGMHnBFlpiBCObUHtWO8n/uomMpir9VRMA+KfW
+         1Wsdst0B46KsreWf+mSlkEl+1Ifsswz2jk0+PJ5Iinx0ZQan3NWjs6geeo4deGQHL/J8
+         Zdz698oWDyPnE3TFedJ6s4wPTFKAg+u70BvB5yHRc50Mnmc1W3iFQFnJvTDKHg+sPcgC
+         aWeI24r2HmNizoRyB16G0SV8DvN4gU7ScV1YJ4i/OC+1Bwn5L7yBM377aJBPQiFGHg5x
+         NTRQ==
+X-Gm-Message-State: AJIora+jtecwe/mH9o9XD1BDeKlwP5D49mXHViF4rTDOp59Iwl9sqSue
+        8jNXM2k5qzYsRvp+zAQ8muNx/Q==
+X-Google-Smtp-Source: AGRyM1sVpr33P2lGME5nAB3rmW5C4qG2GBBItyEacEYV04dU0Z8Luz6mWEWOSjhPRu9n+W5O4KKXZw==
+X-Received: by 2002:a5d:448e:0:b0:21b:887f:23f with SMTP id j14-20020a5d448e000000b0021b887f023fmr37162663wrq.240.1657104822588;
+        Wed, 06 Jul 2022 03:53:42 -0700 (PDT)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id d21-20020a1c7315000000b003a02cbf862esm24990019wmb.13.2022.07.06.03.53.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Jul 2022 03:53:42 -0700 (PDT)
+Date:   Wed, 6 Jul 2022 11:53:40 +0100
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        LKML <linux-kernel@vger.kernel.org>, stable@kernel.org,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Subject: Re: [RESEND 1/1] Bluetooth: Use chan_list_lock to protect the whole
+ put/destroy invokation
+Message-ID: <YsVptCjpzHjR8Scv@google.com>
+References: <20220622082716.478486-1-lee.jones@linaro.org>
+ <CANn89iK-uFP6Swgc0ZeEC38UsuywJ3wbybSNouH202Wa7X7Tzg@mail.gmail.com>
+ <CABBYNZ+C=MQ7577Fr5_W8tQ4iWRSDBSiC4fkRBY3x=9ph+YAzA@mail.gmail.com>
+ <CABBYNZLysdh3NFK+G8=NUQ=G=hvS8X0PdMp=bVqiwPDPCAokmg@mail.gmail.com>
+ <YrxvgIiWuFVlXBaQ@google.com>
+ <CABBYNZJFSxk9=3Gj7jOj__s=iJGmhrZ=CA7Mb74_-Y0sg+N40g@mail.gmail.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM5PR11MB0076.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 41fa2099-0b38-44ba-a178-08da5f3d7ea5
-X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Jul 2022 10:51:34.8305
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: PWSucNnYuEXc0BoldUZO4FvZv7f569133iJIJpAQOZpzF3ujtxRd8l55kZVZr8rHOKkDQq1WrgJQ5H18AwC/458k6+HW++JPZPFiNd47CpY=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR1101MB2279
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CABBYNZJFSxk9=3Gj7jOj__s=iJGmhrZ=CA7Mb74_-Y0sg+N40g@mail.gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgVmxhZGltaXIsDQoNCk9uIFR1ZSwgMjAyMi0wNy0wNSBhdCAyMDozMSArMDMwMCwgVmxhZGlt
-aXIgT2x0ZWFuIHdyb3RlOg0KPiBFWFRFUk5BTCBFTUFJTDogRG8gbm90IGNsaWNrIGxpbmtzIG9y
-IG9wZW4gYXR0YWNobWVudHMgdW5sZXNzIHlvdQ0KPiBrbm93IHRoZSBjb250ZW50IGlzIHNhZmUN
-Cj4gDQo+IFN0b3AgcHJvdGVjdGluZyBEU0EgZHJpdmVycyBmcm9tIHN3aXRjaGRldiBWTEFOIG5v
-dGlmaWNhdGlvbnMgZW1pdHRlZA0KPiB3aGlsZSB0aGUgYnJpZGdlIGhhcyB2bGFuX2ZpbHRlcmlu
-ZyAwLCBieSBkZWxldGluZyB0aGUgZGVwcmVjYXRlZA0KPiBib29sDQo+IGRzLT5jb25maWd1cmVf
-dmxhbl93aGlsZV9ub3RfZmlsdGVyaW5nIG9wdC1pbi4gTm93IGFsbCBEU0EgZHJpdmVycw0KPiBz
-ZWUNCj4gYWxsIG5vdGlmaWNhdGlvbnMgYW5kIHNob3VsZCBzYXZlIHRoZSBicmlkZ2UgUFZJRCB1
-bnRpbCB0aGV5IG5lZWQgdG8NCj4gY29tbWl0IGl0IHRvIGhhcmR3YXJlLg0KPiANCj4gVGhlIDIg
-cmVtYWluaW5nIHVuY29udmVydGVkIGRyaXZlcnMgYXJlIHRoZSBnc3dpcCBhbmQgdGhlIE1pY3Jv
-Y2hpcA0KPiBLU1oNCj4gZmFtaWx5LiBUaGV5IGFyZSBib3RoIHByb2JhYmx5IGJyb2tlbiBhbmQg
-d291bGQgbmVlZCBjaGFuZ2luZyBhcyBmYXINCj4gYXMNCj4gSSBjYW4gc2VlOg0KPiANCj4gLSBG
-b3IgbGFudGlxX2dzd2lwLCBhZnRlciB0aGUgaW5pdGlhbCBjYWxsIHBhdGgNCj4gICAtPiBnc3dp
-cF9wb3J0X2JyaWRnZV9qb2luDQo+ICAgICAgLT4gZ3N3aXBfdmxhbl9hZGRfdW5hd2FyZQ0KPiAg
-ICAgICAgIC0+IGdzd2lwX3N3aXRjaF93KHByaXYsIDAsIEdTV0lQX1BDRV9ERUZQVklEKHBvcnQp
-KTsNCj4gICBub2JvZHkgc2VlbXMgdG8gcHJldmVudCBhIGZ1dHVyZSBjYWxsIHBhdGgNCj4gICAt
-PiBnc3dpcF9wb3J0X3ZsYW5fYWRkDQo+ICAgICAgLT4gZ3N3aXBfdmxhbl9hZGRfYXdhcmUNCj4g
-ICAgICAgICAtPiBnc3dpcF9zd2l0Y2hfdyhwcml2LCBpZHgsIEdTV0lQX1BDRV9ERUZQVklEKHBv
-cnQpKTsNCj4gDQo+IC0gRm9yIGtzejk0NzcsIFJFR19QT1JUX0RFRkFVTFRfVklEIHNlZW1zIHRv
-IGJlIG9ubHkgbW9kaWZpZWQgYnkgdGhlDQo+ICAgYnJpZGdlIFZMQU4gYWRkL2RlbCBoYW5kbGVy
-cywgc28gdGhlcmUgaXMgbm8gbG9naWMgdG8gdXBkYXRlIGl0IG9uDQo+ICAgVkxBTiBhd2FyZW5l
-c3MgY2hhbmdlLiBJIGRvbid0IGtub3cgZXhhY3RseSBob3cgdGhlIHN3aXRjaCBiZWhhdmVzDQo+
-ICAgYWZ0ZXIga3N6OTQ3N19wb3J0X3ZsYW5fZmlsdGVyaW5nKCkgaXMgY2FsbGVkIHdpdGggImZh
-bHNlIi4NCj4gICBJZiBwYWNrZXRzIGFyZSBjbGFzc2lmaWVkIHRvIHRoZSBSRUdfUE9SVF9ERUZB
-VUxUX1ZJRCwgdGhlbiBpdCBpcw0KPiAgIGJyb2tlbi4gU2ltaWxhciB0aGluZyBjYW4gYmUgc2Fp
-ZCBmb3IgS1NaOC4NCg0KV2hlbiBrc3o5NDc3X3BvcnRfdmxhbl9maWx0ZXJpbmcgaXMgc2V0IHRv
-IGZhbHNlLCB0aGVuIGl0IGNsZWFycyB0aGUNCjgwMi4xUSB2bGFuIGVuYWJsZSBiaXQgaW4gdGhl
-IHN3aXRjaC4gU28gdGhlIHBhY2tldHMgYXJlIG5vdCBjbGFzc2lmaWVkDQpiYXNlZCBvbiB2bGFu
-IHRhZy4gT25seSBpZiB0aGUgdmxhbiBiaXQgaXMgc2V0LCBwYWNrZXRzIGFyZSBjbGFzc2lmaWVk
-DQpiYXNlZCBvbiBwdmlkLg0KDQo+IA0KPiBJbiBhbnkgY2FzZSwgc2VlIGNvbW1pdCA4YjY4MzZk
-ODI0NzAgKCJuZXQ6IGRzYTogbXY4OGU2eHh4OiBrZWVwIHRoZQ0KPiBwdmlkIGF0IDAgd2hlbiBW
-TEFOLXVuYXdhcmUiKSBmb3IgYW4gZXhhbXBsZSBvZiBob3cgdG8gZGVhbCB3aXRoIHRoZQ0KPiBw
-cm9ibGVtLCBhbmQgdGVzdCBwdmlkX2NoYW5nZSgpIGluDQo+IHRvb2xzL3Rlc3Rpbmcvc2VsZnRl
-c3RzL2RyaXZlcnMvbmV0L2RzYS9icmlkZ2Vfdmxhbl91bmF3YXJlLnNoIGZvcg0KPiBob3cNCj4g
-dG8gY2hlY2sgd2hldGhlciB0aGUgZHJpdmVyIGJlaGF2ZXMgY29ycmVjdGx5LiBJIGRvbid0IGhh
-dmUgdGhlDQo+IGhhcmR3YXJlDQo+IHRvIHRlc3QgYW55IGNoYW5nZXMuDQoNCkkgY2FuIHRlc3Qg
-aXQgYW5kIHJlcG9ydCB0aGUgb2JzZXJ2YXRpb24uIEJ1dCBJIGhhdmVuJ3QgcnVuIHRoZQ0Kc2Vs
-ZnRlc3RzIGJlZm9yZS4gSSBsb29rZWQgaW4gdGhlIHNjcmlwdHMgdG9kYXksIGJ1dCBjb3VsZG4n
-dCBmaW5kIG91dA0KaG93IHRvIGNvbXBpbGUgaXQgYXMgcGFydCBvZiBrZXJuZWwgYW5kIHByb2dy
-YW0gaXQgdG8gdGhlIHRhcmdldCAmDQp0ZXN0LiBJIGluZmVyIHRoYXQsIHRoaXMgc2NyaXB0cyBz
-aG91bGQgYmUgcnVuIG9uIHRhcmdldCAoSSBoYXZlDQpTQU1BNUQzICsgS1NaOTQ3Nykgd2l0aCA0
-IHN3aXRjaCBwb3J0cy4gQ2FuIHlvdSBndWlkZSBtZSBvbiB0ZXN0aW5nDQp0aGlzLg0KDQo+IA0K
-PiBDYzogQXJ1biBSYW1hZG9zcyA8YXJ1bi5yYW1hZG9zc0BtaWNyb2NoaXAuY29tPg0KPiBDYzog
-SGF1a2UgTWVocnRlbnMgPGhhdWtlQGhhdWtlLW0uZGU+DQo+IENjOiBNYXJ0aW4gQmx1bWVuc3Rp
-bmdsIDxtYXJ0aW4uYmx1bWVuc3RpbmdsQGdvb2dsZW1haWwuY29tPg0KPiBTaWduZWQtb2ZmLWJ5
-OiBWbGFkaW1pciBPbHRlYW4gPHZsYWRpbWlyLm9sdGVhbkBueHAuY29tPg0KPiAtLS0NCj4gIGRy
-aXZlcnMvbmV0L2RzYS9sYW50aXFfZ3N3aXAuYyAgICAgICAgIHwgIDIgLS0NCj4gIGRyaXZlcnMv
-bmV0L2RzYS9taWNyb2NoaXAva3N6X2NvbW1vbi5jIHwgIDIgLS0NCj4gIGluY2x1ZGUvbmV0L2Rz
-YS5oICAgICAgICAgICAgICAgICAgICAgIHwgIDcgLS0tLS0tLQ0KPiAgbmV0L2RzYS9kc2EyLmMg
-ICAgICAgICAgICAgICAgICAgICAgICAgfCAgMiAtLQ0KPiAgbmV0L2RzYS9kc2FfcHJpdi5oICAg
-ICAgICAgICAgICAgICAgICAgfCAgMSAtDQo+ICBuZXQvZHNhL3BvcnQuYyAgICAgICAgICAgICAg
-ICAgICAgICAgICB8IDE0IC0tLS0tLS0tLS0tLS0tDQo+ICBuZXQvZHNhL3NsYXZlLmMgICAgICAg
-ICAgICAgICAgICAgICAgICB8IDIyICstLS0tLS0tLS0tLS0tLS0tLS0tLS0NCj4gIDcgZmlsZXMg
-Y2hhbmdlZCwgMSBpbnNlcnRpb24oKyksIDQ5IGRlbGV0aW9ucygtKQ0KPiANCj4gZGlmZiAtLWdp
-dCBhL2RyaXZlcnMvbmV0L2RzYS9sYW50aXFfZ3N3aXAuYw0KPiBiL2RyaXZlcnMvbmV0L2RzYS9s
-YW50aXFfZ3N3aXAuYw0KPiBpbmRleCBlNTMxYjkzZjNjYjIuLjg2YWNmOGE0ZTUzYyAxMDA2NDQN
-Cj4gLS0tIGEvZHJpdmVycy9uZXQvZHNhL2xhbnRpcV9nc3dpcC5jDQo+ICsrKyBiL2RyaXZlcnMv
-bmV0L2RzYS9sYW50aXFfZ3N3aXAuYw0KPiBAQCAtODkzLDggKzg5Myw2IEBAIHN0YXRpYyBpbnQg
-Z3N3aXBfc2V0dXAoc3RydWN0IGRzYV9zd2l0Y2ggKmRzKQ0KPiANCj4gICAgICAgICBnc3dpcF9w
-b3J0X2VuYWJsZShkcywgY3B1X3BvcnQsIE5VTEwpOw0KPiANCj4gLSAgICAgICBkcy0+Y29uZmln
-dXJlX3ZsYW5fd2hpbGVfbm90X2ZpbHRlcmluZyA9IGZhbHNlOw0KPiAtDQo+ICAgICAgICAgcmV0
-dXJuIDA7DQo+ICB9DQo+IA0KPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZHNhL21pY3JvY2hp
-cC9rc3pfY29tbW9uLmMNCj4gYi9kcml2ZXJzL25ldC9kc2EvbWljcm9jaGlwL2tzel9jb21tb24u
-Yw0KPiBpbmRleCAyOGQ3Y2IyY2U5OGYuLjU2MWE1MTVjN2NiOCAxMDA2NDQNCj4gLS0tIGEvZHJp
-dmVycy9uZXQvZHNhL21pY3JvY2hpcC9rc3pfY29tbW9uLmMNCj4gKysrIGIvZHJpdmVycy9uZXQv
-ZHNhL21pY3JvY2hpcC9rc3pfY29tbW9uLmMNCj4gQEAgLTkyNyw4ICs5MjcsNiBAQCBzdGF0aWMg
-aW50IGtzel9zZXR1cChzdHJ1Y3QgZHNhX3N3aXRjaCAqZHMpDQo+IA0KPiAgICAgICAgIGtzel9p
-bml0X21pYl90aW1lcihkZXYpOw0KPiANCj4gLSAgICAgICBkcy0+Y29uZmlndXJlX3ZsYW5fd2hp
-bGVfbm90X2ZpbHRlcmluZyA9IGZhbHNlOw0KPiAtDQo+ICAgICAgICAgaWYgKGRldi0+ZGV2X29w
-cy0+c2V0dXApIHsNCj4gICAgICAgICAgICAgICAgIHJldCA9IGRldi0+ZGV2X29wcy0+c2V0dXAo
-ZHMpOw0KPiAgICAgICAgICAgICAgICAgaWYgKHJldCkNCj4gZGlmZiAtLWdpdCBhL2luY2x1ZGUv
-bmV0L2RzYS5oIGIvaW5jbHVkZS9uZXQvZHNhLmgNCj4gaW5kZXggYjkwMmIzMWJlYmNlLi4yZWQx
-YzJkYjQwMzcgMTAwNjQ0DQo+IC0tLSBhL2luY2x1ZGUvbmV0L2RzYS5oDQo+ICsrKyBiL2luY2x1
-ZGUvbmV0L2RzYS5oDQo+IEBAIC00MDAsMTMgKzQwMCw2IEBAIHN0cnVjdCBkc2Ffc3dpdGNoIHsN
-Cj4gICAgICAgICAvKiBLZWVwIFZMQU4gZmlsdGVyaW5nIGVuYWJsZWQgb24gcG9ydHMgbm90IG9m
-ZmxvYWRpbmcgYW55DQo+IHVwcGVyICovDQo+ICAgICAgICAgdTMyICAgICAgICAgICAgICAgICAg
-ICAgbmVlZHNfc3RhbmRhbG9uZV92bGFuX2ZpbHRlcmluZzoxOw0KPiANCj4gLSAgICAgICAvKiBQ
-YXNzIC5wb3J0X3ZsYW5fYWRkIGFuZCAucG9ydF92bGFuX2RlbCB0byBkcml2ZXJzIGV2ZW4gZm9y
-DQo+IGJyaWRnZXMNCj4gLSAgICAgICAgKiB0aGF0IGhhdmUgdmxhbl9maWx0ZXJpbmc9MC4gQWxs
-IGRyaXZlcnMgc2hvdWxkIGlkZWFsbHkgc2V0DQo+IHRoaXMgKGFuZA0KPiAtICAgICAgICAqIHRo
-ZW4gdGhlIG9wdGlvbiB3b3VsZCBnZXQgcmVtb3ZlZCksIGJ1dCBpdCBpcyB1bmtub3duDQo+IHdo
-ZXRoZXIgdGhpcw0KPiAtICAgICAgICAqIHdvdWxkIGJyZWFrIHRoaW5ncyBvciBub3QuDQo+IC0g
-ICAgICAgICovDQo+IC0gICAgICAgdTMyICAgICAgICAgICAgICAgICAgICAgY29uZmlndXJlX3Zs
-YW5fd2hpbGVfbm90X2ZpbHRlcmluZzoxOw0KPiAtDQo+ICAgICAgICAgLyogSWYgdGhlIHN3aXRj
-aCBkcml2ZXIgYWx3YXlzIHByb2dyYW1zIHRoZSBDUFUgcG9ydCBhcw0KPiBlZ3Jlc3MgdGFnZ2Vk
-DQo+ICAgICAgICAgICogZGVzcGl0ZSB0aGUgVkxBTiBjb25maWd1cmF0aW9uIGluZGljYXRpbmcg
-b3RoZXJ3aXNlLCB0aGVuDQo+IHNldHRpbmcNCj4gICAgICAgICAgKiBAdW50YWdfYnJpZGdlX3B2
-aWQgd2lsbCBmb3JjZSB0aGUgRFNBIHJlY2VpdmUgcGF0aCB0byBwb3ANCj4gdGhlDQo+IGRpZmYg
-LS1naXQgYS9uZXQvZHNhL2RzYTIuYyBiL25ldC9kc2EvZHNhMi5jDQo+IGluZGV4IGNhYzQ4YTc0
-MWYyNy4uNDdhMmU2MGI2MDgwIDEwMDY0NA0KPiAtLS0gYS9uZXQvZHNhL2RzYTIuYw0KPiArKysg
-Yi9uZXQvZHNhL2RzYTIuYw0KPiBAQCAtODkwLDggKzg5MCw2IEBAIHN0YXRpYyBpbnQgZHNhX3N3
-aXRjaF9zZXR1cChzdHJ1Y3QgZHNhX3N3aXRjaA0KPiAqZHMpDQo+ICAgICAgICAgaWYgKGVycikN
-Cj4gICAgICAgICAgICAgICAgIGdvdG8gdW5yZWdpc3Rlcl9kZXZsaW5rX3BvcnRzOw0KPiANCj4g
-LSAgICAgICBkcy0+Y29uZmlndXJlX3ZsYW5fd2hpbGVfbm90X2ZpbHRlcmluZyA9IHRydWU7DQo+
-IC0NCj4gICAgICAgICBlcnIgPSBkcy0+b3BzLT5zZXR1cChkcyk7DQo+ICAgICAgICAgaWYgKGVy
-ciA8IDApDQo+ICAgICAgICAgICAgICAgICBnb3RvIHVucmVnaXN0ZXJfbm90aWZpZXI7DQo+IGRp
-ZmYgLS1naXQgYS9uZXQvZHNhL2RzYV9wcml2LmggYi9uZXQvZHNhL2RzYV9wcml2LmgNCj4gaW5k
-ZXggZDk3MjJlNDk4NjRiLi42MzE5MWRiNDVkMDIgMTAwNjQ0DQo+IC0tLSBhL25ldC9kc2EvZHNh
-X3ByaXYuaA0KPiArKysgYi9uZXQvZHNhL2RzYV9wcml2LmgNCj4gQEAgLTIyNCw3ICsyMjQsNiBA
-QCB2b2lkIGRzYV9wb3J0X3ByZV9sYWdfbGVhdmUoc3RydWN0IGRzYV9wb3J0ICpkcCwNCj4gc3Ry
-dWN0IG5ldF9kZXZpY2UgKmxhZ19kZXYpOw0KPiAgdm9pZCBkc2FfcG9ydF9sYWdfbGVhdmUoc3Ry
-dWN0IGRzYV9wb3J0ICpkcCwgc3RydWN0IG5ldF9kZXZpY2UNCj4gKmxhZ19kZXYpOw0KPiAgaW50
-IGRzYV9wb3J0X3ZsYW5fZmlsdGVyaW5nKHN0cnVjdCBkc2FfcG9ydCAqZHAsIGJvb2wNCj4gdmxh
-bl9maWx0ZXJpbmcsDQo+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICBzdHJ1Y3QgbmV0bGlu
-a19leHRfYWNrICpleHRhY2spOw0KPiAtYm9vbCBkc2FfcG9ydF9za2lwX3ZsYW5fY29uZmlndXJh
-dGlvbihzdHJ1Y3QgZHNhX3BvcnQgKmRwKTsNCj4gIGludCBkc2FfcG9ydF9hZ2VpbmdfdGltZShz
-dHJ1Y3QgZHNhX3BvcnQgKmRwLCBjbG9ja190IGFnZWluZ19jbG9jayk7DQo+ICBpbnQgZHNhX3Bv
-cnRfbXN0X2VuYWJsZShzdHJ1Y3QgZHNhX3BvcnQgKmRwLCBib29sIG9uLA0KPiAgICAgICAgICAg
-ICAgICAgICAgICAgICBzdHJ1Y3QgbmV0bGlua19leHRfYWNrICpleHRhY2spOw0KPiBkaWZmIC0t
-Z2l0IGEvbmV0L2RzYS9wb3J0LmMgYi9uZXQvZHNhL3BvcnQuYw0KPiBpbmRleCAzNzM4ZjJkNDBh
-MGIuLjc5ODUzZjY3M2I2NSAxMDA2NDQNCj4gLS0tIGEvbmV0L2RzYS9wb3J0LmMNCj4gKysrIGIv
-bmV0L2RzYS9wb3J0LmMNCj4gQEAgLTgzNCwyMCArODM0LDYgQEAgaW50IGRzYV9wb3J0X3ZsYW5f
-ZmlsdGVyaW5nKHN0cnVjdCBkc2FfcG9ydCAqZHAsDQo+IGJvb2wgdmxhbl9maWx0ZXJpbmcsDQo+
-ICAgICAgICAgcmV0dXJuIGVycjsNCj4gIH0NCj4gDQo+IC0vKiBUaGlzIGVuZm9yY2VzIGxlZ2Fj
-eSBiZWhhdmlvciBmb3Igc3dpdGNoIGRyaXZlcnMgd2hpY2ggYXNzdW1lDQo+IHRoZXkgY2FuJ3QN
-Cj4gLSAqIHJlY2VpdmUgVkxBTiBjb25maWd1cmF0aW9uIHdoZW4gZW5zbGF2ZWQgdG8gYSBicmlk
-Z2Ugd2l0aA0KPiB2bGFuX2ZpbHRlcmluZz0wDQo+IC0gKi8NCj4gLWJvb2wgZHNhX3BvcnRfc2tp
-cF92bGFuX2NvbmZpZ3VyYXRpb24oc3RydWN0IGRzYV9wb3J0ICpkcCkNCj4gLXsNCj4gLSAgICAg
-ICBzdHJ1Y3QgbmV0X2RldmljZSAqYnIgPSBkc2FfcG9ydF9icmlkZ2VfZGV2X2dldChkcCk7DQo+
-IC0gICAgICAgc3RydWN0IGRzYV9zd2l0Y2ggKmRzID0gZHAtPmRzOw0KPiAtDQo+IC0gICAgICAg
-aWYgKCFicikNCj4gLSAgICAgICAgICAgICAgIHJldHVybiBmYWxzZTsNCj4gLQ0KPiAtICAgICAg
-IHJldHVybiAhZHMtPmNvbmZpZ3VyZV92bGFuX3doaWxlX25vdF9maWx0ZXJpbmcgJiYNCj4gIWJy
-X3ZsYW5fZW5hYmxlZChicik7DQo+IC19DQo+IC0NCj4gIGludCBkc2FfcG9ydF9hZ2VpbmdfdGlt
-ZShzdHJ1Y3QgZHNhX3BvcnQgKmRwLCBjbG9ja190IGFnZWluZ19jbG9jaykNCj4gIHsNCj4gICAg
-ICAgICB1bnNpZ25lZCBsb25nIGFnZWluZ19qaWZmaWVzID0NCj4gY2xvY2tfdF90b19qaWZmaWVz
-KGFnZWluZ19jbG9jayk7DQo+IGRpZmYgLS1naXQgYS9uZXQvZHNhL3NsYXZlLmMgYi9uZXQvZHNh
-L3NsYXZlLmMNCj4gaW5kZXggYWQ2YTY2NjNmZWViLi5kMTI4NGY4Njg0ZDggMTAwNjQ0DQo+IC0t
-LSBhL25ldC9kc2Evc2xhdmUuYw0KPiArKysgYi9uZXQvZHNhL3NsYXZlLmMNCj4gQEAgLTUzMywx
-MSArNTMzLDYgQEAgc3RhdGljIGludCBkc2Ffc2xhdmVfdmxhbl9hZGQoc3RydWN0IG5ldF9kZXZp
-Y2UNCj4gKmRldiwNCj4gICAgICAgICBzdHJ1Y3Qgc3dpdGNoZGV2X29ial9wb3J0X3ZsYW4gKnZs
-YW47DQo+ICAgICAgICAgaW50IGVycjsNCj4gDQo+IC0gICAgICAgaWYgKGRzYV9wb3J0X3NraXBf
-dmxhbl9jb25maWd1cmF0aW9uKGRwKSkgew0KPiAtICAgICAgICAgICAgICAgTkxfU0VUX0VSUl9N
-U0dfTU9EKGV4dGFjaywgInNraXBwaW5nIGNvbmZpZ3VyYXRpb24gb2YNCj4gVkxBTiIpOw0KPiAt
-ICAgICAgICAgICAgICAgcmV0dXJuIDA7DQo+IC0gICAgICAgfQ0KPiAtDQo+ICAgICAgICAgdmxh
-biA9IFNXSVRDSERFVl9PQkpfUE9SVF9WTEFOKG9iaik7DQo+IA0KPiAgICAgICAgIC8qIERlbnkg
-YWRkaW5nIGEgYnJpZGdlIFZMQU4gd2hlbiB0aGVyZSBpcyBhbHJlYWR5IGFuIDgwMi4xUQ0KPiB1
-cHBlciB3aXRoDQo+IEBAIC01NzEsMTEgKzU2Niw2IEBAIHN0YXRpYyBpbnQgZHNhX3NsYXZlX2hv
-c3Rfdmxhbl9hZGQoc3RydWN0DQo+IG5ldF9kZXZpY2UgKmRldiwNCj4gICAgICAgICBpZiAoIWRw
-LT5icmlkZ2UpDQo+ICAgICAgICAgICAgICAgICByZXR1cm4gLUVPUE5PVFNVUFA7DQo+IA0KPiAt
-ICAgICAgIGlmIChkc2FfcG9ydF9za2lwX3ZsYW5fY29uZmlndXJhdGlvbihkcCkpIHsNCj4gLSAg
-ICAgICAgICAgICAgIE5MX1NFVF9FUlJfTVNHX01PRChleHRhY2ssICJza2lwcGluZyBjb25maWd1
-cmF0aW9uIG9mDQo+IFZMQU4iKTsNCj4gLSAgICAgICAgICAgICAgIHJldHVybiAwOw0KPiAtICAg
-ICAgIH0NCj4gLQ0KPiAgICAgICAgIHZsYW4gPSAqU1dJVENIREVWX09CSl9QT1JUX1ZMQU4ob2Jq
-KTsNCj4gDQo+ICAgICAgICAgLyogRXZlbiB0aG91Z2ggZHJpdmVycyBvZnRlbiBoYW5kbGUgQ1BV
-IG1lbWJlcnNoaXAgaW4gc3BlY2lhbA0KPiB3YXlzLA0KPiBAQCAtNjQyLDkgKzYzMiw2IEBAIHN0
-YXRpYyBpbnQgZHNhX3NsYXZlX3ZsYW5fZGVsKHN0cnVjdCBuZXRfZGV2aWNlDQo+ICpkZXYsDQo+
-ICAgICAgICAgc3RydWN0IGRzYV9wb3J0ICpkcCA9IGRzYV9zbGF2ZV90b19wb3J0KGRldik7DQo+
-ICAgICAgICAgc3RydWN0IHN3aXRjaGRldl9vYmpfcG9ydF92bGFuICp2bGFuOw0KPiANCj4gLSAg
-ICAgICBpZiAoZHNhX3BvcnRfc2tpcF92bGFuX2NvbmZpZ3VyYXRpb24oZHApKQ0KPiAtICAgICAg
-ICAgICAgICAgcmV0dXJuIDA7DQo+IC0NCj4gICAgICAgICB2bGFuID0gU1dJVENIREVWX09CSl9Q
-T1JUX1ZMQU4ob2JqKTsNCj4gDQo+ICAgICAgICAgcmV0dXJuIGRzYV9wb3J0X3ZsYW5fZGVsKGRw
-LCB2bGFuKTsNCj4gQEAgLTY2MCw5ICs2NDcsNiBAQCBzdGF0aWMgaW50IGRzYV9zbGF2ZV9ob3N0
-X3ZsYW5fZGVsKHN0cnVjdA0KPiBuZXRfZGV2aWNlICpkZXYsDQo+ICAgICAgICAgaWYgKCFkcC0+
-YnJpZGdlKQ0KPiAgICAgICAgICAgICAgICAgcmV0dXJuIC1FT1BOT1RTVVBQOw0KPiANCj4gLSAg
-ICAgICBpZiAoZHNhX3BvcnRfc2tpcF92bGFuX2NvbmZpZ3VyYXRpb24oZHApKQ0KPiAtICAgICAg
-ICAgICAgICAgcmV0dXJuIDA7DQo+IC0NCj4gICAgICAgICB2bGFuID0gU1dJVENIREVWX09CSl9Q
-T1JUX1ZMQU4ob2JqKTsNCj4gDQo+ICAgICAgICAgcmV0dXJuIGRzYV9wb3J0X2hvc3Rfdmxhbl9k
-ZWwoZHAsIHZsYW4pOw0KPiBAQCAtMTY1NSwxMSArMTYzOSw3IEBAIHN0YXRpYyBpbnQgZHNhX3Ns
-YXZlX2NsZWFyX3ZsYW4oc3RydWN0DQo+IG5ldF9kZXZpY2UgKnZkZXYsIGludCB2aWQsIHZvaWQg
-KmFyZykNCj4gICAqICAgICAgICAgLSBubyBWTEFOIChhbnkgODAyMXEgdXBwZXIgaXMgYSBzb2Z0
-d2FyZSBWTEFOKQ0KPiAgICoNCj4gICAqIC0gSWYgdW5kZXIgYSB2bGFuX2ZpbHRlcmluZz0wIGJy
-aWRnZSB3aGljaCBpdCBvZmZsb2FkOg0KPiAtICogICAgIC0gaWYgZHMtPmNvbmZpZ3VyZV92bGFu
-X3doaWxlX25vdF9maWx0ZXJpbmcgPSB0cnVlIChkZWZhdWx0KToNCj4gLSAqICAgICAgICAgLSB0
-aGUgYnJpZGdlIFZMQU5zLiBUaGVzZSBWTEFOcyBhcmUgY29tbWl0dGVkIHRvIGhhcmR3YXJlDQo+
-IGJ1dCBpbmFjdGl2ZS4NCj4gLSAqICAgICAtIGVsc2UgKGRlcHJlY2F0ZWQpOg0KPiAtICogICAg
-ICAgICAtIG5vIFZMQU4uIFRoZSBicmlkZ2UgVkxBTnMgYXJlIG5vdCByZXN0b3JlZCB3aGVuIFZM
-QU4NCj4gYXdhcmVuZXNzIGlzDQo+IC0gKiAgICAgICAgICAgZW5hYmxlZCwgc28gdGhpcyBiZWhh
-dmlvciBpcyBicm9rZW4gYW5kIGRpc2NvdXJhZ2VkLg0KPiArICogICAgIC0gdGhlIGJyaWRnZSBW
-TEFOcy4gVGhlc2UgVkxBTnMgYXJlIGNvbW1pdHRlZCB0byBoYXJkd2FyZSBidXQNCj4gaW5hY3Rp
-dmUuDQo+ICAgKg0KPiAgICogLSBJZiB1bmRlciBhIHZsYW5fZmlsdGVyaW5nPTEgYnJpZGdlIHdo
-aWNoIGl0IG9mZmxvYWQ6DQo+ICAgKiAgICAgLSB0aGUgYnJpZGdlIFZMQU5zDQo+IC0tDQo+IDIu
-MjUuMQ0KPiANCg==
+On Tue, 05 Jul 2022, Luiz Augusto von Dentz wrote:
+
+> Hi Lee,
+> 
+> On Wed, Jun 29, 2022 at 8:28 AM Lee Jones <lee.jones@linaro.org> wrote:
+> >
+> > On Tue, 28 Jun 2022, Luiz Augusto von Dentz wrote:
+> >
+> > > Hi Eric, Lee,
+> > >
+> > > On Mon, Jun 27, 2022 at 4:39 PM Luiz Augusto von Dentz
+> > > <luiz.dentz@gmail.com> wrote:
+> > > >
+> > > > Hi Eric, Lee,
+> > > >
+> > > > On Mon, Jun 27, 2022 at 7:41 AM Eric Dumazet <edumazet@google.com> wrote:
+> > > > >
+> > > > > On Wed, Jun 22, 2022 at 10:27 AM Lee Jones <lee.jones@linaro.org> wrote:
+> > > > > >
+> > > > > > This change prevents a use-after-free caused by one of the worker
+> > > > > > threads starting up (see below) *after* the final channel reference
+> > > > > > has been put() during sock_close() but *before* the references to the
+> > > > > > channel have been destroyed.
+> > > > > >
+> > > > > >   refcount_t: increment on 0; use-after-free.
+> > > > > >   BUG: KASAN: use-after-free in refcount_dec_and_test+0x20/0xd0
+> > > > > >   Read of size 4 at addr ffffffc114f5bf18 by task kworker/u17:14/705
+> > > > > >
+> > > > > >   CPU: 4 PID: 705 Comm: kworker/u17:14 Tainted: G S      W       4.14.234-00003-g1fb6d0bd49a4-dirty #28
+> > > > > >   Hardware name: Qualcomm Technologies, Inc. SM8150 V2 PM8150 Google Inc. MSM sm8150 Flame DVT (DT)
+> > > > > >   Workqueue: hci0 hci_rx_work
+> > > > > >   Call trace:
+> > > > > >    dump_backtrace+0x0/0x378
+> > > > > >    show_stack+0x20/0x2c
+> > > > > >    dump_stack+0x124/0x148
+> > > > > >    print_address_description+0x80/0x2e8
+> > > > > >    __kasan_report+0x168/0x188
+> > > > > >    kasan_report+0x10/0x18
+> > > > > >    __asan_load4+0x84/0x8c
+> > > > > >    refcount_dec_and_test+0x20/0xd0
+> > > > > >    l2cap_chan_put+0x48/0x12c
+> > > > > >    l2cap_recv_frame+0x4770/0x6550
+> > > > > >    l2cap_recv_acldata+0x44c/0x7a4
+> > > > > >    hci_acldata_packet+0x100/0x188
+> > > > > >    hci_rx_work+0x178/0x23c
+> > > > > >    process_one_work+0x35c/0x95c
+> > > > > >    worker_thread+0x4cc/0x960
+> > > > > >    kthread+0x1a8/0x1c4
+> > > > > >    ret_from_fork+0x10/0x18
+> > > > > >
+> > > > > > Cc: stable@kernel.org
+> > > > >
+> > > > > When was the bug added ? (Fixes: tag please)
+> > > > >
+> > > > > > Cc: Marcel Holtmann <marcel@holtmann.org>
+> > > > > > Cc: Johan Hedberg <johan.hedberg@gmail.com>
+> > > > > > Cc: Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+> > > > > > Cc: "David S. Miller" <davem@davemloft.net>
+> > > > > > Cc: Eric Dumazet <edumazet@google.com>
+> > > > > > Cc: Jakub Kicinski <kuba@kernel.org>
+> > > > > > Cc: Paolo Abeni <pabeni@redhat.com>
+> > > > > > Cc: linux-bluetooth@vger.kernel.org
+> > > > > > Cc: netdev@vger.kernel.org
+> > > > > > Signed-off-by: Lee Jones <lee.jones@linaro.org>
+> > > > > > ---
+> > > > > >  net/bluetooth/l2cap_core.c | 4 ++--
+> > > > > >  1 file changed, 2 insertions(+), 2 deletions(-)
+> > > > > >
+> > > > > > diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
+> > > > > > index ae78490ecd3d4..82279c5919fd8 100644
+> > > > > > --- a/net/bluetooth/l2cap_core.c
+> > > > > > +++ b/net/bluetooth/l2cap_core.c
+> > > > > > @@ -483,9 +483,7 @@ static void l2cap_chan_destroy(struct kref *kref)
+> > > > > >
+> > > > > >         BT_DBG("chan %p", chan);
+> > > > > >
+> > > > > > -       write_lock(&chan_list_lock);
+> > > > > >         list_del(&chan->global_l);
+> > > > > > -       write_unlock(&chan_list_lock);
+> > > > > >
+> > > > > >         kfree(chan);
+> > > > > >  }
+> > > > > > @@ -501,7 +499,9 @@ void l2cap_chan_put(struct l2cap_chan *c)
+> > > > > >  {
+> > > > > >         BT_DBG("chan %p orig refcnt %u", c, kref_read(&c->kref));
+> > > > > >
+> > > > > > +       write_lock(&chan_list_lock);
+> > > > > >         kref_put(&c->kref, l2cap_chan_destroy);
+> > > > > > +       write_unlock(&chan_list_lock);
+> > > > > >  }
+> > > > > >  EXPORT_SYMBOL_GPL(l2cap_chan_put);
+> > > > > >
+> > > > > >
+> > > > >
+> > > > > I do not think this patch is correct.
+> > > > >
+> > > > > a kref does not need to be protected by a write lock.
+> > > > >
+> > > > > This might shuffle things enough to work around a particular repro you have.
+> > > > >
+> > > > > If the patch was correct why not protect kref_get() sides ?
+> > > > >
+> > > > > Before the &hdev->rx_work is scheduled (queue_work(hdev->workqueue,
+> > > > > &hdev->rx_work),
+> > > > > a reference must be taken.
+> > > > >
+> > > > > Then this reference must be released at the end of hci_rx_work() or
+> > > > > when hdev->workqueue
+> > > > > is canceled.
+> > > > >
+> > > > > This refcount is not needed _if_ the workqueue is properly canceled at
+> > > > > device dismantle,
+> > > > > in a synchronous way.
+> > > > >
+> > > > > I do not see this hdev->rx_work being canceled, maybe this is the real issue.
+> > > > >
+> > > > > There is a call to drain_workqueue() but this is not enough I think,
+> > > > > because hci_recv_frame()
+> > > > > can re-arm
+> > > > >    queue_work(hdev->workqueue, &hdev->rx_work);
+> > > >
+> > > > I suspect this likely a refcount problem, we do l2cap_get_chan_by_scid:
+> > > >
+> > > > /* Find channel with given SCID.
+> > > >  * Returns locked channel. */
+> > > > static struct l2cap_chan *l2cap_get_chan_by_scid(struct l2cap_conn
+> > > > *conn, u16 cid)
+> > > >
+> > > > So we return a locked channel but that doesn't prevent another thread
+> > > > to call l2cap_chan_put which doesn't care about l2cap_chan_lock so
+> > > > perhaps we actually need to host a reference while we have the lock,
+> > > > at least we do something like that on l2cap_sock.c:
+> > > >
+> > > > l2cap_chan_hold(chan);
+> > > > l2cap_chan_lock(chan);
+> > > >
+> > > > __clear_chan_timer(chan);
+> > > > l2cap_chan_close(chan, ECONNRESET);
+> > > > l2cap_sock_kill(sk);
+> > > >
+> > > > l2cap_chan_unlock(chan);
+> > > > l2cap_chan_put(chan);
+> > >
+> > > Perhaps something like this:
+> >
+> > I'm struggling to apply this for test:
+> >
+> >   "error: corrupt patch at line 6"
+> 
+> Check with the attached patch.
+
+With the patch applied:
+
+[  188.825418][   T75] refcount_t: addition on 0; use-after-free.
+[  188.825418][   T75] refcount_t: addition on 0; use-after-free.
+[  188.840629][   T75] WARNING: CPU: 5 PID: 75 at lib/refcount.c:25 refcount_warn_saturate+0x147/0x1b0
+[  188.840629][   T75] WARNING: CPU: 5 PID: 75 at lib/refcount.c:25 refcount_warn_saturate+0x147/0x1b0
+[  188.862642][   T75] Modules linked in:
+[  188.862642][   T75] Modules linked in:
+[  188.871686][   T75] CPU: 5 PID: 75 Comm: kworker/u17:0 Not tainted 5.18.0-00005-gc3401a7ad65f #8
+[  188.871686][   T75] CPU: 5 PID: 75 Comm: kworker/u17:0 Not tainted 5.18.0-00005-gc3401a7ad65f #8
+[  188.892806][   T75] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.0-debian-1.16.0-4 04/01/2014
+[  188.892806][   T75] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.0-debian-1.16.0-4 04/01/2014
+[  188.917398][   T75] Workqueue: hci0 hci_rx_work
+[  188.917398][   T75] Workqueue: hci0 hci_rx_work
+[  188.928515][   T75] RIP: 0010:refcount_warn_saturate+0x147/0x1b0
+[  188.928515][   T75] RIP: 0010:refcount_warn_saturate+0x147/0x1b0
+[  188.943176][   T75] Code: c7 e0 a1 70 85 31 c0 e8 d7 c2 e8 fe 0f 0b eb a1 e8 fe 33 15 ff c6 05 f9 e2 a5 04 01 48 c7 c7 80 a2 70 80
+[  188.943176][   T75] Code: c7 e0 a1 70 85 31 c0 e8 d7 c2 e8 fe 0f 0b eb a1 e8 fe 33 15 ff c6 05 f9 e2 a5 04 01 48 c7 c7 80 a2 70 80
+[  188.990053][   T75] RSP: 0018:ffffc9000156f800 EFLAGS: 00010246
+[  188.990053][   T75] RSP: 0018:ffffc9000156f800 EFLAGS: 00010246
+[  189.004337][   T75] RAX: 118d918bf1a47e00 RBX: 0000000000000002 RCX: ffff8881130ce000
+[  189.004337][   T75] RAX: 118d918bf1a47e00 RBX: 0000000000000002 RCX: ffff8881130ce000
+[  189.023131][   T75] RDX: 0000000000000000 RSI: 0000000000000001 RDI: 0000000000000000
+[  189.023131][   T75] RDX: 0000000000000000 RSI: 0000000000000001 RDI: 0000000000000000
+[  189.042044][   T75] RBP: ffffc9000156f810 R08: ffffffff81574218 R09: ffffed107de165d1
+[  189.042044][   T75] RBP: ffffc9000156f810 R08: ffffffff81574218 R09: ffffed107de165d1
+[  189.060967][   T75] R10: ffffed107de165d1 R11: 0000000000000000 R12: 1ffff920002adf10
+[  189.060967][   T75] R10: ffffed107de165d1 R11: 0000000000000000 R12: 1ffff920002adf10
+[  189.079650][   T75] R13: dffffc0000000000 R14: 0000000000000002 R15: ffff888139224818
+[  189.079650][   T75] R13: dffffc0000000000 R14: 0000000000000002 R15: ffff888139224818
+[  189.098573][   T75] FS:  0000000000000000(0000) GS:ffff8883ef080000(0000) knlGS:0000000000000000
+[  189.098573][   T75] FS:  0000000000000000(0000) GS:ffff8883ef080000(0000) knlGS:0000000000000000
+[  189.119604][   T75] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  189.119604][   T75] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  189.135313][   T75] CR2: 00000000004a2e98 CR3: 000000000680f000 CR4: 0000000000350ea0
+[  189.135313][   T75] CR2: 00000000004a2e98 CR3: 000000000680f000 CR4: 0000000000350ea0
+[  189.154165][   T75] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[  189.154165][   T75] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[  189.173465][   T75] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[  189.173465][   T75] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[  189.192075][   T75] Call Trace:
+[  189.192075][   T75] Call Trace:
+[  189.199853][   T75]  <TASK>
+[  189.199853][   T75]  <TASK>
+[  189.206820][   T75]  l2cap_global_chan_by_psm+0x55a/0x5a0
+[  189.206820][   T75]  l2cap_global_chan_by_psm+0x55a/0x5a0
+[  189.219891][   T75]  ? l2cap_connect+0x12c0/0x12c0
+[  189.219891][   T75]  ? l2cap_connect+0x12c0/0x12c0
+[  189.231602][   T75]  ? __kfree_skb+0x13e/0x1c0
+[  189.231602][   T75]  ? __kfree_skb+0x13e/0x1c0
+[  189.242612][   T75]  ? l2cap_recv_frame+0xf5c/0x95c0
+[  189.242612][   T75]  ? l2cap_recv_frame+0xf5c/0x95c0
+[  189.254714][   T75]  ? skb_pull+0xde/0x150
+[  189.254714][   T75]  ? skb_pull+0xde/0x150
+[  189.264776][   T75]  l2cap_recv_frame+0x5bd/0x95c0
+[  189.264776][   T75]  l2cap_recv_frame+0x5bd/0x95c0
+[  189.276329][   T75]  ? debug_smp_processor_id+0x1c/0x20
+[  189.276329][   T75]  ? debug_smp_processor_id+0x1c/0x20
+[  189.288985][   T75]  ? update_cfs_rq_load_avg+0x412/0x4f0
+[  189.288985][   T75]  ? update_cfs_rq_load_avg+0x412/0x4f0
+[  189.302202][   T75]  ? l2cap_recv_acldata+0x1a60/0x1a60
+[  189.302202][   T75]  ? l2cap_recv_acldata+0x1a60/0x1a60
+[  189.314998][   T75]  ? __kasan_check_write+0x14/0x20
+[  189.314998][   T75]  ? __kasan_check_write+0x14/0x20
+[  189.326877][   T75]  ? __switch_to+0x617/0x1060
+[  189.326877][   T75]  ? __switch_to+0x617/0x1060
+[  189.337858][   T75]  ? __kasan_check_write+0x14/0x20
+[  189.337858][   T75]  ? __kasan_check_write+0x14/0x20
+[  189.349712][   T75]  ? _raw_spin_lock_irqsave+0xdc/0x1f0
+[  189.349712][   T75]  ? _raw_spin_lock_irqsave+0xdc/0x1f0
+[  189.362793][   T75]  ? compat_start_thread+0x20/0x20
+[  189.362793][   T75]  ? compat_start_thread+0x20/0x20
+[  189.375316][   T75]  l2cap_recv_acldata+0x5c9/0x1a60
+[  189.375316][   T75]  l2cap_recv_acldata+0x5c9/0x1a60
+[  189.387262][   T75]  ? hci_connect_sco+0x9b0/0x9b0
+[  189.387262][   T75]  ? hci_connect_sco+0x9b0/0x9b0
+[  189.398857][   T75]  hci_rx_work+0x54b/0x750
+[  189.398857][   T75]  hci_rx_work+0x54b/0x750
+[  189.409172][   T75]  process_one_work+0x6eb/0x1080
+[  189.409172][   T75]  process_one_work+0x6eb/0x1080
+[  189.420829][   T75]  worker_thread+0xb2b/0x13d0
+[  189.420829][   T75]  worker_thread+0xb2b/0x13d0
+[  189.431922][   T75]  kthread+0x2b1/0x2d0
+[  189.431922][   T75]  kthread+0x2b1/0x2d0
+[  189.441724][   T75]  ? process_one_work+0x1080/0x1080
+[  189.441724][   T75]  ? process_one_work+0x1080/0x1080
+[  189.454559][   T75]  ? kthread_blkcg+0xd0/0xd0
+[  189.454559][   T75]  ? kthread_blkcg+0xd0/0xd0
+[  189.465457][   T75]  ret_from_fork+0x1f/0x30
+[  189.465457][   T75]  ret_from_fork+0x1f/0x30
+[  189.475777][   T75]  </TASK>
+[  189.475777][   T75]  </TASK>
+[  189.482907][   T75] ---[ end trace 0000000000000000 ]---
+[  189.482907][   T75] ---[ end trace 0000000000000000 ]---
+[  189.496567][   T75] ------------[ cut here ]------------
+[  189.496567][   T75] ------------[ cut here ]------------
+[  189.510250][   T75] refcount_t: underflow; use-after-free.
+[  189.510250][   T75] refcount_t: underflow; use-after-free.
+
+> From 88cf6b4f2b0c9ed0bd7ef3b0d38574b412264609 Mon Sep 17 00:00:00 2001
+> From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+> Date: Tue, 28 Jun 2022 15:46:04 -0700
+> Subject: [PATCH] Bluetooth: L2CAP: WIP
+> 
+> Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+> ---
+>  net/bluetooth/l2cap_core.c | 25 +++++++++++++++++++------
+>  1 file changed, 19 insertions(+), 6 deletions(-)
+> 
+> diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
+> index 09ecaf556de5..359fb1ce4372 100644
+> --- a/net/bluetooth/l2cap_core.c
+> +++ b/net/bluetooth/l2cap_core.c
+> @@ -111,7 +111,8 @@ static struct l2cap_chan *__l2cap_get_chan_by_scid(struct l2cap_conn *conn,
+>  }
+>  
+>  /* Find channel with given SCID.
+> - * Returns locked channel. */
+> + * Returns a reference locked channel.
+> + */
+>  static struct l2cap_chan *l2cap_get_chan_by_scid(struct l2cap_conn *conn,
+>  						 u16 cid)
+>  {
+> @@ -119,15 +120,17 @@ static struct l2cap_chan *l2cap_get_chan_by_scid(struct l2cap_conn *conn,
+>  
+>  	mutex_lock(&conn->chan_lock);
+>  	c = __l2cap_get_chan_by_scid(conn, cid);
+> -	if (c)
+> +	if (c) {
+> +		l2cap_chan_hold(c);
+>  		l2cap_chan_lock(c);
+> +	}
+>  	mutex_unlock(&conn->chan_lock);
+>  
+>  	return c;
+>  }
+>  
+>  /* Find channel with given DCID.
+> - * Returns locked channel.
+> + * Returns a reference locked channel.
+>   */
+>  static struct l2cap_chan *l2cap_get_chan_by_dcid(struct l2cap_conn *conn,
+>  						 u16 cid)
+> @@ -136,8 +139,10 @@ static struct l2cap_chan *l2cap_get_chan_by_dcid(struct l2cap_conn *conn,
+>  
+>  	mutex_lock(&conn->chan_lock);
+>  	c = __l2cap_get_chan_by_dcid(conn, cid);
+> -	if (c)
+> +	if (c) {
+> +		l2cap_chan_hold(c);
+>  		l2cap_chan_lock(c);
+> +	}
+>  	mutex_unlock(&conn->chan_lock);
+>  
+>  	return c;
+> @@ -4464,6 +4469,7 @@ static inline int l2cap_config_req(struct l2cap_conn *conn,
+>  
+>  unlock:
+>  	l2cap_chan_unlock(chan);
+> +	l2cap_chan_put(chan);
+>  	return err;
+>  }
+>  
+> @@ -4578,6 +4584,7 @@ static inline int l2cap_config_rsp(struct l2cap_conn *conn,
+>  
+>  done:
+>  	l2cap_chan_unlock(chan);
+> +	l2cap_chan_put(chan);
+>  	return err;
+>  }
+>  
+> @@ -5305,6 +5312,7 @@ static inline int l2cap_move_channel_req(struct l2cap_conn *conn,
+>  	l2cap_send_move_chan_rsp(chan, result);
+>  
+>  	l2cap_chan_unlock(chan);
+> +	l2cap_chan_put(chan);
+>  
+>  	return 0;
+>  }
+> @@ -5397,6 +5405,7 @@ static void l2cap_move_continue(struct l2cap_conn *conn, u16 icid, u16 result)
+>  	}
+>  
+>  	l2cap_chan_unlock(chan);
+> +	l2cap_chan_put(chan);
+>  }
+>  
+>  static void l2cap_move_fail(struct l2cap_conn *conn, u8 ident, u16 icid,
+> @@ -5489,6 +5498,7 @@ static int l2cap_move_channel_confirm(struct l2cap_conn *conn,
+>  	l2cap_send_move_chan_cfm_rsp(conn, cmd->ident, icid);
+>  
+>  	l2cap_chan_unlock(chan);
+> +	l2cap_chan_put(chan);
+>  
+>  	return 0;
+>  }
+> @@ -5524,6 +5534,7 @@ static inline int l2cap_move_channel_confirm_rsp(struct l2cap_conn *conn,
+>  	}
+>  
+>  	l2cap_chan_unlock(chan);
+> +	l2cap_chan_put(chan);
+>  
+>  	return 0;
+>  }
+> @@ -5896,12 +5907,11 @@ static inline int l2cap_le_credits(struct l2cap_conn *conn,
+>  	if (credits > max_credits) {
+>  		BT_ERR("LE credits overflow");
+>  		l2cap_send_disconn_req(chan, ECONNRESET);
+> -		l2cap_chan_unlock(chan);
+>  
+>  		/* Return 0 so that we don't trigger an unnecessary
+>  		 * command reject packet.
+>  		 */
+> -		return 0;
+> +		goto unlock;
+>  	}
+>  
+>  	chan->tx_credits += credits;
+> @@ -5912,7 +5922,9 @@ static inline int l2cap_le_credits(struct l2cap_conn *conn,
+>  	if (chan->tx_credits)
+>  		chan->ops->resume(chan);
+>  
+> +unlock:
+>  	l2cap_chan_unlock(chan);
+> +	l2cap_chan_put(chan);
+>  
+>  	return 0;
+>  }
+> @@ -7598,6 +7610,7 @@ static void l2cap_data_channel(struct l2cap_conn *conn, u16 cid,
+>  
+>  done:
+>  	l2cap_chan_unlock(chan);
+> +	l2cap_chan_put(chan);
+>  }
+>  
+>  static void l2cap_conless_channel(struct l2cap_conn *conn, __le16 psm,
+
+
+-- 
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
