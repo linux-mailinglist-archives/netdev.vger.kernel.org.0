@@ -2,48 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EC6056932B
-	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 22:17:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB06A56932D
+	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 22:20:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233805AbiGFURj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jul 2022 16:17:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58472 "EHLO
+        id S233842AbiGFUUc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jul 2022 16:20:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233552AbiGFURi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 16:17:38 -0400
+        with ESMTP id S233816AbiGFUUb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 16:20:31 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E6671CFF3
-        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 13:17:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76B4B1E3DC
+        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 13:20:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A7D5E620CB
-        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 20:17:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AE60C3411C;
-        Wed,  6 Jul 2022 20:17:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F6CC620B1
+        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 20:20:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0582BC341C0;
+        Wed,  6 Jul 2022 20:20:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657138657;
-        bh=jeKWvyF+EPnn3TUzP8ol+sOVtSEC54D/FsU0Imat2y4=;
+        s=k20201202; t=1657138829;
+        bh=c6QiCdISE1NdcEkQHwXP8KeavXttI26LFixoqrYBkjU=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=AmigoYQmU3jHoVrkSH11jWfSFoNjXdsIW1paPLa/luSqsFwCk+WAi0rq6nEJwrqfK
-         pAbV4i9qA0SWzuDxB/ur4SUrE5tpslQopiZoZLNZkF6k15s0yUqyc5Y7RzZB4caOjZ
-         PnPNaNFOHMNg1iZ/Cz+ryoUJ66/GF+9pNX6tESZWqBcgXuKIMGW3nM5Tqu0q3QetQh
-         qDedi6WeoEB+tqvJkPZZ/kykTsHdumHrZ42H3adKp2HPml4v8DGrYqcc6nIjAKyO31
-         CoGK54us7hvWyma+aW7SfbEZx63e/f4SaRL+xFtuhEUmNd64OEyfHXCzFbaq9v0HhT
-         MMqOz+uJSVhBw==
-Date:   Wed, 6 Jul 2022 13:17:35 -0700
+        b=dI5KXpdeYJb6gfK34XFqR1IH5ZWg8Gtbn5y2GspkMQljnxhyFvaN8GrqmX+aVZHNs
+         2zBGACXDNnebbTdBIhB1ONPbrlGHXo+B+GI85EW0I1T1OCu3l/bCbw6+9MqWfbWkqg
+         YpgJXYnNlL29qNJ1+vbX8cOAL5+ia0iPj6RPeFPbjxMJ+jT4Ohl6smPFdCvyidKAdu
+         Xbr755aBaQpZfLa6D4b6E19c4ezPvnUShv1QE5n6k7nXD7FET6KQa3PFb3Wmtj1C/U
+         vXmcPIG3BVtK55n1Dd78jU2EwBexLn0IJKk13/Gw9fndiRNcFLrtrFyhJ3d5GQE7MY
+         7ayhNnXPVEfhg==
+Date:   Wed, 6 Jul 2022 13:20:28 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Matthias May <matthias.may@westermo.com>
-Cc:     <netdev@vger.kernel.org>, <davem@davemloft.net>,
-        <yoshfuji@linux-ipv6.org>, <dsahern@kernel.org>,
-        <edumazet@google.com>, <pabeni@redhat.com>
-Subject: Re: [PATCH net] ip_tunnel: allow to inherit from VLAN encapsulated
- IP frames
-Message-ID: <20220706131735.4d9f4562@kernel.org>
-In-Reply-To: <e829d8ae-ad2c-9cf5-88e3-0323e9f32d3c@westermo.com>
-References: <20220705145441.11992-1-matthias.may@westermo.com>
-        <20220705182512.309f205e@kernel.org>
-        <e829d8ae-ad2c-9cf5-88e3-0323e9f32d3c@westermo.com>
+To:     Mat Martineau <mathew.j.martineau@linux.intel.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, pabeni@redhat.com,
+        edumazet@google.com, fw@strlen.de, geliang.tang@suse.com,
+        matthieu.baerts@tessares.net, mptcp@lists.linux.dev
+Subject: Re: [PATCH net 0/7] mptcp: Path manager fixes for 5.19
+Message-ID: <20220706132028.32028102@kernel.org>
+In-Reply-To: <a61724-7676-bf55-491a-9ea8599ca5a7@linux.intel.com>
+References: <20220705213217.146898-1-mathew.j.martineau@linux.intel.com>
+        <20220705180024.4196a2bf@kernel.org>
+        <a61724-7676-bf55-491a-9ea8599ca5a7@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -57,44 +56,23 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 6 Jul 2022 09:07:36 +0200 Matthias May wrote:
-> >> The current code allows to inherit the TOS, TTL, DF from the payload
-> >> when skb->protocol is ETH_P_IP or ETH_P_IPV6.
-> >> However when the payload is VLAN encapsulated (e.g because the tunnel
-> >> is of type GRETAP), then this inheriting does not work, because the
-> >> visible skb->protocol is of type ETH_P_8021Q.
-> >>
-> >> Add a check on ETH_P_8021Q and subsequently check the payload protocol.  
-> > 
-> > Do we need to check for 8021AD as well?
+On Wed, 6 Jul 2022 10:14:21 -0700 (PDT) Mat Martineau wrote:
+> > Is it possible to CC folks who authored patches under Fixes?
+> > Sorry if I already asked about this. I'm trying to work on refining
+> > the CC check in patchwork but I'm a little ambivalent about adding
+> > this one to exceptions.  
 > 
-> Yeah that would make sense.
-> I can add the check for ETH_P_8021AD in v2.
-> Will have to find some hardware that is AD capable to test.
-
-Why HW, you should be able to test with two Linux endpoints, no?
-
-> >> Signed-off-by: Matthias May <matthias.may@westermo.com>
-> >> ---
-> >>   net/ipv4/ip_tunnel.c | 21 +++++++++++++--------  
-> > 
-> > Does ipv6 need the same treatment?  
+> Yes, I do try to do that. Note that Geliang changed his email address, so 
+> the check script flags his old address though he is cc'd. This is the 
+> recurring source of most of those red 'fail' blobs in patchwork for MPTCP 
+> series.
 > 
-> I don't think i changed anything regarding the behaviour for ipv6
-> by allowing to skip from the outer protocol to the payload protocol.
+> Does your script use the .mailmap file from the kernel repo? Maybe I can 
+> ask Geliang about adding an entry there.
 
-Sorry, to be clear what I meant - we try to enforce feature parity for
-IPv6 these days in Linux. So I was asking if ipv6 needs changes to be
-able to deal with VLANs. I think you got that but just in case.
+That my next TODO item. I'm planning to include a local alias map as
+well because I have a suspicion that chasing people to update .mailmap
+will be a hassle.
 
-> The previous code already
-> * got the TOS via ipv6_get_dsfield,
-> * the TTL was derived from the hop_limit,
-> * and DF does not exist for ipv6 so it doesn't check for ETH_P_IPV6.
-
-Purely by looking at the code I thought that VLAN-enabled GRETAP frames
-would fall into ip6gre_xmit_other() which passes dsfield=0 into
-__gre6_xmit(). key->tos only overrides the field for "external" tunnels, 
-not normal tunnels with a dedicated netdev per tunnel.
-
-A selftest to check both ipv4 and ipv6 would be the ultimate win there.
+> (I did also forget to add my coworker Kishen to part of the series this 
+> time, sorry about that)
