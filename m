@@ -2,232 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 86A88568E99
-	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 18:04:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 44F99568EBC
+	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 18:12:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233954AbiGFQEX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jul 2022 12:04:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60742 "EHLO
+        id S234200AbiGFQMR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jul 2022 12:12:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233786AbiGFQEW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 12:04:22 -0400
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37D7A17586;
-        Wed,  6 Jul 2022 09:04:20 -0700 (PDT)
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1o97VG-0003Og-IK; Wed, 06 Jul 2022 18:03:50 +0200
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1o97VG-000V92-4d; Wed, 06 Jul 2022 18:03:50 +0200
-Subject: Re: [PATCH v6 4/5] bpf: Add bpf_verify_pkcs7_signature() helper
-To:     Roberto Sassu <roberto.sassu@huawei.com>, ast@kernel.org,
-        andrii@kernel.org, kpsingh@kernel.org, john.fastabend@gmail.com,
-        songliubraving@fb.com, kafai@fb.com, yhs@fb.com,
-        dhowells@redhat.com
-Cc:     keyrings@vger.kernel.org, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-security-module@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220628122750.1895107-1-roberto.sassu@huawei.com>
- <20220628122750.1895107-5-roberto.sassu@huawei.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <903b1b6c-b0fd-d624-a24b-5983d8d661b7@iogearbox.net>
-Date:   Wed, 6 Jul 2022 18:03:49 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        with ESMTP id S234175AbiGFQMO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 12:12:14 -0400
+X-Greylist: delayed 395 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 06 Jul 2022 09:12:14 PDT
+Received: from smtpservice.6wind.com (unknown [185.13.181.2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0047826573;
+        Wed,  6 Jul 2022 09:12:13 -0700 (PDT)
+Received: from bretzel (bretzel.dev.6wind.com [10.17.1.57])
+        by smtpservice.6wind.com (Postfix) with ESMTPS id BF33A600E3;
+        Wed,  6 Jul 2022 18:05:37 +0200 (CEST)
+Received: from dichtel by bretzel with local (Exim 4.92)
+        (envelope-from <dichtel@6wind.com>)
+        id 1o97Wz-0008Fi-M7; Wed, 06 Jul 2022 18:05:37 +0200
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        David Ahern <dsahern@kernel.org>
+Cc:     netdev@vger.kernel.org,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        stable@vger.kernel.org, Edwin Brossette <edwin.brossette@6wind.com>
+Subject: [PATCH net 1/2] ip: fix dflt addr selection for connected nexthop
+Date:   Wed,  6 Jul 2022 18:05:25 +0200
+Message-Id: <20220706160526.31711-1-nicolas.dichtel@6wind.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-In-Reply-To: <20220628122750.1895107-5-roberto.sassu@huawei.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.6/26595/Wed Jul  6 09:53:23 2022)
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,RDNS_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/28/22 2:27 PM, Roberto Sassu wrote:
-> Add the bpf_verify_pkcs7_signature() helper, to give eBPF security modules
-> the ability to check the validity of a signature against supplied data, by
-> using user-provided or system-provided keys as trust anchor.
-> 
-> The new helper makes it possible to enforce mandatory policies, as eBPF
-> programs might be allowed to make security decisions only based on data
-> sources the system administrator approves.
-> 
-> The caller should provide both the data to be verified and the signature as
-> eBPF dynamic pointers (to minimize the number of parameters).
-> 
-> The caller should also provide a trusted keyring serial, together with key
-> lookup-specific flags, to determine which keys can be used for signature
-> verification. Alternatively, the caller could specify zero as serial value
-> (not valid, serials must be positive), and provide instead a special
-> keyring ID.
-> 
-> Key lookup flags are defined in include/linux/key.h and can be: 1, to
-> request that special keyrings be created if referred to directly; 2 to
-> permit partially constructed keys to be found.
-> 
-> Special IDs are defined in include/linux/verification.h and can be: 0 for
-> the primary keyring (immutable keyring of system keys); 1 for both the
-> primary and secondary keyring (where keys can be added only if they are
-> vouched for by existing keys in those keyrings); 2 for the platform keyring
-> (primarily used by the integrity subsystem to verify a kexec'ed kerned
-> image and, possibly, the initramfs signature).
-> 
-> Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
-> Reported-by: kernel test robot <lkp@intel.com> (cast warning)
+When a nexthop is added, without a gw address, the default scope was set
+to 'host'. Thus, when a source address is selected, 127.0.0.1 may be chosen
+but rejected when the route is used.
 
-nit: Given this a new feature not a fix to existing code, there is no need to
-      add the above reported-by from kbuild bot.
+When using a route without a nexthop id, the scope can be configured in the
+route, thus the problem doesn't exist.
 
-> ---
->   include/uapi/linux/bpf.h       | 24 +++++++++++++
->   kernel/bpf/bpf_lsm.c           | 63 ++++++++++++++++++++++++++++++++++
->   tools/include/uapi/linux/bpf.h | 24 +++++++++++++
->   3 files changed, 111 insertions(+)
-> 
-> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> index e81362891596..b4f5ad863281 100644
-> --- a/include/uapi/linux/bpf.h
-> +++ b/include/uapi/linux/bpf.h
-> @@ -5325,6 +5325,29 @@ union bpf_attr {
->    *		**-EACCES** if the SYN cookie is not valid.
->    *
->    *		**-EPROTONOSUPPORT** if CONFIG_IPV6 is not builtin.
-> + *
-> + * long bpf_verify_pkcs7_signature(struct bpf_dynptr *data_ptr, struct bpf_dynptr *sig_ptr, u32 trusted_keyring_serial, unsigned long lookup_flags, unsigned long trusted_keyring_id)
+To explain more deeply: when a user creates a nexthop, it cannot specify
+the scope. To create it, the function nh_create_ipv4() calls fib_check_nh()
+with scope set to 0. fib_check_nh() calls fib_check_nh_nongw() wich was
+setting scope to 'host'. Then, nh_create_ipv4() calls
+fib_info_update_nhc_saddr() with scope set to 'host'. The src addr is
+chosen before the route is inserted.
 
-nit: for the args instead of ulong, just do u64
+When a 'standard' route (ie without a reference to a nexthop) is added,
+fib_create_info() calls fib_info_update_nhc_saddr() with the scope set by
+the user. iproute2 set the scope to 'link' by default.
 
-> + *	Description
-> + *		Verify the PKCS#7 signature *sig_ptr* against the supplied
-> + *		*data_ptr* with keys in a keyring with serial
-> + *		*trusted_keyring_serial*, searched with *lookup_flags*, if the
-> + *		parameter value is positive, or alternatively in a keyring with
-> + *		special ID *trusted_keyring_id* if *trusted_keyring_serial* is
-> + *		zero.
-> + *
-> + *		*lookup_flags* are defined in include/linux/key.h and can be: 1,
-> + *		to request that special keyrings be created if referred to
-> + *		directly; 2 to permit partially constructed keys to be found.
-> + *
-> + *		Special IDs are defined in include/linux/verification.h and can
-> + *		be: 0 for the primary keyring (immutable keyring of system
-> + *		keys); 1 for both the primary and secondary keyring (where keys
-> + *		can be added only if they are vouched for by existing keys in
-> + *		those keyrings); 2 for the platform keyring (primarily used by
-> + *		the integrity subsystem to verify a kexec'ed kerned image and,
-> + *		possibly, the initramfs signature).
-> + *	Return
-> + *		0 on success, a negative value on error.
->    */
->   #define __BPF_FUNC_MAPPER(FN)		\
->   	FN(unspec),			\
-> @@ -5535,6 +5558,7 @@ union bpf_attr {
->   	FN(tcp_raw_gen_syncookie_ipv6),	\
->   	FN(tcp_raw_check_syncookie_ipv4),	\
->   	FN(tcp_raw_check_syncookie_ipv6),	\
-> +	FN(verify_pkcs7_signature),	\
+Here is a way to reproduce the problem:
+ip netns add foo
+ip -n foo link set lo up
+ip netns add bar
+ip -n bar link set lo up
+sleep 1
 
-(Needs rebase)
+ip -n foo link add name eth0 type dummy
+ip -n foo link set eth0 up
+ip -n foo address add 192.168.0.1/24 dev eth0
 
->   	/* */
->   
->   /* integer value in 'imm' field of BPF_CALL instruction selects which helper
-> diff --git a/kernel/bpf/bpf_lsm.c b/kernel/bpf/bpf_lsm.c
-> index c1351df9f7ee..401bda01ad84 100644
-> --- a/kernel/bpf/bpf_lsm.c
-> +++ b/kernel/bpf/bpf_lsm.c
-> @@ -16,6 +16,8 @@
->   #include <linux/bpf_local_storage.h>
->   #include <linux/btf_ids.h>
->   #include <linux/ima.h>
-> +#include <linux/verification.h>
-> +#include <linux/key.h>
->   
->   /* For every LSM hook that allows attachment of BPF programs, declare a nop
->    * function where a BPF program can be attached.
-> @@ -132,6 +134,62 @@ static const struct bpf_func_proto bpf_get_attach_cookie_proto = {
->   	.arg1_type	= ARG_PTR_TO_CTX,
->   };
->   
-> +#ifdef CONFIG_SYSTEM_DATA_VERIFICATION
-> +BPF_CALL_5(bpf_verify_pkcs7_signature, struct bpf_dynptr_kern *, data_ptr,
-> +	   struct bpf_dynptr_kern *, sig_ptr, u32, trusted_keyring_serial,
-> +	   unsigned long, lookup_flags, unsigned long, trusted_keyring_id)
-> +{
-> +	key_ref_t trusted_keyring_ref;
-> +	struct key *trusted_keyring;
-> +	int ret;
-> +
-> +	/* Keep in sync with defs in include/linux/key.h. */
-> +	if (lookup_flags > KEY_LOOKUP_PARTIAL)
-> +		return -EINVAL;
+ip -n foo link add name veth0 type veth peer name veth1 netns bar
+ip -n foo link set veth0 address 00:09:c0:26:05:82
+ip -n foo link set veth0 arp off
+ip -n foo link set veth0 up
+ip -n bar link set veth1 address 00:09:c0:26:05:82
+ip -n bar link set veth1 arp off
+ip -n bar link set veth1 up
 
-iiuc, the KEY_LOOKUP_* is a mask, so you could also combine the two, e.g.
-KEY_LOOKUP_CREATE | KEY_LOOKUP_PARTIAL. I haven't seen you mentioning anything
-specific on why it is not allowed. What's the rationale, if it's intentional
-if should probably be documented?
+ip -n bar address add 192.168.1.1/32 dev veth1
+ip -n bar route add default dev veth1
 
-At minimum I also think the helper description needs to be improved for people
-to understand enough w/o reading through the kernel source, e.g. wrt lookup_flags
-since I haven't seen it in your selftests either ... when does a user need to
-use the given flags.
+ip -n foo nexthop add id 1 dev veth0
+ip -n foo route add 192.168.1.1 nhid 1
 
-nit: when both trusted_keyring_serial and trusted_keyring_id are passed to the
-helper, then this should be rejected as invalid argument? (Kind of feels a bit
-like we're cramming two things in one helper.. KP, thoughts? :))
+Try to get/use the route:
+> $ ip -n foo route get 192.168.1.1
+> RTNETLINK answers: Invalid argument
+> $ ip netns exec foo ping -c1 192.168.1.1
+> ping: connect: Invalid argument
 
-> +	/* Keep in sync with defs in include/linux/verification.h. */
-> +	if (trusted_keyring_id > (unsigned long)VERIFY_USE_PLATFORM_KEYRING)
-> +		return -EINVAL;
-> +
-> +	if (trusted_keyring_serial) {
-> +		trusted_keyring_ref = lookup_user_key(trusted_keyring_serial,
-> +						      lookup_flags,
-> +						      KEY_NEED_SEARCH);
-> +		if (IS_ERR(trusted_keyring_ref))
-> +			return PTR_ERR(trusted_keyring_ref);
-> +
-> +		trusted_keyring = key_ref_to_ptr(trusted_keyring_ref);
-> +		goto verify;
-> +	}
-> +
-> +	trusted_keyring = (struct key *)trusted_keyring_id;
-> +verify:
-> +	ret = verify_pkcs7_signature(data_ptr->data,
-> +				     bpf_dynptr_get_size(data_ptr),
-> +				     sig_ptr->data,
-> +				     bpf_dynptr_get_size(sig_ptr),
-> +				     trusted_keyring,
-> +				     VERIFYING_UNSPECIFIED_SIGNATURE, NULL,
-> +				     NULL);
-> +	if (trusted_keyring_serial)
-> +		key_put(trusted_keyring);
-> +
-> +	return ret;
-> +}
-> +
-> +static const struct bpf_func_proto bpf_verify_pkcs7_signature_proto = {
-> +	.func		= bpf_verify_pkcs7_signature,
-> +	.gpl_only	= false,
-> +	.ret_type	= RET_INTEGER,
-> +	.arg1_type	= ARG_PTR_TO_DYNPTR | DYNPTR_TYPE_LOCAL,
-> +	.arg2_type	= ARG_PTR_TO_DYNPTR | DYNPTR_TYPE_LOCAL,
-> +	.arg3_type	= ARG_ANYTHING,
-> +	.arg4_type	= ARG_ANYTHING,
-> +	.arg5_type	= ARG_ANYTHING,
-> +	.allowed	= bpf_ima_inode_hash_allowed,
-> +};
-> +#endif /* CONFIG_SYSTEM_DATA_VERIFICATION */
-> +
+Try without nexthop group (iproute2 sets scope to 'link' by dflt):
+ip -n foo route del 192.168.1.1
+ip -n foo route add 192.168.1.1 dev veth0
+
+Try to get/use the route:
+> $ ip -n foo route get 192.168.1.1
+> 192.168.1.1 dev veth0 src 192.168.0.1 uid 0
+>     cache
+> $ ip netns exec foo ping -c1 192.168.1.1
+> PING 192.168.1.1 (192.168.1.1) 56(84) bytes of data.
+> 64 bytes from 192.168.1.1: icmp_seq=1 ttl=64 time=0.039 ms
+>
+> --- 192.168.1.1 ping statistics ---
+> 1 packets transmitted, 1 received, 0% packet loss, time 0ms
+> rtt min/avg/max/mdev = 0.039/0.039/0.039/0.000 ms
+
+CC: stable@vger.kernel.org
+Fixes: 597cfe4fc339 ("nexthop: Add support for IPv4 nexthops")
+Reported-by: Edwin Brossette <edwin.brossette@6wind.com>
+Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+---
+ net/ipv4/fib_semantics.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
+index a57ba23571c9..20177ecf5bdd 100644
+--- a/net/ipv4/fib_semantics.c
++++ b/net/ipv4/fib_semantics.c
+@@ -1230,7 +1230,7 @@ static int fib_check_nh_nongw(struct net *net, struct fib_nh *nh,
+ 
+ 	nh->fib_nh_dev = in_dev->dev;
+ 	dev_hold_track(nh->fib_nh_dev, &nh->fib_nh_dev_tracker, GFP_ATOMIC);
+-	nh->fib_nh_scope = RT_SCOPE_HOST;
++	nh->fib_nh_scope = RT_SCOPE_LINK;
+ 	if (!netif_carrier_ok(nh->fib_nh_dev))
+ 		nh->fib_nh_flags |= RTNH_F_LINKDOWN;
+ 	err = 0;
+-- 
+2.33.0
+
