@@ -2,40 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 35B3956966F
+	by mail.lfdr.de (Postfix) with ESMTP id F186D569671
 	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 01:43:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234184AbiGFXmy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jul 2022 19:42:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53962 "EHLO
+        id S234762AbiGFXmz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jul 2022 19:42:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234870AbiGFXmO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 19:42:14 -0400
-Received: from smtp-fw-6001.amazon.com (smtp-fw-6001.amazon.com [52.95.48.154])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D28E2DA83;
-        Wed,  6 Jul 2022 16:42:08 -0700 (PDT)
+        with ESMTP id S234958AbiGFXml (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 19:42:41 -0400
+Received: from smtp-fw-80007.amazon.com (smtp-fw-80007.amazon.com [99.78.197.218])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2A392CE05;
+        Wed,  6 Jul 2022 16:42:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1657150929; x=1688686929;
+  t=1657150960; x=1688686960;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=YKlh3xU99+PnvB8tm4pVIMQEaPxMo6bcMnrjqauDi48=;
-  b=BZ57ceqbL7CzekeOmV5oMc3mER3nSQxqoUSTVHBcy7bgFLyI0EPHqr6I
-   Rth7rv0wsAw2wJae/s3B/VbAaDxwlKFJxtolKszErOPc7stSyX/VU82r7
-   2rhGjTw8QOM4lSkzuwioYkkYonLNoCmN1LFjgMRIAuHJ4HARjPPisGlgA
-   A=;
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1e-f771ae83.us-east-1.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-6001.iad6.amazon.com with ESMTP; 06 Jul 2022 23:42:08 +0000
+  bh=WrRefD5BgkzIzv5gXe6/gL75Imx09IKo5AaSxIEliV4=;
+  b=PwlIbTlzCepYu3l/LGa8ey873Y0dgDJ9XSwX+E/g5m8PEL7tYKrMqOdX
+   ooAIFfBiOMmyHClQocRBvqcQElxK9Lz+kI7CiJqP4lX4dMjGDs3EJf9h1
+   K8jWWxIXjE8bmKMI4GcMyFLGuKmnbvVq2GQ6QslmI87lpS0cAyGPHnzQ5
+   8=;
+X-IronPort-AV: E=Sophos;i="5.92,251,1650931200"; 
+   d="scan'208";a="105640207"
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-iad-1a-c92fe759.us-east-1.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP; 06 Jul 2022 23:42:23 +0000
 Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
-        by email-inbound-relay-iad-1e-f771ae83.us-east-1.amazon.com (Postfix) with ESMTPS id 519F81216E0;
-        Wed,  6 Jul 2022 23:42:05 +0000 (UTC)
+        by email-inbound-relay-iad-1a-c92fe759.us-east-1.amazon.com (Postfix) with ESMTPS id 9B400C0846;
+        Wed,  6 Jul 2022 23:42:20 +0000 (UTC)
 Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
  EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.36; Wed, 6 Jul 2022 23:42:04 +0000
+ id 15.0.1497.36; Wed, 6 Jul 2022 23:42:19 +0000
 Received: from 88665a182662.ant.amazon.com (10.43.160.106) by
  EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.9;
- Wed, 6 Jul 2022 23:42:01 +0000
+ Wed, 6 Jul 2022 23:42:16 +0000
 From:   Kuniyuki Iwashima <kuniyu@amazon.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -47,9 +49,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
 CC:     Kuniyuki Iwashima <kuniyu@amazon.com>,
         Kuniyuki Iwashima <kuni1840@gmail.com>,
         <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2 net 06/12] sysctl: Fix data races in proc_dointvec_jiffies().
-Date:   Wed, 6 Jul 2022 16:39:57 -0700
-Message-ID: <20220706234003.66760-7-kuniyu@amazon.com>
+Subject: [PATCH v2 net 07/12] tcp: Fix a data-race around sysctl_tcp_max_orphans.
+Date:   Wed, 6 Jul 2022 16:39:58 -0700
+Message-ID: <20220706234003.66760-8-kuniyu@amazon.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220706234003.66760-1-kuniyu@amazon.com>
 References: <20220706234003.66760-1-kuniyu@amazon.com>
@@ -69,40 +71,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A sysctl variable is accessed concurrently, and there is always a chance
-of data-race.  So, all readers and writers need some basic protection to
-avoid load/store-tearing.
-
-This patch changes proc_dointvec_jiffies() to use READ_ONCE() and
-WRITE_ONCE() internally to fix data-races on the sysctl side.  For now,
-proc_dointvec_jiffies() itself is tolerant to a data-race, but we still
-need to add annotations on the other subsystem's side.
+While reading sysctl_tcp_max_orphans, it can be changed concurrently.
+So, we need to add READ_ONCE() to avoid a data-race.
 
 Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 ---
- kernel/sysctl.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ net/ipv4/tcp.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index 8c55ba01f41b..bf9383d17e1b 100644
---- a/kernel/sysctl.c
-+++ b/kernel/sysctl.c
-@@ -1173,9 +1173,12 @@ static int do_proc_dointvec_jiffies_conv(bool *negp, unsigned long *lvalp,
- 	if (write) {
- 		if (*lvalp > INT_MAX / HZ)
- 			return 1;
--		*valp = *negp ? -(*lvalp*HZ) : (*lvalp*HZ);
-+		if (*negp)
-+			WRITE_ONCE(*valp, -*lvalp * HZ);
-+		else
-+			WRITE_ONCE(*valp, *lvalp * HZ);
- 	} else {
--		int val = *valp;
-+		int val = READ_ONCE(*valp);
- 		unsigned long lval;
- 		if (val < 0) {
- 			*negp = true;
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 028513d3e2a2..2222dfdde316 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -2715,7 +2715,8 @@ static void tcp_orphan_update(struct timer_list *unused)
+ 
+ static bool tcp_too_many_orphans(int shift)
+ {
+-	return READ_ONCE(tcp_orphan_cache) << shift > sysctl_tcp_max_orphans;
++	return READ_ONCE(tcp_orphan_cache) << shift >
++		READ_ONCE(sysctl_tcp_max_orphans);
+ }
+ 
+ bool tcp_check_oom(struct sock *sk, int shift)
 -- 
 2.30.2
 
