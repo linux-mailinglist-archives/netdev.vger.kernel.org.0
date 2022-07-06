@@ -2,153 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AD83568F20
-	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 18:28:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AC3F568F38
+	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 18:33:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233823AbiGFQ22 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jul 2022 12:28:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54462 "EHLO
+        id S229632AbiGFQdd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jul 2022 12:33:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233514AbiGFQ20 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 12:28:26 -0400
-Received: from smtp-fw-6002.amazon.com (smtp-fw-6002.amazon.com [52.95.49.90])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCBBDB7;
-        Wed,  6 Jul 2022 09:28:25 -0700 (PDT)
+        with ESMTP id S232584AbiGFQdc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 12:33:32 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDA07DFC
+        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 09:33:30 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id x10so12623418edd.13
+        for <netdev@vger.kernel.org>; Wed, 06 Jul 2022 09:33:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1657124907; x=1688660907;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=PhXxi/XavP96zC3WSzhoIHhyWbZryHgf8iD5yTBli5s=;
-  b=GrB9ND2Yc/sW0G50m9daBrFDbpOlCTKvB/on26lznszvlKN5AWilGxTq
-   93IGEQjyBax8iNzNvD8mCSQieKb1oCvnPzUWnlOxyu8ub+BbSy7AH6Ki2
-   xa7tUO+cq+RJlOSH57vExR+0SbVcQSkTNOhOFXlaJHmZDuY3dft/kBsjX
-   A=;
-X-IronPort-AV: E=Sophos;i="5.92,250,1650931200"; 
-   d="scan'208";a="218701716"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-iad-1d-7a21ed79.us-east-1.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-6002.iad6.amazon.com with ESMTP; 06 Jul 2022 16:28:15 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1d-7a21ed79.us-east-1.amazon.com (Postfix) with ESMTPS id ACBBE22006A;
-        Wed,  6 Jul 2022 16:28:10 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.36; Wed, 6 Jul 2022 16:28:04 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.160.106) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.9;
- Wed, 6 Jul 2022 16:28:01 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     <rostedt@goodmis.org>
-CC:     <davem@davemloft.net>, <edumazet@google.com>,
-        <keescook@chromium.org>, <kuba@kernel.org>, <kuni1840@gmail.com>,
-        <kuniyu@amazon.com>, <linux-kernel@vger.kernel.org>,
-        <mcgrof@kernel.org>, <netdev@vger.kernel.org>, <pabeni@redhat.com>,
-        <satoru.moriya@hds.com>, <yzaikin@google.com>
-Subject: Re: [PATCH v1 net 11/16] net: Fix a data-race around sysctl_mem.
-Date:   Wed, 6 Jul 2022 09:27:53 -0700
-Message-ID: <20220706162753.47894-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220706092711.28ce57e6@gandalf.local.home>
-References: <20220706092711.28ce57e6@gandalf.local.home>
+        d=googlemail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=KK048VZ34M5ovDSBwkVNDS37dZN4r1BawpIWdHDsBxw=;
+        b=lGYB2M1EDalfV7ktJkLqCTM10Yx4UcG/pUzsEvIcJIoKbtjmX/FqeprKk6WLb+WdQO
+         b+0Rp8XhAp/QekrdQVgUMyKMkimdqduPiQi7+ZB2I0Y1/LEmJpa2AkgvEwM2iRxOXybL
+         hvBakOwb8bvPokbDMZtyE57znMJMXzamFD45WSBRqeXh5Icoj+d77GYyHYqu7fFsY47D
+         8l4vDTXYnDZMsYdyH6EJtHL3qevJzJnybWY/DAk22jkGal2JcLYWe6GMl8qVpOCYK9Cg
+         2O3e0GyDnLWG6QdnX7IgUjzpN9dRIq7WXg5R8/hDhngWwPrByaw/+6pu9vqiX31d9zdC
+         8KFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=KK048VZ34M5ovDSBwkVNDS37dZN4r1BawpIWdHDsBxw=;
+        b=qoxg62i/FwkJYfHJdcAnytY0XgmEr48XjZciq0ZQFuWUkCfjY62fa26Khc+ayqgOtO
+         rXtAsSlCPrGNbf9GiSIpoc6bBKaviNk5+mIpWAZ5YRzgEF9yumS0iy6t+Z9K+BD5QZD4
+         9qQFANoRfkRTzwFouYYzYN3yjsGYItF+BsgdiUo0DhahHC+DoHmjtGACoE0wZebBkNrx
+         FP6hemIRu6sDJbOKyW4ngduUCNMsCwFP1hdPtEr3jVMYYuoW9XvJVhAVXDrfPb0Vv8mh
+         2IYqATUX0+2iD50/8CvZKLl3sQ5nd8eXjvusl0dgND03GFaSjS3oquo30kkLYmRoE5aV
+         v/fg==
+X-Gm-Message-State: AJIora+cOrC08jgvYbon2OHUAe8dVRlusmEZlUhgOkjYP7RH7IQOGyIp
+        Db6Gxfd1a4F0SCLzMzjetW6IGEkMYoLEEtQqyBo=
+X-Google-Smtp-Source: AGRyM1tdwjlBX0ZU46u8LzVeI1gVX93uMldhQ2OaNkZTNdJvAxWXFVytKoyBHNnyF1cjBT89WB+pfdfqJdH8THhkQlM=
+X-Received: by 2002:a05:6402:27c8:b0:435:d40e:c648 with SMTP id
+ c8-20020a05640227c800b00435d40ec648mr55456417ede.200.1657125209327; Wed, 06
+ Jul 2022 09:33:29 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.160.106]
-X-ClientProxiedBy: EX13D19UWC001.ant.amazon.com (10.43.162.64) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220705173114.2004386-1-vladimir.oltean@nxp.com> <20220705173114.2004386-4-vladimir.oltean@nxp.com>
+In-Reply-To: <20220705173114.2004386-4-vladimir.oltean@nxp.com>
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date:   Wed, 6 Jul 2022 18:33:18 +0200
+Message-ID: <CAFBinCC6qzJamGp=kNbvd8VBbMY2aqSj_uCEOLiUTdbnwxouxg@mail.gmail.com>
+Subject: Re: [RFC PATCH net-next 3/3] net: dsa: never skip VLAN configuration
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Arun Ramadoss <arun.ramadoss@microchip.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Steven Rostedt <rostedt@goodmis.org>
-Date:   Wed, 6 Jul 2022 09:27:11 -0400
-> On Wed, 6 Jul 2022 09:17:07 -0400
-> Steven Rostedt <rostedt@goodmis.org> wrote:
-> 
-> > On Tue, 5 Jul 2022 22:21:25 -0700
-> > Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
-> > 
-> > > --- a/include/trace/events/sock.h
-> > > +++ b/include/trace/events/sock.h
-> > > @@ -122,9 +122,9 @@ TRACE_EVENT(sock_exceed_buf_limit,
-> > >  
-> > >  	TP_printk("proto:%s sysctl_mem=%ld,%ld,%ld allocated=%ld sysctl_rmem=%d rmem_alloc=%d sysctl_wmem=%d wmem_alloc=%d wmem_queued=%d kind=%s",
-> > >  		__entry->name,
-> > > -		__entry->sysctl_mem[0],
-> > > -		__entry->sysctl_mem[1],
-> > > -		__entry->sysctl_mem[2],
-> > > +		READ_ONCE(__entry->sysctl_mem[0]),
-> > > +		READ_ONCE(__entry->sysctl_mem[1]),
-> > > +		READ_ONCE(__entry->sysctl_mem[2]),  
-> > 
-> > This is not reading anything to do with sysctl. It's reading the content of
-> > what was recorded in the ring buffer.
-> > 
-> > That is, the READ_ONCE() here is not necessary, and if anything will break
-> > user space parsing, as this is exported to user space to tell it how to
-> > read the binary format in the ring buffer.
-> 
-> I take that back. Looking at the actual trace event, it is pointing to
-> sysctl memory, which is a major bug.
-> 
-> TRACE_EVENT(sock_exceed_buf_limit,
-> 
->         TP_PROTO(struct sock *sk, struct proto *prot, long allocated, int kind),
-> 
->         TP_ARGS(sk, prot, allocated, kind),
-> 
->         TP_STRUCT__entry(
->                 __array(char, name, 32)
->                 __field(long *, sysctl_mem)
-> 
-> sysctl_mem is a pointer.
-> 
->                 __field(long, allocated)
->                 __field(int, sysctl_rmem)
->                 __field(int, rmem_alloc)
->                 __field(int, sysctl_wmem)
->                 __field(int, wmem_alloc)
->                 __field(int, wmem_queued)
->                 __field(int, kind)
->         ),
-> 
->         TP_fast_assign(
->                 strncpy(__entry->name, prot->name, 32);
-> 
->                 __entry->sysctl_mem = prot->sysctl_mem;
-> 
-> 
-> They save the pointer **IN THE RING BUFFER**!!!
-> 
->                 __entry->allocated = allocated;
->                 __entry->sysctl_rmem = sk_get_rmem0(sk, prot);
->                 __entry->rmem_alloc = atomic_read(&sk->sk_rmem_alloc);
->                 __entry->sysctl_wmem = sk_get_wmem0(sk, prot);
->                 __entry->wmem_alloc = refcount_read(&sk->sk_wmem_alloc);
->                 __entry->wmem_queued = READ_ONCE(sk->sk_wmem_queued);
->                 __entry->kind = kind;
->         ),
-> 
->         TP_printk("proto:%s sysctl_mem=%ld,%ld,%ld allocated=%ld sysctl_rmem=%d rmem_alloc=%d sysctl_wmem=%d wmem_alloc=%d wmem_queued=%d kind=%s",
->                 __entry->name,
->                 __entry->sysctl_mem[0],
->                 __entry->sysctl_mem[1],
->                 __entry->sysctl_mem[2],
-> 
-> They are now reading a stale pointer, which can be read at any time. That
-> is, you get the information of what is in sysctl_mem at the time the ring
-> buffer is read (which is useless from user space), and not at the time of
-> the event.
-> 
-> Thanks for pointing this out. This needs to be fixed.
+Hi Vladimir,
 
-For the record, Steve fixed this properly here, so I'll drop the tracing
-part in v2.
-https://lore.kernel.org/netdev/20220706105040.54fc03b0@gandalf.local.home/
+On Tue, Jul 5, 2022 at 7:32 PM Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
+>
+> Stop protecting DSA drivers from switchdev VLAN notifications emitted
+> while the bridge has vlan_filtering 0, by deleting the deprecated bool
+> ds->configure_vlan_while_not_filtering opt-in. Now all DSA drivers see
+> all notifications and should save the bridge PVID until they need to
+> commit it to hardware.
+>
+> The 2 remaining unconverted drivers are the gswip and the Microchip KSZ
+> family. They are both probably broken and would need changing as far as
+> I can see:
+>
+> - For lantiq_gswip, after the initial call path
+>   -> gswip_port_bridge_join
+>      -> gswip_vlan_add_unaware
+>         -> gswip_switch_w(priv, 0, GSWIP_PCE_DEFPVID(port));
+>   nobody seems to prevent a future call path
+>   -> gswip_port_vlan_add
+>      -> gswip_vlan_add_aware
+>         -> gswip_switch_w(priv, idx, GSWIP_PCE_DEFPVID(port));
+Thanks for bringing this to my attention!
+
+I tried to reproduce this issue with the selftest script you provided
+(patch #1 in this series).
+Unfortunately not even the ping_ipv4 and ping_ipv6 tests from
+bridge_vlan_unaware.sh are working for me, nor are the tests from
+router_bridge.sh.
+I suspect that this is an issue with OpenWrt: I already enabled bash,
+jq and the full ip package, vrf support in the kernel. OpenWrt's ping
+command doesn't like a ping interval of 0.1s so I replaced that with
+an 1s interval.
+
+I will try to get the selftests to work here but I think that
+shouldn't block this patch.
+
+
+Best regards,
+Martin
