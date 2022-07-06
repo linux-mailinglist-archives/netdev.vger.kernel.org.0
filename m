@@ -2,44 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4112156882E
-	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 14:18:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 77D3C568836
+	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 14:23:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233609AbiGFMSc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jul 2022 08:18:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54338 "EHLO
+        id S233541AbiGFMXD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jul 2022 08:23:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233511AbiGFMSa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 08:18:30 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A6A2B7F6;
-        Wed,  6 Jul 2022 05:18:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=K1Y7ptrT7Er2IK1W4YVha+bOOd1wacvtD6sKDOTjhDI=; b=T9Iub2y3szS+osiCqWJlAKFFN6
-        fEBaxB+/vywIQlou7UGu+d3PWSi1mre+UKTJZgLTyHjCCQZTdb6cs7csA4JViC4yYJnQjO/n/YGPV
-        UrpVXuwqh9kc9QWxI9uo0e9z2iMY8M3evGnDtgaB8TfZWlf3Gb3sH0TW4wPTnx430fIkyCPLxxRev
-        6H6OZ/g9RzR2FT8jG+KKQ/MVy0jes/numMC9qL8IJETTu6DfK+oIHxyyc8UxKxCq5RNl1E1j7E79s
-        gHfXY07tVW362XGQtGinYSLyI5PDNvaqc2ZEsx/qZnmwHlj1K+hhPFAnODTpvZXM9Z93uWvcPtnZ0
-        pIXibGPg==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o93yx-001dRt-AY; Wed, 06 Jul 2022 12:18:15 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id A1B1C300478;
-        Wed,  6 Jul 2022 14:18:12 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 6728F2020A599; Wed,  6 Jul 2022 14:18:12 +0200 (CEST)
-Date:   Wed, 6 Jul 2022 14:18:12 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
+        with ESMTP id S231875AbiGFMXC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 08:23:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0810E1EC6C;
+        Wed,  6 Jul 2022 05:23:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C2AD1B81CAA;
+        Wed,  6 Jul 2022 12:22:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B999AC3411C;
+        Wed,  6 Jul 2022 12:22:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657110178;
+        bh=1ZJb/iEn73TDHU7Q+jBF1YIGpL32MfjdqyaRDa+4uPI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=XalUi/XI2nsHYiD3CPNszAkwYcFxWNOexTwjpjDPfmf6QVGp0AtWwtcg2DgRSOCVV
+         MxhzT5F7u/DfuThdMmCMSpqWjCakX8FFncELCHyUgxNkpfoL1zVenq2X7hCjoFLtEa
+         qATXweuz5Mu866Z9uAwVwfT/7nnWmjMiGN/uCqJGl9jVFc9VMsIBikcOwfyskUBsNJ
+         OjauqhfhBgrjQbHhxirS+6BOselkn7Ic3ow6ZwXWHq0uJZXCLiYZPovzwY8SijVSSG
+         emsD7EskYoVIP8fIZbqld2DBKMTs5Nd9l3h9tejvvIp0pg7LtoPXCJ2IEIJWMFlbhm
+         w56Gp35pX8YKQ==
+Date:   Wed, 6 Jul 2022 13:22:50 +0100
+From:   Will Deacon <will@kernel.org>
 To:     Florian Westphal <fw@strlen.de>
 Cc:     Kajetan Puchalski <kajetan.puchalski@arm.com>,
-        Will Deacon <will@kernel.org>,
         Pablo Neira Ayuso <pablo@netfilter.org>,
         Jozsef Kadlecsik <kadlec@netfilter.org>,
         "David S. Miller" <davem@davemloft.net>,
@@ -50,10 +45,11 @@ Cc:     Kajetan Puchalski <kajetan.puchalski@arm.com>,
         mark.rutland@arm.com, broonie@kernel.org,
         netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
         netdev@vger.kernel.org, stable@vger.kernel.org,
-        regressions@lists.linux.dev, linux-kernel@vger.kernel.org
+        regressions@lists.linux.dev, linux-kernel@vger.kernel.org,
+        peterz@infradead.org
 Subject: Re: [Regression] stress-ng udp-flood causes kernel panic on Ampere
  Altra
-Message-ID: <YsV9hDD4iMAGV9yU@hirez.programming.kicks-ass.net>
+Message-ID: <20220706122246.GI2403@willie-the-truck>
 References: <YsAnPhPfWRjpkdmn@e126311.manchester.arm.com>
  <20220702205651.GB15144@breakpoint.cc>
  <YsKxTAaIgvKMfOoU@e126311.manchester.arm.com>
@@ -68,10 +64,11 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 In-Reply-To: <20220706120201.GA7996@breakpoint.cc>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -79,7 +76,53 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On Wed, Jul 06, 2022 at 02:02:01PM +0200, Florian Westphal wrote:
-
+> Kajetan Puchalski <kajetan.puchalski@arm.com> wrote:
+> > On Tue, Jul 05, 2022 at 12:24:49PM +0100, Will Deacon wrote:
+> > > > > Sorry, but I have absolutely no context here. We have a handy document
+> > > > > describing the differences between atomic_t and refcount_t:
+> > > > > 
+> > > > > 	Documentation/core-api/refcount-vs-atomic.rst
+> > > > > 
+> > > > > What else do you need to know?
+> > > > 
+> > > > Hmm, and I see a tonne of *_inc_not_zero() conversions in 719774377622
+> > > > ("netfilter: conntrack: convert to refcount_t api") which mean that you
+> > > > no longer have ordering to subsequent reads in the absence of an address
+> > > > dependency.
+> > > 
+> > > I think the patch above needs auditing with the relaxed behaviour in mind,
+> > > but for the specific crash reported here possibly something like the diff
+> > > below?
+> > > 
+> > > Will
+> > > 
+> > > --->8
+> > > 
+> > > diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
+> > > index 082a2fd8d85b..5ad9fcc84269 100644
+> > > --- a/net/netfilter/nf_conntrack_core.c
+> > > +++ b/net/netfilter/nf_conntrack_core.c
+> > > @@ -1394,6 +1394,7 @@ static unsigned int early_drop_list(struct net *net,
+> > >                  * already fired or someone else deleted it. Just drop ref
+> > >                  * and move to next entry.
+> > >                  */
+> > > +               smp_rmb();      /* XXX: Why? */
+> > >                 if (net_eq(nf_ct_net(tmp), net) &&
+> > >                     nf_ct_is_confirmed(tmp) &&
+> > >                     nf_ct_delete(tmp, 0, 0))
+> > > 
+> > 
+> > Just to follow up, I think you're right, the patch in question should be
+> > audited further for other missing memory barrier issues.
+> > While this one smp_rmb() helps a lot, ie lets the test run for at least
+> > an hour or two, an overnight 6 hour test still resulted in the same
+> > crash somewhere along the way so it looks like it's not the only one
+> > that's needed.
+> 
+> Yes, I don't think that refcount_inc_not_zero is useable as-is for conntrack.
+> Here is a patch, I hope this will get things back to a working order without
+> a revert to atomic_t api.
+> 
 > Subject: [nf] netfilter: conntrack: fix crash due to confirmed bit load reordering
 > 
 > Kajetan Puchalski reports crash on ARM, with backtrace of:
@@ -173,45 +216,12 @@ On Wed, Jul 06, 2022 at 02:02:01PM +0200, Florian Westphal wrote:
 >  {
 > +	/* ->status and ->timeout loads must happen after refcount increase */
 > +	smp_rmb();
-> +
->  	return nf_ct_is_expired(ct) && nf_ct_is_confirmed(ct) &&
->  	       !nf_ct_is_dying(ct);
->  }
-> diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
-> index 082a2fd8d85b..072cabf1b296 100644
-> --- a/net/netfilter/nf_conntrack_core.c
-> +++ b/net/netfilter/nf_conntrack_core.c
-> @@ -795,6 +795,9 @@ __nf_conntrack_find_get(struct net *net, const struct nf_conntrack_zone *zone,
->  		 */
->  		ct = nf_ct_tuplehash_to_ctrack(h);
->  		if (likely(refcount_inc_not_zero(&ct->ct_general.use))) {
-> +			/* re-check key after refcount */
-> +			smp_rmb();
-> +
->  			if (likely(nf_ct_key_equal(h, tuple, zone, net)))
->  				goto found;
->  
-> @@ -1393,7 +1396,11 @@ static unsigned int early_drop_list(struct net *net,
->  		 * We steal the timer reference.  If that fails timer has
->  		 * already fired or someone else deleted it. Just drop ref
->  		 * and move to next entry.
-> +		 *
-> +		 * smp_rmb to ensure ->ct_net and ->status are loaded after
-> +		 * refcount increase.
->  		 */
-> +		smp_rmb();
->  		if (net_eq(nf_ct_net(tmp), net) &&
->  		    nf_ct_is_confirmed(tmp) &&
->  		    nf_ct_delete(tmp, 0, 0))
-> @@ -1536,6 +1543,8 @@ static void gc_worker(struct work_struct *work)
->  			if (!refcount_inc_not_zero(&tmp->ct_general.use))
->  				continue;
->  
-> +			/* load ct->status after refcount */
-> +			smp_rmb();
->  			if (gc_worker_skip_ct(tmp)) {
->  				nf_ct_put(tmp);
->  				continue;
+
+Sorry I didn't suggest this earlier, but if all of these smp_rmb()s are
+for upgrading the ordering from refcount_inc_not_zero() then you should
+use smp_acquire__after_ctrl_dep() instead. It's the same under the hood,
+but it illustrates what's going on a bit better.
+
 > @@ -1775,6 +1784,16 @@ init_conntrack(struct net *net, struct nf_conn *tmpl,
 >  	if (!exp)
 >  		__nf_ct_try_assign_helper(ct, tmpl, GFP_ATOMIC);
@@ -229,7 +239,11 @@ On Wed, Jul 06, 2022 at 02:02:01PM +0200, Florian Westphal wrote:
 >  	/* Now it is going to be associated with an sk_buff, set refcount to 1. */
 >  	refcount_set(&ct->ct_general.use, 1);
 
-FWIW, the old code, that used atomic_inc() instead of refcount_set()
-would have had the exact sample problem. There was no implied order vs
-the earlier stores.
+Ideally that refcount_set() would be a release, but this is definitely
+(ab)using refcount_t in way that isn't anticipated by the API! It looks
+like a similar pattern exists in net/core/sock.c as well, so I wonder if
+it's worth extending the API.
 
+Peter, what do you think?
+
+Will
