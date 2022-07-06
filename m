@@ -2,128 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FFCE569551
-	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 00:29:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD3CC56956A
+	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 00:46:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233610AbiGFW3g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jul 2022 18:29:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35678 "EHLO
+        id S232287AbiGFWqq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jul 2022 18:46:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230412AbiGFW3g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 18:29:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52E5614D17;
-        Wed,  6 Jul 2022 15:29:35 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E175B61CFA;
-        Wed,  6 Jul 2022 22:29:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DE56C3411C;
-        Wed,  6 Jul 2022 22:29:33 +0000 (UTC)
-Date:   Wed, 6 Jul 2022 18:29:31 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Song Liu <songliubraving@fb.com>
-Cc:     Song Liu <song@kernel.org>, Networking <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Kernel Team <Kernel-team@fb.com>,
-        "jolsa@kernel.org" <jolsa@kernel.org>,
-        "mhiramat@kernel.org" <mhiramat@kernel.org>
-Subject: Re: [PATCH v2 bpf-next 5/5] bpf: trampoline: support
- FTRACE_OPS_FL_SHARE_IPMODIFY
-Message-ID: <20220706182931.06cb0e20@gandalf.local.home>
-In-Reply-To: <ECD336F1-A130-47BA-8FBB-E3573445380F@fb.com>
-References: <20220602193706.2607681-1-song@kernel.org>
-        <20220602193706.2607681-6-song@kernel.org>
-        <20220706153843.37584b5b@gandalf.local.home>
-        <DC04E081-8320-4A39-A058-D0E33F202625@fb.com>
-        <20220706174049.6c60250f@gandalf.local.home>
-        <ECD336F1-A130-47BA-8FBB-E3573445380F@fb.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        with ESMTP id S229768AbiGFWqo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 18:46:44 -0400
+Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D10B2B1BE
+        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 15:46:43 -0700 (PDT)
+Received: by mail-yb1-xb33.google.com with SMTP id r3so29654787ybr.6
+        for <netdev@vger.kernel.org>; Wed, 06 Jul 2022 15:46:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=sGO2KmAAzrpAl6kAYx9AdPAV8dUrIAcT8nRhDDK6jiI=;
+        b=hn08DNIzFwal/bnJR5VKWwwjNmPgwr6n4bvoWroYyO2DpbHwRRYAcfW6/1ZTCyBZmi
+         442HaMUNtNpyaruLX8iPwxcoiAyug/ARLFHstON9Q9TjfVvmUSePKhO6pNPUvK9mXYPm
+         lMSmcQA5troeHy2OcvMiHoxIIoFGnZ91sySMhuLRMouwol2hgAJPAAneYSr2vs8gl1yy
+         6bU9ohkXrSGklWzrrHSYdxQcmEoWiHMEzdKC5cNB6gMdZ0+w9NSgZ/0uirhMeRfNXoIm
+         ZjCD9o/emfhBNGnfOb/w5O+3btJJGOfa4Y53th1jGuCeZAzGg6LEEMHG3PCe0nKPdnpf
+         9CYQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sGO2KmAAzrpAl6kAYx9AdPAV8dUrIAcT8nRhDDK6jiI=;
+        b=rDjMAQdysF2uNdmeocv7V51ZAGpES5MoByOVGp+CMNbLzQM0BkocJeBYuQF1Ov0BMI
+         jBiX7aVyUUt+eyGo6M3nXq7tcMhtC7HvbopOMdRfl+GHFZkAwig+LoNedxZRN+Kg3sgV
+         s1LHFUbpFPMkVf7kYe41cN7MRBiq3JnjyTM9cGEhFa7DzbiDMl2MjYBGVpaECoGcSoo5
+         uq/Ec3TVJPtcZ6JHIkVY+RZP70c1HNRhFOwh/EnjVgz+R1VBwcfMOHKIMxtr+HlAygYX
+         FHPzmj8V6PmqkEzLUylcvXwRZtj6xg2Uf4BKMLnVoH799PlM+8FNT7/CTTvZ3VIeIWrm
+         KdXg==
+X-Gm-Message-State: AJIora/bjIORihSTcm9jIk/BPE7hcWDLwJRhffUEZHQTeZHeMu0sbyCV
+        nNQqPWjPpgRyEzutS9hTyUroJDvSHUS1IGqfozzggQ==
+X-Google-Smtp-Source: AGRyM1uaFc0IM4WHsDrwwCHO1Der3xWvlmlupuFTBmgrkJ0/QSm68C1x66tIxyPkwSNLJ8ORuxnDLKewZswBi93lxWA=
+X-Received: by 2002:a25:6cc5:0:b0:66e:6606:74fe with SMTP id
+ h188-20020a256cc5000000b0066e660674femr16268009ybc.291.1657147602658; Wed, 06
+ Jul 2022 15:46:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <YsQIjC7UpcGWJovx@shell.armlinux.org.uk>
+In-Reply-To: <YsQIjC7UpcGWJovx@shell.armlinux.org.uk>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Thu, 7 Jul 2022 00:46:30 +0200
+Message-ID: <CACRpkda3tdo0q2xZGrAO2b6Pef-Pt2GV0VyVam1uFKotk4iXKA@mail.gmail.com>
+Subject: Re: [PATCH RFC net-next v2 0/5] net: dsa: always use phylink
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        UNGLinuxDriver@microchip.com,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Woojung Huh <woojung.huh@microchip.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 6 Jul 2022 22:15:47 +0000
-Song Liu <songliubraving@fb.com> wrote:
+On Tue, Jul 5, 2022 at 11:47 AM Russell King (Oracle)
+<linux@armlinux.org.uk> wrote:
 
-> > On Jul 6, 2022, at 2:40 PM, Steven Rostedt <rostedt@goodmis.org> wrote:
-> > 
-> > On Wed, 6 Jul 2022 21:37:52 +0000
-> > Song Liu <songliubraving@fb.com> wrote:
-> >   
-> >>> Can you comment here that returning -EAGAIN will not cause this to repeat.
-> >>> That it will change things where the next try will not return -EGAIN?    
-> >> 
-> >> Hmm.. this is not the guarantee here. This conflict is a real race condition 
-> >> that an IPMODIFY function (i.e. livepatch) is being registered at the same time 
-> >> when something else, for example bpftrace, is updating the BPF trampoline. 
-> >> 
-> >> This EAGAIN will propagate to the user of the IPMODIFY function (i.e. livepatch),
-> >> and we need to retry there. In the case of livepatch, the retry is initiated 
-> >> from user space.   
-> > 
-> > We need to be careful here then. If there's a userspace application that
-> > runs at real-time and does a:
-> > 
-> > 	do {
-> > 		errno = 0;
-> > 		regsiter_bpf();
-> > 	} while (errno != -EAGAIN);  
-> 
-> Actually, do you mean:
-> 
-> 	do {
-> 		errno = 0;
-> 		regsiter_bpf();
-> 	} while (errno == -EAGAIN);
-> 
-> (== -EAGAIN) here?
+> A new revision of the series which incorporates changes that Marek
+> suggested. Specifically, the changes are:
+>
+> 1. Patch 2 - use the phylink_get_caps method in mv88e6xxx to get the
+>    default interface rather than re-using port_max_speed_mode()
+>
+> 2. Patch 4 - if no default interface is provided, use the supported
+>    interface mask to search for the first interface that gives the
+>    fastest speed.
+>
+> 3. Patch 5 - now also removes the port_max_speed_mode() method
 
-Yeah, of course.
+Pulled in the patch set on top of net-next and tested on the
+D-Link DIR-685 with the RTL8366RB switch with no
+regressions, so:
+Tested-by: Linus Walleij <linus.walleij@linaro.org>
 
-> 
-> In this specific race condition, register_bpf() will succeed, as it already
-> got tr->mutex. But the IPMODIFY (livepatch) side will fail and retry. 
+The plan is to enhance the phylink handling in the RTL8366RB
+on top of Russell's patch in some time.
 
-What else takes the tr->mutex ?
-
-If it preempts anything else taking that mutex, when this runs, then it
-needs to be careful.
-
-You said this can happen when the live patch came first. This isn't racing
-against live patch, it's racing against anything that takes the tr->mutex
-and then adds a bpf trampoline to a location that has a live patch.
-
-> 
-> Since both livepatch and bpf trampoline changes are rare operations, I think 
-> the chance of the race condition is low enough. 
-> 
-> Does this make sense?
-> 
-
-It's low, and if it is also a privileged operation then there's less to be
-concern about. As if it is not, then we could have a way to deadlock the
-system. I'm more concerned that this will lead to a CVE than it just
-happening randomly. In other words, it only takes something that can run at
-a real-time priority to connect to a live patch location, and something
-that runs at a low priority to take a tr->mutex. If an attacker has both,
-then it can pin both to a CPU and then cause the deadlock to the system.
-
-One hack to fix this is to add a msleep(1) in the failed case of the
-trylock. This will at least give the owner of the lock a millisecond to
-release it. This was what the RT patch use to do with spin_trylock() that
-was converted to a mutex (and we worked hard to remove all of them).
-
--- Steve
+Yours,
+Linus Walleij
