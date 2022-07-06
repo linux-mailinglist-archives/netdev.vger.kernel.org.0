@@ -2,71 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 591FF567FFA
-	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 09:36:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98EDB568005
+	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 09:38:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229732AbiGFHg0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jul 2022 03:36:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52926 "EHLO
+        id S231736AbiGFHh1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jul 2022 03:37:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231199AbiGFHgZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 03:36:25 -0400
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BC5B22B12
-        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 00:36:23 -0700 (PDT)
-Received: by mail-lf1-x132.google.com with SMTP id d12so1110045lfq.12
-        for <netdev@vger.kernel.org>; Wed, 06 Jul 2022 00:36:23 -0700 (PDT)
+        with ESMTP id S231690AbiGFHhW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 03:37:22 -0400
+Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4751022BD0
+        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 00:37:19 -0700 (PDT)
+Received: by mail-lj1-x231.google.com with SMTP id l7so16617078ljj.4
+        for <netdev@vger.kernel.org>; Wed, 06 Jul 2022 00:37:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=ni67Hdlx8SdwRcOV0nh3z02m953cDwBmWOR3KarI5eQ=;
-        b=eFWNXSlPB1AfAY7bz7WebRsM3DvxF2jlNqK/ANSHQy37sNp0p+voM6EFu0PpuVbrcQ
-         LJj8MgT2dTuFZr7T7Tb1miA9oRaJoG5B1kuTuda3lbNfphdwziijafHy4j9YJ0Fc8ufk
-         8OP4gWaUY/RN0AB61zs0ymAqz+6Z+LIWDZaQNplla0qmF6wuagQ9XW4AKaIb7YitDq+G
-         09eZnirKjKqAcsT6taYIHCWXS3DJKW6iqVBk85pJGogZBmFrnNKOEVYOPEy60XxUww/z
-         +oGg5m3dc5DuTcYRW1+oRScIsZoDdEK0ICVT/XqwUDD6WMQ5HBjaW8+5s4LiZYeEpwz7
-         6qIw==
+        bh=wLYIn0NItelgAXJCwbM/q0ny/IBo5bW15RcTBf0gD1c=;
+        b=W+6Z3LONPK5Ra0z4gntAAtuDAffOwqyAsxR4AWvSIWc/YTOgzf/LbdPEU63qy4XgI9
+         VzpkAqTC8qOhM0yktec60aOOZFTI3LJUUB0Q5T3fTr5OrAC4FP6peAYuazdrWJzUujTO
+         C7scBcPjWY+2I8QK3G/CyzhR7FF6WUwfe14imXbSbhfK8GK0Qsdeqt11dBvDegCumsKF
+         33xGLkEtUhAJxzUN52Tqbako3dDm4nSZHsbSQfyffaD79DWiKg9VnidPbikak+NJZ2Ib
+         YkM1f50x6dx2jrz9fPWdfBR0U6Mj2CX5k0tQSS5OmmPmzUD90Zk+Ph/GGTR+l4MEDiEV
+         tjiQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=ni67Hdlx8SdwRcOV0nh3z02m953cDwBmWOR3KarI5eQ=;
-        b=0+UQr7r84QyrGSCLjP637se9I0pjTnepSl2MQyi/vOTi+iT3da6lvA8+ZhweH6YLYF
-         t9OAxS8SdJkvNZ6KnoOmhGcK7XzbEfwDh6dNY9QjO7WmlcxPO3Rdx2MgpnC5eF8gxTkp
-         wsWGXiP2iFU1mDlnsrj6HpL8V+jZk2T77o1n2w+d31sY2oLFtvr0/98XuqHCS1/Rptbk
-         wevbdn6K1MEhAL5mmBFxS5WR1s2KpUFXJ/dsNq2wmAE26ujvRVMb+WiIOtBppkPGbWi7
-         33afgtx1Ek15OOnKVayy5v2JvNbiXvtHh/vQHyrJwGqrB76z+re8pgbmr7pvELfLt0+X
-         Xu0A==
-X-Gm-Message-State: AJIora8fPMiMEnS103AXcdCrpTJyWLOAFKKFGAgrOLNo3t8tgmXg4Tqi
-        YUNGsYxuQ8FBBBio/jBTUgEI5A==
-X-Google-Smtp-Source: AGRyM1tFrBo+hONe3ZNVXhfUKXTTJ876vyfim9rf05ECkdQdBWA2kpagOUHd5g8W+cUqgw6V8UsuEA==
-X-Received: by 2002:a05:6512:3e19:b0:47f:77d8:236c with SMTP id i25-20020a0565123e1900b0047f77d8236cmr24304754lfv.560.1657092981997;
-        Wed, 06 Jul 2022 00:36:21 -0700 (PDT)
+        bh=wLYIn0NItelgAXJCwbM/q0ny/IBo5bW15RcTBf0gD1c=;
+        b=ClVCIx6oxK//4dzq8+NyrLygmDVLt8/fSZ0QvKer4jw4I/RXv5kOJnTz/1B/Y1n8wg
+         lPcMXtdtLAsihD59LmBrJ7UI5PfjQVvcOgi0l0+EHRflB2aocfWy2RxDTTY5cr+PFOwP
+         wUIqco6QMufKf8JzD925VXcwJdY6aWmv9EK4g8aLAlRNMtXJF0qUxiFWEGaGXqE50Zp+
+         FLU0xp7DZA73d28wOT5I3vtJwjL8lcCIWv0bM7vAbSFYWU45+aiIQtRMrCXtkYNj941k
+         HMMmeZ7lg7cPuV2UWLDmKHdZpjqN91Y7GRwyOxiSk+ESrUSv+GfBIIfteOrPO7CKSmPe
+         FvkQ==
+X-Gm-Message-State: AJIora8n+dcGQiJNsHX6qOQMa2Sw3PmcvhhrDRKN/cQ24UatbuvP1Qvt
+        rIO3sula9xcJ77Ix03vM2GX1Xg==
+X-Google-Smtp-Source: AGRyM1sgyFI4TrauOfkHKFmiUcxJfEwLMSwt/lf0cmYz3yqs/Bie2Q0Qc0fJrVea82hBhXpNy/SafQ==
+X-Received: by 2002:a05:651c:d4:b0:25a:91c6:d9b1 with SMTP id 20-20020a05651c00d400b0025a91c6d9b1mr21881129ljr.400.1657093037642;
+        Wed, 06 Jul 2022 00:37:17 -0700 (PDT)
 Received: from [192.168.1.52] ([84.20.121.239])
-        by smtp.gmail.com with ESMTPSA id a6-20020a2eb546000000b0025a9dccbae5sm6054089ljn.112.2022.07.06.00.36.20
+        by smtp.gmail.com with ESMTPSA id h2-20020a2ea482000000b002556a17e193sm6035809lji.38.2022.07.06.00.37.16
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Jul 2022 00:36:21 -0700 (PDT)
-Message-ID: <cf26f16a-af5d-0cc9-6f5f-ad83768450db@linaro.org>
-Date:   Wed, 6 Jul 2022 09:36:20 +0200
+        Wed, 06 Jul 2022 00:37:16 -0700 (PDT)
+Message-ID: <b74b66f1-f354-9eb9-357b-753bf81cde16@linaro.org>
+Date:   Wed, 6 Jul 2022 09:37:15 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.11.0
-Subject: Re: [PATCH net-next v2 2/9] dt-bindings: Add Tegra234 MGBE clocks and
- resets
+Subject: Re: [PATCH net-next v2 0/9] tegra: Add support for MGBE controller
 Content-Language: en-US
 To:     Bhadram Varka <vbhadram@nvidia.com>, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-tegra@vger.kernel.org
 Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
         thierry.reding@gmail.com, jonathanh@nvidia.com, kuba@kernel.org,
         catalin.marinas@arm.com, will@kernel.org, pabeni@redhat.com,
-        davem@davemloft.net, edumazet@google.com,
-        Thierry Reding <treding@nvidia.com>
+        davem@davemloft.net, edumazet@google.com
 References: <20220706031259.53746-1-vbhadram@nvidia.com>
- <20220706031259.53746-3-vbhadram@nvidia.com>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220706031259.53746-3-vbhadram@nvidia.com>
+In-Reply-To: <20220706031259.53746-1-vbhadram@nvidia.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -80,24 +77,11 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 06/07/2022 05:12, Bhadram Varka wrote:
-> From: Thierry Reding <treding@nvidia.com>
+> This series adds the support for MGBE ethernet controller
+> which is part of Tegra234 SoC's.
 > 
-> Add the clocks and resets used by the MGBE Ethernet hardware found on
-> Tegra234 SoCs.
-> 
-> Signed-off-by: Thierry Reding <treding@nvidia.com>
-> Signed-off-by: Bhadram Varka <vbhadram@nvidia.com>
 
-
-Please add Acked-by/Reviewed-by tags when posting new versions. However,
-there's no need to repost patches *only* to add the tags. The upstream
-maintainer will do that for acks received on the version they apply.
-
-https://elixir.bootlin.com/linux/v5.17/source/Documentation/process/submitting-patches.rst#L540
-
-If a tag was not added on purpose, please state why and what changed.
-
-
+Where is the changelog?
 
 Best regards,
 Krzysztof
