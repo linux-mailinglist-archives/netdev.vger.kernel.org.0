@@ -2,503 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 496335695D2
-	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 01:25:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BF83569667
+	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 01:40:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234584AbiGFXZP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jul 2022 19:25:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38916 "EHLO
+        id S234685AbiGFXk5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jul 2022 19:40:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234511AbiGFXYp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 19:24:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDCE02C106
-        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 16:24:42 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DE8E0B81F48
-        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 23:24:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79617C341CA;
-        Wed,  6 Jul 2022 23:24:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657149879;
-        bh=UsAcD16XwoYpsK/TmZjg5cHIWWB/TPC/zXa60YL2Rkk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q3lSXGCMpSERHr/Lgsq6DAsfW8uJrF/apYFtlmP44E7VcYQpeyyAC5cMok/Vy6nZR
-         0ejlRCkpH4lHh7yCSAoel9x5G/ITo+i41aPJDgarIB8/QsOjOnoTWpQUwd40hFnonf
-         YFrnd9OZ78B2U9CqhC30o4psEOed6ziiBzpFfZmo1boDBnFPjQVV4IqAc79DYqSKO8
-         0ErpTrXSKuFhBTTmyUb/gJnpw351+pbI+txJBAnW5Hx4b7dMrrd8IDqtX4g7Ji0ZjQ
-         tUKeDld6lnqinQdqaxxuVHn8JbpKZQg+3y3hhKrOOIo6tFDnJgoKn+G+kHMjm+Pb6R
-         Wv0QSazekERsA==
-From:   Saeed Mahameed <saeed@kernel.org>
+        with ESMTP id S234645AbiGFXk4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 19:40:56 -0400
+Received: from smtp-fw-2101.amazon.com (smtp-fw-2101.amazon.com [72.21.196.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CD3C2CDE8;
+        Wed,  6 Jul 2022 16:40:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1657150855; x=1688686855;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=554TZ1STLEPnvqv57mOIpMzRQSEDSmhbcUbukQH3HDM=;
+  b=XHrITN6//nZY+F2CaNYw9/jEwFWaR1aMCRwugK75T6sUpZliPaK8Tc7w
+   fzLtfMMxoG7daoO96ywqaKBdX6jKK0+x993RU+gHO9d47O5XhsxPaTIbl
+   3/HPd4K0KmS183vl6i7fg2XraWQG+U3oF4J3oDP4u15moRiDDetLLm8Ja
+   A=;
+X-IronPort-AV: E=Sophos;i="5.92,251,1650931200"; 
+   d="scan'208";a="215524095"
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-iad-1d-7a21ed79.us-east-1.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-2101.iad2.amazon.com with ESMTP; 06 Jul 2022 23:40:43 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-iad-1d-7a21ed79.us-east-1.amazon.com (Postfix) with ESMTPS id 26C49220157;
+        Wed,  6 Jul 2022 23:40:40 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.36; Wed, 6 Jul 2022 23:40:40 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.160.106) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.9;
+ Wed, 6 Jul 2022 23:40:37 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
 To:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>
-Subject: [net-next 15/15] net/mlx5e: kTLS, Dynamically re-size TX recycling pool
-Date:   Wed,  6 Jul 2022 16:24:21 -0700
-Message-Id: <20220706232421.41269-16-saeed@kernel.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220706232421.41269-1-saeed@kernel.org>
-References: <20220706232421.41269-1-saeed@kernel.org>
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Iurii Zaikin <yzaikin@google.com>
+CC:     Kuniyuki Iwashima <kuniyu@amazon.com>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v2 net 00/12] sysctl: Fix data-races around ipv4_table.
+Date:   Wed, 6 Jul 2022 16:39:51 -0700
+Message-ID: <20220706234003.66760-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [10.43.160.106]
+X-ClientProxiedBy: EX13D36UWB001.ant.amazon.com (10.43.161.84) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tariq Toukan <tariqt@nvidia.com>
+A sysctl variable is accessed concurrently, and there is always a chance
+of data-race.  So, all readers and writers need some basic protection to
+avoid load/store-tearing.
 
-Let the TLS TX recycle pool be more flexible in size, by continuously
-and dynamically allocating and releasing HW resources in response to
-changes in the connections rate and load.
+The first half of this series changes some proc handlers used in ipv4_table
+to use READ_ONCE() and WRITE_ONCE() internally to fix data-races on the
+sysctl side.  Then, the second half adds READ_ONCE() to the other readers
+of ipv4_table.
 
-Allocate and release pool entries in bulks (16). Use a workqueue to
-release/allocate in the background. Allocate a new bulk when the pool
-size goes lower than the low threshold (1K). Symmetric operation is done
-when the pool size gets greater than the upper threshold (4K).
 
-Every idle pool entry holds: 1 TIS, 1 DEK (HW resources), in addition to
-~100 bytes in host memory.
+Changes:
+  v2:
+    * Drop some changes that makes backporting difficult
+      * First cleanup patch
+      * Lockless helpers and .proc_handler changes
+    * Drop the tracing part for .sysctl_mem
+      * Steve already posted a fix
+    * Drop int-to-bool change for cipso
+      * Should be posted to net-next later
+    * Drop proc_dobool() change
+      * Can be included in another series
 
-Start with an empty pool to minimize memory and HW resources waste for
-non-TLS users that have the device-offload TLS enabled.
+  v1: https://lore.kernel.org/netdev/20220706052130.16368-1-kuniyu@amazon.com/
 
-Upon a new request, in case the pool is empty, do not wait for a whole bulk
-allocation to complete.  Instead, trigger an instant allocation of a single
-resource to reduce latency.
 
-Performance tests:
-Before: 11,684 CPS
-After:  16,556 CPS
+Kuniyuki Iwashima (12):
+  sysctl: Fix data races in proc_dointvec().
+  sysctl: Fix data races in proc_douintvec().
+  sysctl: Fix data races in proc_dointvec_minmax().
+  sysctl: Fix data races in proc_douintvec_minmax().
+  sysctl: Fix data races in proc_doulongvec_minmax().
+  sysctl: Fix data races in proc_dointvec_jiffies().
+  tcp: Fix a data-race around sysctl_tcp_max_orphans.
+  inetpeer: Fix data-races around sysctl.
+  net: Fix data-races around sysctl_mem.
+  cipso: Fix data-races around sysctl.
+  icmp: Fix data-races around sysctl.
+  ipv4: Fix a data-race around sysctl_fib_sync_mem.
 
-Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
----
- .../mellanox/mlx5/core/en_accel/ktls_tx.c     | 315 ++++++++++++++++--
- 1 file changed, 289 insertions(+), 26 deletions(-)
+ Documentation/networking/ip-sysctl.rst |  2 +-
+ include/net/sock.h                     |  2 +-
+ kernel/sysctl.c                        | 25 ++++++++++++++-----------
+ net/ipv4/cipso_ipv4.c                  | 12 +++++++-----
+ net/ipv4/fib_trie.c                    |  2 +-
+ net/ipv4/icmp.c                        |  5 +++--
+ net/ipv4/inetpeer.c                    | 12 ++++++++----
+ net/ipv4/tcp.c                         |  3 ++-
+ 8 files changed, 37 insertions(+), 26 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c
-index 24d1288e906a..fc8860012a18 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c
-@@ -56,6 +56,36 @@ static int mlx5e_ktls_create_tis(struct mlx5_core_dev *mdev, u32 *tisn)
- 	return mlx5_core_create_tis(mdev, in, tisn);
- }
- 
-+static int mlx5e_ktls_create_tis_cb(struct mlx5_core_dev *mdev,
-+				    struct mlx5_async_ctx *async_ctx,
-+				    u32 *out, int outlen,
-+				    mlx5_async_cbk_t callback,
-+				    struct mlx5_async_work *context)
-+{
-+	u32 in[MLX5_ST_SZ_DW(create_tis_in)] = {};
-+
-+	mlx5e_ktls_set_tisc(mdev, MLX5_ADDR_OF(create_tis_in, in, ctx));
-+	MLX5_SET(create_tis_in, in, opcode, MLX5_CMD_OP_CREATE_TIS);
-+
-+	return mlx5_cmd_exec_cb(async_ctx, in, sizeof(in),
-+				out, outlen, callback, context);
-+}
-+
-+static int mlx5e_ktls_destroy_tis_cb(struct mlx5_core_dev *mdev, u32 tisn,
-+				     struct mlx5_async_ctx *async_ctx,
-+				     u32 *out, int outlen,
-+				     mlx5_async_cbk_t callback,
-+				     struct mlx5_async_work *context)
-+{
-+	u32 in[MLX5_ST_SZ_DW(destroy_tis_in)] = {};
-+
-+	MLX5_SET(destroy_tis_in, in, opcode, MLX5_CMD_OP_DESTROY_TIS);
-+	MLX5_SET(destroy_tis_in, in, tisn, tisn);
-+
-+	return mlx5_cmd_exec_cb(async_ctx, in, sizeof(in),
-+				out, outlen, callback, context);
-+}
-+
- struct mlx5e_ktls_offload_context_tx {
- 	/* fast path */
- 	u32 expected_seq;
-@@ -68,6 +98,7 @@ struct mlx5e_ktls_offload_context_tx {
- 	struct mlx5_core_dev *mdev;
- 	struct mlx5e_tls_sw_stats *sw_stats;
- 	u32 key_id;
-+	u8 create_err : 1;
- };
- 
- static void
-@@ -92,8 +123,81 @@ mlx5e_get_ktls_tx_priv_ctx(struct tls_context *tls_ctx)
- 	return *ctx;
- }
- 
-+/* struct for callback API management */
-+struct mlx5e_async_ctx {
-+	struct mlx5_async_work context;
-+	struct mlx5_async_ctx async_ctx;
-+	struct work_struct work;
-+	struct mlx5e_ktls_offload_context_tx *priv_tx;
-+	struct completion complete;
-+	int err;
-+	union {
-+		u32 out_create[MLX5_ST_SZ_DW(create_tis_out)];
-+		u32 out_destroy[MLX5_ST_SZ_DW(destroy_tis_out)];
-+	};
-+};
-+
-+static struct mlx5e_async_ctx *mlx5e_bulk_async_init(struct mlx5_core_dev *mdev, int n)
-+{
-+	struct mlx5e_async_ctx *bulk_async;
-+	int i;
-+
-+	bulk_async = kvcalloc(n, sizeof(struct mlx5e_async_ctx), GFP_KERNEL);
-+	if (!bulk_async)
-+		return NULL;
-+
-+	for (i = 0; i < n; i++) {
-+		struct mlx5e_async_ctx *async = &bulk_async[i];
-+
-+		mlx5_cmd_init_async_ctx(mdev, &async->async_ctx);
-+		init_completion(&async->complete);
-+	}
-+
-+	return bulk_async;
-+}
-+
-+static void mlx5e_bulk_async_cleanup(struct mlx5e_async_ctx *bulk_async, int n)
-+{
-+	int i;
-+
-+	for (i = 0; i < n; i++) {
-+		struct mlx5e_async_ctx *async = &bulk_async[i];
-+
-+		mlx5_cmd_cleanup_async_ctx(&async->async_ctx);
-+	}
-+	kvfree(bulk_async);
-+}
-+
-+static void create_tis_callback(int status, struct mlx5_async_work *context)
-+{
-+	struct mlx5e_async_ctx *async =
-+		container_of(context, struct mlx5e_async_ctx, context);
-+	struct mlx5e_ktls_offload_context_tx *priv_tx = async->priv_tx;
-+
-+	if (status) {
-+		async->err = status;
-+		priv_tx->create_err = 1;
-+		goto out;
-+	}
-+
-+	priv_tx->tisn = MLX5_GET(create_tis_out, async->out_create, tisn);
-+out:
-+	complete(&async->complete);
-+}
-+
-+static void destroy_tis_callback(int status, struct mlx5_async_work *context)
-+{
-+	struct mlx5e_async_ctx *async =
-+		container_of(context, struct mlx5e_async_ctx, context);
-+	struct mlx5e_ktls_offload_context_tx *priv_tx = async->priv_tx;
-+
-+	complete(&async->complete);
-+	kfree(priv_tx);
-+}
-+
- static struct mlx5e_ktls_offload_context_tx *
--mlx5e_tls_priv_tx_init(struct mlx5_core_dev *mdev, struct mlx5e_tls_sw_stats *sw_stats)
-+mlx5e_tls_priv_tx_init(struct mlx5_core_dev *mdev, struct mlx5e_tls_sw_stats *sw_stats,
-+		       struct mlx5e_async_ctx *async)
- {
- 	struct mlx5e_ktls_offload_context_tx *priv_tx;
- 	int err;
-@@ -105,76 +209,229 @@ mlx5e_tls_priv_tx_init(struct mlx5_core_dev *mdev, struct mlx5e_tls_sw_stats *sw
- 	priv_tx->mdev = mdev;
- 	priv_tx->sw_stats = sw_stats;
- 
--	err = mlx5e_ktls_create_tis(mdev, &priv_tx->tisn);
--	if (err) {
--		kfree(priv_tx);
--		return ERR_PTR(err);
-+	if (!async) {
-+		err = mlx5e_ktls_create_tis(mdev, &priv_tx->tisn);
-+		if (err)
-+			goto err_out;
-+	} else {
-+		async->priv_tx = priv_tx;
-+		err = mlx5e_ktls_create_tis_cb(mdev, &async->async_ctx,
-+					       async->out_create, sizeof(async->out_create),
-+					       create_tis_callback, &async->context);
-+		if (err)
-+			goto err_out;
- 	}
- 
- 	return priv_tx;
-+
-+err_out:
-+	kfree(priv_tx);
-+	return ERR_PTR(err);
- }
- 
--static void mlx5e_tls_priv_tx_cleanup(struct mlx5e_ktls_offload_context_tx *priv_tx)
-+static void mlx5e_tls_priv_tx_cleanup(struct mlx5e_ktls_offload_context_tx *priv_tx,
-+				      struct mlx5e_async_ctx *async)
- {
--	mlx5e_destroy_tis(priv_tx->mdev, priv_tx->tisn);
--	kfree(priv_tx);
-+	if (priv_tx->create_err) {
-+		complete(&async->complete);
-+		kfree(priv_tx);
-+		return;
-+	}
-+	async->priv_tx = priv_tx;
-+	mlx5e_ktls_destroy_tis_cb(priv_tx->mdev, priv_tx->tisn,
-+				  &async->async_ctx,
-+				  async->out_destroy, sizeof(async->out_destroy),
-+				  destroy_tis_callback, &async->context);
- }
- 
--static void mlx5e_tls_priv_tx_list_cleanup(struct list_head *list)
-+static void mlx5e_tls_priv_tx_list_cleanup(struct mlx5_core_dev *mdev,
-+					   struct list_head *list, int size)
- {
- 	struct mlx5e_ktls_offload_context_tx *obj;
-+	struct mlx5e_async_ctx *bulk_async;
-+	int i;
-+
-+	bulk_async = mlx5e_bulk_async_init(mdev, size);
-+	if (!bulk_async)
-+		return;
- 
--	list_for_each_entry(obj, list, list_node)
--		mlx5e_tls_priv_tx_cleanup(obj);
-+	i = 0;
-+	list_for_each_entry(obj, list, list_node) {
-+		mlx5e_tls_priv_tx_cleanup(obj, &bulk_async[i]);
-+		i++;
-+	}
-+
-+	for (i = 0; i < size; i++) {
-+		struct mlx5e_async_ctx *async = &bulk_async[i];
-+
-+		wait_for_completion(&async->complete);
-+	}
-+	mlx5e_bulk_async_cleanup(bulk_async, size);
- }
- 
- /* Recycling pool API */
- 
-+#define MLX5E_TLS_TX_POOL_BULK (16)
-+#define MLX5E_TLS_TX_POOL_HIGH (4 * 1024)
-+#define MLX5E_TLS_TX_POOL_LOW (MLX5E_TLS_TX_POOL_HIGH / 4)
-+
- struct mlx5e_tls_tx_pool {
- 	struct mlx5_core_dev *mdev;
- 	struct mlx5e_tls_sw_stats *sw_stats;
- 	struct mutex lock; /* Protects access to the pool */
- 	struct list_head list;
--#define MLX5E_TLS_TX_POOL_MAX_SIZE (256)
- 	size_t size;
-+
-+	struct workqueue_struct *wq;
-+	struct work_struct create_work;
-+	struct work_struct destroy_work;
- };
- 
-+static void create_work(struct work_struct *work)
-+{
-+	struct mlx5e_tls_tx_pool *pool =
-+		container_of(work, struct mlx5e_tls_tx_pool, create_work);
-+	struct mlx5e_ktls_offload_context_tx *obj;
-+	struct mlx5e_async_ctx *bulk_async;
-+	LIST_HEAD(local_list);
-+	int i, j, err = 0;
-+
-+	bulk_async = mlx5e_bulk_async_init(pool->mdev, MLX5E_TLS_TX_POOL_BULK);
-+	if (!bulk_async)
-+		return;
-+
-+	for (i = 0; i < MLX5E_TLS_TX_POOL_BULK; i++) {
-+		obj = mlx5e_tls_priv_tx_init(pool->mdev, pool->sw_stats, &bulk_async[i]);
-+		if (IS_ERR(obj)) {
-+			err = PTR_ERR(obj);
-+			break;
-+		}
-+		list_add(&obj->list_node, &local_list);
-+	}
-+
-+	for (j = 0; j < i; j++) {
-+		struct mlx5e_async_ctx *async = &bulk_async[j];
-+
-+		wait_for_completion(&async->complete);
-+		if (!err && async->err)
-+			err = async->err;
-+	}
-+	atomic64_add(i, &pool->sw_stats->tx_tls_pool_alloc);
-+	mlx5e_bulk_async_cleanup(bulk_async, MLX5E_TLS_TX_POOL_BULK);
-+	if (err)
-+		goto err_out;
-+
-+	mutex_lock(&pool->lock);
-+	if (pool->size + MLX5E_TLS_TX_POOL_BULK >= MLX5E_TLS_TX_POOL_HIGH) {
-+		mutex_unlock(&pool->lock);
-+		goto err_out;
-+	}
-+	list_splice(&local_list, &pool->list);
-+	pool->size += MLX5E_TLS_TX_POOL_BULK;
-+	if (pool->size <= MLX5E_TLS_TX_POOL_LOW)
-+		queue_work(pool->wq, work);
-+	mutex_unlock(&pool->lock);
-+	return;
-+
-+err_out:
-+	mlx5e_tls_priv_tx_list_cleanup(pool->mdev, &local_list, i);
-+	atomic64_add(i, &pool->sw_stats->tx_tls_pool_free);
-+}
-+
-+static void destroy_work(struct work_struct *work)
-+{
-+	struct mlx5e_tls_tx_pool *pool =
-+		container_of(work, struct mlx5e_tls_tx_pool, destroy_work);
-+	struct mlx5e_ktls_offload_context_tx *obj;
-+	LIST_HEAD(local_list);
-+	int i = 0;
-+
-+	mutex_lock(&pool->lock);
-+	if (pool->size < MLX5E_TLS_TX_POOL_HIGH) {
-+		mutex_unlock(&pool->lock);
-+		return;
-+	}
-+
-+	list_for_each_entry(obj, &pool->list, list_node)
-+		if (++i == MLX5E_TLS_TX_POOL_BULK)
-+			break;
-+
-+	list_cut_position(&local_list, &pool->list, &obj->list_node);
-+	pool->size -= MLX5E_TLS_TX_POOL_BULK;
-+	if (pool->size >= MLX5E_TLS_TX_POOL_HIGH)
-+		queue_work(pool->wq, work);
-+	mutex_unlock(&pool->lock);
-+
-+	mlx5e_tls_priv_tx_list_cleanup(pool->mdev, &local_list, MLX5E_TLS_TX_POOL_BULK);
-+	atomic64_add(MLX5E_TLS_TX_POOL_BULK, &pool->sw_stats->tx_tls_pool_free);
-+}
-+
- static struct mlx5e_tls_tx_pool *mlx5e_tls_tx_pool_init(struct mlx5_core_dev *mdev,
- 							struct mlx5e_tls_sw_stats *sw_stats)
- {
- 	struct mlx5e_tls_tx_pool *pool;
- 
-+	BUILD_BUG_ON(MLX5E_TLS_TX_POOL_LOW + MLX5E_TLS_TX_POOL_BULK >= MLX5E_TLS_TX_POOL_HIGH);
-+
- 	pool = kvzalloc(sizeof(*pool), GFP_KERNEL);
- 	if (!pool)
- 		return NULL;
- 
-+	pool->wq = create_singlethread_workqueue("mlx5e_tls_tx_pool");
-+	if (!pool->wq)
-+		goto err_free;
-+
- 	INIT_LIST_HEAD(&pool->list);
- 	mutex_init(&pool->lock);
- 
-+	INIT_WORK(&pool->create_work, create_work);
-+	INIT_WORK(&pool->destroy_work, destroy_work);
-+
- 	pool->mdev = mdev;
- 	pool->sw_stats = sw_stats;
- 
- 	return pool;
-+
-+err_free:
-+	kvfree(pool);
-+	return NULL;
-+}
-+
-+static void mlx5e_tls_tx_pool_list_cleanup(struct mlx5e_tls_tx_pool *pool)
-+{
-+	while (pool->size > MLX5E_TLS_TX_POOL_BULK) {
-+		struct mlx5e_ktls_offload_context_tx *obj;
-+		LIST_HEAD(local_list);
-+		int i = 0;
-+
-+		list_for_each_entry(obj, &pool->list, list_node)
-+			if (++i == MLX5E_TLS_TX_POOL_BULK)
-+				break;
-+
-+		list_cut_position(&local_list, &pool->list, &obj->list_node);
-+		mlx5e_tls_priv_tx_list_cleanup(pool->mdev, &local_list, MLX5E_TLS_TX_POOL_BULK);
-+		atomic64_add(MLX5E_TLS_TX_POOL_BULK, &pool->sw_stats->tx_tls_pool_free);
-+		pool->size -= MLX5E_TLS_TX_POOL_BULK;
-+	}
-+	if (pool->size) {
-+		mlx5e_tls_priv_tx_list_cleanup(pool->mdev, &pool->list, pool->size);
-+		atomic64_add(pool->size, &pool->sw_stats->tx_tls_pool_free);
-+	}
- }
- 
- static void mlx5e_tls_tx_pool_cleanup(struct mlx5e_tls_tx_pool *pool)
- {
--	mlx5e_tls_priv_tx_list_cleanup(&pool->list);
--	atomic64_add(pool->size, &pool->sw_stats->tx_tls_pool_free);
-+	mlx5e_tls_tx_pool_list_cleanup(pool);
-+	destroy_workqueue(pool->wq);
- 	kvfree(pool);
- }
- 
- static void pool_push(struct mlx5e_tls_tx_pool *pool, struct mlx5e_ktls_offload_context_tx *obj)
- {
- 	mutex_lock(&pool->lock);
--	if (pool->size >= MLX5E_TLS_TX_POOL_MAX_SIZE) {
--		mutex_unlock(&pool->lock);
--		mlx5e_tls_priv_tx_cleanup(obj);
--		atomic64_inc(&pool->sw_stats->tx_tls_pool_free);
--		return;
--	}
- 	list_add(&obj->list_node, &pool->list);
--	pool->size++;
-+	if (++pool->size == MLX5E_TLS_TX_POOL_HIGH)
-+		queue_work(pool->wq, &pool->destroy_work);
- 	mutex_unlock(&pool->lock);
- }
- 
-@@ -183,18 +440,24 @@ static struct mlx5e_ktls_offload_context_tx *pool_pop(struct mlx5e_tls_tx_pool *
- 	struct mlx5e_ktls_offload_context_tx *obj;
- 
- 	mutex_lock(&pool->lock);
--	if (pool->size == 0) {
--		obj = mlx5e_tls_priv_tx_init(pool->mdev, pool->sw_stats);
-+	if (unlikely(pool->size == 0)) {
-+		/* pool is empty:
-+		 * - trigger the populating work, and
-+		 * - serve the current context via the regular blocking api.
-+		 */
-+		queue_work(pool->wq, &pool->create_work);
-+		mutex_unlock(&pool->lock);
-+		obj = mlx5e_tls_priv_tx_init(pool->mdev, pool->sw_stats, NULL);
- 		if (!IS_ERR(obj))
- 			atomic64_inc(&pool->sw_stats->tx_tls_pool_alloc);
--		goto out;
-+		return obj;
- 	}
- 
- 	obj = list_first_entry(&pool->list, struct mlx5e_ktls_offload_context_tx,
- 			       list_node);
- 	list_del(&obj->list_node);
--	pool->size--;
--out:
-+	if (--pool->size == MLX5E_TLS_TX_POOL_LOW)
-+		queue_work(pool->wq, &pool->create_work);
- 	mutex_unlock(&pool->lock);
- 	return obj;
- }
 -- 
-2.36.1
+2.30.2
 
