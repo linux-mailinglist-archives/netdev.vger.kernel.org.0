@@ -2,116 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E577E568AD9
-	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 16:06:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B71D2568ADD
+	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 16:07:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233864AbiGFOF2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jul 2022 10:05:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34598 "EHLO
+        id S229760AbiGFOHG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jul 2022 10:07:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232951AbiGFOFE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 10:05:04 -0400
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7714DB9A
-        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 07:05:03 -0700 (PDT)
-Received: by mail-yb1-xb2e.google.com with SMTP id i14so7755917yba.1
-        for <netdev@vger.kernel.org>; Wed, 06 Jul 2022 07:05:03 -0700 (PDT)
+        with ESMTP id S229557AbiGFOHG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 10:07:06 -0400
+Received: from mail-il1-x12f.google.com (mail-il1-x12f.google.com [IPv6:2607:f8b0:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E28E5B9A;
+        Wed,  6 Jul 2022 07:07:04 -0700 (PDT)
+Received: by mail-il1-x12f.google.com with SMTP id z3so3993333ilz.5;
+        Wed, 06 Jul 2022 07:07:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kVoGDHkmg2bV3dEPVfOyFVTv4T1dp99x9dXZ6++KkGc=;
-        b=cdo6+uYBatnadqEjI5guS0rIxTahsAQIeUq45tTSVhz23zrCM96eQ4BT4Jo3qowS7F
-         zwvrozvhVd7zFWB+PxqeU2qtg3dLEK9pYxuInFXgEWHWATikP5H272k78mRw/8A2M0bP
-         nuS5TSe8/G+NX0Q1E3IBiBi2M8aETzG8enil6Gos7nWggMBDe/5UumGenZ+aCC/PUIAg
-         oy8uzghMOZYCWOuUt85ssn1mfDPfKJehj5ZzD0krTTlBqrGaeuNEA0ldGcDqE6N7E6y7
-         CiMY6S/riZB+qlTjX3boa4jcJthwzSNM53w/Ph5/4rCOauSDEp0U3mAINbQ0DJHvSC7f
-         7/Rg==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HKcelWJsUXG+18Nwfg8eobymoMxt5y7xTMcV4rJ4jIM=;
+        b=K14oQmdverp2DzpSpOp8APkZITqbUnfMthYycoeQdvUqVvI/bcgfwOelE2yS5C4Le5
+         /XnH0L1tHXo/jcrD7mi+2jQzXHbBwN1pK3c3xMYg1toLwQrDDoW1JNbzISpvuVdNP+7y
+         SNuTPobiRWsw66eGtxZzgmbSjpPd1FzwcSXb5qurfhCTyNYzN+iFvAYUlVS7TILU+idv
+         WELv3ji7pTZGxOCNEhHYeNOAg87od0Mdj8A6dvkjFApQRnOoNkq+OUcj+/AzGMuQTMix
+         FQbEebbmq9xZecUXbleGzSS/OrtSwD/2/EjEKYPXANsr96w3qYZJcCLUpyDorY2Q7IZ2
+         aHYQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kVoGDHkmg2bV3dEPVfOyFVTv4T1dp99x9dXZ6++KkGc=;
-        b=H+xVs1y5DXYKvZkXmH1Bhu0VNbiRXYllZo6BcasZ1BQCDdfp7oFbcrviQUe2xamATC
-         WpmT9wE+dT3uDOnAQ1+xjEj3Wkw5vqmAb8UcMIQ/ASsVMcmRj7LmKxOe/QqNFwCUwsm5
-         iifGc4aWJ6MqZWTGtTYGd57tuHkxOqUlKWPCjF2I0BLbTwHbaKkfafEgfZINiVoGrI+2
-         dT7M9/6eA7cxLnqxS+49wAET8VX6b64jTJwzLvuWJFecH2dQA1wfheUCEjqWFaprwLYG
-         kiTucnkDVzeOJUmLCQnwEhqBmXFnag2tZIGvokVvQad+uMT95jiAMNJAv548VwzXs/E+
-         n1gw==
-X-Gm-Message-State: AJIora/S+MiOglZCy4QtceCFczOCQ5aI3m6J9pd8ZuIp1f7b7sDZJ6ae
-        gDXeJMoo0jjc2PSytD+u+uBj5Z7wTYGweJJWJoUIDg==
-X-Google-Smtp-Source: AGRyM1vvPdKHgBPAPQoHPnplrll3WuBZpno3rPELKLbCaPm8kAqegFo2BdOcqTQ6rLOzjsy/LVP7pS1Hssh6NJY/3EY=
-X-Received: by 2002:a05:6902:a:b0:65c:b38e:6d9f with SMTP id
- l10-20020a056902000a00b0065cb38e6d9fmr45625905ybh.36.1657116302422; Wed, 06
- Jul 2022 07:05:02 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HKcelWJsUXG+18Nwfg8eobymoMxt5y7xTMcV4rJ4jIM=;
+        b=D5xES1tokNFJntcHwP1wLek81KbHUa4cMHr6b5r9pJA6XEfs3qBJ0IZXB19NjehDwJ
+         KDYZIwLlWzUhYrDuOKboHQF6t9mfKKVJIWpdq4DTiRtizbICVLkdtRYgXEO4Z+Uf96Wu
+         wn1KPRFKAEOaizAGdGMMgjBtaH86xYFugkSth48mQTNY9JGWQviAED4WElxNjV2sRz1K
+         krEmsRToqIMyplJ4T46R1sHJcRE+DLWi6Klhu09NdA35in5tD4cGkgPL3CJxNyMTrW6i
+         jGr5+mMwlBKjVIq0ec8F4C0A3Petq8R8Sk9VV5tASXymyNBe2ibAOivOMApGUiOHcKVU
+         o0jA==
+X-Gm-Message-State: AJIora8P1mxyPLVTQP9gqmGy7QNNx5lXumavnKaPdfJdScZhUZzcH+Nt
+        L8z1J8ozgrHxV0YVIOnk4wr0nQ9T1utp+g==
+X-Google-Smtp-Source: AGRyM1tR72Fw7RUjiJaTyk+us/gqsZAWL/OtbmF8MaVczaEhDTDIcshgMbsvUxoACdjtb1nTNSeubA==
+X-Received: by 2002:a92:c242:0:b0:2dc:2df2:a3d1 with SMTP id k2-20020a92c242000000b002dc2df2a3d1mr3788217ilo.111.1657116423548;
+        Wed, 06 Jul 2022 07:07:03 -0700 (PDT)
+Received: from james-x399.localdomain (71-218-105-222.hlrn.qwest.net. [71.218.105.222])
+        by smtp.gmail.com with ESMTPSA id t8-20020a5d8848000000b0067276ff71b4sm16756034ios.44.2022.07.06.07.07.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Jul 2022 07:07:02 -0700 (PDT)
+From:   James Hilliard <james.hilliard1@gmail.com>
+To:     bpf@vger.kernel.org
+Cc:     James Hilliard <james.hilliard1@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
+Subject: [PATCH] bpf/scripts: Generate GCC compatible helpers
+Date:   Wed,  6 Jul 2022 08:06:23 -0600
+Message-Id: <20220706140623.2917858-1-james.hilliard1@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <74c6f54cd3869258f4c83b46d9e5b95f7f0dab4b.1656878516.git.cdleonard@gmail.com>
-In-Reply-To: <74c6f54cd3869258f4c83b46d9e5b95f7f0dab4b.1656878516.git.cdleonard@gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 6 Jul 2022 16:04:51 +0200
-Message-ID: <CANn89iKxoSDOO3gx2qVXPaQ2g+6rJi8Q0CN2GAW-nf4WTo1GBw@mail.gmail.com>
-Subject: Re: [PATCH] net: Shrink sock.sk_err sk_err_soft to u16 from int
-To:     Leonard Crestez <cdleonard@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Wei Wang <weiwan@google.com>,
-        Joanne Koong <joannelkoong@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jul 3, 2022 at 10:07 PM Leonard Crestez <cdleonard@gmail.com> wrote:
->
-> These fields hold positive errno values which are limited by
-> ERRNO_MAX=4095 so 16 bits is more than enough.
->
-> They are also always positive; setting them to a negative errno value
-> can result in falsely reporting a successful read/write of incorrect
-> size.
->
-> Signed-off-by: Leonard Crestez <cdleonard@gmail.com>
-> ---
+The current bpf_helper_defs.h helpers are llvm specific and don't work
+correctly with gcc.
 
-We can not do this safely.
+Generate gcc compatible headers based on the format in bpf-helpers.h.
 
-sk->sk_err_soft can be written without lock, this needs to be a full integer,
-otherwise this might pollute adjacent bytes.
+See:
+https://github.com/gcc-mirror/gcc/blob/releases/gcc-12.1.0/gcc/config/bpf/bpf-helpers.h#L24-L27
 
->  include/net/sock.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> I ran some relatively complex tests without noticing issues but some corner
-> case where this breaks might exist.
->
-> diff --git a/include/net/sock.h b/include/net/sock.h
-> index 0dd43c3df49b..acd85d1702d9 100644
-> --- a/include/net/sock.h
-> +++ b/include/net/sock.h
-> @@ -480,11 +480,11 @@ struct sock {
->         u16                     sk_protocol;
->         u16                     sk_gso_max_segs;
->         unsigned long           sk_lingertime;
->         struct proto            *sk_prot_creator;
->         rwlock_t                sk_callback_lock;
-> -       int                     sk_err,
-> +       u16                     sk_err,
->                                 sk_err_soft;
->         u32                     sk_ack_backlog;
->         u32                     sk_max_ack_backlog;
->         kuid_t                  sk_uid;
->         u8                      sk_txrehash;
-> --
-> 2.25.1
->
+Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
+---
+ scripts/bpf_doc.py | 43 ++++++++++++++++++++++++++-----------------
+ 1 file changed, 26 insertions(+), 17 deletions(-)
+
+diff --git a/scripts/bpf_doc.py b/scripts/bpf_doc.py
+index a0ec321469bd..36fb400a5731 100755
+--- a/scripts/bpf_doc.py
++++ b/scripts/bpf_doc.py
+@@ -739,6 +739,24 @@ class PrinterHelpers(Printer):
+ 
+     seen_helpers = set()
+ 
++    def print_args(self, proto):
++        comma = ''
++        for i, a in enumerate(proto['args']):
++            t = a['type']
++            n = a['name']
++            if proto['name'] in self.overloaded_helpers and i == 0:
++                    t = 'void'
++                    n = 'ctx'
++            one_arg = '{}{}'.format(comma, self.map_type(t))
++            if n:
++                if a['star']:
++                    one_arg += ' {}'.format(a['star'])
++                else:
++                    one_arg += ' '
++                one_arg += '{}'.format(n)
++            comma = ', '
++            print(one_arg, end='')
++
+     def print_one(self, helper):
+         proto = helper.proto_break_down()
+ 
+@@ -762,26 +780,17 @@ class PrinterHelpers(Printer):
+                 print(' *{}{}'.format(' \t' if line else '', line))
+ 
+         print(' */')
++        print('#if __GNUC__ && !__clang__')
++        print('%s %s%s(' % (self.map_type(proto['ret_type']),
++                                      proto['ret_star'], proto['name']), end='')
++        self.print_args(proto)
++        print(') __attribute__((kernel_helper(%d)));' % len(self.seen_helpers))
++        print('#else')
+         print('static %s %s(*%s)(' % (self.map_type(proto['ret_type']),
+                                       proto['ret_star'], proto['name']), end='')
+-        comma = ''
+-        for i, a in enumerate(proto['args']):
+-            t = a['type']
+-            n = a['name']
+-            if proto['name'] in self.overloaded_helpers and i == 0:
+-                    t = 'void'
+-                    n = 'ctx'
+-            one_arg = '{}{}'.format(comma, self.map_type(t))
+-            if n:
+-                if a['star']:
+-                    one_arg += ' {}'.format(a['star'])
+-                else:
+-                    one_arg += ' '
+-                one_arg += '{}'.format(n)
+-            comma = ', '
+-            print(one_arg, end='')
+-
++        self.print_args(proto)
+         print(') = (void *) %d;' % len(self.seen_helpers))
++        print('#endif')
+         print('')
+ 
+ ###############################################################################
+-- 
+2.34.1
+
