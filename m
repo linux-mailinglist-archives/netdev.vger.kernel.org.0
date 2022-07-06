@@ -2,112 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 65068568325
-	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 11:17:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7235D56831F
+	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 11:17:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233324AbiGFJOK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jul 2022 05:14:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54952 "EHLO
+        id S232270AbiGFJPP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jul 2022 05:15:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232759AbiGFJNs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 05:13:48 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC3931A3B1;
-        Wed,  6 Jul 2022 02:13:20 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id k30so10305959edk.8;
-        Wed, 06 Jul 2022 02:13:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=WKlacHhWVR2IblvCAgYMcCw7cvtmo7gBzlhxFpijOWM=;
-        b=UyINPEp8aUU7+iO4UvYReAysG8acJi4s0lW7fYS990hIHuI2KgReqshlPjlC0FcdQX
-         RWLEJ1iagzj5JHTLAwg1Tfl34CjKErUg06qCwRi5FpbuqXpIfRK0B8kuUc2l5x+40o+8
-         2YldATzAdsq2GhIZIL2D0cZi8oKOkVG5Y5xLvvP4kajNiX5yCXAJSyEYBx1RvA9W9SdO
-         piij5Lfa0VXVwqnHofYdHxRPOmYTBO/NXTATLm6C9JRKYr2iRvgzlsZTZRGqO8gtc9pI
-         zkPBxco6Fa5B8qkZy3WblPhpXY+1PsQ3ol/zLxC+L8wAov5SdI1JA4byrn/VHyXJavbs
-         ZPkA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=WKlacHhWVR2IblvCAgYMcCw7cvtmo7gBzlhxFpijOWM=;
-        b=QxR5OpPe3NgjVZHkxNID4w7Mgvcw6XaQKzgi6rmn5TdcUkdgaBseRGdfsFVHDfK+LW
-         qhe6gUqffxKYBwr8jvHWxccaa/ThR1eRottwfKm2NQmkTLT10ajPqMSVzGrGZZaNbfSG
-         ornZME+JmgmlRk5r1vYTpZ8jQF3eEmPw3seTG0dsDKCTXCpG90vpF2NV/bTtBNQ0jo/r
-         Cb/OfvKw5bcMuJ+BRqb9+3CIzWMmEcQ/1X77PlHpLxmiK7TnDOOxNF2f5hWrdOj8ijIm
-         b0bKL/Ab/riiu2JY5h2t0CwqmoaY6Z57nESze7yZBTjtdV2/PF7odfLK7dF3yv5IRI8Q
-         mqsQ==
-X-Gm-Message-State: AJIora808hsnV+UdsynlkTYT6KRbYaZklCtQ/r1z67l8sQQwRm1XoMiS
-        PqE6mIIEjoGD9C62az3dzFg=
-X-Google-Smtp-Source: AGRyM1tgzHocOxIjG9HexS+g9z9ap2nsem/HblqVyMjIbl5ZbLhG8nAvflW5PCvUObUWjIPHfLadCA==
-X-Received: by 2002:a05:6402:350a:b0:435:df44:30aa with SMTP id b10-20020a056402350a00b00435df4430aamr51209856edd.403.1657098799156;
-        Wed, 06 Jul 2022 02:13:19 -0700 (PDT)
-Received: from skbuf ([188.26.185.61])
-        by smtp.gmail.com with ESMTPSA id er13-20020a056402448d00b0043a5bcf80a2sm6350790edb.60.2022.07.06.02.13.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 02:13:18 -0700 (PDT)
-Date:   Wed, 6 Jul 2022 12:13:15 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc:     Wolfram Sang <wsa@kernel.org>,
-        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>,
-        linux-i2c@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linuxppc-dev@lists.ozlabs.org,
-        openipmi-developer@lists.sourceforge.net,
-        linux-integrity@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-gpio@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, chrome-platform@lists.linux.dev,
-        linux-rpi-kernel@lists.infradead.org, linux-input@vger.kernel.org,
-        linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-leds@vger.kernel.org, linux-media@vger.kernel.org,
-        patches@opensource.cirrus.com, alsa-devel@alsa-project.org,
-        linux-omap@vger.kernel.org, linux-mtd@lists.infradead.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org,
-        acpi4asus-user@lists.sourceforge.net, linux-pm@vger.kernel.org,
-        linux-pwm@vger.kernel.org, linux-rtc@vger.kernel.org,
-        linux-staging@lists.linux.dev, linux-serial@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        linux-watchdog@vger.kernel.org, kasan-dev@googlegroups.com,
-        linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH 6/6] i2c: Make remove callback return void
-Message-ID: <20220706091315.p5k2jck3rmyjhvqw@skbuf>
-References: <20220628140313.74984-1-u.kleine-koenig@pengutronix.de>
- <20220628140313.74984-7-u.kleine-koenig@pengutronix.de>
+        with ESMTP id S233015AbiGFJPJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 05:15:09 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC662F17;
+        Wed,  6 Jul 2022 02:15:08 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 962B0200F2;
+        Wed,  6 Jul 2022 09:15:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1657098907; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=CXJq7nxPtJXCl52sDj16G3uNZaeTHITEWJQPlk31mnY=;
+        b=jaN+0bB43w4/B3ixFu4OYWOcNc8bExxYcHzTJkfUSnSK3YT8ThS+vsS0Bc0qB49I3+jt7I
+        Gha941h3RPwT9+0AfgKYTBfScTDg3pY2ynvK1cnoa6IoaxJTE5gz5B6FCWMfyoMJj4VIjU
+        xzFYbgSvTGnv7umWgjnEQVTtsTtDX10=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 5AD8313A7D;
+        Wed,  6 Jul 2022 09:15:07 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id 7dmIFJtSxWLBOAAAMHmgww
+        (envelope-from <oneukum@suse.com>); Wed, 06 Jul 2022 09:15:07 +0000
+From:   Oliver Neukum <oneukum@suse.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-usb@vger.kernel.org
+Cc:     Oliver Neukum <oneukum@suse.com>
+Subject: [PATCH] usbnet: modern method to get random MAC
+Date:   Wed,  6 Jul 2022 11:15:04 +0200
+Message-Id: <20220706091504.15306-1-oneukum@suse.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220628140313.74984-7-u.kleine-koenig@pengutronix.de>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 28, 2022 at 04:03:12PM +0200, Uwe Kleine-König wrote:
-> From: Uwe Kleine-König <uwe@kleine-koenig.org>
-> 
-> The value returned by an i2c driver's remove function is mostly ignored.
-> (Only an error message is printed if the value is non-zero that the
-> error is ignored.)
-> 
-> So change the prototype of the remove function to return no value. This
-> way driver authors are not tempted to assume that passing an error to
-> the upper layer is a good idea. All drivers are adapted accordingly.
-> There is no intended change of behaviour, all callbacks were prepared to
-> return 0 before.
-> 
-> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-> ---
+The old method had the bug of issuing the same
+random MAC over and over even to two devices at the
+same time. Instead of fixing that, this does as
+Jakub suggested and moves to the modern method.
 
-Assuming you remove the spurious kasan change:
+This bug is as old as the driver.
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+Signed-off-by: Oliver Neukum <oneukum@suse.com>
+---
+ drivers/net/usb/usbnet.c | 15 +++++++--------
+ 1 file changed, 7 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/net/usb/usbnet.c b/drivers/net/usb/usbnet.c
+index c70def1a87ca..715cc8b66776 100644
+--- a/drivers/net/usb/usbnet.c
++++ b/drivers/net/usb/usbnet.c
+@@ -61,9 +61,6 @@
+ 
+ /*-------------------------------------------------------------------------*/
+ 
+-// randomly generated ethernet address
+-static u8	node_id [ETH_ALEN];
+-
+ /* use ethtool to change the level for any given device */
+ static int msg_level = -1;
+ module_param (msg_level, int, 0);
+@@ -1725,7 +1722,6 @@ usbnet_probe (struct usb_interface *udev, const struct usb_device_id *prod)
+ 
+ 	dev->net = net;
+ 	strscpy(net->name, "usb%d", sizeof(net->name));
+-	eth_hw_addr_set(net, node_id);
+ 
+ 	/* rx and tx sides can use different message sizes;
+ 	 * bind() should set rx_urb_size in that case.
+@@ -1793,9 +1789,13 @@ usbnet_probe (struct usb_interface *udev, const struct usb_device_id *prod)
+ 		goto out4;
+ 	}
+ 
+-	/* let userspace know we have a random address */
+-	if (ether_addr_equal(net->dev_addr, node_id))
+-		net->addr_assign_type = NET_ADDR_RANDOM;
++	/*
++	 * if the device does not come with a MAC
++	 * we ask the network core to generate us one
++	 * and flag the device accordingly
++	 */
++	if (!is_valid_ether_addr(net->dev_addr))
++		eth_hw_addr_random(net);
+ 
+ 	if ((dev->driver_info->flags & FLAG_WLAN) != 0)
+ 		SET_NETDEV_DEVTYPE(net, &wlan_type);
+@@ -2205,7 +2205,6 @@ static int __init usbnet_init(void)
+ 	BUILD_BUG_ON(
+ 		sizeof_field(struct sk_buff, cb) < sizeof(struct skb_data));
+ 
+-	eth_random_addr(node_id);
+ 	return 0;
+ }
+ module_init(usbnet_init);
+-- 
+2.35.3
+
