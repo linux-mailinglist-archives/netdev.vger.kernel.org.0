@@ -2,175 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 87F56567CD2
-	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 05:51:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68A96567CDB
+	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 05:56:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231820AbiGFDuR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jul 2022 23:50:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51416 "EHLO
+        id S230079AbiGFD4I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jul 2022 23:56:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231979AbiGFDty (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 23:49:54 -0400
-Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70094.outbound.protection.outlook.com [40.107.7.94])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06AE820F71
-        for <netdev@vger.kernel.org>; Tue,  5 Jul 2022 20:48:08 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Rz5DBiXe+Bqg6JAd1XYV34LepxGZyQGGGwsdzL+qxUF0RyBSY9QhrS1dE7S61fbRtA/sGHTjMhghower0NzU9YQ6tL1ae9p0b1fw4Wj9+z7cfGqCz1XizX947ydhQzRkjxyl1hQVXx3PaxoigsvuSiR00TZUajBMe8qFY8UxuBZK2XRy7Hn5+G0sNuA9oFIzDlBlo+Ni7nDFSJJTd8LR0ZJrGaF6Hku1hBnDgMhgRRAaPjWj7RcRsUk+PNRfRFAIGryWthIWV1HVmfzetQQudNfk9fttTwNZr3nJoe8PVr6ISVDT2cabf+pWTScXqfR2GZ41sgMINapFIqBLnwEW0g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=liMwI2+2WwO5BrMl7NLeheyFbYQ2CLaLyKviPUHYhPM=;
- b=JKdLikU0yg3WZgJMTmmT04XkdCYp3HZvalW8oCbbViOjEfmfs/SFCjIgaGMkVzhdxm54UVLqpCFTQKn6fcqhrbR7QSj2Rfn0l7m+FrctV3ucrVfLMNuvQ9C+PfH34EPnKysT4XaDLcgfecdI85sQGHiHHHeKcQWDH0FDrxNId2b06bvFW2yinnAuHN3ykmarvpt7oOge3GBUfSYnZzQQ8qYHPC4+NgISeN9UdLq1IL/PMbq/T+kkDFzaQYh1A+1d3eozgx56rgZ0z4QqQVUJp+PJB7ZP8lBirM+EvopzPSrHQy25aABLcaXWSgrVJRP15AmWE7vlcb5HFuT/kzLXwQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=dektech.com.au; dmarc=pass action=none
- header.from=dektech.com.au; dkim=pass header.d=dektech.com.au; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dektech.com.au;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=liMwI2+2WwO5BrMl7NLeheyFbYQ2CLaLyKviPUHYhPM=;
- b=AvWiJMdv+lBZNGjqcgaoSIBOM0ze0TFczup7aLKEVgzjuPOKB3gZESFe1FrriFDbJYG99mUXUzRpI56oKIuP2K3UjpI2bA6UTL003Xa1N7pzRyu85x8aCDpm9z+5mmy/FK9CM87XUV0qUpWaXeEBf4A4Wdl5LdQon9ZMZWNUBLY=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=dektech.com.au;
-Received: from PA4PR05MB7647.eurprd05.prod.outlook.com (2603:10a6:102:fb::12)
- by PR3PR05MB7018.eurprd05.prod.outlook.com (2603:10a6:102:60::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.21; Wed, 6 Jul
- 2022 03:48:04 +0000
-Received: from PA4PR05MB7647.eurprd05.prod.outlook.com
- ([fe80::a167:e9b9:97aa:21b5]) by PA4PR05MB7647.eurprd05.prod.outlook.com
- ([fe80::a167:e9b9:97aa:21b5%3]) with mapi id 15.20.5395.021; Wed, 6 Jul 2022
- 03:48:04 +0000
-From:   Hoang Le <hoang.h.le@dektech.com.au>
-To:     jmaloy@redhat.com, maloy@donjonn.com, ying.xue@windriver.com,
-        tung.q.nguyen@dektech.com.au, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, tipc-discussion@lists.sourceforge.net,
-        netdev@vger.kernel.org, davem@davemloft.net
-Cc:     syzbot+a73d24a22eeeebe5f244@syzkaller.appspotmail.com
-Subject: [net] tipc: fix uninit-value in tipc_nl_node_reset_link_stats
-Date:   Wed,  6 Jul 2022 10:47:52 +0700
-Message-Id: <20220706034752.5729-1-hoang.h.le@dektech.com.au>
-X-Mailer: git-send-email 2.30.2
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SI2PR02CA0019.apcprd02.prod.outlook.com
- (2603:1096:4:195::13) To PA4PR05MB7647.eurprd05.prod.outlook.com
- (2603:10a6:102:fb::12)
+        with ESMTP id S229617AbiGFD4G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jul 2022 23:56:06 -0400
+Received: from wout5-smtp.messagingengine.com (wout5-smtp.messagingengine.com [64.147.123.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FA3B19286;
+        Tue,  5 Jul 2022 20:56:01 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.west.internal (Postfix) with ESMTP id CB602320094E;
+        Tue,  5 Jul 2022 23:55:56 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute5.internal (MEProxy); Tue, 05 Jul 2022 23:55:58 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
+        cc:cc:content-transfer-encoding:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm3; t=1657079756; x=
+        1657166156; bh=Xp5o6gyxdCzArszMKlaxjCeE8en69xtf9sJ/OOknFpw=; b=t
+        QjgxdFTZ/sUqBixmaQRr4hw6EYwdgHYSkiRP0iuxNrvlEdqAMUACl2Hcgldpg859
+        KvrASy01+4n+WZM6RjXvjDI1hgy4Hqbaftix4Le1sY39cRnl7hZcm9UMwHtm8QLS
+        JR7I8VuZlm9BglD346DCV2XbU8raU8FU9C1/X1ZNHStFdS0NMHvTtwApdFGzjoBL
+        plbJtCniV2B0pyqlyLv8HRVneulIbXgUG6xJySofMQGSIiDFHYYhPBavmBw/lIXw
+        X5EhS+xxIZwg2Hkh4QFc5NIOHFnq+HqW6wYKZpSw3WY5kblUFviu6bFx6nr7vcJ7
+        pMyRD98EeahoZjdEXMAoA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:feedback-id:feedback-id:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1657079756; x=
+        1657166156; bh=Xp5o6gyxdCzArszMKlaxjCeE8en69xtf9sJ/OOknFpw=; b=i
+        +wBPw2eDYxdbbxq2CljoEg2WZ4X6XY95ngfukq2ibo4Mgp/V2vrNPbKscpiyRRtH
+        XAMbey+IW8pqctdRHFPNYG2lC2zbkKR1Ea6sLnvTeIri4CPV7TZT3Kg5q5kguvQN
+        K2PBaBGKgZDMn+zhLBiQT6ThtxnXDJFZi6viX4m67YrNUe6qS8+yC0Co0tHpbsYX
+        +xsdz58PEQgVmuuwBIepVSMgQGPs1AVS3eAaXw2LTSd86nSuUDiakhVVcvIYtQRQ
+        CkQKv92ZfCc40rnbIrCrlVByfv3kgdzORWIDxR+GLDeIEThxCJgd4zs3A7uUHV45
+        h99YlaDrf9GwjtBfj1Suw==
+X-ME-Sender: <xms:ywfFYkpEwjKqpg_RCclvnqXfNW6z6CTowdmENDLwkFyzpKPumTcqDg>
+    <xme:ywfFYqqrP471WWg2kOkAUfglarASmf18wOd0j56inmJTvP7TAwyydJs6rVBvq8qrs
+    XUg-FkJ8XNdFq4LsA>
+X-ME-Received: <xmr:ywfFYpMrb2l3Bd3fbMc1WA6w3Vi2MBG5a2nQ1IxnKd16WTB3ti_L-_kx4sl2JTCEhBgsA_EaMzbFAp9ZIQNdNzz7P-9lyMuEQMoK5xDuM0URg9SPF_hZTRbLvQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudeivddgjeefucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhephffuvfevfhfkffgfgggjtgfgsehtjeertddtfeejnecuhfhrohhmpefurghm
+    uhgvlhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenuc
+    ggtffrrghtthgvrhhnpedthefhheevffegvdehkeehieffkeegffethfejteelieejffdu
+    veejkeduleeltdenucffohhmrghinhepghhithhhuhgsrdgtohhmnecuvehluhhsthgvrh
+    fuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepshgrmhhuvghlsehshhholhhl
+    rghnugdrohhrgh
+X-ME-Proxy: <xmx:ywfFYr4L468_Mqq1TBX6j7WTTY6Y90bk6HT-rAROHGRWJw51CGB1zQ>
+    <xmx:ywfFYj54pLMF3-jpJMy7WkcOVUGaR3Jq1QTtV-U-3qNf2G6U_x4zfQ>
+    <xmx:ywfFYriCHV_1o9BkG_FtzD82xZHcVS3HudHTtGMqxkYBVj20QciZVg>
+    <xmx:zAfFYqIs_oBKvV1qh5lPpLrnF6KoOTns_NvTkgy-EyIi7o2GsLajcw>
+Feedback-ID: i0ad843c9:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 5 Jul 2022 23:55:54 -0400 (EDT)
+From:   Samuel Holland <samuel@sholland.org>
+Subject: Re: [PATCH v12 1/7] dt-bindings: arm: sunxi: Add H616 EMAC compatible
+To:     Andre Przywara <andre.przywara@arm.com>
+Cc:     Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+References: <20220701112453.2310722-1-andre.przywara@arm.com>
+ <20220701112453.2310722-2-andre.przywara@arm.com>
+ <b2661412-5fce-a20d-c7c4-6df58efdb930@sholland.org>
+ <20220705111906.3c553f23@donnerap.cambridge.arm.com>
+Message-ID: <b3149c47-7fbf-53b2-f0d7-a45942bb819c@sholland.org>
+Date:   Tue, 5 Jul 2022 22:55:54 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 95b0a383-c45d-4803-be77-08da5f0254f5
-X-MS-TrafficTypeDiagnostic: PR3PR05MB7018:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: tL74Smcyr74+ECYDZxuvtK/a5A5gCmi/wtw4zqifZhYYix7XZUPT9uj/HMQqB//s9FG8fzQsGrsMVjdddd0f41QfJnhP3wsnbGJi/DEPYRDrM4DiikqwHlSGGBIJDhx5qBPi2bAnsZvaR1uez2ivNdOZUs6as+UNEWpbQ8DkxFta5+yjfJNruM0swlQO9EfRIhNnr6mhir/60Bg23ohqUHLyPwva/JjLbnLyAZB4xg89X8x5xG+/WBXmAOa/TtIq12FnS7tbhsd8c+MXpWlt8vbBt+mo+3JQaF6n4VQRxT5kjZq19wqq/DrmldC03p2eJL61xrn0RDEGNXMcUEIcbeeIC+y6Gu9KNikfHR6xKiLOqchP9E1KsyW6ReRr3IpVI2LlZ2MAK8Km5g7bBX49JybISbPP6nGvpnIyOQGAgEtQH7K35aVCJD9H/ub/1p0hUQzH2fZplCSWu5FobsSrW82WdU+Z8VUlQdQVzi46GG3t421e2yWQfajZ3VBfbrwQInMhaCky//gQpCjGJmcIQrPfo12MaSZkQjrNaPx7Ljg40d95BNtm+00yaJJmWqt4DyVeqiVtA/6NZI1SStw2zifbpSk3uDfX1489GRhPEziWPUGh8SzEI0bdhyrrlA2iJRXSZ+IXmIzAb2/BkFdtsbUlbGCcazecK1zMS76FzwyTUN50yP+JgkjsKfEnM999KXylkb7/h7eAmThB/K9Cm4bwx/Ei/WJL8QR8rSTHor2rrIx3STNpbEinNK6lYM6JE6IVNzcIde5ksueQDN6lyGKtIKWERJbNATv7uUr2fZa8/DWMZhuvht0RTg9miTZGhI7TWPFsouKSg7iukZQNtw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PA4PR05MB7647.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(136003)(366004)(396003)(376002)(39850400004)(346002)(316002)(38350700002)(38100700002)(7416002)(921005)(36756003)(26005)(6512007)(41300700001)(2906002)(6486002)(8676002)(4326008)(66556008)(186003)(83380400001)(66946007)(66476007)(55236004)(5660300002)(103116003)(52116002)(8936002)(478600001)(2616005)(1076003)(6506007)(6666004)(86362001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?W33/0usazyXR2MqIehXO9JLfcyYcIKgKJQBFHPUWGhgLOFlov+GzhqCaOP0b?=
- =?us-ascii?Q?TuPrGaf43pHWBN/a3goRODXLA737cqrK5CLlNeCVEjs6qYBDvjXjSRUubskl?=
- =?us-ascii?Q?SO4arDHL4FdSk4BgIFPv0mYoVf8aSlIHLkXqgoQs7H2A8hgAuTfB1b6JQVBm?=
- =?us-ascii?Q?viC8fCRKpWI8S0oSQkFZebGva9BacqGQ3beFQzHM/PCqTgx+UMxxKntMQJqF?=
- =?us-ascii?Q?EkfhQj0JJuqmFLchLmg9rHjk3+M8tudCovUps94AYnKsebxKYubGujKSsWAn?=
- =?us-ascii?Q?Io99mPE6yqBSOZiN7342jrdUMcmcs3R7+nvUHrCrywZv/J7VcnPQMTweJRMI?=
- =?us-ascii?Q?vqzF+DWQBzZ+jBGg74zP0CxUMl36qyiOMWc1bAdTrVegluthTBDgL+Al7Kjm?=
- =?us-ascii?Q?O3obas1MeskPHNK2zGS+V/zKj2bkIo+q0eKkNvXFvHyTrbyO1gtZ23GTlDPb?=
- =?us-ascii?Q?2jssADEsILUWw7s1vrsA9536xH3yltNdSHLw7Z3nUKkrva3O5WkEjWKnyTvO?=
- =?us-ascii?Q?iwanA/aVoQbt4weSodjCdgS1F1rl4aYDPSv3TlE8+JU+caevTz3PdFVpXf7s?=
- =?us-ascii?Q?rlYxEPrc0d5hLY9aClc2FFuixeiIH6lm8PaBXB1hGEf9llYRQflSzunWxBgW?=
- =?us-ascii?Q?DFLsv/zh8OBLdvUpuerJCWaeb/ZrAs4U3898y4vZPrlIPkI5x3jLegxsR5G2?=
- =?us-ascii?Q?e5VhtsjtjSRTs1r/7NO2sotTf2Cu5HUJUqEWsHdOmthnArqW6kv8WdSxhww3?=
- =?us-ascii?Q?z3L+6MJztjo6D1pvH11n7Je+bLUWLeYCs9QVCs2z5+yJC48G54OEIhCxUwuI?=
- =?us-ascii?Q?mMkdHtwJJK7urkCXnhtfmxcvUYveN335AtzEEk7f/rXvRzfBt4nfH82JNhF9?=
- =?us-ascii?Q?Gefs8CP3ERurnZ2mQlZIfQmvKe7jBCZteWGy4/uGB/9vFOzXKDXnbZs7APK7?=
- =?us-ascii?Q?yEcsf1awmY7k8HrgBXPCTpZ2akfcswempzX46FzLKgBWr8X1YBWEuUVxByUn?=
- =?us-ascii?Q?WsMJoBV1EyswlvRkodJK/V6PgRL54ONiDbwp6FGePR8i4BNj+rdkjG5lZzGP?=
- =?us-ascii?Q?cvYiGs/q7bs2hMbubSgPEZ0aA8pAI0dzJteef+Aalnv4p/OFENGqROrpC1J5?=
- =?us-ascii?Q?pDzuNhcfbhrxRmPgnXpqFPD4hV6o81gZmyso8NJk+koYKI2k5Uq+cmjxeuxJ?=
- =?us-ascii?Q?YdMX9CLPy96sApYRL5x9jTC/aVKo49dnRANYqR5MJT7V0vo06cud+lE44cl9?=
- =?us-ascii?Q?7mBRJ3YUDEeNAKvOXeKD4o8kH/ijIQciJFZ8c/ysFI2CNxJzEMZ1cVt+nAgB?=
- =?us-ascii?Q?b3Yn9Q2f9oy7SFCn3R1kE6BEFSc3YPfveNoBWRs+IX96quRK2Yn7QBQgbLea?=
- =?us-ascii?Q?ZFIH2c85g+4bDHD7wXrZjDfmnzwR5KLxfm9iuZTWBRhJ5HAUxHxEhWfQC0TI?=
- =?us-ascii?Q?/EwUtitz9vOf+Ez0JjA9boW0rb2mkBO7l4MSZjA27xN2GBnLOVOKUXPfMj5Q?=
- =?us-ascii?Q?YAbnKEi6fkg49nz+/Ar71yJUVmFbysRQw70HHRu0wKwfX9bVvMCkDE1Kvh+U?=
- =?us-ascii?Q?+45oDYqJyf28N9pcW88Tlk+NT73RoWwFtac03eyal9RCsdN3xQ5ZKiWaPNQG?=
- =?us-ascii?Q?RA=3D=3D?=
-X-OriginatorOrg: dektech.com.au
-X-MS-Exchange-CrossTenant-Network-Message-Id: 95b0a383-c45d-4803-be77-08da5f0254f5
-X-MS-Exchange-CrossTenant-AuthSource: PA4PR05MB7647.eurprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jul 2022 03:48:04.8654
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 1957ea50-0dd8-4360-8db0-c9530df996b2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: V2OOyfJ7wv+nUxz5Gh7gtGIvvxbltwJY+Xf0OgTXY/VGva6q3wPlDkoi+e375C7+uuCIJ6ZS+KZyIHZTEyeEgMyXjc8xNdRJ8QUS9TaZx+8=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PR3PR05MB7018
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220705111906.3c553f23@donnerap.cambridge.arm.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot found the following issue on:
-==================================================================
-BUG: KMSAN: uninit-value in strlen lib/string.c:495 [inline]
-BUG: KMSAN: uninit-value in strstr+0xb4/0x2e0 lib/string.c:840
- strlen lib/string.c:495 [inline]
- strstr+0xb4/0x2e0 lib/string.c:840
- tipc_nl_node_reset_link_stats+0x41e/0xba0 net/tipc/node.c:2582
- genl_family_rcv_msg_doit net/netlink/genetlink.c:731 [inline]
- genl_family_rcv_msg net/netlink/genetlink.c:775 [inline]
- genl_rcv_msg+0x103f/0x1260 net/netlink/genetlink.c:792
- netlink_rcv_skb+0x3a5/0x6c0 net/netlink/af_netlink.c:2501
- genl_rcv+0x3c/0x50 net/netlink/genetlink.c:803
- netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
- netlink_unicast+0xf3b/0x1270 net/netlink/af_netlink.c:1345
- netlink_sendmsg+0x1288/0x1440 net/netlink/af_netlink.c:1921
- sock_sendmsg_nosec net/socket.c:714 [inline]
- sock_sendmsg net/socket.c:734 [inline]
- ____sys_sendmsg+0xabc/0xe90 net/socket.c:2492
- ___sys_sendmsg+0x2a5/0x350 net/socket.c:2546
- __sys_sendmsg net/socket.c:2575 [inline]
- __do_sys_sendmsg net/socket.c:2584 [inline]
- __se_sys_sendmsg net/socket.c:2582 [inline]
- __x64_sys_sendmsg+0x367/0x540 net/socket.c:2582
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x3d/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x46/0xb0
-==================================================================
+Hi Andre,
 
-This is because link name string is not validated before it's used
-in calling strstr() and strlen().
+On 7/5/22 5:19 AM, Andre Przywara wrote:
+> On Mon, 4 Jul 2022 18:53:14 -0500
+> Samuel Holland <samuel@sholland.org> wrote:
+>> On 7/1/22 6:24 AM, Andre Przywara wrote:
+>>> The Allwinner H616 contains an "EMAC" Ethernet MAC compatible to the A64
+>>> version.
+>>>
+>>> Add it to the list of compatible strings.
+>>>
+>>> Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+>>> ---
+>>>  .../devicetree/bindings/net/allwinner,sun8i-a83t-emac.yaml       | 1 +
+>>>  1 file changed, 1 insertion(+)
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/net/allwinner,sun8i-a83t-emac.yaml b/Documentation/devicetree/bindings/net/allwinner,sun8i-a83t-emac.yaml
+>>> index 6a4831fd3616c..87f1306831cc9 100644
+>>> --- a/Documentation/devicetree/bindings/net/allwinner,sun8i-a83t-emac.yaml
+>>> +++ b/Documentation/devicetree/bindings/net/allwinner,sun8i-a83t-emac.yaml
+>>> @@ -22,6 +22,7 @@ properties:
+>>>            - enum:
+>>>                - allwinner,sun20i-d1-emac
+>>>                - allwinner,sun50i-h6-emac
+>>> +              - allwinner,sun50i-h616-emac  
+>>
+>> The H616 manual has register fields for an internal PHY, like H3. Are these not
+>> hooked up for either EMAC?
+> 
+> Which register fields do you mean, exactly?
 
-Reported-by: syzbot+a73d24a22eeeebe5f244@syzkaller.appspotmail.com
-Fixes: 03b6fefd9bb4 ("tipc: add support for broadcast rcv stats dumping")
-Acked-by: Jon Maloy <jmaloy@redhat.com>
-Signed-off-by: Hoang Le <hoang.h.le@dektech.com.au>
----
-v2: remove redundant check
----
- net/tipc/node.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+I mean bits 15-31 of EMAC_EPHY_CLK_REG0.
 
-diff --git a/net/tipc/node.c b/net/tipc/node.c
-index b48d97cbbe29..80885780caa2 100644
---- a/net/tipc/node.c
-+++ b/net/tipc/node.c
-@@ -2574,8 +2574,10 @@ int tipc_nl_node_reset_link_stats(struct sk_buff *skb, struct genl_info *info)
- 	if (!attrs[TIPC_NLA_LINK_NAME])
- 		return -EINVAL;
- 
--	link_name = nla_data(attrs[TIPC_NLA_LINK_NAME]);
-+	if (nla_len(attrs[TIPC_NLA_LINK_NAME]) <= 0)
-+		return -EINVAL;
- 
-+	link_name = nla_data(attrs[TIPC_NLA_LINK_NAME]);
- 	err = -EINVAL;
- 	if (!strcmp(link_name, tipc_bclink_name)) {
- 		err = tipc_bclink_reset_stats(net, tipc_bc_sndlink(net));
--- 
-2.30.2
+> The H616 uses the same internal PHY solution as the H6: an AC200 die
+> co-packaged on the carrier (or whatever integration solution they actually
+> chose). The difference to the H6 is that EMAC0 is hardwired to the external
+> RGMII pins, whereas EMAC1 is hardwired to the internal AC200 RMII pins.
+> From all I could see that does not impact the actual MAC IP: both are the
+> same as in the H6, or A64, for that matter.
 
+If those bits in EMAC_EPHY_CLK_REG0 have no effect, then I agree. But if
+switching bit 15 to internal PHY causes Ethernet to stop working, then the mux
+really does exist (even if one side is not connected to anything). In that case,
+we need to make sure the mux is set to the external PHY, using the code from H3.
+
+> There is one twist, though: the second EMAC uses a separate EMAC clock
+> register in the syscon. I came up with this patch to support that:
+> https://github.com/apritzel/linux/commit/078f591017794a0ec689345b0eeb7150908cf85a
+> That extends the syscon to take an optional(!) index. So EMAC0 works
+> exactly like before (both as "<&syscon>;", or "<&syscon 0>;", but for EMAC1
+> we need the index: "<&syscon 4>;".
+> But in my opinion this should not affect the MAC binding, at least not for
+> MAC0.
+
+It definitely affects the MAC binding, because we have to change the definition
+of the syscon property. We should still get that reviewed before doing anything
+that depends on it. (And I think EMAC0 support depends on it.)
+
+> And I think we should get away without a different compatible string
+> for EMAC1, since the MAC IP is technically the same, it's just the
+> connection that is different.
+
+If you claim that both EMACs are compatible with allwinner,sun50i-a64-emac, then
+you are saying that any existing driver for allwinner,sun50i-a64-emac will also
+work with both of the H616 EMACs. But this is not true. If I hook up both EMACs
+in the DT per the binding, and use the driver in master, at best only EMAC0 will
+work, and likely neither will work.
+
+So at minimum you need a new compatible for the second EMAC, so it only binds to
+drivers that know about the syscon offset specifier.
+
+> In any case I think this does not affect the level of support we promise
+> today: EMAC0 with an external PHY only.
+
+This can work if you introduce a second compatible for EMAC1. But at that point
+you don't need the syscon offset specifier; it can be part of the driver data,
+like for R40. (And any future EMAC1 could likely fall back to this compatible.)
+
+Regards,
+Samuel
