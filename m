@@ -2,48 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B3565569425
-	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 23:18:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB07656942E
+	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 23:20:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233754AbiGFVSp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jul 2022 17:18:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45454 "EHLO
+        id S234251AbiGFVUS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jul 2022 17:20:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232890AbiGFVSo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 17:18:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F02F1659A
-        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 14:18:43 -0700 (PDT)
+        with ESMTP id S234331AbiGFVUQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 17:20:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C10701B7A4
+        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 14:20:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EC631B81E8E
-        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 21:18:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A887C3411C;
-        Wed,  6 Jul 2022 21:18:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5F6C162166
+        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 21:20:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AFDBC3411C;
+        Wed,  6 Jul 2022 21:20:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657142320;
-        bh=mRfca7fLV+uXOxjUgfTt0zkQIpLjqCWzfthlDGKatJ0=;
+        s=k20201202; t=1657142414;
+        bh=eaE9z/Sndc2Jiv59qeQeHtefBhprhY05sBUp2K6hsy0=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=bim+E/6R+6qfUrUVx0zbRqUp6CZzLKww7UrTE7DAcJpelCzB/WGLXsN7GfVLjUWdR
-         aL0tbMZVGBCAEfVB+xQmfm3uUjqH2CnGihIfZPq3KlYThNOSxUFzsmZ4wBZjxFSIwe
-         7yf8pyX5NV7j67PT7cmCXaZ6+swI/6lFGbF8Uu1eOqdMezqF8jRC0AhYTpitotE3cW
-         D/mxPdRdyr7XQXhduvvq5eDucLCvew+rAYgN0UA+z88LRaCGmQxuAeVP1wgTa38qyb
-         8kjMf6gc8xepfIKItfnWnX8uzJ56FtgDV6f9+H1JxQ6bmc3tyfypHR6IndnPrTguIm
-         3K3ZPTisdEncQ==
-Date:   Wed, 6 Jul 2022 14:18:39 -0700
+        b=n8XW51c1nTb51aIByBOU/xli8HQK3XnI9nlvbrgj3Gal3diXBfhzPZfURuyT5fs3S
+         7VeVs1LavIxkGkkbseIs84q/ONbXLWD/XLAiFuckowrl20bUjCnhnKGNEQ1ZGghggG
+         8mydCZsHqKZewQT7lV6dEVFtt0qa3z8ff+8uKyd1OMpBLYg9YQgDFoFuK+Arckvs/c
+         PLILMcn0XgDo2uY6oOnYu51iK5/boUVxAEDEWpiQ9dmzKVEWuE92szJR+r4/eLelCM
+         In6V4KRasV8fIhq5wVtnUEhdJX/xWtTIqRrokgF3/NOzCsC+yLj+tVi3noO8u4T9pu
+         O3BEL3QEAFMxA==
+Date:   Wed, 6 Jul 2022 14:20:13 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Antoine Tenart <atenart@kernel.org>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        David Miller <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next] Documentation: add a description for
- net.core.high_order_alloc_disable
-Message-ID: <20220706141839.469986f5@kernel.org>
-In-Reply-To: <CANn89iKjr=3CVtAiJN_SLUYj5pLta5E1HxR6pEwHcNqwY3BAKA@mail.gmail.com>
-References: <20220706085320.17581-1-atenart@kernel.org>
-        <CANn89iKjr=3CVtAiJN_SLUYj5pLta5E1HxR6pEwHcNqwY3BAKA@mail.gmail.com>
+To:     Martin Habets <habetsm.xilinx@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, davem@davemloft.net,
+        pabeni@redhat.com, edumazet@google.com, netdev@vger.kernel.org,
+        ecree.xilinx@gmail.com
+Subject: Re: [PATCH net-next 1/2] sfc: Add EF100 BAR config support
+Message-ID: <20220706142013.0afe6196@kernel.org>
+In-Reply-To: <YsXFbRF/cw4sH0RZ@lunn.ch>
+References: <165712441387.6549.4915238154843073311.stgit@palantir17.mph.net>
+        <165712447305.6549.5015491740374054340.stgit@palantir17.mph.net>
+        <YsXFbRF/cw4sH0RZ@lunn.ch>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -57,12 +56,11 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 6 Jul 2022 15:24:58 +0200 Eric Dumazet wrote:
-> linux-5.14 allowed high-order pages to be stored on the per-cpu lists.
+On Wed, 6 Jul 2022 19:25:01 +0200 Andrew Lunn wrote:
+> On Wed, Jul 06, 2022 at 05:21:13PM +0100, Martin Habets wrote:
+> > Provide a "bar_config" file in the sysfs directory of the PCI device.
+> > This can be used to switch the PCI BAR layout to/from vDPA mode.  
 > 
-> I ran again the benchmark cited in commit ce27ec60648d to confirm that
-> the slowdown we had before 5.14 for
-> high number of alloc/frees per second is no more.
+> You probably should also Cc: the PCI maintainers.
 
-Sounds useful to know - Antoine, do you reckon we can include a mention
-of this knob being mostly of historical importance?
+And virtio people, just in case.
