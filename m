@@ -2,67 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5ED9C569477
-	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 23:34:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 683BC569474
+	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 23:34:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234599AbiGFVdM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jul 2022 17:33:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54688 "EHLO
+        id S234610AbiGFVdO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jul 2022 17:33:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234582AbiGFVdL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 17:33:11 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BC7F2A955;
+        with ESMTP id S234240AbiGFVdM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 17:33:12 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E25E27145;
         Wed,  6 Jul 2022 14:33:10 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id v16so12315846wrd.13;
+Received: by mail-wr1-x431.google.com with SMTP id q9so23754028wrd.8;
         Wed, 06 Jul 2022 14:33:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=qksiefyWfPEtdDN03SulVwHSuSdTMWDrDcF6sRt+8P4=;
-        b=RqlLDdLC93LTRiXfFHQbhDbjFT/UxkW4XCzvtb6YUDIbkKNLbXpYgYcF7QaHEMWPFB
-         uE4rwaCgMtOaohoDN2ZyvISafWSVnilJT1nn9YUwGOnRR1ZEjWryC1g3MSZUcu+HAFUY
-         fzRqzwEcF5sgaQ8z1WIarOcoFmWTeQ6bK7Uv+VzONtOM8K9os3mZ1EFwZmUw6mZS47mb
-         JCIzSuAM7kaVLK4CVctKU/xoMR5K5I7bORTs3/Jv297bJ3z53fBFb2CYn1dBlX5btdN/
-         Yo+rLqIVObShwY+JBVEXneLi9OanD+MIr8PBzL0Y9//E9cevwB6JQoqsmrWbUv3Ct7CZ
-         yKPA==
+        bh=HVZSEC+VenCeIo/8yTgKOXSfNE5opDjFHGiQ9pUUIZQ=;
+        b=I4pmdpKoYpzTo0R0cK3zBQTv7GMk/4JjvJX/Bb7G70Pe55svcXBfQZq0IdjGCiskV+
+         P0vZwx5cPexjitW+Q/8VvWOU5bhjJr45veMEq6CKbJEfePqNrDgTV4nArcAwQ/e50HU/
+         JkgzzQ3H+DmLFLbxpg3WIP4ZXMkB2YPswlb5tGJAnJHD3C2fKVx8YDR8uvTDy4G8e5lJ
+         3Df1EbJ9Luqo4LL/9q+aaHU8SDImw+drJ1Zt+KcZ8czRWWe5KTH+9oqhiMtSSM3J6+CO
+         X6jWftEf3Mi2N7ni+hju2Ju1/lJYkSh7xcazJbarF6HP3ZJMzmAEl2Mv8qdqk2z9bBGT
+         CjPQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=qksiefyWfPEtdDN03SulVwHSuSdTMWDrDcF6sRt+8P4=;
-        b=HFNU11XnBjQzN/IirDCD2y3JkPC8tiv8XjJaW9DBSBPdGqyAQ9no2drDPdsyAXSeEE
-         Dv3WppikjTTdWWD6AzHTMshdtxTT7tb5DzoTRxFMqCBbhBLCsoqL8BnKpxHZbFnrzmWD
-         +LwXLxUueJ6crLcV5Hi/k6px54+hkOxQtgZ6w7xlgZhRHeBoleTcZK8Avw82qOD5fwVZ
-         ra0XGS4cNObtGlVNTDqCmLCb+YEGCjml4uRzMoQDSZEJLKlteSsY7BFQoG5a6FMR4N5P
-         +y9Q+0EtxGe+INvhZUiYtpmVbBMAKHMNtYnsXIfi2zrnIH1hHrKT6o4zRRUSYdvnrut9
-         ekeg==
-X-Gm-Message-State: AJIora+NsbfwcAzmaeDAdD1tTpfi5QlluIJgYUj4YzUwtGYwFxICy90j
-        IaIvt2aNhseBYGXFwqeGS7o=
-X-Google-Smtp-Source: AGRyM1s6fbdaehrJ71MyjsBSmSmbm4MN9IXvDpm8OLuI5yQ9210DMQ0DXoTrc8chF5uUY28nEo+V7g==
-X-Received: by 2002:a5d:4d46:0:b0:21d:8196:6181 with SMTP id a6-20020a5d4d46000000b0021d81966181mr2190490wru.459.1657143188936;
-        Wed, 06 Jul 2022 14:33:08 -0700 (PDT)
+        bh=HVZSEC+VenCeIo/8yTgKOXSfNE5opDjFHGiQ9pUUIZQ=;
+        b=Ytllck8HuLi2kXiHLxuVCwHZdN55jlMXUrc4WFfAHmTUrROZ4la0pw0JhrjSwJDJ86
+         CBnpoOMjD98NvgWk4+Cev6Kqy+nE6pVzVeA6dDV+s5dY6wF/KLBoAyVp3Hhbm9LD62VD
+         wjg7+gSh7Ruba8JBK1V/Q2PKGQKs35t85RG3CpYzTmdgqqwhh8EH1bQjFEXHghvm7tzD
+         TZeVcx/rPr49akFy/8KPXi7trGsDdxOnEVZX1BDEuj4t9QFbHuYTJPTqL27470zN/5BJ
+         IWtQBFgl/A7nhynHk4czSSUMfO3hyDxjkrFbb5hyjsQq8qfu4xa9eCke7VEEvjC9gyUK
+         Uudg==
+X-Gm-Message-State: AJIora/4T5QPksCSLyYUw1WCkRkOosYUeaHKcL+lIlQbJolZD1k9RXRk
+        H/iOzMKHxuoY2akYwIvGiuo=
+X-Google-Smtp-Source: AGRyM1vubie3i/VEfKiH+iR/HW2Dc7ZjSUlOMm50+gV42c6qtc1hWOltqsrSGwR6eWjVTiJj8LklRQ==
+X-Received: by 2002:a05:6000:1152:b0:21d:7646:a976 with SMTP id d18-20020a056000115200b0021d7646a976mr9219831wrx.416.1657143190468;
+        Wed, 06 Jul 2022 14:33:10 -0700 (PDT)
 Received: from localhost (p200300e41f12c800f22f74fffe1f3a53.dip0.t-ipconnect.de. [2003:e4:1f12:c800:f22f:74ff:fe1f:3a53])
-        by smtp.gmail.com with ESMTPSA id m17-20020adfe0d1000000b0021b866397a7sm37429688wri.1.2022.07.06.14.33.07
+        by smtp.gmail.com with ESMTPSA id j18-20020a05600c191200b003973ea7e725sm30611255wmq.0.2022.07.06.14.33.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 14:33:07 -0700 (PDT)
+        Wed, 06 Jul 2022 14:33:09 -0700 (PDT)
 From:   Thierry Reding <thierry.reding@gmail.com>
-To:     Thierry Reding <thierry.reding@gmail.com>
-Cc:     Jon Hunter <jonathanh@nvidia.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        Jon Hunter <jonathanh@nvidia.com>,
         "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Bhadram Varka <vbhadram@nvidia.com>,
         devicetree@vger.kernel.org, linux-tegra@vger.kernel.org,
-        netdev@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v3 4/9] memory: tegra: Add MGBE memory clients for Tegra234
-Date:   Wed,  6 Jul 2022 23:32:50 +0200
-Message-Id: <20220706213255.1473069-5-thierry.reding@gmail.com>
+        netdev@vger.kernel.org
+Subject: [PATCH v3 5/9] dt-bindings: net: Add Tegra234 MGBE
+Date:   Wed,  6 Jul 2022 23:32:51 +0200
+Message-Id: <20220706213255.1473069-6-thierry.reding@gmail.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220706213255.1473069-1-thierry.reding@gmail.com>
 References: <20220706213255.1473069-1-thierry.reding@gmail.com>
@@ -78,116 +77,204 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Thierry Reding <treding@nvidia.com>
+From: Bhadram Varka <vbhadram@nvidia.com>
 
-The NVIDIA Tegra234 SoC has multiple network interfaces with each their
-own memory clients and stream IDs to allow for proper isolation.
+Add device-tree binding documentation for the Multi-Gigabit Ethernet
+(MGBE) controller found on NVIDIA Tegra234 SoCs.
 
+Signed-off-by: Jon Hunter <jonathanh@nvidia.com>
 Signed-off-by: Bhadram Varka <vbhadram@nvidia.com>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Signed-off-by: Thierry Reding <treding@nvidia.com>
 ---
- drivers/memory/tegra/tegra234.c | 80 +++++++++++++++++++++++++++++++++
- 1 file changed, 80 insertions(+)
+Changes in v3:
+- add macsec and macsec-ns interrupt names
+- improve mdio bus node description
+- drop power-domains description
+- improve bindings title
 
-diff --git a/drivers/memory/tegra/tegra234.c b/drivers/memory/tegra/tegra234.c
-index 5244b3c560b0..c1018a50431e 100644
---- a/drivers/memory/tegra/tegra234.c
-+++ b/drivers/memory/tegra/tegra234.c
-@@ -11,6 +11,76 @@
- 
- static const struct tegra_mc_client tegra234_mc_clients[] = {
- 	{
-+		.id = TEGRA234_MEMORY_CLIENT_MGBEARD,
-+		.name = "mgbeard",
-+		.sid = TEGRA234_SID_MGBE,
-+		.regs = {
-+			.sid = {
-+				.override = 0x2c0,
-+				.security = 0x2c4,
-+			},
-+		},
-+	}, {
-+		.id = TEGRA234_MEMORY_CLIENT_MGBEBRD,
-+		.name = "mgbebrd",
-+		.sid = TEGRA234_SID_MGBE_VF1,
-+		.regs = {
-+			.sid = {
-+				.override = 0x2c8,
-+				.security = 0x2cc,
-+			},
-+		},
-+	}, {
-+		.id = TEGRA234_MEMORY_CLIENT_MGBECRD,
-+		.name = "mgbecrd",
-+		.sid = TEGRA234_SID_MGBE_VF2,
-+		.regs = {
-+			.sid = {
-+				.override = 0x2d0,
-+				.security = 0x2d4,
-+			},
-+		},
-+	}, {
-+		.id = TEGRA234_MEMORY_CLIENT_MGBEDRD,
-+		.name = "mgbedrd",
-+		.sid = TEGRA234_SID_MGBE_VF3,
-+		.regs = {
-+			.sid = {
-+				.override = 0x2d8,
-+				.security = 0x2dc,
-+			},
-+		},
-+	}, {
-+		.id = TEGRA234_MEMORY_CLIENT_MGBEAWR,
-+		.name = "mgbeawr",
-+		.sid = TEGRA234_SID_MGBE,
-+		.regs = {
-+			.sid = {
-+				.override = 0x2e0,
-+				.security = 0x2e4,
-+			},
-+		},
-+	}, {
-+		.id = TEGRA234_MEMORY_CLIENT_MGBEBWR,
-+		.name = "mgbebwr",
-+		.sid = TEGRA234_SID_MGBE_VF1,
-+		.regs = {
-+			.sid = {
-+				.override = 0x2f8,
-+				.security = 0x2fc,
-+			},
-+		},
-+	}, {
-+		.id = TEGRA234_MEMORY_CLIENT_MGBECWR,
-+		.name = "mgbecwr",
-+		.sid = TEGRA234_SID_MGBE_VF2,
-+		.regs = {
-+			.sid = {
-+				.override = 0x308,
-+				.security = 0x30c,
-+			},
-+		},
-+	}, {
- 		.id = TEGRA234_MEMORY_CLIENT_SDMMCRAB,
- 		.name = "sdmmcrab",
- 		.sid = TEGRA234_SID_SDMMC4,
-@@ -20,6 +90,16 @@ static const struct tegra_mc_client tegra234_mc_clients[] = {
- 				.security = 0x31c,
- 			},
- 		},
-+	}, {
-+		.id = TEGRA234_MEMORY_CLIENT_MGBEDWR,
-+		.name = "mgbedwr",
-+		.sid = TEGRA234_SID_MGBE_VF3,
-+		.regs = {
-+			.sid = {
-+				.override = 0x328,
-+				.security = 0x32c,
-+			},
-+		},
- 	}, {
- 		.id = TEGRA234_MEMORY_CLIENT_SDMMCWAB,
- 		.name = "sdmmcwab",
+Changes in v2:
+- add supported PHY modes
+- change to dual license
+
+ .../bindings/net/nvidia,tegra234-mgbe.yaml    | 169 ++++++++++++++++++
+ 1 file changed, 169 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/nvidia,tegra234-mgbe.yaml
+
+diff --git a/Documentation/devicetree/bindings/net/nvidia,tegra234-mgbe.yaml b/Documentation/devicetree/bindings/net/nvidia,tegra234-mgbe.yaml
+new file mode 100644
+index 000000000000..3d242ef1ca57
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/nvidia,tegra234-mgbe.yaml
+@@ -0,0 +1,169 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/net/nvidia,tegra234-mgbe.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Tegra234 MGBE Multi-Gigabit Ethernet Controller
++
++maintainers:
++  - Thierry Reding <treding@nvidia.com>
++  - Jon Hunter <jonathanh@nvidia.com>
++
++properties:
++
++  compatible:
++    const: nvidia,tegra234-mgbe
++
++  reg:
++    minItems: 3
++    maxItems: 3
++
++  reg-names:
++    items:
++      - const: hypervisor
++      - const: mac
++      - const: xpcs
++
++  interrupts:
++    minItems: 1
++
++  interrupt-names:
++    minItems: 1
++    items:
++      - const: common
++      - const: macsec-ns
++      - const: macsec
++
++  clocks:
++    minItems: 12
++    maxItems: 12
++
++  clock-names:
++    minItems: 12
++    maxItems: 12
++    contains:
++      enum:
++        - mgbe
++        - mac
++        - mac-divider
++        - ptp-ref
++        - rx-input-m
++        - rx-input
++        - tx
++        - eee-pcs
++        - rx-pcs-input
++        - rx-pcs-m
++        - rx-pcs
++        - tx-pcs
++
++  resets:
++    minItems: 2
++    maxItems: 2
++
++  reset-names:
++    contains:
++      enum:
++        - mac
++        - pcs
++
++  interconnects:
++    items:
++      - description: memory read client
++      - description: memory write client
++
++  interconnect-names:
++    items:
++      - const: dma-mem # read
++      - const: write
++
++  iommus:
++    maxItems: 1
++
++  power-domains:
++    maxItems: 1
++
++  phy-handle: true
++
++  phy-mode:
++    contains:
++      enum:
++        - usxgmii
++        - 10gbase-kr
++
++  mdio:
++    $ref: mdio.yaml#
++    unevaluatedProperties: false
++    description:
++      Optional node for embedded MDIO controller.
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - interrupt-names
++  - clocks
++  - clock-names
++  - resets
++  - reset-names
++  - power-domains
++  - phy-handle
++  - phy-mode
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/tegra234-clock.h>
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++    #include <dt-bindings/memory/tegra234-mc.h>
++    #include <dt-bindings/power/tegra234-powergate.h>
++    #include <dt-bindings/reset/tegra234-reset.h>
++
++    ethernet@6800000 {
++        compatible = "nvidia,tegra234-mgbe";
++        reg = <0x06800000 0x10000>,
++              <0x06810000 0x10000>,
++              <0x068a0000 0x10000>;
++        reg-names = "hypervisor", "mac", "xpcs";
++        interrupts = <GIC_SPI 384 IRQ_TYPE_LEVEL_HIGH>;
++        interrupt-names = "common";
++        clocks = <&bpmp TEGRA234_CLK_MGBE0_APP>,
++                 <&bpmp TEGRA234_CLK_MGBE0_MAC>,
++                 <&bpmp TEGRA234_CLK_MGBE0_MAC_DIVIDER>,
++                 <&bpmp TEGRA234_CLK_MGBE0_PTP_REF>,
++                 <&bpmp TEGRA234_CLK_MGBE0_RX_INPUT_M>,
++                 <&bpmp TEGRA234_CLK_MGBE0_RX_INPUT>,
++                 <&bpmp TEGRA234_CLK_MGBE0_TX>,
++                 <&bpmp TEGRA234_CLK_MGBE0_EEE_PCS>,
++                 <&bpmp TEGRA234_CLK_MGBE0_RX_PCS_INPUT>,
++                 <&bpmp TEGRA234_CLK_MGBE0_RX_PCS_M>,
++                 <&bpmp TEGRA234_CLK_MGBE0_RX_PCS>,
++                 <&bpmp TEGRA234_CLK_MGBE0_TX_PCS>;
++        clock-names = "mgbe", "mac", "mac-divider", "ptp-ref", "rx-input-m",
++                      "rx-input", "tx", "eee-pcs", "rx-pcs-input", "rx-pcs-m",
++                      "rx-pcs", "tx-pcs";
++        resets = <&bpmp TEGRA234_RESET_MGBE0_MAC>,
++                 <&bpmp TEGRA234_RESET_MGBE0_PCS>;
++        reset-names = "mac", "pcs";
++        interconnects = <&mc TEGRA234_MEMORY_CLIENT_MGBEARD &emc>,
++                        <&mc TEGRA234_MEMORY_CLIENT_MGBEAWR &emc>;
++        interconnect-names = "dma-mem", "write";
++        iommus = <&smmu_niso0 TEGRA234_SID_MGBE>;
++        power-domains = <&bpmp TEGRA234_POWER_DOMAIN_MGBEA>;
++
++        phy-handle = <&mgbe0_phy>;
++        phy-mode = "usxgmii";
++
++        mdio {
++            #address-cells = <1>;
++            #size-cells = <0>;
++
++            mgbe0_phy: phy@0 {
++                compatible = "ethernet-phy-ieee802.3-c45";
++                reg = <0x0>;
++
++                #phy-cells = <0>;
++            };
++        };
++    };
 -- 
 2.36.1
 
