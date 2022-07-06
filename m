@@ -2,123 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DB8B9568980
-	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 15:31:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC0275689F6
+	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 15:48:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233200AbiGFNbB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jul 2022 09:31:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59262 "EHLO
+        id S233010AbiGFNsd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jul 2022 09:48:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231715AbiGFNa7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 09:30:59 -0400
-Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70043.outbound.protection.outlook.com [40.107.7.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56B4023BDB;
-        Wed,  6 Jul 2022 06:30:57 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=S48zH0uwnr1iIS6gn3jmPgNZAY57ajMWs4ct21q8ZT8VsnHatcp7NIcQJmZm9T0ElwJf6fEPUGCFsk8tDHkTcPiYQr3t5h49WxFctHlUn1+gZC+CmLFURSO3Fxzik/xJueL++f8hfJsaZD++BM1/Go4V8H+dbDrCK0Eh/4wm1hOUXzY78arxGZUoDLNE11z8x8ociV0yQJK5q++fYCV+aLvI7O97hBV4hcIUBGn7yDRfHZRUzOcGt11SVmmjZW0NY7DsaEsNpiTFyviDTXCaUTE1tz2hRJsolBZJRnLvsV4HaJSI5/Duwe4JkeHGlbTDgUEhDaP3g5YZtzVnzBHK/g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=qrnSgGT2CqGTDi8r8JNG2F95Ebw5062iqYZQ1GXYKNI=;
- b=GPgM0PvZkZRnJYclZZYSOM71u1g8tCDuxIefgMDO95Lcyrj21pZpXrlolCyG9JOg4HL+TCpUxKJ6Wk9e4lBoWkTxuqcq9JkSmgaKFHDmOmPPixkx/em5ian/4o18YoaVPAlSFLSsCUEY3hv8fWZYf2ete3UeUyPV8F8WXBRMX+ebJ30V3A12aLPLurzLFUCeZACy/7VFMyoY54ACNk8O3wt6+wXi68oLS3EUalpGfxhKVdJmu2IXWJ4s7mXJDSn1FgKiwkT0wt9boa26HXTne72oCIRcC/CJ2hfgheZ7Fb40BFF2LP401tQJUMIRG9XSZWUVhtTa4k20sCA3RbmQSQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qrnSgGT2CqGTDi8r8JNG2F95Ebw5062iqYZQ1GXYKNI=;
- b=rdT6YgFwNy862pkZpNsc8pMRCTSuVdciolzl3VoiHxKgYKdBEcfivoTs8Jskb+C/Omk7Q4d0ulVJznNaoSex4BLBgmcgKQsCH2BXPLa+W/aDC/3iZ/7k0cLSPoU9SYQrSB/NFtgfWo+rSotYiKIYPOzp2ne9SRh3p5+iFBFnM7Y=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by AS8PR04MB7928.eurprd04.prod.outlook.com (2603:10a6:20b:2af::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.21; Wed, 6 Jul
- 2022 13:30:54 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::71b7:8ed1:e4e0:3857]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::71b7:8ed1:e4e0:3857%4]) with mapi id 15.20.5395.021; Wed, 6 Jul 2022
- 13:30:54 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Pavel Skripkin <paskripkin@gmail.com>
-CC:     Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "clement.leger@bootlin.com" <clement.leger@bootlin.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: Re: [PATCH v3] net: ocelot: fix wrong time_after usage
-Thread-Topic: [PATCH v3] net: ocelot: fix wrong time_after usage
-Thread-Index: AQHYkSZB/F5QO/XCnE66pe7u42qQSK1xUe4AgAAEroCAAABTAA==
-Date:   Wed, 6 Jul 2022 13:30:54 +0000
-Message-ID: <20220706133054.nmd62htnhkqhtjcg@skbuf>
-References: <20220706105044.8071-1-paskripkin@gmail.com>
- <20220706131300.uontjopbdf72pwxy@skbuf>
- <12431b93-a614-0525-b581-01aa540748e6@gmail.com>
-In-Reply-To: <12431b93-a614-0525-b581-01aa540748e6@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 7eda23bf-76dc-4b02-d9ae-08da5f53c0c7
-x-ms-traffictypediagnostic: AS8PR04MB7928:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: XNG12YdrnyYz3d19vHckB8zwmT8G2Kjh3UqidF05C4MeDwyuepESZ7aK6ze9M5Kavv/e/mKGRRxhWlsd3AumrxiTLfiQG4/dGgSc8JFjdoIg5liGiyktf8fnc4ZoI4NHuPICp8dmy4D4WDCgdkYlf9AM1v72qVUbd39/h4VRCTIqxApxQEgTtAs5Hg3dqpwXnRTYubqas5TePDEFT2rVveoWBmTh+9Xj4UqN0zn7t1IIxF1GTPigzx41A95jdhPT+drYwy5aKzu4mRwK8q4KdVyISSv1mBy4IBA1FPcHfmSjpcS41PjsV2Fz14ufqYJ89v146QKVT7L5JN2t5rLtqOtDzo2Ob4/eC70yFt9Q8cSeSMMHazcod5dB9//fMlvwfddv1FZUyUYVE0+1aqFvqJzqWq2x7ovlX/OXoYnydYdkdx5foLRERM4reoXe6cx6tgN3zvCkMfTbltbzvcxmoqEK0YhCaGRBKXdK8FsM2PWRRylkS2xasEj45DDdKULNt128lD45GIN7k+VUdSv58+UIs1mvwB/EGHmTvNcvLDWHWDz3busW05mOeTdNgLV1F5DQ0u78J5Q8+VGR2wu48BDGr51SpOslyG6NkHBrcKvmW8Ameh0Ex6nuwH0PrIXuuNxlL1ShT7V4+xoAQJmcVoK3PxfmQu0m2diaap9oqnL3uj8jGOnXU11boLckN8b145FP9tQwUF2KpmWYox4Zl3r8kGlfEaB+xG2ETkF3Y2oH/8iRnoOQCB+ET/beeXyZWOf6bahIo5GMQhUBJDX4uL3M8TpSzI6CQud5ZbhHZSycUO7HCr7cGRpx6RDk43ru
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(7916004)(39860400002)(346002)(136003)(366004)(376002)(396003)(1076003)(6506007)(91956017)(66556008)(66476007)(66446008)(64756008)(9686003)(8676002)(558084003)(76116006)(4326008)(7416002)(5660300002)(66946007)(38100700002)(8936002)(2906002)(38070700005)(44832011)(26005)(86362001)(122000001)(33716001)(478600001)(6486002)(41300700001)(6916009)(71200400001)(6512007)(54906003)(316002)(186003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?AcBPC23s9wDKHmMYFRgXtn0HP9aMG1Fmfz7Wm63SUkaolaaz3aXmDdSz6Tmv?=
- =?us-ascii?Q?wwn8M+iFC4RQu60UfqT66YMMGneD1bLJlQWNt9GUEnecczubAjVyd5y+CqjG?=
- =?us-ascii?Q?w41h96COCIFj5v81ar1dMg69mmQ/UNWF/xZ/23Tna/GYaHck0AIg/1+U9zDM?=
- =?us-ascii?Q?64GOvcCZI6swxRwv4O/Lh+FAs8tyNbjIyvGwpfNX7qHxvSewGhNoUgWm9S7n?=
- =?us-ascii?Q?vThR3R2vK0D+Y5qgsbrMC9sVIrLMC7YykZWQQm6GM59dgAeIobLvPJXErYTO?=
- =?us-ascii?Q?eWRbjQmBa5F8JQ80/DJtiKvwXMB4/mCktdloOEONFMcvXGKER0wXpejBD42S?=
- =?us-ascii?Q?BTi6SWk9JhroZcB9f3ZNI3XM0q/K4DgHj4jS25GdejBCNiRHfRYW0uf/LiO1?=
- =?us-ascii?Q?4fCSNOuRJNbrg85xq05t8drV9InObB2INyc8G6BCX5kurEFZmHahUl2YSnvu?=
- =?us-ascii?Q?GgjImyffBk8DIt9TKBcDkB6IJjwe0nXdFZNDMg/HcoXIxNDsZugUqrIDsI+7?=
- =?us-ascii?Q?peGS7yXd3t00t2K48g9p86Fk6qWnbcQOq1MT1qlE4ciNWRAcinTHcGsbkNjX?=
- =?us-ascii?Q?+pGvI/BFMTHRDZKdkGVwEhQPAWX9w8MoGGBpUfDKFzEZzvWsRdXJtAhqKnxP?=
- =?us-ascii?Q?PjkZ/YL3XFMx49kdml1qoiZb/FtZK59RdlwagjgkYbmHH+KKuwT6zjKl4NOu?=
- =?us-ascii?Q?ewiFhKzAjygHmra+xi7HDj5zCQ/j6Jdh8+Cu78GA28CJfh3PowFj6uDPV7wG?=
- =?us-ascii?Q?RKPYaZzLsYv3T8fXHga4Ea4XHHt7Duu5lgeeajdFLnuEpVOm5cntu9yg0xjt?=
- =?us-ascii?Q?o55CeA3vdK5bXS1qzxcWCGUMgE0Cd3LAM+NDxS5pMmHfV3+1WQ8gmkvBwXlT?=
- =?us-ascii?Q?uqemUB+y3A0sSQtUjC/Wcch1UnM8BmTV/Urvk9LpSseWGhdCezbH3j/tRLAr?=
- =?us-ascii?Q?CmmUdx9t0prYnHtiA94bH+AfyuOOe4vXKYjyPwOg67koikY9mrmoB5p1VE1i?=
- =?us-ascii?Q?t/EzHSB0/l9yz5ECqV4zFncfhalPiTzX2b2MUP6uuefBLq3CPR61Sj1hfMnX?=
- =?us-ascii?Q?0252c1Cu3zIltrbXMWQvdj5jnadr96v+xIYjJ/SC5AcXMxXgOyZ1I3XeRUiN?=
- =?us-ascii?Q?2CdK1nKvsbeTJXx8pZfNMV7SpykeXDPQKpP5TaCgul7S1Us6zz0RLBv+BJAP?=
- =?us-ascii?Q?bDwH4lIrAbYjOuQ6hVDVb/YWc16RwZUP2Xw68s3mznNl8OgiinTi2pS1epXt?=
- =?us-ascii?Q?tIRwCcUVYgCGItsT13RzclM9kpwgGKoTj84t5rkyn6a079LXbQBvvzQFjcGr?=
- =?us-ascii?Q?bxiFU5K9t9Urb9PyD1i5r329AK4iBHv9MyuYC4vsvs0V14/qIPgkXujp4y6E?=
- =?us-ascii?Q?dFacQcU1ygQRmT0o52VfDUndUZoX9+8Q8gtNmX96GTKAJenrhbvLpyu0j8+6?=
- =?us-ascii?Q?f9wjgPx9UYe65HEYAhJ3jF/5VurKtIcTjnmve3oaLXyEZgs/NeGEN/gFd09d?=
- =?us-ascii?Q?g9llGCGvcf3etbdNMmS/KEtPlfEyjDusCQSmh9nJOU1YpRE8ZNU745QUIeif?=
- =?us-ascii?Q?lYXtNqJTBySCzYegnnXtlSXQAGPbRZdY4+WASFgJR9noBedYoLbwB8d+eJFV?=
- =?us-ascii?Q?Jw=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <34E4D1F5337BFD4C847D5B815AC25B6A@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S233467AbiGFNsa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 09:48:30 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C88EABF1;
+        Wed,  6 Jul 2022 06:48:28 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id h17so9013049wrx.0;
+        Wed, 06 Jul 2022 06:48:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7VGDIlKV6gAV8St0jIFraWnG2EvF6VYrYLOYj9aX/Sc=;
+        b=GmdcHEVeVUWW4yGaLtIyHZprjnISw5pW33LwCwJJ7/fDA6Hcfxby9OeEN4idkGEUJr
+         tlORqJvsztOQN74ymQ3E4sWlPqW/6bsqHfxN0YB8ADgv1BjiKCRCjYDOh7lZQBb3Tgl5
+         BdUozqnyBMsdWXGwJFWBmb35kvsmDF2WLkvQp9mRsWZPmu6EbUWcypm8pcp2H715FnU4
+         ipRQuQXENffTeeb6WWoDToEU9RkLs53PtRT5L1YrX7g0bef34vYKUzk1UcPVf5OSAeT5
+         XYbuV7KUIBSkcnstqa0uuwHszYv7gMD72sraYPrXUBZl/08SljwdSVHfeHp5mJ+welFO
+         bGEg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7VGDIlKV6gAV8St0jIFraWnG2EvF6VYrYLOYj9aX/Sc=;
+        b=4SGArS9OC4LziXmsCsYGBgdBut5nCJLRneBTOep1W7bemhUtqfIXrekVF67eIirlnl
+         GGLZaa5QLfz07mIiFg03Zo69c42rKFquZpchF6qqqAD+Dl6igxNKpCHcp8jr3GIUkC9v
+         9x+jgKQ30wRklijN3fRNF03YA1/kFHmeOJ/ctjTU8/PJAHlVwI4IFJP8kCairBzNHU4k
+         n3rjdd6EpcwSZBdOCEvPoyxWllYdm899foiwhOZZP4kaM7+SuxB045F738yXyqQRc2TV
+         uF75t1EIMcSLKebub7a61VRGAfF1sl504bbiIBptTUq9TG8AY6+LQFGsNkRf08BhjTPG
+         5jig==
+X-Gm-Message-State: AJIora+rB9gU/Ub/Zqaq0Ru4H+PBZ1X7Os2KqIhodVOtQqoAp0U3/2rj
+        HDZ4UsbHFpQD1afYGZpnT48TnQ6xwuXsYfhKSSo=
+X-Google-Smtp-Source: AGRyM1ts1iVFzqxNpdFOtNBXP9pYfOs+b0mF015rNdoOcHmF9GTVipUoZ3vq1ks20WVLwoAkcEDLb99UfUxDajaENIY=
+X-Received: by 2002:a5d:658d:0:b0:21d:6e90:c2ed with SMTP id
+ q13-20020a5d658d000000b0021d6e90c2edmr11899137wru.113.1657115307223; Wed, 06
+ Jul 2022 06:48:27 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7eda23bf-76dc-4b02-d9ae-08da5f53c0c7
-X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Jul 2022 13:30:54.7437
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 5Frz4KwXQaZe/PF34hCmkN27kPAv45/2GmuN0tCDEVp5AJAMN5DwnB9L4NdCMoyFanXIOPJxLv3fq9JIsVsikw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB7928
+References: <20220524152144.40527-1-schultz.hans+netdev@gmail.com>
+ <20220524152144.40527-4-schultz.hans+netdev@gmail.com> <20220627180557.xnxud7d6ol22lexb@skbuf>
+ <CAKUejP7ugMB9d3MVX3m9Brw12_ocFoT+nuJJucYdQH70kzC7=w@mail.gmail.com>
+ <CAKUejP5u9rrH8tODODG0a1PLXfLhk7NLe5LUYkefkbs15uU=BQ@mail.gmail.com> <20220706132834.rdw7mmpbwt55kt4r@skbuf>
+In-Reply-To: <20220706132834.rdw7mmpbwt55kt4r@skbuf>
+From:   Hans S <schultz.hans@gmail.com>
+Date:   Wed, 6 Jul 2022 15:48:16 +0200
+Message-ID: <CAKUejP7DjCoEjyzGWs4ZQF3_gfy6tBhCYs+H9Ja7hXcFw09qww@mail.gmail.com>
+Subject: Re: [PATCH V3 net-next 3/4] net: dsa: mv88e6xxx: mac-auth/MAB implementation
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Hans Schultz <schultz.hans+netdev@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -126,15 +81,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 06, 2022 at 04:29:45PM +0300, Pavel Skripkin wrote:
-> Hi Vladimir,
->=20
-> Vladimir Oltean <vladimir.oltean@nxp.com> says:
-> > Can you please indent the arguments to the open bracket?
-> >=20
->=20
-> Sure thing! I've just sent a v4.
->=20
-> Thank you for review
+On Wed, Jul 6, 2022 at 3:28 PM Vladimir Oltean <olteanv@gmail.com> wrote:
+>
+> On Tue, Jul 05, 2022 at 05:05:52PM +0200, Hans S wrote:
+> > Hi, does anybody know what it going on with this variable?
+> > struct dsa_port *dp ->ageing_time;
+> >
+> > I experience that it changes value like a factor ~10 at times.
+>
+> Could you be a bit more specific? Are you talking about STP Topology
+> Change Notification BPDUs, which trigger this code path?
+>
+> diff --git a/net/bridge/br_stp.c b/net/bridge/br_stp.c
+> index 7d27b2e6038f..9b25bc2dcb3e 100644
+> --- a/net/bridge/br_stp.c
+> +++ b/net/bridge/br_stp.c
+> @@ -671,10 +671,10 @@ void __br_set_topology_change(struct net_bridge *br, unsigned char val)
+>
+>                 if (val) {
+>                         t = 2 * br->forward_delay;
+> -                       br_debug(br, "decreasing ageing time to %lu\n", t);
+> +                       br_info(br, "decreasing ageing time to %lu\n", t);
+>                 } else {
+>                         t = br->bridge_ageing_time;
+> -                       br_debug(br, "restoring ageing time to %lu\n", t);
+> +                       br_info(br, "restoring ageing time to %lu\n", t);
+>                 }
+>
+>                 err = __set_ageing_time(br->dev, t);
+>
+> Coincidentally the default values of 2 * br->forward_delay and br->bridge_ageing_time
+> are 1 order of magnitude apart from each other.
+>
+> [  139.998310] br0: topology change detected, propagating
+> [  140.003490] br0: decreasing ageing time to 3000
+> [  175.193054] br0: restoring ageing time to 30000
+>
+> What's the problem anyway?
 
-And thank you for the patch!=
+It might be a topology change as you indicate, though I am not sure.
+So I am not using that variable any more for determining the ageing
+time for the locked FDB entries, but instead I have made a function to
+read the time from the chip instead.
+
+The problem with that, I have mentioned in my latest reply to the
+mac-auth patch set...
