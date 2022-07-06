@@ -2,381 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B282A5693B8
-	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 22:58:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C501C5693C7
+	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 23:01:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234351AbiGFU6n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jul 2022 16:58:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59356 "EHLO
+        id S234194AbiGFVBl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jul 2022 17:01:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229768AbiGFU6m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 16:58:42 -0400
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2AD613FAA;
-        Wed,  6 Jul 2022 13:58:40 -0700 (PDT)
-Received: by mail-lf1-x129.google.com with SMTP id j21so27943634lfe.1;
-        Wed, 06 Jul 2022 13:58:40 -0700 (PDT)
+        with ESMTP id S233383AbiGFVBj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 17:01:39 -0400
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFA9D220F4
+        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 14:01:37 -0700 (PDT)
+Received: by mail-wm1-x32a.google.com with SMTP id o16-20020a05600c379000b003a02eaea815so244693wmr.0
+        for <netdev@vger.kernel.org>; Wed, 06 Jul 2022 14:01:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=C01ffpOgx4WvDOiZmitZs4G9/ytDkF+3lkhWoP9eI5Y=;
-        b=NDGh6xZkLxznP6/c1nBFBT7xOLTrBP28nYJEV3pRLdxcr45HQnbjLjziU7VWo56OIu
-         8WjTp+3BQ4POe6GXTi9uEM4UIc/vxicAagk3XMnNsdXJestHz/T0okwXDpg52HJBKquy
-         rbhubK7zXfcP6golFd6U4B81Y16RbMdqpmXqn6wWq3n3BrRE7pSdHVehWK6T74OxUV/S
-         PFssE2Mau6uOiBSBqsnAcL/6bXZbNhvbD+QEjUOuaOuKHEwj1ycrdSx1+6LSgGKxB/b4
-         h63lVnDk0u0TS2F/CIsZJZF0KXHvLb1FKG2xTZx3QL1gnJI/wkKhE9Z0KwOGjhIrch/6
-         50Zw==
+        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=8giTgAsje0PgfypLa6/wbiRAhOKG5Tbh9uzJ383M/Bs=;
+        b=tKJjlthPnaEUALGlSwOgU2+cmYJtLc+oN99DlO8lq1Y7rInuuxKIEplRA+CkIQc4Zu
+         /mSKlqcduxV+zRdt744Pc41wwC1FnsejAi7m+GVhafW7mWsC3youUYZO0ntc5V1XamCb
+         U56HsOfaCcVYg4yp8enUA1c9MLNo3+yUCuJmKleWR5uRggQ6MYepwTz/ZLZLFR5hMRgW
+         nic4oSRwTR8/ZjeeAQk5NcqHILD6IdjFBUzuG8mcJLKpdezZapamwLnr9V5Tk9RQFERp
+         QpJz9yXqh7jlZYaG0gwhLA9GX/Y8WQdcQbZSxqkFftJ+p2pYV9vmNcJIUbEv6zisJIlO
+         j+Xg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=C01ffpOgx4WvDOiZmitZs4G9/ytDkF+3lkhWoP9eI5Y=;
-        b=0lEUknsJIs2TSZhhdcHhcnaKSiLUhmyBqMRDpat6ot0Yd59OdX9Gw7PazsH6vOEJkc
-         2ofheWpyF3ilC+uS84SbJ2b3QEcIdJtFVazxbzgM9dLBFDnh32z3nD8KyXxVgOElh7VE
-         UrMbifJ3ocz4lIzYFY3+dDm4XxoiwYiTb5Wpv74uKvqPvCZcWEdH2E2OYUlaa4HRI2Yt
-         6hJbrCk7M5+Ik1eQPj/j/F6JMsN6JZHva1NDPgUR4ZOqggNcrL1uU9LSLHTUeHuR83c7
-         80lQBWZknzyn1uyp4FlvPstWlkDpvKx+iWaIdZWppKreI7lZ/3BP+6z/qV4NqeFQt78i
-         BI2A==
-X-Gm-Message-State: AJIora+rwYj89o6G3OPSVNq69cXqyFGPxMrBMB6Kq+G6wjErJkfmUcf3
-        JF8qC6R1EwoeBcNg6hemTCVVbxODKopAmTKRbwM=
-X-Google-Smtp-Source: AGRyM1u3/bFPcIHtTv5VDMx/votS18IU995bwjeY7VxkjcAO/uO0fK8rC+SejQAP6rLKxuQXwrhOAyXInZAej42i3DQ=
-X-Received: by 2002:a05:6512:3b9f:b0:483:9ecc:6740 with SMTP id
- g31-20020a0565123b9f00b004839ecc6740mr7158535lfv.57.1657141119096; Wed, 06
- Jul 2022 13:58:39 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=8giTgAsje0PgfypLa6/wbiRAhOKG5Tbh9uzJ383M/Bs=;
+        b=HdYkvvT0UUj39dc6cy18ndNImgHbatJCo6mjwqjK+IpVIeMQxtLbm+FZsWONkwrPAo
+         cfxOJXDvEk8HgTL8A1CimGnQm0IiS4PXgg6zbwOdZnytVZecHvAGtziZIGrYxqXZXcNP
+         EiPj2UtLndnnz/8Y/Ni5YZdyypHAQY5Cr87xEf0bvv4+rFZdgA5GVH16nz+hp1Ig1WL8
+         9IpGW1xYYs9NXgVBNOlvh05pWIGqkddZtd/6Yt9cZmK1W/X/1dlm4xQUhrlkGc4m1a2l
+         JryPiYmgAGEQXc3qBieXv4laXMvjmdE9QHYmesB6Ej1gct7eFDDHEo4sRRXHAnqvJ/vs
+         GM9w==
+X-Gm-Message-State: AJIora8I4GwErQVpheiLW9l2YJI3vslZjNVkKQc8tb6YjjPhEFr+09Pt
+        H20valVc33OHPSJ1rBX6hsckKg==
+X-Google-Smtp-Source: AGRyM1t2MDSTpNkXC9YMLSLkaChvYJUF4lJkJTFVxiVdM6Jtdc6ObrobRcfGsudXpamHQtbQXOv11w==
+X-Received: by 2002:a05:600c:35d5:b0:3a0:4b1a:2a28 with SMTP id r21-20020a05600c35d500b003a04b1a2a28mr544580wmq.22.1657141296053;
+        Wed, 06 Jul 2022 14:01:36 -0700 (PDT)
+Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
+        by smtp.gmail.com with ESMTPSA id 13-20020a05600c020d00b0039c362311d2sm27187329wmi.9.2022.07.06.14.01.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Jul 2022 14:01:35 -0700 (PDT)
+Message-ID: <fe456fb0-4f68-f93e-d4a9-66e3bc56d547@blackwall.org>
+Date:   Thu, 7 Jul 2022 00:01:33 +0300
 MIME-Version: 1.0
-References: <20220622082716.478486-1-lee.jones@linaro.org> <CANn89iK-uFP6Swgc0ZeEC38UsuywJ3wbybSNouH202Wa7X7Tzg@mail.gmail.com>
- <CABBYNZ+C=MQ7577Fr5_W8tQ4iWRSDBSiC4fkRBY3x=9ph+YAzA@mail.gmail.com>
- <CABBYNZLysdh3NFK+G8=NUQ=G=hvS8X0PdMp=bVqiwPDPCAokmg@mail.gmail.com>
- <YrxvgIiWuFVlXBaQ@google.com> <CABBYNZJFSxk9=3Gj7jOj__s=iJGmhrZ=CA7Mb74_-Y0sg+N40g@mail.gmail.com>
- <YsVptCjpzHjR8Scv@google.com> <CABBYNZKvVKRRdWnX3uFWdTXJ_S+oAj6z72zgyV148VmFtUnPpA@mail.gmail.com>
-In-Reply-To: <CABBYNZKvVKRRdWnX3uFWdTXJ_S+oAj6z72zgyV148VmFtUnPpA@mail.gmail.com>
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date:   Wed, 6 Jul 2022 13:58:27 -0700
-Message-ID: <CABBYNZLTzW3afEPVfg=uS=xsPP-JpW6UBp6W=Urhhab+ai+dcA@mail.gmail.com>
-Subject: Re: [RESEND 1/1] Bluetooth: Use chan_list_lock to protect the whole
- put/destroy invokation
-To:     Lee Jones <lee.jones@linaro.org>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        LKML <linux-kernel@vger.kernel.org>, stable@kernel.org,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: multipart/mixed; boundary="000000000000bf4c2605e3293b50"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH V3 net-next 1/4] net: bridge: add fdb flag to extent
+ locked port feature
+Content-Language: en-US
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Hans Schultz <schultz.hans@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>, Shuah Khan <shuah@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+References: <20220524152144.40527-2-schultz.hans+netdev@gmail.com>
+ <01e6e35c-f5c9-9776-1263-058f84014ed9@blackwall.org>
+ <86zgj6oqa9.fsf@gmail.com>
+ <b78fb006-04c4-5a25-7ba5-94428cc9591a@blackwall.org>
+ <86fskyggdo.fsf@gmail.com>
+ <040a1551-2a9f-18d0-9987-f196bb429c1b@blackwall.org>
+ <86v8tu7za3.fsf@gmail.com>
+ <4bf1c80d-0f18-f444-3005-59a45797bcfd@blackwall.org>
+ <20220706181316.r5l5rzjysxow2j7l@skbuf>
+ <7cf30a3e-a562-d582-4391-072a2c98ab05@blackwall.org>
+ <20220706202130.ehzxnnqnduaq3rmt@skbuf>
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+In-Reply-To: <20220706202130.ehzxnnqnduaq3rmt@skbuf>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000bf4c2605e3293b50
-Content-Type: text/plain; charset="UTF-8"
+On 06/07/2022 23:21, Vladimir Oltean wrote:
+> On Wed, Jul 06, 2022 at 10:38:04PM +0300, Nikolay Aleksandrov wrote:
+>> I don't think that is new or surprising, if there isn't anything to control the
+>> device resources you'll get there. You don't really need to write any new programs
+>> you can easily do it with mausezahn. I have tests that add over 10 million fdbs on
+>> devices for a few seconds.
+> 
+> Of course it isn't new, but that doesn't make the situation in any way better,
+> quite the opposite...
+> 
+>> The point is it's not the bridge's task to limit memory consumption or to watch for resource
+>> management. You can limit new entries from the device driver (in case of swdev learning) or
+>> you can use a daemon to watch the number of entries and disable learning. There are many
+>> different ways to avoid this. We've discussed it before and I don't mind adding a hard fdb
+>> per-port limit in the bridge as long as it's done properly. We've also discussed LRU and similar
+>> algorithms for fdb learning and eviction. But any hardcoded limits or limits that can break
+>> current default use cases are unacceptable, they must be opt-in.
+> 
+> I don't think you can really say that it's not the bridge's task to
+> limit memory consumption when what it does is essentially allocate
+> memory from untrusted and unbounded user input, in kernel softirq
+> context.
+> 
+> That's in fact the problem, the kernel OOM killer will kick in, but
+> there will be no process to kill. This is why the kernel deadlocks on
+> memory and dies.
+> 
+> Maybe where our expectations differ is that I believe that a Linux
+> bridge shouldn't need gazillions of tweaks to not kill the kernel?
+> There are many devices in production using a bridge without such
+> configuration, you can't just make it opt-in.
+> 
 
-Hi,
+No, you cannot suddenly enforce such limit because such limit cannot work for everyone.
+There is no silver bullet that works for everyone. Opt-in is the only way to go
+about this with specific config for different devices and deployments, anyone
+interested can set their limits. They can be auto-adjusted by swdev drivers
+after that if necessary, but first they must be implemented in software.
 
-On Wed, Jul 6, 2022 at 1:36 PM Luiz Augusto von Dentz
-<luiz.dentz@gmail.com> wrote:
->
-> Hi Lee,
->
-> On Wed, Jul 6, 2022 at 3:53 AM Lee Jones <lee.jones@linaro.org> wrote:
-> >
-> > On Tue, 05 Jul 2022, Luiz Augusto von Dentz wrote:
-> >
-> > > Hi Lee,
-> > >
-> > > On Wed, Jun 29, 2022 at 8:28 AM Lee Jones <lee.jones@linaro.org> wrote:
-> > > >
-> > > > On Tue, 28 Jun 2022, Luiz Augusto von Dentz wrote:
-> > > >
-> > > > > Hi Eric, Lee,
-> > > > >
-> > > > > On Mon, Jun 27, 2022 at 4:39 PM Luiz Augusto von Dentz
-> > > > > <luiz.dentz@gmail.com> wrote:
-> > > > > >
-> > > > > > Hi Eric, Lee,
-> > > > > >
-> > > > > > On Mon, Jun 27, 2022 at 7:41 AM Eric Dumazet <edumazet@google.com> wrote:
-> > > > > > >
-> > > > > > > On Wed, Jun 22, 2022 at 10:27 AM Lee Jones <lee.jones@linaro.org> wrote:
-> > > > > > > >
-> > > > > > > > This change prevents a use-after-free caused by one of the worker
-> > > > > > > > threads starting up (see below) *after* the final channel reference
-> > > > > > > > has been put() during sock_close() but *before* the references to the
-> > > > > > > > channel have been destroyed.
-> > > > > > > >
-> > > > > > > >   refcount_t: increment on 0; use-after-free.
-> > > > > > > >   BUG: KASAN: use-after-free in refcount_dec_and_test+0x20/0xd0
-> > > > > > > >   Read of size 4 at addr ffffffc114f5bf18 by task kworker/u17:14/705
-> > > > > > > >
-> > > > > > > >   CPU: 4 PID: 705 Comm: kworker/u17:14 Tainted: G S      W       4.14.234-00003-g1fb6d0bd49a4-dirty #28
-> > > > > > > >   Hardware name: Qualcomm Technologies, Inc. SM8150 V2 PM8150 Google Inc. MSM sm8150 Flame DVT (DT)
-> > > > > > > >   Workqueue: hci0 hci_rx_work
-> > > > > > > >   Call trace:
-> > > > > > > >    dump_backtrace+0x0/0x378
-> > > > > > > >    show_stack+0x20/0x2c
-> > > > > > > >    dump_stack+0x124/0x148
-> > > > > > > >    print_address_description+0x80/0x2e8
-> > > > > > > >    __kasan_report+0x168/0x188
-> > > > > > > >    kasan_report+0x10/0x18
-> > > > > > > >    __asan_load4+0x84/0x8c
-> > > > > > > >    refcount_dec_and_test+0x20/0xd0
-> > > > > > > >    l2cap_chan_put+0x48/0x12c
-> > > > > > > >    l2cap_recv_frame+0x4770/0x6550
-> > > > > > > >    l2cap_recv_acldata+0x44c/0x7a4
-> > > > > > > >    hci_acldata_packet+0x100/0x188
-> > > > > > > >    hci_rx_work+0x178/0x23c
-> > > > > > > >    process_one_work+0x35c/0x95c
-> > > > > > > >    worker_thread+0x4cc/0x960
-> > > > > > > >    kthread+0x1a8/0x1c4
-> > > > > > > >    ret_from_fork+0x10/0x18
-> > > > > > > >
-> > > > > > > > Cc: stable@kernel.org
-> > > > > > >
-> > > > > > > When was the bug added ? (Fixes: tag please)
-> > > > > > >
-> > > > > > > > Cc: Marcel Holtmann <marcel@holtmann.org>
-> > > > > > > > Cc: Johan Hedberg <johan.hedberg@gmail.com>
-> > > > > > > > Cc: Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-> > > > > > > > Cc: "David S. Miller" <davem@davemloft.net>
-> > > > > > > > Cc: Eric Dumazet <edumazet@google.com>
-> > > > > > > > Cc: Jakub Kicinski <kuba@kernel.org>
-> > > > > > > > Cc: Paolo Abeni <pabeni@redhat.com>
-> > > > > > > > Cc: linux-bluetooth@vger.kernel.org
-> > > > > > > > Cc: netdev@vger.kernel.org
-> > > > > > > > Signed-off-by: Lee Jones <lee.jones@linaro.org>
-> > > > > > > > ---
-> > > > > > > >  net/bluetooth/l2cap_core.c | 4 ++--
-> > > > > > > >  1 file changed, 2 insertions(+), 2 deletions(-)
-> > > > > > > >
-> > > > > > > > diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
-> > > > > > > > index ae78490ecd3d4..82279c5919fd8 100644
-> > > > > > > > --- a/net/bluetooth/l2cap_core.c
-> > > > > > > > +++ b/net/bluetooth/l2cap_core.c
-> > > > > > > > @@ -483,9 +483,7 @@ static void l2cap_chan_destroy(struct kref *kref)
-> > > > > > > >
-> > > > > > > >         BT_DBG("chan %p", chan);
-> > > > > > > >
-> > > > > > > > -       write_lock(&chan_list_lock);
-> > > > > > > >         list_del(&chan->global_l);
-> > > > > > > > -       write_unlock(&chan_list_lock);
-> > > > > > > >
-> > > > > > > >         kfree(chan);
-> > > > > > > >  }
-> > > > > > > > @@ -501,7 +499,9 @@ void l2cap_chan_put(struct l2cap_chan *c)
-> > > > > > > >  {
-> > > > > > > >         BT_DBG("chan %p orig refcnt %u", c, kref_read(&c->kref));
-> > > > > > > >
-> > > > > > > > +       write_lock(&chan_list_lock);
-> > > > > > > >         kref_put(&c->kref, l2cap_chan_destroy);
-> > > > > > > > +       write_unlock(&chan_list_lock);
-> > > > > > > >  }
-> > > > > > > >  EXPORT_SYMBOL_GPL(l2cap_chan_put);
-> > > > > > > >
-> > > > > > > >
-> > > > > > >
-> > > > > > > I do not think this patch is correct.
-> > > > > > >
-> > > > > > > a kref does not need to be protected by a write lock.
-> > > > > > >
-> > > > > > > This might shuffle things enough to work around a particular repro you have.
-> > > > > > >
-> > > > > > > If the patch was correct why not protect kref_get() sides ?
-> > > > > > >
-> > > > > > > Before the &hdev->rx_work is scheduled (queue_work(hdev->workqueue,
-> > > > > > > &hdev->rx_work),
-> > > > > > > a reference must be taken.
-> > > > > > >
-> > > > > > > Then this reference must be released at the end of hci_rx_work() or
-> > > > > > > when hdev->workqueue
-> > > > > > > is canceled.
-> > > > > > >
-> > > > > > > This refcount is not needed _if_ the workqueue is properly canceled at
-> > > > > > > device dismantle,
-> > > > > > > in a synchronous way.
-> > > > > > >
-> > > > > > > I do not see this hdev->rx_work being canceled, maybe this is the real issue.
-> > > > > > >
-> > > > > > > There is a call to drain_workqueue() but this is not enough I think,
-> > > > > > > because hci_recv_frame()
-> > > > > > > can re-arm
-> > > > > > >    queue_work(hdev->workqueue, &hdev->rx_work);
-> > > > > >
-> > > > > > I suspect this likely a refcount problem, we do l2cap_get_chan_by_scid:
-> > > > > >
-> > > > > > /* Find channel with given SCID.
-> > > > > >  * Returns locked channel. */
-> > > > > > static struct l2cap_chan *l2cap_get_chan_by_scid(struct l2cap_conn
-> > > > > > *conn, u16 cid)
-> > > > > >
-> > > > > > So we return a locked channel but that doesn't prevent another thread
-> > > > > > to call l2cap_chan_put which doesn't care about l2cap_chan_lock so
-> > > > > > perhaps we actually need to host a reference while we have the lock,
-> > > > > > at least we do something like that on l2cap_sock.c:
-> > > > > >
-> > > > > > l2cap_chan_hold(chan);
-> > > > > > l2cap_chan_lock(chan);
-> > > > > >
-> > > > > > __clear_chan_timer(chan);
-> > > > > > l2cap_chan_close(chan, ECONNRESET);
-> > > > > > l2cap_sock_kill(sk);
-> > > > > >
-> > > > > > l2cap_chan_unlock(chan);
-> > > > > > l2cap_chan_put(chan);
-> > > > >
-> > > > > Perhaps something like this:
-> > > >
-> > > > I'm struggling to apply this for test:
-> > > >
-> > > >   "error: corrupt patch at line 6"
-> > >
-> > > Check with the attached patch.
-> >
-> > With the patch applied:
-> >
-> > [  188.825418][   T75] refcount_t: addition on 0; use-after-free.
-> > [  188.825418][   T75] refcount_t: addition on 0; use-after-free.
->
-> Looks like the changes just make the issue more visible since we are
-> trying to add a refcount when it is already 0 so this proves the
-> design is not quite right since it is removing the object from the
-> list only when destroying it while we probably need to do it before.
->
-> How about we use kref_get_unless_zero as it appears it was introduced
-> exactly for such cases (patch attached.)
+If you're interested in adding default limits based on memory heuristics and consumption
+I'd be interested to see it.
 
-Looks like I missed a few places like l2cap_global_chan_by_psm so here
-is another version.
+> Of course, performance under heavy stress is a separate concern, and
+> maybe user space monitoring would be a better idea for that.
+> 
 
-> Luiz Augusto von Dentz
+You can do the whole software learning from user-space if needed, not only under heavy stress.
 
+> I know you changed jobs, but did Cumulus Linux have an application to
+> monitor and limit the FDB entry count? Is there some standard
+> application which does this somewhere, or does everybody roll their own?
+> 
 
+I don't see how that is relevant.
 
--- 
-Luiz Augusto von Dentz
+> Anyway, limiting FDB entry count from user space is still theoretically
+> different from not dying. If you need to schedule a task to dispose of
 
---000000000000bf4c2605e3293b50
-Content-Type: text/x-patch; charset="US-ASCII"; name="0001-Bluetooth-L2CAP-WIP.patch"
-Content-Disposition: attachment; filename="0001-Bluetooth-L2CAP-WIP.patch"
-Content-Transfer-Encoding: base64
-Content-ID: <f_l5a30y210>
-X-Attachment-Id: f_l5a30y210
+you can disable learning altogether and add entries from a user-space daemon, ie
+implement complete user-space learning agent, theoretically you can solve it in
+many ways if that's the problem
 
-RnJvbSAyMzU5MzdhYzdhMzlkMTZlNWRhYmJmY2EwYWMxZDU4ZTRjYzgxNGQ5IE1vbiBTZXAgMTcg
-MDA6MDA6MDAgMjAwMQpGcm9tOiBMdWl6IEF1Z3VzdG8gdm9uIERlbnR6IDxsdWl6LnZvbi5kZW50
-ekBpbnRlbC5jb20+CkRhdGU6IFR1ZSwgMjggSnVuIDIwMjIgMTU6NDY6MDQgLTA3MDAKU3ViamVj
-dDogW1BBVENIXSBCbHVldG9vdGg6IEwyQ0FQOiBXSVAKClNpZ25lZC1vZmYtYnk6IEx1aXogQXVn
-dXN0byB2b24gRGVudHogPGx1aXoudm9uLmRlbnR6QGludGVsLmNvbT4KLS0tCiBpbmNsdWRlL25l
-dC9ibHVldG9vdGgvbDJjYXAuaCB8ICAxICsKIG5ldC9ibHVldG9vdGgvbDJjYXBfY29yZS5jICAg
-IHwgNTggKysrKysrKysrKysrKysrKysrKysrKysrKysrLS0tLS0tLS0KIDIgZmlsZXMgY2hhbmdl
-ZCwgNDYgaW5zZXJ0aW9ucygrKSwgMTMgZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvaW5jbHVk
-ZS9uZXQvYmx1ZXRvb3RoL2wyY2FwLmggYi9pbmNsdWRlL25ldC9ibHVldG9vdGgvbDJjYXAuaApp
-bmRleCAzYzRmNTUwZTVhOGIuLjJmNzY2ZTM0MzdjZSAxMDA2NDQKLS0tIGEvaW5jbHVkZS9uZXQv
-Ymx1ZXRvb3RoL2wyY2FwLmgKKysrIGIvaW5jbHVkZS9uZXQvYmx1ZXRvb3RoL2wyY2FwLmgKQEAg
-LTg0Nyw2ICs4NDcsNyBAQCBlbnVtIHsKIH07CiAKIHZvaWQgbDJjYXBfY2hhbl9ob2xkKHN0cnVj
-dCBsMmNhcF9jaGFuICpjKTsKK3N0cnVjdCBsMmNhcF9jaGFuICpsMmNhcF9jaGFuX2hvbGRfdW5s
-ZXNzX3plcm8oc3RydWN0IGwyY2FwX2NoYW4gKmMpOwogdm9pZCBsMmNhcF9jaGFuX3B1dChzdHJ1
-Y3QgbDJjYXBfY2hhbiAqYyk7CiAKIHN0YXRpYyBpbmxpbmUgdm9pZCBsMmNhcF9jaGFuX2xvY2so
-c3RydWN0IGwyY2FwX2NoYW4gKmNoYW4pCmRpZmYgLS1naXQgYS9uZXQvYmx1ZXRvb3RoL2wyY2Fw
-X2NvcmUuYyBiL25ldC9ibHVldG9vdGgvbDJjYXBfY29yZS5jCmluZGV4IDA5ZWNhZjU1NmRlNS4u
-M2U1ZDgxZTk3MWNjIDEwMDY0NAotLS0gYS9uZXQvYmx1ZXRvb3RoL2wyY2FwX2NvcmUuYworKysg
-Yi9uZXQvYmx1ZXRvb3RoL2wyY2FwX2NvcmUuYwpAQCAtMTExLDcgKzExMSw4IEBAIHN0YXRpYyBz
-dHJ1Y3QgbDJjYXBfY2hhbiAqX19sMmNhcF9nZXRfY2hhbl9ieV9zY2lkKHN0cnVjdCBsMmNhcF9j
-b25uICpjb25uLAogfQogCiAvKiBGaW5kIGNoYW5uZWwgd2l0aCBnaXZlbiBTQ0lELgotICogUmV0
-dXJucyBsb2NrZWQgY2hhbm5lbC4gKi8KKyAqIFJldHVybnMgYSByZWZlcmVuY2UgbG9ja2VkIGNo
-YW5uZWwuCisgKi8KIHN0YXRpYyBzdHJ1Y3QgbDJjYXBfY2hhbiAqbDJjYXBfZ2V0X2NoYW5fYnlf
-c2NpZChzdHJ1Y3QgbDJjYXBfY29ubiAqY29ubiwKIAkJCQkJCSB1MTYgY2lkKQogewpAQCAtMTE5
-LDE1ICsxMjAsMTkgQEAgc3RhdGljIHN0cnVjdCBsMmNhcF9jaGFuICpsMmNhcF9nZXRfY2hhbl9i
-eV9zY2lkKHN0cnVjdCBsMmNhcF9jb25uICpjb25uLAogCiAJbXV0ZXhfbG9jaygmY29ubi0+Y2hh
-bl9sb2NrKTsKIAljID0gX19sMmNhcF9nZXRfY2hhbl9ieV9zY2lkKGNvbm4sIGNpZCk7Ci0JaWYg
-KGMpCi0JCWwyY2FwX2NoYW5fbG9jayhjKTsKKwlpZiAoYykgeworCQkvKiBPbmx5IGxvY2sgaWYg
-Y2hhbiByZWZlcmVuY2UgaXMgbm90IDAgKi8KKwkJYyA9IGwyY2FwX2NoYW5faG9sZF91bmxlc3Nf
-emVybyhjKTsKKwkJaWYgKGMpCisJCQlsMmNhcF9jaGFuX2xvY2soYyk7CisJfQogCW11dGV4X3Vu
-bG9jaygmY29ubi0+Y2hhbl9sb2NrKTsKIAogCXJldHVybiBjOwogfQogCiAvKiBGaW5kIGNoYW5u
-ZWwgd2l0aCBnaXZlbiBEQ0lELgotICogUmV0dXJucyBsb2NrZWQgY2hhbm5lbC4KKyAqIFJldHVy
-bnMgYSByZWZlcmVuY2UgbG9ja2VkIGNoYW5uZWwuCiAgKi8KIHN0YXRpYyBzdHJ1Y3QgbDJjYXBf
-Y2hhbiAqbDJjYXBfZ2V0X2NoYW5fYnlfZGNpZChzdHJ1Y3QgbDJjYXBfY29ubiAqY29ubiwKIAkJ
-CQkJCSB1MTYgY2lkKQpAQCAtMTM2LDggKzE0MSwxMiBAQCBzdGF0aWMgc3RydWN0IGwyY2FwX2No
-YW4gKmwyY2FwX2dldF9jaGFuX2J5X2RjaWQoc3RydWN0IGwyY2FwX2Nvbm4gKmNvbm4sCiAKIAlt
-dXRleF9sb2NrKCZjb25uLT5jaGFuX2xvY2spOwogCWMgPSBfX2wyY2FwX2dldF9jaGFuX2J5X2Rj
-aWQoY29ubiwgY2lkKTsKLQlpZiAoYykKLQkJbDJjYXBfY2hhbl9sb2NrKGMpOworCWlmIChjKSB7
-CisJCS8qIE9ubHkgbG9jayBpZiBjaGFuIHJlZmVyZW5jZSBpcyBub3QgMCAqLworCQljID0gbDJj
-YXBfY2hhbl9ob2xkX3VubGVzc196ZXJvKGMpOworCQlpZiAoYykKKwkJCWwyY2FwX2NoYW5fbG9j
-ayhjKTsKKwl9CiAJbXV0ZXhfdW5sb2NrKCZjb25uLT5jaGFuX2xvY2spOwogCiAJcmV0dXJuIGM7
-CkBAIC0xNjIsOCArMTcxLDEyIEBAIHN0YXRpYyBzdHJ1Y3QgbDJjYXBfY2hhbiAqbDJjYXBfZ2V0
-X2NoYW5fYnlfaWRlbnQoc3RydWN0IGwyY2FwX2Nvbm4gKmNvbm4sCiAKIAltdXRleF9sb2NrKCZj
-b25uLT5jaGFuX2xvY2spOwogCWMgPSBfX2wyY2FwX2dldF9jaGFuX2J5X2lkZW50KGNvbm4sIGlk
-ZW50KTsKLQlpZiAoYykKLQkJbDJjYXBfY2hhbl9sb2NrKGMpOworCWlmIChjKSB7CisJCS8qIE9u
-bHkgbG9jayBpZiBjaGFuIHJlZmVyZW5jZSBpcyBub3QgMCAqLworCQljID0gbDJjYXBfY2hhbl9o
-b2xkX3VubGVzc196ZXJvKGMpOworCQlpZiAoYykKKwkJCWwyY2FwX2NoYW5fbG9jayhjKTsKKwl9
-CiAJbXV0ZXhfdW5sb2NrKCZjb25uLT5jaGFuX2xvY2spOwogCiAJcmV0dXJuIGM7CkBAIC00OTcs
-NiArNTEwLDE2IEBAIHZvaWQgbDJjYXBfY2hhbl9ob2xkKHN0cnVjdCBsMmNhcF9jaGFuICpjKQog
-CWtyZWZfZ2V0KCZjLT5rcmVmKTsKIH0KIAorc3RydWN0IGwyY2FwX2NoYW4gKmwyY2FwX2NoYW5f
-aG9sZF91bmxlc3NfemVybyhzdHJ1Y3QgbDJjYXBfY2hhbiAqYykKK3sKKwlCVF9EQkcoImNoYW4g
-JXAgb3JpZyByZWZjbnQgJXUiLCBjLCBrcmVmX3JlYWQoJmMtPmtyZWYpKTsKKworCWlmICgha3Jl
-Zl9nZXRfdW5sZXNzX3plcm8oJmMtPmtyZWYpKQorCQlyZXR1cm4gTlVMTDsKKworCXJldHVybiBj
-OworfQorCiB2b2lkIGwyY2FwX2NoYW5fcHV0KHN0cnVjdCBsMmNhcF9jaGFuICpjKQogewogCUJU
-X0RCRygiY2hhbiAlcCBvcmlnIHJlZmNudCAldSIsIGMsIGtyZWZfcmVhZCgmYy0+a3JlZikpOwpA
-QCAtMTk2OSw3ICsxOTkyLDcgQEAgc3RhdGljIHN0cnVjdCBsMmNhcF9jaGFuICpsMmNhcF9nbG9i
-YWxfY2hhbl9ieV9wc20oaW50IHN0YXRlLCBfX2xlMTYgcHNtLAogCQkJc3JjX21hdGNoID0gIWJh
-Y21wKCZjLT5zcmMsIHNyYyk7CiAJCQlkc3RfbWF0Y2ggPSAhYmFjbXAoJmMtPmRzdCwgZHN0KTsK
-IAkJCWlmIChzcmNfbWF0Y2ggJiYgZHN0X21hdGNoKSB7Ci0JCQkJbDJjYXBfY2hhbl9ob2xkKGMp
-OworCQkJCWMgPSBsMmNhcF9jaGFuX2hvbGRfdW5sZXNzX3plcm8oYyk7CiAJCQkJcmVhZF91bmxv
-Y2soJmNoYW5fbGlzdF9sb2NrKTsKIAkJCQlyZXR1cm4gYzsKIAkJCX0KQEAgLTE5ODQsNyArMjAw
-Nyw3IEBAIHN0YXRpYyBzdHJ1Y3QgbDJjYXBfY2hhbiAqbDJjYXBfZ2xvYmFsX2NoYW5fYnlfcHNt
-KGludCBzdGF0ZSwgX19sZTE2IHBzbSwKIAl9CiAKIAlpZiAoYzEpCi0JCWwyY2FwX2NoYW5faG9s
-ZChjMSk7CisJCWMxID0gbDJjYXBfY2hhbl9ob2xkX3VubGVzc196ZXJvKGMxKTsKIAogCXJlYWRf
-dW5sb2NrKCZjaGFuX2xpc3RfbG9jayk7CiAKQEAgLTQ0NjQsNiArNDQ4Nyw3IEBAIHN0YXRpYyBp
-bmxpbmUgaW50IGwyY2FwX2NvbmZpZ19yZXEoc3RydWN0IGwyY2FwX2Nvbm4gKmNvbm4sCiAKIHVu
-bG9jazoKIAlsMmNhcF9jaGFuX3VubG9jayhjaGFuKTsKKwlsMmNhcF9jaGFuX3B1dChjaGFuKTsK
-IAlyZXR1cm4gZXJyOwogfQogCkBAIC00NTc4LDYgKzQ2MDIsNyBAQCBzdGF0aWMgaW5saW5lIGlu
-dCBsMmNhcF9jb25maWdfcnNwKHN0cnVjdCBsMmNhcF9jb25uICpjb25uLAogCiBkb25lOgogCWwy
-Y2FwX2NoYW5fdW5sb2NrKGNoYW4pOworCWwyY2FwX2NoYW5fcHV0KGNoYW4pOwogCXJldHVybiBl
-cnI7CiB9CiAKQEAgLTUzMDUsNiArNTMzMCw3IEBAIHN0YXRpYyBpbmxpbmUgaW50IGwyY2FwX21v
-dmVfY2hhbm5lbF9yZXEoc3RydWN0IGwyY2FwX2Nvbm4gKmNvbm4sCiAJbDJjYXBfc2VuZF9tb3Zl
-X2NoYW5fcnNwKGNoYW4sIHJlc3VsdCk7CiAKIAlsMmNhcF9jaGFuX3VubG9jayhjaGFuKTsKKwls
-MmNhcF9jaGFuX3B1dChjaGFuKTsKIAogCXJldHVybiAwOwogfQpAQCAtNTM5Nyw2ICs1NDIzLDcg
-QEAgc3RhdGljIHZvaWQgbDJjYXBfbW92ZV9jb250aW51ZShzdHJ1Y3QgbDJjYXBfY29ubiAqY29u
-biwgdTE2IGljaWQsIHUxNiByZXN1bHQpCiAJfQogCiAJbDJjYXBfY2hhbl91bmxvY2soY2hhbik7
-CisJbDJjYXBfY2hhbl9wdXQoY2hhbik7CiB9CiAKIHN0YXRpYyB2b2lkIGwyY2FwX21vdmVfZmFp
-bChzdHJ1Y3QgbDJjYXBfY29ubiAqY29ubiwgdTggaWRlbnQsIHUxNiBpY2lkLApAQCAtNTQyNiw2
-ICs1NDUzLDcgQEAgc3RhdGljIHZvaWQgbDJjYXBfbW92ZV9mYWlsKHN0cnVjdCBsMmNhcF9jb25u
-ICpjb25uLCB1OCBpZGVudCwgdTE2IGljaWQsCiAJbDJjYXBfc2VuZF9tb3ZlX2NoYW5fY2ZtKGNo
-YW4sIEwyQ0FQX01DX1VOQ09ORklSTUVEKTsKIAogCWwyY2FwX2NoYW5fdW5sb2NrKGNoYW4pOwor
-CWwyY2FwX2NoYW5fcHV0KGNoYW4pOwogfQogCiBzdGF0aWMgaW50IGwyY2FwX21vdmVfY2hhbm5l
-bF9yc3Aoc3RydWN0IGwyY2FwX2Nvbm4gKmNvbm4sCkBAIC01NDg5LDYgKzU1MTcsNyBAQCBzdGF0
-aWMgaW50IGwyY2FwX21vdmVfY2hhbm5lbF9jb25maXJtKHN0cnVjdCBsMmNhcF9jb25uICpjb25u
-LAogCWwyY2FwX3NlbmRfbW92ZV9jaGFuX2NmbV9yc3AoY29ubiwgY21kLT5pZGVudCwgaWNpZCk7
-CiAKIAlsMmNhcF9jaGFuX3VubG9jayhjaGFuKTsKKwlsMmNhcF9jaGFuX3B1dChjaGFuKTsKIAog
-CXJldHVybiAwOwogfQpAQCAtNTUyNCw2ICs1NTUzLDcgQEAgc3RhdGljIGlubGluZSBpbnQgbDJj
-YXBfbW92ZV9jaGFubmVsX2NvbmZpcm1fcnNwKHN0cnVjdCBsMmNhcF9jb25uICpjb25uLAogCX0K
-IAogCWwyY2FwX2NoYW5fdW5sb2NrKGNoYW4pOworCWwyY2FwX2NoYW5fcHV0KGNoYW4pOwogCiAJ
-cmV0dXJuIDA7CiB9CkBAIC01ODk2LDEyICs1OTI2LDExIEBAIHN0YXRpYyBpbmxpbmUgaW50IGwy
-Y2FwX2xlX2NyZWRpdHMoc3RydWN0IGwyY2FwX2Nvbm4gKmNvbm4sCiAJaWYgKGNyZWRpdHMgPiBt
-YXhfY3JlZGl0cykgewogCQlCVF9FUlIoIkxFIGNyZWRpdHMgb3ZlcmZsb3ciKTsKIAkJbDJjYXBf
-c2VuZF9kaXNjb25uX3JlcShjaGFuLCBFQ09OTlJFU0VUKTsKLQkJbDJjYXBfY2hhbl91bmxvY2so
-Y2hhbik7CiAKIAkJLyogUmV0dXJuIDAgc28gdGhhdCB3ZSBkb24ndCB0cmlnZ2VyIGFuIHVubmVj
-ZXNzYXJ5CiAJCSAqIGNvbW1hbmQgcmVqZWN0IHBhY2tldC4KIAkJICovCi0JCXJldHVybiAwOwor
-CQlnb3RvIHVubG9jazsKIAl9CiAKIAljaGFuLT50eF9jcmVkaXRzICs9IGNyZWRpdHM7CkBAIC01
-OTEyLDcgKzU5NDEsOSBAQCBzdGF0aWMgaW5saW5lIGludCBsMmNhcF9sZV9jcmVkaXRzKHN0cnVj
-dCBsMmNhcF9jb25uICpjb25uLAogCWlmIChjaGFuLT50eF9jcmVkaXRzKQogCQljaGFuLT5vcHMt
-PnJlc3VtZShjaGFuKTsKIAordW5sb2NrOgogCWwyY2FwX2NoYW5fdW5sb2NrKGNoYW4pOworCWwy
-Y2FwX2NoYW5fcHV0KGNoYW4pOwogCiAJcmV0dXJuIDA7CiB9CkBAIC03NTk4LDYgKzc2MjksNyBA
-QCBzdGF0aWMgdm9pZCBsMmNhcF9kYXRhX2NoYW5uZWwoc3RydWN0IGwyY2FwX2Nvbm4gKmNvbm4s
-IHUxNiBjaWQsCiAKIGRvbmU6CiAJbDJjYXBfY2hhbl91bmxvY2soY2hhbik7CisJbDJjYXBfY2hh
-bl9wdXQoY2hhbik7CiB9CiAKIHN0YXRpYyB2b2lkIGwyY2FwX2Nvbmxlc3NfY2hhbm5lbChzdHJ1
-Y3QgbDJjYXBfY29ubiAqY29ubiwgX19sZTE2IHBzbSwKQEAgLTgwODYsNyArODExOCw3IEBAIHN0
-YXRpYyBzdHJ1Y3QgbDJjYXBfY2hhbiAqbDJjYXBfZ2xvYmFsX2ZpeGVkX2NoYW4oc3RydWN0IGwy
-Y2FwX2NoYW4gKmMsCiAJCWlmIChzcmNfdHlwZSAhPSBjLT5zcmNfdHlwZSkKIAkJCWNvbnRpbnVl
-OwogCi0JCWwyY2FwX2NoYW5faG9sZChjKTsKKwkJYyA9IGwyY2FwX2NoYW5faG9sZF91bmxlc3Nf
-emVybyhjKTsKIAkJcmVhZF91bmxvY2soJmNoYW5fbGlzdF9sb2NrKTsKIAkJcmV0dXJuIGM7CiAJ
-fQotLSAKMi4zNS4zCgo=
---000000000000bf4c2605e3293b50--
+> the weight while the ship is sinking from softirq context, you may never
+> get to actually schedule that task in time. AFAIK the bridge UAPI doesn't
+> expose a pre-programmed limit, so what needs to be done is for user
+> space to manually delete entries until the count falls below the limit.
+
+That is a single case speculation, it depends on how it was implemented in the first place. You
+can disable learning and have more than enough time to deal with it.
+
+I already said it's ok to add hard configurable limits if they're done properly performance-wise.
+Any distribution can choose to set some default limits after the option exists.
+
