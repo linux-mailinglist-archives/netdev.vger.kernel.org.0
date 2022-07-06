@@ -2,90 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AFAAB56822E
-	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 10:56:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42EC156822C
+	for <lists+netdev@lfdr.de>; Wed,  6 Jul 2022 10:56:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232440AbiGFI4H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jul 2022 04:56:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36092 "EHLO
+        id S232332AbiGFI4F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jul 2022 04:56:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232426AbiGFI4G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 04:56:06 -0400
-Received: from m1564.mail.126.com (m1564.mail.126.com [220.181.15.64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0480B237CC
-        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 01:56:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=7A14I
-        vJ3BlG4gNz1oUQXUNteQRyd88hui/pA/Ss2GWw=; b=j5DNZ2HGQou+iylqgWek+
-        a0SHhOj6gJOAt788/a52GO/L7KVaf3svY63XLJOhvPEgY/6QWjMbbeGVbdhB242d
-        xdINGu9pRBbbBgrr2xXccjJjPfFVbTb3BEJxLfdD3n4Bxqc9i63CVYv/ALDGVbDB
-        5qYj9pi2ZJ+7XTntO0VpjA=
-Received: from windhl$126.com ( [124.16.139.61] ) by ajax-webmail-wmsvr64
- (Coremail) ; Wed, 6 Jul 2022 16:55:37 +0800 (CST)
-X-Originating-IP: [124.16.139.61]
-Date:   Wed, 6 Jul 2022 16:55:37 +0800 (CST)
-From:   "Liang He" <windhl@126.com>
-To:     "Jakub Kicinski" <kuba@kernel.org>
-Cc:     davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        netdev@vger.kernel.org
-Subject: Re:Re: [PATCH] ftgmac100: Hold reference returned by
- of_get_child_by_name()
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20220113(9671e152)
- Copyright (c) 2002-2022 www.mailtech.cn 126com
-In-Reply-To: <20220705184805.2619caca@kernel.org>
-References: <20220704151819.279513-1-windhl@126.com>
- <20220705184805.2619caca@kernel.org>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=GBK
+        with ESMTP id S230320AbiGFI4F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 04:56:05 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1562F2497D;
+        Wed,  6 Jul 2022 01:56:04 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id e40so18387575eda.2;
+        Wed, 06 Jul 2022 01:56:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=TiSbYoSDE0lMlfqj+l2CCSMOXHr+cfG4LYMnjViLfKg=;
+        b=iZgloJtbC+6whSU9AepPlzjoWEwtuEoHIfHnGtNlQ4C7UtGfnEEmVwBmNUQ+hp8QPE
+         srctWeLgf/fotpb89l8rI9lg4mQnr87w7+3vinjVE3RJNZRD0kzVD+wvsw7UaK+t8/s1
+         st8AI91D07QbVN2WkuVWV8CPl3yJX9BZwJFdkx0W5TdbJV2D1CKOCqCSvlq6wN6RqaPf
+         UUjR7td8tkJqcXdBiPbDT5qzW5f7hWK/dJbmdUy1js1wwVwqnvzOz88LxLXf05GrHzur
+         AKLeY/3k9Tub41UOdBMxbshm3a3Agu7xGvCJZt+FuehosHVD+1D5nfFrAlxRw5PKNxdD
+         XPoQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=TiSbYoSDE0lMlfqj+l2CCSMOXHr+cfG4LYMnjViLfKg=;
+        b=7zOHLWKAPXgGCodGXBfeno64XrpFtSqM2ngQxGuB/S9tfbuqZcSiLMM1LSlZfWtonN
+         JoVXvXJKR/jpswYL2sgkC6TcT+iLhQaPagGVSXojKRFCCq/d8JGdbF3sAzZFjoOw1aAX
+         bXzt/kuLUIAf/q1/NzdMPSow4cBjCyyvHndK572UbA2fTJFJ6r039zkOtN8JaoLj9Fc/
+         RX9LiyEpWgqdCQTgw3nxtvzJx2h+5nnJqwWjF/IWntcw8Xt/B4UtuGI5v6bm5xqmBtjM
+         rmCirfQgw61LN3413VnP4z9omVywWYVWd/1dtrTOWKG34WwyHvnFYTGr1TuEQ6AukDdd
+         9lMQ==
+X-Gm-Message-State: AJIora9kbQ609EjCdC8LD2XfDFhQJmKzfHK5CB6g5DoeiupSWQd72gkW
+        qgX7Nlyamr98WiWQHv9MbrM=
+X-Google-Smtp-Source: AGRyM1sX+A6RqHnQ5QmWzoiAncEiL9RQsnExvWaj8wwcC2AJnUx5vD9KmRmIFnuBHDzZTV1CprW1Hw==
+X-Received: by 2002:aa7:ce8a:0:b0:43a:7b0e:9950 with SMTP id y10-20020aa7ce8a000000b0043a7b0e9950mr9208313edv.58.1657097762610;
+        Wed, 06 Jul 2022 01:56:02 -0700 (PDT)
+Received: from skbuf ([188.26.185.61])
+        by smtp.gmail.com with ESMTPSA id i10-20020a170906698a00b00705fa7087bbsm17260818ejr.142.2022.07.06.01.56.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Jul 2022 01:56:01 -0700 (PDT)
+Date:   Wed, 6 Jul 2022 11:55:59 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Hans S <schultz.hans@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Hans Schultz <schultz.hans+netdev@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH V3 net-next 3/4] net: dsa: mv88e6xxx: mac-auth/MAB
+ implementation
+Message-ID: <20220706085559.oyvzijcikivemfkg@skbuf>
+References: <20220524152144.40527-1-schultz.hans+netdev@gmail.com>
+ <20220524152144.40527-4-schultz.hans+netdev@gmail.com>
+ <20220627180557.xnxud7d6ol22lexb@skbuf>
+ <CAKUejP7ugMB9d3MVX3m9Brw12_ocFoT+nuJJucYdQH70kzC7=w@mail.gmail.com>
 MIME-Version: 1.0
-Message-ID: <41ae7b8e.5fda.181d2b8d4ff.Coremail.windhl@126.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: QMqowAAXJnIKTsVi7KZGAA--.62378W
-X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbi2hs2F1uwMWnlzQACs5
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_INVALID,
-        DKIM_SIGNED,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKUejP7ugMB9d3MVX3m9Brw12_ocFoT+nuJJucYdQH70kzC7=w@mail.gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-CgoKQXQgMjAyMi0wNy0wNiAwOTo0ODowNSwgIkpha3ViIEtpY2luc2tpIiA8a3ViYUBrZXJuZWwu
-b3JnPiB3cm90ZToKPk9uIE1vbiwgIDQgSnVsIDIwMjIgMjM6MTg6MTkgKzA4MDAgTGlhbmcgSGUg
-d3JvdGU6Cj4+IEluIGZ0Z21hYzEwMF9wcm9iZSgpLCB3ZSBzaG91bGQgaG9sZCB0aGUgcmVmZXJu
-ZWNlIHJldHVybmVkIGJ5Cj4+IG9mX2dldF9jaGlsZF9ieV9uYW1lKCkgYW5kIHVzZSBpdCB0byBj
-YWxsIG9mX25vZGVfcHV0KCkgZm9yCj4+IHJlZmVyZW5jZSBiYWxhbmNlLgo+PiAKPj4gU2lnbmVk
-LW9mZi1ieTogTGlhbmcgSGUgPHdpbmRobEAxMjYuY29tPgo+PiAtLS0KPj4gIGRyaXZlcnMvbmV0
-L2V0aGVybmV0L2ZhcmFkYXkvZnRnbWFjMTAwLmMgfCA2ICsrKystLQo+PiAgMSBmaWxlIGNoYW5n
-ZWQsIDQgaW5zZXJ0aW9ucygrKSwgMiBkZWxldGlvbnMoLSkKPj4gCj4+IGRpZmYgLS1naXQgYS9k
-cml2ZXJzL25ldC9ldGhlcm5ldC9mYXJhZGF5L2Z0Z21hYzEwMC5jIGIvZHJpdmVycy9uZXQvZXRo
-ZXJuZXQvZmFyYWRheS9mdGdtYWMxMDAuYwo+PiBpbmRleCA1MjMxODE4OTQzYzYuLmU1MGJkN2Jl
-YjA5YiAxMDA2NDQKPj4gLS0tIGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvZmFyYWRheS9mdGdtYWMx
-MDAuYwo+PiArKysgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9mYXJhZGF5L2Z0Z21hYzEwMC5jCj4+
-IEBAIC0xNzcwLDcgKzE3NzAsNyBAQCBzdGF0aWMgaW50IGZ0Z21hYzEwMF9wcm9iZShzdHJ1Y3Qg
-cGxhdGZvcm1fZGV2aWNlICpwZGV2KQo+PiAgCWludCBpcnE7Cj4+ICAJc3RydWN0IG5ldF9kZXZp
-Y2UgKm5ldGRldjsKPj4gIAlzdHJ1Y3QgZnRnbWFjMTAwICpwcml2Owo+PiAtCXN0cnVjdCBkZXZp
-Y2Vfbm9kZSAqbnA7Cj4+ICsJc3RydWN0IGRldmljZV9ub2RlICpucCwgKmNoaWxkX25wOwo+PiAg
-CWludCBlcnIgPSAwOwo+PiAgCj4+ICAJcmVzID0gcGxhdGZvcm1fZ2V0X3Jlc291cmNlKHBkZXYs
-IElPUkVTT1VSQ0VfTUVNLCAwKTsKPj4gQEAgLTE4ODMsNyArMTg4Myw3IEBAIHN0YXRpYyBpbnQg
-ZnRnbWFjMTAwX3Byb2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpCj4+ICAKPj4gIAkJ
-LyogRGlzcGxheSB3aGF0IHdlIGZvdW5kICovCj4+ICAJCXBoeV9hdHRhY2hlZF9pbmZvKHBoeSk7
-Cj4+IC0JfSBlbHNlIGlmIChucCAmJiAhb2ZfZ2V0X2NoaWxkX2J5X25hbWUobnAsICJtZGlvIikp
-IHsKPj4gKwl9IGVsc2UgaWYgKG5wICYmICEoY2hpbGRfbnAgPSBvZl9nZXRfY2hpbGRfYnlfbmFt
-ZShucCwgIm1kaW8iKSkpIHsKPj4gIAkJLyogU3VwcG9ydCBsZWdhY3kgQVNQRUVEIGRldmljZXRy
-ZWUgZGVzY3JpcHRpb25zIHRoYXQgZGVjcmliZSBhCj4+ICAJCSAqIE1BQyB3aXRoIGFuIGVtYmVk
-ZGVkIE1ESU8gY29udHJvbGxlciBidXQgaGF2ZSBubyAibWRpbyIKPj4gIAkJICogY2hpbGQgbm9k
-ZS4gQXV0b21hdGljYWxseSBzY2FuIHRoZSBNRElPIGJ1cyBmb3IgYXZhaWxhYmxlCj4+IEBAIC0x
-OTAxLDYgKzE5MDEsOCBAQCBzdGF0aWMgaW50IGZ0Z21hYzEwMF9wcm9iZShzdHJ1Y3QgcGxhdGZv
-cm1fZGV2aWNlICpwZGV2KQo+PiAgCQl9Cj4+ICAKPj4gIAl9Cj4+ICsJaWYgKGNoaWxkX25wKQo+
-PiArCQlvZl9ub2RlX3B1dChjaGlsZF9ucCk7Cj4KPlNpbmNlIHdlIGRvbid0IGNhcmUgYWJvdXQg
-dGhlIHZhbHVlIG9mIHRoZSBub2RlIHdlIHNob3VsZCBhZGQgYSBoZWxwZXIKPndoaWNoIGNoZWNr
-cyBmb3IgcHJlc2VuY2Ugb2YgdGhlIG5vZGUgYW5kIHJlbGVhc2VzIHRoZSByZWZlcmVuY2UsCj5y
-YXRoZXIgdGhhbiBoYXZlIHRvIGRvIHRoYXQgaW4gdGhpcyBsYXJnZSBmdW5jdGlvbi4KPgo+UGxl
-YXNlIGFsc28gYWRkIGEgRml4ZXMgdGFnLgoKCkhpLCBKYWt1YiwKCkNhbiB5b3UgdGVsbCBtZSB3
-aGVyZSB0byBhZGQgc3VjaCBoZWxwZXI/Cgp5b3UgbWVhbiBhZGQgYSBoZWxwZXIgaW4gb2YuaCBm
-b3IgY29tbW9uIHVzYXNnZSBvciBqdXN0IGFkZCBpdCBpbiB0aGlzIGZpbGU/CgpUaGFua3MsCgpM
-aWFuZwo=
+On Tue, Jun 28, 2022 at 02:26:43PM +0200, Hans S wrote:
+> > Dumb question: if you only flush the locked entries at fast age if the
+> > port is locked, then what happens with the existing locked entries if
+> > the port becomes unlocked before an FDB flush takes place?
+> > Shouldn't mv88e6xxx_port_set_lock() call mv88e6xxx_atu_locked_entry_flush()
+> > too?
+> 
+> That was my first thought too, but the way the flags are handled with the mask etc, does so that
+> mv88e6xxx_port_set_lock() is called when other flags change. It could be done by the transition
+> from locked->unlocked by checking if the port is locked already.
+
+Why does mv88e6xxx_port_set_lock() get called when other flags change?
+
+> On the other hand, the timers will timeout and the entries will be removed anyhow.
+
+> > > +static void mv88e6xxx_atu_locked_entry_timer_work(struct atu_locked_entry *ale)
+> >
+> > Please find a more adequate name for this function.
+> 
+> Any suggestions?
+
+Not sure. It depends on whether you leave just the logic to delete a
+locked ATU entry, or also the switchdev FDB_DEL_TO_BRIDGE notifier.
+In any case, pick a name that reflects what it does. Something with
+locked_entry_delete() can't be too wrong.
+
+> > From the discussion with Ido and Nikolay I get the impression that
+> > you're not doing the right thing here either, notifying a
+> > SWITCHDEV_FDB_DEL_TO_BRIDGE from what is effectively the
+> > SWITCHDEV_FDB_DEL_TO_DEVICE handler (port_fdb_del).
+> 
+> Hmm, my experience tells me that much is opposite the normal
+> conventions when dealing with
+> locked ports, as there was never switchdev notifications from the
+> driver to the bridge before, but
+> that is needed to keep ATU and FDB entries in sync.
+
+On delete you mean? So the bridge signals switchdev a deletion of a
+locked FDB entry (as I pointed out, this function gets indirectly called
+from port_fdb_del), but it won't get deleted until switchdev signals it
+back, is what you're saying?
+
+> > Why is the rtnl_unlock() outside the switch statement but the rtnl_lock() inside?
+> > Not to mention, the dsa_port_to_bridge_port() call needs to be under rtnl_lock().
+> 
+> Just a small optimization as I also have another case of the switch
+> (only one switch case if
+> you didn't notice) belonging to the next patch set regarding dynamic
+> ATU entries.
+
+What kind of optimization are you even talking about? Please get rid of
+coding patterns like this, sorry.
+
+> > Please, no "if (chiplock) mutex_lock()" hacks. Just lockdep_assert_held(&chip->reg_lock),
+> > which serves both for documentation and for validation purposes, ensure
+> > the lock is always taken at the caller (which in this case is super easy)
+> > and move on.
+> 
+> As I am calling the function in if statement checks, it would make
+> that code more messy, while with
+> this approach the function can be called from anywhere. I also looked
+> at having two functions, with
+> one being a wrapper function taking the lock and calling the other...
+
+There are many functions in mv88e6xxx that require the reg_lock to be
+held, there's nothing new or special here.
+
+> >
+> > > +
+> > > +     if (mv88e6xxx_port_read(chip, port, MV88E6XXX_PORT_CTL0, &reg))
+> > > +             goto out;
+> >
+> > It would be good to actually propagate the error to the caller and
+> > "locked" via a pass-by-reference bool pointer argument, not just say
+> > that I/O errors mean that the port is unlocked.
+> 
+> Again the wish to be able to call it from if statement checks,.
+> 
+> > > +     reg &= MV88E6XXX_PORT_ASSOC_VECTOR_PAV_MASK;
+> > > +     if (locked) {
+> > > +             reg |= MV88E6XXX_PORT_ASSOC_VECTOR_IGNORE_WRONG |
+> > > +                     MV88E6XXX_PORT_ASSOC_VECTOR_LOCKED_PORT |
+> > > +                     MV88E6XXX_PORT_ASSOC_VECTOR_INT_AGE_OUT |
+> > > +                     MV88E6XXX_PORT_ASSOC_VECTOR_HOLD_AT_1;
+> >
+> > I'd suggest aligning these macros vertically.
+> 
+> They are according to the Linux kernel coding standard wrt indentation afaik.
+
+Compare:
+
+		reg |= MV88E6XXX_PORT_ASSOC_VECTOR_IGNORE_WRONG |
+			MV88E6XXX_PORT_ASSOC_VECTOR_LOCKED_PORT |
+			MV88E6XXX_PORT_ASSOC_VECTOR_INT_AGE_OUT |
+			MV88E6XXX_PORT_ASSOC_VECTOR_HOLD_AT_1;
+
+with:
+
+		reg |= MV88E6XXX_PORT_ASSOC_VECTOR_IGNORE_WRONG |
+		       MV88E6XXX_PORT_ASSOC_VECTOR_LOCKED_PORT |
+		       MV88E6XXX_PORT_ASSOC_VECTOR_INT_AGE_OUT |
+		       MV88E6XXX_PORT_ASSOC_VECTOR_HOLD_AT_1;
