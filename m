@@ -2,106 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E9A756986D
-	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 04:56:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D0DED569872
+	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 05:00:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234841AbiGGC4X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jul 2022 22:56:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57866 "EHLO
+        id S234896AbiGGDAR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jul 2022 23:00:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234687AbiGGC4W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 22:56:22 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 171C02F647;
-        Wed,  6 Jul 2022 19:56:21 -0700 (PDT)
-Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Ldgwl36WZzcmy1;
-        Thu,  7 Jul 2022 10:54:15 +0800 (CST)
-Received: from [10.67.111.192] (10.67.111.192) by
- kwepemi500013.china.huawei.com (7.221.188.120) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 7 Jul 2022 10:56:17 +0800
-Message-ID: <cb0966da-c8e8-6c08-4204-327ce7f11576@huawei.com>
-Date:   Thu, 7 Jul 2022 10:56:16 +0800
+        with ESMTP id S234880AbiGGDAQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 23:00:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A66A02F66A
+        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 20:00:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4305D62154
+        for <netdev@vger.kernel.org>; Thu,  7 Jul 2022 03:00:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 94DC8C341CA;
+        Thu,  7 Jul 2022 03:00:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657162813;
+        bh=hyOFysqIq5/4O0E1SplOOFrjG+3bJVNSCk27OTHBhgE=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=U5xvNbcfn8kIfZkNQ5ooD9yJ++WBrHKQYrK7AWhpXCBpeekVP14V4mu9f/xzNaHOR
+         wv9hwSrp1L3bpG60uvTMLeI3gDsVsnH6ztFdUkfC3nBGJ+vxeGaSv5TbkZa1Sje+FY
+         tdPPCJqFX+E9C+H2TNToanhkmVWRJ5vR/lIXutOG7TLhKeW+i4Ilci3T1Dq06LAra/
+         CZNMw6SjMJz4I17qsCGIedb96aVHxpqRbMzQRgjP5UO6i+N/M7kuwzaT7jYeJ9AarR
+         3sniedGL1iX1DT80NTlZpBLfeT+fGXfcKPMvwJFXBFWyhJKFG/n5JxPhsMw6LZnFol
+         SW55HhJyGVQbQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 76B79E45BDF;
+        Thu,  7 Jul 2022 03:00:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH bpf-next v6 0/4] bpf trampoline for arm64
-Content-Language: en-US
-To:     Will Deacon <will@kernel.org>,
-        Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-CC:     Daniel Borkmann <daniel@iogearbox.net>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Mark Rutland <Mark.Rutland@arm.com>,
-        Catalin Marinas <Catalin.Marinas@arm.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Zi Shen Lim <zlim.lnx@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        James Morse <James.Morse@arm.com>,
-        Hou Tao <houtao1@huawei.com>,
-        Jason Wang <wangborong@cdjrlc.com>
-References: <20220625161255.547944-1-xukuohai@huawei.com>
- <d3c1f1ed-353a-6af2-140d-c7051125d023@iogearbox.net>
- <20220705160045.GA1240@willie-the-truck> <YsWzfPUmgtRZi/ny@myrica>
- <20220706161125.GB3204@willie-the-truck>
-From:   Xu Kuohai <xukuohai@huawei.com>
-In-Reply-To: <20220706161125.GB3204@willie-the-truck>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.111.192]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- kwepemi500013.china.huawei.com (7.221.188.120)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2 net] r8169: fix accessing unset transport header
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165716281348.11165.7112653671884631678.git-patchwork-notify@kernel.org>
+Date:   Thu, 07 Jul 2022 03:00:13 +0000
+References: <1b2c2b29-3dc0-f7b6-5694-97ec526d51a0@gmail.com>
+In-Reply-To: <1b2c2b29-3dc0-f7b6-5694-97ec526d51a0@gmail.com>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, nic_swsd@realtek.com,
+        netdev@vger.kernel.org, erhard_f@mailbox.org
+X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/7/2022 12:11 AM, Will Deacon wrote:
-> On Wed, Jul 06, 2022 at 05:08:49PM +0100, Jean-Philippe Brucker wrote:
->> On Tue, Jul 05, 2022 at 05:00:46PM +0100, Will Deacon wrote:
->>>> Given you've been taking a look and had objections in v5, would be great if
->>> you
->>>> can find some cycles for this v6.
->>>
->>> Mark's out at the moment, so I wouldn't hold this series up pending his ack.
->>> However, I agree that it would be good if _somebody_ from the Arm side can
->>> give it the once over, so I've added Jean-Philippe to cc in case he has time
->>> for a quick review.
->>
->> I'll take a look. Sorry for not catching this earlier, all versions of the
->> series somehow ended up in my spams :/
+Hello:
+
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Tue, 5 Jul 2022 21:15:22 +0200 you wrote:
+> 66e4c8d95008 ("net: warn if transport header was not set") added
+> a check that triggers a warning in r8169, see [0].
 > 
-> Yeah, same here. It was only Daniel's mail that hit my inbox!
+> The commit referenced in the Fixes tag refers to the change from
+> which the patch applies cleanly, there's nothing wrong with this
+> commit. It seems the actual issue (not bug, because the warning
+> is harmless here) was introduced with bdfa4ed68187
+> ("r8169: use Giant Send").
 > 
-> Will
-> .
+> [...]
 
-Sorry, there is a misconfiguration in the huawei.com mail server:
+Here is the summary with links:
+  - [v2,net] r8169: fix accessing unset transport header
+    https://git.kernel.org/netdev/net/c/faa4e04e5e14
 
-https://lore.kernel.org/all/20220523152516.7sr247i3bzwhr44w@quack3.lan/
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Our IT admins are working on this issue and hopefully they'll fix it soon.
+
