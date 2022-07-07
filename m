@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FE0F56A1A6
-	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 13:59:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DA5756A1A8
+	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 13:59:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235574AbiGGLwl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S235578AbiGGLwl (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Thu, 7 Jul 2022 07:52:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55594 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234745AbiGGLwH (ORCPT
+        with ESMTP id S235494AbiGGLwH (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 07:52:07 -0400
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC97B53D1A;
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B454353D22;
         Thu,  7 Jul 2022 04:52:04 -0700 (PDT)
-Received: by mail-wr1-x42d.google.com with SMTP id s1so25951976wra.9;
+Received: by mail-wr1-x432.google.com with SMTP id d16so19627093wrv.10;
         Thu, 07 Jul 2022 04:52:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=nKvP/tlFDORXU0+1GtpYo0kp5Sigy9sy1TUkQv+AqGw=;
-        b=IlQvwQLcBp1TFy85nrpoRuNnqpauFPbAMe+/SJzmuF3ItdThMzNPD3hwMfyQheY1nN
-         6D/megvkswY8KnawUHzkbjVSESP5q+fGHZjd3cnN6T09Lq7LFUK+FPPPEK0EGRjygxqj
-         nVSytXcGh0lDxOuTPn7KZnPPGrSFXJkIPgTZd9mfEb1zbbFFs8Z7p03i9wPgY5lflxS5
-         GJYI1DO8LNm2009jQkL5lt8j8k6tSokhl0U4ni1vvwzldlKOtqF9n040R7v8tv4vtzPR
-         lZWLnWEpcsMucveP5KPrxuDj4/vxRS7NCfFoLL1CK+UTuljI65tIxmv5C3fdKJcy3AAM
-         BJTw==
+        bh=bseFqCjtJuCCHP0G+Vx7dbSlO7wFxBUtK6JlLKCdTIA=;
+        b=ZuF1yxoQAZWvMNg6/Bqiyaun6f4IJlBiPmFohxxOaMO72o9L54yj9bIndOcLFSn7p+
+         1XOj8dfOJnNvIDNTz2yEMvln51F8K0GlfpZXqH0VaIy0IKSS7/PrObSc3jNwCq9z/vLF
+         3ca245tOMWGW73tB/7EZ08oA7nsMlZFIW/cxYG4E6tWlTsoS+n3uHWkgPNoxlz5dxAkQ
+         1wjfxdT3UazHGsI+kxJtS7llIF9QTlRonOyISVdfdV9RMNLUgDMmdbST8+AKNKY8rE4+
+         VP6uIKrcpbPLbZS+Hi2ZgxoGPfnMlu89iMzEDJ0uTv4yNYrgsAWtIDgOxB6dXwnaRt5c
+         ck5g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=nKvP/tlFDORXU0+1GtpYo0kp5Sigy9sy1TUkQv+AqGw=;
-        b=8GKQTfU2koq5ZnB/i8+swihMh0WqroeY6fK4OSKpKv1D0IDeIFo2L0YQpEgmrc2/hB
-         V/7YZgyZTq1nioZ1UdPhss0/CROGZ4AA/M81Ts6+jJbmNbpkv6wsoYalsUJgx+qDYPxW
-         7Qcfd/ZH2vb8u1SxG0QQmi2ZkEDqmsKSv3ZaaRXgiKD9xr3qEUmSfA45lWs21wyuyXzD
-         mQnJ1lOa5ju376S2MgzEvFe+skUsYI+zxg48hAT40E6XXSuwaD0DKNGDxlYebWKqX0dk
-         7CULsTyAnbewY+TnWq1p5nc0HB+pvt5peMs6oHUU4YHU2mShUiQnY5l/8ypU4eMpc7Yq
-         5ibQ==
-X-Gm-Message-State: AJIora/R1SwRhdkmXb9eLFDN+AS/KxLYnlxlbJHEuXLF/tBEbrW6+lCm
-        TERkF+kcRimX5WjyrY+8du7j+XH6I1oP8Ei8uB8=
-X-Google-Smtp-Source: AGRyM1vmsqbh1WZ5vzwSxzUp/0pXMXbR65g1XEEWufRl1tfeowq9oHi4cauhB4TpMpOsDHisvd/Oqg==
-X-Received: by 2002:a5d:6b81:0:b0:21d:72a8:73c9 with SMTP id n1-20020a5d6b81000000b0021d72a873c9mr13025161wrx.630.1657194722831;
-        Thu, 07 Jul 2022 04:52:02 -0700 (PDT)
+        bh=bseFqCjtJuCCHP0G+Vx7dbSlO7wFxBUtK6JlLKCdTIA=;
+        b=d4M1pNTR0KZ6trAYuUGPvBQWrIfTGLKdG/W9KX/Wwao/EhXP/AVzrWMwrw/DxcyoiO
+         0d3cYggRsMQ3MvvA9ZshK7KPs2y/F1iFQkfRqsKGnzPOwkGrW8X3w0Z9bl2vmgJPo/lo
+         oyxcuIiz/SF9wIReysW/Bdl1ZNuLda1Lg+0PdLuz/2WGeQffk+Kym0fMKgBa81w8ZDuL
+         nRf8gW5Y1xZq0vUwC+giLu8ucD4WTyF43zHoO1d7ziLrWc01y+jNvPQINMv/f3TW3BSk
+         7ehx67LCKOyyge2KCpwSx7fpXA+yxO8hvSWlNnNlLpUsGXJXgXgJ2Vviv0JLvFlQzDGc
+         UW9w==
+X-Gm-Message-State: AJIora9DOjUvJVPLxfAnfdLccVTFnE/xJYxRCs1fRoi1Uo83FYQlov0p
+        6p9Px+wNzOFVu1V8syvTpjgRVgUjZrc+7EKWzn4=
+X-Google-Smtp-Source: AGRyM1ul0scktUDMsOh6Er/U8WXq2fu1lln5pxLJVW4oesKe8Dip0gU4+L6Wb9irRzKYJDnaKuhT/Q==
+X-Received: by 2002:a05:6000:911:b0:21d:2100:b97b with SMTP id bz17-20020a056000091100b0021d2100b97bmr42788178wrb.649.1657194723943;
+        Thu, 07 Jul 2022 04:52:03 -0700 (PDT)
 Received: from 127.0.0.1localhost (188.28.125.106.threembb.co.uk. [188.28.125.106])
-        by smtp.gmail.com with ESMTPSA id u2-20020a5d5142000000b0021b966abc19sm37982131wrt.19.2022.07.07.04.52.01
+        by smtp.gmail.com with ESMTPSA id u2-20020a5d5142000000b0021b966abc19sm37982131wrt.19.2022.07.07.04.52.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jul 2022 04:52:02 -0700 (PDT)
+        Thu, 07 Jul 2022 04:52:03 -0700 (PDT)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     io-uring@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
@@ -56,9 +56,9 @@ Cc:     "David S . Miller" <davem@davemloft.net>,
         Willem de Bruijn <willemb@google.com>,
         Jens Axboe <axboe@kernel.dk>, David Ahern <dsahern@kernel.org>,
         kernel-team@fb.com, Pavel Begunkov <asml.silence@gmail.com>
-Subject: [PATCH net-next v4 14/27] io_uring: add zc notification infrastructure
-Date:   Thu,  7 Jul 2022 12:49:45 +0100
-Message-Id: <6b938b918696b8a3d0d7bd89045390556ac286fd.1657194434.git.asml.silence@gmail.com>
+Subject: [PATCH net-next v4 15/27] io_uring: cache struct io_notif
+Date:   Thu,  7 Jul 2022 12:49:46 +0100
+Message-Id: <b033c7240e294a543f8ddd20d39dd272ac771a55.1657194434.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1657194434.git.asml.silence@gmail.com>
 References: <cover.1657194434.git.asml.silence@gmail.com>
@@ -74,307 +74,183 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add internal part of send zerocopy notifications. There are two main
-structures, the first one is struct io_notif, which carries inside
-struct ubuf_info and maps 1:1 to it. io_uring will be binding a number
-of zerocopy send requests to it and ask to complete (aka flush) it. When
-flushed and all attached requests and skbs complete, it'll generate one
-and only one CQE. There are intended to be passed into the network layer
-as struct msghdr::msg_ubuf.
-
-The second concept is notification slots. The userspace will be able to
-register an array of slots and subsequently addressing them by the index
-in the array. Slots are independent of each other. Each slot can have
-only one notifier at a time (called active notifier) but many notifiers
-during the lifetime. When active, a notifier not going to post any
-completion but the userspace can attach requests to it by specifying
-the corresponding slot while issueing send zc requests. Eventually, the
-userspace will want to "flush" the notifier losing any way to attach
-new requests to it, however it can use the next atomatically added
-notifier of this slot or of any other slot.
-
-When the network layer is done with all enqueued skbs attached to a
-notifier and doesn't need the specified in them user data, the flushed
-notifier will post a CQE.
+kmalloc'ing struct io_notif is too expensive when done frequently, cache
+them as many other resources in io_uring. Keep two list, the first one
+is from where we're getting notifiers, it's protected by ->uring_lock.
+The second is protected by ->completion_lock, to which we queue released
+notifiers. Then we splice one list into another when needed.
 
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 ---
- include/linux/io_uring_types.h |   5 ++
- io_uring/Makefile              |   2 +-
- io_uring/io_uring.c            |   8 ++-
- io_uring/io_uring.h            |   2 +
- io_uring/notif.c               | 102 +++++++++++++++++++++++++++++++++
- io_uring/notif.h               |  64 +++++++++++++++++++++
- 6 files changed, 179 insertions(+), 4 deletions(-)
- create mode 100644 io_uring/notif.c
- create mode 100644 io_uring/notif.h
+ include/linux/io_uring_types.h |  7 +++++
+ io_uring/io_uring.c            |  3 ++
+ io_uring/notif.c               | 57 +++++++++++++++++++++++++++++-----
+ io_uring/notif.h               |  5 +++
+ 4 files changed, 65 insertions(+), 7 deletions(-)
 
 diff --git a/include/linux/io_uring_types.h b/include/linux/io_uring_types.h
-index d876a0367081..95334e678586 100644
+index 95334e678586..66ab009e7a6b 100644
 --- a/include/linux/io_uring_types.h
 +++ b/include/linux/io_uring_types.h
-@@ -34,6 +34,9 @@ struct io_file_table {
- 	unsigned int alloc_hint;
- };
+@@ -244,6 +244,9 @@ struct io_ring_ctx {
+ 		struct xarray		io_bl_xa;
+ 		struct list_head	io_buffers_cache;
  
-+struct io_notif;
-+struct io_notif_slot;
++		/* struct io_notif cache, protected by uring_lock */
++		struct list_head	notif_list;
 +
- struct io_hash_bucket {
- 	spinlock_t		lock;
- 	struct hlist_head	list;
-@@ -232,6 +235,8 @@ struct io_ring_ctx {
- 		unsigned		nr_user_files;
- 		unsigned		nr_user_bufs;
- 		struct io_mapped_ubuf	**user_bufs;
-+		struct io_notif_slot	*notif_slots;
-+		unsigned		nr_notif_slots;
+ 		struct io_hash_table	cancel_table_locked;
+ 		struct list_head	cq_overflow_list;
+ 		struct list_head	apoll_cache;
+@@ -255,6 +258,10 @@ struct io_ring_ctx {
+ 	struct io_wq_work_list	locked_free_list;
+ 	unsigned int		locked_free_nr;
  
- 		struct io_submit_state	submit_state;
++	/* struct io_notif cache protected by completion_lock */
++	struct list_head	notif_list_locked;
++	unsigned int		notif_locked_nr;
++
+ 	const struct cred	*sq_creds;	/* cred used for __io_sq_thread() */
+ 	struct io_sq_data	*sq_data;	/* if using sq thread polling */
  
-diff --git a/io_uring/Makefile b/io_uring/Makefile
-index 466639c289be..8cc8e5387a75 100644
---- a/io_uring/Makefile
-+++ b/io_uring/Makefile
-@@ -7,5 +7,5 @@ obj-$(CONFIG_IO_URING)		+= io_uring.o xattr.o nop.o fs.o splice.o \
- 					openclose.o uring_cmd.o epoll.o \
- 					statx.o net.o msg_ring.o timeout.o \
- 					sqpoll.o fdinfo.o tctx.o poll.o \
--					cancel.o kbuf.o rsrc.o rw.o opdef.o
-+					cancel.o kbuf.o rsrc.o rw.o opdef.o notif.o
- obj-$(CONFIG_IO_WQ)		+= io-wq.o
 diff --git a/io_uring/io_uring.c b/io_uring/io_uring.c
-index bb644b1b575a..ad816afe2345 100644
+index ad816afe2345..bdc5a2839d94 100644
 --- a/io_uring/io_uring.c
 +++ b/io_uring/io_uring.c
-@@ -89,6 +89,7 @@
- #include "kbuf.h"
- #include "rsrc.h"
- #include "cancel.h"
-+#include "notif.h"
- 
- #include "timeout.h"
- #include "poll.h"
-@@ -726,9 +727,8 @@ struct io_uring_cqe *__io_get_cqe(struct io_ring_ctx *ctx)
- 	return &rings->cqes[off];
- }
- 
--static bool io_fill_cqe_aux(struct io_ring_ctx *ctx,
--			    u64 user_data, s32 res, u32 cflags,
--			    bool allow_overflow)
-+bool io_fill_cqe_aux(struct io_ring_ctx *ctx, u64 user_data, s32 res, u32 cflags,
-+		     bool allow_overflow)
- {
- 	struct io_uring_cqe *cqe;
- 
-@@ -2496,6 +2496,7 @@ static __cold void io_ring_ctx_free(struct io_ring_ctx *ctx)
- 	}
- #endif
+@@ -318,6 +318,8 @@ static __cold struct io_ring_ctx *io_ring_ctx_alloc(struct io_uring_params *p)
+ 	INIT_WQ_LIST(&ctx->locked_free_list);
+ 	INIT_DELAYED_WORK(&ctx->fallback_work, io_fallback_req_func);
+ 	INIT_WQ_LIST(&ctx->submit_state.compl_reqs);
++	INIT_LIST_HEAD(&ctx->notif_list);
++	INIT_LIST_HEAD(&ctx->notif_list_locked);
+ 	return ctx;
+ err:
+ 	kfree(ctx->dummy_ubuf);
+@@ -2498,6 +2500,7 @@ static __cold void io_ring_ctx_free(struct io_ring_ctx *ctx)
  	WARN_ON_ONCE(!list_empty(&ctx->ltimeout_list));
-+	WARN_ON_ONCE(ctx->notif_slots || ctx->nr_notif_slots);
+ 	WARN_ON_ONCE(ctx->notif_slots || ctx->nr_notif_slots);
  
++	io_notif_cache_purge(ctx);
  	io_mem_free(ctx->rings);
  	io_mem_free(ctx->sq_sqes);
-@@ -2672,6 +2673,7 @@ static __cold void io_ring_ctx_wait_and_kill(struct io_ring_ctx *ctx)
- 		io_unregister_personality(ctx, index);
- 	if (ctx->rings)
- 		io_poll_remove_all(ctx, NULL, true);
-+	io_notif_unregister(ctx);
- 	mutex_unlock(&ctx->uring_lock);
  
- 	/* failed during ring init, it couldn't have issued any requests */
-diff --git a/io_uring/io_uring.h b/io_uring/io_uring.h
-index 2379d9e70c10..b8c858727dc8 100644
---- a/io_uring/io_uring.h
-+++ b/io_uring/io_uring.h
-@@ -33,6 +33,8 @@ void io_req_complete_post(struct io_kiocb *req);
- void __io_req_complete_post(struct io_kiocb *req);
- bool io_post_aux_cqe(struct io_ring_ctx *ctx, u64 user_data, s32 res, u32 cflags,
- 		     bool allow_overflow);
-+bool io_fill_cqe_aux(struct io_ring_ctx *ctx, u64 user_data, s32 res, u32 cflags,
-+		     bool allow_overflow);
- void __io_commit_cqring_flush(struct io_ring_ctx *ctx);
- 
- struct page **io_pin_pages(unsigned long ubuf, unsigned long len, int *npages);
 diff --git a/io_uring/notif.c b/io_uring/notif.c
-new file mode 100644
-index 000000000000..6ee948af6a49
---- /dev/null
+index 6ee948af6a49..b257db2120b4 100644
+--- a/io_uring/notif.c
 +++ b/io_uring/notif.c
-@@ -0,0 +1,102 @@
-+#include <linux/kernel.h>
-+#include <linux/errno.h>
-+#include <linux/file.h>
-+#include <linux/slab.h>
-+#include <linux/net.h>
-+#include <linux/io_uring.h>
+@@ -15,10 +15,12 @@ static void __io_notif_complete_tw(struct callback_head *cb)
+ 
+ 	io_cq_lock(ctx);
+ 	io_fill_cqe_aux(ctx, notif->tag, 0, notif->seq, true);
 +
-+#include "io_uring.h"
-+#include "notif.h"
-+
-+static void __io_notif_complete_tw(struct callback_head *cb)
-+{
-+	struct io_notif *notif = container_of(cb, struct io_notif, task_work);
-+	struct io_ring_ctx *ctx = notif->ctx;
-+
-+	io_cq_lock(ctx);
-+	io_fill_cqe_aux(ctx, notif->tag, 0, notif->seq, true);
-+	io_cq_unlock_post(ctx);
-+
-+	percpu_ref_put(&ctx->refs);
-+	kfree(notif);
-+}
-+
-+static inline void io_notif_complete(struct io_notif *notif)
-+{
-+	__io_notif_complete_tw(&notif->task_work);
-+}
-+
-+static void io_notif_complete_wq(struct work_struct *work)
-+{
-+	struct io_notif *notif = container_of(work, struct io_notif, commit_work);
-+
-+	io_notif_complete(notif);
-+}
-+
-+static void io_uring_tx_zerocopy_callback(struct sk_buff *skb,
-+					  struct ubuf_info *uarg,
-+					  bool success)
-+{
-+	struct io_notif *notif = container_of(uarg, struct io_notif, uarg);
-+
-+	if (!refcount_dec_and_test(&uarg->refcnt))
-+		return;
-+	INIT_WORK(&notif->commit_work, io_notif_complete_wq);
-+	queue_work(system_unbound_wq, &notif->commit_work);
-+}
-+
-+struct io_notif *io_alloc_notif(struct io_ring_ctx *ctx,
-+				struct io_notif_slot *slot)
++	list_add(&notif->cache_node, &ctx->notif_list_locked);
++	ctx->notif_locked_nr++;
+ 	io_cq_unlock_post(ctx);
+ 
+ 	percpu_ref_put(&ctx->refs);
+-	kfree(notif);
+ }
+ 
+ static inline void io_notif_complete(struct io_notif *notif)
+@@ -45,21 +47,62 @@ static void io_uring_tx_zerocopy_callback(struct sk_buff *skb,
+ 	queue_work(system_unbound_wq, &notif->commit_work);
+ }
+ 
++static void io_notif_splice_cached(struct io_ring_ctx *ctx)
 +	__must_hold(&ctx->uring_lock)
 +{
-+	struct io_notif *notif;
-+
-+	notif = kzalloc(sizeof(*notif), GFP_ATOMIC | __GFP_ACCOUNT);
-+	if (!notif)
-+		return NULL;
-+
-+	notif->seq = slot->seq++;
-+	notif->tag = slot->tag;
-+	notif->ctx = ctx;
-+	notif->uarg.flags = SKBFL_ZEROCOPY_FRAG | SKBFL_DONT_ORPHAN;
-+	notif->uarg.callback = io_uring_tx_zerocopy_callback;
-+	/* master ref owned by io_notif_slot, will be dropped on flush */
-+	refcount_set(&notif->uarg.refcnt, 1);
-+	percpu_ref_get(&ctx->refs);
-+	return notif;
++	spin_lock(&ctx->completion_lock);
++	list_splice_init(&ctx->notif_list_locked, &ctx->notif_list);
++	ctx->notif_locked_nr = 0;
++	spin_unlock(&ctx->completion_lock);
 +}
 +
-+static void io_notif_slot_flush(struct io_notif_slot *slot)
++void io_notif_cache_purge(struct io_ring_ctx *ctx)
 +	__must_hold(&ctx->uring_lock)
 +{
-+	struct io_notif *notif = slot->notif;
++	io_notif_splice_cached(ctx);
 +
-+	slot->notif = NULL;
++	while (!list_empty(&ctx->notif_list)) {
++		struct io_notif *notif = list_first_entry(&ctx->notif_list,
++						struct io_notif, cache_node);
 +
-+	if (WARN_ON_ONCE(in_interrupt()))
-+		return;
-+	/* drop slot's master ref */
-+	if (refcount_dec_and_test(&notif->uarg.refcnt))
-+		io_notif_complete(notif);
-+}
-+
-+__cold int io_notif_unregister(struct io_ring_ctx *ctx)
-+	__must_hold(&ctx->uring_lock)
-+{
-+	int i;
-+
-+	if (!ctx->notif_slots)
-+		return -ENXIO;
-+
-+	for (i = 0; i < ctx->nr_notif_slots; i++) {
-+		struct io_notif_slot *slot = &ctx->notif_slots[i];
-+
-+		if (slot->notif)
-+			io_notif_slot_flush(slot);
++		list_del(&notif->cache_node);
++		kfree(notif);
 +	}
-+
-+	kvfree(ctx->notif_slots);
-+	ctx->notif_slots = NULL;
-+	ctx->nr_notif_slots = 0;
-+	return 0;
-+}
-\ No newline at end of file
-diff --git a/io_uring/notif.h b/io_uring/notif.h
-new file mode 100644
-index 000000000000..3d7a1d242e17
---- /dev/null
-+++ b/io_uring/notif.h
-@@ -0,0 +1,64 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#include <linux/net.h>
-+#include <linux/uio.h>
-+#include <net/sock.h>
-+#include <linux/nospec.h>
-+
-+struct io_notif {
-+	struct ubuf_info	uarg;
-+	struct io_ring_ctx	*ctx;
-+
-+	/* cqe->user_data, io_notif_slot::tag if not overridden */
-+	u64			tag;
-+	/* see struct io_notif_slot::seq */
-+	u32			seq;
-+
-+	union {
-+		struct callback_head	task_work;
-+		struct work_struct	commit_work;
-+	};
-+};
-+
-+struct io_notif_slot {
-+	/*
-+	 * Current/active notifier. A slot holds only one active notifier at a
-+	 * time and keeps one reference to it. Flush releases the reference and
-+	 * lazily replaces it with a new notifier.
-+	 */
-+	struct io_notif		*notif;
-+
-+	/*
-+	 * Default ->user_data for this slot notifiers CQEs
-+	 */
-+	u64			tag;
-+	/*
-+	 * Notifiers of a slot live in generations, we create a new notifier
-+	 * only after flushing the previous one. Track the sequential number
-+	 * for all notifiers and copy it into notifiers's cqe->cflags
-+	 */
-+	u32			seq;
-+};
-+
-+int io_notif_unregister(struct io_ring_ctx *ctx);
-+
-+struct io_notif *io_alloc_notif(struct io_ring_ctx *ctx,
-+				struct io_notif_slot *slot);
-+
-+static inline struct io_notif *io_get_notif(struct io_ring_ctx *ctx,
-+					    struct io_notif_slot *slot)
-+{
-+	if (!slot->notif)
-+		slot->notif = io_alloc_notif(ctx, slot);
-+	return slot->notif;
 +}
 +
-+static inline struct io_notif_slot *io_get_notif_slot(struct io_ring_ctx *ctx,
-+						      int idx)
++static inline bool io_notif_has_cached(struct io_ring_ctx *ctx)
 +	__must_hold(&ctx->uring_lock)
 +{
-+	if (idx >= ctx->nr_notif_slots)
-+		return NULL;
-+	idx = array_index_nospec(idx, ctx->nr_notif_slots);
-+	return &ctx->notif_slots[idx];
++	if (likely(!list_empty(&ctx->notif_list)))
++		return true;
++	if (data_race(READ_ONCE(ctx->notif_locked_nr) <= IO_NOTIF_SPLICE_BATCH))
++		return false;
++	io_notif_splice_cached(ctx);
++	return !list_empty(&ctx->notif_list);
 +}
++
+ struct io_notif *io_alloc_notif(struct io_ring_ctx *ctx,
+ 				struct io_notif_slot *slot)
+ 	__must_hold(&ctx->uring_lock)
+ {
+ 	struct io_notif *notif;
+ 
+-	notif = kzalloc(sizeof(*notif), GFP_ATOMIC | __GFP_ACCOUNT);
+-	if (!notif)
+-		return NULL;
++	if (likely(io_notif_has_cached(ctx))) {
++		notif = list_first_entry(&ctx->notif_list,
++					 struct io_notif, cache_node);
++		list_del(&notif->cache_node);
++	} else {
++		notif = kzalloc(sizeof(*notif), GFP_ATOMIC | __GFP_ACCOUNT);
++		if (!notif)
++			return NULL;
++		/* pre-initialise some fields */
++		notif->ctx = ctx;
++		notif->uarg.flags = SKBFL_ZEROCOPY_FRAG | SKBFL_DONT_ORPHAN;
++		notif->uarg.callback = io_uring_tx_zerocopy_callback;
++	}
+ 
+ 	notif->seq = slot->seq++;
+ 	notif->tag = slot->tag;
+-	notif->ctx = ctx;
+-	notif->uarg.flags = SKBFL_ZEROCOPY_FRAG | SKBFL_DONT_ORPHAN;
+-	notif->uarg.callback = io_uring_tx_zerocopy_callback;
+ 	/* master ref owned by io_notif_slot, will be dropped on flush */
+ 	refcount_set(&notif->uarg.refcnt, 1);
+ 	percpu_ref_get(&ctx->refs);
+diff --git a/io_uring/notif.h b/io_uring/notif.h
+index 3d7a1d242e17..b23c9c0515bb 100644
+--- a/io_uring/notif.h
++++ b/io_uring/notif.h
+@@ -5,6 +5,8 @@
+ #include <net/sock.h>
+ #include <linux/nospec.h>
+ 
++#define IO_NOTIF_SPLICE_BATCH	32
++
+ struct io_notif {
+ 	struct ubuf_info	uarg;
+ 	struct io_ring_ctx	*ctx;
+@@ -13,6 +15,8 @@ struct io_notif {
+ 	u64			tag;
+ 	/* see struct io_notif_slot::seq */
+ 	u32			seq;
++	/* hook into ctx->notif_list and ctx->notif_list_locked */
++	struct list_head	cache_node;
+ 
+ 	union {
+ 		struct callback_head	task_work;
+@@ -41,6 +45,7 @@ struct io_notif_slot {
+ };
+ 
+ int io_notif_unregister(struct io_ring_ctx *ctx);
++void io_notif_cache_purge(struct io_ring_ctx *ctx);
+ 
+ struct io_notif *io_alloc_notif(struct io_ring_ctx *ctx,
+ 				struct io_notif_slot *slot);
 -- 
 2.36.1
 
