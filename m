@@ -2,206 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AF5BD56A1C8
-	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 14:14:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D473B56A1D2
+	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 14:17:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235158AbiGGMOk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jul 2022 08:14:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49484 "EHLO
+        id S235445AbiGGMRi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jul 2022 08:17:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235105AbiGGMOi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 08:14:38 -0400
-Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEE6C25E6;
-        Thu,  7 Jul 2022 05:14:37 -0700 (PDT)
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2674EkJa017917;
-        Thu, 7 Jul 2022 05:14:33 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=pfpt0220;
- bh=yPFjesdZy7X4+sh1Kq/hbhR4pEK2RDD1VNTtaQfmEUQ=;
- b=ZrVItwYHI7bw4fAX8DcqKGm2bEJxwUZMr/5MT6aOYd7s7Gl0AjYmyAf4fvGE7EilSbjS
- phVLcK8QOH5DWhWDfdwFoDHS2EcWXBJBQo3pbiwBKuiDuO9UFpzOU+68G7vm4BoWxJNi
- uqYFHL2Wk0ruV2T4dAklhBEiDPx4jOs1xqVuvSW1V5CLZerigIph9hWs30dYsTJ5Hdzg
- HGSPklcB9yRsBm7cVtFfhe7EVIzT55sCt7ivGhy4sbqpyF65Tqcgocsy1K6xR0GXnyVK
- J5eZS/rHxRIUbif1TRMyxPIkEncpanZAb79rUYoPrI8eVYEbdRPQpeg0NErncOpNe7qy 1g== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3h56wt5n78-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 07 Jul 2022 05:14:33 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 7 Jul
- 2022 05:14:31 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Thu, 7 Jul 2022 05:14:30 -0700
-Received: from hyd1soter3.marvell.com (unknown [10.29.37.12])
-        by maili.marvell.com (Postfix) with ESMTP id 404ED3F707B;
-        Thu,  7 Jul 2022 05:14:28 -0700 (PDT)
-From:   Hariprasad Kelam <hkelam@marvell.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <kuba@kernel.org>, <davem@davemloft.net>, <sgoutham@marvell.com>,
-        <lcherian@marvell.com>, <gakula@marvell.com>, <jerinj@marvell.com>,
-        <sbhatta@marvell.com>
-Subject: [net-next PATCH] octeontx2-af: Don't reset previous pfc config
-Date:   Thu, 7 Jul 2022 17:44:27 +0530
-Message-ID: <20220707121427.21123-1-hkelam@marvell.com>
-X-Mailer: git-send-email 2.17.1
+        with ESMTP id S235317AbiGGMRh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 08:17:37 -0400
+Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A80C3205DC
+        for <netdev@vger.kernel.org>; Thu,  7 Jul 2022 05:17:36 -0700 (PDT)
+Received: by mail-yb1-xb29.google.com with SMTP id g4so32187484ybg.9
+        for <netdev@vger.kernel.org>; Thu, 07 Jul 2022 05:17:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=uwig/AHabCZBic+c+FvsMRVZZoiP33d9oouIS8HHdQs=;
+        b=rzqLKFWBqKJo6pvg6JS9BPeCvkVwPG3NCG4A6MwTvKn+Tbmx4K1zF24wkcjCZ2Swrz
+         1Zop5IppFxinFymXZRKQf5enZNhzroHfXGleeAhWglfHN5mXlw6RSZlYtFJNvP/6Elbm
+         iyHEVX/qtQpAdtHuoTEGmty+Gt8Ph9Li1ZgmYwGY8S+aipsNX8DqiLSBgu06WDr72Kbf
+         4/gUJX5BRy7SgAd3oV1n/cK4CuZ09Vv9P+e0oUY4qMMRJenmKBvW7GkcxNlLnGLHEK5m
+         NuJHWs6m3IL9yOacrVH0xCILzN6N/6tqmBNICz82Pqz6S0WpUqPq49s00fprMD09Jhhu
+         DH/A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=uwig/AHabCZBic+c+FvsMRVZZoiP33d9oouIS8HHdQs=;
+        b=xUlLaW4DDagikWhdGLxZIysS0fReRClaZnKfMRL6hCnjWlWMTYU/ORyA3nN/lY9D6c
+         Feb3EDWEAxATEV0kvbaMQtbLSPMcXVDw47lrAXeGzXs7uBtw8uvnUqMJyzerEyIFScgN
+         8n+4kybpq6PRwc7pG8dCP5xvcDj1p9asG9HGJAsON3xRq2D1wWPPtj14Z8ddERLluDes
+         mxHc+ABxP0bhkgpEn292kGUICfnk5atrWnaJtSBaaUBf9yCSEijlP2IwnMDiHAesbAGg
+         LaYTie83LbVwddtNzZuHkPE8Fhq/mWC2XYZbvCBN2/uVRO6ZWAbUKmfW5cfN6x8Orrmt
+         9MwA==
+X-Gm-Message-State: AJIora/mRkJ1/oyrBfdV69CiAH1zSQ6yMz/PuAAswYQrMH+SLYy+TVkr
+        boxkTw7W8vsbYtCXb5EJLN85mwmq1nRfyRG8YDzUUHPhDAm3tQ==
+X-Google-Smtp-Source: AGRyM1uU3FrpMuRe1ck63ydqQRuhuXjWSz5CFE/OOGDWmwniq/LkTlbCkQRlgm+BKVaUoyrgFDZxeX9GBEPBcz/nn8g=
+X-Received: by 2002:a25:d741:0:b0:66e:5fc1:3001 with SMTP id
+ o62-20020a25d741000000b0066e5fc13001mr18998721ybg.231.1657196255528; Thu, 07
+ Jul 2022 05:17:35 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: ACyxyUYyQC7cJc8iNTZUxzeCP7glUMgH
-X-Proofpoint-GUID: ACyxyUYyQC7cJc8iNTZUxzeCP7glUMgH
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-07_09,2022-06-28_01,2022-06-22_01
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <1657189155-38222-1-git-send-email-liyonglong@chinatelecom.cn>
+In-Reply-To: <1657189155-38222-1-git-send-email-liyonglong@chinatelecom.cn>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 7 Jul 2022 14:17:24 +0200
+Message-ID: <CANn89iLW5sbPkyySPYCGzAOcTFy24dL4T9xcN7cQ8Nf0MqCX_Q@mail.gmail.com>
+Subject: Re: [PATCH] tcp: make retransmitted SKB fit into the send window
+To:     Yonglong Li <liyonglong@chinatelecom.cn>
+Cc:     netdev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Current implementation is such that driver first resets the
-existing PFC config before applying new pfc configuration.
-This creates a problem like once PF or VFs requests PFC config
-previous pfc config by other PFVfs is getting reset.
+On Thu, Jul 7, 2022 at 12:50 PM Yonglong Li <liyonglong@chinatelecom.cn> wrote:
+>
+> From: liyonglong <liyonglong@chinatelecom.cn>
+>
+> current code of __tcp_retransmit_skb only check TCP_SKB_CB(skb)->seq
+> in send window, it will cause retransmit more than send window data.
 
-This patch fixes the problem by removing unnecessary resetting
-of PFC config. Also configure Pause quanta value to smaller as
-current value is too high.
+This changelog is confusing. I understand the check is already done ?
 
-Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
-Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
----
- .../net/ethernet/marvell/octeontx2/af/cgx.c    | 15 +++++++++++----
- .../net/ethernet/marvell/octeontx2/af/rpm.c    | 18 +++++++++++-------
- .../net/ethernet/marvell/octeontx2/af/rpm.h    |  3 +--
- 3 files changed, 23 insertions(+), 13 deletions(-)
+I think it would be better to explain how a receiver can retract its window,
+even if TCP RFCs specifically forbid this.
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-index 25491edc35ce..931a1a7ebf76 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-@@ -847,6 +847,11 @@ static void cgx_lmac_pause_frm_config(void *cgxd, int lmac_id, bool enable)
- 	cfg |= CGX_CMR_RX_OVR_BP_EN(lmac_id);
- 	cfg &= ~CGX_CMR_RX_OVR_BP_BP(lmac_id);
- 	cgx_write(cgx, 0, CGXX_CMR_RX_OVR_BP, cfg);
-+
-+	/* Disable all PFC classes by default */
-+	cfg = cgx_read(cgx, lmac_id, CGXX_SMUX_CBFC_CTL);
-+	cfg = FIELD_SET(CGX_PFC_CLASS_MASK, 0, cfg);
-+	cgx_write(cgx, lmac_id, CGXX_SMUX_CBFC_CTL, cfg);
- }
- 
- int verify_lmac_fc_cfg(void *cgxd, int lmac_id, u8 tx_pause, u8 rx_pause,
-@@ -899,6 +904,7 @@ int cgx_lmac_pfc_config(void *cgxd, int lmac_id, u8 tx_pause,
- 		return 0;
- 
- 	cfg = cgx_read(cgx, lmac_id, CGXX_SMUX_CBFC_CTL);
-+	pfc_en |= FIELD_GET(CGX_PFC_CLASS_MASK, cfg);
- 
- 	if (rx_pause) {
- 		cfg |= (CGXX_SMUX_CBFC_CTL_RX_EN |
-@@ -910,12 +916,13 @@ int cgx_lmac_pfc_config(void *cgxd, int lmac_id, u8 tx_pause,
- 			CGXX_SMUX_CBFC_CTL_DRP_EN);
- 	}
- 
--	if (tx_pause)
-+	if (tx_pause) {
- 		cfg |= CGXX_SMUX_CBFC_CTL_TX_EN;
--	else
-+		cfg = FIELD_SET(CGX_PFC_CLASS_MASK, pfc_en, cfg);
-+	} else {
- 		cfg &= ~CGXX_SMUX_CBFC_CTL_TX_EN;
--
--	cfg = FIELD_SET(CGX_PFC_CLASS_MASK, pfc_en, cfg);
-+		cfg = FIELD_SET(CGX_PFC_CLASS_MASK, 0, cfg);
-+	}
- 
- 	cgx_write(cgx, lmac_id, CGXX_SMUX_CBFC_CTL, cfg);
- 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rpm.c b/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
-index 47e83d7a5804..05666922a45b 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
-@@ -276,6 +276,11 @@ void rpm_lmac_pause_frm_config(void *rpmd, int lmac_id, bool enable)
- 	cfg = rpm_read(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG);
- 	cfg |= RPMX_MTI_MAC100X_COMMAND_CONFIG_TX_P_DISABLE;
- 	rpm_write(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG, cfg);
-+
-+	/* Disable all PFC classes */
-+	cfg = rpm_read(rpm, lmac_id, RPMX_CMRX_PRT_CBFC_CTL);
-+	cfg = FIELD_SET(RPM_PFC_CLASS_MASK, 0, cfg);
-+	rpm_write(rpm, lmac_id, RPMX_CMRX_PRT_CBFC_CTL, cfg);
- }
- 
- int rpm_get_rx_stats(void *rpmd, int lmac_id, int idx, u64 *rx_stat)
-@@ -387,15 +392,14 @@ void rpm_lmac_ptp_config(void *rpmd, int lmac_id, bool enable)
- int rpm_lmac_pfc_config(void *rpmd, int lmac_id, u8 tx_pause, u8 rx_pause, u16 pfc_en)
- {
- 	rpm_t *rpm = rpmd;
--	u64 cfg;
-+	u64 cfg, class_en;
- 
- 	if (!is_lmac_valid(rpm, lmac_id))
- 		return -ENODEV;
- 
--	/* reset PFC class quanta and threshold */
--	rpm_cfg_pfc_quanta_thresh(rpm, lmac_id, 0xffff, false);
--
- 	cfg = rpm_read(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG);
-+	class_en = rpm_read(rpm, lmac_id, RPMX_CMRX_PRT_CBFC_CTL);
-+	pfc_en |= FIELD_GET(RPM_PFC_CLASS_MASK, class_en);
- 
- 	if (rx_pause) {
- 		cfg &= ~(RPMX_MTI_MAC100X_COMMAND_CONFIG_RX_P_DISABLE |
-@@ -410,9 +414,11 @@ int rpm_lmac_pfc_config(void *rpmd, int lmac_id, u8 tx_pause, u8 rx_pause, u16 p
- 	if (tx_pause) {
- 		rpm_cfg_pfc_quanta_thresh(rpm, lmac_id, pfc_en, true);
- 		cfg &= ~RPMX_MTI_MAC100X_COMMAND_CONFIG_TX_P_DISABLE;
-+		class_en = FIELD_SET(RPM_PFC_CLASS_MASK, pfc_en, class_en);
- 	} else {
- 		rpm_cfg_pfc_quanta_thresh(rpm, lmac_id, 0xfff, false);
- 		cfg |= RPMX_MTI_MAC100X_COMMAND_CONFIG_TX_P_DISABLE;
-+		class_en = FIELD_SET(RPM_PFC_CLASS_MASK, 0, class_en);
- 	}
- 
- 	if (!rx_pause && !tx_pause)
-@@ -422,9 +428,7 @@ int rpm_lmac_pfc_config(void *rpmd, int lmac_id, u8 tx_pause, u8 rx_pause, u16 p
- 
- 	rpm_write(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG, cfg);
- 
--	cfg = rpm_read(rpm, lmac_id, RPMX_CMRX_PRT_CBFC_CTL);
--	cfg = FIELD_SET(RPM_PFC_CLASS_MASK, pfc_en, cfg);
--	rpm_write(rpm, lmac_id, RPMX_CMRX_PRT_CBFC_CTL, cfg);
-+	rpm_write(rpm, lmac_id, RPMX_CMRX_PRT_CBFC_CTL, class_en);
- 
- 	return 0;
- }
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rpm.h b/drivers/net/ethernet/marvell/octeontx2/af/rpm.h
-index 9ab8d49dd180..8205f2626f61 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rpm.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rpm.h
-@@ -48,7 +48,6 @@
- #define RPMX_MTI_MAC100X_CL1011_QUANTA_THRESH		0x8130
- #define RPMX_MTI_MAC100X_CL1213_QUANTA_THRESH		0x8138
- #define RPMX_MTI_MAC100X_CL1415_QUANTA_THRESH		0x8140
--#define RPM_DEFAULT_PAUSE_TIME			0xFFFF
- #define RPMX_CMR_RX_OVR_BP		0x4120
- #define RPMX_CMR_RX_OVR_BP_EN(x)	BIT_ULL((x) + 8)
- #define RPMX_CMR_RX_OVR_BP_BP(x)	BIT_ULL((x) + 4)
-@@ -70,7 +69,7 @@
- #define RPMX_MTI_MAC100X_COMMAND_CONFIG_PAUSE_FWD              BIT_ULL(7)
- #define RPMX_MTI_MAC100X_CL01_PAUSE_QUANTA              0x80A8
- #define RPMX_MTI_MAC100X_CL89_PAUSE_QUANTA		0x8108
--#define RPM_DEFAULT_PAUSE_TIME                          0xFFFF
-+#define RPM_DEFAULT_PAUSE_TIME                          0x7FF
- 
- /* Function Declarations */
- int rpm_get_nr_lmacs(void *rpmd);
--- 
-2.17.1
+>
+> Signed-off-by: liyonglong <liyonglong@chinatelecom.cn>
 
+This probably needs a Fixes: tag, even if targeting net-next (which I
+prefer because this kind of patch is risky)
+
+
+> ---
+>  net/ipv4/tcp_output.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+> index 18c913a..3530d1f 100644
+> --- a/net/ipv4/tcp_output.c
+> +++ b/net/ipv4/tcp_output.c
+> @@ -3176,7 +3176,7 @@ int __tcp_retransmit_skb(struct sock *sk, struct sk_buff *skb, int segs)
+>             TCP_SKB_CB(skb)->seq != tp->snd_una)
+>                 return -EAGAIN;
+>
+> -       len = cur_mss * segs;
+> +       len = min_t(int, tcp_wnd_end(tp) - TCP_SKB_CB(skb)->seq, cur_mss * segs);
+
+I think it is unfortunate to not align len to a multiple of cur_mss,
+if possible.
+
+Also this might break so-called zero window probes.
+We might need to send some payload, to discover if the ACK the
+receiver sent us to re-open its window was lost.
+
+
+>         if (skb->len > len) {
+
+What happens if len == 0 ?
+
+
+
+>                 if (tcp_fragment(sk, TCP_FRAG_IN_RTX_QUEUE, skb, len,
+>                                  cur_mss, GFP_ATOMIC))
+> @@ -3190,7 +3190,7 @@ int __tcp_retransmit_skb(struct sock *sk, struct sk_buff *skb, int segs)
+>                 diff -= tcp_skb_pcount(skb);
+>                 if (diff)
+>                         tcp_adjust_pcount(sk, skb, diff);
+> -               if (skb->len < cur_mss)
+> +               if (skb->len < cur_mss && len >= cur_mss)
+
+This seems to be weak.
+
+I suggest to do it properly in  tcp_retrans_try_collapse() because
+there is already a related test there :
+
+if (after(TCP_SKB_CB(skb)->end_seq, tcp_wnd_end(tp)))
+      break;
+
+But this seems not done properly.
+
+>                         tcp_retrans_try_collapse(sk, skb, cur_mss);
+>         }
+>
+> --
+> 1.8.3.1
+>
