@@ -2,97 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E440756A494
-	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 15:56:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A53DC56A479
+	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 15:50:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235882AbiGGNzy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jul 2022 09:55:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52586 "EHLO
+        id S236163AbiGGNsn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jul 2022 09:48:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235777AbiGGNzw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 09:55:52 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 722BA198;
-        Thu,  7 Jul 2022 06:55:51 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id z41so23285906ede.1;
-        Thu, 07 Jul 2022 06:55:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=6akCPIgr8HGJIBWi6ls9yminwTT+fuazEkGCjpCKWVw=;
-        b=flmDLr4QVWS1Xjiafg/+VA1HhH6ucmWh9iY8gj4q2kaOWsW2KjOmNEeq6HqHzrHOao
-         8tuIwlo6RfT8UDMT2LtCk083/SvLoo2fvLhm/rXZvxHzATU1X7ijfIgePCIyINQTY9xv
-         xEX86SiUKNfIdeAIxHupABpBxXm/XdZhCgHiAL12c6/LL11AommnUeRd8afy4ZKx0Boe
-         lIuz7UqnCPa1jz41dPBy9s18nTXUrIVZcOyJe1AtB8KHU49A10gdeATTuVu/NSC2QX0J
-         /tfLCmVYYkohEHkmUiEMSme/9xAsO9XmR34rG93xaaHKS2dVTeHPE8JxzzrAUVbJqbqE
-         i2Jg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=6akCPIgr8HGJIBWi6ls9yminwTT+fuazEkGCjpCKWVw=;
-        b=g1NYyXuQlWx19T84cq5P7C1Phezi+s2pE4DcNOaULdaz1YdPsSqV5psJmgrOC5Pkt3
-         kA25QbpxC/jiUfEtNGjMCBsWD7dn0OgGAAiJJ2WCQMXes3EFUViU/SNxBRvQqFyMyBO9
-         Qsq2lWZnnEwpeOFP2iH3SJmL3NvL/TcvOr4LUGlo+J0Lez04bp5rwqaOJyPgK8HDfsFx
-         oxPPSkaGhTyIhsntHvhkzmlVDANZyNw23r8O8/WG7xmtOCSWzFdtXUhYgJnYulNH7ezh
-         X3b9pqTp3cauiuUG8fKFiIfdSEKtdWU8Nd83iclABZDzqt6cWDpIBQfPDGMFZ0DIx3OU
-         xjxA==
-X-Gm-Message-State: AJIora+H1lgis/uWp5IYizrbxiiUw2jYVMBc4Zgo8Uah6/WYwhbYeC3U
-        nVJe0b5m0pMwwkwqgYzf5xOLpOPznz4=
-X-Google-Smtp-Source: AGRyM1uJ0I6gUyAMhq/gEJTnIQn1LRDGVeM9YVny+hyxq+2YOCHdbACWOoWpMmlNHzkZeoASXXPjGQ==
-X-Received: by 2002:a05:6402:1907:b0:435:c243:a66e with SMTP id e7-20020a056402190700b00435c243a66emr60906897edz.44.1657202149903;
-        Thu, 07 Jul 2022 06:55:49 -0700 (PDT)
-Received: from localhost.localdomain (dynamic-095-117-000-249.95.117.pool.telefonica.de. [95.117.0.249])
-        by smtp.googlemail.com with ESMTPSA id x10-20020a170906298a00b00705cd37fd5asm19054969eje.72.2022.07.07.06.55.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jul 2022 06:55:49 -0700 (PDT)
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-To:     netdev@vger.kernel.org, linux-kselftest@vger.kernel.org
-Cc:     vladimir.oltean@nxp.com, linux-kernel@vger.kernel.org,
-        pabeni@redhat.com, kuba@kernel.org, edumazet@google.com,
-        davem@davemloft.net, shuah@kernel.org,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH 2/2] selftests: forwarding: Install no_forwarding.sh
-Date:   Thu,  7 Jul 2022 15:55:32 +0200
-Message-Id: <20220707135532.1783925-3-martin.blumenstingl@googlemail.com>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220707135532.1783925-1-martin.blumenstingl@googlemail.com>
-References: <20220707135532.1783925-1-martin.blumenstingl@googlemail.com>
+        with ESMTP id S236145AbiGGNs3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 09:48:29 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 903A31022;
+        Thu,  7 Jul 2022 06:48:27 -0700 (PDT)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LdyPs15xgzkX62;
+        Thu,  7 Jul 2022 21:46:57 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 7 Jul 2022 21:48:25 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 7 Jul
+ 2022 21:48:25 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <netdev@vger.kernel.org>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>
+Subject: [PATCH -next] bcm63xx_enet: change the driver variables to static
+Date:   Thu, 7 Jul 2022 21:58:01 +0800
+Message-ID: <20220707135801.1483941-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When using the Makefile from tools/testing/selftests/net/forwarding/
-all tests should be installed. Add no_forwarding.sh to the list of
-"to be installed tests" where it has been missing so far.
+bcm63xx_enetsw_driver and bcm63xx_enet_driver are only used in
+bcm63xx_enet.c now, change them to static.
 
-Fixes: 476a4f05d9b83f ("selftests: forwarding: add a no_forwarding.sh test")
-Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 ---
- tools/testing/selftests/net/forwarding/Makefile | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/broadcom/bcm63xx_enet.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/tools/testing/selftests/net/forwarding/Makefile b/tools/testing/selftests/net/forwarding/Makefile
-index 6fcf6cdfaee2..a9c5c1be5088 100644
---- a/tools/testing/selftests/net/forwarding/Makefile
-+++ b/tools/testing/selftests/net/forwarding/Makefile
-@@ -54,6 +54,7 @@ TEST_PROGS = bridge_igmp.sh \
- 	mirror_gre_vlan_bridge_1q.sh \
- 	mirror_gre_vlan.sh \
- 	mirror_vlan.sh \
-+	no_forwarding.sh \
- 	pedit_dsfield.sh \
- 	pedit_ip.sh \
- 	pedit_l4port.sh \
+diff --git a/drivers/net/ethernet/broadcom/bcm63xx_enet.c b/drivers/net/ethernet/broadcom/bcm63xx_enet.c
+index 514d61dd91c7..fcaa6a2d067f 100644
+--- a/drivers/net/ethernet/broadcom/bcm63xx_enet.c
++++ b/drivers/net/ethernet/broadcom/bcm63xx_enet.c
+@@ -1935,7 +1935,7 @@ static int bcm_enet_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
+-struct platform_driver bcm63xx_enet_driver = {
++static struct platform_driver bcm63xx_enet_driver = {
+ 	.probe	= bcm_enet_probe,
+ 	.remove	= bcm_enet_remove,
+ 	.driver	= {
+@@ -2756,7 +2756,7 @@ static int bcm_enetsw_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
+-struct platform_driver bcm63xx_enetsw_driver = {
++static struct platform_driver bcm63xx_enetsw_driver = {
+ 	.probe	= bcm_enetsw_probe,
+ 	.remove	= bcm_enetsw_remove,
+ 	.driver	= {
 -- 
-2.37.0
+2.25.1
 
