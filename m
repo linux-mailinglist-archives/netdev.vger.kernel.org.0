@@ -2,132 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CE7A56A527
-	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 16:13:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D289756A534
+	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 16:14:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235734AbiGGONG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jul 2022 10:13:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40024 "EHLO
+        id S235295AbiGGOOY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jul 2022 10:14:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235720AbiGGONF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 10:13:05 -0400
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F8132ED5B;
-        Thu,  7 Jul 2022 07:13:01 -0700 (PDT)
-Received: by mail-pf1-x42c.google.com with SMTP id y141so19631578pfb.7;
-        Thu, 07 Jul 2022 07:13:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=FCyVXYq1xdDQVMoQArRZsE8B3vqMor88n/6u0SE9eE0=;
-        b=g2X5CX7BTukkrE2RBmcSCFU1w2BHJIhhYvVMdalj2riqhOup1DHITVFdNll0Wv4RYc
-         FnlCH+vjH6CzpNDOg20RLObpy98yqzTnvAIKbY4L3wSc1spx+b7E0nwgvI8evX+29j6+
-         BFcKkxRvA9ARMMbLZM9NwyfIOhkPy3+byur05dvzyAyiSP98mP02GeAtkU67WhUy9g2u
-         bv1MSESkuIAyRpSKTWaY7CocBR7Qc5gBN8Bf9CE3Kom3uYEdlicRPfqQm26A81Onla7y
-         tR9tBpcXExh9EC0c991ZlR22i4voAKoJwXtBQjXHfheow8ULk+vKJK4R5DyfguajX28/
-         PWZA==
+        with ESMTP id S235234AbiGGOOX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 10:14:23 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7C1A52F3A5
+        for <netdev@vger.kernel.org>; Thu,  7 Jul 2022 07:14:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657203261;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=iKA2qidqE9pif8xksazqs8JG1hIHW8krOJ1dxi9lmZ8=;
+        b=F97WQ0ih57hOiHcfRQZ85dvtfLGuWlDSyV1idzYhdZ3k8vsrAf1jcXhOPGgEtoUB8vOpmk
+        Ny5pl9e2IjZUGWMJjr8F7g3C18BBcC2XOLn/p1HJTHij5LehmPw9OZiqOnNNs+474zHUkt
+        Gu01uGQYU5HaZyKpGhjD3YFb8ZU4C6Q=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-516-tOptrANyOA-Aa8r6ycdNFw-1; Thu, 07 Jul 2022 10:14:20 -0400
+X-MC-Unique: tOptrANyOA-Aa8r6ycdNFw-1
+Received: by mail-wr1-f70.google.com with SMTP id h29-20020adfaa9d000000b0021d67fc0b4aso2581480wrc.9
+        for <netdev@vger.kernel.org>; Thu, 07 Jul 2022 07:14:19 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=FCyVXYq1xdDQVMoQArRZsE8B3vqMor88n/6u0SE9eE0=;
-        b=MSLwLrtkpm4kJ8skgktR8CEjhstbtPXsEVMTAnDhS2R/XPT1cNnriqbe7+S14xzoAl
-         MDUSjlq1nOSqU8iIdBL7ZQ17UY48CGXHlQI/EiGHpEiopu/pJKIhKZd9RVSvbvCYo3+P
-         3HUFVb5oQDSjTwGb4SSCsoLv6no8WegsNkkTSTODUx7gLURTFfVJnOOmC3h2IBWM4Ljb
-         W9o3ch/1Gj87kcFdDGQ4R65W6592KbCamo+sq7bocITBbC6YCZv0bB8gtGjw9QPHYsQE
-         RQXI2Bs8Hy1McCSHoGCf0qYbI60K2kzxNcVFCRs7/TGRTNz+yLB7g2ADvmpluaEMGtpA
-         oFuA==
-X-Gm-Message-State: AJIora/dOrurzLhEkA9vPW4fU1f6VI6l77V3zdueperBoTVVG/JU+ASV
-        7FH7nlfFeexLcw7YTMZT9Ss=
-X-Google-Smtp-Source: AGRyM1u9xaQuiTFEYOzWDQDEXyLHiJYNlYML/aThQ9Oovo+1VlwROYrTIfWJ0ZkXVRWyNACfvJz+qg==
-X-Received: by 2002:a17:902:ce05:b0:16c:2a1:c335 with SMTP id k5-20020a170902ce0500b0016c02a1c335mr9263405plg.5.1657203180777;
-        Thu, 07 Jul 2022 07:13:00 -0700 (PDT)
-Received: from DESKTOP-8REGVGF.localdomain ([60.51.50.62])
-        by smtp.gmail.com with ESMTPSA id h7-20020a170902680700b0016bfbd99f64sm4447911plk.118.2022.07.07.07.12.58
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=iKA2qidqE9pif8xksazqs8JG1hIHW8krOJ1dxi9lmZ8=;
+        b=b0TPVTrPzzHFNKEMQFOHv2+py8YO7o2AbKxGEDKFqJJEHpUNtJsnTvR4apfTHC7M4m
+         bexrNvB3FNiPpNOmpN+PZx5rwAg7sOos9rboST/jBHTS0ED+svBCyybGWZ96nDdzaz7V
+         j9CZ66sE/teMpwwd8EyUAACJuWfdDgouu+2KVPNYFEsp9CFZg4HZ0MU1+BaMeCM77DLj
+         JP+r8f69Su3kGoGEzGtbWHhXkCEUxvYTKgo0g3u4dGCXTrz640pH9k/6e+nirexC2jZ1
+         rJuI2eAg87FxYAh2am0qhMk5qtrN3UvsZkZCgCqZ9JxPIJ/BKvnocddT+ywzOjzl14wh
+         3saw==
+X-Gm-Message-State: AJIora8dkhWZ7+QEZ3E1IbnsEQOf20mJVzHG1QtL4RjC/vf8DUX2Oun+
+        B9oHtWzSA/UUD/MqYYlfSSDR0bRI/gohUwqja3bOhl6oGhbXccUNGadF1ZmE/+6LIldkThHl4fN
+        dk84PkFtqNMoqWNMd
+X-Received: by 2002:adf:e949:0:b0:21d:89d4:91b3 with SMTP id m9-20020adfe949000000b0021d89d491b3mr2094534wrn.162.1657203259006;
+        Thu, 07 Jul 2022 07:14:19 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1t0tC7akjIJ0A2ue8fgkY10fu239iXuCRNeR9TTMvlyyTI5Zl5gI7Am80XPsX5PUO/VLRRMWw==
+X-Received: by 2002:adf:e949:0:b0:21d:89d4:91b3 with SMTP id m9-20020adfe949000000b0021d89d491b3mr2094472wrn.162.1657203258587;
+        Thu, 07 Jul 2022 07:14:18 -0700 (PDT)
+Received: from debian.home (2a01cb058d1194004161f17a6a9ad508.ipv6.abo.wanadoo.fr. [2a01:cb05:8d11:9400:4161:f17a:6a9a:d508])
+        by smtp.gmail.com with ESMTPSA id b4-20020a5d6344000000b0021d68a504cbsm12517211wrw.94.2022.07.07.07.14.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jul 2022 07:13:00 -0700 (PDT)
-From:   Sieng-Piaw Liew <liew.s.piaw@gmail.com>
-To:     chris.snook@gmail.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Sieng-Piaw Liew <liew.s.piaw@gmail.com>
-Subject: [PATCH net-next v2] net: ag71xx: switch to napi_build_skb() to reuse skbuff_heads
-Date:   Thu,  7 Jul 2022 22:10:56 +0800
-Message-Id: <20220707141056.2644-1-liew.s.piaw@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220706195213.6b751af8@kernel.org>
-References: <20220706195213.6b751af8@kernel.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        Thu, 07 Jul 2022 07:14:17 -0700 (PDT)
+Date:   Thu, 7 Jul 2022 16:14:15 +0200
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Marcin Szycik <marcin.szycik@linux.intel.com>
+Cc:     netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
+        davem@davemloft.net, xiyou.wangcong@gmail.com,
+        jesse.brandeburg@intel.com, gustavoars@kernel.org,
+        baowen.zheng@corigine.com, boris.sukholitko@broadcom.com,
+        edumazet@google.com, kuba@kernel.org, jhs@mojatatu.com,
+        jiri@resnulli.us, kurt@linutronix.de, pablo@netfilter.org,
+        pabeni@redhat.com, paulb@nvidia.com, simon.horman@corigine.com,
+        komachi.yoshiki@gmail.com, zhangkaiheb@126.com,
+        intel-wired-lan@lists.osuosl.org,
+        michal.swiatkowski@linux.intel.com, wojciech.drewek@intel.com,
+        alexandr.lobakin@intel.com, mostrows@earthlink.net,
+        paulus@samba.org
+Subject: Re: [RFC PATCH net-next v3 4/4] ice: Add support for PPPoE hardware
+ offload
+Message-ID: <20220707141415.GB7483@debian.home>
+References: <20220629143859.209028-1-marcin.szycik@linux.intel.com>
+ <20220629143859.209028-5-marcin.szycik@linux.intel.com>
+ <20220630231244.GC392@debian.home>
+ <7a706a7e-d3bd-b4da-fa68-2cabf3e75871@linux.intel.com>
+ <7aa3a974-6575-ade6-b863-feb25736ec0f@linux.intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7aa3a974-6575-ade6-b863-feb25736ec0f@linux.intel.com>
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-napi_build_skb() reuses NAPI skbuff_head cache in order to save some
-cycles on freeing/allocating skbuff_heads on every new Rx or completed
-Tx.
-Use napi_consume_skb() to feed the cache with skbuff_heads of completed
-Tx, so it's never empty. The budget parameter is added to indicate NAPI
-context, as a value of zero can be passed in the case of netpoll.
+On Tue, Jul 05, 2022 at 11:54:08AM +0200, Marcin Szycik wrote:
+> 
+> 
+> On 01-Jul-22 18:12, Marcin Szycik wrote:
+> > 
+> > 
+> > On 01-Jul-22 01:12, Guillaume Nault wrote:
+> >> On Wed, Jun 29, 2022 at 04:38:59PM +0200, Marcin Szycik wrote:
+> >>> Add support for creating PPPoE filters in switchdev mode. Add support
+> >>> for parsing PPPoE and PPP-specific tc options: pppoe_sid and ppp_proto.
+> >>>
+> >>> Example filter:
+> >>> tc filter add dev $PF1 ingress protocol ppp_ses prio 1 flower pppoe_sid \
+> >>>     1234 ppp_proto ip skip_sw action mirred egress redirect dev $VF1_PR
+> >>>
+> >>> Changes in iproute2 are required to use the new fields.
+> >>>
+> >>> ICE COMMS DDP package is required to create a filter as it contains PPPoE
+> >>> profiles. Added a warning message when loaded DDP package does not contain
+> >>> required profiles.
+> >>>
+> >>> Note: currently matching on vlan + PPPoE fields is not supported. Patch [0]
+> >>> will add this feature.
+> >>>
+> >>> [0] https://patchwork.ozlabs.org/project/intel-wired-lan/patch/20220420210048.5809-1-martyna.szapar-mudlaw@intel.com
+> >>
+> >> Out of curiosity, can ice direct PPPoE Session packets to different
+> >> queues with RSS (based on the session ID)?
+> > 
+> > Hardware should support it, but I'm not sure if it's possible with the current driver and how to configure it. I'll try to find out.
+> 
+> From what I understand, currently it's not possible to configure RSS for PPPoE session id, because ethtool does not support PPPoE.
 
-Signed-off-by: Sieng-Piaw Liew <liew.s.piaw@gmail.com>
----
- drivers/net/ethernet/atheros/ag71xx.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/net/ethernet/atheros/ag71xx.c b/drivers/net/ethernet/atheros/ag71xx.c
-index 1c6ea6766aa1..e461f4764066 100644
---- a/drivers/net/ethernet/atheros/ag71xx.c
-+++ b/drivers/net/ethernet/atheros/ag71xx.c
-@@ -786,7 +786,7 @@ static bool ag71xx_check_dma_stuck(struct ag71xx *ag)
- 	return false;
- }
- 
--static int ag71xx_tx_packets(struct ag71xx *ag, bool flush)
-+static int ag71xx_tx_packets(struct ag71xx *ag, bool flush, int budget)
- {
- 	struct ag71xx_ring *ring = &ag->tx_ring;
- 	int sent = 0, bytes_compl = 0, n = 0;
-@@ -825,7 +825,7 @@ static int ag71xx_tx_packets(struct ag71xx *ag, bool flush)
- 		if (!skb)
- 			continue;
- 
--		dev_kfree_skb_any(skb);
-+		napi_consume_skb(skb, budget);
- 		ring->buf[i].tx.skb = NULL;
- 
- 		bytes_compl += ring->buf[i].tx.len;
-@@ -970,7 +970,7 @@ static void ag71xx_fast_reset(struct ag71xx *ag)
- 	mii_reg = ag71xx_rr(ag, AG71XX_REG_MII_CFG);
- 	rx_ds = ag71xx_rr(ag, AG71XX_REG_RX_DESC);
- 
--	ag71xx_tx_packets(ag, true);
-+	ag71xx_tx_packets(ag, true, 0);
- 
- 	reset_control_assert(ag->mac_reset);
- 	usleep_range(10, 20);
-@@ -1657,7 +1657,7 @@ static int ag71xx_rx_packets(struct ag71xx *ag, int limit)
- 		ndev->stats.rx_packets++;
- 		ndev->stats.rx_bytes += pktlen;
- 
--		skb = build_skb(ring->buf[i].rx.rx_buf, ag71xx_buffer_size(ag));
-+		skb = napi_build_skb(ring->buf[i].rx.rx_buf, ag71xx_buffer_size(ag));
- 		if (!skb) {
- 			skb_free_frag(ring->buf[i].rx.rx_buf);
- 			goto next;
-@@ -1703,7 +1703,7 @@ static int ag71xx_poll(struct napi_struct *napi, int limit)
- 	int tx_done, rx_done;
- 	u32 status;
- 
--	tx_done = ag71xx_tx_packets(ag, false);
-+	tx_done = ag71xx_tx_packets(ag, false, limit);
- 
- 	netif_dbg(ag, rx_status, ndev, "processing RX ring\n");
- 	rx_done = ag71xx_rx_packets(ag, limit);
--- 
-2.17.1
+Thanks, that's interesting. PPPoE support in RSS would have been useful
+to me a few years ago. I've heard some former collegues tried to use
+eBPF to work around this limitation and spread packets to different
+cores.
 
