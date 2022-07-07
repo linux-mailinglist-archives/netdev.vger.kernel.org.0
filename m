@@ -2,129 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D289756A534
-	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 16:14:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DE3556A569
+	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 16:31:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235295AbiGGOOY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jul 2022 10:14:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41896 "EHLO
+        id S229934AbiGGObJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jul 2022 10:31:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235234AbiGGOOX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 10:14:23 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7C1A52F3A5
-        for <netdev@vger.kernel.org>; Thu,  7 Jul 2022 07:14:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657203261;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=iKA2qidqE9pif8xksazqs8JG1hIHW8krOJ1dxi9lmZ8=;
-        b=F97WQ0ih57hOiHcfRQZ85dvtfLGuWlDSyV1idzYhdZ3k8vsrAf1jcXhOPGgEtoUB8vOpmk
-        Ny5pl9e2IjZUGWMJjr8F7g3C18BBcC2XOLn/p1HJTHij5LehmPw9OZiqOnNNs+474zHUkt
-        Gu01uGQYU5HaZyKpGhjD3YFb8ZU4C6Q=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-516-tOptrANyOA-Aa8r6ycdNFw-1; Thu, 07 Jul 2022 10:14:20 -0400
-X-MC-Unique: tOptrANyOA-Aa8r6ycdNFw-1
-Received: by mail-wr1-f70.google.com with SMTP id h29-20020adfaa9d000000b0021d67fc0b4aso2581480wrc.9
-        for <netdev@vger.kernel.org>; Thu, 07 Jul 2022 07:14:19 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=iKA2qidqE9pif8xksazqs8JG1hIHW8krOJ1dxi9lmZ8=;
-        b=b0TPVTrPzzHFNKEMQFOHv2+py8YO7o2AbKxGEDKFqJJEHpUNtJsnTvR4apfTHC7M4m
-         bexrNvB3FNiPpNOmpN+PZx5rwAg7sOos9rboST/jBHTS0ED+svBCyybGWZ96nDdzaz7V
-         j9CZ66sE/teMpwwd8EyUAACJuWfdDgouu+2KVPNYFEsp9CFZg4HZ0MU1+BaMeCM77DLj
-         JP+r8f69Su3kGoGEzGtbWHhXkCEUxvYTKgo0g3u4dGCXTrz640pH9k/6e+nirexC2jZ1
-         rJuI2eAg87FxYAh2am0qhMk5qtrN3UvsZkZCgCqZ9JxPIJ/BKvnocddT+ywzOjzl14wh
-         3saw==
-X-Gm-Message-State: AJIora8dkhWZ7+QEZ3E1IbnsEQOf20mJVzHG1QtL4RjC/vf8DUX2Oun+
-        B9oHtWzSA/UUD/MqYYlfSSDR0bRI/gohUwqja3bOhl6oGhbXccUNGadF1ZmE/+6LIldkThHl4fN
-        dk84PkFtqNMoqWNMd
-X-Received: by 2002:adf:e949:0:b0:21d:89d4:91b3 with SMTP id m9-20020adfe949000000b0021d89d491b3mr2094534wrn.162.1657203259006;
-        Thu, 07 Jul 2022 07:14:19 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1t0tC7akjIJ0A2ue8fgkY10fu239iXuCRNeR9TTMvlyyTI5Zl5gI7Am80XPsX5PUO/VLRRMWw==
-X-Received: by 2002:adf:e949:0:b0:21d:89d4:91b3 with SMTP id m9-20020adfe949000000b0021d89d491b3mr2094472wrn.162.1657203258587;
-        Thu, 07 Jul 2022 07:14:18 -0700 (PDT)
-Received: from debian.home (2a01cb058d1194004161f17a6a9ad508.ipv6.abo.wanadoo.fr. [2a01:cb05:8d11:9400:4161:f17a:6a9a:d508])
-        by smtp.gmail.com with ESMTPSA id b4-20020a5d6344000000b0021d68a504cbsm12517211wrw.94.2022.07.07.07.14.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jul 2022 07:14:17 -0700 (PDT)
-Date:   Thu, 7 Jul 2022 16:14:15 +0200
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Marcin Szycik <marcin.szycik@linux.intel.com>
-Cc:     netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        davem@davemloft.net, xiyou.wangcong@gmail.com,
-        jesse.brandeburg@intel.com, gustavoars@kernel.org,
-        baowen.zheng@corigine.com, boris.sukholitko@broadcom.com,
-        edumazet@google.com, kuba@kernel.org, jhs@mojatatu.com,
-        jiri@resnulli.us, kurt@linutronix.de, pablo@netfilter.org,
-        pabeni@redhat.com, paulb@nvidia.com, simon.horman@corigine.com,
-        komachi.yoshiki@gmail.com, zhangkaiheb@126.com,
-        intel-wired-lan@lists.osuosl.org,
-        michal.swiatkowski@linux.intel.com, wojciech.drewek@intel.com,
-        alexandr.lobakin@intel.com, mostrows@earthlink.net,
-        paulus@samba.org
-Subject: Re: [RFC PATCH net-next v3 4/4] ice: Add support for PPPoE hardware
- offload
-Message-ID: <20220707141415.GB7483@debian.home>
-References: <20220629143859.209028-1-marcin.szycik@linux.intel.com>
- <20220629143859.209028-5-marcin.szycik@linux.intel.com>
- <20220630231244.GC392@debian.home>
- <7a706a7e-d3bd-b4da-fa68-2cabf3e75871@linux.intel.com>
- <7aa3a974-6575-ade6-b863-feb25736ec0f@linux.intel.com>
+        with ESMTP id S229491AbiGGObI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 10:31:08 -0400
+Received: from kylie.crudebyte.com (kylie.crudebyte.com [5.189.157.229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4980F2E9D7
+        for <netdev@vger.kernel.org>; Thu,  7 Jul 2022 07:31:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
+        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
+        Content-ID:Content-Description;
+        bh=0q3pCVaNC6eZ01+RxXhdBNZtOsM0QfCCjik57QpvYi8=; b=aq7xLVp1nBc814w1LoFZQRxHY4
+        RdHgJNrAyUYrUNyaZyDcbl4ssPoifrHNjXiwqSr+s49l3Hooqom+Wfk2o1j1fflKHCy4GRbbXLXI6
+        u4wvwbhuavhpKfuKDVUy9iW1cvmT+V9DXOCHa6tMYvgbiBtDGhrka4qqnXnT+aUmOyQxgIMqLYyLI
+        NAGmfoPF4IL+yTNokFPz6pQU3F1XL3M0hrEgIieT3Li3XIHUKSUfVPIkgg5vDZxKc7Kr0Kabb1ufW
+        nL7QKYVl/VwRDdQJHwFVfCtFmAXvxoLeL0Wkafz0M1i1vSiMd9zobyTw7L8gCef4dBKEmxFYaUOQh
+        JeiF0wceE/s6/wSMosjoQr4ETfvuhcpx3iWcOBVQDP77J98u9mMOMGDbDLxVMI1BpczTpeLwpgt0Z
+        ssg5Ws5HKGQkazPoqdEjfsZJ77qAnno4p29PNZSvukB2EDFEaNotElt5uNgMO10yItI927SwZqESW
+        ui6rwroCpXHaZKjkZZlK3QuRwVrv4FsRrLYmLpTJX0N1Pxm4sGEyi5SMB31vkoiTq8hCbECJ5yfID
+        MdncDaMZElPfWrCeB/xfhmBxRopuFu0y7Tt2plv2uSv+PXhg2pmyXnWp+QL/QGGGR+cvbE/KV+8/t
+        QmvBzI3GfeytwblPzbB9bqtdnCGPk7v/PyRS3ZAPs=;
+From:   Christian Schoenebeck <linux_oss@crudebyte.com>
+To:     Dominique Martinet <asmadeus@codewreck.org>,
+        Greg Kurz <groug@kaod.org>
+Cc:     v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
+        Eric Van Hensbergen <ericvh@gmail.com>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        Nikolay Kichukov <nikolay@oldum.net>
+Subject: Re: [PATCH v4 00/12] remove msize limit in virtio transport
+Date:   Thu, 07 Jul 2022 16:30:55 +0200
+Message-ID: <7534209.h2h7kyIpJd@silver>
+In-Reply-To: <cover.1640870037.git.linux_oss@crudebyte.com>
+References: <cover.1640870037.git.linux_oss@crudebyte.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7aa3a974-6575-ade6-b863-feb25736ec0f@linux.intel.com>
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 05, 2022 at 11:54:08AM +0200, Marcin Szycik wrote:
+On Donnerstag, 30. Dezember 2021 14:23:18 CEST Christian Schoenebeck wrote:
+> This series aims to get get rid of the current 500k 'msize' limitation in
+> the 9p virtio transport, which is currently a bottleneck for performance
+> of 9p mounts.
+[...]
+> KNOWN LIMITATION:
+> 
+> With this series applied I can run
+> 
+>   QEMU host <-> 9P virtio <-> Linux guest
+> 
+> with up to slightly below 4 MB msize [4186112 = (1024-2) * 4096]. If I try
+> to run it with exactly 4 MB (4194304) it currently hits a limitation on
+> QEMU side:
+> 
+>   qemu-system-x86_64: virtio: too many write descriptors in indirect table
+> 
+> That's because QEMU currently has a hard coded limit of max. 1024 virtio
+> descriptors per vring slot (i.e. per virtio message), see to do (1.) below.
 > 
 > 
-> On 01-Jul-22 18:12, Marcin Szycik wrote:
-> > 
-> > 
-> > On 01-Jul-22 01:12, Guillaume Nault wrote:
-> >> On Wed, Jun 29, 2022 at 04:38:59PM +0200, Marcin Szycik wrote:
-> >>> Add support for creating PPPoE filters in switchdev mode. Add support
-> >>> for parsing PPPoE and PPP-specific tc options: pppoe_sid and ppp_proto.
-> >>>
-> >>> Example filter:
-> >>> tc filter add dev $PF1 ingress protocol ppp_ses prio 1 flower pppoe_sid \
-> >>>     1234 ppp_proto ip skip_sw action mirred egress redirect dev $VF1_PR
-> >>>
-> >>> Changes in iproute2 are required to use the new fields.
-> >>>
-> >>> ICE COMMS DDP package is required to create a filter as it contains PPPoE
-> >>> profiles. Added a warning message when loaded DDP package does not contain
-> >>> required profiles.
-> >>>
-> >>> Note: currently matching on vlan + PPPoE fields is not supported. Patch [0]
-> >>> will add this feature.
-> >>>
-> >>> [0] https://patchwork.ozlabs.org/project/intel-wired-lan/patch/20220420210048.5809-1-martyna.szapar-mudlaw@intel.com
-> >>
-> >> Out of curiosity, can ice direct PPPoE Session packets to different
-> >> queues with RSS (based on the session ID)?
-> > 
-> > Hardware should support it, but I'm not sure if it's possible with the current driver and how to configure it. I'll try to find out.
+> STILL TO DO:
 > 
-> From what I understand, currently it's not possible to configure RSS for PPPoE session id, because ethtool does not support PPPoE.
+>   1. Negotiating virtio "Queue Indirect Size" (MANDATORY):
+> 
+>     The QEMU issue described above must be addressed by negotiating the
+>     maximum length of virtio indirect descriptor tables on virtio device
+>     initialization. This would not only avoid the QEMU error above, but
+>     would also allow msize of >4MB in future. Before that change can be done
+>     on Linux and QEMU sides though, it first requires a change to the virtio
+>     specs. Work on that on the virtio specs is in progress:
+> 
+>     https://github.com/oasis-tcs/virtio-spec/issues/122
+> 
+>     This is not really an issue for testing this series. Just stick to max.
+>     msize=4186112 as described above and you will be fine. However for the
+>     final PR this should obviously be addressed in a clean way.
 
-Thanks, that's interesting. PPPoE support in RSS would have been useful
-to me a few years ago. I've heard some former collegues tried to use
-eBPF to work around this limitation and spread packets to different
-cores.
+As there is no progress on virtio spec side in sight, I'm considering to 
+handle this issue in upcoming v5 by simply assuming (hard coding) that 9p 
+server supports exactly up to 1024 virtio descriptors (memory segments) per 
+round trip message. That's maybe a bit unclean, but that's what other virtio 
+drivers in the Linux kernel do for many years as well, so I am not expecting a 
+negative issue in practice.
+
+And I mean, when we talk about 9p + virtio, that actually implies QEMU being 
+the 9p server, right? At least I am not aware of another 9p server 
+implementation supporting virtio transport (nor any QEMU version that ever 
+supported less than 1024 virtio descriptors). Maybe Microsoft WSL? Not sure.
+
+Best regards,
+Christian Schoenebeck
+
 
