@@ -2,57 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2777B569BF6
-	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 09:46:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A461569C14
+	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 09:49:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235090AbiGGHqG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jul 2022 03:46:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32822 "EHLO
+        id S234091AbiGGHs0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jul 2022 03:48:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234756AbiGGHqB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 03:46:01 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD65B32EE0;
-        Thu,  7 Jul 2022 00:46:00 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id v16so13632529wrd.13;
-        Thu, 07 Jul 2022 00:46:00 -0700 (PDT)
+        with ESMTP id S231532AbiGGHsY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 03:48:24 -0400
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82125326FB;
+        Thu,  7 Jul 2022 00:48:21 -0700 (PDT)
+Received: by mail-wm1-x333.google.com with SMTP id bi22-20020a05600c3d9600b003a04de22ab6so10228914wmb.1;
+        Thu, 07 Jul 2022 00:48:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=LKzuTu76HYq009jrFW4ITnArK6nwSQEv+W7XUzoR33w=;
-        b=YgLS/IVL8oJWf9znw9oBwb5dk75wPgcOWZKPGd8C7nYr/y9V3x0Ntie2J/s+1Eqyyi
-         qQpcUAA/lpMg2ASeAPMN1qOUEsr7hZlW/HzPSIF4MvumFnjFJ+HGDfJSXwLeXNYj0ZXF
-         9FhIpkpwDIokwLnR8GNvrdDT1C/hTm9FldOHRT3uOqw5MmcKd82DAV8igV4Iro6cR3fJ
-         wkzYxYFhlb7dZPDlPLq1twTHw4Jq/+bprDDv8Hs55Oi8IPiaHV/XZxfVrvq+RaHpGbfF
-         QPUvpZoL+DFH9R+TXgyh7ppWyvulqYCXS5+4bVN/OfAFBzO+A+HkN78xXlTvDZj97+HZ
-         Wn8g==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=DHlqTFfBmwKmCk2ZbxLB23OQys0+sxL93SDYeC5xPbE=;
+        b=hCZQp4+EB/upjBt44wtAfp/QH7vyw2GmFGgVm+9y9uNaDctka7LU1eFDR9jBn56iDp
+         bux3ISM90LWwF7xFZgQXu5BWn4wkGokkaQIh1yk/DDy/dFhTgswkyhJdRNRs6lKFOfEp
+         yKNMgqi9L4Wr/je75ZnQZOdq2Q7Xk8DFA7YK2IfMJMnBoOYtYkcapVjiWKXKB2wQ4uZ2
+         OKtwlbBqDOF9+KOOBCi3Rot2d6MSKuSaXQ+vUP0z51kV0jI5vwYRjLOyAinulcdNwgsF
+         +2eqiorkUpx6Yj0D/bnvT+QikvWDxGbILDmd6nbC0B7dIddLKqSLzUYDFehmFIZCeKWV
+         7lxw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=LKzuTu76HYq009jrFW4ITnArK6nwSQEv+W7XUzoR33w=;
-        b=2TByTxhh72/GMtlhH3bzMLYoAuGTGxrHYyfs7qwH0mjLjxRwchZPqnyT+7rv+FUmL8
-         FnioyiwztcqfmgpRKag/CAOd65cKIlwvkisd/sX5n7MnAJkXlKm349Gjb0Tz+bAE7MyZ
-         D+gefPadrdNHIQFLNMfflzz7VbhOoaeYrn4y0XdA9B3kS1r3WUHOvejZV0Ti2/BWSB29
-         Oc0Pl1C7mu1fQMY+5p3stjirZAvJ6rPfwC5pzJexxr6ZQlcU2beJijl/3YTbZnh5bR17
-         h9CBdvD/5yIdQmOTiWF0MfUD4wyv9rmJy9w0PDnIeQP4k+uUjRkDO5l0IVLp0zUPWKoO
-         XiXg==
-X-Gm-Message-State: AJIora+zIed5NFd4J7S04ZiLFQBN5dyJpyJxRPIAbKp8L/1TwxqxTlAC
-        4FYu0dZjuZV0+u29uq+Xjv4=
-X-Google-Smtp-Source: AGRyM1uhNJyllReG0ZArRd/Db+rq+lfBdkqIvwYsQC/sf+JccUaUBgU538nikPnfBjvsYoPAzW47Nw==
-X-Received: by 2002:a5d:5505:0:b0:21d:6549:70bd with SMTP id b5-20020a5d5505000000b0021d654970bdmr23439119wrv.612.1657179959185;
-        Thu, 07 Jul 2022 00:45:59 -0700 (PDT)
-Received: from orome (p200300e41f12c800f22f74fffe1f3a53.dip0.t-ipconnect.de. [2003:e4:1f12:c800:f22f:74ff:fe1f:3a53])
-        by smtp.gmail.com with ESMTPSA id n15-20020a05600c4f8f00b003a1980d55c4sm16955077wmq.47.2022.07.07.00.45.57
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=DHlqTFfBmwKmCk2ZbxLB23OQys0+sxL93SDYeC5xPbE=;
+        b=N12M8KhoCHV95m2yhxVLu9c83HPBuf7mILgAzbEqi/MKZsT6qM4o5ztDFkTws4b2+0
+         R2eJu7Cu1Akv/V5bY94zt5+r2ddXQhtgYDOpyKgwlLRM7xzuamXg/hJQlqDfz9iwqyIx
+         VJi5DYrsCOO5e7+5S0EKROQvI8kgPAmOf1RdNXOsx8MG5g1tD8IgcgoAtkiSk/oTp/p9
+         dUjebq8ORfqgzOEDw7pVZ50mGmQVlT5mlTCmRNA8xSWccREjrcXiAwVDfhiVuVwFI4hT
+         RyuM9+xdzMcw2I33769X+qPLShIOz/Tq6y41zjI7cH4/IMXaNlyi2hxDaH1+zzvbVUgN
+         lVLQ==
+X-Gm-Message-State: AJIora9mSlghk4tklKavkNRkPtlkv/MHuYDMTpcsDAKQc8bf6PJ1FqUz
+        EoFL2kehI1vgwK/y9GyfH0s=
+X-Google-Smtp-Source: AGRyM1tvrdfRxK5Tczp267q4ABTQ28COkriB37z2fHu5E+xPpKRgSvz29jQiUs3n2M1B4Nib79VWEw==
+X-Received: by 2002:a05:600c:3593:b0:3a1:8909:b5b2 with SMTP id p19-20020a05600c359300b003a18909b5b2mr2917280wmq.77.1657180099958;
+        Thu, 07 Jul 2022 00:48:19 -0700 (PDT)
+Received: from localhost (p200300e41f12c800f22f74fffe1f3a53.dip0.t-ipconnect.de. [2003:e4:1f12:c800:f22f:74ff:fe1f:3a53])
+        by smtp.gmail.com with ESMTPSA id k23-20020a7bc317000000b003976fbfbf00sm29048940wmj.30.2022.07.07.00.48.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jul 2022 00:45:58 -0700 (PDT)
-Date:   Thu, 7 Jul 2022 09:45:56 +0200
+        Thu, 07 Jul 2022 00:48:19 -0700 (PDT)
 From:   Thierry Reding <thierry.reding@gmail.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
+To:     Thierry Reding <thierry.reding@gmail.com>
+Cc:     Jon Hunter <jonathanh@nvidia.com>,
+        Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jon Hunter <jonathanh@nvidia.com>,
         "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -60,17 +59,12 @@ Cc:     Rob Herring <robh+dt@kernel.org>,
         Bhadram Varka <vbhadram@nvidia.com>,
         devicetree@vger.kernel.org, linux-tegra@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: Re: [PATCH v3 5/9] dt-bindings: net: Add Tegra234 MGBE
-Message-ID: <YsaPNKSeQcfYw0FK@orome>
-References: <20220706213255.1473069-1-thierry.reding@gmail.com>
- <20220706213255.1473069-6-thierry.reding@gmail.com>
- <f85d59ba-4f2c-130f-2455-bc28ac060f8c@linaro.org>
+Subject: [PATCH v4 0/9] tegra: Add support for MGBE controller
+Date:   Thu,  7 Jul 2022 09:48:09 +0200
+Message-Id: <20220707074818.1481776-1-thierry.reding@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="X8MNCt9n/wN8o+J9"
-Content-Disposition: inline
-In-Reply-To: <f85d59ba-4f2c-130f-2455-bc28ac060f8c@linaro.org>
-User-Agent: Mutt/2.2.6 (2022-06-05)
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -81,53 +75,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Thierry Reding <treding@nvidia.com>
 
---X8MNCt9n/wN8o+J9
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Hi everyone,
 
-On Thu, Jul 07, 2022 at 08:56:49AM +0200, Krzysztof Kozlowski wrote:
-> On 06/07/2022 23:32, Thierry Reding wrote:
-[...]
-> > +        - mac
-> > +        - pcs
-> > +
-> > +  interconnects:
-> > +    items:
-> > +      - description: memory read client
-> > +      - description: memory write client
-> > +
-> > +  interconnect-names:
-> > +    items:
-> > +      - const: dma-mem # read
->=20
-> I propose to drop the comment - it is obvious from "interconnects" above.
+This series adds support for the MGBE Ethernet controller that can be
+found on Tegra234 SoCs.
 
-Yeah, fair enough. I've addressed all of the other comments in v4 as
-well.
+In addition to patches 1-4 I plan to apply patches 5-8 to the Tegra tree
+as well once the DT bindings have been reviewed and finalized. Patch 9
+can go through the net-next tree independently since there are no
+dependencies.
 
-Thanks for the review!
+I've rebased this onto v5.19-rc1 rather than linux-next so that the bots
+will hopefully have an easier time applying this. The series still
+applies fine to linux-next (except for a minor conflict in patch 4 which
+I can resolve in the Tegra tree), so patch 9 should apply fine on
+net-next as well.
+
+Changes in v4:
+- address review comments from Krzysztof, see patch 5 for details
+
+Changes in v3:
+- address remaining review comments on DT bindings
+
+Changes in v2:
+- address some review comments on DT bindings
+
 Thierry
 
---X8MNCt9n/wN8o+J9
-Content-Type: application/pgp-signature; name="signature.asc"
+Bhadram Varka (3):
+  dt-bindings: net: Add Tegra234 MGBE
+  arm64: defconfig: Enable Tegra MGBE driver
+  stmmac: tegra: Add MGBE support
 
------BEGIN PGP SIGNATURE-----
+Thierry Reding (6):
+  dt-bindings: power: Add Tegra234 MGBE power domains
+  dt-bindings: Add Tegra234 MGBE clocks and resets
+  dt-bindings: memory: Add Tegra234 MGBE memory clients
+  memory: tegra: Add MGBE memory clients for Tegra234
+  arm64: tegra: Add MGBE nodes on Tegra234
+  arm64: tegra: Enable MGBE on Jetson AGX Orin Developer Kit
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmLGjzQACgkQ3SOs138+
-s6Gv4Q//bbgi+ifGsHmooNRh+8eZisJE63igGhF8VcPWQfg5KVsHp9t29GRGjYDZ
-kEJNUNfwY+MNRthNCkSZ4TELThrtWfkQ9JczYVL77zvs4emll0uPKnLvInBq4yBl
-JtOPBsfBJ6smp7q+24r2MxFk/8UqkWWHquGfxsD4Y9o22LpTRtVoqlxpjwQlcKDm
-FRIwsNJVnR3E7LJvJgiBud11nNDJSFChWsx/Fs8lQUGbtw4/gVqvBDWajaQG936z
-ondimFfrYTlKcPZ17taf9Ye/hkuK4HqxqT6V/kZ37iavFePjyE4N353UiZmDP7wx
-jbwwH/ughM5r3/9uyouSHcUOEsksnZjwVz7AeeWl18DvzXsFRhuVjji2gbA8MkY5
-PKmBndRUIkAXror5j/GI5J1JwGhbPF1Zj8StlD743wkWj3N7E6QOrrQsU2Xuzoez
-KoADKZQ12dkbnbUOAmM6OHL9xVQ0rk82xEKKZS9a64IK5jsOxhnvqJuozZEnwUeG
-esyoDtOz65fuNrqwYmdDDUPcRB75CEB7nclBzigpqCL3sukRVttqQRKGgtjU1rt2
-5V/wk7us2EgtcxiBxXgz59ugg8Bp7K1GzLCBqrpVNbkqklfezUkQz+od/+5vbgxA
-sZpFqmOrq8Ta3Cq95u2z2tDvI+4vYjLPLG0r2ZFojct/Ale/V4E=
-=f3wq
------END PGP SIGNATURE-----
+ .../bindings/net/nvidia,tegra234-mgbe.yaml    | 162 ++++++++++
+ .../nvidia/tegra234-p3737-0000+p3701-0000.dts |  21 ++
+ arch/arm64/boot/dts/nvidia/tegra234.dtsi      | 136 ++++++++
+ arch/arm64/configs/defconfig                  |   1 +
+ drivers/memory/tegra/tegra234.c               |  80 +++++
+ drivers/net/ethernet/stmicro/stmmac/Kconfig   |   6 +
+ drivers/net/ethernet/stmicro/stmmac/Makefile  |   1 +
+ .../net/ethernet/stmicro/stmmac/dwmac-tegra.c | 290 ++++++++++++++++++
+ include/dt-bindings/clock/tegra234-clock.h    | 101 ++++++
+ include/dt-bindings/memory/tegra234-mc.h      |  20 ++
+ .../dt-bindings/power/tegra234-powergate.h    |   1 +
+ include/dt-bindings/reset/tegra234-reset.h    |   8 +
+ 12 files changed, 827 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/nvidia,tegra234-mgbe.yaml
+ create mode 100644 drivers/net/ethernet/stmicro/stmmac/dwmac-tegra.c
 
---X8MNCt9n/wN8o+J9--
+-- 
+2.36.1
+
