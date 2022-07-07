@@ -2,65 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 76410569BD7
-	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 09:43:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92704569BDE
+	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 09:43:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234864AbiGGHf7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jul 2022 03:35:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51420 "EHLO
+        id S234811AbiGGHir (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jul 2022 03:38:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234700AbiGGHfm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 03:35:42 -0400
-Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 245BD31DED;
-        Thu,  7 Jul 2022 00:35:40 -0700 (PDT)
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 266NFQsV008099;
-        Thu, 7 Jul 2022 00:35:29 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=pfpt0220;
- bh=QuNfcQhY+JPBowd3H/lN1VuqQOCw4DFZgGxLjGNGm9E=;
- b=XV/Ya2rptJV9UU7I/0dDTWKlVHe5jRdCqtufcDHJDAIfAYz4rTnijuUyyehp4D+p1YGx
- Qw6Rj6uElkfsvYw5vqxqYGx8wVZpLaqov//fJnAqV5Oa+bNTbd2u/T1fL/AG+AdSa1zB
- JA8on8EqnZRLIIg9grgjJrcrEsv/JGa9RrArS656FqJCsVpHJszdxH6vLoDYyiZftQcX
- ocmDIyxuNeZvhoG6Va9A1S2bi15bT3/OGnNUaJ0HFSS4t2ZTpcrCr48IxmIMytgpqOTt
- sNzxR8k+TTki8mSqcWqHaT8O5AYX8hmsFUz3AZHBWcGjt5ZN7WwwkTdw3nMypoJXFxTJ 9A== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3h5kwj1gv4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 07 Jul 2022 00:35:29 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 7 Jul
- 2022 00:35:26 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Thu, 7 Jul 2022 00:35:26 -0700
-Received: from IPBU-BLR-SERVER1.marvell.com (IPBU-BLR-SERVER1.marvell.com [10.28.8.41])
-        by maili.marvell.com (Postfix) with ESMTP id 5BA653F7061;
-        Thu,  7 Jul 2022 00:35:24 -0700 (PDT)
-From:   Ratheesh Kannoth <rkannoth@marvell.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <sgoutham@marvell.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        Ratheesh Kannoth <rkannoth@marvell.com>
-Subject: [net-next PATCH V3 12/12] octeontx2-af: Enable Exact match flag in kex profile
-Date:   Thu, 7 Jul 2022 13:03:53 +0530
-Message-ID: <20220707073353.2752279-13-rkannoth@marvell.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220707073353.2752279-1-rkannoth@marvell.com>
-References: <20220707073353.2752279-1-rkannoth@marvell.com>
+        with ESMTP id S235021AbiGGHih (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 03:38:37 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0A9769E
+        for <netdev@vger.kernel.org>; Thu,  7 Jul 2022 00:38:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657179489;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=WX46C6SaiFZW6Bz+qhhwBvhSeitlVtlZ6EC1ewTE/2o=;
+        b=QQw20igDtLWpevGMAGk2ViEIia9g2BiOaFI/8zDMoPbdF0jExwRep+cXcV3DaWwNrh4Pze
+        yNXcBN7mOvcNCRCA3iSsOyoj8P+f9n5DUoCh14LL1xUeTmGwbgWVw7ayvuSExqGEiqIMA0
+        ScKCZJ9+SCWJwS3ryCAUQnH6JIEnQP0=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-605-FgBD4aaNN6eR91aA-TcblA-1; Thu, 07 Jul 2022 03:38:08 -0400
+X-MC-Unique: FgBD4aaNN6eR91aA-TcblA-1
+Received: by mail-wm1-f72.google.com with SMTP id bg6-20020a05600c3c8600b003a03d5d19e4so9203097wmb.1
+        for <netdev@vger.kernel.org>; Thu, 07 Jul 2022 00:38:08 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=WX46C6SaiFZW6Bz+qhhwBvhSeitlVtlZ6EC1ewTE/2o=;
+        b=Fi2oW9NSk8ok6olGIsXskZl/SC5OSchx80VFSz2v6DyjTENJLWIydp5JL+C5qx0UcN
+         Obttw1DmLNEd3tg6CTeJotYdF8O2rv0NcA+Z/ykmkY+dI4dJ0VwUoyxrm/I92ZSvsEnu
+         k9cqSXwQZM8ImNDbouRGpfBNjoHafel6e9+FskQQyjJa2qcqQEOIphhUC1pOagB9TJgo
+         LQAlfOpUBAk3LB4dZXEB60T223J31MAGkYQuknVaXxOwPIyWYVTq56HiGKwKg/1MmseH
+         +wLy2b9fIJDSpwJoIRC8Qu53VZpsEjbzznTYWpanbpdck5zOaEksMKIRta7ntyi1UuYN
+         WVTQ==
+X-Gm-Message-State: AJIora8W7olxkFBHsG71FzCFfc7pd6hlAiia5+TDSMeCHZR7jBds2X5+
+        RRIU6Cvx3h04A8q7/XU8pMic1oqN6G6MgKdXYHeTBJTcVf5M3U1FaZVGMIk9nr40ZA++XmDf3c9
+        LtlyePLbqeeGvaFwW
+X-Received: by 2002:adf:ed41:0:b0:210:20a5:26c2 with SMTP id u1-20020adfed41000000b0021020a526c2mr39547896wro.603.1657179487515;
+        Thu, 07 Jul 2022 00:38:07 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1v/vqSfo20QsMtEQluvvlGkr+1eY0n28mvYI0x+egb5SCvFuJKh+4akuhj0vO3QUCQmshva3A==
+X-Received: by 2002:adf:ed41:0:b0:210:20a5:26c2 with SMTP id u1-20020adfed41000000b0021020a526c2mr39547879wro.603.1657179487310;
+        Thu, 07 Jul 2022 00:38:07 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-106-148.dyn.eolo.it. [146.241.106.148])
+        by smtp.gmail.com with ESMTPSA id r23-20020a05600c321700b003a03564a005sm23001766wmp.10.2022.07.07.00.38.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Jul 2022 00:38:06 -0700 (PDT)
+Message-ID: <4a66c4b6e6d5147b7545ff3e725f76d0169d96d1.camel@redhat.com>
+Subject: Re: [PATCH] net: macsec: fix potential resource leak in
+ macsec_add_rxsa() and macsec_add_txsa()
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Jianglei Nie <niejianglei2021@163.com>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Thu, 07 Jul 2022 09:38:05 +0200
+In-Reply-To: <20220706074826.2254689-1-niejianglei2021@163.com>
+References: <20220706074826.2254689-1-niejianglei2021@163.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: 0kFqiA9kOF7vndlvjNAQL5VFVS1InrVc
-X-Proofpoint-GUID: 0kFqiA9kOF7vndlvjNAQL5VFVS1InrVc
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-07_06,2022-06-28_01,2022-06-22_01
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -68,38 +78,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Enabled EXACT match flag in Kex default profile. Since
-there is no space in key, NPC_PARSE_NIBBLE_ERRCODE
-is removed
+hello,
 
-Signed-off-by: Ratheesh Kannoth <rkannoth@marvell.com>
----
- drivers/net/ethernet/marvell/octeontx2/af/npc_profile.h | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+On Wed, 2022-07-06 at 15:48 +0800, Jianglei Nie wrote:
+> init_rx_sa() allocates relevant resource for rx_sa->stats and rx_sa->
+> key.tfm with alloc_percpu() and macsec_alloc_tfm(). When some error
+> occurs after init_rx_sa() is called in macsec_add_rxsa(), the function
+> released rx_sa with kfree() without releasing rx_sa->stats and rx_sa->
+> key.tfm, which will lead to a resource leak.
+> 
+> We should call macsec_rxsa_put() instead of kfree() to decrease the ref
+> count of rx_sa and release the relevant resource if the refcount is 0.
+> The same bug exists in macsec_add_txsa() for tx_sa as well. This patch
+> fixes the above two bugs.
+> 
+> Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/npc_profile.h b/drivers/net/ethernet/marvell/octeontx2/af/npc_profile.h
-index 4180376fa676..a820bad3abb2 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/npc_profile.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/npc_profile.h
-@@ -155,7 +155,7 @@
- 
- /* Rx parse key extract nibble enable */
- #define NPC_PARSE_NIBBLE_INTF_RX	(NPC_PARSE_NIBBLE_CHAN | \
--					 NPC_PARSE_NIBBLE_ERRCODE | \
-+					 NPC_PARSE_NIBBLE_L2L3_BCAST | \
- 					 NPC_PARSE_NIBBLE_LA_LTYPE | \
- 					 NPC_PARSE_NIBBLE_LB_LTYPE | \
- 					 NPC_PARSE_NIBBLE_LC_LTYPE | \
-@@ -15123,7 +15123,8 @@ static struct npc_mcam_kex npc_mkex_default = {
- 	.kpu_version = NPC_KPU_PROFILE_VER,
- 	.keyx_cfg = {
- 		/* nibble: LA..LE (ltype only) + Error code + Channel */
--		[NIX_INTF_RX] = ((u64)NPC_MCAM_KEY_X2 << 32) | NPC_PARSE_NIBBLE_INTF_RX,
-+		[NIX_INTF_RX] = ((u64)NPC_MCAM_KEY_X2 << 32) | NPC_PARSE_NIBBLE_INTF_RX |
-+						(u64)NPC_EXACT_NIBBLE_HIT,
- 		/* nibble: LA..LE (ltype only) */
- 		[NIX_INTF_TX] = ((u64)NPC_MCAM_KEY_X2 << 32) | NPC_PARSE_NIBBLE_INTF_TX,
- 	},
--- 
-2.25.1
+This looks exactly alike the previous version: it still lacks the
+target tree and more importantly the Fixes tag.
+
+Additionally, we new post a new revision of a previously posted patch,
+you should include a version number into the subj line.
+
+Please read carefully the documentation under Documentation/process/
+(including maintainer-netdev.rst) before your next attempt,
+
+Thanks!
+
+Paolo
 
