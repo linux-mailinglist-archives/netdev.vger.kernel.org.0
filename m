@@ -2,71 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6577356A196
-	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 13:59:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B520156A143
+	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 13:49:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235660AbiGGLxG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jul 2022 07:53:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55576 "EHLO
+        id S235363AbiGGLtz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jul 2022 07:49:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235300AbiGGLwV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 07:52:21 -0400
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44C5053D33;
-        Thu,  7 Jul 2022 04:52:11 -0700 (PDT)
-Received: by mail-wr1-x42d.google.com with SMTP id n10so652456wrc.4;
-        Thu, 07 Jul 2022 04:52:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=FNoKlp/SzKlWKmK/1oNh3mGrQFyB3mtnwPpvEKvsiGw=;
-        b=Y3VVECV5nyDkb5h+3N82nH/dQ3E7F2OgTMBmUTzHgZ43JyTmExa6k6CfS0GBMvTJ+1
-         CoNLdWWMdKRx235F8de9jx4CQUq3qpPkE7Ef9IneyEdtqvA5qb02scGF4EpNCcpuNApe
-         f8TuIsJgSbreYofNhnywB1TO02RUTZpf30s6ga6jibfQxh4riCxIl+4InY5om8UUD5C+
-         OfJdmCFuRubUyNNPtmwQwFpZIZGepY1c78xf+N9TwsJKB7VwAwqFc7OIn0+aPNAUI3XY
-         y/wkWqjS/sURH3yRFxfvuYYaYVHg1oTQvt+Qrgg0cnFBtjJJD2xKsZdSbegPH6CQmm47
-         qGeA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=FNoKlp/SzKlWKmK/1oNh3mGrQFyB3mtnwPpvEKvsiGw=;
-        b=1c05pXrsgkOcaSE9LQ7wWLuenOO6orgS5YS4+H1SAi5VHPJt9VnZPxvOxqgqm0VKP6
-         GPfR49x4wnFDFPOnOqx615Kqkm+iLWBYB/4fByDsY2SLT8DBjXCrmPhtEP8Q4eGGJl7g
-         NhGurngX+vp/YOT44oeyoI7yqFS2+zyb9YuhI/jvw63+4UcM0q2ItKiZ1peczsJeUjZf
-         FGA+Dl4OpowMV4iH2XynxnjdL+74NMIbVA3gThswh+HBSr6JV89yBmEQGfbFZnIsdYWF
-         UFWJEzx3BtarlvWDMwU5hzHqKm7KG9XSw9cQPOThctk6Eyr33PtC5/8A4effDXTGFje8
-         Z4gA==
-X-Gm-Message-State: AJIora8YGfG5sePMZcRjD0UTCqBaZElcYuYaV2JppvHnauDupI0RMPqR
-        16TWBaJ91hCNYNAg2RnXaBBc/5j7oY7VQ/P4Q/M=
-X-Google-Smtp-Source: AGRyM1vpEFSGS6wbdfQ3p+XZzzOJ8na4RMVJfyFlyF75WuRNegLPfoQfnEHtqVnTL1ZTL58ugNlX6w==
-X-Received: by 2002:a5d:5846:0:b0:21b:c444:9913 with SMTP id i6-20020a5d5846000000b0021bc4449913mr39721499wrf.128.1657194729572;
-        Thu, 07 Jul 2022 04:52:09 -0700 (PDT)
-Received: from 127.0.0.1localhost (188.28.125.106.threembb.co.uk. [188.28.125.106])
-        by smtp.gmail.com with ESMTPSA id u2-20020a5d5142000000b0021b966abc19sm37982131wrt.19.2022.07.07.04.52.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jul 2022 04:52:09 -0700 (PDT)
-From:   Pavel Begunkov <asml.silence@gmail.com>
-To:     io-uring@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Jens Axboe <axboe@kernel.dk>, David Ahern <dsahern@kernel.org>,
-        kernel-team@fb.com, Pavel Begunkov <asml.silence@gmail.com>
-Subject: [PATCH net-next v4 20/27] io_uring: account locked pages for non-fixed zc
-Date:   Thu,  7 Jul 2022 12:49:51 +0100
-Message-Id: <b54ec5eef1eeb7c0f947248392241fcfd9dae522.1657194434.git.asml.silence@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <cover.1657194434.git.asml.silence@gmail.com>
-References: <cover.1657194434.git.asml.silence@gmail.com>
+        with ESMTP id S235072AbiGGLty (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 07:49:54 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FA3633357;
+        Thu,  7 Jul 2022 04:49:53 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LdvkZ41J6zTggP;
+        Thu,  7 Jul 2022 19:46:14 +0800 (CST)
+Received: from dggpemm500019.china.huawei.com (7.185.36.180) by
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 7 Jul 2022 19:49:51 +0800
+Received: from [10.67.109.184] (10.67.109.184) by
+ dggpemm500019.china.huawei.com (7.185.36.180) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 7 Jul 2022 19:49:51 +0800
+Subject: Re: [PATCH bpf-next v3 4/6] libbpf: Unify memory address casting
+ operation style
+To:     Daniel Borkmann <daniel@iogearbox.net>, <bpf@vger.kernel.org>,
+        <linux-riscv@lists.infradead.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Luke Nelson <luke.r.nels@gmail.com>,
+        Xi Wang <xi.wang@gmail.com>, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>
+References: <20220530092815.1112406-1-pulehui@huawei.com>
+ <20220530092815.1112406-5-pulehui@huawei.com>
+ <a31efed5-a436-49c9-4126-902303df9766@iogearbox.net>
+From:   Pu Lehui <pulehui@huawei.com>
+Message-ID: <62f154e1-5ffb-3f7b-adc6-766cb29a18b0@huawei.com>
+Date:   Thu, 7 Jul 2022 19:49:51 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
+In-Reply-To: <a31efed5-a436-49c9-4126-902303df9766@iogearbox.net>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+X-Originating-IP: [10.67.109.184]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500019.china.huawei.com (7.185.36.180)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -74,45 +67,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fixed buffers are RLIMIT_MEMLOCK accounted, however it doesn't cover iovec
-based zerocopy sends. Do the accounting on the io_uring side.
+On 2022/5/31 5:03, Daniel Borkmann wrote:
+> On 5/30/22 11:28 AM, Pu Lehui wrote:
+>> The members of bpf_prog_info, which are line_info, jited_line_info,
+>> jited_ksyms and jited_func_lens, store u64 address pointed to the
+>> corresponding memory regions. Memory addresses are conceptually
+>> unsigned, (unsigned long) casting makes more sense, so let's make
+>> a change for conceptual uniformity.
+>>
+>> Signed-off-by: Pu Lehui <pulehui@huawei.com>
+>> ---
+>>   tools/lib/bpf/bpf_prog_linfo.c | 9 +++++----
+>>   1 file changed, 5 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/tools/lib/bpf/bpf_prog_linfo.c 
+>> b/tools/lib/bpf/bpf_prog_linfo.c
+>> index 5c503096ef43..7beb060d0671 100644
+>> --- a/tools/lib/bpf/bpf_prog_linfo.c
+>> +++ b/tools/lib/bpf/bpf_prog_linfo.c
+>> @@ -127,7 +127,8 @@ struct bpf_prog_linfo *bpf_prog_linfo__new(const 
+>> struct bpf_prog_info *info)
+>>       prog_linfo->raw_linfo = malloc(data_sz);
+>>       if (!prog_linfo->raw_linfo)
+>>           goto err_free;
+>> -    memcpy(prog_linfo->raw_linfo, (void *)(long)info->line_info, 
+>> data_sz);
+>> +    memcpy(prog_linfo->raw_linfo, (void *)(unsigned 
+>> long)info->line_info,
+>> +           data_sz);
+> 
+> Took in patch 1-3, lgtm, thanks! My question around the cleanups in 
+> patch 4-6 ...
+> there are various other such cases e.g. in libbpf, perhaps makes sense 
+> to clean all
+> of them up at once and not just the 4 locations in here.
+> 
 
-Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
----
- io_uring/net.c   | 1 +
- io_uring/notif.c | 6 ++++++
- 2 files changed, 7 insertions(+)
+sorry for reply so late, I will take this soon.
 
-diff --git a/io_uring/net.c b/io_uring/net.c
-index 399267e8f1ef..69273d4f4ef0 100644
---- a/io_uring/net.c
-+++ b/io_uring/net.c
-@@ -724,6 +724,7 @@ int io_sendzc(struct io_kiocb *req, unsigned int issue_flags)
- 	ret = import_single_range(WRITE, zc->buf, zc->len, &iov, &msg.msg_iter);
- 	if (unlikely(ret))
- 		return ret;
-+	mm_account_pinned_pages(&notif->uarg.mmp, zc->len);
- 
- 	msg_flags = zc->msg_flags | MSG_ZEROCOPY;
- 	if (issue_flags & IO_URING_F_NONBLOCK)
-diff --git a/io_uring/notif.c b/io_uring/notif.c
-index e6d98dc208c7..c5179e5c1cd6 100644
---- a/io_uring/notif.c
-+++ b/io_uring/notif.c
-@@ -14,7 +14,13 @@ static void __io_notif_complete_tw(struct callback_head *cb)
- 	struct io_notif *notif = container_of(cb, struct io_notif, task_work);
- 	struct io_rsrc_node *rsrc_node = notif->rsrc_node;
- 	struct io_ring_ctx *ctx = notif->ctx;
-+	struct mmpin *mmp = &notif->uarg.mmp;
- 
-+	if (mmp->user) {
-+		atomic_long_sub(mmp->num_pg, &mmp->user->locked_vm);
-+		free_uid(mmp->user);
-+		mmp->user = NULL;
-+	}
- 	if (likely(notif->task)) {
- 		io_put_task(notif->task, 1);
- 		notif->task = NULL;
--- 
-2.36.1
-
+> Thanks,
+> Daniel
+> .
