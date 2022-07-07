@@ -2,162 +2,208 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 79D9C56A819
-	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 18:29:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A170356A81E
+	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 18:31:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236002AbiGGQ3T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jul 2022 12:29:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40850 "EHLO
+        id S235842AbiGGQbC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jul 2022 12:31:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235723AbiGGQ3R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 12:29:17 -0400
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEE9F286D8
-        for <netdev@vger.kernel.org>; Thu,  7 Jul 2022 09:29:15 -0700 (PDT)
-Received: by mail-yb1-xb2d.google.com with SMTP id n74so3756257yba.3
-        for <netdev@vger.kernel.org>; Thu, 07 Jul 2022 09:29:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=KdtnEcHUawpT1fLqKoUoq9rzfwMk1MR8HOGPic52smQ=;
-        b=PqLmuFJ6AJjlrfAe08BEJii6fjSCA3hTYgqjqhvQ0eAf9GOP1LYpAJ0JJpo/QifbXZ
-         hZClkaAzya/x2KQSh85giAW/OTMFBavIza1VA2zlTmzT6jC6D9JPdFmcTz4BzcVSncSl
-         auyMDldebekRIb+1GZa9DG/KY0TxLCPA8foCbdylWWNRFS1CFm0EZvGcCgRmfMsMdM+T
-         CfQXv7YCDFexKQHWOfJZ+8cnaHaCkNB44Gf/Y5NtybOl6qebO8pw5ItTB183zpXK1usD
-         CNtrmwy9gkDn3EF2envDhcMXrUtLI6pPn3f5YUbjq63RDpzpohRE8s6ERwBsct3FNWYT
-         AvxA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=KdtnEcHUawpT1fLqKoUoq9rzfwMk1MR8HOGPic52smQ=;
-        b=aJb63hcU2RosmKmQp7H+QtuxJDG4qXB94QUiTsprJz3q41j9rnKA9dxavfM9MUWFNH
-         Ve0pjclE/fi0PM936LsXbxO3tq5uuC5gNlHcOoVrFMe41i+Sfh+0RoZ0kbqBe+a3jtiQ
-         MUm/YcSAAilndj/p+iCNchEQoec4+yR61PCxmhaYJV36HT8xDGk6Lixg11xReascwEZ6
-         2glg/TOQKQGa8V5cFkyfauTdw7GtHvQtKIL83Secndcvm7613T8vPb9HCq/nSrJ87elu
-         z8bHAm2hazpso72N0luWi6E7OcaFABn2cNwhcnWCFrnZcDBOKh+EQVx+buwYp20cMPRT
-         x8ew==
-X-Gm-Message-State: AJIora/PuRmcEBnTCB7GXPiGPwnTpMf4wy7RIQ2w/wufBnmAtS6Il1ZZ
-        u/B689j0nl3sYskBsc5acwV+yIJ7E8C1deqM+mppVl3pOoYVug==
-X-Google-Smtp-Source: AGRyM1vIRaSO5WewEYiFRJN0ER5hk5pa+VL5vWI8WlRfO9dMQKUuYerHSqvg3mKecQUKb/wAwsw0GwTrz8JhMDlwEcU=
-X-Received: by 2002:a25:3383:0:b0:66b:6205:1583 with SMTP id
- z125-20020a253383000000b0066b62051583mr48661067ybz.387.1657211354704; Thu, 07
- Jul 2022 09:29:14 -0700 (PDT)
+        with ESMTP id S235444AbiGGQbB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 12:31:01 -0400
+Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 202742A260;
+        Thu,  7 Jul 2022 09:31:01 -0700 (PDT)
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 267A5vUj008113;
+        Thu, 7 Jul 2022 09:30:54 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=MUJjQH1xdx9P6LYZOnnQzblD2ccmaLeiXo/c2Rlin3E=;
+ b=AX31hYoB+V+bqwcJwkCxpaN8gYyPqgkUiLCiO1fwPHvDoPUknOz4g4P1eDb3JQq6t0Ex
+ k/QBusUaf6jmJ/PFbjApljqzcWwu+e+SXHHIu+7UmgCWcDwoKJ7LFmKp8dJ4o6+d4XzJ
+ xdusbhUeHe+mHEsoihU4Hxr2T0rmcLlSvxblKL36fivUAHpvLxxHj6nWNsHLH844PeSU
+ FdAj4W5j09LDvZNS4Thu9FCowu0UG/wJWguh/n4OpzeGwREVTIQ02AOTR1eFu87erzDU
+ cslllHMnf/o0MU5ygJP2KHRkYMl27K9FHEWvAEvngO1gsIt2oqepTInd0EbsM3XBTZJa 2w== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3h5kwj3he2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Thu, 07 Jul 2022 09:30:54 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 7 Jul
+ 2022 09:30:53 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
+ Transport; Thu, 7 Jul 2022 09:30:53 -0700
+Received: from hyd1soter3.marvell.com (unknown [10.29.37.12])
+        by maili.marvell.com (Postfix) with ESMTP id E35305B6928;
+        Thu,  7 Jul 2022 09:30:49 -0700 (PDT)
+From:   Hariprasad Kelam <hkelam@marvell.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <kuba@kernel.org>, <davem@davemloft.net>, <pabeni@redhat.com>,
+        <edumazet@google.com>, <sgoutham@marvell.com>,
+        <lcherian@marvell.com>, <gakula@marvell.com>, <jerinj@marvell.com>,
+        <sbhatta@marvell.com>
+Subject: [net-next PATCH V2] octeontx2-af: Don't reset previous pfc config
+Date:   Thu, 7 Jul 2022 22:00:48 +0530
+Message-ID: <20220707163048.7709-1-hkelam@marvell.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-References: <b4d8cb09c913d3e34f853736f3f5628abfd7f4b6.1656699567.git.gnault@redhat.com>
-In-Reply-To: <b4d8cb09c913d3e34f853736f3f5628abfd7f4b6.1656699567.git.gnault@redhat.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 7 Jul 2022 18:29:03 +0200
-Message-ID: <CANn89i+=GyHjkrHMZAftB-toEhi9GcAQom1_bpT+S0qMvCz0DQ@mail.gmail.com>
-Subject: Re: [RFC net] Should sk_page_frag() also look at the current GFP context?
-To:     Guillaume Nault <gnault@redhat.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna@kernel.org>,
-        Steve French <sfrench@samba.org>,
-        Josef Bacik <josef@toxicpanda.com>,
-        Scott Mayhew <smayhew@redhat.com>,
-        Benjamin Coddington <bcodding@redhat.com>,
-        Tejun Heo <tj@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: W9WNG3sLdi92WFYSAXymVWKUvv2XwG9Q
+X-Proofpoint-GUID: W9WNG3sLdi92WFYSAXymVWKUvv2XwG9Q
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-07_13,2022-06-28_01,2022-06-22_01
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 1, 2022 at 8:41 PM Guillaume Nault <gnault@redhat.com> wrote:
->
-> I'm investigating a kernel oops that looks similar to
-> 20eb4f29b602 ("net: fix sk_page_frag() recursion from memory reclaim")
-> and dacb5d8875cc ("tcp: fix page frag corruption on page fault").
->
-> This time the problem happens on an NFS client, while the previous bzs
-> respectively used NBD and CIFS. While NBD and CIFS clear __GFP_FS in
-> their socket's ->sk_allocation field (using GFP_NOIO or GFP_NOFS), NFS
-> leaves sk_allocation to its default value since commit a1231fda7e94
-> ("SUNRPC: Set memalloc_nofs_save() on all rpciod/xprtiod jobs").
->
-> To recap the original problems, in commit 20eb4f29b602 and dacb5d8875cc,
-> memory reclaim happened while executing tcp_sendmsg_locked(). The code
-> path entered tcp_sendmsg_locked() recursively as pages to be reclaimed
-> were backed by files on the network. The problem was that both the
-> outer and the inner tcp_sendmsg_locked() calls used current->task_frag,
-> thus leaving it in an inconsistent state. The fix was to use the
-> socket's ->sk_frag instead for the file system socket, so that the
-> inner and outer calls wouln't step on each other's toes.
->
-> But now that NFS doesn't modify ->sk_allocation anymore, sk_page_frag()
-> sees sunrpc sockets as plain TCP ones and returns ->task_frag in the
-> inner tcp_sendmsg_locked() call.
->
-> Also it looks like the trend is to avoid GFS_NOFS and GFP_NOIO and use
-> memalloc_no{fs,io}_save() instead. So maybe other network file systems
-> will also stop setting ->sk_allocation in the future and we should
-> teach sk_page_frag() to look at the current GFP flags. Or should we
-> stick to ->sk_allocation and make NFS drop __GFP_FS again?
->
-> Signed-off-by: Guillaume Nault <gnault@redhat.com>
+Current implementation is such that driver first resets the
+existing PFC config before applying new pfc configuration.
+This creates a problem like once PF or VFs requests PFC config
+previous pfc config by other PFVfs is getting reset.
 
-Can you provide a Fixes: tag ?
+This patch fixes the problem by removing unnecessary resetting
+of PFC config. Also configure Pause quanta value to smaller as
+current value is too high.
 
-> ---
->  include/net/sock.h | 8 ++++++--
->  1 file changed, 6 insertions(+), 2 deletions(-)
->
-> diff --git a/include/net/sock.h b/include/net/sock.h
-> index 72ca97ccb460..b934c9851058 100644
-> --- a/include/net/sock.h
-> +++ b/include/net/sock.h
-> @@ -46,6 +46,7 @@
->  #include <linux/netdevice.h>
->  #include <linux/skbuff.h>      /* struct sk_buff */
->  #include <linux/mm.h>
-> +#include <linux/sched/mm.h>
->  #include <linux/security.h>
->  #include <linux/slab.h>
->  #include <linux/uaccess.h>
-> @@ -2503,14 +2504,17 @@ static inline void sk_stream_moderate_sndbuf(struct sock *sk)
->   * socket operations and end up recursing into sk_page_frag()
->   * while it's already in use: explicitly avoid task page_frag
->   * usage if the caller is potentially doing any of them.
-> - * This assumes that page fault handlers use the GFP_NOFS flags.
-> + * This assumes that page fault handlers use the GFP_NOFS flags
-> + * or run under memalloc_nofs_save() protection.
->   *
->   * Return: a per task page_frag if context allows that,
->   * otherwise a per socket one.
->   */
->  static inline struct page_frag *sk_page_frag(struct sock *sk)
->  {
-> -       if ((sk->sk_allocation & (__GFP_DIRECT_RECLAIM | __GFP_MEMALLOC | __GFP_FS)) ==
-> +       gfp_t gfp_mask = current_gfp_context(sk->sk_allocation);
+Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
+Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
+---
+V2 * resending patch as earlier patch has 'missing maintainers" warning
 
-This is slowing down TCP sendmsg() fast path, reading current->flags,
-possibly cold value.
+ .../net/ethernet/marvell/octeontx2/af/cgx.c    | 15 +++++++++++----
+ .../net/ethernet/marvell/octeontx2/af/rpm.c    | 18 +++++++++++-------
+ .../net/ethernet/marvell/octeontx2/af/rpm.h    |  3 +--
+ 3 files changed, 23 insertions(+), 13 deletions(-)
 
-I would suggest using one bit in sk, close to sk->sk_allocation to
-make the decision,
-instead of testing sk->sk_allocation for various flags.
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
+index 25491edc35ce..931a1a7ebf76 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
+@@ -847,6 +847,11 @@ static void cgx_lmac_pause_frm_config(void *cgxd, int lmac_id, bool enable)
+ 	cfg |= CGX_CMR_RX_OVR_BP_EN(lmac_id);
+ 	cfg &= ~CGX_CMR_RX_OVR_BP_BP(lmac_id);
+ 	cgx_write(cgx, 0, CGXX_CMR_RX_OVR_BP, cfg);
++
++	/* Disable all PFC classes by default */
++	cfg = cgx_read(cgx, lmac_id, CGXX_SMUX_CBFC_CTL);
++	cfg = FIELD_SET(CGX_PFC_CLASS_MASK, 0, cfg);
++	cgx_write(cgx, lmac_id, CGXX_SMUX_CBFC_CTL, cfg);
+ }
 
-Not sure if we have available holes.
+ int verify_lmac_fc_cfg(void *cgxd, int lmac_id, u8 tx_pause, u8 rx_pause,
+@@ -899,6 +904,7 @@ int cgx_lmac_pfc_config(void *cgxd, int lmac_id, u8 tx_pause,
+ 		return 0;
 
-> +
-> +       if ((gfp_mask & ( | __GFP_MEMALLOC | __GFP_FS)) ==
->             (__GFP_DIRECT_RECLAIM | __GFP_FS))
->                 return &current->task_frag;
->
-> --
-> 2.21.3
->
+ 	cfg = cgx_read(cgx, lmac_id, CGXX_SMUX_CBFC_CTL);
++	pfc_en |= FIELD_GET(CGX_PFC_CLASS_MASK, cfg);
+
+ 	if (rx_pause) {
+ 		cfg |= (CGXX_SMUX_CBFC_CTL_RX_EN |
+@@ -910,12 +916,13 @@ int cgx_lmac_pfc_config(void *cgxd, int lmac_id, u8 tx_pause,
+ 			CGXX_SMUX_CBFC_CTL_DRP_EN);
+ 	}
+
+-	if (tx_pause)
++	if (tx_pause) {
+ 		cfg |= CGXX_SMUX_CBFC_CTL_TX_EN;
+-	else
++		cfg = FIELD_SET(CGX_PFC_CLASS_MASK, pfc_en, cfg);
++	} else {
+ 		cfg &= ~CGXX_SMUX_CBFC_CTL_TX_EN;
+-
+-	cfg = FIELD_SET(CGX_PFC_CLASS_MASK, pfc_en, cfg);
++		cfg = FIELD_SET(CGX_PFC_CLASS_MASK, 0, cfg);
++	}
+
+ 	cgx_write(cgx, lmac_id, CGXX_SMUX_CBFC_CTL, cfg);
+
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rpm.c b/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
+index 47e83d7a5804..05666922a45b 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
+@@ -276,6 +276,11 @@ void rpm_lmac_pause_frm_config(void *rpmd, int lmac_id, bool enable)
+ 	cfg = rpm_read(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG);
+ 	cfg |= RPMX_MTI_MAC100X_COMMAND_CONFIG_TX_P_DISABLE;
+ 	rpm_write(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG, cfg);
++
++	/* Disable all PFC classes */
++	cfg = rpm_read(rpm, lmac_id, RPMX_CMRX_PRT_CBFC_CTL);
++	cfg = FIELD_SET(RPM_PFC_CLASS_MASK, 0, cfg);
++	rpm_write(rpm, lmac_id, RPMX_CMRX_PRT_CBFC_CTL, cfg);
+ }
+
+ int rpm_get_rx_stats(void *rpmd, int lmac_id, int idx, u64 *rx_stat)
+@@ -387,15 +392,14 @@ void rpm_lmac_ptp_config(void *rpmd, int lmac_id, bool enable)
+ int rpm_lmac_pfc_config(void *rpmd, int lmac_id, u8 tx_pause, u8 rx_pause, u16 pfc_en)
+ {
+ 	rpm_t *rpm = rpmd;
+-	u64 cfg;
++	u64 cfg, class_en;
+
+ 	if (!is_lmac_valid(rpm, lmac_id))
+ 		return -ENODEV;
+
+-	/* reset PFC class quanta and threshold */
+-	rpm_cfg_pfc_quanta_thresh(rpm, lmac_id, 0xffff, false);
+-
+ 	cfg = rpm_read(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG);
++	class_en = rpm_read(rpm, lmac_id, RPMX_CMRX_PRT_CBFC_CTL);
++	pfc_en |= FIELD_GET(RPM_PFC_CLASS_MASK, class_en);
+
+ 	if (rx_pause) {
+ 		cfg &= ~(RPMX_MTI_MAC100X_COMMAND_CONFIG_RX_P_DISABLE |
+@@ -410,9 +414,11 @@ int rpm_lmac_pfc_config(void *rpmd, int lmac_id, u8 tx_pause, u8 rx_pause, u16 p
+ 	if (tx_pause) {
+ 		rpm_cfg_pfc_quanta_thresh(rpm, lmac_id, pfc_en, true);
+ 		cfg &= ~RPMX_MTI_MAC100X_COMMAND_CONFIG_TX_P_DISABLE;
++		class_en = FIELD_SET(RPM_PFC_CLASS_MASK, pfc_en, class_en);
+ 	} else {
+ 		rpm_cfg_pfc_quanta_thresh(rpm, lmac_id, 0xfff, false);
+ 		cfg |= RPMX_MTI_MAC100X_COMMAND_CONFIG_TX_P_DISABLE;
++		class_en = FIELD_SET(RPM_PFC_CLASS_MASK, 0, class_en);
+ 	}
+
+ 	if (!rx_pause && !tx_pause)
+@@ -422,9 +428,7 @@ int rpm_lmac_pfc_config(void *rpmd, int lmac_id, u8 tx_pause, u8 rx_pause, u16 p
+
+ 	rpm_write(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG, cfg);
+
+-	cfg = rpm_read(rpm, lmac_id, RPMX_CMRX_PRT_CBFC_CTL);
+-	cfg = FIELD_SET(RPM_PFC_CLASS_MASK, pfc_en, cfg);
+-	rpm_write(rpm, lmac_id, RPMX_CMRX_PRT_CBFC_CTL, cfg);
++	rpm_write(rpm, lmac_id, RPMX_CMRX_PRT_CBFC_CTL, class_en);
+
+ 	return 0;
+ }
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rpm.h b/drivers/net/ethernet/marvell/octeontx2/af/rpm.h
+index 9ab8d49dd180..8205f2626f61 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rpm.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rpm.h
+@@ -48,7 +48,6 @@
+ #define RPMX_MTI_MAC100X_CL1011_QUANTA_THRESH		0x8130
+ #define RPMX_MTI_MAC100X_CL1213_QUANTA_THRESH		0x8138
+ #define RPMX_MTI_MAC100X_CL1415_QUANTA_THRESH		0x8140
+-#define RPM_DEFAULT_PAUSE_TIME			0xFFFF
+ #define RPMX_CMR_RX_OVR_BP		0x4120
+ #define RPMX_CMR_RX_OVR_BP_EN(x)	BIT_ULL((x) + 8)
+ #define RPMX_CMR_RX_OVR_BP_BP(x)	BIT_ULL((x) + 4)
+@@ -70,7 +69,7 @@
+ #define RPMX_MTI_MAC100X_COMMAND_CONFIG_PAUSE_FWD              BIT_ULL(7)
+ #define RPMX_MTI_MAC100X_CL01_PAUSE_QUANTA              0x80A8
+ #define RPMX_MTI_MAC100X_CL89_PAUSE_QUANTA		0x8108
+-#define RPM_DEFAULT_PAUSE_TIME                          0xFFFF
++#define RPM_DEFAULT_PAUSE_TIME                          0x7FF
+
+ /* Function Declarations */
+ int rpm_get_nr_lmacs(void *rpmd);
+--
+2.17.1
