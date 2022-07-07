@@ -2,76 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 87042569B99
-	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 09:30:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 58D3D569BBA
+	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 09:35:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232693AbiGGHac (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jul 2022 03:30:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47004 "EHLO
+        id S232095AbiGGHfD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jul 2022 03:35:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231284AbiGGHab (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 03:30:31 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 41BDF29CAC
-        for <netdev@vger.kernel.org>; Thu,  7 Jul 2022 00:30:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657179029;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=cbmLgCmTysRy8uiXuxZ5jhXX1Rk2OR8KTMlastRWZ0Y=;
-        b=WeBZj+ad1imVCEIo9pIW6/IsficSf//c1g++UYvqxjjxmNLu6wpXR5RHkOb9RtmDm0fkcT
-        DNS1FCij2cZXx9boIQzJMA+kQKg4hFGNBaorTSRW6ZSuAX1fBsshb+YExG4hcf1t8xkoDB
-        zB+ZJOQIW1GKJ8nnK1njZsTYGqYHHfU=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-398-ExzN_fxvPdaqQmxXntZgaQ-1; Thu, 07 Jul 2022 03:30:27 -0400
-X-MC-Unique: ExzN_fxvPdaqQmxXntZgaQ-1
-Received: by mail-wr1-f71.google.com with SMTP id n7-20020adfc607000000b0021a37d8f93aso3047102wrg.21
-        for <netdev@vger.kernel.org>; Thu, 07 Jul 2022 00:30:26 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=cbmLgCmTysRy8uiXuxZ5jhXX1Rk2OR8KTMlastRWZ0Y=;
-        b=DQuJa/R+YJXI1o5gXKvPNlxYdVZKptEBCM6MmV5MC9OaOoqL1NCpNeycG3x2bYvaTh
-         dhlpf3FiCAeKRLypKF8dCKiAZRel54qwSD72MVIeqcYemKi+0V6VLohIqIll4z8OvhxY
-         oPeGZN6wKf3iYFFQd9Ow8JK3F72TP2h1FS68+FF5sMLrTqLl8NKkHKaqU3owZWXZQjXS
-         SX51YAX/CGUhOPHDCTGh+QrFoATClP4hiN7eyoAXAu6QQnKYcQkhKG6u8xxv6uSkhuFO
-         NuPTU1f047pamNT3zqE5cTxSgYAaX7WgV/JxUAcNChYDcE9hRoEGlRXMK+lD9zVYx68K
-         KRWA==
-X-Gm-Message-State: AJIora+teQR38bFDWN9CZsojSrRKQrj6eWL8IoMa2jlTNCTaE4ikD3pi
-        W15bpj6bBzHPPPwHDE9EYgxl9ncY8QLqOPXKYmvlEnWOvPn8b7ECO3Bm2oQRLrEveMGkqR/41oH
-        YOkxE2ZPd3TBireEW
-X-Received: by 2002:a5d:6d0a:0:b0:21d:6f28:5ead with SMTP id e10-20020a5d6d0a000000b0021d6f285eadmr13900882wrq.95.1657179025874;
-        Thu, 07 Jul 2022 00:30:25 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1seYbB1t0jf8+m8X4AxKyZNme7pt0Y06tR2WH42ONzW+bn03fpq5uQ+FvQAPGqPA7KRlSoeBw==
-X-Received: by 2002:a5d:6d0a:0:b0:21d:6f28:5ead with SMTP id e10-20020a5d6d0a000000b0021d6f285eadmr13900855wrq.95.1657179025614;
-        Thu, 07 Jul 2022 00:30:25 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-106-148.dyn.eolo.it. [146.241.106.148])
-        by smtp.gmail.com with ESMTPSA id p9-20020a5d4e09000000b0021d8190e9cfsm2014707wrt.40.2022.07.07.00.30.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jul 2022 00:30:25 -0700 (PDT)
-Message-ID: <e454f6de32de3be092260d19da24f58635eb6e49.camel@redhat.com>
-Subject: Re: [PATCH net v3] net: ethernet: ti: am65-cpsw: Fix devlink port
- register sequence
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Siddharth Vadapalli <s-vadapalli@ti.com>, davem@davemloft.net,
-        kuba@kernel.org, linux@armlinux.org.uk
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kishon@ti.com, vigneshr@ti.com, grygorii.strashko@ti.com
-Date:   Thu, 07 Jul 2022 09:30:24 +0200
-In-Reply-To: <20220706070208.12207-1-s-vadapalli@ti.com>
-References: <20220706070208.12207-1-s-vadapalli@ti.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        with ESMTP id S229792AbiGGHfB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 03:35:01 -0400
+Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF69227FC8;
+        Thu,  7 Jul 2022 00:35:00 -0700 (PDT)
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 266NFRZ0008109;
+        Thu, 7 Jul 2022 00:34:53 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=pfpt0220; bh=LFq75kwD41f0bvooxPNHL7JO6huu0XPC4usZpiQSkeA=;
+ b=UGIVWSgw8WUVBHTpLUM5xAWVJw6r6DkSfeU5aYDjOl2wSCeF6RQA6YwwqeVWY0f8orqU
+ aXmjkO5pSOv+CZ9LUIUP3CXwS7p6sqDT0DIBCmxsXQoI8949FLFNOBnuUuvFmkmo83v4
+ 4Ahc6iJ5S59XQnO+DJWFIIy09BLbvkpZFjhTyPis9tW7iGrSBOq7AGw/a7lXToNqYl+p
+ egCvy3C9QC6JusTDn97zflgbXITJLdKdq/cwKTNC3c0Xrgp6Wu7wTE+SLScGO6mPysPe
+ TTRKPpr7FSCrcSQInhaop4HJLDyz3OqcQJ71cXBdYqVkf96FwtPLecCwNAkpnLj2/S0u Ew== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3h5kwj1gtg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Thu, 07 Jul 2022 00:34:53 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 7 Jul
+ 2022 00:34:52 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 7 Jul 2022 00:34:52 -0700
+Received: from IPBU-BLR-SERVER1.marvell.com (IPBU-BLR-SERVER1.marvell.com [10.28.8.41])
+        by maili.marvell.com (Postfix) with ESMTP id A499E3F7061;
+        Thu,  7 Jul 2022 00:34:49 -0700 (PDT)
+From:   Ratheesh Kannoth <rkannoth@marvell.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <sgoutham@marvell.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        Ratheesh Kannoth <rkannoth@marvell.com>
+Subject: [net-next PATCH V3 00/12] octeontx2: Exact Match Table.
+Date:   Thu, 7 Jul 2022 13:03:41 +0530
+Message-ID: <20220707073353.2752279-1-rkannoth@marvell.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: _qpugaMHIrW1oCIgd_nu2Uu7dKHqOkh_
+X-Proofpoint-GUID: _qpugaMHIrW1oCIgd_nu2Uu7dKHqOkh_
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-07_05,2022-06-28_01,2022-06-22_01
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -79,110 +65,149 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2022-07-06 at 12:32 +0530, Siddharth Vadapalli wrote:
-> Renaming interfaces using udevd depends on the interface being registered
-> before its netdev is registered. Otherwise, udevd reads an empty
-> phys_port_name value, resulting in the interface not being renamed.
-> 
-> Fix this by registering the interface before registering its netdev
-> by invoking am65_cpsw_nuss_register_devlink() before invoking
-> register_netdev() for the interface.
-> 
-> Move the function call to devlink_port_type_eth_set(), invoking it after
-> register_netdev() is invoked, to ensure that netlink notification for the
-> port state change is generated after the netdev is completely initialized.
-> 
-> Fixes: 58356eb31d60 ("net: ti: am65-cpsw-nuss: Add devlink support")
-> Signed-off-by: Siddharth Vadapalli <s-vadapalli@ti.com>
-> ---
-> Changelog:
-> v2 -> v3:
-> 1. Add error handling to unregister devlink.
-> 
-> v1-> v2:
-> 1. Add Fixes tag in commit message.
-> 2. Update patch subject to include "net".
-> 3. Invoke devlink_port_type_eth_set() after register_netdev() is called.
-> 4. Update commit message describing the cause for moving the call to
->    devlink_port_type_eth_set().
-> 
-> v2: https://lore.kernel.org/r/20220704073040.7542-1-s-vadapalli@ti.com/
-> v1: https://lore.kernel.org/r/20220623044337.6179-1-s-vadapalli@ti.com/
-> 
->  drivers/net/ethernet/ti/am65-cpsw-nuss.c | 17 ++++++++++-------
->  1 file changed, 10 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-> index fb92d4c1547d..f4a6b590a1e3 100644
-> --- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-> +++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-> @@ -2467,7 +2467,6 @@ static int am65_cpsw_nuss_register_devlink(struct am65_cpsw_common *common)
->  				port->port_id, ret);
->  			goto dl_port_unreg;
->  		}
-> -		devlink_port_type_eth_set(dl_port, port->ndev);
->  	}
->  	devlink_register(common->devlink);
->  	return ret;
-> @@ -2511,6 +2510,7 @@ static void am65_cpsw_unregister_devlink(struct am65_cpsw_common *common)
->  static int am65_cpsw_nuss_register_ndevs(struct am65_cpsw_common *common)
->  {
->  	struct device *dev = common->dev;
-> +	struct devlink_port *dl_port;
->  	struct am65_cpsw_port *port;
->  	int ret = 0, i;
->  
-> @@ -2527,6 +2527,10 @@ static int am65_cpsw_nuss_register_ndevs(struct am65_cpsw_common *common)
->  		return ret;
->  	}
->  
-> +	ret = am65_cpsw_nuss_register_devlink(common);
-> +	if (ret)
-> +		return ret;
-> +
->  	for (i = 0; i < common->port_num; i++) {
->  		port = &common->ports[i];
->  
-> @@ -2539,25 +2543,24 @@ static int am65_cpsw_nuss_register_ndevs(struct am65_cpsw_common *common)
->  				i, ret);
->  			goto err_cleanup_ndev;
->  		}
-> +
-> +		dl_port = &port->devlink_port;
-> +		devlink_port_type_eth_set(dl_port, port->ndev);
->  	}
->  
->  	ret = am65_cpsw_register_notifiers(common);
->  	if (ret)
->  		goto err_cleanup_ndev;
->  
-> -	ret = am65_cpsw_nuss_register_devlink(common);
-> -	if (ret)
-> -		goto clean_unregister_notifiers;
-> -
->  	/* can't auto unregister ndev using devm_add_action() due to
->  	 * devres release sequence in DD core for DMA
->  	 */
->  
->  	return 0;
-> -clean_unregister_notifiers:
-> -	am65_cpsw_unregister_notifiers(common);
-> +
->  err_cleanup_ndev:
->  	am65_cpsw_nuss_cleanup_ndev(common);
-> +	am65_cpsw_unregister_devlink(common);
+Exact match table and Field hash support for CN10KB silicon
 
-It looks strange that there is no error path leading to
-am65_cpsw_unregister_devlink() only.
+ChangeLog
+---------
+  1) V0 to V1
+     a) Removed change IDs from all patches.
 
-Why we don't need to call it when/if devm_request_irq() fails? 
+  2) V1 to V2
+     a)Fixed all compile warnings and cleanly compiled all patches.
 
-Not strictly related to this patch, but it looks like there is another
-suspect cleanup point: if a 'register_netdev()' call fails, the cleanup
-code will still call unregister_netdev() on the relevant device and the
-later ones, hitting a WARN_ON(1) in unregister_netdevice_many().
+  3) V2 to V3
+     a) Fixed patch series subject text.
 
-Thanks!
+Ratheesh Kannoth (11):
 
-Paolo
+These patch series enables exact match table in CN10KB silicon. Legacy
+silicon used NPC mcam to do packet fields/channel matching for NPC rules.
+NPC mcam resources exahausted as customer use case increased.
+Supporting many DMAC filter becomes a challenge, as RPM based filter
+count is less. Exact match table has 4way 2K entry table and a 32 entry
+fully associative cam table. Second table is to handle hash
+table collision over flow in 4way 2K entry table. Enabling exact match
+table results in KEX key to be appended with Hit/Miss status. This can be
+used to match in NPC mcam for a more generic rule and drop those packets
+than having DMAC drop rules for each DMAC entry in NPC mcam.
 
+  octeontx2-af: Exact match support
+  octeontx2-af: Exact match scan from kex profile
+  octeontx2-af: devlink configuration support
+  octeontx2-af: FLR handler for exact match table.
+  octeontx2-af: Drop rules for NPC MCAM
+  octeontx2-af: Debugsfs support for exact match.
+  octeontx2: Modify mbox request and response structures
+  octeontx2-af: Wrapper functions for mac addr add/del/update/reset
+  octeontx2-af: Invoke exact match functions if supported
+  octeontx2-pf: Add support for exact match table.
+  octeontx2-af: Enable Exact match flag in kex profile
+
+Suman Ghosh (1):
+  octeontx2-af: Support to hash reduce of actual field into MCAM key
+
+ .../ethernet/marvell/octeontx2/af/Makefile    |    2 +-
+ First patch in the series "octeontx2-af: Support to hash reduce of actual
+ field into MCAM key" introduced new C file. Makefile is modified to
+ compile the same.
+
+ .../net/ethernet/marvell/octeontx2/af/mbox.h  |   41 +-
+ Mbox request and response structures requires modification.
+ RPM based DMAC filter can be modified at any location
+ in the RPM filter table as entry's location has no relation to content.
+ But for NPC exact match's 2K, 4way table is based on hash.
+ This means that modification of an entry may fail if hash mismatches.
+ In these cases, we need to delete existing entry and create a new entry
+ in a different slot determined by hash value. This index has to
+ be returned to caller.
+
+ .../net/ethernet/marvell/octeontx2/af/npc.h   |   25 +
+ New data types (enums and macros) for this feature.
+
+ .../marvell/octeontx2/af/npc_profile.h        |    5 +-
+ Kex profile changes to add exact match HIT bit in the Key.
+ Inorder to accommodate this nibble, NPC_PARSE_NIBBLE_ERRCODE
+ is deleted as it is not used.
+
+ .../net/ethernet/marvell/octeontx2/af/rvu.c   |   17 +
+ Exact match HW capability flag is initialized to false.
+ FLR handler changes to invoke rvu_npc_exact_reset()
+ to free all exact match resources in case of interface reset.
+
+ .../net/ethernet/marvell/octeontx2/af/rvu.h   |   24 +-
+ Exact match table info is defined in rvu_hwinfo structure.
+  This table structure is heap allocated and maintains
+ all information about available/free/allocated resources.
+
+ .../ethernet/marvell/octeontx2/af/rvu_cgx.c   |   41 +-
+ As of today, RPM based DMAC filter is configured upon user command.
+ Each of these mbox handler is trapped and checked for NPC exact match
+ support. If support is enabled, invokes Exact match API instead of
+ RPM dmac based calls.
+
+ .../marvell/octeontx2/af/rvu_debugfs.c        |  179 ++
+ Three debugfs entries would be created if Exact match table is supported.
+  1. exact_entries : List out npc exact match entries
+  2. exact_info : Info related exact match tables (mem and cam table)
+  3. exact_drop_cnt: Drop packet counter for each NPC mcam drop rule.
+
+ .../marvell/octeontx2/af/rvu_devlink.c        |   71 +-
+ Devlink provides flexibility to user to switch to RPM based DMAC filters
+ on CN10KB silicon. Please note that devlink command fails if user added
+ DMAC filters prior to devlink command to disable exact match table.
+
+ .../ethernet/marvell/octeontx2/af/rvu_nix.c   |    7 +
+ Promiscuous mode enable must disable this Exact match table based drop
+ rule on NPC mcam. set rx mode routine calls enable/disable corresponding
+ NPC exact drop rule when promiscuous mode is toggled.
+
+ .../ethernet/marvell/octeontx2/af/rvu_npc.c   |   51 +-
+ APIs to reserve NPC mcam entries. This is used to reserve and
+ configure NPC drop rules.
+
+ .../marvell/octeontx2/af/rvu_npc_fs.c         |  162 +-
+ For each PF, there is a drop rule installed in NPC mcam.
+ This installation is done during rvu probe itself.
+ Drop rule has multicast and broadcast bits turned off.
+ This means that broadcast and multicast packets will
+ never get dropped irrespective of NPC exact match table.
+ This rule action is drop if exact table match bit
+ 0 and channel is matched. This means if there is no hit
+ is exact match table and channel match, packets will
+ be dropped.
+
+ .../marvell/octeontx2/af/rvu_npc_fs.h         |   17 +
+
+ .../marvell/octeontx2/af/rvu_npc_hash.c       | 1958 +++++++++++++++++
+ New file added. This file implements add/del/update to exact match table,
+ probing of the feature and invokes function to install drop ruleis
+ in NPC mcam.
+
+ .../marvell/octeontx2/af/rvu_npc_hash.h       |  233 ++
+ function declarations for rvu_npc_hash.c
+
+ .../ethernet/marvell/octeontx2/af/rvu_reg.h   |   15 +
+ Register access macros for NPC exact match.
+
+ .../marvell/octeontx2/nic/otx2_common.h       |   10 +-
+ Since NPC exact match table has more entries than RPM DMAC filter,
+ size of bmap_to_dmacindex is increased from 8 to 32bit.
+ Maximum number of dmac entries available also increased
+ (increased the size of bitmap)
+
+ .../marvell/octeontx2/nic/otx2_dmac_flt.c     |   46 +-
+ .../marvell/octeontx2/nic/otx2_flows.c        |   40 +-
+ .../ethernet/marvell/octeontx2/nic/otx2_pf.c  |    2 +-
+ Above change in marvell/octeontx2/nic/otx2_common.h,
+ require corresponding modification in these 3 C files.
+ Please note that we need to modify/change existing entry index as
+ mentioned in description of net/ethernet/marvell/octeontx2/af/mbox.h
+ in this cover letter.
+
+ 20 files changed, 2879 insertions(+), 67 deletions(-)
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.h
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.h
+
+--
+2.25.1
