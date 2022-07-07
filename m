@@ -2,139 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 887B356AC90
-	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 22:12:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F05C556AC9B
+	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 22:17:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235859AbiGGULp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jul 2022 16:11:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50246 "EHLO
+        id S236411AbiGGURC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jul 2022 16:17:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231320AbiGGULo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 16:11:44 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65A6ECE9;
-        Thu,  7 Jul 2022 13:11:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=YvxVbi0s8pdES8Ig1gSBYhIVsLmPB4xtFIWqaVBPjdc=; b=BMPjaWOnqsQRsLxJ8XGws3zvDd
-        RhhCBijfg3pyR660vMVQgjveB3wrPXHfrtcK/WhychCeHPT7axZxzeepRb9v2Ahm/H8C4z4Co3xau
-        /aUM7EGC//W6yq3U14JH6zc/bSRcqTg0YCe5ACYS9NMiuvVKu0btDKW511kIu35ammzENIt/Td45T
-        Z/ZlTDUBYl7KFbXabCmX8r0feHweSpO3s9Vyx9DUFoUaYhsDCDM5FoNXJEvd6tGOd4kGSV5GVbDKS
-        0fJquinBuJhKW2g9rU40MS5/hcU9l7BdT8Ead/wJDuA3Rhnjj4VPPrOPDpf1Ry9RSyxoVMKB4C6Pa
-        lWzZsblw==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o9Xqc-0005C6-Jz; Thu, 07 Jul 2022 20:11:38 +0000
-Date:   Thu, 7 Jul 2022 13:11:38 -0700
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     Song Liu <songliubraving@fb.com>
-Cc:     Song Liu <song@kernel.org>, lkml <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "x86@vger.kernel.org" <x86@vger.kernel.org>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "rick.p.edgecombe@intel.com" <rick.p.edgecombe@intel.com>,
-        Kernel Team <Kernel-team@fb.com>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>
-Subject: Re: [PATCH v5 bpf-next 1/5] module: introduce module_alloc_huge
-Message-ID: <Ysc9+r2R6WKMIa3i@bombadil.infradead.org>
-References: <20220624215712.3050672-1-song@kernel.org>
- <20220624215712.3050672-2-song@kernel.org>
- <Yr+BV+HLZikpCU42@bombadil.infradead.org>
- <16959523-ABD1-4D2B-B249-118DDADD7976@fb.com>
+        with ESMTP id S236272AbiGGURA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 16:17:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D36EA205E4
+        for <netdev@vger.kernel.org>; Thu,  7 Jul 2022 13:16:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6EC8F62425
+        for <netdev@vger.kernel.org>; Thu,  7 Jul 2022 20:16:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96800C3411E;
+        Thu,  7 Jul 2022 20:16:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657225018;
+        bh=svFfBCqEXJBt8duPx2UI8bCgwqwyC99JhB0RkqkFknA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=EWsgSCQoI2vpuzcl8I2suIXPZjUpmWfs0EBxjSRHcAyLb6TBo+TBPSx8T5ZIWGElS
+         i6S9NSGL54T2BSl20/97uF9N34EAvzoHrrMK5zKIR6prbltS6E/+auDTxDa3hPtC8D
+         AThs20nQjZRoT0bLD+ke+W3RkHusZu1VXK8NLz+HsUCmxb/yA4FnEzb/5o7oFWzGNi
+         lh2G+8Q5pJH5o/RYG3v/Uq0g4uF8cvSq7qjJaXVEJFztGgyqfXrb0RFfugO1Q07IIY
+         05fv7PLVFcxcqWPSweCX9uIrnAp4urENjADzI4ySuCdF8MV7B1xnbxNAmoEy5ZBKIb
+         QdrmvitR0Q6pg==
+Date:   Thu, 7 Jul 2022 13:16:49 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jiri Pirko <jiri@nvidia.com>
+Cc:     Dima Chumak <dchumak@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        Simon Horman <horms@verge.net.au>
+Subject: Re: [PATCH net-next 0/5] devlink rate police limiter
+Message-ID: <20220707131649.7302a997@kernel.org>
+In-Reply-To: <YsbBbBt+DNvBIU2E@nanopsycho>
+References: <20220620152647.2498927-1-dchumak@nvidia.com>
+        <20220620130426.00818cbf@kernel.org>
+        <228ce203-b777-f21e-1f88-74447f2093ca@nvidia.com>
+        <20220630111327.3a951e3b@kernel.org>
+        <YsbBbBt+DNvBIU2E@nanopsycho>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <16959523-ABD1-4D2B-B249-118DDADD7976@fb.com>
-Sender: Luis Chamberlain <mcgrof@infradead.org>
-X-Spam-Status: No, score=-2.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 06, 2022 at 04:39:13AM +0000, Song Liu wrote:
-> > On Jul 1, 2022, at 4:20 PM, Luis Chamberlain <mcgrof@kernel.org> wrote:
-> > On Fri, Jun 24, 2022 at 02:57:08PM -0700, Song Liu wrote:
-> >> +void *module_alloc_huge(unsigned long size)
-> >> +{
-> >> +	gfp_t gfp_mask = GFP_KERNEL;
-> >> +	void *p;
-> >> +
-> >> +	if (PAGE_ALIGN(size) > MODULES_LEN)
-> >> +		return NULL;
-> >> +
-> >> +	p = __vmalloc_node_range(size, MODULE_ALIGN,
-> >> +				 MODULES_VADDR + get_module_load_offset(),
-> >> +				 MODULES_END, gfp_mask, PAGE_KERNEL,
-> >> +				 VM_DEFER_KMEMLEAK | VM_ALLOW_HUGE_VMAP,
-> >> +				 NUMA_NO_NODE, __builtin_return_address(0));
-> >> +	if (p && (kasan_alloc_module_shadow(p, size, gfp_mask) < 0)) {
-> >> +		vfree(p);
-> >> +		return NULL;
-> >> +	}
-> >> +
-> >> +	return p;
-> >> +}
-> > 
-> > 1) When things like kernel/bpf/core.c start using a module alloc it
-> > is time to consider genearlizing this.
+On Thu, 7 Jul 2022 13:20:12 +0200 Jiri Pirko wrote:
+> Wait. Lets draw the basic picture of "the wire":
 > 
-> I am not quite sure what the generalization would look like. IMHO, the
-> ideal case would have:
->   a) A kernel_text_rw_allocator, similar to current module_alloc.
->   b) A kernel_text_ro_allocator, similar to current bpf_prog_pack_alloc.
->      This is built on top of kernel_text_rw_allocator. Different 
->      allocations could share a page, thus it requires text_poke like 
->      support from the arch. 
->   c) If the arch supports text_poke, kprobes, ftrace trampolines, and
->      bpf trampolines should use kernel_text_ro_allocator.
->   d) Major archs should support CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC,
->      and they should use kernel_text_ro_allocator for module text. 
+> --------------------------+                +--------------------------
+> eswitch representor netdev|=====thewire====|function (vf/sf/whatever
+> --------------------------+                +-------------------------
 > 
-> Does this sound reasonable to you?
+> Now the rate setting Dima is talking about, it is the configuration of
+> the "function" side. Setting the rate is limitting the "function" TX/RX
+> Note that this function could be of any type - netdev, rdma, vdpa, nvme.
 
-Yes, and a respective free call may have an arch specific stuff which
-removes exec stuff.
+The patches add policing, are you saying we're gonna drop RDMA or NVMe
+I/O?
 
-In so far as the bikeshedding, I do think this is generic so
-vmalloc_text_*() suffices or vmalloc_exec_*() take your pick for
-a starter and let the world throw in their preference.
+> Configuring the TX/RX rate (including groupping) applies to all of
+> these.
 
-> I tried to enable CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC for x86_64, 
-> but that doesn't really work. Do we have plan to make this combination
-> work?
+I don't understand why the "side of the wire" matters when the patches
+target both Rx and Tx. Surely that covers both directions.
 
-Oh nice.
+> Putting the configuration on the eswitch representor does not fit:
+> 1) it is configuring the other side of the wire, the configuration
+>    should be of the eswitch port. Configuring the other side is
+>    confusing and misleading. For the purpose of configuring the
+>    "function" side, we introduced "port function" object in devlink.
+> 2) it is confuguring netdev/ethernet however the confuguration applies
+>    to all queues of the function.
 
-Good stuff. Perhaps it just requires a little love from mm folks.
-Don't beat yourself up if it does not yet. We can work towards that
-later.
-
-> > 2) How we free is important, and each arch does something funky for
-> > this. This is not addressed here.
-> 
-> How should we address this? IIUC, x86_64 just calls vfree. 
-
-That's not the case for all archs is it? I'm talking about the generic
-module_alloc() too. I'd like to see that go the way we discussed above.
-
-> > And yes I welcome generalizing generic module_alloc() too as suggested
-> > before. The concern on my part is the sloppiness this enables.
-> 
-> One question I have is, does module_alloc (or kernel_text_*_allocator 
-> above) belong to module code, or mm code (maybe vmalloc)?
-
-The evolution of its uses indicates it is growing outside of modules and
-so mm should be the new home.
-
-> I am planning to let BPF trampoline use bpf_prog_pack on x86_64, which 
-> is another baby step of c) above. 
-
-OK!
-
-  Luis
+If you think it's technically superior to put it in devlink that's fine.
+I'll repeat myself - what I'm asking for is convergence so that drivers
+don't have  to implement 3 different ways of configuring this. We have
+devlink rate for from-VF direction shaping, tc police for bi-dir
+policing and obviously legacy NDOs. None of them translate between each
+other so drivers and user space have to juggle interfaces.
