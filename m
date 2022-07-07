@@ -2,46 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E8BF55696F1
+	by mail.lfdr.de (Postfix) with ESMTP id 21DA35696EF
 	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 02:32:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234799AbiGGAcg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jul 2022 20:32:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57974 "EHLO
+        id S234808AbiGGAck (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jul 2022 20:32:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234795AbiGGAce (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 20:32:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DBCA26AF1
-        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 17:32:33 -0700 (PDT)
+        with ESMTP id S234795AbiGGAch (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 20:32:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D93C26AF1
+        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 17:32:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EE82E61FF5
-        for <netdev@vger.kernel.org>; Thu,  7 Jul 2022 00:32:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9623C3411C;
-        Thu,  7 Jul 2022 00:32:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CEEB461FEF
+        for <netdev@vger.kernel.org>; Thu,  7 Jul 2022 00:32:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3EAAC3411C;
+        Thu,  7 Jul 2022 00:32:34 +0000 (UTC)
 Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="eD7yjb4C"
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="hUy7pQnC"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1657153950;
+        t=1657153953;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=NQJyCdPpqNRO/vvFWnF8a0gFuGGzNFFkaQaNdWGmotA=;
-        b=eD7yjb4CRLvhPN9dCAuYRYq1SUtb7iyYVC1qnBtr9YoP587wp5hhcybxDaIrQJ+aJmjGu6
-        4eGxN2FGVJImTKecDvt4ivIOkcUyHZpba35Yk8MjaDvUXQ5K6wscvRQ+G3GvoFjUMzcHR3
-        z5J9CTwfFeC8maBK7pBo4X1i+DxYf+E=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 358a5412 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Thu, 7 Jul 2022 00:32:30 +0000 (UTC)
+        bh=0q2TbmAxh7dE+QtYUcg5ZBtWYYjwcw2LPiJ75jMXtes=;
+        b=hUy7pQnCvj4gJyBq0vaGkk1h21soChUkuWMU8Y89R9y5xd5uGTl/Rv22U8z0S0cU9un3Su
+        se1Bf7ZS4W+899WjLQyzQM8Z3XcvkMbcCJXd/BUOQBnhqZUoh9mgS0zX9KSMcSLD2WSI7s
+        6aY56VM9tB12fjoAtfbNL2fFTDdwp+w=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id b5775483 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Thu, 7 Jul 2022 00:32:33 +0000 (UTC)
 From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
 To:     netdev@vger.kernel.org, kuba@kernel.org, pabeni@redhat.com,
         davem@davemloft.net
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH net 4/6] wireguard: selftests: use microvm on x86
-Date:   Thu,  7 Jul 2022 02:31:55 +0200
-Message-Id: <20220707003157.526645-5-Jason@zx2c4.com>
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+Subject: [PATCH net 5/6] crypto: s390 - do not depend on CRYPTO_HW for SIMD implementations
+Date:   Thu,  7 Jul 2022 02:31:56 +0200
+Message-Id: <20220707003157.526645-6-Jason@zx2c4.com>
 In-Reply-To: <20220707003157.526645-1-Jason@zx2c4.com>
 References: <20220707003157.526645-1-Jason@zx2c4.com>
 MIME-Version: 1.0
@@ -56,80 +57,336 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This makes for faster tests, faster compile time, and allows us to ditch
-ACPI finally.
+Various accelerated software implementation Kconfig values for S390 were
+mistakenly placed into drivers/crypto/Kconfig, even though they're
+mainly just SIMD code and live in arch/s390/crypto/ like usual. This
+gives them the very unusual dependency on CRYPTO_HW, which leads to
+problems elsewhere.
 
+This patch fixes the issue by moving the Kconfig values for non-hardware
+drivers into the usual place in crypto/Kconfig.
+
+Acked-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 ---
- tools/testing/selftests/wireguard/qemu/Makefile        | 10 ++++++----
- .../testing/selftests/wireguard/qemu/arch/i686.config  |  7 +++++--
- .../selftests/wireguard/qemu/arch/x86_64.config        |  7 +++++--
- 3 files changed, 16 insertions(+), 8 deletions(-)
+ crypto/Kconfig         | 114 ++++++++++++++++++++++++++++++++++++++++
+ drivers/crypto/Kconfig | 115 -----------------------------------------
+ 2 files changed, 114 insertions(+), 115 deletions(-)
 
-diff --git a/tools/testing/selftests/wireguard/qemu/Makefile b/tools/testing/selftests/wireguard/qemu/Makefile
-index ce6176928a7d..9700358e4337 100644
---- a/tools/testing/selftests/wireguard/qemu/Makefile
-+++ b/tools/testing/selftests/wireguard/qemu/Makefile
-@@ -107,20 +107,22 @@ CHOST := x86_64-linux-musl
- QEMU_ARCH := x86_64
- KERNEL_ARCH := x86_64
- KERNEL_BZIMAGE := $(KERNEL_BUILD_PATH)/arch/x86/boot/bzImage
-+QEMU_VPORT_RESULT := virtio-serial-device
- ifeq ($(HOST_ARCH),$(ARCH))
--QEMU_MACHINE := -cpu host -machine q35,accel=kvm
-+QEMU_MACHINE := -cpu host -machine microvm,accel=kvm,pit=off,pic=off,rtc=off -no-acpi
- else
--QEMU_MACHINE := -cpu max -machine q35
-+QEMU_MACHINE := -cpu max -machine microvm -no-acpi
- endif
- else ifeq ($(ARCH),i686)
- CHOST := i686-linux-musl
- QEMU_ARCH := i386
- KERNEL_ARCH := x86
- KERNEL_BZIMAGE := $(KERNEL_BUILD_PATH)/arch/x86/boot/bzImage
-+QEMU_VPORT_RESULT := virtio-serial-device
- ifeq ($(subst x86_64,i686,$(HOST_ARCH)),$(ARCH))
--QEMU_MACHINE := -cpu host -machine q35,accel=kvm
-+QEMU_MACHINE := -cpu host -machine microvm,accel=kvm,pit=off,pic=off,rtc=off -no-acpi
- else
--QEMU_MACHINE := -cpu max -machine q35
-+QEMU_MACHINE := -cpu coreduo -machine microvm -no-acpi
- endif
- else ifeq ($(ARCH),mips64)
- CHOST := mips64-linux-musl
-diff --git a/tools/testing/selftests/wireguard/qemu/arch/i686.config b/tools/testing/selftests/wireguard/qemu/arch/i686.config
-index cd864b9be6fb..35b06502606f 100644
---- a/tools/testing/selftests/wireguard/qemu/arch/i686.config
-+++ b/tools/testing/selftests/wireguard/qemu/arch/i686.config
-@@ -1,7 +1,10 @@
--CONFIG_ACPI=y
- CONFIG_SERIAL_8250=y
- CONFIG_SERIAL_8250_CONSOLE=y
-+CONFIG_VIRTIO_MENU=y
-+CONFIG_VIRTIO_MMIO=y
-+CONFIG_VIRTIO_CONSOLE=y
-+CONFIG_VIRTIO_MMIO_CMDLINE_DEVICES=y
- CONFIG_COMPAT_32BIT_TIME=y
- CONFIG_CMDLINE_BOOL=y
--CONFIG_CMDLINE="console=ttyS0 wg.success=ttyS1 panic_on_warn=1"
-+CONFIG_CMDLINE="console=ttyS0 wg.success=vport0p1 panic_on_warn=1 reboot=t"
- CONFIG_FRAME_WARN=1024
-diff --git a/tools/testing/selftests/wireguard/qemu/arch/x86_64.config b/tools/testing/selftests/wireguard/qemu/arch/x86_64.config
-index efa00693e08b..cf2d1376d121 100644
---- a/tools/testing/selftests/wireguard/qemu/arch/x86_64.config
-+++ b/tools/testing/selftests/wireguard/qemu/arch/x86_64.config
-@@ -1,6 +1,9 @@
--CONFIG_ACPI=y
- CONFIG_SERIAL_8250=y
- CONFIG_SERIAL_8250_CONSOLE=y
-+CONFIG_VIRTIO_MENU=y
-+CONFIG_VIRTIO_MMIO=y
-+CONFIG_VIRTIO_CONSOLE=y
-+CONFIG_VIRTIO_MMIO_CMDLINE_DEVICES=y
- CONFIG_CMDLINE_BOOL=y
--CONFIG_CMDLINE="console=ttyS0 wg.success=ttyS1 panic_on_warn=1"
-+CONFIG_CMDLINE="console=ttyS0 wg.success=vport0p1 panic_on_warn=1 reboot=t"
- CONFIG_FRAME_WARN=1280
+diff --git a/crypto/Kconfig b/crypto/Kconfig
+index 1d44893a997b..7b81685b5655 100644
+--- a/crypto/Kconfig
++++ b/crypto/Kconfig
+@@ -666,6 +666,18 @@ config CRYPTO_CRC32_MIPS
+ 	  CRC32c and CRC32 CRC algorithms implemented using mips crypto
+ 	  instructions, when available.
+ 
++config CRYPTO_CRC32_S390
++	tristate "CRC-32 algorithms"
++	depends on S390
++	select CRYPTO_HASH
++	select CRC32
++	help
++	  Select this option if you want to use hardware accelerated
++	  implementations of CRC algorithms.  With this option, you
++	  can optimize the computation of CRC-32 (IEEE 802.3 Ethernet)
++	  and CRC-32C (Castagnoli).
++
++	  It is available with IBM z13 or later.
+ 
+ config CRYPTO_XXHASH
+ 	tristate "xxHash hash algorithm"
+@@ -898,6 +910,16 @@ config CRYPTO_SHA512_SSSE3
+ 	  Extensions version 1 (AVX1), or Advanced Vector Extensions
+ 	  version 2 (AVX2) instructions, when available.
+ 
++config CRYPTO_SHA512_S390
++	tristate "SHA384 and SHA512 digest algorithm"
++	depends on S390
++	select CRYPTO_HASH
++	help
++	  This is the s390 hardware accelerated implementation of the
++	  SHA512 secure hash standard.
++
++	  It is available as of z10.
++
+ config CRYPTO_SHA1_OCTEON
+ 	tristate "SHA1 digest algorithm (OCTEON)"
+ 	depends on CPU_CAVIUM_OCTEON
+@@ -930,6 +952,16 @@ config CRYPTO_SHA1_PPC_SPE
+ 	  SHA-1 secure hash standard (DFIPS 180-4) implemented
+ 	  using powerpc SPE SIMD instruction set.
+ 
++config CRYPTO_SHA1_S390
++	tristate "SHA1 digest algorithm"
++	depends on S390
++	select CRYPTO_HASH
++	help
++	  This is the s390 hardware accelerated implementation of the
++	  SHA-1 secure hash standard (FIPS 180-1/DFIPS 180-2).
++
++	  It is available as of z990.
++
+ config CRYPTO_SHA256
+ 	tristate "SHA224 and SHA256 digest algorithm"
+ 	select CRYPTO_HASH
+@@ -970,6 +1002,16 @@ config CRYPTO_SHA256_SPARC64
+ 	  SHA-256 secure hash standard (DFIPS 180-2) implemented
+ 	  using sparc64 crypto instructions, when available.
+ 
++config CRYPTO_SHA256_S390
++	tristate "SHA256 digest algorithm"
++	depends on S390
++	select CRYPTO_HASH
++	help
++	  This is the s390 hardware accelerated implementation of the
++	  SHA256 secure hash standard (DFIPS 180-2).
++
++	  It is available as of z9.
++
+ config CRYPTO_SHA512
+ 	tristate "SHA384 and SHA512 digest algorithms"
+ 	select CRYPTO_HASH
+@@ -1010,6 +1052,26 @@ config CRYPTO_SHA3
+ 	  References:
+ 	  http://keccak.noekeon.org/
+ 
++config CRYPTO_SHA3_256_S390
++	tristate "SHA3_224 and SHA3_256 digest algorithm"
++	depends on S390
++	select CRYPTO_HASH
++	help
++	  This is the s390 hardware accelerated implementation of the
++	  SHA3_256 secure hash standard.
++
++	  It is available as of z14.
++
++config CRYPTO_SHA3_512_S390
++	tristate "SHA3_384 and SHA3_512 digest algorithm"
++	depends on S390
++	select CRYPTO_HASH
++	help
++	  This is the s390 hardware accelerated implementation of the
++	  SHA3_512 secure hash standard.
++
++	  It is available as of z14.
++
+ config CRYPTO_SM3
+ 	tristate
+ 
+@@ -1070,6 +1132,16 @@ config CRYPTO_GHASH_CLMUL_NI_INTEL
+ 	  This is the x86_64 CLMUL-NI accelerated implementation of
+ 	  GHASH, the hash function used in GCM (Galois/Counter mode).
+ 
++config CRYPTO_GHASH_S390
++	tristate "GHASH hash function"
++	depends on S390
++	select CRYPTO_HASH
++	help
++	  This is the s390 hardware accelerated implementation of GHASH,
++	  the hash function used in GCM (Galois/Counter mode).
++
++	  It is available as of z196.
++
+ comment "Ciphers"
+ 
+ config CRYPTO_AES
+@@ -1185,6 +1257,23 @@ config CRYPTO_AES_PPC_SPE
+ 	  architecture specific assembler implementations that work on 1KB
+ 	  tables or 256 bytes S-boxes.
+ 
++config CRYPTO_AES_S390
++	tristate "AES cipher algorithms"
++	depends on S390
++	select CRYPTO_ALGAPI
++	select CRYPTO_SKCIPHER
++	help
++	  This is the s390 hardware accelerated implementation of the
++	  AES cipher algorithms (FIPS-197).
++
++	  As of z9 the ECB and CBC modes are hardware accelerated
++	  for 128 bit keys.
++	  As of z10 the ECB and CBC modes are hardware accelerated
++	  for all AES key sizes.
++	  As of z196 the CTR mode is hardware accelerated for all AES
++	  key sizes and XTS mode is hardware accelerated for 256 and
++	  512 bit keys.
++
+ config CRYPTO_ANUBIS
+ 	tristate "Anubis cipher algorithm"
+ 	depends on CRYPTO_USER_API_ENABLE_OBSOLETE
+@@ -1415,6 +1504,19 @@ config CRYPTO_DES3_EDE_X86_64
+ 	  algorithm are provided; regular processing one input block and
+ 	  one that processes three blocks parallel.
+ 
++config CRYPTO_DES_S390
++	tristate "DES and Triple DES cipher algorithms"
++	depends on S390
++	select CRYPTO_ALGAPI
++	select CRYPTO_SKCIPHER
++	select CRYPTO_LIB_DES
++	help
++	  This is the s390 hardware accelerated implementation of the
++	  DES cipher algorithm (FIPS 46-2), and Triple DES EDE (FIPS 46-3).
++
++	  As of z990 the ECB and CBC mode are hardware accelerated.
++	  As of z196 the CTR mode is hardware accelerated.
++
+ config CRYPTO_FCRYPT
+ 	tristate "FCrypt cipher algorithm"
+ 	select CRYPTO_ALGAPI
+@@ -1474,6 +1576,18 @@ config CRYPTO_CHACHA_MIPS
+ 	select CRYPTO_SKCIPHER
+ 	select CRYPTO_ARCH_HAVE_LIB_CHACHA
+ 
++config CRYPTO_CHACHA_S390
++	tristate "ChaCha20 stream cipher"
++	depends on S390
++	select CRYPTO_SKCIPHER
++	select CRYPTO_LIB_CHACHA_GENERIC
++	select CRYPTO_ARCH_HAVE_LIB_CHACHA
++	help
++	  This is the s390 SIMD implementation of the ChaCha20 stream
++	  cipher (RFC 7539).
++
++	  It is available as of z13.
++
+ config CRYPTO_SEED
+ 	tristate "SEED cipher algorithm"
+ 	depends on CRYPTO_USER_API_ENABLE_OBSOLETE
+diff --git a/drivers/crypto/Kconfig b/drivers/crypto/Kconfig
+index ee99c02c84e8..3e6aa319920b 100644
+--- a/drivers/crypto/Kconfig
++++ b/drivers/crypto/Kconfig
+@@ -133,98 +133,6 @@ config CRYPTO_PAES_S390
+ 	  Select this option if you want to use the paes cipher
+ 	  for example to use protected key encrypted devices.
+ 
+-config CRYPTO_SHA1_S390
+-	tristate "SHA1 digest algorithm"
+-	depends on S390
+-	select CRYPTO_HASH
+-	help
+-	  This is the s390 hardware accelerated implementation of the
+-	  SHA-1 secure hash standard (FIPS 180-1/DFIPS 180-2).
+-
+-	  It is available as of z990.
+-
+-config CRYPTO_SHA256_S390
+-	tristate "SHA256 digest algorithm"
+-	depends on S390
+-	select CRYPTO_HASH
+-	help
+-	  This is the s390 hardware accelerated implementation of the
+-	  SHA256 secure hash standard (DFIPS 180-2).
+-
+-	  It is available as of z9.
+-
+-config CRYPTO_SHA512_S390
+-	tristate "SHA384 and SHA512 digest algorithm"
+-	depends on S390
+-	select CRYPTO_HASH
+-	help
+-	  This is the s390 hardware accelerated implementation of the
+-	  SHA512 secure hash standard.
+-
+-	  It is available as of z10.
+-
+-config CRYPTO_SHA3_256_S390
+-	tristate "SHA3_224 and SHA3_256 digest algorithm"
+-	depends on S390
+-	select CRYPTO_HASH
+-	help
+-	  This is the s390 hardware accelerated implementation of the
+-	  SHA3_256 secure hash standard.
+-
+-	  It is available as of z14.
+-
+-config CRYPTO_SHA3_512_S390
+-	tristate "SHA3_384 and SHA3_512 digest algorithm"
+-	depends on S390
+-	select CRYPTO_HASH
+-	help
+-	  This is the s390 hardware accelerated implementation of the
+-	  SHA3_512 secure hash standard.
+-
+-	  It is available as of z14.
+-
+-config CRYPTO_DES_S390
+-	tristate "DES and Triple DES cipher algorithms"
+-	depends on S390
+-	select CRYPTO_ALGAPI
+-	select CRYPTO_SKCIPHER
+-	select CRYPTO_LIB_DES
+-	help
+-	  This is the s390 hardware accelerated implementation of the
+-	  DES cipher algorithm (FIPS 46-2), and Triple DES EDE (FIPS 46-3).
+-
+-	  As of z990 the ECB and CBC mode are hardware accelerated.
+-	  As of z196 the CTR mode is hardware accelerated.
+-
+-config CRYPTO_AES_S390
+-	tristate "AES cipher algorithms"
+-	depends on S390
+-	select CRYPTO_ALGAPI
+-	select CRYPTO_SKCIPHER
+-	help
+-	  This is the s390 hardware accelerated implementation of the
+-	  AES cipher algorithms (FIPS-197).
+-
+-	  As of z9 the ECB and CBC modes are hardware accelerated
+-	  for 128 bit keys.
+-	  As of z10 the ECB and CBC modes are hardware accelerated
+-	  for all AES key sizes.
+-	  As of z196 the CTR mode is hardware accelerated for all AES
+-	  key sizes and XTS mode is hardware accelerated for 256 and
+-	  512 bit keys.
+-
+-config CRYPTO_CHACHA_S390
+-	tristate "ChaCha20 stream cipher"
+-	depends on S390
+-	select CRYPTO_SKCIPHER
+-	select CRYPTO_LIB_CHACHA_GENERIC
+-	select CRYPTO_ARCH_HAVE_LIB_CHACHA
+-	help
+-	  This is the s390 SIMD implementation of the ChaCha20 stream
+-	  cipher (RFC 7539).
+-
+-	  It is available as of z13.
+-
+ config S390_PRNG
+ 	tristate "Pseudo random number generator device driver"
+ 	depends on S390
+@@ -238,29 +146,6 @@ config S390_PRNG
+ 
+ 	  It is available as of z9.
+ 
+-config CRYPTO_GHASH_S390
+-	tristate "GHASH hash function"
+-	depends on S390
+-	select CRYPTO_HASH
+-	help
+-	  This is the s390 hardware accelerated implementation of GHASH,
+-	  the hash function used in GCM (Galois/Counter mode).
+-
+-	  It is available as of z196.
+-
+-config CRYPTO_CRC32_S390
+-	tristate "CRC-32 algorithms"
+-	depends on S390
+-	select CRYPTO_HASH
+-	select CRC32
+-	help
+-	  Select this option if you want to use hardware accelerated
+-	  implementations of CRC algorithms.  With this option, you
+-	  can optimize the computation of CRC-32 (IEEE 802.3 Ethernet)
+-	  and CRC-32C (Castagnoli).
+-
+-	  It is available with IBM z13 or later.
+-
+ config CRYPTO_DEV_NIAGARA2
+ 	tristate "Niagara2 Stream Processing Unit driver"
+ 	select CRYPTO_LIB_DES
 -- 
 2.35.1
 
