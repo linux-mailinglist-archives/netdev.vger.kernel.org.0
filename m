@@ -2,54 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 03B8C56A730
-	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 17:43:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F3CEF56A73C
+	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 17:48:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235930AbiGGPnL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jul 2022 11:43:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60874 "EHLO
+        id S235499AbiGGPsg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jul 2022 11:48:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235908AbiGGPnJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 11:43:09 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAEE82DABE
-        for <netdev@vger.kernel.org>; Thu,  7 Jul 2022 08:43:08 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id u12so33092539eja.8
-        for <netdev@vger.kernel.org>; Thu, 07 Jul 2022 08:43:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=eRyQ6l+HRyXdzOqyBsn/dpYwUzVFGa0ZXhBusdg+nQo=;
-        b=h+1J5PxQdDHpVcPcs2s+yMc1NuhF3fnxWBG+wgM3rOaWtnpf+p85x806rNKDUGzv44
-         LTbrkDfifvjl5ET2lDlezGuLWQpoYLQleLNRJZE08q5gVyUubwxf9WUaMkQpGc1ITEzW
-         Fv/OCqNYE/EBXUstj2Jtr7ceNxc7Susfdfu9RBg6p9QfP9iUA386bkSP3pjthu2JaobM
-         HoeA6HPZnwBRkMjaymKChC/zMY/r6aGh/JQbNykqW3p4wbA0v/+wBEhX3cA7/dI622J8
-         Ia1Bvykj9BrfJiwWNPt0UYLOR57jz0i3/R03Q9v7heVgtH+KF/M2jrTlE3RkSJqSiSg5
-         ptyA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=eRyQ6l+HRyXdzOqyBsn/dpYwUzVFGa0ZXhBusdg+nQo=;
-        b=7SxN1c2W/qUEgEqHVxiEsMneAdzdZmer+z+VD+TI+CLtUjvC9/77eHjm3YskKdH6SM
-         Fw8Y9VCvJY9xDzRVwtliFGxYL2msXnL4L1rCDi6X7bE7sMXJHftYblP6+VyB2Ke9FJZs
-         KZu48fsbfVbeW6UUNYeL5twkjiKDwJCu0XB6cVN3dHLB89qaJZX/kXGygU69O7RXciKQ
-         WeOMDURCTUiji61rLq3b8dNurYrQR8DeIPZlW515eI5B9ocRhaoG0G3gWVyGPFIlCRmB
-         NC+pkmtKFRbpds5Go8/YRt7lgfWb2BH3P9a6170GQHqsvUbbF8d7uYHzYt+yt39XEgrt
-         kXbQ==
-X-Gm-Message-State: AJIora+Mqf09rhrBqQi88PSyqR91Z8G07rT1GJ5veoA02bSqSns7gAIa
-        Qvmaga9Ao/VmgbGDccMBHTg=
-X-Google-Smtp-Source: AGRyM1sEZtfA3ti3uPrw9IQHDMSqCngj2V6a8d3LI1tYlReReGFPyHs4RoO1Aa2GY+mRk60+Ya5F2g==
-X-Received: by 2002:a17:907:7209:b0:72a:fcaf:2250 with SMTP id dr9-20020a170907720900b0072afcaf2250mr7983182ejc.468.1657208587175;
-        Thu, 07 Jul 2022 08:43:07 -0700 (PDT)
-Received: from skbuf ([188.25.231.143])
-        by smtp.gmail.com with ESMTPSA id k14-20020aa7c04e000000b00431962fe5d4sm28681409edo.77.2022.07.07.08.43.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jul 2022 08:43:06 -0700 (PDT)
-Date:   Thu, 7 Jul 2022 18:43:03 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+        with ESMTP id S235202AbiGGPsg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 11:48:36 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BC9E12609
+        for <netdev@vger.kernel.org>; Thu,  7 Jul 2022 08:48:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=IDc7irA5e5zUVtpytP9vUh6O1uTMrjWrHRJNxM2MS04=; b=MCK448ejte9ZbfNyNV4LRrK8JZ
+        +TQWrgECYwRAJNxU05h1pBC5ojyB3czH61I9qhO0Mg/RpYOYAQn8oWCgTo4RPkU+5FpWT/q1c8ubU
+        62WYHrfS2shO9WKaQIcKd/cnYSXMLF4kcqB3P53bC8gBFu2T84g4vzGIiB5YQ91TFWakwgkfPkg/z
+        3XswuhicWZ2WGwwgnpagq4+85bdxG7XgWHjCUd7qpVq0FQvsVaEN0bNOpNcqi8my62xdAw/zwX0dK
+        cqPnRV0uR0AS8XKmbiWzABPmvoW2bJUUW4ZuOdMvapTRcfxmRzdbTIJIWmWtGymcWvZp/yluzcNkk
+        c4ULaYzg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33228)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1o9Tjm-00044h-DB; Thu, 07 Jul 2022 16:48:18 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1o9Tjg-0005O8-5U; Thu, 07 Jul 2022 16:48:12 +0100
+Date:   Thu, 7 Jul 2022 16:48:12 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Vladimir Oltean <olteanv@gmail.com>
 Cc:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
@@ -73,70 +60,175 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         UNGLinuxDriver@microchip.com,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Woojung Huh <woojung.huh@microchip.com>,
-        Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>
+        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
 Subject: Re: [PATCH RFC net-next 5/5] net: dsa: always use phylink for CPU
  and DSA ports
-Message-ID: <20220707154303.236xaeape7isracw@skbuf>
+Message-ID: <YscAPP7mF3KEE1/p@shell.armlinux.org.uk>
 References: <YsQIjC7UpcGWJovx@shell.armlinux.org.uk>
  <E1o8fA7-0059aO-K8@rmk-PC.armlinux.org.uk>
  <20220706102621.hfubvn3wa6wlw735@skbuf>
- <Ysa85mJIUfo5m4dJ@shell.armlinux.org.uk>
+ <YsW3KSeeQBiWQOz/@shell.armlinux.org.uk>
+ <Ysaw56lKTtKMh84b@shell.armlinux.org.uk>
+ <20220707152727.foxrd4gvqg3zb6il@skbuf>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Ysa85mJIUfo5m4dJ@shell.armlinux.org.uk>
+In-Reply-To: <20220707152727.foxrd4gvqg3zb6il@skbuf>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 07, 2022 at 12:00:54PM +0100, Russell King (Oracle) wrote:
-> More importantly, we need your input on Ocelot, which you are listed as
-> a maintainer for, and Ocelot is the only DSA driver that does stuff
-> differently (due to the rate adapting PCS). It doesn't set
-> mac_capabilities, and therefore phylink_set_max_fixed_link() will not
-> work here.
+On Thu, Jul 07, 2022 at 06:27:27PM +0300, Vladimir Oltean wrote:
+> On Thu, Jul 07, 2022 at 11:09:43AM +0100, Russell King (Oracle) wrote:
+> > On Wed, Jul 06, 2022 at 05:24:09PM +0100, Russell King (Oracle) wrote:
+> > > On Wed, Jul 06, 2022 at 01:26:21PM +0300, Vladimir Oltean wrote:
+> > > > Can we please limit phylink_set_max_link_speed() to just the CPU ports
+> > > > where a fixed-link property is also missing, not just a phy-handle?
+> > > > Although to be entirely correct, we can also have MLO_AN_INBAND, which
+> > > > wouldn't be covered by these 2 checks and would still represent a valid
+> > > > DT binding.
+> > > 
+> > > phylink_set_max_fixed_link() already excludes itself:
+> > > 
+> > >         if (pl->cfg_link_an_mode != MLO_AN_PHY || pl->phydev || pl->sfp_bus)
+>                                                       ~~~~~~~~~~
 > 
-> Has Ocelot ever made use of this DSA feature where, when nothing is
-> specified for a CPU or DSA port, we use an effective fixed-link setup
-> with an interface mode that gives the highest speed? Or does this not
-> apply to this DSA driver?
+> If not NULL, this is an SFP PHY, right? In other words, it's supposed to protect from
+> phylink_sfp_connect_phy() - code involuntarily triggered by phylink_create() ->
+> phylink_register_sfp() - and not from calls to phylink_{,fwnode_}connect_phy()
+> that were initiated by the phylink user between phylink_create() and
+> phylink_set_max_fixed_link(), correct? Those are specified as invalid in the
+> kerneldoc and that's about it - that's not what the checking is for, correct?
+
+No, it's not to do with sfps at all, but to do with enforcing the
+pre-conditions for the function - that entire line is checking that
+(a) we are in a sane state to be called, and (b) there is no
+configuration initialisation beyond the default done by
+phylink_create() - in other words, there is no in-band or fixed-link
+specified.
+
+Let's go through this step by step.
+
+1. pl->cfg_link_an_mode != MLO_AN_PHY
+   The default value for cfg_link_an_mode is MLO_AN_PHY. If it's
+   anything other than that, then a fixed-link or in-band mode has
+   been specified, and we don't want to override that. So this call
+   needs to fail.
+
+2. pl->phydev
+   If a PHY has been attached, then the pre-condition for calling this
+   function immediately after phylink_create() has been violated,
+   because the only way it can be non-NULL is if someone's called one of
+   the phylink functions that connects a PHY. Note: SFPs will not set
+   their PHY here, because, for them to discover that there's a PHY, the
+   network interface needs to be up, and it will never be up here... but
+   in any case...
+
+3. pl->sfp_bus
+   If we have a SFP bus, then we definitely are not going to be
+   operating in this default fixed-link mode - because the SFP is going
+   to want to set its own parameters.
+
+> > >                 return -EBUSY;
+> > > 
+> > > intentionally so that if there is anything specified for the port, be
+> > > that a fixed link or in-band, then phylink_set_max_fixed_link() errors
+> > > out with -EBUSY.
+> > > 
+> > > The only case that it can't detect is if there is a PHY that may be
+> > > added to phylink at a later time, and that is what the check above
+> > > is for.
 > 
-> Thanks.
+> Here by "PHY added at a later time", you do mean calling phylink_{,fwnode_}connect_phy()
+> after phylink_set_max_fixed_link(), right?
 
-I'm fine with both the ocelot and sja1105 drivers.
+Correct.
 
-The ocelot driver has 3 users:
+> So this is what I don't understand. If we've called phylink_set_max_fixed_link()
+> we've changed pl->cfg_link_an_mode to MLO_AN_FIXED and this will
+> silently break future calls to phylink_{,fwnode_}connect_phy(), so DSA
+> predicts if it's going to call either of those connect_phy() functions,
+> and calls phylink_set_max_fixed_link() only if it won't. Right?
+> 
+> You've structured the checks in this "distributed" way because phylink
+> can't really predict whether phylink_{,fwnode_}connect_phy() will be
+> called after phylink_set_max_fixed_link(), right? I mean, it can
+> probably predict the fwnode_ variant, but not phylink_connect_phy, and
+> this is why it is up to the caller to decide when to call and when not to.
 
-- felix_vsc9959 (arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi) on NXP
-  LS1028A, where the CPU ports have and have always had a fixed-link
-  node in the SoC dtsi. LS1028A based boards should include the SoC
-  dtsi. If other board DT writers don't do that or if they delete the
-  fixed-link node from the CPU ports, that's not my problem and I don't
-  really want to help them.
+phylink has no idea whether phylink_fwnode_connect_phy() will be called
+with the same fwnode as phylink_create(), so it really can't make any
+assumptions about whether there will be a PHY or not.
 
-- seville_vsc9953 (arch/powerpc/boot/dts/fsl/t1040si-post.dtsi) on NXP
-  T1040. Same thing, embedded switch, not my fault if the fixed-link
-  disappears from the SoC dtsi.
+> 
+> > I've updated the function description to mention this detail:
+> > 
+> > +/**
+> > + * phylink_set_max_fixed_link() - set a fixed link configuration for phylink
+> > + * @pl: a pointer to a &struct phylink returned from phylink_create()
+> > + *
+> > + * Set a maximum speed fixed-link configuration for the chosen interface mode
+> > + * and MAC capabilities for the phylink instance if the instance has not
+> > + * already been configured with a SFP, fixed link, or in-band AN mode. If the
+> > + * interface mode is PHY_INTERFACE_MODE_NA, then search the supported
+> > + * interfaces bitmap for the first interface that gives the fastest supported
+> > + * speed.
+> > 
+> > Does this address your concern?
+> > 
+> > Thanks.
+> 
+> Not really, no, sorry, it just confuses me more.
 
-- Colin Foster's SPI-controlled VSC7512 (still downstream). He has an
-  Ethernet cable connecting the CPU port to a Beaglebone Black, so he
-  has a phy-handle on the CPU port, so definitely not nothing. I believe
-  his work hasn't made it to production in any case, so enforcing
-  validation now shouldn't bother him too much if at all.
+I find that happens a lot when I try to add more documentation to
+clarify things. I sometimes get to the point of deciding its better
+_not_ to write any documentation, because documentation just ends up
+being confusing and people want more and more detail.
 
-As for sja1105, there is DT validation that checks for the presence of
-all required properties in sja1105_parse_ports_node().
+I've got to the point in some case where I've had to spell out which
+keys to press on the keyboard for people to formulate the "[PATCH ...]"
+thing correctly, because if you put it in quotes, you get people who
+will include the quotes even if you tell them not to.
 
-There is some DT validation in felix_parse_ports_node() too, but it
-doesn't check that all specifiers that phylink might use are there.
-I'd really like to add some validation before I gain any involuntary
-users, but all open-coded constructs I can come up with are clumsy.
-What would you suggest, if I explicitly don't want to rely on
-context-specific phylink interpretation of empty OF nodes, and rather
-error out?
+I hate documentation, I seem incapable of writing it in a way people can
+understand.
+
+> It should maybe also
+> say that this function shouldn't be called if phylink_{,fwnode_}connect_phy()
+> is going to be called later.
+
+It's already a precondition that phylink_{,fwnode_}connect_phy() fail if
+we're in fixed-link mode (because PHYs have never been supported when in
+fixed-link mode - if one remembers, the old fixed-link code used to
+provide its own emulation of a PHY to make fixed-links work.) So PHYs
+and fixed-links have always been mutually exclusive before phylink, and
+continue to be so with phylink.
+
+> Can phylink absorb all this logic, and automatically call phylink_set_max_fixed_link()
+> based on the following?
+> 
+> (1) struct phylink_config gets extended with a bool fallback_max_fixed_link.
+> (2) DSA CPU and DSA ports set this to true in dsa_port_phylink_register().
+> (3) phylink_set_max_fixed_link() is hooked into this -ENODEV error
+>     condition from phylink_fwnode_phy_connect():
+> 
+> 	phy_fwnode = fwnode_get_phy_node(fwnode);
+> 	if (IS_ERR(phy_fwnode)) {
+> 		if (pl->cfg_link_an_mode == MLO_AN_PHY)
+> 			return -ENODEV; <- here
+> 		return 0;
+> 	}
+
+My question in response would be - why should this DSA specific behaviour
+be handled completely internally within phylink, when it's a DSA
+specific behaviour? Why do we need boolean flags for this?
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
