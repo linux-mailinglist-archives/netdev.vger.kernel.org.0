@@ -2,423 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DB452569C16
-	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 09:49:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E61A9569C41
+	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 09:54:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234941AbiGGHs5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jul 2022 03:48:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36474 "EHLO
+        id S233060AbiGGHvD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jul 2022 03:51:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235099AbiGGHsl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 03:48:41 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD6DB32076;
-        Thu,  7 Jul 2022 00:48:36 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id o4so25097382wrh.3;
-        Thu, 07 Jul 2022 00:48:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=f9nLTCidfnrhmXifqG1XQtiik+IMQK61AWbNeVnQJug=;
-        b=COxPdk+QiA9hqXD15/35Y59dlziEZHl9Mel3By4DMFp9kA1AKLdKLEcuc0JwbADkBd
-         DxoNwH+VmpZiHB3eTHCc7jK3eCDwhfD7SGJe5AMhVR5VfdcmmTSxaOhUbm/1daU2HMxo
-         LG+8gS9SlS9/mNIWuLgQoyOMsIEACvzJA6axCHh6pAemRoozwT0abNGr18UHeYdMeaZT
-         epkd60xBCwdBmKxvYD9cDuGKnxoztdWXFECWt8ZW8IS30m68XXmCpRTCvSMNVjInSWul
-         CBSGWzhBttew5ehOCgk/5Gf0Fl5zIiU8ggoUXsmoX1fVr7Nv9S0+hhtWoZkKXWLSjae0
-         HnGw==
+        with ESMTP id S235116AbiGGHvB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 03:51:01 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D877433A17
+        for <netdev@vger.kernel.org>; Thu,  7 Jul 2022 00:50:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657180257;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=+6vKb5qtW2WQk3PF9/RN812iqCXsUylPTfCM4P31gZ0=;
+        b=Z9/dRsgWOW1aq8VVcce7SDWbhH4blf5vJqWJFFf8luO3qJI/54bMxFmLmUUajfrDcCiL0q
+        FlHWlxvDCExwmI+THavvOsRuEa119rLr82g/xq61SJceD+W6v3CpydQIynJSU4EaELWDOI
+        vHUuqOpUOiDnjntdw+XZOCagrlSKQGg=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-66-Ns67yTAhOKOQ4b9PgQxv8Q-1; Thu, 07 Jul 2022 03:50:55 -0400
+X-MC-Unique: Ns67yTAhOKOQ4b9PgQxv8Q-1
+Received: by mail-wm1-f72.google.com with SMTP id r7-20020a1c4407000000b003a2cfab0839so15919wma.5
+        for <netdev@vger.kernel.org>; Thu, 07 Jul 2022 00:50:55 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=f9nLTCidfnrhmXifqG1XQtiik+IMQK61AWbNeVnQJug=;
-        b=IMWwOevvWoSVl8ogrH2UAd15Rlq9lwawLSCPo1MA1ngNnAU9SzavJGI6lRUJVMVpk8
-         33F4n1BZVU0REBuDt6wy31he4PeFtmfVAoe4mjNqr7wYS37RPO3Z5rs0enYKm9SUpJVG
-         mG04+3nvn2G818IIU1cH3Bup147q87HU/sromDstYRpevzcg95uw9CfKMAFlQUTTGyT8
-         TiDFZsWLOYBnOitlMLHnKPSpgv4GiwuGj8C/IzjQ4Gb0OjDzykl86ZFhwRGR4s0g7dFP
-         SAcqFz5KVDTG9s85fzKVOdPjy+Qa2InLK1KST+/sH02RgZnWiIjXsHXhnu8K2Vv3lbyg
-         l6pg==
-X-Gm-Message-State: AJIora+Empb964tL78dAqGOB6ORTppWKcU32dLtVpnMRL5WoQo70It9F
-        iTtLqeaziZBE0BHVD8v0PiE=
-X-Google-Smtp-Source: AGRyM1umeORrvq7hOAosAYPuDdg+MWwN3qIG30DhfJC6NU5Xxf/xoytLKFkKU3ZG6wIk8Vd07u+gFA==
-X-Received: by 2002:a5d:5747:0:b0:21d:65e9:be07 with SMTP id q7-20020a5d5747000000b0021d65e9be07mr21879807wrw.215.1657180115009;
-        Thu, 07 Jul 2022 00:48:35 -0700 (PDT)
-Received: from localhost (p200300e41f12c800f22f74fffe1f3a53.dip0.t-ipconnect.de. [2003:e4:1f12:c800:f22f:74ff:fe1f:3a53])
-        by smtp.gmail.com with ESMTPSA id b15-20020adff90f000000b0021b90cc66a1sm37586100wrr.2.2022.07.07.00.48.33
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=+6vKb5qtW2WQk3PF9/RN812iqCXsUylPTfCM4P31gZ0=;
+        b=fmdWTiHO69GJ6gs15L1gW3mhwPo4FEd+0eqsF2Lx/nR7BdYIoSR2iyH4pmWyERBSa6
+         jLTM48nEBV+9Ph3JtABled2RgWHCfK3m7GtxC+R+pqpUj4kHp7xNEv7GLBCQuE1e/XZ8
+         ZMrUgOpBDXpHQe0FU8L9+CpxsSFVVFbR5925GGLKlHaHWGiWGQJp+NcGe3fmFVVz4S+S
+         bTfoiTXFpyrZ3Ajct6qNKJC7YAjuO56Q9wgqCweVGiv4L6HjbBksDo0YZPaK2UZMJj/l
+         ccNW2vqr0x/2+68eBRyZdCmfnODobT4YesZTRZo3aoAxfnY+eST7/W7IOQggynMXfKSn
+         TWFQ==
+X-Gm-Message-State: AJIora+2MfjzacATkNem/PyJyu3rA9n/W6HOLMDjBaqPFP/YuEDYbqfk
+        U5f3Crb96+4E+/S1wxL0mOsKnMakyIW7Z75ky1YMvYkCzigAAFMvutAfEhZNFPnvat/T4myxWZl
+        BRBtGogAlTtDRCwVF
+X-Received: by 2002:adf:fa04:0:b0:21d:1864:3172 with SMTP id m4-20020adffa04000000b0021d18643172mr44359084wrr.292.1657180254794;
+        Thu, 07 Jul 2022 00:50:54 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1s+oP8nKMiKtM5JWiNW2EmP7v5KZWVhT1rv4ikXnOMyupFZ/UG6Ka+8OsYj9pCbnG7pzppYQQ==
+X-Received: by 2002:adf:fa04:0:b0:21d:1864:3172 with SMTP id m4-20020adffa04000000b0021d18643172mr44359057wrr.292.1657180254605;
+        Thu, 07 Jul 2022 00:50:54 -0700 (PDT)
+Received: from debian.home (2a01cb058d1194004161f17a6a9ad508.ipv6.abo.wanadoo.fr. [2a01:cb05:8d11:9400:4161:f17a:6a9a:d508])
+        by smtp.gmail.com with ESMTPSA id u6-20020a5d5146000000b0020fcc655e4asm38297650wrt.5.2022.07.07.00.50.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jul 2022 00:48:34 -0700 (PDT)
-From:   Thierry Reding <thierry.reding@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
+        Thu, 07 Jul 2022 00:50:54 -0700 (PDT)
+Date:   Thu, 7 Jul 2022 09:50:52 +0200
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Justin Stitt <justinstitt@google.com>
+Cc:     James Chapman <jchapman@katalix.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Thierry Reding <thierry.reding@gmail.com>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Bhadram Varka <vbhadram@nvidia.com>,
-        devicetree@vger.kernel.org, linux-tegra@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH net-next v4 9/9] stmmac: tegra: Add MGBE support
-Date:   Thu,  7 Jul 2022 09:48:18 +0200
-Message-Id: <20220707074818.1481776-10-thierry.reding@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220707074818.1481776-1-thierry.reding@gmail.com>
-References: <20220707074818.1481776-1-thierry.reding@gmail.com>
+        Paolo Abeni <pabeni@redhat.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
+Subject: Re: [PATCH] net: l2tp: fix clang -Wformat warning
+Message-ID: <20220707075052.GA3912@debian.home>
+References: <20220706230833.535238-1-justinstitt@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220706230833.535238-1-justinstitt@google.com>
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Bhadram Varka <vbhadram@nvidia.com>
+On Wed, Jul 06, 2022 at 04:08:33PM -0700, Justin Stitt wrote:
+> When building with clang we encounter this warning:
+> | net/l2tp/l2tp_ppp.c:1557:6: error: format specifies type 'unsigned
+> | short' but the argument has type 'u32' (aka 'unsigned int')
+> | [-Werror,-Wformat] session->nr, session->ns,
+> 
+> Both session->nr and session->ns are of type u32. The format specifier
+> previously used is `%hu` which would truncate our unsigned integer from
+> 32 to 16 bits. This doesn't seem like intended behavior, if it is then
+> perhaps we need to consider suppressing the warning with pragma clauses.
 
-Add support for the Multi-Gigabit Ethernet (MGBE/XPCS) IP found on
-NVIDIA Tegra234 SoCs.
+pppol2tp_seq_session_show() is only called for L2TPv2 sessions, where
+ns and nr are 2 bytes long (L2TPv3 uses 3 bytes, hence the u32 type in
+the generic l2tp_session structure). So %hu shouldn't truncate anything
+here.
 
-Signed-off-by: Bhadram Varka <vbhadram@nvidia.com>
-Signed-off-by: Thierry Reding <treding@nvidia.com>
----
-Note that this doesn't have any dependencies on any of the patches
-earlier in the series, so this can be applied independently.
+However %u doesn't harm and is cleaner than silencing the warning with
+pragma.
 
- drivers/net/ethernet/stmicro/stmmac/Kconfig   |   6 +
- drivers/net/ethernet/stmicro/stmmac/Makefile  |   1 +
- .../net/ethernet/stmicro/stmmac/dwmac-tegra.c | 290 ++++++++++++++++++
- 3 files changed, 297 insertions(+)
- create mode 100644 drivers/net/ethernet/stmicro/stmmac/dwmac-tegra.c
+Acked-by: Guillaume Nault <gnault@redhat.com>
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/Kconfig b/drivers/net/ethernet/stmicro/stmmac/Kconfig
-index 929cfc22cd0c..47af5a59ce88 100644
---- a/drivers/net/ethernet/stmicro/stmmac/Kconfig
-+++ b/drivers/net/ethernet/stmicro/stmmac/Kconfig
-@@ -232,6 +232,12 @@ config DWMAC_INTEL_PLAT
- 	  the stmmac device driver. This driver is used for the Intel Keem Bay
- 	  SoC.
- 
-+config DWMAC_TEGRA
-+	tristate "NVIDIA Tegra MGBE support"
-+	depends on ARCH_TEGRA || COMPILE_TEST
-+	help
-+	  Support for the MGBE controller found on Tegra SoCs.
-+
- config DWMAC_VISCONTI
- 	tristate "Toshiba Visconti DWMAC support"
- 	default ARCH_VISCONTI
-diff --git a/drivers/net/ethernet/stmicro/stmmac/Makefile b/drivers/net/ethernet/stmicro/stmmac/Makefile
-index d4e12e9ace4f..057e4bab5c08 100644
---- a/drivers/net/ethernet/stmicro/stmmac/Makefile
-+++ b/drivers/net/ethernet/stmicro/stmmac/Makefile
-@@ -31,6 +31,7 @@ obj-$(CONFIG_DWMAC_DWC_QOS_ETH)	+= dwmac-dwc-qos-eth.o
- obj-$(CONFIG_DWMAC_INTEL_PLAT)	+= dwmac-intel-plat.o
- obj-$(CONFIG_DWMAC_GENERIC)	+= dwmac-generic.o
- obj-$(CONFIG_DWMAC_IMX8)	+= dwmac-imx.o
-+obj-$(CONFIG_DWMAC_TEGRA)	+= dwmac-tegra.o
- obj-$(CONFIG_DWMAC_VISCONTI)	+= dwmac-visconti.o
- stmmac-platform-objs:= stmmac_platform.o
- dwmac-altr-socfpga-objs := altr_tse_pcs.o dwmac-socfpga.o
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-tegra.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-tegra.c
-new file mode 100644
-index 000000000000..bb4b540820fa
---- /dev/null
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-tegra.c
-@@ -0,0 +1,290 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+#include <linux/platform_device.h>
-+#include <linux/of_device.h>
-+#include <linux/module.h>
-+#include <linux/stmmac.h>
-+#include <linux/clk.h>
-+
-+#include "stmmac_platform.h"
-+
-+static const char *const mgbe_clks[] = {
-+	"rx-pcs", "tx", "tx-pcs", "mac-divider", "mac", "mgbe", "ptp-ref", "mac"
-+};
-+
-+struct tegra_mgbe {
-+	struct device *dev;
-+
-+	struct clk_bulk_data *clks;
-+
-+	struct reset_control *rst_mac;
-+	struct reset_control *rst_pcs;
-+
-+	void __iomem *hv;
-+	void __iomem *regs;
-+	void __iomem *xpcs;
-+
-+	struct mii_bus *mii;
-+};
-+
-+#define XPCS_WRAP_UPHY_RX_CONTROL 0x801c
-+#define XPCS_WRAP_UPHY_RX_CONTROL_RX_SW_OVRD BIT(31)
-+#define XPCS_WRAP_UPHY_RX_CONTROL_RX_PCS_PHY_RDY BIT(10)
-+#define XPCS_WRAP_UPHY_RX_CONTROL_RX_CDR_RESET BIT(9)
-+#define XPCS_WRAP_UPHY_RX_CONTROL_RX_CAL_EN BIT(8)
-+#define XPCS_WRAP_UPHY_RX_CONTROL_RX_SLEEP (BIT(7) | BIT(6))
-+#define XPCS_WRAP_UPHY_RX_CONTROL_AUX_RX_IDDQ BIT(5)
-+#define XPCS_WRAP_UPHY_RX_CONTROL_RX_IDDQ BIT(4)
-+#define XPCS_WRAP_UPHY_RX_CONTROL_RX_DATA_EN BIT(0)
-+#define XPCS_WRAP_UPHY_HW_INIT_CTRL 0x8020
-+#define XPCS_WRAP_UPHY_HW_INIT_CTRL_TX_EN BIT(0)
-+#define XPCS_WRAP_UPHY_HW_INIT_CTRL_RX_EN BIT(2)
-+#define XPCS_WRAP_UPHY_STATUS 0x8044
-+#define XPCS_WRAP_UPHY_STATUS_TX_P_UP BIT(0)
-+#define XPCS_WRAP_IRQ_STATUS 0x8050
-+#define XPCS_WRAP_IRQ_STATUS_PCS_LINK_STS BIT(6)
-+
-+#define XPCS_REG_ADDR_SHIFT 10
-+#define XPCS_REG_ADDR_MASK 0x1fff
-+#define XPCS_ADDR 0x3fc
-+
-+#define MGBE_WRAP_COMMON_INTR_ENABLE	0x8704
-+#define MAC_SBD_INTR			BIT(2)
-+#define MGBE_WRAP_AXI_ASID0_CTRL	0x8400
-+#define MGBE_SID			0x6
-+
-+static void mgbe_uphy_lane_bringup(struct tegra_mgbe *mgbe)
-+{
-+	unsigned int retry = 300;
-+	u32 value;
-+	int err;
-+
-+	value = readl(mgbe->xpcs + XPCS_WRAP_UPHY_STATUS);
-+	if ((value & XPCS_WRAP_UPHY_STATUS_TX_P_UP) == 0) {
-+		value = readl(mgbe->xpcs + XPCS_WRAP_UPHY_HW_INIT_CTRL);
-+		value |= XPCS_WRAP_UPHY_HW_INIT_CTRL_TX_EN;
-+		writel(value, mgbe->xpcs + XPCS_WRAP_UPHY_HW_INIT_CTRL);
-+	}
-+
-+	err = readl_poll_timeout(mgbe->xpcs + XPCS_WRAP_UPHY_HW_INIT_CTRL, value,
-+				 (value & XPCS_WRAP_UPHY_HW_INIT_CTRL_TX_EN) == 0,
-+				 500, 500 * 2000);
-+	if (err < 0)
-+		dev_err(mgbe->dev, "timeout waiting for TX lane to become enabled\n");
-+
-+	usleep_range(10000, 20000);
-+
-+	value = readl(mgbe->xpcs + XPCS_WRAP_UPHY_RX_CONTROL);
-+	value |= XPCS_WRAP_UPHY_RX_CONTROL_RX_SW_OVRD;
-+	writel(value, mgbe->xpcs + XPCS_WRAP_UPHY_RX_CONTROL);
-+
-+	value = readl(mgbe->xpcs + XPCS_WRAP_UPHY_RX_CONTROL);
-+	value &= ~XPCS_WRAP_UPHY_RX_CONTROL_RX_IDDQ;
-+	writel(value, mgbe->xpcs + XPCS_WRAP_UPHY_RX_CONTROL);
-+
-+	value = readl(mgbe->xpcs + XPCS_WRAP_UPHY_RX_CONTROL);
-+	value &= ~XPCS_WRAP_UPHY_RX_CONTROL_AUX_RX_IDDQ;
-+	writel(value, mgbe->xpcs + XPCS_WRAP_UPHY_RX_CONTROL);
-+
-+	value = readl(mgbe->xpcs + XPCS_WRAP_UPHY_RX_CONTROL);
-+	value &= ~XPCS_WRAP_UPHY_RX_CONTROL_RX_SLEEP;
-+	writel(value, mgbe->xpcs + XPCS_WRAP_UPHY_RX_CONTROL);
-+
-+	value = readl(mgbe->xpcs + XPCS_WRAP_UPHY_RX_CONTROL);
-+	value |= XPCS_WRAP_UPHY_RX_CONTROL_RX_CAL_EN;
-+	writel(value, mgbe->xpcs + XPCS_WRAP_UPHY_RX_CONTROL);
-+
-+	err = readl_poll_timeout(mgbe->xpcs + XPCS_WRAP_UPHY_RX_CONTROL, value,
-+				 (value & XPCS_WRAP_UPHY_RX_CONTROL_RX_CAL_EN) == 0,
-+				 1000, 1000 * 2000);
-+	if (err < 0)
-+		dev_err(mgbe->dev, "timeout waiting for RX calibration to become enabled\n");
-+
-+	value = readl(mgbe->xpcs + XPCS_WRAP_UPHY_RX_CONTROL);
-+	value |= XPCS_WRAP_UPHY_RX_CONTROL_RX_DATA_EN;
-+	writel(value, mgbe->xpcs + XPCS_WRAP_UPHY_RX_CONTROL);
-+
-+	value = readl(mgbe->xpcs + XPCS_WRAP_UPHY_RX_CONTROL);
-+	value |= XPCS_WRAP_UPHY_RX_CONTROL_RX_CDR_RESET;
-+	writel(value, mgbe->xpcs + XPCS_WRAP_UPHY_RX_CONTROL);
-+
-+	value = readl(mgbe->xpcs + XPCS_WRAP_UPHY_RX_CONTROL);
-+	value &= ~XPCS_WRAP_UPHY_RX_CONTROL_RX_CDR_RESET;
-+	writel(value, mgbe->xpcs + XPCS_WRAP_UPHY_RX_CONTROL);
-+
-+	value = readl(mgbe->xpcs + XPCS_WRAP_UPHY_RX_CONTROL);
-+	value |= XPCS_WRAP_UPHY_RX_CONTROL_RX_PCS_PHY_RDY;
-+	writel(value, mgbe->xpcs + XPCS_WRAP_UPHY_RX_CONTROL);
-+
-+	while (--retry) {
-+		err = readl_poll_timeout(mgbe->xpcs + XPCS_WRAP_IRQ_STATUS, value,
-+					 value & XPCS_WRAP_IRQ_STATUS_PCS_LINK_STS,
-+					 500, 500 * 2000);
-+		if (err < 0) {
-+			dev_err(mgbe->dev, "timeout waiting for link to become ready\n");
-+			usleep_range(10000, 20000);
-+			continue;
-+		}
-+		break;
-+	}
-+
-+	/* clear status */
-+	writel(value, mgbe->xpcs + XPCS_WRAP_IRQ_STATUS);
-+}
-+
-+static int tegra_mgbe_probe(struct platform_device *pdev)
-+{
-+	struct plat_stmmacenet_data *plat;
-+	struct stmmac_resources res;
-+	struct tegra_mgbe *mgbe;
-+	int irq, err, i;
-+
-+	mgbe = devm_kzalloc(&pdev->dev, sizeof(*mgbe), GFP_KERNEL);
-+	if (!mgbe)
-+		return -ENOMEM;
-+
-+	mgbe->dev = &pdev->dev;
-+
-+	memset(&res, 0, sizeof(res));
-+
-+	irq = platform_get_irq(pdev, 0);
-+	if (irq < 0)
-+		return irq;
-+
-+	mgbe->hv = devm_platform_ioremap_resource_byname(pdev, "hypervisor");
-+	if (IS_ERR(mgbe->hv))
-+		return PTR_ERR(mgbe->hv);
-+
-+	mgbe->regs = devm_platform_ioremap_resource_byname(pdev, "mac");
-+	if (IS_ERR(mgbe->regs))
-+		return PTR_ERR(mgbe->regs);
-+
-+	mgbe->xpcs = devm_platform_ioremap_resource_byname(pdev, "xpcs");
-+	if (IS_ERR(mgbe->xpcs))
-+		return PTR_ERR(mgbe->xpcs);
-+
-+	res.addr = mgbe->regs;
-+	res.irq = irq;
-+
-+	mgbe->clks = devm_kzalloc(&pdev->dev, sizeof(*mgbe->clks), GFP_KERNEL);
-+	if (!mgbe->clks)
-+		return -ENOMEM;
-+
-+	for (i = 0; i <  ARRAY_SIZE(mgbe_clks); i++)
-+		mgbe->clks[i].id = mgbe_clks[i];
-+
-+	err = devm_clk_bulk_get(mgbe->dev, ARRAY_SIZE(mgbe_clks), mgbe->clks);
-+	if (err < 0)
-+		return err;
-+
-+	err = clk_bulk_prepare_enable(ARRAY_SIZE(mgbe_clks), mgbe->clks);
-+	if (err < 0)
-+		return err;
-+
-+	/* Perform MAC reset */
-+	mgbe->rst_mac = devm_reset_control_get(&pdev->dev, "mac");
-+	if (IS_ERR(mgbe->rst_mac))
-+		return PTR_ERR(mgbe->rst_mac);
-+
-+	err = reset_control_assert(mgbe->rst_mac);
-+	if (err < 0)
-+		return err;
-+
-+	usleep_range(2000, 4000);
-+
-+	err = reset_control_deassert(mgbe->rst_mac);
-+	if (err < 0)
-+		return err;
-+
-+	/* Perform PCS reset */
-+	mgbe->rst_pcs = devm_reset_control_get(&pdev->dev, "pcs");
-+	if (IS_ERR(mgbe->rst_pcs))
-+		return PTR_ERR(mgbe->rst_pcs);
-+
-+	err = reset_control_assert(mgbe->rst_pcs);
-+	if (err < 0)
-+		return err;
-+
-+	usleep_range(2000, 4000);
-+
-+	err = reset_control_deassert(mgbe->rst_pcs);
-+	if (err < 0)
-+		return err;
-+
-+	plat = stmmac_probe_config_dt(pdev, res.mac);
-+	if (IS_ERR(plat))
-+		return PTR_ERR(plat);
-+
-+	plat->has_xgmac = 1;
-+	plat->tso_en = 1;
-+	plat->pmt = 1;
-+	plat->bsp_priv = mgbe;
-+
-+	if (!plat->mdio_node)
-+		plat->mdio_node = of_get_child_by_name(pdev->dev.of_node, "mdio");
-+
-+	if (!plat->mdio_bus_data) {
-+		plat->mdio_bus_data = devm_kzalloc(&pdev->dev, sizeof(*plat->mdio_bus_data),
-+						   GFP_KERNEL);
-+		if (!plat->mdio_bus_data) {
-+			err = -ENOMEM;
-+			goto remove;
-+		}
-+	}
-+
-+	plat->mdio_bus_data->needs_reset = true;
-+
-+	mgbe_uphy_lane_bringup(mgbe);
-+
-+	/* Tx FIFO Size - 128KB */
-+	plat->tx_fifo_size = 131072;
-+	/* Rx FIFO Size - 192KB */
-+	plat->rx_fifo_size = 196608;
-+
-+	/* Enable common interrupt at wrapper level */
-+	writel(MAC_SBD_INTR, mgbe->regs + MGBE_WRAP_COMMON_INTR_ENABLE);
-+
-+	/* Program SID */
-+	writel(MGBE_SID, mgbe->hv + MGBE_WRAP_AXI_ASID0_CTRL);
-+
-+	err = stmmac_dvr_probe(&pdev->dev, plat, &res);
-+	if (err < 0)
-+		goto remove;
-+
-+	return 0;
-+
-+remove:
-+	stmmac_remove_config_dt(pdev, plat);
-+	return err;
-+}
-+
-+static int tegra_mgbe_remove(struct platform_device *pdev)
-+{
-+	struct tegra_mgbe *mgbe = get_stmmac_bsp_priv(&pdev->dev);
-+
-+	clk_bulk_disable_unprepare(ARRAY_SIZE(mgbe_clks), mgbe->clks);
-+
-+	stmmac_pltfr_remove(pdev);
-+
-+	return 0;
-+}
-+
-+static const struct of_device_id tegra_mgbe_match[] = {
-+	{ .compatible = "nvidia,tegra234-mgbe", },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, tegra_mgbe_match);
-+
-+static struct platform_driver tegra_mgbe_driver = {
-+	.probe = tegra_mgbe_probe,
-+	.remove = tegra_mgbe_remove,
-+	.driver = {
-+		.name = "tegra-mgbe",
-+		.pm		= &stmmac_pltfr_pm_ops,
-+		.of_match_table = tegra_mgbe_match,
-+	},
-+};
-+module_platform_driver(tegra_mgbe_driver);
-+
-+MODULE_AUTHOR("Thierry Reding <treding@nvidia.com>");
-+MODULE_DESCRIPTION("NVIDIA Tegra MGBE driver");
-+MODULE_LICENSE("GPL");
--- 
-2.36.1
+
+> This patch should get us closer to the goal of enabling the -Wformat
+> flag for Clang builds.
+> 
+> Link: https://github.com/ClangBuiltLinux/linux/issues/378
+> Signed-off-by: Justin Stitt <justinstitt@google.com>
+> ---
+>  net/l2tp/l2tp_ppp.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/net/l2tp/l2tp_ppp.c b/net/l2tp/l2tp_ppp.c
+> index 8be1fdc68a0b..db2e584c625e 100644
+> --- a/net/l2tp/l2tp_ppp.c
+> +++ b/net/l2tp/l2tp_ppp.c
+> @@ -1553,7 +1553,7 @@ static void pppol2tp_seq_session_show(struct seq_file *m, void *v)
+>  		   session->lns_mode ? "LNS" : "LAC",
+>  		   0,
+>  		   jiffies_to_msecs(session->reorder_timeout));
+> -	seq_printf(m, "   %hu/%hu %ld/%ld/%ld %ld/%ld/%ld\n",
+> +	seq_printf(m, "   %u/%u %ld/%ld/%ld %ld/%ld/%ld\n",
+>  		   session->nr, session->ns,
+>  		   atomic_long_read(&session->stats.tx_packets),
+>  		   atomic_long_read(&session->stats.tx_bytes),
+> -- 
+> 2.37.0.rc0.161.g10f37bed90-goog
+> 
 
