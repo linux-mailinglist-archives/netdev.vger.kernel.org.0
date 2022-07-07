@@ -2,81 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7841E56A506
-	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 16:04:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 461D756A3CF
+	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 15:37:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235553AbiGGOEZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jul 2022 10:04:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32864 "EHLO
+        id S235980AbiGGNhj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jul 2022 09:37:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235588AbiGGOEL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 10:04:11 -0400
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A6632CDDE;
-        Thu,  7 Jul 2022 07:04:10 -0700 (PDT)
-Received: by mail-wm1-x32d.google.com with SMTP id bi22-20020a05600c3d9600b003a04de22ab6so10788507wmb.1;
-        Thu, 07 Jul 2022 07:04:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:to:cc:references:subject
-         :content-language:from:in-reply-to:content-transfer-encoding;
-        bh=jEk7NQXnrRcwYUUJ7a7WbG8rsOi2ymPcZ84wetxtqz0=;
-        b=AOWvIcbSWkXTHu2AyWWwMx0Pcw9RfA0RIOMce0F6xF6TWRm+4arX8XHMnUQ1BDsrND
-         uji0RSPNHvFYEYbbsLOcsIOfnFGVx2zMm/ypEOAtp4/Z9i4tVIXPoY1daT73KwPJVSsb
-         SF/uGsXEYDl1kb9O+mHm2zyGS+fDNJQg2iqdT/zO3yD63ffwrnN5oGKs0yXlfGxlnSIu
-         xLhiZZcZPbNw2Xvb0UKq/I50jszmSrD5n4PCPROVHv8k5qqqZBXguXUcijEzYe+Ur4M5
-         2A3/A2rStZHOk3vY+heAGPCqamUWuK5XAaJGZKkQmoMA6wAIpNWSqL+OAX83Q9tJ5wqb
-         knkg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:to:cc
-         :references:subject:content-language:from:in-reply-to
-         :content-transfer-encoding;
-        bh=jEk7NQXnrRcwYUUJ7a7WbG8rsOi2ymPcZ84wetxtqz0=;
-        b=WlYKpeYxO6WSB3lfoKb18SGSeAjsfbiQguA72GTz9ZwKNdiCNCtRGlvowKwol8f3mH
-         j4EOH4qHdR98A5SvApVrajNX8BtfFUD+n/ykqPHn7GK0SfRxtWwK1yF/KNDYGAcOlQNR
-         OmVRrdmvmBgNOE/MpK7DrXrMRGpmQBZ9g5GV7IQ5x1DBAy2SLC83gj+aTusoHYZRZymb
-         RDfuq2vVu6b8dnSQKhOqYjn0nHLKNh32gTJTxPa7INiNHFzbzShzgkPaj+8gioJdUTLU
-         Vches5BbUkY0xzthUEyL1WvogtFbHs6TV3hhrH+DkR4SsrohuSer9wXLfbvTq6cnyxxA
-         qj4g==
-X-Gm-Message-State: AJIora9QtheoFZrJL42fW+XEqlQzRnOHx/kj8PpS6773UysIcMOKOj7S
-        bXN0HuCoKi5iRpvSs9sQF44=
-X-Google-Smtp-Source: AGRyM1ufjsg/wTW3PHpDdJTz6e2emaA2g04EF1PgS0QMd/gU63XDp1oe2Z/NS8DgwtI15WHr6GXYtw==
-X-Received: by 2002:a05:600c:354d:b0:3a0:5847:9a1 with SMTP id i13-20020a05600c354d00b003a0584709a1mr4561497wmq.142.1657202648588;
-        Thu, 07 Jul 2022 07:04:08 -0700 (PDT)
-Received: from ?IPV6:2a01:cb04:613:1800:e04b:ee8c:3bc3:648e? (2a01cb0406131800e04bee8c3bc3648e.ipv6.abo.wanadoo.fr. [2a01:cb04:613:1800:e04b:ee8c:3bc3:648e])
-        by smtp.gmail.com with ESMTPSA id l14-20020a05600c4f0e00b003a199ed4f44sm19990769wmq.27.2022.07.07.07.04.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 07 Jul 2022 07:04:08 -0700 (PDT)
-Message-ID: <ee708c61-474a-ce89-3e8d-4c2e0bee30e4@gmail.com>
-Date:   Thu, 7 Jul 2022 16:04:07 +0200
+        with ESMTP id S235519AbiGGNhi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 09:37:38 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22C6D2655A;
+        Thu,  7 Jul 2022 06:37:37 -0700 (PDT)
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Ldy6t2L1czTgpp;
+        Thu,  7 Jul 2022 21:33:58 +0800 (CST)
+Received: from dggpemm500019.china.huawei.com (7.185.36.180) by
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 7 Jul 2022 21:37:35 +0800
+Received: from k04.huawei.com (10.67.174.115) by
+ dggpemm500019.china.huawei.com (7.185.36.180) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 7 Jul 2022 21:37:35 +0800
+From:   Pu Lehui <pulehui@huawei.com>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, "Pu Lehui" <pulehui@huawei.com>
+Subject: [PATCH bpf-next] samples: bpf: Fix cross-compiling error about bpftool
+Date:   Thu, 7 Jul 2022 22:08:11 +0800
+Message-ID: <20220707140811.603590-1-pulehui@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-To:     dlan@gentoo.org
-Cc:     andrii@kernel.org, aou@eecs.berkeley.edu, ast@kernel.org,
-        bjorn@kernel.org, bpf@vger.kernel.org, chenhengqi@outlook.com,
-        daniel@iogearbox.net, john.fastabend@gmail.com, kafai@fb.com,
-        kpsingh@kernel.org, linux-kernel@vger.kernel.org,
-        linux-riscv@lists.infradead.org, netdev@vger.kernel.org,
-        palmer@dabbelt.com, paul.walmsley@sifive.com,
-        songliubraving@fb.com, yhs@fb.com
-References: <20220706140204.47926-1-dlan@gentoo.org>
-Subject: Re: [PATCH] riscv, libbpf: use a0 for RC register
-Content-Language: en-US
-From:   Amjad Ouled-Ameur <ouledameur.amjad@gmail.com>
-In-Reply-To: <20220706140204.47926-1-dlan@gentoo.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.174.115]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm500019.china.huawei.com (7.185.36.180)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Acked-by: Amjad OULED-AMEUR <ouledameur.amjad@gmail.com>
+Currently, when cross compiling bpf samples, the host side
+cannot use arch-specific bpftool to generate vmlinux.h or
+skeleton. We need to compile the bpftool with the host
+compiler.
+
+Signed-off-by: Pu Lehui <pulehui@huawei.com>
+---
+ samples/bpf/Makefile | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
+index 5002a5b9a7da..fe54a8c8f312 100644
+--- a/samples/bpf/Makefile
++++ b/samples/bpf/Makefile
+@@ -1,4 +1,5 @@
+ # SPDX-License-Identifier: GPL-2.0
++-include tools/scripts/Makefile.include
+ 
+ BPF_SAMPLES_PATH ?= $(abspath $(srctree)/$(src))
+ TOOLS_PATH := $(BPF_SAMPLES_PATH)/../../tools
+@@ -283,11 +284,10 @@ $(LIBBPF): $(wildcard $(LIBBPF_SRC)/*.[ch] $(LIBBPF_SRC)/Makefile) | $(LIBBPF_OU
+ BPFTOOLDIR := $(TOOLS_PATH)/bpf/bpftool
+ BPFTOOL_OUTPUT := $(abspath $(BPF_SAMPLES_PATH))/bpftool
+ BPFTOOL := $(BPFTOOL_OUTPUT)/bpftool
+-$(BPFTOOL): $(LIBBPF) $(wildcard $(BPFTOOLDIR)/*.[ch] $(BPFTOOLDIR)/Makefile) | $(BPFTOOL_OUTPUT)
++$(BPFTOOL): $(wildcard $(BPFTOOLDIR)/*.[ch] $(BPFTOOLDIR)/Makefile) | $(BPFTOOL_OUTPUT)
+ 	    $(MAKE) -C $(BPFTOOLDIR) srctree=$(BPF_SAMPLES_PATH)/../../ \
+-		OUTPUT=$(BPFTOOL_OUTPUT)/ \
+-		LIBBPF_OUTPUT=$(LIBBPF_OUTPUT)/ \
+-		LIBBPF_DESTDIR=$(LIBBPF_DESTDIR)/
++		ARCH= CROSS_COMPILE= CC=$(HOSTCC) LD=$(HOSTLD) \
++		OUTPUT=$(BPFTOOL_OUTPUT)/
+ 
+ $(LIBBPF_OUTPUT) $(BPFTOOL_OUTPUT):
+ 	$(call msg,MKDIR,$@)
+-- 
+2.25.1
 
