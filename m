@@ -2,121 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 27FAB56A7AF
-	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 18:13:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7014D56A7D2
+	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 18:16:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235753AbiGGQMj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jul 2022 12:12:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46852 "EHLO
+        id S235989AbiGGQPU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jul 2022 12:15:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236035AbiGGQMC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 12:12:02 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D801F4D173;
-        Thu,  7 Jul 2022 09:11:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657210296; x=1688746296;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=vesXtGlDmOsjMCJXAf5YAftKju8+FHR1Lh+U8lCzIoU=;
-  b=QJIJh4eZcv/NRof01cf6boByjYzjms1hW9qBN8/Jeo1+wdVot83kwAvA
-   NX9RCuYycyHOCiBCaw1mFOvAzt6wYU1+jv44uMxO4oJOAGmWBYoWCWcUy
-   avn+53yoCDpNGUlyqaWeibBJNsx+6lp50Td+S0qhmeELWMmuWQQSZdg+3
-   XfZtAWAOrUveXblvCDg3Crc4DJ8rLhdWFsV0MNkJzgfd9p399uoqHOhTW
-   oUL6oNhGzLlpneU1J4J7YgVQNztYsyeErZktXkUImE/W1whenaVEF0vyN
-   4MUHV5/fkaJRvmzgS+9hAOh4dlX7b2vP9PwUtwnBTAYzB17JdEcBhpDUa
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10401"; a="284803787"
-X-IronPort-AV: E=Sophos;i="5.92,253,1650956400"; 
-   d="scan'208";a="284803787"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jul 2022 09:11:36 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,253,1650956400"; 
-   d="scan'208";a="839971579"
-Received: from boxer.igk.intel.com ([10.102.20.173])
-  by fmsmga006.fm.intel.com with ESMTP; 07 Jul 2022 09:11:34 -0700
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     intel-wired-lan@lists.osuosl.org
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        anthony.l.nguyen@intel.com, kuba@kernel.org, davem@davemloft.net,
-        magnus.karlsson@intel.com,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Subject: [PATCH intel-net] ice: xsk: use Rx ring when picking NAPI context
-Date:   Thu,  7 Jul 2022 18:11:28 +0200
-Message-Id: <20220707161128.54215-1-maciej.fijalkowski@intel.com>
-X-Mailer: git-send-email 2.33.1
+        with ESMTP id S236182AbiGGQPC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 12:15:02 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A20A28722
+        for <netdev@vger.kernel.org>; Thu,  7 Jul 2022 09:14:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id B56E6CE25BB
+        for <netdev@vger.kernel.org>; Thu,  7 Jul 2022 16:14:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA0F3C341C0;
+        Thu,  7 Jul 2022 16:14:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657210492;
+        bh=MdQfPXULr8CxrfINbVlBzsn8fJnMUz9b1hhRq6f7FUU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=kkcYylHxzIdDez3MXu2LXPamwWJr1cu4GAO0n76H3yl3dDed/bIFBgDT+Uq1QCu7K
+         p1cBvXJvnMnR368eeJpetmqkIcl/MSR60UhGxR1E6SIQ4GcHVyd2EgJa3qsu1nPv1e
+         /cIoKDxLoTfE6Iz5bNB7tzJ04pWa6X42O6yMXIsZZC4gwbgl3WkTnoF5NkGzjIdUot
+         w6XekCXbawLeqkBbBhGUDItr6skxsWxSwPJ/2NH79nJQcpIqIFVkHBqtaqYPJVLkQq
+         OqjRZFyJ67axDSCcaf/W1xExWiQc85DcVRb0yHg29emM4L9NKRcBFS0mzra3C79eGb
+         Muu38YpFRvl5A==
+Date:   Thu, 7 Jul 2022 09:14:42 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Maxim Mikityanskiy <maximmi@nvidia.com>
+Subject: Re: [net-next 10/15] net/tls: Perform immediate device ctx cleanup
+ when possible
+Message-ID: <20220707091442.01354da7@kernel.org>
+In-Reply-To: <20220707065114.4tdx6f2lxig6lsof@sx1>
+References: <20220706232421.41269-1-saeed@kernel.org>
+        <20220706232421.41269-11-saeed@kernel.org>
+        <20220706192107.0b6fe869@kernel.org>
+        <20220707065114.4tdx6f2lxig6lsof@sx1>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Ice driver allocates per cpu XDP queues so that redirect path can safely
-use smp_processor_id() as an index to the array. At the same time
-though, XDP rings are used to pick NAPI context to call napi_schedule()
-or set NAPIF_STATE_MISSED. When user reduces queue count, say to 8, and
-num_possible_cpus() of underlying platform is 44, then this means queue
-vectors with correlated NAPI contexts will carry several XDP queues.
+On Wed, 6 Jul 2022 23:51:14 -0700 Saeed Mahameed wrote:
+> On 06 Jul 19:21, Jakub Kicinski wrote:
+> >On Wed,  6 Jul 2022 16:24:16 -0700 Saeed Mahameed wrote:  
+> >> From: Tariq Toukan <tariqt@nvidia.com>
+> >>
+> >> TLS context destructor can be run in atomic context. Cleanup operations
+> >> for device-offloaded contexts could require access and interaction with
+> >> the device callbacks, which might sleep. Hence, the cleanup of such
+> >> contexts must be deferred and completed inside an async work.
+> >>
+> >> For all others, this is not necessary, as cleanup is atomic. Invoke
+> >> cleanup immediately for them, avoiding queueuing redundant gc work.
+> >>
+> >> Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
+> >> Reviewed-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+> >> Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>  
+> >
+> >Not sure if posting core patches as part of driver PRs is a good idea,
+> >if I ack this now the tag will not propagate.  
+> 
+> I agree, how about the devlink lock removal  ? same thing ? 
 
-This in turn can result in a broken behavior where NAPI context of
-interest will never be scheduled and AF_XDP socket will not process any
-traffic.
+I didn't have the same reaction to the devlink part, perhaps because
+of the clear driver dependency there and the fact we discussed that 
+work thoroughly before.
 
-To fix this issue, use Rx ring to pull out the NAPI context.
+Looking at it again it seems like the problem is that these are really
+two independent series squashed together, no? Multiple driver features
+mixed up in a series is fine but when changing the core let's stick to
+clearer separation.
 
-Fixes: 2d4238f55697 ("ice: Add support for AF_XDP")
-Fixes: 22bf877e528f ("ice: introduce XDP_TX fallback path")
-Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
----
- drivers/net/ethernet/intel/ice/ice_xsk.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+The objective is to get reviewers engaged, and it's really easy to miss
+the core changes among the driver ones in a large multi-purpose series.
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_xsk.c b/drivers/net/ethernet/intel/ice/ice_xsk.c
-index 49ba8bfdbf04..34d851d3e767 100644
---- a/drivers/net/ethernet/intel/ice/ice_xsk.c
-+++ b/drivers/net/ethernet/intel/ice/ice_xsk.c
-@@ -353,7 +353,7 @@ int ice_xsk_pool_setup(struct ice_vsi *vsi, struct xsk_buff_pool *pool, u16 qid)
- 	if (if_running) {
- 		ret = ice_qp_ena(vsi, qid);
- 		if (!ret && pool_present)
--			napi_schedule(&vsi->xdp_rings[qid]->q_vector->napi);
-+			napi_schedule(&vsi->rx_rings[qid]->q_vector->napi);
- 		else if (ret)
- 			netdev_err(vsi->netdev, "ice_qp_ena error = %d\n", ret);
- 	}
-@@ -936,7 +936,7 @@ ice_xsk_wakeup(struct net_device *netdev, u32 queue_id,
- 	struct ice_netdev_priv *np = netdev_priv(netdev);
- 	struct ice_q_vector *q_vector;
- 	struct ice_vsi *vsi = np->vsi;
--	struct ice_tx_ring *ring;
-+	struct ice_rx_ring *ring;
- 
- 	if (test_bit(ICE_VSI_DOWN, vsi->state))
- 		return -ENETDOWN;
-@@ -944,13 +944,13 @@ ice_xsk_wakeup(struct net_device *netdev, u32 queue_id,
- 	if (!ice_is_xdp_ena_vsi(vsi))
- 		return -EINVAL;
- 
--	if (queue_id >= vsi->num_txq)
-+	if (queue_id >= vsi->num_txq || queue_id >= vsi->num_rxq)
- 		return -EINVAL;
- 
- 	if (!vsi->xdp_rings[queue_id]->xsk_pool)
- 		return -EINVAL;
- 
--	ring = vsi->xdp_rings[queue_id];
-+	ring = vsi->rx_rings[queue_id];
- 
- 	/* The idea here is that if NAPI is running, mark a miss, so
- 	 * it will run again. If not, trigger an interrupt and
--- 
-2.27.0
-
+On the topic of PRs, does it matter to you if the core changes are
+posted as a PR? I presume it's okay for those to come out as a normal
+series with a proper subject and applied from the list?
