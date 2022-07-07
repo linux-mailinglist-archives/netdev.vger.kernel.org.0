@@ -2,168 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D5A8256A896
-	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 18:50:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 81CCD56A8AA
+	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 18:54:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236170AbiGGQuP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jul 2022 12:50:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58638 "EHLO
+        id S235906AbiGGQxO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jul 2022 12:53:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236023AbiGGQuN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 12:50:13 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 566092A422
-        for <netdev@vger.kernel.org>; Thu,  7 Jul 2022 09:50:12 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id u12so33415222eja.8
-        for <netdev@vger.kernel.org>; Thu, 07 Jul 2022 09:50:12 -0700 (PDT)
+        with ESMTP id S235876AbiGGQxI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 12:53:08 -0400
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1185857251;
+        Thu,  7 Jul 2022 09:53:08 -0700 (PDT)
+Received: by mail-pg1-x534.google.com with SMTP id z14so19620262pgh.0;
+        Thu, 07 Jul 2022 09:53:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Oyhk8tIY7VGBnadaucveAmlAMN+zMbqVtzp3azgS8qw=;
-        b=AGPCA+0zjSmHDSc9g6fcsG673Fk0HU9pCS3mTt/JmQtJZYLVnVqMwBO/Xw+92cq5OX
-         uijLnvbn9Jrdp3Z5bchkpO8oQ86E54fS5SJ6mfjiGqfeUR8SGuk3zV5ASb5EXmNret3w
-         +Zo3+EheYkCT+ouprk32VTfVMWlZ5tbgP800jhl4yUdxo829n/bAbA7yNxYxqJVf4zP4
-         56WklCNdUSZcYWL0AZ0vKQsxdUBywcH1LtZhpugWxM4j5VQxFQextAAFFQv5bUaCEIz3
-         I4Z0fgifKbZnFiXlvSWWTprp01t7dDvWQDGQc+hxo5Z8qThjODWSDnompAwCpIatqXrF
-         Ccug==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=yEdFXCGLYP6p24mUEYpfuF8XGgV1c9l+qum9gTsv/MM=;
+        b=QCmDCcdxcPTv1Kk3qNPtKQIJrsSTwKodwYFoA4Uio6sThCwT3Wxz4yQ3gxfMoGLcOG
+         FQRviSTYBWKdcXTP+2OVH0cUzSMnBBjv0AHcMNMfiDGHcqZ7sjuD1yjJ5Ha044OJli5a
+         8FqV3Wou5/TJXt9YBSAW4j7qT/J3Y0pVP3cnScUwfENHl/nUPCN/QgyCb87CzobKbrVb
+         u1/srX+dBqKtkOe/AtP1AFQQjuisYTmg2G/auZ35b41q4f6slCzwkVzuH7Wffb8Hi1vs
+         y95RnWg0XEkaJgF7lPWLDiQ4wgC8E16gysBeHUPBh1ULMZf1W/7lybHNp9rS9hhu/WqE
+         bPpw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Oyhk8tIY7VGBnadaucveAmlAMN+zMbqVtzp3azgS8qw=;
-        b=N7oL0r4ief5XNwTBpkQtbvBU7BtLqES+J8KyKNBv3/MAxLhNTPTel/8Cqw//UmY0x4
-         f6ubiYz8ojkaRRh0ZFdo26SZmzjdR11E70qafdGt2sf8GAbLyMZsrMYZO1rgJu5R+gqc
-         fUIRQM1sSHbphVcG1a5jQTvlKoDEdHDO+mHdKLYcYfYoLrLr8hdeZJDxi6YI2glIhk+Y
-         Ax/3C2A6pCaqi7dVT3pbPh0nzs12gmRqfo+qwzGZ15dGcVrRP/x6lsDuLKIoFG8TU7ZQ
-         yoCIphAKlrADzcno4N/BDeEn/kz/vDUSI2UpcxqgyWnQEGBPzw3w8/TsjWMLbMsHxSp8
-         cJiA==
-X-Gm-Message-State: AJIora+9Y+7MY+rubUgv8ds9LlKARA5zB5anOgPEREi03LiarJhy1eJz
-        dOh/Dq66MaghihaXNX2YgQc=
-X-Google-Smtp-Source: AGRyM1sN/zswdqJ6efPyjyralPctskh3tvhtSg5OT/CB8HR+fIubQAi30GYPgQAN2QGz5Ru8BH/EvQ==
-X-Received: by 2002:a17:906:84f0:b0:72b:2157:f8fe with SMTP id zp16-20020a17090684f000b0072b2157f8femr342862ejb.462.1657212610836;
-        Thu, 07 Jul 2022 09:50:10 -0700 (PDT)
-Received: from skbuf ([188.25.231.143])
-        by smtp.gmail.com with ESMTPSA id s2-20020a170906454200b006fe9ec4ba9esm19227543ejq.52.2022.07.07.09.50.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jul 2022 09:50:10 -0700 (PDT)
-Date:   Thu, 7 Jul 2022 19:50:08 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Alvin __ipraga <alsi@bang-olufsen.dk>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        UNGLinuxDriver@microchip.com,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>
-Subject: Re: [PATCH RFC net-next 5/5] net: dsa: always use phylink for CPU
- and DSA ports
-Message-ID: <20220707165008.2zumavc4wrvwtcel@skbuf>
-References: <YsQIjC7UpcGWJovx@shell.armlinux.org.uk>
- <E1o8fA7-0059aO-K8@rmk-PC.armlinux.org.uk>
- <20220706102621.hfubvn3wa6wlw735@skbuf>
- <Ysa85mJIUfo5m4dJ@shell.armlinux.org.uk>
- <20220707154303.236xaeape7isracw@skbuf>
- <YscKuTXeXFX0tCap@shell.armlinux.org.uk>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=yEdFXCGLYP6p24mUEYpfuF8XGgV1c9l+qum9gTsv/MM=;
+        b=hfu3k14s9d4Zoi0RSEsbs2IZ+Jw5jQhjym2zRHxGNQ+nhkgvDMIXERX7aGF8+kymPy
+         1c/2xbtfDfZXB9x3AvBsYSD/n+ZXBhYOF9Ak61jTFyEDMSsJlSi6pNOUKnAMI2w3C0w6
+         EznLpeoB8WNWuEYrDIMs7hQcTlmmOqnWbBK7r8Sfyk/+5jQAdWzYlPTJOImapkhFuRjU
+         q9d623T4Pe+Pb2M6blsF/oOoMqmPxhtNSIoGB2o4/7DzpepEf/A+jpaPP9/IHCAUWlml
+         o9iLV8646sHZ3AjW40T+uUF3tan3wUOrtkGwHrvLoQTqhr6OcCBmPXAAwSS5+r5FrAih
+         1CyA==
+X-Gm-Message-State: AJIora+LeRxwq6+Z1IomUxZcY6TbmgocxJqMLelCCcJTu+xFNkwywmk6
+        O6upgjVMr2aUKmtJeNTD7po=
+X-Google-Smtp-Source: AGRyM1vNrGgDokvfbc7rb0oMlFem0P2zbQrWEvUolVG47kpLqWLypzxZNbNO2vmRuPg6YzH9VQ+N7g==
+X-Received: by 2002:a17:90b:2bd3:b0:1ef:9ac7:d90c with SMTP id ru19-20020a17090b2bd300b001ef9ac7d90cmr6235074pjb.53.1657212787423;
+        Thu, 07 Jul 2022 09:53:07 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id o13-20020a17090a5b0d00b001ea629a431bsm19753476pji.8.2022.07.07.09.53.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 Jul 2022 09:53:07 -0700 (PDT)
+Message-ID: <b503199e-61d2-4d60-99dc-0f71616f7ec9@gmail.com>
+Date:   Thu, 7 Jul 2022 09:53:04 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YscKuTXeXFX0tCap@shell.armlinux.org.uk>
-X-Spam-Status: No, score=-0.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,THIS_AD,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH stable 4.9 v2] net: dsa: bcm_sf2: force pause link
+ settings
+Content-Language: en-US
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     stable@vger.kernel.org, Doug Berger <opendmb@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        andrew@lunn.ch
+References: <20220706192455.56001-1-f.fainelli@gmail.com>
+ <20220706203102.6pd5fac7tkyi4idz@skbuf>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220706203102.6pd5fac7tkyi4idz@skbuf>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 07, 2022 at 05:32:57PM +0100, Russell King (Oracle) wrote:
-> Great, so I'll mark ocelot is safe.
+On 7/6/22 13:31, Vladimir Oltean wrote:
+> Hi Florian,
+> 
+> On Wed, Jul 06, 2022 at 12:24:54PM -0700, Florian Fainelli wrote:
+>> From: Doug Berger <opendmb@gmail.com>
+>>
+>> commit 7c97bc0128b2eecc703106112679a69d446d1a12 upstream
+>>
+>> The pause settings reported by the PHY should also be applied to the
+>> GMII port status override otherwise the switch will not generate pause
+>> frames towards the link partner despite the advertisement saying
+>> otherwise.
+>>
+>> Fixes: 246d7f773c13 ("net: dsa: add Broadcom SF2 switch driver")
+>> Signed-off-by: Doug Berger <opendmb@gmail.com>
+>> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+>> Link: https://lore.kernel.org/r/20220623030204.1966851-1-f.fainelli@gmail.com
+>> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+>> ---
+>> Changes in v2:
+>>
+>> - use both local and remote advertisement to determine when to apply
+>>    flow control settings
+>>
+>>   drivers/net/dsa/bcm_sf2.c | 16 ++++++++++++++++
+>>   1 file changed, 16 insertions(+)
+>>
+>> diff --git a/drivers/net/dsa/bcm_sf2.c b/drivers/net/dsa/bcm_sf2.c
+>> index 40b3adf7ad99..562b5eb23d90 100644
+>> --- a/drivers/net/dsa/bcm_sf2.c
+>> +++ b/drivers/net/dsa/bcm_sf2.c
+>> @@ -600,7 +600,9 @@ static void bcm_sf2_sw_adjust_link(struct dsa_switch *ds, int port,
+>>   	struct bcm_sf2_priv *priv = bcm_sf2_to_priv(ds);
+>>   	struct ethtool_eee *p = &priv->port_sts[port].eee;
+>>   	u32 id_mode_dis = 0, port_mode;
+>> +	u16 lcl_adv = 0, rmt_adv = 0;
+>>   	const char *str = NULL;
+>> +	u8 flowctrl = 0;
+>>   	u32 reg;
+>>   
+>>   	switch (phydev->interface) {
+>> @@ -667,10 +669,24 @@ static void bcm_sf2_sw_adjust_link(struct dsa_switch *ds, int port,
+>>   		break;
+>>   	}
+>>   
+>> +	if (phydev->pause)
+>> +		rmt_adv = LPA_PAUSE_CAP;
+>> +	if (phydev->asym_pause)
+>> +		rmt_adv |= LPA_PAUSE_ASYM;
+>> +	if (phydev->advertising & ADVERTISED_Pause)
+>> +		lcl_adv = ADVERTISE_PAUSE_CAP;
+>> +	if (phydev->advertising & ADVERTISED_Asym_Pause)
+>> +		lcl_adv |= ADVERTISE_PAUSE_ASYM;
+>> +	flowctrl = mii_resolve_flowctrl_fdx(lcl_adv, rmt_adv);
+> 
+> IEEE 802.3 says "The PAUSE function shall be enabled according to Table
+> 28B–3 only if the highest common denominator is a full duplex technology."
 
-Yes, please.
+Indeed, sorry about that, so I suppose the incremental patch would do, 
+since we do not support changing pause frame auto-negotiation settings 
+in 4.9:
 
-> > As for sja1105, there is DT validation that checks for the presence of
-> > all required properties in sja1105_parse_ports_node().
-> 
-> Looking at those, it requires all of:
-> 
-> - a phy mode to be specified (as determined by of_get_phy_mode())
-> - a phy-handle or of_phy_is_fixed_link() to return true
-> 
-> otherwise it errors out.
+diff --git a/drivers/net/dsa/bcm_sf2.c b/drivers/net/dsa/bcm_sf2.c
+index 562b5eb23d90..f3d61f2bb0f7 100644
+--- a/drivers/net/dsa/bcm_sf2.c
++++ b/drivers/net/dsa/bcm_sf2.c
+@@ -669,15 +669,18 @@ static void bcm_sf2_sw_adjust_link(struct 
+dsa_switch *ds, int port,
+                 break;
+         }
 
-I know. The problem with this ad-hoc validation is that it doesn't cover
-the pure MLO_AN_INBAND:
+-       if (phydev->pause)
+-               rmt_adv = LPA_PAUSE_CAP;
+-       if (phydev->asym_pause)
+-               rmt_adv |= LPA_PAUSE_ASYM;
+-       if (phydev->advertising & ADVERTISED_Pause)
+-               lcl_adv = ADVERTISE_PAUSE_CAP;
+-       if (phydev->advertising & ADVERTISED_Asym_Pause)
+-               lcl_adv |= ADVERTISE_PAUSE_ASYM;
+-       flowctrl = mii_resolve_flowctrl_fdx(lcl_adv, rmt_adv);
++       if (phydev->duplex == DUPLEX_FULL &&
++           phydev->autoneg == AUTONEG_ENABLE) {
++               if (phydev->pause)
++                       rmt_adv = LPA_PAUSE_CAP;
++               if (phydev->asym_pause)
++                       rmt_adv |= LPA_PAUSE_ASYM;
++               if (phydev->advertising & ADVERTISED_Pause)
++                       lcl_adv = ADVERTISE_PAUSE_CAP;
++               if (phydev->advertising & ADVERTISED_Asym_Pause)
++                       lcl_adv |= ADVERTISE_PAUSE_ASYM;
++               flowctrl = mii_resolve_flowctrl_fdx(lcl_adv, rmt_adv);
++       }
 
-	managed = "in-band-status";
-
-so it is more restrictive than it needs to be. Also it doesn't recognize
-the presence of an SFP bus in MLO_AN_PHY mode.
-
-That is part 1 of my problem. I want to have validation that I'm
-providing phylink with all the right things it may need, but I don't
-want to make the driver code super clunky. By checking just the presence of
-either phy-handle or fixed-link I am rejecting valid phylink configurations.
-What I need is a validation function that is actually in sync with
-phylink, not just ad-hoc.
-
-> > There is some DT validation in felix_parse_ports_node() too, but it
-> > doesn't check that all specifiers that phylink might use are there.
-> 
-> Phylink (correction, fwnode_get_phy_node() which is not part of phylink
-> anymore) will look for phy-handle, phy, or phy-device. This is I don't
-> see that there's any incompatibility between what the driver is doing
-> and what phylink does.
-> 
-> If there's a fixed-link property, then sja1105_parse_ports_node() is
-> happy, and so will phylink. If there's a phy-handle, the same is true.
-> If there's a "phy" or "phy-device" then sja1105_parse_ports_node()
-> errors out. That's completely fine.
-> 
-> "phy" and "phy-device" are the backwards compatibility for DT - I
-> believe one of them is the ePAPR specified property that we in Linux
-> have decided to only fall back on if there's not our more modern
-> "phy-handle" property.
-> 
-> It seems We have a lot of users of "phy" in DT today, so we can't drop
-> that from generic code such as phylink, but I haven't found any users
-> of "phy-device".
-> 
-> > I'd really like to add some validation before I gain any involuntary
-> > users, but all open-coded constructs I can come up with are clumsy.
-> > What would you suggest, if I explicitly don't want to rely on
-> > context-specific phylink interpretation of empty OF nodes, and rather
-> > error out?
-> 
-> So I also don't see a problem - sja1105 rejects DTs that fail to
-> describe a port using at least one of a phy-handle, a fixed-link, or
-> a managed in-band link, and I don't think it needs to do further
-> validation, certainly not for the phy describing properties that
-> the kernel has chosen to deprecate for new implementations.
-
-And this is part 2 of my problem, ocelot/felix doesn't have validation
-at all except for phy-mode, because if it were to simply copy the
-phy-handle/fixed-link either/or logic from sja1105, it would break some
-customer boards with SFP cages. But without that validation, I am
-exposing this driver to configurations I don't want it to support (CPU
-ports with empty OF nodes, i.o.w. what this patch set is about).
+         if (phydev->link)
+                 reg |= LINK_STS;
+-- 
+Florian
