@@ -2,203 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EC4785696DA
-	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 02:22:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C7AE5696E6
+	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 02:30:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234473AbiGGAWN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jul 2022 20:22:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53428 "EHLO
+        id S234762AbiGGAas (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jul 2022 20:30:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234149AbiGGAWL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 20:22:11 -0400
-Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-eopbgr80134.outbound.protection.outlook.com [40.107.8.134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47B242DA96
-        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 17:22:09 -0700 (PDT)
+        with ESMTP id S230090AbiGGAar (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 20:30:47 -0400
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 257981F625;
+        Wed,  6 Jul 2022 17:30:46 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=M+vmf3EHxQQfiS+SAB7UO6s61WKA+EYAZsUEiBF+TyIbnt5iUW+XLABW+hAUvsLYHEKKl5jCKBJUO3+0YYH1MrRuPHvpmPdQ+rMNjqNbrbyP8z4RVCEQqLA0h0p2irlgcEfBJ9m/e03WbgnuPhYune4DUGU/D/l63XOEzmFA/U0XUKuWW5uG1Kvm26nthZo1tdioGpawM9ZsnMf+eOqeoBqzoB85n3Zr/zN8y1ysTN0+B6T0GjLkeq4NKa6E3qaZpv319XvS7SJ7Dcxwf0yilOIneu0LAMB1f/BuFGy8bMEOZ402At2UWjgUflcqDeYY+tk/UoSxMpmNQkpInGb5Lw==
+ b=aekw9f+esVo/a+tUXwpGNCY1g3eGI5Oa2yFNQstuT0s871Ai+T1zs6+VvS1355it18Lm06ZynHkmegd2HzeXw02H9QoD/7Z91mPejThwPeGboKA/8pLwnAX7GXeahP+/mNu7Q19+g/tWggzPhlT+clOrN4F1KDWuA6y0t+IgktVw4C2S+Q8J9R0WcLtzzzn1I0+Vq2dYwqS5Yobfrr9qxvDkuQQg0I1k8x8IXzfTxlj+KDxiygE0O7kwysaFLwqFkeVKKq6TcLXRd8vLBxuzAt8lMy3p0BLLYr+n4cMFvjooaSd/LIWN8iKn6MavsZHBvpvFplZ5Z/Jk5gRLBxcXCw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=BnjoPrf/p9h/jrknQL3xKH0yfjMFYooN58WHz89VD0k=;
- b=CuOcAvGJW+1q4zZgBJoTvvXhDNQ/8HzCV/5oIdx/5CcK65jiOL71RtchruqbjagJxLY8wo2tNA2Roj5qLz8gyAD4S/y5H5nGNt7xRNniDEefqzqT56PA5PTL5442p0ZXrXtc6NF06VJPk5ai1VhBMDuKXDEBRWf9VSBXNKpPxnqSjb2xahEEkOzYaHUH2kCD8LVfa7an+zcZE9chSbzP84nv8nOvivAI82Us+ZwnY70DtUfrJewoZ47vt/XkQW97pMDSj1dLkZkFqI0LEm7D/KJ+fg/JCW/O0Fm6+Ax0jyyNNlfvtn6MmI+LBxJSRKbFEEhyw1NwExLskYqzufaN6g==
+ bh=iCC8fv74HtwHd+cxKqdnuywGCYBXDr85ieWQkC9l7Z8=;
+ b=DB7glDNIa81pchXzRuakOkbr+7Zc1hkU0ck5HszePXcFegBNx0MLs+GdpjX0mEKBdmD2pQ562OxuVzhUytPTmstSy3OJbVYFGo9NidP0m6XNzJKYHXkN4O4Kdzi45qlzP4AUViGfF5ioCKpHSOlZfUuaF7C1lZDjGBtrbgXKXoAuX3dnf8fcHW4C/QxNsbKI5o46gLdyKNWL4WguCRr5Ox30h9umr4P4wWym8eyrDtIRNH6kdCdcGsj3jHvrjbwawS+MC/dfJtcFLn4s4mBNhu8w3g4+35GPhm37Ku+YYPi6A732L1V15rr+873YQ8vJ8MFN+of54X4D5zGQiYbZDw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=dektech.com.au; dmarc=pass action=none
- header.from=dektech.com.au; dkim=pass header.d=dektech.com.au; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dektech.com.au;
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BnjoPrf/p9h/jrknQL3xKH0yfjMFYooN58WHz89VD0k=;
- b=T0fUviQb+34okAlifwvEX+u6kvrzBgVPin4iXXe7Au5uLPoBPkRoW0g0C2/Iap2QDMiXw3eNH0BC/sR58ZSEODVn6sHzl4OWhzfsHKnVOSZBbNWLAbyIs+5SXFXfR1XTxpOrm5Z9d8AQoXPenLlMPG+HhttaIDpT+0tsTqQgkUA=
-Received: from DB9PR05MB7641.eurprd05.prod.outlook.com (2603:10a6:10:21f::6)
- by PA4PR05MB9067.eurprd05.prod.outlook.com (2603:10a6:102:2aa::13) with
+ bh=iCC8fv74HtwHd+cxKqdnuywGCYBXDr85ieWQkC9l7Z8=;
+ b=N2SR0Fi9EfMxy4uhm5AaxOZpxmSTEOjm7/eKXXP58R2QydNVBUReG9NJN7hq0AdtHkOASRbtv5pzczV24EzRtqkU0IYxsYC7Uv+LXYsfnYPTlsR72tkmdn+9139AcVDhfppQFasrVUr+KTsjlrNg45Cj9sB6zi/lvXwkvPFwWQREcwWOKwvGm8k1/KXshF9Nv2VEuQebChXTb7TFKQnLUEimY4aD8KUr7W3bVGngtDucaLRPqBtB8eq3JLc09tpyTc+puArlynRpdDNj5qS1/Y1IO/OfMDbgw70ExS5wBACxpoI7uP0nV0BLHxDHzsXH6UYaPn/i0W9PsnwmJk/1nQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by DM6PR12MB4580.namprd12.prod.outlook.com (2603:10b6:5:2a8::18) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.20; Thu, 7 Jul
- 2022 00:22:06 +0000
-Received: from DB9PR05MB7641.eurprd05.prod.outlook.com
- ([fe80::f429:2b60:9077:6ba8]) by DB9PR05MB7641.eurprd05.prod.outlook.com
- ([fe80::f429:2b60:9077:6ba8%6]) with mapi id 15.20.5417.016; Thu, 7 Jul 2022
- 00:22:06 +0000
-From:   Hoang Huu Le <hoang.h.le@dektech.com.au>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     "jmaloy@redhat.com" <jmaloy@redhat.com>,
-        "maloy@donjonn.com" <maloy@donjonn.com>,
-        "ying.xue@windriver.com" <ying.xue@windriver.com>,
-        Tung Quang Nguyen <tung.q.nguyen@dektech.com.au>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "tipc-discussion@lists.sourceforge.net" 
-        <tipc-discussion@lists.sourceforge.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "syzbot+a73d24a22eeeebe5f244@syzkaller.appspotmail.com" 
-        <syzbot+a73d24a22eeeebe5f244@syzkaller.appspotmail.com>
-Subject: RE: [net] tipc: fix uninit-value in tipc_nl_node_reset_link_stats
-Thread-Topic: [net] tipc: fix uninit-value in tipc_nl_node_reset_link_stats
-Thread-Index: AQHYkOsyB50XojkGrUyN5uJd+Qbw6a1xzXwAgAA+B7A=
-Date:   Thu, 7 Jul 2022 00:22:06 +0000
-Message-ID: <DB9PR05MB7641A853BC76A3DBBF2187BFF1839@DB9PR05MB7641.eurprd05.prod.outlook.com>
-References: <20220706034752.5729-1-hoang.h.le@dektech.com.au>
- <20220706133334.0a6acab5@kernel.org>
-In-Reply-To: <20220706133334.0a6acab5@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=dektech.com.au;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: e5d378a5-de84-496d-ff5a-08da5faeb928
-x-ms-traffictypediagnostic: PA4PR05MB9067:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: fogKr+yXfXk72Wt+7QrV4uZKpj8PljfyvWjral49D/PqWYJUl3Cgd6Mc+4fPK8o53wyo0LYyLFMKeE6GCBlwSxdtpMbOH786zu6RdwqFywR241gq64L2/VcyuW84hku6S89zvdEdoxJ3TKXle232ZIukS8GKpbTvAeI/Bcdc3GwjrTGK1hVVS+O84g26CSURxuHSt6wMrEs/qt+rYP3o4KVMB/nAv6GK3rbxcqzcJQWMn209snwaCkcOGzsvssY/RWoH0N76SeLPqgWOTY9OIk7P75yiYsS2HOtBi62fT3qTWrNQuj70TQeilZC1I7ainLlDqYnOmnmc48OdL1o+fg6aXbA4aUnOub4YUArDQ8VHrgl9pg/Z/MahnoUNg/nJUcaf9lmyzXXm83T5afMBvjvBq5KNQ9o5HGwMXblrGEQrWN1z/tWyUg98geNuIvEc0z+uto89JTyGXqpSVfj/QQ20j5YE0nM8D2eudiPwGCXN8Bp5vHtxjcuLqVXWe8kynGmhBurUblLvs+qO3c0sOOku8cMRDaMPo6KmJj4w4lu+WZREZFUVKjNhMNjEoQ4GrHgzvZpMS9qNkFgU2yemQQDDMHosZj4Ciso3Hv5QLggdCCy0S8IB2EAc/s1IJ4XenoDOVcnbC6AuFEFHDiXsYQSjKzXLSzOl3wGR3MIbH6igLIS2IvylcO4ym+9QUYRAMKgWlzKwb3x/0jlR45NwrovHs6qhsoibVBs0H3Uyz2/iev6j7RvQmBVFZzjRKdijkf0QBo77abeI235Cq+ln0c+Huvp/sOhvaTWVFdN+KNx/6LoMOTzwG7XeY84Iz2cc0YKMu92+y/tOB2No3PQz0R3P+367D/opp5Ej3HiN21g=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR05MB7641.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(39850400004)(136003)(346002)(396003)(366004)(376002)(8936002)(64756008)(54906003)(52536014)(4326008)(8676002)(186003)(5660300002)(66556008)(6916009)(2906002)(66446008)(66946007)(33656002)(316002)(7416002)(66476007)(55016003)(76116006)(122000001)(38100700002)(86362001)(966005)(7696005)(53546011)(478600001)(83380400001)(55236004)(6506007)(41300700001)(9686003)(26005)(38070700005)(71200400001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?3gvuLDVcauDjj6/EJt+W9glW6coKzU/sPy3e9t3WHCHIRTB1xAuN4LwnubY/?=
- =?us-ascii?Q?fegwj00xId6reZbcl/cevKSgUIeNOlwavWSNCRf96iAVx21JiwmEj1MMoIiB?=
- =?us-ascii?Q?CB3QnY2KIXvy2Zmp2M9pC2VOQiaUuHlGdzE+5S0/tU5B8f1E2mF6hY9cpMNf?=
- =?us-ascii?Q?ddAxSVQfJBmKwcq1xjVipCKYix5g054HlT0TCeEMO3KurWjOgd+TYOUmoJwc?=
- =?us-ascii?Q?oUa8GNsaQCbC6bSBVmKGP45HZYgpV67HYB+ks67dUhkl9BR/z76AbiTtko38?=
- =?us-ascii?Q?Tq9CsnaM/2ZpXQwspWq8EnPW3GhkpinUMD8V7F+Gtit7oAzLifsF89a791A5?=
- =?us-ascii?Q?6dd5v2JMxknfrgm2keizaqdYqL1D9HDX1i4gsYP5zqhgOi0IiWprgxvJqHC0?=
- =?us-ascii?Q?4Wn7DQN1nq/POq9RmxDKE3NFFOEGLaoMCmXJhyEW9j6Kw4/a8CKP1jNwCQN0?=
- =?us-ascii?Q?he+W3YUnZ8N4ZDoyTVhiAtlX/dfuJ6xBmLlHarVEt+sXUnXCrgnsqblmv7+n?=
- =?us-ascii?Q?yCG2IZ3oFXkv9v2ccFv0jpLWDqwfBioBEiU5EoNFJmPppf27o/8A5VaZLLr4?=
- =?us-ascii?Q?+6/1d6d3FRf7KK9ZsUoodj5JJhQVDb6QLKLdLNzEtxYy9UBZxQV6jmeZNlRL?=
- =?us-ascii?Q?v0a/y5Z9lHXLnZ1LK2ssmxRRJECTJodwuNFhbdaa5yVohdMH8AoKEoWx+ppt?=
- =?us-ascii?Q?wNW8cJpx/V4i4nJhbxULGsZD1jugWMCfoLKEXPKbDO9e9li/XqiaXZKi2kqR?=
- =?us-ascii?Q?xm0XDJsprqZlPYqTHoGV3clc+a1Z/Nf5bSb5guOG7w0/NE+xSZwic5VoEu6P?=
- =?us-ascii?Q?19B5c9bhzCIb8qoF0GISZ4TbZqcQIKGQ2xZUrxaP3bXdna3JUXF45HP0M7RO?=
- =?us-ascii?Q?ZHZDH/Vryee/Uqs0MQkmfNtwvbzWfLVUbG6TSo2fR3Plrti5G/Qc5S9ZJN1s?=
- =?us-ascii?Q?OCS8BrwN6fkviMFdk2Mm3LSEYmmzK48uRrpH+9h8TR008GUuNpT+yO9qK7iw?=
- =?us-ascii?Q?y8HiJMF6U4GPKWBbIPYOgdBPnnB44rbE8HKm4Z47gCxgyOB35mHjlEGMZOdV?=
- =?us-ascii?Q?apCB2I/6dmt6D6xR4hqq/mKwRuaEC3/UG/rTRy8vmfr5PJ5pQTVgFzrXYnEs?=
- =?us-ascii?Q?/h6t/EU4XEbJID+DeOej3Obcq3/drLeoVPoSM40PEd7euiWq2jwRP54q9fyL?=
- =?us-ascii?Q?srJ60ylw1yjDFaHMwPVvFcThBjyQ051m+8E8NoFl6Z5Ru3Tajt5DF1aEio5c?=
- =?us-ascii?Q?7lMa3IWvqk0EP97EYwsanYQbQlP4VoR/FyiS6kMFKP1MQyKHkuegZog9Rbe9?=
- =?us-ascii?Q?GycQxMuTaYOLA0UYLL8+8au2CzyMcFc1treCUO+//9Ux4pMwrzjdYq9qyIRX?=
- =?us-ascii?Q?AipRBB/TbmDaTH4n5zTI8U7O56p6z6seODMg6JyvTtjo4RsFPUw9t9+Z6ClN?=
- =?us-ascii?Q?iRtvqB6K/SRNFmgRnzDE6Fc8vAJ8RbXUiPM5I5eCLbMSPrs+uODzEXyjM0S8?=
- =?us-ascii?Q?Huhp6BMUTatyzYOtDb7TJwIlg9CpPiejEBIFA/PQi64c9HgpI7HIVbZRIJ/k?=
- =?us-ascii?Q?jNW2Zbp238dXy6VLr9EGSvwvve1orOi83GiXvQgbC6v1wUt2g6eLy/XmcfV4?=
- =?us-ascii?Q?yg=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.15; Thu, 7 Jul
+ 2022 00:30:44 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::ac35:7c4b:3282:abfb]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::ac35:7c4b:3282:abfb%3]) with mapi id 15.20.5395.021; Thu, 7 Jul 2022
+ 00:30:44 +0000
+Date:   Wed, 6 Jul 2022 21:30:43 -0300
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Alex Williamson <alex.williamson@redhat.com>
+Cc:     Yishai Hadas <yishaih@nvidia.com>, saeedm@nvidia.com,
+        kvm@vger.kernel.org, netdev@vger.kernel.org, kuba@kernel.org,
+        kevin.tian@intel.com, joao.m.martins@oracle.com, leonro@nvidia.com,
+        maorg@nvidia.com, cohuck@redhat.com
+Subject: Re: [PATCH V1 vfio 03/11] vfio: Introduce DMA logging uAPIs
+Message-ID: <20220707003043.GA1705032@nvidia.com>
+References: <20220705102740.29337-1-yishaih@nvidia.com>
+ <20220705102740.29337-4-yishaih@nvidia.com>
+ <20220706171137.47e4aa10.alex.williamson@redhat.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220706171137.47e4aa10.alex.williamson@redhat.com>
+X-ClientProxiedBy: MN2PR07CA0001.namprd07.prod.outlook.com
+ (2603:10b6:208:1a0::11) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
 MIME-Version: 1.0
-X-OriginatorOrg: dektech.com.au
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 7537fd2e-261d-4d75-d14d-08da5fafee00
+X-MS-TrafficTypeDiagnostic: DM6PR12MB4580:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: tEOUmJ/g0upHBNLx7HD+XK3f8IHVmUWxdXAac3vLg2mupdMPVF/2bWuW8SPkCGHw3ERrojf10THq9OEEAPFEOimCFqmOmPzJ7ZpVqABFboov954oXZkPFAg14i/g9XO7v0YeU9TSD3C96XlPbm+eoX33OfbY20tMTnCYJkTYQz+cGVqRU6HXzNHCEL1qS5jwDO6U2U2R53l2cJh2e2pa7fC2QE5RWjLhTNpqutE2/WsjW61avRCs9zsGXH4GXqxzctWGrfSJYjY/l8aieGd3m4Q0sPacB9ntrsMWB0xkfB3zH46jEu/F6NudT1qjNyLzBKHIulKnXPFthrvHvNDjwCJdyNA4gzMb4exOuseYX7KKIPRHFNayZNvMAygnxTeLGdztTSKYDg2LBYpnFtkv7PR+dNKUXU/QQ2SOszkpV27faPELOi+LPGeACSUosG6UOmuQZCMojsoe3nb6QslvH78pC6t+U9iQMWtTp375CW1f2aHQ/4/g34wYkO4FnWxfiXQkSSKMMKiG5vHwlOTB5Unf0bbtMlELcYHQgILOpX1VDWMb6g6GQ9P04cNJNuy3/l7k47AbRrA4+4OIrwYQTNemLdU8USG8Yy+OSf0a96p9jV5v2+E5FB527twHorXuqqSBwlXiZ8YnYZMEqCPnZNxTsROr/yNnRt1Z3Nz0uVJNxFi/pVjeNGjVWHnD+vaT6hTj+pldfMnRWzMnJ6ylmI5J5WBCWFvdyDA3b5druD5mAeqo7S/GbOadW/jAr4no
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(346002)(376002)(396003)(366004)(136003)(66476007)(6512007)(66556008)(83380400001)(26005)(4326008)(66946007)(5660300002)(8676002)(2906002)(6486002)(478600001)(41300700001)(33656002)(8936002)(2616005)(186003)(1076003)(316002)(6506007)(36756003)(6916009)(38100700002)(86362001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?bC69KeKd8dKnfJdF08naAer0Dv1AIWsAMfVJiSeW72bTuvwYITSZL5R82rQS?=
+ =?us-ascii?Q?VLu+NLaWoS99moXG0bDTyv9SRHBN+ba8sLLedfRKgJyTPZD/WYD02B0l/boS?=
+ =?us-ascii?Q?BYY26uGFHZSodF1lMcJ6cd9AbAVZKuogEnjCATHJoxDAbfB/5+IwvCMlL4us?=
+ =?us-ascii?Q?LCjiUfOsE5EnNP76ILUAiq+yg/wEdFQR9+aoOrOlzvmUd2KAc1t6+y5ckCm6?=
+ =?us-ascii?Q?2G/oBXypHvfRNK5lJW0zS1n09YE30ovwGuiThW8nTgu92jx3Vx6QaSRo6pLP?=
+ =?us-ascii?Q?KJFa6edKaZ+wepFQ6nQ0ldMhi5sZioO3evBqN67jEy1c2fa5/e56FW2c0xl5?=
+ =?us-ascii?Q?w1m3c4xJJV7UAmtcJbaiQiTagPG+T9G6twKAzthWOfntBsqGVByg8R37KPQY?=
+ =?us-ascii?Q?e343kfnYkFoUjEuBbn8cV3busbdZhf54JdEz+DO+C5tl/N6eBKQL57KRgY0M?=
+ =?us-ascii?Q?uqcKUmv/x1+Qk5Y/1Vs/3UqUC18zCpmxwhaCrtMqmgw0A37VYb7vna+HtAWn?=
+ =?us-ascii?Q?r87rfYnqfWPqeBJ8Y25IhggbvagJdFgWoocaq+FEEjDSQFfMaVGkg1bu+g/W?=
+ =?us-ascii?Q?kfNtpwrjLQpyN3LicFxhhtzLt+pwttl7s/50+4a2VfjZgO19lKP3y2nw0ilx?=
+ =?us-ascii?Q?CYl+qrgcWN8HnZm+iKoB5rdeR+sUx/h2iI5tuKKCsqHI994wnwVC0OpeUJKM?=
+ =?us-ascii?Q?qrwHkDcxfV5TSPaghYCR00zbI5kNoM4U69lpRojOX1GeInQysNuDm1sIm1tj?=
+ =?us-ascii?Q?/O7IMG24HLm7Uj96OuyrnE5z+5EXt0TE46V/vtUGqB8sGge3rcWdM1WgLt5n?=
+ =?us-ascii?Q?r/pfu41DUmhvdbdjwRj41QhDIz4hjNoVDiENEuJ1Omlhko/z2nxtkpG4tOFy?=
+ =?us-ascii?Q?PUEAPdliK8fbvAQ/5wOJT8/612iTyWdcqPCPkqjTScrvaGhOnA1+Fec3Rk5J?=
+ =?us-ascii?Q?asto9jp2X2FUv60VEPfk7uE15vQaEHgT/JrOLqN84asS1X5Mpm6CQKBq8hkT?=
+ =?us-ascii?Q?HLtJYXaQjHHjhGULHSv7WpJxCu4gueczRIxf3uZYe/BSb1tf3SDMHx7I31Td?=
+ =?us-ascii?Q?EXWg0qSF6T9iHi/lYzYtFN59HK53T6jP6+WhsH0DW60L1NugmvKxO78k1d+W?=
+ =?us-ascii?Q?oHSTaBfYmefN3gwmwtkgv/B5I93sS64LwZ5MJkpU5pcVNctkO7pW69CZeO+N?=
+ =?us-ascii?Q?19zakr++v5wobRaC2wyv9Fsxdb2zIy3O9MU0tBSrHiHrIJDVxXUz3WSPRhZW?=
+ =?us-ascii?Q?uCJBfML7+CIwocGnBbKkx/WU+3hdIJmhgKfL1RRefxnRr9lXfA5bXEtz/WGu?=
+ =?us-ascii?Q?myk5BSwvdeI/4eO1CB6Vhnf4dwKXoK8uqf9j6AkqRyBDWJ9iUX/TyOajyt3I?=
+ =?us-ascii?Q?LLdpc03n9SNUzWH6KrSyIe6MXj5AoTPglPD2qgKEE+hb+Eu1KgKBcMnyfYV6?=
+ =?us-ascii?Q?VL9Gfu2+NczRyR5OZFKDcuieiJB16nmwld66Ywb5BqpN9GKtl4Teg1GREq7a?=
+ =?us-ascii?Q?+QOmqkl0ek9sGqLz6P39Jl+EZyXfrYtCTYQJBXBnhx2f4SuVPyOqLPiD9Ese?=
+ =?us-ascii?Q?NrngzAkpWdRKgmdZwt2x8On9tKSuL1qG/NFP4+jN?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7537fd2e-261d-4d75-d14d-08da5fafee00
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DB9PR05MB7641.eurprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e5d378a5-de84-496d-ff5a-08da5faeb928
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Jul 2022 00:22:06.1454
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jul 2022 00:30:44.5010
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 1957ea50-0dd8-4360-8db0-c9530df996b2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: IRrRaATHiTyV0ouasZbh1EE2pm1za5/QF8EOZcnITuSLDTB+2B0zL0QeF2CXAYqiM2B/wLdzJzO6ScjdCTuKfc+eEXOS+k+qGotABA33PSA=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA4PR05MB9067
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: VXyHU8vBfAvR7R2BCFVuQZjtIZx/x4I1JZYcni8HJ5fbl9gNBaAfy/aolqEnAWOA
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4580
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Jakub Kicinski <kuba@kernel.org>
-> Sent: Thursday, July 7, 2022 3:34 AM
-> To: Hoang Huu Le <hoang.h.le@dektech.com.au>
-> Cc: jmaloy@redhat.com; maloy@donjonn.com; ying.xue@windriver.com; Tung Qu=
-ang Nguyen <tung.q.nguyen@dektech.com.au>;
-> pabeni@redhat.com; edumazet@google.com; tipc-discussion@lists.sourceforge=
-.net; netdev@vger.kernel.org;
-> davem@davemloft.net; syzbot+a73d24a22eeeebe5f244@syzkaller.appspotmail.co=
-m
-> Subject: Re: [net] tipc: fix uninit-value in tipc_nl_node_reset_link_stat=
-s
->=20
-> On Wed,  6 Jul 2022 10:47:52 +0700 Hoang Le wrote:
-> > diff --git a/net/tipc/node.c b/net/tipc/node.c
-> > index b48d97cbbe29..80885780caa2 100644
-> > --- a/net/tipc/node.c
-> > +++ b/net/tipc/node.c
-> > @@ -2574,8 +2574,10 @@ int tipc_nl_node_reset_link_stats(struct sk_buff=
- *skb, struct genl_info *info)
-> >  	if (!attrs[TIPC_NLA_LINK_NAME])
-> >  		return -EINVAL;
-> >
-> > -	link_name =3D nla_data(attrs[TIPC_NLA_LINK_NAME]);
-> > +	if (nla_len(attrs[TIPC_NLA_LINK_NAME]) <=3D 0)
-> > +		return -EINVAL;
-> >
-> > +	link_name =3D nla_data(attrs[TIPC_NLA_LINK_NAME]);
-> >  	err =3D -EINVAL;
-> >  	if (!strcmp(link_name, tipc_bclink_name)) {
-> >  		err =3D tipc_bclink_reset_stats(net, tipc_bc_sndlink(net));
->=20
-> I think you misunderstood me. Let me try to explain in more detail.
->=20
-> AFAICT the attrs in this function get validated using the
-> tipc_nl_link_policy:
->=20
-> https://elixir.bootlin.com/linux/v5.19-rc4/source/net/tipc/node.c#L2567
->=20
-> This policy specifies the type for TIPC_NLA_LINK_NAME as NLA_STRING:
->=20
-> https://elixir.bootlin.com/linux/v5.19-rc4/source/net/tipc/netlink.c#L91
->=20
-> Therefore we can assume that the attribute is a valid (but not
-> necessarily null-terminated) string. Otherwise
-> nla_parse_nested_deprecated() would have returned an error.
->=20
-> The code for NLA_STRING validation is here:
->=20
-> https://elixir.bootlin.com/linux/v5.19-rc4/source/lib/nlattr.c#L437
->=20
-> So we can already assume that the attribute is not empty.
->=20
-> The bug you're fixing is that the string is not null-terminated,
-> so strcmp() can read past the end of the attribute.
->=20
-No, I'm trying to fix below issues:
+On Wed, Jul 06, 2022 at 05:11:37PM -0600, Alex Williamson wrote:
+> > +struct vfio_device_feature_dma_logging_control {
+> > +	__aligned_u64 page_size;
+> > +	__u32 num_ranges;
+> > +	__u32 __reserved;
+> > +	__aligned_u64 ranges;
+> > +};
+> 
+> num_ranges probably has a limit below 2^32-1, is it device specific?
+> How does the user learn the limit?
 
-BUG: KMSAN: uninit-value in strlen lib/string.c:495 [inline]
-BUG: KMSAN: uninit-value in strstr+0xb4/0x2e0 lib/string.c:840
- strlen lib/string.c:495 [inline]
- strstr+0xb4/0x2e0 lib/string.c:840
- tipc_nl_node_reset_link_stats+0x41e/0xba0 net/tipc/node.c:2582
+The driver is expected to groom the provided ranges to meet whatever
+limitations the device happens to have. eg expand to fix misalignment,
+cluster to fit in the available tracking, increase page size, etc.
 
-I assume the link name attribute is empty as root cause.=20
-So, just checking length is enough for fixing this issue.
+The next patch has a small algorithm that works with mlx5's limits.
 
-> What I was trying to suggest is that you change the policy from
-> NLA_STRING to NLA_NUL_STRING, which also checks that the string
-> is NULL-terminated.
->=20
-> Please note that it'd be a slight uAPI change, and could break
-> applications which expect kernel to not require null-termination.
-> Perhaps tipc developers can guide us on how likely that is.
-> Alternative is to use strncmp(..., nla_len(attr)).
+This way we avoid trying to explain to userspace every possible device
+quirk.
+
+eg if the device support one range it should take the lowest and
+highest address, fix the alignment, and use that. If that doesn't work
+then tracking isn't supported in the configuration.
+
+> Presumably new ranges cannot be added while logging is already enabled,
+> should we build this limitation into the uAPI or might some devices
+> have the ability to dynamically add and remove logging ranges?  Thanks,
+
+If we see a device that can do dynamic then we'd add a new ioctl for
+'add/remove' ranges along with a feature bit for the capability. mlx5
+doesn't support that so we aren't adding uapi that isn't implemented..
+
+Jason
