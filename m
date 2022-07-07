@@ -2,71 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B5BD6569BE1
-	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 09:43:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC6E2569BF2
+	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 09:46:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234370AbiGGHln (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jul 2022 03:41:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58824 "EHLO
+        id S234206AbiGGHns (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jul 2022 03:43:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232149AbiGGHlk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 03:41:40 -0400
-Received: from mail-yw1-x112a.google.com (mail-yw1-x112a.google.com [IPv6:2607:f8b0:4864:20::112a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 885DC13E39
-        for <netdev@vger.kernel.org>; Thu,  7 Jul 2022 00:41:39 -0700 (PDT)
-Received: by mail-yw1-x112a.google.com with SMTP id 00721157ae682-31c86fe1dddso114622197b3.1
-        for <netdev@vger.kernel.org>; Thu, 07 Jul 2022 00:41:39 -0700 (PDT)
+        with ESMTP id S234795AbiGGHnn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 03:43:43 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEE1D32057;
+        Thu,  7 Jul 2022 00:43:42 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id z41so22094061ede.1;
+        Thu, 07 Jul 2022 00:43:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9eyyTqtIIkulv9gQfR4CtcRsXRhWw/yH02kMqdRM/do=;
-        b=gfaombR7LiK3khQhkRxL3yOZDsNumwGmw/97FGNW8CXTh/lelia1l8ZXUv0b9BMvot
-         SmCBti21PoHYJObRF3tJcrmMRPQN0qc245uM1RclpR+BtclBHVDtKTmFBQeXAU03kkE1
-         xVK0sq32XtBe7igK8cXodJDAw0eLSrQnFtIk3n/KKCvrj8Jro5KbvBVzug8X9w13hN5P
-         Zhfe5I5sKfst/X8g7d4sDRY13+TrjEl9VWQMxyeGJ5FujUw7i4fA5jCQh5WRqz2tt+zb
-         rrvdwuhla/35w5BfD6Kz98JrFFdW5U/tWONKqHGmYL64eqwzxURgy8RJcvkM8EEPJr0r
-         aUWQ==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=rZhUFwwUcGSvBvAq/wrcD4Uta9N9rbopPYQWGF5hp1o=;
+        b=gHaUAtApfMG0IvE0cUroLhlUkukMdzTQff177ejaQV3M86xD07hqh6MP5288Eq+Jqs
+         JDqe9nImg8hc3UUkKGQB8Pjod4uictjopLiiVJarKHCA/+GWe6mXtjOsyzG8Y+EI8bU4
+         dII+BzQjdCLJOerEYbOnbBcXCznFOhgYWAfc9ZjmkQ5txk37672gVZpAkTZN1z5dI26o
+         ioltqdD1QuBBcsGPvMchBd0AHhyQDysLLkueP/sexpcKTgegqNPNLVD+XxcgZjmBGmjf
+         m0q0bFFZOaopdaJxLTq2Eklh9m++kS28ZMGgUscBJB3cGatJUjYfkDNCpQTfDxxrNSyl
+         Ei/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9eyyTqtIIkulv9gQfR4CtcRsXRhWw/yH02kMqdRM/do=;
-        b=lWQY4r0+B2giM/mLmPqQP3DUuiUn9O3AkPgAlHJsym5SlM2puNG09J7ZEIBOJbStx9
-         crUMoz65uYTGtXnUZwi5wksrxZd+fwiZ99bspswus2G2ERji9mx3yur2D1s61FJQCj0i
-         /Inh5t7r3uyJ4CopwH+YagJfp0xcRwqti3Ows0eLlCqo7w9/w0DXzan5tKOAAytQUg0x
-         x2EBLxy4x1EkNHVey9kSuu5mcqKG/ICa7BevHs+fW0tQZz/3tw7m8hyVYYcZeXjiKnOf
-         Gv3Jk7vBMvh30C+TGpx0ZU4WXPqZXv1MlcysT+0LH7O1ckHlpH3+Biwb7/NIX6hcD7lr
-         a8EA==
-X-Gm-Message-State: AJIora9tAZoPN9Je1lzq8XkGjdyioMRcaPPyLNO7Q0xB6IolojuFSMsf
-        qQiftjL2nP2TYotTdMQSj9sC/fgJmDacjRAFHmJvSg==
-X-Google-Smtp-Source: AGRyM1sl834btKCxGlLAL+ZSW/HXLduHzuuMztwjLx1S/OoaENMFb9RfqVnexf7j0s4hP78bzEwQCTwToiPbHHOd1kc=
-X-Received: by 2002:a81:4994:0:b0:31c:d036:d0b1 with SMTP id
- w142-20020a814994000000b0031cd036d0b1mr13999275ywa.255.1657179698498; Thu, 07
- Jul 2022 00:41:38 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220706063243.2782818-1-ssewook@gmail.com> <20220707054008.3471371-1-ssewook@gmail.com>
-In-Reply-To: <20220707054008.3471371-1-ssewook@gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 7 Jul 2022 09:41:27 +0200
-Message-ID: <CANn89iKih_MW7xfJWxAd3Sui+jzeS7R-ePDbzB4mBCYHDGA6OQ@mail.gmail.com>
-Subject: Re: [PATCH v4 net-next] net: Find dst with sk's xfrm policy not ctl_sk
-To:     Sewook Seo <ssewook@gmail.com>
-Cc:     Sewook Seo <sewookseo@google.com>,
-        Linux Network Development Mailing List 
-        <netdev@vger.kernel.org>, "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=rZhUFwwUcGSvBvAq/wrcD4Uta9N9rbopPYQWGF5hp1o=;
+        b=O629Y0G1RH7Xvgz/xCal38LAFiWrJkw+76/sELFMka1n15hjWB170pqHSgiu42p+14
+         9EVZEvyINWXkHlR1vbtroPgDhjafOjQzmra/zSHyZqCPOjs1biq2JvZ9U4W5bs8abCpA
+         vkNoMnTp8qG67YTdjQWQOgf/tJ6eyc/a+Je2AN28mMISr1sX9OPJH2jIfugFcF6nm49r
+         D9PKRjqqcqdDJJCo3+/ZM6oJSRn6yPLKIwXD7yyxy5E1n2Fby4j2KpJg0pycQh9LQFVu
+         trfxijyGWVTUDF/OBGFao1DHt976F8gH8XyzaHN8B1RhnxuXsetEri+3Wea4kaB7hgxt
+         clYg==
+X-Gm-Message-State: AJIora+QPecsR/bItmG3qzMUySoHu8itEgejhiRW5kPdTQiocB8XjMxm
+        uIevi3s17anHbaTdcRYqURf6oiYzre0=
+X-Google-Smtp-Source: AGRyM1v5G4XnQlNmWTuUA9gsDiHTLwYwEbCQwBCtbMTmbgCQ21aY0puoMVOvpoGoGmc6DUo2L4z8qg==
+X-Received: by 2002:a05:6402:1e95:b0:437:ce7f:e17a with SMTP id f21-20020a0564021e9500b00437ce7fe17amr58884437edf.169.1657179821161;
+        Thu, 07 Jul 2022 00:43:41 -0700 (PDT)
+Received: from orome (p200300e41f12c800f22f74fffe1f3a53.dip0.t-ipconnect.de. [2003:e4:1f12:c800:f22f:74ff:fe1f:3a53])
+        by smtp.gmail.com with ESMTPSA id a12-20020a170906670c00b006fe8c831632sm18472588ejp.73.2022.07.07.00.43.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Jul 2022 00:43:40 -0700 (PDT)
+Date:   Thu, 7 Jul 2022 09:43:38 +0200
+From:   Thierry Reding <thierry.reding@gmail.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Rob Herring <robh@kernel.org>, Jon Hunter <jonathanh@nvidia.com>,
         Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>, devicetree@vger.kernel.org,
         Paolo Abeni <pabeni@redhat.com>,
-        =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Sehee Lee <seheele@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        Bhadram Varka <vbhadram@nvidia.com>,
+        linux-tegra@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH v3 5/9] dt-bindings: net: Add Tegra234 MGBE
+Message-ID: <YsaOqgbMFf/RpjLv@orome>
+References: <20220706213255.1473069-1-thierry.reding@gmail.com>
+ <20220706213255.1473069-6-thierry.reding@gmail.com>
+ <1657169989.827036.709503.nullmailer@robh.at.kernel.org>
+ <YsZ6fus1yNcf/H/Q@orome>
+ <173a9087-6a55-13f8-3fc9-897c7f51a09e@linaro.org>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="qi4vcEsMPi9TNHn/"
+Content-Disposition: inline
+In-Reply-To: <173a9087-6a55-13f8-3fc9-897c7f51a09e@linaro.org>
+User-Agent: Mutt/2.2.6 (2022-06-05)
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -74,43 +82,88 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 7, 2022 at 7:41 AM Sewook Seo <ssewook@gmail.com> wrote:
->
-> From: sewookseo <sewookseo@google.com>
->
-> If we set XFRM security policy by calling setsockopt with option
-> IPV6_XFRM_POLICY, the policy will be stored in 'sock_policy' in 'sock'
-> struct. However tcp_v6_send_response doesn't look up dst_entry with the
-> actual socket but looks up with tcp control socket. This may cause a
-> problem that a RST packet is sent without ESP encryption & peer's TCP
-> socket can't receive it.
-> This patch will make the function look up dest_entry with actual socket,
-> if the socket has XFRM policy(sock_policy), so that the TCP response
-> packet via this function can be encrypted, & aligned on the encrypted
-> TCP socket.
->
 
+--qi4vcEsMPi9TNHn/
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> +++ b/net/ipv6/tcp_ipv6.c
-> @@ -952,7 +952,10 @@ static void tcp_v6_send_response(const struct sock *sk, struct sk_buff *skb, u32
->          * Underlying function will use this to retrieve the network
->          * namespace
->          */
-> -       dst = ip6_dst_lookup_flow(sock_net(ctl_sk), ctl_sk, &fl6, NULL);
-> +       if (sk && sk->sk_state != TCP_TIME_WAIT)
-> +               dst = ip6_dst_lookup_flow(net, sk, &fl6, NULL); /*sk's xfrm_policy can be referred.*/
-> +       else
-> +               dst = ip6_dst_lookup_flow(sock_net(ctl_sk), ctl_sk, &fl6, NULL);
+On Thu, Jul 07, 2022 at 08:53:32AM +0200, Krzysztof Kozlowski wrote:
+> On 07/07/2022 08:17, Thierry Reding wrote:
+> > On Wed, Jul 06, 2022 at 10:59:49PM -0600, Rob Herring wrote:
+> >> On Wed, 06 Jul 2022 23:32:51 +0200, Thierry Reding wrote:
+> >>> From: Bhadram Varka <vbhadram@nvidia.com>
+> >>>
+> >>> Add device-tree binding documentation for the Multi-Gigabit Ethernet
+> >>> (MGBE) controller found on NVIDIA Tegra234 SoCs.
+> >>>
+> >>> Signed-off-by: Jon Hunter <jonathanh@nvidia.com>
+> >>> Signed-off-by: Bhadram Varka <vbhadram@nvidia.com>
+> >>> Signed-off-by: Thierry Reding <treding@nvidia.com>
+> >>> ---
+> >>> Changes in v3:
+> >>> - add macsec and macsec-ns interrupt names
+> >>> - improve mdio bus node description
+> >>> - drop power-domains description
+> >>> - improve bindings title
+> >>>
+> >>> Changes in v2:
+> >>> - add supported PHY modes
+> >>> - change to dual license
+> >>>
+> >>>  .../bindings/net/nvidia,tegra234-mgbe.yaml    | 169 ++++++++++++++++=
+++
+> >>>  1 file changed, 169 insertions(+)
+> >>>  create mode 100644 Documentation/devicetree/bindings/net/nvidia,tegr=
+a234-mgbe.yaml
+> >>>
+> >>
+> >> My bot found errors running 'make DT_CHECKER_FLAGS=3D-m dt_binding_che=
+ck'
+> >> on your patch (DT_CHECKER_FLAGS is new in v5.13):
+> >>
+> >> yamllint warnings/errors:
+> >>
+> >> dtschema/dtc warnings/errors:
+> >> Error: Documentation/devicetree/bindings/net/nvidia,tegra234-mgbe.exam=
+ple.dts:53.34-35 syntax error
+> >> FATAL ERROR: Unable to parse input tree
+> >=20
+> > This is an error that you'd get if patch 3 is not applied. Not sure if I
+> > managed to confuse the bot somehow, but I cannot reproduce this if I
+> > apply the series on top of v5.19-rc1 or linux-next.
+>=20
+> Patch number 3 does not apply on v5.19-rc1 or linux-next, so maybe the
+> bot (which applies on rc1) did not have it.
 
-Please use net instead of sock_net(ctl_sk) for consistency.
+Good point. I'll rebase v4 on top of v5.19-rc1 then. This shouldn't
+cause a problem for net-next because there's no conflict there for patch
+9.
 
-Also, if a RST is sent on behalf of a timewait socket, it will be sent
-without ESP encryption.
+I did notice that the devicetree-bindings patchwork instance doesn't
+have all of the patches, so perhaps that tripped up the bot as well. Not
+sure what happened there, the linux-tegra instance has all 9 patches.
 
-This calls for not creating timewait sockets in the first place from
-TCP established sockets
-which were using XFRM.
+Thierry
 
-(timewait is really best effort, I am not sure we want to extend their
-size and complexity
-for XFRM sake)
+--qi4vcEsMPi9TNHn/
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmLGjqcACgkQ3SOs138+
+s6GG9BAApK9vwxL1fMefuwcIDBNUimcfLISswJTiN9OQg+V2NMrXytex2inKYDSv
+jBpo3fMWwF91U4lAVs01WF/CLRmmgJnawx9mF9ttz4CQfN78C4imdwsxj+sZ6sKV
+u/B+hMv4zP5/fJDGW3SH9lhog+s0FgQmvDFhRlYEHQ54KLYqCdyvIlwOyszruF+6
+8A9o8O08JJbAH3wWutGyKZwKyIF/kvwwKYO7W65BiRaVDkE2vnIkMlKtCcg1zIwv
+pwjV2i4VZFOg7u/EFMb0tf49GLmIMLD2FdQ1/ZPaaThBSaJFJvxFMz/dq4+K75YW
+f7uasJ65DTNJigM4FcHGgDfwyYH9QT9j19ZL/Yj3do8Rw0nIhDDD5VUeYpJKJ+xT
+iL7nsFvYl6+VHEQP5PXJjlXuzBFcKZjOwf9rFtKPWBtg/2KTSfSfC0J8Xkcidkql
+eJ/yfxUj24ZSvKP30L0EEN86fIa4HUXjluBUY18cd03XDDPXmKv6qflqAqHnriBm
+S6yXCnkUvJxeB2KmTeWYYr3DBg8ZorSJWewo7NcHqLAj1zfEBlVuKvccRxZm1vn+
+Po0YfwB7cxhCbXPiqgoIs3cQm6ggcT3vRiNUGZVt4Hoqyf6LiK2Gh5hGXYpmmD8u
+W75jc6rtplpQ8qrIPhD0ZAYJFCQCpRyD37A1Em3vy3pU3rft2U8=
+=XBl9
+-----END PGP SIGNATURE-----
+
+--qi4vcEsMPi9TNHn/--
