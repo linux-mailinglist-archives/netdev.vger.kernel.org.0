@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 14BA5569C19
-	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 09:49:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BE60569C20
+	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 09:49:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235113AbiGGHsu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jul 2022 03:48:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36172 "EHLO
+        id S235133AbiGGHs4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jul 2022 03:48:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235029AbiGGHsc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 03:48:32 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 837A315702;
-        Thu,  7 Jul 2022 00:48:31 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id a5so10395973wrx.12;
-        Thu, 07 Jul 2022 00:48:31 -0700 (PDT)
+        with ESMTP id S234285AbiGGHsg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 03:48:36 -0400
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6789E28E13;
+        Thu,  7 Jul 2022 00:48:33 -0700 (PDT)
+Received: by mail-wm1-x32f.google.com with SMTP id t17-20020a1c7711000000b003a0434b0af7so10237811wmi.0;
+        Thu, 07 Jul 2022 00:48:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=4JHBqE0DQ2XHU3tiDx/d/lTFPX4IcMwvbw15OSlGoBE=;
-        b=PNZxlLurHRMNVYSzZxbwtjm077/nl6iet0BcroYYyJuFDSc6UHJM7o7Yr2vjFgrreX
-         kaM5AfWxjGAfz70+P0Vc4dMIkDK3xQAVjU6yTQru7EH0fLoR3evxRmld8DILBk6rOtbF
-         CdTzhW0FejYc5ceT3ZDecZTEyIi1HvRRS6ClGqXzhMbzy5AqQG7WxEiwinpeZBVLFmE5
-         BWKmbjhG7FU73Eq7wqDW1jx26CaLUNEkC3qczyjZyyTNDLM3gEXSNnvSd3F0ieNPzJkW
-         JMBHAE0FAGZwyQTE3JMy3QwqhCZdgLAAxqKoyuHNjGFmMOR5ZMQweWR+LavhuflPS/Wi
-         yjGA==
+        bh=oh1z//JLoO/Xhoxj5qMgPiUpRrKCA2Fe0sFhmzqNLgQ=;
+        b=BHT8iMi8Wo3uBbfVjI1h09go2zHMfeSMc0nUfP8tJJ1igfG/UGZqI8+jdbL+qgHFnd
+         sga7grW3odh5oOVly8ZRgnF8pQleuEB3WUYuVnlRDWAPKJ8bvrcBZhWxuztS5rDbj7qs
+         Yu4YGERQlFEdVAfGFHCKvxbK9JmXB4cet78x0a9P1y2btDOEhrQ8G4RqvIgKylsI7x43
+         QASSsasfhgdBZgsKYQhtJ7hLkl0aKKSAqZ0jVCl3fpbjANkcC+jWD2YfWW72lMAbK/Kh
+         f+cwHO2czZqVhpK5gRmwheTe2LP1RSLrOSADaNhyXuuDg09m89Ah+cKum5MmjO9Ff0Rb
+         e10Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=4JHBqE0DQ2XHU3tiDx/d/lTFPX4IcMwvbw15OSlGoBE=;
-        b=Me1ZL74Vzu03JdSd9aA9W6m8O6oW3gJh1qy+UoZP+ZMOi3kg4nVa72ZOzVy4Nlj7cy
-         7+RjG6lE2BgCgx3L3wnmDvAf4/rtaz4ybGN0g/U1QyUnqajQ4LeNDgTiQFuigXcWUWJS
-         Tvqy8uPzfBAIPYyh6xWsrt6hPBSfN0AUXxtKr96y2Io/VjB952tpvxN3Dvve9te8/kWY
-         wTLYMFLx8kVM1cqYoraf7Xq6eRJCzSkz1WIGZlaZWAlQSa90Cm/VPu52QXCMTPXYrFDi
-         1DjkVVmuuwHekmYn8XAw8Fqlx8OctRqh9LkFeTkFa1hJbcoEIrUt/nkq7bhBwNpUKWYB
-         t/Yw==
-X-Gm-Message-State: AJIora/NXqYsKU4TnqN4FUcYsPKmhtVegUqbxmCxRNhFSaYw43WJA1ky
-        ArKUh3w/sHuAKMUWGfmHCL8=
-X-Google-Smtp-Source: AGRyM1vIl0sEGR+qFSNU6k+Ioo34Dimwf8haF2yfiJHUvvt2O55+y5hc0JMGki47rTv8ZhH+YiCBBA==
-X-Received: by 2002:a5d:61d0:0:b0:21d:5e08:af3c with SMTP id q16-20020a5d61d0000000b0021d5e08af3cmr24617079wrv.25.1657180110055;
-        Thu, 07 Jul 2022 00:48:30 -0700 (PDT)
+        bh=oh1z//JLoO/Xhoxj5qMgPiUpRrKCA2Fe0sFhmzqNLgQ=;
+        b=svA0nYh0DRaO4I4pezIOaQTJHQwJr070ioYNa4LzM5zOcUWzQf46rBu+Ujz8wpXfxR
+         BX1cZIPKOiNEUBwfufzVOEncNEJ/oOfgR0EyqI80JRL1higNyP70M/7VUKABIWaKMj9m
+         FXpossS29S/kc9FbZBWCyB+03flqszTMv3ONPRACsy6+i7CJdJ8u4vxLyWQTK/SXx8cC
+         H8u4l4iMHWfNKxNLoUkmvOMYd6s+io47RPXC9r9Y/SYTL1i/6aQndy0uTXUjBd0Uifgy
+         fezHctGG69eDXX2DveJZHTjsdfKR4ho1nOqeBKbTOS71zyaQdtIEpiPhpXLn4wm5XwBs
+         EXpA==
+X-Gm-Message-State: AJIora86+y7rBc+b9SVLWLclr8UqgaD6B2Lwzfp8FLR7PDcPCWyiPW5J
+        ffnu27dWZZXMR2iM6WiDvUz2VjSa6Rw=
+X-Google-Smtp-Source: AGRyM1tpyk2bBtixDX+/lBP+Z4mrZSCq7CI4o6CBg1K2yMyGqBnZ/kdl0iTaRApYtqSStOPFe4bAkQ==
+X-Received: by 2002:a1c:7903:0:b0:3a0:3936:b71f with SMTP id l3-20020a1c7903000000b003a03936b71fmr2938942wme.168.1657180111920;
+        Thu, 07 Jul 2022 00:48:31 -0700 (PDT)
 Received: from localhost (p200300e41f12c800f22f74fffe1f3a53.dip0.t-ipconnect.de. [2003:e4:1f12:c800:f22f:74ff:fe1f:3a53])
-        by smtp.gmail.com with ESMTPSA id s12-20020a05600c384c00b003a2c7bf0497sm1872879wmr.16.2022.07.07.00.48.28
+        by smtp.gmail.com with ESMTPSA id n27-20020a05600c3b9b00b003a04e900552sm1972536wms.1.2022.07.07.00.48.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jul 2022 00:48:29 -0700 (PDT)
+        Thu, 07 Jul 2022 00:48:30 -0700 (PDT)
 From:   Thierry Reding <thierry.reding@gmail.com>
 To:     Thierry Reding <thierry.reding@gmail.com>
 Cc:     Jon Hunter <jonathanh@nvidia.com>,
@@ -59,9 +59,9 @@ Cc:     Jon Hunter <jonathanh@nvidia.com>,
         Bhadram Varka <vbhadram@nvidia.com>,
         devicetree@vger.kernel.org, linux-tegra@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH v4 6/9] arm64: tegra: Add MGBE nodes on Tegra234
-Date:   Thu,  7 Jul 2022 09:48:15 +0200
-Message-Id: <20220707074818.1481776-7-thierry.reding@gmail.com>
+Subject: [PATCH v4 7/9] arm64: tegra: Enable MGBE on Jetson AGX Orin Developer Kit
+Date:   Thu,  7 Jul 2022 09:48:16 +0200
+Message-Id: <20220707074818.1481776-8-thierry.reding@gmail.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220707074818.1481776-1-thierry.reding@gmail.com>
 References: <20220707074818.1481776-1-thierry.reding@gmail.com>
@@ -79,162 +79,47 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Thierry Reding <treding@nvidia.com>
 
-Add device tree nodes for the four instances of the Multi-Gigabit
-Ethernet (MGBE) IP found on NVIDIA Tegra234 SoCs.
+A Multi-Gigabit Ethernet (MGBE) instance drives the primary Ethernet
+port on the Jetson AGX Orin Developer Kit. Enable it.
 
 Signed-off-by: Bhadram Varka <vbhadram@nvidia.com>
 Signed-off-by: Thierry Reding <treding@nvidia.com>
 ---
- arch/arm64/boot/dts/nvidia/tegra234.dtsi | 136 +++++++++++++++++++++++
- 1 file changed, 136 insertions(+)
+ .../nvidia/tegra234-p3737-0000+p3701-0000.dts | 21 +++++++++++++++++++
+ 1 file changed, 21 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/nvidia/tegra234.dtsi b/arch/arm64/boot/dts/nvidia/tegra234.dtsi
-index cb3af539e477..b77b55e80223 100644
---- a/arch/arm64/boot/dts/nvidia/tegra234.dtsi
-+++ b/arch/arm64/boot/dts/nvidia/tegra234.dtsi
-@@ -791,6 +791,142 @@ hsp_top0: hsp@3c00000 {
- 			#mbox-cells = <2>;
- 		};
+diff --git a/arch/arm64/boot/dts/nvidia/tegra234-p3737-0000+p3701-0000.dts b/arch/arm64/boot/dts/nvidia/tegra234-p3737-0000+p3701-0000.dts
+index eaf1994abb04..8e2618a902ab 100644
+--- a/arch/arm64/boot/dts/nvidia/tegra234-p3737-0000+p3701-0000.dts
++++ b/arch/arm64/boot/dts/nvidia/tegra234-p3737-0000+p3701-0000.dts
+@@ -1976,6 +1976,27 @@ chosen {
+ 		stdout-path = "serial0:115200n8";
+ 	};
  
++	bus@0 {
 +		ethernet@6800000 {
-+			compatible = "nvidia,tegra234-mgbe";
-+			reg = <0x06800000 0x10000>,
-+			      <0x06810000 0x10000>,
-+			      <0x068a0000 0x10000>;
-+			reg-names = "hypervisor", "mac", "xpcs";
-+			interrupts = <GIC_SPI 384 IRQ_TYPE_LEVEL_HIGH>;
-+			interrupt-names = "common";
-+			clocks = <&bpmp TEGRA234_CLK_MGBE0_APP>,
-+				 <&bpmp TEGRA234_CLK_MGBE0_MAC>,
-+				 <&bpmp TEGRA234_CLK_MGBE0_MAC_DIVIDER>,
-+				 <&bpmp TEGRA234_CLK_MGBE0_PTP_REF>,
-+				 <&bpmp TEGRA234_CLK_MGBE0_RX_INPUT_M>,
-+				 <&bpmp TEGRA234_CLK_MGBE0_RX_INPUT>,
-+				 <&bpmp TEGRA234_CLK_MGBE0_TX>,
-+				 <&bpmp TEGRA234_CLK_MGBE0_EEE_PCS>,
-+				 <&bpmp TEGRA234_CLK_MGBE0_RX_PCS_INPUT>,
-+				 <&bpmp TEGRA234_CLK_MGBE0_RX_PCS_M>,
-+				 <&bpmp TEGRA234_CLK_MGBE0_RX_PCS>,
-+				 <&bpmp TEGRA234_CLK_MGBE0_TX_PCS>;
-+			clock-names = "mgbe", "mac", "mac-divider", "ptp-ref", "rx-input-m",
-+				      "rx-input", "tx", "eee-pcs", "rx-pcs-input", "rx-pcs-m",
-+				      "rx-pcs", "tx-pcs";
-+			resets = <&bpmp TEGRA234_RESET_MGBE0_MAC>,
-+				 <&bpmp TEGRA234_RESET_MGBE0_PCS>;
-+			reset-names = "mac", "pcs";
-+			interconnects = <&mc TEGRA234_MEMORY_CLIENT_MGBEARD &emc>,
-+					<&mc TEGRA234_MEMORY_CLIENT_MGBEAWR &emc>;
-+			interconnect-names = "dma-mem", "write";
-+			iommus = <&smmu_niso0 TEGRA234_SID_MGBE>;
-+			power-domains = <&bpmp TEGRA234_POWER_DOMAIN_MGBEA>;
-+			status = "disabled";
-+		};
++			status = "okay";
 +
-+		ethernet@6900000 {
-+			compatible = "nvidia,tegra234-mgbe";
-+			reg = <0x06900000 0x10000>,
-+			      <0x06910000 0x10000>,
-+			      <0x069a0000 0x10000>;
-+			reg-names = "hypervisor", "mac", "xpcs";
-+			interrupts = <GIC_SPI 392 IRQ_TYPE_LEVEL_HIGH>;
-+			interrupt-names = "common";
-+			clocks = <&bpmp TEGRA234_CLK_MGBE1_APP>,
-+				 <&bpmp TEGRA234_CLK_MGBE1_MAC>,
-+				 <&bpmp TEGRA234_CLK_MGBE1_MAC_DIVIDER>,
-+				 <&bpmp TEGRA234_CLK_MGBE1_PTP_REF>,
-+				 <&bpmp TEGRA234_CLK_MGBE1_RX_INPUT_M>,
-+				 <&bpmp TEGRA234_CLK_MGBE1_RX_INPUT>,
-+				 <&bpmp TEGRA234_CLK_MGBE1_TX>,
-+				 <&bpmp TEGRA234_CLK_MGBE1_EEE_PCS>,
-+				 <&bpmp TEGRA234_CLK_MGBE1_RX_PCS_INPUT>,
-+				 <&bpmp TEGRA234_CLK_MGBE1_RX_PCS_M>,
-+				 <&bpmp TEGRA234_CLK_MGBE1_RX_PCS>,
-+				 <&bpmp TEGRA234_CLK_MGBE1_TX_PCS>;
-+			clock-names = "mgbe", "mac", "mac-divider", "ptp-ref", "rx-input-m",
-+				      "rx-input", "tx", "eee-pcs", "rx-pcs-input", "rx-pcs-m",
-+				      "rx-pcs", "tx-pcs";
-+			resets = <&bpmp TEGRA234_RESET_MGBE1_MAC>,
-+				 <&bpmp TEGRA234_RESET_MGBE1_PCS>;
-+			reset-names = "mac", "pcs";
-+			interconnects = <&mc TEGRA234_MEMORY_CLIENT_MGBEBRD &emc>,
-+					<&mc TEGRA234_MEMORY_CLIENT_MGBEBWR &emc>;
-+			interconnect-names = "dma-mem", "write";
-+			iommus = <&smmu_niso0 TEGRA234_SID_MGBE_VF1>;
-+			power-domains = <&bpmp TEGRA234_POWER_DOMAIN_MGBEB>;
-+			status = "disabled";
-+		};
++			phy-handle = <&mgbe0_phy>;
++			phy-mode = "usxgmii";
 +
-+		ethernet@6a00000 {
-+			compatible = "nvidia,tegra234-mgbe";
-+			reg = <0x06a00000 0x10000>,
-+			      <0x06a10000 0x10000>,
-+			      <0x06aa0000 0x10000>;
-+			reg-names = "hypervisor", "mac", "xpcs";
-+			interrupts = <GIC_SPI 400 IRQ_TYPE_LEVEL_HIGH>;
-+			interrupt-names = "common";
-+			clocks = <&bpmp TEGRA234_CLK_MGBE2_APP>,
-+				 <&bpmp TEGRA234_CLK_MGBE2_MAC>,
-+				 <&bpmp TEGRA234_CLK_MGBE2_MAC_DIVIDER>,
-+				 <&bpmp TEGRA234_CLK_MGBE2_PTP_REF>,
-+				 <&bpmp TEGRA234_CLK_MGBE2_RX_INPUT_M>,
-+				 <&bpmp TEGRA234_CLK_MGBE2_RX_INPUT>,
-+				 <&bpmp TEGRA234_CLK_MGBE2_TX>,
-+				 <&bpmp TEGRA234_CLK_MGBE2_EEE_PCS>,
-+				 <&bpmp TEGRA234_CLK_MGBE2_RX_PCS_INPUT>,
-+				 <&bpmp TEGRA234_CLK_MGBE2_RX_PCS_M>,
-+				 <&bpmp TEGRA234_CLK_MGBE2_RX_PCS>,
-+				 <&bpmp TEGRA234_CLK_MGBE2_TX_PCS>;
-+			clock-names = "mgbe", "mac", "mac-divider", "ptp-ref", "rx-input-m",
-+				      "rx-input", "tx", "eee-pcs", "rx-pcs-input", "rx-pcs-m",
-+				      "rx-pcs", "tx-pcs";
-+			resets = <&bpmp TEGRA234_RESET_MGBE2_MAC>,
-+				 <&bpmp TEGRA234_RESET_MGBE2_PCS>;
-+			reset-names = "mac", "pcs";
-+			interconnects = <&mc TEGRA234_MEMORY_CLIENT_MGBECRD &emc>,
-+					<&mc TEGRA234_MEMORY_CLIENT_MGBECWR &emc>;
-+			interconnect-names = "dma-mem", "write";
-+			iommus = <&smmu_niso0 TEGRA234_SID_MGBE_VF2>;
-+			power-domains = <&bpmp TEGRA234_POWER_DOMAIN_MGBEC>;
-+			status = "disabled";
-+		};
++			mdio {
++				#address-cells = <1>;
++				#size-cells = <0>;
 +
-+		ethernet@6b00000 {
-+			compatible = "nvidia,tegra234-mgbe";
-+			reg = <0x06b00000 0x10000>,
-+			      <0x06b10000 0x10000>,
-+			      <0x06ba0000 0x10000>;
-+			reg-names = "hypervisor", "mac", "xpcs";
-+			interrupts = <GIC_SPI 408 IRQ_TYPE_LEVEL_HIGH>;
-+			interrupt-names = "common";
-+			clocks = <&bpmp TEGRA234_CLK_MGBE3_APP>,
-+				 <&bpmp TEGRA234_CLK_MGBE3_MAC>,
-+				 <&bpmp TEGRA234_CLK_MGBE3_MAC_DIVIDER>,
-+				 <&bpmp TEGRA234_CLK_MGBE3_PTP_REF>,
-+				 <&bpmp TEGRA234_CLK_MGBE3_RX_INPUT_M>,
-+				 <&bpmp TEGRA234_CLK_MGBE3_RX_INPUT>,
-+				 <&bpmp TEGRA234_CLK_MGBE3_TX>,
-+				 <&bpmp TEGRA234_CLK_MGBE3_EEE_PCS>,
-+				 <&bpmp TEGRA234_CLK_MGBE3_RX_PCS_INPUT>,
-+				 <&bpmp TEGRA234_CLK_MGBE3_RX_PCS_M>,
-+				 <&bpmp TEGRA234_CLK_MGBE3_RX_PCS>,
-+				 <&bpmp TEGRA234_CLK_MGBE3_TX_PCS>;
-+			clock-names = "mgbe", "mac", "mac-divider", "ptp-ref", "rx-input-m",
-+				      "rx-input", "tx", "eee-pcs", "rx-pcs-input", "rx-pcs-m",
-+				      "rx-pcs", "tx-pcs";
-+			resets = <&bpmp TEGRA234_RESET_MGBE3_MAC>,
-+				 <&bpmp TEGRA234_RESET_MGBE3_PCS>;
-+			reset-names = "mac", "pcs";
-+			interconnects = <&mc TEGRA234_MEMORY_CLIENT_MGBEDRD &emc>,
-+					<&mc TEGRA234_MEMORY_CLIENT_MGBEDWR &emc>;
-+			interconnect-names = "dma-mem", "write";
-+			iommus = <&smmu_niso0 TEGRA234_SID_MGBE_VF3>;
-+			power-domains = <&bpmp TEGRA234_POWER_DOMAIN_MGBED>;
-+			status = "disabled";
-+		};
++				mgbe0_phy: phy@0 {
++					compatible = "ethernet-phy-ieee802.3-c45";
++					reg = <0x0>;
 +
- 		smmu_niso1: iommu@8000000 {
- 			compatible = "nvidia,tegra234-smmu", "nvidia,smmu-500";
- 			reg = <0x8000000 0x1000000>,
++					#phy-cells = <0>;
++				};
++			};
++		};
++	};
++
+ 	gpio-keys {
+ 		compatible = "gpio-keys";
+ 		status = "okay";
 -- 
 2.36.1
 
