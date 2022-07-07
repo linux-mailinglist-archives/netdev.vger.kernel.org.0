@@ -2,208 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A170356A81E
-	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 18:31:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7ED0656A827
+	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 18:33:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235842AbiGGQbC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jul 2022 12:31:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41702 "EHLO
+        id S235510AbiGGQd3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jul 2022 12:33:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235444AbiGGQbB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 12:31:01 -0400
-Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 202742A260;
-        Thu,  7 Jul 2022 09:31:01 -0700 (PDT)
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 267A5vUj008113;
-        Thu, 7 Jul 2022 09:30:54 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=pfpt0220;
- bh=MUJjQH1xdx9P6LYZOnnQzblD2ccmaLeiXo/c2Rlin3E=;
- b=AX31hYoB+V+bqwcJwkCxpaN8gYyPqgkUiLCiO1fwPHvDoPUknOz4g4P1eDb3JQq6t0Ex
- k/QBusUaf6jmJ/PFbjApljqzcWwu+e+SXHHIu+7UmgCWcDwoKJ7LFmKp8dJ4o6+d4XzJ
- xdusbhUeHe+mHEsoihU4Hxr2T0rmcLlSvxblKL36fivUAHpvLxxHj6nWNsHLH844PeSU
- FdAj4W5j09LDvZNS4Thu9FCowu0UG/wJWguh/n4OpzeGwREVTIQ02AOTR1eFu87erzDU
- cslllHMnf/o0MU5ygJP2KHRkYMl27K9FHEWvAEvngO1gsIt2oqepTInd0EbsM3XBTZJa 2w== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3h5kwj3he2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 07 Jul 2022 09:30:54 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 7 Jul
- 2022 09:30:53 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Thu, 7 Jul 2022 09:30:53 -0700
-Received: from hyd1soter3.marvell.com (unknown [10.29.37.12])
-        by maili.marvell.com (Postfix) with ESMTP id E35305B6928;
-        Thu,  7 Jul 2022 09:30:49 -0700 (PDT)
-From:   Hariprasad Kelam <hkelam@marvell.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <kuba@kernel.org>, <davem@davemloft.net>, <pabeni@redhat.com>,
-        <edumazet@google.com>, <sgoutham@marvell.com>,
-        <lcherian@marvell.com>, <gakula@marvell.com>, <jerinj@marvell.com>,
-        <sbhatta@marvell.com>
-Subject: [net-next PATCH V2] octeontx2-af: Don't reset previous pfc config
-Date:   Thu, 7 Jul 2022 22:00:48 +0530
-Message-ID: <20220707163048.7709-1-hkelam@marvell.com>
-X-Mailer: git-send-email 2.17.1
+        with ESMTP id S235202AbiGGQd2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 12:33:28 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 056A41114
+        for <netdev@vger.kernel.org>; Thu,  7 Jul 2022 09:33:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=W1luyxt6XqoqNG1cOwcZcNryytjX2axh+qChWLTs2RA=; b=N/UN3+bi39NJCUQzYPqEOzHjMx
+        a7WrcFu5Z7e+Q940v0ahh8EWaOvTIsTHAa15FPHTOTXxepvjmlI07CLFq1e1CacbY8j6u4h4G3K73
+        R4HHmqkSMA2z/TcbA8S1qN0FkFedfGFm5nce6pv4RTUD7PnHIEZa5QGzJHQtKriivsSNAZw7qy0aK
+        n1LfOowZaH/NxnMDlhJJG6GeHKUGBQx02rj92fSihJSd2KdHWUGhnqSrXnL3KGGY+wakFbj2gV2Fo
+        v9DYTp3u2PPoxW21IU4DzFUB0Zp5d4N138/YyAki16pmNYuMCHrtRGqcZBYr8fHUHDTvh2TMpHgvi
+        agbgIp0g==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33230)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1o9UR4-00047L-Je; Thu, 07 Jul 2022 17:33:02 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1o9UQz-0005PK-4Z; Thu, 07 Jul 2022 17:32:57 +0100
+Date:   Thu, 7 Jul 2022 17:32:57 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Alvin __ipraga <alsi@bang-olufsen.dk>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        UNGLinuxDriver@microchip.com,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
+Subject: Re: [PATCH RFC net-next 5/5] net: dsa: always use phylink for CPU
+ and DSA ports
+Message-ID: <YscKuTXeXFX0tCap@shell.armlinux.org.uk>
+References: <YsQIjC7UpcGWJovx@shell.armlinux.org.uk>
+ <E1o8fA7-0059aO-K8@rmk-PC.armlinux.org.uk>
+ <20220706102621.hfubvn3wa6wlw735@skbuf>
+ <Ysa85mJIUfo5m4dJ@shell.armlinux.org.uk>
+ <20220707154303.236xaeape7isracw@skbuf>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: W9WNG3sLdi92WFYSAXymVWKUvv2XwG9Q
-X-Proofpoint-GUID: W9WNG3sLdi92WFYSAXymVWKUvv2XwG9Q
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-07_13,2022-06-28_01,2022-06-22_01
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220707154303.236xaeape7isracw@skbuf>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Current implementation is such that driver first resets the
-existing PFC config before applying new pfc configuration.
-This creates a problem like once PF or VFs requests PFC config
-previous pfc config by other PFVfs is getting reset.
+On Thu, Jul 07, 2022 at 06:43:03PM +0300, Vladimir Oltean wrote:
+> On Thu, Jul 07, 2022 at 12:00:54PM +0100, Russell King (Oracle) wrote:
+> > More importantly, we need your input on Ocelot, which you are listed as
+> > a maintainer for, and Ocelot is the only DSA driver that does stuff
+> > differently (due to the rate adapting PCS). It doesn't set
+> > mac_capabilities, and therefore phylink_set_max_fixed_link() will not
+> > work here.
+> > 
+> > Has Ocelot ever made use of this DSA feature where, when nothing is
+> > specified for a CPU or DSA port, we use an effective fixed-link setup
+> > with an interface mode that gives the highest speed? Or does this not
+> > apply to this DSA driver?
+> > 
+> > Thanks.
+> 
+> I'm fine with both the ocelot and sja1105 drivers.
+> 
+> The ocelot driver has 3 users:
+> 
+> - felix_vsc9959 (arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi) on NXP
+>   LS1028A, where the CPU ports have and have always had a fixed-link
+>   node in the SoC dtsi. LS1028A based boards should include the SoC
+>   dtsi. If other board DT writers don't do that or if they delete the
+>   fixed-link node from the CPU ports, that's not my problem and I don't
+>   really want to help them.
+> 
+> - seville_vsc9953 (arch/powerpc/boot/dts/fsl/t1040si-post.dtsi) on NXP
+>   T1040. Same thing, embedded switch, not my fault if the fixed-link
+>   disappears from the SoC dtsi.
 
-This patch fixes the problem by removing unnecessary resetting
-of PFC config. Also configure Pause quanta value to smaller as
-current value is too high.
+Great, so I'll mark ocelot is safe.
 
-Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
-Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
----
-V2 * resending patch as earlier patch has 'missing maintainers" warning
+> - Colin Foster's SPI-controlled VSC7512 (still downstream). He has an
+>   Ethernet cable connecting the CPU port to a Beaglebone Black, so he
+>   has a phy-handle on the CPU port, so definitely not nothing. I believe
+>   his work hasn't made it to production in any case, so enforcing
+>   validation now shouldn't bother him too much if at all.
 
- .../net/ethernet/marvell/octeontx2/af/cgx.c    | 15 +++++++++++----
- .../net/ethernet/marvell/octeontx2/af/rpm.c    | 18 +++++++++++-------
- .../net/ethernet/marvell/octeontx2/af/rpm.h    |  3 +--
- 3 files changed, 23 insertions(+), 13 deletions(-)
+Ok, thanks.
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-index 25491edc35ce..931a1a7ebf76 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-@@ -847,6 +847,11 @@ static void cgx_lmac_pause_frm_config(void *cgxd, int lmac_id, bool enable)
- 	cfg |= CGX_CMR_RX_OVR_BP_EN(lmac_id);
- 	cfg &= ~CGX_CMR_RX_OVR_BP_BP(lmac_id);
- 	cgx_write(cgx, 0, CGXX_CMR_RX_OVR_BP, cfg);
-+
-+	/* Disable all PFC classes by default */
-+	cfg = cgx_read(cgx, lmac_id, CGXX_SMUX_CBFC_CTL);
-+	cfg = FIELD_SET(CGX_PFC_CLASS_MASK, 0, cfg);
-+	cgx_write(cgx, lmac_id, CGXX_SMUX_CBFC_CTL, cfg);
- }
+> As for sja1105, there is DT validation that checks for the presence of
+> all required properties in sja1105_parse_ports_node().
 
- int verify_lmac_fc_cfg(void *cgxd, int lmac_id, u8 tx_pause, u8 rx_pause,
-@@ -899,6 +904,7 @@ int cgx_lmac_pfc_config(void *cgxd, int lmac_id, u8 tx_pause,
- 		return 0;
+Looking at those, it requires all of:
 
- 	cfg = cgx_read(cgx, lmac_id, CGXX_SMUX_CBFC_CTL);
-+	pfc_en |= FIELD_GET(CGX_PFC_CLASS_MASK, cfg);
+- a phy mode to be specified (as determined by of_get_phy_mode())
+- a phy-handle or of_phy_is_fixed_link() to return true
 
- 	if (rx_pause) {
- 		cfg |= (CGXX_SMUX_CBFC_CTL_RX_EN |
-@@ -910,12 +916,13 @@ int cgx_lmac_pfc_config(void *cgxd, int lmac_id, u8 tx_pause,
- 			CGXX_SMUX_CBFC_CTL_DRP_EN);
- 	}
+otherwise it errors out.
 
--	if (tx_pause)
-+	if (tx_pause) {
- 		cfg |= CGXX_SMUX_CBFC_CTL_TX_EN;
--	else
-+		cfg = FIELD_SET(CGX_PFC_CLASS_MASK, pfc_en, cfg);
-+	} else {
- 		cfg &= ~CGXX_SMUX_CBFC_CTL_TX_EN;
--
--	cfg = FIELD_SET(CGX_PFC_CLASS_MASK, pfc_en, cfg);
-+		cfg = FIELD_SET(CGX_PFC_CLASS_MASK, 0, cfg);
-+	}
+> There is some DT validation in felix_parse_ports_node() too, but it
+> doesn't check that all specifiers that phylink might use are there.
 
- 	cgx_write(cgx, lmac_id, CGXX_SMUX_CBFC_CTL, cfg);
+Phylink (correction, fwnode_get_phy_node() which is not part of phylink
+anymore) will look for phy-handle, phy, or phy-device. This is I don't
+see that there's any incompatibility between what the driver is doing
+and what phylink does.
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rpm.c b/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
-index 47e83d7a5804..05666922a45b 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
-@@ -276,6 +276,11 @@ void rpm_lmac_pause_frm_config(void *rpmd, int lmac_id, bool enable)
- 	cfg = rpm_read(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG);
- 	cfg |= RPMX_MTI_MAC100X_COMMAND_CONFIG_TX_P_DISABLE;
- 	rpm_write(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG, cfg);
-+
-+	/* Disable all PFC classes */
-+	cfg = rpm_read(rpm, lmac_id, RPMX_CMRX_PRT_CBFC_CTL);
-+	cfg = FIELD_SET(RPM_PFC_CLASS_MASK, 0, cfg);
-+	rpm_write(rpm, lmac_id, RPMX_CMRX_PRT_CBFC_CTL, cfg);
- }
+If there's a fixed-link property, then sja1105_parse_ports_node() is
+happy, and so will phylink. If there's a phy-handle, the same is true.
+If there's a "phy" or "phy-device" then sja1105_parse_ports_node()
+errors out. That's completely fine.
 
- int rpm_get_rx_stats(void *rpmd, int lmac_id, int idx, u64 *rx_stat)
-@@ -387,15 +392,14 @@ void rpm_lmac_ptp_config(void *rpmd, int lmac_id, bool enable)
- int rpm_lmac_pfc_config(void *rpmd, int lmac_id, u8 tx_pause, u8 rx_pause, u16 pfc_en)
- {
- 	rpm_t *rpm = rpmd;
--	u64 cfg;
-+	u64 cfg, class_en;
+"phy" and "phy-device" are the backwards compatibility for DT - I
+believe one of them is the ePAPR specified property that we in Linux
+have decided to only fall back on if there's not our more modern
+"phy-handle" property.
 
- 	if (!is_lmac_valid(rpm, lmac_id))
- 		return -ENODEV;
+It seems We have a lot of users of "phy" in DT today, so we can't drop
+that from generic code such as phylink, but I haven't found any users
+of "phy-device".
 
--	/* reset PFC class quanta and threshold */
--	rpm_cfg_pfc_quanta_thresh(rpm, lmac_id, 0xffff, false);
--
- 	cfg = rpm_read(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG);
-+	class_en = rpm_read(rpm, lmac_id, RPMX_CMRX_PRT_CBFC_CTL);
-+	pfc_en |= FIELD_GET(RPM_PFC_CLASS_MASK, class_en);
+> I'd really like to add some validation before I gain any involuntary
+> users, but all open-coded constructs I can come up with are clumsy.
+> What would you suggest, if I explicitly don't want to rely on
+> context-specific phylink interpretation of empty OF nodes, and rather
+> error out?
 
- 	if (rx_pause) {
- 		cfg &= ~(RPMX_MTI_MAC100X_COMMAND_CONFIG_RX_P_DISABLE |
-@@ -410,9 +414,11 @@ int rpm_lmac_pfc_config(void *rpmd, int lmac_id, u8 tx_pause, u8 rx_pause, u16 p
- 	if (tx_pause) {
- 		rpm_cfg_pfc_quanta_thresh(rpm, lmac_id, pfc_en, true);
- 		cfg &= ~RPMX_MTI_MAC100X_COMMAND_CONFIG_TX_P_DISABLE;
-+		class_en = FIELD_SET(RPM_PFC_CLASS_MASK, pfc_en, class_en);
- 	} else {
- 		rpm_cfg_pfc_quanta_thresh(rpm, lmac_id, 0xfff, false);
- 		cfg |= RPMX_MTI_MAC100X_COMMAND_CONFIG_TX_P_DISABLE;
-+		class_en = FIELD_SET(RPM_PFC_CLASS_MASK, 0, class_en);
- 	}
+So I also don't see a problem - sja1105 rejects DTs that fail to
+describe a port using at least one of a phy-handle, a fixed-link, or
+a managed in-band link, and I don't think it needs to do further
+validation, certainly not for the phy describing properties that
+the kernel has chosen to deprecate for new implementations.
 
- 	if (!rx_pause && !tx_pause)
-@@ -422,9 +428,7 @@ int rpm_lmac_pfc_config(void *rpmd, int lmac_id, u8 tx_pause, u8 rx_pause, u16 p
-
- 	rpm_write(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG, cfg);
-
--	cfg = rpm_read(rpm, lmac_id, RPMX_CMRX_PRT_CBFC_CTL);
--	cfg = FIELD_SET(RPM_PFC_CLASS_MASK, pfc_en, cfg);
--	rpm_write(rpm, lmac_id, RPMX_CMRX_PRT_CBFC_CTL, cfg);
-+	rpm_write(rpm, lmac_id, RPMX_CMRX_PRT_CBFC_CTL, class_en);
-
- 	return 0;
- }
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rpm.h b/drivers/net/ethernet/marvell/octeontx2/af/rpm.h
-index 9ab8d49dd180..8205f2626f61 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rpm.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rpm.h
-@@ -48,7 +48,6 @@
- #define RPMX_MTI_MAC100X_CL1011_QUANTA_THRESH		0x8130
- #define RPMX_MTI_MAC100X_CL1213_QUANTA_THRESH		0x8138
- #define RPMX_MTI_MAC100X_CL1415_QUANTA_THRESH		0x8140
--#define RPM_DEFAULT_PAUSE_TIME			0xFFFF
- #define RPMX_CMR_RX_OVR_BP		0x4120
- #define RPMX_CMR_RX_OVR_BP_EN(x)	BIT_ULL((x) + 8)
- #define RPMX_CMR_RX_OVR_BP_BP(x)	BIT_ULL((x) + 4)
-@@ -70,7 +69,7 @@
- #define RPMX_MTI_MAC100X_COMMAND_CONFIG_PAUSE_FWD              BIT_ULL(7)
- #define RPMX_MTI_MAC100X_CL01_PAUSE_QUANTA              0x80A8
- #define RPMX_MTI_MAC100X_CL89_PAUSE_QUANTA		0x8108
--#define RPM_DEFAULT_PAUSE_TIME                          0xFFFF
-+#define RPM_DEFAULT_PAUSE_TIME                          0x7FF
-
- /* Function Declarations */
- int rpm_get_nr_lmacs(void *rpmd);
---
-2.17.1
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
