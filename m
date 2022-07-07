@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 68EC056979C
-	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 03:35:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7F3F569799
+	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 03:35:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234891AbiGGBf3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jul 2022 21:35:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38210 "EHLO
+        id S234879AbiGGBfW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jul 2022 21:35:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234881AbiGGBfW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 21:35:22 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 479902ED5B
-        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 18:35:21 -0700 (PDT)
+        with ESMTP id S234843AbiGGBfU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 21:35:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3CBA2ED5D
+        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 18:35:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 2CA1ECE221D
-        for <netdev@vger.kernel.org>; Thu,  7 Jul 2022 01:35:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE18BC341C6;
-        Thu,  7 Jul 2022 01:35:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 81E266206B
+        for <netdev@vger.kernel.org>; Thu,  7 Jul 2022 01:35:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83EEBC341CE;
+        Thu,  7 Jul 2022 01:35:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1657157717;
-        bh=8P6p5mOxWTzm6p+3Kb1wHVswI5QRJMiKj2fWaHxJ/HY=;
+        bh=Zxtj02zPPRL4w3GSEdBaVvS3xwzF3Me9a7gqR4vGkoM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hB5cBr/M5m646dIRmAjGcSywBqf2T39oSSYJnMpNVJhtfRBU32uBlzf4WGC6DwFwd
-         OhBsMQXkZyRH/nWU5ra23TPMKMMFrnh5UM9DEW5ukyYD+EXP3y5LoXPMyHEIbLFskq
-         +ynuMdpBFHxMrVz2IUhfg2HlrD/6Cwl/a13jwU1DoK00siPoI/llvtC+6LwslCU5S7
-         hGl1jxGt6rd22NOumtOLk/p4zPaGMyWru+m8wkaehIIsKdLCDGK7WT7Zhd4QIpFOGl
-         1bA97RvTpp9WccHL/w7+OaJ8RKgeigkzn7TLy7lYXDGvo/KhjCm5Yj2IBwdRvNBUX2
-         V3HWdeCJnSc3A==
+        b=dw1/nx3VvvxOiES9OmJXh1U6So2mc0pk97X2pvuFrMST5QyDtWQNHrVdD8UZrO40J
+         csunqOzVLp8YxN/bUN6yb2lRR1Nmohr1qS+beKCCf9zzb5ZABwXrRnVQ04ZRaUk/p3
+         E91jhZ2Yi5YtIS/duQonNMFKWBSILEnN4Y2B/V7+1b6JsJfLCTRuMdNb88V/9LKAdL
+         Ki0yviB/bBg1QeUKl4iQh7xW0/SZnyoFeVW1mDuOb2Ka1iGdfN5sM3zqjPsSTYASCb
+         Yugb8uxXdW0MjKnVWYG1JXo5bM1v8FCmiVCH2SwjmHf6zYZjMpp9EOflS+6TwVNYFc
+         sKVcqtOXgmwVw==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
         borisp@nvidia.com, john.fastabend@gmail.com, maximmi@nvidia.com,
         tariqt@nvidia.com, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 2/6] tls: rx: always allocate max possible aad size for decrypt
-Date:   Wed,  6 Jul 2022 18:35:06 -0700
-Message-Id: <20220707013510.1372695-3-kuba@kernel.org>
+Subject: [PATCH net-next 3/6] tls: rx: wrap decrypt params in a struct
+Date:   Wed,  6 Jul 2022 18:35:07 -0700
+Message-Id: <20220707013510.1372695-4-kuba@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220707013510.1372695-1-kuba@kernel.org>
 References: <20220707013510.1372695-1-kuba@kernel.org>
@@ -54,79 +54,173 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-AAD size is either 5 or 13. Really no point complicating
-the code for the 8B of difference. This will also let us
-turn the chunked up buffer into a sane struct.
+The max size of iv + aad + tail is 22B. That's smaller
+than a single sg entry (32B). Don't bother with the
+memory packing, just create a struct which holds the
+max size of those members.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- include/net/tls.h |  1 +
- net/tls/tls_sw.c  | 19 ++++++++++---------
- 2 files changed, 11 insertions(+), 9 deletions(-)
+ net/tls/tls_sw.c | 60 ++++++++++++++++++++++++------------------------
+ 1 file changed, 30 insertions(+), 30 deletions(-)
 
-diff --git a/include/net/tls.h b/include/net/tls.h
-index 4fc16ca5f469..9394c0459fe8 100644
---- a/include/net/tls.h
-+++ b/include/net/tls.h
-@@ -66,6 +66,7 @@
- #define MAX_IV_SIZE			16
- #define TLS_TAG_SIZE			16
- #define TLS_MAX_REC_SEQ_SIZE		8
-+#define TLS_MAX_AAD_SIZE		TLS_AAD_SPACE_SIZE
- 
- /* For CCM mode, the full 16-bytes of IV is made of '4' fields of given sizes.
-  *
 diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
-index 79043bc3da39..4f6761dd8d86 100644
+index 4f6761dd8d86..5534962963c2 100644
 --- a/net/tls/tls_sw.c
 +++ b/net/tls/tls_sw.c
-@@ -1453,7 +1453,7 @@ static int decrypt_internal(struct sock *sk, struct sk_buff *skb,
+@@ -50,6 +50,13 @@ struct tls_decrypt_arg {
+ 	u8 tail;
+ };
  
- 	aead_size = sizeof(*aead_req) + crypto_aead_reqsize(ctx->aead_recv);
- 	mem_size = aead_size + (nsg * sizeof(struct scatterlist));
--	mem_size = mem_size + prot->aad_size;
-+	mem_size = mem_size + TLS_MAX_AAD_SIZE;
- 	mem_size = mem_size + MAX_IV_SIZE;
- 	mem_size = mem_size + prot->tail_size;
++struct tls_decrypt_ctx {
++	u8 iv[MAX_IV_SIZE];
++	u8 aad[TLS_MAX_AAD_SIZE];
++	u8 tail;
++	struct scatterlist sg[];
++};
++
+ noinline void tls_err_abort(struct sock *sk, int err)
+ {
+ 	WARN_ON_ONCE(err >= 0);
+@@ -1417,17 +1424,18 @@ static int decrypt_internal(struct sock *sk, struct sk_buff *skb,
+ 	struct tls_context *tls_ctx = tls_get_ctx(sk);
+ 	struct tls_sw_context_rx *ctx = tls_sw_ctx_rx(tls_ctx);
+ 	struct tls_prot_info *prot = &tls_ctx->prot_info;
++	int n_sgin, n_sgout, aead_size, err, pages = 0;
+ 	struct strp_msg *rxm = strp_msg(skb);
+ 	struct tls_msg *tlm = tls_msg(skb);
+-	int n_sgin, n_sgout, nsg, mem_size, aead_size, err, pages = 0;
+-	u8 *aad, *iv, *tail, *mem = NULL;
+ 	struct aead_request *aead_req;
+ 	struct sk_buff *unused;
+ 	struct scatterlist *sgin = NULL;
+ 	struct scatterlist *sgout = NULL;
+ 	const int data_len = rxm->full_len - prot->overhead_size;
+ 	int tail_pages = !!prot->tail_size;
++	struct tls_decrypt_ctx *dctx;
+ 	int iv_offset = 0;
++	u8 *mem;
  
-@@ -1470,7 +1470,7 @@ static int decrypt_internal(struct sock *sk, struct sk_buff *skb,
- 	sgin = (struct scatterlist *)(mem + aead_size);
- 	sgout = sgin + n_sgin;
- 	aad = (u8 *)(sgout + n_sgout);
--	iv = aad + prot->aad_size;
-+	iv = aad + TLS_MAX_AAD_SIZE;
- 	tail = iv + MAX_IV_SIZE;
+ 	if (darg->zc && (out_iov || out_sg)) {
+ 		if (out_iov)
+@@ -1449,38 +1457,30 @@ static int decrypt_internal(struct sock *sk, struct sk_buff *skb,
+ 	/* Increment to accommodate AAD */
+ 	n_sgin = n_sgin + 1;
+ 
+-	nsg = n_sgin + n_sgout;
+-
+-	aead_size = sizeof(*aead_req) + crypto_aead_reqsize(ctx->aead_recv);
+-	mem_size = aead_size + (nsg * sizeof(struct scatterlist));
+-	mem_size = mem_size + TLS_MAX_AAD_SIZE;
+-	mem_size = mem_size + MAX_IV_SIZE;
+-	mem_size = mem_size + prot->tail_size;
+-
+ 	/* Allocate a single block of memory which contains
+-	 * aead_req || sgin[] || sgout[] || aad || iv || tail.
+-	 * This order achieves correct alignment for aead_req, sgin, sgout.
++	 *   aead_req || tls_decrypt_ctx.
++	 * Both structs are variable length.
+ 	 */
+-	mem = kmalloc(mem_size, sk->sk_allocation);
++	aead_size = sizeof(*aead_req) + crypto_aead_reqsize(ctx->aead_recv);
++	mem = kmalloc(aead_size + struct_size(dctx, sg, n_sgin + n_sgout),
++		      sk->sk_allocation);
+ 	if (!mem)
+ 		return -ENOMEM;
+ 
+ 	/* Segment the allocated memory */
+ 	aead_req = (struct aead_request *)mem;
+-	sgin = (struct scatterlist *)(mem + aead_size);
+-	sgout = sgin + n_sgin;
+-	aad = (u8 *)(sgout + n_sgout);
+-	iv = aad + TLS_MAX_AAD_SIZE;
+-	tail = iv + MAX_IV_SIZE;
++	dctx = (struct tls_decrypt_ctx *)(mem + aead_size);
++	sgin = &dctx->sg[0];
++	sgout = &dctx->sg[n_sgin];
  
  	/* For CCM based ciphers, first byte of nonce+iv is a constant */
-@@ -2474,13 +2474,6 @@ int tls_set_sw_offload(struct sock *sk, struct tls_context *ctx, int tx)
- 		goto free_priv;
+ 	switch (prot->cipher_type) {
+ 	case TLS_CIPHER_AES_CCM_128:
+-		iv[0] = TLS_AES_CCM_IV_B0_BYTE;
++		dctx->iv[0] = TLS_AES_CCM_IV_B0_BYTE;
+ 		iv_offset = 1;
+ 		break;
+ 	case TLS_CIPHER_SM4_CCM:
+-		iv[0] = TLS_SM4_CCM_IV_B0_BYTE;
++		dctx->iv[0] = TLS_SM4_CCM_IV_B0_BYTE;
+ 		iv_offset = 1;
+ 		break;
+ 	}
+@@ -1488,28 +1488,28 @@ static int decrypt_internal(struct sock *sk, struct sk_buff *skb,
+ 	/* Prepare IV */
+ 	if (prot->version == TLS_1_3_VERSION ||
+ 	    prot->cipher_type == TLS_CIPHER_CHACHA20_POLY1305) {
+-		memcpy(iv + iv_offset, tls_ctx->rx.iv,
++		memcpy(&dctx->iv[iv_offset], tls_ctx->rx.iv,
+ 		       prot->iv_size + prot->salt_size);
+ 	} else {
+ 		err = skb_copy_bits(skb, rxm->offset + TLS_HEADER_SIZE,
+-				    iv + iv_offset + prot->salt_size,
++				    &dctx->iv[iv_offset] + prot->salt_size,
+ 				    prot->iv_size);
+ 		if (err < 0) {
+ 			kfree(mem);
+ 			return err;
+ 		}
+-		memcpy(iv + iv_offset, tls_ctx->rx.iv, prot->salt_size);
++		memcpy(&dctx->iv[iv_offset], tls_ctx->rx.iv, prot->salt_size);
+ 	}
+-	xor_iv_with_seq(prot, iv + iv_offset, tls_ctx->rx.rec_seq);
++	xor_iv_with_seq(prot, &dctx->iv[iv_offset], tls_ctx->rx.rec_seq);
+ 
+ 	/* Prepare AAD */
+-	tls_make_aad(aad, rxm->full_len - prot->overhead_size +
++	tls_make_aad(dctx->aad, rxm->full_len - prot->overhead_size +
+ 		     prot->tail_size,
+ 		     tls_ctx->rx.rec_seq, tlm->control, prot);
+ 
+ 	/* Prepare sgin */
+ 	sg_init_table(sgin, n_sgin);
+-	sg_set_buf(&sgin[0], aad, prot->aad_size);
++	sg_set_buf(&sgin[0], dctx->aad, prot->aad_size);
+ 	err = skb_to_sgvec(skb, &sgin[1],
+ 			   rxm->offset + prot->prepend_size,
+ 			   rxm->full_len - prot->prepend_size);
+@@ -1521,7 +1521,7 @@ static int decrypt_internal(struct sock *sk, struct sk_buff *skb,
+ 	if (n_sgout) {
+ 		if (out_iov) {
+ 			sg_init_table(sgout, n_sgout);
+-			sg_set_buf(&sgout[0], aad, prot->aad_size);
++			sg_set_buf(&sgout[0], dctx->aad, prot->aad_size);
+ 
+ 			err = tls_setup_from_iter(out_iov, data_len,
+ 						  &pages, &sgout[1],
+@@ -1531,7 +1531,7 @@ static int decrypt_internal(struct sock *sk, struct sk_buff *skb,
+ 
+ 			if (prot->tail_size) {
+ 				sg_unmark_end(&sgout[pages]);
+-				sg_set_buf(&sgout[pages + 1], tail,
++				sg_set_buf(&sgout[pages + 1], &dctx->tail,
+ 					   prot->tail_size);
+ 				sg_mark_end(&sgout[pages + 1]);
+ 			}
+@@ -1548,13 +1548,13 @@ static int decrypt_internal(struct sock *sk, struct sk_buff *skb,
  	}
  
--	/* Sanity-check the sizes for stack allocations. */
--	if (iv_size > MAX_IV_SIZE || nonce_size > MAX_IV_SIZE ||
--	    rec_seq_size > TLS_MAX_REC_SEQ_SIZE || tag_size != TLS_TAG_SIZE) {
--		rc = -EINVAL;
--		goto free_priv;
--	}
--
- 	if (crypto_info->version == TLS_1_3_VERSION) {
- 		nonce_size = 0;
- 		prot->aad_size = TLS_HEADER_SIZE;
-@@ -2490,6 +2483,14 @@ int tls_set_sw_offload(struct sock *sk, struct tls_context *ctx, int tx)
- 		prot->tail_size = 0;
- 	}
+ 	/* Prepare and submit AEAD request */
+-	err = tls_do_decryption(sk, skb, sgin, sgout, iv,
++	err = tls_do_decryption(sk, skb, sgin, sgout, dctx->iv,
+ 				data_len + prot->tail_size, aead_req, darg);
+ 	if (darg->async)
+ 		return 0;
  
-+	/* Sanity-check the sizes for stack allocations. */
-+	if (iv_size > MAX_IV_SIZE || nonce_size > MAX_IV_SIZE ||
-+	    rec_seq_size > TLS_MAX_REC_SEQ_SIZE || tag_size != TLS_TAG_SIZE ||
-+	    prot->aad_size > TLS_MAX_AAD_SIZE) {
-+		rc = -EINVAL;
-+		goto free_priv;
-+	}
-+
- 	prot->version = crypto_info->version;
- 	prot->cipher_type = crypto_info->cipher_type;
- 	prot->prepend_size = TLS_HEADER_SIZE + nonce_size;
+ 	if (prot->tail_size)
+-		darg->tail = *tail;
++		darg->tail = dctx->tail;
+ 
+ 	/* Release the pages in case iov was mapped to pages */
+ 	for (; pages > 0; pages--)
 -- 
 2.36.1
 
