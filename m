@@ -2,120 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 06D0956AE2B
+	by mail.lfdr.de (Postfix) with ESMTP id 5022656AE2C
 	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 00:17:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236851AbiGGWPr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jul 2022 18:15:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44740 "EHLO
+        id S236774AbiGGWQJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jul 2022 18:16:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236804AbiGGWPo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 18:15:44 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D118C60518;
-        Thu,  7 Jul 2022 15:15:40 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id l23so2968795ejr.5;
-        Thu, 07 Jul 2022 15:15:40 -0700 (PDT)
+        with ESMTP id S236216AbiGGWQI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 18:16:08 -0400
+Received: from smtp-fw-2101.amazon.com (smtp-fw-2101.amazon.com [72.21.196.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD5B15C9CE;
+        Thu,  7 Jul 2022 15:16:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=YbcTL+3qr14Rocr3oTmfsi882ixi5LpWV64cJlgqYcc=;
-        b=nKKeKcLCsakCzn9XRzT0NpgzcCz7kp0YCUY2hhSmAHC8Orp4ossQP5D7uASZQKiTdj
-         vRcW1AbOgc+uszyAoBDP1G/0vyQeEx3V6fhGWZA+L07P9A+s3ZvS3usUJztiStNHPj7D
-         Ca0xp1rjC6vt2MFnDTc60V3IErNWN+A8pTAtuJDDFEJbHE9KbBfVLi9V27ILxxRVZ7yN
-         e5/OexcdceNHe03xn8VzlKOoS9U00FrzMaKzdvq+UDqAWfaqIzI67EQEzIhCV548vHSq
-         1haK57UQ98sc2kJCKltqY0nIARDffhfSE6ztysmaN7le5FIbZZlt3Toqec6xmdneV/Rv
-         u7Tg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=YbcTL+3qr14Rocr3oTmfsi882ixi5LpWV64cJlgqYcc=;
-        b=Ep9Ku/NToxCSdozwhsW3iggEiXpzgoXT9e77/NSONvHbDD7meb07Wi6ybmSeQ0HkQd
-         ljPD6kTVoOn0WfS53nPn9Y6iYQMyFmb1MhnOFxeIb3upQ/7TBYWvW+FCQ1DDzoHl780i
-         63i9sAcUUQ1GDiI/2JrqMNvEHEiMiik5ZP9c8lw12o5jJFo9bqeOggKV1iLUKKXFdk9A
-         6FJPZykRsrULhMTYoGPOj2uclLsQbCRgWcQq8Uqvdktt98NN0V0O5x62+fbNtoBdcrSC
-         NzynqE13vfXifHqymAcxYWogTp8cqRN30Pl+Dos3ARPoSs5oNMCCwe+7s37BxPO/CZG7
-         up1g==
-X-Gm-Message-State: AJIora/TK+Ntq8PJcGcZAZCQtfGoPGs3Wu+cqql68XWIDEqtQQB9CRPF
-        be0OXxT/aiw5MbU5HLZOliubGRiWxeYohQ==
-X-Google-Smtp-Source: AGRyM1usB5byg/+DNuvkyt37RQjgSlmKDNaBM32qwOSA+SYK1RJhWKYdlKoEvwq6ViMpAswiRIln+A==
-X-Received: by 2002:a17:907:9812:b0:726:3e5b:d299 with SMTP id ji18-20020a170907981200b007263e5bd299mr347748ejc.26.1657232139428;
-        Thu, 07 Jul 2022 15:15:39 -0700 (PDT)
-Received: from skbuf ([188.25.231.143])
-        by smtp.gmail.com with ESMTPSA id fi18-20020a056402551200b0043a43fcde13sm10554706edb.13.2022.07.07.15.15.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jul 2022 15:15:38 -0700 (PDT)
-Date:   Fri, 8 Jul 2022 01:15:37 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     stable@vger.kernel.org, Doug Berger <opendmb@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        andrew@lunn.ch
-Subject: Re: [PATCH stable 4.9 v2] net: dsa: bcm_sf2: force pause link
- settings
-Message-ID: <20220707221537.atc4b2k7fifhvaej@skbuf>
-References: <20220706192455.56001-1-f.fainelli@gmail.com>
- <20220706203102.6pd5fac7tkyi4idz@skbuf>
- <b503199e-61d2-4d60-99dc-0f71616f7ec9@gmail.com>
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1657232168; x=1688768168;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=BM2zMPU85nbWlOcfoqMc00B4n9YA5LFINlWt3reCGNg=;
+  b=L4f8IQ4jUCiTNRrWWOhJP+m2xminJSU1KLDNH8zD4WtAMmGGXxwZUpX2
+   MBbyX2LKmJ666PszdcsHOYX4GQBASMhqXNdztHO3ypV+W+uupIQVtEIpd
+   voopSYIeIbW0RWz3KOvSinrQqZERzPrqUNYmCx7N466L/OhB7Udy7scwN
+   0=;
+X-IronPort-AV: E=Sophos;i="5.92,253,1650931200"; 
+   d="scan'208";a="215922474"
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-iad-1a-828bd003.us-east-1.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-2101.iad2.amazon.com with ESMTP; 07 Jul 2022 22:15:54 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
+        by email-inbound-relay-iad-1a-828bd003.us-east-1.amazon.com (Postfix) with ESMTPS id A286F81080;
+        Thu,  7 Jul 2022 22:15:50 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.36; Thu, 7 Jul 2022 22:15:49 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.162.50) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.9;
+ Thu, 7 Jul 2022 22:15:46 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     <paul@paul-moore.com>
+CC:     <davem@davemloft.net>, <edumazet@google.com>,
+        <keescook@chromium.org>, <kuba@kernel.org>, <kuni1840@gmail.com>,
+        <kuniyu@amazon.com>, <linux-kernel@vger.kernel.org>,
+        <mcgrof@kernel.org>, <netdev@vger.kernel.org>, <pabeni@redhat.com>,
+        <yzaikin@google.com>
+Subject: Re: [PATCH v2 net 10/12] cipso: Fix data-races around sysctl.
+Date:   Thu, 7 Jul 2022 15:15:37 -0700
+Message-ID: <20220707221537.29461-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <CAHC9VhQMigGi65-j0c9WBN+dWLjjaYqTti-eP99c1RRrQzWj5g@mail.gmail.com>
+References: <CAHC9VhQMigGi65-j0c9WBN+dWLjjaYqTti-eP99c1RRrQzWj5g@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <b503199e-61d2-4d60-99dc-0f71616f7ec9@gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [10.43.162.50]
+X-ClientProxiedBy: EX13D36UWB002.ant.amazon.com (10.43.161.149) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 07, 2022 at 09:53:04AM -0700, Florian Fainelli wrote:
-> > IEEE 802.3 says "The PAUSE function shall be enabled according to Table
-> > 28B–3 only if the highest common denominator is a full duplex technology."
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Thu, 7 Jul 2022 15:15:52 -0400
+> On Wed, Jul 6, 2022 at 7:43 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
+> >
+> > While reading cipso sysctl variables, they can be changed concurrently.
+> > So, we need to add READ_ONCE() to avoid data-races.
+> >
+> > Fixes: 446fda4f2682 ("[NetLabel]: CIPSOv4 engine")
+> > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+> > ---
+> > CC: Paul Moore <paul@paul-moore.com>
 > 
-> Indeed, sorry about that, so I suppose the incremental patch would do, since
-> we do not support changing pause frame auto-negotiation settings in 4.9:
+> Thanks for the patch, this looks good to me.  However, in the future
+> you should probably drop the extra "---" separator (just leave the one
+> before the diffstat below) and move my "Cc:" up above "Fixes:".
 > 
-> diff --git a/drivers/net/dsa/bcm_sf2.c b/drivers/net/dsa/bcm_sf2.c
-> index 562b5eb23d90..f3d61f2bb0f7 100644
-> --- a/drivers/net/dsa/bcm_sf2.c
-> +++ b/drivers/net/dsa/bcm_sf2.c
-> @@ -669,15 +669,18 @@ static void bcm_sf2_sw_adjust_link(struct dsa_switch
-> *ds, int port,
->                 break;
->         }
-> 
-> -       if (phydev->pause)
-> -               rmt_adv = LPA_PAUSE_CAP;
-> -       if (phydev->asym_pause)
-> -               rmt_adv |= LPA_PAUSE_ASYM;
-> -       if (phydev->advertising & ADVERTISED_Pause)
-> -               lcl_adv = ADVERTISE_PAUSE_CAP;
-> -       if (phydev->advertising & ADVERTISED_Asym_Pause)
-> -               lcl_adv |= ADVERTISE_PAUSE_ASYM;
-> -       flowctrl = mii_resolve_flowctrl_fdx(lcl_adv, rmt_adv);
-> +       if (phydev->duplex == DUPLEX_FULL &&
-> +           phydev->autoneg == AUTONEG_ENABLE) {
-> +               if (phydev->pause)
-> +                       rmt_adv = LPA_PAUSE_CAP;
-> +               if (phydev->asym_pause)
-> +                       rmt_adv |= LPA_PAUSE_ASYM;
-> +               if (phydev->advertising & ADVERTISED_Pause)
-> +                       lcl_adv = ADVERTISE_PAUSE_CAP;
-> +               if (phydev->advertising & ADVERTISED_Asym_Pause)
-> +                       lcl_adv |= ADVERTISE_PAUSE_ASYM;
-> +               flowctrl = mii_resolve_flowctrl_fdx(lcl_adv, rmt_adv);
-> +       }
-> 
->         if (phydev->link)
->                 reg |= LINK_STS;
+> Acked-by: Paul Moore <paul@paul-moore.com>
 
-Yes, this looks OK, thank you.
+I was wondering if both CC and Acked-by should stay in each commit, but
+will do so in the next time.
+
+Thank you for taking a look!
