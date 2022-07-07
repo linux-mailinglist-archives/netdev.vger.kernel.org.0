@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BA6556A176
-	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 13:59:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE16156A14F
+	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 13:59:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235675AbiGGLxH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jul 2022 07:53:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56150 "EHLO
+        id S235713AbiGGLxW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jul 2022 07:53:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235478AbiGGLwW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 07:52:22 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 336EB564F7;
-        Thu,  7 Jul 2022 04:52:13 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id d16so19627632wrv.10;
-        Thu, 07 Jul 2022 04:52:13 -0700 (PDT)
+        with ESMTP id S235276AbiGGLwf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 07:52:35 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36ABF564DA;
+        Thu,  7 Jul 2022 04:52:15 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id n10so652731wrc.4;
+        Thu, 07 Jul 2022 04:52:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=+Q6oh46ZsOKHpCjkkX4hQw5IEBsf8Tb27Jc0y1xyQTc=;
-        b=Ywu8iSvo174JQHme/OmVbgoGmzJf9QWePhwcoHLFs3l7yO1vexrhvmo4PmZ8nDs1al
-         lyl0IMJecGInKp9mYAiOQrva9FuKjilMXFU4+trpGJ+gCoySjm/GkUPRTLqOLD+Rg1it
-         YEbx8EKiGcrMOE28wRGvpC0vhv61U1EAHimH/znwTDmZIYlzonrWFvcGSOpBD3OxkZ/Q
-         cUy4lSazTojvOEi89kknXJF0iAirvzXiku3WIoqx88dsc/SK5PhnhmowvIlVBIg2Pefc
-         NyCFsG8HUtCZ0A/aXxyfS94V8zSOQdXotlun4ENRETG1AENXPuKMsrnOKpZJeonbZpdP
-         DhxA==
+        bh=vFwRp/uT2nw+K7pbh3+QCIJXYGEcJpL4pQn1YlUGf+0=;
+        b=T9cR/BLHNHIrK0oOpk/oBRK4rI8ArYU64vwAEqghwNcpfSgKH6rC98l4HfCo1PCwwu
+         q4ryD/ZsZdeYU3/kz8Jo/UY8v9vOvabFv9ckU00vPDD/CTG7eJDTAjs8p8GdzQ5Q2T10
+         HLJ7cKaTXoK6O2bsEl0Yicjr/zkpv1tSOgXwx/x0+zcdUEOW+5LGTxHBgRn/7P+EdldJ
+         ZEocR14wEy1hGcYbjNIcBb5aubRM0ToFV+23hgh4TGNAfAObHjC6drrmI44XpFb40Qya
+         CPhc2orqU4qYiw7+6gibLBUQ7A9YRVqo5NszYU8esw3TySprochpVnbm+Y+jg0ZjALqr
+         0gvQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=+Q6oh46ZsOKHpCjkkX4hQw5IEBsf8Tb27Jc0y1xyQTc=;
-        b=am39h89jEbnbY3EJJGO0oRaMKM8/PN0/+kiAb/znCbe+CROxH2NoAGL5TiDP6muOn7
-         7EWcMZxkwmtd5/KO/4QcZUcVQgb/5wzjOczcvsZCOyN7dy0GKovmOjlOY82lcLAZxNw6
-         SwjW4Ar5kTo4uu5qGXfuDd9DWtdNuqo0wrVIdJ4CnN0gESOuAcu/BWUDAQYIsmtF0G/F
-         EhFqD+4iUX6MuWdA+qHpM8tpyKXV8DlQx5PjxGWvdxQx++ZZwQFlG3pC7JhD9+jnrZhf
-         9lCBMgSSC8xveSQ8Ggexw9crOapXQ75gCAC1fXfu8SNtiGaBgfDXVmtINMfkHTcT7Vu7
-         6MQQ==
-X-Gm-Message-State: AJIora9Jr1u9Qrni2HfQ9jz9sx9qupQAPsf8zHnLtvuXSP7Yq6YJD0Q/
-        YbEI6Z7Jl3IOaI9xcIaHND9CILmdossnG5sZjiY=
-X-Google-Smtp-Source: AGRyM1ufO0wl1R6HSZ1OretAHQkqbcdcwBbR6viluQHhQ+UrLM5pmSHsQtVyr2lMuwmDJz1zWkLzcw==
-X-Received: by 2002:adf:dd87:0:b0:21d:6ec4:26b0 with SMTP id x7-20020adfdd87000000b0021d6ec426b0mr15485925wrl.182.1657194733100;
-        Thu, 07 Jul 2022 04:52:13 -0700 (PDT)
+        bh=vFwRp/uT2nw+K7pbh3+QCIJXYGEcJpL4pQn1YlUGf+0=;
+        b=n1OdnCqYz+1QxkNOYNqRF0ORPlAXKLg9M/GDl+U/P/TyWm7jzgvgSrSzhHILuWeJUL
+         mo/Jgv+fmAUxVbcXphF69XgIUz3LhWbQXAfUz9qudpRZG4ajqKNm5NdjSHEjpg/xLorF
+         WEBHXdXrQ9HdxrO2G707qvNvrLAv6hfsFE22Fm7FZ8CdbBVyVTW+5PcPMKhXDZpTkQg7
+         nJwbTjtWj1ut0IIzfCTx7031VOyfQq1vGfacsHPAt21eca3yNXrRLSq4gXLNRpPrnhHK
+         gIZuXMHBCpjawDTiHpyIMjUsMjUpg5x/MBS6RRsxVYAtO9vDyvi14wCA5tbmIoNFhlMq
+         NQ/Q==
+X-Gm-Message-State: AJIora+8/Ult8QMFq3iI/PCKIhJ6dIqBCxiZdpv/lKl6XVkgvrygaes0
+        Ddt0U4+/WVtI9r4OYDTOndYws4TpH1PW4Ar41pw=
+X-Google-Smtp-Source: AGRyM1tpQzs+FyXhlQEZIBss3MiCgfaUoICvxGnZRvJ0DZpF/zvOORBuOlNM0n4ul3LJkYbLDDF2xg==
+X-Received: by 2002:a5d:584e:0:b0:21c:ea0c:3734 with SMTP id i14-20020a5d584e000000b0021cea0c3734mr42204706wrf.420.1657194734356;
+        Thu, 07 Jul 2022 04:52:14 -0700 (PDT)
 Received: from 127.0.0.1localhost (188.28.125.106.threembb.co.uk. [188.28.125.106])
-        by smtp.gmail.com with ESMTPSA id u2-20020a5d5142000000b0021b966abc19sm37982131wrt.19.2022.07.07.04.52.11
+        by smtp.gmail.com with ESMTPSA id u2-20020a5d5142000000b0021b966abc19sm37982131wrt.19.2022.07.07.04.52.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jul 2022 04:52:12 -0700 (PDT)
+        Thu, 07 Jul 2022 04:52:13 -0700 (PDT)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     io-uring@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
@@ -56,9 +56,9 @@ Cc:     "David S . Miller" <davem@davemloft.net>,
         Willem de Bruijn <willemb@google.com>,
         Jens Axboe <axboe@kernel.dk>, David Ahern <dsahern@kernel.org>,
         kernel-team@fb.com, Pavel Begunkov <asml.silence@gmail.com>
-Subject: [PATCH net-next v4 23/27] io_uring: flush notifiers after sendzc
-Date:   Thu,  7 Jul 2022 12:49:54 +0100
-Message-Id: <983172d39865aa7c6d313694f3bc2ef4f31e83a9.1657194434.git.asml.silence@gmail.com>
+Subject: [PATCH net-next v4 24/27] io_uring: rename IORING_OP_FILES_UPDATE
+Date:   Thu,  7 Jul 2022 12:49:55 +0100
+Message-Id: <ab408ab3cd84dee1f797f2539c60d28aa5c4c418.1657194434.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1657194434.git.asml.silence@gmail.com>
 References: <cover.1657194434.git.asml.silence@gmail.com>
@@ -74,156 +74,146 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Allow to flush notifiers as a part of sendzc request by setting
-IORING_SENDZC_FLUSH flag. When the sendzc request succeedes it will
-flush the used [active] notifier.
+IORING_OP_FILES_UPDATE will be a more generic opcode serving different
+resource types, rename it into IORING_OP_RSRC_UPDATE and add subtype
+handling.
 
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 ---
- include/uapi/linux/io_uring.h |  4 ++++
- io_uring/io_uring.c           | 11 +----------
- io_uring/io_uring.h           | 10 ++++++++++
- io_uring/net.c                |  5 ++++-
- io_uring/notif.c              |  2 +-
- io_uring/notif.h              | 11 +++++++++++
- 6 files changed, 31 insertions(+), 12 deletions(-)
+ include/uapi/linux/io_uring.h | 12 +++++++++++-
+ io_uring/opdef.c              |  9 +++++----
+ io_uring/rsrc.c               | 17 +++++++++++++++--
+ io_uring/rsrc.h               |  4 ++--
+ 4 files changed, 33 insertions(+), 9 deletions(-)
 
 diff --git a/include/uapi/linux/io_uring.h b/include/uapi/linux/io_uring.h
-index 8d050c247d6b..37e0730733f9 100644
+index 37e0730733f9..9e325179a4f8 100644
 --- a/include/uapi/linux/io_uring.h
 +++ b/include/uapi/linux/io_uring.h
-@@ -272,10 +272,14 @@ enum io_uring_op {
-  *
-  * IORING_RECVSEND_FIXED_BUF	Use registered buffers, the index is stored in
-  *				the buf_index field.
-+ *
-+ * IORING_RECVSEND_NOTIF_FLUSH	Flush a notification after a successful
-+ *				successful. Only for zerocopy sends.
-  */
- #define IORING_RECVSEND_POLL_FIRST	(1U << 0)
- #define IORING_RECV_MULTISHOT		(1U << 1)
- #define IORING_RECVSEND_FIXED_BUF	(1U << 2)
-+#define IORING_RECVSEND_NOTIF_FLUSH	(1U << 3)
- 
+@@ -171,7 +171,8 @@ enum io_uring_op {
+ 	IORING_OP_FALLOCATE,
+ 	IORING_OP_OPENAT,
+ 	IORING_OP_CLOSE,
+-	IORING_OP_FILES_UPDATE,
++	IORING_OP_RSRC_UPDATE,
++	IORING_OP_FILES_UPDATE = IORING_OP_RSRC_UPDATE,
+ 	IORING_OP_STATX,
+ 	IORING_OP_READ,
+ 	IORING_OP_WRITE,
+@@ -220,6 +221,7 @@ enum io_uring_op {
+ #define IORING_TIMEOUT_ETIME_SUCCESS	(1U << 5)
+ #define IORING_TIMEOUT_CLOCK_MASK	(IORING_TIMEOUT_BOOTTIME | IORING_TIMEOUT_REALTIME)
+ #define IORING_TIMEOUT_UPDATE_MASK	(IORING_TIMEOUT_UPDATE | IORING_LINK_TIMEOUT_UPDATE)
++
  /*
-  * accept flags stored in sqe->ioprio
-diff --git a/io_uring/io_uring.c b/io_uring/io_uring.c
-index 41ef98a43d32..e4f3a1ede2f4 100644
---- a/io_uring/io_uring.c
-+++ b/io_uring/io_uring.c
-@@ -615,7 +615,7 @@ void __io_put_task(struct task_struct *task, int nr)
- 	put_task_struct_many(task, nr);
- }
+  * sqe->splice_flags
+  * extends splice(2) flags
+@@ -286,6 +288,14 @@ enum io_uring_op {
+  */
+ #define IORING_ACCEPT_MULTISHOT	(1U << 0)
  
--static void io_task_refs_refill(struct io_uring_task *tctx)
-+void io_task_refs_refill(struct io_uring_task *tctx)
- {
- 	unsigned int refill = -tctx->cached_refs + IO_TCTX_REFS_CACHE_NR;
- 
-@@ -624,15 +624,6 @@ static void io_task_refs_refill(struct io_uring_task *tctx)
- 	tctx->cached_refs += refill;
- }
- 
--static inline void io_get_task_refs(int nr)
--{
--	struct io_uring_task *tctx = current->io_uring;
--
--	tctx->cached_refs -= nr;
--	if (unlikely(tctx->cached_refs < 0))
--		io_task_refs_refill(tctx);
--}
--
- static __cold void io_uring_drop_tctx_refs(struct task_struct *task)
- {
- 	struct io_uring_task *tctx = task->io_uring;
-diff --git a/io_uring/io_uring.h b/io_uring/io_uring.h
-index b8c858727dc8..d9f2f5c71481 100644
---- a/io_uring/io_uring.h
-+++ b/io_uring/io_uring.h
-@@ -69,6 +69,7 @@ void io_wq_submit_work(struct io_wq_work *work);
- void io_free_req(struct io_kiocb *req);
- void io_queue_next(struct io_kiocb *req);
- void __io_put_task(struct task_struct *task, int nr);
-+void io_task_refs_refill(struct io_uring_task *tctx);
- 
- bool io_match_task_safe(struct io_kiocb *head, struct task_struct *task,
- 			bool cancel_all);
-@@ -265,4 +266,13 @@ static inline void io_put_task(struct task_struct *task, int nr)
- 		__io_put_task(task, nr);
- }
- 
-+static inline void io_get_task_refs(int nr)
-+{
-+	struct io_uring_task *tctx = current->io_uring;
 +
-+	tctx->cached_refs -= nr;
-+	if (unlikely(tctx->cached_refs < 0))
-+		io_task_refs_refill(tctx);
-+}
++/*
++ * IORING_OP_RSRC_UPDATE flags
++ */
++enum {
++	IORING_RSRC_UPDATE_FILES,
++};
 +
- #endif
-diff --git a/io_uring/net.c b/io_uring/net.c
-index 0259fbbad591..bf9916d5e50c 100644
---- a/io_uring/net.c
-+++ b/io_uring/net.c
-@@ -674,7 +674,8 @@ int io_sendzc_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
- 		return -EINVAL;
+ /*
+  * IORING_OP_MSG_RING command types, stored in sqe->addr
+  */
+diff --git a/io_uring/opdef.c b/io_uring/opdef.c
+index 8419b50c1d3b..0fb347d1ec16 100644
+--- a/io_uring/opdef.c
++++ b/io_uring/opdef.c
+@@ -246,12 +246,13 @@ const struct io_op_def io_op_defs[] = {
+ 		.prep			= io_close_prep,
+ 		.issue			= io_close,
+ 	},
+-	[IORING_OP_FILES_UPDATE] = {
++	[IORING_OP_RSRC_UPDATE] = {
+ 		.audit_skip		= 1,
+ 		.iopoll			= 1,
+-		.name			= "FILES_UPDATE",
+-		.prep			= io_files_update_prep,
+-		.issue			= io_files_update,
++		.name			= "RSRC_UPDATE",
++		.prep			= io_rsrc_update_prep,
++		.issue			= io_rsrc_update,
++		.ioprio			= 1,
+ 	},
+ 	[IORING_OP_STATX] = {
+ 		.audit_skip		= 1,
+diff --git a/io_uring/rsrc.c b/io_uring/rsrc.c
+index 1182cf0ea1fc..98ce8a93a816 100644
+--- a/io_uring/rsrc.c
++++ b/io_uring/rsrc.c
+@@ -21,6 +21,7 @@ struct io_rsrc_update {
+ 	u64				arg;
+ 	u32				nr_args;
+ 	u32				offset;
++	int				type;
+ };
  
- 	zc->flags = READ_ONCE(sqe->ioprio);
--	if (zc->flags & ~(IORING_RECVSEND_POLL_FIRST | IORING_RECVSEND_FIXED_BUF))
-+	if (zc->flags & ~(IORING_RECVSEND_POLL_FIRST |
-+			  IORING_RECVSEND_FIXED_BUF | IORING_RECVSEND_NOTIF_FLUSH))
- 		return -EINVAL;
- 	if (zc->flags & IORING_RECVSEND_FIXED_BUF) {
- 		unsigned idx = READ_ONCE(sqe->buf_index);
-@@ -776,6 +777,8 @@ int io_sendzc(struct io_kiocb *req, unsigned int issue_flags)
- 		return ret == -ERESTARTSYS ? -EINTR : ret;
- 	}
+ static int io_sqe_buffer_register(struct io_ring_ctx *ctx, struct iovec *iov,
+@@ -658,7 +659,7 @@ __cold int io_register_rsrc(struct io_ring_ctx *ctx, void __user *arg,
+ 	return -EINVAL;
+ }
  
-+	if (zc->flags & IORING_RECVSEND_NOTIF_FLUSH)
-+		io_notif_slot_flush_submit(notif_slot, 0);
- 	io_req_set_res(req, ret, 0);
+-int io_files_update_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
++int io_rsrc_update_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
+ {
+ 	struct io_rsrc_update *up = io_kiocb_to_cmd(req);
+ 
+@@ -672,6 +673,7 @@ int io_files_update_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
+ 	if (!up->nr_args)
+ 		return -EINVAL;
+ 	up->arg = READ_ONCE(sqe->addr);
++	up->type = READ_ONCE(sqe->ioprio);
+ 	return 0;
+ }
+ 
+@@ -711,7 +713,7 @@ static int io_files_update_with_index_alloc(struct io_kiocb *req,
+ 	return ret;
+ }
+ 
+-int io_files_update(struct io_kiocb *req, unsigned int issue_flags)
++static int io_files_update(struct io_kiocb *req, unsigned int issue_flags)
+ {
+ 	struct io_rsrc_update *up = io_kiocb_to_cmd(req);
+ 	struct io_ring_ctx *ctx = req->ctx;
+@@ -740,6 +742,17 @@ int io_files_update(struct io_kiocb *req, unsigned int issue_flags)
  	return IOU_OK;
  }
-diff --git a/io_uring/notif.c b/io_uring/notif.c
-index c5179e5c1cd6..a93887451bbb 100644
---- a/io_uring/notif.c
-+++ b/io_uring/notif.c
-@@ -133,7 +133,7 @@ struct io_notif *io_alloc_notif(struct io_ring_ctx *ctx,
- 	return notif;
- }
  
--static void io_notif_slot_flush(struct io_notif_slot *slot)
-+void io_notif_slot_flush(struct io_notif_slot *slot)
- 	__must_hold(&ctx->uring_lock)
- {
- 	struct io_notif *notif = slot->notif;
-diff --git a/io_uring/notif.h b/io_uring/notif.h
-index 00efe164bdc4..6cd73d7b965b 100644
---- a/io_uring/notif.h
-+++ b/io_uring/notif.h
-@@ -54,6 +54,7 @@ int io_notif_register(struct io_ring_ctx *ctx,
- int io_notif_unregister(struct io_ring_ctx *ctx);
- void io_notif_cache_purge(struct io_ring_ctx *ctx);
- 
-+void io_notif_slot_flush(struct io_notif_slot *slot);
- struct io_notif *io_alloc_notif(struct io_ring_ctx *ctx,
- 				struct io_notif_slot *slot);
- 
-@@ -74,3 +75,13 @@ static inline struct io_notif_slot *io_get_notif_slot(struct io_ring_ctx *ctx,
- 	idx = array_index_nospec(idx, ctx->nr_notif_slots);
- 	return &ctx->notif_slots[idx];
- }
-+
-+static inline void io_notif_slot_flush_submit(struct io_notif_slot *slot,
-+					      unsigned int issue_flags)
++int io_rsrc_update(struct io_kiocb *req, unsigned int issue_flags)
 +{
-+	if (!(issue_flags & IO_URING_F_UNLOCKED)) {
-+		slot->notif->task = current;
-+		io_get_task_refs(1);
++	struct io_rsrc_update *up = io_kiocb_to_cmd(req);
++
++	switch (up->type) {
++	case IORING_RSRC_UPDATE_FILES:
++		return io_files_update(req, issue_flags);
 +	}
-+	io_notif_slot_flush(slot);
++	return -EINVAL;
 +}
++
+ int io_queue_rsrc_removal(struct io_rsrc_data *data, unsigned idx,
+ 			  struct io_rsrc_node *node, void *rsrc)
+ {
+diff --git a/io_uring/rsrc.h b/io_uring/rsrc.h
+index af342fd239d0..21813a23215f 100644
+--- a/io_uring/rsrc.h
++++ b/io_uring/rsrc.h
+@@ -167,6 +167,6 @@ static inline u64 *io_get_tag_slot(struct io_rsrc_data *data, unsigned int idx)
+ 	return &data->tags[table_idx][off];
+ }
+ 
+-int io_files_update(struct io_kiocb *req, unsigned int issue_flags);
+-int io_files_update_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe);
++int io_rsrc_update(struct io_kiocb *req, unsigned int issue_flags);
++int io_rsrc_update_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe);
+ #endif
 -- 
 2.36.1
 
