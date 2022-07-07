@@ -2,54 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 342F8569C5E
-	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 10:02:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DD91569C63
+	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 10:03:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232789AbiGGICP convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 7 Jul 2022 04:02:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47458 "EHLO
+        id S231866AbiGGIDA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jul 2022 04:03:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229697AbiGGICM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 04:02:12 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CE6FA2BB34
-        for <netdev@vger.kernel.org>; Thu,  7 Jul 2022 01:02:08 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-209-zgEQLzY5O3my-9MC0q_Epw-1; Thu, 07 Jul 2022 09:02:06 +0100
-X-MC-Unique: zgEQLzY5O3my-9MC0q_Epw-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.36; Thu, 7 Jul 2022 09:02:05 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.036; Thu, 7 Jul 2022 09:02:05 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Jakub Kicinski' <kuba@kernel.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: rawip: delayed and mis-sequenced transmits
-Thread-Topic: rawip: delayed and mis-sequenced transmits
-Thread-Index: AdiRRdPsy1CkLIz2RqC6CNg1z+fBBwAVkGiAAA5PJ1A=
-Date:   Thu, 7 Jul 2022 08:02:05 +0000
-Message-ID: <fd92e34c41b94cd1ac9bfcadd4a94ee6@AcuMS.aculab.com>
-References: <433be56da42f4ab2b7722c1caed3a747@AcuMS.aculab.com>
- <20220706185417.2fcbcdf0@kernel.org>
-In-Reply-To: <20220706185417.2fcbcdf0@kernel.org>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        with ESMTP id S234713AbiGGICx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 04:02:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63F9833A1B
+        for <netdev@vger.kernel.org>; Thu,  7 Jul 2022 01:02:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 25600B81BA2
+        for <netdev@vger.kernel.org>; Thu,  7 Jul 2022 08:02:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53A7BC3411E;
+        Thu,  7 Jul 2022 08:02:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657180968;
+        bh=mkTwEUkN8EwEpQjbJG+R6E161G0v9MVtk5qzw8dNY1M=;
+        h=From:To:Cc:Subject:Date:From;
+        b=awRtEdnBORIluyJ3CPM+VhTD3NvufI0XZT2H9+6+rUZeR3Du4KEX416pkp5SjbVQz
+         NsBccXWvCWSDNGaJF673BaPPaE4yd5Bo1uN2SMdqfbNO/y9ob+/0TLeH6ISGrwIvNM
+         G4xq0SbZAq4DL9O+kqt9aRsN/lgFCLQSBzs4Hj/HxkDrzyGWnguoaI0Ji2kxTTZ59n
+         NiX7QJST+RSX1vVmId3909YAELeOhJzyInvqDEAfnBd8EQLUKN0ckA26hZSIPn1PUB
+         9tlj8Mczh7nD0wUYyD+LYB2VioeW+MJ5CjCGLBfI8yf94FMpTETEtU1shJY/ix6pOL
+         R5gnpT31HVluw==
+From:   Antoine Tenart <atenart@kernel.org>
+To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com
+Cc:     Antoine Tenart <atenart@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH net-next v2] Documentation: add a description for net.core.high_order_alloc_disable
+Date:   Thu,  7 Jul 2022 10:02:45 +0200
+Message-Id: <20220707080245.180525-1-atenart@kernel.org>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -58,38 +51,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jakub Kicinski
-> Sent: 07 July 2022 02:54
-> 
-> On Wed, 6 Jul 2022 15:54:18 +0000 David Laight wrote:
-> > Anyone any ideas before I start digging through the kernel code?
-> 
-> If the qdisc is pfifo_fast and kernel is old there could be races.
-> But I don't think that's likely given you probably run something
-> recent and next packet tx would usually flush the stuck packet.
-> In any case - switching qdisc could be a useful test, also bpftrace
-> is your friend for catching patckets with long sojourn time.
+A description is missing for the net.core.high_order_alloc_disable
+option in admin-guide/sysctl/net.rst ; add it. The above sysctl option
+was introduced by commit ce27ec60648d ("net: add high_order_alloc_disable
+sysctl/static key").
 
-Yes, I forgot to mention the system is running a 5.18-rc6 kernel.
-(I've already got some diagnostics in the receive path.)
+Thanks to Eric for running again the benchmark cited in the above
+commit, showing this knob is now mostly of historical importance.
 
-I'd expect bugs in the qdisc layer to (mostly) keep packets
-in order.
-In this case I'm sending several packets at 20ms intervals that
-overtake the 'stuck' packet.
-So it really must be on a per socket queue.
-Also the 'stuck' packet is sent after the packet that unblocks it.
+Cc: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Antoine Tenart <atenart@kernel.org>
+---
 
-I'm not sure normal tracing will help.
-I'm seeing one mis-sequence every couple of million packets.
-I can add code to the ethernet tx code to call ftrace_stop()
-when the delayed packet gets sent.
-(I've got the same check in the rx path to detect lost packets.)
-That should show where it came from and probably why it got queued.
+Since v1:
+  - Reworked the documentation to mention this knob is now mostly of
+    historical importance after Eric ran again the benchmark cited in
+    the above commit.
 
-	David
+ Documentation/admin-guide/sysctl/net.rst | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+diff --git a/Documentation/admin-guide/sysctl/net.rst b/Documentation/admin-guide/sysctl/net.rst
+index fcd650bdbc7e..805f2281e000 100644
+--- a/Documentation/admin-guide/sysctl/net.rst
++++ b/Documentation/admin-guide/sysctl/net.rst
+@@ -391,6 +391,18 @@ GRO has decided not to coalesce, it is placed on a per-NAPI list. This
+ list is then passed to the stack when the number of segments reaches the
+ gro_normal_batch limit.
+ 
++high_order_alloc_disable
++------------------------
++
++By default the allocator for page frags tries to use high order pages (order-3
++on x86). While the default behavior gives good results in most cases, some users
++might have hit a contention in page allocations/freeing. This was especially
++true on older kernels (< 5.14) when high-order pages were not stored on per-cpu
++lists. This allows to opt-in for order-0 allocation instead but is now mostly of
++historical importance.
++
++Default: 0
++
+ 2. /proc/sys/net/unix - Parameters for Unix domain sockets
+ ----------------------------------------------------------
+ 
+-- 
+2.36.1
 
