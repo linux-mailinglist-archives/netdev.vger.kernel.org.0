@@ -2,244 +2,566 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 48DA256A855
-	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 18:39:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C48F256A868
+	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 18:41:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236431AbiGGQjS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jul 2022 12:39:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46238 "EHLO
+        id S236257AbiGGQlX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jul 2022 12:41:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236436AbiGGQiq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 12:38:46 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC7E6140DB
-        for <netdev@vger.kernel.org>; Thu,  7 Jul 2022 09:38:36 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id eq6so23830970edb.6
-        for <netdev@vger.kernel.org>; Thu, 07 Jul 2022 09:38:36 -0700 (PDT)
+        with ESMTP id S236360AbiGGQlN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 12:41:13 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED64857225
+        for <netdev@vger.kernel.org>; Thu,  7 Jul 2022 09:41:11 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id o4so27128886wrh.3
+        for <netdev@vger.kernel.org>; Thu, 07 Jul 2022 09:41:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=linaro.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=NP3TfXivDzPg8bQeGjHrAWUB1mJTjySus60GzDg+eos=;
-        b=aY1eU7eh5VGYJMMV7kYcUpZPhcNUCB4Xo66u1UcF371ro2hh/DKUNUTPltyCDVJ4CP
-         EQuXZTUo/NcUIVXkw+Saqp+oZ3Ie15ZsTuP9F4Kmtyqle4OS46ZNd3IHcgdSWCVdBOhY
-         K9nm9Cc1D1o9B2ohPO0uVxdpnDbgphMgEKM/Ns21xpxWa0uYN4DDfM4QWAVWfxTysvgL
-         dyuH82vSfbaQ4/+qHbHiwoomUMudko1BhQgu7WFRA7DtKhYI8lItHuOvznhTFqd2OVYa
-         ECljs9pPAVErICSPpTbXYPjGEIc1aXJiWwoOoCPMcfm8mdOm9P8r/e1kudUs40FbOBSA
-         VTOg==
+        bh=ItGO6NK/3MSi92BUXFAqSiv2+WBgdHs6NhvmL5uKAxg=;
+        b=Grum5TjDc5XXzjyLI8WYn9T2YjWxesuA9fJLo56EUgmtGUhwyNGzcaVNXsj0rf8Zzz
+         QVW20O4duwR92ubS8ogjuyfKiyTQRLKCtMaeL0r45QUQiJD6M2kSPoj/uDqerA847SBH
+         8TEvfA2Rntr5SA7JCIpIWJzehG0A69GVqbDiXGir9RYt+6fl+ky4v+PUpMwqbQQH0XyB
+         Q3EFZ7Khilojz8e6K2ANbxpWlt7DC2yTjs+IckKF/J+fVyCSmRyeOgu7lCrCTZTTy1ul
+         wH11KyaE5sT+YYQnasuutwyD+0A/5Gy0F0qnRYxSbeE/zLenTSkbG66V9/zwyhrEu1tY
+         p4zw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=NP3TfXivDzPg8bQeGjHrAWUB1mJTjySus60GzDg+eos=;
-        b=EJOI5mCGO53UyVfeMGKL/3wF+La8aARs/mzyYwDXA8QyUjJkDd2dcVO78QuJyfsA+5
-         rgrtEi3cYqcUXIGwY5AkCIqLKh70MqDFA/6mxrMDvBADJAOEAEzNf0OrH4bBOwdD/mDI
-         8rP1NLcOH0Ym+eeYepEPNrrZe/IoRtAfUxg4VIKtIOoZifhVYZ9x6a4T4j/IvU8z6fFS
-         KEQMbpXhDFbCQb3YYV/442JEk7Ke6Q/dRmeULtOdn+Wf2EBBUBIZh2+cZ4imWfS2J7qm
-         5bj+f/1uamVsu0YZ2y2irxQNzpq+Il78WeCMQBTHp/6A1LI5Q+WwmMHZc9i60Hu/1VRi
-         DP5w==
-X-Gm-Message-State: AJIora9bWuWEH3xqUB5JAf9NMmAW/+N3mIdjHo/9VZM0cpeGtOeBjbkn
-        wJKSpoV2DOt6jUlo+E+rYxc=
-X-Google-Smtp-Source: AGRyM1vEb9oDaoNVrcyI2T+8spDg7aBx31ZYk8nGod2D881rK5sNRdQ35rcoAP1DFKu1Ipw2zgUvfQ==
-X-Received: by 2002:a05:6402:3590:b0:43a:8156:e842 with SMTP id y16-20020a056402359000b0043a8156e842mr16654455edc.219.1657211915271;
-        Thu, 07 Jul 2022 09:38:35 -0700 (PDT)
-Received: from skbuf ([188.25.231.143])
-        by smtp.gmail.com with ESMTPSA id p19-20020aa7cc93000000b0042bdb6a3602sm27900357edt.69.2022.07.07.09.38.33
+        bh=ItGO6NK/3MSi92BUXFAqSiv2+WBgdHs6NhvmL5uKAxg=;
+        b=i6XkyKWQB+pHck4/slgs47Onu5/ZlB6ZFHz/4PsjVCC/lgyLK8i5CF92Pb0hDefhC8
+         ERwdJvIp0GmUSNIKRG2sGjI/XVBoI4VGue95QyVCo9+wYBl+zwZ7/go78opUSy8E1CE4
+         CFGnqvOqenrbZLiUwflIdF+LgvYWKqKwVtydG1WUNGciJum7iqJtE2njR3iGNp5cPcTX
+         pH5+/LKflqZSmpzbcgoErCCBAgESVQt7GflcjZeuNIeumhLe6y+v2/srXm2YHoz6E2e8
+         uSQPLjNFaEf7debN/YmyJg0Fk9dzkZwH9rcwXXFYzColLsXVPQQru2Z9EFUWnhwbJgRY
+         sVTw==
+X-Gm-Message-State: AJIora+H7+ZUHLUGY8S+BXYuAYpRnX0dyJPsJ5hq/zpZyhR8+4TbvC0Z
+        e+794XAo3ESV27Eu11rIwcHLTA==
+X-Google-Smtp-Source: AGRyM1vwpgnCt8LTWG4ialf7PResaLtUvur0iNabS00uU6w0bA5OXHU33CjVR+m90xKkeThyvm9TWw==
+X-Received: by 2002:a5d:4201:0:b0:21d:7b63:1b43 with SMTP id n1-20020a5d4201000000b0021d7b631b43mr9705389wrq.225.1657212070375;
+        Thu, 07 Jul 2022 09:41:10 -0700 (PDT)
+Received: from larix (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net. [82.27.106.168])
+        by smtp.gmail.com with ESMTPSA id c8-20020a05600c0a4800b003a02f957245sm26967792wmq.26.2022.07.07.09.41.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jul 2022 09:38:34 -0700 (PDT)
-Date:   Thu, 7 Jul 2022 19:38:31 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Alvin __ipraga <alsi@bang-olufsen.dk>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
+        Thu, 07 Jul 2022 09:41:10 -0700 (PDT)
+Date:   Thu, 7 Jul 2022 17:41:07 +0100
+From:   Jean-Philippe Brucker <jean-philippe@linaro.org>
+To:     Xu Kuohai <xukuohai@huawei.com>
+Cc:     bpf@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Mark Rutland <mark.rutland@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Zi Shen Lim <zlim.lnx@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H . Peter Anvin" <hpa@zytor.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        UNGLinuxDriver@microchip.com,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>
-Subject: Re: [PATCH RFC net-next 5/5] net: dsa: always use phylink for CPU
- and DSA ports
-Message-ID: <20220707163831.cjj54a6ys5bceb22@skbuf>
-References: <YsQIjC7UpcGWJovx@shell.armlinux.org.uk>
- <E1o8fA7-0059aO-K8@rmk-PC.armlinux.org.uk>
- <20220706102621.hfubvn3wa6wlw735@skbuf>
- <YsW3KSeeQBiWQOz/@shell.armlinux.org.uk>
- <Ysaw56lKTtKMh84b@shell.armlinux.org.uk>
- <20220707152727.foxrd4gvqg3zb6il@skbuf>
- <YscAPP7mF3KEE1/p@shell.armlinux.org.uk>
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        James Morse <james.morse@arm.com>,
+        Hou Tao <houtao1@huawei.com>,
+        Jason Wang <wangborong@cdjrlc.com>
+Subject: Re: [PATCH bpf-next v6 3/4] bpf, arm64: Impelment
+ bpf_arch_text_poke() for arm64
+Message-ID: <YscMo+jlif44bxBP@larix>
+References: <20220625161255.547944-1-xukuohai@huawei.com>
+ <20220625161255.547944-4-xukuohai@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YscAPP7mF3KEE1/p@shell.armlinux.org.uk>
+In-Reply-To: <20220625161255.547944-4-xukuohai@huawei.com>
+X-TUID: RY2JuS/AgKUo
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 07, 2022 at 04:48:12PM +0100, Russell King (Oracle) wrote:
-> On Thu, Jul 07, 2022 at 06:27:27PM +0300, Vladimir Oltean wrote:
-> > On Thu, Jul 07, 2022 at 11:09:43AM +0100, Russell King (Oracle) wrote:
-> > > On Wed, Jul 06, 2022 at 05:24:09PM +0100, Russell King (Oracle) wrote:
-> > > > On Wed, Jul 06, 2022 at 01:26:21PM +0300, Vladimir Oltean wrote:
-> > > > > Can we please limit phylink_set_max_link_speed() to just the CPU ports
-> > > > > where a fixed-link property is also missing, not just a phy-handle?
-> > > > > Although to be entirely correct, we can also have MLO_AN_INBAND, which
-> > > > > wouldn't be covered by these 2 checks and would still represent a valid
-> > > > > DT binding.
-> > > > 
-> > > > phylink_set_max_fixed_link() already excludes itself:
-> > > > 
-> > > >         if (pl->cfg_link_an_mode != MLO_AN_PHY || pl->phydev || pl->sfp_bus)
-> >                                                       ~~~~~~~~~~
-> > 
-> > If not NULL, this is an SFP PHY, right? In other words, it's supposed to protect from
-> > phylink_sfp_connect_phy() - code involuntarily triggered by phylink_create() ->
-> > phylink_register_sfp() - and not from calls to phylink_{,fwnode_}connect_phy()
-> > that were initiated by the phylink user between phylink_create() and
-> > phylink_set_max_fixed_link(), correct? Those are specified as invalid in the
-> > kerneldoc and that's about it - that's not what the checking is for, correct?
+On Sat, Jun 25, 2022 at 12:12:54PM -0400, Xu Kuohai wrote:
+> Impelment bpf_arch_text_poke() for arm64, so bpf prog or bpf trampoline
+
+Implement
+
+> diff --git a/arch/arm64/net/bpf_jit_comp.c b/arch/arm64/net/bpf_jit_comp.c
+> index f08a4447d363..e0e9c705a2e4 100644
+> --- a/arch/arm64/net/bpf_jit_comp.c
+> +++ b/arch/arm64/net/bpf_jit_comp.c
+> @@ -9,6 +9,7 @@
+>  
+>  #include <linux/bitfield.h>
+>  #include <linux/bpf.h>
+> +#include <linux/memory.h>
+
+nit: keep sorted
+
+>  #include <linux/filter.h>
+>  #include <linux/printk.h>
+>  #include <linux/slab.h>
+> @@ -18,6 +19,7 @@
+>  #include <asm/cacheflush.h>
+>  #include <asm/debug-monitors.h>
+>  #include <asm/insn.h>
+> +#include <asm/patching.h>
+>  #include <asm/set_memory.h>
+>  
+>  #include "bpf_jit.h"
+> @@ -78,6 +80,15 @@ struct jit_ctx {
+>  	int fpb_offset;
+>  };
+>  
+> +struct bpf_plt {
+> +	u32 insn_ldr; /* load target */
+> +	u32 insn_br;  /* branch to target */
+> +	u64 target;   /* target value */
+> +} __packed;
+
+don't need __packed
+
+> +
+> +#define PLT_TARGET_SIZE   sizeof_field(struct bpf_plt, target)
+> +#define PLT_TARGET_OFFSET offsetof(struct bpf_plt, target)
+> +
+>  static inline void emit(const u32 insn, struct jit_ctx *ctx)
+>  {
+>  	if (ctx->image != NULL)
+> @@ -140,6 +151,12 @@ static inline void emit_a64_mov_i64(const int reg, const u64 val,
+>  	}
+>  }
+>  
+> +static inline void emit_bti(u32 insn, struct jit_ctx *ctx)
+> +{
+> +	if (IS_ENABLED(CONFIG_ARM64_BTI_KERNEL))
+> +		emit(insn, ctx);
+> +}
+> +
+>  /*
+>   * Kernel addresses in the vmalloc space use at most 48 bits, and the
+>   * remaining bits are guaranteed to be 0x1. So we can compose the address
+> @@ -235,13 +252,30 @@ static bool is_lsi_offset(int offset, int scale)
+>  	return true;
+>  }
+>  
+> +/* generated prologue:
+> + *      bti c // if CONFIG_ARM64_BTI_KERNEL
+> + *      mov x9, lr
+> + *      nop  // POKE_OFFSET
+> + *      paciasp // if CONFIG_ARM64_PTR_AUTH_KERNEL
+
+Any reason for the change regarding BTI and pointer auth?  We used to put
+'bti c' at the function entry if (BTI && !PA), or 'paciasp' if (BTI && PA),
+because 'paciasp' is an implicit BTI.
+
+> + *      stp x29, lr, [sp, #-16]!
+> + *      mov x29, sp
+> + *      stp x19, x20, [sp, #-16]!
+> + *      stp x21, x22, [sp, #-16]!
+> + *      stp x25, x26, [sp, #-16]!
+> + *      stp x27, x28, [sp, #-16]!
+> + *      mov x25, sp
+> + *      mov tcc, #0
+> + *      // PROLOGUE_OFFSET
+> + */
+> +
+> +#define BTI_INSNS (IS_ENABLED(CONFIG_ARM64_BTI_KERNEL) ? 1 : 0)
+> +#define PAC_INSNS (IS_ENABLED(CONFIG_ARM64_PTR_AUTH_KERNEL) ? 1 : 0)
+> +
+> +/* Offset of nop instruction in bpf prog entry to be poked */
+> +#define POKE_OFFSET (BTI_INSNS + 1)
+> +
+>  /* Tail call offset to jump into */
+> -#if IS_ENABLED(CONFIG_ARM64_BTI_KERNEL) || \
+> -	IS_ENABLED(CONFIG_ARM64_PTR_AUTH_KERNEL)
+> -#define PROLOGUE_OFFSET 9
+> -#else
+> -#define PROLOGUE_OFFSET 8
+> -#endif
+> +#define PROLOGUE_OFFSET (BTI_INSNS + 2 + PAC_INSNS + 8)
+>  
+>  static int build_prologue(struct jit_ctx *ctx, bool ebpf_from_cbpf)
+>  {
+> @@ -280,12 +314,14 @@ static int build_prologue(struct jit_ctx *ctx, bool ebpf_from_cbpf)
+>  	 *
+>  	 */
+>  
+> +	emit_bti(A64_BTI_C, ctx);
+> +
+> +	emit(A64_MOV(1, A64_R(9), A64_LR), ctx);
+> +	emit(A64_NOP, ctx);
+> +
+>  	/* Sign lr */
+>  	if (IS_ENABLED(CONFIG_ARM64_PTR_AUTH_KERNEL))
+>  		emit(A64_PACIASP, ctx);
+> -	/* BTI landing pad */
+> -	else if (IS_ENABLED(CONFIG_ARM64_BTI_KERNEL))
+> -		emit(A64_BTI_C, ctx);
+>  
+>  	/* Save FP and LR registers to stay align with ARM64 AAPCS */
+>  	emit(A64_PUSH(A64_FP, A64_LR, A64_SP), ctx);
+> @@ -312,8 +348,7 @@ static int build_prologue(struct jit_ctx *ctx, bool ebpf_from_cbpf)
+>  		}
+>  
+>  		/* BTI landing pad for the tail call, done with a BR */
+> -		if (IS_ENABLED(CONFIG_ARM64_BTI_KERNEL))
+> -			emit(A64_BTI_J, ctx);
+> +		emit_bti(A64_BTI_J, ctx);
+>  	}
+>  
+>  	emit(A64_SUB_I(1, fpb, fp, ctx->fpb_offset), ctx);
+> @@ -557,6 +592,53 @@ static int emit_ll_sc_atomic(const struct bpf_insn *insn, struct jit_ctx *ctx)
+>  	return 0;
+>  }
+>  
+> +void dummy_tramp(void);
+> +
+> +asm (
+> +"	.pushsection .text, \"ax\", @progbits\n"
+> +"	.type dummy_tramp, %function\n"
+> +"dummy_tramp:"
+> +#if IS_ENABLED(CONFIG_ARM64_BTI_KERNEL)
+> +"	bti j\n" /* dummy_tramp is called via "br x10" */
+> +#endif
+> +"	mov x10, lr\n"
+> +"	mov lr, x9\n"
+> +"	ret x10\n"
+> +"	.size dummy_tramp, .-dummy_tramp\n"
+> +"	.popsection\n"
+> +);
+> +
+> +/* build a plt initialized like this:
+> + *
+> + * plt:
+> + *      ldr tmp, target
+> + *      br tmp
+> + * target:
+> + *      .quad dummy_tramp
+> + *
+> + * when a long jump trampoline is attached, target is filled with the
+> + * trampoline address, and when the trampoine is removed, target is
+
+s/trampoine/trampoline/
+
+> + * restored to dummy_tramp address.
+> + */
+> +static void build_plt(struct jit_ctx *ctx, bool write_target)
+> +{
+> +	const u8 tmp = bpf2a64[TMP_REG_1];
+> +	struct bpf_plt *plt = NULL;
+> +
+> +	/* make sure target is 64-bit aligend */
+
+aligned
+
+> +	if ((ctx->idx + PLT_TARGET_OFFSET / AARCH64_INSN_SIZE) % 2)
+> +		emit(A64_NOP, ctx);
+> +
+> +	plt = (struct bpf_plt *)(ctx->image + ctx->idx);
+> +	/* plt is called via bl, no BTI needed here */
+> +	emit(A64_LDR64LIT(tmp, 2 * AARCH64_INSN_SIZE), ctx);
+> +	emit(A64_BR(tmp), ctx);
+> +
+> +	/* false write_target means target space is not allocated yet */
+> +	if (write_target)
+
+How about "if (ctx->image)", to be consistent
+
+> +		plt->target = (u64)&dummy_tramp;
+> +}
+> +
+>  static void build_epilogue(struct jit_ctx *ctx)
+>  {
+>  	const u8 r0 = bpf2a64[BPF_REG_0];
+> @@ -1356,7 +1438,7 @@ struct arm64_jit_data {
+>  
+>  struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+>  {
+> -	int image_size, prog_size, extable_size;
+> +	int image_size, prog_size, extable_size, extable_align, extable_offset;
+>  	struct bpf_prog *tmp, *orig_prog = prog;
+>  	struct bpf_binary_header *header;
+>  	struct arm64_jit_data *jit_data;
+> @@ -1426,13 +1508,17 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+>  
+>  	ctx.epilogue_offset = ctx.idx;
+>  	build_epilogue(&ctx);
+> +	build_plt(&ctx, false);
+>  
+> +	extable_align = __alignof__(struct exception_table_entry);
+>  	extable_size = prog->aux->num_exentries *
+>  		sizeof(struct exception_table_entry);
+>  
+>  	/* Now we know the actual image size. */
+>  	prog_size = sizeof(u32) * ctx.idx;
+> -	image_size = prog_size + extable_size;
+> +	/* also allocate space for plt target */
+> +	extable_offset = round_up(prog_size + PLT_TARGET_SIZE, extable_align);
+> +	image_size = extable_offset + extable_size;
+>  	header = bpf_jit_binary_alloc(image_size, &image_ptr,
+>  				      sizeof(u32), jit_fill_hole);
+>  	if (header == NULL) {
+> @@ -1444,7 +1530,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+>  
+>  	ctx.image = (__le32 *)image_ptr;
+>  	if (extable_size)
+> -		prog->aux->extable = (void *)image_ptr + prog_size;
+> +		prog->aux->extable = (void *)image_ptr + extable_offset;
+>  skip_init_ctx:
+>  	ctx.idx = 0;
+>  	ctx.exentry_idx = 0;
+> @@ -1458,6 +1544,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+>  	}
+>  
+>  	build_epilogue(&ctx);
+> +	build_plt(&ctx, true);
+>  
+>  	/* 3. Extra pass to validate JITed code. */
+>  	if (validate_code(&ctx)) {
+> @@ -1537,3 +1624,218 @@ bool bpf_jit_supports_subprog_tailcalls(void)
+>  {
+>  	return true;
+>  }
+> +
+> +static bool is_long_jump(void *ip, void *target)
+> +{
+> +	long offset;
+> +
+> +	/* NULL target means this is a NOP */
+> +	if (!target)
+> +		return false;
+> +
+> +	offset = (long)target - (long)ip;
+> +	return offset < -SZ_128M || offset >= SZ_128M;
+> +}
+> +
+> +static int gen_branch_or_nop(enum aarch64_insn_branch_type type, void *ip,
+> +			     void *addr, void *plt, u32 *insn)
+> +{
+> +	void *target;
+> +
+> +	if (!addr) {
+> +		*insn = aarch64_insn_gen_nop();
+> +		return 0;
+> +	}
+> +
+> +	if (is_long_jump(ip, addr))
+> +		target = plt;
+> +	else
+> +		target = addr;
+> +
+> +	*insn = aarch64_insn_gen_branch_imm((unsigned long)ip,
+> +					    (unsigned long)target,
+> +					    type);
+> +
+> +	return *insn != AARCH64_BREAK_FAULT ? 0 : -EFAULT;
+> +}
+> +
+> +/* Replace the branch instruction from @ip to @old_addr in a bpf prog or a bpf
+> + * trampoline with the branch instruction from @ip to @new_addr. If @old_addr
+> + * or @new_addr is NULL, the old or new instruction is NOP.
+> + *
+> + * When @ip is the bpf prog entry, a bpf trampoline is being attached or
+> + * detached. Since bpf trampoline and bpf prog are allocated separately with
+> + * vmalloc, the address distance may exceed 128MB, the maximum branch range.
+> + * So long jump should be handled.
+> + *
+> + * When a bpf prog is constructed, a plt pointing to empty trampoline
+> + * dummy_tramp is placed at the end:
+> + *
+> + *      bpf_prog:
+> + *              mov x9, lr
+> + *              nop // patchsite
+> + *              ...
+> + *              ret
+> + *
+> + *      plt:
+> + *              ldr x10, target
+> + *              br x10
+> + *      target:
+> + *              .quad dummy_tramp // plt target
+> + *
+> + * This is also the state when no trampoline is attached.
+> + *
+> + * When a short-jump bpf trampoline is attached, the patchsite is patched
+> + * to a bl instruction to the trampoline directly:
+> + *
+> + *      bpf_prog:
+> + *              mov x9, lr
+> + *              bl <short-jump bpf trampoline address> // patchsite
+> + *              ...
+> + *              ret
+> + *
+> + *      plt:
+> + *              ldr x10, target
+> + *              br x10
+> + *      target:
+> + *              .quad dummy_tramp // plt target
+> + *
+> + * When a long-jump bpf trampoline is attached, the plt target is filled with
+> + * the trampoline address and the patchsite is patched to a bl instruction to
+> + * the plt:
+> + *
+> + *      bpf_prog:
+> + *              mov x9, lr
+> + *              bl plt // patchsite
+> + *              ...
+> + *              ret
+> + *
+> + *      plt:
+> + *              ldr x10, target
+> + *              br x10
+> + *      target:
+> + *              .quad <long-jump bpf trampoline address> // plt target
+> + *
+> + * The dummy_tramp is used to prevent another CPU from jumping to unknown
+> + * locations during the patching process, making the patching process easier.
+> + */
+> +int bpf_arch_text_poke(void *ip, enum bpf_text_poke_type poke_type,
+> +		       void *old_addr, void *new_addr)
+> +{
+> +	int ret;
+> +	u32 old_insn;
+> +	u32 new_insn;
+> +	u32 replaced;
+> +	struct bpf_plt *plt = NULL;
+> +	unsigned long size = 0UL;
+> +	unsigned long offset = ~0UL;
+> +	enum aarch64_insn_branch_type branch_type;
+> +	char namebuf[KSYM_NAME_LEN];
+> +	void *image = NULL;
+> +	u64 plt_target = 0ULL;
+> +	bool poking_bpf_entry;
+> +
+> +	if (!__bpf_address_lookup((unsigned long)ip, &size, &offset, namebuf))
+> +		/* Only poking bpf text is supported. Since kernel function
+> +		 * entry is set up by ftrace, we reply on ftrace to poke kernel
+> +		 * functions.
+> +		 */
+> +		return -ENOTSUPP;
+> +
+> +	image = ip - offset;
+> +	/* zero offset means we're poking bpf prog entry */
+> +	poking_bpf_entry = (offset == 0UL);
+> +
+> +	/* bpf prog entry, find plt and the real patchsite */
+> +	if (poking_bpf_entry) {
+> +		/* plt locates at the end of bpf prog */
+> +		plt = image + size - PLT_TARGET_OFFSET;
+> +
+> +		/* skip to the nop instruction in bpf prog entry:
+> +		 * bti c // if BTI enabled
+> +		 * mov x9, x30
+> +		 * nop
+> +		 */
+> +		ip = image + POKE_OFFSET * AARCH64_INSN_SIZE;
+> +	}
+> +
+> +	/* long jump is only possible at bpf prog entry */
+> +	if (WARN_ON((is_long_jump(ip, new_addr) || is_long_jump(ip, old_addr)) &&
+> +		    !poking_bpf_entry))
+> +		return -EINVAL;
+> +
+> +	if (poke_type == BPF_MOD_CALL)
+> +		branch_type = AARCH64_INSN_BRANCH_LINK;
+> +	else
+> +		branch_type = AARCH64_INSN_BRANCH_NOLINK;
+> +
+> +	if (gen_branch_or_nop(branch_type, ip, old_addr, plt, &old_insn) < 0)
+> +		return -EFAULT;
+> +
+> +	if (gen_branch_or_nop(branch_type, ip, new_addr, plt, &new_insn) < 0)
+> +		return -EFAULT;
+> +
+> +	if (is_long_jump(ip, new_addr))
+> +		plt_target = (u64)new_addr;
+> +	else if (is_long_jump(ip, old_addr))
+> +		/* if the old target is a long jump and the new target is not,
+> +		 * restore the plt target to dummy_tramp, so there is always a
+> +		 * legal and harmless address stored in plt target, and we'll
+> +		 * never jump from plt to an unknown place.
+> +		 */
+> +		plt_target = (u64)&dummy_tramp;
+> +
+> +	if (plt_target) {
+> +		/* non-zero plt_target indicates we're patching a bpf prog,
+> +		 * which is read only.
+> +		 */
+> +		if (set_memory_rw(PAGE_MASK & ((uintptr_t)&plt->target), 1))
+> +			return -EFAULT;
+> +		WRITE_ONCE(plt->target, plt_target);
+> +		set_memory_ro(PAGE_MASK & ((uintptr_t)&plt->target), 1);
+> +		/* since plt target points to either the new trmapoline
+
+trampoline
+
+> +		 * or dummy_tramp, even if aother CPU reads the old plt
+
+another
+
+Thanks,
+Jean
+
+> +		 * target value before fetching the bl instruction to plt,
+> +		 * it will be brought back by dummy_tramp, so no barrier is
+> +		 * required here.
+> +		 */
+> +	}
+> +
+> +	/* if the old target and the new target are both long jumps, no
+> +	 * patching is required
+> +	 */
+> +	if (old_insn == new_insn)
+> +		return 0;
+> +
+> +	mutex_lock(&text_mutex);
+> +	if (aarch64_insn_read(ip, &replaced)) {
+> +		ret = -EFAULT;
+> +		goto out;
+> +	}
+> +
+> +	if (replaced != old_insn) {
+> +		ret = -EFAULT;
+> +		goto out;
+> +	}
+> +
+> +	/* We call aarch64_insn_patch_text_nosync() to replace instruction
+> +	 * atomically, so no other CPUs will fetch a half-new and half-old
+> +	 * instruction. But there is chance that another CPU executes the
+> +	 * old instruction after the patching operation finishes (e.g.,
+> +	 * pipeline not flushed, or icache not synchronized yet).
+> +	 *
+> +	 * 1. when a new trampoline is attached, it is not a problem for
+> +	 *    different CPUs to jump to different trampolines temporarily.
+> +	 *
+> +	 * 2. when an old trampoline is freed, we should wait for all other
+> +	 *    CPUs to exit the trampoline and make sure the trampoline is no
+> +	 *    longer reachable, since bpf_tramp_image_put() function already
+> +	 *    uses percpu_ref and task rcu to do the sync, no need to call
+> +	 *    the sync version here, see bpf_tramp_image_put() for details.
+> +	 */
+> +	ret = aarch64_insn_patch_text_nosync(ip, new_insn);
+> +out:
+> +	mutex_unlock(&text_mutex);
+> +
+> +	return ret;
+> +}
+> -- 
+> 2.30.2
 > 
-> No, it's not to do with sfps at all, but to do with enforcing the
-> pre-conditions for the function - that entire line is checking that
-> (a) we are in a sane state to be called, and (b) there is no
-> configuration initialisation beyond the default done by
-> phylink_create() - in other words, there is no in-band or fixed-link
-> specified.
-> 
-> Let's go through this step by step.
-> 
-> 1. pl->cfg_link_an_mode != MLO_AN_PHY
->    The default value for cfg_link_an_mode is MLO_AN_PHY. If it's
->    anything other than that, then a fixed-link or in-band mode has
->    been specified, and we don't want to override that. So this call
->    needs to fail.
-
-Thanks for the explanation.
-
-Yes, I noticed that phylink_set_max_fixed_link() relies on the fact that
-pl->cfg_link_an_mode has the unset value of 0, which coincidentally is
-MLO_AN_PHY.
-
-> 2. pl->phydev
->    If a PHY has been attached, then the pre-condition for calling this
->    function immediately after phylink_create() has been violated,
->    because the only way it can be non-NULL is if someone's called one of
->    the phylink functions that connects a PHY. Note: SFPs will not set
->    their PHY here, because, for them to discover that there's a PHY, the
->    network interface needs to be up, and it will never be up here... but
->    in any case...
-
-Ok, so this does check for a precondition that the caller did something
-correctly. But it doesn't (and can't) check that all preconditions and
-postconditions are satisfied. That's one of my irks, why bother checking
-the easy to satisfy precondition (which depends on the code organization,
-static information, easy to check), and give up on the hard one (which
-depends on the device tree blob, dynamic information, not so easy).
-
-> > So this is what I don't understand. If we've called phylink_set_max_fixed_link()
-> > we've changed pl->cfg_link_an_mode to MLO_AN_FIXED and this will
-> > silently break future calls to phylink_{,fwnode_}connect_phy(), so DSA
-> > predicts if it's going to call either of those connect_phy() functions,
-> > and calls phylink_set_max_fixed_link() only if it won't. Right?
-> > 
-> > You've structured the checks in this "distributed" way because phylink
-> > can't really predict whether phylink_{,fwnode_}connect_phy() will be
-> > called after phylink_set_max_fixed_link(), right? I mean, it can
-> > probably predict the fwnode_ variant, but not phylink_connect_phy, and
-> > this is why it is up to the caller to decide when to call and when not to.
-> 
-> phylink has no idea whether phylink_fwnode_connect_phy() will be called
-> with the same fwnode as phylink_create(), so it really can't make any
-> assumptions about whether there will be a PHY or not.
-
-This is interesting. Is there a use case for passing a different
-fwnode_handle to the 2 functions?
-
-> > It should maybe also
-> > say that this function shouldn't be called if phylink_{,fwnode_}connect_phy()
-> > is going to be called later.
-> 
-> It's already a precondition that phylink_{,fwnode_}connect_phy() fail if
-> we're in fixed-link mode (because PHYs have never been supported when in
-> fixed-link mode - if one remembers, the old fixed-link code used to
-> provide its own emulation of a PHY to make fixed-links work.) So PHYs
-> and fixed-links have always been mutually exclusive before phylink, and
-> continue to be so with phylink.
-
-Define "fail" exactly, because if I look in phylink_fwnode_phy_connect(), I see:
-
-	/* Fixed links and 802.3z are handled without needing a PHY */
-	if (pl->cfg_link_an_mode == MLO_AN_FIXED ||
-	    (pl->cfg_link_an_mode == MLO_AN_INBAND &&
-	     phy_interface_mode_is_8023z(pl->link_interface)))
-		return 0; <- does this count as failure?
-
-This is why dsa_port_phylink_register() calls phylink_of_phy_connect()
-without checking whether it has a fixed-link or a PHY, because it
-doesn't fail even if it doesn't do anything.
-
-In fact I've wanted to make a correction to my previous phrasing that
-"this function shouldn't be called if phylink_{,fwnode_}connect_phy() is
-going to be called later". The correction is "... with a phy-handle".
-
-> > Can phylink absorb all this logic, and automatically call phylink_set_max_fixed_link()
-> > based on the following?
-> > 
-> > (1) struct phylink_config gets extended with a bool fallback_max_fixed_link.
-> > (2) DSA CPU and DSA ports set this to true in dsa_port_phylink_register().
-> > (3) phylink_set_max_fixed_link() is hooked into this -ENODEV error
-> >     condition from phylink_fwnode_phy_connect():
-> > 
-> > 	phy_fwnode = fwnode_get_phy_node(fwnode);
-> > 	if (IS_ERR(phy_fwnode)) {
-> > 		if (pl->cfg_link_an_mode == MLO_AN_PHY)
-> > 			return -ENODEV; <- here
-> > 		return 0;
-> > 	}
-> 
-> My question in response would be - why should this DSA specific behaviour
-> be handled completely internally within phylink, when it's a DSA
-> specific behaviour? Why do we need boolean flags for this?
-
-Because the end result will be simpler if we respect the separation of
-concerns that continues to exist, and it's still phylink's business to
-say what is and isn't valid. DSA still isn't aware of the bindings
-required by phylink, it just passes its fwnode to it. Practically
-speaking, I wouldn't be scratching my head as to why we're checking for
-half the prerequisites of phylink_set_max_fixed_link() in one place and
-for the other half in another.
-
-True, through this patch set DSA is creating its own context specific
-extension of phylink bindings, but arguably those existed before DSA was
-even integrated with phylink, and we're just fixing something now we
-didn't realize at the time we'd need to do.
-
-I can reverse the question, why would phylink even want to be involved
-in how the max fixed link parameters are deduced, and it doesn't just
-require that a fixed-link software node is constructed somehow
-(irrelevant to phylink how), and phylink is just modified to find and
-work with that if it exists? Isn't it for the exact same reason,
-separation of concerns, that it's easiest for phylink to figure out what
-is the most appropriate maximum fixed-link configuration?
