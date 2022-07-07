@@ -2,98 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DD91569C63
-	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 10:03:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 89E28569C7D
+	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 10:08:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231866AbiGGIDA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jul 2022 04:03:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47844 "EHLO
+        id S231223AbiGGIEi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jul 2022 04:04:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234713AbiGGICx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 04:02:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63F9833A1B
-        for <netdev@vger.kernel.org>; Thu,  7 Jul 2022 01:02:51 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 25600B81BA2
-        for <netdev@vger.kernel.org>; Thu,  7 Jul 2022 08:02:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53A7BC3411E;
-        Thu,  7 Jul 2022 08:02:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657180968;
-        bh=mkTwEUkN8EwEpQjbJG+R6E161G0v9MVtk5qzw8dNY1M=;
-        h=From:To:Cc:Subject:Date:From;
-        b=awRtEdnBORIluyJ3CPM+VhTD3NvufI0XZT2H9+6+rUZeR3Du4KEX416pkp5SjbVQz
-         NsBccXWvCWSDNGaJF673BaPPaE4yd5Bo1uN2SMdqfbNO/y9ob+/0TLeH6ISGrwIvNM
-         G4xq0SbZAq4DL9O+kqt9aRsN/lgFCLQSBzs4Hj/HxkDrzyGWnguoaI0Ji2kxTTZ59n
-         NiX7QJST+RSX1vVmId3909YAELeOhJzyInvqDEAfnBd8EQLUKN0ckA26hZSIPn1PUB
-         9tlj8Mczh7nD0wUYyD+LYB2VioeW+MJ5CjCGLBfI8yf94FMpTETEtU1shJY/ix6pOL
-         R5gnpT31HVluw==
-From:   Antoine Tenart <atenart@kernel.org>
-To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com
-Cc:     Antoine Tenart <atenart@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH net-next v2] Documentation: add a description for net.core.high_order_alloc_disable
-Date:   Thu,  7 Jul 2022 10:02:45 +0200
-Message-Id: <20220707080245.180525-1-atenart@kernel.org>
-X-Mailer: git-send-email 2.36.1
+        with ESMTP id S232120AbiGGIEh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 04:04:37 -0400
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BCAF25C5
+        for <netdev@vger.kernel.org>; Thu,  7 Jul 2022 01:04:35 -0700 (PDT)
+Received: by mail-wm1-x32f.google.com with SMTP id g39-20020a05600c4ca700b003a03ac7d540so12965956wmp.3
+        for <netdev@vger.kernel.org>; Thu, 07 Jul 2022 01:04:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=tzmqTyKeHDALVK+yAQp68XxMSEoXmsZfsJiQwxJCiZY=;
+        b=6uS59JjvqaEbJHJqzW0WFOVe+egtI/InStP96LLjHF/d1M7H1K1kJ7quCEcE58i2K6
+         5UNtcHOQ4KzCY6SnHovKbY/Dd3DUZqiGEMyF4a1rKeJ0gTAqYsgTT4sFOtWVhsBSzl5V
+         lgynUJEjU8UMTfqEHWldIrKncAWZQ4RmFu0cjq2OK1gj8fFnWv3ua9S7fjCaoNVU6DNV
+         VfuOBKuvFyPSO+jQxKlm5pOFiGJ0byzcWQiB60LQ1tZTfquxslqzHhsQeQ5PUZoJPJvG
+         239xxLuWie6x1ntT7ydigyHm8mrTcG8hIn4wmCSRKiO7Sgu/6PjQnYVAoPtsy002HxfG
+         EDLQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=tzmqTyKeHDALVK+yAQp68XxMSEoXmsZfsJiQwxJCiZY=;
+        b=Wr9uZpSSpRi2FDqHx3bx9Tes1uBQa1LbOQqu5FqwcTRbtj5D5LnXv614TQhHCKT+Rw
+         NPAx3xrlBUqtAghMTXdXa15MZrUtteO8yxUukHllKsNDEhz1MFj0lC+4UVsuoo4qjxDX
+         wgvHAxRU+IV98dzJejAG3HO1O14fbV+VJONVvFXNrFOhfXArFdLQDGq0bb4jdb6UwjMW
+         LXa7hfCuZkKlH9Saz18C38uIcSPZjE57oGs7y3mWNXSKXnIyogylO6w9eaSGuMS60vnb
+         Hp2Dvu9akreqIcRHG8WFtOu6qqwSlXeTmldTwm2qnOdh3YKD/MqRN18YiDQMystf+jRL
+         y7RQ==
+X-Gm-Message-State: AJIora8nPw45JyXquhdR77kOdbYJ+N646++YCXco2/FgQzXpd+91ygJ7
+        NEtDbGhgyDNt7LQI67Ffsr3n4A==
+X-Google-Smtp-Source: AGRyM1vMCoiuBS8WD9hcEtKrK71vkUDjyoKcwGfZXDUHL/KeUwu02CYSOR0Yyoa4KrgiavXyIJMaHQ==
+X-Received: by 2002:a05:600c:8a9:b0:3a0:3d78:21a4 with SMTP id l41-20020a05600c08a900b003a03d7821a4mr2905204wmp.112.1657181073681;
+        Thu, 07 Jul 2022 01:04:33 -0700 (PDT)
+Received: from localhost ([86.61.181.4])
+        by smtp.gmail.com with ESMTPSA id t5-20020a1c4605000000b0039db31f6372sm24836623wma.2.2022.07.07.01.04.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Jul 2022 01:04:33 -0700 (PDT)
+Date:   Thu, 7 Jul 2022 10:04:32 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, pabeni@redhat.com,
+        edumazet@google.com, mlxsw@nvidia.com, saeedm@nvidia.com,
+        moshe@nvidia.com
+Subject: Re: [patch net-next 2/3] net: devlink: call lockdep_assert_held()
+ for devlink->lock directly
+Message-ID: <YsaTkAV9uavlvPBH@nanopsycho>
+References: <20220701095926.1191660-1-jiri@resnulli.us>
+ <20220701095926.1191660-3-jiri@resnulli.us>
+ <20220701093316.410157f3@kernel.org>
+ <YsBrDhZuV4j3uCk3@nanopsycho>
+ <20220702122946.7bfc387a@kernel.org>
+ <YsKGZZ8ZggAf+jGT@nanopsycho>
+ <20220704195839.34128dd3@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220704195839.34128dd3@kernel.org>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A description is missing for the net.core.high_order_alloc_disable
-option in admin-guide/sysctl/net.rst ; add it. The above sysctl option
-was introduced by commit ce27ec60648d ("net: add high_order_alloc_disable
-sysctl/static key").
+Tue, Jul 05, 2022 at 04:58:39AM CEST, kuba@kernel.org wrote:
+>On Mon, 4 Jul 2022 08:19:17 +0200 Jiri Pirko wrote:
+>> Jakub, I don't really care. If you say we should do it differently, I
+>> will do it differently. I just want the use to be consistent. From the
+>> earlier reactions of DaveM on such helpers, I got an impression we don't
+>> want them if possible. If this is no longer true, I'm fine with it. Just
+>> tell me what I should do.
+>
+>As I said - my understanding is that we want to discourage (driver)
+>authors from wrapping locks in lock/unlock helpers. Which was very
+>fashionable at some point (IDK why, but it seem to have mostly gone
+>away?).
+>
+>If the helper already exists I think consistency wins and we should use
+>it.
 
-Thanks to Eric for running again the benchmark cited in the above
-commit, showing this knob is now mostly of historical importance.
-
-Cc: Eric Dumazet <edumazet@google.com>
-Signed-off-by: Antoine Tenart <atenart@kernel.org>
----
-
-Since v1:
-  - Reworked the documentation to mention this knob is now mostly of
-    historical importance after Eric ran again the benchmark cited in
-    the above commit.
-
- Documentation/admin-guide/sysctl/net.rst | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
-
-diff --git a/Documentation/admin-guide/sysctl/net.rst b/Documentation/admin-guide/sysctl/net.rst
-index fcd650bdbc7e..805f2281e000 100644
---- a/Documentation/admin-guide/sysctl/net.rst
-+++ b/Documentation/admin-guide/sysctl/net.rst
-@@ -391,6 +391,18 @@ GRO has decided not to coalesce, it is placed on a per-NAPI list. This
- list is then passed to the stack when the number of segments reaches the
- gro_normal_batch limit.
- 
-+high_order_alloc_disable
-+------------------------
-+
-+By default the allocator for page frags tries to use high order pages (order-3
-+on x86). While the default behavior gives good results in most cases, some users
-+might have hit a contention in page allocations/freeing. This was especially
-+true on older kernels (< 5.14) when high-order pages were not stored on per-cpu
-+lists. This allows to opt-in for order-0 allocation instead but is now mostly of
-+historical importance.
-+
-+Default: 0
-+
- 2. /proc/sys/net/unix - Parameters for Unix domain sockets
- ----------------------------------------------------------
- 
--- 
-2.36.1
-
+Okay, will send a patch to convert devlink.c to use these helpers.
+Thanks!
