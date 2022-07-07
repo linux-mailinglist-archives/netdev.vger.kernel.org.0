@@ -2,76 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 62CFC56AE25
-	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 00:14:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2B1756AE37
+	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 00:17:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234551AbiGGWOj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jul 2022 18:14:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44002 "EHLO
+        id S236592AbiGGWPT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jul 2022 18:15:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229638AbiGGWOh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 18:14:37 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0C0F2DAB7
-        for <netdev@vger.kernel.org>; Thu,  7 Jul 2022 15:14:36 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id fd6so24821883edb.5
-        for <netdev@vger.kernel.org>; Thu, 07 Jul 2022 15:14:36 -0700 (PDT)
+        with ESMTP id S236400AbiGGWPS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 18:15:18 -0400
+Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FE165C95D
+        for <netdev@vger.kernel.org>; Thu,  7 Jul 2022 15:15:18 -0700 (PDT)
+Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-31cb93cadf2so69043727b3.11
+        for <netdev@vger.kernel.org>; Thu, 07 Jul 2022 15:15:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=AOzonu74G88DxgvMZKiIFo3EHxFQqJl5NBGJL+KQbBg=;
-        b=ZKIIyz/Cnhg+EjLAPjXWYTkMbNGt1e70EBw6r4U/hP76TTG+j7PHoAOLWHOSPUCiJe
-         4MCu5dF3Og4x5MHBcFRdeje29olgMBKkkq/76bDzEGDpOhdV8oOXDfkOCD8wOjIDdAnp
-         pdTou1VTq+tzd5MyPVFahos1oN5Gi8D0zF7skRPsJWyUwIDWLW8usdFOJDGBbcj8ftid
-         +HzsLgHl1BMK9v+t7w5e1HJKfaf5WiJkcR0S/IHZfs+Hl0wmKtIIS9M3z05i+N7CtCrJ
-         IxySRaXvci4DkPAo8rHbZRUsFvj820WcL5mG9vnGpIU8t8pZ69xY2cyTg2zIKfI7H5jM
-         1wnw==
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=FgNJR3N4HuEzik8BFbsoxsCKMlA6Q79TXfo2nVTvHXw=;
+        b=aA00TODOScLx5rfKCpO+pAVqEX73pui8cCx+3XpnCCyru+fT+ofb/Ab2TS9xNDNU99
+         YNKaOBTsA7ff9EZZ8xUcR6VLuO3JXPvfBsrunTIT2rDulAbfyKZPIfD0jv7m8Tno8JXY
+         +T82Ab/D0pYfuaUmvFtngjFXFFMc5T/BVO6ypDoulJZ75kMRvYHKQB86864y10eH2uEw
+         4d3PUryKB7/phRYE0n7zvCY/JzTFCQSei9cMSVgBAyjxLTch+vrSPufB05tcgg9vjG2i
+         vuM1YjWMW1zfvqSXyEnoZLyTtO/m+9YJbYPez+Izg4VE+po1sFIWI3ZbN2N7STiUOkcA
+         SUTg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=AOzonu74G88DxgvMZKiIFo3EHxFQqJl5NBGJL+KQbBg=;
-        b=L+TaBl0yPQS50yRcyqHJ5VrxwJttWMGAj+Np9tVrHY51YCTHFFEbmE6BPH89mPEZVo
-         Tv2HRInU1hCB74pe3FYvoOiuT4FRt/+YJrRVgw5gQrA+tGnhGI1Azlz3MnroV79zoiVJ
-         YIkqgmWQziV9zYtxfiJE+7qZcNDBBX4lKomgMPxfU4fx8xrbwNQQpbDYQv76mfmRxXK5
-         MgCX/iBdE2Q92rQL/z0zb0yW/ZgYf7XsVy5mraAwYfXf+uTD5CQJLrNgpVF2XHBnEX8U
-         pnxaqQFKlXqmkgXWDQcQq9VLHCZbuGVkzQkDFlVIkJDd3QbDF0Ghd7pZTfB6oGyYzJml
-         9A4g==
-X-Gm-Message-State: AJIora+vovgcVEw9zV3nrp2lkBC7cR2bH6WiWDFWn0YixLSyu79/50HP
-        1myPYu6w/O497ClskfmAJQU=
-X-Google-Smtp-Source: AGRyM1trAxPNGfH30s1f5gbkxWItzJWEfQw9CQO8Ez3mlDbYYz1Jm0nA6U8q1cZ1vstwq3XJNi4EHQ==
-X-Received: by 2002:a05:6402:34ce:b0:43a:a4bb:27a6 with SMTP id w14-20020a05640234ce00b0043aa4bb27a6mr443298edc.158.1657232074955;
-        Thu, 07 Jul 2022 15:14:34 -0700 (PDT)
-Received: from [192.168.0.104] ([77.126.166.31])
-        by smtp.gmail.com with ESMTPSA id t17-20020a1709067c1100b00711d5baae0esm19730219ejo.145.2022.07.07.15.14.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 07 Jul 2022 15:14:34 -0700 (PDT)
-Message-ID: <953f4a8c-1b17-cf22-9cbf-151ba4d39656@gmail.com>
-Date:   Fri, 8 Jul 2022 01:14:32 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [net-next 11/15] net/tls: Multi-threaded calls to TX tls_dev_del
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>, Saeed Mahameed <saeed@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=FgNJR3N4HuEzik8BFbsoxsCKMlA6Q79TXfo2nVTvHXw=;
+        b=MRrMYAlyhJoTr0jBp+9QaOhBF9FuGB7hJbdxx8EV5jqd5fNccrSByB43bSZqCkpjzK
+         4AlSDqUp/sx8iME1Z9VnSWjPoO67tjp2MSS6jq2I80wq5FOxnHoJpyUjFWOTRZfOoDVy
+         wYzDcDpNTOZ9h2zXv/xnMhfJ2v9zmuJ2aCVZMU9NbzW++oaFPp9CXAW2OHtkjeFjhs7K
+         IoLOrYh/he/wKE4mlA89OOEU7STA0aw6Ye/VH5cq8FyVRZvx5LS/A4MeFMlcPoY5fRvl
+         kmZfsa7D2nRx2LTw7A0AXFPNvm91MatQV8YnFGwBUlxZY+1bx2pPKwlzfattPux8MbZT
+         w0Gw==
+X-Gm-Message-State: AJIora/PXTSh/KeWII+b+Ysd1KIeaNsjkh+Jc8ibN07riocCZ9OI6qmU
+        uEqw4DbnX8Wmlyv+J/AFcNnTXlzABJtuej8trg==
+X-Google-Smtp-Source: AGRyM1vsybvdyGETyP8/pCMszh/hivglrkQc+shq/bl09u6ogz5eozWp/OTQeXLsPPeDx31CWy9PP42+u4bdaUY5Ow==
+X-Received: from justinstitt.mtv.corp.google.com ([2620:15c:211:202:4640:519a:f833:9a5])
+ (user=justinstitt job=sendgmr) by 2002:a81:1cc:0:b0:317:a0fa:7a61 with SMTP
+ id 195-20020a8101cc000000b00317a0fa7a61mr516504ywb.10.1657232117460; Thu, 07
+ Jul 2022 15:15:17 -0700 (PDT)
+Date:   Thu,  7 Jul 2022 15:14:56 -0700
+Message-Id: <20220707221456.1782048-1-justinstitt@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
+Subject: [PATCH] l2tp: l2tp_debugfs: fix Clang -Wformat warnings
+From:   Justin Stitt <justinstitt@google.com>
+To:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Maxim Mikityanskiy <maximmi@nvidia.com>
-References: <20220706232421.41269-1-saeed@kernel.org>
- <20220706232421.41269-12-saeed@kernel.org>
- <20220706193735.49d5f081@kernel.org>
-From:   Tariq Toukan <ttoukan.linux@gmail.com>
-In-Reply-To: <20220706193735.49d5f081@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>, Tom Parkin <tparkin@katalix.com>,
+        Justin Stitt <justinstitt@google.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -79,60 +69,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+When building with Clang we encounter the following warnings:
+| net/l2tp/l2tp_debugfs.c:187:40: error: format specifies type 'unsigned
+| short' but the argument has type 'u32' (aka 'unsigned int')
+| [-Werror,-Wformat] seq_printf(m, "   nr %hu, ns %hu\n", session->nr,
+| session->ns);
+-
+| net/l2tp/l2tp_debugfs.c:196:32: error: format specifies type 'unsigned
+| short' but the argument has type 'int' [-Werror,-Wformat]
+| session->l2specific_type, l2tp_get_l2specific_len(session));
+-
+| net/l2tp/l2tp_debugfs.c:219:6: error: format specifies type 'unsigned
+| short' but the argument has type 'u32' (aka 'unsigned int')
+| [-Werror,-Wformat] session->nr, session->ns,
 
+Both session->nr and ->nc are of type `u32`. The currently used format
+specifier is `%hu` which describes a `u16`. My proposed fix is to listen
+to Clang and use the correct format specifier `%u`.
 
-On 7/7/2022 5:37 AM, Jakub Kicinski wrote:
-> On Wed,  6 Jul 2022 16:24:17 -0700 Saeed Mahameed wrote:
->> diff --git a/include/net/tls.h b/include/net/tls.h
->> index 4fc16ca5f469..c4be74635502 100644
->> --- a/include/net/tls.h
->> +++ b/include/net/tls.h
->> @@ -163,6 +163,11 @@ struct tls_record_info {
->>   	skb_frag_t frags[MAX_SKB_FRAGS];
->>   };
->>   
->> +struct destruct_work {
->> +	struct work_struct work;
->> +	struct tls_context *ctx;
-> 
-> Pretty strange to bundle the back-pointer with the work.
-> Why not put it directly in struct tls_offload_context_tx?
-> 
+For the warning at line 196, l2tp_get_l2specific_len() returns an int
+and should therefore be using the `%d` format specifier.
 
-I can put them directly under struct tls_offload_context_tx.
-No strong reason, I just followed the code reference in 
-include/net/tls.h :: struct tx_work.
-I'll change it and respin.
+Link: https://github.com/ClangBuiltLinux/linux/issues/378
+Signed-off-by: Justin Stitt <justinstitt@google.com>
+---
+Related l2tp -Wformat patch:
+https://lore.kernel.org/all/20220706230833.535238-1-justinstitt@google.com/
 
-> Also now that we have the backpointer, can we move the list member of
-> struct tls_context to the offload context? (I haven't checked if its
-> used in other places)
+ net/l2tp/l2tp_debugfs.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-I'll check and move if possible.
-
-> 
->>   
->>   	up_write(&device_offload_lock);
->>   
->> -	flush_work(&tls_device_gc_work);
->> -
->>   	return NOTIFY_DONE;
->>   }
->>   
->> @@ -1435,6 +1416,5 @@ void __init tls_device_init(void)
->>   void __exit tls_device_cleanup(void)
->>   {
->>   	unregister_netdevice_notifier(&tls_dev_notifier);
->> -	flush_work(&tls_device_gc_work);
->>   	clean_acked_data_flush();
->>   }
-> 
-> Why don't we need the flush any more? The module reference is gone as
-> soon as destructor runs (i.e. on ULP cleanup), the work can still be
-> pending, no?
-
-So this garbage collector work does not exist anymore. Replaced by 
-per-context works, with no accessibility to them from this function.
-It seems that we need to guarantee completion of these works. Maybe by 
-queuing them to a new dedicated queue, flushing it here.
+diff --git a/net/l2tp/l2tp_debugfs.c b/net/l2tp/l2tp_debugfs.c
+index 9d1aafe75f92..4595b56d175d 100644
+--- a/net/l2tp/l2tp_debugfs.c
++++ b/net/l2tp/l2tp_debugfs.c
+@@ -184,7 +184,7 @@ static void l2tp_dfs_seq_session_show(struct seq_file *m, void *v)
+ 		   session->pwtype == L2TP_PWTYPE_PPP ? "PPP" :
+ 		   "");
+ 	if (session->send_seq || session->recv_seq)
+-		seq_printf(m, "   nr %hu, ns %hu\n", session->nr, session->ns);
++		seq_printf(m, "   nr %u, ns %u\n", session->nr, session->ns);
+ 	seq_printf(m, "   refcnt %d\n", refcount_read(&session->ref_count));
+ 	seq_printf(m, "   config 0/0/%c/%c/-/%s %08x %u\n",
+ 		   session->recv_seq ? 'R' : '-',
+@@ -192,7 +192,7 @@ static void l2tp_dfs_seq_session_show(struct seq_file *m, void *v)
+ 		   session->lns_mode ? "LNS" : "LAC",
+ 		   0,
+ 		   jiffies_to_msecs(session->reorder_timeout));
+-	seq_printf(m, "   offset 0 l2specific %hu/%hu\n",
++	seq_printf(m, "   offset 0 l2specific %hu/%d\n",
+ 		   session->l2specific_type, l2tp_get_l2specific_len(session));
+ 	if (session->cookie_len) {
+ 		seq_printf(m, "   cookie %02x%02x%02x%02x",
+@@ -215,7 +215,7 @@ static void l2tp_dfs_seq_session_show(struct seq_file *m, void *v)
+ 		seq_puts(m, "\n");
+ 	}
+ 
+-	seq_printf(m, "   %hu/%hu tx %ld/%ld/%ld rx %ld/%ld/%ld\n",
++	seq_printf(m, "   %u/%u tx %ld/%ld/%ld rx %ld/%ld/%ld\n",
+ 		   session->nr, session->ns,
+ 		   atomic_long_read(&session->stats.tx_packets),
+ 		   atomic_long_read(&session->stats.tx_bytes),
+-- 
+2.37.0.rc0.161.g10f37bed90-goog
 
