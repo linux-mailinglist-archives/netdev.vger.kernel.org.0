@@ -2,147 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BFF83569E00
-	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 10:52:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49244569E25
+	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 10:52:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235374AbiGGIq1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jul 2022 04:46:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60386 "EHLO
+        id S235292AbiGGIwl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jul 2022 04:52:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235370AbiGGIqG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 04:46:06 -0400
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FBCB205F7
-        for <netdev@vger.kernel.org>; Thu,  7 Jul 2022 01:46:02 -0700 (PDT)
-Received: by mail-yb1-xb31.google.com with SMTP id r3so31354321ybr.6
-        for <netdev@vger.kernel.org>; Thu, 07 Jul 2022 01:46:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5cHJei8eL/XiwTDNpED+fxZcKWgVJ7HjqIIRFdQymYE=;
-        b=Rwr/0xAbP22SkSO4ltQNd5DO9kOdCIPUX8eOWtlHwOdZ+eXUirzl5qg06j9V+Yiv3O
-         cj7QAXKgcpDd8VICNliQszBCAfuOO4LZEpTjaWPrYa9merLlH9ymfe1gCJLK8816QNU/
-         TN52ctMJoN3rUixBRY3lCznhnmS/VbStTrwRs0BgeY/EyE/CTatkYIj4zSvpxgx+pPnn
-         tPxLB1SdDda2RY+mRf/sMVZ6PreLNpt/mvvd6bUWrj+nJMaosEedrdUWLVvYeyvr9AKx
-         kMW2frNUT64iftKRxwYAo6Hhj0Co6UbznTiP1Gu8CHNGLcohgC/Bx0CprW20sB+U/MTj
-         Mp8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5cHJei8eL/XiwTDNpED+fxZcKWgVJ7HjqIIRFdQymYE=;
-        b=bSUkFoYYJUa3DjBBiUs9ezoFJgh+nCp4oonFGF8IIpnrHMlfLGzKQaEjLCesGt/YAn
-         Rxd7e/WI0xqR7rYf3NstvwejfpDKNkzli89Z1vSJNWjr1T7Ius3AFXJAvhu5eDIjxBlv
-         jtpXBMLqajSRQT6Rmgm4p5jeUNq+ylmK5peUaHb0wynEk8qQawj+uzOkDy2ufT76zDf8
-         FYHZuk+Ktw9LiOHu4f7JU148dLJdg0mAuPQoxqZfA/gvuUZBiBrGtcQVoBZmmypaPTgV
-         82L8eIcHRUBFdlwI0r3l2f64xYg1u3NRMl1f9uVFA4U+qzL5P+T3kZkUZDu9oOuQX69k
-         7gCw==
-X-Gm-Message-State: AJIora+WBhP0JBGVidQGwExeoEfo8F+TsmCRcsX1W2jxSolhcerQQVeH
-        R1xb8SBvPnEO6mHv/noVVXeZJqHbB5hQSbNEwAypuQ==
-X-Google-Smtp-Source: AGRyM1umnEo/DDoPW1gezdcq6NhnRjlJjrnSjug9dbwPv0bkQtbR3YYvr8jnWrkUAiqc8A/LvQP5N4QmUNAx7CqjhD0=
-X-Received: by 2002:a25:d07:0:b0:66e:6c0e:a2d1 with SMTP id
- 7-20020a250d07000000b0066e6c0ea2d1mr14360322ybn.369.1657183561693; Thu, 07
- Jul 2022 01:46:01 -0700 (PDT)
+        with ESMTP id S235608AbiGGIwf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 04:52:35 -0400
+Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-eopbgr60075.outbound.protection.outlook.com [40.107.6.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1017E50720;
+        Thu,  7 Jul 2022 01:52:26 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=BnjxWc5cxmiy+MkdFBpBp8Jmo8NeJGZFtS5hGqGbvvRRntP7g+N3gmfwtOaJpQKkkiBqVTuk0Ng1EzEqnjTiibqEdGrpI88BskQ4DUsOSQC1YqLtcWDrmHEOj8c6074wRzqB+vBFOPjJIIZmgRtgY3mxsQ58OfkDehjvZWM3kqc4/stUG2M5BWq8sN8exeSJz/4Yynu/O4zOFZ+wWnT4/E9eBjNP1O7+HfyNARRoeAUSz7zoze+qZedo7/FT+6njrrs2gQsFMeW22RRFuimwCUT8iaj4gMiki94mCFlxtbL+5b4y788J/e3k8xBPIj+MJlVYFbULTk8zQfugeAcZXQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=tvWbEzeEI2RuSIb4wnJuIdt0DjPeUOPG8udzp28ulP8=;
+ b=fbM8Mhxyx8wg3xEDjiHld7wBa3JSn/i2bcMUDmzK4O4uGMvyG7mx5ZGWHbEmS8QE4DQQXru601/1LAJhvez+jePkMItPIg+91NrJ+/VCgicdWRcvVBePEPRSLTW6p4+lCHRrNdVDoTJ4/vWWbuxwrI+E+HbTtuUsCHahtaUPtFpZRuLaOLSluWp9AUMirtXu7WVATDonyyatcJFyGgjmyXnDf0+9NjgOp76ankzrTsvtNgTxMRzpBvNHxksg+KNLSveYL9jeMcvwJrCcPUmoAcl53qMB3EqbbO3KHQzqrQWwZJ/d2rwgNbwC+rPwEGdFd5ViF+ROMpuSspxLqU+J1g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=tvWbEzeEI2RuSIb4wnJuIdt0DjPeUOPG8udzp28ulP8=;
+ b=dum50hMR53iN/3ZZMLxzXtLL5fGmATZHstU1gURznm46lYuVtV0Hmwa9T+bDEgHbqxirvon18FA1AwuPqCaJhAUBcKfxSV49VWF8keae8QR+zJkRhJwvCxp6Vsdj5vSCuqbUIXXlHNsxV6UgTfoVQsBUSrG8B0isisl9loNdpso=
+Received: from GV1PR04MB9055.eurprd04.prod.outlook.com (2603:10a6:150:1e::22)
+ by PA4PR04MB9343.eurprd04.prod.outlook.com (2603:10a6:102:2a7::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.21; Thu, 7 Jul
+ 2022 08:52:23 +0000
+Received: from GV1PR04MB9055.eurprd04.prod.outlook.com
+ ([fe80::4c14:c403:a8a4:b4e4]) by GV1PR04MB9055.eurprd04.prod.outlook.com
+ ([fe80::4c14:c403:a8a4:b4e4%5]) with mapi id 15.20.5373.018; Thu, 7 Jul 2022
+ 08:52:23 +0000
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     Rob Herring <robh@kernel.org>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+Subject: Re: [PATCH v2 net-next 1/4] dt-bindings: net: convert sff,sfp to
+ dtschema
+Thread-Topic: [PATCH v2 net-next 1/4] dt-bindings: net: convert sff,sfp to
+ dtschema
+Thread-Index: AQHYj6x0ixunGQ4a40qQixFLFVbFVK1wTSWAgAJRQAA=
+Date:   Thu, 7 Jul 2022 08:52:23 +0000
+Message-ID: <20220707084925.tdi27tvfcnvzqoii@skbuf>
+References: <20220704134604.13626-1-ioana.ciornei@nxp.com>
+ <20220704134604.13626-2-ioana.ciornei@nxp.com>
+ <20220705212903.GA2615438-robh@kernel.org>
+In-Reply-To: <20220705212903.GA2615438-robh@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 780e78fa-aec7-4cd1-b956-08da5ff60299
+x-ms-traffictypediagnostic: PA4PR04MB9343:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: n+bWQ7BikveXiaxEGnOjy02UA4GAOBKtH4BXG2oeuz5Z+0rk1pFUnxCUNEosE9OT0rVYVDQXIU5q1jZGlZABP8lFgbGLBVgi8OXVXteK7HVMNgy8hO8SsetzMUWvXwm0A5CzpSRjqx1QNOEiaL0YEC1LcG2Rw1ZUggkxZ9DaMfFJ70S2UtSCsC2gF3x2o1ZGkZl2pF382jy9EyjEJ3SyvNnqa3ZX5aQdAEr6nrv85T0/C9B443l/HMnw0mW4VXGE6N6aKGp7cvvzPQFbiC8YQOjGMu4D84scwR6zywLmT6JqoARgi/7eXDSQTV9AyvxKm4WA0ryvCf8Zwd57/enieTSw7b57LVbWOxWV9b73tT1tLqBif/lgtmbllCilcVieAQvT6TOrBegnCxu9ltuHAJS/hWfLnUrMiGF911P8E5YPxmYS5NCSv2TRNWCM8pmCnIg1+1o0GYAS31l5YnOo4q4oBBBFteMEr/Kg8jOjelX645+OylQTykmHwKfG/d0L4Cil8BZJIKjz+AaksbhEZ93d+tU66CCvQCeHknt9uD5b/YInt+DjNLpeo9gWTpfvu1mhYRZx86s9Jv4lyVZBWTyNfs6XdbCf7hJ9HBxYBvA85IAdgzIlBgcIfyCoT/fhszAANDBrwm64l/OwOEpKhoXy1a5PHVTHIuq1q2OJOdqN/wrTNKT9Dgaw5u6zyxLHBvkDeHVptUzOhPgVsdKXxxIXLWcu70NzBIzBmtPqK4scdfticvy9aUBWFmnTLl7OyKUz1/uBiQ4qpFSrrNJ0i4gb9CcGm+77xyD/vbIAoQ2mGCctLE8JE8zgHGNvfNum
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:GV1PR04MB9055.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(4636009)(376002)(346002)(136003)(396003)(366004)(39860400002)(44832011)(5660300002)(478600001)(9686003)(6506007)(86362001)(26005)(41300700001)(6512007)(8936002)(33716001)(2906002)(6486002)(66556008)(122000001)(316002)(38100700002)(38070700005)(186003)(76116006)(64756008)(83380400001)(66446008)(71200400001)(91956017)(54906003)(8676002)(6916009)(66476007)(1076003)(66946007)(4326008);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?ZBQjng0KjV97W1BuK5MRjXvq6ocpZaj9AStj97tPktTpua9a7UoHQ+QQJeZO?=
+ =?us-ascii?Q?5iA1MiKO90BqssGIyDFhAZJ26CCgttTx/DofH4Bs9avVw9RgVeTnNFTappQx?=
+ =?us-ascii?Q?JDL8MzX6E3a26WtZUlsNgJDF7XwUMmU8dpJ/fg++Mok3BU136bv09jTPi7/O?=
+ =?us-ascii?Q?/qfGg/iphLLV6At8Hvh/ZDg/AKIVinpGsh2qORt4vpn5bYNOxg8Snx95z/NN?=
+ =?us-ascii?Q?yDSFhvLK/nXO58rVrBh8QoFbJN4baT7NaAJhaLrIsxoRXmKXLO2VFA9xJbjj?=
+ =?us-ascii?Q?lQQ1yhZ1GdZ/oebNlQfiDPQyf1pm4I6lG6HrNoouWC61ZQfGC3zNCIuzfeKM?=
+ =?us-ascii?Q?9QAIR0EE02EVK1ao1g1V65xfDWraNeuxMtWPE94bDBMIXrlO9/7IwcqeeDDk?=
+ =?us-ascii?Q?ZrOkIKrUGuQc/HQ1TaKgh4xmx99bkCc0MRbd3idX5kghdq621LYisuhBVTeC?=
+ =?us-ascii?Q?KpIndGHz7t61kQGQAJBBKwm1+eIk7gnsSBXQ0DMfpv6qNYeCGy4+L8lytDSu?=
+ =?us-ascii?Q?eLvXvD3NaQnkPCgG4+lF044dLsqc5tTdbNtIdr3CV/CYHV9mwGRLvRiPeVZV?=
+ =?us-ascii?Q?uh7Jy7xAzDclyX/Xd178A8actXejW81eQfvpK1hVCYR5DNCfgB1pXIgh6Vv8?=
+ =?us-ascii?Q?SMCNJo3XdbltWUaJ2pI5VAYeVAsr2ubWkIJsYVQGfxMTjA2Um0OvvRNm4VpM?=
+ =?us-ascii?Q?3cIUD6okPuOdYv0CgixUolReFiqHevMbL4FY54JRp39DfIx5WHFaeBL96mjD?=
+ =?us-ascii?Q?ctR/XdsGWdxDrvAdUI5f65gVlPWPt4D7eYy7Aji64kGUl3dhhoevGPtlOf6u?=
+ =?us-ascii?Q?EJ32FIIgB0248cKwP+M2J71GsdgUXG8qCCmlMIr0cbRUzhk1CHLX+1AlmXG8?=
+ =?us-ascii?Q?JN221TZfHvN+xeeC25E1ALGelAwsjE159Zr6EHrl8uio6dm0L76qMYnRW2qm?=
+ =?us-ascii?Q?tpGBA/8kfNzVJqWw2yggOBw121SzSTwvY63+ucDXKzUPK16J1iKE1FVTPjVx?=
+ =?us-ascii?Q?3Ms93hNcZkqSjpHH6nYzC8uGIgKa0y9cQ+OtFzeTbsxnZa8dJeTtmKS0OTrd?=
+ =?us-ascii?Q?e3Lo9MlN4DftspFQYTVewCNNr9B2uUMMD84RcDg/n42A0rHxO6T9NGzN7Sl5?=
+ =?us-ascii?Q?DR6CCsv2YhNPvfeWONEJw/GBwiuCGPSQU0ilG3WC0J+LBOv2GsmkF42NJ1uF?=
+ =?us-ascii?Q?L5I6/YFdPtxt46SooZqgUDP/603p2AzNlW2o9hSYvBzTyPAk12UK5Z4OOv32?=
+ =?us-ascii?Q?FUc2Hqicc/HaZxGW2aD7BoXPPdIpNjoW438TlVpecZC+MMHK/VQTHsoDU84W?=
+ =?us-ascii?Q?bwiegz3i1miyANg9OCrHv8c+ju6iITWmP63SpskK7cGASrDjmdkJ5yHG6hTd?=
+ =?us-ascii?Q?nlpRcREGuOC/axJqUWMCIMd/F18VyUitu3c2N0bEiZXKoUAkCJcBaDeBAreZ?=
+ =?us-ascii?Q?ca5VU5tz0npZwfDAiBDomPUzffc0W46FfIy/S0B6Elmp1qooQK0JOb/ujBCu?=
+ =?us-ascii?Q?lTgKvg33gk0JQv5KyYSpnuIk6jPawn3hdlVCkkXtzv+QBoQnx1T+nXUtYEFh?=
+ =?us-ascii?Q?O6fQgN3XgTUUc6fISPoU303m2MyGYDHymPWPtEr1uBsrLWNUxAWtsH9bR+/t?=
+ =?us-ascii?Q?gw=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <2BAD24F0CF001845ADB0A3BA2F1DA5E5@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <20220629035434.1891-1-luizluca@gmail.com> <CAJq09z44SNGFkCi_BCpQ+3DuXhKfGVsMubRYE7AezJsGGOboVA@mail.gmail.com>
- <20220629181455.boerjnqmvovmtzra@bang-olufsen.dk> <CAJq09z6iX9s75Y2G46V_CEMiAk2PSGW6fF4t4QSPbjEXgs1iTQ@mail.gmail.com>
- <20220706152923.mhc7vw7xkr7xkot4@skbuf>
-In-Reply-To: <20220706152923.mhc7vw7xkr7xkot4@skbuf>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Thu, 7 Jul 2022 10:45:49 +0200
-Message-ID: <CACRpkda6NSf+R22ioA7suqYLv8GB21NMwCNWR3arc8wo0_-fFw@mail.gmail.com>
-Subject: Re: [PATCH net-next RFC 0/3] net: dsa: realtek: drop custom slave MII
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <ALSI@bang-olufsen.dk>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        "krzk+dt@kernel.org" <krzk+dt@kernel.org>,
-        =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: GV1PR04MB9055.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 780e78fa-aec7-4cd1-b956-08da5ff60299
+X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Jul 2022 08:52:23.6412
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: pzPA1CA5cqgBPpZDLZE5KPJpZ8VtNSozQ/YI/dEsFkyxtbLPbaaYI8oQCXYv9Gu7wP0S7GADJ4/DyfNn5m+PQA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA4PR04MB9343
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 6, 2022 at 5:29 PM Vladimir Oltean <olteanv@gmail.com> wrote:
-> On Thu, Jun 30, 2022 at 02:05:39PM -0300, Luiz Angelo Daros de Luca wrote:
+On Tue, Jul 05, 2022 at 03:29:03PM -0600, Rob Herring wrote:
+> On Mon, Jul 04, 2022 at 04:46:01PM +0300, Ioana Ciornei wrote:
+> > Convert the sff,sfp.txt bindings to the DT schema format.
+> > Also add the new path to the list of maintained files.
+> >=20
+> > Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+> > ---
+> > Changes in v2:
+> >  - used the -gpios suffix
+> >  - restricted the use of some gpios if the compatible is sff,sff
+> >=20
+> >  .../devicetree/bindings/net/sff,sfp.txt       |  85 -----------
+> >  .../devicetree/bindings/net/sff,sfp.yaml      | 143 ++++++++++++++++++
+> >  MAINTAINERS                                   |   1 +
+> >  3 files changed, 144 insertions(+), 85 deletions(-)
+> >  delete mode 100644 Documentation/devicetree/bindings/net/sff,sfp.txt
+> >  create mode 100644 Documentation/devicetree/bindings/net/sff,sfp.yaml
+> >=20
+> > diff --git a/Documentation/devicetree/bindings/net/sff,sfp.txt b/Docume=
+ntation/devicetree/bindings/net/sff,sfp.txt
+> > deleted file mode 100644
+> > index 832139919f20..000000000000
+> > --- a/Documentation/devicetree/bindings/net/sff,sfp.txt
+> > +++ /dev/null
+> > @@ -1,85 +0,0 @@
+> > -Small Form Factor (SFF) Committee Small Form-factor Pluggable (SFP)
+> > -Transceiver
 
-> > > In principle I like your changes, but I'm not sure if what you are doing
-> > > is allowed, since DT is ABI. The fact that you have to split this into
-> > > two steps, with the first step warning about old "incompatible" DTs
-> > > (your point 3 below) before the second step breaks that compatibility,
-> > > suggests that you are aware that you could be breaking old DTs.
-> >
-> > Thanks Alvin for your review. Yes, that is a good question for the ML.
-> > I don't know at what level we can break compatibility (DT and driver).
-> > That's why it is a RFC.
->
-> DT bindings are only extended in backwards-compatible ways. Only in the
-> case where you can prove that there is no DT user of a certain binding,
-> and that none should appear either, is when you can consider breaking
-> the backward compatibility. The idea here is that old DT blobs may live
-> forever and be provided by fixed firmware such as U-Boot, you can't
-> really force anyone to update them.
+(...)
 
-We break it when it makes sense.
+> > +  maximum-power-milliwatt:
+> > +    maxItems: 1
+> > +    description:
+> > +      Maximum module power consumption Specifies the maximum power con=
+sumption
+> > +      allowable by a module in the slot, in milli-Watts. Presently, mo=
+dules can
+> > +      be up to 1W, 1.5W or 2W.
+>=20
+>        enum: [ 1000, 1500, 2000 ]
+>=20
+> Or is it not just those values? Maybe 'maximum: 2000' instead.
 
-The central question is to ascertain if there are actually binary DTBs
-deployed with these bindings, in mass-market products, and these are
-not upgraded in tandem with the kernel.
+Keeping in mind Russell's comment, I think I will leave this just as it
+is since there is no enforcing made on the value.
 
-A mistake (IMO) in the early days of DT was to assume that
-it was used with Open Firmware (OF) which is like ACPI, a kind of BIOS.
-Most users of DT do not use OF, the only thing we ever see relating
-to it is the of_* prefix.
+>=20
+> > +
+> > +patternProperties:
+> > +  "mod-def0-gpios":
+>=20
+> These aren't patterns. Move to 'properties'.
 
-People actually using open firmware would embed the DTB with the
-open firmware and flash it into a (desktop) computer as a blob, pretty
-much like how the ACPI BIOS works now.
+Yes, I forgot to move them when I removed the '(s)?'
 
-It turns out the majority of contemporary users of DT don't use DTBs
-like this at all: instead they compile the kernel and the DTB, then flash
-both into the platform at the same time. There is even the FIT format for
-U-Boot which is a package of both kernel and DT and whatnot.
+Thanks!
 
-Actually very few people flash their DTB in such a way that it cannot get
-upgraded, and in fact most flash both at the same time, after building
-both from source. In that case it doesn't matter if we break compatibility.
-
-While we strive to keep DT schemas strict and compatible (it is a good
-ambition) I would reverse the burden of proof for backward compatibility:
-if it can not be proven that irrevocable DTBs have been deployed, and
-that kernels may get upgraded independently of the DTB, using this
-specific binding, then it is fine to change it in incompatible ways if
-we need to.
-
-It could also be that the DT bindings started to get used
-with another operating system. But these things have to be demonstrated,
-they are the rare cases and should not be the assumption, as if a
-DT binding is immediately used in a myriad of places the second
-we merge it to Torvald's tree. Such adoption in the real world happens
-much later.
-
-If the only specimens are inside a company that has not yet released
-any products we can certainly change it. What we don't want is the
-general public running into these incompatibilities.
-
-Notice that as we discuss this, I see some people being requested to
-reflash their (ACPI) bioses rather than put fixes in the kernel for
-erroneous ACPI DSDT:s. Not for end users, but for people working
-with prototypes still in development. "Go fix your DSDT BIOS tables".
-
-Yours,
-Linus Walleij
+Ioana=
