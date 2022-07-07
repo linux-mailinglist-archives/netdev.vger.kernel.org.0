@@ -2,130 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A6C1569AC5
-	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 08:53:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 74A88569ACC
+	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 08:55:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234818AbiGGGxj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jul 2022 02:53:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49614 "EHLO
+        id S234560AbiGGGzM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jul 2022 02:55:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232925AbiGGGxi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 02:53:38 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 328382C674
-        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 23:53:36 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id j21so29585809lfe.1
-        for <netdev@vger.kernel.org>; Wed, 06 Jul 2022 23:53:36 -0700 (PDT)
+        with ESMTP id S232342AbiGGGzL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 02:55:11 -0400
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CC542CDFC;
+        Wed,  6 Jul 2022 23:55:10 -0700 (PDT)
+Received: by mail-wm1-x32f.google.com with SMTP id be14-20020a05600c1e8e00b003a04a458c54so10141302wmb.3;
+        Wed, 06 Jul 2022 23:55:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=mt7zIclzGYwiZtrdDDRxf+U0w9aqap2nhLKvDAss8Mw=;
-        b=lgZ9SC3QhzW82Gje3PKw/6IDYppvXW6kp7PSJeCAvEtWxnv6GIYAo06xvSRoPH4vJa
-         I1TOl2/tE4KFqrrvhpD4kGZ3X3o7juqMFVfwtv/k3HoMAUEm6P1GlEhQvf34qv966KoA
-         iHmOI0ECROGSx91SbNWcbWYxIZlHqE2d41D3qnXkwqnO2IKFx7hsF7GVKW09H87z04YF
-         DMJSF8ckU2O4emC9UqGfvqY9ybC0usgGA5E3iQzmiuE3guth2VSIsJjVyptCbsgya6Hm
-         p3zAiyPg6ZLgEpYapTBaKe//26LJKfUOlpbARa/N0q//mQ6MM5ZQIXsNpFNJZVEwc1E0
-         8JDQ==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Tle9jlf1XL+CuKZZCKk8/9Xh9QpHZZM5Qn39ORyOqj4=;
+        b=f06mxs48qNo4rSKbN9MgCRF0G3k3lDnx3IsusDP4IZ7GASvreoRNWd3xTCTmWoPeoU
+         /gZ7vU45VNaeCyHoSim28POqn2+9UMEejuJXE2rDpoO3BBZnenj6N8Ch1TN1a9KTzHrq
+         WLQSdADneb+yfI4Bry0BKQ3UOj/Xvb5DunTMwTyevS9B9mBTjBisvr6EzjwfmOt8rgE1
+         t3zOfArQqKVYOGF3UhyKhYebeDPefM4ihtSYKH7+HlKdExdm+L3JhgNqdTmBkf+oNSHN
+         1UyMtjFYDD5m0JaREqHui5mbcpxVsEpuM6XarcPfuA6oc64XqrG2Gw6JuN+glp+ajAFx
+         OQPg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=mt7zIclzGYwiZtrdDDRxf+U0w9aqap2nhLKvDAss8Mw=;
-        b=jU+xKz1mqGjTLjF0n7Qtr9SRL5n5ygvCPyA5+DlM88oJHUG/eqDaD2ebb1glBJBRlJ
-         iOAs8Q3MNPBVNRtNlFzZduVqInBcqgCRidUj5lW56Y5wquJ0TXM12v2g20nMz/IlB3zX
-         s4pHnGGrOjG3X0FJXw4Mv+p7glf21G3xw1fKziZucaT3jHGZKkF2iNCz9Aa+fqte88LH
-         dWMekbViephgBuWeB4rl6sBMlvBMog1M+lvfWUBxK0pmYIW5ITMO8chwzhcfuEE6FJrI
-         McUgaGkpu/d+pp9JEeQOAl/Z/nPaQugGKvWkYwRiZpfKf0b16VZCVgJ5sbJSkMpRP4n/
-         28tQ==
-X-Gm-Message-State: AJIora/shynZ+G36f/cSjEihUkZ8OXAM32vF/yVambYEuIhfK2evL9Yn
-        oUuDBnWizKY9196EJ6KzCInXsQ==
-X-Google-Smtp-Source: AGRyM1vUxKVCvQTTNhom6XBQrzdSmST4HFRlymepgf9hEeHqiMzRJHyaK/fTR4aqUKPh89ZUf1kPXQ==
-X-Received: by 2002:a05:6512:3f1c:b0:488:8c74:5f2f with SMTP id y28-20020a0565123f1c00b004888c745f2fmr993562lfa.285.1657176814570;
-        Wed, 06 Jul 2022 23:53:34 -0700 (PDT)
-Received: from [192.168.1.52] ([84.20.121.239])
-        by smtp.gmail.com with ESMTPSA id m10-20020a19710a000000b0047f68b11329sm6643797lfc.266.2022.07.06.23.53.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Jul 2022 23:53:34 -0700 (PDT)
-Message-ID: <173a9087-6a55-13f8-3fc9-897c7f51a09e@linaro.org>
-Date:   Thu, 7 Jul 2022 08:53:32 +0200
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Tle9jlf1XL+CuKZZCKk8/9Xh9QpHZZM5Qn39ORyOqj4=;
+        b=rCvUdL8vD6sye7Z+HO16fDPuwhJHaWYsKhSzt/nPHgc//23eEMBaS8UcUYONOJFwje
+         4CoEPom6ML1c8gFhsyWfNaL0vkpmd7Fouj4SE40a1sXME4F/dWlzzhwf+QTF4QRjTRR+
+         m5bV3kc8VVg6uFWitA4ORFLFudtJGy/6YQj1P+p9hUn9n237Rg+uogb0wUvV0boeTJFb
+         w1V4G6eRwtvrs+ITqVvRV93WSSayIbTa4Bl5glDaubcvIW5cBPQFSH6mQ0WHvcsCvW5t
+         9NcZt2XeukKe132nnN/dwZSUGPCaAuTpXjLhawKrUcW14j/7MwK8ERlDbm/NwYUdia4G
+         8WdA==
+X-Gm-Message-State: AJIora/2uCser8MEMVjGalZjYPUtf5kDwn3fc6kdogV2STEyQVCWNnjZ
+        ZNGv3CT8XY4MVpUUdI+XQcbgsKJeIB3+NfptQ20=
+X-Google-Smtp-Source: AGRyM1sE385x8pSeDePRC1UDcReakr6re7xVegD6h3qSltBTzx62KnIdv332ZfbwfOBmKHgg5eZkenKZJ6LL77BrVCo=
+X-Received: by 2002:a05:600c:154a:b0:3a1:70dd:9a12 with SMTP id
+ f10-20020a05600c154a00b003a170dd9a12mr2736421wmg.70.1657176908726; Wed, 06
+ Jul 2022 23:55:08 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v3 5/9] dt-bindings: net: Add Tegra234 MGBE
-Content-Language: en-US
-To:     Thierry Reding <thierry.reding@gmail.com>,
-        Rob Herring <robh@kernel.org>
-Cc:     Jon Hunter <jonathanh@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>, devicetree@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>,
-        Bhadram Varka <vbhadram@nvidia.com>,
-        linux-tegra@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, netdev@vger.kernel.org
-References: <20220706213255.1473069-1-thierry.reding@gmail.com>
- <20220706213255.1473069-6-thierry.reding@gmail.com>
- <1657169989.827036.709503.nullmailer@robh.at.kernel.org>
- <YsZ6fus1yNcf/H/Q@orome>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <YsZ6fus1yNcf/H/Q@orome>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220524152144.40527-1-schultz.hans+netdev@gmail.com>
+ <20220524152144.40527-4-schultz.hans+netdev@gmail.com> <20220627180557.xnxud7d6ol22lexb@skbuf>
+ <CAKUejP7ugMB9d3MVX3m9Brw12_ocFoT+nuJJucYdQH70kzC7=w@mail.gmail.com>
+ <20220706085559.oyvzijcikivemfkg@skbuf> <CAKUejP7gmULyrjqd3b3PiWwi7TJzF4HNuEbmAf25Cqh3w7a1mw@mail.gmail.com>
+ <20220706143339.iuwi23ktk53ihhb6@skbuf> <CAKUejP6NG_X-Bh_xeA2y4Wru2=pxgHaRMdsvMu8NATNxPVeQ7A@mail.gmail.com>
+In-Reply-To: <CAKUejP6NG_X-Bh_xeA2y4Wru2=pxgHaRMdsvMu8NATNxPVeQ7A@mail.gmail.com>
+From:   Hans S <schultz.hans@gmail.com>
+Date:   Thu, 7 Jul 2022 08:54:57 +0200
+Message-ID: <CAKUejP6wfcCE9n=_i2vroNX+v1YdGJzOH0bev06nrUCOsRPdwQ@mail.gmail.com>
+Subject: Re: [PATCH V3 net-next 3/4] net: dsa: mv88e6xxx: mac-auth/MAB implementation
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Hans Schultz <schultz.hans+netdev@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 07/07/2022 08:17, Thierry Reding wrote:
-> On Wed, Jul 06, 2022 at 10:59:49PM -0600, Rob Herring wrote:
->> On Wed, 06 Jul 2022 23:32:51 +0200, Thierry Reding wrote:
->>> From: Bhadram Varka <vbhadram@nvidia.com>
->>>
->>> Add device-tree binding documentation for the Multi-Gigabit Ethernet
->>> (MGBE) controller found on NVIDIA Tegra234 SoCs.
->>>
->>> Signed-off-by: Jon Hunter <jonathanh@nvidia.com>
->>> Signed-off-by: Bhadram Varka <vbhadram@nvidia.com>
->>> Signed-off-by: Thierry Reding <treding@nvidia.com>
->>> ---
->>> Changes in v3:
->>> - add macsec and macsec-ns interrupt names
->>> - improve mdio bus node description
->>> - drop power-domains description
->>> - improve bindings title
->>>
->>> Changes in v2:
->>> - add supported PHY modes
->>> - change to dual license
->>>
->>>  .../bindings/net/nvidia,tegra234-mgbe.yaml    | 169 ++++++++++++++++++
->>>  1 file changed, 169 insertions(+)
->>>  create mode 100644 Documentation/devicetree/bindings/net/nvidia,tegra234-mgbe.yaml
->>>
->>
->> My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
->> on your patch (DT_CHECKER_FLAGS is new in v5.13):
->>
->> yamllint warnings/errors:
->>
->> dtschema/dtc warnings/errors:
->> Error: Documentation/devicetree/bindings/net/nvidia,tegra234-mgbe.example.dts:53.34-35 syntax error
->> FATAL ERROR: Unable to parse input tree
-> 
-> This is an error that you'd get if patch 3 is not applied. Not sure if I
-> managed to confuse the bot somehow, but I cannot reproduce this if I
-> apply the series on top of v5.19-rc1 or linux-next.
+Hi Vladimir,
 
-Patch number 3 does not apply on v5.19-rc1 or linux-next, so maybe the
-bot (which applies on rc1) did not have it.
+BTW, I have sent the patch to read the FID as you requested. You
+should have received it yesterday (6th July) at around 12:25 UTC.
 
-Best regards,
-Krzysztof
+Hans
