@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D4E656AF0D
-	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 01:33:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DEDCD56AF15
+	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 01:36:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236918AbiGGXdj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jul 2022 19:33:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40268 "EHLO
+        id S236944AbiGGXgh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jul 2022 19:36:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236791AbiGGXdi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 19:33:38 -0400
-Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D05C1C932
-        for <netdev@vger.kernel.org>; Thu,  7 Jul 2022 16:33:35 -0700 (PDT)
-Received: by mail-qt1-x82d.google.com with SMTP id g14so25094724qto.9
-        for <netdev@vger.kernel.org>; Thu, 07 Jul 2022 16:33:35 -0700 (PDT)
+        with ESMTP id S236535AbiGGXgg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 19:36:36 -0400
+Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DEA42F014
+        for <netdev@vger.kernel.org>; Thu,  7 Jul 2022 16:36:35 -0700 (PDT)
+Received: by mail-qt1-x831.google.com with SMTP id c20so2855823qtw.8
+        for <netdev@vger.kernel.org>; Thu, 07 Jul 2022 16:36:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=C3mGVzkNGFQOGZ/y27ZbQkMVyVRvFTFo9AVDkxPU3Qs=;
-        b=jI3G3nw3SkAqpzPaUgQF22T9Ic6RqP7p4lMxcErcOD7LNwKHd9PhRD3jRjB5LpdRas
-         Y5NSMurtCWidZFToFy1cwL/XBxIfNw8pRD1q5Tkl+DjQU82h4wug5DMjjkpFX5N/DorO
-         SwsedXFgGBd+s1tGJbH90/3YrEFEevIGRkGo0KerFHlOynd+zFhmCXD6wOxegx+qKcI7
-         whx6NUJOU7zlSU/AwEkpEWHVAccpRcvhOXltX62YPY1hchP+LZnGgdRpe/U837IrWH3D
-         dz5dOl6K+w5srsimqMB2BRtRhqEml7mfZ8+BDapksn3GwHM8o2gHQoLWP2Z3Uu5lfvw3
-         v75A==
+        bh=XH4cPztGrQqsT+SfmP8eyqdVMM+gtgpNj/VjG8VG1nM=;
+        b=RFDw+QHkFGDIWwRdYchdMvdzsKCZaAPs4rT4ufLkxWlPRK1TI6fo0tjk8JODZtXKd4
+         O72HgDCHviGjhjlEXZIeWeRgMHge4ii8LtPQRk1ZM82WyleakaHT/bxJQNT7uYoRE8yd
+         SOGYpBPdjvDJJFdnTOaO+cMv6a2l85flA9T+BpAnhJq3g+mfulEU+5cpzBnFASy/TLUZ
+         N9Cwcsd0p4otAVw0a9HYeTSCK1Sxz4CS2n9g8UPBtXsPDroiRwmeHTmafUJH0EaJcSGS
+         O/nPs75YVwnKxl4fHAQR8KMDd+7m3K4UhR5DhjExN/y7NOq4kENl9IZ+KDKOPDR2/Q/9
+         7jBg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=C3mGVzkNGFQOGZ/y27ZbQkMVyVRvFTFo9AVDkxPU3Qs=;
-        b=rztblNBfLQTcdiE5eFtEkgAmTElt8ofgxj2KzD6lyBnfYXwR8sOYf/PRibSyfUM+om
-         CjD/lOLobE/QrAanF/MD/7mZ5BD3zb+AOTNNkpSuLxRqAPzfWKiPujNkemo61Wz8nTZQ
-         j0qjM3T7kp64HYaFESziPbOgHqafPhi+xNG8RuS7sy2zRbcWu59XoIWIaPA2xS5bwPSY
-         W5loaenWxeeweG6R+4KbBzstuHXcjJAVpgA+Ba8zRL1B8WWSwe35fXEQYv6Hd11Wf7Nv
-         IdLtDWSDRbl4Rh9h5zZfoDO7vRT4VQtUTMgi6KfD1u6AE4fCyxFikU6L6JR8lwyUTdbY
-         Ts8w==
-X-Gm-Message-State: AJIora/7Te44VvfbnkIsAgooZDg70JB1Kc7LlZefEc8EzYOtF/2rQPIx
-        WHCHHKvwvCReYEZhuOdU2nVbxcp4R3icDJD3I1d5Xw==
-X-Google-Smtp-Source: AGRyM1vEAd1x2UNB33pdXaPWBs45WXrfdgTefCVvtafX/mSzrQX5KL9nA7apiMh9koyl9ZSeRjRPZ2w8IZQ0Rvdb+DA=
-X-Received: by 2002:a0c:b30e:0:b0:470:a567:edf6 with SMTP id
- s14-20020a0cb30e000000b00470a567edf6mr326564qve.44.1657236814309; Thu, 07 Jul
- 2022 16:33:34 -0700 (PDT)
+        bh=XH4cPztGrQqsT+SfmP8eyqdVMM+gtgpNj/VjG8VG1nM=;
+        b=svL09GJlMoySPchb3ymJcHPw+Fa5s+/pyMNxgmY9YbnbqdGM4nhcgOzZG2LmqXvPFR
+         4/M4wt8aFyq7RymwK7ebKlwD3rWc8Odk/fDLRBplnqCGuQftPQk9VUAdW9y72+ECILMv
+         CxAoZwnlCzD1UWi1tLYDz90hgAU5KUcIdHeBez8F1nVtexY1tF/mbTTguuJ8G3suAORR
+         UdypgEToFzrAEIk05ssrT7kyD0qEEscbcaXDIuQvY1I2KeswG+tMhS8bogxHr9+mX2if
+         wSaX8PIqs3GMkFyR1XUqUCYWUqZrXnLccFZ1XsukNM+ImFNaLVj+KaHh6H5Yr+r6ILaO
+         TNng==
+X-Gm-Message-State: AJIora+AsrGZ8A2GF3hYdj0jAEHuVYm9p+Ti6Eh3LdWHAaN0OPyNQbAQ
+        kwGA1hpovceSzv8IexiEyC5huYpjJl6BVObpmmF6JQ==
+X-Google-Smtp-Source: AGRyM1sBme6J6p5RCO5xjhv3NKpjQ0wj5ST2F+p/Xh1EL/z7+dP5eFQHgL71McKnLl+LsLYXpBQv/G7H5+l03mEnHyY=
+X-Received: by 2002:a05:6214:c6c:b0:470:a322:6777 with SMTP id
+ t12-20020a0562140c6c00b00470a3226777mr501392qvj.85.1657236994169; Thu, 07 Jul
+ 2022 16:36:34 -0700 (PDT)
 MIME-Version: 1.0
 References: <20220610194435.2268290-1-yosryahmed@google.com>
- <20220610194435.2268290-5-yosryahmed@google.com> <f6c0274d-73c4-e05b-6405-4062230c4a14@fb.com>
-In-Reply-To: <f6c0274d-73c4-e05b-6405-4062230c4a14@fb.com>
+ <20220610194435.2268290-5-yosryahmed@google.com> <40114462-d5e2-ab07-7af9-5e60180027f9@fb.com>
+In-Reply-To: <40114462-d5e2-ab07-7af9-5e60180027f9@fb.com>
 From:   Hao Luo <haoluo@google.com>
-Date:   Thu, 7 Jul 2022 16:33:23 -0700
-Message-ID: <CA+khW7h05O1zg90tkK_7G9u0dhi8jN8WFZ_V_58obSLR4n1iBQ@mail.gmail.com>
+Date:   Thu, 7 Jul 2022 16:36:23 -0700
+Message-ID: <CA+khW7hqVbNWFbZcJz2QWV=c5SD1ci5KOD+t4drYt2-yqpyNTg@mail.gmail.com>
 Subject: Re: [PATCH bpf-next v2 4/8] bpf: Introduce cgroup iter
 To:     Yonghong Song <yhs@fb.com>
 Cc:     Yosry Ahmed <yosryahmed@google.com>,
@@ -84,112 +84,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 27, 2022 at 9:09 PM Yonghong Song <yhs@fb.com> wrote:
+On Mon, Jun 27, 2022 at 9:14 PM Yonghong Song <yhs@fb.com> wrote:
 >
->
->
-> On 6/10/22 12:44 PM, Yosry Ahmed wrote:
-> > From: Hao Luo <haoluo@google.com>
-> >
-> > Cgroup_iter is a type of bpf_iter. It walks over cgroups in two modes:
-> >
-> >   - walking a cgroup's descendants.
-> >   - walking a cgroup's ancestors.
->
-> The implementation has another choice, BPF_ITER_CGROUP_PARENT_UP.
-> We should add it here as well.
->
-
-Sorry about the late reply. I meant to write two modes: walking up and
-walking down. And two sub-modes when walking down: pre-order and
-post-order.
-
-But it seems this is confusing. I'm going to use three modes in the
-next version: UP, PRE and POST.
-
-Besides, since this patch modifies the bpf_iter_link_info, and that
-breaks the btf_dump selftest, I need to include the fix of the
-selftest in this patch.
-
-> >
-> > When attaching cgroup_iter, one can set a cgroup to the iter_link
-> > created from attaching. This cgroup is passed as a file descriptor and
-> > serves as the starting point of the walk. If no cgroup is specified,
-> > the starting point will be the root cgroup.
-> >
-> > For walking descendants, one can specify the order: either pre-order or
-> > post-order. For walking ancestors, the walk starts at the specified
-> > cgroup and ends at the root.
-> >
-> > One can also terminate the walk early by returning 1 from the iter
-> > program.
-> >
-> > Note that because walking cgroup hierarchy holds cgroup_mutex, the iter
-> > program is called with cgroup_mutex held.
->
-> Overall looks good to me with a few nits below.
->
-> Acked-by: Yonghong Song <yhs@fb.com>
->
-> >
-> > Signed-off-by: Hao Luo <haoluo@google.com>
-> > Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
-> > ---
-[...]
-> > +
-> > +/* cgroup_iter provides two modes of traversal to the cgroup hierarchy.
-> > + *
-> > + *  1. Walk the descendants of a cgroup.
-> > + *  2. Walk the ancestors of a cgroup.
->
-> three modes here?
->
-
-Same here. Will use 'three modes' in the next version.
-
-> > + *
-[...]
-> > +
-> > +static int bpf_iter_attach_cgroup(struct bpf_prog *prog,
-> > +                               union bpf_iter_link_info *linfo,
-> > +                               struct bpf_iter_aux_info *aux)
+> > +static int __cgroup_iter_seq_show(struct seq_file *seq,
+> > +                               struct cgroup_subsys_state *css, int in_stop)
 > > +{
-> > +     int fd = linfo->cgroup.cgroup_fd;
-> > +     struct cgroup *cgrp;
+> > +     struct cgroup_iter_priv *p = seq->private;
+> > +     struct bpf_iter__cgroup ctx;
+> > +     struct bpf_iter_meta meta;
+> > +     struct bpf_prog *prog;
+> > +     int ret = 0;
 > > +
-> > +     if (fd)
-> > +             cgrp = cgroup_get_from_fd(fd);
-> > +     else /* walk the entire hierarchy by default. */
-> > +             cgrp = cgroup_get_from_path("/");
+> > +     /* cgroup is dead, skip this element */
+> > +     if (css && cgroup_is_dead(css->cgroup))
+> > +             return 0;
 > > +
-> > +     if (IS_ERR(cgrp))
-> > +             return PTR_ERR(cgrp);
-> > +
-> > +     aux->cgroup.start = cgrp;
-> > +     aux->cgroup.order = linfo->cgroup.traversal_order;
+> > +     ctx.meta = &meta;
+> > +     ctx.cgroup = css ? css->cgroup : NULL;
+> > +     meta.seq = seq;
+> > +     prog = bpf_iter_get_info(&meta, in_stop);
+> > +     if (prog)
+> > +             ret = bpf_iter_run_prog(prog, &ctx);
 >
-> The legality of traversal_order should be checked.
+> Do we need to do anything special to ensure bpf program gets
+> up-to-date stat from ctx.cgroup?
 >
 
-Sounds good. Will do.
+Let's leave that to be handled by bpf programs. The kfunc rstat_flush
+can be called to sync stats, if using rstat.
 
+> > +
+> > +     /* if prog returns > 0, terminate after this element. */
+> > +     if (ret != 0)
+> > +             p->terminate = true;
+> > +
 > > +     return 0;
 > > +}
 > > +
-[...]
-> > +static void bpf_iter_cgroup_show_fdinfo(const struct bpf_iter_aux_info *aux,
-> > +                                     struct seq_file *seq)
-> > +{
-> > +     char *buf;
-> > +
-> > +     buf = kzalloc(PATH_MAX, GFP_KERNEL);
-> > +     if (!buf) {
-> > +             seq_puts(seq, "cgroup_path:\n");
->
-> This is a really unlikely case. maybe "cgroup_path:<unknown>"?
->
-
-Sure, no problem. This is a path that is unlikely to hit.
-
-> > +             goto show_order;
-[...]
+> [...]
