@@ -2,62 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 40485569EA7
-	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 11:40:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A3521569F0B
+	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 12:03:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235228AbiGGJjC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jul 2022 05:39:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42844 "EHLO
+        id S234500AbiGGKCP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jul 2022 06:02:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233857AbiGGJi7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 05:38:59 -0400
-Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85D9F64EC;
-        Thu,  7 Jul 2022 02:38:58 -0700 (PDT)
-Received: by mail-qt1-x82c.google.com with SMTP id x1so21893739qtv.8;
-        Thu, 07 Jul 2022 02:38:58 -0700 (PDT)
+        with ESMTP id S233004AbiGGKCN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 06:02:13 -0400
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FB144F1AE
+        for <netdev@vger.kernel.org>; Thu,  7 Jul 2022 03:02:12 -0700 (PDT)
+Received: by mail-pg1-x52f.google.com with SMTP id g4so17589846pgc.1
+        for <netdev@vger.kernel.org>; Thu, 07 Jul 2022 03:02:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6asbgKWz5KHYE7O0UZbtRVtmQMjaffUmkO0hZOBuxeQ=;
-        b=QZLwCBKyScydvvSOVtGD1qyZw3hrB10MO+G+M0RTJ0CdbEsv5bCrs/twvrHUVXpCLf
-         ORqVcBS34PqcOfTkm69xUoT/vD3Jrfrdg3hgONzXu+MmeyJuQl6oFRcmoL360lMQMN3Z
-         TUcheJAsOhEeOEXCo38BP1aCCoOqMtpZLS4AStuc03Nu6x8q7LLMfzxQq2S9Q8UYP5uD
-         woqYfOdoZWGifHEzFmi4UBdW235DipK8dN+c7/PgEF98ZJ58jXX9SrK4xUELE1UWcG9A
-         qCj31+W9q3mwNZDyVirI6n0q8fAbDp/lrSECKgOMb4PCPh2oRHJ+P2QOp/6GMo2+CnIX
-         eMeQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=G8LqfIwmX0KVqykESRh2eYWw/y6SCPPm5x+a8wmY5Qg=;
+        b=mFgVMmZZeaBzSub0zx1+ptEqxUuzvF5ngkk+vYSJHNBAtrm2bjvmFtq0FFfkyUxZ34
+         Wc/IS84uL86iZXrj+D0GI94HMCARKr1kPDBmizHPDw73wWCx5nE7NEvW2hUSKtk2bEAW
+         ghxQMXqlx70HgwWCDrAjwYWCzye3ORi1SiQenbWpb4ZkUN3862g/0huU7YqZaBjczcvD
+         96XhBHYV+oeWL0eyiXzrPXopD9kkOimSLYcmpKgfLviea6G012V47vTDw0rnGjX80i1n
+         fwx56hlSqk7gnHQAZtXRBRC6nioDit1cfVGmDCMLrk6BkZY1Rh+UKZwTVxn8I8R+b/m0
+         aRbA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6asbgKWz5KHYE7O0UZbtRVtmQMjaffUmkO0hZOBuxeQ=;
-        b=kWmXOBk4bN0cYM+zJaVHVo/fUALAbCviQkk7s34ZnzXaBcBICliXL8Thr3pQYRg50I
-         oZeDaMgUy8ruaF+HpUtmlrftUoAJndn/qkSb+q47ULbKEQGIcEjyNpC0tan7XYZIVeRy
-         ygwa4pSkYMg6M0I82IUyWuF5yc/d1xcA1hv3NIzaukkZ1gUsuooyl9Ih+eKggLYQo2ZX
-         ECyr+XyN2xEx7T283q+wvzsJGcTiEXQwMrd3V8n5jFOunE5BGdg4TiMEz0JT3lmWF0ah
-         2gVo+WnnDN0JjMuAw/VahbFKgm68dCu4lPqNSegV941CwPFvLc3OEtc51f2v4/F9v3lS
-         9cIg==
-X-Gm-Message-State: AJIora+4djS+uOBKiOKyGlfSg2o0KPp7ZMfk82beJLy0/NOeEw2i1VGw
-        liSzxj216K7b/8zbJwQTYY8+kmMmXi3nQDhKe8CdNoEroWXMUw==
-X-Google-Smtp-Source: AGRyM1u1DxVEueyr4AjU7AJ8HsYZD917QDTURHYtEpLChyDxMkomtkQpXPfMEGhLJHPknvmFFijnt7114s+rnyC5QSQ=
-X-Received: by 2002:a0c:9719:0:b0:473:2d8e:60b9 with SMTP id
- k25-20020a0c9719000000b004732d8e60b9mr1921725qvd.122.1657186737605; Thu, 07
- Jul 2022 02:38:57 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=G8LqfIwmX0KVqykESRh2eYWw/y6SCPPm5x+a8wmY5Qg=;
+        b=2fdbFwT8sAdnQosCC96ZPnfiE+UE6J19GD2snXYrHF8fC7YhLXlf4cr00QPM3mIh/I
+         sXTE3nWyZZJqB1NEhi78WCBGjPWKQY2WTrADnYhgjAEb/dfGOD8I7RldrP94d73syPly
+         LD2CU0hPxg+5b/JsSsO3ifKzGZIIO6W0zQN+z7DFFRl3zUozFsS+KIkgU32oBelJWSeq
+         UXYMePuVFJodBAZ4O1BR4sN6IrSPegaIgnfPJSBJRAg+AOQFp4ewSADsMiE5JZbDgmEp
+         7Ea3Gnv7mZJAwVJQM70mGelhDu9DaQesPAQMH8lUi2nQpvqUBsQ5fJpmzpR2vq3ShkfL
+         qEIA==
+X-Gm-Message-State: AJIora+sZthhWhSh4msWfESamHIbRYb3jtKD/LbFMaZB5+ZHZW0swgtH
+        LZxHXrpV9hd427yQ+nPqS7c=
+X-Google-Smtp-Source: AGRyM1sIrfAA3StQFQs483RRK/cGThJqhe+aoy9qbqQur33Z3PyXw0elLtJcu25GNbHFvr3Vz+LGIw==
+X-Received: by 2002:a17:90b:17c6:b0:1ec:dcc8:370a with SMTP id me6-20020a17090b17c600b001ecdcc8370amr4073205pjb.63.1657188131966;
+        Thu, 07 Jul 2022 03:02:11 -0700 (PDT)
+Received: from sewookseo1.c.googlers.com.com (174.71.80.34.bc.googleusercontent.com. [34.80.71.174])
+        by smtp.gmail.com with ESMTPSA id z15-20020a6553cf000000b003fadd680908sm25626986pgr.83.2022.07.07.03.02.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Jul 2022 03:02:11 -0700 (PDT)
+From:   Sewook Seo <ssewook@gmail.com>
+To:     Sewook Seo <sewookseo@google.com>
+Cc:     Linux Network Development Mailing List <netdev@vger.kernel.org>,
+        "David S . Miller " <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Sehee Lee <seheele@google.com>
+Subject: [PATCH v5 net-next] net: Find dst with sk's xfrm policy not ctl_sk
+Date:   Thu,  7 Jul 2022 10:01:39 +0000
+Message-Id: <20220707100139.3748417-1-ssewook@gmail.com>
+X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
+In-Reply-To: <20220707054008.3471371-1-ssewook@gmail.com>
+References: <20220707054008.3471371-1-ssewook@gmail.com>
 MIME-Version: 1.0
-References: <20220706160021.10710-1-matthias.may@westermo.com>
- <CAHsH6GsN=kykC32efTWhHKSPqi8Qn3HYgRursSSY2JiFf2hijw@mail.gmail.com> <45a19551-6004-2453-2f16-a7af5d5c0a59@westermo.com>
-In-Reply-To: <45a19551-6004-2453-2f16-a7af5d5c0a59@westermo.com>
-From:   Eyal Birger <eyal.birger@gmail.com>
-Date:   Thu, 7 Jul 2022 12:38:46 +0300
-Message-ID: <CAHsH6GtyXozwURA17DANjmmEVNRXTKZ-HASD6RhzisJ-+LZ=8Q@mail.gmail.com>
-Subject: Re: [PATCH net-next v2] ip_tunnel: allow to inherit from VLAN
- encapsulated IP frames
-To:     Matthias May <matthias.may@westermo.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -68,59 +78,123 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 7, 2022 at 10:44 AM Matthias May <matthias.may@westermo.com> wrote:
->
-> On 7/6/22 19:24, Eyal Birger wrote:
-> >
-> > Hi,
-> >
-> > On Wed, Jul 6, 2022 at 7:54 PM Matthias May <matthias.may@westermo.com <mailto:matthias.may@westermo.com>> wrote:
-> >
-> >     The current code allows to inherit the TOS, TTL, DF from the payload
-> >     when skb->protocol is ETH_P_IP or ETH_P_IPV6.
-> >     However when the payload is VLAN encapsulated (e.g because the tunnel
-> >     is of type GRETAP), then this inheriting does not work, because the
-> >     visible skb->protocol is of type ETH_P_8021Q.
-> >
-> >     Add a check on ETH_P_8021Q and subsequently check the payload protocol.
-> >
-> >     Signed-off-by: Matthias May <matthias.may@westermo.com <mailto:matthias.may@westermo.com>>
-> >     ---
-> >     v1 -> v2:
-> >       - Add support for ETH_P_8021AD as suggested by Jakub Kicinski.
-> >     ---
-> >       net/ipv4/ip_tunnel.c | 22 ++++++++++++++--------
-> >       1 file changed, 14 insertions(+), 8 deletions(-)
-> >
-> >     diff --git a/net/ipv4/ip_tunnel.c b/net/ipv4/ip_tunnel.c
-> >     index 94017a8c3994..bdcc0f1e83c8 100644
-> >     --- a/net/ipv4/ip_tunnel.c
-> >     +++ b/net/ipv4/ip_tunnel.c
-> >     @@ -648,6 +648,13 @@ void ip_tunnel_xmit(struct sk_buff *skb, struct net_device *dev,
-> >              u8 tos, ttl;
-> >              __be32 dst;
-> >              __be16 df;
-> >     +       __be16 *payload_protocol;
-> >     +
-> >     +       if (skb->protocol == htons(ETH_P_8021Q) ||
-> >     +           skb->protocol == htons(ETH_P_8021AD))
-> >     +               payload_protocol = (__be16 *)(skb->head + skb->network_header - 2);
-> >     +       else
-> >     +               payload_protocol = &skb->protocol;
-> >
-> >
-> > Maybe it's better to use skb_protocol(skb, true) here instead of open
-> > coding the vlan parsing?
-> >
-> > Eyal
->
-> Hi Eyal
-> I've looked into using skb_protocol(skb, true).
-> If skip_vlan is set to true, wouldn't it make sense to use vlan_get_protocol(skb) directly?
+From: sewookseo <sewookseo@google.com>
 
-Since it's inlined i don't think it makes a practical difference.
-Personally I'd find it more readable to use skb_protocol() here because
-VLANs are the less expected path, and the change is basically to ignore
-them.
+If we set XFRM security policy by calling setsockopt with option
+IPV6_XFRM_POLICY, the policy will be stored in 'sock_policy' in 'sock'
+struct. However tcp_v6_send_response doesn't look up dst_entry with the
+actual socket but looks up with tcp control socket. This may cause a
+problem that a RST packet is sent without ESP encryption & peer's TCP
+socket can't receive it.
+This patch will make the function look up dest_entry with actual socket,
+if the socket has XFRM policy(sock_policy), so that the TCP response
+packet via this function can be encrypted, & aligned on the encrypted
+TCP socket.
 
-Eyal.
+Tested: We encountered this problem when a TCP socket which is encrypted
+in ESP transport mode encryption, receives challenge ACK at SYN_SENT
+state. After receiving challenge ACK, TCP needs to send RST to
+establish the socket at next SYN try. But the RST was not encrypted &
+peer TCP socket still remains on ESTABLISHED state.
+So we verified this with test step as below.
+[Test step]
+1. Making a TCP state mismatch between client(IDLE) & server(ESTABLISHED).
+2. Client tries a new connection on the same TCP ports(src & dst).
+3. Server will return challenge ACK instead of SYN,ACK.
+4. Client will send RST to server to clear the SOCKET.
+5. Client will retransmit SYN to server on the same TCP ports.
+[Expected result]
+The TCP connection should be established.
+
+Cc: Maciej Żenczykowski <maze@google.com>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Steffen Klassert <steffen.klassert@secunet.com>
+Cc: Sehee Lee <seheele@google.com>
+Signed-off-by: Sewook Seo <sewookseo@google.com>
+---
+Changelog since v4:
+- tcp_ipv6.c Using net instead of sock_net(ctl_sk) for consistency.
+
+Changelog since v3:
+- avoid to use ifdef directives for CONFIG_XFRM
+
+Changelog since v2:
+- condition check with sk_fullsock() instead of SYN_SENT state
+
+Changelog since v1:
+- Remove unnecessary null check of sk at ip_output.c
+  Narrow down patch scope: sending RST at SYN_SENT state
+  Remove unnecessay condition to call xfrm_sk_free_policy()
+---
+
+ include/net/xfrm.h   | 2 ++
+ net/ipv4/ip_output.c | 2 +-
+ net/ipv4/tcp_ipv4.c  | 2 ++
+ net/ipv6/tcp_ipv6.c  | 5 ++++-
+ 4 files changed, 9 insertions(+), 2 deletions(-)
+
+diff --git a/include/net/xfrm.h b/include/net/xfrm.h
+index 9287712ad977..67b799ef5f67 100644
+--- a/include/net/xfrm.h
++++ b/include/net/xfrm.h
+@@ -1195,6 +1195,8 @@ int __xfrm_sk_clone_policy(struct sock *sk, const struct sock *osk);
+ 
+ static inline int xfrm_sk_clone_policy(struct sock *sk, const struct sock *osk)
+ {
++	if (!sk_fullsock(osk))
++		return 0;
+ 	sk->sk_policy[0] = NULL;
+ 	sk->sk_policy[1] = NULL;
+ 	if (unlikely(osk->sk_policy[0] || osk->sk_policy[1]))
+diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
+index 00b4bf26fd93..1c0013c9a9d1 100644
+--- a/net/ipv4/ip_output.c
++++ b/net/ipv4/ip_output.c
+@@ -1704,7 +1704,7 @@ void ip_send_unicast_reply(struct sock *sk, struct sk_buff *skb,
+ 			   tcp_hdr(skb)->source, tcp_hdr(skb)->dest,
+ 			   arg->uid);
+ 	security_skb_classify_flow(skb, flowi4_to_flowi_common(&fl4));
+-	rt = ip_route_output_key(net, &fl4);
++	rt = ip_route_output_flow(net, &fl4, sk);
+ 	if (IS_ERR(rt))
+ 		return;
+ 
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index fda811a5251f..076010f82939 100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -819,6 +819,7 @@ static void tcp_v4_send_reset(const struct sock *sk, struct sk_buff *skb)
+ 		ctl_sk->sk_priority = (sk->sk_state == TCP_TIME_WAIT) ?
+ 				   inet_twsk(sk)->tw_priority : sk->sk_priority;
+ 		transmit_time = tcp_transmit_time(sk);
++		xfrm_sk_clone_policy(ctl_sk, sk);
+ 	}
+ 	ip_send_unicast_reply(ctl_sk,
+ 			      skb, &TCP_SKB_CB(skb)->header.h4.opt,
+@@ -827,6 +828,7 @@ static void tcp_v4_send_reset(const struct sock *sk, struct sk_buff *skb)
+ 			      transmit_time);
+ 
+ 	ctl_sk->sk_mark = 0;
++	xfrm_sk_free_policy(ctl_sk);
+ 	sock_net_set(ctl_sk, &init_net);
+ 	__TCP_INC_STATS(net, TCP_MIB_OUTSEGS);
+ 	__TCP_INC_STATS(net, TCP_MIB_OUTRSTS);
+diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
+index c72448ba6dc9..70d4890d8d2f 100644
+--- a/net/ipv6/tcp_ipv6.c
++++ b/net/ipv6/tcp_ipv6.c
+@@ -952,7 +952,10 @@ static void tcp_v6_send_response(const struct sock *sk, struct sk_buff *skb, u32
+ 	 * Underlying function will use this to retrieve the network
+ 	 * namespace
+ 	 */
+-	dst = ip6_dst_lookup_flow(sock_net(ctl_sk), ctl_sk, &fl6, NULL);
++	if (sk && sk->sk_state != TCP_TIME_WAIT)
++		dst = ip6_dst_lookup_flow(net, sk, &fl6, NULL); /*sk's xfrm_policy can be referred*/
++	else
++		dst = ip6_dst_lookup_flow(net, ctl_sk, &fl6, NULL);
+ 	if (!IS_ERR(dst)) {
+ 		skb_dst_set(buff, dst);
+ 		ip6_xmit(ctl_sk, buff, &fl6, fl6.flowi6_mark, NULL,
+-- 
+2.37.0.rc0.161.g10f37bed90-goog
+
