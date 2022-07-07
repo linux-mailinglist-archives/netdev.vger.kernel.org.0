@@ -2,53 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A0F38569844
-	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 04:37:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B9C7569858
+	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 04:50:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234494AbiGGChs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jul 2022 22:37:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46916 "EHLO
+        id S234161AbiGGCuS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jul 2022 22:50:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235011AbiGGChj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 22:37:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E993EB5
-        for <netdev@vger.kernel.org>; Wed,  6 Jul 2022 19:37:39 -0700 (PDT)
+        with ESMTP id S234177AbiGGCuR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jul 2022 22:50:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33A0D2F3B9;
+        Wed,  6 Jul 2022 19:50:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D4EAAB81F44
-        for <netdev@vger.kernel.org>; Thu,  7 Jul 2022 02:37:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45471C341C6;
-        Thu,  7 Jul 2022 02:37:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BA4E0620D1;
+        Thu,  7 Jul 2022 02:50:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 16CB4C341CA;
+        Thu,  7 Jul 2022 02:50:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657161456;
-        bh=IJRIxOmyCRxqRD6kK6334kr2360kQdOjcS/uV2zNkwE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=uoOpKi5QIE6Rwrgy2PztrkOZlkJK5xYsIWFrwlTT84s3T+qobZ2NMJY+wNXtX/ZfW
-         XFdIve/x1ClAgIOU6FmWe54MT76QTKjfAfgTQ682MOtnhhsCCY8fWaD3UY9BoiAdXR
-         TtH3pgcIxD/mI/122osdy71iu22GD/rwzrBiLXjgyfhC9rqtXhw1mJ5o4mSuTB8jQV
-         JTS8lOOInWdkRVwkzAQi4WkTKNZfUHtTfz2WDJX6aSR+N+6cKXGhNkGBwKQbMInB/M
-         0B6u3KWOxDUIgBYCfoalYwiotAPaxGam+UZp6eff7l0pu4hte7ZvjuMR3+rK2j1Gxe
-         eqKoNIYYZ/R7A==
-Date:   Wed, 6 Jul 2022 19:37:35 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Maxim Mikityanskiy <maximmi@nvidia.com>
-Subject: Re: [net-next 11/15] net/tls: Multi-threaded calls to TX
- tls_dev_del
-Message-ID: <20220706193735.49d5f081@kernel.org>
-In-Reply-To: <20220706232421.41269-12-saeed@kernel.org>
-References: <20220706232421.41269-1-saeed@kernel.org>
-        <20220706232421.41269-12-saeed@kernel.org>
+        s=k20201202; t=1657162214;
+        bh=XnQK+eECpSZ3e/MV59t4zcybku2jGtfF2yLmp9tJmu4=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=miV66brl/WVnGDjly/OQG1OU9EAtjYV1owEwJA4PUaM7mp2902LxMLnNV3uDuOfNl
+         GcvbN5uPSKQpzZ2PG1WAgT9eT8zCDnJsV4utXLOIR6gooTVf1E4XHvBvriPHHBI87H
+         hai5OMAcX9SaB5h7fbX34zdH7vn/y7RtWesQ/z/+Ku9X/PRAj3/+QffJ/QFAaVurbO
+         335/BATyx+YdR67PmqNbsB/DAczrCondHV0IwTCiqNmXSjKwAm6rVBv3WUl7rgb+W7
+         /d6xi+8hgsJXtzJTU2dWmFCe7pYQt6unFIx0SBFep56vsbfK9dmL3jeRPhBT0vI5T5
+         IBa7PqdLnDZLg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id F3705E45BDE;
+        Thu,  7 Jul 2022 02:50:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCHv3] usbnet: fix memory leak in error case
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165716221399.6818.11575624289125230749.git-patchwork-notify@kernel.org>
+Date:   Thu, 07 Jul 2022 02:50:13 +0000
+References: <20220705125351.17309-1-oneukum@suse.com>
+In-Reply-To: <20220705125351.17309-1-oneukum@suse.com>
+To:     Oliver Neukum <oneukum@suse.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
+        linux-usb@vger.kernel.org
 X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -59,42 +56,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed,  6 Jul 2022 16:24:17 -0700 Saeed Mahameed wrote:
-> diff --git a/include/net/tls.h b/include/net/tls.h
-> index 4fc16ca5f469..c4be74635502 100644
-> --- a/include/net/tls.h
-> +++ b/include/net/tls.h
-> @@ -163,6 +163,11 @@ struct tls_record_info {
->  	skb_frag_t frags[MAX_SKB_FRAGS];
->  };
->  
-> +struct destruct_work {
-> +	struct work_struct work;
-> +	struct tls_context *ctx;
+Hello:
 
-Pretty strange to bundle the back-pointer with the work.
-Why not put it directly in struct tls_offload_context_tx?
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-Also now that we have the backpointer, can we move the list member of
-struct tls_context to the offload context? (I haven't checked if its
-used in other places)
+On Tue,  5 Jul 2022 14:53:51 +0200 you wrote:
+> usbnet_write_cmd_async() mixed up which buffers
+> need to be freed in which error case.
+> 
+> v2: add Fixes tag
+> v3: fix uninitialized buf pointer
+> 
+> Fixes: 877bd862f32b8 ("usbnet: introduce usbnet 3 command helpers")
+> Signed-off-by: Oliver Neukum <oneukum@suse.com>
+> 
+> [...]
 
->  
->  	up_write(&device_offload_lock);
->  
-> -	flush_work(&tls_device_gc_work);
-> -
->  	return NOTIFY_DONE;
->  }
->  
-> @@ -1435,6 +1416,5 @@ void __init tls_device_init(void)
->  void __exit tls_device_cleanup(void)
->  {
->  	unregister_netdevice_notifier(&tls_dev_notifier);
-> -	flush_work(&tls_device_gc_work);
->  	clean_acked_data_flush();
->  }
+Here is the summary with links:
+  - [PATCHv3] usbnet: fix memory leak in error case
+    https://git.kernel.org/netdev/net/c/b55a21b764c1
 
-Why don't we need the flush any more? The module reference is gone as
-soon as destructor runs (i.e. on ULP cleanup), the work can still be
-pending, no?
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
