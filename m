@@ -2,66 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 67969569E54
+	by mail.lfdr.de (Postfix) with ESMTP id B1228569E55
 	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 11:13:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234399AbiGGJL5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jul 2022 05:11:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53606 "EHLO
+        id S234746AbiGGJNG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jul 2022 05:13:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232095AbiGGJLz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 05:11:55 -0400
-Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44BCF27178;
-        Thu,  7 Jul 2022 02:11:54 -0700 (PDT)
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 2679BfO4067950;
-        Thu, 7 Jul 2022 04:11:41 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1657185101;
-        bh=9T7T+TcW3HB3h8rQseCPo2y1Th8ApZJxTQE8TAFp8Gs=;
-        h=Date:CC:Subject:To:References:From:In-Reply-To;
-        b=xVQvcz/s4JVxY3lyuL14IjrzuOByKg/31LSIMxjgkZlety+v0RDEwDW8MxKDUSguO
-         lFrJkScwL7IoW3GJSpBEBl5bWdU6P5c3fFwNoroOZXU4QgVvlS8d231em1omyCZoZp
-         vcDAfWv6ErAN5S7G/Y1mwyqwK1mAjltJctUB38kI=
-Received: from DLEE107.ent.ti.com (dlee107.ent.ti.com [157.170.170.37])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 2679BeTM004246
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 7 Jul 2022 04:11:41 -0500
-Received: from DLEE113.ent.ti.com (157.170.170.24) by DLEE107.ent.ti.com
- (157.170.170.37) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Thu, 7
- Jul 2022 04:11:40 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE113.ent.ti.com
- (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Thu, 7 Jul 2022 04:11:40 -0500
-Received: from [172.24.222.108] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 2679Baj4023761;
-        Thu, 7 Jul 2022 04:11:37 -0500
-Message-ID: <5d06687a-17f1-4d5c-7d3f-83d11e5ec2e7@ti.com>
-Date:   Thu, 7 Jul 2022 14:41:35 +0530
+        with ESMTP id S231545AbiGGJNG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 05:13:06 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 549FA27B05;
+        Thu,  7 Jul 2022 02:13:05 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id v12so9695426edc.10;
+        Thu, 07 Jul 2022 02:13:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=x+63eUrjXUS+FoLmYUnXUsHGEfQ+CC/XntxoPecjWQY=;
+        b=MZSl682fLdY5iXGZZoTOwJ/2sZL5DCelmQ9ACkQCf9eXeXxmEo7j93wyWmcpKINfRu
+         XbyS9U9t9bE/kGVT/NBlYlFkJf6CpCkWo68pTY5j3dgWwzW564NCmsbX4ULon0D5WuW1
+         tRaZMZ1EPnxbAnVxCbPgAzX2cEoSXt2/eiR240jY2pIryUebGuEgTS94+SKf4HPTgbLP
+         mguGaQtE+T0ounVqFWMK/CV6RA6M7hNqipiSLxPyyIcM31pxmvANtkBWaXt6JBWlafrS
+         s+e8ZeyjS19IBk9l7YgDh5u6CnfgyogFltZwFJBpKhbRYLa953ItBdO39iUzn3Lg5fTx
+         JrPg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=x+63eUrjXUS+FoLmYUnXUsHGEfQ+CC/XntxoPecjWQY=;
+        b=sacVKz/oDnsyX6hcAy4FUbZVqJ6psdQhPJZaHJ4mswtSgwVbtLaATETxp8wyqb1bLb
+         5cWUay5c30ylnDsUqwNgaceflG9Gpcc5IBAALGwMq+ljCyAohu20bmmILU93ArcYGah7
+         K/P0StM5nV4cPdGtGKEKRlSCVb4Uv1COOzr1xw/44Sce2IPwLL54F74KUZjC880MvkNi
+         qeznJf7m3nmY/AXbVdmz+A+/VClHiPMrbJI1PuHcJjKTmoui990eoS91mW8KhUhpukvM
+         oVDJm4HQ1bTLxORwzeP/dGBwRFudTKEND/cz/ba5e2wZz9+B59xICXpDYQbDT/VNmDBD
+         5uGQ==
+X-Gm-Message-State: AJIora8Hn3gX8Qcj73dLAAZkTw0oRXlr4euwbqNVaISio+BZJBv+3Zm+
+        JHHzQH1s2xdpPOsp3j/xZUw=
+X-Google-Smtp-Source: AGRyM1tYBw5UwvRzB1BekPXgl8hXIyXb25xvzrpMxlE3LhiqtZQ/kkB01z6WGG45sSJVN4TuEjaKwA==
+X-Received: by 2002:a05:6402:34c5:b0:43a:8f90:e643 with SMTP id w5-20020a05640234c500b0043a8f90e643mr8925308edc.88.1657185183791;
+        Thu, 07 Jul 2022 02:13:03 -0700 (PDT)
+Received: from debian64.daheim (pd9e295da.dip0.t-ipconnect.de. [217.226.149.218])
+        by smtp.gmail.com with ESMTPSA id b7-20020a17090630c700b0072aebed5937sm3385767ejb.221.2022.07.07.02.13.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Jul 2022 02:13:03 -0700 (PDT)
+Received: from localhost.daheim ([127.0.0.1])
+        by debian64.daheim with esmtp (Exim 4.96)
+        (envelope-from <chunkeey@gmail.com>)
+        id 1o9NZH-00084J-0W;
+        Thu, 07 Jul 2022 11:13:03 +0200
+Message-ID: <1e1c7c7e-ef86-e4c9-92cc-f28bf6ec6b8a@gmail.com>
+Date:   Thu, 7 Jul 2022 11:13:03 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <linux@armlinux.org.uk>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <kishon@ti.com>, <vigneshr@ti.com>, <grygorii.strashko@ti.com>,
-        <s-vadapalli@ti.com>
-Subject: Re: [PATCH net v3] net: ethernet: ti: am65-cpsw: Fix devlink port
- register sequence
-Content-Language: en-US
-To:     Paolo Abeni <pabeni@redhat.com>
-References: <20220706070208.12207-1-s-vadapalli@ti.com>
- <e454f6de32de3be092260d19da24f58635eb6e49.camel@redhat.com>
-From:   Siddharth Vadapalli <s-vadapalli@ti.com>
-In-Reply-To: <e454f6de32de3be092260d19da24f58635eb6e49.camel@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-X-Spam-Status: No, score=-5.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+ Thunderbird/91.11.0
+Subject: Re: [RESEND] [PATCH] p54: Use the bitmap API to allocate bitmaps
+Content-Language: de-DE
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Christian Lamparter <chunkeey@googlemail.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+References: <2755b8b7d85a2db0663d39ea6df823f94f3401b3.1656939750.git.christophe.jaillet@wanadoo.fr>
+From:   Christian Lamparter <chunkeey@gmail.com>
+In-Reply-To: <2755b8b7d85a2db0663d39ea6df823f94f3401b3.1656939750.git.christophe.jaillet@wanadoo.fr>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -69,118 +84,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Paolo,
+Hi,
 
-On 07/07/22 13:00, Paolo Abeni wrote:
-> On Wed, 2022-07-06 at 12:32 +0530, Siddharth Vadapalli wrote:
->> Renaming interfaces using udevd depends on the interface being registered
->> before its netdev is registered. Otherwise, udevd reads an empty
->> phys_port_name value, resulting in the interface not being renamed.
->>
->> Fix this by registering the interface before registering its netdev
->> by invoking am65_cpsw_nuss_register_devlink() before invoking
->> register_netdev() for the interface.
->>
->> Move the function call to devlink_port_type_eth_set(), invoking it after
->> register_netdev() is invoked, to ensure that netlink notification for the
->> port state change is generated after the netdev is completely initialized.
->>
->> Fixes: 58356eb31d60 ("net: ti: am65-cpsw-nuss: Add devlink support")
->> Signed-off-by: Siddharth Vadapalli <s-vadapalli@ti.com>
->> ---
->> Changelog:
->> v2 -> v3:
->> 1. Add error handling to unregister devlink.
->>
->> v1-> v2:
->> 1. Add Fixes tag in commit message.
->> 2. Update patch subject to include "net".
->> 3. Invoke devlink_port_type_eth_set() after register_netdev() is called.
->> 4. Update commit message describing the cause for moving the call to
->>    devlink_port_type_eth_set().
->>
->> v2: https://lore.kernel.org/r/20220704073040.7542-1-s-vadapalli@ti.com/
->> v1: https://lore.kernel.org/r/20220623044337.6179-1-s-vadapalli@ti.com/
->>
->>  drivers/net/ethernet/ti/am65-cpsw-nuss.c | 17 ++++++++++-------
->>  1 file changed, 10 insertions(+), 7 deletions(-)
->>
->> diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
->> index fb92d4c1547d..f4a6b590a1e3 100644
->> --- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
->> +++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
->> @@ -2467,7 +2467,6 @@ static int am65_cpsw_nuss_register_devlink(struct am65_cpsw_common *common)
->>  				port->port_id, ret);
->>  			goto dl_port_unreg;
->>  		}
->> -		devlink_port_type_eth_set(dl_port, port->ndev);
->>  	}
->>  	devlink_register(common->devlink);
->>  	return ret;
->> @@ -2511,6 +2510,7 @@ static void am65_cpsw_unregister_devlink(struct am65_cpsw_common *common)
->>  static int am65_cpsw_nuss_register_ndevs(struct am65_cpsw_common *common)
->>  {
->>  	struct device *dev = common->dev;
->> +	struct devlink_port *dl_port;
->>  	struct am65_cpsw_port *port;
->>  	int ret = 0, i;
->>  
->> @@ -2527,6 +2527,10 @@ static int am65_cpsw_nuss_register_ndevs(struct am65_cpsw_common *common)
->>  		return ret;
->>  	}
->>  
->> +	ret = am65_cpsw_nuss_register_devlink(common);
->> +	if (ret)
->> +		return ret;
->> +
->>  	for (i = 0; i < common->port_num; i++) {
->>  		port = &common->ports[i];
->>  
->> @@ -2539,25 +2543,24 @@ static int am65_cpsw_nuss_register_ndevs(struct am65_cpsw_common *common)
->>  				i, ret);
->>  			goto err_cleanup_ndev;
->>  		}
->> +
->> +		dl_port = &port->devlink_port;
->> +		devlink_port_type_eth_set(dl_port, port->ndev);
->>  	}
->>  
->>  	ret = am65_cpsw_register_notifiers(common);
->>  	if (ret)
->>  		goto err_cleanup_ndev;
->>  
->> -	ret = am65_cpsw_nuss_register_devlink(common);
->> -	if (ret)
->> -		goto clean_unregister_notifiers;
->> -
->>  	/* can't auto unregister ndev using devm_add_action() due to
->>  	 * devres release sequence in DD core for DMA
->>  	 */
->>  
->>  	return 0;
->> -clean_unregister_notifiers:
->> -	am65_cpsw_unregister_notifiers(common);
->> +
->>  err_cleanup_ndev:
->>  	am65_cpsw_nuss_cleanup_ndev(common);
->> +	am65_cpsw_unregister_devlink(common);
+I'm sending this again because Android added HTML. Sorry for that.
+
+On 04/07/2022 15:02, Christophe JAILLET wrote:
+> Use bitmap_zalloc()/bitmap_free() instead of hand-writing them.
 > 
-> It looks strange that there is no error path leading to
-> am65_cpsw_unregister_devlink() only.
+> It is less verbose and it improves the semantic.
 > 
-> Why we don't need to call it when/if devm_request_irq() fails? 
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Acked-by: Christian Lamparter <chunkeey@gmail.com>
 
-am65_cpsw_nuss_register_devlink() is invoked after devm_request_irq() and
-devm_request_irq()'s associated error handling.
-
+> ---
+>   drivers/net/wireless/intersil/p54/fwio.c | 6 ++----
+>   drivers/net/wireless/intersil/p54/main.c | 2 +-
+>   2 files changed, 3 insertions(+), 5 deletions(-)
 > 
-> Not strictly related to this patch, but it looks like there is another
-> suspect cleanup point: if a 'register_netdev()' call fails, the cleanup
-> code will still call unregister_netdev() on the relevant device and the
-> later ones, hitting a WARN_ON(1) in unregister_netdevice_many().
+> diff --git a/drivers/net/wireless/intersil/p54/fwio.c b/drivers/net/wireless/intersil/p54/fwio.c
+> index bece14e4ff0d..b52cce38115d 100644
+> --- a/drivers/net/wireless/intersil/p54/fwio.c
+> +++ b/drivers/net/wireless/intersil/p54/fwio.c
+> @@ -173,10 +173,8 @@ int p54_parse_firmware(struct ieee80211_hw *dev, const struct firmware *fw)
+>   		 * keeping a extra list for uploaded keys.
+>   		 */
+>   
+> -		priv->used_rxkeys = kcalloc(BITS_TO_LONGS(priv->rx_keycache_size),
+> -					    sizeof(long),
+> -					    GFP_KERNEL);
+> -
+> +		priv->used_rxkeys = bitmap_zalloc(priv->rx_keycache_size,
+> +						  GFP_KERNEL);
+>   		if (!priv->used_rxkeys)
+>   			return -ENOMEM;
+>   	}
+> diff --git a/drivers/net/wireless/intersil/p54/main.c b/drivers/net/wireless/intersil/p54/main.c
+> index 115be1f3f33d..c1e1711382a7 100644
+> --- a/drivers/net/wireless/intersil/p54/main.c
+> +++ b/drivers/net/wireless/intersil/p54/main.c
+> @@ -830,7 +830,7 @@ void p54_free_common(struct ieee80211_hw *dev)
+>   	kfree(priv->output_limit);
+>   	kfree(priv->curve_data);
+>   	kfree(priv->rssi_db);
+> -	kfree(priv->used_rxkeys);
+> +	bitmap_free(priv->used_rxkeys);
+>   	kfree(priv->survey);
+>   	priv->iq_autocal = NULL;
+>   	priv->output_limit = NULL;
 
-Thank you for pointing it out. I will look at it and address it in a separate
-cleanup patch.
-
-Regards,
-Siddharth.
