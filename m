@@ -2,136 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 64C4856A682
-	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 17:02:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B77D56A6DB
+	for <lists+netdev@lfdr.de>; Thu,  7 Jul 2022 17:27:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236188AbiGGPBS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jul 2022 11:01:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56802 "EHLO
+        id S235122AbiGGP1e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jul 2022 11:27:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236301AbiGGPBB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 11:01:01 -0400
-Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2062.outbound.protection.outlook.com [40.107.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7882C5C959;
-        Thu,  7 Jul 2022 08:00:30 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=H0nd8juVVxdlIYphYSYKTb4p6hFAJMCJ4ISDk/oEUFvr04hexuWws5pqH2fHQJHxLEdNN+AWfS7wsmwA2meNg+FCyjDdKWZqqsU7o7sXiu6XoAv1uf7P2XD0LX8hc1+Pwl8bFbUbXy289WQehpievQjWQaX8eNC7nEM88uIYDB0gCTjQgCzNA4rUyfCWFrPkgdQnnmxTFwFYuWyduk/dzXWXQgQvbwBRzOTptM9HcSyZJ8HcfEdtGKbUe7pb44RitPUs5+xOL5EJoRXJB+NhiPxBEQLz20DmKC57BPPMZsNgJrKlaIRNlCZ4JTsTzXgG2lWTr3ZwUjClFszJLpvCyg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ecedMdUa9UhAfpsTIqAEINcbcP/2xpTrW3vWneaE0L8=;
- b=me0tur5dCQUxaTzXUgFjOEbIdAwYN2cCi4zpEak2xBOj0fa4XKjucM/EZodKsmn7plxGyrm5iKuhIyYx4MIZ5tJLKnEn9d/sUQASkt6XlM66YpEq87w4GjiI9xnxIi+Jl+jB7nJIrjsu8IyTRRxWtsxzjX51ruj7xRIgd9oj0cmYN+nHBMS1q+PSY1NJt9KpfCOOqU7ArZmTBdYuKivQg8/1sLqfGsMUUQSvJZ6CvNlrnaHCkKXXIsxRyU74ktJ78Liyxsgo/cc9s5NhxgX0GRLbIEAiT6HaeHNLMr+1y/UPTn9S6uGE8kOCftIAIdKFNKXt5wIn/SnCzo5Juw48gA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
- dkim=pass header.d=seco.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ecedMdUa9UhAfpsTIqAEINcbcP/2xpTrW3vWneaE0L8=;
- b=qt4OcKo2aokeAzEjsoGJ2eqCu2yMAZzAWQpZWjuhhF2mX/Op/PyJKGujXmc1RNtcFuIRFhnXkxkpCkbmBlOZifUaiJVwX/VVjJnKmGORHKWMldHnN3eFPE/X8Eq76k+WHuernCgRs8am3IT2FL9w454cL2aMhPKWhx5dSGCgxho50SmQd0ci6QODH423l1s6jCYVutKFMQGaS4yx9t8siq5p9sPmujXDMOmOXTg6tGSd/s5ktDlFqQQouixsGPxCYwudmxEVInd/0NrZk2NuJovreUpjM4LF9lCmtRbv6bAdVmb0H8TwdfgL91ijRyZZFNRLXjPUOb63eJmn+dZ56g==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=seco.com;
-Received: from DB7PR03MB4972.eurprd03.prod.outlook.com (2603:10a6:10:7d::22)
- by PAXPR03MB8114.eurprd03.prod.outlook.com (2603:10a6:102:227::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.21; Thu, 7 Jul
- 2022 15:00:27 +0000
-Received: from DB7PR03MB4972.eurprd03.prod.outlook.com
- ([fe80::757e:b75f:3449:45b1]) by DB7PR03MB4972.eurprd03.prod.outlook.com
- ([fe80::757e:b75f:3449:45b1%6]) with mapi id 15.20.5417.016; Thu, 7 Jul 2022
- 15:00:27 +0000
-Subject: Re: [PATCH net-next v2 04/35] [RFC] phy: fsl: Add Lynx 10G SerDes
- driver
-To:     Vinod Koul <vkoul@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Madalin Bucur <madalin.bucur@nxp.com>, netdev@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-arm-kernel@lists.infradead.org,
+        with ESMTP id S235171AbiGGP1d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 11:27:33 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FAED2E69D
+        for <netdev@vger.kernel.org>; Thu,  7 Jul 2022 08:27:32 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id v12so10978721edc.10
+        for <netdev@vger.kernel.org>; Thu, 07 Jul 2022 08:27:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=L+i2VKDCE1a0IVY2FYEleoaw7pLpG4up9Kj32QFKNUU=;
+        b=imZ9ANuAa3a7nKrVOBBqe0V2bpJHfSjTkUz+CahjxlWI6osnO+cqvBX0vuAGRpAVwV
+         iFCkDsEYyRSGcSOyyFcWt5h0BsduWYVW82w8/l59hfnC31fk9YilLFsdqFgMOr3P/aHs
+         favxQISfH4ARGDeGFvun+Z7hXdlGSBYNYrDv2Z5jKDietGapf8YUNt3spDapLLYhzPNp
+         rtkYgOx1pmkMqanv4uTwpVBGNz98WnZa/LyMnPoZJXSs6L3AjskftZfjMkO2Mvub4u+H
+         MS/+GFFV/5vFtUOLbkRXfzVJdmWt87SKll888rx67Tjdp79km6SCyTlogUxTZbE60GFF
+         RIHg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=L+i2VKDCE1a0IVY2FYEleoaw7pLpG4up9Kj32QFKNUU=;
+        b=Gkz4Fq72ihJX1DbogT09Z+s6+qD0unzkgN5JDSebQi+LXXEElM3QdLQtFhqtYwT9Qh
+         Wv8hBgSxby+4iFLp/AkGCNskZjUMqzZPLC2npYa6WD+twAJKjrAkIc94dDdJHEYWqp/p
+         ta314PtdVKSiYMAZPX4pC/IdggZL+b5T6qiIvpn8aDTS4x3oNXJRF44PT8w9HY6eeoJN
+         HYnbNN/lTVCQR95mjs7l7Oc8uPuxwzWW8RprCY8/mufOWCQbS0efHLYbdRdBFrb6hcGu
+         WBICwEelkeaFrpPRyuIEtNzCj6plCuFoSSOwx32ANNXRY5Eu0uIeUVU51o/lY6NFiTJO
+         LEEw==
+X-Gm-Message-State: AJIora+SJarJnSfVqXzBai0zkf0g2WbXDy9Bw4QQ44F+ApQzAIOk/ETO
+        xghC1mnrv+3pLzB3omEeO+o=
+X-Google-Smtp-Source: AGRyM1tt4zPclKXxrskJcAhd0l4cLyni1GDXPAelDG0Cead02xKNZE5V4PhtrG18Fbv3SVXuYD+PRg==
+X-Received: by 2002:a05:6402:3307:b0:43a:826c:d8b4 with SMTP id e7-20020a056402330700b0043a826cd8b4mr16134904eda.32.1657207650767;
+        Thu, 07 Jul 2022 08:27:30 -0700 (PDT)
+Received: from skbuf ([188.25.231.143])
+        by smtp.gmail.com with ESMTPSA id kw24-20020a170907771800b0072a3216c23asm11915163ejc.154.2022.07.07.08.27.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Jul 2022 08:27:29 -0700 (PDT)
+Date:   Thu, 7 Jul 2022 18:27:27 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Alvin __ipraga <alsi@bang-olufsen.dk>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        DENG Qingfang <dqfext@gmail.com>,
         Eric Dumazet <edumazet@google.com>,
-        linux-kernel@vger.kernel.org,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-phy@lists.infradead.org
-References: <20220628221404.1444200-1-sean.anderson@seco.com>
- <20220628221404.1444200-5-sean.anderson@seco.com> <YsPWMYjyu2nyk+w8@matsya>
- <431a014a-3a8f-fdc7-319e-29df52832128@seco.com> <YsW+4fm/613ByK09@matsya>
-From:   Sean Anderson <sean.anderson@seco.com>
-Message-ID: <e4664a59-773a-cb72-3abe-ab4bb69aa9ea@seco.com>
-Date:   Thu, 7 Jul 2022 11:00:20 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
-In-Reply-To: <YsW+4fm/613ByK09@matsya>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BL0PR02CA0044.namprd02.prod.outlook.com
- (2603:10b6:207:3d::21) To DB7PR03MB4972.eurprd03.prod.outlook.com
- (2603:10a6:10:7d::22)
+        Florian Fainelli <f.fainelli@gmail.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        UNGLinuxDriver@microchip.com,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>
+Subject: Re: [PATCH RFC net-next 5/5] net: dsa: always use phylink for CPU
+ and DSA ports
+Message-ID: <20220707152727.foxrd4gvqg3zb6il@skbuf>
+References: <YsQIjC7UpcGWJovx@shell.armlinux.org.uk>
+ <E1o8fA7-0059aO-K8@rmk-PC.armlinux.org.uk>
+ <20220706102621.hfubvn3wa6wlw735@skbuf>
+ <YsW3KSeeQBiWQOz/@shell.armlinux.org.uk>
+ <Ysaw56lKTtKMh84b@shell.armlinux.org.uk>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f5a07ca6-7ef0-419e-5cd5-08da60296d02
-X-MS-TrafficTypeDiagnostic: PAXPR03MB8114:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Z/5/6arsFB73NafNvLeQO0ufNAX3X5WS6CSW71rH6X8+e0RI9QUuUT1fX0HMIm73wwKChr3haIR6yi3KdJVZTpBFj99MR8LYz3275CnIWBho9fNbWlFNXM2dnAtrlvLwdJ4LSZbL5wSZTO1lrUUaeCn25SF6dR/AaYIb3AOD3aXaa7Il4OrEtMEAoPQybnMsEwpqvFgdchqTwgREMJfXpp1sKDUmCz93QhungFVm+fLf8omXhcjGSKvmBozXv7xsByiruvVMbFHAMj/9ZtiN6G3j/v8w+k2chUv4TWb34/98GGXmNBoExm3XwD2UuTCmzSVPRYfjrrxsAZ1hAooPV4X2EoUEbd3Fljjpl1006uRWhIZPQ1gLlPSJn5hDuhZnqwssrKarOWqDq4Y0vu7dcQUE6OUs3GNQDpscEFpKO1W8Uaf5m3Di0B6wQU4cIH+RV9y8yT7MgmS0OYa/HhvOVgqGbqBp9T+qGFeQJqkcxyElnKPEAmN3GJeDDxOTm/z7Z2ISTI22MkItRcnRKAahJ6DYfApVC5LN8oHp9Dpoqz8kde5K3jveRJt6WVLYbGOJhzbT4CEO9eEZ+q0Ihri3iDrgjwnwCTbs4VsU3ysOKv+HW+f3mtNmNf14qe3cFrFUuveX9nOHLcDaXOw26k+qaZ/NhH6h3I0cxG6CL2syXooZjZ7k1B1lPckGrof1QLnp03MYGxc+AmKYbR3sgxV9mIFBC59aCh+4TMu/PQoPdsUdndiY66muWzaMKnRPunP+rzrrA92u216e8CNaS6C0+OuzHZ/uwJClzw4T//TxKRSN6PRlT8mxZTSCQOTyIToGzrQZoRlq5DMZ393ZL4qkG9hjdBlCAX3I+xCpXmH94+Qls3Wnln21LwYOQMRWOzq0
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(346002)(39850400004)(396003)(376002)(136003)(366004)(2616005)(186003)(26005)(38350700002)(4326008)(36756003)(54906003)(31686004)(8676002)(6916009)(38100700002)(66556008)(83380400001)(66476007)(66946007)(86362001)(6486002)(478600001)(5660300002)(53546011)(6506007)(6666004)(31696002)(316002)(7416002)(44832011)(6512007)(8936002)(2906002)(41300700001)(52116002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?QmVqNWFmT0JOaTV6c000SzhHRDN4Y2djWnBMOUVZL2JzbmR6c0dJM0s0emRr?=
- =?utf-8?B?dVJabXR4UEs0VFY3aDJpdGhBaDhCSkNvSEtxVVUvMzR4NU9icEV5UnZBVGVD?=
- =?utf-8?B?SUZzM3pBMzN3d0FUMjFpUXBoaW43TDdMR0RDSVhSYjRzc2JZbUNuZmh1WnFL?=
- =?utf-8?B?SWVCUlRPMzRlQTY2a3ZlNWE4dHdmL1V4S1VHN1ZnNml5RHVNYWdjTFk0RWFu?=
- =?utf-8?B?NjJKVzZvcDUxZXFDT2NWT2xGV2x0UXB5ZWpiRGQ2cWgxK1FBQ0wwYlJPcEVP?=
- =?utf-8?B?ZW5PZVZHMWFWeW1tMHpodUovWjhKeFhrdnR5Z1RrOTZtWW0xYTlWQmJUeDQx?=
- =?utf-8?B?aVBHMUtMTE9uRTMvZ2Y3VDRQTDAwdXZ1NTFBWmRLcUtCY3ZvdU02bG1uakYv?=
- =?utf-8?B?UFZ1VVhJN1MwTUI4SGFGM3RQTGRTQUUrMTQwdG8wSWEzUUFrMWpLRG1iaW55?=
- =?utf-8?B?UHp3RW9SRHJNb3dEQVAyc1JmWWxyYlZaaGhQUVZIL1RmQ1kvakZBSkhzK3F1?=
- =?utf-8?B?RmxocXlqQmxjSjhicjlGeUNYQ015WkZ3UGxMSjU4ZjR0RzQ2alhRdC8vUTlB?=
- =?utf-8?B?TWNsb1lBOFhRckVFZWh2QlljN3BlbDdGSm5DMUxnUDg0VCtoS3lXZTI2dU14?=
- =?utf-8?B?cEdXY2QvUXY4N3NCcEJhKzluOEFKaWRsTjVCSVhvWHVRM2s1cHF6dVBIRVJz?=
- =?utf-8?B?QVV4eWFyNlFXMW5BbUd2ZlBPd25VTzZESS8vaFJSTm1teGFydUtRS3FISEUw?=
- =?utf-8?B?bjlyTnBVV043dGpDN0M4bldDNGNLTGlkVFhhc3RiNDJ1Q0dMWjdQSnl5V2JH?=
- =?utf-8?B?TlVWdzNLY3dTSG1seGJnWUQ4bjloZ3ZyMjBVVGZCQ0JXQzM3d3dDcjJSc01S?=
- =?utf-8?B?SmZCR1VpQ256aFZJRkszSHJtTEJOejhxNWpsaE9sWFFBbi90SFJzQzh1NlFL?=
- =?utf-8?B?aW1MNTFBMXhteXErYk1KTCtjaGFNeklndEpHL0w1SEVqR0Z3dXluS2ZlRjNK?=
- =?utf-8?B?MG5La0lOcDc0Y0NUN1RhL3ZINUl0ZDRQVXJwVVJlOEFnK2VzYnYzVTd0K2F3?=
- =?utf-8?B?Q2NhZ1BMN3NWRlRzR2kzTkx1WktCY0hmTTlzN0w5RTY0RjkrdzZhdnduMUhh?=
- =?utf-8?B?N0RrOWVYUnJvdWl1NUJxMUZOUm9nRHhxVXJpNlMrd3kyNm1jaFpFSXBVUEtu?=
- =?utf-8?B?RGNLRk1XekxIVEEycUtaK3k5Kzlta0JKMHFkRmU3YWViR0xOWk84WmpFbHFN?=
- =?utf-8?B?ZU9FajlqNDUxdEExa0ZVZFptMUNIcWs5VUFSRG1CVFFXVzUrS0ovV2RnOEJO?=
- =?utf-8?B?TDVSU1FZOXNPbXUrM1RraDI4R01YZUUxQ092bnUzcFpWdktFN1poUFVmUHgr?=
- =?utf-8?B?NHYxZDVLVitYeTZMV3g1ZXNQWFo5OUMvZXllQmprSXN5QTFWTTJIc3U1RFhL?=
- =?utf-8?B?a2toUFFOOFViVk9EYmtuTlVjRkdSOFZqWEtaNUpHZFkrOXZFU1JtaGNsczBE?=
- =?utf-8?B?c1RtM1A3eGRCajhoTDFOamNWNmYxalJwYnRhN0ZGaHp0elJKUlhrVE9LSVVK?=
- =?utf-8?B?WXUvNVZLS1c5YkpMd0NXSHVOVHZKRUJ4Mlk0dmRGcG9yN3JEeGNYdHgrdFgz?=
- =?utf-8?B?QnJFUVBKNi9JSFFwczZmL1E2T2VhYkJ1N3JUejJtVVByVVcwVFNzSlZDT3d4?=
- =?utf-8?B?OHhZTlgvbk9ITldlY2g2dm1CRTJSVEpwV0l2aDlYRXRaMVZ0c01aQzdtclBk?=
- =?utf-8?B?aEtEcVRSYktSTTA2Nm5tKzVpVUVCYnN3c3gxSFMzKzBBVFJRL0dkN3Z5bm5m?=
- =?utf-8?B?dGNDdklVQkVBcUluNzVqS1RqUkxCdUV2NzRyazJONFJqUFpFaVJKNS83ck9Y?=
- =?utf-8?B?cFJMcmIzL2NyNGsvbXozdHdrcUZOalZtVDU1Q09GcGYrZlE3cEZlT0YxZWtw?=
- =?utf-8?B?TTN6QU5iY0dBL05UT3N0OVU4eld4SWpVRjN6ZTIzMjJjN2k4NlRnUFdWZDhn?=
- =?utf-8?B?cFJQRDdQbzBPRURWQVhtL2RYMjNtMlBWbjZvWmJJR2ZlaG9HVC90VEdBSWF5?=
- =?utf-8?B?R0xvNk1kcWd6N211YXNOZnVnNjdqT1hFV2FhYVJybnBndXM2UVd6bk12VDJX?=
- =?utf-8?B?RC9OOEdkM1NLVXN1cFY2bE5DZDl6QzB3WTY1YUlLNk1RVTQ3WFVmVElNTy9l?=
- =?utf-8?B?UkE9PQ==?=
-X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f5a07ca6-7ef0-419e-5cd5-08da60296d02
-X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4972.eurprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jul 2022 15:00:26.8424
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: /r6MRSZA4GDwcXoooFqBO4bzNSVX1olrpWprsDsE7tbNFuq93n3or5MMWTzN0S+UgX1KNIFu9syjE27VU2+Vzw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR03MB8114
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Ysaw56lKTtKMh84b@shell.armlinux.org.uk>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -139,44 +96,86 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Vinod,
+On Thu, Jul 07, 2022 at 11:09:43AM +0100, Russell King (Oracle) wrote:
+> On Wed, Jul 06, 2022 at 05:24:09PM +0100, Russell King (Oracle) wrote:
+> > On Wed, Jul 06, 2022 at 01:26:21PM +0300, Vladimir Oltean wrote:
+> > > Can we please limit phylink_set_max_link_speed() to just the CPU ports
+> > > where a fixed-link property is also missing, not just a phy-handle?
+> > > Although to be entirely correct, we can also have MLO_AN_INBAND, which
+> > > wouldn't be covered by these 2 checks and would still represent a valid
+> > > DT binding.
+> > 
+> > phylink_set_max_fixed_link() already excludes itself:
+> > 
+> >         if (pl->cfg_link_an_mode != MLO_AN_PHY || pl->phydev || pl->sfp_bus)
+                                                      ~~~~~~~~~~
 
-On 7/6/22 12:57 PM, Vinod Koul wrote:
-> On 05-07-22, 11:29, Sean Anderson wrote:
+If not NULL, this is an SFP PHY, right? In other words, it's supposed to protect from
+phylink_sfp_connect_phy() - code involuntarily triggered by phylink_create() ->
+phylink_register_sfp() - and not from calls to phylink_{,fwnode_}connect_phy()
+that were initiated by the phylink user between phylink_create() and
+phylink_set_max_fixed_link(), correct? Those are specified as invalid in the
+kerneldoc and that's about it - that's not what the checking is for, correct?
+
+But if so, why even check for pl->phydev, if you check for pl->sfp_bus?
+
+> >                 return -EBUSY;
+> > 
+> > intentionally so that if there is anything specified for the port, be
+> > that a fixed link or in-band, then phylink_set_max_fixed_link() errors
+> > out with -EBUSY.
+> > 
+> > The only case that it can't detect is if there is a PHY that may be
+> > added to phylink at a later time, and that is what the check above
+> > is for.
+
+Here by "PHY added at a later time", you do mean calling phylink_{,fwnode_}connect_phy()
+after phylink_set_max_fixed_link(), right?
+
+So this is what I don't understand. If we've called phylink_set_max_fixed_link()
+we've changed pl->cfg_link_an_mode to MLO_AN_FIXED and this will
+silently break future calls to phylink_{,fwnode_}connect_phy(), so DSA
+predicts if it's going to call either of those connect_phy() functions,
+and calls phylink_set_max_fixed_link() only if it won't. Right?
+
+You've structured the checks in this "distributed" way because phylink
+can't really predict whether phylink_{,fwnode_}connect_phy() will be
+called after phylink_set_max_fixed_link(), right? I mean, it can
+probably predict the fwnode_ variant, but not phylink_connect_phy, and
+this is why it is up to the caller to decide when to call and when not to.
+
+> I've updated the function description to mention this detail:
 > 
->> >> +	/* TODO: wait for the PLL to lock */
->> > 
->> > when will this be added?
->> 
->> I'm not sure. I haven't had any issues with this, and waiting on the lock bit is
->> only mentioned in some datasheets for this SerDes. On the LS1046A for example,
->> there is no mention of waiting for lock.
+> +/**
+> + * phylink_set_max_fixed_link() - set a fixed link configuration for phylink
+> + * @pl: a pointer to a &struct phylink returned from phylink_create()
+> + *
+> + * Set a maximum speed fixed-link configuration for the chosen interface mode
+> + * and MAC capabilities for the phylink instance if the instance has not
+> + * already been configured with a SFP, fixed link, or in-band AN mode. If the
+> + * interface mode is PHY_INTERFACE_MODE_NA, then search the supported
+> + * interfaces bitmap for the first interface that gives the fastest supported
+> + * speed.
 > 
-> okay maybe remove the comment then?
-
-Well, as it happens, on the write before this (where we request the reset), we must
-wait for the request to clear before making this write. Since that needed a
-read_poll_timeout anyway, I added one for this line as well.
-
->> >> +static const struct clk_ops lynx_pll_clk_ops = {
->> >> +	.enable = lynx_pll_enable,
->> >> +	.disable = lynx_pll_disable,
->> >> +	.is_enabled = lynx_pll_is_enabled,
->> >> +	.recalc_rate = lynx_pll_recalc_rate,
->> >> +	.round_rate = lynx_pll_round_rate,
->> >> +	.set_rate = lynx_pll_set_rate,
->> >> +};
->> > 
->> > right, this should be a clk driver
->> 
->> Well, it is a clock driver, effectively internal to the SerDes. There are a few
->> examples of this already (e.g. the qualcomm and cadence phys). It could of course
->> be split off, but I would prefer that they remained together.
+> Does this address your concern?
 > 
-> I would prefer clk driver is split and we maintain clean split b/w phy
-> and clk
-> 
+> Thanks.
 
-OK. I will split this into drivers/phy/freescale/phy-fsl-lynx-10g-clk.c
+Not really, no, sorry, it just confuses me more. It should maybe also
+say that this function shouldn't be called if phylink_{,fwnode_}connect_phy()
+is going to be called later.
 
---Sean
+Can phylink absorb all this logic, and automatically call phylink_set_max_fixed_link()
+based on the following?
+
+(1) struct phylink_config gets extended with a bool fallback_max_fixed_link.
+(2) DSA CPU and DSA ports set this to true in dsa_port_phylink_register().
+(3) phylink_set_max_fixed_link() is hooked into this -ENODEV error
+    condition from phylink_fwnode_phy_connect():
+
+	phy_fwnode = fwnode_get_phy_node(fwnode);
+	if (IS_ERR(phy_fwnode)) {
+		if (pl->cfg_link_an_mode == MLO_AN_PHY)
+			return -ENODEV; <- here
+		return 0;
+	}
