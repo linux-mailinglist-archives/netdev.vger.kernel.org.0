@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4322D56C1C6
-	for <lists+netdev@lfdr.de>; Sat,  9 Jul 2022 01:12:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 64EF356C1FB
+	for <lists+netdev@lfdr.de>; Sat,  9 Jul 2022 01:12:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239643AbiGHSo2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jul 2022 14:44:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36634 "EHLO
+        id S239636AbiGHSo1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jul 2022 14:44:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239374AbiGHSo0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 14:44:26 -0400
-Received: from mx0b-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CABC2CC9C
-        for <netdev@vger.kernel.org>; Fri,  8 Jul 2022 11:44:25 -0700 (PDT)
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 268HAakJ027352
-        for <netdev@vger.kernel.org>; Fri, 8 Jul 2022 11:44:24 -0700
+        with ESMTP id S239627AbiGHSoY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 14:44:24 -0400
+Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA8662F38C
+        for <netdev@vger.kernel.org>; Fri,  8 Jul 2022 11:44:23 -0700 (PDT)
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 268HArSh026367
+        for <netdev@vger.kernel.org>; Fri, 8 Jul 2022 11:44:23 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=facebook;
- bh=j6l0IXqRmUZOdyxXo1Os+VNGvKC8tqc1GwGKPhRun0U=;
- b=UgWCijUpaYjscTUAU+7M8mD/0hhiXv6x+eZ/lxEyFUFGtSvARH7yS5/g6kYlEVRye15F
- fVpoW1URVGqfqO3RMv6Xj9sR1QuVH04NlOxIaZ7I9aFzqbYGmlHaUYHELHn3CuK5kWOK
- 41vE3+ddqb9rfPJP1f04oUI+KZ19WsLPQvs= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3h6eg1m3xf-4
+ bh=7vpiV+qo5YEmeQz/EmD3AkIA5b5keVbR5zawTu5mr0Y=;
+ b=INiY4xT4bQhW03zteNQxnkN7Qox2+PwuvO+7SL7ta+2kBRjH5LGyLoc5iw7xXWA4OqzR
+ 9TNz+ycuoEuaqPQMzuTzlYY0bl81io2m+0nl10yjsEA0HhSWlmbEIxJI37wHPJFcbLIA
+ g2drXzuO/Czs6HEHMsNIzswt13ilcs67msU= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3h6f69uypk-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 08 Jul 2022 11:44:24 -0700
-Received: from twshared14577.08.ash8.facebook.com (2620:10d:c085:208::f) by
- mail.thefacebook.com (2620:10d:c085:21d::5) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Fri, 08 Jul 2022 11:44:23 -0700
+Received: from twshared5640.09.ash9.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.2375.28; Fri, 8 Jul 2022 11:44:21 -0700
 Received: by devbig038.lla2.facebook.com (Postfix, from userid 572232)
-        id A32FF2BA1EBB; Fri,  8 Jul 2022 11:44:12 -0700 (PDT)
+        id E916A2BA1EBF; Fri,  8 Jul 2022 11:44:13 -0700 (PDT)
 From:   Dylan Yudaken <dylany@fb.com>
 To:     Jens Axboe <axboe@kernel.dk>,
         Pavel Begunkov <asml.silence@gmail.com>, <davem@davemloft.net>,
@@ -41,9 +41,9 @@ To:     Jens Axboe <axboe@kernel.dk>,
         <io-uring@vger.kernel.org>
 CC:     <netdev@vger.kernel.org>, <Kernel-team@fb.com>,
         Dylan Yudaken <dylany@fb.com>
-Subject: [PATCH for-next 3/3] io_uring: reintroduce multishot recvmsg
-Date:   Fri, 8 Jul 2022 11:43:57 -0700
-Message-ID: <20220708184358.1624275-4-dylany@fb.com>
+Subject: [PATCH for-next 3/3] io_uring: support multishot in recvmsg
+Date:   Fri, 8 Jul 2022 11:43:58 -0700
+Message-ID: <20220708184358.1624275-5-dylany@fb.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220708184358.1624275-1-dylany@fb.com>
 References: <20220708184358.1624275-1-dylany@fb.com>
@@ -51,23 +51,20 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 X-FB-Internal: Safe
 Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: 23X3B60NP0kmGP6TKL6qMFdfw8l80ZjL
-X-Proofpoint-GUID: 23X3B60NP0kmGP6TKL6qMFdfw8l80ZjL
+X-Proofpoint-ORIG-GUID: Qj6t9WC6bky0B-T6OY-TTWxbjXkpE5fj
+X-Proofpoint-GUID: Qj6t9WC6bky0B-T6OY-TTWxbjXkpE5fj
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
  definitions=2022-07-08_15,2022-07-08_01,2022-06-22_01
 X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
-
-Support multishot recvmsg in io_uring.
 
 Similar to multishot recv, this will require provided buffers to be
 used. However recvmsg is much more complex than recv as it has multiple
