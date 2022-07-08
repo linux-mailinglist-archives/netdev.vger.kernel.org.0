@@ -2,205 +2,207 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A181E56B8C9
-	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 13:46:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 04C8156B8E4
+	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 13:50:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237955AbiGHLps (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jul 2022 07:45:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41096 "EHLO
+        id S238141AbiGHLsY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jul 2022 07:48:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237947AbiGHLpr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 07:45:47 -0400
-Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52C387D1F7
-        for <netdev@vger.kernel.org>; Fri,  8 Jul 2022 04:45:46 -0700 (PDT)
-Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-31d27fd3d94so6906277b3.7
-        for <netdev@vger.kernel.org>; Fri, 08 Jul 2022 04:45:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0tmhfB2qZ1rJuCSaoNGejboEaSJLUIJ6TqE77fRvlzs=;
-        b=smu96S04D3ZJjp1/T5E5NsAigl7ygO73rGEXME8dzP0jRfNX52v+qEnOIdQBfnvx6Q
-         oapYtdbdrxK9agL5YiV+jBrVAr7IBX9/9AkFKvEqmZ0Fv9AKRiKD1Q2/+MPWka2J6cv9
-         Jbd1AZ79jvjFPYSAKjEfruG1YwA2HYWV5JNnjt9tA0EIEHX7Dm1saXL71GKirJDjY9oh
-         WfCAeiVItJVqcKtf6AOf1+PWQ/xnPJcE0LiS+PwVBg58qTHZFIUDrnNM/lEajrf44wA2
-         AqfuIEzAbR5EWzgbmbfj4Wp962Hr3LLbowzleYizv0lq5dl/WHP0k+lLu64CB+JQKygN
-         ZWvg==
+        with ESMTP id S238123AbiGHLsW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 07:48:22 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 05394951D8
+        for <netdev@vger.kernel.org>; Fri,  8 Jul 2022 04:48:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657280901;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Qz83jQ6ie8rpR79Lw5oBAFua2qVBO7q3ChvGPuAzjrw=;
+        b=T2bivFwuHapcklp2AKZVISQTV/DHQp3r3CCLenZK7lYDGAOQGD2g8f7cu3c0wb+Q8kKnef
+        x6b7hcJJ546X8GWVmdMdVz+o+LpOHMqJfoGHRWutttNejW8WWN6ZhjRnjW83I9hzasFGQi
+        MLGqHZPKfzW6tIgnPWdd8+3tbWj5j24=
+Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
+ [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-413-nwyH2FJ1Pgups1hblRy-Dw-1; Fri, 08 Jul 2022 07:48:20 -0400
+X-MC-Unique: nwyH2FJ1Pgups1hblRy-Dw-1
+Received: by mail-qk1-f199.google.com with SMTP id s9-20020a05620a254900b006b54dd4d6deso5170429qko.3
+        for <netdev@vger.kernel.org>; Fri, 08 Jul 2022 04:48:20 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0tmhfB2qZ1rJuCSaoNGejboEaSJLUIJ6TqE77fRvlzs=;
-        b=GIXLRvuO+SB463jcNzPEUfaWQF/nWU3NlBExCFNsIx93szHtEY3cHXp42O5YRfHmeN
-         ptUDq7uZ/MxPZmK703Hm5Fguax7NMB9V35zT3aT5NACB8JTqgVgGjlSIFCUU2kuO8MsE
-         kdd7I9ibTAVubKl3W+3Vpi/WVPl8T6rc/stsF7CPQHf0Y58OHtNqCaCNg9JYGvEpywuL
-         m8yoOZB6b/af75+XC/3JQtF9PZsOyTnrd1Sm8S29sIja6wSMvyPVNVY9kICOufUrY//Y
-         u64eD4P757/nc4SSwU1AavgEf3+I9LzHLIM1RFdmzUkGCwXd3CdrViplJKZznAYck2MB
-         Jl1Q==
-X-Gm-Message-State: AJIora/e+vwK5sAgYSGbSTmCymbNCFRGZzafqcbDriN/YphlbYtrxQtd
-        Pj7LTSe/v56l2JYoaoA3R9adqdeZLsTRcNA5RT2XlA==
-X-Google-Smtp-Source: AGRyM1vpVvMPzK6xVpPVGewdD6usjx4eXhTf7KN5m9tOkzmwecfCGO77wpfaagl423Pp8jVNOfGyOhEQZL8eZf3grFU=
-X-Received: by 2002:a81:4994:0:b0:31c:d036:d0b1 with SMTP id
- w142-20020a814994000000b0031cd036d0b1mr3550343ywa.255.1657280745233; Fri, 08
- Jul 2022 04:45:45 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Qz83jQ6ie8rpR79Lw5oBAFua2qVBO7q3ChvGPuAzjrw=;
+        b=7nKOJFlhuRS5qBcosxR1c1k2VaQUSETxKvGllBQiuDQL8y7LlAL+02YALY5Ehni0uk
+         g3EBQLK/XKUpy2vj4XlqZhaBhsmJ1hdFEeKvWOCGoSM5+eAZH0xRWV//FANZs33pzdAU
+         lq4GpVzZAAYK+4zYWfYuWTS8MX4aNh03LEyWJWSiJ8HwzOpR3KIikTv6z87U8qbqqgab
+         e5itdIFMKyMEZQaKXvqfJGXN5DVmmAkq0jJ3A4kz7vnrzfWKEGtygv1tMDa4pN3YU3l3
+         WJP+E4f82f+obzUSYJDZk4r0OucDpS6p5HFgTEfv1P7B/TbTaikikaKTdiZLNPBX1v+C
+         6ibg==
+X-Gm-Message-State: AJIora+rDEO/e+UFcLMqJ9H2Dkaj3qtJ3mhaIUMnHXcg8dnfkBThbufr
+        PRZrMgQfSnI7o/HQKe9d6LGHcWH3kcKjZP9OZgv3PCbE4v5U57al/ZMO9kwVm9uChzv2//qD34y
+        MmKKfM/95G/imDwyH4og27fVKxiyhKtpf
+X-Received: by 2002:ac8:5b51:0:b0:317:3513:cf60 with SMTP id n17-20020ac85b51000000b003173513cf60mr2447559qtw.495.1657280899667;
+        Fri, 08 Jul 2022 04:48:19 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1usVpZKD7lAzE4htKPsep3j+Ey0tw3eoaPrJNum/msse0zljtQvQdftD4RelMyTVPVazDTazPU1BOO+SKyLp1g=
+X-Received: by 2002:ac8:5b51:0:b0:317:3513:cf60 with SMTP id
+ n17-20020ac85b51000000b003173513cf60mr2447536qtw.495.1657280899449; Fri, 08
+ Jul 2022 04:48:19 -0700 (PDT)
 MIME-Version: 1.0
-References: <1657270774-39372-1-git-send-email-liyonglong@chinatelecom.cn>
-In-Reply-To: <1657270774-39372-1-git-send-email-liyonglong@chinatelecom.cn>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 8 Jul 2022 13:45:33 +0200
-Message-ID: <CANn89i+VULAsSwaT=n8DGxazijiJfu+BLfFhuknKn9MJ8LXtUQ@mail.gmail.com>
-Subject: Re: [PATCH v2] tcp: make retransmitted SKB fit into the send window
-To:     Yonglong Li <liyonglong@chinatelecom.cn>
-Cc:     netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
+References: <20220623160738.632852-1-eperezma@redhat.com> <20220623160738.632852-4-eperezma@redhat.com>
+ <CAGxU2F43+5zsQOR4ReTtQtEF47s6y-XKcevosMOzUdEqpLhAsg@mail.gmail.com>
+In-Reply-To: <CAGxU2F43+5zsQOR4ReTtQtEF47s6y-XKcevosMOzUdEqpLhAsg@mail.gmail.com>
+From:   Eugenio Perez Martin <eperezma@redhat.com>
+Date:   Fri, 8 Jul 2022 13:47:43 +0200
+Message-ID: <CAJaqyWdn=mShLEZzfJB_+PwM+pkLhLMJaMOjdFtuW8tYbbU3FQ@mail.gmail.com>
+Subject: Re: [PATCH v6 3/4] vhost-vdpa: uAPI to suspend the device
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     netdev <netdev@vger.kernel.org>, Jason Wang <jasowang@redhat.com>,
+        kernel list <linux-kernel@vger.kernel.org>,
+        Linux Virtualization <virtualization@lists.linux-foundation.org>,
+        kvm <kvm@vger.kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Cindy Lu <lulu@redhat.com>,
+        "Kamde, Tanuj" <tanuj.kamde@amd.com>,
+        Si-Wei Liu <si-wei.liu@oracle.com>,
+        "Uminski, Piotr" <Piotr.Uminski@intel.com>,
+        habetsm.xilinx@gmail.com, "Dawar, Gautam" <gautam.dawar@amd.com>,
+        Pablo Cascon Katchadourian <pabloc@xilinx.com>,
+        Zhu Lingshan <lingshan.zhu@intel.com>,
+        Laurent Vivier <lvivier@redhat.com>,
+        Longpeng <longpeng2@huawei.com>,
+        Dinan Gunawardena <dinang@xilinx.com>,
+        Martin Petrus Hubertus Habets <martinh@xilinx.com>,
+        Martin Porter <martinpo@xilinx.com>,
+        Eli Cohen <elic@nvidia.com>, ecree.xilinx@gmail.com,
+        Wu Zongyong <wuzongyong@linux.alibaba.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Harpreet Singh Anand <hanand@xilinx.com>,
+        Xie Yongji <xieyongji@bytedance.com>,
+        Zhang Min <zhang.min9@zte.com.cn>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 8, 2022 at 10:59 AM Yonglong Li <liyonglong@chinatelecom.cn> wrote:
+On Tue, Jun 28, 2022 at 3:45 PM Stefano Garzarella <sgarzare@redhat.com> wr=
+ote:
 >
-> From: lyl <liyonglong@chinatelecom.cn>
+> On Thu, Jun 23, 2022 at 06:07:37PM +0200, Eugenio P=C3=A9rez wrote:
+> >The ioctl adds support for suspending the device from userspace.
+> >
+> >This is a must before getting virtqueue indexes (base) for live migratio=
+n,
+> >since the device could modify them after userland gets them. There are
+> >individual ways to perform that action for some devices
+> >(VHOST_NET_SET_BACKEND, VHOST_VSOCK_SET_RUNNING, ...) but there was no
+> >way to perform it for any vhost device (and, in particular, vhost-vdpa).
+> >
+> >After a successful return of the ioctl call the device must not process
+> >more virtqueue descriptors. The device can answer to read or writes of
+> >config fields as if it were not suspended. In particular, writing to
+> >"queue_enable" with a value of 1 will not make the device start
+> >processing buffers of the virtqueue.
+> >
+> >Signed-off-by: Eugenio P=C3=A9rez <eperezma@redhat.com>
+> >---
+> > drivers/vhost/vdpa.c       | 19 +++++++++++++++++++
+> > include/uapi/linux/vhost.h | 14 ++++++++++++++
+> > 2 files changed, 33 insertions(+)
+> >
+> >diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+> >index 3d636e192061..7fa671ac4bdf 100644
+> >--- a/drivers/vhost/vdpa.c
+> >+++ b/drivers/vhost/vdpa.c
+> >@@ -478,6 +478,22 @@ static long vhost_vdpa_get_vqs_count(struct vhost_v=
+dpa *v, u32 __user *argp)
+> >       return 0;
+> > }
+> >
+> >+/* After a successful return of ioctl the device must not process more
+> >+ * virtqueue descriptors. The device can answer to read or writes of co=
+nfig
+> >+ * fields as if it were not suspended. In particular, writing to "queue=
+_enable"
+> >+ * with a value of 1 will not make the device start processing buffers.
+> >+ */
+> >+static long vhost_vdpa_suspend(struct vhost_vdpa *v)
+> >+{
+> >+      struct vdpa_device *vdpa =3D v->vdpa;
+> >+      const struct vdpa_config_ops *ops =3D vdpa->config;
+> >+
+> >+      if (!ops->suspend)
+> >+              return -EOPNOTSUPP;
+> >+
+> >+      return ops->suspend(vdpa);
+> >+}
+> >+
+> > static long vhost_vdpa_vring_ioctl(struct vhost_vdpa *v, unsigned int c=
+md,
+> >                                  void __user *argp)
+> > {
+> >@@ -654,6 +670,9 @@ static long vhost_vdpa_unlocked_ioctl(struct file *f=
+ilep,
+> >       case VHOST_VDPA_GET_VQS_COUNT:
+> >               r =3D vhost_vdpa_get_vqs_count(v, argp);
+> >               break;
+> >+      case VHOST_VDPA_SUSPEND:
+> >+              r =3D vhost_vdpa_suspend(v);
+> >+              break;
+> >       default:
+> >               r =3D vhost_dev_ioctl(&v->vdev, cmd, argp);
+> >               if (r =3D=3D -ENOIOCTLCMD)
+> >diff --git a/include/uapi/linux/vhost.h b/include/uapi/linux/vhost.h
+> >index cab645d4a645..6d9f45163155 100644
+> >--- a/include/uapi/linux/vhost.h
+> >+++ b/include/uapi/linux/vhost.h
+> >@@ -171,4 +171,18 @@
+> > #define VHOST_VDPA_SET_GROUP_ASID     _IOW(VHOST_VIRTIO, 0x7C, \
+> >                                            struct vhost_vring_state)
+> >
+> >+/* Suspend or resume a device so it does not process virtqueue requests=
+ anymore
+> >+ *
+> >+ * After the return of ioctl with suspend !=3D 0, the device must finis=
+h any
+> >+ * pending operations like in flight requests. It must also preserve al=
+l the
+> >+ * necessary state (the virtqueue vring base plus the possible device s=
+pecific
+> >+ * states) that is required for restoring in the future. The device mus=
+t not
+> >+ * change its configuration after that point.
+> >+ *
+> >+ * After the return of ioctl with suspend =3D=3D 0, the device can cont=
+inue
+> >+ * processing buffers as long as typical conditions are met (vq is enab=
+led,
+> >+ * DRIVER_OK status bit is enabled, etc).
+> >+ */
+> >+#define VHOST_VDPA_SUSPEND            _IOW(VHOST_VIRTIO, 0x7D, int)
+>                                          ^
+> IIUC we are not using the argument anymore, so this should be changed in
+> _IO(VHOST_VIRTIO, 0x7D).
 >
-> current code of __tcp_retransmit_skb only check TCP_SKB_CB(skb)->seq
-> in send window, and TCP_SKB_CB(skb)->seq_end maybe out of send window.
-> If receiver has shrunk his window, and skb is out of new window,  it
-> should not retransmit it.
-
-More exactly, it should retransmit a smaller portion of the payload.
-
+> And we should update a bit the documentation.
 >
-> test packetdrill script:
->     0 socket(..., SOCK_STREAM, IPPROTO_TCP) = 3
->    +0 fcntl(3, F_GETFL) = 0x2 (flags O_RDWR)
->    +0 fcntl(3, F_SETFL, O_RDWR|O_NONBLOCK) = 0
+
+Totally right, replacing it for the next version.
+
+Thanks!
+
+> Thanks,
+> Stefano
 >
->    +0 connect(3, ..., ...) = -1 EINPROGRESS (Operation now in progress)
->    +0 > S 0:0(0)  win 65535 <mss 1460,sackOK,TS val 100 ecr 0,nop,wscale 8>
->  +.05 < S. 0:0(0) ack 1 win 6000 <mss 1000,nop,nop,sackOK>
->    +0 > . 1:1(0) ack 1
->
->    +0 write(3, ..., 10000) = 10000
->
->    +0 > . 1:2001(2000) ack 1 win 65535
->    +0 > . 2001:4001(2000) ack 1 win 65535
->    +0 > . 4001:6001(2000) ack 1 win 65535
->
->  +.05 < . 1:1(0) ack 4001 win 1001
->
-> and tcpdump show:
-> 192.168.226.67.55 > 192.0.2.1.8080: Flags [.], seq 1:2001, ack 1, win 65535, length 2000
-> 192.168.226.67.55 > 192.0.2.1.8080: Flags [.], seq 2001:4001, ack 1, win 65535, length 2000
-> 192.168.226.67.55 > 192.0.2.1.8080: Flags [P.], seq 4001:5001, ack 1, win 65535, length 1000
-> 192.168.226.67.55 > 192.0.2.1.8080: Flags [.], seq 5001:6001, ack 1, win 65535, length 1000
-> 192.0.2.1.8080 > 192.168.226.67.55: Flags [.], ack 4001, win 1001, length 0
-> 192.168.226.67.55 > 192.0.2.1.8080: Flags [.], seq 5001:6001, ack 1, win 65535, length 1000
-> 192.168.226.67.55 > 192.0.2.1.8080: Flags [P.], seq 4001:5001, ack 1, win 65535, length 1000
->
-> when cient retract window to 1001, send window is [4001,5002],
-> but TLP send 5001-6001 packet which is out of send window.
->
-> Signed-off-by: liyonglong <liyonglong@chinatelecom.cn>
-> ---
->  net/ipv4/tcp_output.c | 7 ++++++-
->  1 file changed, 6 insertions(+), 1 deletion(-)
->
-> diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-> index 1c05443..7e1569e 100644
-> --- a/net/ipv4/tcp_output.c
-> +++ b/net/ipv4/tcp_output.c
-> @@ -3176,7 +3176,12 @@ int __tcp_retransmit_skb(struct sock *sk, struct sk_buff *skb, int segs)
->             TCP_SKB_CB(skb)->seq != tp->snd_una)
->                 return -EAGAIN;
->
-> -       len = cur_mss * segs;
-> +       len = min_t(int, tcp_wnd_end(tp) - TCP_SKB_CB(skb)->seq, cur_mss * segs);
-> +
-> +       /* retransmit serves as a zero window probe. */
-> +       if (len == 0 && TCP_SKB_CB(skb)->seq == tp->snd_una)
-> +               len = cur_mss;
-> +
 
-I asked in my prior feeback to align len to a multiple of cur_mss.
-Trying to send full MSS is likely helping receivers to not waste
-memory and thus send us bigger RWIN.
-
-Also I think the logic about zero window probe could be consolidated
-in one place.
-
-Also you forgot to change the part about tcp_retrans_try_collapse()
-which I also mentioned in my feedback.
-
-If we want to fix this problem for good, we need to take care of all cases...
-
-Something like this:
-
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index 18c913a2347a984ae8cf2793bb8991e59e5e94ab..2aa67cbfa1428a11b723263083ce48284762e306
-100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -3144,7 +3144,7 @@ int __tcp_retransmit_skb(struct sock *sk, struct
-sk_buff *skb, int segs)
-        struct tcp_sock *tp = tcp_sk(sk);
-        unsigned int cur_mss;
-        int diff, len, err;
--
-+       int avail_wnd;
-
-        /* Inconclusive MTU probe */
-        if (icsk->icsk_mtup.probe_size)
-@@ -3167,16 +3167,24 @@ int __tcp_retransmit_skb(struct sock *sk,
-struct sk_buff *skb, int segs)
-
-        cur_mss = tcp_current_mss(sk);
-
-+       avail_wnd = tcp_wnd_end(tp) - TCP_SKB_CB(skb)->seq;
-        /* If receiver has shrunk his window, and skb is out of
-         * new window, do not retransmit it. The exception is the
-         * case, when window is shrunk to zero. In this case
--        * our retransmit serves as a zero window probe.
-+        * our retransmit of one segment serves as a zero window probe.
-         */
--       if (!before(TCP_SKB_CB(skb)->seq, tcp_wnd_end(tp)) &&
--           TCP_SKB_CB(skb)->seq != tp->snd_una)
--               return -EAGAIN;
-+       if (avail_wnd <= 0) {
-+               if (TCP_SKB_CB(skb)->seq != tp->snd_una)
-+                       return -EAGAIN;
-+               avail_wnd = cur_mss;
-+       }
-
-        len = cur_mss * segs;
-+       if (len > avail_wnd) {
-+               len = rounddown(avail_wnd, cur_mss);
-+               if (!len)
-+                       len = avail_wnd;
-+       }
-        if (skb->len > len) {
-                if (tcp_fragment(sk, TCP_FRAG_IN_RTX_QUEUE, skb, len,
-                                 cur_mss, GFP_ATOMIC))
-@@ -3190,8 +3198,9 @@ int __tcp_retransmit_skb(struct sock *sk, struct
-sk_buff *skb, int segs)
-                diff -= tcp_skb_pcount(skb);
-                if (diff)
-                        tcp_adjust_pcount(sk, skb, diff);
--               if (skb->len < cur_mss)
--                       tcp_retrans_try_collapse(sk, skb, cur_mss);
-+               avail_wnd = min_t(int, avail_wnd, cur_mss);
-+               if (skb->len < avail_wnd)
-+                       tcp_retrans_try_collapse(sk, skb, avail_wnd);
-        }
-
-        /* RFC3168, section 6.1.1.1. ECN fallback */
