@@ -2,46 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DAB856AF70
-	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 02:33:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 516B856AF62
+	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 02:32:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236795AbiGHAVM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jul 2022 20:21:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36666 "EHLO
+        id S236533AbiGHAYi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jul 2022 20:24:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229458AbiGHAVL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 20:21:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25DD16EEB5;
-        Thu,  7 Jul 2022 17:21:11 -0700 (PDT)
+        with ESMTP id S229458AbiGHAYh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 20:24:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2B536EEBE;
+        Thu,  7 Jul 2022 17:24:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BF5AC625F6;
-        Fri,  8 Jul 2022 00:21:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3220C3411E;
-        Fri,  8 Jul 2022 00:21:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6CFBEB824A5;
+        Fri,  8 Jul 2022 00:24:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD757C3411E;
+        Fri,  8 Jul 2022 00:24:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657239670;
-        bh=iD66a2yH3e2FOfE8f244TwVOk+3Qw5uIbPlG/hJAAD0=;
+        s=k20201202; t=1657239874;
+        bh=a5FeKJO7w4Mvn7Dj8VS7sxWFdZ43pR/WOTDj+raYDPY=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=hJ+c+4OJnlVAlrCvcbqfXqF4aInqz7rLVLnBaGVy7r0MAFbx8ffXwLmG4llFbcqRo
-         CJf470wtA/VVB+M0xhl2WB9OgPlXPQ13Yzon4kV/sQDpuL+DANt40OhSpLufb8Gljb
-         baojrDmYDaHnejNX22gKnjKkY39hz3IEnVx3mz7tkTXVF1XC4pB1R7BenUpkOwMIkK
-         kcQbH8g38IoMCW2SeF3r1JjJSMKIQc7noP2Vh6H4iwALcqLh1N5Bm7Q4aE3kQGxcEh
-         yjn5PVc3KqmyE2hTmleMLKOufBiiewE+DhkM5Ba+p7zIzCb9PBX6LUZPC1IpVvfAqy
-         sOwpvSBIQkiIA==
-Date:   Thu, 7 Jul 2022 17:21:01 -0700
+        b=TK043CSkF31k4mTJX+rMbyWjCfk1JH/3bs+6VZO+XcOTQ1f6rkmLw2hPB9ZlX1tba
+         02CNfIlVWRi3zkx1g0F/q6EPs++6HEoFfhFMLHQ3918h3iK9sEGncg9CM90jsrFRSD
+         gGQ9tkRSA4+TfmFkGWvcN2gmuRmBZ47ByfvMARluQResWJ6DGHiBS15FJAqM93p9By
+         ltSGce3oiEFL/oct8JDy+WNmKmyDsD+u2gPpknV2l+UFmuJgmlnUUBM25H0Qp6fMds
+         zLQT05fG+PRFgtNPEInUqyKm7zjvVDGziHhuKJmus0/yb+unsRcX3ofklNO5HSSrHz
+         Xxnwoo2Ht4nKg==
+Date:   Thu, 7 Jul 2022 17:24:24 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        David Ahern <dsahern@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH] neighbor: tracing: Have neigh_create event use
- __string()
-Message-ID: <20220707172101.25ae51c8@kernel.org>
-In-Reply-To: <20220705183741.35387e3f@rorschach.local.home>
-References: <20220705183741.35387e3f@rorschach.local.home>
+To:     Kuniyuki Iwashima <kuniyu@amazon.com>
+Cc:     <paul@paul-moore.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <keescook@chromium.org>,
+        <kuni1840@gmail.com>, <linux-kernel@vger.kernel.org>,
+        <mcgrof@kernel.org>, <netdev@vger.kernel.org>, <pabeni@redhat.com>,
+        <yzaikin@google.com>
+Subject: Re: [PATCH v2 net 10/12] cipso: Fix data-races around sysctl.
+Message-ID: <20220707172424.2b280154@kernel.org>
+In-Reply-To: <20220707221537.29461-1-kuniyu@amazon.com>
+References: <CAHC9VhQMigGi65-j0c9WBN+dWLjjaYqTti-eP99c1RRrQzWj5g@mail.gmail.com>
+        <20220707221537.29461-1-kuniyu@amazon.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -55,23 +57,8 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 5 Jul 2022 18:37:41 -0400 Steven Rostedt wrote:
-> From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
-> 
-> The dev field of the neigh_create event uses __dynamic_array() with a
-> fixed size, which defeats the purpose of __dynamic_array(). Looking at the
-> logic, as it already uses __assign_str(), just use the same logic in
-> __string to create the size needed. It appears that because "dev" can be
-> NULL, it needs the check. But __string() can have the same checks as
-> __assign_str() so use them there too.
-> 
-> Cc: David Ahern <dsahern@gmail.com>
-> Cc: David S. Miller <davem@davemloft.net>
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-> ---
-> 
-> [ This is simpler logic than the fib* events, so I figured just
->   convert to __string() instead of a static __array() ]
+On Thu, 7 Jul 2022 15:15:37 -0700 Kuniyuki Iwashima wrote:
+> I was wondering if both CC and Acked-by should stay in each commit, but
+> will do so in the next time.
 
-This one is also going via your tree?
+For Paul only, don't take that as general advice.
