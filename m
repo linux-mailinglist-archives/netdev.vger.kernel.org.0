@@ -2,64 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F58D56BD62
-	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 18:08:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B9DE056BD8A
+	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 18:08:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238402AbiGHPL6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jul 2022 11:11:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33252 "EHLO
+        id S238777AbiGHPO1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jul 2022 11:14:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231849AbiGHPL5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 11:11:57 -0400
-Received: from mail-qt1-x84a.google.com (mail-qt1-x84a.google.com [IPv6:2607:f8b0:4864:20::84a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 417182316E
-        for <netdev@vger.kernel.org>; Fri,  8 Jul 2022 08:11:56 -0700 (PDT)
-Received: by mail-qt1-x84a.google.com with SMTP id f14-20020ac8068e000000b0031e899fabdcso10074619qth.5
-        for <netdev@vger.kernel.org>; Fri, 08 Jul 2022 08:11:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=Lw3mE9XibSyJGeeym+U7hDw1qb6cZwUd2GOXItbzMUo=;
-        b=jz2MOB0QJk7N8WADng97o+67KosDrrIJucbi4ukvKtTvy+aPzUot7loQoWGGicyb+S
-         UrajfQRMUaHkrF2WiWL510lbq7s779XotHKFYYbMst35Xr8R4mXK0Lxcd8dMUQSw029T
-         JrRyb8+t9AthVRd3Nqsaa07UvgkRPA0KC2da5FCraGfFf6BmqjhJ66j8pXxuGXp7vqnh
-         jNDLhSEQkiVfKhfB10Y4IFyb4DrQhsLma2EipSHEFF6pm533aESQaAvEu8VARX8JVg7N
-         uw9U7W61978ZUkfUTIimSRALv9Nbnq9TUaSYwfmszy+2OkLkeTp5fbr/gvQbkxv+cZtf
-         9wPQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=Lw3mE9XibSyJGeeym+U7hDw1qb6cZwUd2GOXItbzMUo=;
-        b=a8Ew6jy3s6eEbcIIZH/RRBI70Wb9EnEp1PUvYvKKSXuaol634uHkbS2caUKYngoNcn
-         5Pn4SNNx6kFJHiL6vL03LPo50b4NzuQ5KeE4VCvEtLaBBzpHiPrWp8Pu4VQXldKjkHcf
-         Jq272hxQ9O7g3FuFQlRCqk7Y/nen2ITuxTn60VHo2L1W84cRBlwxUIGetzocI+Vu63Tx
-         F+10Jz9vLRiv4N+LfvOwu2F8OSXPCMxfVfO1gbsQ9NVg0a9J3cCuM+wHeQrLhNYEfK7j
-         AZeb16H1ZRPXScMYjMvkLWWptVzmRJh1xJeblaBdHm2RZUR7yhAsbMRK9VCzeUf0lul6
-         jd9Q==
-X-Gm-Message-State: AJIora87lZDzN1NuKZ4csr6n5egU82iNXdC8/yGr9MUchqSHyNHraGtA
-        UeffQ74IlNSgqWOiHYbPz2wbC+9OPnM2AQ==
-X-Google-Smtp-Source: AGRyM1urZtF3rG6okHOxV6sBH7onlcEXai3xwiak8yQSjWFrY78Ox5oYwVznGYDEsQQVs55kTUZuo5b0NPJ7tw==
-X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:a05:622a:1348:b0:31e:9f66:880f with SMTP
- id w8-20020a05622a134800b0031e9f66880fmr3405450qtk.542.1657293115442; Fri, 08
- Jul 2022 08:11:55 -0700 (PDT)
-Date:   Fri,  8 Jul 2022 15:11:53 +0000
-Message-Id: <20220708151153.1813012-1-edumazet@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
-Subject: [PATCH net] vlan: fix memory leak in vlan_newlink()
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
-        Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        Xin Long <lucien.xin@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
+        with ESMTP id S235427AbiGHPO0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 11:14:26 -0400
+Received: from JPN01-OS0-obe.outbound.protection.outlook.com (mail-os0jpn01olkn2058.outbound.protection.outlook.com [40.92.98.58])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B634230F43
+        for <netdev@vger.kernel.org>; Fri,  8 Jul 2022 08:14:24 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Ay4+J4Ix+Hq3Qn0oQhlk5lU8S2QS8zhJ0M+jy9Fn+5wfNEj0TKr6I/AitW6eGACUBX8cq16KQHAZ5hJNHwIrdvZ5w2dQ/ybJpnpeTbwHklRXYM5da9WtGiQcmYjF3kApNSObWXhHYw3WUHtn7uUCyCpD78/egwx7p0imw6uIo1yGE0LuHtOeZ5sBpI9rSYhWebLtP3tcJYuyKK+1UhC7+/mXF8TBLzN2BRhQmyhk3uaKa9RRtrC7Dy1+xn9Hxq4G8VtKCrMF/jT64oGOAiMBYDCX1ytibftALvK5zy4E8NupVzDCGLRk2KF4nzEX3JEMEn1mOGeatUoR14za1DRVcg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=4cWT1EpbkxoIAMvHnYXkszgq4P7lE+3hRAVfG3CQrgA=;
+ b=EHi6WhRnm6tqmBo4sXBmmQbIlNUl+aVoIp/9M12SIkJqclgu4gwTM59B0BVEA+64+pPoEryOKqOF9SWw4n0ia9cSCZqH/90lEsEBNMIooSTMXC+MBzACv9e2o5CJ8Rh+gTd5FbP5mtyaIvhHvoTHt21XYMn4veI3Qp+Lh01LJkXMDbOQzx8mCjA+4F72x+6cNiw8+9KNIL8YZoxKd7ceH5ZQ/AIcuZ4hKr6eDvNs4iPr7jMOx1GKFntExVE6z8TheWfx0S9crXQ/iItNykiX1i28QfzPkhAl+K6StEcy6lwCwpet8P30AsoiivJtUXNRImoCq2jVb1PwkcvJjRgQag==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4cWT1EpbkxoIAMvHnYXkszgq4P7lE+3hRAVfG3CQrgA=;
+ b=ARBBoDPUjHw3x/FpJSR58et6ZJ6aSF5eTu4rXhsSU00SCgQnWDGjug3MgUyxmbvIjww7+d9schTAF0kBLfMcrEDjdYWfSTD72un78v/MokEHAOnfGyux+wuYjkrW0Nwf6DobS49KHmkURc9Wcjgajn5XU4UHrxz9lwe3Kz+U+oLHitqz6LnCk0p9vXc4CtWc65CiGDNa2CrY0XuKTR8OMNedDKL+YFib7f+uHqHDHsUl/Mfl0TB+S/yVtPPIZGADcrsDetw1sURv+wo+MhHkpkaWKCHIvM3lkYux4pCcWKmHpvJWbLsIs1sX0gbdXaIIgbEjfXnEXA41LVG3+R8oBA==
+Received: from OSZP286MB1404.JPNP286.PROD.OUTLOOK.COM (2603:1096:604:11a::9)
+ by OS0P286MB0644.JPNP286.PROD.OUTLOOK.COM (2603:1096:604:cf::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.16; Fri, 8 Jul
+ 2022 15:14:22 +0000
+Received: from OSZP286MB1404.JPNP286.PROD.OUTLOOK.COM
+ ([fe80::79c7:e656:3e13:428f]) by OSZP286MB1404.JPNP286.PROD.OUTLOOK.COM
+ ([fe80::79c7:e656:3e13:428f%9]) with mapi id 15.20.5417.020; Fri, 8 Jul 2022
+ 15:14:22 +0000
+From:   gfree.wind@outlook.com
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org
+Cc:     gfree.wind@outlook.com, Gao Feng <gfree.wind@gmail.com>
+Subject: [PATCH net] pktgen: Fix the inaccurate bps calculation
+Date:   Fri,  8 Jul 2022 23:14:01 +0800
+Message-ID: <OSZP286MB14047FAFB44F13D76137DFFA95829@OSZP286MB1404.JPNP286.PROD.OUTLOOK.COM>
+X-Mailer: git-send-email 2.20.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-TMN:  [uRQ5tcZcuthCedAm5xT/6RqsFC78u4vG]
+X-ClientProxiedBy: SG2PR06CA0249.apcprd06.prod.outlook.com
+ (2603:1096:4:ac::33) To OSZP286MB1404.JPNP286.PROD.OUTLOOK.COM
+ (2603:1096:604:11a::9)
+X-Microsoft-Original-Message-ID: <20220708151401.3518-1-gfree.wind@outlook.com>
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 5c3e5200-6238-4239-b952-08da60f4895b
+X-MS-Exchange-SLBlob-MailProps: CjO2us0gQYBUny+C40yt4siy/VhkNGNCppB3AnXKl+VM0cJ5MHsgdu36NijncRtCBVM6UxNwVn3vmDPI+NStWFjKoftaQmoDc6YvOiyGAMGxH10pLxpm6HxFdjuPF5rYQwDW8O9kKgFnmHZf7yrEAMVuhr7a8zo+1PwTpie+drIR24uLLxXykHboX+Htkx3qSyFFIBuiAgQJ7gE9rzO/CwIHwnKXpNEdnGtLWRnciMGZhPi3HxT+ANpJ2Q5Swrb2U/fltC9NtYxZFXaG1AqGNs31D0rdTHyXhs8SgyF7vN72N40ytlPdehvawHdK6ed01rVnfadS2uW7SDcBiC+eow2HyUWjC/6BqwxXDZioIV4CMFiUyKg24q1MoKKxRNqLRR5qCpRPVgRT6L9pLH7gwvjNJf1BD6EOWfLttiUd8nO1TjMitJcW2YL3hFioqs0tIagNEuasUJASW+p5lLJVV2ECJl0izeAF8w4rxFBvbWEXnJ4h1moeGoHnV5Cepay4WeV4SiM/vc3jd61g/0fVOxLZdnhPyyCBtHi9BPjNf3CeP+2LO3w1J/jmi5bZcSqIrAgYpgfwHVx5hmBVwcClM5Ue0cm657DjzWpYWJqXiGvfw3wG9ZL0uJxcZejq3iUMOm1zJRohzdAYnvd0Rsd1G6c3j1BzRsDsmhQBASGlp2lQrSaCe3AAXFJ0nZub0Ueh
+X-MS-TrafficTypeDiagnostic: OS0P286MB0644:EE_
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: MwbucXSETwssrN+vJ5tq5oCG8zuYgOSzGQZwPgwqI76gVG+olmYeeIHndeSnIFbIq6u10ouOLwX0WozSB8SDMZAbC7nuc/xI3+vKKoIOiUAIxEM7BYF6vgKv1L3FHlvg37kfqsiWdmHQoztwwK8PwwgyyykGS6VT4ffYCrRGRaF7rDJFrB/Nmdcla1foCKhlrC7p3rn6fFHMcAjP4iYQqRWwOsC3xBvk0ex2p246mmc9pzLHGfimZlqVdMFt3H7Z7lbwVEznNkZX5nqBZPytFrus2yWm1WRCHhnLVeW522xLyaXW8rApyYVsUYOsUdPMAHMn0TuFb12jboYEI47OcYRwKwkwe/hMnNZPjCF2M9g4vgNZbeh952VCPwxBnFE4HJkERCn5zgr9+IMg1s+s151mYMWBxmW/z83qZpFBDGGlyJ/XGfNiOOL1Hj3P/ciH9tIJ6Sxw8QobXCRByVA5l2ZKbN1YmvX8c4arf1UfA6HER5qxxCINII7UrgfnUmew9jyBBrdiJXz2vQ5ovP6dVJEkhMSKG5Jn7tIcY+cLDyp6gb1267fnkoP5lQrDb9vSnNqRwR0lp16QPo9mJrttOnQD0/PtPMWnB3eEaUlku2Dzj2BfRNqHttL4f1ymvIuolN1zoptXmFVbCYiM1Ks1M1wb8dmQlt94p4XiuUsW9whzZnuWmqKXYNL58Kwv3OHeGYQDYrFQsKgV/UduG7oeWw==
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?U8AVNfzy+OGI6EP7Lo96LFA+flWnBgnzR2iiKuC8/0F+IxXV08kZPJaaqUyQ?=
+ =?us-ascii?Q?RZt/yhYdaQ/A7eIYnRz+Y6LLN0tCdIJ/eTh76y5CdJZFEWo7VtdaeRrcssXT?=
+ =?us-ascii?Q?C2xy8ju6Zkq+aHc+pikH5MAD2bBug9VK2zLWq043dWeVGmisD9jC3YXH1kkp?=
+ =?us-ascii?Q?dO65v4ZfxY5ltzuabrOix9SBHxOSfADBrGlaAICZJTiAxgA5sloY0y47Pp4k?=
+ =?us-ascii?Q?TMhpueB6hT0a9xcJN6Ht4dTnjWk6UIpaRCmB1v14S7JmB1+utmdkZ7KlJ6TA?=
+ =?us-ascii?Q?D3LBmrH0Wa8riXAOryrLl7UHPfd3UvHov4KV4K+uHufE5nFC3stjB7Z8Fxoa?=
+ =?us-ascii?Q?VRXjNElqmqO6JMHc2qYDFUE/c/sErYr6c/fF2BqndCleynRas9pAqnKuB/XX?=
+ =?us-ascii?Q?e7uJEuCkFQYaO7yNlcXcJZTzcNd9EzbXn+4fismr7GEjYhKhwIokFz7GGuM6?=
+ =?us-ascii?Q?Jx93Pnl9JLwoUjkndolaHCra6kNNyNNjfN4wzUvwjx0Rmzfud6QlA5dVERFa?=
+ =?us-ascii?Q?dVVyQ6Qiessfl4/H3WTs4RRExvhmP6AAJntYiOUPVu+WFJ9zXFoZsKU3lblw?=
+ =?us-ascii?Q?01rOoQ2lvdHwz5lAdfpUTVAApYEzMkz6AFA9Ik4aea5TyQ2S6/N2lo/VY4N2?=
+ =?us-ascii?Q?giG+2j/bmL9O7ZbnhELQrATYzzCVjy9D5/OF95mGoZgG6ATyRBOh/uocRo8B?=
+ =?us-ascii?Q?BYPmB4cKasXMNTNf+Woxlnydo9NprfGtajoagN+Uh6qJHB7q0oxZrTNDP+JH?=
+ =?us-ascii?Q?UOKCKtAtsF4xBi8tLV6azpWtJTR8dTFxWJJc5BD2gKDgcRaVq+rsNfxyJl8r?=
+ =?us-ascii?Q?aXI+7HcM05W1VHde6QT6s0jP+pTLGVvbZXV3TrNNByblM37nSwTG4WZzd3q7?=
+ =?us-ascii?Q?BdlZISucP+0yXqiyA2gM+n2yCI0UguoKwYfm6wfQTmTYql8Ov38JRxaLcA4G?=
+ =?us-ascii?Q?mSSwjqSYU86gsANkfSbebM4pFPRxLSTubCkpYw7OpK2sTEwaU0PILkvP1qD2?=
+ =?us-ascii?Q?pO5E8XOP23h/KnkEo9lota/LZSuDZbIsLmPtgBOdFpTSNqlida6OdKM6FaMK?=
+ =?us-ascii?Q?kTj8ur4sS0RsVgD3NgH5mHiDLTNf5bFMRSlOMO5ipBOqRg0Nl8mdFhjaYvdr?=
+ =?us-ascii?Q?UaBfNFTOdOCPShNcYLAwqWpBcalUijiun2yrMF2bSAA757DmeWFzO/bFIhEl?=
+ =?us-ascii?Q?MFjwNvApF7Z23N8eEU0QiaMs52sVqZOrmBD9pP3GzMMOk7YZD+sf8k8FON4D?=
+ =?us-ascii?Q?q1QcyWZ/cnXIfIOZagCvuuyCnqAQ2WLhvVHAIIBeyQ=3D=3D?=
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5c3e5200-6238-4239-b952-08da60f4895b
+X-MS-Exchange-CrossTenant-AuthSource: OSZP286MB1404.JPNP286.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Jul 2022 15:14:22.2247
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: OS0P286MB0644
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -67,83 +103,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Blamed commit added back a bug I fixed in commit 9bbd917e0bec
-("vlan: fix memory leak in vlan_dev_set_egress_priority")
+From: Gao Feng <gfree.wind@gmail.com>
 
-If a memory allocation fails in vlan_changelink() after other allocations
-succeeded, we need to call vlan_dev_free_egress_priority()
-to free all allocated memory because after a failed ->newlink()
-we do not call any methods like ndo_uninit() or dev->priv_destructor().
+The prior codes use 1000000 as divisor to convert to the Mbps. But it isn't
+accurate, because the NIC uses 1024*1024 from bps to Mbps. The result of
+the codes is 1.05 times as the real value, even it may cause the result is
+more than the nic's physical rate.
 
-In following example, if the allocation for last element 2000:2001 fails,
-we need to free eight prior allocations:
-
-ip link add link dummy0 dummy0.100 type vlan id 100 \
-	egress-qos-map 1:2 2:3 3:4 4:5 5:6 6:7 7:8 8:9 2000:2001
-
-syzbot report was:
-
-BUG: memory leak
-unreferenced object 0xffff888117bd1060 (size 32):
-comm "syz-executor408", pid 3759, jiffies 4294956555 (age 34.090s)
-hex dump (first 32 bytes):
-09 00 00 00 00 a0 00 00 00 00 00 00 00 00 00 00 ................
-00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
-backtrace:
-[<ffffffff83fc60ad>] kmalloc include/linux/slab.h:600 [inline]
-[<ffffffff83fc60ad>] vlan_dev_set_egress_priority+0xed/0x170 net/8021q/vlan_dev.c:193
-[<ffffffff83fc6628>] vlan_changelink+0x178/0x1d0 net/8021q/vlan_netlink.c:128
-[<ffffffff83fc67c8>] vlan_newlink+0x148/0x260 net/8021q/vlan_netlink.c:185
-[<ffffffff838b1278>] rtnl_newlink_create net/core/rtnetlink.c:3363 [inline]
-[<ffffffff838b1278>] __rtnl_newlink+0xa58/0xdc0 net/core/rtnetlink.c:3580
-[<ffffffff838b1629>] rtnl_newlink+0x49/0x70 net/core/rtnetlink.c:3593
-[<ffffffff838ac66c>] rtnetlink_rcv_msg+0x21c/0x5c0 net/core/rtnetlink.c:6089
-[<ffffffff839f9c37>] netlink_rcv_skb+0x87/0x1d0 net/netlink/af_netlink.c:2501
-[<ffffffff839f8da7>] netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
-[<ffffffff839f8da7>] netlink_unicast+0x397/0x4c0 net/netlink/af_netlink.c:1345
-[<ffffffff839f9266>] netlink_sendmsg+0x396/0x710 net/netlink/af_netlink.c:1921
-[<ffffffff8384dbf6>] sock_sendmsg_nosec net/socket.c:714 [inline]
-[<ffffffff8384dbf6>] sock_sendmsg+0x56/0x80 net/socket.c:734
-[<ffffffff8384e15c>] ____sys_sendmsg+0x36c/0x390 net/socket.c:2488
-[<ffffffff838523cb>] ___sys_sendmsg+0x8b/0xd0 net/socket.c:2542
-[<ffffffff838525b8>] __sys_sendmsg net/socket.c:2571 [inline]
-[<ffffffff838525b8>] __do_sys_sendmsg net/socket.c:2580 [inline]
-[<ffffffff838525b8>] __se_sys_sendmsg net/socket.c:2578 [inline]
-[<ffffffff838525b8>] __x64_sys_sendmsg+0x78/0xf0 net/socket.c:2578
-[<ffffffff845ad8d5>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-[<ffffffff845ad8d5>] do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
-[<ffffffff8460006a>] entry_SYSCALL_64_after_hwframe+0x46/0xb0
-
-Fixes: 37aa50c539bc ("vlan: introduce vlan_dev_free_egress_priority")
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Xin Long <lucien.xin@gmail.com>
+Signed-off-by: Gao Feng <gfree.wind@gmail.com>
 ---
- net/8021q/vlan_netlink.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ net/core/pktgen.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/8021q/vlan_netlink.c b/net/8021q/vlan_netlink.c
-index 53b1955b027f89245eb8dd46ede9d7bfd6e553a3..214532173536b790cf032615f73fb3d868d2aae1 100644
---- a/net/8021q/vlan_netlink.c
-+++ b/net/8021q/vlan_netlink.c
-@@ -182,10 +182,14 @@ static int vlan_newlink(struct net *src_net, struct net_device *dev,
- 	else if (dev->mtu > max_mtu)
- 		return -EINVAL;
+diff --git a/net/core/pktgen.c b/net/core/pktgen.c
+index 84b62cd7bc57..e5cd3da63035 100644
+--- a/net/core/pktgen.c
++++ b/net/core/pktgen.c
+@@ -3305,7 +3305,7 @@ static void show_results(struct pktgen_dev *pkt_dev, int nr_frags)
+ 	}
  
-+	/* Note: If this initial vlan_changelink() fails, we need
-+	 * to call vlan_dev_free_egress_priority() to free memory.
-+	 */
- 	err = vlan_changelink(dev, tb, data, extack);
--	if (err)
--		return err;
--	err = register_vlan_dev(dev, extack);
-+
-+	if (!err)
-+		err = register_vlan_dev(dev, extack);
-+
- 	if (err)
- 		vlan_dev_free_egress_priority(dev);
- 	return err;
+ 	mbps = bps;
+-	do_div(mbps, 1000000);
++	do_div(mbps, 1024 * 1024);
+ 	p += sprintf(p, "  %llupps %lluMb/sec (%llubps) errors: %llu",
+ 		     (unsigned long long)pps,
+ 		     (unsigned long long)mbps,
 -- 
-2.37.0.rc0.161.g10f37bed90-goog
+2.20.1
 
