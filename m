@@ -2,32 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EC7356C056
-	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 20:37:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 34B2A56C0F4
+	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 20:38:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239496AbiGHS2R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jul 2022 14:28:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47886 "EHLO
+        id S239471AbiGHS2Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jul 2022 14:28:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239691AbiGHS1j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 14:27:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B173B83F23;
-        Fri,  8 Jul 2022 11:27:06 -0700 (PDT)
+        with ESMTP id S239797AbiGHS1v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 14:27:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ADCEA0266;
+        Fri,  8 Jul 2022 11:27:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 76E9AB82925;
-        Fri,  8 Jul 2022 18:27:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D56F7C341C0;
-        Fri,  8 Jul 2022 18:27:03 +0000 (UTC)
-Subject: [PATCH v3 31/32] NFSD: NFSv4 CLOSE should release an nfsd_file
- immediately
+        by ams.source.kernel.org (Postfix) with ESMTPS id 017A1B82924;
+        Fri,  8 Jul 2022 18:27:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F06CC341C6;
+        Fri,  8 Jul 2022 18:27:10 +0000 (UTC)
+Subject: [PATCH v3 32/32] NFSD: Ensure nf_inode is never dereferenced
 From:   Chuck Lever <chuck.lever@oracle.com>
 To:     linux-nfs@vger.kernel.org, netdev@vger.kernel.org
 Cc:     david@fromorbit.com, jlayton@redhat.com, tgraf@suug.ch
-Date:   Fri, 08 Jul 2022 14:27:02 -0400
-Message-ID: <165730482277.28142.4640004602667754380.stgit@klimt.1015granger.net>
+Date:   Fri, 08 Jul 2022 14:27:09 -0400
+Message-ID: <165730482946.28142.13069318391976207471.stgit@klimt.1015granger.net>
 In-Reply-To: <165730437087.28142.6731645688073512500.stgit@klimt.1015granger.net>
 References: <165730437087.28142.6731645688073512500.stgit@klimt.1015granger.net>
 User-Agent: StGit/1.5.dev3+g9561319
@@ -43,76 +42,77 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The last close of a file should enable other accessors to open and
-use that file immediately. Leaving the file open in the filecache
-prevents other users from accessing that file until the filecache
-garbage-collects the file -- sometimes that takes several seconds.
+The documenting comment for struct nf_file states:
 
-Reported-by: Wang Yugui <wangyugui@e16-tech.com>
-Link: https://bugzilla.linux-nfs.org/show_bug.cgi?387
+/*
+ * A representation of a file that has been opened by knfsd. These are hashed
+ * in the hashtable by inode pointer value. Note that this object doesn't
+ * hold a reference to the inode by itself, so the nf_inode pointer should
+ * never be dereferenced, only used for comparison.
+ */
+
+Replace the two existing dereferences to make the comment always
+true.
+
 Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 ---
- fs/nfsd/filecache.c |   18 ++++++++++++++++++
- fs/nfsd/filecache.h |    1 +
- fs/nfsd/nfs4state.c |    4 ++--
- 3 files changed, 21 insertions(+), 2 deletions(-)
+ fs/nfsd/filecache.c |    5 ++---
+ fs/nfsd/filecache.h |    2 +-
+ fs/nfsd/nfs4state.c |    2 +-
+ 3 files changed, 4 insertions(+), 5 deletions(-)
 
 diff --git a/fs/nfsd/filecache.c b/fs/nfsd/filecache.c
-index a904364551e8..36d61012d5de 100644
+index 36d61012d5de..11099c8918a4 100644
 --- a/fs/nfsd/filecache.c
 +++ b/fs/nfsd/filecache.c
-@@ -458,6 +458,24 @@ nfsd_file_put(struct nfsd_file *nf)
- 		nfsd_file_put_noref(nf);
+@@ -228,12 +228,11 @@ nfsd_file_mark_put(struct nfsd_file_mark *nfm)
  }
  
-+/**
-+ * nfsd_file_close - Close an nfsd_file
-+ * @nf: nfsd_file to close
-+ *
-+ * If this is the final reference for @nf, free it immediately.
-+ * This reflects an on-the-wire CLOSE or DELEGRETURN into the
-+ * VFS and exported filesystem.
-+ */
-+void nfsd_file_close(struct nfsd_file *nf)
-+{
-+	nfsd_file_put(nf);
-+	if (refcount_dec_if_one(&nf->nf_ref)) {
-+		nfsd_file_unhash(nf);
-+		nfsd_file_lru_remove(nf);
-+		nfsd_file_free(nf);
-+	}
-+}
-+
- struct nfsd_file *
- nfsd_file_get(struct nfsd_file *nf)
+ static struct nfsd_file_mark *
+-nfsd_file_mark_find_or_create(struct nfsd_file *nf)
++nfsd_file_mark_find_or_create(struct nfsd_file *nf, struct inode *inode)
  {
+ 	int			err;
+ 	struct fsnotify_mark	*mark;
+ 	struct nfsd_file_mark	*nfm = NULL, *new;
+-	struct inode *inode = nf->nf_inode;
+ 
+ 	do {
+ 		fsnotify_group_lock(nfsd_file_fsnotify_group);
+@@ -1164,7 +1163,7 @@ nfsd_file_do_acquire(struct svc_rqst *rqstp, struct svc_fh *fhp,
+ 
+ open_file:
+ 	trace_nfsd_file_alloc(nf);
+-	nf->nf_mark = nfsd_file_mark_find_or_create(nf);
++	nf->nf_mark = nfsd_file_mark_find_or_create(nf, key.inode);
+ 	if (nf->nf_mark) {
+ 		if (open) {
+ 			status = nfsd_open_verified(rqstp, fhp, may_flags,
 diff --git a/fs/nfsd/filecache.h b/fs/nfsd/filecache.h
-index 7b40d5b446e1..c5ddc877116b 100644
+index c5ddc877116b..d534b76cb65b 100644
 --- a/fs/nfsd/filecache.h
 +++ b/fs/nfsd/filecache.h
-@@ -54,6 +54,7 @@ void nfsd_file_cache_shutdown(void);
- int nfsd_file_cache_start_net(struct net *net);
- void nfsd_file_cache_shutdown_net(struct net *net);
- void nfsd_file_put(struct nfsd_file *nf);
-+void nfsd_file_close(struct nfsd_file *nf);
- struct nfsd_file *nfsd_file_get(struct nfsd_file *nf);
- void nfsd_file_close_inode_sync(struct inode *inode);
- bool nfsd_file_is_cached(struct inode *inode);
+@@ -41,7 +41,7 @@ struct nfsd_file {
+ #define NFSD_FILE_BREAK_WRITE	(3)
+ #define NFSD_FILE_REFERENCED	(4)
+ 	unsigned long		nf_flags;
+-	struct inode		*nf_inode;
++	struct inode		*nf_inode;	/* don't deref */
+ 	refcount_t		nf_ref;
+ 	unsigned char		nf_may;
+ 	struct nfsd_file_mark	*nf_mark;
 diff --git a/fs/nfsd/nfs4state.c b/fs/nfsd/nfs4state.c
-index 3a05c095dfe5..9d1a3e131c49 100644
+index 9d1a3e131c49..994bd11bafe0 100644
 --- a/fs/nfsd/nfs4state.c
 +++ b/fs/nfsd/nfs4state.c
-@@ -820,9 +820,9 @@ static void __nfs4_file_put_access(struct nfs4_file *fp, int oflag)
- 			swap(f2, fp->fi_fds[O_RDWR]);
- 		spin_unlock(&fp->fi_lock);
- 		if (f1)
--			nfsd_file_put(f1);
-+			nfsd_file_close(f1);
- 		if (f2)
--			nfsd_file_put(f2);
-+			nfsd_file_close(f2);
- 	}
- }
+@@ -2564,7 +2564,7 @@ static void nfs4_show_fname(struct seq_file *s, struct nfsd_file *f)
  
+ static void nfs4_show_superblock(struct seq_file *s, struct nfsd_file *f)
+ {
+-	struct inode *inode = f->nf_inode;
++	struct inode *inode = file_inode(f->nf_file);
+ 
+ 	seq_printf(s, "superblock: \"%02x:%02x:%ld\"",
+ 					MAJOR(inode->i_sb->s_dev),
 
 
