@@ -2,68 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6551856C25C
-	for <lists+netdev@lfdr.de>; Sat,  9 Jul 2022 01:13:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 364F556C258
+	for <lists+netdev@lfdr.de>; Sat,  9 Jul 2022 01:13:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239190AbiGHThL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jul 2022 15:37:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44914 "EHLO
+        id S239902AbiGHTnq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jul 2022 15:43:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238095AbiGHThK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 15:37:10 -0400
+        with ESMTP id S238532AbiGHTnp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 15:43:45 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3AB9B5C9F1
-        for <netdev@vger.kernel.org>; Fri,  8 Jul 2022 12:37:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2358813FAD
+        for <netdev@vger.kernel.org>; Fri,  8 Jul 2022 12:43:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657309028;
+        s=mimecast20190719; t=1657309423;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=LZZbYOOcXAtwVe1yHJ9sPLjzHsng5usdRE+DGZNGrHI=;
-        b=PsEnEq7G7pWUat500Cfpxr8X+Nj4UYgWqyJmIuSOOXk72phVM4khw005PURadQU6HvPCut
-        xaFD7blxUIZsoTt8s19GD+77r6T3ZCClNCF1Ubpq5E8K7s4E+CCe/fHyX4+BJcwXJRrEfJ
-        QGPhJ0Iy8AmTQwXWS6n+VVPH1GZvYVQ=
-Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
- [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=ZRvcEyBikV1fuKkjf8/FIQL8bf6qUSsx6qqnqqq9IP8=;
+        b=BZ76FwgT7zY9ZWe4aXXl59B2dP02wMrwMef6JpOcroybEIFxCwTyjFRsPXOqF7KGx58ROu
+        AreYzxrbYM7wXxuaN69WX0iryg8OLnR8MSNWoXqkPMnQZPkOSX8mihqlLhlap37mCPfcyW
+        dEm9PMXmP1HwMxzaamhaeqwmqCPsXZg=
+Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
+ [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-86-bc6dkQnQPEKi8pTVgLp4Yw-1; Fri, 08 Jul 2022 15:37:07 -0400
-X-MC-Unique: bc6dkQnQPEKi8pTVgLp4Yw-1
-Received: by mail-qt1-f200.google.com with SMTP id cf8-20020a05622a400800b0031e80dcf14cso12738372qtb.3
-        for <netdev@vger.kernel.org>; Fri, 08 Jul 2022 12:37:07 -0700 (PDT)
+ us-mta-374-GtggaDQnPV6v9mf7f2Pk6Q-1; Fri, 08 Jul 2022 15:43:42 -0400
+X-MC-Unique: GtggaDQnPV6v9mf7f2Pk6Q-1
+Received: by mail-qt1-f197.google.com with SMTP id x16-20020ac85f10000000b0031d3262f264so19567936qta.22
+        for <netdev@vger.kernel.org>; Fri, 08 Jul 2022 12:43:42 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
          :references:content-transfer-encoding:user-agent:mime-version;
-        bh=LZZbYOOcXAtwVe1yHJ9sPLjzHsng5usdRE+DGZNGrHI=;
-        b=GnoTWt2PDILO2s7LEA4GQ2abPDWgdkTHFJdz64wkhrBL/6nYRvUWk/fKnKHQW+2Iwz
-         JLc/nbktpVBVg/YZU/7yKebsA6B2N6kXE+iLk7JZNudzKOcl8bknIDh4xN7iyilIESaS
-         Qo9LEDId96gRmL69EiolNyKFhAQN9YiogNLzS5AdO484gAF19WjcJ0k52gCkku3OEttc
-         Qa8AIV/coHIOJsALvNrYZrJ7dU6bUpw5it3PyqweD7CivgxWfKqQZ52CG6UArYftUZCG
-         v6V4s2VyhtMAYgZqzLtv3+KNOnEArrzOrYSFbfXmV+00e4egwUbgImyVB9XtzVFUK4F7
-         vSnw==
-X-Gm-Message-State: AJIora8xLT8QMMOf7stw1MD45CDIck3oljRmEjVZG/nbja5lifu+h8Rd
-        dUouurlp2eGNrbxXwHyv1hR9RKABgzznG000ipJC3/d9hj68YXrU45WxpVaJX4J8JTr9SAWg+Iy
-        xTfDXR2KBEAsNmLh9
-X-Received: by 2002:a05:620a:4402:b0:6af:1b92:f064 with SMTP id v2-20020a05620a440200b006af1b92f064mr3671142qkp.410.1657309026801;
-        Fri, 08 Jul 2022 12:37:06 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1vm0R0WcqiPbdS2g7+1beiF05cDJd+5zcwDWnJmUMZWlh25pEEb0YUh5CgUKtnc5FKaEq7Hxg==
-X-Received: by 2002:a05:620a:4402:b0:6af:1b92:f064 with SMTP id v2-20020a05620a440200b006af1b92f064mr3671133qkp.410.1657309026590;
-        Fri, 08 Jul 2022 12:37:06 -0700 (PDT)
+        bh=ZRvcEyBikV1fuKkjf8/FIQL8bf6qUSsx6qqnqqq9IP8=;
+        b=67C2VQldhA6G9+dBbYhRN9OwCqCICGqGWdArZmq4bWQfLMadpYD276cPWZ6j6mUQA7
+         lm2mj8C/kc8lMVM+DmqfyRxAqC871NBPAQhmJ64ZsuabWRDCcF1SSVNQbKLM6T/sin7n
+         NEMntq0V3Su7+4up7jW7UexTmZez7yk6N78xiP82th3oXGvc7wU8+2yGJ+j2fazEx56g
+         nw5vRvvF71TLZPj6lCGKDzUn35ADTEeQUNpkvs+MZoURO6ahcIpC7g5i/TemOWZdAiVZ
+         m3OuYcFWVcInweJ2kLB8HSMcNb1o7g+6XgaFtBS3jrVbSqP4kFpKVfSesOKeHh1vVauC
+         faNA==
+X-Gm-Message-State: AJIora+wQgJ6QUiO15Fl63LafKJIwfwvKJEVF8oYp0pqEwZppsKdB+zC
+        wFW8lYJHZa+s3ye3uNBAndcQPrBhywGHYve9EdLsV12ozAimMyBFeb8Th8I0ask6QSc2sjCCSiG
+        MDwFMZsMPzOmFRrrU
+X-Received: by 2002:a05:622a:134f:b0:317:cade:5551 with SMTP id w15-20020a05622a134f00b00317cade5551mr4418112qtk.445.1657309421632;
+        Fri, 08 Jul 2022 12:43:41 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1tVZcfBxrToeHT7ysSsp4WOwsEbugOvV/vI4cdDHdIqbGieXzfOsHl3Urur0nTqqJuy1sb2sw==
+X-Received: by 2002:a05:622a:134f:b0:317:cade:5551 with SMTP id w15-20020a05622a134f00b00317cade5551mr4418089qtk.445.1657309421355;
+        Fri, 08 Jul 2022 12:43:41 -0700 (PDT)
 Received: from [192.168.1.3] (68-20-15-154.lightspeed.rlghnc.sbcglobal.net. [68.20.15.154])
-        by smtp.gmail.com with ESMTPSA id n20-20020a05620a223400b006a6b564e9b8sm32843176qkh.4.2022.07.08.12.37.06
+        by smtp.gmail.com with ESMTPSA id bp13-20020a05620a458d00b006af10bd3635sm30225651qkb.57.2022.07.08.12.43.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Jul 2022 12:37:06 -0700 (PDT)
-Message-ID: <22b89cf06b59cf6d39da2e7c7bf86c6872e5edd1.camel@redhat.com>
-Subject: Re: [PATCH v3 16/32] NFSD: Fix the filecache LRU shrinker
+        Fri, 08 Jul 2022 12:43:41 -0700 (PDT)
+Message-ID: <10963d58b011dbe42bf3b9ec69a010862f0d2638.camel@redhat.com>
+Subject: Re: [PATCH v3 17/32] NFSD: Never call nfsd_file_gc() in foreground
+ paths
 From:   Jeff Layton <jlayton@redhat.com>
 To:     Chuck Lever <chuck.lever@oracle.com>, linux-nfs@vger.kernel.org,
         netdev@vger.kernel.org
 Cc:     david@fromorbit.com, tgraf@suug.ch
-Date:   Fri, 08 Jul 2022 15:37:05 -0400
-In-Reply-To: <165730472428.28142.17571886266553271473.stgit@klimt.1015granger.net>
+Date:   Fri, 08 Jul 2022 15:43:40 -0400
+In-Reply-To: <165730473096.28142.6742811495100296997.stgit@klimt.1015granger.net>
 References: <165730437087.28142.6731645688073512500.stgit@klimt.1015granger.net>
-         <165730472428.28142.17571886266553271473.stgit@klimt.1015granger.net>
+         <165730473096.28142.6742811495100296997.stgit@klimt.1015granger.net>
 Content-Type: text/plain; charset="ISO-8859-15"
 Content-Transfer-Encoding: quoted-printable
 User-Agent: Evolution 3.44.3 (3.44.3-1.fc36) 
@@ -79,54 +80,88 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On Fri, 2022-07-08 at 14:25 -0400, Chuck Lever wrote:
-> Without LRU item rotation, the shrinker visits only a few items on
-> the end of the LRU list, and those would always be long-term OPEN
-> files for NFSv4 workloads. That makes the filecache shrinker
-> completely ineffective.
+> The checks in nfsd_file_acquire() and nfsd_file_put() that directly
+> invoke filecache garbage collection are intended to keep cache
+> occupancy between a low- and high-watermark. The reason to limit the
+> capacity of the filecache is to keep filecache lookups reasonably
+> fast.
 >=20
-> Adopt the same strategy as the inode LRU by using LRU_ROTATE.
+> However, invoking garbage collection at those points has some
+> undesirable negative impacts. Files that are held open by NFSv4
+> clients often push the occupancy of the filecache over these
+> watermarks. At that point:
 >=20
+> - Every call to nfsd_file_acquire() and nfsd_file_put() results in
+>   an LRU walk. This has the same effect on lookup latency as long
+>   chains in the hash table.
+> - Garbage collection will then run on every nfsd thread, causing a
+>   lot of unnecessary lock contention.
+> - Limiting cache capacity pushes out files used only by NFSv3
+>   clients, which are the type of files the filecache is supposed to
+>   help.
+>=20
+> To address those negative impacts, remove the direct calls to the
+> garbage collector. Subsequent patches will address maintaining
+> lookup efficiency as cache capacity increases.
+>=20
+> Suggested-by: Wang Yugui <wangyugui@e16-tech.com>
 > Suggested-by: Dave Chinner <david@fromorbit.com>
 > Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 > ---
->  fs/nfsd/filecache.c |    5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
+>  fs/nfsd/filecache.c |   10 +---------
+>  1 file changed, 1 insertion(+), 9 deletions(-)
 >=20
 > diff --git a/fs/nfsd/filecache.c b/fs/nfsd/filecache.c
-> index 6e9e186334ab..bd6ba63f69ae 100644
+> index bd6ba63f69ae..faa8588663d6 100644
 > --- a/fs/nfsd/filecache.c
 > +++ b/fs/nfsd/filecache.c
-> @@ -452,6 +452,7 @@ nfsd_file_dispose_list_delayed(struct list_head *disp=
-ose)
->   *
->   * Return values:
->   *   %LRU_REMOVED: @item was removed from the LRU
-> + *   %LRU_ROTATED: @item is to be moved to the LRU tail
+> @@ -29,8 +29,6 @@
+>  #define NFSD_LAUNDRETTE_DELAY		     (2 * HZ)
+> =20
+>  #define NFSD_FILE_SHUTDOWN		     (1)
+> -#define NFSD_FILE_LRU_THRESHOLD		     (4096UL)
+> -#define NFSD_FILE_LRU_LIMIT		     (NFSD_FILE_LRU_THRESHOLD << 2)
+> =20
+>  /* We only care about NFSD_MAY_READ/WRITE for this cache */
+>  #define NFSD_FILE_MAY_MASK	(NFSD_MAY_READ|NFSD_MAY_WRITE)
+> @@ -66,8 +64,6 @@ static struct fsnotify_group		*nfsd_file_fsnotify_group=
+;
+>  static atomic_long_t			nfsd_filecache_count;
+>  static struct delayed_work		nfsd_filecache_laundrette;
+> =20
+> -static void nfsd_file_gc(void);
+> -
+>  static void
+>  nfsd_file_schedule_laundrette(void)
+>  {
+> @@ -350,9 +346,6 @@ nfsd_file_put(struct nfsd_file *nf)
+>  		nfsd_file_schedule_laundrette();
+>  	} else
+>  		nfsd_file_put_noref(nf);
+> -
+> -	if (atomic_long_read(&nfsd_filecache_count) >=3D NFSD_FILE_LRU_LIMIT)
+> -		nfsd_file_gc();
 
-%LRU_ROTATE
+This may be addressed in later patches, but instead of just removing
+these, would it be better to instead call
+nfsd_file_schedule_laundrette() ?
 
->   *   %LRU_SKIP: @item cannot be evicted
->   */
->  static enum lru_status
-> @@ -490,7 +491,7 @@ nfsd_file_lru_cb(struct list_head *item, struct list_=
-lru_one *lru,
-> =20
->  	if (test_and_clear_bit(NFSD_FILE_REFERENCED, &nf->nf_flags)) {
->  		trace_nfsd_file_gc_referenced(nf);
-> -		return LRU_SKIP;
-> +		return LRU_ROTATE;
->  	}
-> =20
->  	if (!test_and_clear_bit(NFSD_FILE_HASHED, &nf->nf_flags)) {
-> @@ -532,7 +533,7 @@ nfsd_file_gc(void)
->  	unsigned long ret;
-> =20
->  	ret =3D list_lru_walk(&nfsd_file_lru, nfsd_file_lru_cb,
-> -			    &dispose, LONG_MAX);
-> +			    &dispose, list_lru_count(&nfsd_file_lru));
->  	trace_nfsd_file_gc_removed(ret, list_lru_count(&nfsd_file_lru));
->  	nfsd_file_gc_dispose_list(&dispose);
 >  }
+> =20
+>  struct nfsd_file *
+> @@ -1075,8 +1068,7 @@ nfsd_do_file_acquire(struct svc_rqst *rqstp, struct=
+ svc_fh *fhp,
+>  	nfsd_file_hashtbl[hashval].nfb_maxcount =3D max(nfsd_file_hashtbl[hashv=
+al].nfb_maxcount,
+>  			nfsd_file_hashtbl[hashval].nfb_count);
+>  	spin_unlock(&nfsd_file_hashtbl[hashval].nfb_lock);
+> -	if (atomic_long_inc_return(&nfsd_filecache_count) >=3D NFSD_FILE_LRU_TH=
+RESHOLD)
+> -		nfsd_file_gc();
+> +	atomic_long_inc(&nfsd_filecache_count);
+> =20
+>  	nf->nf_mark =3D nfsd_file_mark_find_or_create(nf);
+>  	if (nf->nf_mark) {
 >=20
 >=20
 
