@@ -2,117 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1871056B510
-	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 11:07:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E65656B519
+	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 11:09:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237638AbiGHJG3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jul 2022 05:06:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59866 "EHLO
+        id S237843AbiGHJIM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jul 2022 05:08:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230230AbiGHJG2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 05:06:28 -0400
-Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 253AC1FCDB;
-        Fri,  8 Jul 2022 02:06:27 -0700 (PDT)
-Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id DB73F1887457;
-        Fri,  8 Jul 2022 09:06:24 +0000 (UTC)
-Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id D3BF425032B7;
-        Fri,  8 Jul 2022 09:06:24 +0000 (UTC)
-Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id CA8D7A1E00AE; Fri,  8 Jul 2022 09:06:24 +0000 (UTC)
-X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
+        with ESMTP id S237847AbiGHJIK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 05:08:10 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E664922BC6;
+        Fri,  8 Jul 2022 02:08:08 -0700 (PDT)
+Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LfS7w3r6BzhXYy;
+        Fri,  8 Jul 2022 17:06:36 +0800 (CST)
+Received: from [10.67.111.192] (10.67.111.192) by
+ kwepemi500013.china.huawei.com (7.221.188.120) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 8 Jul 2022 17:08:05 +0800
+Message-ID: <bbca91f2-d770-af69-8e6d-bfd18c7f1ec1@huawei.com>
+Date:   Fri, 8 Jul 2022 17:08:04 +0800
 MIME-Version: 1.0
-Date:   Fri, 08 Jul 2022 11:06:24 +0200
-From:   netdev@kapio-technology.com
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH bpf-next v6 4/4] bpf, arm64: bpf trampoline for arm64
+Content-Language: en-US
+To:     Jean-Philippe Brucker <jean-philippe@linaro.org>
+CC:     <bpf@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v4 net-next 3/6] drivers: net: dsa: add locked fdb entry
- flag to drivers
-In-Reply-To: <20220708084904.33otb6x256huddps@skbuf>
-References: <20220707152930.1789437-1-netdev@kapio-technology.com>
- <20220707152930.1789437-4-netdev@kapio-technology.com>
- <20220708084904.33otb6x256huddps@skbuf>
-User-Agent: Gigahost Webmail
-Message-ID: <e6f418705e19df370c8d644993aa9a6f@kapio-technology.com>
-X-Sender: netdev@kapio-technology.com
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
+        Alexei Starovoitov <ast@kernel.org>,
+        Zi Shen Lim <zlim.lnx@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, <x86@kernel.org>,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        James Morse <james.morse@arm.com>,
+        Hou Tao <houtao1@huawei.com>,
+        Jason Wang <wangborong@cdjrlc.com>
+References: <20220625161255.547944-1-xukuohai@huawei.com>
+ <20220625161255.547944-5-xukuohai@huawei.com> <YscL4t1pYHYApIiK@larix>
+ <a24109d5-b79a-99de-0fd5-66b0ec34e5ed@huawei.com> <YsfptiexC0wFABFL@myrica>
+From:   Xu Kuohai <xukuohai@huawei.com>
+In-Reply-To: <YsfptiexC0wFABFL@myrica>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,FROM_FMBLA_NEWDOM,
-        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+X-Originating-IP: [10.67.111.192]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ kwepemi500013.china.huawei.com (7.221.188.120)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-07-08 10:49, Vladimir Oltean wrote:
-> Hi Hans,
+On 7/8/2022 4:24 PM, Jean-Philippe Brucker wrote:
+> On Fri, Jul 08, 2022 at 12:35:33PM +0800, Xu Kuohai wrote:
+>>>> +
+>>>> +	emit(A64_ADD_I(1, A64_R(0), A64_SP, args_off), ctx);
+>>>> +	if (!p->jited)
+>>>> +		emit_addr_mov_i64(A64_R(1), (const u64)p->insnsi, ctx);
+>>>> +
+>>>> +	emit_call((const u64)p->bpf_func, ctx);
+>>>> +
+>>>> +	/* store return value */
+>>>> +	if (save_ret)
+>>>> +		emit(A64_STR64I(r0, A64_SP, retval_off), ctx);
+>>>
+>>> Here too I think it should be x0. I'm guessing r0 may work for jitted
+>>> functions but not interpreted ones
+>>>
+>>
+>> Yes, r0 is only correct for jitted code, will fix it to:
+>>
+>> if (save_ret)
+>>         emit(A64_STR64I(p->jited ? r0 : A64_R(0), A64_SP, retval_off),
+>>              ctx);
 > 
-> On Thu, Jul 07, 2022 at 05:29:27PM +0200, Hans Schultz wrote:
->> Ignore locked fdb entries coming in on all drivers.
->> 
->> Signed-off-by: Hans Schultz <netdev@kapio-technology.com>
->> ---
+> I don't think we need this test because x0 should be correct in all cases.
+> x7 happens to equal x0 when jitted due to the way build_epilogue() builds
+> the function at the moment, but we shouldn't rely on that.
 > 
-> A good patch should have a reason for the change in the commit message.
-> This has no reason because there is no reason.
 > 
-> Think about it, you've said it yourself in patch 1:
+>>>> +	if (flags & BPF_TRAMP_F_CALL_ORIG) {
+>>>> +		restore_args(ctx, args_off, nargs);
+>>>> +		/* call original func */
+>>>> +		emit(A64_LDR64I(A64_R(10), A64_SP, retaddr_off), ctx);
+>>>> +		emit(A64_BLR(A64_R(10)), ctx);
+>>>
+>>> I don't think we can do this when BTI is enabled because we're not jumping
+>>> to a BTI instruction. We could introduce one in a patched BPF function
+>>> (there currently is one if CONFIG_ARM64_PTR_AUTH_KERNEL), but probably not
+>>> in a kernel function.
+>>>
+>>> We could fo like FUNCTION_GRAPH_TRACER does and return to the patched
+>>> function after modifying its LR. Not sure whether that works with pointer
+>>> auth though.
+>>>
+>>
+>> Yes, the blr instruction should be replaced with ret instruction, thanks!
+>>
+>> The layout for bpf prog and regular kernel function is as follows, with
+>> bti always coming first and paciasp immediately after patchsite, so the
+>> ret instruction should work in all cases.
+>>
+>> bpf prog or kernel function:
+>>         bti c // if BTI
+>>         mov x9, lr
+>>         bl <trampoline>    ------> trampoline:
+>>                                            ...
+>>                                            mov lr, <return_entry>
+>>                                            mov x10, <ORIG_CALL_entry>
+>> ORIG_CALL_entry:           <-------        ret x10
+>>                                    return_entry:
+>>                                            ...
+>>         paciasp // if PA
+>>         ...
 > 
-> | Only the kernel can set this FDB entry flag, while userspace can read
-> | the flag and remove it by replacing or deleting the FDB entry.
+> Actually I just noticed that CONFIG_ARM64_BTI_KERNEL depends on
+> CONFIG_ARM64_PTR_AUTH_KERNEL, so we should be able to rely on there always
+> being a PACIASP at ORIG_CALL_entry, and since it's a landing pad for BLR
+> we don't need to make this a RET
 > 
-> So if user space will never add locked FDB entries to the bridge,
-> then FDB entries with is_locked=true are never transported using
-> SWITCHDEV_FDB_ADD_TO_DEVICE to drivers, and so, there is no reason at
-> all to pass is_locked to drivers, just for them to ignore something 
-> that
-> won't appear.
+>  92e2294d870b ("arm64: bti: Support building kernel C code using BTI")
+> 
 
-Correct me if I am wrong, but since the bridge can add locked entries, 
-and
-the ensuring fdb update will create a SWITCHDEV_FDB_ADD_TO_DEVICE, those 
-entries
-should reach the driver. The policy to ignore those in the driver can be
-seen as either the right thing to do, or not yet implemented.
+oh, yeah, thanks
 
-I remember Ido wrote at a point that the scheme they use is to trap 
-various
-packets to the CPU and let the bridge add the locked entry, which I then
-understand is sent to the driver with a SWITCHDEV_FDB_ADD_TO_DEVICE 
-event.
+> Thanks,
+> Jean
+> 
+> .
 
-> 
-> You just need this for SWITCHDEV_FDB_ADD_TO_BRIDGE, so please keep it
-> only in those code paths, and remove it from net/dsa/slave.c as well.
-> 
->>  drivers/net/dsa/b53/b53_common.c       | 5 +++++
->>  drivers/net/dsa/b53/b53_priv.h         | 1 +
->>  drivers/net/dsa/hirschmann/hellcreek.c | 5 +++++
->>  drivers/net/dsa/lan9303-core.c         | 5 +++++
->>  drivers/net/dsa/lantiq_gswip.c         | 5 +++++
->>  drivers/net/dsa/microchip/ksz9477.c    | 5 +++++
->>  drivers/net/dsa/mt7530.c               | 5 +++++
->>  drivers/net/dsa/mv88e6xxx/chip.c       | 5 +++++
->>  drivers/net/dsa/ocelot/felix.c         | 5 +++++
->>  drivers/net/dsa/qca8k.c                | 5 +++++
->>  drivers/net/dsa/sja1105/sja1105_main.c | 5 +++++
->>  include/net/dsa.h                      | 1 +
->>  net/dsa/switch.c                       | 4 ++--
->>  13 files changed, 54 insertions(+), 2 deletions(-)
