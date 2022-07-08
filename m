@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 30B9156C534
-	for <lists+netdev@lfdr.de>; Sat,  9 Jul 2022 02:29:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FA5556C537
+	for <lists+netdev@lfdr.de>; Sat,  9 Jul 2022 02:29:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238526AbiGHXgS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jul 2022 19:36:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37060 "EHLO
+        id S238729AbiGHXgT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jul 2022 19:36:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230367AbiGHXgR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 19:36:17 -0400
+        with ESMTP id S238449AbiGHXgS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 19:36:18 -0400
 Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E637171BCD
-        for <netdev@vger.kernel.org>; Fri,  8 Jul 2022 16:36:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2047A606B2
+        for <netdev@vger.kernel.org>; Fri,  8 Jul 2022 16:36:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657323376; x=1688859376;
+  t=1657323377; x=1688859377;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=cNc661S3iimevezDyva1ssvcfT/UsrE7h/xgcUHLZHg=;
-  b=RxGIsFZ0dBGja6E8uXkbg4NcKKRCoB7WX6GPE5Q/xUTIcYjRAPbA/3D/
-   Q4q/9QnnVCEBXTLsQVJZaeWiqmSsFHBq8n2fvHnvYu5i8OXuCZo8I7HEQ
-   6MfbpapyhlJ0TlmxDbFVBLQouUNelGHfqQ3vl4co5Tj5zecnsAbwy/SRj
-   3ECxnPMo94EDuB7+/p8sC9ocCEcf6RY5dlj/FIJop/oRWY4OH4odLoA8v
-   UWio1rpiOhXp5JjLRaDh+RfmlKn0KEuxd+VTYWNek6O+TyT2NfDzroCzW
-   O9O7++NNVfY1ZjwqfA2JTAD/FagOdPZfxhhQeG6p2+WjJH8wZVwemWlll
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10402"; a="346071656"
+  bh=mLtbgDckIbKax2TRKG/sQfPD3NEQ0gRiAtYmyp8RjqY=;
+  b=MQDmBMTjNN41x8QBSW7nXMrPvDm3ORbpRyQ6dsFZDrWA10XfuiN9fDVd
+   Vm2+6NWtDElby0LX2omIB6qAJiqzdn/0uvFW975jG/qtYc4HijoxXZ380
+   dQKbr2sfPZ5nLZsYwE/lAqZD0zk3zTLc7kI+/0jn3RuEokJGfk14ENdXh
+   aEGcRh5D7XZX7usUnsf1ioGCAGKXMJFJ+BmrVVGDrsGwcsUyzvVPDkLG/
+   bK44vIi1JbXbYHNflJYW4RPUEsP7kzix+2JMr18yt/CEk9ySLT3EabkCx
+   Ylpm6xLgJhxlb2+A/ZELm6LzCwl9rT47mEutKcaawetnxuvbCwe5TSB5O
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10402"; a="346071659"
 X-IronPort-AV: E=Sophos;i="5.92,256,1650956400"; 
-   d="scan'208";a="346071656"
+   d="scan'208";a="346071659"
 Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2022 16:36:14 -0700
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2022 16:36:15 -0700
 X-IronPort-AV: E=Sophos;i="5.92,256,1650956400"; 
-   d="scan'208";a="770933079"
+   d="scan'208";a="770933082"
 Received: from aroras-mobl.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.209.1.203])
   by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2022 16:36:14 -0700
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
 To:     netdev@vger.kernel.org
-Cc:     Paolo Abeni <pabeni@redhat.com>, davem@davemloft.net,
-        kuba@kernel.org, edumazet@google.com, kishen.maloor@intel.com,
-        matthieu.baerts@tessares.net, mptcp@lists.linux.dev,
-        van fantasy <g1042620637@gmail.com>,
+Cc:     Matthieu Baerts <matthieu.baerts@tessares.net>,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, kishen.maloor@intel.com,
+        mptcp@lists.linux.dev,
         Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net 1/2] mptcp: fix subflow traversal at disconnect time
-Date:   Fri,  8 Jul 2022 16:36:09 -0700
-Message-Id: <20220708233610.410786-2-mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net 2/2] selftests: mptcp: validate userspace PM tests by default
+Date:   Fri,  8 Jul 2022 16:36:10 -0700
+Message-Id: <20220708233610.410786-3-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220708233610.410786-1-mathew.j.martineau@linux.intel.com>
 References: <20220708233610.410786-1-mathew.j.martineau@linux.intel.com>
@@ -61,45 +61,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Paolo Abeni <pabeni@redhat.com>
+From: Matthieu Baerts <matthieu.baerts@tessares.net>
 
-At disconnect time the MPTCP protocol traverse the subflows
-list closing each of them. In some circumstances - MPJ subflow,
-passive MPTCP socket, the latter operation can remove the
-subflow from the list, invalidating the current iterator.
+The new script was not listed in the programs to test.
 
-Address the issue using the safe list traversing helper
-variant.
+By consequence, some CIs running MPTCP selftests were not validating
+these new tests. Note that MPTCP CI was validating it as it executes all
+.sh scripts from 'tools/testing/selftests/net/mptcp' directory.
 
-Reported-by: van fantasy <g1042620637@gmail.com>
-Fixes: b29fcfb54cd7 ("mptcp: full disconnect implementation")
-Tested-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+Fixes: 259a834fadda ("selftests: mptcp: functional tests for the userspace PM type")
+Reported-by: Jakub Kicinski <kuba@kernel.org>
 Reviewed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
 Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 ---
- net/mptcp/protocol.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ tools/testing/selftests/net/mptcp/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index cc21fafd9726..21a3ed64226e 100644
---- a/net/mptcp/protocol.c
-+++ b/net/mptcp/protocol.c
-@@ -2919,12 +2919,12 @@ static void mptcp_copy_inaddrs(struct sock *msk, const struct sock *ssk)
+diff --git a/tools/testing/selftests/net/mptcp/Makefile b/tools/testing/selftests/net/mptcp/Makefile
+index f905d5358e68..48a99e1453e1 100644
+--- a/tools/testing/selftests/net/mptcp/Makefile
++++ b/tools/testing/selftests/net/mptcp/Makefile
+@@ -6,7 +6,7 @@ KSFT_KHDR_INSTALL := 1
+ CFLAGS =  -Wall -Wl,--no-as-needed -O2 -g -I$(top_srcdir)/usr/include $(KHDR_INCLUDES)
  
- static int mptcp_disconnect(struct sock *sk, int flags)
- {
--	struct mptcp_subflow_context *subflow;
-+	struct mptcp_subflow_context *subflow, *tmp;
- 	struct mptcp_sock *msk = mptcp_sk(sk);
+ TEST_PROGS := mptcp_connect.sh pm_netlink.sh mptcp_join.sh diag.sh \
+-	      simult_flows.sh mptcp_sockopt.sh
++	      simult_flows.sh mptcp_sockopt.sh userspace_pm.sh
  
- 	inet_sk_state_store(sk, TCP_CLOSE);
+ TEST_GEN_FILES = mptcp_connect pm_nl_ctl mptcp_sockopt mptcp_inq
  
--	mptcp_for_each_subflow(msk, subflow) {
-+	list_for_each_entry_safe(subflow, tmp, &msk->conn_list, node) {
- 		struct sock *ssk = mptcp_subflow_tcp_sock(subflow);
- 
- 		__mptcp_close_ssk(sk, ssk, subflow, MPTCP_CF_FASTCLOSE);
 -- 
 2.37.0
 
