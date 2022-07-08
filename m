@@ -2,138 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E21B856C203
-	for <lists+netdev@lfdr.de>; Sat,  9 Jul 2022 01:12:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 73D5356C34D
+	for <lists+netdev@lfdr.de>; Sat,  9 Jul 2022 01:14:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239953AbiGHUEZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jul 2022 16:04:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36522 "EHLO
+        id S239349AbiGHUJh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jul 2022 16:09:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238564AbiGHUEY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 16:04:24 -0400
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 531AD140CA
-        for <netdev@vger.kernel.org>; Fri,  8 Jul 2022 13:04:19 -0700 (PDT)
+        with ESMTP id S239224AbiGHUJg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 16:09:36 -0400
+Received: from mx07-001d1705.pphosted.com (mx07-001d1705.pphosted.com [185.132.183.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E13A1AF1E;
+        Fri,  8 Jul 2022 13:09:33 -0700 (PDT)
+Received: from pps.filterd (m0209329.ppops.net [127.0.0.1])
+        by mx08-001d1705.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 268JS5Tt031585;
+        Fri, 8 Jul 2022 20:09:03 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sony.com; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=S1;
+ bh=X8oxTXUI7J9ZGPeCupXexiqRNNMEfXAIqSWESr1P1BE=;
+ b=ACNxXRgq1wpYmfSgK3hW5CgSVdiXBjODRbqUxT8xTFH7JymkMuzzCqR7vvM+YDicMIZs
+ u6PymZe9AedmiuzMDCcTAsP7CQ2zBwGtQHbNC2PHvJI5JLFPjtNUARl6Cly2gM5+9TNB
+ P1YU4MKGtw614XGog4RuEgXcehNIQpcBpKxOQwYWBoYh28mpT/VA7KB57foSa2gNbQX1
+ pFNLql6/gYJQfHg31kCMDo1FBjzF0gFox09HZuybH1qefPzzxaiYobsXzgLPUbL5ZNuH
+ KpUU/y4zGKhv+5pcL2pF45eftjO2RM662EutoScpoHWudHB15U8YQibkggemw8il6F0r Lg== 
+Received: from nam11-bn8-obe.outbound.protection.outlook.com (mail-bn8nam11lp2168.outbound.protection.outlook.com [104.47.58.168])
+        by mx08-001d1705.pphosted.com (PPS) with ESMTPS id 3h4urcknmw-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 08 Jul 2022 20:09:02 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=c1nTtaGBZO0bACZmY6f1xUp2EyMQixdXLC6tjaFVhhdEE4nDvMjBZ6ufYSBFW4ClNwflbXfh/ATydfLRuTYRKoe2fIZ1pUMx4QwWZ8Psd19QoaBbPaDLsfmmkCrZOJpgYlMzPdVBCk2dOTV0hDiuut7bGc677Ja73iJxU8vQT0LYyZTDpMsQhAxCv5PBawFL34BIsJIwmS6ODujc3tcA+K9CLSDSkXh1cZR9olV0keWyjUtYkdlmqvKm/6lXkLC52tIK2msP4s0aJ2cZe4yXdL0KoRm/hjDL5NLteiVCiO4l23SyF8BJbwYZeotq6Wi173ZSg1Whv0osERKfPfYqVg==
+ b=V52uPlx7yw5Vbc433tmMKGQuQOqKrvm9vaIsU/EXTpvykEzl0pS7nHh1ouxfRq7YQgAWr8j2r2LRsPdLDYdB6luXzkbsJbTheuqbM6HZBoR+0sHVWNsK7pVJVWdC9Jl/WcheXm0lesLWSMopBF75hz1Xd6xMVfl4Ynh/iQgCtY/AI9vpsiHAU98EM0R0h/rGtMvkMZV61shYZJakQqZ6qqjtfg2lkdRyY9SjCR97fqXDNA5qEJnYiqN45NZmBVGdk8L4TDwnSBPvN8YxRjkg6BKu5GyUg2xi2N1JNnQdJvil7ssD0220/wKxqlLED3n6l93x4DBnrS5p1jfntJuTMQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=gtNB4mRpAbzUJ4QafG3SVw/qv/U4CO4eiZncuRZZyBU=;
- b=mT3udnI1IJ5enLrvmPFGyyhExIo4kajwVAmjgziybSPrEZf2djvMabAnBOsyMIt6h6kDobVkqYO+hB3ga439ET+2+mca5kVtQD0WZnOridE+0JL+2xJYfDmT1vYcDwUUxVuI7wujePO3aX3YeRDGmKpH/PxsgGarMgukk0YFtgqcVFHNOFj7Pn5gua9ia7Y3U1j3EkeYCCpA5lKiZQqLUG2hCowpq6dAu4EJKYm0zeTyoyf3Q88YwZBPamTrQneZZZ84wCmUUtn9vxV8guhwU2ufqT0pxAqnvCbAhx8X+OtUbDW4wA6V6CJTUCpBIKZjw32vz7OgDyC1Cf0btDzofA==
+ bh=X8oxTXUI7J9ZGPeCupXexiqRNNMEfXAIqSWESr1P1BE=;
+ b=k3bBn5CPDLNLAXh4de0kM0JhaEY8LdtZZTNuc/k4AygOo3ULHAIlgDT4irvQ+NhGABF/nkITAQPcl2pG+MhdZ4QitGwxay5KoA8EU+SjmOw6F2m9v23V2xlKNe/V+ELwy1zCS1KwmaGqe79nNg2mcbN5ZR+WcfyGXLMOKMn2FQ4ikbKXDQ01qWazGt8KKaGfz28aEo1YDZMr5DOYqOFNW757f3PoMKEBQ+pCzPt1rxSmJQjAqKYPeQGQ4eVIpSdbPFt67RkyxJIpTWkkaX3qWJR4sceV6ewJV3bkj5oR5UEQBMJH0XEBz9aeiRFfFZ80ICRFdQE9xsYV5lLy6ZZBpw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=hammerspace.com; dmarc=pass action=none
- header.from=hammerspace.com; dkim=pass header.d=hammerspace.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hammerspace.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gtNB4mRpAbzUJ4QafG3SVw/qv/U4CO4eiZncuRZZyBU=;
- b=CnSAUoVsU0jh4us0VPz1zwa8XqPAzQNPde5f1LTGREVnc0jbJjj8U/mNsTHtJTDWXeryuBHkjYfgnRXWrxEfdxaH5smb6CEUpkq9gri4MjzCDK2Ti5o1U/z2DtJiXwNqx1DANyQvnHDCGWnwMXUG0EXwbzukbNSQX7Lz4b6DCbA=
-Received: from CH0PR13MB5084.namprd13.prod.outlook.com (2603:10b6:610:111::7)
- by MW5PR13MB5440.namprd13.prod.outlook.com (2603:10b6:303:191::6) with
+ smtp.mailfrom=sony.com; dmarc=pass action=none header.from=sony.com;
+ dkim=pass header.d=sony.com; arc=none
+Received: from DM6PR13MB3098.namprd13.prod.outlook.com (2603:10b6:5:196::11)
+ by MN2PR13MB4384.namprd13.prod.outlook.com (2603:10b6:208:1b5::14) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.15; Fri, 8 Jul
- 2022 20:04:17 +0000
-Received: from CH0PR13MB5084.namprd13.prod.outlook.com
- ([fe80::28a1:bc39:bd83:9f7]) by CH0PR13MB5084.namprd13.prod.outlook.com
- ([fe80::28a1:bc39:bd83:9f7%9]) with mapi id 15.20.5417.013; Fri, 8 Jul 2022
- 20:04:16 +0000
-From:   Trond Myklebust <trondmy@hammerspace.com>
-To:     "edumazet@google.com" <edumazet@google.com>,
-        "bcodding@redhat.com" <bcodding@redhat.com>
-CC:     "smayhew@redhat.com" <smayhew@redhat.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "chuck.lever@oracle.com" <chuck.lever@oracle.com>,
-        "sfrench@samba.org" <sfrench@samba.org>,
-        "tj@kernel.org" <tj@kernel.org>,
-        "anna@kernel.org" <anna@kernel.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "jlayton@kernel.org" <jlayton@kernel.org>,
-        "gnault@redhat.com" <gnault@redhat.com>,
-        "josef@toxicpanda.com" <josef@toxicpanda.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>
-Subject: Re: [RFC net] Should sk_page_frag() also look at the current GFP
- context?
-Thread-Topic: [RFC net] Should sk_page_frag() also look at the current GFP
- context?
-Thread-Index: AQHYjXoj1cqSWQ6/u0eRgomhkg9WFK1zImKAgAGuxQCAAB+vAA==
-Date:   Fri, 8 Jul 2022 20:04:16 +0000
-Message-ID: <e8de4a15c934658b06ee1de10fd21975b972f902.camel@hammerspace.com>
-References: <b4d8cb09c913d3e34f853736f3f5628abfd7f4b6.1656699567.git.gnault@redhat.com>
-         <CANn89i+=GyHjkrHMZAftB-toEhi9GcAQom1_bpT+S0qMvCz0DQ@mail.gmail.com>
-         <429C561E-2F85-4DB5-993C-B2DD4E575BF0@redhat.com>
-In-Reply-To: <429C561E-2F85-4DB5-993C-B2DD4E575BF0@redhat.com>
-Accept-Language: en-US, en-GB
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.12; Fri, 8 Jul
+ 2022 20:08:57 +0000
+Received: from DM6PR13MB3098.namprd13.prod.outlook.com
+ ([fe80::f879:1f68:a013:c06]) by DM6PR13MB3098.namprd13.prod.outlook.com
+ ([fe80::f879:1f68:a013:c06%7]) with mapi id 15.20.5417.016; Fri, 8 Jul 2022
+ 20:08:57 +0000
+From:   "U'ren, Aaron" <Aaron.U'ren@sony.com>
+To:     Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     Thorsten Leemhuis <regressions@leemhuis.info>,
+        "McLean, Patrick" <Patrick.Mclean@sony.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        "netfilter-devel@vger.kernel.org" <netfilter-devel@vger.kernel.org>,
+        "Brown, Russell" <Russell.Brown@sony.com>,
+        "Rueger, Manuel" <manuel.rueger@sony.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
+        Florian Westphal <fw@strlen.de>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: Intermittent performance regression related to ipset between 5.10
+ and 5.15
+Thread-Topic: Intermittent performance regression related to ipset between
+ 5.10 and 5.15
+Thread-Index: AQHYOMGW67qKpuT7dk2J1ij1Ec0M9azBu8uAgCjylwCAABPlAIAkPh0AgABqshCAKHvIgIABK1GAgB9noQCAEDSYyIAAN9SAgAMd64CACZB8jQ==
+Date:   Fri, 8 Jul 2022 20:08:57 +0000
+Message-ID: <DM6PR13MB309813DF3769F48E5DE2EB6EC8829@DM6PR13MB3098.namprd13.prod.outlook.com>
+References: <BY5PR13MB3604D24C813A042A114B639DEE109@BY5PR13MB3604.namprd13.prod.outlook.com>
+ <5e56c644-2311-c094-e099-cfe0d574703b@leemhuis.info>
+ <c28ed507-168e-e725-dddd-b81fadaf6aa5@leemhuis.info>
+ <b1bfbc2f-2a91-9d20-434d-395491994de@netfilter.org>
+ <96e12c14-eb6d-ae07-916b-7785f9558c67@leemhuis.info>
+ <DM6PR13MB3098E6B746264B4F96D9F743C8C39@DM6PR13MB3098.namprd13.prod.outlook.com>
+ <2d9479bd-93bd-0cf1-9bc9-591ab3b2bdec@leemhuis.info>
+ <6f6070ff-b50-1488-7e9-322be08f35b9@netfilter.org>
+ <871bc2cb-ae4b-bc2a-1bd8-1315288957c3@leemhuis.info>
+ <DM6PR13MB309846DD4673636DF440000EC8BA9@DM6PR13MB3098.namprd13.prod.outlook.com>
+ <20220630110443.100f8aa9@kernel.org>
+ <d44d3522-ac1f-a1e-ddf6-312c7b25d685@netfilter.org>
+In-Reply-To: <d44d3522-ac1f-a1e-ddf6-312c7b25d685@netfilter.org>
+Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=hammerspace.com;
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 38a52940-1a91-437c-12ea-08da611d0987
-x-ms-traffictypediagnostic: MW5PR13MB5440:EE_
+x-ms-office365-filtering-correlation-id: 44c82de8-d48f-481a-433f-08da611db0cc
+x-ms-traffictypediagnostic: MN2PR13MB4384:EE_
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Aux0WIvjPHKv6cW/aTxFXA4zq+jfEaSpe9yEkHZu5dm9dHbxTWYSalTGQfwtml+HHDyRcaEmNs4zKTDKYUK/b5hU6GFh7sQ731UbV429GndCkVBd1q8XZ3wuqUQayCOM5vqcZm8gj8Ldg6Y+8TSbd96s5DItzq6YrYVJdgbtRfhPpZlOqHN2l/rEH3tPsEkjVC2OwSQFhFg6cKhK0eODZn1rFtgg4kI1W3tji9xjkCXiffyUq1qW6O5G1vpM6aSt4kqix/CCRMv/wbKqxAM+S34D88ggDHqjJiscJyZaMCMVUcwUM3T1LFapLY6pwMAQms8qff7zwvXlPUKcvh9a2IuLYlXI5USQ33Ur5aYtbj+4gKIFuhvfgdMnqhAtK4jwoVEnzaoQPyCvLW9Su2TFdeFiuu/jvomeTdwV/RNxDs0vOIMa/XTh0WScex0GkmkZlfAZbMtq/YY45hs9LDDfAZqgg3Eu+E6kxGXfX6b+2tyoc8m0eJfeETPPJQTNGfZPMzG9L/z+3jKVrkd4o8zDlMTCG6rP8Br3pVjM0EO9vPO2qhm4x9rltJ4MWxJ7nJ0CxTOnWjW5tj9f+1y2HCxpjGWqo2utI4J+Q5gTwZREze4Luvk2ZPxZEyKswxc63mdb4MiY3byhIpY35L6Hq4pIIfnlomHBjPRdVmx7KZ7nf2RKsuojehSar1YjSp5hIqo4iH3VLJH1WkbWNIPv4CXZGiKnh9JHgYCze1yUyBFxdih6TKmZHyNo0lm/X1daFOfsaGfsxcl2vHukrtXVHVV81OzBRwMj4f24HFO07n0MKv+NbJlwzkU5cgN8TmK4FYGbGkeJx/MXpebQPFPogjokJuPB1mEa4+HNGjnpBy4OQVo=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH0PR13MB5084.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(136003)(366004)(376002)(39840400004)(396003)(346002)(7416002)(5660300002)(6512007)(6506007)(83380400001)(122000001)(26005)(53546011)(478600001)(41300700001)(86362001)(2906002)(8936002)(6486002)(38100700002)(38070700005)(2616005)(186003)(36756003)(54906003)(110136005)(66476007)(71200400001)(66556008)(316002)(64756008)(76116006)(66946007)(4326008)(8676002)(66446008);DIR:OUT;SFP:1102;
+x-microsoft-antispam-message-info: fRjMJcktpjzX761BHqnYKemTGihpdAWz1eC26lnNaRb+juc9aGfjApW1EylXWlye7poRojU7wsPO+fJCVaVCBL9m/SOssgOFi2bdKwcZA8BhEHoOzACajHjxx0c6JRK3FHkuyfliRclAWOLWDNk74mKoJpS+6HsLKJTv6ISj3eNCp0Zv1F7E1iNPA47Mueeyj2MCJ8jOEyfH8+H7reYU6xS1vuofF2ijLo6s1VvU3bZL+1outRJYPioRBGQvunthQm0WGsbDPXUDl4qMEQH7orPvYdGrESIKcMZsuhlcbatmyR5BGr2OYCFiJS9I+Vfs+nrH2jr+Km9vaBcpFT9MXNth407pj2c+EGHmSDw7PPoOwqwwbdefcj9IUYNllI3aOb5tUKJbORw32ZAEF9f1dLIlI+gx6EbJklTiDk/NTlZxoiL9uJWpqj/CqoPROENCrP8mjshdDFr39NIIhseG3no8mOix1oxtqJLeCkId9M2jV3dtYKagoMdSM1w01pmbR2W4c8YeD4PjzNaMFjqmABaD0FP1Dekh/EUb/PBLLh6Dz9dPK9YOWM3awka5K4wq+CqryG/ojS9xvYVEzBhwte8u62JM9RvqN+S0f93grNogs83XbUPuT/aqup2XHuKB1BUDb9vcdNcRNymBwo2F9I+H+u6+/R7rQUuwTXQ/uc6n0rXRJdcw4947NRjg6QMQsnAsC0s/83vxWjEt+sNYUls0RiCsa7MHg+sa2mruNrt6M5QY+a5evCkn4HUl8TH0jq8pHZKJJq3YAHMwf5WOxDSidIcqcfVhOi/I7W2trfNS7ZxnZpCbpMP4Fz1LV2dJR9EicpfTYeWRRhePK5o7RQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR13MB3098.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(376002)(136003)(39860400002)(346002)(396003)(83380400001)(91956017)(8676002)(66476007)(52536014)(66556008)(4326008)(316002)(76116006)(122000001)(66574015)(64756008)(66446008)(54906003)(110136005)(55016003)(38070700005)(82960400001)(71200400001)(38100700002)(66946007)(9686003)(5660300002)(26005)(966005)(8936002)(30864003)(478600001)(2906002)(6506007)(86362001)(186003)(33656002)(7696005)(41300700001)(53546011);DIR:OUT;SFP:1102;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?b2N1TVFkL2lQL0FxRWdzb2o1NkNXb1pjd3FCNkhkekxnQlZIYTN5YStreUpn?=
- =?utf-8?B?bU81K2psSkxLVW9TUE93a2ZHZ0lDby85ZDdoWnVYOEx6SkRwcWljYitzMGFW?=
- =?utf-8?B?OGhXaTgyVTIxZUlzRE81Ymx5UjBiSk1Fa3JSOGJUdXQwQTRwMWVBTUVOL0JK?=
- =?utf-8?B?ZG16dUZNSTdNQXMyM25LZWdXT0ZEQ2YwVXlnbGtMZW96VUx4aE9XWVlrUDgz?=
- =?utf-8?B?WkgwL0VxOUVZaHZ6WTNLb2FRMUZKQ0xGT0xVY1lkMFlWM00vVk1XcTVobWpF?=
- =?utf-8?B?OXA5YjU1ajV0RmliUCs4THRKOGh3Nml6V2lXVmR3TlZkTEJSR0txZVVHNGxR?=
- =?utf-8?B?V3crUEtqQ0R4Nyt0NWhHL2JrVEJ0UktSemdxNjZaWXRyTldGV3hZdzhCY3pY?=
- =?utf-8?B?VjJuWk9LLy82c05Bczlwa0JmQTVmYzN0OXd2Z0x2MllRUko4cndOd2RKY2pk?=
- =?utf-8?B?aS81RGhUQXEyZm1qR2Myci9ETDFYanZrNHFUK05Dc2hXQ0pESnY0L2ROTzVP?=
- =?utf-8?B?blpCbUozK2NTZHN6UWtvcHFpdDBUUTh3aERnTno2YkxmYzhhNmN5aUdCQkNE?=
- =?utf-8?B?eHBZaExEdmNPSnFtcWtTLzRocjFzK0FaYWorekJQdFRLcml1ZVVOMlg3S2di?=
- =?utf-8?B?czl4S2l0ZHc0bW1jVlhXV1ZaanZxc3lYak9FQUVXL2pNbzJuYldPOXFSNWZ4?=
- =?utf-8?B?ZXdVNWR6R3UwNkUrYnZ0LzJZTEw3emNsMGVJRmVmZ2sreHVJUVpHRTlrSjYv?=
- =?utf-8?B?QldQV3Z1eUY0ckdBcXBCUGJlSkYvblNTM0hwYktEV1ZNRXNRRnJpUE95Rmpo?=
- =?utf-8?B?cUtPVUF2NmVPRk85Njcva25PRXJLaVVTVlRScGczanJ5emlMd2g4akdVaUdK?=
- =?utf-8?B?NkpvakpBcVpzSTJwQjNtYWdqaTlodXlqclNSLzY5V3I5VVJGazVmejRabW5P?=
- =?utf-8?B?MzJWMmZxZnpHRzcwWVpTY2t2NUhraitRdWJzTm1WVW05VU0wRWc0Z1YyUGYw?=
- =?utf-8?B?blZ5cmYvck55WCtrdWQrbnlrT0ZHOFRPNzJ4TklpbVQvd0cvcXZ6Smc4NmpJ?=
- =?utf-8?B?cm0yK3d5bnlVWUFIa3kwUzhJWFd5R25vVS83K3RBMVFTRDJKcGU0L2FrOXQz?=
- =?utf-8?B?Z0NOa0VadGlxWWZRSHgrV2ZiOE5TRDJpWkZTQ0txSS9zd2czRjA4OHMyeTc2?=
- =?utf-8?B?WjJVQVFYT0k1L0hYaVpUMzUvV2MzSW9nQmw5bXNsZmwzeDJqN3QrcWpVZERx?=
- =?utf-8?B?OUtTMHI4dFB3aFRiUURoTUx0WUFENGc3TC9Xd0xkb1htL3E4bXZ4NHNMd05B?=
- =?utf-8?B?cFUycjM3VFBFNzFOTkxTSHlKL1FBZ1RrbmVoMUZDT29ycWN6Ym1WY0w5MUlo?=
- =?utf-8?B?K202M3RkTXJxOXNZTkpBcjc5dDE1cEFGRHJvTEM0YWFBL0FVMkE3Z2ZOYWhJ?=
- =?utf-8?B?NUd6TzJYM3NRbEVEVlhwTHBORWdKQVdPK0E2bFIzdHdWK1pzQlpZVGwvNGlu?=
- =?utf-8?B?VW5GaThLTldrNGJTVHZkVjZGc083R0hQdVB0Y3BtSUE3YnU5cUMyUjZ6ajlM?=
- =?utf-8?B?dkNQS3JqTEtZN3pUbXJwN0VlMWgwL1NrV3hUN2pJWnJJeEJBZWtvdFBhQ1Ra?=
- =?utf-8?B?RGFpZ3lIeHlXMlIrUDY4cGNvcENlN2h2aVdaUHlBTnU2WDY1b1lCUHVLL05s?=
- =?utf-8?B?UENpMEI5blNRbFllRVgxSnZ6aFlBY3BXR3JrVWlDVnpScEk2aVlMbW9zamF4?=
- =?utf-8?B?V1M2bWI1TXpud1Q5WGhrZW5SVzZwcm5kK2dlNENyUFcyVCtYdlRqbFdvSWUw?=
- =?utf-8?B?VnJsNVhkRS8yVTFkajcrWmJ5d3NKbW8xZTRzeW9jQlJTbHZoZFlpMms0QTZP?=
- =?utf-8?B?Nm9ldkJ0V1E2Y0xoY2NCS20vSnNBdWdmbm8xNGpJVVdCRlBTcjFBWXJ6TmJ6?=
- =?utf-8?B?WEViN1RPOHhBVkk4MXFGM0pYak43YTMvcnZTWXQrbncxUlp4aUJwcUdsS2Rs?=
- =?utf-8?B?OENYd0JqVWUwalVZYUNjSnNSUTUzRkc5bTI0cEhudWhkRlRMb3o1VnpnYXhr?=
- =?utf-8?B?WCtEcmg1akg1VmlqRlRKNUNrTW9raFkyZnd0ckN4OVFhSXdCSDA4b3VRTVFM?=
- =?utf-8?B?WkNuQlpON1F3d2p3cFFvL3B3a2hJSnRITkMrNURuanNOdjJncE1qb1EzdlZa?=
- =?utf-8?B?MGc9PQ==?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <BD5C63981CE8EC4AA8DDC6039D1FD383@namprd13.prod.outlook.com>
-Content-Transfer-Encoding: base64
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?/ls2esq+N7TNM/dg5hhN2tnCzZPX9eDb4RnOZ/gi7kfqLT5yDFr8W9CRdk?=
+ =?iso-8859-1?Q?X5zACwMSF4H9HMdVwlHv5KIE3+rVo8FK51UTlnjlw5khKDFpc5AfarWriX?=
+ =?iso-8859-1?Q?Hcson2xafM7ddg+clgIPajJj8ysb0+XEDSQQYpX9j7s3f6ji3407yosCew?=
+ =?iso-8859-1?Q?LiuKTSMX3T8FiKExdTKLO5xqBz3rMj4M//5lH4skUU2TNWyjvwjzBxvX05?=
+ =?iso-8859-1?Q?hDxlaSMAD/IHxos2dApIble8pB6F08d1PpH+lTSDnOjpsNQg4lzwf0WMxN?=
+ =?iso-8859-1?Q?VXmN1owlJOj7D6TOVM/eiIvbjpK0e4wR2DDb1mvteBerG3/2AW0YoXgALC?=
+ =?iso-8859-1?Q?GAFqw79ldTXdFhqi0Edhk5ceZCcpAuAhwoVyqhptLyzfIODMulyl1g7Uoc?=
+ =?iso-8859-1?Q?PZ9F2ypMcr6Z8bcCB1M+MG5HHo78kVMmOZy0tfTGkKrG3N6qwxFmHW2iCy?=
+ =?iso-8859-1?Q?maOnvfuG06ZJbrgVQ37knn/MCXLrQX7h6x4VXOw6F9Snnawnah3Le4DYm8?=
+ =?iso-8859-1?Q?9YathzxvrwTlaR6U6IKuQlx/39OTwjqIfo4iMklsUYnPLFKFDc8+xmRIUF?=
+ =?iso-8859-1?Q?uq/VriIPPrzWsyhjYPybXVN4Qi2v7fcya6ZFtrD2RHUWDzwX0U3DRegwgi?=
+ =?iso-8859-1?Q?h0M2ZaoY6mKItHH2HVUezfI63WgDWeS5wi9/622rAs1YBVvnjlubz9vIya?=
+ =?iso-8859-1?Q?j/RlcHVQ1tDTiZ38gRCGiNC/ePfODa6cbmz3Awam7PvgMPZjTqFBKX8XHb?=
+ =?iso-8859-1?Q?IoHVixvCv77I9ye2l9XAO148RAaW08MIekjgAglI5o9ELjz1dhv5FpDuYk?=
+ =?iso-8859-1?Q?j7yVthyVVFdd5xvI3bUcE3Z9AdB7LvozNPJRvPTp5RKezcecdfWDgLcXOy?=
+ =?iso-8859-1?Q?opCCRHKCGd8svZM6It2ovbFu/3f7iWPsiW6nvKbIuOXrce7wXabXFUtz/M?=
+ =?iso-8859-1?Q?wSMXD9tiZCovCypROmCysNn9P8hc9FBTOWVwCzbdwcecXUH3kYKCPlt/9Z?=
+ =?iso-8859-1?Q?Jy4w+s7fxMTC3eA28CUdDMeRkGX+AUbZEXujJ4hcd6EYklwxeQp4sxn8dt?=
+ =?iso-8859-1?Q?Xv688r6kTzZOePAZYtsbYIzOBNNLAlTsWc6afKkMfDazW7YiIFMmsNxMBl?=
+ =?iso-8859-1?Q?1BlIRIpmTNSQq1Arg6ub9rhNaxgZ+gQYSNczuY9dwc53ny6kATGLCTnccT?=
+ =?iso-8859-1?Q?n9pi2IXGfaYz0VHTSsZiHDxaGduEoijyQhPVrF+As7un77huvUUedkz8LI?=
+ =?iso-8859-1?Q?Fu1LXZHCFpMvvwz5zDxPLNvSfD/OtxH/Io9bxik3318c8LCH+twYU6BXkJ?=
+ =?iso-8859-1?Q?/UFBQWhQbo0fEjQ52SIzKdcJ/hFSfDfH+kWcvJKsDK8PQSvUdqpJW35Yx/?=
+ =?iso-8859-1?Q?Hh4X0raWFMPVs2gqB47Xw/HUrUUdaM8UkcM4D9bpH9CcOj69MGjC23wDuP?=
+ =?iso-8859-1?Q?DBsjvhPpLA0G0i1Fde7ktMtoa45bYFDe8C1NjlPXrLGQN6s1G1M3xDlIZP?=
+ =?iso-8859-1?Q?OSrXeWH6CSMtvvDD6iGXB7CRLMocqsH9X2Sl5B5119nOyoqjaEduuFdXcU?=
+ =?iso-8859-1?Q?P4crG+Ks6WiAY8RireF3+Q6Zpm4E3XMOytFGljwWMuW2RFpXw9Q/a0MAQO?=
+ =?iso-8859-1?Q?VQl4papUTYqtDA7jImZE3Rt+h4Q3urd7sRio+uOBowqbnArldSUJ7R7Q?=
+ =?iso-8859-1?Q?=3D=3D?=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-OriginatorOrg: hammerspace.com
+X-OriginatorOrg: sony.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CH0PR13MB5084.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 38a52940-1a91-437c-12ea-08da611d0987
-X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Jul 2022 20:04:16.7983
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR13MB3098.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 44c82de8-d48f-481a-433f-08da611db0cc
+X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Jul 2022 20:08:57.4312
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 0d4fed5c-3a70-46fe-9430-ece41741f59e
+X-MS-Exchange-CrossTenant-id: 66c65d8a-9158-4521-a2d8-664963db48e4
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: K4FPPSz3hREn3daM8ZosfjY+xtLH+26m56jTu+PWrtoAnFlCS7FB+uq389u8qoQeRx7anUErQEOUdglY8oiuMQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW5PR13MB5440
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+X-MS-Exchange-CrossTenant-userprincipalname: y1P0Xe4EhcHdhc8kQOL9yGILxH9kGXLzQFzg3B1VK1hZVK8EUS+La6AliyeDuUpbWaeaL2InGrbDv1RJZ7VYsA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR13MB4384
+X-Proofpoint-GUID: vLuA2m2qPLoPkCJJVlaDLrSCl-ftWZ8k
+X-Proofpoint-ORIG-GUID: vLuA2m2qPLoPkCJJVlaDLrSCl-ftWZ8k
+X-Sony-Outbound-GUID: vLuA2m2qPLoPkCJJVlaDLrSCl-ftWZ8k
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-08_17,2022-07-08_01,2022-06-22_01
+X-Spam-Status: No, score=-3.0 required=5.0 tests=APOSTROPHE_FROM,BAYES_00,
+        DKIMWL_WL_HIGH,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -141,90 +154,282 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gRnJpLCAyMDIyLTA3LTA4IGF0IDE0OjEwIC0wNDAwLCBCZW5qYW1pbiBDb2RkaW5ndG9uIHdy
-b3RlOg0KPiBPbiA3IEp1bCAyMDIyLCBhdCAxMjoyOSwgRXJpYyBEdW1hemV0IHdyb3RlOg0KPiAN
-Cj4gPiBPbiBGcmksIEp1bCAxLCAyMDIyIGF0IDg6NDEgUE0gR3VpbGxhdW1lIE5hdWx0IDxnbmF1
-bHRAcmVkaGF0LmNvbT4gDQo+ID4gd3JvdGU6DQo+ID4gPiANCj4gPiA+IEknbSBpbnZlc3RpZ2F0
-aW5nIGEga2VybmVsIG9vcHMgdGhhdCBsb29rcyBzaW1pbGFyIHRvDQo+ID4gPiAyMGViNGYyOWI2
-MDIgKCJuZXQ6IGZpeCBza19wYWdlX2ZyYWcoKSByZWN1cnNpb24gZnJvbSBtZW1vcnkgDQo+ID4g
-PiByZWNsYWltIikNCj4gPiA+IGFuZCBkYWNiNWQ4ODc1Y2MgKCJ0Y3A6IGZpeCBwYWdlIGZyYWcg
-Y29ycnVwdGlvbiBvbiBwYWdlIGZhdWx0IikuDQo+ID4gPiANCj4gPiA+IFRoaXMgdGltZSB0aGUg
-cHJvYmxlbSBoYXBwZW5zIG9uIGFuIE5GUyBjbGllbnQsIHdoaWxlIHRoZQ0KPiA+ID4gcHJldmlv
-dXMgDQo+ID4gPiBienMNCj4gPiA+IHJlc3BlY3RpdmVseSB1c2VkIE5CRCBhbmQgQ0lGUy4gV2hp
-bGUgTkJEIGFuZCBDSUZTIGNsZWFyIF9fR0ZQX0ZTDQo+ID4gPiBpbg0KPiA+ID4gdGhlaXIgc29j
-a2V0J3MgLT5za19hbGxvY2F0aW9uIGZpZWxkICh1c2luZyBHRlBfTk9JTyBvcg0KPiA+ID4gR0ZQ
-X05PRlMpLCANCj4gPiA+IE5GUw0KPiA+ID4gbGVhdmVzIHNrX2FsbG9jYXRpb24gdG8gaXRzIGRl
-ZmF1bHQgdmFsdWUgc2luY2UgY29tbWl0DQo+ID4gPiBhMTIzMWZkYTdlOTQNCj4gPiA+ICgiU1VO
-UlBDOiBTZXQgbWVtYWxsb2Nfbm9mc19zYXZlKCkgb24gYWxsIHJwY2lvZC94cHJ0aW9kIGpvYnMi
-KS4NCj4gPiA+IA0KPiA+ID4gVG8gcmVjYXAgdGhlIG9yaWdpbmFsIHByb2JsZW1zLCBpbiBjb21t
-aXQgMjBlYjRmMjliNjAyIGFuZCANCj4gPiA+IGRhY2I1ZDg4NzVjYywNCj4gPiA+IG1lbW9yeSBy
-ZWNsYWltIGhhcHBlbmVkIHdoaWxlIGV4ZWN1dGluZyB0Y3Bfc2VuZG1zZ19sb2NrZWQoKS4gVGhl
-DQo+ID4gPiBjb2RlDQo+ID4gPiBwYXRoIGVudGVyZWQgdGNwX3NlbmRtc2dfbG9ja2VkKCkgcmVj
-dXJzaXZlbHkgYXMgcGFnZXMgdG8gYmUgDQo+ID4gPiByZWNsYWltZWQNCj4gPiA+IHdlcmUgYmFj
-a2VkIGJ5IGZpbGVzIG9uIHRoZSBuZXR3b3JrLiBUaGUgcHJvYmxlbSB3YXMgdGhhdCBib3RoDQo+
-ID4gPiB0aGUNCj4gPiA+IG91dGVyIGFuZCB0aGUgaW5uZXIgdGNwX3NlbmRtc2dfbG9ja2VkKCkg
-Y2FsbHMgdXNlZCANCj4gPiA+IGN1cnJlbnQtPnRhc2tfZnJhZywNCj4gPiA+IHRodXMgbGVhdmlu
-ZyBpdCBpbiBhbiBpbmNvbnNpc3RlbnQgc3RhdGUuIFRoZSBmaXggd2FzIHRvIHVzZSB0aGUNCj4g
-PiA+IHNvY2tldCdzIC0+c2tfZnJhZyBpbnN0ZWFkIGZvciB0aGUgZmlsZSBzeXN0ZW0gc29ja2V0
-LCBzbyB0aGF0DQo+ID4gPiB0aGUNCj4gPiA+IGlubmVyIGFuZCBvdXRlciBjYWxscyB3b3Vsbid0
-IHN0ZXAgb24gZWFjaCBvdGhlcidzIHRvZXMuDQo+ID4gPiANCj4gPiA+IEJ1dCBub3cgdGhhdCBO
-RlMgZG9lc24ndCBtb2RpZnkgLT5za19hbGxvY2F0aW9uIGFueW1vcmUsIA0KPiA+ID4gc2tfcGFn
-ZV9mcmFnKCkNCj4gPiA+IHNlZXMgc3VucnBjIHNvY2tldHMgYXMgcGxhaW4gVENQIG9uZXMgYW5k
-IHJldHVybnMgLT50YXNrX2ZyYWcgaW4NCj4gPiA+IHRoZQ0KPiA+ID4gaW5uZXIgdGNwX3NlbmRt
-c2dfbG9ja2VkKCkgY2FsbC4NCj4gPiA+IA0KPiA+ID4gQWxzbyBpdCBsb29rcyBsaWtlIHRoZSB0
-cmVuZCBpcyB0byBhdm9pZCBHRlNfTk9GUyBhbmQgR0ZQX05PSU8NCj4gPiA+IGFuZCANCj4gPiA+
-IHVzZQ0KPiA+ID4gbWVtYWxsb2Nfbm97ZnMsaW99X3NhdmUoKSBpbnN0ZWFkLiBTbyBtYXliZSBv
-dGhlciBuZXR3b3JrIGZpbGUgDQo+ID4gPiBzeXN0ZW1zDQo+ID4gPiB3aWxsIGFsc28gc3RvcCBz
-ZXR0aW5nIC0+c2tfYWxsb2NhdGlvbiBpbiB0aGUgZnV0dXJlIGFuZCB3ZQ0KPiA+ID4gc2hvdWxk
-DQo+ID4gPiB0ZWFjaCBza19wYWdlX2ZyYWcoKSB0byBsb29rIGF0IHRoZSBjdXJyZW50IEdGUCBm
-bGFncy4gT3Igc2hvdWxkDQo+ID4gPiB3ZQ0KPiA+ID4gc3RpY2sgdG8gLT5za19hbGxvY2F0aW9u
-IGFuZCBtYWtlIE5GUyBkcm9wIF9fR0ZQX0ZTIGFnYWluPw0KPiA+ID4gDQo+ID4gPiBTaWduZWQt
-b2ZmLWJ5OiBHdWlsbGF1bWUgTmF1bHQgPGduYXVsdEByZWRoYXQuY29tPg0KPiA+IA0KPiA+IENh
-biB5b3UgcHJvdmlkZSBhIEZpeGVzOiB0YWcgPw0KPiA+IA0KPiA+ID4gLS0tDQo+ID4gPiDCoGlu
-Y2x1ZGUvbmV0L3NvY2suaCB8IDggKysrKysrLS0NCj4gPiA+IMKgMSBmaWxlIGNoYW5nZWQsIDYg
-aW5zZXJ0aW9ucygrKSwgMiBkZWxldGlvbnMoLSkNCj4gPiA+IA0KPiA+ID4gZGlmZiAtLWdpdCBh
-L2luY2x1ZGUvbmV0L3NvY2suaCBiL2luY2x1ZGUvbmV0L3NvY2suaA0KPiA+ID4gaW5kZXggNzJj
-YTk3Y2NiNDYwLi5iOTM0Yzk4NTEwNTggMTAwNjQ0DQo+ID4gPiAtLS0gYS9pbmNsdWRlL25ldC9z
-b2NrLmgNCj4gPiA+ICsrKyBiL2luY2x1ZGUvbmV0L3NvY2suaA0KPiA+ID4gQEAgLTQ2LDYgKzQ2
-LDcgQEANCj4gPiA+IMKgI2luY2x1ZGUgPGxpbnV4L25ldGRldmljZS5oPg0KPiA+ID4gwqAjaW5j
-bHVkZSA8bGludXgvc2tidWZmLmg+wqDCoMKgwqDCoCAvKiBzdHJ1Y3Qgc2tfYnVmZiAqLw0KPiA+
-ID4gwqAjaW5jbHVkZSA8bGludXgvbW0uaD4NCj4gPiA+ICsjaW5jbHVkZSA8bGludXgvc2NoZWQv
-bW0uaD4NCj4gPiA+IMKgI2luY2x1ZGUgPGxpbnV4L3NlY3VyaXR5Lmg+DQo+ID4gPiDCoCNpbmNs
-dWRlIDxsaW51eC9zbGFiLmg+DQo+ID4gPiDCoCNpbmNsdWRlIDxsaW51eC91YWNjZXNzLmg+DQo+
-ID4gPiBAQCAtMjUwMywxNCArMjUwNCwxNyBAQCBzdGF0aWMgaW5saW5lIHZvaWQgDQo+ID4gPiBz
-a19zdHJlYW1fbW9kZXJhdGVfc25kYnVmKHN0cnVjdCBzb2NrICpzaykNCj4gPiA+IMKgICogc29j
-a2V0IG9wZXJhdGlvbnMgYW5kIGVuZCB1cCByZWN1cnNpbmcgaW50byBza19wYWdlX2ZyYWcoKQ0K
-PiA+ID4gwqAgKiB3aGlsZSBpdCdzIGFscmVhZHkgaW4gdXNlOiBleHBsaWNpdGx5IGF2b2lkIHRh
-c2sgcGFnZV9mcmFnDQo+ID4gPiDCoCAqIHVzYWdlIGlmIHRoZSBjYWxsZXIgaXMgcG90ZW50aWFs
-bHkgZG9pbmcgYW55IG9mIHRoZW0uDQo+ID4gPiAtICogVGhpcyBhc3N1bWVzIHRoYXQgcGFnZSBm
-YXVsdCBoYW5kbGVycyB1c2UgdGhlIEdGUF9OT0ZTIGZsYWdzLg0KPiA+ID4gKyAqIFRoaXMgYXNz
-dW1lcyB0aGF0IHBhZ2UgZmF1bHQgaGFuZGxlcnMgdXNlIHRoZSBHRlBfTk9GUyBmbGFncw0KPiA+
-ID4gKyAqIG9yIHJ1biB1bmRlciBtZW1hbGxvY19ub2ZzX3NhdmUoKSBwcm90ZWN0aW9uLg0KPiA+
-ID4gwqAgKg0KPiA+ID4gwqAgKiBSZXR1cm46IGEgcGVyIHRhc2sgcGFnZV9mcmFnIGlmIGNvbnRl
-eHQgYWxsb3dzIHRoYXQsDQo+ID4gPiDCoCAqIG90aGVyd2lzZSBhIHBlciBzb2NrZXQgb25lLg0K
-PiA+ID4gwqAgKi8NCj4gPiA+IMKgc3RhdGljIGlubGluZSBzdHJ1Y3QgcGFnZV9mcmFnICpza19w
-YWdlX2ZyYWcoc3RydWN0IHNvY2sgKnNrKQ0KPiA+ID4gwqB7DQo+ID4gPiAtwqDCoMKgwqDCoMKg
-IGlmICgoc2stPnNrX2FsbG9jYXRpb24gJiAoX19HRlBfRElSRUNUX1JFQ0xBSU0gfCANCj4gPiA+
-IF9fR0ZQX01FTUFMTE9DIHwgX19HRlBfRlMpKSA9PQ0KPiA+ID4gK8KgwqDCoMKgwqDCoCBnZnBf
-dCBnZnBfbWFzayA9IGN1cnJlbnRfZ2ZwX2NvbnRleHQoc2stPnNrX2FsbG9jYXRpb24pOw0KPiA+
-IA0KPiA+IFRoaXMgaXMgc2xvd2luZyBkb3duIFRDUCBzZW5kbXNnKCkgZmFzdCBwYXRoLCByZWFk
-aW5nIGN1cnJlbnQtDQo+ID4gPmZsYWdzLA0KPiA+IHBvc3NpYmx5IGNvbGQgdmFsdWUuDQo+IA0K
-PiBUcnVlIC0gY3VycmVudC0+ZmxhZ3MgaXMgcHJldHR5IGRpc3RhbnQgZnJvbSBjdXJyZW50LT50
-YXNrX2ZyYWcuDQo+IA0KPiA+IEkgd291bGQgc3VnZ2VzdCB1c2luZyBvbmUgYml0IGluIHNrLCBj
-bG9zZSB0byBzay0+c2tfYWxsb2NhdGlvbiB0bw0KPiA+IG1ha2UgdGhlIGRlY2lzaW9uLA0KPiA+
-IGluc3RlYWQgb2YgdGVzdGluZyBzay0+c2tfYWxsb2NhdGlvbiBmb3IgdmFyaW91cyBmbGFncy4N
-Cj4gPiANCj4gPiBOb3Qgc3VyZSBpZiB3ZSBoYXZlIGF2YWlsYWJsZSBob2xlcy4NCj4gDQo+IEl0
-cyBsb29raW5nIHByZXR0eSBwYWNrZWQgb24gbXkgYnVpbGQuLiB0aGUgbmVhcmVzdCBob2xlIGlz
-IDUNCj4gY2FjaGVsaW5lcw0KPiBhd2F5Lg0KPiANCj4gSXQnZCBiZSBuaWNlIHRvIGFsbG93IG5l
-dHdvcmsgZmlsZXN5c3RlbSB0byB1c2UgdGFza19mcmFnIHdoZW4NCj4gcG9zc2libGUuDQo+IA0K
-PiBJZiB3ZSBleHBlY3Qgc2tfcGFnZV9mcmFnKCkgdG8gb25seSByZXR1cm4gdGFza19mcmFnIG9u
-Y2UgcGVyIGNhbGwgDQo+IHN0YWNrLA0KPiB0aGVuIGNhbiB3ZSBzaW1wbHkgY2hlY2sgaXQncyBh
-bHJlYWR5IGluIHVzZSwgcGVyaGFwcyBieSBsb29raW5nIGF0DQo+IHRoZQ0KPiBzaXplIGZpZWxk
-Pw0KPiANCj4gT3IgbWF5YmUgY2FuIHdlIHNldCBza19hbGxvY2F0aW9uIGVhcmx5IGZyb20gY3Vy
-cmVudF9nZnBfY29udGV4dCgpIA0KPiBvdXRzaWRlDQo+IHRoZSBmYXN0IHBhdGg/DQoNCldoeSBu
-b3QganVzdCBhZGQgYSBiaXQgdG8gc2stPnNrX2FsbG9jYXRpb24gaXRzZWxmLCBhbmQgaGF2ZQ0K
-X19zb2NrX2NyZWF0ZSgpIGRlZmF1bHQgdG8gc2V0dGluZyBpdCB3aGVuIHRoZSAna2VybicgcGFy
-YW1ldGVyIGlzIG5vbi0NCnplcm8/IE5GUyBpcyBub3QgYWxvbmUgaW4gZm9sbG93aW5nIHRoZSBy
-ZXF1ZXN0IG9mIHRoZSBtbSB0ZWFtIHRvDQpkZXByZWNhdGUgdXNlIG9mIEdGUF9OT0ZTIGFuZCBH
-RlBfTk9JTy4NCg0KLS0gDQpUcm9uZCBNeWtsZWJ1c3QNCkxpbnV4IE5GUyBjbGllbnQgbWFpbnRh
-aW5lciwgSGFtbWVyc3BhY2UNCnRyb25kLm15a2xlYnVzdEBoYW1tZXJzcGFjZS5jb20NCg0KDQo=
+Jozsef / Jakub-
+
+Given your latest email and the fact that just adding back in IPSET_ATTR_GC=
+ doesn't shed any light on the issue I wanted to spend a lot more time test=
+ing. Also, I wanted to try to provide as much context for this issue as pos=
+sible.
+
+I think that the iptables slowness is just a symptom not the cause of the i=
+ssue. After spending a lot more time with it, I can see that iptables only =
+runs slowly when an existing "ipset restore" process is being run by kube-r=
+outer simultaneously. Given the other information that you've provided, my =
+hunch is that iptables slows down when ipset restore is running because the=
+y are both vying for the same mutex? Anyway, I think troubleshooting it fro=
+m the direction of iptables slowness is likely the wrong path to go down.
+
+The true problem seems to be that when IPSET_ATTR_GC is not included, someh=
+ow nodes are able to get into a state where "ipset restore" goes from compl=
+eting in less than a 10th of a second, to taking 30 seconds to a minute to =
+complete. The hard part, is that I still don't know what causes a node to e=
+nter this state.
+
+I have a Kubernetes cluster of about 7 nodes that I can reliably get into t=
+his state, but I have yet to be able to reproduce it consistently anywhere =
+else. Other clusters will randomly exhibit the issue if IPSET_ATTR_GC is le=
+ft out of the kernel, but not consistently. Since the email where we found =
+the commit about 2 weeks ago, we have also been running 6 clusters of 9+ no=
+des with IPSET_ATTR_GC enabled and have not had any issues.
+
+Since we have a custom kernel configuration, I have also tried using the va=
+nilla Ubuntu kernel configuration (taken from 5.15.0-40-generic) as well ju=
+st to ensure that we didn't have some errant configuration option enabled. =
+However, this also reliably reproduced the issue when IPSET_ATTR_GC was rem=
+oved and just as reliably removed the issue when IPSET_ATTR_GC was added ba=
+ck in.
+
+I have also verified that neither ipset, iptables, or any of its dependent =
+libraries have references to IPSET_ATTR_GC, going as far as to remove it fr=
+om the ipset header file (https://git.netfilter.org/iptables/tree/include/l=
+inux/netfilter/ipset/ip_set.h#n86) and rebuild it (and all of the libraries=
+ and other tools) from scratch just as a hail mary. No changes to user-spac=
+e seem to have an effect on this issue.
+
+One other thing that I've done to help track down the issue is to add debug=
+ options to kube-router so that it outputs the file that it feeds into "ips=
+et restore -exist". With this file, on nodes affected by this issue, I can =
+reliably reproduce the issue by calling "ipset restore -exist <file" and se=
+e that it takes 30+ seconds to execute.
+
+In a hope that maybe it sheds some light and gives you some more context, I=
+'m going to be sending you and Jakub a copy of the strace and the ipset fil=
+e that was used separately from this email.
+
+At this point, I'm not sure how to proceed other than with the files that I=
+'ll be sending you. I'm highly confident that somehow the removal of IPSET_=
+ATTR_GC is causing the issues that we see. At this point I've added and rem=
+oved the options almost 20 times and done reboots across our cluster. Anyti=
+me that variable is missing, we see several nodes exhibit the performance i=
+ssues immediately. Any time the variable is present, we see no nodes exhibi=
+t the performance issues.
+
+Looking forward to hearing back from you and getting to the bottom of this =
+very bizarre issue.
+
+-Aaron
+
+From: Jozsef Kadlecsik <kadlec@netfilter.org>
+Date: Saturday, July 2, 2022 at 12:41 PM
+To: Jakub Kicinski <kuba@kernel.org>
+Cc: U'ren, Aaron <Aaron.U'ren@sony.com>, Thorsten Leemhuis <regressions@lee=
+mhuis.info>, McLean, Patrick <Patrick.Mclean@sony.com>, Pablo Neira Ayuso <=
+pablo@netfilter.org>, netfilter-devel@vger.kernel.org <netfilter-devel@vger=
+.kernel.org>, Brown, Russell <Russell.Brown@sony.com>, Rueger, Manuel <manu=
+el.rueger@sony.com>, linux-kernel@vger.kernel.org <linux-kernel@vger.kernel=
+.org>, regressions@lists.linux.dev <regressions@lists.linux.dev>, Florian W=
+estphal <fw@strlen.de>, netdev@vger.kernel.org <netdev@vger.kernel.org>
+Subject: Re: Intermittent performance regression related to ipset between 5=
+.10 and 5.15
+Hi,
+
+On Thu, 30 Jun 2022, Jakub Kicinski wrote:
+
+> Sounds like you're pretty close to figuring this out! Can you check=20
+> if the user space is intentionally setting IPSET_ATTR_INITVAL?
+> Either that or IPSET_ATTR_GC was not as "unused" as initially thought.
+
+IPSET_ATTR_GC was really unused. It was an old remnant from the time when=20
+ipset userspace-kernel communication was through set/getsockopt. However,=20
+when it was migrated to netlink, just the symbol was kept but it was not=20
+used either with the userspace tool or the kernel.
+
+Aaron, could you send me how to reproduce the issue? I have no idea how=20
+that patch could be the reason. Setting/getting/using IPSET_ATTR_INITVAL=20
+is totally independent from listing iptables rules. But if you have got a=20
+reproducer then I can dig into it.
+
+Best regards,
+Jozsef
+
+> Testing something like this could be a useful data point:
+>=20
+> diff --git a/include/uapi/linux/netfilter/ipset/ip_set.h b/include/uapi/l=
+inux/netfilter/ipset/ip_set.h
+> index 6397d75899bc..7caf9b53d2a7 100644
+> --- a/include/uapi/linux/netfilter/ipset/ip_set.h
+> +++ b/include/uapi/linux/netfilter/ipset/ip_set.h
+> @@ -92,7 +92,7 @@ enum {
+>=A0=A0=A0=A0=A0=A0=A0 /* Reserve empty slots */
+>=A0=A0=A0=A0=A0=A0=A0 IPSET_ATTR_CADT_MAX =3D 16,
+>=A0=A0=A0=A0=A0=A0=A0 /* Create-only specific attributes */
+> -=A0=A0=A0=A0 IPSET_ATTR_INITVAL,=A0=A0=A0=A0 /* was unused IPSET_ATTR_GC=
+ */
+> +=A0=A0=A0=A0 IPSET_ATTR_GC,
+>=A0=A0=A0=A0=A0=A0=A0 IPSET_ATTR_HASHSIZE,
+>=A0=A0=A0=A0=A0=A0=A0 IPSET_ATTR_MAXELEM,
+>=A0=A0=A0=A0=A0=A0=A0 IPSET_ATTR_NETMASK,
+> @@ -104,6 +104,8 @@ enum {
+>=A0=A0=A0=A0=A0=A0=A0 IPSET_ATTR_REFERENCES,
+>=A0=A0=A0=A0=A0=A0=A0 IPSET_ATTR_MEMSIZE,
+>=A0=20
+> +=A0=A0=A0=A0 IPSET_ATTR_INITVAL,
+> +
+>=A0=A0=A0=A0=A0=A0=A0 __IPSET_ATTR_CREATE_MAX,
+>=A0 };
+>=A0 #define IPSET_ATTR_CREATE_MAX=A0=A0=A0=A0=A0=A0=A0 (__IPSET_ATTR_CREAT=
+E_MAX - 1)
+>=20
+>=20
+> On Thu, 30 Jun 2022 14:59:14 +0000 U'ren, Aaron wrote:
+> > Thorsten / Jozsef -
+> >=20
+> > Thanks for continuing to follow up! I'm sorry that this has moved so sl=
+ow, it has taken us a bit to find the time to fully track this issue down, =
+however, I think that we have figured out enough to make some more forward =
+progress on this issue.
+> >=20
+> > Jozsef, thanks for your insight into what is happening between those sy=
+stem calls. In regards to your question about wait/wound mutex debugging po=
+ssibly being enabled, I can tell you that we definitely don't have that ena=
+bled on any of our regular machines. While we were debugging we did turn on=
+ quite a few debug options to help us try and track this issue down and it =
+is very possible that the strace that was taken that started off this email=
+ was taken on a machine that did have that debug option enabled. Either way=
+ though, the root issue occurs on hosts that definitely do not have wait/wo=
+und mutex debugging enabled.
+> >=20
+> > The good news is that we finally got one of our development environment=
+s into a state where we could reliably reproduce the performance issue acro=
+ss reboots. This was a win because it meant that we were able to do a full =
+bisect of the kernel and were able to tell relatively quickly whether or no=
+t the issue was present in the test kernels.
+> >=20
+> > After bisecting for 3 days, I have been able to narrow it down to a sin=
+gle commit: https://urldefense.com/v3/__https:/git.kernel.org/pub/scm/linux=
+/kernel/git/torvalds/linux.git/commit/?id=3D3976ca101990ca11ddf51f38bec7b86=
+c19d0ca6f__;!!JmoZiZGBv3RvKRSx!9YR_bFOCOkQzPaUftFL2NvuKLm8zPa4tQr_DI8CUZEen=
+jK4Rak_OFmUrCpmiNOaUaiueGbgsEqk0IirIc4I$=A0 (netfilter: ipset: Expose the i=
+nitval hash parameter to userspace)
+> >=20
+> > I'm at a bit of a loss as to why this would cause such severe performan=
+ce regressions, but I've proved it out multiple times now. I've even checke=
+d out a fresh version of the 5.15 kernel that we've been deploying with jus=
+t this single commit reverted and found that the performance problems are c=
+ompletely resolved.
+> >=20
+> > I'm hoping that maybe Jozsef will have some more insight into why this =
+seemingly innocuous commit causes such larger performance issues for us? If=
+ you have any additional patches or other things that you would like us to =
+test I will try to leave our environment in its current state for the next =
+couple of days so that we can do so.
+> >=20
+> > -Aaron
+> >=20
+> > From: Thorsten Leemhuis <regressions@leemhuis.info>
+> > Date: Monday, June 20, 2022 at 2:16 AM
+> > To: U'ren, Aaron <Aaron.U'ren@sony.com>
+> > Cc: McLean, Patrick <Patrick.Mclean@sony.com>, Pablo Neira Ayuso <pablo=
+@netfilter.org>, netfilter-devel@vger.kernel.org <netfilter-devel@vger.kern=
+el.org>, Brown, Russell <Russell.Brown@sony.com>, Rueger, Manuel <manuel.ru=
+eger@sony.com>, linux-kernel@vger.kernel.org <linux-kernel@vger.kernel.org>=
+, regressions@lists.linux.dev <regressions@lists.linux.dev>, Florian Westph=
+al <fw@strlen.de>, netdev@vger.kernel.org <netdev@vger.kernel.org>, Jozsef =
+Kadlecsik <kadlec@netfilter.org>
+> > Subject: Re: Intermittent performance regression related to ipset betwe=
+en 5.10 and 5.15
+> > On 31.05.22 09:41, Jozsef Kadlecsik wrote:
+> > > On Mon, 30 May 2022, Thorsten Leemhuis wrote:=A0=20
+> > >> On 04.05.22 21:37, U'ren, Aaron wrote:=A0=20
+> >=A0 [...]=A0=20
+> > >=20
+> > > Every set lookups behind "iptables" needs two getsockopt() calls: you=
+ can=20
+> > > see them in the strace logs. The first one check the internal protoco=
+l=20
+> > > number of ipset and the second one verifies/gets the processed set (i=
+t's=20
+> > > an extension to iptables and therefore there's no internal state to s=
+ave=20
+> > > the protocol version number).=A0=20
+> >=20
+> > Hi Aaron! Did any of the suggestions from Jozsef help to track down the
+> > root case? I have this issue on the list of tracked regressions and
+> > wonder what the status is. Or can I mark this as resolved?
+> >=20
+> > Side note: this is not a "something breaks" regressions and it seems to
+> > progress slowly, so I'm putting it on the backburner:
+> >=20
+> > #regzbot backburner: performance regression where the culprit is hard t=
+o
+> > track down
+> >=20
+> > Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat=
+)
+> >=20
+> > P.S.: As the Linux kernel's regression tracker I deal with a lot of
+> > reports and sometimes miss something important when writing mails like
+> > this. If that's the case here, don't hesitate to tell me in a public
+> > reply, it's in everyone's interest to set the public record straight.
+> >=20
+> >=A0 [...]=A0=20
+> > >=20
+> > > In your strace log
+> > >=20
+> > > 0.000024 getsockopt(4, SOL_IP, 0x53 /* IP_??? */, "\0\1\0\0\7\0\0\0",=
+ [8]) =3D 0 <0.000024>
+> > > 0.000046 getsockopt(4, SOL_IP, 0x53 /* IP_??? */, "\7\0\0\0\7\0\0\0KU=
+BE-DST-VBH27M7NWLDOZIE"..., [40]) =3D 0 <0.1$
+> > > 0.109456 close(4)=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 =
+=3D 0 <0.000022>
+> > >=20
+> > > the only things which happen in the second sockopt function are to lo=
+ck=20
+> > > the NFNL_SUBSYS_IPSET mutex, walk the array of the sets, compare the=
+=20
+> > > setname, save the result in the case of a match and unlock the mutex.=
+=20
+> > > Nothing complicated, no deep, multi-level function calls. Just a few =
+line=20
+> > > of codes which haven't changed.
+> > >=20
+> > > The only thing which can slow down the processing is the mutex handli=
+ng.=20
+> > > Don't you have accidentally wait/wound mutex debugging enabled in the=
+=20
+> > > kernel? If not, then bisecting the mutex related patches might help.
+> > >=20
+> > > You wrote that flushing tables or ipsets didn't seem to help. That=20
+> > > literally meant flushing i.e. the sets were emptied but not destroyed=
+? Did=20
+> > > you try both destroying or flushing?
+> > >=A0=A0=20
+> > >> Jozsef, I still have this issue on my list of tracked regressions an=
+d it
+> > >> looks like nothing happens since above mail (or did I miss it?). Cou=
+ld
+> > >> you maybe provide some guidance to Aaron to get us all closer to the
+> > >> root of the problem?=A0=20
+> > >=20
+> > > I really hope it's an accidentally enabled debugging option in the ke=
+rnel.=20
+> > > Otherwise bisecting could help to uncover the issue.
+> > >=20
+> > > Best regards,
+> > > Jozsef
+> > >=A0=A0=20
+> > >> P.S.: As the Linux kernel's regression tracker I deal with a lot of
+> > >> reports and sometimes miss something important when writing mails li=
+ke
+> > >> this. If that's the case here, don't hesitate to tell me in a public
+> > >> reply, it's in everyone's interest to set the public record straight=
+.
+>=20
+
+-
+E-mail=A0 : kadlec@blackhole.kfki.hu, kadlecsik.jozsef@wigner.hu
+PGP key : https://urldefense.com/v3/__https:/wigner.hu/*kadlec/pgp_public_k=
+ey.txt__;fg!!JmoZiZGBv3RvKRSx!9YR_bFOCOkQzPaUftFL2NvuKLm8zPa4tQr_DI8CUZEenj=
+K4Rak_OFmUrCpmiNOaUaiueGbgsEqk0Udypzvg$=20
+Address : Wigner Research Centre for Physics
+=A0=A0=A0=A0=A0=A0=A0=A0=A0 H-1525 Budapest 114, POB. 49, Hungary
