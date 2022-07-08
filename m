@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DB03056AFA5
-	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 03:07:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BAF9456AFB4
+	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 03:07:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236059AbiGHAxS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jul 2022 20:53:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53722 "EHLO
+        id S236419AbiGHAyx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jul 2022 20:54:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbiGHAxR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 20:53:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7106D70E47;
-        Thu,  7 Jul 2022 17:53:17 -0700 (PDT)
+        with ESMTP id S236569AbiGHAyp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 20:54:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3926A71BC5;
+        Thu,  7 Jul 2022 17:54:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E1A7B60AF9;
-        Fri,  8 Jul 2022 00:53:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 181E0C3411E;
-        Fri,  8 Jul 2022 00:53:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DB28EB80315;
+        Fri,  8 Jul 2022 00:54:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5897DC3411E;
+        Fri,  8 Jul 2022 00:54:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657241596;
-        bh=TDiLu1rwvodJqPnwKWHyS0Wn+8q/Byec3xL72R5c0zw=;
+        s=k20201202; t=1657241677;
+        bh=0ikl6M9LpLlUr62WdpqX+N48a9lRsyWn0/7qj/fKUe8=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=aDOAjVDOPWxre5eCVFbyyvEtIOkIZ6cSftEAxCZIw9yYVDNicaq5/THlBg13JxIw9
-         fPkN1ao0vaUR+FDEjAmkw01KpUijFK9TSzseg3s7l+ZE4+0xjvVgxLFoxMWPPVdef7
-         ShZTn8fIjcIbH+ostm4flSc1rHrxwJbkyj9La3VkNjZIlNQowOn4Z28D39cnhlGMLP
-         Aa7SEHQqj9e2mMKBeIyvWEdVKEqQ8iNogMORPxNoygCc/V8z+fWj8D2FgrdMErtJfT
-         9sfC2o4bUYO32NksPZdw+B9pFyHyHHo62BOg9/AQQcT4pJzj1KSLIodYlfYOmZjnct
-         eqxgGiZcHUjYQ==
-Date:   Thu, 7 Jul 2022 17:53:07 -0700
+        b=QqfFuuuK8MkseChkRSGcyxXrP8H7Ozn+rzIZ2963niTJ6yHyJmjtFBuM0pavQ+STd
+         LCIW/IYvn57LeE8TEB5UqDbYSVa4veqeaCYtf59oxrDktqHFrBCR9I3p14MXj7F+y5
+         RVxJAYuhx4+sSgSA2h0WTJPtUJkXgRhgxtnv107v2S/PFLdD9OugbAlj1SI2rdwqML
+         rJKiYjRvSbGG2E6HPCjBzXQ9VdW82MLmbyoOBDM7f3csmDHpyx8GSyj9ZVE+S9+1UZ
+         gb8QWx/It3S1jrOnOiUPBaxy+v2gBNz/fS3HzgvWGft2hrEW3c4EOxQ/7ActknT+AI
+         AcQt82PdnqbQw==
+Date:   Thu, 7 Jul 2022 17:54:28 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Ratheesh Kannoth <rkannoth@marvell.com>
 Cc:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <sgoutham@marvell.com>, <davem@davemloft.net>,
         <edumazet@google.com>, <pabeni@redhat.com>
-Subject: Re: [net-next PATCH V3 02/12] octeontx2-af: Exact match support
-Message-ID: <20220707175307.4e83ad48@kernel.org>
-In-Reply-To: <20220707073353.2752279-3-rkannoth@marvell.com>
+Subject: Re: [net-next PATCH V3 06/12] octeontx2-af: Drop rules for NPC MCAM
+Message-ID: <20220707175428.127006ba@kernel.org>
+In-Reply-To: <20220707073353.2752279-7-rkannoth@marvell.com>
 References: <20220707073353.2752279-1-rkannoth@marvell.com>
-        <20220707073353.2752279-3-rkannoth@marvell.com>
+        <20220707073353.2752279-7-rkannoth@marvell.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -55,25 +55,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 7 Jul 2022 13:03:43 +0530 Ratheesh Kannoth wrote:
-> CN10KB silicon has support for exact match table. This table
-> can be used to match maimum 64 bit value of KPU parsed output.
-> Hit/non hit in exact match table can be used as a KEX key to
-> NPC mcam.
-> 
-> This patch makes use of Exact match table to increase number of
-> DMAC filters supported. NPC  mcam is no more need for each of these
-> DMAC entries as will be populated in Exact match table.
-> 
-> This patch implements following
-> 
-> 1. Initialization of exact match table only for CN10KB.
-> 2. Add/del/update interface function for exact match table.
-> 
-> Signed-off-by: Ratheesh Kannoth <rkannoth@marvell.com>
+On Thu, 7 Jul 2022 13:03:47 +0530 Ratheesh Kannoth wrote:
+> NPC exact match table installs drop on hit rules in
+> NPC mcam for each channel. This rule has broadcast and multicast
+> bits cleared. Exact match bit cleared and channel bits
+> set. If exact match table hit bit is 0, corresponding NPC mcam
+> drop rule will be hit for the packet and will be dropped.
 
-Build with C=1 (i.e. with the sparse checker) we get:
+kdoc:
 
-drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c:558:21: warning: dubious: x & !y
+drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c:1462: warning: bad line:         u8 cgx_id, lmac_id;
 
-could you figure out which one it is and if it can be muted?
+
+clang:
+
+../drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c:1228:6: warning: variable 'disable_cam' is used uninitialized whenever 'if' condition is false [-Wsometimes-uninitialized]
+        if (entry->cmd)
+            ^~~~~~~~~~
+../drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c:1232:6: note: uninitialized use occurs here
+        if (disable_cam) {
+            ^~~~~~~~~~~
+../drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c:1228:2: note: remove the 'if' if its condition is always true
+        if (entry->cmd)
+        ^~~~~~~~~~~~~~~
+../drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c:1201:18: note: initialize the variable 'disable_cam' to silence this warning
+        bool disable_cam;
+                        ^
+                         = 0
+../drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c:1308:6: warning: variable 'enable_cam' is used uninitialized whenever 'if' condition is false [-Wsometimes-uninitialized]
+        if (cmd)
+            ^~~
+../drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c:1312:6: note: uninitialized use occurs here
+        if (enable_cam) {
+            ^~~~~~~~~~
+../drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c:1308:2: note: remove the 'if' if its condition is always true
+        if (cmd)
+        ^~~~~~~~
+../drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c:1275:17: note: initialize the variable 'enable_cam' to silence this warning
+        bool enable_cam;
+                       ^
+                        = 0
