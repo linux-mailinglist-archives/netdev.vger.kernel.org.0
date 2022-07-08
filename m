@@ -2,49 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AEB056BA37
-	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 15:01:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD97456BA3A
+	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 15:03:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237622AbiGHNAz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jul 2022 09:00:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46912 "EHLO
+        id S237813AbiGHNDe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jul 2022 09:03:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232561AbiGHNAy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 09:00:54 -0400
-Received: from kylie.crudebyte.com (kylie.crudebyte.com [5.189.157.229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8021820BC4
-        for <netdev@vger.kernel.org>; Fri,  8 Jul 2022 06:00:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
-        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
-        Content-ID:Content-Description;
-        bh=uUgQz5drJuRxwq718pUlHf9G0oCeKtbwx5N/3KXL+1w=; b=egqw9Px4AzMTi3neswF9XadCp3
-        Dz2rThAKxZZcCYbacQheOGJ5+UBXrpG/mdk+TOMzS/GvOBKKVrjnw/n5OBoeTXuwtUSgwkQJp2tzJ
-        PRUGLiZyORX/Xc5CvsY1WXIhyFLl0F346Ddz57Tr1gvuXDci2ljtCXQUcYbbyOcKrAycCogPHIRWY
-        Z+Rkz7P+5SlICTJTRRIpSQC8NnjoI8wrTVGUggl0CdZkkSPKiF2DVfFhIDBZTGtZxqlvx4iD8Slow
-        A4eoZdC0+UO/TAUF/Ke1mSqhdU2PIG3q2RWLrxtOQGxwxYM637ajy5MdO63kTYEQGEVFDZA4UcNBC
-        GxXFglNjOqwuOgrWWJtldLYnqUHPeyDOGZNLss864Lb6BgUFestpPL+DM1GLZK33er8dTQq4HZ+al
-        XT3cq6p7xMwku3g5zv/x5mUCZYwsBZgjfxRO4KUDcfB0gT+4DIafwP2r3/LFwPOZCkAhIewSmV2ai
-        uX1uud98Ne0Dbf0m5XjDb/hqxPP2ew0jCMXgK6wcy1wc/5ZiUHk1EKGOwr8zfq8I4TaPjv7k7e+SH
-        U4DLkvvDe4ochbfZvir889synhHiuRoorvTGPWcxH25LlPqRFUd/+ucdVL6F+6+YydLL+Zw38Z3iT
-        2Snv5CtneU6rTYNyr8d+eP3xxd6ht1frNC94aIXd8=;
-From:   Christian Schoenebeck <linux_oss@crudebyte.com>
-To:     Dominique Martinet <asmadeus@codewreck.org>,
-        Eric Van Hensbergen <ericvh@gmail.com>
-Cc:     Greg Kurz <groug@kaod.org>, Latchesar Ionkov <lucho@ionkov.net>,
-        Nikolay Kichukov <nikolay@oldum.net>, netdev@vger.kernel.org,
-        v9fs-developer@lists.sourceforge.net
-Subject: Re: [PATCH v4 00/12] remove msize limit in virtio transport
-Date:   Fri, 08 Jul 2022 15:00:45 +0200
-Message-ID: <7969175.Y4Flz6HuuJ@silver>
-In-Reply-To: <YsgXtBsfLEQ9dFux@codewreck.org>
-References: <cover.1640870037.git.linux_oss@crudebyte.com> <1690835.L3irNgtgWz@silver>
- <YsgXtBsfLEQ9dFux@codewreck.org>
+        with ESMTP id S237443AbiGHNDc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 09:03:32 -0400
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F132EA1B2;
+        Fri,  8 Jul 2022 06:03:30 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=FPNlI6aUnSj+aBrUB2AlNWSlMmMLJ+OrFPOqo4WQ4FJ1hA54KjCpswjQgAY8g4eMGImH6WqnUet7MhN8Rt/4U6uM3IEJLcnW8AUTVnAsWLtqSW+OF44xtUTAeFmqQKtbtkwSaUNzALzDJ5HPSfjkeJk8KKMzqSw1NvXVgoytuQ2I1zaADH7+2W6hifCWuAIb4zlLnYawAiOcgd8HQi/KNidxfcIB37jvtGkjwG4chXIg/s2+175ux7vU3vrauPZTg1ack/9hut9bPtuBzOh9m9DjK00hHdh7zvwhYq4/42oVPTk2WRbpS4HZy+Br88am5+jEz+/YjakUAco1aEMdOQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=TwYAiMLEYWxpECEnOU8pJHLqwvlbYJxrhO27RukLDMU=;
+ b=a8bFRm2CJnlmEZsHbggEkdvdZ0SrYdwLFWZw9HhfJGqMBRbz2ftzU0sSvGfGfoEGaE1q6+//EHERvH1Tk8LNG8v3vtcsGuu+yNnxMCqH6airYkP0khC0wh29iWZ3VHzhyzJIEBvlKeGY5B8QMOCikAWWdoN4J7XVXOYld0Ag8Ahm2m86bycIZxjqdyZ+XiQiIJ/Hhow2aK+J6V15HI/xycTVXUts7MztlkdtfG0B8lLHHCVs846ZcAJv5pjflMEyjOC7Z4la1/yOcLbtqChRM37iLCbcH6rbprH5fN+VPb2DAkmMbBMYxnFMgvALzNt8JE79mU7teUhbQ5m1FJwuFQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.235) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=TwYAiMLEYWxpECEnOU8pJHLqwvlbYJxrhO27RukLDMU=;
+ b=c3iF17CaMT8Sf8W8yQfWOBk7i5O+9b4VjxFdMNOA7VuLHs57GCTjZB8fnmJ5Tx2raC2VrESHkObEriabFdb3LT4Caz4+FkCvn04dGsoovKCtnNRYU9JJXXdwWpkXAbIL4vVpvgtTrQAjXF/5mC8C+7I1uavXwnd8+pwNyyVHX3ITeI1F0+AS+Uxi+GTwZli+iVK0xlDOX3ydCjjs+A8l+S5STnK170zHWRgHEBAhyEYe710zJY4CyBLaxNtPBOe2qHnYw3YV8/Dtn1Fv6NlgT6V8SEyX/wclMHIVKjdq6P0z6/ozlM6E+1XREG8K00Q3WEO5i3RbvRKxgzaNxqv9Mw==
+Received: from DM6PR11CA0070.namprd11.prod.outlook.com (2603:10b6:5:14c::47)
+ by MN2PR12MB4190.namprd12.prod.outlook.com (2603:10b6:208:1dd::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.16; Fri, 8 Jul
+ 2022 13:03:29 +0000
+Received: from DM6NAM11FT054.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:14c:cafe::da) by DM6PR11CA0070.outlook.office365.com
+ (2603:10b6:5:14c::47) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.17 via Frontend
+ Transport; Fri, 8 Jul 2022 13:03:29 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.235; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.235) by
+ DM6NAM11FT054.mail.protection.outlook.com (10.13.173.95) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5417.15 via Frontend Transport; Fri, 8 Jul 2022 13:03:28 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL107.nvidia.com
+ (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Fri, 8 Jul
+ 2022 13:03:28 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Fri, 8 Jul 2022
+ 06:03:27 -0700
+Received: from vdi.nvidia.com (10.127.8.10) by mail.nvidia.com (10.129.68.7)
+ with Microsoft SMTP Server id 15.2.986.26 via Frontend Transport; Fri, 8 Jul
+ 2022 06:03:23 -0700
+From:   Maxim Mikityanskiy <maximmi@nvidia.com>
+To:     Shuah Khan <shuah@kernel.org>, <bpf@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-kselftest@vger.kernel.org>
+CC:     Yauheni Kaliuta <ykaliuta@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Jesper Dangaard Brouer" <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        "Andrii Nakryiko" <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Maxim Mikityanskiy <maximmi@nvidia.com>
+Subject: [PATCH bpf] selftests/bpf: Fix xdp_synproxy build failure if CONFIG_NF_CONNTRACK=m/n
+Date:   Fri, 8 Jul 2022 16:03:19 +0300
+Message-ID: <20220708130319.1016294-1-maximmi@nvidia.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 5b65a0b8-00ce-4b1d-d923-08da60e240b6
+X-MS-TrafficTypeDiagnostic: MN2PR12MB4190:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: DVj+kyEkC4DWRTrH9wcJuPU5vG4van8l3qGDc4/hKRCBz7OSPzfz92x3t8y1Yv9QTtB/hZgEStnOP5AgFQKiOCqN41RGrCv+rCuVjl9Dlc6JMw1TPaY8I3lmSIsZN3E1i5007FcfFJSXZoSPBg+S3r7jQOsRCV/aSMWM9OIUBQTLvyrz9a9HOBBYQZNHV8QPWOaQGgqrMmlWoyF+Sn2Pk53YSy0vMG2aCe/suVKJYuj3ZGapjFzeKtOMJoiXTIR6vvzz8PPDU2Ts3W2x2RCNm6DqeE5atwQ8EbviPI4TR/Hr0BmmWaKFOp2RnXBqGZRrPtrhNBqo9JTRiw7a6U9GW/eCKYJYliTFuwaWJYmdC6JbEMINnxQNcxBjKrJOVuB3T47lMiFTvQbBzO+lDuteyFKVOKcOiGBG2ebtsV8ipNL9/BgvW0QCH71TfMbJlRmx83AyAfm6unHMeZZj4ZgdJtL8ERAauFoYj/gW1LT27RWFmC9tyyA0TQ8qyby07YycfHlY0Yqa4xeEpS8jNuwhPGUVlzh1ALyUbrT9d7mWPisAPmnOk449MzHy/Wa9piO4aPG6QzIjEX/tEqGjT/xHhvvZFDF3muzLUlTdHtlX5ExCt9fl0c60r6U7OxUN/h5OLYzJmdX/0WwKhmil/UIQWIr0F9+LmmEwiyL9UZKrESRMFTc4eA/7FLtbYjfGmEgtpscukkiCInqENJjXzDf+OKODRDAMAaQdd7lkKxBJUyNGoR2uAwE5TIKOP61hcodOuYVr203/CvsThL/V5/rFrFulzxkP3xcjvEpjG0nMaRwPKVNOvzpKoIH7vEDyounAsUj42pqeTvkVoYS3vl1+i6LDGkXREJ8qKziaAS/Wv2w=
+X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(346002)(39860400002)(376002)(136003)(396003)(46966006)(36840700001)(40470700004)(336012)(426003)(83380400001)(186003)(8676002)(110136005)(40480700001)(70206006)(47076005)(70586007)(1076003)(36756003)(4326008)(107886003)(26005)(54906003)(7696005)(2616005)(86362001)(82310400005)(41300700001)(7416002)(6666004)(356005)(2906002)(81166007)(316002)(5660300002)(36860700001)(478600001)(8936002)(40460700003)(82740400003)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Jul 2022 13:03:28.9696
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5b65a0b8-00ce-4b1d-d923-08da60e240b6
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT054.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4190
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -52,78 +111,80 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Freitag, 8. Juli 2022 13:40:36 CEST Dominique Martinet wrote:
-> Christian Schoenebeck wrote on Fri, Jul 08, 2022 at 01:18:40PM +0200:
-> > On Freitag, 8. Juli 2022 04:26:40 CEST Eric Van Hensbergen wrote:
-[...]
-> https://github.com/kvmtool/kvmtool indeed has a 9p server, I think I
-> used to run it ages ago.
-> I'll give it a fresh spin, thanks for the reminder.
-> 
-> For this one it defines VIRTQUEUE_NUM to 128, so not quite 1024.
+When CONFIG_NF_CONNTRACK=m, struct bpf_ct_opts and enum member
+BPF_F_CURRENT_NETNS are not exposed. This commit allows building the
+xdp_synproxy selftest in such cases. Note that nf_conntrack must be
+loaded before running the test if it's compiled as a module.
 
-Yes, and it does *not* limit client supplied 'msize' either. It just always 
-sends the same 'msize' value as-is back to client. :/ So I would expect it to 
-error (or worse) if client tries msize > 512kB.
+This commit also allows this selftest to be successfully compiled when
+CONFIG_NF_CONNTRACK is disabled.
 
-> > > > I found https://github.com/moby/hyperkit for OSX but that doesn't
-> > > > really
-> > > > help me, and can't see much else relevant in a quick search
-> > 
-> > So that appears to be a 9p (@virtio-PCI) client for xhyve,
-> 
-> oh the 9p part is client code?
-> the readme says it's a server:
-> "It includes a complete hypervisor, based on xhyve/bhyve"
-> but I can't run it anyway, so I didn't check very hard.
+One unused local variable of type struct bpf_ct_opts is also removed.
 
-Hmm, I actually just interpreted this for it to be a client:
+Reported-by: Yauheni Kaliuta <ykaliuta@redhat.com>
+Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+Fixes: fb5cd0ce70d4 ("selftests/bpf: Add selftests for raw syncookie helpers")
+---
+ .../selftests/bpf/progs/xdp_synproxy_kern.c   | 24 +++++++++++++------
+ 1 file changed, 17 insertions(+), 7 deletions(-)
 
-fprintf(stderr, "virtio-9p: unexpected EOF writing to server-- did the 9P 
-server crash?\n");
-
-But looking at it again, it seems you are right, at least I see that it also 
-handles even 9p message type numbers, but only Twrite and Tflush? I don't see 
-any Tversion or msize handling in general. [shrug]
-
-> > with max. 256kB buffers <=> max. 68 virtio descriptors (memory segments) 
-[1]:
-> huh...
-> 
-> Well, as long as msize is set I assume it'll work out anyway?
-
-If server would limit 'msize' appropriately, yes. But as the kvmtool example 
-shows, that should probably not taken for granted.
-
-> How does virtio queue size work with e.g. parallel messages?
-
-Simple question, complicated to answer.
-
-From virtio spec PoV (and current virtio <= v1.2), the negotiated virtio queue 
-size defines both the max. amount of parallel (round-trip) messages *and* the 
-max. amount of virtio descriptors (memory segments) of *all* currently active/
-parallel messages in total. I "think" because of virtio's origin for 
-virtualized network devices?
-
-So yes, if you are very strict what the virtio spec <= v1.2 says, and say you 
-have a virtio queue size of 128 (e.g. hard coded by QEMU, kvmtool), and say 
-client would send out the first 9p request with 128 memory segments, then the 
-next (i.e. second) parallel 9p request sent to server would already exceed the 
-theoretically allowed max. amount of virtio descriptors.
-
-But in practice, I don't see that this theoretical limitation would exist in 
-actual 9p virtio server implementations. At least in all server 
-implementations I saw so far, they all seem to handle the max. virtio 
-descriptors amount for each request separately.
-
-> Anyway, even if the negotiation part gets done servers won't all get
-> implemented in a day, so we need to think of other servers a bit..
-
-OTOH kernel should have the name of the hypervisor/emulator somewhere, right? 
-So Linux client's max. virtio descriptors could probably made dependent on 
-that name?
-
-Best regards,
-Christian Schoenebeck
-
+diff --git a/tools/testing/selftests/bpf/progs/xdp_synproxy_kern.c b/tools/testing/selftests/bpf/progs/xdp_synproxy_kern.c
+index 9fd62e94b5e6..736686e903f6 100644
+--- a/tools/testing/selftests/bpf/progs/xdp_synproxy_kern.c
++++ b/tools/testing/selftests/bpf/progs/xdp_synproxy_kern.c
+@@ -77,16 +77,30 @@ struct {
+ 	__uint(max_entries, MAX_ALLOWED_PORTS);
+ } allowed_ports SEC(".maps");
+ 
++/* Some symbols defined in net/netfilter/nf_conntrack_bpf.c are unavailable in
++ * vmlinux.h if CONFIG_NF_CONNTRACK=m, so they are redefined locally.
++ */
++
++struct bpf_ct_opts___local {
++	s32 netns_id;
++	s32 error;
++	u8 l4proto;
++	u8 dir;
++	u8 reserved[2];
++} __attribute__((preserve_access_index));
++
++#define BPF_F_CURRENT_NETNS (-1)
++
+ extern struct nf_conn *bpf_xdp_ct_lookup(struct xdp_md *xdp_ctx,
+ 					 struct bpf_sock_tuple *bpf_tuple,
+ 					 __u32 len_tuple,
+-					 struct bpf_ct_opts *opts,
++					 struct bpf_ct_opts___local *opts,
+ 					 __u32 len_opts) __ksym;
+ 
+ extern struct nf_conn *bpf_skb_ct_lookup(struct __sk_buff *skb_ctx,
+ 					 struct bpf_sock_tuple *bpf_tuple,
+ 					 u32 len_tuple,
+-					 struct bpf_ct_opts *opts,
++					 struct bpf_ct_opts___local *opts,
+ 					 u32 len_opts) __ksym;
+ 
+ extern void bpf_ct_release(struct nf_conn *ct) __ksym;
+@@ -393,7 +407,7 @@ static __always_inline int tcp_dissect(void *data, void *data_end,
+ 
+ static __always_inline int tcp_lookup(void *ctx, struct header_pointers *hdr, bool xdp)
+ {
+-	struct bpf_ct_opts ct_lookup_opts = {
++	struct bpf_ct_opts___local ct_lookup_opts = {
+ 		.netns_id = BPF_F_CURRENT_NETNS,
+ 		.l4proto = IPPROTO_TCP,
+ 	};
+@@ -714,10 +728,6 @@ static __always_inline int syncookie_handle_ack(struct header_pointers *hdr)
+ static __always_inline int syncookie_part1(void *ctx, void *data, void *data_end,
+ 					   struct header_pointers *hdr, bool xdp)
+ {
+-	struct bpf_ct_opts ct_lookup_opts = {
+-		.netns_id = BPF_F_CURRENT_NETNS,
+-		.l4proto = IPPROTO_TCP,
+-	};
+ 	int ret;
+ 
+ 	ret = tcp_dissect(data, data_end, hdr);
+-- 
+2.30.2
 
