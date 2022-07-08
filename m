@@ -2,130 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D3B3A56B3D8
-	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 09:54:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E9F3C56B3E9
+	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 09:57:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237457AbiGHHwx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jul 2022 03:52:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56942 "EHLO
+        id S237307AbiGHH4m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jul 2022 03:56:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237441AbiGHHww (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 03:52:52 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55FDB7E005
-        for <netdev@vger.kernel.org>; Fri,  8 Jul 2022 00:52:50 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id m16so10432182edb.11
-        for <netdev@vger.kernel.org>; Fri, 08 Jul 2022 00:52:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=k+1kh73qPqurRHWbKKVu98io15cDFmP3DMcz791PA0E=;
-        b=KOzTf8nNUAUzZJoSoolgB6oQILTw+TbMmyQrPqiRoDrUTZMqfyh0zPJMH+NSpbf0iB
-         9DVSjVLezslY6vMSbYLMKoUnmK19Ynm2Yc4iRys8PuCZ6mVY0aO0xmpF2qrNlz2pshuq
-         qvmHx2aJ1P1seEs4TvIrdOdJLh8K6jkFV6ZqGaUzEvBaDQ2ZZmOqgOCFEneDxVmTWkZs
-         3iSHvXjUT2QZ8SyxvDDsaD5goyEmPz3LAgPNuhj1mbfT0WP989eq0pTGba+sKRMXCprY
-         R5EJkBu7pFmY5TCF5RqS26xwBZmmHPZSnwaDYdTTSpDUO0c6DZL2NdM0u0hy3+/0mLS4
-         KX1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=k+1kh73qPqurRHWbKKVu98io15cDFmP3DMcz791PA0E=;
-        b=WGePhX540ZkBuvgQWrAL24UndeTUL9X8jE0O50kdcOtRdVW2ZR8OsQIM2e/8qVWf01
-         O2VGPF9ByzlJZlIoYu3nGDAhK8doBWKC7Ck2lbad4dTp22mG1bIhOmkVYXGZ7C6GGb4z
-         IURuKYd6raXISzwVTfKsAM46QddzqMAutGBycMt3rZwjUxNMjSU39bsNjDR6JAq3jsll
-         N76V7nGJ37/h1b6589nTs8GfuI3GOtdY3ffmO2DG8tdlCAp/vfxnk4S8ccPG6H4Otd1S
-         KE6XD8SKFvxnzYnuUNHJ9ZW215tbHw6TjdclGXD+OtighvElvqKrrblQO3UZJJLL4TVc
-         bjQA==
-X-Gm-Message-State: AJIora/UVu0jUZBVm5Ax2lnPdO+dcVgF0oibYQ0KE5lIFT1EToR3XXKH
-        Pc2wEbqVUgxKTkZnORO7v2o9oXued8GidKGAk4U=
-X-Google-Smtp-Source: AGRyM1su8O148XlZzq4edLobi/dwtC/Y0esD15jS8OiRRpyihsyI/tU8ywXaBTPfisFc/L7wGVND6w==
-X-Received: by 2002:aa7:db09:0:b0:43a:7353:94a6 with SMTP id t9-20020aa7db09000000b0043a735394a6mr2994029eds.191.1657266768771;
-        Fri, 08 Jul 2022 00:52:48 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id bg6-20020a170906a04600b00722e31fcf42sm19933531ejb.184.2022.07.08.00.52.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Jul 2022 00:52:48 -0700 (PDT)
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, mlxsw@nvidia.com, saeedm@nvidia.com,
-        moshe@nvidia.com
-Subject: [patch net-next v3 3/3] net: devlink: move unlocked function prototypes alongside the locked ones
-Date:   Fri,  8 Jul 2022 09:52:47 +0200
-Message-Id: <20220708075247.2192245-1-jiri@resnulli.us>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220708074808.2191479-1-jiri@resnulli.us>
-References: <20220708074808.2191479-1-jiri@resnulli.us>
+        with ESMTP id S237260AbiGHH4k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 03:56:40 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8A167E00B;
+        Fri,  8 Jul 2022 00:56:39 -0700 (PDT)
+X-UUID: 0b0892414da34fa6b668b78b6c631121-20220708
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.8,REQID:886fd712-971e-44c0-9368-79a1732e097f,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:0
+X-CID-META: VersionHash:0f94e32,CLOUDID:ebcff4d6-5d6d-4eaf-a635-828a3ee48b7c,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
+        ,QS:nil,BEC:nil,COL:0
+X-UUID: 0b0892414da34fa6b668b78b6c631121-20220708
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
+        (envelope-from <biao.huang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 720533736; Fri, 08 Jul 2022 15:56:36 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Fri, 8 Jul 2022 15:56:35 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 8 Jul 2022 15:56:24 +0800
+From:   Biao Huang <biao.huang@mediatek.com>
+To:     David Miller <davem@davemloft.net>
+CC:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Biao Huang <biao.huang@mediatek.com>, <netdev@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>, <macpaul.lin@mediatek.com>
+Subject: [PATCH net v2 0/1] stmmac: dwmac-mediatek: fix clock issue
+Date:   Fri, 8 Jul 2022 15:56:21 +0800
+Message-ID: <20220708075622.26342-1-biao.huang@mediatek.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-MTK:  N
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Pirko <jiri@nvidia.com>
+changes in v2:
+1. clock configuration is still needed in probe,
+and invoke mediatek_dwmac_clks_config() instead.
+2. update commit message.
 
-Maintain the same order as it is in devlink.c for function prototypes.
-The most of the locked variants would very likely soon be removed
-and the unlocked version would be the only one.
+v1:
+remove duplicated clock configuration in init/exit.
 
-Signed-off-by: Jiri Pirko <jiri@nvidia.com>
----
- include/net/devlink.h | 16 +++++++---------
- 1 file changed, 7 insertions(+), 9 deletions(-)
+Biao Huang (1):
+  stmmac: dwmac-mediatek: fix clock issue
 
-diff --git a/include/net/devlink.h b/include/net/devlink.h
-index b8f54a8e9c82..edbfe6daa3b5 100644
---- a/include/net/devlink.h
-+++ b/include/net/devlink.h
-@@ -1520,15 +1520,6 @@ void devl_unlock(struct devlink *devlink);
- void devl_assert_locked(struct devlink *devlink);
- bool devl_lock_is_held(struct devlink *devlink);
- 
--int devl_port_register(struct devlink *devlink,
--		       struct devlink_port *devlink_port,
--		       unsigned int port_index);
--void devl_port_unregister(struct devlink_port *devlink_port);
--
--int devl_rate_leaf_create(struct devlink_port *port, void *priv);
--void devl_rate_leaf_destroy(struct devlink_port *devlink_port);
--void devl_rate_nodes_destroy(struct devlink *devlink);
--
- struct ib_device;
- 
- struct net *devlink_net(const struct devlink *devlink);
-@@ -1550,9 +1541,13 @@ void devlink_set_features(struct devlink *devlink, u64 features);
- void devlink_register(struct devlink *devlink);
- void devlink_unregister(struct devlink *devlink);
- void devlink_free(struct devlink *devlink);
-+int devl_port_register(struct devlink *devlink,
-+		       struct devlink_port *devlink_port,
-+		       unsigned int port_index);
- int devlink_port_register(struct devlink *devlink,
- 			  struct devlink_port *devlink_port,
- 			  unsigned int port_index);
-+void devl_port_unregister(struct devlink_port *devlink_port);
- void devlink_port_unregister(struct devlink_port *devlink_port);
- void devlink_port_type_eth_set(struct devlink_port *devlink_port,
- 			       struct net_device *netdev);
-@@ -1568,8 +1563,11 @@ void devlink_port_attrs_pci_vf_set(struct devlink_port *devlink_port, u32 contro
- void devlink_port_attrs_pci_sf_set(struct devlink_port *devlink_port,
- 				   u32 controller, u16 pf, u32 sf,
- 				   bool external);
-+int devl_rate_leaf_create(struct devlink_port *port, void *priv);
- int devlink_rate_leaf_create(struct devlink_port *port, void *priv);
-+void devl_rate_leaf_destroy(struct devlink_port *devlink_port);
- void devlink_rate_leaf_destroy(struct devlink_port *devlink_port);
-+void devl_rate_nodes_destroy(struct devlink *devlink);
- void devlink_rate_nodes_destroy(struct devlink *devlink);
- void devlink_port_linecard_set(struct devlink_port *devlink_port,
- 			       struct devlink_linecard *linecard);
+ .../ethernet/stmicro/stmmac/dwmac-mediatek.c  | 32 ++++++-------------
+ 1 file changed, 10 insertions(+), 22 deletions(-)
+
 -- 
-2.35.3
+2.25.1
+
+
 
