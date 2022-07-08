@@ -2,85 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3430056B9B9
-	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 14:33:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2028E56B9BE
+	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 14:34:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237725AbiGHMaR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jul 2022 08:30:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52622 "EHLO
+        id S237987AbiGHMeb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jul 2022 08:34:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231301AbiGHMaR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 08:30:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1153331DEF;
-        Fri,  8 Jul 2022 05:30:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 93316626A5;
-        Fri,  8 Jul 2022 12:30:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E7427C385A2;
-        Fri,  8 Jul 2022 12:30:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657283414;
-        bh=S+17Nac2ZIldkq69SqPt+vSn4AM3hE7u7oO/OCFZ4J8=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Zsv53VZSKMPej1bgX0gp7hbHP6xEdyTjQJme03bkHZ/iIWxL3tAb60JDYBsepOpZN
-         NYasU2ywrGiodX+aSpk5i2/VoKierNlCjsFuAcAAXV14qgu+esLWlBcLc5rIfKJDsl
-         /h6Xwa7xw3UZ66OIGNNyUWFdI0OGLd2rd5YwPilVdxDnIpF/RdVkkabhoH5cKETGSl
-         PMc8mh9Q6Tkt9AURHiHIzYxZPruSICT0iXbFt6+N4+dZ1fq7i4pPfJyT6OrwYnGDQh
-         OlilpM5Xgp/edQSnMthsDz5rXGoMaspMrmo0xQ4Xfq5SDcs47QXAftlO97xcpTxdlt
-         92ADNV4Y+CXdQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id CD563E45BE1;
-        Fri,  8 Jul 2022 12:30:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S237735AbiGHMea (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 08:34:30 -0400
+Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6401B6EE9E;
+        Fri,  8 Jul 2022 05:34:28 -0700 (PDT)
+Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
+        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 1662F1887129;
+        Fri,  8 Jul 2022 12:34:26 +0000 (UTC)
+Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
+        by mailout.gigahost.dk (Postfix) with ESMTP id 0BDBB25032B7;
+        Fri,  8 Jul 2022 12:34:26 +0000 (UTC)
+Received: by smtp.gigahost.dk (Postfix, from userid 1000)
+        id EE690A1E00AD; Fri,  8 Jul 2022 12:34:25 +0000 (UTC)
+X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf-next 0/2] xsk: cover AF_XDP test app in MAINTAINERS
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165728341383.9693.13945717406781339916.git-patchwork-notify@kernel.org>
-Date:   Fri, 08 Jul 2022 12:30:13 +0000
-References: <20220707111613.49031-1-maciej.fijalkowski@intel.com>
-In-Reply-To: <20220707111613.49031-1-maciej.fijalkowski@intel.com>
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, netdev@vger.kernel.org,
-        magnus.karlsson@intel.com
-X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Date:   Fri, 08 Jul 2022 14:34:25 +0200
+From:   netdev@kapio-technology.com
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH v4 net-next 3/6] drivers: net: dsa: add locked fdb entry
+ flag to drivers
+In-Reply-To: <20220708115624.rrjzjtidlhcqczjv@skbuf>
+References: <20220707152930.1789437-1-netdev@kapio-technology.com>
+ <20220707152930.1789437-4-netdev@kapio-technology.com>
+ <20220708084904.33otb6x256huddps@skbuf>
+ <e6f418705e19df370c8d644993aa9a6f@kapio-technology.com>
+ <20220708091550.2qcu3tyqkhgiudjg@skbuf>
+ <e3ea3c0d72c2417430e601a150c7f0dd@kapio-technology.com>
+ <20220708115624.rrjzjtidlhcqczjv@skbuf>
+User-Agent: Gigahost Webmail
+Message-ID: <723e2995314b41ff323272536ef27341@kapio-technology.com>
+X-Sender: netdev@kapio-technology.com
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,FROM_FMBLA_NEWDOM,
+        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to bpf/bpf-next.git (master)
-by Daniel Borkmann <daniel@iogearbox.net>:
-
-On Thu,  7 Jul 2022 13:16:11 +0200 you wrote:
-> MAINTAINERS needs adjustment after file moves/deletions.
-> First commit does s/xdpxceiver/xskxceiver while second adjust the
-> MAINTAINERS.
+On 2022-07-08 13:56, Vladimir Oltean wrote:
+> On Fri, Jul 08, 2022 at 11:50:33AM +0200, netdev@kapio-technology.com 
+> wrote:
+>> On 2022-07-08 11:15, Vladimir Oltean wrote:
+>> > When the possibility for it to be true will exist, _all_ switchdev
+>> > drivers will need to be updated to ignore that (mlxsw, cpss, ocelot,
+>> > rocker, prestera, etc etc), not just DSA. And you don't need to
+>> > propagate the is_locked flag to all individual DSA sub-drivers when none
+>> > care about is_locked in the ADD_TO_DEVICE direction, you can just ignore
+>> > within DSA until needed otherwise.
+>> >
+>> 
+>> Maybe I have it wrong, but I think that Ido requested me to send it to 
+>> all
+>> the drivers, and have them ignore entries with is_locked=true ...
 > 
-> Thanks,
-> Maciej
+> I don't think Ido requested you to ignore is_locked from all DSA
+> drivers, but instead from all switchdev drivers maybe. Quite different.
+
+So without changing the signature on port_fdb_add(). If that is to avoid 
+changing that signature, which needs to be changed anyhow for any 
+switchcore driver to act on it, then my next patch set will change the 
+signarure also as it is needed for creating dynamic ATU entries from 
+userspace, which is needed to make the whole thing complete.
+
+As it is already done (with the is_locked to the drivers) and needed for 
+future application, I would like Ido to comment on it before I take 
+action.
+
 > 
-> [...]
+> In any case I'm going to take a look at this patch set more closely and
+> run the selftest on my Marvell switch, but I can't do this today
+> unfortunately. I'll return with more comments.
 
-Here is the summary with links:
-  - [bpf-next,1/2] selftests: xsk: rename AF_XDP testing app
-    https://git.kernel.org/bpf/bpf-next/c/018a8e75b49c
-  - [bpf-next,2/2] MAINTAINERS: add entry for AF_XDP selftests files
-    https://git.kernel.org/bpf/bpf-next/c/d6f34f7f77fb
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Yes :-)
