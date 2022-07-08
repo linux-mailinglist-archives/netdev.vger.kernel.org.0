@@ -2,157 +2,242 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AE0E56B88D
-	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 13:32:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00C5556B8AB
+	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 13:38:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238036AbiGHLbI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jul 2022 07:31:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57910 "EHLO
+        id S238028AbiGHLiM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jul 2022 07:38:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238042AbiGHLbF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 07:31:05 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 80BFE904EC
-        for <netdev@vger.kernel.org>; Fri,  8 Jul 2022 04:31:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657279863;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=UAhm09EfssnFXCcdbsvbfvfsk3WrYS8DdytneLUevKI=;
-        b=imdF/M9umr3IrvK6cDuQ8xRZkT4mC/KtovLuDRaDyh/daSxz+TYm1QLun5l7Kb1uFNQn/P
-        uIpgolw8iLDeHl+rf5+19mc5iLB1uk8xQM2YZ8q3k/UhpnF3kTb1gQZgNdStqWMt1rzLEI
-        Bfb/4AKmR6w9rYa3JtMmHZgJ227o0Ew=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-16-v9z5bTQiPNq-PmeifB_tzA-1; Fri, 08 Jul 2022 07:30:56 -0400
-X-MC-Unique: v9z5bTQiPNq-PmeifB_tzA-1
-Received: by mail-qk1-f199.google.com with SMTP id t203-20020a3746d4000000b006af1d3e8068so20624184qka.0
-        for <netdev@vger.kernel.org>; Fri, 08 Jul 2022 04:30:56 -0700 (PDT)
+        with ESMTP id S237510AbiGHLiL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 07:38:11 -0400
+Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDBD0951CF;
+        Fri,  8 Jul 2022 04:38:10 -0700 (PDT)
+Received: by mail-il1-x12b.google.com with SMTP id n9so8530785ilq.12;
+        Fri, 08 Jul 2022 04:38:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:content-language:to:cc
+         :references:from:subject:in-reply-to:content-transfer-encoding;
+        bh=nszoEzYnCxQ1xDNDNvtGrYIcNHRX5TSbVWsgNtzZYhA=;
+        b=dKvjhinarA+FocDEae0v2+po7LXoRwU4pY01+kUagQ5SQYb3XXmu3zkzCPOoiQIK6I
+         /JOuB/inq9ACoE5FjhLsVyJmuqdG97nxZOul+6cAackx1m82N44sCs/mULzrGat08yv9
+         wUXyLH/M2uKfNvDXyes0tu22w4WK797yLHWyVeef0hjRaXeoO2XouqmmKWifJeY19mWR
+         LY+h4c85KmZMyQqb3OG1G12IMWa/xrrdfVs4hiyoiFnvwbRxLsbnSpLzTCCrPAXAkFtP
+         Zvt2kscGtFJCPLT/DEpLBLt3EQGmiLWOj8c5ITdnyHDMSS+AfdulxIthKL+LXDYS41rB
+         ldrw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=UAhm09EfssnFXCcdbsvbfvfsk3WrYS8DdytneLUevKI=;
-        b=BhN7hD72ZiISHMyd9ylaNpMJPyosAO4H2CGheCjgq0sEs/CkOG86mLPUSPo/JpSfxs
-         JNIcpFnt0DyglZPliUQLHg575hNipIl+egAdoNVgZIpxN9mCUN7OCkPegiWbc6vWqxa3
-         3DOo5eXEIJUJNbtbCQolvjQ6N6YTe4PBrDcTKs17l131hi3ILbV+M/Gu9wEl6K8S69xu
-         Du3PQbDcrtYKW/bW229eWOVoENjEKfPWsvPnlbP38B0csf+Ove+zpfBOx9TY1WWMLLYC
-         aVHwLRJAAPlk9oAv5WdoCQvbDuie9fkfZ0NJFGw5gqlpdFCo/DAF9zd4dFVsT0cCLw+h
-         LceQ==
-X-Gm-Message-State: AJIora/K/4QsR8V8pcjU7mWs3ewLAFpRMUEGoZODUms1DDj634T6XnH5
-        MXt7e8+QenqPHmVu4cJKynwHCFUCziRm+dLdy4vv5j6sh+HTvITrVStSFvV7/e5DGZxSIB/B4QF
-        KipggmKw1jV8evX5li/VvVrnrZus0LZrv
-X-Received: by 2002:a05:620a:1a28:b0:6b1:4d4d:c7c3 with SMTP id bk40-20020a05620a1a2800b006b14d4dc7c3mr1814595qkb.522.1657279855630;
-        Fri, 08 Jul 2022 04:30:55 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1v8+NK0ig5X6Bjadt6KK8FEJO3wlTzXuPkDiWOHFPeuAEaLG9/Cabys/udfnjWvsySslvzBdf92a3lY5t1vcR0=
-X-Received: by 2002:a05:620a:1a28:b0:6b1:4d4d:c7c3 with SMTP id
- bk40-20020a05620a1a2800b006b14d4dc7c3mr1814565qkb.522.1657279855371; Fri, 08
- Jul 2022 04:30:55 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:subject:in-reply-to
+         :content-transfer-encoding;
+        bh=nszoEzYnCxQ1xDNDNvtGrYIcNHRX5TSbVWsgNtzZYhA=;
+        b=G/Ha6+gjAiiFFOwitQyA8+IW9NBHad03OkFpKFnT4CZ30FVS8iocn9zDg6bpjKt7N/
+         8XgzcnTV5PxRGApVEYa2PDwXbf4DTtQH9am2NxnFd6wE520y/7XyyyKiszlBjcP1cNrs
+         PHO6/Xen4pDCHXD4RLK0vKScdY9k6r4pVKIeHb8KKt3FdMDWA+rne2Tg3ODG5TzmEen4
+         TZWhYrMeg9vAFe7iEoBkNjYfTxHEci01512HhLYYeIilzc+5KgdlttyY1txlhalqFMbK
+         7x5ogYP5h+5P7aQkkd1lAUJVe12XcEagXYCd1OoSiMZhIXtr3INWhmjzkGIpfLnF0pei
+         jovQ==
+X-Gm-Message-State: AJIora/wntgZVp1c8zoDsrSCGOv1wI2gdO47cAIWGbNF7oiLFuC9aNQI
+        iTssufQ6b3ljfHkOcVEicLQ=
+X-Google-Smtp-Source: AGRyM1sNiPet/tVOy6XFSa61R0msl5dFrsxCFuQMc8hx1cl0M2wFvwdfDVlZDWJVEB+BtAPuu3xZXg==
+X-Received: by 2002:a05:6e02:1a2f:b0:2dc:31f1:2976 with SMTP id g15-20020a056e021a2f00b002dc31f12976mr1810014ile.179.1657280290036;
+        Fri, 08 Jul 2022 04:38:10 -0700 (PDT)
+Received: from [192.168.1.145] ([207.188.167.132])
+        by smtp.gmail.com with ESMTPSA id k14-20020a0566022a4e00b0067821726c8csm9007770iov.53.2022.07.08.04.38.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 08 Jul 2022 04:38:08 -0700 (PDT)
+Message-ID: <78beb398-01ed-400e-e79c-0bcdcbc279d0@gmail.com>
+Date:   Fri, 8 Jul 2022 13:37:59 +0200
 MIME-Version: 1.0
-References: <20220623160738.632852-1-eperezma@redhat.com> <20220623160738.632852-2-eperezma@redhat.com>
- <CACGkMEv+yFLCzo-K7eSaVPJqLCa5SxfVCmB=piQ3+6R3=oDz-w@mail.gmail.com>
-In-Reply-To: <CACGkMEv+yFLCzo-K7eSaVPJqLCa5SxfVCmB=piQ3+6R3=oDz-w@mail.gmail.com>
-From:   Eugenio Perez Martin <eperezma@redhat.com>
-Date:   Fri, 8 Jul 2022 13:30:19 +0200
-Message-ID: <CAJaqyWcsesMV5DSs7sCrsJmZX=QED7p7UXa_7H=1UHfQTnKS6w@mail.gmail.com>
-Subject: Re: [PATCH v6 1/4] vdpa: Add suspend operation
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        kvm <kvm@vger.kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Cindy Lu <lulu@redhat.com>,
-        "Kamde, Tanuj" <tanuj.kamde@amd.com>,
-        Si-Wei Liu <si-wei.liu@oracle.com>,
-        "Uminski, Piotr" <Piotr.Uminski@intel.com>,
-        habetsm.xilinx@gmail.com, "Dawar, Gautam" <gautam.dawar@amd.com>,
-        Pablo Cascon Katchadourian <pabloc@xilinx.com>,
-        Zhu Lingshan <lingshan.zhu@intel.com>,
-        Laurent Vivier <lvivier@redhat.com>,
-        Longpeng <longpeng2@huawei.com>,
-        Dinan Gunawardena <dinang@xilinx.com>,
-        Martin Petrus Hubertus Habets <martinh@xilinx.com>,
-        Martin Porter <martinpo@xilinx.com>,
-        Eli Cohen <elic@nvidia.com>, ecree.xilinx@gmail.com,
-        Wu Zongyong <wuzongyong@linux.alibaba.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Harpreet Singh Anand <hanand@xilinx.com>,
-        Xie Yongji <xieyongji@bytedance.com>,
-        Zhang Min <zhang.min9@zte.com.cn>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Content-Language: en-US
+To:     Biao Huang <biao.huang@mediatek.com>,
+        David Miller <davem@davemloft.net>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, macpaul.lin@mediatek.com
+References: <20220708083937.27334-1-biao.huang@mediatek.com>
+ <20220708083937.27334-2-biao.huang@mediatek.com>
+ <14bf5e6b-4230-fffc-4134-c3015cf4d262@gmail.com>
+ <410b8c62ea399b51c11021c4838bd6a62d542703.camel@mediatek.com>
+From:   Matthias Brugger <matthias.bgg@gmail.com>
+Subject: Re: [PATCH net v3] stmmac: dwmac-mediatek: fix clock issue
+In-Reply-To: <410b8c62ea399b51c11021c4838bd6a62d542703.camel@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 29, 2022 at 6:10 AM Jason Wang <jasowang@redhat.com> wrote:
->
-> On Fri, Jun 24, 2022 at 12:07 AM Eugenio P=C3=A9rez <eperezma@redhat.com>=
- wrote:
-> >
-> > This operation is optional: It it's not implemented, backend feature bi=
-t
-> > will not be exposed.
->
-> A question, do we allow suspending a device without DRIVER_OK?
->
+Hi Biao Huang,
 
-That should be invalid. In particular, vdpa_sim will resume in that
-case, but I guess it would depend on the device.
+On 08/07/2022 11:46, Biao Huang wrote:
+> Dear Mattias,
+> 	Thanks for your comments.
+> 
+> On Fri, 2022-07-08 at 11:22 +0200, Matthias Brugger wrote:
+>>
+>> On 08/07/2022 10:39, Biao Huang wrote:
+>>> Since clocks are handled in mediatek_dwmac_clks_config(),
+>>> remove the clocks configuration in init()/exit(), and
+>>> invoke mediatek_dwmac_clks_config instead.
+>>>
+>>> This issue is found in suspend/resume test.
+>>>
+>>
+>> Commit message is rather confusing. Basically you are moving the
+>> clock enable
+>> into probe instead of init and remove it from exit. That means,
+>> clocks get
+>> enabled earlier and don't get disabled if the module gets unloaded.
+>> That doesn't
+>> sound correct, I think we would at least need to disable the clocks
+>> in remove
+>> function.
+> there is pm_runtime support in driver, and clocks will be
+> disabled/enabled in stmmac_runtime_suspend/stmmac_runtime_resume.
+> 
+> stmmac_dvr_probe() invoke pm_runtime_put(device) at the end, and
+> disable clocks, but no clock enable at the beginning.
+> so vendor's probe entry should enable clocks to ensure normal behavior.
+> 
+> As to clocks in remove function, we did not test it
+> We should implement a vendor specified remove function who will take
+> care of clocks rather than invoke stmmac_pltfr_remove directly.
+> 
+> Anyway, we miss the clock handling case in remove function,
+> and will
+> test it and feed back.
 
-Do you think it should be controlled in the vdpa frontend code?
+Right, sorry I'm not familiar with the stmmac driver stack, yes suspend/resume 
+is fine. Thanks for clarification.
 
-Thanks!
+stmmac_pltfr_remove will disable stmmac_clk and pclk but not the rest of the 
+clocks. So I think you will need to have specific remove function to disable them.
 
-> Thanks
->
-> >
-> > Signed-off-by: Eugenio P=C3=A9rez <eperezma@redhat.com>
-> > ---
-> >  include/linux/vdpa.h | 4 ++++
-> >  1 file changed, 4 insertions(+)
-> >
-> > diff --git a/include/linux/vdpa.h b/include/linux/vdpa.h
-> > index 7b4a13d3bd91..d282f464d2f1 100644
-> > --- a/include/linux/vdpa.h
-> > +++ b/include/linux/vdpa.h
-> > @@ -218,6 +218,9 @@ struct vdpa_map_file {
-> >   * @reset:                     Reset device
-> >   *                             @vdev: vdpa device
-> >   *                             Returns integer: success (0) or error (=
-< 0)
-> > + * @suspend:                   Suspend or resume the device (optional)
-> > + *                             @vdev: vdpa device
-> > + *                             Returns integer: success (0) or error (=
-< 0)
-> >   * @get_config_size:           Get the size of the configuration space=
- includes
-> >   *                             fields that are conditional on feature =
-bits.
-> >   *                             @vdev: vdpa device
-> > @@ -319,6 +322,7 @@ struct vdpa_config_ops {
-> >         u8 (*get_status)(struct vdpa_device *vdev);
-> >         void (*set_status)(struct vdpa_device *vdev, u8 status);
-> >         int (*reset)(struct vdpa_device *vdev);
-> > +       int (*suspend)(struct vdpa_device *vdev);
-> >         size_t (*get_config_size)(struct vdpa_device *vdev);
-> >         void (*get_config)(struct vdpa_device *vdev, unsigned int offse=
-t,
-> >                            void *buf, unsigned int len);
-> > --
-> > 2.31.1
-> >
->
+>>
+>> I suppose that suspend calls exit and that there was a problem when
+>> we disable
+>> the clocks there. Is this a HW issue that has no other possible fix?
+> Not a HW issue. suspend/resume will disable/enable clocks by invoking
+> stmmac_pltfr_noirq_suspend/stmmac_pltfr_noirq_resume -->
+> pm_runtime_force_suspend/pm_runtime_force_resume-->
+> mediatek_dwmac_clks_config, so old clock handling in init/exit is no
+> longer a proper choice.
+> 
 
+Got it, thanks for clarification.
+
+Best regards,
+Matthias
+
+> Best Regards!
+> Biao
+> 
+>>
+>> Regards,
+>> Matthias
+>>
+>>> Fixes: 3186bdad97d5 ("stmmac: dwmac-mediatek: add platform level
+>>> clocks management")
+>>> Signed-off-by: Biao Huang <biao.huang@mediatek.com>
+>>> ---
+>>>    .../ethernet/stmicro/stmmac/dwmac-mediatek.c  | 36 +++++---------
+>>> -----
+>>>    1 file changed, 9 insertions(+), 27 deletions(-)
+>>>
+>>> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
+>>> b/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
+>>> index 6ff88df58767..e86f3e125cb4 100644
+>>> --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
+>>> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
+>>> @@ -576,32 +576,7 @@ static int mediatek_dwmac_init(struct
+>>> platform_device *pdev, void *priv)
+>>>    		}
+>>>    	}
+>>>    
+>>> -	ret = clk_bulk_prepare_enable(variant->num_clks, plat->clks);
+>>> -	if (ret) {
+>>> -		dev_err(plat->dev, "failed to enable clks, err = %d\n",
+>>> ret);
+>>> -		return ret;
+>>> -	}
+>>> -
+>>> -	ret = clk_prepare_enable(plat->rmii_internal_clk);
+>>> -	if (ret) {
+>>> -		dev_err(plat->dev, "failed to enable rmii internal clk,
+>>> err = %d\n", ret);
+>>> -		goto err_clk;
+>>> -	}
+>>> -
+>>>    	return 0;
+>>> -
+>>> -err_clk:
+>>> -	clk_bulk_disable_unprepare(variant->num_clks, plat->clks);
+>>> -	return ret;
+>>> -}
+>>> -
+>>> -static void mediatek_dwmac_exit(struct platform_device *pdev, void
+>>> *priv)
+>>> -{
+>>> -	struct mediatek_dwmac_plat_data *plat = priv;
+>>> -	const struct mediatek_dwmac_variant *variant = plat->variant;
+>>> -
+>>> -	clk_disable_unprepare(plat->rmii_internal_clk);
+>>> -	clk_bulk_disable_unprepare(variant->num_clks, plat->clks);
+>>>    }
+>>>    
+>>>    static int mediatek_dwmac_clks_config(void *priv, bool enabled)
+>>> @@ -643,7 +618,6 @@ static int mediatek_dwmac_common_data(struct
+>>> platform_device *pdev,
+>>>    	plat->addr64 = priv_plat->variant->dma_bit_mask;
+>>>    	plat->bsp_priv = priv_plat;
+>>>    	plat->init = mediatek_dwmac_init;
+>>> -	plat->exit = mediatek_dwmac_exit;
+>>>    	plat->clks_config = mediatek_dwmac_clks_config;
+>>>    	if (priv_plat->variant->dwmac_fix_mac_speed)
+>>>    		plat->fix_mac_speed = priv_plat->variant-
+>>>> dwmac_fix_mac_speed;
+>>> @@ -712,13 +686,21 @@ static int mediatek_dwmac_probe(struct
+>>> platform_device *pdev)
+>>>    	mediatek_dwmac_common_data(pdev, plat_dat, priv_plat);
+>>>    	mediatek_dwmac_init(pdev, priv_plat);
+>>>    
+>>> +	ret = mediatek_dwmac_clks_config(priv_plat, true);
+>>> +	if (ret)
+>>> +		return ret;
+>>> +
+>>>    	ret = stmmac_dvr_probe(&pdev->dev, plat_dat, &stmmac_res);
+>>>    	if (ret) {
+>>>    		stmmac_remove_config_dt(pdev, plat_dat);
+>>> -		return ret;
+>>> +		goto err_drv_probe;
+>>>    	}
+>>>    
+>>>    	return 0;
+>>> +
+>>> +err_drv_probe:
+>>> +	mediatek_dwmac_clks_config(priv_plat, false);
+>>> +	return ret;
+>>>    }
+>>>    
+>>>    static const struct of_device_id mediatek_dwmac_match[] = {
+> 
