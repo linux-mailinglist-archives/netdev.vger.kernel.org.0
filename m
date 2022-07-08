@@ -2,112 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AFCF656B40D
-	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 10:08:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D478C56B454
+	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 10:19:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237448AbiGHIHV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jul 2022 04:07:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41770 "EHLO
+        id S237691AbiGHISG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jul 2022 04:18:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237307AbiGHIHU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 04:07:20 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AB4AA8048F
-        for <netdev@vger.kernel.org>; Fri,  8 Jul 2022 01:07:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657267637;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=HLYylxtBEzg+YALLvd9LbEGO9M2fLeX5WQLfMpASEEo=;
-        b=TEvgv/BaQZ8HKDL8ZbMlrl3AN2DjAN9B6fxZ9irmsH/mR42Lc68FTluRptGh/ZYgD1RceI
-        GbH7RuIoaDMcBA3NC5pZsmWNcwWCj09JijL8Fk8aZi2wAwDaV/vC+qYtb8YpO4ogZxoWOT
-        dwp55styo6mkHk4IARm5XgdUL/bn6qA=
-Received: from mail-ua1-f70.google.com (mail-ua1-f70.google.com
- [209.85.222.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-646-ifSgg-i-OWC7u6l0L9GS6g-1; Fri, 08 Jul 2022 04:07:04 -0400
-X-MC-Unique: ifSgg-i-OWC7u6l0L9GS6g-1
-Received: by mail-ua1-f70.google.com with SMTP id b10-20020ab0238a000000b0037efa0a4ba0so6146651uan.11
-        for <netdev@vger.kernel.org>; Fri, 08 Jul 2022 01:07:04 -0700 (PDT)
+        with ESMTP id S236902AbiGHISF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 04:18:05 -0400
+Received: from mail-il1-x136.google.com (mail-il1-x136.google.com [IPv6:2607:f8b0:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 732E181481;
+        Fri,  8 Jul 2022 01:18:04 -0700 (PDT)
+Received: by mail-il1-x136.google.com with SMTP id a20so7723278ilk.9;
+        Fri, 08 Jul 2022 01:18:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=P6Gd+dIUTT3KkGrv9ENkxJer9nCvFgdfmHoOd7OvfxA=;
+        b=MXWXmsdiLUQnCnslmIwo2CH3pAvsVQmDpyWIyYp9f7wga1G+VyuLRAz/FltCJ0DMon
+         qlSREkRY0G2UDgvQV1IwPGaoISST0gSuQeBY1XKGFgQvEqllJbydZSWKtUURftpz5Hpe
+         XfeNCZpdv6p7oe/Yzhqb8WqZcTs8SmmIYIG+je+fKAwtkecCAzBbiWVMoIz7jAcMAzI2
+         Uze4Yo3RQ7KwKqDvf+Uvsdp7aANozHX4n0LESp/DxleVp2ocNDmEeOirGG5BQU4Fw5V2
+         Dques4ELlQEy+G+X5jOJEmyaldF5VIGSUmFxL6jOzUC0sIO25BQkgaferMTWPufdyidJ
+         aTGg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=HLYylxtBEzg+YALLvd9LbEGO9M2fLeX5WQLfMpASEEo=;
-        b=FUiwtAkQWIWTogiiKDeqqXxTFvDfiIjbByNSkoWEirf3kxBYiHa4k+FbLkX4+BeQug
-         kDCdoVRIaDx7XKQXBFlmfmbHeQMIIDg4vNGQPGoaELMV7Ks5v3RFaThs6SHXQSM/VcEr
-         R+J1HokauuDjafvL8tU4+dq5hy5FXL0PIPLgEdA+kTqq1XD08VGAU/JLPZ3u/WQOkFLb
-         xIjDz99q7L+woG8YNQ0dQtIr1kuz2o1i2Xvvz6Vxgv+Dg7Z6HBAF57a1k/M7Sf5lC/vK
-         P1Uu6ep0LEuQE50wvUgQNCpIa0SPJhjhuxWYtdDEfKScYGsb15hyMQ4H85V78/g4WUAX
-         vqcw==
-X-Gm-Message-State: AJIora/pTyJFzvvX9D+kZQvb5qdXMGEQWO63Hrc3SZTbci+XlYH7w73b
-        fi5bD++1MvFwn5l3+vQfKZes2CATGRhuAqSU2lRj63vruFxdfOlKji4rvrgZoEBbX7AIi2rzqKT
-        KDdoebm20AdlLQJr1eFE6kSn5/XQoXx2T
-X-Received: by 2002:a67:c894:0:b0:324:c5da:a9b5 with SMTP id v20-20020a67c894000000b00324c5daa9b5mr806347vsk.33.1657267624146;
-        Fri, 08 Jul 2022 01:07:04 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1vtSsw27PcDf3CxP61G0rXLMhfXJ7efh8iTUreeYkPunA27DUyKMkZxBK+PdSsgScu9YO7PPUz6YnRJa2vV24Y=
-X-Received: by 2002:a67:c894:0:b0:324:c5da:a9b5 with SMTP id
- v20-20020a67c894000000b00324c5daa9b5mr806338vsk.33.1657267623936; Fri, 08 Jul
- 2022 01:07:03 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=P6Gd+dIUTT3KkGrv9ENkxJer9nCvFgdfmHoOd7OvfxA=;
+        b=hxNU/o/DEvafv3YhtIsyhK/iBA7iuVgrEBp9x3BHSsXOZ7CGhARz1MaTPGWmLfLRVy
+         /pPznyBGmg++vNRx3xONMX87e8bRy87xqm+c7sZl2htfyd3cDqhTcEujL8pQR9f0LbON
+         E+Kih3TqZTYVaqu4arzXrwX2g3ssKn7R1/crA23k7oqszrFnoRIorkcgBLngJi1d+8Fs
+         VAbZgYHPEt2Mt8BwUugKOm8bp+43706x9HIZ1O8vc7/ZwFe83/dKQ/eeeNiC6srOZEL9
+         jUdsD0xrUvN4v78pZ5BjWJqJRnn0XEoHqQB9dcde2h+TFjfWcxDIRAke/dTbDqGW4LiW
+         eJZg==
+X-Gm-Message-State: AJIora+EFbsbSZ2eM2XxARziXUDWpNld3TdrVaZaW5475TRPRp+4eEaO
+        Ag+Ej5FaLsXHwjvMg8iu9Jk=
+X-Google-Smtp-Source: AGRyM1sMYLA3oN2FhV8iRlBxBKPC6Ma2VfIhQd5iP198thNMgX+FuuPQHfTYCjFgSpS9UIvXNT8yBA==
+X-Received: by 2002:a05:6e02:1549:b0:2dc:616a:1dd4 with SMTP id j9-20020a056e02154900b002dc616a1dd4mr47747ilu.131.1657268283864;
+        Fri, 08 Jul 2022 01:18:03 -0700 (PDT)
+Received: from [192.168.1.145] ([207.188.167.132])
+        by smtp.gmail.com with ESMTPSA id g18-20020a05663810f200b0033cbfb5202esm2928253jae.11.2022.07.08.01.18.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 08 Jul 2022 01:18:02 -0700 (PDT)
+Message-ID: <c088f936-00a1-4a7b-c995-dd49b011494f@gmail.com>
+Date:   Fri, 8 Jul 2022 10:17:59 +0200
 MIME-Version: 1.0
-References: <20220531081412.22db88cc@kernel.org> <1654011382-2453-1-git-send-email-chen45464546@163.com>
- <20220531084704.480133fa@kernel.org> <CAKgT0UfQsbAzsJ1e__irHY2xBRevpB9m=FBYDis3C1fMua+Zag@mail.gmail.com>
- <3498989.c69f.1811f41186e.Coremail.chen45464546@163.com>
-In-Reply-To: <3498989.c69f.1811f41186e.Coremail.chen45464546@163.com>
-From:   Maurizio Lombardi <mlombard@redhat.com>
-Date:   Fri, 8 Jul 2022 10:06:53 +0200
-Message-ID: <CAFL455=ZcU_fyM9kiuZUJeVmRv9Jx_FmURcweCrTXheRoKkSqg@mail.gmail.com>
-Subject: Re: Re: [PATCH v2] mm: page_frag: Warn_on when frag_alloc size is
- bigger than PAGE_SIZE
-To:     =?UTF-8?B?5oSa5qCR?= <chen45464546@163.com>
-Cc:     Alexander Duyck <alexander.duyck@gmail.com>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH net v2] stmmac: dwmac-mediatek: fix clock issue
+Content-Language: en-US
+To:     Biao Huang <biao.huang@mediatek.com>,
+        David Miller <davem@davemloft.net>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-mm <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, macpaul.lin@mediatek.com
+References: <20220708075622.26342-1-biao.huang@mediatek.com>
+ <20220708075622.26342-2-biao.huang@mediatek.com>
+From:   Matthias Brugger <matthias.bgg@gmail.com>
+In-Reply-To: <20220708075622.26342-2-biao.huang@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-st 1. 6. 2022 v 14:49 odes=C3=ADlatel =E6=84=9A=E6=A0=91 <chen45464546@163.=
-com> napsal:
-> Can we just add code to the relatively slow path to capture the mistake
-> before it lead to memory corruption?
-> Like:
-> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-> index e6f211d..ac60a97 100644
-> --- a/mm/page_alloc.c
-> +++ b/mm/page_alloc.c
-> @@ -5580,6 +5580,7 @@ void *page_frag_alloc_align(struct page_frag_cache =
-*nc,
->                 /* reset page count bias and offset to start of new frag =
-*/
->                 nc->pagecnt_bias =3D PAGE_FRAG_CACHE_MAX_SIZE + 1;
->                 offset =3D size - fragsz;
-> +               BUG_ON(offset < 0);
->         }
->
 
-Personally, I'm not really convinced this is the best solution.
-The next time a driver abuses  the page_frag_alloc() interface, the
-bug may go unnoticed for a long time...
-until a server in production runs into OOM and crashes because it hits
-the BUG_ON().
 
-And why should the kernel panic? It's perfectly able to handle this
-condition by failing
-the allocation and returning NULL, and printing a warning maybe.
+On 08/07/2022 09:56, Biao Huang wrote:
+> Since clocks are handled in mediatek_dwmac_clks_config(),
+> remove the clocks configuration in init()/exit(), and
+> invoke mediatek_dwmac_clks_config instead.
+> 
+> This issue is found in suspend/resume test.
+> 
+> Fixes: 3186bdad97d5 ("stmmac: dwmac-mediatek: add platform level clocks management")
+> Signed-off-by: Biao Huang <biao.huang@mediatek.com>
+> ---
+>   .../ethernet/stmicro/stmmac/dwmac-mediatek.c  | 32 ++++++-------------
+>   1 file changed, 10 insertions(+), 22 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
+> index 6ff88df58767..6d82cf2658e0 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
+> @@ -576,32 +576,12 @@ static int mediatek_dwmac_init(struct platform_device *pdev, void *priv)
+>   		}
+>   	}
+>   
+> -	ret = clk_bulk_prepare_enable(variant->num_clks, plat->clks);
+> -	if (ret) {
+> -		dev_err(plat->dev, "failed to enable clks, err = %d\n", ret);
+> -		return ret;
+> -	}
+> -
+> -	ret = clk_prepare_enable(plat->rmii_internal_clk);
+> -	if (ret) {
+> -		dev_err(plat->dev, "failed to enable rmii internal clk, err = %d\n", ret);
+> -		goto err_clk;
+> -	}
+> -
+>   	return 0;
+> -
+> -err_clk:
+> -	clk_bulk_disable_unprepare(variant->num_clks, plat->clks);
+> -	return ret;
+>   }
+>   
+>   static void mediatek_dwmac_exit(struct platform_device *pdev, void *priv)
+>   {
+> -	struct mediatek_dwmac_plat_data *plat = priv;
+> -	const struct mediatek_dwmac_variant *variant = plat->variant;
+> -
+> -	clk_disable_unprepare(plat->rmii_internal_clk);
+> -	clk_bulk_disable_unprepare(variant->num_clks, plat->clks);
+> +	/* nothing to do now */
 
-Maurizio
+We can just leave the function pointer point to NULL, that get checked before 
+calling exit.
 
+Regards,
+Matthias
+
+>   }
+>   
+>   static int mediatek_dwmac_clks_config(void *priv, bool enabled)
+> @@ -712,13 +692,21 @@ static int mediatek_dwmac_probe(struct platform_device *pdev)
+>   	mediatek_dwmac_common_data(pdev, plat_dat, priv_plat);
+>   	mediatek_dwmac_init(pdev, priv_plat);
+>   
+> +	ret = mediatek_dwmac_clks_config(priv_plat, true);
+> +	if (ret)
+> +		return ret;
+> +
+>   	ret = stmmac_dvr_probe(&pdev->dev, plat_dat, &stmmac_res);
+>   	if (ret) {
+>   		stmmac_remove_config_dt(pdev, plat_dat);
+> -		return ret;
+> +		goto err_drv_probe;
+>   	}
+>   
+>   	return 0;
+> +
+> +err_drv_probe:
+> +	mediatek_dwmac_clks_config(priv_plat, false);
+> +	return ret;
+>   }
+>   
+>   static const struct of_device_id mediatek_dwmac_match[] = {
