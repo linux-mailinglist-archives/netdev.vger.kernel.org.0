@@ -2,121 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3353056B2CC
-	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 08:33:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D968B56B2DA
+	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 08:38:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237313AbiGHGdQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jul 2022 02:33:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57432 "EHLO
+        id S237268AbiGHGiq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jul 2022 02:38:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236895AbiGHGdQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 02:33:16 -0400
-Received: from out1.migadu.com (out1.migadu.com [91.121.223.63])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A63DA24BDE;
-        Thu,  7 Jul 2022 23:33:14 -0700 (PDT)
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1657261992;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=wMj0rNqJktrmg9SQYqpgpSwCODUUJ7vqMo6vdS1piJY=;
-        b=KDal/ch4EdfRRYIsG/hkoGvLojdMBXkdDy2BJADEFHbG5cMIaIjY7G3PfqQv0ktpMo33w9
-        i/Eysa+oKPta5y55ZKJQp0okPFHs3dBnsnf+dWSHcOeUutEst1hHVefItXpzm0H2Q7CmyL
-        9bx04Qcp84MuOFax4LjQIHrBRkNPjqs=
-From:   Yajun Deng <yajun.deng@linux.dev>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Yajun Deng <yajun.deng@linux.dev>
-Subject: [PATCH net-next] net: rtnetlink: add rx_otherhost_dropped for struct rtnl_link_stats
-Date:   Fri,  8 Jul 2022 14:32:57 +0800
-Message-Id: <20220708063257.1192311-1-yajun.deng@linux.dev>
+        with ESMTP id S236525AbiGHGio (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 02:38:44 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D62D51836B;
+        Thu,  7 Jul 2022 23:38:43 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id a5so14500310wrx.12;
+        Thu, 07 Jul 2022 23:38:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=6MNY7diHJ+MnWxKcDHqJkKosV/mr66iz8oydZliBRmQ=;
+        b=Y+HfLILvoGNJKQwKFAtwItKF+nCU+J9436rxhfgzKj8LxGXYwEyhG9L5pC/GGnKcdD
+         OakYQ5yA1HWawR+S2zFE2a6CJG4WW0xpCZKA5ZEAV9jE47k/LUyRUKiGiG3uKwijbCKU
+         NV4KIyrtkEqVcSyMJch5SBJa58tVqjxP7xToKLhCOPnCSfhpg/F4B2xs7hIpHmVkommW
+         Zt5rqJZpPIpwTgHyjxaWFhu27gs5QHkOPa6NnNwBF2l0y4vu0P+y0lmOKc7ZRKyjNWMK
+         XqtyfkLnqIfI219BNbG+a7HAZwfByoQoCrQ64uSG9r8XWGu9IW0ObRyJKSPD5Zg8lGq9
+         iG2Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6MNY7diHJ+MnWxKcDHqJkKosV/mr66iz8oydZliBRmQ=;
+        b=LvAnNhhRwwmE7+KgAmDNl65kp1hvs4McITf6RqhYKf3fN9OfYRLN2sUoZKWSPsStyc
+         eb5WVX/nrQ3uxBfsPNexdU9w7RuV10z0gDQ8v5sshRMrnPHxHy1zOd7bVX9bWkDHR4MC
+         slHKXpduiXEnKzfGZtNPNszGUHFbXDvloTNQHc77yvGxlErt7KxD642iiIyVqbntvr7p
+         ZdLr8vgtJPGXoB/wR6zZA+4n51GdlZ6fuPxzGoPMBDh+4VJASLG8SqkeUT6EXphZRgid
+         nr7w3PvWdB1SPO8AUD/txfYT4oqOvsmVh3NiK1B+GZ2H9fO/yTXjThJJZF+dn15lsFoK
+         Fs/A==
+X-Gm-Message-State: AJIora8imOKBU0rxa4q0UO/gWMlwmO0VJOJHQCQF5Y83sA5yFb68rIIy
+        92zxWaWSHaJ1NMKNRdfmBXDTu2+DncIeUJR4aUU=
+X-Google-Smtp-Source: AGRyM1v1scyfjp6+EGm8qT5gCJ8TPVBCMuX9yYoD0E0kmstb/lo3xGd1jIUmhQVuWt/vLqRSvbuExBzmMqpCiMTuhMM=
+X-Received: by 2002:adf:dc0d:0:b0:21d:ea5:710f with SMTP id
+ t13-20020adfdc0d000000b0021d0ea5710fmr1684518wri.48.1657262322403; Thu, 07
+ Jul 2022 23:38:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+References: <20220524152144.40527-2-schultz.hans+netdev@gmail.com>
+ <01e6e35c-f5c9-9776-1263-058f84014ed9@blackwall.org> <86zgj6oqa9.fsf@gmail.com>
+ <b78fb006-04c4-5a25-7ba5-94428cc9591a@blackwall.org> <86fskyggdo.fsf@gmail.com>
+ <040a1551-2a9f-18d0-9987-f196bb429c1b@blackwall.org> <86v8tu7za3.fsf@gmail.com>
+ <4bf1c80d-0f18-f444-3005-59a45797bcfd@blackwall.org> <20220706181316.r5l5rzjysxow2j7l@skbuf>
+ <7cf30a3e-a562-d582-4391-072a2c98ab05@blackwall.org> <20220706202130.ehzxnnqnduaq3rmt@skbuf>
+ <fe456fb0-4f68-f93e-d4a9-66e3bc56d547@blackwall.org> <37d59561-6ce8-6c5f-5d31-5c37a0a3d231@blackwall.org>
+In-Reply-To: <37d59561-6ce8-6c5f-5d31-5c37a0a3d231@blackwall.org>
+From:   Hans S <schultz.hans@gmail.com>
+Date:   Fri, 8 Jul 2022 08:38:31 +0200
+Message-ID: <CAKUejP4P6-5gYg2owdbcNLKwYvsimg6L-Y_izUxfq=Uz=K_JDg@mail.gmail.com>
+Subject: Re: [PATCH V3 net-next 1/4] net: bridge: add fdb flag to extent
+ locked port feature
+To:     Nikolay Aleksandrov <razor@blackwall.org>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>, Shuah Khan <shuah@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The commit 794c24e9921f ("net-core: rx_otherhost_dropped to core_stats")
-introduce rx_otherhost_dropped, add rx_otherhost_dropped for struct
-rtnl_link_stats to keep sync with struct rtnl_link_stats64.
+On Thu, Jul 7, 2022 at 4:08 PM Nikolay Aleksandrov <razor@blackwall.org> wrote:
+>
+> On 07/07/2022 00:01, Nikolay Aleksandrov wrote:
+> > On 06/07/2022 23:21, Vladimir Oltean wrote:
+> >> On Wed, Jul 06, 2022 at 10:38:04PM +0300, Nikolay Aleksandrov wrote:
+> [snip]
+> > I already said it's ok to add hard configurable limits if they're done properly performance-wise.
+> > Any distribution can choose to set some default limits after the option exists.
+> >
+>
+> Just fyi, and to avoid duplicate efforts, I already have patches for global and per-port software
+> fdb limits that I'll polish and submit soon (depending on time availability, of course). If I find
+> more time I might add per-vlan limits as well to the set. They use embedded netlink attributes
+> to config and dump, so we can easily extend them later (e.g. different action on limit hit, limit
+> statistics etc).
+>
 
-As the same time, add BUILD_BUG_ON() in copy_rtnl_link_stats().
-
-Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
----
- include/uapi/linux/if_link.h |  1 +
- net/core/rtnetlink.c         | 36 +++++++-----------------------------
- 2 files changed, 8 insertions(+), 29 deletions(-)
-
-diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
-index e36d9d2c65a7..fd6776d665c8 100644
---- a/include/uapi/linux/if_link.h
-+++ b/include/uapi/linux/if_link.h
-@@ -37,6 +37,7 @@ struct rtnl_link_stats {
- 	__u32	tx_compressed;
- 
- 	__u32	rx_nohandler;
-+	__u32   rx_otherhost_dropped;
- };
- 
- /**
-diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index ac45328607f7..818649850b2c 100644
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -908,35 +908,13 @@ static unsigned int rtnl_dev_combine_flags(const struct net_device *dev,
- static void copy_rtnl_link_stats(struct rtnl_link_stats *a,
- 				 const struct rtnl_link_stats64 *b)
- {
--	a->rx_packets = b->rx_packets;
--	a->tx_packets = b->tx_packets;
--	a->rx_bytes = b->rx_bytes;
--	a->tx_bytes = b->tx_bytes;
--	a->rx_errors = b->rx_errors;
--	a->tx_errors = b->tx_errors;
--	a->rx_dropped = b->rx_dropped;
--	a->tx_dropped = b->tx_dropped;
--
--	a->multicast = b->multicast;
--	a->collisions = b->collisions;
--
--	a->rx_length_errors = b->rx_length_errors;
--	a->rx_over_errors = b->rx_over_errors;
--	a->rx_crc_errors = b->rx_crc_errors;
--	a->rx_frame_errors = b->rx_frame_errors;
--	a->rx_fifo_errors = b->rx_fifo_errors;
--	a->rx_missed_errors = b->rx_missed_errors;
--
--	a->tx_aborted_errors = b->tx_aborted_errors;
--	a->tx_carrier_errors = b->tx_carrier_errors;
--	a->tx_fifo_errors = b->tx_fifo_errors;
--	a->tx_heartbeat_errors = b->tx_heartbeat_errors;
--	a->tx_window_errors = b->tx_window_errors;
--
--	a->rx_compressed = b->rx_compressed;
--	a->tx_compressed = b->tx_compressed;
--
--	a->rx_nohandler = b->rx_nohandler;
-+	size_t i, n = sizeof(*b) / sizeof(u64);
-+	const u64 *src = (const u64 *)b;
-+	u32 *dst = (u32 *)a;
-+
-+	BUILD_BUG_ON(n != sizeof(*a) / sizeof(u32));
-+	for (i = 0; i < n; i++)
-+		dst[i] = src[i];
- }
- 
- /* All VF info */
--- 
-2.25.1
-
+Sounds good, I will just limit the number of locked entries in the
+driver as they are not controllable from the bridge. :-)
