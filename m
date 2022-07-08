@@ -2,108 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5166956B8BC
-	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 13:43:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 99CBD56B8CC
+	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 13:46:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237945AbiGHLlJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jul 2022 07:41:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37658 "EHLO
+        id S237847AbiGHLpi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jul 2022 07:45:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237623AbiGHLlI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 07:41:08 -0400
-Received: from nautica.notk.org (ipv6.notk.org [IPv6:2001:41d0:1:7a93::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5647226104
-        for <netdev@vger.kernel.org>; Fri,  8 Jul 2022 04:41:06 -0700 (PDT)
-Received: by nautica.notk.org (Postfix, from userid 108)
-        id 02AF3C01A; Fri,  8 Jul 2022 13:41:05 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1657280465; bh=CESzf00bqxk8zPwTMZ8J7GXH4+tR1d5gAM6n61EMPow=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=rTrzggeWnPYhCRVhdtYvy5iyWdgip05jelmVydBomV52Pcl/qePVSZrObhJjsh98C
-         J3U7ecf8yyjI+gW0JKUWKsSufIqqZEHdgoswBXTkQDIZLJhUZ5DmKpiS8E1zavBCcP
-         6dk8q8YVV9/8uV1JswBHNFCMGncUOAn3Hy+YhNWX2HKt4tSVkICTSCfCuqlZAvUNuJ
-         jv/XZh1lS0OmPkyHnlUywmoLRlPMnHaZyZwx33P8UX5IP7FFkE99rHZ4Ba/zDJHX5J
-         2vnTnZf1LXDcVYnkqZ8bzLBeYQ7MR/+a86aU2E5mzg7ZI+IzG9oI+VDlYB6EQifnw4
-         j4NKEnpBfTEVQ==
+        with ESMTP id S237704AbiGHLph (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 07:45:37 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B62BD7D1F7
+        for <netdev@vger.kernel.org>; Fri,  8 Jul 2022 04:45:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657280735;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=D16LkhWInPs1rx1LRkF636S9a6Uz2RaFBw2M/GUtu3w=;
+        b=WysMYs4DCNLD/JzxcezvA5BExzMQ0jrE5RcinXdCdbTDY0lckc3PQim8QMYTTV5v79Jsz2
+        fq5G/jzNiuFcJvtj6bIRjIiXgSnP/Y6GdclHiJWCE0caExQVmZnTG7OXxcgCOw7jufARb+
+        FkAUi4Kz41uZTBk3pxW8nC69JlzZ3tc=
+Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
+ [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-427-NAM8ck-RMPWaMuByy2hqkg-1; Fri, 08 Jul 2022 07:45:34 -0400
+X-MC-Unique: NAM8ck-RMPWaMuByy2hqkg-1
+Received: by mail-qt1-f198.google.com with SMTP id v13-20020a05622a014d00b0031ea4c5d35dso1367287qtw.9
+        for <netdev@vger.kernel.org>; Fri, 08 Jul 2022 04:45:34 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=D16LkhWInPs1rx1LRkF636S9a6Uz2RaFBw2M/GUtu3w=;
+        b=ptXsnC0YTPCIBpvYVSIDHR0PjMz91b2xT0vAweHkVHbDnBWqRIytwTKwRFhs3cGCuZ
+         81b6eIXJmNcnX/j9yAKuysSiTQYVXlQeWq2jBbIAWUa5HA/oMr2uaMHptkeTG+mcMcm7
+         kI8yA7glEbWCdPPQhQIhZCv1Hwplj8S7V/z8rwri0nmJnfh23lMdEla9VQGyiwziH94U
+         3soEKe8qWIyBFFHXtktFEuf8Ew5DgXPXsl75T9+blKaqpYENQMoAGilIcIrwrsWQscMq
+         xJC3C8YKCL0iTa9x6yO8/RnTi3RZFb9Qibhh/CkzPoFTqlN9n9BWd9a1OO4dSQ8OJeP9
+         laTw==
+X-Gm-Message-State: AJIora8s2bO3J/UkTjyfAu50U/m+YTNoVYGLPd+CzbMl//Volnq9LCOg
+        u08Mu6Tp7TvEqhC+omWOmhUWAHyUaclBrQ6/Bd8htGr8F5kgCcTBnRcHJ9+YcR6E7tXn+UEmD/3
+        QmAfGA6GFgacm+f2xzlybCbdB8b2jDacA
+X-Received: by 2002:a05:620a:2005:b0:6b5:6531:ec5e with SMTP id c5-20020a05620a200500b006b56531ec5emr1206565qka.255.1657280734359;
+        Fri, 08 Jul 2022 04:45:34 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1stKhUP+nH27TcsnFwZJ468XK3gzKwN+NclOEEgZAId1wEgmBGS630kxnmOKs/qxn5jXaIABZGZ/lPTom5S67I=
+X-Received: by 2002:a05:620a:2005:b0:6b5:6531:ec5e with SMTP id
+ c5-20020a05620a200500b006b56531ec5emr1206540qka.255.1657280734102; Fri, 08
+ Jul 2022 04:45:34 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220623160738.632852-1-eperezma@redhat.com> <20220623160738.632852-3-eperezma@redhat.com>
+ <CACGkMEtNC=4KeigQXr4NuaiuVGkxK2ruQTk6-Fbr3B1MqHieTA@mail.gmail.com>
+In-Reply-To: <CACGkMEtNC=4KeigQXr4NuaiuVGkxK2ruQTk6-Fbr3B1MqHieTA@mail.gmail.com>
+From:   Eugenio Perez Martin <eperezma@redhat.com>
+Date:   Fri, 8 Jul 2022 13:44:57 +0200
+Message-ID: <CAJaqyWdciXkbtpBmGugDsr+0Nh3X50r2Fa5i9Yk2NyQaXBLKtg@mail.gmail.com>
+Subject: Re: [PATCH v6 2/4] vhost-vdpa: introduce SUSPEND backend feature bit
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        kvm <kvm@vger.kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Cindy Lu <lulu@redhat.com>,
+        "Kamde, Tanuj" <tanuj.kamde@amd.com>,
+        Si-Wei Liu <si-wei.liu@oracle.com>,
+        "Uminski, Piotr" <Piotr.Uminski@intel.com>,
+        habetsm.xilinx@gmail.com, "Dawar, Gautam" <gautam.dawar@amd.com>,
+        Pablo Cascon Katchadourian <pabloc@xilinx.com>,
+        Zhu Lingshan <lingshan.zhu@intel.com>,
+        Laurent Vivier <lvivier@redhat.com>,
+        Longpeng <longpeng2@huawei.com>,
+        Dinan Gunawardena <dinang@xilinx.com>,
+        Martin Petrus Hubertus Habets <martinh@xilinx.com>,
+        Martin Porter <martinpo@xilinx.com>,
+        Eli Cohen <elic@nvidia.com>, ecree.xilinx@gmail.com,
+        Wu Zongyong <wuzongyong@linux.alibaba.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Harpreet Singh Anand <hanand@xilinx.com>,
+        Xie Yongji <xieyongji@bytedance.com>,
+        Zhang Min <zhang.min9@zte.com.cn>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
-Received: from odin.codewreck.org (localhost [127.0.0.1])
-        by nautica.notk.org (Postfix) with ESMTPS id CF790C009;
-        Fri,  8 Jul 2022 13:40:54 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1657280456; bh=CESzf00bqxk8zPwTMZ8J7GXH4+tR1d5gAM6n61EMPow=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=l2pe+aFn0nIRfP/yrcn4rqTxdifWA3zG6w66vXl0gQu3DYC8un2P/4BBMMmujG/SS
-         nJLtcVTxJ+fukYNDxXpY0vcHsq/Os6QKmz11uZHjiTQjiG7H9mD8F3aTbIV+4wmPbv
-         7SPaQep3zKLkBAr6gLHdqRCKT5IanYQau1vh4FA9AeHRq0GTCFehUUGYGmHatUIu43
-         b4hwTIjwud9ldg+GDOz2REbGpLx8IE/DndZivvjl0h1qSCEB4hqLFKncHg9YQgNubT
-         ts1PV0Oy3lOm115uUl5bq8k2yWNIdTlYBuNBlqpf0oq0XiAiS80xpKXa3/0kP8Rh2Z
-         n/0Z31pWVcZPQ==
-Received: from localhost (odin.codewreck.org [local])
-        by odin.codewreck.org (OpenSMTPD) with ESMTPA id f9afc261;
-        Fri, 8 Jul 2022 11:40:51 +0000 (UTC)
-Date:   Fri, 8 Jul 2022 20:40:36 +0900
-From:   Dominique Martinet <asmadeus@codewreck.org>
-To:     Christian Schoenebeck <linux_oss@crudebyte.com>
-Cc:     Eric Van Hensbergen <ericvh@gmail.com>, Greg Kurz <groug@kaod.org>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        Nikolay Kichukov <nikolay@oldum.net>, netdev@vger.kernel.org,
-        v9fs-developer@lists.sourceforge.net
-Subject: Re: [PATCH v4 00/12] remove msize limit in virtio transport
-Message-ID: <YsgXtBsfLEQ9dFux@codewreck.org>
-References: <cover.1640870037.git.linux_oss@crudebyte.com>
- <YseFPgFoLpjOGq40@codewreck.org>
- <CAFkjPTngeFh=0mPVW-Yf1Sxkxp_HDNUeANndoYN3-eU9_rGLuQ@mail.gmail.com>
- <1690835.L3irNgtgWz@silver>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <1690835.L3irNgtgWz@silver>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Christian Schoenebeck wrote on Fri, Jul 08, 2022 at 01:18:40PM +0200:
-> On Freitag, 8. Juli 2022 04:26:40 CEST Eric Van Hensbergen wrote:
-> > kvmtool might be the easiest I guess - I’m traveling right now but I can
-> > try and find some others.  The arm fast models have free versions that are
-> > downloadable as well.  I know I’ve seem some other less-traditional uses of
-> > virtio particularly in libos deployments but will take some time to rattle
-> > those from my memory.
-> 
-> Some examples would indeed be useful, thanks!
+On Wed, Jun 29, 2022 at 6:12 AM Jason Wang <jasowang@redhat.com> wrote:
+>
+> On Fri, Jun 24, 2022 at 12:08 AM Eugenio P=C3=A9rez <eperezma@redhat.com>=
+ wrote:
+> >
+> > Userland knows if it can suspend the device or not by checking this fea=
+ture
+> > bit.
+> >
+> > It's only offered if the vdpa driver backend implements the suspend()
+> > operation callback, and to offer it or userland to ack it if the backen=
+d
+> > does not offer that callback is an error.
+> >
+> > Signed-off-by: Eugenio P=C3=A9rez <eperezma@redhat.com>
+> > ---
+> >  drivers/vhost/vdpa.c             | 16 +++++++++++++++-
+> >  include/uapi/linux/vhost_types.h |  2 ++
+> >  2 files changed, 17 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+> > index 23dcbfdfa13b..3d636e192061 100644
+> > --- a/drivers/vhost/vdpa.c
+> > +++ b/drivers/vhost/vdpa.c
+> > @@ -347,6 +347,14 @@ static long vhost_vdpa_set_config(struct vhost_vdp=
+a *v,
+> >         return 0;
+> >  }
+> >
+> > +static bool vhost_vdpa_can_suspend(const struct vhost_vdpa *v)
+> > +{
+> > +       struct vdpa_device *vdpa =3D v->vdpa;
+> > +       const struct vdpa_config_ops *ops =3D vdpa->config;
+> > +
+> > +       return ops->suspend;
+> > +}
+> > +
+> >  static long vhost_vdpa_get_features(struct vhost_vdpa *v, u64 __user *=
+featurep)
+> >  {
+> >         struct vdpa_device *vdpa =3D v->vdpa;
+> > @@ -577,7 +585,11 @@ static long vhost_vdpa_unlocked_ioctl(struct file =
+*filep,
+> >         if (cmd =3D=3D VHOST_SET_BACKEND_FEATURES) {
+> >                 if (copy_from_user(&features, featurep, sizeof(features=
+)))
+> >                         return -EFAULT;
+> > -               if (features & ~VHOST_VDPA_BACKEND_FEATURES)
+> > +               if (features & ~(VHOST_VDPA_BACKEND_FEATURES |
+> > +                                BIT_ULL(VHOST_BACKEND_F_SUSPEND)))
+> > +                       return -EOPNOTSUPP;
+> > +               if ((features & BIT_ULL(VHOST_BACKEND_F_SUSPEND)) &&
+> > +                    !vhost_vdpa_can_suspend(v))
+>
+> Do we need to advertise this to the management?
+>
 
-https://github.com/kvmtool/kvmtool indeed has a 9p server, I think I
-used to run it ages ago.
-I'll give it a fresh spin, thanks for the reminder.
+Not sure if I follow, the feature bit is not exposed if the backend
+cannot suspend.
 
-For this one it defines VIRTQUEUE_NUM to 128, so not quite 1024.
+Thanks!
 
+> Thanks
+>
+> >                         return -EOPNOTSUPP;
+> >                 vhost_set_backend_features(&v->vdev, features);
+> >                 return 0;
+> > @@ -628,6 +640,8 @@ static long vhost_vdpa_unlocked_ioctl(struct file *=
+filep,
+> >                 break;
+> >         case VHOST_GET_BACKEND_FEATURES:
+> >                 features =3D VHOST_VDPA_BACKEND_FEATURES;
+> > +               if (vhost_vdpa_can_suspend(v))
+> > +                       features |=3D BIT_ULL(VHOST_BACKEND_F_SUSPEND);
+> >                 if (copy_to_user(featurep, &features, sizeof(features))=
+)
+> >                         r =3D -EFAULT;
+> >                 break;
+> > diff --git a/include/uapi/linux/vhost_types.h b/include/uapi/linux/vhos=
+t_types.h
+> > index 634cee485abb..1bdd6e363f4c 100644
+> > --- a/include/uapi/linux/vhost_types.h
+> > +++ b/include/uapi/linux/vhost_types.h
+> > @@ -161,5 +161,7 @@ struct vhost_vdpa_iova_range {
+> >   * message
+> >   */
+> >  #define VHOST_BACKEND_F_IOTLB_ASID  0x3
+> > +/* Device can be suspended */
+> > +#define VHOST_BACKEND_F_SUSPEND  0x4
+> >
+> >  #endif
+> > --
+> > 2.31.1
+> >
+>
 
-> > > I found https://github.com/moby/hyperkit for OSX but that doesn't really
-> > > help me, and can't see much else relevant in a quick search
-> 
-> So that appears to be a 9p (@virtio-PCI) client for xhyve,
-
-oh the 9p part is client code?
-the readme says it's a server:
-"It includes a complete hypervisor, based on xhyve/bhyve"
-but I can't run it anyway, so I didn't check very hard.
-
-> with max. 256kB buffers <=> max. 68 virtio descriptors (memory segments) [1]:
-
-huh...
-
-Well, as long as msize is set I assume it'll work out anyway? How does
-virtio queue size work with e.g. parallel messages?
-
-Anyway, even if the negotiation part gets done servers won't all get
-implemented in a day, so we need to think of other servers a bit..
-
---
-Dominique
