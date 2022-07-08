@@ -2,117 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CDDA56B336
-	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 09:14:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 75D0456B32C
+	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 09:14:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237426AbiGHHMu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jul 2022 03:12:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53306 "EHLO
+        id S237467AbiGHHNm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jul 2022 03:13:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236525AbiGHHMu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 03:12:50 -0400
-Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C9287696F;
-        Fri,  8 Jul 2022 00:12:48 -0700 (PDT)
-Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 910741887361;
-        Fri,  8 Jul 2022 07:12:46 +0000 (UTC)
-Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id 8876325032B7;
-        Fri,  8 Jul 2022 07:12:46 +0000 (UTC)
-Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id 70813A1E00B7; Fri,  8 Jul 2022 07:12:46 +0000 (UTC)
-X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
-MIME-Version: 1.0
-Date:   Fri, 08 Jul 2022 09:12:46 +0200
-From:   netdev@kapio-technology.com
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        with ESMTP id S237206AbiGHHNl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 03:13:41 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C42A13F63;
+        Fri,  8 Jul 2022 00:13:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657264419; x=1688800419;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=QnZ104EyG7R40U+ZFVN/xtqfTjTBSCm2mjg2XawQNXM=;
+  b=HWjAk9zQBdLcl1csApgbILbBOrMfGQlvsy6zSbeTyCOc+aZhY3J73GMm
+   C+o8FAoQ6QAtt5gepUR7kH9C9H3r4XKZfWe+zUbS6RvN4m7a30yJ+ldLg
+   PJoFHxYHX65Meorni5MGJ8nANvkoOS1YS+PQaMcO+7i7XmKTshtZCo2RF
+   JdtsFg5zydTKii26jkaZ7JlWcNQAL2UccxtsuMWJ+bZ3Zc4qMag74d2fO
+   06SMyk12AOsH0Ee+6KFHjK9hVoJMdFnbPI+034v7APfspVQxoK3cUK+Ds
+   wcD8Hk7XsMkOy3KQNjMoOHjQCCR0eY9vsuHrh5FYgWvCHaSanp2p9wipN
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10401"; a="284236567"
+X-IronPort-AV: E=Sophos;i="5.92,254,1650956400"; 
+   d="scan'208";a="284236567"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2022 00:13:39 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,254,1650956400"; 
+   d="scan'208";a="683575110"
+Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 08 Jul 2022 00:13:31 -0700
+Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o9iB9-000N5S-1w;
+        Fri, 08 Jul 2022 07:13:31 +0000
+Date:   Fri, 8 Jul 2022 15:12:51 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Hans Schultz <netdev@kapio-technology.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org,
+        Hans Schultz <netdev@kapio-technology.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         Eric Dumazet <edumazet@google.com>,
         Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
         Ivan Vecera <ivecera@redhat.com>,
         Roopa Prabhu <roopa@nvidia.com>,
         Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
         bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH net-next 1/1] net: dsa: mv88e6xxx: allow reading FID when
- handling ATU violations
-In-Reply-To: <20220707102836.u7ig6rr2664mcrlf@skbuf>
-References: <20220706122502.1521819-1-netdev@kapio-technology.com>
- <20220707102836.u7ig6rr2664mcrlf@skbuf>
-User-Agent: Gigahost Webmail
-Message-ID: <f8a4f54a90efa545cac1ff2cdbde78c7@kapio-technology.com>
-X-Sender: netdev@kapio-technology.com
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,FROM_FMBLA_NEWDOM,
-        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+Subject: Re: [PATCH v4 net-next 3/6] drivers: net: dsa: add locked fdb entry
+ flag to drivers
+Message-ID: <202207081529.riNiUWOf-lkp@intel.com>
+References: <20220707152930.1789437-4-netdev@kapio-technology.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220707152930.1789437-4-netdev@kapio-technology.com>
+X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-07-07 12:28, Vladimir Oltean wrote:
-> On Wed, Jul 06, 2022 at 02:25:02PM +0200, Hans Schultz wrote:
->> For convenience the function mv88e6xxx_g1_atu_op() has been used to 
->> read
->> ATU violations, but the function has other purposes and does not 
->> enable
->> the possibility to read the FID when reading ATU violations.
->> 
->> The FID is needed to get hold of which VID was involved in the 
->> violation,
->> thus the need for future purposes to be able to read the FID.
-> 
-> Make no mistake, the existing code doesn't disallow reading back the 
-> FID
-> during an ATU Get/Clear Violation operation, and your patch isn't
-> "allowing" something that wasn't disallowed.
+Hi Hans,
 
-It would only read 0 the way it worked. And I don't understand why
-mv88e6xxx_g1_atu_op() writes the FID?
+Thank you for the patch! Yet something to improve:
 
-> 
-> The documentation for the ATU FID register says that its contents is
-> ignored before the operation starts, and it contains the returned ATU
-> entry's FID after the operation completes.
-> 
-> So the change simply says: don't bother to write the ATU FID register
-> with zero, it doesn't matter what this contains. This is probably true,
-> but the patch needs to do what's written on the box.
+[auto build test ERROR on net/master]
+[also build test ERROR on shuah-kselftest/next linus/master v5.19-rc5]
+[cannot apply to net-next/master next-20220707]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-Writing 0 to the ATU fID register resulted in a read giving zero of 
-course.
+url:    https://github.com/intel-lab-lkp/linux/commits/Hans-Schultz/Extend-locked-port-feature-with-FDB-locked-flag-MAC-Auth-MAB/20220707-233246
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git 07266d066301b97ad56a693f81b29b7ced429b27
+config: i386-allyesconfig (https://download.01.org/0day-ci/archive/20220708/202207081529.riNiUWOf-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/ebd598d7ea6c015001489c4293da887763491086
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Hans-Schultz/Extend-locked-port-feature-with-FDB-locked-flag-MAC-Auth-MAB/20220707-233246
+        git checkout ebd598d7ea6c015001489c4293da887763491086
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
 
-> 
-> Please note that this only even matters at all for switches with
-> mv88e6xxx_num_databases(chip) > 256, where MV88E6352_G1_ATU_FID is a
-> dedicated register which this patch avoids writing. For other switches,
-> the FID is embedded within MV88E6XXX_G1_ATU_CTL or MV88E6XXX_G1_ATU_OP.
-> So _practically_, for those switches, you are still emitting the
-> GET_CLR_VIOLATION ATU op with a FID of 0 whether you like it or not, 
-> and
-> this patch introduces a (most likely irrelevant) discrepancy between 
-> the
-> access methods for various switches.
-> 
-> Please note that this observation is relevant for your future changes 
-> to
-> read back the FID too. As I said here:
-> https://patchwork.kernel.org/project/netdevbpf/patch/20220524152144.40527-4-schultz.hans+netdev@gmail.com/#24912482
-> you can't just assume that the FID lies within the MV88E6352_G1_ATU_FID
-> register, just look at the way it is packed within 
-> mv88e6xxx_g1_atu_op().
-> You'll need to unpack it in the same way.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-So I need a new function to read the FID that mimics 
-mv88e6xxx_g1_atu_op()
-as far as I understand?
+All errors (new ones prefixed by >>):
+
+   drivers/net/dsa/sja1105/sja1105_main.c: In function 'sja1105_mdb_add':
+>> drivers/net/dsa/sja1105/sja1105_main.c:1952:63: error: incompatible type for argument 5 of 'sja1105_fdb_add'
+    1952 |         return sja1105_fdb_add(ds, port, mdb->addr, mdb->vid, db);
+         |                                                               ^~
+         |                                                               |
+         |                                                               struct dsa_db
+   drivers/net/dsa/sja1105/sja1105_main.c:1805:33: note: expected 'bool' {aka '_Bool'} but argument is of type 'struct dsa_db'
+    1805 |                            bool is_locked,
+         |                            ~~~~~^~~~~~~~~
+>> drivers/net/dsa/sja1105/sja1105_main.c:1952:16: error: too few arguments to function 'sja1105_fdb_add'
+    1952 |         return sja1105_fdb_add(ds, port, mdb->addr, mdb->vid, db);
+         |                ^~~~~~~~~~~~~~~
+   drivers/net/dsa/sja1105/sja1105_main.c:1803:12: note: declared here
+    1803 | static int sja1105_fdb_add(struct dsa_switch *ds, int port,
+         |            ^~~~~~~~~~~~~~~
+   drivers/net/dsa/sja1105/sja1105_main.c:1953:1: error: control reaches end of non-void function [-Werror=return-type]
+    1953 | }
+         | ^
+   cc1: some warnings being treated as errors
+
+
+vim +/sja1105_fdb_add +1952 drivers/net/dsa/sja1105/sja1105_main.c
+
+5126ec72a094bd3 Vladimir Oltean 2021-08-08  1947  
+a52b2da778fc93e Vladimir Oltean 2021-01-09  1948  static int sja1105_mdb_add(struct dsa_switch *ds, int port,
+c26933639b5402c Vladimir Oltean 2022-02-25  1949  			   const struct switchdev_obj_port_mdb *mdb,
+c26933639b5402c Vladimir Oltean 2022-02-25  1950  			   struct dsa_db db)
+291d1e72b756424 Vladimir Oltean 2019-05-02  1951  {
+c26933639b5402c Vladimir Oltean 2022-02-25 @1952  	return sja1105_fdb_add(ds, port, mdb->addr, mdb->vid, db);
+291d1e72b756424 Vladimir Oltean 2019-05-02  1953  }
+291d1e72b756424 Vladimir Oltean 2019-05-02  1954  
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
