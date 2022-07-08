@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E12D56BF8F
-	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 20:36:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EC7356C056
+	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 20:37:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239543AbiGHS2X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jul 2022 14:28:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48394 "EHLO
+        id S239496AbiGHS2R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jul 2022 14:28:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239618AbiGHS11 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 14:27:27 -0400
+        with ESMTP id S239691AbiGHS1j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 14:27:39 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EABC88F1A;
-        Fri,  8 Jul 2022 11:27:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B173B83F23;
+        Fri,  8 Jul 2022 11:27:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D4B27B82928;
-        Fri,  8 Jul 2022 18:26:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40C72C341C0;
-        Fri,  8 Jul 2022 18:26:57 +0000 (UTC)
-Subject: [PATCH v3 30/32] NFSD: Update the nfsd_file_fsnotify_handle_event()
- tracepoint
+        by ams.source.kernel.org (Postfix) with ESMTPS id 76E9AB82925;
+        Fri,  8 Jul 2022 18:27:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D56F7C341C0;
+        Fri,  8 Jul 2022 18:27:03 +0000 (UTC)
+Subject: [PATCH v3 31/32] NFSD: NFSv4 CLOSE should release an nfsd_file
+ immediately
 From:   Chuck Lever <chuck.lever@oracle.com>
 To:     linux-nfs@vger.kernel.org, netdev@vger.kernel.org
 Cc:     david@fromorbit.com, jlayton@redhat.com, tgraf@suug.ch
-Date:   Fri, 08 Jul 2022 14:26:56 -0400
-Message-ID: <165730481643.28142.10460346630935183143.stgit@klimt.1015granger.net>
+Date:   Fri, 08 Jul 2022 14:27:02 -0400
+Message-ID: <165730482277.28142.4640004602667754380.stgit@klimt.1015granger.net>
 In-Reply-To: <165730437087.28142.6731645688073512500.stgit@klimt.1015granger.net>
 References: <165730437087.28142.6731645688073512500.stgit@klimt.1015granger.net>
 User-Agent: StGit/1.5.dev3+g9561319
@@ -43,107 +43,76 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As a convenience, display the mode and event mask symbolically
-rather than numerically.
+The last close of a file should enable other accessors to open and
+use that file immediately. Leaving the file open in the filecache
+prevents other users from accessing that file until the filecache
+garbage-collects the file -- sometimes that takes several seconds.
 
+Reported-by: Wang Yugui <wangyugui@e16-tech.com>
+Link: https://bugzilla.linux-nfs.org/show_bug.cgi?387
 Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 ---
- fs/nfsd/trace.h           |   21 ++++++++++++++-------
- include/trace/events/fs.h |   37 +++++++++++++++++++++++++++++++++++++
- 2 files changed, 51 insertions(+), 7 deletions(-)
+ fs/nfsd/filecache.c |   18 ++++++++++++++++++
+ fs/nfsd/filecache.h |    1 +
+ fs/nfsd/nfs4state.c |    4 ++--
+ 3 files changed, 21 insertions(+), 2 deletions(-)
 
-diff --git a/fs/nfsd/trace.h b/fs/nfsd/trace.h
-index 96bb6629541e..f68bcf13be8e 100644
---- a/fs/nfsd/trace.h
-+++ b/fs/nfsd/trace.h
-@@ -9,6 +9,7 @@
- #define _NFSD_TRACE_H
+diff --git a/fs/nfsd/filecache.c b/fs/nfsd/filecache.c
+index a904364551e8..36d61012d5de 100644
+--- a/fs/nfsd/filecache.c
++++ b/fs/nfsd/filecache.c
+@@ -458,6 +458,24 @@ nfsd_file_put(struct nfsd_file *nf)
+ 		nfsd_file_put_noref(nf);
+ }
  
- #include <linux/tracepoint.h>
-+#include <trace/events/fs.h>
- 
- #include "export.h"
- #include "nfsfh.h"
-@@ -1020,22 +1021,28 @@ TRACE_EVENT(nfsd_file_is_cached,
- );
- 
- TRACE_EVENT(nfsd_file_fsnotify_handle_event,
--	TP_PROTO(struct inode *inode, u32 mask),
-+	TP_PROTO(
-+		const struct inode *inode,
-+		u32 mask
-+	),
- 	TP_ARGS(inode, mask),
- 	TP_STRUCT__entry(
--		__field(struct inode *, inode)
-+		__field(const struct inode *, inode)
- 		__field(unsigned int, nlink)
--		__field(umode_t, mode)
--		__field(u32, mask)
-+		__field(unsigned long, mode)
-+		__field(unsigned long, mask)
- 	),
- 	TP_fast_assign(
- 		__entry->inode = inode;
- 		__entry->nlink = inode->i_nlink;
--		__entry->mode = inode->i_mode;
-+		__entry->mode = inode->i_mode & S_IFMT;
- 		__entry->mask = mask;
- 	),
--	TP_printk("inode=%p nlink=%u mode=0%ho mask=0x%x", __entry->inode,
--			__entry->nlink, __entry->mode, __entry->mask)
-+	TP_printk("inode=%p nlink=%u mode=%s mask=%s",
-+		__entry->inode, __entry->nlink,
-+		show_fs_file_type(__entry->mode),
-+		show_fs_notify_flags(__entry->mask)
-+	)
- );
- 
- DECLARE_EVENT_CLASS(nfsd_file_gc_class,
-diff --git a/include/trace/events/fs.h b/include/trace/events/fs.h
-index 738b97f22f36..3c75f85086a2 100644
---- a/include/trace/events/fs.h
-+++ b/include/trace/events/fs.h
-@@ -120,3 +120,40 @@
- 		{ LOOKUP_BENEATH,	"BENEATH" }, \
- 		{ LOOKUP_IN_ROOT,	"IN_ROOT" }, \
- 		{ LOOKUP_CACHED,	"CACHED" })
++/**
++ * nfsd_file_close - Close an nfsd_file
++ * @nf: nfsd_file to close
++ *
++ * If this is the final reference for @nf, free it immediately.
++ * This reflects an on-the-wire CLOSE or DELEGRETURN into the
++ * VFS and exported filesystem.
++ */
++void nfsd_file_close(struct nfsd_file *nf)
++{
++	nfsd_file_put(nf);
++	if (refcount_dec_if_one(&nf->nf_ref)) {
++		nfsd_file_unhash(nf);
++		nfsd_file_lru_remove(nf);
++		nfsd_file_free(nf);
++	}
++}
 +
-+#define show_fs_file_type(x) \
-+	__print_symbolic(x, \
-+		{ S_IFLNK,		"LNK" }, \
-+		{ S_IFREG,		"REG" }, \
-+		{ S_IFDIR,		"DIR" }, \
-+		{ S_IFCHR,		"CHR" }, \
-+		{ S_IFBLK,		"BLK" }, \
-+		{ S_IFIFO,		"FIFO" }, \
-+		{ S_IFSOCK,		"SOCK" })
-+
-+#define show_fs_notify_flags(x) \
-+	__print_flags(x, "|", \
-+		{ FS_ACCESS,		"ACCESS" }, \
-+		{ FS_MODIFY,		"MODIFY" }, \
-+		{ FS_ATTRIB,		"ATTRIB" }, \
-+		{ FS_CLOSE_WRITE,	"CLOSE_WRITE" }, \
-+		{ FS_CLOSE_NOWRITE,	"CLOSE_NOWRITE" }, \
-+		{ FS_OPEN,		"OPEN" }, \
-+		{ FS_MOVED_FROM,	"MOVED_FROM" }, \
-+		{ FS_MOVED_TO,		"MOVED_TO" }, \
-+		{ FS_CREATE,		"CREATE" }, \
-+		{ FS_DELETE,		"DELETE" }, \
-+		{ FS_DELETE_SELF,	"DELETE_SELF" }, \
-+		{ FS_MOVE_SELF,		"MOVE_SELF" }, \
-+		{ FS_OPEN_EXEC,		"OPEN_EXEC" }, \
-+		{ FS_UNMOUNT,		"UNMOUNT" }, \
-+		{ FS_Q_OVERFLOW,	"Q_OVERFLOW" }, \
-+		{ FS_ERROR,		"ERROR" }, \
-+		{ FS_IN_IGNORED,	"IN_IGNORED" }, \
-+		{ FS_OPEN_PERM,		"OPEN_PERM" }, \
-+		{ FS_ACCESS_PERM,	"ACCESS_PERM" }, \
-+		{ FS_OPEN_EXEC_PERM,	"OPEN_EXEC_PERM" }, \
-+		{ FS_EVENT_ON_CHILD,	"EVENT_ON_CHILD" }, \
-+		{ FS_RENAME,		"RENAME" }, \
-+		{ FS_DN_MULTISHOT,	"DN_MULTISHOT" }, \
-+		{ FS_ISDIR,		"ISDIR" })
+ struct nfsd_file *
+ nfsd_file_get(struct nfsd_file *nf)
+ {
+diff --git a/fs/nfsd/filecache.h b/fs/nfsd/filecache.h
+index 7b40d5b446e1..c5ddc877116b 100644
+--- a/fs/nfsd/filecache.h
++++ b/fs/nfsd/filecache.h
+@@ -54,6 +54,7 @@ void nfsd_file_cache_shutdown(void);
+ int nfsd_file_cache_start_net(struct net *net);
+ void nfsd_file_cache_shutdown_net(struct net *net);
+ void nfsd_file_put(struct nfsd_file *nf);
++void nfsd_file_close(struct nfsd_file *nf);
+ struct nfsd_file *nfsd_file_get(struct nfsd_file *nf);
+ void nfsd_file_close_inode_sync(struct inode *inode);
+ bool nfsd_file_is_cached(struct inode *inode);
+diff --git a/fs/nfsd/nfs4state.c b/fs/nfsd/nfs4state.c
+index 3a05c095dfe5..9d1a3e131c49 100644
+--- a/fs/nfsd/nfs4state.c
++++ b/fs/nfsd/nfs4state.c
+@@ -820,9 +820,9 @@ static void __nfs4_file_put_access(struct nfs4_file *fp, int oflag)
+ 			swap(f2, fp->fi_fds[O_RDWR]);
+ 		spin_unlock(&fp->fi_lock);
+ 		if (f1)
+-			nfsd_file_put(f1);
++			nfsd_file_close(f1);
+ 		if (f2)
+-			nfsd_file_put(f2);
++			nfsd_file_close(f2);
+ 	}
+ }
+ 
 
 
