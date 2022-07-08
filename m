@@ -2,80 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D968B56B2DA
-	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 08:38:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E2EB156B2E8
+	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 08:44:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237268AbiGHGiq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jul 2022 02:38:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32852 "EHLO
+        id S237113AbiGHGoP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jul 2022 02:44:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236525AbiGHGio (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 02:38:44 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D62D51836B;
-        Thu,  7 Jul 2022 23:38:43 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id a5so14500310wrx.12;
-        Thu, 07 Jul 2022 23:38:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6MNY7diHJ+MnWxKcDHqJkKosV/mr66iz8oydZliBRmQ=;
-        b=Y+HfLILvoGNJKQwKFAtwItKF+nCU+J9436rxhfgzKj8LxGXYwEyhG9L5pC/GGnKcdD
-         OakYQ5yA1HWawR+S2zFE2a6CJG4WW0xpCZKA5ZEAV9jE47k/LUyRUKiGiG3uKwijbCKU
-         NV4KIyrtkEqVcSyMJch5SBJa58tVqjxP7xToKLhCOPnCSfhpg/F4B2xs7hIpHmVkommW
-         Zt5rqJZpPIpwTgHyjxaWFhu27gs5QHkOPa6NnNwBF2l0y4vu0P+y0lmOKc7ZRKyjNWMK
-         XqtyfkLnqIfI219BNbG+a7HAZwfByoQoCrQ64uSG9r8XWGu9IW0ObRyJKSPD5Zg8lGq9
-         iG2Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6MNY7diHJ+MnWxKcDHqJkKosV/mr66iz8oydZliBRmQ=;
-        b=LvAnNhhRwwmE7+KgAmDNl65kp1hvs4McITf6RqhYKf3fN9OfYRLN2sUoZKWSPsStyc
-         eb5WVX/nrQ3uxBfsPNexdU9w7RuV10z0gDQ8v5sshRMrnPHxHy1zOd7bVX9bWkDHR4MC
-         slHKXpduiXEnKzfGZtNPNszGUHFbXDvloTNQHc77yvGxlErt7KxD642iiIyVqbntvr7p
-         ZdLr8vgtJPGXoB/wR6zZA+4n51GdlZ6fuPxzGoPMBDh+4VJASLG8SqkeUT6EXphZRgid
-         nr7w3PvWdB1SPO8AUD/txfYT4oqOvsmVh3NiK1B+GZ2H9fO/yTXjThJJZF+dn15lsFoK
-         Fs/A==
-X-Gm-Message-State: AJIora8imOKBU0rxa4q0UO/gWMlwmO0VJOJHQCQF5Y83sA5yFb68rIIy
-        92zxWaWSHaJ1NMKNRdfmBXDTu2+DncIeUJR4aUU=
-X-Google-Smtp-Source: AGRyM1v1scyfjp6+EGm8qT5gCJ8TPVBCMuX9yYoD0E0kmstb/lo3xGd1jIUmhQVuWt/vLqRSvbuExBzmMqpCiMTuhMM=
-X-Received: by 2002:adf:dc0d:0:b0:21d:ea5:710f with SMTP id
- t13-20020adfdc0d000000b0021d0ea5710fmr1684518wri.48.1657262322403; Thu, 07
- Jul 2022 23:38:42 -0700 (PDT)
+        with ESMTP id S236513AbiGHGoN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 02:44:13 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0C8125EB5
+        for <netdev@vger.kernel.org>; Thu,  7 Jul 2022 23:44:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657262652; x=1688798652;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=9Jt5ewzmIZvLhiVx2SoTlkljLZc85oMXSAYuFItrqVI=;
+  b=iUu//7tOLKFRiiMoohtWXVwq5HiNAnwsaFyk5E7RXtLBvvka7HnmL004
+   1IkXGB2qdc/7OKA6T58P/Kc+BAvIXH9u8ITlIngZZhwwA+tt0+S2bA+E3
+   AdQn1y5XZHP603BWWMMXzSm7d3NEoZK3z2fCNzjh7sNN5umUrk1feUbHs
+   4mL8UWlMX4KPxjFsJSYC16d23LSu1kBx2uFULjvjJyN/rjQcthpQ55cux
+   /r1IgnyZY6IoRSMUZXKDTKmWlLYbUS3oPB3IxR4Wm7AqteV0bQ3agPwJi
+   XLA4PdqPE0IUNC9NRYV/Z5e4zB6yQngY4e1tX1Yso5HAWZn+zaDbfoS5E
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10401"; a="370520185"
+X-IronPort-AV: E=Sophos;i="5.92,254,1650956400"; 
+   d="scan'208";a="370520185"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jul 2022 23:44:12 -0700
+X-IronPort-AV: E=Sophos;i="5.92,254,1650956400"; 
+   d="scan'208";a="920890991"
+Received: from lingshan-mobl.ccr.corp.intel.com (HELO [10.254.210.36]) ([10.254.210.36])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jul 2022 23:44:10 -0700
+Message-ID: <b2b2fb5e-c1c2-84b6-0315-a6eef121cdac@intel.com>
+Date:   Fri, 8 Jul 2022 14:44:08 +0800
 MIME-Version: 1.0
-References: <20220524152144.40527-2-schultz.hans+netdev@gmail.com>
- <01e6e35c-f5c9-9776-1263-058f84014ed9@blackwall.org> <86zgj6oqa9.fsf@gmail.com>
- <b78fb006-04c4-5a25-7ba5-94428cc9591a@blackwall.org> <86fskyggdo.fsf@gmail.com>
- <040a1551-2a9f-18d0-9987-f196bb429c1b@blackwall.org> <86v8tu7za3.fsf@gmail.com>
- <4bf1c80d-0f18-f444-3005-59a45797bcfd@blackwall.org> <20220706181316.r5l5rzjysxow2j7l@skbuf>
- <7cf30a3e-a562-d582-4391-072a2c98ab05@blackwall.org> <20220706202130.ehzxnnqnduaq3rmt@skbuf>
- <fe456fb0-4f68-f93e-d4a9-66e3bc56d547@blackwall.org> <37d59561-6ce8-6c5f-5d31-5c37a0a3d231@blackwall.org>
-In-Reply-To: <37d59561-6ce8-6c5f-5d31-5c37a0a3d231@blackwall.org>
-From:   Hans S <schultz.hans@gmail.com>
-Date:   Fri, 8 Jul 2022 08:38:31 +0200
-Message-ID: <CAKUejP4P6-5gYg2owdbcNLKwYvsimg6L-Y_izUxfq=Uz=K_JDg@mail.gmail.com>
-Subject: Re: [PATCH V3 net-next 1/4] net: bridge: add fdb flag to extent
- locked port feature
-To:     Nikolay Aleksandrov <razor@blackwall.org>
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>, Shuah Khan <shuah@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.11.0
+Subject: Re: [PATCH V3 1/6] vDPA/ifcvf: get_config_size should return a value
+ no greater than dev implementation
+Content-Language: en-US
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     mst <mst@redhat.com>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>, Parav Pandit <parav@nvidia.com>,
+        Yongji Xie <xieyongji@bytedance.com>,
+        "Dawar, Gautam" <gautam.dawar@amd.com>
+References: <20220701132826.8132-1-lingshan.zhu@intel.com>
+ <20220701132826.8132-2-lingshan.zhu@intel.com>
+ <CACGkMEvGo2urfPriS3f6dCxT+41KJ0E-KUd4-GvUrX81BVy8Og@mail.gmail.com>
+From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
+In-Reply-To: <CACGkMEvGo2urfPriS3f6dCxT+41KJ0E-KUd4-GvUrX81BVy8Og@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -83,22 +67,97 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 7, 2022 at 4:08 PM Nikolay Aleksandrov <razor@blackwall.org> wrote:
->
-> On 07/07/2022 00:01, Nikolay Aleksandrov wrote:
-> > On 06/07/2022 23:21, Vladimir Oltean wrote:
-> >> On Wed, Jul 06, 2022 at 10:38:04PM +0300, Nikolay Aleksandrov wrote:
-> [snip]
-> > I already said it's ok to add hard configurable limits if they're done properly performance-wise.
-> > Any distribution can choose to set some default limits after the option exists.
-> >
->
-> Just fyi, and to avoid duplicate efforts, I already have patches for global and per-port software
-> fdb limits that I'll polish and submit soon (depending on time availability, of course). If I find
-> more time I might add per-vlan limits as well to the set. They use embedded netlink attributes
-> to config and dump, so we can easily extend them later (e.g. different action on limit hit, limit
-> statistics etc).
->
 
-Sounds good, I will just limit the number of locked entries in the
-driver as they are not controllable from the bridge. :-)
+
+On 7/4/2022 12:39 PM, Jason Wang wrote:
+> On Fri, Jul 1, 2022 at 9:36 PM Zhu Lingshan <lingshan.zhu@intel.com> wrote:
+>> ifcvf_get_config_size() should return a virtio device type specific value,
+>> however the ret_value should not be greater than the onboard size of
+>> the device implementation. E.g., for virtio_net, config_size should be
+>> the minimum value of sizeof(struct virtio_net_config) and the onboard
+>> cap size.
+> Rethink of this, I wonder what's the value of exposing device
+> implementation details to users? Anyhow the parent is in charge of
+> "emulating" config space accessing.
+This will not be exposed to the users, it is a ifcvf internal helper,
+to get the actual device config space size.
+
+For example, if ifcvf drives an Intel virtio-net device,
+if the device config space size is greater than sizeof(struct 
+virtio_net_cfg),
+this means the device has something more than the spec, some private fields,
+we don't want to expose these extra private fields to the users, so in 
+this case,
+we only return what the spec defines.
+
+If the device config space size is less than sizeof(struct virtio_net_cfg),
+means the device didn't implement all fields the spec defined, like no RSS.
+In such cases, we only return what the device implemented.
+
+So these are defensive programming.
+>
+> If we do this, it's probably a blocker for cross vendor stuff.
+>
+> Thanks
+>
+>> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+>> ---
+>>   drivers/vdpa/ifcvf/ifcvf_base.c | 13 +++++++++++--
+>>   drivers/vdpa/ifcvf/ifcvf_base.h |  2 ++
+>>   2 files changed, 13 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/vdpa/ifcvf/ifcvf_base.c b/drivers/vdpa/ifcvf/ifcvf_base.c
+>> index 48c4dadb0c7c..fb957b57941e 100644
+>> --- a/drivers/vdpa/ifcvf/ifcvf_base.c
+>> +++ b/drivers/vdpa/ifcvf/ifcvf_base.c
+>> @@ -128,6 +128,7 @@ int ifcvf_init_hw(struct ifcvf_hw *hw, struct pci_dev *pdev)
+>>                          break;
+>>                  case VIRTIO_PCI_CAP_DEVICE_CFG:
+>>                          hw->dev_cfg = get_cap_addr(hw, &cap);
+>> +                       hw->cap_dev_config_size = le32_to_cpu(cap.length);
+>>                          IFCVF_DBG(pdev, "hw->dev_cfg = %p\n", hw->dev_cfg);
+>>                          break;
+>>                  }
+>> @@ -233,15 +234,23 @@ int ifcvf_verify_min_features(struct ifcvf_hw *hw, u64 features)
+>>   u32 ifcvf_get_config_size(struct ifcvf_hw *hw)
+>>   {
+>>          struct ifcvf_adapter *adapter;
+>> +       u32 net_config_size = sizeof(struct virtio_net_config);
+>> +       u32 blk_config_size = sizeof(struct virtio_blk_config);
+>> +       u32 cap_size = hw->cap_dev_config_size;
+>>          u32 config_size;
+>>
+>>          adapter = vf_to_adapter(hw);
+>> +       /* If the onboard device config space size is greater than
+>> +        * the size of struct virtio_net/blk_config, only the spec
+>> +        * implementing contents size is returned, this is very
+>> +        * unlikely, defensive programming.
+>> +        */
+>>          switch (hw->dev_type) {
+>>          case VIRTIO_ID_NET:
+>> -               config_size = sizeof(struct virtio_net_config);
+>> +               config_size = cap_size >= net_config_size ? net_config_size : cap_size;
+>>                  break;
+>>          case VIRTIO_ID_BLOCK:
+>> -               config_size = sizeof(struct virtio_blk_config);
+>> +               config_size = cap_size >= blk_config_size ? blk_config_size : cap_size;
+>>                  break;
+>>          default:
+>>                  config_size = 0;
+>> diff --git a/drivers/vdpa/ifcvf/ifcvf_base.h b/drivers/vdpa/ifcvf/ifcvf_base.h
+>> index 115b61f4924b..f5563f665cc6 100644
+>> --- a/drivers/vdpa/ifcvf/ifcvf_base.h
+>> +++ b/drivers/vdpa/ifcvf/ifcvf_base.h
+>> @@ -87,6 +87,8 @@ struct ifcvf_hw {
+>>          int config_irq;
+>>          int vqs_reused_irq;
+>>          u16 nr_vring;
+>> +       /* VIRTIO_PCI_CAP_DEVICE_CFG size */
+>> +       u32 cap_dev_config_size;
+>>   };
+>>
+>>   struct ifcvf_adapter {
+>> --
+>> 2.31.1
+>>
+
