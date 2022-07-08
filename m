@@ -2,74 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F4A556C2C4
-	for <lists+netdev@lfdr.de>; Sat,  9 Jul 2022 01:13:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86E5656C208
+	for <lists+netdev@lfdr.de>; Sat,  9 Jul 2022 01:12:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239601AbiGHWbK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jul 2022 18:31:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53700 "EHLO
+        id S237269AbiGHWnJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jul 2022 18:43:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238977AbiGHWbH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 18:31:07 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71EF713B462;
-        Fri,  8 Jul 2022 15:31:06 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id dn9so34614724ejc.7;
-        Fri, 08 Jul 2022 15:31:06 -0700 (PDT)
+        with ESMTP id S229448AbiGHWnH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 18:43:07 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1CEF13B471;
+        Fri,  8 Jul 2022 15:43:06 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id r6so184654edd.7;
+        Fri, 08 Jul 2022 15:43:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=vtYNlUjFPBorTja/ZZdAiqkuVJixHxyN2XSNBOycbUI=;
-        b=DM5Hj2oOBlL+l9CByJUKOaJ1vh4HJDKbEohe9/mUhrJgEyABIdmO+clfDNX8z4r0VE
-         nO3YJTw4Dj43d+Ay0VD9VuWxZn3DTEQTUbM/kbJ4S7meIbQXRsDrq4PSBKwlvTLCj8f9
-         tD8hIcQzA2JxTza2YBdsVregDQcn+tgrrmRuWeGW3NN7zkdUaRumuuPDsb2LiQ4IEpL2
-         yOB9FFMy/0wpprM4LnpZ15p3wwuLPUGpmHLxXl+xf4tVLMXyDpm0lFf8gM4V5edxrtIH
-         dT5HHV32Z9hMD4BpMZAoV+EXhfLeV/u5UTsBdsa2+Mhyg4FmR8s2R/IH4LJzCBGxetst
-         aOjQ==
+        bh=rGYZvcYf47sP+55Vs4UvXXryFfFplfq5QIu85G/+xro=;
+        b=UmCsFRzomqWag60HiSO6s7F26oEj/FqCk7eX3SaKMoZj1Owl4dXDJrDU7HgSYmYFBG
+         ppkR5X7cbgoKHqK6YkALQdM6mrKQEYZFC12cINZJBgbn+NImcC/yC7qoNoiT/emc4veL
+         jt1DZln7jjseWzByF0ub40nUIlUirQWpFSecjApXl7Xm4ZHvy9LAsRc3LIdcoGrl7dkS
+         iCgCDUWgla6BwhNlZ9g0u5HdE7DjTthX4R5WNAKRjo2n23oHMoxc6CjcrDTkE0IwTP9e
+         2RIfYhAfHYzg2Mmiyqw8CM98caAAZ9WTZfTvl5mrx8wz5NDC0t0c3QCqkdP6j7Dk0Rjw
+         nWSQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=vtYNlUjFPBorTja/ZZdAiqkuVJixHxyN2XSNBOycbUI=;
-        b=2pkBIjiTDRMMB3g1QnJ8GbohCKVvdGipWFX8BajFFa1xn+cDdkOlQ/Hy8sz+zI1S8F
-         mF4Tj6E56EXa23pp81oKNoAI+8wj6WVRl6XPnK+CSN/+hnTdU3B0YugSsDjiJ1HdqpSx
-         jdKOE2bpFqSz2Do//GVGybBelByVh/ABj6wqZ0mMbIW/EDhHZA6LVvxy6lFsmrtaaVti
-         YziRUD7LcTS+taTSl9zidjiCqb8VCi8vKWIyExUjRBk6X5f0ECxgLhHq1Z+pVR1wi062
-         KxjHzDefCP3U6zsKaMtxHcbE0ZvA+niiCnfD6hXZ5F/U9wC+rwhz0/Ab7R+uu5cOO0WH
-         s3VQ==
-X-Gm-Message-State: AJIora/6k9UjF2P0Gfeb6bAUz6iUTHEo5542x0DCVqostOO7IRKn7WsX
-        ZjZsiBruBC+2p7Or7isfD9rrp49dajIMBy27apw=
-X-Google-Smtp-Source: AGRyM1vFnuzeNUeQJq3npYMM5/i0JV31krsyjIvnTW8wNxdmDm4x2jiY80Prv2hmg2FGbtZg7UXyubeeDzGWGUamxDg=
-X-Received: by 2002:a17:906:a3ca:b0:726:2bd2:87bc with SMTP id
- ca10-20020a170906a3ca00b007262bd287bcmr5799290ejb.226.1657319464980; Fri, 08
- Jul 2022 15:31:04 -0700 (PDT)
+        bh=rGYZvcYf47sP+55Vs4UvXXryFfFplfq5QIu85G/+xro=;
+        b=CXFZIUtfyR3fEcUypqf8uhC8HlK25gTQOrhYgMB8pXIxN82PiS/KKN7OeV1TLNQd8b
+         XCf1sUH1DJVcQt0Q+scGe7qy3LIqTuSPqd+gN/nn2Ums/wI8kUkFJ1aLw3TrnYYQITKQ
+         dnJCZhuuDz8CXuUeKTUn4EHR33SftE4hx5YDPmlJTDWee4TFeE9EkhRnObFs2H1DwPyn
+         0OhxgRw0Dbb4rJ8cWgnVNtCeSnHqvvoUu/3m64HWFpOJB/CJBwzUfB7HFEO+UEbG1QwG
+         Q+Rn58XSvKuSsnkcD5Wpd5X7+XaNQSfTlVytCC9se6HWI8/ZQBRTNrdfOFuj4rfSfSph
+         Uqyg==
+X-Gm-Message-State: AJIora8h6y3dwiPSD1bvgHqsqhXqUo+RXbr1hb3k+p8qm4VQrcVSO90X
+        A5wYFNG0ZyKbomj9Ix8IlKpvC+Zvqle68iTUUz8ANtHMkHQSkw==
+X-Google-Smtp-Source: AGRyM1vnGLoGOwdAcO2TdMuO/mhpm1ZA44hl5swMvkyTOkD+uUoojhY8gXcIw9hX3HCbszWx1FslVBL2R2Mf310MvD0=
+X-Received: by 2002:a05:6402:5309:b0:435:6431:f9dc with SMTP id
+ eo9-20020a056402530900b004356431f9dcmr7718578edb.14.1657320185368; Fri, 08
+ Jul 2022 15:43:05 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220530092815.1112406-1-pulehui@huawei.com> <20220530092815.1112406-5-pulehui@huawei.com>
- <a31efed5-a436-49c9-4126-902303df9766@iogearbox.net> <CAEf4BzacrRNDDYFR_4GH40+wxff=hCiyxymig6N+NVrM537AAA@mail.gmail.com>
- <38a59b80-f64a-0913-73e4-29e4ee4149c5@huawei.com>
-In-Reply-To: <38a59b80-f64a-0913-73e4-29e4ee4149c5@huawei.com>
+References: <20220707140811.603590-1-pulehui@huawei.com>
+In-Reply-To: <20220707140811.603590-1-pulehui@huawei.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 8 Jul 2022 15:30:53 -0700
-Message-ID: <CAEf4BzaDQ+cPh8pLGqg-GSM+ryZz3vvDtUy=o2u19KM0CTrewg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 4/6] libbpf: Unify memory address casting
- operation style
-To:     Pu Lehui <pulehui@huawei.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>, bpf <bpf@vger.kernel.org>,
-        linux-riscv@lists.infradead.org,
-        Networking <netdev@vger.kernel.org>,
+Date:   Fri, 8 Jul 2022 15:42:54 -0700
+Message-ID: <CAEf4Bzb_re+o2zALCA+Rf_cJS-31350PjhzRg42bgW0mO-GVbg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] samples: bpf: Fix cross-compiling error about bpftool
+To:     Pu Lehui <pulehui@huawei.com>,
+        Quentin Monnet <quentin@isovalent.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
         open list <linux-kernel@vger.kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Luke Nelson <luke.r.nels@gmail.com>,
-        Xi Wang <xi.wang@gmail.com>, Martin KaFai Lau <kafai@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>
+        KP Singh <kpsingh@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
@@ -81,64 +73,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 7, 2022 at 5:23 AM Pu Lehui <pulehui@huawei.com> wrote:
+On Thu, Jul 7, 2022 at 6:37 AM Pu Lehui <pulehui@huawei.com> wrote:
 >
+> Currently, when cross compiling bpf samples, the host side
+> cannot use arch-specific bpftool to generate vmlinux.h or
+> skeleton. We need to compile the bpftool with the host
+> compiler.
 >
->
-> On 2022/6/4 5:03, Andrii Nakryiko wrote:
-> > On Mon, May 30, 2022 at 2:03 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
-> >>
-> >> On 5/30/22 11:28 AM, Pu Lehui wrote:
-> >>> The members of bpf_prog_info, which are line_info, jited_line_info,
-> >>> jited_ksyms and jited_func_lens, store u64 address pointed to the
-> >>> corresponding memory regions. Memory addresses are conceptually
-> >>> unsigned, (unsigned long) casting makes more sense, so let's make
-> >>> a change for conceptual uniformity.
-> >>>
-> >>> Signed-off-by: Pu Lehui <pulehui@huawei.com>
-> >>> ---
-> >>>    tools/lib/bpf/bpf_prog_linfo.c | 9 +++++----
-> >>>    1 file changed, 5 insertions(+), 4 deletions(-)
-> >>>
-> >>> diff --git a/tools/lib/bpf/bpf_prog_linfo.c b/tools/lib/bpf/bpf_prog_linfo.c
-> >>> index 5c503096ef43..7beb060d0671 100644
-> >>> --- a/tools/lib/bpf/bpf_prog_linfo.c
-> >>> +++ b/tools/lib/bpf/bpf_prog_linfo.c
-> >>> @@ -127,7 +127,8 @@ struct bpf_prog_linfo *bpf_prog_linfo__new(const struct bpf_prog_info *info)
-> >>>        prog_linfo->raw_linfo = malloc(data_sz);
-> >>>        if (!prog_linfo->raw_linfo)
-> >>>                goto err_free;
-> >>> -     memcpy(prog_linfo->raw_linfo, (void *)(long)info->line_info, data_sz);
-> >>> +     memcpy(prog_linfo->raw_linfo, (void *)(unsigned long)info->line_info,
-> >>> +            data_sz);
-> >>
-> >> Took in patch 1-3, lgtm, thanks! My question around the cleanups in patch 4-6 ...
-> >> there are various other such cases e.g. in libbpf, perhaps makes sense to clean all
-> >> of them up at once and not just the 4 locations in here.
-> >
-> > if (void *)(long) pattern is wrong, then I guess the best replacement
-> > should be (void *)(uintptr_t) ?
-> >
->
-> I also think that (void *)(uintptr_t) would be the best replacement. I
-> applied the changes to kernel/bpf and samples/bpf, and it worked fine.
-> But in selftests/bpf, the following similar error occur at compile time:
->
-> progs/test_cls_redirect.c:504:11: error: cast to 'uint8_t *' (aka
-> 'unsigned char *') from smaller integer type 'uintptr_t' (aka 'unsigned
-> int') [-Werror,-Wint-to-pointer-cast]
->         .head = (uint8_t *)(uintptr_t)skb->data,
+> Signed-off-by: Pu Lehui <pulehui@huawei.com>
+> ---
 
-this is BPF-side code so using system's uintptr_t definition won't
-work correctly here. Just do (unsigned long) instead?
+samples/bpf use bpftool for vmlinux.h, skeleton, and static linking
+only. All that is supported by lightweight "bootstrap" bpftool
+version, so we can build just that. It will be faster, and bootstrap
+version should be always host-native even during cross compilation.
+See [0] for what I did in libbpf-bootstrap.
 
+Also please cc Quention for bpftool-related changes. Thanks!
+
+   [0] https://github.com/libbpf/libbpf-bootstrap/commit/fc28424eb3f0e39cfb5959296b070389b9a8bd8f
+
+>  samples/bpf/Makefile | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
 >
-> I take clang to compile with the front and back end separation, like
-> samples/bpf, and it works. It seems that the all-in-one clang has
-> problems handling the uintptr_t.
+> diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
+> index 5002a5b9a7da..fe54a8c8f312 100644
+> --- a/samples/bpf/Makefile
+> +++ b/samples/bpf/Makefile
+> @@ -1,4 +1,5 @@
+>  # SPDX-License-Identifier: GPL-2.0
+> +-include tools/scripts/Makefile.include
 >
-> >>
-> >> Thanks,
-> >> Daniel
-> > .
-> >
+>  BPF_SAMPLES_PATH ?= $(abspath $(srctree)/$(src))
+>  TOOLS_PATH := $(BPF_SAMPLES_PATH)/../../tools
+> @@ -283,11 +284,10 @@ $(LIBBPF): $(wildcard $(LIBBPF_SRC)/*.[ch] $(LIBBPF_SRC)/Makefile) | $(LIBBPF_OU
+>  BPFTOOLDIR := $(TOOLS_PATH)/bpf/bpftool
+>  BPFTOOL_OUTPUT := $(abspath $(BPF_SAMPLES_PATH))/bpftool
+>  BPFTOOL := $(BPFTOOL_OUTPUT)/bpftool
+> -$(BPFTOOL): $(LIBBPF) $(wildcard $(BPFTOOLDIR)/*.[ch] $(BPFTOOLDIR)/Makefile) | $(BPFTOOL_OUTPUT)
+> +$(BPFTOOL): $(wildcard $(BPFTOOLDIR)/*.[ch] $(BPFTOOLDIR)/Makefile) | $(BPFTOOL_OUTPUT)
+>             $(MAKE) -C $(BPFTOOLDIR) srctree=$(BPF_SAMPLES_PATH)/../../ \
+> -               OUTPUT=$(BPFTOOL_OUTPUT)/ \
+> -               LIBBPF_OUTPUT=$(LIBBPF_OUTPUT)/ \
+> -               LIBBPF_DESTDIR=$(LIBBPF_DESTDIR)/
+> +               ARCH= CROSS_COMPILE= CC=$(HOSTCC) LD=$(HOSTLD) \
+> +               OUTPUT=$(BPFTOOL_OUTPUT)/
+>
+>  $(LIBBPF_OUTPUT) $(BPFTOOL_OUTPUT):
+>         $(call msg,MKDIR,$@)
+> --
+> 2.25.1
+>
