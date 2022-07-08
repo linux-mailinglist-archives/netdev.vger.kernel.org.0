@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 97F5256BB89
-	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 16:14:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C43F156BB8D
+	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 16:14:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238352AbiGHOOf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jul 2022 10:14:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41164 "EHLO
+        id S238354AbiGHOOl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jul 2022 10:14:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237980AbiGHOOd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 10:14:33 -0400
+        with ESMTP id S238411AbiGHOOk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 10:14:40 -0400
 Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E00C183BE;
-        Fri,  8 Jul 2022 07:14:30 -0700 (PDT)
-Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.206])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LfZxm2Zwdz67NKY;
-        Fri,  8 Jul 2022 22:13:16 +0800 (CST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CE0618E13;
+        Fri,  8 Jul 2022 07:14:39 -0700 (PDT)
+Received: from fraeml713-chm.china.huawei.com (unknown [172.18.147.226])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LfZw46Sc1z682ct;
+        Fri,  8 Jul 2022 22:11:48 +0800 (CST)
 Received: from lhreml745-chm.china.huawei.com (10.201.108.195) by
- fraeml714-chm.china.huawei.com (10.206.15.33) with Microsoft SMTP Server
+ fraeml713-chm.china.huawei.com (10.206.15.32) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 8 Jul 2022 16:14:27 +0200
+ 15.1.2375.24; Fri, 8 Jul 2022 16:14:37 +0200
 Received: from [10.122.132.241] (10.122.132.241) by
  lhreml745-chm.china.huawei.com (10.201.108.195) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 8 Jul 2022 15:14:26 +0100
-Message-ID: <6ee7e769-ce91-a6cc-378b-f206e04d112a@huawei.com>
-Date:   Fri, 8 Jul 2022 17:14:25 +0300
+ 15.1.2375.24; Fri, 8 Jul 2022 15:14:36 +0100
+Message-ID: <92bb77ab-ec5a-07cc-ef2e-bf6c15e94478@huawei.com>
+Date:   Fri, 8 Jul 2022 17:14:35 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.4.1
@@ -40,10 +40,10 @@ CC:     <willemdebruijn.kernel@gmail.com>,
 References: <20220621082313.3330667-1-konstantin.meskhidze@huawei.com>
  <20220621082313.3330667-3-konstantin.meskhidze@huawei.com>
  <0bbbcf21-1e7d-5585-545f-bf89d8ebd527@digikod.net>
- <7735ae47-9088-be29-2696-c5170031d7c2@huawei.com>
- <b08fe5cc-3be0-390b-3575-4f27f795f609@digikod.net>
+ <9d0c8780-6648-404f-7e51-b62a36617121@huawei.com>
+ <72375435-94d4-e3aa-c27b-b44382dde6ad@digikod.net>
 From:   "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
-In-Reply-To: <b08fe5cc-3be0-390b-3575-4f27f795f609@digikod.net>
+In-Reply-To: <72375435-94d4-e3aa-c27b-b44382dde6ad@digikod.net>
 Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
 X-Originating-IP: [10.122.132.241]
@@ -61,9 +61,9 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-7/8/2022 4:59 PM, Mickaël Salaün пишет:
+7/8/2022 4:56 PM, Mickaël Salaün пишет:
 > 
-> On 08/07/2022 15:10, Konstantin Meskhidze (A) wrote:
+> On 08/07/2022 14:53, Konstantin Meskhidze (A) wrote:
 >> 
 >> 
 >> 7/7/2022 7:44 PM, Mickaël Salaün пишет:
@@ -163,33 +163,19 @@ X-Mailing-List: netdev@vger.kernel.org
 >>>
 >>> Something is wrong with this second check: else + object_ptr?
 >> 
->>   Sorry. Do you mean logical error here? I got your point.
->>   You are right!
+>> It was your suggestion to use it like this:
+>> " ....You can also add a WARN_ON_ONCE(object_ptr && object_data)."
 >> 
->>   I think it must be refactored like this:
->> 
->>      if (object_ptr && !object_data) {
->>          landlock_get_object(object_ptr);
->>          new_rule->object.ptr = object_ptr;
->>      } else if (object_ptr && object_data) {
->>          ...
->>      }
+>> Please check it here:
+>> https://lore.kernel.org/linux-security-module/bc44f11f-0eaa-a5f6-c5dc-1d36570f1be1@digikod.net/ 
 > 
-> There is indeed a logical error but this doesn't fix everything. Please
-> include my previous suggestion instead.
+> Yes, but the error is in the "else", you should write:
+> if (WARN_ON_ONCE(object_ptr && object_data))
+> 	return ERR_PTR(-EINVAL);
 > 
-    By the way, in the next commits I have fixed this logic error.
-Anyway I will refactor this one also. Thanks.
-> 
->> Plus, I will add a test for this case.
-> 
-> That would be great but I don't think this code is reachable from user
-> space. I think that would require kunit but I may be missing something.
-> How would you test this?
+> …and this should be before the `if (object_ptr) {` line (to avoid
+> erronous landlock_get_object() call), just after the `if (!new_rule)` check.
 
-You are correct. I checked it. It's impossible to reach this line from 
-userpace (insert both object_ptr and object_data). But create_rule() 
-must be used carefuly by other developers (if any in future). Do you 
-think if its possible to have some internal kernel tests that could 
-handle this issue?
+  By the way, in the next commits I have fixed this logic error.
+Anyway I will refactor this one also. Thanks.
 > .
