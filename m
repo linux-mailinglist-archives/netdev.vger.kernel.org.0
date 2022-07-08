@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 67BE556C057
-	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 20:37:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1454D56BF1F
+	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 20:35:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238953AbiGHRns (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jul 2022 13:43:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45658 "EHLO
+        id S239054AbiGHRnw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jul 2022 13:43:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238927AbiGHRnp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 13:43:45 -0400
+        with ESMTP id S238944AbiGHRns (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 13:43:48 -0400
 Received: from EUR01-HE1-obe.outbound.protection.outlook.com (mail-eopbgr130135.outbound.protection.outlook.com [40.107.13.135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D51DD5A449;
-        Fri,  8 Jul 2022 10:43:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE40FDF10;
+        Fri,  8 Jul 2022 10:43:45 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lhjypxPtyysZT+xLzBf2efgFYxL5jENabDA+Cqh7iFZbr0zbO+YPNY3bh5+iP+oC5lJoYqRQrt8cjdX55Vdvtt8rQnvDHQ6pAJAqV5RiuviWnQw7x3snHkBMH+TM+nwUhpDsV4UD27Yl3YnCjZCdrOFEEP7p1K+aHKR1dlHRzSCheNP5BrNFjgmVWz0GTykLOvT16hmjix2l0aDLeSA2aJNJ31j/uSwxcFTfAu4Ng/jJBFRFF6iajMVT5TOUfXd+7nI1Gax17CkW30Lo/vzSByhXe0G8Uje/+hfbFH85DOe5xUmC4Z+E12cLh6/ke06W9GmLRexrKo5L2CDn6rrvlA==
+ b=j+9cg02e4sd2gpKe5WHSb6o7+/LUVzi1rPTV2DtknXS+SvjNGTe3JxOhYm7abvk2Uldm29KX0iQfzxiVPU7gjuuSWsC5wZis18Mqg5gosGKS0+KFNWx8p+SbMZnAmHVp1ku0oOyxC4fVaLrhlzvb41zO7IY1vxDlQYg+B1aTGKmizeqo4gtTFNApIRUOzQ/emEE4W2xc7nm0YQDoxzbcyUoBqy1IkRbzADf5TqQ3vyav4jOthWMo/U/Wx2Jg0W4XE7joWKdMEKY0/BP7s032mWf/ZMlW14L44t/jABHAQFqACJxcJGHhMx3jtRIPXWQHeuDxq5Q+RM/VVA/hjXMX6w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vZ8sYFHsoS/cOOFa5qh4l4HRlGzM5FJje3Uwj9PpLQ4=;
- b=LrIvWVnuo4uXiS5xnSnEknNV3cF/BRO+nA42Hitqdxo6IrlbfcEdyOMAZglgn+ANERU31YwfNSk9aJ/PqjqUaarXXbhk/bLwYjqRWWqoZQ6RrytJkUftEb8782MjJfwDEzQoO0Xn7f5C/O3AdNkJLubu5gJfsyJXU03BgBWqTBSEJvqmazAJ9/zemXmENZeKmw9TVnzpIN4zc8GTIT84tnGnd/xjG47/hTN0h+9amSohju4Fa6D/7Y3dGbb+yFl9plV+2DHuL1W8Ghh9jiub0Qmrq6DAMGMPkPrBqfYVoRVwgjXNnqp3tK4v/ofBBU7jLa8IXpTcMUMTGqIicoou7A==
+ bh=Ksutx2RW4x0Lz0Iho5G2F5CgEfNeQ2Xl0szoV1ygqXA=;
+ b=iptgEIhnP0hPly0nf//0Sik2Vt9kjdf1DuXRc/icMHOjcQPO3wvLTVXsM5VogdHzjxHEeXh66HM/Rew/gPiFIfxvgmJoheADGyLitJw3QMiBz355Kn/xzhCAG8SFDhuTKtWEuLaWfyvELV6MGADfA+DjxfDJJ/E9zUeYzc6DowcdtDaOM/T2iZLuaZwTTdaniAU29+1INT4BOejg8qrdUznqEmLrFWR+imDzKUQ77wmrYMlfUaTxnz+2MSIf2PICd2bvaAUfFXDVS5M6mGLciEs98cKdtjnQe8JEaK2ijO0Qv77C/oNBCIuybqBqYG137WM15cLZAPw0pNJNb99iIA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
  dkim=pass header.d=plvision.eu; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vZ8sYFHsoS/cOOFa5qh4l4HRlGzM5FJje3Uwj9PpLQ4=;
- b=OTYT2ThOVIK8DV1VkFhPi6TjYkmKJulNzk0QZDsApvmcitJiZB6QGDmQ017nRRrxIlw7TlIaaOTW7rJBG+K3rjZpN5rtbgybqfov2wVTXu3sV0yQlGs1NMznOuOQPCoysCQ5hVCbuQU3YlZXvCj5OZjLNwZ363M1TSwCSS2PbDM=
+ bh=Ksutx2RW4x0Lz0Iho5G2F5CgEfNeQ2Xl0szoV1ygqXA=;
+ b=e0s0c3nww1W1RNZWmFImfKkjXUwnHTSc6Tv1UEc6OXb+tOz4fN7uRO7/qBhkEDvQm0B8ziRVl5xiUx+hDDGms44xB25td3uQMO0x6desjABpBzfHcFcFy7ORtUL55Fkzvgz3nIR2GGVG+Q3lGfGbHvWRUlT2F4qHhLptNjYS9j0=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=plvision.eu;
 Received: from GV1P190MB2019.EURP190.PROD.OUTLOOK.COM (2603:10a6:150:5b::20)
  by AS8P190MB1414.EURP190.PROD.OUTLOOK.COM (2603:10a6:20b:3f1::22) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.15; Fri, 8 Jul
- 2022 17:43:39 +0000
+ 2022 17:43:40 +0000
 Received: from GV1P190MB2019.EURP190.PROD.OUTLOOK.COM
  ([fe80::25a3:3edc:9320:f35e]) by GV1P190MB2019.EURP190.PROD.OUTLOOK.COM
  ([fe80::25a3:3edc:9320:f35e%3]) with mapi id 15.20.5417.016; Fri, 8 Jul 2022
- 17:43:39 +0000
+ 17:43:40 +0000
 From:   Oleksandr Mazur <oleksandr.mazur@plvision.eu>
 To:     netdev@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org, oleksandr.mazur@plvision.eu,
         tchornyi@marvell.com, davem@davemloft.net, edumazet@google.com,
         kuba@kernel.org, pabeni@redhat.com, lkp@intel.com,
         Yevhen Orlov <yevhen.orlov@plvision.eu>
-Subject: [PATCH V4 net-next 1/4] net: marvell: prestera: rework bridge flags setting
-Date:   Fri,  8 Jul 2022 20:43:21 +0300
-Message-Id: <20220708174324.18862-2-oleksandr.mazur@plvision.eu>
+Subject: [PATCH V4 net-next 2/4] net: marvell: prestera: define MDB/flood domain entries and HW API to offload them to the HW
+Date:   Fri,  8 Jul 2022 20:43:22 +0300
+Message-Id: <20220708174324.18862-3-oleksandr.mazur@plvision.eu>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220708174324.18862-1-oleksandr.mazur@plvision.eu>
 References: <20220708174324.18862-1-oleksandr.mazur@plvision.eu>
@@ -58,52 +58,52 @@ X-ClientProxiedBy: GV3P280CA0045.SWEP280.PROD.OUTLOOK.COM
  (2603:10a6:150:5b::20)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 86950adb-05ff-4f9b-e599-08da6109641a
+X-MS-Office365-Filtering-Correlation-Id: 826a927b-231f-4239-22c6-08da610964f0
 X-MS-TrafficTypeDiagnostic: AS8P190MB1414:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: p+zkfT04s/p+L5J0duwOSce+q2NPR2FUEBef1260WQmkL6R3u41oxYyYLELhVw91nCjy7t8lUlZ0+YxiDNCKDugV6WcQOQcxNByrzF9SjhZw8RFwd2F3b0LkLNYT2yWqYNdAiaBJkIK3KR92ANTvgsDg8/6vNKZcx/XsvDRuAfetvq/2uoOfBdC0NFPy84IL3u53bTMS1YCxCEd04gftbVbjdal+4sj3JQ84DGbhSCxdNJPVs0yMOpp4DJtNCMqZIq1teDZfdb2cu/NFbvlTVSiDl791HARfQRTKSpSt1iDsSt0NITSuxp1IdcYw2Kj3dhsB518qcXywN6nP5loERo0fGUHrbLuODWvgbs2AIFI4A5xgjQx5MNu6jE/5YsTsGmrOK864PCoe2ICwSBQsVw9GfLYcDgcrgIQh8JpB7uQSqySFrILO+T74NFY77AYLjybbJzzhE++/Gh7ijBYzp8SvwDAG7jMjFykWx2kGrvonqo2PGQ3lJ4H9HBc4kteV1OFvqIb29oqKKCJANSEe1h+Wx4jRBjV1YvVHZ061xannMhXIPQ+RU3tEiLtUGXvxplW0N0Ly1bLLBUUrpUpJes4c0KHx7R3cz7q9fDCbG47R2l5Yl0I6DEeTCLrDtIYxuaPJwzDCf9vPUlCxUlJWRvjASD6VcNOXq+UNTDQ7+KfUTF3DkRk57hzuYup5tbhZ5j5cR3d1493JHPWIfDlJMZgEFof0CgRx+cKEIdwzaAXRZKUbb2anbEPmhbkdqFQPeLKMJLEZBLMi5B+vU2swSP/9QsCdMSPmvs6Nh5m97Vf2Mekgfymn8/VmOPt47GF8
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:GV1P190MB2019.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(366004)(346002)(39830400003)(376002)(136003)(4326008)(66556008)(2906002)(52116002)(478600001)(316002)(6666004)(86362001)(6916009)(36756003)(6486002)(41300700001)(6512007)(6506007)(66946007)(26005)(8676002)(66476007)(1076003)(83380400001)(38350700002)(38100700002)(2616005)(44832011)(5660300002)(8936002)(186003)(107886003);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: Zl1egdLu/RF+jXw6jWzxglJ8Fdm40gq4WQxCNbcTF4TEH+1fZQeZuyQKgWTm1IyOaCB7uwmsICOAtJ6uB+SmX6vLgW7CDnxrsU1NmQTdEPy02pDOCXEoU77UFGj7/T2ArkV6dWt+zOjRWguFRs43uRj2PhJaXibOnT7/JE70gvH+eRWAksTF4uHJs7WH8QOuZM3DeI6skiFdZU9OOzP5nSCjCh61mKXSPlqE4HqueP93Rrl6svu+lwlwZwpGz3YYV+WT5zt5s/4l396BjevkDY/EbLx2cvUra0Pv5pX8s/TUZTvPRlmRw7GctHjzK/vF+l1PdBAZr0AI3zpb+Sjf4416A15hfH/3oFwYjr2UiWysCXZN6ELdIaotWG3893KiRJe5o5s4dtZxiT1W8b9qJaKk4ErDoxlXsx90jyraNxuaj4Jh/y9jHGOW5/1xX9srZ4Q4k9Pi4Gpg5JV7aUIigidVB7Ml2n60/YQEUqAOFlusy3TCr52A3V6q2K8PnX9qLUibnXnVm/MyhFGavpXNz8tYgojTjKOs9Go/lhr1e3Bw6HqCxi3ayesyP6+SAq4+6P5Y//mBevVyVJ4bXQQ2BdjDCudUciwhxzHTrpfww3RQYAeDxsnhWsO/PHqSo4KDwBZ1dEr6VLSU0mkQqfEVH8UqliRLHRmMTK2RphKzwSwd7ZhXPXOO7SKeAqiUCwOmZzU4B71myYb7Z9w/YgYEjapwamUlQdQ6sVYZIcLlMwCoKIj8BM5fAV3iUztbYo3HIY6zNnFKzH64gPvpBtN6zY8yHaA3/d9gUsotJAusTmZ6GSrMbUHyQ/A4A0cJjEZa
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:GV1P190MB2019.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(366004)(346002)(39830400003)(376002)(136003)(4326008)(66556008)(2906002)(52116002)(478600001)(316002)(6666004)(86362001)(6916009)(36756003)(6486002)(41300700001)(6512007)(6506007)(66946007)(26005)(8676002)(66476007)(66574015)(1076003)(83380400001)(38350700002)(38100700002)(2616005)(44832011)(5660300002)(30864003)(8936002)(186003)(107886003);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?1MvphboMDDk6EH7WAAgJiphKmdY6kh/HIFAU5xEYXEcrfW9OxbTBIEG0y3To?=
- =?us-ascii?Q?OZRCw2Q2rQb1IQDxFQhxwLKWQ1mufbS5BgPSVJuEhxJgyoXpFoV2eXvQ0cfE?=
- =?us-ascii?Q?IeZdBAZ+sqDjMIwedZCPxcH8vD6kCw4d8Le9u9CLZDHx3X+zUzXuhlV+l7od?=
- =?us-ascii?Q?fcEtQ0406x6wuTqya0+UvuWTDAhKX/UvyjkijCMJW8mvgM2ERZHUv/nffIgt?=
- =?us-ascii?Q?jvVIMNpvdokqd9BU9lqvJZS1khgwuHAKy78mm9MZwlMNgjvBNbzkMK0VhX9t?=
- =?us-ascii?Q?ks9b+MZJePHiv8qgFNshOymR3Nb+WBhFNHsteqZtv+9a6YeMm38TuUUvoIqX?=
- =?us-ascii?Q?hBhp/piludtouzjdXSxxsmSRMnJaPAbCci0RcwuHX+KWdv6NW7aqgy8X9aoz?=
- =?us-ascii?Q?MQNdkBI7o9ZrZSKL+IlKFJMWFqKnep5NuIziBHuP92RG+sgybdJsqvqRsqz8?=
- =?us-ascii?Q?IiXH2xLMduQFqWie78pFgjnWDV4EGaHz9jxy3A7zYhS10QSs0+WsPXjQXIth?=
- =?us-ascii?Q?oOK2E5aG0OldRhEz9TiUyfDAL5MYw+t7OZWMQ/mvlp/Ky8FAJROfpi48Fulw?=
- =?us-ascii?Q?lD2rrCWAkka5jAIfPpmQnbKKaqS4QWyxVkxXCSwDOzIFurAEzh+XnRfaRUuf?=
- =?us-ascii?Q?/QVCFI0jPGu13Ir/IPDxmkhE+Bq8pd9TW0FrV99QOeC16az2LgykUiWTyOnV?=
- =?us-ascii?Q?4cHkDUkXTh/YE8HrHiq2Z1svbAUvqUmFvk7mXhRcuJQQur3W3Xvjm3oHqk2s?=
- =?us-ascii?Q?Z6nMBRA6Rh9X8i7Ulk7t9OEs4K7Nb36Yd2y5DkPG8iNUr7H/4Qm7ss/kOq25?=
- =?us-ascii?Q?0bESJIPU+N1xoCagJhCXX54RTXc7YwhmDd3OiqSxKkQBp8EbFPu7xWv7tqsv?=
- =?us-ascii?Q?CDs9ike0D66YG51aDlpRWL8DbXbxqmEdiuLDCjaoCMCcv+lmxVpkZNdtZ9ZM?=
- =?us-ascii?Q?WewxmrsuT18DeuzxkDHsshkeQnn1+rdtfs+63F23/HfGMtG/NA5HlmF48Ykd?=
- =?us-ascii?Q?KSbyTq0mSmw1+QtS34ZMe4F/743JaX53aA1oeHXMqjrjnvdbNvxPkQFUz5R9?=
- =?us-ascii?Q?UBrKiM8fiNvPaCqjtMY+Crmo3ksULwdby8io4SIKqWWHe/g0s1hXo22UtfLl?=
- =?us-ascii?Q?AK5md/PFYFs6SUZeTiNtFLGQqu9hSnVWfq5OJQDAuS2P6jUXFNy8zhyrp2cM?=
- =?us-ascii?Q?jXQ1zTtyAWh30bXPWvHYM07XdRZBoduLYaZI6oE08EVrIDHiXZ3BlmYQirB8?=
- =?us-ascii?Q?nmksFx/tdzVV8NDymL1NBIa3z6QzLcnasc+8wIT7J4dbjZdTfxM4SIygt0kw?=
- =?us-ascii?Q?kBmblit/vddOWLhnB31KEsA1t8DfYi8O4cZWW/v5bHp0y0DCpb7bLMvOEWow?=
- =?us-ascii?Q?jjCX1UGPcbJ2nVeJz6LiuoRixbo7FrgEIcEpZIZdvqBGqGvn5CK+brasz79b?=
- =?us-ascii?Q?mOLWZjkxXMxX4rh0cYPNwZzE/BEPxJWlJBAMSavf4LUvMLE68T1pUT6pr0UN?=
- =?us-ascii?Q?L5+uTfSxGjwg8Fl+PWXS/fQBVhdxjXV2JsfuMgJdGimdGb6u3JCH4cUFo00r?=
- =?us-ascii?Q?DIELyMCXVIKa8BzW0VmAAXhpqqmnsnz9aREWNbafIH/fbwVZ7FLzHNQqCqJT?=
- =?us-ascii?Q?UQ=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?orgbTu5nY/gmxGFGyFc7OPuXs+onT2hZ3fc+cSTvEqLg8SHs26na8SU7IGHc?=
+ =?us-ascii?Q?0/3XWWFH89YdX6Du/7YFp+oombPBEUzoofNMrjE+qaOJ6YcdDouhcZKbMN3X?=
+ =?us-ascii?Q?CGy+lNw7WuVmh6InGAD+3DOdmAsmMuPrQSZyjc91WYzm+elTzB3pE/Iy7H1H?=
+ =?us-ascii?Q?DIwU7PXhI1hGchBiWBjWYMvq3l2VeWOHEzxqELtzlKuW6gEOZBLDHWY2u8pk?=
+ =?us-ascii?Q?0iNR7tyZpKXVBlkC3Bl96zNvUN4Wd+eNJ5E/AVDXPn9KDw6jXHacTni1Z0rt?=
+ =?us-ascii?Q?lv6WHmwi5fVFO+3YsNURmnBV6rQagrrBiQ8BNsXC1KiyB3H2Gki9ZVBxRTt4?=
+ =?us-ascii?Q?uXFaCYbEipfhXGEagsah8RNIlejIbT84K0lhF6bbkfjf+Jo1AjgHla9ZB0O6?=
+ =?us-ascii?Q?oo7i+f2bvKUydBXIgIw6gGAzmH+MbsijJwuIFTUoAXB/LKmfTzt/ON+8xtE4?=
+ =?us-ascii?Q?iXGMdWTQcdPQDwDCdT144YPQpNDFgMbW48xHEkKn5+1XyWCGLMBPa1xUKztA?=
+ =?us-ascii?Q?1IymCahpAgXQYQQuUjWs2yr4ROB0Wp/OoxJYIiTlOx7fiSaMxBRvrtC08cma?=
+ =?us-ascii?Q?SmRBNg8uLImC35TKX18rbqJs1Lju2ZOKwyff9lPp9gKBG3NEwxQNt8zaUpNN?=
+ =?us-ascii?Q?bh7+nFEDxD+jl0BbCRVkVlWkoKM2lRTGRE8knIlrX71b4KgGSFZIjOYg3ZCf?=
+ =?us-ascii?Q?mNZStUsZK7cIVlq8to4+OqvUPXXXmPOChck0dLPgQu8oG+NKd1bV06B0sFpT?=
+ =?us-ascii?Q?GtmTd/7zkFRa81NdedS+ReNLRrWca//dbUHyDBwtPvQrUAXlcNu2oBFVuMQZ?=
+ =?us-ascii?Q?EYwc3JpAv2CPUbexmIwbU0wRFkvFQOb8xQToZ3RzjP7dAVGf/tsw/l2uTF6T?=
+ =?us-ascii?Q?UtIKrkh454WQkd3u6tUS33CTWwhPYIWtuYuLpMIJuX6DSOABhdxrvUPqRKIp?=
+ =?us-ascii?Q?Zj5MD3XZ8XOHbh1epsFISs10rZrWJW3qEybXYb8/ixllTZNLnnSqYJmw5V8U?=
+ =?us-ascii?Q?NFf/EHlEnv0nCVxsQP40eG1gEEWxTt03biVSZ97cqBmX/fnI37ymsrjC3tCg?=
+ =?us-ascii?Q?fro8wkBPTCUFxBVQo1YJ5vU5PrnEcFiFGp4p2lGwQp4wvRbNrqOflmQjFF02?=
+ =?us-ascii?Q?gBz1l90nYRLSfMeHrpxMscc4U89qEZQCJ5u7TibyT8P80AStW7KKd3DLuWWA?=
+ =?us-ascii?Q?UzsGI1vTvYV//1sSrWfC6ZKqWliivoWTdC+zjFamPgEVnl3/IhWSc9ELIEeF?=
+ =?us-ascii?Q?s5cnxmlz08TXWcW3djQQe6v12CRjS9555m5jI5kC7fk2Um04G7/IqoA2Metn?=
+ =?us-ascii?Q?1V+Y1eTImE4QThxxko1Ja1FIJJzUMf81Bil2Df3Oc87220GdLOVp5UE222nf?=
+ =?us-ascii?Q?RGLYR0U8rp5GHRmQfSbLZM/NXA6ujj1pXeflVbTwLNVUgv/0rOnGLZz9BUq2?=
+ =?us-ascii?Q?ts9BLmUfctksUVvD/S3kK2rgKOLpSzf/LVZPZx+bGzbE1CaYIOVKJAn300Nn?=
+ =?us-ascii?Q?FWWVCIGkwH4JqT0UGjJhz+hlelj6l2aGG3VfkhJFP4H7zZcFKOFVW0Kk3512?=
+ =?us-ascii?Q?wn73XACXh9a45s5ca9E64gRM+TvkRjyLlHhEh6j9HgEwxBljd346VyE/fZu/?=
+ =?us-ascii?Q?GA=3D=3D?=
 X-OriginatorOrg: plvision.eu
-X-MS-Exchange-CrossTenant-Network-Message-Id: 86950adb-05ff-4f9b-e599-08da6109641a
+X-MS-Exchange-CrossTenant-Network-Message-Id: 826a927b-231f-4239-22c6-08da610964f0
 X-MS-Exchange-CrossTenant-AuthSource: GV1P190MB2019.EURP190.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Jul 2022 17:43:38.9680
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Jul 2022 17:43:40.3499
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: QpPrmxoNC9YRQx3whKSjhqYJmJbVVGzoLHwsecNNOcQCXlmTxp6AxWoC1JhMHhofxd1plvwmJ/14vZ4kFWBNCzkoCZJa93GeZ7yjRp3h2v4=
+X-MS-Exchange-CrossTenant-UserPrincipalName: EZPpeq3Own8z43iHcsl5G/K7+jzUa3mqTkwPCkfN6vGS3qnGuWrDhJrEklqMfMrxnd9j/wzlu70tvHL6UMWiZdZBM5vsmCDzac6E8VbVraQ=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8P190MB1414
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -115,292 +115,371 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Separate flags to make it possible to alter them separately;
-Move bridge flags setting logic from HW API level to prestera_main
-  where it belongs;
-Move bridge flags parsing (and setting using prestera API) to
-  prestera_switchdev.c - module responsible for bridge operations
-  handling;
+Define MDB entry that can be offloaded:
+  - FDB entry, that defines an multicast group to which traffic can be
+    replicated to;
+Define flood domain:
+  - Arrangement of ports (list), that have joined multicast group, which
+    would receive and replicate to multicast traffic of specified group;
+Define flood domain port:
+  - single flood domain list entry, that is associated with any given
+    bridge port interface (could be LAG interface or physical port-member).
+    Applicable to both Q and D bridges;
 
+Co-developed-by: Yevhen Orlov <yevhen.orlov@plvision.eu>
+Signed-off-by: Yevhen Orlov <yevhen.orlov@plvision.eu>
 Signed-off-by: Oleksandr Mazur <oleksandr.mazur@plvision.eu>
 ---
- .../net/ethernet/marvell/prestera/prestera.h  |  4 +
- .../ethernet/marvell/prestera/prestera_hw.c   | 54 +------------
- .../ethernet/marvell/prestera/prestera_hw.h   |  4 +-
- .../ethernet/marvell/prestera/prestera_main.c | 15 ++++
- .../marvell/prestera/prestera_switchdev.c     | 79 +++++++++++--------
- 5 files changed, 67 insertions(+), 89 deletions(-)
+ .../net/ethernet/marvell/prestera/prestera.h  |  22 ++
+ .../ethernet/marvell/prestera/prestera_hw.c   | 202 ++++++++++++++++++
+ .../ethernet/marvell/prestera/prestera_hw.h   |  11 +
+ .../ethernet/marvell/prestera/prestera_main.c |  24 +++
+ 4 files changed, 259 insertions(+)
 
 diff --git a/drivers/net/ethernet/marvell/prestera/prestera.h b/drivers/net/ethernet/marvell/prestera/prestera.h
-index 0bb46eee46b4..cab80e501419 100644
+index cab80e501419..bf7ecb18858a 100644
 --- a/drivers/net/ethernet/marvell/prestera/prestera.h
 +++ b/drivers/net/ethernet/marvell/prestera/prestera.h
-@@ -331,6 +331,10 @@ struct prestera_port *prestera_port_dev_lower_find(struct net_device *dev);
+@@ -20,6 +20,26 @@ struct prestera_fw_rev {
+ 	u16 sub;
+ };
  
- void prestera_queue_work(struct work_struct *work);
- 
-+int prestera_port_learning_set(struct prestera_port *port, bool learn_enable);
-+int prestera_port_uc_flood_set(struct prestera_port *port, bool flood);
-+int prestera_port_mc_flood_set(struct prestera_port *port, bool flood);
++struct prestera_flood_domain {
++	struct prestera_switch *sw;
++	struct list_head flood_domain_port_list;
++	u32 idx;
++};
 +
- int prestera_port_pvid_set(struct prestera_port *port, u16 vid);
++struct prestera_mdb_entry {
++	struct prestera_switch *sw;
++	struct prestera_flood_domain *flood_domain;
++	unsigned char addr[ETH_ALEN];
++	u16 vid;
++};
++
++struct prestera_flood_domain_port {
++	struct prestera_flood_domain *flood_domain;
++	struct net_device *dev;
++	struct list_head flood_domain_port_node;
++	u16 vid;
++};
++
+ struct prestera_port_stats {
+ 	u64 good_octets_received;
+ 	u64 bad_octets_received;
+@@ -342,6 +362,8 @@ bool prestera_netdev_check(const struct net_device *dev);
+ int prestera_is_valid_mac_addr(struct prestera_port *port, const u8 *addr);
  
- bool prestera_netdev_check(const struct net_device *dev);
+ bool prestera_port_is_lag_member(const struct prestera_port *port);
++int prestera_lag_id(struct prestera_switch *sw,
++		    struct net_device *lag_dev, u16 *lag_id);
+ 
+ struct prestera_lag *prestera_lag_by_id(struct prestera_switch *sw, u16 id);
+ 
 diff --git a/drivers/net/ethernet/marvell/prestera/prestera_hw.c b/drivers/net/ethernet/marvell/prestera/prestera_hw.c
-index 79fd3cac539d..b00e69fabc6b 100644
+index b00e69fabc6b..962d7e0c0cb5 100644
 --- a/drivers/net/ethernet/marvell/prestera/prestera_hw.c
 +++ b/drivers/net/ethernet/marvell/prestera/prestera_hw.c
-@@ -1531,7 +1531,7 @@ int prestera_hw_port_learning_set(struct prestera_port *port, bool enable)
+@@ -60,6 +60,14 @@ enum prestera_cmd_type_t {
+ 	PRESTERA_CMD_TYPE_ROUTER_VR_CREATE = 0x630,
+ 	PRESTERA_CMD_TYPE_ROUTER_VR_DELETE = 0x631,
+ 
++	PRESTERA_CMD_TYPE_FLOOD_DOMAIN_CREATE = 0x700,
++	PRESTERA_CMD_TYPE_FLOOD_DOMAIN_DESTROY = 0x701,
++	PRESTERA_CMD_TYPE_FLOOD_DOMAIN_PORTS_SET = 0x702,
++	PRESTERA_CMD_TYPE_FLOOD_DOMAIN_PORTS_RESET = 0x703,
++
++	PRESTERA_CMD_TYPE_MDB_CREATE = 0x704,
++	PRESTERA_CMD_TYPE_MDB_DESTROY = 0x705,
++
+ 	PRESTERA_CMD_TYPE_RXTX_INIT = 0x800,
+ 
+ 	PRESTERA_CMD_TYPE_LAG_MEMBER_ADD = 0x900,
+@@ -185,6 +193,12 @@ struct prestera_fw_event_handler {
+ 	void *arg;
+ };
+ 
++enum {
++	PRESTERA_HW_FLOOD_DOMAIN_PORT_TYPE_REG_PORT = 0,
++	PRESTERA_HW_FLOOD_DOMAIN_PORT_TYPE_LAG = 1,
++	PRESTERA_HW_FLOOD_DOMAIN_PORT_TYPE_MAX = 2,
++};
++
+ struct prestera_msg_cmd {
+ 	__le32 type;
+ };
+@@ -627,6 +641,57 @@ struct prestera_msg_event_fdb {
+ 	u8 dest_type;
+ };
+ 
++struct prestera_msg_flood_domain_create_req {
++	struct prestera_msg_cmd cmd;
++};
++
++struct prestera_msg_flood_domain_create_resp {
++	struct prestera_msg_ret ret;
++	__le32 flood_domain_idx;
++};
++
++struct prestera_msg_flood_domain_destroy_req {
++	struct prestera_msg_cmd cmd;
++	__le32 flood_domain_idx;
++};
++
++struct prestera_msg_flood_domain_ports_set_req {
++	struct prestera_msg_cmd cmd;
++	__le32 flood_domain_idx;
++	__le32 ports_num;
++};
++
++struct prestera_msg_flood_domain_ports_reset_req {
++	struct prestera_msg_cmd cmd;
++	__le32 flood_domain_idx;
++};
++
++struct prestera_msg_flood_domain_port {
++	union {
++		struct {
++			__le32 port_num;
++			__le32 dev_num;
++		};
++		__le16 lag_id;
++	};
++	__le16 vid;
++	__le16 port_type;
++};
++
++struct prestera_msg_mdb_create_req {
++	struct prestera_msg_cmd cmd;
++	__le32 flood_domain_idx;
++	__le16 vid;
++	u8 mac[ETH_ALEN];
++};
++
++struct prestera_msg_mdb_destroy_req {
++	struct prestera_msg_cmd cmd;
++	__le32 flood_domain_idx;
++	__le16 vid;
++	u8 mac[ETH_ALEN];
++};
++
+ static void prestera_hw_build_tests(void)
+ {
+ 	/* check requests */
+@@ -654,10 +719,17 @@ static void prestera_hw_build_tests(void)
+ 	BUILD_BUG_ON(sizeof(struct prestera_msg_vr_req) != 8);
+ 	BUILD_BUG_ON(sizeof(struct prestera_msg_lpm_req) != 36);
+ 	BUILD_BUG_ON(sizeof(struct prestera_msg_policer_req) != 36);
++	BUILD_BUG_ON(sizeof(struct prestera_msg_flood_domain_create_req) != 4);
++	BUILD_BUG_ON(sizeof(struct prestera_msg_flood_domain_destroy_req) != 8);
++	BUILD_BUG_ON(sizeof(struct prestera_msg_flood_domain_ports_set_req) != 12);
++	BUILD_BUG_ON(sizeof(struct prestera_msg_flood_domain_ports_reset_req) != 8);
++	BUILD_BUG_ON(sizeof(struct prestera_msg_mdb_create_req) != 16);
++	BUILD_BUG_ON(sizeof(struct prestera_msg_mdb_destroy_req) != 16);
+ 
+ 	/*  structure that are part of req/resp fw messages */
+ 	BUILD_BUG_ON(sizeof(struct prestera_msg_iface) != 16);
+ 	BUILD_BUG_ON(sizeof(struct prestera_msg_ip_addr) != 20);
++	BUILD_BUG_ON(sizeof(struct prestera_msg_flood_domain_port) != 12);
+ 
+ 	/* check responses */
+ 	BUILD_BUG_ON(sizeof(struct prestera_msg_common_resp) != 8);
+@@ -2194,3 +2266,133 @@ int prestera_hw_policer_sr_tcm_set(struct prestera_switch *sw,
+ 	return prestera_cmd(sw, PRESTERA_CMD_TYPE_POLICER_SET,
  			    &req.cmd, sizeof(req));
  }
- 
--static int prestera_hw_port_uc_flood_set(struct prestera_port *port, bool flood)
-+int prestera_hw_port_uc_flood_set(const struct prestera_port *port, bool flood)
- {
- 	struct prestera_msg_port_attr_req req = {
- 		.attr = __cpu_to_le32(PRESTERA_CMD_PORT_ATTR_FLOOD),
-@@ -1549,7 +1549,7 @@ static int prestera_hw_port_uc_flood_set(struct prestera_port *port, bool flood)
- 			    &req.cmd, sizeof(req));
- }
- 
--static int prestera_hw_port_mc_flood_set(struct prestera_port *port, bool flood)
-+int prestera_hw_port_mc_flood_set(const struct prestera_port *port, bool flood)
- {
- 	struct prestera_msg_port_attr_req req = {
- 		.attr = __cpu_to_le32(PRESTERA_CMD_PORT_ATTR_FLOOD),
-@@ -1567,56 +1567,6 @@ static int prestera_hw_port_mc_flood_set(struct prestera_port *port, bool flood)
- 			    &req.cmd, sizeof(req));
- }
- 
--static int prestera_hw_port_flood_set_v2(struct prestera_port *port, bool flood)
--{
--	struct prestera_msg_port_attr_req req = {
--		.attr = __cpu_to_le32(PRESTERA_CMD_PORT_ATTR_FLOOD),
--		.port = __cpu_to_le32(port->hw_id),
--		.dev = __cpu_to_le32(port->dev_id),
--		.param = {
--			.flood = flood,
--		}
--	};
--
--	return prestera_cmd(port->sw, PRESTERA_CMD_TYPE_PORT_ATTR_SET,
--			    &req.cmd, sizeof(req));
--}
--
--int prestera_hw_port_flood_set(struct prestera_port *port, unsigned long mask,
--			       unsigned long val)
--{
--	int err;
--
--	if (port->sw->dev->fw_rev.maj <= 2) {
--		if (!(mask & BR_FLOOD))
--			return 0;
--
--		return prestera_hw_port_flood_set_v2(port, val & BR_FLOOD);
--	}
--
--	if (mask & BR_FLOOD) {
--		err = prestera_hw_port_uc_flood_set(port, val & BR_FLOOD);
--		if (err)
--			goto err_uc_flood;
--	}
--
--	if (mask & BR_MCAST_FLOOD) {
--		err = prestera_hw_port_mc_flood_set(port, val & BR_MCAST_FLOOD);
--		if (err)
--			goto err_mc_flood;
--	}
--
--	return 0;
--
--err_mc_flood:
--	prestera_hw_port_mc_flood_set(port, 0);
--err_uc_flood:
--	if (mask & BR_FLOOD)
--		prestera_hw_port_uc_flood_set(port, 0);
--
--	return err;
--}
--
- int prestera_hw_vlan_create(struct prestera_switch *sw, u16 vid)
- {
- 	struct prestera_msg_vlan_req req = {
-diff --git a/drivers/net/ethernet/marvell/prestera/prestera_hw.h b/drivers/net/ethernet/marvell/prestera/prestera_hw.h
-index aa74f668aa3c..d3fdfe244f87 100644
---- a/drivers/net/ethernet/marvell/prestera/prestera_hw.h
-+++ b/drivers/net/ethernet/marvell/prestera/prestera_hw.h
-@@ -179,8 +179,8 @@ int prestera_hw_port_stats_get(const struct prestera_port *port,
- 			       struct prestera_port_stats *stats);
- int prestera_hw_port_speed_get(const struct prestera_port *port, u32 *speed);
- int prestera_hw_port_learning_set(struct prestera_port *port, bool enable);
--int prestera_hw_port_flood_set(struct prestera_port *port, unsigned long mask,
--			       unsigned long val);
-+int prestera_hw_port_uc_flood_set(const struct prestera_port *port, bool flood);
-+int prestera_hw_port_mc_flood_set(const struct prestera_port *port, bool flood);
- int prestera_hw_port_accept_frm_type(struct prestera_port *port,
- 				     enum prestera_accept_frm_type type);
- /* Vlan API */
-diff --git a/drivers/net/ethernet/marvell/prestera/prestera_main.c b/drivers/net/ethernet/marvell/prestera/prestera_main.c
-index 3952fdcc9240..0e8eecbe13e1 100644
---- a/drivers/net/ethernet/marvell/prestera/prestera_main.c
-+++ b/drivers/net/ethernet/marvell/prestera/prestera_main.c
-@@ -35,6 +35,21 @@ void prestera_queue_work(struct work_struct *work)
- 	queue_work(prestera_owq, work);
- }
- 
-+int prestera_port_learning_set(struct prestera_port *port, bool learn)
-+{
-+	return prestera_hw_port_learning_set(port, learn);
-+}
 +
-+int prestera_port_uc_flood_set(struct prestera_port *port, bool flood)
++int prestera_hw_flood_domain_create(struct prestera_flood_domain *domain)
 +{
-+	return prestera_hw_port_uc_flood_set(port, flood);
-+}
-+
-+int prestera_port_mc_flood_set(struct prestera_port *port, bool flood)
-+{
-+	return prestera_hw_port_mc_flood_set(port, flood);
-+}
-+
- int prestera_port_pvid_set(struct prestera_port *port, u16 vid)
- {
- 	enum prestera_accept_frm_type frm_type;
-diff --git a/drivers/net/ethernet/marvell/prestera/prestera_switchdev.c b/drivers/net/ethernet/marvell/prestera/prestera_switchdev.c
-index b4599fe4ca8d..7002c35526d2 100644
---- a/drivers/net/ethernet/marvell/prestera/prestera_switchdev.c
-+++ b/drivers/net/ethernet/marvell/prestera/prestera_switchdev.c
-@@ -74,6 +74,39 @@ static void prestera_bridge_port_put(struct prestera_bridge_port *br_port);
- static int prestera_port_vid_stp_set(struct prestera_port *port, u16 vid,
- 				     u8 state);
- 
-+static void
-+prestera_br_port_flags_reset(struct prestera_bridge_port *br_port,
-+			     struct prestera_port *port)
-+{
-+	prestera_port_uc_flood_set(port, false);
-+	prestera_port_mc_flood_set(port, false);
-+	prestera_port_learning_set(port, false);
-+}
-+
-+static int prestera_br_port_flags_set(struct prestera_bridge_port *br_port,
-+				      struct prestera_port *port)
-+{
++	struct prestera_msg_flood_domain_create_resp resp;
++	struct prestera_msg_flood_domain_create_req req;
 +	int err;
 +
-+	err = prestera_port_uc_flood_set(port, br_port->flags & BR_FLOOD);
++	err = prestera_cmd_ret(domain->sw,
++			       PRESTERA_CMD_TYPE_FLOOD_DOMAIN_CREATE, &req.cmd,
++			       sizeof(req), &resp.ret, sizeof(resp));
 +	if (err)
-+		goto err_out;
++		return err;
 +
-+	err = prestera_port_mc_flood_set(port, br_port->flags & BR_MCAST_FLOOD);
-+	if (err)
-+		goto err_out;
-+
-+	err = prestera_port_learning_set(port, br_port->flags & BR_LEARNING);
-+	if (err)
-+		goto err_out;
++	domain->idx = __le32_to_cpu(resp.flood_domain_idx);
 +
 +	return 0;
++}
 +
-+err_out:
-+	prestera_br_port_flags_reset(br_port, port);
++int prestera_hw_flood_domain_destroy(struct prestera_flood_domain *domain)
++{
++	struct prestera_msg_flood_domain_destroy_req req = {
++		.flood_domain_idx = __cpu_to_le32(domain->idx),
++	};
++
++	return prestera_cmd(domain->sw, PRESTERA_CMD_TYPE_FLOOD_DOMAIN_DESTROY,
++			   &req.cmd, sizeof(req));
++}
++
++int prestera_hw_flood_domain_ports_set(struct prestera_flood_domain *domain)
++{
++	struct prestera_flood_domain_port *flood_domain_port;
++	struct prestera_msg_flood_domain_ports_set_req *req;
++	struct prestera_msg_flood_domain_port *ports;
++	struct prestera_switch *sw = domain->sw;
++	struct prestera_port *port;
++	u32 ports_num = 0;
++	int buf_size;
++	void *buff;
++	u16 lag_id;
++	int err;
++
++	list_for_each_entry(flood_domain_port, &domain->flood_domain_port_list,
++			    flood_domain_port_node)
++		ports_num++;
++
++	if (!ports_num)
++		return -EINVAL;
++
++	buf_size = sizeof(*req) + sizeof(*ports) * ports_num;
++
++	buff = kmalloc(buf_size, GFP_KERNEL);
++	if (!buff)
++		return -ENOMEM;
++
++	req = buff;
++	ports = buff + sizeof(*req);
++
++	req->flood_domain_idx = __cpu_to_le32(domain->idx);
++	req->ports_num = __cpu_to_le32(ports_num);
++
++	list_for_each_entry(flood_domain_port, &domain->flood_domain_port_list,
++			    flood_domain_port_node) {
++		if (netif_is_lag_master(flood_domain_port->dev)) {
++			if (prestera_lag_id(sw, flood_domain_port->dev,
++					    &lag_id)) {
++				kfree(buff);
++				return -EINVAL;
++			}
++
++			ports->port_type =
++				__cpu_to_le16(PRESTERA_HW_FLOOD_DOMAIN_PORT_TYPE_LAG);
++			ports->lag_id = __cpu_to_le16(lag_id);
++		} else {
++			port = prestera_port_dev_lower_find(flood_domain_port->dev);
++
++			ports->port_type =
++				__cpu_to_le16(PRESTERA_HW_FDB_ENTRY_TYPE_REG_PORT);
++			ports->dev_num = __cpu_to_le32(port->dev_id);
++			ports->port_num = __cpu_to_le32(port->hw_id);
++		}
++
++		ports->vid = __cpu_to_le16(flood_domain_port->vid);
++
++		ports++;
++	}
++
++	err = prestera_cmd(sw, PRESTERA_CMD_TYPE_FLOOD_DOMAIN_PORTS_SET,
++			   &req->cmd, buf_size);
++
++	kfree(buff);
++
 +	return err;
 +}
 +
- static struct prestera_bridge_vlan *
- prestera_bridge_vlan_create(struct prestera_bridge_port *br_port, u16 vid)
++int prestera_hw_flood_domain_ports_reset(struct prestera_flood_domain *domain)
++{
++	struct prestera_msg_flood_domain_ports_reset_req req = {
++		.flood_domain_idx = __cpu_to_le32(domain->idx),
++	};
++
++	return prestera_cmd(domain->sw,
++			   PRESTERA_CMD_TYPE_FLOOD_DOMAIN_PORTS_RESET, &req.cmd,
++			   sizeof(req));
++}
++
++int prestera_hw_mdb_create(struct prestera_mdb_entry *mdb)
++{
++	struct prestera_msg_mdb_create_req req = {
++		.flood_domain_idx = __cpu_to_le32(mdb->flood_domain->idx),
++		.vid = __cpu_to_le16(mdb->vid),
++	};
++
++	memcpy(req.mac, mdb->addr, ETH_ALEN);
++
++	return prestera_cmd(mdb->sw, PRESTERA_CMD_TYPE_MDB_CREATE, &req.cmd,
++			    sizeof(req));
++}
++
++int prestera_hw_mdb_destroy(struct prestera_mdb_entry *mdb)
++{
++	struct prestera_msg_mdb_destroy_req req = {
++		.flood_domain_idx = __cpu_to_le32(mdb->flood_domain->idx),
++		.vid = __cpu_to_le16(mdb->vid),
++	};
++
++	memcpy(req.mac, mdb->addr, ETH_ALEN);
++
++	return prestera_cmd(mdb->sw, PRESTERA_CMD_TYPE_MDB_DESTROY, &req.cmd,
++			    sizeof(req));
++}
+diff --git a/drivers/net/ethernet/marvell/prestera/prestera_hw.h b/drivers/net/ethernet/marvell/prestera/prestera_hw.h
+index d3fdfe244f87..56e043146dd2 100644
+--- a/drivers/net/ethernet/marvell/prestera/prestera_hw.h
++++ b/drivers/net/ethernet/marvell/prestera/prestera_hw.h
+@@ -144,6 +144,8 @@ struct prestera_acl_hw_action_info;
+ struct prestera_acl_iface;
+ struct prestera_counter_stats;
+ struct prestera_iface;
++struct prestera_flood_domain;
++struct prestera_mdb_entry;
+ 
+ /* Switch API */
+ int prestera_hw_switch_init(struct prestera_switch *sw);
+@@ -302,4 +304,13 @@ int prestera_hw_policer_release(struct prestera_switch *sw,
+ int prestera_hw_policer_sr_tcm_set(struct prestera_switch *sw,
+ 				   u32 policer_id, u64 cir, u32 cbs);
+ 
++/* Flood domain / MDB API */
++int prestera_hw_flood_domain_create(struct prestera_flood_domain *domain);
++int prestera_hw_flood_domain_destroy(struct prestera_flood_domain *domain);
++int prestera_hw_flood_domain_ports_set(struct prestera_flood_domain *domain);
++int prestera_hw_flood_domain_ports_reset(struct prestera_flood_domain *domain);
++
++int prestera_hw_mdb_create(struct prestera_mdb_entry *mdb);
++int prestera_hw_mdb_destroy(struct prestera_mdb_entry *mdb);
++
+ #endif /* _PRESTERA_HW_H_ */
+diff --git a/drivers/net/ethernet/marvell/prestera/prestera_main.c b/drivers/net/ethernet/marvell/prestera/prestera_main.c
+index 0e8eecbe13e1..4b95ef393b6e 100644
+--- a/drivers/net/ethernet/marvell/prestera/prestera_main.c
++++ b/drivers/net/ethernet/marvell/prestera/prestera_main.c
+@@ -600,6 +600,30 @@ static struct prestera_lag *prestera_lag_by_dev(struct prestera_switch *sw,
+ 	return NULL;
+ }
+ 
++int prestera_lag_id(struct prestera_switch *sw,
++		    struct net_device *lag_dev, u16 *lag_id)
++{
++	struct prestera_lag *lag;
++	int free_id = -1;
++	int id;
++
++	for (id = 0; id < sw->lag_max; id++) {
++		lag = prestera_lag_by_id(sw, id);
++		if (lag->member_count) {
++			if (lag->dev == lag_dev) {
++				*lag_id = id;
++				return 0;
++			}
++		} else if (free_id < 0) {
++			free_id = id;
++		}
++	}
++	if (free_id < 0)
++		return -ENOSPC;
++	*lag_id = free_id;
++	return 0;
++}
++
+ static struct prestera_lag *prestera_lag_create(struct prestera_switch *sw,
+ 						struct net_device *lag_dev)
  {
-@@ -461,19 +494,13 @@ prestera_bridge_1d_port_join(struct prestera_bridge_port *br_port)
- 	if (err)
- 		return err;
- 
--	err = prestera_hw_port_flood_set(port, BR_FLOOD | BR_MCAST_FLOOD,
--					 br_port->flags);
--	if (err)
--		goto err_port_flood_set;
--
--	err = prestera_hw_port_learning_set(port, br_port->flags & BR_LEARNING);
-+	err = prestera_br_port_flags_set(br_port, port);
- 	if (err)
--		goto err_port_learning_set;
-+		goto err_flags2port_set;
- 
- 	return 0;
- 
--err_port_learning_set:
--err_port_flood_set:
-+err_flags2port_set:
- 	prestera_hw_bridge_port_delete(port, bridge->bridge_id);
- 
- 	return err;
-@@ -592,8 +619,7 @@ void prestera_bridge_port_leave(struct net_device *br_dev,
- 
- 	switchdev_bridge_port_unoffload(br_port->dev, NULL, NULL, NULL);
- 
--	prestera_hw_port_learning_set(port, false);
--	prestera_hw_port_flood_set(port, BR_FLOOD | BR_MCAST_FLOOD, 0);
-+	prestera_br_port_flags_reset(br_port, port);
- 	prestera_port_vid_stp_set(port, PRESTERA_VID_ALL, BR_STATE_FORWARDING);
- 	prestera_bridge_port_put(br_port);
- }
-@@ -603,26 +629,14 @@ static int prestera_port_attr_br_flags_set(struct prestera_port *port,
- 					   struct switchdev_brport_flags flags)
- {
- 	struct prestera_bridge_port *br_port;
--	int err;
- 
- 	br_port = prestera_bridge_port_by_dev(port->sw->swdev, dev);
- 	if (!br_port)
- 		return 0;
- 
--	err = prestera_hw_port_flood_set(port, flags.mask, flags.val);
--	if (err)
--		return err;
--
--	if (flags.mask & BR_LEARNING) {
--		err = prestera_hw_port_learning_set(port,
--						    flags.val & BR_LEARNING);
--		if (err)
--			return err;
--	}
--
--	memcpy(&br_port->flags, &flags.val, sizeof(flags.val));
--
--	return 0;
-+	br_port->flags &= ~flags.mask;
-+	br_port->flags |= flags.val & flags.mask;
-+	return prestera_br_port_flags_set(br_port, port);
- }
- 
- static int prestera_port_attr_br_ageing_set(struct prestera_port *port,
-@@ -918,14 +932,9 @@ prestera_port_vlan_bridge_join(struct prestera_port_vlan *port_vlan,
- 	if (port_vlan->br_port)
- 		return 0;
- 
--	err = prestera_hw_port_flood_set(port, BR_FLOOD | BR_MCAST_FLOOD,
--					 br_port->flags);
--	if (err)
--		return err;
--
--	err = prestera_hw_port_learning_set(port, br_port->flags & BR_LEARNING);
-+	err = prestera_br_port_flags_set(br_port, port);
- 	if (err)
--		goto err_port_learning_set;
-+		goto err_flags2port_set;
- 
- 	err = prestera_port_vid_stp_set(port, vid, br_port->stp_state);
- 	if (err)
-@@ -950,8 +959,8 @@ prestera_port_vlan_bridge_join(struct prestera_port_vlan *port_vlan,
- err_bridge_vlan_get:
- 	prestera_port_vid_stp_set(port, vid, BR_STATE_FORWARDING);
- err_port_vid_stp_set:
--	prestera_hw_port_learning_set(port, false);
--err_port_learning_set:
-+	prestera_br_port_flags_reset(br_port, port);
-+err_flags2port_set:
- 	return err;
- }
- 
 -- 
 2.17.1
 
