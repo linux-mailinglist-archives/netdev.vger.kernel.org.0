@@ -2,105 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B21E56B850
-	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 13:19:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4C9F56B891
+	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 13:32:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237157AbiGHLSx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jul 2022 07:18:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48022 "EHLO
+        id S237215AbiGHL3U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jul 2022 07:29:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237028AbiGHLSw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 07:18:52 -0400
-Received: from kylie.crudebyte.com (kylie.crudebyte.com [5.189.157.229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A23BC88F1D
-        for <netdev@vger.kernel.org>; Fri,  8 Jul 2022 04:18:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
-        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
-        Content-ID:Content-Description;
-        bh=+nD4DS8oXyEly5aIOtgm4gxwma+XmZ8gZLIcYuW4KRw=; b=FHP22ExkFj3UrAOaRCKAYj2RJe
-        C3Jp31UVB1Bnb357JrSlZRh1ewErJE9xzobxfYgT6P+3gBeQwIks2yPSRGTniW0ClGn5ngOkHOxN/
-        bI0eDY3C/WK7Aa75FhWbn+Y+aD5fAi5h/d/lU6y4SkldFwIA1KDbmNNttYQK/fGdulyBbobiW5u7X
-        WTriliP8iRV0U2OSXrNMCvoctGNzo3S9AfLyU5Pp3bfOs8Jq+i7klJlSXOS4XZFERyBRGO/+kHo/N
-        xQ5xdCCy1nYcC48FJSL8YhN5Msd8kC5pd7JycF2gaPjPrhxiqfxwtSilI9J92p1xAIIDwZFSCogQF
-        qRcXB2xwPGUgeM42yrX3iy36ER3Dx7/LEh3Ca1O2VSlGH6jtIHNouBHMSotrlwTp2Kc8+iI+UhcHl
-        BjXNrAcZeOIi8d2YjE94m1a80yXKa+QNir/9fMiwc46lUc8t+PMPM2vZn+2kiP/GeodGBvYtqHqGA
-        XgBZudtRxSWKSAFMUGacsIsNkBPwKHlWiJOyTvMNHELLL8o/VRCpl01ZDD9mDnqx4X5dz2fq9SXlz
-        +5nrvvLGR48pSJ6TZ4kAzMhiS0fzdyTK4WYblTl2i/Zymb9X4GW4gLRn77OYJb6KvQJyMOYdOnyNF
-        MjtBqSALMRsg+tPGp2uISS8ngZpp29KGmDLaLaBB8=;
-From:   Christian Schoenebeck <linux_oss@crudebyte.com>
-To:     Dominique Martinet <asmadeus@codewreck.org>,
-        Eric Van Hensbergen <ericvh@gmail.com>
-Cc:     Greg Kurz <groug@kaod.org>, Latchesar Ionkov <lucho@ionkov.net>,
-        Nikolay Kichukov <nikolay@oldum.net>, netdev@vger.kernel.org,
-        v9fs-developer@lists.sourceforge.net
-Subject: Re: [PATCH v4 00/12] remove msize limit in virtio transport
-Date:   Fri, 08 Jul 2022 13:18:40 +0200
-Message-ID: <1690835.L3irNgtgWz@silver>
-In-Reply-To: <CAFkjPTngeFh=0mPVW-Yf1Sxkxp_HDNUeANndoYN3-eU9_rGLuQ@mail.gmail.com>
-References: <cover.1640870037.git.linux_oss@crudebyte.com>
- <YseFPgFoLpjOGq40@codewreck.org>
- <CAFkjPTngeFh=0mPVW-Yf1Sxkxp_HDNUeANndoYN3-eU9_rGLuQ@mail.gmail.com>
+        with ESMTP id S237642AbiGHL3Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 07:29:16 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 99AE1951C8
+        for <netdev@vger.kernel.org>; Fri,  8 Jul 2022 04:29:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657279751;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=pQ8hI7tAToAaGENhoelGGeUPhfdGj6ZA32YUdh4TI7g=;
+        b=erkHckSpTKhpr3t0qW94EHRpsmCPPtbrmrsqXpiBthAe4QP/p3E4q/XPrjVYVwx130f7Rc
+        2VknINL9mefRysoZWsb1ApWNaGImjNDkdsCSGhITzy3Q68dTfK1w4pRhKg4+Pngo1l/6ql
+        MWysHNtCuLjaX2PykKxVSPfTH9uhBHY=
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
+ [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-330-el9q19J_MMGraRXbqvdS6Q-1; Fri, 08 Jul 2022 07:29:04 -0400
+X-MC-Unique: el9q19J_MMGraRXbqvdS6Q-1
+Received: by mail-qk1-f198.google.com with SMTP id k190-20020a37bac7000000b006af6d953751so20781003qkf.13
+        for <netdev@vger.kernel.org>; Fri, 08 Jul 2022 04:29:04 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=pQ8hI7tAToAaGENhoelGGeUPhfdGj6ZA32YUdh4TI7g=;
+        b=f/ka8pVSbU77/08QRCIzTHdT6q2A1RSnnh4rqOTFIhRFepUuGYq+kc/7bi0rWdVbyp
+         05MvT68cAyIa3slv3KaE9UH85Lmd/cvKPT0FqGn8lqmfVHVfxTAMggVhFs0zdYr7k8fL
+         MeZQAwSlvzZyNUpbPJ4nmsOAK+fm7MK35cGd4FlCW4kuUpDxGgilj+Kp19KC/uuWiJQp
+         grCszVIhgd2+ZVLhU3vIBHhIcw1sRMRxUwv6ycuWsI7xLlCzpi6/NfhbirmqhOfLRdj/
+         yAxEWjM5+IpLsq1dWDRtl9aK7YC3NS5llqh45hkfYCpDuIYBz9pmB8Hwg4SLXOyjNjEg
+         o2Sg==
+X-Gm-Message-State: AJIora+BbmUk4Qfh4MSl5OUdU3yTc7Xm3kxkne8C1uV3tzrznM+g0l96
+        eLbHJGt/f3HCyGxgFKtyfpiMprlRbpTpmHZRIJqy75ShCRLdhrIf/0ANzRAS1XKzDK3wavI+2sU
+        AdD/GXCa+jnL4LQFO3EFvHlAkhkzqlKaJ
+X-Received: by 2002:ac8:5dca:0:b0:31e:85b8:8a18 with SMTP id e10-20020ac85dca000000b0031e85b88a18mr2366803qtx.370.1657279744183;
+        Fri, 08 Jul 2022 04:29:04 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1sentVPmK5WEA4lrN7utaqjkf+t27q8DqhRdkX0cZZhMbHLJdy+uMh1/O3NgdOS4+jT1HeWza8vKer/xm5M1KI=
+X-Received: by 2002:ac8:5dca:0:b0:31e:85b8:8a18 with SMTP id
+ e10-20020ac85dca000000b0031e85b88a18mr2366771qtx.370.1657279743969; Fri, 08
+ Jul 2022 04:29:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+References: <20220623160738.632852-1-eperezma@redhat.com> <20220623160738.632852-2-eperezma@redhat.com>
+ <20220628133955.sj32sfounu4byggl@sgarzare-redhat>
+In-Reply-To: <20220628133955.sj32sfounu4byggl@sgarzare-redhat>
+From:   Eugenio Perez Martin <eperezma@redhat.com>
+Date:   Fri, 8 Jul 2022 13:28:27 +0200
+Message-ID: <CAJaqyWcHoB6edp3Qq8Df75Si_6aBDN=qp9ggB2D5hsshCxOdjQ@mail.gmail.com>
+Subject: Re: [PATCH v6 1/4] vdpa: Add suspend operation
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     netdev <netdev@vger.kernel.org>, Jason Wang <jasowang@redhat.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        kvm list <kvm@vger.kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Cindy Lu <lulu@redhat.com>,
+        "Kamde, Tanuj" <tanuj.kamde@amd.com>,
+        Si-Wei Liu <si-wei.liu@oracle.com>,
+        "Uminski, Piotr" <Piotr.Uminski@intel.com>,
+        habetsm.xilinx@gmail.com, "Dawar, Gautam" <gautam.dawar@amd.com>,
+        Pablo Cascon Katchadourian <pabloc@xilinx.com>,
+        Zhu Lingshan <lingshan.zhu@intel.com>,
+        Laurent Vivier <lvivier@redhat.com>,
+        Longpeng <longpeng2@huawei.com>,
+        Dinan Gunawardena <dinang@xilinx.com>,
+        Martin Petrus Hubertus Habets <martinh@xilinx.com>,
+        Martin Porter <martinpo@xilinx.com>,
+        Eli Cohen <elic@nvidia.com>, ecree.xilinx@gmail.com,
+        Wu Zongyong <wuzongyong@linux.alibaba.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Harpreet Singh Anand <hanand@xilinx.com>,
+        Xie Yongji <xieyongji@bytedance.com>,
+        Zhang Min <zhang.min9@zte.com.cn>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Freitag, 8. Juli 2022 04:26:40 CEST Eric Van Hensbergen wrote:
-> kvmtool might be the easiest I guess - I=E2=80=99m traveling right now bu=
-t I can
-> try and find some others.  The arm fast models have free versions that are
-> downloadable as well.  I know I=E2=80=99ve seem some other less-tradition=
-al uses of
-> virtio particularly in libos deployments but will take some time to rattle
-> those from my memory.
+On Tue, Jun 28, 2022 at 3:40 PM Stefano Garzarella <sgarzare@redhat.com> wr=
+ote:
+>
+> On Thu, Jun 23, 2022 at 06:07:35PM +0200, Eugenio P=C3=A9rez wrote:
+> >This operation is optional: It it's not implemented, backend feature bit
+> >will not be exposed.
+> >
+> >Signed-off-by: Eugenio P=C3=A9rez <eperezma@redhat.com>
+> >---
+> > include/linux/vdpa.h | 4 ++++
+> > 1 file changed, 4 insertions(+)
+> >
+> >diff --git a/include/linux/vdpa.h b/include/linux/vdpa.h
+> >index 7b4a13d3bd91..d282f464d2f1 100644
+> >--- a/include/linux/vdpa.h
+> >+++ b/include/linux/vdpa.h
+> >@@ -218,6 +218,9 @@ struct vdpa_map_file {
+> >  * @reset:                    Reset device
+> >  *                            @vdev: vdpa device
+> >  *                            Returns integer: success (0) or error (< =
+0)
+> >+ * @suspend:                  Suspend or resume the device (optional)
+>                                             ^
+> IIUC we removed the resume operation (that should be done with reset),
+> so should we update this documentation?
+>
 
-Some examples would indeed be useful, thanks!
+Totally, I forgot to update the doc. I'll send a new version with that.
 
-> On Fri, Jul 8, 2022 at 11:16 AM Dominique Martinet <asmadeus@codewreck.or=
-g>
->=20
-> wrote:
-> > Eric Van Hensbergen wrote on Fri, Jul 08, 2022 at 10:44:45AM +1000:
-> > > there are other 9p virtio servers - several emulation platforms suppo=
-rt
-> >=20
-> > it
-> >=20
-> > > sans qemu.
-> >=20
-> > Would you happen to have any concrete example?
-> > I'd be curious if there are some that'd be easy to setup for test for
-> > example; my current validation setup lacks a bit of diversity...
-> >=20
-> > I found https://github.com/moby/hyperkit for OSX but that doesn't really
-> > help me, and can't see much else relevant in a quick search
+Thanks!
 
-So that appears to be a 9p (@virtio-PCI) client for xhyve, with max. 256kB=
-=20
-buffers <=3D> max. 68 virtio descriptors (memory segments) [1]:
 
-/* XXX issues with larger buffers elsewhere in stack */
-#define BUFSIZE (1 << 18)
-#define MAXDESC (BUFSIZE / 4096 + 4)
-#define VT9P_RINGSZ (BUFSIZE / 4096 * 4)
-
-[1] https://github.com/moby/hyperkit/blob/master/src/lib/pci_virtio_9p.c#L27
-
-But on xhyve side I don't see any 9p server implementation:
-https://github.com/machyve/xhyve/search?q=3D9p
-Maybe a 9p server is already implemented by Apple's Hypervisor framework. I=
-=20
-don't find this documented anywhere though.
-
-Best regards,
-Christian Schoenebeck
-
+> Thanks,
+> Stefano
+>
+> >+ *                            @vdev: vdpa device
+> >+ *                            Returns integer: success (0) or error (< =
+0)
+> >  * @get_config_size:          Get the size of the configuration space i=
+ncludes
+> >  *                            fields that are conditional on feature bi=
+ts.
+> >  *                            @vdev: vdpa device
+> >@@ -319,6 +322,7 @@ struct vdpa_config_ops {
+> >       u8 (*get_status)(struct vdpa_device *vdev);
+> >       void (*set_status)(struct vdpa_device *vdev, u8 status);
+> >       int (*reset)(struct vdpa_device *vdev);
+> >+      int (*suspend)(struct vdpa_device *vdev);
+> >       size_t (*get_config_size)(struct vdpa_device *vdev);
+> >       void (*get_config)(struct vdpa_device *vdev, unsigned int offset,
+> >                          void *buf, unsigned int len);
+> >--
+> >2.31.1
+> >
+>
 
