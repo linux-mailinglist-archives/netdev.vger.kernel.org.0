@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D60756BB4C
-	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 15:56:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3760656BB5C
+	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 16:00:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238292AbiGHN4N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jul 2022 09:56:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57124 "EHLO
+        id S238211AbiGHN73 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jul 2022 09:59:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237981AbiGHN4M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 09:56:12 -0400
-Received: from smtp-42aa.mail.infomaniak.ch (smtp-42aa.mail.infomaniak.ch [IPv6:2001:1600:4:17::42aa])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B05382B26E
-        for <netdev@vger.kernel.org>; Fri,  8 Jul 2022 06:56:11 -0700 (PDT)
+        with ESMTP id S238018AbiGHN71 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 09:59:27 -0400
+Received: from smtp-190e.mail.infomaniak.ch (smtp-190e.mail.infomaniak.ch [IPv6:2001:1600:4:17::190e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDEE413FB4
+        for <netdev@vger.kernel.org>; Fri,  8 Jul 2022 06:59:26 -0700 (PDT)
 Received: from smtp-3-0001.mail.infomaniak.ch (unknown [10.4.36.108])
-        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4LfZYz4bwfzMqNRC;
-        Fri,  8 Jul 2022 15:56:07 +0200 (CEST)
+        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4LfZdn3qMVzMq01C;
+        Fri,  8 Jul 2022 15:59:25 +0200 (CEST)
 Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
-        by smtp-3-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4LfZYz11Wdzln2Gb;
-        Fri,  8 Jul 2022 15:56:06 +0200 (CEST)
+        by smtp-3-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4LfZdn065Qzln2Gm;
+        Fri,  8 Jul 2022 15:59:24 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
-        s=20191114; t=1657288567;
-        bh=lnemEDM1drkoo6yhUrRJxeqXP0/bequ47VDKSLTUJgA=;
+        s=20191114; t=1657288765;
+        bh=EzX7t3K/O5SpDe7WJRGQski/oO2eNixevg8tUUVZBn0=;
         h=Date:To:Cc:References:From:Subject:In-Reply-To:From;
-        b=eAOmpKRBwlHiFDW7c+KF0oIU7MYcjwDI3rBi+dimAbnmKjf84et4houguniJCLDbw
-         xBEijDsPbPIgOhRz5KS/KRiJGxcldIUSAwpH2uNBvQ+3ux6hHx6Lp+Hgt2AxlWrpKW
-         Vt5WlmVHr09TgKU48OaxWq7Ry8wOqxltcIugZ0xU=
-Message-ID: <72375435-94d4-e3aa-c27b-b44382dde6ad@digikod.net>
-Date:   Fri, 8 Jul 2022 15:56:06 +0200
+        b=ZkawuMSttAIT3elovHlY1u4Orxg4jLlbXnylL+jwfww7e41VIQIdnpVhIPZtvy/P5
+         w1OWzsH+/5khkCtAIyqncvbdjx7WdqQ+o2QOkumY+iuEkcUqSIEihp5FRNy8DliNJO
+         0FrCDYMsLSU1G7PJJXGQAzUtArsMipCzTeZ54dvQ=
+Message-ID: <b08fe5cc-3be0-390b-3575-4f27f795f609@digikod.net>
+Date:   Fri, 8 Jul 2022 15:59:24 +0200
 MIME-Version: 1.0
 User-Agent: 
 Content-Language: en-US
@@ -40,16 +40,15 @@ Cc:     willemdebruijn.kernel@gmail.com,
 References: <20220621082313.3330667-1-konstantin.meskhidze@huawei.com>
  <20220621082313.3330667-3-konstantin.meskhidze@huawei.com>
  <0bbbcf21-1e7d-5585-545f-bf89d8ebd527@digikod.net>
- <9d0c8780-6648-404f-7e51-b62a36617121@huawei.com>
+ <7735ae47-9088-be29-2696-c5170031d7c2@huawei.com>
 From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
 Subject: Re: [PATCH v6 02/17] landlock: refactors landlock_find/insert_rule
-In-Reply-To: <9d0c8780-6648-404f-7e51-b62a36617121@huawei.com>
+In-Reply-To: <7735ae47-9088-be29-2696-c5170031d7c2@huawei.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -57,7 +56,7 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 08/07/2022 14:53, Konstantin Meskhidze (A) wrote:
+On 08/07/2022 15:10, Konstantin Meskhidze (A) wrote:
 > 
 > 
 > 7/7/2022 7:44 PM, Mickaël Salaün пишет:
@@ -157,15 +156,24 @@ On 08/07/2022 14:53, Konstantin Meskhidze (A) wrote:
 >>
 >> Something is wrong with this second check: else + object_ptr?
 > 
-> It was your suggestion to use it like this:
-> " ....You can also add a WARN_ON_ONCE(object_ptr && object_data)."
+>   Sorry. Do you mean logical error here? I got your point.
+>   You are right!
 > 
-> Please check it here:
-> https://lore.kernel.org/linux-security-module/bc44f11f-0eaa-a5f6-c5dc-1d36570f1be1@digikod.net/ 
+>   I think it must be refactored like this:
+> 
+>      if (object_ptr && !object_data) {
+>          landlock_get_object(object_ptr);
+>          new_rule->object.ptr = object_ptr;
+>      } else if (object_ptr && object_data) {
+>          ...
+>      }
 
-Yes, but the error is in the "else", you should write:
-if (WARN_ON_ONCE(object_ptr && object_data))
-	return ERR_PTR(-EINVAL);
+There is indeed a logical error but this doesn't fix everything. Please 
+include my previous suggestion instead.
 
-…and this should be before the `if (object_ptr) {` line (to avoid 
-erronous landlock_get_object() call), just after the `if (!new_rule)` check.
+
+> Plus, I will add a test for this case.
+
+That would be great but I don't think this code is reachable from user 
+space. I think that would require kunit but I may be missing something. 
+How would you test this?
