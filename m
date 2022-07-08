@@ -2,90 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2236256B2EF
-	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 08:47:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 31B1456B2F0
+	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 08:50:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237370AbiGHGp2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jul 2022 02:45:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36492 "EHLO
+        id S236950AbiGHGuX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jul 2022 02:50:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236575AbiGHGp1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 02:45:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 692ED4D4FC;
-        Thu,  7 Jul 2022 23:45:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1B949B80189;
-        Fri,  8 Jul 2022 06:45:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D42DC341C0;
-        Fri,  8 Jul 2022 06:45:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657262719;
-        bh=FlwRiRHtGel2rCGS4TGuYsdGWisqlLhpOiaAc2cCkUU=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=I3BnsXq93SQnzAOwRFujOtCiPKruJMc25QSMiggQvZ2wBKS0/v4k5PgqgoNOnr9Qj
-         C5fu9Clucy3N+DXL+4tnrrWWdwaP1jX0xl+iIQ17n0iDsp6huelUwesErmoSLgVU9g
-         +LCFqlQP/PBOEyJEUeyt4Pk2c4MkYDBFhPaZtCfQzFnLRFWBkiCQuHYGqvAXgy3RYF
-         pyWKjiGAQQ56Tqpd3pkZQ2N2W8kGLthplZ68UjeVvWCqOjoW/myrx9a2g5z5ka39tx
-         R8sXHKcHMegDwNKMJtd7q0DXoETrueJo5UA9rt+k5b5i9fv4qmZOkfrXMAy8WlFrj1
-         0t44WfpHnjvDA==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     linux-kernel@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        ath11k@lists.infradead.org
-Subject: Re: [PATCH 03/13] tracing/ath: Use the new __vstring() helper
-References: <20220705224453.120955146@goodmis.org>
-        <20220705224749.430339634@goodmis.org>
-Date:   Fri, 08 Jul 2022 09:45:14 +0300
-In-Reply-To: <20220705224749.430339634@goodmis.org> (Steven Rostedt's message
-        of "Tue, 05 Jul 2022 18:44:56 -0400")
-Message-ID: <87edywt85h.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        with ESMTP id S236471AbiGHGuW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 02:50:22 -0400
+Received: from mail-ed1-f50.google.com (mail-ed1-f50.google.com [209.85.208.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EAF867599;
+        Thu,  7 Jul 2022 23:50:21 -0700 (PDT)
+Received: by mail-ed1-f50.google.com with SMTP id r6so14337490edd.7;
+        Thu, 07 Jul 2022 23:50:21 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=+/ZsZEkzPw0eYeUwGLX4xLCdhSTPfzJLZOs5yae4prU=;
+        b=nDNdbO1yPixnJNT2jqq2V1+W3JxqKSjyhEPP2zKztpG8YFD5w6SVAXLu3tIQNfaUaO
+         VpSiuiNReaEu0duWnqEsGU18K6evA5t+UXjOCHHMVrt3O8hfCG1wz0l/zo7UzxWDKRZv
+         SrqyM4lFTI4pKHuBZgUNEk+vn7zq0DEv0Xrx43ZaXQZFlfRr9dL6XqeeaAEWahfqgD7G
+         0Ehtn5aaZOB42cl6+GXTycUnLkLuw96nhSdooGkZdBT8m/V6hFRHX8q2QT046rrU7pOo
+         MqlpTUD5Zs4rP8cNWNvqGOySF3mLzEIeKqMYlq71Y8dxBKXtLqPreTwpXSRrbozjLPuS
+         S/ow==
+X-Gm-Message-State: AJIora91iIPHqQnQEGjywtVK4cKehYVLM3JX+sKRTg634xYEjOYmIaM9
+        SCLlN2u49S4ABWPuFZpA4CuF7X/mckg=
+X-Google-Smtp-Source: AGRyM1u1HScerSMocfufpmRxwy9I7MUBqToNtEWUoc+1wV00utccbUf8MBD3C0UtThQ46XdKa4vSdQ==
+X-Received: by 2002:a05:6402:5409:b0:42a:a643:4eb8 with SMTP id ev9-20020a056402540900b0042aa6434eb8mr2711015edb.71.1657263020214;
+        Thu, 07 Jul 2022 23:50:20 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id u17-20020a056402111100b0043a6e807febsm9568316edv.46.2022.07.07.23.50.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 Jul 2022 23:50:19 -0700 (PDT)
+Message-ID: <1d708abb-4ab1-3af3-3952-2ebc9be33297@kernel.org>
+Date:   Fri, 8 Jul 2022 08:50:18 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] ath5k: Use swap() instead of open coding it
+Content-Language: en-US
+To:     Tan Zhongjun <tanzhongjun@coolpad.com>, mickflemm@gmail.com,
+        mcgrof@kernel.org, kvalo@kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220704130614.37467-1-tanzhongjun@coolpad.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <20220704130614.37467-1-tanzhongjun@coolpad.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Steven Rostedt <rostedt@goodmis.org> writes:
+On 04. 07. 22, 15:06, Tan Zhongjun wrote:
+> Use swap() instead of open coding it.
 
-> From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
->
-> Instead of open coding a __dynamic_array() with a fixed length (which
-> defeats the purpose of the dynamic array in the first place). Use the new
-> __vstring() helper that will use a va_list and only write enough of the
-> string into the ring buffer that is needed.
->
-> Cc: Kalle Valo <kvalo@kernel.org>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Eric Dumazet <edumazet@google.com>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Paolo Abeni <pabeni@redhat.com>
-> Cc: ath10k@lists.infradead.org
-> Cc: linux-wireless@vger.kernel.org
-> Cc: netdev@vger.kernel.org
-> Cc: ath11k@lists.infradead.org
-> Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+This still holds:
+https://lore.kernel.org/all/0c3acbd4-6ab2-5cc5-6293-54e30093cce2@kernel.org/
 
-Feel free to take this via your tree:
+> Signed-off-by: Tan Zhongjun
 
-Acked-by: Kalle Valo <kvalo@kernel.org>
+This is a wrong S-O-B line.
+
+> ---
+> drivers/net/wireless/ath/ath5k/phy.c | 4 +---
+> 1 file changed, 1 insertion(+), 3 deletions(-)
+> 
+> diff --git a/drivers/net/wireless/ath/ath5k/phy.c 
+> b/drivers/net/wireless/ath/ath5k/phy.c
+> index 5797ef9c73d7..c2cf4b79dd95 100644
+> --- a/drivers/net/wireless/ath/ath5k/phy.c
+> +++ b/drivers/net/wireless/ath/ath5k/phy.c
+> @@ -1569,9 +1569,7 @@ ath5k_hw_get_median_noise_floor(struct ath5k_hw *ah)
+> for (i = 0; i < ATH5K_NF_CAL_HIST_MAX - 1; i++) {
+> for (j = 1; j < ATH5K_NF_CAL_HIST_MAX - i; j++) {
+> if (sort[j] > sort[j - 1]) {
+> - tmp = sort[j];
+> - sort[j] = sort[j - 1];
+> - sort[j - 1] = tmp;
+> + swap(sort[j], sort[j - 1]);
+> }
+> }
+> }
+> -- 
+> 2.29.0
+> 
+
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/list/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+js
