@@ -2,83 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C171956C3D6
-	for <lists+netdev@lfdr.de>; Sat,  9 Jul 2022 01:15:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0492B56C3D0
+	for <lists+netdev@lfdr.de>; Sat,  9 Jul 2022 01:14:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238205AbiGHXAa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jul 2022 19:00:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42208 "EHLO
+        id S239267AbiGHXEw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jul 2022 19:04:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236471AbiGHXA3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 19:00:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3CB9371B4;
-        Fri,  8 Jul 2022 16:00:28 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6A22FB82A11;
-        Fri,  8 Jul 2022 23:00:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 013C3C341CB;
-        Fri,  8 Jul 2022 23:00:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657321226;
-        bh=cfgz11hbDz6Yz0qnEPQRJ2nlz33mqPZwQvepHGJGv20=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=VdpQ60CYIYawwiQrtwGy0xCwxBMZr7rv4xRgMyXP6jT7pAa21kSM4NizGlZTAdZtk
-         xfv/lFZB5RdgxODHFUiR3f4Dw3WEOr+UL+k1jPEXMmi+Vw+g624zJjHmaky+gH56hU
-         8YxW4TSiCmYZRbf0WliEW4GojFRt6zW4SL/aH/n0JhtcUJq4Bda0n+vbX3S9qPIp5p
-         dc/3rz1UWsc4KLCeji+6QjDxZdihrZuC4pmtAlr0PfhB1XkkbS0gQRRxMmLwVP4k25
-         i0zJ7+jzBeG8AHeg4ieZtqabBSA5l6u/Z0eT1iu7bBw2L30LEhdoUwI0MQ3DhSkUkF
-         9bb3qQIQx7CJQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D8369E45BDB;
-        Fri,  8 Jul 2022 23:00:25 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S239113AbiGHXEu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 19:04:50 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 107053C147;
+        Fri,  8 Jul 2022 16:04:50 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id e15so241822edj.2;
+        Fri, 08 Jul 2022 16:04:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Mj2Ee6BNVC0lRz8SFhG2FrxB6VbtTeRJYQIs2AbTu0s=;
+        b=M1nNIpWyo7U3mGICfv2akVhXxl+3tlXtuNaLk6idAg2RXGNMVybBKK3Q+Bg4pDkS0q
+         r9Hj58KMmNwvUYlRAqBzbzFjgxqONxb3pvmw6h89HpVlrI0NFEQel8s13SOip7etSboT
+         WcZx2l6StZLxGBQ9q7XyWgReTGUXJWmkvnjhvXS/LRcbgHqi8geusFKo2qBGMcO7VdoR
+         R0gYmUgH2BvVKTNJ/pLStZ4tiT6c7Tvn2ECQUVal7GOrdFLnhFfJ6c8Du7DU9NmkEUW/
+         lrKpGpxy1pDgKx6G4I9gvVccYZD8KipwpS3b9MR5Nnh3CtqCgmJ2nK78N8PWcLvwOQyf
+         nQ+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Mj2Ee6BNVC0lRz8SFhG2FrxB6VbtTeRJYQIs2AbTu0s=;
+        b=qS8VGoUp9esEXkGN6BI5dYzTBCuvIRVsbgnkQivCU7IjbXdLG4o5Nrqrbzt4R8OyJX
+         BepxsjGRAqarHRTXY8FPETgR0P8hnD9WbSqvw6pD+LkNwwHFUR0hIf61jTQySin8Kjya
+         7Eh9Ace2brB0VvBE0DhWVEwONB9gNqX8bCb+6gBVGb2/s9bxbu9nCeCYF2Lpl7WjuEGv
+         jv7lkpy0bcAoZtVtwEpka5iD76b7Bpt1vL13MDYaa3OALdW7nUjH5LAazUuflTSTZVzR
+         tXG+834qT7TwBGjoHq6ana7gIeEU55E8BXDZjNjgGE5HY9cqZ74yDpMGnWQN/a+fhT8X
+         1NMg==
+X-Gm-Message-State: AJIora/vPxm1ofEFNgWM/qldLzQ7sAGPPdyXwSKpyWAP038vCkZ7Jpob
+        wAicX3lfnD/DqMN4JnxaY+lFapBpPP/JrqQ8ODk=
+X-Google-Smtp-Source: AGRyM1sWBkuMD8jN4uB24QxHNnydV9PwsJNcmyTAZKY13PMRmzcHMNZsGdizzP7u+qgaSMR+nhxr/gHOUR0Q/qpheEw=
+X-Received: by 2002:a05:6402:50d2:b0:43a:8487:8a09 with SMTP id
+ h18-20020a05640250d200b0043a84878a09mr7932866edb.232.1657321488508; Fri, 08
+ Jul 2022 16:04:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: pull-request: bpf 2022-07-08
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165732122588.21326.6932743257091611309.git-patchwork-notify@kernel.org>
-Date:   Fri, 08 Jul 2022 23:00:25 +0000
-References: <20220708213418.19626-1-daniel@iogearbox.net>
-In-Reply-To: <20220708213418.19626-1-daniel@iogearbox.net>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, ast@kernel.org, andrii@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220708130319.1016294-1-maximmi@nvidia.com> <CAPhsuW5oGiXy27wyYXkzXCgYo+PD50paOvT1qKDwNjGsxGuWzQ@mail.gmail.com>
+In-Reply-To: <CAPhsuW5oGiXy27wyYXkzXCgYo+PD50paOvT1qKDwNjGsxGuWzQ@mail.gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 8 Jul 2022 16:04:37 -0700
+Message-ID: <CAEf4BzZ4ep4gBpccuji4THxT92FqvjQBZ0iXhHtQx+ncYMkfYw@mail.gmail.com>
+Subject: Re: [PATCH bpf] selftests/bpf: Fix xdp_synproxy build failure if CONFIG_NF_CONNTRACK=m/n
+To:     Song Liu <song@kernel.org>
+Cc:     Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Shuah Khan <shuah@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Yauheni Kaliuta <ykaliuta@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Fri, Jul 8, 2022 at 9:49 AM Song Liu <song@kernel.org> wrote:
+>
+> On Fri, Jul 8, 2022 at 6:03 AM Maxim Mikityanskiy <maximmi@nvidia.com> wrote:
+> >
+> > When CONFIG_NF_CONNTRACK=m, struct bpf_ct_opts and enum member
+> > BPF_F_CURRENT_NETNS are not exposed. This commit allows building the
+> > xdp_synproxy selftest in such cases. Note that nf_conntrack must be
+> > loaded before running the test if it's compiled as a module.
+> >
+> > This commit also allows this selftest to be successfully compiled when
+> > CONFIG_NF_CONNTRACK is disabled.
+> >
+> > One unused local variable of type struct bpf_ct_opts is also removed.
+> >
+> > Reported-by: Yauheni Kaliuta <ykaliuta@redhat.com>
+> > Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+> > Fixes: fb5cd0ce70d4 ("selftests/bpf: Add selftests for raw syncookie helpers")
+>
+> Given tools/testing/selftests/bpf/config specifies CONFIG_NF_CONNTRACK=y,
+> I don't think this is really necessary.
+>
 
-This pull request was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Fri,  8 Jul 2022 23:34:18 +0200 you wrote:
-> Hi David, hi Jakub, hi Paolo, hi Eric,
-> 
-> The following pull-request contains BPF updates for your *net* tree.
-> 
-> We've added 3 non-merge commits during the last 2 day(s) which contain
-> a total of 7 files changed, 40 insertions(+), 24 deletions(-).
-> 
-> [...]
-
-Here is the summary with links:
-  - pull-request: bpf 2022-07-08
-    https://git.kernel.org/netdev/net/c/7c895ef88403
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+We do redefine some of the kernel structs (e.g., bpf_iter.h), though,
+to simplify build systems if it doesn't cost much maintenance burden.
+Which seems to be the case here. So I've applied this to bpf-next
+tree.
 
 
+> Thanks,
+> Song
+>
+>
+
+[...]
