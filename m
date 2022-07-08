@@ -2,107 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B881C56B2FD
-	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 08:53:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 367DF56B2FF
+	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 08:55:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237421AbiGHGwf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jul 2022 02:52:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40572 "EHLO
+        id S237134AbiGHGyp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jul 2022 02:54:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237414AbiGHGwe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 02:52:34 -0400
+        with ESMTP id S236525AbiGHGyo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 02:54:44 -0400
 Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FF006EE9C;
-        Thu,  7 Jul 2022 23:52:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFFCF72EEC
+        for <netdev@vger.kernel.org>; Thu,  7 Jul 2022 23:54:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657263153; x=1688799153;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=QIOfrS9Mg8mDpfgg0AWFxkQHpTHuQeEmTtCHCmLAbsc=;
-  b=EtjtPgeGc73fbn3ugI0CXgz6Sx7nreQ31HvzReNgj/roLiNUAKHuoiK0
-   vuR/4T0KZJo6ORII2iSqPgp3ANiAajdCU7vvjmXgBtoMELpCxzO8ydNhG
-   XEq8BQ9UuFa9DNe0nrNy6NjVcZ3OVjtN2HArYQ8G7Zi+RnLB2WCH0UyP2
-   MH5ZbbDd9nm+L+o+oFu6cxVWD/MVmzeillq4JMkcyuVjeZAQ7i06rxgGi
-   JnNg9/IyN5P5B+US3CfgDuB7I3K3/KAkP0Dp4qxhR/Z46sklylwfQoRPI
-   IMp9LX4NwGKJ/xEX0H1KC89t6Hg9Lzp2G5R0z52gSKXxHuSfikpuvO+YI
+  t=1657263283; x=1688799283;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=VsisQ0BEWsEuR/P7mVfwoilpiFOxHfQOccotQUfXK8U=;
+  b=U6fyzfCzcoAURGl8Z1eHGD57Xxb2OluQQL/GUc1xjsB1IqdwRbSiqoBK
+   kXRZkWnbdQXAGmRCjjhf/yxCJYQGF15eIGI/N5SSpedrMlaiCKNc2qO2e
+   CHR6OvrHPw1EocpDRdUs3pNN3Q4GvG6BsRayPwpM5I/j4tevzptX//FtB
+   pRNbSIdM5KZqqq7qJBI6KtyfWvxnWmMTtX8RdOyqQHzgYxAFtqgdvAPmF
+   guNGr1jgOwL1KCdyjbD7XGrWzei9y/QcDAbOg2NkX/sxm69kwNYuK7Nwh
+   jzn8vfWay17apBHR867NMwRsFj5fvC5hRQtU/dxAr5Rpq7grDYkj5b1Q6
    w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10401"; a="284949289"
+X-IronPort-AV: E=McAfee;i="6400,9594,10401"; a="284949574"
 X-IronPort-AV: E=Sophos;i="5.92,254,1650956400"; 
-   d="scan'208";a="284949289"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jul 2022 23:52:32 -0700
-X-ExtLoop1: 1
+   d="scan'208";a="284949574"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jul 2022 23:54:31 -0700
 X-IronPort-AV: E=Sophos;i="5.92,254,1650956400"; 
-   d="scan'208";a="736239583"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 07 Jul 2022 23:52:30 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o9hqn-000N3q-OY;
-        Fri, 08 Jul 2022 06:52:29 +0000
-Date:   Fri, 8 Jul 2022 14:52:10 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Manish Mandlik <mmandlik@google.com>, marcel@holtmann.org,
-        luiz.dentz@gmail.com
-Cc:     kbuild-all@lists.01.org, linux-bluetooth@vger.kernel.org,
-        chromeos-bluetooth-upstreaming@chromium.org,
-        Manish Mandlik <mmandlik@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v3 2/3] Bluetooth: Add sysfs entry to enable/disable
- devcoredump
-Message-ID: <202207081448.MghkbBvn-lkp@intel.com>
-References: <20220707151420.v3.2.I39885624992dacff236aed268bdaa69107cd1310@changeid>
+   d="scan'208";a="920893148"
+Received: from lingshan-mobl.ccr.corp.intel.com (HELO [10.254.210.36]) ([10.254.210.36])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jul 2022 23:54:28 -0700
+Message-ID: <1a40a361-536f-c1a6-8a95-09df80014dc5@intel.com>
+Date:   Fri, 8 Jul 2022 14:54:26 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220707151420.v3.2.I39885624992dacff236aed268bdaa69107cd1310@changeid>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.11.0
+Subject: Re: [PATCH V3 2/6] vDPA/ifcvf: support userspace to query features
+ and MQ of a management device
+Content-Language: en-US
+To:     Jason Wang <jasowang@redhat.com>, mst@redhat.com
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        parav@nvidia.com, xieyongji@bytedance.com, gautam.dawar@amd.com
+References: <20220701132826.8132-1-lingshan.zhu@intel.com>
+ <20220701132826.8132-3-lingshan.zhu@intel.com>
+ <c602c6c3-b38a-9543-2bb5-03be7d99fef3@redhat.com>
+From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
+In-Reply-To: <c602c6c3-b38a-9543-2bb5-03be7d99fef3@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-5.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Manish,
-
-Thank you for the patch! Perhaps something to improve:
-
-[auto build test WARNING on bluetooth/master]
-[also build test WARNING on bluetooth-next/master linus/master v5.19-rc5 next-20220707]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Manish-Mandlik/Bluetooth-Add-support-for-devcoredump/20220708-061724
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth.git master
-config: i386-randconfig-s002 (https://download.01.org/0day-ci/archive/20220708/202207081448.MghkbBvn-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.4-39-gce1a6720-dirty
-        # https://github.com/intel-lab-lkp/linux/commit/0d785cbd11ed3a6de29aeb05926177440ab26d54
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Manish-Mandlik/Bluetooth-Add-support-for-devcoredump/20220708-061724
-        git checkout 0d785cbd11ed3a6de29aeb05926177440ab26d54
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=i386 SHELL=/bin/bash net/bluetooth/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
 
 
-sparse warnings: (new ones prefixed by >>)
->> net/bluetooth/hci_sysfs.c:118:1: sparse: sparse: symbol 'dev_attr_enable_coredump' was not declared. Should it be static?
+On 7/4/2022 12:43 PM, Jason Wang wrote:
+>
+> 在 2022/7/1 21:28, Zhu Lingshan 写道:
+>> Adapting to current netlink interfaces, this commit allows userspace
+>> to query feature bits and MQ capability of a management device.
+>>
+>> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+>> ---
+>>   drivers/vdpa/ifcvf/ifcvf_base.c | 12 ++++++++++++
+>>   drivers/vdpa/ifcvf/ifcvf_base.h |  1 +
+>>   drivers/vdpa/ifcvf/ifcvf_main.c |  3 +++
+>>   3 files changed, 16 insertions(+)
+>>
+>> diff --git a/drivers/vdpa/ifcvf/ifcvf_base.c 
+>> b/drivers/vdpa/ifcvf/ifcvf_base.c
+>> index fb957b57941e..7c5f1cc93ad9 100644
+>> --- a/drivers/vdpa/ifcvf/ifcvf_base.c
+>> +++ b/drivers/vdpa/ifcvf/ifcvf_base.c
+>> @@ -346,6 +346,18 @@ int ifcvf_set_vq_state(struct ifcvf_hw *hw, u16 
+>> qid, u16 num)
+>>       return 0;
+>>   }
+>>   +u16 ifcvf_get_max_vq_pairs(struct ifcvf_hw *hw)
+>> +{
+>> +    struct virtio_net_config __iomem *config;
+>> +    u16 val, mq;
+>> +
+>> +    config = hw->dev_cfg;
+>> +    val = vp_ioread16((__le16 __iomem *)&config->max_virtqueue_pairs);
+>> +    mq = le16_to_cpu((__force __le16)val);
+>> +
+>> +    return mq;
+>> +}
+>> +
+>>   static int ifcvf_hw_enable(struct ifcvf_hw *hw)
+>>   {
+>>       struct virtio_pci_common_cfg __iomem *cfg;
+>> diff --git a/drivers/vdpa/ifcvf/ifcvf_base.h 
+>> b/drivers/vdpa/ifcvf/ifcvf_base.h
+>> index f5563f665cc6..d54a1bed212e 100644
+>> --- a/drivers/vdpa/ifcvf/ifcvf_base.h
+>> +++ b/drivers/vdpa/ifcvf/ifcvf_base.h
+>> @@ -130,6 +130,7 @@ u64 ifcvf_get_hw_features(struct ifcvf_hw *hw);
+>>   int ifcvf_verify_min_features(struct ifcvf_hw *hw, u64 features);
+>>   u16 ifcvf_get_vq_state(struct ifcvf_hw *hw, u16 qid);
+>>   int ifcvf_set_vq_state(struct ifcvf_hw *hw, u16 qid, u16 num);
+>> +u16 ifcvf_get_max_vq_pairs(struct ifcvf_hw *hw);
+>>   struct ifcvf_adapter *vf_to_adapter(struct ifcvf_hw *hw);
+>>   int ifcvf_probed_virtio_net(struct ifcvf_hw *hw);
+>>   u32 ifcvf_get_config_size(struct ifcvf_hw *hw);
+>> diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c 
+>> b/drivers/vdpa/ifcvf/ifcvf_main.c
+>> index 0a5670729412..3ff7096d30f1 100644
+>> --- a/drivers/vdpa/ifcvf/ifcvf_main.c
+>> +++ b/drivers/vdpa/ifcvf/ifcvf_main.c
+>> @@ -791,6 +791,9 @@ static int ifcvf_vdpa_dev_add(struct 
+>> vdpa_mgmt_dev *mdev, const char *name,
+>>       vf->hw_features = ifcvf_get_hw_features(vf);
+>>       vf->config_size = ifcvf_get_config_size(vf);
+>>   +    ifcvf_mgmt_dev->mdev.max_supported_vqs = 
+>> ifcvf_get_max_vq_pairs(vf);
+>
+>
+> Do we want #qps or #queues?
+>
+> FYI, vp_vdpa did:
+>
+> drivers/vdpa/virtio_pci/vp_vdpa.c: mgtdev->max_supported_vqs = 
+> vp_modern_get_num_queues(mdev);
+Oh Yes, it should be the queues, will fix this
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Thanks
+>
+> Thanks
+>
+>
+>> + ifcvf_mgmt_dev->mdev.supported_features = vf->hw_features;
+>> +
+>>       adapter->vdpa.mdev = &ifcvf_mgmt_dev->mdev;
+>>       ret = _vdpa_register_device(&adapter->vdpa, vf->nr_vring);
+>>       if (ret) {
+>
+
