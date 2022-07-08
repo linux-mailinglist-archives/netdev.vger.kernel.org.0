@@ -2,146 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FDD456B0DC
-	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 05:42:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9684A56B0FD
+	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 05:42:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237030AbiGHDMj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jul 2022 23:12:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48202 "EHLO
+        id S236738AbiGHDOb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jul 2022 23:14:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236180AbiGHDMi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 23:12:38 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79FCA7393D;
-        Thu,  7 Jul 2022 20:12:36 -0700 (PDT)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.55])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LfJGS4FtRzpW6X;
-        Fri,  8 Jul 2022 11:11:44 +0800 (CST)
-Received: from dggpemm500019.china.huawei.com (7.185.36.180) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 8 Jul 2022 11:12:34 +0800
-Received: from [10.67.109.184] (10.67.109.184) by
- dggpemm500019.china.huawei.com (7.185.36.180) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 8 Jul 2022 11:12:34 +0800
-Subject: Re: [PATCH bpf-next] samples: bpf: Fix cross-compiling error about
- bpftool
-From:   Pu Lehui <pulehui@huawei.com>
-To:     Song Liu <songliubraving@fb.com>
-CC:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        "Daniel Borkmann" <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        "Martin Lau" <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>
-References: <20220707140811.603590-1-pulehui@huawei.com>
- <FDFF5B78-F555-4C55-96D3-B7B3FAA8E84F@fb.com>
- <c357fa1a-5160-ed85-19bf-51f3c188d56e@huawei.com>
-Message-ID: <d44f8faf-06df-6fdf-0adf-2abbdf9c9a49@huawei.com>
-Date:   Fri, 8 Jul 2022 11:12:33 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        with ESMTP id S236998AbiGHDO3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 23:14:29 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 557DC74798
+        for <netdev@vger.kernel.org>; Thu,  7 Jul 2022 20:14:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657250067;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=6pWJ9vidmXiESXTHRmiFlc+OMg3mXWEt42MkWbaRXFo=;
+        b=Jm3zIBnoc6Kh3fSpf9GBnJab6AdKruWc9l8tHqQ9H3EswhpAEx0KkZM6LsO+x7kEJ0EgLw
+        RV00vflmtOvoG/k/XkL3D00UsUA7j3Ss4+4dmMV1q3CIjqbuB0fw7PKyI+TkAYJOt4Ji+o
+        PXSqhW2JshH6JY1D5eycE3JLsENemKg=
+Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com
+ [209.85.167.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-315-yE4uFPHlPM-UfPb0kjLxCQ-1; Thu, 07 Jul 2022 23:14:26 -0400
+X-MC-Unique: yE4uFPHlPM-UfPb0kjLxCQ-1
+Received: by mail-lf1-f69.google.com with SMTP id cf10-20020a056512280a00b0047f5a295656so7192356lfb.15
+        for <netdev@vger.kernel.org>; Thu, 07 Jul 2022 20:14:25 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6pWJ9vidmXiESXTHRmiFlc+OMg3mXWEt42MkWbaRXFo=;
+        b=8PdYZemKR6Ck1nLB1pXm+EzFqPeZT6J3Rb+Kvpio6KLPPUV+zS2OuRRNsnM+On+FT1
+         CIE44jZRGjINHR0CQk791Yo9pvyfebi2/eV1/t7KIPhzsWSkQKSp1Gdt001HCuZS5sGZ
+         1AEhNduz0mgX8//dpwztbcmrtH6qxruyJh6oHyo5D38J/On8FSLlSCOwRIWv2YXsr7iG
+         UOqwtSxklm9SOG3zWZEhd5AStxlgFUxTpw9TVEK7syB9mXEpRbBs5z/Od1dyBzUryrLd
+         E25bd/n3Mm0YHfoVClMVcALIV2fk/B9kGPFVW3mzI41jmGLk+BH4rNk6+f8rR29BC26B
+         kzVw==
+X-Gm-Message-State: AJIora8jDquXa6ZisY+RBjYA4zNHGX5aUvFYc1lC1O9YxUWJi13Nj77e
+        sZZCeHhQX43iUVatghDJG5loRfGMX3h96gJuAn2LTWg3KaUcJi6eXFA2l3/pAPfalmMUEYhtCjC
+        cfMF2ulGP4MuaVWGyOPNE17fwnEdMl5xm
+X-Received: by 2002:a05:6512:b0d:b0:481:5cb4:cf1e with SMTP id w13-20020a0565120b0d00b004815cb4cf1emr864062lfu.442.1657250064634;
+        Thu, 07 Jul 2022 20:14:24 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1sL5nNaKVUjLfzqmHqBuyERNjefQaJM/fNkZA4syaavKMsdSCdlbxtRU8opv07Qp1KDTOFhmmsBKmEyTtATiQ0=
+X-Received: by 2002:a05:6512:b0d:b0:481:5cb4:cf1e with SMTP id
+ w13-20020a0565120b0d00b004815cb4cf1emr864054lfu.442.1657250064363; Thu, 07
+ Jul 2022 20:14:24 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <c357fa1a-5160-ed85-19bf-51f3c188d56e@huawei.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.67.109.184]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500019.china.huawei.com (7.185.36.180)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <548e316fa282ce513fabb991a4c4d92258062eb5.1654688822.git.robin.murphy@arm.com>
+In-Reply-To: <548e316fa282ce513fabb991a4c4d92258062eb5.1654688822.git.robin.murphy@arm.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Fri, 8 Jul 2022 11:14:13 +0800
+Message-ID: <CACGkMEvkHKqOkTCEaTUHK4Ve=naeU5p09BpnvPW-y1cGqOTo_w@mail.gmail.com>
+Subject: Re: [PATCH] vdpa: Use device_iommu_capable()
+To:     Robin Murphy <robin.murphy@arm.com>
+Cc:     mst <mst@redhat.com>, kvm <kvm@vger.kernel.org>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Jun 8, 2022 at 7:53 PM Robin Murphy <robin.murphy@arm.com> wrote:
+>
+> Use the new interface to check the capability for our device
+> specifically.
+>
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 
+Acked-by: Jason Wang <jasowang@redhat.com>
 
-On 2022/7/8 10:46, Pu Lehui wrote:
-> 
-> 
-> On 2022/7/8 3:12, Song Liu wrote:
->>
->>
->>> On Jul 7, 2022, at 7:08 AM, Pu Lehui <pulehui@huawei.com> wrote:
->>>
->>> Currently, when cross compiling bpf samples, the host side
->>> cannot use arch-specific bpftool to generate vmlinux.h or
->>> skeleton. We need to compile the bpftool with the host
->>> compiler.
->>>
->>> Signed-off-by: Pu Lehui <pulehui@huawei.com>
->>> ---
->>> samples/bpf/Makefile | 8 ++++----
->>> 1 file changed, 4 insertions(+), 4 deletions(-)
->>>
->>> diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
->>> index 5002a5b9a7da..fe54a8c8f312 100644
->>> --- a/samples/bpf/Makefile
->>> +++ b/samples/bpf/Makefile
->>> @@ -1,4 +1,5 @@
->>> # SPDX-License-Identifier: GPL-2.0
->>> +-include tools/scripts/Makefile.include
->>
->> Why do we need the -include here?
->>
-> 
-> HOSTLD is defined in tools/scripts/Makefile.include, we need to add it.
-> 
-> And for -include, mainly to resolve some conflicts:
-> 1. If workdir is kernel_src, then 'include 
-> tools/scripts/Makefile.include' is fine when 'make M=samples/bpf'.
-> 2. Since the trick in samples/bpf/Makefile:
-> 
-> # Trick to allow make to be run from this directory
-> all:
->      $(MAKE) -C ../../ M=$(CURDIR) BPF_SAMPLES_PATH=$(CURDIR)
-> 
-> If workdir is samples/bpf, the compile process will first load the 
-> Makefile in samples/bpf, then change workdir to kernel_src and load the 
-> kernel_src's Makefile. So if we just add 'include 
-> tools/scripts/Makefile.include', then the first load will occur error 
-> for not found the file, so we add -include to skip the first load.
+> ---
+>  drivers/vhost/vdpa.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+> index 935a1d0ddb97..4cfebcc24a03 100644
+> --- a/drivers/vhost/vdpa.c
+> +++ b/drivers/vhost/vdpa.c
+> @@ -1074,7 +1074,7 @@ static int vhost_vdpa_alloc_domain(struct vhost_vdpa *v)
+>         if (!bus)
+>                 return -EFAULT;
+>
+> -       if (!iommu_capable(bus, IOMMU_CAP_CACHE_COHERENCY))
+> +       if (!device_iommu_capable(dma_dev, IOMMU_CAP_CACHE_COHERENCY))
+>                 return -ENOTSUPP;
+>
+>         v->domain = iommu_domain_alloc(bus);
+> --
+> 2.36.1.dirty
+>
 
-sorry, correct the reply, so we add -include to skip the 
-'tools/scripts/Makefile.include' file on the fisrt load.
-
-> 
->> Thanks,
->> Song
->>
->>>
->>> BPF_SAMPLES_PATH ?= $(abspath $(srctree)/$(src))
->>> TOOLS_PATH := $(BPF_SAMPLES_PATH)/../../tools
->>> @@ -283,11 +284,10 @@ $(LIBBPF): $(wildcard $(LIBBPF_SRC)/*.[ch] 
->>> $(LIBBPF_SRC)/Makefile) | $(LIBBPF_OU
->>> BPFTOOLDIR := $(TOOLS_PATH)/bpf/bpftool
->>> BPFTOOL_OUTPUT := $(abspath $(BPF_SAMPLES_PATH))/bpftool
->>> BPFTOOL := $(BPFTOOL_OUTPUT)/bpftool
->>> -$(BPFTOOL): $(LIBBPF) $(wildcard $(BPFTOOLDIR)/*.[ch] 
->>> $(BPFTOOLDIR)/Makefile) | $(BPFTOOL_OUTPUT)
->>> +$(BPFTOOL): $(wildcard $(BPFTOOLDIR)/*.[ch] $(BPFTOOLDIR)/Makefile) 
->>> | $(BPFTOOL_OUTPUT)
->>>         $(MAKE) -C $(BPFTOOLDIR) srctree=$(BPF_SAMPLES_PATH)/../../ \
->>> -        OUTPUT=$(BPFTOOL_OUTPUT)/ \
->>> -        LIBBPF_OUTPUT=$(LIBBPF_OUTPUT)/ \
->>> -        LIBBPF_DESTDIR=$(LIBBPF_DESTDIR)/
->>> +        ARCH= CROSS_COMPILE= CC=$(HOSTCC) LD=$(HOSTLD) \
->>> +        OUTPUT=$(BPFTOOL_OUTPUT)/
->>>
->>> $(LIBBPF_OUTPUT) $(BPFTOOL_OUTPUT):
->>>     $(call msg,MKDIR,$@)
->>> -- 
->>> 2.25.1
->>>
->>
->> .
->>
-> .
