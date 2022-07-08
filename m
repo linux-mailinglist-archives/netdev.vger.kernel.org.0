@@ -2,60 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EEB256AFB3
-	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 03:07:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6D4756AF9F
+	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 03:07:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236756AbiGHBAi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jul 2022 21:00:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59314 "EHLO
+        id S236789AbiGHBDa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jul 2022 21:03:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236735AbiGHBAg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 21:00:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E105183A3;
-        Thu,  7 Jul 2022 18:00:36 -0700 (PDT)
+        with ESMTP id S236735AbiGHBD3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 21:03:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 662AA38AD
+        for <netdev@vger.kernel.org>; Thu,  7 Jul 2022 18:03:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9DBC361721;
-        Fri,  8 Jul 2022 01:00:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39325C3411E;
-        Fri,  8 Jul 2022 01:00:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 12227B824BD
+        for <netdev@vger.kernel.org>; Fri,  8 Jul 2022 01:03:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81BA3C3411E;
+        Fri,  8 Jul 2022 01:03:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657242035;
-        bh=70o+V3ET76drXM83rOdHEUsJuE2jU9gz82CTfzhNP0A=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=jkUoycSRQnG2Kh4/DvYw/ce+0v3+iNaW8HRBzoeSHYwm1RYucKZ+ua6u4dXGjwTlr
-         N5QDKSvQp6sHnUky/qoZPZSc5HAOGW7dOQ1TomiH/VjTogx/SdP14x+HBv39VgFzqb
-         /r0TSeUTNMUo3nM4JAOhRo8M0Pba0pt0p/CohpCNxX22CQKUk9qc7U06rC1ctRw63I
-         tTyaoNhBA9FFU+KaMOM0TE7IKo2fZ7qMOSlMNLWPNM2feeVhgVZpkmFS+nEWr/bOKB
-         7LArADuTVJJxzG+/4Cu/N6foNVlAKq4B5Il6lXh354DLiCM9OC0mdpPMnJ+b86s6qo
-         HUsAIqvrKEphg==
-Date:   Thu, 7 Jul 2022 18:00:25 -0700
+        s=k20201202; t=1657242205;
+        bh=1pJkOYBDqQ87kvQ/0vzGH1IQm7fyIHh4FAewV2z9H5c=;
+        h=From:To:Cc:Subject:Date:From;
+        b=o9/1hD4hBuqtsHi8/gXWw//tlJLrzmnhduRswLn4Yek2G1Z819UH46lvYOeaBfnxP
+         hgEgaLw927hS4P/UzwYCvOSUP7SJ0L3UYxcZXbdx76XnWXw3Flc7ELNteIvSonaIdQ
+         iD9VeVUSfazmgLY09k1P6iMz9w31HiFx9LoCaGPh869qSDX876ktLokNhKhl6yqERD
+         UVmagToBrnV1lu55RaOB66enwderY1sHTJ0xMbWdNqX0CLN2Hi2QL7Z1I/0JO4s5I6
+         /euBfmo6IAHo25qmTuWxpQzjDqhGByP0qm2A1CNZnUzdKa+yjwlOI0ZKpNK2x8JjZv
+         lVBygyVFxYrDg==
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Hans Schultz <netdev@kapio-technology.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v4 net-next 0/6] Extend locked port feature with FDB
- locked flag (MAC-Auth/MAB)
-Message-ID: <20220707180025.42cc41d8@kernel.org>
-In-Reply-To: <20220707152930.1789437-1-netdev@kapio-technology.com>
-References: <20220707152930.1789437-1-netdev@kapio-technology.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
+        borisp@nvidia.com, john.fastabend@gmail.com, maximmi@nvidia.com,
+        tariqt@nvidia.com, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next v2 0/6] tls: pad strparser, internal header, decrypt_ctx etc.
+Date:   Thu,  7 Jul 2022 18:03:08 -0700
+Message-Id: <20220708010314.1451462-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -66,9 +52,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu,  7 Jul 2022 17:29:24 +0200 Hans Schultz wrote:
->  [PATCH v4 net-next 0/6] Extend locked port feature with FDB locked flag (MAC-Auth/MAB)
+A grab bag of non-functional refactoring to make the series
+which will let us decrypt into a fresh skb smaller.
 
-Let's give it a day or two for feedback but the series does not apply
-cleanly to net-next so a rebase & repost will be needed even if it's
-otherwise perfect.
+Patches in this series are not strictly required to get the
+decryption into a fresh skb going, they are more in the "things
+which had been annoying me for a while" category.
+
+v2: fix build (patch 5)
+
+Jakub Kicinski (6):
+  strparser: pad sk_skb_cb to avoid straddling cachelines
+  tls: rx: always allocate max possible aad size for decrypt
+  tls: rx: wrap decrypt params in a struct
+  tls: rx: coalesce exit paths in tls_decrypt_sg()
+  tls: create an internal header
+  tls: rx: make tls_wait_data() return an recvmsg retcode
+
+ include/net/strparser.h       |  12 +-
+ include/net/tls.h             | 278 +-------------------------------
+ net/strparser/strparser.c     |   3 +
+ net/tls/tls.h                 | 290 ++++++++++++++++++++++++++++++++++
+ net/tls/tls_device.c          |   3 +-
+ net/tls/tls_device_fallback.c |   2 +
+ net/tls/tls_main.c            |  23 ++-
+ net/tls/tls_proc.c            |   2 +
+ net/tls/tls_sw.c              | 162 ++++++++++---------
+ net/tls/tls_toe.c             |   2 +
+ 10 files changed, 418 insertions(+), 359 deletions(-)
+ create mode 100644 net/tls/tls.h
+
+-- 
+2.36.1
+
