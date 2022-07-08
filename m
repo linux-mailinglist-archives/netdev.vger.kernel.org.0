@@ -2,161 +2,213 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A94B056BF6B
-	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 20:35:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE8DB56BF5C
+	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 20:35:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238600AbiGHQtP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jul 2022 12:49:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33724 "EHLO
+        id S239509AbiGHQ5r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jul 2022 12:57:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238099AbiGHQtO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 12:49:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C5081E3FB;
-        Fri,  8 Jul 2022 09:49:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A358622EC;
-        Fri,  8 Jul 2022 16:49:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86E27C341C6;
-        Fri,  8 Jul 2022 16:49:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657298952;
-        bh=71/D2igWE3HfEGRsBW79k6KVzfnzn8KlVshYAOVpp1w=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=Ztldf7MyyImuaRJkuyhBY7RCgf6a0gUniJPZtDeZSVJB6nHiDXdbj1m7gGNEJm+FD
-         +YZLZ8XAHXJe73vhTCVSaze43bsB8jXNngMugYK9bcm+MOWViJ8HQAAS5ZI192GILR
-         dvdBKq/LM384ph00D4XA7YYDmlP2KJjbCrvJpMPls3qwkNJzUrZ3zA3kKMsVvAq9sI
-         abgIMp3G1B83GNEyLUrmTEGi675m1B2yAMLCo1PQydeeQGsIi9LjIHOuWJAxJ3++zC
-         IJ9SOM7yj0VQxRp89dUd7HDHEfB+UP9N8NOzrRAz+65s8CRX/ENikUVHSIDUu4yfX2
-         ipxVhRzOHfULQ==
-Received: by mail-yb1-f173.google.com with SMTP id 64so29469815ybt.12;
-        Fri, 08 Jul 2022 09:49:12 -0700 (PDT)
-X-Gm-Message-State: AJIora/j2FeecnO9g8e72v4amg2EHIV5POyP8NB0clUnqUXrR7c3EPDH
-        V35WGwhx3Fs9UB/CggHSUn5+zZ5m3Jd2lF6/++Q=
-X-Google-Smtp-Source: AGRyM1uyUE+qmmEK1J9qDHRLaz+EGwSfNDas5Z7iUChEpqzrBvnAUE6FyULJzuP3QLwEhcyMqym9Zo48wGF1Rq2aGa8=
-X-Received: by 2002:a25:9c09:0:b0:66e:4d5c:8cbc with SMTP id
- c9-20020a259c09000000b0066e4d5c8cbcmr4356435ybo.449.1657298951592; Fri, 08
- Jul 2022 09:49:11 -0700 (PDT)
+        with ESMTP id S239530AbiGHQ5i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 12:57:38 -0400
+X-Greylist: delayed 87160 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 08 Jul 2022 09:57:36 PDT
+Received: from smtp-8fad.mail.infomaniak.ch (smtp-8fad.mail.infomaniak.ch [83.166.143.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 746E83BB
+        for <netdev@vger.kernel.org>; Fri,  8 Jul 2022 09:57:36 -0700 (PDT)
+Received: from smtp-3-0001.mail.infomaniak.ch (unknown [10.4.36.108])
+        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4LffbL5D3lzMqD8M;
+        Fri,  8 Jul 2022 18:57:34 +0200 (CEST)
+Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
+        by smtp-3-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4LffbL1vMvzln2G9;
+        Fri,  8 Jul 2022 18:57:33 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
+        s=20191114; t=1657299454;
+        bh=Qw59FDtqD8nojf3FMAqraBM3XJAAKEP12B6NgU6LwV0=;
+        h=Date:To:Cc:References:From:Subject:In-Reply-To:From;
+        b=abGlx7afXg/wnMLIZHV5t3pl7hnInDLDh4DdVRWVWDMDYmIuPtyb1vk8H7jTXVEv3
+         VYDxCTNkJNjBQ13O97YLbRpKyRI4l0mOj5CxBXc2SghLLNkCx5HLvrLT6VqXG5rrOQ
+         No9aHJq0WIln/xd3OPnSrdM47V/vgcdN5Kd0DL6s=
+Message-ID: <7d72fc3e-bdeb-14b8-1e6c-a99c2d052e3f@digikod.net>
+Date:   Fri, 8 Jul 2022 18:57:33 +0200
 MIME-Version: 1.0
-References: <20220708130319.1016294-1-maximmi@nvidia.com>
-In-Reply-To: <20220708130319.1016294-1-maximmi@nvidia.com>
-From:   Song Liu <song@kernel.org>
-Date:   Fri, 8 Jul 2022 09:49:00 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW5oGiXy27wyYXkzXCgYo+PD50paOvT1qKDwNjGsxGuWzQ@mail.gmail.com>
-Message-ID: <CAPhsuW5oGiXy27wyYXkzXCgYo+PD50paOvT1qKDwNjGsxGuWzQ@mail.gmail.com>
-Subject: Re: [PATCH bpf] selftests/bpf: Fix xdp_synproxy build failure if CONFIG_NF_CONNTRACK=m/n
-To:     Maxim Mikityanskiy <maximmi@nvidia.com>
-Cc:     Shuah Khan <shuah@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        linux-kselftest@vger.kernel.org,
-        Yauheni Kaliuta <ykaliuta@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: 
+Content-Language: en-US
+To:     "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
+Cc:     willemdebruijn.kernel@gmail.com,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, yusongping@huawei.com,
+        anton.sirazetdinov@huawei.com
+References: <20220621082313.3330667-1-konstantin.meskhidze@huawei.com>
+ <20220621082313.3330667-3-konstantin.meskhidze@huawei.com>
+ <0bbbcf21-1e7d-5585-545f-bf89d8ebd527@digikod.net>
+ <9d0c8780-6648-404f-7e51-b62a36617121@huawei.com>
+ <72375435-94d4-e3aa-c27b-b44382dde6ad@digikod.net>
+ <76c7c92e-3377-0bb8-14d5-e5c286c67dc3@huawei.com>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+Subject: Re: [PATCH v6 02/17] landlock: refactors landlock_find/insert_rule
+In-Reply-To: <76c7c92e-3377-0bb8-14d5-e5c286c67dc3@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 8, 2022 at 6:03 AM Maxim Mikityanskiy <maximmi@nvidia.com> wrote:
->
-> When CONFIG_NF_CONNTRACK=m, struct bpf_ct_opts and enum member
-> BPF_F_CURRENT_NETNS are not exposed. This commit allows building the
-> xdp_synproxy selftest in such cases. Note that nf_conntrack must be
-> loaded before running the test if it's compiled as a module.
->
-> This commit also allows this selftest to be successfully compiled when
-> CONFIG_NF_CONNTRACK is disabled.
->
-> One unused local variable of type struct bpf_ct_opts is also removed.
->
-> Reported-by: Yauheni Kaliuta <ykaliuta@redhat.com>
-> Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
-> Fixes: fb5cd0ce70d4 ("selftests/bpf: Add selftests for raw syncookie helpers")
 
-Given tools/testing/selftests/bpf/config specifies CONFIG_NF_CONNTRACK=y,
-I don't think this is really necessary.
+On 08/07/2022 16:20, Konstantin Meskhidze (A) wrote:
+> 
+> 
+> 7/8/2022 4:56 PM, Mickaël Salaün пишет:
+>>
+>> On 08/07/2022 14:53, Konstantin Meskhidze (A) wrote:
+>>>
+>>>
+>>> 7/7/2022 7:44 PM, Mickaël Salaün пишет:
+>>>>
+>>>> On 21/06/2022 10:22, Konstantin Meskhidze wrote:
+>>>>> Adds a new object union to support a socket port
+>>>>> rule type. Refactors landlock_insert_rule() and
+>>>>> landlock_find_rule() to support coming network
+>>>>> modifications. Now adding or searching a rule
+>>>>> in a ruleset depends on a rule_type argument
+>>>>> provided in refactored functions mentioned above.
+>>>>>
+>>>>> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+>>>>> ---
+>>>>>
+>>>>> Changes since v5:
+>>>>> * Formats code with clang-format-14.
+>>>>>
+>>>>> Changes since v4:
+>>>>> * Refactors insert_rule() and create_rule() functions by deleting
+>>>>> rule_type from their arguments list, it helps to reduce useless code.
+>>>>>
+>>>>> Changes since v3:
+>>>>> * Splits commit.
+>>>>> * Refactors landlock_insert_rule and landlock_find_rule functions.
+>>>>> * Rename new_ruleset->root_inode.
+>>>>>
+>>>>> ---
+>>>>>   security/landlock/fs.c      |   7 ++-
+>>>>>   security/landlock/ruleset.c | 105 
+>>>>> ++++++++++++++++++++++++++----------
+>>>>>   security/landlock/ruleset.h |  27 +++++-----
+>>>>>   3 files changed, 96 insertions(+), 43 deletions(-)
+>>>>>
+>>>>> diff --git a/security/landlock/fs.c b/security/landlock/fs.c
+>>>>> index e6da08ed99d1..46aedc2a05a8 100644
+>>>>> --- a/security/landlock/fs.c
+>>>>> +++ b/security/landlock/fs.c
+>>>>> @@ -173,7 +173,8 @@ int landlock_append_fs_rule(struct 
+>>>>> landlock_ruleset *const ruleset,
+>>>>>       if (IS_ERR(object))
+>>>>>           return PTR_ERR(object);
+>>>>>       mutex_lock(&ruleset->lock);
+>>>>> -    err = landlock_insert_rule(ruleset, object, access_rights);
+>>>>> +    err = landlock_insert_rule(ruleset, object, 0, access_rights,
+>>>>> +                   LANDLOCK_RULE_PATH_BENEATH);
+>>>>>       mutex_unlock(&ruleset->lock);
+>>>>>       /*
+>>>>>        * No need to check for an error because landlock_insert_rule()
+>>>>> @@ -204,7 +205,9 @@ find_rule(const struct landlock_ruleset *const 
+>>>>> domain,
+>>>>>       inode = d_backing_inode(dentry);
+>>>>>       rcu_read_lock();
+>>>>>       rule = landlock_find_rule(
+>>>>> -        domain, rcu_dereference(landlock_inode(inode)->object));
+>>>>> +        domain,
+>>>>> +        (uintptr_t)rcu_dereference(landlock_inode(inode)->object),
+>>>>> +        LANDLOCK_RULE_PATH_BENEATH);
+>>>>>       rcu_read_unlock();
+>>>>>       return rule;
+>>>>>   }
+>>>>> diff --git a/security/landlock/ruleset.c b/security/landlock/ruleset.c
+>>>>> index a3fd58d01f09..5f13f8a12aee 100644
+>>>>> --- a/security/landlock/ruleset.c
+>>>>> +++ b/security/landlock/ruleset.c
+>>>>> @@ -35,7 +35,7 @@ static struct landlock_ruleset 
+>>>>> *create_ruleset(const u32 num_layers)
+>>>>>           return ERR_PTR(-ENOMEM);
+>>>>>       refcount_set(&new_ruleset->usage, 1);
+>>>>>       mutex_init(&new_ruleset->lock);
+>>>>> -    new_ruleset->root = RB_ROOT;
+>>>>> +    new_ruleset->root_inode = RB_ROOT;
+>>>>>       new_ruleset->num_layers = num_layers;
+>>>>>       /*
+>>>>>        * hierarchy = NULL
+>>>>> @@ -69,7 +69,8 @@ static void build_check_rule(void)
+>>>>>   }
+>>>>>
+>>>>>   static struct landlock_rule *
+>>>>> -create_rule(struct landlock_object *const object,
+>>>>> +create_rule(struct landlock_object *const object_ptr,
+>>>>> +        const uintptr_t object_data,
+>>>>>           const struct landlock_layer (*const layers)[], const u32 
+>>>>> num_layers,
+>>>>>           const struct landlock_layer *const new_layer)
+>>>>>   {
+>>>>> @@ -90,8 +91,15 @@ create_rule(struct landlock_object *const object,
+>>>>>       if (!new_rule)
+>>>>>           return ERR_PTR(-ENOMEM);
+>>>>>       RB_CLEAR_NODE(&new_rule->node);
+>>>>> -    landlock_get_object(object);
+>>>>> -    new_rule->object = object;
+>>>>> +
+>>>>> +    if (object_ptr) {
+>>>>> +        landlock_get_object(object_ptr);
+>>>>> +        new_rule->object.ptr = object_ptr;
+>>>>> +    } else if (object_ptr && object_data) {
+>>>>
+>>>> Something is wrong with this second check: else + object_ptr?
+>>>
+>>> It was your suggestion to use it like this:
+>>> " ....You can also add a WARN_ON_ONCE(object_ptr && object_data)."
+>>>
+>>> Please check it here:
+>>> https://lore.kernel.org/linux-security-module/bc44f11f-0eaa-a5f6-c5dc-1d36570f1be1@digikod.net/ 
+>>
+>>
+>> Yes, but the error is in the "else", you should write:
+>> if (WARN_ON_ONCE(object_ptr && object_data))
+>>     return ERR_PTR(-EINVAL);
+>>
+>> …and this should be before the `if (object_ptr) {` line (to avoid
+>> erronous landlock_get_object() call), just after the `if (!new_rule)` 
+>> check.
+> 
+>    Maybe we could delete this check here cause we have it in the upper 
+> insert_rule() function??
+> 
+> ...
+>      if (WARN_ON_ONCE(!layers))
+>          return -ENOENT;
+> ------>    if (WARN_ON_ONCE(object_ptr && object_data))
+>          return -EINVAL;
+>      /* Chooses rb_tree structure depending on a rule type. */
+>      switch (rule_type) {
+>      case LANDLOCK_RULE_PATH_BENEATH:
+>          if (WARN_ON_ONCE(!object_ptr))
+>              return -ENOENT;
+>          object_data = (uintptr_t)object_ptr;
+>          root = &ruleset->root_inode;
+>          break;
+>      default:
+>          WARN_ON_ONCE(1);
+>          return -EINVAL;
+>      }
+> ...
+> 
+> This is double check here. What do you think?
 
-Thanks,
-Song
+This check is indeed done twice, and for now create_rule() is only 
+called from insert_rule(), but I prefer to keep it in both location to 
+not get bitten in the future were it could be called from other 
+locations. The compiler may be smart enough to remove the redundant 
+checks though.
 
-
-> ---
->  .../selftests/bpf/progs/xdp_synproxy_kern.c   | 24 +++++++++++++------
->  1 file changed, 17 insertions(+), 7 deletions(-)
->
-> diff --git a/tools/testing/selftests/bpf/progs/xdp_synproxy_kern.c b/tools/testing/selftests/bpf/progs/xdp_synproxy_kern.c
-> index 9fd62e94b5e6..736686e903f6 100644
-> --- a/tools/testing/selftests/bpf/progs/xdp_synproxy_kern.c
-> +++ b/tools/testing/selftests/bpf/progs/xdp_synproxy_kern.c
-> @@ -77,16 +77,30 @@ struct {
->         __uint(max_entries, MAX_ALLOWED_PORTS);
->  } allowed_ports SEC(".maps");
->
-> +/* Some symbols defined in net/netfilter/nf_conntrack_bpf.c are unavailable in
-> + * vmlinux.h if CONFIG_NF_CONNTRACK=m, so they are redefined locally.
-> + */
-> +
-> +struct bpf_ct_opts___local {
-> +       s32 netns_id;
-> +       s32 error;
-> +       u8 l4proto;
-> +       u8 dir;
-> +       u8 reserved[2];
-> +} __attribute__((preserve_access_index));
-> +
-> +#define BPF_F_CURRENT_NETNS (-1)
-> +
->  extern struct nf_conn *bpf_xdp_ct_lookup(struct xdp_md *xdp_ctx,
->                                          struct bpf_sock_tuple *bpf_tuple,
->                                          __u32 len_tuple,
-> -                                        struct bpf_ct_opts *opts,
-> +                                        struct bpf_ct_opts___local *opts,
->                                          __u32 len_opts) __ksym;
->
->  extern struct nf_conn *bpf_skb_ct_lookup(struct __sk_buff *skb_ctx,
->                                          struct bpf_sock_tuple *bpf_tuple,
->                                          u32 len_tuple,
-> -                                        struct bpf_ct_opts *opts,
-> +                                        struct bpf_ct_opts___local *opts,
->                                          u32 len_opts) __ksym;
->
->  extern void bpf_ct_release(struct nf_conn *ct) __ksym;
-> @@ -393,7 +407,7 @@ static __always_inline int tcp_dissect(void *data, void *data_end,
->
->  static __always_inline int tcp_lookup(void *ctx, struct header_pointers *hdr, bool xdp)
->  {
-> -       struct bpf_ct_opts ct_lookup_opts = {
-> +       struct bpf_ct_opts___local ct_lookup_opts = {
->                 .netns_id = BPF_F_CURRENT_NETNS,
->                 .l4proto = IPPROTO_TCP,
->         };
-> @@ -714,10 +728,6 @@ static __always_inline int syncookie_handle_ack(struct header_pointers *hdr)
->  static __always_inline int syncookie_part1(void *ctx, void *data, void *data_end,
->                                            struct header_pointers *hdr, bool xdp)
->  {
-> -       struct bpf_ct_opts ct_lookup_opts = {
-> -               .netns_id = BPF_F_CURRENT_NETNS,
-> -               .l4proto = IPPROTO_TCP,
-> -       };
->         int ret;
->
->         ret = tcp_dissect(data, data_end, hdr);
-> --
-> 2.30.2
->
+I'll send a patch to improve this part.
