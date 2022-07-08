@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1356E56C0B2
-	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 20:37:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 30D8156BF50
+	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 20:35:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238450AbiGHROV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jul 2022 13:14:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54834 "EHLO
+        id S238456AbiGHROW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jul 2022 13:14:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238128AbiGHROU (ORCPT
+        with ESMTP id S238392AbiGHROU (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 13:14:20 -0400
 Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E48120BE2
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEB1F25C7A
         for <netdev@vger.kernel.org>; Fri,  8 Jul 2022 10:14:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1657300459; x=1688836459;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=dDFcKsL9kB1Uqm+n86u6isMH3J6Z2PbdfW1/uIBATOc=;
-  b=lf9AfmYXeCw3h1Jwr/dypVUjEp4pxd99/G97KsoyxQKRAE7h9pOUXkb1
-   WnawssX870cBIM+I7hHrn8kJfXOL6IBI5HdWAKXUw7FIpjx0hVAg6pNxY
-   5G/iP7XZ6g5ITDsAq5cASDtHcXqgahqWlrgcaTm+2tezHFOYtITzEBgKb
-   x5AsFz+sLolhXXJotCV9iW5zYwSOndpiv2iJjpcQ20esOiTYZV7GcO0lb
-   duqGu0R+9xSfktPGr4+MuTT9F/8ofVY4bh3YZhdVxVfmt9u4l+9Kzg56F
-   f17zo5omA3BuF/zBS03kXuQMr3KCTsjiYrXEeTErbR8M4pT52HVnKAsQN
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10402"; a="267364238"
+  bh=DQFTa2o7tX8z6E5Yqben/xtRbWyD1sotbqs9kP1vAWI=;
+  b=iNmOUF1O1zpSUgfMR5080JejKt8bhhgo63SN/Nil9hu3wa4p9xTiE2Ec
+   EQny4NjU7G7h+JAZXz5cdpwxRd/WFIVuU9lvSFsZbiJ9vn8HybDWQDKcF
+   oLYH38YyuqSiUpdXhquM1IxetymB11B3gAC189/SdI77MuNiWcUsfSh9B
+   WBZXeEiSyGA+BxOHhwr/xkQgadg21SXWW2frrvpudBUNslDSh6Q5Hyg6S
+   T8scYuMFqPn1yraZO4P28kOrD1UAhuVEr11Edci2m/xqZ7fWsmDHdCj+g
+   l7URV49wYJAyX/s12qVuLut2Rnu/k7J2BY4uFC8+lpRAV+VyrYmOUb+JR
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10402"; a="267364240"
 X-IronPort-AV: E=Sophos;i="5.92,256,1650956400"; 
-   d="scan'208";a="267364238"
+   d="scan'208";a="267364240"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2022 10:14:18 -0700
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2022 10:14:19 -0700
 X-IronPort-AV: E=Sophos;i="5.92,256,1650956400"; 
-   d="scan'208";a="651641498"
+   d="scan'208";a="651641504"
 Received: from aroras-mobl.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.209.1.203])
   by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2022 10:14:18 -0700
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
 To:     netdev@vger.kernel.org
-Cc:     Paolo Abeni <pabeni@redhat.com>, davem@davemloft.net,
-        kuba@kernel.org, edumazet@google.com, matthieu.baerts@tessares.net,
-        mptcp@lists.linux.dev,
+Cc:     Geliang Tang <geliang.tang@suse.com>, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
+        matthieu.baerts@tessares.net, mptcp@lists.linux.dev,
         Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next 2/6] selftests: mptcp: tweak simult_flows for debug kernels
-Date:   Fri,  8 Jul 2022 10:14:09 -0700
-Message-Id: <20220708171413.327112-3-mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next 3/6] selftests: mptcp: userspace pm address tests
+Date:   Fri,  8 Jul 2022 10:14:10 -0700
+Message-Id: <20220708171413.327112-4-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220708171413.327112-1-mathew.j.martineau@linux.intel.com>
 References: <20220708171413.327112-1-mathew.j.martineau@linux.intel.com>
@@ -59,75 +59,128 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Paolo Abeni <pabeni@redhat.com>
+From: Geliang Tang <geliang.tang@suse.com>
 
-The mentioned test measures the transfer run-time to verify
-that the user-space program is able to use the full aggregate B/W.
+This patch adds userspace pm tests support for mptcp_join.sh script. Add
+userspace pm add_addr and rm_addr test cases in userspace_tests().
 
-Even on (virtual) link-speed-bound tests, debug kernel can slow
-down the transfer enough to cause sporadic test failures.
-
-Instead of unconditionally raising the maximum allowed run-time,
-tweak when the running kernel is a debug one, and use some simple/
-rough heuristic to guess such scenarios.
-
-Note: this intentionally avoids looking for /boot/config-<version> as
-the latter file is not always available in our reference CI
-environments.
-
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Co-developed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Reviewed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Signed-off-by: Geliang Tang <geliang.tang@suse.com>
 Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 ---
- tools/testing/selftests/net/mptcp/simult_flows.sh | 14 +++++++++++++-
- 1 file changed, 13 insertions(+), 1 deletion(-)
+ .../testing/selftests/net/mptcp/mptcp_join.sh | 49 ++++++++++++++++++-
+ 1 file changed, 48 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/net/mptcp/simult_flows.sh b/tools/testing/selftests/net/mptcp/simult_flows.sh
-index f441ff7904fc..ffa13a957a36 100755
---- a/tools/testing/selftests/net/mptcp/simult_flows.sh
-+++ b/tools/testing/selftests/net/mptcp/simult_flows.sh
-@@ -12,6 +12,7 @@ timeout_test=$((timeout_poll * 2 + 1))
- test_cnt=1
- ret=0
- bail=0
-+slack=50
- 
- usage() {
- 	echo "Usage: $0 [ -b ] [ -c ] [ -d ]"
-@@ -52,6 +53,7 @@ setup()
- 	cout=$(mktemp)
- 	capout=$(mktemp)
- 	size=$((2 * 2048 * 4096))
-+
- 	dd if=/dev/zero of=$small bs=4096 count=20 >/dev/null 2>&1
- 	dd if=/dev/zero of=$large bs=4096 count=$((size / 4096)) >/dev/null 2>&1
- 
-@@ -104,6 +106,16 @@ setup()
- 	ip -net "$ns3" route add default via dead:beef:3::2
- 
- 	ip netns exec "$ns3" ./pm_nl_ctl limits 1 1
-+
-+	# debug build can slow down measurably the test program
-+	# we use quite tight time limit on the run-time, to ensure
-+	# maximum B/W usage.
-+	# Use kmemleak/lockdep/kasan/prove_locking presence as a rough
-+	# estimate for this being a debug kernel and increase the
-+	# maximum run-time accordingly. Observed run times for CI builds
-+	# running selftests, including kbuild, were used to determine the
-+	# amount of time to add.
-+	grep -q ' kmemleak_init$\| lockdep_init$\| kasan_init$\| prove_locking$' /proc/kallsyms && slack=$((slack+550))
+diff --git a/tools/testing/selftests/net/mptcp/mptcp_join.sh b/tools/testing/selftests/net/mptcp/mptcp_join.sh
+index a4406b7a8064..d889e7507cd9 100755
+--- a/tools/testing/selftests/net/mptcp/mptcp_join.sh
++++ b/tools/testing/selftests/net/mptcp/mptcp_join.sh
+@@ -455,6 +455,12 @@ wait_mpj()
+ 	done
  }
  
- # $1: ns, $2: port
-@@ -241,7 +253,7 @@ run_test()
++kill_wait()
++{
++	kill $1 > /dev/null 2>&1
++	wait $1 2>/dev/null
++}
++
+ pm_nl_set_limits()
+ {
+ 	local ns=$1
+@@ -654,6 +660,9 @@ do_transfer()
  
- 	# mptcp_connect will do some sleeps to allow the mp_join handshake
- 	# completion (see mptcp_connect): 200ms on each side, add some slack
--	time=$((time + 450))
-+	time=$((time + 400 + slack))
+ 	local port=$((10000 + TEST_COUNT - 1))
+ 	local cappid
++	local userspace_pm=0
++	local evts_ns1
++	local evts_ns1_pid
  
- 	printf "%-60s" "$msg"
- 	do_transfer $small $large $time
+ 	:> "$cout"
+ 	:> "$sout"
+@@ -690,12 +699,24 @@ do_transfer()
+ 		extra_args="-r ${speed:6}"
+ 	fi
+ 
++	if [[ "${addr_nr_ns1}" = "userspace_"* ]]; then
++		userspace_pm=1
++		addr_nr_ns1=${addr_nr_ns1:10}
++	fi
++
+ 	if [[ "${addr_nr_ns2}" = "fastclose_"* ]]; then
+ 		# disconnect
+ 		extra_args="$extra_args -I ${addr_nr_ns2:10}"
+ 		addr_nr_ns2=0
+ 	fi
+ 
++	if [ $userspace_pm -eq 1 ]; then
++		evts_ns1=$(mktemp)
++		:> "$evts_ns1"
++		ip netns exec ${listener_ns} ./pm_nl_ctl events >> "$evts_ns1" 2>&1 &
++		evts_ns1_pid=$!
++	fi
++
+ 	local local_addr
+ 	if is_v6 "${connect_addr}"; then
+ 		local_addr="::"
+@@ -748,6 +769,8 @@ do_transfer()
+ 	if [ $addr_nr_ns1 -gt 0 ]; then
+ 		local counter=2
+ 		local add_nr_ns1=${addr_nr_ns1}
++		local id=10
++		local tk
+ 		while [ $add_nr_ns1 -gt 0 ]; do
+ 			local addr
+ 			if is_v6 "${connect_addr}"; then
+@@ -755,9 +778,18 @@ do_transfer()
+ 			else
+ 				addr="10.0.$counter.1"
+ 			fi
+-			pm_nl_add_endpoint $ns1 $addr flags signal
++			if [ $userspace_pm -eq 0 ]; then
++				pm_nl_add_endpoint $ns1 $addr flags signal
++			else
++				tk=$(sed -n 's/.*\(token:\)\([[:digit:]]*\).*$/\2/p;q' "$evts_ns1")
++				ip netns exec ${listener_ns} ./pm_nl_ctl ann $addr token $tk id $id
++				sleep 1
++				ip netns exec ${listener_ns} ./pm_nl_ctl rem token $tk id $id
++			fi
++
+ 			counter=$((counter + 1))
+ 			add_nr_ns1=$((add_nr_ns1 - 1))
++			id=$((id + 1))
+ 		done
+ 	elif [ $addr_nr_ns1 -lt 0 ]; then
+ 		local rm_nr_ns1=$((-addr_nr_ns1))
+@@ -890,6 +922,11 @@ do_transfer()
+ 	    kill $cappid
+ 	fi
+ 
++	if [ $userspace_pm -eq 1 ]; then
++		kill_wait $evts_ns1_pid
++		rm -rf $evts_ns1
++	fi
++
+ 	NSTAT_HISTORY=/tmp/${listener_ns}.nstat ip netns exec ${listener_ns} \
+ 		nstat | grep Tcp > /tmp/${listener_ns}.out
+ 	NSTAT_HISTORY=/tmp/${connector_ns}.nstat ip netns exec ${connector_ns} \
+@@ -2810,6 +2847,16 @@ userspace_tests()
+ 		chk_join_nr 0 0 0
+ 		chk_rm_nr 0 0
+ 	fi
++
++	# userspace pm add & remove address
++	if reset "userspace pm add & remove address"; then
++		set_userspace_pm $ns1
++		pm_nl_set_limits $ns2 1 1
++		run_tests $ns1 $ns2 10.0.1.1 0 userspace_1 0 slow
++		chk_join_nr 1 1 1
++		chk_add_nr 1 1
++		chk_rm_nr 1 1 invert
++	fi
+ }
+ 
+ endpoint_tests()
 -- 
 2.37.0
 
