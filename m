@@ -2,101 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B90D056BB2F
-	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 15:53:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A11D556BB32
+	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 15:53:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238030AbiGHNv7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jul 2022 09:51:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53310 "EHLO
+        id S238295AbiGHNwp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jul 2022 09:52:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237057AbiGHNv6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 09:51:58 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 05DC0193C5
-        for <netdev@vger.kernel.org>; Fri,  8 Jul 2022 06:51:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657288314;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=yVefCn2Sr2XDtcSF1e802d6x0OPOMy5L9rDF1Zp3WNI=;
-        b=UCEeuR7V675yczouLZGyT2PSI0G2l2A5fjwFfsnzyKzbsEWdjFUZ8HAonxmeWeKU0e6VDG
-        b3eUwQLbCuSzJVD8PWCDcNA6CVPaVXsqq24tVYHwsX0P1IA9RorxmdIJuNZP7bRZ2b1wC+
-        BZugZVbAnviZda/AqEe/3Ok5qiE78Jc=
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
- [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-37-bHiAksKdMOytZiBpzZgH5Q-1; Fri, 08 Jul 2022 09:51:53 -0400
-X-MC-Unique: bHiAksKdMOytZiBpzZgH5Q-1
-Received: by mail-qt1-f198.google.com with SMTP id fx12-20020a05622a4acc00b0031e98cb703cso5078905qtb.18
-        for <netdev@vger.kernel.org>; Fri, 08 Jul 2022 06:51:53 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=yVefCn2Sr2XDtcSF1e802d6x0OPOMy5L9rDF1Zp3WNI=;
-        b=u26P64ho9Eqh/0iD7FU3sxo2R3TRst9bifMHKvmk85xj9M6c2zH4m29kny+nW/SfAD
-         MIZCGXWu+0fs7h2y022kp3aVh0xv1tG1bQqp8+dTT3IRgt9L5po1g/Uy1TvC0AxvlRh4
-         O8hV84g0dMTQe9/R139kEEtRg6ePWoHXpK26+QnCeXXWF3m+rbCz4c4/2fdtuIJCLifH
-         p+GzBuSXyxibAjh2sXdo+b4TKjq6x+7w3K966jx31zuJJjJiG1TtRUx4J2KvRIUEBmzC
-         NL3cQr1wqvk/uPdG0D5A9EGz5VYfDYlcG3vRHeiKK+M4FcZfQoSF80YrxbI6JVyb+REG
-         49rQ==
-X-Gm-Message-State: AJIora9p/8zbC3lsDqGEd0tcpcf7Dx4y7kD3j83Slu+IT7bLTQSKFPXG
-        md9ZWmhAf8dwoLqsUJ+4m67DQ8eAGqYxAxn7yob+9IOikjt6cUZZjhX5Cd3LTRkokqJY+tmX667
-        dR+cBBBXDxAr6Qid+
-X-Received: by 2002:a05:6214:20ea:b0:473:421d:d459 with SMTP id 10-20020a05621420ea00b00473421dd459mr1714711qvk.27.1657288313015;
-        Fri, 08 Jul 2022 06:51:53 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1s9HR4FiVcyVsBfX00aQKPJWG12vBD+uxGxuwJDaIa2y0QoQQjiF0NRy0pY+w9XGYubd8flkg==
-X-Received: by 2002:a05:6214:20ea:b0:473:421d:d459 with SMTP id 10-20020a05621420ea00b00473421dd459mr1714693qvk.27.1657288312809;
-        Fri, 08 Jul 2022 06:51:52 -0700 (PDT)
-Received: from sgarzare-redhat (host-79-46-200-206.retail.telecomitalia.it. [79.46.200.206])
-        by smtp.gmail.com with ESMTPSA id t14-20020a05620a004e00b006a6d20386f6sm31658212qkt.42.2022.07.08.06.51.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Jul 2022 06:51:50 -0700 (PDT)
-Date:   Fri, 8 Jul 2022 15:51:38 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Eugenio Perez Martin <eperezma@redhat.com>
-Cc:     netdev <netdev@vger.kernel.org>, Jason Wang <jasowang@redhat.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        kvm list <kvm@vger.kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Cindy Lu <lulu@redhat.com>,
-        "Kamde, Tanuj" <tanuj.kamde@amd.com>,
-        Si-Wei Liu <si-wei.liu@oracle.com>,
-        "Uminski, Piotr" <Piotr.Uminski@intel.com>,
-        habetsm.xilinx@gmail.com, "Dawar, Gautam" <gautam.dawar@amd.com>,
-        Pablo Cascon Katchadourian <pabloc@xilinx.com>,
-        Zhu Lingshan <lingshan.zhu@intel.com>,
-        Laurent Vivier <lvivier@redhat.com>,
-        Longpeng <longpeng2@huawei.com>,
-        Dinan Gunawardena <dinang@xilinx.com>,
-        Martin Petrus Hubertus Habets <martinh@xilinx.com>,
-        Martin Porter <martinpo@xilinx.com>,
-        Eli Cohen <elic@nvidia.com>, ecree.xilinx@gmail.com,
-        Wu Zongyong <wuzongyong@linux.alibaba.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Harpreet Singh Anand <hanand@xilinx.com>,
-        Xie Yongji <xieyongji@bytedance.com>,
-        Zhang Min <zhang.min9@zte.com.cn>
-Subject: Re: [PATCH v6 2/4] vhost-vdpa: introduce SUSPEND backend feature bit
-Message-ID: <20220708135138.kjdnnxelgll2p3cv@sgarzare-redhat>
-References: <20220623160738.632852-1-eperezma@redhat.com>
- <20220623160738.632852-3-eperezma@redhat.com>
- <20220628134340.5fla7surd34bwnq3@sgarzare-redhat>
- <CAJaqyWd8yNdfGEDJ3Zesruh_Q0_9u_j80pad-FUA=oK=mvnLGQ@mail.gmail.com>
+        with ESMTP id S237408AbiGHNwo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 09:52:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A147819034;
+        Fri,  8 Jul 2022 06:52:43 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 60B01B8286A;
+        Fri,  8 Jul 2022 13:52:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95C84C341C0;
+        Fri,  8 Jul 2022 13:52:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657288361;
+        bh=dWgUfcl57UvS0TwOtzEgblzBsozkUjqJ4CbUIdLRBdc=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=HoXSrgvoH8IJbmahKM7OZa/dU6/k/6AVvRp1NVATCrH5EeahyuG9m/hgQZQ8i4YaJ
+         3DNLvPqepGiYWY8jjRXRZTQ2F5R9vi++m2Yd8Pm4Jw5Yz7u5SEWT8iVwQMf/gXlcam
+         g9NdNKhNxZvqOn/F3nqQeJFOMhwqQTfT8829UTZTV/DJXziYXbakLdkwvW/eM877bx
+         SIE1ib2iLc2O8ST8pT1W33/AL+dTz5QM1TqJAt8xWI6Lo4LLBzPEIELAXZpLKgo9VI
+         8VsqYco4lGLf7BZYXmPyc9yEmq7vyrj8BQLt+7jFqPChbkzf8wabdq/w8OxSqYeUCY
+         L/5D+u46hx+sA==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAJaqyWd8yNdfGEDJ3Zesruh_Q0_9u_j80pad-FUA=oK=mvnLGQ@mail.gmail.com>
-X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] ath11k: Fix typo in comments
+From:   Kalle Valo <kvalo@kernel.org>
+In-Reply-To: <20220704030004.16484-1-jiaming@nfschina.com>
+References: <20220704030004.16484-1-jiaming@nfschina.com>
+To:     Zhang Jiaming <jiaming@nfschina.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, ath11k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, liqiong@nfschina.com,
+        renyu@nfschina.com, Zhang Jiaming <jiaming@nfschina.com>
+User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-ID: <165728835557.16445.10510816476274107000.kvalo@kernel.org>
+Date:   Fri,  8 Jul 2022 13:52:38 +0000 (UTC)
+X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -104,36 +57,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 08, 2022 at 01:38:45PM +0200, Eugenio Perez Martin wrote:
->On Tue, Jun 28, 2022 at 3:43 PM Stefano Garzarella <sgarzare@redhat.com> wrote:
->>
->> On Thu, Jun 23, 2022 at 06:07:36PM +0200, Eugenio Pérez wrote:
->> >Userland knows if it can suspend the device or not by checking this feature
->> >bit.
->> >
->> >It's only offered if the vdpa driver backend implements the suspend()
->> >operation callback, and to offer it or userland to ack it if the backend
->> >does not offer that callback is an error.
->>
->> Should we document in the previous patch that the callback must be
->> implemented only if the drive/device support it?
->>
->
->It's marked as optional in the doc, following other optional callbacks
->like set_group_asid for example. But I'm ok with documenting this
->behavior further.
->
->> The rest LGTM although I have a doubt whether it is better to move this
->> patch after patch 3, or merge it with patch 3, for bisectability since
->> we enable the feature here but if the userspace calls ioctl() with
->> VHOST_VDPA_SUSPEND we reply back that it is not supported.
->>
->
->I'm fine with moving it, but we will have that behavior with all the
->devices anyway. Regarding userspace, we just replace ENOIOCTL with
->EOPNOTSUPP. Or I'm missing something?
+Zhang Jiaming <jiaming@nfschina.com> wrote:
 
-Yep, you're right, this is fine! ;-)
+> There is a typo(isn't') in comments.
+> It maybe 'isn't' instead of 'isn't''.
+> 
+> Signed-off-by: Zhang Jiaming <jiaming@nfschina.com>
+> Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
 
-Stefano
+Patch applied to ath-next branch of ath.git, thanks.
+
+7d1e59a35ffa ath11k: Fix typo in comments
+
+-- 
+https://patchwork.kernel.org/project/linux-wireless/patch/20220704030004.16484-1-jiaming@nfschina.com/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
