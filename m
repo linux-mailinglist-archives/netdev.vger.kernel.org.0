@@ -2,201 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C5DC56BBA7
-	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 16:24:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49CB556BBC3
+	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 16:35:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238047AbiGHOU5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jul 2022 10:20:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45338 "EHLO
+        id S238018AbiGHO2R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jul 2022 10:28:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238057AbiGHOUy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 10:20:54 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29BEA3192F;
-        Fri,  8 Jul 2022 07:20:46 -0700 (PDT)
-Received: from fraeml708-chm.china.huawei.com (unknown [172.18.147.207])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Lfb1S4qZqz67jfG;
-        Fri,  8 Jul 2022 22:16:28 +0800 (CST)
-Received: from lhreml745-chm.china.huawei.com (10.201.108.195) by
- fraeml708-chm.china.huawei.com (10.206.15.36) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 8 Jul 2022 16:20:44 +0200
-Received: from [10.122.132.241] (10.122.132.241) by
- lhreml745-chm.china.huawei.com (10.201.108.195) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 8 Jul 2022 15:20:43 +0100
-Message-ID: <76c7c92e-3377-0bb8-14d5-e5c286c67dc3@huawei.com>
-Date:   Fri, 8 Jul 2022 17:20:42 +0300
+        with ESMTP id S234271AbiGHO2Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 10:28:16 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5F102F03C;
+        Fri,  8 Jul 2022 07:28:15 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id l23so6209439ejr.5;
+        Fri, 08 Jul 2022 07:28:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=LngixNJX6TgG7N5xNVxJaVBarAufEAvWKBRlLibchAc=;
+        b=niRheLaAYh4fLQ14XeZHNggN6GPSkHm6CvSeP9RhIsdv029EVf65gUur6uifV96fyg
+         YxgCto7qBMQRXLbcXqImoowFxBL8QrNciG4fe41+S9MA9xPgsMXXCbCSHLQcLlOkxpRf
+         fYTaJh1UGdfLPu7zbiA4K//nOhdM5V00ikhVC54VPIdDv+/BZb0PrexSD9ws4PZWueL4
+         ErsxV29PxQ8saSjQ3r85PZ8L4pm9YZUDe21nA5Ji5JxvGvrzo1l8YN9YHAJAo0oCUASL
+         5ZkOWDt7oZQsd470Izn4hvEwMownqZZP+nPKv7HZhiijLBpu94pGIunOSPKsTbd4P1/C
+         hLzg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=LngixNJX6TgG7N5xNVxJaVBarAufEAvWKBRlLibchAc=;
+        b=vteaJ2eCU+dA6p/eeDdYk6rH3/LuTJXnzAXPJYdOn81HdUYVmuG8Us/v32J5jp/VdH
+         Kq69ua8D9AhzqHF9VYtq9rtm5oTD886CoqmdbTanMXgyLvN24aPxoc3E0RN6lPQcod2Q
+         IF+X9FuOI08lJvKrCKqtl/Sq+xGlGgfv8sxSgPSKj4rn0K+7tciGOQQmg8E0ZdWasspN
+         2fSl88qXR9n5zP8Rh1eIHfddOpFhBQ8RC80sDJ7LJMooQaSZqt6w1DFLBg/sPMGsXDJn
+         z1upU8tjXt4n6MDpqgV0Vob2eh9fZgtjLPRY4aQhdkV4yvPIrw1JKiz5W60AwG979Sae
+         9c2w==
+X-Gm-Message-State: AJIora84HtM2qe7spPJ0CA5M+lJ3iIljKDeNW8oPgD8n5w5rU1+OyApp
+        YstLMGnRFg6Tw+QkhYedod0=
+X-Google-Smtp-Source: AGRyM1sr5tm9eUjoEiYGRmWe/IQkAg2S4PQdNYXAarJ+OJ9zEa05D+JIy3e9sO4ddJTqEgt81sM29w==
+X-Received: by 2002:a17:907:1608:b0:726:a7b7:cd7a with SMTP id hb8-20020a170907160800b00726a7b7cd7amr3765412ejc.682.1657290494311;
+        Fri, 08 Jul 2022 07:28:14 -0700 (PDT)
+Received: from ?IPV6:2620:10d:c096:310::2eef? ([2620:10d:c092:600::2:676a])
+        by smtp.gmail.com with ESMTPSA id h18-20020aa7c952000000b0043a6fde6e7bsm10019592edt.19.2022.07.08.07.28.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 08 Jul 2022 07:28:13 -0700 (PDT)
+Message-ID: <bd9960ab-c9d8-8e5d-c347-8049cdf5708a@gmail.com>
+Date:   Fri, 8 Jul 2022 15:26:13 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH v6 02/17] landlock: refactors landlock_find/insert_rule
-Content-Language: ru
-To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-CC:     <willemdebruijn.kernel@gmail.com>,
-        <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <netfilter-devel@vger.kernel.org>, <yusongping@huawei.com>,
-        <anton.sirazetdinov@huawei.com>
-References: <20220621082313.3330667-1-konstantin.meskhidze@huawei.com>
- <20220621082313.3330667-3-konstantin.meskhidze@huawei.com>
- <0bbbcf21-1e7d-5585-545f-bf89d8ebd527@digikod.net>
- <9d0c8780-6648-404f-7e51-b62a36617121@huawei.com>
- <72375435-94d4-e3aa-c27b-b44382dde6ad@digikod.net>
-From:   "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
-In-Reply-To: <72375435-94d4-e3aa-c27b-b44382dde6ad@digikod.net>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.122.132.241]
-X-ClientProxiedBy: lhreml751-chm.china.huawei.com (10.201.108.201) To
- lhreml745-chm.china.huawei.com (10.201.108.195)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH net-next v4 00/27] io_uring zerocopy send
+Content-Language: en-US
+To:     David Ahern <dsahern@kernel.org>, io-uring@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Jens Axboe <axboe@kernel.dk>, kernel-team@fb.com
+References: <cover.1657194434.git.asml.silence@gmail.com>
+ <2c49d634-bd8a-5a7f-0f66-65dba22bae0d@kernel.org>
+From:   Pavel Begunkov <asml.silence@gmail.com>
+In-Reply-To: <2c49d634-bd8a-5a7f-0f66-65dba22bae0d@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-7/8/2022 4:56 PM, Mickaël Salaün пишет:
+On 7/8/22 05:10, David Ahern wrote:
+> On 7/7/22 5:49 AM, Pavel Begunkov wrote:
+>> NOTE: Not be picked directly. After getting necessary acks, I'll be working
+>>        out merging with Jakub and Jens.
+>>
+>> The patchset implements io_uring zerocopy send. It works with both registered
+>> and normal buffers, mixing is allowed but not recommended. Apart from usual
+>> request completions, just as with MSG_ZEROCOPY, io_uring separately notifies
+>> the userspace when buffers are freed and can be reused (see API design below),
+>> which is delivered into io_uring's Completion Queue. Those "buffer-free"
+>> notifications are not necessarily per request, but the userspace has control
+>> over it and should explicitly attaching a number of requests to a single
+>> notification. The series also adds some internal optimisations when used with
+>> registered buffers like removing page referencing.
+>>
+>>  From the kernel networking perspective there are two main changes. The first
+>> one is passing ubuf_info into the network layer from io_uring (inside of an
+>> in kernel struct msghdr). This allows extra optimisations, e.g. ubuf_info
+>> caching on the io_uring side, but also helps to avoid cross-referencing
+>> and synchronisation problems. The second part is an optional optimisation
+>> removing page referencing for requests with registered buffers.
+>>
+>> Benchmarking with an optimised version of the selftest (see [1]), which sends
+>> a bunch of requests, waits for completions and repeats. "+ flush" column posts
+>> one additional "buffer-free" notification per request, and just "zc" doesn't
+>> post buffer notifications at all.
+>>
+>> NIC (requests / second):
+>> IO size | non-zc    | zc             | zc + flush
+>> 4000    | 495134    | 606420 (+22%)  | 558971 (+12%)
+>> 1500    | 551808    | 577116 (+4.5%) | 565803 (+2.5%)
+>> 1000    | 584677    | 592088 (+1.2%) | 560885 (-4%)
+>> 600     | 596292    | 598550 (+0.4%) | 555366 (-6.7%)
+>>
+>> dummy (requests / second):
+>> IO size | non-zc    | zc             | zc + flush
+>> 8000    | 1299916   | 2396600 (+84%) | 2224219 (+71%)
+>> 4000    | 1869230   | 2344146 (+25%) | 2170069 (+16%)
+>> 1200    | 2071617   | 2361960 (+14%) | 2203052 (+6%)
+>> 600     | 2106794   | 2381527 (+13%) | 2195295 (+4%)
+>>
+>> Previously it also brought a massive performance speedup compared to the
+>> msg_zerocopy tool (see [3]), which is probably not super interesting.
+>>
 > 
-> On 08/07/2022 14:53, Konstantin Meskhidze (A) wrote:
->> 
->> 
->> 7/7/2022 7:44 PM, Mickaël Salaün пишет:
->>>
->>> On 21/06/2022 10:22, Konstantin Meskhidze wrote:
->>>> Adds a new object union to support a socket port
->>>> rule type. Refactors landlock_insert_rule() and
->>>> landlock_find_rule() to support coming network
->>>> modifications. Now adding or searching a rule
->>>> in a ruleset depends on a rule_type argument
->>>> provided in refactored functions mentioned above.
->>>>
->>>> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
->>>> ---
->>>>
->>>> Changes since v5:
->>>> * Formats code with clang-format-14.
->>>>
->>>> Changes since v4:
->>>> * Refactors insert_rule() and create_rule() functions by deleting
->>>> rule_type from their arguments list, it helps to reduce useless code.
->>>>
->>>> Changes since v3:
->>>> * Splits commit.
->>>> * Refactors landlock_insert_rule and landlock_find_rule functions.
->>>> * Rename new_ruleset->root_inode.
->>>>
->>>> ---
->>>>   security/landlock/fs.c      |   7 ++-
->>>>   security/landlock/ruleset.c | 105 ++++++++++++++++++++++++++----------
->>>>   security/landlock/ruleset.h |  27 +++++-----
->>>>   3 files changed, 96 insertions(+), 43 deletions(-)
->>>>
->>>> diff --git a/security/landlock/fs.c b/security/landlock/fs.c
->>>> index e6da08ed99d1..46aedc2a05a8 100644
->>>> --- a/security/landlock/fs.c
->>>> +++ b/security/landlock/fs.c
->>>> @@ -173,7 +173,8 @@ int landlock_append_fs_rule(struct 
->>>> landlock_ruleset *const ruleset,
->>>>       if (IS_ERR(object))
->>>>           return PTR_ERR(object);
->>>>       mutex_lock(&ruleset->lock);
->>>> -    err = landlock_insert_rule(ruleset, object, access_rights);
->>>> +    err = landlock_insert_rule(ruleset, object, 0, access_rights,
->>>> +                   LANDLOCK_RULE_PATH_BENEATH);
->>>>       mutex_unlock(&ruleset->lock);
->>>>       /*
->>>>        * No need to check for an error because landlock_insert_rule()
->>>> @@ -204,7 +205,9 @@ find_rule(const struct landlock_ruleset *const 
->>>> domain,
->>>>       inode = d_backing_inode(dentry);
->>>>       rcu_read_lock();
->>>>       rule = landlock_find_rule(
->>>> -        domain, rcu_dereference(landlock_inode(inode)->object));
->>>> +        domain,
->>>> +        (uintptr_t)rcu_dereference(landlock_inode(inode)->object),
->>>> +        LANDLOCK_RULE_PATH_BENEATH);
->>>>       rcu_read_unlock();
->>>>       return rule;
->>>>   }
->>>> diff --git a/security/landlock/ruleset.c b/security/landlock/ruleset.c
->>>> index a3fd58d01f09..5f13f8a12aee 100644
->>>> --- a/security/landlock/ruleset.c
->>>> +++ b/security/landlock/ruleset.c
->>>> @@ -35,7 +35,7 @@ static struct landlock_ruleset 
->>>> *create_ruleset(const u32 num_layers)
->>>>           return ERR_PTR(-ENOMEM);
->>>>       refcount_set(&new_ruleset->usage, 1);
->>>>       mutex_init(&new_ruleset->lock);
->>>> -    new_ruleset->root = RB_ROOT;
->>>> +    new_ruleset->root_inode = RB_ROOT;
->>>>       new_ruleset->num_layers = num_layers;
->>>>       /*
->>>>        * hierarchy = NULL
->>>> @@ -69,7 +69,8 @@ static void build_check_rule(void)
->>>>   }
->>>>
->>>>   static struct landlock_rule *
->>>> -create_rule(struct landlock_object *const object,
->>>> +create_rule(struct landlock_object *const object_ptr,
->>>> +        const uintptr_t object_data,
->>>>           const struct landlock_layer (*const layers)[], const u32 
->>>> num_layers,
->>>>           const struct landlock_layer *const new_layer)
->>>>   {
->>>> @@ -90,8 +91,15 @@ create_rule(struct landlock_object *const object,
->>>>       if (!new_rule)
->>>>           return ERR_PTR(-ENOMEM);
->>>>       RB_CLEAR_NODE(&new_rule->node);
->>>> -    landlock_get_object(object);
->>>> -    new_rule->object = object;
->>>> +
->>>> +    if (object_ptr) {
->>>> +        landlock_get_object(object_ptr);
->>>> +        new_rule->object.ptr = object_ptr;
->>>> +    } else if (object_ptr && object_data) {
->>>
->>> Something is wrong with this second check: else + object_ptr?
->> 
->> It was your suggestion to use it like this:
->> " ....You can also add a WARN_ON_ONCE(object_ptr && object_data)."
->> 
->> Please check it here:
->> https://lore.kernel.org/linux-security-module/bc44f11f-0eaa-a5f6-c5dc-1d36570f1be1@digikod.net/ 
-> 
-> Yes, but the error is in the "else", you should write:
-> if (WARN_ON_ONCE(object_ptr && object_data))
-> 	return ERR_PTR(-EINVAL);
-> 
-> …and this should be before the `if (object_ptr) {` line (to avoid
-> erronous landlock_get_object() call), just after the `if (!new_rule)` check.
+> can you add a comment that the above results are for UDP.
 
-   Maybe we could delete this check here cause we have it in the upper 
-insert_rule() function??
+Oh, right, forgot to add it
 
-...
-	if (WARN_ON_ONCE(!layers))
-		return -ENOENT;
------->	if (WARN_ON_ONCE(object_ptr && object_data))
-		return -EINVAL;
-	/* Chooses rb_tree structure depending on a rule type. */
-	switch (rule_type) {
-	case LANDLOCK_RULE_PATH_BENEATH:
-		if (WARN_ON_ONCE(!object_ptr))
-			return -ENOENT;
-		object_data = (uintptr_t)object_ptr;
-		root = &ruleset->root_inode;
-		break;
-	default:
-		WARN_ON_ONCE(1);
-		return -EINVAL;
-	}
-...
 
-This is double check here. What do you think?
-> .
+> You dropped comments about TCP testing; any progress there? If not, can
+> you relay any issues you are hitting?
+
+Not really a problem, but for me it's bottle necked at NIC bandwidth
+(~3GB/s) for both zc and non-zc and doesn't even nearly saturate a CPU.
+Was actually benchmarked by my colleague quite a while ago, but can't
+find numbers. Probably need to at least add localhost numbers or grab
+a better server.
+
+-- 
+Pavel Begunkov
