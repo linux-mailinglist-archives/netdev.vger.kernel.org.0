@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9015556B2BC
-	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 08:25:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E7F2656B2B3
+	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 08:25:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237268AbiGHGVG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jul 2022 02:21:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50324 "EHLO
+        id S237302AbiGHGWO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jul 2022 02:22:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237034AbiGHGVF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 02:21:05 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8C092CDC0
-        for <netdev@vger.kernel.org>; Thu,  7 Jul 2022 23:21:04 -0700 (PDT)
+        with ESMTP id S237298AbiGHGWN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 02:22:13 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5817B2C109
+        for <netdev@vger.kernel.org>; Thu,  7 Jul 2022 23:22:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657261264; x=1688797264;
+  t=1657261332; x=1688797332;
   h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=XBXi1qyOk24yCoBgZacud8aZXtqMUCt0EwnZ9lt9vMg=;
-  b=loGcCXFUi8cnBn787tkEIHerHo9V4MyoUFBHrGlI2sWO4NPLxfNFHwHn
-   NMnQxpGOiRbYNHHut9YGI03Nockh9E5l9EJizVe3zCQ3w99GSGM3fSFC4
-   Yfc+dUzY3hm8FRlfF6ceZ14N1V6soWuFf9QnfiecNm+8wjf7C9JgSZ3rV
-   Zd2IBDN2STXzV7aMMjXl/jjWNrdZsBev+/eswhe6q/rAaZIbTShhg0eKR
-   LdyDIIw4IbT3ScCQIbDBiH2FPI8ZBRLhe75nFjjiGGh/fm4iW5azzmdwp
-   Ey2wE4lq9vgDdxCeMeQ3SxDclBheM9ljIiH8O47eN5UOh2pzlW0+LowKc
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10401"; a="348187561"
+  bh=+xcCqaDGt4/n5biucDVcC/ko31w3ssGfdyQYtdSak9Y=;
+  b=MioPcnUGz7xvfXzkHpmOXuI/2KAsva5ryXYgzI4QglXSpnVVC8WeuEzw
+   fIJn3bmgAHdu1+zJ8zBJhLb02lUBkOgp3wgXk+STNEyUG6zxoxPxseP0R
+   e1Ni/IkKsYP6NSbBvs+dC7xtt2c1K/Dh33yodhOYVvgZ4xhxy86F8yotR
+   zCxyug0oc0B2hbJ82LXF4sxDGqs/UAItUvlvkHFb+mB+JmxqIXV5B4Utf
+   gUNGMqKFY3xne8IZb3RYLPlKfAcHtsWdrNUok3cojQSXdsD3A2+eRtl0P
+   MqeeYFeJQnyWg2u72PGY4mH0w+DWQzJ1lXnqP17GLqz74gUvxD3/JLyHO
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10401"; a="264616146"
 X-IronPort-AV: E=Sophos;i="5.92,254,1650956400"; 
-   d="scan'208";a="348187561"
+   d="scan'208";a="264616146"
 Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jul 2022 23:21:04 -0700
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jul 2022 23:22:06 -0700
 X-IronPort-AV: E=Sophos;i="5.92,254,1650956400"; 
-   d="scan'208";a="920885298"
+   d="scan'208";a="920885532"
 Received: from lingshan-mobl.ccr.corp.intel.com (HELO [10.254.210.36]) ([10.254.210.36])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jul 2022 23:21:02 -0700
-Message-ID: <ef1c42e8-2350-dd9c-c6c0-2e9bbe85adb4@intel.com>
-Date:   Fri, 8 Jul 2022 14:21:00 +0800
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jul 2022 23:22:04 -0700
+Message-ID: <733ee258-86e3-da9c-22af-fa1275f00593@intel.com>
+Date:   Fri, 8 Jul 2022 14:22:02 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Firefox/91.0 Thunderbird/91.11.0
-Subject: Re: [PATCH V3 5/6] vDPA: answer num of queue pairs = 1 to userspace
- when VIRTIO_NET_F_MQ == 0
+Subject: Re: [PATCH V3 4/6] vDPA: !FEATURES_OK should not block querying
+ device config space
 Content-Language: en-US
 To:     Parav Pandit <parav@nvidia.com>,
         "jasowang@redhat.com" <jasowang@redhat.com>,
@@ -53,10 +53,10 @@ Cc:     "virtualization@lists.linux-foundation.org"
         "xieyongji@bytedance.com" <xieyongji@bytedance.com>,
         "gautam.dawar@amd.com" <gautam.dawar@amd.com>
 References: <20220701132826.8132-1-lingshan.zhu@intel.com>
- <20220701132826.8132-6-lingshan.zhu@intel.com>
- <PH0PR12MB548173B9511FD3941E2D5F64DCBD9@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20220701132826.8132-5-lingshan.zhu@intel.com>
+ <PH0PR12MB548190DE76CC64E56DA2DF13DCBD9@PH0PR12MB5481.namprd12.prod.outlook.com>
 From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
-In-Reply-To: <PH0PR12MB548173B9511FD3941E2D5F64DCBD9@PH0PR12MB5481.namprd12.prod.outlook.com>
+In-Reply-To: <PH0PR12MB548190DE76CC64E56DA2DF13DCBD9@PH0PR12MB5481.namprd12.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-5.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -71,82 +71,62 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 7/2/2022 6:07 AM, Parav Pandit wrote:
+On 7/2/2022 6:12 AM, Parav Pandit wrote:
 >
 >> From: Zhu Lingshan <lingshan.zhu@intel.com>
 >> Sent: Friday, July 1, 2022 9:28 AM
->> If VIRTIO_NET_F_MQ == 0, the virtio device should have one queue pair, so
->> when userspace querying queue pair numbers, it should return mq=1 than
->> zero.
 >>
->> Function vdpa_dev_net_config_fill() fills the attributions of the vDPA
->> devices, so that it should call vdpa_dev_net_mq_config_fill() so the
->> parameter in vdpa_dev_net_mq_config_fill() should be feature_device than
->> feature_driver for the vDPA devices themselves
+>> Users may want to query the config space of a vDPA device, to choose a
+>> appropriate one for a certain guest. This means the users need to read the
+>> config space before FEATURES_OK, and the existence of config space
+>> contents does not depend on FEATURES_OK.
 >>
->> Before this change, when MQ = 0, iproute2 output:
->> $vdpa dev config show vdpa0
->> vdpa0: mac 00:e8:ca:11:be:05 link up link_announce false max_vq_pairs 0
->> mtu 1500
+>> The spec says:
+>> The device MUST allow reading of any device-specific configuration field
+>> before FEATURES_OK is set by the driver. This includes fields which are
+>> conditional on feature bits, as long as those feature bits are offered by the
+>> device.
 >>
-> The fix belongs to user space.
-> When a feature bit _MQ is not negotiated, vdpa kernel space will not add attribute VDPA_ATTR_DEV_NET_CFG_MAX_VQP.
-> When such attribute is not returned by kernel, max_vq_pairs should not be shown by the iproute2.
-I think userspace tool does not need to care whether MQ is offered or 
-negotiated, it just needs to read the number of queues
-there, so if no MQ, it is not "not any queues", there are still 1 queue 
-pair to be a virtio-net device, means two queues.
-
-If not, how can you tell the user there are only 2 queues? The end users 
-may don't know this is default. They may misunderstand this
-as an error or defects.
+>> Fixes: 30ef7a8ac8a07 (vdpa: Read device configuration only if FEATURES_OK)
+> Fix is fine, but fixes tag needs correction described below.
 >
-> We have many config space fields that depend on the feature bits and some of them do not have any defaults.
-> To keep consistency of existence of config space fields among all, we don't want to show default like below.
+> Above commit id is 13 letters should be 12.
+> And
+> It should be in format
+> Fixes: 30ef7a8ac8a0 ("vdpa: Read device configuration only if FEATURES_OK")
 >
-> Please fix the iproute2 to not print max_vq_pairs when it is not returned by the kernel.
->   
->> After applying this commit, when MQ = 0, iproute2 output:
->> $vdpa dev config show vdpa0
->> vdpa0: mac 00:e8:ca:11:be:05 link up link_announce false max_vq_pairs 1
->> mtu 1500
->>
->> Fixes: a64917bc2e9b (vdpa: Provide interface to read driver features)
+> Please use checkpatch.pl script before posting the patches to catch these errors.
+> There is a bot that looks at the fixes tag and identifies the right kernel version to apply this fix.
+strange, checkpatch.pl did not complain this, I will fix this tag. Thanks
+>
 >> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
 >> ---
->>   drivers/vdpa/vdpa.c | 7 ++++---
->>   1 file changed, 4 insertions(+), 3 deletions(-)
+>>   drivers/vdpa/vdpa.c | 8 --------
+>>   1 file changed, 8 deletions(-)
 >>
 >> diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c index
->> d76b22b2f7ae..846dd37f3549 100644
+>> 9b0e39b2f022..d76b22b2f7ae 100644
 >> --- a/drivers/vdpa/vdpa.c
 >> +++ b/drivers/vdpa/vdpa.c
->> @@ -806,9 +806,10 @@ static int vdpa_dev_net_mq_config_fill(struct
->> vdpa_device *vdev,
->>   	u16 val_u16;
+>> @@ -851,17 +851,9 @@ vdpa_dev_config_fill(struct vdpa_device *vdev,
+>> struct sk_buff *msg, u32 portid,  {
+>>   	u32 device_id;
+>>   	void *hdr;
+>> -	u8 status;
+>>   	int err;
 >>
->>   	if ((features & BIT_ULL(VIRTIO_NET_F_MQ)) == 0)
->> -		return 0;
->> +		val_u16 = 1;
->> +	else
->> +		val_u16 = __virtio16_to_cpu(true, config-
->>> max_virtqueue_pairs);
->> -	val_u16 = le16_to_cpu(config->max_virtqueue_pairs);
->>   	return nla_put_u16(msg, VDPA_ATTR_DEV_NET_CFG_MAX_VQP,
->> val_u16);  }
->>
->> @@ -842,7 +843,7 @@ static int vdpa_dev_net_config_fill(struct
->> vdpa_device *vdev, struct sk_buff *ms
->>   			      VDPA_ATTR_PAD))
->>   		return -EMSGSIZE;
->>
->> -	return vdpa_dev_net_mq_config_fill(vdev, msg, features_driver,
->> &config);
->> +	return vdpa_dev_net_mq_config_fill(vdev, msg, features_device,
->> +&config);
->>   }
->>
->>   static int
+>>   	down_read(&vdev->cf_lock);
+>> -	status = vdev->config->get_status(vdev);
+>> -	if (!(status & VIRTIO_CONFIG_S_FEATURES_OK)) {
+>> -		NL_SET_ERR_MSG_MOD(extack, "Features negotiation not
+>> completed");
+>> -		err = -EAGAIN;
+>> -		goto out;
+>> -	}
+>> -
+>>   	hdr = genlmsg_put(msg, portid, seq, &vdpa_nl_family, flags,
+>>   			  VDPA_CMD_DEV_CONFIG_GET);
+>>   	if (!hdr) {
 >> --
 >> 2.31.1
 
