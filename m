@@ -2,56 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DEBC056AF5C
-	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 02:32:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AFC0256AF5E
+	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 02:32:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236845AbiGHARk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jul 2022 20:17:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34870 "EHLO
+        id S236449AbiGHAUR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jul 2022 20:20:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236829AbiGHARj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 20:17:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D89A6EEA3
-        for <netdev@vger.kernel.org>; Thu,  7 Jul 2022 17:17:38 -0700 (PDT)
+        with ESMTP id S229458AbiGHAUQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 20:20:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1160F6EEA1;
+        Thu,  7 Jul 2022 17:20:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 63640B82446
-        for <netdev@vger.kernel.org>; Fri,  8 Jul 2022 00:17:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7E4EC3411E;
-        Fri,  8 Jul 2022 00:17:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A238A625FA;
+        Fri,  8 Jul 2022 00:20:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id EFA2AC341D1;
+        Fri,  8 Jul 2022 00:20:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657239456;
-        bh=18EvcOfRQZ0Oq1YDmoN81IcFEOq6xziiwJ23OvvkK3k=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=hL39/ZGAvjhknHeVRyJv2FFHPmBsYwUMLKjzoVBQkBq0zeF64xZcQCgF3iKIfUkb7
-         J5FIwveL9jQotL2xAZB84n6NP51veZ9PU+BRVj64QlIU/K7N8wgOy2V2FgjCUP9QAa
-         oCFBchrnsUT9aB3pXiVf4zie3reL/XRhYV8M548YDN+Z6jy2tlHYCBEjh0dxXn1vjp
-         6LAIkhDSiHVivFkOaFtFQKnkWdA19rfxcUVjo0hDTIr6YTCfNXMVBvLktG5HyqGffm
-         z3+zFEzmyQ6H08fVdtLQge3eu1K5BDnB/cTrTxADmWgMXrY3zDOar6YnSdpYTfN2VE
-         HUgQLdWOYsJpw==
-Date:   Thu, 7 Jul 2022 17:17:26 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Tariq Toukan <ttoukan.linux@gmail.com>
-Cc:     Saeed Mahameed <saeed@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Maxim Mikityanskiy <maximmi@nvidia.com>
-Subject: Re: [net-next 11/15] net/tls: Multi-threaded calls to TX
- tls_dev_del
-Message-ID: <20220707171726.5759eb5c@kernel.org>
-In-Reply-To: <953f4a8c-1b17-cf22-9cbf-151ba4d39656@gmail.com>
-References: <20220706232421.41269-1-saeed@kernel.org>
-        <20220706232421.41269-12-saeed@kernel.org>
-        <20220706193735.49d5f081@kernel.org>
-        <953f4a8c-1b17-cf22-9cbf-151ba4d39656@gmail.com>
+        s=k20201202; t=1657239614;
+        bh=xr331W5Ea/ycBBI8aMRJXuRpjaog4l4hqCjwl3e4p0I=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=A/rue9HgG6TGNfqlsk1bmfUtjBTY3WlEfkrB/odlebe1uimzQPltbkq1kU1TO8Jq1
+         yILd0McT7t/Sw2PrJzSsTzulm2xByX/zvzgj+px5Xo1PWFunoqg/tFDc0rou30f0Pz
+         M5EirYMC4s/6a3ChrdKeefa8etZ/6lTA1pcSaKRMWMwYCPDJCfhPnnbar/X4+wtqZd
+         XJK6ukt0BVdGELEjAFW4jlBiXWgoGjz0z5FY5+J1gcwgUVC2HCY6OVlaQWI8dNonDf
+         I0IMj2tbsD9Uvn6Aj0VG8eXH89eex9n/45zG+/8BSubZj1o85wsU3NL9wjwBt955o/
+         mysCYXxQuA0cw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DBCF8E45BDC;
+        Fri,  8 Jul 2022 00:20:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] net: stmmac: dwc-qos: Disable split header for Tegra194
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165723961389.9316.14613536179831335249.git-patchwork-notify@kernel.org>
+Date:   Fri, 08 Jul 2022 00:20:13 +0000
+References: <20220706083913.13750-1-jonathanh@nvidia.com>
+In-Reply-To: <20220706083913.13750-1-jonathanh@nvidia.com>
+To:     Jon Hunter <jonathanh@nvidia.com>
+Cc:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org
 X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -62,14 +58,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 8 Jul 2022 01:14:32 +0300 Tariq Toukan wrote:
-> > Why don't we need the flush any more? The module reference is gone as
-> > soon as destructor runs (i.e. on ULP cleanup), the work can still be
-> > pending, no?  
-> 
-> So this garbage collector work does not exist anymore. Replaced by 
-> per-context works, with no accessibility to them from this function.
-> It seems that we need to guarantee completion of these works. Maybe by 
-> queuing them to a new dedicated queue, flushing it here.
+Hello:
 
-Yup, SG.
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Wed, 6 Jul 2022 09:39:13 +0100 you wrote:
+> There is a long-standing issue with the Synopsys DWC Ethernet driver
+> for Tegra194 where random system crashes have been observed [0]. The
+> problem occurs when the split header feature is enabled in the stmmac
+> driver. In the bad case, a larger than expected buffer length is
+> received and causes the calculation of the total buffer length to
+> overflow. This results in a very large buffer length that causes the
+> kernel to crash. Why this larger buffer length is received is not clear,
+> however, the feedback from the NVIDIA design team is that the split
+> header feature is not supported for Tegra194. Therefore, disable split
+> header support for Tegra194 to prevent these random crashes from
+> occurring.
+> 
+> [...]
+
+Here is the summary with links:
+  - net: stmmac: dwc-qos: Disable split header for Tegra194
+    https://git.kernel.org/netdev/net/c/029c1c2059e9
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
