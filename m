@@ -2,85 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A75856B816
-	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 13:11:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B21E56B850
+	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 13:19:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237994AbiGHLKQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jul 2022 07:10:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40280 "EHLO
+        id S237157AbiGHLSx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jul 2022 07:18:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237923AbiGHLKP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 07:10:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85BD984EFC;
-        Fri,  8 Jul 2022 04:10:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A74A62480;
-        Fri,  8 Jul 2022 11:10:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 783E7C341CA;
-        Fri,  8 Jul 2022 11:10:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657278613;
-        bh=aCtXti091cuDxdiFhNRKpJ500AeRV5xrA/DHZ+VEEjg=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=eJVTZ8DLtJ4EmERr9ATHZ++ArfY6OXw3YUbnKZlN7p+x94/i//oawSyVJYmjj8O6i
-         sP5Y9njunkYVsmFhpx90BadBynDB5Grd3uJDOFa4zvDUq2Csaao4ALKopkhggc8ZbH
-         j/lFLqlzvWEoNVDzjgCvhfiLejHCZqwTiWlendGB2BNZa8Bwo72/JiDFs4AU2Y5A89
-         Bv+ONlmhoRtBd6epaiGjx6/zdvo3RshLREBUEprs35cRsIM7UvzM3UELJ+3uecP5NZ
-         94FZuFzFA9gt1Nvs/jqe14HCNfUTDLXkqra8jEug+u66KBpMVWMKgh4QgY3QsG3kJW
-         6jLtbud8T3vsw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 58B90E45BDA;
-        Fri,  8 Jul 2022 11:10:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S237028AbiGHLSw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 07:18:52 -0400
+Received: from kylie.crudebyte.com (kylie.crudebyte.com [5.189.157.229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A23BC88F1D
+        for <netdev@vger.kernel.org>; Fri,  8 Jul 2022 04:18:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
+        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
+        Content-ID:Content-Description;
+        bh=+nD4DS8oXyEly5aIOtgm4gxwma+XmZ8gZLIcYuW4KRw=; b=FHP22ExkFj3UrAOaRCKAYj2RJe
+        C3Jp31UVB1Bnb357JrSlZRh1ewErJE9xzobxfYgT6P+3gBeQwIks2yPSRGTniW0ClGn5ngOkHOxN/
+        bI0eDY3C/WK7Aa75FhWbn+Y+aD5fAi5h/d/lU6y4SkldFwIA1KDbmNNttYQK/fGdulyBbobiW5u7X
+        WTriliP8iRV0U2OSXrNMCvoctGNzo3S9AfLyU5Pp3bfOs8Jq+i7klJlSXOS4XZFERyBRGO/+kHo/N
+        xQ5xdCCy1nYcC48FJSL8YhN5Msd8kC5pd7JycF2gaPjPrhxiqfxwtSilI9J92p1xAIIDwZFSCogQF
+        qRcXB2xwPGUgeM42yrX3iy36ER3Dx7/LEh3Ca1O2VSlGH6jtIHNouBHMSotrlwTp2Kc8+iI+UhcHl
+        BjXNrAcZeOIi8d2YjE94m1a80yXKa+QNir/9fMiwc46lUc8t+PMPM2vZn+2kiP/GeodGBvYtqHqGA
+        XgBZudtRxSWKSAFMUGacsIsNkBPwKHlWiJOyTvMNHELLL8o/VRCpl01ZDD9mDnqx4X5dz2fq9SXlz
+        +5nrvvLGR48pSJ6TZ4kAzMhiS0fzdyTK4WYblTl2i/Zymb9X4GW4gLRn77OYJb6KvQJyMOYdOnyNF
+        MjtBqSALMRsg+tPGp2uISS8ngZpp29KGmDLaLaBB8=;
+From:   Christian Schoenebeck <linux_oss@crudebyte.com>
+To:     Dominique Martinet <asmadeus@codewreck.org>,
+        Eric Van Hensbergen <ericvh@gmail.com>
+Cc:     Greg Kurz <groug@kaod.org>, Latchesar Ionkov <lucho@ionkov.net>,
+        Nikolay Kichukov <nikolay@oldum.net>, netdev@vger.kernel.org,
+        v9fs-developer@lists.sourceforge.net
+Subject: Re: [PATCH v4 00/12] remove msize limit in virtio transport
+Date:   Fri, 08 Jul 2022 13:18:40 +0200
+Message-ID: <1690835.L3irNgtgWz@silver>
+In-Reply-To: <CAFkjPTngeFh=0mPVW-Yf1Sxkxp_HDNUeANndoYN3-eU9_rGLuQ@mail.gmail.com>
+References: <cover.1640870037.git.linux_oss@crudebyte.com>
+ <YseFPgFoLpjOGq40@codewreck.org>
+ <CAFkjPTngeFh=0mPVW-Yf1Sxkxp_HDNUeANndoYN3-eU9_rGLuQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: sock: tracing: Fix sock_exceed_buf_limit not to
- dereference stale pointer
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165727861336.31785.10791410995734457119.git-patchwork-notify@kernel.org>
-Date:   Fri, 08 Jul 2022 11:10:13 +0000
-References: <20220706105040.54fc03b0@gandalf.local.home>
-In-Reply-To: <20220706105040.54fc03b0@gandalf.local.home>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     linux-kernel@vger.kernel.org, nhorman@tuxdriver.com,
-        davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-        kuniyu@amazon.com
-X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Freitag, 8. Juli 2022 04:26:40 CEST Eric Van Hensbergen wrote:
+> kvmtool might be the easiest I guess - I=E2=80=99m traveling right now bu=
+t I can
+> try and find some others.  The arm fast models have free versions that are
+> downloadable as well.  I know I=E2=80=99ve seem some other less-tradition=
+al uses of
+> virtio particularly in libos deployments but will take some time to rattle
+> those from my memory.
 
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
+Some examples would indeed be useful, thanks!
 
-On Wed, 6 Jul 2022 10:50:40 -0400 you wrote:
-> From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
-> 
-> The trace event sock_exceed_buf_limit saves the prot->sysctl_mem pointer
-> and then dereferences it in the TP_printk() portion. This is unsafe as the
-> TP_printk() portion is executed at the time the buffer is read. That is,
-> it can be seconds, minutes, days, months, even years later. If the proto
-> is freed, then this dereference will can also lead to a kernel crash.
-> 
-> [...]
+> On Fri, Jul 8, 2022 at 11:16 AM Dominique Martinet <asmadeus@codewreck.or=
+g>
+>=20
+> wrote:
+> > Eric Van Hensbergen wrote on Fri, Jul 08, 2022 at 10:44:45AM +1000:
+> > > there are other 9p virtio servers - several emulation platforms suppo=
+rt
+> >=20
+> > it
+> >=20
+> > > sans qemu.
+> >=20
+> > Would you happen to have any concrete example?
+> > I'd be curious if there are some that'd be easy to setup for test for
+> > example; my current validation setup lacks a bit of diversity...
+> >=20
+> > I found https://github.com/moby/hyperkit for OSX but that doesn't really
+> > help me, and can't see much else relevant in a quick search
 
-Here is the summary with links:
-  - net: sock: tracing: Fix sock_exceed_buf_limit not to dereference stale pointer
-    https://git.kernel.org/netdev/net/c/820b8963adae
+So that appears to be a 9p (@virtio-PCI) client for xhyve, with max. 256kB=
+=20
+buffers <=3D> max. 68 virtio descriptors (memory segments) [1]:
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+/* XXX issues with larger buffers elsewhere in stack */
+#define BUFSIZE (1 << 18)
+#define MAXDESC (BUFSIZE / 4096 + 4)
+#define VT9P_RINGSZ (BUFSIZE / 4096 * 4)
+
+[1] https://github.com/moby/hyperkit/blob/master/src/lib/pci_virtio_9p.c#L27
+
+But on xhyve side I don't see any 9p server implementation:
+https://github.com/machyve/xhyve/search?q=3D9p
+Maybe a 9p server is already implemented by Apple's Hypervisor framework. I=
+=20
+don't find this documented anywhere though.
+
+Best regards,
+Christian Schoenebeck
 
 
