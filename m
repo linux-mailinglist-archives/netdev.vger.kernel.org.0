@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F13F156AF59
-	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 02:32:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 934BF56AF5B
+	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 02:32:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236448AbiGHAOK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jul 2022 20:14:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33744 "EHLO
+        id S236749AbiGHAOQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jul 2022 20:14:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230016AbiGHAOJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 20:14:09 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 141776EE92;
-        Thu,  7 Jul 2022 17:14:09 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id b9so6139601pfp.10;
-        Thu, 07 Jul 2022 17:14:09 -0700 (PDT)
+        with ESMTP id S230016AbiGHAOL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jul 2022 20:14:11 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75DB46EE92;
+        Thu,  7 Jul 2022 17:14:10 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id s21so12139388pjq.4;
+        Thu, 07 Jul 2022 17:14:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=EPIqDUDwUL8GcLZII6giZ1lM/7jnEq1hR9ruxU38etY=;
-        b=Zgd9Mzhrgu975THaR3rV8Hknxs7yBMfORZclz7hgD7q9Fa8mFVKt9QMutgq4zHtZSP
-         90WLNv3UVc6ui9XvAVsvQqdSB/WnoNmu5ynw0o3Akud7Kms6n/DfWTRpQyJ2Z2MIqZZT
-         B+k8rz0+a2KUGEa9CHCV7ft9BaWyR0a1FUYMKfBpB359mcPzLhVMijXzYL61XF6Aeocv
-         /LjZN8FaYWolw5h0ljAFH9/as+usV540aGZs8mHKZjlXd2F6hxzPuN0KuYSPpAz5tleK
-         6QHebSG+gczugSEXWgzTVYAWmXUTiaDMzue6IMlHdLojdZT/EIDWAYUjk4xvp8ip1do5
-         +GKQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Tvre+hlNJp6WXp1SXGtKsESYflfZh+7jUtQqn/SqKBY=;
+        b=BI3INW1EKYcbfgVOKcn46ln+bVkOf2fGwq0IgAxGxDVT9wv60EITNotu2wYcG58BNN
+         dEDBvc5AQ3ovmfeFDFzaH67Yxlfwwya+N+QFDNGZ+NdkzsHZzorjE63qcO9a9abJhHKF
+         NH3hRicHYd6mnda2+TvNyTgX8OoPcJWiOWS9oV7PhfOmiw862wisZ0vnUSjkd7CcRD0b
+         xcdAvhYu4TmfEgyZK6HlzDvN9faOO+PAtAHTr2xptkbJOn/IHFQlJ0rpfrHKxavKSSYi
+         Rpgnlu+Fycz43Dc1jUFmP0y2JGFNDhPAfyR4fFAYyfOWEbaRssc2if/TijDoWRt2Tah0
+         3cWg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=EPIqDUDwUL8GcLZII6giZ1lM/7jnEq1hR9ruxU38etY=;
-        b=ORGQO/RVAOq575YOJfYc8hRSjr8UIFEjO6J+eO/Oz2N4/li374OAemKwO3OqEcEmoh
-         OZm7ftqzGycikUHFVTVO2KK3gVnKAVwtSVjmdTbVrR3GTnVM0I9adDXo+5xLDJ3or9VJ
-         tlLsp/xj1fSlM2z02RlNlI0oQBfg7/+sACpicLh/HYqH7q8MbOsunzPoOA1FMDpf8qy7
-         P8eWUklMZdoVIj6CFOrogYuXZ3K+ATKEMfQDSZ5+LojemNPZPz33tuB7KXYRHKeDk2S1
-         1304QVe3Aj9H1HssgpeNmqv/uTlbAAe71iz7uLYF56adKEQ0JHE7fgoi/RMiOJWslJKH
-         mUNg==
-X-Gm-Message-State: AJIora9XVK/ZoJdi33kFWRMNgmyLC9FsaMwadNFR6DeZmaB4g/Zqc6Sx
-        n/6QWDc8g510X+c82/s5JV1F3y8bVnw=
-X-Google-Smtp-Source: AGRyM1srMNsNREHvzkYJIXlogrslrHy5Vja65MpLfTgalTmHZgsp3NLmlhMlXo2e/ApQfmbjFEsxcA==
-X-Received: by 2002:a62:1891:0:b0:528:5d43:c3ab with SMTP id 139-20020a621891000000b005285d43c3abmr886621pfy.79.1657239248208;
-        Thu, 07 Jul 2022 17:14:08 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Tvre+hlNJp6WXp1SXGtKsESYflfZh+7jUtQqn/SqKBY=;
+        b=D2cQvALcs51f/SY/kRbPqifUGGC11QnHXoSYhGS8Y9KMhP9oYcYa7GXgq9TDe26YdH
+         u2tN5U2Gg8prA0BKkOiuTXR/xh8ESqklartq8NgwCU9bFER8Aqa6IQHXSGhArV4Yd4Hr
+         je2x1R58xOVE7DQeQDzsYJSFJmrkoaSloQCaMBh69Re2kcmPeeZw0FsZg78dRqndAK3x
+         HV1BRcfk58GTn2knP1LCZ8SEC7uvsczCK/13gcU/ja8J2XtqHoh+j8ntcv/C4VujcjOZ
+         HjeNbO8c+R4PhdiKk0u4dObyaKsGuLv8UiEDuH3AxVp0l2KgtqN25xRjZxWOO9e8uTq5
+         pGRw==
+X-Gm-Message-State: AJIora9UaiZtWIO8DB/q+asH2op4L5wqLBx5c8m29mjsj0rJcz77KO/w
+        NXbO1BQruNtRIyGmqru/dlf9THxnEmo=
+X-Google-Smtp-Source: AGRyM1sF1XjkjGH3k5a79pT/Dsb6XwQ4k5Y8s6fgd4IGP6qYB19fs8HElnn/31X+fnyQNG5shLizMw==
+X-Received: by 2002:a17:902:f708:b0:153:839f:bf2c with SMTP id h8-20020a170902f70800b00153839fbf2cmr751686plo.113.1657239249586;
+        Thu, 07 Jul 2022 17:14:09 -0700 (PDT)
 Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id t14-20020a62ea0e000000b00525521a288dsm27340169pfh.28.2022.07.07.17.14.06
+        by smtp.gmail.com with ESMTPSA id t14-20020a62ea0e000000b00525521a288dsm27340169pfh.28.2022.07.07.17.14.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jul 2022 17:14:07 -0700 (PDT)
+        Thu, 07 Jul 2022 17:14:09 -0700 (PDT)
 From:   Florian Fainelli <f.fainelli@gmail.com>
 To:     stable@vger.kernel.org
 Cc:     Doug Berger <opendmb@gmail.com>,
@@ -55,10 +55,12 @@ Cc:     Doug Berger <opendmb@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
         olteanv@gmail.com, andrew@lunn.ch
-Subject: [PATCH stable 4.9 v3] net: dsa: bcm_sf2: force pause link settings
-Date:   Thu,  7 Jul 2022 17:14:04 -0700
-Message-Id: <20220708001405.1743251-1-f.fainelli@gmail.com>
+Subject: [PATCH stable 4.14 v3] net: dsa: bcm_sf2: force pause link settings
+Date:   Thu,  7 Jul 2022 17:14:05 -0700
+Message-Id: <20220708001405.1743251-2-f.fainelli@gmail.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220708001405.1743251-1-f.fainelli@gmail.com>
+References: <20220708001405.1743251-1-f.fainelli@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -100,20 +102,20 @@ Changes in v2:
  1 file changed, 19 insertions(+)
 
 diff --git a/drivers/net/dsa/bcm_sf2.c b/drivers/net/dsa/bcm_sf2.c
-index 40b3adf7ad99..f3d61f2bb0f7 100644
+index 11a72c4cbb92..2279e5e2deee 100644
 --- a/drivers/net/dsa/bcm_sf2.c
 +++ b/drivers/net/dsa/bcm_sf2.c
-@@ -600,7 +600,9 @@ static void bcm_sf2_sw_adjust_link(struct dsa_switch *ds, int port,
+@@ -625,7 +625,9 @@ static void bcm_sf2_sw_adjust_link(struct dsa_switch *ds, int port,
  	struct bcm_sf2_priv *priv = bcm_sf2_to_priv(ds);
  	struct ethtool_eee *p = &priv->port_sts[port].eee;
  	u32 id_mode_dis = 0, port_mode;
 +	u16 lcl_adv = 0, rmt_adv = 0;
  	const char *str = NULL;
 +	u8 flowctrl = 0;
- 	u32 reg;
+ 	u32 reg, offset;
  
- 	switch (phydev->interface) {
-@@ -667,10 +669,27 @@ static void bcm_sf2_sw_adjust_link(struct dsa_switch *ds, int port,
+ 	if (priv->type == BCM7445_DEVICE_ID)
+@@ -697,10 +699,27 @@ static void bcm_sf2_sw_adjust_link(struct dsa_switch *ds, int port,
  		break;
  	}
  
@@ -139,7 +141,7 @@ index 40b3adf7ad99..f3d61f2bb0f7 100644
 +	if (flowctrl & FLOW_CTRL_RX)
 +		reg |= RXFLOW_CNTL;
  
- 	core_writel(priv, reg, CORE_STS_OVERRIDE_GMIIP_PORT(port));
+ 	core_writel(priv, reg, offset);
  
 -- 
 2.25.1
