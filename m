@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DFD756C552
-	for <lists+netdev@lfdr.de>; Sat,  9 Jul 2022 02:29:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EDA256C4F5
+	for <lists+netdev@lfdr.de>; Sat,  9 Jul 2022 02:29:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229484AbiGHX5h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jul 2022 19:57:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41874 "EHLO
+        id S229492AbiGHX5y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jul 2022 19:57:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbiGHX5g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 19:57:36 -0400
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D6C664E0C
-        for <netdev@vger.kernel.org>; Fri,  8 Jul 2022 16:57:35 -0700 (PDT)
-Received: by mail-lj1-x236.google.com with SMTP id y18so205694ljj.6
-        for <netdev@vger.kernel.org>; Fri, 08 Jul 2022 16:57:35 -0700 (PDT)
+        with ESMTP id S229493AbiGHX5x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 19:57:53 -0400
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF5D264E21
+        for <netdev@vger.kernel.org>; Fri,  8 Jul 2022 16:57:51 -0700 (PDT)
+Received: by mail-lf1-x132.google.com with SMTP id e12so194531lfr.6
+        for <netdev@vger.kernel.org>; Fri, 08 Jul 2022 16:57:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=OFSi/uBs6fvaK9vnGi6KJaQNfAg8IioYRv9G9NO6zoo=;
-        b=dwqOpDQ+p9U7LQ04UOpLa3Si2eRPblF0fpvP0oHeQC0pF357qu2S4UBXkM7xMs6l3f
-         dBxzhnuFv089bKSkmiBIvdLmHMbQYr1g++qZA5WGZEJR8F4fgWLZdUgJdl318K5Krsu9
-         e/SnRk2rGgNoz5qTtHwnSj3J4CzuVU5v7GVmaryp+ajmtgxovrQZ4zCCi9Z9VatLlpez
-         bR1Z9DhtEUTzXuo7KBbFJBUl/lM+xEqlpwMN/iUvajw3VZXf1z5l1ASvoG34qmmhv+dC
-         FT+Klmw05gzDZcM7JVCMNxVjkcS15QKxxNM/O3i6QFCojP7qc3x2U9FW3AjBJyv/1xZt
-         a9eQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=/jxC1JjCm62YabzFufDUJocIDmCx9DnXigWUB8EgFBU=;
+        b=V/9C1dg6QUXjaq1Z42eKO3+gppZcwczSEcVUnrPxoecYZEk4n02NCttORT+wYJX0cq
+         Bbe/ItpQcpNA6Rod6Wl0CGRmnVxCXdCdeTFjHkuqo/vlMJDj1Czl8iFgV5A8ii26oLft
+         joILYDfxSuznWFbVq1t1BeJhIdZIdQe3jqMQWrzjAYbl4GIWvak1Eg4DVYm0mM8l4kAU
+         AOk7FCYG8EbcPR6ccOFC1df6NdFpO97qPmCyWRRlslow6o5lpBw7ZzDyFkY3X6puRSgz
+         gCls+R1vbubVzJLpZb3TQ8uDr5ew3V3Hit/wNmg1KFYkXJUhzFuMqj1xnV7B0+qZZ2sf
+         WY0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=OFSi/uBs6fvaK9vnGi6KJaQNfAg8IioYRv9G9NO6zoo=;
-        b=3Bt7Qg3tAL2QDTbI2YryadBJ1F9yxsSkw7hOz+ZecZjznstn28S4CmBGQBT7optgCh
-         vzQ6T8AhYTYbCwNXEb+NWiRhzzsUNO3Ii4348jrfIbgW/oR0QEEXcJsSl0rnXTRa9Ayc
-         TvuiUcRPrXZ4hH9ER+QV7abAggYlK8Y/nO+qzsVBXXGMsgotWTv6420/aj0Hlfu0KpkT
-         xUmM90VC+OXj7PU1pLArnHnkhwY1Os3bG0jIXzH2Wu1U6kxn3BbFiGTeujKWeITsHeUn
-         h2bwluedMW6FDoRRcih4lIgpWSD52cIyjsIoOjNSQ0jSRi4ac9v0AGZ07gN1XiHQr/ZD
-         ZlTA==
-X-Gm-Message-State: AJIora8TVBuKNVnPsBCYPPb6HTRVlR8zQoWqXFAAl4EHvuL85st9vyER
-        71xdOA5hqOeqFmMkT/pj+ySwcO4zyISlBg==
-X-Google-Smtp-Source: AGRyM1ukm8iHdECyzQLSPbFeD7cvE0cT7sQN/s+WCR6oGlxRaAOncDrUr8lbZgsptV3mPl2757jyeQ==
-X-Received: by 2002:a2e:9bc2:0:b0:25d:53a9:65e1 with SMTP id w2-20020a2e9bc2000000b0025d53a965e1mr3435240ljj.158.1657324653769;
-        Fri, 08 Jul 2022 16:57:33 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=/jxC1JjCm62YabzFufDUJocIDmCx9DnXigWUB8EgFBU=;
+        b=qKz9ZKxdQuxmv5A2bwVXXgt8pkHyhkEvB7IYxyED9AnO58cE17poyLq8lEag/z/Xnx
+         EagWT0bew8Ec2MybTwULSOWPrjqsTedmCkuP5XyDCOnZUdA6kbtHuwV5MAb8n4P9GJ/Y
+         JQMA/G+UfmNcdj11P7yytlrQKgHHFUf5WwY4rsBd9LXT/Hx2lv9rYr9elhHXy2N7ioNR
+         qQ8hWAte7raEPvZFsv4VqmCUbE+Q/jU8RCc+QXTf7vBo4rjbzEqzXO5796cjHxQODP6O
+         6t7o3HMwE4SoYcksWQoxMBlykp4vKbfJGESeLc97o4jL0y23PesDZgwtb68LIeC8lHcn
+         p5VQ==
+X-Gm-Message-State: AJIora/VI0keQlkhv2BJE+VA08K22kdRVfOyfoKrnt1M6zvMRlpuJ6k3
+        UDblNtVpCd5Vau962wzY8fFN2gEJnGD0lA==
+X-Google-Smtp-Source: AGRyM1tHFLDIleQF/l+unkoe09LeZuJbygt/0eEFmR19uu8nctQsW/Lg6VggB/HsuNxqz+ssGRT1kw==
+X-Received: by 2002:a05:6512:3b8e:b0:481:1a75:452 with SMTP id g14-20020a0565123b8e00b004811a750452mr4256038lfv.238.1657324670088;
+        Fri, 08 Jul 2022 16:57:50 -0700 (PDT)
 Received: from localhost.localdomain (c-fdcc225c.014-348-6c756e10.bbcust.telenor.se. [92.34.204.253])
-        by smtp.gmail.com with ESMTPSA id s25-20020a056512203900b0047f6b4a53cdsm71603lfs.172.2022.07.08.16.57.32
+        by smtp.gmail.com with ESMTPSA id s25-20020a056512203900b0047f6b4a53cdsm71603lfs.172.2022.07.08.16.57.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Jul 2022 16:57:33 -0700 (PDT)
+        Fri, 08 Jul 2022 16:57:49 -0700 (PDT)
 From:   Linus Walleij <linus.walleij@linaro.org>
 To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -54,10 +54,12 @@ To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
         Paolo Abeni <pabeni@redhat.com>
 Cc:     Imre Kaloz <kaloz@openwrt.org>, Krzysztof Halasa <khalasa@piap.pl>,
         Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH net-next 1/2] ixp4xx_eth: Fall back to random MAC address
-Date:   Sat,  9 Jul 2022 01:55:29 +0200
-Message-Id: <20220708235530.1099185-1-linus.walleij@linaro.org>
+Subject: [PATCH net-next 2/2] ixp4xx_eth: Set MAC address from device tree
+Date:   Sat,  9 Jul 2022 01:55:30 +0200
+Message-Id: <20220708235530.1099185-2-linus.walleij@linaro.org>
 X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220708235530.1099185-1-linus.walleij@linaro.org>
+References: <20220708235530.1099185-1-linus.walleij@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -70,29 +72,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If the firmware does not provide a MAC address to the driver,
-fall back to generating a random MAC address.
+If there is a MAC address specified in the device tree, then
+use it. This is already perfectly legal to specify in accordance
+with the generic ethernet-controller.yaml schema.
 
 Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
- drivers/net/ethernet/xscale/ixp4xx_eth.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/xscale/ixp4xx_eth.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/xscale/ixp4xx_eth.c b/drivers/net/ethernet/xscale/ixp4xx_eth.c
-index 89770c2e0ffb..a5d1d8d12064 100644
+index a5d1d8d12064..3591b9edc9a1 100644
 --- a/drivers/net/ethernet/xscale/ixp4xx_eth.c
 +++ b/drivers/net/ethernet/xscale/ixp4xx_eth.c
-@@ -1487,7 +1487,10 @@ static int ixp4xx_eth_probe(struct platform_device *pdev)
+@@ -29,6 +29,7 @@
+ #include <linux/net_tstamp.h>
+ #include <linux/of.h>
+ #include <linux/of_mdio.h>
++#include <linux/of_net.h>
+ #include <linux/phy.h>
+ #include <linux/platform_device.h>
+ #include <linux/ptp_classify.h>
+@@ -156,7 +157,7 @@ struct eth_plat_info {
+ 	u8 phy;		/* MII PHY ID, 0 - 31 */
+ 	u8 rxq;		/* configurable, currently 0 - 31 only */
+ 	u8 txreadyq;
+-	u8 hwaddr[6];
++	u8 hwaddr[ETH_ALEN];
+ 	u8 npe;		/* NPE instance used by this interface */
+ 	bool has_mdio;	/* If this instance has an MDIO bus */
+ };
+@@ -1387,6 +1388,7 @@ static struct eth_plat_info *ixp4xx_of_get_platdata(struct device *dev)
+ 	struct of_phandle_args npe_spec;
+ 	struct device_node *mdio_np;
+ 	struct eth_plat_info *plat;
++	u8 mac[ETH_ALEN];
+ 	int ret;
  
- 	port->plat = plat;
- 	npe_port_tab[NPE_ID(port->id)] = port;
--	eth_hw_addr_set(ndev, plat->hwaddr);
-+	if (is_valid_ether_addr(plat->hwaddr))
-+		eth_hw_addr_set(ndev, plat->hwaddr);
-+	else
-+		eth_hw_addr_random(ndev);
+ 	plat = devm_kzalloc(dev, sizeof(*plat), GFP_KERNEL);
+@@ -1428,6 +1430,12 @@ static struct eth_plat_info *ixp4xx_of_get_platdata(struct device *dev)
+ 	}
+ 	plat->txreadyq = queue_spec.args[0];
  
- 	platform_set_drvdata(pdev, ndev);
++	ret = of_get_mac_address(np, mac);
++	if (!ret) {
++		dev_info(dev, "Setting macaddr from DT %pM\n", mac);
++		memcpy(plat->hwaddr, mac, ETH_ALEN);
++	}
++
+ 	return plat;
+ }
  
 -- 
 2.36.1
