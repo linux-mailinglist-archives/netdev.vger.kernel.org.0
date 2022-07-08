@@ -2,70 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4631F56B495
-	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 10:40:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3792056B4C2
+	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 10:49:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237681AbiGHIjs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jul 2022 04:39:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40944 "EHLO
+        id S237638AbiGHItL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jul 2022 04:49:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237350AbiGHIjq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 04:39:46 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A99E1747BF;
-        Fri,  8 Jul 2022 01:39:45 -0700 (PDT)
-X-UUID: 28f64b4918914d1fa6019092676c940c-20220708
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.8,REQID:afba3807-9c58-4a22-a2b6-47362ac6cbd2,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:100,FILE:0,RULE:Release_Ham,A
-        CTION:release,TS:95
-X-CID-INFO: VERSION:1.1.8,REQID:afba3807-9c58-4a22-a2b6-47362ac6cbd2,OB:0,LOB:
-        0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:100,FILE:0,RULE:Spam_GS981B3D,A
-        CTION:quarantine,TS:95
-X-CID-META: VersionHash:0f94e32,CLOUDID:c2cac363-0b3f-4b2c-b3a6-ed5c044366a0,C
-        OID:648d5ed77d06,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:0,File:nil,QS:nil,BEC:nil,COL:0
-X-UUID: 28f64b4918914d1fa6019092676c940c-20220708
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
-        (envelope-from <biao.huang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 758901126; Fri, 08 Jul 2022 16:39:41 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Fri, 8 Jul 2022 16:39:40 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 8 Jul 2022 16:39:39 +0800
-From:   Biao Huang <biao.huang@mediatek.com>
-To:     David Miller <davem@davemloft.net>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-CC:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
+        with ESMTP id S237336AbiGHItJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 04:49:09 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2276F7B369;
+        Fri,  8 Jul 2022 01:49:08 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id ez10so6422308ejc.13;
+        Fri, 08 Jul 2022 01:49:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=9d07Y8B9hW/YK4FdVwqna0EC5kCeABlM1GESgsdV3qE=;
+        b=gHiNAIzwdN+JoHOkRq1S10c9X8e7xkFXbnXduv9//hQbLAE2ZUtsAVfggdlFAg4wUu
+         6/CE6XPRQu1qfoMQJpFEUw6B1Gw1T2fmrzkr8Q47dVmmniPm21DvCE0uVqaXUhrVlms2
+         oGakDf2RW5pztTCtvTDSr5QeOYmASWFF0sHlK+xxTfO3EM6NcjrnlnaZwreqrvWJaFbm
+         5+sm2eZr4BrNevPHorokPFNHQJLcFdq5cELRn8RBvnp8CulnRjCfinXbSd4cepmU6NkM
+         +tnVjqI42b5ZUHwYMIXnvz6hTg5ZNmJ8AnSU1hIbMAzd87LyWZR+gaEw/37RkDmLcpq7
+         69zQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=9d07Y8B9hW/YK4FdVwqna0EC5kCeABlM1GESgsdV3qE=;
+        b=0aQDLPZ8gdC8vqEE6818m+uw3TL9n7V7w74sSHmnIaLH6nOwdm8XFz6j3cny5Y3VIF
+         b9Kg6aUpa5O1wzSTzM7aJBm8Z8C/k9b6hNG+NyRek2cIcgVdohAV0YEzQc8MfsajutqT
+         J8w7A0MjzOYjjVcMEjtguafD4GDoiEv1FvTBWYW1Rj5RenbkzcEehjctNhJhtjyKn+ei
+         SSgoYmvRbiVof2y04EXc+1KnNcKf7+1xcRGIo+stuMWJd3zbfiqU/5bbfgA2zsrd5PHm
+         p0Z6YZA6M/T7ZLzvr0IZAoYVZ1rxrDO5fPLUzhXw19H/spS+jnlYKeqx4A6vkZuyQcFo
+         7T7A==
+X-Gm-Message-State: AJIora+anqclScxEx6NPr1AcH2b60BzsAJfle3KZbL7VcMYb7fP0YCzz
+        5W2YxLKq+bkBUwpi6XLgPQbwnOb1TeRq2Q==
+X-Google-Smtp-Source: AGRyM1vGQ+JxnW1/f9ERcoeH3wHX7kTQAW2ACV5QEuHg+XAeS3YAK+b1gKaR6BVkpav8213+/dv1dA==
+X-Received: by 2002:a17:907:1c09:b0:726:b834:1a21 with SMTP id nc9-20020a1709071c0900b00726b8341a21mr2375623ejc.518.1657270146684;
+        Fri, 08 Jul 2022 01:49:06 -0700 (PDT)
+Received: from skbuf ([188.25.231.143])
+        by smtp.gmail.com with ESMTPSA id 9-20020a170906210900b0072af56103casm3847130ejt.220.2022.07.08.01.49.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Jul 2022 01:49:06 -0700 (PDT)
+Date:   Fri, 8 Jul 2022 11:49:04 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Hans Schultz <netdev@kapio-technology.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Biao Huang <biao.huang@mediatek.com>, <netdev@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>, <macpaul.lin@mediatek.com>
-Subject: [PATCH net v3] stmmac: dwmac-mediatek: fix clock issue
-Date:   Fri, 8 Jul 2022 16:39:37 +0800
-Message-ID: <20220708083937.27334-2-biao.huang@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220708083937.27334-1-biao.huang@mediatek.com>
-References: <20220708083937.27334-1-biao.huang@mediatek.com>
+        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH v4 net-next 3/6] drivers: net: dsa: add locked fdb entry
+ flag to drivers
+Message-ID: <20220708084904.33otb6x256huddps@skbuf>
+References: <20220707152930.1789437-1-netdev@kapio-technology.com>
+ <20220707152930.1789437-4-netdev@kapio-technology.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220707152930.1789437-4-netdev@kapio-technology.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -73,86 +82,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since clocks are handled in mediatek_dwmac_clks_config(),
-remove the clocks configuration in init()/exit(), and
-invoke mediatek_dwmac_clks_config instead.
+Hi Hans,
 
-This issue is found in suspend/resume test.
+On Thu, Jul 07, 2022 at 05:29:27PM +0200, Hans Schultz wrote:
+> Ignore locked fdb entries coming in on all drivers.
+> 
+> Signed-off-by: Hans Schultz <netdev@kapio-technology.com>
+> ---
 
-Fixes: 3186bdad97d5 ("stmmac: dwmac-mediatek: add platform level clocks management")
-Signed-off-by: Biao Huang <biao.huang@mediatek.com>
----
- .../ethernet/stmicro/stmmac/dwmac-mediatek.c  | 36 +++++--------------
- 1 file changed, 9 insertions(+), 27 deletions(-)
+A good patch should have a reason for the change in the commit message.
+This has no reason because there is no reason.
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
-index 6ff88df58767..e86f3e125cb4 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
-@@ -576,32 +576,7 @@ static int mediatek_dwmac_init(struct platform_device *pdev, void *priv)
- 		}
- 	}
- 
--	ret = clk_bulk_prepare_enable(variant->num_clks, plat->clks);
--	if (ret) {
--		dev_err(plat->dev, "failed to enable clks, err = %d\n", ret);
--		return ret;
--	}
--
--	ret = clk_prepare_enable(plat->rmii_internal_clk);
--	if (ret) {
--		dev_err(plat->dev, "failed to enable rmii internal clk, err = %d\n", ret);
--		goto err_clk;
--	}
--
- 	return 0;
--
--err_clk:
--	clk_bulk_disable_unprepare(variant->num_clks, plat->clks);
--	return ret;
--}
--
--static void mediatek_dwmac_exit(struct platform_device *pdev, void *priv)
--{
--	struct mediatek_dwmac_plat_data *plat = priv;
--	const struct mediatek_dwmac_variant *variant = plat->variant;
--
--	clk_disable_unprepare(plat->rmii_internal_clk);
--	clk_bulk_disable_unprepare(variant->num_clks, plat->clks);
- }
- 
- static int mediatek_dwmac_clks_config(void *priv, bool enabled)
-@@ -643,7 +618,6 @@ static int mediatek_dwmac_common_data(struct platform_device *pdev,
- 	plat->addr64 = priv_plat->variant->dma_bit_mask;
- 	plat->bsp_priv = priv_plat;
- 	plat->init = mediatek_dwmac_init;
--	plat->exit = mediatek_dwmac_exit;
- 	plat->clks_config = mediatek_dwmac_clks_config;
- 	if (priv_plat->variant->dwmac_fix_mac_speed)
- 		plat->fix_mac_speed = priv_plat->variant->dwmac_fix_mac_speed;
-@@ -712,13 +686,21 @@ static int mediatek_dwmac_probe(struct platform_device *pdev)
- 	mediatek_dwmac_common_data(pdev, plat_dat, priv_plat);
- 	mediatek_dwmac_init(pdev, priv_plat);
- 
-+	ret = mediatek_dwmac_clks_config(priv_plat, true);
-+	if (ret)
-+		return ret;
-+
- 	ret = stmmac_dvr_probe(&pdev->dev, plat_dat, &stmmac_res);
- 	if (ret) {
- 		stmmac_remove_config_dt(pdev, plat_dat);
--		return ret;
-+		goto err_drv_probe;
- 	}
- 
- 	return 0;
-+
-+err_drv_probe:
-+	mediatek_dwmac_clks_config(priv_plat, false);
-+	return ret;
- }
- 
- static const struct of_device_id mediatek_dwmac_match[] = {
--- 
-2.25.1
+Think about it, you've said it yourself in patch 1:
 
+| Only the kernel can set this FDB entry flag, while userspace can read
+| the flag and remove it by replacing or deleting the FDB entry.
+
+So if user space will never add locked FDB entries to the bridge,
+then FDB entries with is_locked=true are never transported using
+SWITCHDEV_FDB_ADD_TO_DEVICE to drivers, and so, there is no reason at
+all to pass is_locked to drivers, just for them to ignore something that
+won't appear.
+
+You just need this for SWITCHDEV_FDB_ADD_TO_BRIDGE, so please keep it
+only in those code paths, and remove it from net/dsa/slave.c as well.
+
+>  drivers/net/dsa/b53/b53_common.c       | 5 +++++
+>  drivers/net/dsa/b53/b53_priv.h         | 1 +
+>  drivers/net/dsa/hirschmann/hellcreek.c | 5 +++++
+>  drivers/net/dsa/lan9303-core.c         | 5 +++++
+>  drivers/net/dsa/lantiq_gswip.c         | 5 +++++
+>  drivers/net/dsa/microchip/ksz9477.c    | 5 +++++
+>  drivers/net/dsa/mt7530.c               | 5 +++++
+>  drivers/net/dsa/mv88e6xxx/chip.c       | 5 +++++
+>  drivers/net/dsa/ocelot/felix.c         | 5 +++++
+>  drivers/net/dsa/qca8k.c                | 5 +++++
+>  drivers/net/dsa/sja1105/sja1105_main.c | 5 +++++
+>  include/net/dsa.h                      | 1 +
+>  net/dsa/switch.c                       | 4 ++--
+>  13 files changed, 54 insertions(+), 2 deletions(-)
