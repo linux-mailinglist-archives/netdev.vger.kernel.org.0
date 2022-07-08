@@ -2,178 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DCF6556BB7E
-	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 16:07:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97F5256BB89
+	for <lists+netdev@lfdr.de>; Fri,  8 Jul 2022 16:14:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238158AbiGHOFs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jul 2022 10:05:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36698 "EHLO
+        id S238352AbiGHOOf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jul 2022 10:14:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237856AbiGHOFr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 10:05:47 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E68FC3057E;
-        Fri,  8 Jul 2022 07:05:45 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id o25so37916229ejm.3;
-        Fri, 08 Jul 2022 07:05:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=cZ1JcOk+cUjBFM0UwNYjGC+6gUqeLmPdNAn2VtbItVs=;
-        b=C9j9Jy5kzmcXgNLE/fU11cTma6Idiv4NJsWSRkixHHFIEWnpJIeb1yiiSVW77jpu9h
-         hHMji7RRFAPDYKup2J+ulh5R6T6PHcjrIuAj1grORvTjoQXfBxeRPQCJWIAMBKIO/znV
-         d3yaeQ6rSUPkLd+k3Cpf94gvuLG46Y3IRys3ux5jHFnx+W1Dr8cpivPi2t8G8VLVciOj
-         NIIpxKKDnFRxyK8K8zlkB5ePXZza/1qtywUpNEt2U0hGc8VJQi51rBMC0vOYx3JmPFGj
-         CxRKTgEzkxAXr4zTDP0c3jkwRSNm9R6s+pYAKbfr2Z83SMPs7YiilwBszAa6dswIbeLi
-         s0Sw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=cZ1JcOk+cUjBFM0UwNYjGC+6gUqeLmPdNAn2VtbItVs=;
-        b=ns7vV7BKT+YoVh4vEAR19ZuAPcpLBCWhzKURCz8jFuyfpxTYzTeE+0YxK6XEtFj4sO
-         mdee3wQt+xFOaKxMJwB+NYYK26xcO3NYipcuiaXOBVB5jNMVF6c9Hw0XVFxgrc8lZqEA
-         hfGyeXj4pSk8j3tX8uI7JHrUlwiqWjGPFcDAvrvzBgUPRcfd/cI/K+C2bdQV76PVvhn0
-         DhvP+bS/UnT6ZirxRUVbkgbkIesenNMzaclK46J9IWxg/fDVWLwzjQU5BPB8WRFRmpoo
-         0RzAFL2ZfCkt45y4RKgD8SI8c6ukRxxRXBfNDUPRIKPnacVZHENf/4QPlQxK1YAITcgT
-         us3w==
-X-Gm-Message-State: AJIora+qYJmaRAxemoFhPVk2k8H258/4Q3BVZzsIuH3+3WNd1MLr7bSn
-        lokCL9gol5fd1VhYBL8QpTM=
-X-Google-Smtp-Source: AGRyM1vBuNxa9hPEoGCyoVYwPo5Hyon2tNuoSUO6lwL0Et0s7AQ72pbHGPRbmfCHOUK/Nfzeao4YuQ==
-X-Received: by 2002:a17:907:8a25:b0:726:c9f2:2f5e with SMTP id sc37-20020a1709078a2500b00726c9f22f5emr3792005ejc.286.1657289144375;
-        Fri, 08 Jul 2022 07:05:44 -0700 (PDT)
-Received: from ?IPV6:2620:10d:c096:310::2eef? ([2620:10d:c092:600::2:676a])
-        by smtp.gmail.com with ESMTPSA id l10-20020a1709060cca00b0072b16ea4795sm1845081ejh.48.2022.07.08.07.05.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 08 Jul 2022 07:05:43 -0700 (PDT)
-Message-ID: <45cd36ee-ef99-fb67-df8d-218603facfd7@gmail.com>
-Date:   Fri, 8 Jul 2022 15:03:46 +0100
+        with ESMTP id S237980AbiGHOOd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 10:14:33 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E00C183BE;
+        Fri,  8 Jul 2022 07:14:30 -0700 (PDT)
+Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.206])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LfZxm2Zwdz67NKY;
+        Fri,  8 Jul 2022 22:13:16 +0800 (CST)
+Received: from lhreml745-chm.china.huawei.com (10.201.108.195) by
+ fraeml714-chm.china.huawei.com (10.206.15.33) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 8 Jul 2022 16:14:27 +0200
+Received: from [10.122.132.241] (10.122.132.241) by
+ lhreml745-chm.china.huawei.com (10.201.108.195) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 8 Jul 2022 15:14:26 +0100
+Message-ID: <6ee7e769-ce91-a6cc-378b-f206e04d112a@huawei.com>
+Date:   Fri, 8 Jul 2022 17:14:25 +0300
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH net-next v4 11/27] tcp: support externally provided ubufs
-Content-Language: en-US
-To:     David Ahern <dsahern@kernel.org>, io-uring@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Jens Axboe <axboe@kernel.dk>, kernel-team@fb.com
-References: <cover.1657194434.git.asml.silence@gmail.com>
- <7ee05f644e3b3626b693973738364bcb23cf905d.1657194434.git.asml.silence@gmail.com>
- <62e1daba-fb20-bf20-5c4d-c31770e5420e@kernel.org>
-From:   Pavel Begunkov <asml.silence@gmail.com>
-In-Reply-To: <62e1daba-fb20-bf20-5c4d-c31770e5420e@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH v6 02/17] landlock: refactors landlock_find/insert_rule
+Content-Language: ru
+To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+CC:     <willemdebruijn.kernel@gmail.com>,
+        <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <netfilter-devel@vger.kernel.org>, <yusongping@huawei.com>,
+        <anton.sirazetdinov@huawei.com>
+References: <20220621082313.3330667-1-konstantin.meskhidze@huawei.com>
+ <20220621082313.3330667-3-konstantin.meskhidze@huawei.com>
+ <0bbbcf21-1e7d-5585-545f-bf89d8ebd527@digikod.net>
+ <7735ae47-9088-be29-2696-c5170031d7c2@huawei.com>
+ <b08fe5cc-3be0-390b-3575-4f27f795f609@digikod.net>
+From:   "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
+In-Reply-To: <b08fe5cc-3be0-390b-3575-4f27f795f609@digikod.net>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.122.132.241]
+X-ClientProxiedBy: lhreml751-chm.china.huawei.com (10.201.108.201) To
+ lhreml745-chm.china.huawei.com (10.201.108.195)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/8/22 05:06, David Ahern wrote:
-> On 7/7/22 5:49 AM, Pavel Begunkov wrote:
->> Teach ipv4/udp how to use external ubuf_info provided in msghdr and
+
+
+7/8/2022 4:59 PM, Mickaël Salaün пишет:
 > 
-> ipv4/tcp?
-
-Ehh, just tcp. Thanks, I updated the branches
-
-
->> also prepare it for managed frags by sprinkling
->> skb_zcopy_downgrade_managed() when it could mix managed and not managed
->> frags.
->>
->> Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
->> ---
->>   net/ipv4/tcp.c | 32 ++++++++++++++++++++------------
->>   1 file changed, 20 insertions(+), 12 deletions(-)
->>
->> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
->> index 390eb3dc53bd..a81f694af5e9 100644
->> --- a/net/ipv4/tcp.c
->> +++ b/net/ipv4/tcp.c
->> @@ -1223,17 +1223,23 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
->>   
->>   	flags = msg->msg_flags;
->>   
->> -	if (flags & MSG_ZEROCOPY && size && sock_flag(sk, SOCK_ZEROCOPY)) {
->> +	if ((flags & MSG_ZEROCOPY) && size) {
->>   		skb = tcp_write_queue_tail(sk);
->> -		uarg = msg_zerocopy_realloc(sk, size, skb_zcopy(skb));
->> -		if (!uarg) {
->> -			err = -ENOBUFS;
->> -			goto out_err;
->> -		}
->>   
->> -		zc = sk->sk_route_caps & NETIF_F_SG;
->> -		if (!zc)
->> -			uarg->zerocopy = 0;
->> +		if (msg->msg_ubuf) {
->> +			uarg = msg->msg_ubuf;
->> +			net_zcopy_get(uarg);
->> +			zc = sk->sk_route_caps & NETIF_F_SG;
->> +		} else if (sock_flag(sk, SOCK_ZEROCOPY)) {
->> +			uarg = msg_zerocopy_realloc(sk, size, skb_zcopy(skb));
->> +			if (!uarg) {
->> +				err = -ENOBUFS;
->> +				goto out_err;
->> +			}
->> +			zc = sk->sk_route_caps & NETIF_F_SG;
->> +			if (!zc)
->> +				uarg->zerocopy = 0;
->> +		}
->>   	}
->>   
->>   	if (unlikely(flags & MSG_FASTOPEN || inet_sk(sk)->defer_connect) &&
->> @@ -1356,9 +1362,11 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
->>   
->>   			copy = min_t(int, copy, pfrag->size - pfrag->offset);
->>   
->> -			if (tcp_downgrade_zcopy_pure(sk, skb))
->> -				goto wait_for_space;
->> -
->> +			if (unlikely(skb_zcopy_pure(skb) || skb_zcopy_managed(skb))) {
->> +				if (tcp_downgrade_zcopy_pure(sk, skb))
->> +					goto wait_for_space;
->> +				skb_zcopy_downgrade_managed(skb);
->> +			}
->>   			copy = tcp_wmem_schedule(sk, copy);
->>   			if (!copy)
->>   				goto wait_for_space;
+> On 08/07/2022 15:10, Konstantin Meskhidze (A) wrote:
+>> 
+>> 
+>> 7/7/2022 7:44 PM, Mickaël Salaün пишет:
+>>>
+>>> On 21/06/2022 10:22, Konstantin Meskhidze wrote:
+>>>> Adds a new object union to support a socket port
+>>>> rule type. Refactors landlock_insert_rule() and
+>>>> landlock_find_rule() to support coming network
+>>>> modifications. Now adding or searching a rule
+>>>> in a ruleset depends on a rule_type argument
+>>>> provided in refactored functions mentioned above.
+>>>>
+>>>> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+>>>> ---
+>>>>
+>>>> Changes since v5:
+>>>> * Formats code with clang-format-14.
+>>>>
+>>>> Changes since v4:
+>>>> * Refactors insert_rule() and create_rule() functions by deleting
+>>>> rule_type from their arguments list, it helps to reduce useless code.
+>>>>
+>>>> Changes since v3:
+>>>> * Splits commit.
+>>>> * Refactors landlock_insert_rule and landlock_find_rule functions.
+>>>> * Rename new_ruleset->root_inode.
+>>>>
+>>>> ---
+>>>>   security/landlock/fs.c      |   7 ++-
+>>>>   security/landlock/ruleset.c | 105 ++++++++++++++++++++++++++----------
+>>>>   security/landlock/ruleset.h |  27 +++++-----
+>>>>   3 files changed, 96 insertions(+), 43 deletions(-)
+>>>>
+>>>> diff --git a/security/landlock/fs.c b/security/landlock/fs.c
+>>>> index e6da08ed99d1..46aedc2a05a8 100644
+>>>> --- a/security/landlock/fs.c
+>>>> +++ b/security/landlock/fs.c
+>>>> @@ -173,7 +173,8 @@ int landlock_append_fs_rule(struct 
+>>>> landlock_ruleset *const ruleset,
+>>>>       if (IS_ERR(object))
+>>>>           return PTR_ERR(object);
+>>>>       mutex_lock(&ruleset->lock);
+>>>> -    err = landlock_insert_rule(ruleset, object, access_rights);
+>>>> +    err = landlock_insert_rule(ruleset, object, 0, access_rights,
+>>>> +                   LANDLOCK_RULE_PATH_BENEATH);
+>>>>       mutex_unlock(&ruleset->lock);
+>>>>       /*
+>>>>        * No need to check for an error because landlock_insert_rule()
+>>>> @@ -204,7 +205,9 @@ find_rule(const struct landlock_ruleset *const 
+>>>> domain,
+>>>>       inode = d_backing_inode(dentry);
+>>>>       rcu_read_lock();
+>>>>       rule = landlock_find_rule(
+>>>> -        domain, rcu_dereference(landlock_inode(inode)->object));
+>>>> +        domain,
+>>>> +        (uintptr_t)rcu_dereference(landlock_inode(inode)->object),
+>>>> +        LANDLOCK_RULE_PATH_BENEATH);
+>>>>       rcu_read_unlock();
+>>>>       return rule;
+>>>>   }
+>>>> diff --git a/security/landlock/ruleset.c b/security/landlock/ruleset.c
+>>>> index a3fd58d01f09..5f13f8a12aee 100644
+>>>> --- a/security/landlock/ruleset.c
+>>>> +++ b/security/landlock/ruleset.c
+>>>> @@ -35,7 +35,7 @@ static struct landlock_ruleset 
+>>>> *create_ruleset(const u32 num_layers)
+>>>>           return ERR_PTR(-ENOMEM);
+>>>>       refcount_set(&new_ruleset->usage, 1);
+>>>>       mutex_init(&new_ruleset->lock);
+>>>> -    new_ruleset->root = RB_ROOT;
+>>>> +    new_ruleset->root_inode = RB_ROOT;
+>>>>       new_ruleset->num_layers = num_layers;
+>>>>       /*
+>>>>        * hierarchy = NULL
+>>>> @@ -69,7 +69,8 @@ static void build_check_rule(void)
+>>>>   }
+>>>>
+>>>>   static struct landlock_rule *
+>>>> -create_rule(struct landlock_object *const object,
+>>>> +create_rule(struct landlock_object *const object_ptr,
+>>>> +        const uintptr_t object_data,
+>>>>           const struct landlock_layer (*const layers)[], const u32 
+>>>> num_layers,
+>>>>           const struct landlock_layer *const new_layer)
+>>>>   {
+>>>> @@ -90,8 +91,15 @@ create_rule(struct landlock_object *const object,
+>>>>       if (!new_rule)
+>>>>           return ERR_PTR(-ENOMEM);
+>>>>       RB_CLEAR_NODE(&new_rule->node);
+>>>> -    landlock_get_object(object);
+>>>> -    new_rule->object = object;
+>>>> +
+>>>> +    if (object_ptr) {
+>>>> +        landlock_get_object(object_ptr);
+>>>> +        new_rule->object.ptr = object_ptr;
+>>>> +    } else if (object_ptr && object_data) {
+>>>
+>>> Something is wrong with this second check: else + object_ptr?
+>> 
+>>   Sorry. Do you mean logical error here? I got your point.
+>>   You are right!
+>> 
+>>   I think it must be refactored like this:
+>> 
+>>      if (object_ptr && !object_data) {
+>>          landlock_get_object(object_ptr);
+>>          new_rule->object.ptr = object_ptr;
+>>      } else if (object_ptr && object_data) {
+>>          ...
+>>      }
 > 
-> You dropped the msg->msg_ubuf checks on jump labels. Removing the one
-> you had at 'out_nopush' I agree with based on my tests (i.e, it is not
-> needed).
+> There is indeed a logical error but this doesn't fix everything. Please
+> include my previous suggestion instead.
+> 
+    By the way, in the next commits I have fixed this logic error.
+Anyway I will refactor this one also. Thanks.
+> 
+>> Plus, I will add a test for this case.
+> 
+> That would be great but I don't think this code is reachable from user
+> space. I think that would require kunit but I may be missing something.
+> How would you test this?
 
-It was an optimisation, which I dropped for simplicity. Will be sending it
-and couple more afterwards.
-
-
-> The one at 'out_err' seems like it is needed - but it has been a few
-> weeks since I debugged that case. I believe the error path I was hitting
-> was sk_stream_wait_memory with MSG_DONTWAIT flag set meaning timeout is
-> 0 and it jumps there with EPIPE.
-
-Currently, it's consistent with MSG_ZEROCOPY ubuf_info, we grab a ubuf_info
-reference at the beginning (msg_zerocopy_realloc() for MSG_ZEROCOPY and
-net_zcopy_get() for msg_ubuf), and then release it at the end
-with net_zcopy_put() or net_zcopy_put_abort().
-
-All users, e.g. skb_zerocopy_iter_stream(), have to grab a new reference,
-skb_zcopy_set() -> net_zcopy_get().
-
-Not sure I see any issue, and if there is it sounds that it should also
-be affecting MSG_ZEROCOPY.
-
-
--- 
-Pavel Begunkov
+You are correct. I checked it. It's impossible to reach this line from 
+userpace (insert both object_ptr and object_data). But create_rule() 
+must be used carefuly by other developers (if any in future). Do you 
+think if its possible to have some internal kernel tests that could 
+handle this issue?
+> .
