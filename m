@@ -2,133 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B58756C25F
-	for <lists+netdev@lfdr.de>; Sat,  9 Jul 2022 01:13:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7642656C202
+	for <lists+netdev@lfdr.de>; Sat,  9 Jul 2022 01:12:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238834AbiGHUkO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jul 2022 16:40:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36212 "EHLO
+        id S239835AbiGHVeY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jul 2022 17:34:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238652AbiGHUkN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 16:40:13 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04A1B2182F;
-        Fri,  8 Jul 2022 13:40:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657312812; x=1688848812;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=DIVHdvGmcoQvN9wD6lnJmfi5wn5rSahT3GEvClW89ZA=;
-  b=h57LgtzQYYDr4Ut2QBHOxBUbeJgkaPQ/jYVgKR8bF1mEhaZUeAa8ClkI
-   ZHXHCkBkWHTRONDpXbPcUwW8QkmAIjA1fXeZDecXS58Chd5MHEtwKMzvP
-   UrkjCG3v2hIhB851kn18O/QBiUqXdUtQehFHvIwZbIcrIOZd+3Z8wri3W
-   MbAJmjnt8Mn6itUyuyYgHh0Hfw5tBzIuAITOYnUX8f7G+a0rcvIkyC8MO
-   5/UAgZU7UZkb1PomAxMnN7mNYxFewGgKiIDEkiO6S2I8Jc2A1kQAEk8YJ
-   pbqW9Q5ODXBtFo7xQCIoVgs3XR3g4xOdjr3PgG6EpDTCVIDaX0Zh1obkH
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10402"; a="309946170"
-X-IronPort-AV: E=Sophos;i="5.92,256,1650956400"; 
-   d="scan'208";a="309946170"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2022 13:40:12 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,256,1650956400"; 
-   d="scan'208";a="594244629"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 08 Jul 2022 13:40:07 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o9uli-000Nv4-Tb;
-        Fri, 08 Jul 2022 20:40:06 +0000
-Date:   Sat, 9 Jul 2022 04:39:43 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Hans Schultz <netdev@kapio-technology.com>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        netdev@vger.kernel.org, Hans Schultz <netdev@kapio-technology.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v4 net-next 3/6] drivers: net: dsa: add locked fdb entry
- flag to drivers
-Message-ID: <202207090438.PlGIeA4G-lkp@intel.com>
-References: <20220707152930.1789437-4-netdev@kapio-technology.com>
+        with ESMTP id S239233AbiGHVeX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 17:34:23 -0400
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6562A026E;
+        Fri,  8 Jul 2022 14:34:21 -0700 (PDT)
+Received: from 226.206.1.85.dynamic.wline.res.cust.swisscom.ch ([85.1.206.226] helo=localhost)
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1o9vcB-000CH5-5E; Fri, 08 Jul 2022 23:34:19 +0200
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     davem@davemloft.net
+Cc:     kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
+        daniel@iogearbox.net, ast@kernel.org, andrii@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: pull-request: bpf 2022-07-08
+Date:   Fri,  8 Jul 2022 23:34:18 +0200
+Message-Id: <20220708213418.19626-1-daniel@iogearbox.net>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220707152930.1789437-4-netdev@kapio-technology.com>
-X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.6/26596/Thu Jul  7 09:53:54 2022)
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Hans,
+Hi David, hi Jakub, hi Paolo, hi Eric,
 
-Thank you for the patch! Yet something to improve:
+The following pull-request contains BPF updates for your *net* tree.
 
-[auto build test ERROR on net/master]
-[also build test ERROR on shuah-kselftest/next linus/master v5.19-rc5]
-[cannot apply to net-next/master next-20220708]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+We've added 3 non-merge commits during the last 2 day(s) which contain
+a total of 7 files changed, 40 insertions(+), 24 deletions(-).
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Hans-Schultz/Extend-locked-port-feature-with-FDB-locked-flag-MAC-Auth-MAB/20220707-233246
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git 07266d066301b97ad56a693f81b29b7ced429b27
-config: i386-randconfig-a013 (https://download.01.org/0day-ci/archive/20220709/202207090438.PlGIeA4G-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 562c3467a6738aa89203f72fc1d1343e5baadf3c)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/ebd598d7ea6c015001489c4293da887763491086
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Hans-Schultz/Extend-locked-port-feature-with-FDB-locked-flag-MAC-Auth-MAB/20220707-233246
-        git checkout ebd598d7ea6c015001489c4293da887763491086
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/net/dsa/sja1105/
+The main changes are:
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+1) Fix cBPF splat triggered by skb not having a mac header, from Eric Dumazet.
 
-All errors (new ones prefixed by >>):
+2) Fix spurious packet loss in generic XDP when pushing packets out (note
+   that native XDP is not affected by the issue), from Johan Almbladh.
 
->> drivers/net/dsa/sja1105/sja1105_main.c:1952:58: error: too few arguments to function call, expected 6, have 5
-           return sja1105_fdb_add(ds, port, mdb->addr, mdb->vid, db);
-                  ~~~~~~~~~~~~~~~                                  ^
-   drivers/net/dsa/sja1105/sja1105_main.c:1803:12: note: 'sja1105_fdb_add' declared here
-   static int sja1105_fdb_add(struct dsa_switch *ds, int port,
-              ^
-   1 error generated.
+3) Fix bpf_dynptr_{read,write}() helper signatures with flag argument before
+   its set in stone as UAPI, from Joanne Koong.
 
+Please consider pulling these changes from:
 
-vim +1952 drivers/net/dsa/sja1105/sja1105_main.c
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
 
-5126ec72a094bd3 Vladimir Oltean 2021-08-08  1947  
-a52b2da778fc93e Vladimir Oltean 2021-01-09  1948  static int sja1105_mdb_add(struct dsa_switch *ds, int port,
-c26933639b5402c Vladimir Oltean 2022-02-25  1949  			   const struct switchdev_obj_port_mdb *mdb,
-c26933639b5402c Vladimir Oltean 2022-02-25  1950  			   struct dsa_db db)
-291d1e72b756424 Vladimir Oltean 2019-05-02  1951  {
-c26933639b5402c Vladimir Oltean 2022-02-25 @1952  	return sja1105_fdb_add(ds, port, mdb->addr, mdb->vid, db);
-291d1e72b756424 Vladimir Oltean 2019-05-02  1953  }
-291d1e72b756424 Vladimir Oltean 2019-05-02  1954  
+Thanks a lot!
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Also thanks to reporters, reviewers and testers of commits in this pull-request:
+
+syzbot
+
+----------------------------------------------------------------
+
+The following changes since commit ae9fdf6cb4da4265bdc3a574d06eaad02a7f669a:
+
+  Merge branch 'mptcp-path-manager-fixes' (2022-07-06 12:50:27 +0100)
+
+are available in the Git repository at:
+
+  https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git 
+
+for you to fetch changes up to f8d3da4ef8faf027261e06b7864583930dd7c7b9:
+
+  bpf: Add flags arg to bpf_dynptr_read and bpf_dynptr_write APIs (2022-07-08 10:55:53 +0200)
+
+----------------------------------------------------------------
+Eric Dumazet (1):
+      bpf: Make sure mac_header was set before using it
+
+Joanne Koong (1):
+      bpf: Add flags arg to bpf_dynptr_read and bpf_dynptr_write APIs
+
+Johan Almbladh (1):
+      xdp: Fix spurious packet loss in generic XDP TX path
+
+ include/uapi/linux/bpf.h                           | 11 +++++++----
+ kernel/bpf/core.c                                  |  8 +++++---
+ kernel/bpf/helpers.c                               | 12 ++++++++----
+ net/core/dev.c                                     |  8 ++++++--
+ tools/include/uapi/linux/bpf.h                     | 11 +++++++----
+ tools/testing/selftests/bpf/progs/dynptr_fail.c    | 10 +++++-----
+ tools/testing/selftests/bpf/progs/dynptr_success.c |  4 ++--
+ 7 files changed, 40 insertions(+), 24 deletions(-)
