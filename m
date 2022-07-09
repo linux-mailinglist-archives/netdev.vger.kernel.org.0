@@ -2,88 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D30756CB42
-	for <lists+netdev@lfdr.de>; Sat,  9 Jul 2022 21:23:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC0B556CB4C
+	for <lists+netdev@lfdr.de>; Sat,  9 Jul 2022 22:00:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229515AbiGITX0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Jul 2022 15:23:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44982 "EHLO
+        id S229543AbiGIUAW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Jul 2022 16:00:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229481AbiGITXZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 Jul 2022 15:23:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66C7515A10
-        for <netdev@vger.kernel.org>; Sat,  9 Jul 2022 12:23:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0324DB806A0
-        for <netdev@vger.kernel.org>; Sat,  9 Jul 2022 19:23:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3051DC3411C;
-        Sat,  9 Jul 2022 19:23:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657394601;
-        bh=0D6oFHqU+zFv3pjPrUJqqWWAIeXMFm2WwgHxERu24yQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=DFz0q9ylgzaCjgQTf6icDW9WBR7peMlE6kjaIl8AYDkSAMwzeO+ryhT2GK093j1RJ
-         JqCHbYqHQHHwh3ZlMxWfdw5PJY1DOQpdjqIZVPFaNfcrT4+qgrOyKkFAGikcardzHw
-         bBx/7X0V18Xhn6byaxbvY+1nUXQOeGtemaig7i4OeSAPIXgdqedbCT9dqqYRbHMVkR
-         qAJ6zpfYkoTfAImoeld/Yt3yjcCN3ohY1H0WpVs/5m3bpiF9TZ3O3g3k5m0w+UGk/3
-         0sQ5etP0WkMMLILGPL/TC6dN/d4FvqNCV4XVC75XzSz6No1tMwln47fBXkT3Qjg/en
-         kNo2lG3SUheQQ==
-Date:   Sat, 9 Jul 2022 12:23:20 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     David Lamparter <equinox@diac24.net>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S229448AbiGIUAV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 Jul 2022 16:00:21 -0400
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0CD33E01D;
+        Sat,  9 Jul 2022 13:00:20 -0700 (PDT)
+Received: from sequoia.devices.tihix.com (162-237-133-238.lightspeed.rcsntx.sbcglobal.net [162.237.133.238])
+        by linux.microsoft.com (Postfix) with ESMTPSA id AC919204C8E0;
+        Sat,  9 Jul 2022 13:00:18 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com AC919204C8E0
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1657396819;
+        bh=0/4/je5F3ph2qO9T5M9uqjsKhrJMFF9mOYX6DBCeVVI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=WwAVohwjMEHgPxZC8fl/YVpl7hgLuB3Ct1y5ziEld3gJ5uEsMj6vCC0cCBu3Dp7ih
+         VSHgbFIzLHlkoc8NIssRqOYG4OviGqXv49J/OBO9QtU7me0jYqpcT1KMMLGvqDmqe6
+         8jdmkB7MWMeAbmYcLMWWtX0+QxOXQPWlaPeUUKpg=
+From:   Tyler Hicks <tyhicks@linux.microsoft.com>
+To:     Eric Van Hensbergen <ericvh@gmail.com>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        Dominique Martinet <asmadeus@codewreck.org>,
+        Christian Schoenebeck <linux_oss@crudebyte.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        David Ahern <dsahern@kernel.org>
-Subject: Re: [PATCH net-next v5] net: ip6mr: add RTM_GETROUTE netlink op
-Message-ID: <20220709122320.7ecc9621@kernel.org>
-In-Reply-To: <Ysl4TPkTNW+6JPj4@eidolon.nox.tf>
-References: <20220707093336.214658-1-equinox@diac24.net>
-        <20220708202951.46d3454a@kernel.org>
-        <Ysl4TPkTNW+6JPj4@eidolon.nox.tf>
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] net/9p: Initialize the iounit field during fid creation
+Date:   Sat,  9 Jul 2022 15:00:05 -0500
+Message-Id: <20220709200005.681861-1-tyhicks@linux.microsoft.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-19.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,
+        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 9 Jul 2022 14:45:00 +0200 David Lamparter wrote:
-> > > +	err = ip6mr_rtm_valid_getroute_req(in_skb, nlh, tb, extack);
-> > > +	if (err < 0)
-> > > +		goto errout;  
-> > 
-> > Can we:
-> > 
-> > 		return err;
-> > 
-> > ? I don't know where the preference for jumping to the return statement
-> > came from, old compilers? someone's "gut feeling"?  
-> 
-> If I were forced to find a justification, I'd say having a central
-> sequence of exit helps avoiding mistakes when some other resource
-> acquisition is added later.  Easy to add a cleanup call to an existing
-> cleanup block - easy to overlook a "return err;" that needs to be
-> changed to "goto errout;".
+Ensure that the fid's iounit field is set to zero when a new fid is
+created. Certain 9P operations, such as OPEN and CREATE, allow the
+server to reply with an iounit size which the client code assigns to the
+fid struct shortly after the fid is created in p9_fid_create(). Other
+operations that follow a call to p9_fid_create(), such as an XATTRWALK,
+don't include an iounit value in the reply message from the server. In
+the latter case, the iounit field remained uninitialized. Depending on
+allocation patterns, the iounit value could have been something
+reasonable that was carried over from previously freed fids or, in the
+worst case, could have been arbitrary values from non-fid related usages
+of the memory location.
 
-That only works if the label's name is meaningless, if the label is
-named after what it points to you have to rename the label and all the
-jumps anyway. Can as well replace returns with a goto.
+The bug was detected in the Windows Subsystem for Linux 2 (WSL2) kernel
+after the uninitialized iounit field resulted in the typical sequence of
+two getxattr(2) syscalls, one to get the size of an xattr and another
+after allocating a sufficiently sized buffer to fit the xattr value, to
+hit an unexpected ERANGE error in the second call to getxattr(2). An
+uninitialized iounit field would sometimes force rsize to be smaller
+than the xattr value size in p9_client_read_once() and the 9P server in
+WSL refused to chunk up the READ on the attr_fid and, instead, returned
+ERANGE to the client. The virtfs server in QEMU seems happy to chunk up
+the READ and this problem goes undetected there. However, there are
+likely other non-xattr implications of this bug that could cause
+inefficient communication between the client and server.
 
-> But I have absolutely no stake in this at all, I'll happily edit it to
-> whatever the consensus is.  This is just what the IPv4 code looks like
-> after being adapted for IPv6.
+Cc: stable@vger.kernel.org
+Signed-off-by: Tyler Hicks <tyhicks@linux.microsoft.com>
+---
 
-Ah, I looked around other getroute implementations but not specifically
-ipmr. I'd rather refactor ipmr.c as well than keep its strangeness.
-The fact that we jump to the error path which tries to free the skb
-without ever allocating the skb feels particularly off.
+Note that I haven't had a chance to identify when this bug was
+introduced so I don't yet have a proper Fixes tag. The history looked a
+little tricky to me but I'll have another look in the coming days. We
+started hitting this bug after trying to move from linux-5.10.y to
+linux-5.15.y but I didn't see any obvious changes between those two
+series. I'm not confident of this theory but perhaps the fid refcounting
+changes impacted the fid allocation patterns enough to uncover the
+latent bug?
+
+ net/9p/client.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/net/9p/client.c b/net/9p/client.c
+index 8bba0d9cf975..1dfceb9154f7 100644
+--- a/net/9p/client.c
++++ b/net/9p/client.c
+@@ -899,6 +899,7 @@ static struct p9_fid *p9_fid_create(struct p9_client *clnt)
+ 	fid->clnt = clnt;
+ 	fid->rdir = NULL;
+ 	fid->fid = 0;
++	fid->iounit = 0;
+ 	refcount_set(&fid->count, 1);
+ 
+ 	idr_preload(GFP_KERNEL);
+-- 
+2.25.1
+
