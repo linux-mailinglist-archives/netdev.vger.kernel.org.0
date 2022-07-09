@@ -2,76 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DEA4356C83B
-	for <lists+netdev@lfdr.de>; Sat,  9 Jul 2022 11:11:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E83256C8C7
+	for <lists+netdev@lfdr.de>; Sat,  9 Jul 2022 12:09:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229477AbiGIJLy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Jul 2022 05:11:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57120 "EHLO
+        id S229781AbiGIKHx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Jul 2022 06:07:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229448AbiGIJLx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 Jul 2022 05:11:53 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A22F3545EE
-        for <netdev@vger.kernel.org>; Sat,  9 Jul 2022 02:11:51 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id ez10so1277067ejc.13
-        for <netdev@vger.kernel.org>; Sat, 09 Jul 2022 02:11:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares.net; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to;
-        bh=GwRPDPz0wAqQuQjReGGFUUa9OBEO/j7dclJ1wvnbWbw=;
-        b=3Bk7y61bJci89ZJ+gdYXv/2I2Jd2H107ZgBpjScH3iI0MvbkdyNoFcIWlrEWTU+jHi
-         sOyDWGsQZSVr58Nwhv30399lkGvsSY2T5wh3bw0vteP3vfYQMjy6qnrEzVxwz1BRbCGL
-         FcMEaJFEI+vHHH4aOsmLrNqg8sDJY78xw6zBEucJoR7pVc+F9BqhoWS1G1DO4jI/ZEQi
-         pbBy3ATNb5ZEbfNIp59CTRxcOYn2aUoprsExPnCOWiC4Y893cGlZrEf51ifyWB5U38rR
-         lB3fhZ6uepYs9Wadql+/NECLavybhDnZAXCP1Ut9suIE9nn8LemPquOuiVYksMRcToGz
-         1AEQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to;
-        bh=GwRPDPz0wAqQuQjReGGFUUa9OBEO/j7dclJ1wvnbWbw=;
-        b=FOSqAjS5AHxd8A9rcbFyaayuAQN4xhH84ic4fHGAm/XBcGdbI/p4p1EtkkcfKfoszF
-         SgRgVum0JCSjMF8GUf4+vOM+olsTLObEK5mfizxxToq9J3lHKc+PEAQ7hcDa4oi7iinN
-         KUSiIYs3JEZonh3osMzjv4ItDgoV2KJGT+UkKKfG35FrA+hftttwGQZeDCX8Fhx/fmYB
-         EUfilQosCTypsJ8PJ32KF+WejchmbB7MnlRGalMQOYUqy3xINQGKGF0zOPrGyJ09sief
-         z2+0YVnm4foFCIVZg+QzfOzUN2mDYqzH5JcJtZNMw4OPNrBC0RReEiUcY5VKhyDoBK1M
-         pv/w==
-X-Gm-Message-State: AJIora8lnF5IVxetD4jYODkTUxl/+aHXX8pQhULiKFIHJKECu8Hlun3+
-        8YyVH0FKkTVHqQobP/A89/3CXA==
-X-Google-Smtp-Source: AGRyM1vI7m5nS7zEdVam2tmvN320LNjtUyI/YEZCStnztWbPDuR7Wt5qMJTystEcWIBSj3QF/E84fg==
-X-Received: by 2002:a17:906:cc52:b0:72b:114e:c56c with SMTP id mm18-20020a170906cc5200b0072b114ec56cmr8008533ejb.144.1657357909909;
-        Sat, 09 Jul 2022 02:11:49 -0700 (PDT)
-Received: from ?IPV6:2a02:578:8593:1200:e51f:3772:e05:89c3? ([2a02:578:8593:1200:e51f:3772:e05:89c3])
-        by smtp.gmail.com with ESMTPSA id y26-20020a056402135a00b00435a742e350sm636472edw.75.2022.07.09.02.11.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 09 Jul 2022 02:11:49 -0700 (PDT)
-Content-Type: multipart/mixed; boundary="------------3cL3LDjvU14fMcomcm3uA5J9"
-Message-ID: <6dddf3f2-40c1-a08b-ec0e-c4feafcad118@tessares.net>
-Date:   Sat, 9 Jul 2022 11:11:47 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 net 09/12] net: Fix data-races around sysctl_mem.
-Content-Language: en-GB
-To:     Kuniyuki Iwashima <kuniyu@amazon.com>,
+        with ESMTP id S229723AbiGIKHo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 Jul 2022 06:07:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 509CF4B4B8;
+        Sat,  9 Jul 2022 03:07:41 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E898E60E84;
+        Sat,  9 Jul 2022 10:07:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3EAE2C341C7;
+        Sat,  9 Jul 2022 10:07:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657361259;
+        bh=KJtmXylkYfBUCP9nKw3ANSOdLovVVTpFPXktiDmYhX8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=LnWbmh+eLrmzEUuOUtwt1Zk7RPhAHxviv/xN1zz17DDCm7ZZ2jcjIeAUW4KTxMXed
+         KM6hlnyvwgcE/ucoKBLNi3lTI0HLQorkZBQKDriJ83QapG5TazYrBSO0s5jpBgI518
+         zjHSfekRlLlgNoH4pC8Bvx7SWcUhuyyANeCxHX9hJfkXhijte2QxQFmBhEqOt4NAki
+         WRxJiBGp9FbjYtPunI+ANm5ybjHbUrO7XEI2HfTHJrTDCbiOpxKJM0muKF/npo2L8i
+         8btVRvA0c3zQa7eBwzLXG2Hotce3pbtGp96wKaC+VQwn/aYfgAwZb7CnJrfDBP08B6
+         LAxmYYMrturXw==
+Received: from mchehab by mail.kernel.org with local (Exim 4.95)
+        (envelope-from <mchehab@kernel.org>)
+        id 1oA7N9-004EGQ-BD;
+        Sat, 09 Jul 2022 11:07:35 +0100
+From:   Mauro Carvalho Chehab <mchehab@kernel.org>
+To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
         "David S. Miller" <davem@davemloft.net>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
+        "Theodore Ts'o" <tytso@mit.edu>, Alex Shi <alexs@kernel.org>,
+        Alexander Potapenko <glider@google.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Andreas Dilger <adilger.kernel@dilger.ca>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andrey Grodzovsky <andrey.grodzovsky@amd.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Dmitry Vyukov <dvyukov@google.com>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>, Leo Yan <leo.yan@linaro.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Marco Elver <elver@google.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Max Staudt <max@enpas.org>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mike Leach <mike.leach@linaro.org>,
+        Muchun Song <songmuchun@bytedance.com>,
         Paolo Abeni <pabeni@redhat.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Iurii Zaikin <yzaikin@google.com>
-Cc:     Kuniyuki Iwashima <kuni1840@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        MPTCP Upstream <mptcp@lists.linux.dev>
-References: <20220706234003.66760-1-kuniyu@amazon.com>
- <20220706234003.66760-10-kuniyu@amazon.com>
-From:   Matthieu Baerts <matthieu.baerts@tessares.net>
-In-Reply-To: <20220706234003.66760-10-kuniyu@amazon.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Yanteng Si <siyanteng@loongson.cn>, coresight@lists.linaro.org,
+        dri-devel@lists.freedesktop.org, kasan-dev@googlegroups.com,
+        kvm@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
+        linux-arm-kernel@lists.infradead.org, linux-cachefs@redhat.com,
+        linux-can@vger.kernel.org, linux-ext4@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-mm@kvack.org, linux-pci@vger.kernel.org,
+        linux-sgx@vger.kernel.org, netdev@vger.kernel.org, x86@kernel.org
+Subject: [PATCH v3 00/21] Update Documentation/ cross references and fix issues
+Date:   Sat,  9 Jul 2022 11:07:13 +0100
+Message-Id: <cover.1657360984.git.mchehab@kernel.org>
+X-Mailer: git-send-email 2.36.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -80,59 +94,68 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a multi-part message in MIME format.
---------------3cL3LDjvU14fMcomcm3uA5J9
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+This series fix almost all fixable issues when building the html docs at
+linux-next (next-20220608):
 
-Hello,
+- Address some broken cross-references;
+- Fix kernel-doc warnings;
+- Fix bad tags on ReST files.
 
-On 07/07/2022 01:40, Kuniyuki Iwashima wrote:
-> While reading .sysctl_mem, it can be changed concurrently.
-> So, we need to add READ_ONCE() to avoid data-races.
+With this series applied, plus other pending patches that should hopefully
+be merged in time for the next merge window, htmldocs build will produce
+just 4 warnings with Sphinx 2.4.4.
 
-FYI, we got a small conflict when merging -net in net-next in the MPTCP
-tree due to this patch applied in -net:
+Sphinx >=3 will produce some extra false-positive warnings due to conflicts
+between structs and functions sharing the same name. Hopefully this will
+be fixed either on a new Sphinx 5.x version or Sphinx 6.0.
 
-  310731e2f161 ("net: Fix data-races around sysctl_mem.")
+Mauro Carvalho Chehab (21):
+  docs: networking: update netdevices.rst reference
+  docs: update vmalloced-kernel-stacks.rst reference
+  docs: update vmemmap_dedup.rst reference
+  docs: zh_CN: page_migration: fix reference to mm index.rst
+  dt-bindings: arm: update arm,coresight-cpu-debug.yaml reference
+  x86/sgx: fix kernel-doc markups
+  fscache: fix kernel-doc documentation
+  fs: namei: address some kernel-doc issues
+  drm/scheduler: fix a kernel-doc warning
+  drm/scheduler: add a missing kernel-doc parameter
+  kfence: fix a kernel-doc parameter
+  genalloc: add a description for start_addr parameter
+  textsearch: document list inside struct ts_ops
+  dcache: fix a kernel-doc warning
+  docs: ext4: blockmap.rst: fix a broken table
+  docs: PCI: pci-vntb-function.rst: Properly include ascii artwork
+  docs: PCI: pci-vntb-howto.rst: fix a title markup
+  docs: virt: kvm: fix a title markup at api.rst
+  docs: ABI: sysfs-bus-nvdimm
+  docs: leds: index.rst: add leds-qcom-lpg to it
+  Documentation: coresight: fix binding wildcards
 
-and this one from net-next:
+ Documentation/ABI/testing/sysfs-bus-nvdimm             |  2 ++
+ Documentation/PCI/endpoint/pci-vntb-function.rst       |  2 +-
+ Documentation/PCI/endpoint/pci-vntb-howto.rst          |  2 +-
+ Documentation/filesystems/ext4/blockmap.rst            |  2 +-
+ Documentation/leds/index.rst                           |  1 +
+ Documentation/trace/coresight/coresight-cpu-debug.rst  |  2 +-
+ Documentation/trace/coresight/coresight.rst            |  2 +-
+ Documentation/translations/zh_CN/mm/page_migration.rst |  2 +-
+ .../translations/zh_CN/mm/vmalloced-kernel-stacks.rst  |  2 +-
+ Documentation/virt/kvm/api.rst                         |  6 +++---
+ arch/x86/include/uapi/asm/sgx.h                        | 10 ++++++++--
+ drivers/gpu/drm/scheduler/sched_main.c                 |  1 +
+ drivers/net/can/can327.c                               |  2 +-
+ fs/namei.c                                             |  3 +++
+ include/drm/gpu_scheduler.h                            |  1 +
+ include/linux/dcache.h                                 |  2 +-
+ include/linux/fscache.h                                |  4 ++--
+ include/linux/genalloc.h                               |  1 +
+ include/linux/kfence.h                                 |  1 +
+ include/linux/textsearch.h                             |  1 +
+ mm/hugetlb_vmemmap.h                                   |  2 +-
+ 21 files changed, 34 insertions(+), 17 deletions(-)
 
-  e70f3c701276 ("Revert "net: set SK_MEM_QUANTUM to 4096"")
-
-The conflict has been resolved on our side[1] and the resolution we
-suggest is attached to this email.
-
-I'm sharing this thinking it can help others but if it only creates
-noise, please tell me! :)
-
-Cheers,
-Matt
-
-[1] https://github.com/multipath-tcp/mptcp_net-next/commit/b01bda9d0fe6
 -- 
-Tessares | Belgium | Hybrid Access Solutions
-www.tessares.net
---------------3cL3LDjvU14fMcomcm3uA5J9
-Content-Type: text/x-patch; charset=UTF-8; name="b01bda9d0fe6.patch"
-Content-Disposition: attachment; filename="b01bda9d0fe6.patch"
-Content-Transfer-Encoding: base64
+2.36.1
 
-ZGlmZiAtLWNjIGluY2x1ZGUvbmV0L3NvY2suaAppbmRleCAwZGQ0M2MzZGY0OWIsOWZhNTQ3
-NjJlMDc3Li5mN2FkMWE3NzA1ZTkKLS0tIGEvaW5jbHVkZS9uZXQvc29jay5oCisrKyBiL2lu
-Y2x1ZGUvbmV0L3NvY2suaApAQEAgLTE1NDEsMTAgLTE1MjEsMjIgKzE1NDEsMTAgQEBAIHZv
-aWQgX19za19tZW1fcmVjbGFpbShzdHJ1Y3Qgc29jayAqc2ssIAogICNkZWZpbmUgU0tfTUVN
-X1NFTkQJMAogICNkZWZpbmUgU0tfTUVNX1JFQ1YJMQogIAogLS8qIHN5c2N0bF9tZW0gdmFs
-dWVzIGFyZSBpbiBwYWdlcywgd2UgY29udmVydCB0aGVtIGluIFNLX01FTV9RVUFOVFVNIHVu
-aXRzICovCiArLyogc3lzY3RsX21lbSB2YWx1ZXMgYXJlIGluIHBhZ2VzICovCiAgc3RhdGlj
-IGlubGluZSBsb25nIHNrX3Byb3RfbWVtX2xpbWl0cyhjb25zdCBzdHJ1Y3Qgc29jayAqc2ss
-IGludCBpbmRleCkKICB7Ci0gCXJldHVybiBzay0+c2tfcHJvdC0+c3lzY3RsX21lbVtpbmRl
-eF07CiAtCWxvbmcgdmFsID0gUkVBRF9PTkNFKHNrLT5za19wcm90LT5zeXNjdGxfbWVtW2lu
-ZGV4XSk7CiAtCiAtI2lmIFBBR0VfU0laRSA+IFNLX01FTV9RVUFOVFVNCiAtCXZhbCA8PD0g
-UEFHRV9TSElGVCAtIFNLX01FTV9RVUFOVFVNX1NISUZUOwogLSNlbGlmIFBBR0VfU0laRSA8
-IFNLX01FTV9RVUFOVFVNCiAtCXZhbCA+Pj0gU0tfTUVNX1FVQU5UVU1fU0hJRlQgLSBQQUdF
-X1NISUZUOwogLSNlbmRpZgogLQlyZXR1cm4gdmFsOworKwlyZXR1cm4gUkVBRF9PTkNFKHNr
-LT5za19wcm90LT5zeXNjdGxfbWVtW2luZGV4XSk7CiAgfQogIAogIHN0YXRpYyBpbmxpbmUg
-aW50IHNrX21lbV9wYWdlcyhpbnQgYW10KQo=
 
---------------3cL3LDjvU14fMcomcm3uA5J9--
