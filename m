@@ -2,142 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AF3D56CB95
-	for <lists+netdev@lfdr.de>; Sat,  9 Jul 2022 23:22:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A112956CBAB
+	for <lists+netdev@lfdr.de>; Sun, 10 Jul 2022 00:21:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229590AbiGIVVa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Jul 2022 17:21:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33204 "EHLO
+        id S229593AbiGIWUo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Jul 2022 18:20:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229549AbiGIVV2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 Jul 2022 17:21:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C89181A066;
-        Sat,  9 Jul 2022 14:21:26 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6A63FB8075B;
-        Sat,  9 Jul 2022 21:21:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7ED5C341CA;
-        Sat,  9 Jul 2022 21:21:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657401684;
-        bh=3PmXbYGfYxecOdWXGHi7rCtLqyl1SUnRBQY9cUsGOHU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nMOEim0jUbMLWcgmAuWmDN7gPOYQBP1x5E3XGsNAlt76YwEw3+WuZj4Ifvu2ahZPS
-         p4R/+bJ7cl0FcTe/Lz9x4s7ZDnPbYSmu6b816rr4bMdFN8G+mmKod1Z1hyt7CdfO19
-         iSTn4O88Ab/Fd1HgwFDgiQ11YyiBnOYhF3S+8fIpLmCz3Z71JbNaI/frrQTMY34gLU
-         Bn0X4ztMSYxtrdYbdYJe2/UEifvw8L95wyFj/yvwnAgRwbCOy2RlJkx6uomyXwoQOx
-         YllI/HvxrFBMf15rH9Ib24e8JbvnqfwrvPsnrWu8J+MF8JBmnUXk4a3ldLXEXndPPt
-         90pbkS9eAgVww==
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     linux-crypto@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        "Jason A . Donenfeld " <Jason@zx2c4.com>
-Subject: [PATCH 2/2] crypto: make the sha1 library optional
-Date:   Sat,  9 Jul 2022 14:18:49 -0700
-Message-Id: <20220709211849.210850-3-ebiggers@kernel.org>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220709211849.210850-1-ebiggers@kernel.org>
-References: <20220709211849.210850-1-ebiggers@kernel.org>
+        with ESMTP id S229552AbiGIWUn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 Jul 2022 18:20:43 -0400
+Received: from mail-qk1-x736.google.com (mail-qk1-x736.google.com [IPv6:2607:f8b0:4864:20::736])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B93AC1262E;
+        Sat,  9 Jul 2022 15:20:42 -0700 (PDT)
+Received: by mail-qk1-x736.google.com with SMTP id p22so1503550qkj.4;
+        Sat, 09 Jul 2022 15:20:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jar/wn5SAcivKcUXRjmaj2VcVCJGgbSuRsAEeqFIITo=;
+        b=fDx+XSxkgVz0uMbEkQdHTdezbvggIZPd1KpFvZ3z9Itl+m27xDpAe91+MUieN9QIsZ
+         54qQWzxV0rNRUAC6DatCvLE9ez7jQtb3mwqZ8Xifgh8SWqkhI8TgUX3L5J2+RX93WEAI
+         woq0up533Bl/R5uiBkdyysrhbWOj+xr4Rud3EHYUScPM1Qsot8mQ82kZtN3+L5qyTGmh
+         ElqlX2+9OvFQyPhUanTbx0tx3aj28bCBa7eYGbRa1RHFyKpPGEznPQ8WAP9wCbJF9rGa
+         Lc27Iptp6x1uiOXAM0plPZKxwwifyg48vxJ1SkZW2oCvDLOi+NAlvkTOZ2IYEaWbM2sy
+         cKJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jar/wn5SAcivKcUXRjmaj2VcVCJGgbSuRsAEeqFIITo=;
+        b=W2/27EZj+4FQ3yvVULS2gx2upySbLJ7obguqgJGwQqmiI6YdaXU2z2y89d9t99t/6S
+         xUObsVfaVlA+hwj1vuQ/gubT26sJY1IGMdWOUtgh0UTEzp/hRHq512dRZAReqqVlMGg9
+         gx9Jz6c0FX7X3SI5cU0WfkaLR6+Wv3bTMguoy3kmvy/ggZUT9AGg2Fwa8J1JUkEV+rCc
+         e0cXM5F/7qGWYsKh1V1Hazpi0iPxMJWUvVf+hEDKwe/vtBvEXRI3NxUT9H2xu3CoWnng
+         /ZaX5z3PO010FHaYbLLhp2Eu+wtuor5KS6R/MTkYnX9NISfOJObwL+i1NciJsIQf5+QK
+         6vPg==
+X-Gm-Message-State: AJIora/9YLvbjq0a411/xKn4r7P72IkXrtTkGp9Dc1qOda9OmWgAxaYi
+        p71lYe+qEC0hhP8AWTziC8+elswIp54=
+X-Google-Smtp-Source: AGRyM1uw5Vs+H7iCq7TA6+adLnZkbtbzMAu+IS1LdXpiVFVNW0sEmH2eYQVd4v3367tKHIEDjSSHNw==
+X-Received: by 2002:a05:620a:2987:b0:6b5:7d81:e34b with SMTP id r7-20020a05620a298700b006b57d81e34bmr37736qkp.271.1657405241439;
+        Sat, 09 Jul 2022 15:20:41 -0700 (PDT)
+Received: from pop-os.attlocal.net ([2600:1700:65a0:ab60:7207:3bf4:9b32:cf29])
+        by smtp.gmail.com with ESMTPSA id w13-20020a05620a424d00b006af0ce13499sm2151006qko.115.2022.07.09.15.20.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 09 Jul 2022 15:20:40 -0700 (PDT)
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
+        syzbot+a0e6f8738b58f7654417@syzkaller.appspotmail.com,
+        Stanislav Fomichev <sdf@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Subject: [Patch bpf-next] tcp: fix sock skb accounting in tcp_read_skb()
+Date:   Sat,  9 Jul 2022 15:20:29 -0700
+Message-Id: <20220709222029.297471-1-xiyou.wangcong@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Biggers <ebiggers@google.com>
+From: Cong Wang <cong.wang@bytedance.com>
 
-Since the Linux RNG no longer uses sha1_transform(), the SHA-1 library
-is no longer needed unconditionally.  Make it possible to build the
-Linux kernel without the SHA-1 library by putting it behind a kconfig
-option, and selecting this new option from the kconfig options that gate
-the remaining users: CRYPTO_SHA1 for crypto/sha1_generic.c, BPF for
-kernel/bpf/core.c, and IPV6 for net/ipv6/addrconf.c.
+Before commit 965b57b469a5 ("net: Introduce a new proto_ops
+->read_skb()"), skb was not dequeued from receive queue hence
+when we close TCP socket skb can be just flushed synchronously.
 
-Unfortunately, since BPF is selected by NET, for now this can only make
-a difference for kernels built without networking support.
+After this commit, we have to uncharge skb immediately after being
+dequeued, otherwise it is still charged in the original sock. And we
+still need to retain skb->sk, as eBPF programs may extract sock
+information from skb->sk. Therefore, we have to call
+skb_set_owner_sk_safe() here.
 
-Signed-off-by: Eric Biggers <ebiggers@google.com>
+Fixes: 965b57b469a5 ("net: Introduce a new proto_ops ->read_skb()")
+Reported-and-tested-by: syzbot+a0e6f8738b58f7654417@syzkaller.appspotmail.com
+Tested-by: Stanislav Fomichev <sdf@google.com>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: John Fastabend <john.fastabend@gmail.com>
+Signed-off-by: Cong Wang <cong.wang@bytedance.com>
 ---
- crypto/Kconfig      | 1 +
- init/Kconfig        | 1 +
- lib/crypto/Kconfig  | 3 +++
- lib/crypto/Makefile | 3 ++-
- net/ipv6/Kconfig    | 1 +
- 5 files changed, 8 insertions(+), 1 deletion(-)
+ net/ipv4/tcp.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/crypto/Kconfig b/crypto/Kconfig
-index 59489a300cd100..bf15ca5eb9d367 100644
---- a/crypto/Kconfig
-+++ b/crypto/Kconfig
-@@ -880,6 +880,7 @@ config CRYPTO_RMD160
- config CRYPTO_SHA1
- 	tristate "SHA1 digest algorithm"
- 	select CRYPTO_HASH
-+	select CRYPTO_LIB_SHA1
- 	help
- 	  SHA-1 secure hash standard (FIPS 180-1/DFIPS 180-2).
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 9d2fd3ced21b..c6b1effb2afd 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -1749,6 +1749,7 @@ int tcp_read_skb(struct sock *sk, skb_read_actor_t recv_actor)
+ 		int used;
  
-diff --git a/init/Kconfig b/init/Kconfig
-index c984afc489dead..d8d0b4bdfe4195 100644
---- a/init/Kconfig
-+++ b/init/Kconfig
-@@ -1472,6 +1472,7 @@ config HAVE_PCSPKR_PLATFORM
- # interpreter that classic socket filters depend on
- config BPF
- 	bool
-+	select CRYPTO_LIB_SHA1
- 
- menuconfig EXPERT
- 	bool "Configure standard kernel features (expert users)"
-diff --git a/lib/crypto/Kconfig b/lib/crypto/Kconfig
-index 2082af43d51fbe..9ff549f63540fa 100644
---- a/lib/crypto/Kconfig
-+++ b/lib/crypto/Kconfig
-@@ -121,6 +121,9 @@ config CRYPTO_LIB_CHACHA20POLY1305
- 	select CRYPTO_LIB_POLY1305
- 	select CRYPTO_ALGAPI
- 
-+config CRYPTO_LIB_SHA1
-+	tristate
-+
- config CRYPTO_LIB_SHA256
- 	tristate
- 
-diff --git a/lib/crypto/Makefile b/lib/crypto/Makefile
-index d28111ba54fcb2..919cbb2c220d61 100644
---- a/lib/crypto/Makefile
-+++ b/lib/crypto/Makefile
-@@ -34,7 +34,8 @@ libpoly1305-y					:= poly1305-donna32.o
- libpoly1305-$(CONFIG_ARCH_SUPPORTS_INT128)	:= poly1305-donna64.o
- libpoly1305-y					+= poly1305.o
- 
--obj-y						+= sha1.o
-+obj-$(CONFIG_CRYPTO_LIB_SHA1)			+= libsha1.o
-+libsha1-y					:= sha1.o
- 
- obj-$(CONFIG_CRYPTO_LIB_SHA256)			+= libsha256.o
- libsha256-y					:= sha256.o
-diff --git a/net/ipv6/Kconfig b/net/ipv6/Kconfig
-index bf2e5e5fe14273..658bfed1df8b17 100644
---- a/net/ipv6/Kconfig
-+++ b/net/ipv6/Kconfig
-@@ -7,6 +7,7 @@
- menuconfig IPV6
- 	tristate "The IPv6 protocol"
- 	default y
-+	select CRYPTO_LIB_SHA1
- 	help
- 	  Support for IP version 6 (IPv6).
- 
+ 		__skb_unlink(skb, &sk->sk_receive_queue);
++		WARN_ON(!skb_set_owner_sk_safe(skb, sk));
+ 		used = recv_actor(sk, skb);
+ 		if (used <= 0) {
+ 			if (!copied)
 -- 
-2.37.0
+2.34.1
 
