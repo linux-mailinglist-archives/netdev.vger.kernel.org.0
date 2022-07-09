@@ -2,94 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EDAE56CB37
-	for <lists+netdev@lfdr.de>; Sat,  9 Jul 2022 21:07:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D30756CB42
+	for <lists+netdev@lfdr.de>; Sat,  9 Jul 2022 21:23:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229471AbiGITHQ convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sat, 9 Jul 2022 15:07:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37920 "EHLO
+        id S229515AbiGITX0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Jul 2022 15:23:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229448AbiGITHP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 Jul 2022 15:07:15 -0400
-Received: from relay3.hostedemail.com (smtprelay0014.hostedemail.com [216.40.44.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63A1111A2F
-        for <netdev@vger.kernel.org>; Sat,  9 Jul 2022 12:07:14 -0700 (PDT)
-Received: from omf07.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay12.hostedemail.com (Postfix) with ESMTP id CC1DB120311;
-        Sat,  9 Jul 2022 19:07:12 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf07.hostedemail.com (Postfix) with ESMTPA id 0DA9420032;
-        Sat,  9 Jul 2022 19:07:10 +0000 (UTC)
-Message-ID: <b47293b4b8874c0ae32868533bd0df94e08b8706.camel@perches.com>
-Subject: Re: [PATCH] wifi: wcn36xx: fix repeated words in comments
-From:   Joe Perches <joe@perches.com>
-To:     Jilin Yuan <yuanjilin@cdjrlc.com>, kvalo@kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     wcn36xx@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Sat, 09 Jul 2022 12:07:10 -0700
-In-Reply-To: <20220709124356.52543-1-yuanjilin@cdjrlc.com>
-References: <20220709124356.52543-1-yuanjilin@cdjrlc.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 8BIT
-User-Agent: Evolution 3.44.1-0ubuntu1 
+        with ESMTP id S229481AbiGITXZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 Jul 2022 15:23:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66C7515A10
+        for <netdev@vger.kernel.org>; Sat,  9 Jul 2022 12:23:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0324DB806A0
+        for <netdev@vger.kernel.org>; Sat,  9 Jul 2022 19:23:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3051DC3411C;
+        Sat,  9 Jul 2022 19:23:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657394601;
+        bh=0D6oFHqU+zFv3pjPrUJqqWWAIeXMFm2WwgHxERu24yQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=DFz0q9ylgzaCjgQTf6icDW9WBR7peMlE6kjaIl8AYDkSAMwzeO+ryhT2GK093j1RJ
+         JqCHbYqHQHHwh3ZlMxWfdw5PJY1DOQpdjqIZVPFaNfcrT4+qgrOyKkFAGikcardzHw
+         bBx/7X0V18Xhn6byaxbvY+1nUXQOeGtemaig7i4OeSAPIXgdqedbCT9dqqYRbHMVkR
+         qAJ6zpfYkoTfAImoeld/Yt3yjcCN3ohY1H0WpVs/5m3bpiF9TZ3O3g3k5m0w+UGk/3
+         0sQ5etP0WkMMLILGPL/TC6dN/d4FvqNCV4XVC75XzSz6No1tMwln47fBXkT3Qjg/en
+         kNo2lG3SUheQQ==
+Date:   Sat, 9 Jul 2022 12:23:20 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     David Lamparter <equinox@diac24.net>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        David Ahern <dsahern@kernel.org>
+Subject: Re: [PATCH net-next v5] net: ip6mr: add RTM_GETROUTE netlink op
+Message-ID: <20220709122320.7ecc9621@kernel.org>
+In-Reply-To: <Ysl4TPkTNW+6JPj4@eidolon.nox.tf>
+References: <20220707093336.214658-1-equinox@diac24.net>
+        <20220708202951.46d3454a@kernel.org>
+        <Ysl4TPkTNW+6JPj4@eidolon.nox.tf>
 MIME-Version: 1.0
-X-Rspamd-Server: rspamout04
-X-Rspamd-Queue-Id: 0DA9420032
-X-Spam-Status: No, score=-0.9 required=5.0 tests=BAYES_00,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY autolearn=no
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
-X-Stat-Signature: zjeymh5t1ywdjs75snkez43foa6p6gra
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX18ENkg52OUH3RO+NWHMWJrFQPA9iNDLJHg=
-X-HE-Tag: 1657393630-573364
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 2022-07-09 at 20:43 +0800, Jilin Yuan wrote:
->  Delete the redundant word 'the'.
-[]
-> diff --git a/drivers/net/wireless/ath/wcn36xx/hal.h b/drivers/net/wireless/ath/wcn36xx/hal.h
-[]
-> @@ -1961,7 +1961,7 @@ struct wcn36xx_hal_config_bss_params {
->  
->  	/* HAL should update the existing BSS entry, if this flag is set.
->  	 * UMAC will set this flag in case of reassoc, where we want to
-> -	 * resue the the old BSSID and still return success 0 = Add, 1 =
-> +	 * resue the old BSSID and still return success 0 = Add, 1 =
+On Sat, 9 Jul 2022 14:45:00 +0200 David Lamparter wrote:
+> > > +	err = ip6mr_rtm_valid_getroute_req(in_skb, nlh, tb, extack);
+> > > +	if (err < 0)
+> > > +		goto errout;  
+> > 
+> > Can we:
+> > 
+> > 		return err;
+> > 
+> > ? I don't know where the preference for jumping to the return statement
+> > came from, old compilers? someone's "gut feeling"?  
+> 
+> If I were forced to find a justification, I'd say having a central
+> sequence of exit helps avoiding mistakes when some other resource
+> acquisition is added later.  Easy to add a cleanup call to an existing
+> cleanup block - easy to overlook a "return err;" that needs to be
+> changed to "goto errout;".
 
+That only works if the label's name is meaningless, if the label is
+named after what it points to you have to rename the label and all the
+jumps anyway. Can as well replace returns with a goto.
 
-s/resue/reuse/
+> But I have absolutely no stake in this at all, I'll happily edit it to
+> whatever the consensus is.  This is just what the IPv4 code looks like
+> after being adapted for IPv6.
 
->  	 * Update */
->  	u8 action;
->  
-> @@ -2098,7 +2098,7 @@ struct wcn36xx_hal_config_bss_params_v1 {
->  
->  	/* HAL should update the existing BSS entry, if this flag is set.
->  	 * UMAC will set this flag in case of reassoc, where we want to
-> -	 * resue the the old BSSID and still return success 0 = Add, 1 =
-> +	 * resue the old BSSID and still return success 0 = Add, 1 =
-
-here too
-
->  	 * Update */
->  	u8 action;
->  
-> @@ -4142,7 +4142,7 @@ struct wcn36xx_hal_dump_cmd_rsp_msg {
->  	/* Length of the responce message */
->  	u32 rsp_length;
->  
-> -	/* FIXME: Currently considering the the responce will be less than
-> +	/* FIXME: Currently considering the responce will be less than
-
-s/responce/response/
-
->  	 * 100bytes */
->  	u8 rsp_buffer[DUMPCMD_RSP_BUFFER];
->  } __packed;
-
+Ah, I looked around other getroute implementations but not specifically
+ipmr. I'd rather refactor ipmr.c as well than keep its strangeness.
+The fact that we jump to the error path which tries to free the skb
+without ever allocating the skb feels particularly off.
