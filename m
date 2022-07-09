@@ -2,84 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C37D56C971
-	for <lists+netdev@lfdr.de>; Sat,  9 Jul 2022 14:45:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EC7F56C982
+	for <lists+netdev@lfdr.de>; Sat,  9 Jul 2022 15:22:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229600AbiGIMpJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Jul 2022 08:45:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55306 "EHLO
+        id S229603AbiGINWR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Jul 2022 09:22:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229598AbiGIMpH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 Jul 2022 08:45:07 -0400
-Received: from eidolon.nox.tf (eidolon.nox.tf [IPv6:2a07:2ec0:2185::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 461A24E85C
-        for <netdev@vger.kernel.org>; Sat,  9 Jul 2022 05:45:04 -0700 (PDT)
-Received: from equinox by eidolon.nox.tf with local (Exim 4.94.2)
-        (envelope-from <equinox@diac24.net>)
-        id 1oA9pU-008p6Y-D2; Sat, 09 Jul 2022 14:45:00 +0200
-Date:   Sat, 9 Jul 2022 14:45:00 +0200
-From:   David Lamparter <equinox@diac24.net>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        David Ahern <dsahern@kernel.org>
-Subject: Re: [PATCH net-next v5] net: ip6mr: add RTM_GETROUTE netlink op
-Message-ID: <Ysl4TPkTNW+6JPj4@eidolon.nox.tf>
-References: <20220707093336.214658-1-equinox@diac24.net>
- <20220708202951.46d3454a@kernel.org>
+        with ESMTP id S229568AbiGINWQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 Jul 2022 09:22:16 -0400
+Received: from smtpbg.qq.com (biz-43-154-54-12.mail.qq.com [43.154.54.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F7CE32ED0;
+        Sat,  9 Jul 2022 06:22:10 -0700 (PDT)
+X-QQ-mid: bizesmtp87t1657372907tk53euzj
+Received: from localhost.localdomain ( [182.148.15.109])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Sat, 09 Jul 2022 21:21:44 +0800 (CST)
+X-QQ-SSF: 01000000002000B0C000C00A0000000
+X-QQ-FEAT: MFQNDABwGMnbI3+zPdQ+CVJ73bFABe6xFN9qPX+xShDslADrWhdoXqR9M+dNl
+        +XmcI5B7nHUCBjX6Fcvlbm9GK0VuuV9j18dYTQVk4jaTTIU06bGXqQmK4fgcjXKSz3mA7eu
+        nRfxUXIyeivvB5QE3P89kxAzGWtuKz8HIJy5sfmhP4gHdRBLsenLauD1WW1Kx1HvhRTvXUQ
+        HP09r7ShF25B4Uct2Yt3k2LEHexJ2BwrE0TXV5+UPffH9YUNno8Rskl5KqNrliXv9N/3XQL
+        BWi7VWUms0Gg6/S40ycpJFu5P1yDp7UsvIK5bzKUraUMKZk/PjUCwf7I6tbJIsZ5GDRHuCT
+        IITpxEOSh16vphVxgOCd66sxDnOK1PSBdNzyKc8oJcX3m+WSwY=
+X-QQ-GoodBg: 0
+From:   Jilin Yuan <yuanjilin@cdjrlc.com>
+To:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jilin Yuan <yuanjilin@cdjrlc.com>
+Subject: [PATCH] wifi: wil6210: fix repeated words in comments
+Date:   Sat,  9 Jul 2022 21:21:37 +0800
+Message-Id: <20220709132137.12442-1-yuanjilin@cdjrlc.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220708202951.46d3454a@kernel.org>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
+X-Spam-Status: No, score=-0.9 required=5.0 tests=BAYES_00,RDNS_DYNAMIC,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE,T_SPF_HELO_TEMPERROR autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 08, 2022 at 08:29:51PM -0700, Jakub Kicinski wrote:
-> Few more nit picks, sorry..
+ Delete the redundant word 'for'.
 
-Thanks for the feedback!  [opens editor]
+Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
+---
+ drivers/net/wireless/ath/wil6210/txrx.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> On Thu,  7 Jul 2022 11:33:36 +0200 David Lamparter wrote:
-[...]
-> > +	err = ip6mr_rtm_valid_getroute_req(in_skb, nlh, tb, extack);
-> > +	if (err < 0)
-> > +		goto errout;
-> 
-> Can we:
-> 
-> 		return err;
-> 
-> ? I don't know where the preference for jumping to the return statement
-> came from, old compilers? someone's "gut feeling"?
-
-If I were forced to find a justification, I'd say having a central
-sequence of exit helps avoiding mistakes when some other resource
-acquisition is added later.  Easy to add a cleanup call to an existing
-cleanup block - easy to overlook a "return err;" that needs to be
-changed to "goto errout;".
-
-But I have absolutely no stake in this at all, I'll happily edit it to
-whatever the consensus is.  This is just what the IPv4 code looks like
-after being adapted for IPv6.
-
-> > +errout:
-> > +	return err;
-[...]
-> > +
-> > +errout_free:
-> > +	kfree_skb(skb);
-> > +	goto errout;
-> 
-> and no need to do the funky backwards jump here either, IMO
-
-"funky" is a nice description.
+diff --git a/drivers/net/wireless/ath/wil6210/txrx.h b/drivers/net/wireless/ath/wil6210/txrx.h
+index 1f4c8ec75be8..1ae1bec1b97f 100644
+--- a/drivers/net/wireless/ath/wil6210/txrx.h
++++ b/drivers/net/wireless/ath/wil6210/txrx.h
+@@ -356,7 +356,7 @@ struct vring_rx_mac {
+  * bit     10 : cmd_dma_it:1 immediate interrupt
+  * bit 11..15 : reserved:5
+  * bit 16..29 : phy_info_length:14 It is valid when the PII is set.
+- *		When the FFM bit is set bits 29-27 are used for for
++ *		When the FFM bit is set bits 29-27 are used for
+  *		Flex Filter Match. Matching Index to one of the L2
+  *		EtherType Flex Filter
+  * bit 30..31 : l4_type:2 valid if the L4I bit is set in the status field
+-- 
+2.36.1
 
 
--equi/David
