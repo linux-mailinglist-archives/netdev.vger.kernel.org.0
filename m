@@ -2,38 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 11E8756C969
-	for <lists+netdev@lfdr.de>; Sat,  9 Jul 2022 14:41:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D348B56C96E
+	for <lists+netdev@lfdr.de>; Sat,  9 Jul 2022 14:44:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229560AbiGIMl1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Jul 2022 08:41:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52878 "EHLO
+        id S229565AbiGIMot (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Jul 2022 08:44:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229379AbiGIMl0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 Jul 2022 08:41:26 -0400
+        with ESMTP id S229470AbiGIMot (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 Jul 2022 08:44:49 -0400
 Received: from smtpbg.qq.com (unknown [43.155.67.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C41B4332B;
-        Sat,  9 Jul 2022 05:41:21 -0700 (PDT)
-X-QQ-mid: bizesmtp76t1657370446tzv1j8n5
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3FFF4C639;
+        Sat,  9 Jul 2022 05:44:43 -0700 (PDT)
+X-QQ-mid: bizesmtp89t1657370648tq64gdvv
 Received: from localhost.localdomain ( [182.148.15.109])
         by bizesmtp.qq.com (ESMTP) with 
-        id ; Sat, 09 Jul 2022 20:40:43 +0800 (CST)
+        id ; Sat, 09 Jul 2022 20:44:05 +0800 (CST)
 X-QQ-SSF: 01000000002000B0C000B00A0000000
-X-QQ-FEAT: 907spY4M0eOSt2O5UyoKCCzfRgkM3uUzgP5HH3sDfinARVBZ+lDgdOFty3LAv
-        1FnNO6wzCFTzsqj9/J58ZHykARTM2D6itVkyzR9EdBoX9TMS76AVMcsYB/0/dm6p2GrcIQY
-        n1U2tGql8Fx2JujO0yq13I1O92zZVSWn5XcLLk6YBFuXxCwwrcp74hPmOmkvnHs+rX21D74
-        KHHsQSr9WIAkIOALcI3Rq4FNvWjoyGfiuYJ3C51IXV+mBe/P0ismTtXsX9Ra6Ph9W4U7myh
-        TmPYUrZeFxLoKGPB1oK2HD3GsIS8gdS7Ncx0FtZrmarcgHOP2ugot3PXfZsO9KhqM5Kbj9j
-        E1bcWe/F2a4xNLF6DUGLBADfJ28VZEB+do378QeJFuHP5/+Xlw=
+X-QQ-FEAT: 89zkXg0mlYZO48zndYkhgG+NXJJJj15O7inoRCXCj2z1xHrOcCFfZXlNufKds
+        VmAApYwCEqONtsUZMVdrG6B/Qx/MUk9OUZW3nI+i7Ko3qemdHGlfbJUbONRY7W5dLb6Egl6
+        m1krrpiFISbYr9n/M4W7h3D/sJxvaarb9s6Yv7S7GvnaO/pzEXGg95t18MAMIGQrmhE1sqN
+        xi8zauKRH0sUUjcRu9QtBAUk1wwthxspHZJtaPviWgzbLd8Ei/GysDcjOILgCFxInrJWkBa
+        naARImL0cq4vaqQG3LLP2MQyxEpPHDdrOpsxxjThbMTR7Gus1zUxSggRa5w8jDvKSMij5n+
+        5d3/wz5QejSVGm8LzUSw/3dea6U5U8UIyUCAIIq
 X-QQ-GoodBg: 0
 From:   Jilin Yuan <yuanjilin@cdjrlc.com>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, kvalo@kernel.org
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jilin Yuan <yuanjilin@cdjrlc.com>
-Subject: [PATCH] wifi: ath: fix repeated words in comments
-Date:   Sat,  9 Jul 2022 20:40:36 +0800
-Message-Id: <20220709124036.49674-1-yuanjilin@cdjrlc.com>
+To:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com
+Cc:     wcn36xx@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jilin Yuan <yuanjilin@cdjrlc.com>
+Subject: [PATCH] wifi: wcn36xx: fix repeated words in comments
+Date:   Sat,  9 Jul 2022 20:43:56 +0800
+Message-Id: <20220709124356.52543-1-yuanjilin@cdjrlc.com>
 X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -48,26 +49,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
- Delete the redundant word 'have'.
+ Delete the redundant word 'the'.
 
 Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
 ---
- drivers/net/wireless/ath/hw.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/ath/wcn36xx/hal.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/hw.c b/drivers/net/wireless/ath/hw.c
-index b53ebb3ac9a2..85955572a705 100644
---- a/drivers/net/wireless/ath/hw.c
-+++ b/drivers/net/wireless/ath/hw.c
-@@ -48,7 +48,7 @@
-  * the MAC address to obtain the relevant bits and compare the result with
-  * (frame's BSSID & mask) to see if they match.
-  *
-- * Simple example: on your card you have have two BSSes you have created with
-+ * Simple example: on your card you have two BSSes you have created with
-  * BSSID-01 and BSSID-02. Lets assume BSSID-01 will not use the MAC address.
-  * There is another BSSID-03 but you are not part of it. For simplicity's sake,
-  * assuming only 4 bits for a mac address and for BSSIDs you can then have:
+diff --git a/drivers/net/wireless/ath/wcn36xx/hal.h b/drivers/net/wireless/ath/wcn36xx/hal.h
+index 46a49f0a51b3..a1afe1f85f0e 100644
+--- a/drivers/net/wireless/ath/wcn36xx/hal.h
++++ b/drivers/net/wireless/ath/wcn36xx/hal.h
+@@ -1961,7 +1961,7 @@ struct wcn36xx_hal_config_bss_params {
+ 
+ 	/* HAL should update the existing BSS entry, if this flag is set.
+ 	 * UMAC will set this flag in case of reassoc, where we want to
+-	 * resue the the old BSSID and still return success 0 = Add, 1 =
++	 * resue the old BSSID and still return success 0 = Add, 1 =
+ 	 * Update */
+ 	u8 action;
+ 
+@@ -2098,7 +2098,7 @@ struct wcn36xx_hal_config_bss_params_v1 {
+ 
+ 	/* HAL should update the existing BSS entry, if this flag is set.
+ 	 * UMAC will set this flag in case of reassoc, where we want to
+-	 * resue the the old BSSID and still return success 0 = Add, 1 =
++	 * resue the old BSSID and still return success 0 = Add, 1 =
+ 	 * Update */
+ 	u8 action;
+ 
+@@ -4142,7 +4142,7 @@ struct wcn36xx_hal_dump_cmd_rsp_msg {
+ 	/* Length of the responce message */
+ 	u32 rsp_length;
+ 
+-	/* FIXME: Currently considering the the responce will be less than
++	/* FIXME: Currently considering the responce will be less than
+ 	 * 100bytes */
+ 	u8 rsp_buffer[DUMPCMD_RSP_BUFFER];
+ } __packed;
 -- 
 2.36.1
 
