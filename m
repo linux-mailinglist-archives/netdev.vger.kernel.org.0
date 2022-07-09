@@ -2,52 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B01B456C60A
-	for <lists+netdev@lfdr.de>; Sat,  9 Jul 2022 04:50:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 129C056C612
+	for <lists+netdev@lfdr.de>; Sat,  9 Jul 2022 04:53:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229544AbiGICuS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jul 2022 22:50:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34424 "EHLO
+        id S229448AbiGICxQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jul 2022 22:53:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229452AbiGICuR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 22:50:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92BB57AB16
-        for <netdev@vger.kernel.org>; Fri,  8 Jul 2022 19:50:16 -0700 (PDT)
+        with ESMTP id S229524AbiGICxH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 22:53:07 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3C147AB18
+        for <netdev@vger.kernel.org>; Fri,  8 Jul 2022 19:53:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E31462404
-        for <netdev@vger.kernel.org>; Sat,  9 Jul 2022 02:50:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 72685C341C8;
-        Sat,  9 Jul 2022 02:50:15 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 1B3E0CE2E5E
+        for <netdev@vger.kernel.org>; Sat,  9 Jul 2022 02:53:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5644C341C0;
+        Sat,  9 Jul 2022 02:53:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657335015;
-        bh=/ifup7lc53fKsbnq8AWXp7L2wFqEGDWJhfXNmOZufW8=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=NRlF6Ou94R1ioVhIazW+1Il4MUc7Zf1Y4v3R4bKSuhKsHHCitH+A0CQK2ecJ/Ayy0
-         M8wCVcR7NqJeI+m+oLEE4rS07lZ0Rgi9VzS79NuQ4pyV9GbjCU/QpAMYAeeD8Ax/Kk
-         3jkH4gMAF62E3xSp9VVVv4UZd9DD4C9uX2H6cQTiwcwYju9yl0BnnIGlpZwmaVKoVY
-         DMEV2dA2M3R/I2p/yIkdr5jiwEzIoU9qlOhfPF3fsWzX7HQPaKkSxZPXFuQSr/mNAL
-         nLl/cLg8awPUN264lH6A/mGJdrhvCdbuRRH/3p3iHyz8CQhkOYXFqEHF1Mhe7QYqhK
-         v3nYdH3SlrJ4Q==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5A2C6E45BDB;
-        Sat,  9 Jul 2022 02:50:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1657335183;
+        bh=0oSKdYOBZIev0qnsn5rD11W1hmyPUlKHFW0mbG9Urzo=;
+        h=From:To:Cc:Subject:Date:From;
+        b=newUZiXp1CSX+RBBlZKofXcv2oHaRh5So3DFlPfnufQIVSK7dpUISy8HsjH6lzxh3
+         TKHzZSmymsdS01aE5WdR14iplWgz8N3QR0o4r+DjhdCbJQhgwTxEnr7Wcz88iuHftT
+         rH/kgkjQbbmxkY0y+6CbxZP98y6LjMDIfp6y4+Lb+df8COF1RCmXcdXwghx5541Wbj
+         x4xfBKpQzSNuNYI0AzOMFMAJvx3lYgbwb1uCNbp/3t9WBZwlIJ42ZpLxPBVgM14JG3
+         CN63EKUCd3+Fe2lEyWAF6SJFFi2FCQfElHVuYC+GtK+t3/WOxuGMGbpXb+RINR8Zuv
+         +xS50D7qqOeGA==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
+        borisp@nvidia.com, john.fastabend@gmail.com, maximmi@nvidia.com,
+        tariqt@nvidia.com, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next 0/4] tls: rx: follow-ups to NoPad
+Date:   Fri,  8 Jul 2022 19:52:51 -0700
+Message-Id: <20220709025255.323864-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2 0/6] tls: pad strparser, internal header,
- decrypt_ctx etc.
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165733501536.22629.3596736417274152283.git-patchwork-notify@kernel.org>
-Date:   Sat, 09 Jul 2022 02:50:15 +0000
-References: <20220708010314.1451462-1-kuba@kernel.org>
-In-Reply-To: <20220708010314.1451462-1-kuba@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-        pabeni@redhat.com, borisp@nvidia.com, john.fastabend@gmail.com,
-        maximmi@nvidia.com, tariqt@nvidia.com
 X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -58,38 +52,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+A few fixes for issues spotted by Maxim.
 
-This series was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+Jakub Kicinski (4):
+  tls: fix spelling of MIB
+  tls: rx: add counter for NoPad violations
+  tls: rx: fix the NoPad getsockopt
+  selftests: tls: add test for NoPad getsockopt
 
-On Thu,  7 Jul 2022 18:03:08 -0700 you wrote:
-> A grab bag of non-functional refactoring to make the series
-> which will let us decrypt into a fresh skb smaller.
-> 
-> Patches in this series are not strictly required to get the
-> decryption into a fresh skb going, they are more in the "things
-> which had been annoying me for a while" category.
-> 
-> [...]
+ Documentation/networking/tls.rst  |  4 +++
+ include/uapi/linux/snmp.h         |  3 +-
+ net/tls/tls_main.c                |  9 +++---
+ net/tls/tls_proc.c                |  3 +-
+ net/tls/tls_sw.c                  |  4 ++-
+ tools/testing/selftests/net/tls.c | 51 +++++++++++++++++++++++++++++++
+ 6 files changed, 66 insertions(+), 8 deletions(-)
 
-Here is the summary with links:
-  - [net-next,v2,1/6] strparser: pad sk_skb_cb to avoid straddling cachelines
-    https://git.kernel.org/netdev/net-next/c/2d91ecace661
-  - [net-next,v2,2/6] tls: rx: always allocate max possible aad size for decrypt
-    https://git.kernel.org/netdev/net-next/c/50a07aa53161
-  - [net-next,v2,3/6] tls: rx: wrap decrypt params in a struct
-    https://git.kernel.org/netdev/net-next/c/b89fec54fd61
-  - [net-next,v2,4/6] tls: rx: coalesce exit paths in tls_decrypt_sg()
-    https://git.kernel.org/netdev/net-next/c/03957d84055e
-  - [net-next,v2,5/6] tls: create an internal header
-    https://git.kernel.org/netdev/net-next/c/587903142308
-  - [net-next,v2,6/6] tls: rx: make tls_wait_data() return an recvmsg retcode
-    https://git.kernel.org/netdev/net-next/c/35560b7f06b8
-
-You are awesome, thank you!
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.36.1
 
