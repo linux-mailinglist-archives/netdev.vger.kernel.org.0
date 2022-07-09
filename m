@@ -2,66 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 09E9356CAAF
-	for <lists+netdev@lfdr.de>; Sat,  9 Jul 2022 18:38:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB09B56CB02
+	for <lists+netdev@lfdr.de>; Sat,  9 Jul 2022 20:07:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229515AbiGIQij convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sat, 9 Jul 2022 12:38:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33668 "EHLO
+        id S229478AbiGISHa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Jul 2022 14:07:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229556AbiGIQii (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 Jul 2022 12:38:38 -0400
-Received: from relay4.hostedemail.com (smtprelay0011.hostedemail.com [216.40.44.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7E7EE0E4
-        for <netdev@vger.kernel.org>; Sat,  9 Jul 2022 09:38:36 -0700 (PDT)
-Received: from omf14.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay06.hostedemail.com (Postfix) with ESMTP id 32846353BB;
-        Sat,  9 Jul 2022 16:38:35 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf14.hostedemail.com (Postfix) with ESMTPA id 7B11333;
-        Sat,  9 Jul 2022 16:38:33 +0000 (UTC)
-Message-ID: <3cbbd8c924c2d8105115535de6b9b35b618a6eb6.camel@perches.com>
-Subject: Re: [PATCH] wifi: mvm: fix repeated words in comments
-From:   Joe Perches <joe@perches.com>
-To:     Jilin Yuan <yuanjilin@cdjrlc.com>, gregory.greenman@intel.com,
-        kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, quic_srirrama@quicinc.com
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Sat, 09 Jul 2022 09:38:32 -0700
-In-Reply-To: <20220709141259.60127-1-yuanjilin@cdjrlc.com>
-References: <20220709141259.60127-1-yuanjilin@cdjrlc.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 8BIT
-User-Agent: Evolution 3.44.1-0ubuntu1 
+        with ESMTP id S229456AbiGISH3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 Jul 2022 14:07:29 -0400
+Received: from mail-oa1-x32.google.com (mail-oa1-x32.google.com [IPv6:2001:4860:4864:20::32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97A9F15FDF;
+        Sat,  9 Jul 2022 11:07:25 -0700 (PDT)
+Received: by mail-oa1-x32.google.com with SMTP id 586e51a60fabf-fe023ab520so2351980fac.10;
+        Sat, 09 Jul 2022 11:07:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=fZ2DlAja/+2nCGSdIH4+cPZNDYwaZSWAPaICbiz9AYM=;
+        b=CYPf091AKymWbb5KHYTb7xPPniLdyUxg/MdmhVb2t6cSo5t502Py5cw8HMWXEBjLH1
+         vILDxtLKyCK80TFXiWp571x0dk2oGF/cA1xd+bT117FzNkwLX6S9NdPjCyU0LjYSoxBf
+         eM2kOZ/HqHBUd9EAyd0i39WUQ5t+0t5qE6e0K2P8LxvTNv3QjtgAGUEKzAr9EdBOvMjV
+         I6gsREeYeKWZJZEs0WDRlz/nRvKp8R6LB3SXfoMu4H5AiAdQJFTPSVVGrkI4GXFw3WrY
+         E1AXdtJk/yvwJXT+h30IAWIfMFQRDX6roX6bfBpyXbaa2G2eex0eOqjh2kwF1MsqznH2
+         xogQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fZ2DlAja/+2nCGSdIH4+cPZNDYwaZSWAPaICbiz9AYM=;
+        b=qZbUQ37u0smfy+0seVTeeZE463z68DDolNDsbZFci/bGkrgDJBQhWO6p/WKwNsM+RE
+         jYlGFNWKmMmolDwZFFP6g6mmI1oYG66vFnt8lIJPbhzhl8yamVTvamTJ17VttSOdeE23
+         BNqOeF5TYXmb5lkAs+wCf+veE17uLTTFjPxP/Qakr9iJtzhRpri+kkV/umpJZAYmDbMa
+         crzDcnBvTBGIiSNikeVENE3G1bovWVwfPNs8M/GqgkdZyyXeuIFmgbXnGC9qcnHM9eCF
+         uLzhGMd1QLLgNc5ywIXgW5dxFKNnGNLAi8chKRCVhesV/Urv1B1BndynQp+ilVx1hKbm
+         r2cg==
+X-Gm-Message-State: AJIora8komt8R2kg2WFUe5hDrksTrzbcpzQksZj2I70/R1zBPvvORh1C
+        XgpTvM7myxZN1aj4q7Jo5KsNfHz0ucIyklo6NeFeVrppDic=
+X-Google-Smtp-Source: AGRyM1t02SzdumzFSQRTSRQJ9Jw3RvXoHXRAYYz+j/aYwo7aVDO0Q+6PAbUTzb+Nmvpl8VuNBKo4bUA/7jnhFPAx1x4=
+X-Received: by 2002:a05:6870:5896:b0:e6:6c21:3584 with SMTP id
+ be22-20020a056870589600b000e66c213584mr3398536oab.220.1657390045027; Sat, 09
+ Jul 2022 11:07:25 -0700 (PDT)
 MIME-Version: 1.0
-X-Stat-Signature: c71kasigjg54jxiquqf9dabaiu1qytzz
-X-Rspamd-Server: rspamout07
-X-Rspamd-Queue-Id: 7B11333
-X-Spam-Status: No, score=-0.9 required=5.0 tests=BAYES_00,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY autolearn=no
-        autolearn_force=no version=3.4.6
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX188vpeTFgqpyYLvMefLfVV9ZatXLOnW/XQ=
-X-HE-Tag: 1657384713-908630
+References: <20220708020223.4234-1-liubo03@inspur.com>
+In-Reply-To: <20220708020223.4234-1-liubo03@inspur.com>
+From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
+Date:   Sat, 9 Jul 2022 21:07:14 +0300
+Message-ID: <CAHNKnsQRCNowC+MSfGYNi4bmVhg5O305+hwmrWjgbesoWp8UgA@mail.gmail.com>
+Subject: Re: [PATCH] net: wwan: call ida_free when device_register fails
+To:     Bo Liu <liubo03@inspur.com>
+Cc:     Loic Poulain <loic.poulain@linaro.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        David Miller <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 2022-07-09 at 22:12 +0800, Jilin Yuan wrote:
->  Delete the redundant word 'to'.
->  Delete the redundant word 'the'.
-[]
-> diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/d3.c b/drivers/net/wireless/intel/iwlwifi/mvm/d3.c
-[]
-> @@ -251,7 +251,7 @@ static void iwl_mvm_wowlan_get_rsc_tsc_data(struct ieee80211_hw *hw,
->  
->  		/*
->  		 * For non-QoS this relies on the fact that both the uCode and
-> -		 * mac80211 use TID 0 (as they need to to avoid replay attacks)
-> +		 * mac80211 use TID 0 (as they need to avoid replay attacks)
+On Fri, Jul 8, 2022 at 5:03 AM Bo Liu <liubo03@inspur.com> wrote:
+> when device_register() fails, we should call ida_free().
+>
+> Signed-off-by: Bo Liu <liubo03@inspur.com>
 
-Maybe ok as is, could be "as required to" or "as they must to"
-
+Acked-by: Sergey Ryazanov <ryazanov.s.a@gmail.com>
