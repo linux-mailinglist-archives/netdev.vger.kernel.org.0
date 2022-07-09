@@ -2,51 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BB31156C63F
-	for <lists+netdev@lfdr.de>; Sat,  9 Jul 2022 05:20:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9052A56C665
+	for <lists+netdev@lfdr.de>; Sat,  9 Jul 2022 05:29:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229606AbiGIDUd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jul 2022 23:20:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50860 "EHLO
+        id S229513AbiGID35 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jul 2022 23:29:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229554AbiGIDU0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 23:20:26 -0400
+        with ESMTP id S229453AbiGID34 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 23:29:56 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7EDF66B84
-        for <netdev@vger.kernel.org>; Fri,  8 Jul 2022 20:20:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 665AC68708
+        for <netdev@vger.kernel.org>; Fri,  8 Jul 2022 20:29:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 27DB2B82A1D
-        for <netdev@vger.kernel.org>; Sat,  9 Jul 2022 03:20:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id A454BC341C0;
-        Sat,  9 Jul 2022 03:20:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 21ACAB82A1D
+        for <netdev@vger.kernel.org>; Sat,  9 Jul 2022 03:29:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AFEFC341C0;
+        Sat,  9 Jul 2022 03:29:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657336813;
-        bh=oauOv3MeyRe4k/3gdp5W8Zl5lQAw1rQyIVWOdtJTnSI=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=hXeDfo8ZzdYxxAXuK6CximgQUlvjj7qIWFAslHqGxGsDjr4bCJZbg/YdCcS+Iq6Se
-         4/Y7X4T/YTEVFX3dVad0oi7ELlNh/2SWcs5rVRi+8GVJzrLoE07KrfFtLQqGy04oyC
-         ZLgo4tDpDEv1XOrxNNG1TYLzyfUmjdFiscJbXiD3I3KLffr9iV01FimDqO0DdggDX9
-         zCGOnzf/vH0oYtQ5Bl38cOxYLdXvoTMtgC4v1WQga3h2mohoBZve5hwZFbJY4j12mN
-         n8FlWx5+Ymqhmq1JHtAVt9SceWLv+b0W+gH4ao1MknFhhl/u4ervJz7i0Pp54DbTHI
-         QZd7huwEVmCzA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 89639E45BDB;
-        Sat,  9 Jul 2022 03:20:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1657337392;
+        bh=81I0mrm4c4wFdVLwTX16BCuUn0sQG0aGEU8IGc0gR3s=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ISTefVyIYIb2X+ZtN3klor+e7N1zO+tQQn4mWOR5WjRLSw1yMZbhgoRXgehXqtY91
+         7jfJmJMtzOZZnUizHXLlU9lqYnbMl5CthtYzkY3RVhuFp3lF1ttFH7rRpFpdCFr+yY
+         EWIgEi0KCHQNMd16NjRMV1a/i5QybughBrg6xeX3jIflYWAC9XHoFr00LxKUDLDdtA
+         ZokAirXKLwTM4QWbPX0O9cJWuRJ2liWT3J/zhSKjNn7tjMT/rOFuawrtzrIHo1B8C1
+         pub3E+ebMfPtk3ePh42G0Bdy87mHLbFd6KUF0nIUkOx2JXaUMaIA+M37CrsukRhetZ
+         nqAIHycmIKdRA==
+Date:   Fri, 8 Jul 2022 20:29:51 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     David Lamparter <equinox@diac24.net>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        David Ahern <dsahern@kernel.org>
+Subject: Re: [PATCH net-next v5] net: ip6mr: add RTM_GETROUTE netlink op
+Message-ID: <20220708202951.46d3454a@kernel.org>
+In-Reply-To: <20220707093336.214658-1-equinox@diac24.net>
+References: <20220707093336.214658-1-equinox@diac24.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2] Documentation: add a description for
- net.core.high_order_alloc_disable
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165733681355.2987.14809070979721350364.git-patchwork-notify@kernel.org>
-Date:   Sat, 09 Jul 2022 03:20:13 +0000
-References: <20220707080245.180525-1-atenart@kernel.org>
-In-Reply-To: <20220707080245.180525-1-atenart@kernel.org>
-To:     Antoine Tenart <atenart@kernel.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, netdev@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -57,29 +55,102 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Few more nit picks, sorry..
 
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+On Thu,  7 Jul 2022 11:33:36 +0200 David Lamparter wrote:
+> +static int ip6mr_rtm_getroute(struct sk_buff *in_skb, struct nlmsghdr *nlh,
+> +			      struct netlink_ext_ack *extack)
+> +{
+> +	struct net *net = sock_net(in_skb->sk);
+> +	struct in6_addr src = {}, grp = {};
+> +	struct nlattr *tb[RTA_MAX + 1];
+> +	struct sk_buff *skb = NULL;
 
-On Thu,  7 Jul 2022 10:02:45 +0200 you wrote:
-> A description is missing for the net.core.high_order_alloc_disable
-> option in admin-guide/sysctl/net.rst ; add it. The above sysctl option
-> was introduced by commit ce27ec60648d ("net: add high_order_alloc_disable
-> sysctl/static key").
-> 
-> Thanks to Eric for running again the benchmark cited in the above
-> commit, showing this knob is now mostly of historical importance.
-> 
-> [...]
+Should be unnecessary if the code is right, let the compiler warn us
+about uninitialized variables.
 
-Here is the summary with links:
-  - [net-next,v2] Documentation: add a description for net.core.high_order_alloc_disable
-    https://git.kernel.org/netdev/net-next/c/40ad0a52ef5d
+> +	struct mfc6_cache *cache;
+> +	struct mr_table *mrt;
+> +	u32 tableid;
+> +	int err;
+> +
+> +	err = ip6mr_rtm_valid_getroute_req(in_skb, nlh, tb, extack);
+> +	if (err < 0)
+> +		goto errout;
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Can we:
 
+		return err;
 
+? I don't know where the preference for jumping to the return statement
+came from, old compilers? someone's "gut feeling"?
+
+> +	if (tb[RTA_SRC])
+> +		src = nla_get_in6_addr(tb[RTA_SRC]);
+> +	if (tb[RTA_DST])
+> +		grp = nla_get_in6_addr(tb[RTA_DST]);
+> +	tableid = tb[RTA_TABLE] ? nla_get_u32(tb[RTA_TABLE]) : 0;
+> +
+> +	mrt = ip6mr_get_table(net, tableid ? tableid : RT_TABLE_DEFAULT);
+
+	tableid ? : RT_TABLE_DEFAULT
+
+or
+
+	tableid ?: RT_TABLE_DEFAULT
+
+the abbreviated version of the ternary operator is used quite commonly
+in the kernel.
+
+> +	if (!mrt) {
+> +		NL_SET_ERR_MSG_MOD(extack, "MR table does not exist");
+> +		err = -ENOENT;
+> +		goto errout_free;
+
+Ditto, just return, if not goto errout; there's nothing to free.
+
+> +	}
+> +
+> +	/* entries are added/deleted only under RTNL */
+> +	rcu_read_lock();
+> +	cache = ip6mr_cache_find(mrt, &src, &grp);
+> +	rcu_read_unlock();
+> +	if (!cache) {
+> +		NL_SET_ERR_MSG_MOD(extack, "MR cache entry not found");
+> +		err = -ENOENT;
+> +		goto errout_free;
+> +	}
+> +
+> +	skb = nlmsg_new(mr6_msgsize(false, mrt->maxvif), GFP_KERNEL);
+> +	if (!skb) {
+> +		err = -ENOBUFS;
+> +		goto errout_free;
+> +	}
+> +
+> +	err = ip6mr_fill_mroute(mrt, skb, NETLINK_CB(in_skb).portid,
+> +				nlh->nlmsg_seq, cache, RTM_NEWROUTE, 0);
+> +	if (err < 0)
+> +		goto errout_free;
+
+now this is the only case which actually needs to free the skb
+
+> +
+> +	err = rtnl_unicast(skb, net, NETLINK_CB(in_skb).portid);
+> +
+> +errout:
+> +	return err;
+
+when the label is gone you can:
+
+	return rtnl_unicast(...
+
+directly.
+
+> +
+> +errout_free:
+> +	kfree_skb(skb);
+> +	goto errout;
+
+and no need to do the funky backwards jump here either, IMO
+
+> +}
