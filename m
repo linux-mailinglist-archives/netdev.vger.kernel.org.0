@@ -2,75 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8476356C67E
-	for <lists+netdev@lfdr.de>; Sat,  9 Jul 2022 05:41:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F32F856C731
+	for <lists+netdev@lfdr.de>; Sat,  9 Jul 2022 06:58:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229560AbiGIDl5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jul 2022 23:41:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35790 "EHLO
+        id S229509AbiGIE6z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Jul 2022 00:58:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbiGIDl4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 23:41:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8B7B820D9;
-        Fri,  8 Jul 2022 20:41:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 51EF46273C;
-        Sat,  9 Jul 2022 03:41:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4410BC341C0;
-        Sat,  9 Jul 2022 03:41:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657338114;
-        bh=JFaD4EhWcIg0SjtZJljxbEn4FacUlXxE34nZHrfBjrg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=kKiqxNcJLXQlr63Of5uWK6Xq3IpBPkknAcTRstoLKIfD+2ufUhWNixIA40Gr+4Zs+
-         7J/OM/coxOD1ZLa4p9QXjByCBbVyIsySgE7O98sIJz1MyQQ3kfljq2qOh6VgJ4l73z
-         QoqlVLxbC5nJqlrhkJBA9RC2EftBT6R5siKeKVUSHBFfB2SH3aEImhR9bHDh3Jv4rz
-         8I/JEFcx++gdpuWPc6z/PN4bF/r//kHfBJHUrLqPlJEf2qnZl9slgISsp2B/ZVyxp5
-         8s/klcKnAvSMOQqXUiOFmlDEW0APXlqzkv/6Ww2uBgEWV16YCXwKs6IybBxgVpL8fQ
-         zQedhzJRckqgA==
-Date:   Fri, 8 Jul 2022 20:41:53 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jonathan Toppins <jtoppins@redhat.com>
-Cc:     netdev@vger.kernel.org, razor@blackwall.org,
-        Long Xin <lxin@redhat.com>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH net-next v4 1/2] bond: add mac filter option for
- balance-xor
-Message-ID: <20220708204153.0a4ce4ab@kernel.org>
-In-Reply-To: <1755bbaad9c3792ce22b8fa4906bb6051968f29e.1657302266.git.jtoppins@redhat.com>
-References: <1755bbaad9c3792ce22b8fa4906bb6051968f29e.1657302266.git.jtoppins@redhat.com>
+        with ESMTP id S229547AbiGIE6s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 Jul 2022 00:58:48 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A81D3F328
+        for <netdev@vger.kernel.org>; Fri,  8 Jul 2022 21:58:45 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id y8so687925eda.3
+        for <netdev@vger.kernel.org>; Fri, 08 Jul 2022 21:58:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=NxdqlDR1KlI4EtAPuQyvzTscyD2gFnPQL9fvtT7tI1M=;
+        b=19Tu+/l8OKE7bc7WDDnzMwsw6V9ROqjHB1V7jePYwxeBqqCsBlsZZ2S3uqCsngWRVq
+         qCLA0gDnaAXo9BUL/eAkVtuiMAP4gs/T80BKtIgV2hQm5P1rVRcBSyA8PxVXOtdgmhL+
+         yPFlgxEHtNWBgKwsTfIo8MXQDeeF3L0BAoYUVUDwqixTSEMatHOCqqoIiheQ8RFeK6lR
+         Zv76MSqAm0MI3sycgP7SS5Z9uvccLb+roFTqmkfBhlHVx0lBx8n9kdEfPBG3wPG9V4WE
+         atI04TNpZCkYbdY5FQKb6I0RzJpfJZsdJvAH68bzO2o6EjDRTwPUxZf8AVPlasWEfKYW
+         YMvg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=NxdqlDR1KlI4EtAPuQyvzTscyD2gFnPQL9fvtT7tI1M=;
+        b=5RqeyrwRlA8xP1SEhuB2i7ABu5A76ZFKcimCWWNZV0nfRO2s1GArHiC9OWBhmB7lCs
+         LuljQ6U2NaO5mZ9UJ3QRvrqPtG6Vv/HLYVoen5yNBywPFpcSmdn+/kib2fPuxcokSJNb
+         ty15be+zv1xBjj8nI5iFaPWYReoQZc02Na2+DF2vdaQ1QU9I3+a7mgMl5VUBJcTLnZVr
+         iLjxrnydyhOSfLqunTn7lIppEMBDamgLxkYV7SMf0UjVAHyo17lGUiGd4MR26q7iCSbw
+         wf0Y/2QEwTouyC63Yajl7RpbEy3QG0TEzs4+fw/76tcjnl5+gT14UvyYa+XGsiIG7VLy
+         Y2RQ==
+X-Gm-Message-State: AJIora/AHpMBTUa0XkY4n6OaXl9A/1iXaWxZLZ89VzYc8O2Bat+uzZvX
+        N9Uigi0soAUaSTwZsR2PqXBiSg==
+X-Google-Smtp-Source: AGRyM1tETDH4EGlzBNU/kLTDJp2hq3tUoBI36teo6Wv7URsZkjfxQdz0qpVaDr0cphqKOtEeF9nWYg==
+X-Received: by 2002:a05:6402:12d8:b0:43a:6a70:9039 with SMTP id k24-20020a05640212d800b0043a6a709039mr9243093edx.379.1657342724162;
+        Fri, 08 Jul 2022 21:58:44 -0700 (PDT)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id y26-20020a056402135a00b00435a742e350sm347580edw.75.2022.07.08.21.58.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Jul 2022 21:58:43 -0700 (PDT)
+Date:   Sat, 9 Jul 2022 06:58:42 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, pabeni@redhat.com,
+        edumazet@google.com, mlxsw@nvidia.com, saeedm@nvidia.com,
+        moshe@nvidia.com
+Subject: Re: [patch net-next v3 0/3] net: devlink: devl_* cosmetic fixes
+Message-ID: <YskLAocOeYsZVQCJ@nanopsycho>
+References: <20220708074808.2191479-1-jiri@resnulli.us>
+ <20220708151717.4fe3487d@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220708151717.4fe3487d@kernel.org>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri,  8 Jul 2022 14:41:56 -0400 Jonathan Toppins wrote:
-> Implement a MAC filter that prevents duplicate frame delivery when
-> handling BUM traffic. This attempts to partially replicate OvS SLB
-> Bonding[1] like functionality without requiring significant change
-> in the Linux bridging code.
+Sat, Jul 09, 2022 at 12:17:17AM CEST, kuba@kernel.org wrote:
+>On Fri,  8 Jul 2022 09:48:02 +0200 Jiri Pirko wrote:
+>> Hi. This patches just fixes some small cosmetic issues of devl_* related
+>> functions which I found on the way.
+>
+>This version does not apply but lgtm:
 
-You can't post the user space patches in the same series, patchwork
-will think they are supposed to be applied to the same tree. Post them
-separately please, they'll land on the list next to each other if you
-send them at the same time, that's good enough.
+Okay, will check, fix, repost.
 
-https://www.kernel.org/doc/html/latest/process/maintainer-netdev.html#how-do-i-post-corresponding-changes-to-user-space-components
+>
+>Acked-by: Jakub Kicinski <kuba@kernel.org>
+
+thx!
