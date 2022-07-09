@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4480056C670
-	for <lists+netdev@lfdr.de>; Sat,  9 Jul 2022 05:39:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C55C656C676
+	for <lists+netdev@lfdr.de>; Sat,  9 Jul 2022 05:40:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229513AbiGIDjO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jul 2022 23:39:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33400 "EHLO
+        id S229590AbiGIDkW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jul 2022 23:40:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229476AbiGIDjM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 23:39:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 097FC820D9;
-        Fri,  8 Jul 2022 20:39:11 -0700 (PDT)
+        with ESMTP id S229564AbiGIDkS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jul 2022 23:40:18 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15A6D820DA
+        for <netdev@vger.kernel.org>; Fri,  8 Jul 2022 20:40:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4FCABB82A4F;
-        Sat,  9 Jul 2022 03:39:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EAC2C341C0;
-        Sat,  9 Jul 2022 03:39:08 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 8499ACE29A7
+        for <netdev@vger.kernel.org>; Sat,  9 Jul 2022 03:40:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id C5177C341D1;
+        Sat,  9 Jul 2022 03:40:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657337948;
-        bh=XWVQ/Q6W3I3bvxKqfJpupU4xGnWGQM+x9j/rteGJzrc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=slEcjB1j+8CrEvsCLvwTmy1AWPlIYyAtooUq5uQJOQCy1YHCeJn8aZZLu1R7fUiO+
-         bM1bkhRj2Y/6WVuHI8W9CyFLEZyaAtvvwQeLmLg4iAhMoAmtTvuPeShmSe2vnn5Eui
-         c4wqF17CZvDgNeMiuX5Ri4OEUN9UCLcjRGltONtRFqNO1+a+2KfAXzbJSyw6rMe+El
-         jaRA5o5eWAghYX7FbkIDMNO05rfoaDPXi7B6ipRexDp8qLAc1eaNLxWnOj+mtx5f3S
-         nmN2v6+q+7SwC51vY4yjZB2g6AoEu/gRB6f9IGXYkzYZm/lENRSDffYDseiUVcVy0C
-         qdIV3Yp9lEbXg==
-Date:   Fri, 8 Jul 2022 20:39:07 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Oleksandr Mazur <oleksandr.mazur@plvision.eu>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        tchornyi@marvell.com, davem@davemloft.net, edumazet@google.com,
-        pabeni@redhat.com, lkp@intel.com,
-        Yevhen Orlov <yevhen.orlov@plvision.eu>
-Subject: Re: [PATCH V4 net-next 4/4] net: marvell: prestera: implement
- software MDB entries allocation
-Message-ID: <20220708203907.253df7a9@kernel.org>
-In-Reply-To: <20220708174324.18862-5-oleksandr.mazur@plvision.eu>
-References: <20220708174324.18862-1-oleksandr.mazur@plvision.eu>
-        <20220708174324.18862-5-oleksandr.mazur@plvision.eu>
+        s=k20201202; t=1657338014;
+        bh=IG0+GERQ4uT02bt+AvZZH1fmdWihs2XjCcOMHOT0QAU=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=r3hGr8NchhzqJXPd4MaiZs1y0GugCqYnA6dejie5AIV3KZoU52c8XiLspTZCBynjt
+         QXNZzzdXWcS/Q/CyTXIlFBRaWUYNBrmg8m549lHFS5qMtMLnrdqNM37zzpcvDax/VV
+         d7dMXNF+SxcmNiwe1A66H6niurmKt4bbveVFwlxus4XgTvTvEeT1IhLbc7/1Ze4b3n
+         DqtbgpPh53GDKjJH3ctp5b6ng26NMDOQeB/dudsjZloMtckkJedP4mNRR5VN+6r0Hu
+         KzFnLa3A0ppO595sddAC14Xfd2Us8YKuk/PQHzYjzuCnAz5lQ2QK3HOfWF3TBPdI4k
+         cDv0+ACv2GstA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B1690E45BE1;
+        Sat,  9 Jul 2022 03:40:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next] net: phylink: fix SGMII inband autoneg enable
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165733801472.11477.5753843751071771176.git-patchwork-notify@kernel.org>
+Date:   Sat, 09 Jul 2022 03:40:14 +0000
+References: <E1o9Ng2-005Qbe-3H@rmk-PC.armlinux.org.uk>
+In-Reply-To: <E1o9Ng2-005Qbe-3H@rmk-PC.armlinux.org.uk>
+To:     Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Cc:     andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
+        netdev@vger.kernel.org, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, robert.hancock@calian.com
 X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -57,36 +57,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri,  8 Jul 2022 20:43:24 +0300 Oleksandr Mazur wrote:
-> +static int
-> +prestera_mdb_port_addr_obj_add(const struct switchdev_obj_port_mdb *mdb);
-> +static int
-> +prestera_mdb_port_addr_obj_del(struct prestera_port *port,
-> +			       const struct switchdev_obj_port_mdb *mdb);
-> +
-> +static void
-> +prestera_mdb_flush_bridge_port(struct prestera_bridge_port *br_port);
-> +static int
-> +prestera_mdb_port_add(struct prestera_mdb_entry *br_mdb,
-> +		      struct net_device *orig_dev,
-> +		      const unsigned char addr[ETH_ALEN], u16 vid);
-> +
-> +static void
-> +prestera_br_mdb_entry_put(struct prestera_br_mdb_entry *br_mdb_entry);
-> +static int prestera_br_mdb_mc_enable_sync(struct prestera_bridge *br_dev);
-> +static int prestera_br_mdb_sync(struct prestera_bridge *br_dev);
-> +static int prestera_br_mdb_port_add(struct prestera_br_mdb_entry *br_mdb,
-> +				    struct prestera_bridge_port *br_port);
-> +static void
-> +prestera_mdb_port_del(struct prestera_mdb_entry *mdb,
-> +		      struct net_device *orig_dev);
+Hello:
 
-No forward declarations in the kernel, unless the there is a circular
-dependency. You should be able to just order the functions correctly.
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-> +	list_for_each_entry(br_mdb, &br_dev->br_mdb_entry_list,
-> +			    br_mdb_entry_node)
-> +		if ((err = prestera_mdb_enable_set(br_mdb, enable)))
-> +			return err;
+On Thu, 07 Jul 2022 10:20:02 +0100 you wrote:
+> When we are operating in SGMII inband mode, it implies that there is a
+> PHY connected, and the ethtool advertisement for autoneg applies to
+> the PHY, not the SGMII link. When in 1000base-X mode, then this applies
+> to the 802.3z link and needs to be applied to the PCS.
+> 
+> Fix this.
+> 
+> [...]
 
-Like checkpatch says, no assignments in the if statements.
+Here is the summary with links:
+  - [net-next] net: phylink: fix SGMII inband autoneg enable
+    https://git.kernel.org/netdev/net-next/c/6d1ce9c03880
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
