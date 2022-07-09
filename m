@@ -2,70 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5110856C955
-	for <lists+netdev@lfdr.de>; Sat,  9 Jul 2022 14:09:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 989F956C961
+	for <lists+netdev@lfdr.de>; Sat,  9 Jul 2022 14:33:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229477AbiGIMJP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Jul 2022 08:09:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38150 "EHLO
+        id S229478AbiGIMdQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Jul 2022 08:33:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229448AbiGIMJO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 Jul 2022 08:09:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD762371BF;
-        Sat,  9 Jul 2022 05:09:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8D5C3B819D3;
-        Sat,  9 Jul 2022 12:09:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23274C3411C;
-        Sat,  9 Jul 2022 12:09:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657368550;
-        bh=YO9kouytDckeiNed5/PCbASz81pBf9NT+av1kb0cQ1g=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=mPO8bNZxLY9r7WrCyVYilLh1vks62Uiw++D7pq2dWREbVaf+Jr+qUGtPD8UTZfnpZ
-         a0EO3Huvk8UlObsL7KZvOWrJfbuQrzbd4fEpwAm4odVRmk4h3nygcu16dwChQKJGmI
-         TkexGG9zpMyMDXpmwXkerfGhcZZLO2hZUNYaeHmzbND9XvDbI1aaiEUkgqrrV9edBs
-         QQYXdsiiGdlbNcmzKQX2NlYr1IbPcZWlQjCqGRQn0xjJJfEJJlDmlveGR/83yhA3Fz
-         TKzguVd5e1EQBtIRs+xmBGdBgcU0vH7VcYBBV4GEQ+bUEgOCiWrOKu9Q7PDAJI2t6L
-         kKM+/GVUvBZHg==
-Received: by pali.im (Postfix)
-        id 18984AFA; Sat,  9 Jul 2022 14:09:07 +0200 (CEST)
-Date:   Sat, 9 Jul 2022 14:09:06 +0200
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Guillaume Nault <gnault@redhat.com>
-Cc:     James Carlson <carlsonj@workingcode.com>,
-        Chris Fowler <cfowler@outpostsentinel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paul Mackerras <paulus@samba.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        "linux-ppp@vger.kernel.org" <linux-ppp@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] ppp: Add rtnl attribute IFLA_PPP_UNIT_ID for specifying
- ppp unit id
-Message-ID: <20220709120906.ymkhn5diywadgrka@pali>
-References: <20210811173811.GE15488@pc-32.home>
- <20210811180401.owgmie36ydx62iep@pali>
- <20210812092847.GB3525@pc-23.home>
- <20210812134845.npj3m3vzkrmhx6uy@pali>
- <20210812182645.GA10725@pc-23.home>
- <20210812190440.fknfthdk3mazm6px@pali>
- <20210816161114.GA3611@pc-32.home>
- <20210816162355.7ssd53lrpclfvuiz@pali>
- <20210817160525.GA20616@pc-32.home>
- <20210817162155.idyfy53qbxcsf2ga@pali>
+        with ESMTP id S229379AbiGIMdP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 Jul 2022 08:33:15 -0400
+X-Greylist: delayed 74571 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 09 Jul 2022 05:33:09 PDT
+Received: from smtpbg.qq.com (unknown [43.155.67.158])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF87E17E03;
+        Sat,  9 Jul 2022 05:33:09 -0700 (PDT)
+X-QQ-mid: bizesmtp82t1657369958tkb4jeu2
+Received: from localhost.localdomain ( [182.148.15.109])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Sat, 09 Jul 2022 20:32:15 +0800 (CST)
+X-QQ-SSF: 01000000002000B0C000B00A0000000
+X-QQ-FEAT: 2y6l/C9CgvuTB3CSaiaIXWePfVtVmlUFyEU2Pp2+wmActmh89r3aVOCDl9kXP
+        zketmaxcnJ4HNXno09F9ppO8I5OKkaXYI/6TIcldsYNiJc25Yv1IOAXA+snUC27qdhna0xf
+        uJe/PFdEnVZZ7w+UaQI2hVpkdIZ8Bf1e/v+L62EjPxiSTbEEBXW1ucUoQSwXs5xsJ3IqSYv
+        yrnFyp9LSe6bTtSCKFvhgX+UXm2UyJ8/MQuYg/9Arhnn+KIB7cXako4isE5c2fjS8p7pXvV
+        jdghPMVHAbw0Iai5XQcZ6uorhrkn+a6PxiGFrm3jXI/Eb00clCuWIkZkltmCqt4fJSunPxA
+        kviCXfJVhxtE8nUXNz7MNtG5SDjIQ==
+X-QQ-GoodBg: 0
+From:   Jilin Yuan <yuanjilin@cdjrlc.com>
+To:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jilin Yuan <yuanjilin@cdjrlc.com>
+Subject: [PATCH] wifi: ath6kl:: fix repeated words in comments
+Date:   Sat,  9 Jul 2022 20:32:08 +0800
+Message-Id: <20220709123208.41736-1-yuanjilin@cdjrlc.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210817162155.idyfy53qbxcsf2ga@pali>
-User-Agent: NeoMutt/20180716
-X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,RDNS_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,T_SPF_HELO_TEMPERROR autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -73,41 +49,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tuesday 17 August 2021 18:21:55 Pali Rohár wrote:
-> On Tuesday 17 August 2021 18:05:25 Guillaume Nault wrote:
-> > On Mon, Aug 16, 2021 at 06:23:55PM +0200, Pali Rohár wrote:
-> > > On Monday 16 August 2021 18:11:14 Guillaume Nault wrote:
-> > > > Do you have plans for adding netlink support to pppd? If so, is the
-> > > > project ready to accept such code?
-> > > 
-> > > Yes, I have already some WIP code and I'm planning to send a pull
-> > > request to pppd on github for it. I guess that it could be accepted,
-> > 
-> > I guess you can easily use the netlink api for cases where the "unit"
-> > option isn't specified and fall back to the ioctl api when it is. If
-> > all goes well, then we can extend the netlink api to accept a unit id.
-> > 
-> > But what about the lack of netlink feedback about the created
-> > interface? Are you restricted to use netlink only when the "ifname"
-> > option is provided?
-> 
-> Exactly, this is how I wrote my WIP code...
+ Delete the redundant word 'the'.
+ Delete the redundant word 'of'.
 
-Sorry for a long delay (I forgot about it). Now I created pull request
-for pppd https://github.com/ppp-project/ppp/pull/354 which adds support
-for creating ppp interface via rtnetlink. rtnetlink is used only when
-ppp unit id was not provided and interface name was provided.
+Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
+---
+ drivers/net/wireless/ath/ath6kl/hif.h  | 2 +-
+ drivers/net/wireless/ath/ath6kl/sdio.c | 2 +-
+ drivers/net/wireless/ath/ath6kl/wmi.h  | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
 
-> > > specially if there still would be backward compatibility via ioctl for
-> > > kernels which do not support rtnl API.
-> > 
-> > Indeed, I'd expect keeping compatiblitity with old kernels that only
-> > have the ioctl api to be a must (but I have no experience contributing
-> > to the pppd project).
-> > 
-> > > One of the argument which can be
-> > > used why rtnl API is better, is fixing issue: atomic creating of
-> > > interface with specific name.
-> > 
-> > Yes, that looks useful.
-> > 
+diff --git a/drivers/net/wireless/ath/ath6kl/hif.h b/drivers/net/wireless/ath/ath6kl/hif.h
+index f9d3f3a5edfe..ba16b98c872d 100644
+--- a/drivers/net/wireless/ath/ath6kl/hif.h
++++ b/drivers/net/wireless/ath/ath6kl/hif.h
+@@ -92,7 +92,7 @@ struct bus_request {
+  *     emode - This indicates the whether the command is to be executed in a
+  *             blocking or non-blocking fashion (HIF_SYNCHRONOUS/
+  *             HIF_ASYNCHRONOUS). The read/write data paths in HTC have been
+- *             implemented using the asynchronous mode allowing the the bus
++ *             implemented using the asynchronous mode allowing the bus
+  *             driver to indicate the completion of operation through the
+  *             registered callback routine. The requirement primarily comes
+  *             from the contexts these operations get called from (a driver's
+diff --git a/drivers/net/wireless/ath/ath6kl/sdio.c b/drivers/net/wireless/ath/ath6kl/sdio.c
+index 6b51a2dceadc..8a43c48ec1cf 100644
+--- a/drivers/net/wireless/ath/ath6kl/sdio.c
++++ b/drivers/net/wireless/ath/ath6kl/sdio.c
+@@ -1185,7 +1185,7 @@ static int ath6kl_sdio_bmi_read(struct ath6kl *ar, u8 *buf, u32 len)
+ 	 *        Wait for first 4 bytes to be in FIFO
+ 	 *        If CONSERVATIVE_BMI_READ is enabled, also wait for
+ 	 *        a BMI command credit, which indicates that the ENTIRE
+-	 *        response is available in the the FIFO
++	 *        response is available in the FIFO
+ 	 *
+ 	 *  CASE 3: length > 128
+ 	 *        Wait for the first 4 bytes to be in FIFO
+diff --git a/drivers/net/wireless/ath/ath6kl/wmi.h b/drivers/net/wireless/ath/ath6kl/wmi.h
+index 672014973cee..7eeb7ea68518 100644
+--- a/drivers/net/wireless/ath/ath6kl/wmi.h
++++ b/drivers/net/wireless/ath/ath6kl/wmi.h
+@@ -698,7 +698,7 @@ enum auth_mode {
+ 
+ /*
+  * NB: these values are ordered carefully; there are lots of
+- * of implications in any reordering.  In particular beware
++ * implications in any reordering.  In particular beware
+  * that 4 is not used to avoid conflicting with IEEE80211_F_PRIVACY.
+  */
+ #define ATH6KL_CIPHER_WEP            0
+-- 
+2.36.1
+
