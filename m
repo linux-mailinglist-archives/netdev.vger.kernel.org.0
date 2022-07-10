@@ -2,172 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 27FF656CEE0
-	for <lists+netdev@lfdr.de>; Sun, 10 Jul 2022 13:53:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 376DE56CF00
+	for <lists+netdev@lfdr.de>; Sun, 10 Jul 2022 14:20:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229564AbiGJLxt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Jul 2022 07:53:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41066 "EHLO
+        id S229561AbiGJMUn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Jul 2022 08:20:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229650AbiGJLxd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Jul 2022 07:53:33 -0400
-Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 924431C8;
-        Sun, 10 Jul 2022 04:53:29 -0700 (PDT)
-X-IronPort-AV: E=Sophos;i="5.92,260,1650898800"; 
-   d="scan'208";a="127337621"
-Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie6.idc.renesas.com with ESMTP; 10 Jul 2022 20:53:28 +0900
-Received: from localhost.localdomain (unknown [10.226.92.4])
-        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 91BEC40071F4;
-        Sun, 10 Jul 2022 20:53:24 +0900 (JST)
-From:   Biju Das <biju.das.jz@bp.renesas.com>
-To:     Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
+        with ESMTP id S229497AbiGJMUm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Jul 2022 08:20:42 -0400
+Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-eopbgr60115.outbound.protection.outlook.com [40.107.6.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CCC1B7DE;
+        Sun, 10 Jul 2022 05:20:40 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=l1YYm7r5QCPFIAbVNvlOyZKWrMuhVJySMn/jMGrnndkWRWvjYBXrpeiQjF+iV4ITeVKxv+KLAndzBEIRLlfxuTj8h/4y9qItYZJl5degbBjCcG53IojQuKvXEJiX3LAGBqigVHAsKDgoMLsKcZNooSFuQsQKbT3UdRkbNisAYY+Kw6ZdS8aseVnE33v1U5YumHnK38l7KMWqK1rFmNgfGy5VYsTFO1TMJsVLmZF5m85t5z+X/I9u3lDDh/P1Dj/CRYgo7Na+0VTHpfkXV89cSBt/yIa8gBT1grGZLO3M2aEwSAgRQb+uU/R32waE3SKDYW6bPWlEb5pZo5A/h8nZDg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=jojp9lvjTrOqKCBMefo5IOSIkAjrxVXikCJW972bUGA=;
+ b=nVrDnrbWgTLbhZ09T0ctcm6Y+rJl167DDS8wvATNm68SsXsf03LhXIce0rg9uxaqu1GdVxJem8eTC0eK6aP32rAjzSFdoaIAwM7qdEBZLuTh7QRlTbYilu6GTMq6bObk0QmUYbqSgGu+coaW5KNCwf68HqyTHct9UDQqZzTpGc7/CtMYEYd7gRrob/tczasFZVS0qTgNjO3QXSm5HwSmqB59OxsHONRnkakPLHggPgZvYBlZC1qKvkcQ9FYLgTukOgo6ChfXUdhdwKWsIH6FxOU/KDNhpXrGhhFzIy9zuGnxm5fhtOTZRO45vy4B6Kr/yUyD3kZCPM7P0HUSpuOhog==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
+ dkim=pass header.d=plvision.eu; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jojp9lvjTrOqKCBMefo5IOSIkAjrxVXikCJW972bUGA=;
+ b=YKhgcoRZKnc4W2JzKOKacv+W1BThCErRkzd4ddixaf6ePCdooU8T2e5e6W/pritIoU9tJuc8L2aZTrHvVLr8AIr5Z1xAJqLqruc8DhFbQM4RnTUIgcB/OkhzRE50ZPDO0sKWn0AvnROWNxoUxKpxP/ZRYSvoSwz915DI+BZJRVM=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=plvision.eu;
+Received: from PAXP190MB1789.EURP190.PROD.OUTLOOK.COM (2603:10a6:102:283::6)
+ by AM5P190MB0276.EURP190.PROD.OUTLOOK.COM (2603:10a6:206:21::31) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.20; Sun, 10 Jul
+ 2022 12:20:37 +0000
+Received: from PAXP190MB1789.EURP190.PROD.OUTLOOK.COM
+ ([fe80::d521:ba19:29db:e42d]) by PAXP190MB1789.EURP190.PROD.OUTLOOK.COM
+ ([fe80::d521:ba19:29db:e42d%3]) with mapi id 15.20.5417.025; Sun, 10 Jul 2022
+ 12:20:36 +0000
+From:   Yevhen Orlov <yevhen.orlov@plvision.eu>
+To:     netdev@vger.kernel.org
+Cc:     Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
+        Taras Chornyi <taras.chornyi@plvision.eu>,
+        Mickey Rachamim <mickeyr@marvell.com>,
+        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
+        Yevhen Orlov <yevhen.orlov@plvision.eu>,
+        Taras Chornyi <tchornyi@marvell.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Biju Das <biju.das.jz@bp.renesas.com>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>,
-        linux-renesas-soc@vger.kernel.org
-Subject: [PATCH v4 6/6] can: sja1000: Add support for RZ/N1 SJA1000 CAN Controller
-Date:   Sun, 10 Jul 2022 12:52:48 +0100
-Message-Id: <20220710115248.190280-7-biju.das.jz@bp.renesas.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220710115248.190280-1-biju.das.jz@bp.renesas.com>
-References: <20220710115248.190280-1-biju.das.jz@bp.renesas.com>
+        Paolo Abeni <pabeni@redhat.com>,
+        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net] net: marvell: prestera: fix missed deinit sequence
+Date:   Sun, 10 Jul 2022 15:20:21 +0300
+Message-Id: <20220710122021.7642-1-yevhen.orlov@plvision.eu>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-ClientProxiedBy: FR3P281CA0068.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:4b::15) To PAXP190MB1789.EURP190.PROD.OUTLOOK.COM
+ (2603:10a6:102:283::6)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 56b5e154-7395-4c4d-96fa-08da626e9827
+X-MS-TrafficTypeDiagnostic: AM5P190MB0276:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: EYOw68ZGrtiFHZGJHEx3RBnbGdfQgTpWbcsl4gA0NKXL1ggeP32Uf2JKfRJYofSsbKTwjTieZvdpRODyf+4n+hVxy1ISS94A66koL7GeJyV6Nm6txLPCJGMBo5nB3IfN1iRWiF5G/4sF/clfZq+REhNeps9e5LFHmAtkXECzYJOl9iCvfUGdc6VZLrGdJRwYWPF5CrC/IjLbA29fcK50GZWIb1l5T417D9c6u4fkgpc/kl3TPHdr15NW77NNzpovUtNtKP2dWm1enqEoyjp6mz/P1ceCbl1tXuxH2En0UoJSPGBi1h49W2M49pgxJuSG8Gm8+AC1lFL++ZYfL+FG5WnrmHhovk46PqUEKQ/iGKcD4sJEUFWcXPjMgL07/aaPiEXrN30hz/DqUcZUo4ZiPRyGAyfh870arY4T+Gf88o5EHm0uHPLo4UcuePhxQb4FGlPSpMnzwdk1K3BI2BEhBpiZjodfYeJ0hgnQYRO0XX8teouWqh9rYjQigKWWKprzFZEMA2TMyjx9G13Is6JkU76ix28aJk2yxNtgv2FIj0qBXAUsVCAQtSK5M93o6WoFrqgTlKxmNp2MP9CM277eCxwjFDJoPxP7WtSxOPiZbfljhfLZLGwme2Xt8agFVc+gyuMQAKEZwcqy/LclrXy9xpk1YRqx1aPWNW33fZn2aSlBjn/U8ES8ET2S4PbnviNM5QWOw/zhoI99omOK3BtLT2L+LiHdm5GKdV/y2Gy6lwE0yREtQzcU1GnQst18ntfH7lBZRLCy1BElyS8gYC/0jcoFU09Vz4AlCKxNiVuEPOsuwii3tzWlgzSJn0E9PZbX
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXP190MB1789.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(39830400003)(366004)(376002)(396003)(136003)(66946007)(186003)(38350700002)(36756003)(41300700001)(66574015)(38100700002)(86362001)(1076003)(26005)(2616005)(8676002)(2906002)(52116002)(6916009)(54906003)(83380400001)(44832011)(4744005)(8936002)(4326008)(6506007)(66476007)(6486002)(478600001)(6512007)(316002)(5660300002)(66556008)(6666004);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?3M7epefWlI6VXkX7QR4jy61twP/U49pupiIxWhCVPDwJqMqZZMHU/h2usKTE?=
+ =?us-ascii?Q?n6wdtB6W/svr1Wm3c5I35+643lLnWdhRt0nhW3jjo/pDvw3yk+q/ph2cL7Xk?=
+ =?us-ascii?Q?zugDKT2hYYzIv3KgGCzXLhHWfJusF1DFefgAuI3rvPbUs5aJFIKW4H99ZQaU?=
+ =?us-ascii?Q?fWxVdoYzlh0imRk5IJz0YDWlPTuulZDX7EZ7oAhA3nZra4Thww6n8Il6OFqD?=
+ =?us-ascii?Q?lHeRX0licHYBlEqv/mxcxstsu20VXI1PYKexCCaM917lNhpGYEv9/WABSqA6?=
+ =?us-ascii?Q?S7onRERgf9+XLsQscqA1qA4TNrTTELLPCHRwFCfjXDzXxPe3iHinFzgBB08t?=
+ =?us-ascii?Q?Bb1ALAGnCXG2OaswoVtO5GEjB2bJZLWPi6aPnZpOaHMGK/fpMxfgnu0fX6kM?=
+ =?us-ascii?Q?S8ra6QDJNhpfnxYdgTAmFqk/RYI8azz1+3U7Cj46KCD5rFLvzWiT3vbIQV13?=
+ =?us-ascii?Q?2axc1nVqNeyF+pXFwv242wkhayeh0qIYw8ZUUlMozfYtmAYNO4yy4yF3/vD+?=
+ =?us-ascii?Q?c2mWQNB+CKo8kAWPgpYv7vcnPXLk5yaTT7qetC6mi632g87cWL/uho5MK4TQ?=
+ =?us-ascii?Q?LysqmNodIBWfZuEveZ2Stcp6pGPELyZybMhHixE25jTfjKIxDXiYzqUq/0lz?=
+ =?us-ascii?Q?rHLhP1oubrVWYJunjZngNMoAGRyOOXPNebnNAogR/yQ2iJTrA2M/wU60UFeA?=
+ =?us-ascii?Q?YeS4TMD/HphW4zMezT+edeUl/oDm+9pRe7ZxpYMuTdaqBY0cICmltUm6jnwt?=
+ =?us-ascii?Q?tHPODIAu2RWkU+AyGnsEwPTA+gTdkmKTsKJBSMiRWKqYdwcNWxa0Bsb40AlA?=
+ =?us-ascii?Q?/wk9hL9GoVbQY9C2+QuqJN0KhYuGzwqTK9hoKc4bo2MRBcSC0d1/m8xWr68x?=
+ =?us-ascii?Q?RPswz7KnPozNBR72b9T9B1Rw7bQrAS7DhptadXqHN1DCHWsDXaN6JCPqnata?=
+ =?us-ascii?Q?MWTIlQrgztPawcHUUdWSIE/Qz7ROAZ1+DN0VSNb+FNq5AulkEd3j+Hq8fr2r?=
+ =?us-ascii?Q?SdPwRmn6Nmb8TgDgn1kQz3tQSvzc9Z1JKfrhXt5heNcGD2zjqRGu6TwhTRif?=
+ =?us-ascii?Q?8kbJr4VHRNIPI1ZZhcdfX6N6a/qLOKRQ6b4afmv7J8FoSWntEmtQ0Toj86Uu?=
+ =?us-ascii?Q?UMJj5LdeohaHjiZ5+QSuBijzzEjy+zRxuHGnxJhlQm5aVKNEKf4kZQhsAgat?=
+ =?us-ascii?Q?i0Bw07gtRLSxWEWxH6NDxxZ3HsykvCqSS/rke760Xl2yz7IiEFQMZVA0qhoi?=
+ =?us-ascii?Q?hffWNp4mA1onGcpCaKmxAzCoUH3ESw7dwIBhfoTa2VBd7M/3Ne0sh4V/971v?=
+ =?us-ascii?Q?oqUZAG6h3fTBB/n0eAw3Z2CdWkugK1Q8STRsgxU+HRRDgPnPNnnfrNdpHVTe?=
+ =?us-ascii?Q?Th/BVBfvG8bKA8oSVLPFU27lwsDHqleUGwEaTQTe7tJLwcdkHGlhkZhnjGPr?=
+ =?us-ascii?Q?5ML9vVga/gFh+Nk7wu2fnrWUTpW65JfOuEmtJOwHpXa2lmTUSPyLEP4k9Q/U?=
+ =?us-ascii?Q?wVWA7RLXK0rVlT6H280cagD9gNkCQzZLRpm43guFfvQ8wSaDwBB4/JQ8vfkx?=
+ =?us-ascii?Q?s8QhAH4HVsDb3sVqDDDduQvEUUIOFCiLT1d1KP9r+8QK8EWW7swNvVGzwZ2V?=
+ =?us-ascii?Q?hg=3D=3D?=
+X-OriginatorOrg: plvision.eu
+X-MS-Exchange-CrossTenant-Network-Message-Id: 56b5e154-7395-4c4d-96fa-08da626e9827
+X-MS-Exchange-CrossTenant-AuthSource: PAXP190MB1789.EURP190.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Jul 2022 12:20:36.6720
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: SfhyUUjD/81/f6UJ4Of/ipHshT96nbrAwQ7MFgN9c7ywU/niRaDlXfjBwxK+wAHGnKBkChWq3x8c09cpO5xp7779TnMacPXc8ZPQ240qbf4=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM5P190MB0276
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The SJA1000 CAN controller on RZ/N1 SoC has no clock divider register
-(CDR) support compared to others.
+Add unregister_fib_notifier as rollback of register_fib_notifier.
 
-This patch adds support for RZ/N1 SJA1000 CAN Controller, by adding
-SoC specific compatible to handle this difference as well as using
-clk framework to retrieve the CAN clock frequency.
-
-Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+Fixes: 4394fbcb78cf ("net: marvell: prestera: handle fib notifications")
+Signed-off-by: Yevhen Orlov <yevhen.orlov@plvision.eu>
 ---
-v3->v4:
- * Updated commit description.
- * Updated clock handling as per bindings.
-v2->v3:
- * No change.
-v1->v2:
- * Updated commit description as SJA1000_NO_HW_LOOPBACK_QUIRK is removed
- * Added error handling on clk error path
- * Started using "devm_clk_get_optional_enabled" for clk get,prepare and enable.
----
- drivers/net/can/sja1000/sja1000_platform.c | 38 +++++++++++++++++++---
- 1 file changed, 33 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/marvell/prestera/prestera_router.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/can/sja1000/sja1000_platform.c b/drivers/net/can/sja1000/sja1000_platform.c
-index 81bc741905fd..6779d5357069 100644
---- a/drivers/net/can/sja1000/sja1000_platform.c
-+++ b/drivers/net/can/sja1000/sja1000_platform.c
-@@ -14,6 +14,7 @@
- #include <linux/irq.h>
- #include <linux/can/dev.h>
- #include <linux/can/platform/sja1000.h>
-+#include <linux/clk.h>
- #include <linux/io.h>
- #include <linux/of.h>
- #include <linux/of_device.h>
-@@ -103,6 +104,11 @@ static void sp_technologic_init(struct sja1000_priv *priv, struct device_node *o
- 	spin_lock_init(&tp->io_lock);
- }
+diff --git a/drivers/net/ethernet/marvell/prestera/prestera_router.c b/drivers/net/ethernet/marvell/prestera/prestera_router.c
+index 3754d8aec76d..3c8116f16b4d 100644
+--- a/drivers/net/ethernet/marvell/prestera/prestera_router.c
++++ b/drivers/net/ethernet/marvell/prestera/prestera_router.c
+@@ -588,6 +588,7 @@ int prestera_router_init(struct prestera_switch *sw)
  
-+static void sp_rzn1_init(struct sja1000_priv *priv, struct device_node *of)
-+{
-+	priv->flags = SJA1000_QUIRK_NO_CDR_REG;
-+}
-+
- static void sp_populate(struct sja1000_priv *priv,
- 			struct sja1000_platform_data *pdata,
- 			unsigned long resource_mem_flags)
-@@ -153,11 +159,13 @@ static void sp_populate_of(struct sja1000_priv *priv, struct device_node *of)
- 		priv->write_reg = sp_write_reg8;
- 	}
- 
--	err = of_property_read_u32(of, "nxp,external-clock-frequency", &prop);
--	if (!err)
--		priv->can.clock.freq = prop / 2;
--	else
--		priv->can.clock.freq = SP_CAN_CLOCK; /* default */
-+	if (!priv->can.clock.freq) {
-+		err = of_property_read_u32(of, "nxp,external-clock-frequency", &prop);
-+		if (!err)
-+			priv->can.clock.freq = prop / 2;
-+		else
-+			priv->can.clock.freq = SP_CAN_CLOCK; /* default */
-+	}
- 
- 	err = of_property_read_u32(of, "nxp,tx-output-mode", &prop);
- 	if (!err)
-@@ -192,8 +200,13 @@ static struct sja1000_of_data technologic_data = {
- 	.init = sp_technologic_init,
- };
- 
-+static struct sja1000_of_data renesas_data = {
-+	.init = sp_rzn1_init,
-+};
-+
- static const struct of_device_id sp_of_table[] = {
- 	{ .compatible = "nxp,sja1000", .data = NULL, },
-+	{ .compatible = "renesas,rzn1-sja1000", .data = &renesas_data, },
- 	{ .compatible = "technologic,sja1000", .data = &technologic_data, },
- 	{ /* sentinel */ },
- };
-@@ -210,6 +223,7 @@ static int sp_probe(struct platform_device *pdev)
- 	struct device_node *of = pdev->dev.of_node;
- 	const struct sja1000_of_data *of_data = NULL;
- 	size_t priv_sz = 0;
-+	struct clk *clk;
- 
- 	pdata = dev_get_platdata(&pdev->dev);
- 	if (!pdata && !of) {
-@@ -234,6 +248,11 @@ static int sp_probe(struct platform_device *pdev)
- 		irq = platform_get_irq(pdev, 0);
- 		if (irq < 0)
- 			return irq;
-+
-+		clk = devm_clk_get_optional_enabled(&pdev->dev, NULL);
-+		if (IS_ERR(clk))
-+			return dev_err_probe(&pdev->dev, PTR_ERR(clk),
-+					     "CAN clk operation failed");
- 	} else {
- 		res_irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
- 		if (!res_irq)
-@@ -262,6 +281,15 @@ static int sp_probe(struct platform_device *pdev)
- 	priv->reg_base = addr;
- 
- 	if (of) {
-+		if (clk) {
-+			priv->can.clock.freq  = clk_get_rate(clk) / 2;
-+			if (!priv->can.clock.freq) {
-+				err = -EINVAL;
-+				dev_err(&pdev->dev, "Zero CAN clk rate");
-+				goto exit_free;
-+			}
-+		}
-+
- 		sp_populate_of(priv, of);
- 
- 		if (of_data && of_data->init)
+ void prestera_router_fini(struct prestera_switch *sw)
+ {
++	unregister_fib_notifier(&init_net, &sw->router->fib_nb);
+ 	unregister_inetaddr_notifier(&sw->router->inetaddr_nb);
+ 	unregister_inetaddr_validator_notifier(&sw->router->inetaddr_valid_nb);
+ 	rhashtable_destroy(&sw->router->kern_fib_cache_ht);
 -- 
-2.25.1
+2.17.1
 
