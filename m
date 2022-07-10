@@ -2,397 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D51C56CFD1
-	for <lists+netdev@lfdr.de>; Sun, 10 Jul 2022 17:38:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9024C56D06B
+	for <lists+netdev@lfdr.de>; Sun, 10 Jul 2022 19:22:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229617AbiGJPi4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Jul 2022 11:38:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47086 "EHLO
+        id S229543AbiGJRWi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Jul 2022 13:22:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229592AbiGJPiy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Jul 2022 11:38:54 -0400
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3785626F5
-        for <netdev@vger.kernel.org>; Sun, 10 Jul 2022 08:38:53 -0700 (PDT)
-Received: by mail-lj1-x235.google.com with SMTP id c15so3717375ljr.0
-        for <netdev@vger.kernel.org>; Sun, 10 Jul 2022 08:38:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=4InbvFypZX6TmIbBp6levT/VKpWVJCxkgia4Yfn1yWU=;
-        b=r74VLAZ//WKA5rgX28jJ8k9zfNT1Y6zrKsGOS9zGMgSkq8WYQOfUfCec7RuXCSQOPm
-         /g4mjm/7kdnglWLDp2JgO2hIhByRa8Haisq5ns3JBO+veBI38f/wKJ/dToUPcAR9k3JY
-         hPVAXuq3rRBjvcJ+Efb3SeuG9yNAfUStaN2ME=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4InbvFypZX6TmIbBp6levT/VKpWVJCxkgia4Yfn1yWU=;
-        b=zLNSStKxDmfpVNCWEgOEiSzzKua/6dGCFvBAFE8FLZt+8Ww4uEZrPwiuPVJDoLtyxU
-         B/KAYPl+3Z+ciJTcBV2CSPPh5kb1x2l1pdMOthHc/oYFV2mErgt0cL4Rygl8oKHIDY4B
-         7lGpXNjDTtdA5GFRHv7nd0ZJKU1VB9Wc7VFC2UVl6CAK+QmRjXafSILd3Tbdn10dn9hy
-         hczgm36Pim5bf/mes0VlGtZHe8iH/+zu7dNwuaTjr1N2DJZW0nGe0Bd7P0Y57NOuWmhO
-         DM+72NxBfD+UYUb/4Rk/0Ztx+OPcaCLTwdp9IKTlAKehpu9bqut8kbkCqO8Yv9gp/j7k
-         bvnw==
-X-Gm-Message-State: AJIora+UhJLXmetmlrXyWAN4aetwqvaePJuec0viEaw8TxqadBVGh0jE
-        8172b4qko50Pq4xDKlRHnhOHvghpvXve859izx81Fw==
-X-Google-Smtp-Source: AGRyM1vzAjNt9Gs4XXh0+aJbjy7FGZiws66c9r99HhobblyVxG1cQA9cChLx+/sP50bdhhC4cB5mpKnmZ3USXNCcLVw=
-X-Received: by 2002:a2e:6e0c:0:b0:255:98fb:cb45 with SMTP id
- j12-20020a2e6e0c000000b0025598fbcb45mr7502614ljc.55.1657467531473; Sun, 10
- Jul 2022 08:38:51 -0700 (PDT)
+        with ESMTP id S229492AbiGJRWh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Jul 2022 13:22:37 -0400
+Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-eopbgr60113.outbound.protection.outlook.com [40.107.6.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12CA6BF63;
+        Sun, 10 Jul 2022 10:22:34 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=LGRGLWJdN91eAoCZYiw1kPQfc++GxmtELqW84kcXiv4HfxQyOxz2tux3/6xJyB3AuXWz9zxlN+xzUnsT5Ky23qM3ezsNCM0Oed/6tgqwkNXjaUMKLhS3DluQjeGiCRoC2wP95mmoud87hNwF/uUhESINzZeOf7g2wyWLG3XxzBeQAw2ZO13aBZd5yOlqlXTliMj696ydwjo6s2qSqy0drbl9p7di5Pp3FhKfa6ShNg03fq7ZW9iVi9oc5PlG+h6sKzGgBiQQOgOHkoeCtM5voHDqDmHr/zeO5iMDD5UOveipEb3FxkiCuCCiskE1Ituz5I00XNjoSEQPHazGFw8z0A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=dzCyhfYaeB2Ek6YtCtB5Nv65Lr51KT4NBGbnV7kG3bk=;
+ b=P8G97mAeQz0YefBxdMSng+23Augq92TyXrwOGSK+TNf2QpdbHqen1g7EA9eWdBcxBuPNx81uwvJKP3gsO8fRv+L7H8IiApp7PgDNbL9hdNUy77FVTD6o1pz3GlsjMp8QIzsQttuhGEK5jfbBS3P1561VKBzKaqktJrzbmPfVs8345eSMndmk2oio5Gd+grZ96o3pRK8Gm3JOjtXIsKbY+/Hc62798w96I+Qcnfk3/9HS8XJYyzNiv5X37Nk6DGdLTx/Qoxm+almWhaWCfLLfbVzzyp5NZNLj35hUzP4BLg0pScCOac/p5PlvOThREu3zBv5gqjW91S20ez/IOdTzOQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
+ dkim=pass header.d=plvision.eu; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=dzCyhfYaeB2Ek6YtCtB5Nv65Lr51KT4NBGbnV7kG3bk=;
+ b=s76KtEPtmW/iAOZw68lFdSnqn36Iifo5ogkxul1HQR3eectWu7IkRvGkPYP5X7YiAEyqyENP2gWGna5+0EOP8BkID2PQvxpLwWyNHnILfsmqUjhEBWm/makfkvgK66jVXdEIQS+FZYrAdKEsy7mCuiit49+s8LHVVDqgpjixkEg=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=plvision.eu;
+Received: from PAXP190MB1789.EURP190.PROD.OUTLOOK.COM (2603:10a6:102:283::6)
+ by AS8P190MB1109.EURP190.PROD.OUTLOOK.COM (2603:10a6:20b:2e7::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.21; Sun, 10 Jul
+ 2022 17:22:31 +0000
+Received: from PAXP190MB1789.EURP190.PROD.OUTLOOK.COM
+ ([fe80::d521:ba19:29db:e42d]) by PAXP190MB1789.EURP190.PROD.OUTLOOK.COM
+ ([fe80::d521:ba19:29db:e42d%3]) with mapi id 15.20.5417.025; Sun, 10 Jul 2022
+ 17:22:31 +0000
+From:   Yevhen Orlov <yevhen.orlov@plvision.eu>
+To:     netdev@vger.kernel.org
+Cc:     Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
+        Taras Chornyi <taras.chornyi@plvision.eu>,
+        Mickey Rachamim <mickeyr@marvell.com>,
+        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
+        Yevhen Orlov <yevhen.orlov@plvision.eu>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 0/9] net: marvell: prestera: add nexthop routes offloading
+Date:   Sun, 10 Jul 2022 20:21:58 +0300
+Message-Id: <20220710172208.29851-1-yevhen.orlov@plvision.eu>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-ClientProxiedBy: GV3P280CA0058.SWEP280.PROD.OUTLOOK.COM
+ (2603:10a6:150:9::28) To PAXP190MB1789.EURP190.PROD.OUTLOOK.COM
+ (2603:10a6:102:283::6)
 MIME-Version: 1.0
-References: <20220703101430.1306048-1-mkl@pengutronix.de> <20220703101430.1306048-9-mkl@pengutronix.de>
-In-Reply-To: <20220703101430.1306048-9-mkl@pengutronix.de>
-From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
-Date:   Sun, 10 Jul 2022 17:38:40 +0200
-Message-ID: <CABGWkvpcHhicFGs96+czuTeVuxbXoKXx_XPvQPGt98GEvqr6aw@mail.gmail.com>
-Subject: Re: [PATCH net-next 08/15] can: slcan: use CAN network device driver API
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        linux-can@vger.kernel.org, kernel@pengutronix.de,
-        Jeroen Hofstee <jhofstee@victronenergy.com>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d52f856a-d153-4b7f-a4c7-08da6298c52d
+X-MS-TrafficTypeDiagnostic: AS8P190MB1109:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: qYz6fYfRx08nxUGdxKzRnacFORG2dZZfgnQhZ80rlkh/qXDuGALmBpa2iHJK+6+6JAhvBp8SHuUypPic/Et6lEyZCB8pwsjM97tqwgThEw9VAkCjB5xWyZJ7HXcuHSwCYY5HG8Cw4rzKx8w7JhZl/oII+Ya1MRal0n7AVdX5p04XMZbKc5y3nIpNzY8Q0KwQqsMTcns+02ly2H+6ZU0+kwQohYEGxt2Te7CrLFKtPynKji/DAWqhj6BafGRvMY/LC+wOb3gHmPot0ubvD/QS3yelvKAIfqekldKJte0zWImmdgWKkgerZc3vGJpfWlmklUd6HF54xmieaE8RZX2XPq+SkF+RdF+LbmnwZnrqhwe7oUu80N7mjgYRq4DJUh0vmFU0/RqRmFmFUKThcWfxqFSHRzJIWmiKWBBb8e8YgP9kUcVyoL8n8Y/Y7tTutVz6BPX1y0a74Avknf6jRght/hWqmhoVObrLhoUjkQ+mt6cgaoP9F1JrcNZscnElYuwBzTyiKmj4oVjL7fTOxsS4YF2PgDXjw0pTN/wmalN1AP25x/4xuAJKBToEneWSzozJSv0ASpV20zBXVslKWF1DNZBndBcVO7IjNEdI+lSvc40vsZqYw70Xml1apwzg4h+vNtlFk7ZFel5Wld1AehmL1bJtTw40WQn8znhOGjl9JOpgitd7Yv9FQq38GBdnKMe90hAfl1h6a+HZaPRwh/lESJRnKBvtJsvVmQVeP8LXth60KSPhkX3b/jI++RonFeqBt+mXDFQqCGsgBDGveEA8y55TItcmk+PODXszkZyBWaZ3NU9/520RtrGPzX11ZbC+
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXP190MB1789.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(136003)(346002)(39830400003)(376002)(366004)(26005)(41300700001)(1076003)(6666004)(6486002)(83380400001)(6512007)(316002)(66574015)(2616005)(36756003)(52116002)(6506007)(186003)(38350700002)(2906002)(38100700002)(6916009)(54906003)(86362001)(5660300002)(478600001)(8936002)(66946007)(66556008)(4326008)(44832011)(8676002)(66476007);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?LsWcQa4aAbT1+60jZsOu75mGDPPP8OquFtY4A1UJ3ctUPdMsKCXp7uYYEqTi?=
+ =?us-ascii?Q?lm3O/Pj82rYPi3Yyh6B2D7AQIO49AZHuMvWiVYyCqGVc/7U2GYcx4SLAQJ4h?=
+ =?us-ascii?Q?73P/bPTKT2IBxbNnjEgpIYNxVBaR+/oXaSv8PG896mE1sKZ+N5OYiY1ypVGd?=
+ =?us-ascii?Q?tLV7uAZdJ6DPcb7/mlf6LnwEM5eOxjkLWSQ96r+HHOkdsg+BIQaA5VIXjnkL?=
+ =?us-ascii?Q?RZ7zqIIa88PsqGC36nwE+8VEe1dkOQ9gl6Thfb078AhNdQizW2a9Bk9YJ+PT?=
+ =?us-ascii?Q?/9bq6zCDaNYp1u8pIWiUtNg02Sm66SoRnOz1S+GEj3B12j3ab8/6tOldDpsg?=
+ =?us-ascii?Q?yo7NOEjHBearnsOUTY++LGYcIxxaqusY7ujX+AcuL3q1DEI8scAcOBppoSme?=
+ =?us-ascii?Q?FE93/D0pQDp4XMyu8Z1hRiCApshDBkQne5MnT3DEIIvYjNSBz7mKBpv7XYJ9?=
+ =?us-ascii?Q?EjRipS9OSWSJPkKJrYq2ER4PnDi/s5U+mX3IWqlqMgvSguxfOEP4KBvXwMoa?=
+ =?us-ascii?Q?eIPEV+rLw8LmhfynBM+i1CsHYpuWlCRw+tfu2yz19E/Pysd+xqUzoTOK+yDh?=
+ =?us-ascii?Q?sU7qHd9o89Q6aIBu1rMWdD+aItkIABcXLB+pfSFBEg685nQSSmIMZuPiSAyW?=
+ =?us-ascii?Q?sWXQKcpYHoV0uQyauRVpb84R5y+FY3JbyfKWb8jIKyWzBu4gmDX39U8VeDlT?=
+ =?us-ascii?Q?Wg4DuooOcCZUzIUctkZDazgaENRQyjNTohwc2FpD4cFc6uXqpIvwup6zJu56?=
+ =?us-ascii?Q?C2gpzZv0vgNA70Pwdcq8RpIuXbQ7u3gQM/aT53opKCZiVEW+OoscA3zWteG9?=
+ =?us-ascii?Q?j3CnJ6DbTDx9bIj4F7LUozOJ3pVTU0SFWXYG3hJT7LW/H4m8JvtjIejO68zW?=
+ =?us-ascii?Q?tmgaf3M9Cf8Zxns44RlaUny3ckzW0Ekom6tosTVVv46iVPzhItUyihaHRFGH?=
+ =?us-ascii?Q?cYffwm3OuIGJ+Q3i/wwOXG+0PEh3HkNb7zkWYRnN5/S9v5tvbWn6PPGgY4y2?=
+ =?us-ascii?Q?Y7y7W7YfgwURkH/JHQzVmPu32r81NW0VqBKTRtf5XnP7rGVgODme7kzDzDme?=
+ =?us-ascii?Q?PF5h7FuH5qhXFBh+GOdWjOWgRH/4UB9g2WjOyF7n0Zgs0PGmlA6BPygJAGFP?=
+ =?us-ascii?Q?/Rb3FgL8FU3q5PW2HC0Sfv7ZPPfoQyUJkIHyZRkSGqJn3CSEeauuoDIntgM7?=
+ =?us-ascii?Q?JtUnmvtEol9UxKd4twbmUy9kgZxyMfLVBhPTn8rB+hzh8/zMh3JxGp/E05Cd?=
+ =?us-ascii?Q?XvPlA69ixeeJSDJE3J3p1lVJ6hH+uB7ARvahWjTNBQjIqdW7kDvfCjBVuEpe?=
+ =?us-ascii?Q?o7Ch4E856e0LXHZLFgj6fFPDYvQ2xuOt+kEUB1DMvM7cKnoermHIqKKY0mxu?=
+ =?us-ascii?Q?+p32afXpmCjFlJs0RjhtZ+m8WVP8xBzfgmNWWVtFp8g5JGUTZMqi74wnKI4m?=
+ =?us-ascii?Q?8GeqqhlA1B9ulJvmVSoXXnxL8WDNy/QfucRkl8ZVPYXweLzGkmpC+P+16HQb?=
+ =?us-ascii?Q?5YKXst4ICl8EiKhmh/1ak9fbO7+EDaz9fJ1NOaDGxOLniQLaK5iFeKNtwbm+?=
+ =?us-ascii?Q?dRJz7xK0wKOSw6+sQub0l/gYMfd8MebgTYLRVwuvPIipEuGX6p/uTZcaDGj8?=
+ =?us-ascii?Q?6Q=3D=3D?=
+X-OriginatorOrg: plvision.eu
+X-MS-Exchange-CrossTenant-Network-Message-Id: d52f856a-d153-4b7f-a4c7-08da6298c52d
+X-MS-Exchange-CrossTenant-AuthSource: PAXP190MB1789.EURP190.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Jul 2022 17:22:31.0093
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: yQGiUVVGqE8NlRazH/SwVI4xg0ZjxlrE49LGLwpqCl1iT41Ku/dIQ/7pXZIEDAGNh17D0C04Fetl0rDAyuz4MlbpAs70VPuiizdC+eazLWs=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8P190MB1109
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Marc,
+Add support for nexthop routes for Marvell Prestera driver.
+Subscribe on NEIGH_UPDATE events.
 
-On Sun, Jul 3, 2022 at 12:26 PM Marc Kleine-Budde <mkl@pengutronix.de> wrote:
->
-> From: Dario Binacchi <dario.binacchi@amarulasolutions.com>
->
-> As suggested by commit [1], now the driver uses the functions and the
-> data structures provided by the CAN network device driver interface.
->
-> Currently the driver doesn't implement a way to set bitrate for SLCAN
-> based devices via ip tool, so you'll have to do this by slcand or
-> slcan_attach invocation through the -sX parameter:
->
-> - slcan_attach -f -s6 -o /dev/ttyACM0
-> - slcand -f -s8 -o /dev/ttyUSB0
->
-> where -s6 in will set adapter's bitrate to 500 Kbit/s and -s8 to
-> 1Mbit/s.
-> See the table below for further CAN bitrates:
-> - s0 ->   10 Kbit/s
-> - s1 ->   20 Kbit/s
-> - s2 ->   50 Kbit/s
-> - s3 ->  100 Kbit/s
-> - s4 ->  125 Kbit/s
-> - s5 ->  250 Kbit/s
-> - s6 ->  500 Kbit/s
-> - s7 ->  800 Kbit/s
-> - s8 -> 1000 Kbit/s
->
-> In doing so, the struct can_priv::bittiming.bitrate of the driver is not
-> set and since the open_candev() checks that the bitrate has been set, it
-> must be a non-zero value, the bitrate is set to a fake value (-1U)
-> before it is called.
->
-> Using the rtnl_lock()/rtnl_unlock() functions has become a bit more
-> tricky as the register_candev() function indirectly calls rtnl_lock()
-> via register_netdev(). To avoid a deadlock it is therefore necessary to
-> call rtnl_unlock() before calling register_candev(). The same goes for
-> the unregister_candev() function.
->
-> [1] commit 39549eef3587f ("can: CAN Network device driver and Netlink interface")
->
-> Link: https://lore.kernel.org/all/20220628163137.413025-6-dario.binacchi@amarulasolutions.com
-> Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
-> Tested-by: Jeroen Hofstee <jhofstee@victronenergy.com>
-> Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
-> ---
->  drivers/net/can/Kconfig | 40 ++++++++++----------
->  drivers/net/can/slcan.c | 82 ++++++++++++++++++++---------------------
->  2 files changed, 60 insertions(+), 62 deletions(-)
->
-> diff --git a/drivers/net/can/Kconfig b/drivers/net/can/Kconfig
-> index 4078d0775572..3048ad77edb3 100644
-> --- a/drivers/net/can/Kconfig
-> +++ b/drivers/net/can/Kconfig
-> @@ -49,26 +49,6 @@ config CAN_VXCAN
->           This driver can also be built as a module.  If so, the module
->           will be called vxcan.
->
-> -config CAN_SLCAN
-> -       tristate "Serial / USB serial CAN Adaptors (slcan)"
-> -       depends on TTY
-> -       help
-> -         CAN driver for several 'low cost' CAN interfaces that are attached
-> -         via serial lines or via USB-to-serial adapters using the LAWICEL
-> -         ASCII protocol. The driver implements the tty linediscipline N_SLCAN.
-> -
-> -         As only the sending and receiving of CAN frames is implemented, this
-> -         driver should work with the (serial/USB) CAN hardware from:
-> -         www.canusb.com / www.can232.com / www.mictronics.de / www.canhack.de
-> -
-> -         Userspace tools to attach the SLCAN line discipline (slcan_attach,
-> -         slcand) can be found in the can-utils at the linux-can project, see
-> -         https://github.com/linux-can/can-utils for details.
-> -
-> -         The slcan driver supports up to 10 CAN netdevices by default which
-> -         can be changed by the 'maxdev=xx' module option. This driver can
-> -         also be built as a module. If so, the module will be called slcan.
-> -
->  config CAN_NETLINK
->         bool "CAN device drivers with Netlink support"
->         default y
-> @@ -172,6 +152,26 @@ config CAN_KVASER_PCIEFD
->             Kvaser Mini PCI Express HS v2
->             Kvaser Mini PCI Express 2xHS v2
->
-> +config CAN_SLCAN
-> +       tristate "Serial / USB serial CAN Adaptors (slcan)"
-> +       depends on TTY
-> +       help
-> +         CAN driver for several 'low cost' CAN interfaces that are attached
-> +         via serial lines or via USB-to-serial adapters using the LAWICEL
-> +         ASCII protocol. The driver implements the tty linediscipline N_SLCAN.
-> +
-> +         As only the sending and receiving of CAN frames is implemented, this
-> +         driver should work with the (serial/USB) CAN hardware from:
-> +         www.canusb.com / www.can232.com / www.mictronics.de / www.canhack.de
-> +
-> +         Userspace tools to attach the SLCAN line discipline (slcan_attach,
-> +         slcand) can be found in the can-utils at the linux-can project, see
-> +         https://github.com/linux-can/can-utils for details.
-> +
-> +         The slcan driver supports up to 10 CAN netdevices by default which
-> +         can be changed by the 'maxdev=xx' module option. This driver can
-> +         also be built as a module. If so, the module will be called slcan.
-> +
->  config CAN_SUN4I
->         tristate "Allwinner A10 CAN controller"
->         depends on MACH_SUN4I || MACH_SUN7I || COMPILE_TEST
-> diff --git a/drivers/net/can/slcan.c b/drivers/net/can/slcan.c
-> index c39580b142e0..bf84698f1a81 100644
-> --- a/drivers/net/can/slcan.c
-> +++ b/drivers/net/can/slcan.c
-> @@ -56,7 +56,6 @@
->  #include <linux/can.h>
->  #include <linux/can/dev.h>
->  #include <linux/can/skb.h>
-> -#include <linux/can/can-ml.h>
->
->  MODULE_ALIAS_LDISC(N_SLCAN);
->  MODULE_DESCRIPTION("serial line CAN interface");
-> @@ -79,6 +78,7 @@ MODULE_PARM_DESC(maxdev, "Maximum number of slcan interfaces");
->  #define SLC_EFF_ID_LEN 8
->
->  struct slcan {
-> +       struct can_priv         can;
->         int                     magic;
->
->         /* Various fields. */
-> @@ -394,6 +394,8 @@ static int slc_close(struct net_device *dev)
->                 clear_bit(TTY_DO_WRITE_WAKEUP, &sl->tty->flags);
->         }
->         netif_stop_queue(dev);
-> +       close_candev(dev);
-> +       sl->can.state = CAN_STATE_STOPPED;
->         sl->rcount   = 0;
->         sl->xleft    = 0;
->         spin_unlock_bh(&sl->lock);
+Add features:
+ - Support connected route adding
+   e.g.: "ip address add 1.1.1.1/24 dev sw1p1"
+   e.g.: "ip route add 6.6.6/24 dev sw1p1"
+ - Support nexthop route adding
+   e.g.: "ip route add 5.5.5/24 via 1.1.1.2"
+ - Support ECMP route adding
+   e.g.: "ip route add 5.5.5/24 nexthop via 1.1.1.2 nexthop via 1.1.1.3"
+ - Support "offload" and "trap" flags per each nexthop
+ - Support "offload" flag for neighbours
 
-Maybe better to move the spin_unlock_bh() before calling close_candev()?
+Limitations:
+ - Only "local" and "main" tables supported
+ - Only generic interfaces supported for router (no bridges or vlans)
 
-Thanks and regards,
-Dario
+Flags meaning:
+  ip route add 5.5.5/24 nexthop via 2.2.2.2 nexthop via 2.2.2.3
+  ip route show
+  ...
+  5.5.5.0/24 rt_offload 
+        nexthop via 2.2.2.2 dev sw1p31 weight 1 trap 
+        nexthop via 2.2.2.3 dev sw1p31 weight 1 trap 
+  ...
+  # When you just add route - lpm entry became occupied
+  # in HW ("rt_offload" flag), but related to nexthops neighbours
+  # still not resolved ("trap" flag).
+  #
+  # After some time...
+  ip route show
+  ...
+  5.5.5.0/24 rt_offload 
+        nexthop via 2.2.2.2 dev sw1p31 weight 1 offload 
+        nexthop via 2.2.2.3 dev sw1p31 weight 1 offload 
+  ...
+  # You will see, that appropriate neighbours was resolved and nexthop
+  # entries occupied in HW too ("offload" flag)
 
-> @@ -405,20 +407,34 @@ static int slc_close(struct net_device *dev)
->  static int slc_open(struct net_device *dev)
->  {
->         struct slcan *sl = netdev_priv(dev);
-> +       int err;
->
->         if (sl->tty == NULL)
->                 return -ENODEV;
->
-> +       /* The baud rate is not set with the command
-> +        * `ip link set <iface> type can bitrate <baud>' and therefore
-> +        * can.bittiming.bitrate is CAN_BITRATE_UNSET (0), causing
-> +        * open_candev() to fail. So let's set to a fake value.
-> +        */
-> +       sl->can.bittiming.bitrate = CAN_BITRATE_UNKNOWN;
-> +       err = open_candev(dev);
-> +       if (err) {
-> +               netdev_err(dev, "failed to open can device\n");
-> +               return err;
-> +       }
-> +
-> +       sl->can.state = CAN_STATE_ERROR_ACTIVE;
->         sl->flags &= BIT(SLF_INUSE);
->         netif_start_queue(dev);
->         return 0;
->  }
->
-> -/* Hook the destructor so we can free slcan devs at the right point in time */
-> -static void slc_free_netdev(struct net_device *dev)
-> +static void slc_dealloc(struct slcan *sl)
->  {
-> -       int i = dev->base_addr;
-> +       int i = sl->dev->base_addr;
->
-> +       free_candev(sl->dev);
->         slcan_devs[i] = NULL;
->  }
->
-> @@ -434,24 +450,6 @@ static const struct net_device_ops slc_netdev_ops = {
->         .ndo_change_mtu         = slcan_change_mtu,
->  };
->
-> -static void slc_setup(struct net_device *dev)
-> -{
-> -       dev->netdev_ops         = &slc_netdev_ops;
-> -       dev->needs_free_netdev  = true;
-> -       dev->priv_destructor    = slc_free_netdev;
-> -
-> -       dev->hard_header_len    = 0;
-> -       dev->addr_len           = 0;
-> -       dev->tx_queue_len       = 10;
-> -
-> -       dev->mtu                = CAN_MTU;
-> -       dev->type               = ARPHRD_CAN;
-> -
-> -       /* New-style flags. */
-> -       dev->flags              = IFF_NOARP;
-> -       dev->features           = NETIF_F_HW_CSUM;
-> -}
-> -
->  /******************************************
->    Routines looking at TTY side.
->   ******************************************/
-> @@ -514,11 +512,8 @@ static void slc_sync(void)
->  static struct slcan *slc_alloc(void)
->  {
->         int i;
-> -       char name[IFNAMSIZ];
->         struct net_device *dev = NULL;
-> -       struct can_ml_priv *can_ml;
->         struct slcan       *sl;
-> -       int size;
->
->         for (i = 0; i < maxdev; i++) {
->                 dev = slcan_devs[i];
-> @@ -531,16 +526,14 @@ static struct slcan *slc_alloc(void)
->         if (i >= maxdev)
->                 return NULL;
->
-> -       sprintf(name, "slcan%d", i);
-> -       size = ALIGN(sizeof(*sl), NETDEV_ALIGN) + sizeof(struct can_ml_priv);
-> -       dev = alloc_netdev(size, name, NET_NAME_UNKNOWN, slc_setup);
-> +       dev = alloc_candev(sizeof(*sl), 1);
->         if (!dev)
->                 return NULL;
->
-> +       snprintf(dev->name, sizeof(dev->name), "slcan%d", i);
-> +       dev->netdev_ops = &slc_netdev_ops;
->         dev->base_addr  = i;
->         sl = netdev_priv(dev);
-> -       can_ml = (void *)sl + ALIGN(sizeof(*sl), NETDEV_ALIGN);
-> -       can_set_ml_priv(dev, can_ml);
->
->         /* Initialize channel control data */
->         sl->magic = SLCAN_MAGIC;
-> @@ -605,26 +598,28 @@ static int slcan_open(struct tty_struct *tty)
->
->                 set_bit(SLF_INUSE, &sl->flags);
->
-> -               err = register_netdevice(sl->dev);
-> -               if (err)
-> +               rtnl_unlock();
-> +               err = register_candev(sl->dev);
-> +               if (err) {
-> +                       pr_err("slcan: can't register candev\n");
->                         goto err_free_chan;
-> +               }
-> +       } else {
-> +               rtnl_unlock();
->         }
->
-> -       /* Done.  We have linked the TTY line to a channel. */
-> -       rtnl_unlock();
->         tty->receive_room = 65536;      /* We don't flow control */
->
->         /* TTY layer expects 0 on success */
->         return 0;
->
->  err_free_chan:
-> +       rtnl_lock();
->         sl->tty = NULL;
->         tty->disc_data = NULL;
->         clear_bit(SLF_INUSE, &sl->flags);
-> -       slc_free_netdev(sl->dev);
-> -       /* do not call free_netdev before rtnl_unlock */
-> +       slc_dealloc(sl);
->         rtnl_unlock();
-> -       free_netdev(sl->dev);
->         return err;
->
->  err_exit:
-> @@ -658,9 +653,11 @@ static void slcan_close(struct tty_struct *tty)
->         synchronize_rcu();
->         flush_work(&sl->tx_work);
->
-> -       /* Flush network side */
-> -       unregister_netdev(sl->dev);
-> -       /* This will complete via sl_free_netdev */
-> +       slc_close(sl->dev);
-> +       unregister_candev(sl->dev);
-> +       rtnl_lock();
-> +       slc_dealloc(sl);
-> +       rtnl_unlock();
->  }
->
->  static void slcan_hangup(struct tty_struct *tty)
-> @@ -768,14 +765,15 @@ static void __exit slcan_exit(void)
->                 dev = slcan_devs[i];
->                 if (!dev)
->                         continue;
-> -               slcan_devs[i] = NULL;
->
->                 sl = netdev_priv(dev);
->                 if (sl->tty) {
->                         netdev_err(dev, "tty discipline still running\n");
->                 }
->
-> -               unregister_netdev(dev);
-> +               slc_close(dev);
-> +               unregister_candev(dev);
-> +               slc_dealloc(sl);
->         }
->
->         kfree(slcan_devs);
-> --
-> 2.35.1
->
->
+Co-developed-by: Taras Chornyi <tchornyi@marvell.com>
+Signed-off-by: Taras Chornyi <tchornyi@marvell.com>
+Co-developed-by: Oleksandr Mazur <oleksandr.mazur@plvision.eu>
+Signed-off-by: Oleksandr Mazur <oleksandr.mazur@plvision.eu>
+Signed-off-by: Yevhen Orlov <yevhen.orlov@plvision.eu>
 
+Yevhen Orlov (9):
+  net: marvell: prestera: Add router nexthops ABI
+  net: marvell: prestera: Add cleanup of allocated fib_nodes
+  net: marvell: prestera: Add strict cleanup of fib arbiter
+  net: marvell: prestera: add delayed wq and flush wq on deinit
+  net: marvell: prestera: Add length macros for prestera_ip_addr
+  net: marvell: prestera: Add heplers to interact with fib_notifier_info
+  net: marvell: prestera: add stub handler neighbour events
+  net: marvell: prestera: Add neighbour cache accounting
+  net: marvell: prestera: Propogate nh state from hw to kernel
+
+ .../net/ethernet/marvell/prestera/prestera.h  |   12 +
+ .../ethernet/marvell/prestera/prestera_hw.c   |  124 ++
+ .../ethernet/marvell/prestera/prestera_hw.h   |   11 +
+ .../ethernet/marvell/prestera/prestera_main.c |   11 +
+ .../marvell/prestera/prestera_router.c        | 1141 ++++++++++++++++-
+ .../marvell/prestera/prestera_router_hw.c     |  379 +++++-
+ .../marvell/prestera/prestera_router_hw.h     |   76 +-
+ 7 files changed, 1712 insertions(+), 42 deletions(-)
 
 -- 
+2.17.1
 
-Dario Binacchi
-
-Embedded Linux Developer
-
-dario.binacchi@amarulasolutions.com
-
-__________________________________
-
-
-Amarula Solutions SRL
-
-Via Le Canevare 30, 31100 Treviso, Veneto, IT
-
-T. +39 042 243 5310
-info@amarulasolutions.com
-
-www.amarulasolutions.com
