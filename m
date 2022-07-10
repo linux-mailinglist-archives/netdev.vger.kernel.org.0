@@ -2,105 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7224F56D0B4
-	for <lists+netdev@lfdr.de>; Sun, 10 Jul 2022 20:22:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D889E56D14B
+	for <lists+netdev@lfdr.de>; Sun, 10 Jul 2022 23:00:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229477AbiGJSWI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Jul 2022 14:22:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33406 "EHLO
+        id S229547AbiGJUzS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Jul 2022 16:55:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229463AbiGJSWH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Jul 2022 14:22:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68E23EE07;
-        Sun, 10 Jul 2022 11:22:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0338160E8B;
-        Sun, 10 Jul 2022 18:22:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 5630BC341C8;
-        Sun, 10 Jul 2022 18:22:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657477323;
-        bh=fFLHdaTrkdL546hiavbwZ4q6JyKxUPTO4mCIXRkM4ZQ=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ojK40enGcuer2RNiPxNMGa9P6bv06ZfLhTK1nB7O87SXb1qLc3JDuplfTYSIZ5V8P
-         SkoP7BOBQ8IxIenw8rrTP7Z1XnoKNRjWqbIEwnl2u8Iikx62dRbdbe9fY5QK8Qwwkt
-         l1yvo3vUc3Avxlcr3I3QjLVkEzknIDVPh6X5ZBKpZF7YyC+/UQii9IyKm21YNQQrqI
-         1ITC+VnR/nb+3e1lTPG9/uYZ4eSd3CYuPwg71ptlUKwmKQooutWLfCxCjvkYuGdWzE
-         V2ZZaX7713W03hxWC9opx5v22vgRsAW9yzgd+2BAhLGImT67qbtdg6L9BnXy/bAinB
-         wUeIRALm4Al5Q==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 33339E45BE0;
-        Sun, 10 Jul 2022 18:22:03 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229450AbiGJUzR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Jul 2022 16:55:17 -0400
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 413E814003;
+        Sun, 10 Jul 2022 13:55:14 -0700 (PDT)
+Received: by mail-pg1-x52a.google.com with SMTP id g4so3217927pgc.1;
+        Sun, 10 Jul 2022 13:55:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=qQKjxcYz1SGrja/RVWPyvjQAdujAs0bm/5MR0Zd7Fbs=;
+        b=J3T5xnG1aPiHUNRQPunaMCimNV7xGov7UtdtYdHjaMGT6u0XnG5UsGmHJSLPOKXzn8
+         J7nMnII2QM10Qhl5LHKZJKUrrFFZK4V0wwUc4w3aXHt+cQcj2s55m7Kn40IYEDhUKqTb
+         dSwMuwcjOEXlC4wNQ6+ODl8OgELw4mXnHHj1wrfu3Cfkdx1bgCseS64zjhFdMSRmY2pj
+         HcUrWodW2cY1xOKmN5ahKPKXtkrgZWsvc99irE6xip8ou5SnXmApnqWIrCuz1kxFuz8z
+         6Tm/J379p46vZwowXNbim6uD1hNpMSsNLsN7wmMbaLFyFoDLuNy5VPyF7wV8UcIBZk+b
+         Gx8w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=qQKjxcYz1SGrja/RVWPyvjQAdujAs0bm/5MR0Zd7Fbs=;
+        b=ACkb1wOseiwW2R1kVfkKp+AQ2Yo/TIhBgDwcSLXVG8oFzhznm6KN93Wpw4sGCe5Kgz
+         O5j7AseyM+zpnF1/wtOwty8M6u2zkz9iVWeKZEosFz//wvPGBN5IKqrylvj8gPpRxSIV
+         4kWCbix4SUs6BITHq0Iwu4r2vuk4RnQ33mNoqfoWegWsPapcKbuBAgy+OzolooOGlax9
+         jjIhMQLjdwpR6IIdiiO5dibmohxBjJOl+spoFrx3NV/8qTpe1rCPlrCWDC+K+vWQKr9s
+         OqaekpnFizotECDeg26pXRZYn5oMb5RXbcK2vZBg/GADD70jWkEubH4emN16Nd3hOPNt
+         4xRA==
+X-Gm-Message-State: AJIora/iulXxQXjpzMEgZHyoffqUAvPycxmdt/xVMPEv8UXP8SOZqb6o
+        5ID57239mNNquKkWvDYUZwae7zrGNA7mqA==
+X-Google-Smtp-Source: AGRyM1v/0pHHJkcEvPg32H/Zrta20c9KMIwYkT2EJglL1F4N05DErX0mIwaKlQWfsGCUQACIrQO7Dw==
+X-Received: by 2002:a63:69ca:0:b0:411:994d:1e29 with SMTP id e193-20020a6369ca000000b00411994d1e29mr13517561pgc.118.1657486513481;
+        Sun, 10 Jul 2022 13:55:13 -0700 (PDT)
+Received: from cloud-MacBookPro ([2601:646:8201:c2e0:4045:a2e:ac7a:d1f4])
+        by smtp.gmail.com with ESMTPSA id js1-20020a17090b148100b001ef7e5f2a82sm3235158pjb.25.2022.07.10.13.55.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 10 Jul 2022 13:55:13 -0700 (PDT)
+Date:   Sun, 10 Jul 2022 13:55:12 -0700
+From:   binyi <dantengknight@gmail.com>
+To:     Joe Perches <joe@perches.com>
+Cc:     Manish Chopra <manishc@marvell.com>, GR-Linux-NIC-Dev@marvell.com,
+        Coiby Xu <coiby.xu@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] staging: qlge: Fix indentation issue under long for
+ loop
+Message-ID: <20220710205512.GA1883@cloud-MacBookPro>
+References: <20220710083657.GA3311@cloud-MacBookPro>
+ <d278cf5d38235db92efa236cb1940a67e0e9a005.camel@perches.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [net-next PATCH v5 00/12] octeontx2: Exact Match Table.
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165747732320.1773.1868461985348849288.git-patchwork-notify@kernel.org>
-Date:   Sun, 10 Jul 2022 18:22:03 +0000
-References: <20220708044151.2972645-1-rkannoth@marvell.com>
-In-Reply-To: <20220708044151.2972645-1-rkannoth@marvell.com>
-To:     Ratheesh Kannoth <rkannoth@marvell.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        sgoutham@marvell.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d278cf5d38235db92efa236cb1940a67e0e9a005.camel@perches.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to bpf/bpf-next.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Fri, 8 Jul 2022 10:11:39 +0530 you wrote:
-> Exact match table and Field hash support for CN10KB silicon
+On Sun, Jul 10, 2022 at 08:28:57AM -0700, Joe Perches wrote:
+> On Sun, 2022-07-10 at 01:36 -0700, Binyi Han wrote:
+> > Fix indentation issue to adhere to Linux kernel coding style,
+> > Issue found by checkpatch. And change the long for loop into 3 lines.
+> > 
+> > Signed-off-by: Binyi Han <dantengknight@gmail.com>
+> > ---
+> > v2:
+> > 	- Change the long for loop into 3 lines.
+> > 
+> >  drivers/staging/qlge/qlge_main.c | 18 ++++++++++--------
+> >  1 file changed, 10 insertions(+), 8 deletions(-)
+> > 
+> > diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
+> > index 1a378330d775..6e771d0e412b 100644
+> > --- a/drivers/staging/qlge/qlge_main.c
+> > +++ b/drivers/staging/qlge/qlge_main.c
+> > @@ -3007,10 +3007,11 @@ static int qlge_start_rx_ring(struct qlge_adapter *qdev, struct rx_ring *rx_ring
+> >  		tmp = (u64)rx_ring->lbq.base_dma;
+> >  		base_indirect_ptr = rx_ring->lbq.base_indirect;
+> >  
+> > -		for (page_entries = 0; page_entries <
+> > -			MAX_DB_PAGES_PER_BQ(QLGE_BQ_LEN); page_entries++)
+> > -				base_indirect_ptr[page_entries] =
+> > -					cpu_to_le64(tmp + (page_entries * DB_PAGE_SIZE));
+> > +		for (page_entries = 0;
+> > +			page_entries < MAX_DB_PAGES_PER_BQ(QLGE_BQ_LEN);
+> > +			page_entries++)
+> > +			base_indirect_ptr[page_entries] =
+> > +				cpu_to_le64(tmp + (page_entries * DB_PAGE_SIZE));
 > 
-> ChangeLog
-> ---------
->   1) V0 to V1
->      a) Removed change IDs from all patches.
+> Better to align page_entries to the open parenthesis.
 > 
-> [...]
+> And another optimization would be to simply add DB_PAGE_SIZE to tmp
+> in the loop and avoid the multiply.
+> 
+> 		for (page_entries = 0;
+> 		     page_entries < MAX_DB_PAGES_PER_BQ(QLGE_BQ_LEN);
+> 		     page_entries++) {
+> 			base_indirect_ptr[page_entries] = cpu_to_le64(tmp);
+> 			tmp += DB_PAGE_SIZE;
+> 		}
+> 
+> > @@ -3022,10 +3023,11 @@ static int qlge_start_rx_ring(struct qlge_adapter *qdev, struct rx_ring *rx_ring
+> >  		tmp = (u64)rx_ring->sbq.base_dma;
+> >  		base_indirect_ptr = rx_ring->sbq.base_indirect;
+> >  
+> > -		for (page_entries = 0; page_entries <
+> > -			MAX_DB_PAGES_PER_BQ(QLGE_BQ_LEN); page_entries++)
+> > -				base_indirect_ptr[page_entries] =
+> > -					cpu_to_le64(tmp + (page_entries * DB_PAGE_SIZE));
+> > +		for (page_entries = 0;
+> > +			page_entries < MAX_DB_PAGES_PER_BQ(QLGE_BQ_LEN);
+> > +			page_entries++)
+> > +			base_indirect_ptr[page_entries] =
+> > +				cpu_to_le64(tmp + (page_entries * DB_PAGE_SIZE));
+> 
+> here too
+> 
 
-Here is the summary with links:
-  - [net-next,v5,01/12] octeontx2-af: Use hashed field in MCAM key
-    https://git.kernel.org/bpf/bpf-next/c/a95ab93550d3
-  - [net-next,v5,02/12] octeontx2-af: Exact match support
-    (no matching commit)
-  - [net-next,v5,03/12] octeontx2-af: Exact match scan from kex profile
-    https://git.kernel.org/bpf/bpf-next/c/60ec39311750
-  - [net-next,v5,04/12] octeontx2-af: devlink configuration support
-    (no matching commit)
-  - [net-next,v5,05/12] octeontx2-af: FLR handler for exact match table.
-    https://git.kernel.org/bpf/bpf-next/c/799f02ef2ce3
-  - [net-next,v5,06/12] octeontx2-af: Drop rules for NPC MCAM
-    (no matching commit)
-  - [net-next,v5,07/12] octeontx2-af: Debugsfs support for exact match.
-    https://git.kernel.org/bpf/bpf-next/c/01b9228b20ad
-  - [net-next,v5,08/12] octeontx2: Modify mbox request and response structures
-    https://git.kernel.org/bpf/bpf-next/c/68793a8bbfcd
-  - [net-next,v5,09/12] octeontx2-af: Wrapper functions for MAC addr add/del/update/reset
-    (no matching commit)
-  - [net-next,v5,10/12] octeontx2-af: Invoke exact match functions if supported
-    https://git.kernel.org/bpf/bpf-next/c/84926eb57dbf
-  - [net-next,v5,11/12] octeontx2-pf: Add support for exact match table.
-    https://git.kernel.org/bpf/bpf-next/c/e56468377fa0
-  - [net-next,v5,12/12] octeontx2-af: Enable Exact match flag in kex profile
-    https://git.kernel.org/bpf/bpf-next/c/7189d28e7e2d
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Ah I see, that makes sense. Thanks for reviewing!
