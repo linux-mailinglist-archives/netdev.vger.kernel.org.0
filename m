@@ -2,130 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F0C0856CF42
-	for <lists+netdev@lfdr.de>; Sun, 10 Jul 2022 15:22:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AEF8656CF51
+	for <lists+netdev@lfdr.de>; Sun, 10 Jul 2022 15:52:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229592AbiGJNV6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Jul 2022 09:21:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48964 "EHLO
+        id S229482AbiGJNwe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Jul 2022 09:52:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229469AbiGJNV5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Jul 2022 09:21:57 -0400
-Received: from nautica.notk.org (ipv6.notk.org [IPv6:2001:41d0:1:7a93::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F316C12D11;
-        Sun, 10 Jul 2022 06:21:55 -0700 (PDT)
-Received: by nautica.notk.org (Postfix, from userid 108)
-        id 96E72C020; Sun, 10 Jul 2022 15:21:54 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1657459314; bh=K7azBUtXb9QlU6M/oC4wUt3g0LkVwhsHRxrJ+2emkdU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Z232gDRtgVmB7mdntIImDT8XecmC5DWbBht8xmM+5sieGswOW2apv+23TO3SpEwoL
-         lF6UNsQUOZXblJ7O35XdNUrui73dXa1gJzqqLhSrK0gc9i3Q89lJaHnKi8iMxarlQi
-         pPJJEQEO0dAuvUCbFXwXoHsOychQN4kScyxL8Yi2zFhtccDQoezs0dIKq7GVG7Ou0d
-         mdp5a0axxBkvAAd/ma/vawl3Ob0x8P3hhQo4OlAutRYAS0rdFboXU675JeD34t52ik
-         j7jmYyiGDSilJ45WbeuLviDMDXKnShcYgTxXt3gHRUcevaumW1EPyzkd+mAsAVRepa
-         9Yq/ewqhroisA==
+        with ESMTP id S229450AbiGJNwc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Jul 2022 09:52:32 -0400
+Received: from zg8tmtyylji0my4xnjqunzqa.icoremail.net (zg8tmtyylji0my4xnjqunzqa.icoremail.net [162.243.164.74])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id 37F72DF1B;
+        Sun, 10 Jul 2022 06:52:28 -0700 (PDT)
+Received: by ajax-webmail-mail-app3 (Coremail) ; Sun, 10 Jul 2022 21:52:06
+ +0800 (GMT+08:00)
+X-Originating-IP: [124.236.130.231]
+Date:   Sun, 10 Jul 2022 21:52:06 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From:   duoming@zju.edu.cn
+To:     linux-hams@vger.kernel.org, pabeni@redhat.com
+Cc:     ralf@linux-mips.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net v5] net: rose: fix null-ptr-deref caused by
+ rose_kill_by_neigh
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
+ Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
+MIME-Version: 1.0
+Message-ID: <56319300.38660.181e861b71b.Coremail.duoming@zju.edu.cn>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: cC_KCgCXnQyH2cpiqBw2AA--.3587W
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgkHAVZdtam0gAAAsu
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VW3Jw
+        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+        daVFxhVjvjDU=
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
-Received: from odin.codewreck.org (localhost [127.0.0.1])
-        by nautica.notk.org (Postfix) with ESMTPS id 62F05C009;
-        Sun, 10 Jul 2022 15:21:50 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1657459313; bh=K7azBUtXb9QlU6M/oC4wUt3g0LkVwhsHRxrJ+2emkdU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=bBVfSBX5Y0e/dgd4JveWnVnEfSnQEuvDoO7g4aons8iVKMy+maaeBXSwAJX28HC7g
-         YcKLDHiV62wpmBBGEYeG3fE3TDmY7sLiwt0S/jusqVC9wuP6jZ4HWK6pEWahs4UbIj
-         0JueGl8zHouoFUaoJPyxEMd5YFBfBz1KpajRCuqNvD0sF3vHTwUg+yWL6FN9FWspyk
-         RyGn33MP0LOYTV/2NJY149KCQMz5L9zsLHynCoXsYXShwho+XockesY2VOC7kXs49j
-         /qxOO6vDsqu8BBb7h5ehClBVV91hU1dTvUk2dtwjKUdylAuAsNvp8LS7x/7hZrzpMl
-         b2TZeuak+IktA==
-Received: from localhost (odin.codewreck.org [local])
-        by odin.codewreck.org (OpenSMTPD) with ESMTPA id f2fe1c83;
-        Sun, 10 Jul 2022 13:21:48 +0000 (UTC)
-Date:   Sun, 10 Jul 2022 22:21:33 +0900
-From:   Dominique Martinet <asmadeus@codewreck.org>
-To:     Tyler Hicks <tyhicks@linux.microsoft.com>
-Cc:     Eric Van Hensbergen <ericvh@gmail.com>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        Christian Schoenebeck <linux_oss@crudebyte.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net/9p: Initialize the iounit field during fid creation
-Message-ID: <YsrSXdGYQdtdqp9E@codewreck.org>
-References: <20220709200005.681861-1-tyhicks@linux.microsoft.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220709200005.681861-1-tyhicks@linux.microsoft.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tyler Hicks wrote on Sat, Jul 09, 2022 at 03:00:05PM -0500:
-> Ensure that the fid's iounit field is set to zero when a new fid is
-> created. Certain 9P operations, such as OPEN and CREATE, allow the
-> server to reply with an iounit size which the client code assigns to the
-> fid struct shortly after the fid is created in p9_fid_create(). Other
-> operations that follow a call to p9_fid_create(), such as an XATTRWALK,
-> don't include an iounit value in the reply message from the server. In
-> the latter case, the iounit field remained uninitialized. Depending on
-> allocation patterns, the iounit value could have been something
-> reasonable that was carried over from previously freed fids or, in the
-> worst case, could have been arbitrary values from non-fid related usages
-> of the memory location.
-> 
-> The bug was detected in the Windows Subsystem for Linux 2 (WSL2) kernel
-> after the uninitialized iounit field resulted in the typical sequence of
-> two getxattr(2) syscalls, one to get the size of an xattr and another
-> after allocating a sufficiently sized buffer to fit the xattr value, to
-> hit an unexpected ERANGE error in the second call to getxattr(2). An
-> uninitialized iounit field would sometimes force rsize to be smaller
-> than the xattr value size in p9_client_read_once() and the 9P server in
-> WSL refused to chunk up the READ on the attr_fid and, instead, returned
-> ERANGE to the client. The virtfs server in QEMU seems happy to chunk up
-> the READ and this problem goes undetected there. However, there are
-> likely other non-xattr implications of this bug that could cause
-> inefficient communication between the client and server.
-> 
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Tyler Hicks <tyhicks@linux.microsoft.com>
-
-Thanks for the fix!
-
-> ---
-> 
-> Note that I haven't had a chance to identify when this bug was
-> introduced so I don't yet have a proper Fixes tag. The history looked a
-> little tricky to me but I'll have another look in the coming days. We
-> started hitting this bug after trying to move from linux-5.10.y to
-> linux-5.15.y but I didn't see any obvious changes between those two
-> series. I'm not confident of this theory but perhaps the fid refcounting
-> changes impacted the fid allocation patterns enough to uncover the
-> latent bug?
-> 
->  net/9p/client.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/net/9p/client.c b/net/9p/client.c
-> index 8bba0d9cf975..1dfceb9154f7 100644
-> --- a/net/9p/client.c
-> +++ b/net/9p/client.c
-> @@ -899,6 +899,7 @@ static struct p9_fid *p9_fid_create(struct p9_client *clnt)
->  	fid->clnt = clnt;
->  	fid->rdir = NULL;
->  	fid->fid = 0;
-> +	fid->iounit = 0;
-
-ugh, this isn't the first we've missed so I'll be tempted to agree with
-Christophe -- let's make that a kzalloc and only set non-zero fields.
-
---
-Dominique
+SGVsbG8sCgpPbiBUdWUsIDA1IEp1bCAyMDIyIDEwOjQzOjQ0ICswMjAwIHBhYmVuaUByZWRoYXQu
+Y29tIHdyb3RlOgoKPiBPbiBTYXQsIDIwMjItMDctMDIgYXQgMTU6NTcgKzA4MDAsIER1b21pbmcg
+WmhvdSB3cm90ZToKPiA+IFdoZW4gdGhlIGxpbmsgbGF5ZXIgY29ubmVjdGlvbiBpcyBicm9rZW4s
+IHRoZSByb3NlLT5uZWlnaGJvdXIgaXMKPiA+IHNldCB0byBudWxsLiBCdXQgcm9zZS0+bmVpZ2hi
+b3VyIGNvdWxkIGJlIHVzZWQgYnkgcm9zZV9jb25uZWN0aW9uKCkKPiA+IGFuZCByb3NlX3JlbGVh
+c2UoKSBsYXRlciwgYmVjYXVzZSB0aGVyZSBpcyBubyBzeW5jaHJvbml6YXRpb24gYW1vbmcKPiA+
+IHRoZW0uIEFzIGEgcmVzdWx0LCB0aGUgbnVsbC1wdHItZGVyZWYgYnVncyB3aWxsIGhhcHBlbi4K
+PiA+IAo+ID4gT25lIG9mIHRoZSBudWxsLXB0ci1kZXJlZiBidWdzIGlzIHNob3duIGJlbG93Ogo+
+ID4gCj4gPiAgICAgKHRocmVhZCAxKSAgICAgICAgICAgICAgICAgIHwgICAgICAgICh0aHJlYWQg
+MikKPiA+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgcm9zZV9jb25uZWN0Cj4g
+PiByb3NlX2tpbGxfYnlfbmVpZ2ggICAgICAgICAgICAgIHwgICAgbG9ja19zb2NrKHNrKQo+ID4g
+ICBzcGluX2xvY2tfYmgoJnJvc2VfbGlzdF9sb2NrKSB8ICAgIGlmICghcm9zZS0+bmVpZ2hib3Vy
+KQo+ID4gICByb3NlLT5uZWlnaGJvdXIgPSBOVUxMOy8vKDEpICB8Cj4gPiAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgIHwgICAgcm9zZS0+bmVpZ2hib3VyLT51c2UrKzsvLygyKQo+ID4g
+Cj4gPiBUaGUgcm9zZS0+bmVpZ2hib3VyIGlzIHNldCB0byBudWxsIGluIHBvc2l0aW9uICgxKSBh
+bmQgZGVyZWZlcmVuY2VkCj4gPiBpbiBwb3NpdGlvbiAoMikuCj4gPiAKPiA+IFRoZSBLQVNBTiBy
+ZXBvcnQgdHJpZ2dlcmVkIGJ5IFBPQyBpcyBzaG93biBiZWxvdzoKPiA+IAo+ID4gS0FTQU46IG51
+bGwtcHRyLWRlcmVmIGluIHJhbmdlIFsweDAwMDAwMDAwMDAwMDAwMjgtMHgwMDAwMDAwMDAwMDAw
+MDJmXQo+ID4gLi4uCj4gPiBSSVA6IDAwMTA6cm9zZV9jb25uZWN0KzB4NmMyLzB4ZjMwCj4gPiBS
+U1A6IDAwMTg6ZmZmZjg4ODAwYWI0N2Q2MCBFRkxBR1M6IDAwMDAwMjA2Cj4gPiBSQVg6IDAwMDAw
+MDAwMDAwMDAwMDUgUkJYOiAwMDAwMDAwMDAwMDAwMDJhIFJDWDogMDAwMDAwMDAwMDAwMDAwMAo+
+ID4gUkRYOiBmZmZmODg4MDBhYjM4MDAwIFJTSTogZmZmZjg4ODAwYWI0N2U0OCBSREk6IGZmZmY4
+ODgwMGFiMzgzMDkKPiA+IFJCUDogZGZmZmZjMDAwMDAwMDAwMCBSMDg6IDAwMDAwMDAwMDAwMDAw
+MDAgUjA5OiBmZmZmZWQxMDAxNTY3MDYyCj4gPiBSMTA6IGRmZmZlOTEwMDE1NjcwNjMgUjExOiAx
+ZmZmZjExMDAxNTY3MDYxIFIxMjogMWZmZmYxMTAwMGQxN2NkMAo+ID4gUjEzOiBmZmZmODg4MDA2
+OGJlNjgwIFIxNDogMDAwMDAwMDAwMDAwMDAwMiBSMTU6IDFmZmZmMTEwMDBkMTdjZDAKPiA+IC4u
+Lgo+ID4gQ2FsbCBUcmFjZToKPiA+ICAgPFRBU0s+Cj4gPiAgID8gX19sb2NhbF9iaF9lbmFibGVf
+aXArMHg1NC8weDgwCj4gPiAgID8gc2VsaW51eF9uZXRsYmxfc29ja2V0X2Nvbm5lY3QrMHgyNi8w
+eDMwCj4gPiAgID8gcm9zZV9iaW5kKzB4NWIwLzB4NWIwCj4gPiAgIF9fc3lzX2Nvbm5lY3QrMHgy
+MTYvMHgyODAKPiA+ICAgX194NjRfc3lzX2Nvbm5lY3QrMHg3MS8weDgwCj4gPiAgIGRvX3N5c2Nh
+bGxfNjQrMHg0My8weDkwCj4gPiAgIGVudHJ5X1NZU0NBTExfNjRfYWZ0ZXJfaHdmcmFtZSsweDQ2
+LzB4YjAKPiA+IAo+ID4gVGhpcyBwYXRjaCBhZGRzIGxvY2tfc29jaygpIGluIHJvc2Vfa2lsbF9i
+eV9uZWlnaCgpIGluIG9yZGVyIHRvCj4gPiBzeW5jaHJvbml6ZSB3aXRoIHJvc2VfY29ubmVjdCgp
+IGFuZCByb3NlX3JlbGVhc2UoKS4KPiA+IAo+ID4gTWVhbndoaWxlLCB0aGlzIHBhdGNoIGFkZHMg
+c29ja19ob2xkKCkgcHJvdGVjdGVkIGJ5IHJvc2VfbGlzdF9sb2NrCj4gPiB0aGF0IGNvdWxkIHN5
+bmNocm9uaXplIHdpdGggcm9zZV9yZW1vdmVfc29ja2V0KCkgaW4gb3JkZXIgdG8gbWl0aWdhdGUK
+PiA+IFVBRiBidWcgY2F1c2VkIGJ5IGxvY2tfc29jaygpIHdlIGFkZC4KPiA+IAo+ID4gV2hhdCdz
+IG1vcmUsIHRoZXJlIGlzIG5vIG5lZWQgdXNpbmcgcm9zZV9uZWlnaF9saXN0X2xvY2sgdG8gcHJv
+dGVjdAo+ID4gcm9zZV9raWxsX2J5X25laWdoKCkuIEJlY2F1c2Ugd2UgaGF2ZSBhbHJlYWR5IHVz
+ZWQgcm9zZV9uZWlnaF9saXN0X2xvY2sKPiA+IHRvIHByb3RlY3QgdGhlIHN0YXRlIGNoYW5nZSBv
+ZiByb3NlX25laWdoIGluIHJvc2VfbGlua19mYWlsZWQoKSwgd2hpY2gKPiA+IGlzIHdlbGwgc3lu
+Y2hyb25pemVkLgo+ID4gCj4gPiBGaXhlczogMWRhMTc3ZTRjM2Y0ICgiTGludXgtMi42LjEyLXJj
+MiIpCj4gPiBTaWduZWQtb2ZmLWJ5OiBEdW9taW5nIFpob3UgPGR1b21pbmdAemp1LmVkdS5jbj4K
+PiA+IC0tLQo+ID4gQ2hhbmdlcyBpbiB2NToKPiA+ICAgLSB2NTogVXNlIHNvY2tldCBsb2NrIHRv
+IHByb3RlY3QgY29tcGFyaXNvbiBpbiByb3NlX2tpbGxfYnlfbmVpZ2guCj4gPiAKPiA+ICBuZXQv
+cm9zZS9hZl9yb3NlLmMgICAgfCAxMiArKysrKysrKysrKysKPiA+ICBuZXQvcm9zZS9yb3NlX3Jv
+dXRlLmMgfCAgMiArKwo+ID4gIDIgZmlsZXMgY2hhbmdlZCwgMTQgaW5zZXJ0aW9ucygrKQo+ID4g
+Cj4gPiBkaWZmIC0tZ2l0IGEvbmV0L3Jvc2UvYWZfcm9zZS5jIGIvbmV0L3Jvc2UvYWZfcm9zZS5j
+Cj4gPiBpbmRleCBiZjJkOTg2YTZiYy4uNmQ1MDg4YjAzMGEgMTAwNjQ0Cj4gPiAtLS0gYS9uZXQv
+cm9zZS9hZl9yb3NlLmMKPiA+ICsrKyBiL25ldC9yb3NlL2FmX3Jvc2UuYwo+ID4gQEAgLTE2NSwx
+NCArMTY1LDI2IEBAIHZvaWQgcm9zZV9raWxsX2J5X25laWdoKHN0cnVjdCByb3NlX25laWdoICpu
+ZWlnaCkKPiA+ICAJc3RydWN0IHNvY2sgKnM7Cj4gPiAgCj4gPiAgCXNwaW5fbG9ja19iaCgmcm9z
+ZV9saXN0X2xvY2spOwo+ID4gK2FnYWluOgo+ID4gIAlza19mb3JfZWFjaChzLCAmcm9zZV9saXN0
+KSB7Cj4gPiAgCQlzdHJ1Y3Qgcm9zZV9zb2NrICpyb3NlID0gcm9zZV9zayhzKTsKPiA+ICAKPiA+
+ICsJCXNvY2tfaG9sZChzKTsKPiA+ICsJCXNwaW5fdW5sb2NrX2JoKCZyb3NlX2xpc3RfbG9jayk7
+Cj4gPiArCQlsb2NrX3NvY2socyk7Cj4gPiAgCQlpZiAocm9zZS0+bmVpZ2hib3VyID09IG5laWdo
+KSB7Cj4gPiAgCQkJcm9zZV9kaXNjb25uZWN0KHMsIEVORVRVTlJFQUNILCBST1NFX09VVF9PRl9P
+UkRFUiwgMCk7Cj4gPiAgCQkJcm9zZS0+bmVpZ2hib3VyLT51c2UtLTsKCkkgYW0gc29ycnkgZm9y
+IHRoZSBkZWxheS4KCj4gTm90ZSB0aGF0IHRoZSBjb2RlIGNhbiBoZWxkIGRpZmZlcmVudCBzb2Nr
+ZXQgbG9jayB3aGlsZSB1cGRhdGluZwo+ICduZWlnaGJvdXItPnVzZScuIFRoYXQgcmVhbGx5IG1l
+YW5zIHRoYXQgc3VjaCB1cGRhdGVzIGNhbiByZWFsbHkgcmFjZQo+IGVhY2ggb3RoZXIsIHdpdGgg
+YmFkIHJlc3VsdHMuCgpUaGFuayB5b3UgZm9yIHlvdXIgdGltZSBhbmQgc3VnZ2VzdGlvbnMhIEkg
+YWdyZWUgd2l0aCB5b3UgYW5kIEkgd2lsbCBpbXByb3ZlCnRoaXMgcGF0Y2guCgo+IEkgdGhpbmsg
+dGhlIG9ubHkgc2FmZSB3YXkgb3V0IGlzIHVzaW5nIGFuIGF0b21pY190IGZvciAnbmVpZ2hib3Vy
+LT51c2UnCj4gKGxpa2VseSBhIHJlZmNvdW50X3Qgd291bGQgYmUgYSBiZXR0ZXIgb3B0aW9uKS4K
+Ckkgd2lsbCB1c2UgcmVmY291bnRfdCB0byBtYW5hZ2UgdGhlICduZWlnaGJvdXItPnVzZScuCgo+
+IEFsbCB0aGUgYWJvdmUgZGVzZXJ2ZXMgYSBzZXBhcmF0ZSBwYXRjaCBJTUhPLgo+IAo+ID4gIAkJ
+CXJvc2UtPm5laWdoYm91ciA9IE5VTEw7Cj4gPiArCQkJcmVsZWFzZV9zb2NrKHMpOwo+ID4gKwkJ
+CXNvY2tfcHV0KHMpOwo+ID4gKwkJCXNwaW5fbG9ja19iaCgmcm9zZV9saXN0X2xvY2spOwo+ID4g
+KwkJCWdvdG8gYWdhaW47Cj4gCj4gVGhpcyBjaHVuayBpcyBkdXAgb2YgdGhlIGZvbGxvd2luZyBs
+aW5lcywgaXQgY291bGQgYmUgZHJvcHBlZC4uLgo+IAo+ID4gIAkJfQo+ID4gKwkJcmVsZWFzZV9z
+b2NrKHMpOwo+ID4gKwkJc29ja19wdXQocyk7Cj4gPiArCQlzcGluX2xvY2tfYmgoJnJvc2VfbGlz
+dF9sb2NrKTsKPiA+ICsJCWdvdG8gYWdhaW47Cj4gCj4gLi4uIGlmIHRoaXMgd291bGQgYmUgY29y
+cmVjdCwgd2hpY2ggYXBwYXJlbnRseSBpcyBub3QuCj4gCj4gV2hhdCBoYXBwZW5zIHdoZW4gJ3Jv
+c2UtPm5laWdoYm91cicgaXMgZGlmZmVyZW50IGZyb20gJ25laWdoJyBmb3IgZmlyc3QKPiBzb2Nr
+ZXQgaW4gcm9zZV9saXN0PwoKSSB1bmRlcnN0YW5kLiBJZiB0aGUgJ3Jvc2UtPm5laWdoYm91cicg
+aXMgZGlmZmVyZW50IGZyb20gJ25laWdoJyBmb3IgdGhlIGZpcnN0IHNvY2tldAppbiB0aGUgcm9z
+ZV9saXN0LCB0aGUgY29kZSB3aWxsIGdvdG8gYWdhaW4gYW5kIHJlLXNlYXJjaCB0aGUgbGlzdC4g
+VGhpcyB3aWxsIGNhdXNlCmluZmluaXRlIGxvb3AuIEkgd2lsbCBpbXByb3ZlIHRoaXMuCgpCZXN0
+IHJlZ2FyZHMsCkR1b21pbmcgWmhvdQ==
