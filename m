@@ -2,38 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C5A9656CCE7
-	for <lists+netdev@lfdr.de>; Sun, 10 Jul 2022 06:34:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 340E456CD3C
+	for <lists+netdev@lfdr.de>; Sun, 10 Jul 2022 07:25:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229694AbiGJEei (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Jul 2022 00:34:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52338 "EHLO
+        id S229594AbiGJFZJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Jul 2022 01:25:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229477AbiGJEeh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Jul 2022 00:34:37 -0400
+        with ESMTP id S229488AbiGJFZJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Jul 2022 01:25:09 -0400
 Received: from smtpbg.qq.com (biz-43-154-54-12.mail.qq.com [43.154.54.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A76611145F;
-        Sat,  9 Jul 2022 21:34:32 -0700 (PDT)
-X-QQ-mid: bizesmtp66t1657427654tyba4nv9
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E28B3DEB4;
+        Sat,  9 Jul 2022 22:25:03 -0700 (PDT)
+X-QQ-mid: bizesmtp62t1657430692th344d3v
 Received: from localhost.localdomain ( [182.148.15.109])
         by bizesmtp.qq.com (ESMTP) with 
-        id ; Sun, 10 Jul 2022 12:34:11 +0800 (CST)
+        id ; Sun, 10 Jul 2022 13:24:49 +0800 (CST)
 X-QQ-SSF: 01000000002000B0C000C00A0000000
-X-QQ-FEAT: BYjrFJkuRRd+wl4E6Z47xa6NTp1+QyC6Ef9V2qKYyzNW6zZe6omfGzPHk9z6j
-        U5RDKqKPEsVC/wF6KeL2UpDNAitKEUDL8HqJ7NLNPo03rBcSSpFSEI7mYNVmlc6ztaEFfzc
-        svk4SLzMmIUEnPV91TJjIqWLTaPIWvdUJQNkPhlaDZRytByctbGydoecyONNhFiSlR+5BDk
-        LypQt9+cGxN5jYBJGNn+7Hm1iS9xNrLPEvvurwGqbjwvFvtCFMJIibK/fsaExpGYnaoYVsh
-        529g2V6FYWNj52dlNUJ/l3xzZGiDbEBkolHujA+OVLLwGkiKhzyioFQt8j/YkQ/q7Xo3Gyf
-        zUqBqdIpw7yxikHxPfh9INhj8+icibh0k5lOqOHay2wrCVOmPE=
+X-QQ-FEAT: VtOeT7Mmgt8QdUZi/607dKvLCGh6wDylYrbYl2i7c1s9QsC0AmxDUarQsbx9P
+        2PdZdVe/kbc/CtlGwAjL9o7O1YKZnxkf8FZKVh/U/aJk1rmrr4ZdkwkY/wTBuxmQzDtWH0r
+        scRCNq658Bd+JdvEcRIdtUIDa+4kCnZKqKfqkTSw1yMC0MvqrEy6XL0SoLNdwn0zTy29gYf
+        KZrEcva71L8zTBYYQ+QX7cGP2Q4ogVPY1lSn9ApT3FQrAbzj1zRkOHdHW/ORTOQToy2QdSi
+        YCuhzLm3KlmDtGBD9RXuiJY1JKwbZtaUrfJOtsNpom7Q0/h59Wez0rxj1vgefPZZa0M3XBE
+        RULKjSaoXdUW2SVYTA+PczjsYbR3+3ENH6M8VESEPn6ORYeHjZ/Snfi8dfw9A==
 X-QQ-GoodBg: 0
 From:   Jilin Yuan <yuanjilin@cdjrlc.com>
-To:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+To:     3chas3@gmail.com
+Cc:     netdev@vger.kernel.org, linux-atm-general@lists.sourceforge.net,
         linux-kernel@vger.kernel.org, Jilin Yuan <yuanjilin@cdjrlc.com>
-Subject: [PATCH] wifi: wl1251: fix repeated words in comments
-Date:   Sun, 10 Jul 2022 12:34:05 +0800
-Message-Id: <20220710043405.38304-1-yuanjilin@cdjrlc.com>
+Subject: [PATCH] drivers/atm: fix repeated words in comments
+Date:   Sun, 10 Jul 2022 13:24:43 +0800
+Message-Id: <20220710052443.15179-1-yuanjilin@cdjrlc.com>
 X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -52,22 +51,22 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
 ---
- drivers/net/wireless/ti/wl1251/acx.h | 2 +-
+ drivers/atm/iphase.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ti/wl1251/acx.h b/drivers/net/wireless/ti/wl1251/acx.h
-index 1da6ba95d3d4..1da6ab664e41 100644
---- a/drivers/net/wireless/ti/wl1251/acx.h
-+++ b/drivers/net/wireless/ti/wl1251/acx.h
-@@ -1229,7 +1229,7 @@ struct wl1251_acx_arp_filter {
- 	u8 address[16];	/* The IP address used to filter ARP packets.
- 			   ARP packets that do not match this address are
- 			   dropped. When the IP Version is 4, the last 12
--			   bytes of the the address are ignored. */
-+			   bytes of the address are ignored. */
- } __attribute__((packed));
- 
- struct wl1251_acx_ac_cfg {
+diff --git a/drivers/atm/iphase.c b/drivers/atm/iphase.c
+index 3e726ee91fdc..76b9081cf6f7 100644
+--- a/drivers/atm/iphase.c
++++ b/drivers/atm/iphase.c
+@@ -740,7 +740,7 @@ static u16 ia_eeprom_get (IADEV *iadev, u32 addr)
+ 	int	i;
+ 	/*
+ 	 * Read the first bit that was clocked with the falling edge of the
+-	 * the last command data clock
++	 * last command data clock
+ 	 */
+ 	NVRAM_CMD(IAREAD + addr);
+ 	/*
 -- 
 2.36.1
 
