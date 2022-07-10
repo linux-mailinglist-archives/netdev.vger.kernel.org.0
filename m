@@ -2,39 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 13A1C56CC99
-	for <lists+netdev@lfdr.de>; Sun, 10 Jul 2022 06:15:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AAA6E56CCA4
+	for <lists+netdev@lfdr.de>; Sun, 10 Jul 2022 06:21:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229642AbiGJEPf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Jul 2022 00:15:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43890 "EHLO
+        id S229648AbiGJEVX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Jul 2022 00:21:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229543AbiGJEPd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Jul 2022 00:15:33 -0400
+        with ESMTP id S229477AbiGJEVW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Jul 2022 00:21:22 -0400
 Received: from smtpbg.qq.com (biz-43-154-54-12.mail.qq.com [43.154.54.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4CC01057B;
-        Sat,  9 Jul 2022 21:15:28 -0700 (PDT)
-X-QQ-mid: bizesmtp86t1657426491t4ddiweg
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEAEB22531;
+        Sat,  9 Jul 2022 21:21:09 -0700 (PDT)
+X-QQ-mid: bizesmtp88t1657426851t9cmf4ud
 Received: from localhost.localdomain ( [182.148.15.109])
         by bizesmtp.qq.com (ESMTP) with 
-        id ; Sun, 10 Jul 2022 12:14:48 +0800 (CST)
+        id ; Sun, 10 Jul 2022 12:20:47 +0800 (CST)
 X-QQ-SSF: 01000000002000B0C000B00A0000000
-X-QQ-FEAT: EBK0Xn0IPVit/hKYiLQnKuTt9ew4nX4f4hP3LG2pxqo7NPEvv6ADGy5L4OI23
-        rdSJnjo2c7//D8nnqAknFusMfQxJ5wRauRlU+VwMHbxn0kw7XBF9YUWoyVbDMZQeFluxBtA
-        vnBiaP/54XRtioaZhBy+ZOmbVHenxHF5iOFVOTh6cbdxxhyMidu539iPtXrRqxNFle+12zC
-        ntpdUh4LyIH46FP3OZH226S5etuwwn7uybr749zaWQSCGPSsK95CGIvb7z81blZ6T2Mhezj
-        7zJ5HRnFNLXy4TigTEGVQ+X+UXDLBsK2TJWy4sRHDdtVG1dySx2MrCaJoJDRfYvCzQ4mS83
-        RkFSY02I9+09plpSWeFkoRog5IImLlDDONMpnFw
+X-QQ-FEAT: mVJZl7SIEgijNN91Ngu4wfxx0Jx6cmlMLwWSZZ8rTsr3bD8kS/kU+4XmnRynx
+        OBR2kDdWhKDVeO8zSWgMJRU2vHYJysBwt0zf4wKQIPWt6oSHsFShflA/B/gDobKAqnBLvg7
+        qeDJgByk7pvzSBYOlqCT1rwCOsuQay7Vk59TFOFx7WBA3JT4mpzU4fo3530MNURTt1+nz8a
+        dgks8AB66c/KyArWrWB7e2R+zXglOoChAvJaWc+T/L6/WnTzJ8fdTJcOFxfbPCASTpFztH8
+        uOdknzNUKfeJ8j5ahNmhGY0tK6G8ItEMNEKuKZnNJKgc6tzdK8yJ7m89DlcdYQrO004Kezv
+        tnQzVGpPbtmdTEOuDL6LdkYQ23w+hYKh91Xac1jkTyoN85Id+E=
 X-QQ-GoodBg: 0
 From:   Jilin Yuan <yuanjilin@cdjrlc.com>
-To:     stf_xl@wp.pl, helmut.schaa@googlemail.com, kvalo@kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
+To:     pkshih@realtek.com, kvalo@kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
 Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Jilin Yuan <yuanjilin@cdjrlc.com>
-Subject: [PATCH] wifi: rt2x00: fix repeated words in comments
-Date:   Sun, 10 Jul 2022 12:14:42 +0800
-Message-Id: <20220710041442.16177-1-yuanjilin@cdjrlc.com>
+Subject: [PATCH] wifi: rtlwifi: fix repeated words in comments
+Date:   Sun, 10 Jul 2022 12:20:40 +0800
+Message-Id: <20220710042040.22456-1-yuanjilin@cdjrlc.com>
 X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -49,41 +48,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
- Delete the redundant word 'is'.
- Delete the redundant word 'with'.
+ Delete the redundant word 'in'.
+ Delete the redundant word 'scan'.
 
 Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
 ---
- drivers/net/wireless/ralink/rt2x00/rt2x00.h    | 2 +-
- drivers/net/wireless/ralink/rt2x00/rt2x00mac.c | 2 +-
+ drivers/net/wireless/realtek/rtlwifi/core.c | 2 +-
+ drivers/net/wireless/realtek/rtlwifi/regd.c | 2 +-
  2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/ralink/rt2x00/rt2x00.h b/drivers/net/wireless/ralink/rt2x00/rt2x00.h
-index 9f6fc40649be..7927fb10b8a8 100644
---- a/drivers/net/wireless/ralink/rt2x00/rt2x00.h
-+++ b/drivers/net/wireless/ralink/rt2x00/rt2x00.h
-@@ -232,7 +232,7 @@ struct link_qual {
- 	 * VGC levels
- 	 * Hardware driver will tune the VGC level during each call
- 	 * to the link_tuner() callback function. This vgc_level is
--	 * is determined based on the link quality statistics like
-+	 * determined based on the link quality statistics like
- 	 * average RSSI and the false CCA count.
- 	 *
- 	 * In some cases the drivers need to differentiate between
-diff --git a/drivers/net/wireless/ralink/rt2x00/rt2x00mac.c b/drivers/net/wireless/ralink/rt2x00/rt2x00mac.c
-index dea5babd30fe..6b1ad4e268d6 100644
---- a/drivers/net/wireless/ralink/rt2x00/rt2x00mac.c
-+++ b/drivers/net/wireless/ralink/rt2x00/rt2x00mac.c
-@@ -325,7 +325,7 @@ int rt2x00mac_config(struct ieee80211_hw *hw, u32 changed)
- 	 */
- 	rt2x00queue_stop_queue(rt2x00dev->rx);
+diff --git a/drivers/net/wireless/realtek/rtlwifi/core.c b/drivers/net/wireless/realtek/rtlwifi/core.c
+index 99a1d91ced5a..a1cbedb346dd 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/core.c
++++ b/drivers/net/wireless/realtek/rtlwifi/core.c
+@@ -671,7 +671,7 @@ static int rtl_op_config(struct ieee80211_hw *hw, u32 changed)
  
--	/* Do not race with with link tuner. */
-+	/* Do not race with link tuner. */
- 	mutex_lock(&rt2x00dev->conf_mutex);
+ 		/*
+ 		 *because we should back channel to
+-		 *current_network.chan in in scanning,
++		 *current_network.chan in scanning,
+ 		 *So if set_chan == current_network.chan
+ 		 *we should set it.
+ 		 *because mac80211 tell us wrong bw40
+diff --git a/drivers/net/wireless/realtek/rtlwifi/regd.c b/drivers/net/wireless/realtek/rtlwifi/regd.c
+index 4cf8face0bbd..0bc4afa4fda3 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/regd.c
++++ b/drivers/net/wireless/realtek/rtlwifi/regd.c
+@@ -178,7 +178,7 @@ static void _rtl_reg_apply_beaconing_flags(struct wiphy *wiphy,
+ 	}
+ }
  
- 	/*
+-/* Allows active scan scan on Ch 12 and 13 */
++/* Allows active scan on Ch 12 and 13 */
+ static void _rtl_reg_apply_active_scan_flags(struct wiphy *wiphy,
+ 					     enum nl80211_reg_initiator
+ 					     initiator)
 -- 
 2.36.1
 
