@@ -2,43 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D1F6256CC3B
-	for <lists+netdev@lfdr.de>; Sun, 10 Jul 2022 04:08:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8130756CC59
+	for <lists+netdev@lfdr.de>; Sun, 10 Jul 2022 04:16:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229534AbiGJCIM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Jul 2022 22:08:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50568 "EHLO
+        id S229479AbiGJCQd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Jul 2022 22:16:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229462AbiGJCIL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 Jul 2022 22:08:11 -0400
-Received: from m15112.mail.126.com (m15112.mail.126.com [220.181.15.112])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 59E3924089
-        for <netdev@vger.kernel.org>; Sat,  9 Jul 2022 19:08:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=eUhp1
-        p94eXV8KkMAhZTBxBjJPlTpKFq8T+dc3Sfb1YA=; b=OJpszw+XiVkFhMmvvTexi
-        vhkYe77zSWWWfBezOrv/czr+B5D4u5LvJ7Mqbi5CdQ/HK1zZG8Rqjx2UNeg9jn3R
-        WIJ52UjemFJNlCZKlcWBqbMyZOpJ768xbPAfuw23XLqV/GtEYFm4mz0aRyn2YWqB
-        fBEQ+9Y5m0N35yajjeU7+g=
-Received: from localhost.localdomain (unknown [124.16.139.61])
-        by smtp2 (Coremail) with SMTP id DMmowAAnjvphNMpiOwNkEg--.15253S2;
-        Sun, 10 Jul 2022 10:07:30 +0800 (CST)
-From:   Liang He <windhl@126.com>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, windhl@126.com, netdev@vger.kernel.org
-Subject: [PATCH v2] net: ftgmac100: Hold reference returned by of_get_child_by_name()
-Date:   Sun, 10 Jul 2022 10:07:28 +0800
-Message-Id: <20220710020728.317086-1-windhl@126.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S229459AbiGJCQc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 Jul 2022 22:16:32 -0400
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06B0E1144B;
+        Sat,  9 Jul 2022 19:16:32 -0700 (PDT)
+Received: by mail-pg1-x52a.google.com with SMTP id q82so2050743pgq.6;
+        Sat, 09 Jul 2022 19:16:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=IBkh7IsZmbFYLN06pIohD0sqXoNpFUpMtpF2eiWgC/c=;
+        b=hJEfCZHCjmcvTVedYigK9MS4ZN5U7binqtqQQsqe6KRATruu9vEegw6jZ45Y78iGTM
+         jzesCTpvkLZmURTrU5zaSrhUEHyaYtJsYgmDLUJ0cwT+r+yucYw9S1piZKW2L+JHnL7z
+         uWI/ZA9n0/z3c2v+VdVTSMbKnwYEE0M6h8J/if/6h7TCTv1DSb+/sAW9lVDof4zKUC97
+         jeMQ+T8ieG2c6/+652EthjFfw6NYb92AGJiomMOAV6eM5ZV2SjlIXW+WlurRXY8En7Nn
+         fMKVyL1RJxkFYj9MgkQ4Oq6lYQgVr7reF+P5415rASo5Yo2GUbCU4h9wTFZnasmTo6tX
+         7tuA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=IBkh7IsZmbFYLN06pIohD0sqXoNpFUpMtpF2eiWgC/c=;
+        b=40EHSQHk530/T5g8RU7mgqKSLp9LFCSz9xNd+HKw5IQUzlHWqAlmdRpamSWZqN11sP
+         xqFwNl1xk3igtYNmbmbqVMLACs7r5qsgoNaAF7+DteUzqTXhYWdo3Dg6r1EFD58/XsTD
+         S3ajLDsWmnLOajlSY3ba+ffSPqNS2OTx7Q3YDrBCw4rPlHb2jHGiBm5AKLnpGgDqGm9R
+         FVCZIeMUepySHjwvsPXVjJwZlxhfXzyrB2BGOMDkyPOtj7sOgIyOHMQeawOXJnHEzE80
+         BVWmBjXKltATDDmTQNlcfY6AjpCYwoF8bRHav2L7hQcBqQFoYH/JP0Kq6tREQbRNXvky
+         9ksQ==
+X-Gm-Message-State: AJIora9xnpoEcio2bv1m3PHXHovCBIN9VG7afMrbukzXAQMOHNRJDXBV
+        jum0IERL8R2UHA0+SOXoMKit4zTSoVKF2w==
+X-Google-Smtp-Source: AGRyM1t2Q/yjn10IfRmCt7ORJW55dNab68K9IiJI7QQKCrINWnSYQB5w79KBS22ZEIimzf0wCXUXcQ==
+X-Received: by 2002:a05:6a00:188e:b0:52a:b545:559f with SMTP id x14-20020a056a00188e00b0052ab545559fmr8921660pfh.18.1657419391137;
+        Sat, 09 Jul 2022 19:16:31 -0700 (PDT)
+Received: from cloud-MacBookPro ([2601:646:8201:c2e0:4775:5e6e:8613:5b36])
+        by smtp.gmail.com with ESMTPSA id iw5-20020a170903044500b0016bd72887fcsm1946645plb.59.2022.07.09.19.16.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 09 Jul 2022 19:16:30 -0700 (PDT)
+Date:   Sat, 9 Jul 2022 19:16:29 -0700
+From:   Binyi Han <dantengknight@gmail.com>
+To:     Manish Chopra <manishc@marvell.com>, GR-Linux-NIC-Dev@marvell.com,
+        Coiby Xu <coiby.xu@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     netdev@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] staging: qlge: Fix indentation issue under long for loop
+Message-ID: <20220710021629.GA11852@cloud-MacBookPro>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: DMmowAAnjvphNMpiOwNkEg--.15253S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7WF15Kry7WF13Zw15CF1fXrb_yoW8CFWDp3
-        yUCrW3urWrK347ua1vyan5AFW3uw12g34jgF48G39akFn8GFyUXrn7KFy5Z39xtFyrGFy3
-        tr4UZ3WSyFWDArUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zixsqAUUUUU=
-X-Originating-IP: [124.16.139.61]
-X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbi2gM6F1uwMYD4gQAAsX
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -49,56 +68,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In ftgmac100_probe(), we should hold the refernece returned by
-of_get_child_by_name() and use it to call of_node_put() for
-reference balance.
+Fix indentation issue to adhere to Linux kernel coding style.
+Issue found by checkpatch.
 
-Fixes: 39bfab8844a0 ("net: ftgmac100: Add support for DT phy-handle property")
-Signed-off-by: Liang He <windhl@126.com>
+Signed-off-by: Binyi Han <dantengknight@gmail.com>
 ---
- changelog:
+ drivers/staging/qlge/qlge_main.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
- v2: (1) use a helper advised by Jakub (2) add fix tag
- v1: directly hold the reference returned by of_get_xx
-
- v1 link: https://lore.kernel.org/all/20220704151819.279513-1-windhl@126.com/
-
- NOTE: I have used an 'inline' to improve the help performance, similar with:
- https://lore.kernel.org/all/20181212163548.23723-1-tiny.windzz@gmail.com/
-
-
- drivers/net/ethernet/faraday/ftgmac100.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/faraday/ftgmac100.c b/drivers/net/ethernet/faraday/ftgmac100.c
-index 5231818943c6..bcf0767f99fd 100644
---- a/drivers/net/ethernet/faraday/ftgmac100.c
-+++ b/drivers/net/ethernet/faraday/ftgmac100.c
-@@ -1764,6 +1764,15 @@ static int ftgmac100_setup_clk(struct ftgmac100 *priv)
- 	return rc;
- }
+diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
+index 1a378330d775..60c796a64135 100644
+--- a/drivers/staging/qlge/qlge_main.c
++++ b/drivers/staging/qlge/qlge_main.c
+@@ -3009,8 +3009,8 @@ static int qlge_start_rx_ring(struct qlge_adapter *qdev, struct rx_ring *rx_ring
  
-+static inline struct device_node *ftgmac100_has_child_node(struct device_node *np, const char *name)
-+{
-+	struct device_node *child_np = of_get_child_by_name(np, "mdio");
-+
-+	of_node_put(child_np);
-+
-+	return child_np;
-+}
-+
- static int ftgmac100_probe(struct platform_device *pdev)
- {
- 	struct resource *res;
-@@ -1883,7 +1892,7 @@ static int ftgmac100_probe(struct platform_device *pdev)
+ 		for (page_entries = 0; page_entries <
+ 			MAX_DB_PAGES_PER_BQ(QLGE_BQ_LEN); page_entries++)
+-				base_indirect_ptr[page_entries] =
+-					cpu_to_le64(tmp + (page_entries * DB_PAGE_SIZE));
++			base_indirect_ptr[page_entries] =
++				cpu_to_le64(tmp + (page_entries * DB_PAGE_SIZE));
+ 		cqicb->lbq_addr = cpu_to_le64(rx_ring->lbq.base_indirect_dma);
+ 		cqicb->lbq_buf_size =
+ 			cpu_to_le16(QLGE_FIT16(qdev->lbq_buf_size));
+@@ -3024,8 +3024,8 @@ static int qlge_start_rx_ring(struct qlge_adapter *qdev, struct rx_ring *rx_ring
  
- 		/* Display what we found */
- 		phy_attached_info(phy);
--	} else if (np && !of_get_child_by_name(np, "mdio")) {
-+	} else if (np && !ftgmac100_has_child_node(np, "mdio")) {
- 		/* Support legacy ASPEED devicetree descriptions that decribe a
- 		 * MAC with an embedded MDIO controller but have no "mdio"
- 		 * child node. Automatically scan the MDIO bus for available
+ 		for (page_entries = 0; page_entries <
+ 			MAX_DB_PAGES_PER_BQ(QLGE_BQ_LEN); page_entries++)
+-				base_indirect_ptr[page_entries] =
+-					cpu_to_le64(tmp + (page_entries * DB_PAGE_SIZE));
++			base_indirect_ptr[page_entries] =
++				cpu_to_le64(tmp + (page_entries * DB_PAGE_SIZE));
+ 		cqicb->sbq_addr =
+ 			cpu_to_le64(rx_ring->sbq.base_indirect_dma);
+ 		cqicb->sbq_buf_size = cpu_to_le16(SMALL_BUFFER_SIZE);
 -- 
 2.25.1
 
