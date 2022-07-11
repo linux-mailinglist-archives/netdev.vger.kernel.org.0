@@ -2,69 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E2024570E66
-	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 01:42:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 562E8570E73
+	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 01:56:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230482AbiGKXmP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jul 2022 19:42:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56310 "EHLO
+        id S229996AbiGKX4A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jul 2022 19:56:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229500AbiGKXmO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 19:42:14 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C5BF2B63D;
-        Mon, 11 Jul 2022 16:42:13 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id e15so8109683edj.2;
-        Mon, 11 Jul 2022 16:42:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=huQyBNaLi+rnS6hPpdKZkF89bhus7inuhiN+hMoHvBQ=;
-        b=jxY/JP45BhlQP3lBMxyWEQEllqy3vEWLHl/BHPMe7fWuTRohdf6wV789EFvMz8fIFr
-         CRRkuLci2+pUc1YhdDkQpTcyq6peF74XMedvlpbdpcvsWr7+z/+jygiQr3RjHWm27LA6
-         42gGkliM2JwIpigwsynlfwwKIoqGX8Bslj1o5eWyO3ZttFFInnLvQSAvykjwkdf1COiJ
-         uCAGKU7gQc6zag4a6Gwz+kwAtyG1YC4Ji+JZ54CB8TAYXp6E1IjSWuQm3zes/NqQyBea
-         FuwNwGreba8kf1KzXqn8p6UK3xA/LBhvxQAAUF07dbtH/0vqlCyuxNjM6OnNfE/TvZ14
-         ZLWw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=huQyBNaLi+rnS6hPpdKZkF89bhus7inuhiN+hMoHvBQ=;
-        b=N/hVbHi51dWlhIS/snYAYOCsqELy1Z9yQIRmbDyH7R+HcF/hr30C4GwrB4pBB8naj3
-         /LC3e6zqkVUeDnkM28ToSO5TaLQilW/0KA/26S/l/U8DBto36O2vfvW0rAQlNjbdoru+
-         I7zpQ6FG3/Kwc6up0OQKg/H9h2rjySw72mZIcAzGskujgq3NnMknwc9xujxAcD5Ln724
-         4ZqlPMSpsDemQsyyiwjl5zkZO99Yi2Yq2k1BjJwZAacClTSi7K1kZ+uf82d/auoIx8XJ
-         AOhpOmpYUasHblkxl3vmVmk0JG3CzbOAWPT49ETJlp9bWVV5bk8E6YNV2KZE8eB51+dD
-         4Luw==
-X-Gm-Message-State: AJIora+EccIhob835XgfNt508SpYk58aPWBz+uGwV8mq1JpQhERjbiwu
-        KVsn9peSUFU02DJAuTPealxqV7/MjFXq4fmePwN57C0Le6WqfD3nwfw=
-X-Google-Smtp-Source: AGRyM1tADoJ8vpBzLJhYUlDt5dcMRWq3oWM7vQBq9gmCutDrCaff8R/RW16I4Y/5eLa66hNqg/e31QjQzazoy8YuRw8=
-X-Received: by 2002:a05:6402:5cb:b0:434:eb48:754f with SMTP id
- n11-20020a05640205cb00b00434eb48754fmr28441808edx.421.1657582931539; Mon, 11
- Jul 2022 16:42:11 -0700 (PDT)
+        with ESMTP id S229477AbiGKX4A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 19:56:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 179592BB3F;
+        Mon, 11 Jul 2022 16:55:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A5041B8100E;
+        Mon, 11 Jul 2022 23:55:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90A9BC34115;
+        Mon, 11 Jul 2022 23:55:54 +0000 (UTC)
+Date:   Mon, 11 Jul 2022 19:55:52 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Song Liu <song@kernel.org>
+Cc:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <ast@kernel.org>,
+        <daniel@iogearbox.net>, <andrii@kernel.org>, <kernel-team@fb.com>,
+        <jolsa@kernel.org>, <mhiramat@kernel.org>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Petr Mladek <pmladek@suse.com>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        live-patching@vger.kernel.org
+Subject: Re: [PATCH v2 bpf-next 0/5] ftrace: host klp and bpf trampoline
+ together
+Message-ID: <20220711195552.22c3a4be@gandalf.local.home>
+In-Reply-To: <20220602193706.2607681-1-song@kernel.org>
+References: <20220602193706.2607681-1-song@kernel.org>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <cover.1657556229.git.jhpark1013@gmail.com>
-In-Reply-To: <cover.1657556229.git.jhpark1013@gmail.com>
-From:   Jaehee <jhpark1013@gmail.com>
-Date:   Mon, 11 Jul 2022 16:42:06 -0700
-Message-ID: <CAA1TwFDoA2ZbjAY2Z2hmweJs1bnemSH2SSmj-9AeE74zmqJ8xw@mail.gmail.com>
-Subject: Re: [PATCH net-next 0/3] net: ipv4/ipv6: new option to accept
- garp/untracked na only if in-network
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, edumazet@google.com,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, shuah@kernel.org,
-        linux-kernel@vger.kernel.org, aajith@arista.com,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Andy Roulin <aroulin@nvidia.com>,
-        Stefano Brivio <sbrivio@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -72,45 +52,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 11, 2022 at 10:51 AM Jaehee Park <jhpark1013@gmail.com> wrote:
->
-> The first patch adds an option to learn a neighbor from garp only if
-> the src ip is in the same subnet of addresses configured on the
-> interface. The option has been added to arp_accept in ipv4.
->
-> The same feature has been added to ndisc (patch 2). For ipv6, the
-> subnet filtering knob is an extension of the accept_untracked_na
-> option introduced in these patches:
-> https://lore.kernel.org/all/642672cb-8b11-c78f-8975-f287ece9e89e@gmail.com/t/
-> https://lore.kernel.org/netdev/20220530101414.65439-1-aajith@arista.com/T/
->
-> The third patch contains selftests for testing the different options
-> for accepting arp and neighbor advertisements.
->
-> Jaehee Park (3):
->   net: ipv4: new arp_accept option to accept garp only if in-network
->   net: ipv6: new accept_untracked_na option to accept na only if
->     in-network
->   selftests: net: arp_ndisc_untracked_subnets: test for arp_accept and
->     accept_untracked_na
->
->  Documentation/networking/ip-sysctl.rst        |  48 +--
->  include/linux/inetdevice.h                    |   2 +-
->  net/ipv4/arp.c                                |  24 +-
->  net/ipv6/addrconf.c                           |   2 +-
->  net/ipv6/ndisc.c                              |  29 +-
->  tools/testing/selftests/net/Makefile          |   1 +
->  .../net/arp_ndisc_untracked_subnets.sh        | 281 ++++++++++++++++++
->  7 files changed, 360 insertions(+), 27 deletions(-)
->  create mode 100755 tools/testing/selftests/net/arp_ndisc_untracked_subnets.sh
->
+I just realized that none of the live kernel patching folks are Cc'd on
+this thread. I think they will care much more about this than I do.
+
+-- Steve
+
+
+On Thu, 2 Jun 2022 12:37:01 -0700
+Song Liu <song@kernel.org> wrote:
+
+> Changes v1 => v2:
+> 1. Fix build errors for different config. (kernel test robot)
+> 
+> Kernel Live Patch (livepatch, or klp) and bpf trampoline are important
+> features for modern systems. This set allows the two to work on the same
+> kernel function as the same time.
+> 
+> live patch uses ftrace with IPMODIFY, while bpf trampoline use direct
+> ftrace. Existing policy does not allow the two to attach to the same kernel
+> function. This is changed by fine tuning ftrace IPMODIFY policy, and allows
+> one non-DIRECT IPMODIFY ftrace_ops and one non-IPMODIFY DIRECT ftrace_ops
+> on the same kernel function at the same time. Please see 3/5 for more
+> details on this.
+> 
+> Note that, one of the constraint here is to let bpf trampoline use direct
+> call when it is not working on the same function as live patch. This is
+> achieved by allowing ftrace code to ask bpf trampoline to make changes.
+> 
+> Jiri Olsa (1):
+>   bpf, x64: Allow to use caller address from stack
+> 
+> Song Liu (4):
+>   ftrace: allow customized flags for ftrace_direct_multi ftrace_ops
+>   ftrace: add modify_ftrace_direct_multi_nolock
+>   ftrace: introduce FTRACE_OPS_FL_SHARE_IPMODIFY
+>   bpf: trampoline: support FTRACE_OPS_FL_SHARE_IPMODIFY
+> 
+>  arch/x86/net/bpf_jit_comp.c |  13 +-
+>  include/linux/bpf.h         |   8 ++
+>  include/linux/ftrace.h      |  79 +++++++++++
+>  kernel/bpf/trampoline.c     | 109 +++++++++++++--
+>  kernel/trace/ftrace.c       | 269 +++++++++++++++++++++++++++++++-----
+>  5 files changed, 424 insertions(+), 54 deletions(-)
+> 
 > --
 > 2.30.2
->
 
-
-I forgot a few cleanups. I will post a v2 soon.
-Sorry about that!
-
-Thanks,
-Jaehee
