@@ -2,45 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B159656D77E
-	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 10:14:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 381A856D77D
+	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 10:14:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229768AbiGKIOT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jul 2022 04:14:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50786 "EHLO
+        id S229677AbiGKIOR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jul 2022 04:14:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229721AbiGKIOR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 04:14:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 516C813F46
-        for <netdev@vger.kernel.org>; Mon, 11 Jul 2022 01:14:16 -0700 (PDT)
+        with ESMTP id S229614AbiGKIOQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 04:14:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90B9CB7FD
+        for <netdev@vger.kernel.org>; Mon, 11 Jul 2022 01:14:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0CCE7B80D2C
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3690260F58
         for <netdev@vger.kernel.org>; Mon, 11 Jul 2022 08:14:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F68FC34115;
-        Mon, 11 Jul 2022 08:14:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FCF4C341C0;
+        Mon, 11 Jul 2022 08:14:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657527253;
-        bh=veVitC+VW/fIgZQ2FgbmCXV3hG+bd6P7IEVhvA/0qtg=;
-        h=From:To:Cc:Subject:Date:From;
-        b=HY//AvCEOUYPT8pe81/iqZVcR8D3nUHbBFaaHXFFTBF92ornMGwQC3ojXhlQfTLJx
-         VsScsk2STnnPOOgXBiQ7iggkC7TYvmT0EpU3mfwnb7Iu/9HOlHqFJ7rSZ21xfLWZPr
-         GigXoxP1wz6l1e3/mFU02er2WdgS4V7F68sjW0QX+4AepGwpN5UMnKCRsFQc9kwl1v
-         xg9ZitxYJt5fzmUvXVwSnkjOemjDoQxyZquyhzJNSpEKNkEeKElHxiuZ+naZs6q6Id
-         9Vok7+VkhvtVw4R6XekuNehxh/Y1mEfU6Sjvtempv/1dm+tB//dPSH9v7kBjLIIbG/
-         NgSAkMCirLJvg==
+        s=k20201202; t=1657527254;
+        bh=6i1SyttgMc5FbATXnrGso04gRH6QEJ/H+4lYfPA3TUo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=KNpjEkBW8S+kgOCXGPNbxsLX0W6GPy1jhjKJaLV9p7WkQikg5f70Nzy89hU97hycp
+         Dw57gEunVtoGdfjCBAnOhhUaPbuf3s41MKDem5/7yVX8MCrlNxXvWj83zhCRnriGgk
+         MDHyGlM+cJ5kfhYVPkWWE+lDHLl9A6iHQsBMKyIJOiSHlC0zoe11cgNuxu4qs5HtdD
+         Xe8Einkf3XqKN+/4ogUvXXyIZH7zU8HB2A4CAaA/nCuA0qbNycJEG8k+HKGzlw75rl
+         zv5ETyCK0l/3PQi2zWmhbucH8p7OpxOpuTCReN8oFdzzXMHQzx6WOvHsK2uH/fHdzS
+         6SxNc07PqsJFw==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>
-Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org
-Subject: [PATCH net-next 0/9] mlx5 devlink mutex removal part 1 
-Date:   Mon, 11 Jul 2022 01:13:59 -0700
-Message-Id: <20220711081408.69452-1-saeed@kernel.org>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
+        Moshe Shemesh <moshe@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>
+Subject: [PATCH net-next 1/9] net/mlx5: Remove devl_unlock from mlx5_eswtich_mode_callback_enter
+Date:   Mon, 11 Jul 2022 01:14:00 -0700
+Message-Id: <20220711081408.69452-2-saeed@kernel.org>
 X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220711081408.69452-1-saeed@kernel.org>
+References: <20220711081408.69452-1-saeed@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -53,54 +57,137 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Saeed Mahameed <saeedm@nvidia.com>
+From: Moshe Shemesh <moshe@nvidia.com>
 
-Moshe Shemesh Says:
-===================
-1) Fix devlink lock in mlx5 devlink eswitch callbacks
+The function mlx5_eswtich_mode_callback_enter() was added as a temporary
+workaround once devlink instance lock was added to devlink eswitch
+callbacks. However, code review and testing show that all the callbacks
+part to eswitch_mode_set don't take devlink instance lock in any flow
+and so unlocking devlink instance lock while entering these functions is
+not needed.
 
-Following the commit 14e426bf1a4d "devlink: hold the instance lock
-during eswitch_mode callbacks" which takes devlink instance lock for all
-devlink eswitch callbacks and adds a temporary workaround, this patchset
-removes the workaround, replaces devlink API functions by devl_ API
-where called from mlx5 driver eswitch callbacks flows and adds devlink
-instance lock in other driver's path that leads to these functions.
-While moving to devl_ API the patchset removes part of the devlink API
-functions which mlx5 was the last one to use and so not used by any
-driver now.
+Remove devl_lock from mlx5_eswtich_mode_callback_enter() and devl_unlock
+from mlx5_eswtich_mode_callback_exit(). Also remove the functions
+mlx5_eswtich_mode_callback_enter()/exit() as they are not needed any
+more. The callback eswitch_mode_set will be treated separately in the
+following patches.
 
-The patchset also remove DEVLINK_NL_FLAG_NO_LOCK flag from the callbacks
-of port_new/port which are called only from mlx5 driver and the already
-locked by the patchset as parallel paths to the eswitch callbacks using
-devl_ API functions.
+Signed-off-by: Moshe Shemesh <moshe@nvidia.com>
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+---
+ .../mellanox/mlx5/core/eswitch_offloads.c     | 43 +++++--------------
+ 1 file changed, 11 insertions(+), 32 deletions(-)
 
-This patchset will be followed by another patchset that will remove
-DEVLINK_NL_FLAG_NO_LOCK flag from devlink reload and devlink health
-callbacks. Thus we will have all devlink callbacks locked and it will
-pave the way to remove devlink mutex.
-=================== 
-
-Moshe Shemesh (9):
-  net/mlx5: Remove devl_unlock from mlx5_eswtich_mode_callback_enter
-  net/mlx5: Use devl_ API for rate nodes destroy
-  devlink: Remove unused function devlink_rate_nodes_destroy
-  net/mlx5: Use devl_ API in mlx5_esw_offloads_devlink_port_register
-  net/mlx5: Use devl_ API in mlx5_esw_devlink_sf_port_register
-  devlink: Remove unused functions devlink_rate_leaf_create/destroy
-  net/mlx5: Use devl_ API in mlx5e_devlink_port_register
-  net/mlx5: Remove devl_unlock from mlx5_devlink_eswitch_mode_set
-  devlink: Hold the instance lock in port_new / port_del callbacks
-
- drivers/net/ethernet/mellanox/mlx5/core/dev.c | 29 +++++++-
- .../ethernet/mellanox/mlx5/core/en/devlink.c  | 16 ++++-
- .../mellanox/mlx5/core/esw/devlink_port.c     | 20 +++---
- .../net/ethernet/mellanox/mlx5/core/eswitch.c | 18 ++++-
- .../mellanox/mlx5/core/eswitch_offloads.c     | 57 +++++-----------
- include/linux/mlx5/driver.h                   |  4 ++
- include/net/devlink.h                         |  3 -
- net/core/devlink.c                            | 66 +++----------------
- 8 files changed, 94 insertions(+), 119 deletions(-)
-
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+index e224ec7005a6..3bd843e6d66a 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+@@ -3342,27 +3342,6 @@ static int esw_inline_mode_to_devlink(u8 mlx5_mode, u8 *mode)
+ 	return 0;
+ }
+ 
+-/* FIXME: devl_unlock() followed by devl_lock() inside driver callback
+- * is never correct and prone to races. It's a transitional workaround,
+- * never repeat this pattern.
+- *
+- * This code MUST be fixed before removing devlink_mutex as it is safe
+- * to do only because of that mutex.
+- */
+-static void mlx5_eswtich_mode_callback_enter(struct devlink *devlink,
+-					     struct mlx5_eswitch *esw)
+-{
+-	devl_unlock(devlink);
+-	down_write(&esw->mode_lock);
+-}
+-
+-static void mlx5_eswtich_mode_callback_exit(struct devlink *devlink,
+-					    struct mlx5_eswitch *esw)
+-{
+-	up_write(&esw->mode_lock);
+-	devl_lock(devlink);
+-}
+-
+ int mlx5_devlink_eswitch_mode_set(struct devlink *devlink, u16 mode,
+ 				  struct netlink_ext_ack *extack)
+ {
+@@ -3431,9 +3410,9 @@ int mlx5_devlink_eswitch_mode_get(struct devlink *devlink, u16 *mode)
+ 	if (IS_ERR(esw))
+ 		return PTR_ERR(esw);
+ 
+-	mlx5_eswtich_mode_callback_enter(devlink, esw);
++	down_write(&esw->mode_lock);
+ 	err = esw_mode_to_devlink(esw->mode, mode);
+-	mlx5_eswtich_mode_callback_exit(devlink, esw);
++	up_write(&esw->mode_lock);
+ 	return err;
+ }
+ 
+@@ -3480,7 +3459,7 @@ int mlx5_devlink_eswitch_inline_mode_set(struct devlink *devlink, u8 mode,
+ 	if (IS_ERR(esw))
+ 		return PTR_ERR(esw);
+ 
+-	mlx5_eswtich_mode_callback_enter(devlink, esw);
++	down_write(&esw->mode_lock);
+ 
+ 	switch (MLX5_CAP_ETH(dev, wqe_inline_mode)) {
+ 	case MLX5_CAP_INLINE_MODE_NOT_REQUIRED:
+@@ -3514,11 +3493,11 @@ int mlx5_devlink_eswitch_inline_mode_set(struct devlink *devlink, u8 mode,
+ 		goto out;
+ 
+ 	esw->offloads.inline_mode = mlx5_mode;
+-	mlx5_eswtich_mode_callback_exit(devlink, esw);
++	up_write(&esw->mode_lock);
+ 	return 0;
+ 
+ out:
+-	mlx5_eswtich_mode_callback_exit(devlink, esw);
++	up_write(&esw->mode_lock);
+ 	return err;
+ }
+ 
+@@ -3531,9 +3510,9 @@ int mlx5_devlink_eswitch_inline_mode_get(struct devlink *devlink, u8 *mode)
+ 	if (IS_ERR(esw))
+ 		return PTR_ERR(esw);
+ 
+-	mlx5_eswtich_mode_callback_enter(devlink, esw);
++	down_write(&esw->mode_lock);
+ 	err = esw_inline_mode_to_devlink(esw->offloads.inline_mode, mode);
+-	mlx5_eswtich_mode_callback_exit(devlink, esw);
++	up_write(&esw->mode_lock);
+ 	return err;
+ }
+ 
+@@ -3549,7 +3528,7 @@ int mlx5_devlink_eswitch_encap_mode_set(struct devlink *devlink,
+ 	if (IS_ERR(esw))
+ 		return PTR_ERR(esw);
+ 
+-	mlx5_eswtich_mode_callback_enter(devlink, esw);
++	down_write(&esw->mode_lock);
+ 
+ 	if (encap != DEVLINK_ESWITCH_ENCAP_MODE_NONE &&
+ 	    (!MLX5_CAP_ESW_FLOWTABLE_FDB(dev, reformat) ||
+@@ -3592,7 +3571,7 @@ int mlx5_devlink_eswitch_encap_mode_set(struct devlink *devlink,
+ 	}
+ 
+ unlock:
+-	mlx5_eswtich_mode_callback_exit(devlink, esw);
++	up_write(&esw->mode_lock);
+ 	return err;
+ }
+ 
+@@ -3605,9 +3584,9 @@ int mlx5_devlink_eswitch_encap_mode_get(struct devlink *devlink,
+ 	if (IS_ERR(esw))
+ 		return PTR_ERR(esw);
+ 
+-	mlx5_eswtich_mode_callback_enter(devlink, esw);
++	down_write(&esw->mode_lock);
+ 	*encap = esw->offloads.encap;
+-	mlx5_eswtich_mode_callback_exit(devlink, esw);
++	up_write(&esw->mode_lock);
+ 	return 0;
+ }
+ 
 -- 
 2.36.1
 
