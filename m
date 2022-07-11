@@ -2,98 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FA8E570A61
-	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 21:10:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C4F4B570A7C
+	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 21:16:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231542AbiGKTKR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jul 2022 15:10:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51218 "EHLO
+        id S229822AbiGKTQk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jul 2022 15:16:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229518AbiGKTKQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 15:10:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3FD82AE02;
-        Mon, 11 Jul 2022 12:10:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8092761557;
-        Mon, 11 Jul 2022 19:10:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id C589BC341CA;
-        Mon, 11 Jul 2022 19:10:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657566614;
-        bh=6D+2DpXoaKcspcgzrN+pNsncRNJULDzNOzPp8Ld7hoM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=NFUmoYBnhmrc9WJYfGgXQmVg60YJU8zfdxGmpXVS8BAyhzXqV52AsUhq6dKG4E75o
-         qBC5wDnfluq+3lR1PgH8SiKwFSa2ZnikoFXLeKDvAoeaWavJzUWfGgUyjP3ukAbhF0
-         P+ZAa780luJ/AkeByfYJoZl3H/GqP59x7T9HDUibeQrTYLbHMIwFYYuM94LtK7tT0s
-         BIfbjogxVwrH5NoizVwPCWDh406pi+TnNze9ybkBLZIaeXUGRU2Ih8TQsJhUmGk3JY
-         oPrg88vcBcQNsi4Gb32JbOvqt6rVE8vN9d3gqAJzDkPIlaUHhB4W2s37jGymotWD0j
-         aBWVHeZ31iSIg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 9B3C7E45223;
-        Mon, 11 Jul 2022 19:10:14 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229490AbiGKTQj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 15:16:39 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C43F2167E7
+        for <netdev@vger.kernel.org>; Mon, 11 Jul 2022 12:16:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657566998; x=1689102998;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=t9wX0QlDLudHj5GUjPvRfRHzgwKh9jkuWBj8FrotkrE=;
+  b=N50/mqowFPumysILQQ4Gu0QI0IoY0Xoh9UPrP+mTPs3MXi6tMFPtY8p4
+   NHk9Wrd4BNFrijGAu847G4H4nW2joKUqlwuLuwKch4v6B1NgO86WkYIQ6
+   LhAvVC7ZkEA2TTNsAcWzsugsdp21ui2adEGrqyU84be56yBQ1yZMfsfGF
+   MLFMAJ6aWzCqaDR+3lFl+qnS7E+pmNrCB+TKsXbAok/VvXBWfIBHjvLsS
+   S8yh9j5/5VCZWVa6KfSTjcrPkdeJFF9rvoDRErIChtL3Jx29MxUZwA4f2
+   9imU8GoXVIbd9kVlkDWfxD2yzQREBpKvr1+4ige+OwOOeMFnjBntGwawQ
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10405"; a="282300977"
+X-IronPort-AV: E=Sophos;i="5.92,263,1650956400"; 
+   d="scan'208";a="282300977"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2022 12:16:38 -0700
+X-IronPort-AV: E=Sophos;i="5.92,263,1650956400"; 
+   d="scan'208";a="697742708"
+Received: from eedeets-mobl1.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.251.2.111])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2022 12:16:37 -0700
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+To:     netdev@vger.kernel.org
+Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, matthieu.baerts@tessares.net,
+        mptcp@lists.linux.dev
+Subject: [PATCH net-next 0/5] mptcp: Support changes to initial subflow priority
+Date:   Mon, 11 Jul 2022 12:16:28 -0700
+Message-Id: <20220711191633.80826-1-mathew.j.martineau@linux.intel.com>
+X-Mailer: git-send-email 2.37.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf-next v9 0/4] bpf trampoline for arm64
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165756661463.27404.16087446828795658696.git-patchwork-notify@kernel.org>
-Date:   Mon, 11 Jul 2022 19:10:14 +0000
-References: <20220711150823.2128542-1-xukuohai@huawei.com>
-In-Reply-To: <20220711150823.2128542-1-xukuohai@huawei.com>
-To:     Xu Kuohai <xukuohai@huawei.com>
-Cc:     bpf@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        jean-philippe@linaro.org, will@kernel.org, kpsingh@kernel.org,
-        mark.rutland@arm.com, catalin.marinas@arm.com,
-        daniel@iogearbox.net, ast@kernel.org, andrii@kernel.org,
-        zlim.lnx@gmail.com, kafai@fb.com, songliubraving@fb.com,
-        yhs@fb.com, john.fastabend@gmail.com, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org, hpa@zytor.com, kuba@kernel.org, hawk@kernel.org,
-        rmk+kernel@armlinux.org.uk, james.morse@arm.com,
-        houtao1@huawei.com, wangborong@cdjrlc.com
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+This series updates the in-kernel MPTCP path manager to allow changes to
+subflow priority for the first subflow created for each MPTCP connection
+(the one created with the MP_CAPABLE handshake).
 
-This series was applied to bpf/bpf-next.git (master)
-by Daniel Borkmann <daniel@iogearbox.net>:
+Patches 1 and 2 do some refactoring to simplify the new functionality.
 
-On Mon, 11 Jul 2022 11:08:19 -0400 you wrote:
-> This patchset introduces bpf trampoline on arm64. A bpf trampoline converts
-> native calling convention to bpf calling convention and is used to implement
-> various bpf features, such as fentry, fexit, fmod_ret and struct_ops.
-> 
-> The trampoline introduced does essentially the same thing as the bpf
-> trampoline does on x86.
-> 
-> [...]
+Patch 3 introduces the new feature to change the initial subflow
+priority and send the MP_PRIO header on that subflow.
 
-Here is the summary with links:
-  - [bpf-next,v9,1/4] bpf: Remove is_valid_bpf_tramp_flags()
-    https://git.kernel.org/bpf/bpf-next/c/535a57a7ffc0
-  - [bpf-next,v9,2/4] arm64: Add LDR (literal) instruction
-    https://git.kernel.org/bpf/bpf-next/c/f1e8a24ed2ca
-  - [bpf-next,v9,3/4] bpf, arm64: Implement bpf_arch_text_poke() for arm64
-    https://git.kernel.org/bpf/bpf-next/c/b2ad54e1533e
-  - [bpf-next,v9,4/4] bpf, arm64: bpf trampoline for arm64
-    https://git.kernel.org/bpf/bpf-next/c/efc9909fdce0
+Patch 4 cleans up code related to tracking endpoint ids on the initial
+subflow.
 
-You are awesome, thank you!
+Patch 5 adds a selftest to confirm that subflow priorities are updated
+as expected.
+
+
+Paolo Abeni (5):
+  mptcp: introduce and use mptcp_pm_send_ack()
+  mptcp: address lookup improvements
+  mptcp: allow the in kernel PM to set MPC subflow priority
+  mptcp: more accurate MPC endpoint tracking
+  selftests: mptcp: add MPC backup tests
+
+ net/mptcp/pm_netlink.c                        | 129 ++++++++++--------
+ net/mptcp/protocol.c                          |   2 +-
+ net/mptcp/protocol.h                          |   2 +-
+ .../testing/selftests/net/mptcp/mptcp_join.sh |  30 ++++
+ 4 files changed, 105 insertions(+), 58 deletions(-)
+
+
+base-commit: edb2c3476db9898a63fb5d0011ecaa43ebf46c9b
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.37.0
 
