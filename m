@@ -2,54 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B4D3756D2C9
-	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 03:53:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 28D5556D2CE
+	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 04:02:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229598AbiGKBxg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Jul 2022 21:53:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50412 "EHLO
+        id S229567AbiGKCCA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Jul 2022 22:02:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229593AbiGKBxf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Jul 2022 21:53:35 -0400
-Received: from chinatelecom.cn (prt-mail.chinatelecom.cn [42.123.76.222])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B8DDDDB3
-        for <netdev@vger.kernel.org>; Sun, 10 Jul 2022 18:53:32 -0700 (PDT)
-HMM_SOURCE_IP: 172.18.0.188:51094.204989568
-HMM_ATTACHE_NUM: 0000
-HMM_SOURCE_TYPE: SMTP
-Received: from clientip-110.80.1.46 (unknown [172.18.0.188])
-        by chinatelecom.cn (HERMES) with SMTP id 4957F2800C6;
-        Mon, 11 Jul 2022 09:53:23 +0800 (CST)
-X-189-SAVE-TO-SEND: liyonglong@chinatelecom.cn
-Received: from  ([172.18.0.188])
-        by app0023 with ESMTP id 2a2cee2fc075408982a0dee1e45274bc for pabeni@redhat.com;
-        Mon, 11 Jul 2022 09:53:26 CST
-X-Transaction-ID: 2a2cee2fc075408982a0dee1e45274bc
-X-Real-From: liyonglong@chinatelecom.cn
-X-Receive-IP: 172.18.0.188
-X-MEDUSA-Status: 0
-Sender: liyonglong@chinatelecom.cn
-Subject: Re: [PATCH v2] tcp: make retransmitted SKB fit into the send window
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-References: <1657270774-39372-1-git-send-email-liyonglong@chinatelecom.cn>
- <CANn89i+VULAsSwaT=n8DGxazijiJfu+BLfFhuknKn9MJ8LXtUQ@mail.gmail.com>
-From:   Yonglong Li <liyonglong@chinatelecom.cn>
-Message-ID: <6ff1ef1f-1c3a-8822-eb82-a4dde482de93@chinatelecom.cn>
-Date:   Mon, 11 Jul 2022 09:53:23 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.9.0
+        with ESMTP id S229469AbiGKCB7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Jul 2022 22:01:59 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F15F6DFA0
+        for <netdev@vger.kernel.org>; Sun, 10 Jul 2022 19:01:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657504916;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=dtGmLvgMVrjBsXPDcs0lR3PF5YdXW4PPSQrac0ALdQg=;
+        b=LJA7/91M2t3KW9GiQ9QQJMFdSXEPA0tpODZIlOQ2ZFN1C/kbtMwgqpjHfoIsSe8xHZUv1p
+        P1L9oI+0aVDjn9k5VcpxLGyjIp5w2dnPnn77ARqJ1c6aVDb1G8sDyZ/desvUmYGtjs1APr
+        26546RTRRL4FmhpTzQPefHuwjhwCMSI=
+Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
+ [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-649-7pvEkRb_P56vtLNpBTHzJw-1; Sun, 10 Jul 2022 22:01:55 -0400
+X-MC-Unique: 7pvEkRb_P56vtLNpBTHzJw-1
+Received: by mail-qt1-f199.google.com with SMTP id z14-20020ac8454e000000b0031ead2bfe77so3794074qtn.2
+        for <netdev@vger.kernel.org>; Sun, 10 Jul 2022 19:01:55 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dtGmLvgMVrjBsXPDcs0lR3PF5YdXW4PPSQrac0ALdQg=;
+        b=qkyYEzpc/3woA9yUuL19U6hzGJzp7f47n70j8Ge/8htvf/EkhUxxSgB8yiWOzDIY0b
+         31uBjQUNORA7bsYLFXmoio0gUuO8iKIb5jMqrE4FUL7MZ3d/2glyX5jFcWF26vNl3Lyu
+         D4yJss+4GIm9rVceRNNGhJ8v/SFGlWBNXIiC5oko5J3L+aS5jGqchJDi5dYC5qiRr/NB
+         fwvvZCOGWwPbLpG0WfchK08qfqoOzsA+4//HyOiNG6SeeRoXuyLXOR9DpzzMbrLVTY6a
+         YRo43IKcUzYRtkcd589cY/iWssMtuSGzCXspIC8tLiW0vEmc+mYz67enYvqZwjOwfIjw
+         vbXg==
+X-Gm-Message-State: AJIora8a56o2ew35KaRUXbmxiF1qnQ5Iu1e66G5qz5tlnlKAdU7ZWUiX
+        BIJ/j8Uwsc4rh6J7r1YlNtVmXcz/UJjul3EzIVzTaOqmR7aPyyMilZ1RrRDsNPtWUIlJ3wS13Hc
+        ylg/Hc8wjTwH1y+UT8LLSja/oCI1YWvoM
+X-Received: by 2002:a05:622a:130b:b0:31e:ac55:947f with SMTP id v11-20020a05622a130b00b0031eac55947fmr7143836qtk.339.1657504914541;
+        Sun, 10 Jul 2022 19:01:54 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1s+4QWQAz9S6VUHnnj1EkcpLlFpZLIeLG0B9WpxwYNpoQl4l3EVvNJ4LX0kZkEJHfR5w5Y/o8qC5aPmwpO5N3M=
+X-Received: by 2002:a05:622a:130b:b0:31e:ac55:947f with SMTP id
+ v11-20020a05622a130b00b0031eac55947fmr7143824qtk.339.1657504914366; Sun, 10
+ Jul 2022 19:01:54 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <CANn89i+VULAsSwaT=n8DGxazijiJfu+BLfFhuknKn9MJ8LXtUQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+References: <20220701143052.1267509-1-miquel.raynal@bootlin.com> <20220701143052.1267509-21-miquel.raynal@bootlin.com>
+In-Reply-To: <20220701143052.1267509-21-miquel.raynal@bootlin.com>
+From:   Alexander Aring <aahringo@redhat.com>
+Date:   Sun, 10 Jul 2022 22:01:43 -0400
+Message-ID: <CAK-6q+hS-6esVw7ebAsr8MoDDsEkorTLKVQupW1xoTZaawCHZA@mail.gmail.com>
+Subject: Re: [PATCH wpan-next 20/20] ieee802154: hwsim: Allow devices to be coordinators
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
+Cc:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Network Development <netdev@vger.kernel.org>,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,150 +82,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Eric,
-thank you for your feedback and suggestions. Sorry for miss part of your
-prior feedback. I will prepare a v3 patch as your suggestion.
+Hi,
 
-And anther your feedback about "need a Fixes: tag", I can not find any commit
-which is related to this patch. Do you have any suggestion about Fixes:tag?
+On Fri, Jul 1, 2022 at 10:37 AM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+>
+> In order to be able to create coordinator interfaces, we need the
+> drivers to advertize that they support this type of interface. Fill in
+> the right bit in the hwsim capabilities to allow the creation of these
+> coordinator interfaces.
+>
+> Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+> ---
+>  drivers/net/ieee802154/mac802154_hwsim.c | 2 ++
+>  1 file changed, 2 insertions(+)
+>
+> diff --git a/drivers/net/ieee802154/mac802154_hwsim.c b/drivers/net/ieee802154/mac802154_hwsim.c
+> index a5b9fc2fb64c..a678ede07219 100644
+> --- a/drivers/net/ieee802154/mac802154_hwsim.c
+> +++ b/drivers/net/ieee802154/mac802154_hwsim.c
+> @@ -776,6 +776,8 @@ static int hwsim_add_one(struct genl_info *info, struct device *dev,
+>         /* 950 MHz GFSK 802.15.4d-2009 */
+>         hw->phy->supported.channels[6] |= 0x3ffc00;
+>
+> +       hw->phy->supported.iftypes |= BIT(NL802154_IFTYPE_COORD);
 
-On 7/8/2022 7:45 PM, Eric Dumazet wrote:
-> On Fri, Jul 8, 2022 at 10:59 AM Yonglong Li <liyonglong@chinatelecom.cn> wrote:
->>
->> From: lyl <liyonglong@chinatelecom.cn>
->>
->> current code of __tcp_retransmit_skb only check TCP_SKB_CB(skb)->seq
->> in send window, and TCP_SKB_CB(skb)->seq_end maybe out of send window.
->> If receiver has shrunk his window, and skb is out of new window,  it
->> should not retransmit it.
-> 
-> More exactly, it should retransmit a smaller portion of the payload.
-> 
->>
->> test packetdrill script:
->>     0 socket(..., SOCK_STREAM, IPPROTO_TCP) = 3
->>    +0 fcntl(3, F_GETFL) = 0x2 (flags O_RDWR)
->>    +0 fcntl(3, F_SETFL, O_RDWR|O_NONBLOCK) = 0
->>
->>    +0 connect(3, ..., ...) = -1 EINPROGRESS (Operation now in progress)
->>    +0 > S 0:0(0)  win 65535 <mss 1460,sackOK,TS val 100 ecr 0,nop,wscale 8>
->>  +.05 < S. 0:0(0) ack 1 win 6000 <mss 1000,nop,nop,sackOK>
->>    +0 > . 1:1(0) ack 1
->>
->>    +0 write(3, ..., 10000) = 10000
->>
->>    +0 > . 1:2001(2000) ack 1 win 65535
->>    +0 > . 2001:4001(2000) ack 1 win 65535
->>    +0 > . 4001:6001(2000) ack 1 win 65535
->>
->>  +.05 < . 1:1(0) ack 4001 win 1001
->>
->> and tcpdump show:
->> 192.168.226.67.55 > 192.0.2.1.8080: Flags [.], seq 1:2001, ack 1, win 65535, length 2000
->> 192.168.226.67.55 > 192.0.2.1.8080: Flags [.], seq 2001:4001, ack 1, win 65535, length 2000
->> 192.168.226.67.55 > 192.0.2.1.8080: Flags [P.], seq 4001:5001, ack 1, win 65535, length 1000
->> 192.168.226.67.55 > 192.0.2.1.8080: Flags [.], seq 5001:6001, ack 1, win 65535, length 1000
->> 192.0.2.1.8080 > 192.168.226.67.55: Flags [.], ack 4001, win 1001, length 0
->> 192.168.226.67.55 > 192.0.2.1.8080: Flags [.], seq 5001:6001, ack 1, win 65535, length 1000
->> 192.168.226.67.55 > 192.0.2.1.8080: Flags [P.], seq 4001:5001, ack 1, win 65535, length 1000
->>
->> when cient retract window to 1001, send window is [4001,5002],
->> but TLP send 5001-6001 packet which is out of send window.
->>
->> Signed-off-by: liyonglong <liyonglong@chinatelecom.cn>
->> ---
->>  net/ipv4/tcp_output.c | 7 ++++++-
->>  1 file changed, 6 insertions(+), 1 deletion(-)
->>
->> diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
->> index 1c05443..7e1569e 100644
->> --- a/net/ipv4/tcp_output.c
->> +++ b/net/ipv4/tcp_output.c
->> @@ -3176,7 +3176,12 @@ int __tcp_retransmit_skb(struct sock *sk, struct sk_buff *skb, int segs)
->>             TCP_SKB_CB(skb)->seq != tp->snd_una)
->>                 return -EAGAIN;
->>
->> -       len = cur_mss * segs;
->> +       len = min_t(int, tcp_wnd_end(tp) - TCP_SKB_CB(skb)->seq, cur_mss * segs);
->> +
->> +       /* retransmit serves as a zero window probe. */
->> +       if (len == 0 && TCP_SKB_CB(skb)->seq == tp->snd_una)
->> +               len = cur_mss;
->> +
-> 
-> I asked in my prior feeback to align len to a multiple of cur_mss.
-> Trying to send full MSS is likely helping receivers to not waste
-> memory and thus send us bigger RWIN.
-> 
-> Also I think the logic about zero window probe could be consolidated
-> in one place.
-> 
-> Also you forgot to change the part about tcp_retrans_try_collapse()
-> which I also mentioned in my feedback.
-> 
-> If we want to fix this problem for good, we need to take care of all cases...
-> 
-> Something like this:
-> 
-> diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-> index 18c913a2347a984ae8cf2793bb8991e59e5e94ab..2aa67cbfa1428a11b723263083ce48284762e306
-> 100644
-> --- a/net/ipv4/tcp_output.c
-> +++ b/net/ipv4/tcp_output.c
-> @@ -3144,7 +3144,7 @@ int __tcp_retransmit_skb(struct sock *sk, struct
-> sk_buff *skb, int segs)
->         struct tcp_sock *tp = tcp_sk(sk);
->         unsigned int cur_mss;
->         int diff, len, err;
-> -
-> +       int avail_wnd;
-> 
->         /* Inconclusive MTU probe */
->         if (icsk->icsk_mtup.probe_size)
-> @@ -3167,16 +3167,24 @@ int __tcp_retransmit_skb(struct sock *sk,
-> struct sk_buff *skb, int segs)
-> 
->         cur_mss = tcp_current_mss(sk);
-> 
-> +       avail_wnd = tcp_wnd_end(tp) - TCP_SKB_CB(skb)->seq;
->         /* If receiver has shrunk his window, and skb is out of
->          * new window, do not retransmit it. The exception is the
->          * case, when window is shrunk to zero. In this case
-> -        * our retransmit serves as a zero window probe.
-> +        * our retransmit of one segment serves as a zero window probe.
->          */
-> -       if (!before(TCP_SKB_CB(skb)->seq, tcp_wnd_end(tp)) &&
-> -           TCP_SKB_CB(skb)->seq != tp->snd_una)
-> -               return -EAGAIN;
-> +       if (avail_wnd <= 0) {
-> +               if (TCP_SKB_CB(skb)->seq != tp->snd_una)
-> +                       return -EAGAIN;
-> +               avail_wnd = cur_mss;
-> +       }
-> 
->         len = cur_mss * segs;
-> +       if (len > avail_wnd) {
-> +               len = rounddown(avail_wnd, cur_mss);
-> +               if (!len)
-> +                       len = avail_wnd;
-> +       }
->         if (skb->len > len) {
->                 if (tcp_fragment(sk, TCP_FRAG_IN_RTX_QUEUE, skb, len,
->                                  cur_mss, GFP_ATOMIC))
-> @@ -3190,8 +3198,9 @@ int __tcp_retransmit_skb(struct sock *sk, struct
-> sk_buff *skb, int segs)
->                 diff -= tcp_skb_pcount(skb);
->                 if (diff)
->                         tcp_adjust_pcount(sk, skb, diff);
-> -               if (skb->len < cur_mss)
-> -                       tcp_retrans_try_collapse(sk, skb, cur_mss);
-> +               avail_wnd = min_t(int, avail_wnd, cur_mss);
-> +               if (skb->len < avail_wnd)
-> +                       tcp_retrans_try_collapse(sk, skb, avail_wnd);
->         }
-> 
->         /* RFC3168, section 6.1.1.1. ECN fallback */
-> 
+I think we can do that for more than one driver (except ca8210). What
+about the other iftypes?
 
--- 
-Li YongLong
+- Alex
+
