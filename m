@@ -2,49 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D48956D75A
-	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 10:05:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 604CD56D758
+	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 10:04:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229636AbiGKIFU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jul 2022 04:05:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44342 "EHLO
+        id S229604AbiGKIEh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jul 2022 04:04:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229635AbiGKIFT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 04:05:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EBDE1CFDF;
-        Mon, 11 Jul 2022 01:05:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 25027B80DE7;
-        Mon, 11 Jul 2022 08:05:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79B9EC34115;
-        Mon, 11 Jul 2022 08:05:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657526715;
-        bh=q4hZ5dAOv+NEWL4wDWpk+yHIaXbKs/PWCF6KRLMu/O8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=v1A4TmeOjf5P4w0Juk+VqmGfXpqMWOOzO3QijyvW2pesY1ns7ly+dbG8kqjAlHAVF
-         8IQTd8QBKdBKxCWQemkp7m+QXHDI+MgucdBv4GapsncP6mhmS56DAzBCsMgYn+eYV4
-         xvyerp/GZ2xiKTi3K8O+b63ZxkaKbggtF5Mo6CBM=
-Date:   Mon, 11 Jul 2022 10:05:12 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Binyi Han <dantengknight@gmail.com>
-Cc:     Manish Chopra <manishc@marvell.com>, GR-Linux-NIC-Dev@marvell.com,
-        Coiby Xu <coiby.xu@gmail.com>, Joe Perches <joe@perches.com>,
-        netdev@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] staging: qlge: Fix indentation issue under long for
- loop
-Message-ID: <YsvZuPkbwe8yX8oi@kroah.com>
-References: <20220710210418.GA148412@cloud-MacBookPro>
+        with ESMTP id S229500AbiGKIEf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 04:04:35 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F089613E36;
+        Mon, 11 Jul 2022 01:04:33 -0700 (PDT)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LhGb63MC7zlVyf;
+        Mon, 11 Jul 2022 16:02:58 +0800 (CST)
+Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
+ (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 11 Jul
+ 2022 16:04:29 +0800
+From:   Zhengchao Shao <shaozhengchao@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>
+CC:     <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>,
+        <shaozhengchao@huawei.com>
+Subject: [PATCH v2,net-next] net/sched: remove return value of unregister_tcf_proto_ops
+Date:   Mon, 11 Jul 2022 16:09:10 +0800
+Message-ID: <20220711080910.40270-1-shaozhengchao@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220710210418.GA148412@cloud-MacBookPro>
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+Content-Type: text/plain
+X-Originating-IP: [10.175.101.6]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpeml500026.china.huawei.com (7.185.36.106)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -53,26 +47,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jul 10, 2022 at 02:04:18PM -0700, Binyi Han wrote:
-> Fix indentation issue to adhere to Linux kernel coding style,
-> Issue found by checkpatch. Change the long for loop into 3 lines. And
-> optimize by avoiding the multiplication.
-> 
-> Signed-off-by: Binyi Han <dantengknight@gmail.com>
-> ---
-> v2:
-> 	- Change the long for loop into 3 lines.
-> v3:
-> 	- Align page_entries in the for loop to open parenthesis.
-> 	- Optimize by avoiding the multiplication.
+Return value of unregister_tcf_proto_ops is unused, remove it.
 
-Please do not mix coding style fixes with "optimizations" or logical
-changes.  This should be multiple patches.
+Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+---
+v1: need to warn if unregister failed. 
 
-Also, did you test this change on real hardware?  At first glance, it's
-not obvious that the code is still doing the same thing, so "proof" of
-that would be nice to have.
+ include/net/pkt_cls.h | 2 +-
+ net/sched/cls_api.c   | 7 +++++--
+ 2 files changed, 6 insertions(+), 3 deletions(-)
 
-thanks,
+diff --git a/include/net/pkt_cls.h b/include/net/pkt_cls.h
+index 8cf001aed858..d9d90e6925e1 100644
+--- a/include/net/pkt_cls.h
++++ b/include/net/pkt_cls.h
+@@ -23,7 +23,7 @@ struct tcf_walker {
+ };
+ 
+ int register_tcf_proto_ops(struct tcf_proto_ops *ops);
+-int unregister_tcf_proto_ops(struct tcf_proto_ops *ops);
++void unregister_tcf_proto_ops(struct tcf_proto_ops *ops);
+ 
+ struct tcf_block_ext_info {
+ 	enum flow_block_binder_type binder_type;
+diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+index 9bb4d3dcc994..d20dd1532b48 100644
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -194,7 +194,7 @@ EXPORT_SYMBOL(register_tcf_proto_ops);
+ 
+ static struct workqueue_struct *tc_filter_wq;
+ 
+-int unregister_tcf_proto_ops(struct tcf_proto_ops *ops)
++void unregister_tcf_proto_ops(struct tcf_proto_ops *ops)
+ {
+ 	struct tcf_proto_ops *t;
+ 	int rc = -ENOENT;
+@@ -214,7 +214,10 @@ int unregister_tcf_proto_ops(struct tcf_proto_ops *ops)
+ 		}
+ 	}
+ 	write_unlock(&cls_mod_lock);
+-	return rc;
++
++	if (rc)
++		pr_warn("unregister tc filter kind(%s) failed\n", ops->kind);
++
+ }
+ EXPORT_SYMBOL(unregister_tcf_proto_ops);
+ 
+-- 
+2.17.1
 
-greg k-h
