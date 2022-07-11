@@ -2,123 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B1AEA56D2DB
-	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 04:07:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 02B7656D2EB
+	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 04:19:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229564AbiGKCHU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Jul 2022 22:07:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56392 "EHLO
+        id S229478AbiGKCS7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Jul 2022 22:18:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229469AbiGKCHS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Jul 2022 22:07:18 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6ECD514D31
-        for <netdev@vger.kernel.org>; Sun, 10 Jul 2022 19:07:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657505236;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=meNn6SbpJh9fea8sNzE6pLer+JbMNyWdQAZ+kpRRRwo=;
-        b=HGJcfk8UnpPhWH0e85YRQYAPsQU8jMM3BddYZK59K30V6cXBYZZ3dn7Z0nTAPJ+IeSiSsr
-        ergFLjsEA+SrGxAghHV0euyM1B49c2umQ1kv7QF1nlYXWW/KBT1o9Sjj7cmHv4bjS5wRXj
-        J6NuhW8SnSzgvXlXD4/bQkxld2s2928=
-Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
- [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-338-MdZ-KOn5PM6QzAXZrxltvQ-1; Sun, 10 Jul 2022 22:07:09 -0400
-X-MC-Unique: MdZ-KOn5PM6QzAXZrxltvQ-1
-Received: by mail-qt1-f200.google.com with SMTP id f14-20020ac8068e000000b0031e899fabdcso3924569qth.5
-        for <netdev@vger.kernel.org>; Sun, 10 Jul 2022 19:07:09 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=meNn6SbpJh9fea8sNzE6pLer+JbMNyWdQAZ+kpRRRwo=;
-        b=l9PJHXtVQZ/0AS4W74Of+DMwkg00H5So1Jj9ntXk3o3iHFjsbYxzduErMxmelZgNpe
-         7o65ABXmQ+F7OTJKZCM2TEBNOXbFDSpaHJcqJ/pNon8s03bTaJkHmdKd2Fkhry31V0DY
-         jJ0BTiacpT40XfQPOpc4iuI9SQza+zt/mfpWzAbbP1o9Ob5dXQLKH+1nnBhm2RuCm9Xx
-         od0jpTlP/dI5YAjgl7r827hxByHUQf+qRDErCQZCsjD85v+ixU1lUvrrmkxIR2SjvZw8
-         YcZSMONLwtbroHjLb7WuaqBbBEG64brssAfBkRdWpkbKeBX8JGicjCbFUwKipzQ5Ic6x
-         365g==
-X-Gm-Message-State: AJIora9mdCamBihZ3TYzFFUkGGTFBnlPghQS8GLdxMapjDck9gPPE1yo
-        qDvQlll+mH4XBt/9yNVWxNPsbjRVaddoKNUtukPjv+WPomEcb8MKkwI3PQGmrz90BoiPCiofCiO
-        Y4Fthep3yKayktIgqS9fwnV+LkxL3/bxu
-X-Received: by 2002:a05:622a:4cb:b0:31e:a94d:f8aa with SMTP id q11-20020a05622a04cb00b0031ea94df8aamr9581157qtx.526.1657505228754;
-        Sun, 10 Jul 2022 19:07:08 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1swo0XjTp8Y/xb37YTwTbEFtbyj1jv27lOnGpdxWXFDq1UtDxu9MChS8YMYrOYFM6B2zx4h06J4QeTiLiXbyFE=
-X-Received: by 2002:a05:622a:4cb:b0:31e:a94d:f8aa with SMTP id
- q11-20020a05622a04cb00b0031ea94df8aamr9581152qtx.526.1657505228585; Sun, 10
- Jul 2022 19:07:08 -0700 (PDT)
+        with ESMTP id S229469AbiGKCS7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Jul 2022 22:18:59 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C744595A5
+        for <netdev@vger.kernel.org>; Sun, 10 Jul 2022 19:18:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657505937; x=1689041937;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=Q46wZQglv9QTkr9wAQrqh/TnfC7Lo/AEBp46K7fnid0=;
+  b=FdD78NI4ddX/08HJn6xu58dkApzm2qO7ogCXzZviUkS6q9lseRZUff4X
+   IbtXdPvWl8E+l/+h+D+LHkKKPaXjZfgjQTDoBFT6OaQfHtLsrl+U0U4lb
+   968k1oDdxKQTNNTzJSBxl9msfI7WJZPTLqezynUD/aqYL+ZjERgC+sz//
+   2uHyJ7SQdqLjb5Sjy9tZKybBySMlrsS3N+D1udxdhFQKGv1fCXc9sF5xw
+   FEjh7+95ybEVjySzmeA5QxbFR0fmgt+6hw7aOmDmLJz+vaSb+H67FYK9b
+   crD/13qQybhyjXtwpKhMWAu+XsHiB5czFXPV/MSEUm8/NIblDfwnqil6v
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10404"; a="285303917"
+X-IronPort-AV: E=Sophos;i="5.92,262,1650956400"; 
+   d="scan'208";a="285303917"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jul 2022 19:18:57 -0700
+X-IronPort-AV: E=Sophos;i="5.92,262,1650956400"; 
+   d="scan'208";a="544839632"
+Received: from lingshan-mobl.ccr.corp.intel.com (HELO [10.254.215.78]) ([10.254.215.78])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jul 2022 19:18:55 -0700
+Message-ID: <cbbb0341-5383-0e64-1ab8-52289869a233@intel.com>
+Date:   Mon, 11 Jul 2022 10:18:53 +0800
 MIME-Version: 1.0
-References: <20220701143052.1267509-1-miquel.raynal@bootlin.com> <20220701143052.1267509-6-miquel.raynal@bootlin.com>
-In-Reply-To: <20220701143052.1267509-6-miquel.raynal@bootlin.com>
-From:   Alexander Aring <aahringo@redhat.com>
-Date:   Sun, 10 Jul 2022 22:06:57 -0400
-Message-ID: <CAK-6q+gXUySx1YzPdq1+dt5MN5y_4qGWAB5a1qPe2tOGkbq19A@mail.gmail.com>
-Subject: Re: [PATCH wpan-next 05/20] net: ieee802154: Define frame types
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Network Development <netdev@vger.kernel.org>,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.11.0
+Subject: Re: [PATCH V3 3/6] vDPA: allow userspace to query features of a vDPA
+ device
+Content-Language: en-US
+To:     Parav Pandit <parav@nvidia.com>,
+        "jasowang@redhat.com" <jasowang@redhat.com>,
+        "mst@redhat.com" <mst@redhat.com>
+Cc:     "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "xieyongji@bytedance.com" <xieyongji@bytedance.com>,
+        "gautam.dawar@amd.com" <gautam.dawar@amd.com>
+References: <20220701132826.8132-1-lingshan.zhu@intel.com>
+ <20220701132826.8132-4-lingshan.zhu@intel.com>
+ <PH0PR12MB5481AEB53864F35A79AAD7F5DCBD9@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <bfd46eb1-bc82-b1c8-f492-7bcaaada8aa4@intel.com>
+ <PH0PR12MB54816D143AAB834616FAEF67DC829@PH0PR12MB5481.namprd12.prod.outlook.com>
+From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
+In-Reply-To: <PH0PR12MB54816D143AAB834616FAEF67DC829@PH0PR12MB5481.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
 
-On Fri, Jul 1, 2022 at 10:36 AM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
->
-> A 802.15.4 frame can be of different types, here is a definition
-> matching the specification. This enumeration will be soon be used when
-> adding scanning support.
->
-> Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-> ---
->  include/net/ieee802154_netdev.h | 11 +++++++++++
->  1 file changed, 11 insertions(+)
->
-> diff --git a/include/net/ieee802154_netdev.h b/include/net/ieee802154_netdev.h
-> index d0d188c3294b..13167851b1c3 100644
-> --- a/include/net/ieee802154_netdev.h
-> +++ b/include/net/ieee802154_netdev.h
-> @@ -69,6 +69,17 @@ struct ieee802154_hdr_fc {
->  #endif
->  };
->
-> +enum ieee802154_frame_type {
-> +       IEEE802154_BEACON_FRAME,
-> +       IEEE802154_DATA_FRAME,
-> +       IEEE802154_ACKNOWLEDGEMENT_FRAME,
-> +       IEEE802154_MAC_COMMAND_FRAME,
-> +       IEEE802154_RESERVED_FRAME,
-> +       IEEE802154_MULTIPURPOSE_FRAME,
-> +       IEEE802154_FRAGMENT_FRAME,
-> +       IEEE802154_EXTENDED_FRAME,
-> +};
 
-Please use and extend include/linux/ieee802154.h e.g. IEEE802154_FC_TYPE_DATA.
-I am also not a fan of putting those structs on payload, because there
-can be several problems with it, we should introduce inline helpers to
-check/get each individual fields but... the struct is currently how
-it's implemented.
-
-- Alex
+On 7/9/2022 12:13 AM, Parav Pandit wrote:
+>
+>> From: Zhu, Lingshan <lingshan.zhu@intel.com>
+>> Sent: Friday, July 8, 2022 2:16 AM
+>>
+>> On 7/2/2022 6:02 AM, Parav Pandit wrote:
+>>>> From: Zhu Lingshan <lingshan.zhu@intel.com>
+>>>> Sent: Friday, July 1, 2022 9:28 AM
+>>>>
+>>>> This commit adds a new vDPA netlink attribution
+>>>> VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES. Userspace can query
+>> features
+>>>> of vDPA devices through this new attr.
+>>>>
+>>>> Fixes: a64917bc2e9b vdpa: (Provide interface to read driver feature)
+>>> Missing the "" in the line.
+>> will fix
+>>> I reviewed the patches again.
+>>>
+>>> However, this is not the fix.
+>>> A fix cannot add a new UAPI.
+>> I think we have discussed this, on why we can not re-name the existing
+>> wrong named attr, and why we can not re-use the attr.
+>> So are you suggesting remove this fixes tag?
+>> And why a fix can not add a new uAPI?
+> Because a new attribute cannot fix any existing attribute.
+>
+> What is done in the patch is show current attributes of the vdpa device (which sometimes contains a different value than the mgmt. device).
+> So it is a new functionality that cannot have fixes tag.
+OK, I get the points now.
+>
+>>> Code is already considering negotiated driver features to return the device
+>> config space.
+>>> Hence it is fine.
+>> No, the spec says:
+>> The device MUST allow reading of any device-specific configuration field
+>> before FEATURES_OK is set by the driver.
+>>> This patch intents to provide device features to user space.
+>>> First what vdpa device are capable of, are already returned by features
+>> attribute on the management device.
+>>> This is done in commit [1].
+>> we have discussed this in another thread, vDPA device feature bits can be
+>> different from the management device feature bits.
+> Yes.
+>>> The only reason to have it is, when one management device indicates that
+>> feature is supported, but device may end up not supporting this feature if
+>> such feature is shared with other devices on same physical device.
+>>> For example all VFs may not be symmetric after large number of them are
+>> in use. In such case features bit of management device can differ (more
+>> features) than the vdpa device of this VF.
+>>> Hence, showing on the device is useful.
+>>>
+>>> As mentioned before in V2, commit [1] has wrongly named the attribute to
+>> VDPA_ATTR_DEV_SUPPORTED_FEATURES.
+>>> It should have been,
+>> VDPA_ATTR_DEV_MGMTDEV_SUPPORTED_FEATURES.
+>>> Because it is in UAPI, and since we don't want to break compilation of
+>>> iproute2, It cannot be renamed anymore.
+>> Yes, rename it will break current uAPI, so I can not rename it.
+> I know, which is why this patch needs to do following listed changes described in previous email.
+>
+>>> Given that, we do not want to start trend of naming device attributes with
+>> additional _VDPA_ to it as done in this patch.
+>>> Error in commit [1] was exception.
+>>>
+>>> Hence, please reuse VDPA_ATTR_DEV_SUPPORTED_FEATURES to return
+>> for device features too.
+>>> Secondly, you need output example for showing device features in the
+>> commit log.
+>>> 3rd, please drop the fixes tag as new capability is not a fix.
+>>>
 
