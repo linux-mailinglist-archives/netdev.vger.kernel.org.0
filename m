@@ -2,140 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BEA73570606
-	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 16:43:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 734EA5705CE
+	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 16:39:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231579AbiGKOnw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jul 2022 10:43:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38758 "EHLO
+        id S230211AbiGKOi4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jul 2022 10:38:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231523AbiGKOnt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 10:43:49 -0400
-Received: from mail-oo1-xc32.google.com (mail-oo1-xc32.google.com [IPv6:2607:f8b0:4864:20::c32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB53822533
-        for <netdev@vger.kernel.org>; Mon, 11 Jul 2022 07:43:48 -0700 (PDT)
-Received: by mail-oo1-xc32.google.com with SMTP id i7-20020a4aa6c7000000b004325d18bac9so1002877oom.7
-        for <netdev@vger.kernel.org>; Mon, 11 Jul 2022 07:43:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=vZE+qmfAgv5Q4Ok+kbuXIowyw8njtCi5ttVKDOeueCk=;
-        b=c7jNZdnaj22NSPk8CBeLnYRVsYH6nZ0j4IXNSpskE72kMyveTyE4j29ITTsMt5y41x
-         lYjSkZTZA9Lk/wSlB925N6ADt0V7SSsEoclGDdYduxdpEWkedKnxAwjXGjM2Ew1tMURf
-         JceWsMobTOOZEPGM4rzyl0ZK1vTTMkt8w87PG554LeJbdLTGNvBfV5D4fzBtDGOIf/+d
-         8zqXGidUAHxHenWP+D4lwPEbOZ4Q/kl1M1muPUE1hkBO1TfjzEQGnr3WG0AeUp2bs+vQ
-         pKvLrzyVD4Edy5wgX/nWs9jYrrjPiQkNmtjeXN3iBJVwTwmqezt/utE8H3dlBPEV0CAb
-         P12g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=vZE+qmfAgv5Q4Ok+kbuXIowyw8njtCi5ttVKDOeueCk=;
-        b=57ZZje/Ccw9rBFgfjYhsMV+jLMTFRt//2tBMR+wflE9z3xWhgAURBPQ7iS90mkjYHE
-         emUwNdf1qrS+8HQskYQFwSODj9LmwR6s71q+aN2tpKDq3JdE2dVCXwWruR/LbqlXLpoL
-         yUSA1qAp5dlR676U0XaBBDR+LDA92NWQiXESULfz8zVQK6k1UmewF2ARdDxf8iZj1s3R
-         7NvZAlpr+1RyB3zX5+kkztwgiyUQSOLyZtrTgm739vQtv1p4eNFb4RbuXO/R2/wHG8gN
-         gGKSgjS20EHzqOkt0egybaF77WBgUPDWpca6DbnELDSafgiIV7KFZzcVfMNhWe9zuDMT
-         vmdg==
-X-Gm-Message-State: AJIora9PzzimnbSI07yeDshq0QwJZPvB81eL6kcy9oNir08u+Dn5FCE+
-        sSPTqhuOOSMlYMfibOViFcaxcNN3kd8oWZzVT80=
-X-Google-Smtp-Source: AGRyM1u07yEiUQq3OjAv5gquTK1WH8ltqq77xl/YZ/CpZHemwSvwGkFPlBw1ufAs+luEAP+xp3NoofLz06WAv+XntqA=
-X-Received: by 2002:a4a:cf0e:0:b0:433:a4f4:5fcf with SMTP id
- l14-20020a4acf0e000000b00433a4f45fcfmr4228299oos.63.1657550628236; Mon, 11
- Jul 2022 07:43:48 -0700 (PDT)
+        with ESMTP id S231417AbiGKOir (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 10:38:47 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABC892605;
+        Mon, 11 Jul 2022 07:38:45 -0700 (PDT)
+Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LhRJm6msqzhZ81;
+        Mon, 11 Jul 2022 22:36:08 +0800 (CST)
+Received: from huawei.com (10.67.174.197) by kwepemi500013.china.huawei.com
+ (7.221.188.120) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 11 Jul
+ 2022 22:38:40 +0800
+From:   Xu Kuohai <xukuohai@huawei.com>
+To:     <bpf@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Will Deacon <will@kernel.org>, KP Singh <kpsingh@kernel.org>
+CC:     Mark Rutland <mark.rutland@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Zi Shen Lim <zlim.lnx@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, <x86@kernel.org>,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        James Morse <james.morse@arm.com>,
+        Hou Tao <houtao1@huawei.com>,
+        Jason Wang <wangborong@cdjrlc.com>
+Subject: [PATCH bpf-next v8 0/4] bpf trampoline for arm64
+Date:   Mon, 11 Jul 2022 10:47:18 -0400
+Message-ID: <20220711144722.2100039-1-xukuohai@huawei.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Received: by 2002:ac9:5ed2:0:0:0:0:0 with HTTP; Mon, 11 Jul 2022 07:43:47
- -0700 (PDT)
-Reply-To: abrahammorrison443@gmail.com
-From:   Abraham Morrison <ikengachambers001@gmail.com>
-Date:   Mon, 11 Jul 2022 07:43:47 -0700
-Message-ID: <CAOYSfbd3TaVPOR=6A6Hbfe2RZvTyjOnPtW4v766Pa1ANzntKpw@mail.gmail.com>
-Subject: Good day!
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: Yes, score=5.3 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        UNDISC_FREEM autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2607:f8b0:4864:20:0:0:0:c32 listed in]
-        [list.dnswl.org]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.4107]
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [ikengachambers001[at]gmail.com]
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [ikengachambers001[at]gmail.com]
-        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
-        *      digit
-        *      [abrahammorrison443[at]gmail.com]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  3.2 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-X-Spam-Level: *****
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.174.197]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemi500013.china.huawei.com (7.221.188.120)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Oppmerksomhet takk,
+This patchset introduces bpf trampoline on arm64. A bpf trampoline converts
+native calling convention to bpf calling convention and is used to implement
+various bpf features, such as fentry, fexit, fmod_ret and struct_ops.
 
-Jeg er Mr. Abraham Morrison, hvordan har du det, jeg h=C3=A5per du er frisk
-og frisk? Dette er for =C3=A5 informere deg om at jeg har fullf=C3=B8rt
-transaksjonen vellykket ved hjelp av en ny partner fra India, og at
-fondet n=C3=A5 er overf=C3=B8rt til India til bankkontoen til den nye partn=
-eren.
+The trampoline introduced does essentially the same thing as the bpf
+trampoline does on x86.
 
-I mellomtiden har jeg bestemt meg for =C3=A5 kompensere deg med summen av
-=E2=82=AC500 000,00 (kun fem hundre tusen euro) p=C3=A5 grunn av din tidlig=
-ere
-innsats, selv om du skuffet meg langs linjen. Men likevel er jeg
-veldig glad for den vellykkede avslutningen av transaksjonen uten
-problemer, og det er grunnen til at jeg har bestemt meg for =C3=A5
-kompensere deg med summen av =E2=82=AC500 000,00 slik at du vil dele gleden
-med meg.
+Tested on raspberry pi 4b and qemu:
 
-Jeg anbefaler deg =C3=A5 kontakte sekret=C3=A6ren min for et minibankkort p=
-=C3=A5
-=E2=82=AC500 000,00, som jeg beholdt for deg. Kontakt henne n=C3=A5 uten
-forsinkelser.
+ #18 /1     bpf_tcp_ca/dctcp:OK
+ #18 /2     bpf_tcp_ca/cubic:OK
+ #18 /3     bpf_tcp_ca/invalid_license:OK
+ #18 /4     bpf_tcp_ca/dctcp_fallback:OK
+ #18 /5     bpf_tcp_ca/rel_setsockopt:OK
+ #18        bpf_tcp_ca:OK
+ #51 /1     dummy_st_ops/dummy_st_ops_attach:OK
+ #51 /2     dummy_st_ops/dummy_init_ret_value:OK
+ #51 /3     dummy_st_ops/dummy_init_ptr_arg:OK
+ #51 /4     dummy_st_ops/dummy_multiple_args:OK
+ #51        dummy_st_ops:OK
+ #57 /1     fexit_bpf2bpf/target_no_callees:OK
+ #57 /2     fexit_bpf2bpf/target_yes_callees:OK
+ #57 /3     fexit_bpf2bpf/func_replace:OK
+ #57 /4     fexit_bpf2bpf/func_replace_verify:OK
+ #57 /5     fexit_bpf2bpf/func_sockmap_update:OK
+ #57 /6     fexit_bpf2bpf/func_replace_return_code:OK
+ #57 /7     fexit_bpf2bpf/func_map_prog_compatibility:OK
+ #57 /8     fexit_bpf2bpf/func_replace_multi:OK
+ #57 /9     fexit_bpf2bpf/fmod_ret_freplace:OK
+ #57        fexit_bpf2bpf:OK
+ #237       xdp_bpf2bpf:OK
 
-Navn: Linda Koffi
-E-post: koffilinda785@gmail.com
+v8:
+ - Load return value from A64_R(0) for both non-JITed and JITed bpf prog
+ - Add Jean-Philippe's Reviewed-by
 
-Vennligst bekreft til henne f=C3=B8lgende informasjon nedenfor:
+v7: https://lore.kernel.org/bpf/20220708093032.1832755-1-xukuohai@huawei.com/
+ - Fix return value register usage error
+ - Typo fixes, etc
 
-Ditt fulle navn:........
-Adressen din:..........
-Ditt land:..........
-Din alder:.........
-Ditt yrke:..........
-Ditt mobiltelefonnummer: ..........
-Ditt pass eller f=C3=B8rerkort:.........
+v6: https://lore.kernel.org/bpf/20220625161255.547944-1-xukuohai@huawei.com/
+- Since Mark is refactoring arm64 ftrace to support long jump and reduce the
+  ftrace trampoline overhead, it's not clear how we'll attach bpf trampoline
+  to regular kernel functions, so remove ftrace related patches for now.
+- Add long jump support for attaching bpf trampoline to bpf prog, since bpf
+  trampoline and bpf prog are allocated via vmalloc, there is chance the
+  distance exceeds the max branch range.
+- Collect ACK/Review-by, not sure if the ACK and Review-bys for bpf_arch_text_poke()
+  should be kept, since the changes to it is not trivial
+- Update some commit messages and comments
 
-Merk at hvis du ikke har sendt henne informasjonen ovenfor
-fullstendig, vil hun ikke gi ut minibankkortet til deg fordi hun m=C3=A5
-v=C3=A6re sikker p=C3=A5 at det er deg. Be henne sende deg den totale summe=
-n av
-(=E2=82=AC500 000,00) minibankkort, som jeg beholdt for deg.
+v5: https://lore.kernel.org/bpf/20220518131638.3401509-1-xukuohai@huawei.com/
+- As Alexei suggested, remove is_valid_bpf_tramp_flags()
 
-Med vennlig hilsen,
+v4: https://lore.kernel.org/bpf/20220517071838.3366093-1-xukuohai@huawei.com/
+- Run the test cases on raspberry pi 4b
+- Rebase and add cookie to trampoline
+- As Steve suggested, move trace_direct_tramp() back to entry-ftrace.S to
+  avoid messing up generic code with architecture specific code
+- As Jakub suggested, merge patch 4 and patch 5 of v3 to provide full function
+  in one patch
+- As Mark suggested, add a comment for the use of aarch64_insn_patch_text_nosync()
+- Do not generate trampoline for long jump to avoid triggering ftrace_bug
+- Round stack size to multiples of 16B to avoid SPAlignmentFault
+- Use callee saved register x20 to reduce the use of mov_i64
+- Add missing BTI J instructions
+- Trivial spelling and code style fixes
 
-Mr. Abraham Morrison
+v3: https://lore.kernel.org/bpf/20220424154028.1698685-1-xukuohai@huawei.com/
+- Append test results for bpf_tcp_ca, dummy_st_ops, fexit_bpf2bpf,
+  xdp_bpf2bpf
+- Support to poke bpf progs
+- Fix return value of arch_prepare_bpf_trampoline() to the total number
+  of bytes instead of number of instructions 
+- Do not check whether CONFIG_DYNAMIC_FTRACE_WITH_REGS is enabled in
+  arch_prepare_bpf_trampoline, since the trampoline may be hooked to a bpf
+  prog
+- Restrict bpf_arch_text_poke() to poke bpf text only, as kernel functions
+  are poked by ftrace
+- Rewrite trace_direct_tramp() in inline assembly in trace_selftest.c
+  to avoid messing entry-ftrace.S
+- isolate arch_ftrace_set_direct_caller() with macro
+  CONFIG_HAVE_DYNAMIC_FTRACE_WITH_DIRECT_CALLS to avoid compile error
+  when this macro is disabled
+- Some trivial code sytle fixes
+
+v2: https://lore.kernel.org/bpf/20220414162220.1985095-1-xukuohai@huawei.com/
+- Add Song's ACK
+- Change the multi-line comment in is_valid_bpf_tramp_flags() into net
+  style (patch 3)
+- Fix a deadloop issue in ftrace selftest (patch 2)
+- Replace pt_regs->x0 with pt_regs->orig_x0 in patch 1 commit message 
+- Replace "bpf trampoline" with "custom trampoline" in patch 1, as
+  ftrace direct call is not only used by bpf trampoline.
+
+v1: https://lore.kernel.org/bpf/20220413054959.1053668-1-xukuohai@huawei.com/
+
+Xu Kuohai (4):
+  bpf: Remove is_valid_bpf_tramp_flags()
+  arm64: Add LDR (literal) instruction
+  bpf, arm64: Implement bpf_arch_text_poke() for arm64
+  bpf, arm64: bpf trampoline for arm64
+
+ arch/arm64/include/asm/insn.h |   3 +
+ arch/arm64/lib/insn.c         |  30 +-
+ arch/arm64/net/bpf_jit.h      |   7 +
+ arch/arm64/net/bpf_jit_comp.c | 718 +++++++++++++++++++++++++++++++++-
+ arch/x86/net/bpf_jit_comp.c   |  20 -
+ kernel/bpf/bpf_struct_ops.c   |   3 +
+ kernel/bpf/trampoline.c       |   3 +
+ 7 files changed, 743 insertions(+), 41 deletions(-)
+
+-- 
+2.30.2
+
