@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0708B57020F
-	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 14:30:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BEA89570210
+	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 14:31:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230260AbiGKMaw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jul 2022 08:30:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54822 "EHLO
+        id S230404AbiGKMax (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jul 2022 08:30:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229555AbiGKMau (ORCPT
+        with ESMTP id S229782AbiGKMau (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 08:30:50 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E35AD4E606
-        for <netdev@vger.kernel.org>; Mon, 11 Jul 2022 05:30:46 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id w12so5295068edd.13
-        for <netdev@vger.kernel.org>; Mon, 11 Jul 2022 05:30:46 -0700 (PDT)
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB7ED4E630
+        for <netdev@vger.kernel.org>; Mon, 11 Jul 2022 05:30:48 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id h23so8512076ejj.12
+        for <netdev@vger.kernel.org>; Mon, 11 Jul 2022 05:30:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pqrs.dk; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=dinsH8nHmPQWYTrCJzENUxcxxna7aK91AI5aOp85vpU=;
-        b=ZZIAPv5RFeBCz9t2F7BEVlo9BkdIK0n0zy2AuB6Tlo1bYfSE1reFdGQZ+WfyNc3PHX
-         SYx5kQA7raM7YwqTMo6Epc/joM7/9Ho2XX9WaUHzr0NiALqPsPjKMeQP84DUZQk0tGYq
-         nNtYqiELHdJBOO2MeQRNQxLY1Npgk/kvG2O0g=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=3SasMWyrhlBVoSPa/+DazZ+0uAy40h1yJmXYnejMTE8=;
+        b=N4yE70WYcr4oloa6HIttGo0wZVN+ExaRyrNGxu+F2x71xPMEROMnfM7ZtJjPpNJWzQ
+         9qblc5lYP2gIStYvRC+cov9MgXUnrouDI6+o066Gu604Wucr4asA9bt8BLpR+Qt6ueEJ
+         sKjSbHNzRaUjJuQqt2wU32S1EYuCA4jGY4jyA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=dinsH8nHmPQWYTrCJzENUxcxxna7aK91AI5aOp85vpU=;
-        b=5AhASwPydG6bsez+3UknwAjAwck7Xl3rwqJaysQ81CqDoEEgYZh8IIklrrhVtRhhAE
-         XYY+Cp2rtZJYN7uut2tEf63zrPduonELdsXedJ4srQysQ5vyuzm+pDqlqyk4iLGnlL9v
-         elEgFldJ7uz9n4OEuN8WUdRm8rIUDkLNepFuvAuXJOmL9+4cglY+Hz6b3uJ++wmYvej/
-         3Phx1YSDcCCvU50TyscQ5BVUeTzAInf8NdSfEMTTNFWDLTJkH94HPch9IxF92+nDkBb0
-         8yHVSu2/aefvkcDXT2QrWwPu1WvdH3LkSRmCSPwyOFcyDtJjTboTDc11EJqsgq9AVq97
-         yxLA==
-X-Gm-Message-State: AJIora8QpoXgtl/8zObOcQocVkutAINalAIITJk9vRq3XwjNGArWsmJG
-        B6/ctp/5iJtWiwW2DcYEX0QnXA==
-X-Google-Smtp-Source: AGRyM1tTEgBNgz9f8tfSSoW95yEmuofIldNpEiDEKPcaXPL6BBFJPbk/MXZsdlSD7LsDcAe2MIw+Sg==
-X-Received: by 2002:a50:fb81:0:b0:43a:7975:c721 with SMTP id e1-20020a50fb81000000b0043a7975c721mr24785059edq.381.1657542645520;
-        Mon, 11 Jul 2022 05:30:45 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=3SasMWyrhlBVoSPa/+DazZ+0uAy40h1yJmXYnejMTE8=;
+        b=Nvdy6uNezH0wcHiVi0OGhEiLioTJds5g2Ro32gglKj9m4OX8FgVAZSNgsItMNC1M1z
+         xH+FUDAzlzwRn1ToMaM7JniBFVRLeNmHt8G6Xq8SJnMKcfiVZBZ81dDE+qZdfbmqKDSa
+         jFXmeSokCTTF1ul/NvoP/iOiG8x50rYi25WqKOLzMu9OfliUx+xG3+QIdGjhLIFHN16w
+         qCblQ2CdjOV8Y9DxToKLZELr7vMgMI3wFwkplBxpOaA5M8qlwnLuOWfnIoAt8JWMizke
+         rOngaa4N/QERtwoGIOqk5fnatVlFGkWQ1qfuhEoDbfEv3GmrYfFvLSHRyaZny00L/EAK
+         sdWA==
+X-Gm-Message-State: AJIora86PpvPcDcn2Rg3J5MGQDuXjEOhmeF2S3ZzdLU1ylHGTEkm+7Ux
+        StLW73b8gtquty7upg2C7eZdjQ==
+X-Google-Smtp-Source: AGRyM1u6G7PtoLInurzT8QC8Y4AYygm9vrlxOrdABf14TxRcMzn9o5xuJC09+CDE9V+GJSfbDKXfaA==
+X-Received: by 2002:a17:907:2c47:b0:6d7:31b0:e821 with SMTP id hf7-20020a1709072c4700b006d731b0e821mr17675287ejc.334.1657542647462;
+        Mon, 11 Jul 2022 05:30:47 -0700 (PDT)
 Received: from localhost.localdomain (80.71.142.18.ipv4.parknet.dk. [80.71.142.18])
-        by smtp.gmail.com with ESMTPSA id g1-20020a17090604c100b0072b16a57cdcsm738785eja.118.2022.07.11.05.30.43
+        by smtp.gmail.com with ESMTPSA id g1-20020a17090604c100b0072b16a57cdcsm738785eja.118.2022.07.11.05.30.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Jul 2022 05:30:44 -0700 (PDT)
+        Mon, 11 Jul 2022 05:30:47 -0700 (PDT)
 From:   =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alvin@pqrs.dk>
 To:     Kalle Valo <kvalo@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
@@ -62,10 +62,12 @@ Cc:     Ahmad Fatoum <a.fatoum@pengutronix.de>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         brcm80211-dev-list.pdl@broadcom.com,
         SHA-cyfmac-dev-list@infineon.com
-Subject: [PATCH 0/2] wifi: brcmfmac: add DT property for trivial ccode mapping
-Date:   Mon, 11 Jul 2022 14:30:02 +0200
-Message-Id: <20220711123005.3055300-1-alvin@pqrs.dk>
+Subject: [PATCH 1/2] dt-bindings: bcm4329-fmac: add optional brcm,ccode-map-trivial
+Date:   Mon, 11 Jul 2022 14:30:03 +0200
+Message-Id: <20220711123005.3055300-2-alvin@pqrs.dk>
 X-Mailer: git-send-email 2.37.0
+In-Reply-To: <20220711123005.3055300-1-alvin@pqrs.dk>
+References: <20220711123005.3055300-1-alvin@pqrs.dk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -80,35 +82,47 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Alvin Šipraga <alsi@bang-olufsen.dk>
 
-Previous commits introduced a fallback mechanism for translating the
-in-kernel ISO3166 country code to the in-firmware country code +
-revision pair. The mechanism is dependent on the common chip core ID and
-enabled only for a few specific chipsets.
+The bindings already offer a brcm,ccode-map property to describe the
+mapping between the kernel's ISO3166 alpha 2 country code string and the
+firmware's country code string and revision number. This is a
+board-specific property and determined by the CLM blob firmware provided
+by the hardware vendor.
 
-But the in-firmware country code/revision is actually a function of the CLM
-blob, not the chip core. Indeed, while it was reported that the fallback
-mechanism causes regressions on a board with a chip identified by the
-driver as BCM4359, we too have such a board with a BCM4359-identified
-chip, and in our case we really do want to use this fallback mechanism.
-Put another way, our CLM blob is using ISO3166 country codes, and the
-revision is always 0.
+However, in some cases the firmware will also use ISO3166 country codes
+internally, and the revision will always be zero. This implies a trivial
+mapping: cc -> { cc, 0 }.
 
-Since this is evidently a property of the firmware, it would be nice to
-be able to specify this in the device tree, since the driver has no
-general mechanism for finding out based on the hardware type alone. This
-series adds such a property: brcm,ccode-map-trivial.
+For such cases, add an optional property brcm,ccode-map-trivial which
+obviates the need to describe every trivial country code mapping in the
+device tree with the existing brcm,ccode-map property. The new property
+is subordinate to the more explicit brcm,ccode-map property.
 
-
-Alvin Šipraga (2):
-  dt-bindings: bcm4329-fmac: add optional brcm,ccode-map-trivial
-  wifi: brcmfmac: support brcm,ccode-map-trivial DT property
-
+Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
+---
  .../bindings/net/wireless/brcm,bcm4329-fmac.yaml       | 10 ++++++++++
- .../wireless/broadcom/brcm80211/brcmfmac/cfg80211.c    |  3 +++
- .../net/wireless/broadcom/brcm80211/brcmfmac/common.h  |  2 ++
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c  |  6 ++++++
- 4 files changed, 21 insertions(+)
+ 1 file changed, 10 insertions(+)
 
+diff --git a/Documentation/devicetree/bindings/net/wireless/brcm,bcm4329-fmac.yaml b/Documentation/devicetree/bindings/net/wireless/brcm,bcm4329-fmac.yaml
+index c11f23b20c4c..53b4153d9bfc 100644
+--- a/Documentation/devicetree/bindings/net/wireless/brcm,bcm4329-fmac.yaml
++++ b/Documentation/devicetree/bindings/net/wireless/brcm,bcm4329-fmac.yaml
+@@ -75,6 +75,16 @@ properties:
+     items:
+       pattern: '^[A-Z][A-Z]-[A-Z][0-9A-Z]-[0-9]+$'
+ 
++  brcm,ccode-map-trivial:
++    description: |
++      Use a trivial mapping of ISO3166 country codes to brcmfmac firmware
++      country code and revision: cc -> { cc, 0 }. In other words, assume that
++      the CLM blob firmware uses ISO3166 country codes as well, and that all
++      revisions are zero. This property is mutually exclusive with
++      brcm,ccode-map. If both properties are specified, then brcm,ccode-map
++      takes precedence.
++    type: boolean
++
+ required:
+   - compatible
+   - reg
 -- 
 2.37.0
 
