@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C5E9D56D781
-	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 10:14:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 56AA356D782
+	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 10:14:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229808AbiGKIO1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jul 2022 04:14:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50934 "EHLO
+        id S229819AbiGKIOb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jul 2022 04:14:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229790AbiGKIOW (ORCPT
+        with ESMTP id S229793AbiGKIOW (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 04:14:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B1651D31A
-        for <netdev@vger.kernel.org>; Mon, 11 Jul 2022 01:14:19 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 937B113F46
+        for <netdev@vger.kernel.org>; Mon, 11 Jul 2022 01:14:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 60FFDB80E41
-        for <netdev@vger.kernel.org>; Mon, 11 Jul 2022 08:14:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15AB3C341CA;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2CC7BB80E40
+        for <netdev@vger.kernel.org>; Mon, 11 Jul 2022 08:14:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD42AC34115;
         Mon, 11 Jul 2022 08:14:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657527257;
-        bh=kB3a+lgQZaExOGuprV+qJttZlO7TtQuEhSjvgosdyvU=;
+        s=k20201202; t=1657527258;
+        bh=lP6gX8rZgBAOcJhHn5swZ1Lhj3ULGWZDD1wKT2vd80Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oRSJJZT01Mtjy8IY4uCKBPpKuGG0dwnZueLqyufiGSpwEob1vaR967Kf1lg25kjBd
-         oWyPyVVILBkot4+ODvB9ostTYWLlQDfNGBBANsrakJdYm7cS5MJizH6Gw3NIvsDoZV
-         dZYHLGnkbmu/i2xer30Zq8NWaHa8CR7GqC9UotedagTJqWhtYkEWVch83qatPIGZn0
-         A/VH/WWzWny/sYzexmAX+rGI9fFAY2P45DqTzyXHYL5CSeB8btyJvigUYhz+BqZ9bq
-         0yrm80cveSvb1iBA2RoxjV8KdjhrP4kp+2RLVlHLXQsxyWf4bw8iUqJbewTySpYHPS
-         tTYMKI3XHSHNw==
+        b=mcagB1gbo+2ZDfB6hr3UDNPsb3Roi0YTShB0CYSNJAh+5iyoUS6TBCkTmscDZtaSX
+         ZsHxv2Xg2n6zP7U5P6Zw1887naLlffURHX4RevnpcpBTWhjs1+2LxHm34f/ZKl1wUU
+         J64Mtahz6toghlqRP8X3g50SVIvSRGhWk3A06BlfAb26lwlu2yPFZygOQWmIAZgcOv
+         8hs9H5c1TNG4hv0CvbweC/GIlAESb53CGpbdehsDMgfkiribtSuQGmLZuMckHZUu4V
+         z4DQYPlT9c3IbGgMDrd/6rl/OYPpSolsPYH8aXqfOP2ed1PyNv5Xg5hmbMMKwTWUSO
+         9hFUVpKLFjttQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -39,9 +39,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Moshe Shemesh <moshe@nvidia.com>,
         Leon Romanovsky <leonro@nvidia.com>
-Subject: [PATCH net-next 4/9] net/mlx5: Use devl_ API in mlx5_esw_offloads_devlink_port_register
-Date:   Mon, 11 Jul 2022 01:14:03 -0700
-Message-Id: <20220711081408.69452-5-saeed@kernel.org>
+Subject: [PATCH net-next 5/9] net/mlx5: Use devl_ API in mlx5_esw_devlink_sf_port_register
+Date:   Mon, 11 Jul 2022 01:14:04 -0700
+Message-Id: <20220711081408.69452-6-saeed@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220711081408.69452-1-saeed@kernel.org>
 References: <20220711081408.69452-1-saeed@kernel.org>
@@ -59,56 +59,59 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Moshe Shemesh <moshe@nvidia.com>
 
-The function mlx5_esw_offloads_devlink_port_register() calls
+The function mlx5_esw_devlink_sf_port_register() calls
 devlink_port_register() and devlink_rate_leaf_create(). Use devl_ API to
 call devl_port_register() and devl_rate_leaf_create() accordingly and
 add devlink instance lock in driver paths to this function.
 
 Similarly, use devl_ API to call devl_port_unregister() and
-devl_rate_leaf_destroy() in mlx5_esw_offloads_devlink_port_unregister()
-and ensure locking devlink instance lock on the paths to this function
+devl_rate_leaf_destroy() in mlx5_esw_devlink_sf_port_unregister() and
+ensure locking devlink instance lock on all the paths to this function
 too.
 
 This will be used by the downstream patch to invoke
 mlx5_devlink_eswitch_mode_set() with devlink lock held.
+
+Note this patch is taking devlink lock on mlx5_devlink_sf_port_new/del()
+which are devlink callbacks for port_new/del(). We will take these locks
+off once these callbacks will be locked by devlink too.
 
 Signed-off-by: Moshe Shemesh <moshe@nvidia.com>
 Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
  .../net/ethernet/mellanox/mlx5/core/esw/devlink_port.c | 10 +++++-----
- drivers/net/ethernet/mellanox/mlx5/core/eswitch.c      |  4 ++++
- .../net/ethernet/mellanox/mlx5/core/eswitch_offloads.c | 10 ++++++++++
- 3 files changed, 19 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/sf/devlink.c   |  4 ++++
+ 2 files changed, 9 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/devlink_port.c b/drivers/net/ethernet/mellanox/mlx5/core/esw/devlink_port.c
-index 7f9b96d9537e..a8f7618831f5 100644
+index a8f7618831f5..9bc7be95db54 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/esw/devlink_port.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/devlink_port.c
-@@ -87,11 +87,11 @@ int mlx5_esw_offloads_devlink_port_register(struct mlx5_eswitch *esw, u16 vport_
- 
+@@ -156,11 +156,11 @@ int mlx5_esw_devlink_sf_port_register(struct mlx5_eswitch *esw, struct devlink_p
+ 	devlink_port_attrs_pci_sf_set(dl_port, controller, pfnum, sfnum, !!controller);
  	devlink = priv_to_devlink(dev);
  	dl_port_index = mlx5_esw_vport_to_devlink_port_index(dev, vport_num);
 -	err = devlink_port_register(devlink, dl_port, dl_port_index);
 +	err = devl_port_register(devlink, dl_port, dl_port_index);
  	if (err)
- 		goto reg_err;
+ 		return err;
  
 -	err = devlink_rate_leaf_create(dl_port, vport);
 +	err = devl_rate_leaf_create(dl_port, vport);
  	if (err)
  		goto rate_err;
  
-@@ -99,7 +99,7 @@ int mlx5_esw_offloads_devlink_port_register(struct mlx5_eswitch *esw, u16 vport_
+@@ -168,7 +168,7 @@ int mlx5_esw_devlink_sf_port_register(struct mlx5_eswitch *esw, struct devlink_p
  	return 0;
  
  rate_err:
 -	devlink_port_unregister(dl_port);
 +	devl_port_unregister(dl_port);
- reg_err:
- 	mlx5_esw_dl_port_free(dl_port);
  	return err;
-@@ -118,10 +118,10 @@ void mlx5_esw_offloads_devlink_port_unregister(struct mlx5_eswitch *esw, u16 vpo
+ }
+ 
+@@ -182,9 +182,9 @@ void mlx5_esw_devlink_sf_port_unregister(struct mlx5_eswitch *esw, u16 vport_num
  
  	if (vport->dl_port->devlink_rate) {
  		mlx5_esw_qos_vport_update_group(esw, vport, NULL, NULL);
@@ -118,105 +121,32 @@ index 7f9b96d9537e..a8f7618831f5 100644
  
 -	devlink_port_unregister(vport->dl_port);
 +	devl_port_unregister(vport->dl_port);
- 	mlx5_esw_dl_port_free(vport->dl_port);
  	vport->dl_port = NULL;
  }
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
-index 571114e4878f..b95f75431882 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
-@@ -1296,6 +1296,7 @@ int mlx5_eswitch_enable_locked(struct mlx5_eswitch *esw, int num_vfs)
-  */
- int mlx5_eswitch_enable(struct mlx5_eswitch *esw, int num_vfs)
- {
-+	struct devlink *devlink;
- 	bool toggle_lag;
- 	int ret;
- 
-@@ -1307,6 +1308,8 @@ int mlx5_eswitch_enable(struct mlx5_eswitch *esw, int num_vfs)
- 	if (toggle_lag)
- 		mlx5_lag_disable_change(esw->dev);
- 
-+	devlink = priv_to_devlink(esw->dev);
-+	devl_lock(devlink);
- 	down_write(&esw->mode_lock);
- 	if (!mlx5_esw_is_fdb_created(esw)) {
- 		ret = mlx5_eswitch_enable_locked(esw, num_vfs);
-@@ -1320,6 +1323,7 @@ int mlx5_eswitch_enable(struct mlx5_eswitch *esw, int num_vfs)
- 			esw->esw_funcs.num_vfs = num_vfs;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/sf/devlink.c b/drivers/net/ethernet/mellanox/mlx5/core/sf/devlink.c
+index 7d955a4d9f14..2068c22ff367 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/sf/devlink.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/sf/devlink.c
+@@ -355,7 +355,9 @@ int mlx5_devlink_sf_port_new(struct devlink *devlink,
+ 				   "Port add is only supported in eswitch switchdev mode or SF ports are disabled.");
+ 		return -EOPNOTSUPP;
  	}
- 	up_write(&esw->mode_lock);
-+	devl_unlock(devlink);
- 
- 	if (toggle_lag)
- 		mlx5_lag_enable_change(esw->dev);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-index f1640e4cb719..1bfbc88f513f 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-@@ -2177,8 +2177,10 @@ static int esw_create_restore_table(struct mlx5_eswitch *esw)
- static int esw_offloads_start(struct mlx5_eswitch *esw,
- 			      struct netlink_ext_ack *extack)
- {
-+	struct devlink *devlink = priv_to_devlink(esw->dev);
- 	int err, err1;
- 
 +	devl_lock(devlink);
- 	esw->mode = MLX5_ESWITCH_OFFLOADS;
- 	err = mlx5_eswitch_enable_locked(esw, esw->dev->priv.sriov.num_vfs);
- 	if (err) {
-@@ -2200,6 +2202,7 @@ static int esw_offloads_start(struct mlx5_eswitch *esw,
- 					   "Inline mode is different between vports");
- 		}
- 	}
+ 	err = mlx5_sf_add(dev, table, new_attr, extack, new_port_index);
 +	devl_unlock(devlink);
+ 	mlx5_sf_table_put(table);
  	return err;
  }
- 
-@@ -3064,6 +3067,7 @@ static void esw_offloads_steering_cleanup(struct mlx5_eswitch *esw)
- static void
- esw_vfs_changed_event_handler(struct mlx5_eswitch *esw, const u32 *out)
- {
-+	struct devlink *devlink;
- 	bool host_pf_disabled;
- 	u16 new_num_vfs;
- 
-@@ -3075,6 +3079,8 @@ esw_vfs_changed_event_handler(struct mlx5_eswitch *esw, const u32 *out)
- 	if (new_num_vfs == esw->esw_funcs.num_vfs || host_pf_disabled)
- 		return;
- 
-+	devlink = priv_to_devlink(esw->dev);
-+	devl_lock(devlink);
- 	/* Number of VFs can only change from "0 to x" or "x to 0". */
- 	if (esw->esw_funcs.num_vfs > 0) {
- 		mlx5_eswitch_unload_vf_vports(esw, esw->esw_funcs.num_vfs);
-@@ -3087,6 +3093,7 @@ esw_vfs_changed_event_handler(struct mlx5_eswitch *esw, const u32 *out)
- 			return;
+@@ -400,7 +402,9 @@ int mlx5_devlink_sf_port_del(struct devlink *devlink, unsigned int port_index,
+ 		goto sf_err;
  	}
- 	esw->esw_funcs.num_vfs = new_num_vfs;
-+	devl_unlock(devlink);
- }
- 
- static void esw_functions_changed_event_handler(struct work_struct *work)
-@@ -3236,8 +3243,10 @@ int esw_offloads_enable(struct mlx5_eswitch *esw)
- static int esw_offloads_stop(struct mlx5_eswitch *esw,
- 			     struct netlink_ext_ack *extack)
- {
-+	struct devlink *devlink = priv_to_devlink(esw->dev);
- 	int err, err1;
  
 +	devl_lock(devlink);
- 	esw->mode = MLX5_ESWITCH_LEGACY;
- 	err = mlx5_eswitch_enable_locked(esw, MLX5_ESWITCH_IGNORE_NUM_VFS);
- 	if (err) {
-@@ -3249,6 +3258,7 @@ static int esw_offloads_stop(struct mlx5_eswitch *esw,
- 					   "Failed setting eswitch back to offloads");
- 		}
- 	}
+ 	mlx5_esw_offloads_sf_vport_disable(esw, sf->hw_fn_id);
 +	devl_unlock(devlink);
+ 	mlx5_sf_id_erase(table, sf);
  
- 	return err;
- }
+ 	mutex_lock(&table->sf_state_lock);
 -- 
 2.36.1
 
