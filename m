@@ -2,246 +2,211 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2DB7856FEA8
-	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 12:15:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7519756FE95
+	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 12:14:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234281AbiGKKPB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jul 2022 06:15:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54550 "EHLO
+        id S230308AbiGKKOq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jul 2022 06:14:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234766AbiGKKOF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 06:14:05 -0400
-Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3BB917AC0D;
-        Mon, 11 Jul 2022 02:34:17 -0700 (PDT)
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
-        pabeni@redhat.com, edumazet@google.com
-Subject: [PATCH net 3/3] netfilter: nf_tables: replace BUG_ON by element length check
-Date:   Mon, 11 Jul 2022 11:33:57 +0200
-Message-Id: <20220711093357.107260-4-pablo@netfilter.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220711093357.107260-1-pablo@netfilter.org>
-References: <20220711093357.107260-1-pablo@netfilter.org>
+        with ESMTP id S230252AbiGKKOA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 06:14:00 -0400
+Received: from chinatelecom.cn (prt-mail.chinatelecom.cn [42.123.76.222])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D4C697AC08
+        for <netdev@vger.kernel.org>; Mon, 11 Jul 2022 02:34:11 -0700 (PDT)
+HMM_SOURCE_IP: 172.18.0.218:39622.1018751414
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-110.80.1.46 (unknown [172.18.0.218])
+        by chinatelecom.cn (HERMES) with SMTP id E417F2800D7;
+        Mon, 11 Jul 2022 17:34:07 +0800 (CST)
+X-189-SAVE-TO-SEND: liyonglong@chinatelecom.cn
+Received: from  ([172.18.0.218])
+        by app0025 with ESMTP id f7ad3ce5bcda41368238527836a9c21d for pabeni@redhat.com;
+        Mon, 11 Jul 2022 17:34:09 CST
+X-Transaction-ID: f7ad3ce5bcda41368238527836a9c21d
+X-Real-From: liyonglong@chinatelecom.cn
+X-Receive-IP: 172.18.0.218
+X-MEDUSA-Status: 0
+Sender: liyonglong@chinatelecom.cn
+Subject: Re: [PATCH v3] tcp: make retransmitted SKB fit into the send window
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+References: <1657525740-7585-1-git-send-email-liyonglong@chinatelecom.cn>
+ <CANn89iJ-ca3u1JRKm=H4+rR3MFrdXxXTDUftNUzF20YTUM3=rg@mail.gmail.com>
+From:   Yonglong Li <liyonglong@chinatelecom.cn>
+Message-ID: <d69cf438-9c91-a174-6856-4ff4d680737f@chinatelecom.cn>
+Date:   Mon, 11 Jul 2022 17:34:06 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+In-Reply-To: <CANn89iJ-ca3u1JRKm=H4+rR3MFrdXxXTDUftNUzF20YTUM3=rg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-BUG_ON can be triggered from userspace with an element with a large
-userdata area. Replace it by length check and return EINVAL instead.
-Over time extensions have been growing in size.
 
-Pick a sufficiently old Fixes: tag to propagate this fix.
 
-Fixes: 7d7402642eaf ("netfilter: nf_tables: variable sized set element keys / data")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
- include/net/netfilter/nf_tables.h | 14 +++---
- net/netfilter/nf_tables_api.c     | 72 ++++++++++++++++++++++---------
- 2 files changed, 60 insertions(+), 26 deletions(-)
+On 7/11/2022 5:06 PM, Eric Dumazet wrote:
+> On Mon, Jul 11, 2022 at 9:56 AM Yonglong Li <liyonglong@chinatelecom.cn> wrote:
+>>
+>> current code of __tcp_retransmit_skb only check TCP_SKB_CB(skb)->seq
+>> in send window, and TCP_SKB_CB(skb)->seq_end maybe out of send window.
+>> If receiver has shrunk his window, and skb is out of new window,  it
+>> should retransmit a smaller portion of the payload.
+>>
+>> test packetdrill script:
+>>     0 socket(..., SOCK_STREAM, IPPROTO_TCP) = 3
+>>    +0 fcntl(3, F_GETFL) = 0x2 (flags O_RDWR)
+>>    +0 fcntl(3, F_SETFL, O_RDWR|O_NONBLOCK) = 0
+>>
+>>    +0 connect(3, ..., ...) = -1 EINPROGRESS (Operation now in progress)
+>>    +0 > S 0:0(0)  win 65535 <mss 1460,sackOK,TS val 100 ecr 0,nop,wscale 8>
+>>  +.05 < S. 0:0(0) ack 1 win 6000 <mss 1000,nop,nop,sackOK>
+>>    +0 > . 1:1(0) ack 1
+>>
+>>    +0 write(3, ..., 10000) = 10000
+>>
+>>    +0 > . 1:2001(2000) ack 1 win 65535
+>>    +0 > . 2001:4001(2000) ack 1 win 65535
+>>    +0 > . 4001:6001(2000) ack 1 win 65535
+>>
+>>  +.05 < . 1:1(0) ack 4001 win 1001
+>>
+>> and tcpdump show:
+>> 192.168.226.67.55 > 192.0.2.1.8080: Flags [.], seq 1:2001, ack 1, win 65535, length 2000
+>> 192.168.226.67.55 > 192.0.2.1.8080: Flags [.], seq 2001:4001, ack 1, win 65535, length 2000
+>> 192.168.226.67.55 > 192.0.2.1.8080: Flags [P.], seq 4001:5001, ack 1, win 65535, length 1000
+>> 192.168.226.67.55 > 192.0.2.1.8080: Flags [.], seq 5001:6001, ack 1, win 65535, length 1000
+>> 192.0.2.1.8080 > 192.168.226.67.55: Flags [.], ack 4001, win 1001, length 0
+>> 192.168.226.67.55 > 192.0.2.1.8080: Flags [.], seq 5001:6001, ack 1, win 65535, length 1000
+>> 192.168.226.67.55 > 192.0.2.1.8080: Flags [P.], seq 4001:5001, ack 1, win 65535, length 1000
+>>
+>> when cient retract window to 1001, send window is [4001,5002],
+>> but TLP send 5001-6001 packet which is out of send window.
+>>
+>> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+>> Signed-off-by: Yonglong Li <liyonglong@chinatelecom.cn>
+>> ---
+>>  net/ipv4/tcp_output.c | 36 ++++++++++++++++++++++++------------
+>>  1 file changed, 24 insertions(+), 12 deletions(-)
+>>
+>> diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+>> index 18c913a..efd0f05 100644
+>> --- a/net/ipv4/tcp_output.c
+>> +++ b/net/ipv4/tcp_output.c
+>> @@ -3100,7 +3100,6 @@ static bool tcp_can_collapse(const struct sock *sk, const struct sk_buff *skb)
+>>  static void tcp_retrans_try_collapse(struct sock *sk, struct sk_buff *to,
+>>                                      int space)
+>>  {
+>> -       struct tcp_sock *tp = tcp_sk(sk);
+>>         struct sk_buff *skb = to, *tmp;
+>>         bool first = true;
+>>
+>> @@ -3123,14 +3122,18 @@ static void tcp_retrans_try_collapse(struct sock *sk, struct sk_buff *to,
+>>                         continue;
+>>                 }
+>>
+>> -               if (space < 0)
+>> -                       break;
+>> -
+>> -               if (after(TCP_SKB_CB(skb)->end_seq, tcp_wnd_end(tp)))
+>> +               if (space < 0) {
+>> +                       if (unlikely(tcp_fragment(sk, TCP_FRAG_IN_RTX_QUEUE,
+>> +                                                 skb, space + skb->len,
+>> +                                                 tcp_current_mss(sk), GFP_ATOMIC)))
+> 
+> What are you doing here ?
+> 
+> This seems wrong.
 
-diff --git a/include/net/netfilter/nf_tables.h b/include/net/netfilter/nf_tables.h
-index 5c4e5a96a984..64cf655c818c 100644
---- a/include/net/netfilter/nf_tables.h
-+++ b/include/net/netfilter/nf_tables.h
-@@ -657,18 +657,22 @@ static inline void nft_set_ext_prepare(struct nft_set_ext_tmpl *tmpl)
- 	tmpl->len = sizeof(struct nft_set_ext);
- }
- 
--static inline void nft_set_ext_add_length(struct nft_set_ext_tmpl *tmpl, u8 id,
--					  unsigned int len)
-+static inline int nft_set_ext_add_length(struct nft_set_ext_tmpl *tmpl, u8 id,
-+					 unsigned int len)
- {
- 	tmpl->len	 = ALIGN(tmpl->len, nft_set_ext_types[id].align);
--	BUG_ON(tmpl->len > U8_MAX);
-+	if (tmpl->len > U8_MAX)
-+		return -EINVAL;
-+
- 	tmpl->offset[id] = tmpl->len;
- 	tmpl->len	+= nft_set_ext_types[id].len + len;
-+
-+	return 0;
- }
- 
--static inline void nft_set_ext_add(struct nft_set_ext_tmpl *tmpl, u8 id)
-+static inline int nft_set_ext_add(struct nft_set_ext_tmpl *tmpl, u8 id)
- {
--	nft_set_ext_add_length(tmpl, id, 0);
-+	return nft_set_ext_add_length(tmpl, id, 0);
- }
- 
- static inline void nft_set_ext_init(struct nft_set_ext *ext,
-diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index d6b59beab3a9..646d5fd53604 100644
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -5833,8 +5833,11 @@ static int nft_add_set_elem(struct nft_ctx *ctx, struct nft_set *set,
- 	if (!nla[NFTA_SET_ELEM_KEY] && !(flags & NFT_SET_ELEM_CATCHALL))
- 		return -EINVAL;
- 
--	if (flags != 0)
--		nft_set_ext_add(&tmpl, NFT_SET_EXT_FLAGS);
-+	if (flags != 0) {
-+		err = nft_set_ext_add(&tmpl, NFT_SET_EXT_FLAGS);
-+		if (err < 0)
-+			return err;
-+	}
- 
- 	if (set->flags & NFT_SET_MAP) {
- 		if (nla[NFTA_SET_ELEM_DATA] == NULL &&
-@@ -5943,7 +5946,9 @@ static int nft_add_set_elem(struct nft_ctx *ctx, struct nft_set *set,
- 		if (err < 0)
- 			goto err_set_elem_expr;
- 
--		nft_set_ext_add_length(&tmpl, NFT_SET_EXT_KEY, set->klen);
-+		err = nft_set_ext_add_length(&tmpl, NFT_SET_EXT_KEY, set->klen);
-+		if (err < 0)
-+			goto err_parse_key;
- 	}
- 
- 	if (nla[NFTA_SET_ELEM_KEY_END]) {
-@@ -5952,22 +5957,31 @@ static int nft_add_set_elem(struct nft_ctx *ctx, struct nft_set *set,
- 		if (err < 0)
- 			goto err_parse_key;
- 
--		nft_set_ext_add_length(&tmpl, NFT_SET_EXT_KEY_END, set->klen);
-+		err = nft_set_ext_add_length(&tmpl, NFT_SET_EXT_KEY_END, set->klen);
-+		if (err < 0)
-+			goto err_parse_key_end;
- 	}
- 
- 	if (timeout > 0) {
--		nft_set_ext_add(&tmpl, NFT_SET_EXT_EXPIRATION);
--		if (timeout != set->timeout)
--			nft_set_ext_add(&tmpl, NFT_SET_EXT_TIMEOUT);
-+		err = nft_set_ext_add(&tmpl, NFT_SET_EXT_EXPIRATION);
-+		if (err < 0)
-+			goto err_parse_key_end;
-+
-+		if (timeout != set->timeout) {
-+			err = nft_set_ext_add(&tmpl, NFT_SET_EXT_TIMEOUT);
-+			if (err < 0)
-+				goto err_parse_key_end;
-+		}
- 	}
- 
- 	if (num_exprs) {
- 		for (i = 0; i < num_exprs; i++)
- 			size += expr_array[i]->ops->size;
- 
--		nft_set_ext_add_length(&tmpl, NFT_SET_EXT_EXPRESSIONS,
--				       sizeof(struct nft_set_elem_expr) +
--				       size);
-+		err = nft_set_ext_add_length(&tmpl, NFT_SET_EXT_EXPRESSIONS,
-+					     sizeof(struct nft_set_elem_expr) + size);
-+		if (err < 0)
-+			goto err_parse_key_end;
- 	}
- 
- 	if (nla[NFTA_SET_ELEM_OBJREF] != NULL) {
-@@ -5982,7 +5996,9 @@ static int nft_add_set_elem(struct nft_ctx *ctx, struct nft_set *set,
- 			err = PTR_ERR(obj);
- 			goto err_parse_key_end;
- 		}
--		nft_set_ext_add(&tmpl, NFT_SET_EXT_OBJREF);
-+		err = nft_set_ext_add(&tmpl, NFT_SET_EXT_OBJREF);
-+		if (err < 0)
-+			goto err_parse_key_end;
- 	}
- 
- 	if (nla[NFTA_SET_ELEM_DATA] != NULL) {
-@@ -6016,7 +6032,9 @@ static int nft_add_set_elem(struct nft_ctx *ctx, struct nft_set *set,
- 							  NFT_VALIDATE_NEED);
- 		}
- 
--		nft_set_ext_add_length(&tmpl, NFT_SET_EXT_DATA, desc.len);
-+		err = nft_set_ext_add_length(&tmpl, NFT_SET_EXT_DATA, desc.len);
-+		if (err < 0)
-+			goto err_parse_data;
- 	}
- 
- 	/* The full maximum length of userdata can exceed the maximum
-@@ -6026,9 +6044,12 @@ static int nft_add_set_elem(struct nft_ctx *ctx, struct nft_set *set,
- 	ulen = 0;
- 	if (nla[NFTA_SET_ELEM_USERDATA] != NULL) {
- 		ulen = nla_len(nla[NFTA_SET_ELEM_USERDATA]);
--		if (ulen > 0)
--			nft_set_ext_add_length(&tmpl, NFT_SET_EXT_USERDATA,
--					       ulen);
-+		if (ulen > 0) {
-+			err = nft_set_ext_add_length(&tmpl, NFT_SET_EXT_USERDATA,
-+						     ulen);
-+			if (err < 0)
-+				goto err_parse_data;
-+		}
- 	}
- 
- 	err = -ENOMEM;
-@@ -6256,8 +6277,11 @@ static int nft_del_setelem(struct nft_ctx *ctx, struct nft_set *set,
- 
- 	nft_set_ext_prepare(&tmpl);
- 
--	if (flags != 0)
--		nft_set_ext_add(&tmpl, NFT_SET_EXT_FLAGS);
-+	if (flags != 0) {
-+		err = nft_set_ext_add(&tmpl, NFT_SET_EXT_FLAGS);
-+		if (err < 0)
-+			return err;
-+	}
- 
- 	if (nla[NFTA_SET_ELEM_KEY]) {
- 		err = nft_setelem_parse_key(ctx, set, &elem.key.val,
-@@ -6265,16 +6289,20 @@ static int nft_del_setelem(struct nft_ctx *ctx, struct nft_set *set,
- 		if (err < 0)
- 			return err;
- 
--		nft_set_ext_add_length(&tmpl, NFT_SET_EXT_KEY, set->klen);
-+		err = nft_set_ext_add_length(&tmpl, NFT_SET_EXT_KEY, set->klen);
-+		if (err < 0)
-+			goto fail_elem;
- 	}
- 
- 	if (nla[NFTA_SET_ELEM_KEY_END]) {
- 		err = nft_setelem_parse_key(ctx, set, &elem.key_end.val,
- 					    nla[NFTA_SET_ELEM_KEY_END]);
- 		if (err < 0)
--			return err;
-+			goto fail_elem;
- 
--		nft_set_ext_add_length(&tmpl, NFT_SET_EXT_KEY_END, set->klen);
-+		err = nft_set_ext_add_length(&tmpl, NFT_SET_EXT_KEY_END, set->klen);
-+		if (err < 0)
-+			goto fail_elem_key_end;
- 	}
- 
- 	err = -ENOMEM;
-@@ -6282,7 +6310,7 @@ static int nft_del_setelem(struct nft_ctx *ctx, struct nft_set *set,
- 				      elem.key_end.val.data, NULL, 0, 0,
- 				      GFP_KERNEL_ACCOUNT);
- 	if (elem.priv == NULL)
--		goto fail_elem;
-+		goto fail_elem_key_end;
- 
- 	ext = nft_set_elem_ext(set, elem.priv);
- 	if (flags)
-@@ -6306,6 +6334,8 @@ static int nft_del_setelem(struct nft_ctx *ctx, struct nft_set *set,
- 	kfree(trans);
- fail_trans:
- 	kfree(elem.priv);
-+fail_elem_key_end:
-+	nft_data_release(&elem.key_end.val, NFT_DATA_VALUE);
- fail_elem:
- 	nft_data_release(&elem.key.val, NFT_DATA_VALUE);
- 	return err;
+I think we can collapse more data if skb->len < avail_wnd. If you think doing this is wrong
+I will remove it.
+
+> 
+> Can we please stick to the patch I sent earlier.
+> 
+> If you want to amend it later, you can do this in a separate patch,
+> with a clear explanation.
+> 
+>> +                               break;
+>> +                       tcp_collapse_retrans(sk, to);
+>>                         break;
+>> +               }
+>>
+>>                 if (!tcp_collapse_retrans(sk, to))
+>>                         break;
+>> +
+>>         }
+>>  }
+>>
+>> @@ -3144,7 +3147,7 @@ int __tcp_retransmit_skb(struct sock *sk, struct sk_buff *skb, int segs)
+>>         struct tcp_sock *tp = tcp_sk(sk);
+>>         unsigned int cur_mss;
+>>         int diff, len, err;
+>> -
+>> +       int avail_wnd;
+>>
+>>         /* Inconclusive MTU probe */
+>>         if (icsk->icsk_mtup.probe_size)
+>> @@ -3166,17 +3169,25 @@ int __tcp_retransmit_skb(struct sock *sk, struct sk_buff *skb, int segs)
+>>                 return -EHOSTUNREACH; /* Routing failure or similar. */
+>>
+>>         cur_mss = tcp_current_mss(sk);
+>> +       avail_wnd = tcp_wnd_end(tp) - TCP_SKB_CB(skb)->seq;
+>>
+>>         /* If receiver has shrunk his window, and skb is out of
+>>          * new window, do not retransmit it. The exception is the
+>>          * case, when window is shrunk to zero. In this case
+>> -        * our retransmit serves as a zero window probe.
+>> +        * our retransmit of one segment serves as a zero window probe.
+>>          */
+>> -       if (!before(TCP_SKB_CB(skb)->seq, tcp_wnd_end(tp)) &&
+>> -           TCP_SKB_CB(skb)->seq != tp->snd_una)
+>> -               return -EAGAIN;
+>> +       if (avail_wnd <= 0) {
+>> +               if (TCP_SKB_CB(skb)->seq != tp->snd_una)
+>> +                       return -EAGAIN;
+>> +               avail_wnd = cur_mss;
+>> +       }
+>>
+>>         len = cur_mss * segs;
+>> +       if (len > avail_wnd) {
+>> +               len = rounddown(avail_wnd, cur_mss);
+>> +               if (!len)
+>> +                       len = avail_wnd;
+>> +       }
+>>         if (skb->len > len) {
+>>                 if (tcp_fragment(sk, TCP_FRAG_IN_RTX_QUEUE, skb, len,
+>>                                  cur_mss, GFP_ATOMIC))
+>> @@ -3190,8 +3201,9 @@ int __tcp_retransmit_skb(struct sock *sk, struct sk_buff *skb, int segs)
+>>                 diff -= tcp_skb_pcount(skb);
+>>                 if (diff)
+>>                         tcp_adjust_pcount(sk, skb, diff);
+>> -               if (skb->len < cur_mss)
+>> -                       tcp_retrans_try_collapse(sk, skb, cur_mss);
+>> +               avail_wnd = min_t(int, avail_wnd, cur_mss);
+>> +               if (skb->len < avail_wnd)
+>> +                       tcp_retrans_try_collapse(sk, skb, avail_wnd);
+>>         }
+>>
+>>         /* RFC3168, section 6.1.1.1. ECN fallback */
+>> --
+>> 1.8.3.1
+>>
+> 
+
 -- 
-2.30.2
-
+Li YongLong
