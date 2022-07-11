@@ -2,76 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D760D56D6A6
-	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 09:21:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D9EB56D6D3
+	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 09:29:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230058AbiGKHVg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jul 2022 03:21:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41434 "EHLO
+        id S230022AbiGKH3e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jul 2022 03:29:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229735AbiGKHVd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 03:21:33 -0400
-Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC7561055F;
-        Mon, 11 Jul 2022 00:21:31 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045168;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=26;SR=0;TI=SMTPD_---0VIxofy0_1657524082;
-Received: from 30.227.65.231(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0VIxofy0_1657524082)
-          by smtp.aliyun-inc.com;
-          Mon, 11 Jul 2022 15:21:24 +0800
-Message-ID: <0408b739-3506-608a-4284-1086443a154d@linux.alibaba.com>
-Date:   Mon, 11 Jul 2022 15:21:21 +0800
+        with ESMTP id S230000AbiGKH3d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 03:29:33 -0400
+Received: from mail-m972.mail.163.com (mail-m972.mail.163.com [123.126.97.2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 333031572D;
+        Mon, 11 Jul 2022 00:29:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=I8+m1
+        YAsVZ4gl1y1umKlRTUNyEHJgsOKvTyV1H7WmOY=; b=FwmkrMFXFr/vChhjh8X1r
+        cR26ZV6bNosnkAScnaDfPrNOlBwTSAywa+4kczhfrktr3AdUiLX/JQznsYpPFxNz
+        xIxK4fPjJ7hz7e+3+KfJFlG0svk8pOL0OMZoDMWQB+zwdz3y9VAXOEDpqUNiDiAe
+        UhQLcHNcJTn77xcWjTWCeg=
+Received: from localhost.localdomain (unknown [123.112.69.106])
+        by smtp2 (Coremail) with SMTP id GtxpCgBX5vg00ctiUDjsOQ--.9309S4;
+        Mon, 11 Jul 2022 15:29:06 +0800 (CST)
+From:   Jianglei Nie <niejianglei2021@163.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jianglei Nie <niejianglei2021@163.com>
+Subject: [PATCH v2] net: macsec: fix potential resource leak in macsec_add_rxsa() and macsec_add_txsa()
+Date:   Mon, 11 Jul 2022 15:28:51 +0800
+Message-Id: <20220711072851.2319308-1-niejianglei2021@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.10.0
-Subject: Re: [PATCH] smc: fix refcount bug in sk_psock_get (2)
-To:     Hawkins Jiawei <yin31149@gmail.com>,
-        syzbot+5f26f85569bd179c18ce@syzkaller.appspotmail.com
-Cc:     andrii@kernel.org, ast@kernel.org, borisp@nvidia.com,
-        bpf@vger.kernel.org, daniel@iogearbox.net, davem@davemloft.net,
-        edumazet@google.com, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        john.fastabend@gmail.com, kafai@fb.com, kgraul@linux.ibm.com,
-        kpsingh@kernel.org, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, yhs@fb.com,
-        skhan@linuxfoundation.org, 18801353760@163.com,
-        paskripkin@gmail.com,
-        linux-kernel-mentees@lists.linuxfoundation.org
-References: <00000000000026328205e08cdbeb@google.com>
- <20220709024659.6671-1-yin31149@gmail.com>
-From:   Wen Gu <guwen@linux.alibaba.com>
-In-Reply-To: <20220709024659.6671-1-yin31149@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: GtxpCgBX5vg00ctiUDjsOQ--.9309S4
+X-Coremail-Antispam: 1Uf129KBjvJXoW7Ar4rWF4fCF17Zw1xZr43ZFb_yoW8Jw4Dpa
+        15ZwsrCF1qqrWI93ZrCw4UWF1rXayUtryagry7C3yfua4kJw1rWFy0kFyI9Fy5AryxGF48
+        ZrWvyr47AFn8C37anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zRha9hUUUUU=
+X-Originating-IP: [123.112.69.106]
+X-CM-SenderInfo: xqlhyxxdqjzvrlsqjii6rwjhhfrp/xtbB0Qg7jFzIB3B7eAABsP
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+init_rx_sa() allocates relevant resource for rx_sa->stats and rx_sa->
+key.tfm with alloc_percpu() and macsec_alloc_tfm(). When some error
+occurs after init_rx_sa() is called in macsec_add_rxsa(), the function
+released rx_sa with kfree() without releasing rx_sa->stats and rx_sa->
+key.tfm, which will lead to a resource leak.
 
+We should call macsec_rxsa_put() instead of kfree() to decrease the ref
+count of rx_sa and release the relevant resource if the refcount is 0.
+The same bug exists in macsec_add_txsa() for tx_sa as well. This patch
+fixes the above two bugs.
 
-On 2022/7/9 10:46 am, Hawkins Jiawei wrote:
+Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
+---
+ drivers/net/macsec.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-> 
-> syzbot is try to setup TLS on a SMC socket.
-> 
-> During SMC fallback process in connect syscall, kernel will sets the
-> smc->sk.sk_socket->file->private_data to smc->clcsock
-> in smc_switch_to_fallback(), and set smc->clcsock->sk_user_data
-> to origin smc in smc_fback_replace_callbacks().
+diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
+index 817577e713d7..ac3ff624a8dd 100644
+--- a/drivers/net/macsec.c
++++ b/drivers/net/macsec.c
+@@ -1842,7 +1842,7 @@ static int macsec_add_rxsa(struct sk_buff *skb, struct genl_info *info)
+ 	return 0;
+ 
+ cleanup:
+-	kfree(rx_sa);
++	macsec_rxsa_put(rx_sa);
+ 	rtnl_unlock();
+ 	return err;
+ }
+@@ -2085,7 +2085,7 @@ static int macsec_add_txsa(struct sk_buff *skb, struct genl_info *info)
+ 
+ cleanup:
+ 	secy->operational = was_operational;
+-	kfree(tx_sa);
++	macsec_txsa_put(tx_sa);
+ 	rtnl_unlock();
+ 	return err;
+ }
+-- 
+2.25.1
 
-> 
-> Later, sk_psock_get() will treat the smc->clcsock->sk_user_data
-> as sk_psock type, which triggers the refcnt warning.
-> 
-
-
-Thanks for your analysis.
-
-Although syzbot found this issue in SMC, seems that it is a generic
-issue about sk_user_data usage? Fixing it from SK_USER_DATA_PTRMASK
-as you plan should be a right way.
