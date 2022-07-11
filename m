@@ -2,158 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 553A4570444
-	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 15:27:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91ECB570475
+	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 15:39:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230147AbiGKN1q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jul 2022 09:27:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59478 "EHLO
+        id S230145AbiGKNjK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jul 2022 09:39:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229558AbiGKN1p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 09:27:45 -0400
-Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70078.outbound.protection.outlook.com [40.107.7.78])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DABAB45079;
-        Mon, 11 Jul 2022 06:27:44 -0700 (PDT)
+        with ESMTP id S229903AbiGKNjG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 09:39:06 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2070.outbound.protection.outlook.com [40.107.244.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EEC641D03
+        for <netdev@vger.kernel.org>; Mon, 11 Jul 2022 06:39:05 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=A1j5uy5f8wiflV4VCQHv3qoI0BXajR4w7RaPLEAM1pa6F8T+mrfvSWGeuIMlQ2J256untcfDwX+a9C3793+Bg82KzEn2dl0TkQ8G2O17+iog3q/R5a+2jFf8eH7xx6O3L53aMHR5IcxR7tWJHMdCW2MFG27hoPY6OuCYQojHfckn3rfW8SBSmj7Iogq8nUak1iV1H09XlQBY9g0nOslhYlIp6PbuKDIiwsSd3tip7HiN21RNXKomt4NqOPK1uaqXDZZ7tJnljZzBXc0CWR0/uTneKwcCegzAt5o61NFRWZGn35BwZ8GyPvjzK8AN/UHff/u/XMsMC13PvenS8UTqtQ==
+ b=gnMfg0fCeCUsYufIgAiIefsM7zvwz7h/9szyC9pG9zNdW46vXh0ojg1fhUzUKroxY7FxqPmoh+iLBwVde4xljCgFczq82JqJPATfaqrsAS7E7V3UrUI4nOnz3r5fcvq+kCD8CAdoTcziAnRzqz3nfGvPamMygE3zu/4ix30OfT/TUMlrXX4SK0q9spRjz+/dIboJa5ndq1Q9xjNbuh2C986kfbkc6CZWL4+zK9DZ8huM1/C6lSrYU1LphbJC0ZdhlA/KnBxJlAR4OKIswDqFEE58Nm//x1lR0TNr0EGXIPpwMbBCb2m7pmgIszXSI+U948tCYDy/8mSnr5N5GjcnNQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=FVUrzmFRQIMF/yhjnTTC+IyI/gX7wC1pBDyXN6owt6I=;
- b=mL60tos7RXZxNiUfptLNZETg60XvmvZWT9wp1LIO7GFytDDsP+iZ2Wn1dlIucpdsI7HFJMB49ypZCqkkQ9XcHEoB4uovHHhE9+erXF8KzDo4mGbyZZVhyM9Gm62cCF/al6LCKzvzVb768zY4eAwbmGGSBxddtp3/KrJ7yvgCGzCuNXN4kuJ0/dtUMb+1xk+LJAeomYDbRYOaQrXO3GAyVShXA0aB4htBkdhMewJXK9OMB4LaUemnY+YMbrPb9kEHbGZFyOQTtYTvLMzZ1QgIU1rNlbNCGzL3vZ0Jg9bpVQRPQUmjlhlt1JvI2EfwrnfTSgRHFswzX76+2EDWonil2g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ bh=hIy3YsDxGBqOp8a75931J9Daa24GoGPUgMM6RuABzfM=;
+ b=VxfjLJqX7VtMaeHVrbbnnZ6wbL+x1ZZ8I6O+o0+Z89gJ/V+mi1WAnKjKUQMa7kO7BFOLl0fjYRgk2TlEhGnLFX6WL9G041aa+fN28NLN/btsXvI3ZMsgp1DB9syLIByWlQ9AhPGqvbFJjFdmiojy1sEocJCifri5emhIbDd/RY6fa8iMpi5HhIh2FrlwPhuoECuIfALx2mJxY6ucau3CSWtNqiVsNm5xfH7LW6CRQjvcB/WV67cP+oGSjHADTXizYMgOOzzHfk4AFiCQLYhQRa9CXYwrEs0iwiUa8wWHq2DSODXj45aKvNXqqAO2I0CbjY9kyhbQG78VLXVinbx0JA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.234) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FVUrzmFRQIMF/yhjnTTC+IyI/gX7wC1pBDyXN6owt6I=;
- b=M9kCKJDwosjjOZWHZ3zIMouOqOCAHnoD4ZJ+3K9DGoB1v+YtFJFTtt/B9K3HVDearKQNtlX5RvtAkWIV2OEeBrv8zXyxY2wnTmE+0xlNNV6hiCmWj1e7AiZHtIWmtpmXlEyCdVGDBt3J+wGDLWlNdw3hG6MzXEq3SUtlRFIJt04=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by PA4PR04MB7742.eurprd04.prod.outlook.com (2603:10a6:102:b9::17) with
+ bh=hIy3YsDxGBqOp8a75931J9Daa24GoGPUgMM6RuABzfM=;
+ b=KM+pGiUDhWXiXOHbHragbp3N+pX6x4RJ11sIgWgPz8ABi3KiXx2nYtEGsEXL/fApM1z/Rq/1FKdPgla2tN0YvO8E4/oL48nsIs92s9YNUPEOiUMAHxDuBzBZl5TKJ/JumDz1bPnM3SK9xeltfd+FjGb9rbxA+j0bIcoN6Mrhh2xU934j5AaF+uoIqttNSpU+SQsdchtA1hOZ1VKL3QX3W84L0eg3A/LMvaH/mWGX2r9sQIp4ZmlDVz6z28gwkm8SyI3P5wt3TzeW5ukdL+KL2XgwwdnzbFh9fnYvqcbxxhuniSyTzlC9i+JLI/3basmbP6V0w0sds9SAQQczFZtj1A==
+Received: from DM6PR07CA0067.namprd07.prod.outlook.com (2603:10b6:5:74::44) by
+ SJ0PR12MB5485.namprd12.prod.outlook.com (2603:10b6:a03:305::13) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.26; Mon, 11 Jul
- 2022 13:27:42 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::71b7:8ed1:e4e0:3857]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::71b7:8ed1:e4e0:3857%4]) with mapi id 15.20.5417.026; Mon, 11 Jul 2022
- 13:27:41 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Colin Foster <colin.foster@in-advantage.com>
-CC:     "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Wolfram Sang <wsa@kernel.org>,
-        Terry Bowman <terry.bowman@amd.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        "katie.morris@in-advantage.com" <katie.morris@in-advantage.com>
-Subject: Re: [PATCH v13 net-next 9/9] mfd: ocelot: add support for the vsc7512
- chip via spi
-Thread-Topic: [PATCH v13 net-next 9/9] mfd: ocelot: add support for the
- vsc7512 chip via spi
-Thread-Index: AQHYkLCPgEvqIBosNUe2nxXKVdr3Ka15MpsA
-Date:   Mon, 11 Jul 2022 13:27:41 +0000
-Message-ID: <20220711132740.q3ietozqgucdutqu@skbuf>
-References: <20220705204743.3224692-1-colin.foster@in-advantage.com>
- <20220705204743.3224692-10-colin.foster@in-advantage.com>
-In-Reply-To: <20220705204743.3224692-10-colin.foster@in-advantage.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 56c47670-1d5c-4a27-34b2-08da634121e0
-x-ms-traffictypediagnostic: PA4PR04MB7742:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Pts8R1r9KCSXl8FF8OUi/6FMksXs67+UlgEEKKb17anyXwzQeJ7EZeRP4hqREimL6v7O1ztMHqWCRfRQayUmz1i873Ahj7+/j6Jey9bdEGVR4uKcnSb/PIIh4qfbyX/UbY1A6m1RCnOcLwdGmeMnALok9zUJlm5H4B68vQuMdg567oOdK7B918BC2yBWmUmzN16Zlf/27c6yUhzQhtVe1puZPGkYhkt5T/MFZtiYylyfw4EcuNGFHgxbiUjgfKc3qxiOIFwYnIjnI3wd4qhicdRHGKwVL0qid0REcb6n6b81YEleVWXncI7xK4Ce+nLFqAknjzxQSdzz6ahM3L4lFp+gwXFz1NP5ao8yJLkZkUDt73zf1GZS8+nTGqQoyolJYly5H2xra69lFPBF0jPnK8BWkLuCPEgPaC3JEvR1nM4mO20vdbiacRODpcZFlD24Ie8zpbWqqkzCe0wqdND5dCvm/rl2g0MxKafpbJKeKWHafgTKlSzehw9N+c5ppHU+Asw3Ryftn6/PdTHIG0tbNjyMyw5Fu/nZR2UUkJ3+XOzZEozhxhITWqJaSqwYgSg2fI87h+gxZhd4tQEhhzpdHcQF1bW0q2Hsfjg82h95nnKUGEPHqU6ZWZFfoIVIZuqhEMCbkLvbojo2X91fgT/GVdCCAY7xKjOBu9/rXiR2WebIETTJD1VvRkOMLiZb3+Mog/EcnoYVg9M68p1V4qBYjehhAQVMseG//6Q57G2Tmo0ajoqouOUaKhJyERZT7CjpnHd7NT7daPqpN17de4R3wOHuOZgasV94Nnc+orD8NGK7yAYhxhOszjalPGoJCvDC
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(7916004)(136003)(39860400002)(376002)(396003)(346002)(366004)(186003)(122000001)(33716001)(38100700002)(5660300002)(66556008)(66476007)(66446008)(64756008)(6916009)(76116006)(4326008)(66946007)(54906003)(316002)(86362001)(6506007)(8676002)(71200400001)(8936002)(2906002)(6486002)(478600001)(41300700001)(9686003)(6512007)(38070700005)(7416002)(1076003)(44832011)(4744005)(26005);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?hr86I2slcTDEhJxommxbnElsr63e9Xsm+8wEOWRCKMYTd/nZr8ioJ9u262RZ?=
- =?us-ascii?Q?rRZH7rE8r3k3FvgLYj5TwHlmXi/oK7NsFLH8CXKHKRoBrSCIwa5E7Xt8siEj?=
- =?us-ascii?Q?pX0cPnkdR2aXX+XKLJowWDLTEvvkOWKFhz8uv6PBFfR2yU1arbcm0LCK4z23?=
- =?us-ascii?Q?MPgqjOUasQ70TPj7UINGQDet1rv+Fw84Dv27sTIwMMCbkoatHCgzqxCtctCr?=
- =?us-ascii?Q?SMVIq9f0VLDeiv3RC1U4pvbVr3ZRgSNtqeI1cI/DNnXGsbNmO44RPo7riBCe?=
- =?us-ascii?Q?MDwstpC/ZqhvUzvx7xA00HfBLQdj8y/P2tBi31q1xqIMsAvkeXX7aFoo7ivb?=
- =?us-ascii?Q?4agAd3CtKWw949IXTx4XNkGukYBOpzMAn5LKE4q8a7GjC/ZIM/XV/QndGoFt?=
- =?us-ascii?Q?UBw8P0ykogkOm5A6mV5JRdhuL4tRVJY6c8Bt4B9zFTAPpkxzWiZLk78PxRVH?=
- =?us-ascii?Q?XP1I0X24+Io32No7PJbd7az2ds/YoFulTMxlwxWGEnowHdqQH5Vd40Qxaoco?=
- =?us-ascii?Q?/LnJqJfPF1/tr3zLJCptyIf3PxlsM9amEKXqZmkNtDs0j66TspuR4WOtyCRf?=
- =?us-ascii?Q?S82MZr4YRHwS3gQ53nO/gW3Z7Hh5EfMSEUu0zlrr297f7VHMYmj/g/k6VFc+?=
- =?us-ascii?Q?T8zgsJnsD0EClnU3e5CmviCyiikz7MjiwzVqiKa7bfN/OCYHw+O9VplmSbd9?=
- =?us-ascii?Q?yR9UP2BJgDDA4z29iRVVqwHKeKj4vfPvF3yJyXl1enzcDZud5/dxdnGTX2Pp?=
- =?us-ascii?Q?sApzr2kvsJ2dMpG2++pYdbupywT/q/fXuzozBTHY/mA1qB1HW8mVwZnoTOP3?=
- =?us-ascii?Q?6Nlia1sIxHrGwMQ5z25vgDMNtr3FswOvCl1S9bhN9mHXBaAtzm9NZKNJUSUG?=
- =?us-ascii?Q?iypIV+K5FyHEmYHHXekJc4NAILymjfNRo0yElhFURxRhnEO4m+JyyHALXgPf?=
- =?us-ascii?Q?rkEtjAXx14HO4AeuGZ98ex2BbdYVfnHSu19AemUoSUYnfPYubZFoYrP2M2x+?=
- =?us-ascii?Q?HDf/KpevTWSPgW7wOsSoRQdA6SZgGJcojORFjqREO8QA7vf4aRi2klPpg/KY?=
- =?us-ascii?Q?VNtW93Xv0Sc1/94uCVWcgwNUcWnRLsnPPci4T2LqbheoOnVQaatT99i7YRsV?=
- =?us-ascii?Q?bkCuUuaMX/CJHSsj+4klmZdZowmTugdzCsuhwLtB9sy8XVX+FdS++CaO4gSG?=
- =?us-ascii?Q?WMZ/Zhxwguilslwb9pwa8UmfsqP8JC11/zKTfKBd8RUYDj9f16YZL3fJm9gt?=
- =?us-ascii?Q?TERA/VKm1A4XGgCWCy+yrsfzU1egJG/enbf8mgEZxJRnJYc7/Sr6yuqTh9HO?=
- =?us-ascii?Q?XQgQG91iB33Dx62+pRKM6t9ouYTxkx9obTYVcMNM9lyFOQVBnoL1rZ4n6Lx+?=
- =?us-ascii?Q?A4Zm7mhzRU6n4L+zEVubuJ9k/++NqSd9tEhFt3zzJas0ru++Ii5ZDP1HRgEo?=
- =?us-ascii?Q?sO2mXpeyghHNcTVxTKsYluFGqFQWY97ePbqIu7g3SAyCj4x1ByVEgWfEmAuc?=
- =?us-ascii?Q?Ef8Fc0AC35I/wpoX4df/YovuGIrqQsQtxbKNhfgNc4EeexlCZQOTYQNmsPir?=
- =?us-ascii?Q?sMrtr+72gwCQDrtPfPxz/UxC5Vax6nFnR1BKTM9eeWjmfkNlYRAA6FNSpJWV?=
- =?us-ascii?Q?1A=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <0C60D734D83E7F4C8E9C8155F35167FE@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.15; Mon, 11 Jul
+ 2022 13:39:02 +0000
+Received: from DM6NAM11FT055.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:74:cafe::73) by DM6PR07CA0067.outlook.office365.com
+ (2603:10b6:5:74::44) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.26 via Frontend
+ Transport; Mon, 11 Jul 2022 13:39:02 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.234; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.234) by
+ DM6NAM11FT055.mail.protection.outlook.com (10.13.173.103) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5417.15 via Frontend Transport; Mon, 11 Jul 2022 13:39:02 +0000
+Received: from drhqmail201.nvidia.com (10.126.190.180) by
+ DRHQMAIL101.nvidia.com (10.27.9.10) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.32; Mon, 11 Jul 2022 13:39:01 +0000
+Received: from drhqmail203.nvidia.com (10.126.190.182) by
+ drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.26; Mon, 11 Jul 2022 06:39:01 -0700
+Received: from vdi.nvidia.com (10.127.8.9) by mail.nvidia.com (10.126.190.182)
+ with Microsoft SMTP Server id 15.2.986.26 via Frontend Transport; Mon, 11 Jul
+ 2022 06:38:59 -0700
+From:   <ehakim@nvidia.com>
+To:     <dsahern@kernel.org>, <netdev@vger.kernel.org>
+CC:     <raeds@nvidia.com>, <tariqt@nvidia.com>,
+        Emeel Hakim <ehakim@nvidia.com>
+Subject: [PATCH v1 1/3] macsec: add option to pass flag list to ip link add command
+Date:   Mon, 11 Jul 2022 16:38:51 +0300
+Message-ID: <20220711133853.19418-1-ehakim@nvidia.com>
+X-Mailer: git-send-email 2.21.3
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 56c47670-1d5c-4a27-34b2-08da634121e0
-X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Jul 2022 13:27:41.8399
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d83fd129-4cd1-4846-4044-08da6342b763
+X-MS-TrafficTypeDiagnostic: SJ0PR12MB5485:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Qxsqy02SgyK+esfEt2SFR34X7hU5MIrm/qk6MKTmURRrVYW7F3gz2rnExkJWJx/5Zsg+uslGfQMv9p8inJaV+uwX916GCWY3HY+4VaB4VUwKXIDThHWLNH3l4Yu4fNFm9NXldsbOrtNgWBoXjfVIEs9J2kxWd2GFUgn0Us7Nk/4PUGUYiFdfmwhki19avlwkLoh4T4XB5PJWK5IZ4tVcvt1ULZcKGUvdo4vMOv6vIlpVCZpmLZuPT0CqQqpAnKSTP3CDZH1i5gs8mmpBldzPXAyvFKzAuPKfZdpTFW2G0PPbpuithIYCsXCjRuEnIxkRV8fs0mXMBNIHCrfAB0ymUkn5zBXYAp9/umoJMnB8VCmdjP1CBAQF17O8XCc5FGzkQbMH20zfPtl8rr7F10+r1dVrixDKd9OYYvUDY1jjki5Wt1jU1bggSY69a699rhZ/P+IWkv1+mYsjTkcawGn2JnKVZ5yf8nQcQeBBwQDU+PQoCBILJlo6uvLRUcihHV+S9+IgHQduRK+Iwj2xO+AmB3HG3xXk2uehbKuu7k7O1esdX9+F72id4X5AYic2QluxlOQ/O9nALw+kHF0Y1MdoYAD5tC8VFjJAdzQQ9eCjnUCuOf17o8dWUpgWikpHv3kziEIwxkv913LWo8ElkG7aRjkfDX150+HNZ9+mqIRgCGKvgrTkDo2qjb5nn7mALxAHiniMlDO4vi79KeUYr43/0A+AUMb1EsLdflfRljJn/9gHZI98xV0TrJL5cm46YN+hihv8jaOUufFPIcjiWj6kAk5UMc743OifDbVd4bAoplx9wvKL86VAIbRXuAJ7j9510djHjKq6FiYX2tYwYsTxfZLBmILS43XMsp+ziI6vHu4=
+X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(396003)(136003)(376002)(346002)(40470700004)(46966006)(36840700001)(47076005)(2906002)(478600001)(336012)(36860700001)(26005)(2876002)(426003)(110136005)(356005)(82310400005)(40460700003)(83380400001)(36756003)(40480700001)(107886003)(70206006)(54906003)(8936002)(186003)(1076003)(81166007)(5660300002)(4326008)(8676002)(41300700001)(2616005)(7696005)(316002)(82740400003)(86362001)(6666004)(70586007)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jul 2022 13:39:02.0823
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: RaS0/maP9V0KWKWIn6Hp4Dx1ptp/9mbzOWd9XxSIgYCdewPtMMWPyh932yBX5nDgg7iTgeLuNVPPoreVTdsYiw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA4PR04MB7742
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-Network-Message-Id: d83fd129-4cd1-4846-4044-08da6342b763
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT055.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB5485
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 05, 2022 at 01:47:43PM -0700, Colin Foster wrote:
-> The VSC7512 is a networking chip that contains several peripherals. Many =
-of
-> these peripherals are currently supported by the VSC7513 and VSC7514 chip=
-s,
-> but those run on an internal CPU. The VSC7512 lacks this CPU, and must be
-> controlled externally.
->=20
-> Utilize the existing drivers by referencing the chip as an MFD. Add suppo=
-rt
-> for the two MDIO buses, the internal phys, pinctrl, and serial GPIO.
->=20
-> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
-> ---
+From: Emeel Hakim <ehakim@nvidia.com>
 
-Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>=
+This patch introduces a new flag list option to ip link add
+command using type macsec, the patch prepares a framework for
+passing and parsing flag list for future features like macsec
+extended packet number (XPN) to use.
+
+Signed-off-by: Emeel Hakim <ehakim@nvidia.com>
+---
+ ip/ipmacsec.c | 23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
+
+diff --git a/ip/ipmacsec.c b/ip/ipmacsec.c
+index bf48e8b5..9aeaafcc 100644
+--- a/ip/ipmacsec.c
++++ b/ip/ipmacsec.c
+@@ -1256,9 +1256,28 @@ static void usage(FILE *f)
+ 		"                  [ validate { strict | check | disabled } ]\n"
+ 		"                  [ encodingsa { 0..3 } ]\n"
+ 		"                  [ offload { mac | phy | off } ]\n"
++		"                  [ flag FLAG-LIST ]\n"
++		"FLAG-LIST :=      [ FLAG-LIST ] FLAG\n"
++		"FLAG :=\n"
+ 		);
+ }
+ 
++static int macsec_flag_parse(__u8 *flags, int *argcp, char ***argvp)
++{
++	int argc = *argcp;
++	char **argv = *argvp;
++
++	while (1) {
++		/* parse flag list */
++		break;
++	}
++
++	*argcp = argc;
++	*argvp = argv;
++
++	return 0;
++}
++
+ static int macsec_parse_opt(struct link_util *lu, int argc, char **argv,
+ 			    struct nlmsghdr *n)
+ {
+@@ -1271,6 +1290,7 @@ static int macsec_parse_opt(struct link_util *lu, int argc, char **argv,
+ 	bool es = false, scb = false, send_sci = false;
+ 	int replay_protect = -1;
+ 	struct sci sci = { 0 };
++	__u8 flags = 0;
+ 
+ 	ret = get_sci_portaddr(&sci, &argc, &argv, true, true);
+ 	if (ret < 0) {
+@@ -1388,6 +1408,9 @@ static int macsec_parse_opt(struct link_util *lu, int argc, char **argv,
+ 				return ret;
+ 			addattr8(n, MACSEC_BUFLEN,
+ 				 IFLA_MACSEC_OFFLOAD, offload);
++		} else if (strcmp(*argv, "flag") == 0) {
++			NEXT_ARG();
++			macsec_flag_parse(&flags, &argc, &argv);
+ 		} else {
+ 			fprintf(stderr, "macsec: unknown command \"%s\"?\n",
+ 				*argv);
+-- 
+2.26.3
+
