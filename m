@@ -2,93 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D9EB56D6D3
-	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 09:29:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 203EC56D6D8
+	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 09:31:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230022AbiGKH3e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jul 2022 03:29:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50112 "EHLO
+        id S229948AbiGKHbO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jul 2022 03:31:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230000AbiGKH3d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 03:29:33 -0400
-Received: from mail-m972.mail.163.com (mail-m972.mail.163.com [123.126.97.2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 333031572D;
-        Mon, 11 Jul 2022 00:29:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=I8+m1
-        YAsVZ4gl1y1umKlRTUNyEHJgsOKvTyV1H7WmOY=; b=FwmkrMFXFr/vChhjh8X1r
-        cR26ZV6bNosnkAScnaDfPrNOlBwTSAywa+4kczhfrktr3AdUiLX/JQznsYpPFxNz
-        xIxK4fPjJ7hz7e+3+KfJFlG0svk8pOL0OMZoDMWQB+zwdz3y9VAXOEDpqUNiDiAe
-        UhQLcHNcJTn77xcWjTWCeg=
-Received: from localhost.localdomain (unknown [123.112.69.106])
-        by smtp2 (Coremail) with SMTP id GtxpCgBX5vg00ctiUDjsOQ--.9309S4;
-        Mon, 11 Jul 2022 15:29:06 +0800 (CST)
-From:   Jianglei Nie <niejianglei2021@163.com>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jianglei Nie <niejianglei2021@163.com>
-Subject: [PATCH v2] net: macsec: fix potential resource leak in macsec_add_rxsa() and macsec_add_txsa()
-Date:   Mon, 11 Jul 2022 15:28:51 +0800
-Message-Id: <20220711072851.2319308-1-niejianglei2021@163.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S229697AbiGKHbN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 03:31:13 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D9471A39F;
+        Mon, 11 Jul 2022 00:31:12 -0700 (PDT)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.56])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LhFsN4xVVzFpyY;
+        Mon, 11 Jul 2022 15:30:16 +0800 (CST)
+Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
+ (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 11 Jul
+ 2022 15:31:09 +0800
+From:   Zhengchao Shao <shaozhengchao@huawei.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <davem@davemloft.net>, <yoshfuji@linux-ipv6.org>,
+        <dsahern@kernel.org>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>
+CC:     <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>,
+        <shaozhengchao@huawei.com>
+Subject: [PATCH] net: change the type of ip_route_input_rcu to static
+Date:   Mon, 11 Jul 2022 15:35:49 +0800
+Message-ID: <20220711073549.8947-1-shaozhengchao@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: GtxpCgBX5vg00ctiUDjsOQ--.9309S4
-X-Coremail-Antispam: 1Uf129KBjvJXoW7Ar4rWF4fCF17Zw1xZr43ZFb_yoW8Jw4Dpa
-        15ZwsrCF1qqrWI93ZrCw4UWF1rXayUtryagry7C3yfua4kJw1rWFy0kFyI9Fy5AryxGF48
-        ZrWvyr47AFn8C37anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zRha9hUUUUU=
-X-Originating-IP: [123.112.69.106]
-X-CM-SenderInfo: xqlhyxxdqjzvrlsqjii6rwjhhfrp/xtbB0Qg7jFzIB3B7eAABsP
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [10.175.101.6]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpeml500026.china.huawei.com (7.185.36.106)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-init_rx_sa() allocates relevant resource for rx_sa->stats and rx_sa->
-key.tfm with alloc_percpu() and macsec_alloc_tfm(). When some error
-occurs after init_rx_sa() is called in macsec_add_rxsa(), the function
-released rx_sa with kfree() without releasing rx_sa->stats and rx_sa->
-key.tfm, which will lead to a resource leak.
+The type of ip_route_input_rcu should be static.
 
-We should call macsec_rxsa_put() instead of kfree() to decrease the ref
-count of rx_sa and release the relevant resource if the refcount is 0.
-The same bug exists in macsec_add_txsa() for tx_sa as well. This patch
-fixes the above two bugs.
-
-Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
+Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
 ---
- drivers/net/macsec.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ include/net/route.h |  4 ----
+ net/ipv4/route.c    | 34 +++++++++++++++++-----------------
+ 2 files changed, 17 insertions(+), 21 deletions(-)
 
-diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
-index 817577e713d7..ac3ff624a8dd 100644
---- a/drivers/net/macsec.c
-+++ b/drivers/net/macsec.c
-@@ -1842,7 +1842,7 @@ static int macsec_add_rxsa(struct sk_buff *skb, struct genl_info *info)
- 	return 0;
- 
- cleanup:
--	kfree(rx_sa);
-+	macsec_rxsa_put(rx_sa);
- 	rtnl_unlock();
- 	return err;
+diff --git a/include/net/route.h b/include/net/route.h
+index b6743ff88e30..4929a710c24b 100644
+--- a/include/net/route.h
++++ b/include/net/route.h
+@@ -201,10 +201,6 @@ int ip_mc_validate_source(struct sk_buff *skb, __be32 daddr, __be32 saddr,
+ 			  struct in_device *in_dev, u32 *itag);
+ int ip_route_input_noref(struct sk_buff *skb, __be32 dst, __be32 src,
+ 			 u8 tos, struct net_device *devin);
+-int ip_route_input_rcu(struct sk_buff *skb, __be32 dst, __be32 src,
+-		       u8 tos, struct net_device *devin,
+-		       struct fib_result *res);
+-
+ int ip_route_use_hint(struct sk_buff *skb, __be32 dst, __be32 src,
+ 		      u8 tos, struct net_device *devin,
+ 		      const struct sk_buff *hint);
+diff --git a/net/ipv4/route.c b/net/ipv4/route.c
+index bd351fab46e6..328beff85a1e 100644
+--- a/net/ipv4/route.c
++++ b/net/ipv4/route.c
+@@ -2432,24 +2432,9 @@ out:	return err;
+ 	goto out;
  }
-@@ -2085,7 +2085,7 @@ static int macsec_add_txsa(struct sk_buff *skb, struct genl_info *info)
  
- cleanup:
- 	secy->operational = was_operational;
--	kfree(tx_sa);
-+	macsec_txsa_put(tx_sa);
- 	rtnl_unlock();
- 	return err;
+-int ip_route_input_noref(struct sk_buff *skb, __be32 daddr, __be32 saddr,
+-			 u8 tos, struct net_device *dev)
+-{
+-	struct fib_result res;
+-	int err;
+-
+-	tos &= IPTOS_RT_MASK;
+-	rcu_read_lock();
+-	err = ip_route_input_rcu(skb, daddr, saddr, tos, dev, &res);
+-	rcu_read_unlock();
+-
+-	return err;
+-}
+-EXPORT_SYMBOL(ip_route_input_noref);
+-
+ /* called with rcu_read_lock held */
+-int ip_route_input_rcu(struct sk_buff *skb, __be32 daddr, __be32 saddr,
+-		       u8 tos, struct net_device *dev, struct fib_result *res)
++static int ip_route_input_rcu(struct sk_buff *skb, __be32 daddr, __be32 saddr,
++			      u8 tos, struct net_device *dev, struct fib_result *res)
+ {
+ 	/* Multicast recognition logic is moved from route cache to here.
+ 	 * The problem was that too many Ethernet cards have broken/missing
+@@ -2498,6 +2483,21 @@ int ip_route_input_rcu(struct sk_buff *skb, __be32 daddr, __be32 saddr,
+ 	return ip_route_input_slow(skb, daddr, saddr, tos, dev, res);
  }
+ 
++int ip_route_input_noref(struct sk_buff *skb, __be32 daddr, __be32 saddr,
++			 u8 tos, struct net_device *dev)
++{
++	struct fib_result res;
++	int err;
++
++	tos &= IPTOS_RT_MASK;
++	rcu_read_lock();
++	err = ip_route_input_rcu(skb, daddr, saddr, tos, dev, &res);
++	rcu_read_unlock();
++
++	return err;
++}
++EXPORT_SYMBOL(ip_route_input_noref);
++
+ /* called with rcu_read_lock() */
+ static struct rtable *__mkroute_output(const struct fib_result *res,
+ 				       const struct flowi4 *fl4, int orig_oif,
 -- 
-2.25.1
+2.17.1
 
