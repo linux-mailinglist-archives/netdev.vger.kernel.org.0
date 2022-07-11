@@ -2,131 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0654B5701AC
-	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 14:08:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BE2B5701E7
+	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 14:21:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231363AbiGKMIH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jul 2022 08:08:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34488 "EHLO
+        id S231308AbiGKMVD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jul 2022 08:21:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231379AbiGKMIF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 08:08:05 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1D7334332A
-        for <netdev@vger.kernel.org>; Mon, 11 Jul 2022 05:08:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657541282;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=C1Fa11yvH3zHSAbXYwOqWzVpwYwysHK4A0l1MnClKws=;
-        b=C5bwnaYpBlamREEaqjTbE+1mRwLNKdMXVtxapaydha/QNjzdetqEJj04eUbHCJPpeXgKHA
-        gswiJq2qTxU9+w7wOhgAj6fjBa91ukqWpOJBBNhYwClcmI8BhRS5KlxMXhS64Y34W+M8mx
-        UHqwA49EwX9OrGEC1OyEdkt335/vJKg=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-145-vzmEMl2SPo6Wz8OJbqaV8Q-1; Mon, 11 Jul 2022 08:07:59 -0400
-X-MC-Unique: vzmEMl2SPo6Wz8OJbqaV8Q-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 80DF3811E83;
-        Mon, 11 Jul 2022 12:07:58 +0000 (UTC)
-Received: from jtoppins.rdu.csb (unknown [10.22.9.55])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 30E28492C3B;
-        Mon, 11 Jul 2022 12:07:58 +0000 (UTC)
-From:   Jonathan Toppins <jtoppins@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     jtoppins@redhat.com, razor@blackwall.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
-Subject: [RESEND PATCH iproute2 next v4] bond: add mac_filter option
-Date:   Mon, 11 Jul 2022 08:07:52 -0400
-Message-Id: <3c7a89f9a92c41847a1b643c9db5c0a601e95d66.1657303056.git.jtoppins@redhat.com>
+        with ESMTP id S229543AbiGKMVC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 08:21:02 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69B071758A;
+        Mon, 11 Jul 2022 05:21:01 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id oy13so3635427ejb.1;
+        Mon, 11 Jul 2022 05:21:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=uKA5XThrP7I2nX8lNpiC7vhH5hhUaMwToTzr5MGFKtw=;
+        b=YmT+PXQW+sZv0zPCwNeH7XLRn7rZwge975c83z5htppn4ZyBHGC+G0mX9Mtj00u+5G
+         7oko7pUNjNOzsVJj6xQC4FaLYix6anKwMe+EQ9U6MHfuW9woVS82JpFZzH4MMhcpVa7j
+         MMvjGe3HZe6/xcqclV8re6KjYC/5yNDct2rdcmyWeMagH1OXozAOzXVsTBdC6DeprtYD
+         zUif+UBSXeJe6asi6TxQ47Xkr9zPC8umUt04MYIFL4HeMitbbLIGzB7vdeB7GLh0CKmY
+         70K5hgSZSyNOh+GUSJ+GrJSZFPc+SZJkCGOiWXi1AClmssOhhiI6U+VNFjEG+HEFbip1
+         58MQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=uKA5XThrP7I2nX8lNpiC7vhH5hhUaMwToTzr5MGFKtw=;
+        b=hFJncy/Kd+CZjwc9bwGTIymfV3p4TrNtfm9q1wGL3AMa91moYe/iQLaJgDi7V828Wj
+         5qq6zd35XNs78oRPWC0UvhZ1xqAekze9fgR4dVEIZFRFoVpCtNGtTBn1LoDdJtOSkg9d
+         c0KraNA4tFPXNxT1wT6BzL3Ol8cNeqtFHLIyH3pja+dlH+n0VG/4S0OM2XJdAx9jnnXm
+         mmobWYKCgVXmGWf/Z3q1O8erlkO/278jDJx4SdrRObwYPSNphRF50e+QJFjOH3aPUGmC
+         m+S0SIjolF3f6TKvKor90GK0jWJvrI5ths/0AVVu+ecljSgs7ghbgLtXn/a53ai3X8ks
+         0KSQ==
+X-Gm-Message-State: AJIora8clVlgeLj2+jW1eVR6e3Ok4jjN/bbyHl6PigvxLi8foX94Mp5+
+        BLxjEu4mvSsCcJs26RJVidhENa2TE7khJRDg
+X-Google-Smtp-Source: AGRyM1tjdHvVvXfFLsXeSKQaVK3FIywDXatGxV4lcbkw/9BJ3pfvV5b9yVe5ScENPQhYaiO18bm08w==
+X-Received: by 2002:a17:906:8448:b0:72b:5659:9873 with SMTP id e8-20020a170906844800b0072b56599873mr4519375ejy.117.1657542059639;
+        Mon, 11 Jul 2022 05:20:59 -0700 (PDT)
+Received: from ?IPV6:2620:10d:c096:310::2eef? ([2620:10d:c093:600::1:ac34])
+        by smtp.gmail.com with ESMTPSA id cb1-20020a0564020b6100b0043a6dc3c4b0sm4253373edb.41.2022.07.11.05.20.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 11 Jul 2022 05:20:59 -0700 (PDT)
+Message-ID: <a2527c63-1b74-fe10-a959-097ec7f68135@gmail.com>
+Date:   Mon, 11 Jul 2022 13:20:02 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH net-next v4 06/27] net: Allow custom iter handler in
+ msghdr
+Content-Language: en-US
+To:     io-uring@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Jens Axboe <axboe@kernel.dk>, David Ahern <dsahern@kernel.org>,
+        kernel-team@fb.com
+References: <cover.1657194434.git.asml.silence@gmail.com>
+ <968c344a59315ec5d0095584a95bb7dd5a3ac617.1657194434.git.asml.silence@gmail.com>
+From:   Pavel Begunkov <asml.silence@gmail.com>
+In-Reply-To: <968c344a59315ec5d0095584a95bb7dd5a3ac617.1657194434.git.asml.silence@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add ability to set bonding option `mac_filter`. Values greater than zero
-represent the maximum hashtable size the mac filter is allowed to grow
-to, zero disables the filter.
+On 7/7/22 12:49, Pavel Begunkov wrote:
+> From: David Ahern <dsahern@kernel.org>
+> 
+> Add support for custom iov_iter handling to msghdr. The idea is that
+> in-kernel subsystems want control over how an SG is split.
+> 
+> Signed-off-by: David Ahern <dsahern@kernel.org>
+> [pavel: move callback into msghdr]
+> Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
+> ---
+>   include/linux/skbuff.h |  7 ++++---
+>   include/linux/socket.h |  4 ++++
+>   net/core/datagram.c    | 14 ++++++++++----
+>   net/core/skbuff.c      |  2 +-
+>   4 files changed, 19 insertions(+), 8 deletions(-)
+> 
+> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+> index 8e12b3b9ad6c..a8a2dd4cfdfd 100644
+> --- a/include/linux/skbuff.h
+> +++ b/include/linux/skbuff.h
+> @@ -1776,13 +1776,14 @@ void msg_zerocopy_put_abort(struct ubuf_info *uarg, bool have_uref);
+>   void msg_zerocopy_callback(struct sk_buff *skb, struct ubuf_info *uarg,
+>   			   bool success);
+>   
+> -int __zerocopy_sg_from_iter(struct sock *sk, struct sk_buff *skb,
+> -			    struct iov_iter *from, size_t length);
+> +int __zerocopy_sg_from_iter(struct msghdr *msg, struct sock *sk,
+> +			    struct sk_buff *skb, struct iov_iter *from,
+> +			    size_t length);
+>   
+>   static inline int skb_zerocopy_iter_dgram(struct sk_buff *skb,
+>   					  struct msghdr *msg, int len)
+>   {
+> -	return __zerocopy_sg_from_iter(skb->sk, skb, &msg->msg_iter, len);
+> +	return __zerocopy_sg_from_iter(msg, skb->sk, skb, &msg->msg_iter, len);
+>   }
+>   
+>   int skb_zerocopy_iter_stream(struct sock *sk, struct sk_buff *skb,
+> diff --git a/include/linux/socket.h b/include/linux/socket.h
+> index 7bac9fc1cee0..3c11ef18a9cf 100644
+> --- a/include/linux/socket.h
+> +++ b/include/linux/socket.h
+> @@ -14,6 +14,8 @@ struct file;
+>   struct pid;
+>   struct cred;
+>   struct socket;
+> +struct sock;
+> +struct sk_buff;
+>   
+>   #define __sockaddr_check_size(size)	\
+>   	BUILD_BUG_ON(((size) > sizeof(struct __kernel_sockaddr_storage)))
+> @@ -70,6 +72,8 @@ struct msghdr {
+>   	__kernel_size_t	msg_controllen;	/* ancillary data buffer length */
+>   	struct kiocb	*msg_iocb;	/* ptr to iocb for async requests */
+>   	struct ubuf_info *msg_ubuf;
+> +	int (*sg_from_iter)(struct sock *sk, struct sk_buff *skb,
+> +			    struct iov_iter *from, size_t length);
+>   };
+>   
+>   struct user_msghdr {
+> diff --git a/net/core/datagram.c b/net/core/datagram.c
+> index 50f4faeea76c..b3c05efd659f 100644
+> --- a/net/core/datagram.c
+> +++ b/net/core/datagram.c
+> @@ -613,10 +613,16 @@ int skb_copy_datagram_from_iter(struct sk_buff *skb, int offset,
+>   }
+>   EXPORT_SYMBOL(skb_copy_datagram_from_iter);
+>   
+> -int __zerocopy_sg_from_iter(struct sock *sk, struct sk_buff *skb,
+> -			    struct iov_iter *from, size_t length)
+> +int __zerocopy_sg_from_iter(struct msghdr *msg, struct sock *sk,
+> +			    struct sk_buff *skb, struct iov_iter *from,
+> +			    size_t length)
+>   {
+> -	int frag = skb_shinfo(skb)->nr_frags;
+> +	int frag;
+> +
+> +	if (msg && msg->sg_from_iter && msg->msg_ubuf == skb_zcopy(skb))
 
-Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
----
+I'm killing "msg->msg_ubuf == skb_zcopy(skb)", which I added with an
+intention to make it less fragile, but it disables the optimisation for
+TCP because skb_zerocopy_iter_stream() assigns ubuf to the skb only after
+calling __zerocopy_sg_from_iter().
 
-Notes:
-    v4:
-     * rebase onto latest next branch
 
- include/uapi/linux/if_link.h |  1 +
- ip/iplink_bond.c             | 15 +++++++++++++++
- 2 files changed, 16 insertions(+)
 
-diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
-index e0fbbfeeb3a1..529ae4faa7e2 100644
---- a/include/uapi/linux/if_link.h
-+++ b/include/uapi/linux/if_link.h
-@@ -934,6 +934,7 @@ enum {
- 	IFLA_BOND_AD_LACP_ACTIVE,
- 	IFLA_BOND_MISSED_MAX,
- 	IFLA_BOND_NS_IP6_TARGET,
-+	IFLA_BOND_MAC_FILTER,
- 	__IFLA_BOND_MAX,
- };
- 
-diff --git a/ip/iplink_bond.c b/ip/iplink_bond.c
-index 7943499e0adf..fb7236c58253 100644
---- a/ip/iplink_bond.c
-+++ b/ip/iplink_bond.c
-@@ -157,6 +157,7 @@ static void print_explain(FILE *f)
- 		"                [ ad_actor_sys_prio SYSPRIO ]\n"
- 		"                [ ad_actor_system LLADDR ]\n"
- 		"                [ arp_missed_max MISSED_MAX ]\n"
-+		"                [ mac_filter HASH_SIZE ]\n"
- 		"\n"
- 		"BONDMODE := balance-rr|active-backup|balance-xor|broadcast|802.3ad|balance-tlb|balance-alb\n"
- 		"ARP_VALIDATE := none|active|backup|all|filter|filter_active|filter_backup\n"
-@@ -410,6 +411,14 @@ static int bond_parse_opt(struct link_util *lu, int argc, char **argv,
- 			}
- 			addattr8(n, 1024, IFLA_BOND_TLB_DYNAMIC_LB,
- 				 tlb_dynamic_lb);
-+		} else if (matches(*argv, "mac_filter") == 0) {
-+			__u8 mac_filter;
-+			NEXT_ARG();
-+			if (get_u8(&mac_filter, *argv, 0)) {
-+				invarg("invalid mac_filter", *argv);
-+				return -1;
-+			}
-+			addattr8(n, 1024, IFLA_BOND_MAC_FILTER, mac_filter);
- 		} else if (matches(*argv, "help") == 0) {
- 			explain();
- 			return -1;
-@@ -491,6 +500,12 @@ static void bond_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
- 			   "arp_missed_max %u ",
- 			   rta_getattr_u8(tb[IFLA_BOND_MISSED_MAX]));
- 
-+	if (tb[IFLA_BOND_MAC_FILTER])
-+		print_uint(PRINT_ANY,
-+			   "mac_filter",
-+			   "mac_filter %u ",
-+			   rta_getattr_u8(tb[IFLA_BOND_MAC_FILTER]));
-+
- 	if (tb[IFLA_BOND_ARP_IP_TARGET]) {
- 		struct rtattr *iptb[BOND_MAX_ARP_TARGETS + 1];
- 
+> +		return msg->sg_from_iter(sk, skb, from, length);
+> +
+> +	frag = skb_shinfo(skb)->nr_frags;
+>   
+>   	while (length && iov_iter_count(from)) {
+>   		struct page *pages[MAX_SKB_FRAGS];
+> @@ -702,7 +708,7 @@ int zerocopy_sg_from_iter(struct sk_buff *skb, struct iov_iter *from)
+>   	if (skb_copy_datagram_from_iter(skb, 0, from, copy))
+>   		return -EFAULT;
+>   
+> -	return __zerocopy_sg_from_iter(NULL, skb, from, ~0U);
+> +	return __zerocopy_sg_from_iter(NULL, NULL, skb, from, ~0U);
+>   }
+>   EXPORT_SYMBOL(zerocopy_sg_from_iter);
+>   
+> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> index fc22b3d32052..f5a3ebbc1f7e 100644
+> --- a/net/core/skbuff.c
+> +++ b/net/core/skbuff.c
+> @@ -1358,7 +1358,7 @@ int skb_zerocopy_iter_stream(struct sock *sk, struct sk_buff *skb,
+>   	if (orig_uarg && uarg != orig_uarg)
+>   		return -EEXIST;
+>   
+> -	err = __zerocopy_sg_from_iter(sk, skb, &msg->msg_iter, len);
+> +	err = __zerocopy_sg_from_iter(msg, sk, skb, &msg->msg_iter, len);
+>   	if (err == -EFAULT || (err == -EMSGSIZE && skb->len == orig_len)) {
+>   		struct sock *save_sk = skb->sk;
+>   
+
 -- 
-2.31.1
-
+Pavel Begunkov
