@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 600AC5707EF
-	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 18:06:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7BE45707F3
+	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 18:06:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231696AbiGKQGX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jul 2022 12:06:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57092 "EHLO
+        id S231770AbiGKQGj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jul 2022 12:06:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231645AbiGKQF5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 12:05:57 -0400
+        with ESMTP id S231405AbiGKQGT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 12:06:19 -0400
 Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2059.outbound.protection.outlook.com [40.107.22.59])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E29AF6C116;
-        Mon, 11 Jul 2022 09:05:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79A9E6B263;
+        Mon, 11 Jul 2022 09:05:54 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Rp9iHtVxIrmwK5SdX1sNpbzXzrehZCcUIxJxX9hwZG7daAVjXsu2RjGCsdFAt7YOeQXv18TSUtAnYkbBGZ2D31ni6UuuzUjCzmlSg8xwGnE87nhr/tvqCECz3iqA4f7Iqh9QYWnx3LQYByFRAp2Hw0SIp0M9OfrW63/VWrBs3mvOJAX+3IbsLP63HnPaNswIvr/6yfzMw4Gq7JYIKE83kUX1yjVcA1mY2g+x+GMBviS1eEZ+WctV/9V0yyT31Pys15EReCQOkstiwsf57GSr9CPVE6Ch8bXk8Mjd2SuDuE24hfP7BMKUF4Pt4zMlJ/zROGakXbcYBGC/KIv/HQMkTg==
+ b=k0wxfqYhhJLuUE2xZLwfZffb254i3cuuo5y811fXEKlxS7fzL4DDlZR4Izr9GBvBm4fsuRdeUFOoKvZI//fCoYo/b/fWvE5IBK93y7q4F7ka0A6Q7n0UjdmojCyJdcMzlDEgQguQLsZ2b92ZUmhw7faD5a+75rE264+z8x0wBEnZ8Rf3XIxt4x55lU8LSXb3IDBi7klnxpcTiGTM54oFR2FIT+F1j+tqE/vf8q7mSFSG7S+yOvG9plohD0TGyExj65aBe83nRG+GYIPiMJ7AuM1nnNWZv3DYYrFoNXCcmLB86UAlZMbq59cMFgUh/tUpkEWn5Sx/2nCEXEB58fCeAg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=B3jcfX4LA/ZGnQOBcEiA1eFhvPLhnXo6KxDN6qgmZbw=;
- b=RUA4ZH1/c8SUCjpqrhMC8u+TYn/a7W3oT9xUpLhlKlmeDL+CXE7U7+XkimrRqz5xP57yrUOMYjwG+Cd8iCHOdUoAWafQLtclRweoOBKXkF2vPxtnLVk2l4m2YCyiSac1rfWWtYyBJ2V4edqeJLSYsGoF6ZICkQTvVHAPVibntqWYDFGMUgeEtdf9F/cSLtEV8qQmvWnwIL5Htf7ayv5A5eK+e12jG4PJrmowz/6AEf8rDZg5V199KhWEVdwHu1wkvAz3EZ34xvPd2imK5E2yJ0l17E9qad3/bgVKcRA8okS/IieCv96zlbd7oo4yoIKwEM9x/FjFa2pOAPVjFgmTsw==
+ bh=Hjc9RLGREP3Z5WJkyMST6CSowlBSuOnnDs9Ai7CFZkk=;
+ b=e9Oa2h1GCdU80jdOMLiw03mp/BauQWvYYYJgQkFNlHcSZTzvmHvjN7FWM4DTJ9xbZ6Qk15PdoXot456kRYK+/zIEmhcRmu1mdy9tc60DEjXyWAbp9g+FBJy97VM9dklZgL9dPgckOprTl9IyEMyqLxUvAU43e1XMAWsbOnMJdycCRDCgQTRbYdEprsxHXqixvfAybGZovEH281c8BqsUmKqK5LFoER2EiLNFg22cbaUeBHc396uN3BGPW4Izp/7+rydF7awqObt+2Wnqvk3YNTWUPUY4IbnETomn42/x/b0DX7W37ts6scDc93kwuOTnmhxiJyZTGNr2etxdi+uKVw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
  dkim=pass header.d=seco.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=B3jcfX4LA/ZGnQOBcEiA1eFhvPLhnXo6KxDN6qgmZbw=;
- b=g12GwZh2WwIE5oq2uekF5sUYVc6BmQ21QwQGg+v2is/ytpYed/PK5QuKJQcB0m932CbwW8kXFXiAtKEfpXalJn253uKu3DsuB36h8hkmdz7QPHITAfC+b7ZHBjUTPbiscKywYqXVLXEvA0DPJj1jHJidEUsWLlUhDRFxR/ybH9/QM8F3JNf9ONGR3qE+z4yHHXBM5PbzaZyyrHOpC5zhLUdv+KUId4p7T+QLZvD51ooYmKDQ1gWBGCM5GWpYQcgr1maT47Ehqc7wqzX1LqR0sZ5gzsfoYh0BjkE3s9eoL7fCr8exdpaZV5/LodWRDW4csZD/kVvYSn+fihEJe7GUiA==
+ bh=Hjc9RLGREP3Z5WJkyMST6CSowlBSuOnnDs9Ai7CFZkk=;
+ b=VQYIx380w46jSdBsSWAWVdwgivbSy23x2OU1vRDsajF/iVBIqYi/lgUr7cMJ5VRN+S2y6ikGm0PccPkRCNmy7mGc//6gj42Ec0porqNgCqtF4zBFReTEe4gUGqvwLoKe5+bGVGtMvGG48kho/z6VLG8aU0P3sfALJG5fNfIyrJHMhbcjNq8ky65yC2ssm3aaSoDtEEBhSy06EG3CvyKsOfMSRtz19d28ZS03F4rfrw3eZ+NsmUp0nA3C22KMDLnYGtrI3gG8fM2AJgDkDDutfhIgbN3rc6BnIUkYkt27BmqSh7Y2SKEqXHTXWb4hUR691wpN1236P55ozmNvpqo/bA==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=seco.com;
 Received: from DB7PR03MB4972.eurprd03.prod.outlook.com (2603:10a6:10:7d::22)
  by DB7PR03MB5113.eurprd03.prod.outlook.com (2603:10a6:10:77::11) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.26; Mon, 11 Jul
- 2022 16:05:50 +0000
+ 2022 16:05:52 +0000
 Received: from DB7PR03MB4972.eurprd03.prod.outlook.com
  ([fe80::757e:b75f:3449:45b1]) by DB7PR03MB4972.eurprd03.prod.outlook.com
  ([fe80::757e:b75f:3449:45b1%6]) with mapi id 15.20.5417.026; Mon, 11 Jul 2022
- 16:05:50 +0000
+ 16:05:52 +0000
 From:   Sean Anderson <sean.anderson@seco.com>
 To:     Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org
@@ -56,9 +56,9 @@ Cc:     Jakub Kicinski <kuba@kernel.org>,
         UNGLinuxDriver@microchip.com,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [RFC PATCH net-next 5/9] net: pcs: lynx: Use pcs_get_by_provider to get PCS
-Date:   Mon, 11 Jul 2022 12:05:15 -0400
-Message-Id: <20220711160519.741990-6-sean.anderson@seco.com>
+Subject: [RFC PATCH net-next 6/9] net: pcs: lynx: Remove lynx_get_mdio_device and lynx_pcs_destroy
+Date:   Mon, 11 Jul 2022 12:05:16 -0400
+Message-Id: <20220711160519.741990-7-sean.anderson@seco.com>
 X-Mailer: git-send-email 2.35.1.1320.gc452695387.dirty
 In-Reply-To: <20220711160519.741990-1-sean.anderson@seco.com>
 References: <20220711160519.741990-1-sean.anderson@seco.com>
@@ -69,52 +69,52 @@ X-ClientProxiedBy: MN2PR16CA0056.namprd16.prod.outlook.com
  (2603:10a6:10:7d::22)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d56cdda8-1162-4d08-7ad1-08da63573989
+X-MS-Office365-Filtering-Correlation-Id: 1c86d629-41ab-45ea-79d1-08da63573ad2
 X-MS-TrafficTypeDiagnostic: DB7PR03MB5113:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: BzdxLeM8BRmqnxJIk3DK0/ho3e0edW2kGGOgsY37K0B8fle7VDBdh/SPyxDESx9iEuhoA481ZbNpn9525OBJIEEbD54HQAEQ+SnHWgjEGxDqO3vtbS6HxhNF37mDmrulxASc/w+4zbutGd8tEBl8lTXp7bilhCp76FTlyX+/cyjQ7mJH2iwPycwOSqxWR56W0F9zHob2P0kB+ovMOLSte5HGCcO8cu7HE/sfobQ8k/QjKkZKbXfAzSxg72JidPd4q0IT/dN9NIqGWWh/9HMbYdQ/t2bqhOFL0FY0tLTtQg93j+ulhgxQozX0jufAhxz5kQbSnjg/m759/84FbpejQ9qBXsryGMY3tkPXb/OsHksr147A2Ll3Kvnqa7SwAwS4gJLI8bJVf/lZn4S7KTFlli3nar1/nKKIyjDAoM483OGVpztJoNdTxuCtaamV9MWns30bXdkgZ0hZaklLuWjg4ln/xiT6T/rFiX2yhLTX7KKzWheN1YV/pm+eKfTWX8VeBNx5CFm/zC4iklhEUqfO1BrlBb7aeWMfN9JCqUGL4EjerFkYzMtF0mPlcHL6Qxd+3L2kcPud5W5TAzi+APULfzs7RNSNY+Q3spokhAK675EN7ijPPAT6+/lLUCYlJ0ygZvfwzXHpLbl1bTcge2KeMC/+egc6AB0pQaXzavT6/mxxkRT7vBFNy/AtH/7mxmjLVb7Sbz+IdcMtxJpdJOSlEQooA9aoUrvM2Bx7n0NrnQhON6aiq6VrqsEvpq4hV97S1WFjlu19ti+ocWW9KkBTlvKDi6hvJeA3C+pFoZD9N2oRbK+cGV+0A7IXqyrNRL0h
+X-Microsoft-Antispam-Message-Info: SruOoDBENiQknJRFUYN1EeuamFHcHtJC8WEjCMyix5clekdUF7xXvj/jGvaBavWOFOPHeWewXjBxaoKNGTJmS0Woksdcc8XNRZlgzIa6eEz9sCreblJXheirZId+y9eQmz5T/nkSzwbpCwnHmOV1rh1NJsPQtbCXBBI05KYy+QTJWA3qbDOi72qXzQJMwgSGPMiOX+bYuLGLPii4nuBA14oaoohemSxTUqdZVxvSWRyx0nmPtMpoCiUHRBdKLaYaPm7v2Qu+Fj3ljLNimblvF1hscdyMuJ5dTwfIUCs0DsVGEIkYHLRI4odW/I+BXvV9Oa/tghzRC7SbORZsxwp+suN1xE8/gChUcpPzjCGPidGuFe+1qF6JpN7xsIg9Qs/3T2TO4U3NKTqKKFiIslt8dK5/jMmvcAp0vEHzuarIDyDHCeZydhbR8/RSBHxiVt9/HbGAmQo3rkjmo5XIvCkLJJ+bjKmmALObqtNNTdAyDsVDmajlGviLvEVaftARuStLGa9zT+NaSIu0PvlaJ1eA17Y6jiCAKP91xXaaH3q0ub+Z5+X+x2qXVHtVjxG1YrgDQ9hq6LGrvvC22CtMmgDrthUoGZFtAJIOz6jHAEHZSGuhuClNc8V8wghgwTdJ89SU/7V7AxMWyuuOjEPIoMkUZx/C98hNdj/9rz2JRwLwRehUmduelHTfb4WSDhajLQiCrGGwct7jU65Xk58wi7a+DE09C3PiSZ3pz/OK8yX2qx0o6vzlIIl6KxWfa2szywdu4p2ZA4NyPbhFpcVzyMQkg/9HoFAtzW0GZ5d/lhtdtrJT8yLuPTDHBFESpbU6LI3L
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(346002)(136003)(396003)(376002)(39850400004)(366004)(83380400001)(86362001)(38350700002)(66946007)(38100700002)(4326008)(8936002)(66556008)(66476007)(8676002)(36756003)(6512007)(316002)(54906003)(5660300002)(44832011)(6666004)(7416002)(2906002)(6506007)(41300700001)(26005)(6486002)(52116002)(478600001)(110136005)(186003)(1076003)(2616005);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Pg8Xd4fdQ0XMnCa5ivPZOUzQ+Q80pA62O2qxXjLZPIs8CXMM9sHGzFphO/8L?=
- =?us-ascii?Q?Ab0qfPBY/19EVZrIZXqKgPeQOCOcjq7sTDrsWmpB8paVeQA8JZ9nAFhqJUsQ?=
- =?us-ascii?Q?Okga0MRyS6cHdGNj2DouNrmKMIuQpkKDQHnaSyMCwJH4Vk/H2IZkcy5PCZCJ?=
- =?us-ascii?Q?Gr5P+ixYRp+X62Zmw41OdT/E2gSzmWvwZLPrMx2NJ07Wyo+nHl9NGE8K/do0?=
- =?us-ascii?Q?VKWmoT42fsyJdlIPam5uesxY6728+kx0lTex8vckS13g/ue0DOBtWzET6cGD?=
- =?us-ascii?Q?e18tMRKTPmNDtXb8e8xDc0+M2yk0AHHWUcLgAdUh5fw+b14W+0eI1qQJHnw2?=
- =?us-ascii?Q?X61fZaVjOGqWeN45ClRUaWdegvvCNxA6qVTUMEty6VUmQ2Hh5JLjfhtxUjZb?=
- =?us-ascii?Q?hHx9DHc491ZAH/Mh3oHeucjKJJyDajkKZ+73umUrvNF3tNXStbR9ZsEmrJMz?=
- =?us-ascii?Q?jBzxiL2NxAQsy27N0TKK0Gn2Nv1kYjYtFm4x9hqBNvqRWvVP5my4VON3DR48?=
- =?us-ascii?Q?0SA+0UnDZabq0N38nyfYZ/XBUB4ydUdGCgfulo302g3aD+T1JUea19PR7/2J?=
- =?us-ascii?Q?EqFCnCOB6NV5iesfj0LNyniGAEWNAjMPgbLBI2yaiyFXduDQfsaoJsUXfGa0?=
- =?us-ascii?Q?HJMBlCu8rY7ASRnenDD2JTu5mh28vyY19MtSOO7gH/oGIc1mdS6XIEgOmHJf?=
- =?us-ascii?Q?ux957odr+aDNmWk0dw1HORnnbFtJwn4cXhCVGKW2dRJ5dGaSDRqqzQJIDkR6?=
- =?us-ascii?Q?Sf1QHsx6aWOv2vIh0rnYDQ1wrx7jePrJakUCDY+1jZAjYK4FBKNhJigAnhXz?=
- =?us-ascii?Q?rqAe3apkOf+ckQus4qFgq7qjVslHB5jJ5d4esRPY4QJuGDX8RFJneGjIknDE?=
- =?us-ascii?Q?/4VB+7/H/Ulg7sJdZD7XQxB5pEWubk2jF4iIGRZtBE49EtEOLNOf5skpJWG4?=
- =?us-ascii?Q?G1ke0RiFlvxIWkt4eQnUUx9LXOE/GiDqMEJfa+K4WDUdmAHWeUd4d02bKDJI?=
- =?us-ascii?Q?3qafKd0GwAskqR4YH+JPSXPsVXCzz9VH8aQZeSXDZKE9+ojDNjMmZrBnYfWa?=
- =?us-ascii?Q?TP7RLDBHtAUWHGwJyryG7sF6MMF9oMNDaf/5PffiwBloZyD2PsQ+Fk2mp6lv?=
- =?us-ascii?Q?XOxQRWw8h0mOimNz2cFQ5MxYfw+lsArulm1EWt0Wz448OUDKl8tnH7UPhwbU?=
- =?us-ascii?Q?99ZBRpSIiNhpEe7bBiG10LrZNqxTBU/PvlaNhip6fKuvJ52OuzjWh8sI8qIb?=
- =?us-ascii?Q?vD8QilFwQRIiRibdncw9Ngn6y4mjsfU+36O8MUshjR6fVIc0TP9mCBVApJmz?=
- =?us-ascii?Q?v8B8xNVeDqIcNjzjE2HsHgJ7Qh4rZa1bQUMAVtfxmlnZWsS1ux/beCwWFBDX?=
- =?us-ascii?Q?B8EyPWXgFZoezYSXmvz4UQNJQCKyszu/wNcXdurxNu//ZKReOIXquG5Tawor?=
- =?us-ascii?Q?yJy+Z2cQ4pOhcnK1xMlSWyShnIjlxQ+EWgdhYt6WwEZtSCDdc2FMetxLW4EQ?=
- =?us-ascii?Q?NOWqfxynNqwKMdpriG/sN45eJOesOD12vIcgoE0w5bquouwebLLg9shh0saG?=
- =?us-ascii?Q?qPKhAzIrzZoiZ9ni/IRHT+L6i40xSzUPG4ffrGjYr2Acjsn+XsITyaSd3Q96?=
- =?us-ascii?Q?uQ=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?KrL3reZPq0vi/4FpMqYz7hX2ZJrewvEpaEtaT/b30D4Mw2GnS+ihalwTX8xb?=
+ =?us-ascii?Q?FTWoEwx6xKLXUz+ylGtjv1z9ALXO0hDWnfXYUEQBx5d7RjZnKmrlOTWPLWc/?=
+ =?us-ascii?Q?RjBSJctGfZelPWtpTcB3IIWuPweDNFnwUj6Sb2BlEnBZz8LvOufK88bU1IE1?=
+ =?us-ascii?Q?KEUlZr75U86w6p7eyQGGgfQb1dPA08V2pHE++N+lKUg82xe5prlTfaAO1iGN?=
+ =?us-ascii?Q?PlImYdaxsKBU2FW9eJwdsE+iAbo5eSSN/PWZGGvy2l8T5NTg23MfcgxSqDWp?=
+ =?us-ascii?Q?Iwp4DTIdIjfpdutn1fO8X++zsfoaC+FQlrl1OoSHSVHfR1a8ECTHzIIQKoEg?=
+ =?us-ascii?Q?kVCax3cYDyAW0xRbaQOZgNK00auaZwFU9aIymsrxtlVqzeBVQ6ukGxGPffCO?=
+ =?us-ascii?Q?Mj1/O6bLBdmdoSIBHhdHE5t14QWxkML1x0FYb7usGhDUeUG9xmAvJ0iuGpHK?=
+ =?us-ascii?Q?eY3uJXU3eLqI1/BE863pqWfjoIGv46v6ggFElYAOA7tCosqbsokcMYujkXr7?=
+ =?us-ascii?Q?N5b/swlvnRBc6GkjgHlj06AW1W8SVXXp6L88PjMUQ/khsm+hjSgANVUZl3vX?=
+ =?us-ascii?Q?HAebOX9Jo3Qrl5wsYyHFaZswMA9pJeL1zcQoV9GgBzEjSwiATrOgD/01a0pP?=
+ =?us-ascii?Q?WuUWa9rRNGXfgzsMQjHH57p/yzyMIWdWEXBUVFAZqi/eWJCcu7tX038C2NqD?=
+ =?us-ascii?Q?whDUjD8FYs3iWhOhiBbdy/Hg37GRcURv4K9gyjI4xBo5w57nykhU5XptBUyy?=
+ =?us-ascii?Q?WB71jy5colnpYB2QhVoDCmhbyf+qXT7kirQtKrMICCVmvwJHORSzeGj/wAEq?=
+ =?us-ascii?Q?AYhVWvmYEROda3jqAIciz1KjmNoo1Oq4T5cUkItpy9Xc1PAL8ggW8zsYeRE7?=
+ =?us-ascii?Q?YmQu8mwUuqpV5R2d5GfpW19MOLefTBsMNJDU1C4jh0GbJSxYTdsQ3mRFvUL5?=
+ =?us-ascii?Q?WOGNk5aXcZrSNMt/DCeYlKAfM7Ev+91sQ5NS6S0PmqqEbtyNESVHLSBjiOrz?=
+ =?us-ascii?Q?ASUQUxTSslGy1q6k+cWSrvJYV0IeT/lKTsqnSoVHaofycrXKblZCWZ2/HsLE?=
+ =?us-ascii?Q?YG8zEBnhgGP2nJsHnD1qyE00sAINRApOPZPQgDjmjnxIs42pI1VViuhFBFOa?=
+ =?us-ascii?Q?IcZUl4Crp8gLYWhnGl8slrcighH02yg/ggXIEfEFsLl873MO7WdvrzP17rMr?=
+ =?us-ascii?Q?mzORSI0v5YW8zh08FaJDwernA7wBvVrZt4HaAVajKv45vulkFrnSEo7EMYuQ?=
+ =?us-ascii?Q?e6ALqVUUkNz69rmlHymriexPiU153YnN1A+iiUqE6soLg7ENtcObbBgjyecq?=
+ =?us-ascii?Q?BON7m1rCIousuQo1d5L902MJzd9qNcPEBmqH79Wg1RlvSwwlvC6mdV2BHF7e?=
+ =?us-ascii?Q?rhNmGa1PUu34TETjEXp8KiHrFG0qaqnB5erSwwI3CJBT36uUNHJXYzCU5Z7u?=
+ =?us-ascii?Q?DQVrW/kj946agxYSHY9QsDnQ6kOJ/iBCAazNLzXqcHz8PJPh3wEhacF8WQye?=
+ =?us-ascii?Q?Hh39vmpNdOPOyjTBw5EDdg+NTBQVAz9q7JxFV0bh/sxjQzLA62C/A/VJplwU?=
+ =?us-ascii?Q?KMIrJuUysQeeTQboXsp+LaIrKeguukO9FJsaGzGbgu2+IKOgCbr5zOijw1Bn?=
+ =?us-ascii?Q?Ew=3D=3D?=
 X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d56cdda8-1162-4d08-7ad1-08da63573989
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1c86d629-41ab-45ea-79d1-08da63573ad2
 X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4972.eurprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jul 2022 16:05:50.7462
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jul 2022 16:05:52.8554
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Wjn3PmR/Ff+VsbXN5cXsyQiRvbUO0Do8xpCQZUrMkNYlJvkuOhkCW48vGwJfpWfCjnIw2VND4knB45dPcZ0a3w==
+X-MS-Exchange-CrossTenant-UserPrincipalName: x1ymC9tGS14nWwuJMOdUHlpD2spQFFIBvg6hyq53XeE4YhJbvI7N8amcT7EenxneAMn0Ct3dHks9edH+DVT0xA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR03MB5113
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -126,225 +126,130 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is a common flow in several drivers where a lynx PCS is created
-without a corresponding firmware node. Consolidate these into one helper
-function. Because we control when the mdiodev is registered, we can add
-a custom match function which will automatically bind our driver
-(instead of using device_driver_attach).
+The PCS subsystem now manages getting/putting the PCS device. We can
+convert our manual cleanup with a call to pcs_put. This removes the last
+users of lynx_get_mdio_device lynx_pcs_destroy, so they can be removed.
 
 Signed-off-by: Sean Anderson <sean.anderson@seco.com>
 ---
 
- drivers/net/dsa/ocelot/felix_vsc9959.c        | 25 ++++---------------
- drivers/net/dsa/ocelot/seville_vsc9953.c      | 25 ++++---------------
- .../net/ethernet/freescale/enetc/enetc_pf.c   | 21 +++-------------
- drivers/net/pcs/pcs-lynx.c                    | 24 ++++++++++++++++++
- include/linux/pcs-lynx.h                      |  1 +
- 5 files changed, 39 insertions(+), 57 deletions(-)
+ drivers/net/dsa/ocelot/felix_vsc9959.c           |  1 -
+ drivers/net/dsa/ocelot/seville_vsc9953.c         |  1 -
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c | 14 ++++----------
+ drivers/net/pcs/pcs-lynx.c                       | 14 --------------
+ include/linux/pcs-lynx.h                         |  4 ----
+ 5 files changed, 4 insertions(+), 30 deletions(-)
 
 diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
-index 57634e2296c0..0a756c25d5e8 100644
+index 0a756c25d5e8..16ff0052a8bf 100644
 --- a/drivers/net/dsa/ocelot/felix_vsc9959.c
 +++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
-@@ -11,6 +11,7 @@
- #include <net/tc_act/tc_gate.h>
- #include <soc/mscc/ocelot.h>
- #include <linux/dsa/ocelot.h>
-+#include <linux/pcs.h>
- #include <linux/pcs-lynx.h>
- #include <net/pkt_sched.h>
- #include <linux/iopoll.h>
-@@ -1089,16 +1090,9 @@ static int vsc9959_mdio_bus_alloc(struct ocelot *ocelot)
- 		if (ocelot_port->phy_mode == PHY_INTERFACE_MODE_INTERNAL)
- 			continue;
- 
--		mdio_device = mdio_device_create(felix->imdio, port);
--		if (IS_ERR(mdio_device))
-+		phylink_pcs = lynx_pcs_create_on_bus(felix->imdio, port);
-+		if (IS_ERR(phylink_pcs))
- 			continue;
--
--		phylink_pcs = lynx_pcs_create(mdio_device);
--		if (IS_ERR(phylink_pcs)) {
--			mdio_device_free(mdio_device);
--			continue;
--		}
--
- 		felix->pcs[port] = phylink_pcs;
- 
- 		dev_info(dev, "Found PCS at internal MDIO address %d\n", port);
-@@ -1112,17 +1106,8 @@ static void vsc9959_mdio_bus_free(struct ocelot *ocelot)
- 	struct felix *felix = ocelot_to_felix(ocelot);
- 	int port;
- 
--	for (port = 0; port < ocelot->num_phys_ports; port++) {
--		struct phylink_pcs *phylink_pcs = felix->pcs[port];
+@@ -1082,7 +1082,6 @@ static int vsc9959_mdio_bus_alloc(struct ocelot *ocelot)
+ 	for (port = 0; port < felix->info->num_ports; port++) {
+ 		struct ocelot_port *ocelot_port = ocelot->ports[port];
+ 		struct phylink_pcs *phylink_pcs;
 -		struct mdio_device *mdio_device;
--
--		if (!phylink_pcs)
--			continue;
--
--		mdio_device = lynx_get_mdio_device(phylink_pcs);
--		mdio_device_free(mdio_device);
--		lynx_pcs_destroy(phylink_pcs);
--	}
-+	for (port = 0; port < ocelot->num_phys_ports; port++)
-+		pcs_put(felix->pcs[port]);
- 	mdiobus_unregister(felix->imdio);
- 	mdiobus_free(felix->imdio);
- }
+ 
+ 		if (dsa_is_unused_port(felix->ds, port))
+ 			continue;
 diff --git a/drivers/net/dsa/ocelot/seville_vsc9953.c b/drivers/net/dsa/ocelot/seville_vsc9953.c
-index 8c52de5d0b02..9006dec85ef0 100644
+index 9006dec85ef0..669af83c9611 100644
 --- a/drivers/net/dsa/ocelot/seville_vsc9953.c
 +++ b/drivers/net/dsa/ocelot/seville_vsc9953.c
-@@ -9,6 +9,7 @@
- #include <linux/mdio/mdio-mscc-miim.h>
- #include <linux/of_mdio.h>
- #include <linux/of_platform.h>
-+#include <linux/pcs.h>
- #include <linux/pcs-lynx.h>
- #include <linux/dsa/ocelot.h>
- #include <linux/iopoll.h>
-@@ -1044,16 +1045,9 @@ static int vsc9953_mdio_bus_alloc(struct ocelot *ocelot)
- 		if (ocelot_port->phy_mode == PHY_INTERFACE_MODE_INTERNAL)
- 			continue;
- 
--		mdio_device = mdio_device_create(felix->imdio, addr);
--		if (IS_ERR(mdio_device))
-+		phylink_pcs = lynx_pcs_create_on_bus(felix->imdio, addr);
-+		if (IS_ERR(phylink_pcs))
- 			continue;
--
--		phylink_pcs = lynx_pcs_create(mdio_device);
--		if (IS_ERR(phylink_pcs)) {
--			mdio_device_free(mdio_device);
--			continue;
--		}
--
- 		felix->pcs[port] = phylink_pcs;
- 
- 		dev_info(dev, "Found PCS at internal MDIO address %d\n", addr);
-@@ -1067,17 +1061,8 @@ static void vsc9953_mdio_bus_free(struct ocelot *ocelot)
- 	struct felix *felix = ocelot_to_felix(ocelot);
- 	int port;
- 
--	for (port = 0; port < ocelot->num_phys_ports; port++) {
--		struct phylink_pcs *phylink_pcs = felix->pcs[port];
+@@ -1036,7 +1036,6 @@ static int vsc9953_mdio_bus_alloc(struct ocelot *ocelot)
+ 	for (port = 0; port < felix->info->num_ports; port++) {
+ 		struct ocelot_port *ocelot_port = ocelot->ports[port];
+ 		struct phylink_pcs *phylink_pcs;
 -		struct mdio_device *mdio_device;
--
--		if (!phylink_pcs)
--			continue;
--
--		mdio_device = lynx_get_mdio_device(phylink_pcs);
--		mdio_device_free(mdio_device);
--		lynx_pcs_destroy(phylink_pcs);
--	}
-+	for (port = 0; port < ocelot->num_phys_ports; port++)
-+		pcs_put(felix->pcs[port]);
+ 		int addr = port + 4;
  
- 	/* mdiobus_unregister and mdiobus_free handled by devres */
- }
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc_pf.c b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
-index 8c923a93da88..8da7c8644e44 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc_pf.c
-+++ b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
-@@ -8,6 +8,7 @@
- #include <linux/of_platform.h>
- #include <linux/of_mdio.h>
- #include <linux/of_net.h>
+ 		if (dsa_is_unused_port(felix->ds, port))
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
+index e82c0d23eeb5..d8b491ffa4db 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
+@@ -2,6 +2,7 @@
+ /* Copyright 2019 NXP */
+ 
+ #include <linux/acpi.h>
 +#include <linux/pcs.h>
  #include <linux/pcs-lynx.h>
- #include "enetc_ierb.h"
- #include "enetc_pf.h"
-@@ -827,7 +828,6 @@ static int enetc_imdio_create(struct enetc_pf *pf)
- 	struct device *dev = &pf->si->pdev->dev;
- 	struct enetc_mdio_priv *mdio_priv;
- 	struct phylink_pcs *phylink_pcs;
--	struct mdio_device *mdio_device;
- 	struct mii_bus *bus;
- 	int err;
+ #include <linux/phy/phy.h>
+ #include <linux/property.h>
+@@ -268,6 +269,7 @@ static int dpaa2_pcs_create(struct dpaa2_mac *mac,
+ 		return -EPROBE_DEFER;
  
-@@ -851,16 +851,8 @@ static int enetc_imdio_create(struct enetc_pf *pf)
- 		goto free_mdio_bus;
- 	}
+ 	mac->pcs = lynx_pcs_create(mdiodev);
++	mdio_device_free(mdiodev);
+ 	if (IS_ERR(mac->pcs)) {
+ 		netdev_err(mac->net_dev, "lynx_pcs_create() failed\n");
+ 		put_device(&mdiodev->dev);
+@@ -279,16 +281,8 @@ static int dpaa2_pcs_create(struct dpaa2_mac *mac,
  
--	mdio_device = mdio_device_create(bus, 0);
--	if (IS_ERR(mdio_device)) {
--		err = PTR_ERR(mdio_device);
--		dev_err(dev, "cannot create mdio device (%d)\n", err);
--		goto unregister_mdiobus;
--	}
--
--	phylink_pcs = lynx_pcs_create(mdio_device);
-+	phylink_pcs = lynx_pcs_create_on_bus(bus, 0);
- 	if (IS_ERR(phylink_pcs)) {
--		mdio_device_free(mdio_device);
- 		err = PTR_ERR(phylink_pcs);
- 		dev_err(dev, "cannot create lynx pcs (%d)\n", err);
- 		goto unregister_mdiobus;
-@@ -880,13 +872,8 @@ static int enetc_imdio_create(struct enetc_pf *pf)
- 
- static void enetc_imdio_remove(struct enetc_pf *pf)
+ static void dpaa2_pcs_destroy(struct dpaa2_mac *mac)
  {
--	struct mdio_device *mdio_device;
+-	struct phylink_pcs *phylink_pcs = mac->pcs;
 -
--	if (pf->pcs) {
--		mdio_device = lynx_get_mdio_device(pf->pcs);
--		mdio_device_free(mdio_device);
--		lynx_pcs_destroy(pf->pcs);
+-	if (phylink_pcs) {
+-		struct mdio_device *mdio = lynx_get_mdio_device(phylink_pcs);
+-		struct device *dev = &mdio->dev;
+-
+-		lynx_pcs_destroy(phylink_pcs);
+-		put_device(dev);
+-		mac->pcs = NULL;
 -	}
-+	if (pf->pcs)
-+		pcs_put(pf->pcs);
- 	if (pf->imdio) {
- 		mdiobus_unregister(pf->imdio);
- 		mdiobus_free(pf->imdio);
++	pcs_put(mac->pcs);
++	mac->pcs = NULL;
+ }
+ 
+ static void dpaa2_mac_set_supported_interfaces(struct dpaa2_mac *mac)
 diff --git a/drivers/net/pcs/pcs-lynx.c b/drivers/net/pcs/pcs-lynx.c
-index 8272072698e4..adb9fd5ce72e 100644
+index adb9fd5ce72e..bfa72d9cbcf9 100644
 --- a/drivers/net/pcs/pcs-lynx.c
 +++ b/drivers/net/pcs/pcs-lynx.c
-@@ -403,6 +403,30 @@ struct phylink_pcs *lynx_pcs_create(struct mdio_device *mdio)
- }
- EXPORT_SYMBOL(lynx_pcs_create);
+@@ -40,14 +40,6 @@ enum sgmii_speed {
+ #define phylink_pcs_to_lynx(pl_pcs) container_of((pl_pcs), struct lynx_pcs, pcs)
+ #define lynx_to_phylink_pcs(lynx) (&(lynx)->pcs)
  
-+struct phylink_pcs *lynx_pcs_create_on_bus(struct mii_bus *bus, int addr)
-+{
-+	struct mdio_device *mdio;
-+	struct phylink_pcs *pcs;
-+	int err;
-+
-+	mdio = mdio_device_create(bus, addr);
-+	if (IS_ERR(mdio))
-+		return ERR_CAST(mdio);
-+
-+	mdio->bus_match = mdio_device_bus_match;
-+	strncpy(mdio->modalias, "lynx-pcs", sizeof(mdio->modalias));
-+	err = mdio_device_register(mdio);
-+	if (err) {
-+		mdio_device_free(mdio);
-+		return ERR_PTR(err);
-+	}
-+
-+	pcs = pcs_get_by_provider(&mdio->dev);
-+	mdio_device_free(mdio);
-+	return pcs;
-+}
-+EXPORT_SYMBOL(lynx_pcs_create_on_bus);
-+
- void lynx_pcs_destroy(struct phylink_pcs *pcs)
+-struct mdio_device *lynx_get_mdio_device(struct phylink_pcs *pcs)
+-{
+-	struct lynx_pcs *lynx = phylink_pcs_to_lynx(pcs);
+-
+-	return lynx->mdio;
+-}
+-EXPORT_SYMBOL(lynx_get_mdio_device);
+-
+ static void lynx_pcs_get_state_usxgmii(struct mdio_device *pcs,
+ 				       struct phylink_link_state *state)
  {
- 	pcs_put(pcs);
+@@ -427,11 +419,5 @@ struct phylink_pcs *lynx_pcs_create_on_bus(struct mii_bus *bus, int addr)
+ }
+ EXPORT_SYMBOL(lynx_pcs_create_on_bus);
+ 
+-void lynx_pcs_destroy(struct phylink_pcs *pcs)
+-{
+-	pcs_put(pcs);
+-}
+-EXPORT_SYMBOL(lynx_pcs_destroy);
+-
+ MODULE_DESCRIPTION("NXP Lynx 10G/28G PCS driver");
+ MODULE_LICENSE("GPL");
 diff --git a/include/linux/pcs-lynx.h b/include/linux/pcs-lynx.h
-index 5712cc2ce775..1c14342bb8c4 100644
+index 1c14342bb8c4..61caa59a069c 100644
 --- a/include/linux/pcs-lynx.h
 +++ b/include/linux/pcs-lynx.h
-@@ -12,6 +12,7 @@
- struct mdio_device *lynx_get_mdio_device(struct phylink_pcs *pcs);
+@@ -9,11 +9,7 @@
+ #include <linux/mdio.h>
+ #include <linux/phylink.h>
  
+-struct mdio_device *lynx_get_mdio_device(struct phylink_pcs *pcs);
+-
  struct phylink_pcs *lynx_pcs_create(struct mdio_device *mdio);
-+struct phylink_pcs *lynx_pcs_create_on_bus(struct mii_bus *bus, int addr);
+ struct phylink_pcs *lynx_pcs_create_on_bus(struct mii_bus *bus, int addr);
  
- void lynx_pcs_destroy(struct phylink_pcs *pcs);
- 
+-void lynx_pcs_destroy(struct phylink_pcs *pcs);
+-
+ #endif /* __LINUX_PCS_LYNX_H */
 -- 
 2.35.1.1320.gc452695387.dirty
 
