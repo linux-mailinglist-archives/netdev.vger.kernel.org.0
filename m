@@ -2,87 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AB1056D7C8
-	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 10:24:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BEBE656D80B
+	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 10:31:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229754AbiGKIYR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jul 2022 04:24:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59954 "EHLO
+        id S230093AbiGKIbv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jul 2022 04:31:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229941AbiGKIYJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 04:24:09 -0400
-Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53D551AD87
-        for <netdev@vger.kernel.org>; Mon, 11 Jul 2022 01:24:08 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 001AD204E0;
-        Mon, 11 Jul 2022 10:24:06 +0200 (CEST)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id KEq9CoUBx4au; Mon, 11 Jul 2022 10:24:05 +0200 (CEST)
-Received: from mailout2.secunet.com (mailout2.secunet.com [62.96.220.49])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 72418201E5;
-        Mon, 11 Jul 2022 10:24:05 +0200 (CEST)
-Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
-        by mailout2.secunet.com (Postfix) with ESMTP id 68E9180004A;
-        Mon, 11 Jul 2022 10:24:05 +0200 (CEST)
-Received: from mbx-dresden-01.secunet.de (10.53.40.199) by
- cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 11 Jul 2022 10:24:05 +0200
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-dresden-01.secunet.de
- (10.53.40.199) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 11 Jul
- 2022 10:24:04 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id 1F3C93182E41; Mon, 11 Jul 2022 10:24:04 +0200 (CEST)
-Date:   Mon, 11 Jul 2022 10:24:04 +0200
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Antony Antony <antony.antony@secunet.com>
-CC:     Herbert Xu <herbert@gondor.apana.org.au>, <netdev@vger.kernel.org>,
-        "Tobias Brunner" <tobias@strongswan.org>
-Subject: Re: [PATCH ipsec-next 1/4] Revert "xfrm: update SA curlft.use_time"
-Message-ID: <20220711082404.GM566407@gauss3.secunet.de>
-References: <3e201e1156639286e1874ebc29233741b8b2ac54.1657260947.git.antony.antony@secunet.com>
+        with ESMTP id S229807AbiGKIbt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 04:31:49 -0400
+Received: from mail-yw1-x112d.google.com (mail-yw1-x112d.google.com [IPv6:2607:f8b0:4864:20::112d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E138D1F2CF
+        for <netdev@vger.kernel.org>; Mon, 11 Jul 2022 01:31:47 -0700 (PDT)
+Received: by mail-yw1-x112d.google.com with SMTP id 00721157ae682-31cac89d8d6so41687807b3.2
+        for <netdev@vger.kernel.org>; Mon, 11 Jul 2022 01:31:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=3J9IyHuNdf4RzUYhyAwrvjFLRiRYfpINA65MRt4kKgM=;
+        b=WxLDiTDJ/cGeyxc13LPwdMBwqy9mf7NUwb8pTiIlyxslwk4PbnCJ5wM4ZxQ35hQTGW
+         6TdMU9/dafniNVuenzFjx8a4yzjl2UN+41lCphU9wQ862bHH/avz5vqbTBj9jqQaFTop
+         t8HZ+LNAl5fhEr5lPMGTw8emV50wpE1Z0y/D+PtanoEug9S0I/UR/GQ0bIkGpXqWChXT
+         CkuPZLS4pRGNHOkZbqcNlOGOWC5EV6GRURwUkV01gXNwuLub3EVxobjhfETIqSQVT9b+
+         wP0ObIClelaK0DwNKkMyl6qbPjhB/sHo2bzFrYhWWiwB5gnKjXI2bQ5PXWtp/oubc5um
+         +6Qw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=3J9IyHuNdf4RzUYhyAwrvjFLRiRYfpINA65MRt4kKgM=;
+        b=G7hksnWQcSWb9FIA6mlPGhkqqUJG4ufAHxOITec0tItQYZK4nbrGp0gEB7B7QdGZGP
+         rN1szOcpHy/77qgIoZPrJ5s2A56C+vIuaYTJngYuln7uHU6ETAVYKaDnZetqh4QdedJ1
+         eOHt9UI3tEVdUBUjULwdmawo5kTKTiQJvYQWNgFFDnSX3UQyAdhGaXf2qGkIlHVjjzz4
+         v14suNpt0HBnqB+mWV0b8y3ZcPtVyiDql8cw9mLnxnaAcqv0cdVIIeH3NcO4n7dtraY+
+         DmVc6V8PcTaCy3IGd95OuXo6ZFJyMak/jy3zMeyX1YoyBbwOJzdkncv1gXgaEbWy3GSE
+         5pMA==
+X-Gm-Message-State: AJIora8Eaubhg5PyR1Y7aTIsmJq5yAwkkjS89WGZNkFGknoStuCX/cxu
+        ggv7Ez3aXKoMR8v8Y+CWjptJRNokfbkXHDog22f1rg==
+X-Google-Smtp-Source: AGRyM1u/2OXTB+9LffDEL+06zw4GuQSG0hG72hUyRzuw00qzHcEs9iDFO58dE3J4U/ALR03h0POcpnK5re78d+8pfSI=
+X-Received: by 2002:a81:6cf:0:b0:31c:913c:144c with SMTP id
+ 198-20020a8106cf000000b0031c913c144cmr18316528ywg.437.1657528307206; Mon, 11
+ Jul 2022 01:31:47 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <3e201e1156639286e1874ebc29233741b8b2ac54.1657260947.git.antony.antony@secunet.com>
-X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
- mbx-dresden-01.secunet.de (10.53.40.199)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+References: <cover.1656583541.git.hakan.jansson@infineon.com> <e3f949c067ad07a1dd34247efc49f3d913c4f7c6.1656583541.git.hakan.jansson@infineon.com>
+In-Reply-To: <e3f949c067ad07a1dd34247efc49f3d913c4f7c6.1656583541.git.hakan.jansson@infineon.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Mon, 11 Jul 2022 10:31:36 +0200
+Message-ID: <CACRpkdYoe1-kCepz2J3h7H15rcG-a2o6y-GHOwaC6f+ipLTQhg@mail.gmail.com>
+Subject: Re: [PATCH v2 1/5] dt-bindings: net: broadcom-bluetooth: Add CYW55572
+ DT binding
+To:     Hakan Jansson <hakan.jansson@infineon.com>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        linux-bluetooth@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 08, 2022 at 08:16:28AM +0200, Antony Antony wrote:
-> This reverts commit af734a26a1a95a9fda51f2abb0c22a7efcafd5ca.
-> 
-> The abvoce commit is a regression according RFC 2367. A better fix would be
-> use x->lastused. Which will be propsed later.
-> 
-> according to RFC 2367 use_time == sadb_lifetime_usetime.
-> 
-> "sadb_lifetime_usetime
->                    For CURRENT, the time, in seconds, when association
->                    was first used. For HARD and SOFT, the number of
->                    seconds after the first use of the association until
->                    it expires."
-> 
-> Fixes: af734a26a1a9 ("xfrm: update SA curlft.use_time")
-> Signed-off-by: Antony Antony <antony.antony@secunet.com>
+On Thu, Jun 30, 2022 at 2:46 PM Hakan Jansson
+<hakan.jansson@infineon.com> wrote:
 
-This is a fix, so it should go to the ipsec tree. Please
-slpit your patchset into fixes that go to the ipsec tree
-and new features that go to ipsec-next.
+> CYW55572 is a Wi-Fi + Bluetooth combo device from Infineon.
+> Extend the binding with its DT compatible.
+>
+> Signed-off-by: Hakan Jansson <hakan.jansson@infineon.com>
+> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Thanks!
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
+Yours,
+Linus Walleij
