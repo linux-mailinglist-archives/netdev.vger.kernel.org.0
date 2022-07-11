@@ -2,440 +2,369 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 96DA956D280
-	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 03:29:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC13A56D289
+	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 03:31:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229641AbiGKB3N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Jul 2022 21:29:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33642 "EHLO
+        id S229639AbiGKBbf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Jul 2022 21:31:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229563AbiGKB3M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Jul 2022 21:29:12 -0400
-X-Greylist: delayed 918 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 10 Jul 2022 18:29:10 PDT
-Received: from na01-obe.outbound.protection.outlook.com (unknown [52.101.56.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B26A162F6;
-        Sun, 10 Jul 2022 18:29:10 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=P854yvhEAmGGxacXkETRIrYU28zrxR+y+5L5g6mWTIj3fN14vqDtll+Ul6uFXuTGqE/+itt6jAUluXZ3w68XM2CgfkIBp8J5rcMD3M/QDuKWXV71N7Ix/P5ImBz+i0Kzw+0jTMPOvf5D3qNldf4DTXGGljbYhulOA7Ui0WMRiHEvHmVYac1dIGAgVRTlNHdx03NlurhyJ5i1GJy0rVc57+aNqkl6cp9EJq1Cv6CA7q6o+Q+ei3bCEeZ6K+Y8JbXJDLkvk2FG7lPwcEhdmCuoP9p9nS8F8IE2+1ASEHqBzTGipWpv3IuFLJoWdMF3w7ehbIfGexAA0h/aMVQyoHrcrA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=rfyvglgLFyAScwZyVRsOAMKMn85ka6MmQhFBOPcqcZY=;
- b=gZq0MVkQJxjZrB38lTXw5mB80WuWEO1LArCONuNMeS3Z+TSTKjeN9yXfsVmmH5DvZAem6W9zkEs7CQLtjeXCj082Qn9dr70S+y2XT6AIEW91uGzrWfL03AUKgoRhmz/8HI704Uij3dQDyXXxI2LwtjLNfuDFLG4V6ysjwTPj7HnMGO2cK8PySNYoo11Eqaq7MC/ORHCqCxKTFY2JjUPpeqYcAhanQz4Ab923IFGUwU9EqU37q79ZoaVI5BrrM++9C3r6j4avzTlE2Cc8sDTZwmDp2+qlShucbST3pYM9sMTt3oABlz93ACqdHH8n/wdefK2h85eSyzI7YSiEW+f0oQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rfyvglgLFyAScwZyVRsOAMKMn85ka6MmQhFBOPcqcZY=;
- b=NyYGTb422amN3VCqa2TVceQMM1I7ks9H9ExJWwQc4hQkbJrzBDaPQpviQ+9QJPcIt9ch+T1hts0GUP1DERQm8P6ngXeXqMjoUjnEeqGWWf8VK2AIIDEm2/Qwq3w7Qu1jpMqh4/h7yvbBCWR3++58wW5ThoUaaKRNbakUoHudZIQ=
-Received: from SN6PR2101MB1327.namprd21.prod.outlook.com
- (2603:10b6:805:107::9) by SA0PR21MB1882.namprd21.prod.outlook.com
- (2603:10b6:806:d8::7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.4; Mon, 11 Jul
- 2022 01:29:08 +0000
-Received: from SN6PR2101MB1327.namprd21.prod.outlook.com
- ([fe80::59ea:cdde:5229:d4f0]) by SN6PR2101MB1327.namprd21.prod.outlook.com
- ([fe80::59ea:cdde:5229:d4f0%7]) with mapi id 15.20.5458.003; Mon, 11 Jul 2022
- 01:29:08 +0000
-From:   Dexuan Cui <decui@microsoft.com>
-To:     Long Li <longli@microsoft.com>, KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Leon Romanovsky <leon@kernel.org>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "shiraz.saleem@intel.com" <shiraz.saleem@intel.com>,
-        Ajay Sharma <sharmaajay@microsoft.com>
-CC:     "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
-Subject: RE: [Patch v4 06/12] net: mana: Define data structures for protection
- domain and memory registration
-Thread-Topic: [Patch v4 06/12] net: mana: Define data structures for
- protection domain and memory registration
-Thread-Index: AQHYgSXZ61KmVR7xZES2DK7HXoNYta122DDw
-Date:   Mon, 11 Jul 2022 01:29:08 +0000
-Message-ID: <SN6PR2101MB13276E8879F455D06318118EBF879@SN6PR2101MB1327.namprd21.prod.outlook.com>
-References: <1655345240-26411-1-git-send-email-longli@linuxonhyperv.com>
- <1655345240-26411-7-git-send-email-longli@linuxonhyperv.com>
-In-Reply-To: <1655345240-26411-7-git-send-email-longli@linuxonhyperv.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=b2f59ba0-0f91-467d-abb8-8c0490284381;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-07-09T23:40:16Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: e2b62f9f-6db1-4c64-7fff-08da62dcc031
-x-ms-traffictypediagnostic: SA0PR21MB1882:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: DsAEXYjS1YZ9joTLWV68CIcVsRI1W8FRZaVVDQfQs5Db5ldLbuvPCDH3J+0t/8KrgdfPeS+pzbra7csP+q4oxItIwhRL6unpk4DtBTMcZ8Hg5+p3N7akoSMcwJnx0KTZt5AKf6e62aj1IP5DQ3rYtBZaiSfHzaexOaIklp/+E00TWJX7DtSN18MLRHBeUDmPCjhcIxIBFrzXz/q4T9u2hIMyaM3i8sNALjd4kqa7z1uyxk84i984o3o79A7iDi9mUYKOiEWrgrAxKobLCa8k5oeMUBfisRNt4aRFMqcQi+TwPv6eDOCV1khHZ3RUsoFl3cTIjPc0KQnIY5dbAAUEM3ZGnCQMB4jwFQCq74QUEBaewX3SsRbvVSKCiaAg49k8MMipw6sayA4KPchPfc7bxs/qXaE1q3xkqZhLIVT6m8JN0jqf+XX5zy1/E4cS7gthSvPY8sWHDN81gRVL0vClc388VxnWDQrRW7kp7mXjfwbXMFAnWH6l4zA4mo4mLffBvZmUz9yd7X3KmWB62B/h74vpqPX1I6+VKXyZfsUrzMPypQ34VbLesFFBLzC0iUT8KH4TZJHSImA8vZ30eO4X+8kxmj7nxg53jBsMRO8rVEDGsH1K3v1amlf1H30/qvIUjKXx4A9TE125w9KydIoiVMtwH+7Rk1VlnKIhXbf1xKTqiJth8Ib9wlDaVORVbjj8Mxad1qGFzBpNb9rGb00gyYLb7SojqqT3sRP0g+tsyti8OEhJOjtix6VT2wmm1Td1QEnqE+1Bc/lNXSwIX4bUf5Izp94JJIpZ3kuTs2vmnZAQ/gq4lTGTM+T9lCVidH4QBQ+NRyGZumu6PjSpUwlzvGeGwD/HxvbdPY+yk4V6xgcNkBphnQIpBrOqef2gFOqO
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR2101MB1327.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(39860400002)(136003)(376002)(396003)(366004)(451199009)(52536014)(478600001)(110136005)(10290500003)(71200400001)(66946007)(2906002)(8676002)(64756008)(66476007)(41300700001)(76116006)(4326008)(66556008)(66446008)(7416002)(5660300002)(83380400001)(54906003)(316002)(8936002)(6636002)(7696005)(6506007)(8990500004)(33656002)(26005)(186003)(9686003)(82950400001)(38070700005)(86362001)(122000001)(82960400001)(55016003)(921005)(38100700002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?Mtjkp94vce2z7n662cbeGS83/Pb9xDU2P+Kdb7UZxzwzs4IpSh+x6N7q1VPo?=
- =?us-ascii?Q?KOBMbP5y9RwbBWDZjhhRekjtbUDIlfFFYoM6nZrXlNtwPSf0YiSSomYL5KOZ?=
- =?us-ascii?Q?q6azhxs3ipVjoqcWYEHp1b+8UG1YFKjm/0E1ddVdW4qPELsKd+bw67kVfBlI?=
- =?us-ascii?Q?yIzHQdTadQn64SWxXEficop0MkM7IrkyVYZCYRoLR7F9pPFCNsXoI4SGY2y9?=
- =?us-ascii?Q?3VpWvzO1uooV71RRpVjKbZwIGEYwSzEyMY7U+wmOsJYGVR10P1FWDJxLaX5T?=
- =?us-ascii?Q?rh4hfGED/cvuKB6qk0xIoBdIzLml5c4F0tPGsZzrtwnoSf97LvpKohQX/QsG?=
- =?us-ascii?Q?Hu0yHwKuJ4TokKa3W5PhuA//rAt1BVChnxgw7NqgUllDSglWniY6uteN0oI6?=
- =?us-ascii?Q?Hx02XUG1VCcUh7Icag7w5wiVCIds1XaSAIP05Z2e2r/cb0EpDk3ZeE4XYJds?=
- =?us-ascii?Q?2qKRtCXTDlYuYAPOQiWY3IfyiBGZChj1zAzdFKbs2RFqTP52ia903nOv2Gmv?=
- =?us-ascii?Q?G0eqls5TvJK9T12CbmXn1bWN41YA8ug5LkbXXEEW1tGVkrOrj+gOMCjZLC4O?=
- =?us-ascii?Q?m7ZLiU/ShE+C2d+TTi/rGG8P6c63/YxOQPD/PIEifE2SqnkdCjXLtPizF7uS?=
- =?us-ascii?Q?LOZe8+d4pOsEBfeAxX7o4S22Y/EgiRtpDpE9hXC7H49/VmKsIZr/PrOaIR+6?=
- =?us-ascii?Q?+xeqv2x3Kus7z+/agg20TK80YKhx9WB2BjP0Xi7ana0uO0wVUyTaIforvSt9?=
- =?us-ascii?Q?kyHISOmn4fZTxTdjXjlzkPkyhvOZULKhT4i32cycGzpemeJnwG7Y40hXNIpN?=
- =?us-ascii?Q?yXWux/BA++L3tLwalMLxgW1SnvKsy6d34BADkP7DviOl91ckewIC9AUDScZ1?=
- =?us-ascii?Q?zv8ejD9Yc/Ec+H8aTtTUYw2qVbcBMlW8YiLYnGsnBi47QANB9mhQLeUK60Gz?=
- =?us-ascii?Q?fPAMtybFEekhdcT0LehVsTnQpLWrnmGBXiqp/5tBSiLF2jIFVEqP2tpcbW4v?=
- =?us-ascii?Q?LA3sloUr6/nZsqZg4Wn1nnopf3dlqoMxVo1KGrmdrHltVatReFTOGw2RHrwX?=
- =?us-ascii?Q?3S7QefJRKmw+nQDGtKyxsHpENYpaOWWWdEz3MpYwInktKtUgEY5s8jGjRwAt?=
- =?us-ascii?Q?AihKsv0jz31+37X2dq2jqOwkMBzokIUg1jCCtq3SYn/q4xyC83V8tkks0DiB?=
- =?us-ascii?Q?tSN2ChpN9oi/4eNwmxfyK5KtmZ5Sw8xlnAqjrKHo9uiG9hGcLMz29IYsrjPg?=
- =?us-ascii?Q?7+ibaMKO4p7aZ9fwwdwR1HjbFTzyIOHn8+UVI7WCoJxfxyPksUsnjJzUAsZb?=
- =?us-ascii?Q?xKWOYZjo9UfX5x/vfwAPKvZlAR3DkHnDJxTn/qBMh+vsv8U3T0YrBMyKw3Kb?=
- =?us-ascii?Q?FunyPRr77aTy9FCpwEqwiyUqP04dsQhGM0DzYRM4qv7IiX3lk+5Jyl79Yr1w?=
- =?us-ascii?Q?lM2ql1Ax+uJ2O9MHedm1kvPEBqNiUW0YdTdayFmrbyi9YCAF6LG1AKA7Lq1L?=
- =?us-ascii?Q?Lmwb64Fvd7oDbhMJYnKAYKftzGlGiHcWzDKVRMtk09STR0Apdnw2e4w/m9q+?=
- =?us-ascii?Q?qbG4YWT+ZeV4t0xq6RPBMX1+Tp+SgWK01mAY6XCn?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR2101MB1327.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e2b62f9f-6db1-4c64-7fff-08da62dcc031
-X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Jul 2022 01:29:08.2518
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Uxv3Ib64cpXTylU5FAuwJYo8hW1TcoGupSrg3iFOgjEF2dXESU4kemkJgvKVYuSQ/XeTSWLutz0nyRAsQXj7mg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR21MB1882
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229477AbiGKBbe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Jul 2022 21:31:34 -0400
+Received: from azure-sdnproxy-3.icoremail.net (azure-sdnproxy.icoremail.net [20.232.28.96])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id E7F84165BF;
+        Sun, 10 Jul 2022 18:31:30 -0700 (PDT)
+Received: from ubuntu.localdomain (unknown [218.12.16.13])
+        by mail-app4 (Coremail) with SMTP id cS_KCgDnIfxgfctie5I1AA--.29416S2;
+        Mon, 11 Jul 2022 09:31:20 +0800 (CST)
+From:   Duoming Zhou <duoming@zju.edu.cn>
+To:     linux-hams@vger.kernel.org, pabeni@redhat.com
+Cc:     ralf@linux-mips.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>
+Subject: [PATCH net v6] net: rose: fix null-ptr-deref caused by rose_kill_by_neigh
+Date:   Mon, 11 Jul 2022 09:31:11 +0800
+Message-Id: <20220711013111.33183-1-duoming@zju.edu.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: cS_KCgDnIfxgfctie5I1AA--.29416S2
+X-Coremail-Antispam: 1UD129KBjvJXoW3ZF1xuw1kAF45WrWrCFWUCFg_yoWkJFyUpF
+        nIkay3Gr4Utw4qqF4DJanrZw4YqFn2yry3Gr109FyIyF1UGrWYva4ktFW5Cr1xXFZ8JFyY
+        gF1xW3yIyrsFyw7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUyv14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4U
+        JVW0owA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
+        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
+        I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
+        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCF04k20xvY0x0EwIxG
+        rwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4
+        vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IY
+        x2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr1lIxAIcVCF04k26c
+        xKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAF
+        wI0_Jr0_GrUvcSsGvfC2KfnxnUUI43ZEXa7VUbXdbUUUUUU==
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgMIAVZdtanBoQAKs1
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> From: longli@linuxonhyperv.com <longli@linuxonhyperv.com>
-> Sent: Wednesday, June 15, 2022 7:07 PM
->=20
-> The MANA hardware support protection domain and memory registration for
-s/support/supports
-=20
-> diff --git a/drivers/net/ethernet/microsoft/mana/gdma.h
-> b/drivers/net/ethernet/microsoft/mana/gdma.h
-> index f945755760dc..b1bec8ab5695 100644
-> --- a/drivers/net/ethernet/microsoft/mana/gdma.h
-> +++ b/drivers/net/ethernet/microsoft/mana/gdma.h
-> @@ -27,6 +27,10 @@ enum gdma_request_type {
->  	GDMA_CREATE_DMA_REGION		=3D 25,
->  	GDMA_DMA_REGION_ADD_PAGES	=3D 26,
->  	GDMA_DESTROY_DMA_REGION		=3D 27,
-> +	GDMA_CREATE_PD			=3D 29,
-> +	GDMA_DESTROY_PD			=3D 30,
-> +	GDMA_CREATE_MR			=3D 31,
-> +	GDMA_DESTROY_MR			=3D 32,
-These are not used in this patch. They're used in the 12th=20
-patch for the first time. Can we move these to that patch?
+When the link layer connection is broken, the rose->neighbour is
+set to null. But rose->neighbour could be used by rose_connection()
+and rose_release() later, because there is no synchronization among
+them. As a result, the null-ptr-deref bugs will happen.
 
->  #define GDMA_RESOURCE_DOORBELL_PAGE	27
-> @@ -59,6 +63,8 @@ enum {
->  	GDMA_DEVICE_MANA	=3D 2,
->  };
->=20
-> +typedef u64 gdma_obj_handle_t;
-> +
->  struct gdma_resource {
->  	/* Protect the bitmap */
->  	spinlock_t lock;
-> @@ -192,7 +198,7 @@ struct gdma_mem_info {
->  	u64 length;
->=20
->  	/* Allocated by the PF driver */
-> -	u64 gdma_region;
-> +	gdma_obj_handle_t dma_region_handle;
-The old name "gdma_region" is shorter and it has "gdma"
-rather than "dma".=20
+One of the null-ptr-deref bugs is shown below:
 
-The new name is longer. When one starts to read the code for
-the first time, I feel that "dma_region_handle" might be confusing
-as it's similar to "dma_handle" (which is the DMA address returned
-by dma_alloc_coherent()). "dma_region_handle" is an integer
-rather than a memory address.=20
+    (thread 1)                  |        (thread 2)
+                                |  rose_connect
+rose_kill_by_neigh              |    lock_sock(sk)
+  spin_lock_bh(&rose_list_lock) |    if (!rose->neighbour)
+  rose->neighbour = NULL;//(1)  |
+                                |    rose->neighbour->use++;//(2)
 
-You use the new name probably because there is a "mr_handle "
-in the 12 patch. I prefer the old name, though the new name is
-also ok to me. If you decide to use the new name, it would be
-great if this patch could split into two patches: one for the
-renaming only, and the other for the real changes.
+The rose->neighbour is set to null in position (1) and dereferenced
+in position (2).
 
->  #define REGISTER_ATB_MST_MKEY_LOWER_SIZE 8
-> @@ -599,7 +605,7 @@ struct gdma_create_queue_req {
->  	u32 reserved1;
->  	u32 pdid;
->  	u32 doolbell_id;
-> -	u64 gdma_region;
-> +	gdma_obj_handle_t gdma_region;
-If we decide to use the new name "dma_region_handle", should
-we change the field/param names in the below structs and
-functions as well (this may not be a complete list)?
-  struct mana_ib_wq
-  struct mana_ib_cq
-  mana_ib_gd_create_dma_region
-  mana_ib_gd_destroy_dma_region
+The KASAN report triggered by POC is shown below:
 
->  	u32 reserved2;
->  	u32 queue_size;
->  	u32 log2_throttle_limit;
-> @@ -626,6 +632,28 @@ struct gdma_disable_queue_req {
->  	u32 alloc_res_id_on_creation;
->  }; /* HW DATA */
->=20
-> +enum atb_page_size {
-> +	ATB_PAGE_SIZE_4K,
-> +	ATB_PAGE_SIZE_8K,
-> +	ATB_PAGE_SIZE_16K,
-> +	ATB_PAGE_SIZE_32K,
-> +	ATB_PAGE_SIZE_64K,
-> +	ATB_PAGE_SIZE_128K,
-> +	ATB_PAGE_SIZE_256K,
-> +	ATB_PAGE_SIZE_512K,
-> +	ATB_PAGE_SIZE_1M,
-> +	ATB_PAGE_SIZE_2M,
-> +	ATB_PAGE_SIZE_MAX,
-> +};
-> +
-> +enum gdma_mr_access_flags {
-> +	GDMA_ACCESS_FLAG_LOCAL_READ =3D (1 << 0),
-> +	GDMA_ACCESS_FLAG_LOCAL_WRITE =3D (1 << 1),
-> +	GDMA_ACCESS_FLAG_REMOTE_READ =3D (1 << 2),
-> +	GDMA_ACCESS_FLAG_REMOTE_WRITE =3D (1 << 3),
-> +	GDMA_ACCESS_FLAG_REMOTE_ATOMIC =3D (1 << 4),
-> +};
-It would be better to use BIT_ULL(0), BIT_ULL(1), etc.
+KASAN: null-ptr-deref in range [0x0000000000000028-0x000000000000002f]
+...
+RIP: 0010:rose_connect+0x6c2/0xf30
+RSP: 0018:ffff88800ab47d60 EFLAGS: 00000206
+RAX: 0000000000000005 RBX: 000000000000002a RCX: 0000000000000000
+RDX: ffff88800ab38000 RSI: ffff88800ab47e48 RDI: ffff88800ab38309
+RBP: dffffc0000000000 R08: 0000000000000000 R09: ffffed1001567062
+R10: dfffe91001567063 R11: 1ffff11001567061 R12: 1ffff11000d17cd0
+R13: ffff8880068be680 R14: 0000000000000002 R15: 1ffff11000d17cd0
+...
+Call Trace:
+  <TASK>
+  ? __local_bh_enable_ip+0x54/0x80
+  ? selinux_netlbl_socket_connect+0x26/0x30
+  ? rose_bind+0x5b0/0x5b0
+  __sys_connect+0x216/0x280
+  __x64_sys_connect+0x71/0x80
+  do_syscall_64+0x43/0x90
+  entry_SYSCALL_64_after_hwframe+0x46/0xb0
 
->  /* GDMA_CREATE_DMA_REGION */
->  struct gdma_create_dma_region_req {
->  	struct gdma_req_hdr hdr;
-> @@ -652,14 +680,14 @@ struct gdma_create_dma_region_req {
->=20
->  struct gdma_create_dma_region_resp {
->  	struct gdma_resp_hdr hdr;
-> -	u64 gdma_region;
-> +	gdma_obj_handle_t dma_region_handle;
->  }; /* HW DATA */
->=20
->  /* GDMA_DMA_REGION_ADD_PAGES */
->  struct gdma_dma_region_add_pages_req {
->  	struct gdma_req_hdr hdr;
->=20
-> -	u64 gdma_region;
-> +	gdma_obj_handle_t dma_region_handle;
->=20
->  	u32 page_addr_list_len;
->  	u32 reserved3;
-> @@ -671,9 +699,114 @@ struct gdma_dma_region_add_pages_req {
->  struct gdma_destroy_dma_region_req {
->  	struct gdma_req_hdr hdr;
->=20
-> -	u64 gdma_region;
-> +	gdma_obj_handle_t dma_region_handle;
->  }; /* HW DATA */
->=20
-> +enum gdma_pd_flags {
-> +	GDMA_PD_FLAG_ALLOW_GPA_MR =3D (1 << 0),
-> +	GDMA_PD_FLAG_ALLOW_FMR_MR =3D (1 << 1),
-> +};
-Use BIT_ULL(0), BIT_ULL(1) ?
+This patch adds lock_sock() in rose_kill_by_neigh() in order to
+synchronize with rose_connect() and rose_release(). Then, changing
+type of 'neighbour->use' from unsigned short to atomic_t in order to
+mitigate race conditions caused by holding different socket lock while
+updating 'neighbour->use'.
 
-> +struct gdma_create_pd_req {
-> +	struct gdma_req_hdr hdr;
-> +	enum gdma_pd_flags flags;
-> +	u32 reserved;
-> +};
-> +
-> +struct gdma_create_pd_resp {
-> +	struct gdma_resp_hdr hdr;
-> +	gdma_obj_handle_t pd_handle;
-> +	u32 pd_id;
-> +	u32 reserved;
-> +};
-> +
-> +struct gdma_destroy_pd_req {
-> +	struct gdma_req_hdr hdr;
-> +	gdma_obj_handle_t pd_handle;
-> +};
-> +
-> +struct gdma_destory_pd_resp {
-> +	struct gdma_resp_hdr hdr;
-> +};
-> +
-> +enum gdma_mr_type {
-> +	/* Guest Physical Address - MRs of this type allow access
-> +	 * to any DMA-mapped memory using bus-logical address
-> +	 */
-> +	GDMA_MR_TYPE_GPA =3D 1,
-> +
-> +	/* Guest Virtual Address - MRs of this type allow access
-> +	 * to memory mapped by PTEs associated with this MR using a virtual
-> +	 * address that is set up in the MST
-> +	 */
-> +	GDMA_MR_TYPE_GVA,
-> +
-> +	/* Fast Memory Register - Like GVA but the MR is initially put in the
-> +	 * FREE state (as opposed to Valid), and the specified number of
-> +	 * PTEs are reserved for future fast memory reservations.
-> +	 */
-> +	GDMA_MR_TYPE_FMR,
-> +};
-> +
-> +struct gdma_create_mr_params {
-> +	gdma_obj_handle_t pd_handle;
-> +	enum gdma_mr_type mr_type;
-> +	union {
-> +		struct {
-> +			gdma_obj_handle_t dma_region_handle;
-> +			u64 virtual_address;
-> +			enum gdma_mr_access_flags access_flags;
-> +		} gva;
-Add an empty line to make it more readable?
+Meanwhile, this patch adds sock_hold() protected by rose_list_lock
+that could synchronize with rose_remove_socket() in order to mitigate
+UAF bug caused by lock_sock() we add.
 
-> +		struct {
-> +			enum gdma_mr_access_flags access_flags;
-> +		} gpa;
-Add an empty line?
+What's more, there is no need using rose_neigh_list_lock to protect
+rose_kill_by_neigh(). Because we have already used rose_neigh_list_lock
+to protect the state change of rose_neigh in rose_link_failed(), which
+is well synchronized.
 
-> +		struct {
-> +			enum atb_page_size page_size;
-> +			u32  reserved_pte_count;
-> +		} fmr;
-> +	};
-> +};
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+---
+Changes in v6:
+  - Change sk_for_each() to sk_for_each_safe().
+  - Change type of 'neighbour->use' from unsigned short to atomic_t.
 
-The definition of struct gdma_create_mr_params is not naturally aligned.
-This can potenially cause issues.
+ include/net/rose.h    |  2 +-
+ net/rose/af_rose.c    | 19 +++++++++++++------
+ net/rose/rose_in.c    | 12 ++++++------
+ net/rose/rose_route.c | 24 ++++++++++++------------
+ net/rose/rose_timer.c |  2 +-
+ 5 files changed, 33 insertions(+), 26 deletions(-)
 
-According to my test, sizeof(struct gdma_create_mr_params) is 40 bytes,
-meaning the compiler adds two "hidden" fields:
-
-struct gdma_create_mr_params {
-        gdma_obj_handle_t pd_handle;                        // offset =3D 0
-        enum gdma_mr_type mr_type;                        // offset =3D 8
-+       u32 hidden_field_a;
-        union {                                            // offset =3D 0x=
-10
-                struct {
-                        gdma_obj_handle_t dma_region_handle;   // offset =
-=3D0x10
-                        u64 virtual_address;                    // offset =
-=3D0x18
-                        enum gdma_mr_access_flags access_flags;  // offset =
-=3D0x20
-+                       u32 hidden_field_b;
-                } gva;
-
-We'll run into trouble some day if the Linux VF driver or the host PF
-driver adds something like __attribute__((packed)).
-
-Can we work with the host team to improve the definition? If it's
-hard/impossible to change the PF driver side definition, both sides
-should at least explicitly define the two hidden fields as reserved fields.
-
-BTW, can we assume the size of "enum" is 4 bytes? I prefer using u32
-explicitly when a struct is used to talk to the PF driver or the device.
-
-If we decide to use "enum", I suggest we add=20
-BUILD_BUG_ON(sizeof(struct gdma_create_mr_params) !=3D 40)
-to make sure the assumptin is true.
-
-BTW, Haiyang added "/* HW DATA */ " to other definitions,=20
-e.g. gdma_create_queue_resp. Can you please add the same comment
-for consistency?
-
-> +struct gdma_create_mr_request {
-> +	struct gdma_req_hdr hdr;
-> +	gdma_obj_handle_t pd_handle;
-> +	enum gdma_mr_type mr_type;
-> +	u32 reserved;
-> +
-> +	union {
-> +		struct {
-> +			enum gdma_mr_access_flags access_flags;
-> +		} gpa;
-> +
-> +		struct {
-> +			gdma_obj_handle_t dma_region_handle;
-> +			u64 virtual_address;
-> +			enum gdma_mr_access_flags access_flags;
-
-Similarly, there is a hidden u32 field here. We should explicitly define it=
-.
-
-> +		} gva;
-Can we use the same order of "gva; gpa" used in
-struct gdma_create_mr_params?
-
-> +		struct {
-> +			enum atb_page_size page_size;
-> +			u32 reserved_pte_count;
-> +		} fmr;
-> +	};
-> +};
-
-Add BUILD_BUG_ON(sizeof(struct gdma_create_mr_request) !=3D 80) ?
-Add /* HW DATA */ ?
-
-> +struct gdma_create_mr_response {
-> +	struct gdma_resp_hdr hdr;
-> +	gdma_obj_handle_t mr_handle;
-> +	u32 lkey;
-> +	u32 rkey;
-> +};
-> +
-> +struct gdma_destroy_mr_request {
-> +	struct gdma_req_hdr hdr;
-> +	gdma_obj_handle_t mr_handle;
-> +};
-> +
-> +struct gdma_destroy_mr_response {
-> +	struct gdma_resp_hdr hdr;
-> +};
-> +
-
-None of the new defines are really used in this patch:
-
-+enum atb_page_size {
-+enum gdma_mr_access_flags {
-+enum gdma_pd_flags {
-+struct gdma_create_pd_req {
-+struct gdma_create_pd_resp {
-+struct gdma_destroy_pd_req {
-+struct gdma_destory_pd_resp {
-+enum gdma_mr_type {
-+struct gdma_create_mr_params {
-+struct gdma_create_mr_request {
-+struct gdma_create_mr_response {
-+struct gdma_destroy_mr_request {
-+struct gdma_destroy_mr_response
-
-The new defines are used in the 12th patch for the first time.
-Can we move these to that patch or at least move these defines
-to before the 12th patch?
+diff --git a/include/net/rose.h b/include/net/rose.h
+index 0f0a4ce0fee..d5ddebc556d 100644
+--- a/include/net/rose.h
++++ b/include/net/rose.h
+@@ -95,7 +95,7 @@ struct rose_neigh {
+ 	ax25_cb			*ax25;
+ 	struct net_device		*dev;
+ 	unsigned short		count;
+-	unsigned short		use;
++	atomic_t		use;
+ 	unsigned int		number;
+ 	char			restarted;
+ 	char			dce_mode;
+diff --git a/net/rose/af_rose.c b/net/rose/af_rose.c
+index bf2d986a6bc..54e7b76c4f3 100644
+--- a/net/rose/af_rose.c
++++ b/net/rose/af_rose.c
+@@ -163,16 +163,23 @@ static void rose_remove_socket(struct sock *sk)
+ void rose_kill_by_neigh(struct rose_neigh *neigh)
+ {
+ 	struct sock *s;
++	struct hlist_node *tmp;
+ 
+ 	spin_lock_bh(&rose_list_lock);
+-	sk_for_each(s, &rose_list) {
++	sk_for_each_safe(s, tmp, &rose_list) {
+ 		struct rose_sock *rose = rose_sk(s);
+ 
++		sock_hold(s);
++		spin_unlock_bh(&rose_list_lock);
++		lock_sock(s);
+ 		if (rose->neighbour == neigh) {
+ 			rose_disconnect(s, ENETUNREACH, ROSE_OUT_OF_ORDER, 0);
+-			rose->neighbour->use--;
++			atomic_dec(&rose->neighbour->use);
+ 			rose->neighbour = NULL;
+ 		}
++		release_sock(s);
++		sock_put(s);
++		spin_lock_bh(&rose_list_lock);
+ 	}
+ 	spin_unlock_bh(&rose_list_lock);
+ }
+@@ -191,7 +198,7 @@ static void rose_kill_by_device(struct net_device *dev)
+ 		if (rose->device == dev) {
+ 			rose_disconnect(s, ENETUNREACH, ROSE_OUT_OF_ORDER, 0);
+ 			if (rose->neighbour)
+-				rose->neighbour->use--;
++				atomic_dec(&rose->neighbour->use);
+ 			rose->device = NULL;
+ 		}
+ 	}
+@@ -618,7 +625,7 @@ static int rose_release(struct socket *sock)
+ 		break;
+ 
+ 	case ROSE_STATE_2:
+-		rose->neighbour->use--;
++		atomic_dec(&rose->neighbour->use);
+ 		release_sock(sk);
+ 		rose_disconnect(sk, 0, -1, -1);
+ 		lock_sock(sk);
+@@ -819,7 +826,7 @@ static int rose_connect(struct socket *sock, struct sockaddr *uaddr, int addr_le
+ 
+ 	rose->state = ROSE_STATE_1;
+ 
+-	rose->neighbour->use++;
++	atomic_inc(&rose->neighbour->use);
+ 
+ 	rose_write_internal(sk, ROSE_CALL_REQUEST);
+ 	rose_start_heartbeat(sk);
+@@ -1019,7 +1026,7 @@ int rose_rx_call_request(struct sk_buff *skb, struct net_device *dev, struct ros
+ 	make_rose->device        = dev;
+ 	make_rose->facilities    = facilities;
+ 
+-	make_rose->neighbour->use++;
++	atomic_inc(&make_rose->neighbour->use);
+ 
+ 	if (rose_sk(sk)->defer) {
+ 		make_rose->state = ROSE_STATE_5;
+diff --git a/net/rose/rose_in.c b/net/rose/rose_in.c
+index 4d67f36dce1..86168f29943 100644
+--- a/net/rose/rose_in.c
++++ b/net/rose/rose_in.c
+@@ -56,7 +56,7 @@ static int rose_state1_machine(struct sock *sk, struct sk_buff *skb, int framety
+ 	case ROSE_CLEAR_REQUEST:
+ 		rose_write_internal(sk, ROSE_CLEAR_CONFIRMATION);
+ 		rose_disconnect(sk, ECONNREFUSED, skb->data[3], skb->data[4]);
+-		rose->neighbour->use--;
++		atomic_dec(&rose->neighbour->use);
+ 		break;
+ 
+ 	default:
+@@ -79,12 +79,12 @@ static int rose_state2_machine(struct sock *sk, struct sk_buff *skb, int framety
+ 	case ROSE_CLEAR_REQUEST:
+ 		rose_write_internal(sk, ROSE_CLEAR_CONFIRMATION);
+ 		rose_disconnect(sk, 0, skb->data[3], skb->data[4]);
+-		rose->neighbour->use--;
++		atomic_dec(&rose->neighbour->use);
+ 		break;
+ 
+ 	case ROSE_CLEAR_CONFIRMATION:
+ 		rose_disconnect(sk, 0, -1, -1);
+-		rose->neighbour->use--;
++		atomic_dec(&rose->neighbour->use);
+ 		break;
+ 
+ 	default:
+@@ -120,7 +120,7 @@ static int rose_state3_machine(struct sock *sk, struct sk_buff *skb, int framety
+ 	case ROSE_CLEAR_REQUEST:
+ 		rose_write_internal(sk, ROSE_CLEAR_CONFIRMATION);
+ 		rose_disconnect(sk, 0, skb->data[3], skb->data[4]);
+-		rose->neighbour->use--;
++		atomic_dec(&rose->neighbour->use);
+ 		break;
+ 
+ 	case ROSE_RR:
+@@ -233,7 +233,7 @@ static int rose_state4_machine(struct sock *sk, struct sk_buff *skb, int framety
+ 	case ROSE_CLEAR_REQUEST:
+ 		rose_write_internal(sk, ROSE_CLEAR_CONFIRMATION);
+ 		rose_disconnect(sk, 0, skb->data[3], skb->data[4]);
+-		rose->neighbour->use--;
++		atomic_dec(&rose->neighbour->use);
+ 		break;
+ 
+ 	default:
+@@ -253,7 +253,7 @@ static int rose_state5_machine(struct sock *sk, struct sk_buff *skb, int framety
+ 	if (frametype == ROSE_CLEAR_REQUEST) {
+ 		rose_write_internal(sk, ROSE_CLEAR_CONFIRMATION);
+ 		rose_disconnect(sk, 0, skb->data[3], skb->data[4]);
+-		rose_sk(sk)->neighbour->use--;
++		atomic_dec(&rose_sk(sk)->neighbour->use);
+ 	}
+ 
+ 	return 0;
+diff --git a/net/rose/rose_route.c b/net/rose/rose_route.c
+index eb0b8197ac8..8be00a44540 100644
+--- a/net/rose/rose_route.c
++++ b/net/rose/rose_route.c
+@@ -93,7 +93,7 @@ static int __must_check rose_add_node(struct rose_route_struct *rose_route,
+ 		rose_neigh->ax25      = NULL;
+ 		rose_neigh->dev       = dev;
+ 		rose_neigh->count     = 0;
+-		rose_neigh->use       = 0;
++		atomic_set(&rose_neigh->use, 0);
+ 		rose_neigh->dce_mode  = 0;
+ 		rose_neigh->loopback  = 0;
+ 		rose_neigh->number    = rose_neigh_no++;
+@@ -263,10 +263,10 @@ static void rose_remove_route(struct rose_route *rose_route)
+ 	struct rose_route *s;
+ 
+ 	if (rose_route->neigh1 != NULL)
+-		rose_route->neigh1->use--;
++		atomic_dec(&rose_route->neigh1->use);
+ 
+ 	if (rose_route->neigh2 != NULL)
+-		rose_route->neigh2->use--;
++		atomic_dec(&rose_route->neigh2->use);
+ 
+ 	if ((s = rose_route_list) == rose_route) {
+ 		rose_route_list = rose_route->next;
+@@ -331,7 +331,7 @@ static int rose_del_node(struct rose_route_struct *rose_route,
+ 		if (rose_node->neighbour[i] == rose_neigh) {
+ 			rose_neigh->count--;
+ 
+-			if (rose_neigh->count == 0 && rose_neigh->use == 0)
++			if (rose_neigh->count == 0 && atomic_read(&rose_neigh->use) == 0)
+ 				rose_remove_neigh(rose_neigh);
+ 
+ 			rose_node->count--;
+@@ -381,7 +381,7 @@ void rose_add_loopback_neigh(void)
+ 	sn->ax25      = NULL;
+ 	sn->dev       = NULL;
+ 	sn->count     = 0;
+-	sn->use       = 0;
++	atomic_set(&sn->use, 0);
+ 	sn->dce_mode  = 1;
+ 	sn->loopback  = 1;
+ 	sn->number    = rose_neigh_no++;
+@@ -573,7 +573,7 @@ static int rose_clear_routes(void)
+ 		s          = rose_neigh;
+ 		rose_neigh = rose_neigh->next;
+ 
+-		if (s->use == 0 && !s->loopback) {
++		if (atomic_read(&s->use) == 0 && !s->loopback) {
+ 			s->count = 0;
+ 			rose_remove_neigh(s);
+ 		}
+@@ -789,13 +789,13 @@ static void rose_del_route_by_neigh(struct rose_neigh *rose_neigh)
+ 		}
+ 
+ 		if (rose_route->neigh1 == rose_neigh) {
+-			rose_route->neigh1->use--;
++			atomic_dec(&rose_route->neigh1->use);
+ 			rose_route->neigh1 = NULL;
+ 			rose_transmit_clear_request(rose_route->neigh2, rose_route->lci2, ROSE_OUT_OF_ORDER, 0);
+ 		}
+ 
+ 		if (rose_route->neigh2 == rose_neigh) {
+-			rose_route->neigh2->use--;
++			atomic_dec(&rose_route->neigh2->use);
+ 			rose_route->neigh2 = NULL;
+ 			rose_transmit_clear_request(rose_route->neigh1, rose_route->lci1, ROSE_OUT_OF_ORDER, 0);
+ 		}
+@@ -924,7 +924,7 @@ int rose_route_frame(struct sk_buff *skb, ax25_cb *ax25)
+ 			rose_clear_queues(sk);
+ 			rose->cause	 = ROSE_NETWORK_CONGESTION;
+ 			rose->diagnostic = 0;
+-			rose->neighbour->use--;
++			atomic_dec(&rose->neighbour->use);
+ 			rose->neighbour	 = NULL;
+ 			rose->lci	 = 0;
+ 			rose->state	 = ROSE_STATE_0;
+@@ -1067,8 +1067,8 @@ int rose_route_frame(struct sk_buff *skb, ax25_cb *ax25)
+ 	rose_route->lci2      = new_lci;
+ 	rose_route->neigh2    = new_neigh;
+ 
+-	rose_route->neigh1->use++;
+-	rose_route->neigh2->use++;
++	atomic_inc(&rose_route->neigh1->use);
++	atomic_inc(&rose_route->neigh2->use);
+ 
+ 	rose_route->next = rose_route_list;
+ 	rose_route_list  = rose_route;
+@@ -1195,7 +1195,7 @@ static int rose_neigh_show(struct seq_file *seq, void *v)
+ 			   (rose_neigh->loopback) ? "RSLOOP-0" : ax2asc(buf, &rose_neigh->callsign),
+ 			   rose_neigh->dev ? rose_neigh->dev->name : "???",
+ 			   rose_neigh->count,
+-			   rose_neigh->use,
++			   atomic_read(&rose_neigh->use),
+ 			   (rose_neigh->dce_mode) ? "DCE" : "DTE",
+ 			   (rose_neigh->restarted) ? "yes" : "no",
+ 			   ax25_display_timer(&rose_neigh->t0timer) / HZ,
+diff --git a/net/rose/rose_timer.c b/net/rose/rose_timer.c
+index f06ddbed3fe..9dfd4eae5d5 100644
+--- a/net/rose/rose_timer.c
++++ b/net/rose/rose_timer.c
+@@ -171,7 +171,7 @@ static void rose_timer_expiry(struct timer_list *t)
+ 		break;
+ 
+ 	case ROSE_STATE_2:	/* T3 */
+-		rose->neighbour->use--;
++		atomic_dec(&rose->neighbour->use);
+ 		rose_disconnect(sk, ETIMEDOUT, -1, -1);
+ 		break;
+ 
+-- 
+2.17.1
 
