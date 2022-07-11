@@ -2,46 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A191C5709AC
-	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 20:04:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A86E05709D2
+	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 20:21:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230162AbiGKSEH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jul 2022 14:04:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35784 "EHLO
+        id S230498AbiGKSVd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jul 2022 14:21:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231514AbiGKSEF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 14:04:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DE9B1EADF;
-        Mon, 11 Jul 2022 11:04:00 -0700 (PDT)
+        with ESMTP id S229635AbiGKSVb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 14:21:31 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EB7032468;
+        Mon, 11 Jul 2022 11:21:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 19F96B80E4A;
-        Mon, 11 Jul 2022 18:03:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A79CC341C8;
-        Mon, 11 Jul 2022 18:03:57 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 6C277CE140D;
+        Mon, 11 Jul 2022 18:21:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4FACC34115;
+        Mon, 11 Jul 2022 18:21:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657562637;
-        bh=mCBd8b09ydPs61XWBzNZW3Jvis9MI3ZBw0K33RhQuQc=;
+        s=k20201202; t=1657563686;
+        bh=Hvuab+BJPtTL2KeqX1EXN+dkDwg1hOiOXl5zkH6UkmU=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=bPHJ6HpySPrM18KQCSn1D2BSyAWr1t8nXDVWvcVJeMqTUhh2A4ji8ah3hE/BbuFNJ
-         5EiJ/oYRDSYqkDgdBs/GBIRgf6ukxQjAF/Zd3zvzpkXj+mJ2a5qg4k+sBur4rgcFgD
-         5iyur9y6k1itXK6qdtWdr9onEG+9ZJXd9hb55VWDu54Xz/U+ImoPDKAqRfNq45khQk
-         Qugx1B33faTd3h0e1ILPv+fX64KbhWJHQkq7Jvw+DOGGsZu9N9dtnVvJRyUf8GnuFV
-         wmoS7LJ4hnCbMJe3zfDR6DFAE1Upr/ahAz8Zzwa6x6NsnvaPqfv7/k9Do0KrdPOPay
-         AtkMxtKCKoieQ==
-Date:   Mon, 11 Jul 2022 11:03:48 -0700
+        b=jiDa2k7Tgjdcq8hRiumQkx460Nf7JmnyEKOsszWE9X+DXPHzqBqF2+6kbzTcgZfRR
+         SmhDjH4oeCUgBXKQHfoto3Gw7l6LIVcZJYUP00RfEs81PgiXnwZZawi0YumsgWrHld
+         a0LjZfw5aVzzR32Mi76Nt7PT/VXrQwEnD3L4WjhW70GmD2bJ8nXliTXCoApsdePjk/
+         nR7fhH7cUh9cVo53mbW2hvM3Wp+wauA3uGe6/aGAUldUuLzYkkddOp2lU8s0nc1b/+
+         nUxL4oGuGqRDKijs3EJjIFpeguce4Nnss1OXnm+mm5UmfW9LP5zGVsoE9odafGHEHM
+         xabKF+o4xXcYA==
+Date:   Mon, 11 Jul 2022 11:21:16 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Eric Biggers <ebiggers@kernel.org>
-Cc:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, "Jason A . Donenfeld " <Jason@zx2c4.com>,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH 2/2] crypto: make the sha1 library optional
-Message-ID: <20220711110348.4c951fff@kernel.org>
-In-Reply-To: <20220709211849.210850-3-ebiggers@kernel.org>
-References: <20220709211849.210850-1-ebiggers@kernel.org>
-        <20220709211849.210850-3-ebiggers@kernel.org>
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Colin Foster <colin.foster@in-advantage.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-gpio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        UNGLinuxDriver@microchip.com, Wolfram Sang <wsa@kernel.org>,
+        Terry Bowman <terry.bowman@amd.com>,
+        katie.morris@in-advantage.com
+Subject: Re: [PATCH v13 net-next 0/9] add support for VSC7512 control over
+ SPI
+Message-ID: <20220711112116.2f931390@kernel.org>
+In-Reply-To: <YsvWh8YJGeJNbQFB@google.com>
+References: <20220705204743.3224692-1-colin.foster@in-advantage.com>
+        <20220708200918.131c0950@kernel.org>
+        <YsvWh8YJGeJNbQFB@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -55,41 +73,25 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat,  9 Jul 2022 14:18:49 -0700 Eric Biggers wrote:
-> Since the Linux RNG no longer uses sha1_transform(), the SHA-1 library
-> is no longer needed unconditionally.  Make it possible to build the
-> Linux kernel without the SHA-1 library by putting it behind a kconfig
-> option, and selecting this new option from the kconfig options that gate
-> the remaining users: CRYPTO_SHA1 for crypto/sha1_generic.c, BPF for
-> kernel/bpf/core.c, and IPV6 for net/ipv6/addrconf.c.
+On Mon, 11 Jul 2022 08:51:35 +0100 Lee Jones wrote:
+> > Can this go into net-next if there are no more complains over the
+> > weekend? Anyone still planning to review?  
 > 
-> Unfortunately, since BPF is selected by NET, for now this can only make
-> a difference for kernels built without networking support.
+> As the subsystem with the fewest changes, I'm not sure why it would.
 
-> diff --git a/init/Kconfig b/init/Kconfig
-> index c984afc489dead..d8d0b4bdfe4195 100644
-> --- a/init/Kconfig
-> +++ b/init/Kconfig
-> @@ -1472,6 +1472,7 @@ config HAVE_PCSPKR_PLATFORM
->  # interpreter that classic socket filters depend on
->  config BPF
->  	bool
-> +	select CRYPTO_LIB_SHA1
->  
+Yeah, just going by the tag in the subject. I have no preference,
+looks like it applies cleanly to Linus'.
 
-Let's give it an explicit CC: bpf@
+> I'd planed to route this in via MFD and send out a pull-request for
+> other sub-system maintainers to pull from.
+> 
+> If you would like to co-ordinate it instead, you'd be welcome to.
+> However, I (and probably Linus) would need a succinct immutable branch
+> to pull from.
 
-> diff --git a/net/ipv6/Kconfig b/net/ipv6/Kconfig
-> index bf2e5e5fe14273..658bfed1df8b17 100644
-> --- a/net/ipv6/Kconfig
-> +++ b/net/ipv6/Kconfig
-> @@ -7,6 +7,7 @@
->  menuconfig IPV6
->  	tristate "The IPv6 protocol"
->  	default y
-> +	select CRYPTO_LIB_SHA1
->  	help
->  	  Support for IP version 6 (IPv6).
+Oh, that'd be perfect, sorry, I didn't realize there was already a plan.
+If you're willing to carry on as intended, please do.
 
-FWIW:
-Acked-by: Jakub Kicinski <kuba@kernel.org>
+Colin if there is another version please make a note of the above
+merging plan in the cover letter and drop the net-next tag. 
+Just in  case my goldfish brain forgets.
