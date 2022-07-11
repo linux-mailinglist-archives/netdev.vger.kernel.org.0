@@ -2,52 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 32B095709EA
-	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 20:29:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5F97570A1E
+	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 20:48:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229635AbiGKS3X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jul 2022 14:29:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51942 "EHLO
+        id S230124AbiGKSsT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jul 2022 14:48:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229476AbiGKS3W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 14:29:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAD5A1275A
-        for <netdev@vger.kernel.org>; Mon, 11 Jul 2022 11:29:21 -0700 (PDT)
+        with ESMTP id S229476AbiGKSsR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 14:48:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10FE813E0E;
+        Mon, 11 Jul 2022 11:48:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 51B96614E3
-        for <netdev@vger.kernel.org>; Mon, 11 Jul 2022 18:29:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61FB2C34115;
-        Mon, 11 Jul 2022 18:29:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9E411614C1;
+        Mon, 11 Jul 2022 18:48:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A561BC341CA;
+        Mon, 11 Jul 2022 18:48:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657564160;
-        bh=fEgCzjV/7eisWm3F0bfE6x6eY/udqi64CeIF8jt9A1o=;
+        s=k20201202; t=1657565296;
+        bh=X0wkjmHG3OfgyaFyrzn6qOP72SWpx1Vvzd2obV7bFCA=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=JrjGklWBg2ZUYOl0wEPb14xXMrLdFZNsGtujpCotXCf3BU5yiowJMpLyR/WKUNZ95
-         CpH5LRdMzkxO1Hwr5pOW94eAJupWvf6sKt4R3ZS6JzUydEFgULg0vZ/IyEAacNXN6W
-         M4y6gokRZYAQW9hvrY/XDjzW4iTw8wKQGIXoqkmU2T6sks5wwsqT9gVQ5LmRNNvgT1
-         ysx4Yt/0z3ptOPYze11S2yqAw4VGO4vEIYhLWsUnGm1iHKw8B4jrmtQbI4+gpzD2Oc
-         2IiqFFdiJldUVUtRfUyD8IAyjgXciUNgNUIGSIQJ/jPcEqwL5FTvmD38UOkFxImhvf
-         IGOZZ7d3GtrYg==
-Date:   Mon, 11 Jul 2022 11:29:11 -0700
+        b=VtXHSR56wbUCDhG3/Wt0hmbYDaEQzAn7aVfYmCQFqBoxc6CjDehO4IJU58ylH6YJ4
+         daiCXBOscKG/364xbpFnH/Xq3VOhPmB4MCOamRlYjAjksSBfQ1IhR8uqJ+T5HOheTR
+         UNVG2R4BxL7kL9o8Iy6I9u9+6xb4o/s3VfGuD9ENRw/gDrOlLO1mHVWNzXUJq2y5l3
+         8iQg0Oc+LSTsGLg7/PS/uXRRiXfQtrqexNsSbYfVe3gSTmPJrv6uGTBvX2rWDli7VF
+         mHyxB6lGuYtIeMXGUEM0bSj2VlMVuF3kyWcV68YPM1h7ZDU1ZAw/REOA6MGXrtu/Wn
+         lMWLfd6oFabpg==
+Date:   Mon, 11 Jul 2022 11:48:06 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Matthias May <matthias.may@westermo.com>
-Cc:     <netdev@vger.kernel.org>, <davem@davemloft.net>,
-        <yoshfuji@linux-ipv6.org>, <dsahern@kernel.org>,
-        <edumazet@google.com>, <pabeni@redhat.com>
-Subject: Re: [PATCH net] ip_tunnel: allow to inherit from VLAN encapsulated
- IP frames
-Message-ID: <20220711112911.6e387608@kernel.org>
-In-Reply-To: <b046ef4e-cb97-2430-ab56-e2b615ac29eb@westermo.com>
-References: <20220705145441.11992-1-matthias.may@westermo.com>
-        <20220705182512.309f205e@kernel.org>
-        <e829d8ae-ad2c-9cf5-88e3-0323e9f32d3c@westermo.com>
-        <20220706131735.4d9f4562@kernel.org>
-        <bcfcb4a9-0a2f-3f12-155c-393ac86a8974@westermo.com>
-        <20220707170145.0666cd4c@kernel.org>
-        <b046ef4e-cb97-2430-ab56-e2b615ac29eb@westermo.com>
+To:     Martin Habets <habetsm.xilinx@gmail.com>
+Cc:     Bjorn Helgaas <helgaas@kernel.org>, davem@davemloft.net,
+        pabeni@redhat.com, edumazet@google.com, netdev@vger.kernel.org,
+        ecree.xilinx@gmail.com, linux-pci@vger.kernel.org,
+        virtualization@lists.linux-foundation.org
+Subject: Re: [PATCH net-next v2 0/2] sfc: Add EF100 BAR config support
+Message-ID: <20220711114806.2724b349@kernel.org>
+In-Reply-To: <Yswn7p+OWODbT7AR@gmail.com>
+References: <165719918216.28149.7678451615870416505.stgit@palantir17.mph.net>
+        <20220707155500.GA305857@bhelgaas>
+        <Yswn7p+OWODbT7AR@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -61,17 +57,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 9 Jul 2022 22:09:12 +0200 Matthias May wrote:
-> >> How should i go forward with this?  
-> > 
-> > I think your example above shows that "tos 0xa0" does not work but the
-> > conversation was about inheritance, does "tos inherit" not work either?  
+On Mon, 11 Jul 2022 14:38:54 +0100 Martin Habets wrote:
+> > Normally drivers rely on the PCI Vendor and Device ID to learn the
+> > number of BARs and their layouts.  I guess this series implies that
+> > doesn't work on this device?  And the user needs to manually specify
+> > what kind of device this is?  
 > 
-> Yes inherit does not work either. This is why i started setting it statically.
-> However I think I figured out what is going on.
-> Setting the TOS statically to 0xa0 does work... when the payload is IPv4 or IPv6,
-> which is also when inheriting works. For everything other type of payload, it is always 0x00.
-> This is different than with an IPv4 tunnel.
-> Should i consider this a bug that needs to be fixed, or is that the intended behaviour?
+> When a new PCI device is added (like a VF) it always starts of with
+> the register layout for an EF100 network device. This is hardcoded,
+> i.e. it cannot be customised.
+> The layout can be changed after bootup, and only after the sfc driver has
+> bound to the device.
+> The PCI Vendor and Device ID do not change when the layout is changed.
+> 
+> For vDPA specifically we return the Xilinx PCI Vendor and our device ID
+> to the vDPA framework via struct vdpa_config_opts.
 
-Yes, most likely a bug if you ask me :S
+So it's switching between ethernet and vdpa? Isn't there a general
+problem for configuring vdpa capabilities (net vs storage etc) and
+shouldn't we seek to solve your BAR format switch in a similar fashion
+rather than adding PCI device attrs, which I believe is not done for
+anything vDPA-related?
+
+> > I'm confused about how this is supposed to work.  What if the driver
+> > is built-in and claims a device before the user can specify the
+> > register layout?  
+> 
+> The bar_config file will only exist once the sfc driver has bound to
+> the device. So in fact we count on that driver getting loaded.
+> When a new value is written to bar_config it is the sfc driver that
+> instructs the NIC to change the register layout.
+
+When you say "driver bound" you mean the VF driver, right?
+
+> > What if the user specifies the wrong layout and the
+> > driver writes to the wrong registers?  
+> 
+> We have specific hardware and driver requirements for this sort of
+> situation. For example, the register layouts must have some common
+> registers (to ensure some compatibility).
+> A layout that is too different will require a separate device ID.
+> A driver that writes to the wrong register is a bug.
+> 
+> Maybe the name "bar_config" is causing most of the confusion here.
+> Internally we also talk about "function profiles" or "personalities",
+> but we thought such a name would be too vague.
