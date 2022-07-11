@@ -2,117 +2,346 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 055DF570A81
-	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 21:16:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6F9B570AB9
+	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 21:29:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231751AbiGKTQq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jul 2022 15:16:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56426 "EHLO
+        id S229899AbiGKT3C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jul 2022 15:29:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229721AbiGKTQm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 15:16:42 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ADAB2A970
-        for <netdev@vger.kernel.org>; Mon, 11 Jul 2022 12:16:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657567001; x=1689103001;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=sX26Sc/Ae3nAyNsrp8P8AJWuFq/C3wjAC5FxQqFb5uw=;
-  b=Q4PcaTAaCaVK61S/bgnau8GwY5/SNDEv22cglf5AngDX+mq3b7SBxFD0
-   20AHPgGRaSKiHfEO0KKv8Rvr80h+pP3IFjCOukox6j1Mnr8VqxJP6c3QP
-   K7Sg9BcX+N/hQ1vBwgL4A43XA7L1pFpAWTIIQFew3eKpLLe/4wdvT0mdt
-   UhW6Y7f+NLvVrXCKdhTQW16onkfr8HEm72A/tl01S9Yr6HzWBEgG3Vhtz
-   RfkJR7CgJd+LiyRulXMojkGKkJV8TbDc1gt66M4bnvG7L+ZJ+IAEZxUuQ
-   kRxF2G01kOAryTlQUShv6IMUBL35kB5rsU6Gj/1Ee2LXdKoxIpKDdSPTp
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10405"; a="282300988"
-X-IronPort-AV: E=Sophos;i="5.92,263,1650956400"; 
-   d="scan'208";a="282300988"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2022 12:16:40 -0700
-X-IronPort-AV: E=Sophos;i="5.92,263,1650956400"; 
-   d="scan'208";a="697742717"
-Received: from eedeets-mobl1.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.251.2.111])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2022 12:16:39 -0700
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Paolo Abeni <pabeni@redhat.com>, davem@davemloft.net,
-        kuba@kernel.org, edumazet@google.com, matthieu.baerts@tessares.net,
-        mptcp@lists.linux.dev,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next 5/5] selftests: mptcp: add MPC backup tests
-Date:   Mon, 11 Jul 2022 12:16:33 -0700
-Message-Id: <20220711191633.80826-6-mathew.j.martineau@linux.intel.com>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220711191633.80826-1-mathew.j.martineau@linux.intel.com>
-References: <20220711191633.80826-1-mathew.j.martineau@linux.intel.com>
+        with ESMTP id S229606AbiGKT3B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 15:29:01 -0400
+Received: from mail-il1-f181.google.com (mail-il1-f181.google.com [209.85.166.181])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 071C62A24C;
+        Mon, 11 Jul 2022 12:29:00 -0700 (PDT)
+Received: by mail-il1-f181.google.com with SMTP id k1so3613035ilu.1;
+        Mon, 11 Jul 2022 12:28:59 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=iZPISdQIEd50IPkyIIGorwgmFbhDgLSaiPphEdn18A0=;
+        b=3vdq7w2Xc9rEd6pqOBppT/f2oTokCWJfAAko3I9I1Fb7EOcPbUWuB+7hX6ffeh5++x
+         rxK0BKAxW8g2aiHDW7+AKG7db4S/3KEsG6djVYiOiacH/5yZvIzGxIVdl6K1y3BC64dB
+         dM4b0qXyUwfMYyy0VZJH/kL/9Z7AjffGZ8qSGNPSwo2bACy8pBvvWV+r3PJ47s0g/tsV
+         vpyjbao44UKxrFBbdwBGn7FVRVj8YfJwValvIn7Amq5oD81WcpqMCOWdQyKpmSJdfEXx
+         qYW1e7zSksQXM3o3Ei0Okp7Dq/yAX2qo1m++VEX/Bcyj6w43mBC/IVbyQRBGAV8Rsm5v
+         /RWg==
+X-Gm-Message-State: AJIora+RPoqO1FQDCu16c6wZ41GURRqbn96MNXUjKeukaVQg+WAfxUZc
+        yqUCVtYDvqlhBoqCiw/0jw==
+X-Google-Smtp-Source: AGRyM1uTmzKpa35PHa/VK8S85DfO/DfoqsviXp4pKUJJVOI+xGD20bTc1Z2f0gvCnH9LLnR54Y58dA==
+X-Received: by 2002:a92:6c05:0:b0:2da:b9e8:24df with SMTP id h5-20020a926c05000000b002dab9e824dfmr10494179ilc.99.1657567739216;
+        Mon, 11 Jul 2022 12:28:59 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id m2-20020a056e020de200b002dc779f1708sm1894739ilj.51.2022.07.11.12.28.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Jul 2022 12:28:58 -0700 (PDT)
+Received: (nullmailer pid 137565 invoked by uid 1000);
+        Mon, 11 Jul 2022 19:28:55 -0000
+Date:   Mon, 11 Jul 2022 13:28:55 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Ioana Ciornei <ioana.ciornei@nxp.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org, linux@armlinux.org.uk,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH net-next v3 1/4] dt-bindings: net: convert sff,sfp to
+ dtschema
+Message-ID: <20220711192855.GA134503-robh@kernel.org>
+References: <20220707091437.446458-1-ioana.ciornei@nxp.com>
+ <20220707091437.446458-2-ioana.ciornei@nxp.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220707091437.446458-2-ioana.ciornei@nxp.com>
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Paolo Abeni <pabeni@redhat.com>
+On Thu, Jul 07, 2022 at 12:14:34PM +0300, Ioana Ciornei wrote:
+> Convert the sff,sfp.txt bindings to the DT schema format.
+> Also add the new path to the list of maintained files.
+> 
+> Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+> ---
+> Changes in v2:
+>  - used the -gpios suffix
+>  - restricted the use of some gpios if the compatible is sff,sff
+> 
+> Changes in v3:
+>  - moved the -gpios properties to be under properties and not
+>    pattern properties.
+> 
+>  .../devicetree/bindings/net/sff,sfp.txt       |  85 -----------
+>  .../devicetree/bindings/net/sff,sfp.yaml      | 142 ++++++++++++++++++
+>  MAINTAINERS                                   |   1 +
+>  3 files changed, 143 insertions(+), 85 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/net/sff,sfp.txt
+>  create mode 100644 Documentation/devicetree/bindings/net/sff,sfp.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/net/sff,sfp.txt b/Documentation/devicetree/bindings/net/sff,sfp.txt
+> deleted file mode 100644
+> index 832139919f20..000000000000
+> --- a/Documentation/devicetree/bindings/net/sff,sfp.txt
+> +++ /dev/null
+> @@ -1,85 +0,0 @@
+> -Small Form Factor (SFF) Committee Small Form-factor Pluggable (SFP)
+> -Transceiver
+> -
+> -Required properties:
+> -
+> -- compatible : must be one of
+> -  "sff,sfp" for SFP modules
+> -  "sff,sff" for soldered down SFF modules
+> -
+> -- i2c-bus : phandle of an I2C bus controller for the SFP two wire serial
+> -  interface
+> -
+> -Optional Properties:
+> -
+> -- mod-def0-gpios : GPIO phandle and a specifier of the MOD-DEF0 (AKA Mod_ABS)
+> -  module presence input gpio signal, active (module absent) high. Must
+> -  not be present for SFF modules
+> -
+> -- los-gpios : GPIO phandle and a specifier of the Receiver Loss of Signal
+> -  Indication input gpio signal, active (signal lost) high
+> -
+> -- tx-fault-gpios : GPIO phandle and a specifier of the Module Transmitter
+> -  Fault input gpio signal, active (fault condition) high
+> -
+> -- tx-disable-gpios : GPIO phandle and a specifier of the Transmitter Disable
+> -  output gpio signal, active (Tx disable) high
+> -
+> -- rate-select0-gpios : GPIO phandle and a specifier of the Rx Signaling Rate
+> -  Select (AKA RS0) output gpio signal, low: low Rx rate, high: high Rx rate
+> -  Must not be present for SFF modules
+> -
+> -- rate-select1-gpios : GPIO phandle and a specifier of the Tx Signaling Rate
+> -  Select (AKA RS1) output gpio signal (SFP+ only), low: low Tx rate, high:
+> -  high Tx rate. Must not be present for SFF modules
+> -
+> -- maximum-power-milliwatt : Maximum module power consumption
+> -  Specifies the maximum power consumption allowable by a module in the
+> -  slot, in milli-Watts.  Presently, modules can be up to 1W, 1.5W or 2W.
+> -
+> -Example #1: Direct serdes to SFP connection
+> -
+> -sfp_eth3: sfp-eth3 {
+> -	compatible = "sff,sfp";
+> -	i2c-bus = <&sfp_1g_i2c>;
+> -	los-gpios = <&cpm_gpio2 22 GPIO_ACTIVE_HIGH>;
+> -	mod-def0-gpios = <&cpm_gpio2 21 GPIO_ACTIVE_LOW>;
+> -	maximum-power-milliwatt = <1000>;
+> -	pinctrl-names = "default";
+> -	pinctrl-0 = <&cpm_sfp_1g_pins &cps_sfp_1g_pins>;
+> -	tx-disable-gpios = <&cps_gpio1 24 GPIO_ACTIVE_HIGH>;
+> -	tx-fault-gpios = <&cpm_gpio2 19 GPIO_ACTIVE_HIGH>;
+> -};
+> -
+> -&cps_emac3 {
+> -	phy-names = "comphy";
+> -	phys = <&cps_comphy5 0>;
+> -	sfp = <&sfp_eth3>;
+> -};
+> -
+> -Example #2: Serdes to PHY to SFP connection
+> -
+> -sfp_eth0: sfp-eth0 {
+> -	compatible = "sff,sfp";
+> -	i2c-bus = <&sfpp0_i2c>;
+> -	los-gpios = <&cps_gpio1 28 GPIO_ACTIVE_HIGH>;
+> -	mod-def0-gpios = <&cps_gpio1 27 GPIO_ACTIVE_LOW>;
+> -	pinctrl-names = "default";
+> -	pinctrl-0 = <&cps_sfpp0_pins>;
+> -	tx-disable-gpios = <&cps_gpio1 29 GPIO_ACTIVE_HIGH>;
+> -	tx-fault-gpios  = <&cps_gpio1 26 GPIO_ACTIVE_HIGH>;
+> -};
+> -
+> -p0_phy: ethernet-phy@0 {
+> -	compatible = "ethernet-phy-ieee802.3-c45";
+> -	pinctrl-names = "default";
+> -	pinctrl-0 = <&cpm_phy0_pins &cps_phy0_pins>;
+> -	reg = <0>;
+> -	interrupt = <&cpm_gpio2 18 IRQ_TYPE_EDGE_FALLING>;
+> -	sfp = <&sfp_eth0>;
+> -};
+> -
+> -&cpm_eth0 {
+> -	phy = <&p0_phy>;
+> -	phy-mode = "10gbase-kr";
+> -};
+> diff --git a/Documentation/devicetree/bindings/net/sff,sfp.yaml b/Documentation/devicetree/bindings/net/sff,sfp.yaml
+> new file mode 100644
+> index 000000000000..19cf88284295
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/sff,sfp.yaml
+> @@ -0,0 +1,142 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: "http://devicetree.org/schemas/net/sff,sfp.yaml#"
+> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
+> +
+> +title: Small Form Factor (SFF) Committee Small Form-factor Pluggable (SFP)
+> +  Transceiver
+> +
+> +maintainers:
+> +  - Russell King <linux@armlinux.org.uk>
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - sff,sfp  # for SFP modules
+> +      - sff,sff  # for soldered down SFF modules
+> +
+> +  i2c-bus:
+> +    $ref: /schemas/types.yaml#/definitions/phandle
+> +    description:
+> +      phandle of an I2C bus controller for the SFP two wire serial
+> +
+> +  maximum-power-milliwatt:
+> +    maxItems: 1
+> +    description:
+> +      Maximum module power consumption Specifies the maximum power consumption
+> +      allowable by a module in the slot, in milli-Watts. Presently, modules can
+> +      be up to 1W, 1.5W or 2W.
+> +
+> +  "mod-def0-gpios":
 
-Add a couple of test-cases covering the newly introduced
-features - priority update for the MPC subflow.
+You don't need quotes on any of these. Otherwise,
 
-Reviewed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
----
- .../testing/selftests/net/mptcp/mptcp_join.sh | 30 +++++++++++++++++++
- 1 file changed, 30 insertions(+)
+Reviewed-by: Rob Herring <robh@kernel.org>
 
-diff --git a/tools/testing/selftests/net/mptcp/mptcp_join.sh b/tools/testing/selftests/net/mptcp/mptcp_join.sh
-index 55efe2aafb84..ff83ef426df5 100755
---- a/tools/testing/selftests/net/mptcp/mptcp_join.sh
-+++ b/tools/testing/selftests/net/mptcp/mptcp_join.sh
-@@ -2428,6 +2428,36 @@ backup_tests()
- 		chk_add_nr 1 1
- 		chk_prio_nr 1 1
- 	fi
-+
-+	if reset "mpc backup"; then
-+		pm_nl_add_endpoint $ns2 10.0.1.2 flags subflow,backup
-+		run_tests $ns1 $ns2 10.0.1.1 0 0 0 slow
-+		chk_join_nr 0 0 0
-+		chk_prio_nr 0 1
-+	fi
-+
-+	if reset "mpc backup both sides"; then
-+		pm_nl_add_endpoint $ns1 10.0.1.1 flags subflow,backup
-+		pm_nl_add_endpoint $ns2 10.0.1.2 flags subflow,backup
-+		run_tests $ns1 $ns2 10.0.1.1 0 0 0 slow
-+		chk_join_nr 0 0 0
-+		chk_prio_nr 1 1
-+	fi
-+
-+	if reset "mpc switch to backup"; then
-+		pm_nl_add_endpoint $ns2 10.0.1.2 flags subflow
-+		run_tests $ns1 $ns2 10.0.1.1 0 0 0 slow backup
-+		chk_join_nr 0 0 0
-+		chk_prio_nr 0 1
-+	fi
-+
-+	if reset "mpc switch to backup both sides"; then
-+		pm_nl_add_endpoint $ns1 10.0.1.1 flags subflow
-+		pm_nl_add_endpoint $ns2 10.0.1.2 flags subflow
-+		run_tests $ns1 $ns2 10.0.1.1 0 0 0 slow backup
-+		chk_join_nr 0 0 0
-+		chk_prio_nr 1 1
-+	fi
- }
- 
- add_addr_ports_tests()
--- 
-2.37.0
-
+> +    maxItems: 1
+> +    description:
+> +      GPIO phandle and a specifier of the MOD-DEF0 (AKA Mod_ABS) module
+> +      presence input gpio signal, active (module absent) high. Must not be
+> +      present for SFF modules
+> +
+> +  "los-gpios":
+> +    maxItems: 1
+> +    description:
+> +      GPIO phandle and a specifier of the Receiver Loss of Signal Indication
+> +      input gpio signal, active (signal lost) high
+> +
+> +  "tx-fault-gpios":
+> +    maxItems: 1
+> +    description:
+> +      GPIO phandle and a specifier of the Module Transmitter Fault input gpio
+> +      signal, active (fault condition) high
+> +
+> +  "tx-disable-gpios":
+> +    maxItems: 1
+> +    description:
+> +      GPIO phandle and a specifier of the Transmitter Disable output gpio
+> +      signal, active (Tx disable) high
+> +
+> +  "rate-select0-gpios":
+> +    maxItems: 1
+> +    description:
+> +      GPIO phandle and a specifier of the Rx Signaling Rate Select (AKA RS0)
+> +      output gpio signal, low - low Rx rate, high - high Rx rate Must not be
+> +      present for SFF modules
+> +
+> +  "rate-select1-gpios":
+> +    maxItems: 1
+> +    description:
+> +      GPIO phandle and a specifier of the Tx Signaling Rate Select (AKA RS1)
+> +      output gpio signal (SFP+ only), low - low Tx rate, high - high Tx rate. Must
+> +      not be present for SFF modules
+> +
+> +allOf:
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          contains:
+> +            const: sff,sff
+> +    then:
+> +      properties:
+> +        mod-def0-gpios: false
+> +        rate-select0-gpios: false
+> +        rate-select1-gpios: false
+> +
+> +required:
+> +  - compatible
+> +  - i2c-bus
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - | # Direct serdes to SFP connection
+> +    #include <dt-bindings/gpio/gpio.h>
+> +
+> +    sfp_eth3: sfp-eth3 {
+> +      compatible = "sff,sfp";
+> +      i2c-bus = <&sfp_1g_i2c>;
+> +      los-gpios = <&cpm_gpio2 22 GPIO_ACTIVE_HIGH>;
+> +      mod-def0-gpios = <&cpm_gpio2 21 GPIO_ACTIVE_LOW>;
+> +      maximum-power-milliwatt = <1000>;
+> +      pinctrl-names = "default";
+> +      pinctrl-0 = <&cpm_sfp_1g_pins &cps_sfp_1g_pins>;
+> +      tx-disable-gpios = <&cps_gpio1 24 GPIO_ACTIVE_HIGH>;
+> +      tx-fault-gpios = <&cpm_gpio2 19 GPIO_ACTIVE_HIGH>;
+> +    };
+> +
+> +    cps_emac3 {
+> +      phy-names = "comphy";
+> +      phys = <&cps_comphy5 0>;
+> +      sfp = <&sfp_eth3>;
+> +    };
+> +
+> +  - | # Serdes to PHY to SFP connection
+> +    #include <dt-bindings/gpio/gpio.h>
+> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+> +
+> +    sfp_eth0: sfp-eth0 {
+> +      compatible = "sff,sfp";
+> +      i2c-bus = <&sfpp0_i2c>;
+> +      los-gpios = <&cps_gpio1 28 GPIO_ACTIVE_HIGH>;
+> +      mod-def0-gpios = <&cps_gpio1 27 GPIO_ACTIVE_LOW>;
+> +      pinctrl-names = "default";
+> +      pinctrl-0 = <&cps_sfpp0_pins>;
+> +      tx-disable-gpios = <&cps_gpio1 29 GPIO_ACTIVE_HIGH>;
+> +      tx-fault-gpios  = <&cps_gpio1 26 GPIO_ACTIVE_HIGH>;
+> +    };
+> +
+> +    mdio {
+> +      #address-cells = <1>;
+> +      #size-cells = <0>;
+> +
+> +      p0_phy: ethernet-phy@0 {
+> +        compatible = "ethernet-phy-ieee802.3-c45";
+> +        pinctrl-names = "default";
+> +        pinctrl-0 = <&cpm_phy0_pins &cps_phy0_pins>;
+> +        reg = <0>;
+> +        interrupt = <&cpm_gpio2 18 IRQ_TYPE_EDGE_FALLING>;
+> +        sfp = <&sfp_eth0>;
+> +      };
+> +    };
+> +
+> +    cpm_eth0 {
+> +      phy = <&p0_phy>;
+> +      phy-mode = "10gbase-kr";
+> +    };
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 32c4708cdeb9..d495f6d7c2c8 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -18109,6 +18109,7 @@ SFF/SFP/SFP+ MODULE SUPPORT
+>  M:	Russell King <linux@armlinux.org.uk>
+>  L:	netdev@vger.kernel.org
+>  S:	Maintained
+> +F:	Documentation/devicetree/bindings/net/sff,sfp.yaml
+>  F:	drivers/net/phy/phylink.c
+>  F:	drivers/net/phy/sfp*
+>  F:	include/linux/mdio/mdio-i2c.h
+> -- 
+> 2.34.1
+> 
+> 
