@@ -2,73 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D183B570827
-	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 18:17:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C5C157085F
+	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 18:30:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231778AbiGKQRy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jul 2022 12:17:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41508 "EHLO
+        id S231721AbiGKQaT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jul 2022 12:30:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229741AbiGKQRx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 12:17:53 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 771DA7A50F
-        for <netdev@vger.kernel.org>; Mon, 11 Jul 2022 09:17:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657556271;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=NFy7tx4vuflJ9T67q4fsWyscGk3VBcpn9gI9HIE/8ZA=;
-        b=dcBdbSa+U6dmDLaTIPYSsUKUWbEy2paoLMcS05UMmAX/pnrXTPve+HT2UBsbeFpLJK245B
-        t18e+lgLjBC5N4OFkQtuWSQx8d0+Xj4nPnKjCdU4mLcjxyRpTBtRFb/oUGZWeThdGyKk9v
-        8Xi6rS6be5BN7iAsyF7PTtl507XRZfM=
-Received: from mail-ua1-f72.google.com (mail-ua1-f72.google.com
- [209.85.222.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-467-bdgdCqe2PYejQrLXasI3Rg-1; Mon, 11 Jul 2022 12:17:50 -0400
-X-MC-Unique: bdgdCqe2PYejQrLXasI3Rg-1
-Received: by mail-ua1-f72.google.com with SMTP id y15-20020ab0638f000000b00368a2d9b075so1091456uao.13
-        for <netdev@vger.kernel.org>; Mon, 11 Jul 2022 09:17:50 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=NFy7tx4vuflJ9T67q4fsWyscGk3VBcpn9gI9HIE/8ZA=;
-        b=UZCWtJJoDzS5qMLhcHl9gSLNtHcjykgXEAGjBvrygJ3RV421z00u2oA4vKW4rUtbQr
-         ED0+jbdeuD3D9297+4Bq38XmEc2Yv/rRZj8AztF0Y/WGHMlfZdIYYZMLq01BetaKfJrH
-         RPF0iOSD7ps6RyMl8Mv8DhipC+7PBcqBUswjKP0E4EIIpogDXmQVVqfmC3gLn0Y2+m76
-         fJZUPwlVWfYCdbX+9m1gmCHy2Aq5H7JaU05vvsvjwcxP0rqmf5QsI5OsraBDJRzyexRK
-         efxcOiW8ViBqBhLG1mb4WHSoI1MBbU2uhBlP3WzOnWW9qhTek5f0YLi/OGr89K4rvdoj
-         fOzw==
-X-Gm-Message-State: AJIora+Rcudaovzsh+z9dL+uyeiCfeuxpJwBP/1MUwZ9ebGDpxzRF+aM
-        pMNqsfUnm2J+t2k5zCUnbapVcOL/yDlc4k9+2R8/aQ9tdpXpOgsrHZWERofprcF5gIf8gVr7ton
-        FYjswWj/8ilgSipGMvvtmcRHgMOlkqxdK
-X-Received: by 2002:a67:e9c2:0:b0:357:547e:d541 with SMTP id q2-20020a67e9c2000000b00357547ed541mr2640137vso.68.1657556269855;
-        Mon, 11 Jul 2022 09:17:49 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1tcsrYRDtkH4eUNCid1rUG2+vczmpwYghbpC6RG7cGJFQGmWBSLROKXXH4pGLODJIZOU2JW5CpBt0iHf5vZvHw=
-X-Received: by 2002:a67:e9c2:0:b0:357:547e:d541 with SMTP id
- q2-20020a67e9c2000000b00357547ed541mr2640130vso.68.1657556269612; Mon, 11 Jul
- 2022 09:17:49 -0700 (PDT)
+        with ESMTP id S230442AbiGKQaS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 12:30:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E12B21813;
+        Mon, 11 Jul 2022 09:30:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CA14EB810D5;
+        Mon, 11 Jul 2022 16:30:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 6D61FC341CA;
+        Mon, 11 Jul 2022 16:30:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657557014;
+        bh=aNQ+BDXMXzM+Tqs2QOCZqwZwwv67alTyO9wJS8ENrQY=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=XqJ/1pKSU9P6u1P/Gc+91mtL4bmNvZpJzwsAz9OqN/iLu4k06LTrg5+Sf7D629OaG
+         Tp6qioOZJzLj7/I/s1EImArY9gX5jZyvv09wUlt2LxuOFlyFUT0p75tDB4XZ7iiur9
+         ORqo8ADovTvFpDKHsqb1Ai278ktMYB008Lp5P+joVcU/txIcV9+Cr0LnqVesg1ycVq
+         u/7ij7WVPQ8BAeDZ2lkNpTVILgeAsxC8iGeH4jjF/C3NKIR4umgAG3E/ywpt0qvBGA
+         13RNSACw6SkZP5QSD+Tl2gFQwXxQ/XCXNQ1rubXXzAvPYRtZjMgVUw+ESL295+6GGF
+         jxB6f9nmbcfLw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 4AD89E45223;
+        Mon, 11 Jul 2022 16:30:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20220711075225.15687-1-mlombard@redhat.com> <CAKgT0UedQL-Yeum8m=j6oX5s2SjzjtwcwFXBZQde+FzmkmL5bQ@mail.gmail.com>
-In-Reply-To: <CAKgT0UedQL-Yeum8m=j6oX5s2SjzjtwcwFXBZQde+FzmkmL5bQ@mail.gmail.com>
-From:   Maurizio Lombardi <mlombard@redhat.com>
-Date:   Mon, 11 Jul 2022 18:17:38 +0200
-Message-ID: <CAFL455nwqqrviZranVvVgRapSF_Na3vwR4NYM+=Hqbvt3+fJeA@mail.gmail.com>
-Subject: Re: [PATCH] mm: prevent page_frag_alloc() from corrupting the memory
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-mm <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>, Chen Lin <chen45464546@163.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH bpf] skmsg: Fix invalid last sg check in sk_msg_recvmsg()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165755701430.14376.9886144012475004579.git-patchwork-notify@kernel.org>
+Date:   Mon, 11 Jul 2022 16:30:14 +0000
+References: <20220628123616.186950-1-liujian56@huawei.com>
+In-Reply-To: <20220628123616.186950-1-liujian56@huawei.com>
+To:     Liu Jian <liujian56@huawei.com>
+Cc:     john.fastabend@gmail.com, jakub@cloudflare.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        kpsingh@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,25 +59,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-po 11. 7. 2022 v 17:34 odes=C3=ADlatel Alexander Duyck
-<alexander.duyck@gmail.com> napsal:
->
-> Rather than forcing us to free the page it might be better to move the
-> lines getting the size and computing the offset to the top of the "if
-> (unlikely(offset < 0)) {" block. Then instead of freeing the page we
-> could just return NULL and don't have to change the value of any
-> fields in the page_frag_cache.
->
-> That way a driver performing bad requests can't force us to start
-> allocating and freeing pages like mad by repeatedly flushing the
-> cache.
->
+Hello:
 
-I understand. On the other hand, if we free the cache page then the
-next time __page_frag_cache_refill() runs it may be successful
-at allocating the order=3D3 cache, the normal page_frag_alloc() behaviour w=
-ill
-therefore be restored.
+This patch was applied to bpf/bpf-next.git (master)
+by Daniel Borkmann <daniel@iogearbox.net>:
 
-Maurizio
+On Tue, 28 Jun 2022 20:36:16 +0800 you wrote:
+> In sk_psock_skb_ingress_enqueue function, if the linear area + nr_frags +
+> frag_list of the SKB has NR_MSG_FRAG_IDS blocks in total, skb_to_sgvec
+> will return NR_MSG_FRAG_IDS, then msg->sg.end will be set to
+> NR_MSG_FRAG_IDS, and in addition, (NR_MSG_FRAG_IDS - 1) is set to the last
+> SG of msg. Recv the msg in sk_msg_recvmsg, when i is (NR_MSG_FRAG_IDS - 1),
+> the sk_msg_iter_var_next(i) will change i to 0 (not NR_MSG_FRAG_IDS), the
+> judgment condition "msg_rx->sg.start==msg_rx->sg.end" and
+> "i != msg_rx->sg.end" can not work.
+> 
+> [...]
+
+Here is the summary with links:
+  - [bpf] skmsg: Fix invalid last sg check in sk_msg_recvmsg()
+    https://git.kernel.org/bpf/bpf-next/c/9974d37ea75f
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
