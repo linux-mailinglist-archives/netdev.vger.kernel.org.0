@@ -2,241 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 50196570503
-	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 16:05:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 175B9570513
+	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 16:07:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230339AbiGKOFS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jul 2022 10:05:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58438 "EHLO
+        id S229651AbiGKOHT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jul 2022 10:07:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229635AbiGKOFR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 10:05:17 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66D4010548;
-        Mon, 11 Jul 2022 07:05:15 -0700 (PDT)
-Received: from fraeml744-chm.china.huawei.com (unknown [172.18.147.201])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LhQbY0V8hz6HJdj;
-        Mon, 11 Jul 2022 22:03:53 +0800 (CST)
-Received: from lhreml745-chm.china.huawei.com (10.201.108.195) by
- fraeml744-chm.china.huawei.com (10.206.15.225) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 11 Jul 2022 16:05:12 +0200
-Received: from [10.122.132.241] (10.122.132.241) by
- lhreml745-chm.china.huawei.com (10.201.108.195) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 11 Jul 2022 15:05:11 +0100
-Message-ID: <223e6a19-058e-439e-ef29-a53d086838d9@huawei.com>
-Date:   Mon, 11 Jul 2022 17:05:11 +0300
+        with ESMTP id S229478AbiGKOHS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 10:07:18 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 90E8219C18
+        for <netdev@vger.kernel.org>; Mon, 11 Jul 2022 07:07:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657548436;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=K3bRd2dpFtpuMGYuYjoPUXKp0GUe3T2Nj8Fu1hH4wAk=;
+        b=dY6cG2Ebnb6tZMvlt+nmGY903m5CjS0fDRyYuBZjvi/xGGQ/l3Ox1lL4U2vO9O45FUzcoq
+        pfU2Bm+86ZQeRBZ6Mq6AL+6VH4hrxAmEkru1lXfaEvEWuNBsjfPDMg6PDv8j/oXpIdLuRN
+        T06phLgbdD76rKbE/Xm8kiLtgC/B82w=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-617-6gJdb1lPNuqchjN0KIouJQ-1; Mon, 11 Jul 2022 10:07:13 -0400
+X-MC-Unique: 6gJdb1lPNuqchjN0KIouJQ-1
+Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id D69222813D26;
+        Mon, 11 Jul 2022 14:07:12 +0000 (UTC)
+Received: from [172.16.176.1] (unknown [10.22.48.8])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 99EFD492C3B;
+        Mon, 11 Jul 2022 14:07:10 +0000 (UTC)
+From:   "Benjamin Coddington" <bcodding@redhat.com>
+To:     "Trond Myklebust" <trondmy@hammerspace.com>,
+        "Eric Dumazet" <edumazet@google.com>
+Cc:     edumazet@google.com, smayhew@redhat.com, davem@davemloft.net,
+        chuck.lever@oracle.com, sfrench@samba.org, tj@kernel.org,
+        anna@kernel.org, kuba@kernel.org, jlayton@kernel.org,
+        gnault@redhat.com, josef@toxicpanda.com, netdev@vger.kernel.org,
+        pabeni@redhat.com
+Subject: Re: [RFC net] Should sk_page_frag() also look at the current GFP
+ context?
+Date:   Mon, 11 Jul 2022 10:07:09 -0400
+Message-ID: <9ADC95E9-7756-4706-8B45-E1BB65020216@redhat.com>
+In-Reply-To: <e8de4a15c934658b06ee1de10fd21975b972f902.camel@hammerspace.com>
+References: <b4d8cb09c913d3e34f853736f3f5628abfd7f4b6.1656699567.git.gnault@redhat.com>
+ <CANn89i+=GyHjkrHMZAftB-toEhi9GcAQom1_bpT+S0qMvCz0DQ@mail.gmail.com>
+ <429C561E-2F85-4DB5-993C-B2DD4E575BF0@redhat.com>
+ <e8de4a15c934658b06ee1de10fd21975b972f902.camel@hammerspace.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH v6 02/17] landlock: refactors landlock_find/insert_rule
-Content-Language: ru
-To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-CC:     <willemdebruijn.kernel@gmail.com>,
-        <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <netfilter-devel@vger.kernel.org>, <yusongping@huawei.com>,
-        <anton.sirazetdinov@huawei.com>
-References: <20220621082313.3330667-1-konstantin.meskhidze@huawei.com>
- <20220621082313.3330667-3-konstantin.meskhidze@huawei.com>
- <0bbbcf21-1e7d-5585-545f-bf89d8ebd527@digikod.net>
- <7735ae47-9088-be29-2696-c5170031d7c2@huawei.com>
- <b08fe5cc-3be0-390b-3575-4f27f795f609@digikod.net>
- <6ee7e769-ce91-a6cc-378b-f206e04d112a@huawei.com>
- <582f8ace-1f95-16a6-fa9e-4014ddd8b7f2@digikod.net>
-From:   "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
-In-Reply-To: <582f8ace-1f95-16a6-fa9e-4014ddd8b7f2@digikod.net>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.122.132.241]
-X-ClientProxiedBy: lhreml753-chm.china.huawei.com (10.201.108.203) To
- lhreml745-chm.china.huawei.com (10.201.108.195)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 8 Jul 2022, at 16:04, Trond Myklebust wrote:
 
-
-7/8/2022 5:35 PM, Mickaël Salaün пишет:
-> 
-> On 08/07/2022 16:14, Konstantin Meskhidze (A) wrote:
->> 
->> 
->> 7/8/2022 4:59 PM, Mickaël Salaün пишет:
->>>
->>> On 08/07/2022 15:10, Konstantin Meskhidze (A) wrote:
+> On Fri, 2022-07-08 at 14:10 -0400, Benjamin Coddington wrote:
+>> On 7 Jul 2022, at 12:29, Eric Dumazet wrote:
+>>
+>>> On Fri, Jul 1, 2022 at 8:41 PM Guillaume Nault <gnault@redhat.com>
+>>> wrote:
 >>>>
+>>>> I'm investigating a kernel oops that looks similar to
+>>>> 20eb4f29b602 ("net: fix sk_page_frag() recursion from memory
+>>>> reclaim")
+>>>> and dacb5d8875cc ("tcp: fix page frag corruption on page fault").
 >>>>
->>>> 7/7/2022 7:44 PM, Mickaël Salaün пишет:
->>>>>
->>>>> On 21/06/2022 10:22, Konstantin Meskhidze wrote:
->>>>>> Adds a new object union to support a socket port
->>>>>> rule type. Refactors landlock_insert_rule() and
->>>>>> landlock_find_rule() to support coming network
->>>>>> modifications. Now adding or searching a rule
->>>>>> in a ruleset depends on a rule_type argument
->>>>>> provided in refactored functions mentioned above.
->>>>>>
->>>>>> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
->>>>>> ---
->>>>>>
->>>>>> Changes since v5:
->>>>>> * Formats code with clang-format-14.
->>>>>>
->>>>>> Changes since v4:
->>>>>> * Refactors insert_rule() and create_rule() functions by deleting
->>>>>> rule_type from their arguments list, it helps to reduce useless code.
->>>>>>
->>>>>> Changes since v3:
->>>>>> * Splits commit.
->>>>>> * Refactors landlock_insert_rule and landlock_find_rule functions.
->>>>>> * Rename new_ruleset->root_inode.
->>>>>>
->>>>>> ---
->>>>>>   security/landlock/fs.c      |   7 ++-
->>>>>>   security/landlock/ruleset.c | 105 
->>>>>> ++++++++++++++++++++++++++----------
->>>>>>   security/landlock/ruleset.h |  27 +++++-----
->>>>>>   3 files changed, 96 insertions(+), 43 deletions(-)
->>>>>>
->>>>>> diff --git a/security/landlock/fs.c b/security/landlock/fs.c
->>>>>> index e6da08ed99d1..46aedc2a05a8 100644
->>>>>> --- a/security/landlock/fs.c
->>>>>> +++ b/security/landlock/fs.c
->>>>>> @@ -173,7 +173,8 @@ int landlock_append_fs_rule(struct 
->>>>>> landlock_ruleset *const ruleset,
->>>>>>       if (IS_ERR(object))
->>>>>>           return PTR_ERR(object);
->>>>>>       mutex_lock(&ruleset->lock);
->>>>>> -    err = landlock_insert_rule(ruleset, object, access_rights);
->>>>>> +    err = landlock_insert_rule(ruleset, object, 0, access_rights,
->>>>>> +                   LANDLOCK_RULE_PATH_BENEATH);
->>>>>>       mutex_unlock(&ruleset->lock);
->>>>>>       /*
->>>>>>        * No need to check for an error because landlock_insert_rule()
->>>>>> @@ -204,7 +205,9 @@ find_rule(const struct landlock_ruleset *const 
->>>>>> domain,
->>>>>>       inode = d_backing_inode(dentry);
->>>>>>       rcu_read_lock();
->>>>>>       rule = landlock_find_rule(
->>>>>> -        domain, rcu_dereference(landlock_inode(inode)->object));
->>>>>> +        domain,
->>>>>> +        (uintptr_t)rcu_dereference(landlock_inode(inode)->object),
->>>>>> +        LANDLOCK_RULE_PATH_BENEATH);
->>>>>>       rcu_read_unlock();
->>>>>>       return rule;
->>>>>>   }
->>>>>> diff --git a/security/landlock/ruleset.c b/security/landlock/ruleset.c
->>>>>> index a3fd58d01f09..5f13f8a12aee 100644
->>>>>> --- a/security/landlock/ruleset.c
->>>>>> +++ b/security/landlock/ruleset.c
->>>>>> @@ -35,7 +35,7 @@ static struct landlock_ruleset 
->>>>>> *create_ruleset(const u32 num_layers)
->>>>>>           return ERR_PTR(-ENOMEM);
->>>>>>       refcount_set(&new_ruleset->usage, 1);
->>>>>>       mutex_init(&new_ruleset->lock);
->>>>>> -    new_ruleset->root = RB_ROOT;
->>>>>> +    new_ruleset->root_inode = RB_ROOT;
->>>>>>       new_ruleset->num_layers = num_layers;
->>>>>>       /*
->>>>>>        * hierarchy = NULL
->>>>>> @@ -69,7 +69,8 @@ static void build_check_rule(void)
->>>>>>   }
->>>>>>
->>>>>>   static struct landlock_rule *
->>>>>> -create_rule(struct landlock_object *const object,
->>>>>> +create_rule(struct landlock_object *const object_ptr,
->>>>>> +        const uintptr_t object_data,
->>>>>>           const struct landlock_layer (*const layers)[], const u32 
->>>>>> num_layers,
->>>>>>           const struct landlock_layer *const new_layer)
->>>>>>   {
->>>>>> @@ -90,8 +91,15 @@ create_rule(struct landlock_object *const object,
->>>>>>       if (!new_rule)
->>>>>>           return ERR_PTR(-ENOMEM);
->>>>>>       RB_CLEAR_NODE(&new_rule->node);
->>>>>> -    landlock_get_object(object);
->>>>>> -    new_rule->object = object;
->>>>>> +
->>>>>> +    if (object_ptr) {
->>>>>> +        landlock_get_object(object_ptr);
->>>>>> +        new_rule->object.ptr = object_ptr;
->>>>>> +    } else if (object_ptr && object_data) {
->>>>>
->>>>> Something is wrong with this second check: else + object_ptr?
+>>>> This time the problem happens on an NFS client, while the
+>>>> previous
+>>>> bzs
+>>>> respectively used NBD and CIFS. While NBD and CIFS clear __GFP_FS
+>>>> in
+>>>> their socket's ->sk_allocation field (using GFP_NOIO or
+>>>> GFP_NOFS),
+>>>> NFS
+>>>> leaves sk_allocation to its default value since commit
+>>>> a1231fda7e94
+>>>> ("SUNRPC: Set memalloc_nofs_save() on all rpciod/xprtiod jobs").
 >>>>
->>>>   Sorry. Do you mean logical error here? I got your point.
->>>>   You are right!
+>>>> To recap the original problems, in commit 20eb4f29b602 and
+>>>> dacb5d8875cc,
+>>>> memory reclaim happened while executing tcp_sendmsg_locked(). The
+>>>> code
+>>>> path entered tcp_sendmsg_locked() recursively as pages to be
+>>>> reclaimed
+>>>> were backed by files on the network. The problem was that both
+>>>> the
+>>>> outer and the inner tcp_sendmsg_locked() calls used
+>>>> current->task_frag,
+>>>> thus leaving it in an inconsistent state. The fix was to use the
+>>>> socket's ->sk_frag instead for the file system socket, so that
+>>>> the
+>>>> inner and outer calls wouln't step on each other's toes.
 >>>>
->>>>   I think it must be refactored like this:
+>>>> But now that NFS doesn't modify ->sk_allocation anymore,
+>>>> sk_page_frag()
+>>>> sees sunrpc sockets as plain TCP ones and returns ->task_frag in
+>>>> the
+>>>> inner tcp_sendmsg_locked() call.
 >>>>
->>>>      if (object_ptr && !object_data) {
->>>>          landlock_get_object(object_ptr);
->>>>          new_rule->object.ptr = object_ptr;
->>>>      } else if (object_ptr && object_data) {
->>>>          ...
->>>>      }
+>>>> Also it looks like the trend is to avoid GFS_NOFS and GFP_NOIO
+>>>> and
+>>>> use
+>>>> memalloc_no{fs,io}_save() instead. So maybe other network file
+>>>> systems
+>>>> will also stop setting ->sk_allocation in the future and we
+>>>> should
+>>>> teach sk_page_frag() to look at the current GFP flags. Or should
+>>>> we
+>>>> stick to ->sk_allocation and make NFS drop __GFP_FS again?
+>>>>
+>>>> Signed-off-by: Guillaume Nault <gnault@redhat.com>
 >>>
->>> There is indeed a logical error but this doesn't fix everything. Please
->>> include my previous suggestion instead.
+>>> Can you provide a Fixes: tag ?
 >>>
->>     By the way, in the next commits I have fixed this logic error.
->> Anyway I will refactor this one also. Thanks.
+>>>> ---
+>>>>  include/net/sock.h | 8 ++++++--
+>>>>  1 file changed, 6 insertions(+), 2 deletions(-)
+>>>>
+>>>> diff --git a/include/net/sock.h b/include/net/sock.h
+>>>> index 72ca97ccb460..b934c9851058 100644
+>>>> --- a/include/net/sock.h
+>>>> +++ b/include/net/sock.h
+>>>> @@ -46,6 +46,7 @@
+>>>>  #include <linux/netdevice.h>
+>>>>  #include <linux/skbuff.h>      /* struct sk_buff */
+>>>>  #include <linux/mm.h>
+>>>> +#include <linux/sched/mm.h>
+>>>>  #include <linux/security.h>
+>>>>  #include <linux/slab.h>
+>>>>  #include <linux/uaccess.h>
+>>>> @@ -2503,14 +2504,17 @@ static inline void
+>>>> sk_stream_moderate_sndbuf(struct sock *sk)
+>>>>   * socket operations and end up recursing into sk_page_frag()
+>>>>   * while it's already in use: explicitly avoid task page_frag
+>>>>   * usage if the caller is potentially doing any of them.
+>>>> - * This assumes that page fault handlers use the GFP_NOFS flags.
+>>>> + * This assumes that page fault handlers use the GFP_NOFS flags
+>>>> + * or run under memalloc_nofs_save() protection.
+>>>>   *
+>>>>   * Return: a per task page_frag if context allows that,
+>>>>   * otherwise a per socket one.
+>>>>   */
+>>>>  static inline struct page_frag *sk_page_frag(struct sock *sk)
+>>>>  {
+>>>> -       if ((sk->sk_allocation & (__GFP_DIRECT_RECLAIM |
+>>>> __GFP_MEMALLOC | __GFP_FS)) ==
+>>>> +       gfp_t gfp_mask = current_gfp_context(sk->sk_allocation);
 >>>
->>>> Plus, I will add a test for this case.
+>>> This is slowing down TCP sendmsg() fast path, reading current-
+>>>> flags,
+>>> possibly cold value.
+>>
+>> True - current->flags is pretty distant from current->task_frag.
+>>
+>>> I would suggest using one bit in sk, close to sk->sk_allocation to
+>>> make the decision,
+>>> instead of testing sk->sk_allocation for various flags.
 >>>
->>> That would be great but I don't think this code is reachable from user
->>> space. I think that would require kunit but I may be missing something.
->>> How would you test this?
->> 
->> You are correct. I checked it. It's impossible to reach this line from 
->> userpace (insert both object_ptr and object_data). But create_rule() 
->> must be used carefuly by other developers (if any in future). Do you 
->> think if its possible to have some internal kernel tests that could 
->> handle this issue?
-> 
-> We can use kunit tests for such kernel functions, but in this case I'm
-> not sure what could be tested. I started working on bringing kunit tests
-> to Landlock but it's not ready yet. Please list all non-userspace tests
-> you can think about.
+>>> Not sure if we have available holes.
+>>
+>> Its looking pretty packed on my build.. the nearest hole is 5
+>> cachelines
+>> away.
+>>
+>> It'd be nice to allow network filesystem to use task_frag when
+>> possible.
+>>
+>> If we expect sk_page_frag() to only return task_frag once per call
+>> stack,
+>> then can we simply check it's already in use, perhaps by looking at
+>> the
+>> size field?
+>>
+>> Or maybe can we set sk_allocation early from current_gfp_context()
+>> outside
+>> the fast path?
+>
+> Why not just add a bit to sk->sk_allocation itself, and have
+> __sock_create() default to setting it when the 'kern' parameter is non-
+> zero? NFS is not alone in following the request of the mm team to
+> deprecate use of GFP_NOFS and GFP_NOIO.
 
-  I'm thinking about ones that we can't reach from the userspace.
-  I analyzed test coverage logs finding lines that are untouched by the 
-userspace tests.
-  Let's discus this list:
+Can we overload sk_allocation safely?  There's 28 GFP flags already, I'm
+worried about unintended consequences if sk_allocation gets passed on.
 
-	1. create_rule():  - insert both  object_ptr and object_data.
+What about a flag in sk_gso_type?  Looks like there's 13 free there, and its
+in the same cacheline as sk_allocation and sk_frag.
 
-	2. insert_rule():  - insert both  object_ptr and object_data.
-			   - insert NULL (*const layers).
-			   - insert layers[0].level != 0.
-			   - insert num_layers != 1.
-			   - insert default rule_type.
-	
-	3. tree_merge():   - insert default rule_type.
-			   - insert walker_rule->num_layers != 1.
-			   - insert walker_rule->layers[0].level != 0.
-	
-	4. tree_copy():    - insert default rule_type.
-	
-	5. merge_ruleset:  - insert !dst || !dst->hierarchy.
-			   - insert src->num_layers != 1 ||
-                                     dst->num_layers < 1.
+Ben
 
-	6. inherit_ruleset(): - insert child->num_layers <=
-				   parent->num_layers.
-  			      - insert parent->hierarchy = NULL.
-
-	7. landlock_merge_ruleset(): - insert ruleset = NULL.
-				     - insert parent = ruleset
-
-	8. landlock_find_rule(): - insert default rule_type.
-
-  Please your opinion?
-> .
