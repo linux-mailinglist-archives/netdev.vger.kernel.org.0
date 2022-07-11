@@ -2,162 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 975CB56D20A
-	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 01:55:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A4F156D21E
+	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 02:17:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229514AbiGJXyU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Jul 2022 19:54:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50912 "EHLO
+        id S229540AbiGKARr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Jul 2022 20:17:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229502AbiGJXyT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Jul 2022 19:54:19 -0400
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2077.outbound.protection.outlook.com [40.107.243.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41FC56370
-        for <netdev@vger.kernel.org>; Sun, 10 Jul 2022 16:54:19 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WD3/Kvh/Sng/bcYc1pzJoaeaSqozYDRzCq0a2YcnoCmhV0Pa+rYV248e/Xjt5M1gPZOuJtqfa18dGtn8h1RAtPxZpMgb1k3oagtBWHW+IFsZKV9AQ3RINBDHcfEMt85AFA9NrjSbIO9HRbNL+W/ow02BiLPQbjd90apRmJWTodawA89daLJfsTcvKdoHN+U8F2pTj3FT+AErkO1UWHeEU9hm94j5eW+HYnxQfSrITzC3btX7oTxpJDAco+okoW1Fy5yXjWribhC38ibqkdXc7I26hBPZr/grYQqMvHnlOwk6Ym1tfQnibgpIQ5Fj8bsjoP6+fei8icMYjFarM57rag==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=zVCROPtaOXURz1M/u8CM81ujHE+/8G+QIBrd2aBFHnU=;
- b=Gns1bucUXUp3nRRPXd2Kqek8VQBfh5APrfCCSI043sX8ogRvtwK8+qUsEYrMqdIis5Zk6Cs/0l5p495rYtNAic7AXO2qzo/rmC7ZBoe6cZ7dbhxgLMqRfeVwBns7daev4OmilYRCf6IMd7+nhAMo3if87WBSRfgIe2G4fk+aoeih2ASYhyH8xvpIKTKpj+j2vRebzfEG7lcDCFZm3RIUEE+atfBa7aiU4pkQghRiyL/nM6NBfrGZrZTzjj8n/CrqUT5YnGuCxk/gvINgyeO3/6gCqSZqb9pGEKg+tUdlbdseqp4uU+mUwJilGIlrtgBR8YCe+JYvzWGliGYcFGwbdA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zVCROPtaOXURz1M/u8CM81ujHE+/8G+QIBrd2aBFHnU=;
- b=JAq4N59M0EwsASRgW6E4Z7/ZA9JVAeQq6rcPL6+UPWm+MkT/oKslX+Ze8ie4QnKHXf5Q9p9QU7UOTI7l/56QHKZQ5H76RvXwOfqfgSDTX5Sx2r0zGiWlVAitnb4DFwBmSKy78788B9EZuwKQSGHNBvm1VhT/XRSRVwp7yXnqqsR4TX6DNxj4fAHgARLvuEs75iDDn+HGNXrI3gwnliQK1VzPckXAJTTDEIFnP3FJcl6xzHN2l1Wz9y9XjMOBITO/hSXCAJ3/1mf0HwXTkFe8bHVGTO/8OfKaQMN7baQqrp+aEPKJ6YEK5rpQeJcMq11lb0UocDBCPuSFtm9oc1foPA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4373.namprd12.prod.outlook.com (2603:10b6:208:261::8)
- by MWHPR1201MB2542.namprd12.prod.outlook.com (2603:10b6:300:e8::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.23; Sun, 10 Jul
- 2022 23:54:17 +0000
-Received: from MN2PR12MB4373.namprd12.prod.outlook.com
- ([fe80::e9e9:810c:102b:c6e5]) by MN2PR12MB4373.namprd12.prod.outlook.com
- ([fe80::e9e9:810c:102b:c6e5%3]) with mapi id 15.20.5417.025; Sun, 10 Jul 2022
- 23:54:17 +0000
-From:   Benjamin Poirier <bpoirier@nvidia.com>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev@vger.kernel.org, Ido Schimmel <idosch@nvidia.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        David Ahern <dsahern@gmail.com>
-Subject: [PATCH iproute2 5/5] ip neigh: Fix memory leak when doing 'get'
-Date:   Mon, 11 Jul 2022 08:52:54 +0900
-Message-Id: <20220710235254.568878-6-bpoirier@nvidia.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220710235254.568878-1-bpoirier@nvidia.com>
-References: <20220710235254.568878-1-bpoirier@nvidia.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: TYBP286CA0002.JPNP286.PROD.OUTLOOK.COM
- (2603:1096:404:ce::14) To MN2PR12MB4373.namprd12.prod.outlook.com
- (2603:10b6:208:261::8)
+        with ESMTP id S229476AbiGKARq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Jul 2022 20:17:46 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9CFA8120B7;
+        Sun, 10 Jul 2022 17:17:45 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9CA9323A;
+        Sun, 10 Jul 2022 17:17:45 -0700 (PDT)
+Received: from slackpad.lan (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 79EB33F73D;
+        Sun, 10 Jul 2022 17:17:42 -0700 (PDT)
+Date:   Mon, 11 Jul 2022 01:16:36 +0100
+From:   Andre Przywara <andre.przywara@arm.com>
+To:     Samuel Holland <samuel@sholland.org>
+Cc:     Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH v12 1/7] dt-bindings: arm: sunxi: Add H616 EMAC
+ compatible
+Message-ID: <20220711011558.01a586d2@slackpad.lan>
+In-Reply-To: <b3149c47-7fbf-53b2-f0d7-a45942bb819c@sholland.org>
+References: <20220701112453.2310722-1-andre.przywara@arm.com>
+        <20220701112453.2310722-2-andre.przywara@arm.com>
+        <b2661412-5fce-a20d-c7c4-6df58efdb930@sholland.org>
+        <20220705111906.3c553f23@donnerap.cambridge.arm.com>
+        <b3149c47-7fbf-53b2-f0d7-a45942bb819c@sholland.org>
+Organization: Arm Ltd.
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.31; x86_64-slackware-linux-gnu)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4fa98226-6b0f-4200-8032-08da62cf8026
-X-MS-TrafficTypeDiagnostic: MWHPR1201MB2542:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ++S82Hm99JcQuPI0WdQS1hHepCEMOkcYe6ib9e69Eg/RahQMpIf03GOYTlaFtQWazRPZmmuHkmXtkGKy7qSvh1j7wDCExKYyV+JRPoGK9jy4rYCyuT1+KZrBkKxA1OyLw6OOD3pTkUpuFS5ThwxiDpktFHZdHjb05IiaCtpDaxGKmM8/7nefLzsD+LHYr+wU0uYVYbKMtGLa8tNJaxrO5aswM3nwG9FLtzBcaAxd1NK+I0ggOlymkZNaIu/yLlb9ov8HjJnjIH/1ZOOc1f49rxOUPpAPMwM42JJZnfvredD0WRDRqcF2CE1gznGWRRCQkMvGnoIfP6XdCX2Q7ZeB6ALmJHD9Lpw3lLbqWmdtYeO0vKbcyPfa8fcfIvLxDDVKeXz19tUt32GuS9apSkPF4N9j2Ia5xh6kd6Wr+1SQl34f5uPQAZhnsX11E02Mx91Do0qxoU0kt8efVNbMt4yiPvOc4BF4+zCSVd9Tw+VDj7C3rK+5Y7pdhVLUiD950iysByZugnB8WLUGUZ+Mtydd4WKynLA5Qj7mB9sUvpK01jQ42AnqBNX1ZkTZtIJb9FqTU8WoBQTjZns5t7FrD0/C0nsmMmDNBEgb2bEwdC62pDv6p6HzpDKsi5dL6O7phL5X8T6SzuoPt5BAumyebotpmpZl5l22SrFMhsO0UKklqpts7g2k3n64KMGRU4oMQDH6KFTK5bg2N4xbW0xJBobgy8d4zQNYjmwrhnd0e5yJt+eOoracKN63YuonpKkoss/l
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4373.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(396003)(136003)(376002)(346002)(366004)(186003)(66476007)(8676002)(66946007)(4326008)(66556008)(6666004)(1076003)(86362001)(6512007)(6506007)(478600001)(26005)(6486002)(41300700001)(2616005)(54906003)(6916009)(316002)(2906002)(38100700002)(36756003)(83380400001)(5660300002)(8936002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?cleIbi/585GZsQyWPiH1Jeuk/AF70uoSYUiUEhIe4e4h1fEFwoYk/SUvyTBQ?=
- =?us-ascii?Q?tdn2Yd7EpY6OSHHAMWPsKczCrU2JJKqaS84VTmULYbhtovr/TywJLzQwezMx?=
- =?us-ascii?Q?kZdtMqOpbctoxG19l69ruAtthdqD2CNEgYfUo8jmkY4kxRzeUdZ0bmVIjhjl?=
- =?us-ascii?Q?GZMnKX8k7rty8DT68PZHffWxe0JM9oEMka0b8UV/UtbNxzVzPhGKEb82UnJ6?=
- =?us-ascii?Q?hwJVDsFQXAL7LneWJMRMLp96GKFNuy8xv+6U6o575Jasny2pEjeYJ6KZ8zYG?=
- =?us-ascii?Q?BdzJMA/5n43N7DN1uWW05QVWzlzyFQ3Gd3fTVszOzwkGop6Lm77A4GLuBhGk?=
- =?us-ascii?Q?zSmp0YaRJnJrtwBJUC/p0MY+Fskaq/hmdhsglsft//h11tj/VofqMpTK5CSU?=
- =?us-ascii?Q?zoJhE1hWEyG4cjD7dfT22J8DumpdP7JoBXWXuqtDmeEV/XaKlZ1mg3h40XDn?=
- =?us-ascii?Q?dhjwKqyqIvxOcctKikL/nvlwag95CxXmWQhlwghz4dQZiYURPMgFaD+4K0TN?=
- =?us-ascii?Q?JEEgxsdeqZCi+y5fiRz2pyH+mZVco1oJ3SgJoeYfv3GxqnX1UXyuCH+uZf0q?=
- =?us-ascii?Q?WnfeEygc6OqZ1+6DvltTTu/w9C05Ia1foGRABhTTIN6IvuLpv1+UW5x12afQ?=
- =?us-ascii?Q?qfkj+R4bq6hpumQ1w/LzDyPP+rg+rspn5XYdawvH3JIk2djEg7erWCeNjXuP?=
- =?us-ascii?Q?zhq67E2sycReoRQMmfajuZX2EvogfU7yVQqCBaaqwvnbjg2PXvXcybCSPH9O?=
- =?us-ascii?Q?+hEyVwircSys9+rS+A1uYUSGcVi812svstgoFvKbd6v8DJqQfzroD8bRX7X0?=
- =?us-ascii?Q?puGL3MaH6Bm7vZvEkoarscStaBLPKChrAFRXzy9udqUMBBIYXZBzV1HIywk6?=
- =?us-ascii?Q?w+DTdSn4Ge5ZzLqcbh5gJnZqMpdIL//YWBHD06zm8hMDHtrzYvQ5AKOaB8cm?=
- =?us-ascii?Q?bUUYx8Rg0oW5vEMI8SDFEWvu63W6D833TBbm4MhGstN4a3qe+ySM6jJUp8mC?=
- =?us-ascii?Q?phvqoncJRt7RcmQrzKYDoFl0WqLKLgQGlzeL9vlBMU2AMP3EEu7nADrm+IGT?=
- =?us-ascii?Q?LKmR8aRXZBMFCvZmNfcSNIdHxD1dsZMdKnSDq4859Wq3c7+4f2L7g3TvewYX?=
- =?us-ascii?Q?inbNEUSL6x7liu7Cj+0JNZWgbS7uN2crwFOUp1wjdjHw40E8PbykmSFw07fN?=
- =?us-ascii?Q?S05IkOmX8QxdLEM+G2VDfjc1rjL2hpILCS4G80yXPDcsrCX9xPoRALG6ynmr?=
- =?us-ascii?Q?FsQLxDRWzF+bQoCXmhKKs7GzNQveVE39OlvlaTc9wcOjkcoWQ6wW2kPK+Tyo?=
- =?us-ascii?Q?4zCW927PVs/uTqTmeYoE/JUKds+BUugMWCK5Qzw37oZdq3Mj0dqVDweDifup?=
- =?us-ascii?Q?ESJ98/FogDIJJtObGPrU2TtXhu0cHuG0tlf3agAVv/87HR5zbk1K8ljRZdrM?=
- =?us-ascii?Q?m/8oyUQWl6eJe7PC0uH9M95heMpsZp60UjSZ8Haeu2pi/AjU9q5vlMg4/Rxq?=
- =?us-ascii?Q?FsnAHgclcex/Ye3hMpa8xCl7fmMJJZzaVf8Hq0BAheFTfQ+RGtmkPdL64Ew0?=
- =?us-ascii?Q?3jrQZb+S41IlYeQJj959Sg6k6xdSFeomvVe8srUX?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4fa98226-6b0f-4200-8032-08da62cf8026
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4373.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Jul 2022 23:54:17.5667
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: bqKyOM4oFQ6aj316j7xsDSAsth5Jxeowzezv25bsFzTh2iB8bfbV+YU4cgovi9rNLaxnniS/ravyPyR5U/Bm0A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR1201MB2542
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-6.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With the following command sequence:
+On Tue, 5 Jul 2022 22:55:54 -0500
+Samuel Holland <samuel@sholland.org> wrote:
 
-ip link add dummy0 type dummy
-ip neigh add 192.168.0.1 dev dummy0
-ip neigh get 192.168.0.1 dev dummy0
+Hi Samuel,
 
-when running the last command under valgrind, it reports
+thanks for the answer! I think we settled this particular issue, just
+for clarification some comments/questions below.
 
-32,768 bytes in 1 blocks are definitely lost in loss record 2 of 2
-   at 0x483F7B5: malloc (vg_replace_malloc.c:381)
-   by 0x17A0EC: rtnl_recvmsg (libnetlink.c:838)
-   by 0x17A3D1: __rtnl_talk_iov.constprop.0 (libnetlink.c:1040)
-   by 0x17B894: __rtnl_talk (libnetlink.c:1141)
-   by 0x17B894: rtnl_talk (libnetlink.c:1147)
-   by 0x12E49B: ipneigh_get (ipneigh.c:728)
-   by 0x1174CB: do_cmd (ip.c:136)
-   by 0x116F7C: main (ip.c:324)
+> On 7/5/22 5:19 AM, Andre Przywara wrote:
+> > On Mon, 4 Jul 2022 18:53:14 -0500
+> > Samuel Holland <samuel@sholland.org> wrote:  
+> >> On 7/1/22 6:24 AM, Andre Przywara wrote:  
+> >>> The Allwinner H616 contains an "EMAC" Ethernet MAC compatible to the A64
+> >>> version.
+> >>>
+> >>> Add it to the list of compatible strings.
+> >>>
+> >>> Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+> >>> ---
+> >>>  .../devicetree/bindings/net/allwinner,sun8i-a83t-emac.yaml       | 1 +
+> >>>  1 file changed, 1 insertion(+)
+> >>>
+> >>> diff --git a/Documentation/devicetree/bindings/net/allwinner,sun8i-a83t-emac.yaml b/Documentation/devicetree/bindings/net/allwinner,sun8i-a83t-emac.yaml
+> >>> index 6a4831fd3616c..87f1306831cc9 100644
+> >>> --- a/Documentation/devicetree/bindings/net/allwinner,sun8i-a83t-emac.yaml
+> >>> +++ b/Documentation/devicetree/bindings/net/allwinner,sun8i-a83t-emac.yaml
+> >>> @@ -22,6 +22,7 @@ properties:
+> >>>            - enum:
+> >>>                - allwinner,sun20i-d1-emac
+> >>>                - allwinner,sun50i-h6-emac
+> >>> +              - allwinner,sun50i-h616-emac    
+> >>
+> >> The H616 manual has register fields for an internal PHY, like H3. Are these not
+> >> hooked up for either EMAC?  
+> > 
+> > Which register fields do you mean, exactly?  
+> 
+> I mean bits 15-31 of EMAC_EPHY_CLK_REG0.
 
-Free the answer obtained from rtnl_talk().
+Right, so those bits look the same as in the H6, and probably do the
+same "nothing" here as well, except for PHY_SELECT[15]?
 
-Fixes: 62842362370b ("ipneigh: neigh get support")
-Suggested-by: Ido Schimmel <idosch@nvidia.com>
-Reviewed-by: Ido Schimmel <idosch@nvidia.com>
-Signed-off-by: Benjamin Poirier <bpoirier@nvidia.com>
----
- ip/ipneigh.c | 2 ++
- 1 file changed, 2 insertions(+)
+> > The H616 uses the same internal PHY solution as the H6: an AC200 die
+> > co-packaged on the carrier (or whatever integration solution they actually
+> > chose). The difference to the H6 is that EMAC0 is hardwired to the external
+> > RGMII pins, whereas EMAC1 is hardwired to the internal AC200 RMII pins.
+> > From all I could see that does not impact the actual MAC IP: both are the
+> > same as in the H6, or A64, for that matter.  
+> 
+> If those bits in EMAC_EPHY_CLK_REG0 have no effect, then I agree. But if
+> switching bit 15 to internal PHY causes Ethernet to stop working, then the mux
+> really does exist (even if one side is not connected to anything). In that case,
+> we need to make sure the mux is set to the external PHY, using the code from H3.
 
-diff --git a/ip/ipneigh.c b/ip/ipneigh.c
-index 7facc399..61b0a4a2 100644
---- a/ip/ipneigh.c
-+++ b/ip/ipneigh.c
-@@ -731,8 +731,10 @@ static int ipneigh_get(int argc, char **argv)
- 	ipneigh_reset_filter(0);
- 	if (print_neigh(answer, stdout) < 0) {
- 		fprintf(stderr, "An error :-)\n");
-+		free(answer);
- 		return -1;
- 	}
-+	free(answer);
- 
- 	return 0;
- }
--- 
-2.36.1
+I guess so, but this is what we do for the H6/A64 already, if I read the
+code correctly?
 
+        if (gmac->variant->soc_has_internal_phy) {
+		...
+        } else {
+                /* For SoCs without internal PHY the PHY selection bit should be
+                 * set to 0 (external PHY).
+                 */
+                reg &= ~H3_EPHY_SELECT;
+        }
+
+And since we set soc_has_internal_phy to false for the A64 (and H6)
+compatible, we should be good?
+
+> > There is one twist, though: the second EMAC uses a separate EMAC clock
+> > register in the syscon. I came up with this patch to support that:
+> > https://github.com/apritzel/linux/commit/078f591017794a0ec689345b0eeb7150908cf85a
+> > That extends the syscon to take an optional(!) index. So EMAC0 works
+> > exactly like before (both as "<&syscon>;", or "<&syscon 0>;", but for EMAC1
+> > we need the index: "<&syscon 4>;".
+> > But in my opinion this should not affect the MAC binding, at least not for
+> > MAC0.  
+> 
+> It definitely affects the MAC binding, because we have to change the definition
+> of the syscon property. We should still get that reviewed before doing anything
+> that depends on it. (And I think EMAC0 support depends on it.)
+
+Technically I agree that it affects the current binding, at least for
+EMAC1. Though this looks like some shortcoming of our binding then, as
+the actual EMAC IP looks the same for both instances. It just seems
+to be the *connection* to the PHYs that differ, so it's a more PHY
+*setup* property than an EMAC configuration issue.
+But I guess this ship has sailed, and we have to stick with what we
+have right now, so would need a different compatible and some code
+additions for EMAC1. But since this relies on the AC200 support
+anyway (buggy RFC/WIP code here [1], btw), this doesn't look like a big
+problem for now.
+
+[1] https://github.com/apritzel/linux/commits/ac200-WIP)
+
+> > And I think we should get away without a different compatible string
+> > for EMAC1, since the MAC IP is technically the same, it's just the
+> > connection that is different.  
+> 
+> If you claim that both EMACs are compatible with allwinner,sun50i-a64-emac, then
+> you are saying that any existing driver for allwinner,sun50i-a64-emac will also
+> work with both of the H616 EMACs. But this is not true. If I hook up both EMACs
+> in the DT per the binding, and use the driver in master, at best only EMAC0 will
+> work, and likely neither will work.
+> 
+> So at minimum you need a new compatible for the second EMAC, so it only binds to
+> drivers that know about the syscon offset specifier.
+> 
+> > In any case I think this does not affect the level of support we promise
+> > today: EMAC0 with an external PHY only.  
+> 
+> This can work if you introduce a second compatible for EMAC1. But at that point
+> you don't need the syscon offset specifier; it can be part of the driver data,
+> like for R40. (And any future EMAC1 could likely fall back to this compatible.)
+
+Yeah, I agree. For robustness I would prefer having a specifier, so any
+future twisted EMAC could be covered without yet another compatible
+string. But this is a detail.
+Or we use the opportunity to design this differently, so that the PHY
+driver enables its PHY using this bit, maybe as part of this AC200 EPHY
+"control" driver?
+
+Cheers,
+Andre
