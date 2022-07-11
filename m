@@ -2,51 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 86F625709A4
-	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 20:00:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A191C5709AC
+	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 20:04:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230288AbiGKSAT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jul 2022 14:00:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33100 "EHLO
+        id S230162AbiGKSEH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jul 2022 14:04:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229629AbiGKSAS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 14:00:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 044827643;
-        Mon, 11 Jul 2022 11:00:18 -0700 (PDT)
+        with ESMTP id S231514AbiGKSEF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 14:04:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DE9B1EADF;
+        Mon, 11 Jul 2022 11:04:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 92E3E6137F;
-        Mon, 11 Jul 2022 18:00:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E868BC341C8;
-        Mon, 11 Jul 2022 18:00:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 19F96B80E4A;
+        Mon, 11 Jul 2022 18:03:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A79CC341C8;
+        Mon, 11 Jul 2022 18:03:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657562417;
-        bh=opFjFQDhmxBamXMAmVZz4cx1gLgHEmCQauUWMnWCeMU=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=e3KMjGSMtZNNSH4Q1SYkcXpzn7T20pxMdbj3zTQxs83g2cjxgFFx53l4Qt5r9nKUK
-         YC/2Uc5gSnZPuen5pr5odIBK++CLQXwiAcScEBHoiDmvi0NGzBEwf68Nsf6eCV/7re
-         JG3FTi9lsferj8dpY00aFH/tOE493JueABUBWb5paswa/7g2JY6Vm8I1oLdA2IDV6i
-         3dBO1fgSf1EHq2vgqUkx24AH0qAwauM3Uv8mL9P9Pap8+e2+4rBi36UQ+Zxz9VFbAI
-         4slb6Oao/X01Hgovu3DR3ZhfS98dvvzYfKG3Yhu+d35wSoZ8NM/5JZf47GvkCIca8p
-         /777+/xB44SNQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id CF5AFE4521F;
-        Mon, 11 Jul 2022 18:00:16 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1657562637;
+        bh=mCBd8b09ydPs61XWBzNZW3Jvis9MI3ZBw0K33RhQuQc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=bPHJ6HpySPrM18KQCSn1D2BSyAWr1t8nXDVWvcVJeMqTUhh2A4ji8ah3hE/BbuFNJ
+         5EiJ/oYRDSYqkDgdBs/GBIRgf6ukxQjAF/Zd3zvzpkXj+mJ2a5qg4k+sBur4rgcFgD
+         5iyur9y6k1itXK6qdtWdr9onEG+9ZJXd9hb55VWDu54Xz/U+ImoPDKAqRfNq45khQk
+         Qugx1B33faTd3h0e1ILPv+fX64KbhWJHQkq7Jvw+DOGGsZu9N9dtnVvJRyUf8GnuFV
+         wmoS7LJ4hnCbMJe3zfDR6DFAE1Upr/ahAz8Zzwa6x6NsnvaPqfv7/k9Do0KrdPOPay
+         AtkMxtKCKoieQ==
+Date:   Mon, 11 Jul 2022 11:03:48 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Eric Biggers <ebiggers@kernel.org>
+Cc:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, "Jason A . Donenfeld " <Jason@zx2c4.com>,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH 2/2] crypto: make the sha1 library optional
+Message-ID: <20220711110348.4c951fff@kernel.org>
+In-Reply-To: <20220709211849.210850-3-ebiggers@kernel.org>
+References: <20220709211849.210850-1-ebiggers@kernel.org>
+        <20220709211849.210850-3-ebiggers@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [net-next PATCH v5 00/12] octeontx2: Exact Match Table.
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165756241684.27191.3816847388683645025.git-patchwork-notify@kernel.org>
-Date:   Mon, 11 Jul 2022 18:00:16 +0000
-References: <20220708044151.2972645-1-rkannoth@marvell.com>
-In-Reply-To: <20220708044151.2972645-1-rkannoth@marvell.com>
-To:     Ratheesh Kannoth <rkannoth@marvell.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        sgoutham@marvell.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -57,50 +55,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Fri, 8 Jul 2022 10:11:39 +0530 you wrote:
-> Exact match table and Field hash support for CN10KB silicon
+On Sat,  9 Jul 2022 14:18:49 -0700 Eric Biggers wrote:
+> Since the Linux RNG no longer uses sha1_transform(), the SHA-1 library
+> is no longer needed unconditionally.  Make it possible to build the
+> Linux kernel without the SHA-1 library by putting it behind a kconfig
+> option, and selecting this new option from the kconfig options that gate
+> the remaining users: CRYPTO_SHA1 for crypto/sha1_generic.c, BPF for
+> kernel/bpf/core.c, and IPV6 for net/ipv6/addrconf.c.
 > 
-> ChangeLog
-> ---------
->   1) V0 to V1
->      a) Removed change IDs from all patches.
-> 
-> [...]
+> Unfortunately, since BPF is selected by NET, for now this can only make
+> a difference for kernels built without networking support.
 
-Here is the summary with links:
-  - [net-next,v5,01/12] octeontx2-af: Use hashed field in MCAM key
-    https://git.kernel.org/netdev/net-next/c/56d9f5fd2246
-  - [net-next,v5,02/12] octeontx2-af: Exact match support
-    https://git.kernel.org/netdev/net-next/c/b747923afff8
-  - [net-next,v5,03/12] octeontx2-af: Exact match scan from kex profile
-    https://git.kernel.org/netdev/net-next/c/812103edf670
-  - [net-next,v5,04/12] octeontx2-af: devlink configuration support
-    https://git.kernel.org/netdev/net-next/c/ef83e186855d
-  - [net-next,v5,05/12] octeontx2-af: FLR handler for exact match table.
-    https://git.kernel.org/netdev/net-next/c/bab9eed564ed
-  - [net-next,v5,06/12] octeontx2-af: Drop rules for NPC MCAM
-    https://git.kernel.org/netdev/net-next/c/3571fe07a090
-  - [net-next,v5,07/12] octeontx2-af: Debugsfs support for exact match.
-    https://git.kernel.org/netdev/net-next/c/87e4ea29b030
-  - [net-next,v5,08/12] octeontx2: Modify mbox request and response structures
-    https://git.kernel.org/netdev/net-next/c/292822e961cc
-  - [net-next,v5,09/12] octeontx2-af: Wrapper functions for MAC addr add/del/update/reset
-    https://git.kernel.org/netdev/net-next/c/2dba9459d2c9
-  - [net-next,v5,10/12] octeontx2-af: Invoke exact match functions if supported
-    https://git.kernel.org/netdev/net-next/c/d6c9784baf59
-  - [net-next,v5,11/12] octeontx2-pf: Add support for exact match table.
-    https://git.kernel.org/netdev/net-next/c/fa5e0ccb8f3a
-  - [net-next,v5,12/12] octeontx2-af: Enable Exact match flag in kex profile
-    https://git.kernel.org/netdev/net-next/c/bb67a66689e2
+> diff --git a/init/Kconfig b/init/Kconfig
+> index c984afc489dead..d8d0b4bdfe4195 100644
+> --- a/init/Kconfig
+> +++ b/init/Kconfig
+> @@ -1472,6 +1472,7 @@ config HAVE_PCSPKR_PLATFORM
+>  # interpreter that classic socket filters depend on
+>  config BPF
+>  	bool
+> +	select CRYPTO_LIB_SHA1
+>  
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Let's give it an explicit CC: bpf@
 
+> diff --git a/net/ipv6/Kconfig b/net/ipv6/Kconfig
+> index bf2e5e5fe14273..658bfed1df8b17 100644
+> --- a/net/ipv6/Kconfig
+> +++ b/net/ipv6/Kconfig
+> @@ -7,6 +7,7 @@
+>  menuconfig IPV6
+>  	tristate "The IPv6 protocol"
+>  	default y
+> +	select CRYPTO_LIB_SHA1
+>  	help
+>  	  Support for IP version 6 (IPv6).
 
+FWIW:
+Acked-by: Jakub Kicinski <kuba@kernel.org>
