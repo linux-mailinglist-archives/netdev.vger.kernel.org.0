@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DA1E570A7E
+	by mail.lfdr.de (Postfix) with ESMTP id AB263570A7F
 	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 21:16:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231440AbiGKTQm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jul 2022 15:16:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56392 "EHLO
+        id S231448AbiGKTQo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jul 2022 15:16:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229740AbiGKTQk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 15:16:40 -0400
+        with ESMTP id S229490AbiGKTQl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 15:16:41 -0400
 Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 184F157261
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F7E2167E7
         for <netdev@vger.kernel.org>; Mon, 11 Jul 2022 12:16:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1657567000; x=1689103000;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=joQ6Vbeab6laBXOOHJaDUI2swEi5kjt7lAQTHBmWF1s=;
-  b=hACmbz3mWI5m19nYe4J98QqRZZMSpLCbiGCsitArfug04xOjZ7rR4dA7
-   G3wPQLAIaKgInVZn4LW/HVoMjEyWmL27HdQLOWMJmS80NXL9Mf9yAFbHY
-   ja3aSxOTpeg4YQTq241rHulHpvuphLppdpnWgNk+8ku4BwKflXLxXs4il
-   kAiQuzCFRhpQ/PMKtyJPonwCmS50G/QebHBqBmziHmTIcUn1/26t3F1TU
-   qhFvCZdu/KMH6hNBsMjkrc3Vkhuy3XJ1fvWShPRgIbY86q096s0QUlkoP
-   rNG2C7kY8HdpCyTyBHPky+Bhrsn130reu7qjWDSORwWa3VUOL7v0+XNKR
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10405"; a="282300981"
+  bh=NEiJvTKvSTMVTvV6Cif8kN1PwHk/e+jtjHvC50aicgs=;
+  b=M7AZh0SCFAsIeJsK5VM9JgjNG5LidvvZjp9IxnfdQoIepBdxtgzCVvNd
+   5PMWjvHSHYPeSct8q7jAz1sSTA2ZEiKhdr3F4VZKQ/25cPGR73Fti92SU
+   amrCCtvgy+QhZ9+bNLyJFDvxaAbz8J1orPpKnd/+/IwjIDQfEtriJCjN4
+   q/F/3MrbtKkGZnXXIDeESdNKvjVa59Y8YGA3RtFrygL4cgbCeyDc+9NUM
+   E9/BML9afe3EufFcw2vEiMFQsbLIhZ7ikSlHIajbyFGNNiBUD6W7wKsmu
+   To66mUPfCIxLoPIOBCV0amHvJW39GplSfZJxyiqFZpqZhuWTJNhG6IBSh
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10405"; a="282300982"
 X-IronPort-AV: E=Sophos;i="5.92,263,1650956400"; 
-   d="scan'208";a="282300981"
+   d="scan'208";a="282300982"
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
   by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2022 12:16:39 -0700
 X-IronPort-AV: E=Sophos;i="5.92,263,1650956400"; 
-   d="scan'208";a="697742712"
+   d="scan'208";a="697742714"
 Received: from eedeets-mobl1.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.251.2.111])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2022 12:16:38 -0700
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2022 12:16:39 -0700
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
 To:     netdev@vger.kernel.org
 Cc:     Paolo Abeni <pabeni@redhat.com>, davem@davemloft.net,
         kuba@kernel.org, edumazet@google.com, matthieu.baerts@tessares.net,
         mptcp@lists.linux.dev,
         Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next 2/5] mptcp: address lookup improvements
-Date:   Mon, 11 Jul 2022 12:16:30 -0700
-Message-Id: <20220711191633.80826-3-mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next 3/5] mptcp: allow the in kernel PM to set MPC subflow priority
+Date:   Mon, 11 Jul 2022 12:16:31 -0700
+Message-Id: <20220711191633.80826-4-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711191633.80826-1-mathew.j.martineau@linux.intel.com>
 References: <20220711191633.80826-1-mathew.j.martineau@linux.intel.com>
@@ -62,69 +62,92 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Paolo Abeni <pabeni@redhat.com>
 
-When looking-up a socket address in the endpoint list, we
-must prefer port-based matches over address only match.
+Any local endpoints configured on the address matching the
+MPC subflow are currently ignored.
 
-Ensure that port-based endpoints are listed first, using
-head insertion for them. Additionally be sure that only
-port-based endpoints carry a non zero port number.
+Specifically, setting a backup flag on them has no effect
+on the first subflow, as the MPC handshake can't carry such
+info.
+
+This change refactors the MPC endpoint id accounting to
+additionally fetch the priority info from the relevant endpoint
+and eventually trigger the MP_PRIO handshake as needed.
+
+As a result, the MPC subflow now switches to backup priority
+after that the MPTCP socket is fully established, according
+to the local endpoint configuration.
 
 Reviewed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 ---
- net/mptcp/pm_netlink.c | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+ net/mptcp/pm_netlink.c | 37 +++++++++++++++----------------------
+ 1 file changed, 15 insertions(+), 22 deletions(-)
 
 diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
-index 8e1d3aec94da..fe8e22aff7d2 100644
+index fe8e22aff7d2..b767a336ad98 100644
 --- a/net/mptcp/pm_netlink.c
 +++ b/net/mptcp/pm_netlink.c
-@@ -413,7 +413,7 @@ static bool lookup_address_in_vec(const struct mptcp_addr_info *addrs, unsigned
- 	int i;
+@@ -514,30 +514,14 @@ __lookup_addr(struct pm_nl_pernet *pernet, const struct mptcp_addr_info *info,
+ 	struct mptcp_pm_addr_entry *entry;
  
- 	for (i = 0; i < nr; i++) {
--		if (mptcp_addresses_equal(&addrs[i], addr, addr->port))
-+		if (addrs[i].id == addr->id)
- 			return true;
+ 	list_for_each_entry(entry, &pernet->local_addr_list, list) {
+-		if ((!lookup_by_id && mptcp_addresses_equal(&entry->addr, info, true)) ||
++		if ((!lookup_by_id &&
++		     mptcp_addresses_equal(&entry->addr, info, entry->addr.port)) ||
+ 		    (lookup_by_id && entry->addr.id == info->id))
+ 			return entry;
  	}
+ 	return NULL;
+ }
  
-@@ -449,7 +449,8 @@ static unsigned int fill_remote_addresses_vec(struct mptcp_sock *msk, bool fullm
- 		mptcp_for_each_subflow(msk, subflow) {
- 			ssk = mptcp_subflow_tcp_sock(subflow);
- 			remote_address((struct sock_common *)ssk, &addrs[i]);
--			if (deny_id0 && mptcp_addresses_equal(&addrs[i], &remote, false))
-+			addrs[i].id = subflow->remote_id;
-+			if (deny_id0 && !addrs[i].id)
- 				continue;
+-static int
+-lookup_id_by_addr(const struct pm_nl_pernet *pernet, const struct mptcp_addr_info *addr)
+-{
+-	const struct mptcp_pm_addr_entry *entry;
+-	int ret = -1;
+-
+-	rcu_read_lock();
+-	list_for_each_entry(entry, &pernet->local_addr_list, list) {
+-		if (mptcp_addresses_equal(&entry->addr, addr, entry->addr.port)) {
+-			ret = entry->addr.id;
+-			break;
+-		}
+-	}
+-	rcu_read_unlock();
+-	return ret;
+-}
+-
+ static void mptcp_pm_create_subflow_or_signal_addr(struct mptcp_sock *msk)
+ {
+ 	struct sock *sk = (struct sock *)msk;
+@@ -555,13 +539,22 @@ static void mptcp_pm_create_subflow_or_signal_addr(struct mptcp_sock *msk)
  
- 			if (!lookup_address_in_vec(addrs, i, &addrs[i]) &&
-@@ -919,10 +920,11 @@ static int mptcp_pm_nl_append_new_local_addr(struct pm_nl_pernet *pernet,
- 	/* do not insert duplicate address, differentiate on port only
- 	 * singled addresses
- 	 */
-+	if (!address_use_port(entry))
-+		entry->addr.port = 0;
- 	list_for_each_entry(cur, &pernet->local_addr_list, list) {
- 		if (mptcp_addresses_equal(&cur->addr, &entry->addr,
--					  address_use_port(entry) &&
--					  address_use_port(cur))) {
-+					  cur->addr.port || entry->addr.port)) {
- 			/* allow replacing the exiting endpoint only if such
- 			 * endpoint is an implicit one and the user-space
- 			 * did not provide an endpoint id
-@@ -968,7 +970,10 @@ static int mptcp_pm_nl_append_new_local_addr(struct pm_nl_pernet *pernet,
+ 	/* do lazy endpoint usage accounting for the MPC subflows */
+ 	if (unlikely(!(msk->pm.status & BIT(MPTCP_PM_MPC_ENDPOINT_ACCOUNTED))) && msk->first) {
++		struct mptcp_subflow_context *subflow = mptcp_subflow_ctx(msk->first);
++		struct mptcp_pm_addr_entry *entry;
+ 		struct mptcp_addr_info mpc_addr;
+-		int mpc_id;
++		bool backup = false;
+ 
+ 		local_address((struct sock_common *)msk->first, &mpc_addr);
+-		mpc_id = lookup_id_by_addr(pernet, &mpc_addr);
+-		if (mpc_id >= 0)
+-			__clear_bit(mpc_id, msk->pm.id_avail_bitmap);
++		rcu_read_lock();
++		entry = __lookup_addr(pernet, &mpc_addr, false);
++		if (entry) {
++			__clear_bit(entry->addr.id, msk->pm.id_avail_bitmap);
++			backup = !!(entry->flags & MPTCP_PM_ADDR_FLAG_BACKUP);
++		}
++		rcu_read_unlock();
++
++		if (backup)
++			mptcp_pm_send_ack(msk, subflow, true, backup);
+ 
+ 		msk->pm.status |= BIT(MPTCP_PM_MPC_ENDPOINT_ACCOUNTED);
  	}
- 
- 	pernet->addrs++;
--	list_add_tail_rcu(&entry->list, &pernet->local_addr_list);
-+	if (!entry->addr.port)
-+		list_add_tail_rcu(&entry->list, &pernet->local_addr_list);
-+	else
-+		list_add_rcu(&entry->list, &pernet->local_addr_list);
- 	ret = entry->addr.id;
- 
- out:
 -- 
 2.37.0
 
