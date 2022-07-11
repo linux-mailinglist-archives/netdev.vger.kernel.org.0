@@ -2,38 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F4DF5706A8
-	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 17:09:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 96EA85706A4
+	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 17:09:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232132AbiGKPJf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jul 2022 11:09:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37256 "EHLO
+        id S232122AbiGKPJd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jul 2022 11:09:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232114AbiGKPJc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 11:09:32 -0400
+        with ESMTP id S232096AbiGKPJb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 11:09:31 -0400
 Received: from syslogsrv (unknown [217.20.186.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4640A5FAD7;
-        Mon, 11 Jul 2022 08:09:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAE6E5FAD6;
+        Mon, 11 Jul 2022 08:09:29 -0700 (PDT)
 Received: from fg200.ow.s ([172.20.254.44] helo=localhost.localdomain)
         by syslogsrv with esmtp (Exim 4.90_1)
         (envelope-from <maksym.glubokiy@plvision.eu>)
-        id 1oAv2D-000G64-NI; Mon, 11 Jul 2022 18:09:17 +0300
+        id 1oAv2F-000G64-1i; Mon, 11 Jul 2022 18:09:19 +0300
 From:   Maksym Glubokiy <maksym.glubokiy@plvision.eu>
-To:     "David S. Miller" <davem@davemloft.net>,
+To:     Taras Chornyi <tchornyi@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>
+        Paolo Abeni <pabeni@redhat.com>
 Cc:     Maksym Glubokiy <maksym.glubokiy@plvision.eu>,
-        louis.peens@corigine.com, elic@nvidia.com,
-        simon.horman@corigine.com, baowen.zheng@corigine.com,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>
-Subject: [PATCH net-next v2 1/2] net: extract port range fields from fl_flow_key
-Date:   Mon, 11 Jul 2022 18:09:07 +0300
-Message-Id: <20220711150908.1030650-2-maksym.glubokiy@plvision.eu>
+Subject: [PATCH net-next v2 2/2] net: prestera: add support for port range filters
+Date:   Mon, 11 Jul 2022 18:09:08 +0300
+Message-Id: <20220711150908.1030650-3-maksym.glubokiy@plvision.eu>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220711150908.1030650-1-maksym.glubokiy@plvision.eu>
 References: <20220711150908.1030650-1-maksym.glubokiy@plvision.eu>
@@ -48,109 +44,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-So it can be used for port range filter offloading.
+This adds support for port-range rules:
+
+  $ tc qdisc add ... clsact
+  $ tc filter add ... flower ... src_port <PMIN>-<PMAX> ...
 
 Co-developed-by: Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>
 Signed-off-by: Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>
 Signed-off-by: Maksym Glubokiy <maksym.glubokiy@plvision.eu>
 ---
-v2:
- - fix kernel-doc for the newly added structure
+ .../marvell/prestera/prestera_flower.c        | 24 +++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
- include/net/flow_dissector.h | 16 ++++++++++++++++
- include/net/flow_offload.h   |  6 ++++++
- net/core/flow_offload.c      |  7 +++++++
- net/sched/cls_flower.c       |  8 +-------
- 4 files changed, 30 insertions(+), 7 deletions(-)
-
-diff --git a/include/net/flow_dissector.h b/include/net/flow_dissector.h
-index a4c6057c7097..0f9544a9bb9e 100644
---- a/include/net/flow_dissector.h
-+++ b/include/net/flow_dissector.h
-@@ -178,6 +178,22 @@ struct flow_dissector_key_ports {
- 	};
- };
+diff --git a/drivers/net/ethernet/marvell/prestera/prestera_flower.c b/drivers/net/ethernet/marvell/prestera/prestera_flower.c
+index a54748ac6541..652aa95e65ac 100644
+--- a/drivers/net/ethernet/marvell/prestera/prestera_flower.c
++++ b/drivers/net/ethernet/marvell/prestera/prestera_flower.c
+@@ -202,6 +202,7 @@ static int prestera_flower_parse(struct prestera_flow_block *block,
+ 	      BIT(FLOW_DISSECTOR_KEY_IPV6_ADDRS) |
+ 	      BIT(FLOW_DISSECTOR_KEY_ICMP) |
+ 	      BIT(FLOW_DISSECTOR_KEY_PORTS) |
++	      BIT(FLOW_DISSECTOR_KEY_PORTS_RANGE) |
+ 	      BIT(FLOW_DISSECTOR_KEY_VLAN))) {
+ 		NL_SET_ERR_MSG_MOD(f->common.extack, "Unsupported key");
+ 		return -EOPNOTSUPP;
+@@ -301,6 +302,29 @@ static int prestera_flower_parse(struct prestera_flow_block *block,
+ 		rule_match_set(r_match->mask, L4_PORT_DST, match.mask->dst);
+ 	}
  
-+/**
-+ * struct flow_dissector_key_ports_range
-+ * @tp: port number from packet
-+ * @tp_min: min port number in range
-+ * @tp_max: max port number in range
-+ */
-+struct flow_dissector_key_ports_range {
-+	union {
-+		struct flow_dissector_key_ports tp;
-+		struct {
-+			struct flow_dissector_key_ports tp_min;
-+			struct flow_dissector_key_ports tp_max;
-+		};
-+	};
-+};
++	if (flow_rule_match_key(f_rule, FLOW_DISSECTOR_KEY_PORTS_RANGE)) {
++		struct flow_match_ports_range match;
++		__be32 tp_key, tp_mask;
 +
- /**
-  * flow_dissector_key_icmp:
-  *		type: ICMP type
-diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
-index 7ac313858037..a8d8512b7059 100644
---- a/include/net/flow_offload.h
-+++ b/include/net/flow_offload.h
-@@ -48,6 +48,10 @@ struct flow_match_ports {
- 	struct flow_dissector_key_ports *key, *mask;
- };
++		flow_rule_match_ports_range(f_rule, &match);
++
++		/* src port range (min, max) */
++		tp_key = htonl(ntohs(match.key->tp_min.src) |
++			       (ntohs(match.key->tp_max.src) << 16));
++		tp_mask = htonl(ntohs(match.mask->tp_min.src) |
++				(ntohs(match.mask->tp_max.src) << 16));
++		rule_match_set(r_match->key, L4_PORT_RANGE_SRC, tp_key);
++		rule_match_set(r_match->mask, L4_PORT_RANGE_SRC, tp_mask);
++
++		/* dst port range (min, max) */
++		tp_key = htonl(ntohs(match.key->tp_min.dst) |
++			       (ntohs(match.key->tp_max.dst) << 16));
++		tp_mask = htonl(ntohs(match.mask->tp_min.dst) |
++				(ntohs(match.mask->tp_max.dst) << 16));
++		rule_match_set(r_match->key, L4_PORT_RANGE_DST, tp_key);
++		rule_match_set(r_match->mask, L4_PORT_RANGE_DST, tp_mask);
++	}
++
+ 	if (flow_rule_match_key(f_rule, FLOW_DISSECTOR_KEY_VLAN)) {
+ 		struct flow_match_vlan match;
  
-+struct flow_match_ports_range {
-+	struct flow_dissector_key_ports_range *key, *mask;
-+};
-+
- struct flow_match_icmp {
- 	struct flow_dissector_key_icmp *key, *mask;
- };
-@@ -94,6 +98,8 @@ void flow_rule_match_ip(const struct flow_rule *rule,
- 			struct flow_match_ip *out);
- void flow_rule_match_ports(const struct flow_rule *rule,
- 			   struct flow_match_ports *out);
-+void flow_rule_match_ports_range(const struct flow_rule *rule,
-+				 struct flow_match_ports_range *out);
- void flow_rule_match_tcp(const struct flow_rule *rule,
- 			 struct flow_match_tcp *out);
- void flow_rule_match_icmp(const struct flow_rule *rule,
-diff --git a/net/core/flow_offload.c b/net/core/flow_offload.c
-index 929f6379a279..0d3075d3c8fb 100644
---- a/net/core/flow_offload.c
-+++ b/net/core/flow_offload.c
-@@ -125,6 +125,13 @@ void flow_rule_match_ports(const struct flow_rule *rule,
- }
- EXPORT_SYMBOL(flow_rule_match_ports);
- 
-+void flow_rule_match_ports_range(const struct flow_rule *rule,
-+				 struct flow_match_ports_range *out)
-+{
-+	FLOW_DISSECTOR_MATCH(rule, FLOW_DISSECTOR_KEY_PORTS_RANGE, out);
-+}
-+EXPORT_SYMBOL(flow_rule_match_ports_range);
-+
- void flow_rule_match_tcp(const struct flow_rule *rule,
- 			 struct flow_match_tcp *out)
- {
-diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
-index dcca70144dff..1a1e34480b7e 100644
---- a/net/sched/cls_flower.c
-+++ b/net/sched/cls_flower.c
-@@ -63,13 +63,7 @@ struct fl_flow_key {
- 	struct flow_dissector_key_ip ip;
- 	struct flow_dissector_key_ip enc_ip;
- 	struct flow_dissector_key_enc_opts enc_opts;
--	union {
--		struct flow_dissector_key_ports tp;
--		struct {
--			struct flow_dissector_key_ports tp_min;
--			struct flow_dissector_key_ports tp_max;
--		};
--	} tp_range;
-+	struct flow_dissector_key_ports_range tp_range;
- 	struct flow_dissector_key_ct ct;
- 	struct flow_dissector_key_hash hash;
- 	struct flow_dissector_key_num_of_vlans num_of_vlans;
 -- 
 2.25.1
 
