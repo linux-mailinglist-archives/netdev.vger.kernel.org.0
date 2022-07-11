@@ -2,180 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AB07556D70B
-	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 09:50:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 70A4956D716
+	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 09:51:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230206AbiGKHuD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jul 2022 03:50:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33516 "EHLO
+        id S230222AbiGKHvm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jul 2022 03:51:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230203AbiGKHuC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 03:50:02 -0400
-Received: from chinatelecom.cn (prt-mail.chinatelecom.cn [42.123.76.226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 27ADA1BEAC
-        for <netdev@vger.kernel.org>; Mon, 11 Jul 2022 00:49:57 -0700 (PDT)
-HMM_SOURCE_IP: 172.18.0.218:50322.580737606
-HMM_ATTACHE_NUM: 0000
-HMM_SOURCE_TYPE: SMTP
-Received: from clientip-36.111.140.9 (unknown [172.18.0.218])
-        by chinatelecom.cn (HERMES) with SMTP id 11A3D2800D5;
-        Mon, 11 Jul 2022 15:49:52 +0800 (CST)
-X-189-SAVE-TO-SEND: +liyonglong@chinatelecom.cn
-Received: from  ([172.18.0.218])
-        by app0025 with ESMTP id 409ce89312494811bcd672b3e0318c7a for netdev@vger.kernel.org;
-        Mon, 11 Jul 2022 15:49:54 CST
-X-Transaction-ID: 409ce89312494811bcd672b3e0318c7a
-X-Real-From: liyonglong@chinatelecom.cn
-X-Receive-IP: 172.18.0.218
-X-MEDUSA-Status: 0
-Sender: liyonglong@chinatelecom.cn
-From:   Yonglong Li <liyonglong@chinatelecom.cn>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, dsahern@kernel.org, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, liyonglong@chinatelecom.cn
-Subject: [PATCH v3] tcp: make retransmitted SKB fit into the send window
-Date:   Mon, 11 Jul 2022 15:49:00 +0800
-Message-Id: <1657525740-7585-1-git-send-email-liyonglong@chinatelecom.cn>
-X-Mailer: git-send-email 1.8.3.1
+        with ESMTP id S229890AbiGKHvl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 03:51:41 -0400
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34CDF1C13A
+        for <netdev@vger.kernel.org>; Mon, 11 Jul 2022 00:51:40 -0700 (PDT)
+Received: by mail-wm1-x334.google.com with SMTP id bi22-20020a05600c3d9600b003a04de22ab6so2529037wmb.1
+        for <netdev@vger.kernel.org>; Mon, 11 Jul 2022 00:51:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=ztvaz5BdnKGZMhPHdfgEZYHb0hAaDWz8do9AwzsiSBg=;
+        b=Hwn6nzpGX+T+LutaM8+KjYmqBSQV517VD113jCKqsTVABZpL3RajgVlzsBUtJOj6+w
+         4MEC0eMoLndBf/WUzEJ7yzPiCK1SWNCKgIu1M9hYuXO5BmJkIGbetDA8FrXCbRB72Iv8
+         cuGtRCIzhnji6qdtB8kjxdp0cHFvMmJ4n0mnOOT3LWt8AMxcvOZGxpsqvtuzWUCKuIMC
+         fFdzRXrnV0BOKOs3upAtIl7HIPMA9dScmdkiB7B+/S49RiMn5in2NNk8xfF7F3HOHyiq
+         5qfuoOVPIgj2+dKEiBbHEPrrp2a62s/B7gZFv9XINNIpZY787eCcGOnl4p2D5P4utq63
+         3Hng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=ztvaz5BdnKGZMhPHdfgEZYHb0hAaDWz8do9AwzsiSBg=;
+        b=wnwCh10sU7OiPkIYvsE77jaa6wdRGtrjNaOv5dox6W8xlBhhouctyMoiHbIUys2pFg
+         uU9eU3c/AaSTIYzOnwlkPjGEGC21uitxWv6LzgsbyKTmdjYPjK8pWkXfOyIDWpFbro5H
+         A+on7WTHM1UmAejXZwsg4a4ZqgiRyINzOsrEKi27Mpvoh/Qbh2al946zFVra9y+3mA37
+         gy/VGwNoZbAm0Axt9j6O6QUEpXh5MWI6hFbX9w/1JxfGDb4byxYXz16QPgrk3KfjMtYe
+         By3ioXKuG6Xd4SyO4KdIn7/4HhBiyF/TQYljzKcyJqcBNsGQRa1vJR5/2r5RnDwnNMTn
+         ncqQ==
+X-Gm-Message-State: AJIora8QyzxHDJglyWrvvvvd1MkXdDIAn2U/oLrh0cn843U0HPT29q2L
+        RDFTXMfqvYVbcpzviOEJdpF5uA==
+X-Google-Smtp-Source: AGRyM1t2LVG3w5w5knczU+KZudV327hkRGwLX8FTdhh12km7FALGEq592+7HTWIKyz30zF/nq6jpkw==
+X-Received: by 2002:a05:600c:215a:b0:3a2:cf18:6dcc with SMTP id v26-20020a05600c215a00b003a2cf186dccmr14590732wml.53.1657525898761;
+        Mon, 11 Jul 2022 00:51:38 -0700 (PDT)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id j5-20020adff545000000b0021d864d4461sm5112097wrp.83.2022.07.11.00.51.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Jul 2022 00:51:38 -0700 (PDT)
+Date:   Mon, 11 Jul 2022 08:51:35 +0100
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Colin Foster <colin.foster@in-advantage.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-gpio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        UNGLinuxDriver@microchip.com, Wolfram Sang <wsa@kernel.org>,
+        Terry Bowman <terry.bowman@amd.com>,
+        katie.morris@in-advantage.com
+Subject: Re: [PATCH v13 net-next 0/9] add support for VSC7512 control over SPI
+Message-ID: <YsvWh8YJGeJNbQFB@google.com>
+References: <20220705204743.3224692-1-colin.foster@in-advantage.com>
+ <20220708200918.131c0950@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+In-Reply-To: <20220708200918.131c0950@kernel.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-current code of __tcp_retransmit_skb only check TCP_SKB_CB(skb)->seq
-in send window, and TCP_SKB_CB(skb)->seq_end maybe out of send window.
-If receiver has shrunk his window, and skb is out of new window,  it
-should retransmit a smaller portion of the payload.
+On Fri, 08 Jul 2022, Jakub Kicinski wrote:
 
-test packetdrill script:
-    0 socket(..., SOCK_STREAM, IPPROTO_TCP) = 3
-   +0 fcntl(3, F_GETFL) = 0x2 (flags O_RDWR)
-   +0 fcntl(3, F_SETFL, O_RDWR|O_NONBLOCK) = 0
+> On Tue,  5 Jul 2022 13:47:34 -0700 Colin Foster wrote:
+> > The patch set in general is to add support for the VSC7512, and
+> > eventually the VSC7511, VSC7513 and VSC7514 devices controlled over
+> > SPI. Specifically this patch set enables pinctrl, serial gpio expander
+> > access, and control of an internal and an external MDIO bus.
+> 
+> Can this go into net-next if there are no more complains over the
+> weekend? Anyone still planning to review?
 
-   +0 connect(3, ..., ...) = -1 EINPROGRESS (Operation now in progress)
-   +0 > S 0:0(0)  win 65535 <mss 1460,sackOK,TS val 100 ecr 0,nop,wscale 8>
- +.05 < S. 0:0(0) ack 1 win 6000 <mss 1000,nop,nop,sackOK>
-   +0 > . 1:1(0) ack 1
+As the subsystem with the fewest changes, I'm not sure why it would.
 
-   +0 write(3, ..., 10000) = 10000
+I'd planed to route this in via MFD and send out a pull-request for
+other sub-system maintainers to pull from.
 
-   +0 > . 1:2001(2000) ack 1 win 65535
-   +0 > . 2001:4001(2000) ack 1 win 65535
-   +0 > . 4001:6001(2000) ack 1 win 65535
+If you would like to co-ordinate it instead, you'd be welcome to.
+However, I (and probably Linus) would need a succinct immutable branch
+to pull from.
 
- +.05 < . 1:1(0) ack 4001 win 1001
+> Linus's ack on patch 6 and an MFD Ack from Lee would be great.
 
-and tcpdump show:
-192.168.226.67.55 > 192.0.2.1.8080: Flags [.], seq 1:2001, ack 1, win 65535, length 2000
-192.168.226.67.55 > 192.0.2.1.8080: Flags [.], seq 2001:4001, ack 1, win 65535, length 2000
-192.168.226.67.55 > 192.0.2.1.8080: Flags [P.], seq 4001:5001, ack 1, win 65535, length 1000
-192.168.226.67.55 > 192.0.2.1.8080: Flags [.], seq 5001:6001, ack 1, win 65535, length 1000
-192.0.2.1.8080 > 192.168.226.67.55: Flags [.], ack 4001, win 1001, length 0
-192.168.226.67.55 > 192.0.2.1.8080: Flags [.], seq 5001:6001, ack 1, win 65535, length 1000
-192.168.226.67.55 > 192.0.2.1.8080: Flags [P.], seq 4001:5001, ack 1, win 65535, length 1000
-
-when cient retract window to 1001, send window is [4001,5002],
-but TLP send 5001-6001 packet which is out of send window.
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Yonglong Li <liyonglong@chinatelecom.cn>
----
- net/ipv4/tcp_output.c | 36 ++++++++++++++++++++++++------------
- 1 file changed, 24 insertions(+), 12 deletions(-)
-
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index 18c913a..efd0f05 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -3100,7 +3100,6 @@ static bool tcp_can_collapse(const struct sock *sk, const struct sk_buff *skb)
- static void tcp_retrans_try_collapse(struct sock *sk, struct sk_buff *to,
- 				     int space)
- {
--	struct tcp_sock *tp = tcp_sk(sk);
- 	struct sk_buff *skb = to, *tmp;
- 	bool first = true;
- 
-@@ -3123,14 +3122,18 @@ static void tcp_retrans_try_collapse(struct sock *sk, struct sk_buff *to,
- 			continue;
- 		}
- 
--		if (space < 0)
--			break;
--
--		if (after(TCP_SKB_CB(skb)->end_seq, tcp_wnd_end(tp)))
-+		if (space < 0) {
-+			if (unlikely(tcp_fragment(sk, TCP_FRAG_IN_RTX_QUEUE,
-+						  skb, space + skb->len,
-+						  tcp_current_mss(sk), GFP_ATOMIC)))
-+				break;
-+			tcp_collapse_retrans(sk, to);
- 			break;
-+		}
- 
- 		if (!tcp_collapse_retrans(sk, to))
- 			break;
-+
- 	}
- }
- 
-@@ -3144,7 +3147,7 @@ int __tcp_retransmit_skb(struct sock *sk, struct sk_buff *skb, int segs)
- 	struct tcp_sock *tp = tcp_sk(sk);
- 	unsigned int cur_mss;
- 	int diff, len, err;
--
-+	int avail_wnd;
- 
- 	/* Inconclusive MTU probe */
- 	if (icsk->icsk_mtup.probe_size)
-@@ -3166,17 +3169,25 @@ int __tcp_retransmit_skb(struct sock *sk, struct sk_buff *skb, int segs)
- 		return -EHOSTUNREACH; /* Routing failure or similar. */
- 
- 	cur_mss = tcp_current_mss(sk);
-+	avail_wnd = tcp_wnd_end(tp) - TCP_SKB_CB(skb)->seq;
- 
- 	/* If receiver has shrunk his window, and skb is out of
- 	 * new window, do not retransmit it. The exception is the
- 	 * case, when window is shrunk to zero. In this case
--	 * our retransmit serves as a zero window probe.
-+	 * our retransmit of one segment serves as a zero window probe.
- 	 */
--	if (!before(TCP_SKB_CB(skb)->seq, tcp_wnd_end(tp)) &&
--	    TCP_SKB_CB(skb)->seq != tp->snd_una)
--		return -EAGAIN;
-+	if (avail_wnd <= 0) {
-+		if (TCP_SKB_CB(skb)->seq != tp->snd_una)
-+			return -EAGAIN;
-+		avail_wnd = cur_mss;
-+	}
- 
- 	len = cur_mss * segs;
-+	if (len > avail_wnd) {
-+		len = rounddown(avail_wnd, cur_mss);
-+		if (!len)
-+			len = avail_wnd;
-+	}
- 	if (skb->len > len) {
- 		if (tcp_fragment(sk, TCP_FRAG_IN_RTX_QUEUE, skb, len,
- 				 cur_mss, GFP_ATOMIC))
-@@ -3190,8 +3201,9 @@ int __tcp_retransmit_skb(struct sock *sk, struct sk_buff *skb, int segs)
- 		diff -= tcp_skb_pcount(skb);
- 		if (diff)
- 			tcp_adjust_pcount(sk, skb, diff);
--		if (skb->len < cur_mss)
--			tcp_retrans_try_collapse(sk, skb, cur_mss);
-+		avail_wnd = min_t(int, avail_wnd, cur_mss);
-+		if (skb->len < avail_wnd)
-+			tcp_retrans_try_collapse(sk, skb, avail_wnd);
- 	}
- 
- 	/* RFC3168, section 6.1.1.1. ECN fallback */
 -- 
-1.8.3.1
-
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
