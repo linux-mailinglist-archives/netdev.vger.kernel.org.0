@@ -2,67 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 889B557004E
-	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 13:23:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FF22570057
+	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 13:25:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230478AbiGKLXu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jul 2022 07:23:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36376 "EHLO
+        id S231313AbiGKLZ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jul 2022 07:25:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230359AbiGKLXH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 07:23:07 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 914D237FA8;
-        Mon, 11 Jul 2022 03:51:28 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id w12so4988016edd.13;
-        Mon, 11 Jul 2022 03:51:28 -0700 (PDT)
+        with ESMTP id S229718AbiGKLZJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 07:25:09 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74D1F77A43;
+        Mon, 11 Jul 2022 03:56:33 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id t3so5492699edd.0;
+        Mon, 11 Jul 2022 03:56:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:date:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=VK08yQTJ99mufpNp27xubsdOIIjMExE65sg5hpJC6W8=;
-        b=iZzvVctewcKQocbxZXTD2xaYK71jGE8DBwGmiIb7/RjBQGsQAP2re8q9deGfdCBYPM
-         q45s+T/m6yLcGhYjLphHnlB1HcFU0reX2CLEqA4HLzFlklecDyYu9OiCkuyCLTWj+ELS
-         KkS73iukQ+5Bv8yXy3Uv2AkPoxkBKiKlgmFv8odpUX2hN0vIAj9IgGcN/fsPhVJtoOq6
-         zmn3kBYgbIFHg06ZWrQuOK1PhxmSDLzTpx21+9thhv0J0P457fwqlG8kiCGzgT5BEM9b
-         3lCtwNC3dL39cY9COM1weGQMOjVM0vNavUrUKe3MXRELxtirtC8QX+cbYc5RxXwCBguX
-         j+Lw==
+        bh=iMqIn8DONeCRuyNwWf4Kg7ANcVQQQZs13SNcKa6q92Q=;
+        b=oA3VrB2ys9UGrJKpk+qnmiCqv+TF3R18mgz4TYXGJOnv7yAPx6Z/M1M5cBFqlCus4E
+         PcytroyDjHNx7q/vmZQVdxzPh0WkTX1oPD29sFqY0sTy1yfK4J1vg6WJN6F2LepJwh9D
+         ugA1N1KAjvNQ6O/RFTqpXUxG//wz6SnssCWz2NHAieWug0IRJ6cERMZlTXwW3cY4DiN7
+         5pkxox6hEYodHlw6vl/YrD2rRcBB9ZFi42gIlM85OYRKWZUNkGJp6d+jNsryi3irilX/
+         alEBFdapzJh4vHuxCk+oZDMgc44DMKzBfl54ZC8U78eCs6lq+EZDBx4c0BXbI8h8n6Rb
+         Q0VQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:date:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=VK08yQTJ99mufpNp27xubsdOIIjMExE65sg5hpJC6W8=;
-        b=QxoJJMhD1GwmkadlY49FXT1ROiNT+/hMTFDy6KHW0hRXq/tOxMKtGWeqYFqIrHj4B0
-         CDfkQuz+IuBw4VvziD+29qVfzS1Z9AJdJmqNVawm12mKbuWuO4NlF5QBeykkWtElVa3a
-         nl87ZaYGWhhhraCQWHLkQRmLoeXywHocnB9uhaAJyU9cRsrHKA5dYQckLmKeXcneC5tC
-         ivFdaL3RrIWVuxx/iRJRKT2uO4fzMV2lwG8ZiHCCnSTn1OodGjRz2p94D4RNcxdtfwIp
-         AwypqrIYpNQQkhjeH5JiflKkgKsZVC4UXx7gWKzQnwdCHvbRvf9Cfu6pFIw4GYZwikRp
-         kVrA==
-X-Gm-Message-State: AJIora9XRXcSM6QMcVfJQI33rhk0s19V6GVwM84+YYcs50Rz0E895CVB
-        RCSCnbldGFMT2y5LK+5kikc=
-X-Google-Smtp-Source: AGRyM1t03riDeHSSHc5gIxP5aK4wSoVRCftx91lEkKDrESYg55vCCJalA11JLAomTLJTSjy4CieWWg==
-X-Received: by 2002:a05:6402:d0a:b0:437:66ca:c211 with SMTP id eb10-20020a0564020d0a00b0043766cac211mr24216273edb.29.1657536687051;
-        Mon, 11 Jul 2022 03:51:27 -0700 (PDT)
+        bh=iMqIn8DONeCRuyNwWf4Kg7ANcVQQQZs13SNcKa6q92Q=;
+        b=dSg1MYkvoU6fn8UOVmQBV633slmABDEeuTNN4wKOmL9hMIJPHzyMMU+OWZE7L2NN2+
+         /Koz6IfxF8cUAassUh4YvvEVqpGKE0Jwm+69fs+sCi36yBNT4sJxqATnLv2ChksIXOZQ
+         y5ORDWo9K1rhiD2x58nGfr5D0vee9hnEdsEWXJE/NZ4/qPnarQLlcS8v7Vz0jGJ9YPiR
+         bK7jM09ILWSUzQhJPQZgTZp04XknjU+vyGyv9n4PwmGOULPqgxNWDlz5y93pEVTvZHmK
+         8VuDwqP+oOcsJaKY3F+sLFp+oOq2iyHK4DIkrlMOVE/ocVx/X2vGncdxN1f1gTyncbTq
+         hF2Q==
+X-Gm-Message-State: AJIora/7eb2zDfmFzK0nO/lleq1VThSISqZKArhmVM2j/w8NmBbgF0bK
+        elfIcBofTmsxugjhQK5hSYI=
+X-Google-Smtp-Source: AGRyM1uSOA9xkrmk1S6YtinowVu2TsbwF7PZcBpaUAg91vvDXWNh5+Q66LYOALd6hCTn+AZ9tgycVA==
+X-Received: by 2002:a05:6402:510c:b0:43a:e041:a371 with SMTP id m12-20020a056402510c00b0043ae041a371mr1570379edd.424.1657536991960;
+        Mon, 11 Jul 2022 03:56:31 -0700 (PDT)
 Received: from krava ([151.14.22.253])
-        by smtp.gmail.com with ESMTPSA id g12-20020aa7d1cc000000b00435726bd375sm4121080edp.57.2022.07.11.03.51.25
+        by smtp.gmail.com with ESMTPSA id fn15-20020a1709069d0f00b006fecf74395bsm2565875ejc.8.2022.07.11.03.56.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Jul 2022 03:51:26 -0700 (PDT)
+        Mon, 11 Jul 2022 03:56:31 -0700 (PDT)
 From:   Jiri Olsa <olsajiri@gmail.com>
 X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
-Date:   Mon, 11 Jul 2022 12:51:22 +0200
+Date:   Mon, 11 Jul 2022 12:56:28 +0200
 To:     Artem Savkov <asavkov@redhat.com>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Andrea Arcangeli <aarcange@redhat.com>, dvacek@redhat.com
-Subject: Re: [RFC PATCH bpf-next 0/4] bpf_panic() helper
-Message-ID: <YswAqrJrMKIZPpcz@krava>
+        Andrea Arcangeli <aarcange@redhat.com>
+Subject: Re: [RFC PATCH bpf-next 2/4] bpf: add BPF_F_DESTRUCTIVE flag for
+ BPF_PROG_LOAD
+Message-ID: <YswB3CebEK0ltAwt@krava>
 References: <20220711083220.2175036-1-asavkov@redhat.com>
+ <20220711083220.2175036-3-asavkov@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220711083220.2175036-1-asavkov@redhat.com>
+In-Reply-To: <20220711083220.2175036-3-asavkov@redhat.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -73,40 +75,94 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 11, 2022 at 10:32:16AM +0200, Artem Savkov wrote:
-> eBPF is often used for kernel debugging, and one of the widely used and
-> powerful debugging techniques is post-mortem debugging with a full memory dump.
-> Triggering a panic at exactly the right moment allows the user to get such a
-> dump and thus a better view at the system's state. This patchset adds
-> bpf_panic() helper to do exactly that.
+On Mon, Jul 11, 2022 at 10:32:18AM +0200, Artem Savkov wrote:
+> Add a BPF_F_DESTRUCTIVE will be required to be supplied to
+> BPF_PROG_LOAD for programs to utilize destructive helpers such as
+> bpf_panic().
 
-FWIW I was asked for such helper some time ago from Daniel Vacek, cc-ed
+I'd think that having kernel.destructive_bpf_enabled sysctl knob enabled
+would be enough to enable that helper from any program, not sure having
+extra load flag adds more security
 
 jirka
 
 > 
-> I realize that even though there are multiple guards present, a helper like
-> this is contrary to BPF being "safe", so this is sent as RFC to have a
-> discussion on whether adding destructive capabilities is deemed acceptable.
+> Signed-off-by: Artem Savkov <asavkov@redhat.com>
+> ---
+>  include/linux/bpf.h            | 1 +
+>  include/uapi/linux/bpf.h       | 6 ++++++
+>  kernel/bpf/syscall.c           | 4 +++-
+>  tools/include/uapi/linux/bpf.h | 6 ++++++
+>  4 files changed, 16 insertions(+), 1 deletion(-)
 > 
-> Artem Savkov (4):
->   bpf: add a sysctl to enable destructive bpf helpers
->   bpf: add BPF_F_DESTRUCTIVE flag for BPF_PROG_LOAD
->   bpf: add bpf_panic() helper
->   selftests/bpf: bpf_panic selftest
-> 
->  include/linux/bpf.h                           |   8 +
->  include/uapi/linux/bpf.h                      |  13 ++
->  kernel/bpf/core.c                             |   1 +
->  kernel/bpf/helpers.c                          |  13 ++
->  kernel/bpf/syscall.c                          |  33 +++-
->  kernel/bpf/verifier.c                         |   7 +
->  kernel/trace/bpf_trace.c                      |   2 +
->  tools/include/uapi/linux/bpf.h                |  13 ++
->  .../selftests/bpf/prog_tests/bpf_panic.c      | 144 ++++++++++++++++++
->  9 files changed, 233 insertions(+), 1 deletion(-)
->  create mode 100644 tools/testing/selftests/bpf/prog_tests/bpf_panic.c
-> 
+> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> index 77972724bed7..43c008e3587a 100644
+> --- a/include/linux/bpf.h
+> +++ b/include/linux/bpf.h
+> @@ -1041,6 +1041,7 @@ struct bpf_prog_aux {
+>  	bool sleepable;
+>  	bool tail_call_reachable;
+>  	bool xdp_has_frags;
+> +	bool destructive;
+>  	bool use_bpf_prog_pack;
+>  	/* BTF_KIND_FUNC_PROTO for valid attach_btf_id */
+>  	const struct btf_type *attach_func_proto;
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index e81362891596..4423874b5da4 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -1121,6 +1121,12 @@ enum bpf_link_type {
+>   */
+>  #define BPF_F_XDP_HAS_FRAGS	(1U << 5)
+>  
+> +/* If BPF_F_DESTRUCTIVE is used in BPF_PROG_LOAD command, the loaded program
+> + * will be able to perform destructive operations such as calling bpf_panic()
+> + * helper.
+> + */
+> +#define BPF_F_DESTRUCTIVE	(1U << 6)
+> +
+>  /* link_create.kprobe_multi.flags used in LINK_CREATE command for
+>   * BPF_TRACE_KPROBE_MULTI attach type to create return probe.
+>   */
+> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+> index 1ce6541d90e1..779feac2dc7d 100644
+> --- a/kernel/bpf/syscall.c
+> +++ b/kernel/bpf/syscall.c
+> @@ -2449,7 +2449,8 @@ static int bpf_prog_load(union bpf_attr *attr, bpfptr_t uattr)
+>  				 BPF_F_TEST_STATE_FREQ |
+>  				 BPF_F_SLEEPABLE |
+>  				 BPF_F_TEST_RND_HI32 |
+> -				 BPF_F_XDP_HAS_FRAGS))
+> +				 BPF_F_XDP_HAS_FRAGS |
+> +				 BPF_F_DESTRUCTIVE))
+>  		return -EINVAL;
+>  
+>  	if (!IS_ENABLED(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS) &&
+> @@ -2536,6 +2537,7 @@ static int bpf_prog_load(union bpf_attr *attr, bpfptr_t uattr)
+>  	prog->aux->offload_requested = !!attr->prog_ifindex;
+>  	prog->aux->sleepable = attr->prog_flags & BPF_F_SLEEPABLE;
+>  	prog->aux->xdp_has_frags = attr->prog_flags & BPF_F_XDP_HAS_FRAGS;
+> +	prog->aux->destructive = attr->prog_flags & BPF_F_DESTRUCTIVE;
+>  
+>  	err = security_bpf_prog_alloc(prog->aux);
+>  	if (err)
+> diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+> index e81362891596..4423874b5da4 100644
+> --- a/tools/include/uapi/linux/bpf.h
+> +++ b/tools/include/uapi/linux/bpf.h
+> @@ -1121,6 +1121,12 @@ enum bpf_link_type {
+>   */
+>  #define BPF_F_XDP_HAS_FRAGS	(1U << 5)
+>  
+> +/* If BPF_F_DESTRUCTIVE is used in BPF_PROG_LOAD command, the loaded program
+> + * will be able to perform destructive operations such as calling bpf_panic()
+> + * helper.
+> + */
+> +#define BPF_F_DESTRUCTIVE	(1U << 6)
+> +
+>  /* link_create.kprobe_multi.flags used in LINK_CREATE command for
+>   * BPF_TRACE_KPROBE_MULTI attach type to create return probe.
+>   */
 > -- 
 > 2.35.3
 > 
