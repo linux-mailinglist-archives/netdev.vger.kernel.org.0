@@ -2,118 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CC78856D50A
-	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 08:59:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B52156D515
+	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 09:02:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229743AbiGKG7d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jul 2022 02:59:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50002 "EHLO
+        id S229773AbiGKHCL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jul 2022 03:02:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229479AbiGKG7c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 02:59:32 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7F6D10FC8;
-        Sun, 10 Jul 2022 23:59:30 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id j1-20020a17090aeb0100b001ef777a7befso5319901pjz.0;
-        Sun, 10 Jul 2022 23:59:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=GeihzPQ4gDEvIfkX96rheatYD9BEj0zBOuDE5t7m6pM=;
-        b=EIA8veF/UGA6fCHdCpgvNU75iz7I0Xiw+YjywF2DlGNY3pW+zQaJqrxRSJiMRssuSM
-         9kL0NmgU/ZtKKMJTLwYUROa6z4I/fy6H7GVLPf9ar03+iNjIJO/P96wjO+p7Zejopony
-         dEqnA5B8YWWyfSbOj3OqqLhOHQ7YgC95YVeuCUVSrWjPJt0wUMZtleG+W/3nPs8WJAjm
-         2n6Gj4A8CSVh0gg2kEDXIX9OdwgefV+I3pxo6FtJpG/Uql4lD9X1yf+3zA3wLdiknrlc
-         86LQpDBNszaGwTe0G9VcKxXYNif6TJwMvGwiPXsTaPZHtPFtM/eXtBBuJFx8J5wekm60
-         BSuQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=GeihzPQ4gDEvIfkX96rheatYD9BEj0zBOuDE5t7m6pM=;
-        b=SYV/GfjUlV/R0X9BTZpaK4vzbhUZh5gOsPHWd5zq2xTyoHbTVHSFIHpiYkh5AegbIK
-         shw24DCUKPzo88m3qSQyg1JMcd0Odf1SyAj2E5xldSg5ebO64+xOVLwXUEO6D9hM7+5Z
-         QPX1YMVZagJXfZVRQEIcAhtMWx5kgptYWMfxwGRQaQncoYNUoItpIFuv6V5Ru8bOodEO
-         Tb+0LYvwEtJWfFkPHlfAIeg87z45nAqvU3LrQGkUbhBz89mRevu8J3/k5rJiCxDFZjeU
-         mIncQ30RRSpSGOpqVsVR6IogIXM77ahL1PJYinUgB5cWEE/IO8bAcA5EqwpHcK7vzjl1
-         BMDQ==
-X-Gm-Message-State: AJIora+CBdAanAPI6EfR/Hv8k6N5ZEGSVtRtChqSoYu979pZpxk88+wo
-        K8VnQ84qkbmijmCkJY1L4xA=
-X-Google-Smtp-Source: AGRyM1uCInwr/NUdysJ0b7sefaWPA1c+O7e2tIqHEY64v2pvje38AiK2iGkVPsi0juW35BrPY2yGEg==
-X-Received: by 2002:a17:902:e850:b0:16c:41d1:19d2 with SMTP id t16-20020a170902e85000b0016c41d119d2mr5672566plg.125.1657522770331;
-        Sun, 10 Jul 2022 23:59:30 -0700 (PDT)
-Received: from localhost.localdomain ([129.227.148.126])
-        by smtp.gmail.com with ESMTPSA id s7-20020a170902988700b00168c52319c3sm3910010plp.149.2022.07.10.23.59.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 10 Jul 2022 23:59:29 -0700 (PDT)
-From:   Hangyu Hua <hbh25y@gmail.com>
-To:     ericvh@gmail.com, lucho@ionkov.net, asmadeus@codewreck.org,
-        linux_oss@crudebyte.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, tomasbortoli@gmail.com
-Cc:     v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>
-Subject: [PATCH] net: 9p: fix possible refcount leak in p9_read_work() and recv_done()
-Date:   Mon, 11 Jul 2022 14:59:07 +0800
-Message-Id: <20220711065907.23105-1-hbh25y@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S229463AbiGKHCK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 03:02:10 -0400
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E461D140C2;
+        Mon, 11 Jul 2022 00:02:05 -0700 (PDT)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 26B71ak16000661, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36504.realtek.com.tw[172.21.6.27])
+        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 26B71ak16000661
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Mon, 11 Jul 2022 15:01:36 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXH36504.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.7; Mon, 11 Jul 2022 15:01:38 +0800
+Received: from fc34.localdomain (172.21.177.102) by RTEXMBS04.realtek.com.tw
+ (172.21.6.97) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.27; Mon, 11 Jul
+ 2022 15:01:37 +0800
+From:   Hayes Wang <hayeswang@realtek.com>
+To:     <kuba@kernel.org>, <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <nic_swsd@realtek.com>,
+        <linux-kernel@vger.kernel.org>, Hayes Wang <hayeswang@realtek.com>
+Subject: [PATCH net] r8152: fix accessing unset transport header
+Date:   Mon, 11 Jul 2022 15:00:04 +0800
+Message-ID: <20220711070004.28010-389-nic_swsd@realtek.com>
+X-Mailer: git-send-email 2.34.3
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [172.21.177.102]
+X-ClientProxiedBy: RTEXH36504.realtek.com.tw (172.21.6.27) To
+ RTEXMBS04.realtek.com.tw (172.21.6.97)
+X-KSE-ServerInfo: RTEXMBS04.realtek.com.tw, 9
+X-KSE-AntiSpam-Interceptor-Info: trusted connection
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Deterministic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 07/11/2022 06:49:00
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: =?big5?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzcvMTEgpFekyCAwNDozODowMA==?=
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-KSE-ServerInfo: RTEXH36504.realtek.com.tw, 9
+X-KSE-AntiSpam-Interceptor-Info: fallback
+X-KSE-Antivirus-Interceptor-Info: fallback
+X-KSE-AntiSpam-Interceptor-Info: fallback
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A ref got in p9_tag_lookup needs to be put when functions enter the
-error path.
+A warning is triggered by commit 66e4c8d95008 ("net: warn if transport
+header was not set"). The warning is harmless, because the value from
+skb_transport_offset() is only used for skb_is_gso() is true or the
+skb->ip_summed is equal to CHECKSUM_PARTIAL.
 
-Fix this by adding p9_req_put in error path.
-
-Fixes: 728356dedeff ("9p: Add refcount to p9_req_t")
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Signed-off-by: Hayes Wang <hayeswang@realtek.com>
 ---
- net/9p/trans_fd.c   | 3 +++
- net/9p/trans_rdma.c | 1 +
- 2 files changed, 4 insertions(+)
+ drivers/net/usb/r8152.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/net/9p/trans_fd.c b/net/9p/trans_fd.c
-index 8f8f95e39b03..c4ccb7b9e1bf 100644
---- a/net/9p/trans_fd.c
-+++ b/net/9p/trans_fd.c
-@@ -343,6 +343,7 @@ static void p9_read_work(struct work_struct *work)
- 			p9_debug(P9_DEBUG_ERROR,
- 				 "No recv fcall for tag %d (req %p), disconnecting!\n",
- 				 m->rc.tag, m->rreq);
-+			p9_req_put(m->rreq);
- 			m->rreq = NULL;
- 			err = -EIO;
- 			goto error;
-@@ -372,6 +373,8 @@ static void p9_read_work(struct work_struct *work)
- 				 "Request tag %d errored out while we were reading the reply\n",
- 				 m->rc.tag);
- 			err = -EIO;
-+			p9_req_put(m->rreq);
-+			m->rreq = NULL;
- 			goto error;
+diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
+index 7389d6ef8569..b082819509e1 100644
+--- a/drivers/net/usb/r8152.c
++++ b/drivers/net/usb/r8152.c
+@@ -2156,7 +2156,7 @@ static inline void rtl_rx_vlan_tag(struct rx_desc *desc, struct sk_buff *skb)
+ }
+ 
+ static int r8152_tx_csum(struct r8152 *tp, struct tx_desc *desc,
+-			 struct sk_buff *skb, u32 len, u32 transport_offset)
++			 struct sk_buff *skb, u32 len)
+ {
+ 	u32 mss = skb_shinfo(skb)->gso_size;
+ 	u32 opts1, opts2 = 0;
+@@ -2167,6 +2167,8 @@ static int r8152_tx_csum(struct r8152 *tp, struct tx_desc *desc,
+ 	opts1 = len | TX_FS | TX_LS;
+ 
+ 	if (mss) {
++		u32 transport_offset = (u32)skb_transport_offset(skb);
++
+ 		if (transport_offset > GTTCPHO_MAX) {
+ 			netif_warn(tp, tx_err, tp->netdev,
+ 				   "Invalid transport offset 0x%x for TSO\n",
+@@ -2197,6 +2199,7 @@ static int r8152_tx_csum(struct r8152 *tp, struct tx_desc *desc,
+ 		opts1 |= transport_offset << GTTCPHO_SHIFT;
+ 		opts2 |= min(mss, MSS_MAX) << MSS_SHIFT;
+ 	} else if (skb->ip_summed == CHECKSUM_PARTIAL) {
++		u32 transport_offset = (u32)skb_transport_offset(skb);
+ 		u8 ip_protocol;
+ 
+ 		if (transport_offset > TCPHO_MAX) {
+@@ -2260,7 +2263,6 @@ static int r8152_tx_agg_fill(struct r8152 *tp, struct tx_agg *agg)
+ 		struct tx_desc *tx_desc;
+ 		struct sk_buff *skb;
+ 		unsigned int len;
+-		u32 offset;
+ 
+ 		skb = __skb_dequeue(&skb_head);
+ 		if (!skb)
+@@ -2276,9 +2278,7 @@ static int r8152_tx_agg_fill(struct r8152 *tp, struct tx_agg *agg)
+ 		tx_data = tx_agg_align(tx_data);
+ 		tx_desc = (struct tx_desc *)tx_data;
+ 
+-		offset = (u32)skb_transport_offset(skb);
+-
+-		if (r8152_tx_csum(tp, tx_desc, skb, skb->len, offset)) {
++		if (r8152_tx_csum(tp, tx_desc, skb, skb->len)) {
+ 			r8152_csum_workaround(tp, skb, &skb_head);
+ 			continue;
  		}
- 		spin_unlock(&m->client->lock);
-diff --git a/net/9p/trans_rdma.c b/net/9p/trans_rdma.c
-index 88e563826674..82b5d6894ee2 100644
---- a/net/9p/trans_rdma.c
-+++ b/net/9p/trans_rdma.c
-@@ -317,6 +317,7 @@ recv_done(struct ib_cq *cq, struct ib_wc *wc)
- 	/* Check that we have not yet received a reply for this request.
- 	 */
- 	if (unlikely(req->rc.sdata)) {
-+		p9_req_put(req);
- 		pr_err("Duplicate reply for request %d", tag);
- 		goto err_out;
- 	}
+@@ -2759,9 +2759,9 @@ rtl8152_features_check(struct sk_buff *skb, struct net_device *dev,
+ {
+ 	u32 mss = skb_shinfo(skb)->gso_size;
+ 	int max_offset = mss ? GTTCPHO_MAX : TCPHO_MAX;
+-	int offset = skb_transport_offset(skb);
+ 
+-	if ((mss || skb->ip_summed == CHECKSUM_PARTIAL) && offset > max_offset)
++	if ((mss || skb->ip_summed == CHECKSUM_PARTIAL) &&
++	    skb_transport_offset(skb) > max_offset)
+ 		features &= ~(NETIF_F_CSUM_MASK | NETIF_F_GSO_MASK);
+ 	else if ((skb->len + sizeof(struct tx_desc)) > agg_buf_sz)
+ 		features &= ~NETIF_F_GSO_MASK;
 -- 
-2.25.1
+2.34.3
 
