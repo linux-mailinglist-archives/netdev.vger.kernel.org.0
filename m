@@ -2,67 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 95FCE5704E3
-	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 16:01:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 781DA5704F8
+	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 16:04:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230008AbiGKOBc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jul 2022 10:01:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55320 "EHLO
+        id S230084AbiGKOEc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jul 2022 10:04:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229536AbiGKOBb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 10:01:31 -0400
-Received: from jari.cn (unknown [218.92.28.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BEAD6627E;
-        Mon, 11 Jul 2022 07:01:26 -0700 (PDT)
-Received: by ajax-webmail-localhost.localdomain (Coremail) ; Mon, 11 Jul
- 2022 21:55:37 +0800 (GMT+08:00)
-X-Originating-IP: [182.148.15.109]
-Date:   Mon, 11 Jul 2022 21:55:37 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   "XueBing Chen" <chenxuebing@jari.cn>
-To:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        edumazet@google.com, pabeni@redhat.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: ip_tunnel: use strscpy to replace strlcpy
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT6.0.1 build 20210329(c53f3fee)
- Copyright (c) 2002-2022 www.mailtech.cn
- mispb-4e503810-ca60-4ec8-a188-7102c18937cf-zhkzyfz.cn
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        with ESMTP id S229923AbiGKOEa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 10:04:30 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 267C41BEBC
+        for <netdev@vger.kernel.org>; Mon, 11 Jul 2022 07:04:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657548268;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=MHDwuZOBumrb0bTeaJpSEvJ+mJYtR/xSjJZhFTAmwho=;
+        b=hLEhfxA46qiHgH7cPBsmDIkq6umXp6nztCNuKGZK2/T1e6xU2frqVpcjioawqI4vnxIvtx
+        m2NRbMOMk5CRWcXFDhyo++0IB/l0Xn2IMoqVRm62X+6kII74biz2wFjuMk8sOZRv60vmuS
+        /WcJcQP3mO3ww1weKsgMuRJJIoxJFfM=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-439-0eFv_hyjPBmNxstG_IyD-Q-1; Mon, 11 Jul 2022 10:04:24 -0400
+X-MC-Unique: 0eFv_hyjPBmNxstG_IyD-Q-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 83CA1101E9B0;
+        Mon, 11 Jul 2022 14:04:24 +0000 (UTC)
+Received: from firesoul.localdomain (unknown [10.40.208.35])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 31CF52026D64;
+        Mon, 11 Jul 2022 14:04:24 +0000 (UTC)
+Received: from [192.168.42.3] (localhost [IPv6:::1])
+        by firesoul.localdomain (Postfix) with ESMTP id 03C2130736C78;
+        Mon, 11 Jul 2022 16:04:23 +0200 (CEST)
+Subject: [bpf-next PATCH] samples/bpf: Fix xdp_redirect_map egress devmap prog
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     bpf@vger.kernel.org
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
+        tstellar@redhat.com
+Date:   Mon, 11 Jul 2022 16:04:22 +0200
+Message-ID: <165754826292.575614.5636444052787717159.stgit@firesoul>
+User-Agent: StGit/1.4
 MIME-Version: 1.0
-Message-ID: <2a08f6c1.e30.181ed8b49ad.Coremail.chenxuebing@jari.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: AQAAfwD3AG_ZK8xiSORIAA--.923W
-X-CM-SenderInfo: hfkh05pxhex0nj6mt2flof0/1tbiAQAOCmFEYxsxegANse
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
-X-Spam-Status: No, score=2.2 required=5.0 tests=BAYES_00,RCVD_IN_PBL,RDNS_NONE,
-        T_SCC_BODY_TEXT_LINE,T_SPF_HELO_PERMERROR,T_SPF_PERMERROR,XPRIO
-        autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: **
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.4
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ClRoZSBzdHJsY3B5IHNob3VsZCBub3QgYmUgdXNlZCBiZWNhdXNlIGl0IGRvZXNuJ3QgbGltaXQg
-dGhlIHNvdXJjZQpsZW5ndGguIFByZWZlcnJlZCBpcyBzdHJzY3B5LgoKU2lnbmVkLW9mZi1ieTog
-WHVlQmluZyBDaGVuIDxjaGVueHVlYmluZ0BqYXJpLmNuPgotLS0KIG5ldC9pcHY0L2lwX3R1bm5l
-bC5jIHwgNCArKy0tCiAxIGZpbGUgY2hhbmdlZCwgMiBpbnNlcnRpb25zKCspLCAyIGRlbGV0aW9u
-cygtKQoKZGlmZiAtLWdpdCBhL25ldC9pcHY0L2lwX3R1bm5lbC5jIGIvbmV0L2lwdjQvaXBfdHVu
-bmVsLmMKaW5kZXggOTQwMTdhOGMzOTk0Li40Njg4ZjAwYTQ1NGMgMTAwNjQ0Ci0tLSBhL25ldC9p
-cHY0L2lwX3R1bm5lbC5jCisrKyBiL25ldC9pcHY0L2lwX3R1bm5lbC5jCkBAIC0yNDIsNyArMjQy
-LDcgQEAgc3RhdGljIHN0cnVjdCBuZXRfZGV2aWNlICpfX2lwX3R1bm5lbF9jcmVhdGUoc3RydWN0
-IG5ldCAqbmV0LAogCWlmIChwYXJtcy0+bmFtZVswXSkgewogCQlpZiAoIWRldl92YWxpZF9uYW1l
-KHBhcm1zLT5uYW1lKSkKIAkJCWdvdG8gZmFpbGVkOwotCQlzdHJsY3B5KG5hbWUsIHBhcm1zLT5u
-YW1lLCBJRk5BTVNJWik7CisJCXN0cnNjcHkobmFtZSwgcGFybXMtPm5hbWUsIElGTkFNU0laKTsK
-IAl9IGVsc2UgewogCQlpZiAoc3RybGVuKG9wcy0+a2luZCkgPiAoSUZOQU1TSVogLSAzKSkKIAkJ
-CWdvdG8gZmFpbGVkOwpAQCAtMTA2NSw3ICsxMDY1LDcgQEAgaW50IGlwX3R1bm5lbF9pbml0X25l
-dChzdHJ1Y3QgbmV0ICpuZXQsIHVuc2lnbmVkIGludCBpcF90bmxfbmV0X2lkLAogCiAJbWVtc2V0
-KCZwYXJtcywgMCwgc2l6ZW9mKHBhcm1zKSk7CiAJaWYgKGRldm5hbWUpCi0JCXN0cmxjcHkocGFy
-bXMubmFtZSwgZGV2bmFtZSwgSUZOQU1TSVopOworCQlzdHJzY3B5KHBhcm1zLm5hbWUsIGRldm5h
-bWUsIElGTkFNU0laKTsKIAogCXJ0bmxfbG9jaygpOwogCWl0bi0+ZmJfdHVubmVsX2RldiA9IF9f
-aXBfdHVubmVsX2NyZWF0ZShuZXQsIG9wcywgJnBhcm1zKTsKLS0gCjIuMjUuMQoKCg==
+LLVM compiler optimized out the memcpy in xdp_redirect_map_egress,
+which caused the Ethernet source MAC-addr to always be zero
+when enabling the devmap egress prog via cmdline --load-egress.
+
+Issue observed with LLVM version 14.0.0
+ - Shipped with Fedora 36 on target: x86_64-redhat-linux-gnu.
+
+In verbose mode print the source MAC-addr in case xdp_devmap_attached
+mode is used.
+
+Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+---
+ samples/bpf/xdp_redirect_map.bpf.c  |    6 ++++--
+ samples/bpf/xdp_redirect_map_user.c |    9 +++++++++
+ 2 files changed, 13 insertions(+), 2 deletions(-)
+
+diff --git a/samples/bpf/xdp_redirect_map.bpf.c b/samples/bpf/xdp_redirect_map.bpf.c
+index 415bac1758e3..8557c278df77 100644
+--- a/samples/bpf/xdp_redirect_map.bpf.c
++++ b/samples/bpf/xdp_redirect_map.bpf.c
+@@ -33,7 +33,7 @@ struct {
+ } tx_port_native SEC(".maps");
+ 
+ /* store egress interface mac address */
+-const volatile char tx_mac_addr[ETH_ALEN];
++const volatile __u8 tx_mac_addr[ETH_ALEN];
+ 
+ static __always_inline int xdp_redirect_map(struct xdp_md *ctx, void *redirect_map)
+ {
+@@ -73,6 +73,7 @@ int xdp_redirect_map_egress(struct xdp_md *ctx)
+ {
+ 	void *data_end = (void *)(long)ctx->data_end;
+ 	void *data = (void *)(long)ctx->data;
++	u8 *mac_addr = (u8 *) tx_mac_addr;
+ 	struct ethhdr *eth = data;
+ 	u64 nh_off;
+ 
+@@ -80,7 +81,8 @@ int xdp_redirect_map_egress(struct xdp_md *ctx)
+ 	if (data + nh_off > data_end)
+ 		return XDP_DROP;
+ 
+-	__builtin_memcpy(eth->h_source, (const char *)tx_mac_addr, ETH_ALEN);
++	barrier_var(mac_addr); /* prevent optimizing out memcpy */
++	__builtin_memcpy(eth->h_source, mac_addr, ETH_ALEN);
+ 
+ 	return XDP_PASS;
+ }
+diff --git a/samples/bpf/xdp_redirect_map_user.c b/samples/bpf/xdp_redirect_map_user.c
+index b6e4fc849577..c889a1394dc1 100644
+--- a/samples/bpf/xdp_redirect_map_user.c
++++ b/samples/bpf/xdp_redirect_map_user.c
+@@ -40,6 +40,8 @@ static const struct option long_options[] = {
+ 	{}
+ };
+ 
++static int verbose = 0;
++
+ int main(int argc, char **argv)
+ {
+ 	struct bpf_devmap_val devmap_val = {};
+@@ -79,6 +81,7 @@ int main(int argc, char **argv)
+ 			break;
+ 		case 'v':
+ 			sample_switch_mode();
++			verbose = 1;
+ 			break;
+ 		case 's':
+ 			mask |= SAMPLE_REDIRECT_MAP_CNT;
+@@ -134,6 +137,12 @@ int main(int argc, char **argv)
+ 			ret = EXIT_FAIL;
+ 			goto end_destroy;
+ 		}
++		if (verbose)
++			printf("Egress ifindex:%d using src MAC %02x:%02x:%02x:%02x:%02x:%02x\n",
++			       ifindex_out,
++			       skel->rodata->tx_mac_addr[0], skel->rodata->tx_mac_addr[1],
++			       skel->rodata->tx_mac_addr[2], skel->rodata->tx_mac_addr[3],
++			       skel->rodata->tx_mac_addr[4], skel->rodata->tx_mac_addr[5]);
+ 	}
+ 
+ 	skel->rodata->from_match[0] = ifindex_in;
+
+
