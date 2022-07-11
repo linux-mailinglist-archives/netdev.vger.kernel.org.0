@@ -2,74 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BEBE656D80B
-	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 10:31:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 548B556D822
+	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 10:33:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230093AbiGKIbv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jul 2022 04:31:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37400 "EHLO
+        id S230274AbiGKIdD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jul 2022 04:33:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229807AbiGKIbt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 04:31:49 -0400
-Received: from mail-yw1-x112d.google.com (mail-yw1-x112d.google.com [IPv6:2607:f8b0:4864:20::112d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E138D1F2CF
-        for <netdev@vger.kernel.org>; Mon, 11 Jul 2022 01:31:47 -0700 (PDT)
-Received: by mail-yw1-x112d.google.com with SMTP id 00721157ae682-31cac89d8d6so41687807b3.2
-        for <netdev@vger.kernel.org>; Mon, 11 Jul 2022 01:31:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3J9IyHuNdf4RzUYhyAwrvjFLRiRYfpINA65MRt4kKgM=;
-        b=WxLDiTDJ/cGeyxc13LPwdMBwqy9mf7NUwb8pTiIlyxslwk4PbnCJ5wM4ZxQ35hQTGW
-         6TdMU9/dafniNVuenzFjx8a4yzjl2UN+41lCphU9wQ862bHH/avz5vqbTBj9jqQaFTop
-         t8HZ+LNAl5fhEr5lPMGTw8emV50wpE1Z0y/D+PtanoEug9S0I/UR/GQ0bIkGpXqWChXT
-         CkuPZLS4pRGNHOkZbqcNlOGOWC5EV6GRURwUkV01gXNwuLub3EVxobjhfETIqSQVT9b+
-         wP0ObIClelaK0DwNKkMyl6qbPjhB/sHo2bzFrYhWWiwB5gnKjXI2bQ5PXWtp/oubc5um
-         +6Qw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3J9IyHuNdf4RzUYhyAwrvjFLRiRYfpINA65MRt4kKgM=;
-        b=G7hksnWQcSWb9FIA6mlPGhkqqUJG4ufAHxOITec0tItQYZK4nbrGp0gEB7B7QdGZGP
-         rN1szOcpHy/77qgIoZPrJ5s2A56C+vIuaYTJngYuln7uHU6ETAVYKaDnZetqh4QdedJ1
-         eOHt9UI3tEVdUBUjULwdmawo5kTKTiQJvYQWNgFFDnSX3UQyAdhGaXf2qGkIlHVjjzz4
-         v14suNpt0HBnqB+mWV0b8y3ZcPtVyiDql8cw9mLnxnaAcqv0cdVIIeH3NcO4n7dtraY+
-         DmVc6V8PcTaCy3IGd95OuXo6ZFJyMak/jy3zMeyX1YoyBbwOJzdkncv1gXgaEbWy3GSE
-         5pMA==
-X-Gm-Message-State: AJIora8Eaubhg5PyR1Y7aTIsmJq5yAwkkjS89WGZNkFGknoStuCX/cxu
-        ggv7Ez3aXKoMR8v8Y+CWjptJRNokfbkXHDog22f1rg==
-X-Google-Smtp-Source: AGRyM1u/2OXTB+9LffDEL+06zw4GuQSG0hG72hUyRzuw00qzHcEs9iDFO58dE3J4U/ALR03h0POcpnK5re78d+8pfSI=
-X-Received: by 2002:a81:6cf:0:b0:31c:913c:144c with SMTP id
- 198-20020a8106cf000000b0031c913c144cmr18316528ywg.437.1657528307206; Mon, 11
- Jul 2022 01:31:47 -0700 (PDT)
+        with ESMTP id S230202AbiGKIcg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 04:32:36 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ADD3A1FCCA
+        for <netdev@vger.kernel.org>; Mon, 11 Jul 2022 01:32:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657528352;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=aKGFy03TW0CXqndqD4MQz+oIb7kOoMG9F98zOmwauWM=;
+        b=hFzA1BwAxs+lojonVPs2JruKq0isMrc8+x3X/oDSYQ9k5rKzVmYDqRHMV6EQvvuwOVX5cw
+        WxTcHr6QLndpCjjynBAm8EW7I3E5lUOxwoyAekqdwBzaW4+mlM4mseWh8at5joyl2cbV2s
+        UoeV5GvMIDO/skSnpc+5XPWdMcsJoaM=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-624-gSuQ_0p3PhyNcyK48n_gNw-1; Mon, 11 Jul 2022 04:32:23 -0400
+X-MC-Unique: gSuQ_0p3PhyNcyK48n_gNw-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2F606802D1F;
+        Mon, 11 Jul 2022 08:32:23 +0000 (UTC)
+Received: from shodan.usersys.redhat.com (unknown [10.43.17.22])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 098DC1415118;
+        Mon, 11 Jul 2022 08:32:22 +0000 (UTC)
+Received: by shodan.usersys.redhat.com (Postfix, from userid 1000)
+        id DBED31C022D; Mon, 11 Jul 2022 10:32:21 +0200 (CEST)
+From:   Artem Savkov <asavkov@redhat.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Artem Savkov <asavkov@redhat.com>
+Subject: [RFC PATCH bpf-next 0/4] bpf_panic() helper
+Date:   Mon, 11 Jul 2022 10:32:16 +0200
+Message-Id: <20220711083220.2175036-1-asavkov@redhat.com>
 MIME-Version: 1.0
-References: <cover.1656583541.git.hakan.jansson@infineon.com> <e3f949c067ad07a1dd34247efc49f3d913c4f7c6.1656583541.git.hakan.jansson@infineon.com>
-In-Reply-To: <e3f949c067ad07a1dd34247efc49f3d913c4f7c6.1656583541.git.hakan.jansson@infineon.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Mon, 11 Jul 2022 10:31:36 +0200
-Message-ID: <CACRpkdYoe1-kCepz2J3h7H15rcG-a2o6y-GHOwaC6f+ipLTQhg@mail.gmail.com>
-Subject: Re: [PATCH v2 1/5] dt-bindings: net: broadcom-bluetooth: Add CYW55572
- DT binding
-To:     Hakan Jansson <hakan.jansson@infineon.com>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        linux-bluetooth@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,16 +62,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 30, 2022 at 2:46 PM Hakan Jansson
-<hakan.jansson@infineon.com> wrote:
+eBPF is often used for kernel debugging, and one of the widely used and
+powerful debugging techniques is post-mortem debugging with a full memory dump.
+Triggering a panic at exactly the right moment allows the user to get such a
+dump and thus a better view at the system's state. This patchset adds
+bpf_panic() helper to do exactly that.
 
-> CYW55572 is a Wi-Fi + Bluetooth combo device from Infineon.
-> Extend the binding with its DT compatible.
->
-> Signed-off-by: Hakan Jansson <hakan.jansson@infineon.com>
-> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+I realize that even though there are multiple guards present, a helper like
+this is contrary to BPF being "safe", so this is sent as RFC to have a
+discussion on whether adding destructive capabilities is deemed acceptable.
 
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Artem Savkov (4):
+  bpf: add a sysctl to enable destructive bpf helpers
+  bpf: add BPF_F_DESTRUCTIVE flag for BPF_PROG_LOAD
+  bpf: add bpf_panic() helper
+  selftests/bpf: bpf_panic selftest
 
-Yours,
-Linus Walleij
+ include/linux/bpf.h                           |   8 +
+ include/uapi/linux/bpf.h                      |  13 ++
+ kernel/bpf/core.c                             |   1 +
+ kernel/bpf/helpers.c                          |  13 ++
+ kernel/bpf/syscall.c                          |  33 +++-
+ kernel/bpf/verifier.c                         |   7 +
+ kernel/trace/bpf_trace.c                      |   2 +
+ tools/include/uapi/linux/bpf.h                |  13 ++
+ .../selftests/bpf/prog_tests/bpf_panic.c      | 144 ++++++++++++++++++
+ 9 files changed, 233 insertions(+), 1 deletion(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/bpf_panic.c
+
+-- 
+2.35.3
+
