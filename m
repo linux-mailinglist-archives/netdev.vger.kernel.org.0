@@ -2,99 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 604CD56D758
-	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 10:04:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B9FB056D76A
+	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 10:09:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229604AbiGKIEh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jul 2022 04:04:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43750 "EHLO
+        id S229679AbiGKIJZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jul 2022 04:09:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229500AbiGKIEf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 04:04:35 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F089613E36;
-        Mon, 11 Jul 2022 01:04:33 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LhGb63MC7zlVyf;
-        Mon, 11 Jul 2022 16:02:58 +0800 (CST)
-Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
- (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
+        with ESMTP id S229450AbiGKIJX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 04:09:23 -0400
+Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0662264CB;
+        Mon, 11 Jul 2022 01:09:22 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id E8685204E0;
+        Mon, 11 Jul 2022 10:09:18 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id tz3KzfKcewNt; Mon, 11 Jul 2022 10:09:18 +0200 (CEST)
+Received: from mailout2.secunet.com (mailout2.secunet.com [62.96.220.49])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 4874620270;
+        Mon, 11 Jul 2022 10:09:18 +0200 (CEST)
+Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
+        by mailout2.secunet.com (Postfix) with ESMTP id 3ED6080004A;
+        Mon, 11 Jul 2022 10:09:18 +0200 (CEST)
+Received: from mbx-dresden-01.secunet.de (10.53.40.199) by
+ cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 11 Jul 2022 10:09:18 +0200
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-dresden-01.secunet.de
+ (10.53.40.199) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 11 Jul
- 2022 16:04:29 +0800
-From:   Zhengchao Shao <shaozhengchao@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>
-CC:     <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>,
-        <shaozhengchao@huawei.com>
-Subject: [PATCH v2,net-next] net/sched: remove return value of unregister_tcf_proto_ops
-Date:   Mon, 11 Jul 2022 16:09:10 +0800
-Message-ID: <20220711080910.40270-1-shaozhengchao@huawei.com>
-X-Mailer: git-send-email 2.17.1
+ 2022 10:09:17 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id E992C3182E41; Mon, 11 Jul 2022 10:09:16 +0200 (CEST)
+Date:   Mon, 11 Jul 2022 10:09:16 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Zhang Jiaming <jiaming@nfschina.com>
+CC:     <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
+        <yoshfuji@linux-ipv6.org>, <dsahern@kernel.org>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <liqiong@nfschina.com>, <renyu@nfschina.com>
+Subject: Re: [PATCH] esp6: Fix spelling mistake
+Message-ID: <20220711080916.GK566407@gauss3.secunet.de>
+References: <20220623092712.12696-1-jiaming@nfschina.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpeml500026.china.huawei.com (7.185.36.106)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20220623092712.12696-1-jiaming@nfschina.com>
+X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
+ mbx-dresden-01.secunet.de (10.53.40.199)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Return value of unregister_tcf_proto_ops is unused, remove it.
+On Thu, Jun 23, 2022 at 05:27:12PM +0800, Zhang Jiaming wrote:
+> Change 'accomodate' to 'accommodate'.
+> 
+> Signed-off-by: Zhang Jiaming <jiaming@nfschina.com>
 
-Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
----
-v1: need to warn if unregister failed. 
-
- include/net/pkt_cls.h | 2 +-
- net/sched/cls_api.c   | 7 +++++--
- 2 files changed, 6 insertions(+), 3 deletions(-)
-
-diff --git a/include/net/pkt_cls.h b/include/net/pkt_cls.h
-index 8cf001aed858..d9d90e6925e1 100644
---- a/include/net/pkt_cls.h
-+++ b/include/net/pkt_cls.h
-@@ -23,7 +23,7 @@ struct tcf_walker {
- };
- 
- int register_tcf_proto_ops(struct tcf_proto_ops *ops);
--int unregister_tcf_proto_ops(struct tcf_proto_ops *ops);
-+void unregister_tcf_proto_ops(struct tcf_proto_ops *ops);
- 
- struct tcf_block_ext_info {
- 	enum flow_block_binder_type binder_type;
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index 9bb4d3dcc994..d20dd1532b48 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -194,7 +194,7 @@ EXPORT_SYMBOL(register_tcf_proto_ops);
- 
- static struct workqueue_struct *tc_filter_wq;
- 
--int unregister_tcf_proto_ops(struct tcf_proto_ops *ops)
-+void unregister_tcf_proto_ops(struct tcf_proto_ops *ops)
- {
- 	struct tcf_proto_ops *t;
- 	int rc = -ENOENT;
-@@ -214,7 +214,10 @@ int unregister_tcf_proto_ops(struct tcf_proto_ops *ops)
- 		}
- 	}
- 	write_unlock(&cls_mod_lock);
--	return rc;
-+
-+	if (rc)
-+		pr_warn("unregister tc filter kind(%s) failed\n", ops->kind);
-+
- }
- EXPORT_SYMBOL(unregister_tcf_proto_ops);
- 
--- 
-2.17.1
-
+Applied to ipsec-next, thanks!
