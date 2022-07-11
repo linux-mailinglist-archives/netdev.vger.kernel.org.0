@@ -2,166 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B7604570A66
-	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 21:11:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D29D570BCD
+	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 22:31:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231585AbiGKTLC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jul 2022 15:11:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51800 "EHLO
+        id S231438AbiGKUbM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jul 2022 16:31:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230154AbiGKTLB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 15:11:01 -0400
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2108.outbound.protection.outlook.com [40.107.223.108])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A72EC2AE02;
-        Mon, 11 Jul 2022 12:11:00 -0700 (PDT)
+        with ESMTP id S232018AbiGKUa5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 16:30:57 -0400
+Received: from mx0b-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 348768E1E7;
+        Mon, 11 Jul 2022 13:28:48 -0700 (PDT)
+Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26BJHNZ9031065;
+        Mon, 11 Jul 2022 13:28:01 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=aKK/gzqNSPUo+r3xM+GYvX5oFBDMvkgq9L8yTDHBjsQ=;
+ b=PQigtw6zDn5c+kYF8RSLpfQpyTtwqkzo0aYYyuWnpV4bP1FtOTmNqnkJ4JenwW/bx8cd
+ +Az8iR2uKVWTYg/hp1mYrPuYYFcqN2IDgH7QkpsL0TUEUQISOcO66T/NGS6NiwN69E88
+ +ehWvwRh1Xan5h2eMzZQXy77g/jtOTErNFE= 
+Received: from nam10-dm6-obe.outbound.protection.outlook.com (mail-dm6nam10lp2107.outbound.protection.outlook.com [104.47.58.107])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3h77gubhcp-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 11 Jul 2022 13:28:01 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fLNc0f5ugPszAhSozPCCY5z3HfBVFo7ko1hIa/PdjOTvGanJMJNY5cgIDX5ZjHlXQRQC1lJMeyS72YGGCO8Dt7M1neTZvU7WbA0KEypcO70ulsC/6N9WqMUwT9291A4qmLCuip3rclc/KcM6YlMak75T/Q1J+YkrO+gj0f88hp2QUvhQuGUc8CY9YuRUFwO4vyveRZgthhozVPd4RJCpSrCk/4yFEvmGgJG0ELRcFKqTCPa5g2UvB1uVwMOVxYodjnKa09o+HybEVa/ykOSlx3ikXa8v2zAvV9G1e2QwPlutpwbyXO6s1HnUdVYltM2cxpHwrfvDQcXpyAUX91Oa3g==
+ b=MrECMwH5TsmHxe3zC6Qn8jN+wrW+R68TBz3qmzm9OmRI7oZIvitVxstT/Pa4I58hcbSmW3SOUfZvGX007J58GcO7/CiV6jSmTtKjq1TLxgeGgs3VWmOnAV+uoUZeVqhttA4xHEpWGKnnZ8Z/Ch3eqzADO9QgFEo5hvso/NSIMIn9PmuT9kzcft9wGH0Z6R3vIFRwAvZo7fW79fruOoMRvO/xRtRovoN97LA7Ku7xDup7L5vTJEizjjehdYnoon68sJHCAnLdcwLexdZ5lhc1uC4x2SzeCmzlmPUeatbEcR4g6tTN75shAItJBO39EtOJQRV05ZhBkA+r7C9qgVvtOw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=LZT9iE8j4PqTdzlx0P8deV3inSHqJ65f3WuNUw7i0VA=;
- b=n6RqQjPyWiDfcGuUb9G0jTbaj5mpZ8BuD3Qdrm/2i8M/JQWGjo0tfmIPxgJWU9A5vXatqdXQHl9qz2Zg5x8/U8cuZJcyrdQLZ5AeahXt5Rwzhm6QLisL46BqjQ03kSer/gFAZID5Orh913F7p2A1//DT+0KTjl0/al9HoNlJh2WXmAtc8KQJbZYJigQA/C9AawcMTIGePEwGRbpbzpRxsf6+bzMUobJffDRb7Too4WRp8mfR0kIDPZzFcJ5AVht/UJl8zuW5GBGI36OwWhS4XkVhH77UePj87OBq2JAMBDVPrjbh8jNIYpv+3AXP+dajLSKC65wHpqnKgOXst1vdIQ==
+ bh=aKK/gzqNSPUo+r3xM+GYvX5oFBDMvkgq9L8yTDHBjsQ=;
+ b=LnBJDR89K8EOW3GT3GqRranWRDZOGgA0V63faL0UwU2tKrAklz51XTS+EAHEb6+5dbzrtPboinvsP6aV06f1dx/BFYby88bgwSx1vxpQnqDv+iiep3nRAJHPhLooVR7ap1Ln2WQy6WNfh/bfjJz5Ha9Py6cfHDVC2CqNY4vtGNzO+AATq/U2pEf7ilTIE4MxRdZozmAUBxEj05aSin3Th3YZPRJZtfZciTXI2ZDRDWRxzDgItZS9nnii84C3xiX5+j8EkIihDSbjgtL1in9+5L6rxpQCAuPC8CjP20ewPZ/2AEb2q34R0UYvhItshsn0DkuuvxmVKXtcC3ssblvn8g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=in-advantage.com; dmarc=pass action=none
- header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=LZT9iE8j4PqTdzlx0P8deV3inSHqJ65f3WuNUw7i0VA=;
- b=npHMKa7duiS2EblwEgTmQAHGoflBkgh9dyde4OkrA7Dpj1W+BjPUz1Mp96AQ2yaArjL6zFtrNvpbhDlFqCv4ZKCMTkzWK7U0o80Z+qQ+QEYSe8Ed4QyGUKiML5LENw+7ZDPNTd5oCs8Qm/HIj2zuieQIdM87vEDKQMYI4IM13ww=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=in-advantage.com;
-Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
- (2603:10b6:301:35::37) by BYAPR10MB2437.namprd10.prod.outlook.com
- (2603:10b6:a02:b0::16) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.23; Mon, 11 Jul
- 2022 19:10:58 +0000
-Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
- ([fe80::712f:6916:3431:e74e]) by MWHPR1001MB2351.namprd10.prod.outlook.com
- ([fe80::712f:6916:3431:e74e%6]) with mapi id 15.20.5395.020; Mon, 11 Jul 2022
- 19:10:58 +0000
-Date:   Mon, 11 Jul 2022 19:10:48 -0700
-From:   Colin Foster <colin.foster@in-advantage.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Lee Jones <lee.jones@linaro.org>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-gpio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        UNGLinuxDriver@microchip.com, Wolfram Sang <wsa@kernel.org>,
-        Terry Bowman <terry.bowman@amd.com>,
-        katie.morris@in-advantage.com
-Subject: Re: [PATCH v13 net-next 0/9] add support for VSC7512 control over SPI
-Message-ID: <YszYKLxNyuLdH35Q@COLIN-DESKTOP1.localdomain>
-References: <20220705204743.3224692-1-colin.foster@in-advantage.com>
- <20220708200918.131c0950@kernel.org>
- <YsvWh8YJGeJNbQFB@google.com>
- <20220711112116.2f931390@kernel.org>
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Received: from MW4PR15MB4475.namprd15.prod.outlook.com (2603:10b6:303:104::16)
+ by PH0PR15MB4815.namprd15.prod.outlook.com (2603:10b6:510:ac::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.26; Mon, 11 Jul
+ 2022 20:27:59 +0000
+Received: from MW4PR15MB4475.namprd15.prod.outlook.com
+ ([fe80::3941:25c6:c1cd:5762]) by MW4PR15MB4475.namprd15.prod.outlook.com
+ ([fe80::3941:25c6:c1cd:5762%6]) with mapi id 15.20.5417.026; Mon, 11 Jul 2022
+ 20:27:59 +0000
+Date:   Mon, 11 Jul 2022 13:27:56 -0700
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Geliang Tang <geliang.tang@suse.com>, mptcp@lists.linux.dev
+Subject: Re: [PATCH bpf-next] mptcp: Add struct mptcp_sock definition when
+ CONFIG_MPTCP is disabled
+Message-ID: <20220711202756.he4wdhb6zx6ipjge@kafai-mbp.dhcp.thefacebook.com>
+References: <20220711130731.3231188-1-jolsa@kernel.org>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220711112116.2f931390@kernel.org>
-X-ClientProxiedBy: MW4PR03CA0052.namprd03.prod.outlook.com
- (2603:10b6:303:8e::27) To MWHPR1001MB2351.namprd10.prod.outlook.com
- (2603:10b6:301:35::37)
+In-Reply-To: <20220711130731.3231188-1-jolsa@kernel.org>
+X-ClientProxiedBy: MW4PR04CA0109.namprd04.prod.outlook.com
+ (2603:10b6:303:83::24) To MW4PR15MB4475.namprd15.prod.outlook.com
+ (2603:10b6:303:104::16)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 64e09eb6-c1ea-4a4c-68fe-08da63711611
-X-MS-TrafficTypeDiagnostic: BYAPR10MB2437:EE_
+X-MS-Office365-Filtering-Correlation-Id: f1a53cf3-5613-45e7-bb06-08da637bd8a3
+X-MS-TrafficTypeDiagnostic: PH0PR15MB4815:EE_
+X-FB-Source: Internal
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: qrrecnuG3dsM+tobq/F2MvOYEepUeHpQ5j2f6T+1xTDMiuuKnaPhkxMhOyd+doNqO8vhHVoeitcTSW4aAJtrzaGQl7SQ6vQj6fCNjA21uIkVX2iGb2vS35kfC5ms4vgGSYVaksfBcIOuFltsTLDerDrYTSySXQSvsORq1kmEJotNyNwlY3fUhF+/v2yyBJHGG6Ja03Aa+D1IngvXwTteQikd3FueaoheQTVW1XgKnbWyGwXR8reFfj6goOisSspGebYNct5peFtSN8BupyGmeiOuaIFy4XSjW3MNyLqu6ng54p3BKKKMPeJSt094H5x1qIYhxTklcdYDnyLXrswfp8sE3Gif81Uc2ArOTyw4Rov+x/sM9oriSs76bHNybnOXdtfzN65PNCnAAYwEtChKXLCe7ZUECISfOOcI5yP//t7cVkJ8HMflsrJei9MSBkXKcqt/e3Kwfx4InJd/S+wkXBRRIh6t4/Qgb+YH4elc7fqRYcjHhI8OZf3763aEqj+s3rb+QzXZlRKpRLu6ckUON4z4BLpSL0Q8xnhb8CAV6F3fDCzdcBxc6Z46jWphftK+rmCRZWfD1ftkRgRGmUxxE57WrIZ4Ot1Z3lM3ceHcm9yd6IN4MVzMCxuul1pCuYllnn2rv3cQWXub3boNdmE7PzIAnCZ6TkLF3ksMsz7e4Tm/zxxXb08Tn4iDRelbbFsCKCHA/9eX1n9yvMfgXp9cq/zfT8L6yXAH2KQ0+RqNHLnL/nsgDbwrxguyWdyfTdSrqeqJohVQAVl/ZG7+BQB7JA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(39830400003)(136003)(396003)(346002)(376002)(366004)(8676002)(186003)(66946007)(66476007)(66556008)(6666004)(83380400001)(4326008)(6486002)(316002)(478600001)(107886003)(41300700001)(86362001)(6916009)(6512007)(26005)(6506007)(54906003)(44832011)(5660300002)(38100700002)(2906002)(7416002)(9686003)(8936002);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: BevNdtQRXD0W1L9LZv//NOn+ZbSucmrZsue5p0OY+2kNPoNHnPWIsmG3XchnZG+kvsalROMHVtUsor6pZLIT7nrQroyPiXoLUlnxR/21Mo5dS1+eSBcK6iy06XC1ij4YJ8ry8V54+SeBI9kLWDXfswzS6o8xIqIkNhqD9C+UT5LLYOy7WPzzvKQLY0WR/c0kAjf6LfYSNas4AcqEykALWi1Ed5+6YBZ4e7iRlRMCuPiELeunhJiApouH3ddeJm6DDKF5TvE2Cm5Zd5ttkypo8w8y+79b4fmQEQvJhNrdfHtvmnOGuPO2nlqYXRa8PN4DCsjjFU9k/6FWaDhsISHq8V+wXYlMSV36atTvFDhOYqzFdPpeKsI9zdCPFl0Gw9KXUiyXavE49HFJGdseWyWyjwI+hyhXgX6DBfxkN146Bi0ArYOxJ+fAAhwT7n1etMPHRmP/4loA+mKRmHa4Xp2oSo8lT7vfYRMUxKHrfBMkX+9Y0euyTrvoim5YuVJXKPYDGgXkiuNFNRlmroZEkQ4+81K7OU4pqMA1oj6QBQYUt8nnBxNjsDt5ghyMWjdM8mlTVodlgRH6hiEfWGeNgQaSj5/ETCjd1oU5/qs5dbafgrqXM/EC2hRpIdlfAhIKaViMbrdd0GNSk+CBGVw0STDjlkEN4hCuA2lW9hYWw1BoTsrDXKZ4pzE0m3NzNeBp0D+6XuopSqz6S+Vou7s28U0CYR0+00SMQdVM06hkKXlWqG2q89M+Z/uBINH/XXjHLaKw
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW4PR15MB4475.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(39860400002)(346002)(136003)(366004)(396003)(7416002)(6916009)(54906003)(316002)(5660300002)(6666004)(478600001)(1076003)(186003)(9686003)(6512007)(52116002)(2906002)(6506007)(41300700001)(6486002)(83380400001)(86362001)(66946007)(66556008)(66476007)(8936002)(4326008)(38100700002)(8676002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?LTi/yKZrGzdhXfwtTOwAecDVmz0Vljrc/EN6ZcT5EP8p/5eD+UB2wI336WdR?=
- =?us-ascii?Q?7IaR6RhuOgxyt6mdZT9PZXXWMxpyohPGa65iFp8jH7Yx0dW7bwCMS/n5Pm0M?=
- =?us-ascii?Q?XQVuZkBP0JDHd2zD0J7MnSqHbDPwNo/XEMZZg1CmyqCBjJslCep73CVMeskn?=
- =?us-ascii?Q?xHXPd7r3G2hHmmrJDKH+YFaAowMmgJneNbSCNndr8jjlN46KFXa2S09VmopZ?=
- =?us-ascii?Q?udyA9s+gSljMlKWwrWof9PlBk4fAyNiLtzkrKEW3nlg+1JCd8D0oKTj6SeHf?=
- =?us-ascii?Q?A7fvYFRB3PjX8/pbQUuUgUnEqrBCc7QhQVV8dLK6Hj5UY4VdANP8CAFhi9Q1?=
- =?us-ascii?Q?DLazB2SgmaMymjOfy+EvzfczqM6oo3/2BZ1BeoyjHN8bjGgyiLM1zmlsjsjo?=
- =?us-ascii?Q?8L2r9j9jQ5P+p+r9d2uwXJp3WrbsaRZGS9318fPp5gn9zX/pyq71lcgBbodQ?=
- =?us-ascii?Q?SjzLCKZ2f52gOnLSDGhfey/RV5Rc7Mg3qrsOerZtNN4YSuUnX9Wjg9K1NiXB?=
- =?us-ascii?Q?kfLO0hs2ERpY+xU/ND4wxppGphwCWT8WenLSIdV9RhVcRMLM7BocfC/viR+z?=
- =?us-ascii?Q?dPI+Ovhkn88cgfOhSLqRKaSt4H0dphllkT1VLoO2IzPI5M+RZ2r71cLuZqHS?=
- =?us-ascii?Q?owm8tpWolGaqdatZs4W5uXkF8J2M4BdAhUS/ys0H29akXb6jlFYWQTCvQbP5?=
- =?us-ascii?Q?mOwj/rHony+2oMBaf5xbifzDGb2yh+aqyQbdBRZOLXV0TkSHKc9VLRPHqoIO?=
- =?us-ascii?Q?XrkgLKX13+sRyAvi6R04eRePDS4OFXw1sK0BwXy0yQ6WdyD5HWgxAoQli7xd?=
- =?us-ascii?Q?192DgJTYu1pe44bbSvbbrRQD1GwWT17kJWp57Us3mknppLIOJGbX0x50Kbfc?=
- =?us-ascii?Q?onds0OujXUULCvkjbAZDH3AAz/mMgU2rtjQJIwi6dm4Mnir1x5AW+wB0M3hE?=
- =?us-ascii?Q?6oAh85M8z2U8SeettxjdJfl47FeDjYHyuTIN2gIgo7NoqevpbgXhEAjaON6U?=
- =?us-ascii?Q?xjH5FyPZEGtvKn+/jPyojmhl1gZbRsRtYx4/YsS6lK/cT5CNyWDGa35XqdHU?=
- =?us-ascii?Q?O0CqTT7zkjXN5qGIZiq3U8Yl70KIdbQ3oz7FyORDowR6n8KC9R6oEgWzmqUk?=
- =?us-ascii?Q?EVMhzpIQLhG9YbO9VmR+ZbTkx/IgwWFsUKmN4WI+Z0yetBuLOGCckTycFr2T?=
- =?us-ascii?Q?mxAPRFD94bkPzKEVXf0Ocy0UK3t25O6KpvgqWaBhpcCMKy5de0MEk3MhtRI8?=
- =?us-ascii?Q?Fs+HNRN1VMW1RQ4BqvB2si8bMlRrWdq3ggW+ftj926PGZ7QCm9LqUHv4HTQa?=
- =?us-ascii?Q?wzLlmEpILwHhwDWx9m9l8BBQnbN/r+SAkZ28E24XAAnacNgqt0dGxylYs2Xj?=
- =?us-ascii?Q?oLNI8GxXHsJ1HTzSovg9LkNy0/2pZgJruE1TL6rp3a5lHdgJBua5Sy3Owtw7?=
- =?us-ascii?Q?oEGFQv22OYj2ZyYD06LizhEvdS4Ft+642SEyLmBbfJMMBf7DildlbNcJ/1iB?=
- =?us-ascii?Q?Fb1orCQ7opGJ3ZLvURhU7d1R2BrkoLQrNcy2y1WK+Pj6BL243QDxtrvkTv3A?=
- =?us-ascii?Q?OwLGvDC7sY0U3dNVclnYBYsIdP1e4jo04FjyaY/GQX/yap66LZLwptagbGKC?=
- =?us-ascii?Q?TUw11pXJZrZgJjT7+hapsdc=3D?=
-X-OriginatorOrg: in-advantage.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 64e09eb6-c1ea-4a4c-68fe-08da63711611
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?VL3N8lSY5wmTRCJ1gT1In0ud5lePyZ7nKHdsS7UPM3pfdP3JK+5ckztoP5/E?=
+ =?us-ascii?Q?KKHX8vTh2G4UN6opVdllozGRL9WYh5bZMmeJP6HkBIatoMjZPzcVaiuMZgiE?=
+ =?us-ascii?Q?Lw271SazrK0L9HMdzEgDRoaLlBDeU6t2zVnw8Mn2VkPmdvo0SLi140xuRyTH?=
+ =?us-ascii?Q?EDcBPfj2MQaPERdg2C6t98xKCx+F7Ql4YJrO1+64QY7aIkA2b+cSwTELBkZ2?=
+ =?us-ascii?Q?A8P0A26sfNb7jrAJgzNtg0y/Ye8hTuQaGGOXrZwEQJXNI+gup07/5xZHyykx?=
+ =?us-ascii?Q?GihvVJ1d4o7UUFYi9XdHaYMXF4gyGKYjrCimIQKSrEMYnB9E/aAx4dYegA3K?=
+ =?us-ascii?Q?tp1GkJH+pGK1S/TybkrIw93zhhcloF1KVCL0etnfeHsspiQ9ZJTRX0xOmZSY?=
+ =?us-ascii?Q?7rtNUWq9YsKXUub/pXvP2izRbwm3gaUY18m34Lah1GtzkdOiGscYhasNuu6M?=
+ =?us-ascii?Q?TIVlqLwwzoBSwo+b6YBML/k0kG94DfRYqtGkkSZLgZ40KPS7vf1PmP475HXx?=
+ =?us-ascii?Q?jKP9EjrDrK4X/zih3v/NuouyuS4FwgD6XGu5X8pyqH5SeYbhB3bsxNB7/WHY?=
+ =?us-ascii?Q?W5kzxgXfEkae/iRHRqNxzgeVJQoV5gsHJ5p7W1iHKh1PB7izeQljZixyco7S?=
+ =?us-ascii?Q?x1b8jl8OgwFsmI/7t1Lj9MGQVPw+T5HVaKg30SDOWiAeJfc99lkoGg9GrjmF?=
+ =?us-ascii?Q?UTTP/wNOgf5ewvkNUeKcg0HTJKT2eI+oLBVQvDBSUMH3tHvvcAuZC9ZXDJYo?=
+ =?us-ascii?Q?YvzukuZE5bsL5Xl3q5vmNd+VL6gUQe6p4vlUaEdew9jSMrKEzJdBwKj4PotA?=
+ =?us-ascii?Q?xqVepobyfe/H0QN0REAXgRs3+AMICeBPzVPg2xJ2cknv3xWveTcu8hI6d008?=
+ =?us-ascii?Q?aUQVzpWZ5M9VI03PL35346CZvEqoSXKjZIqKihfEqnvd+LJWJFta7dyjajaS?=
+ =?us-ascii?Q?0Z5sPhvYPc2aVejSxqx0yQth8rnT5AG6Gr40nFBBfEoPAsjw2zQQxE88XhUX?=
+ =?us-ascii?Q?cnfhf2msTlxwDzP4hXVgaBv/hIAVyaCUzsAc5hm0jJ7AdZir0NC4u71DUGCi?=
+ =?us-ascii?Q?/42ryZj8EZh3Zs+taeIYqQQjNarsVvsGVesLuQlE35SDNJpkKXhz1uJ2jxte?=
+ =?us-ascii?Q?TrBApZdD0NGzWtTVFYRQs6Ug9DH99KmeEVQeyVeVKsrfgKnCZs7BtjDOwyVd?=
+ =?us-ascii?Q?skhS4YgZF0jpEsjw+Ph1yy67o37zDOXRNgIEy+sEWYGi/y4f62SR2ARGohWG?=
+ =?us-ascii?Q?FEkQNSjSBKhcKgw2837Qv+ZlN00tTCuNQEyUKpXeQHODhgAXRuxvIuvGSln9?=
+ =?us-ascii?Q?UE3gni0OIaIZIlXg5LrPK5VT4pdxg2BX4RBrkEtOCV56CDjqA1Dl12BTz5T4?=
+ =?us-ascii?Q?0Dm5yT8KLgJZxxtv2g7TRznui0b4QGZ85Ra7Wl7bLzi11OGqltEuOBwOQaaO?=
+ =?us-ascii?Q?wnEKpO1XL5Hcj3NHnBQTRYki0JiWgMTcFSdC6xYQw49ZwqoLSNBEmitPfgP0?=
+ =?us-ascii?Q?PMoelLLzBUYtpki+BFh6ACMRDtKHinhz5Xn2zp6mkHhO9wGLG5k/IraMY08b?=
+ =?us-ascii?Q?GJ2vDEcd18FWA9GsQ0g48jMT0ihhIYKBp9FvEXSZFweB9n22OtxMuiEQoCyl?=
+ =?us-ascii?Q?UA=3D=3D?=
+X-OriginatorOrg: fb.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f1a53cf3-5613-45e7-bb06-08da637bd8a3
+X-MS-Exchange-CrossTenant-AuthSource: MW4PR15MB4475.namprd15.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jul 2022 19:10:58.1384
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jul 2022 20:27:59.5269
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: nRsUO9RONIf0LiA+mph5uRuDCp/Y5EV2fjxRLKGJzKHxAcHT5KYLGANl9aMXgpPxgjpFjmgKz0CUlnVRLErfcsODIJiuSOP5AbwMyINCBJM=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR10MB2437
-X-Spam-Status: No, score=0.0 required=5.0 tests=BAYES_00,DATE_IN_FUTURE_06_12,
-        DKIM_SIGNED,DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-UserPrincipalName: G2lWl42gmeQ11zah2+eQKizBXVSaXf2l9kzVFmOPS18wK+OuSG/up1ms8rW+JsIL
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR15MB4815
+X-Proofpoint-GUID: _MmnkALJxQE0QnxcGe6GYJcH5PkCOyJ0
+X-Proofpoint-ORIG-GUID: _MmnkALJxQE0QnxcGe6GYJcH5PkCOyJ0
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-11_25,2022-07-08_01,2022-06-22_01
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 11, 2022 at 11:21:16AM -0700, Jakub Kicinski wrote:
-> On Mon, 11 Jul 2022 08:51:35 +0100 Lee Jones wrote:
-> > > Can this go into net-next if there are no more complains over the
-> > > weekend? Anyone still planning to review?  
-> > 
-> > As the subsystem with the fewest changes, I'm not sure why it would.
+On Mon, Jul 11, 2022 at 03:07:31PM +0200, Jiri Olsa wrote:
+> The btf_sock_ids array needs struct mptcp_sock BTF ID for
+> the bpf_skc_to_mptcp_sock helper.
 > 
-> Yeah, just going by the tag in the subject. I have no preference,
-> looks like it applies cleanly to Linus'.
+> When CONFIG_MPTCP is disabled, the 'struct mptcp_sock' is not
+> defined and resolve_btfids will complain with:
 > 
-> > I'd planed to route this in via MFD and send out a pull-request for
-> > other sub-system maintainers to pull from.
-> > 
-> > If you would like to co-ordinate it instead, you'd be welcome to.
-> > However, I (and probably Linus) would need a succinct immutable branch
-> > to pull from.
-> 
-> Oh, that'd be perfect, sorry, I didn't realize there was already a plan.
-> If you're willing to carry on as intended, please do.
-> 
-> Colin if there is another version please make a note of the above
-> merging plan in the cover letter and drop the net-next tag. 
-> Just in  case my goldfish brain forgets.
+>   BTFIDS  vmlinux
+> WARN: resolve_btfids: unresolved symbol mptcp_sock
+BTF_TYPE_EMIT(struct mptcp_sock) did not help here because
+'struct mptcp_sock' is not defined anywhere in the include/ ?  :(
 
-I wasn't sure of the plan, but this makes sense to bring it through MFD.
-Fortunately there's enough work for me on the DSA front that there's no
-way that'll land before this merge window - so I have no objection to it
-going any non-net-next path.
+> 
+> Adding empty difinition for struct mptcp_sock when CONFIG_MPTCP
+> is disabled.
+> 
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> ---
+>  include/net/mptcp.h | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/include/net/mptcp.h b/include/net/mptcp.h
+> index ac9cf7271d46..25741a52c666 100644
+> --- a/include/net/mptcp.h
+> +++ b/include/net/mptcp.h
+> @@ -59,6 +59,10 @@ struct mptcp_addr_info {
+>  	};
+>  };
+>  
+> +#if !IS_ENABLED(CONFIG_MPTCP)
+> +struct mptcp_sock { };
+> +#endif
+Considering a similar case in the existing 'struct mptcp_out_options',
+this seems reasonable.
 
-I'll look to Lee as to whether there should be a v14 with the header
-guard addition per Vladimir's review, or whether that should be in a
-future patch set. I'm happy to go either way.
+Acked-by: Martin KaFai Lau <kafai@fb.com>
+
+> +
+>  struct mptcp_out_options {
+>  #if IS_ENABLED(CONFIG_MPTCP)
+>  	u16 suboptions;
+> -- 
+> 2.35.3
+> 
