@@ -2,65 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D972570A5F
-	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 21:09:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FA8E570A61
+	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 21:10:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231499AbiGKTJw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jul 2022 15:09:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50940 "EHLO
+        id S231542AbiGKTKR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jul 2022 15:10:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229602AbiGKTJv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 15:09:51 -0400
-Received: from mail-il1-f180.google.com (mail-il1-f180.google.com [209.85.166.180])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 652212AE29;
-        Mon, 11 Jul 2022 12:09:50 -0700 (PDT)
-Received: by mail-il1-f180.google.com with SMTP id p13so3591920ilq.0;
-        Mon, 11 Jul 2022 12:09:50 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=flztqminVKMZYpYH1iU55F5QEC4nG+ot8ew7MHnd8eE=;
-        b=kMN+SW83xjJy/OSZxmYXxDfJQ2hlQ8LogIFD1SiNpisQk6wfUJ9YUZP0DciZouosXP
-         PQs8m8+6KrckoLaPixeQyWsmpD97FETUcXiOJuMztdul8lOrnccoe0gd3isEVRvYLwxa
-         bK22oQC5qF5l45rrfWV2gQHLGpJywe9XFYKmwp99DgxiTkN9ZSCNUeL7t41ULDQ3ufnJ
-         YrDlGUzlQN8Ha4+VA4e6g/J0JpaLrdElP+riKPXAxkkZeTKhWzXlS3rjs4mNMwdvtZE0
-         ZvPC2z4UFH2as5UDc3ZdAbHe2SVh0c7tld3B5oX8Fmj3RHu0H+2+FkSSvG053n23wJQQ
-         EH1Q==
-X-Gm-Message-State: AJIora+8SFZc8jViCB330vCCND1S3PJ9BQM0ElzF23gdKMlqu4xdJDUa
-        B1sO61o5m0DKVf84DxP2Xw==
-X-Google-Smtp-Source: AGRyM1stovigsPBJd/F3fxnlI4NIXYN+zovd3E1R5wvHMPhCL5WeBq6OcKj9MKUYMVlS8c1NVTrnMg==
-X-Received: by 2002:a05:6e02:b2d:b0:2dc:5e24:7ce9 with SMTP id e13-20020a056e020b2d00b002dc5e247ce9mr9799838ilu.291.1657566589627;
-        Mon, 11 Jul 2022 12:09:49 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id f95-20020a0284e8000000b0033cbbf0b762sm3249649jai.116.2022.07.11.12.09.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Jul 2022 12:09:49 -0700 (PDT)
-Received: (nullmailer pid 109049 invoked by uid 1000);
-        Mon, 11 Jul 2022 19:09:47 -0000
-Date:   Mon, 11 Jul 2022 13:09:47 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Thierry Reding <thierry.reding@gmail.com>
-Cc:     Bhadram Varka <vbhadram@nvidia.com>,
-        Paolo Abeni <pabeni@redhat.com>, devicetree@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-tegra@vger.kernel.org, Rob Herring <robh+dt@kernel.org>
-Subject: Re: [PATCH v4 5/9] dt-bindings: net: Add Tegra234 MGBE
-Message-ID: <20220711190947.GA108998-robh@kernel.org>
-References: <20220707074818.1481776-1-thierry.reding@gmail.com>
- <20220707074818.1481776-6-thierry.reding@gmail.com>
+        with ESMTP id S229518AbiGKTKQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 15:10:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3FD82AE02;
+        Mon, 11 Jul 2022 12:10:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8092761557;
+        Mon, 11 Jul 2022 19:10:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id C589BC341CA;
+        Mon, 11 Jul 2022 19:10:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657566614;
+        bh=6D+2DpXoaKcspcgzrN+pNsncRNJULDzNOzPp8Ld7hoM=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=NFUmoYBnhmrc9WJYfGgXQmVg60YJU8zfdxGmpXVS8BAyhzXqV52AsUhq6dKG4E75o
+         qBC5wDnfluq+3lR1PgH8SiKwFSa2ZnikoFXLeKDvAoeaWavJzUWfGgUyjP3ukAbhF0
+         P+ZAa780luJ/AkeByfYJoZl3H/GqP59x7T9HDUibeQrTYLbHMIwFYYuM94LtK7tT0s
+         BIfbjogxVwrH5NoizVwPCWDh406pi+TnNze9ybkBLZIaeXUGRU2Ih8TQsJhUmGk3JY
+         oPrg88vcBcQNsi4Gb32JbOvqt6rVE8vN9d3gqAJzDkPIlaUHhB4W2s37jGymotWD0j
+         aBWVHeZ31iSIg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 9B3C7E45223;
+        Mon, 11 Jul 2022 19:10:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220707074818.1481776-6-thierry.reding@gmail.com>
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH bpf-next v9 0/4] bpf trampoline for arm64
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165756661463.27404.16087446828795658696.git-patchwork-notify@kernel.org>
+Date:   Mon, 11 Jul 2022 19:10:14 +0000
+References: <20220711150823.2128542-1-xukuohai@huawei.com>
+In-Reply-To: <20220711150823.2128542-1-xukuohai@huawei.com>
+To:     Xu Kuohai <xukuohai@huawei.com>
+Cc:     bpf@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        jean-philippe@linaro.org, will@kernel.org, kpsingh@kernel.org,
+        mark.rutland@arm.com, catalin.marinas@arm.com,
+        daniel@iogearbox.net, ast@kernel.org, andrii@kernel.org,
+        zlim.lnx@gmail.com, kafai@fb.com, songliubraving@fb.com,
+        yhs@fb.com, john.fastabend@gmail.com, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, hpa@zytor.com, kuba@kernel.org, hawk@kernel.org,
+        rmk+kernel@armlinux.org.uk, james.morse@arm.com,
+        houtao1@huawei.com, wangborong@cdjrlc.com
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -68,36 +66,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 07 Jul 2022 09:48:14 +0200, Thierry Reding wrote:
-> From: Bhadram Varka <vbhadram@nvidia.com>
-> 
-> Add device-tree binding documentation for the Multi-Gigabit Ethernet
-> (MGBE) controller found on NVIDIA Tegra234 SoCs.
-> 
-> Signed-off-by: Jon Hunter <jonathanh@nvidia.com>
-> Signed-off-by: Bhadram Varka <vbhadram@nvidia.com>
-> Signed-off-by: Thierry Reding <treding@nvidia.com>
-> ---
-> Changes in v4:
-> - uses fixed lists of items for clock-names and reset-names
-> - add missing maxItems to interrupts property
-> - drop minItems where it equals maxItems
-> - drop unnecessary blank lines
-> - drop redundant comment
-> 
-> Changes in v3:
-> - add macsec and macsec-ns interrupt names
-> - improve mdio bus node description
-> - drop power-domains description
-> - improve bindings title
-> 
-> Changes in v2:
-> - add supported PHY modes
-> - change to dual license
-> 
->  .../bindings/net/nvidia,tegra234-mgbe.yaml    | 162 ++++++++++++++++++
->  1 file changed, 162 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/nvidia,tegra234-mgbe.yaml
-> 
+Hello:
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+This series was applied to bpf/bpf-next.git (master)
+by Daniel Borkmann <daniel@iogearbox.net>:
+
+On Mon, 11 Jul 2022 11:08:19 -0400 you wrote:
+> This patchset introduces bpf trampoline on arm64. A bpf trampoline converts
+> native calling convention to bpf calling convention and is used to implement
+> various bpf features, such as fentry, fexit, fmod_ret and struct_ops.
+> 
+> The trampoline introduced does essentially the same thing as the bpf
+> trampoline does on x86.
+> 
+> [...]
+
+Here is the summary with links:
+  - [bpf-next,v9,1/4] bpf: Remove is_valid_bpf_tramp_flags()
+    https://git.kernel.org/bpf/bpf-next/c/535a57a7ffc0
+  - [bpf-next,v9,2/4] arm64: Add LDR (literal) instruction
+    https://git.kernel.org/bpf/bpf-next/c/f1e8a24ed2ca
+  - [bpf-next,v9,3/4] bpf, arm64: Implement bpf_arch_text_poke() for arm64
+    https://git.kernel.org/bpf/bpf-next/c/b2ad54e1533e
+  - [bpf-next,v9,4/4] bpf, arm64: bpf trampoline for arm64
+    https://git.kernel.org/bpf/bpf-next/c/efc9909fdce0
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
