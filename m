@@ -2,66 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6336E56F9AB
-	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 11:07:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D785156D2B8
+	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 03:49:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231197AbiGKJHX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jul 2022 05:07:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46684 "EHLO
+        id S229490AbiGKBtn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Jul 2022 21:49:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231130AbiGKJHO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 05:07:14 -0400
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4113822BCC
-        for <netdev@vger.kernel.org>; Mon, 11 Jul 2022 02:07:06 -0700 (PDT)
-Received: by mail-yb1-xb2d.google.com with SMTP id e69so7715406ybh.2
-        for <netdev@vger.kernel.org>; Mon, 11 Jul 2022 02:07:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=r3r9shr/bSnpdVbJCshaTpav4kwHF4Hogm4v6ZuXBPM=;
-        b=XHgonOycZCkATK7QjpK7xNhOOrMMMUV9CCSZSo/kCdBu4+dnmaUvhfUTTpenrKen5j
-         UBasG5auSqA8pCL1IT9D8Uq9Sa2goVodx7Mdr9auerdXR51S1y4IMhRLBJb4jIyKRo2l
-         9sIcNyAIxL2vGfi1uJ7wi6XLVpac7PCG13I7FLcqKc0UL+/dR9jNaBCeQQSdk2JaGVGz
-         dGZjgEwpbFpi49GpfV1LWXuJpdZ/OJKKc9OWE2LqYSNvsA3TjeF/VwXlqoNhYR28YFjc
-         iBJMwQ5xYNeQjfRvYMeJQUUcW8sP3ho1056Girrww3f3jMccFV/uLg3JcvFrUQiuvAtz
-         26zA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=r3r9shr/bSnpdVbJCshaTpav4kwHF4Hogm4v6ZuXBPM=;
-        b=PZiRCtlYYCjKqNDSyb9XlByfACVGf95o6NRaHO9JYJP9UGVcm/xjoM6aXJLUCaV0sY
-         g/w3+rNlV5tYFLHwPXO9T8BGHYAtvmHbfsXyhjgXpFd8ppKhUlUmL9bcLcn4mxnNKhEe
-         x0NhKUNtZuIbZiBrtcqu6U+ezps3HZC6txF5cf7QNMIw05Q1NNtp4wyF7TsctJXS/WXF
-         uw3AIhlCXp7cFjZd9JtyD/oA203jFHiADbEJ7LpFTomnGklE3zwnGApqJL+z4qBhrdi0
-         88a1BIbz7FE73dziX8QdPoEfjm8KunVsLkAhtoRDhJsKpsETldItfb2SuaFltSV/1A2G
-         F+vQ==
-X-Gm-Message-State: AJIora9AkN2oGwg1eKfXuDgaMP51bBr/Mf/COrK0X72RdKrwLkqZ0j/G
-        zdjwNGCcHavPf1JlgBpgd48jz4kbCUth/bo63Jlnlr2sQpY=
-X-Google-Smtp-Source: AGRyM1vIH7goxBS9KzuDJ+Sn3+JJXHOZi8hPaZFkOgCy0uO4UqnbM8GgzsyvRkb/dGHjK1Qk01csw8POAZFNSS1TDFo=
-X-Received: by 2002:a25:e211:0:b0:669:9cf9:bac7 with SMTP id
- h17-20020a25e211000000b006699cf9bac7mr15673809ybe.407.1657530425039; Mon, 11
- Jul 2022 02:07:05 -0700 (PDT)
+        with ESMTP id S229469AbiGKBtl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Jul 2022 21:49:41 -0400
+Received: from EUR01-HE1-obe.outbound.protection.outlook.com (mail-eopbgr130071.outbound.protection.outlook.com [40.107.13.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04AEA13F75;
+        Sun, 10 Jul 2022 18:49:39 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=XWLCJf8mWYq0iCMmQddSF3WwxAUfDzxifF3iCNaqB5FasHlCbxmOF8jkgdAFiB14dWmEvzgzhmwxy7XXWk6Trde1ep15D9RayPwi5N2s6mYrQw+4bT7rIn2MkUom7zlLISAslG6CneexTGrf3vRkjd0J+YK1mY2dRezeYTDE4n7/lZUMBpZLgbUYPGvylcDCQy2KK6kuSc+dPlnn9EQuq5Nugjb7VsS2LVdlUO0w7wAlnH3awMX+MjyzHMsP5jfusrb12s6vvUg2E399nJgRPgibimF9SFQdwiC6Q+mLzqllmHHey38V7SoUYISAo29lz8Et+ZhVWbXM1w24WpWIJA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=5CJkZ61v3bdULjq3lXajsSde+/uwLER/90rib5xlmAM=;
+ b=gxA1KWMyAcsBM4tIdBLnUNYyruP+HtpVnQ4fM2+xb6ak5TNPmqRf6nUwqnY2lSw3Wh7+vjdrEPA0zEGKNs7cSZsCnpstr8fsVmw+RDajAQSO6T5zgDRq6hyng6gvafzcj1IaTWhVyDtICKKANwG9IjxHuKBcG/BIr4NsHaT/VZOZUEFJZygXsIQcupBKuxdN5BVMVy8XBtA5GUok+yvmmTGRIoRT4VGF57/x5swK03lz7TuiXi2VRXXSlzUY2h5omtQtnVPrlNKdjqf+Ld18QooxTqw2NQ7cvMAVXN0A1KKc9tXBw5x3hTfykRq2gJlqS+quJEInclUDRafhv3cEyQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5CJkZ61v3bdULjq3lXajsSde+/uwLER/90rib5xlmAM=;
+ b=P/qUmntDmYY/CjQjbs9ZkLHChguWH4SEhjKgeafIeKiHeSCQrDteTmxyKMGsqjkoNOTdRFTeJvIfoCsmz/oIviI0oHrE/tlZULXbd1A1UlxvkKkrOOXoihs8mvZlXiDDnnGyJZ+juvy55Kb058DPwJplg0UNHDWvCBS6lEzC0gI=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AM9PR04MB9003.eurprd04.prod.outlook.com (2603:10a6:20b:40a::9)
+ by AM0PR04MB6673.eurprd04.prod.outlook.com (2603:10a6:208:16a::29) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.25; Mon, 11 Jul
+ 2022 01:49:35 +0000
+Received: from AM9PR04MB9003.eurprd04.prod.outlook.com
+ ([fe80::a9e6:66bf:9b6f:1573]) by AM9PR04MB9003.eurprd04.prod.outlook.com
+ ([fe80::a9e6:66bf:9b6f:1573%8]) with mapi id 15.20.5417.026; Mon, 11 Jul 2022
+ 01:49:35 +0000
+From:   Wei Fang <wei.fang@nxp.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, shawnguo@kernel.org,
+        s.hauer@pengutronix.de
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
+        festevam@gmail.com, linux-imx@nxp.com, peng.fan@nxp.com,
+        ping.bai@nxp.com, sudeep.holla@arm.com,
+        linux-arm-kernel@lists.infradead.org, aisheng.dong@nxp.com
+Subject: [PATCH V2 0/3] Add the fec node on i.MX8ULP platform
+Date:   Mon, 11 Jul 2022 19:44:31 +1000
+Message-Id: <20220711094434.369377-1-wei.fang@nxp.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SG2PR04CA0169.apcprd04.prod.outlook.com (2603:1096:4::31)
+ To AM9PR04MB9003.eurprd04.prod.outlook.com (2603:10a6:20b:40a::9)
 MIME-Version: 1.0
-References: <1657525740-7585-1-git-send-email-liyonglong@chinatelecom.cn>
-In-Reply-To: <1657525740-7585-1-git-send-email-liyonglong@chinatelecom.cn>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 11 Jul 2022 11:06:53 +0200
-Message-ID: <CANn89iJ-ca3u1JRKm=H4+rR3MFrdXxXTDUftNUzF20YTUM3=rg@mail.gmail.com>
-Subject: Re: [PATCH v3] tcp: make retransmitted SKB fit into the send window
-To:     Yonglong Li <liyonglong@chinatelecom.cn>
-Cc:     netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 4b907d0b-9425-4496-8389-08da62df9b35
+X-MS-TrafficTypeDiagnostic: AM0PR04MB6673:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: WEEjK92liVyHJqyoJ2FGIKgOYip8W6DB3EWri5WTggfLTjrkjpGEJU/ygCxpVnrbnnwguLg0tBnqwFLO2Q9wLCUSdD1TPcTkO1b2U44hxQzfKNnPbxcUvgbnEB+XPby/5snw5p7HkdjfkqvSr9dZymDgiAcjsmNAJuplEJ8YaeSriYQhSHE26StrOcH4NwQOmAfVCqQnHWtLdrxbeZxkYEQBXXvbvrwT+LbT2cnOC0i2AL5BHlmGUJCPbB1QQIPMB/YoZx3DnCRZ3LpsarmNuyXhsc/2M1yCX+/NiUMp3vH6AcvH7stD/wtWHeG4HWDf0zTLC34nIScMH5Dd4miAqonDTptkJNCzpVBFIXCzAMI0nsk7vVO3NvewIPVJjTTtTZYCshXna/FBC1E4Yx/bcN9cBF0YtifdBSfgICY+AOiVVJd3OFqFxCdv7p48zS7IcXNN5DdxJoUtReNBJCc7G5B3lAiMS5CEJsfCbfi1RtCrgoD19smCq/56sJJT71lwIqWAxygDbqoVdOswhltJEV7Vo3BMFEHpAvwZOeQ1nvEZeRKxkbwjSazoK5LZChXaVpvyoEdhr0KuHK00mOmpenkiFLoiBCuDt91FlyY1/4SZyfqO5EABaZfHd5XlvtU7A9pRzAuzKJlt443QKRMMMi1amOvPV8uzk0pGhdO4nx4BZLi1oniPO3RwShOxKuFJA9QtI1kr7ytAdpHDjmAMQNW9eAN+YR+UzW9jYmBJRiRPezvbJBiOSY5jQYeLo5ZTA0ouInkSckzEbHqKtHandZ13omrM2qXBrHmlV1zwPho0Du66M7Zwquu/WbNrFjwf
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR04MB9003.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(136003)(376002)(396003)(39860400002)(346002)(66946007)(66476007)(66556008)(6512007)(86362001)(8936002)(186003)(6666004)(8676002)(1076003)(4326008)(52116002)(6506007)(41300700001)(26005)(478600001)(6486002)(2616005)(38350700002)(316002)(38100700002)(2906002)(36756003)(44832011)(5660300002)(4744005)(7416002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?sYmf1v1IaYvWU6spK8qfbQtos8jIbeekpzY8/sB2HmKji7Vmio4tkssMvE5S?=
+ =?us-ascii?Q?Z0qceLooUR0xNOTwFZKUOy2PvSwKUfiWfeJtlIDpxT2OiqX3512M2txzA5Lk?=
+ =?us-ascii?Q?MycLbm5wlYYRQCK0RWgCDzjCDXazWvRszvCgrLkj74K9HdHEteZ4EuZfGB3m?=
+ =?us-ascii?Q?Glz7oSJ9xNBAddZex63QhvchfpefsQvsNqMWI5pvxjEBdrPGnay1lqayoM9r?=
+ =?us-ascii?Q?VvSifEEWi+wmXyUvjOirwwcviZTzmRBK4ZZxFPmqTCZsm7DFfZvXa5aAh5wz?=
+ =?us-ascii?Q?3XBVAwdzpqLPen8gvo1K47yC8R29N71VxPWE1HOg3aBHumUZl6KoqOoMvqEp?=
+ =?us-ascii?Q?1DVz7vhyubz6EKEQ7fPTCmYg80rDCmitUs82cjwNgev7+nNbOGT9LYVtvnie?=
+ =?us-ascii?Q?XqxbJiMnyaiTRSW2RAtBvUczeggF3r1eIx1ATX4axaEy5isfahqy+cLXaYwv?=
+ =?us-ascii?Q?w2S54boQqix3LL56Q0D7ZOXToqqsbsv51e86MYVb6bU40GRb4Kcr28swwQz6?=
+ =?us-ascii?Q?Odd35xsyo6xcEfwR83ASmX2NOgxxbZNrknaUYCl/U4jHicaT1I0cmATMmjki?=
+ =?us-ascii?Q?st1jSJwgz3wexJhv+/RD3E1hHbixGQ1XBaO9AZdwXkmKM8km2un/ybEyDVHX?=
+ =?us-ascii?Q?eMy3J786MVissb0CW0Oy5TYS0Xk3lmh9em2HXMGnhtsST3kvFvVd2Rz5+Pj2?=
+ =?us-ascii?Q?Q5ozbGSLbqBJ5YOrogWBhPA3SfiUGVt1RfvUwJi3Bg1LvJHzJC87ZlqQwY7+?=
+ =?us-ascii?Q?VXMIAof8jakzsWnYExts+Wd6msAwVEVCxS6M/n52l/XOMSzpp+V9sDACbPTv?=
+ =?us-ascii?Q?gVdcLC4l4Dj6N9OYUwkmf+5v+VgRt6pzl4tNewM3JhyxdFnqZQIWSNycRxs8?=
+ =?us-ascii?Q?PbxRGiaNMcI78JWzMt92UqZ5wenytTJULA9ayt99QPTqWS4HdLWLHN/ehx0Z?=
+ =?us-ascii?Q?4whmTNSt2xRDVpHifFMHvaxp0venpdKFlmWqOHhaOK8Xg1Dxc4o6+EhK7ELg?=
+ =?us-ascii?Q?aHKlPFSCwPJh0a0eUZF1iF0ag4QG5Nvs0rSO5CJwrNtXhle46bWNy9WHeARO?=
+ =?us-ascii?Q?qk6P34n1qZ0eMhCwgcvDu9DWIo/khdZvHzQCvAWuxS2H21kSFqmiL4oftnPf?=
+ =?us-ascii?Q?UakoLkJ23rqvExVH0MTWPTS/qGsEI8enJVTRSZ9USdvNxHd5h0ZU0IEPVqMI?=
+ =?us-ascii?Q?Hk/+aOO8YmHXJlBQKWCAbAGvXPXoFQl5DZNpXsBEnFdo3iYjzZ0DLt6DggHM?=
+ =?us-ascii?Q?1MQqdBAapOzdAqu8s0oxLhABZoiYJvUhjiyi1Z3gvEtEcpCDVqfMWi5HsvKi?=
+ =?us-ascii?Q?rBnvcJA5Mu2YO1Dt0oqXUqon7gSumty9eAXAuZkMq4mtNEhiyu2GtsHt/07t?=
+ =?us-ascii?Q?Yjr30P0akvCC0u1Ut7q+P6ecQNWK+ShVMbDVZiuB8+1csOsBkUb4EgPp2Msj?=
+ =?us-ascii?Q?hCkmKd7cnSUI98Umz7nVH/45SxihxfMdndhAU8n6iTIPe6hsAJL46LVENQHI?=
+ =?us-ascii?Q?S0hbfiWPYq6NvP043sG9gMxzAGYKhQWFdOlbKA86Le/yIgcQrrYyG2CE9fwW?=
+ =?us-ascii?Q?3iJPIGuR5AKpEsAZPQHRQSNNPJBYYYa6LORgBBx/?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4b907d0b-9425-4496-8389-08da62df9b35
+X-MS-Exchange-CrossTenant-AuthSource: AM9PR04MB9003.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jul 2022 01:49:35.0375
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: wcc788dcOVlS03l17T+A7Ak64DZXeQDjIp7fQu61NE5dQOivauVvFWjzg4o4apo4g6IYnjhECF9/fF5AaFI4bg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB6673
+X-Spam-Status: No, score=-0.2 required=5.0 tests=BAYES_00,DATE_IN_FUTURE_06_12,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -69,145 +115,19 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 11, 2022 at 9:56 AM Yonglong Li <liyonglong@chinatelecom.cn> wrote:
->
-> current code of __tcp_retransmit_skb only check TCP_SKB_CB(skb)->seq
-> in send window, and TCP_SKB_CB(skb)->seq_end maybe out of send window.
-> If receiver has shrunk his window, and skb is out of new window,  it
-> should retransmit a smaller portion of the payload.
->
-> test packetdrill script:
->     0 socket(..., SOCK_STREAM, IPPROTO_TCP) = 3
->    +0 fcntl(3, F_GETFL) = 0x2 (flags O_RDWR)
->    +0 fcntl(3, F_SETFL, O_RDWR|O_NONBLOCK) = 0
->
->    +0 connect(3, ..., ...) = -1 EINPROGRESS (Operation now in progress)
->    +0 > S 0:0(0)  win 65535 <mss 1460,sackOK,TS val 100 ecr 0,nop,wscale 8>
->  +.05 < S. 0:0(0) ack 1 win 6000 <mss 1000,nop,nop,sackOK>
->    +0 > . 1:1(0) ack 1
->
->    +0 write(3, ..., 10000) = 10000
->
->    +0 > . 1:2001(2000) ack 1 win 65535
->    +0 > . 2001:4001(2000) ack 1 win 65535
->    +0 > . 4001:6001(2000) ack 1 win 65535
->
->  +.05 < . 1:1(0) ack 4001 win 1001
->
-> and tcpdump show:
-> 192.168.226.67.55 > 192.0.2.1.8080: Flags [.], seq 1:2001, ack 1, win 65535, length 2000
-> 192.168.226.67.55 > 192.0.2.1.8080: Flags [.], seq 2001:4001, ack 1, win 65535, length 2000
-> 192.168.226.67.55 > 192.0.2.1.8080: Flags [P.], seq 4001:5001, ack 1, win 65535, length 1000
-> 192.168.226.67.55 > 192.0.2.1.8080: Flags [.], seq 5001:6001, ack 1, win 65535, length 1000
-> 192.0.2.1.8080 > 192.168.226.67.55: Flags [.], ack 4001, win 1001, length 0
-> 192.168.226.67.55 > 192.0.2.1.8080: Flags [.], seq 5001:6001, ack 1, win 65535, length 1000
-> 192.168.226.67.55 > 192.0.2.1.8080: Flags [P.], seq 4001:5001, ack 1, win 65535, length 1000
->
-> when cient retract window to 1001, send window is [4001,5002],
-> but TLP send 5001-6001 packet which is out of send window.
->
-> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-> Signed-off-by: Yonglong Li <liyonglong@chinatelecom.cn>
-> ---
->  net/ipv4/tcp_output.c | 36 ++++++++++++++++++++++++------------
->  1 file changed, 24 insertions(+), 12 deletions(-)
->
-> diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-> index 18c913a..efd0f05 100644
-> --- a/net/ipv4/tcp_output.c
-> +++ b/net/ipv4/tcp_output.c
-> @@ -3100,7 +3100,6 @@ static bool tcp_can_collapse(const struct sock *sk, const struct sk_buff *skb)
->  static void tcp_retrans_try_collapse(struct sock *sk, struct sk_buff *to,
->                                      int space)
->  {
-> -       struct tcp_sock *tp = tcp_sk(sk);
->         struct sk_buff *skb = to, *tmp;
->         bool first = true;
->
-> @@ -3123,14 +3122,18 @@ static void tcp_retrans_try_collapse(struct sock *sk, struct sk_buff *to,
->                         continue;
->                 }
->
-> -               if (space < 0)
-> -                       break;
-> -
-> -               if (after(TCP_SKB_CB(skb)->end_seq, tcp_wnd_end(tp)))
-> +               if (space < 0) {
-> +                       if (unlikely(tcp_fragment(sk, TCP_FRAG_IN_RTX_QUEUE,
-> +                                                 skb, space + skb->len,
-> +                                                 tcp_current_mss(sk), GFP_ATOMIC)))
+Add the fec node on i.MX8ULP platfroms.
+And enable the fec support on i.MX8ULP EVK boards.
 
-What are you doing here ?
+Wei Fang (3):
+  dt-bindings: net: fsl,fec: Add i.MX8ULP FEC items
+  arm64: dts: imx8ulp: Add the fec support
+  arm64: dts: imx8ulp-evk: Add the fec support
 
-This seems wrong.
+ .../devicetree/bindings/net/fsl,fec.yaml      |  5 ++
+ arch/arm64/boot/dts/freescale/imx8ulp-evk.dts | 57 +++++++++++++++++++
+ arch/arm64/boot/dts/freescale/imx8ulp.dtsi    | 11 ++++
+ 3 files changed, 73 insertions(+)
 
-Can we please stick to the patch I sent earlier.
+-- 
+2.25.1
 
-If you want to amend it later, you can do this in a separate patch,
-with a clear explanation.
-
-> +                               break;
-> +                       tcp_collapse_retrans(sk, to);
->                         break;
-> +               }
->
->                 if (!tcp_collapse_retrans(sk, to))
->                         break;
-> +
->         }
->  }
->
-> @@ -3144,7 +3147,7 @@ int __tcp_retransmit_skb(struct sock *sk, struct sk_buff *skb, int segs)
->         struct tcp_sock *tp = tcp_sk(sk);
->         unsigned int cur_mss;
->         int diff, len, err;
-> -
-> +       int avail_wnd;
->
->         /* Inconclusive MTU probe */
->         if (icsk->icsk_mtup.probe_size)
-> @@ -3166,17 +3169,25 @@ int __tcp_retransmit_skb(struct sock *sk, struct sk_buff *skb, int segs)
->                 return -EHOSTUNREACH; /* Routing failure or similar. */
->
->         cur_mss = tcp_current_mss(sk);
-> +       avail_wnd = tcp_wnd_end(tp) - TCP_SKB_CB(skb)->seq;
->
->         /* If receiver has shrunk his window, and skb is out of
->          * new window, do not retransmit it. The exception is the
->          * case, when window is shrunk to zero. In this case
-> -        * our retransmit serves as a zero window probe.
-> +        * our retransmit of one segment serves as a zero window probe.
->          */
-> -       if (!before(TCP_SKB_CB(skb)->seq, tcp_wnd_end(tp)) &&
-> -           TCP_SKB_CB(skb)->seq != tp->snd_una)
-> -               return -EAGAIN;
-> +       if (avail_wnd <= 0) {
-> +               if (TCP_SKB_CB(skb)->seq != tp->snd_una)
-> +                       return -EAGAIN;
-> +               avail_wnd = cur_mss;
-> +       }
->
->         len = cur_mss * segs;
-> +       if (len > avail_wnd) {
-> +               len = rounddown(avail_wnd, cur_mss);
-> +               if (!len)
-> +                       len = avail_wnd;
-> +       }
->         if (skb->len > len) {
->                 if (tcp_fragment(sk, TCP_FRAG_IN_RTX_QUEUE, skb, len,
->                                  cur_mss, GFP_ATOMIC))
-> @@ -3190,8 +3201,9 @@ int __tcp_retransmit_skb(struct sock *sk, struct sk_buff *skb, int segs)
->                 diff -= tcp_skb_pcount(skb);
->                 if (diff)
->                         tcp_adjust_pcount(sk, skb, diff);
-> -               if (skb->len < cur_mss)
-> -                       tcp_retrans_try_collapse(sk, skb, cur_mss);
-> +               avail_wnd = min_t(int, avail_wnd, cur_mss);
-> +               if (skb->len < avail_wnd)
-> +                       tcp_retrans_try_collapse(sk, skb, avail_wnd);
->         }
->
->         /* RFC3168, section 6.1.1.1. ECN fallback */
-> --
-> 1.8.3.1
->
