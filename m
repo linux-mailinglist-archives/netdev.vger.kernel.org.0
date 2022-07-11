@@ -2,127 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 203EC56D6D8
-	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 09:31:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4785C56D6F6
+	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 09:40:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229948AbiGKHbO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jul 2022 03:31:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51698 "EHLO
+        id S229925AbiGKHkJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jul 2022 03:40:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229697AbiGKHbN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 03:31:13 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D9471A39F;
-        Mon, 11 Jul 2022 00:31:12 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.56])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LhFsN4xVVzFpyY;
-        Mon, 11 Jul 2022 15:30:16 +0800 (CST)
-Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
- (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 11 Jul
- 2022 15:31:09 +0800
-From:   Zhengchao Shao <shaozhengchao@huawei.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <davem@davemloft.net>, <yoshfuji@linux-ipv6.org>,
-        <dsahern@kernel.org>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>
-CC:     <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>,
-        <shaozhengchao@huawei.com>
-Subject: [PATCH] net: change the type of ip_route_input_rcu to static
-Date:   Mon, 11 Jul 2022 15:35:49 +0800
-Message-ID: <20220711073549.8947-1-shaozhengchao@huawei.com>
-X-Mailer: git-send-email 2.17.1
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpeml500026.china.huawei.com (7.185.36.106)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S229478AbiGKHkI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 03:40:08 -0400
+Received: from nautica.notk.org (nautica.notk.org [91.121.71.147])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E1266577;
+        Mon, 11 Jul 2022 00:40:07 -0700 (PDT)
+Received: by nautica.notk.org (Postfix, from userid 108)
+        id 3DF6FC009; Mon, 11 Jul 2022 09:40:05 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1657525205; bh=4znMRb8yNMIL2ImNXJHHakTw5e86CC6v8rfhTcy+ZYY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=0Hp+pjZdW6nvsDpQMwtbcZJsXG4UaF+GS8rGC4AeCNlM/agyHrpB3s+OyC4XivVD+
+         zCrblT85F8a97htBCZ7V6w6XacakGklghoTZqzqUc7ZNuiy+y1Bu0yd5JHSwgtdpBy
+         TXrWkJlk89SEWozd0l91LgwGLBfPlNMVy1PeQk6TzJWzpR60QMBDqqQWPgRsiMOPsb
+         3QC5RbGHhn9f4fe1pIkWBD7JCV4pBjHqRKfoBiPgYYY/uEtJSMwMw8U02LuZiHsWgn
+         vaGV70wkJZT2xLQba66jPV/BE/CCG4KWnTFH8AxdsDykNzB70URPLFpJSQyvwuHyId
+         jUUwEAkXOMwtw==
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Received: from odin.codewreck.org (localhost [127.0.0.1])
+        by nautica.notk.org (Postfix) with ESMTPS id A6C79C009;
+        Mon, 11 Jul 2022 09:40:00 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1657525204; bh=4znMRb8yNMIL2ImNXJHHakTw5e86CC6v8rfhTcy+ZYY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=APOSJV0WYbmBOmerpJvPFt0U+eh10sL0i+zdv7vzmc+EW0jRxUGJacQN7/3Rr/9iW
+         Qt6ZNPhVMYkoXX0VXV2Om/asntBOqpgLoTH2CRKEQdF6VjL3qog2JLbGasmTzZ5l85
+         tNG45gtzUEjVx6pBM6wrryisuqFJXXZSFA4p/ZTuO2pg7T/Szs6JjCnWaY7Oqtyna7
+         fZhNEKYR4J764OWtaHk3wHhCk5Ze5s3ct67tfhdvX5hLxAkUKUFQ77OqDssV+EQK49
+         yPohvHCZ4xhb9Pw3F0DQY5DyZ9+zfK53vJ4WsFSRv91L1hgyRtamHOPYB4bjcgpCnr
+         Rnylswyj3je0Q==
+Received: from localhost (odin.codewreck.org [local])
+        by odin.codewreck.org (OpenSMTPD) with ESMTPA id d9434db7;
+        Mon, 11 Jul 2022 07:39:56 +0000 (UTC)
+Date:   Mon, 11 Jul 2022 16:39:41 +0900
+From:   asmadeus@codewreck.org
+To:     Hangyu Hua <hbh25y@gmail.com>
+Cc:     ericvh@gmail.com, lucho@ionkov.net, linux_oss@crudebyte.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, tomasbortoli@gmail.com,
+        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: 9p: fix possible refcount leak in p9_read_work()
+ and recv_done()
+Message-ID: <YsvTvalrwd4bxO75@codewreck.org>
+References: <20220711065907.23105-1-hbh25y@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220711065907.23105-1-hbh25y@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The type of ip_route_input_rcu should be static.
+Hangyu Hua wrote on Mon, Jul 11, 2022 at 02:59:07PM +0800:
+> A ref got in p9_tag_lookup needs to be put when functions enter the
+> error path.
+> 
+> Fix this by adding p9_req_put in error path.
 
-Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
----
- include/net/route.h |  4 ----
- net/ipv4/route.c    | 34 +++++++++++++++++-----------------
- 2 files changed, 17 insertions(+), 21 deletions(-)
+I wish it was that simple.
 
-diff --git a/include/net/route.h b/include/net/route.h
-index b6743ff88e30..4929a710c24b 100644
---- a/include/net/route.h
-+++ b/include/net/route.h
-@@ -201,10 +201,6 @@ int ip_mc_validate_source(struct sk_buff *skb, __be32 daddr, __be32 saddr,
- 			  struct in_device *in_dev, u32 *itag);
- int ip_route_input_noref(struct sk_buff *skb, __be32 dst, __be32 src,
- 			 u8 tos, struct net_device *devin);
--int ip_route_input_rcu(struct sk_buff *skb, __be32 dst, __be32 src,
--		       u8 tos, struct net_device *devin,
--		       struct fib_result *res);
--
- int ip_route_use_hint(struct sk_buff *skb, __be32 dst, __be32 src,
- 		      u8 tos, struct net_device *devin,
- 		      const struct sk_buff *hint);
-diff --git a/net/ipv4/route.c b/net/ipv4/route.c
-index bd351fab46e6..328beff85a1e 100644
---- a/net/ipv4/route.c
-+++ b/net/ipv4/route.c
-@@ -2432,24 +2432,9 @@ out:	return err;
- 	goto out;
- }
- 
--int ip_route_input_noref(struct sk_buff *skb, __be32 daddr, __be32 saddr,
--			 u8 tos, struct net_device *dev)
--{
--	struct fib_result res;
--	int err;
--
--	tos &= IPTOS_RT_MASK;
--	rcu_read_lock();
--	err = ip_route_input_rcu(skb, daddr, saddr, tos, dev, &res);
--	rcu_read_unlock();
--
--	return err;
--}
--EXPORT_SYMBOL(ip_route_input_noref);
--
- /* called with rcu_read_lock held */
--int ip_route_input_rcu(struct sk_buff *skb, __be32 daddr, __be32 saddr,
--		       u8 tos, struct net_device *dev, struct fib_result *res)
-+static int ip_route_input_rcu(struct sk_buff *skb, __be32 daddr, __be32 saddr,
-+			      u8 tos, struct net_device *dev, struct fib_result *res)
- {
- 	/* Multicast recognition logic is moved from route cache to here.
- 	 * The problem was that too many Ethernet cards have broken/missing
-@@ -2498,6 +2483,21 @@ int ip_route_input_rcu(struct sk_buff *skb, __be32 daddr, __be32 saddr,
- 	return ip_route_input_slow(skb, daddr, saddr, tos, dev, res);
- }
- 
-+int ip_route_input_noref(struct sk_buff *skb, __be32 daddr, __be32 saddr,
-+			 u8 tos, struct net_device *dev)
-+{
-+	struct fib_result res;
-+	int err;
-+
-+	tos &= IPTOS_RT_MASK;
-+	rcu_read_lock();
-+	err = ip_route_input_rcu(skb, daddr, saddr, tos, dev, &res);
-+	rcu_read_unlock();
-+
-+	return err;
-+}
-+EXPORT_SYMBOL(ip_route_input_noref);
-+
- /* called with rcu_read_lock() */
- static struct rtable *__mkroute_output(const struct fib_result *res,
- 				       const struct flowi4 *fl4, int orig_oif,
--- 
-2.17.1
+Did you actually observe a leak?
 
+> diff --git a/net/9p/trans_fd.c b/net/9p/trans_fd.c
+> index 8f8f95e39b03..c4ccb7b9e1bf 100644
+> --- a/net/9p/trans_fd.c
+> +++ b/net/9p/trans_fd.c
+> @@ -343,6 +343,7 @@ static void p9_read_work(struct work_struct *work)
+>  			p9_debug(P9_DEBUG_ERROR,
+>  				 "No recv fcall for tag %d (req %p), disconnecting!\n",
+>  				 m->rc.tag, m->rreq);
+> +			p9_req_put(m->rreq);
+>  			m->rreq = NULL;
+>  			err = -EIO;
+>  			goto error;
+> @@ -372,6 +373,8 @@ static void p9_read_work(struct work_struct *work)
+>  				 "Request tag %d errored out while we were reading the reply\n",
+>  				 m->rc.tag);
+>  			err = -EIO;
+> +			p9_req_put(m->rreq);
+> +			m->rreq = NULL;
+>  			goto error;
+>  		}
+>  		spin_unlock(&m->client->lock);
+
+
+for tcp, we still have that request in m->req_list, so we should be
+calling p9_client_cb which will do the p9_req_put in p9_conn_cancel.
+
+If you do it here, you'll get a refcount overflow and use after free.
+
+> diff --git a/net/9p/trans_rdma.c b/net/9p/trans_rdma.c
+> index 88e563826674..82b5d6894ee2 100644
+> --- a/net/9p/trans_rdma.c
+> +++ b/net/9p/trans_rdma.c
+> @@ -317,6 +317,7 @@ recv_done(struct ib_cq *cq, struct ib_wc *wc)
+>  	/* Check that we have not yet received a reply for this request.
+>  	 */
+>  	if (unlikely(req->rc.sdata)) {
+> +		p9_req_put(req);
+>  		pr_err("Duplicate reply for request %d", tag);
+>  		goto err_out;
+>  	}
+
+This one isn't as clear cut, I see that they put the client in a
+FLUSHING state but nothing seems to acton on it... But if this happens
+we're already in the use after free realm -- it means rc.sdata was
+already set so the other thread could be calling p9_client_cb anytime if
+it already hasn't, and yet another thread will then do the final ref put
+and free this.
+We shouldn't free this here as that would also be an overflow. The best
+possible thing to do at this point is just to stop using that pointer.
+
+
+If you actually run into a problem with these refcounts (should get a
+warning on umount that something didn't get freed) then by all mean
+let's look further into it, but please don't send such patches without
+testing the error paths you're "fixing" -- I'm pretty sure a reproducer
+to hit these paths would bark errors in dmesg as refcount has an
+overflow check.
+
+--
+Dominique
