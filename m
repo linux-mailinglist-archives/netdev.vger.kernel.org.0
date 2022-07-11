@@ -2,88 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 11E2D5709D8
-	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 20:22:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39B925709DC
+	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 20:23:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231486AbiGKSWX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jul 2022 14:22:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46860 "EHLO
+        id S229949AbiGKSXQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jul 2022 14:23:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229635AbiGKSWV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 14:22:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8068532470;
-        Mon, 11 Jul 2022 11:22:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 24329614DB;
-        Mon, 11 Jul 2022 18:22:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9625C34115;
-        Mon, 11 Jul 2022 18:22:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657563739;
-        bh=CvQRlE/ufLqF5vMtPD31qdoYcNYjoAvuZ3UjFo4NIrA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=kuHdm9IZqSaGlxtM3jWp0VqxJgW8mxBvW8RhxQQI/wqhqG9zQDcc6uqKwJac3DRy2
-         nHx36rn5b7/rEniXgAKi7kp7ZvmUCyPlFDeEwNFyrcVTz8ubG5iVxoKMFvmdmAaK32
-         GyrYtRuVPnk92U9vGUG4rhdC6V9TSwDCBkf4HPYaLqQOjoKP/hHeFDkXHyNViBd4BM
-         1WymX3Imn3xMxzrhiEb5Spf6V8ivZ1jbQQXW054QUA0/RRyU8msJcqlrkL288sxJdD
-         K6UyHJhlCet0ylR73YPmkOX9v2Od9C8Dd5wgYUEXSuF/4UQGooHihol4p1D9zcoNqy
-         QgaDSVAlEmH7g==
-Date:   Mon, 11 Jul 2022 11:22:09 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Colin Foster <colin.foster@in-advantage.com>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-gpio@vger.kernel.org,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Wolfram Sang <wsa@kernel.org>,
-        Terry Bowman <terry.bowman@amd.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        katie.morris@in-advantage.com
-Subject: Re: [PATCH v13 net-next 2/9] net: mdio: mscc-miim: add ability to
- be used in a non-mmio configuration
-Message-ID: <20220711112209.4902720b@kernel.org>
-In-Reply-To: <20220705204743.3224692-3-colin.foster@in-advantage.com>
-References: <20220705204743.3224692-1-colin.foster@in-advantage.com>
-        <20220705204743.3224692-3-colin.foster@in-advantage.com>
+        with ESMTP id S229635AbiGKSXP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 14:23:15 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A07474D80E;
+        Mon, 11 Jul 2022 11:23:14 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id r14so8127843wrg.1;
+        Mon, 11 Jul 2022 11:23:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=LDyh/vtAqlchTUEJhEUMVYzVZhOGqr+c1tP2nxvPQ3E=;
+        b=BaSeEBuhTSPhFm1WrSLp2YkYR10LGnYPSUVyfpevAiQd+DV3x60uiu1vOlXhEPoafT
+         8uhaaIcyLSG9Pfly5++bPQSfjqetrKb+e2ZuT3cl6BE2XJ9sebsq1WjXLnrFxAa9uuEy
+         H0o65IOCCQv07sPoU38yamOZAPVR9Sd7l8Eh6TG99L8bB7C+WOf8NhQaC6Ukbid8ud4F
+         T69SBV5AT+wvKH8c0PvqhABw//I3Wdju5UbLtOE+Id97rVZ/WeALxW8lH3P9dTY2NmWV
+         FOYV00GouzXZIvvNtP2S6wbHzYTMayz+PPB/hR0kNDqsUC45ixtSk5aY1fgDPrAkg5ua
+         Iqpw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=LDyh/vtAqlchTUEJhEUMVYzVZhOGqr+c1tP2nxvPQ3E=;
+        b=Medv72cGPK2w2uTWVRA1cxaIetKn/9/u2gIpAX+TCG8sauI/mluydfMYsWc1BcoXuz
+         /ZL2FgzE76N+V2aIrJq8T5Y0ApdDAcHyCX1pxALcQFBXA4rBwI+cxA6LxufVK4SITvI4
+         p7DJ4HtEBzQx1qguLVCqsREwe5pzqUmv85/WQhZ+X9w551/ZoR3Pg/cJFJqR4O+yleQk
+         k5XMnhXggckIMf0JMxVGKXocCxxd8+jiU+w8hnaW7imW78yt8qemur0/vKjGzoYxWkfs
+         NESwGfvLjSdBCtjoPHGLsFfUP2zuvls42W/phf7zZO7i5rfOutSDvGoJ6mEWxWW5IAZ0
+         0XLA==
+X-Gm-Message-State: AJIora85CpOB5zmaYhKzaHzCk1R2U/pSN/Wsqop7XTNsSdYYbZSQKXlE
+        gqOvgkEWtPNiDazlm0VvO6l+3GxfgD2WY5nqujU=
+X-Google-Smtp-Source: AGRyM1vnXJ5hhT+ys1lcCGj0nB0+/HxOwAfACFTvmeWcxHW8mH9vqF6mNfjJ5oVC0wEams8uv9j7kD9E93A0fTrK9e4=
+X-Received: by 2002:adf:f90c:0:b0:21a:3dcb:d106 with SMTP id
+ b12-20020adff90c000000b0021a3dcbd106mr17872123wrr.448.1657563793057; Mon, 11
+ Jul 2022 11:23:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220711075225.15687-1-mlombard@redhat.com> <CAKgT0UedQL-Yeum8m=j6oX5s2SjzjtwcwFXBZQde+FzmkmL5bQ@mail.gmail.com>
+ <CAFL455nwqqrviZranVvVgRapSF_Na3vwR4NYM+=Hqbvt3+fJeA@mail.gmail.com>
+In-Reply-To: <CAFL455nwqqrviZranVvVgRapSF_Na3vwR4NYM+=Hqbvt3+fJeA@mail.gmail.com>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Mon, 11 Jul 2022 11:23:01 -0700
+Message-ID: <CAKgT0Ue0j1-EF+X0miM4ZYQgJ7xLX79BwN58rqHcaEBzC6BBcg@mail.gmail.com>
+Subject: Re: [PATCH] mm: prevent page_frag_alloc() from corrupting the memory
+To:     Maurizio Lombardi <mlombard@redhat.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-mm <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>, Chen Lin <chen45464546@163.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue,  5 Jul 2022 13:47:36 -0700 Colin Foster wrote:
-> There are a few Ocelot chips that contain the logic for this bus, but are
-> controlled externally. Specifically the VSC7511, 7512, 7513, and 7514. In
-> the externally controlled configurations these registers are not
-> memory-mapped.
-> 
-> Add support for these non-memory-mapped configurations.
-> 
-> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+On Mon, Jul 11, 2022 at 9:17 AM Maurizio Lombardi <mlombard@redhat.com> wro=
+te:
+>
+> po 11. 7. 2022 v 17:34 odes=C3=ADlatel Alexander Duyck
+> <alexander.duyck@gmail.com> napsal:
+> >
+> > Rather than forcing us to free the page it might be better to move the
+> > lines getting the size and computing the offset to the top of the "if
+> > (unlikely(offset < 0)) {" block. Then instead of freeing the page we
+> > could just return NULL and don't have to change the value of any
+> > fields in the page_frag_cache.
+> >
+> > That way a driver performing bad requests can't force us to start
+> > allocating and freeing pages like mad by repeatedly flushing the
+> > cache.
+> >
+>
+> I understand. On the other hand, if we free the cache page then the
+> next time __page_frag_cache_refill() runs it may be successful
+> at allocating the order=3D3 cache, the normal page_frag_alloc() behaviour=
+ will
+> therefore be restored.
 
-Since the patch may go via MFD:
+That is a big "maybe". My concern is that it will actually make memory
+pressure worse by forcing us to reduce the number of uses for a lower
+order page. One bad actor will have us flushing memory like mad so a
+guy expecting a small fragment may end up allocating 32K pages because
+someone else is trying to allocate them.
 
-Acked-by: Jakub Kicinski <kuba@kernel.org>
+I recommend we do not optimize for a case which this code was not
+designed for. Try to optimize for the standard case that most of the
+drivers are using. These drivers that are allocating higher order
+pages worth of memory should really be using alloc_pages. Using this
+to allocate pages over 4K in size is just a waste since they are not
+likely to see page reuse which is what this code expects to see.
