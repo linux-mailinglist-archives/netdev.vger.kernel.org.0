@@ -2,36 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 38A5156FE6A
-	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 12:11:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F7DB56FE8F
+	for <lists+netdev@lfdr.de>; Mon, 11 Jul 2022 12:14:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234696AbiGKKLk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jul 2022 06:11:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46038 "EHLO
+        id S230438AbiGKKOr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jul 2022 06:14:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231411AbiGKKKd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 06:10:33 -0400
-Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 150C9BCB6;
-        Mon, 11 Jul 2022 02:33:17 -0700 (PDT)
-Received: from rustam-GF63-Thin-9RCX.intra.ispras.ru (unknown [83.149.199.65])
-        by mail.ispras.ru (Postfix) with ESMTPS id 692F740737A7;
-        Mon, 11 Jul 2022 09:33:11 +0000 (UTC)
-From:   Rustam Subkhankulov <subkhankulov@ispras.ru>
-To:     Saeed Mahameed <saeedm@nvidia.com>
-Cc:     Rustam Subkhankulov <subkhankulov@ispras.ru>,
-        Leon Romanovsky <leon@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maor Gottlieb <maorg@mellanox.com>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Alexey Khoroshilov <khoroshilov@ispras.ru>
-Subject: [PATCH] net/mlx5e: Removed useless code in function
-Date:   Mon, 11 Jul 2022 12:33:03 +0300
-Message-Id: <20220711093303.14511-1-subkhankulov@ispras.ru>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S234748AbiGKKOC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 06:14:02 -0400
+Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7B5D84A825;
+        Mon, 11 Jul 2022 02:34:14 -0700 (PDT)
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
+        pabeni@redhat.com, edumazet@google.com
+Subject: [PATCH net 0/3] Netfilter fixes for net
+Date:   Mon, 11 Jul 2022 11:33:54 +0200
+Message-Id: <20220711093357.107260-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
@@ -43,36 +33,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Comparison of eth_ft->ft with NULL is useless, because
-get_flow_table() returns either pointer 'eth_ft'
-such that eth_ft->ft != NULL, or an erroneous value that is
-handled on return, causing mlx5e_ethtool_flow_replace()
-to terminate before checking whether eth_ft->ft equals NULL.
+Hi,
 
-Found by Linux Verification Center (linuxtesting.org) with SVACE.
+The following patchset contains Netfilter fixes for net:
 
-Signed-off-by: Rustam Subkhankulov <subkhankulov@ispras.ru>
-Fixes: 6dc6071cfcde ("net/mlx5e: Add ethtool flow steering support")
----
- drivers/net/ethernet/mellanox/mlx5/core/en_fs_ethtool.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+1) refcount_inc_not_zero() is not semantically equivalent to
+   atomic_int_not_zero(), from Florian Westphal. My understanding was
+   that refcount_*() API provides a wrapper to easier debugging of
+   reference count leaks, however, there are semantic differences
+   between these two APIs, where refcount_inc_not_zero() needs a barrier.
+   Reason for this subtle difference to me is unknown.
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_fs_ethtool.c b/drivers/net/ethernet/mellanox/mlx5/core/en_fs_ethtool.c
-index ad0d234632a3..9466202fd97b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_fs_ethtool.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_fs_ethtool.c
-@@ -742,10 +742,7 @@ mlx5e_ethtool_flow_replace(struct mlx5e_priv *priv,
- 
- 	eth_rule->flow_spec = *fs;
- 	eth_rule->eth_ft = eth_ft;
--	if (!eth_ft->ft) {
--		err = -EINVAL;
--		goto del_ethtool_rule;
--	}
-+
- 	rule = add_ethtool_flow_rule(priv, eth_rule, eth_ft->ft, fs, rss_context);
- 	if (IS_ERR(rule)) {
- 		err = PTR_ERR(rule);
--- 
-2.25.1
+2) packet logging is not correct for ARP and IP packets, from the
+   ARP family and netdev/egress respectively. Use skb_network_offset()
+   to reach the headers accordingly.
 
+3) set element extension length have been growing over time, replace
+   a BUG_ON by EINVAL which might be triggerable from userspace.
+
+Please, pull these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf.git
+
+Thanks.
+
+----------------------------------------------------------------
+
+The following changes since commit 280e3a857d96f9ca8e24632788e1e7a0fec4e9f7:
+
+  Merge git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf (2022-07-03 12:29:18 +0100)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf.git HEAD
+
+for you to fetch changes up to c39ba4de6b0a843bec5d46c2b6f2064428dada5e:
+
+  netfilter: nf_tables: replace BUG_ON by element length check (2022-07-09 16:25:09 +0200)
+
+----------------------------------------------------------------
+Florian Westphal (1):
+      netfilter: conntrack: fix crash due to confirmed bit load reordering
+
+Pablo Neira Ayuso (2):
+      netfilter: nf_log: incorrect offset to network header
+      netfilter: nf_tables: replace BUG_ON by element length check
+
+ include/net/netfilter/nf_tables.h       | 14 ++++---
+ net/netfilter/nf_conntrack_core.c       | 22 ++++++++++
+ net/netfilter/nf_conntrack_netlink.c    |  1 +
+ net/netfilter/nf_conntrack_standalone.c |  3 ++
+ net/netfilter/nf_log_syslog.c           |  8 ++--
+ net/netfilter/nf_tables_api.c           | 72 +++++++++++++++++++++++----------
+ 6 files changed, 90 insertions(+), 30 deletions(-)
