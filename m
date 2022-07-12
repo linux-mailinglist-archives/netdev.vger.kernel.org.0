@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D120D5727E8
-	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 22:54:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 909755727F0
+	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 22:55:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233923AbiGLUxe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jul 2022 16:53:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55726 "EHLO
+        id S234041AbiGLUxo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jul 2022 16:53:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230161AbiGLUxN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 16:53:13 -0400
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB0D4CDA1C;
-        Tue, 12 Jul 2022 13:53:12 -0700 (PDT)
-Received: by mail-wr1-x42d.google.com with SMTP id bu1so11641726wrb.9;
-        Tue, 12 Jul 2022 13:53:12 -0700 (PDT)
+        with ESMTP id S231857AbiGLUxh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 16:53:37 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52869CEB8B;
+        Tue, 12 Jul 2022 13:53:15 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id h17so12872942wrx.0;
+        Tue, 12 Jul 2022 13:53:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=PuXIMDYTsEzEI4UhsZdMwE6aeyhFjCPDoQCmzh6YH3o=;
-        b=QP9OK++DUQUGUN/TfnVfXW4o6NNZJOcm61ED+dTvcywJIfbyqHNgd2Iwavh3F+mj9X
-         Rjh9ftLgNpOdYsR56P1d2hM6QN7oPIU2M6c5825vOLnJWB+0arqLlzmQi+2Wn4GO9+61
-         1gIyVdHgeAj1RcEH4EB5kV23mslrkcXswLTfLPwFtMm/MsJVRrl9TNtAgfZVzLhG5YiI
-         dOHZbdQWqvp0Pfah2v/+PCCJe7t218O6mFrzIag8U+Vq4xBhBeap6dtelnPVwfz91bjw
-         hlmy0qKRCXCORMdWjRA/4GE0yqCcysmexvnDdAwb385pwzE6RDkNFwp+4kNDv++M0ENe
-         JWXw==
+        bh=gX+xYQxM94KdtlI7YGh/i2Kh7GR2uKZ7IifaNrt+CnI=;
+        b=qwHfey5WrSh60CwhUhPpq9J8tMgPyA7SZrCS0uF/kzXsPtQ8Qk713E1Zm8O7OEwpli
+         BEhdg+7WlQv0h4u5QBgCsk/caRl+1HXHwz84/fL63Oz/UD+QWjJNCoR44z77rirM68xS
+         yh4m0OkzkPcCrPHX0m3uMruKKKfY/+u8w7BJGitMF062xQYL0SXHbKAeR09KLaNY5FZH
+         syKClEWRPA48a8VLoxlYcPPxN9Sj0j++LO8k4BTQdUOErukuiiWP8+u2rDsuygIV+0xP
+         a2ybPvIDpHK/VFiBVVjs9vMnc8PZlCx3p4M45yniprJGOQXUF+kKnIusZrcrdL/WTG7o
+         Xvvw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=PuXIMDYTsEzEI4UhsZdMwE6aeyhFjCPDoQCmzh6YH3o=;
-        b=MGeKL86jPpNbD/GScwSSXLAjj7XMQRgbknPRpyHutrRftVFqgt48iYJvOw7NRl21FA
-         QiG/FVt/wA8cCzJouOBMGipEuyIWllNL9Xu7lUqHwplmuh/wnTYaiM9ms/bxya2B0LFL
-         JwRZUl8BgcD2RyIUNGCn9gIDZMs9TbQEGejSwOgQ7gyo7fG7FP3x094bJwjn+ZxnDV9k
-         JG3dY8K1El534vvjLomYvZJ250g3e2olKcRIOexHAffW41fsJbltyE5B7k4InE5hO+1/
-         2/l9Aeus0Xvce3u7PPAXm9WRKbzI5WQWs8kGYL6dZvEuuoJBtH7upL5ZMhgSz3mBKoog
-         m/MQ==
-X-Gm-Message-State: AJIora+PV0bcM7d+yvSZcEQacFnguYPLwXtVlDG85SsUPyhyjknR+6tX
-        SwTBKHSgjuXeQoNWI1qmjMz4dr5/RLs=
-X-Google-Smtp-Source: AGRyM1t8LKotJskqrU/NswXAsKu+ZHQ2weZAQ/2YMkDGFacGQX1f8sJ9NH26DiTkDDbVTeW5UwOdxw==
-X-Received: by 2002:a5d:6b43:0:b0:21d:7d01:b314 with SMTP id x3-20020a5d6b43000000b0021d7d01b314mr25127544wrw.357.1657659192085;
-        Tue, 12 Jul 2022 13:53:12 -0700 (PDT)
+        bh=gX+xYQxM94KdtlI7YGh/i2Kh7GR2uKZ7IifaNrt+CnI=;
+        b=7YauKXK8kAFhqSGt63X2d+NGtKaXOreDSaUmPmoNPtVbDCw1DXm7SFnVXle+w2Rp3g
+         ZCtGyaq9KNuwEei81kZP26ZuKY9QAoaAee7eJZAw+ft3FerhtsEDWZvyeNrqOS/l7CsV
+         B84IENg1jbLAQrGGbyIOLEOZz7qPYO5oRWKfU8F8Y8py1B4OlCz5KhfcmHPjdI5kFhh3
+         J+RYnxbDS84VqGWHJMjd2tYjUySOJZCGoxJ2SvobzMRfeZKwYZm35Xs8vQDnETWtvw3m
+         EQGvFQpap1olEqtP0WuPGd99UDTGATMNck1PHjBQ2Go/YQwBVJeJJe/X18ahLm9PICeq
+         eE5Q==
+X-Gm-Message-State: AJIora9rOpUZVl4lQdZA07iVDzi0HXvzH0bAF8kSg//5LnoJUlz9xBQS
+        xDiid21C+wfmxCzoSNlx6BruYIjwjQ4=
+X-Google-Smtp-Source: AGRyM1vJO6/TlD4KPbS4LApDW2ydFy9CLGTsitQWz16pq4eg5pqazjcj6Muji88ifwzIrnA1KmbRDw==
+X-Received: by 2002:adf:eccb:0:b0:21d:7b41:22c7 with SMTP id s11-20020adfeccb000000b0021d7b4122c7mr22293206wro.543.1657659193344;
+        Tue, 12 Jul 2022 13:53:13 -0700 (PDT)
 Received: from 127.0.0.1localhost (188.28.125.106.threembb.co.uk. [188.28.125.106])
-        by smtp.gmail.com with ESMTPSA id c14-20020a7bc00e000000b003a044fe7fe7sm89833wmb.9.2022.07.12.13.53.11
+        by smtp.gmail.com with ESMTPSA id c14-20020a7bc00e000000b003a044fe7fe7sm89833wmb.9.2022.07.12.13.53.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 13:53:11 -0700 (PDT)
+        Tue, 12 Jul 2022 13:53:12 -0700 (PDT)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     io-uring@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
@@ -56,9 +56,9 @@ Cc:     "David S . Miller" <davem@davemloft.net>,
         Willem de Bruijn <willemb@google.com>,
         Jens Axboe <axboe@kernel.dk>, David Ahern <dsahern@kernel.org>,
         kernel-team@fb.com, Pavel Begunkov <asml.silence@gmail.com>
-Subject: [PATCH net-next v5 04/27] skbuff: add SKBFL_DONT_ORPHAN flag
-Date:   Tue, 12 Jul 2022 21:52:28 +0100
-Message-Id: <c1dd557e091e21937baa088308770121017daa8c.1657643355.git.asml.silence@gmail.com>
+Subject: [PATCH net-next v5 05/27] skbuff: carry external ubuf_info in msghdr
+Date:   Tue, 12 Jul 2022 21:52:29 +0100
+Message-Id: <2c3ce22ec6939856cef4329d8c95e4c8dfb355d8.1657643355.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <cover.1657643355.git.asml.silence@gmail.com>
 References: <cover.1657643355.git.asml.silence@gmail.com>
@@ -74,57 +74,68 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We don't want to list every single ubuf_info callback in
-skb_orphan_frags(), add a flag controlling the behaviour.
+Make possible for network in-kernel callers like io_uring to pass in a
+custom ubuf_info by setting it in a new field of struct msghdr.
 
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 ---
- include/linux/skbuff.h | 8 +++++---
- net/core/skbuff.c      | 2 +-
- 2 files changed, 6 insertions(+), 4 deletions(-)
+ include/linux/socket.h | 1 +
+ net/compat.c           | 1 +
+ net/socket.c           | 3 +++
+ 3 files changed, 5 insertions(+)
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index d3d10556f0fa..8e12b3b9ad6c 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -686,10 +686,13 @@ enum {
- 	 * charged to the kernel memory.
- 	 */
- 	SKBFL_PURE_ZEROCOPY = BIT(2),
-+
-+	SKBFL_DONT_ORPHAN = BIT(3),
+diff --git a/include/linux/socket.h b/include/linux/socket.h
+index 17311ad9f9af..7bac9fc1cee0 100644
+--- a/include/linux/socket.h
++++ b/include/linux/socket.h
+@@ -69,6 +69,7 @@ struct msghdr {
+ 	unsigned int	msg_flags;	/* flags on received message */
+ 	__kernel_size_t	msg_controllen;	/* ancillary data buffer length */
+ 	struct kiocb	*msg_iocb;	/* ptr to iocb for async requests */
++	struct ubuf_info *msg_ubuf;
  };
  
- #define SKBFL_ZEROCOPY_FRAG	(SKBFL_ZEROCOPY_ENABLE | SKBFL_SHARED_FRAG)
--#define SKBFL_ALL_ZEROCOPY	(SKBFL_ZEROCOPY_FRAG | SKBFL_PURE_ZEROCOPY)
-+#define SKBFL_ALL_ZEROCOPY	(SKBFL_ZEROCOPY_FRAG | SKBFL_PURE_ZEROCOPY | \
-+				 SKBFL_DONT_ORPHAN)
+ struct user_msghdr {
+diff --git a/net/compat.c b/net/compat.c
+index 210fc3b4d0d8..6cd2e7683dd0 100644
+--- a/net/compat.c
++++ b/net/compat.c
+@@ -80,6 +80,7 @@ int __get_compat_msghdr(struct msghdr *kmsg,
+ 		return -EMSGSIZE;
  
- /*
-  * The callback notifies userspace to release buffers when skb DMA is done in
-@@ -3182,8 +3185,7 @@ static inline int skb_orphan_frags(struct sk_buff *skb, gfp_t gfp_mask)
- {
- 	if (likely(!skb_zcopy(skb)))
- 		return 0;
--	if (!skb_zcopy_is_nouarg(skb) &&
--	    skb_uarg(skb)->callback == msg_zerocopy_callback)
-+	if (skb_shinfo(skb)->flags & SKBFL_DONT_ORPHAN)
- 		return 0;
- 	return skb_copy_ubufs(skb, gfp_mask);
- }
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 09f56bfa2771..fc22b3d32052 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -1193,7 +1193,7 @@ static struct ubuf_info *msg_zerocopy_alloc(struct sock *sk, size_t size)
- 	uarg->len = 1;
- 	uarg->bytelen = size;
- 	uarg->zerocopy = 1;
--	uarg->flags = SKBFL_ZEROCOPY_FRAG;
-+	uarg->flags = SKBFL_ZEROCOPY_FRAG | SKBFL_DONT_ORPHAN;
- 	refcount_set(&uarg->refcnt, 1);
- 	sock_hold(sk);
+ 	kmsg->msg_iocb = NULL;
++	kmsg->msg_ubuf = NULL;
+ 	*ptr = msg.msg_iov;
+ 	*len = msg.msg_iovlen;
+ 	return 0;
+diff --git a/net/socket.c b/net/socket.c
+index 2bc8773d9dc5..ed061609265e 100644
+--- a/net/socket.c
++++ b/net/socket.c
+@@ -2106,6 +2106,7 @@ int __sys_sendto(int fd, void __user *buff, size_t len, unsigned int flags,
+ 	msg.msg_control = NULL;
+ 	msg.msg_controllen = 0;
+ 	msg.msg_namelen = 0;
++	msg.msg_ubuf = NULL;
+ 	if (addr) {
+ 		err = move_addr_to_kernel(addr, addr_len, &address);
+ 		if (err < 0)
+@@ -2171,6 +2172,7 @@ int __sys_recvfrom(int fd, void __user *ubuf, size_t size, unsigned int flags,
+ 	msg.msg_namelen = 0;
+ 	msg.msg_iocb = NULL;
+ 	msg.msg_flags = 0;
++	msg.msg_ubuf = NULL;
+ 	if (sock->file->f_flags & O_NONBLOCK)
+ 		flags |= MSG_DONTWAIT;
+ 	err = sock_recvmsg(sock, &msg, flags);
+@@ -2409,6 +2411,7 @@ int __copy_msghdr_from_user(struct msghdr *kmsg,
+ 		return -EMSGSIZE;
  
+ 	kmsg->msg_iocb = NULL;
++	kmsg->msg_ubuf = NULL;
+ 	*uiov = msg.msg_iov;
+ 	*nsegs = msg.msg_iovlen;
+ 	return 0;
 -- 
 2.37.0
 
