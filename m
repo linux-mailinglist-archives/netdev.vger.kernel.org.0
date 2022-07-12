@@ -2,89 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E7F455712D6
-	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 09:12:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D22845712ED
+	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 09:17:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232297AbiGLHME (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jul 2022 03:12:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51452 "EHLO
+        id S232313AbiGLHRx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jul 2022 03:17:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229747AbiGLHMC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 03:12:02 -0400
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 284E52AE2D;
-        Tue, 12 Jul 2022 00:12:02 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id 9CD0880B5;
-        Tue, 12 Jul 2022 07:06:20 +0000 (UTC)
-Date:   Tue, 12 Jul 2022 10:12:00 +0300
-From:   Tony Lindgren <tony@atomide.com>
-To:     Saravana Kannan <saravanak@google.com>
-Cc:     Rob Herring <robh@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Kevin Hilman <khilman@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Android Kernel Team <kernel-team@android.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "open list:THERMAL" <linux-pm@vger.kernel.org>,
-        Linux IOMMU <iommu@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Alexander Stein <alexander.stein@ew.tq-group.com>
-Subject: Re: [PATCH v2 1/9] PM: domains: Delete usage of
- driver_deferred_probe_check_state()
-Message-ID: <Ys0ewNYFB25RWNju@atomide.com>
-References: <CAGETcx9aFBzMcuOiTAEy5SJyWw3UfajZ8DVQfW2DGmzzDabZVg@mail.gmail.com>
- <Yrlz/P6Un2fACG98@atomide.com>
- <CAGETcx8c+P0r6ARmhv+ERaz9zAGBOVJQu3bSDXELBycEGfkYQw@mail.gmail.com>
- <CAL_JsqJd3J6k6pRar7CkHVaaPbY7jqvzAePd8rVDisRV-dLLtg@mail.gmail.com>
- <CAGETcx9ZmeTyP1sJCFZ9pBbMyXeifQFohFvWN3aBPx0sSOJ2VA@mail.gmail.com>
- <Yr6HQOtS4ctUYm9m@atomide.com>
- <Yr6QUzdoFWv/eAI6@atomide.com>
- <CAGETcx-0bStPx8sF3BtcJFiu74NwiB0btTQ+xx_B=8B37TEb8w@mail.gmail.com>
- <CAGETcx-Yp2JKgCNfaGD0SzZg9F2Xnu8A3zXmV5=WX1hY7uR=0g@mail.gmail.com>
- <Yr7wA8d4J7xtjwsH@atomide.com>
+        with ESMTP id S232285AbiGLHRw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 03:17:52 -0400
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D75674DD7
+        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 00:17:51 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id h14-20020a1ccc0e000000b0039eff745c53so4246414wmb.5
+        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 00:17:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=6wind.com; s=google;
+        h=message-id:date:mime-version:user-agent:reply-to:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=8p7pSjgMH7NDuXnh5+4nZ6el7vUcOBJ2B3VHb/Ta1r8=;
+        b=Nr+tZAsKh9TZquzZ03J7EeGDpvclMgYP5LAJjj2xfYKUwKLT9xAnmr3AqsvRseGhpY
+         6zMY7Iy+vviuf1WdTho11n3T+bxD9OzLimI+LaI0mhpkRo14HaRcP+j226hbSEUc/xRf
+         MDvW9qivtGodfwVWJrnOAXzR5KxFsarx93EiEXUAa02likczJ67+6vFv9akAZRG8sAQj
+         1KqoMdllXXGZm4NQ2Qf7v6+PiMe2ww1+Q/LWI73Uz5qakw6eXcfNTBiGsS17EQ4ew88Y
+         Q6Hi2GSqFHtsWcX3KI/QI00Q7CLMrizS3F3ula+jUdwj7CJJEHalPOtdtCFl+9t7aaAh
+         fyRg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:reply-to
+         :subject:content-language:to:cc:references:from:organization
+         :in-reply-to:content-transfer-encoding;
+        bh=8p7pSjgMH7NDuXnh5+4nZ6el7vUcOBJ2B3VHb/Ta1r8=;
+        b=dXVaus4CToWIzZflkqNBabQfk6H3uhfis2vh7eeY55Aq9X7O2lMaXun7vDE+htTzDb
+         aC/HkA7o6Zkpb1f0sLxmbLiETPP35xW6x38lPJNUcU1uVWUdIgZE6pFtUFXjkO9QcHnY
+         NdAL9VHUNx247idaIwTMvmblASCghfZ+y981Rex9mgNYXzJ2qseBeaNuGfj3sV3f6Oib
+         EJKIjvOUKkU/KFkyMG1lMHowSq0qCwvwtVB6AidSoBP/PNKhdp6A+sUyVWZn+lhDSDn1
+         O+UGWXGupNWOKYz2j+whPDxv/aWHRcBSfjE0yxCCtAEoanp/W2Is7CCOfoELsi2HDXhN
+         vF4w==
+X-Gm-Message-State: AJIora/FEt8rhV3+QiatQvW1mr7iPOlYK+oJNlYXOgqbvJY89rT7zFcv
+        JNIvFqe5WPqHcvTQQstYLExVnQ==
+X-Google-Smtp-Source: AGRyM1v4+DusPOwfBDYpf5YL3QpoKU7pzRSsprrd3ia7BEU2m6OPcVXJmj1JK9wfPQWXo7hLoKNFkQ==
+X-Received: by 2002:a7b:cb41:0:b0:3a2:d6eb:135d with SMTP id v1-20020a7bcb41000000b003a2d6eb135dmr2371293wmj.150.1657610269715;
+        Tue, 12 Jul 2022 00:17:49 -0700 (PDT)
+Received: from ?IPV6:2a01:e0a:b41:c160:6422:a9c9:641f:c60b? ([2a01:e0a:b41:c160:6422:a9c9:641f:c60b])
+        by smtp.gmail.com with ESMTPSA id i9-20020a5d6309000000b0021d808826fbsm7560552wru.44.2022.07.12.00.17.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 Jul 2022 00:17:48 -0700 (PDT)
+Message-ID: <42015af3-daa5-7435-725e-8197adbbf3b8@6wind.com>
+Date:   Tue, 12 Jul 2022 09:17:48 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yr7wA8d4J7xtjwsH@atomide.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Reply-To: nicolas.dichtel@6wind.com
+Subject: Re: [PATCH net] ip_tunnel: allow to inherit from VLAN encapsulated IP
+ frames
+Content-Language: en-US
+To:     Matthias May <matthias.may@westermo.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, edumazet@google.com,
+        pabeni@redhat.com
+References: <20220705145441.11992-1-matthias.may@westermo.com>
+ <20220705182512.309f205e@kernel.org>
+ <e829d8ae-ad2c-9cf5-88e3-0323e9f32d3c@westermo.com>
+ <20220706131735.4d9f4562@kernel.org>
+ <bcfcb4a9-0a2f-3f12-155c-393ac86a8974@westermo.com>
+ <20220707170145.0666cd4c@kernel.org>
+ <b046ef4e-cb97-2430-ab56-e2b615ac29eb@westermo.com>
+ <20220711112911.6e387608@kernel.org>
+ <331695e3-bfa3-9ea7-3ba9-aebd0689251c@westermo.com>
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Organization: 6WIND
+In-Reply-To: <331695e3-bfa3-9ea7-3ba9-aebd0689251c@westermo.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-* Tony Lindgren <tony@atomide.com> [220701 16:00]:
-> Also, looks like both with the initcall change for prm, and the patch
-> below, there seems to be also another problem where my test devices no
-> longer properly idle somehow compared to reverting the your two patches
-> in next.
+Le 12/07/2022 à 00:06, Matthias May a écrit :
+[snip]
+> One thing that puzzles me a bit: Is there any reason why the IPv6 version of ip
+> tunnels is so... distributed?
+Someone does the factorization for ipv4, but nobody for ipv6 ;-)
 
-Sorry looks like was a wrong conclusion. While trying to track down this
-issue, I cannot reproduce it. So I don't see issues idling with either
-the initcall change or your test patch.
-
-Not sure what caused my earlier tests to fail though. Maybe a config
-change to enable more debugging, or possibly some kind of warm reset vs
-cold reset type issue.
+> The IPv4 version does everything in a single function in ip_tunnels, while the
+> IPv6 delegates some? of the parsing to
+> the respective tunnel types, but then does some of the parsing again in
+> ip6_tunnel (e.g the ttl parsing).
+Note that geneve and vxlan use ip_tunnel_get_dsfield() / ip_tunnel_get_ttl()
+which also miss the vlan case.
 
 Regards,
-
-Tony
+Nicolas
