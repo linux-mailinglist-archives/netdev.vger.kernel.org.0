@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 04150571DB1
-	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 17:02:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 08278571DD9
+	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 17:04:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233885AbiGLPB4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jul 2022 11:01:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53126 "EHLO
+        id S233105AbiGLPDV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jul 2022 11:03:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233540AbiGLPAo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 11:00:44 -0400
+        with ESMTP id S233098AbiGLPCl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 11:02:41 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C7184BF54E
-        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 07:59:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D10C2C08E9
+        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 07:59:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657637972;
+        s=mimecast20190719; t=1657637981;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=vToVReCil+AdJ1RFja/w0WdWza4Q968O0r6LsNQSeso=;
-        b=OIOmP4gVMqTA0PHEt970ZqCT8O0jQD550bvAJjJmLCpiAhyEmn2ijiOWnBv1/9fTEVWape
-        AlZpAzD31aYUAJmgolLD6AhkQrnProCHBXcB4kE1VPDQxvqcCX/jjsPRrdybhc3XkxYQwn
-        +0NJ27795t55UFQzxJPUKf13vjYf+5k=
+        bh=igo8dC1xC3DXlcpimn8xHU/p9nb0gu+criSaajfjMaY=;
+        b=Eg6rdL3AZoM+rFlrLsnqsn1PSYefGgh77u+D11L5+rwcXLPnR6apquGJlt87tRpWAYVjJP
+        vebzexDiWbczFq+ngwdyQqQnG6iznNFsR+JFDZVPAMCJtKrTbthG2Hbza3YyHThMC2fW9g
+        lcNTLWNUeGRxr1uUulSUFqj/KKeJQPc=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-118-Q8yKot40NRebSeD_viiSlQ-1; Tue, 12 Jul 2022 10:59:27 -0400
-X-MC-Unique: Q8yKot40NRebSeD_viiSlQ-1
+ us-mta-102-Psl1Js4BOnKK_Sv0I2ObuQ-1; Tue, 12 Jul 2022 10:59:31 -0400
+X-MC-Unique: Psl1Js4BOnKK_Sv0I2ObuQ-1
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5E817185A7A4;
-        Tue, 12 Jul 2022 14:59:26 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2D4D718A6523;
+        Tue, 12 Jul 2022 14:59:30 +0000 (UTC)
 Received: from plouf.redhat.com (unknown [10.39.195.8])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3F2AD2166B26;
-        Tue, 12 Jul 2022 14:59:22 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A544E2166B26;
+        Tue, 12 Jul 2022 14:59:26 +0000 (UTC)
 From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
 To:     Greg KH <gregkh@linuxfoundation.org>,
         Jiri Kosina <jikos@kernel.org>,
@@ -54,9 +54,9 @@ Cc:     Tero Kristo <tero.kristo@linux.intel.com>,
         netdev@vger.kernel.org, bpf@vger.kernel.org,
         linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org,
         Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Subject: [PATCH bpf-next v6 06/23] selftests/bpf: Add tests for kfunc returning a memory pointer
-Date:   Tue, 12 Jul 2022 16:58:33 +0200
-Message-Id: <20220712145850.599666-7-benjamin.tissoires@redhat.com>
+Subject: [PATCH bpf-next v6 07/23] bpf: prepare for more bpf syscall to be used from kernel and user space.
+Date:   Tue, 12 Jul 2022 16:58:34 +0200
+Message-Id: <20220712145850.599666-8-benjamin.tissoires@redhat.com>
 In-Reply-To: <20220712145850.599666-1-benjamin.tissoires@redhat.com>
 References: <20220712145850.599666-1-benjamin.tissoires@redhat.com>
 MIME-Version: 1.0
@@ -72,302 +72,68 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We add 2 new kfuncs that are following the RET_PTR_TO_MEM
-capability from the previous commit.
-Then we test them in selftests:
-the first tests are testing valid case, and are not failing,
-and the later ones are actually preventing the program to be loaded
-because they are wrong.
+Add BPF_MAP_GET_FD_BY_ID and BPF_MAP_DELETE_PROG.
 
-To work around that, we mark the failing ones as not autoloaded
-(with SEC("?tc")), and we manually enable them one by one, ensuring
-the verifier rejects them.
-
-To be able to use bpf_program__set_autoload() from libbpf, we need
-to use a plain skeleton, not a light-skeleton, and this is why we
-also change the Makefile to generate both for kfunc_call_test.c
+Only BPF_MAP_GET_FD_BY_ID needs to be amended to be able
+to access the bpf pointer either from the userspace or the kernel.
 
 Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
 
 ---
 
-new in v6
----
- include/linux/btf.h                           |  4 +-
- net/bpf/test_run.c                            | 22 +++++
- tools/testing/selftests/bpf/Makefile          |  5 +-
- .../selftests/bpf/prog_tests/kfunc_call.c     | 48 ++++++++++
- .../selftests/bpf/progs/kfunc_call_test.c     | 89 +++++++++++++++++++
- 5 files changed, 165 insertions(+), 3 deletions(-)
+changes in v6:
+- commit description change
 
-diff --git a/include/linux/btf.h b/include/linux/btf.h
-index 31da4273c2ec..6f46ff2128ae 100644
---- a/include/linux/btf.h
-+++ b/include/linux/btf.h
-@@ -422,7 +422,9 @@ static inline int register_btf_id_dtor_kfuncs(const struct btf_id_dtor_kfunc *dt
+new in v5
+---
+ kernel/bpf/syscall.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index ab688d85b2c6..637765390c30 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -1417,9 +1417,9 @@ static int map_update_elem(union bpf_attr *attr, bpfptr_t uattr)
  
- static inline bool btf_type_is_struct_ptr(struct btf *btf, const struct btf_type *t)
+ #define BPF_MAP_DELETE_ELEM_LAST_FIELD key
+ 
+-static int map_delete_elem(union bpf_attr *attr)
++static int map_delete_elem(union bpf_attr *attr, bpfptr_t uattr)
  {
--	/* t comes in already as a pointer */
-+	if (!btf_type_is_ptr(t))
-+		return false;
-+
- 	t = btf_type_by_id(btf, t->type);
+-	void __user *ukey = u64_to_user_ptr(attr->key);
++	bpfptr_t ukey = make_bpfptr(attr->key, uattr.is_kernel);
+ 	int ufd = attr->map_fd;
+ 	struct bpf_map *map;
+ 	struct fd f;
+@@ -1439,7 +1439,7 @@ static int map_delete_elem(union bpf_attr *attr)
+ 		goto err_put;
+ 	}
  
- 	/* allow const */
-diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-index 9da2a42811e8..0b4026ea4652 100644
---- a/net/bpf/test_run.c
-+++ b/net/bpf/test_run.c
-@@ -606,6 +606,24 @@ noinline void bpf_kfunc_call_memb1_release(struct prog_test_member1 *p)
- 	WARN_ON_ONCE(1);
- }
+-	key = __bpf_copy_key(ukey, map->key_size);
++	key = ___bpf_copy_key(ukey, map->key_size);
+ 	if (IS_ERR(key)) {
+ 		err = PTR_ERR(key);
+ 		goto err_put;
+@@ -4922,7 +4922,7 @@ static int __sys_bpf(int cmd, bpfptr_t uattr, unsigned int size)
+ 		err = map_update_elem(&attr, uattr);
+ 		break;
+ 	case BPF_MAP_DELETE_ELEM:
+-		err = map_delete_elem(&attr);
++		err = map_delete_elem(&attr, uattr);
+ 		break;
+ 	case BPF_MAP_GET_NEXT_KEY:
+ 		err = map_get_next_key(&attr);
+@@ -5057,8 +5057,10 @@ BPF_CALL_3(bpf_sys_bpf, int, cmd, union bpf_attr *, attr, u32, attr_size)
  
-+static int *__bpf_kfunc_call_test_get_mem(struct prog_test_ref_kfunc *p, const int size)
-+{
-+	if (size > 2 * sizeof(int))
-+		return NULL;
-+
-+	return (int *)p;
-+}
-+
-+noinline int *bpf_kfunc_call_test_get_rdwr_mem(struct prog_test_ref_kfunc *p, const int rdwr_buf_size)
-+{
-+	return __bpf_kfunc_call_test_get_mem(p, rdwr_buf_size);
-+}
-+
-+noinline int *bpf_kfunc_call_test_get_rdonly_mem(struct prog_test_ref_kfunc *p, const int rdonly_buf_size)
-+{
-+	return __bpf_kfunc_call_test_get_mem(p, rdonly_buf_size);
-+}
-+
- noinline struct prog_test_ref_kfunc *
- bpf_kfunc_call_test_kptr_get(struct prog_test_ref_kfunc **pp, int a, int b)
- {
-@@ -704,6 +722,8 @@ BTF_ID(func, bpf_kfunc_call_memb_acquire)
- BTF_ID(func, bpf_kfunc_call_test_release)
- BTF_ID(func, bpf_kfunc_call_memb_release)
- BTF_ID(func, bpf_kfunc_call_memb1_release)
-+BTF_ID(func, bpf_kfunc_call_test_get_rdwr_mem)
-+BTF_ID(func, bpf_kfunc_call_test_get_rdonly_mem)
- BTF_ID(func, bpf_kfunc_call_test_kptr_get)
- BTF_ID(func, bpf_kfunc_call_test_pass_ctx)
- BTF_ID(func, bpf_kfunc_call_test_pass1)
-@@ -731,6 +751,8 @@ BTF_SET_END(test_sk_release_kfunc_ids)
- BTF_SET_START(test_sk_ret_null_kfunc_ids)
- BTF_ID(func, bpf_kfunc_call_test_acquire)
- BTF_ID(func, bpf_kfunc_call_memb_acquire)
-+BTF_ID(func, bpf_kfunc_call_test_get_rdwr_mem)
-+BTF_ID(func, bpf_kfunc_call_test_get_rdonly_mem)
- BTF_ID(func, bpf_kfunc_call_test_kptr_get)
- BTF_SET_END(test_sk_ret_null_kfunc_ids)
- 
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index 8d59ec7f4c2d..0905315ff86d 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -350,11 +350,12 @@ LINKED_SKELS := test_static_linked.skel.h linked_funcs.skel.h		\
- 		test_subskeleton.skel.h test_subskeleton_lib.skel.h	\
- 		test_usdt.skel.h
- 
--LSKELS := kfunc_call_test.c fentry_test.c fexit_test.c fexit_sleep.c \
-+LSKELS := fentry_test.c fexit_test.c fexit_sleep.c \
- 	test_ringbuf.c atomics.c trace_printk.c trace_vprintk.c \
- 	map_ptr_kern.c core_kern.c core_kern_overflow.c
- # Generate both light skeleton and libbpf skeleton for these
--LSKELS_EXTRA := test_ksyms_module.c test_ksyms_weak.c kfunc_call_test_subprog.c
-+LSKELS_EXTRA := test_ksyms_module.c test_ksyms_weak.c kfunc_call_test.c	\
-+		kfunc_call_test_subprog.c
- SKEL_BLACKLIST += $$(LSKELS)
- 
- test_static_linked.skel.h-deps := test_static_linked1.o test_static_linked2.o
-diff --git a/tools/testing/selftests/bpf/prog_tests/kfunc_call.c b/tools/testing/selftests/bpf/prog_tests/kfunc_call.c
-index 22547aafdd60..021ec38562d2 100644
---- a/tools/testing/selftests/bpf/prog_tests/kfunc_call.c
-+++ b/tools/testing/selftests/bpf/prog_tests/kfunc_call.c
-@@ -2,6 +2,7 @@
- /* Copyright (c) 2021 Facebook */
- #include <test_progs.h>
- #include <network_helpers.h>
-+#include "kfunc_call_test.skel.h"
- #include "kfunc_call_test.lskel.h"
- #include "kfunc_call_test_subprog.skel.h"
- #include "kfunc_call_test_subprog.lskel.h"
-@@ -50,10 +51,12 @@ static void test_main(void)
- 	prog_fd = skel->progs.kfunc_syscall_test.prog_fd;
- 	err = bpf_prog_test_run_opts(prog_fd, &syscall_topts);
- 	ASSERT_OK(err, "bpf_prog_test_run(syscall_test)");
-+	ASSERT_EQ(syscall_topts.retval, 0, "syscall_test-retval");
- 
- 	prog_fd = skel->progs.kfunc_syscall_test_fail.prog_fd;
- 	err = bpf_prog_test_run_opts(prog_fd, &syscall_topts);
- 	ASSERT_ERR(err, "bpf_prog_test_run(syscall_test_fail)");
-+	ASSERT_EQ(syscall_topts.retval, 0, "syscall_test_fail-retval");
- 
- 	kfunc_call_test_lskel__destroy(skel);
- }
-@@ -106,6 +109,48 @@ static void test_subprog_lskel(void)
- 	kfunc_call_test_subprog_lskel__destroy(skel);
- }
- 
-+static void test_get_mem(void)
-+{
-+	struct kfunc_call_test *skel;
-+	int prog_fd, err;
-+	LIBBPF_OPTS(bpf_test_run_opts, topts,
-+		.data_in = &pkt_v4,
-+		.data_size_in = sizeof(pkt_v4),
-+		.repeat = 1,
-+	);
-+
-+	skel = kfunc_call_test__open_and_load();
-+	if (!ASSERT_OK_PTR(skel, "skel"))
-+		return;
-+
-+	prog_fd = bpf_program__fd(skel->progs.kfunc_call_test_get_mem);
-+	err = bpf_prog_test_run_opts(prog_fd, &topts);
-+	ASSERT_OK(err, "bpf_prog_test_run(test_get_mem)");
-+	ASSERT_EQ(topts.retval, 42, "test_get_mem-retval");
-+
-+	kfunc_call_test__destroy(skel);
-+
-+	/* start the various failing tests */
-+	skel = kfunc_call_test__open();
-+	if (!ASSERT_OK_PTR(skel, "skel"))
-+		return;
-+
-+	bpf_program__set_autoload(skel->progs.kfunc_call_test_get_mem_fail1, true);
-+	err = kfunc_call_test__load(skel);
-+	ASSERT_ERR(err, "load(kfunc_call_test_get_mem_fail1)");
-+	kfunc_call_test__destroy(skel);
-+
-+	skel = kfunc_call_test__open();
-+	if (!ASSERT_OK_PTR(skel, "skel"))
-+		return;
-+
-+	bpf_program__set_autoload(skel->progs.kfunc_call_test_get_mem_fail2, true);
-+	err = kfunc_call_test__load(skel);
-+	ASSERT_ERR(err, "load(kfunc_call_test_get_mem_fail2)");
-+
-+	kfunc_call_test__destroy(skel);
-+}
-+
- void test_kfunc_call(void)
- {
- 	if (test__start_subtest("main"))
-@@ -116,4 +161,7 @@ void test_kfunc_call(void)
- 
- 	if (test__start_subtest("subprog_lskel"))
- 		test_subprog_lskel();
-+
-+	if (test__start_subtest("get_mem"))
-+		test_get_mem();
- }
-diff --git a/tools/testing/selftests/bpf/progs/kfunc_call_test.c b/tools/testing/selftests/bpf/progs/kfunc_call_test.c
-index 0978834e22ad..e865f8db26a3 100644
---- a/tools/testing/selftests/bpf/progs/kfunc_call_test.c
-+++ b/tools/testing/selftests/bpf/progs/kfunc_call_test.c
-@@ -14,6 +14,8 @@ extern void bpf_kfunc_call_test_pass1(struct prog_test_pass1 *p) __ksym;
- extern void bpf_kfunc_call_test_pass2(struct prog_test_pass2 *p) __ksym;
- extern void bpf_kfunc_call_test_mem_len_pass1(void *mem, int len) __ksym;
- extern void bpf_kfunc_call_test_mem_len_fail2(__u64 *mem, int len) __ksym;
-+extern int *bpf_kfunc_call_test_get_rdwr_mem(struct prog_test_ref_kfunc *p, const int rdwr_buf_size) __ksym;
-+extern int *bpf_kfunc_call_test_get_rdonly_mem(struct prog_test_ref_kfunc *p, const int rdonly_buf_size) __ksym;
- 
- SEC("tc")
- int kfunc_call_test2(struct __sk_buff *skb)
-@@ -119,4 +121,91 @@ int kfunc_syscall_test_fail(struct syscall_test_args *args)
- 	return 0;
- }
- 
-+SEC("tc")
-+int kfunc_call_test_get_mem(struct __sk_buff *skb)
-+{
-+	struct prog_test_ref_kfunc *pt;
-+	unsigned long s = 0;
-+	int *p = NULL;
-+	int ret = 0;
-+
-+	pt = bpf_kfunc_call_test_acquire(&s);
-+	if (pt) {
-+		if (pt->a != 42 || pt->b != 108)
-+			ret = -1;
-+
-+		p = bpf_kfunc_call_test_get_rdwr_mem(pt, 2 * sizeof(int));
-+		if (p) {
-+			p[0] = 42;
-+			ret = p[1]; /* 108 */
-+		} else {
-+			ret = -1;
-+		}
-+
-+		if (ret >= 0) {
-+			p = bpf_kfunc_call_test_get_rdonly_mem(pt, 2 * sizeof(int));
-+			if (p)
-+				ret = p[0]; /* 42 */
-+			else
-+				ret = -1;
-+		}
-+
-+		bpf_kfunc_call_test_release(pt);
-+	}
-+	return ret;
-+}
-+
-+SEC("?tc")
-+int kfunc_call_test_get_mem_fail1(struct __sk_buff *skb)
-+{
-+	struct prog_test_ref_kfunc *pt;
-+	unsigned long s = 0;
-+	int *p = NULL;
-+	int ret = 0;
-+
-+	pt = bpf_kfunc_call_test_acquire(&s);
-+	if (pt) {
-+		if (pt->a != 42 || pt->b != 108)
-+			ret = -1;
-+
-+		p = bpf_kfunc_call_test_get_rdonly_mem(pt, 2 * sizeof(int));
-+		if (p)
-+			p[0] = 42; /* this is a read-only buffer, so -EACCES */
-+		else
-+			ret = -1;
-+
-+		bpf_kfunc_call_test_release(pt);
-+	}
-+	return ret;
-+}
-+
-+SEC("?tc")
-+int kfunc_call_test_get_mem_fail2(struct __sk_buff *skb)
-+{
-+	struct prog_test_ref_kfunc *pt;
-+	unsigned long s = 0;
-+	int *p = NULL;
-+	int ret = 0;
-+
-+	pt = bpf_kfunc_call_test_acquire(&s);
-+	if (pt) {
-+		if (pt->a != 42 || pt->b != 108)
-+			ret = -1;
-+
-+		p = bpf_kfunc_call_test_get_rdwr_mem(pt, 2 * sizeof(int));
-+		if (p) {
-+			p[0] = 42;
-+			ret = p[1]; /* 108 */
-+		} else {
-+			ret = -1;
-+		}
-+
-+		bpf_kfunc_call_test_release(pt);
-+	}
-+	if (p)
-+		ret = p[0]; /* p is not valid anymore */
-+
-+	return ret;
-+}
-+
- char _license[] SEC("license") = "GPL";
+ 	switch (cmd) {
+ 	case BPF_MAP_CREATE:
++	case BPF_MAP_DELETE_ELEM:
+ 	case BPF_MAP_UPDATE_ELEM:
+ 	case BPF_MAP_FREEZE:
++	case BPF_MAP_GET_FD_BY_ID:
+ 	case BPF_PROG_LOAD:
+ 	case BPF_BTF_LOAD:
+ 	case BPF_LINK_CREATE:
 -- 
 2.36.1
 
