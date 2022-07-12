@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DA9D5720CA
-	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 18:26:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B70965720C4
+	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 18:26:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234375AbiGLQ0X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jul 2022 12:26:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41726 "EHLO
+        id S234401AbiGLQ0T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jul 2022 12:26:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234358AbiGLQ0D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 12:26:03 -0400
-X-Greylist: delayed 1821 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 12 Jul 2022 09:26:00 PDT
+        with ESMTP id S234323AbiGLQZ6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 12:25:58 -0400
+X-Greylist: delayed 1810 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 12 Jul 2022 09:25:57 PDT
 Received: from lizzy.crudebyte.com (lizzy.crudebyte.com [91.194.90.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CFBFCC020;
-        Tue, 12 Jul 2022 09:25:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1950ACC003;
+        Tue, 12 Jul 2022 09:25:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=crudebyte.com; s=lizzy; h=Cc:To:Subject:Date:From:References:In-Reply-To:
         Message-Id:Content-Type:Content-Transfer-Encoding:MIME-Version:Content-ID:
-        Content-Description; bh=RLioEug01fRuSRXwq7xjppErxLOywQH5JImBTn7mP9s=; b=loUEc
-        eodp+MFKBLd2cj2T6Lt8zubnVb5dWzo9HZZUjPMfKROqHV1my5p36JvD1MaD3MVa9lSSNYVOh8F+M
-        x04/WzTiPmWn0A1xJ3PnEaQIAh73jDdCPfnw0EVCdPd4JD+tbRiWrCYGk0DiPkF5wbjVEWyWSwRxA
-        YtIkdZWI3dS9eituH2gsx5WjY4bz+oFGsRb9JxoC/5XV47PeMaUk3K0EroOFbbgSfmqNAA0sHHCg9
-        Dp/OSFH9wb0qKszzlZMh+28G/ek7JZ8txNnAosSJ5rVpuZHiytWqv2Ghlij/WvfInj+gQ873n5s0Y
-        /cJEEdOWOalywHfGc3MTOm3FHFi4A==;
-Message-Id: <d4fe16174cd1ba2321aae35049b3327f82f2af99.1657636554.git.linux_oss@crudebyte.com>
+        Content-Description; bh=p78n0j+aija+d8Yb4f8ouk+I4Dnzsq0NMzCi4AYsSxU=; b=py8F9
+        hYhY8+dGDBcqTZo9UX97sZyab9Y+6UPXYg0gOLCs7L3OLhWmfg3z1U644dBCLnsyw7oRXVQiuRwtq
+        8JLYjO5ccPMq5heCaEVdu0v7TFCcR/F5IP1vNoz1YqsFehoV2ezv+XfkE4wwIdcRENrAH6whjXWxH
+        58sh5ty23IexJWLD7Uk0dBdYN2il93xNGyb9o62IQN/m72jxVsgPWJIEMpQF5Ntr+s6rU6WBJgAF5
+        wwulgVLcm3P/8D6RnrmX2FEB8LT2r6jQUiSvxAHpn7MDWOuNsfXKVhVGInW8e5OY3glai+/Mi4w3h
+        S4odkqtNIsrHsf733KObRlUyM3asg==;
+Message-Id: <2506fd2ed484f688826cdc33c177c467e2b0506c.1657636554.git.linux_oss@crudebyte.com>
 In-Reply-To: <cover.1657636554.git.linux_oss@crudebyte.com>
 References: <cover.1657636554.git.linux_oss@crudebyte.com>
 From:   Christian Schoenebeck <linux_oss@crudebyte.com>
-Date:   Tue, 12 Jul 2022 16:31:24 +0200
-Subject: [PATCH v5 06/11] 9p/trans_virtio: resize sg lists to whatever is
- possible
+Date:   Tue, 12 Jul 2022 16:31:26 +0200
+Subject: [PATCH v5 07/11] net/9p: limit 'msize' to KMALLOC_MAX_SIZE for all
+ transports
 To:     v9fs-developer@lists.sourceforge.net
 Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         Dominique Martinet <asmadeus@codewreck.org>,
@@ -46,125 +46,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Right now vq_sg_resize() used a lazy implementation following
-the all-or-nothing princible. So it either resized exactly to
-the requested new amount of sg lists, or it did not resize at
-all.
+This 9p client implementation is yet using linear message buffers for
+most message types, i.e. they use kmalloc() et al. for allocating
+continuous physical memory pages, which is usually limited to 4MB
+buffers. Use KMALLOC_MAX_SIZE though instead of a hard coded 4MB for
+constraining this more safely.
 
-The problem with this is if a user supplies a very large msize
-value, resize would simply fail and the user would stick to
-the default maximum msize supported by the virtio transport.
+Unfortunately we cannot simply replace the existing kmalloc() calls by
+vmalloc() ones, because that would yield in non-logical kernel addresses
+(for any vmalloc(>4MB) that is) which are in general not accessible by
+hosts like QEMU.
 
-To resolve this potential issue, change vq_sg_resize() to resize
-the passed sg list to whatever is possible on the machine.
+In future we would replace those linear buffers by scatter/gather lists
+to eventually get rid of this limit (struct p9_fcall's sdata member by
+p9_fcall_init() and struct p9_fid's rdir member by
+v9fs_alloc_rdir_buf()).
 
 Signed-off-by: Christian Schoenebeck <linux_oss@crudebyte.com>
 ---
- net/9p/trans_virtio.c | 68 ++++++++++++++++++++++++++++++++++++++-----
- 1 file changed, 60 insertions(+), 8 deletions(-)
 
-diff --git a/net/9p/trans_virtio.c b/net/9p/trans_virtio.c
-index 51c48741ff20..e436d748abe0 100644
---- a/net/9p/trans_virtio.c
-+++ b/net/9p/trans_virtio.c
-@@ -208,24 +208,67 @@ static struct virtqueue_sg *vq_sg_alloc(unsigned int nsgl)
-  * amount of lists
-  * @_vq_sg: scatter/gather lists to be resized
-  * @nsgl: new amount of scatter/gather lists
-+ *
-+ * Old scatter/gather lists are retained. Only growing the size is supported.
-+ * If the requested amount cannot be satisfied, then lists are increased to
-+ * whatever is possible.
-  */
- static int vq_sg_resize(struct virtqueue_sg **_vq_sg, unsigned int nsgl)
- {
- 	struct virtqueue_sg *vq_sg;
-+	unsigned int i;
-+	size_t sz;
-+	int ret = 0;
+Hmm, that's a bit too simple, as we also need a bit of headroom for
+transport specific overhead. So maybe this has to be handled by each
+transport appropriately instead?
+
+ net/9p/client.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/net/9p/client.c b/net/9p/client.c
+index 20054addd81b..fab939541c81 100644
+--- a/net/9p/client.c
++++ b/net/9p/client.c
+@@ -1042,6 +1042,17 @@ struct p9_client *p9_client_create(const char *dev_name, char *options)
+ 	p9_debug(P9_DEBUG_MUX, "clnt %p trans %p msize %d protocol %d\n",
+ 		 clnt, clnt->trans_mod, clnt->msize, clnt->proto_version);
  
- 	BUG_ON(!_vq_sg || !nsgl);
- 	vq_sg = *_vq_sg;
-+	if (nsgl > VIRTQUEUE_SG_NSGL_MAX)
-+		nsgl = VIRTQUEUE_SG_NSGL_MAX;
- 	if (vq_sg->nsgl == nsgl)
- 		return 0;
-+	if (vq_sg->nsgl > nsgl)
-+		return -ENOTSUPP;
-+
-+	vq_sg = kzalloc(sizeof(struct virtqueue_sg) +
-+			nsgl * sizeof(struct scatterlist *),
-+			GFP_KERNEL);
- 
--	/* lazy resize implementation for now */
--	vq_sg = vq_sg_alloc(nsgl);
- 	if (!vq_sg)
- 		return -ENOMEM;
- 
-+	/* copy over old scatter gather lists */
-+	sz = sizeof(struct virtqueue_sg) +
-+		(*_vq_sg)->nsgl * sizeof(struct scatterlist *);
-+	memcpy(vq_sg, *_vq_sg, sz);
-+
-+	vq_sg->nsgl = nsgl;
-+
-+	for (i = (*_vq_sg)->nsgl; i < nsgl; ++i) {
-+		vq_sg->sgl[i] = kmalloc_array(
-+			SG_MAX_SINGLE_ALLOC, sizeof(struct scatterlist),
-+			GFP_KERNEL
++	/*
++	 * due to linear message buffers being used by client ATM
++	 */
++	if (clnt->msize > KMALLOC_MAX_SIZE) {
++		clnt->msize = KMALLOC_MAX_SIZE;
++		pr_info("Limiting 'msize' to %zu as this is the maximum "
++			"supported by this client version.\n",
++			(size_t) KMALLOC_MAX_SIZE
 +		);
-+		/*
-+		 * handle failed allocation as soft error, we take whatever
-+		 * we get
-+		 */
-+		if (!vq_sg->sgl[i]) {
-+			ret = -ENOMEM;
-+			vq_sg->nsgl = nsgl = i;
-+			break;
-+		}
-+		sg_init_table(vq_sg->sgl[i], SG_MAX_SINGLE_ALLOC);
-+		if (i) {
-+			/* chain the lists */
-+			sg_chain(vq_sg->sgl[i - 1], SG_MAX_SINGLE_ALLOC,
-+				 vq_sg->sgl[i]);
-+		}
 +	}
-+	sg_mark_end(&vq_sg->sgl[nsgl - 1][SG_MAX_SINGLE_ALLOC - 1]);
 +
- 	kfree(*_vq_sg);
- 	*_vq_sg = vq_sg;
--	return 0;
-+	return ret;
- }
- 
- /**
-@@ -846,12 +889,21 @@ p9_virtio_create(struct p9_client *client, const char *devname, char *args)
- 		if (nsgl > chan->vq_sg->nsgl) {
- 			/*
- 			 * if resize fails, no big deal, then just
--			 * continue with default msize instead
-+			 * continue with whatever we got
-+			 */
-+			vq_sg_resize(&chan->vq_sg, nsgl);
-+			/*
-+			 * actual allocation size might be less than
-+			 * requested, so use vq_sg->nsgl instead of nsgl
- 			 */
--			if (!vq_sg_resize(&chan->vq_sg, nsgl)) {
--				client->trans_maxsize =
--					PAGE_SIZE *
--					((nsgl * SG_USER_PAGES_PER_LIST) - 3);
-+			client->trans_maxsize =
-+				PAGE_SIZE * ((chan->vq_sg->nsgl *
-+				SG_USER_PAGES_PER_LIST) - 3);
-+			if (nsgl > chan->vq_sg->nsgl) {
-+				pr_info("limiting 'msize' to %d as only %d "
-+					"of %zu SG lists could be allocated",
-+					client->trans_maxsize,
-+					chan->vq_sg->nsgl, nsgl);
- 			}
- 		}
- #endif /* CONFIG_ARCH_NO_SG_CHAIN */
+ 	err = clnt->trans_mod->create(clnt, dev_name, options);
+ 	if (err)
+ 		goto put_trans;
 -- 
 2.30.2
 
