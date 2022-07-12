@@ -2,79 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 77435571551
-	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 11:06:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B31C857158C
+	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 11:18:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232453AbiGLJGt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jul 2022 05:06:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36070 "EHLO
+        id S232644AbiGLJSv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jul 2022 05:18:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231524AbiGLJGn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 05:06:43 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C4127172E
-        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 02:06:41 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id y4so9266783edc.4
-        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 02:06:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares.net; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=qYA+CXnEl7sfS6k4g6zHHThVZs8dy55zsI6lMrLacaY=;
-        b=aYBI2z7PA36pGhgjlUbNBRX+vHc3wQvJievLrFZtAfUCjO1g/8yqhR8RaFRKn8X8JR
-         vB26NAW2t5IxIMu3mCn+G+6tYXSrp0Dk6xSos5W5kFJWjaHG/BDmxOAjsB8Rm0l6bx2A
-         3QmwccZ2fQR6FlBK7mpYNwp1mEQZ6miNuodkTcpCN6Yawuq8b3PHw3FGbbhY1IrogwKd
-         BMXNMAMuDXuQV8+8aRV61tnvw4owfyLc1SAEqS2hsAyxgM05XFvYBPI9FMo5B68Mcjra
-         6tOW0XHjlxVHBrlW1RCiOd3VrF23+0JxGJ0j8EQwYNBHaGBNZwoVE9Up8J+PDy3Ma2xT
-         ifhQ==
+        with ESMTP id S232667AbiGLJSu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 05:18:50 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 44711B7F6
+        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 02:18:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657617526;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=nqE/jzjwP7jwk2FmoVCVvujtcooqMUAch43GDeT3Y2M=;
+        b=cKuAf4h+KmmcW/P6ynReyfMpC/v9up0o1KFw0kW7OWHMXI3aUwtcDVXHN8ATwSwGm1lags
+        QeQQjiPS/Kjn3meRiJJvL4RPZOPkn88bRGPSzHnURu8Wci7bfqV9GV9/y1hYMZmBgVz5Ba
+        AvUYYstI4uMCo0HKpEKDtBiRxjCD0mY=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-388-Pz3Oc9RzMpWrKjLWmQqIOw-1; Tue, 12 Jul 2022 05:18:36 -0400
+X-MC-Unique: Pz3Oc9RzMpWrKjLWmQqIOw-1
+Received: by mail-wm1-f72.google.com with SMTP id bg6-20020a05600c3c8600b003a03d5d19e4so3528283wmb.1
+        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 02:18:36 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=qYA+CXnEl7sfS6k4g6zHHThVZs8dy55zsI6lMrLacaY=;
-        b=rEve3lzxQbQHYhdV2QVDUeHq9rggYBwfV4nKvrMEYH+z/MDNmbhXz651BKXuguEzLt
-         W1YbbUlWYdnJuBDWbKsBkPxtjL2uIOEcRJcZwHVKfu5EnE+2TXJ790Uv6T3Dzo1Bq0ip
-         mb/TDo+nuPgTFMWO+g0GEkmhOE7/9/WdYDLzKJbVUi5qRG2ybVLbxzV2Ibszm3YvxBSb
-         3Hcm8kwqo6Zkf8sBjWwJA8/wwjp3J/NHI2JuiNAR3MjL48dRmMOSKHFCPn2JAe2mQWnp
-         BRp0b60qfL+eMrlgS4a4sJQFNoE5nsZ1vgE/aoYoDdZ1EL/FoCiCFqg7/DXiSIzSifqr
-         LyxQ==
-X-Gm-Message-State: AJIora/m7fXKHVH+Qeg4JQKl5IZmMAhB4k8Cd82jND7/EpBiZXcYC71e
-        9NNyyog4ccSYCdVXgnhUos6GIw==
-X-Google-Smtp-Source: AGRyM1uhar7ip0dqkB0ceBmPEnItulW4wUgu8zUqEkAtY3ZqOdlRnk83HfpQf+FiI7s9q4Cm6flCuQ==
-X-Received: by 2002:aa7:ce8a:0:b0:43a:7b0e:9950 with SMTP id y10-20020aa7ce8a000000b0043a7b0e9950mr30451101edv.58.1657616799959;
-        Tue, 12 Jul 2022 02:06:39 -0700 (PDT)
-Received: from ?IPV6:2a02:578:8593:1200:dee3:acc:246:d17a? ([2a02:578:8593:1200:dee3:acc:246:d17a])
-        by smtp.gmail.com with ESMTPSA id i8-20020a170906a28800b0072b13fa5e4csm3617403ejz.58.2022.07.12.02.06.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Jul 2022 02:06:39 -0700 (PDT)
-Message-ID: <5710e8f7-6c09-538f-a636-2ea1863ab208@tessares.net>
-Date:   Tue, 12 Jul 2022 11:06:38 +0200
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=nqE/jzjwP7jwk2FmoVCVvujtcooqMUAch43GDeT3Y2M=;
+        b=1ouV0sBsFHptFTF3mEIHtkHzIiSlBBEwZo16X7tsrBZUZFBQbMz0K6S0G0V8X7gF9h
+         0TGwxfVN2Ylo/oEWNRJxe6fEw5ntnNiolkkf5P4i+46Pz/xM2tRsJKFoQCpZN8zUSEx4
+         jQsdagn3gt6oJ8yOsTZ6BQQKc5jcAqYmLknQfc9JI+YvQAsU9MQ+6153UA9deW/BcGDf
+         9U+TJwUQwovXWiX2+VyHWsziZpHBSflTjf+hMnahxbtwNgTdPOxhLf9GSR3GuIewR6AD
+         tvEXTrSFA06p6tqbzRM0MDjhDUClQDWSsalTe2rx9SKC9MaRxcxRIT272CDphE/IJ+Ro
+         ToEA==
+X-Gm-Message-State: AJIora/Y3Bh/pnWMnsvLyK3w44/D9mx/Ye6jOi5oCFywL5+1TRDZsUWN
+        5S7kzNkcbbchgrM38D8SOU+ez5KYnZzN3psbSBxo88dZUZSbh2IkgmBMe2CJf8PNwHNUFZGtuRs
+        B4BGFMRHonZ3ZJxCz
+X-Received: by 2002:a05:600c:1906:b0:3a0:d983:cc2b with SMTP id j6-20020a05600c190600b003a0d983cc2bmr2788747wmq.81.1657617515503;
+        Tue, 12 Jul 2022 02:18:35 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1sz3uW2QDGN5byP2NMgZglyEfzIAOr/VYaEK5vUKbK9DZJUDKq8PvoHa62nVWhM6Z1dZyOfCw==
+X-Received: by 2002:a05:600c:1906:b0:3a0:d983:cc2b with SMTP id j6-20020a05600c190600b003a0d983cc2bmr2788721wmq.81.1657617515297;
+        Tue, 12 Jul 2022 02:18:35 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-97-238.dyn.eolo.it. [146.241.97.238])
+        by smtp.gmail.com with ESMTPSA id n35-20020a05600c502300b003a2d0f0ccaesm12906153wmr.34.2022.07.12.02.18.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Jul 2022 02:18:34 -0700 (PDT)
+Message-ID: <88f9133542d0a4bf2100e0a521f6e6a19eb2feb1.camel@redhat.com>
+Subject: Re: [PATCH for-next 0/3] io_uring: multishot recvmsg
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Dylan Yudaken <dylany@fb.com>, Jens Axboe <axboe@kernel.dk>,
+        Pavel Begunkov <asml.silence@gmail.com>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, io-uring@vger.kernel.org
+Cc:     netdev@vger.kernel.org, Kernel-team@fb.com
+Date:   Tue, 12 Jul 2022 11:18:33 +0200
+In-Reply-To: <20220708184358.1624275-1-dylany@fb.com>
+References: <20220708184358.1624275-1-dylany@fb.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH bpf-next] mptcp: Add struct mptcp_sock definition when
- CONFIG_MPTCP is disabled
-Content-Language: en-GB
-To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Geliang Tang <geliang.tang@suse.com>, mptcp@lists.linux.dev
-References: <20220711130731.3231188-1-jolsa@kernel.org>
- <6d3b3bf-2e29-d695-87d7-c23497acc81@linux.intel.com>
-From:   Matthieu Baerts <matthieu.baerts@tessares.net>
-In-Reply-To: <6d3b3bf-2e29-d695-87d7-c23497acc81@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -82,57 +78,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jiri, Mat,
+On Fri, 2022-07-08 at 11:43 -0700, Dylan Yudaken wrote:
+> This series adds multishot support to recvmsg in io_uring.
+> 
+> The idea is that you submit a single multishot recvmsg and then receive
+> completions as and when data arrives. For recvmsg each completion also has
+> control data, and this is necessarily included in the same buffer as the
+> payload.
+> 
+> In order to do this a new structure is used: io_uring_recvmsg_out. This
+> specifies the length written of the name, control and payload. As well as
+> including the flags.
+> The layout of the buffer is <header><name><control><payload> where the
+> lengths are those specified in the original msghdr used to issue the recvmsg.
+> 
+> I suspect this API will be the most contentious part of this series and would
+> appreciate any comments on it.
+> 
+> For completeness I considered having the original struct msghdr as the header,
+> but size wise it is much bigger (72 bytes including an iovec vs 16 bytes here).
+> Testing also showed a 1% slowdown in terms of QPS.
+> 
+> Using a mini network tester [1] shows 14% QPS improvment using this API, however
+> this is likely to go down to ~8% with the latest allocation cache added by Jens.
+> 
+> I have based this on this other patch series [2].
+> 
+> [1]: https://github.com/DylanZA/netbench/tree/main
+> [2]: https://lore.kernel.org/io-uring/20220708181838.1495428-1-dylany@fb.com/
+> 
+> Dylan Yudaken (3):
+>   net: copy from user before calling __copy_msghdr
+>   net: copy from user before calling __get_compat_msghdr
+>   io_uring: support multishot in recvmsg
+> 
+>  include/linux/socket.h        |   7 +-
+>  include/net/compat.h          |   5 +-
+>  include/uapi/linux/io_uring.h |   7 ++
+>  io_uring/net.c                | 195 ++++++++++++++++++++++++++++------
+>  io_uring/net.h                |   5 +
+>  net/compat.c                  |  39 +++----
+>  net/socket.c                  |  37 +++----
+>  7 files changed, 215 insertions(+), 80 deletions(-)
+> 
+> 
+> base-commit: 9802dee74e7f30ab52dc5f346373185cd860afab
 
-On 11/07/2022 23:21, Mat Martineau wrote:
-> On Mon, 11 Jul 2022, Jiri Olsa wrote:
-> 
->> The btf_sock_ids array needs struct mptcp_sock BTF ID for
->> the bpf_skc_to_mptcp_sock helper.
->>
->> When CONFIG_MPTCP is disabled, the 'struct mptcp_sock' is not
->> defined and resolve_btfids will complain with:
->>
->>  BTFIDS  vmlinux
->> WARN: resolve_btfids: unresolved symbol mptcp_sock
->>
->> Adding empty difinition for struct mptcp_sock when CONFIG_MPTCP
->> is disabled.
->>
->> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
->> ---
->> include/net/mptcp.h | 4 ++++
->> 1 file changed, 4 insertions(+)
->>
->> diff --git a/include/net/mptcp.h b/include/net/mptcp.h
->> index ac9cf7271d46..25741a52c666 100644
->> --- a/include/net/mptcp.h
->> +++ b/include/net/mptcp.h
->> @@ -59,6 +59,10 @@ struct mptcp_addr_info {
->>     };
->> };
->>
->> +#if !IS_ENABLED(CONFIG_MPTCP)
->> +struct mptcp_sock { };
->> +#endif
-> 
-> The only use of struct mptcp_sock I see with !CONFIG_MPTCP is from this
-> stub at the end of mptcp.h:
-> 
-> static inline struct mptcp_sock *bpf_mptcp_sock_from_subflow(struct sock
-> *sk) { return NULL; }
-> 
-> It's normally defined in net/mptcp/protocol.h for the MPTCP subsystem code.
-> 
-> The conditional could be added on the line before the stub to make it
-> clear that the empty struct is associated with that inline stub.
+I read the above as this series is targeting Jens's tree. It looks like
+it should be conflicts-free vs net-next.
 
-If this is required only for this specific BPF function, why not
-modifying this stub (or add a define) to return "void *" instead of
-"struct mptcp_sock *"?
+For the network bits:
+
+Acked-by: Paolo Abeni <pabeni@redhat.com>
 
 Cheers,
-Matt
--- 
-Tessares | Belgium | Hybrid Access Solutions
-www.tessares.net
+
+Paolo
+
