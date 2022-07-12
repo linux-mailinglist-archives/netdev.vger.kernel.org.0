@@ -2,232 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 10ADE5721FC
-	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 19:53:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B3B657220C
+	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 20:00:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233379AbiGLRxm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jul 2022 13:53:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54580 "EHLO
+        id S233545AbiGLSAI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jul 2022 14:00:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230372AbiGLRxl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 13:53:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF06B38BB;
-        Tue, 12 Jul 2022 10:53:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4ADC1B81B88;
-        Tue, 12 Jul 2022 17:53:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFB44C341C8;
-        Tue, 12 Jul 2022 17:53:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657648417;
-        bh=81DQ6XwV6QSGRv/Y8PZB4OF0sSCD+qz4XroqcCziNmg=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=nd3/SesHarbZ9Ec5IuCJ/CxludbfYk4IrYVLcvv/AT257kIyLgURuvBaEV3Vum0hc
-         t3ME+q+Z0hh6HnQnNpocVI39x0VHdAbXJZ9V/86jTEztZOkmehbiQehlIAwcFCgI83
-         U9BpOsR0ZKhWAKjdSGzlT6DrYaE7pmgFoGif9cvR8zGasRtD6ltfQQMAbVSB6f9saU
-         3TLmtZYnugNpToW+BFontk/DHQezBdPbTbk6fQbCwesvUAnyDr0/RKq2k7vAFZWBBb
-         WdP/lyKt5KjUuMxHHamf5Ky4lpRkemMIeZe9E2UqJYhbV7ZG8pefk1JATo+e9o16pN
-         WjGLF0NGXvoRw==
-Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-31bf3656517so88792797b3.12;
-        Tue, 12 Jul 2022 10:53:36 -0700 (PDT)
-X-Gm-Message-State: AJIora8iYPmbbE0eOG+TMTTXaAi6QRKV6dinXcwIxlPaGP61ajpcAQyK
-        jaS92gMx+lClXV/mcB0SAYZHmayetwpqEeY8UfA=
-X-Google-Smtp-Source: AGRyM1uZFjBEihbK2YQQp/NBSOZ9Xn1WI5+IJIQYfmNEdqci5UczaZ7c5pkl25sDzH1+9TZ7vqGVhxQpLxRNKtYZXl4=
-X-Received: by 2002:a0d:f445:0:b0:31d:4f2c:a0b0 with SMTP id
- d66-20020a0df445000000b0031d4f2ca0b0mr19507196ywf.73.1657648415966; Tue, 12
- Jul 2022 10:53:35 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220711083220.2175036-1-asavkov@redhat.com> <20220711083220.2175036-4-asavkov@redhat.com>
-In-Reply-To: <20220711083220.2175036-4-asavkov@redhat.com>
-From:   Song Liu <song@kernel.org>
-Date:   Tue, 12 Jul 2022 10:53:25 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW7xTRpLf1kyj5ejH0fV_aHCMQjUwn-uhWeNytXedh4+TQ@mail.gmail.com>
-Message-ID: <CAPhsuW7xTRpLf1kyj5ejH0fV_aHCMQjUwn-uhWeNytXedh4+TQ@mail.gmail.com>
-Subject: Re: [RFC PATCH bpf-next 3/4] bpf: add bpf_panic() helper
-To:     Artem Savkov <asavkov@redhat.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
+        with ESMTP id S233462AbiGLSAG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 14:00:06 -0400
+Received: from smtp.uniroma2.it (smtp.uniroma2.it [160.80.6.16])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1B49B93C3;
+        Tue, 12 Jul 2022 11:00:01 -0700 (PDT)
+Received: from localhost.localdomain ([160.80.103.126])
+        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 26CHxCBr005871
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 12 Jul 2022 19:59:12 +0200
+From:   Andrea Mayer <andrea.mayer@uniroma2.it>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Andrea Arcangeli <aarcange@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        David Lebrun <david.lebrun@uclouvain.be>,
+        Mathieu Xhonneux <m.xhonneux@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     Stefano Salsano <stefano.salsano@uniroma2.it>,
+        Paolo Lungaroni <paolo.lungaroni@uniroma2.it>,
+        Ahmed Abdelsalam <ahabdels.dev@gmail.com>,
+        Anton Makarov <anton.makarov11235@gmail.com>,
+        Andrea Mayer <andrea.mayer@uniroma2.it>
+Subject: [net 0/3] seg6: fix skb checksum for SRH encapsulation/insertion 
+Date:   Tue, 12 Jul 2022 19:58:34 +0200
+Message-Id: <20220712175837.16267-1-andrea.mayer@uniroma2.it>
+X-Mailer: git-send-email 2.20.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: clamav-milter 0.100.0 at smtp-2015
+X-Virus-Status: Clean
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 11, 2022 at 1:32 AM Artem Savkov <asavkov@redhat.com> wrote:
->
-> Add a helper that will make the kernel panic immediately with specified
-> message. Using this helper requires kernel.destructive_bpf_enabled sysctl
-> to be enabled, BPF_F_DESTRUCTIVE flag to be supplied on program load as
-> well as CAP_SYS_BOOT capabilities.
->
-> Signed-off-by: Artem Savkov <asavkov@redhat.com>
-> ---
->  include/linux/bpf.h            |  1 +
->  include/uapi/linux/bpf.h       |  7 +++++++
->  kernel/bpf/core.c              |  1 +
->  kernel/bpf/helpers.c           | 13 +++++++++++++
->  kernel/bpf/verifier.c          |  7 +++++++
->  kernel/trace/bpf_trace.c       |  2 ++
->  tools/include/uapi/linux/bpf.h |  7 +++++++
->  7 files changed, 38 insertions(+)
->
-> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> index 43c008e3587a..77c20ba9ca8e 100644
-> --- a/include/linux/bpf.h
-> +++ b/include/linux/bpf.h
-> @@ -2339,6 +2339,7 @@ extern const struct bpf_func_proto bpf_strtol_proto;
->  extern const struct bpf_func_proto bpf_strtoul_proto;
->  extern const struct bpf_func_proto bpf_tcp_sock_proto;
->  extern const struct bpf_func_proto bpf_jiffies64_proto;
-> +extern const struct bpf_func_proto bpf_panic_proto;
->  extern const struct bpf_func_proto bpf_get_ns_current_pid_tgid_proto;
->  extern const struct bpf_func_proto bpf_event_output_data_proto;
->  extern const struct bpf_func_proto bpf_ringbuf_output_proto;
-> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> index 4423874b5da4..e2e2c4de44ee 100644
-> --- a/include/uapi/linux/bpf.h
-> +++ b/include/uapi/linux/bpf.h
-> @@ -3927,6 +3927,12 @@ union bpf_attr {
->   *     Return
->   *             The 64 bit jiffies
->   *
-> + * void bpf_panic(const char *msg)
-> + *     Description
-> + *             Make the kernel panic immediately
-> + *     Return
-> + *             void
-> + *
->   * long bpf_read_branch_records(struct bpf_perf_event_data *ctx, void *buf, u32 size, u64 flags)
->   *     Description
->   *             For an eBPF program attached to a perf event, retrieve the
-> @@ -5452,6 +5458,7 @@ union bpf_attr {
->         FN(tcp_send_ack),               \
->         FN(send_signal_thread),         \
->         FN(jiffies64),                  \
-> +       FN(panic),                      \
->         FN(read_branch_records),        \
->         FN(get_ns_current_pid_tgid),    \
->         FN(xdp_output),                 \
-> diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-> index b5ffebcce6cc..0f333a0e85a5 100644
-> --- a/kernel/bpf/core.c
-> +++ b/kernel/bpf/core.c
-> @@ -2649,6 +2649,7 @@ const struct bpf_func_proto bpf_map_lookup_percpu_elem_proto __weak;
->  const struct bpf_func_proto bpf_spin_lock_proto __weak;
->  const struct bpf_func_proto bpf_spin_unlock_proto __weak;
->  const struct bpf_func_proto bpf_jiffies64_proto __weak;
-> +const struct bpf_func_proto bpf_panic_proto __weak;
->
->  const struct bpf_func_proto bpf_get_prandom_u32_proto __weak;
->  const struct bpf_func_proto bpf_get_smp_processor_id_proto __weak;
-> diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
-> index a1c84d256f83..5cb90208a264 100644
-> --- a/kernel/bpf/helpers.c
-> +++ b/kernel/bpf/helpers.c
-> @@ -374,6 +374,19 @@ const struct bpf_func_proto bpf_jiffies64_proto = {
->         .ret_type       = RET_INTEGER,
->  };
->
-> +BPF_CALL_1(bpf_panic, const char *, msg)
-> +{
-> +       panic(msg);
+The Linux kernel supports Segment Routing Header (SRH)
+encapsulation/insertion operations by providing the capability to: i)
+encapsulate a packet in an outer IPv6 header with a specified SRH; ii)
+insert a specified SRH directly after the IPv6 header of the packet.
+Note that the insertion operation is also referred to as 'injection'.
 
-I think we should also check
+The two operations are respectively supported by seg6_do_srh_encap() and
+seg6_do_srh_inline(), which operate on the skb associated to the packet as
+needed (e.g. adding the necessary headers and initializing them, while
+taking care to recalculate the skb checksum).
 
-   capable(CAP_SYS_BOOT) && destructive_ebpf_enabled()
+seg6_do_srh_encap() and seg6_do_srh_inline() do not initialize the payload
+length of the IPv6 header, which is carried out by the caller functions.
+However, this approach causes the corruption of the skb checksum which
+needs to be updated only after initialization of headers is completed
+(thanks to Paolo Abeni for detecting this issue).
 
-here. Or at least, destructive_ebpf_enabled(). Otherwise, we
-may trigger panic after the sysctl is disabled.
+The patchset fixes the skb checksum corruption by moving the IPv6 header
+payload length initialization from the callers of seg6_do_srh_encap() and
+seg6_do_srh_inline() directly into these functions.
 
-In general, I don't think sysctl is a good API, as it is global, and
-the user can easily forget to turn it back off. If possible, I would
-rather avoid adding new BPF related sysctls.
+This patchset is organized as follows:
+ - patch 1/3, seg6: fix skb checksum evaluation in SRH
+   encapsulation/insertion;
+    (* SRH encapsulation/insertion available since v4.10)
+   
+ - patch 2/3, seg6: fix skb checksum in SRv6 End.B6 and End.B6.Encaps
+   behaviors;
+    (* SRv6 End.B6 and End.B6.Encaps behaviors available since v4.14)
 
-Thanks,
-Song
+ - patch 3/3, seg6: bpf: fix skb checksum in bpf_push_seg6_encap();
+    (* bpf IPv6 Segment Routing helpers available since v4.18)
 
+Thank you all,
+Andrea
 
-> +       return 0;
-> +}
-> +
-> +const struct bpf_func_proto bpf_panic_proto = {
-> +       .func           = bpf_panic,
-> +       .gpl_only       = false,
-> +       .ret_type       = RET_VOID,
-> +       .arg1_type      = ARG_PTR_TO_CONST_STR,
-> +};
-> +
->  #ifdef CONFIG_CGROUPS
->  BPF_CALL_0(bpf_get_current_cgroup_id)
->  {
-> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> index 2859901ffbe3..f49c026917c5 100644
-> --- a/kernel/bpf/verifier.c
-> +++ b/kernel/bpf/verifier.c
-> @@ -7285,6 +7285,13 @@ static int check_helper_call(struct bpf_verifier_env *env, struct bpf_insn *insn
->                                 reg_type_str(env, regs[BPF_REG_1].type));
->                         return -EACCES;
->                 }
-> +               break;
-> +       case BPF_FUNC_panic:
-> +               struct bpf_prog_aux *aux = env->prog->aux;
-> +               if (!aux->destructive) {
-> +                       verbose(env, "bpf_panic() calls require BPF_F_DESTRUCTIVE flag\n");
-> +                       return -EACCES;
-> +               }
->         }
->
->         if (err)
-> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-> index 4be976cf7d63..3ee888507795 100644
-> --- a/kernel/trace/bpf_trace.c
-> +++ b/kernel/trace/bpf_trace.c
-> @@ -1304,6 +1304,8 @@ bpf_tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
->                 return &bpf_find_vma_proto;
->         case BPF_FUNC_trace_vprintk:
->                 return bpf_get_trace_vprintk_proto();
-> +       case BPF_FUNC_panic:
-> +               return capable(CAP_SYS_BOOT) && destructive_ebpf_enabled() ? &bpf_panic_proto : NULL;
->         default:
->                 return bpf_base_func_proto(func_id);
->         }
-> diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-> index 4423874b5da4..e2e2c4de44ee 100644
-> --- a/tools/include/uapi/linux/bpf.h
-> +++ b/tools/include/uapi/linux/bpf.h
-> @@ -3927,6 +3927,12 @@ union bpf_attr {
->   *     Return
->   *             The 64 bit jiffies
->   *
-> + * void bpf_panic(const char *msg)
-> + *     Description
-> + *             Make the kernel panic immediately
-> + *     Return
-> + *             void
-> + *
->   * long bpf_read_branch_records(struct bpf_perf_event_data *ctx, void *buf, u32 size, u64 flags)
->   *     Description
->   *             For an eBPF program attached to a perf event, retrieve the
-> @@ -5452,6 +5458,7 @@ union bpf_attr {
->         FN(tcp_send_ack),               \
->         FN(send_signal_thread),         \
->         FN(jiffies64),                  \
-> +       FN(panic),                      \
->         FN(read_branch_records),        \
->         FN(get_ns_current_pid_tgid),    \
->         FN(xdp_output),                 \
-> --
-> 2.35.3
->
+Andrea Mayer (3):
+  seg6: fix skb checksum evaluation in SRH encapsulation/insertion
+  seg6: fix skb checksum in SRv6 End.B6 and End.B6.Encaps behaviors
+  seg6: bpf: fix skb checksum in bpf_push_seg6_encap()
+
+ net/core/filter.c        | 1 -
+ net/ipv6/seg6_iptunnel.c | 5 ++++-
+ net/ipv6/seg6_local.c    | 2 --
+ 3 files changed, 4 insertions(+), 4 deletions(-)
+
+-- 
+2.20.1
+
