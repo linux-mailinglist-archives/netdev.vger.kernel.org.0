@@ -2,220 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 60F6D572231
-	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 20:08:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 433A9572234
+	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 20:09:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233236AbiGLSIc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jul 2022 14:08:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37402 "EHLO
+        id S233705AbiGLSJV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jul 2022 14:09:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231567AbiGLSI3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 14:08:29 -0400
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE092AE553
-        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 11:08:26 -0700 (PDT)
-Received: by mail-wr1-x42d.google.com with SMTP id z12so12284932wrq.7
-        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 11:08:26 -0700 (PDT)
+        with ESMTP id S229800AbiGLSJI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 14:09:08 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39B972A712;
+        Tue, 12 Jul 2022 11:09:07 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id k30so11135383edk.8;
+        Tue, 12 Jul 2022 11:09:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=DGz+BY3xnZELHM6ryZfTEhs4BFSh6HG4c9xaRhOdDBo=;
-        b=eATREUwe5KadLfNjw8E2OW3DLp6+xaXH9pE7xPuScqZ/3UTqteOJA4331fRQnqqLyl
-         oAM//6GD5o7X7rzo41Dhzgi//jvDgdDAKpaN6K/IXpbcpKZqoNClJIXZpeTsMfaOqiMz
-         TopiZP54AuO0nG/77QILQysk/4jc75EA07J7SD1PyzpZXuw/p8mo/umz5Jb8o2Q4VKNw
-         wre9k0na3PvIpnwuEQ78yb4LnMB8u6GB3fpwoGWG6PfDfPmprrhxFsSyouCH2uOzGG2E
-         uDn9ts3DGWA7aREWeNVDwcVvNrYV25QjtZO9hgCJCl1Fvb28MUyhtojAqU+CzDcYULLm
-         psPQ==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Yp1OmpY1y3vVYhTPvfPmHmX6dm6dSMFfYgW5f8nVVoA=;
+        b=V4mM+z6VTxmp1Qzn39eT5HwOIxjSgejq39mLAAp1us24aatJLMZx+txxjyQgo0imyi
+         kxFEYbZE+S0usVZnbvFjHdalXfPRZyrjPhw3FFSIk4g44jMrAbxMGf8YwMBTNDR5rayJ
+         hxM3MYlmNOk8btngFeKDLxUYmd607gTbZbaHXaQ3iSjUsv7E/MWM027W1sS/cEGn4OB0
+         mJacaAin0xAn20hBpvslY5abMexQ+QodkAc3dbw+13FOes/x3O6MZMbzo4TavZ3x6oVr
+         c4yG8Ra2baUE+5RmpqjBiKUYhagV3vHP9a+pKt5pErBz1tosJRPs78iYeosp5JKD6PlA
+         b5mw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=DGz+BY3xnZELHM6ryZfTEhs4BFSh6HG4c9xaRhOdDBo=;
-        b=jSpFWhkjraZqv4M2FI3284CGszjVtAiUSMGmnZYuuDb6zE91l4P5u0c/lQNmk2rqtw
-         KGLFobsZr/epDqAW7+zfiHFgY9CEEU7nouIc5JqUTdvRec9rdOglEE49XCQjj6wJhZ1W
-         Q/RC+GWRyO8El+mH34hupGkzc/1jGSlWXjc1WOECww6pmqjbs5+Aqp/CFXqPO8TVjeZC
-         FroEjQmvo38Hdj1CBfQQi4X3R3swu/k1dD8U/LCML/+520A7SALpNAIkHbkYDkeftw2u
-         TeOFCEDXzz/SHjf44T4u4qCchVUHEGGjp2BIyFBXU2UAOABUxWHV/fHKNubHVeefnbyE
-         gSCA==
-X-Gm-Message-State: AJIora/OtPe/etguyrnPxelabTar5j+3oEtlLPI7hZQCk+9ggSOs7bb9
-        XOk8iVME2qcO0dStX2LOcTXsmQ==
-X-Google-Smtp-Source: AGRyM1v7/Ig14MY8t442WbNsWeoaSgcjtu4MSGmscQ8plX+daxEtm2CNix76Opc5SpGWbiGJHGXwTw==
-X-Received: by 2002:adf:fcca:0:b0:21d:68ff:2e5a with SMTP id f10-20020adffcca000000b0021d68ff2e5amr23300797wrs.453.1657649305307;
-        Tue, 12 Jul 2022 11:08:25 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id d20-20020a05600c4c1400b003a1980d55c4sm12883840wmp.47.2022.07.12.11.08.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 11:08:24 -0700 (PDT)
-Date:   Tue, 12 Jul 2022 20:08:23 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Vikas Gupta <vikas.gupta@broadcom.com>
-Cc:     Jiri Pirko <jiri@nvidia.com>, Jakub Kicinski <kuba@kernel.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>, dsahern@kernel.org,
-        stephen@networkplumber.org, Eric Dumazet <edumazet@google.com>,
-        pabeni@redhat.com, ast@kernel.org, leon@kernel.org,
-        linux-doc@vger.kernel.org, corbet@lwn.net,
-        Michael Chan <michael.chan@broadcom.com>,
-        Andrew Gospodarek <andrew.gospodarek@broadcom.com>
-Subject: Re: [PATCH net-next v2 1/3] devlink: introduce framework for
- selftests
-Message-ID: <Ys24l4O1M/8Kf4/o@nanopsycho>
-References: <20220628164241.44360-1-vikas.gupta@broadcom.com>
- <20220707182950.29348-1-vikas.gupta@broadcom.com>
- <20220707182950.29348-2-vikas.gupta@broadcom.com>
- <YswaKcUs6nOndU2V@nanopsycho>
- <CAHLZf_t9ihOQPvcQa8cZsDDVUX1wisrBjC30tHG_-Dz13zg=qQ@mail.gmail.com>
- <Ys0UpFtcOGWjK/sZ@nanopsycho>
- <CAHLZf_s7s4rqBkDnB+KH-YJRDBDzeZB6VhKMMndk+dxxY11h3g@mail.gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Yp1OmpY1y3vVYhTPvfPmHmX6dm6dSMFfYgW5f8nVVoA=;
+        b=0tszMNvOARll8wXRybmjSUI3HdPpTqDP0ycIlVn1B5NsoSnhSTJU1toMcJOVlKlQ3O
+         xM1we5mSDAsaIcTOxvtw/jpJX4xn3UPKkO4pXNEaUkPel0iJ8WAufoVSxF0EAFJ9th5V
+         hMJ+0+uDvqMMjTC26xQKd70AzmCTA3RqxzLyEv/nksIFF1y+omPlNP+nZWKJw2EyBqzQ
+         GA8rkeNkstQQKVeMjWR6Qkq2/dxEzPfPSkhtzLMtzIS+F/GryDcPb+VBirJLv7JQuDfj
+         NXP4PBRklnFEVQz5B6wxEpwuHcOOEdriDArfHz/bmlYVltpqzRLtkISij+YKURm/Irhh
+         HC/g==
+X-Gm-Message-State: AJIora8u/3dE58kmzrSRY2mdM2jwS9389U7bSbYZHDLngkYJzGAHfolS
+        FjeCJT9/uHWIMuj8SUBetAdjvpFJqPeclwmUpuc=
+X-Google-Smtp-Source: AGRyM1saSErCrTNPa4aZDOBLpDXpTNVhuuM81/gv5HZTdRRDXX80C5hVGqz1cHsM/BZOGLgxxSyeLeHDgNxkvUzb9zI=
+X-Received: by 2002:a05:6402:350c:b0:43a:e25f:d73 with SMTP id
+ b12-20020a056402350c00b0043ae25f0d73mr10720783edd.66.1657649345743; Tue, 12
+ Jul 2022 11:09:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHLZf_s7s4rqBkDnB+KH-YJRDBDzeZB6VhKMMndk+dxxY11h3g@mail.gmail.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+References: <20220711083220.2175036-1-asavkov@redhat.com> <20220711083220.2175036-4-asavkov@redhat.com>
+ <CAPhsuW7xTRpLf1kyj5ejH0fV_aHCMQjUwn-uhWeNytXedh4+TQ@mail.gmail.com>
+In-Reply-To: <CAPhsuW7xTRpLf1kyj5ejH0fV_aHCMQjUwn-uhWeNytXedh4+TQ@mail.gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 12 Jul 2022 11:08:54 -0700
+Message-ID: <CAADnVQ+ju04JAqyEbA_7oVj9uBAuL-fUP1FBr_OTygGf915RfQ@mail.gmail.com>
+Subject: Re: [RFC PATCH bpf-next 3/4] bpf: add bpf_panic() helper
+To:     Song Liu <song@kernel.org>
+Cc:     Artem Savkov <asavkov@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Andrea Arcangeli <aarcange@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, Jul 12, 2022 at 06:41:49PM CEST, vikas.gupta@broadcom.com wrote:
->Hi Jiri,
+On Tue, Jul 12, 2022 at 10:53 AM Song Liu <song@kernel.org> wrote:
 >
->On Tue, Jul 12, 2022 at 11:58 AM Jiri Pirko <jiri@nvidia.com> wrote:
->>
->> Tue, Jul 12, 2022 at 08:16:11AM CEST, vikas.gupta@broadcom.com wrote:
->> >Hi Jiri,
->> >
->> >On Mon, Jul 11, 2022 at 6:10 PM Jiri Pirko <jiri@nvidia.com> wrote:
->> >
->> >> Thu, Jul 07, 2022 at 08:29:48PM CEST, vikas.gupta@broadcom.com wrote:
+> >
+> > +BPF_CALL_1(bpf_panic, const char *, msg)
+> > +{
+> > +       panic(msg);
+>
+> I think we should also check
+>
+>    capable(CAP_SYS_BOOT) && destructive_ebpf_enabled()
+>
+> here. Or at least, destructive_ebpf_enabled(). Otherwise, we
+> may trigger panic after the sysctl is disabled.
+>
+> In general, I don't think sysctl is a good API, as it is global, and
+> the user can easily forget to turn it back off. If possible, I would
+> rather avoid adding new BPF related sysctls.
 
-[...]
++1. New syscal isn't warranted here.
+Just CAP_SYS_BOOT would be enough here.
 
+Also full blown panic() seems unnecessary.
+If the motivation is to get a memory dump then crash_kexec() helper
+would be more suitable.
+If the goal is to reboot the system then the wrapper of sys_reboot()
+is better.
+Unfortunately the cover letter lacks these details.
+Why this destructive action cannot be delegated to user space?
 
->> >> >  * enum devlink_trap_action - Packet trap action.
->> >> >  * @DEVLINK_TRAP_ACTION_DROP: Packet is dropped by the device and a copy
->> >> is not
->> >> >@@ -576,6 +598,10 @@ enum devlink_attr {
->> >> >       DEVLINK_ATTR_LINECARD_TYPE,             /* string */
->> >> >       DEVLINK_ATTR_LINECARD_SUPPORTED_TYPES,  /* nested */
->> >> >
->> >> >+      DEVLINK_ATTR_SELFTESTS_MASK,            /* u32 */
->> >>
->> >> I don't see why this is u32 bitset. Just have one attr per test
->> >> (NLA_FLAG) in a nested attr instead.
->> >>
->> >
->> >As per your suggestion, for an example it should be like as below
->> >
->> >        DEVLINK_ATTR_SELFTESTS,                 /* nested */
->> >
->> >        DEVLINK_ATTR_SELFTESTS_SOMETEST1            /* flag */
->> >
->> >        DEVLINK_ATTR_SELFTESTS_SOMETEST2           /* flag */
->>
->> Yeah, but have the flags in separate enum, no need to pullute the
->> devlink_attr enum by them.
->>
->>
->> >
->> >....    <SOME MORE TESTS>
->> >
->> >.....
->> >
->> >        DEVLINK_ATTR_SLEFTESTS_RESULT_VAL,      /* u8 */
->> >
->> >
->> >
->> > If we have this way then we need to have a mapping (probably a function)
->> >for drivers to tell them what tests need to be executed based on the flags
->> >that are set.
->> > Does this look OK?
->> >  The rationale behind choosing a mask is that we could directly pass the
->> >mask-value to the drivers.
->>
->> If you have separate enum, you can use the attrs as bits internally in
->> kernel. Add a helper that would help the driver to work with it.
->> Pass a struct containing u32 (or u8) not to drivers. Once there are more
->> tests than that, this structure can be easily extended and the helpers
->> changed. This would make this scalable. No need for UAPI change or even
->> internel driver api change.
->
->As per your suggestion, selftest attributes can be declared in separate
->enum as below
->
->enum {
->
->        DEVLINK_SELFTEST_SOMETEST,         /* flag */
->
->        DEVLINK_SELFTEST_SOMETEST1,
->
->        DEVLINK_SELFTEST_SOMETEST2,
->
->....
->
->......
->
->        __DEVLINK_SELFTEST_MAX,
->
->        DEVLINK_SELFTEST_MAX = __DEVLINK_SELFTEST_MAX - 1
->
->};
->Below  examples could be the flow of parameters/data from user to
->kernel and vice-versa
->
->
->Kernel to user for show command . Users can know what all tests are
->supported by the driver. A return from kernel to user.
->______
->|NEST |
->|_____ |TEST1|TEST4|TEST7|...
->
->
->User to kernel to execute test: If user wants to execute test4, test8, test1...
->______
->|NEST |
->|_____ |TEST4|TEST8|TEST1|...
->
->
->Result Kernel to user execute test RES(u8)
->______
->|NEST |
->|_____ |RES4|RES8|RES1|...
-
-Hmm, I think it is not good idea to rely on the order, a netlink library
-can perhaps reorder it? Not sure here.
-
->
->Results are populated in the same order as the user passed the TESTs
->flags. Does the above result format from kernel to user look OK ?
->Else we need to have below way to form a result format, a nest should
->be made for <test_flag,
->result> but since test flags are in different enum other than
->devlink_attr and RES being part of devlink_attr, I believe it's not
->good practice to make the below structure.
-
-Not a structure, no. Have it as another nest (could be the same attr as
-the parent nest:
-
-______
-|NEST |
-|_____ |NEST|       |NEST|       |NEST|
-        TEST4,RES4   TEST8,RES8   TEST1, RES1
-
-also, it is flexible to add another attr if needed (like maybe result
-message string containing error message? IDK).
-
-
-
->______
->|NEST |
->|_____ | TEST4, RES4|TEST8,RES8|TEST1,RES1|...
->
->Let me know if my understanding is correct.
-
-[...]
+btw, we should avoid adding new uapi helpers in most cases.
+Ideally all of them should be added as new kfunc-s, because they're
+unstable and we can rip them out later if our judgement call
+turns out to be problematic for whatever reason.
