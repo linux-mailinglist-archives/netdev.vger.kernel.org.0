@@ -2,56 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 516B5571050
-	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 04:38:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 356D15710B1
+	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 05:16:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231304AbiGLChw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jul 2022 22:37:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40574 "EHLO
+        id S230269AbiGLDQD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jul 2022 23:16:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229670AbiGLChs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 22:37:48 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD81A8FD5D;
-        Mon, 11 Jul 2022 19:37:47 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.55])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LhlJM49p7zFq0j;
-        Tue, 12 Jul 2022 10:36:51 +0800 (CST)
-Received: from dggpemm500019.china.huawei.com (7.185.36.180) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 12 Jul 2022 10:37:45 +0800
-Received: from k04.huawei.com (10.67.174.115) by
- dggpemm500019.china.huawei.com (7.185.36.180) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 12 Jul 2022 10:37:45 +0800
-From:   Pu Lehui <pulehui@huawei.com>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "Jean-Philippe Brucker" <jean-philippe@linaro.org>,
-        Pu Lehui <pulehui@huawei.com>
-Subject: [PATCH bpf-next 3/3] bpf: iterators: build and use lightweight bootstrap version of bpftool
-Date:   Tue, 12 Jul 2022 11:08:13 +0800
-Message-ID: <20220712030813.865410-4-pulehui@huawei.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220712030813.865410-1-pulehui@huawei.com>
-References: <20220712030813.865410-1-pulehui@huawei.com>
+        with ESMTP id S229523AbiGLDQB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 23:16:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47DC22DA94
+        for <netdev@vger.kernel.org>; Mon, 11 Jul 2022 20:16:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D633E616C5
+        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 03:16:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1085C34115;
+        Tue, 12 Jul 2022 03:15:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657595760;
+        bh=MOA0XUXEC0xTIoipP5O0fKxLeR3KLX2IomJD1Rksbw4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=TwbMQ332bYoCBVch+znPVVm6uJVQFhlEVcoIqVzYGlnxupQ9Vg58r4sZcEoVfLyuG
+         jdEG8l0iOmbGcaEv9riUvjgUQIa+0VwNW+BOKN725PDCXL0Lxy9m3lhPapLk9/9NBL
+         Oyoy4Pttw1fWhsuRsgFkBWf9+U3KlMT0DOiTXaFyW8JmnRLPqq75SrGGuow1u7jDw2
+         pheysfQzM7l0vpZYzDqwlg/pDFeF/s8K+J+vMLSTHDQFsHrVjTukysiZfRbxnIbt+r
+         vFGtdTBG0hy9jEXwWNXxiGjjMCYCgL0M3wniHI00Rn863t2ztqqbpDEnNK+yikDIzw
+         0bWuDsngHPf0w==
+Date:   Mon, 11 Jul 2022 20:15:58 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        oss-drivers@corigine.com, Diana Wang <na.wang@corigine.com>
+Subject: Re: [PATCH net-next] nfp: support TX VLAN ctag insert in NFDK
+Message-ID: <20220711201558.559d7c06@kernel.org>
+In-Reply-To: <20220711093048.1911698-1-simon.horman@corigine.com>
+References: <20220711093048.1911698-1-simon.horman@corigine.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.174.115]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemm500019.china.huawei.com (7.185.36.180)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -60,47 +54,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-kernel/bpf/preload/iterators use bpftool for vmlinux.h, skeleton, and
-static linking only. So we can use lightweight bootstrap version of
-bpftool to handle these, and it will be faster.
+On Mon, 11 Jul 2022 11:30:48 +0200 Simon Horman wrote:
+> From: Diana Wang <na.wang@corigine.com>
+> 
+> Add support for TX VLAN ctag insert
+> which may be configured via ethtool.
+> e.g.
+>      # ethtool -K $DEV tx-vlan-offload on
+> 
+> The NIC supplies VLAN insert information as packet metadata.
+> The fields of this VLAN metadata including vlan_proto and vlan tag.
+> 
+> Configuration control bit NFP_NET_CFG_CTRL_TXVLAN_V2 is to
+> signal availability of ctag-insert features of the firmware.
+> 
+> NFDK is used to communicate via PCIE to NFP-3800 based NICs
+> while NFD3 is used for other NICs supported by the NFP driver.
+> This features is currently implemented only for NFD3 and
+> this patch adds support for it with NFDK.
+> 
+> Signed-off-by: Diana Wang <na.wang@corigine.com>
+> Reviewed-by: Louis Peens <louis.peens@corigine.com>
+> Signed-off-by: Simon Horman <simon.horman@corigine.com>
 
-Signed-off-by: Pu Lehui <pulehui@huawei.com>
-Suggested-by: Andrii Nakryiko <andrii@kernel.org>
----
- kernel/bpf/preload/iterators/Makefile | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+Interesting exercise.....
 
-diff --git a/kernel/bpf/preload/iterators/Makefile b/kernel/bpf/preload/iterators/Makefile
-index bfe24f8c5a20..cf5f39f95fed 100644
---- a/kernel/bpf/preload/iterators/Makefile
-+++ b/kernel/bpf/preload/iterators/Makefile
-@@ -9,7 +9,7 @@ LLVM_STRIP ?= llvm-strip
- TOOLS_PATH := $(abspath ../../../../tools)
- BPFTOOL_SRC := $(TOOLS_PATH)/bpf/bpftool
- BPFTOOL_OUTPUT := $(abs_out)/bpftool
--DEFAULT_BPFTOOL := $(OUTPUT)/sbin/bpftool
-+DEFAULT_BPFTOOL := $(BPFTOOL_OUTPUT)/bootstrap/bpftool
- BPFTOOL ?= $(DEFAULT_BPFTOOL)
- 
- LIBBPF_SRC := $(TOOLS_PATH)/lib/bpf
-@@ -61,9 +61,14 @@ $(BPFOBJ): $(wildcard $(LIBBPF_SRC)/*.[ch] $(LIBBPF_SRC)/Makefile) | $(LIBBPF_OU
- 		    OUTPUT=$(abspath $(dir $@))/ prefix=		       \
- 		    DESTDIR=$(LIBBPF_DESTDIR) $(abspath $@) install_headers
- 
-+ifeq ($(CROSS_COMPILE),)
- $(DEFAULT_BPFTOOL): $(BPFOBJ) | $(BPFTOOL_OUTPUT)
- 	$(Q)$(MAKE) $(submake_extras) -C $(BPFTOOL_SRC)			       \
- 		    OUTPUT=$(BPFTOOL_OUTPUT)/				       \
--		    LIBBPF_OUTPUT=$(LIBBPF_OUTPUT)/			       \
--		    LIBBPF_DESTDIR=$(LIBBPF_DESTDIR)/			       \
--		    prefix= DESTDIR=$(abs_out)/ install-bin
-+		    LIBBPF_BOOTSTRAP_OUTPUT=$(LIBBPF_OUTPUT)/		       \
-+		    LIBBPF_BOOTSTRAP_DESTDIR=$(LIBBPF_DESTDIR)/ bootstrap
-+else
-+$(DEFAULT_BPFTOOL): | $(BPFTOOL_OUTPUT)
-+	$(Q)$(MAKE) $(submake_extras) -C $(BPFTOOL_SRC)			       \
-+		    OUTPUT=$(BPFTOOL_OUTPUT)/ bootstrap
-+endif
--- 
-2.25.1
-
+Acked-by: Jakub Kicinski <kuba@kernel.org>
