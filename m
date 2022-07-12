@@ -2,81 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 50AA9571C4D
-	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 16:22:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 896B6571CF2
+	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 16:39:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232013AbiGLOWX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jul 2022 10:22:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38868 "EHLO
+        id S233431AbiGLOjm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jul 2022 10:39:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230449AbiGLOWW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 10:22:22 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E0F23340A
-        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 07:22:20 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id z12so11400353wrq.7
-        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 07:22:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=VzVyLq93v7Q1sxLTDDMDRjloIU59iqwzRVlFfkSnQsc=;
-        b=of4p0Wgua6bZb2OZ/tCRo0c31uD/XMaPz16Q2FYXnqtLKxPmrfKbcNzkndTXsfSvcd
-         f+4SnhrPS0LIxPq/u460O6F6/v4B1m/11a/bi4Wt4wD8hmikRP8WeoLyA/HiDv3eLKj7
-         Z475vmwGY9mh12B5Momv3URNMVAxHfVvmLNpy3iMeieBbNr+Y9z0vZPDWBJIh1nJfbuu
-         ezGp9+LMNWZBGBhXJ5OPwL4/upycNVYMRa81kx2EX6KwsT2gYL7BQcOyAFe5XVz4hV9x
-         3HbR46bniAhb8bfVtqusDKno9Sxrr3W+4nyHzyIwU94g3pSOwycYBttk9MIED1E3DV/h
-         +aUA==
+        with ESMTP id S229976AbiGLOjl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 10:39:41 -0400
+Received: from mail-yw1-f179.google.com (mail-yw1-f179.google.com [209.85.128.179])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 564712496F;
+        Tue, 12 Jul 2022 07:39:40 -0700 (PDT)
+Received: by mail-yw1-f179.google.com with SMTP id 00721157ae682-31c8bb90d09so83060147b3.8;
+        Tue, 12 Jul 2022 07:39:40 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=VzVyLq93v7Q1sxLTDDMDRjloIU59iqwzRVlFfkSnQsc=;
-        b=SOyUcoCdM20OICNHvH0hp1Rbg9TE2GTVfG7tfw9wQexTehFT9qPr3nqMUnswQaD3k6
-         ISfDW9SBe2TT3apSP2OnTVVMIgV9ygIWC0lagoDRG1URbzZHBBw8R6azM7u+ZHubzsTt
-         ufaR9EHbgohPYuiBqAbJwxpFaxguIX4doa1rN4KlBZp2+XdzlfC73u74CfSZPIgp588c
-         egW99VwivDjCLfZ1tCmMLEaLfW6RzN+hG2hmWTX+FHg+Xht69IHgCnUchk1ug2onlg/e
-         nHyW7wYZc54YBp3pMSFVuu7wESbAXrb4v9vGsFQovmHjz+cvJ0ywwopRhE1b64xYqIXn
-         QO6A==
-X-Gm-Message-State: AJIora9NdkzxVIsZ7Kq2ybE4D+0M8fVyypOkTBggBJrlQyxSJyX7dNG7
-        6j4KiV5kPoWaurGuasV6wke1JQ==
-X-Google-Smtp-Source: AGRyM1s0BZahYV3foKfdcHJHV6CPzd5TeU/Lqx2ZxDW0pLKHuorh4lkyyrrZsQhxr9p6DN1Q4b2LSQ==
-X-Received: by 2002:a05:6000:1e01:b0:21d:94a2:750d with SMTP id bj1-20020a0560001e0100b0021d94a2750dmr18333159wrb.80.1657635739021;
-        Tue, 12 Jul 2022 07:22:19 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id c189-20020a1c35c6000000b003a046549a85sm13242207wma.37.2022.07.12.07.22.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 07:22:18 -0700 (PDT)
-Date:   Tue, 12 Jul 2022 16:22:17 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Ido Schimmel <idosch@nvidia.com>
-Cc:     netdev@vger.kernel.org, sthemmin@microsoft.com, dsahern@gmail.com,
-        mlxsw@nvidia.com
-Subject: Re: [patch iproute2/net-next] devlink: add support for linecard show
- and type set
-Message-ID: <Ys2DmcVlePRFDgCN@nanopsycho>
-References: <20220712103154.2805695-1-jiri@resnulli.us>
- <Ys1sCNp0E0W86EGG@shredder>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=PC86xMGUfSnwU1wUnbuH+oo/JpYi0LOJ0j1avSTctkQ=;
+        b=49tUINXn/QYV9ue6R5pzbBm14aQue7KHtywG32+w6coBbVe+Ou8W4fz4lgpViBpfkJ
+         1aQp7jed18dC476wLzbfk250VB6P/JYGF9iKvc9XkUpGRyPLCKVu2GmRAYzGXfVaCXqr
+         HtRz1TTxbxRd4yQ7uEDtcbgtLCC5UlwHX8aXoor0ESsb13mP2hanOCgwgZwOFBbO4OER
+         6xgFZMCUhGMO7LTYQ5+CYV3iy+rNjjN2Gqc3eU4nI/TZJuF7vwYFvu1qfA6KyqUDOdwQ
+         16v6wKjCsvpqD+ETrpyehLzg35mool5l2QQVHpp1IewtOw/IZcjlV39un+/+zurAdN3Q
+         Gotg==
+X-Gm-Message-State: AJIora+5KscHJzHWOca4iaawPDNKUeMUHkfB/IshYFUt31SaqRqbyn/p
+        aTCM7y7YCbE13sv/rygEzgXgXBNql+Vq5JNwSCR9GzCsbxc=
+X-Google-Smtp-Source: AGRyM1v/Pvr2a1+guMYqIWCRQro8zrJa0Io2m5481K1W8RgdZFu+NYSafudYKYGO8r8yUk1u+yyW7faKYF8JpPhYVnc=
+X-Received: by 2002:a0d:f247:0:b0:31d:68b1:5a16 with SMTP id
+ b68-20020a0df247000000b0031d68b15a16mr13513324ywf.191.1657636779504; Tue, 12
+ Jul 2022 07:39:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Ys1sCNp0E0W86EGG@shredder>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220708181235.4104943-1-frank.jungclaus@esd.eu> <20220708181235.4104943-5-frank.jungclaus@esd.eu>
+In-Reply-To: <20220708181235.4104943-5-frank.jungclaus@esd.eu>
+From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Date:   Tue, 12 Jul 2022 23:39:28 +0900
+Message-ID: <CAMZ6Rq+QBO1yTX_o6GV0yhdBj-RzZSRGWDZBS0fs7zbSTy4hmA@mail.gmail.com>
+Subject: Re: [PATCH 4/6] can: esd_usb: Improved behavior on esd CAN_ERROR_EXT
+ event (3)
+To:     Frank Jungclaus <frank.jungclaus@esd.eu>
+Cc:     linux-can@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        =?UTF-8?Q?Stefan_M=C3=A4tje?= <stefan.maetje@esd.eu>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, Jul 12, 2022 at 02:41:44PM CEST, idosch@nvidia.com wrote:
->On Tue, Jul 12, 2022 at 12:31:54PM +0200, Jiri Pirko wrote:
->>  devlink/devlink.c     | 210 +++++++++++++++++++++++++++++++++++++++++-
->>  man/man8/devlink-lc.8 | 103 +++++++++++++++++++++
->>  2 files changed, 310 insertions(+), 3 deletions(-)
->>  create mode 100644 man/man8/devlink-lc.8
+On Tue. 9 Jul. 2022 at 03:15, Frank Jungclaus <frank.jungclaus@esd.eu> wrote:
+> Started a rework initiated by Vincents remark about "You should not
+> report the greatest of txerr and rxerr but the one which actually
+> increased." Now setting CAN_ERR_CRTL_[RT]X_WARNING and
+> CAN_ERR_CRTL_[RT]X_PASSIVE depending on REC and TEC
 >
->Missing bash completion
+> Signed-off-by: Frank Jungclaus <frank.jungclaus@esd.eu>
+> ---
+>  drivers/net/can/usb/esd_usb.c | 16 +++++++++++-----
+>  1 file changed, 11 insertions(+), 5 deletions(-)
+>
+> diff --git a/drivers/net/can/usb/esd_usb.c b/drivers/net/can/usb/esd_usb.c
+> index 0a402a23d7ac..588caba1453b 100644
+> --- a/drivers/net/can/usb/esd_usb.c
+> +++ b/drivers/net/can/usb/esd_usb.c
+> @@ -304,11 +304,17 @@ static void esd_usb_rx_event(struct esd_usb_net_priv *priv,
+>                         /* Store error in CAN protocol (location) in data[3] */
+>                         cf->data[3] = ecc & SJA1000_ECC_SEG;
+>
+> -                       if (priv->can.state == CAN_STATE_ERROR_WARNING ||
+> -                           priv->can.state == CAN_STATE_ERROR_PASSIVE) {
+> -                               cf->data[1] = (txerr > rxerr) ?
+> -                                       CAN_ERR_CRTL_TX_PASSIVE :
+> -                                       CAN_ERR_CRTL_RX_PASSIVE;
+> +                       /* Store error status of CAN-controller in data[1] */
+> +                       if (priv->can.state == CAN_STATE_ERROR_WARNING) {
+> +                               if (txerr >= 96)
+> +                                       cf->data[1] |= CAN_ERR_CRTL_TX_WARNING;
 
-Okay, will add. Thanks!
+As far as I understand, those flags should be set only when the
+threshold is *reached*:
+https://elixir.bootlin.com/linux/latest/source/include/uapi/linux/can/error.h#L69
+
+I don't think you should set it if the error state does not change.
+
+Here, you probably want to compare the new value  with the previous
+one (stored in struct can_berr_counter) to decide whether or not the
+flags should be set.
+
+
+> +                               if (rxerr >= 96)
+> +                                       cf->data[1] |= CAN_ERR_CRTL_RX_WARNING;
+> +                       } else if (priv->can.state == CAN_STATE_ERROR_PASSIVE) {
+> +                               if (txerr >= 128)
+> +                                       cf->data[1] |= CAN_ERR_CRTL_TX_PASSIVE;
+> +                               if (rxerr >= 128)
+> +                                       cf->data[1] |= CAN_ERR_CRTL_RX_PASSIVE;
+>                         }
+>
+>                         cf->data[6] = txerr;
+> --
+> 2.25.1
+>
