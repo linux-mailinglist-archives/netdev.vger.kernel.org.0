@@ -2,138 +2,431 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E07B5721D0
-	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 19:34:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D0FE65721DA
+	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 19:38:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231314AbiGLReM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jul 2022 13:34:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41904 "EHLO
+        id S230255AbiGLRif (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jul 2022 13:38:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229534AbiGLReL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 13:34:11 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 44E19C3AF9
-        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 10:34:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657647249;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=YnYHNlXG4sAUmEFeyzh6YNeY0EHRa/NJXlU0ExFTwhw=;
-        b=LeN0LOk5xO5EDmwLsi6D9VbtzoDO3q9V2wmGRURYa6gOh9RJzebyyU/Q6a6q86lchgVnCP
-        9z5EJ3RGUMBMw2Y8Nh3CTLlccE9crpTAFJs43TBQB1mSVzrgKli4V1djYJQ2N7a9Qtv+mL
-        vf4bmcVuG+xGl0RzioxHv9jNAx8St7U=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-8-_0g6gQtiNaaLg8XsIwkcww-1; Tue, 12 Jul 2022 13:34:08 -0400
-X-MC-Unique: _0g6gQtiNaaLg8XsIwkcww-1
-Received: by mail-wm1-f70.google.com with SMTP id v123-20020a1cac81000000b003a02a3f0beeso6987010wme.3
-        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 10:34:08 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=YnYHNlXG4sAUmEFeyzh6YNeY0EHRa/NJXlU0ExFTwhw=;
-        b=T2qbGIgSDSynVhrMtXBavuTl9b4ivqgsRmE2eNsR3wceVMtOdwmNrnnNRwq7YKJXfs
-         TZMrd4LUnsepDk/oE6jJuUxqGd20zodK9F75nCcDIxwg9SRVDE8c5RvNekcFFVGyPTUJ
-         O+h+8I+grtYslt6Tx0a7/4rlUGPXoP1H8aTs6MSEN4PfQnVxRZPjmNUidxrmRLFC/AeU
-         NGgEvjLq6Oe1fEuDDuTBgK9Gx1vuXk4tASq99pbQsrcV4sUCWAGuztT3t2Kn7Q7ONZhX
-         hRZxy8ytSFCS6IncAJr4qP7vElQ33e7peDYmKzTiTBFIePikX0deayPopEHFfefwEby+
-         wG9w==
-X-Gm-Message-State: AJIora9egE8302ElTKZhps7S4ncOTJ8aPZb/XFtB1aje/zaF5n1R6A6P
-        t3ukwE2y4BsayGpmhtnScW2VIclyle79LfivnBSE8KqXY9xTsxSH8AumPZRYui3gLmRB2ZViUTK
-        DomvpazeCnXG8tRDq
-X-Received: by 2002:a5d:64e2:0:b0:21d:38e8:2497 with SMTP id g2-20020a5d64e2000000b0021d38e82497mr21630553wri.142.1657647246900;
-        Tue, 12 Jul 2022 10:34:06 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1s+PP4fF7oA8OdWVvLKhyeV68On2eq47evFDSzPrbco4GFV9G3YPeiUG9k5/I7KupkTLDI7PA==
-X-Received: by 2002:a5d:64e2:0:b0:21d:38e8:2497 with SMTP id g2-20020a5d64e2000000b0021d38e82497mr21630530wri.142.1657647246710;
-        Tue, 12 Jul 2022 10:34:06 -0700 (PDT)
-Received: from localhost.localdomain ([185.233.130.50])
-        by smtp.gmail.com with ESMTPSA id j16-20020adfff90000000b0021d76a1b0e3sm8759337wrr.6.2022.07.12.10.34.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 10:34:05 -0700 (PDT)
-Date:   Tue, 12 Jul 2022 19:34:03 +0200
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
-Cc:     James Carlson <carlsonj@workingcode.com>,
-        Chris Fowler <cfowler@outpostsentinel.com>,
+        with ESMTP id S231157AbiGLRie (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 13:38:34 -0400
+Received: from smtp-fw-6001.amazon.com (smtp-fw-6001.amazon.com [52.95.48.154])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC902C5C
+        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 10:38:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1657647512; x=1689183512;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=JqC0sPUNsCJLu+vPTNNeBFWL0gANKIXtk6vX9flH8TI=;
+  b=oyGDdEzeyk2LkjiYxMRGCGvE30hki3rNCaVJ8vLw0l2WWueEcT2ohiYp
+   fdPk3DJXWsXW4T7MHV1LZl+f8faU0BLWrTPSZiKD3ahKG+OSMoNwsaLt+
+   9iY/wyN/6UR0ElSUFrtw7ta0UmiMzXk5KWhUcVpkN37H5oO9l9rU3wPnl
+   w=;
+Received: from iad6-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-pdx-2b-02ee77e7.us-west-2.amazon.com) ([10.124.125.2])
+  by smtp-border-fw-6001.iad6.amazon.com with ESMTP; 12 Jul 2022 17:38:19 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-pdx-2b-02ee77e7.us-west-2.amazon.com (Postfix) with ESMTPS id 6B83643CC5;
+        Tue, 12 Jul 2022 17:38:18 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.36; Tue, 12 Jul 2022 17:38:17 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.160.236) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.9;
+ Tue, 12 Jul 2022 17:38:15 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paul Mackerras <paulus@samba.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        "linux-ppp@vger.kernel.org" <linux-ppp@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] ppp: Add rtnl attribute IFLA_PPP_UNIT_ID for specifying
- ppp unit id
-Message-ID: <20220712173403.GC3794@localhost.localdomain>
-References: <20210811180401.owgmie36ydx62iep@pali>
- <20210812092847.GB3525@pc-23.home>
- <20210812134845.npj3m3vzkrmhx6uy@pali>
- <20210812182645.GA10725@pc-23.home>
- <20210812190440.fknfthdk3mazm6px@pali>
- <20210816161114.GA3611@pc-32.home>
- <20210816162355.7ssd53lrpclfvuiz@pali>
- <20210817160525.GA20616@pc-32.home>
- <20210817162155.idyfy53qbxcsf2ga@pali>
- <20220709120906.ymkhn5diywadgrka@pali>
+        Paolo Abeni <pabeni@redhat.com>,
+        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
+CC:     Kuniyuki Iwashima <kuniyu@amazon.com>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>,
+        <netdev@vger.kernel.org>
+Subject: [PATCH v2 net] tcp/udp: Make early_demux back namespacified.
+Date:   Tue, 12 Jul 2022 10:38:01 -0700
+Message-ID: <20220712173801.39550-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220709120906.ymkhn5diywadgrka@pali>
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [10.43.160.236]
+X-ClientProxiedBy: EX13D01UWA003.ant.amazon.com (10.43.160.107) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jul 09, 2022 at 02:09:06PM +0200, Pali Rohár wrote:
-> On Tuesday 17 August 2021 18:21:55 Pali Rohár wrote:
-> > On Tuesday 17 August 2021 18:05:25 Guillaume Nault wrote:
-> > > On Mon, Aug 16, 2021 at 06:23:55PM +0200, Pali Rohár wrote:
-> > > > On Monday 16 August 2021 18:11:14 Guillaume Nault wrote:
-> > > > > Do you have plans for adding netlink support to pppd? If so, is the
-> > > > > project ready to accept such code?
-> > > > 
-> > > > Yes, I have already some WIP code and I'm planning to send a pull
-> > > > request to pppd on github for it. I guess that it could be accepted,
-> > > 
-> > > I guess you can easily use the netlink api for cases where the "unit"
-> > > option isn't specified and fall back to the ioctl api when it is. If
-> > > all goes well, then we can extend the netlink api to accept a unit id.
-> > > 
-> > > But what about the lack of netlink feedback about the created
-> > > interface? Are you restricted to use netlink only when the "ifname"
-> > > option is provided?
-> > 
-> > Exactly, this is how I wrote my WIP code...
-> 
-> Sorry for a long delay (I forgot about it). Now I created pull request
-> for pppd https://github.com/ppp-project/ppp/pull/354 which adds support
-> for creating ppp interface via rtnetlink. rtnetlink is used only when
-> ppp unit id was not provided and interface name was provided.
+Commit e21145a9871a ("ipv4: namespacify ip_early_demux sysctl knob") made
+it possible to enable/disable early_demux on a per-netns basis.  Then, we
+introduced two knobs, tcp_early_demux and udp_early_demux, to switch it for
+TCP/UDP in commit dddb64bcb346 ("net: Add sysctl to toggle early demux for
+tcp and udp").  However, the .proc_handler() was wrong and actually
+disabled us from changing the behaviour in each netns.
 
-Interesting work. Thanks for working on it!
+We can execute early_demux if net.ipv4.ip_early_demux is on and each proto
+.early_demux() handler is not NULL.  When we toggle (tcp|udp)_early_demux,
+the change itself is saved in each netns variable, but the .early_demux()
+handler is a global variable, so the handler is switched based on the
+init_net's sysctl variable.  Thus, netns (tcp|udp)_early_demux knobs have
+nothing to do with the logic.  Whether we CAN execute proto .early_demux()
+is always decided by init_net's sysctl knob, and whether we DO it or not is
+by each netns ip_early_demux knob.
 
-> > > > specially if there still would be backward compatibility via ioctl for
-> > > > kernels which do not support rtnl API.
-> > > 
-> > > Indeed, I'd expect keeping compatiblitity with old kernels that only
-> > > have the ioctl api to be a must (but I have no experience contributing
-> > > to the pppd project).
-> > > 
-> > > > One of the argument which can be
-> > > > used why rtnl API is better, is fixing issue: atomic creating of
-> > > > interface with specific name.
-> > > 
-> > > Yes, that looks useful.
-> > > 
-> 
+This patch namespacifies (tcp|udp)_early_demux again.  For now, the users
+of the .early_demux() handler are TCP and UDP only, and they are called
+directly to avoid retpoline.  So, we can remove the .early_demux() handler
+from inet6?_protos and need not dereference them in ip6?_rcv_finish_core().
+If another proto needs .early_demux(), we can restore it at that time.
+
+Fixes: dddb64bcb346 ("net: Add sysctl to toggle early demux for tcp and udp")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+---
+v2:
+  - Drop cleanups in tcp_v4_early_demux() (Eric Dumazet)
+
+v1: https://lore.kernel.org/netdev/20220712163243.36014-1-kuniyu@amazon.com/
+---
+ include/net/protocol.h     |  4 ---
+ include/net/tcp.h          |  2 +-
+ include/net/udp.h          |  2 +-
+ net/ipv4/af_inet.c         | 14 ++-------
+ net/ipv4/ip_input.c        | 37 +++++++++++++---------
+ net/ipv4/sysctl_net_ipv4.c | 63 ++++----------------------------------
+ net/ipv6/ip6_input.c       | 23 ++++++++------
+ net/ipv6/tcp_ipv6.c        |  9 ++----
+ net/ipv6/udp.c             |  9 ++----
+ 9 files changed, 49 insertions(+), 114 deletions(-)
+
+diff --git a/include/net/protocol.h b/include/net/protocol.h
+index f51c06ae365f..6aef8cb11cc8 100644
+--- a/include/net/protocol.h
++++ b/include/net/protocol.h
+@@ -35,8 +35,6 @@
+ 
+ /* This is used to register protocols. */
+ struct net_protocol {
+-	int			(*early_demux)(struct sk_buff *skb);
+-	int			(*early_demux_handler)(struct sk_buff *skb);
+ 	int			(*handler)(struct sk_buff *skb);
+ 
+ 	/* This returns an error if we weren't able to handle the error. */
+@@ -52,8 +50,6 @@ struct net_protocol {
+ 
+ #if IS_ENABLED(CONFIG_IPV6)
+ struct inet6_protocol {
+-	void	(*early_demux)(struct sk_buff *skb);
+-	void    (*early_demux_handler)(struct sk_buff *skb);
+ 	int	(*handler)(struct sk_buff *skb);
+ 
+ 	/* This returns an error if we weren't able to handle the error. */
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index 1e99f5c61f84..1636c55e798b 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -932,7 +932,7 @@ extern const struct inet_connection_sock_af_ops ipv6_specific;
+ 
+ INDIRECT_CALLABLE_DECLARE(void tcp_v6_send_check(struct sock *sk, struct sk_buff *skb));
+ INDIRECT_CALLABLE_DECLARE(int tcp_v6_rcv(struct sk_buff *skb));
+-INDIRECT_CALLABLE_DECLARE(void tcp_v6_early_demux(struct sk_buff *skb));
++void tcp_v6_early_demux(struct sk_buff *skb);
+ 
+ #endif
+ 
+diff --git a/include/net/udp.h b/include/net/udp.h
+index b83a00330566..bb4c227299cc 100644
+--- a/include/net/udp.h
++++ b/include/net/udp.h
+@@ -167,7 +167,7 @@ static inline void udp_csum_pull_header(struct sk_buff *skb)
+ typedef struct sock *(*udp_lookup_t)(const struct sk_buff *skb, __be16 sport,
+ 				     __be16 dport);
+ 
+-INDIRECT_CALLABLE_DECLARE(void udp_v6_early_demux(struct sk_buff *));
++void udp_v6_early_demux(struct sk_buff *skb);
+ INDIRECT_CALLABLE_DECLARE(int udpv6_rcv(struct sk_buff *));
+ 
+ struct sk_buff *__udp_gso_segment(struct sk_buff *gso_skb,
+diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
+index 93da9f783bec..76e7a7ca6772 100644
+--- a/net/ipv4/af_inet.c
++++ b/net/ipv4/af_inet.c
+@@ -1710,24 +1710,14 @@ static const struct net_protocol igmp_protocol = {
+ };
+ #endif
+ 
+-/* thinking of making this const? Don't.
+- * early_demux can change based on sysctl.
+- */
+-static struct net_protocol tcp_protocol = {
+-	.early_demux	=	tcp_v4_early_demux,
+-	.early_demux_handler =  tcp_v4_early_demux,
++static const struct net_protocol tcp_protocol = {
+ 	.handler	=	tcp_v4_rcv,
+ 	.err_handler	=	tcp_v4_err,
+ 	.no_policy	=	1,
+ 	.icmp_strict_tag_validation = 1,
+ };
+ 
+-/* thinking of making this const? Don't.
+- * early_demux can change based on sysctl.
+- */
+-static struct net_protocol udp_protocol = {
+-	.early_demux =	udp_v4_early_demux,
+-	.early_demux_handler =	udp_v4_early_demux,
++static const struct net_protocol udp_protocol = {
+ 	.handler =	udp_rcv,
+ 	.err_handler =	udp_err,
+ 	.no_policy =	1,
+diff --git a/net/ipv4/ip_input.c b/net/ipv4/ip_input.c
+index b1165f717cd1..455ec0931ad8 100644
+--- a/net/ipv4/ip_input.c
++++ b/net/ipv4/ip_input.c
+@@ -312,14 +312,13 @@ static bool ip_can_use_hint(const struct sk_buff *skb, const struct iphdr *iph,
+ 	       ip_hdr(hint)->tos == iph->tos;
+ }
+ 
+-INDIRECT_CALLABLE_DECLARE(int udp_v4_early_demux(struct sk_buff *));
+-INDIRECT_CALLABLE_DECLARE(int tcp_v4_early_demux(struct sk_buff *));
++int tcp_v4_early_demux(struct sk_buff *skb);
++int udp_v4_early_demux(struct sk_buff *skb);
+ static int ip_rcv_finish_core(struct net *net, struct sock *sk,
+ 			      struct sk_buff *skb, struct net_device *dev,
+ 			      const struct sk_buff *hint)
+ {
+ 	const struct iphdr *iph = ip_hdr(skb);
+-	int (*edemux)(struct sk_buff *skb);
+ 	int err, drop_reason;
+ 	struct rtable *rt;
+ 
+@@ -332,21 +331,29 @@ static int ip_rcv_finish_core(struct net *net, struct sock *sk,
+ 			goto drop_error;
+ 	}
+ 
+-	if (net->ipv4.sysctl_ip_early_demux &&
++	if (READ_ONCE(net->ipv4.sysctl_ip_early_demux) &&
+ 	    !skb_dst(skb) &&
+ 	    !skb->sk &&
+ 	    !ip_is_fragment(iph)) {
+-		const struct net_protocol *ipprot;
+-		int protocol = iph->protocol;
+-
+-		ipprot = rcu_dereference(inet_protos[protocol]);
+-		if (ipprot && (edemux = READ_ONCE(ipprot->early_demux))) {
+-			err = INDIRECT_CALL_2(edemux, tcp_v4_early_demux,
+-					      udp_v4_early_demux, skb);
+-			if (unlikely(err))
+-				goto drop_error;
+-			/* must reload iph, skb->head might have changed */
+-			iph = ip_hdr(skb);
++		switch (iph->protocol) {
++		case IPPROTO_TCP:
++			if (READ_ONCE(net->ipv4.sysctl_tcp_early_demux)) {
++				tcp_v4_early_demux(skb);
++
++				/* must reload iph, skb->head might have changed */
++				iph = ip_hdr(skb);
++			}
++			break;
++		case IPPROTO_UDP:
++			if (READ_ONCE(net->ipv4.sysctl_tcp_early_demux)) {
++				err = udp_v4_early_demux(skb);
++				if (unlikely(err))
++					goto drop_error;
++
++				/* must reload iph, skb->head might have changed */
++				iph = ip_hdr(skb);
++			}
++			break;
+ 		}
+ 	}
+ 
+diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
+index cd448cdd3b38..c6f4f8459473 100644
+--- a/net/ipv4/sysctl_net_ipv4.c
++++ b/net/ipv4/sysctl_net_ipv4.c
+@@ -350,61 +350,6 @@ static int proc_tcp_fastopen_key(struct ctl_table *table, int write,
+ 	return ret;
+ }
+ 
+-static void proc_configure_early_demux(int enabled, int protocol)
+-{
+-	struct net_protocol *ipprot;
+-#if IS_ENABLED(CONFIG_IPV6)
+-	struct inet6_protocol *ip6prot;
+-#endif
+-
+-	rcu_read_lock();
+-
+-	ipprot = rcu_dereference(inet_protos[protocol]);
+-	if (ipprot)
+-		ipprot->early_demux = enabled ? ipprot->early_demux_handler :
+-						NULL;
+-
+-#if IS_ENABLED(CONFIG_IPV6)
+-	ip6prot = rcu_dereference(inet6_protos[protocol]);
+-	if (ip6prot)
+-		ip6prot->early_demux = enabled ? ip6prot->early_demux_handler :
+-						 NULL;
+-#endif
+-	rcu_read_unlock();
+-}
+-
+-static int proc_tcp_early_demux(struct ctl_table *table, int write,
+-				void *buffer, size_t *lenp, loff_t *ppos)
+-{
+-	int ret = 0;
+-
+-	ret = proc_dou8vec_minmax(table, write, buffer, lenp, ppos);
+-
+-	if (write && !ret) {
+-		int enabled = init_net.ipv4.sysctl_tcp_early_demux;
+-
+-		proc_configure_early_demux(enabled, IPPROTO_TCP);
+-	}
+-
+-	return ret;
+-}
+-
+-static int proc_udp_early_demux(struct ctl_table *table, int write,
+-				void *buffer, size_t *lenp, loff_t *ppos)
+-{
+-	int ret = 0;
+-
+-	ret = proc_dou8vec_minmax(table, write, buffer, lenp, ppos);
+-
+-	if (write && !ret) {
+-		int enabled = init_net.ipv4.sysctl_udp_early_demux;
+-
+-		proc_configure_early_demux(enabled, IPPROTO_UDP);
+-	}
+-
+-	return ret;
+-}
+-
+ static int proc_tfo_blackhole_detect_timeout(struct ctl_table *table,
+ 					     int write, void *buffer,
+ 					     size_t *lenp, loff_t *ppos)
+@@ -695,14 +640,18 @@ static struct ctl_table ipv4_net_table[] = {
+ 		.data           = &init_net.ipv4.sysctl_udp_early_demux,
+ 		.maxlen         = sizeof(u8),
+ 		.mode           = 0644,
+-		.proc_handler   = proc_udp_early_demux
++		.proc_handler   = proc_dou8vec_minmax,
++		.extra1		= SYSCTL_ZERO,
++		.extra2		= SYSCTL_ONE,
+ 	},
+ 	{
+ 		.procname       = "tcp_early_demux",
+ 		.data           = &init_net.ipv4.sysctl_tcp_early_demux,
+ 		.maxlen         = sizeof(u8),
+ 		.mode           = 0644,
+-		.proc_handler   = proc_tcp_early_demux
++		.proc_handler   = proc_dou8vec_minmax,
++		.extra1		= SYSCTL_ZERO,
++		.extra2		= SYSCTL_ONE,
+ 	},
+ 	{
+ 		.procname       = "nexthop_compat_mode",
+diff --git a/net/ipv6/ip6_input.c b/net/ipv6/ip6_input.c
+index 0322cc86b84e..9b4cbc1d790b 100644
+--- a/net/ipv6/ip6_input.c
++++ b/net/ipv6/ip6_input.c
+@@ -45,20 +45,23 @@
+ #include <net/inet_ecn.h>
+ #include <net/dst_metadata.h>
+ 
+-INDIRECT_CALLABLE_DECLARE(void tcp_v6_early_demux(struct sk_buff *));
+ static void ip6_rcv_finish_core(struct net *net, struct sock *sk,
+ 				struct sk_buff *skb)
+ {
+-	void (*edemux)(struct sk_buff *skb);
+-
+-	if (net->ipv4.sysctl_ip_early_demux && !skb_dst(skb) && skb->sk == NULL) {
+-		const struct inet6_protocol *ipprot;
+-
+-		ipprot = rcu_dereference(inet6_protos[ipv6_hdr(skb)->nexthdr]);
+-		if (ipprot && (edemux = READ_ONCE(ipprot->early_demux)))
+-			INDIRECT_CALL_2(edemux, tcp_v6_early_demux,
+-					udp_v6_early_demux, skb);
++	if (READ_ONCE(net->ipv4.sysctl_ip_early_demux) &&
++	    !skb_dst(skb) && !skb->sk) {
++		switch (ipv6_hdr(skb)->nexthdr) {
++		case IPPROTO_TCP:
++			if (READ_ONCE(net->ipv4.sysctl_tcp_early_demux))
++				tcp_v6_early_demux(skb);
++			break;
++		case IPPROTO_UDP:
++			if (READ_ONCE(net->ipv4.sysctl_tcp_early_demux))
++				udp_v6_early_demux(skb);
++			break;
++		}
+ 	}
++
+ 	if (!skb_valid_dst(skb))
+ 		ip6_route_input(skb);
+ }
+diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
+index f37dd4aa91c6..9d3ede293258 100644
+--- a/net/ipv6/tcp_ipv6.c
++++ b/net/ipv6/tcp_ipv6.c
+@@ -1822,7 +1822,7 @@ INDIRECT_CALLABLE_SCOPE int tcp_v6_rcv(struct sk_buff *skb)
+ 	goto discard_it;
+ }
+ 
+-INDIRECT_CALLABLE_SCOPE void tcp_v6_early_demux(struct sk_buff *skb)
++void tcp_v6_early_demux(struct sk_buff *skb)
+ {
+ 	const struct ipv6hdr *hdr;
+ 	const struct tcphdr *th;
+@@ -2176,12 +2176,7 @@ struct proto tcpv6_prot = {
+ };
+ EXPORT_SYMBOL_GPL(tcpv6_prot);
+ 
+-/* thinking of making this const? Don't.
+- * early_demux can change based on sysctl.
+- */
+-static struct inet6_protocol tcpv6_protocol = {
+-	.early_demux	=	tcp_v6_early_demux,
+-	.early_demux_handler =  tcp_v6_early_demux,
++static const struct inet6_protocol tcpv6_protocol = {
+ 	.handler	=	tcp_v6_rcv,
+ 	.err_handler	=	tcp_v6_err,
+ 	.flags		=	INET6_PROTO_NOPOLICY|INET6_PROTO_FINAL,
+diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
+index 55afd7f39c04..e2f2e087a753 100644
+--- a/net/ipv6/udp.c
++++ b/net/ipv6/udp.c
+@@ -1052,7 +1052,7 @@ static struct sock *__udp6_lib_demux_lookup(struct net *net,
+ 	return NULL;
+ }
+ 
+-INDIRECT_CALLABLE_SCOPE void udp_v6_early_demux(struct sk_buff *skb)
++void udp_v6_early_demux(struct sk_buff *skb)
+ {
+ 	struct net *net = dev_net(skb->dev);
+ 	const struct udphdr *uh;
+@@ -1660,12 +1660,7 @@ int udpv6_getsockopt(struct sock *sk, int level, int optname,
+ 	return ipv6_getsockopt(sk, level, optname, optval, optlen);
+ }
+ 
+-/* thinking of making this const? Don't.
+- * early_demux can change based on sysctl.
+- */
+-static struct inet6_protocol udpv6_protocol = {
+-	.early_demux	=	udp_v6_early_demux,
+-	.early_demux_handler =  udp_v6_early_demux,
++static const struct inet6_protocol udpv6_protocol = {
+ 	.handler	=	udpv6_rcv,
+ 	.err_handler	=	udpv6_err,
+ 	.flags		=	INET6_PROTO_NOPOLICY|INET6_PROTO_FINAL,
+-- 
+2.30.2
 
