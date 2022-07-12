@@ -2,59 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FCDB571026
-	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 04:27:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CCF48571024
+	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 04:26:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230040AbiGLC0p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jul 2022 22:26:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60402 "EHLO
+        id S230107AbiGLC0s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jul 2022 22:26:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229926AbiGLC0l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 22:26:41 -0400
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F03CA32D8C
-        for <netdev@vger.kernel.org>; Mon, 11 Jul 2022 19:26:40 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id j3so6308506pfb.6
-        for <netdev@vger.kernel.org>; Mon, 11 Jul 2022 19:26:40 -0700 (PDT)
+        with ESMTP id S229935AbiGLC0n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 22:26:43 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C4444507A
+        for <netdev@vger.kernel.org>; Mon, 11 Jul 2022 19:26:42 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id y9so6280925pff.12
+        for <netdev@vger.kernel.org>; Mon, 11 Jul 2022 19:26:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=d80lBoqTD646qmPEFeNUy2KDmedKwGNs/biUYzcz2gk=;
-        b=VyN1OVd+NsiyWFaGLy5hh8eUD0gyl/vo7oOPy3bCuv8aH5qUyrG0NR1PGrmHx/2vwU
-         GvKioDJr4PvJp0ctgWghhPg3Qj31qG5QfDLTz0MYmyrr1KZ8jvNh8ACoL8GndS6IOCTx
-         cVldxHWQKEYqGm5jHq6XYklBM5Xj/7vqa9sg4=
+        bh=5rOO7bG1oQf3dAfclpw+kv2pF1erzjKxw50DSNjDzW8=;
+        b=dd75TGl9lff2Wt/BQBb8sNDz+jJpHETsYIEP7pykc/BOZH3DjEQRlmeLJKr17+nzoj
+         Dn2/uyOuob10MTSnu4fdd8Qt7N99Uz+YzPYd/dbSdidL3KXWsL24Opw6XaThMCLSX55H
+         GwpOSmmlkxXIIaHl6Q7JMsJRDkMVbj20gcKqM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=d80lBoqTD646qmPEFeNUy2KDmedKwGNs/biUYzcz2gk=;
-        b=6HLNPsKF9nQONA2vC5jjyZYQruff/Vy9NJJwjb/5bSQipTm22qzhq1zvxntVbcbE2p
-         Um4AKlPcC5wn5k6y1Z7rPL5S7o/a0hjRH8xn02PVUXFyskMjdOH1xjSZCp+UPrC2CtVq
-         ZErj8ZDt8eCAi7h9tub0G1B/YkrqLfmCjZbFv8CD59JvotdtZ7jIJG8HYkq6qMpHhsxv
-         Aa21DcDJFVtWqavcu3koS2i+NAFdaBZFOG0mQcZR8Jxpmi3skFagDevdeuKbBmoH/LFN
-         6qnwjgQaKhnBUncIvzp458NpeK66k+coAHYZiBAQtcxYaWeirzPBqv++8JN5VHIQrgQk
-         oi/Q==
-X-Gm-Message-State: AJIora/KjtjC0c6qcuMKuxJRacY8HkB5mlb3vAJ766v2715BAgK0EmSR
-        VFcrKRCv2r1orRPtUHz41oWexQ==
-X-Google-Smtp-Source: AGRyM1tx/qJWY5P0MLYrgKr2ELfBv4H3VjRvd+nbqPkorK81FpbHVSJb5TAyGvamQGFzaziK57xKbA==
-X-Received: by 2002:a63:6c81:0:b0:3fd:4be3:8ee9 with SMTP id h123-20020a636c81000000b003fd4be38ee9mr17870494pgc.188.1657592800411;
-        Mon, 11 Jul 2022 19:26:40 -0700 (PDT)
+        bh=5rOO7bG1oQf3dAfclpw+kv2pF1erzjKxw50DSNjDzW8=;
+        b=mqy8UBt3mvaBGb/6z1VQC6YzRrK64apFjffYWSKlOtbuQTiaYTymsWcz6EEU5q3qJu
+         ClvrO6/lI9PCbxuxPBMyJzBQYUPzds7TF26dSsYlkt19DjPYYctHc9Y1c9bvLvSSga7b
+         CR2ERM5x3p8AtLhVNXBMOGsbg6AdJpZ/T4MK0Iah87K9rGnRKfQFKZpMWPHNpqq4lPx7
+         tTj1THs/eLcnDwhNnAJJPxfrVEimUHcbAbC0cH3M/CE0Uva7jvVAD+RKj9zE7k/rqlWJ
+         +l4uDleMZFzHPVumAWKdzutdfU2LyFo+NJQYH2H1oX8kDHJZsLRbFpScgEpaFKq84Ym3
+         l8qg==
+X-Gm-Message-State: AJIora95f0bFF+FGYLAsc4shJ4ylV8X57asd99tp2Ria/g6T2xYuE6OH
+        Ev5JIDn5R4pI1sj/m4s5b8OUuA==
+X-Google-Smtp-Source: AGRyM1smLTLA06hTIcTtDZJKuFkbyXd2tNTR9XIjRHbgqRrLd1vZla8p9hDlfQ1PzrkeY84zuB3MxA==
+X-Received: by 2002:a05:6a00:4211:b0:52a:c86e:aba3 with SMTP id cd17-20020a056a00421100b0052ac86eaba3mr10937458pfb.41.1657592801561;
+        Mon, 11 Jul 2022 19:26:41 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id p4-20020a62d004000000b0052878f66f8asm5443049pfg.132.2022.07.11.19.26.39
+        by smtp.gmail.com with ESMTPSA id p4-20020a62d004000000b0052878f66f8asm5443049pfg.132.2022.07.11.19.26.40
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 11 Jul 2022 19:26:39 -0700 (PDT)
+        Mon, 11 Jul 2022 19:26:41 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com,
-        Vikas Gupta <vikas.gupta@broadcom.com>
-Subject: [PATCH net 3/5] bnxt_en: fix livepatch query
-Date:   Mon, 11 Jul 2022 22:26:16 -0400
-Message-Id: <1657592778-12730-4-git-send-email-michael.chan@broadcom.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
+Subject: [PATCH net 4/5] bnxt_en: Fix and simplify XDP transmit path
+Date:   Mon, 11 Jul 2022 22:26:17 -0400
+Message-Id: <1657592778-12730-5-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1657592778-12730-1-git-send-email-michael.chan@broadcom.com>
 References: <1657592778-12730-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="00000000000013629305e3926686"
+        boundary="00000000000026021205e3926684"
 X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
         MIME_HEADER_CTYPE_ONLY,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
@@ -66,46 +65,74 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---00000000000013629305e3926686
+--00000000000026021205e3926684
 
-From: Vikas Gupta <vikas.gupta@broadcom.com>
+Fix the missing length hint in the TX BD for the XDP transmit path.  The
+length hint is required on legacy chips.
 
-In the livepatch query fw_target BNXT_FW_SRT_PATCH is
-applicable for P5 chips only.
+Also, simplify the code by eliminating the first_buf local variable.
+tx_buf contains the same value.  The opaque value only needs to be set
+on the first BD.  Fix this also for correctness.
 
-Fixes: 3c4153394e2c ("bnxt_en: implement firmware live patching")
-Reviewed-by: Saravanan Vajravel <saravanan.vajravel@broadcom.com>
-Reviewed-by: Somnath Kotur <somnath.kotur@broadcom.com>
-Signed-off-by: Vikas Gupta <vikas.gupta@broadcom.com>
+Fixes: a7559bc8c17c ("bnxt: support transmit and free of aggregation buffers")
+Reviewed-by: Andy Gospodarek <andrew.gospodarek@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-index 3528ce9849e6..6b3d4f4c2a75 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-@@ -979,9 +979,11 @@ static int bnxt_dl_info_get(struct devlink *dl, struct devlink_info_req *req,
- 	if (rc)
- 		return rc;
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
+index f02fe906dedb..f53387ed0167 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
+@@ -28,7 +28,7 @@ struct bnxt_sw_tx_bd *bnxt_xmit_bd(struct bnxt *bp,
+ 				   struct xdp_buff *xdp)
+ {
+ 	struct skb_shared_info *sinfo;
+-	struct bnxt_sw_tx_bd *tx_buf, *first_buf;
++	struct bnxt_sw_tx_bd *tx_buf;
+ 	struct tx_bd *txbd;
+ 	int num_frags = 0;
+ 	u32 flags;
+@@ -43,13 +43,14 @@ struct bnxt_sw_tx_bd *bnxt_xmit_bd(struct bnxt *bp,
+ 	/* fill up the first buffer */
+ 	prod = txr->tx_prod;
+ 	tx_buf = &txr->tx_buf_ring[prod];
+-	first_buf = tx_buf;
+ 	tx_buf->nr_frags = num_frags;
+ 	if (xdp)
+ 		tx_buf->page = virt_to_head_page(xdp->data);
  
--	rc = bnxt_dl_livepatch_info_put(bp, req, BNXT_FW_SRT_PATCH);
--	if (rc)
--		return rc;
-+	if (BNXT_CHIP_P5(bp)) {
-+		rc = bnxt_dl_livepatch_info_put(bp, req, BNXT_FW_SRT_PATCH);
-+		if (rc)
-+			return rc;
-+	}
- 	return bnxt_dl_livepatch_info_put(bp, req, BNXT_FW_CRT_PATCH);
+ 	txbd = &txr->tx_desc_ring[TX_RING(prod)][TX_IDX(prod)];
+-	flags = ((len) << TX_BD_LEN_SHIFT) | ((num_frags + 1) << TX_BD_FLAGS_BD_CNT_SHIFT);
++	flags = (len << TX_BD_LEN_SHIFT) |
++		((num_frags + 1) << TX_BD_FLAGS_BD_CNT_SHIFT) |
++		bnxt_lhint_arr[len >> 9];
+ 	txbd->tx_bd_len_flags_type = cpu_to_le32(flags);
+ 	txbd->tx_bd_opaque = prod;
+ 	txbd->tx_bd_haddr = cpu_to_le64(mapping);
+@@ -82,7 +83,6 @@ struct bnxt_sw_tx_bd *bnxt_xmit_bd(struct bnxt *bp,
  
+ 		flags = frag_len << TX_BD_LEN_SHIFT;
+ 		txbd->tx_bd_len_flags_type = cpu_to_le32(flags);
+-		txbd->tx_bd_opaque = prod;
+ 		txbd->tx_bd_haddr = cpu_to_le64(frag_mapping);
+ 
+ 		len = frag_len;
+@@ -96,7 +96,7 @@ struct bnxt_sw_tx_bd *bnxt_xmit_bd(struct bnxt *bp,
+ 	prod = NEXT_TX(prod);
+ 	txr->tx_prod = prod;
+ 
+-	return first_buf;
++	return tx_buf;
  }
+ 
+ static void __bnxt_xmit_xdp(struct bnxt *bp, struct bnxt_tx_ring_info *txr,
 -- 
 2.18.1
 
 
---00000000000013629305e3926686
+--00000000000026021205e3926684
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -176,13 +203,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIADs1ABY57+DUrL0J2AgWuTLoWshYHDj
-k4/0crKhU5qMMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDcx
-MjAyMjY0MFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIJ62dnyz4b6OfT9MLIEuHbIAaDlyaA67
+dJGv6Pcxt5BYMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDcx
+MjAyMjY0MlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQARN2gx2pTokZwxn3XQEaJse2tqC/dVGYPW8NKN0kzmKMwK0C1V
-1k2wwsRYaRerT7qW5f02SP1NlYrAoomdRk57lKGxSLVO/lK2Yl62DnSsAUskOcSgL/+Rn1FsBx/Y
-enH2vXjsWWSmTW3g6sEQl78V7k7NdpgMZL4zlgtZLtJ9sZZZs9ciy3wYpongLPg1otkUcfL3z7RR
-j/M5AumueVYZ3fKKNuBBkD+IqKT6DviPkoA1xv1pcUtlX7r5CVJEDP8geFEY9T1gp6Y87GoCO0yK
-GPax8FTUjY/BLIBe1SP6KBtcTAffb4MkZ1dmhShjf87qoxEEVcx06xJ0FpfeNKhK
---00000000000013629305e3926686--
+ATANBgkqhkiG9w0BAQEFAASCAQA/fpYIlmTd64stvh3aJlwYHriQjuA/yW3a9rvwIooWWDMZmYO6
+1HBrzuq+9rFZX4UQvA4Rk3XqzX3XOhAY5dP8tlV66ccQv4V+SQ+wVCXZjq2tgGflYkJPNhsX4q4n
+r8wVImy5QXGHVFCkRGTvOEZAynlejEeL6vyt3GkIHC8zOUGE9xVkW6aHWjwJu2BqGu1Z8bEXRDOv
+iRFachKQqISg3aIg2eFSy4Qh1GBpmTS0czuBZCwdqk4j949gEH7bDQDpJwIJP+orZ4wRdYw7oqVd
+y0K651QUeiS+6kYrrVeXmxLMWy02o3Z/B7MyxWSoAc8ha8uk+O4RSLAHqHrtI+K1
+--00000000000026021205e3926684--
