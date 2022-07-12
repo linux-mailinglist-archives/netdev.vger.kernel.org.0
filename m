@@ -2,121 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C3555571B05
-	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 15:20:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 536CD571B19
+	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 15:24:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232332AbiGLNUv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jul 2022 09:20:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35248 "EHLO
+        id S231600AbiGLNYr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jul 2022 09:24:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229657AbiGLNUu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 09:20:50 -0400
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3DDD41D1F
-        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 06:20:49 -0700 (PDT)
-Received: by mail-yb1-xb2e.google.com with SMTP id g4so13868899ybg.9
-        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 06:20:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=WgplIbYGZStxvy6kBPwzY7tvzlqnbWL1ukxWQkjqjxQ=;
-        b=NK+19/L2duAPWC9U9IH0+V9hMN58tqGeRNlvI9XGf0ct7PySCH1WsIR3iWdlsbHY7C
-         9zeLrrnEB22JarA9goFT6i9IgEmILtaA8/JWbowZisAHmztjCghFC6YyofEJbxSypP7P
-         7jtn9aB7oOdnVoDTeBdvoZHHRgLqC0Aki3AS6VOlVQFjEKIL16TorY1ctcjQ5jJTBUGA
-         uvXatfQRfIToebGfRmQmW6WcaCq4vZfOPBDBNSE/QLUeTl9Ow/JfktdYfPwYwoI1wGKU
-         d49vp9k/FOrGZL2wqPqQ+tSNEachb5PdYQRfa2zXDbuyU/O5QmbT805n59W88rppxnMd
-         wBbw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=WgplIbYGZStxvy6kBPwzY7tvzlqnbWL1ukxWQkjqjxQ=;
-        b=xPr4jnN4lZ65Yc1FmviejThPEkNEfkxkXjMR7WvQT6ls7uvLKFWaqYMp6/t0FCJkBc
-         b/lDY8S+oVsgRgvydzt1NBStcunvPLwnj8Ck54JIFQSmbVy256af3KaBv3rQYejiNCUO
-         yMw5izf5onEI1WweofaMLe+/wJnSx775Uct9etjlHt12RwK4XdOU9HAITjY6gdI5fnT/
-         NHBN1h9U0LJMOhdQeeZlfdQGD8QTQ2KjxX+nCmbkiMqZhKncB3eEG6YeTWSqLOjg9Ev7
-         09gNhL94lMaFAV3nQrQMrdUYk9dJ8Oc28uH5i0acAdTznoPxNodw3ATmWtsLRa2lLtuu
-         u4BQ==
-X-Gm-Message-State: AJIora98VpuGRKdP7A0Jo/hXcd8Qi5IJvyTVw/Bf0bzWESBT3xX7/X1m
-        84uTbWw1SzGketmc9g+6qwYN7rzUYzCmH7PCLl5+Ww==
-X-Google-Smtp-Source: AGRyM1vDcxq0itawvT8h/jiNruNgCov2wzidRFCPIYqfIrZeghKpIysv2bL6bLJOwbcRq1cM4C9LTyRyliKOYNTcn6o=
-X-Received: by 2002:a05:6902:a:b0:65c:b38e:6d9f with SMTP id
- l10-20020a056902000a00b0065cb38e6d9fmr22934795ybh.36.1657632048898; Tue, 12
- Jul 2022 06:20:48 -0700 (PDT)
+        with ESMTP id S229814AbiGLNYq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 09:24:46 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2124161B07;
+        Tue, 12 Jul 2022 06:24:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=k7j5/4LH1uxSAoyJKqSGeIzJp+14qU8heufrbtbEFus=; b=CY6DHndYMpX154FZn7uRO3BKzL
+        f1o6IfzDXQpIrYvrfDh3EocKoGzzJGLcGuK/VGP+OWvGxl5JylzLcnMS9JyXLIDk2G3MFkmLxC1x3
+        jYiTnJ5bDjuozjBzTCAjUiQ6tOblbq5YQpi/h34EeYrVOdKC7j7W/u5whh0PddnYzNyE=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oBFsR-00A3Jn-BL; Tue, 12 Jul 2022 15:24:35 +0200
+Date:   Tue, 12 Jul 2022 15:24:35 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Michael Walle <michael@walle.cc>
+Cc:     Xu Liang <lxu@maxlinear.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 2/4] net: phy: mxl-gpy: cache PHY firmware
+ version
+Message-ID: <Ys12E0mVdc3rd7it@lunn.ch>
+References: <20220712131554.2737792-1-michael@walle.cc>
+ <20220712131554.2737792-3-michael@walle.cc>
 MIME-Version: 1.0
-References: <20220709222029.297471-1-xiyou.wangcong@gmail.com>
-In-Reply-To: <20220709222029.297471-1-xiyou.wangcong@gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 12 Jul 2022 15:20:37 +0200
-Message-ID: <CANn89iJSQh-5DAhEL4Fh5ZDrtY47y0Mo9YJbG-rnj17pdXqoXA@mail.gmail.com>
-Subject: Re: [Patch bpf-next] tcp: fix sock skb accounting in tcp_read_skb()
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Cong Wang <cong.wang@bytedance.com>,
-        syzbot <syzbot+a0e6f8738b58f7654417@syzkaller.appspotmail.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220712131554.2737792-3-michael@walle.cc>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jul 10, 2022 at 12:20 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
->
-> From: Cong Wang <cong.wang@bytedance.com>
->
-> Before commit 965b57b469a5 ("net: Introduce a new proto_ops
-> ->read_skb()"), skb was not dequeued from receive queue hence
-> when we close TCP socket skb can be just flushed synchronously.
->
-> After this commit, we have to uncharge skb immediately after being
-> dequeued, otherwise it is still charged in the original sock. And we
-> still need to retain skb->sk, as eBPF programs may extract sock
-> information from skb->sk. Therefore, we have to call
-> skb_set_owner_sk_safe() here.
->
-> Fixes: 965b57b469a5 ("net: Introduce a new proto_ops ->read_skb()")
-> Reported-and-tested-by: syzbot+a0e6f8738b58f7654417@syzkaller.appspotmail.com
-> Tested-by: Stanislav Fomichev <sdf@google.com>
-> Cc: Eric Dumazet <edumazet@google.com>
-> Cc: John Fastabend <john.fastabend@gmail.com>
-> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-> ---
->  net/ipv4/tcp.c | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-> index 9d2fd3ced21b..c6b1effb2afd 100644
-> --- a/net/ipv4/tcp.c
-> +++ b/net/ipv4/tcp.c
-> @@ -1749,6 +1749,7 @@ int tcp_read_skb(struct sock *sk, skb_read_actor_t recv_actor)
->                 int used;
->
->                 __skb_unlink(skb, &sk->sk_receive_queue);
-> +               WARN_ON(!skb_set_owner_sk_safe(skb, sk));
->                 used = recv_actor(sk, skb);
->                 if (used <= 0) {
->                         if (!copied)
-> --
-> 2.34.1
->
+> +	priv->fw_type = FIELD_GET(PHY_FWV_TYPE_MASK, fw_version);
+> +	priv->fw_minor = FIELD_GET(PHY_FWV_MINOR_MASK, fw_version);
+>  
+>  	ret = gpy_hwmon_register(phydev);
+>  	if (ret)
+>  		return ret;
+>  
+> +	/* Show GPY PHY FW version in dmesg */
+>  	phydev_info(phydev, "Firmware Version: 0x%04X (%s)\n", fw_version,
+>  		    (fw_version & PHY_FWV_REL_MASK) ? "release" : "test");
 
-I am reading tcp_read_skb(),it seems to have other bugs.
-I wonder why syzbot has not caught up yet.
+Maybe use fw_type and fw_minor. It makes the patch a bit bigger, but
+makes the code more consistent.
 
-It ignores the offset value from tcp_recv_skb(), this looks wrong to me.
-The reason tcp_read_sock() passes a @len parameter is that is it not
-skb->len, but (skb->len - offset)
-
-Also if recv_actor(sk, skb) returns 0, we probably still need to
-advance tp->copied_seq,
-for instance if skb had a pure FIN (and thus skb->len == 0), since you
-removed the skb from sk_receive_queue ?
+      Andrew
