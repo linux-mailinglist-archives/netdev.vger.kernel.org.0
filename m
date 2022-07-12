@@ -2,331 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 56185571872
-	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 13:22:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7367457188B
+	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 13:30:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229776AbiGLLWy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jul 2022 07:22:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38232 "EHLO
+        id S231991AbiGLLar (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jul 2022 07:30:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229617AbiGLLWx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 07:22:53 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3F112AC7E
-        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 04:22:51 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id v16so10681372wrd.13
-        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 04:22:51 -0700 (PDT)
+        with ESMTP id S230115AbiGLLao (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 07:30:44 -0400
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C9D420F61;
+        Tue, 12 Jul 2022 04:30:42 -0700 (PDT)
+Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26CA2nfd027964;
+        Tue, 12 Jul 2022 11:30:12 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : references : date : in-reply-to : message-id : content-type :
+ mime-version; s=corp-2021-07-09;
+ bh=VFoJb4L56Js3MJo2FaoD9xgMIgtEdp22V7xokcIKrdw=;
+ b=Kct4dBEUw2KuVTGawoAq3WNOsN83bIxnXLNPSNMKa240MwX34dR7l2D6C40R4LmuX3Jf
+ 0QF3SgqrVjLJbl6w9R25J3unRf6LATM606OZa78WHl9u1fI1oNDUxgD3tBSla/hd5gGe
+ DiEyqROfF7BfgHUY7ALznSykqyAJUBh7JmmO/TkVz8YA4fEf7+OB87/I6o/w2NC3EP6i
+ WfleQHWAGCuBz/nwDMDhK88aY467ai2S4rCFWNEt8YEOo1UBxnLmCOPsOhB71OaSeTze
+ 7druwn5wQUn9Ha9mXixVqnr8TfjFWnUg886fQTyCyJFZ23qpSTlzSnfItK8mI7H1CuKH NQ== 
+Received: from phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta03.appoci.oracle.com [138.1.37.129])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3h71rfxe1y-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 12 Jul 2022 11:30:12 +0000
+Received: from pps.filterd (phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+        by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 26CBAA6x025747;
+        Tue, 12 Jul 2022 11:30:11 GMT
+Received: from nam02-bn1-obe.outbound.protection.outlook.com (mail-bn1nam07lp2046.outbound.protection.outlook.com [104.47.51.46])
+        by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3h7043h5ve-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 12 Jul 2022 11:30:11 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jSvIjMbvizdiUDqOKvBeo9FCp7scKk4e8hStNv8gzgj5L9n3KpuzuL3g7FeWTaDEWMRu79COfY8SngP1cEOZtU1LHxyPGIZnEbb+3S/8KZsa5p7SVD4X5TM5JYdOzeZnPUsyh7eLlAdyQbJ0Ag4xhyCdBgWcYjpgtaf50leKwkUKcEVTiFiTz7gVmF+mkBA93fOZx2UOEDbSsBh5FvQJIuZVabKY0UF29w3+hyIO1Ya48qO+4FjCJrSqsQqooDc2OqpCgMaMTeORTekmr+oyBkTuJwGV5XmzLSVYT4UZzCF/FY71CxG+F5J5rquGAoXFayWKQH7u765pMci3IibPxA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=VFoJb4L56Js3MJo2FaoD9xgMIgtEdp22V7xokcIKrdw=;
+ b=bypMalIieX6KvCR67UHHsQH5opL1ijYghv+cw4m3GsThvGTD34Vkmj5LTXL+0wKDLXgjIdWdG5uXUN7vj+FIDqaOaLFdQZMkI5v+ioUxHrVYvaIiqRtqYW34fhRjHqWZ7H2bQlSJQQC8JPe170o8g4J53iioqxh00DClctmly9bO5iSL0Nelj0rMQkLAP5slGCrEMTWbCoXjiUJQ7Ry0D3MZNnTh3ujxNJVB/4ndJXzm2DArMFjy/n2+0ZmFKMmsUAdWIilgTYUW8RbotIHXI6orYSgkWMZ9hcyHknohD2lYKf0yf3NtBw9GsnzQRksZnqyjFobOvsmbMBD1DqhcOg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=solid-run-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bm7PIiMSm/fxmX6A16eRCP7sHUqI/l4JWYX/q9b3wYk=;
-        b=T3e6Rh7ZQyr+nUH+fT2If2iP/umJekRI76AWs6Xg0vN0/B5D1yAT7taxwBeNTVE3Xv
-         MqkT6867YyzJuZqwlg6YlLP8HYdHXJfW7nhejMZ3l6t37hP9x6K8olFSA8pZOLw2TWjf
-         VuU5jblGygTde8fVp447tUFM75jVf7tlKKzj8JAWlaYOgbLge2nExPx8PRbfv36Y3m3q
-         MXwYP3ZBJfBKhlSIqsv3G21TONG0UYNTxuIyvQY2nA9cK08eIv/LzFu04HAGFMV5LOAR
-         kHEQ1kGIyIkwqWUETGYNdmLRrP+9Jaugs0xdOSUKMHeY73fzCfWlhckW1z2n48adYmCr
-         GavQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bm7PIiMSm/fxmX6A16eRCP7sHUqI/l4JWYX/q9b3wYk=;
-        b=aDiniEjET4kMZdXRh32/AdljVEHe0tTRldzM0M6iFvwydmke/6/rIn09fTG+iDILwc
-         XpzHGS2xlU+uw3KC38j0WewtEFhVGL8RlRNgU8BbxOMqqmEnREbqwSqxxsLObXsUuFzq
-         XKgssIfn4IDcCg67d+KDD+J0gMawd+n4lBVD4c/ajPsRdEioJAqulzgLryqY48jcYKua
-         Knw7zSnfmE0O0kBU15WOolW7KKNYvl2Oz2/qzXGkpKNxykPZT9UzU4OdE37sxdqu4LlB
-         p84u10dTMNbJf+pjX4Ki1x/vIPjby2++AlmIlGvC7MywUQJXJhRaRlG6/1XDpwAjCNKb
-         h/vA==
-X-Gm-Message-State: AJIora844z3bfsu2exOOefPKhAG0jtVka7C3x56j3wqJ1XmT/vlj0kT7
-        nXCjTWWlXQ6Xtr52gxGX1JEv0dfnyVodPBmt
-X-Google-Smtp-Source: AGRyM1v17pQ64/u87Fc29+cO6B8jda3KeAJa2lJ/aYhpkAeFA+xX0DAn4dBb/1w054ET4KDv1gV7ww==
-X-Received: by 2002:a05:6000:15ca:b0:21d:a72d:beb8 with SMTP id y10-20020a05600015ca00b0021da72dbeb8mr8503835wry.624.1657624970051;
-        Tue, 12 Jul 2022 04:22:50 -0700 (PDT)
-Received: from alvaro-dell.. (bzq-82-81-222-124.cablep.bezeqint.net. [82.81.222.124])
-        by smtp.gmail.com with ESMTPSA id o8-20020a05600c510800b003a2e2e965absm8171623wms.20.2022.07.12.04.22.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 04:22:49 -0700 (PDT)
-From:   Alvaro Karsz <alvaro.karsz@solid-run.com>
-To:     netdev@vger.kernel.org
-Cc:     Alvaro Karsz <alvaro.karsz@solid-run.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH v2] net: virtio_net: notifications coalescing support
-Date:   Tue, 12 Jul 2022 14:22:09 +0300
-Message-Id: <20220712112210.2852777-1-alvaro.karsz@solid-run.com>
-X-Mailer: git-send-email 2.32.0
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=VFoJb4L56Js3MJo2FaoD9xgMIgtEdp22V7xokcIKrdw=;
+ b=0FfZerOygaU3+C7azKw1vOa7AYtm18fBUDMvkpMeBkVoXV71tQ6hKN9BSIEewYrrZ+ZzFZHGiLt2siZYy50sN3v+bKR5/QRAeM6QWrF/lMEelLBeqA12ETTNRORpn7EtN9W09swS2oDA2hQjuHsdxLbrkS9qYA5Fge/EV4j8xRw=
+Received: from BYAPR10MB2888.namprd10.prod.outlook.com (2603:10b6:a03:88::32)
+ by SJ0PR10MB5408.namprd10.prod.outlook.com (2603:10b6:a03:3ba::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.20; Tue, 12 Jul
+ 2022 11:30:08 +0000
+Received: from BYAPR10MB2888.namprd10.prod.outlook.com
+ ([fe80::b5ee:262a:b151:2fdd]) by BYAPR10MB2888.namprd10.prod.outlook.com
+ ([fe80::b5ee:262a:b151:2fdd%4]) with mapi id 15.20.5417.026; Tue, 12 Jul 2022
+ 11:30:08 +0000
+From:   "Jose E. Marchesi" <jose.marchesi@oracle.com>
+To:     Quentin Monnet <quentin@isovalent.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        James Hilliard <james.hilliard1@gmail.com>,
+        Yonghong Song <yhs@fb.com>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>, Networking <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        llvm@lists.linux.dev
+Subject: Re: [PATCH v2] bpf/scripts: Generate GCC compatible helpers
+References: <20220706172814.169274-1-james.hilliard1@gmail.com>
+        <a0bddf0b-e8c4-46ce-b7c6-a22809af1677@fb.com>
+        <CADvTj4ovwExtM-bWUpJELy-OqsT=J9stmqbAXto8ds2n+G8mfw@mail.gmail.com>
+        <CAEf4BzYwRyXG1zE5BK1ZXmxLh+ZPU0=yQhNhpqr0JmfNA30tdQ@mail.gmail.com>
+        <a443a6f9-fd6f-d283-ce00-68d72b40539d@isovalent.com>
+Date:   Tue, 12 Jul 2022 13:29:58 +0200
+In-Reply-To: <a443a6f9-fd6f-d283-ce00-68d72b40539d@isovalent.com> (Quentin
+        Monnet's message of "Tue, 12 Jul 2022 10:48:20 +0100")
+Message-ID: <87r12q6021.fsf@oracle.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.0.50 (gnu/linux)
+Content-Type: text/plain
+X-ClientProxiedBy: AM6PR0502CA0039.eurprd05.prod.outlook.com
+ (2603:10a6:20b:56::16) To BYAPR10MB2888.namprd10.prod.outlook.com
+ (2603:10b6:a03:88::32)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 7c20a30e-6090-4055-f415-08da63f9e036
+X-MS-TrafficTypeDiagnostic: SJ0PR10MB5408:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: sBCWpVbW8J/r9VoL7HUTTK4vGdcdsac9dIh43mW0X7hNxm8T09pB7lAUjX/2upsBS2ZyJTL7J9ceFvbIRMWu2OHD1FtdnMIDhpvIIXLABXTqEIoa7U7BwJviw2oH4qapbDuA5FfGrW4NF2MG4yqB30qaRR7hn5KKZNdJMOHg8SeRzcvvT3EZ/noAkg4mSgtS4QvndTPQ6QTbHPbcWWLu89u2Wf+OxhUq+wlI4q0DuAgSFD/C8Hv+Kgnd2uC9ZQfZx0t5OOFraalGeLVL1wvGU1FnFGqyDYs6u0tyFYwzUmnFgk+cWggSNH2yt6XjDWAWfbZ6IvD/cDdTTGa5lK4/KvzztjyjWm0+qA9x+eXY2w4Fsq0/tb8C9COMLOR4b6RwgWm9EVZgxNXGKv+gdWH3QHagUTwC2TbA+f3bS1ff7nGh20vD5OXy6mFhuqKg5/6jAwAAUaByuk2NCSlue6n5+nJ7iNQoxVUezxdxRCIUtNCxLnnLfrhGoG/aj3pC9vPHbdGEGZj6xV5ngycMcRfyrhpUvK4TgeoTALdBO11NlHZafj+1dCPJk8teL+H16ERLKlfiFRaaeJc7apLuX7LMHx+tEIDyff8JZE/6C63K/rE8squcR7TBk5WZyRLpDdd7031pch58BGZgC9nCOmAYrTIE6gN6lEThkD3eVxcMlnMp+Wi0rMfh0ay5dUKn1f5CoUiBWh5deN6Z/tJvHY2BUr6la4ilc5u4Q4uyEb93shrrRvyyUEaQl8sG7UXBzivdq6tZCwQ5FW3geRsyuP2m3Y7sVMHiVnN+H2wpFTiu9W0GRrS1NqDOcNilv5w6ebnJ
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR10MB2888.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(396003)(136003)(39860400002)(346002)(366004)(376002)(4326008)(8676002)(26005)(66556008)(66476007)(38350700002)(66946007)(5660300002)(53546011)(478600001)(6512007)(38100700002)(52116002)(86362001)(8936002)(2616005)(316002)(41300700001)(6666004)(7416002)(54906003)(6916009)(2906002)(36756003)(83380400001)(186003)(6486002)(6506007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?k+NvVQxq7eIdQWp6K6QsNeABXCoprLByxlYtz8QYGuefwGY7EIP4cHQckjN5?=
+ =?us-ascii?Q?VYsQ/p254l1q0gD0eZS5eo1Jb+I5cFhKSx9adbsEx6TWQ2SYqTm4/9AYi6lD?=
+ =?us-ascii?Q?Qu0o76cawXv9TXDggu3ZUYRpF+L5yz+p7ExJh1L/WI0H0PbTjIEMM6vxndwy?=
+ =?us-ascii?Q?E5I9r+0EZB/3v2rkF+o2O7bLmk5EwCQEZ5GLKadihiQ+Yl6jDJSoCMiAYo4J?=
+ =?us-ascii?Q?kUF5v2xbIcn1/sAImOx5GY25yYfj/hb/xDdcLYqs1sxUBCdhXiIghtDGte0r?=
+ =?us-ascii?Q?RPWFWVD9vot8LF0u6pZCKVlHI7px5JEbNROJ4sp9ZkYL5mIXwKCnWqQunV2K?=
+ =?us-ascii?Q?gOBNz9m9+FIoIuTF20uj8h9+Tchdigwankgk+fuPcKhDq0P7n6sZ56ItzIjt?=
+ =?us-ascii?Q?Fqy0bEqiqnxppmY/DDZEUZltd2lsii0Q8ZDtYKuHAlvojbaSMbxbRYI6jlYx?=
+ =?us-ascii?Q?CjUx3vLYVq9nNdEZLqA5rCCLE8N1aVHXJhZdTVpjvgOfjh0CYt5ZssHx/gW9?=
+ =?us-ascii?Q?m9JVLGXTYIr5yyccN5OBvfqBeJqI1A/GB8U/BMv4S1kd335YXDOcu9EyrIxV?=
+ =?us-ascii?Q?wym/FkF/2qbWJrARF9aIA/m26eH8ebX4FbWysTaMTIPZL8r0T9qZL80UQhtV?=
+ =?us-ascii?Q?uWaEBPfvV2p44vmAniCiAyC/TV2d1p7XcTASHvhKuuWXynvfok0dTA5oWulN?=
+ =?us-ascii?Q?xRBz5s5OyXDxbzst6YZa4aHSgXd2xP9/Np6ai5/70rz8Z/TT292BRx9v0uC1?=
+ =?us-ascii?Q?ABCGWBN6eIeRImuxd0+KtrsjAld2PKMaVtpXkisg3u79ImFQh5kvi/VklOPa?=
+ =?us-ascii?Q?jkkL1Hj9k6+ZfdRFxuRQEqmTkIcr/ATKM9edOg5gf6Po9+cuJgS5PTgSAUWd?=
+ =?us-ascii?Q?l/T2ONjDgRGKCdMYd0Hb9ZbA2bLOcaqaIccz50oMAi63KF47hxIgMnI4XOhv?=
+ =?us-ascii?Q?hf+jiR+kBNAzgbzBsA4t8DXmZ0ckS0i1qZ6LjlEcTKwX9uD3UTO49opyjXsG?=
+ =?us-ascii?Q?hcHC5r14RaCO4ARtF7saWCmpvZ985tRMNZttXmSdcgWMh/c4c5E5gAbGaVxE?=
+ =?us-ascii?Q?Qea3SXAm83MrOy2z4T2HRHxomPbrfwmBwNaN2fEe8/6gy5sG2rSn2qoJ0Nm8?=
+ =?us-ascii?Q?HiXoILLsEM+U7DUomBxtVpbDMS9x9660eW3AClOiWgjrwgaZUkhHFJ1Dtk2q?=
+ =?us-ascii?Q?nrZlY2BPQon6qco+8FM28FuNPmL0yGOI7Ks7KrLbqqoACfy4ARUrX+LuwwoR?=
+ =?us-ascii?Q?C/5paTpPctYEbRuBxtkZoKwk5ALblHB8RSjrU+Rcs+sGfMzZVSFmeQzammqp?=
+ =?us-ascii?Q?QBFWgQ6LGdqAC9rEFBMIsL/HZ6D7dXf8bYzJZPTvKh2LIA/Lv1kEdWY1z5Mv?=
+ =?us-ascii?Q?Ja2fOVaxifofKI54BN0+DnxpIytL1zpqJaRESBz69/PVqleUkP6mI+heVUxY?=
+ =?us-ascii?Q?yuIWbm0sBnO1kZIxiMAFH10ip+Q+eSehnyGBgYMZljXJHCESCnvtEL8oZX+C?=
+ =?us-ascii?Q?TT0DKpwCHKbOb7ebF7niE3xSpGwQ3U3OJY+F0wu6m4RRmlnBZio0wCwsmU58?=
+ =?us-ascii?Q?JqGeywbjzkNGHQdCi46AtLCrHY8FKqUF1X+su9MLoJAN23SdWBs2IFHJ8caG?=
+ =?us-ascii?Q?Vg=3D=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7c20a30e-6090-4055-f415-08da63f9e036
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR10MB2888.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jul 2022 11:30:08.7144
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: DdrpLFmQYWhRFmJBpry8a1rWTabRHQFT0No7ZjkbgdNdQuLEoyWhSQRcnUbaECm5ICs2J3tOmuopZrSJrdZpV4zW7SrHzlxoCimPlSthocE=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR10MB5408
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.517,18.0.883
+ definitions=2022-07-12_08:2022-07-12,2022-07-12 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 mlxlogscore=819
+ malwarescore=0 suspectscore=0 mlxscore=0 spamscore=0 adultscore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2206140000 definitions=main-2207120043
+X-Proofpoint-GUID: 3M2MMJiVcky8xhOIZb3Z7500hYO3v00Z
+X-Proofpoint-ORIG-GUID: 3M2MMJiVcky8xhOIZb3Z7500hYO3v00Z
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-New VirtIO network feature: VIRTIO_NET_F_NOTF_COAL.
 
-Control a Virtio network device notifications coalescing parameters
-using the control virtqueue.
+> On 12/07/2022 05:40, Andrii Nakryiko wrote:
+>> CC Quentin as well
+>> 
+>> On Mon, Jul 11, 2022 at 5:11 PM James Hilliard
+>> <james.hilliard1@gmail.com> wrote:
+>>>
+>>> On Mon, Jul 11, 2022 at 5:36 PM Yonghong Song <yhs@fb.com> wrote:
+>>>>
+>>>>
+>>>>
+>>>> On 7/6/22 10:28 AM, James Hilliard wrote:
+>>>>> The current bpf_helper_defs.h helpers are llvm specific and don't work
+>>>>> correctly with gcc.
+>>>>>
+>>>>> GCC appears to required kernel helper funcs to have the following
+>>>>> attribute set: __attribute__((kernel_helper(NUM)))
+>>>>>
+>>>>> Generate gcc compatible headers based on the format in bpf-helpers.h.
+>>>>>
+>>>>> This adds conditional blocks for GCC while leaving clang codepaths
+>>>>> unchanged, for example:
+>>>>>       #if __GNUC__ && !__clang__
+>>>>>       void *bpf_map_lookup_elem(void *map, const void *key)
+>>>>> __attribute__((kernel_helper(1)));
+>>>>>       #else
+>>>>>       static void *(*bpf_map_lookup_elem)(void *map, const void *key) = (void *) 1;
+>>>>>       #endif
+>>>>
+>>>> It does look like that gcc kernel_helper attribute is better than
+>>>> '(void *) 1' style. The original clang uses '(void *) 1' style is
+>>>> just for simplicity.
+>>>
+>>> Isn't the original style going to be needed for backwards compatibility with
+>>> older clang versions for a while?
+>> 
+>> I'm curious, is there any added benefit to having this special
+>> kernel_helper attribute vs what we did in Clang for a long time? Did
+>> GCC do it just to be different and require workarounds like this or
+>> there was some technical benefit to this?
+>> 
+>> This duplication of definitions with #if for each one looks really
+>> awful, IMO. I'd rather have a macro invocation like below (or
+>> something along those lines) for each helper:
+>> 
+>> BPF_HELPER_DEF(2, void *, bpf_map_update_elem, void *map, const void
+>> *key, const void *value, __u64 flags);
+>> 
+>> And then define BPF_HELPER_DEF() once based on whether it's Clang or GCC.
+>
+> Hi, for what it's worth I agree with Andrii, I would rather avoid the
+> #if/else/endif and dual definition for each helper in the header, using
+> a macro should keep it more readable indeed. The existing one
+> (BPF_HELPER(return_type, name, args, id)) can likely be adapted.
+>
+> Also I note that contrarily to clang's helpers, you don't declare GCC's
+> as "static" (although I'm not sure of the effect of declaring them
+> static in this case).
 
-A device that supports this fetature can receive
-VIRTIO_NET_CTRL_NOTF_COAL control commands.
+That's because in the clang line bpf_map_lookup_elem is a static
+variable, a pointer to a function type, initialized to 1.
 
-- VIRTIO_NET_CTRL_NOTF_COAL_TX_SET:
-  Ask the network device to change the following parameters:
-  - tx_usecs: Maximum number of usecs to delay a TX notification.
-  - tx_max_packets: Maximum number of packets to send before a
-    TX notification.
+On the other hand, in the GCC line bpf_map_lookup_elem is just a normal
+function declaration.  No variable, and thus no need for `static'.
 
-- VIRTIO_NET_CTRL_NOTF_COAL_RX_SET:
-  Ask the network device to change the following parameters:
-  - rx_usecs: Maximum number of usecs to delay a RX notification.
-  - rx_max_packets: Maximum number of packets to receive before a
-    RX notification.
-
-VirtIO spec. patch:
-https://lists.oasis-open.org/archives/virtio-comment/202206/msg00100.html
-
-Signed-off-by: Alvaro Karsz <alvaro.karsz@solid-run.com>
----
-v2:
-	- Fix type assignments warnings found with sparse.
-	- Fix a few typos.
----
- drivers/net/virtio_net.c        | 110 ++++++++++++++++++++++++++++----
- include/uapi/linux/virtio_net.h |  34 +++++++++-
- 2 files changed, 130 insertions(+), 14 deletions(-)
-
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index 356cf8dd416..7837db0306f 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -261,6 +261,12 @@ struct virtnet_info {
- 	u8 duplex;
- 	u32 speed;
- 
-+	/* Interrupt coalescing settings */
-+	u32 tx_usecs;
-+	u32 rx_usecs;
-+	u32 tx_max_packets;
-+	u32 rx_max_packets;
-+
- 	unsigned long guest_offloads;
- 	unsigned long guest_offloads_capable;
- 
-@@ -2594,19 +2600,76 @@ static int virtnet_set_coalesce(struct net_device *dev,
- {
- 	struct virtnet_info *vi = netdev_priv(dev);
- 	int i, napi_weight;
-+	struct scatterlist sgs_tx, sgs_rx;
-+	struct virtio_net_ctrl_coal_tx coal_tx;
-+	struct virtio_net_ctrl_coal_rx coal_rx;
-+	bool update_napi,
-+	notf_coal = virtio_has_feature(vi->vdev, VIRTIO_NET_F_NOTF_COAL);
-+
-+	/* rx_coalesce_usecs/tx_coalesce_usecs are supported only
-+	 * if VIRTIO_NET_F_NOTF_COAL feature is negotiated.
-+	 */
-+	if (!notf_coal && (ec->rx_coalesce_usecs || ec->tx_coalesce_usecs))
-+		return -EOPNOTSUPP;
-+
-+	if (notf_coal) {
-+		coal_tx.tx_usecs = cpu_to_le32(ec->tx_coalesce_usecs);
-+		coal_tx.tx_max_packets = cpu_to_le32(ec->tx_max_coalesced_frames);
-+		sg_init_one(&sgs_tx, &coal_tx, sizeof(coal_tx));
-+
-+		if (!virtnet_send_command(vi, VIRTIO_NET_CTRL_NOTF_COAL,
-+					  VIRTIO_NET_CTRL_NOTF_COAL_TX_SET,
-+					  &sgs_tx))
-+			return -EINVAL;
-+
-+		/* Save parameters */
-+		vi->tx_usecs = ec->tx_coalesce_usecs;
-+		vi->tx_max_packets = ec->tx_max_coalesced_frames;
-+
-+		coal_rx.rx_usecs = cpu_to_le32(ec->rx_coalesce_usecs);
-+		coal_rx.rx_max_packets = cpu_to_le32(ec->rx_max_coalesced_frames);
-+		sg_init_one(&sgs_rx, &coal_rx, sizeof(coal_rx));
-+
-+		if (!virtnet_send_command(vi, VIRTIO_NET_CTRL_NOTF_COAL,
-+					  VIRTIO_NET_CTRL_NOTF_COAL_RX_SET,
-+					  &sgs_rx))
-+			return -EINVAL;
-+
-+		/* Save parameters */
-+		vi->rx_usecs = ec->rx_coalesce_usecs;
-+		vi->rx_max_packets = ec->rx_max_coalesced_frames;
-+	}
-+
-+	/* Should we update NAPI? */
-+	update_napi = ec->tx_max_coalesced_frames <= 1 &&
-+			ec->rx_max_coalesced_frames == 1;
- 
--	if (ec->tx_max_coalesced_frames > 1 ||
--	    ec->rx_max_coalesced_frames != 1)
-+	/* If notifications coalesing feature is not negotiated,
-+	 * and we can't update NAPI, return an error
-+	 */
-+	if (!notf_coal && !update_napi)
- 		return -EINVAL;
- 
--	napi_weight = ec->tx_max_coalesced_frames ? NAPI_POLL_WEIGHT : 0;
--	if (napi_weight ^ vi->sq[0].napi.weight) {
--		if (dev->flags & IFF_UP)
--			return -EBUSY;
--		for (i = 0; i < vi->max_queue_pairs; i++)
--			vi->sq[i].napi.weight = napi_weight;
-+	if (update_napi) {
-+		napi_weight = ec->tx_max_coalesced_frames ? NAPI_POLL_WEIGHT : 0;
-+		if (napi_weight ^ vi->sq[0].napi.weight) {
-+			if (dev->flags & IFF_UP) {
-+				/* If notifications coalescing feature is not negotiated,
-+				 * return an error, otherwise exit without changing
-+				 * the NAPI parameters.
-+				 */
-+				if (!notf_coal)
-+					return -EBUSY;
-+
-+				goto exit;
-+			}
-+
-+			for (i = 0; i < vi->max_queue_pairs; i++)
-+				vi->sq[i].napi.weight = napi_weight;
-+		}
- 	}
- 
-+exit:
- 	return 0;
- }
- 
-@@ -2616,14 +2679,25 @@ static int virtnet_get_coalesce(struct net_device *dev,
- 				struct netlink_ext_ack *extack)
- {
- 	struct ethtool_coalesce ec_default = {
--		.cmd = ETHTOOL_GCOALESCE,
--		.rx_max_coalesced_frames = 1,
-+		.cmd = ETHTOOL_GCOALESCE
- 	};
-+
- 	struct virtnet_info *vi = netdev_priv(dev);
-+	bool notf_coal = virtio_has_feature(vi->vdev, VIRTIO_NET_F_NOTF_COAL);
-+
-+	/* Add notifications coalescing settings */
-+	if (notf_coal) {
-+		ec_default.rx_coalesce_usecs = vi->rx_usecs;
-+		ec_default.tx_coalesce_usecs = vi->tx_usecs;
-+		ec_default.tx_max_coalesced_frames = vi->tx_max_packets;
-+		ec_default.rx_max_coalesced_frames = vi->rx_max_packets;
-+	} else {
-+		ec_default.rx_max_coalesced_frames = 1;
-+	}
- 
- 	memcpy(ec, &ec_default, sizeof(ec_default));
- 
--	if (vi->sq[0].napi.weight)
-+	if (!notf_coal && vi->sq[0].napi.weight)
- 		ec->tx_max_coalesced_frames = 1;
- 
- 	return 0;
-@@ -2743,7 +2817,8 @@ static int virtnet_set_rxnfc(struct net_device *dev, struct ethtool_rxnfc *info)
- }
- 
- static const struct ethtool_ops virtnet_ethtool_ops = {
--	.supported_coalesce_params = ETHTOOL_COALESCE_MAX_FRAMES,
-+	.supported_coalesce_params = ETHTOOL_COALESCE_MAX_FRAMES |
-+		ETHTOOL_COALESCE_USECS,
- 	.get_drvinfo = virtnet_get_drvinfo,
- 	.get_link = ethtool_op_get_link,
- 	.get_ringparam = virtnet_get_ringparam,
-@@ -3411,6 +3486,8 @@ static bool virtnet_validate_features(struct virtio_device *vdev)
- 	     VIRTNET_FAIL_ON(vdev, VIRTIO_NET_F_RSS,
- 			     "VIRTIO_NET_F_CTRL_VQ") ||
- 	     VIRTNET_FAIL_ON(vdev, VIRTIO_NET_F_HASH_REPORT,
-+			     "VIRTIO_NET_F_CTRL_VQ") ||
-+	     VIRTNET_FAIL_ON(vdev, VIRTIO_NET_F_NOTF_COAL,
- 			     "VIRTIO_NET_F_CTRL_VQ"))) {
- 		return false;
- 	}
-@@ -3546,6 +3623,13 @@ static int virtnet_probe(struct virtio_device *vdev)
- 	if (virtio_has_feature(vdev, VIRTIO_NET_F_MRG_RXBUF))
- 		vi->mergeable_rx_bufs = true;
- 
-+	if (virtio_has_feature(vi->vdev, VIRTIO_NET_F_NOTF_COAL)) {
-+		vi->rx_usecs = 0;
-+		vi->tx_usecs = 0;
-+		vi->tx_max_packets = 0;
-+		vi->rx_max_packets = 0;
-+	}
-+
- 	if (virtio_has_feature(vdev, VIRTIO_NET_F_HASH_REPORT))
- 		vi->has_rss_hash_report = true;
- 
-@@ -3780,7 +3864,7 @@ static struct virtio_device_id id_table[] = {
- 	VIRTIO_NET_F_CTRL_MAC_ADDR, \
- 	VIRTIO_NET_F_MTU, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS, \
- 	VIRTIO_NET_F_SPEED_DUPLEX, VIRTIO_NET_F_STANDBY, \
--	VIRTIO_NET_F_RSS, VIRTIO_NET_F_HASH_REPORT
-+	VIRTIO_NET_F_RSS, VIRTIO_NET_F_HASH_REPORT, VIRTIO_NET_F_NOTF_COAL
- 
- static unsigned int features[] = {
- 	VIRTNET_FEATURES,
-diff --git a/include/uapi/linux/virtio_net.h b/include/uapi/linux/virtio_net.h
-index 3f55a4215f1..29ced55514d 100644
---- a/include/uapi/linux/virtio_net.h
-+++ b/include/uapi/linux/virtio_net.h
-@@ -56,7 +56,7 @@
- #define VIRTIO_NET_F_MQ	22	/* Device supports Receive Flow
- 					 * Steering */
- #define VIRTIO_NET_F_CTRL_MAC_ADDR 23	/* Set MAC address */
--
-+#define VIRTIO_NET_F_NOTF_COAL	53	/* Guest can handle notifications coalescing */
- #define VIRTIO_NET_F_HASH_REPORT  57	/* Supports hash report */
- #define VIRTIO_NET_F_RSS	  60	/* Supports RSS RX steering */
- #define VIRTIO_NET_F_RSC_EXT	  61	/* extended coalescing info */
-@@ -355,4 +355,36 @@ struct virtio_net_hash_config {
- #define VIRTIO_NET_CTRL_GUEST_OFFLOADS   5
- #define VIRTIO_NET_CTRL_GUEST_OFFLOADS_SET        0
- 
-+/*
-+ * Control notifications coalescing.
-+ *
-+ * Request the device to change the notifications coalescing parameters.
-+ *
-+ * Available with the VIRTIO_NET_F_NOTF_COAL feature bit.
-+ */
-+#define VIRTIO_NET_CTRL_NOTF_COAL		6
-+/*
-+ * Set the tx-usecs/tx-max-packets patameters.
-+ * tx-usecs - Maximum number of usecs to delay a TX notification.
-+ * tx-max-packets - Maximum number of packets to send before a TX notification.
-+ */
-+struct virtio_net_ctrl_coal_tx {
-+	__le32 tx_max_packets;
-+	__le32 tx_usecs;
-+};
-+
-+#define VIRTIO_NET_CTRL_NOTF_COAL_TX_SET		0
-+
-+/*
-+ * Set the rx-usecs/rx-max-packets patameters.
-+ * rx-usecs - Maximum number of usecs to delay a RX notification.
-+ * rx-max-frames - Maximum number of packets to receive before a RX notification.
-+ */
-+struct virtio_net_ctrl_coal_rx {
-+	__le32 rx_max_packets;
-+	__le32 rx_usecs;
-+};
-+
-+#define VIRTIO_NET_CTRL_NOTF_COAL_RX_SET		1
-+
- #endif /* _UAPI_LINUX_VIRTIO_NET_H */
--- 
-2.32.0
-
+>
+> Thanks,
+> Quentin
