@@ -2,126 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 10B14570F8A
-	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 03:33:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B8D0F571021
+	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 04:26:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231862AbiGLBdG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jul 2022 21:33:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53142 "EHLO
+        id S229768AbiGLC0k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jul 2022 22:26:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230217AbiGLBdE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 21:33:04 -0400
-Received: from mail-yb1-f173.google.com (mail-yb1-f173.google.com [209.85.219.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4BD28D5F0;
-        Mon, 11 Jul 2022 18:33:02 -0700 (PDT)
-Received: by mail-yb1-f173.google.com with SMTP id r3so11595503ybr.6;
-        Mon, 11 Jul 2022 18:33:02 -0700 (PDT)
+        with ESMTP id S229837AbiGLC0i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 22:26:38 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D2EC32EFC
+        for <netdev@vger.kernel.org>; Mon, 11 Jul 2022 19:26:37 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id j3so6308428pfb.6
+        for <netdev@vger.kernel.org>; Mon, 11 Jul 2022 19:26:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=4QZv8xOYdkkXHw+TXHBWh+26+T7pXCAjbh7G+26CenI=;
+        b=MZDQPiaqX0Q0GVwMMQ5VAtkfD+QIc63FJWkaNM0zBCvY/bQPwgP6KWICl0ylmTdATC
+         t15NQtLWbQV6IW2OaaL3Myq4TQ2QjBBxFdNQamZ4VdeF9GNMsZ/9XD+wkMcwhoCCkExh
+         vOgSdykVwYNYdaI34wFLkzxkbYLZEa4qKbjyw=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ldd/zpJwmj78yQKupkX1vWzC+GyweGRaRS0TSs8SWDY=;
-        b=GwcTWXIHrPEauze9nthM8ajJuQRhaOBJrqLd1YMoezYFnZ7wXXP6liHv4T2njgpJ4F
-         5Ju1dJ3XzjDovb0HfeP7mtRHnC0SOxwo7ZPWx7OvzMpPtg6fmgYFPVOFzpREXLX5zGAv
-         9eqMfAbG4JxPznvUaoSWcs4TbmGmAOyQ0w0vihTM0zyzpOaJySsHBN2pFz6CHduQEbOb
-         Hsq/rPWqPRjnzjpEgbzt39G+QD6xK7y60KSJ37QfZqCP6OqAKYhjmypYXYBR2XtKx2T9
-         FDorE+uMAlghfPpxq7RE99+OJwh8+dnxb+eE0q1Rh7dHeD/rMI511Uys2XgJSgmGLK4p
-         CTLQ==
-X-Gm-Message-State: AJIora+bauERk9C/rF+T12o9XtsUnjjSQSnBmTLWNzj0lJB/xngzVLG6
-        41jyuSOXBbCvxxzKXkFNmkGtPbiQetky9UbGSxSM8NuRbks=
-X-Google-Smtp-Source: AGRyM1uvMuQ5pwkMlrFt4f9cDZt+Q25E2CcdS6aIV4xvgCOYC/LdTyh64KRLiMuQrzAL3sAO40GRzkDv96ZWf6zn4SM=
-X-Received: by 2002:a25:9743:0:b0:66e:f62d:4956 with SMTP id
- h3-20020a259743000000b0066ef62d4956mr12345502ybo.381.1657589581738; Mon, 11
- Jul 2022 18:33:01 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220708181235.4104943-1-frank.jungclaus@esd.eu> <20220708181235.4104943-7-frank.jungclaus@esd.eu>
-In-Reply-To: <20220708181235.4104943-7-frank.jungclaus@esd.eu>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Tue, 12 Jul 2022 10:33:15 +0900
-Message-ID: <CAMZ6RqLC9a50mbyeaUSE4zqOfwPEVvOeYXcCVefC5EMD5dN6PA@mail.gmail.com>
-Subject: Re: [PATCH 6/6] can: esd_usb: Improved decoding for
- ESD_EV_CAN_ERROR_EXT messages
-To:     Frank Jungclaus <frank.jungclaus@esd.eu>
-Cc:     linux-can@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        =?UTF-8?Q?Stefan_M=C3=A4tje?= <stefan.maetje@esd.eu>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=4QZv8xOYdkkXHw+TXHBWh+26+T7pXCAjbh7G+26CenI=;
+        b=xa1HUGsPbOLZlV63878ez4TN3xTw4invgKw5M2EWzRYJqkQgnKJu4geRg3QsIrWSAu
+         EVnov6SIHtTNF9KUiwJLKQ799YjjnoKpHBuXpPHZrTQVz+tPuZH66NgGnF17yxN2/Mgk
+         Z4ePjecM9J5RLXTqzuTABxyv8u0pWcHss+2mqKrkuv6jLehXSGU4HMO/vQzalwuKnCJj
+         YSC4cEX9MXYxdaIa9cozYN2VPj+pM2Qz5sv4H7CHFsrd0IAeLhDRDwHtJvoFyW0QG3HR
+         BlfjpCU6JmChgyE+mb+aSeQSRZmDz77vT/0kyQx3Ap2HSFzJf275uIYDEHm5IaqXFmqD
+         8/ng==
+X-Gm-Message-State: AJIora/7WdplEtpfKUE3gEXuwnyETlqnpCGdFiuyQSk11hny2nNomKJP
+        YrEH6ngUFyNraLOqrLgteuVcTSwl68C7fPjA
+X-Google-Smtp-Source: AGRyM1trEGAJuKEC1fudepIAkIdaM8d+8F+OfZdapRQsUKdt0nHKiv2KF8sOv/ORJojUDZb26bnUOg==
+X-Received: by 2002:a63:1619:0:b0:40d:37aa:9ace with SMTP id w25-20020a631619000000b0040d37aa9acemr18051365pgl.609.1657592796170;
+        Mon, 11 Jul 2022 19:26:36 -0700 (PDT)
+Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id p4-20020a62d004000000b0052878f66f8asm5443049pfg.132.2022.07.11.19.26.35
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 11 Jul 2022 19:26:35 -0700 (PDT)
+From:   Michael Chan <michael.chan@broadcom.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
+Subject: [PATCH net 0/5] bnxt_en: 5 Bug fixes
+Date:   Mon, 11 Jul 2022 22:26:13 -0400
+Message-Id: <1657592778-12730-1-git-send-email-michael.chan@broadcom.com>
+X-Mailer: git-send-email 1.8.3.1
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="000000000000d9f9ff05e392657b"
+X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        MIME_HEADER_CTYPE_ONLY,MIME_NO_TEXT,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE,T_TVD_MIME_NO_HEADERS autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat. 9 Jul. 2022 at 03:14, Frank Jungclaus <frank.jungclaus@esd.eu> wrote:
-> As suggested by Vincent I spend a union plus a struct ev_can_err_ext
+--000000000000d9f9ff05e392657b
 
-The canonical way to declare that something was suggested by someone
-else is to use the Suggested-by tag.
+This patchset fixes various issues, including SRIOV error unwinding,
+one error recovery path, live patch reporting, XDP transmit path,
+and PHC clock reading.
 
-Also, this particular change was suggested by Marc, not by me ;)
-https://lore.kernel.org/linux-can/20220621071152.ggyhrr5sbzvwpkpx@pengutronix.de/
+Kashyap Desai (1):
+  bnxt_en: reclaim max resources if sriov enable fails
 
-> for easier decoding of an ESD_EV_CAN_ERROR_EXT event message (which
-> simply is a rx_msg with some dedicated data).
+Michael Chan (2):
+  bnxt_en: Fix bnxt_reinit_after_abort() code path
+  bnxt_en: Fix and simplify XDP transmit path
 
-Suggested-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Pavan Chebbi (1):
+  bnxt_en: Fix bnxt_refclk_read()
 
-> Signed-off-by: Frank Jungclaus <frank.jungclaus@esd.eu>
-> ---
->  drivers/net/can/usb/esd_usb.c | 20 ++++++++++++++------
->  1 file changed, 14 insertions(+), 6 deletions(-)
->
-> diff --git a/drivers/net/can/usb/esd_usb.c b/drivers/net/can/usb/esd_usb.c
-> index 09649a45d6ff..2b149590720c 100644
-> --- a/drivers/net/can/usb/esd_usb.c
-> +++ b/drivers/net/can/usb/esd_usb.c
-> @@ -126,7 +126,15 @@ struct rx_msg {
->         u8 dlc;
->         __le32 ts;
->         __le32 id; /* upper 3 bits contain flags */
-> -       u8 data[8];
-> +       union {
-> +               u8 data[8];
-> +               struct {
-> +                       u8 status; /* CAN Controller Status */
-> +                       u8 ecc;    /* Error Capture Register */
-> +                       u8 rec;    /* RX Error Counter */
-> +                       u8 tec;    /* TX Error Counter */
-> +               } ev_can_err_ext;  /* For ESD_EV_CAN_ERROR_EXT */
-> +       };
->  };
->
->  struct tx_msg {
-> @@ -134,7 +142,7 @@ struct tx_msg {
->         u8 cmd;
->         u8 net;
->         u8 dlc;
-> -       u32 hnd;        /* opaque handle, not used by device */
-> +       u32 hnd;   /* opaque handle, not used by device */
->         __le32 id; /* upper 3 bits contain flags */
->         u8 data[8];
->  };
-> @@ -228,11 +236,11 @@ static void esd_usb_rx_event(struct esd_usb_net_priv *priv,
->         u32 id = le32_to_cpu(msg->msg.rx.id) & ESD_IDMASK;
->
->         if (id == ESD_EV_CAN_ERROR_EXT) {
-> -               u8 state = msg->msg.rx.data[0];
-> -               u8 ecc   = msg->msg.rx.data[1];
-> +               u8 state = msg->msg.rx.ev_can_err_ext.status;
-> +               u8 ecc   = msg->msg.rx.ev_can_err_ext.ecc;
->
-> -               priv->bec.rxerr = msg->msg.rx.data[2];
-> -               priv->bec.txerr = msg->msg.rx.data[3];
-> +               priv->bec.rxerr = msg->msg.rx.ev_can_err_ext.rec;
-> +               priv->bec.txerr = msg->msg.rx.ev_can_err_ext.tec;
->
->                 netdev_dbg(priv->netdev,
->                            "CAN_ERR_EV_EXT: dlc=%#02x state=%02x ecc=%02x rec=%02x tec=%02x\n",
+Vikas Gupta (1):
+  bnxt_en: fix livepatch query
 
-Yours sincerely,
-Vincent Mailhol
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c         |  5 +++--
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h         |  1 +
+ drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c |  8 +++++---
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c     | 13 +++++++++++--
+ drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c   |  7 ++++++-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c     | 10 +++++-----
+ 6 files changed, 31 insertions(+), 13 deletions(-)
+
+-- 
+2.18.1
+
+
+--000000000000d9f9ff05e392657b
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+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
+xV4Em+0wQoEIR2kPG6yiZNtUK0tNCaZejYU/Mf/bzdKSwud3pLgHV8ls83y2OU/ha9xgJMLpRswv
+xucFCxMsPmk0yoVmpbr92kIpLm+TomNZsL++LcDRa2ECAwEAAaOCAdowggHWMA4GA1UdDwEB/wQE
+AwIFoDCBowYIKwYBBQUHAQEEgZYwgZMwTgYIKwYBBQUHMAKGQmh0dHA6Ly9zZWN1cmUuZ2xvYmFs
+c2lnbi5jb20vY2FjZXJ0L2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNydDBBBggrBgEFBQcw
+AYY1aHR0cDovL29jc3AuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAw
+TQYDVR0gBEYwRDBCBgorBgEEAaAyASgKMDQwMgYIKwYBBQUHAgEWJmh0dHBzOi8vd3d3Lmdsb2Jh
+bHNpZ24uY29tL3JlcG9zaXRvcnkvMAkGA1UdEwQCMAAwSQYDVR0fBEIwQDA+oDygOoY4aHR0cDov
+L2NybC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcmwwJAYDVR0R
+BB0wG4EZbWljaGFlbC5jaGFuQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNV
+HSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUz2bMvqtXpXM0u3vAvRkalz60
+CjswDQYJKoZIhvcNAQELBQADggEBAGUgeqqI/q2pkETeLr6oS7nnm1bkeNmtnJ2bnybNO/RdrbPj
+DHVSiDCCrWr6xrc+q6OiZDKm0Ieq6BN+Wfr8h5mCkZMUdJikI85WcQTRk6EEF2lzIiaULmFD7U15
+FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
+1CHkODrS2JGwDQxXKmyF64MhJiOutWHmqoGmLJVz1jnDvClsYtgT4zcNtoqKtjpWDYAefncWDPIQ
+DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
+aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
+EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIHOiDokyEBfXHscghUOAuJ24OdVYPKnm
+ka0LLsBkM5RIMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDcx
+MjAyMjYzN1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
+ATANBgkqhkiG9w0BAQEFAASCAQCis3UD04FlHzqdEY740CtSVLzQruSw5q2S7xQf2vw4ax0xJ7ES
+Zy19Qfl14bgroLkhPGl0C02nE0Twa5vG6pFdxhHCPG98q7zbRLdIqjxtyQMX7c4yaVryW5vIHFzR
+w7w372o+BaHkWINE7s3GQWU26+hfMWwx1StrFsLjNZm2ZJPx1gDYAYkrwU4FX6MzAhj/AQe0FlcP
+nh7JM9T3Gx06ziiFDL40qiVKd2pgOAtFhLsYu+S0AA9goN1VvlG30lZCA2oU4q2IUuV/l9Qgjghy
+PqgIuU5te+4bieu3YmkbJUuUSYLBVWtm8fvZvQsKW/xr3/kTQufidmnAWvutyeWW
+--000000000000d9f9ff05e392657b--
