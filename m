@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 435AC572804
-	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 22:59:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98A5B572808
+	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 22:59:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233862AbiGLU4E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jul 2022 16:56:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57206 "EHLO
+        id S234370AbiGLU4B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jul 2022 16:56:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234178AbiGLUyz (ORCPT
+        with ESMTP id S234180AbiGLUyz (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 16:54:55 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C89B31172;
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA2E72ED52;
         Tue, 12 Jul 2022 13:53:43 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id bk26so12796473wrb.11;
+Received: by mail-wr1-x433.google.com with SMTP id b26so12831567wrc.2;
         Tue, 12 Jul 2022 13:53:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=lTEKopEUAeQr5d74gqsIxK77ORJixv2HTggIm0W0E6c=;
-        b=XmSKQIQuCqY/uVsXhKKb1J3A1zYatMru/4pa7BBb8xXRz90QUz5IbSZV1pCxmrtKJs
-         3dPfzpdPc5wMlbGojMzs7TPgv//zAsgnRmhhe6vwENqPw8UjPzVmKYt7iEjLvZ1M1vwa
-         xp0NIwC9T+pStJ7k+xRugEWK83w5YkaR4BZ3VipYK8wY+i4p466HRKwPHAYvz8I5gM2Q
-         Co9/PmV+z8HB0KMcQ6APltCLYzrkZZ6+KszBZ24q/4kyBVKoJKDew2xCkKHPIgdl/vT/
-         dQQXu1XclWFXVcWF/elfOybBkbK05Vsg7g3QQQiRCmiHInnLdBYtkOZYaIhWg9l1CZ/T
-         +P4g==
+        bh=WExwuGiqZIBx1fmX1iBGP3JMT2QbBuC/oWcmMGulQEg=;
+        b=AR1tcfKYxhwttlnwbEu04QtHHvFEwA8d6fTwm8XkFzi/3Skk2t67yWkd539d0tBtOg
+         eUBF9HhPWXwa5aJyj6lJl75cbOLHT8evfHscEvlH5D8iFJErYCZUvl3NFVVEgccRXboK
+         I9U3YW74wdBrCHMgnJ3M6E9p09tuXoZjeE6GhkKnnUI8U/yMNjVxbszzDsOG6fXLmpAG
+         2ioGMJFPqz1uxUxQZLa0GsCZnJQusg7jKmk/tt9N4Kw5JoyYgUdEdG3TmlRI/QUt80M3
+         /9YxMGdZSvS+u587xf+O2jsirphJ5whxgTaM0uFlLh4gfeOI35K2kMu2wu79/Jy9Lla8
+         tgUQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=lTEKopEUAeQr5d74gqsIxK77ORJixv2HTggIm0W0E6c=;
-        b=iTog5NjvB12UFidFA2nmltdGKbzPYhhpZTNJ5n3VdnlQGSdVRf3gfP0peis39eRB6Z
-         /LoOBi7LgGDmriQ1bY5sSsVgRLNM/G9V7ZraYR+EBLOcZ8Q3HIJIvaHw+/wfp4OPaBtf
-         k4F83A88+m/El+9vjZr6JzGaQwv8+Bl90X02XsZyCuxfxhGqG0lUnUevXTeS/G/pb/mk
-         77AtQi3z4oMfsjs3DlzS+U7/JZ4d+vJQ/7SItzyq8OCXSSIJoh1TarjQ/Pqkmwnl+EcK
-         6wOm0sVFxmxDZTPhP7xQlPR1MOvcEcTaB9bD7M1Kmzs7bCQEoLUJp7y+6O57KaGUfMsZ
-         DZtQ==
-X-Gm-Message-State: AJIora8HGU9WsQppGJJSX5j4JfXnR6x66I5JDNn5ARraTwKpA+HsukUj
-        fYEcFXtVetAEqSZdwe20tgar4eM/6ZU=
-X-Google-Smtp-Source: AGRyM1vvX0Sob/YNDt7bpKNdszodUoKWSI0yDRqYSfbrj0q9XwxNkvJ9nhdwp5iFWM46ebnCNOobuQ==
-X-Received: by 2002:a05:6000:1ac8:b0:21d:b7d9:3c03 with SMTP id i8-20020a0560001ac800b0021db7d93c03mr2006827wry.149.1657659218010;
-        Tue, 12 Jul 2022 13:53:38 -0700 (PDT)
+        bh=WExwuGiqZIBx1fmX1iBGP3JMT2QbBuC/oWcmMGulQEg=;
+        b=6TWucY1DYrW1SNtUT5fILBNoGWe8UyBRxqIafMYzTUj+UDujkrGLAEXKwPBtm0Lxbi
+         ZFZk5wM+PRDlX4Y2Y+YdXkTcXFneqd8APpdkz5O+huoAiZtTK8lIAJG7AiKM4TMtqYl3
+         1HxIxfm0M29XlJR57b1QGF9fed0IFNHfHHGMVEaclL2ucmgqHV98D0XuVnqCjbdyZVF8
+         D49m5mBvlc9Ynd1xDoi8TGHEVf2diZQ3RmvkbMirSvMJYe0zlZHeV08wZrlaknPDe0f5
+         WF072+UzHQsUJU52Kfu41ypKcWsIoS22tl2euDxQ0z8gUnAHgJFVPcCluHPC1ApHZudv
+         A5XA==
+X-Gm-Message-State: AJIora8zErZoTzYGq0DZUqSVHJRZi2QQmGT5fkMMA6CgsEOHuPooGcxx
+        TssfS1PrwIyMUxc4IoISBunV+iL0gXE=
+X-Google-Smtp-Source: AGRyM1unJ1n2O0NPeI9UuP/QZRL5LZMj16HAQZczt097u1MFWD1uXx0tu81pUtVLOKUHy1uQupxduw==
+X-Received: by 2002:a5d:64e8:0:b0:21d:b277:d4a7 with SMTP id g8-20020a5d64e8000000b0021db277d4a7mr5252670wri.621.1657659219223;
+        Tue, 12 Jul 2022 13:53:39 -0700 (PDT)
 Received: from 127.0.0.1localhost (188.28.125.106.threembb.co.uk. [188.28.125.106])
-        by smtp.gmail.com with ESMTPSA id c14-20020a7bc00e000000b003a044fe7fe7sm89833wmb.9.2022.07.12.13.53.36
+        by smtp.gmail.com with ESMTPSA id c14-20020a7bc00e000000b003a044fe7fe7sm89833wmb.9.2022.07.12.13.53.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 13:53:37 -0700 (PDT)
+        Tue, 12 Jul 2022 13:53:38 -0700 (PDT)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     io-uring@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
@@ -56,9 +56,9 @@ Cc:     "David S . Miller" <davem@davemloft.net>,
         Willem de Bruijn <willemb@google.com>,
         Jens Axboe <axboe@kernel.dk>, David Ahern <dsahern@kernel.org>,
         kernel-team@fb.com, Pavel Begunkov <asml.silence@gmail.com>
-Subject: [PATCH net-next v5 25/27] io_uring: add zc notification flush requests
-Date:   Tue, 12 Jul 2022 21:52:49 +0100
-Message-Id: <df13e2363400682a73dd9e71c3b990b8d1ff0333.1657643355.git.asml.silence@gmail.com>
+Subject: [PATCH net-next v5 26/27] io_uring: enable managed frags with register buffers
+Date:   Tue, 12 Jul 2022 21:52:50 +0100
+Message-Id: <278731d3f20caf346cfc025fbee0b4c9ee4ed751.1657643355.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <cover.1657643355.git.asml.silence@gmail.com>
 References: <cover.1657643355.git.asml.silence@gmail.com>
@@ -74,96 +74,89 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Overlay notification control onto IORING_OP_RSRC_UPDATE (former
-IORING_OP_FILES_UPDATE). It allows to flush a range of zc notifications
-from slots with indexes [sqe->off, sqe->off+sqe->len). If sqe->arg is
-not zero, it also copies sqe->arg as a new tag for all flushed
-notifications.
-
-Note, it doesn't flush a notification of a slot if there was no requests
-attached to it (since last flush or registration).
+io_uring's registered buffers infra has a good performant way of pinning
+pages, so let's use SKBFL_MANAGED_FRAG_REFS when our requests are purely
+register buffer backed.
 
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 ---
- include/uapi/linux/io_uring.h |  1 +
- io_uring/rsrc.c               | 38 +++++++++++++++++++++++++++++++++++
- 2 files changed, 39 insertions(+)
+ io_uring/net.c | 56 +++++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 55 insertions(+), 1 deletion(-)
 
-diff --git a/include/uapi/linux/io_uring.h b/include/uapi/linux/io_uring.h
-index 37e8c104d31f..9a7aa25d09a1 100644
---- a/include/uapi/linux/io_uring.h
-+++ b/include/uapi/linux/io_uring.h
-@@ -294,6 +294,7 @@ enum io_uring_op {
-  */
- enum {
- 	IORING_RSRC_UPDATE_FILES,
-+	IORING_RSRC_UPDATE_NOTIF,
- };
- 
- /*
-diff --git a/io_uring/rsrc.c b/io_uring/rsrc.c
-index 98ce8a93a816..088a2dc32e2c 100644
---- a/io_uring/rsrc.c
-+++ b/io_uring/rsrc.c
-@@ -15,6 +15,7 @@
- #include "io_uring.h"
- #include "openclose.h"
- #include "rsrc.h"
-+#include "notif.h"
- 
- struct io_rsrc_update {
- 	struct file			*file;
-@@ -742,6 +743,41 @@ static int io_files_update(struct io_kiocb *req, unsigned int issue_flags)
- 	return IOU_OK;
+diff --git a/io_uring/net.c b/io_uring/net.c
+index bf9916d5e50c..a4e863dce7ec 100644
+--- a/io_uring/net.c
++++ b/io_uring/net.c
+@@ -704,6 +704,60 @@ int io_sendzc_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
+ 	return 0;
  }
  
-+static int io_notif_update(struct io_kiocb *req, unsigned int issue_flags)
++static int io_sg_from_iter(struct sock *sk, struct sk_buff *skb,
++			   struct iov_iter *from, size_t length)
 +{
-+	struct io_rsrc_update *up = io_kiocb_to_cmd(req);
-+	struct io_ring_ctx *ctx = req->ctx;
-+	unsigned len = up->nr_args;
-+	unsigned idx_end, idx = up->offset;
++	struct skb_shared_info *shinfo = skb_shinfo(skb);
++	int frag = shinfo->nr_frags;
 +	int ret = 0;
++	struct bvec_iter bi;
++	ssize_t copied = 0;
++	unsigned long truesize = 0;
 +
-+	io_ring_submit_lock(ctx, issue_flags);
-+	if (unlikely(check_add_overflow(idx, len, &idx_end))) {
-+		ret = -EOVERFLOW;
-+		goto out;
-+	}
-+	if (unlikely(idx_end > ctx->nr_notif_slots)) {
-+		ret = -EINVAL;
-+		goto out;
++	if (!shinfo->nr_frags)
++		shinfo->flags |= SKBFL_MANAGED_FRAG_REFS;
++
++	if (!skb_zcopy_managed(skb) || !iov_iter_is_bvec(from)) {
++		skb_zcopy_downgrade_managed(skb);
++		return __zerocopy_sg_from_iter(NULL, sk, skb, from, length);
 +	}
 +
-+	for (; idx < idx_end; idx++) {
-+		struct io_notif_slot *slot = &ctx->notif_slots[idx];
++	bi.bi_size = min(from->count, length);
++	bi.bi_bvec_done = from->iov_offset;
++	bi.bi_idx = 0;
 +
-+		if (!slot->notif)
-+			continue;
-+		if (up->arg)
-+			slot->tag = up->arg;
-+		io_notif_slot_flush_submit(slot, issue_flags);
++	while (bi.bi_size && frag < MAX_SKB_FRAGS) {
++		struct bio_vec v = mp_bvec_iter_bvec(from->bvec, bi);
++
++		copied += v.bv_len;
++		truesize += PAGE_ALIGN(v.bv_len + v.bv_offset);
++		__skb_fill_page_desc_noacc(shinfo, frag++, v.bv_page,
++					   v.bv_offset, v.bv_len);
++		bvec_iter_advance_single(from->bvec, &bi, v.bv_len);
 +	}
-+out:
-+	io_ring_submit_unlock(ctx, issue_flags);
-+	if (ret < 0)
-+		req_set_fail(req);
-+	io_req_set_res(req, ret, 0);
-+	return IOU_OK;
++	if (bi.bi_size)
++		ret = -EMSGSIZE;
++
++	shinfo->nr_frags = frag;
++	from->bvec += bi.bi_idx;
++	from->nr_segs -= bi.bi_idx;
++	from->count = bi.bi_size;
++	from->iov_offset = bi.bi_bvec_done;
++
++	skb->data_len += copied;
++	skb->len += copied;
++	skb->truesize += truesize;
++
++	if (sk && sk->sk_type == SOCK_STREAM) {
++		sk_wmem_queued_add(sk, truesize);
++		if (!skb_zcopy_pure(skb))
++			sk_mem_charge(sk, truesize);
++	} else {
++		refcount_add(truesize, &skb->sk->sk_wmem_alloc);
++	}
++	return ret;
 +}
 +
- int io_rsrc_update(struct io_kiocb *req, unsigned int issue_flags)
+ int io_sendzc(struct io_kiocb *req, unsigned int issue_flags)
  {
- 	struct io_rsrc_update *up = io_kiocb_to_cmd(req);
-@@ -749,6 +785,8 @@ int io_rsrc_update(struct io_kiocb *req, unsigned int issue_flags)
- 	switch (up->type) {
- 	case IORING_RSRC_UPDATE_FILES:
- 		return io_files_update(req, issue_flags);
-+	case IORING_RSRC_UPDATE_NOTIF:
-+		return io_notif_update(req, issue_flags);
- 	}
- 	return -EINVAL;
- }
+ 	struct sockaddr_storage address;
+@@ -768,7 +822,7 @@ int io_sendzc(struct io_kiocb *req, unsigned int issue_flags)
+ 
+ 	msg.msg_flags = msg_flags;
+ 	msg.msg_ubuf = &notif->uarg;
+-	msg.sg_from_iter = NULL;
++	msg.sg_from_iter = io_sg_from_iter;
+ 	ret = sock_sendmsg(sock, &msg);
+ 
+ 	if (unlikely(ret < min_ret)) {
 -- 
 2.37.0
 
