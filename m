@@ -2,65 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B5473571B03
-	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 15:20:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 595FE571B02
+	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 15:20:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232000AbiGLNUV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jul 2022 09:20:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34550 "EHLO
+        id S229991AbiGLNUP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jul 2022 09:20:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229657AbiGLNUU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 09:20:20 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F9924B49B;
-        Tue, 12 Jul 2022 06:20:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=5myWbE1xCV9RkNlbJ5TLOsN03+CVJzD4SpNFRvkiDJM=; b=IqqDFj4nYtwcP+DizK+aKySf/D
-        LGBPGndi0WYmd8RRMkUgYTqktU/ZBr0bVTbvrJ9Lmz0oF4/GrahzOZ8QGeTsZgiKTA60hiSKm21sG
-        hND/5ntIzlSYeq6mP/IloH0iKIWaUNkzmP/3nHHm/YAkrtpZx1inrPmL5VhPEBsZ1mu8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1oBFno-00A3IN-KP; Tue, 12 Jul 2022 15:19:48 +0200
-Date:   Tue, 12 Jul 2022 15:19:48 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Michael Walle <michael@walle.cc>
-Cc:     Xu Liang <lxu@maxlinear.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 1/4] net: phy: mxl-gpy: fix version reporting
-Message-ID: <Ys109F4n3960bgqz@lunn.ch>
-References: <20220712131554.2737792-1-michael@walle.cc>
- <20220712131554.2737792-2-michael@walle.cc>
+        with ESMTP id S229657AbiGLNUO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 09:20:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F1F933E39;
+        Tue, 12 Jul 2022 06:20:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D0CA26176B;
+        Tue, 12 Jul 2022 13:20:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 2E579C341CB;
+        Tue, 12 Jul 2022 13:20:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657632013;
+        bh=VtYTT+GuTYziiLBNQuhIPi8afVUYtci7GhuKaVENo4w=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=EzkzOzloLxmnvnmvv0BQkmHpcwmdd9DXOkQ53Ud+7XtpkcNg7+oxNMByye3ZueUQQ
+         gYMRbbiWALJjKmRBDF9Ax7mEJAJO5xm/xtSql5o3bOmmNJEzuuleAC/7gIEzdJG3MY
+         sLhWnE3hrAcJbVwBOR9sfT0hPxDVk67rFnIEyXu8LAUPxNPn17+XRAWanLs7+p0XAs
+         0oZ6oubuicae0BF1TSxdQhidF78InN6T1FGUd+AHbagSM5GcOCtY4xzpoH6NA3bEu4
+         WVj3l6nOPKXE7GmtjiNs1hOilRtvE+bD/Q+8GWnmiy+IhWRWyT32lz5sxFXCFi8X0+
+         KfzOBErMX2/eQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 11604E45227;
+        Tue, 12 Jul 2022 13:20:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220712131554.2737792-2-michael@walle.cc>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] net: change the type of ip_route_input_rcu to static
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165763201305.27182.8607099090817656312.git-patchwork-notify@kernel.org>
+Date:   Tue, 12 Jul 2022 13:20:13 +0000
+References: <20220711073549.8947-1-shaozhengchao@huawei.com>
+In-Reply-To: <20220711073549.8947-1-shaozhengchao@huawei.com>
+To:     Zhengchao Shao <shaozhengchao@huawei.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        weiyongjun1@huawei.com, yuehaibing@huawei.com
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 12, 2022 at 03:15:51PM +0200, Michael Walle wrote:
-> The commit 09ce6b20103b ("net: phy: mxl-gpy: add temperature sensor")
-> will overwrite the return value and the reported version will be wrong.
-> Fix it.
+Hello:
+
+This patch was applied to netdev/net-next.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
+
+On Mon, 11 Jul 2022 15:35:49 +0800 you wrote:
+> The type of ip_route_input_rcu should be static.
 > 
-> Fixes: 09ce6b20103b ("net: phy: mxl-gpy: add temperature sensor")
-> Signed-off-by: Michael Walle <michael@walle.cc>
+> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+> ---
+>  include/net/route.h |  4 ----
+>  net/ipv4/route.c    | 34 +++++++++++++++++-----------------
+>  2 files changed, 17 insertions(+), 21 deletions(-)
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Here is the summary with links:
+  - net: change the type of ip_route_input_rcu to static
+    https://git.kernel.org/netdev/net-next/c/5022e221c98a
 
-    Andrew
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
