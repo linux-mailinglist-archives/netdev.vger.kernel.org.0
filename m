@@ -2,45 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 88B41571EA6
-	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 17:14:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D20CF571EDC
+	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 17:21:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230440AbiGLPOZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jul 2022 11:14:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42934 "EHLO
+        id S233773AbiGLPVa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jul 2022 11:21:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234196AbiGLPOJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 11:14:09 -0400
-Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2060.outbound.protection.outlook.com [40.107.20.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6D59D13BB;
-        Tue, 12 Jul 2022 08:06:57 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DzYTt9moI8eWFEtwzNjytWlZuAQvsxxORf6kpfujHVWqXpVbux0QU6/KKwAwfEWIPLonqKBacuJQHlkTcQXZUYuJCZKx0oI+2BH7BoXf8AypKk2NUDYgNtyOmf1ft91+TaeQbDQB+rEg6+o8bH32zg43QRpY+/Im9WHV69QYMBKp0rkAPc77qoXi7gl6nJn+b+lMpusEUbtlc1Ui+CyNjhO6ltahObsJVUVrx9X/gq+LizhbsMC6rqmr06fkLsG8MC71YWVt0l/Gsqq3P1mDLd5kExdf2uthXXET9ghuUXceHzyHbRMTaWe4k/QGOUYwSNnFDvt8gV2EnIJz7lOnOA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=FAJs1kmKljPLcF1VnhvA0z86k/cBtBvSPl5TBiKOVPY=;
- b=gxSxVduKgzaEcDb/CPRjHUZHkIkpAVOuBeznE7njJ4BUUcG2TxLM1Fg0+oCAsMmquyBkOJMxIuiuKbK1uKF6mKjCojibzMrGLK+Q/tD4/rgzpBzPowU++/b0Z7ZhzRybVwssTd7dAmDjGlf+t7K0umc7BPEdCjqWZODL6A6E6dZ8iNPVo8xk5ZQWF7/4No/cacnQ+GREHtCxjoFxRLnZ/wmBaQT3qSr81uF7MyqJ3CitT4vbrCMUDpN5JM3auA2cKdiQRqVxZWp1ucHpBu0dvcSAeFauqFyqKNE7xLBq4Ry2+kPnFY1Cy8T9GWOaXMXaeHHTt9YrlE6wEp+/dA1S0Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
- dkim=pass header.d=seco.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FAJs1kmKljPLcF1VnhvA0z86k/cBtBvSPl5TBiKOVPY=;
- b=NoMv8Bp9Sqnx8eEpGN6wnLTzQ2T5taqgVzu25WLigU4Vpk+CwA7Ce/fo+HkyjJsVulM2ZAZOYZ8TlFeyTgmIYU2hBhNFZe6cIeysTGqOh/CMe7TgtF7giy+fbq9EOnShR4VpYXUp8KmU3q3JkTh2UxMUJRT7b/JQU0SXm2YHVHnYnXnQcTzz6fFzJ4cQLew1NcKzs6fF9xWE44qVlfpXevkNq9c+dMoTciV8O4tI/Pct2dOvfpXeFni6uoMQmqxGTa7HQpFoXpLdJJhD/QG9YK5fTVopbN+4YcFwA1kNBCRQ+LWhqaUWXMhNSZItLufjK3dZgBGcFhHRTG70O6huyg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=seco.com;
-Received: from DB7PR03MB4972.eurprd03.prod.outlook.com (2603:10a6:10:7d::22)
- by AM9PR03MB6961.eurprd03.prod.outlook.com (2603:10a6:20b:280::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.26; Tue, 12 Jul
- 2022 15:06:55 +0000
-Received: from DB7PR03MB4972.eurprd03.prod.outlook.com
- ([fe80::757e:b75f:3449:45b1]) by DB7PR03MB4972.eurprd03.prod.outlook.com
- ([fe80::757e:b75f:3449:45b1%6]) with mapi id 15.20.5417.026; Tue, 12 Jul 2022
- 15:06:55 +0000
-Subject: Re: [RFC PATCH net-next 1/9] dt-bindings: net: Add lynx PCS
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        with ESMTP id S233183AbiGLPVI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 11:21:08 -0400
+Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A318B57231
+        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 08:18:14 -0700 (PDT)
+Received: by mail-lj1-x235.google.com with SMTP id p6so7449597ljc.8
+        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 08:18:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Tj5Gg27gp6guU9o9CDqxeuyaEnEIyrvYSMIuKpk5DD8=;
+        b=tGqKNetCeWXzqGSSNavFzF6GgOnaP8uE2YFx+VXS9WdGV5+5ap7lYe4ilTL/1ca+f+
+         ouoKcLg2D+XuplmIZ64Lz27n+Eh3j2Ya6E+NSRFRl3bnp1leC9bzqMmv7HUj60q49LET
+         rIvE/HVfZH7a4dyRgaENaiFzB5AsCD1r63XXMdITydVZRxTVBgbNgWAB2rO9AxLLVuaC
+         AzOFcDK+tXjAOimM2VbjoHL+V5TK3gLBOqx+O79eaba0f8hHPr9JyQA8CWPolOaN8rpT
+         6B9s+95UGjNRSOzF5Y3dhERiewU2/lC5qnFS8oZu/sLrVVw+82sAAOSBpGrbvWYEnvPL
+         5OrQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Tj5Gg27gp6guU9o9CDqxeuyaEnEIyrvYSMIuKpk5DD8=;
+        b=C3j0A8qFVkRjnmR2fYqF4l8y35K2R4h6loi5qgjXFrLYOAFfuC485K69mEXEJ0SFHt
+         irk84RdY0yFEhVISl2jyHKSv8uLvuIjxbsZIlYedK9n81mzHZYeRrXv5cm1U3bs4wBBx
+         l2GLJZ/e9fvv823Zesd327VLGEbR3RZJJpI3kmXUoL79PEC8Z8DfdnxQx+q843SZtIs9
+         ql1y+yryeIihhvajGqFdS9ogBVHwWjTRIYmp2SIdiH+dRRaUry+OLTMk4o204ExAw6LX
+         FKLO1XRcPYIpZ8UjE8IPy9ZaL1h/gDP/GdlgZB4JXfZzaXpy6tswvzy9Q7yYFa/ZBLrJ
+         Bihg==
+X-Gm-Message-State: AJIora+4AUEu027DTTFk9mpoIhzctrcPtV12ay3c5w5I5i3usE65dwtI
+        i9ej00MEZDLqZf54M9uaYKzsdw==
+X-Google-Smtp-Source: AGRyM1s3SKYPr8wCbAab/dh6Yo/xp76xDbLfy2u6JUJeWpoicCcLEvo3aAi857vpfyk8jA3cDKyCLA==
+X-Received: by 2002:a2e:9547:0:b0:24f:2e31:6078 with SMTP id t7-20020a2e9547000000b0024f2e316078mr12469910ljh.102.1657639093026;
+        Tue, 12 Jul 2022 08:18:13 -0700 (PDT)
+Received: from [10.0.0.8] (fwa5da9-171.bb.online.no. [88.93.169.171])
+        by smtp.gmail.com with ESMTPSA id o28-20020a198c1c000000b00482bb812713sm2232708lfd.94.2022.07.12.08.18.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 Jul 2022 08:18:12 -0700 (PDT)
+Message-ID: <d84899e7-06f7-1a20-964f-90b6f0ff96fd@linaro.org>
+Date:   Tue, 12 Jul 2022 17:18:05 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [RFC PATCH net-next 2/9] dt-bindings: net: Expand pcs-handle to
+ an array
+Content-Language: en-US
+To:     Sean Anderson <sean.anderson@seco.com>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org
 Cc:     Jakub Kicinski <kuba@kernel.org>,
@@ -53,119 +69,71 @@ Cc:     Jakub Kicinski <kuba@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
 References: <20220711160519.741990-1-sean.anderson@seco.com>
- <20220711160519.741990-2-sean.anderson@seco.com>
- <4584120c-8e6f-6943-1bd3-aa6942525eda@linaro.org>
- <a6b2d031-8356-492b-8eef-a7cdfacaba51@seco.com>
- <b46f49e4-355d-7a59-4a4a-f5c77b6835df@linaro.org>
-From:   Sean Anderson <sean.anderson@seco.com>
-Message-ID: <73415f21-7c48-b9b0-e02f-c83d0a185718@seco.com>
-Date:   Tue, 12 Jul 2022 11:06:50 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
-In-Reply-To: <b46f49e4-355d-7a59-4a4a-f5c77b6835df@linaro.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+ <20220711160519.741990-3-sean.anderson@seco.com>
+ <ecaf9d0f-6ddb-5842-790e-3d5ee80e2a77@linaro.org>
+ <fdd34075-4e5e-a617-696d-15c5ac6e9bfe@seco.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <fdd34075-4e5e-a617-696d-15c5ac6e9bfe@seco.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BL1P221CA0011.NAMP221.PROD.OUTLOOK.COM
- (2603:10b6:208:2c5::23) To DB7PR03MB4972.eurprd03.prod.outlook.com
- (2603:10a6:10:7d::22)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5513e4f8-e97a-4f27-36c8-08da641828e0
-X-MS-TrafficTypeDiagnostic: AM9PR03MB6961:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: oFAi5MyC1wBTH44sIAORF8aoGKpL00GN+alMXEtQbhc3ZjpzOSubQFslqcKbrEUe5/toS6rz7DZeEVUU9eVXwf+eM6JW6KhDEv3mNDhHHPbUfgZQ8M0NPSW3y2vAe03eIa2XvYf4OSY0XuUyRSwTPAp7L2Ne/2o3xAVcUDbYjDs+hA9wfzH7/vpg0hgiXt/YhS/Ah1P0ItMRew8OhJ1N/UWzMQajCJoYuq6VT0mfO2mFeXN+p6Gl6LE1rpjjgs2XdfYJVGfOOKb5K5gkSxNNuqbZMzp7DSxxQakFqywJTE9eUT2rQIW/eOkX0kRkOUSYbP4bSQibfIkpN774RDTP1HlfuAA0shCBxs6AH341CQq966cc6LxhDXt1GymbFEgkpjogsN040BZKppL/EKUMVyrZKSCLwj1ZfBUgGt3yLrWRiGhIZY0i4WbTKSrpWRKc6piuWHC8YWm8PeeCeJ36CwZ7MEHzHGi6Q3/PbEeT5MRCizdZ6Ay/vHoiE2GBerQPhfqBSK8FhSKbRIIsFANzIT3tcyKlfBKWGZijWfQsvb2/qJZwPM9yk9IAG46Wzi8NGHL3AX95ZrTT5bvjW99zUUF2hycHGVpu9hkzFDCT2Hq5ffAi65SRUiX/Jo0qQOTZqvGvs7yDnYBr6nc7+z/EBVU+MgjuCToPy7aJx4At72enaxZCdSAh0aBzh5Kbk3lSTMDUJHOa3BJqweDC2NlXeIwLFlACe8eCg9x9yHVRjAbhqMKVF7dmX81D+5QZ4FwrfPt8A8AxjhdDVcwEzSZ2XkQVA9L11YpXOCeAbcRgXTBYKLvlrd1GrILv6rjswPGsDHSiyr1oSMhd1O1yoHXG+5ZZcwWQFeo0gjTjQEa4wTyzS4bHGcQLMy/h5zGAAQJE
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(346002)(39850400004)(366004)(136003)(376002)(396003)(186003)(2616005)(53546011)(26005)(52116002)(6512007)(6506007)(2906002)(38350700002)(86362001)(31696002)(110136005)(8676002)(4326008)(66476007)(54906003)(6666004)(41300700001)(5660300002)(38100700002)(6486002)(316002)(66556008)(44832011)(31686004)(7416002)(478600001)(36756003)(66946007)(8936002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?OVdDZXRhVlBwSVRONWdBQmQvS3k4R1BTZGFjOVFIbUppd2dIQTJJZ3J4Ym5K?=
- =?utf-8?B?a1hndU9GdGhSRnN6TlVZbjlYTWwxM0hOeHVTeTB6UmtHUzZ6MnN5cTJrdDZh?=
- =?utf-8?B?L0FZSW5OdVRKV1g1UmFFWXVHRlVpb0xnWnpJZ3dYM0djcnRkcm95elVYNUlP?=
- =?utf-8?B?Qk5lendkQjBPS1NjV1BoUVk3dkQwVWh0dC9XTEhqR3RXOTA2bzBpajJxN08v?=
- =?utf-8?B?NU1tM0hYbFlpaXI4cWwrNlRUKzRCY3Q4RjFFUXkycmxRQXJZY1RpSzBNZEJP?=
- =?utf-8?B?NHRUMXpuS2xIQlB4dFBmdFBaMmoyWVBDRW9GZW4vTzFENC9pQVZScHZVeGJD?=
- =?utf-8?B?bnZnMVJGOGVSZi8rajhyejc0UkVVYzBhaXZhTW1jbnlDNE5IbTR4RE05aTJY?=
- =?utf-8?B?NlZtSjVDV3RoNUEwM0c3YWFYRkp1M1N2Y0NVT2kyVXZjWFBKRTVaamtLWlBL?=
- =?utf-8?B?QUtsaitycXBMMWRrc1AwQlNwMkhCNkJDZnFOL2JiY1FiNC8yMTdTamNCNU5V?=
- =?utf-8?B?N2RZNEdxSFhzRWJXY2hqd2REQ256RG81VU9iZVBIMW5wZGF4dHlLV0duY2dC?=
- =?utf-8?B?cThMY0JEUnBURUozbk04ektWN2RpUEpVeXB1b3JRRzB4QWgxaXlzUHIvOUpD?=
- =?utf-8?B?NFB2dWxjcGNxYm5sZWozbFowTlNwTzZ3NmpTMjgyUEg1UmtIQkFxa3dlUGE0?=
- =?utf-8?B?bGdqNi9OQVRaR1Q5SWQ3OGpqUllQNEJ0YU0yV2ZIeUw0cncvbDNodHRqYld1?=
- =?utf-8?B?VGp4VDVTeU5yNDN6MW0wRFhDcXlMVkdPTHBqQ2QyUFhMaVZBQUhIUGhoMVRX?=
- =?utf-8?B?M1FKOERhRXVYY1c0MkhJbElMQ0FXTFlZQzNZWkFyU1lGT2p3TkxtUjUzYTJk?=
- =?utf-8?B?WUZ2SmpRLzdzQWgrK3YxeGg0RUt1L29jajJlUUpydDEyU3F6SDVzTlk2ek1K?=
- =?utf-8?B?dDVSV29QcytDTVljOGM2OUY2Z2p5Sk9oQzlXM2NucmlBRGxVaklKWTJmUlpN?=
- =?utf-8?B?S2ljYXdQcVY2eFZySXdEalE3OW95eFZNb0RxTzVIanhaTFEyOXU0WW1ZVVZR?=
- =?utf-8?B?VUp0UVBwQkREc0gwSkhzd01WVmhXazkyTmtSc3RuUjVneWMvL1B4V1B6REtL?=
- =?utf-8?B?aEs2UDlERG9VbkV0QVZjSTQ0eUJCTGllVitRWk9RVEk5NlZMQXlaMWxrb0d3?=
- =?utf-8?B?Qi9EQWN6ZE05ZE9VU0J2cS9MZmxJdEgxNTV0ZkdGUzdLUlJTVnhNdGFiZ3V1?=
- =?utf-8?B?bzlwTXdzWnRQRUUwbDcvOFhRNnA2ZHRRZC9uNmJYS0lId0duU1MySWFseFRD?=
- =?utf-8?B?dmFBNS8ya3pZa0lGWWdwNkJNUCtUS29oaHdjSUkwQTV4U2gyUzkvYXdHUG9l?=
- =?utf-8?B?K2dDcXRIOFpHaTJXNVlnRWh5QVJocmhkZHhGWlZ0eXV3QU1rNmFBb0lid3Bw?=
- =?utf-8?B?T3JUTEhPUUR4NmxFTU1RTk4rQllMY0NkK2doa0VGekZNRldTU1JzZUdJcXJk?=
- =?utf-8?B?cGxlMm9CL3I4MWFjRkNYdzc3UWhiZCsyZUNSY0pvU0FzOUpQMFJKdDB3dzhL?=
- =?utf-8?B?MFBET2M4SmRNQm5ZNEhpYUVDK00vemQ5ZDNGQ1pRNk5GRThTODJsZFRvK09E?=
- =?utf-8?B?RDFqdkhpNk83d2EyUlJzaG5mVEFQZ0NUZW85aUtjb1VXR2svL2FXRUxxVXRO?=
- =?utf-8?B?eE9STGpmc3ZoWnNsMXV6S3d0T0JYNWYzSmxld3lUQS9wdC9uSXhwODFCVFJt?=
- =?utf-8?B?MU5SMFdWL1UzT1lJRThGQlczUkhqcUhyTWxINGhCZWpUcU1aR0xhcmZoUW84?=
- =?utf-8?B?R1BlbWROS0RzZEwzVW13TWJlc24zT0Q3VEE2TmxqV29HY25UeTF2dllHcjVW?=
- =?utf-8?B?VkhqMC9vbS96Qm1OZTVtQ2c0NW5oYllzOXkxSmxHM1JEZGRBbEdIWUVEaFQ0?=
- =?utf-8?B?dFlQbGkvY0xuTVAzdk1HSTMwRitJei9KR1lDZk9xZ3EzUlpoRUU3MG5aYk1M?=
- =?utf-8?B?ZlVZNUpWWVNsNnFwQ3dFMC82VE1LcGxidGFBdTM4OU05RlNaRW43STBwUnR2?=
- =?utf-8?B?cVpNcG50U0FFTFlSWDlRS1NBRzByRXhmb1lPNmVXZDV5WElTdmM0bStOYUpq?=
- =?utf-8?B?WDBTYVVDdFNWQWxaRTRIZVpXa01HOUQrbFBLbExBTGEyQWI2MDN1SExiSHhv?=
- =?utf-8?B?VWc9PQ==?=
-X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5513e4f8-e97a-4f27-36c8-08da641828e0
-X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4972.eurprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jul 2022 15:06:55.5528
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: xfrmUTqW0TKtPqNxV8mrMC4pJyxRMHB2le4+aMNcKmRUkaQMPRN5Yd6sjFlaNhhO4heWosZmdY8Byx1UieXxsw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR03MB6961
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 7/12/22 11:00 AM, Krzysztof Kozlowski wrote:
-> On 12/07/2022 16:57, Sean Anderson wrote:
->> Hi Krzysztof,
->> 
->> On 7/12/22 4:47 AM, Krzysztof Kozlowski wrote:
->>> On 11/07/2022 18:05, Sean Anderson wrote:
->>>> This adds bindings for the PCS half of the Lynx 10g/28g SerDes drivers.
->>>>
->>>> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
->>>> ---
->>>>
->>>>  .../devicetree/bindings/net/fsl,lynx-pcs.yaml | 47 +++++++++++++++++++
->>>>  1 file changed, 47 insertions(+)
->>>>  create mode 100644 Documentation/devicetree/bindings/net/fsl,lynx-pcs.yaml
->>>>
->>>> diff --git a/Documentation/devicetree/bindings/net/fsl,lynx-pcs.yaml b/Documentation/devicetree/bindings/net/fsl,lynx-pcs.yaml
->>>> new file mode 100644
->>>> index 000000000000..49dee66ab679
->>>> --- /dev/null
->>>> +++ b/Documentation/devicetree/bindings/net/fsl,lynx-pcs.yaml
->>>
->>> Shouldn't this be under net/pcs?
->> 
->> There's no net/pcs, since this is the first of its kind. 
+On 12/07/2022 17:06, Sean Anderson wrote:
+> Hi Krzysztof,
 > 
-> There is, coming via Renesas tree.
+> On 7/12/22 4:51 AM, Krzysztof Kozlowski wrote:
+>> On 11/07/2022 18:05, Sean Anderson wrote:
+>>> This allows multiple phandles to be specified for pcs-handle, such as
+>>> when multiple PCSs are present for a single MAC. To differentiate
+>>> between them, also add a pcs-names property.
+>>>
+>>> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
+>>> ---
+>>>
+>>>  .../devicetree/bindings/net/ethernet-controller.yaml       | 7 ++++++-
+>>>  1 file changed, 6 insertions(+), 1 deletion(-)
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/net/ethernet-controller.yaml b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+>>> index 4f15463611f8..c033e536f869 100644
+>>> --- a/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+>>> +++ b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+>>> @@ -107,11 +107,16 @@ properties:
+>>>      $ref: "#/properties/phy-connection-type"
+>>>  
+>>>    pcs-handle:
+>>> -    $ref: /schemas/types.yaml#/definitions/phandle
+>>> +    $ref: /schemas/types.yaml#/definitions/phandle-array
+>>>      description:
+>>>        Specifies a reference to a node representing a PCS PHY device on a MDIO
+>>>        bus to link with an external PHY (phy-handle) if exists.
+>>
+>> You need to update all existing bindings and add maxItems:1.
+>>
+>>>  
+>>> +  pcs-names:
+>>
+>> To be consistent with other properties this should be "pcs-handle-names"
+>> and the other "pcs-handles"... and then actually drop the "handle".
+> 
+> Sorry, I'm not sure what you're recommending in the second half here.
 
-Ah, I will move this then.
+I would be happy to see consistent naming with other xxxs/xxx-names
+properties, therefore I recommend to:
+1. deprecate pcs-handle because anyway the naming is encoding DT spec
+into the name ("handle"),
+2. add new property 'pcs' or 'pcss' (the 's' at the end like clocks but
+maybe that's too much) with pcs-names.
 
---Sean
+However before implementing this, please wait for more feedback. Maybe
+Rob or net folks will have different opinions.
+
+Best regards,
+Krzysztof
