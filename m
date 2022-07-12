@@ -2,156 +2,226 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B17A4571215
-	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 08:03:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BB50571219
+	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 08:06:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229782AbiGLGDs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jul 2022 02:03:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38036 "EHLO
+        id S230358AbiGLGGy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jul 2022 02:06:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229515AbiGLGDr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 02:03:47 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE2CB2B63D
-        for <netdev@vger.kernel.org>; Mon, 11 Jul 2022 23:03:43 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id r18so8754941edb.9
-        for <netdev@vger.kernel.org>; Mon, 11 Jul 2022 23:03:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=yDg4aQWiW5PC39Zrei9VabNIyFmpRsiN0B34CISRO5s=;
-        b=VYXSK/aFyD0NLFq5R3tFCbvSm1YBEirrp8R5jJfzLgNRC5Ze5K9D2FIJgwAFWqJivY
-         +d4tZW6zC8cRjwgs0VdiTnIopfWYf1dScCpzQiziqKWR0R/0vduA29mpSjs6+yBM6852
-         CErSGK0EZTrIUQsCQo843s3Rdua++39gvmqDzESm/I5GGPFlndK8qrbMiJtrqAw0aKFV
-         3U4KYOoWPfoOwVKM/Do7PZipdp3Jev9lEX1o9w6s91NxfD2JEwtLYhwYycQoGMHMkgYD
-         pVJIAHhJKF4U/SvQSbflwojO4V+DzJkub8L0eHvqmlMevLv+/fkM1V63rkmNBVKpfKDb
-         yeVQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=yDg4aQWiW5PC39Zrei9VabNIyFmpRsiN0B34CISRO5s=;
-        b=3Z8TzI4NSuyhqjRTDzKVM2mlIp1+JxrQLP/G3Thrgrmuvo0vbn2fzZNTqRaV1GLexP
-         EcES28VhBGLFAyTIZBS1HEZnr+MDy6vHbhuqp1z0UcXjExH45p3dihvXu9rYzZY3TVWm
-         Td5MdEabZOwtldmmILS0rWoqmHYanWJnG8cv8vO5gCydcT4CdTiVVmd8CS8AAX7choCN
-         qfb6ok/hf1SevK1L1Enrddir5jfAT545POzfmAk0SYPcP7ay6hP2ycjydkWrwS+8ETlJ
-         d2Rs3FdQ6ZcPl3LrvJkUcILA857eoMC1//+aVok/fQB089Qsc9YXZlIFKTVNQJCv0dnt
-         HdXQ==
-X-Gm-Message-State: AJIora8s6+rfDJzIhpWMSJHFgaGrci3fjJXQfSxq407x/hHaNVQqNL5i
-        89E+dJGQjVrvJZ/fbpmX+WnrSw==
-X-Google-Smtp-Source: AGRyM1sBR5g094kkjnHW9krP3xKKtHGUzrFAYZtdehBkW9hfVrHSjZTOb7CmKuiK2UFyRUIwwvMDJw==
-X-Received: by 2002:a05:6402:1941:b0:435:5972:7811 with SMTP id f1-20020a056402194100b0043559727811mr29380631edz.234.1657605822524;
-        Mon, 11 Jul 2022 23:03:42 -0700 (PDT)
-Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id d26-20020a170906345a00b00726e51b6d7dsm3407987ejb.195.2022.07.11.23.03.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Jul 2022 23:03:41 -0700 (PDT)
-Date:   Tue, 12 Jul 2022 08:03:40 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Jiri Pirko <jiri@nvidia.com>, Dima Chumak <dchumak@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Simon Horman <horms@verge.net.au>,
-        Michal Wilczynski <michal.wilczynski@intel.com>
-Subject: Re: [PATCH net-next 0/5] devlink rate police limiter
-Message-ID: <Ys0OvOtwVz7Aden9@nanopsycho>
-References: <20220620152647.2498927-1-dchumak@nvidia.com>
- <20220620130426.00818cbf@kernel.org>
- <228ce203-b777-f21e-1f88-74447f2093ca@nvidia.com>
- <20220630111327.3a951e3b@kernel.org>
- <YsbBbBt+DNvBIU2E@nanopsycho>
- <20220707131649.7302a997@kernel.org>
- <YsfcUlF9KjFEGGVW@nanopsycho>
- <20220708110535.63a2b8e9@kernel.org>
- <YskOt0sbTI5DpFUu@nanopsycho>
- <20220711102957.0b278c12@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220711102957.0b278c12@kernel.org>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229515AbiGLGGx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 02:06:53 -0400
+Received: from nautica.notk.org (nautica.notk.org [91.121.71.147])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A170A7CB47;
+        Mon, 11 Jul 2022 23:06:51 -0700 (PDT)
+Received: by nautica.notk.org (Postfix, from userid 108)
+        id 8A0F6C021; Tue, 12 Jul 2022 08:06:49 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1657606009; bh=Oei6nGCRVDIFiTLCYzG4olbX/seA/soTnXGc+IcXkbA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Nw8anNgxe4VAdmnH1L9hXpyoFSiGLVvs7e6r0fUnWdSCtAwWO49kyYCUBj6Y5/Kd4
+         HOzYdqtsh/OjGKF8YNOuvTS8sFALGHGN+CYX1utKfW5KfNpinJP1jx2DKZvioj2k6w
+         /u7U8OASYLOh0ciXsOvg0KPI6gqado33BkmDHVUvybydEe/lXFgwAzs4u5rSmkl6hA
+         qjwUbT6BsaTiBnPViMBGHTxiVJzAtx5s7RON7OdK2zqFMqcEKzity2cEHSBoufBq0B
+         U8PNJjR1Y1MyveOi1EBsrNWNuY1phpt6Ks/vCJrXt7Qm/0RLQ4DNiiE96eqMNI2v3v
+         432JnLmF6XyYw==
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Received: from odin.codewreck.org (localhost [127.0.0.1])
+        by nautica.notk.org (Postfix) with ESMTPS id 5F191C009;
+        Tue, 12 Jul 2022 08:06:44 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1657606008; bh=Oei6nGCRVDIFiTLCYzG4olbX/seA/soTnXGc+IcXkbA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=3B3RrEAEVAJkX7uuNdvc44x4wrAh3AA7NTxwiPicFYXICpCTUE22X7JCfauJZ+J2y
+         ZM66sIDqK5U52pMU1OTYhUyqXk6whOc5pnHKl6lrQP71VU8aavtp8P0f/dDGIEzTTR
+         NPINWN90iNavo0XGruqu1qeyxPT1CTl5BEiTU0KzOK3xs+HoWt8y46z9k7X1xe2Q+h
+         7XybKi8tFU+P5N9nFxgXfs0+tdALfH/aWA607NUUpTQIGVUYEAi4f26llYSFGru4Ly
+         sl0yFFSTnrlUtw7OeIHnWN5iuHFmALG9kUNqdUUsnxzgs0uWvQqy6UvrntrIvxzs+g
+         pT9ZJi0Bm1ZAA==
+Received: from localhost (odin.codewreck.org [local])
+        by odin.codewreck.org (OpenSMTPD) with ESMTPA id f581a640;
+        Tue, 12 Jul 2022 06:06:40 +0000 (UTC)
+Date:   Tue, 12 Jul 2022 15:06:25 +0900
+From:   asmadeus@codewreck.org
+To:     Hangyu Hua <hbh25y@gmail.com>
+Cc:     ericvh@gmail.com, lucho@ionkov.net, linux_oss@crudebyte.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, tomasbortoli@gmail.com,
+        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: 9p: fix possible refcount leak in p9_read_work()
+ and recv_done()
+Message-ID: <Ys0PYaD7x7InUpc+@codewreck.org>
+References: <20220711065907.23105-1-hbh25y@gmail.com>
+ <YsvTvalrwd4bxO75@codewreck.org>
+ <f68df7cf-4b72-4c01-9492-103fa67c5e99@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <f68df7cf-4b72-4c01-9492-103fa67c5e99@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Jul 11, 2022 at 07:29:57PM CEST, kuba@kernel.org wrote:
->On Sat, 9 Jul 2022 07:14:31 +0200 Jiri Pirko wrote:
->> >I resisted the port function aberration as long as I could. It's   
->> 
->> Why do you say "aberration"? It is a legitimate feature that is allowing
->> to solve legitimate issues. Maybe I'm missing something.
->
->From netdev perspective it's an implementation detail irrelevant 
->to the user. The netdev model is complete without it.
+Hangyu Hua wrote on Tue, Jul 12, 2022 at 11:24:36AM +0800:
+> That's a little weird. If you are right, the three return paths of this
+> function are inconsistent with the handling of refcount.
+> 
+> static void p9_read_work(struct work_struct *work)
+> {
+> ...
+> 	if ((m->rreq) && (m->rc.offset == m->rc.capacity)) {
+> 		p9_debug(P9_DEBUG_TRANS, "got new packet\n");
+> 		m->rreq->rc.size = m->rc.offset;
+> 		spin_lock(&m->client->lock);
+> 		if (m->rreq->status == REQ_STATUS_SENT) {
+> 			list_del(&m->rreq->req_list);
+> 			p9_client_cb(m->client, m->rreq, REQ_STATUS_RCVD);	<---- [1]
+> 		} else if (m->rreq->status == REQ_STATUS_FLSHD) {
+> 			/* Ignore replies associated with a cancelled request. */
+> 			p9_debug(P9_DEBUG_TRANS,
+> 				 "Ignore replies associated with a cancelled request\n");	<---- [2]
+> 		} else {
+> 			spin_unlock(&m->client->lock);
+> 			p9_debug(P9_DEBUG_ERROR,
+> 				 "Request tag %d errored out while we were reading the reply\n",
+> 				 m->rc.tag);
+> 			err = -EIO;
+> 			goto error;	<---- [3]
+> 		}
+> 		spin_unlock(&m->client->lock);
+> 		m->rc.sdata = NULL;
+> 		m->rc.offset = 0;
+> 		m->rc.capacity = 0;
+> 		p9_req_put(m->rreq);	<---- [4]
+> 		m->rreq = NULL;
+> 	}
+> ...
+> error:
+> 	p9_conn_cancel(m, err);		<---- [5]
+> 	clear_bit(Rworksched, &m->wsched);
+> }
+> 
+> There are three return paths here, [1] and [2] and [3].
+> [1]: m->rreq will be put twice in [1] and [4]. And m->rreq will be deleted
+> from the m->req_list in [1].
+> 
+> [2]: m->rreq will be put in [4]. And m->rreq will not be deleted from
+> m->req_list.
 
-Well it is a configuration of a device part out of the scope of netdev.
-So yes, netdev model is complete without it. But does does not mean we
-don't need such configuration. I may be missing your point.
+when req status got put to FLUSHD the req was dropped from the list
+already and put in p9_fd_cancel, so we shouldn't put it here.
 
+> [3]: m->rreq will be put in [5]. And m->rreq will be deleted from the
+> m->req_list in [5].
 
->
->> >a limitation of your design as far as I'm concerned.  
->> 
->> What do you mean? This is not related to us only. The need to work with
->> port function (the other side of the wire) is definitelly nothing
->> specific to mlx5 driver.
->>
->> >Switches use TC to configure egress queuing, that's our Linux model.
->> >Representor is the switch side, TC qdisc on it maps to the egress
->> >of the switch.  
->> 
->> Sure.
->>
->> >I don't understand where the disconnect between us is, you know that's
->> >what mlxsw does..  
->> 
->> No disconnect. mlxsw works like that. However, there is no VF/SF in
->> mlxsw world. The other side of the wire is a different host.
->> 
->> However in case of VF/SF, we also need to configure the other side of
->> the wire, which we are orchestrating. That is the sole purpose of why we
->> have devlink port function. And once we have such object, why is it
->> incorrect to use it for the needed configuration?
->
->So the function conversation _is_ relevant here, eh? Sad but it is what
->it is.
+On this error case I really can't say anything: it depends on how the
+req got in this state in the first place -- more precisely is it still
+in req_list or not?
 
-I'm not sure I follow what "function conversation" you mean. :/
+But even if it is and we leak it here, we return an error here, so the
+connection will be marked as disconnected and won't be usable anymore.
+The memory will be freed when the user umounts after that.
 
+If we took the time to re-init the rreq->req_list everytime we could
+check if it's empty (don't think we can rely on it being poisoned), but
+I just don't think it's worth it: it's better to consume a bit more
+memory until umount than to risk a UAF.
 
->
->> Okay, if you really feel that we need to reuse TC interface for this
->> feature (however mismathing it might be),
->
->Not what I said, I'm not gonna say it the fourth time.
-
-Okay, sorry for being slow, but I still don't understand your point :/
-
-
->
->> lets create a netdev for the port function to hook this to. But do we
->> want such a beast? But to hook this to eswitch port representor seems
->> to me plain wrong.
->
->I presume you're being facetious. Extra netdev is gonna help nothing. 
-
-I'm somewhat am, yes.
-
-
->
->AFAIU the problem is that you want to control endpoints which are not
->ndevs with this API. Is that the main or only reason? Can we agree that
->it's legitimate but will result in muddying the netdev model (which in
->itself is good and complete)?
-
-I don't think this has anything to do with netdev model. It is actually
-out of the scope of it, therefore there cannot be any mudding of it.
+(note: while writing this I noticed p9_tag_cleanup() in
+p9_client_destroy() only tracks requests still in the idr, so doesn't
+work for requests that went through p9_tag_remove().
+We don't need p9_tag_remove() anymore so I've just gotten rid of it and
+we will catch these now)
 
 
+> If p9_tag_lookup keep the refcount of req which is in m->req_list. There
+> will be a double put in return path [1] and a potential UAF in return path
+> [2]. And this also means a req in m->req_list without getting refcount
+> before p9_tag_lookup.
+
+That is the nominal path, we'd notice immediately if there are too many
+puts there.
+A request is initialized with two refs so that we can have one for the
+transport ((a), for fd, "is the request tracked in a list?") and one for
+the main thread ((b), p9_client_rpc which will put it at the end)
+Then you get a third ref from p9_tag_lookup that I was forgetting about,
+(c).
+
+Going through [1] removes it from the list, and removes the associated
+ref (a), then through p9_client_cb which removes ref (c) and wakes up
+p9_client_rpc which takes the last ref (b), freeing the request.
+
+
+Now you were correct on one of these error paths not described in your
+last mail: we -are- missing a p9_req_ut in the "No recv fcall for tag
+%d" error path shortly after p9_tag_lookup, for the ref obtained from
+p9_tag_lookup itself -- feel free to resend a patch with just that one.
+But once again the connection is now unusable and it'll be caught on
+umount so it's not the end of the world...
+
+(I'd appreciate if you base the new patch on top of
+https://github.com/martinetd/linux/commits/9p-next )
+
+> 
+> static void p9_write_work(struct work_struct *work)
+> {
+> ...
+> 		list_move_tail(&req->req_list, &m->req_list);
+> 
+> 		m->wbuf = req->tc.sdata;
+> 		m->wsize = req->tc.size;
+> 		m->wpos = 0;
+> 		p9_req_get(req);
+> ...
+> }
+> 
+> But if you check out p9_write_work, a refcount already get after
+> list_move_tail. We don't need to rely on p9_tag_lookup to keep a list's
+> refcount.
+
+This refcount is because we are keeping a ref in m->wreq, and is freed
+when m->wreq is set back to null when the packet is done writing a few
+lines below (but possibly in another call of the function).
+
+refs don't have to come from p9_tag_lookup, they're managing pointers
+lifecycle: we're making a copy of the pointer, so we should increment
+the refcount so another thread can't free the req under us. In this case
+the p9_req_get() is under the trans fd m->client->lock where we got the
+req from the list, so req can't be freed between its obtention from the
+list and then; once the lock is dropped the req is protected by the ref.
+
+
+> Whatsmore, code comments in p9_tag_alloc also proves that the
+> refcount get by p9_tag_lookup is a temporary refcount.
+
+comments don't prove anything, but yes I forgot p9_tag_alloc takes a ref
+when I commented earlier, sorry.
+
+> > This one isn't as clear cut, I see that they put the client in a
+> > FLUSHING state but nothing seems to acton on it... But if this happens
+> > we're already in the use after free realm -- it means rc.sdata was
+> > already set so the other thread could be calling p9_client_cb anytime if
+> > it already hasn't, and yet another thread will then do the final ref put
+> > and free this.
+> > We shouldn't free this here as that would also be an overflow. The best
+> > possible thing to do at this point is just to stop using that pointer.
+> > 
+> 
+> But p9_tag_lookup have a lock inside. Doesn't this mean p9_tag_lookup won't
+> return a freed req? Otherwise we should fix the lock to avoid falling into
+> the use after free realm.
+
+Right, that falls into the p9_tag_lookup ref, I had implemented this
+better than I thought I did...
+
+I agree that one is also more correct to add, although I'd really want
+to make some rdma setup and trigger a few errors to test.
+
+--
+Dominique
