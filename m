@@ -2,97 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 90354571782
-	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 12:44:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1A2857178B
+	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 12:49:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232244AbiGLKoz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jul 2022 06:44:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33050 "EHLO
+        id S231804AbiGLKs7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jul 2022 06:48:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229889AbiGLKoy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 06:44:54 -0400
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F2D9AC051;
-        Tue, 12 Jul 2022 03:44:53 -0700 (PDT)
-Received: by mail-pl1-x644.google.com with SMTP id r6so4478109plg.3;
-        Tue, 12 Jul 2022 03:44:53 -0700 (PDT)
+        with ESMTP id S232112AbiGLKs6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 06:48:58 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B148140E6
+        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 03:48:56 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id sz17so13572804ejc.9
+        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 03:48:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=LHFcdt/M7EFun7/LtZfwRF7i8tXqFEDcoXVMpTsmevI=;
-        b=CM6E0gWMLJ5qt1wx2A0YMDp8y9kCQQgtYbH1SKHLAFqJVb63vwoe/DZn5fwC1LwOcr
-         Y0vht9vEm5cX6CMdJSfktp7VvHZBTWyvjBZJs13dbyWLzPZzh0TIgWi4JjL01TuBUwxJ
-         KjOk/5ujryU/QK8/g0zh2ogzWP/RIrtGFfpZ+mBKgNBXf94PbeCTDVelL/n66A/cWl+d
-         8OTa0f8rMJNoKL2KuvMIFuUO3/IWeBz6SH+5IQFEBfej9z3j5PvdBIh6QHflaVwSfQsr
-         5ApVBLrcIxJUsFf4blFPQMH6WlOz8X8Uj4Z/8Voz4Gnu+Lj04YOYZdJzBGMeY8NPtpUY
-         Z/Ww==
+        bh=CtNLc+zHrE4eROp1W7Buw5YfPYD5lQRArRs16J3dFe8=;
+        b=2c0Kj3e8AUuUs1kRzaJUJx80gaa6EN9J2FxKC3yFC27ugf3T6aZ9MNO6AOQgKKHlGO
+         FGWHmvEB77aqb+Rh55m7rPU+4Rs88pdbscUaKUnAa+pKW8d/eozckkwPTy9c/KVn7iu2
+         Rd8vavtcYXUmwm0y8r3gSyTqGJ5VkUNbAmmwS4frG6S/k2IXj+mnriwYkyZpk6sOsz/h
+         ru3dAD4gaiVGkvPaZbZxewNUNVEc+eyYLsFHVJLt5sEK79cjWuV4fIE57aBWwPIyICVv
+         RsZ1kGcwcmbOK0+tCaVDTVmfhzNZc00+kxXwee1NsY9+8LcMiXNcVyJsH+hY6+sIEac2
+         Clow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=LHFcdt/M7EFun7/LtZfwRF7i8tXqFEDcoXVMpTsmevI=;
-        b=NCsEQSjj+8OH2/ewFbVlKgPyjrY6vHqN4XCSynfYaCCbQ3tZAF9Zbb8wk0SU17froK
-         K9x8ZyuTgUsK5DWYHsYyZIKtr/TbZ2zmcRw3DHJp8M+R4nZg3dCSr01MeC9ClfPAr5Kz
-         2d08fjIkn7MjNrgkWYgsg+dL+mchSINs1WDGzPwtwoZPOVkTFgW1ntaVF9eRa5w/w0lh
-         VXUYiVI3IcBvJPdnIlIMouyCrdU0zJFF1UE62Rm33bftEagOic8m/LH0bLpy9v5d3YHm
-         r3grndrg+dQxlRlCDqFlChjNz39wHyBGZaA46A7DAIKnuUHIx7Clh5OywvuqhJQU/JMR
-         CkAQ==
-X-Gm-Message-State: AJIora+TlMBHbiJnPbPqfITm1ABE0mf2cLskBKIsg0+jzQxgURWOEXy1
-        GXy6PIkgthvMhexWRnNn8rA=
-X-Google-Smtp-Source: AGRyM1sY+jWNlR0EFF9t2eMZ6mOWYimqBONWbupdaAhQg9KJfZr6VZpWoVzoBUG0ZYdInWu3ykHutA==
-X-Received: by 2002:a17:902:8345:b0:167:879c:abe8 with SMTP id z5-20020a170902834500b00167879cabe8mr22981968pln.7.1657622693149;
-        Tue, 12 Jul 2022 03:44:53 -0700 (PDT)
-Received: from localhost.localdomain ([223.104.159.146])
-        by smtp.gmail.com with ESMTPSA id p10-20020a1709028a8a00b0016c0408932dsm6438727plo.129.2022.07.12.03.44.48
+        bh=CtNLc+zHrE4eROp1W7Buw5YfPYD5lQRArRs16J3dFe8=;
+        b=wqvKrPQp99rrfoaiYUDWqexk8u8+9p1Ista8bmUSwvzu/Z+yjQV/lfb0OjEgNYlBHY
+         jiKudyxVE+shrE07vIkKwxe/T57rNmC+gdfUkfUn8z3+RU77HJ9l/wIddsFYnX0lbMLy
+         njYIAuC836BhlsUGES6Fi11i6zGJuxNpdtgD+yyvVz9G2LfLGDW1tQ2S5e47vjP5Aos+
+         b5fGrjb2LPYL0vFGR5rxaJPvnwkVhWxp2sfFMqq1hgQX1/BZIW1npF0bq2AHgeVfxZdb
+         JXXSQT7CD6reG+IyS1SVs0IgMqRaG56N95XmoRB/ydl4ymwVAJgXKqDyMwCHpJUr6cxQ
+         26/A==
+X-Gm-Message-State: AJIora/ZGmmMc1fJHbaEaD0/tIybzZcr3l4bYQQMp2oApF7qK6qpiGHj
+        UrtMddt46CeY2dQWgUY8RfiU+m8orTrjBZvX3Uk=
+X-Google-Smtp-Source: AGRyM1uWilH4SwroIQaIwadHP6RPQumFXfic5jAmWVVpm551YWJCz3lXizh1nLMQvtCd+PU3Hcs6vQ==
+X-Received: by 2002:a17:907:1b1c:b0:6fe:f1a9:ef5a with SMTP id mp28-20020a1709071b1c00b006fef1a9ef5amr23794106ejc.233.1657622934937;
+        Tue, 12 Jul 2022 03:48:54 -0700 (PDT)
+Received: from localhost ([86.61.181.4])
+        by smtp.gmail.com with ESMTPSA id su9-20020a17090703c900b0071cbc7487e1sm3689875ejb.69.2022.07.12.03.48.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 03:44:52 -0700 (PDT)
-From:   Hangyu Hua <hbh25y@gmail.com>
-To:     ericvh@gmail.com, lucho@ionkov.net, asmadeus@codewreck.org,
-        linux_oss@crudebyte.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, tomasbortoli@gmail.com
-Cc:     v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>
-Subject: [PATCH] net: 9p: fix possible refcount leak in p9_read_work()
-Date:   Tue, 12 Jul 2022 18:44:38 +0800
-Message-Id: <20220712104438.30800-1-hbh25y@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 12 Jul 2022 03:48:54 -0700 (PDT)
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, mlxsw@nvidia.com, saeedm@nvidia.com,
+        moshe@nvidia.com
+Subject: [patch net-next 0/3] net: devlink: couple of trivial fixes
+Date:   Tue, 12 Jul 2022 12:48:50 +0200
+Message-Id: <20220712104853.2831646-1-jiri@resnulli.us>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-p9_req_put need to be called when m->rreq->rc.sdata is NULL to avoid
-possible refcount leak.
+From: Jiri Pirko <jiri@nvidia.com>
 
-Fixes: 728356dedeff ("9p: Add refcount to p9_req_t")
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
----
+Just a couple of trivial fixes I found on the way.
 
-Add p9_req_put in the "No recv fcall for tag..." error path according to Dominique's suggestion.
+Jiri Pirko (3):
+  net: devlink: make devlink_dpipe_headers_register() return void
+  net: devlink: fix a typo in function name devlink_port_new_notifiy()
+  net: devlink: fix return statement in devlink_port_new_notify()
 
- net/9p/trans_fd.c | 1 +
- 1 file changed, 1 insertion(+)
+ .../net/ethernet/mellanox/mlxsw/spectrum_dpipe.c |  6 ++----
+ include/net/devlink.h                            |  2 +-
+ net/core/devlink.c                               | 16 +++++++---------
+ 3 files changed, 10 insertions(+), 14 deletions(-)
 
-diff --git a/net/9p/trans_fd.c b/net/9p/trans_fd.c
-index 507974ce880c..090337f446d7 100644
---- a/net/9p/trans_fd.c
-+++ b/net/9p/trans_fd.c
-@@ -345,6 +345,7 @@ static void p9_read_work(struct work_struct *work)
- 			p9_debug(P9_DEBUG_ERROR,
- 				 "No recv fcall for tag %d (req %p), disconnecting!\n",
- 				 m->rc.tag, m->rreq);
-+			p9_req_put(m->rreq);
- 			m->rreq = NULL;
- 			err = -EIO;
- 			goto error;
 -- 
-2.25.1
+2.35.3
 
