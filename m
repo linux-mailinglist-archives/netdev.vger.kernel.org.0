@@ -2,60 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 32EF1571CF8
+	by mail.lfdr.de (Postfix) with ESMTP id A729A571CF9
 	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 16:41:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233322AbiGLOlS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jul 2022 10:41:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60938 "EHLO
+        id S233477AbiGLOlT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jul 2022 10:41:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230264AbiGLOlR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 10:41:17 -0400
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D00ABA389
-        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 07:41:15 -0700 (PDT)
-Received: by mail-wm1-x331.google.com with SMTP id v67-20020a1cac46000000b003a1888b9d36so6895740wme.0
-        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 07:41:15 -0700 (PDT)
+        with ESMTP id S231346AbiGLOlS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 10:41:18 -0400
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E682BA3A7
+        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 07:41:17 -0700 (PDT)
+Received: by mail-wr1-x429.google.com with SMTP id bk26so11450498wrb.11
+        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 07:41:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=BVhC7qnlQr71rFqxNgBM/T1aEtLyPvyLIPg7ZZrYI2s=;
-        b=jLcyvDf8m9ZocbRKOQo2omfT0RJzzKl20KFNCkgUD1HDJLwBTKAoLdRC7p7A9zmx5C
-         yVRWmwCb20d0pLeHh9d9gSVdIR0yoyK172rdbzcPiqM3sfe1pCjFMGS4wcNy/S4MgCjF
-         +fXDMmX7RY+p+xFLDCAKHebleHHUEOl5ipEKCpqD0QjellALrRVyyunVXMqwPAyNtzox
-         KCnF1OfeH+TAm5oemXvl070tBHGNw9ULs0i4rpmCy2WPHdrc7O8pA1uDzqUc1QPeljGM
-         UEp5cGfJ8OqnpUFcC9Efbj5DBO49AxL5qNar9Vl9Vp7sk/kXKLUxJdvTeZ0wCu41cffE
-         be+A==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=8GiI7c6KLyvYWlAlrJO708tvc5vzNaQAzQETyEtyT+o=;
+        b=PjrQ8ZudPXS8ab7l8WSGrRaL8glhsm8gn9L59tbRri5aszp1VGHwGHwYc4td9T9Za1
+         nnI3utPu9/NCsygMehRPimIl9mZJdI7G7hsR0jYkUVULpG8Xxxp3+ZQ60kgppp9JxkEy
+         xu/pQcv9mzO22KhW/N3yElvr4q2OzPlQSJ/zaTTmO5JRSp3Ndq2sQ0FzEvse5/9H1MON
+         vOdEa1r09L1nFfVmZsNE/8bdnBuFjPYkWUOHC18xEog9ibaRpgeGRNnqn+sdHf9ddfmm
+         jJXQrlZ2UaVuTr8Xe1V05cKxqFF9V1l8bpM7yEk0k6mPnpKdLUNOvsOaIVwZ2LOeKczC
+         MSZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=BVhC7qnlQr71rFqxNgBM/T1aEtLyPvyLIPg7ZZrYI2s=;
-        b=wbaFcpeyT8yZ/1oZ36VItG6D+k9o3yGYyIPmrK0PkpM0k6TmbMuq9VKJyXBrvjgYk0
-         6zfG+UZSZqe/RF29wZZvEMiEdeClWPf4qZwcpeXMN2BchMrWYbvR8w/webu89wysyP4r
-         sMVdYTWOmYwUyOQpPHh70abnSjbfcbUKQyxLFiw6uKgFelv8YOWZB+lLTZBQt9gcc71E
-         ROStyrs6j0N8+jN/I42xfnLNwDn4A3XDfEEzCwy8+mJWaxtdB97BaQkkdpIBFVcqh7EW
-         g30FgDOFkzY42dZnKCmBciRrPNN42KJmWBSr3M+auKnXlgMDiSVv+ZYUuwTUdfUbn1Pm
-         KAiw==
-X-Gm-Message-State: AJIora+uMuqjN6sLj56r6VO6OXjDM4kYMnYndhgy87qCKkYdskK5IrEp
-        5cZ1WVIWnXdwWGin+lH3YKTIRRyFU0yH6K4oRRI=
-X-Google-Smtp-Source: AGRyM1vEFGN3bia5V9WfIA89a467ByAh615F+hMBC3DY15Fb7+768v6F/TjeMaJXwsrcwF89v6+vAw==
-X-Received: by 2002:a05:600c:5108:b0:3a1:a0c2:ba47 with SMTP id o8-20020a05600c510800b003a1a0c2ba47mr4604989wms.68.1657636874083;
-        Tue, 12 Jul 2022 07:41:14 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=8GiI7c6KLyvYWlAlrJO708tvc5vzNaQAzQETyEtyT+o=;
+        b=ybg0KMIE+9gDf2vzRS+A+ks8C+D618TcA4zS6demk7Ij0I7IjyX4wZhfxL9vY3NgdN
+         TlqpVLKSWZvb14me06xAPho98r090GcluC+L5plh82Jp4fUKtlbN7c6FV5/bO6PTW5Ar
+         XMbW+c1MVT8zVa0N29ehs0velBqeJK2gLPfePQyK9FOhphvHqKRYyw/MendHDYfp9RRL
+         3Q6Hi4DEP3izG6TatuAVt3Cb5pu39nqMwU8JL8YmgBkQjfjF9ktEYB4NABn248OibzKi
+         PVej1xP4L3n29sIKtJYIdE+8Ao6fYQacK4mu7kQJ4bEPPxHORTvUto5Y3wPTWDtUa/d5
+         okdA==
+X-Gm-Message-State: AJIora8ZquPLE2hF9kTZNt5DLmm4jYu1TYy5Bi7QWUzFGmj8veIZHYCs
+        02rwtQ92slWivGObx+hbbKu9PnA0Uw+tvWAjkAU=
+X-Google-Smtp-Source: AGRyM1tG8Kmhf5F6LdXEdDBGyrEwt30TIFpl5eDB8J1jqFafEWqlAy5LsCrikRnPblYg3B2EFs4kOw==
+X-Received: by 2002:a5d:4889:0:b0:21b:293e:9e43 with SMTP id g9-20020a5d4889000000b0021b293e9e43mr21879584wrq.705.1657636875580;
+        Tue, 12 Jul 2022 07:41:15 -0700 (PDT)
 Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id k18-20020a5d6e92000000b0021d746d4820sm8574135wrz.37.2022.07.12.07.41.13
+        by smtp.gmail.com with ESMTPSA id 21-20020a05600c229500b003a02b135747sm9541365wmf.46.2022.07.12.07.41.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 07:41:13 -0700 (PDT)
+        Tue, 12 Jul 2022 07:41:15 -0700 (PDT)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com, mlxsw@nvidia.com, idosch@nvidia.com,
         saeedm@nvidia.com, moshe@nvidia.com, tariqt@nvidia.com
-Subject: [patch net-next RFCv2 0/9] net: devlink: prepare mlxsw and netdevsim for locked reload
-Date:   Tue, 12 Jul 2022 16:41:03 +0200
-Message-Id: <20220712144112.2905407-1-jiri@resnulli.us>
+Subject: [patch net-next RFCv2 1/9] net: devlink: avoid false DEADLOCK warning reported by lockdep
+Date:   Tue, 12 Jul 2022 16:41:04 +0200
+Message-Id: <20220712144112.2905407-2-jiri@resnulli.us>
 X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220712144112.2905407-1-jiri@resnulli.us>
+References: <20220712144112.2905407-1-jiri@resnulli.us>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -67,50 +69,150 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Pirko <jiri@nvidia.com>
+From: Moshe Shemesh <moshe@nvidia.com>
 
-This is preparation patchset to be able to eventually make a switch and
-make reload cmd to take devlink->lock as the other commands do.
+Add a lock_class_key per devlink instance to avoid DEADLOCK warning by
+lockdep, while locking more than one devlink instance in driver code,
+for example in opening VFs flow.
 
-This patchset is preparing 2 major users of devlink API - mlxsw and
-netdevsim. The sets of functions are similar, therefore taking care of
-both here.
+Kernel log:
+[  101.433802] ============================================
+[  101.433803] WARNING: possible recursive locking detected
+[  101.433810] 5.19.0-rc1+ #35 Not tainted
+[  101.433812] --------------------------------------------
+[  101.433813] bash/892 is trying to acquire lock:
+[  101.433815] ffff888127bfc2f8 (&devlink->lock){+.+.}-{3:3}, at: probe_one+0x3c/0x690 [mlx5_core]
+[  101.433909]
+               but task is already holding lock:
+[  101.433910] ffff888118f4c2f8 (&devlink->lock){+.+.}-{3:3}, at: mlx5_core_sriov_configure+0x62/0x280 [mlx5_core]
+[  101.433989]
+               other info that might help us debug this:
+[  101.433990]  Possible unsafe locking scenario:
 
-I would like to ask you to take this RFC for a test spin, will send v1
-after you give me a go.
+[  101.433991]        CPU0
+[  101.433991]        ----
+[  101.433992]   lock(&devlink->lock);
+[  101.433993]   lock(&devlink->lock);
+[  101.433995]
+                *** DEADLOCK ***
 
-Jiri Pirko (8):
-  net: devlink: add unlocked variants of devling_trap*() functions
-  net: devlink: add unlocked variants of devlink_resource*() functions
-  net: devlink: add unlocked variants of devlink_sb*() functions
-  net: devlink: add unlocked variants of devlink_dpipe*() functions
-  mlxsw: convert driver to use unlocked devlink API during init/fini
-  net: devlink: add unlocked variants of devlink_region_create/destroy()
-    functions
-  netdevsim: convert driver to use unlocked devlink API during init/fini
-  net: devlink: remove unused locked functions
+[  101.433996]  May be due to missing lock nesting notation
 
-Moshe Shemesh (1):
-  net: devlink: avoid false DEADLOCK warning reported by lockdep
+[  101.433996] 6 locks held by bash/892:
+[  101.433998]  #0: ffff88810eb50448 (sb_writers#3){.+.+}-{0:0}, at: ksys_write+0xf3/0x1d0
+[  101.434009]  #1: ffff888114777c88 (&of->mutex){+.+.}-{3:3}, at: kernfs_fop_write_iter+0x20d/0x520
+[  101.434017]  #2: ffff888102b58660 (kn->active#231){.+.+}-{0:0}, at: kernfs_fop_write_iter+0x230/0x520
+[  101.434023]  #3: ffff888102d70198 (&dev->mutex){....}-{3:3}, at: sriov_numvfs_store+0x132/0x310
+[  101.434031]  #4: ffff888118f4c2f8 (&devlink->lock){+.+.}-{3:3}, at: mlx5_core_sriov_configure+0x62/0x280 [mlx5_core]
+[  101.434108]  #5: ffff88812adce198 (&dev->mutex){....}-{3:3}, at: __device_attach+0x76/0x430
+[  101.434116]
+               stack backtrace:
+[  101.434118] CPU: 5 PID: 892 Comm: bash Not tainted 5.19.0-rc1+ #35
+[  101.434120] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
+[  101.434130] Call Trace:
+[  101.434133]  <TASK>
+[  101.434135]  dump_stack_lvl+0x57/0x7d
+[  101.434145]  __lock_acquire.cold+0x1df/0x3e7
+[  101.434151]  ? register_lock_class+0x1880/0x1880
+[  101.434157]  lock_acquire+0x1c1/0x550
+[  101.434160]  ? probe_one+0x3c/0x690 [mlx5_core]
+[  101.434229]  ? lockdep_hardirqs_on_prepare+0x400/0x400
+[  101.434232]  ? __xa_alloc+0x1ed/0x2d0
+[  101.434236]  ? ksys_write+0xf3/0x1d0
+[  101.434239]  __mutex_lock+0x12c/0x14b0
+[  101.434243]  ? probe_one+0x3c/0x690 [mlx5_core]
+[  101.434312]  ? probe_one+0x3c/0x690 [mlx5_core]
+[  101.434380]  ? devlink_alloc_ns+0x11b/0x910
+[  101.434385]  ? mutex_lock_io_nested+0x1320/0x1320
+[  101.434388]  ? lockdep_init_map_type+0x21a/0x7d0
+[  101.434391]  ? lockdep_init_map_type+0x21a/0x7d0
+[  101.434393]  ? __init_swait_queue_head+0x70/0xd0
+[  101.434397]  probe_one+0x3c/0x690 [mlx5_core]
+[  101.434467]  pci_device_probe+0x1b4/0x480
+[  101.434471]  really_probe+0x1e0/0xaa0
+[  101.434474]  __driver_probe_device+0x219/0x480
+[  101.434478]  driver_probe_device+0x49/0x130
+[  101.434481]  __device_attach_driver+0x1b8/0x280
+[  101.434484]  ? driver_allows_async_probing+0x140/0x140
+[  101.434487]  bus_for_each_drv+0x123/0x1a0
+[  101.434489]  ? bus_for_each_dev+0x1a0/0x1a0
+[  101.434491]  ? lockdep_hardirqs_on_prepare+0x286/0x400
+[  101.434494]  ? trace_hardirqs_on+0x2d/0x100
+[  101.434498]  __device_attach+0x1a3/0x430
+[  101.434501]  ? device_driver_attach+0x1e0/0x1e0
+[  101.434503]  ? pci_bridge_d3_possible+0x1e0/0x1e0
+[  101.434506]  ? pci_create_resource_files+0xeb/0x190
+[  101.434511]  pci_bus_add_device+0x6c/0xa0
+[  101.434514]  pci_iov_add_virtfn+0x9e4/0xe00
+[  101.434517]  ? trace_hardirqs_on+0x2d/0x100
+[  101.434521]  sriov_enable+0x64a/0xca0
+[  101.434524]  ? pcibios_sriov_disable+0x10/0x10
+[  101.434528]  mlx5_core_sriov_configure+0xab/0x280 [mlx5_core]
+[  101.434602]  sriov_numvfs_store+0x20a/0x310
+[  101.434605]  ? sriov_totalvfs_show+0xc0/0xc0
+[  101.434608]  ? sysfs_file_ops+0x170/0x170
+[  101.434611]  ? sysfs_file_ops+0x117/0x170
+[  101.434614]  ? sysfs_file_ops+0x170/0x170
+[  101.434616]  kernfs_fop_write_iter+0x348/0x520
+[  101.434619]  new_sync_write+0x2e5/0x520
+[  101.434621]  ? new_sync_read+0x520/0x520
+[  101.434624]  ? lock_acquire+0x1c1/0x550
+[  101.434626]  ? lockdep_hardirqs_on_prepare+0x400/0x400
+[  101.434630]  vfs_write+0x5cb/0x8d0
+[  101.434633]  ksys_write+0xf3/0x1d0
+[  101.434635]  ? __x64_sys_read+0xb0/0xb0
+[  101.434638]  ? lockdep_hardirqs_on_prepare+0x286/0x400
+[  101.434640]  ? syscall_enter_from_user_mode+0x1d/0x50
+[  101.434643]  do_syscall_64+0x3d/0x90
+[  101.434647]  entry_SYSCALL_64_after_hwframe+0x46/0xb0
+[  101.434650] RIP: 0033:0x7f5ff536b2f7
+[  101.434658] Code: 0d 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb b7 0f
+1f 00 f3 0f 1e fa 64 8b 04 25 18 00 00 00 85 c0 75 10 b8 01 00 00 00 0f
+05 <48> 3d 00 f0 ff ff 77 51 c3 48 83 ec 28 48 89 54 24 18 48 89 74 24
+[  101.434661] RSP: 002b:00007ffd9ea85d58 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
+[  101.434664] RAX: ffffffffffffffda RBX: 0000000000000002 RCX: 00007f5ff536b2f7
+[  101.434666] RDX: 0000000000000002 RSI: 000055c4c279e230 RDI: 0000000000000001
+[  101.434668] RBP: 000055c4c279e230 R08: 000000000000000a R09: 0000000000000001
+[  101.434669] R10: 000055c4c283cbf0 R11: 0000000000000246 R12: 0000000000000002
+[  101.434670] R13: 00007f5ff543d500 R14: 0000000000000002 R15: 00007f5ff543d700
+[  101.434673]  </TASK>
 
- drivers/net/ethernet/mellanox/mlxsw/core.c    |  53 +-
- .../net/ethernet/mellanox/mlxsw/spectrum.c    | 103 ++-
- .../ethernet/mellanox/mlxsw/spectrum1_kvdl.c  |  82 +--
- .../mellanox/mlxsw/spectrum_buffers.c         |  14 +-
- .../ethernet/mellanox/mlxsw/spectrum_cnt.c    |  62 +-
- .../ethernet/mellanox/mlxsw/spectrum_dpipe.c  |  88 +--
- .../mellanox/mlxsw/spectrum_policer.c         |  32 +-
- .../ethernet/mellanox/mlxsw/spectrum_router.c |  22 +-
- .../ethernet/mellanox/mlxsw/spectrum_span.c   |   6 +-
- .../ethernet/mellanox/mlxsw/spectrum_trap.c   |  27 +-
- drivers/net/netdevsim/bus.c                   |  19 -
- drivers/net/netdevsim/dev.c                   | 134 ++--
- drivers/net/netdevsim/fib.c                   |  62 +-
- drivers/net/netdevsim/netdevsim.h             |   3 -
- include/net/devlink.h                         |  76 ++-
- net/core/devlink.c                            | 637 ++++++++++++------
- 16 files changed, 816 insertions(+), 604 deletions(-)
+Signed-off-by: Moshe Shemesh <moshe@nvidia.com>
+Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+---
+ net/core/devlink.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index a9776ea923ae..d2a4e6ee1be6 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -66,6 +66,7 @@ struct devlink {
+ 	 * port, sb, dpipe, resource, params, region, traps and more.
+ 	 */
+ 	struct mutex lock;
++	struct lock_class_key lock_key;
+ 	u8 reload_failed:1;
+ 	refcount_t refcount;
+ 	struct completion comp;
+@@ -9472,7 +9473,9 @@ struct devlink *devlink_alloc_ns(const struct devlink_ops *ops,
+ 	INIT_LIST_HEAD(&devlink->trap_list);
+ 	INIT_LIST_HEAD(&devlink->trap_group_list);
+ 	INIT_LIST_HEAD(&devlink->trap_policer_list);
++	lockdep_register_key(&devlink->lock_key);
+ 	mutex_init(&devlink->lock);
++	lockdep_set_class(&devlink->lock, &devlink->lock_key);
+ 	mutex_init(&devlink->reporters_lock);
+ 	mutex_init(&devlink->linecards_lock);
+ 	refcount_set(&devlink->refcount, 1);
+@@ -9619,6 +9622,7 @@ void devlink_free(struct devlink *devlink)
+ 	mutex_destroy(&devlink->linecards_lock);
+ 	mutex_destroy(&devlink->reporters_lock);
+ 	mutex_destroy(&devlink->lock);
++	lockdep_unregister_key(&devlink->lock_key);
+ 	WARN_ON(!list_empty(&devlink->trap_policer_list));
+ 	WARN_ON(!list_empty(&devlink->trap_group_list));
+ 	WARN_ON(!list_empty(&devlink->trap_list));
 -- 
 2.35.3
 
