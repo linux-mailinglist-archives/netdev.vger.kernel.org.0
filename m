@@ -2,133 +2,257 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CB012571682
-	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 12:05:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 29895571698
+	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 12:08:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231816AbiGLKFE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jul 2022 06:05:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53386 "EHLO
+        id S231790AbiGLKI0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jul 2022 06:08:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229756AbiGLKFD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 06:05:03 -0400
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2047.outbound.protection.outlook.com [40.107.95.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B87C6AA83D
-        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 03:05:02 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eGgxzSSMiiOzg9ESJL5dM7qON8OHiBqZhpqM9/82S2eLpdSzS3LYDLpOpPXV3V3ixl16ZuH+LIqpixEiX7YqpmkGb34+elO0tqYDyf6wESq6XatEO1lga5VVkYmq+LwXPLgEnaLeBZnDwGkWR3HKfW8IMSPKQCeNvyn+agIRkIaLRiF/pyt9xa8SwmY7MSBW00mE6EVqC5tjkqgY+B8qLcd+IZT2+lbwwiEsG6Ceo7+oO/piNZ7ti5PjurdMrCIZxfC7jR00t0XfAaBxcfFEL73rXt7XfkIWC28yvuF5vaQdQNRh1OkFZPTsT5wbgo/8feY8issckKIFWFoop05iUQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=wTTqHnGYjwLV9tjRFsA2IElIEH+Dd3Shc1c3Hn0WZME=;
- b=PWa63stU6DO1PCDdxuhf5VrbaFIpcJJ0/f1uQ6Ht5Y+su77E5TW4BXAFOmM1VXT5lLUT21hri4Vuiy6IMJjoshY+mRFeDwl+yT0mgjmqAQBQhiDRwDlDlyK3GwU0oUeqOjAX7v1MfJy2U6EDgSsku639z9gfzSifU8zOgJTi02a+Fz0Cv9ZqRScJInulRq9XdnbasDwV42GXBD40RSfFi+KMJh2wLOmYWikzuJRO3NEnaqQ9Q28zfKm7dyDGtfg65TbwSzeJ8qIgZIGdRksBvB+T4MwTNbKBek9tzQhYvYj12YJco1JRPKIDmrymHFZjYYtPJdbNvHehzLD3UNaQ8Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wTTqHnGYjwLV9tjRFsA2IElIEH+Dd3Shc1c3Hn0WZME=;
- b=dDrlSVZgiJswwoUt6nHnmHTfE6KUc3/uQfdxsRtaQxs0FeoPHQWoYiw1vRQQlmUG9EFW/9ZVTSRKJrrhIO4TQ/EwKa2j//8H1kUhLUWt+ppNApne/qOxwF1d7M9MtDWYivJ+FEU/XUqHPQLVYs/Z48+eWopSNTKCsY65R3gUH7WEazEDuopXLVdNEtSxACL3Qiz8M5GegfCmgjoPyopdmP21UrrYcgDh+ceEbWHgApQK3IYfeZY80JOGRkRf2Zz/d6h3FDaIQqTySXhgTtdz5A1NIy/uabhI0GyXt+F+JkhUUztBMUS54BEpKNR/HgsPpy5/k0cOi+Rgr5ngmKZoVg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN0PR12MB5979.namprd12.prod.outlook.com (2603:10b6:208:37e::15)
- by MN2PR12MB3181.namprd12.prod.outlook.com (2603:10b6:208:ae::27) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.17; Tue, 12 Jul
- 2022 10:05:01 +0000
-Received: from MN0PR12MB5979.namprd12.prod.outlook.com
- ([fe80::6cf7:d2b:903c:282]) by MN0PR12MB5979.namprd12.prod.outlook.com
- ([fe80::6cf7:d2b:903c:282%3]) with mapi id 15.20.5417.023; Tue, 12 Jul 2022
- 10:05:01 +0000
-Date:   Tue, 12 Jul 2022 12:04:56 +0200
-From:   Jiri Pirko <jiri@nvidia.com>
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
-        mlxsw@nvidia.com, saeedm@nvidia.com, moshe@nvidia.com
-Subject: Re: [patch net-next v3/repost 0/3] net: devlink: devl_* cosmetic
- fixes
-Message-ID: <Ys1HSDTQpU7kOd46@nanopsycho>
-References: <20220711132607.2654337-1-jiri@resnulli.us>
- <Ysw0XA2NC3cGxWIY@nanopsycho>
- <fbb2e0580c0ac108db8ee47b4342c4981f4d66b1.camel@redhat.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <fbb2e0580c0ac108db8ee47b4342c4981f4d66b1.camel@redhat.com>
-X-ClientProxiedBy: AS9PR07CA0024.eurprd07.prod.outlook.com
- (2603:10a6:20b:46c::33) To MN0PR12MB5979.namprd12.prod.outlook.com
- (2603:10b6:208:37e::15)
+        with ESMTP id S232756AbiGLKIT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 06:08:19 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B30C7AB6B4
+        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 03:08:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657620496;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=asP8dhyxSUgO0L29Od55/p+ittqGFcnMIB0u28ju8Tk=;
+        b=YNm2e9KFCt8VPVNzd5IDyIk3IQmC6ox8wti+1FF+F6ANmD5P+Gu/cbWNBju//BlFG/0mGH
+        /qk2nnLGGyfngrj9HDc/OrgC01KWnlKL2rIhlXVDvqMSF/OT8QfSj8v7p0g7AwWRKdPPd+
+        6S7qPrZKMLsQ+TwTHKlYstg8PJ2GQYc=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-296-58oR-c52Psq50MClkpW0Tg-1; Tue, 12 Jul 2022 06:08:09 -0400
+X-MC-Unique: 58oR-c52Psq50MClkpW0Tg-1
+Received: by mail-wm1-f72.google.com with SMTP id m20-20020a05600c4f5400b003a03aad6bdfso3873221wmq.6
+        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 03:08:09 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=asP8dhyxSUgO0L29Od55/p+ittqGFcnMIB0u28ju8Tk=;
+        b=NB/u27ntyx/U39+2JVsciHlz8h0E2QIa8KkiVOHf6ZeR9nT+7wSXFlhy/mOQQXvx41
+         OJfr3M//KcDaXLBcK8/7qu/XKRpCJbMHn5E/t0JaS55D5WEq5N+WoBtDb/dB6yE10XzP
+         VksesZHjP9Qc/VrCzT4t3Q9uF2xPDk+YNh1ua1PJ9rZzX6mZ0wCU+Pt+NlzDdh22UGr5
+         Vatrex/KGmu3AWitjQVfpIu5PtmuT1IrwC2skoDB9eu1q7Ex9Z9zN8xRVWdo1J4RZOT0
+         HcoTqnC0uhyNmKRQyZ/sXdbDTZQBDnpYQ9UgHcQYV7lMHf+AxVb4qTWOaAcjBKvwjmpn
+         VR/g==
+X-Gm-Message-State: AJIora/KrviQXEL3kctpeDARHpHn6UGrx/5Ssly/D7VcPVNGI0x8QYsl
+        TraJvp2VTcuQ6JslBm7Bw7vX+mMwkk/aAeVIQzjQ1HSisUvDpdlT1m+wBP61gpWZxvRXnj+IMLq
+        zW+QnEVhqjrfyb34i
+X-Received: by 2002:a05:600c:19cd:b0:3a1:77b6:cf1d with SMTP id u13-20020a05600c19cd00b003a177b6cf1dmr2833028wmq.141.1657620488721;
+        Tue, 12 Jul 2022 03:08:08 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1t1SefFmZkzyMfcY527GGFtqz++KRFKTRxAYUMCOJyY2MyCpI06LmrS10U0FyeLhmcsKyHfcQ==
+X-Received: by 2002:a05:600c:19cd:b0:3a1:77b6:cf1d with SMTP id u13-20020a05600c19cd00b003a177b6cf1dmr2833006wmq.141.1657620488462;
+        Tue, 12 Jul 2022 03:08:08 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-97-238.dyn.eolo.it. [146.241.97.238])
+        by smtp.gmail.com with ESMTPSA id c9-20020adfed89000000b0021d9233e7e6sm9505539wro.54.2022.07.12.03.08.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Jul 2022 03:08:07 -0700 (PDT)
+Message-ID: <2112728b3e53609c46d6403bffd563d62846a1d6.camel@redhat.com>
+Subject: Re: [PATCH net-next 3/4] net: ethernet: mtk_eth_soc: introduce xdp
+ ethtool counters
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org
+Cc:     nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
+        Mark-MC.Lee@mediatek.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, matthias.bgg@gmail.com,
+        linux-mediatek@lists.infradead.org, ilias.apalodimas@linaro.org,
+        lorenzo.bianconi@redhat.com, jbrouer@redhat.com
+Date:   Tue, 12 Jul 2022 12:08:05 +0200
+In-Reply-To: <6a522ca5588fde75f42d4d812e8990eca6d8952d.1657381057.git.lorenzo@kernel.org>
+References: <cover.1657381056.git.lorenzo@kernel.org>
+         <6a522ca5588fde75f42d4d812e8990eca6d8952d.1657381057.git.lorenzo@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 7b2bb003-57e8-4c52-0fb0-08da63edfbca
-X-MS-TrafficTypeDiagnostic: MN2PR12MB3181:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: v6lg+u1KVukOp/7zTWEhISJUoE/gwnPaklwXYxNG38CMqXbaCNYDKcca/2sBsF1Wp6D7mM9NJtSXdJkhNtjFtPlE9/fGvOogSMUcds++M0utrlvXo50u/mrKdnDr7FbVEzx7Q9P5t7Gr0xueTKGogtlH0qF6VBNTkBDIanL3Gry8T3JiMjnTAYOAWIpsZf99KMokhiKE2wJw4WvoOvZ8D3I25M7EBXLhSCLbpW9iZFEkFlnhfWu42guZZ2v0NbCoB+E69VDahF/izTbB3VyfP7CvhepTfVvm15ccQm9zLkKJmyu+Fl4pi1jphKOrJXfEpixxPvjBWp/VVK7N2PzmOcMF+QjiUcUMRYaK4bTrCRNtMWBlj1hteuHTnmOl+xCKRQCo48BmNZpvt+JYI00SmbDz3mRgxZslUFqMsd1G2bwWSYwQda4GdErxn4SqrKf/TCuzwe6gL3wnG0VtwxEkLTC1bdVcG09NFhGBqL9ip0fIWr76Z+GJZlC1qPJNJ1IIjyTr29BNk1nRNBzUjvd7Rp4f450aBnCDBNb+e8dlYJCtIJDx6CkRsUw/SVTGPwrBoCWuN3sX3wzZ+0kh7qKRQziCkNKJHrw60Dq3iGw5bB2Nr39Cs/ljwpTqaY9vYiFkSVosQ+tLoT4VxXZVancBmNOqqB5nhm8a92RzO/gBR9upcRmum5eTyzjbwSe3dhJ3+Y4yVA0PtbL4QIYR2zFeSZTp4TAgvEhTaJbVGY+Cj10jvP6OJIo5aNf9KX8locMs
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN0PR12MB5979.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(7916004)(346002)(376002)(39860400002)(396003)(136003)(366004)(66476007)(316002)(6506007)(33716001)(2906002)(86362001)(6666004)(38100700002)(6916009)(8676002)(4744005)(41300700001)(6512007)(26005)(9686003)(66946007)(8936002)(5660300002)(186003)(6486002)(107886003)(4326008)(66556008)(478600001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?0S3+QXpIre6ExEGD4Anhg/WROE7k03bckZM8RtRXMC/4df1rIgGMFjJFiKM9?=
- =?us-ascii?Q?HrRAkYp/muF/Le3J3u2X83micwzFf5bs1cvKSGcIpJDoNNcm8BlapWBNc1oy?=
- =?us-ascii?Q?rRlHCc8WenLEBOj+6Q7J74ejzvz1xmbi7+pYQaUiNj0fbuLoXq4oCG2oJVvl?=
- =?us-ascii?Q?nDMjouA4CJ7GcHc7QXLOljOeIZCcZ7x1CQkoRsp7O6GrFKVGslNF9FAWM1xQ?=
- =?us-ascii?Q?oUHJMWStlPkU2KOSdNQ4s5y4FJTbIm8q14TkG0KgYSD+Gp35uczBBMfJwl/9?=
- =?us-ascii?Q?Onlk7SBsy0uyhTLwT62xqw1cc3DKagAkpaFgQAhVZOKgPU/2CSXvge9S0Kmp?=
- =?us-ascii?Q?zrUNWW0YmZwjYrz+gzj0TOhdGglyQf/h4qNvI8BzFISEaSjuuhgP6WiAgBuo?=
- =?us-ascii?Q?WwQy/J+ybvMa8MZnFtK2LZQKLU9J0UV9Dsh/GXodooIq54Pl2Ci/2QD+6O/m?=
- =?us-ascii?Q?zWlxMRm3bpSTGLAdAQq2wAmLzSwUkrpylwpfzS6SUHV1JBBA3uDCedCpSWO6?=
- =?us-ascii?Q?yCQJpiFn/P58tgdQlORZ0Mmj268Q8B/14NPS+d3FnF/v3HsffQ1bYeVfbLD4?=
- =?us-ascii?Q?HfRLVbvZWtq+bvyowHbInJ4C15go5nkp5pOb+9qFMkYvU0+4xD67nwdHvw7W?=
- =?us-ascii?Q?l4fW1ECiPrOQ4wpgxw/Z2L4HJ8l+np8PM+ap3mEJUBTWY5YXSy0tf5ldnRHL?=
- =?us-ascii?Q?8iMHRHcqVPk1dOuJGOnwmDEm/fonB7vorH4DLsM/2SvXUeZ9Cij+ycIituRy?=
- =?us-ascii?Q?6poM21nipnACcRV5RGBqAySIHw5nNcoBnbp2xGdvMTf6ixhexIl1foeXUd/k?=
- =?us-ascii?Q?xxMqyrXXnbpFgYDeNBmgBgS9M4UXO0wSQZJKCJg2I35OzalHdjuQGRAIGe5n?=
- =?us-ascii?Q?g3ArHs1zuMGaMz4G18tEGiKnr0mpzeV6IL6bH4GE5Kk+IAG5xP59nm9paLG7?=
- =?us-ascii?Q?HMQa3emj04hbAcfhdL9KGIIJKdAArc8lm5tKXskkx3V/GPVh7pSeHDHMWTFU?=
- =?us-ascii?Q?UExMdTYhskuY+lGHUyfFHAZe1KvqirnUfI0qmpviaRmWDrenxuKW6/sUyG0e?=
- =?us-ascii?Q?GI4+MIDvoNK0apuwuGh0FwpnaHis7CUjOuzoqPF8PIQ/FDGvau9GjdBXbWwr?=
- =?us-ascii?Q?onm9TzY7muJ0PTdYbDKYtKb11HvSQ6OOsJrFGmn+Rw9Tl/BWzoCwC4sfg58B?=
- =?us-ascii?Q?aDMnEet01+ye4DoV/RP48+JSeuRN4vQKL+O0QpnotUmo6nx9/0ndKj0qoxuP?=
- =?us-ascii?Q?1HoW9IbKetaqrpwzsUru+BR2B+d5SKX67CvqLqh+Zga1fyyXOM2ivqY4yWA+?=
- =?us-ascii?Q?p0Nk8sHoUuyGYLTSffZBn9FML817u8gUl8ZdPHpXM/eMzV4/zpd51WkIbx8K?=
- =?us-ascii?Q?o5BPz+6GnjFP6wUt3H+IMK2KHizqSWlx0I0MGkbQ3kYRMxcLkPs3DvNnXB8s?=
- =?us-ascii?Q?HhhES9svAG8kjAYXYP2siMJrrHEA0j0oJ2uGeCLLTIDxO2SUnU4L2qAmGtR6?=
- =?us-ascii?Q?zn3T8tZZaTJgzrzb2oZdq2bMXKOy+Z6DJRzEO9F4b1WGiA94ua9DibXgr3Gz?=
- =?us-ascii?Q?zntUMeiJ29mrgLbEbwQ=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7b2bb003-57e8-4c52-0fb0-08da63edfbca
-X-MS-Exchange-CrossTenant-AuthSource: MN0PR12MB5979.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jul 2022 10:05:01.0631
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: onvSZc/tlOkaopNcWd86BJpaGbIh838uF99Ocji154s4DpBFTave6pLfnclmTFlO
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3181
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, Jul 12, 2022 at 10:53:38AM CEST, pabeni@redhat.com wrote:
->Hello,
->
->On Mon, 2022-07-11 at 16:31 +0200, Jiri Pirko wrote:
->> Jakub, this will probably conflict with Saeeds PR. Let me know and I
->> will rebase. Thanks!
->
->Indeed there are some conflicts. Could you please rebase? 
+On Sat, 2022-07-09 at 17:48 +0200, Lorenzo Bianconi wrote:
+> Report xdp stats through ethtool
+> 
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> ---
+>  drivers/net/ethernet/mediatek/mtk_eth_soc.c | 54 +++++++++++++++++----
+>  drivers/net/ethernet/mediatek/mtk_eth_soc.h | 12 +++++
+>  2 files changed, 57 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+> index 3b583abb599d..ae7ba2e09df8 100644
+> --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+> +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+> @@ -34,6 +34,10 @@ MODULE_PARM_DESC(msg_level, "Message level (-1=defaults,0=none,...,16=all)");
+>  #define MTK_ETHTOOL_STAT(x) { #x, \
+>  			      offsetof(struct mtk_hw_stats, x) / sizeof(u64) }
+>  
+> +#define MTK_ETHTOOL_XDP_STAT(x) { #x, \
+> +				  offsetof(struct mtk_hw_stats, xdp_stats.x) / \
+> +				  sizeof(u64) }
+> +
+>  static const struct mtk_reg_map mtk_reg_map = {
+>  	.tx_irq_mask		= 0x1a1c,
+>  	.tx_irq_status		= 0x1a18,
+> @@ -141,6 +145,13 @@ static const struct mtk_ethtool_stats {
+>  	MTK_ETHTOOL_STAT(rx_long_errors),
+>  	MTK_ETHTOOL_STAT(rx_checksum_errors),
+>  	MTK_ETHTOOL_STAT(rx_flow_control_packets),
+> +	MTK_ETHTOOL_XDP_STAT(rx_xdp_redirect),
+> +	MTK_ETHTOOL_XDP_STAT(rx_xdp_pass),
+> +	MTK_ETHTOOL_XDP_STAT(rx_xdp_drop),
+> +	MTK_ETHTOOL_XDP_STAT(rx_xdp_tx),
+> +	MTK_ETHTOOL_XDP_STAT(rx_xdp_tx_errors),
+> +	MTK_ETHTOOL_XDP_STAT(tx_xdp_xmit),
+> +	MTK_ETHTOOL_XDP_STAT(tx_xdp_xmit_errors),
+>  };
+>  
+>  static const char * const mtk_clks_source_name[] = {
+> @@ -1495,7 +1506,8 @@ static void mtk_rx_put_buff(struct mtk_rx_ring *ring, void *data, bool napi)
+>  }
+>  
+>  static u32 mtk_xdp_run(struct mtk_rx_ring *ring, struct bpf_prog *prog,
+> -		       struct xdp_buff *xdp, struct net_device *dev)
+> +		       struct xdp_buff *xdp, struct net_device *dev,
+> +		       struct mtk_xdp_stats *stats)
+>  {
+>  	u32 act = XDP_PASS;
+>  
+> @@ -1505,10 +1517,13 @@ static u32 mtk_xdp_run(struct mtk_rx_ring *ring, struct bpf_prog *prog,
+>  	act = bpf_prog_run_xdp(prog, xdp);
+>  	switch (act) {
+>  	case XDP_PASS:
+> +		stats->rx_xdp_pass++;
+>  		return XDP_PASS;
+>  	case XDP_REDIRECT:
+>  		if (unlikely(xdp_do_redirect(dev, xdp, prog)))
+>  			break;
+> +
+> +		stats->rx_xdp_redirect++;
+>  		return XDP_REDIRECT;
+>  	default:
+>  		bpf_warn_invalid_xdp_action(dev, prog, act);
+> @@ -1520,14 +1535,38 @@ static u32 mtk_xdp_run(struct mtk_rx_ring *ring, struct bpf_prog *prog,
+>  		break;
+>  	}
+>  
+> +	stats->rx_xdp_drop++;
+>  	page_pool_put_full_page(ring->page_pool,
+>  				virt_to_head_page(xdp->data), true);
+>  	return XDP_DROP;
+>  }
+>  
+> +static void mtk_xdp_rx_complete(struct mtk_eth *eth,
+> +				struct mtk_xdp_stats *stats)
+> +{
+> +	int i, xdp_do_redirect = 0;
+> +
+> +	/* update xdp ethtool stats */
+> +	for (i = 0; i < MTK_MAX_DEVS; i++) {
+> +		struct mtk_hw_stats *hw_stats = eth->mac[i]->hw_stats;
+> +		struct mtk_xdp_stats *xdp_stats = &hw_stats->xdp_stats;
+> +
+> +		u64_stats_update_begin(&hw_stats->syncp);
+> +		xdp_stats->rx_xdp_redirect += stats[i].rx_xdp_redirect;
+> +		xdp_do_redirect += stats[i].rx_xdp_pass;
+> +		xdp_stats->rx_xdp_pass += stats[i].rx_xdp_pass;
+> +		xdp_stats->rx_xdp_drop += stats[i].rx_xdp_drop;
+> +		u64_stats_update_end(&hw_stats->syncp);
+> +	}
+> +
+> +	if (xdp_do_redirect)
+> +		xdp_do_flush_map();
+> +}
+> +
+>  static int mtk_poll_rx(struct napi_struct *napi, int budget,
+>  		       struct mtk_eth *eth)
+>  {
+> +	struct mtk_xdp_stats xdp_stats[MTK_MAX_DEVS] = {};
 
-I'm on in. Will it to you in a jiff.
+This is allocating on the stack and clearing a relatively large struct
+for every poll() call, which is not good.
 
->
->Thanks!
->
->Paolo
->
+Why can't you touch directly the eth->mac[i]->hw_stats.xdp_stats
+counters where needed?
+
+>  	struct bpf_prog *prog = READ_ONCE(eth->prog);
+>  	struct dim_sample dim_sample = {};
+>  	struct mtk_rx_ring *ring;
+> @@ -1535,7 +1574,6 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
+>  	struct sk_buff *skb;
+>  	u8 *data, *new_data;
+>  	struct mtk_rx_dma_v2 *rxd, trxd;
+> -	bool xdp_do_redirect = false;
+>  	int done = 0, bytes = 0;
+>  
+>  	while (done < budget) {
+> @@ -1597,12 +1635,10 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
+>  					 false);
+>  			xdp_buff_clear_frags_flag(&xdp);
+>  
+> -			ret = mtk_xdp_run(ring, prog, &xdp, netdev);
+> -			if (ret != XDP_PASS) {
+> -				if (ret == XDP_REDIRECT)
+> -					xdp_do_redirect = true;
+> +			ret = mtk_xdp_run(ring, prog, &xdp, netdev,
+> +					  &xdp_stats[mac]);
+> +			if (ret != XDP_PASS)
+>  				goto skip_rx;
+> -			}
+>  
+>  			skb = build_skb(data, PAGE_SIZE);
+>  			if (unlikely(!skb)) {
+> @@ -1725,8 +1761,8 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
+>  			  &dim_sample);
+>  	net_dim(&eth->rx_dim, dim_sample);
+>  
+> -	if (prog && xdp_do_redirect)
+> -		xdp_do_flush_map();
+> +	if (prog)
+> +		mtk_xdp_rx_complete(eth, xdp_stats);
+>  
+>  	return done;
+>  }
+> diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+> index a1cea93300c1..629cdcdd632a 100644
+> --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+> +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+> @@ -570,6 +570,16 @@ struct mtk_tx_dma_v2 {
+>  struct mtk_eth;
+>  struct mtk_mac;
+>  
+> +struct mtk_xdp_stats {
+> +	u64 rx_xdp_redirect;
+> +	u64 rx_xdp_pass;
+> +	u64 rx_xdp_drop;
+> +	u64 rx_xdp_tx;
+> +	u64 rx_xdp_tx_errors;
+> +	u64 tx_xdp_xmit;
+> +	u64 tx_xdp_xmit_errors;
+> +};
+> +
+>  /* struct mtk_hw_stats - the structure that holds the traffic statistics.
+>   * @stats_lock:		make sure that stats operations are atomic
+>   * @reg_offset:		the status register offset of the SoC
+> @@ -593,6 +603,8 @@ struct mtk_hw_stats {
+>  	u64 rx_checksum_errors;
+>  	u64 rx_flow_control_packets;
+>  
+> +	struct mtk_xdp_stats	xdp_stats;
+> +
+>  	spinlock_t		stats_lock;
+>  	u32			reg_offset;
+>  	struct u64_stats_sync	syncp;
+
