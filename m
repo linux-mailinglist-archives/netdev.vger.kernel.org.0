@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 04ADE5717FC
+	by mail.lfdr.de (Postfix) with ESMTP id 6F10B5717FD
 	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 13:05:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232454AbiGLLFe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S232542AbiGLLFe (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Tue, 12 Jul 2022 07:05:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51466 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232876AbiGLLFX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 07:05:23 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1A05B0255
-        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 04:05:21 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id m16so9600658edb.11
-        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 04:05:21 -0700 (PDT)
+        with ESMTP id S232891AbiGLLFY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 07:05:24 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F303B025B
+        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 04:05:23 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id mf4so12472063ejc.3
+        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 04:05:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=/58qnqaKZqDl81glf7gtHwtss7t83dbWLid2FRs2q14=;
-        b=QXk9+J+JKmycUczpv3p0AhzJw50WwAjgSnB3MUc6ggxrtaUcR9NGbwGcwW8mUf6KGv
-         Irjq0Zuo7l2QV21HUT82cnADLpvPYhwtjWFJKStgJZDnn7xIDdTJgrnqZDNqxHc8zsxb
-         D3Kl9Y8G0cwUBQafdDPU9xrlBuNOxLxQhB0PbKGxBuBvdxKhH3QcwpEnQKrfBq6P29wN
-         EYEbUwEkDs1wQAmJvVmdDfh+A8LWb2FZpjEMiEkK81yYufkTPYlLK+/5Jv7CmuP0MjdK
-         Qshv2O3wG2T88bWHHoSG+2pQJiAMVCGq2Z8VxznsQiszUT8YQRwN/RRiV24DDCwdDCKU
-         gSYQ==
+        bh=jRj2x+hppUH4qtgedgp/T52fIYsQutjLXzc5QM6zN1Q=;
+        b=ogrS9qzhZZgbVQGfltPJiHKhxSdx6qGI1tm2zE/KDknQpjEBH9gUXg03pyC8kmxF6m
+         hCvfTK0K1R9B3/jrPQvW9Ag7F9WRaHTvka6WGR6v/6GVdjOrPG6iP2hNJIO33Kh7DW8a
+         Eai5Ij6jd69xr4lbkZV+XBEU19/BAuCp7Tqjs6KvkyvhXXH8ZyzWeXKcutr4x1ginf5z
+         uFdGAa1bvFjD0UB7ioXRPV/79ubjdGOnAnzulOtzeFjKI4hXOS24xy8yOZUH3mjdzLbZ
+         n/EDwv0MbotluLJi5fBYzHF83TiVncjafT1Jk75h0iUQ73ce4mRb6nfX1Y93gjpojABL
+         JExQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=/58qnqaKZqDl81glf7gtHwtss7t83dbWLid2FRs2q14=;
-        b=cSwSUFMCRs/SKZCEtZL366mKWd4LHYVvhrvY1MZiViotTsJKfB60Jjn/8whxKHPJ17
-         mC07y9edUoGL83gOeP3LBtzCl63XQEkV2dBjdMoKolalG906zPLUUi/SgwVXgnlkOcxa
-         rCP7cyA6hkU+tI65Qm0EeJI2JJz9F72g4rtQ5kuMdhsFb9AuTFkuImfUk/0NP4Kf0buq
-         S10D7ap/Ae+G/CMj4snaojgIA9AUY9ELNSNyBy3FWgyeiIWIxSlpDcCsECJZbqf5M6v1
-         zXOpiPxrxuHRc0gPiu6l4bor/+PLhEknmfJucMJ9BZLmc8DEzjPhxRFFVVEX3i1QeGqF
-         YZHw==
-X-Gm-Message-State: AJIora/GnYIQ+pVE/JwObeFavdoiwkF+ecLX8JKsaoDz0QigVwNPbnUX
-        dj8GIKgbZ9gtP5vIHLhm5CwgOpanfZGLRp8QnSA=
-X-Google-Smtp-Source: AGRyM1uzQEYP3JirP9Su/le6mvFCb9Syn7tMMsgPk9xclk1nmC3sWYcfwdfpmxG08d3qryAixQclEA==
-X-Received: by 2002:aa7:c585:0:b0:43a:725b:9851 with SMTP id g5-20020aa7c585000000b0043a725b9851mr31575439edq.399.1657623920241;
-        Tue, 12 Jul 2022 04:05:20 -0700 (PDT)
+        bh=jRj2x+hppUH4qtgedgp/T52fIYsQutjLXzc5QM6zN1Q=;
+        b=CP3a6tXsE7xHn4MYUDskvxaRfJJpN82p2W5XZB7UgUU3rqOBEDX5ta6OE50sWBQm1F
+         LSVLugPXWZzJMgagJHxLw7MllI7HIPst3zR+acJgBK1Ia288m7rugFEjtws19nPWnW+h
+         DwLjpOXNSM2gzNc5jV4S4wogHxQX2OTQo1L19+yye+QC8QvZwZgYBFF/rvxRysRVCm2Q
+         PmScdnANHu+P+cdrbGk/cQXxLo4glitbMoyFlxzP7NJ344C8UzahamLhZEw+Yf5uh6XI
+         36NhcCLKGryXWjP32en1WKXgPaOkFfewAqpB+xpDOj5g+JsmFam1wGFYKtwtBAw8k6Yt
+         bf3Q==
+X-Gm-Message-State: AJIora/sbhKJM73yJknx45rBvfdR/RGfYJyJYZ02qonv4zDj9ISwOuQT
+        NL7sLQO0gUhKgBjWy0UZD7Fz7YTlAHKBhq3QHY4=
+X-Google-Smtp-Source: AGRyM1sYcvTi6VLmBAEzzLNA8RctdNo8YDgXAMvI9a7Kf8XYM2PRUBy/EiTng4CYmSA98zPEkAr4Iw==
+X-Received: by 2002:a17:906:c10:b0:6f4:6c70:b00f with SMTP id s16-20020a1709060c1000b006f46c70b00fmr23469663ejf.660.1657623921731;
+        Tue, 12 Jul 2022 04:05:21 -0700 (PDT)
 Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id 17-20020a170906211100b006fefd1d5c2bsm3720754ejt.148.2022.07.12.04.05.19
+        by smtp.gmail.com with ESMTPSA id e24-20020a50ec98000000b0043a6a7048absm5763205edr.95.2022.07.12.04.05.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 04:05:19 -0700 (PDT)
+        Tue, 12 Jul 2022 04:05:21 -0700 (PDT)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com, mlxsw@nvidia.com, idosch@nvidia.com,
         saeedm@nvidia.com, moshe@nvidia.com, tariqt@nvidia.com
-Subject: [patch net-next RFC 05/10] net: devlink: add unlocked variants of devlink_dpipe*() functions
-Date:   Tue, 12 Jul 2022 13:05:06 +0200
-Message-Id: <20220712110511.2834647-6-jiri@resnulli.us>
+Subject: [patch net-next RFC 06/10] net: devlink: add unlocked variants of devlink_trap_policers*() functions
+Date:   Tue, 12 Jul 2022 13:05:07 +0200
+Message-Id: <20220712110511.2834647-7-jiri@resnulli.us>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220712110511.2834647-1-jiri@resnulli.us>
 References: <20220712110511.2834647-1-jiri@resnulli.us>
@@ -71,333 +71,150 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@nvidia.com>
 
-Add unlocked variants of devlink_dpipe*() functions to be used
+Add unlocked variants of devlink_trap_policers*() functions to be used
 in drivers called-in with devlink->lock held.
 
 Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 ---
- include/net/devlink.h |  12 +++
- net/core/devlink.c    | 181 +++++++++++++++++++++++++++++++-----------
- 2 files changed, 147 insertions(+), 46 deletions(-)
+ include/net/devlink.h |  8 ++++++
+ net/core/devlink.c    | 61 +++++++++++++++++++++++++++++++++++--------
+ 2 files changed, 58 insertions(+), 11 deletions(-)
 
 diff --git a/include/net/devlink.h b/include/net/devlink.h
-index 9d340f642ed9..66722e4dcb87 100644
+index 66722e4dcb87..18ad88527847 100644
 --- a/include/net/devlink.h
 +++ b/include/net/devlink.h
-@@ -1589,14 +1589,23 @@ int devlink_sb_register(struct devlink *devlink, unsigned int sb_index,
- 			u16 egress_tc_count);
- void devl_sb_unregister(struct devlink *devlink, unsigned int sb_index);
- void devlink_sb_unregister(struct devlink *devlink, unsigned int sb_index);
-+int devl_dpipe_table_register(struct devlink *devlink,
-+			      const char *table_name,
-+			      struct devlink_dpipe_table_ops *table_ops,
-+			      void *priv, bool counter_control_extern);
- int devlink_dpipe_table_register(struct devlink *devlink,
- 				 const char *table_name,
- 				 struct devlink_dpipe_table_ops *table_ops,
- 				 void *priv, bool counter_control_extern);
-+void devl_dpipe_table_unregister(struct devlink *devlink,
-+				 const char *table_name);
- void devlink_dpipe_table_unregister(struct devlink *devlink,
- 				    const char *table_name);
-+void devl_dpipe_headers_register(struct devlink *devlink,
-+				 struct devlink_dpipe_headers *dpipe_headers);
- void devlink_dpipe_headers_register(struct devlink *devlink,
- 				   struct devlink_dpipe_headers *dpipe_headers);
-+void devl_dpipe_headers_unregister(struct devlink *devlink);
- void devlink_dpipe_headers_unregister(struct devlink *devlink);
- bool devlink_dpipe_table_counter_enabled(struct devlink *devlink,
- 					 const char *table_name);
-@@ -1633,6 +1642,9 @@ int devl_resource_size_get(struct devlink *devlink,
- int devlink_resource_size_get(struct devlink *devlink,
- 			      u64 resource_id,
- 			      u64 *p_resource_size);
-+int devl_dpipe_table_resource_set(struct devlink *devlink,
-+				  const char *table_name, u64 resource_id,
-+				  u64 resource_units);
- int devlink_dpipe_table_resource_set(struct devlink *devlink,
- 				     const char *table_name, u64 resource_id,
- 				     u64 resource_units);
+@@ -1808,10 +1808,18 @@ void devlink_trap_groups_unregister(struct devlink *devlink,
+ 				    const struct devlink_trap_group *groups,
+ 				    size_t groups_count);
+ int
++devl_trap_policers_register(struct devlink *devlink,
++			    const struct devlink_trap_policer *policers,
++			    size_t policers_count);
++int
+ devlink_trap_policers_register(struct devlink *devlink,
+ 			       const struct devlink_trap_policer *policers,
+ 			       size_t policers_count);
+ void
++devl_trap_policers_unregister(struct devlink *devlink,
++			      const struct devlink_trap_policer *policers,
++			      size_t policers_count);
++void
+ devlink_trap_policers_unregister(struct devlink *devlink,
+ 				 const struct devlink_trap_policer *policers,
+ 				 size_t policers_count);
 diff --git a/net/core/devlink.c b/net/core/devlink.c
-index b45e9216e913..20b2a5e2c2f2 100644
+index 20b2a5e2c2f2..efd0772e8c42 100644
 --- a/net/core/devlink.c
 +++ b/net/core/devlink.c
-@@ -10438,6 +10438,23 @@ void devlink_sb_unregister(struct devlink *devlink, unsigned int sb_index)
+@@ -12185,7 +12185,7 @@ devlink_trap_policer_unregister(struct devlink *devlink,
  }
- EXPORT_SYMBOL_GPL(devlink_sb_unregister);
- 
-+/**
-+ * devl_dpipe_headers_register - register dpipe headers
-+ *
-+ * @devlink: devlink
-+ * @dpipe_headers: dpipe header array
-+ *
-+ * Register the headers supported by hardware.
-+ */
-+void devl_dpipe_headers_register(struct devlink *devlink,
-+				 struct devlink_dpipe_headers *dpipe_headers)
-+{
-+	lockdep_assert_held(&devlink->lock);
-+
-+	devlink->dpipe_headers = dpipe_headers;
-+}
-+EXPORT_SYMBOL_GPL(devl_dpipe_headers_register);
-+
- /**
-  *	devlink_dpipe_headers_register - register dpipe headers
-  *
-@@ -10445,27 +10462,46 @@ EXPORT_SYMBOL_GPL(devlink_sb_unregister);
-  *	@dpipe_headers: dpipe header array
-  *
-  *	Register the headers supported by hardware.
-+ *
-+ *	Context: Takes and release devlink->lock <mutex>.
-  */
- void devlink_dpipe_headers_register(struct devlink *devlink,
- 				    struct devlink_dpipe_headers *dpipe_headers)
- {
- 	devl_lock(devlink);
--	devlink->dpipe_headers = dpipe_headers;
-+	devl_dpipe_headers_register(devlink, dpipe_headers);
- 	devl_unlock(devlink);
- }
- EXPORT_SYMBOL_GPL(devlink_dpipe_headers_register);
- 
-+/**
-+ * devl_dpipe_headers_unregister - unregister dpipe headers
-+ *
-+ * @devlink: devlink
-+ *
-+ * Unregister the headers supported by hardware.
-+ */
-+void devl_dpipe_headers_unregister(struct devlink *devlink)
-+{
-+	lockdep_assert_held(&devlink->lock);
-+
-+	devlink->dpipe_headers = NULL;
-+}
-+EXPORT_SYMBOL_GPL(devl_dpipe_headers_unregister);
-+
- /**
-  *	devlink_dpipe_headers_unregister - unregister dpipe headers
-  *
-  *	@devlink: devlink
-  *
-  *	Unregister the headers supported by hardware.
-+ *
-+ *	Context: Takes and release devlink->lock <mutex>.
-  */
- void devlink_dpipe_headers_unregister(struct devlink *devlink)
- {
- 	devl_lock(devlink);
--	devlink->dpipe_headers = NULL;
-+	devl_dpipe_headers_unregister(devlink);
- 	devl_unlock(devlink);
- }
- EXPORT_SYMBOL_GPL(devlink_dpipe_headers_unregister);
-@@ -10502,38 +10538,33 @@ bool devlink_dpipe_table_counter_enabled(struct devlink *devlink,
- EXPORT_SYMBOL_GPL(devlink_dpipe_table_counter_enabled);
  
  /**
-- *	devlink_dpipe_table_register - register dpipe table
-+ * devl_dpipe_table_register - register dpipe table
-  *
-- *	@devlink: devlink
-- *	@table_name: table name
-- *	@table_ops: table ops
-- *	@priv: priv
-- *	@counter_control_extern: external control for counters
-+ * @devlink: devlink
-+ * @table_name: table name
-+ * @table_ops: table ops
-+ * @priv: priv
-+ * @counter_control_extern: external control for counters
+- * devlink_trap_policers_register - Register packet trap policers with devlink.
++ * devl_trap_policers_register - Register packet trap policers with devlink.
+  * @devlink: devlink.
+  * @policers: Packet trap policers.
+  * @policers_count: Count of provided packet trap policers.
+@@ -12193,13 +12193,13 @@ devlink_trap_policer_unregister(struct devlink *devlink,
+  * Return: Non-zero value on failure.
   */
--int devlink_dpipe_table_register(struct devlink *devlink,
--				 const char *table_name,
--				 struct devlink_dpipe_table_ops *table_ops,
--				 void *priv, bool counter_control_extern)
-+int devl_dpipe_table_register(struct devlink *devlink,
-+			      const char *table_name,
-+			      struct devlink_dpipe_table_ops *table_ops,
-+			      void *priv, bool counter_control_extern)
+ int
+-devlink_trap_policers_register(struct devlink *devlink,
+-			       const struct devlink_trap_policer *policers,
+-			       size_t policers_count)
++devl_trap_policers_register(struct devlink *devlink,
++			    const struct devlink_trap_policer *policers,
++			    size_t policers_count)
  {
- 	struct devlink_dpipe_table *table;
--	int err = 0;
-+
-+	lockdep_assert_held(&devlink->lock);
- 
- 	if (WARN_ON(!table_ops->size_get))
- 		return -EINVAL;
+ 	int i, err;
  
 -	devl_lock(devlink);
--
- 	if (devlink_dpipe_table_find(&devlink->dpipe_table_list, table_name,
--				     devlink)) {
--		err = -EEXIST;
--		goto unlock;
--	}
-+				     devlink))
-+		return -EEXIST;
++	devl_assert_locked(devlink);
+ 	for (i = 0; i < policers_count; i++) {
+ 		const struct devlink_trap_policer *policer = &policers[i];
  
- 	table = kzalloc(sizeof(*table), GFP_KERNEL);
--	if (!table) {
--		err = -ENOMEM;
--		goto unlock;
--	}
-+	if (!table)
-+		return -ENOMEM;
- 
- 	table->name = table_name;
- 	table->table_ops = table_ops;
-@@ -10541,33 +10572,72 @@ int devlink_dpipe_table_register(struct devlink *devlink,
- 	table->counter_control_extern = counter_control_extern;
- 
- 	list_add_tail_rcu(&table->list, &devlink->dpipe_table_list);
--unlock:
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(devl_dpipe_table_register);
-+
-+/**
-+ *	devlink_dpipe_table_register - register dpipe table
-+ *
-+ *	@devlink: devlink
-+ *	@table_name: table name
-+ *	@table_ops: table ops
-+ *	@priv: priv
-+ *	@counter_control_extern: external control for counters
-+ *
-+ *	Context: Takes and release devlink->lock <mutex>.
-+ */
-+int devlink_dpipe_table_register(struct devlink *devlink,
-+				 const char *table_name,
-+				 struct devlink_dpipe_table_ops *table_ops,
-+				 void *priv, bool counter_control_extern)
-+{
-+	int err;
-+
-+	devl_lock(devlink);
-+	err = devl_dpipe_table_register(devlink, table_name, table_ops, priv,
-+					counter_control_extern);
- 	devl_unlock(devlink);
- 	return err;
- }
- EXPORT_SYMBOL_GPL(devlink_dpipe_table_register);
- 
- /**
-- *	devlink_dpipe_table_unregister - unregister dpipe table
-+ * devl_dpipe_table_unregister - unregister dpipe table
-  *
-- *	@devlink: devlink
-- *	@table_name: table name
-+ * @devlink: devlink
-+ * @table_name: table name
-  */
--void devlink_dpipe_table_unregister(struct devlink *devlink,
--				    const char *table_name)
-+void devl_dpipe_table_unregister(struct devlink *devlink,
-+				 const char *table_name)
- {
- 	struct devlink_dpipe_table *table;
- 
--	devl_lock(devlink);
-+	lockdep_assert_held(&devlink->lock);
-+
- 	table = devlink_dpipe_table_find(&devlink->dpipe_table_list,
- 					 table_name, devlink);
- 	if (!table)
--		goto unlock;
-+		return;
- 	list_del_rcu(&table->list);
+@@ -12214,35 +12214,74 @@ devlink_trap_policers_register(struct devlink *devlink,
+ 		if (err)
+ 			goto err_trap_policer_register;
+ 	}
 -	devl_unlock(devlink);
- 	kfree_rcu(table, rcu);
--	return;
--unlock:
-+}
-+EXPORT_SYMBOL_GPL(devl_dpipe_table_unregister);
-+
-+/**
-+ *	devlink_dpipe_table_unregister - unregister dpipe table
-+ *
-+ *	@devlink: devlink
-+ *	@table_name: table name
-+ *
-+ *	Context: Takes and release devlink->lock <mutex>.
-+ */
-+void devlink_dpipe_table_unregister(struct devlink *devlink,
-+				    const char *table_name)
-+{
-+	devl_lock(devlink);
-+	devl_dpipe_table_unregister(devlink, table_name);
- 	devl_unlock(devlink);
- }
- EXPORT_SYMBOL_GPL(devlink_dpipe_table_unregister);
-@@ -10766,6 +10836,32 @@ int devlink_resource_size_get(struct devlink *devlink,
- }
- EXPORT_SYMBOL_GPL(devlink_resource_size_get);
+-
+ 	return 0;
  
-+/**
-+ * devl_dpipe_table_resource_set - set the resource id
-+ *
-+ * @devlink: devlink
-+ * @table_name: table name
-+ * @resource_id: resource id
-+ * @resource_units: number of resource's units consumed per table's entry
-+ */
-+int devl_dpipe_table_resource_set(struct devlink *devlink,
-+				  const char *table_name, u64 resource_id,
-+				  u64 resource_units)
-+{
-+	struct devlink_dpipe_table *table;
-+
-+	table = devlink_dpipe_table_find(&devlink->dpipe_table_list,
-+					 table_name, devlink);
-+	if (!table)
-+		return -EINVAL;
-+
-+	table->resource_id = resource_id;
-+	table->resource_units = resource_units;
-+	table->resource_valid = true;
-+	return 0;
+ err_trap_policer_register:
+ err_trap_policer_verify:
+ 	for (i--; i >= 0; i--)
+ 		devlink_trap_policer_unregister(devlink, &policers[i]);
++	return err;
 +}
-+EXPORT_SYMBOL_GPL(devl_dpipe_table_resource_set);
++EXPORT_SYMBOL_GPL(devl_trap_policers_register);
 +
- /**
-  *	devlink_dpipe_table_resource_set - set the resource id
-  *
-@@ -10773,25 +10869,18 @@ EXPORT_SYMBOL_GPL(devlink_resource_size_get);
-  *	@table_name: table name
-  *	@resource_id: resource id
-  *	@resource_units: number of resource's units consumed per table's entry
++/**
++ * devlink_trap_policers_register - Register packet trap policers with devlink.
++ * @devlink: devlink.
++ * @policers: Packet trap policers.
++ * @policers_count: Count of provided packet trap policers.
 + *
-+ *	Context: Takes and release devlink->lock <mutex>.
-  */
- int devlink_dpipe_table_resource_set(struct devlink *devlink,
- 				     const char *table_name, u64 resource_id,
- 				     u64 resource_units)
- {
--	struct devlink_dpipe_table *table;
--	int err = 0;
++ * Return: Non-zero value on failure.
++ *
++ * Context: Takes and release devlink->lock <mutex>.
++ */
++int
++devlink_trap_policers_register(struct devlink *devlink,
++			       const struct devlink_trap_policer *policers,
++			       size_t policers_count)
++{
 +	int err;
- 
- 	devl_lock(devlink);
--	table = devlink_dpipe_table_find(&devlink->dpipe_table_list,
--					 table_name, devlink);
--	if (!table) {
--		err = -EINVAL;
--		goto out;
--	}
--	table->resource_id = resource_id;
--	table->resource_units = resource_units;
--	table->resource_valid = true;
--out:
-+	err = devl_dpipe_table_resource_set(devlink, table_name,
-+					    resource_id, resource_units);
++
++	devl_lock(devlink);
++	err = devl_trap_policers_register(devlink, policers, policers_count);
  	devl_unlock(devlink);
  	return err;
  }
+ EXPORT_SYMBOL_GPL(devlink_trap_policers_register);
+ 
++/**
++ * devl_trap_policers_unregister - Unregister packet trap policers from devlink.
++ * @devlink: devlink.
++ * @policers: Packet trap policers.
++ * @policers_count: Count of provided packet trap policers.
++ */
++void
++devl_trap_policers_unregister(struct devlink *devlink,
++			      const struct devlink_trap_policer *policers,
++			      size_t policers_count)
++{
++	int i;
++
++	devl_assert_locked(devlink);
++	for (i = policers_count - 1; i >= 0; i--)
++		devlink_trap_policer_unregister(devlink, &policers[i]);
++}
++EXPORT_SYMBOL_GPL(devl_trap_policers_unregister);
++
+ /**
+  * devlink_trap_policers_unregister - Unregister packet trap policers from devlink.
+  * @devlink: devlink.
+  * @policers: Packet trap policers.
+  * @policers_count: Count of provided packet trap policers.
++ *
++ * Context: Takes and release devlink->lock <mutex>.
+  */
+ void
+ devlink_trap_policers_unregister(struct devlink *devlink,
+ 				 const struct devlink_trap_policer *policers,
+ 				 size_t policers_count)
+ {
+-	int i;
+-
+ 	devl_lock(devlink);
+-	for (i = policers_count - 1; i >= 0; i--)
+-		devlink_trap_policer_unregister(devlink, &policers[i]);
++	devl_trap_policers_unregister(devlink, policers, policers_count);
+ 	devl_unlock(devlink);
+ }
+ EXPORT_SYMBOL_GPL(devlink_trap_policers_unregister);
 -- 
 2.35.3
 
