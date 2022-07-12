@@ -2,480 +2,668 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 62FD95720E0
-	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 18:33:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1AD257213D
+	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 18:42:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230010AbiGLQdX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jul 2022 12:33:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48510 "EHLO
+        id S234300AbiGLQmx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jul 2022 12:42:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229746AbiGLQdW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 12:33:22 -0400
-Received: from smtp-fw-33001.amazon.com (smtp-fw-33001.amazon.com [207.171.190.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3348CB47C
-        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 09:33:20 -0700 (PDT)
+        with ESMTP id S234182AbiGLQmj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 12:42:39 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8439B3D75
+        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 09:42:09 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id o7so14876565lfq.9
+        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 09:42:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1657643601; x=1689179601;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=IWfbGGwZ5AwqqnKgtflBoY+ldvt5ZNBTBSmqI6ADtaU=;
-  b=gf98rBPMyEEn9o/9yS+kiyrtxqumHsv41XADtuycTOSdUS5WZ8S6bZCc
-   f57+8BUXkiSd6o78J85sK04kayTtbDjp7Lnrth3LsLt/x2Ht24GGWCzq3
-   QctCYM/8kBW1zQzcb0P8WkPhwX+9kZbQQ4vPTUGNN9ECyIGe1gBikftd+
-   A=;
-X-IronPort-AV: E=Sophos;i="5.92,266,1650931200"; 
-   d="scan'208";a="209304230"
-Received: from iad6-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-pdx-2a-6fd66c4a.us-west-2.amazon.com) ([10.124.125.6])
-  by smtp-border-fw-33001.sea14.amazon.com with ESMTP; 12 Jul 2022 16:32:58 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-pdx-2a-6fd66c4a.us-west-2.amazon.com (Postfix) with ESMTPS id 4589A941FE;
-        Tue, 12 Jul 2022 16:32:56 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.36; Tue, 12 Jul 2022 16:32:55 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.160.111) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.9;
- Tue, 12 Jul 2022 16:32:53 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
-CC:     Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>,
-        <netdev@vger.kernel.org>
-Subject: [PATCH v1 net] tcp/udp: Make early_demux back namespacified.
-Date:   Tue, 12 Jul 2022 09:32:43 -0700
-Message-ID: <20220712163243.36014-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
+        d=broadcom.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=mzZyQED/yCEHz5UyIipVTP+p+PvpvXJH6FEoNcTBy1o=;
+        b=MlZmIr8BIHVkvgN3Iw/gci4iR6wj8Zg0qiOKtMGQFNs//RYw59z2AfWe1LGJYq3p/z
+         j4WdrrnilN9HXAMJ7a7jJVBfB6rPexU3gOJXtyncHYmy/1xanGnoNGFbi3BWRrJnuEn0
+         jZDAz6okXKqJqd4cWnLUCI0ZXlcMg6Q+qhceU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=mzZyQED/yCEHz5UyIipVTP+p+PvpvXJH6FEoNcTBy1o=;
+        b=LtptP4lfr8PhyVRxuDBjnZOqWm3FR8GUQMuXmLL9WR2q9bdl9kjW3QUBruVX2xVxy6
+         Fn7qCuWHtqpChdoTjZlzK4NWlN8kVR8wcar/hR90rupOaKzfYJGCOeGam1tfG/Jf3DUY
+         6G6Pu8jfC2pc6aEgd0UN+6ks+vAf9Tc4J2a+z8wMgwvsyGp+B8UaiMrHSvcgn/nxUlNQ
+         cB94ZVJd4XMm/pIhsYlC0X0RHe+UY0zi4q9l7nCn/Am5k+OOw+PkcURSUhHxqIOSt0LB
+         8YrWVjDidDIAeiKChtm3ZABQy89xBYVkLIC1uEkIP7nT5Dmzf2E+PFZSaGWhOhlZL8Jb
+         QthQ==
+X-Gm-Message-State: AJIora8WIuxkvWxBX1gH0kgOsvhe8zNU/laYgoZaQYSnUjrbXWT3TqVy
+        Y8xZ3Ysv6+0bXCsfDa7q31vloXShImYCuONWnMcdnw==
+X-Google-Smtp-Source: AGRyM1ti2YwZ/fkLc45ZFgDFkVmzWapuTADrgvw14AQzoXbY0+raMlUHYzrjoE5kAUDOGOEFUHisOJbXs1Uin1a2l/0=
+X-Received: by 2002:a19:2d04:0:b0:482:e88a:b933 with SMTP id
+ k4-20020a192d04000000b00482e88ab933mr16266885lfj.533.1657644121817; Tue, 12
+ Jul 2022 09:42:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.160.111]
-X-ClientProxiedBy: EX13P01UWB004.ant.amazon.com (10.43.161.213) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220628164241.44360-1-vikas.gupta@broadcom.com>
+ <20220707182950.29348-1-vikas.gupta@broadcom.com> <20220707182950.29348-2-vikas.gupta@broadcom.com>
+ <YswaKcUs6nOndU2V@nanopsycho> <CAHLZf_t9ihOQPvcQa8cZsDDVUX1wisrBjC30tHG_-Dz13zg=qQ@mail.gmail.com>
+ <Ys0UpFtcOGWjK/sZ@nanopsycho>
+In-Reply-To: <Ys0UpFtcOGWjK/sZ@nanopsycho>
+From:   Vikas Gupta <vikas.gupta@broadcom.com>
+Date:   Tue, 12 Jul 2022 22:11:49 +0530
+Message-ID: <CAHLZf_s7s4rqBkDnB+KH-YJRDBDzeZB6VhKMMndk+dxxY11h3g@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 1/3] devlink: introduce framework for selftests
+To:     Jiri Pirko <jiri@nvidia.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>, dsahern@kernel.org,
+        stephen@networkplumber.org, Eric Dumazet <edumazet@google.com>,
+        pabeni@redhat.com, ast@kernel.org, leon@kernel.org,
+        linux-doc@vger.kernel.org, corbet@lwn.net,
+        Michael Chan <michael.chan@broadcom.com>,
+        Andrew Gospodarek <andrew.gospodarek@broadcom.com>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="00000000000014795105e39e59ad"
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit e21145a9871a ("ipv4: namespacify ip_early_demux sysctl knob") made
-it possible to enable/disable early_demux on a per-netns basis.  Then, we
-introduced two knobs, tcp_early_demux and udp_early_demux, to switch it for
-TCP/UDP in commit dddb64bcb346 ("net: Add sysctl to toggle early demux for
-tcp and udp").  However, the .proc_handler() was wrong and actually
-disabled us from changing the behaviour in each netns.
+--00000000000014795105e39e59ad
+Content-Type: text/plain; charset="UTF-8"
 
-We can execute early_demux if net.ipv4.ip_early_demux is on and each proto
-.early_demux() handler is not NULL.  When we toggle (tcp|udp)_early_demux,
-the change itself is saved in each netns variable, but the .early_demux()
-handler is a global variable, so the handler is switched based on the
-init_net's sysctl variable.  Thus, netns (tcp|udp)_early_demux knobs have
-nothing to do with the logic.  Whether we CAN execute proto .early_demux()
-is always decided by init_net's sysctl knob, and whether we DO it or not is
-by each netns ip_early_demux knob.
+Hi Jiri,
 
-This patch namespacifies (tcp|udp)_early_demux again.  For now, the users
-of the .early_demux() handler are TCP and UDP only, and they are called
-directly to avoid retpoline.  So, we can remove the .early_demux() handler
-from inet6?_protos and need not dereference them in ip6?_rcv_finish_core().
-If another proto needs .early_demux(), we can restore it at that time.
+On Tue, Jul 12, 2022 at 11:58 AM Jiri Pirko <jiri@nvidia.com> wrote:
+>
+> Tue, Jul 12, 2022 at 08:16:11AM CEST, vikas.gupta@broadcom.com wrote:
+> >Hi Jiri,
+> >
+> >On Mon, Jul 11, 2022 at 6:10 PM Jiri Pirko <jiri@nvidia.com> wrote:
+> >
+> >> Thu, Jul 07, 2022 at 08:29:48PM CEST, vikas.gupta@broadcom.com wrote:
+> >> >Add a framework for running selftests.
+> >> >Framework exposes devlink commands and test suite(s) to the user
+> >> >to execute and query the supported tests by the driver.
+> >> >
+> >> >Below are new entries in devlink_nl_ops
+> >> >devlink_nl_cmd_selftests_show: To query the supported selftests
+> >> >by the driver.
+> >> >devlink_nl_cmd_selftests_run: To execute selftests. Users can
+> >> >provide a test mask for executing group tests or standalone tests.
+> >> >
+> >> >Documentation/networking/devlink/ path is already part of MAINTAINERS &
+> >> >the new files come under this path. Hence no update needed to the
+> >> >MAINTAINERS
+> >> >
+> >> >Signed-off-by: Vikas Gupta <vikas.gupta@broadcom.com>
+> >> >Reviewed-by: Michael Chan <michael.chan@broadcom.com>
+> >> >Reviewed-by: Andy Gospodarek <andrew.gospodarek@broadcom.com>
+> >> >---
+> >> > .../networking/devlink/devlink-selftests.rst  |  34 +++++
+> >> > include/net/devlink.h                         |  30 ++++
+> >> > include/uapi/linux/devlink.h                  |  26 ++++
+> >> > net/core/devlink.c                            | 144 ++++++++++++++++++
+> >> > 4 files changed, 234 insertions(+)
+> >> > create mode 100644 Documentation/networking/devlink/devlink-selftests.rst
+> >> >
+> >> >diff --git a/Documentation/networking/devlink/devlink-selftests.rst
+> >> b/Documentation/networking/devlink/devlink-selftests.rst
+> >> >new file mode 100644
+> >> >index 000000000000..796d38f77038
+> >> >--- /dev/null
+> >> >+++ b/Documentation/networking/devlink/devlink-selftests.rst
+> >> >@@ -0,0 +1,34 @@
+> >> >+.. SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> >> >+
+> >> >+=================
+> >> >+Devlink Selftests
+> >> >+=================
+> >> >+
+> >> >+The ``devlink-selftests`` API allows executing selftests on the device.
+> >> >+
+> >> >+Tests Mask
+> >> >+==========
+> >> >+The ``devlink-selftests`` command should be run with a mask indicating
+> >> >+the tests to be executed.
+> >> >+
+> >> >+Tests Description
+> >> >+=================
+> >> >+The following is a list of tests that drivers may execute.
+> >> >+
+> >> >+.. list-table:: List of tests
+> >> >+   :widths: 5 90
+> >> >+
+> >> >+   * - Name
+> >> >+     - Description
+> >> >+   * - ``DEVLINK_SELFTEST_FLASH``
+> >> >+     - Runs a flash test on the device.
+> >> >+
+> >> >+example usage
+> >> >+-------------
+> >> >+
+> >> >+.. code:: shell
+> >> >+
+> >> >+    # Query selftests supported on the device
+> >> >+    $ devlink dev selftests show DEV
+> >> >+    # Executes selftests on the device
+> >> >+    $ devlink dev selftests run DEV test {flash | all}
+> >> >diff --git a/include/net/devlink.h b/include/net/devlink.h
+> >> >index 2a2a2a0c93f7..cb7c378cf720 100644
+> >> >--- a/include/net/devlink.h
+> >> >+++ b/include/net/devlink.h
+> >> >@@ -1215,6 +1215,18 @@ enum {
+> >> >       DEVLINK_F_RELOAD = 1UL << 0,
+> >> > };
+> >> >
+> >> >+#define DEVLINK_SELFTEST_FLASH_TEST_NAME "flash"
+> >> >+
+> >> >+static inline const char *devlink_selftest_name(int test)
+> >>
+> >> I don't understand why this is needed. Better not to expose string to
+> >> the user. Just have it as well defined attr.
+> >
+> >
+> > OK. Will remove this function and corresponding attr
+> >DEVLINK_ATTR_TEST_NAME added in this patch.
+> >
+> >
+> >
+> >
+> >>
+> >> >+{
+> >> >+      switch (test) {
+> >> >+      case DEVLINK_SELFTEST_FLASH_BIT:
+> >> >+              return DEVLINK_SELFTEST_FLASH_TEST_NAME;
+> >> >+      default:
+> >> >+              return "unknown";
+> >> >+      }
+> >> >+}
+> >> >+
+> >> > struct devlink_ops {
+> >> >       /**
+> >> >        * @supported_flash_update_params:
+> >> >@@ -1509,6 +1521,24 @@ struct devlink_ops {
+> >> >                                   struct devlink_rate *parent,
+> >> >                                   void *priv_child, void *priv_parent,
+> >> >                                   struct netlink_ext_ack *extack);
+> >> >+      /**
+> >> >+       * selftests_show() - Shows selftests supported by device
+> >> >+       * @devlink: Devlink instance
+> >> >+       * @extack: extack for reporting error messages
+> >> >+       *
+> >> >+       * Return: test mask supported by driver
+> >> >+       */
+> >> >+      u32 (*selftests_show)(struct devlink *devlink,
+> >> >+                            struct netlink_ext_ack *extack);
+> >> >+      /**
+> >> >+       * selftests_run() - Runs selftests
+> >> >+       * @devlink: Devlink instance
+> >> >+       * @tests_mask: tests to be run by driver
+> >> >+       * @results: test results by driver
+> >> >+       * @extack: extack for reporting error messages
+> >> >+       */
+> >> >+      void (*selftests_run)(struct devlink *devlink, u32 tests_mask,
+> >> >+                            u8 *results, struct netlink_ext_ack *extack);
+> >> > };
+> >> >
+> >> > void *devlink_priv(struct devlink *devlink);
+> >> >diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
+> >> >index b3d40a5d72ff..1dba262328b9 100644
+> >> >--- a/include/uapi/linux/devlink.h
+> >> >+++ b/include/uapi/linux/devlink.h
+> >> >@@ -136,6 +136,9 @@ enum devlink_command {
+> >> >       DEVLINK_CMD_LINECARD_NEW,
+> >> >       DEVLINK_CMD_LINECARD_DEL,
+> >> >
+> >> >+      DEVLINK_CMD_SELFTESTS_SHOW,
+> >> >+      DEVLINK_CMD_SELFTESTS_RUN,
+> >> >+
+> >> >       /* add new commands above here */
+> >> >       __DEVLINK_CMD_MAX,
+> >> >       DEVLINK_CMD_MAX = __DEVLINK_CMD_MAX - 1
+> >> >@@ -276,6 +279,25 @@ enum {
+> >> > #define DEVLINK_SUPPORTED_FLASH_OVERWRITE_SECTIONS \
+> >> >       (_BITUL(__DEVLINK_FLASH_OVERWRITE_MAX_BIT) - 1)
+> >> >
+> >> >+/* Commonly used test cases */
+> >> >+enum {
+> >> >+      DEVLINK_SELFTEST_FLASH_BIT,
+> >> >+
+> >> >+      __DEVLINK_SELFTEST_MAX_BIT,
+> >> >+      DEVLINK_SELFTEST_MAX_BIT = __DEVLINK_SELFTEST_MAX_BIT - 1
+> >> >+};
+> >> >+
+> >> >+#define DEVLINK_SELFTEST_FLASH _BITUL(DEVLINK_SELFTEST_FLASH_BIT)
+> >> >+
+> >> >+#define DEVLINK_SELFTESTS_MASK \
+> >> >+      (_BITUL(__DEVLINK_SELFTEST_MAX_BIT) - 1)
+> >> >+
+> >> >+enum {
+> >> >+      DEVLINK_SELFTEST_SKIP,
+> >> >+      DEVLINK_SELFTEST_PASS,
+> >> >+      DEVLINK_SELFTEST_FAIL
+> >> >+};
+> >> >+
+> >> > /**
+> >> >  * enum devlink_trap_action - Packet trap action.
+> >> >  * @DEVLINK_TRAP_ACTION_DROP: Packet is dropped by the device and a copy
+> >> is not
+> >> >@@ -576,6 +598,10 @@ enum devlink_attr {
+> >> >       DEVLINK_ATTR_LINECARD_TYPE,             /* string */
+> >> >       DEVLINK_ATTR_LINECARD_SUPPORTED_TYPES,  /* nested */
+> >> >
+> >> >+      DEVLINK_ATTR_SELFTESTS_MASK,            /* u32 */
+> >>
+> >> I don't see why this is u32 bitset. Just have one attr per test
+> >> (NLA_FLAG) in a nested attr instead.
+> >>
+> >
+> >As per your suggestion, for an example it should be like as below
+> >
+> >        DEVLINK_ATTR_SELFTESTS,                 /* nested */
+> >
+> >        DEVLINK_ATTR_SELFTESTS_SOMETEST1            /* flag */
+> >
+> >        DEVLINK_ATTR_SELFTESTS_SOMETEST2           /* flag */
+>
+> Yeah, but have the flags in separate enum, no need to pullute the
+> devlink_attr enum by them.
+>
+>
+> >
+> >....    <SOME MORE TESTS>
+> >
+> >.....
+> >
+> >        DEVLINK_ATTR_SLEFTESTS_RESULT_VAL,      /* u8 */
+> >
+> >
+> >
+> > If we have this way then we need to have a mapping (probably a function)
+> >for drivers to tell them what tests need to be executed based on the flags
+> >that are set.
+> > Does this look OK?
+> >  The rationale behind choosing a mask is that we could directly pass the
+> >mask-value to the drivers.
+>
+> If you have separate enum, you can use the attrs as bits internally in
+> kernel. Add a helper that would help the driver to work with it.
+> Pass a struct containing u32 (or u8) not to drivers. Once there are more
+> tests than that, this structure can be easily extended and the helpers
+> changed. This would make this scalable. No need for UAPI change or even
+> internel driver api change.
 
-Fixes: dddb64bcb346 ("net: Add sysctl to toggle early demux for tcp and udp")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
----
- include/net/protocol.h     |  4 ---
- include/net/tcp.h          |  4 +--
- include/net/udp.h          |  2 +-
- net/ipv4/af_inet.c         | 14 ++-------
- net/ipv4/ip_input.c        | 40 ++++++++++++++----------
- net/ipv4/sysctl_net_ipv4.c | 63 ++++----------------------------------
- net/ipv4/tcp_ipv4.c        | 10 +++---
- net/ipv6/ip6_input.c       | 23 ++++++++------
- net/ipv6/tcp_ipv6.c        |  9 ++----
- net/ipv6/udp.c             |  9 ++----
- 10 files changed, 56 insertions(+), 122 deletions(-)
+As per your suggestion, selftest attributes can be declared in separate
+enum as below
 
-diff --git a/include/net/protocol.h b/include/net/protocol.h
-index f51c06ae365f..6aef8cb11cc8 100644
---- a/include/net/protocol.h
-+++ b/include/net/protocol.h
-@@ -35,8 +35,6 @@
- 
- /* This is used to register protocols. */
- struct net_protocol {
--	int			(*early_demux)(struct sk_buff *skb);
--	int			(*early_demux_handler)(struct sk_buff *skb);
- 	int			(*handler)(struct sk_buff *skb);
- 
- 	/* This returns an error if we weren't able to handle the error. */
-@@ -52,8 +50,6 @@ struct net_protocol {
- 
- #if IS_ENABLED(CONFIG_IPV6)
- struct inet6_protocol {
--	void	(*early_demux)(struct sk_buff *skb);
--	void    (*early_demux_handler)(struct sk_buff *skb);
- 	int	(*handler)(struct sk_buff *skb);
- 
- 	/* This returns an error if we weren't able to handle the error. */
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index 1e99f5c61f84..95c55e9252b9 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -318,7 +318,7 @@ int tcp_v4_err(struct sk_buff *skb, u32);
- 
- void tcp_shutdown(struct sock *sk, int how);
- 
--int tcp_v4_early_demux(struct sk_buff *skb);
-+void tcp_v4_early_demux(struct sk_buff *skb);
- int tcp_v4_rcv(struct sk_buff *skb);
- 
- void tcp_remove_empty_skb(struct sock *sk);
-@@ -932,7 +932,7 @@ extern const struct inet_connection_sock_af_ops ipv6_specific;
- 
- INDIRECT_CALLABLE_DECLARE(void tcp_v6_send_check(struct sock *sk, struct sk_buff *skb));
- INDIRECT_CALLABLE_DECLARE(int tcp_v6_rcv(struct sk_buff *skb));
--INDIRECT_CALLABLE_DECLARE(void tcp_v6_early_demux(struct sk_buff *skb));
-+void tcp_v6_early_demux(struct sk_buff *skb);
- 
- #endif
- 
-diff --git a/include/net/udp.h b/include/net/udp.h
-index b83a00330566..bb4c227299cc 100644
---- a/include/net/udp.h
-+++ b/include/net/udp.h
-@@ -167,7 +167,7 @@ static inline void udp_csum_pull_header(struct sk_buff *skb)
- typedef struct sock *(*udp_lookup_t)(const struct sk_buff *skb, __be16 sport,
- 				     __be16 dport);
- 
--INDIRECT_CALLABLE_DECLARE(void udp_v6_early_demux(struct sk_buff *));
-+void udp_v6_early_demux(struct sk_buff *skb);
- INDIRECT_CALLABLE_DECLARE(int udpv6_rcv(struct sk_buff *));
- 
- struct sk_buff *__udp_gso_segment(struct sk_buff *gso_skb,
-diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
-index 93da9f783bec..76e7a7ca6772 100644
---- a/net/ipv4/af_inet.c
-+++ b/net/ipv4/af_inet.c
-@@ -1710,24 +1710,14 @@ static const struct net_protocol igmp_protocol = {
- };
- #endif
- 
--/* thinking of making this const? Don't.
-- * early_demux can change based on sysctl.
-- */
--static struct net_protocol tcp_protocol = {
--	.early_demux	=	tcp_v4_early_demux,
--	.early_demux_handler =  tcp_v4_early_demux,
-+static const struct net_protocol tcp_protocol = {
- 	.handler	=	tcp_v4_rcv,
- 	.err_handler	=	tcp_v4_err,
- 	.no_policy	=	1,
- 	.icmp_strict_tag_validation = 1,
- };
- 
--/* thinking of making this const? Don't.
-- * early_demux can change based on sysctl.
-- */
--static struct net_protocol udp_protocol = {
--	.early_demux =	udp_v4_early_demux,
--	.early_demux_handler =	udp_v4_early_demux,
-+static const struct net_protocol udp_protocol = {
- 	.handler =	udp_rcv,
- 	.err_handler =	udp_err,
- 	.no_policy =	1,
-diff --git a/net/ipv4/ip_input.c b/net/ipv4/ip_input.c
-index b1165f717cd1..4afb94f66da6 100644
---- a/net/ipv4/ip_input.c
-+++ b/net/ipv4/ip_input.c
-@@ -312,14 +312,13 @@ static bool ip_can_use_hint(const struct sk_buff *skb, const struct iphdr *iph,
- 	       ip_hdr(hint)->tos == iph->tos;
- }
- 
--INDIRECT_CALLABLE_DECLARE(int udp_v4_early_demux(struct sk_buff *));
--INDIRECT_CALLABLE_DECLARE(int tcp_v4_early_demux(struct sk_buff *));
-+void tcp_v4_early_demux(struct sk_buff *skb);
-+int udp_v4_early_demux(struct sk_buff *skb);
- static int ip_rcv_finish_core(struct net *net, struct sock *sk,
- 			      struct sk_buff *skb, struct net_device *dev,
- 			      const struct sk_buff *hint)
- {
- 	const struct iphdr *iph = ip_hdr(skb);
--	int (*edemux)(struct sk_buff *skb);
- 	int err, drop_reason;
- 	struct rtable *rt;
- 
-@@ -332,21 +331,28 @@ static int ip_rcv_finish_core(struct net *net, struct sock *sk,
- 			goto drop_error;
- 	}
- 
--	if (net->ipv4.sysctl_ip_early_demux &&
--	    !skb_dst(skb) &&
--	    !skb->sk &&
-+	if (READ_ONCE(net->ipv4.sysctl_ip_early_demux) &&
-+	    !skb_dst(skb) && !skb->sk &&
- 	    !ip_is_fragment(iph)) {
--		const struct net_protocol *ipprot;
--		int protocol = iph->protocol;
--
--		ipprot = rcu_dereference(inet_protos[protocol]);
--		if (ipprot && (edemux = READ_ONCE(ipprot->early_demux))) {
--			err = INDIRECT_CALL_2(edemux, tcp_v4_early_demux,
--					      udp_v4_early_demux, skb);
--			if (unlikely(err))
--				goto drop_error;
--			/* must reload iph, skb->head might have changed */
--			iph = ip_hdr(skb);
-+		switch (iph->protocol) {
-+		case IPPROTO_TCP:
-+			if (READ_ONCE(net->ipv4.sysctl_tcp_early_demux)) {
-+				tcp_v4_early_demux(skb);
-+
-+				/* must reload iph, skb->head might have changed */
-+				iph = ip_hdr(skb);
-+			}
-+			break;
-+		case IPPROTO_UDP:
-+			if (READ_ONCE(net->ipv4.sysctl_tcp_early_demux)) {
-+				err = udp_v4_early_demux(skb);
-+				if (unlikely(err))
-+					goto drop_error;
-+
-+				/* must reload iph, skb->head might have changed */
-+				iph = ip_hdr(skb);
-+			}
-+			break;
- 		}
- 	}
- 
-diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
-index cd448cdd3b38..c6f4f8459473 100644
---- a/net/ipv4/sysctl_net_ipv4.c
-+++ b/net/ipv4/sysctl_net_ipv4.c
-@@ -350,61 +350,6 @@ static int proc_tcp_fastopen_key(struct ctl_table *table, int write,
- 	return ret;
- }
- 
--static void proc_configure_early_demux(int enabled, int protocol)
--{
--	struct net_protocol *ipprot;
--#if IS_ENABLED(CONFIG_IPV6)
--	struct inet6_protocol *ip6prot;
--#endif
--
--	rcu_read_lock();
--
--	ipprot = rcu_dereference(inet_protos[protocol]);
--	if (ipprot)
--		ipprot->early_demux = enabled ? ipprot->early_demux_handler :
--						NULL;
--
--#if IS_ENABLED(CONFIG_IPV6)
--	ip6prot = rcu_dereference(inet6_protos[protocol]);
--	if (ip6prot)
--		ip6prot->early_demux = enabled ? ip6prot->early_demux_handler :
--						 NULL;
--#endif
--	rcu_read_unlock();
--}
--
--static int proc_tcp_early_demux(struct ctl_table *table, int write,
--				void *buffer, size_t *lenp, loff_t *ppos)
--{
--	int ret = 0;
--
--	ret = proc_dou8vec_minmax(table, write, buffer, lenp, ppos);
--
--	if (write && !ret) {
--		int enabled = init_net.ipv4.sysctl_tcp_early_demux;
--
--		proc_configure_early_demux(enabled, IPPROTO_TCP);
--	}
--
--	return ret;
--}
--
--static int proc_udp_early_demux(struct ctl_table *table, int write,
--				void *buffer, size_t *lenp, loff_t *ppos)
--{
--	int ret = 0;
--
--	ret = proc_dou8vec_minmax(table, write, buffer, lenp, ppos);
--
--	if (write && !ret) {
--		int enabled = init_net.ipv4.sysctl_udp_early_demux;
--
--		proc_configure_early_demux(enabled, IPPROTO_UDP);
--	}
--
--	return ret;
--}
--
- static int proc_tfo_blackhole_detect_timeout(struct ctl_table *table,
- 					     int write, void *buffer,
- 					     size_t *lenp, loff_t *ppos)
-@@ -695,14 +640,18 @@ static struct ctl_table ipv4_net_table[] = {
- 		.data           = &init_net.ipv4.sysctl_udp_early_demux,
- 		.maxlen         = sizeof(u8),
- 		.mode           = 0644,
--		.proc_handler   = proc_udp_early_demux
-+		.proc_handler   = proc_dou8vec_minmax,
-+		.extra1		= SYSCTL_ZERO,
-+		.extra2		= SYSCTL_ONE,
- 	},
- 	{
- 		.procname       = "tcp_early_demux",
- 		.data           = &init_net.ipv4.sysctl_tcp_early_demux,
- 		.maxlen         = sizeof(u8),
- 		.mode           = 0644,
--		.proc_handler   = proc_tcp_early_demux
-+		.proc_handler   = proc_dou8vec_minmax,
-+		.extra1		= SYSCTL_ZERO,
-+		.extra2		= SYSCTL_ONE,
- 	},
- 	{
- 		.procname       = "nexthop_compat_mode",
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index da5a3c44c4fb..aa7975060f06 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -1705,23 +1705,23 @@ int tcp_v4_do_rcv(struct sock *sk, struct sk_buff *skb)
- }
- EXPORT_SYMBOL(tcp_v4_do_rcv);
- 
--int tcp_v4_early_demux(struct sk_buff *skb)
-+void tcp_v4_early_demux(struct sk_buff *skb)
- {
- 	const struct iphdr *iph;
- 	const struct tcphdr *th;
- 	struct sock *sk;
- 
- 	if (skb->pkt_type != PACKET_HOST)
--		return 0;
-+		return;
- 
- 	if (!pskb_may_pull(skb, skb_transport_offset(skb) + sizeof(struct tcphdr)))
--		return 0;
-+		return;
- 
- 	iph = ip_hdr(skb);
- 	th = tcp_hdr(skb);
- 
- 	if (th->doff < sizeof(struct tcphdr) / 4)
--		return 0;
-+		return;
- 
- 	sk = __inet_lookup_established(dev_net(skb->dev), &tcp_hashinfo,
- 				       iph->saddr, th->source,
-@@ -1740,7 +1740,7 @@ int tcp_v4_early_demux(struct sk_buff *skb)
- 				skb_dst_set_noref(skb, dst);
- 		}
- 	}
--	return 0;
-+	return;
- }
- 
- bool tcp_add_backlog(struct sock *sk, struct sk_buff *skb,
-diff --git a/net/ipv6/ip6_input.c b/net/ipv6/ip6_input.c
-index 0322cc86b84e..9b4cbc1d790b 100644
---- a/net/ipv6/ip6_input.c
-+++ b/net/ipv6/ip6_input.c
-@@ -45,20 +45,23 @@
- #include <net/inet_ecn.h>
- #include <net/dst_metadata.h>
- 
--INDIRECT_CALLABLE_DECLARE(void tcp_v6_early_demux(struct sk_buff *));
- static void ip6_rcv_finish_core(struct net *net, struct sock *sk,
- 				struct sk_buff *skb)
- {
--	void (*edemux)(struct sk_buff *skb);
--
--	if (net->ipv4.sysctl_ip_early_demux && !skb_dst(skb) && skb->sk == NULL) {
--		const struct inet6_protocol *ipprot;
--
--		ipprot = rcu_dereference(inet6_protos[ipv6_hdr(skb)->nexthdr]);
--		if (ipprot && (edemux = READ_ONCE(ipprot->early_demux)))
--			INDIRECT_CALL_2(edemux, tcp_v6_early_demux,
--					udp_v6_early_demux, skb);
-+	if (READ_ONCE(net->ipv4.sysctl_ip_early_demux) &&
-+	    !skb_dst(skb) && !skb->sk) {
-+		switch (ipv6_hdr(skb)->nexthdr) {
-+		case IPPROTO_TCP:
-+			if (READ_ONCE(net->ipv4.sysctl_tcp_early_demux))
-+				tcp_v6_early_demux(skb);
-+			break;
-+		case IPPROTO_UDP:
-+			if (READ_ONCE(net->ipv4.sysctl_tcp_early_demux))
-+				udp_v6_early_demux(skb);
-+			break;
-+		}
- 	}
-+
- 	if (!skb_valid_dst(skb))
- 		ip6_route_input(skb);
- }
-diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-index f37dd4aa91c6..9d3ede293258 100644
---- a/net/ipv6/tcp_ipv6.c
-+++ b/net/ipv6/tcp_ipv6.c
-@@ -1822,7 +1822,7 @@ INDIRECT_CALLABLE_SCOPE int tcp_v6_rcv(struct sk_buff *skb)
- 	goto discard_it;
- }
- 
--INDIRECT_CALLABLE_SCOPE void tcp_v6_early_demux(struct sk_buff *skb)
-+void tcp_v6_early_demux(struct sk_buff *skb)
- {
- 	const struct ipv6hdr *hdr;
- 	const struct tcphdr *th;
-@@ -2176,12 +2176,7 @@ struct proto tcpv6_prot = {
- };
- EXPORT_SYMBOL_GPL(tcpv6_prot);
- 
--/* thinking of making this const? Don't.
-- * early_demux can change based on sysctl.
-- */
--static struct inet6_protocol tcpv6_protocol = {
--	.early_demux	=	tcp_v6_early_demux,
--	.early_demux_handler =  tcp_v6_early_demux,
-+static const struct inet6_protocol tcpv6_protocol = {
- 	.handler	=	tcp_v6_rcv,
- 	.err_handler	=	tcp_v6_err,
- 	.flags		=	INET6_PROTO_NOPOLICY|INET6_PROTO_FINAL,
-diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-index 55afd7f39c04..e2f2e087a753 100644
---- a/net/ipv6/udp.c
-+++ b/net/ipv6/udp.c
-@@ -1052,7 +1052,7 @@ static struct sock *__udp6_lib_demux_lookup(struct net *net,
- 	return NULL;
- }
- 
--INDIRECT_CALLABLE_SCOPE void udp_v6_early_demux(struct sk_buff *skb)
-+void udp_v6_early_demux(struct sk_buff *skb)
- {
- 	struct net *net = dev_net(skb->dev);
- 	const struct udphdr *uh;
-@@ -1660,12 +1660,7 @@ int udpv6_getsockopt(struct sock *sk, int level, int optname,
- 	return ipv6_getsockopt(sk, level, optname, optval, optlen);
- }
- 
--/* thinking of making this const? Don't.
-- * early_demux can change based on sysctl.
-- */
--static struct inet6_protocol udpv6_protocol = {
--	.early_demux	=	udp_v6_early_demux,
--	.early_demux_handler =  udp_v6_early_demux,
-+static const struct inet6_protocol udpv6_protocol = {
- 	.handler	=	udpv6_rcv,
- 	.err_handler	=	udpv6_err,
- 	.flags		=	INET6_PROTO_NOPOLICY|INET6_PROTO_FINAL,
--- 
-2.30.2
+enum {
 
+        DEVLINK_SELFTEST_SOMETEST,         /* flag */
+
+        DEVLINK_SELFTEST_SOMETEST1,
+
+        DEVLINK_SELFTEST_SOMETEST2,
+
+....
+
+......
+
+        __DEVLINK_SELFTEST_MAX,
+
+        DEVLINK_SELFTEST_MAX = __DEVLINK_SELFTEST_MAX - 1
+
+};
+Below  examples could be the flow of parameters/data from user to
+kernel and vice-versa
+
+
+Kernel to user for show command . Users can know what all tests are
+supported by the driver. A return from kernel to user.
+______
+|NEST |
+|_____ |TEST1|TEST4|TEST7|...
+
+
+User to kernel to execute test: If user wants to execute test4, test8, test1...
+______
+|NEST |
+|_____ |TEST4|TEST8|TEST1|...
+
+
+Result Kernel to user execute test RES(u8)
+______
+|NEST |
+|_____ |RES4|RES8|RES1|...
+
+Results are populated in the same order as the user passed the TESTs
+flags. Does the above result format from kernel to user look OK ?
+Else we need to have below way to form a result format, a nest should
+be made for <test_flag,
+result> but since test flags are in different enum other than
+devlink_attr and RES being part of devlink_attr, I believe it's not
+good practice to make the below structure.
+______
+|NEST |
+|_____ | TEST4, RES4|TEST8,RES8|TEST1,RES1|...
+
+Let me know if my understanding is correct.
+
+Thanks,
+Vikas
+
+>
+>
+> >
+> >
+> >>
+> >>
+> >>
+> >> >+      DEVLINK_ATTR_TEST_RESULT,               /* nested */
+> >> >+      DEVLINK_ATTR_TEST_NAME,                 /* string */
+> >> >+      DEVLINK_ATTR_TEST_RESULT_VAL,           /* u8 */
+> >>
+> >> Could you maintain the same "namespace" for all attrs related to
+> >> selftests?
+> >>
+> >
+> >Will fix it.
+> >
+> >
+> >>
+> >> >       /* add new attributes above here, update the policy in devlink.c */
+> >> >
+> >> >       __DEVLINK_ATTR_MAX,
+> >> >diff --git a/net/core/devlink.c b/net/core/devlink.c
+> >> >index db61f3a341cb..0b7341ab6379 100644
+> >> >--- a/net/core/devlink.c
+> >> >+++ b/net/core/devlink.c
+> >> >@@ -4794,6 +4794,136 @@ static int devlink_nl_cmd_flash_update(struct
+> >> sk_buff *skb,
+> >> >       return ret;
+> >> > }
+> >> >
+> >> >+static int devlink_selftest_name_put(struct sk_buff *skb, int test)
+> >> >+{
+> >> >+      const char *name = devlink_selftest_name(test);
+> >> >+      if (nla_put_string(skb, DEVLINK_ATTR_TEST_NAME, name))
+> >> >+              return -EMSGSIZE;
+> >> >+
+> >> >+      return 0;
+> >> >+}
+> >> >+
+> >> >+static int devlink_nl_cmd_selftests_show(struct sk_buff *skb,
+> >> >+                                       struct genl_info *info)
+> >> >+{
+> >> >+      struct devlink *devlink = info->user_ptr[0];
+> >> >+      struct sk_buff *msg;
+> >> >+      unsigned long tests;
+> >> >+      int err = 0;
+> >> >+      void *hdr;
+> >> >+      int test;
+> >> >+
+> >> >+      if (!devlink->ops->selftests_show)
+> >> >+              return -EOPNOTSUPP;
+> >> >+
+> >> >+      msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
+> >> >+      if (!msg)
+> >> >+              return -ENOMEM;
+> >> >+
+> >> >+      hdr = genlmsg_put(msg, info->snd_portid, info->snd_seq,
+> >> >+                        &devlink_nl_family, 0,
+> >> DEVLINK_CMD_SELFTESTS_SHOW);
+> >> >+      if (!hdr)
+> >> >+              goto free_msg;
+> >> >+
+> >> >+      if (devlink_nl_put_handle(msg, devlink))
+> >> >+              goto genlmsg_cancel;
+> >> >+
+> >> >+      tests = devlink->ops->selftests_show(devlink, info->extack);
+> >> >+
+> >> >+      for_each_set_bit(test, &tests, __DEVLINK_SELFTEST_MAX_BIT) {
+> >> >+              err = devlink_selftest_name_put(msg, test);
+> >> >+              if (err)
+> >> >+                      goto genlmsg_cancel;
+> >> >+      }
+> >> >+
+> >> >+      genlmsg_end(msg, hdr);
+> >> >+
+> >> >+      return genlmsg_reply(msg, info);
+> >> >+
+> >> >+genlmsg_cancel:
+> >> >+      genlmsg_cancel(msg, hdr);
+> >> >+free_msg:
+> >> >+      nlmsg_free(msg);
+> >> >+      return err;
+> >> >+}
+> >> >+
+> >> >+static int devlink_selftest_result_put(struct sk_buff *skb, int test,
+> >> >+                                     u8 result)
+> >> >+{
+> >> >+      const char *name = devlink_selftest_name(test);
+> >> >+      struct nlattr *result_attr;
+> >> >+
+> >> >+      result_attr = nla_nest_start_noflag(skb, DEVLINK_ATTR_TEST_RESULT);
+> >> >+      if (!result_attr)
+> >> >+              return -EMSGSIZE;
+> >> >+
+> >> >+      if (nla_put_string(skb, DEVLINK_ATTR_TEST_NAME, name) ||
+> >> >+          nla_put_u8(skb, DEVLINK_ATTR_TEST_RESULT_VAL, result))
+> >> >+              goto nla_put_failure;
+> >> >+
+> >> >+      nla_nest_end(skb, result_attr);
+> >> >+
+> >> >+      return 0;
+> >> >+
+> >> >+nla_put_failure:
+> >> >+      nla_nest_cancel(skb, result_attr);
+> >> >+      return -EMSGSIZE;
+> >> >+}
+> >> >+
+> >> >+static int devlink_nl_cmd_selftests_run(struct sk_buff *skb,
+> >> >+                                      struct genl_info *info)
+> >> >+{
+> >> >+      u8 test_results[DEVLINK_SELFTEST_MAX_BIT + 1] = {};
+> >> >+      struct devlink *devlink = info->user_ptr[0];
+> >> >+      unsigned long tests;
+> >> >+      struct sk_buff *msg;
+> >> >+      u32 tests_mask;
+> >> >+      void *hdr;
+> >> >+      int err = 0;
+> >> >+      int test;
+> >> >+
+> >> >+      if (!devlink->ops->selftests_run)
+> >> >+              return -EOPNOTSUPP;
+> >> >+
+> >> >+      if (!info->attrs[DEVLINK_ATTR_SELFTESTS_MASK])
+> >> >+              return -EINVAL;
+> >> >+
+> >> >+      msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
+> >> >+      if (!msg)
+> >> >+              return -ENOMEM;
+> >> >+
+> >> >+      hdr = genlmsg_put(msg, info->snd_portid, info->snd_seq,
+> >> >+                        &devlink_nl_family, 0,
+> >> DEVLINK_CMD_SELFTESTS_RUN);
+> >> >+      if (!hdr)
+> >> >+              goto free_msg;
+> >> >+
+> >> >+      if (devlink_nl_put_handle(msg, devlink))
+> >> >+              goto genlmsg_cancel;
+> >> >+
+> >> >+      tests_mask = nla_get_u32(info->attrs[DEVLINK_ATTR_SELFTESTS_MASK]);
+> >> >+
+> >> >+      devlink->ops->selftests_run(devlink, tests_mask, test_results,
+> >>
+> >> Why don't you run it 1 by 1 and fill up the NL message 1 by 1 too?
+> >>
+> >>      I`ll consider it in the next patch set.
+>
+> Please do. This array of results returned from driver looks sloppy.
+>
+>
+> >
+> >
+> >>
+> >> >+                                  info->extack);
+> >> >+      tests = tests_mask;
+> >> >+
+> >> >+      for_each_set_bit(test, &tests, __DEVLINK_SELFTEST_MAX_BIT) {
+> >> >+              err = devlink_selftest_result_put(msg, test,
+> >> >+                                                test_results[test]);
+> >> >+              if (err)
+> >> >+                      goto genlmsg_cancel;
+> >> >+      }
+> >> >+
+> >> >+      genlmsg_end(msg, hdr);
+> >> >+
+> >> >+      return genlmsg_reply(msg, info);
+> >> >+
+> >> >+genlmsg_cancel:
+> >> >+      genlmsg_cancel(msg, hdr);
+> >> >+free_msg:
+> >> >+      nlmsg_free(msg);
+> >> >+      return err;
+> >> >+}
+> >> >+
+> >> > static const struct devlink_param devlink_param_generic[] = {
+> >> >       {
+> >> >               .id = DEVLINK_PARAM_GENERIC_ID_INT_ERR_RESET,
+> >> >@@ -9000,6 +9130,8 @@ static const struct nla_policy
+> >> devlink_nl_policy[DEVLINK_ATTR_MAX + 1] = {
+> >> >       [DEVLINK_ATTR_RATE_PARENT_NODE_NAME] = { .type = NLA_NUL_STRING },
+> >> >       [DEVLINK_ATTR_LINECARD_INDEX] = { .type = NLA_U32 },
+> >> >       [DEVLINK_ATTR_LINECARD_TYPE] = { .type = NLA_NUL_STRING },
+> >> >+      [DEVLINK_ATTR_SELFTESTS_MASK] = NLA_POLICY_MASK(NLA_U32,
+> >> >+
+> >> DEVLINK_SELFTESTS_MASK),
+> >> > };
+> >> >
+> >> > static const struct genl_small_ops devlink_nl_ops[] = {
+> >> >@@ -9361,6 +9493,18 @@ static const struct genl_small_ops
+> >> devlink_nl_ops[] = {
+> >> >               .doit = devlink_nl_cmd_trap_policer_set_doit,
+> >> >               .flags = GENL_ADMIN_PERM,
+> >> >       },
+> >> >+      {
+> >> >+              .cmd = DEVLINK_CMD_SELFTESTS_SHOW,
+> >> >+              .validate = GENL_DONT_VALIDATE_STRICT |
+> >> GENL_DONT_VALIDATE_DUMP,
+> >> >+              .doit = devlink_nl_cmd_selftests_show,
+> >>
+> >> Why don't dump?
+> >>
+> >
+> >  I`ll add a dump in the next patchset.
+> >
+> >Thanks,
+> >Vikas
+> >
+> >
+> >>
+> >>
+> >> >+              .flags = GENL_ADMIN_PERM,
+> >> >+      },
+> >> >+      {
+> >> >+              .cmd = DEVLINK_CMD_SELFTESTS_RUN,
+> >> >+              .validate = GENL_DONT_VALIDATE_STRICT |
+> >> GENL_DONT_VALIDATE_DUMP,
+> >> >+              .doit = devlink_nl_cmd_selftests_run,
+> >> >+              .flags = GENL_ADMIN_PERM,
+> >> >+      },
+> >> > };
+> >> >
+> >> > static struct genl_family devlink_nl_family __ro_after_init = {
+> >> >--
+> >> >2.31.1
+> >> >
+> >>
+> >>
+> >>
+>
+>
+
+--00000000000014795105e39e59ad
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+MIIQagYJKoZIhvcNAQcCoIIQWzCCEFcCAQExDzANBglghkgBZQMEAgEFADALBgkqhkiG9w0BBwGg
+gg3BMIIFDTCCA/WgAwIBAgIQeEqpED+lv77edQixNJMdADANBgkqhkiG9w0BAQsFADBMMSAwHgYD
+VQQLExdHbG9iYWxTaWduIFJvb3QgQ0EgLSBSMzETMBEGA1UEChMKR2xvYmFsU2lnbjETMBEGA1UE
+AxMKR2xvYmFsU2lnbjAeFw0yMDA5MTYwMDAwMDBaFw0yODA5MTYwMDAwMDBaMFsxCzAJBgNVBAYT
+AkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBS
+MyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA
+vbCmXCcsbZ/a0fRIQMBxp4gJnnyeneFYpEtNydrZZ+GeKSMdHiDgXD1UnRSIudKo+moQ6YlCOu4t
+rVWO/EiXfYnK7zeop26ry1RpKtogB7/O115zultAz64ydQYLe+a1e/czkALg3sgTcOOcFZTXk38e
+aqsXsipoX1vsNurqPtnC27TWsA7pk4uKXscFjkeUE8JZu9BDKaswZygxBOPBQBwrA5+20Wxlk6k1
+e6EKaaNaNZUy30q3ArEf30ZDpXyfCtiXnupjSK8WU2cK4qsEtj09JS4+mhi0CTCrCnXAzum3tgcH
+cHRg0prcSzzEUDQWoFxyuqwiwhHu3sPQNmFOMwIDAQABo4IB2jCCAdYwDgYDVR0PAQH/BAQDAgGG
+MGAGA1UdJQRZMFcGCCsGAQUFBwMCBggrBgEFBQcDBAYKKwYBBAGCNxQCAgYKKwYBBAGCNwoDBAYJ
+KwYBBAGCNxUGBgorBgEEAYI3CgMMBggrBgEFBQcDBwYIKwYBBQUHAxEwEgYDVR0TAQH/BAgwBgEB
+/wIBADAdBgNVHQ4EFgQUljPR5lgXWzR1ioFWZNW+SN6hj88wHwYDVR0jBBgwFoAUj/BLf6guRSSu
+TVD6Y5qL3uLdG7wwegYIKwYBBQUHAQEEbjBsMC0GCCsGAQUFBzABhiFodHRwOi8vb2NzcC5nbG9i
+YWxzaWduLmNvbS9yb290cjMwOwYIKwYBBQUHMAKGL2h0dHA6Ly9zZWN1cmUuZ2xvYmFsc2lnbi5j
+b20vY2FjZXJ0L3Jvb3QtcjMuY3J0MDYGA1UdHwQvMC0wK6ApoCeGJWh0dHA6Ly9jcmwuZ2xvYmFs
+c2lnbi5jb20vcm9vdC1yMy5jcmwwWgYDVR0gBFMwUTALBgkrBgEEAaAyASgwQgYKKwYBBAGgMgEo
+CjA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3dy5nbG9iYWxzaWduLmNvbS9yZXBvc2l0b3J5LzAN
+BgkqhkiG9w0BAQsFAAOCAQEAdAXk/XCnDeAOd9nNEUvWPxblOQ/5o/q6OIeTYvoEvUUi2qHUOtbf
+jBGdTptFsXXe4RgjVF9b6DuizgYfy+cILmvi5hfk3Iq8MAZsgtW+A/otQsJvK2wRatLE61RbzkX8
+9/OXEZ1zT7t/q2RiJqzpvV8NChxIj+P7WTtepPm9AIj0Keue+gS2qvzAZAY34ZZeRHgA7g5O4TPJ
+/oTd+4rgiU++wLDlcZYd/slFkaT3xg4qWDepEMjT4T1qFOQIL+ijUArYS4owpPg9NISTKa1qqKWJ
+jFoyms0d0GwOniIIbBvhI2MJ7BSY9MYtWVT5jJO3tsVHwj4cp92CSFuGwunFMzCCA18wggJHoAMC
+AQICCwQAAAAAASFYUwiiMA0GCSqGSIb3DQEBCwUAMEwxIDAeBgNVBAsTF0dsb2JhbFNpZ24gUm9v
+dCBDQSAtIFIzMRMwEQYDVQQKEwpHbG9iYWxTaWduMRMwEQYDVQQDEwpHbG9iYWxTaWduMB4XDTA5
+MDMxODEwMDAwMFoXDTI5MDMxODEwMDAwMFowTDEgMB4GA1UECxMXR2xvYmFsU2lnbiBSb290IENB
+IC0gUjMxEzARBgNVBAoTCkdsb2JhbFNpZ24xEzARBgNVBAMTCkdsb2JhbFNpZ24wggEiMA0GCSqG
+SIb3DQEBAQUAA4IBDwAwggEKAoIBAQDMJXaQeQZ4Ihb1wIO2hMoonv0FdhHFrYhy/EYCQ8eyip0E
+XyTLLkvhYIJG4VKrDIFHcGzdZNHr9SyjD4I9DCuul9e2FIYQebs7E4B3jAjhSdJqYi8fXvqWaN+J
+J5U4nwbXPsnLJlkNc96wyOkmDoMVxu9bi9IEYMpJpij2aTv2y8gokeWdimFXN6x0FNx04Druci8u
+nPvQu7/1PQDhBjPogiuuU6Y6FnOM3UEOIDrAtKeh6bJPkC4yYOlXy7kEkmho5TgmYHWyn3f/kRTv
+riBJ/K1AFUjRAjFhGV64l++td7dkmnq/X8ET75ti+w1s4FRpFqkD2m7pg5NxdsZphYIXAgMBAAGj
+QjBAMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSP8Et/qC5FJK5N
+UPpjmove4t0bvDANBgkqhkiG9w0BAQsFAAOCAQEAS0DbwFCq/sgM7/eWVEVJu5YACUGssxOGhigH
+M8pr5nS5ugAtrqQK0/Xx8Q+Kv3NnSoPHRHt44K9ubG8DKY4zOUXDjuS5V2yq/BKW7FPGLeQkbLmU
+Y/vcU2hnVj6DuM81IcPJaP7O2sJTqsyQiunwXUaMld16WCgaLx3ezQA3QY/tRG3XUyiXfvNnBB4V
+14qWtNPeTCekTBtzc3b0F5nCH3oO4y0IrQocLP88q1UOD5F+NuvDV0m+4S4tfGCLw0FREyOdzvcy
+a5QBqJnnLDMfOjsl0oZAzjsshnjJYS8Uuu7bVW/fhO4FCU29KNhyztNiUGUe65KXgzHZs7XKR1g/
+XzCCBUkwggQxoAMCAQICDBiN6lq0HrhLrbl6zDANBgkqhkiG9w0BAQsFADBbMQswCQYDVQQGEwJC
+RTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMg
+UGVyc29uYWxTaWduIDIgQ0EgMjAyMDAeFw0yMTAyMjIxNDA0MDFaFw0yMjA5MjIxNDE3MjJaMIGM
+MQswCQYDVQQGEwJJTjESMBAGA1UECBMJS2FybmF0YWthMRIwEAYDVQQHEwlCYW5nYWxvcmUxFjAU
+BgNVBAoTDUJyb2FkY29tIEluYy4xFDASBgNVBAMTC1Zpa2FzIEd1cHRhMScwJQYJKoZIhvcNAQkB
+Fhh2aWthcy5ndXB0YUBicm9hZGNvbS5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIB
+AQDGPY5w75TVknD8MBKnhiOurqUeRaVpVK3ug0ingLjemIIfjQ/IdVvoAT7rBE0eb90jQPcB3Xe1
+4XxelNl6HR9z6oqM2xiF4juO/EJeN3KVyscJUEYA9+coMb89k/7gtHEHHEkOCmtkJ/1TSInH/FR2
+KR5L6wTP/IWrkBqfr8rfggNgY+QrjL5QI48hkAZXVdJKbCcDm2lyXwO9+iJ3wU6oENmOWOA3iaYf
+I7qKxvF8Yo7eGTnHRTa99J+6yTd88AKVuhM5TEhpC8cS7qvrQXJje+Uing2xWC4FH76LEWIFH0Pt
+x8C1WoCU0ClXHU/XfzH2mYrFANBSCeP1Co6QdEfRAgMBAAGjggHZMIIB1TAOBgNVHQ8BAf8EBAMC
+BaAwgaMGCCsGAQUFBwEBBIGWMIGTME4GCCsGAQUFBzAChkJodHRwOi8vc2VjdXJlLmdsb2JhbHNp
+Z24uY29tL2NhY2VydC9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcnQwQQYIKwYBBQUHMAGG
+NWh0dHA6Ly9vY3NwLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwME0G
+A1UdIARGMEQwQgYKKwYBBAGgMgEoCjA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3dy5nbG9iYWxz
+aWduLmNvbS9yZXBvc2l0b3J5LzAJBgNVHRMEAjAAMEkGA1UdHwRCMEAwPqA8oDqGOGh0dHA6Ly9j
+cmwuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3JsMCMGA1UdEQQc
+MBqBGHZpa2FzLmd1cHRhQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNVHSME
+GDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUUc6J11rH3s6PyZQ0zIVZHIuP20Yw
+DQYJKoZIhvcNAQELBQADggEBALvCjXn9gy9a2nU/Ey0nphGZefIP33ggiyuKnmqwBt7Wk/uDHIIc
+kkIlqtTbo0x0PqphS9A23CxCDjKqZq2WN34fL5MMW83nrK0vqnPloCaxy9/6yuLbottBY4STNuvA
+mQ//Whh+PE+DZadqiDbxXbos3IH8AeFXH4A1zIqIrc0Um2/CSD/T6pvu9QrchtvemfP0z/f1Bk+8
+QbQ4ARVP93WV1I13US69evWXw+mOv9VnejShU9PMcDK203xjXbBOi9Hm+fthrWfwIyGoC5aEf7vd
+PKkEDt4VZ9RbudZU/c3N8+kURaHNtrvu2K+mQs5w/AF7HYZThqmOzQJnvMRjuL8xggJtMIICaQIB
+ATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQDEyhH
+bG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwYjepatB64S625eswwDQYJ
+YIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIMW7j/56oRK9m5Unw4CJZ8kJV7AoKya8leYd
+QciXI19qMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDcxMjE2
+NDIwMlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCGSAFl
+AwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQCATAN
+BgkqhkiG9w0BAQEFAASCAQCbWshErB8soPQASTLdeV91Wn0LG0RAKtidjCTN4BCTJsRBOJsQUYKf
+NVbeFhZ9ZdaBKbOKCAJ5o+e+c1JXDl6rJShzTwq/GY9dWsawlED+zryw4PN2y6LNm5HIcGF4tWyD
+uSSvncvmfZczKbR9n59ovoydf8xWKJm3gADHVpVvvdNDsuSwdekt/7Sew7eVyn1nksRcqnV2VoyQ
+ufDLs8gnMFzERAo05vkU7Cai/vJGi2a72QVZhO1MdAV+Y46EsozinzvXRklPswBg/LVQ20ggePzC
+98eWqsDNbowPguIFPZYnL0WoGT88My2xZ7SX1biD2qJEtmXLJtTU3UC126bm
+--00000000000014795105e39e59ad--
