@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D24CD57178D
-	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 12:49:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 94F1257178F
+	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 12:49:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232343AbiGLKtH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jul 2022 06:49:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35716 "EHLO
+        id S232184AbiGLKtK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jul 2022 06:49:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232154AbiGLKtD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 06:49:03 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2D721A828
-        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 03:48:58 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id r18so9570331edb.9
-        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 03:48:58 -0700 (PDT)
+        with ESMTP id S232314AbiGLKtG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 06:49:06 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ED6E1FCD8
+        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 03:49:00 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id v12so9546275edc.10
+        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 03:49:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=xFvLhpZkHISgnDC83dfl5Kxi12bkzGFASRURcstvTFc=;
-        b=GYmlWfyvlTE7ZKNMe2DOy8ksmDgNqzTCOrrIzMUcC4OqWDlQt4WcQQRLgfBics9Ir9
-         8B7qIKvVvqU6hGgI5P4VXX7ijvCFrWi8D46oqGA/qilThib4FC4vFU1IpyZIwucIoMQP
-         1GfFh0lH0uyOLkURuj3eV24IlCi1R1f669s6bhZqDqMgWunsKo2xRoJHkFneiKBr96rX
-         FTiOpkdbM7yTQ6jZa2KJAHMhFKtiF6vsJOefuwuFZ02uXjZZXhKkI4a51UPW5osvluoo
-         LzbXKGAIg/dKD3b2elzBWBjOzo07PvU8Li1ecEtX15Z38LB4lzGaA4TpVuy2+3im5U1T
-         5t8Q==
+        bh=H26OfbW/YT2X377qgJMvhVMj5grGfc0kIq9uEFQaW9k=;
+        b=6rxjBSy6kYL3uz0ZkbyThHhBKBiYS3WaM1Lv+dKCN+V/N/ursA4zuuiYK8oV2oKhS5
+         PKEXxb8EDDJypvdmEHwYRhxPJ0/xZBJzo4sr6iiZz87uWxwVOGRzi9OVpFGVcdL1ZsFU
+         XtEVbaXW2383ZeEgUiWY1pEDHS1UJ96McmhtwF6frmR9qG/aJYotoR50JydHz65lfH9O
+         icY4+Z3O3lbb89kx395x6cLeVkv8AUxLSVXbz4aUP1+LSI7/sDAg/hCZjnIZPmpXwme0
+         PXL4n50JSvybZUlquYKoaDmie4J0fyVb5ZJbw+2OGzUuCx5wmca3XarihipsGT5c02Vy
+         8Q+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=xFvLhpZkHISgnDC83dfl5Kxi12bkzGFASRURcstvTFc=;
-        b=2UQqBY4teAUwa00npDdIN9foJtJpESIlERwT/UUeuPCeOy2uwSbYDmImF2GGm8DnzM
-         6Avor36d0KEFQES4tPbjlDHSPieVqBu4kEjS8zONzHOAerT3u/JNnGSklu/CbEx1Wihe
-         Pzwwf68ZIo5sX9lE3oQgGZ5D2HcaE4C9tWTDhfowpuMmf1EnBsjxdEuj5p+w2nSwU2bo
-         JAjGyRduccKt5NZJb9MDwxmPkGgczI+TBfztqImmxQS7fedYOhFecI41iAwncYbanlav
-         wjfvKCB5CNnrOSAAUG9NVAGwDy5rs8ccg5adq9x5qCJKp66VctNAl066S2j8UGgTMYND
-         2bag==
-X-Gm-Message-State: AJIora8J3a/REaEWuaIvwy30/A3Ni5/utSgBY/TZwd6ZxtBBAPdETkS6
-        SNq58d5c6KXG0czUgAPFGwMPdECUwPKx8Mkwaik=
-X-Google-Smtp-Source: AGRyM1s2gw2l937xOun0I+GD7LtCx0s8lbDk/k3eVKGxJqyxL2RhpwIljNEnDD9bgAOAu5SCCkVFhw==
-X-Received: by 2002:a05:6402:1909:b0:43a:64bb:9f27 with SMTP id e9-20020a056402190900b0043a64bb9f27mr31713174edz.24.1657622936620;
-        Tue, 12 Jul 2022 03:48:56 -0700 (PDT)
+        bh=H26OfbW/YT2X377qgJMvhVMj5grGfc0kIq9uEFQaW9k=;
+        b=7WuxwH94gz1uEI7MlbgPjp0FnldZeoH2JJ3KaMraahRkBO9vR+Yxxxko78hlKvSWTh
+         0pvbNom1JiWSutom8wBjxktqT/tM/spSMiN3xOPQROG8wpEMQ5b2JEJ8sBD56Q5TsLyD
+         /NW4TDRBREY77SUUffXYM2bgoFKxc+mYomXAO/PAC4B5EWE0HpcFcXco4bpeGMQsE+TZ
+         huSqVyE/cy51qkAiIp8jwiR8Uxmu4hqO3F6UzDbT8YsPTvNUBQdR7yDwqWPeGhD6C04O
+         F8+hINez2ll/ugVsdWZ6QjNcwHwfrSAN1FqDB91RVib5Sy6RgYYCuUa1Y/yzpetQHKwX
+         tReg==
+X-Gm-Message-State: AJIora9YmbsMa4DpfI/HCXTGX432ltIVHLjmUb2jT+2C6+nWjwUBW4ld
+        PgFw7hhW8zqAP1GXBNQjauN/Xq5jw2+bV6AYjC8=
+X-Google-Smtp-Source: AGRyM1t8slqFVBoKbK1OfM99fI0uXEDjWQiR5KzTfkRk83N0BQrIBvqRtYb18KQddZWh0qGooqAYjQ==
+X-Received: by 2002:a05:6402:1502:b0:439:e4a5:4ba9 with SMTP id f2-20020a056402150200b00439e4a54ba9mr31366280edw.19.1657622938820;
+        Tue, 12 Jul 2022 03:48:58 -0700 (PDT)
 Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id 27-20020a170906311b00b0072aac739089sm3688821ejx.98.2022.07.12.03.48.55
+        by smtp.gmail.com with ESMTPSA id s10-20020a170906354a00b00705cdfec71esm3699505eja.7.2022.07.12.03.48.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 03:48:55 -0700 (PDT)
+        Tue, 12 Jul 2022 03:48:58 -0700 (PDT)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com, mlxsw@nvidia.com, saeedm@nvidia.com,
         moshe@nvidia.com
-Subject: [patch net-next 1/3] net: devlink: make devlink_dpipe_headers_register() return void
-Date:   Tue, 12 Jul 2022 12:48:51 +0200
-Message-Id: <20220712104853.2831646-2-jiri@resnulli.us>
+Subject: [patch net-next 2/3] net: devlink: fix a typo in function name devlink_port_new_notifiy()
+Date:   Tue, 12 Jul 2022 12:48:52 +0200
+Message-Id: <20220712104853.2831646-3-jiri@resnulli.us>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220712104853.2831646-1-jiri@resnulli.us>
 References: <20220712104853.2831646-1-jiri@resnulli.us>
@@ -71,65 +71,39 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@nvidia.com>
 
-The return value is not used, so change the return value type to void.
+Fix the typo in a name of devlink_port_new_notifiy() function.
 
 Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/spectrum_dpipe.c | 6 ++----
- include/net/devlink.h                                | 2 +-
- net/core/devlink.c                                   | 5 ++---
- 3 files changed, 5 insertions(+), 8 deletions(-)
+ net/core/devlink.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_dpipe.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_dpipe.c
-index 5d494fabf93d..c2540292702d 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_dpipe.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_dpipe.c
-@@ -1266,10 +1266,8 @@ int mlxsw_sp_dpipe_init(struct mlxsw_sp *mlxsw_sp)
- 	struct devlink *devlink = priv_to_devlink(mlxsw_sp->core);
- 	int err;
- 
--	err = devlink_dpipe_headers_register(devlink,
--					     &mlxsw_sp_dpipe_headers);
--	if (err)
--		return err;
-+	devlink_dpipe_headers_register(devlink, &mlxsw_sp_dpipe_headers);
-+
- 	err = mlxsw_sp_dpipe_erif_table_init(mlxsw_sp);
- 	if (err)
- 		goto err_erif_table_init;
-diff --git a/include/net/devlink.h b/include/net/devlink.h
-index b1b5c19a8316..88c701b375a2 100644
---- a/include/net/devlink.h
-+++ b/include/net/devlink.h
-@@ -1590,7 +1590,7 @@ int devlink_dpipe_table_register(struct devlink *devlink,
- 				 void *priv, bool counter_control_extern);
- void devlink_dpipe_table_unregister(struct devlink *devlink,
- 				    const char *table_name);
--int devlink_dpipe_headers_register(struct devlink *devlink,
-+void devlink_dpipe_headers_register(struct devlink *devlink,
- 				   struct devlink_dpipe_headers *dpipe_headers);
- void devlink_dpipe_headers_unregister(struct devlink *devlink);
- bool devlink_dpipe_table_counter_enabled(struct devlink *devlink,
 diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 2b2e454ebd78..c261bba9ab76 100644
+index c261bba9ab76..2f22ce33c3ec 100644
 --- a/net/core/devlink.c
 +++ b/net/core/devlink.c
-@@ -10425,13 +10425,12 @@ EXPORT_SYMBOL_GPL(devlink_sb_unregister);
-  *
-  *	Register the headers supported by hardware.
-  */
--int devlink_dpipe_headers_register(struct devlink *devlink,
--				   struct devlink_dpipe_headers *dpipe_headers)
-+void devlink_dpipe_headers_register(struct devlink *devlink,
-+				    struct devlink_dpipe_headers *dpipe_headers)
- {
- 	devl_lock(devlink);
- 	devlink->dpipe_headers = dpipe_headers;
- 	devl_unlock(devlink);
--	return 0;
+@@ -1700,9 +1700,9 @@ static int devlink_nl_cmd_port_unsplit_doit(struct sk_buff *skb,
+ 	return devlink->ops->port_unsplit(devlink, devlink_port, info->extack);
  }
- EXPORT_SYMBOL_GPL(devlink_dpipe_headers_register);
  
+-static int devlink_port_new_notifiy(struct devlink *devlink,
+-				    unsigned int port_index,
+-				    struct genl_info *info)
++static int devlink_port_new_notify(struct devlink *devlink,
++				   unsigned int port_index,
++				   struct genl_info *info)
+ {
+ 	struct devlink_port *devlink_port;
+ 	struct sk_buff *msg;
+@@ -1775,7 +1775,7 @@ static int devlink_nl_cmd_port_new_doit(struct sk_buff *skb,
+ 	if (err)
+ 		return err;
+ 
+-	err = devlink_port_new_notifiy(devlink, new_port_index, info);
++	err = devlink_port_new_notify(devlink, new_port_index, info);
+ 	if (err && err != -ENODEV) {
+ 		/* Fail to send the response; destroy newly created port. */
+ 		devlink->ops->port_del(devlink, new_port_index, extack);
 -- 
 2.35.3
 
