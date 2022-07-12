@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ED5715727E0
-	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 22:54:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CFCCA5727E3
+	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 22:54:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231435AbiGLUxz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jul 2022 16:53:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57540 "EHLO
+        id S233704AbiGLUyj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jul 2022 16:54:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234049AbiGLUxo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 16:53:44 -0400
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94023D038E;
-        Tue, 12 Jul 2022 13:53:21 -0700 (PDT)
-Received: by mail-wr1-x42d.google.com with SMTP id bu1so11642111wrb.9;
-        Tue, 12 Jul 2022 13:53:21 -0700 (PDT)
+        with ESMTP id S233990AbiGLUxs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 16:53:48 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 032B7D03B3;
+        Tue, 12 Jul 2022 13:53:23 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id v16so12790828wrd.13;
+        Tue, 12 Jul 2022 13:53:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=OJ0hXZfV5Alrn5VQyEcS8Jj+bIgVFhTm5Bw+BZyTG0c=;
-        b=gUEjS0b1uKrgeP8SV+ckYTtCLYwhpD7RrM77qL572lXDM/R9S/ant/W8YQXwWS8+zB
-         hMd/GuIMiQbUiCN7T9Kz3mcSLcXXPvy9vWl1ZWFtznrlOFtDTcti6qS0TlFpvKxQjcoe
-         sGsQI+eAGvIGcRv8p5WIswDXDQT6geiY3gmb/Iyu1uiVYWBblSdY/5QHUaYCZSJUNk+z
-         bMz+59jAper6eKDw3Bjn9wB7nnW48inVy3bLJfehRAuErxPTdNfdbceGPdrHorQFpp1z
-         S7P6PC/b6hYgj5N6zZc7mwIkmsnMkejqrK2p1ZhJBxUqR8cCFbSb2UbTdqJzEEbYqSmb
-         6IQQ==
+        bh=zU7SCTZ1JR9bpmBy/aLylVb+e+9ie+s0rEDh1Smgcsg=;
+        b=F8O/jx5Je8eryKkph6AeX5I8ABHFSKvG/mNDO6VjK4TGox9Z+Z9g67tGWGVonwYaX8
+         ABTZZc1RpU56XCDZ8Oz2N5S3H3n8gU4PHzi8YCR7NumYYazatkqYJ5zn3rcQ9p5/bxfc
+         fDhXHPw/ynwfAMT9uNhGUJb8WuEKLc9A1Qg02RGFolptTciLXGLh0qXZKytXPJ6jzfYk
+         BYz7nUpalakGuhdfS90zylg1dT7gkgO/ihrdrKgPGI6o7NzCCRkzK1BfSHPl4yZLZ2IF
+         QmPBsIc67tbl78FFrpuU5RP2FIJKBlXaGwfz5dupuJnhGrOnR8t4S7vllopPthaK+Pam
+         bW/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=OJ0hXZfV5Alrn5VQyEcS8Jj+bIgVFhTm5Bw+BZyTG0c=;
-        b=ycoHrmkTrgrqOQx7ptenRImEfrrV8AX/qi+KMMulpeatYDLkPt/MLBUX/GQP7QA1Ct
-         kiSLF4DY6FOGVcHqao8OcPKw3q5uUGHWK0dCEdB5xQbjcpF31EiDpssYknjHpbZ9sXR7
-         umH322GpXEXPwwo4J78zBne1FJFDsjTPG6MOIduteQ6Ogzuya5ABc5EIUnTJwAWRTe/R
-         gUXOZU6guav9DW05UKq7On8WhaFfDewA1f2mjbGpFamLXpBGB+JlKp2qoiOA10Ivymxp
-         Bp2UKIRftR4tz84HdM/otT2RSrbKPGcW5csFKXOP/Wtlx42/Yyxof8kYI5YnuxzM4XUc
-         eTPA==
-X-Gm-Message-State: AJIora9V/l+jUhFod1AoylzdwGvK04hTs813+PgBw7GCd0e6Xz+TTP6f
-        REkyfUgPNHYc7SgSqCv/rBYtOkEC9f0=
-X-Google-Smtp-Source: AGRyM1vd7lHZ0K8ZfBC4o5wvmHxAWa3AvtgHBbjRQkWNlv/9DxoLb2w3ZwrpMYP+O6fyLAgn5NaSUg==
-X-Received: by 2002:a5d:4892:0:b0:20c:d4eb:1886 with SMTP id g18-20020a5d4892000000b0020cd4eb1886mr24080604wrq.96.1657659200697;
-        Tue, 12 Jul 2022 13:53:20 -0700 (PDT)
+        bh=zU7SCTZ1JR9bpmBy/aLylVb+e+9ie+s0rEDh1Smgcsg=;
+        b=6dgZIsGbvcvff7NGxVk0n/xR9CVVjq5Q46Su6+2axU6S82H9u3HnnnbIBGxp72ZXU1
+         DUlmnaQ+jk65UcFNRDrZf/pN7HXs2yv5MYw5IBNdcv1Bsktw3VBrwylNL/3aT4X6VtC3
+         dT0DV8zcBzoUfbBDAOJ3udUUvNQcwqAwkr/Z1khlRCIkzLS+0KyOID1ZFz3adMsabSY8
+         w+OWegG4G4WQCVcl6GSXopxQXlvesUNQJHo19ZfRy09WOd8Cnd8c2ZE+FOK2NSd8f+ys
+         DlRPjQwpQ835l5LocX0JMSxI4Pp3BItQa/1ko3bbwpqtUyBHt7z+N492EFndcmbfoErv
+         Iazw==
+X-Gm-Message-State: AJIora+Oh/JEdv7AiYxCkQC7nNujCNQk0EHwY5Otg8Wz9MiKz+Nbnuo2
+        YyWh3am9xwME6jsvzAU6lMldp4TWFfk=
+X-Google-Smtp-Source: AGRyM1tgGvNkygL1SBdVVnlSafYsitm6VFrOzmb1ExdfB9SQlfNPmvMHAfOSIcCo+FyJPCGHGE3S+w==
+X-Received: by 2002:a05:6000:1152:b0:21d:7646:a976 with SMTP id d18-20020a056000115200b0021d7646a976mr24466876wrx.416.1657659201832;
+        Tue, 12 Jul 2022 13:53:21 -0700 (PDT)
 Received: from 127.0.0.1localhost (188.28.125.106.threembb.co.uk. [188.28.125.106])
-        by smtp.gmail.com with ESMTPSA id c14-20020a7bc00e000000b003a044fe7fe7sm89833wmb.9.2022.07.12.13.53.19
+        by smtp.gmail.com with ESMTPSA id c14-20020a7bc00e000000b003a044fe7fe7sm89833wmb.9.2022.07.12.13.53.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 13:53:20 -0700 (PDT)
+        Tue, 12 Jul 2022 13:53:21 -0700 (PDT)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     io-uring@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
@@ -56,9 +56,9 @@ Cc:     "David S . Miller" <davem@davemloft.net>,
         Willem de Bruijn <willemb@google.com>,
         Jens Axboe <axboe@kernel.dk>, David Ahern <dsahern@kernel.org>,
         kernel-team@fb.com, Pavel Begunkov <asml.silence@gmail.com>
-Subject: [PATCH net-next v5 11/27] tcp: support externally provided ubufs
-Date:   Tue, 12 Jul 2022 21:52:35 +0100
-Message-Id: <ed55670c84dc1b0d442e33a0855429a3e5c780d2.1657643355.git.asml.silence@gmail.com>
+Subject: [PATCH net-next v5 12/27] io_uring: initialise msghdr::msg_ubuf
+Date:   Tue, 12 Jul 2022 21:52:36 +0100
+Message-Id: <b8f9f263875a4a36e7f26cc5d55ebe315308f57d.1657643355.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <cover.1657643355.git.asml.silence@gmail.com>
 References: <cover.1657643355.git.asml.silence@gmail.com>
@@ -74,68 +74,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Teach tcp how to use external ubuf_info provided in msghdr and
-also prepare it for managed frags by sprinkling
-skb_zcopy_downgrade_managed() when it could mix managed and not managed
-frags.
+Initialise newly added ->msg_ubuf in io_recv() and io_send().
 
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 ---
- net/ipv4/tcp.c | 32 ++++++++++++++++++++------------
- 1 file changed, 20 insertions(+), 12 deletions(-)
+ io_uring/net.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 390eb3dc53bd..a81f694af5e9 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -1223,17 +1223,23 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
+diff --git a/io_uring/net.c b/io_uring/net.c
+index cb08a4b62840..2dd61fcf91d8 100644
+--- a/io_uring/net.c
++++ b/io_uring/net.c
+@@ -255,6 +255,7 @@ int io_send(struct io_kiocb *req, unsigned int issue_flags)
+ 	msg.msg_control = NULL;
+ 	msg.msg_controllen = 0;
+ 	msg.msg_namelen = 0;
++	msg.msg_ubuf = NULL;
  
- 	flags = msg->msg_flags;
+ 	flags = sr->msg_flags;
+ 	if (issue_flags & IO_URING_F_NONBLOCK)
+@@ -601,6 +602,7 @@ int io_recv(struct io_kiocb *req, unsigned int issue_flags)
+ 	msg.msg_flags = 0;
+ 	msg.msg_controllen = 0;
+ 	msg.msg_iocb = NULL;
++	msg.msg_ubuf = NULL;
  
--	if (flags & MSG_ZEROCOPY && size && sock_flag(sk, SOCK_ZEROCOPY)) {
-+	if ((flags & MSG_ZEROCOPY) && size) {
- 		skb = tcp_write_queue_tail(sk);
--		uarg = msg_zerocopy_realloc(sk, size, skb_zcopy(skb));
--		if (!uarg) {
--			err = -ENOBUFS;
--			goto out_err;
--		}
- 
--		zc = sk->sk_route_caps & NETIF_F_SG;
--		if (!zc)
--			uarg->zerocopy = 0;
-+		if (msg->msg_ubuf) {
-+			uarg = msg->msg_ubuf;
-+			net_zcopy_get(uarg);
-+			zc = sk->sk_route_caps & NETIF_F_SG;
-+		} else if (sock_flag(sk, SOCK_ZEROCOPY)) {
-+			uarg = msg_zerocopy_realloc(sk, size, skb_zcopy(skb));
-+			if (!uarg) {
-+				err = -ENOBUFS;
-+				goto out_err;
-+			}
-+			zc = sk->sk_route_caps & NETIF_F_SG;
-+			if (!zc)
-+				uarg->zerocopy = 0;
-+		}
- 	}
- 
- 	if (unlikely(flags & MSG_FASTOPEN || inet_sk(sk)->defer_connect) &&
-@@ -1356,9 +1362,11 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
- 
- 			copy = min_t(int, copy, pfrag->size - pfrag->offset);
- 
--			if (tcp_downgrade_zcopy_pure(sk, skb))
--				goto wait_for_space;
--
-+			if (unlikely(skb_zcopy_pure(skb) || skb_zcopy_managed(skb))) {
-+				if (tcp_downgrade_zcopy_pure(sk, skb))
-+					goto wait_for_space;
-+				skb_zcopy_downgrade_managed(skb);
-+			}
- 			copy = tcp_wmem_schedule(sk, copy);
- 			if (!copy)
- 				goto wait_for_space;
+ 	flags = sr->msg_flags;
+ 	if (force_nonblock)
 -- 
 2.37.0
 
