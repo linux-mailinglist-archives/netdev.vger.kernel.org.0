@@ -2,62 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 10769572185
-	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 19:03:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7C4157218B
+	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 19:05:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232918AbiGLRDh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jul 2022 13:03:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49598 "EHLO
+        id S232094AbiGLRFw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jul 2022 13:05:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229823AbiGLRDf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 13:03:35 -0400
-Received: from smtp-fw-9102.amazon.com (smtp-fw-9102.amazon.com [207.171.184.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 173EFE87
-        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 10:03:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1657645413; x=1689181413;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=8DtFh9+twygDYJByYFhJ3SPAK4ip6KdpU2tSgeoeOvw=;
-  b=A31+CSP2mrzWHwy4g9wogBRIPt75769GXqzYStfUN1NKsV8jXVeWBU/B
-   T76WVQ4yAOkhxP1NtIVgV3IgDA2D2iYP8efjEmnoJeh7UScofcv2O9DVm
-   5KduNFFNeDMm81Din4f7ZH0aXEpBqwRpCJMo7LxpFwI2oQzSLgF1HGvDH
-   Y=;
-X-IronPort-AV: E=Sophos;i="5.92,266,1650931200"; 
-   d="scan'208";a="237456708"
-Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-iad-1e-7dac3c4d.us-east-1.amazon.com) ([10.25.36.210])
-  by smtp-border-fw-9102.sea19.amazon.com with ESMTP; 12 Jul 2022 17:03:16 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1e-7dac3c4d.us-east-1.amazon.com (Postfix) with ESMTPS id D86342024FB;
-        Tue, 12 Jul 2022 17:03:13 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.36; Tue, 12 Jul 2022 17:03:13 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.162.144) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.9;
- Tue, 12 Jul 2022 17:03:10 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     <edumazet@google.com>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <kuni1840@gmail.com>,
-        <kuniyu@amazon.com>, <netdev@vger.kernel.org>, <pabeni@redhat.com>,
-        <subashab@codeaurora.org>
-Subject: Re: [PATCH v1 net] tcp/udp: Make early_demux back namespacified.
-Date:   Tue, 12 Jul 2022 10:03:02 -0700
-Message-ID: <20220712170302.37685-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <CANn89i+k084b4RuoOOrFzYkd9uB0GUbW7VxcCCDSpqWWJaNXnQ@mail.gmail.com>
-References: <CANn89i+k084b4RuoOOrFzYkd9uB0GUbW7VxcCCDSpqWWJaNXnQ@mail.gmail.com>
+        with ESMTP id S231684AbiGLRFv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 13:05:51 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E04DBFAF1;
+        Tue, 12 Jul 2022 10:05:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657645550; x=1689181550;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=rPxMZ+Vw5uzO4+6HpSJz1lqVx99t6Z9trYQCIx/TXKA=;
+  b=mJpu+NKIV3fcJpi5eB03XT7mn5lVUTCWDJb97ALuikap2G6s7KPDmBgm
+   S7W6FKLT8FLWYCRc2Tt77e8Xant6f/NmmOSUU+0I86iW+RkPgOxM9sq0c
+   FmwWa6Sm4gTbWBze/djyGjVHDOaM5ZeVvM/oQDWl9j4unEHXy4ugB5xkf
+   CATjjsR+R//eCgCwRnDpzZv+sKmRvAbr2gsEmWmboQKwvnnfiapB1sOUO
+   PMjl7A7TOFeUvDFMaQq8camJ1MdPCpljUhyNM4M9Og9zO2TGdYUT79I9u
+   oVsPSp0A+XdcP+soYAbuz0BcfcNkSwDYAyfdUgGl8wDu41T8h50G358Jj
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10406"; a="285733892"
+X-IronPort-AV: E=Sophos;i="5.92,266,1650956400"; 
+   d="scan'208";a="285733892"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2022 10:05:48 -0700
+X-IronPort-AV: E=Sophos;i="5.92,266,1650956400"; 
+   d="scan'208";a="663024910"
+Received: from eklong-mobl.amr.corp.intel.com ([10.209.68.103])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2022 10:05:47 -0700
+Date:   Tue, 12 Jul 2022 10:05:47 -0700 (PDT)
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+To:     Matthieu Baerts <matthieu.baerts@tessares.net>
+cc:     Jiri Olsa <olsajiri@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Geliang Tang <geliang.tang@suse.com>, mptcp@lists.linux.dev
+Subject: Re: [PATCH bpf-next] mptcp: Add struct mptcp_sock definition when
+ CONFIG_MPTCP is disabled
+In-Reply-To: <23fa8509-5b2d-6263-1543-443c9c896348@tessares.net>
+Message-ID: <d8cecd5-64b-5e5f-3fa-93dbbef3c2@linux.intel.com>
+References: <20220711130731.3231188-1-jolsa@kernel.org> <6d3b3bf-2e29-d695-87d7-c23497acc81@linux.intel.com> <5710e8f7-6c09-538f-a636-2ea1863ab208@tessares.net> <Ys1lKqF1GL/T6mBz@krava> <23fa8509-5b2d-6263-1543-443c9c896348@tessares.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.162.144]
-X-ClientProxiedBy: EX13D19UWA004.ant.amazon.com (10.43.160.102) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-7.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_HI,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+Content-Type: multipart/mixed; boundary="0-1561649209-1657645548=:60884"
+X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -65,59 +65,95 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 12 Jul 2022 18:51:51 +0200
-> On Tue, Jul 12, 2022 at 6:33 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
-> >
-> > Commit e21145a9871a ("ipv4: namespacify ip_early_demux sysctl knob") made
-> > it possible to enable/disable early_demux on a per-netns basis.  Then, we
-> > introduced two knobs, tcp_early_demux and udp_early_demux, to switch it for
-> > TCP/UDP in commit dddb64bcb346 ("net: Add sysctl to toggle early demux for
-> > tcp and udp").  However, the .proc_handler() was wrong and actually
-> > disabled us from changing the behaviour in each netns.
-> 
-> ...
-> 
-> > -int tcp_v4_early_demux(struct sk_buff *skb)
-> > +void tcp_v4_early_demux(struct sk_buff *skb)
-> >  {
-> >         const struct iphdr *iph;
-> >         const struct tcphdr *th;
-> >         struct sock *sk;
-> >
-> >         if (skb->pkt_type != PACKET_HOST)
-> > -               return 0;
-> > +               return;
-> >
-> >         if (!pskb_may_pull(skb, skb_transport_offset(skb) + sizeof(struct tcphdr)))
-> > -               return 0;
-> > +               return;
-> >
-> >         iph = ip_hdr(skb);
-> >         th = tcp_hdr(skb);
-> >
-> >         if (th->doff < sizeof(struct tcphdr) / 4)
-> > -               return 0;
-> > +               return;
-> >
-> >         sk = __inet_lookup_established(dev_net(skb->dev), &tcp_hashinfo,
-> >                                        iph->saddr, th->source,
-> > @@ -1740,7 +1740,7 @@ int tcp_v4_early_demux(struct sk_buff *skb)
-> >                                 skb_dst_set_noref(skb, dst);
-> >                 }
-> >         }
-> > -       return 0;
-> > +       return;
-> >  }
-> >
-> 
-> You have a tendency of making your patches larger than needed.
-> 
-> If you fix a bug, please do not add 'cleanups'.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Ah sorry.  I thought it would be confusing if we just drop the returned
-value when calling tcp_v4_early_demux().
+--0-1561649209-1657645548=:60884
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8BIT
 
-I drop the part in v2 and send it to net-next after net is merged.
+On Tue, 12 Jul 2022, Matthieu Baerts wrote:
 
-Thank you!
+> Hi Jiri,
+>
+> On 12/07/2022 14:12, Jiri Olsa wrote:
+>> On Tue, Jul 12, 2022 at 11:06:38AM +0200, Matthieu Baerts wrote:
+>>> Hi Jiri, Mat,
+>>>
+>>> On 11/07/2022 23:21, Mat Martineau wrote:
+>>>> On Mon, 11 Jul 2022, Jiri Olsa wrote:
+>>>>
+>>>>> The btf_sock_ids array needs struct mptcp_sock BTF ID for
+>>>>> the bpf_skc_to_mptcp_sock helper.
+>>>>>
+>>>>> When CONFIG_MPTCP is disabled, the 'struct mptcp_sock' is not
+>>>>> defined and resolve_btfids will complain with:
+>>>>>
+>>>>>  BTFIDS  vmlinux
+>>>>> WARN: resolve_btfids: unresolved symbol mptcp_sock
+>>>>>
+>>>>> Adding empty difinition for struct mptcp_sock when CONFIG_MPTCP
+>>>>> is disabled.
+>>>>>
+>>>>> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+>>>>> ---
+>>>>> include/net/mptcp.h | 4 ++++
+>>>>> 1 file changed, 4 insertions(+)
+>>>>>
+>>>>> diff --git a/include/net/mptcp.h b/include/net/mptcp.h
+>>>>> index ac9cf7271d46..25741a52c666 100644
+>>>>> --- a/include/net/mptcp.h
+>>>>> +++ b/include/net/mptcp.h
+>>>>> @@ -59,6 +59,10 @@ struct mptcp_addr_info {
+>>>>>     };
+>>>>> };
+>>>>>
+>>>>> +#if !IS_ENABLED(CONFIG_MPTCP)
+>>>>> +struct mptcp_sock { };
+>>>>> +#endif
+>>>>
+>>>> The only use of struct mptcp_sock I see with !CONFIG_MPTCP is from this
+>>>> stub at the end of mptcp.h:
+>>>>
+>>>> static inline struct mptcp_sock *bpf_mptcp_sock_from_subflow(struct sock
+>>>> *sk) { return NULL; }
+>>>>
+>>>> It's normally defined in net/mptcp/protocol.h for the MPTCP subsystem code.
+>>>>
+>>>> The conditional could be added on the line before the stub to make it
+>>>> clear that the empty struct is associated with that inline stub.
+>>>
+>>> If this is required only for this specific BPF function, why not
+>>> modifying this stub (or add a define) to return "void *" instead of
+>>> "struct mptcp_sock *"?
+>>
+>> so btf_sock_ids array needs BTF ID for 'struct mptcp_sock' and if CONFIG_MPTCP
+>> is not enabled, then resolve_btfids (which resolves and populate all BTF IDs)
+>> won't find it and will complain
+>>
+>> btf_sock_ids keeps all socket IDs regardles the state of their CONFIG options,
+>> and relies that sock structs are defined even if related CONFIG option is disabled
+>
+> Thank you for the explanation. I didn't know about that.
+>
+> Then it is fine for me to leave it in mptcp.h. If it is not directly
+> linked to bpf_mptcp_sock_from_subflow(), I guess it can stay there but
+> maybe better to wait for Mat's answer about that.
+>
+>> if that is false assumption then maybe we need to make btf_sock_ids values optional
+>> somehow
+>
+
+I'd rather keep the full mptcp_sock definition in net/mptcp/protocol.h 
+since moving it would require also moving a few other structs it depends 
+on.
+
+Defining the empty struct in mptcp.h is fine with me and it sounds like 
+that meets the needs of btf_sock_ids - but I'd like a v2 of this patch 
+that moves the new empty struct declaration next to the inline 
+btf_mptcp_sock_from_subflow function in mptcp.h
+
+--
+Mat Martineau
+Intel
+--0-1561649209-1657645548=:60884--
