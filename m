@@ -2,133 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 31C14570EA7
-	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 02:11:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DFA7570EC9
+	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 02:18:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231633AbiGLALi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jul 2022 20:11:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46834 "EHLO
+        id S231947AbiGLAR4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jul 2022 20:17:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231523AbiGLALd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 20:11:33 -0400
-Received: from mail-oo1-xc36.google.com (mail-oo1-xc36.google.com [IPv6:2607:f8b0:4864:20::c36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9BBD52DE4;
-        Mon, 11 Jul 2022 17:11:32 -0700 (PDT)
-Received: by mail-oo1-xc36.google.com with SMTP id d12-20020a4aeb8c000000b004214e709b72so1245744ooj.6;
-        Mon, 11 Jul 2022 17:11:32 -0700 (PDT)
+        with ESMTP id S231902AbiGLARl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 20:17:41 -0400
+Received: from smtp-fw-80007.amazon.com (smtp-fw-80007.amazon.com [99.78.197.218])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 144798BA8D;
+        Mon, 11 Jul 2022 17:16:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=wX4uw378nHlZZknwBrLqu9hUejNkdIA+CIdUtRzeQzk=;
-        b=NymimtnM+Y30KQXD7Cptxk5Z4ryzMYPBT7zbkpkh6jPgLhmRchiDCaO8jl9xkAMUST
-         nGHBw9018BZcw8Tz31l+LjHaEfLPg8rGKF314uGxeJlmjJBamvCZmbCneXkVGHtROPyv
-         6Ec69hspGGyNPw9H8ELkRPKwANwJ0L+Lknc6RsZbSjOhM5hv/EZocwpQ25HSBFaaBuSC
-         73pj98+DVOkgdJZNktgftZ7H1Vsi3jYaMU8mpmZhvfoLWEsD9Gh3V72enJwP8/45ujPj
-         pPxeud2eDQb4TVaemhXgK2v9l/E1lBt11VKujjtX375TLdOY4d6vQDmJjd9Jv3UkLzkU
-         gG2Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=wX4uw378nHlZZknwBrLqu9hUejNkdIA+CIdUtRzeQzk=;
-        b=1Hg0hLG5UK4mo/ibESrROJeJkoTVni5zzV8fZ61h5K4DSEy/RgeaJ8oqqz98ds1iA9
-         7COMrFAF/a8O7zENvq8mECGDm6xcuzrjqcCrKl7PCpuLTFIqZckj0Ta5/huB7AYGziAq
-         LCyXoTQv2uXkqsEK1JZ2jmAc/JGStaEFojDoStXa8YofBQwE1WPS1C5mz6mTPkIqeB+A
-         UKmnkLOnAz3sS3qrHSxGAd7606+7Yz/5/skSebH3ipKDLSyXHqhXVlfWdrAE45TNbxxV
-         i2/zVwVy/yIiostru5qojgxtuuKiD25RFCFrvhbf4F2iv36IoezqrxFQ3viECbCB7GzQ
-         BUQQ==
-X-Gm-Message-State: AJIora9jRkVNeWqDt9sVcxNbEHoID9YYZCpKSrHQLImUTzXmO+ozzj+/
-        9yMVkfmiDcDFHqL4LhtzgFNlKCczdHCODE6JTVM=
-X-Google-Smtp-Source: AGRyM1vj4LOisBgu89jgkYWeP2kS6EPd2McSLFszQseAIDiNr82gXEopeUU2DNf4jJeHxtDqAtMFWYaryxSEAWCMR4w=
-X-Received: by 2002:a4a:5107:0:b0:41b:873e:895f with SMTP id
- s7-20020a4a5107000000b0041b873e895fmr7619919ooa.22.1657584692166; Mon, 11 Jul
- 2022 17:11:32 -0700 (PDT)
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1657584980; x=1689120980;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=S3ejaRnW01VNLQ/1XovIQoxZMXojlYmfQp9xaPV993w=;
+  b=PnDvPDYqchUiX/qL7o3lmtpjLl/FHf33R+WKZTSdCaMjm8Dk7HubA2p8
+   nBQfzmzJ9IXFzxLcJZfxQMgp06f29DqYXwUxvDiQd9Wyr+0ORpEa5r/X3
+   v52uMbnBoO7tEqLq55YMJdRnCXq2NtoM8utVhd3jPQC+rLwLuA/m7xWcX
+   Y=;
+X-IronPort-AV: E=Sophos;i="5.92,264,1650931200"; 
+   d="scan'208";a="107193599"
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-2a-7d84505d.us-west-2.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP; 12 Jul 2022 00:16:04 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-pdx-2a-7d84505d.us-west-2.amazon.com (Postfix) with ESMTPS id 855D695C24;
+        Tue, 12 Jul 2022 00:16:03 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.36; Tue, 12 Jul 2022 00:16:02 +0000
+Received: from 88665a182662.ant.amazon.com.com (10.43.161.185) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.9;
+ Tue, 12 Jul 2022 00:15:59 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        David Ahern <dsahern@kernel.org>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Iurii Zaikin <yzaikin@google.com>
+CC:     Kuniyuki Iwashima <kuniyu@amazon.com>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v1 net 00/15] sysctl: Fix data-races around ipv4_net_table (Round 1).
+Date:   Mon, 11 Jul 2022 17:15:18 -0700
+Message-ID: <20220712001533.89927-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-References: <20220706172814.169274-1-james.hilliard1@gmail.com> <a0bddf0b-e8c4-46ce-b7c6-a22809af1677@fb.com>
-In-Reply-To: <a0bddf0b-e8c4-46ce-b7c6-a22809af1677@fb.com>
-From:   James Hilliard <james.hilliard1@gmail.com>
-Date:   Mon, 11 Jul 2022 18:11:21 -0600
-Message-ID: <CADvTj4ovwExtM-bWUpJELy-OqsT=J9stmqbAXto8ds2n+G8mfw@mail.gmail.com>
-Subject: Re: [PATCH v2] bpf/scripts: Generate GCC compatible helpers
-To:     Yonghong Song <yhs@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        llvm@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.43.161.185]
+X-ClientProxiedBy: EX13D04UWB002.ant.amazon.com (10.43.161.133) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 11, 2022 at 5:36 PM Yonghong Song <yhs@fb.com> wrote:
->
->
->
-> On 7/6/22 10:28 AM, James Hilliard wrote:
-> > The current bpf_helper_defs.h helpers are llvm specific and don't work
-> > correctly with gcc.
-> >
-> > GCC appears to required kernel helper funcs to have the following
-> > attribute set: __attribute__((kernel_helper(NUM)))
-> >
-> > Generate gcc compatible headers based on the format in bpf-helpers.h.
-> >
-> > This adds conditional blocks for GCC while leaving clang codepaths
-> > unchanged, for example:
-> >       #if __GNUC__ && !__clang__
-> >       void *bpf_map_lookup_elem(void *map, const void *key) __attribute__((kernel_helper(1)));
-> >       #else
-> >       static void *(*bpf_map_lookup_elem)(void *map, const void *key) = (void *) 1;
-> >       #endif
->
-> It does look like that gcc kernel_helper attribute is better than
-> '(void *) 1' style. The original clang uses '(void *) 1' style is
-> just for simplicity.
+This series fixes data-races around the first 13 knobs and
+nexthop_compat_mode in ipv4_net_table.
 
-Isn't the original style going to be needed for backwards compatibility with
-older clang versions for a while?
+I will post another patch for three early_demux knobs later,
+so the next round will start from ip_default_ttl.
 
->
-> Do you mind to help implement similar attribute in clang so we
-> don't need "#if" here?
 
-That's well outside my area of expertise unfortunately.
+Kuniyuki Iwashima (15):
+  sysctl: Fix data-races in proc_dou8vec_minmax().
+  sysctl: Fix data-races in proc_dointvec_ms_jiffies().
+  tcp: Fix a data-race around sysctl_max_tw_buckets.
+  icmp: Fix a data-race around sysctl_icmp_echo_ignore_all.
+  icmp: Fix data-races around sysctl_icmp_echo_enable_probe.
+  icmp: Fix a data-race around sysctl_icmp_echo_ignore_broadcasts.
+  icmp: Fix a data-race around sysctl_icmp_ignore_bogus_error_responses.
+  icmp: Fix a data-race around sysctl_icmp_errors_use_inbound_ifaddr.
+  icmp: Fix a data-race around sysctl_icmp_ratelimit.
+  icmp: Fix a data-race around sysctl_icmp_ratemask.
+  raw: Fix a data-race around sysctl_raw_l3mdev_accept.
+  tcp: Fix data-races around sysctl_tcp_ecn.
+  tcp: Fix a data-race around sysctl_tcp_ecn_fallback.
+  ipv4: Fix data-races around sysctl_ip_dynaddr.
+  nexthop: Fix data-races around nexthop_compat_mode.
 
->
-> >
-> >       #if __GNUC__ && !__clang__
-> >       long bpf_map_update_elem(void *map, const void *key, const void *value, __u64 flags) __attribute__((kernel_helper(2)));
-> >       #else
-> >       static long (*bpf_map_update_elem)(void *map, const void *key, const void *value, __u64 flags) = (void *) 2;
-> >       #endif
-> >
-> > See:
-> > https://github.com/gcc-mirror/gcc/blob/releases/gcc-12.1.0/gcc/config/bpf/bpf-helpers.h#L24-L27
-> >
-> > This fixes the following build error:
-> > error: indirect call in function, which are not supported by eBPF
-> >
-> > Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
-> > ---
-> > Changes v1 -> v2:
-> >    - more details in commit log
-> > ---
-> >   scripts/bpf_doc.py | 43 ++++++++++++++++++++++++++-----------------
-> >   1 file changed, 26 insertions(+), 17 deletions(-)
-> >
-> [...]
+ Documentation/networking/ip-sysctl.rst            |  2 +-
+ .../chelsio/inline_crypto/chtls/chtls_cm.c        |  2 +-
+ include/net/raw.h                                 |  2 +-
+ kernel/sysctl.c                                   | 12 ++++++------
+ net/ipv4/af_inet.c                                |  4 ++--
+ net/ipv4/fib_semantics.c                          |  2 +-
+ net/ipv4/icmp.c                                   | 15 ++++++++-------
+ net/ipv4/inet_timewait_sock.c                     |  3 ++-
+ net/ipv4/nexthop.c                                |  5 +++--
+ net/ipv4/syncookies.c                             |  2 +-
+ net/ipv4/sysctl_net_ipv4.c                        | 12 ++++++++++++
+ net/ipv4/tcp_input.c                              |  2 +-
+ net/ipv4/tcp_output.c                             |  4 ++--
+ net/ipv6/icmp.c                                   |  2 +-
+ net/ipv6/route.c                                  |  2 +-
+ 15 files changed, 43 insertions(+), 28 deletions(-)
+
+-- 
+2.30.2
+
