@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8694C5720CB
-	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 18:26:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 702285720C0
+	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 18:26:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234410AbiGLQ04 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jul 2022 12:26:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42344 "EHLO
+        id S234370AbiGLQZ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jul 2022 12:25:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234316AbiGLQ0U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 12:26:20 -0400
-X-Greylist: delayed 1818 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 12 Jul 2022 09:26:11 PDT
+        with ESMTP id S234316AbiGLQZv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 12:25:51 -0400
+X-Greylist: delayed 1805 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 12 Jul 2022 09:25:45 PDT
 Received: from lizzy.crudebyte.com (lizzy.crudebyte.com [91.194.90.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E061BCD3E7
-        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 09:26:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13876CB469;
+        Tue, 12 Jul 2022 09:25:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=crudebyte.com; s=lizzy; h=Cc:To:Subject:Date:From:References:In-Reply-To:
         Message-Id:Content-Type:Content-Transfer-Encoding:MIME-Version:Content-ID:
-        Content-Description; bh=HRgmsvyQc5R1HqZKiatrCeJDIA/6CkbTdpYiY2zKJhY=; b=ISm0U
-        6toqo+pRL+qZTAPrXM7f+INHAl5w800kZIlSnKC/6fnQX1+utojn0cKjLfCv++fVYNn5doiJ9cVYN
-        rWz6Xz9RT9tSmphWW271a8D3cWlbC+5DD9hVl73LdyxarRabFmpVnSYSTGM7E09Pt4hu3/xEooNX7
-        t6sPy1fCftAPAGfbrr6BiA7iKYoWw5roCRJoaAvQfU2TEA/921OdXio4L1TziTlB54kiHkPdcK7EX
-        nLGNYsPgQdLY1YQgtFcC25EGwcCHOVkbIDVEP0cxMYFUfByJGNF3aJuW3/tlJjkSaoyH4HX5nid3Y
-        uq6Dx1aryTr2GQxTKN0tvXpaI5eTg==;
-Message-Id: <3f9c6da94f466743feffdba407ae2be313c47c93.1657636554.git.linux_oss@crudebyte.com>
+        Content-Description; bh=WkWVLOzQWUJG7V+0cVVMnUDBPNnlBLlSNA5Xuhzm6pA=; b=aD16h
+        5gXIacLM+1mKsQucP0kvMs1Fpx/v64jPPsvNzeW35TGuWfoYzMytlBfHhPvf1oSvRoOZYe7qUsak/
+        I5koC434XT/m9d7E1GifFFjL7pDTkR+SVID+/2TwUktPRkkVPOjVv9mTjKx2M27cY10xKMKXBdEz6
+        9AOmdn8Q4W62X7I5kimxR867tOz/Djt7vwLmwvvzIYlZjuQPmOz90o+Zb+AzTkhMcltdtGewF0bMn
+        P8Xvfzi9DywTt7BEd5oitWJBS9Ct0G48T2z6HqNO6qTCzttKIpUBojl2l1dASWXsqH9lyuFavuQUY
+        pZdvZnsMOn5Szx/T9Vhfa/K3K0m0Q==;
+Message-Id: <7c0f01dec9b91f9d9f034f02d2c04e70c456aa68.1657636554.git.linux_oss@crudebyte.com>
 In-Reply-To: <cover.1657636554.git.linux_oss@crudebyte.com>
 References: <cover.1657636554.git.linux_oss@crudebyte.com>
 From:   Christian Schoenebeck <linux_oss@crudebyte.com>
-Date:   Tue, 12 Jul 2022 16:31:19 +0200
-Subject: [PATCH v5 04/11] net/9p: add trans_maxsize to struct p9_client
+Date:   Tue, 12 Jul 2022 16:31:21 +0200
+Subject: [PATCH v5 05/11] 9p/trans_virtio: support larger msize values
 To:     v9fs-developer@lists.sourceforge.net
 Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         Dominique Martinet <asmadeus@codewreck.org>,
@@ -38,74 +38,113 @@ Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         Nikolay Kichukov <nikolay@oldum.net>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This new field 'trans_maxsize' optionally allows transport to
-update it to reflect the actual maximum msize supported by
-allocated transport channel.
+The virtio transport supports by default a 9p 'msize' of up to
+approximately 500 kB. This patch adds support for larger 'msize'
+values by resizing the amount of scatter/gather lists if required.
 
 Signed-off-by: Christian Schoenebeck <linux_oss@crudebyte.com>
 ---
- include/net/9p/client.h |  2 ++
- net/9p/client.c         | 12 ++++++++++--
- 2 files changed, 12 insertions(+), 2 deletions(-)
 
-diff --git a/include/net/9p/client.h b/include/net/9p/client.h
-index ec1d1706f43c..f5718057fca4 100644
---- a/include/net/9p/client.h
-+++ b/include/net/9p/client.h
-@@ -87,6 +87,7 @@ struct p9_req_t {
-  * struct p9_client - per client instance state
-  * @lock: protect @fids and @reqs
-  * @msize: maximum data size negotiated by protocol
-+ * @trans_maxsize: actual maximum msize supported by transport channel
-  * @proto_version: 9P protocol version to use
-  * @trans_mod: module API instantiated with this client
-  * @status: connection state
-@@ -101,6 +102,7 @@ struct p9_req_t {
- struct p9_client {
- 	spinlock_t lock;
- 	unsigned int msize;
-+	unsigned int trans_maxsize;
- 	unsigned char proto_version;
- 	struct p9_trans_module *trans_mod;
- 	enum p9_trans_status status;
-diff --git a/net/9p/client.c b/net/9p/client.c
-index 8bba0d9cf975..20054addd81b 100644
---- a/net/9p/client.c
-+++ b/net/9p/client.c
-@@ -1031,6 +1031,14 @@ struct p9_client *p9_client_create(const char *dev_name, char *options)
- 		goto free_client;
+I am not sure if it is safe the way SG lists are resized here. I "think"
+Dominique said before there should be no concurrency here, but probably
+deserves a revisit.
+
+ net/9p/trans_virtio.c | 61 +++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 61 insertions(+)
+
+diff --git a/net/9p/trans_virtio.c b/net/9p/trans_virtio.c
+index f63cd1b08bca..51c48741ff20 100644
+--- a/net/9p/trans_virtio.c
++++ b/net/9p/trans_virtio.c
+@@ -203,6 +203,31 @@ static struct virtqueue_sg *vq_sg_alloc(unsigned int nsgl)
+ 	return vq_sg;
+ }
+ 
++/**
++ * vq_sg_resize - resize passed virtqueue scatter/gather lists to the passed
++ * amount of lists
++ * @_vq_sg: scatter/gather lists to be resized
++ * @nsgl: new amount of scatter/gather lists
++ */
++static int vq_sg_resize(struct virtqueue_sg **_vq_sg, unsigned int nsgl)
++{
++	struct virtqueue_sg *vq_sg;
++
++	BUG_ON(!_vq_sg || !nsgl);
++	vq_sg = *_vq_sg;
++	if (vq_sg->nsgl == nsgl)
++		return 0;
++
++	/* lazy resize implementation for now */
++	vq_sg = vq_sg_alloc(nsgl);
++	if (!vq_sg)
++		return -ENOMEM;
++
++	kfree(*_vq_sg);
++	*_vq_sg = vq_sg;
++	return 0;
++}
++
+ /**
+  * p9_virtio_close - reclaim resources of a channel
+  * @client: client instance
+@@ -774,6 +799,10 @@ p9_virtio_create(struct p9_client *client, const char *devname, char *args)
+ 	struct virtio_chan *chan;
+ 	int ret = -ENOENT;
+ 	int found = 0;
++#if !defined(CONFIG_ARCH_NO_SG_CHAIN)
++	size_t npages;
++	size_t nsgl;
++#endif
+ 
+ 	if (devname == NULL)
+ 		return -EINVAL;
+@@ -796,6 +825,38 @@ p9_virtio_create(struct p9_client *client, const char *devname, char *args)
+ 		return ret;
  	}
  
 +	/*
-+	 * transport will get a chance to increase trans_maxsize (if
-+	 * necessary) and it may update trans_maxsize in create() function
-+	 * below accordingly to reflect the actual maximum size supported by
-+	 * the allocated transport channel
++	 * if user supplied an 'msize' option that's larger than what this
++	 * transport supports by default, then try to allocate more sg lists
 +	 */
-+	clnt->trans_maxsize = clnt->trans_mod->maxsize;
++	if (client->msize > client->trans_maxsize) {
++#ifdef CONFIG_ARCH_NO_SG_CHAIN
++		pr_info("limiting 'msize' to %d because architecture does not "
++			"support chained scatter gather lists\n",
++			client->trans_maxsize);
++#else
++		npages = DIV_ROUND_UP(client->msize, PAGE_SIZE);
++		if (npages > chan->p9_max_pages) {
++			npages = chan->p9_max_pages;
++			pr_info("limiting 'msize' as it would exceed the max. "
++				"of %lu pages allowed on this system\n",
++				chan->p9_max_pages);
++		}
++		nsgl = DIV_ROUND_UP(npages, SG_USER_PAGES_PER_LIST);
++		if (nsgl > chan->vq_sg->nsgl) {
++			/*
++			 * if resize fails, no big deal, then just
++			 * continue with default msize instead
++			 */
++			if (!vq_sg_resize(&chan->vq_sg, nsgl)) {
++				client->trans_maxsize =
++					PAGE_SIZE *
++					((nsgl * SG_USER_PAGES_PER_LIST) - 3);
++			}
++		}
++#endif /* CONFIG_ARCH_NO_SG_CHAIN */
++	}
 +
- 	p9_debug(P9_DEBUG_MUX, "clnt %p trans %p msize %d protocol %d\n",
- 		 clnt, clnt->trans_mod, clnt->msize, clnt->proto_version);
- 
-@@ -1038,8 +1046,8 @@ struct p9_client *p9_client_create(const char *dev_name, char *options)
- 	if (err)
- 		goto put_trans;
- 
--	if (clnt->msize > clnt->trans_mod->maxsize) {
--		clnt->msize = clnt->trans_mod->maxsize;
-+	if (clnt->msize > clnt->trans_maxsize) {
-+		clnt->msize = clnt->trans_maxsize;
- 		pr_info("Limiting 'msize' to %d as this is the maximum "
- 			"supported by transport %s\n",
- 			clnt->msize, clnt->trans_mod->name
+ 	client->trans = (void *)chan;
+ 	client->status = Connected;
+ 	chan->client = client;
 -- 
 2.30.2
 
