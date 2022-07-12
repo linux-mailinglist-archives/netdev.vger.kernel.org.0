@@ -2,58 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 100BC571022
-	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 04:26:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FCDB571026
+	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 04:27:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229909AbiGLC0l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jul 2022 22:26:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60370 "EHLO
+        id S230040AbiGLC0p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jul 2022 22:26:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229868AbiGLC0k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 22:26:40 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F027132D8C
-        for <netdev@vger.kernel.org>; Mon, 11 Jul 2022 19:26:39 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id i8-20020a17090a4b8800b001ef8a65bfbdso6607521pjh.1
-        for <netdev@vger.kernel.org>; Mon, 11 Jul 2022 19:26:39 -0700 (PDT)
+        with ESMTP id S229926AbiGLC0l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jul 2022 22:26:41 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F03CA32D8C
+        for <netdev@vger.kernel.org>; Mon, 11 Jul 2022 19:26:40 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id j3so6308506pfb.6
+        for <netdev@vger.kernel.org>; Mon, 11 Jul 2022 19:26:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=zV1a814olpDnSbmo97nfIlwRNcemiuv9zZ0syJp1uHE=;
-        b=KwX91G8WkeyFWJo6OLPWD/VS8DyWpu6dhmTjTyYRq7FyzjH65ti3DA2x9riaWVL5dy
-         IE19C0X2Zz+ifodn3Q1ro/ZQSveeMV18u1TPcyq0H3/WMQHWzYUu6M/9v4iUZ7hph8/o
-         hpFCqDRbR16Uh4uKPEZDd3qbtSM4IzwGEwFSc=
+        bh=d80lBoqTD646qmPEFeNUy2KDmedKwGNs/biUYzcz2gk=;
+        b=VyN1OVd+NsiyWFaGLy5hh8eUD0gyl/vo7oOPy3bCuv8aH5qUyrG0NR1PGrmHx/2vwU
+         GvKioDJr4PvJp0ctgWghhPg3Qj31qG5QfDLTz0MYmyrr1KZ8jvNh8ACoL8GndS6IOCTx
+         cVldxHWQKEYqGm5jHq6XYklBM5Xj/7vqa9sg4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=zV1a814olpDnSbmo97nfIlwRNcemiuv9zZ0syJp1uHE=;
-        b=QdrfQYwArMXNW5pyme493vRBNcpXoSC17LRBy8rELkDBjzWCY9JqHja5yNBhMOKR6P
-         vbf5oQH6VtjQetInzqgK9xKxbNGV7QP7mGde+Hj4MXxWQn+SXcVk+li9nzmqEqxtXmrh
-         9KTJJaDsI1Z+h4PwP2Eh7y9B1g3vTBnEQe7NMSoN2uJ4aim3Mvl+HVS4bRLhyZ7zCZS/
-         dXOIH1dQxy0x69ffw768fxQYHalecbqZScZeyvGDcTLzYlP2hk5TYC2oYwap2FK6xCI+
-         Fp+cfONtWQUvWP91IxMfz+MPWp3JaMRk0vpMRdeoB8N1YoFQ4TeCWufDKt4ukr2M3jxn
-         P6/g==
-X-Gm-Message-State: AJIora9za6ZrUkY+2M0Hm5zsX0ZC0PlVHl1sA4J5Qy30883lamfCrz5s
-        N9AyxxF56anqcbR2XNarNIxnWw==
-X-Google-Smtp-Source: AGRyM1uxmmaAZcuXYEbkxaqeVQjmhgV/BUUV7JsM5hgvav3yc0jnaGHIMPsTPPmIFkZQnRFYa5EYAA==
-X-Received: by 2002:a17:90b:1e4f:b0:1ef:aa42:f196 with SMTP id pi15-20020a17090b1e4f00b001efaa42f196mr1538306pjb.228.1657592799259;
-        Mon, 11 Jul 2022 19:26:39 -0700 (PDT)
+        bh=d80lBoqTD646qmPEFeNUy2KDmedKwGNs/biUYzcz2gk=;
+        b=6HLNPsKF9nQONA2vC5jjyZYQruff/Vy9NJJwjb/5bSQipTm22qzhq1zvxntVbcbE2p
+         Um4AKlPcC5wn5k6y1Z7rPL5S7o/a0hjRH8xn02PVUXFyskMjdOH1xjSZCp+UPrC2CtVq
+         ZErj8ZDt8eCAi7h9tub0G1B/YkrqLfmCjZbFv8CD59JvotdtZ7jIJG8HYkq6qMpHhsxv
+         Aa21DcDJFVtWqavcu3koS2i+NAFdaBZFOG0mQcZR8Jxpmi3skFagDevdeuKbBmoH/LFN
+         6qnwjgQaKhnBUncIvzp458NpeK66k+coAHYZiBAQtcxYaWeirzPBqv++8JN5VHIQrgQk
+         oi/Q==
+X-Gm-Message-State: AJIora/KjtjC0c6qcuMKuxJRacY8HkB5mlb3vAJ766v2715BAgK0EmSR
+        VFcrKRCv2r1orRPtUHz41oWexQ==
+X-Google-Smtp-Source: AGRyM1tx/qJWY5P0MLYrgKr2ELfBv4H3VjRvd+nbqPkorK81FpbHVSJb5TAyGvamQGFzaziK57xKbA==
+X-Received: by 2002:a63:6c81:0:b0:3fd:4be3:8ee9 with SMTP id h123-20020a636c81000000b003fd4be38ee9mr17870494pgc.188.1657592800411;
+        Mon, 11 Jul 2022 19:26:40 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id p4-20020a62d004000000b0052878f66f8asm5443049pfg.132.2022.07.11.19.26.38
+        by smtp.gmail.com with ESMTPSA id p4-20020a62d004000000b0052878f66f8asm5443049pfg.132.2022.07.11.19.26.39
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 11 Jul 2022 19:26:38 -0700 (PDT)
+        Mon, 11 Jul 2022 19:26:39 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
-Subject: [PATCH net 2/5] bnxt_en: Fix bnxt_reinit_after_abort() code path
-Date:   Mon, 11 Jul 2022 22:26:15 -0400
-Message-Id: <1657592778-12730-3-git-send-email-michael.chan@broadcom.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com,
+        Vikas Gupta <vikas.gupta@broadcom.com>
+Subject: [PATCH net 3/5] bnxt_en: fix livepatch query
+Date:   Mon, 11 Jul 2022 22:26:16 -0400
+Message-Id: <1657592778-12730-4-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1657592778-12730-1-git-send-email-michael.chan@broadcom.com>
 References: <1657592778-12730-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="00000000000002d27c05e3926663"
+        boundary="00000000000013629305e3926686"
 X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
         MIME_HEADER_CTYPE_ONLY,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
@@ -65,51 +66,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---00000000000002d27c05e3926663
+--00000000000013629305e3926686
 
-bnxt_reinit_after_abort() is called during ifup when a previous
-FW reset sequence has aborted or a previous ifup has failed after
-detecting FW reset.  In all cases, it is safe to assume that a
-previous FW reset has completed and the driver may not have fully
-reinitialized.
+From: Vikas Gupta <vikas.gupta@broadcom.com>
 
-Prior to this patch, it is assumed that the
-FUNC_DRV_IF_CHANGE_RESP_FLAGS_HOT_FW_RESET_DONE flag will always be
-set by the firmware in bnxt_hwrm_if_change().  This may not be true if
-the driver has already attempted to register with the firmware.  The
-firmware may not set the RESET_DONE flag again after the driver has
-registered, assuming that the driver has seen the flag already.
+In the livepatch query fw_target BNXT_FW_SRT_PATCH is
+applicable for P5 chips only.
 
-Fix it to always go through the FW reset initialization path if
-the BNXT_STATE_FW_RESET_DET flag is set.  This flag is always set
-by the driver after successfully going through bnxt_reinit_after_abort().
-
-Fixes: 6882c36cf82e ("bnxt_en: attempt to reinitialize after aborted reset")
-Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
+Fixes: 3c4153394e2c ("bnxt_en: implement firmware live patching")
+Reviewed-by: Saravanan Vajravel <saravanan.vajravel@broadcom.com>
+Reviewed-by: Somnath Kotur <somnath.kotur@broadcom.com>
+Signed-off-by: Vikas Gupta <vikas.gupta@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 7ba181ccaac2..cf9b00576ed3 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -10065,7 +10065,8 @@ static int bnxt_hwrm_if_change(struct bnxt *bp, bool up)
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
+index 3528ce9849e6..6b3d4f4c2a75 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
+@@ -979,9 +979,11 @@ static int bnxt_dl_info_get(struct devlink *dl, struct devlink_info_req *req,
+ 	if (rc)
+ 		return rc;
  
- 	if (flags & FUNC_DRV_IF_CHANGE_RESP_FLAGS_RESC_CHANGE)
- 		resc_reinit = true;
--	if (flags & FUNC_DRV_IF_CHANGE_RESP_FLAGS_HOT_FW_RESET_DONE)
-+	if (flags & FUNC_DRV_IF_CHANGE_RESP_FLAGS_HOT_FW_RESET_DONE ||
-+	    test_bit(BNXT_STATE_FW_RESET_DET, &bp->state))
- 		fw_reset = true;
- 	else
- 		bnxt_remap_fw_health_regs(bp);
+-	rc = bnxt_dl_livepatch_info_put(bp, req, BNXT_FW_SRT_PATCH);
+-	if (rc)
+-		return rc;
++	if (BNXT_CHIP_P5(bp)) {
++		rc = bnxt_dl_livepatch_info_put(bp, req, BNXT_FW_SRT_PATCH);
++		if (rc)
++			return rc;
++	}
+ 	return bnxt_dl_livepatch_info_put(bp, req, BNXT_FW_CRT_PATCH);
+ 
+ }
 -- 
 2.18.1
 
 
---00000000000002d27c05e3926663
+--00000000000013629305e3926686
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -180,13 +176,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIPJpwKTcIeciMhRw8XYZDN7val0QFoJH
-9O86F7iWnPWwMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDcx
-MjAyMjYzOVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIADs1ABY57+DUrL0J2AgWuTLoWshYHDj
+k4/0crKhU5qMMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDcx
+MjAyMjY0MFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQANWPPP52Jk9DJqH9P3mr1YqgqQYV78XDzB1MRCYvxdV4iNLUxM
-70j/nJpgF+JNYjnIB/iqA/u5rEELk6Vf55XkyFvHqkRGqKhrcAwxIcETT3Qe/Vt1B150yGZ7aPv2
-/i/sYqvF1OVVME5vMNiiVPLHCEu3FTJapxSQD0HIjwJ0Hf1hpK/QbTdo27Y7QNgvTWKTllKcjVNl
-5cCifPdBMtzGpW4NJ71O2D8x+nufoAgx/n2vZrZRnqCBgd94e/KsurNKOcaRcNAXXJ7nYz2t/w9j
-HbzlABBvuuPYacU0cgOd/W0RkxQ/Qs5gtzZ+Yw8VwNM0aTpfrtDc/4JRbLh5mPuJ
---00000000000002d27c05e3926663--
+ATANBgkqhkiG9w0BAQEFAASCAQARN2gx2pTokZwxn3XQEaJse2tqC/dVGYPW8NKN0kzmKMwK0C1V
+1k2wwsRYaRerT7qW5f02SP1NlYrAoomdRk57lKGxSLVO/lK2Yl62DnSsAUskOcSgL/+Rn1FsBx/Y
+enH2vXjsWWSmTW3g6sEQl78V7k7NdpgMZL4zlgtZLtJ9sZZZs9ciy3wYpongLPg1otkUcfL3z7RR
+j/M5AumueVYZ3fKKNuBBkD+IqKT6DviPkoA1xv1pcUtlX7r5CVJEDP8geFEY9T1gp6Y87GoCO0yK
+GPax8FTUjY/BLIBe1SP6KBtcTAffb4MkZ1dmhShjf87qoxEEVcx06xJ0FpfeNKhK
+--00000000000013629305e3926686--
