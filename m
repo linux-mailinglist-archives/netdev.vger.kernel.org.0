@@ -2,160 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 93BEF572151
-	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 18:48:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 387B0572155
+	for <lists+netdev@lfdr.de>; Tue, 12 Jul 2022 18:48:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233658AbiGLQsU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jul 2022 12:48:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37618 "EHLO
+        id S233869AbiGLQsd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jul 2022 12:48:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231547AbiGLQsU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 12:48:20 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E984826550;
-        Tue, 12 Jul 2022 09:48:18 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id oy13so10491568ejb.1;
-        Tue, 12 Jul 2022 09:48:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=mbcmmT+pMIMYMSXXNjbFWB+IQNvMXD49nlszvCumBmU=;
-        b=C1vtv/hzFoN+4KUlqwUzTpCbKy6osNIrSgaVsPH2ISYa96ePHQDacSsKJieasMjDbW
-         xQI+2uqQcp+HXJH4Jnpi+G1ApZQOCEsLycWTM3DqBia6powR7ttUJSwGGXT5y9tFxrsL
-         mA/fbxw9AoAeeGMXWPdEeVKS60RwLdjij3kub586mW+2jlmcVpPAReibwGwnBBcqaCrZ
-         +0fsFwlHPyxePGt3TUDYuWU/JZwniI+wJJA1Sh1OpGwWmuypq4MXTDkbA/UtNV2NGWpP
-         zXWx4GuVCBZXpX7HmrZUtEYp+HVNYN9YyERwAX29yTRiQTiTyTlZQtc56VrhsipDOsBE
-         ssPg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=mbcmmT+pMIMYMSXXNjbFWB+IQNvMXD49nlszvCumBmU=;
-        b=xD83WuZJ0cTThlE6u9DgwfEF33dlKtMJio3+/zqEAggZnaxFM64jI7SPOw042SJOm9
-         DHFVIMO5tLpPUuH/GkE0FM09LwYzouJq5ZCHAlY5rmh/xlEViWjvF8+cFWYp3lIDvgUB
-         RpegtPdEj2WIGG9Gnsi18pK6kj9kzchWDQuqkGHcoUhK9UW5y44mXrW45jFGAPpPMvjs
-         c6eFOuf6KAgLZCiskhfE2DW+xcv3q/59mQijPkaPTE+C55fEkfI7PV2TV3g0sqQ/MNnH
-         qul7ephaAY7Op/KFM3snMu8ycLJtMINYoGINCH+YCWpr1Ix1XX64601Zo9DCuQ5aqAu1
-         iXzg==
-X-Gm-Message-State: AJIora+jnlt9HKATF0sQu5yeUyaM+omLXwgTVNtRRuyPybRBv7qD3jyp
-        c6BwSBYVMSfCVpUpGt8B4pcgxdPyeyH+ToL2KvE=
-X-Google-Smtp-Source: AGRyM1ult/9veqdiVtMu6Yt+QfiYXMYM/CbHEUmsdXJfyLCmDL4cncCV1h1TX4KkfDkaeoJZksDdv+HaMlACJA7Ni9E=
-X-Received: by 2002:a17:907:6e03:b0:726:a6a3:7515 with SMTP id
- sd3-20020a1709076e0300b00726a6a37515mr25271067ejc.676.1657644497455; Tue, 12
- Jul 2022 09:48:17 -0700 (PDT)
+        with ESMTP id S233806AbiGLQs0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 12:48:26 -0400
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2064.outbound.protection.outlook.com [40.107.102.64])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 487FDCAF19
+        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 09:48:24 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=O0tGSgQIVJSe6JywTt0VzYQbis+qm6aw+jbwzNjk60CLE/iH0un2SsEju5hslYwwnqlWjmoBCfzTHL2XbOQemJMtr0fED5Na+jq4ZqOoBwRUHj4rD1AOhkgKJjiwB4V8NZ9jWQKI8WrhxR7+EpBTHU9dP24eyQ1r9EmkfB1wMFv3+DZJIAOdUSCfMj9cvMBF6siLr10BLOBpMxSpmlCh2OAAhvzmth//Ny/6VJLn3zYoFevStEzJobU6uWqFocDVA9f9m/DsgbV6zaBVEdUcFJaye2ADlUM4QmxrYvXD3XEMopc6C1UT4R1TXy6tW3qkmtrKBkIvJdPnzWYJw1buXA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Gglm6vdkgDknSlV0OrPCOvWtKcAKpHCX1PlmZpQYtXs=;
+ b=TsbcvlRWBYaHFe8PdpOEEBX70z8ZAkm07bxDrnzn+Xbdma7o5fgxeCDctz5qiFnN0E68rxqrUZvToeBmFblAZiWoeEemAZT1+oxFN1SztHRB32wivgoY14v+5pwfdFygHyGAWvTbB3sVga0tQuiaGGHAx8JlEYD1aT2OgdoytmPHx2+cNBgdkGBB6ktboWbgpcWcYUvDrg00UPn67WZMvB9r2ISl6z60WgWpAUh2nO8uNgXos/Zh5peZ6eIdnRKQV6ZFeYcVgau1JApXu/7AMNE9GsJknp0NER1843f2yt3+aUY8861zNAE7LRJ9947LQiVWP2ua8Plmv/Gyl8cwXw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Gglm6vdkgDknSlV0OrPCOvWtKcAKpHCX1PlmZpQYtXs=;
+ b=SmkhbLSRjybj2/9inuQJnGLSn4bu3RYM9/iv0l9/qFhU6SivobVOMdjSf6wn+16CPR8fLT9+kWVuPJ7MkWDiSz2UYXyEo8mYtbcub9945UAiNbUgfAP7qBjuy1p/cJ1rm7einuVAa4LVTYTxaV3xlQfY5foYsRaRE4w0tXZNSMjlkqBkKpbIZBELZn3Ne0bmsMlowxxHHI75npyv3kPTdI1Bs5yfl7uzwFZhCpZkLPUoZgt8VrT4yp/XQwjr1h/ksG3Afcu2NjJIOzMPVuIkgzViHYhllViQ0E4z4RxShXmQ9eWnrvuD9jQFPe3gr+4yTnwshxVdWuFlRr7Fqjqgyw==
+Received: from PH0PR12MB5481.namprd12.prod.outlook.com (2603:10b6:510:d4::15)
+ by BN9PR12MB5180.namprd12.prod.outlook.com (2603:10b6:408:11d::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.21; Tue, 12 Jul
+ 2022 16:48:22 +0000
+Received: from PH0PR12MB5481.namprd12.prod.outlook.com
+ ([fe80::544b:6e21:453e:d3d6]) by PH0PR12MB5481.namprd12.prod.outlook.com
+ ([fe80::544b:6e21:453e:d3d6%9]) with mapi id 15.20.5417.026; Tue, 12 Jul 2022
+ 16:48:22 +0000
+From:   Parav Pandit <parav@nvidia.com>
+To:     "Zhu, Lingshan" <lingshan.zhu@intel.com>,
+        "jasowang@redhat.com" <jasowang@redhat.com>,
+        "mst@redhat.com" <mst@redhat.com>
+CC:     "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "xieyongji@bytedance.com" <xieyongji@bytedance.com>,
+        "gautam.dawar@amd.com" <gautam.dawar@amd.com>
+Subject: RE: [PATCH V3 5/6] vDPA: answer num of queue pairs = 1 to userspace
+ when VIRTIO_NET_F_MQ == 0
+Thread-Topic: [PATCH V3 5/6] vDPA: answer num of queue pairs = 1 to userspace
+ when VIRTIO_NET_F_MQ == 0
+Thread-Index: AQHYjU+OpP/4aLhN20eCCMO4rbOEoq1qEloggAn4zwCAAKXGEIAD0JkAgAJ/vUA=
+Date:   Tue, 12 Jul 2022 16:48:22 +0000
+Message-ID: <PH0PR12MB54817863E7BA89D6BB5A5F8CDC869@PH0PR12MB5481.namprd12.prod.outlook.com>
+References: <20220701132826.8132-1-lingshan.zhu@intel.com>
+ <20220701132826.8132-6-lingshan.zhu@intel.com>
+ <PH0PR12MB548173B9511FD3941E2D5F64DCBD9@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <ef1c42e8-2350-dd9c-c6c0-2e9bbe85adb4@intel.com>
+ <PH0PR12MB5481FF0AE64F3BB24FF8A869DC829@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <00c1f5e8-e58d-5af7-cc6b-b29398e17c8b@intel.com>
+In-Reply-To: <00c1f5e8-e58d-5af7-cc6b-b29398e17c8b@intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 966c3f20-2753-462c-057e-08da6426552b
+x-ms-traffictypediagnostic: BN9PR12MB5180:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: tViPTH178/BxwTmC8jvzZaJ3KyvtKmddcgeRtQVc9l6YjD/Q+PrmfIdXk2zaTmKT6oDPqMpF0UXBX9xauxTy/qJAQcC/84l6fOAhHmnmKKXYGR7Tfps/3YYS0YI4sqprtmLb/Nr+cFi9p+oLWJXS4FI0dFFeELetdPVQE6AeWZCneHUFlcSOJVAl9kNkPfIKCi+TjI+Sqa39GZv1GlcWi2m9uqlHDT4/GkQV7o0MYg7FF89OGzCbq7CX8F2ShsyVtzIWPkbLIP/SRJttMhnsaa5IoD50nCEZp47YGvYxOj2Om3NBNNKYfpFqlv5K8WQO7D8dExnMVAit7naIUpWsAT9ewP8HNdSU1gBidgUlimKxUZGy7fWDiHpNYOnjUaHgFuz7WkhPY9KYfEk7Z+eLDu+6/8qR13/+ELMFuWgGdl90pZs44jbHyJXDBHRQLe6YBTO3KG1d12zrHiDxjDEYZYxjn/WqoCl8CQPze0aSbRLKHFPityIA/eK4jWxko9TXENzFzbjEQRDaQzzxyv4gdkxW020geNdlWJaXWxesOdHsspdLoJT8huwEF76WOjCJ1zJM2+qCmw86Tnn7zeQ9P1XqCVowRmNUHlOR5V/qI6tZiIzemiEVczFZmupsxoYabyNMCqnUOPknJShfNPhG/0dO4mtRxrr1Wbcqnh8/qSmxEb+LF+2gvkvJARIy/Gs24Wu8U9i5jQAt7tcO3wM6LjQlusbInlemID/xhud8juefpUJKpqqn2D1nOmWH3qQmaasDOwq/ucY+Lx6PPt7+pzxnEuQiN3xBD/VZakVZYax+mUESKBJiEaGCog/E0XA+
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(376002)(396003)(39860400002)(346002)(136003)(76116006)(8676002)(122000001)(66476007)(66556008)(66946007)(8936002)(66446008)(186003)(4326008)(64756008)(38100700002)(86362001)(54906003)(7696005)(316002)(52536014)(38070700005)(71200400001)(33656002)(26005)(41300700001)(110136005)(478600001)(9686003)(55016003)(2906002)(6506007)(5660300002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?RU0zc1ZjODFjY3U5bS9GbE9mbUJ6Rnp2VVlwVUw3RTBiMUZhakdLM2JBelM5?=
+ =?utf-8?B?TkNvN0MySklXL0RDeTIzUkxlNHZKV1NIQStEYm9mYTZNS0JuQit0bFZTRUpq?=
+ =?utf-8?B?dU0xdkZKaXNhYU82RFo4cEhUbXBJak5oYm1Ud1hHWm54bXphcU5rVHpjYzhB?=
+ =?utf-8?B?SjNSTjk1R2NsdGN6VVh6Mmk0aDdoSSt6N0g2S2Z1eEJZbXJKNlgxWlFoanBZ?=
+ =?utf-8?B?RGllb0ZvdzA5UEl6VURBMTBMUXJ0Z0ZHMk9WTFFmRnJKZ2Z4a1Z5bEx1cW04?=
+ =?utf-8?B?eEJiR0FtWHlMZkZSZTQrcnZyYmRrWnlZaXpLcDdZQ213MGErUXJtVzlzMkNy?=
+ =?utf-8?B?UnIvcDJ2OGpFRlMrd2N6NUN0UmptaTVtSGxmc1BZcnl5Y2pvUjFrZlM4ZCtD?=
+ =?utf-8?B?bWdvSW4yQkZpbkdtb1ZxU0lNcGdiZmpJUUcxVG16TGxySmpEMVR1ejNMT3pi?=
+ =?utf-8?B?MENWaFZadkVxMGFpV0dIWXhpTHFRb20vZjZubHB1RkY3SmFqMURxYXhPUmxm?=
+ =?utf-8?B?ZmQwMlZXdWhlNG5Ta3pJWWtFcWpsdHl0YmJZNE1pSmU1Q0F2N3k2bmZOTDJK?=
+ =?utf-8?B?dStjVXJmbVVxbnlSYWEwS0x5dWVsNUN1K2JkY2t0YjNodmpZa2lVRDlLdW1Y?=
+ =?utf-8?B?bEY4eU5KNElYSGtIaEpMUGlwRGNQUjJnSXVyYkI5YWZIUjJqVnFOaHAvNUVH?=
+ =?utf-8?B?anJRTUVuczdrT2E4bUdMZ0JOZ1ZqNTBHVm55YTcwWTcwTG5RbUJtK0EwbUJL?=
+ =?utf-8?B?SitDSkM5RUxkWGI1VlgwMVdkV0w1UFp6K05hUFZiaGozV2QweCtzK0Nia0xq?=
+ =?utf-8?B?bDhpV090UUNmcXRTS0N5N2pvcGxyUFdweUVBeS91a2VnZm16bnVBVys5TGZn?=
+ =?utf-8?B?VThNYVhaSGR3OEMvNXFTeFRFSGo1S1BJU1JVbzVpY1BuMml4S21XVVU4VHc5?=
+ =?utf-8?B?Q1A3UFc2bExEdGdUT242TTRudkRGc1IxWFZDWWNMb05qWHlFbklIWDJ6MFVm?=
+ =?utf-8?B?TndqK0tMTHFUTHhWS3pRcWJQcjBJdTV6djQvdUc3Y3FBY0NaWkZuTE14azFQ?=
+ =?utf-8?B?eDZONHVydXQxN1BGZlhwQTZMUVY1NWpQUWoxd2RTenVlSUV2TFhWTWphV0tC?=
+ =?utf-8?B?L0FzWHNPTmxFUVdoczJXb3dzd2V2cCtQRDVkc09ubW1RNzBBeHNZUDBKM0R1?=
+ =?utf-8?B?ajR4TXVLem42b3ZCdGNIVDdpdzJUZWtkV0Y0WWFWbDJrZnBxN1pLcWs4d1RW?=
+ =?utf-8?B?UG1qdytWek9RekZhMEN4TWo0WW5mS3h1dlVBa0ZOa3B4RStBQlFMQk1jR1M2?=
+ =?utf-8?B?cWVQMzVqYUovdDZ2T3Y0emZrS3hnNjNoMjE2Z1JpcUY4Wk5rd1NyMy9IaUFm?=
+ =?utf-8?B?SFNUNUdMcWhnOGdqSmw3UWlMUDNOdEx3Uzc2RlM4ZFovdUJEVUxTMzllNzEr?=
+ =?utf-8?B?Vk5XYXJoa1hLSWcrY3lOcHdZYXgrbzVieW1LeW5EMTRndGhhWHl1TVEzOFEr?=
+ =?utf-8?B?WnpYVjVnZGtIUndMYjVPeFNLR1p1VUxIZll3c0QyZWNka0tXR21pa1pwNEhM?=
+ =?utf-8?B?VTBoSUJCanduRzJORVhJQk9sR0hQcmtLQ1RXMjN6Q2pEQVUweE9kU25hQVpE?=
+ =?utf-8?B?WTRuSHV3M05zOWxFKzVjaXQ2Y1pTblBaMmE2Y09INXJHcVFzbG9mR3FsSnNQ?=
+ =?utf-8?B?NVdoc2FFRldmTDZWa1VNZWVmQ2lKTEl4cEhpYmg0L0QwcmJDUmhEQ0c4WVYw?=
+ =?utf-8?B?Rm9HYStOT2EvWTlDMXBqVzdwdGFjSUpZNjJpODN0N0ZvQ1hZenVxa3Q1bFYr?=
+ =?utf-8?B?V1RYRVFGNG9ZL1g0QWV2Zm4waTdMVnpNV3lxSW5nTDF5eVNoeTFLZVhhZmhl?=
+ =?utf-8?B?citJRklaNXQwNWgwMmx5akZXVjNmcFpqdTRlcWloa1ZWaC8yOXQ0ZURCZk82?=
+ =?utf-8?B?QTEzdkw5OGlBemxVaGFTRXYwbEhHeXZjNGIyUUtTLy9tRUFCU0xEemtJRXZY?=
+ =?utf-8?B?VkgySFhKTUJ0U01sVHpLaUxUdkFNaGU5UFNyREc4a25kTitwYjB4djllS0da?=
+ =?utf-8?B?MVJqTVl3N1RIRHdoWFdxQnlZc1FDa3dLLzN2SkJBd05yYzBrWVU2S29KWVl1?=
+ =?utf-8?Q?IOlk=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20220706172814.169274-1-james.hilliard1@gmail.com>
- <a0bddf0b-e8c4-46ce-b7c6-a22809af1677@fb.com> <CADvTj4ovwExtM-bWUpJELy-OqsT=J9stmqbAXto8ds2n+G8mfw@mail.gmail.com>
- <CAEf4BzYwRyXG1zE5BK1ZXmxLh+ZPU0=yQhNhpqr0JmfNA30tdQ@mail.gmail.com> <87v8s260j1.fsf@oracle.com>
-In-Reply-To: <87v8s260j1.fsf@oracle.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 12 Jul 2022 09:48:05 -0700
-Message-ID: <CAADnVQLQGHoj_gCOvdFFw2pRxgMubPSp+bRpFeCSa5zvcK2qRQ@mail.gmail.com>
-Subject: Re: [PATCH v2] bpf/scripts: Generate GCC compatible helpers
-To:     "Jose E. Marchesi" <jose.marchesi@oracle.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        James Hilliard <james.hilliard1@gmail.com>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Yonghong Song <yhs@fb.com>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        llvm@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 966c3f20-2753-462c-057e-08da6426552b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Jul 2022 16:48:22.6451
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: bM4BKrJfKlDZzC9vjvoNCSqGAgnbMAMRbq1LFH5UBqW8X56t7fDII1o0zHQ8DLu5ig2IJ+O+0/0utIxTUO3U7A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR12MB5180
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 12, 2022 at 4:20 AM Jose E. Marchesi
-<jose.marchesi@oracle.com> wrote:
->
->
-> > CC Quentin as well
-> >
-> > On Mon, Jul 11, 2022 at 5:11 PM James Hilliard
-> > <james.hilliard1@gmail.com> wrote:
-> >>
-> >> On Mon, Jul 11, 2022 at 5:36 PM Yonghong Song <yhs@fb.com> wrote:
-> >> >
-> >> >
-> >> >
-> >> > On 7/6/22 10:28 AM, James Hilliard wrote:
-> >> > > The current bpf_helper_defs.h helpers are llvm specific and don't work
-> >> > > correctly with gcc.
-> >> > >
-> >> > > GCC appears to required kernel helper funcs to have the following
-> >> > > attribute set: __attribute__((kernel_helper(NUM)))
-> >> > >
-> >> > > Generate gcc compatible headers based on the format in bpf-helpers.h.
-> >> > >
-> >> > > This adds conditional blocks for GCC while leaving clang codepaths
-> >> > > unchanged, for example:
-> >> > >       #if __GNUC__ && !__clang__
-> >> > >       void *bpf_map_lookup_elem(void *map, const void *key)
-> >> > > __attribute__((kernel_helper(1)));
-> >> > >       #else
-> >> > >       static void *(*bpf_map_lookup_elem)(void *map, const void *key) = (void *) 1;
-> >> > >       #endif
-> >> >
-> >> > It does look like that gcc kernel_helper attribute is better than
-> >> > '(void *) 1' style. The original clang uses '(void *) 1' style is
-> >> > just for simplicity.
-> >>
-> >> Isn't the original style going to be needed for backwards compatibility with
-> >> older clang versions for a while?
-> >
-> > I'm curious, is there any added benefit to having this special
-> > kernel_helper attribute vs what we did in Clang for a long time?
-> > Did GCC do it just to be different and require workarounds like this
-> > or there was some technical benefit to this?
->
-> We did it that way so we could make trouble and piss you off.
->
-> Nah :)
->
-> We did it that way because technically speaking the clang construction
-> works relying on particular optimizations to happen to get correct
-> compiled programs, which is not guaranteed to happen and _may_ break in
-> the future.
->
-> In fact, if you compile a call to such a function prototype with clang
-> with -O0 the compiler will try to load the function's address in a
-> register and then emit an invalid BPF instruction:
->
->   28:   8d 00 00 00 03 00 00 00         *unknown*
->
-> On the other hand the kernel_helper attribute is bullet-proof: will work
-> with any optimization level, with any version of the compiler, and in
-> our opinion it is also more readable, more tidy and more correct.
->
-> Note I'm not saying what you do in clang is not reasonable; it may be,
-> obviously it works well enough for you in practice.  Only that we have
-> good reasons for doing it differently in GCC.
-
-Not questioning the validity of the reasons, but they created
-the unnecessary difference between compilers.
-We have to avoid forking.
-Meaning we're not going to work around that by ifdefs in
-bpf_helper_defs.h
-Because gcc community will not learn the lesson and will keep
-the bad practice of unnecessary forks.
-The best path forward here is to support both (void *) 1 style
-and kernel_helper attribute in both gcc and llvm.
-Moving forward the bpf_helper_defs.h will stay with (void *)1 style
-and when both compilers support both options we will start
-transitioning to the new kernel_helpers style.
+DQo+IEZyb206IFpodSwgTGluZ3NoYW4gPGxpbmdzaGFuLnpodUBpbnRlbC5jb20+DQo+IFNlbnQ6
+IFN1bmRheSwgSnVseSAxMCwgMjAyMiAxMDozMCBQTQ0KDQo+ID4gU2hvd2luZyBtYXhfdnFfcGFp
+cnMgb2YgMSBldmVuIHdoZW4gX01RIGlzIG5vdCBuZWdvdGlhdGVkLCBpbmNvcnJlY3RseQ0KPiBz
+YXlzIHRoYXQgbWF4X3ZxX3BhaXJzIGlzIGV4cG9zZWQgdG8gdGhlIGd1ZXN0LCBidXQgaXQgaXMg
+bm90IG9mZmVyZWQuDQo+ID4NCj4gPiBTbywgcGxlYXNlIGZpeCB0aGUgaXByb3V0ZTIgdG8gbm90
+IHByaW50IG1heF92cV9wYWlycyB3aGVuIGl0IGlzIG5vdA0KPiByZXR1cm5lZCBieSB0aGUga2Vy
+bmVsLg0KPiBpcHJvdXRlMiBjYW4gcmVwb3J0IHdoZXRoZXIgdGhlcmUgaXMgTVEgZmVhdHVyZSBp
+biB0aGUgZGV2aWNlIC8gZHJpdmVyDQo+IGZlYXR1cmUgYml0cy4NCj4gSSB0aGluayBpcHJvdXRl
+MiBvbmx5IHF1ZXJpZXMgdGhlIG51bWJlciBvZiBtYXggcXVldWVzIGhlcmUuDQo+IA0KPiBtYXhf
+dnFfcGFpcnMgc2hvd3MgaG93IG1hbnkgcXVldWUgcGFpcnMgdGhlcmUsIHRoaXMgYXR0cmlidXRl
+J3MgZXhpc3RlbmNlDQo+IGRvZXMgbm90IGRlcGVuZCBvbiBNUSwgaWYgbm8gTVEsIHRoZXJlIGFy
+ZSBzdGlsbCBvbmUgcXVldWUgcGFpciwgc28ganVzdA0KPiBzaG93IG9uZS4NClRoaXMgbmV0bGlu
+ayBhdHRyaWJ1dGUncyBleGlzdGVuY2UgaXMgZGVwZW5kaW5nIG9uIHRoZSBfTVEgZmVhdHVyZSBi
+aXQgZXhpc3RlbmNlLg0KV2UgY2FuIGJyZWFrIHRoYXQgYW5kIHJlcG9ydCB0aGUgdmFsdWUsIGJ1
+dCBpZiB3ZSBicmVhayB0aGF0IHRoZXJlIGFyZSBtYW55IG90aGVyIGNvbmZpZyBzcGFjZSBiaXRz
+IHdobyBkb2VzbuKAmXQgaGF2ZSBnb29kIGRlZmF1bHQgbGlrZSBtYXhfdnFfcGFpcnMuDQpUaGVy
+ZSBpcyBhbWJpZ3VpdHkgZm9yIHVzZXIgc3BhY2Ugd2hhdCB0byBkbyB3aXRoIGl0IGFuZCBzbyBp
+biB0aGUga2VybmVsIHNwYWNlLi4NCkluc3RlYWQgb2YgZGVhbGluZyB3aXRoIHRoZW0gZGlmZmVy
+ZW50bHkgaW4ga2VybmVsLCBhdCBwcmVzZW50IHdlIGF0dGFjaCBlYWNoIG5ldGxpbmsgYXR0cmli
+dXRlIHRvIGEgcmVzcGVjdGl2ZSBmZWF0dXJlIGJpdCB3aGVyZXZlciBhcHBsaWNhYmxlLg0KQW5k
+IGNvZGUgaW4ga2VybmVsIGFuZCB1c2VyIHNwYWNlIGlzIHVuaWZvcm0gdG8gaGFuZGxlIHRoZW0u
+DQo=
