@@ -2,104 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B2C1572F59
-	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 09:39:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A49EB572F7B
+	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 09:46:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234227AbiGMHjU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jul 2022 03:39:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35534 "EHLO
+        id S233959AbiGMHq2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jul 2022 03:46:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229543AbiGMHjS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 03:39:18 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B60E6286DD;
-        Wed, 13 Jul 2022 00:39:17 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id g16-20020a17090a7d1000b001ea9f820449so2248844pjl.5;
-        Wed, 13 Jul 2022 00:39:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=nzhLKayx5ZTvhq0OTzVspj8uwQVYr3uuqnEf5g004ms=;
-        b=hoijz3NApAWePoZC6EflevIP1lP2IfOIW4CXtTBbE+s93kgypBTSe+ErqRmKjt/EXl
-         47HZDNUrqmK0EmnhLl6Hv9/foTq6icJ5qwpqJCLl6rtiYWjyfkrz1JdmecGvzWnEAQCk
-         /fk6hnU/6+RImPX0OFjx4QtwVIoipes+VaaJcmf6IoEc7po0wlgR472c0jWq3jEZcXFy
-         8+wkY1OIlOmjnHQXR80jx/93ddf3aJaIwrinEXLykT6jsiYPkBdEN3+aX6XCK+GtcLfK
-         AboIPO4jObp+7z0614iogdRnlPg8kJVHQKosLxeEP3qVRTu9x+BV2c2NvFh3AZMNB4mU
-         aYMA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=nzhLKayx5ZTvhq0OTzVspj8uwQVYr3uuqnEf5g004ms=;
-        b=jJFYLDWH/BySExNOFvaDfUMsazAh6En0VkgbAoFV3z7v7iMtC1hWsV6rUf5s/BLVn8
-         nllaTp1n+SWwEQm/K+KVcN9MDJnnuVEcVBiKesxpVbqeEMEYBbhqi+Z6sUgEKWLC2tm8
-         gs7BMfc29UWyYI5wX118lV2URKWVgha6qxOUZATfLRX7B1dz8WKTIue0ck6HiSBdMULU
-         MKxGaeQTIlzdhpl71qE9ORwkNhR/kIULMJysS/jFXr7bA0q4Wtbi/QPnU+fYI7n3F1nl
-         HRl+nJJ1mlWWqyVjmDdfGk02NLYCD+QSvLCMbrxEgWGA2OIAuHUYlwhZT6O/Oa1AdWYA
-         c27A==
-X-Gm-Message-State: AJIora9mrCVZntZiv37uBATn3fpTIyoAZFE9CVi8Wn2j5FnH3CT1XVQU
-        XZDOAQAbvv1/vUPXfORHl4bQouOrmgnX/iZK
-X-Google-Smtp-Source: AGRyM1vssrB4FS8kuAl24Lgp3QRCJ977Nwknctu1a47TBRR4aexLA5L2YFm8da5Nh7vh5Xg9cdYq6Q==
-X-Received: by 2002:a17:903:11d2:b0:167:8a0f:8d33 with SMTP id q18-20020a17090311d200b001678a0f8d33mr1905691plh.95.1657697957145;
-        Wed, 13 Jul 2022 00:39:17 -0700 (PDT)
-Received: from sebin-inspiron.bbrouter ([103.182.167.131])
-        by smtp.gmail.com with ESMTPSA id x190-20020a6286c7000000b005252680aa30sm8167086pfd.3.2022.07.13.00.39.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Jul 2022 00:39:16 -0700 (PDT)
-From:   Sebin Sebastian <mailmesebin00@gmail.com>
-Cc:     Sebin Sebastian <mailmesebin00@gmail.com>,
-        Sunil Goutham <sgoutham@marvell.com>,
-        Linu Cherian <lcherian@marvell.com>,
-        Geetha sowjanya <gakula@marvell.com>,
-        Jerin Jacob <jerinj@marvell.com>,
-        hariprasad <hkelam@marvell.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH -next] octeontx2-af: returning uninitialized variable
-Date:   Wed, 13 Jul 2022 13:08:58 +0530
-Message-Id: <20220713073858.42015-1-mailmesebin00@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S233330AbiGMHq1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 03:46:27 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5424AE5DC1
+        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 00:46:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657698386; x=1689234386;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=ubFntTtAAMt96fiHItlMx6IW3IWwjnOg2cqFeliNvMk=;
+  b=as+QH/z60w+T4wGZaiA/bGGPHTyhkveH9TF2+Pt7v94Ji/uplJmsgohU
+   cjy6CLhcAUv8O1nwMj1UYuKVz9wJCYFIJPupWMxASA30BfdklZnQpldjS
+   GYW8g3E2HHZJRCyLZiTuvwo7jEMdxMGnLAWQ7idD5RYBZTUnzVHMDhib2
+   Qytusv0/5x/6yLEIB0EMEw63LUdxBpFE0lmfzyPc9xw7IfgWzLYV3A0mF
+   YMh9ShhxQFBvJKa2F0rEWdgYJEF3SklTmnUnX6EvqvENh9ns3if5lx97M
+   HMkhBtnX1zuoCqxhJQtdQoYE4zBZ6F4L0NRLyg07STX8ITvdyrvfG+hqT
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10406"; a="265551140"
+X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
+   d="scan'208";a="265551140"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 00:46:25 -0700
+X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
+   d="scan'208";a="628205526"
+Received: from lingshan-mobl.ccr.corp.intel.com (HELO [10.254.208.157]) ([10.254.208.157])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 00:46:23 -0700
+Message-ID: <fd667dd2-0e06-b0a3-2b85-d5e4bbca5a31@intel.com>
+Date:   Wed, 13 Jul 2022 15:46:20 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.11.0
+Subject: Re: [PATCH V3 4/6] vDPA: !FEATURES_OK should not block querying
+ device config space
+Content-Language: en-US
+To:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Parav Pandit <parav@nvidia.com>
+Cc:     "jasowang@redhat.com" <jasowang@redhat.com>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "xieyongji@bytedance.com" <xieyongji@bytedance.com>,
+        "gautam.dawar@amd.com" <gautam.dawar@amd.com>
+References: <20220701132826.8132-1-lingshan.zhu@intel.com>
+ <20220701132826.8132-5-lingshan.zhu@intel.com>
+ <PH0PR12MB548190DE76CC64E56DA2DF13DCBD9@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20220713012048-mutt-send-email-mst@kernel.org>
+From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
+In-Reply-To: <20220713012048-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix coverity error 'use of uninitialized variable'. err is uninitialized
-and is returned which can lead to unintended results. err has been replaced
-with -einval.
-Coverity issue: 1518921 (uninitialized scalar variable)
 
-Signed-off-by: Sebin Sebastian <mailmesebin00@gmail.com>
----
- drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c
-index ed8b9afbf731..563bf1497fd0 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_hash.c
-@@ -1961,7 +1961,7 @@ int rvu_npc_exact_init(struct rvu *rvu)
- 			dev_err(rvu->dev,
- 				"%s: failed to set drop info for cgx=%d, lmac=%d, chan=%llx\n",
- 				__func__, cgx_id, lmac_id, chan_val);
--			return err;
-+			return -EINVAL;
- 		}
- 
- 		err = npc_install_mcam_drop_rule(rvu, *drop_mcam_idx,
--- 
-2.34.1
+On 7/13/2022 1:23 PM, Michael S. Tsirkin wrote:
+> On Fri, Jul 01, 2022 at 10:12:49PM +0000, Parav Pandit wrote:
+>>
+>>> From: Zhu Lingshan <lingshan.zhu@intel.com>
+>>> Sent: Friday, July 1, 2022 9:28 AM
+>>>
+>>> Users may want to query the config space of a vDPA device, to choose a
+>>> appropriate one for a certain guest. This means the users need to read the
+>>> config space before FEATURES_OK, and the existence of config space
+>>> contents does not depend on FEATURES_OK.
+>>>
+>>> The spec says:
+>>> The device MUST allow reading of any device-specific configuration field
+>>> before FEATURES_OK is set by the driver. This includes fields which are
+> c> > conditional on feature bits, as long as those feature bits are offered by the
+>>> device.
+yes
+>>>
+>>> Fixes: 30ef7a8ac8a07 (vdpa: Read device configuration only if FEATURES_OK)
+>> Fix is fine, but fixes tag needs correction described below.
+>>
+>> Above commit id is 13 letters should be 12.
+>> And
+>> It should be in format
+>> Fixes: 30ef7a8ac8a0 ("vdpa: Read device configuration only if FEATURES_OK")
+> Yea you normally use
+>
+> --format='Fixes: %h (\"%s\")'
+Thanks, but I will drop this fix tag, since Parav suggest I drop the fix 
+tag of the 3/6 patch which reporting device
+feature bits to the upserspace(this fix is composed of several patches).
+>
+>
+>> Please use checkpatch.pl script before posting the patches to catch these errors.
+>> There is a bot that looks at the fixes tag and identifies the right kernel version to apply this fix.
+>
+> I don't think checkpatch complains about this if for no other reason
+> that sometimes the 6 byte hash is not enough.
+>
+>>> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+>>> ---
+>>>   drivers/vdpa/vdpa.c | 8 --------
+>>>   1 file changed, 8 deletions(-)
+>>>
+>>> diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c index
+>>> 9b0e39b2f022..d76b22b2f7ae 100644
+>>> --- a/drivers/vdpa/vdpa.c
+>>> +++ b/drivers/vdpa/vdpa.c
+>>> @@ -851,17 +851,9 @@ vdpa_dev_config_fill(struct vdpa_device *vdev,
+>>> struct sk_buff *msg, u32 portid,  {
+>>>   	u32 device_id;
+>>>   	void *hdr;
+>>> -	u8 status;
+>>>   	int err;
+>>>
+>>>   	down_read(&vdev->cf_lock);
+>>> -	status = vdev->config->get_status(vdev);
+>>> -	if (!(status & VIRTIO_CONFIG_S_FEATURES_OK)) {
+>>> -		NL_SET_ERR_MSG_MOD(extack, "Features negotiation not
+>>> completed");
+>>> -		err = -EAGAIN;
+>>> -		goto out;
+>>> -	}
+>>> -
+>>>   	hdr = genlmsg_put(msg, portid, seq, &vdpa_nl_family, flags,
+>>>   			  VDPA_CMD_DEV_CONFIG_GET);
+>>>   	if (!hdr) {
+>>> --
+>>> 2.31.1
 
