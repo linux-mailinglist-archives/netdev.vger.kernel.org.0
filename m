@@ -2,83 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A826C573743
-	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 15:20:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B9F9573745
+	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 15:20:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231529AbiGMNUV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jul 2022 09:20:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42882 "EHLO
+        id S235360AbiGMNUp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jul 2022 09:20:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234891AbiGMNUQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 09:20:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27A2FF40
-        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 06:20:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C53CAB81A5F
-        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 13:20:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 89AADC3411E;
-        Wed, 13 Jul 2022 13:20:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657718413;
-        bh=v2oI4b102Uk+mbLk4T2r/fHRFqoJJe0mDB9UaN35mg4=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Eu9Z5iwpgThIekWNKsth9HlkUKmcQaHAg9bNe+yOBXpPtLiN8Z2Vr0RliKTqZq9xY
-         Czw4NeReCL6LUfABYcA0JfCBOFeRwFQnfJEidIG3uYuIZOl06YPp4ozkd4c2e0J6Kp
-         +Px3p693Cm17CBriCuPJnsUYYH7Eq8DR4arFk1XKH1ol9+dEucFU5MVU95RrKxryYN
-         BT01gERa7M2VYENJiJu5bDOjmp+hQUImTau0eCpgpunKo/Fj3arZOUem6CXRk3owJn
-         6Kf+CLn/4j6AFPQZet7CLioACUHDO/YZViyPwOs8lYQXIV/I4MePKZfEfnvIQfzn0E
-         euaotQOH62Wzg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6D990E45227;
-        Wed, 13 Jul 2022 13:20:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S234908AbiGMNUo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 09:20:44 -0400
+Received: from out30-132.freemail.mail.aliyun.com (out30-132.freemail.mail.aliyun.com [115.124.30.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65632E06;
+        Wed, 13 Jul 2022 06:20:42 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R151e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046060;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0VJE3WgM_1657718437;
+Received: from 30.227.73.183(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0VJE3WgM_1657718437)
+          by smtp.aliyun-inc.com;
+          Wed, 13 Jul 2022 21:20:38 +0800
+Message-ID: <9c3496de-aa8f-21fa-e3fc-385fafba21e4@linux.alibaba.com>
+Date:   Wed, 13 Jul 2022 21:20:37 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v3] net: ftgmac100: Hold reference returned by
-  of_get_child_by_name()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165771841344.24696.13836170564158202924.git-patchwork-notify@kernel.org>
-Date:   Wed, 13 Jul 2022 13:20:13 +0000
-References: <20220712061417.363145-1-windhl@126.com>
-In-Reply-To: <20220712061417.363145-1-windhl@126.com>
-To:     Liang He <windhl@126.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.10.0
+Subject: Re: [PATCH net-next 5/6] net/smc: Allow virtually contiguous sndbufs
+ or RMBs for SMC-R
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     kgraul@linux.ibm.com, wenjia@linux.ibm.com, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, linux-s390@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <1657626690-60367-1-git-send-email-guwen@linux.alibaba.com>
+ <1657626690-60367-6-git-send-email-guwen@linux.alibaba.com>
+ <20220712205442.22a29fcd@kernel.org>
+From:   Wen Gu <guwen@linux.alibaba.com>
+In-Reply-To: <20220712205442.22a29fcd@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
 
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
 
-On Tue, 12 Jul 2022 14:14:17 +0800 you wrote:
-> In ftgmac100_probe(), we should hold the refernece returned by
-> of_get_child_by_name() and use it to call of_node_put() for
-> reference balance.
+On 2022/7/13 11:54 pm, Jakub Kicinski wrote:
+
+> On Tue, 12 Jul 2022 19:51:29 +0800 Wen Gu wrote:
+>> net/smc: Allow virtually contiguous sndbufs or RMBs for SMC-R
 > 
-> Fixes: 39bfab8844a0 ("net: ftgmac100: Add support for DT phy-handle property")
-> Signed-off-by: Liang He <windhl@126.com>
-> 
-> [...]
-
-Here is the summary with links:
-  - [v3] net: ftgmac100: Hold reference returned by of_get_child_by_name()
-    https://git.kernel.org/netdev/net/c/49b9f431ff0d
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> This one does not build cleanly on 32bit.
 
 
+Thanks for reminding, I will fix it in v2
+
+
+Thanks,
+Wen Gu
