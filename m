@@ -2,173 +2,434 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BA67574028
-	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 01:45:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61703574031
+	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 01:51:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231473AbiGMXps (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jul 2022 19:45:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54868 "EHLO
+        id S231667AbiGMXvD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jul 2022 19:51:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229598AbiGMXpr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 19:45:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97FEA419BF;
-        Wed, 13 Jul 2022 16:45:46 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 370B561B47;
-        Wed, 13 Jul 2022 23:45:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EF22C3411E;
-        Wed, 13 Jul 2022 23:45:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657755945;
-        bh=EVrjEqKWBDsWAGl8SZNcPub4UIoDCewTBWArMH4yHkY=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=qb0uqohBiKJ9u/DCEyPWejLejudk2uHDj1f9OuLNZVRX4NOJPUD1ucmXJ7+iF9mqs
-         839/AnN1aqIW9E2jaGTbYdVkHGF6LI/2mKCSppcDIptnF4OJ1yyNhUVt97jjOpX7WL
-         9NIvteh8P8v4OK702QDaLDXELrzhVOBVrKg9rGqMjffv3Usct43SC9bM97au1NFwub
-         iFba/wTSQkyqWogm0qChvc/DMbp5PG/Ul5lcUBDy3tkudJe8XmTcodGRkjlyUrk3nV
-         CHg4pqK+aiS5Mhq3gMn/4P5xhJcpVthjRdWh+P4qd6iRlb+XXX4j61Y45xpkv1k9ze
-         lAHxYvKasR28Q==
-Message-ID: <d10f20a9-851a-33be-2615-a57ab92aca90@kernel.org>
-Date:   Wed, 13 Jul 2022 16:45:43 -0700
+        with ESMTP id S230371AbiGMXvC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 19:51:02 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29E3B52DE7;
+        Wed, 13 Jul 2022 16:51:01 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id ez10so435777ejc.13;
+        Wed, 13 Jul 2022 16:51:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Z7t/XikED1GrBgAk91sAA2PO/Z9j37ofymS87tdO76U=;
+        b=JsE9SyDQFepNYPZxpdGunX8fi6n5/pAkF72yLch5x1TDs4NQOYwapnE7jOqySt2vH5
+         JHm/YhmBJrcnfjLabNmeG06qeWyDdbHh3+JODu0Jh27goGdg/Twx71cj1f/HCeFQj85N
+         xNzpGG5ur44HRm0xWTxC2Sw0pzCr+P04G6tMpQf2qGJFJQkg/0Bte2hp7E3BjI3C+7+c
+         G2ZZLThSogB6GgfmVbmuTATIuACpGY2a3GxMaOVCV1uXHm2L348kON0rPeApKA047IDn
+         +EkCJr2uvN+brEBNXAP6HrMLteiT6/N22At7ev/qB4IJsWS8nAd5XYHTXpBuWzVDEQrs
+         P/UQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Z7t/XikED1GrBgAk91sAA2PO/Z9j37ofymS87tdO76U=;
+        b=UGKr6WYkFoGOUO6bV47sEXBfoc7DKQQLeH06NSpjTm/EgV/T9vAU2Z6aVUmDIwirWc
+         daKZ4vIuVubb4JiVvACDmJzTqJDRVfTymGR0/aclhjSt6wfASx5ez3bT0Y2LyywT2y72
+         IetI3I34Pvz/h4R7oBXo8xuX4zjcFx5ljMvLT4dmj3iIneQjZrzh5Yfag0WBS/oUVkHT
+         2s3Iy2bIJa35TjzJ7W5b1PzBF/3JR3ybUEPm3dc9rA6c8Lyy4S5/rIHbvwn9UXszgfif
+         aJJgff1uDXAoXR6rQSORhBuzVsFgsBYamHdH1PKEZlwg7+N31OaJo+KK2YslAcCh/1mv
+         FeIw==
+X-Gm-Message-State: AJIora+B3HDc+/iL0KeCKatcMppz94UexH4uyTNARyID8BTAjyt5Q+Ux
+        mboo4dOi3d1Lq0J4g/6NkQAVrLoWba/V4/zY3ILTC9EbFgVzN/iH
+X-Google-Smtp-Source: AGRyM1sjYmo4Q3LjoA9Gtnw+lvcUKbaDOMXSRX8mXBdTosyO5+IA9orKrGb8pR2ZM+7gku+IojhRUVZ6LnL+RQR0Y6Q=
+X-Received: by 2002:a17:907:1612:b0:722:e1b9:45d0 with SMTP id
+ hb18-20020a170907161200b00722e1b945d0mr5902103ejc.439.1657756259578; Wed, 13
+ Jul 2022 16:50:59 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.11.0
-Subject: Re: [PATCH net-next v4 00/27] io_uring zerocopy send
-Content-Language: en-US
-To:     Pavel Begunkov <asml.silence@gmail.com>, io-uring@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     "David S . Miller" <davem@davemloft.net>,
+References: <cover.1657750543.git.jhpark1013@gmail.com> <4f9916058458b8d802ce47f5d19aba213e50b6bc.1657750543.git.jhpark1013@gmail.com>
+In-Reply-To: <4f9916058458b8d802ce47f5d19aba213e50b6bc.1657750543.git.jhpark1013@gmail.com>
+From:   Jaehee <jhpark1013@gmail.com>
+Date:   Wed, 13 Jul 2022 16:50:55 -0700
+Message-ID: <CAA1TwFCuG5LWGE1eEmt1j7_jD-HXW1WaMgEA9W2J7s7Z3ZqxLQ@mail.gmail.com>
+Subject: Re: [PATCH v2 net-next 3/3] selftests: net: arp_ndisc_untracked_subnets:
+ test for arp_accept and accept_untracked_na
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, David Ahern <dsahern@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Jens Axboe <axboe@kernel.dk>, kernel-team@fb.com
-References: <cover.1657194434.git.asml.silence@gmail.com>
- <2c49d634-bd8a-5a7f-0f66-65dba22bae0d@kernel.org>
- <bd9960ab-c9d8-8e5d-c347-8049cdf5708a@gmail.com>
- <0f54508f-e819-e367-84c2-7aa0d7767097@gmail.com>
-From:   David Ahern <dsahern@kernel.org>
-In-Reply-To: <0f54508f-e819-e367-84c2-7aa0d7767097@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>, shuah@kernel.org,
+        linux-kernel@vger.kernel.org, Arun Ajith S <aajith@arista.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Roopa Prabhu <roopa.prabhu@gmail.com>,
+        Andy Roulin <aroulin@nvidia.com>,
+        Stefano Brivio <sbrivio@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/11/22 5:56 AM, Pavel Begunkov wrote:
-> On 7/8/22 15:26, Pavel Begunkov wrote:
->> On 7/8/22 05:10, David Ahern wrote:
->>> On 7/7/22 5:49 AM, Pavel Begunkov wrote:
->>>> NOTE: Not be picked directly. After getting necessary acks, I'll be
->>>> working
->>>>        out merging with Jakub and Jens.
->>>>
->>>> The patchset implements io_uring zerocopy send. It works with both
->>>> registered
->>>> and normal buffers, mixing is allowed but not recommended. Apart
->>>> from usual
->>>> request completions, just as with MSG_ZEROCOPY, io_uring separately
->>>> notifies
->>>> the userspace when buffers are freed and can be reused (see API
->>>> design below),
->>>> which is delivered into io_uring's Completion Queue. Those
->>>> "buffer-free"
->>>> notifications are not necessarily per request, but the userspace has
->>>> control
->>>> over it and should explicitly attaching a number of requests to a
->>>> single
->>>> notification. The series also adds some internal optimisations when
->>>> used with
->>>> registered buffers like removing page referencing.
->>>>
->>>>  From the kernel networking perspective there are two main changes.
->>>> The first
->>>> one is passing ubuf_info into the network layer from io_uring
->>>> (inside of an
->>>> in kernel struct msghdr). This allows extra optimisations, e.g.
->>>> ubuf_info
->>>> caching on the io_uring side, but also helps to avoid cross-referencing
->>>> and synchronisation problems. The second part is an optional
->>>> optimisation
->>>> removing page referencing for requests with registered buffers.
->>>>
->>>> Benchmarking with an optimised version of the selftest (see [1]),
->>>> which sends
->>>> a bunch of requests, waits for completions and repeats. "+ flush"
->>>> column posts
->>>> one additional "buffer-free" notification per request, and just "zc"
->>>> doesn't
->>>> post buffer notifications at all.
->>>>
->>>> NIC (requests / second):
->>>> IO size | non-zc    | zc             | zc + flush
->>>> 4000    | 495134    | 606420 (+22%)  | 558971 (+12%)
->>>> 1500    | 551808    | 577116 (+4.5%) | 565803 (+2.5%)
->>>> 1000    | 584677    | 592088 (+1.2%) | 560885 (-4%)
->>>> 600     | 596292    | 598550 (+0.4%) | 555366 (-6.7%)
->>>>
->>>> dummy (requests / second):
->>>> IO size | non-zc    | zc             | zc + flush
->>>> 8000    | 1299916   | 2396600 (+84%) | 2224219 (+71%)
->>>> 4000    | 1869230   | 2344146 (+25%) | 2170069 (+16%)
->>>> 1200    | 2071617   | 2361960 (+14%) | 2203052 (+6%)
->>>> 600     | 2106794   | 2381527 (+13%) | 2195295 (+4%)
->>>>
->>>> Previously it also brought a massive performance speedup compared to
->>>> the
->>>> msg_zerocopy tool (see [3]), which is probably not super interesting.
->>>>
->>>
->>> can you add a comment that the above results are for UDP.
->>
->> Oh, right, forgot to add it
->>
->>
->>> You dropped comments about TCP testing; any progress there? If not, can
->>> you relay any issues you are hitting?
->>
->> Not really a problem, but for me it's bottle necked at NIC bandwidth
->> (~3GB/s) for both zc and non-zc and doesn't even nearly saturate a CPU.
->> Was actually benchmarked by my colleague quite a while ago, but can't
->> find numbers. Probably need to at least add localhost numbers or grab
->> a better server.
-> 
-> Testing localhost TCP with a hack (see below), it doesn't include
-> refcounting optimisations I was testing UDP with and that will be
-> sent afterwards. Numbers are in MB/s
-> 
-> IO size | non-zc    | zc
-> 1200    | 4174      | 4148
-> 4096    | 7597      | 11228
+Hi,
 
-I am surprised by the low numbers; you should be able to saturate a 100G
-link with TCP and ZC TX API.
+Sorry -- I noticed this selftest is using spaces instead of tabs.
 
-> 
-> Because it's localhost, we also spend cycles here for the recv side.
-> Using a real NIC 1200 bytes, zc is worse than non-zc ~5-10%, maybe the
-> omitted optimisations will somewhat help. I don't consider it to be a
-> blocker. but would be interesting to poke into later. One thing helping
-> non-zc is that it squeezes a number of requests into a single page
-> whenever zerocopy adds a new frag for every request.
-> 
-> Can't say anything new for larger payloads, I'm still NIC-bound but
-> looking at CPU utilisation zc doesn't drain as much cycles as non-zc.
-> Also, I don't remember if mentioned before, but another catch is that
-> with TCP it expects users to not be flushing notifications too much,
-> because it forces it to allocate a new skb and lose a good chunk of
-> benefits from using TCP.
+I just sent in a v3 patchset with this fix. Sorry about sending a 3rd
+version so close to the 2nd.
 
-I had issues with TCP sockets and io_uring at the end of 2020:
-https://www.spinics.net/lists/io-uring/msg05125.html
+Thanks,
+Jaehee
 
-have not tried anything recent (from 2022).
-
+On Wed, Jul 13, 2022 at 3:37 PM Jaehee Park <jhpark1013@gmail.com> wrote:
+>
+> ipv4 arp_accept has a new option '2' to create new neighbor entries
+> only if the src ip is in the same subnet as an address configured on
+> the interface that received the garp message. This selftest tests all
+> options in arp_accept.
+>
+> ipv6 has a sysctl endpoint, accept_untracked_na, that defines the
+> behavior for accepting untracked neighbor advertisements. A new option
+> similar to that of arp_accept for learning only from the same subnet is
+> added to accept_untracked_na. This selftest tests this new feature.
+>
+> Signed-off-by: Jaehee Park <jhpark1013@gmail.com>
+> Suggested-by: Roopa Prabhu <roopa@nvidia.com>
+> ---
+>  tools/testing/selftests/net/Makefile          |   1 +
+>  .../net/arp_ndisc_untracked_subnets.sh        | 308 ++++++++++++++++++
+>  2 files changed, 309 insertions(+)
+>  create mode 100755 tools/testing/selftests/net/arp_ndisc_untracked_subnets.sh
+>
+> diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
+> index ddad703ace34..9c2e9e303c37 100644
+> --- a/tools/testing/selftests/net/Makefile
+> +++ b/tools/testing/selftests/net/Makefile
+> @@ -38,6 +38,7 @@ TEST_PROGS += srv6_end_dt6_l3vpn_test.sh
+>  TEST_PROGS += vrf_strict_mode_test.sh
+>  TEST_PROGS += arp_ndisc_evict_nocarrier.sh
+>  TEST_PROGS += ndisc_unsolicited_na_test.sh
+> +TEST_PROGS += arp_ndisc_untracked_subnets.sh
+>  TEST_PROGS += stress_reuseport_listen.sh
+>  TEST_PROGS_EXTENDED := in_netns.sh setup_loopback.sh setup_veth.sh
+>  TEST_PROGS_EXTENDED += toeplitz_client.sh toeplitz.sh
+> diff --git a/tools/testing/selftests/net/arp_ndisc_untracked_subnets.sh b/tools/testing/selftests/net/arp_ndisc_untracked_subnets.sh
+> new file mode 100755
+> index 000000000000..689ecfacee10
+> --- /dev/null
+> +++ b/tools/testing/selftests/net/arp_ndisc_untracked_subnets.sh
+> @@ -0,0 +1,308 @@
+> +#!/bin/bash
+> +# SPDX-License-Identifier: GPL-2.0
+> +#
+> +# 2 namespaces: one host and one router. Use arping from the host to send a
+> +# garp to the router. Router accepts or ignores based on its arp_accept
+> +# or accept_untracked_na configuration.
+> +
+> +TESTS="arp ndisc"
+> +
+> +ROUTER_NS="ns-router"
+> +ROUTER_NS_V6="ns-router-v6"
+> +ROUTER_INTF="veth-router"
+> +ROUTER_ADDR="10.0.10.1"
+> +ROUTER_ADDR_V6="2001:db8:abcd:0012::1"
+> +
+> +HOST_NS="ns-host"
+> +HOST_NS_V6="ns-host-v6"
+> +HOST_INTF="veth-host"
+> +HOST_ADDR="10.0.10.2"
+> +HOST_ADDR_V6="2001:db8:abcd:0012::2"
+> +
+> +SUBNET_WIDTH=24
+> +PREFIX_WIDTH_V6=64
+> +
+> +cleanup() {
+> +        ip netns del ${HOST_NS}
+> +        ip netns del ${ROUTER_NS}
+> +}
+> +
+> +cleanup_v6() {
+> +        ip netns del ${HOST_NS_V6}
+> +        ip netns del ${ROUTER_NS_V6}
+> +}
+> +
+> +setup() {
+> +        set -e
+> +        local arp_accept=$1
+> +
+> +        # Set up two namespaces
+> +        ip netns add ${ROUTER_NS}
+> +        ip netns add ${HOST_NS}
+> +
+> +        # Set up interfaces veth0 and veth1, which are pairs in separate
+> +        # namespaces. veth0 is veth-router, veth1 is veth-host.
+> +        # first, set up the inteface's link to the namespace
+> +        # then, set the interface "up"
+> +        ip netns exec ${ROUTER_NS} ip link add name ${ROUTER_INTF} \
+> +                type veth peer name ${HOST_INTF}
+> +
+> +        ip netns exec ${ROUTER_NS} ip link set dev ${ROUTER_INTF} up
+> +        ip netns exec ${ROUTER_NS} ip link set dev ${HOST_INTF} netns ${HOST_NS}
+> +
+> +        ip netns exec ${HOST_NS} ip link set dev ${HOST_INTF} up
+> +        ip netns exec ${ROUTER_NS} ip addr add ${ROUTER_ADDR}/${SUBNET_WIDTH} \
+> +                dev ${ROUTER_INTF}
+> +
+> +        ip netns exec ${HOST_NS} ip addr add ${HOST_ADDR}/${SUBNET_WIDTH} \
+> +                dev ${HOST_INTF}
+> +        ip netns exec ${HOST_NS} ip route add default via ${HOST_ADDR} \
+> +                dev ${HOST_INTF}
+> +        ip netns exec ${ROUTER_NS} ip route add default via ${ROUTER_ADDR} \
+> +                dev ${ROUTER_INTF}
+> +
+> +        ROUTER_CONF=net.ipv4.conf.${ROUTER_INTF}
+> +        ip netns exec ${ROUTER_NS} sysctl -w \
+> +                ${ROUTER_CONF}.arp_accept=${arp_accept} >/dev/null 2>&1
+> +        set +e
+> +}
+> +
+> +setup_v6() {
+> +        set -e
+> +        local accept_untracked_na=$1
+> +
+> +        # Set up two namespaces
+> +        ip netns add ${ROUTER_NS_V6}
+> +        ip netns add ${HOST_NS_V6}
+> +
+> +        # Set up interfaces veth0 and veth1, which are pairs in separate
+> +        # namespaces. veth0 is veth-router, veth1 is veth-host.
+> +        # first, set up the inteface's link to the namespace
+> +        # then, set the interface "up"
+> +        ip -6 -netns ${ROUTER_NS_V6} link add name ${ROUTER_INTF} \
+> +                type veth peer name ${HOST_INTF}
+> +
+> +        ip -6 -netns ${ROUTER_NS_V6} link set dev ${ROUTER_INTF} up
+> +        ip -6 -netns ${ROUTER_NS_V6} link set dev ${HOST_INTF} netns \
+> +                ${HOST_NS_V6}
+> +
+> +        ip -6 -netns ${HOST_NS_V6} link set dev ${HOST_INTF} up
+> +        ip -6 -netns ${ROUTER_NS_V6} addr add \
+> +                ${ROUTER_ADDR_V6}/${PREFIX_WIDTH_V6} dev ${ROUTER_INTF} nodad
+> +
+> +        HOST_CONF=net.ipv6.conf.${HOST_INTF}
+> +        ip netns exec ${HOST_NS_V6} sysctl -qw ${HOST_CONF}.ndisc_notify=1
+> +        ip netns exec ${HOST_NS_V6} sysctl -qw ${HOST_CONF}.disable_ipv6=0
+> +        ip -6 -netns ${HOST_NS_V6} addr add ${HOST_ADDR_V6}/${PREFIX_WIDTH_V6} \
+> +                dev ${HOST_INTF}
+> +
+> +        ROUTER_CONF=net.ipv6.conf.${ROUTER_INTF}
+> +
+> +        ip netns exec ${ROUTER_NS_V6} sysctl -w \
+> +                ${ROUTER_CONF}.forwarding=1 >/dev/null 2>&1
+> +        ip netns exec ${ROUTER_NS_V6} sysctl -w \
+> +                ${ROUTER_CONF}.drop_unsolicited_na=0 >/dev/null 2>&1
+> +        ip netns exec ${ROUTER_NS_V6} sysctl -w \
+> +                ${ROUTER_CONF}.accept_untracked_na=${accept_untracked_na} \
+> +                >/dev/null 2>&1
+> +        set +e
+> +}
+> +
+> +verify_arp() {
+> +        local arp_accept=$1
+> +        local same_subnet=$2
+> +
+> +        neigh_show_output=$(ip netns exec ${ROUTER_NS} ip neigh get \
+> +                ${HOST_ADDR} dev ${ROUTER_INTF} 2>/dev/null)
+> +
+> +        if [ ${arp_accept} -eq 1 ]; then
+> +                # Neighbor entries expected
+> +                [[ ${neigh_show_output} ]]
+> +        elif [ ${arp_accept} -eq 2 ]; then
+> +                if [ ${same_subnet} -eq 1 ]; then
+> +                        # Neighbor entries expected
+> +                        [[ ${neigh_show_output} ]]
+> +                else
+> +                        [[ -z "${neigh_show_output}" ]]
+> +                fi
+> +        else
+> +                [[ -z "${neigh_show_output}" ]]
+> +        fi
+> + }
+> +
+> +arp_test_gratuitous() {
+> +        set -e
+> +        local arp_accept=$1
+> +        local same_subnet=$2
+> +
+> +        if [ ${arp_accept} -eq 2 ]; then
+> +                test_msg=("test_arp: "
+> +                          "accept_arp=$1 "
+> +                          "same_subnet=$2")
+> +                if [ ${same_subnet} -eq 0 ]; then
+> +                        HOST_ADDR=10.0.11.3
+> +                else
+> +                        HOST_ADDR=10.0.10.3
+> +                fi
+> +        else
+> +                test_msg=("test_arp: "
+> +                          "accept_arp=$1")
+> +        fi
+> +        # Supply arp_accept option to set up which sets it in sysctl
+> +        setup ${arp_accept}
+> +        ip netns exec ${HOST_NS} arping -A -U ${HOST_ADDR} -c1 2>&1 >/dev/null
+> +
+> +        if verify_arp $1 $2; then
+> +                printf "    TEST: %-60s  [ OK ]\n" "${test_msg[*]}"
+> +        else
+> +                printf "    TEST: %-60s  [FAIL]\n" "${test_msg[*]}"
+> +        fi
+> +        cleanup
+> +        set +e
+> +}
+> +
+> +arp_test_gratuitous_combinations() {
+> +        arp_test_gratuitous 0
+> +        arp_test_gratuitous 1
+> +        arp_test_gratuitous 2 0 # Second entry indicates subnet or not
+> +        arp_test_gratuitous 2 1
+> +}
+> +
+> +cleanup_tcpdump() {
+> +        set -e
+> +        [[ ! -z  ${tcpdump_stdout} ]] && rm -f ${tcpdump_stdout}
+> +        [[ ! -z  ${tcpdump_stderr} ]] && rm -f ${tcpdump_stderr}
+> +        tcpdump_stdout=
+> +        tcpdump_stderr=
+> +        set +e
+> +}
+> +
+> +start_tcpdump() {
+> +        set -e
+> +        tcpdump_stdout=`mktemp`
+> +        tcpdump_stderr=`mktemp`
+> +        ip netns exec ${ROUTER_NS_V6} timeout 15s \
+> +                tcpdump --immediate-mode -tpni ${ROUTER_INTF} -c 1 \
+> +                "icmp6 && icmp6[0] == 136 && src ${HOST_ADDR_V6}" \
+> +                > ${tcpdump_stdout} 2> /dev/null
+> +        set +e
+> +}
+> +
+> +verify_ndisc() {
+> +        local accept_untracked_na=$1
+> +        local same_subnet=$2
+> +
+> +        neigh_show_output=$(ip -6 -netns ${ROUTER_NS_V6} neigh show \
+> +                to ${HOST_ADDR_V6} dev ${ROUTER_INTF} nud stale)
+> +
+> +        if [ ${accept_untracked_na} -eq 1 ]; then
+> +                # Neighbour entry expected to be present
+> +                [[ ${neigh_show_output} ]]
+> +        elif [ ${accept_untracked_na} -eq 2 ]; then
+> +                if [ ${same_subnet} -eq 1 ]; then
+> +                        [[ ${neigh_show_output} ]]
+> +                else
+> +                        [[ -z "${neigh_show_output}" ]]
+> +                fi
+> +        else
+> +                # Neighbour entry expected to be absent for all other cases
+> +                [[ -z "${neigh_show_output}" ]]
+> +        fi
+> +}
+> +
+> +ndisc_test_untracked_advertisements() {
+> +        set -e
+> +        test_msg=("test_ndisc: "
+> +                  "accept_untracked_na=$1")
+> +
+> +        local accept_untracked_na=$1
+> +        local same_subnet=$2
+> +        if [ ${accept_untracked_na} -eq 2 ]; then
+> +                test_msg=("test_ndisc: "
+> +                          "accept_untracked_na=$1 "
+> +                          "same_subnet=$2")
+> +                if [ ${same_subnet} -eq 0 ]; then
+> +                        # Not same subnet
+> +                        HOST_ADDR_V6=2000:db8:abcd:0013::4
+> +                else
+> +                        HOST_ADDR_V6=2001:db8:abcd:0012::3
+> +                fi
+> +        fi
+> +        setup_v6 $1 $2
+> +        start_tcpdump
+> +
+> +        if verify_ndisc $1 $2; then
+> +                printf "    TEST: %-60s  [ OK ]\n" "${test_msg[*]}"
+> +        else
+> +                printf "    TEST: %-60s  [FAIL]\n" "${test_msg[*]}"
+> +        fi
+> +
+> +        cleanup_tcpdump
+> +        cleanup_v6
+> +        set +e
+> +}
+> +
+> +ndisc_test_untracked_combinations() {
+> +        ndisc_test_untracked_advertisements 0
+> +        ndisc_test_untracked_advertisements 1
+> +        ndisc_test_untracked_advertisements 2 0
+> +        ndisc_test_untracked_advertisements 2 1
+> +}
+> +
+> +################################################################################
+> +# usage
+> +
+> +usage()
+> +{
+> +        cat <<EOF
+> +usage: ${0##*/} OPTS
+> +
+> +        -t <test>       Test(s) to run (default: all)
+> +                        (options: $TESTS)
+> +EOF
+> +}
+> +
+> +################################################################################
+> +# main
+> +
+> +while getopts ":t:h" opt; do
+> +        case $opt in
+> +                t) TESTS=$OPTARG;;
+> +                h) usage; exit 0;;
+> +                *) usage; exit 1;;
+> +        esac
+> +done
+> +
+> +if [ "$(id -u)" -ne 0 ];then
+> +       echo "SKIP: Need root privileges"
+> +       exit $ksft_skip;
+> +fi
+> +
+> +if [ ! -x "$(command -v ip)" ]; then
+> +       echo "SKIP: Could not run test without ip tool"
+> +       exit $ksft_skip
+> +fi
+> +
+> +if [ ! -x "$(command -v tcpdump)" ]; then
+> +       echo "SKIP: Could not run test without tcpdump tool"
+> +       exit $ksft_skip
+> +fi
+> +
+> +if [ ! -x "$(command -v arping)" ]; then
+> +       echo "SKIP: Could not run test without arping tool"
+> +       exit $ksft_skip
+> +fi
+> +
+> +# start clean
+> +cleanup &> /dev/null
+> +cleanup_v6 &> /dev/null
+> +
+> +for t in $TESTS
+> +do
+> +        case $t in
+> +        arp_test_gratuitous_combinations|arp) arp_test_gratuitous_combinations;;
+> +        ndisc_test_untracked_combinations|ndisc) \
+> +                ndisc_test_untracked_combinations;;
+> +        help) echo "Test names: $TESTS"; exit 0;;
+> +esac
+> +done
+> --
+> 2.30.2
+>
