@@ -2,120 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D02C573C67
-	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 20:15:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F3DFF573C5E
+	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 20:13:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236582AbiGMSO5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jul 2022 14:14:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52580 "EHLO
+        id S236391AbiGMSNh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jul 2022 14:13:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236581AbiGMSO4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 14:14:56 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8142186DB;
-        Wed, 13 Jul 2022 11:14:55 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id v4-20020a17090abb8400b001ef966652a3so4994898pjr.4;
-        Wed, 13 Jul 2022 11:14:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=UtHJ3Qg/19HcUm4MJm1fPiRsTok3DEs2h2LHQfacgzU=;
-        b=ntCKgZRAm+eSzp/faQAyDd8Dl+7yFpy6fF8pMd3h08/YpaXT5B0B1GyX7a1R0CPpgO
-         +Cs0OwzUQ4iMwGx6nyDPFcBD+VIIcDJoFSbur2vZ0B2PH5oGRcu+6fx7WqOSQviHItiW
-         XDrXGD36GpCamSxqDgNeNZGnhsOvoSJBgFo6EHv+hA7MWNZBeOSur9eAKtE6uY9G/prW
-         Y/01c9cURM256XlV93x10AFeriiURULVgfMTG6k9aT2NU9vy2/5tM21yuUvKB8SJA05S
-         n6L8UE8mO/0namLte4roiMqoClJG6mJ0hR/8aDh+GZsUFZAb3kP8YdW4qC9y6pvciFFg
-         h0cw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=UtHJ3Qg/19HcUm4MJm1fPiRsTok3DEs2h2LHQfacgzU=;
-        b=Cb2zaPlBnunMnSMqpeJwbRMNcObM+wzO7IejfDl6h9P6aZR9ZfjHlUG/pZbMYL3g0u
-         Nuew68EZtfIyO9ZXiqdrH6B9tWa+MqatMDmcKcYw16WWIm0Vc3jV7xAjjyAEBpnyczVF
-         RZMfy7VMjW9v9PwAKC5IjppCCKR3yyaSp71de71fqKxwvlzwnppr2XnbTenj59fF05RT
-         moZuHQwyagnGmV6FlpyA9tBaITBWHxuQubyVDwb3S4ynunpT+yeBsYDpanCpR0WRyeym
-         CeF+jZKMVsQ958xOmDh9FwSc6EipqSgzzDNeTaFgBU/fLrtkf7LQVYkN4BCpRbo3pl8z
-         7EBg==
-X-Gm-Message-State: AJIora/GvnliazedbL0o3pRWyhLsEdLogoXg7lSoq7RDEZTgbqBPR+er
-        c5z860DI2a5+IchpI1UkZaM=
-X-Google-Smtp-Source: AGRyM1vU7NzF7lHvZ02XnNN53qGMTI64cfjlKr5EM3jBfvohilp/9pIBrt5KJamOYL5JmmeDP1Bg8Q==
-X-Received: by 2002:a17:90b:3e89:b0:1f0:4233:b20e with SMTP id rj9-20020a17090b3e8900b001f04233b20emr5191803pjb.0.1657736095153;
-        Wed, 13 Jul 2022 11:14:55 -0700 (PDT)
-Received: from fedora.. ([103.159.189.141])
-        by smtp.gmail.com with ESMTPSA id p6-20020a625b06000000b0052abc2438f1sm8874960pfb.55.2022.07.13.11.14.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Jul 2022 11:14:54 -0700 (PDT)
-From:   Khalid Masum <khalid.masum.92@gmail.com>
-To:     linux-kernel-mentees@lists.linuxfoundation.org,
-        linux-kernel@vger.kernel.org,
+        with ESMTP id S229437AbiGMSNg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 14:13:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E883F26D0;
+        Wed, 13 Jul 2022 11:13:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8DDB261D5A;
+        Wed, 13 Jul 2022 18:13:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAE7AC34114;
+        Wed, 13 Jul 2022 18:13:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657736015;
+        bh=AaUsNxQggnzWiPVjpjcMAaRJhu9wrjZVpBIyOLXibdw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=FmIP6/Bd1FekydgfeyGeC1VUHDXWXSm9fS2zdhigJsfsvYez65GrU5wLQRmrsYcNt
+         CrPpF0CYU4HvAJbZPiSYcvU0fLa1dKmkV7MEq3geWPAUl4G6xtJNPfkgn7lBs9qFsf
+         XFUA9omvashJleu4rPueQPtadxAlov49n/KV1Z9XefMcV0auAdzvY+Eu7wRMxTu30n
+         6rMqhZdxwJXZz5fCqlKq6GmZsS+bsTxQ5jRZSYJiG+qlfkmfDU8u+DV1EPgBhIpKN3
+         0PnFLpfbsXOxhIAbceYECa4yzq6NkPYiC/b+uIfseluL5J/kc+OqROWtHzPq3ng0lN
+         yqJLvBE9s0Yfw==
+Date:   Wed, 13 Jul 2022 11:13:33 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
         "David S . Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Cc:     Shuah Khan <skhan@linuxfoundation.org>,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        khalid.masum.92@gmail.com, Marc Kleine-Budde <mkl@pengutronix.de>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        syzbot+1fa91bcd05206ff8cbb5@syzkaller.appspotmail.com
-Subject: [RFC PATCH 1/1] net: kcm: Use sk_psock size for kcm_psock_cache
-Date:   Thu, 14 Jul 2022 00:13:24 +0600
-Message-Id: <20220713181324.14228-2-khalid.masum.92@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220713181324.14228-1-khalid.masum.92@gmail.com>
-References: <20220713181324.14228-1-khalid.masum.92@gmail.com>
+        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH net v2 2/2] selftests/net: test nexthop without gw
+Message-ID: <20220713111333.4ffd9f19@kernel.org>
+In-Reply-To: <c4eccb16-3b45-1644-d4b0-ee3fee3810d9@6wind.com>
+References: <9fb5e3df069db50396799a250c4db761b1505dd3.camel@redhat.com>
+        <20220712095545.10947-1-nicolas.dichtel@6wind.com>
+        <20220712095545.10947-2-nicolas.dichtel@6wind.com>
+        <Ys1JefI+co1IFda4@kroah.com>
+        <20220712172515.126dc119@kernel.org>
+        <c4eccb16-3b45-1644-d4b0-ee3fee3810d9@6wind.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-`struct sock` has a member `sk_user_data`, which got its memory allocated
-in `kcm_attach` by `kcm_psock_cache` with the size of `kcm_psock`. Which
-is not enough when the member is used as `sk_psock` causing out of bound
-read.
+On Wed, 13 Jul 2022 09:36:37 +0200 Nicolas Dichtel wrote:
+> > And please don't resend your patches in reply to the previous version.
+> > Add a lore link to the previous version in the commit message if you
+> > want. In-reply-to breaks the review ordering for us :/  
+> Oh ok, I didn't know that.
 
-Use `sk_psock` size to allocate memory instead for `sk_user_data`.
-
-Reported-by: syzbot+1fa91bcd05206ff8cbb5@syzkaller.appspotmail.com
-Link: https://syzkaller.appspot.com/bug?extid=1fa91bcd05206ff8cbb5
-Signed-off-by: Khalid Masum <khalid.masum.92@gmail.com>
-
----
- net/kcm/kcmsock.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/net/kcm/kcmsock.c b/net/kcm/kcmsock.c
-index 71899e5a5a11..688bee56f90c 100644
---- a/net/kcm/kcmsock.c
-+++ b/net/kcm/kcmsock.c
-@@ -23,6 +23,7 @@
- #include <linux/workqueue.h>
- #include <linux/syscalls.h>
- #include <linux/sched/signal.h>
-+#include <linux/skmsg.h>
- 
- #include <net/kcm.h>
- #include <net/netns/generic.h>
-@@ -2041,7 +2042,7 @@ static int __init kcm_init(void)
- 		goto fail;
- 
- 	kcm_psockp = kmem_cache_create("kcm_psock_cache",
--				       sizeof(struct kcm_psock), 0,
-+				       sizeof(struct sk_psock), 0,
- 					SLAB_HWCACHE_ALIGN, NULL);
- 	if (!kcm_psockp)
- 		goto fail;
--- 
-2.36.1
-
+Yeah, I haven't documented it because it's a bit of an oddity 
+and frankly a shortcoming of the tooling on my side. But IDK
+how to "detach" the threads in a way that'd allow me to keep 
+a queue sorted by posting data :(
