@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DAB1E573501
-	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 13:12:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 99D3C573503
+	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 13:12:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235540AbiGMLM3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jul 2022 07:12:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36062 "EHLO
+        id S235843AbiGMLMc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jul 2022 07:12:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229579AbiGMLM2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 07:12:28 -0400
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CCA11005E2;
-        Wed, 13 Jul 2022 04:12:27 -0700 (PDT)
-Received: by mail-pf1-x430.google.com with SMTP id a15so9909691pfv.13;
-        Wed, 13 Jul 2022 04:12:27 -0700 (PDT)
+        with ESMTP id S229579AbiGMLMb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 07:12:31 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 142F0100CC0;
+        Wed, 13 Jul 2022 04:12:30 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id z12-20020a17090a7b8c00b001ef84000b8bso3094511pjc.1;
+        Wed, 13 Jul 2022 04:12:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=sender:from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=1b/MRvHRlr04K9YKU9yX4GmLbVKqvcAwXCZ6Wb7inMQ=;
-        b=W0AAxWPcHX4waKArnjIQfPn5EvbSZ1Nk17CX5TuK01Wlh78J81p5D43+b1F+vSRG4C
-         uux/QmuzikRch0+aPcd9OICrFGdiQwyetByojZx5WyjggGkU9V0yHCvnWnN4waXpok1k
-         QnrdK2Oxaw7LBRl+oAlVh2HOyfUtPEENPxK8Oe4YRKTQ4mGYCiRQDg+D0qY0LSBB61tC
-         2K7CkSb57BCE6xJNI2R/lbbKA6V7n7Do2cWa0YfCjdPL2Eq5hP2mKEX/RFiOFaEB1Zlg
-         WwEbhQOgG/AHlICppafDHjY2YB22W8xNPYpYLaqLjBjIoFxSkyizD1j2iIOB9Vd9LSX6
-         uZcg==
+        h=sender:from:to:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=R3j6t7oPeXFLjhrbi+QAqbOvyaU9gHal8+lBJxi7A/4=;
+        b=WZwjyI7V5QGyVjGhnpjZJcakRO0bgyFXIRVKSQPFMQ+/4ujxfOCeaMdZbfMAv+pxKy
+         5hZ3f9/miomMaMtKILEMVP1rPwhy56itokbXK/CCaZWWNC2DTqxVntJA1bpAlxSPlNsT
+         HSKSgllRXQpnZdwO3lPQc9O3fR+dbJADkzIX8L28VzuCihBlx3jLWO50p1Ol3vN1Ztor
+         mva7UUaBeb5ACXPXuF3JNGiBjwEY0fCvsxcEJQwpkqlz8KJW5SsBlKT0GMg4LOYxWBVQ
+         dcCvTJUD6Nndm5D77TM066auV9OWHY5QX9ZCe8weSi8/CK2Z6xMiIFSiaH9JwhQs7nBF
+         NySg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:sender:from:to:subject:date:message-id
-         :mime-version:content-transfer-encoding;
-        bh=1b/MRvHRlr04K9YKU9yX4GmLbVKqvcAwXCZ6Wb7inMQ=;
-        b=UQUq73qfCmP0UoNjvPbnPYXuX0Iv7D2LCtZS3kGKrxGYjkpGqJKqPnkfXDStDiid92
-         j8C6FmHRwrvXEGQPVTWNpfGGKMJ+rgFVEv7zMGFiVrsV678q3RDYbFLheLsoLeRo2C+K
-         HPWEQoS47TaO5hcjo+Vvrfkwqgnvl5a4TlA0j7CNpugSdWuNITgelzpGB6DQy3lBVqJe
-         oIhpXwOsCrxEWEyXrixnJOGllBlPGxyWABNg0Y3hiQG8g6aFdJYuYvSluHZrMsBHFl4E
-         8LHLz1dMpop7oi6F5R+4Gbq3CVZw4qQdsGboi9CdSVzaBVzEmhC1GBUjrr1VwFKuMLGA
-         3etQ==
-X-Gm-Message-State: AJIora/exOf7h1haIhN49DmgSGtPGx8lZJHGbeqgtu8azqinH9tM13SN
-        Eqr2fj2YFJ+Qu2/Hw7dKXZk=
-X-Google-Smtp-Source: AGRyM1vR/ldtZUn+g70C68LOzooEl9N1TbXddKJsQ661WbsNhdAvYT7cnhP+pHllI6kL3hDkdyEQrw==
-X-Received: by 2002:a63:5d21:0:b0:40d:d9fd:7254 with SMTP id r33-20020a635d21000000b0040dd9fd7254mr2526204pgb.353.1657710746784;
-        Wed, 13 Jul 2022 04:12:26 -0700 (PDT)
+         :in-reply-to:references:mime-version:content-transfer-encoding;
+        bh=R3j6t7oPeXFLjhrbi+QAqbOvyaU9gHal8+lBJxi7A/4=;
+        b=ZM9iTim788tBtXv5uZ2zvLWrDc1no5vRF3AIeFYtJMEmKOZ13BsIu27v6pkGgYlpsI
+         9CV02RKvKUl/AyV3WlEW9XVmr8Fbg5xcEdZ0Q8KOK1GX1depi/YBmqqT7Mzh5OiAzMk4
+         q+5h3q7d21XLOl3GG9TqR47/1rCmPvOflef+85kc+1MShqtoHI0FOXAlON1k2Bb0XZrK
+         6APYm0Sa+uaU3EuFv4sAH+FjdCJUoq+OFHZUbbyBJNek+mVufGYTXpIESaB9OmPUnON6
+         r9jQ1GJ1w+g5zMxMshpERRkp3BlMrRRVERaYN/EkTdzIP0lt+1Q+yl64OHScmSy9AINQ
+         1Zpw==
+X-Gm-Message-State: AJIora8mUS197Fc0hnNlcybC9jNkmYHh25ddOo4Cnq1f8yo3/vyFPjpy
+        whHYMM6GqKTEG9HF8A7gN2w=
+X-Google-Smtp-Source: AGRyM1tY6oR3MZL8vQQ11xnmuuzvLUVVQCbxnmjeU5BC+SCjRmiiucPVNo/U9YLkCQvSKmfBPij1cQ==
+X-Received: by 2002:a17:902:cec2:b0:16c:3deb:a062 with SMTP id d2-20020a170902cec200b0016c3deba062mr3044222plg.136.1657710749524;
+        Wed, 13 Jul 2022 04:12:29 -0700 (PDT)
 Received: from localhost (220-135-95-34.hinet-ip.hinet.net. [220.135.95.34])
-        by smtp.gmail.com with ESMTPSA id r30-20020aa7989e000000b00528baea53afsm8590716pfl.46.2022.07.13.04.12.25
+        by smtp.gmail.com with ESMTPSA id c5-20020a170902b68500b0016bdea07b8asm8560123pls.236.2022.07.13.04.12.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Jul 2022 04:12:26 -0700 (PDT)
+        Wed, 13 Jul 2022 04:12:29 -0700 (PDT)
 Sender: AceLan Kao <acelan@gmail.com>
 From:   AceLan Kao <acelan.kao@canonical.com>
 To:     Igor Russkikh <irusskikh@marvell.com>,
@@ -56,10 +56,12 @@ To:     Igor Russkikh <irusskikh@marvell.com>,
         Paolo Abeni <pabeni@redhat.com>,
         Manuel Ullmann <labre@posteo.de>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 1/2] net: atlantic: remove deep parameter on suspend/resume functions
-Date:   Wed, 13 Jul 2022 19:12:23 +0800
-Message-Id: <20220713111224.1535938-1-acelan.kao@canonical.com>
+Subject: [PATCH 2/2] net: atlantic: remove aq_nic_deinit() when resume
+Date:   Wed, 13 Jul 2022 19:12:24 +0800
+Message-Id: <20220713111224.1535938-2-acelan.kao@canonical.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220713111224.1535938-1-acelan.kao@canonical.com>
+References: <20220713111224.1535938-1-acelan.kao@canonical.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -75,92 +77,52 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: "Chia-Lin Kao (AceLan)" <acelan.kao@canonical.com>
 
-Below commit claims that atlantic NIC requires to reset the device on pm
-op, and had set the deep to true for all suspend/resume functions.
-commit 1809c30b6e5a ("net: atlantic: always deep reset on pm op, fixing up my null deref regression")
-So, we could remove deep parameter on suspend/resume functions without
-any functional change.
+aq_nic_deinit() has been called while suspending, so we don't have to call
+it again on resume.
+Actually, call it again leads to another hang issue when resuming from
+S3.
+
+Jul 8 03:09:44 u-Precision-7865-Tower kernel: [ 5910.992345] Call Trace:
+Jul 8 03:09:44 u-Precision-7865-Tower kernel: [ 5910.992346] <TASK>
+Jul 8 03:09:44 u-Precision-7865-Tower kernel: [ 5910.992348] aq_nic_deinit+0xb4/0xd0 [atlantic]
+Jul 8 03:09:44 u-Precision-7865-Tower kernel: [ 5910.992356] aq_pm_thaw+0x7f/0x100 [atlantic]
+Jul 8 03:09:44 u-Precision-7865-Tower kernel: [ 5910.992362] pci_pm_resume+0x5c/0x90
+Jul 8 03:09:44 u-Precision-7865-Tower kernel: [ 5910.992366] ? pci_pm_thaw+0x80/0x80
+Jul 8 03:09:44 u-Precision-7865-Tower kernel: [ 5910.992368] dpm_run_callback+0x4e/0x120
+Jul 8 03:09:44 u-Precision-7865-Tower kernel: [ 5910.992371] device_resume+0xad/0x200
+Jul 8 03:09:44 u-Precision-7865-Tower kernel: [ 5910.992373] async_resume+0x1e/0x40
+Jul 8 03:09:44 u-Precision-7865-Tower kernel: [ 5910.992374] async_run_entry_fn+0x33/0x120
+Jul 8 03:09:44 u-Precision-7865-Tower kernel: [ 5910.992377] process_one_work+0x220/0x3c0
+Jul 8 03:09:44 u-Precision-7865-Tower kernel: [ 5910.992380] worker_thread+0x4d/0x3f0
+Jul 8 03:09:44 u-Precision-7865-Tower kernel: [ 5910.992382] ? process_one_work+0x3c0/0x3c0
+Jul 8 03:09:44 u-Precision-7865-Tower kernel: [ 5910.992384] kthread+0x12a/0x150
+Jul 8 03:09:44 u-Precision-7865-Tower kernel: [ 5910.992386] ? set_kthread_struct+0x40/0x40
+Jul 8 03:09:44 u-Precision-7865-Tower kernel: [ 5910.992387] ret_from_fork+0x22/0x30
+Jul 8 03:09:44 u-Precision-7865-Tower kernel: [ 5910.992391] </TASK>
+Jul 8 03:09:44 u-Precision-7865-Tower kernel: [ 5910.992392] ---[ end trace 1ec8c79604ed5e0d ]---
+Jul 8 03:09:44 u-Precision-7865-Tower kernel: [ 5910.992394] PM: dpm_run_callback(): pci_pm_resume+0x0/0x90 returns -110
+Jul 8 03:09:44 u-Precision-7865-Tower kernel: [ 5910.992397] atlantic 0000:02:00.0: PM: failed to resume async: error -110
 
 Fixes: 1809c30b6e5a ("net: atlantic: always deep reset on pm op, fixing up my null deref regression")
 Signed-off-by: Chia-Lin Kao (AceLan) <acelan.kao@canonical.com>
 ---
- .../ethernet/aquantia/atlantic/aq_pci_func.c  | 24 ++++++++-----------
- 1 file changed, 10 insertions(+), 14 deletions(-)
+ drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
 diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c b/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
-index 831833911a52..dbd5263130f9 100644
+index dbd5263130f9..8647125d60ae 100644
 --- a/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
 +++ b/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
-@@ -379,7 +379,7 @@ static void aq_pci_shutdown(struct pci_dev *pdev)
- 	}
- }
- 
--static int aq_suspend_common(struct device *dev, bool deep)
-+static int aq_suspend_common(struct device *dev)
- {
- 	struct aq_nic_s *nic = pci_get_drvdata(to_pci_dev(dev));
- 
-@@ -392,17 +392,15 @@ static int aq_suspend_common(struct device *dev, bool deep)
- 	if (netif_running(nic->ndev))
- 		aq_nic_stop(nic);
- 
--	if (deep) {
--		aq_nic_deinit(nic, !nic->aq_hw->aq_nic_cfg->wol);
--		aq_nic_set_power(nic);
--	}
-+	aq_nic_deinit(nic, !nic->aq_hw->aq_nic_cfg->wol);
-+	aq_nic_set_power(nic);
- 
- 	rtnl_unlock();
- 
- 	return 0;
- }
- 
--static int atl_resume_common(struct device *dev, bool deep)
-+static int atl_resume_common(struct device *dev)
- {
- 	struct pci_dev *pdev = to_pci_dev(dev);
- 	struct aq_nic_s *nic;
-@@ -415,10 +413,8 @@ static int atl_resume_common(struct device *dev, bool deep)
+@@ -413,9 +413,6 @@ static int atl_resume_common(struct device *dev)
  	pci_set_power_state(pdev, PCI_D0);
  	pci_restore_state(pdev);
  
--	if (deep) {
--		/* Reinitialize Nic/Vecs objects */
--		aq_nic_deinit(nic, !nic->aq_hw->aq_nic_cfg->wol);
--	}
-+	/* Reinitialize Nic/Vecs objects */
-+	aq_nic_deinit(nic, !nic->aq_hw->aq_nic_cfg->wol);
- 
+-	/* Reinitialize Nic/Vecs objects */
+-	aq_nic_deinit(nic, !nic->aq_hw->aq_nic_cfg->wol);
+-
  	if (netif_running(nic->ndev)) {
  		ret = aq_nic_init(nic);
-@@ -444,22 +440,22 @@ static int atl_resume_common(struct device *dev, bool deep)
- 
- static int aq_pm_freeze(struct device *dev)
- {
--	return aq_suspend_common(dev, true);
-+	return aq_suspend_common(dev);
- }
- 
- static int aq_pm_suspend_poweroff(struct device *dev)
- {
--	return aq_suspend_common(dev, true);
-+	return aq_suspend_common(dev);
- }
- 
- static int aq_pm_thaw(struct device *dev)
- {
--	return atl_resume_common(dev, true);
-+	return atl_resume_common(dev);
- }
- 
- static int aq_pm_resume_restore(struct device *dev)
- {
--	return atl_resume_common(dev, true);
-+	return atl_resume_common(dev);
- }
- 
- static const struct dev_pm_ops aq_pm_ops = {
+ 		if (ret)
 -- 
 2.25.1
 
