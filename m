@@ -2,66 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 10F5957384A
-	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 16:03:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 85551573861
+	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 16:08:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231340AbiGMODX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jul 2022 10:03:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38378 "EHLO
+        id S236543AbiGMOH5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jul 2022 10:07:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230258AbiGMODW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 10:03:22 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0BCE2D1CB
-        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 07:03:20 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id l23so20034749ejr.5
-        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 07:03:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=DHixGE+cr+K21WVSLKuNnxetOA0/CHewD38dOxNk2Vo=;
-        b=uvdwYiasqC8LljyPpgNSvvOamtKs7faaTvV+aXGpUR6OP/GjJpRCeqU10kdXkF1PzJ
-         U6j9h5r++qqjFixuKfUyoYOYjyAOaJ678qIxvUvPFCqwXI1w7zva69npnel1M9/2P+ad
-         ngzXL9pS+yyagD1tMq7xl9Ht9Fb8cKXXwIIsitsgdfHTbg7L7mak71FWuoEzVtXWqy7E
-         bNUwgfLuibBihRWxTYSP0sq1eYTJH5+xpldxAMQ3oGTAYD2paYHi2awZqpUMYmCvyRlu
-         Kvnj745jAPul8VCOfQXlDqu8xBK3P67BOl3HlsPYgmUiZVVexTEoUYVMxrz7zrR1k1d9
-         PkDQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=DHixGE+cr+K21WVSLKuNnxetOA0/CHewD38dOxNk2Vo=;
-        b=wlb2uKy4uM+H9Ltdkk710c/ukfec4cwmv1IpWrzholsp8FvF4j+LKAeJoyuQV/mv2z
-         XnfzPHz47yRRNEHcxO2hjxjUij1hymD8LD4ZIvpzBQndu1aA08RHmr7d/tSMt26fl+Iv
-         4TfI2u2EmtY7UEo17HmlQKYqvirm1J44cPeOIxIKE10RYhGGFZ/1Gosh7mM1jfwG9NQ3
-         bt+cu4MdMRe1s/O1aNeB5GtghB1ryc6hSMDlnZDfNU+uinAWTsKLY5iUIjnFYLGH1ryN
-         7xVJcSfY8mKjwLVzhlig4KTeRvjJT/eR5LPU7gEpJU17zV8jIOiNzgUlo04tm3MTF+c0
-         uiCw==
-X-Gm-Message-State: AJIora8bqlUFO+ugfMsHoCdfsLvwM+W6WO5IBn6qQL1hKoaXkiUEUgvs
-        NBPcvIwI5dH9JNZg0SJy/BopIjr/Fvbw73meucI=
-X-Google-Smtp-Source: AGRyM1vbA7azS4D/mdcqzbsEJ8h5mfaH4dCarOntsFGzIYEXBKzqk8LERQLreR/J0/EPUa3de8ks9w==
-X-Received: by 2002:a17:907:7dac:b0:722:3352:ac05 with SMTP id oz44-20020a1709077dac00b007223352ac05mr3699271ejc.421.1657720999535;
-        Wed, 13 Jul 2022 07:03:19 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id g25-20020a056402321900b0043aa17dc199sm7889793eda.90.2022.07.13.07.03.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Jul 2022 07:03:18 -0700 (PDT)
-Date:   Wed, 13 Jul 2022 16:03:17 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, mlxsw@nvidia.com, saeedm@nvidia.com,
-        moshe@nvidia.com
-Subject: Re: [patch net-next 0/3] net: devlink: couple of trivial fixes
-Message-ID: <Ys7QpWEVIh7NfrAx@nanopsycho>
-References: <20220712104853.2831646-1-jiri@resnulli.us>
+        with ESMTP id S236511AbiGMOHu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 10:07:50 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F39E326D2;
+        Wed, 13 Jul 2022 07:07:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
+        Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=gA3XVimnX7f3s6KgiLlFK+Po6cdJBSVv58Yny5mkLeQ=; b=DeAZz/u08LyY66av49LSBj404F
+        Z1pv+JxyNxpbyQNSBtLumt6bq99DUgUOvJELIyRwoLQEXcthrEo0yZ9nVAAtX1tKSgxuH2dMmB+jA
+        RU4NQAi+mSAy8faMSx/seFqS6ytNIgYr2tQx/OJxiMNdEA0fckOScgYQZCR7QV5N+Ql4iLxVW7u5t
+        YVEhA4gpDss/Fp1O9Yy6+X/53bDV+oM4Zinq344vPFpPcwUDc86YHQnhaNBfwgjreihJ0oQO8qC3V
+        BEx2OXyizzoqih3kUFui4oDFzaID0qEjlas5NmT78Mb2+auyWkNQYZzUSmWHX1O4ueEJ9TKBzA6LP
+        YXum0aZw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33316)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1oBd0u-0004Zy-Vu; Wed, 13 Jul 2022 15:06:53 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1oBd0p-0005gm-9r; Wed, 13 Jul 2022 15:06:47 +0100
+Date:   Wed, 13 Jul 2022 15:06:47 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Marek =?us-ascii?B?PT9pc28tODg1OS0xP1E/QmVoPUZBbj89?= 
+        <kabel@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        UNGLinuxDriver@microchip.com,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Woojung Huh <woojung.huh@microchip.com>
+Subject: [PATCH RFC v2 0/6] net: dsa: always use phylink
+Message-ID: <Ys7RdzGgHbYiPyB1@shell.armlinux.org.uk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220712104853.2831646-1-jiri@resnulli.us>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -69,28 +82,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Guys, this is incorrectly marked as "Changes Requested" in patchwork,
-however I got ack from Jakub and no changes were requested.
-Could you apply, or should I re-send?
+Hi,
 
-Thanks!
+This is a re-hash of the previous RFC series, this time using the
+suggestion from Vladimir to create a swnode based fixed-link
+specifier.
 
+Most of the changes are to DSA and phylink code from the previous
+series. I've tested on my Clearfog (which has just one Marvell DSA
+switch) and it works there - also tested without the fixed-link
+specified in DT.
 
-Tue, Jul 12, 2022 at 12:48:50PM CEST, jiri@resnulli.us wrote:
->From: Jiri Pirko <jiri@nvidia.com>
->
->Just a couple of trivial fixes I found on the way.
->
->Jiri Pirko (3):
->  net: devlink: make devlink_dpipe_headers_register() return void
->  net: devlink: fix a typo in function name devlink_port_new_notifiy()
->  net: devlink: fix return statement in devlink_port_new_notify()
->
-> .../net/ethernet/mellanox/mlxsw/spectrum_dpipe.c |  6 ++----
-> include/net/devlink.h                            |  2 +-
-> net/core/devlink.c                               | 16 +++++++---------
-> 3 files changed, 10 insertions(+), 14 deletions(-)
->
->-- 
->2.35.3
->
+ drivers/base/swnode.c                  |  14 ++-
+ drivers/net/dsa/b53/b53_common.c       |   3 +-
+ drivers/net/dsa/bcm_sf2.c              |   3 +-
+ drivers/net/dsa/hirschmann/hellcreek.c |   3 +-
+ drivers/net/dsa/lantiq_gswip.c         |   6 +-
+ drivers/net/dsa/microchip/ksz_common.c |   3 +-
+ drivers/net/dsa/mt7530.c               |   3 +-
+ drivers/net/dsa/mv88e6xxx/chip.c       | 134 ++++++++++++-------------
+ drivers/net/dsa/mv88e6xxx/chip.h       |   6 +-
+ drivers/net/dsa/mv88e6xxx/port.c       |  32 ------
+ drivers/net/dsa/mv88e6xxx/port.h       |   5 -
+ drivers/net/dsa/ocelot/felix.c         |   3 +-
+ drivers/net/dsa/qca/ar9331.c           |   3 +-
+ drivers/net/dsa/qca8k.c                |   3 +-
+ drivers/net/dsa/realtek/rtl8365mb.c    |   3 +-
+ drivers/net/dsa/sja1105/sja1105_main.c |   3 +-
+ drivers/net/dsa/xrs700x/xrs700x.c      |   3 +-
+ drivers/net/phy/phylink.c              |  30 ++++--
+ include/linux/phylink.h                |   1 +
+ include/linux/property.h               |   4 +
+ include/net/dsa.h                      |   3 +-
+ net/dsa/port.c                         | 175 +++++++++++++++++++++++++++++----
+ 22 files changed, 290 insertions(+), 153 deletions(-)
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
