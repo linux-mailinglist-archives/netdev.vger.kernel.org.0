@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 75679573FD4
-	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 00:59:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7872573FD6
+	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 00:59:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230047AbiGMW72 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jul 2022 18:59:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54246 "EHLO
+        id S230036AbiGMW7e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jul 2022 18:59:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229793AbiGMW7R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 18:59:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B82112A42D
-        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 15:59:15 -0700 (PDT)
+        with ESMTP id S229931AbiGMW70 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 18:59:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5416F2A955
+        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 15:59:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 28EBD618B0
-        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 22:59:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D48FC3411E;
-        Wed, 13 Jul 2022 22:59:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D26EEB81D5E
+        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 22:59:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D424C34114;
+        Wed, 13 Jul 2022 22:59:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657753154;
-        bh=27IGSCFJ6LHAVLvwMn0wzzHk36RSDscTpcvklwdL4Xo=;
+        s=k20201202; t=1657753155;
+        bh=kKhKA39WSLgL+FHdDXj5GD5gsJiM4oWpOq6STolBlwA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KNhHU06CFXbFdmP1qOwePof6SU3VaXSGRw5MX4kLaf+9Aiub881nNPd5kUyDFcUfI
-         FYUFMHp4Yn4omqGe+q1P3nuwElPOwEdDXRWyPhHy1Tz6+tf2UvLuQSKxwWpL842cXL
-         c5ibsAvGjUKdzwQvkU/3IvcSUp/PEpIdJAJy39K/FvUiIa6od4urwoKRRHdOFT1XcL
-         ACICfAIN4ZrtW+u2lUQM9vaAR/p/9Q6qfNXFZuZAGCpVxn7THTSe6eKlDh4lVYE8tr
-         47nww6m2Ym+x1dTLPOj7ykK96L9T/gONeGDQHD7OugtlHiGmTQmYwRKJjGB41Hx0NS
-         MhQtJ2q5+4AUA==
+        b=Kvqz8T+9xa/4HBIfcrMuAI9pe1fUUtrblorbW+yDQs7FMW18i/DhVYScldfQ2Im+8
+         swJmzTcuJaiBKpQBP7M2WgYtX1N8mZexwgkodZzXkkgY44XiBcr62C6LdtuylVAnCg
+         8dCE6+LgPNlZIpl2IUSpK/+okpg+LSmS8tJjnyzTRe39wbC4QiuUrSf93DY4bPlk3F
+         zqSIYtwL6ayoZ6UE2JyChY5WzZl4t6iVVo+rMKCSVowxAaY6Dv11kwqnXYlPtSPb9l
+         k3sbAqyi8NtU5i9YZbv2b8gdQz0f3irLj8fzEAzvfCRv0AmzK2WnKJy0m7Qk5SP9sO
+         2Yi5PaWq0vMsA==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Yishai Hadas <yishaih@nvidia.com>,
+        Michael Guralnik <michaelgur@nvidia.com>,
         Mark Bloch <mbloch@nvidia.com>
-Subject: [net-next 03/15] net/mlx5: Use software VHCA id when it's supported
-Date:   Wed, 13 Jul 2022 15:58:47 -0700
-Message-Id: <20220713225859.401241-4-saeed@kernel.org>
+Subject: [net-next 04/15] net/mlx5: Expose vnic diagnostic counters for eswitch managed vports
+Date:   Wed, 13 Jul 2022 15:58:48 -0700
+Message-Id: <20220713225859.401241-5-saeed@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220713225859.401241-1-saeed@kernel.org>
 References: <20220713225859.401241-1-saeed@kernel.org>
@@ -57,173 +57,363 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yishai Hadas <yishaih@nvidia.com>
+From: Michael Guralnik <michaelgur@nvidia.com>
 
-Use software VHCA id when it's supported by the firmware.
+Expose on vport group managers debug counters for their managed vports.
 
-A unique id is allocated upon mlx5_mdev_init() and freed upon
-mlx5_mdev_uninit(), as such it stays the same during the full life cycle
-of the device including upon health recovery if occurred.
+Counters are exposed through debugfs, the directory will be present only
+for functions that are eswitch managers and only counters that are
+supported on their specific HW/FW will be exposed.
 
-The conjunction of sw_vhca_id with sw_owner_id will be a global unique
-id per function which uses mlx5_core.
+Example:
+$ ls /sys/kernel/debug/mlx5/0000:08:00.0/esw/
+pf sf_8  vf_0  vf_1
 
-The sw_vhca_id is set upon init_hca command and is used to specify the
-VHCA that the NIC vport is affiliated with.
+$ ls -l /sys/kernel/debug/mlx5/0000:08:00.0/esw/vf_0/vnic_diag/
+cq_overrun
+quota_exceeded_command
+total_q_under_processor_handle
+invalid_command
+send_queue_priority_update_flow
 
-This functionality is needed upon migration of VM which is MPV based.
-(i.e. multi port device).
+List of all counter added:
+total_q_under_processor_handle - number of queues in error state due to an
+async error or errored command.
+send_queue_priority_update_flow - number of QP/SQ priority/SL update
+events.
+cq_overrun - number of times CQ entered an error state due to an
+overflow.
+async_eq_overrun -number of time an EQ mapped to async events was
+overrun.
+comp_eq_overrun - number of time an EQ mapped to completion events was
+overrun.
+quota_exceeded_command - number of commands issued and failed due to quota
+exceeded.
+invalid_command - number of commands issued and failed dues to any reason
+other than quota exceeded.
 
-Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
+Signed-off-by: Michael Guralnik <michaelgur@nvidia.com>
 Reviewed-by: Mark Bloch <mbloch@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/fw.c  |  4 ++
- .../net/ethernet/mellanox/mlx5/core/main.c    | 49 +++++++++++++++++++
- .../net/ethernet/mellanox/mlx5/core/vport.c   | 14 ++++--
- include/linux/mlx5/driver.h                   |  1 +
- 4 files changed, 65 insertions(+), 3 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/Makefile  |   2 +-
+ .../ethernet/mellanox/mlx5/core/esw/debugfs.c | 182 ++++++++++++++++++
+ .../net/ethernet/mellanox/mlx5/core/eswitch.c |   6 +
+ .../net/ethernet/mellanox/mlx5/core/eswitch.h |   5 +
+ .../mellanox/mlx5/core/eswitch_offloads.c     |   3 +
+ 5 files changed, 197 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/esw/debugfs.c
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fw.c b/drivers/net/ethernet/mellanox/mlx5/core/fw.c
-index cfb8bedba512..079fa44ada71 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fw.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fw.c
-@@ -289,6 +289,10 @@ int mlx5_cmd_init_hca(struct mlx5_core_dev *dev, uint32_t *sw_owner_id)
- 				       sw_owner_id[i]);
- 	}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/Makefile b/drivers/net/ethernet/mellanox/mlx5/core/Makefile
+index 5dadc2fce7ee..7ab432cc522f 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/Makefile
++++ b/drivers/net/ethernet/mellanox/mlx5/core/Makefile
+@@ -68,7 +68,7 @@ mlx5_core-$(CONFIG_MLX5_TC_SAMPLE)   += en/tc/sample.o
+ #
+ mlx5_core-$(CONFIG_MLX5_ESWITCH)   += eswitch.o eswitch_offloads.o eswitch_offloads_termtbl.o \
+ 				      ecpf.o rdma.o esw/legacy.o \
+-				      esw/devlink_port.o esw/vporttbl.o esw/qos.o
++				      esw/debugfs.o esw/devlink_port.o esw/vporttbl.o esw/qos.o
  
-+	if (MLX5_CAP_GEN_2_MAX(dev, sw_vhca_id_valid) &&
-+	    dev->priv.sw_vhca_id > 0)
-+		MLX5_SET(init_hca_in, in, sw_vhca_id, dev->priv.sw_vhca_id);
+ mlx5_core-$(CONFIG_MLX5_ESWITCH)   += esw/acl/helper.o \
+ 				      esw/acl/egress_lgcy.o esw/acl/egress_ofld.o \
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/debugfs.c b/drivers/net/ethernet/mellanox/mlx5/core/esw/debugfs.c
+new file mode 100644
+index 000000000000..2db13c71e88c
+--- /dev/null
++++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/debugfs.c
+@@ -0,0 +1,182 @@
++// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
++/* Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
 +
- 	return mlx5_cmd_exec_in(dev, init_hca, in);
- }
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-index a9e51c1b7738..8b621c1ddd14 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-@@ -90,6 +90,8 @@ module_param_named(prof_sel, prof_sel, uint, 0444);
- MODULE_PARM_DESC(prof_sel, "profile selector. Valid range 0 - 2");
- 
- static u32 sw_owner_id[4];
-+#define MAX_SW_VHCA_ID (BIT(__mlx5_bit_sz(cmd_hca_cap_2, sw_vhca_id)) - 1)
-+static DEFINE_IDA(sw_vhca_ida);
- 
- enum {
- 	MLX5_ATOMIC_REQ_MODE_BE = 0x0,
-@@ -492,6 +494,31 @@ static int max_uc_list_get_devlink_param(struct mlx5_core_dev *dev)
- 	return err;
- }
- 
-+static int handle_hca_cap_2(struct mlx5_core_dev *dev, void *set_ctx)
++#include <linux/debugfs.h>
++#include "eswitch.h"
++
++enum vnic_diag_counter {
++	MLX5_VNIC_DIAG_TOTAL_Q_UNDER_PROCESSOR_HANDLE,
++	MLX5_VNIC_DIAG_SEND_QUEUE_PRIORITY_UPDATE_FLOW,
++	MLX5_VNIC_DIAG_COMP_EQ_OVERRUN,
++	MLX5_VNIC_DIAG_ASYNC_EQ_OVERRUN,
++	MLX5_VNIC_DIAG_CQ_OVERRUN,
++	MLX5_VNIC_DIAG_INVALID_COMMAND,
++	MLX5_VNIC_DIAG_QOUTA_EXCEEDED_COMMAND,
++};
++
++static int mlx5_esw_query_vnic_diag(struct mlx5_vport *vport, enum vnic_diag_counter counter,
++				    u32 *val)
 +{
-+	void *set_hca_cap;
++	u32 out[MLX5_ST_SZ_DW(query_vnic_env_out)] = {};
++	u32 in[MLX5_ST_SZ_DW(query_vnic_env_in)] = {};
++	struct mlx5_core_dev *dev = vport->dev;
++	u16 vport_num = vport->vport;
++	void *vnic_diag_out;
 +	int err;
 +
-+	if (!MLX5_CAP_GEN_MAX(dev, hca_cap_2))
-+		return 0;
++	MLX5_SET(query_vnic_env_in, in, opcode, MLX5_CMD_OP_QUERY_VNIC_ENV);
++	MLX5_SET(query_vnic_env_in, in, vport_number, vport_num);
++	if (!mlx5_esw_is_manager_vport(dev->priv.eswitch, vport_num))
++		MLX5_SET(query_vnic_env_in, in, other_vport, 1);
 +
-+	err = mlx5_core_get_caps(dev, MLX5_CAP_GENERAL_2);
++	err = mlx5_cmd_exec(dev, in, sizeof(in), out, sizeof(out));
 +	if (err)
 +		return err;
 +
-+	if (!MLX5_CAP_GEN_2_MAX(dev, sw_vhca_id_valid) ||
-+	    !(dev->priv.sw_vhca_id > 0))
-+		return 0;
++	vnic_diag_out = MLX5_ADDR_OF(query_vnic_env_out, out, vport_env);
++	switch (counter) {
++	case MLX5_VNIC_DIAG_TOTAL_Q_UNDER_PROCESSOR_HANDLE:
++		*val = MLX5_GET(vnic_diagnostic_statistics, vnic_diag_out, total_error_queues);
++		break;
++	case MLX5_VNIC_DIAG_SEND_QUEUE_PRIORITY_UPDATE_FLOW:
++		*val = MLX5_GET(vnic_diagnostic_statistics, vnic_diag_out,
++				send_queue_priority_update_flow);
++		break;
++	case MLX5_VNIC_DIAG_COMP_EQ_OVERRUN:
++		*val = MLX5_GET(vnic_diagnostic_statistics, vnic_diag_out, comp_eq_overrun);
++		break;
++	case MLX5_VNIC_DIAG_ASYNC_EQ_OVERRUN:
++		*val = MLX5_GET(vnic_diagnostic_statistics, vnic_diag_out, async_eq_overrun);
++		break;
++	case MLX5_VNIC_DIAG_CQ_OVERRUN:
++		*val = MLX5_GET(vnic_diagnostic_statistics, vnic_diag_out, cq_overrun);
++		break;
++	case MLX5_VNIC_DIAG_INVALID_COMMAND:
++		*val = MLX5_GET(vnic_diagnostic_statistics, vnic_diag_out, invalid_command);
++		break;
++	case MLX5_VNIC_DIAG_QOUTA_EXCEEDED_COMMAND:
++		*val = MLX5_GET(vnic_diagnostic_statistics, vnic_diag_out, quota_exceeded_command);
++		break;
++	}
 +
-+	set_hca_cap = MLX5_ADDR_OF(set_hca_cap_in, set_ctx,
-+				   capability);
-+	memcpy(set_hca_cap, dev->caps.hca[MLX5_CAP_GENERAL_2]->cur,
-+	       MLX5_ST_SZ_BYTES(cmd_hca_cap_2));
-+	MLX5_SET(cmd_hca_cap_2, set_hca_cap, sw_vhca_id_valid, 1);
-+
-+	return set_caps(dev, set_ctx, MLX5_CAP_GENERAL_2);
++	return 0;
 +}
 +
- static int handle_hca_cap(struct mlx5_core_dev *dev, void *set_ctx)
- {
- 	struct mlx5_profile *prof = &dev->profile;
-@@ -662,6 +689,13 @@ static int set_hca_cap(struct mlx5_core_dev *dev)
- 		goto out;
- 	}
- 
-+	memset(set_ctx, 0, set_sz);
-+	err = handle_hca_cap_2(dev, set_ctx);
-+	if (err) {
-+		mlx5_core_err(dev, "handle_hca_cap_2 failed\n");
-+		goto out;
++static int __show_vnic_diag(struct seq_file *file, struct mlx5_vport *vport,
++			    enum vnic_diag_counter type)
++{
++	u32 val = 0;
++	int ret;
++
++	ret = mlx5_esw_query_vnic_diag(vport, type, &val);
++	if (ret)
++		return ret;
++
++	seq_printf(file, "%d\n", val);
++	return 0;
++}
++
++static int total_q_under_processor_handle_show(struct seq_file *file, void *priv)
++{
++	return __show_vnic_diag(file, file->private, MLX5_VNIC_DIAG_TOTAL_Q_UNDER_PROCESSOR_HANDLE);
++}
++
++static int send_queue_priority_update_flow_show(struct seq_file *file, void *priv)
++{
++	return __show_vnic_diag(file, file->private,
++				MLX5_VNIC_DIAG_SEND_QUEUE_PRIORITY_UPDATE_FLOW);
++}
++
++static int comp_eq_overrun_show(struct seq_file *file, void *priv)
++{
++	return __show_vnic_diag(file, file->private, MLX5_VNIC_DIAG_COMP_EQ_OVERRUN);
++}
++
++static int async_eq_overrun_show(struct seq_file *file, void *priv)
++{
++	return __show_vnic_diag(file, file->private, MLX5_VNIC_DIAG_ASYNC_EQ_OVERRUN);
++}
++
++static int cq_overrun_show(struct seq_file *file, void *priv)
++{
++	return __show_vnic_diag(file, file->private, MLX5_VNIC_DIAG_CQ_OVERRUN);
++}
++
++static int invalid_command_show(struct seq_file *file, void *priv)
++{
++	return __show_vnic_diag(file, file->private, MLX5_VNIC_DIAG_INVALID_COMMAND);
++}
++
++static int quota_exceeded_command_show(struct seq_file *file, void *priv)
++{
++	return __show_vnic_diag(file, file->private, MLX5_VNIC_DIAG_QOUTA_EXCEEDED_COMMAND);
++}
++
++DEFINE_SHOW_ATTRIBUTE(total_q_under_processor_handle);
++DEFINE_SHOW_ATTRIBUTE(send_queue_priority_update_flow);
++DEFINE_SHOW_ATTRIBUTE(comp_eq_overrun);
++DEFINE_SHOW_ATTRIBUTE(async_eq_overrun);
++DEFINE_SHOW_ATTRIBUTE(cq_overrun);
++DEFINE_SHOW_ATTRIBUTE(invalid_command);
++DEFINE_SHOW_ATTRIBUTE(quota_exceeded_command);
++
++void mlx5_esw_vport_debugfs_destroy(struct mlx5_eswitch *esw, u16 vport_num)
++{
++	struct mlx5_vport *vport = mlx5_eswitch_get_vport(esw, vport_num);
++
++	debugfs_remove_recursive(vport->dbgfs);
++	vport->dbgfs = NULL;
++}
++
++/* vnic diag dir name is "pf", "ecpf" or "{vf/sf}_xxxx" */
++#define VNIC_DIAG_DIR_NAME_MAX_LEN 8
++
++void mlx5_esw_vport_debugfs_create(struct mlx5_eswitch *esw, u16 vport_num, bool is_sf, u16 sf_num)
++{
++	struct mlx5_vport *vport = mlx5_eswitch_get_vport(esw, vport_num);
++	struct dentry *vnic_diag;
++	char dir_name[VNIC_DIAG_DIR_NAME_MAX_LEN];
++	int err;
++
++	if (!MLX5_CAP_GEN(esw->dev, vport_group_manager))
++		return;
++
++	if (vport_num == MLX5_VPORT_PF) {
++		strcpy(dir_name, "pf");
++	} else if (vport_num == MLX5_VPORT_ECPF) {
++		strcpy(dir_name, "ecpf");
++	} else {
++		err = snprintf(dir_name, VNIC_DIAG_DIR_NAME_MAX_LEN, "%s_%d", is_sf ? "sf" : "vf",
++			       is_sf ? sf_num : vport_num - MLX5_VPORT_FIRST_VF);
++		if (WARN_ON(err < 0))
++			return;
 +	}
 +
- out:
- 	kfree(set_ctx);
- 	return err;
-@@ -1506,6 +1540,18 @@ int mlx5_mdev_init(struct mlx5_core_dev *dev, int profile_idx)
- 	if (err)
- 		goto err_hca_caps;
- 
-+	/* The conjunction of sw_vhca_id with sw_owner_id will be a global
-+	 * unique id per function which uses mlx5_core.
-+	 * Those values are supplied to FW as part of the init HCA command to
-+	 * be used by both driver and FW when it's applicable.
-+	 */
-+	dev->priv.sw_vhca_id = ida_alloc_range(&sw_vhca_ida, 1,
-+					       MAX_SW_VHCA_ID,
-+					       GFP_KERNEL);
-+	if (dev->priv.sw_vhca_id < 0)
-+		mlx5_core_err(dev, "failed to allocate sw_vhca_id, err=%d\n",
-+			      dev->priv.sw_vhca_id);
++	vport->dbgfs = debugfs_create_dir(dir_name, esw->dbgfs);
++	vnic_diag = debugfs_create_dir("vnic_diag", vport->dbgfs);
 +
++	if (MLX5_CAP_GEN(esw->dev, vnic_env_queue_counters)) {
++		debugfs_create_file("total_q_under_processor_handle", 0444, vnic_diag, vport,
++				    &total_q_under_processor_handle_fops);
++		debugfs_create_file("send_queue_priority_update_flow", 0444, vnic_diag, vport,
++				    &send_queue_priority_update_flow_fops);
++	}
++
++	if (MLX5_CAP_GEN(esw->dev, eq_overrun_count)) {
++		debugfs_create_file("comp_eq_overrun", 0444, vnic_diag, vport,
++				    &comp_eq_overrun_fops);
++		debugfs_create_file("async_eq_overrun", 0444, vnic_diag, vport,
++				    &async_eq_overrun_fops);
++	}
++
++	if (MLX5_CAP_GEN(esw->dev, vnic_env_cq_overrun))
++		debugfs_create_file("cq_overrun", 0444, vnic_diag, vport, &cq_overrun_fops);
++
++	if (MLX5_CAP_GEN(esw->dev, invalid_command_count))
++		debugfs_create_file("invalid_command", 0444, vnic_diag, vport,
++				    &invalid_command_fops);
++
++	if (MLX5_CAP_GEN(esw->dev, quota_exceeded_count))
++		debugfs_create_file("quota_exceeded_command", 0444, vnic_diag, vport,
++				    &quota_exceeded_command_fops);
++}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
+index b95f75431882..30a6c9fbf1b6 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
+@@ -36,6 +36,7 @@
+ #include <linux/mlx5/vport.h>
+ #include <linux/mlx5/fs.h>
+ #include <linux/mlx5/mpfs.h>
++#include <linux/debugfs.h>
+ #include "esw/acl/lgcy.h"
+ #include "esw/legacy.h"
+ #include "esw/qos.h"
+@@ -1002,6 +1003,7 @@ int mlx5_eswitch_load_vport(struct mlx5_eswitch *esw, u16 vport_num,
+ 	if (err)
+ 		return err;
+ 
++	mlx5_esw_vport_debugfs_create(esw, vport_num, false, 0);
+ 	err = esw_offloads_load_rep(esw, vport_num);
+ 	if (err)
+ 		goto err_rep;
+@@ -1009,6 +1011,7 @@ int mlx5_eswitch_load_vport(struct mlx5_eswitch *esw, u16 vport_num,
+ 	return err;
+ 
+ err_rep:
++	mlx5_esw_vport_debugfs_destroy(esw, vport_num);
+ 	mlx5_esw_vport_disable(esw, vport_num);
+ 	return err;
+ }
+@@ -1016,6 +1019,7 @@ int mlx5_eswitch_load_vport(struct mlx5_eswitch *esw, u16 vport_num,
+ void mlx5_eswitch_unload_vport(struct mlx5_eswitch *esw, u16 vport_num)
+ {
+ 	esw_offloads_unload_rep(esw, vport_num);
++	mlx5_esw_vport_debugfs_destroy(esw, vport_num);
+ 	mlx5_esw_vport_disable(esw, vport_num);
+ }
+ 
+@@ -1622,6 +1626,7 @@ int mlx5_eswitch_init(struct mlx5_core_dev *dev)
+ 	dev->priv.eswitch = esw;
+ 	BLOCKING_INIT_NOTIFIER_HEAD(&esw->n_head);
+ 
++	esw->dbgfs = debugfs_create_dir("esw", mlx5_debugfs_get_dev_root(esw->dev));
+ 	esw_info(dev,
+ 		 "Total vports %d, per vport: max uc(%d) max mc(%d)\n",
+ 		 esw->total_vports,
+@@ -1645,6 +1650,7 @@ void mlx5_eswitch_cleanup(struct mlx5_eswitch *esw)
+ 
+ 	esw_info(esw->dev, "cleanup\n");
+ 
++	debugfs_remove_recursive(esw->dbgfs);
+ 	esw->dev->priv.eswitch = NULL;
+ 	destroy_workqueue(esw->work_queue);
+ 	WARN_ON(refcount_read(&esw->qos.refcnt));
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
+index c19604b06a2c..87ce5a208cb5 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
+@@ -191,6 +191,7 @@ struct mlx5_vport {
+ 	enum mlx5_eswitch_vport_event enabled_events;
+ 	int index;
+ 	struct devlink_port *dl_port;
++	struct dentry *dbgfs;
+ };
+ 
+ struct mlx5_esw_indir_table;
+@@ -336,6 +337,7 @@ struct mlx5_eswitch {
+ 		u32             large_group_num;
+ 	}  params;
+ 	struct blocking_notifier_head n_head;
++	struct dentry *dbgfs;
+ };
+ 
+ void esw_offloads_disable(struct mlx5_eswitch *esw);
+@@ -684,6 +686,9 @@ int mlx5_esw_offloads_devlink_port_register(struct mlx5_eswitch *esw, u16 vport_
+ void mlx5_esw_offloads_devlink_port_unregister(struct mlx5_eswitch *esw, u16 vport_num);
+ struct devlink_port *mlx5_esw_offloads_devlink_port(struct mlx5_eswitch *esw, u16 vport_num);
+ 
++void mlx5_esw_vport_debugfs_create(struct mlx5_eswitch *esw, u16 vport_num, bool is_sf, u16 sf_num);
++void mlx5_esw_vport_debugfs_destroy(struct mlx5_eswitch *esw, u16 vport_num);
++
+ int mlx5_esw_devlink_sf_port_register(struct mlx5_eswitch *esw, struct devlink_port *dl_port,
+ 				      u16 vport_num, u32 controller, u32 sfnum);
+ void mlx5_esw_devlink_sf_port_unregister(struct mlx5_eswitch *esw, u16 vport_num);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+index d3da52e3fc67..85b3aa4d7955 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+@@ -3704,12 +3704,14 @@ int mlx5_esw_offloads_sf_vport_enable(struct mlx5_eswitch *esw, struct devlink_p
+ 	if (err)
+ 		goto devlink_err;
+ 
++	mlx5_esw_vport_debugfs_create(esw, vport_num, true, sfnum);
+ 	err = mlx5_esw_offloads_rep_load(esw, vport_num);
+ 	if (err)
+ 		goto rep_err;
  	return 0;
  
- err_hca_caps:
-@@ -1530,6 +1576,9 @@ void mlx5_mdev_uninit(struct mlx5_core_dev *dev)
+ rep_err:
++	mlx5_esw_vport_debugfs_destroy(esw, vport_num);
+ 	mlx5_esw_devlink_sf_port_unregister(esw, vport_num);
+ devlink_err:
+ 	mlx5_esw_vport_disable(esw, vport_num);
+@@ -3719,6 +3721,7 @@ int mlx5_esw_offloads_sf_vport_enable(struct mlx5_eswitch *esw, struct devlink_p
+ void mlx5_esw_offloads_sf_vport_disable(struct mlx5_eswitch *esw, u16 vport_num)
  {
- 	struct mlx5_priv *priv = &dev->priv;
- 
-+	if (priv->sw_vhca_id > 0)
-+		ida_free(&sw_vhca_ida, dev->priv.sw_vhca_id);
-+
- 	mlx5_hca_caps_free(dev);
- 	mlx5_adev_cleanup(dev);
- 	mlx5_pagealloc_cleanup(dev);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/vport.c b/drivers/net/ethernet/mellanox/mlx5/core/vport.c
-index ac020cb78072..d5c317325030 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/vport.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/vport.c
-@@ -1086,9 +1086,17 @@ int mlx5_nic_vport_affiliate_multiport(struct mlx5_core_dev *master_mdev,
- 		goto free;
- 
- 	MLX5_SET(modify_nic_vport_context_in, in, field_select.affiliation, 1);
--	MLX5_SET(modify_nic_vport_context_in, in,
--		 nic_vport_context.affiliated_vhca_id,
--		 MLX5_CAP_GEN(master_mdev, vhca_id));
-+	if (MLX5_CAP_GEN_2(master_mdev, sw_vhca_id_valid)) {
-+		MLX5_SET(modify_nic_vport_context_in, in,
-+			 nic_vport_context.vhca_id_type, VHCA_ID_TYPE_SW);
-+		MLX5_SET(modify_nic_vport_context_in, in,
-+			 nic_vport_context.affiliated_vhca_id,
-+			 MLX5_CAP_GEN_2(master_mdev, sw_vhca_id));
-+	} else {
-+		MLX5_SET(modify_nic_vport_context_in, in,
-+			 nic_vport_context.affiliated_vhca_id,
-+			 MLX5_CAP_GEN(master_mdev, vhca_id));
-+	}
- 	MLX5_SET(modify_nic_vport_context_in, in,
- 		 nic_vport_context.affiliation_criteria,
- 		 MLX5_CAP_GEN(port_mdev, affiliate_nic_vport_criteria));
-diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h
-index bd882884b23c..ecda6e63d5f2 100644
---- a/include/linux/mlx5/driver.h
-+++ b/include/linux/mlx5/driver.h
-@@ -610,6 +610,7 @@ struct mlx5_priv {
- 	spinlock_t              ctx_lock;
- 	struct mlx5_adev       **adev;
- 	int			adev_idx;
-+	int			sw_vhca_id;
- 	struct mlx5_events      *events;
- 
- 	struct mlx5_flow_steering *steering;
+ 	mlx5_esw_offloads_rep_unload(esw, vport_num);
++	mlx5_esw_vport_debugfs_destroy(esw, vport_num);
+ 	mlx5_esw_devlink_sf_port_unregister(esw, vport_num);
+ 	mlx5_esw_vport_disable(esw, vport_num);
+ }
 -- 
 2.36.1
 
