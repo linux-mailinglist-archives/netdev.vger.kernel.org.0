@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 779E8573893
-	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 16:19:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E44D4573895
+	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 16:19:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236470AbiGMOTD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jul 2022 10:19:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52696 "EHLO
+        id S236416AbiGMOTE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jul 2022 10:19:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236455AbiGMOTB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 10:19:01 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04D7FE08D
-        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 07:19:00 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id oy13so15263190ejb.1
-        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 07:18:59 -0700 (PDT)
+        with ESMTP id S236491AbiGMOTC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 10:19:02 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61891B4B8
+        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 07:19:01 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id bp15so9865996ejb.6
+        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 07:19:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=IUSKZ5hVydPYGMVd2QIHCwI22Wd1tI7e9fbKWH3ODT4=;
-        b=ie8SHxnYD1RfWCEquafqtutY8+AaZnyaFH1zqvsv0QvZKQstNGAjDfwH9Rr4jyglKZ
-         0xhXLuFahazETgRQlXNBkEx6rKE6waEgLCiE98hV9Zy4BR5orpHnAKxSXuTb1ZGKaJ11
-         8JPQ//MAmkSTcXkltb6Lp+VQyp+stwXVXmY+b4H+tbaTeNAGbvZi0t+1+E63pZR70DiC
-         8inAA3F0gOzRwo6UJ0w9lsvdY6WaBKOmvjPhRvQXit4ZBIRnpijCFTnHJfNZ5PcZAWNE
-         lWVHf2At3zh2oyZa+58hVStFDy8ErjH6ExK8JTgD5aAMzjFGscPTI3rCsTOjxIid1jBx
-         As5A==
+        bh=qdxHGAw4fwtPClwOf0CmOMbYQKMEa4xMp9KzJ6jp6n0=;
+        b=7FjdEG3xyCZnYt95lp61KRGoL3N7Lrga4eUDTttSkSWv4tz9ia35Db0a3iPapsKfK2
+         6BpGhR2YNcIWX2bxt7jD/qM2fGnx1FZyDB4OOd/FvJ9L4tvqSwNNrrlxz9+eDA2GSLTI
+         2dqpV3/JD0BGYMXJpCC8DU/DHFfbsqiMKexQW2QUC59DeI31oayATAO9Kleay90ZOxtz
+         ErvI6/vGNlb/2wiLhplEmk34XJPJv/1ddLSIDw7Wh5brYOJ2xthfKDGcey7zWxv6g/aR
+         37VFVsqhwkjOTrXyWAaajOpk7aw/VWLUtMCGvrFH7QeiggqU76yXtEKeYSTzqbvkaGSS
+         IheA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=IUSKZ5hVydPYGMVd2QIHCwI22Wd1tI7e9fbKWH3ODT4=;
-        b=I/uGMNZX4fYuwo7ag7AjXMCvnskOTQ6eMwqQFAQ6+5U30kuT5+/45v1NgprP1VOH9F
-         emNv3SlAOYLogKmbCZcNsx58ZA2Kj6eQeVPOLANxCQFU8j7e2aeSa0K+mKGgMss0kqOh
-         OGD35nE4UDRUrDjBJS//fMcnZ0b5BsnoGLTBGe9GUmws2vQPgiWv2XB6wCftPbTFt1dc
-         wRT5ZBAK8AB5jhQ074EWOkTBPC5sMB7BmeYTPoZ29tO7qMe+dfsqnHLk+25LkIDcHg6V
-         Z6EGKxM1xTmHaRMV6W774zPorGG7zv51M4mijMxU6KCn4/EN+kzRN4wF0vh5mNHNGX22
-         yKzw==
-X-Gm-Message-State: AJIora+bE2tnYmBQRAQI6X5WnIsbHDB03sD9p66pV2aBNVbnGnXwIYTT
-        lJCAhkRKS+s1FM6o0154sx2YlPjEtW5Iq7/MaWk=
-X-Google-Smtp-Source: AGRyM1v5d+G6aQ4x3CXgxDWs/Ii26MgaZqVZkNWuI1z07BArMXYixmgeSEie4q1LNI6XFr71mwl9nw==
-X-Received: by 2002:a17:906:98c7:b0:72b:2f8a:66b4 with SMTP id zd7-20020a17090698c700b0072b2f8a66b4mr3630260ejb.692.1657721938527;
-        Wed, 13 Jul 2022 07:18:58 -0700 (PDT)
+        bh=qdxHGAw4fwtPClwOf0CmOMbYQKMEa4xMp9KzJ6jp6n0=;
+        b=ylnvryTt5GZZG+pyH/K17PZNzgOE2Hxwe4kHz+k0bY4+1Y5uubBz97VpVdh41NRDzo
+         8aiXWqIdT8iQGVvJ0uEWK9kLwhEVI3YtFHuhXXPzx2aiNuZi6xKBdvQbEQ9C+pa4vZYk
+         bw3xzBKgpxv+Vo86zpDvvGOgzGOb8koJglA5KD53Qi5CDFD/VLb6Nys33yBvc7XoE9nB
+         tx1nDGTnHuueUFq+NXvZSlkWsyyd2YX1bw6CXfgXm1m6l8gKoHIQJcDyrAw5OE6s8m2j
+         zoVLfE6n5TpBCkBeYfyipxsjGn4RvhiTLBQnYAeCW+vd6TUNSBpBEyMOApNHiYy94NG9
+         ZVSA==
+X-Gm-Message-State: AJIora9LmmFUW17Dak3C3jSYkwFGENyLkg9btooQfuk1/41BhF9Dfpfh
+        LgD1U3fbLCyRwmZ0/U+WBk0wdOIDrk/HEFv1PX4=
+X-Google-Smtp-Source: AGRyM1uz0d2y1pJpkob9X7h3UszO2ccfuw/70eylQXqXa4gvLnVdnupO4q0T4Oc9S1WoDfu98Cq1wA==
+X-Received: by 2002:a17:906:8a4a:b0:72b:5b23:3065 with SMTP id gx10-20020a1709068a4a00b0072b5b233065mr3739272ejc.557.1657721940012;
+        Wed, 13 Jul 2022 07:19:00 -0700 (PDT)
 Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id g24-20020a170906539800b00727c6da69besm5007811ejo.38.2022.07.13.07.18.57
+        by smtp.gmail.com with ESMTPSA id j11-20020a50ed0b000000b0043a6b86f024sm7897036eds.67.2022.07.13.07.18.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Jul 2022 07:18:58 -0700 (PDT)
+        Wed, 13 Jul 2022 07:18:59 -0700 (PDT)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com, mlxsw@nvidia.com, saeedm@nvidia.com,
         moshe@nvidia.com
-Subject: [patch net-next repost 2/3] net: devlink: fix a typo in function name devlink_port_new_notifiy()
-Date:   Wed, 13 Jul 2022 16:18:52 +0200
-Message-Id: <20220713141853.2992014-3-jiri@resnulli.us>
+Subject: [patch net-next repost 3/3] net: devlink: fix return statement in devlink_port_new_notify()
+Date:   Wed, 13 Jul 2022 16:18:53 +0200
+Message-Id: <20220713141853.2992014-4-jiri@resnulli.us>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220713141853.2992014-1-jiri@resnulli.us>
 References: <20220713141853.2992014-1-jiri@resnulli.us>
@@ -71,40 +71,29 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@nvidia.com>
 
-Fix the typo in a name of devlink_port_new_notifiy() function.
+Return directly without intermediate value store at the end of
+devlink_port_new_notify() function.
 
 Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 Acked-by: Jakub Kicinski <kuba@kernel.org>
 ---
- net/core/devlink.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ net/core/devlink.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
 diff --git a/net/core/devlink.c b/net/core/devlink.c
-index c261bba9ab76..2f22ce33c3ec 100644
+index 2f22ce33c3ec..a9776ea923ae 100644
 --- a/net/core/devlink.c
 +++ b/net/core/devlink.c
-@@ -1700,9 +1700,9 @@ static int devlink_nl_cmd_port_unsplit_doit(struct sk_buff *skb,
- 	return devlink->ops->port_unsplit(devlink, devlink_port, info->extack);
- }
- 
--static int devlink_port_new_notifiy(struct devlink *devlink,
--				    unsigned int port_index,
--				    struct genl_info *info)
-+static int devlink_port_new_notify(struct devlink *devlink,
-+				   unsigned int port_index,
-+				   struct genl_info *info)
- {
- 	struct devlink_port *devlink_port;
- 	struct sk_buff *msg;
-@@ -1775,7 +1775,7 @@ static int devlink_nl_cmd_port_new_doit(struct sk_buff *skb,
+@@ -1724,8 +1724,7 @@ static int devlink_port_new_notify(struct devlink *devlink,
  	if (err)
- 		return err;
+ 		goto out;
  
--	err = devlink_port_new_notifiy(devlink, new_port_index, info);
-+	err = devlink_port_new_notify(devlink, new_port_index, info);
- 	if (err && err != -ENODEV) {
- 		/* Fail to send the response; destroy newly created port. */
- 		devlink->ops->port_del(devlink, new_port_index, extack);
+-	err = genlmsg_reply(msg, info);
+-	return err;
++	return genlmsg_reply(msg, info);
+ 
+ out:
+ 	nlmsg_free(msg);
 -- 
 2.35.3
 
