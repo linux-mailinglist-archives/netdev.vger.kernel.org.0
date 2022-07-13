@@ -2,176 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 26D5E573255
-	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 11:20:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF40457325E
+	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 11:21:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234638AbiGMJUC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jul 2022 05:20:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36384 "EHLO
+        id S235235AbiGMJVi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jul 2022 05:21:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234696AbiGMJUA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 05:20:00 -0400
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-eopbgr60086.outbound.protection.outlook.com [40.107.6.86])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5410DA5A4
-        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 02:19:59 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LfqdRDT7Dxfb6znB7xA8Q0dnBLYEs5/Z24Wzr5CH2cpLNzUkPY3kKy+/IH7Qcetr7yq8slPOX10ZSQ962GKcQ7qCqhlyoK3E7NrJBsnM8KR7QjO5ZRm/H4eYDjw53dk2y197Z2bz4OX7uT7heXuqI3Y/+WBpr9uS4Go57Ch5X99wqJ+g23SshoTynoYzD/Zr5bPELvqIeymK507NreiHCzf9W1xsh9dUbGALv42iz7H2YtX6Mf05mNuY9XCKWxGR6EZil72qWk8SOZ7g9DpYrdfJ0ql3GgxNMXc6h+l2L7ws37seAJMD0/7IyymYWcp/xvV7vEMq5hZWKr4tyRN6KA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=WEzlgyoqktpBUwg5qI3Cs3eLw+k3O3PDbgsVFU2rvWw=;
- b=VgveumqRArUODB/DBd1QI/dmJJczlsXRsvuDwkKS+1kFaqHx6uEXeFtsU4cnW50o/oD8mEYExued+AXLlBAtQjP5kq+sQvpQYvrvq4Q/HDBQZiY8hjQ/Y6rIDNVA7IKLEx20vfethYT5n0ttCQZxV8o6/1wTeuIIabSSa+FqT2Ygg9nQMv3WHge+z6TXAthgTDv+T3d4x+NJMgnLpFdlLgdwQjZj3YnCzy/i3u7aeSzOvkcw3tMN38kMB5bbqqMZDqa5Pu1SxU4o2y2Q9u1RQeEjKcu2Ur2kX8IwY3sewRmPdRNFOK7n4OW8E1a+bipNcGFpCInMRxPlqvq9ZD3HwA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=suse.com; dmarc=pass action=none header.from=suse.com;
- dkim=pass header.d=suse.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WEzlgyoqktpBUwg5qI3Cs3eLw+k3O3PDbgsVFU2rvWw=;
- b=rsoQ7UM28NSh93C8G5ghGNcO6lpZQDDrvZ3Kmvr3ijZz/cYvQpaj5ch3RlHZxQosRN0d4o8z0tazvNMWaWd7Z75nSRAavJeuoDGI7pT5Uqi4JAxcokDjcH+LlCTDauy0DmkZzwHd7PhlE1/6iywE2lpsz9nsn5jkZAT1vFnuMnacefdPvH21PpMNRyhWCVavCnvRKbZQrZJvO3XVSKTP/46GLMWsZAQL9beGVFCfTU4I5k0XHj1UQsDb7qhaphtPGX6JhetSb0t2CmRP/buG1siv3oPyA7wPAvRs9vhPMuzgRpRLC2tHXD0LqYl+lBr0bdtNXl0pgj1mtwXC1MuwQQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=suse.com;
-Received: from VE1PR04MB6560.eurprd04.prod.outlook.com (2603:10a6:803:122::25)
- by AM6PR04MB6248.eurprd04.prod.outlook.com (2603:10a6:20b:bf::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.26; Wed, 13 Jul
- 2022 09:19:57 +0000
-Received: from VE1PR04MB6560.eurprd04.prod.outlook.com
- ([fe80::60ad:4d78:a28a:7df4]) by VE1PR04MB6560.eurprd04.prod.outlook.com
- ([fe80::60ad:4d78:a28a:7df4%4]) with mapi id 15.20.5417.025; Wed, 13 Jul 2022
- 09:19:57 +0000
-Message-ID: <743b3ff3-896c-bfc9-e187-6d50da88f103@suse.com>
-Date:   Wed, 13 Jul 2022 11:19:55 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: [PATCH net-next 2/2] xen-netfront: re-order error checks in
- xennet_get_responses()
-Content-Language: en-US
-From:   Jan Beulich <jbeulich@suse.com>
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>
-Cc:     Juergen Gross <jgross@suse.com>,
-        Stefano Stabellini <stefano@stabellini.net>,
-        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
-References: <7fca0e44-43b5-8448-3653-249d117dc084@suse.com>
-In-Reply-To: <7fca0e44-43b5-8448-3653-249d117dc084@suse.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR0P281CA0078.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:1e::17) To VE1PR04MB6560.eurprd04.prod.outlook.com
- (2603:10a6:803:122::25)
+        with ESMTP id S235250AbiGMJVh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 05:21:37 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 054D2F2E3B
+        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 02:21:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657704094;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=Oz0N+QsU06DLhZQte7+5atP5TvWBFGl9kj65WCB06k8=;
+        b=fEamxsemtGeSxq/MUvb/Qi6p4RYMJBjggP0vveMhGtpPaS2w6zCAugQ4BI+u/mhkV62eS+
+        A1UV/cCa3jkMhFMXf7mSHdI5ETgw71KF8mEczjAjj+NrazqBEtH+2gkfk/GijvL8OmwxuY
+        RDe+U/4s3rX0AzK16gtgiDfAQECOtVM=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-662-dXxASUGVMMeegl6U6A8bxw-1; Wed, 13 Jul 2022 05:21:25 -0400
+X-MC-Unique: dXxASUGVMMeegl6U6A8bxw-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7AD9E811E76;
+        Wed, 13 Jul 2022 09:21:25 +0000 (UTC)
+Received: from localhost.localdomain (unknown [10.39.192.252])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id EB5C9C04482;
+        Wed, 13 Jul 2022 09:21:22 +0000 (UTC)
+From:   =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>
+To:     ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com,
+        sshah@solarflare.com
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>,
+        Ma Yuying <yuma@redhat.com>
+Subject: [PATCH net] sfc: fix kernel panic when creating VF
+Date:   Wed, 13 Jul 2022 11:21:16 +0200
+Message-Id: <20220713092116.21238-1-ihuguet@redhat.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 9b73baaa-af5e-4ce8-baae-08da64b0dac2
-X-MS-TrafficTypeDiagnostic: AM6PR04MB6248:EE_
-X-LD-Processed: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba,ExtFwd
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Fdppvxoy6fB7RzXwbN/jS/vA8fxOlMEaUpyLP9848ljFdMZBByjfXmbaTRY/ukPv/hFbtq4ZfuAEXZDLkiqdsTgiqQ/LgG+9ADZ732NVIhjCdv8NKgXW42bEGi3NikKxfeRMPoNCACLaLMT6cdkDU6FI/vS1xcZcnAPx39UnXY9GUfJQWQ/FFxAXwBYkyZwzk11Hmeesl4jz+R2kB4QDL73Uxywr6/ujdGAOMecToJwdodPyr+Vq1ioSkX8mKrSPkZ32UJm3qETNBPSJx/3Z7gft5RV0c8ZeOAurSSsOoA0ApigL/eTv/B2ty4uwxa9+FnaDibWqn8HrBPsOSiJjQc6ywQCGGTauAe9fDXA03DS6KejCEXQyGQAXjwips4gz3JC5klyPgZegD+9hNMvgTELTWIdXTfSSN07WOIhnuLPk0iDDYQMUG5zOZX5byu1plaIh+4TmoBnFCrUbnFcl+BwhnQb1T/1nXcAR+mTrUMNWhFONdhK3h8OZvJQH/mVUCuYC6X6T/xU3C59Z2hEKIdI3VA8JRCRDQV+hEbTI19F5up/YCjaJa9b4VBygRZ4JLIivnBzE7pjfiNv7S5G8yb5usPxDxzLUibBnld0yHDK6QCuTcEoSndq/F8JPW7dtRvdXQjd4vldOctuXqeBtdHHDwZIDSBse13jM4UW43f26xedFs7zQ0Tv3TuGzvQU5W7fANQb2J09EHQrFYbPSLfmRKSKBrvuIDtysKw5OJ6pkU/uY3UvvkNB6i1PkkedQzpvjXic3hXtoHyMxNsCAKy7nVuFHVQvIAJz5VPaMB77yqGRgD9KdrIvnaoUwjQfbYQs69NPb7xZgPDi1ZgSx8V+LE5TYvNLnEqAOVSmA9IeMm0ziTwieMt2kzThY4akx
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VE1PR04MB6560.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(346002)(376002)(396003)(366004)(136003)(39860400002)(2906002)(5660300002)(8936002)(83380400001)(31686004)(2616005)(38100700002)(478600001)(6486002)(86362001)(6506007)(110136005)(8676002)(54906003)(4326008)(31696002)(66476007)(316002)(186003)(66556008)(26005)(6512007)(36756003)(41300700001)(66946007)(169823001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?NTlFa2c4K2V1TmJxV04zbG84Z050WWtWeE1DdUU5TGY0MlN4VURYUXk0TThq?=
- =?utf-8?B?SlNsL3NUSnMxOTlzMUNldmRpenZjVDY1NDB6U210N210eHBmcXRwYWY2ZFZS?=
- =?utf-8?B?Ry93NFBvNFZWWVdMMmw4ckhzSzZiUU5tRE5sT25pd2JYNXNzY2tCV255VXI3?=
- =?utf-8?B?Y0JIUjZsRmZQZ2g0aXRrWnFtQ1R6a041MVRiRUN6bTlrOFBoaHJJZUYwNVAw?=
- =?utf-8?B?WHZvUngrLzVhNTRJTy9tcW1LSlhSZy9ON1JWaGNiNDdBUDRWaU40eXRLclhC?=
- =?utf-8?B?S211UmRyUDdtYk1jUU5RTnJSOEJBdHgzTmluTVVUMWh3eHdVVGlkOWxwRzNs?=
- =?utf-8?B?dHdxUTRUVkpUdnZ1WVBlbUZickQ0Vnh0N0cxTHhSMk1rWmJiaGJhajNlcEll?=
- =?utf-8?B?WEtEVkpaays5ODE1dk95a211R1NXTGgzeGo2aHlOU0R6d0g3TGwvb2NEVlpr?=
- =?utf-8?B?V3pUU0plOGF0S2JhTDdUZU1QSmxMejBjWjlmSjhFNGZoZlVUMlVpSDVpamJw?=
- =?utf-8?B?TnljRXc5SDBpZHZIYTBYeGlZQkNFRjM2UkE0cW1Yb1VHMTZMampIM0xhd3BY?=
- =?utf-8?B?TnZCSzExUkYzWkZpTXNZdjU5UGhtZjdqSFVJOHFaRlZEenlCekdmQ2RMVmY4?=
- =?utf-8?B?MjZRenozOFQ5d3dqbXBEdnM3SFAxSTdaT0NnM3ZHU1FaR1VSZUJVeFBNOHh6?=
- =?utf-8?B?b3RwOUFPZVRJTTB3QVB4QXRwcklINEt5c21ybVZNRVpRMnFKRVNYNzZPbEM3?=
- =?utf-8?B?L29leWRZblI4RHE3UmFsbW9HalNXQUFJT1NVR2xDcnlGY0JpS2JXL1RkLzVy?=
- =?utf-8?B?aHIyc2UyT2lzQWRGSkM5bXRGTGJhOWtBOHBnTWY3WXUvYXoyOFBwRitvQU95?=
- =?utf-8?B?cjA2WCt3V1pZR0ZPbm9qcU14REIxS3MvOWlXK3JiejFIZDRrcEJnVFREQ3VJ?=
- =?utf-8?B?eG1Ya3o3cEZ2eGFwNVppVzY2a3U3VFM0bHVBSk42NFgwUW1yQnZoZVdUcTlF?=
- =?utf-8?B?MkJlZE44TW1ySjVNQk1FdVRESUorbk5vY3NSRC9panptUVlEeEFPZFdJVmVC?=
- =?utf-8?B?NVNSU1hPMnNPMS90NllwNktheTRQRDVNbHU0TmNoa3B2RnJ0UE1qajRmMXB6?=
- =?utf-8?B?UTFTR3EwbVFYd2RwVHhPeThiQWJrZEQzb3ExRWw4OHhZRG1GYTVrUzhhRzQ3?=
- =?utf-8?B?c0ZxZnNTYmU4ZnlIU2FLKzdwbmlGdTkyL0Z0cklXQXovYzJJdDZ0OVJwb0Q2?=
- =?utf-8?B?emtpeXZuOHRmR1lJMWNPamR3TnZkbFc0WGQ3VUw2YzBFSHFSdHhaVWk0dHd2?=
- =?utf-8?B?U0tFTmJYOHdHalpiNG9wbFpQeWtRU3piZHZxc2dLaE5HSG9tYTRERXZVRVl4?=
- =?utf-8?B?bVkrZDJvZmlPcnNkKzNoVkRpVzMrQUdOMnE5bStodFVySDd0NkpjS0hBREVr?=
- =?utf-8?B?SnY5SW5TZ0hPQndzbDFhQnRLN010elpWK2F3TlhJQUIxOVhLN3VUU2NIR00v?=
- =?utf-8?B?TkorSlhUZ29sblVkb0ZiNExweCtLT1RVTlVXalJJc09jZkNKOW9LWE9tdVdq?=
- =?utf-8?B?eVBQVzFiTXpLTk5HSVlrb0QrQXJrRG1CTlB6T3FuRnVwMk9TY3BYWmhlL3Qz?=
- =?utf-8?B?RFkwREZ4MDRiU2FhUDk2MVRkTFpBanVWRUE0Rm5oeGdSWEswQVRZbjVwOGN2?=
- =?utf-8?B?eHQrdDBGaS9qWDlOWnRaUWxBdjIvNzV5U3NKVDA2cnhrVVlBaDJLVENhRElz?=
- =?utf-8?B?TEtvTHkxTlkveU1ncVRwTVVwaXUwR0IyVXg1SFkrTStvZ2g4RXVkSHlsNnZ0?=
- =?utf-8?B?NUhhUy9EZ2ZpeDhQMVpoRXFRZU9RUHJYZnoyUlI4VWNreUNEYTJFUXdBK0No?=
- =?utf-8?B?eTg4VU5tek9ibmVPMU8yRU9ESlY1ejZ6aEh3eUNKUmZJaHRNWGp5WmV1U2RL?=
- =?utf-8?B?S2ZzSnVuYzVSZFBHTGxoWENzVmVDd1BQdWIrRjAxYUg0dkdWTmVaR1BpSE5p?=
- =?utf-8?B?V2x4OFB4L2llNnJseC9UNmF6US9hSFBvbDhRTDBESnRScDBMUHpSR20yV1dk?=
- =?utf-8?B?dWlDcURLSE81K0FGaUtYbkdUL0FPUWZpME94djVkMVR4RS95eU9sR1JqNVpX?=
- =?utf-8?Q?FWHWGxOrCvE8TYavwwMRjjIK1?=
-X-OriginatorOrg: suse.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9b73baaa-af5e-4ce8-baae-08da64b0dac2
-X-MS-Exchange-CrossTenant-AuthSource: VE1PR04MB6560.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jul 2022 09:19:57.4656
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ZyFvZzwNx4CpfTdtb6VsaBnE4Vk5+fz5JJsjQ5r1T8WKHaubReph7QJsOd2OppTfJP4qYS1ESOcQFTMjBKChAw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR04MB6248
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Check the retrieved grant reference first; there's no point trying to
-have xennet_move_rx_slot() move invalid data (and further defer
-recognition of the issue, likely making diagnosis yet more difficult).
+When creating VFs a kernel panic can happen when calling to
+efx_ef10_try_update_nic_stats_vf.
 
-Signed-off-by: Jan Beulich <jbeulich@suse.com>
+When releasing a DMA coherent buffer, sometimes, I don't know in what
+specific circumstances, it has to unmap memory with vunmap. It is
+disallowed to do that in IRQ context or with BH disabled. Otherwise, we
+hit this line in vunmap, causing the crash:
+  BUG_ON(in_interrupt());
+
+This patch reenables BH to release the buffer.
+
+Log messages when the bug is hit:
+ kernel BUG at mm/vmalloc.c:2727!
+ invalid opcode: 0000 [#1] PREEMPT SMP NOPTI
+ CPU: 6 PID: 1462 Comm: NetworkManager Kdump: loaded Tainted: G          I      --------- ---  5.14.0-119.el9.x86_64 #1
+ Hardware name: Dell Inc. PowerEdge R740/06WXJT, BIOS 2.8.2 08/27/2020
+ RIP: 0010:vunmap+0x2e/0x30
+ ...skip...
+ Call Trace:
+  __iommu_dma_free+0x96/0x100
+  efx_nic_free_buffer+0x2b/0x40 [sfc]
+  efx_ef10_try_update_nic_stats_vf+0x14a/0x1c0 [sfc]
+  efx_ef10_update_stats_vf+0x18/0x40 [sfc]
+  efx_start_all+0x15e/0x1d0 [sfc]
+  efx_net_open+0x5a/0xe0 [sfc]
+  __dev_open+0xe7/0x1a0
+  __dev_change_flags+0x1d7/0x240
+  dev_change_flags+0x21/0x60
+  ...skip...
+
+Fixes: d778819609a2 ("sfc: DMA the VF stats only when requested")
+Reported-by: Ma Yuying <yuma@redhat.com>
+Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
 ---
-I question the log message claiming a bad ID (which is how I read its
-wording): rx->id isn't involved in determining ref. I don't see what
-else to usefully log, though, yet making the message just "Bad rx
-response" also doesn't look very useful.
+ drivers/net/ethernet/sfc/ef10.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/net/xen-netfront.c
-+++ b/drivers/net/xen-netfront.c
-@@ -1043,16 +1043,6 @@ static int xennet_get_responses(struct n
- 	}
+diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
+index 186cb28c03bd..8b62ce21aff3 100644
+--- a/drivers/net/ethernet/sfc/ef10.c
++++ b/drivers/net/ethernet/sfc/ef10.c
+@@ -1932,7 +1932,10 @@ static int efx_ef10_try_update_nic_stats_vf(struct efx_nic *efx)
  
- 	for (;;) {
--		if (unlikely(rx->status < 0 ||
--			     rx->offset + rx->status > XEN_PAGE_SIZE)) {
--			if (net_ratelimit())
--				dev_warn(dev, "rx->offset: %u, size: %d\n",
--					 rx->offset, rx->status);
--			xennet_move_rx_slot(queue, skb, ref);
--			err = -EINVAL;
--			goto next;
--		}
--
- 		/*
- 		 * This definitely indicates a bug, either in this driver or in
- 		 * the backend driver. In future this should flag the bad
-@@ -1065,6 +1055,16 @@ static int xennet_get_responses(struct n
- 			err = -EINVAL;
- 			goto next;
- 		}
-+
-+		if (unlikely(rx->status < 0 ||
-+			     rx->offset + rx->status > XEN_PAGE_SIZE)) {
-+			if (net_ratelimit())
-+				dev_warn(dev, "rx->offset: %u, size: %d\n",
-+					 rx->offset, rx->status);
-+			xennet_move_rx_slot(queue, skb, ref);
-+			err = -EINVAL;
-+			goto next;
-+		}
+ 	efx_update_sw_stats(efx, stats);
+ out:
++	/* releasing a DMA coherent buffer with BH disabled can panic */
++	spin_unlock_bh(&efx->stats_lock);
+ 	efx_nic_free_buffer(efx, &stats_buf);
++	spin_lock_bh(&efx->stats_lock);
+ 	return rc;
+ }
  
- 		if (!gnttab_end_foreign_access_ref(ref)) {
- 			dev_alert(dev,
+-- 
+2.34.1
 
