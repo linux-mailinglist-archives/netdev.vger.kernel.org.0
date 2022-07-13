@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F1EA57401C
-	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 01:40:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3833757401F
+	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 01:41:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231545AbiGMXkw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jul 2022 19:40:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50992 "EHLO
+        id S231510AbiGMXlA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jul 2022 19:41:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231503AbiGMXkt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 19:40:49 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC934528A5;
-        Wed, 13 Jul 2022 16:40:47 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id x18-20020a17090a8a9200b001ef83b332f5so6374924pjn.0;
-        Wed, 13 Jul 2022 16:40:47 -0700 (PDT)
+        with ESMTP id S231514AbiGMXku (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 19:40:50 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B8A352DD1;
+        Wed, 13 Jul 2022 16:40:49 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id y14-20020a17090a644e00b001ef775f7118so6319093pjm.2;
+        Wed, 13 Jul 2022 16:40:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=rvr6j7UaN5VGV3LHJmM0Oblok56ZT0nZGaQ8H5yP6gw=;
-        b=e6DKHKzpwAs/7f9mhdiQ870XsKSagrYyVl9qYpIxr4Ejw1SLMtatqeoiY+Sm2zVx9o
-         q72Qp2RDXrZpjax1LiaJfbKLAP679L+mL4HQmBb/xOigj2ctUP5jYwFxWrnlrbSU5duZ
-         jaFZgySMTFPZ9Jxo5B3vsOJsjRkg+Ld6rvrvVDINRqrZeJytXSRWzlSywEcv1Mw+PPv5
-         O/IGcNOFQ21PNCGMpoIzU+z6LfvdJONyiQXFT6/bmnR+Al25LcgAOd8YnI+EoZTtcjHC
-         hfnIqcdD7cAEDW/zQyqzCOsXi8f/SDqgRtcBLZLfaQJsZVFGVZXlTo8CdTj0a3hBBTCO
-         2v3w==
+        bh=XQu2Y0N0pC8ziwr02mU+W0MxcF97hu7nA9diSOBkYdE=;
+        b=Bklqb/zJQ710B6296z/RAdirpGZ2CBV2h/6i/n1cXbzE8ocQbhEwYQ9CO7YJzmMj/q
+         2HCcbXHbT90W784IBKCJQ9qThswSXM6/NWdDDo+0FvU//5eHlC1q1IY0f7MA/SZvX6pr
+         LuiBaE1Zfykn3y96IJ2eE+QZ7o1anycyLnaJH65O7aON5LnEYYlgab1R7aNgp6lOdmFR
+         q2vD7qlw5VbEEnHCMpaM7t3e/hvDhmawvUdYN8a7wSyXIHzZCUEcRi/VmWLb8j8137SC
+         4L9L5VSOp/GbpF5UqQl0A3Lsw4ZIaNurjgpKEnWZDeAeslaIeB0YbR8F/kFhNdG2TeOJ
+         Ol6A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=rvr6j7UaN5VGV3LHJmM0Oblok56ZT0nZGaQ8H5yP6gw=;
-        b=p2SPiYow8slK7lD/3T7cxfpuM7rQAb5Bf0flyJmdWZ+rTZcQVDD9k8tKd/biidTqJ6
-         MrScuDT7NJYZA8V64MFHTd02fR9PNczOAg005/RTn/yMD/GFC9XgO9Cf/REKLxZqIG9p
-         mlJAZuNH5aXJasG/GWUmpWP7FGTIxhqcFUTusze//PCWrkOQXTYmzKiXzM+/FBxUiZt2
-         KE1aIpdLuiZBW63tpI1PJ64JehJYvp6s4tniI0D3HJq6MKPynec5fOKlGu/RljQiil3+
-         aAwMsFOOee6BzN3tJjNlPDjPw/I9GKNBothxQrxNG4ePPA2avcVcJIOe/+mVvDpYTPbJ
-         OBtw==
-X-Gm-Message-State: AJIora/C1Zxm4yRjFgxGS8Q7mNgfKDb9fshabir59RDhyxFWI0/td3um
-        5Tz9kdEF4W/lVdN3XBuQLjVLelQ/7u0cO7NnWiY=
-X-Google-Smtp-Source: AGRyM1v+9qWneCOZM+owxR4yA8hvmWMHcmKy3dtpz/i21W/dCe+TP3H/Imvsfn8nTgNnW/0DaqUKlQ==
-X-Received: by 2002:a17:90b:4c48:b0:1ef:c839:c68c with SMTP id np8-20020a17090b4c4800b001efc839c68cmr6356141pjb.233.1657755647046;
-        Wed, 13 Jul 2022 16:40:47 -0700 (PDT)
+        bh=XQu2Y0N0pC8ziwr02mU+W0MxcF97hu7nA9diSOBkYdE=;
+        b=3HmO3Gp8Yx3VvPJf/gHn7b3gs9lqsRNjAJLVW3yzz3J94qVcPzLqXG+mnbh5Gg3nFM
+         7UhUyavg4pG+8g8pQdrxBiFcOSvX8BZBL9QB6igscDTrIiF093Luz+M4N1r1NwT1ovD7
+         noR9UBBWs4byDapuA7OmN/BbDAUY0maj9mgqexKqbRP4Cu6YA29Vm3EgMrawqyOMC4Ud
+         kMxDiR4B7NAgjmWkXc8Y2XitxtHgC5EiZLPh8SgnAdA9cHc5tRpq0QdkzizqUG5qaP4x
+         C8DZB0Om/+2ZA8RTlcCoBR/6Mu3U7X6I8SlQlNgVu6EC+qA2Nm21wAFMtOisS7sZ2P92
+         d7SQ==
+X-Gm-Message-State: AJIora/TwPlup702Q0+TcbaVFnf5IJ1GA1nFXF2awTmgvcABX2rj5Sk8
+        M/5qgtxkNdkJaGNH3Lqg5kY+1eZFknCIbll4e7k=
+X-Google-Smtp-Source: AGRyM1u4Ib0UPA2vfnfTlfN2cE4Nl0SMECfAPG2FdYsPADNNOjBl9pMzs8CG5SIPuwj3JeOADkQpvw==
+X-Received: by 2002:a17:90b:4f85:b0:1f0:95d:c02b with SMTP id qe5-20020a17090b4f8500b001f0095dc02bmr12580177pjb.89.1657755648132;
+        Wed, 13 Jul 2022 16:40:48 -0700 (PDT)
 Received: from localhost.localdomain ([64.141.80.140])
-        by smtp.gmail.com with ESMTPSA id 188-20020a6216c5000000b005286a4ca9c8sm87653pfw.211.2022.07.13.16.40.45
+        by smtp.gmail.com with ESMTPSA id 188-20020a6216c5000000b005286a4ca9c8sm87653pfw.211.2022.07.13.16.40.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Jul 2022 16:40:46 -0700 (PDT)
+        Wed, 13 Jul 2022 16:40:47 -0700 (PDT)
 From:   Jaehee Park <jhpark1013@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
@@ -54,9 +54,9 @@ Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
         pabeni@redhat.com, shuah@kernel.org, linux-kernel@vger.kernel.org,
         aajith@arista.com, roopa@nvidia.com, roopa.prabhu@gmail.com,
         aroulin@nvidia.com, sbrivio@redhat.com, jhpark1013@gmail.com
-Subject: [PATCH v3 net-next 2/3] net: ipv6: new accept_untracked_na option to accept na only if in-network
-Date:   Wed, 13 Jul 2022 16:40:48 -0700
-Message-Id: <56d57be31141c12e9034cfa7570f2012528ca884.1657755189.git.jhpark1013@gmail.com>
+Subject: [PATCH v3 net-next 3/3] selftests: net: arp_ndisc_untracked_subnets: test for arp_accept and accept_untracked_na
+Date:   Wed, 13 Jul 2022 16:40:49 -0700
+Message-Id: <3b39a02e86681948bc6424c40dd630e3b4640c91.1657755189.git.jhpark1013@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <cover.1657755188.git.jhpark1013@gmail.com>
 References: <cover.1657755188.git.jhpark1013@gmail.com>
@@ -72,142 +72,350 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds a third knob, '2', which extends the
-accept_untracked_na option to learn a neighbor only if the src ip is
-in the same subnet as an address configured on the interface that
-received the neighbor advertisement. This is similar to the arp_accept
-configuration for ipv4.
+ipv4 arp_accept has a new option '2' to create new neighbor entries
+only if the src ip is in the same subnet as an address configured on
+the interface that received the garp message. This selftest tests all
+options in arp_accept.
+
+ipv6 has a sysctl endpoint, accept_untracked_na, that defines the
+behavior for accepting untracked neighbor advertisements. A new option
+similar to that of arp_accept for learning only from the same subnet is
+added to accept_untracked_na. This selftest tests this new feature.
 
 Signed-off-by: Jaehee Park <jhpark1013@gmail.com>
 Suggested-by: Roopa Prabhu <roopa@nvidia.com>
 ---
- Documentation/networking/ip-sysctl.rst | 51 +++++++++++++++-----------
- net/ipv6/addrconf.c                    |  2 +-
- net/ipv6/ndisc.c                       | 29 ++++++++++++---
- 3 files changed, 55 insertions(+), 27 deletions(-)
+ tools/testing/selftests/net/Makefile          |   1 +
+ .../net/arp_ndisc_untracked_subnets.sh        | 308 ++++++++++++++++++
+ 2 files changed, 309 insertions(+)
+ create mode 100755 tools/testing/selftests/net/arp_ndisc_untracked_subnets.sh
 
-diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
-index 5c017fc1e24d..722ec4f491db 100644
---- a/Documentation/networking/ip-sysctl.rst
-+++ b/Documentation/networking/ip-sysctl.rst
-@@ -2483,27 +2483,36 @@ drop_unsolicited_na - BOOLEAN
- 
- 	By default this is turned off.
- 
--accept_untracked_na - BOOLEAN
--	Add a new neighbour cache entry in STALE state for routers on receiving a
--	neighbour advertisement (either solicited or unsolicited) with target
--	link-layer address option specified if no neighbour entry is already
--	present for the advertised IPv6 address. Without this knob, NAs received
--	for untracked addresses (absent in neighbour cache) are silently ignored.
--
--	This is as per router-side behaviour documented in RFC9131.
--
--	This has lower precedence than drop_unsolicited_na.
--
--	This will optimize the return path for the initial off-link communication
--	that is initiated by a directly connected host, by ensuring that
--	the first-hop router which turns on this setting doesn't have to
--	buffer the initial return packets to do neighbour-solicitation.
--	The prerequisite is that the host is configured to send
--	unsolicited neighbour advertisements on interface bringup.
--	This setting should be used in conjunction with the ndisc_notify setting
--	on the host to satisfy this prerequisite.
--
--	By default this is turned off.
-+accept_untracked_na - INTEGER
-+	Define behavior for accepting neighbor advertisements from devices that
-+	are absent in the neighbor cache:
+diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
+index ddad703ace34..9c2e9e303c37 100644
+--- a/tools/testing/selftests/net/Makefile
++++ b/tools/testing/selftests/net/Makefile
+@@ -38,6 +38,7 @@ TEST_PROGS += srv6_end_dt6_l3vpn_test.sh
+ TEST_PROGS += vrf_strict_mode_test.sh
+ TEST_PROGS += arp_ndisc_evict_nocarrier.sh
+ TEST_PROGS += ndisc_unsolicited_na_test.sh
++TEST_PROGS += arp_ndisc_untracked_subnets.sh
+ TEST_PROGS += stress_reuseport_listen.sh
+ TEST_PROGS_EXTENDED := in_netns.sh setup_loopback.sh setup_veth.sh
+ TEST_PROGS_EXTENDED += toeplitz_client.sh toeplitz.sh
+diff --git a/tools/testing/selftests/net/arp_ndisc_untracked_subnets.sh b/tools/testing/selftests/net/arp_ndisc_untracked_subnets.sh
+new file mode 100755
+index 000000000000..c899b446acb6
+--- /dev/null
++++ b/tools/testing/selftests/net/arp_ndisc_untracked_subnets.sh
+@@ -0,0 +1,308 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
++#
++# 2 namespaces: one host and one router. Use arping from the host to send a
++# garp to the router. Router accepts or ignores based on its arp_accept
++# or accept_untracked_na configuration.
 +
-+	- 0 - (default) Do not accept unsolicited and untracked neighbor
-+	  advertisements.
++TESTS="arp ndisc"
 +
-+	- 1 - Add a new neighbor cache entry in STALE state for routers on
-+	  receiving a neighbor advertisement (either solicited or unsolicited)
-+	  with target link-layer address option specified if no neighbor entry
-+	  is already present for the advertised IPv6 address. Without this knob,
-+	  NAs received for untracked addresses (absent in neighbor cache) are
-+	  silently ignored.
++ROUTER_NS="ns-router"
++ROUTER_NS_V6="ns-router-v6"
++ROUTER_INTF="veth-router"
++ROUTER_ADDR="10.0.10.1"
++ROUTER_ADDR_V6="2001:db8:abcd:0012::1"
 +
-+	  This is as per router-side behavior documented in RFC9131.
++HOST_NS="ns-host"
++HOST_NS_V6="ns-host-v6"
++HOST_INTF="veth-host"
++HOST_ADDR="10.0.10.2"
++HOST_ADDR_V6="2001:db8:abcd:0012::2"
 +
-+	  This has lower precedence than drop_unsolicited_na.
++SUBNET_WIDTH=24
++PREFIX_WIDTH_V6=64
 +
-+	  This will optimize the return path for the initial off-link
-+	  communication that is initiated by a directly connected host, by
-+	  ensuring that the first-hop router which turns on this setting doesn't
-+	  have to buffer the initial return packets to do neighbor-solicitation.
-+	  The prerequisite is that the host is configured to send unsolicited
-+	  neighbor advertisements on interface bringup. This setting should be
-+	  used in conjunction with the ndisc_notify setting on the host to
-+	  satisfy this prerequisite.
-+
-+	- 2 - Extend option (1) to add a new neighbor cache entry only if the
-+	  source IP address is in the same subnet as an address configured on
-+	  the interface that received the neighbor advertisement.
- 
- enhanced_dad - BOOLEAN
- 	Include a nonce option in the IPv6 neighbor solicitation messages used for
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index 88becb037eb6..6ed807b6c647 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -7042,7 +7042,7 @@ static const struct ctl_table addrconf_sysctl[] = {
- 		.data		= &ipv6_devconf.accept_untracked_na,
- 		.maxlen		= sizeof(int),
- 		.mode		= 0644,
--		.proc_handler	= proc_dointvec_minmax,
-+		.proc_handler	= proc_dointvec,
- 		.extra1		= (void *)SYSCTL_ZERO,
- 		.extra2		= (void *)SYSCTL_ONE,
- 	},
-diff --git a/net/ipv6/ndisc.c b/net/ipv6/ndisc.c
-index cd84cbdac0a2..98453693e400 100644
---- a/net/ipv6/ndisc.c
-+++ b/net/ipv6/ndisc.c
-@@ -967,6 +967,25 @@ static void ndisc_recv_ns(struct sk_buff *skb)
- 		in6_dev_put(idev);
- }
- 
-+static int accept_untracked_na(struct net_device *dev, struct in6_addr *saddr)
-+{
-+	struct inet6_dev *idev = __in6_dev_get(dev);
-+
-+	switch (idev->cnf.accept_untracked_na) {
-+	case 0: /* Don't accept untracked na (absent in neighbor cache) */
-+		return 0;
-+	case 1: /* Create new entries from na if currently untracked */
-+		return 1;
-+	case 2: /* Create new entries from untracked na only if saddr is in the
-+		 * same subnet as an address configured on the interface that
-+		 * received the na
-+		 */
-+		return !!ipv6_chk_prefix(saddr, dev);
-+	default:
-+		return 0;
-+	}
++cleanup() {
++	ip netns del ${HOST_NS}
++	ip netns del ${ROUTER_NS}
 +}
 +
- static void ndisc_recv_na(struct sk_buff *skb)
- {
- 	struct nd_msg *msg = (struct nd_msg *)skb_transport_header(skb);
-@@ -1061,11 +1080,11 @@ static void ndisc_recv_na(struct sk_buff *skb)
- 	 * Note that we don't do a (daddr == all-routers-mcast) check.
- 	 */
- 	new_state = msg->icmph.icmp6_solicited ? NUD_REACHABLE : NUD_STALE;
--	if (!neigh && lladdr &&
--	    idev && idev->cnf.forwarding &&
--	    idev->cnf.accept_untracked_na) {
--		neigh = neigh_create(&nd_tbl, &msg->target, dev);
--		new_state = NUD_STALE;
-+	if (!neigh && lladdr && idev && idev->cnf.forwarding) {
-+		if (accept_untracked_na(dev, saddr)) {
-+			neigh = neigh_create(&nd_tbl, &msg->target, dev);
-+			new_state = NUD_STALE;
-+		}
- 	}
- 
- 	if (neigh && !IS_ERR(neigh)) {
++cleanup_v6() {
++	ip netns del ${HOST_NS_V6}
++	ip netns del ${ROUTER_NS_V6}
++}
++
++setup() {
++	set -e
++	local arp_accept=$1
++
++	# Set up two namespaces
++	ip netns add ${ROUTER_NS}
++	ip netns add ${HOST_NS}
++
++	# Set up interfaces veth0 and veth1, which are pairs in separate
++	# namespaces. veth0 is veth-router, veth1 is veth-host.
++	# first, set up the inteface's link to the namespace
++	# then, set the interface "up"
++	ip netns exec ${ROUTER_NS} ip link add name ${ROUTER_INTF} \
++		type veth peer name ${HOST_INTF}
++
++	ip netns exec ${ROUTER_NS} ip link set dev ${ROUTER_INTF} up
++	ip netns exec ${ROUTER_NS} ip link set dev ${HOST_INTF} netns ${HOST_NS}
++
++	ip netns exec ${HOST_NS} ip link set dev ${HOST_INTF} up
++	ip netns exec ${ROUTER_NS} ip addr add ${ROUTER_ADDR}/${SUBNET_WIDTH} \
++		dev ${ROUTER_INTF}
++
++	ip netns exec ${HOST_NS} ip addr add ${HOST_ADDR}/${SUBNET_WIDTH} \
++		dev ${HOST_INTF}
++	ip netns exec ${HOST_NS} ip route add default via ${HOST_ADDR} \
++		dev ${HOST_INTF}
++	ip netns exec ${ROUTER_NS} ip route add default via ${ROUTER_ADDR} \
++		dev ${ROUTER_INTF}
++
++	ROUTER_CONF=net.ipv4.conf.${ROUTER_INTF}
++	ip netns exec ${ROUTER_NS} sysctl -w \
++		${ROUTER_CONF}.arp_accept=${arp_accept} >/dev/null 2>&1
++	set +e
++}
++
++setup_v6() {
++	set -e
++	local accept_untracked_na=$1
++
++	# Set up two namespaces
++	ip netns add ${ROUTER_NS_V6}
++	ip netns add ${HOST_NS_V6}
++
++	# Set up interfaces veth0 and veth1, which are pairs in separate
++	# namespaces. veth0 is veth-router, veth1 is veth-host.
++	# first, set up the inteface's link to the namespace
++	# then, set the interface "up"
++	ip -6 -netns ${ROUTER_NS_V6} link add name ${ROUTER_INTF} \
++		type veth peer name ${HOST_INTF}
++
++	ip -6 -netns ${ROUTER_NS_V6} link set dev ${ROUTER_INTF} up
++	ip -6 -netns ${ROUTER_NS_V6} link set dev ${HOST_INTF} netns \
++		${HOST_NS_V6}
++
++	ip -6 -netns ${HOST_NS_V6} link set dev ${HOST_INTF} up
++	ip -6 -netns ${ROUTER_NS_V6} addr add \
++		${ROUTER_ADDR_V6}/${PREFIX_WIDTH_V6} dev ${ROUTER_INTF} nodad
++
++	HOST_CONF=net.ipv6.conf.${HOST_INTF}
++	ip netns exec ${HOST_NS_V6} sysctl -qw ${HOST_CONF}.ndisc_notify=1
++	ip netns exec ${HOST_NS_V6} sysctl -qw ${HOST_CONF}.disable_ipv6=0
++	ip -6 -netns ${HOST_NS_V6} addr add ${HOST_ADDR_V6}/${PREFIX_WIDTH_V6} \
++		dev ${HOST_INTF}
++
++	ROUTER_CONF=net.ipv6.conf.${ROUTER_INTF}
++
++	ip netns exec ${ROUTER_NS_V6} sysctl -w \
++		${ROUTER_CONF}.forwarding=1 >/dev/null 2>&1
++	ip netns exec ${ROUTER_NS_V6} sysctl -w \
++		${ROUTER_CONF}.drop_unsolicited_na=0 >/dev/null 2>&1
++	ip netns exec ${ROUTER_NS_V6} sysctl -w \
++		${ROUTER_CONF}.accept_untracked_na=${accept_untracked_na} \
++		>/dev/null 2>&1
++	set +e
++}
++
++verify_arp() {
++	local arp_accept=$1
++	local same_subnet=$2
++
++	neigh_show_output=$(ip netns exec ${ROUTER_NS} ip neigh get \
++		${HOST_ADDR} dev ${ROUTER_INTF} 2>/dev/null)
++
++	if [ ${arp_accept} -eq 1 ]; then
++		# Neighbor entries expected
++		[[ ${neigh_show_output} ]]
++	elif [ ${arp_accept} -eq 2 ]; then
++		if [ ${same_subnet} -eq 1 ]; then
++			# Neighbor entries expected
++			[[ ${neigh_show_output} ]]
++		else
++			[[ -z "${neigh_show_output}" ]]
++		fi
++	else
++		[[ -z "${neigh_show_output}" ]]
++	fi
++ }
++
++arp_test_gratuitous() {
++	set -e
++	local arp_accept=$1
++	local same_subnet=$2
++
++	if [ ${arp_accept} -eq 2 ]; then
++		test_msg=("test_arp: "
++			  "accept_arp=$1 "
++			  "same_subnet=$2")
++		if [ ${same_subnet} -eq 0 ]; then
++			HOST_ADDR=10.0.11.3
++		else
++			HOST_ADDR=10.0.10.3
++		fi
++	else
++		test_msg=("test_arp: "
++			  "accept_arp=$1")
++	fi
++	# Supply arp_accept option to set up which sets it in sysctl
++	setup ${arp_accept}
++	ip netns exec ${HOST_NS} arping -A -U ${HOST_ADDR} -c1 2>&1 >/dev/null
++
++	if verify_arp $1 $2; then
++		printf "    TEST: %-60s  [ OK ]\n" "${test_msg[*]}"
++	else
++		printf "    TEST: %-60s  [FAIL]\n" "${test_msg[*]}"
++	fi
++	cleanup
++	set +e
++}
++
++arp_test_gratuitous_combinations() {
++	arp_test_gratuitous 0
++	arp_test_gratuitous 1
++	arp_test_gratuitous 2 0 # Second entry indicates subnet or not
++	arp_test_gratuitous 2 1
++}
++
++cleanup_tcpdump() {
++	set -e
++	[[ ! -z  ${tcpdump_stdout} ]] && rm -f ${tcpdump_stdout}
++	[[ ! -z  ${tcpdump_stderr} ]] && rm -f ${tcpdump_stderr}
++	tcpdump_stdout=
++	tcpdump_stderr=
++	set +e
++}
++
++start_tcpdump() {
++	set -e
++	tcpdump_stdout=`mktemp`
++	tcpdump_stderr=`mktemp`
++	ip netns exec ${ROUTER_NS_V6} timeout 15s \
++		tcpdump --immediate-mode -tpni ${ROUTER_INTF} -c 1 \
++		"icmp6 && icmp6[0] == 136 && src ${HOST_ADDR_V6}" \
++		> ${tcpdump_stdout} 2> /dev/null
++	set +e
++}
++
++verify_ndisc() {
++	local accept_untracked_na=$1
++	local same_subnet=$2
++
++	neigh_show_output=$(ip -6 -netns ${ROUTER_NS_V6} neigh show \
++		to ${HOST_ADDR_V6} dev ${ROUTER_INTF} nud stale)
++
++	if [ ${accept_untracked_na} -eq 1 ]; then
++		# Neighbour entry expected to be present
++		[[ ${neigh_show_output} ]]
++	elif [ ${accept_untracked_na} -eq 2 ]; then
++		if [ ${same_subnet} -eq 1 ]; then
++			[[ ${neigh_show_output} ]]
++		else
++			[[ -z "${neigh_show_output}" ]]
++		fi
++	else
++		# Neighbour entry expected to be absent for all other cases
++		[[ -z "${neigh_show_output}" ]]
++	fi
++}
++
++ndisc_test_untracked_advertisements() {
++	set -e
++	test_msg=("test_ndisc: "
++		  "accept_untracked_na=$1")
++
++	local accept_untracked_na=$1
++	local same_subnet=$2
++	if [ ${accept_untracked_na} -eq 2 ]; then
++		test_msg=("test_ndisc: "
++			  "accept_untracked_na=$1 "
++			  "same_subnet=$2")
++		if [ ${same_subnet} -eq 0 ]; then
++			# Not same subnet
++			HOST_ADDR_V6=2000:db8:abcd:0013::4
++		else
++			HOST_ADDR_V6=2001:db8:abcd:0012::3
++		fi
++	fi
++	setup_v6 $1 $2
++	start_tcpdump
++
++	if verify_ndisc $1 $2; then
++		printf "    TEST: %-60s  [ OK ]\n" "${test_msg[*]}"
++	else
++		printf "    TEST: %-60s  [FAIL]\n" "${test_msg[*]}"
++	fi
++
++	cleanup_tcpdump
++	cleanup_v6
++	set +e
++}
++
++ndisc_test_untracked_combinations() {
++	ndisc_test_untracked_advertisements 0
++	ndisc_test_untracked_advertisements 1
++	ndisc_test_untracked_advertisements 2 0
++	ndisc_test_untracked_advertisements 2 1
++}
++
++################################################################################
++# usage
++
++usage()
++{
++	cat <<EOF
++usage: ${0##*/} OPTS
++
++	-t <test>       Test(s) to run (default: all)
++			(options: $TESTS)
++EOF
++}
++
++################################################################################
++# main
++
++while getopts ":t:h" opt; do
++	case $opt in
++		t) TESTS=$OPTARG;;
++		h) usage; exit 0;;
++		*) usage; exit 1;;
++	esac
++done
++
++if [ "$(id -u)" -ne 0 ];then
++	echo "SKIP: Need root privileges"
++	exit $ksft_skip;
++fi
++
++if [ ! -x "$(command -v ip)" ]; then
++	echo "SKIP: Could not run test without ip tool"
++	exit $ksft_skip
++fi
++
++if [ ! -x "$(command -v tcpdump)" ]; then
++	echo "SKIP: Could not run test without tcpdump tool"
++	exit $ksft_skip
++fi
++
++if [ ! -x "$(command -v arping)" ]; then
++	echo "SKIP: Could not run test without arping tool"
++	exit $ksft_skip
++fi
++
++# start clean
++cleanup &> /dev/null
++cleanup_v6 &> /dev/null
++
++for t in $TESTS
++do
++	case $t in
++	arp_test_gratuitous_combinations|arp) arp_test_gratuitous_combinations;;
++	ndisc_test_untracked_combinations|ndisc) \
++		ndisc_test_untracked_combinations;;
++	help) echo "Test names: $TESTS"; exit 0;;
++esac
++done
 -- 
 2.30.2
 
