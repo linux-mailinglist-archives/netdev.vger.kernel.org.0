@@ -2,82 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B63B6573523
-	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 13:15:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 965F0573534
+	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 13:18:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236197AbiGMLPX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jul 2022 07:15:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38956 "EHLO
+        id S236196AbiGMLSd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jul 2022 07:18:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236192AbiGMLPM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 07:15:12 -0400
+        with ESMTP id S236060AbiGMLS3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 07:18:29 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 10D371014A1
-        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 04:14:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9180BF5116
+        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 04:18:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657710889;
+        s=mimecast20190719; t=1657711106;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=JTualzM4oL2vgENjqe1wfSZOmJQzk4aA4xXaa8p3Kw8=;
-        b=DVMhJ6bNITrKchWvmFOEl2vAsvDPkJgtrHgpyAfPRGN1UltaMeAvOuomJSpUPF8pCn4X7h
-        9pnGo5/wmGwlZQLqhUC15n50yyy0AWGF+pdwjxADQBI/kn5MWBuX1GhjQSR7TJf0Di/E5R
-        DZZnz8sypanvQ6Y/sNnRAFDyT992q4c=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=BDuTtgPYXERcYe6YSrw64YmlYChWKjHDpeR4it4TBh0=;
+        b=cfYIunHcx/lRCCUjPuBoQ1mDXnmTKFwRtT9S9lV+fUiAUfNr5N3d6XxyiR7wIFNN7vfYI1
+        RpDwcIu6kG95FjdOLkXUy2ftJxMKo0MQq4l+YjhO+yWuujxKONc3HIt22KLkXo/tzpDxy4
+        pAKmCJxANIzmY5qYwGeZA/3oC3PS8pE=
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
+ [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-513-iuVBm8WlPZug1oUhOWhI-g-1; Wed, 13 Jul 2022 07:14:48 -0400
-X-MC-Unique: iuVBm8WlPZug1oUhOWhI-g-1
-Received: by mail-ed1-f72.google.com with SMTP id t5-20020a056402524500b0043a923324b2so8239103edd.22
-        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 04:14:48 -0700 (PDT)
+ us-mta-639-cGCtARgkM3SO2IOeOwHF1g-1; Wed, 13 Jul 2022 07:18:25 -0400
+X-MC-Unique: cGCtARgkM3SO2IOeOwHF1g-1
+Received: by mail-ej1-f71.google.com with SMTP id nc23-20020a1709071c1700b0072b94109144so765856ejc.2
+        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 04:18:25 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=JTualzM4oL2vgENjqe1wfSZOmJQzk4aA4xXaa8p3Kw8=;
-        b=qwyt65WvHQGMzPyp/G/EROF+/DrnUEFJsFxvEAB1nlS+KitIR6Mx+8QE4FTS1ivev0
-         q1IYnEdzdBUhYfFHUdDbB9sRxedaApL+kJ/mjI6htkUUeBQWDtqIOTPZW/KLTWBe5rTy
-         f+0IEvVZcvK8mLGKFTBdiTG1+CsBPGbJhCKwJbfSEB/N2iu4Pw1xz7T3zkCD58lmencl
-         TGzmFKHZOJMEdbKjmmWBG/bqsoRAMyEHTNzwwuUlPs92cOBtBPxoosCp6YpaaUQvboJI
-         qsKv8DMxxSdZhrZq24IXEnQEn09nJoSHhDI+jsj2unTeq3U07nbUspqzE+jBGJOOy6zK
-         O7BA==
-X-Gm-Message-State: AJIora8oZ1mYUrF7+MzpibmsBD/olJ14gFf2clBmRfNVVSNgTopP14NC
-        iPlmTeZd4pgbVjeRHnyYoWAhPXJYSjDFVsix4KbMK8lsFa/8nxtMohtfMyQPGcI3H4cqSOV+alI
-        EWIVuOk/njTwyfiEu
-X-Received: by 2002:a05:6402:782:b0:43a:7387:39df with SMTP id d2-20020a056402078200b0043a738739dfmr4211345edy.251.1657710886100;
-        Wed, 13 Jul 2022 04:14:46 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1vXnNWI44L6kygD3dzfFuwC7JWimjzIW9xbUM6ULQgOQCzHJd4S0QCisMYM3N+I+KwcoXga2Q==
-X-Received: by 2002:a05:6402:782:b0:43a:7387:39df with SMTP id d2-20020a056402078200b0043a738739dfmr4211225edy.251.1657710885100;
-        Wed, 13 Jul 2022 04:14:45 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id fs13-20020a170907600d00b0072b2f95d5d1sm4938507ejc.170.2022.07.13.04.14.41
+        bh=BDuTtgPYXERcYe6YSrw64YmlYChWKjHDpeR4it4TBh0=;
+        b=OXqplW+rZubiiWcLlutHKe/CMJmPhEtpO4mIGgTsiOeDLct0Vnf2mbFWwfoqu7g2GM
+         kFtvcSR8mHd/8fkJKJfMerw93hVmvQEgjjxh2uQmevLy1TEpLNMnNONjVRAbx/j6vvlK
+         AREpk0q8A1iScBNziFC1kp09fQbv8QKqCGsnnQn69Pi8HwKqRmQuMOaVK2cyLHVmnV0Z
+         1zKDhsjEdbnWJanWLw0ZtSNdsL1zFFSIA9YPFhGva4VfHQTXuMbCk/O/QakpQp2eCZ3t
+         LZ5Xwav+9MVLdYRFiA3sgwwR2gETfIgPi3QGsMt5OxTrTp3HkGOFZLzd1CM5cY36J6d0
+         IbGg==
+X-Gm-Message-State: AJIora+Rcem/om8F2ao0CNpQec+FfU4xreovOFY5Dchwtjww2ncq/n/X
+        VZT0lm33azbaCFTGGAa7d800LnWTrfZoKSVoQZ8bsZpNwSteI6aQlVRMS7+liruQnEnoQ5tNNeG
+        lZN3x/lVxUTU+PtJy
+X-Received: by 2002:a17:907:7b92:b0:72b:67fb:8985 with SMTP id ne18-20020a1709077b9200b0072b67fb8985mr2760321ejc.569.1657711104138;
+        Wed, 13 Jul 2022 04:18:24 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1sXNO5rg/tDHkU+OLM52NxMejHM8BDcFzfxdTh7py1+Z9YBRZeZ/+C2bPXp9t6qVrBQAFx22g==
+X-Received: by 2002:a17:907:7b92:b0:72b:67fb:8985 with SMTP id ne18-20020a1709077b9200b0072b67fb8985mr2760280ejc.569.1657711103712;
+        Wed, 13 Jul 2022 04:18:23 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id b4-20020a17090630c400b006fe0abb00f0sm4839488ejb.209.2022.07.13.04.18.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Jul 2022 04:14:44 -0700 (PDT)
+        Wed, 13 Jul 2022 04:18:22 -0700 (PDT)
 Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id B1C0D4D991E; Wed, 13 Jul 2022 13:14:40 +0200 (CEST)
+        id 210254D9920; Wed, 13 Jul 2022 13:14:41 +0200 (CEST)
 From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org,
-        Freysteinn Alfredsson <freysteinn.alfredsson@kau.se>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
         Andrii Nakryiko <andrii@kernel.org>,
         Martin KaFai Lau <martin.lau@linux.dev>,
         Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
         KP Singh <kpsingh@kernel.org>,
         Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        Mykola Lysenko <mykolal@fb.com>, Shuah Khan <shuah@kernel.org>
-Subject: [RFC PATCH 16/17] selftests/bpf: Add test for XDP queueing through PIFO maps
-Date:   Wed, 13 Jul 2022 13:14:24 +0200
-Message-Id: <20220713111430.134810-17-toke@redhat.com>
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>
+Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org,
+        Freysteinn Alfredsson <freysteinn.alfredsson@kau.se>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+Subject: [RFC PATCH 17/17] samples/bpf: Add queueing support to xdp_fwd sample
+Date:   Wed, 13 Jul 2022 13:14:25 +0200
+Message-Id: <20220713111430.134810-18-toke@redhat.com>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220713111430.134810-1-toke@redhat.com>
 References: <20220713111430.134810-1-toke@redhat.com>
@@ -94,492 +93,443 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds selftests for both variants of the generic PIFO map type, and for
-the dequeue program type. The XDP test uses bpf_prog_run() to run an XDP
-program that puts packets into a PIFO map, and then adds tests that pull
-them back out again through bpf_prog_run() of a dequeue program, as well as
-by attaching a dequeue program to a veth device and scheduling transmission
-there.
+Add support for queueing packets before forwarding them to the xdp_fwd
+sample. This is meant to serve as an example (for the RFC series) of how
+one could add queueing to a forwarding application. It doesn't actually
+implement any fancy queueing algorithms, it just uses the queue maps to do
+simple FIFO queueing, instantiating one queue map per interface.
 
 Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
 ---
- .../selftests/bpf/prog_tests/pifo_map.c       | 125 ++++++++++++++
- .../bpf/prog_tests/xdp_pifo_test_run.c        | 154 ++++++++++++++++++
- tools/testing/selftests/bpf/progs/pifo_map.c  |  54 ++++++
- .../selftests/bpf/progs/test_xdp_pifo.c       | 110 +++++++++++++
- 4 files changed, 443 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/pifo_map.c
- create mode 100644 tools/testing/selftests/bpf/prog_tests/xdp_pifo_test_run.c
- create mode 100644 tools/testing/selftests/bpf/progs/pifo_map.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_pifo.c
+ samples/bpf/xdp_fwd_kern.c |  65 +++++++++++-
+ samples/bpf/xdp_fwd_user.c | 200 +++++++++++++++++++++++++++----------
+ 2 files changed, 205 insertions(+), 60 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/pifo_map.c b/tools/testing/selftests/bpf/prog_tests/pifo_map.c
-new file mode 100644
-index 000000000000..ae23bcc0683f
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/pifo_map.c
-@@ -0,0 +1,125 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <test_progs.h>
-+#include "pifo_map.skel.h"
-+
-+static int run_prog(int prog_fd, __u32 exp_retval)
-+{
-+	struct xdp_md ctx_in = {};
-+	char data[10] = {};
-+	DECLARE_LIBBPF_OPTS(bpf_test_run_opts, opts,
-+			    .data_in = data,
-+			    .data_size_in = sizeof(data),
-+			    .ctx_in = &ctx_in,
-+			    .ctx_size_in = sizeof(ctx_in),
-+			    .repeat = 1,
-+		);
-+	int err;
-+
-+	ctx_in.data_end = sizeof(data);
-+	err = bpf_prog_test_run_opts(prog_fd, &opts);
-+	if (!ASSERT_OK(err, "bpf_prog_test_run(valid)"))
-+		return -1;
-+	if (!ASSERT_EQ(opts.retval, exp_retval, "prog retval"))
-+		return -1;
-+
-+	return 0;
-+}
-+
-+static void check_map_counts(int map_fd, int start, int interval, int num, int exp_val)
-+{
-+	__u32 val, key, next_key, *kptr = NULL;
-+	int i, err;
-+
-+	for (i = 0; i < num; i++) {
-+		err = bpf_map_get_next_key(map_fd, kptr, &next_key);
-+		if (!ASSERT_OK(err, "bpf_map_get_next_key()"))
-+			return;
-+
-+		key = next_key;
-+		kptr = &key;
-+
-+		if (!ASSERT_EQ(key, start + i * interval, "expected key"))
-+			break;
-+		err = bpf_map_lookup_elem(map_fd, &key, &val);
-+		if (!ASSERT_OK(err, "bpf_map_lookup_elem()"))
-+			break;
-+		if (!ASSERT_EQ(val, exp_val, "map value"))
-+			break;
-+	}
-+}
-+
-+static void run_enqueue_fail(struct pifo_map *skel, int start, int interval, __u32 exp_retval)
-+{
-+	int enqueue_fd;
-+
-+	skel->bss->start = start;
-+	skel->data->interval = interval;
-+
-+	enqueue_fd = bpf_program__fd(skel->progs.pifo_enqueue);
-+
-+	if (run_prog(enqueue_fd, exp_retval))
-+		return;
-+}
-+
-+static void run_test(struct pifo_map *skel, int start, int interval)
-+{
-+	int enqueue_fd, dequeue_fd;
-+
-+	skel->bss->start = start;
-+	skel->data->interval = interval;
-+
-+	enqueue_fd = bpf_program__fd(skel->progs.pifo_enqueue);
-+	dequeue_fd = bpf_program__fd(skel->progs.pifo_dequeue);
-+
-+	if (run_prog(enqueue_fd, 0))
-+		return;
-+	check_map_counts(bpf_map__fd(skel->maps.pifo_map),
-+			 skel->bss->start, skel->data->interval,
-+			 skel->rodata->num_entries, 1);
-+	run_prog(dequeue_fd, 0);
-+}
-+
-+void test_pifo_map(void)
-+{
-+	struct pifo_map *skel = NULL;
-+	int err;
-+
-+	skel = pifo_map__open_and_load();
-+	if (!ASSERT_OK_PTR(skel, "skel"))
-+		return;
-+
-+	run_test(skel, 0, 1);
-+	run_test(skel, 0, 10);
-+	run_test(skel, 0, 100);
-+
-+	/* do a series of runs that keep advancing the priority, to check that
-+	 * we can keep rorating the two internal maps
-+	 */
-+	run_test(skel, 0, 125);
-+	run_test(skel, 1250, 1);
-+	run_test(skel, 1250, 125);
-+
-+	/* after rotating, starting enqueue at prio 0 will now fail */
-+	run_enqueue_fail(skel, 0, 1, -ERANGE);
-+
-+	run_test(skel, 2500, 125);
-+	run_test(skel, 3750, 125);
-+	run_test(skel, 5000, 125);
-+
-+	pifo_map__destroy(skel);
-+
-+	/* reopen but change rodata */
-+	skel = pifo_map__open();
-+	if (!ASSERT_OK_PTR(skel, "open skel"))
-+		return;
-+
-+	skel->rodata->num_entries = 12;
-+	err = pifo_map__load(skel);
-+	if (!ASSERT_OK(err, "load skel"))
-+		goto out;
-+
-+	/* fails because the map is too small */
-+	run_enqueue_fail(skel, 0, 1, -EOVERFLOW);
-+out:
-+	pifo_map__destroy(skel);
-+}
-diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_pifo_test_run.c b/tools/testing/selftests/bpf/prog_tests/xdp_pifo_test_run.c
-new file mode 100644
-index 000000000000..bac029731eee
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/xdp_pifo_test_run.c
-@@ -0,0 +1,154 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <test_progs.h>
-+#include <network_helpers.h>
-+#include <net/if.h>
-+#include <linux/if_link.h>
-+
-+#include "test_xdp_pifo.skel.h"
-+
-+#define SYS(fmt, ...)						\
-+	({							\
-+		char cmd[1024];					\
-+		snprintf(cmd, sizeof(cmd), fmt, ##__VA_ARGS__);	\
-+		if (!ASSERT_OK(system(cmd), cmd))		\
-+			goto out;				\
-+	})
-+
-+static void run_xdp_prog(int prog_fd, void *data, size_t data_size, int repeat)
-+{
-+	struct xdp_md ctx_in = {};
-+	DECLARE_LIBBPF_OPTS(bpf_test_run_opts, opts,
-+			    .data_in = data,
-+			    .data_size_in = data_size,
-+			    .ctx_in = &ctx_in,
-+			    .ctx_size_in = sizeof(ctx_in),
-+			    .repeat = repeat,
-+			    .flags = BPF_F_TEST_XDP_LIVE_FRAMES,
-+		);
-+	int err;
-+
-+	ctx_in.data_end = ctx_in.data + sizeof(pkt_v4);
-+	err = bpf_prog_test_run_opts(prog_fd, &opts);
-+	ASSERT_OK(err, "bpf_prog_test_run(valid)");
-+}
-+
-+static void run_dequeue_prog(int prog_fd, int exp_proto)
-+{
-+	struct ipv4_packet data_out;
-+	DECLARE_LIBBPF_OPTS(bpf_test_run_opts, opts,
-+			    .data_out = &data_out,
-+			    .data_size_out = sizeof(data_out),
-+			    .repeat = 1,
-+		);
-+	int err;
-+
-+	err = bpf_prog_test_run_opts(prog_fd, &opts);
-+	ASSERT_OK(err, "bpf_prog_test_run(valid)");
-+	ASSERT_EQ(opts.retval, exp_proto == -1 ? 0 : 1, "valid-retval");
-+	if (exp_proto >= 0) {
-+		ASSERT_EQ(opts.data_size_out, sizeof(pkt_v4), "valid-datasize");
-+		ASSERT_EQ(data_out.eth.h_proto, exp_proto, "valid-pkt");
-+	} else {
-+		ASSERT_EQ(opts.data_size_out, 0, "no-pkt-returned");
-+	}
-+}
-+
-+void test_xdp_pifo(void)
-+{
-+	int xdp_prog_fd, dequeue_prog_fd, i;
-+	struct test_xdp_pifo *skel = NULL;
-+	struct ipv4_packet data;
-+
-+	skel = test_xdp_pifo__open_and_load();
-+	if (!ASSERT_OK_PTR(skel, "skel"))
-+		return;
-+
-+	xdp_prog_fd = bpf_program__fd(skel->progs.xdp_pifo);
-+	dequeue_prog_fd = bpf_program__fd(skel->progs.dequeue_pifo);
-+	data = pkt_v4;
-+
-+	run_xdp_prog(xdp_prog_fd, &data, sizeof(data), 3);
-+
-+	/* kernel program queues packets with prio 2, 1, 0 (in that order), we
-+	 * should get back 0 and 1, and 2 should get dropped on dequeue
-+	 */
-+	run_dequeue_prog(dequeue_prog_fd, 0);
-+	run_dequeue_prog(dequeue_prog_fd, 1);
-+	run_dequeue_prog(dequeue_prog_fd, -1);
-+
-+	xdp_prog_fd = bpf_program__fd(skel->progs.xdp_pifo_inc);
-+	run_xdp_prog(xdp_prog_fd, &data, sizeof(data), 1024);
-+
-+	skel->bss->pkt_count = 0;
-+	skel->data->prio = 0;
-+	skel->data->drop_above = 1024;
-+	for (i = 0; i < 1024; i++)
-+		run_dequeue_prog(dequeue_prog_fd, i*10);
-+
-+	test_xdp_pifo__destroy(skel);
-+}
-+
-+void test_xdp_pifo_live(void)
-+{
-+	struct test_xdp_pifo *skel = NULL;
-+	int err, ifindex_src, ifindex_dst;
-+	int xdp_prog_fd, dequeue_prog_fd;
-+	struct nstoken *nstoken = NULL;
-+	struct ipv4_packet data;
-+	struct bpf_link *link;
-+	__u32 xdp_flags = XDP_FLAGS_DEQUEUE_MODE;
-+	LIBBPF_OPTS(bpf_xdp_attach_opts, opts,
-+		    .old_prog_fd = -1);
-+
-+	skel = test_xdp_pifo__open();
-+	if (!ASSERT_OK_PTR(skel, "skel"))
-+		return;
-+
-+	SYS("ip netns add testns");
-+	nstoken = open_netns("testns");
-+	if (!ASSERT_OK_PTR(nstoken, "setns"))
-+		goto out;
-+
-+	SYS("ip link add veth_src type veth peer name veth_dst");
-+	SYS("ip link set dev veth_src up");
-+	SYS("ip link set dev veth_dst up");
-+
-+	ifindex_src = if_nametoindex("veth_src");
-+	ifindex_dst = if_nametoindex("veth_dst");
-+	if (!ASSERT_NEQ(ifindex_src, 0, "ifindex_src") ||
-+	    !ASSERT_NEQ(ifindex_dst, 0, "ifindex_dst"))
-+		goto out;
-+
-+	skel->bss->tgt_ifindex = ifindex_src;
-+	skel->data->drop_above = 3;
-+
-+	err = test_xdp_pifo__load(skel);
-+	ASSERT_OK(err, "load skel");
-+
-+	link = bpf_program__attach_xdp(skel->progs.xdp_check_pkt, ifindex_dst);
-+	if (!ASSERT_OK_PTR(link, "prog_attach"))
-+		goto out;
-+	skel->links.xdp_check_pkt = link;
-+
-+	xdp_prog_fd = bpf_program__fd(skel->progs.xdp_pifo);
-+	dequeue_prog_fd = bpf_program__fd(skel->progs.dequeue_pifo);
-+	data = pkt_v4;
-+
-+	err = bpf_xdp_attach(ifindex_src, dequeue_prog_fd, xdp_flags, &opts);
-+	if (!ASSERT_OK(err, "attach-dequeue"))
-+		goto out;
-+
-+	run_xdp_prog(xdp_prog_fd, &data, sizeof(data), 3);
-+
-+	/* wait for the packets to be flushed */
-+	kern_sync_rcu();
-+
-+	ASSERT_EQ(skel->bss->seen_good_pkts, 3, "live packets OK");
-+
-+	opts.old_prog_fd = dequeue_prog_fd;
-+	err = bpf_xdp_attach(ifindex_src, -1, xdp_flags, &opts);
-+	ASSERT_OK(err, "dequeue-detach");
-+
-+out:
-+	test_xdp_pifo__destroy(skel);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/pifo_map.c b/tools/testing/selftests/bpf/progs/pifo_map.c
-new file mode 100644
-index 000000000000..b27bc2d0de03
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/pifo_map.c
-@@ -0,0 +1,54 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <linux/bpf.h>
-+#include <linux/if_ether.h>
-+#include <bpf/bpf_helpers.h>
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_PIFO_GENERIC);
-+	__uint(key_size, sizeof(__u32));
-+	__uint(value_size, sizeof(__u32));
-+	__uint(max_entries, 10);
-+	__uint(map_extra, 1024); /* range */
-+} pifo_map SEC(".maps");
-+
-+const volatile int num_entries = 10;
-+volatile int interval = 10;
-+volatile int start = 0;
-+
-+SEC("xdp")
-+int pifo_dequeue(struct xdp_md *xdp)
-+{
-+	__u32 val, exp;
-+	int i, ret;
-+
-+	for (i = 0; i < num_entries; i++) {
-+		exp = start + i * interval;
-+		ret = bpf_map_pop_elem(&pifo_map, &val);
-+		if (ret)
-+			return ret;
-+		if (val != exp)
-+			return 1;
-+	}
-+
-+	return 0;
-+}
-+
-+SEC("xdp")
-+int pifo_enqueue(struct xdp_md *xdp)
-+{
-+	__u64 flags;
-+	__u32 val;
-+	int i, ret;
-+
-+	for (i = num_entries - 1; i >= 0; i--) {
-+		val = start + i * interval;
-+		flags = val;
-+		ret = bpf_map_push_elem(&pifo_map, &val, flags);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+char _license[] SEC("license") = "GPL";
-diff --git a/tools/testing/selftests/bpf/progs/test_xdp_pifo.c b/tools/testing/selftests/bpf/progs/test_xdp_pifo.c
-new file mode 100644
-index 000000000000..702611e0cd1a
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_xdp_pifo.c
-@@ -0,0 +1,110 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <linux/bpf.h>
-+#include <linux/if_ether.h>
-+#include <bpf/bpf_helpers.h>
-+
-+struct {
+diff --git a/samples/bpf/xdp_fwd_kern.c b/samples/bpf/xdp_fwd_kern.c
+index 54c099cbd639..125adb02c658 100644
+--- a/samples/bpf/xdp_fwd_kern.c
++++ b/samples/bpf/xdp_fwd_kern.c
+@@ -23,6 +23,14 @@
+ 
+ #define IPV6_FLOWINFO_MASK              cpu_to_be32(0x0FFFFFFF)
+ 
++struct pifo_map {
 +	__uint(type, BPF_MAP_TYPE_PIFO_XDP);
 +	__uint(key_size, sizeof(__u32));
 +	__uint(value_size, sizeof(__u32));
 +	__uint(max_entries, 1024);
 +	__uint(map_extra, 8192); /* range */
-+} pifo_map SEC(".maps");
++} pmap SEC(".maps");
 +
-+__u16 prio = 3;
-+int tgt_ifindex = 0;
+ struct {
+ 	__uint(type, BPF_MAP_TYPE_DEVMAP);
+ 	__uint(key_size, sizeof(int));
+@@ -30,6 +38,13 @@ struct {
+ 	__uint(max_entries, 64);
+ } xdp_tx_ports SEC(".maps");
+ 
++struct {
++	__uint(type, BPF_MAP_TYPE_ARRAY_OF_MAPS);
++	__uint(key_size, sizeof(__u32));
++	__uint(max_entries, 64);
++	__array(values, struct pifo_map);
++} pifo_maps SEC(".maps");
 +
+ /* from include/net/ip.h */
+ static __always_inline int ip_decrease_ttl(struct iphdr *iph)
+ {
+@@ -40,7 +55,7 @@ static __always_inline int ip_decrease_ttl(struct iphdr *iph)
+ 	return --iph->ttl;
+ }
+ 
+-static __always_inline int xdp_fwd_flags(struct xdp_md *ctx, u32 flags)
++static __always_inline int xdp_fwd_flags(struct xdp_md *ctx, u32 flags, bool queue)
+ {
+ 	void *data_end = (void *)(long)ctx->data_end;
+ 	void *data = (void *)(long)ctx->data;
+@@ -137,22 +152,62 @@ static __always_inline int xdp_fwd_flags(struct xdp_md *ctx, u32 flags)
+ 
+ 		memcpy(eth->h_dest, fib_params.dmac, ETH_ALEN);
+ 		memcpy(eth->h_source, fib_params.smac, ETH_ALEN);
++
++		if (queue) {
++			void *ptr;
++			int ret;
++
++			ptr = bpf_map_lookup_elem(&pifo_maps, &fib_params.ifindex);
++			if (!ptr)
++				return XDP_DROP;
++
++			ret = bpf_redirect_map(ptr, 0, 0);
++			if (ret == XDP_REDIRECT)
++				bpf_schedule_iface_dequeue(ctx, fib_params.ifindex, 0);
++			return ret;
++		}
++
+ 		return bpf_redirect_map(&xdp_tx_ports, fib_params.ifindex, 0);
+ 	}
+ 
+ 	return XDP_PASS;
+ }
+ 
+-SEC("xdp_fwd")
 +SEC("xdp")
-+int xdp_pifo(struct xdp_md *xdp)
-+{
-+	void *data = (void *)(long)xdp->data;
-+	void *data_end = (void *)(long)xdp->data_end;
-+	struct ethhdr *eth = data;
-+	int ret;
-+
-+	if (eth + 1 > data_end)
-+		return XDP_DROP;
-+
-+	/* We write the priority into the ethernet proto field so userspace can
-+	 * pick it back out and confirm that it's correct
-+	 */
-+	eth->h_proto = --prio;
-+	ret = bpf_redirect_map(&pifo_map, prio, 0);
-+	if (tgt_ifindex && ret == XDP_REDIRECT)
-+		bpf_schedule_iface_dequeue(xdp, tgt_ifindex, 0);
-+	return ret;
+ int xdp_fwd_prog(struct xdp_md *ctx)
+ {
+-	return xdp_fwd_flags(ctx, 0);
++	return xdp_fwd_flags(ctx, 0, false);
+ }
+ 
+-SEC("xdp_fwd_direct")
++SEC("xdp")
+ int xdp_fwd_direct_prog(struct xdp_md *ctx)
+ {
+-	return xdp_fwd_flags(ctx, BPF_FIB_LOOKUP_DIRECT);
++	return xdp_fwd_flags(ctx, BPF_FIB_LOOKUP_DIRECT, false);
 +}
 +
-+__u16 check_prio = 0;
-+__u16 seen_good_pkts = 0;
-+
 +SEC("xdp")
-+int xdp_check_pkt(struct xdp_md *xdp)
++int xdp_fwd_queue(struct xdp_md *ctx)
 +{
-+	void *data = (void *)(long)xdp->data;
-+	void *data_end = (void *)(long)xdp->data_end;
-+	struct ethhdr *eth = data;
-+
-+	if (eth + 1 > data_end)
-+		return XDP_DROP;
-+
-+	if (eth->h_proto == check_prio) {
-+		check_prio++;
-+		seen_good_pkts++;
-+		return XDP_DROP;
-+	}
-+
-+	return XDP_PASS;
++	return xdp_fwd_flags(ctx, 0, true);
 +}
-+
-+SEC("xdp")
-+int xdp_pifo_inc(struct xdp_md *xdp)
-+{
-+	void *data = (void *)(long)xdp->data;
-+	void *data_end = (void *)(long)xdp->data_end;
-+	struct ethhdr *eth = data;
-+	int ret;
-+
-+	if (eth + 1 > data_end)
-+		return XDP_DROP;
-+
-+	/* We write the priority into the ethernet proto field so userspace can
-+	 * pick it back out and confirm that it's correct
-+	 */
-+	eth->h_proto = prio;
-+	ret = bpf_redirect_map(&pifo_map, prio, 0);
-+	prio += 10;
-+	return ret;
-+}
-+
-+__u16 pkt_count = 0;
-+__u16 drop_above = 2;
 +
 +SEC("dequeue")
-+void *dequeue_pifo(struct dequeue_ctx *ctx)
++void *xdp_dequeue(struct dequeue_ctx *ctx)
 +{
-+	__u64 prio = 0, pkt_prio = 0;
-+	void *data, *data_end;
++	__u32 ifindex = ctx->egress_ifindex;
 +	struct xdp_md *pkt;
-+	struct ethhdr *eth;
++	__u64 prio = 0;
++	void *pifo_ptr;
 +
-+	pkt = (void *)bpf_packet_dequeue(ctx, &pifo_map, 0, &prio);
++	pifo_ptr = bpf_map_lookup_elem(&pifo_maps, &ifindex);
++	if (!pifo_ptr)
++		return NULL;
++
++	pkt = (void *)bpf_packet_dequeue(ctx, pifo_ptr, 0, &prio);
 +	if (!pkt)
 +		return NULL;
 +
-+	data = (void *)(long)pkt->data;
-+	data_end = (void *)(long)pkt->data_end;
-+	eth = data;
++	return pkt;
+ }
+ 
+ char _license[] SEC("license") = "GPL";
+diff --git a/samples/bpf/xdp_fwd_user.c b/samples/bpf/xdp_fwd_user.c
+index 84f57f1209ce..ec3f29d0babe 100644
+--- a/samples/bpf/xdp_fwd_user.c
++++ b/samples/bpf/xdp_fwd_user.c
+@@ -11,6 +11,7 @@
+  * General Public License for more details.
+  */
+ 
++#include "linux/if_link.h"
+ #include <linux/bpf.h>
+ #include <linux/if_link.h>
+ #include <linux/limits.h>
+@@ -29,66 +30,122 @@
+ 
+ static __u32 xdp_flags = XDP_FLAGS_UPDATE_IF_NOEXIST;
+ 
+-static int do_attach(int idx, int prog_fd, int map_fd, const char *name)
++#define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
 +
-+	if (eth + 1 <= data_end)
-+		pkt_prio = eth->h_proto;
++const char *redir_prog_names[] = {
++	"xdp_fwd_prog",
++	"xdp_fwd_direct_", /* name truncated to BPF_OBJ_NAME_LEN */
++	"xdp_fwd_queue",
++};
 +
-+	if (pkt_prio != prio || ++pkt_count > drop_above) {
-+		bpf_packet_drop(ctx, pkt);
-+		return NULL;
++const char *dequeue_prog_names[] = {
++	"xdp_dequeue"
++};
++
++static int do_attach(int idx, int redir_prog_fd, int dequeue_prog_fd,
++		     int redir_map_fd, int pifos_map_fd, const char *name)
+ {
+ 	int err;
+ 
+-	err = bpf_xdp_attach(idx, prog_fd, xdp_flags, NULL);
++	if (pifos_map_fd > -1) {
++		LIBBPF_OPTS(bpf_map_create_opts, map_opts, .map_extra = 8192);
++		char map_name[BPF_OBJ_NAME_LEN];
++		int pifo_fd;
++
++		snprintf(map_name, sizeof(map_name), "pifo_%d", idx);
++		map_name[BPF_OBJ_NAME_LEN - 1] = '\0';
++
++		pifo_fd = bpf_map_create(BPF_MAP_TYPE_PIFO_XDP, map_name,
++					 sizeof(__u32), sizeof(__u32), 10240, &map_opts);
++		if (pifo_fd < 0) {
++			err = -errno;
++			printf("ERROR: Couldn't create PIFO map: %s\n", strerror(-err));
++			return err;
++		}
++
++		err = bpf_map_update_elem(pifos_map_fd, &idx, &pifo_fd, 0);
++		if (err)
++			printf("ERROR: failed adding PIFO map for device %s\n", name);
 +	}
 +
-+	return pkt;
++	if (dequeue_prog_fd > -1) {
++		LIBBPF_OPTS(bpf_xdp_attach_opts, prog_opts, .old_prog_fd = -1);
++
++		err = bpf_xdp_attach(idx, dequeue_prog_fd,
++				     (XDP_FLAGS_DEQUEUE_MODE | XDP_FLAGS_REPLACE),
++				     &prog_opts);
++		if (err < 0) {
++			printf("ERROR: failed to attach dequeue program to %s\n", name);
++			return err;
++		}
++	}
++
++	err = bpf_xdp_attach(idx, redir_prog_fd, xdp_flags, NULL);
+ 	if (err < 0) {
+-		printf("ERROR: failed to attach program to %s\n", name);
++		printf("ERROR: failed to attach redir program to %s\n", name);
+ 		return err;
+ 	}
+ 
+ 	/* Adding ifindex as a possible egress TX port */
+-	err = bpf_map_update_elem(map_fd, &idx, &idx, 0);
++	err = bpf_map_update_elem(redir_map_fd, &idx, &idx, 0);
+ 	if (err)
+ 		printf("ERROR: failed using device %s as TX-port\n", name);
+ 
+ 	return err;
+ }
+ 
++static bool should_detach(__u32 prog_fd, const char **prog_names, int num_prog_names)
++{
++	struct bpf_prog_info prog_info = {};
++	__u32 info_len = sizeof(prog_info);
++	int err, i;
++
++	err = bpf_obj_get_info_by_fd(prog_fd, &prog_info, &info_len);
++	if (err) {
++		printf("ERROR: bpf_obj_get_info_by_fd failed (%s)\n",
++		       strerror(errno));
++		return false;
++	}
++
++	for (i = 0; i < num_prog_names; i++)
++		if (!strcmp(prog_info.name, prog_names[i]))
++			return true;
++
++	return false;
 +}
 +
-+char _license[] SEC("license") = "GPL";
+ static int do_detach(int ifindex, const char *ifname, const char *app_name)
+ {
+ 	LIBBPF_OPTS(bpf_xdp_attach_opts, opts);
+-	struct bpf_prog_info prog_info = {};
+-	char prog_name[BPF_OBJ_NAME_LEN];
+-	__u32 info_len, curr_prog_id;
+-	int prog_fd;
+-	int err = 1;
++	LIBBPF_OPTS(bpf_xdp_query_opts, query_opts);
++	int prog_fd, err = 1;
++	__u32 curr_prog_id;
+ 
+-	if (bpf_xdp_query_id(ifindex, xdp_flags, &curr_prog_id)) {
++	if (bpf_xdp_query(ifindex, xdp_flags, &query_opts)) {
+ 		printf("ERROR: bpf_xdp_query_id failed (%s)\n",
+ 		       strerror(errno));
+ 		return err;
+ 	}
+ 
++	curr_prog_id = (xdp_flags & XDP_FLAGS_SKB_MODE) ? query_opts.skb_prog_id
++								: query_opts.drv_prog_id;
+ 	if (!curr_prog_id) {
+ 		printf("ERROR: flags(0x%x) xdp prog is not attached to %s\n",
+ 		       xdp_flags, ifname);
+ 		return err;
+ 	}
+ 
+-	info_len = sizeof(prog_info);
+ 	prog_fd = bpf_prog_get_fd_by_id(curr_prog_id);
+ 	if (prog_fd < 0) {
+ 		printf("ERROR: bpf_prog_get_fd_by_id failed (%s)\n",
+ 		       strerror(errno));
+-		return prog_fd;
+-	}
+-
+-	err = bpf_obj_get_info_by_fd(prog_fd, &prog_info, &info_len);
+-	if (err) {
+-		printf("ERROR: bpf_obj_get_info_by_fd failed (%s)\n",
+-		       strerror(errno));
+-		goto close_out;
++		return err;
+ 	}
+-	snprintf(prog_name, sizeof(prog_name), "%s_prog", app_name);
+-	prog_name[BPF_OBJ_NAME_LEN - 1] = '\0';
+ 
+-	if (strcmp(prog_info.name, prog_name)) {
++	if (!should_detach(prog_fd, redir_prog_names, ARRAY_SIZE(redir_prog_names))) {
+ 		printf("ERROR: %s isn't attached to %s\n", app_name, ifname);
+-		err = 1;
+-		goto close_out;
++		close(prog_fd);
++		return 1;
+ 	}
+ 
+ 	opts.old_prog_fd = prog_fd;
+@@ -96,11 +153,34 @@ static int do_detach(int ifindex, const char *ifname, const char *app_name)
+ 	if (err < 0)
+ 		printf("ERROR: failed to detach program from %s (%s)\n",
+ 		       ifname, strerror(errno));
+-	/* TODO: Remember to cleanup map, when adding use of shared map
++
++	close(prog_fd);
++
++	if (query_opts.dequeue_prog_id) {
++		prog_fd = bpf_prog_get_fd_by_id(query_opts.dequeue_prog_id);
++		if (prog_fd < 0) {
++			printf("ERROR: bpf_prog_get_fd_by_id failed (%s)\n",
++			       strerror(errno));
++			return err;
++		}
++
++		if (!should_detach(prog_fd, dequeue_prog_names, ARRAY_SIZE(dequeue_prog_names))) {
++			close(prog_fd);
++			return err;
++		}
++
++		opts.old_prog_fd = prog_fd;
++		err = bpf_xdp_detach(ifindex,
++				     (XDP_FLAGS_DEQUEUE_MODE | XDP_FLAGS_REPLACE),
++				     &opts);
++		if (err < 0)
++			printf("ERROR: failed to detach dequeue program from %s (%s)\n",
++			       ifname, strerror(errno));
++	}
++
++	/* todo: Remember to cleanup map, when adding use of shared map
+ 	 *  bpf_map_delete_elem((map_fd, &idx);
+ 	 */
+-close_out:
+-	close(prog_fd);
+ 	return err;
+ }
+ 
+@@ -112,24 +192,23 @@ static void usage(const char *prog)
+ 		"    -d    detach program\n"
+ 		"    -S    use skb-mode\n"
+ 		"    -F    force loading prog\n"
+-		"    -D    direct table lookups (skip fib rules)\n",
++		"    -D    direct table lookups (skip fib rules)\n"
++		"    -Q    direct table lookups (skip fib rules)\n",
+ 		prog);
+ }
+ 
+ int main(int argc, char **argv)
+ {
+-	const char *prog_name = "xdp_fwd";
+-	struct bpf_program *prog = NULL;
+-	struct bpf_program *pos;
+-	const char *sec_name;
+-	int prog_fd = -1, map_fd = -1;
++	int redir_prog_fd = -1, dequeue_prog_fd = -1, redir_map_fd = -1, pifos_map_fd = -1;
++	const char *prog_name = "xdp_fwd_prog";
+ 	char filename[PATH_MAX];
+ 	struct bpf_object *obj;
+ 	int opt, i, idx, err;
++	bool queue = false;
+ 	int attach = 1;
+ 	int ret = 0;
+ 
+-	while ((opt = getopt(argc, argv, ":dDSF")) != -1) {
++	while ((opt = getopt(argc, argv, ":dDQSF")) != -1) {
+ 		switch (opt) {
+ 		case 'd':
+ 			attach = 0;
+@@ -141,7 +220,11 @@ int main(int argc, char **argv)
+ 			xdp_flags &= ~XDP_FLAGS_UPDATE_IF_NOEXIST;
+ 			break;
+ 		case 'D':
+-			prog_name = "xdp_fwd_direct";
++			prog_name = "xdp_fwd_direct_prog";
++			break;
++		case 'Q':
++			prog_name = "xdp_fwd_queue";
++			queue = true;
+ 			break;
+ 		default:
+ 			usage(basename(argv[0]));
+@@ -170,9 +253,6 @@ int main(int argc, char **argv)
+ 		if (libbpf_get_error(obj))
+ 			return 1;
+ 
+-		prog = bpf_object__next_program(obj, NULL);
+-		bpf_program__set_type(prog, BPF_PROG_TYPE_XDP);
+-
+ 		err = bpf_object__load(obj);
+ 		if (err) {
+ 			printf("Does kernel support devmap lookup?\n");
+@@ -181,25 +261,34 @@ int main(int argc, char **argv)
+ 			 */
+ 			return 1;
+ 		}
+-
+-		bpf_object__for_each_program(pos, obj) {
+-			sec_name = bpf_program__section_name(pos);
+-			if (sec_name && !strcmp(sec_name, prog_name)) {
+-				prog = pos;
+-				break;
+-			}
+-		}
+-		prog_fd = bpf_program__fd(prog);
+-		if (prog_fd < 0) {
+-			printf("program not found: %s\n", strerror(prog_fd));
++		redir_prog_fd = bpf_program__fd(bpf_object__find_program_by_name(obj,
++										 prog_name));
++		if (redir_prog_fd < 0) {
++			printf("program not found: %s\n", strerror(redir_prog_fd));
+ 			return 1;
+ 		}
+-		map_fd = bpf_map__fd(bpf_object__find_map_by_name(obj,
+-							"xdp_tx_ports"));
+-		if (map_fd < 0) {
+-			printf("map not found: %s\n", strerror(map_fd));
++
++		redir_map_fd = bpf_map__fd(bpf_object__find_map_by_name(obj,
++									"xdp_tx_ports"));
++		if (redir_map_fd < 0) {
++			printf("map not found: %s\n", strerror(redir_map_fd));
+ 			return 1;
+ 		}
++
++		if (queue) {
++			dequeue_prog_fd = bpf_program__fd(bpf_object__find_program_by_name(obj,
++											   "xdp_dequeue"));
++			if (dequeue_prog_fd < 0) {
++				printf("dequeue program not found: %s\n",
++				       strerror(-dequeue_prog_fd));
++				return 1;
++			}
++			pifos_map_fd = bpf_map__fd(bpf_object__find_map_by_name(obj, "pifo_maps"));
++			if (pifos_map_fd < 0) {
++				printf("map not found: %s\n", strerror(-pifos_map_fd));
++				return 1;
++			}
++		}
+ 	}
+ 
+ 	for (i = optind; i < argc; ++i) {
+@@ -212,11 +301,12 @@ int main(int argc, char **argv)
+ 			return 1;
+ 		}
+ 		if (!attach) {
+-			err = do_detach(idx, argv[i], prog_name);
++			err = do_detach(idx, argv[i], argv[0]);
+ 			if (err)
+ 				ret = err;
+ 		} else {
+-			err = do_attach(idx, prog_fd, map_fd, argv[i]);
++			err = do_attach(idx, redir_prog_fd, dequeue_prog_fd,
++					redir_map_fd, pifos_map_fd, argv[i]);
+ 			if (err)
+ 				ret = err;
+ 		}
 -- 
 2.37.0
 
