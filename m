@@ -2,49 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 82AA0573C9E
-	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 20:39:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A8E61573CB0
+	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 20:48:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236706AbiGMSji (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jul 2022 14:39:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41572 "EHLO
+        id S236806AbiGMSsI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jul 2022 14:48:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231336AbiGMSji (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 14:39:38 -0400
+        with ESMTP id S236773AbiGMSsH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 14:48:07 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A08E4201AE
-        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 11:39:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 628122C65B;
+        Wed, 13 Jul 2022 11:48:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 40BCF61D17
-        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 18:39:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63CE5C34114;
-        Wed, 13 Jul 2022 18:39:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F0C2461DA8;
+        Wed, 13 Jul 2022 18:48:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01F23C34114;
+        Wed, 13 Jul 2022 18:48:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657737576;
-        bh=XYDJUuSaSUwLcmwnWJhQXxwgLBGdAsqHXN0rjjiXhJ8=;
+        s=k20201202; t=1657738085;
+        bh=38NO3lToKP38VLjzuaPVixfjEIcb7gzrFoGrZclOBjM=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=s61YsKkG/wFCh6gK7btqRkk2TLPRBePWywX1ulHWgj/Lm/VtJ7je+sAl9abTZsKWs
-         4ZnL7hwviO3glsr633OyZQy4OucUn5SDVwuM/0Qk27psvBvYWtsGPYnhc+GIg8WgjC
-         CSMg56dOdLGr5nZ+JITuWI2d03SzOB0E/X74WgCdAAO9Gjo4RolUCXK1RXw6a0mu/a
-         5kcQMsN/GYwIUmR0Os61sElx1mubztMJyzYoDHXzX7yBOD763yjRF84JAcyHAMhutL
-         zwq9WISWyrU2XzdMJH8Vy6KZ18mG1VL/10gcdU2kxogvpC+YFQbEqtxSdA7ZWQmzEL
-         G7R1UzYBVYqjw==
-Date:   Wed, 13 Jul 2022 11:39:35 -0700
+        b=X3+cEjFov0rh2HZDTIpJHWFKA7YlK5aYe8/Tux6Q3iRSa98dLWA6runnxqoLiJ78Z
+         X0hhqOmDDDfFAvi75v4S6goWoggWVGvsC1bbHEv1u5iamT/Wf2zz5DeCT8VkNzRWdl
+         DkT09Ld4qwoyfmZp9B3mcWRENAJ470+ZAnVDNX3zM+woaK8AnTnYnbhRt0TYPO7IHt
+         rb/zEQ60m7JTB3bgzxkV1jtFETxQJoZ3Ok4JyYSZrW4ZoE0XR5dMicNNRusPC1M7Kf
+         luYS2kK6arAEvaClpDVAvU0wUeLCluKdGyCj5g8WO2EIYdclOsd1PlhYln9BX5Ne5z
+         OFKWyXm7+itjg==
+Date:   Wed, 13 Jul 2022 11:48:04 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Richard Gobert <richardbgobert@gmail.com>
-Cc:     Paolo Abeni <pabeni@redhat.com>, David Ahern <dsahern@kernel.org>,
-        davem@davemloft.net, yoshfuji@linux-ipv6.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH] net: Fix IP_UNICAST_IF option behavior for connected
- sockets
-Message-ID: <20220713113935.7a572178@kernel.org>
-In-Reply-To: <20220713124435.GA51741@debian>
-References: <20220627085219.GA9597@debian>
-        <7be18dc0-4d2c-283d-eedb-123ab99197d3@kernel.org>
-        <77c9a31ba08bcc472617c08c0542cd82f7959a58.camel@redhat.com>
-        <20220713124435.GA51741@debian>
+To:     Martin Habets <habetsm.xilinx@gmail.com>
+Cc:     Bjorn Helgaas <helgaas@kernel.org>, davem@davemloft.net,
+        pabeni@redhat.com, edumazet@google.com, netdev@vger.kernel.org,
+        ecree.xilinx@gmail.com, linux-pci@vger.kernel.org,
+        virtualization@lists.linux-foundation.org
+Subject: Re: [PATCH net-next v2 0/2] sfc: Add EF100 BAR config support
+Message-ID: <20220713114804.11c7517e@kernel.org>
+In-Reply-To: <Ys6E4fvoufokIFqk@gmail.com>
+References: <165719918216.28149.7678451615870416505.stgit@palantir17.mph.net>
+        <20220707155500.GA305857@bhelgaas>
+        <Yswn7p+OWODbT7AR@gmail.com>
+        <20220711114806.2724b349@kernel.org>
+        <Ys6E4fvoufokIFqk@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -58,21 +59,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 13 Jul 2022 14:45:11 +0200 Richard Gobert wrote:
-> On Wed, Jul 06, 2022 at 06:21:05PM +0200, Paolo Abeni wrote:
-> > I think your reasoning is correct, and I'm now ok with the patch. Jakub
-> > noted it does not apply cleanly, so a repost will be needed.
-> > Additionally it would be great to include some self-tests.  
+On Wed, 13 Jul 2022 09:40:01 +0100 Martin Habets wrote:
+> > So it's switching between ethernet and vdpa? Isn't there a general
+> > problem for configuring vdpa capabilities (net vs storage etc) and
+> > shouldn't we seek to solve your BAR format switch in a similar fashion
+> > rather than adding PCI device attrs, which I believe is not done for
+> > anything vDPA-related?  
 > 
-> Will include self-tests and submit V2.
-> The patch applies cleanly in my local setup. Do you have an idea as to why
-> this might happen? I missed the email where Jakub mentioned this.
+> The initial support will be for vdpa net. vdpa block and RDMA will follow
+> later, and we also need to consider FPGA management.
+> 
+> When it comes to vDPA there is a "vdpa" tool that we intend to support.
+> This comes into play after we've switched a device into vdpa mode (using
+> this new file).
+> For a network device there is also "devlink" to consider. That could be used
+> to switch a device into vdpa mode, but it cannot be used to switch it
+> back (there is no netdev to operate on).
+> My current understanding is that we won't have this issue for RDMA.
+> For FPGA management there is no general configuration tool, just what
+> fpga_mgr exposes (drivers/fpga). We intend to remove the special PF
+> devices we have for this (PCI space is valuable), and use the normal
+> network device in stead. I can give more details on this if you want.
+> Worst case a special BAR config would be needed for this, but if needed I
+> expect we can restrict this to the NIC provisioning stage.
+> 
+> So there is a general problem I think. The solution here is something at
+> lower level, which is PCI in this case.
+> Another solution would be a proprietary tool, something we are off course
+> keen to avoid.
 
-Jakub noted it in a private conversation with Paolo :)
+Okay. Indeed, we could easily bolt something onto devlink, I'd think
+but I don't know the space enough to push for one solution over
+another. 
 
-If it does indeed apply cleanly to net-next [1] please repost with the
-tree name explicitly stated in the subject line, ie. [PATCH net-next]
-to make sure our bots don't make any mistakes in tree selection for
-testing.
-
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/
+Please try to document the problem and the solution... somewhere, tho.
+Otherwise the chances that the next vendor with this problem follows
+the same approach fall from low to none.
