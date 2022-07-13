@@ -2,66 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E44D4573895
-	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 16:19:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E4EE55738C7
+	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 16:26:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236416AbiGMOTE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jul 2022 10:19:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52772 "EHLO
+        id S236360AbiGMO01 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jul 2022 10:26:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236491AbiGMOTC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 10:19:02 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61891B4B8
-        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 07:19:01 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id bp15so9865996ejb.6
-        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 07:19:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=qdxHGAw4fwtPClwOf0CmOMbYQKMEa4xMp9KzJ6jp6n0=;
-        b=7FjdEG3xyCZnYt95lp61KRGoL3N7Lrga4eUDTttSkSWv4tz9ia35Db0a3iPapsKfK2
-         6BpGhR2YNcIWX2bxt7jD/qM2fGnx1FZyDB4OOd/FvJ9L4tvqSwNNrrlxz9+eDA2GSLTI
-         2dqpV3/JD0BGYMXJpCC8DU/DHFfbsqiMKexQW2QUC59DeI31oayATAO9Kleay90ZOxtz
-         ErvI6/vGNlb/2wiLhplEmk34XJPJv/1ddLSIDw7Wh5brYOJ2xthfKDGcey7zWxv6g/aR
-         37VFVsqhwkjOTrXyWAaajOpk7aw/VWLUtMCGvrFH7QeiggqU76yXtEKeYSTzqbvkaGSS
-         IheA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=qdxHGAw4fwtPClwOf0CmOMbYQKMEa4xMp9KzJ6jp6n0=;
-        b=ylnvryTt5GZZG+pyH/K17PZNzgOE2Hxwe4kHz+k0bY4+1Y5uubBz97VpVdh41NRDzo
-         8aiXWqIdT8iQGVvJ0uEWK9kLwhEVI3YtFHuhXXPzx2aiNuZi6xKBdvQbEQ9C+pa4vZYk
-         bw3xzBKgpxv+Vo86zpDvvGOgzGOb8koJglA5KD53Qi5CDFD/VLb6Nys33yBvc7XoE9nB
-         tx1nDGTnHuueUFq+NXvZSlkWsyyd2YX1bw6CXfgXm1m6l8gKoHIQJcDyrAw5OE6s8m2j
-         zoVLfE6n5TpBCkBeYfyipxsjGn4RvhiTLBQnYAeCW+vd6TUNSBpBEyMOApNHiYy94NG9
-         ZVSA==
-X-Gm-Message-State: AJIora9LmmFUW17Dak3C3jSYkwFGENyLkg9btooQfuk1/41BhF9Dfpfh
-        LgD1U3fbLCyRwmZ0/U+WBk0wdOIDrk/HEFv1PX4=
-X-Google-Smtp-Source: AGRyM1uz0d2y1pJpkob9X7h3UszO2ccfuw/70eylQXqXa4gvLnVdnupO4q0T4Oc9S1WoDfu98Cq1wA==
-X-Received: by 2002:a17:906:8a4a:b0:72b:5b23:3065 with SMTP id gx10-20020a1709068a4a00b0072b5b233065mr3739272ejc.557.1657721940012;
-        Wed, 13 Jul 2022 07:19:00 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id j11-20020a50ed0b000000b0043a6b86f024sm7897036eds.67.2022.07.13.07.18.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Jul 2022 07:18:59 -0700 (PDT)
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, mlxsw@nvidia.com, saeedm@nvidia.com,
-        moshe@nvidia.com
-Subject: [patch net-next repost 3/3] net: devlink: fix return statement in devlink_port_new_notify()
-Date:   Wed, 13 Jul 2022 16:18:53 +0200
-Message-Id: <20220713141853.2992014-4-jiri@resnulli.us>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220713141853.2992014-1-jiri@resnulli.us>
-References: <20220713141853.2992014-1-jiri@resnulli.us>
+        with ESMTP id S236195AbiGMO00 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 10:26:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 692FA2F390;
+        Wed, 13 Jul 2022 07:26:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0682261DBD;
+        Wed, 13 Jul 2022 14:26:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 255FCC34114;
+        Wed, 13 Jul 2022 14:26:23 +0000 (UTC)
+Subject: [PATCH v1] net: Add distinct sk_psock field
+From:   Chuck Lever <chuck.lever@oracle.com>
+To:     john.fastabend@gmail.com, daniel@iogearbox.net,
+        jakub@cloudflare.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, ast@kernel.org,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        kpsingh@kernel.org
+Cc:     chuck.lever@oracle.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Wed, 13 Jul 2022 10:26:21 -0400
+Message-ID: <165772238175.1757.4978340330606055982.stgit@oracle-102.nfsv4.dev>
+User-Agent: StGit/1.5
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -69,31 +45,99 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Pirko <jiri@nvidia.com>
+The sk_psock facility populates the sk_user_data field with the
+address of an extra bit of metadata. User space sockets never
+populate the sk_user_data field, so this has worked out fine.
 
-Return directly without intermediate value store at the end of
-devlink_port_new_notify() function.
+However, kernel socket consumers such as the RPC client and server
+do populate the sk_user_data field. The sk_psock() function cannot
+tell that the content of sk_user_data does not point to psock
+metadata, so it will happily return a pointer to something else,
+cast to a struct sk_psock.
 
-Signed-off-by: Jiri Pirko <jiri@nvidia.com>
-Acked-by: Jakub Kicinski <kuba@kernel.org>
+Thus kernel socket consumers and psock currently cannot co-exist.
+
+We could educate sk_psock() to return NULL if sk_user_data does
+not point to a struct sk_psock. However, a more general solution
+that enables full co-existence psock and other uses of sk_user_data
+might be more interesting.
+
+Move the struct sk_psock address to its own pointer field so that
+the contents of the sk_user_data field is preserved.
+
+Reviewed-by: Hannes Reinecke <hare@suse.de>
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 ---
- net/core/devlink.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ include/linux/skmsg.h |    2 +-
+ include/net/sock.h    |    4 +++-
+ net/core/skmsg.c      |    6 +++---
+ 3 files changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 2f22ce33c3ec..a9776ea923ae 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -1724,8 +1724,7 @@ static int devlink_port_new_notify(struct devlink *devlink,
- 	if (err)
- 		goto out;
+diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
+index c5a2d6f50f25..5ef3a07c5b6c 100644
+--- a/include/linux/skmsg.h
++++ b/include/linux/skmsg.h
+@@ -277,7 +277,7 @@ static inline void sk_msg_sg_copy_clear(struct sk_msg *msg, u32 start)
  
--	err = genlmsg_reply(msg, info);
--	return err;
-+	return genlmsg_reply(msg, info);
+ static inline struct sk_psock *sk_psock(const struct sock *sk)
+ {
+-	return rcu_dereference_sk_user_data(sk);
++	return rcu_dereference(sk->sk_psock);
+ }
+ 
+ static inline void sk_psock_set_state(struct sk_psock *psock,
+diff --git a/include/net/sock.h b/include/net/sock.h
+index c4b91fc19b9c..d2a513169527 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -327,7 +327,8 @@ struct sk_filter;
+   *	@sk_tskey: counter to disambiguate concurrent tstamp requests
+   *	@sk_zckey: counter to order MSG_ZEROCOPY notifications
+   *	@sk_socket: Identd and reporting IO signals
+-  *	@sk_user_data: RPC layer private data
++  *	@sk_user_data: Upper layer private data
++  *	@sk_psock: socket policy data (bpf)
+   *	@sk_frag: cached page frag
+   *	@sk_peek_off: current peek_offset value
+   *	@sk_send_head: front of stuff to transmit
+@@ -519,6 +520,7 @@ struct sock {
+ 
+ 	struct socket		*sk_socket;
+ 	void			*sk_user_data;
++	struct sk_psock	__rcu	*sk_psock;
+ #ifdef CONFIG_SECURITY
+ 	void			*sk_security;
+ #endif
+diff --git a/net/core/skmsg.c b/net/core/skmsg.c
+index cc381165ea08..2b3d01d92790 100644
+--- a/net/core/skmsg.c
++++ b/net/core/skmsg.c
+@@ -695,7 +695,7 @@ struct sk_psock *sk_psock_init(struct sock *sk, int node)
+ 
+ 	write_lock_bh(&sk->sk_callback_lock);
+ 
+-	if (sk->sk_user_data) {
++	if (sk->sk_psock) {
+ 		psock = ERR_PTR(-EBUSY);
+ 		goto out;
+ 	}
+@@ -726,7 +726,7 @@ struct sk_psock *sk_psock_init(struct sock *sk, int node)
+ 	sk_psock_set_state(psock, SK_PSOCK_TX_ENABLED);
+ 	refcount_set(&psock->refcnt, 1);
+ 
+-	rcu_assign_sk_user_data_nocopy(sk, psock);
++	rcu_assign_pointer(sk->sk_psock, psock);
+ 	sock_hold(sk);
  
  out:
- 	nlmsg_free(msg);
--- 
-2.35.3
+@@ -825,7 +825,7 @@ void sk_psock_drop(struct sock *sk, struct sk_psock *psock)
+ {
+ 	write_lock_bh(&sk->sk_callback_lock);
+ 	sk_psock_restore_proto(sk, psock);
+-	rcu_assign_sk_user_data(sk, NULL);
++	rcu_assign_pointer(sk->sk_psock, NULL);
+ 	if (psock->progs.stream_parser)
+ 		sk_psock_stop_strp(sk, psock);
+ 	else if (psock->progs.stream_verdict || psock->progs.skb_verdict)
+
 
