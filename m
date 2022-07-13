@@ -2,92 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 64E7E5735D8
-	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 13:55:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EAEC05735EC
+	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 14:00:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235972AbiGMLy5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jul 2022 07:54:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45660 "EHLO
+        id S236312AbiGMMAY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jul 2022 08:00:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235679AbiGMLy4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 07:54:56 -0400
-Received: from m15114.mail.126.com (m15114.mail.126.com [220.181.15.114])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BB5F4C04D0
-        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 04:54:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=z4F7U
-        rsR4M0u368p/ZuwOaUCBWyfKpYbu5TaXutIPq0=; b=Q7M5N+Rktu963LUTZzJi+
-        RhuxlCCfnfyv5lqiM558JT0kr8ZerN55WcaLZaRDxiHMSOIjtixLSEPycCFw9Lic
-        hG630OC1FjqKXMpvxzepHHvA+GIIDuoBqGr5OzTl+Ry0dNt9dLy66+JkOVHaMJog
-        cVob5jbNsolntziWqQcF5o=
-Received: from localhost.localdomain (unknown [124.16.139.61])
-        by smtp7 (Coremail) with SMTP id DsmowAC3hfF0ss5ioXFZEw--.46074S2;
-        Wed, 13 Jul 2022 19:54:29 +0800 (CST)
-From:   Liang He <windhl@126.com>
-To:     woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
-        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        olteanv@gmail.com, windhl@126.com, netdev@vger.kernel.org
-Subject: [PATCH] net: dsa: microchip: ksz_common: Fix refcount leak bug
-Date:   Wed, 13 Jul 2022 19:54:28 +0800
-Message-Id: <20220713115428.367840-1-windhl@126.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S236104AbiGMMAT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 08:00:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB12410400E;
+        Wed, 13 Jul 2022 05:00:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DB08FB81D07;
+        Wed, 13 Jul 2022 12:00:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 7EF60C3411E;
+        Wed, 13 Jul 2022 12:00:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657713614;
+        bh=7ZQv/4gcKwMxrWQ3R8K+5GmEoZGtx+9WTQW4h7AZojo=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=cNbCcC9IopFfBuw7A3T2mCSim7+evprYZO/9ddqN3WbI0UxVCBjsCRxcTmciyL1Ht
+         75f85sBaZ1xWAilvt6v9GzewmGAZ8+CkFL26gjUGzYABjPIuPvb7bLL4szRHTDliOl
+         T4ujPozUJcBPAe9J+XKiqlv9Kb9MHed+zRqtuzGzigq5Z23OZfc+bv/63m2w5XLg/G
+         kXJx6k8PQPAHWtPsGslzIEv+ojuTvjaCqF9eHJ1KfyFYS3MlVzqU/2A28fLvagje0k
+         +YiisZSVowUtJd7roVoEjOuHWvH1ZyfrVIY8CFHruawN6SpAqOE1bVvArF8z5vFKjp
+         j7jOKHvfjtF1Q==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 51DCBE45223;
+        Wed, 13 Jul 2022 12:00:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: DsmowAC3hfF0ss5ioXFZEw--.46074S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7CryUZF1DZw13tF15ArW5Jrb_yoW8GFy8pF
-        W5CFy3ZrWUKr45uw40yw48ZFyjgF4Utr4jgFyxCa9xur95tF1kXF1UWFZxWr98AFWrA3yY
-        qr4UAFWa9F98urJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zRUfHbUUUUU=
-X-Originating-IP: [124.16.139.61]
-X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbi2hY9F1uwMZZ3FwAAsK
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Subject: Re: [PATCH net-next v2 0/2] net: prestera: add support for port range
+ filters
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165771361432.14728.4361651412076279677.git-patchwork-notify@kernel.org>
+Date:   Wed, 13 Jul 2022 12:00:14 +0000
+References: <20220711150908.1030650-1-maksym.glubokiy@plvision.eu>
+In-Reply-To: <20220711150908.1030650-1-maksym.glubokiy@plvision.eu>
+To:     Maksym Glubokiy <maksym.glubokiy@plvision.eu>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+        jiri@resnulli.us, louis.peens@corigine.com, elic@nvidia.com,
+        simon.horman@corigine.com, baowen.zheng@corigine.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In ksz_switch_register(), we should call of_node_put() for the
-reference returned by of_get_child_by_name() which has increased
-the refcount.
+Hello:
 
-Fixes: 44e53c88828f ("net: dsa: microchip: support for "ethernet-ports" node")
-Signed-off-by: Liang He <windhl@126.com>
----
- 
- drivers/net/dsa/microchip/ksz_common.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index 9ca8c8d7740f..92a500e1ccd2 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -1038,18 +1038,21 @@ int ksz_switch_register(struct ksz_device *dev,
- 		ports = of_get_child_by_name(dev->dev->of_node, "ethernet-ports");
- 		if (!ports)
- 			ports = of_get_child_by_name(dev->dev->of_node, "ports");
--		if (ports)
-+		if (ports) {
- 			for_each_available_child_of_node(ports, port) {
- 				if (of_property_read_u32(port, "reg",
- 							 &port_num))
- 					continue;
- 				if (!(dev->port_mask & BIT(port_num))) {
- 					of_node_put(port);
-+					of_node_put(ports);
- 					return -EINVAL;
- 				}
- 				of_get_phy_mode(port,
- 						&dev->ports[port_num].interface);
- 			}
-+			of_node_put(ports);
-+		}
- 		dev->synclko_125 = of_property_read_bool(dev->dev->of_node,
- 							 "microchip,synclko-125");
- 		dev->synclko_disable = of_property_read_bool(dev->dev->of_node,
+On Mon, 11 Jul 2022 18:09:06 +0300 you wrote:
+> This adds support for port-range rules in Marvel Prestera driver:
+> 
+>   $ tc qdisc add ... clsact
+>   $ tc filter add ... flower ... src_port <PMIN>-<PMAX> ...
+> 
+> Maksym Glubokiy (2):
+>   net: extract port range fields from fl_flow_key
+>   net: prestera: add support for port range filters
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next,v2,1/2] net: extract port range fields from fl_flow_key
+    https://git.kernel.org/netdev/net-next/c/83d85bb06915
+  - [net-next,v2,2/2] net: prestera: add support for port range filters
+    https://git.kernel.org/netdev/net-next/c/551871bfc82c
+
+You are awesome, thank you!
 -- 
-2.25.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
