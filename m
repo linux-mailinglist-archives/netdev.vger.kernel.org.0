@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D3AB574019
+	by mail.lfdr.de (Postfix) with ESMTP id F31CB57401B
 	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 01:40:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231175AbiGMXkq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jul 2022 19:40:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50900 "EHLO
+        id S229740AbiGMXks (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jul 2022 19:40:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229624AbiGMXkq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 19:40:46 -0400
-Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7680C509C1;
-        Wed, 13 Jul 2022 16:40:45 -0700 (PDT)
-Received: by mail-pg1-x52e.google.com with SMTP id bh13so8283pgb.4;
-        Wed, 13 Jul 2022 16:40:45 -0700 (PDT)
+        with ESMTP id S231450AbiGMXkr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 19:40:47 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0A30509C1;
+        Wed, 13 Jul 2022 16:40:46 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id o3-20020a17090a744300b001ef8f7f3dddso597165pjk.3;
+        Wed, 13 Jul 2022 16:40:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=hIeO3opyZf6HnkUX87feyv18m3Q65HBILavBjNxjfqs=;
-        b=IC/WcfcEC1Cz9/45QmOtWZTVoia7SSaR15G2ZJnNjlWwDU8Q89WiDCJbIykAmQzT4s
-         kOWbIUY61FfQSZwgffJ0V8PSB3DHtw7gDYkSwFxMGlju2W1v6jQjAaeKNCZBeEaI27Nj
-         BUdRKm5yjCGPuoBCd+W0v4ITlxlYzbkp8FZP9F4IZ/mgjRftqLgTSwD78NRN5BkSMYe6
-         bobLo/grzjSwHsbs5IOD8+hse9czjalVrC1xJMrmUalkBqthYA7HqMbCje0Ff8Zr56Jx
-         kzacYQ+0Gr1WpKxvETWwX4wI+OuF2dDxck7Rn+f83mwBmR0lHtMGBZjsoQNHCzYgKD+u
-         zEKw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=wCM0UDHUVihBgY7YWogvcLCrLbNF9p6xLuztOGFMvkI=;
+        b=NRoJ+UDhRHy76a4NDta3han9YBZ/XI48D458cpbWyqf78sPEzf7J11OD2gxerrpeIH
+         u0ew6cdFtZ/kpyL0J7FgaGDETdPeNXDLFGnm3Barq78fwAMDo45SQxXO/rP3v8I5nKAJ
+         RdXhvR40A/vJYjM/JHb9rfGuKOi3RZd/SqIKqlURToGI5c4t32lF3zXcg/8nRt9uIAYY
+         7GrYLhjWMRmPxZ1ATrayMdkSF4nHkJzm8yEdn8ZEH2D5Xnj+PlMQXPaZZKghirEr8/IG
+         u8a5RrUm6LLcbWmp7iyXGW4WdHIS/3eNsOVRpPt+Ds2KV65XwOVwykUn/3u+FyVLiTNH
+         0+MA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=hIeO3opyZf6HnkUX87feyv18m3Q65HBILavBjNxjfqs=;
-        b=F7TWnzvXKYrJ0hzOmo9Ep5gu4I6UzflyFnjAPMC1U43WiuSUlYu5+CeAp6+FX0xGSD
-         LBj1IFv43cLLd26edzqbZfWJ71mbuk1aGSyfjdRrLaioaF2qLCTQrW+LkrKN/qD8a/+0
-         SffQNPBSRhsoj81/wjCG/y9KxDxmNq3Qr3ujm2ETcjdAwRMl2Yqjb4foyMX9HOP5tljK
-         nUPdrRtMGfeDzq4qIZ8IPHC33yEj+0hKNIVde1bgAbpgJAlwI7e+UNb+430jg4H+ZoeC
-         qme7ltHveAOTTngqaR+BOEZOmnV1QCDcRKaahMfPrfK0xVocEuncqeGyxhV8hgYAU1es
-         XbLw==
-X-Gm-Message-State: AJIora+a3N9AnRR8xxaiInivD+hbnxJb9WgWlAeERSLBRMsVniGgR2ns
-        X5YPgMUkG/I8HYGujjPTUlbC8DVSiYq2tAvmD5I=
-X-Google-Smtp-Source: AGRyM1v7uROft4wCwLyJCPDHmeFKv+XMUokThxGa62zybBfVaamm8jZCUGQPM6/LtWz/xz/7GoCnFg==
-X-Received: by 2002:a63:84c8:0:b0:415:b761:efa1 with SMTP id k191-20020a6384c8000000b00415b761efa1mr4895898pgd.89.1657755644732;
-        Wed, 13 Jul 2022 16:40:44 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=wCM0UDHUVihBgY7YWogvcLCrLbNF9p6xLuztOGFMvkI=;
+        b=55bjfnGa9F+btT5xXY7ManCJcDWhmEPiQSqkp/jFvERahiCayiPqyIUvBqdT7dCXYZ
+         KlcYXF4vVslpHmNYqMZ1PqFS8AHKeUMDmvxLmyXDnm50n0Csteox+hacpERdp4UNWrW5
+         +Kny1STuKI9MDQ9Iuq/ic5tqWYEuW0B5vJzKF8tB8TocP9JzIdBTx3titky8HH9oZDnH
+         avru4fLeEdHbf5lPpeUay+1kELKznh4vqB9l3kE6iwlDa2fNpAHvsagnovceDfezIsNU
+         owEKaa8FIosi9op2t9fUQvWTzmweKLaQuIWERt5jqYUPxUYKuhG8+VzD5cyRjPxbAS2/
+         X86Q==
+X-Gm-Message-State: AJIora/rxcqp8cNTJxViScZgsJChpglLR/3ElI1fJEb3DMMSMl3rMJEg
+        LHY6ha5A0R3aCthSnqeY0BZ0ZXOXtkZH/jrNDTI=
+X-Google-Smtp-Source: AGRyM1vxMiPvZqkn2A8ffZQTH6vgXFh3gLcPVtDqEqjmO8KcOngWL/INdw62fpEVTVakBqwNasBDwg==
+X-Received: by 2002:a17:902:7d92:b0:16c:54a4:bb2f with SMTP id a18-20020a1709027d9200b0016c54a4bb2fmr5828227plm.158.1657755645829;
+        Wed, 13 Jul 2022 16:40:45 -0700 (PDT)
 Received: from localhost.localdomain ([64.141.80.140])
-        by smtp.gmail.com with ESMTPSA id 188-20020a6216c5000000b005286a4ca9c8sm87653pfw.211.2022.07.13.16.40.43
+        by smtp.gmail.com with ESMTPSA id 188-20020a6216c5000000b005286a4ca9c8sm87653pfw.211.2022.07.13.16.40.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Jul 2022 16:40:43 -0700 (PDT)
+        Wed, 13 Jul 2022 16:40:45 -0700 (PDT)
 From:   Jaehee Park <jhpark1013@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
@@ -54,10 +54,12 @@ Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
         pabeni@redhat.com, shuah@kernel.org, linux-kernel@vger.kernel.org,
         aajith@arista.com, roopa@nvidia.com, roopa.prabhu@gmail.com,
         aroulin@nvidia.com, sbrivio@redhat.com, jhpark1013@gmail.com
-Subject: [PATCH v3 net-next 0/3] net: ipv4/ipv6: new option to accept garp/untracked na only if in-network
-Date:   Wed, 13 Jul 2022 16:40:46 -0700
-Message-Id: <cover.1657755188.git.jhpark1013@gmail.com>
+Subject: [PATCH v3 net-next 1/3] net: ipv4: new arp_accept option to accept garp only if in-network
+Date:   Wed, 13 Jul 2022 16:40:47 -0700
+Message-Id: <93cfe14597ec1205f61366b9902876287465f1cd.1657755189.git.jhpark1013@gmail.com>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <cover.1657755188.git.jhpark1013@gmail.com>
+References: <cover.1657755188.git.jhpark1013@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -70,44 +72,104 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The first patch adds an option to learn a neighbor from garp only if
-the source ip is in the same subnet as an address configured on the
-interface that received the garp message. The option has been added
-to arp_accept in ipv4.
+In many deployments, we want the option to not learn a neighbor from
+garp if the src ip is not in the same subnet as an address configured
+on the interface that received the garp message. net.ipv4.arp_accept
+sysctl is currently used to control creation of a neigh from a
+received garp packet. This patch adds a new option '2' to
+net.ipv4.arp_accept which extends option '1' by including the subnet
+check.
 
-The same feature has been added to ndisc (patch 2). For ipv6, the
-subnet filtering knob is an extension of the accept_untracked_na
-option introduced in these patches:
-https://lore.kernel.org/all/642672cb-8b11-c78f-8975-f287ece9e89e@gmail.com/t/
-https://lore.kernel.org/netdev/20220530101414.65439-1-aajith@arista.com/T/
+Signed-off-by: Jaehee Park <jhpark1013@gmail.com>
+Suggested-by: Roopa Prabhu <roopa@nvidia.com>
+---
+ Documentation/networking/ip-sysctl.rst |  9 ++++++---
+ include/linux/inetdevice.h             |  2 +-
+ net/ipv4/arp.c                         | 24 ++++++++++++++++++++++--
+ 3 files changed, 29 insertions(+), 6 deletions(-)
 
-The third patch contains selftests for testing the different options
-for accepting arp and neighbor advertisements. 
-
-v3
-- fixed tabs in the selftest
-
-v2
-- reworded documentation and commit messages
-- cleanup selftest
-
-Jaehee Park (3):
-  net: ipv4: new arp_accept option to accept garp only if in-network
-  net: ipv6: new accept_untracked_na option to accept na only if
-    in-network
-  selftests: net: arp_ndisc_untracked_subnets: test for arp_accept and
-    accept_untracked_na
-
- Documentation/networking/ip-sysctl.rst        |  52 +--
- include/linux/inetdevice.h                    |   2 +-
- net/ipv4/arp.c                                |  24 +-
- net/ipv6/addrconf.c                           |   2 +-
- net/ipv6/ndisc.c                              |  29 +-
- tools/testing/selftests/net/Makefile          |   1 +
- .../net/arp_ndisc_untracked_subnets.sh        | 308 ++++++++++++++++++
- 7 files changed, 389 insertions(+), 29 deletions(-)
- create mode 100755 tools/testing/selftests/net/arp_ndisc_untracked_subnets.sh
-
+diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
+index 4c8bbf5acfd1..5c017fc1e24d 100644
+--- a/Documentation/networking/ip-sysctl.rst
++++ b/Documentation/networking/ip-sysctl.rst
+@@ -1633,12 +1633,15 @@ arp_notify - BOOLEAN
+ 	     or hardware address changes.
+ 	 ==  ==========================================================
+ 
+-arp_accept - BOOLEAN
+-	Define behavior for gratuitous ARP frames who's IP is not
+-	already present in the ARP table:
++arp_accept - INTEGER
++	Define behavior for accepting gratuitous ARP (garp) frames from devices
++	that are not already present in the ARP table:
+ 
+ 	- 0 - don't create new entries in the ARP table
+ 	- 1 - create new entries in the ARP table
++	- 2 - create new entries only if the source IP address is in the same
++	  subnet as an address configured on the interface that received the
++	  garp message.
+ 
+ 	Both replies and requests type gratuitous arp will trigger the
+ 	ARP table to be updated, if this setting is on.
+diff --git a/include/linux/inetdevice.h b/include/linux/inetdevice.h
+index ead323243e7b..ddb27fc0ee8c 100644
+--- a/include/linux/inetdevice.h
++++ b/include/linux/inetdevice.h
+@@ -131,7 +131,7 @@ static inline void ipv4_devconf_setall(struct in_device *in_dev)
+ 	IN_DEV_ORCONF((in_dev), IGNORE_ROUTES_WITH_LINKDOWN)
+ 
+ #define IN_DEV_ARPFILTER(in_dev)	IN_DEV_ORCONF((in_dev), ARPFILTER)
+-#define IN_DEV_ARP_ACCEPT(in_dev)	IN_DEV_ORCONF((in_dev), ARP_ACCEPT)
++#define IN_DEV_ARP_ACCEPT(in_dev)	IN_DEV_MAXCONF((in_dev), ARP_ACCEPT)
+ #define IN_DEV_ARP_ANNOUNCE(in_dev)	IN_DEV_MAXCONF((in_dev), ARP_ANNOUNCE)
+ #define IN_DEV_ARP_IGNORE(in_dev)	IN_DEV_MAXCONF((in_dev), ARP_IGNORE)
+ #define IN_DEV_ARP_NOTIFY(in_dev)	IN_DEV_MAXCONF((in_dev), ARP_NOTIFY)
+diff --git a/net/ipv4/arp.c b/net/ipv4/arp.c
+index af2f12ffc9ca..87c7e3fc5197 100644
+--- a/net/ipv4/arp.c
++++ b/net/ipv4/arp.c
+@@ -429,6 +429,26 @@ static int arp_ignore(struct in_device *in_dev, __be32 sip, __be32 tip)
+ 	return !inet_confirm_addr(net, in_dev, sip, tip, scope);
+ }
+ 
++static int arp_accept(struct in_device *in_dev, __be32 sip)
++{
++	struct net *net = dev_net(in_dev->dev);
++	int scope = RT_SCOPE_LINK;
++
++	switch (IN_DEV_ARP_ACCEPT(in_dev)) {
++	case 0: /* Don't create new entries from garp */
++		return 0;
++	case 1: /* Create new entries from garp */
++		return 1;
++	case 2: /* Create a neighbor in the arp table only if sip
++		 * is in the same subnet as an address configured
++		 * on the interface that received the garp message
++		 */
++		return !!inet_confirm_addr(net, in_dev, sip, 0, scope);
++	default:
++		return 0;
++	}
++}
++
+ static int arp_filter(__be32 sip, __be32 tip, struct net_device *dev)
+ {
+ 	struct rtable *rt;
+@@ -868,12 +888,12 @@ static int arp_process(struct net *net, struct sock *sk, struct sk_buff *skb)
+ 	n = __neigh_lookup(&arp_tbl, &sip, dev, 0);
+ 
+ 	addr_type = -1;
+-	if (n || IN_DEV_ARP_ACCEPT(in_dev)) {
++	if (n || arp_accept(in_dev, sip)) {
+ 		is_garp = arp_is_garp(net, dev, &addr_type, arp->ar_op,
+ 				      sip, tip, sha, tha);
+ 	}
+ 
+-	if (IN_DEV_ARP_ACCEPT(in_dev)) {
++	if (arp_accept(in_dev, sip)) {
+ 		/* Unsolicited ARP is not accepted by default.
+ 		   It is possible, that this option should be enabled for some
+ 		   devices (strip is candidate)
 -- 
 2.30.2
 
