@@ -2,229 +2,273 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 12F70572C29
-	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 06:06:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 908C0572C79
+	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 06:25:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232000AbiGMEGy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jul 2022 00:06:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44256 "EHLO
+        id S232106AbiGMEZ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jul 2022 00:25:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230120AbiGMEGq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 00:06:46 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DA51DA0CF
-        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 21:06:45 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id dn9so17698389ejc.7
-        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 21:06:44 -0700 (PDT)
+        with ESMTP id S230013AbiGMEZz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 00:25:55 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 272AA4506E;
+        Tue, 12 Jul 2022 21:25:54 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id o31-20020a17090a0a2200b001ef7bd037bbso1678943pjo.0;
+        Tue, 12 Jul 2022 21:25:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=LUWmWddMzDtySO2JFnge/iGzRW7Z2XYM2SnGEFSecJw=;
-        b=xZedl+kW1g50VCIIQGNbp3XtfQ9rSb1dAK0Lb8BIAeW5FAk7oNAaRYYYJCU3HpBFkt
-         swrYEWJDBFlV3AMCnUoAB3OS82jPb7FRSmuy7Pu4kKmhCH4ILCyVV9QDi92gL8oZDixm
-         XUrR0o8HBsyMb+Rzal7H09KVL0ahxN3CUbXZZ3W+VTTVEqmo1AnbKPpzRr7WSZDvHxiB
-         +QedpRpeqY5aCfAaLe2zo208uoDDknwJAz/A6iMvfB+qx+N6imvBbzXS4AvTfdcjY/Kj
-         TDGtXP45i/5UqvSHCUReTnO2uLNdm0Aifg21iXONEYPXqT6r28Yw1/+m/dgUVL1WT7H9
-         BP1w==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=nMGzjqDUW6SdVGyuTZy6wI3JH0wU7GZTzrC52WE7cc0=;
+        b=ABfb0rNSZ2TR5dRBsJ0xrkkxMAwSh4EmmJtx205q+k9wcvQiq9H5D8qVacW42Z8vka
+         Za1l9DY7v8VSiU9o/K6H4DW5LoPWI+7Q5yi4LMJ7Ufq22dIUV4RWtW9C+7E8hA2BIAqt
+         u2MRX27wnScWVmlI9KyNah4SX5qBTYg5n4hili8eTXUJymco/6PRVPB3O07+8CFHUnG7
+         4QkfxQc2lyRsYJf9D//gvyo0Nem3uQlG7YNASr6iz4jPriA6RUYpQjlfDbEY/AZE2JVd
+         lP4Wit1ln6emmVBwFrOlRZno7whBDhFhY+FbK8mLyPX221eskMJ7coT5mz8PTV6U3Eyj
+         oZtA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=LUWmWddMzDtySO2JFnge/iGzRW7Z2XYM2SnGEFSecJw=;
-        b=D6NUsyaccRw992qJ/kGOWu/XlcpXR5eGHJQgNZNf/CK8IELpv7nZm9w8Uuonz+Bsa1
-         DOz8fU2PjCCHJXPyKIURH1Vhnjfzd2gJm8XXIWb4YiRKn+18mJ/Yfz62LpPl2Wj8owj9
-         dKvSMfg9FFF0Zxum/Xshb+twkrDr3H90VG0NAtenWxgTVsJ7GYz/RYDaK87nRMN2tmfU
-         /vxkFy5t9qnU+p6L1L4OkBTG8wMsGAWGPkKYN6z7Q0+0bg8pTZUg5gc6WmRIxZDOrAFK
-         bk/MOy/vQlwK8p/JmGk5peglk04O9sFaSiD605IIQbspHzKoIMGWtXOvc4vmcfVUmraG
-         Z7OA==
-X-Gm-Message-State: AJIora9gzlsdhDtVN9bNWFFzyp9z2UdaELHq4YVAPMZShoTrynSxkBWe
-        /9F5RpGBJnroYZ48Fl+A6dN+ONyMwkQssqSfpqo=
-X-Google-Smtp-Source: AGRyM1u8BUCAcx7Qy+VR55zOa4AJwvlgQ8CrVO4/kd1yxNpOfGVAHzKvaWSEInjikKQ0BB2AEAespQ==
-X-Received: by 2002:a17:906:8a4a:b0:72b:5b23:3065 with SMTP id gx10-20020a1709068a4a00b0072b5b233065mr1378176ejc.557.1657685203351;
-        Tue, 12 Jul 2022 21:06:43 -0700 (PDT)
-Received: from [192.168.0.118] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
-        by smtp.gmail.com with ESMTPSA id la13-20020a170907780d00b0072af56103casm4460623ejc.220.2022.07.12.21.06.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Jul 2022 21:06:42 -0700 (PDT)
-Message-ID: <88f37f14-54a5-4f9a-ca76-94a8e54769f2@blackwall.org>
-Date:   Wed, 13 Jul 2022 07:06:40 +0300
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=nMGzjqDUW6SdVGyuTZy6wI3JH0wU7GZTzrC52WE7cc0=;
+        b=vSXLpAAXZbH2xFI2coK0EGpFJqWkoiEjB6L/lGFAt4aTEGLjFf3aw1aMvs4shZiXgC
+         GMdjVuHFIN2Nr/4HYsSMezkwUDzSgax9VMpGtHj5a5S6kXbC+/bF6wOq7smdy5BbKHmr
+         a0scCLypXSCgZ0EgP6hmp01hAn+hvtZaqaS3r9ALNKcm6J6stWbBavtT/Q17627/vcsu
+         F/JsNdSs2ws4ceAbqcpn4ywDwsyiKK4XGh/Cz3CwtQV0RpGEsoGSIJhgwaCD/HUhixoQ
+         ItJXdIMYUhZnwHfWWTaZJzKv3YytYeE6xTVaOjVv1IvWQ3zzF5fJ7DDnA/FVS6CPe5Wg
+         W8nw==
+X-Gm-Message-State: AJIora/kbGCEHhJcOR7TtDiGUwWyqwSWIai6WXqVQe+Wh1sWNp7jL8Kl
+        g+hxc7WN1s9wdZTNR9kYiXw=
+X-Google-Smtp-Source: AGRyM1syYHQhPr7RhT9rFmN72PJ2fPdHbWvXbIqYCV2V7Z2PlYl6loSQ1/6Fo3O8xuydFUf85LKmKw==
+X-Received: by 2002:a17:90b:3890:b0:1f0:2abb:e7d1 with SMTP id mu16-20020a17090b389000b001f02abbe7d1mr8212824pjb.158.1657686353312;
+        Tue, 12 Jul 2022 21:25:53 -0700 (PDT)
+Received: from macbook-pro-3.dhcp.thefacebook.com ([2620:10d:c090:400::5:580c])
+        by smtp.gmail.com with ESMTPSA id h11-20020a170902680b00b0016a11750b50sm7640118plk.16.2022.07.12.21.25.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Jul 2022 21:25:52 -0700 (PDT)
+Date:   Tue, 12 Jul 2022 21:25:49 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     James Hilliard <james.hilliard1@gmail.com>
+Cc:     "Jose E. Marchesi" <jose.marchesi@oracle.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Yonghong Song <yhs@fb.com>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>, Networking <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        llvm@lists.linux.dev
+Subject: Re: [PATCH v2] bpf/scripts: Generate GCC compatible helpers
+Message-ID: <20220713042549.uljgrp4lffianxyj@macbook-pro-3.dhcp.thefacebook.com>
+References: <a0bddf0b-e8c4-46ce-b7c6-a22809af1677@fb.com>
+ <CADvTj4ovwExtM-bWUpJELy-OqsT=J9stmqbAXto8ds2n+G8mfw@mail.gmail.com>
+ <CAEf4BzYwRyXG1zE5BK1ZXmxLh+ZPU0=yQhNhpqr0JmfNA30tdQ@mail.gmail.com>
+ <87v8s260j1.fsf@oracle.com>
+ <CAADnVQLQGHoj_gCOvdFFw2pRxgMubPSp+bRpFeCSa5zvcK2qRQ@mail.gmail.com>
+ <CADvTj4qqxckZmxvL=97e-2W5M4DgCCMDV8RCFDg23+cY2URjTA@mail.gmail.com>
+ <20220713011851.4a2tnqhdd5f5iwak@macbook-pro-3.dhcp.thefacebook.com>
+ <CADvTj4o7z7J=4BOtKM9dthZyfFogV6hL5zKBwiBq7vs+bNhUHA@mail.gmail.com>
+ <CAADnVQJAz7BcZjrBwu-8MjQprh86Z_UpWGMSQtFnowZTc4d6Vw@mail.gmail.com>
+ <CADvTj4qtCfmsu=dMZx9LtaDMOSNsOxGVSa1g3USEWroA1AfTJA@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [RESEND PATCH net-next v4] bond: add mac filter option for
- balance-xor
-Content-Language: en-US
-To:     Jonathan Toppins <jtoppins@redhat.com>, netdev@vger.kernel.org
-Cc:     Long Xin <lxin@redhat.com>, Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org
-References: <1755bbaad9c3792ce22b8fa4906bb6051968f29e.1657302266.git.jtoppins@redhat.com>
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <1755bbaad9c3792ce22b8fa4906bb6051968f29e.1657302266.git.jtoppins@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CADvTj4qtCfmsu=dMZx9LtaDMOSNsOxGVSa1g3USEWroA1AfTJA@mail.gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/11/22 15:07, Jonathan Toppins wrote:
-> Implement a MAC filter that prevents duplicate frame delivery when
-> handling BUM traffic. This attempts to partially replicate OvS SLB
-> Bonding[1] like functionality without requiring significant change
-> in the Linux bridging code.
+On Tue, Jul 12, 2022 at 08:56:35PM -0600, James Hilliard wrote:
+> On Tue, Jul 12, 2022 at 7:45 PM Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
+> >
+> > On Tue, Jul 12, 2022 at 6:29 PM James Hilliard
+> > <james.hilliard1@gmail.com> wrote:
+> > >
+> > > On Tue, Jul 12, 2022 at 7:18 PM Alexei Starovoitov
+> > > <alexei.starovoitov@gmail.com> wrote:
+> > > >
+> > > > On Tue, Jul 12, 2022 at 07:10:27PM -0600, James Hilliard wrote:
+> > > > > On Tue, Jul 12, 2022 at 10:48 AM Alexei Starovoitov
+> > > > > <alexei.starovoitov@gmail.com> wrote:
+> > > > > >
+> > > > > > On Tue, Jul 12, 2022 at 4:20 AM Jose E. Marchesi
+> > > > > > <jose.marchesi@oracle.com> wrote:
+> > > > > > >
+> > > > > > >
+> > > > > > > > CC Quentin as well
+> > > > > > > >
+> > > > > > > > On Mon, Jul 11, 2022 at 5:11 PM James Hilliard
+> > > > > > > > <james.hilliard1@gmail.com> wrote:
+> > > > > > > >>
+> > > > > > > >> On Mon, Jul 11, 2022 at 5:36 PM Yonghong Song <yhs@fb.com> wrote:
+> > > > > > > >> >
+> > > > > > > >> >
+> > > > > > > >> >
+> > > > > > > >> > On 7/6/22 10:28 AM, James Hilliard wrote:
+> > > > > > > >> > > The current bpf_helper_defs.h helpers are llvm specific and don't work
+> > > > > > > >> > > correctly with gcc.
+> > > > > > > >> > >
+> > > > > > > >> > > GCC appears to required kernel helper funcs to have the following
+> > > > > > > >> > > attribute set: __attribute__((kernel_helper(NUM)))
+> > > > > > > >> > >
+> > > > > > > >> > > Generate gcc compatible headers based on the format in bpf-helpers.h.
+> > > > > > > >> > >
+> > > > > > > >> > > This adds conditional blocks for GCC while leaving clang codepaths
+> > > > > > > >> > > unchanged, for example:
+> > > > > > > >> > >       #if __GNUC__ && !__clang__
+> > > > > > > >> > >       void *bpf_map_lookup_elem(void *map, const void *key)
+> > > > > > > >> > > __attribute__((kernel_helper(1)));
+> > > > > > > >> > >       #else
+> > > > > > > >> > >       static void *(*bpf_map_lookup_elem)(void *map, const void *key) = (void *) 1;
+> > > > > > > >> > >       #endif
+> > > > > > > >> >
+> > > > > > > >> > It does look like that gcc kernel_helper attribute is better than
+> > > > > > > >> > '(void *) 1' style. The original clang uses '(void *) 1' style is
+> > > > > > > >> > just for simplicity.
+> > > > > > > >>
+> > > > > > > >> Isn't the original style going to be needed for backwards compatibility with
+> > > > > > > >> older clang versions for a while?
+> > > > > > > >
+> > > > > > > > I'm curious, is there any added benefit to having this special
+> > > > > > > > kernel_helper attribute vs what we did in Clang for a long time?
+> > > > > > > > Did GCC do it just to be different and require workarounds like this
+> > > > > > > > or there was some technical benefit to this?
+> > > > > > >
+> > > > > > > We did it that way so we could make trouble and piss you off.
+> > > > > > >
+> > > > > > > Nah :)
+> > > > > > >
+> > > > > > > We did it that way because technically speaking the clang construction
+> > > > > > > works relying on particular optimizations to happen to get correct
+> > > > > > > compiled programs, which is not guaranteed to happen and _may_ break in
+> > > > > > > the future.
+> > > > > > >
+> > > > > > > In fact, if you compile a call to such a function prototype with clang
+> > > > > > > with -O0 the compiler will try to load the function's address in a
+> > > > > > > register and then emit an invalid BPF instruction:
+> > > > > > >
+> > > > > > >   28:   8d 00 00 00 03 00 00 00         *unknown*
+> > > > > > >
+> > > > > > > On the other hand the kernel_helper attribute is bullet-proof: will work
+> > > > > > > with any optimization level, with any version of the compiler, and in
+> > > > > > > our opinion it is also more readable, more tidy and more correct.
+> > > > > > >
+> > > > > > > Note I'm not saying what you do in clang is not reasonable; it may be,
+> > > > > > > obviously it works well enough for you in practice.  Only that we have
+> > > > > > > good reasons for doing it differently in GCC.
+> > > > > >
+> > > > > > Not questioning the validity of the reasons, but they created
+> > > > > > the unnecessary difference between compilers.
+> > > > >
+> > > > > Sounds to me like clang is relying on an unreliable hack that may
+> > > > > be difficult to implement in GCC, so let's see what's the best option
+> > > > > moving forwards in terms of a migration path for both GCC and clang.
+> > > >
+> > > > The following is a valid C code:
+> > > > static long (*foo) (void) = (void *) 1234;
+> > > > foo();
+> > > >
+> > > > and GCC has to generate correct assembly assuming it runs at -O1 or higher.
+> > >
+> > > Providing -O1 or higher with gcc-bpf does not seem to work at the moment.
+> >
+> > Let's fix gcc first.
 > 
-> A typical network setup for this feature would be:
+> If the intention is to migrate to kernel_helper for clang as well it
+> seems kind of
+> redundant, is there a real world use case for supporting the '(void *)
+> 1' style in
+> GCC rather than just adding feature detection+kernel_helper support to libbpf?
 > 
->              .--------------------------------------------.
->              |         .--------------------.             |
->              |         |                    |             |
->         .-------------------.               |             |
->         |    | Bond 0  |    |               |             |
->         | .--'---. .---'--. |               |             |
->    .----|-| eth0 |-| eth1 |-|----.    .-----+----.   .----+------.
->    |    | '------' '------' |    |    | Switch 1 |   | Switch 2  |
->    |    '---,---------------'    |    |          +---+           |
->    |       /                     |    '----+-----'   '----+------'
->    |  .---'---.    .------.      |         |              |
->    |  |  br0  |----| VM 1 |      |      ~~~~~~~~~~~~~~~~~~~~~
->    |  '-------'    '------'      |     (                     )
->    |      |        .------.      |     ( Rest of Network     )
->    |      '--------| VM # |      |     (_____________________)
->    |               '------'      |
->    |  Host 1                     |
->    '-----------------------------'
+> My assumption is that kernel helpers are in practice always used via libbpf
+> which appears to be sufficient in terms of being able to provide a compatibility
+> layer via feature detection. Or is there some use case I'm missing here?
+
+static long (*foo) (void) = (void *) 1234;
+is not about calling into "kernel helpers".
+There is no concept of "kernel" in BPF ISA.
+'call 1234' insn means call a function with that absolute address.
+The gcc named that attribute incorrectly.
+It should be renamed to something like __attribute__((fixed_address(1234))).
+
+It's a linux kernel abi choice to interpret 'call abs_addr' as a call to a kernel
+provided function at that address. 1,2,3,... are addresses of functions.
+
+> >
+> > > > There is no indirect call insn defined in BPF ISA yet,
+> > > > so the -O0 behavior is undefined.
+> > >
+> > > Well GCC at least seems to be able to compile BPF programs with -O0 using
+> > > kernel_helper. I assume -O0 is probably just targeting the minimum BPF ISA
+> > > optimization level or something like that which avoids indirect calls.
+> >
+> > There are other reasons why -O0 compiled progs will
+> > fail in the verifier.
 > 
-> Where 'VM1' and 'VM#' are hosts connected to a Linux bridge, br0, with
-> bond0 and its associated links, eth0 & eth1, provide ingress/egress. One
-> can assume bond0, br1, and hosts VM1 to VM# are all contained in a
-> single box, as depicted. Interfaces eth0 and eth1 provide redundant
-> connections to the data center with the requirement to use all bandwidth
-> when the system is functioning normally. Switch 1 and Switch 2 are
-> physical switches that do not implement any advanced L2 management
-> features such as MLAG, Cisco's VPC, or LACP.
+> Why would -O0 generate code that isn't compatible with the selected
+> target BPF ISA?
+
+llvm has no issue producing valid BPF code with -O0.
+It's the kernel verifier that doesn't understand such code.
+For the following code:
+static long (*foo) (void) = (void *) 1234;
+long bar(void)
+{
+    return foo();
+}
+
+With -O[12] llvm will generate
+  call 1234
+  exit
+With -O0
+  r1 = foo ll
+  r1 = *(u64 *)(r1 + 0)
+  callx r1
+  exit
+
+Both codes are valid and equivalent.
+'callx' here is a reserved insn. The kernel verifier doesn't know about it yet,
+but llvm was generting such code for 8+ years.
+
+> > Assuming that kernel_helper attr is actually necessary
+> > we have to add its support to clang as well.
 > 
-> Combining this feature with vlan+srcmac hash policy allows a user to
-> create an access network without the need to use expensive switches that
-> support features like Cisco's VCP.
+> I mean, I'd argue there's a difference between something being arguably a better
+> alternative(optional) and actually being necessary(non-optional).
+
+gcc's attribute is not better.
+It's just a different way to tell compiler about fixed function address.
+
+> > gcc-bpf is a niche. If gcc devs want it to become a real
+> > alternative to clang they have to always aim for feature parity
+> > instead of inventing their own ways of doing things.
 > 
-> [1] https://docs.openvswitch.org/en/latest/topics/bonding/#slb-bonding
-> 
-> Co-developed-by: Long Xin <lxin@redhat.com>
-> Signed-off-by: Long Xin <lxin@redhat.com>
-> Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
-> ---
-> 
-> Notes:
->      v2:
->       * dropped needless abstraction functions and put code in module init
->       * renamed variable "rc" to "ret" to stay consistent with most of the
->         code
->       * fixed parameter setting management, when arp-monitor is turned on
->         this feature will be turned off similar to how miimon and arp-monitor
->         interact
->       * renamed bond_xor_recv to bond_mac_filter_recv for a little more
->         clarity
->       * it appears the implied default return code for any bonding recv probe
->         must be `RX_HANDLER_ANOTHER`. Changed the default return code of
->         bond_mac_filter_recv to use this return value to not break skb
->         processing when the skb dev is switched to the bond dev:
->           `skb->dev = bond->dev`
->      
->      v3: Nik's comments
->       * clarified documentation
->       * fixed inline and basic reverse Christmas tree formatting
->       * zero'ed entry in mac_create
->       * removed read_lock taking in bond_mac_filter_recv
->       * made has_expired() atomic and removed critical sections
->         surrounding calls to has_expired(), this also removed the
->         use-after-free that would have occurred:
->             spin_lock_irqsave(&entry->lock, flags);
->                 if (has_expired(bond, entry))
->                     mac_delete(bond, entry);
->             spin_unlock_irqrestore(&entry->lock, flags); <---
->       * moved init/destroy of mac_filter_tbl to bond_open/bond_close
->         this removed the complex option dependencies, the only behavioural
->         change the user will see is if the bond is up and mac_filter is
->         enabled if they try and set arp_interval they will receive -EBUSY
->       * in bond_changelink moved processing of mac_filter option just below
->         mode processing
->      
->      v4:
->       * rebase to latest net-next
->       * removed rcu_read_lock() call in bond_mac_insert()
->       * used specific spin_lock_{}() calls instead of the irqsave version
->       * Outstanding comments from Nik:
->         https://lore.kernel.org/netdev/4c9db6ac-aa24-2ca2-3e44-18cfb23ac1bc@blackwall.org/
->         - old version of the patch still under discussion
->           https://lore.kernel.org/netdev/d2696dab-2490-feb5-ccb2-96906fc652f0@redhat.com/
->           * response: it has been over a month now and no new comments have come in
->             so I am assuming there is nothing left to the discussion
+> What's ultimately going to help the most in regards to helping gcc-bpf reach
+> feature parity with clang is getting it minimally usable in the real
+> world, because
+> that's how you're going to get more people testing+fixing bugs so that all these
+> differences/incompatibilities can be worked though/fixed.
 
-Not really, I didn't have time to adjust my solution, but it's not hard
-to solve the multicast ingress. More below.
+Can gcc-bpf compile all of selftests/bpf ?
+How many of compiled programs will pass the verifier ?
 
->         - What if anyone decides at some point 5 seconds are not enough or too much?
->           * response: I think making that configurable at a later time should not
->             prevent the inclusion of the initial feature. >         - This bit is pointless, you still have races even though not 
-critical
->           * response: if there are races please point them out simply making a
->             comment about an enum doesn't show the race.
+> If nobody can compile a real world BPF program with gcc-bpf it's likely going to
+> lag further behind.
 
-You had race conditions about the flag, now that you always take the 
-lock you no longer have them, but also the flag is useless.
-
->         - This is not scalable at all, you get the lock even to update the
->           expire on *every* packet, most users go for L3 or L3+L4 and will hit
->           this with different flows on different CPUs.
->           * response: we take the lock to update the value, so that receive
->             traffic is not dropped. Further any implementation, bpf or nft,
->             will also have to take locks to update MAC entries. If there is a
->             specific locking order that will be less bad, I would appreciate
->             that discussion. Concerning L3 or L3+L4 hashing this is not the
->             data I have, in fact the most utilized hash is layer2.
-> 
-
-Yes, there are more scalable alternatives that are already implemented
-in nft and eBPF and you can get them for free if you go with some of the
-options below.
-
-To the point, tbh I'm amazed we're still discussing applying this change :)
-
-anyway here are my suggestions:
-
-a) if you insist on adding some new code then at least add only
-what is missing, i.e. add a xor mode option to limit ingress mcast only
-to the active slave, then use the nftables mac filtering solution that I
-gave you and you'll have the best of both worlds, you'll be able to dump
-the current macs, edit them if needed, control the filtering time and
-have the full nft flexibility, also it will scale much better than this
-
-b) write a 3-4 line bash script that allows mcast only through the 
-active slave, and again use the nft solution I gave you for the rest
-
-c) extend the eBPF program I wrote to do mcast filtering, again it'll 
-scale much better
-
-(tentative) d) figure out a way to solve the mcast ingress entirely with 
-nft, I suspect it's possible but I don't have time to waste to prove it
-
-I don't plan on reviewing the patch in this form because I don't think
-it should be applied at all since all of this can be easily implemented
-with the available tools, but I won't officially nack it either.
-That would be the maintainers' decision.
-
-Cheers,
-  Nik
+selftest/bpf is a first milestone that gcc-bpf has to pass before talking about
+'real world' bpf progs.
