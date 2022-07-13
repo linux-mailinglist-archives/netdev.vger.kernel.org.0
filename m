@@ -2,420 +2,232 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C369573104
-	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 10:26:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 77FE5573130
+	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 10:34:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235601AbiGMI0M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jul 2022 04:26:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58892 "EHLO
+        id S235601AbiGMIeM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jul 2022 04:34:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235599AbiGMIZt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 04:25:49 -0400
-Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B13862A40C
-        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 01:23:57 -0700 (PDT)
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26CLk8ii018144
-        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 01:23:57 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=facebook;
- bh=sGWRkyqkpVz1RGFjg2PBYP+CEYmUvga0JR8HG3YVf4k=;
- b=doLPhZjHaKHeoe0daAVJLg8o21IcN9rMwH74MzK6ihMKQkQo2QAGCFlQ76tEoyvtRBh4
- Jvr5EtErHJdtGIzvxYXwjvpQ6mKd1lhp+T47VkjSfRJKCAqg4Y0/e1hI+X4uCKX91kY2
- ytZPqM9ufSPLgGvwLrNdkMdoU5JbGYTw/jw= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3h9h5f2dbr-3
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 01:23:57 -0700
-Received: from twshared25478.08.ash9.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::f) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28; Wed, 13 Jul 2022 01:23:54 -0700
-Received: by devbig038.lla2.facebook.com (Postfix, from userid 572232)
-        id ECB8E2ED8C2D; Wed, 13 Jul 2022 01:23:44 -0700 (PDT)
-From:   Dylan Yudaken <dylany@fb.com>
-To:     Jens Axboe <axboe@kernel.dk>,
-        Pavel Begunkov <asml.silence@gmail.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <io-uring@vger.kernel.org>
-CC:     <netdev@vger.kernel.org>, <Kernel-team@fb.com>,
-        Dylan Yudaken <dylany@fb.com>
-Subject: [PATCH v2 for-next 3/3] io_uring: support multishot in recvmsg
-Date:   Wed, 13 Jul 2022 01:23:21 -0700
-Message-ID: <20220713082321.1445020-4-dylany@fb.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220713082321.1445020-1-dylany@fb.com>
-References: <20220713082321.1445020-1-dylany@fb.com>
+        with ESMTP id S235573AbiGMIeH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 04:34:07 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C65E98C17C
+        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 01:34:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657701244;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=74dW0jhlKIvaOyEGuXtY/bgXjn9zQ+zDadO8O10/PE4=;
+        b=QAk7NEV4N2zEbg8rxdL9sql/p3kZBS/uSgc7+PR5KXtgbDWexsxO3tTebA/GS+yfHRW6/z
+        oHe9Wwv+upWg39yes5kEh7h6qiY/hDdRVqCjlo1mqE2ny4XrI0kEHjti5DRopAn5dbmnDQ
+        oJcFFZmZgEtAKKZZHWPJJz6cEnvjUBw=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-658-h_teTfYUO-Wf2i05jMZr9w-1; Wed, 13 Jul 2022 04:33:57 -0400
+X-MC-Unique: h_teTfYUO-Wf2i05jMZr9w-1
+Received: by mail-wm1-f72.google.com with SMTP id m20-20020a05600c4f5400b003a03aad6bdfso5177759wmq.6
+        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 01:33:57 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=74dW0jhlKIvaOyEGuXtY/bgXjn9zQ+zDadO8O10/PE4=;
+        b=oQF2BEXA8aVyAqJ1n+J6ER2wEuTEc8CsEUtwM8C8U4UpU7Rdl0z2tiz8CsTMOeWxsV
+         zJAcDNJSSasi9mOn3kn1kBKRzdOmvmtivn5jFsuzn11H9PrBCUVpbbrp/RXxVMnUWMif
+         U3rE/ChPqSqyQtKIht4wFwpdk8/g6WukJPxaShZq7CEtLb+YQOi0NFOpXyp7rvk/I4LP
+         YCH6wP+Nx5TN5mU8JeozRa/EBGx5vdXQUqZULp62owCiKow7bBQ2UqiGk6MGvKKDxe20
+         kJbLNvKC7yWtRDLUGjmEbEWo3WlxtXhIB3+NcCrDX+pFDpz9S2Kb8ZV1mrQksB5RFL5r
+         xTZg==
+X-Gm-Message-State: AJIora/cHBUIUloic34kDEzoU0NpWjP52x3FR6vqga+6Y/y9XbrlTQES
+        gB55g8uMcV68CKikKYga6dMiqBFRsVM6WHed6TcSqpgv0Ub17up7VJeHDZNML0k3VrYbfwjgpmD
+        2/OAj4hVl1a5ocK1y
+X-Received: by 2002:adf:eccb:0:b0:21d:7b41:22c7 with SMTP id s11-20020adfeccb000000b0021d7b4122c7mr1924340wro.543.1657701236586;
+        Wed, 13 Jul 2022 01:33:56 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1u8ITw976yDjianJL9XwDcoXz2Y6QyUbFXu8PB3MPkowu/ymg7juX4C+XbujXlltHzYiurZOQ==
+X-Received: by 2002:adf:eccb:0:b0:21d:7b41:22c7 with SMTP id s11-20020adfeccb000000b0021d7b4122c7mr1924318wro.543.1657701236338;
+        Wed, 13 Jul 2022 01:33:56 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-97-238.dyn.eolo.it. [146.241.97.238])
+        by smtp.gmail.com with ESMTPSA id l26-20020a056000023a00b0021d96b3b6adsm10266971wrz.106.2022.07.13.01.33.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Jul 2022 01:33:55 -0700 (PDT)
+Message-ID: <2dc058285c524363b93ebf9468ff85186b9c72c2.camel@redhat.com>
+Subject: Re: [PATCH net v6] net: rose: fix null-ptr-deref caused by
+ rose_kill_by_neigh
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     duoming@zju.edu.cn
+Cc:     linux-hams@vger.kernel.org, ralf@linux-mips.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Wed, 13 Jul 2022 10:33:54 +0200
+In-Reply-To: <540ab034.3f081.181f6895dba.Coremail.duoming@zju.edu.cn>
+References: <20220711013111.33183-1-duoming@zju.edu.cn>
+         <daa2b799956c286b2cce898bee22fb2a043f5177.camel@redhat.com>
+         <540ab034.3f081.181f6895dba.Coremail.duoming@zju.edu.cn>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: HzriPsxXOMCh3WmQtWSG8ExmwYM1xEo5
-X-Proofpoint-GUID: HzriPsxXOMCh3WmQtWSG8ExmwYM1xEo5
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-12_14,2022-07-13_01,2022-06-22_01
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Similar to multishot recv, this will require provided buffers to be
-used. However recvmsg is much more complex than recv as it has multiple
-outputs. Specifically flags, name, and control messages.
+On Wed, 2022-07-13 at 15:50 +0800, duoming@zju.edu.cn wrote:
+> Hello,
+> 
+> On Tue, 12 Jul 2022 13:00:49 +0200 Paolo Abeni wrote:
+> 
+> > On Mon, 2022-07-11 at 09:31 +0800, Duoming Zhou wrote:
+> > > When the link layer connection is broken, the rose->neighbour is
+> > > set to null. But rose->neighbour could be used by rose_connection()
+> > > and rose_release() later, because there is no synchronization among
+> > > them. As a result, the null-ptr-deref bugs will happen.
+> > > 
+> > > One of the null-ptr-deref bugs is shown below:
+> > > 
+> > >     (thread 1)                  |        (thread 2)
+> > >                                 |  rose_connect
+> > > rose_kill_by_neigh              |    lock_sock(sk)
+> > >   spin_lock_bh(&rose_list_lock) |    if (!rose->neighbour)
+> > >   rose->neighbour = NULL;//(1)  |
+> > >                                 |    rose->neighbour->use++;//(2)
+> > > 
+> > > The rose->neighbour is set to null in position (1) and dereferenced
+> > > in position (2).
+> > > 
+> > > The KASAN report triggered by POC is shown below:
+> > > 
+> > > KASAN: null-ptr-deref in range [0x0000000000000028-0x000000000000002f]
+> > > ...
+> > > RIP: 0010:rose_connect+0x6c2/0xf30
+> > > RSP: 0018:ffff88800ab47d60 EFLAGS: 00000206
+> > > RAX: 0000000000000005 RBX: 000000000000002a RCX: 0000000000000000
+> > > RDX: ffff88800ab38000 RSI: ffff88800ab47e48 RDI: ffff88800ab38309
+> > > RBP: dffffc0000000000 R08: 0000000000000000 R09: ffffed1001567062
+> > > R10: dfffe91001567063 R11: 1ffff11001567061 R12: 1ffff11000d17cd0
+> > > R13: ffff8880068be680 R14: 0000000000000002 R15: 1ffff11000d17cd0
+> > > ...
+> > > Call Trace:
+> > >   <TASK>
+> > >   ? __local_bh_enable_ip+0x54/0x80
+> > >   ? selinux_netlbl_socket_connect+0x26/0x30
+> > >   ? rose_bind+0x5b0/0x5b0
+> > >   __sys_connect+0x216/0x280
+> > >   __x64_sys_connect+0x71/0x80
+> > >   do_syscall_64+0x43/0x90
+> > >   entry_SYSCALL_64_after_hwframe+0x46/0xb0
+> > > 
+> > > This patch adds lock_sock() in rose_kill_by_neigh() in order to
+> > > synchronize with rose_connect() and rose_release(). Then, changing
+> > > type of 'neighbour->use' from unsigned short to atomic_t in order to
+> > > mitigate race conditions caused by holding different socket lock while
+> > > updating 'neighbour->use'.
+> > > 
+> > > Meanwhile, this patch adds sock_hold() protected by rose_list_lock
+> > > that could synchronize with rose_remove_socket() in order to mitigate
+> > > UAF bug caused by lock_sock() we add.
+> > > 
+> > > What's more, there is no need using rose_neigh_list_lock to protect
+> > > rose_kill_by_neigh(). Because we have already used rose_neigh_list_lock
+> > > to protect the state change of rose_neigh in rose_link_failed(), which
+> > > is well synchronized.
+> > > 
+> > > Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+> > > Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+> > > ---
+> > > Changes in v6:
+> > >   - Change sk_for_each() to sk_for_each_safe().
+> > >   - Change type of 'neighbour->use' from unsigned short to atomic_t.
+> > > 
+> > >  include/net/rose.h    |  2 +-
+> > >  net/rose/af_rose.c    | 19 +++++++++++++------
+> > >  net/rose/rose_in.c    | 12 ++++++------
+> > >  net/rose/rose_route.c | 24 ++++++++++++------------
+> > >  net/rose/rose_timer.c |  2 +-
+> > >  5 files changed, 33 insertions(+), 26 deletions(-)
+> > > 
+> > > diff --git a/include/net/rose.h b/include/net/rose.h
+> > > index 0f0a4ce0fee..d5ddebc556d 100644
+> > > --- a/include/net/rose.h
+> > > +++ b/include/net/rose.h
+> > > @@ -95,7 +95,7 @@ struct rose_neigh {
+> > >  	ax25_cb			*ax25;
+> > >  	struct net_device		*dev;
+> > >  	unsigned short		count;
+> > > -	unsigned short		use;
+> > > +	atomic_t		use;
+> > >  	unsigned int		number;
+> > >  	char			restarted;
+> > >  	char			dce_mode;
+> > > diff --git a/net/rose/af_rose.c b/net/rose/af_rose.c
+> > > index bf2d986a6bc..54e7b76c4f3 100644
+> > > --- a/net/rose/af_rose.c
+> > > +++ b/net/rose/af_rose.c
+> > > @@ -163,16 +163,23 @@ static void rose_remove_socket(struct sock *sk)
+> > >  void rose_kill_by_neigh(struct rose_neigh *neigh)
+> > >  {
+> > >  	struct sock *s;
+> > > +	struct hlist_node *tmp;
+> > >  
+> > >  	spin_lock_bh(&rose_list_lock);
+> > > -	sk_for_each(s, &rose_list) {
+> > > +	sk_for_each_safe(s, tmp, &rose_list) {
+> > >  		struct rose_sock *rose = rose_sk(s);
+> > >  
+> > > +		sock_hold(s);
+> > > +		spin_unlock_bh(&rose_list_lock);
+> > > +		lock_sock(s);
+> > >  		if (rose->neighbour == neigh) {
+> > >  			rose_disconnect(s, ENETUNREACH, ROSE_OUT_OF_ORDER, 0);
+> > > -			rose->neighbour->use--;
+> > > +			atomic_dec(&rose->neighbour->use);
+> > >  			rose->neighbour = NULL;
+> > >  		}
+> > > +		release_sock(s);
+> > > +		sock_put(s);
+> > 
+> > I'm sorry, this does not work. At this point both 's' and 'tmp' sockets
+> > can be freed and reused. Both iterators are not valid anymore when you
+> > acquire the 'rose_list_lock' later.
+> 
+> Thank you for your time and reply! But I think both 's' and 'tmp' can not
+> be freed and reused in rose_kill_by_neigh(). Because rose_remove_socket()
+> calls sk_del_node_init() which is protected by rose_list_lock to delete the
+> socket node from the hlist and if sk->sk_refcnt equals to 1, the socket will
+> be deallocated.
+> 
+> static void rose_remove_socket(struct sock *sk)
+> {
+> 	spin_lock_bh(&rose_list_lock);
+> 	sk_del_node_init(sk);
+> 	spin_unlock_bh(&rose_list_lock);
+> }
+> 
+> https://elixir.bootlin.com/linux/v5.19-rc6/source/net/rose/af_rose.c#L152
+> 
+> Both 's' and 'tmp' in rose_kill_by_neigh() is also protected by rose_list_lock.
 
-Support this by introducing a new struct io_uring_recvmsg_out with 4
-fields. namelen, controllen and flags match the similar out fields in
-msghdr from standard recvmsg(2), payloadlen is the length of the payload
-following the header.
-This struct is placed at the start of the returned buffer. Based on what
-the user specifies in struct msghdr, the next bytes of the buffer will be
-name (the next msg_namelen bytes), and then control (the next
-msg_controllen bytes). The payload will come at the end. The return value
-in the CQE is the total used size of the provided buffer.
+The above loop explicitly releases the rose_list_lock at each
+iteration. Additionally, the reference count to 's' is released before
+re-acquiring such lock. By the time rose_list_lock is re-acquired, some
+other process could have removed from the list both 's' and 'tmp' and
+even de-allocate them.
 
-Signed-off-by: Dylan Yudaken <dylany@fb.com>
----
- include/uapi/linux/io_uring.h |   7 ++
- io_uring/net.c                | 178 ++++++++++++++++++++++++++++++----
- io_uring/net.h                |   6 ++
- 3 files changed, 172 insertions(+), 19 deletions(-)
+Moving the 'sock_put(s);' after re-acquiring the rose_list_lock could
+protect from 's' being de-allocated, but can't protect from 'tmp' being
+deallocated, neither from 's' and 'tmp' being removed from the list.
 
-diff --git a/include/uapi/linux/io_uring.h b/include/uapi/linux/io_uring.=
-h
-index 499679134961..4c9b11e2e991 100644
---- a/include/uapi/linux/io_uring.h
-+++ b/include/uapi/linux/io_uring.h
-@@ -613,4 +613,11 @@ struct io_uring_file_index_range {
- 	__u64	resv;
- };
-=20
-+struct io_uring_recvmsg_out {
-+	__u32 namelen;
-+	__u32 controllen;
-+	__u32 payloadlen;
-+	__u32 flags;
-+};
-+
- #endif
-diff --git a/io_uring/net.c b/io_uring/net.c
-index 5bc3440a8290..56f734acced6 100644
---- a/io_uring/net.c
-+++ b/io_uring/net.c
-@@ -352,6 +352,11 @@ static int __io_recvmsg_copy_hdr(struct io_kiocb *re=
-q,
- 			sr->len =3D iomsg->fast_iov[0].iov_len;
- 			iomsg->free_iov =3D NULL;
- 		}
-+
-+		if (req->flags & REQ_F_APOLL_MULTISHOT) {
-+			iomsg->namelen =3D msg.msg_namelen;
-+			iomsg->controllen =3D msg.msg_controllen;
-+		}
- 	} else {
- 		iomsg->free_iov =3D iomsg->fast_iov;
- 		ret =3D __import_iovec(READ, msg.msg_iov, msg.msg_iovlen, UIO_FASTIOV,
-@@ -399,6 +404,11 @@ static int __io_compat_recvmsg_copy_hdr(struct io_ki=
-ocb *req,
- 			sr->len =3D clen;
- 			iomsg->free_iov =3D NULL;
- 		}
-+
-+		if (req->flags & REQ_F_APOLL_MULTISHOT) {
-+			iomsg->namelen =3D msg.msg_namelen;
-+			iomsg->controllen =3D msg.msg_controllen;
-+		}
- 	} else {
- 		iomsg->free_iov =3D iomsg->fast_iov;
- 		ret =3D __import_iovec(READ, (struct iovec __user *)uiov, msg.msg_iovl=
-en,
-@@ -455,8 +465,6 @@ int io_recvmsg_prep(struct io_kiocb *req, const struc=
-t io_uring_sqe *sqe)
- 	if (sr->msg_flags & MSG_ERRQUEUE)
- 		req->flags |=3D REQ_F_CLEAR_POLLIN;
- 	if (sr->flags & IORING_RECV_MULTISHOT) {
--		if (req->opcode =3D=3D IORING_OP_RECVMSG)
--			return -EINVAL;
- 		if (!(req->flags & REQ_F_BUFFER_SELECT))
- 			return -EINVAL;
- 		if (sr->msg_flags & MSG_WAITALL)
-@@ -483,12 +491,15 @@ static inline void io_recv_prep_retry(struct io_kio=
-cb *req)
- }
-=20
- /*
-- * Finishes io_recv
-+ * Finishes io_recv and io_recvmsg.
-  *
-  * Returns true if it is actually finished, or false if it should run
-  * again (for multishot).
-  */
--static inline bool io_recv_finish(struct io_kiocb *req, int *ret, unsign=
-ed int cflags)
-+static inline bool io_recv_finish(struct io_kiocb *req,
-+				  int *ret,
-+				  unsigned int cflags,
-+				  bool multishot_finished)
- {
- 	if (!(req->flags & REQ_F_APOLL_MULTISHOT)) {
- 		io_req_set_res(req, *ret, cflags);
-@@ -496,7 +507,7 @@ static inline bool io_recv_finish(struct io_kiocb *re=
-q, int *ret, unsigned int c
- 		return true;
- 	}
-=20
--	if (*ret > 0) {
-+	if (!multishot_finished) {
- 		if (io_post_aux_cqe(req->ctx, req->cqe.user_data, *ret,
- 				    cflags | IORING_CQE_F_MORE, false)) {
- 			io_recv_prep_retry(req);
-@@ -518,6 +529,104 @@ static inline bool io_recv_finish(struct io_kiocb *=
-req, int *ret, unsigned int c
- 	return true;
- }
-=20
-+static int io_recvmsg_prep_multishot(
-+	struct io_async_msghdr *kmsg,
-+	struct io_sr_msg *sr,
-+	void __user **buf,
-+	size_t *len)
-+{
-+	unsigned long used =3D 0;
-+
-+	if (*len < sizeof(struct io_uring_recvmsg_out))
-+		return -EFAULT;
-+	used +=3D sizeof(struct io_uring_recvmsg_out);
-+
-+	if (kmsg->namelen) {
-+		if (kmsg->namelen + used > *len)
-+			return -EFAULT;
-+		used +=3D kmsg->namelen;
-+	}
-+	if (kmsg->controllen) {
-+		if (kmsg->controllen + used > *len)
-+			return -EFAULT;
-+		kmsg->msg.msg_control_user =3D (void *)((unsigned long)*buf + used);
-+		kmsg->msg.msg_controllen =3D kmsg->controllen;
-+		used +=3D kmsg->controllen;
-+	}
-+	if (used >=3D UINT_MAX)
-+		return -EOVERFLOW;
-+
-+	sr->buf =3D *buf; /* stash for later copy */
-+	*buf =3D (void *)((unsigned long)*buf + used);
-+	*len -=3D used;
-+	kmsg->payloadlen =3D *len;
-+	return 0;
-+}
-+
-+struct io_recvmsg_multishot_hdr {
-+	struct io_uring_recvmsg_out msg;
-+	struct sockaddr_storage addr;
-+} __packed;
-+
-+static int io_recvmsg_multishot(
-+	struct socket *sock,
-+	struct io_sr_msg *io,
-+	struct io_async_msghdr *kmsg,
-+	unsigned int flags,
-+	bool *finished)
-+{
-+	int err;
-+	int copy_len;
-+	struct io_recvmsg_multishot_hdr hdr;
-+
-+	if (kmsg->namelen)
-+		kmsg->msg.msg_name =3D &hdr.addr;
-+	kmsg->msg.msg_flags =3D flags & (MSG_CMSG_CLOEXEC|MSG_CMSG_COMPAT);
-+	kmsg->msg.msg_namelen =3D 0;
-+
-+	if (sock->file->f_flags & O_NONBLOCK)
-+		flags |=3D MSG_DONTWAIT;
-+
-+	err =3D sock_recvmsg(sock, &kmsg->msg, flags);
-+	*finished =3D err <=3D 0;
-+	if (err < 0)
-+		return err;
-+
-+	hdr.msg =3D (struct io_uring_recvmsg_out) {
-+		.controllen =3D kmsg->controllen - kmsg->msg.msg_controllen,
-+		.flags =3D kmsg->msg.msg_flags & ~MSG_CMSG_COMPAT
-+	};
-+
-+	hdr.msg.payloadlen =3D err;
-+	if (err > kmsg->payloadlen)
-+		err =3D kmsg->payloadlen;
-+
-+	copy_len =3D sizeof(struct io_uring_recvmsg_out);
-+	if (kmsg->msg.msg_namelen > kmsg->namelen)
-+		copy_len +=3D kmsg->namelen;
-+	else
-+		copy_len +=3D kmsg->msg.msg_namelen;
-+
-+	/*
-+	 *      "fromlen shall refer to the value before truncation.."
-+	 *                      1003.1g
-+	 */
-+	hdr.msg.namelen =3D kmsg->msg.msg_namelen;
-+
-+	/* ensure that there is no gap between hdr and sockaddr_storage */
-+	BUILD_BUG_ON(offsetof(struct io_recvmsg_multishot_hdr, addr) !=3D
-+		     sizeof(struct io_uring_recvmsg_out));
-+	if (copy_to_user(io->buf, &hdr, copy_len)) {
-+		*finished =3D true;
-+		return -EFAULT;
-+	}
-+
-+	return sizeof(struct io_uring_recvmsg_out) +
-+		kmsg->namelen +
-+		kmsg->controllen +
-+		err;
-+}
-+
- int io_recvmsg(struct io_kiocb *req, unsigned int issue_flags)
- {
- 	struct io_sr_msg *sr =3D io_kiocb_to_cmd(req);
-@@ -527,6 +636,7 @@ int io_recvmsg(struct io_kiocb *req, unsigned int iss=
-ue_flags)
- 	unsigned flags;
- 	int ret, min_ret =3D 0;
- 	bool force_nonblock =3D issue_flags & IO_URING_F_NONBLOCK;
-+	bool multishot_finished =3D true;
-=20
- 	sock =3D sock_from_file(req->file);
- 	if (unlikely(!sock))
-@@ -545,16 +655,29 @@ int io_recvmsg(struct io_kiocb *req, unsigned int i=
-ssue_flags)
- 	    (sr->flags & IORING_RECVSEND_POLL_FIRST))
- 		return io_setup_async_msg(req, kmsg, issue_flags);
-=20
-+retry_multishot:
- 	if (io_do_buffer_select(req)) {
- 		void __user *buf;
-+		size_t len =3D sr->len;
-=20
--		buf =3D io_buffer_select(req, &sr->len, issue_flags);
-+		buf =3D io_buffer_select(req, &len, issue_flags);
- 		if (!buf)
- 			return -ENOBUFS;
-+
-+		if (req->flags & REQ_F_APOLL_MULTISHOT) {
-+			ret =3D io_recvmsg_prep_multishot(kmsg, sr,
-+							&buf, &len);
-+
-+			if (ret) {
-+				io_kbuf_recycle(req, issue_flags);
-+				return ret;
-+			}
-+		}
-+
- 		kmsg->fast_iov[0].iov_base =3D buf;
--		kmsg->fast_iov[0].iov_len =3D sr->len;
-+		kmsg->fast_iov[0].iov_len =3D len;
- 		iov_iter_init(&kmsg->msg.msg_iter, READ, kmsg->fast_iov, 1,
--				sr->len);
-+				len);
- 	}
-=20
- 	flags =3D sr->msg_flags;
-@@ -564,10 +687,22 @@ int io_recvmsg(struct io_kiocb *req, unsigned int i=
-ssue_flags)
- 		min_ret =3D iov_iter_count(&kmsg->msg.msg_iter);
-=20
- 	kmsg->msg.msg_get_inq =3D 1;
--	ret =3D __sys_recvmsg_sock(sock, &kmsg->msg, sr->umsg, kmsg->uaddr, fla=
-gs);
-+	if (req->flags & REQ_F_APOLL_MULTISHOT)
-+		ret =3D io_recvmsg_multishot(sock, sr, kmsg, flags,
-+					   &multishot_finished);
-+	else
-+		ret =3D __sys_recvmsg_sock(sock, &kmsg->msg, sr->umsg, kmsg->uaddr, fl=
-ags);
-+
- 	if (ret < min_ret) {
--		if (ret =3D=3D -EAGAIN && force_nonblock)
--			return io_setup_async_msg(req, kmsg, issue_flags);
-+		if (ret =3D=3D -EAGAIN && force_nonblock) {
-+			ret =3D io_setup_async_msg(req, kmsg, issue_flags);
-+			if (ret =3D=3D -EAGAIN && (req->flags & IO_APOLL_MULTI_POLLED) =3D=3D
-+					       IO_APOLL_MULTI_POLLED) {
-+				io_kbuf_recycle(req, issue_flags);
-+				return IOU_ISSUE_SKIP_COMPLETE;
-+			}
-+			return ret;
-+		}
- 		if (ret =3D=3D -ERESTARTSYS)
- 			ret =3D -EINTR;
- 		if (ret > 0 && io_net_retry(sock, flags)) {
-@@ -580,11 +715,6 @@ int io_recvmsg(struct io_kiocb *req, unsigned int is=
-sue_flags)
- 		req_set_fail(req);
- 	}
-=20
--	/* fast path, check for non-NULL to avoid function call */
--	if (kmsg->free_iov)
--		kfree(kmsg->free_iov);
--	io_netmsg_recycle(req, issue_flags);
--	req->flags &=3D ~REQ_F_NEED_CLEANUP;
- 	if (ret > 0)
- 		ret +=3D sr->done_io;
- 	else if (sr->done_io)
-@@ -596,8 +726,18 @@ int io_recvmsg(struct io_kiocb *req, unsigned int is=
-sue_flags)
- 	if (kmsg->msg.msg_inq)
- 		cflags |=3D IORING_CQE_F_SOCK_NONEMPTY;
-=20
--	io_req_set_res(req, ret, cflags);
--	return IOU_OK;
-+	if (!io_recv_finish(req, &ret, cflags, multishot_finished))
-+		goto retry_multishot;
-+
-+	if (multishot_finished) {
-+		io_netmsg_recycle(req, issue_flags);
-+		/* fast path, check for non-NULL to avoid function call */
-+		if (kmsg->free_iov)
-+			kfree(kmsg->free_iov);
-+		req->flags &=3D ~REQ_F_NEED_CLEANUP;
-+	}
-+
-+	return ret;
- }
-=20
- int io_recv(struct io_kiocb *req, unsigned int issue_flags)
-@@ -684,7 +824,7 @@ int io_recv(struct io_kiocb *req, unsigned int issue_=
-flags)
- 	if (msg.msg_inq)
- 		cflags |=3D IORING_CQE_F_SOCK_NONEMPTY;
-=20
--	if (!io_recv_finish(req, &ret, cflags))
-+	if (!io_recv_finish(req, &ret, cflags, ret <=3D 0))
- 		goto retry_multishot;
-=20
- 	return ret;
-diff --git a/io_uring/net.h b/io_uring/net.h
-index 178a6d8b76e0..db20ce9d6546 100644
---- a/io_uring/net.h
-+++ b/io_uring/net.h
-@@ -9,6 +9,12 @@
- struct io_async_msghdr {
- 	union {
- 		struct iovec		fast_iov[UIO_FASTIOV];
-+		struct {
-+			struct iovec	fast_iov_one;
-+			__kernel_size_t	controllen;
-+			int		namelen;
-+			__kernel_size_t	payloadlen;
-+		};
- 		struct io_cache_entry	cache;
- 	};
- 	/* points to an allocated iov, if NULL we use fast_iov instead */
---=20
-2.30.2
+The above code is not safe.
+
+/P
+
 
