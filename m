@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CFD6757392A
-	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 16:49:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 25E9A57392E
+	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 16:50:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236346AbiGMOs6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jul 2022 10:48:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52448 "EHLO
+        id S236494AbiGMOt4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jul 2022 10:49:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236278AbiGMOs4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 10:48:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1909B21BE;
-        Wed, 13 Jul 2022 07:48:56 -0700 (PDT)
+        with ESMTP id S230427AbiGMOtz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 10:49:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DA632613E;
+        Wed, 13 Jul 2022 07:49:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B11B6B82025;
-        Wed, 13 Jul 2022 14:48:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1BD0C3411E;
-        Wed, 13 Jul 2022 14:48:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9640561E0B;
+        Wed, 13 Jul 2022 14:49:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E4B2C3411E;
+        Wed, 13 Jul 2022 14:49:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657723733;
-        bh=uiCGtM0WRA+1HmoM7RCgdlbEQVWM+21G8RM3hI+jodo=;
+        s=k20201202; t=1657723794;
+        bh=ZJlaya3bj+MoS5OVPgQllizfALxL2/jWhyLEifRnbl8=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=n14om2g/olH34oG/VNNsfwN9mWzb60zP3Ir7cXiyGRsPMlL9ON7F4ZH0lKP0rs/vx
-         EGFILkFvsULfLaMCOMEhCk3tCylKzTVGUAAvu4fhd5vAreV0IqLrGQK992o53oQDKn
-         47gn5Gflda7kQX6CIX1W/0dQZjSooPf/LGM3V/iCE6wS1iY9Lz/xiLUKwY0cylBU86
-         hHplQAqHOnaNftEevZdcH/BDmCVKVl1bv+jn7Wr4u5sg5Xyknnocuhk+S47sGgHYwG
-         KZ+0Y/iTs1yEgDW3qdphfFTvbXIx6z4pSbwbkgZha2p0k+6xKezcrQtqG6EqJOai9/
-         B4cIsLXvk6Ndw==
-Date:   Wed, 13 Jul 2022 16:48:43 +0200
+        b=sSYaYXACNRKzzvzpT00ioaFUcDG5yM5b4gVemr0HubsMlIIQHRKNc3EpjjglmOE3Y
+         ptn1xrd+m1KVimqL2OOtZ9mi3/Io4iYQcIYH1tvpmdFC7e50E1f9RC0jPEtuwmH2hs
+         20Tfb1vaUMzfkVTP4xUWOCM4A1XsZ0WDIuh+chFPwecQhKOs18udPveRTzkXBNjnE7
+         bWYtueeALl7mCWbqgXxrAzEjCaWREQ4cPhna6fybe/fafEp15HSxgSJV/tQE3kwPrB
+         Z9JaGIK/xx4BxTTZQTBbZpbUjcjprY3mitu6s4f2avNaE6Q9ssmRIpFibNt2D6OVcN
+         Pf3XAS9zAUPFw==
+Date:   Wed, 13 Jul 2022 16:49:44 +0200
 From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
 To:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -64,12 +64,12 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Vladimir Oltean <olteanv@gmail.com>,
         Woojung Huh <woojung.huh@microchip.com>
-Subject: Re: [PATCH RFC net-next v2 5/6] net: dsa: create swnode fixed-link
- if using default params
-Message-ID: <20220713164843.5dcb7235@thinkpad>
-In-Reply-To: <E1oBd23-006UD8-1d@rmk-PC.armlinux.org.uk>
+Subject: Re: [PATCH RFC net-next v2 6/6] net: dsa: mv88e6xxx: remove
+ handling for DSA and CPU ports
+Message-ID: <20220713164944.317f5d9b@thinkpad>
+In-Reply-To: <E1oBd28-006UDF-6Q@rmk-PC.armlinux.org.uk>
 References: <Ys7RdzGgHbYiPyB1@shell.armlinux.org.uk>
-        <E1oBd23-006UD8-1d@rmk-PC.armlinux.org.uk>
+        <E1oBd28-006UDF-6Q@rmk-PC.armlinux.org.uk>
 X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -84,14 +84,16 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 13 Jul 2022 15:08:03 +0100
+On Wed, 13 Jul 2022 15:08:08 +0100
 "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk> wrote:
 
-> Create and use a swnode fixed-link specification for phylink if no
-> parameters are given in DT for a fixed-link. This allows phylink to
-> be used for "default" cases for DSA and CPU ports.
+> As we now always use a fixed-link for DSA and CPU ports, we no longer
+> need the hack in the Marvell code to make this work. Remove it.
 >=20
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> This is especially important with the conversion of DSA drivers to
+> phylink_pcs, as the PCS code only gets called if we are using
+> phylink for the port.
+>=20
 > Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
 Reviewed-by: Marek Beh=C3=BAn <kabel@kernel.org>
