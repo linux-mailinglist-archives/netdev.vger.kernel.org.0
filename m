@@ -2,116 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DFE65572FE1
-	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 10:00:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 41DA7573014
+	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 10:07:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234944AbiGMIA1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jul 2022 04:00:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59166 "EHLO
+        id S234652AbiGMIG5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jul 2022 04:06:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234729AbiGMIA0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 04:00:26 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4FF2E0249;
-        Wed, 13 Jul 2022 01:00:24 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id o5-20020a17090a3d4500b001ef76490983so2303159pjf.2;
-        Wed, 13 Jul 2022 01:00:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=UoKkbTCGppE1RjnxJhiFSTs25wxtlVXgMJ54CPVb2mk=;
-        b=C//LZB2o5gZfRHuzi3bO0tBHyBOV56+mmRQD83HreBx7UgZ6b+k9lJpEFTKvL48jfZ
-         PZ8AGMsGxDIcB9uB1JpbgcvvbXWS43SkHxcnjzRx6WnrfLiDcXwfxsDaI1I0/yQF5/Ic
-         7i/5v5OeaHzG4pmSiOzilSEPMXv3wxJWikuZWtwWpeKbJ9swAGxczj+HZNkcOAmbHE+/
-         PKdvUQCHHHE5C+VszPrXYYqXQ4mqSCuwNkNHwbZVd5e4rqYr3bnSgPpWthOx458ygKfZ
-         BQNWvcJUNp0+VMaqd8pmcWribUA8A3OuXaCOt4AWlijsUdXMjn6vOw+iXjmaHKnt8xTh
-         6XzQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=UoKkbTCGppE1RjnxJhiFSTs25wxtlVXgMJ54CPVb2mk=;
-        b=B0zcZIC+3OqDkZbJgFhFmWl22Hzqf3U2KEGP7VKSuIeQgUmis1OuWSWpLsnXzxbRcy
-         Nzz3OCyAz2BlB1Wir7nAzEV884+Ci/vz+XEkgN/q5SK759p8vEmQK71XWoVtlrp1lblM
-         MwFvtAy6TH44vx+WvfXXUZC1ezaQJXFyoPaWucUWqK8A7LTLH+Jz1+FNTwpwpGZvaXjE
-         2gR94aRCaAZk5zpIY4YKYd5JhcVHls0ijWm+V8kDAnVK/W9XU31tJTpyDwWCEGfOR8vb
-         hVDLlsRjvlu1L2zezRxjQfcnf224Fz2uJBzpPzsHvbDxvX0IJPujRKYn13v7XZE/E2yS
-         Gk/w==
-X-Gm-Message-State: AJIora/82cBdvfunOifjNyib0lR1qLH0TODPHxLmbE0RC90G8HBdJ4NI
-        XmkxZh//pXcC1VRWWMd8RQYBnfS5N3RzDw==
-X-Google-Smtp-Source: AGRyM1vVTSqvvqV5eXj6we2txPZJMsjJKBNk7FSArmTJ7QPZDu8ST+LhD4F1yFmWUObwyhLSmkFHSg==
-X-Received: by 2002:a17:90b:4f82:b0:1f0:95d:c029 with SMTP id qe2-20020a17090b4f8200b001f0095dc029mr2547730pjb.66.1657699223980;
-        Wed, 13 Jul 2022 01:00:23 -0700 (PDT)
-Received: from cloud-MacBookPro ([2601:646:8201:c2e0:5ee1:7060:fe1d:88a2])
-        by smtp.gmail.com with ESMTPSA id z27-20020aa79f9b000000b0052089e1b88esm8187747pfr.192.2022.07.13.01.00.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Jul 2022 01:00:23 -0700 (PDT)
-Date:   Wed, 13 Jul 2022 01:00:23 -0700
-From:   Binyi Han <dantengknight@gmail.com>
-To:     Manish Chopra <manishc@marvell.com>, GR-Linux-NIC-Dev@marvell.com,
-        Coiby Xu <coiby.xu@gmail.com>,
+        with ESMTP id S234828AbiGMIGx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 04:06:53 -0400
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E92FDE9213;
+        Wed, 13 Jul 2022 01:06:51 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id 268A680AE;
+        Wed, 13 Jul 2022 08:01:08 +0000 (UTC)
+Date:   Wed, 13 Jul 2022 11:06:49 +0300
+From:   Tony Lindgren <tony@atomide.com>
+To:     Saravana Kannan <saravanak@google.com>
+Cc:     Rob Herring <robh@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Joe Perches <joe@perches.com>
-Cc:     netdev@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v4 2/2] staging: qlge: Avoid multiplication while keep the
- same logic
-Message-ID: <31fe21bf4a9e8f13cf27bd50073e9d5d197654ea.1657697683.git.dantengknight@gmail.com>
-References: <cover.1657697683.git.dantengknight@gmail.com>
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Kevin Hilman <khilman@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Android Kernel Team <kernel-team@android.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "open list:THERMAL" <linux-pm@vger.kernel.org>,
+        Linux IOMMU <iommu@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Alexander Stein <alexander.stein@ew.tq-group.com>
+Subject: Re: [PATCH v2 1/9] PM: domains: Delete usage of
+ driver_deferred_probe_check_state()
+Message-ID: <Ys59Gctsllu6GraU@atomide.com>
+References: <CAGETcx8c+P0r6ARmhv+ERaz9zAGBOVJQu3bSDXELBycEGfkYQw@mail.gmail.com>
+ <CAL_JsqJd3J6k6pRar7CkHVaaPbY7jqvzAePd8rVDisRV-dLLtg@mail.gmail.com>
+ <CAGETcx9ZmeTyP1sJCFZ9pBbMyXeifQFohFvWN3aBPx0sSOJ2VA@mail.gmail.com>
+ <Yr6HQOtS4ctUYm9m@atomide.com>
+ <Yr6QUzdoFWv/eAI6@atomide.com>
+ <CAGETcx-0bStPx8sF3BtcJFiu74NwiB0btTQ+xx_B=8B37TEb8w@mail.gmail.com>
+ <CAGETcx-Yp2JKgCNfaGD0SzZg9F2Xnu8A3zXmV5=WX1hY7uR=0g@mail.gmail.com>
+ <Yr7wA8d4J7xtjwsH@atomide.com>
+ <Ys0ewNYFB25RWNju@atomide.com>
+ <CAGETcx8H9je6Yg-fciU5-dh22xB0_h6XzAfH5UsCSeET97wrpA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <cover.1657697683.git.dantengknight@gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <CAGETcx8H9je6Yg-fciU5-dh22xB0_h6XzAfH5UsCSeET97wrpA@mail.gmail.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Avoid the more expensive multiplication while keep the same logic.
+* Saravana Kannan <saravanak@google.com> [220713 00:44]:
+> On Tue, Jul 12, 2022 at 12:12 AM Tony Lindgren <tony@atomide.com> wrote:
+> >
+> > * Tony Lindgren <tony@atomide.com> [220701 16:00]:
+> > > Also, looks like both with the initcall change for prm, and the patch
+> > > below, there seems to be also another problem where my test devices no
+> > > longer properly idle somehow compared to reverting the your two patches
+> > > in next.
+> >
+> > Sorry looks like was a wrong conclusion. While trying to track down this
+> > issue, I cannot reproduce it. So I don't see issues idling with either
+> > the initcall change or your test patch.
+> >
+> > Not sure what caused my earlier tests to fail though. Maybe a config
+> > change to enable more debugging, or possibly some kind of warm reset vs
+> > cold reset type issue.
+> 
+> Thanks for getting back to me about the false alarm.
 
-Signed-off-by: Binyi Han <dantengknight@gmail.com>
----
- drivers/staging/qlge/qlge_main.c | 14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
+FYI I'm pretty sure I had also some pending sdhci related patches applied
+while testing causing extra issues.
 
-diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
-index 5209456edc39..4b166c66cfc5 100644
---- a/drivers/staging/qlge/qlge_main.c
-+++ b/drivers/staging/qlge/qlge_main.c
-@@ -3009,9 +3009,10 @@ static int qlge_start_rx_ring(struct qlge_adapter *qdev, struct rx_ring *rx_ring
- 
- 		for (page_entries = 0;
- 		     page_entries < MAX_DB_PAGES_PER_BQ(QLGE_BQ_LEN);
--		     page_entries++)
--			base_indirect_ptr[page_entries] =
--				cpu_to_le64(tmp + (page_entries * DB_PAGE_SIZE));
-+		     page_entries++) {
-+			base_indirect_ptr[page_entries] = cpu_to_le64(tmp);
-+			tmp += DB_PAGE_SIZE;
-+		}
- 		cqicb->lbq_addr = cpu_to_le64(rx_ring->lbq.base_indirect_dma);
- 		cqicb->lbq_buf_size =
- 			cpu_to_le16(QLGE_FIT16(qdev->lbq_buf_size));
-@@ -3025,9 +3026,10 @@ static int qlge_start_rx_ring(struct qlge_adapter *qdev, struct rx_ring *rx_ring
- 
- 		for (page_entries = 0;
- 		     page_entries < MAX_DB_PAGES_PER_BQ(QLGE_BQ_LEN);
--		     page_entries++)
--			base_indirect_ptr[page_entries] =
--				cpu_to_le64(tmp + (page_entries * DB_PAGE_SIZE));
-+		     page_entries++) {
-+			base_indirect_ptr[page_entries] = cpu_to_le64(tmp);
-+			tmp += DB_PAGE_SIZE;
-+		}
- 		cqicb->sbq_addr =
- 			cpu_to_le64(rx_ring->sbq.base_indirect_dma);
- 		cqicb->sbq_buf_size = cpu_to_le16(SMALL_BUFFER_SIZE);
--- 
-2.25.1
+> OK, so it looks like my patch to drivers/of/property.c fixed the issue
+> for you. In that case, let me test that a bit more thoroughly on my
+> end to make sure it's not breaking any existing functionality. And if
+> it's not breaking, I'll land that in the kernel eventually. Might be a
+> bit too late for 5.19. I'm considering temporarily reverting my series
+> depending on how the rest of the issues from my series go.
 
+OK. Seems the series is otherwise working and in case of issues, partial
+revert should be enough in the worst case. But yeah, probably some more
+testing is needed.
+
+Regards,
+
+Tony
