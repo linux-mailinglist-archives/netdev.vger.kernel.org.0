@@ -2,51 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0ED68572A3A
-	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 02:25:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CAB83572A50
+	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 02:37:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230368AbiGMAZa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jul 2022 20:25:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53096 "EHLO
+        id S230300AbiGMAhb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jul 2022 20:37:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229711AbiGMAZ2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 20:25:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2835CD3DD;
-        Tue, 12 Jul 2022 17:25:27 -0700 (PDT)
+        with ESMTP id S231905AbiGMAha (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 20:37:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAD22B7D6A;
+        Tue, 12 Jul 2022 17:37:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8E59FB81C21;
-        Wed, 13 Jul 2022 00:25:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0A4CC3411C;
-        Wed, 13 Jul 2022 00:25:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4C8C361852;
+        Wed, 13 Jul 2022 00:37:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 748CAC3411C;
+        Wed, 13 Jul 2022 00:37:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657671925;
-        bh=1YNcoWIS2y1EJK6xuFFvvK029UyYEWCxaYb0oiKwI/8=;
+        s=k20201202; t=1657672648;
+        bh=zrEAqCvFaLLRfDkoCkAVybVZ0VUg0r6WiAhoHWGPViU=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=klxNbggvF4MOAuWRX4NIgpT9Ay/jnvrJ4elv2a0bMFOqyTbPqbEvOe0ttHeqyd1gM
-         /aOQwj+HFqo9vHCv5ob1Scq8AM5zI/qQitHQITiPT9Tx/ktAopL9dmnGtJb8mfa46d
-         W3TyllWUGmeKjcQtNN1Dp31p0911oO1DXvbMckXtObq+ueqF29YEmFPgYRfHYR8j0A
-         CRAA2Pbg7S9N+HzYC+J9qAwhJQhUgn1ATRpILZnMFrnVAYtpb/D4nyjpHifhonjjv3
-         22L6qwtZStcqNblkU7v+CtpWXPpQB+VQEkwpxbdZteB+eLpn1oLWL5mMrNPxmbD8m6
-         XDNYruS5hJDYA==
-Date:   Tue, 12 Jul 2022 17:25:15 -0700
+        b=POM9zk+cYuG8o1oZk2xlHZdtmynzg8avxWcTBUX8reU8tgQ+AHP8ej2XVH5woil6q
+         a82BdQYfUnGT1aAYmh/3UxC1vOzG8glQr5JDazfnP/PwbmlcyRJkOak1ajzwaf3XhD
+         0JfWp+IzEVfSyecROZ/WuSaKwwAiteku88YP/xnCzFLZNsJpXxvitCbt0YEboWrCWB
+         CW/oHbmpaS1U7+cl25XGgoaPexqTw5A8l32a4cqq/ndrSVwh6DRDdWWrCsZ/Jij3DF
+         PBYxrIAqh+evFBkqj4BSYczxw8I/IgyYAAp+Ys+aifYIo/5JHYul8rrJHCNcs5rMta
+         aspntO1csOddg==
+Date:   Tue, 12 Jul 2022 17:37:19 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH net v2 2/2] selftests/net: test nexthop without gw
-Message-ID: <20220712172515.126dc119@kernel.org>
-In-Reply-To: <Ys1JefI+co1IFda4@kroah.com>
-References: <9fb5e3df069db50396799a250c4db761b1505dd3.camel@redhat.com>
-        <20220712095545.10947-1-nicolas.dichtel@6wind.com>
-        <20220712095545.10947-2-nicolas.dichtel@6wind.com>
-        <Ys1JefI+co1IFda4@kroah.com>
+To:     Hayes Wang <hayeswang@realtek.com>
+Cc:     Paolo Abeni <pabeni@redhat.com>, davem@davemloft.net,
+        netdev@vger.kernel.org, nic_swsd@realtek.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] r8152: fix accessing unset transport header
+Message-ID: <20220712173719.0e834365@kernel.org>
+In-Reply-To: <e3745b77b8537e08bbace5088d9f41e21755e08b.camel@redhat.com>
+References: <20220711070004.28010-389-nic_swsd@realtek.com>
+        <e3745b77b8537e08bbace5088d9f41e21755e08b.camel@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -60,13 +55,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 12 Jul 2022 12:14:17 +0200 Greg KH wrote:
-> On Tue, Jul 12, 2022 at 11:55:45AM +0200, Nicolas Dichtel wrote:
-> > This test implement the scenario described in the previous patch.  
+On Tue, 12 Jul 2022 15:06:25 +0200 Paolo Abeni wrote:
+> On Mon, 2022-07-11 at 15:00 +0800, Hayes Wang wrote:
+> > A warning is triggered by commit 66e4c8d95008 ("net: warn if transport
+> > header was not set"). The warning is harmless, because the value from
+> > skb_transport_offset() is only used for skb_is_gso() is true or the
+> > skb->ip_summed is equal to CHECKSUM_PARTIAL.
+> > 
+> > Signed-off-by: Hayes Wang <hayeswang@realtek.com>  
 > 
-> "previous patch" does not work well when things are committed to the
-> kernel tree.  Please be descriptive.
+> If this is targeting the -net tree please add a suitable Fixes tag,
+> thanks!
 
-And please don't resend your patches in reply to the previous version.
-Add a lore link to the previous version in the commit message if you
-want. In-reply-to breaks the review ordering for us :/
+And FWIW I think the fixes tag you want is:
+
+Fixes: 66e4c8d95008 ("net: warn if transport header was not set")
