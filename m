@@ -2,45 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B92E573FD2
+	by mail.lfdr.de (Postfix) with ESMTP id C8625573FD3
 	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 00:59:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229644AbiGMW7O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jul 2022 18:59:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54174 "EHLO
+        id S229704AbiGMW7P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jul 2022 18:59:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229478AbiGMW7O (ORCPT
+        with ESMTP id S229515AbiGMW7O (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 18:59:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E791B29809
-        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 15:59:12 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDEA42A42B
+        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 15:59:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 87D3C618B0
-        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 22:59:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1F26C34114;
-        Wed, 13 Jul 2022 22:59:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6034F61651
+        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 22:59:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1334C341C0;
+        Wed, 13 Jul 2022 22:59:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1657753152;
-        bh=PZQv3NoxyLWG+EjWxyooV5sFWIFwHmOdRntQ31DHqIY=;
-        h=From:To:Cc:Subject:Date:From;
-        b=FdcZk58XptNAQ4n1EdS9lKXB02ZvgSnFdO2TMHAKew9tnFg4/purGrLSd45PXnS/I
-         rJNum4LoH+cvh4VBtih4/RtRbmDms+Z3Mw2iBAa/0IurHqDn6iuSYtDmhYgIRrfO0M
-         7ekGWNV5OeAxOkfS8xUTGE/8eLABIgIlb9ZH+pzbUAXXiqibe7tKIfOBk99oGQMv8L
-         KaMKKDtUEdJl0D8PG9tYcLZYZXLhbrfnKfGPPwi1fsFW1WdRe0ySOr/x/KFknh8TRq
-         8C2S0TVNX7M5Rso50CwLkyzah71j11iHhDp7ugDlZjaN4c7fymAAZ+ddtCIU7k7N4O
-         LOVgqHh2mNU8g==
+        bh=RtAInv/HJweYJo81jqJhDc5kDIsF4USARigflvaOV24=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=s4WodDGBjEQA10lKym0ctC+7oyGDMfayFA/N/69pUakjNd/yITG3aYJB49Z6YRwVb
+         HSKfnwVTB0IHDAQy8QJlv24KZOVS5/UvcU4xOBBwZHeMumonJvJJq3nBF8fx1qnf4B
+         TxjPxmqFsnnJ9IEZvMV9pwxIm1jQbCo8dy5Uei5Px4keLLl+qR+7SXDAcLgQqE6sgo
+         wqnw2kt8LejeNB1Xx3Cqilujz+4Vsj+2s9oesgbnPhSFAu45/ncmMZsuFdyUZw+NRp
+         GLF1bNqGcRqdaxVvEnZi2EkvNQRkVEG2I0IZh9O9+lmIkY8l7YIpsiXrDEtGLamFG8
+         TJVdmA/o3vvng==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>
-Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org
-Subject: [pull request][net-next 00/15] mlx5 updates 2022-07-13
-Date:   Wed, 13 Jul 2022 15:58:44 -0700
-Message-Id: <20220713225859.401241-1-saeed@kernel.org>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [net-next 01/15] net/mlx5: Use the bitmap API to allocate bitmaps
+Date:   Wed, 13 Jul 2022 15:58:45 -0700
+Message-Id: <20220713225859.401241-2-saeed@kernel.org>
 X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220713225859.401241-1-saeed@kernel.org>
+References: <20220713225859.401241-1-saeed@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -53,106 +56,92 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Saeed Mahameed <saeedm@nvidia.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-This series provides misc updates to mlx5 driver.
-For more information please see tag log below.
+Use bitmap_zalloc()/bitmap_free() instead of hand-writing them.
 
-Please pull and let me know if there is any problem.
+It is less verbose and it improves the semantic.
 
-Thanks,
-Saeed.
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+---
+ .../net/ethernet/mellanox/mlx5/core/lib/dm.c  | 19 ++++++++-----------
+ 1 file changed, 8 insertions(+), 11 deletions(-)
 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/dm.c b/drivers/net/ethernet/mellanox/mlx5/core/lib/dm.c
+index 7e02cbe8c3b9..9482e51ac82a 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lib/dm.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/dm.c
+@@ -38,8 +38,7 @@ struct mlx5_dm *mlx5_dm_create(struct mlx5_core_dev *dev)
+ 			    MLX5_LOG_SW_ICM_BLOCK_SIZE(dev));
+ 
+ 		dm->steering_sw_icm_alloc_blocks =
+-			kcalloc(BITS_TO_LONGS(steering_icm_blocks),
+-				sizeof(unsigned long), GFP_KERNEL);
++			bitmap_zalloc(steering_icm_blocks, GFP_KERNEL);
+ 		if (!dm->steering_sw_icm_alloc_blocks)
+ 			goto err_steering;
+ 	}
+@@ -50,8 +49,7 @@ struct mlx5_dm *mlx5_dm_create(struct mlx5_core_dev *dev)
+ 			    MLX5_LOG_SW_ICM_BLOCK_SIZE(dev));
+ 
+ 		dm->header_modify_sw_icm_alloc_blocks =
+-			kcalloc(BITS_TO_LONGS(header_modify_icm_blocks),
+-				sizeof(unsigned long), GFP_KERNEL);
++			bitmap_zalloc(header_modify_icm_blocks, GFP_KERNEL);
+ 		if (!dm->header_modify_sw_icm_alloc_blocks)
+ 			goto err_modify_hdr;
+ 	}
+@@ -66,8 +64,7 @@ struct mlx5_dm *mlx5_dm_create(struct mlx5_core_dev *dev)
+ 			    MLX5_LOG_SW_ICM_BLOCK_SIZE(dev));
+ 
+ 		dm->header_modify_pattern_sw_icm_alloc_blocks =
+-			kcalloc(BITS_TO_LONGS(header_modify_pattern_icm_blocks),
+-				sizeof(unsigned long), GFP_KERNEL);
++			bitmap_zalloc(header_modify_pattern_icm_blocks, GFP_KERNEL);
+ 		if (!dm->header_modify_pattern_sw_icm_alloc_blocks)
+ 			goto err_pattern;
+ 	}
+@@ -75,10 +72,10 @@ struct mlx5_dm *mlx5_dm_create(struct mlx5_core_dev *dev)
+ 	return dm;
+ 
+ err_pattern:
+-	kfree(dm->header_modify_sw_icm_alloc_blocks);
++	bitmap_free(dm->header_modify_sw_icm_alloc_blocks);
+ 
+ err_modify_hdr:
+-	kfree(dm->steering_sw_icm_alloc_blocks);
++	bitmap_free(dm->steering_sw_icm_alloc_blocks);
+ 
+ err_steering:
+ 	kfree(dm);
+@@ -97,7 +94,7 @@ void mlx5_dm_cleanup(struct mlx5_core_dev *dev)
+ 		WARN_ON(!bitmap_empty(dm->steering_sw_icm_alloc_blocks,
+ 				      BIT(MLX5_CAP_DEV_MEM(dev, log_steering_sw_icm_size) -
+ 					  MLX5_LOG_SW_ICM_BLOCK_SIZE(dev))));
+-		kfree(dm->steering_sw_icm_alloc_blocks);
++		bitmap_free(dm->steering_sw_icm_alloc_blocks);
+ 	}
+ 
+ 	if (dm->header_modify_sw_icm_alloc_blocks) {
+@@ -105,7 +102,7 @@ void mlx5_dm_cleanup(struct mlx5_core_dev *dev)
+ 				      BIT(MLX5_CAP_DEV_MEM(dev,
+ 							   log_header_modify_sw_icm_size) -
+ 				      MLX5_LOG_SW_ICM_BLOCK_SIZE(dev))));
+-		kfree(dm->header_modify_sw_icm_alloc_blocks);
++		bitmap_free(dm->header_modify_sw_icm_alloc_blocks);
+ 	}
+ 
+ 	if (dm->header_modify_pattern_sw_icm_alloc_blocks) {
+@@ -113,7 +110,7 @@ void mlx5_dm_cleanup(struct mlx5_core_dev *dev)
+ 				      BIT(MLX5_CAP_DEV_MEM(dev,
+ 							   log_header_modify_pattern_sw_icm_size) -
+ 					  MLX5_LOG_SW_ICM_BLOCK_SIZE(dev))));
+-		kfree(dm->header_modify_pattern_sw_icm_alloc_blocks);
++		bitmap_free(dm->header_modify_pattern_sw_icm_alloc_blocks);
+ 	}
+ 
+ 	kfree(dm);
+-- 
+2.36.1
 
-The following changes since commit 6a605eb1d71ea8cec50bdf7151c772c599a5fb70:
-
-  octeontx2-af: returning uninitialized variable (2022-07-13 14:51:34 +0100)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2022-07-13
-
-for you to fetch changes up to 1a55048674379f9b093e0a6dbef586d28b55f9ae:
-
-  net/mlx5e: Remove the duplicating check for striding RQ when enabling LRO (2022-07-13 15:56:49 -0700)
-
-----------------------------------------------------------------
-mlx5-updates-2022-07-13
-
-1) Support 802.1ad for bridge offloads
-
-Vlad Buslov Says:
-=================
-
-Current mlx5 bridge VLAN offload implementation only supports 802.1Q VLAN
-Ethernet protocol. That protocol type is assumed by default and
-SWITCHDEV_ATTR_ID_BRIDGE_VLAN_PROTOCOL notification is ignored.
-
-In order to support dynamically setting VLAN protocol handle
-SWITCHDEV_ATTR_ID_BRIDGE_VLAN_PROTOCOL notification by flushing FDB and
-re-creating VLAN modify header actions with a new protocol. Implement support
-for 802.1ad protocol by saving the current VLAN protocol to per-bridge variable
-and re-create the necessary flow groups according to its current value (either
-use cvlan or svlan flow fields).
-==================
-
-2) debugfs to count ongoing FW commands
-
-3) debugfs to query eswitch vport firmware diagnostic counters
-
-4) Add missing meter configuration in flow action
-
-5) Some misc cleanup
-
-----------------------------------------------------------------
-Christophe JAILLET (1):
-      net/mlx5: Use the bitmap API to allocate bitmaps
-
-Jianbo Liu (1):
-      net/mlx5e: configure meter in flow action
-
-Maxim Mikityanskiy (2):
-      net/mlx5e: Move the LRO-XSK check to mlx5e_fix_features
-      net/mlx5e: Remove the duplicating check for striding RQ when enabling LRO
-
-Michael Guralnik (1):
-      net/mlx5: Expose vnic diagnostic counters for eswitch managed vports
-
-Rustam Subkhankulov (1):
-      net/mlx5e: Removed useless code in function
-
-Tariq Toukan (1):
-      net/mlx5: debugfs, Add num of in-use FW command interface slots
-
-Vlad Buslov (6):
-      net/mlx5: Bridge, refactor groups sizes and indices
-      net/mlx5: Bridge, rename filter fg to vlan_filter
-      net/mlx5: Bridge, extract VLAN push/pop actions creation
-      net/mlx5: Bridge, implement infrastructure for VLAN protocol change
-      net/mlx5: Bridge, implement QinQ support
-      net/mlx5e: Extend flower police validation
-
-Yishai Hadas (2):
-      net/mlx5: Introduce ifc bits for using software vhca id
-      net/mlx5: Use software VHCA id when it's supported
-
- drivers/net/ethernet/mellanox/mlx5/core/Makefile   |   2 +-
- drivers/net/ethernet/mellanox/mlx5/core/debugfs.c  |  24 ++
- .../ethernet/mellanox/mlx5/core/en/rep/bridge.c    |   6 +
- .../ethernet/mellanox/mlx5/core/en/tc/act/police.c |   6 +
- .../ethernet/mellanox/mlx5/core/en_fs_ethtool.c    |   5 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c  |  18 +-
- .../net/ethernet/mellanox/mlx5/core/esw/bridge.c   | 408 +++++++++++++++++----
- .../net/ethernet/mellanox/mlx5/core/esw/bridge.h   |   6 +-
- .../net/ethernet/mellanox/mlx5/core/esw/debugfs.c  | 182 +++++++++
- drivers/net/ethernet/mellanox/mlx5/core/eswitch.c  |   6 +
- drivers/net/ethernet/mellanox/mlx5/core/eswitch.h  |   5 +
- .../ethernet/mellanox/mlx5/core/eswitch_offloads.c |  21 ++
- drivers/net/ethernet/mellanox/mlx5/core/fw.c       |   4 +
- drivers/net/ethernet/mellanox/mlx5/core/lib/dm.c   |  19 +-
- drivers/net/ethernet/mellanox/mlx5/core/main.c     |  49 +++
- drivers/net/ethernet/mellanox/mlx5/core/vport.c    |  14 +-
- include/linux/mlx5/driver.h                        |   1 +
- include/linux/mlx5/mlx5_ifc.h                      |  25 +-
- 18 files changed, 684 insertions(+), 117 deletions(-)
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/esw/debugfs.c
