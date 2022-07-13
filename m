@@ -2,497 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FE0C572EF2
-	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 09:19:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 88409572F19
+	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 09:22:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234092AbiGMHTj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jul 2022 03:19:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46528 "EHLO
+        id S234630AbiGMHWg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jul 2022 03:22:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229968AbiGMHTi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 03:19:38 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30CF75C9E1;
-        Wed, 13 Jul 2022 00:19:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
-        Message-Id:Date:Subject:Cc:To:From:Content-Type:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-To:Resent-Cc:
-        Resent-Message-ID:In-Reply-To:References;
-        bh=ocFiboKT+wXRxdcF8qb17PSSG33q5N+R3QAfiNxrkD4=; t=1657696776; x=1658906376; 
-        b=G315dt4V3cjVCVi4XuwmTIG8HyDPWUNSGszvAcG5OOTWqfnbvgcZW0hDDJF8EEIFPXBHInfb+ox
-        tZ1xNFHl6dX29+za8EaUXoAPQpTe9kCKb+fqvA+lQ1ouxe7Out+B8qwGukZOPoZYK0QjFyYhm5He/
-        EKCKPWyKXI5DU4fmzDYzV76CLiTggPDa9xg6A6CA0AV5s6dPISWkaxVI1QDfIKHP3Guly9ayQ6iUr
-        G2rD/zleBq+/kJWq6fvzg8G6zGwiTkvIAI4XBuqIeeKP0z7u2yKcYG2ME4Cj86vP9PdKog1aftYjH
-        xv8B6NupaBrEYyFmMtmonv5/BXHGWJN/oI/Q==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.95)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1oBWek-00EbjT-Db;
-        Wed, 13 Jul 2022 09:19:34 +0200
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     netdev@vger.kernel.org
-Cc:     linux-wireless@vger.kernel.org
-Subject: pull-request: wireless-next-2022-07-13
-Date:   Wed, 13 Jul 2022 09:19:31 +0200
-Message-Id: <20220713071932.20538-1-johannes@sipsolutions.net>
-X-Mailer: git-send-email 2.36.1
+        with ESMTP id S234322AbiGMHWW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 03:22:22 -0400
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2114.outbound.protection.outlook.com [40.107.94.114])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B54B5BAAA3;
+        Wed, 13 Jul 2022 00:22:21 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=USc5YnvBxlSWlXlimxDAO98aEfbGic0d8IZawJCmS/Jo+E8AqJoPqA3FqB2XFhLTpCP8/XKFZxoD1XR3OqP8gGSqBkZHxFz5nPhGRtD38f6JqCiuhNONHcsdBkfsOuTeWGjIa8UkbrseUTDUtySFv7DtnbOePmhL2Ko6fAEG7DJ9lIoUV1BXbtnprkq/QD8K526loSYwAAY0TV8/qFSIpErFrXD7S15NngplJ1b8TNyUET0GjudVWFbhjCaKYkkmxkhd8W8NFYYk59blke0AWQKcdNAFfAV6ZMYh3JFpWobpVN8pl5PjhW1wcHQ8v7CT3CvDdYGsxv63HegouYBCqg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=hCu+xOgtabFEM/r7j8pnZHQ885/nAZ4/ProQRMZJbJA=;
+ b=HwxqrgIxAdjlV7dLtSd6mxCraKw6U+ukw+o/J1IUjHFQ91Cnv67FJco5AeFdNKKKKH2uKVqYMnT70Bds4Etg4dAODYlW87p6HnKQKB5Y76WmDtaKHS6/avVgO2ab26leG05tne1l7iW/09b0GT0uBrlcmPSDMkHWaX289CpZyIvy6sRi0g3Ypk57jxrD0ls7NHWW4ovzkkdrNpDl+6aaqxrqsPGK7nJ/GN/rIIYQKwn0q3k+d3Iev9h6gZlV18u+4tU5pdpAZLr2Df8uKVA8WM9nB4l0kVM337GTEsqrUdnevorx2zVVM3P2tjr1I0wy599w6Am/WEu016/g1BAZVg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=hCu+xOgtabFEM/r7j8pnZHQ885/nAZ4/ProQRMZJbJA=;
+ b=OfcT86Cmp6j4lWvIz5ioO7PIWGniPFxe+UjHpimX9dEx4lOOrEIhgHv0CqmDlCY4wjaBsaoZIrQXdBIzICX91p3yuloIBvwkEZLWSwT2ZwN7qsYS2TS56wh1wvhB/Mq3EaVXGcORm3aWA+1XY1MMcWDgFF+Z1T14U5sgW9ek2uw=
+Received: from SN6PR2101MB1327.namprd21.prod.outlook.com
+ (2603:10b6:805:107::9) by DM4PR21MB3320.namprd21.prod.outlook.com
+ (2603:10b6:8:69::20) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.5; Wed, 13 Jul
+ 2022 07:22:19 +0000
+Received: from SN6PR2101MB1327.namprd21.prod.outlook.com
+ ([fe80::59ea:cdde:5229:d4f0]) by SN6PR2101MB1327.namprd21.prod.outlook.com
+ ([fe80::59ea:cdde:5229:d4f0%7]) with mapi id 15.20.5458.005; Wed, 13 Jul 2022
+ 07:22:19 +0000
+From:   Dexuan Cui <decui@microsoft.com>
+To:     Ajay Sharma <sharmaajay@microsoft.com>,
+        Long Li <longli@microsoft.com>,
+        KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Leon Romanovsky <leon@kernel.org>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "shiraz.saleem@intel.com" <shiraz.saleem@intel.com>
+CC:     "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
+Subject: RE: [Patch v4 06/12] net: mana: Define data structures for protection
+ domain and memory registration
+Thread-Topic: [Patch v4 06/12] net: mana: Define data structures for
+ protection domain and memory registration
+Thread-Index: AQHYgSXZ61KmVR7xZES2DK7HXoNYta122DDwgAUKhgCAACpp0A==
+Date:   Wed, 13 Jul 2022 07:22:19 +0000
+Message-ID: <SN6PR2101MB13273A97F6709C7752F37A87BF899@SN6PR2101MB1327.namprd21.prod.outlook.com>
+References: <1655345240-26411-1-git-send-email-longli@linuxonhyperv.com>
+ <1655345240-26411-7-git-send-email-longli@linuxonhyperv.com>
+ <SN6PR2101MB13276E8879F455D06318118EBF879@SN6PR2101MB1327.namprd21.prod.outlook.com>
+ <BL1PR21MB3283DDCF92E59105F9D40330D6899@BL1PR21MB3283.namprd21.prod.outlook.com>
+In-Reply-To: <BL1PR21MB3283DDCF92E59105F9D40330D6899@BL1PR21MB3283.namprd21.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=b2f59ba0-0f91-467d-abb8-8c0490284381;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-07-09T23:40:16Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: c9c40e9b-2223-423f-5f99-08da64a06bf5
+x-ms-traffictypediagnostic: DM4PR21MB3320:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: yAO11wg9EEqCV0UccNksophNKZCmrKV30Eeo9Pw+i8lWqXiNbFPdK2XAdeHAPKxlD7xO9FYj4HJk0yDxQ7dsvmAgOhQ2nRu1EtwemG+NEpAJV1vchiBbHZTcNEFuriuwjm9eym574W63syyjiW2lpzxEPBgpatCWusDfw2AjpajBxGvRBz63MJ/dNT9IuqIknz06b/YcOD7NNDhCNMp6XgBtAqJOTVvGI2vm0L1s+/1sR/VpHTDw1ysN/ZyJihtzdbT05tamepaiW0Rm9KGAJIuq9DTMvk7WwAi6bUTg4zkc/NYct66Ew6ub+6RERNp3BRTUFFXvDD5EZnzs1Nisr86UA3TtxlIRGtmEdXwYimZqV7L4abtIWX9PXlslzBP7VXD81LA49eeEzpWNwBUBwGs1XynplnOwfrmQduqjOr/TB/dnvvdcHElJehOBVglJuqC2QvpQfmfHyl93H5VuAI67SKJCujs5Xu2eAc+8KdWmpsJvUTdO00GAMkhACcMkniKbMyInRoFX0p8r+l0UPTwPiSoilved7exmwKKP+JNysn9Ow6xBLSqxsUoWgrEctvREEC6FEaEoLP4bpiYKOhjYigUhtib5XiBe8SkdFzTmUrskkgzw7mu/HGMMnFJbdGID0bR3m6u2vCf1cmhoROD6rtE+DqVLcZYfUYvMW14Tp7RmoR1o7/dWL+d6qJGQhyqNk+b7XWPYoR3hUDgl7ZW52E2YmGvp5u5F3d9cwsYMsv3PT4xZztZDbcGlCRAjQgCwLVxM8MNoAKdKtrGo54wW+dcaK6ekh7h7CHUwtnc9iz+Nsh4cAwo57jWVQopEZdcpyyVUmUznDdHNwCJnH1/1r7PjapgjnPNVViGepuxQrAzsWPILN6GY8YS7zpQx
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR2101MB1327.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(376002)(366004)(39860400002)(346002)(396003)(451199009)(921005)(33656002)(82960400001)(82950400001)(10290500003)(5660300002)(7416002)(478600001)(52536014)(9686003)(26005)(8936002)(55016003)(110136005)(122000001)(316002)(54906003)(186003)(8676002)(7696005)(83380400001)(53546011)(6506007)(76116006)(66556008)(66946007)(66446008)(66476007)(64756008)(4326008)(71200400001)(38070700005)(41300700001)(8990500004)(86362001)(2906002)(38100700002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?ReLV7wOl3v4jzEfzcOyCess1KpDNf/mZSrDXJvO8Xcck9XLlvpb3B2n3dNoh?=
+ =?us-ascii?Q?b14eD4xl2S5DAQGI8j6Q4TeT7vPv0wBB6Bg86yS36IyPdcRQQTvu15KYYLf8?=
+ =?us-ascii?Q?3EY1ZKHydDl1Mn4UYQvGuB9V9wNPRe9itpM71frekUABRqiVUL6OJx3/QSw8?=
+ =?us-ascii?Q?+53z2jL7r+kqib2S+43RHaOCX0JplMrD7Pgvgj7iSqUnsdIPTM8I+Jx1U/Q3?=
+ =?us-ascii?Q?YvBbHyeBBsRjlgewpdFoPB1Sbd7yGD1cBVwe4J40mg5GoUErLMHHTponscKC?=
+ =?us-ascii?Q?v705NONfeaK2SwzOJpAaGpe5RAYgin+IjDr6LvmFqKiy7Amg3XjrJHyjbCmF?=
+ =?us-ascii?Q?rY8d7+/7vl5QWjpz7IJ0+nySimM7CyoWGFNmRFyAwAlyYdansZxtEzOIWt/x?=
+ =?us-ascii?Q?vGdA+EI9yag21K2n0t+6FQl/y2RUuZJON6deXY221lXdjEzg3vo7RmO2awMu?=
+ =?us-ascii?Q?kc7Ye+vsn6iWi1WsNHqeGrskYcnEbT+3FL9PfD5VrzDXmYqKYHFJt30EnOOH?=
+ =?us-ascii?Q?BMn35ZKOxownNgIB3prIy80m9NfLQtMkqQSjvsoJkdykCU3ypxqMxKL4whv/?=
+ =?us-ascii?Q?s4OyakLG+FyFk/LN7npTMzGA//xeZ/q9Ou8N0NE38+1/0DO109R5eaELnzxz?=
+ =?us-ascii?Q?YPAPc/+ku6jUm5Rt+Lcu9qz7dpjukwsZWhsA7B5hfB8WEjB/++rjr7lmWuxW?=
+ =?us-ascii?Q?aHZ4iw43LjsIV0Xw9nGYbqvq+8jy7riv3c52ZBmUW9E2+RTa+aTSpwN+eIc9?=
+ =?us-ascii?Q?QowCF/pewvxoQdvLGeBAhd66nol/qYb0DD5yPRhx8Bc1rqdg5Um1wMapq+03?=
+ =?us-ascii?Q?RQvRczRxNKeiLMVmHtg6vyN0/3MTWUoYvMy81osQ9d7cxksNyfx5xNPRZuiU?=
+ =?us-ascii?Q?jz6UQlzSWOk7t5RT9zzSOAxHeF1OWNeYk7LQdsqDeNa1a2gI/biXEvKosfMW?=
+ =?us-ascii?Q?7FcbLTbdK0dykeoaeYdeUANTuBMzEdWysfyhy75d6YvbQp3pAuV08Cry/TKL?=
+ =?us-ascii?Q?+QBr7X1AQ3oEPzRPVXkN5q3Wbwz5ToPrV3lgeOx30aJE69KH4GMp/VnMVDpn?=
+ =?us-ascii?Q?2pvbSlgxnmGdP43KN+ZR/C9WNfMToYRsJ8+n9Am4JdNir64lKI7XGJVO2eTi?=
+ =?us-ascii?Q?UbpadRedUDmncTRZNIbtklMjzeuVyxXYg3cYRngTpiT2V1y9+EtJoDTCU9bd?=
+ =?us-ascii?Q?xkcy1QpmuKcB9J2waDeg2ovxvGa6GEgHrvE85D/kclClpSVKXGsD5+lbKBZY?=
+ =?us-ascii?Q?oX/4oN9/+dbZWkGXBGnl88bZXnw1eC1hppPQ+KsIcLdF6SZ7JNSJEMrc+xmq?=
+ =?us-ascii?Q?b+JBp7PbVwB5eB+vdEPFi2oIAdwf5qA9SbvsQ5GHWylClFNEJTB4ZlnlSdZK?=
+ =?us-ascii?Q?VyR2pEXWV7Oth8UCl2HwdUimFiyjYtviXXqoJl0U55rKENj5FG0cB+MdaFsA?=
+ =?us-ascii?Q?kM4Mw736/M5TxBQ6tKHr3QDE0xHGHb7JYXe4eZMykPcglLh5JE9tb5HqJaBs?=
+ =?us-ascii?Q?/r/EG3Ij7ZKGSgumgqHae3e5GSAtAL7AK3rztskvH5C/6hDEH9UsH0UmjNd6?=
+ =?us-ascii?Q?ysjUe0ZNH8/KoluvX/i8i5CksbXZljjQnaznQWXw?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR2101MB1327.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c9c40e9b-2223-423f-5f99-08da64a06bf5
+X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Jul 2022 07:22:19.4821
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: kCnJzfSayxM+xV/cGCp/QNW8TZJbmeEzYR8tsce0HNLNGOOccJM0eY7AibOcQwFJ1T5dC4RSVK5Vt6qK/hVuRA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR21MB3320
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+> From: Ajay Sharma <sharmaajay@microsoft.com>
+> Sent: Tuesday, July 12, 2022 9:39 PM
+> To: Dexuan Cui <decui@microsoft.com>; Long Li <longli@microsoft.com>; KY
+>  ...
+> > The definition of struct gdma_create_mr_params is not naturally aligned=
+.
+> > This can potenially cause issues.
+> This is union and so the biggest element is aligned to word. I feel since=
+ this is
+> not passed to the hw it should be fine.
 
-And another one, for next! This one's big, due to the first
-parts of multi-link operation (MLO) support - though that's
-not nearly done yet (have probably about as many patches as
-here already in the pipeline again).
+Ajay, you're right. I didn't realize struct gdma_create_mr_params is not re=
+ally
+passed to the PF driver or the device. Please ignore my comments on
+struct gdma_create_mr_params. Sorry for the confusion!
 
-Please pull and let me know if there's any problem.
+> > BTW, Haiyang added "/* HW DATA */ " to other definitions, e.g.
+> > gdma_create_queue_resp. Can you please add the same comment for
+> > consistency?
+It's still recommended that we add the tag "/* HW DATA */ " to new definiti=
+ons
+that are passed to the PF driver or the device.
 
-Thanks,
-johannes
+> > +struct gdma_create_mr_request {
+> > +	struct gdma_req_hdr hdr;
+> > +	gdma_obj_handle_t pd_handle;
+> > +	enum gdma_mr_type mr_type;
+> > +	u32 reserved;
+> > +
+> > +	union {
+> > +		struct {
+> > +			enum gdma_mr_access_flags access_flags;
+> > +		} gpa;
+> > +
+> > +		struct {
+> > +			gdma_obj_handle_t dma_region_handle;
+> > +			u64 virtual_address;
+> > +			enum gdma_mr_access_flags access_flags;
+>=20
+> Similarly, there is a hidden u32 field here. We should explicitly define =
+it.
 
-
-
-The following changes since commit fbb89d02e33a8c8f522d75882f5f19c65b722b46:
-
-  net: sparx5: Allow mdb entries to both CPU and ports (2022-06-15 13:01:26 +0100)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless-next.git tags/wireless-next-2022-07-13
-
-for you to fetch changes up to 58b6259d820d63c2adf1c7541b54cce5a2ae6073:
-
-  wifi: mac80211_hwsim: add back erroneously removed cast (2022-07-11 13:16:30 +0200)
-
-----------------------------------------------------------------
-A fairly large set of updates for next, highlights:
-
-ath10k
- * ethernet frame format support
-
-rtw89
- * TDLS support
-
-cfg80211/mac80211
- * airtime fairness fixes
- * EHT support continued, especially in AP mode
- * initial (and still major) rework for multi-link
-   operation (MLO) from 802.11be/wifi 7
-
-As usual, also many small updates/cleanups/fixes/etc.
-
-----------------------------------------------------------------
-Alexey Kodanev (1):
-      wifi: iwlegacy: 4965: fix potential off-by-one overflow in il4965_rs_fill_link_cmd()
-
-Aloka Dixit (1):
-      wifi: nl80211: retrieve EHT related elements in AP mode
-
-Baochen Qiang (1):
-      ath11k: Fix warning on variable 'sar' dereference before check
-
-Christian 'Ansuel' Marangi (1):
-      ath11k: fix missing skb drop on htc_tx_completion error
-
-Christophe JAILLET (1):
-      wifi: mac80211: Use the bitmap API to allocate bitmaps
-
-Felix Fietkau (7):
-      wifi: mac80211: switch airtime fairness back to deficit round-robin scheduling
-      wifi: mac80211: make sta airtime deficit field s32 instead of s64
-      wifi: mac80211: consider aql_tx_pending when checking airtime deficit
-      wifi: mac80211: keep recently active tx queues in scheduling list
-      wifi: mac80211: add a per-PHY AQL limit to improve fairness
-      wifi: mac80211: add debugfs file to display per-phy AQL pending airtime
-      wifi: mac80211: only accumulate airtime deficit for active clients
-
-Guo Zhengkui (2):
-      ath5k: replace ternary operator with min()
-      ath9k: replace ternary operator with max()
-
-Jeongik Cha (1):
-      wifi: mac80211_hwsim: fix race condition in pending packet
-
-Jiang Jian (1):
-      ath9k: remove unexpected words "the" in comments
-
-Johan Hovold (2):
-      ath11k: fix netdev open race
-      ath11k: fix IRQ affinity warning on shutdown
-
-Johannes Berg (53):
-      wifi: mac80211: reject WEP or pairwise keys with key ID > 3
-      wifi: cfg80211: do some rework towards MLO link APIs
-      wifi: mac80211: move some future per-link data to bss_conf
-      wifi: mac80211: move interface config to new struct
-      wifi: mac80211: reorg some iface data structs for MLD
-      wifi: mac80211: split bss_info_changed method
-      wifi: mac80211: add per-link configuration pointer
-      wifi: mac80211: pass link ID where already present
-      wifi: mac80211: make channel context code MLO-aware
-      wifi: mac80211: remove sta_info_tx_streams()
-      wifi: mac80211: refactor some sta_info link handling
-      wifi: mac80211: use IEEE80211_MLD_MAX_NUM_LINKS
-      wifi: mac80211: validate some driver features for MLO
-      wifi: mac80211: refactor some link setup code
-      wifi: mac80211: add link_id to vht.c code for MLO
-      wifi: mac80211: add link_id to eht.c code for MLO
-      wifi: mac80211: HT: make ieee80211_ht_cap_ie_to_sta_ht_cap() MLO-aware
-      wifi: mac80211: make some SMPS code MLD-aware
-      wifi: mac80211: make ieee80211_he_cap_ie_to_sta_he_cap() MLO-aware
-      wifi: mac80211: correct link config data in tracing
-      wifi: mac80211: sort trace.h file
-      wifi: mac80211: status: look up band only where needed
-      wifi: mac80211: tx: simplify chanctx_conf handling
-      wifi: cfg80211: mlme: get BSS entry outside cfg80211_mlme_assoc()
-      wifi: nl80211: refactor BSS lookup in nl80211_associate()
-      wifi: ieee80211: add definitions for multi-link element
-      wifi: cfg80211: simplify cfg80211_mlme_auth() prototype
-      wifi: mac80211: ignore IEEE80211_CONF_CHANGE_SMPS in chanctx mode
-      wifi: nl80211: support MLO in auth/assoc
-      wifi: mac80211: add vif link addition/removal
-      wifi: mac80211: remove band from TX info in MLO
-      wifi: mac80211: add MLO link ID to TX frame metadata
-      wifi: mac80211: add sta link addition/removal
-      wifi: cfg80211: sort trace.h
-      wifi: cfg80211: add optional link add/remove callbacks
-      wifi: mac80211: implement add/del interface link callbacks
-      wifi: mac80211: move ieee80211_bssid_match() function
-      wifi: mac80211: ethtool: use deflink for now
-      wifi: mac80211: RCU-ify link STA pointers
-      wifi: mac80211: maintain link-sta hash table
-      wifi: mac80211: set STA deflink addresses
-      wifi: nl80211: expose link information for interfaces
-      wifi: nl80211: expose link ID for associated BSSes
-      wifi: mac80211_hwsim: support creating MLO-capable radios
-      wifi: cfg80211: remove redundant documentation
-      wifi: mac80211: fix a kernel-doc complaint
-      wifi: mac80211: properly skip link info driver update
-      wifi: cfg80211: handle IBSS in channel switch
-      wifi: nl80211: hold wdev mutex for tid config
-      wifi: nl80211: acquire wdev mutex earlier in start_ap
-      wifi: nl80211: relax wdev mutex check in wdev_chandef()
-      wifi: cfg80211: remove chandef check in cfg80211_cac_event()
-      wifi: mac80211_hwsim: add back erroneously removed cast
-
-Julia Lawall (1):
-      ath6kl: fix typo in comment
-
-Kalle Valo (3):
-      ath10k: fix recently introduced checkpatch warning
-      Merge ath-next from git://git.kernel.org/pub/scm/linux/kernel/git/kvalo/ath.git
-      Merge ath-next from git://git.kernel.org/pub/scm/linux/kernel/git/kvalo/ath.git
-
-Krzysztof Kozlowski (1):
-      ath10k: do not enforce interrupt trigger type
-
-Kuan-Chung Chen (2):
-      wifi: rtw89: fix potential TX stuck
-      wifi: rtw89: enable VO TX AMPDU
-
-Manikanta Pubbisetty (5):
-      ath11k: Init hw_params before setting up AHB resources
-      ath11k: Fix incorrect debug_mask mappings
-      ath11k: Avoid REO CMD failed prints during firmware recovery
-      ath11k: Fix LDPC config in set_bitrate_mask hook
-      ath11k: Fix warnings reported by checkpatch
-
-Mauro Carvalho Chehab (3):
-      wifi: cfg80211: fix kernel-doc warnings all over the file
-      wifi: mac80211: add a missing comma at kernel-doc markup
-      wifi: mac80211: sta_info: fix a missing kernel-doc struct element
-
-Maxime Bizon (1):
-      ath10k: fix misreported tx bandwidth for 160Mhz
-
-MeiChia Chiu (1):
-      wifi: mac80211: fix center freq calculation in ieee80211_chandef_downgrade
-
-Pavel Skripkin (2):
-      ath9k: fix use-after-free in ath9k_hif_usb_rx_cb
-      ath9k: htc: clean up statistics macros
-
-Peter Chiu (1):
-      wifi: ieee80211: s1g action frames are not robust
-
-Ping-Ke Shih (9):
-      wifi: rtw89: allocate address CAM and MAC ID to TDLS peer
-      wifi: rtw89: separate BSSID CAM operations
-      wifi: rtw89: allocate BSSID CAM per TDLS peer
-      wifi: rtw89: support TDLS
-      wifi: rtw89: add UNEXP debug mask to keep monitor messages unexpected to happen frequently
-      wifi: rtw89: drop invalid TX rate report of legacy rate
-      wifi: rtw89: fix long RX latency in low power mode
-      wifi: rtw89: pci: fix PCI doesn't reclaim TX BD properly
-      wifi: rtw89: 8852a: rfk: fix div 0 exception
-
-Po-Hao Huang (1):
-      wifi: rtw89: disable invalid phy reports for all ICs
-
-Sergey Ryazanov (4):
-      ath10k: improve tx status reporting
-      ath10k: htt_tx: do not interpret Eth frames as WiFi
-      ath10k: turn rawmode into frame_mode
-      ath10k: add encapsulation offloading support
-
-Shaul Triebitz (6):
-      wifi: mac80211_hwsim: split bss_info_changed to vif/link info_changed
-      wifi: mac80211: use link in start/stop ap
-      wifi: mac80211: pass the link id in start/stop ap
-      wifi: mac80211: return a beacon for a specific link
-      wifi: mac80211_hwsim: send a beacon per link
-      wifi: mac80211_hwsim: print the link id
-
-Sriram R (1):
-      ath11k: update missing MU-MIMO and OFDMA stats
-
-Tetsuo Handa (1):
-      ath6kl: avoid flush_scheduled_work() usage
-
-Thiraviyam Mariyappan (1):
-      ath11k: support avg signal in station dump
-
-Veerendranath Jakkam (5):
-      cfg80211: Indicate MLO connection info in connect and roam callbacks
-      wifi: cfg80211: Increase akm_suites array size in cfg80211_crypto_settings
-      wifi: nl80211: Fix reading NL80211_ATTR_MLO_LINK_ID in nl80211_pre_doit
-      wifi: cfg80211: fix a comment in cfg80211_mlme_mgmt_tx()
-      wifi: nl80211: fix sending link ID info of associated BSS
-
-Wen Gong (1):
-      ath10k: fix regdomain info of iw reg set/get
-
-Xiang wangx (1):
-      wcn36xx: Fix typo in comment
-
-Zhang Jiaming (1):
-      ath11k: Fix typo in comments
-
- drivers/net/wireless/admtek/adm8211.c              |    2 +-
- drivers/net/wireless/ath/ar5523/ar5523.c           |   12 +-
- drivers/net/wireless/ath/ath10k/core.c             |   11 +-
- drivers/net/wireless/ath/ath10k/core.h             |    1 +
- drivers/net/wireless/ath/ath10k/htt_rx.c           |    8 +-
- drivers/net/wireless/ath/ath10k/htt_tx.c           |   61 +-
- drivers/net/wireless/ath/ath10k/mac.c              |  113 +-
- drivers/net/wireless/ath/ath10k/qmi.c              |    4 +-
- drivers/net/wireless/ath/ath10k/snoc.c             |    5 +-
- drivers/net/wireless/ath/ath10k/txrx.c             |   15 +-
- drivers/net/wireless/ath/ath10k/wmi-tlv.c          |    2 +-
- drivers/net/wireless/ath/ath10k/wmi.c              |    4 +-
- drivers/net/wireless/ath/ath11k/ahb.c              |    4 +-
- drivers/net/wireless/ath/ath11k/core.c             |   16 +-
- drivers/net/wireless/ath/ath11k/core.h             |    6 +-
- drivers/net/wireless/ath/ath11k/debug.h            |    4 +-
- .../net/wireless/ath/ath11k/debugfs_htt_stats.c    |   88 +-
- .../net/wireless/ath/ath11k/debugfs_htt_stats.h    |   39 +
- drivers/net/wireless/ath/ath11k/dp_rx.c            |    8 +-
- drivers/net/wireless/ath/ath11k/hal.c              |    2 +-
- drivers/net/wireless/ath/ath11k/hal_rx.c           |    2 +-
- drivers/net/wireless/ath/ath11k/htc.c              |    4 +-
- drivers/net/wireless/ath/ath11k/mac.c              |   64 +-
- drivers/net/wireless/ath/ath11k/pci.c              |    2 +
- drivers/net/wireless/ath/ath11k/qmi.c              |    6 +-
- drivers/net/wireless/ath/ath11k/wmi.c              |    6 +-
- drivers/net/wireless/ath/ath5k/base.c              |    2 +-
- drivers/net/wireless/ath/ath5k/mac80211-ops.c      |   14 +-
- drivers/net/wireless/ath/ath5k/phy.c               |    2 +-
- drivers/net/wireless/ath/ath6kl/cfg80211.c         |    8 +-
- drivers/net/wireless/ath/ath6kl/usb.c              |   16 +-
- drivers/net/wireless/ath/ath6kl/wmi.h              |    2 +-
- drivers/net/wireless/ath/ath9k/ar9002_phy.c        |    2 +-
- drivers/net/wireless/ath/ath9k/beacon.c            |   15 +-
- drivers/net/wireless/ath/ath9k/dfs.c               |    2 +-
- drivers/net/wireless/ath/ath9k/hif_usb.c           |   26 +-
- drivers/net/wireless/ath/ath9k/htc.h               |   32 +-
- drivers/net/wireless/ath/ath9k/htc_drv_beacon.c    |    4 +-
- drivers/net/wireless/ath/ath9k/htc_drv_init.c      |    3 +-
- drivers/net/wireless/ath/ath9k/htc_drv_main.c      |   18 +-
- drivers/net/wireless/ath/ath9k/htc_drv_txrx.c      |   10 +-
- drivers/net/wireless/ath/ath9k/main.c              |   12 +-
- drivers/net/wireless/ath/carl9170/main.c           |    4 +-
- drivers/net/wireless/ath/carl9170/tx.c             |    2 +-
- drivers/net/wireless/ath/wcn36xx/hal.h             |    4 +-
- drivers/net/wireless/ath/wcn36xx/main.c            |   22 +-
- drivers/net/wireless/ath/wcn36xx/smd.c             |    2 +-
- drivers/net/wireless/ath/wil6210/cfg80211.c        |    9 +-
- drivers/net/wireless/ath/wil6210/wmi.c             |    4 +-
- drivers/net/wireless/atmel/at76c50x-usb.c          |    2 +-
- drivers/net/wireless/broadcom/b43/main.c           |    6 +-
- drivers/net/wireless/broadcom/b43legacy/main.c     |    4 +-
- .../broadcom/brcm80211/brcmfmac/cfg80211.c         |   10 +-
- .../broadcom/brcm80211/brcmsmac/mac80211_if.c      |   18 +-
- drivers/net/wireless/intel/iwlegacy/3945-mac.c     |    6 +-
- drivers/net/wireless/intel/iwlegacy/4965-rs.c      |    5 +-
- drivers/net/wireless/intel/iwlegacy/4965.c         |    6 +-
- drivers/net/wireless/intel/iwlegacy/common.c       |   18 +-
- drivers/net/wireless/intel/iwlegacy/common.h       |    2 +-
- drivers/net/wireless/intel/iwlwifi/dvm/agn.h       |    2 +-
- drivers/net/wireless/intel/iwlwifi/dvm/lib.c       |    4 +-
- drivers/net/wireless/intel/iwlwifi/dvm/main.c      |    4 +-
- drivers/net/wireless/intel/iwlwifi/dvm/rxon.c      |   26 +-
- drivers/net/wireless/intel/iwlwifi/mvm/coex.c      |   10 +-
- drivers/net/wireless/intel/iwlwifi/mvm/d3.c        |    4 +-
- .../net/wireless/intel/iwlwifi/mvm/debugfs-vif.c   |    4 +-
- drivers/net/wireless/intel/iwlwifi/mvm/debugfs.c   |    2 +-
- .../net/wireless/intel/iwlwifi/mvm/ftm-initiator.c |   12 +-
- .../net/wireless/intel/iwlwifi/mvm/ftm-responder.c |    4 +-
- drivers/net/wireless/intel/iwlwifi/mvm/mac-ctxt.c  |   24 +-
- drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c  |   88 +-
- .../net/wireless/intel/iwlwifi/mvm/offloading.c    |    6 +-
- drivers/net/wireless/intel/iwlwifi/mvm/ops.c       |    2 +-
- drivers/net/wireless/intel/iwlwifi/mvm/power.c     |    4 +-
- drivers/net/wireless/intel/iwlwifi/mvm/quota.c     |    4 +-
- drivers/net/wireless/intel/iwlwifi/mvm/rs.c        |    2 +-
- drivers/net/wireless/intel/iwlwifi/mvm/scan.c      |    4 +-
- drivers/net/wireless/intel/iwlwifi/mvm/sf.c        |    6 +-
- drivers/net/wireless/intel/iwlwifi/mvm/sta.c       |    2 +-
- drivers/net/wireless/intel/iwlwifi/mvm/tdls.c      |    4 +-
- .../net/wireless/intel/iwlwifi/mvm/time-event.c    |   12 +-
- drivers/net/wireless/intel/iwlwifi/mvm/tx.c        |    2 +-
- drivers/net/wireless/intel/iwlwifi/mvm/utils.c     |    6 +-
- drivers/net/wireless/intersil/p54/main.c           |    8 +-
- drivers/net/wireless/mac80211_hwsim.c              |  257 +++--
- drivers/net/wireless/mac80211_hwsim.h              |    5 +-
- drivers/net/wireless/marvell/libertas/mesh.c       |   10 +-
- drivers/net/wireless/marvell/libertas_tf/main.c    |    6 +-
- drivers/net/wireless/marvell/mwifiex/11h.c         |    2 +-
- drivers/net/wireless/marvell/mwifiex/cfg80211.c    |   18 +-
- drivers/net/wireless/marvell/mwl8k.c               |   14 +-
- drivers/net/wireless/mediatek/mt76/mac80211.c      |    4 +-
- drivers/net/wireless/mediatek/mt76/mt7603/beacon.c |    2 +-
- drivers/net/wireless/mediatek/mt76/mt7603/main.c   |    4 +-
- drivers/net/wireless/mediatek/mt76/mt7615/main.c   |    4 +-
- drivers/net/wireless/mediatek/mt76/mt7615/mcu.c    |    8 +-
- .../net/wireless/mediatek/mt76/mt76_connac_mcu.c   |   10 +-
- drivers/net/wireless/mediatek/mt76/mt76x02.h       |    2 +-
- .../net/wireless/mediatek/mt76/mt76x02_beacon.c    |    2 +-
- drivers/net/wireless/mediatek/mt76/mt76x02_util.c  |    2 +-
- drivers/net/wireless/mediatek/mt76/mt7915/main.c   |    4 +-
- drivers/net/wireless/mediatek/mt76/mt7915/mcu.c    |   12 +-
- drivers/net/wireless/mediatek/mt76/mt7921/main.c   |    4 +-
- drivers/net/wireless/mediatek/mt76/mt7921/mcu.c    |    4 +-
- drivers/net/wireless/mediatek/mt7601u/main.c       |    2 +-
- drivers/net/wireless/mediatek/mt7601u/phy.c        |    9 +-
- drivers/net/wireless/microchip/wilc1000/cfg80211.c |    3 +-
- drivers/net/wireless/purelifi/plfxlc/mac.c         |    8 +-
- drivers/net/wireless/quantenna/qtnfmac/cfg80211.c  |   14 +-
- drivers/net/wireless/quantenna/qtnfmac/commands.c  |   14 +-
- drivers/net/wireless/quantenna/qtnfmac/event.c     |   15 +-
- drivers/net/wireless/ralink/rt2x00/rt2x00.h        |    2 +-
- drivers/net/wireless/ralink/rt2x00/rt2x00config.c  |    4 +-
- drivers/net/wireless/ralink/rt2x00/rt2x00mac.c     |    4 +-
- drivers/net/wireless/ralink/rt2x00/rt2x00queue.c   |    2 +-
- drivers/net/wireless/realtek/rtl818x/rtl8180/dev.c |    4 +-
- drivers/net/wireless/realtek/rtl818x/rtl8187/dev.c |    4 +-
- .../net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c  |   12 +-
- drivers/net/wireless/realtek/rtlwifi/core.c        |    8 +-
- drivers/net/wireless/realtek/rtlwifi/pci.c         |    2 +-
- drivers/net/wireless/realtek/rtw88/bf.c            |    2 +-
- drivers/net/wireless/realtek/rtw88/fw.c            |    2 +-
- drivers/net/wireless/realtek/rtw88/mac80211.c      |    9 +-
- drivers/net/wireless/realtek/rtw88/main.c          |   17 +-
- drivers/net/wireless/realtek/rtw89/cam.c           |   31 +-
- drivers/net/wireless/realtek/rtw89/cam.h           |    9 +-
- drivers/net/wireless/realtek/rtw89/core.c          |  150 ++-
- drivers/net/wireless/realtek/rtw89/core.h          |   35 +-
- drivers/net/wireless/realtek/rtw89/debug.c         |    3 +-
- drivers/net/wireless/realtek/rtw89/debug.h         |    2 +
- drivers/net/wireless/realtek/rtw89/fw.c            |    5 +-
- drivers/net/wireless/realtek/rtw89/mac80211.c      |   12 +-
- drivers/net/wireless/realtek/rtw89/pci.c           |   16 +-
- drivers/net/wireless/realtek/rtw89/phy.c           |   22 +-
- drivers/net/wireless/realtek/rtw89/rtw8852a_rfk.c  |    4 +-
- drivers/net/wireless/realtek/rtw89/ser.c           |   15 +-
- drivers/net/wireless/rndis_wlan.c                  |    5 +-
- drivers/net/wireless/rsi/rsi_91x_core.c            |    3 +-
- drivers/net/wireless/rsi/rsi_91x_hal.c             |    9 +-
- drivers/net/wireless/rsi/rsi_91x_mac80211.c        |   33 +-
- drivers/net/wireless/rsi/rsi_91x_mgmt.c            |    3 +-
- drivers/net/wireless/silabs/wfx/hif_tx.c           |   12 +-
- drivers/net/wireless/silabs/wfx/sta.c              |   40 +-
- drivers/net/wireless/silabs/wfx/sta.h              |   10 +-
- drivers/net/wireless/st/cw1200/sta.c               |   44 +-
- drivers/net/wireless/st/cw1200/sta.h               |    2 +-
- drivers/net/wireless/st/cw1200/txrx.c              |    4 +-
- drivers/net/wireless/ti/wl1251/main.c              |   12 +-
- drivers/net/wireless/ti/wlcore/cmd.c               |    4 +-
- drivers/net/wireless/ti/wlcore/main.c              |   47 +-
- drivers/net/wireless/zydas/zd1211rw/zd_mac.c       |   13 +-
- drivers/staging/rtl8723bs/os_dep/ioctl_cfg80211.c  |    8 +-
- drivers/staging/vt6655/device_main.c               |    8 +-
- drivers/staging/vt6655/rxtx.c                      |    2 +-
- drivers/staging/vt6656/main_usb.c                  |    6 +-
- drivers/staging/vt6656/rxtx.c                      |    2 +-
- drivers/staging/wlan-ng/cfg80211.c                 |    2 +-
- include/linux/ieee80211.h                          |  226 ++++
- include/net/cfg80211.h                             |  265 ++++-
- include/net/mac80211.h                             |  229 ++--
- include/uapi/linux/nl80211.h                       |   53 +
- net/mac80211/agg-rx.c                              |    4 +-
- net/mac80211/agg-tx.c                              |    2 +-
- net/mac80211/airtime.c                             |    4 +-
- net/mac80211/cfg.c                                 |  525 ++++-----
- net/mac80211/chan.c                                |  660 ++++++-----
- net/mac80211/debug.h                               |   14 +
- net/mac80211/debugfs.c                             |  101 +-
- net/mac80211/debugfs_key.c                         |   10 +-
- net/mac80211/debugfs_netdev.c                      |   52 +-
- net/mac80211/debugfs_sta.c                         |   24 +-
- net/mac80211/driver-ops.h                          |  102 +-
- net/mac80211/eht.c                                 |    9 +-
- net/mac80211/ethtool.c                             |   26 +-
- net/mac80211/he.c                                  |   17 +-
- net/mac80211/ht.c                                  |   41 +-
- net/mac80211/ibss.c                                |   65 +-
- net/mac80211/ieee80211_i.h                         |  478 +++-----
- net/mac80211/iface.c                               |  249 ++++-
- net/mac80211/key.c                                 |   56 +-
- net/mac80211/main.c                                |  158 ++-
- net/mac80211/mesh.c                                |   20 +-
- net/mac80211/mesh_plink.c                          |   19 +-
- net/mac80211/mlme.c                                |  434 ++++----
- net/mac80211/ocb.c                                 |   15 +-
- net/mac80211/offchannel.c                          |   22 +-
- net/mac80211/rate.c                                |   19 +-
- net/mac80211/rate.h                                |    8 +-
- net/mac80211/rx.c                                  |   49 +-
- net/mac80211/scan.c                                |    2 +-
- net/mac80211/sta_info.c                            |  391 +++++--
- net/mac80211/sta_info.h                            |   42 +-
- net/mac80211/status.c                              |   43 +-
- net/mac80211/tdls.c                                |   31 +-
- net/mac80211/trace.h                               | 1160 +++++++++++---------
- net/mac80211/tx.c                                  |  722 ++++++------
- net/mac80211/util.c                                |   82 +-
- net/mac80211/vht.c                                 |  177 +--
- net/mac80211/wme.c                                 |    3 +-
- net/wireless/ap.c                                  |   46 +-
- net/wireless/chan.c                                |  206 +++-
- net/wireless/core.c                                |   34 +-
- net/wireless/core.h                                |   24 +-
- net/wireless/ibss.c                                |   57 +-
- net/wireless/mesh.c                                |   31 +-
- net/wireless/mlme.c                                |  163 +--
- net/wireless/nl80211.c                             | 1022 +++++++++++++----
- net/wireless/ocb.c                                 |    5 +-
- net/wireless/rdev-ops.h                            |   58 +-
- net/wireless/reg.c                                 |  139 ++-
- net/wireless/scan.c                                |    8 +-
- net/wireless/sme.c                                 |  512 ++++++---
- net/wireless/trace.h                               |  378 ++++---
- net/wireless/util.c                                |   44 +-
- net/wireless/wext-compat.c                         |   48 +-
- net/wireless/wext-sme.c                            |   29 +-
- 216 files changed, 7240 insertions(+), 4284 deletions(-)
-
+The issue with struct gdma_create_mr_request is valid, since it's
+passed to the PF driver. We should explicitly define the hidden field.
