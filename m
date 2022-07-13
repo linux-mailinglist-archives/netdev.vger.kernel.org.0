@@ -2,95 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 33F45572C0A
-	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 05:54:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FDDA572C0E
+	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 05:55:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230267AbiGMDyS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jul 2022 23:54:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37862 "EHLO
+        id S231436AbiGMDy5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jul 2022 23:54:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229824AbiGMDyR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 23:54:17 -0400
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72F0ED863D;
-        Tue, 12 Jul 2022 20:54:16 -0700 (PDT)
-Received: by mail-pf1-x42d.google.com with SMTP id j3so9172601pfb.6;
-        Tue, 12 Jul 2022 20:54:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=P4PUdB8dVnvZuC81zaWvCmS9tlD9k9mFvoBHlllyMfo=;
-        b=HYDPHqvTOcp7dZcdSqeq+Miw5OCWtioscKlj1C4Jf4kS6jx5Debfq0QMb+PRiGz9As
-         zWhi/eEWkN2/BVP1/C1Zj14HErOrPmoOi/dH1zR8LZqGKj2bP+0tw4N67Z9irLiDAX+x
-         +4yluLGkonk94EsIywRR0KomJKkT6t4/rPCCvb0gY7PD6G7aMnitaf68AbwkBXcUuyR3
-         T+O62t00hswopUGCYKUuxI4pzkXvh2XJS9fDyKL3tQ0IfTLc2tD2TZvZtH680h4UY2CF
-         Ikh/Ao1cbYfMArTEvfSHvDofrKi58wLQd5CAW39CafCE0J6qbhunuLbjZiVluQnQtoJ3
-         b55A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=P4PUdB8dVnvZuC81zaWvCmS9tlD9k9mFvoBHlllyMfo=;
-        b=4QjziizVG+bqqVx/iJ++Mc80YsJAzKqyqeuUk1ip9ahPIffQlRI54h0LLC23CEMhm5
-         Rmu2rWCtD57op7aVMa8lg3zjhKUPG9FmQzYe7dit0/55/e5pZYHGwoaQM6D0FETFVM2Z
-         mdPFVL0JKSEdLO9KuylAX6AchVHsiJTUC9akIL1osnKbQhDzLJads0onQQbzdXk7rKVf
-         Sg6VmYcpzGhDca3oEWP4iUUU+xHvPoFuDXUu9jzvmgNfoDlL/WKtBLakpdt0rihAVsZJ
-         PYrJwzyX1PjBAGO8r9F0gtAVLSwlfShmIvRaRqem9JnVRQnQaxvAphh9ZICM2+wVyxri
-         9fDQ==
-X-Gm-Message-State: AJIora80j7eFKIVtBDIdneC/Yy/Wslevz5aRF7gRBWUcd/ZZQXgSFn5J
-        +hn+JAnCoWjD9b6sfjppdG4=
-X-Google-Smtp-Source: AGRyM1ufVlFqpStvjGQBNKeGmgZU/emowlMyxX8RxVbkptqYnuEBDwNfCNh2iTGOnV+fC7jRnFfYpA==
-X-Received: by 2002:a63:1824:0:b0:408:a22b:df0c with SMTP id y36-20020a631824000000b00408a22bdf0cmr1333293pgl.119.1657684455954;
-        Tue, 12 Jul 2022 20:54:15 -0700 (PDT)
-Received: from localhost.localdomain (42-2-207-060.static.netvigator.com. [42.2.207.60])
-        by smtp.gmail.com with ESMTPSA id s19-20020a656453000000b00411acdb1625sm6855844pgv.92.2022.07.12.20.54.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 20:54:15 -0700 (PDT)
-From:   Hawkins Jiawei <yin31149@gmail.com>
-To:     kuba@kernel.org
-Cc:     18801353760@163.com, andrii@kernel.org, ast@kernel.org,
-        borisp@nvidia.com, bpf@vger.kernel.org, chuck.lever@oracle.com,
-        daniel@iogearbox.net, davem@davemloft.net, dsahern@kernel.org,
-        edumazet@google.com, guwen@linux.alibaba.com,
-        john.fastabend@gmail.com, kafai@fb.com, kgraul@linux.ibm.com,
-        kpsingh@kernel.org, linux-kernel-mentees@lists.linuxfoundation.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        pabeni@redhat.com, paskripkin@gmail.com, skhan@linuxfoundation.org,
-        songliubraving@fb.com,
-        syzbot+5f26f85569bd179c18ce@syzkaller.appspotmail.com,
-        syzkaller-bugs@googlegroups.com, yhs@fb.com, yin31149@gmail.com,
-        yoshfuji@linux-ipv6.org
-Subject: Re: [PATCH] smc: fix refcount bug in sk_psock_get (2)
-Date:   Wed, 13 Jul 2022 11:53:44 +0800
-Message-Id: <20220713035344.60733-1-yin31149@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220712203311.05541472@kernel.org>
-References: <20220712203311.05541472@kernel.org>
+        with ESMTP id S230439AbiGMDyy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 23:54:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ABE4D863E;
+        Tue, 12 Jul 2022 20:54:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BC1B1619D6;
+        Wed, 13 Jul 2022 03:54:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7AA0C3411E;
+        Wed, 13 Jul 2022 03:54:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657684492;
+        bh=gnBy6Ab9XgDFL3xiP37PoQYDOtaIzWpH+OVMx4jzRSk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=QZslAdHnOE8HFNa5YFPD3ChkV2qkUICCDW3HHhdmbSwBVulxsyWKaExEPGH33CHqA
+         mGZU6oRGNalKCX8rGrHIhnDG9DIeJ+rJzFUvu1GrERQdM2mS1C430fYoSE7lQaNyKp
+         xSEASO/SDE79EUBZHz++t8I+h4hPsx4CANsRJgwwRsCyF9M3D/4C4WcGnGFbDnSac5
+         6lGyotKEFkwySe/C4kdlMfeSFy7ippMs3OzpCuTeKoMiPOWOH0kp6V6IGAk2ZRHkcv
+         1NVXO1OVbSeqra3t9sUGE4bDYHyRonvIBkAEAvdh2iKevkUo/wsvlluY9grtDxyZWH
+         IPg89h2zQD8Vw==
+Date:   Tue, 12 Jul 2022 20:54:42 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Wen Gu <guwen@linux.alibaba.com>
+Cc:     kgraul@linux.ibm.com, wenjia@linux.ibm.com, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, linux-s390@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 5/6] net/smc: Allow virtually contiguous
+ sndbufs or RMBs for SMC-R
+Message-ID: <20220712205442.22a29fcd@kernel.org>
+In-Reply-To: <1657626690-60367-6-git-send-email-guwen@linux.alibaba.com>
+References: <1657626690-60367-1-git-send-email-guwen@linux.alibaba.com>
+        <1657626690-60367-6-git-send-email-guwen@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 13 Jul 2022 at 11:33, Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Wed, 13 Jul 2022 11:10:05 +0800 Hawkins Jiawei wrote:
-> > In Patchwork website, this patch fails the checks on
-> > netdev/cc_maintainers. If this patch fails for some other reasons,
-> > I will still fix this bug from SK_USER_DATA_PTRMASK,
-> > as a temporary solution.
->
-> That check just runs scripts/get_maintainer.pl so make sure you CC
-> folks pointed out by that script and you should be fine.
+On Tue, 12 Jul 2022 19:51:29 +0800 Wen Gu wrote:
+> net/smc: Allow virtually contiguous sndbufs or RMBs for SMC-R
 
-Thanks for your reply, yet I am not the patch's author, I
-found this patch during my bug analysis.
-
-I will reply the relative email to remind the patch's author.
+This one does not build cleanly on 32bit.
