@@ -2,330 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9301757386D
-	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 16:09:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6312657388F
+	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 16:17:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236425AbiGMOJ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jul 2022 10:09:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43328 "EHLO
+        id S236430AbiGMORQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jul 2022 10:17:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236511AbiGMOIh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 10:08:37 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E70526E3;
-        Wed, 13 Jul 2022 07:08:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
-        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=Q6s95lMpMbmCk9KJVQv2vAsPo3xoX650/cHQ9mn8lSg=; b=bNxbHjGk6H1ooqCG0qSfwOa1dI
-        MCi3+HZiqTYjUf46UXPjibdpidvVbP90mN4x7wUIyrZLAVRx7itlM28POQBhLmnRunzi+z0/2v1us
-        keyfWnfrgGWCk/x0o0Ys3sF56uKSY+bmyLj8FI2/cgFxiKZAZj83ZzThgX1IPVXiEnJqkHkPhtn9Y
-        sl13TyikW9gDk8fpXvKn1Y7JJTEOLljWKaP0NwmZZyhNLi62apylvMBPgC968RokvlXkIscQHMVY2
-        Ugw94So0q+Wo3V0wJ2+VmDFECxcsgyXNBgPj1LZaSiKWxnTeYUT9U3jALDixWtmApd/rujUlYPhwW
-        SGBN1fzg==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:37062 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1oBd29-0004cQ-1U; Wed, 13 Jul 2022 15:08:09 +0100
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <rmk@rmk-PC.armlinux.org.uk>)
-        id 1oBd28-006UDF-6Q; Wed, 13 Jul 2022 15:08:08 +0100
-In-Reply-To: <Ys7RdzGgHbYiPyB1@shell.armlinux.org.uk>
-References: <Ys7RdzGgHbYiPyB1@shell.armlinux.org.uk>
-From:   "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "Alvin __ipraga" <alsi@bang-olufsen.dk>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        UNGLinuxDriver@microchip.com,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
-Subject: [PATCH RFC net-next v2 6/6] net: dsa: mv88e6xxx: remove handling for
- DSA and CPU ports
-MIME-Version: 1.0
+        with ESMTP id S235703AbiGMORO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 10:17:14 -0400
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2056.outbound.protection.outlook.com [40.107.223.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68459255BB
+        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 07:17:13 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=d9skXs9R+q0xIAwyXcyzx+k+z/Nn1tzpYWWXzgl+QEfdf1FUHFX6797VCyjmZ1CvDUgT+43ZtGfsLQNBV7+yITXRRP1kwyk60qw8E/vzEnhzjTLdBRww94MWfpLqU03NKqlHjZI7BpcVj/GqJXwV0gwzv3pJaHT1M4IKQ7Ji2nQicJ/9w1jC22+gqi8ToXB33ucVNjE65k81Spesd3z9EmOqkjOx4CUXjCq3iaFNCiZHcDM3PHz2UK2r4MKQimcLeuPeBuu9jrHgtE/8zt2H+Iapc20QzeOcFfHFI7kb1e3A4q4MjAEMNi4SKEtXAnffL4hEI5WX7UdoF1DPKpimMQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=nyblavHvyQyTRtlxXiWn31N5ISsGilTIUj1VTdk49A0=;
+ b=Jqenl2lhPRi8Fdr2FoV+fFEbyIA7q+Z3Tdyl+Mq/KrjaSmv6ef10mZtrcp2azRAGfhc3WDJiKICmFSA5OXUIy6Lu7Qy4CXtiNOObQW+m1daQMa6aKrpKU46BxRgamecpzkuygVeu93gIamjN7f+vxxzvC/c3qYHS0vGnvEcUJbrFA3akWXDZhGVKZJnrvb9lbwPWaTGQBlGIkyxFWo0KLifrrjEwSZEqf4OgTdrMDGegXzeTGnzgutyb0JHL6riAoijlAQO/h9yVM2j9ADdbOp0H9dInR+41jrwd58uq7SYJ19lHQUATYUjemmZDy4CYC38uFdC+CkyM4mUfuCs5NA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=nyblavHvyQyTRtlxXiWn31N5ISsGilTIUj1VTdk49A0=;
+ b=U/nNqEVJHBRT7qfHzB4bx70JgJRdo4e3DpDp32ko7+/srIh6DsGfKy7JnPvaXyNiRy1QW/13+sLEU07CAEcx+OUDRjp1zAnonaEHxfogf4I7X3x3sPOENy+QPVLHCJSowFIUEImdZUyFPjxVhJTCENNjKEaS73FheiY4RH7MCNk+bgslkz5TvIvlDQII204eG0KV5JLpp+SLmjJ22MZ98ne7hAxPfQZDCgwV56S1HJWdMhtDpZBLjKi9k8ZUv8Ghm+GmqYRHW+ewr6auE+e9gd2qGXa1Hkfkja61TzSuEdQsq1Ynejo8Zcxour6gL/4gZqAi9ehHnCluvhRaRr7ftA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN0PR12MB5979.namprd12.prod.outlook.com (2603:10b6:208:37e::15)
+ by SA0PR12MB4431.namprd12.prod.outlook.com (2603:10b6:806:95::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.16; Wed, 13 Jul
+ 2022 14:17:10 +0000
+Received: from MN0PR12MB5979.namprd12.prod.outlook.com
+ ([fe80::6cf7:d2b:903c:282]) by MN0PR12MB5979.namprd12.prod.outlook.com
+ ([fe80::6cf7:d2b:903c:282%3]) with mapi id 15.20.5417.023; Wed, 13 Jul 2022
+ 14:17:10 +0000
+Date:   Wed, 13 Jul 2022 16:17:04 +0200
+From:   Jiri Pirko <jiri@nvidia.com>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, edumazet@google.com, mlxsw@nvidia.com,
+        saeedm@nvidia.com, moshe@nvidia.com
+Subject: Re: [patch net-next 0/3] net: devlink: couple of trivial fixes
+Message-ID: <Ys7T4FJ/jbK5s7uh@nanopsycho>
+References: <20220712104853.2831646-1-jiri@resnulli.us>
+ <Ys7QpWEVIh7NfrAx@nanopsycho>
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1oBd28-006UDF-6Q@rmk-PC.armlinux.org.uk>
-Sender: Russell King <rmk@armlinux.org.uk>
-Date:   Wed, 13 Jul 2022 15:08:08 +0100
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <Ys7QpWEVIh7NfrAx@nanopsycho>
+X-ClientProxiedBy: AS8PR05CA0008.eurprd05.prod.outlook.com
+ (2603:10a6:20b:311::13) To MN0PR12MB5979.namprd12.prod.outlook.com
+ (2603:10b6:208:37e::15)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: e24e81f7-9458-45db-31ac-08da64da5fdb
+X-MS-TrafficTypeDiagnostic: SA0PR12MB4431:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: adjqH52vkZZiM4b4PstoCZFeChSktHVbwbiC+t141UxsIOZBTKCETiuKPZyqcFhOrO71xIGbQm9J6er+c5nfaB3tfuGL2zwSPa6oVBvRzb4ukFL1gq/05sIWFlHtXRqesBUO1B+cXFXzney2L9tZc2KHaOAjzQsxrCPh7pFv5cC1nokoWoawYTyZVcdnOBhLktuoPntHHeQrt+XRxcrs26bAze7GDfSZMX9ADgn5G+Is8kt7b2x77IeJbCIMCgXvhl5mchRK+w4WHdZfiYHQ3gGWdPL2UlrOUiXWKAheNRTVOjck+p/wuGLoTzKokL/uwe25+c8EYAmA94IA+V/qJUx84yZdsPWVfdiXumWN6oKTJGv1qi/3CMO439YB4onuFII4Tg0PQRUGLQ/+s0ZHMLuwZfQOAV20n8TDYkJd6sXDph1v6bjxkqFDFk3JdTrywL4x23B+mTaFs53CsCnjhEAuo30uqHEZCT+L0iOQzFrusfp2utq/AgAtpCK0GLGZvrm55XjGipspxKH32HHK5ypfbwE7UDAst6MVo2JihFwDNmpM1zuqSGPC6hnK03bnj55PI8TdZHAFqqZAYF03JKJ7t7UHcX0Q8sg4GAnPArWJuV4A9KwX1zH5/yTQiccYoA0sXEmSIGVh9qA/pX8VQBrmOxtgKSIHcbibEF4z27NsQxNlcXkQ00Y6iSHT9CC7Yyxmh+PoRicI0pFySzmiwiTeilnzfxRkVrjmjRDMuNYRqTGvZ3rOHMTOSnztuBev
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN0PR12MB5979.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(4636009)(376002)(366004)(396003)(136003)(39860400002)(346002)(316002)(4744005)(5660300002)(6916009)(2906002)(33716001)(478600001)(86362001)(38100700002)(66946007)(66476007)(8676002)(6512007)(83380400001)(6486002)(6666004)(9686003)(26005)(4326008)(6506007)(66556008)(8936002)(186003)(41300700001)(107886003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?AfG8iP6yVHf3i7cX8G0UqWIAabWiVyiVNRogYnHspAmmoOXCmC12geE0YjYb?=
+ =?us-ascii?Q?esi4aQwsOWVuOUddlgPLeqr6bUFFi1CRBqDffcu7t8Y8R4+DNnLA52ECiREm?=
+ =?us-ascii?Q?TwniuwalPQU3zGEAWaI0lr53YTjni5nQFg/cQG3DZHRpdN8IVbZ0gqV224B2?=
+ =?us-ascii?Q?T5K1/pNrSYUmPhGj43XQtT8J0rM0erTZEvmf3empQj/0vsv8zTRFtvaGmlzX?=
+ =?us-ascii?Q?IF7/Ic/PLrzSgoS4uF6c+GCKfBz49jIrsmAsNn8PJ+bLgxF73QjQK1m+3mAt?=
+ =?us-ascii?Q?6B3lZqzCUt/yu0JSkfYSqmRz9hmRc/yccLoay5xLSugMuK1extgwtTCVW+/i?=
+ =?us-ascii?Q?bd88wjvY47ke/kFZcWHHo0QHc0RruLfSzfAMVyvDiZyEBs1doRwie+CgLPlD?=
+ =?us-ascii?Q?uUO1yFl8upX/fZlBi2bMLywq/FsD4vZ2w3X9G835deQedocDJdQDLyrkG49M?=
+ =?us-ascii?Q?4xq2x241rbAl4/6gV5etX6in8O6tprKqiyvhG+pV0XyjKIW7CdCSmjw6rRg4?=
+ =?us-ascii?Q?0libNKqLAEoMT0VJnb/fWuNPxqtoDjt+A/r29OEt/m8DYH0cZ4ihOJyA9MeC?=
+ =?us-ascii?Q?liJl1/5jMD13BkaIm79zKPtWsV4J3RneQZ3ruGU7lWcdDhZjVioOwKAX0gI6?=
+ =?us-ascii?Q?pfVUUNDGPsoqqmxetc3plS95bOFsGGn6jf6Gwq3iK7awIp4Twj7AoNwOhbaf?=
+ =?us-ascii?Q?eAllH7pDZ8IDTLchwSBH/wqhYtrQA9x1RA+6QBH9WE+20Egh7X4qoZnUUUGJ?=
+ =?us-ascii?Q?KjpGdQROhe4dY6NDYE3I2oLV02aj5OALm+kcSDGwU9ueOW6GazsynaJJKJPm?=
+ =?us-ascii?Q?4pIEQZf8obGsQvjiMFWll1ac1DDXnWg2gKfotlFJy62nt1zaHH8omjaqwJjg?=
+ =?us-ascii?Q?Pe1OifNUwrViRk5cFP9EdZBPalwjikwL/Nl4c9tDuUbutvc9rSMgwQ0K6mTU?=
+ =?us-ascii?Q?OokGyMD6OafgUMi+4GDe7epo8cVwWWOJl2FxP9FdOFZ2NVGIBjf19E87Z5dj?=
+ =?us-ascii?Q?2kmPaWpLzlPphW6aNgKycqA43etx3NgLxOkhhzWARSBrBXsrNemvdxK+v9Zb?=
+ =?us-ascii?Q?viWzvz/0nd+pU5UnpitEfSoVYsdfYGyIqPznZcbR5RAUPzcjOE88GY6b8S5y?=
+ =?us-ascii?Q?M9aLYCPDQp+eeQKGmstHlzp9ZXqS1m4tVzaNpINSJH0CnQImmnGZ6EJQwAow?=
+ =?us-ascii?Q?awxZPwwfFSdOyt605BjQ5kFtWC4YOEkgKKcW9kyTRcRvJ5CJCidE/XyJynP0?=
+ =?us-ascii?Q?uOG11zlmLyQg2g/DqxR2u6PxgpXld6PXHmpPmdFX3iLFcbNjcjPrRI60rMCs?=
+ =?us-ascii?Q?7v6AdY5w7piTfzrva2cc40cxnLtYZWcswr48JSe5tAgUuJ0j55zD38oghtie?=
+ =?us-ascii?Q?LOJFWE5unT7JloXbgH8kvnhAkhLMDa1+RCRSyjZ9ISwHkZgrdldbCLM+pcCs?=
+ =?us-ascii?Q?hjOE36XDQv5f4QvACPckv4AYs/5Qh8yJysn8uBHoCNsTw+nESjyftM9feHQC?=
+ =?us-ascii?Q?8Py+BXgI7uKD+ZC6kqV5gqZXmerk9BwAh5pxQsCJV26ez693nRnNjLwiBGfb?=
+ =?us-ascii?Q?bYSuRmkY2penHiFsFNL3dU+UTm/iwE62uWs4hZ5y?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e24e81f7-9458-45db-31ac-08da64da5fdb
+X-MS-Exchange-CrossTenant-AuthSource: MN0PR12MB5979.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jul 2022 14:17:10.1913
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: VEoOt4gvMQ/TDA4FevtbHssPJhcJfOd9ztvfPTWt/Ks/feZEhFn9Yg/CkGfWCIMe
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR12MB4431
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As we now always use a fixed-link for DSA and CPU ports, we no longer
-need the hack in the Marvell code to make this work. Remove it.
+Wed, Jul 13, 2022 at 04:03:17PM CEST, jiri@resnulli.us wrote:
+>Guys, this is incorrectly marked as "Changes Requested" in patchwork,
+>however I got ack from Jakub and no changes were requested.
+>Could you apply, or should I re-send?
 
-This is especially important with the conversion of DSA drivers to
-phylink_pcs, as the PCS code only gets called if we are using
-phylink for the port.
+I see, the previous patchset was not applied when robot tried to apply
+this, and the apply failed. Will repost, sorry for fuzz.
 
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
----
- drivers/net/dsa/mv88e6xxx/chip.c | 49 +++-----------------------------
- drivers/net/dsa/mv88e6xxx/chip.h |  3 --
- drivers/net/dsa/mv88e6xxx/port.c | 32 ---------------------
- drivers/net/dsa/mv88e6xxx/port.h |  5 ----
- 4 files changed, 4 insertions(+), 85 deletions(-)
-
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index ccb35ea5d7b0..01dff8d46642 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -3314,9 +3314,8 @@ static int mv88e6xxx_setup_port(struct mv88e6xxx_chip *chip, int port)
- {
- 	struct device_node *phy_handle = NULL;
- 	struct dsa_switch *ds = chip->ds;
--	phy_interface_t mode;
- 	struct dsa_port *dp;
--	int tx_amp, speed;
-+	int tx_amp;
- 	int err;
- 	u16 reg;
- 
-@@ -3325,40 +3324,9 @@ static int mv88e6xxx_setup_port(struct mv88e6xxx_chip *chip, int port)
- 
- 	dp = dsa_to_port(ds, port);
- 
--	/* MAC Forcing register: don't force link, speed, duplex or flow control
--	 * state to any particular values on physical ports, but force the CPU
--	 * port and all DSA ports to their maximum bandwidth and full duplex.
--	 */
--	if (dsa_is_cpu_port(ds, port) || dsa_is_dsa_port(ds, port)) {
--		unsigned long caps = dp->pl_config.mac_capabilities;
--
--		if (chip->info->ops->port_max_speed_mode)
--			mode = chip->info->ops->port_max_speed_mode(port);
--		else
--			mode = PHY_INTERFACE_MODE_NA;
--
--		if (caps & MAC_10000FD)
--			speed = SPEED_10000;
--		else if (caps & MAC_5000FD)
--			speed = SPEED_5000;
--		else if (caps & MAC_2500FD)
--			speed = SPEED_2500;
--		else if (caps & MAC_1000)
--			speed = SPEED_1000;
--		else if (caps & MAC_100)
--			speed = SPEED_100;
--		else
--			speed = SPEED_10;
--
--		err = mv88e6xxx_port_setup_mac(chip, port, LINK_FORCED_UP,
--					       speed, DUPLEX_FULL,
--					       PAUSE_OFF, mode);
--	} else {
--		err = mv88e6xxx_port_setup_mac(chip, port, LINK_UNFORCED,
--					       SPEED_UNFORCED, DUPLEX_UNFORCED,
--					       PAUSE_ON,
--					       PHY_INTERFACE_MODE_NA);
--	}
-+	err = mv88e6xxx_port_setup_mac(chip, port, LINK_UNFORCED,
-+				       SPEED_UNFORCED, DUPLEX_UNFORCED,
-+				       PAUSE_ON, PHY_INTERFACE_MODE_NA);
- 	if (err)
- 		return err;
- 
-@@ -4306,7 +4274,6 @@ static const struct mv88e6xxx_ops mv88e6141_ops = {
- 	.port_sync_link = mv88e6xxx_port_sync_link,
- 	.port_set_rgmii_delay = mv88e6390_port_set_rgmii_delay,
- 	.port_set_speed_duplex = mv88e6341_port_set_speed_duplex,
--	.port_max_speed_mode = mv88e6341_port_max_speed_mode,
- 	.port_tag_remap = mv88e6095_port_tag_remap,
- 	.port_set_policy = mv88e6352_port_set_policy,
- 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
-@@ -4699,7 +4666,6 @@ static const struct mv88e6xxx_ops mv88e6190_ops = {
- 	.port_sync_link = mv88e6xxx_port_sync_link,
- 	.port_set_rgmii_delay = mv88e6390_port_set_rgmii_delay,
- 	.port_set_speed_duplex = mv88e6390_port_set_speed_duplex,
--	.port_max_speed_mode = mv88e6390_port_max_speed_mode,
- 	.port_tag_remap = mv88e6390_port_tag_remap,
- 	.port_set_policy = mv88e6352_port_set_policy,
- 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
-@@ -4762,7 +4728,6 @@ static const struct mv88e6xxx_ops mv88e6190x_ops = {
- 	.port_sync_link = mv88e6xxx_port_sync_link,
- 	.port_set_rgmii_delay = mv88e6390_port_set_rgmii_delay,
- 	.port_set_speed_duplex = mv88e6390x_port_set_speed_duplex,
--	.port_max_speed_mode = mv88e6390x_port_max_speed_mode,
- 	.port_tag_remap = mv88e6390_port_tag_remap,
- 	.port_set_policy = mv88e6352_port_set_policy,
- 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
-@@ -4825,7 +4790,6 @@ static const struct mv88e6xxx_ops mv88e6191_ops = {
- 	.port_sync_link = mv88e6xxx_port_sync_link,
- 	.port_set_rgmii_delay = mv88e6390_port_set_rgmii_delay,
- 	.port_set_speed_duplex = mv88e6390_port_set_speed_duplex,
--	.port_max_speed_mode = mv88e6390_port_max_speed_mode,
- 	.port_tag_remap = mv88e6390_port_tag_remap,
- 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
- 	.port_set_ucast_flood = mv88e6352_port_set_ucast_flood,
-@@ -4990,7 +4954,6 @@ static const struct mv88e6xxx_ops mv88e6290_ops = {
- 	.port_sync_link = mv88e6xxx_port_sync_link,
- 	.port_set_rgmii_delay = mv88e6390_port_set_rgmii_delay,
- 	.port_set_speed_duplex = mv88e6390_port_set_speed_duplex,
--	.port_max_speed_mode = mv88e6390_port_max_speed_mode,
- 	.port_tag_remap = mv88e6390_port_tag_remap,
- 	.port_set_policy = mv88e6352_port_set_policy,
- 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
-@@ -5141,7 +5104,6 @@ static const struct mv88e6xxx_ops mv88e6341_ops = {
- 	.port_sync_link = mv88e6xxx_port_sync_link,
- 	.port_set_rgmii_delay = mv88e6390_port_set_rgmii_delay,
- 	.port_set_speed_duplex = mv88e6341_port_set_speed_duplex,
--	.port_max_speed_mode = mv88e6341_port_max_speed_mode,
- 	.port_tag_remap = mv88e6095_port_tag_remap,
- 	.port_set_policy = mv88e6352_port_set_policy,
- 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
-@@ -5364,7 +5326,6 @@ static const struct mv88e6xxx_ops mv88e6390_ops = {
- 	.port_sync_link = mv88e6xxx_port_sync_link,
- 	.port_set_rgmii_delay = mv88e6390_port_set_rgmii_delay,
- 	.port_set_speed_duplex = mv88e6390_port_set_speed_duplex,
--	.port_max_speed_mode = mv88e6390_port_max_speed_mode,
- 	.port_tag_remap = mv88e6390_port_tag_remap,
- 	.port_set_policy = mv88e6352_port_set_policy,
- 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
-@@ -5431,7 +5392,6 @@ static const struct mv88e6xxx_ops mv88e6390x_ops = {
- 	.port_sync_link = mv88e6xxx_port_sync_link,
- 	.port_set_rgmii_delay = mv88e6390_port_set_rgmii_delay,
- 	.port_set_speed_duplex = mv88e6390x_port_set_speed_duplex,
--	.port_max_speed_mode = mv88e6390x_port_max_speed_mode,
- 	.port_tag_remap = mv88e6390_port_tag_remap,
- 	.port_set_policy = mv88e6352_port_set_policy,
- 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
-@@ -5497,7 +5457,6 @@ static const struct mv88e6xxx_ops mv88e6393x_ops = {
- 	.port_sync_link = mv88e6xxx_port_sync_link,
- 	.port_set_rgmii_delay = mv88e6390_port_set_rgmii_delay,
- 	.port_set_speed_duplex = mv88e6393x_port_set_speed_duplex,
--	.port_max_speed_mode = mv88e6393x_port_max_speed_mode,
- 	.port_tag_remap = mv88e6390_port_tag_remap,
- 	.port_set_policy = mv88e6393x_port_set_policy,
- 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
-index 4518c17c1b9b..a3b7cfe3eb23 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.h
-+++ b/drivers/net/dsa/mv88e6xxx/chip.h
-@@ -502,9 +502,6 @@ struct mv88e6xxx_ops {
- 	int (*port_set_speed_duplex)(struct mv88e6xxx_chip *chip, int port,
- 				     int speed, int duplex);
- 
--	/* What interface mode should be used for maximum speed? */
--	phy_interface_t (*port_max_speed_mode)(int port);
--
- 	int (*port_tag_remap)(struct mv88e6xxx_chip *chip, int port);
- 
- 	int (*port_set_policy)(struct mv88e6xxx_chip *chip, int port,
-diff --git a/drivers/net/dsa/mv88e6xxx/port.c b/drivers/net/dsa/mv88e6xxx/port.c
-index 90c55f23b7c9..47e21f3c437a 100644
---- a/drivers/net/dsa/mv88e6xxx/port.c
-+++ b/drivers/net/dsa/mv88e6xxx/port.c
-@@ -333,14 +333,6 @@ int mv88e6341_port_set_speed_duplex(struct mv88e6xxx_chip *chip, int port,
- 					       duplex);
- }
- 
--phy_interface_t mv88e6341_port_max_speed_mode(int port)
--{
--	if (port == 5)
--		return PHY_INTERFACE_MODE_2500BASEX;
--
--	return PHY_INTERFACE_MODE_NA;
--}
--
- /* Support 10, 100, 200, 1000 Mbps (e.g. 88E6352 family) */
- int mv88e6352_port_set_speed_duplex(struct mv88e6xxx_chip *chip, int port,
- 				    int speed, int duplex)
-@@ -372,14 +364,6 @@ int mv88e6390_port_set_speed_duplex(struct mv88e6xxx_chip *chip, int port,
- 					       duplex);
- }
- 
--phy_interface_t mv88e6390_port_max_speed_mode(int port)
--{
--	if (port == 9 || port == 10)
--		return PHY_INTERFACE_MODE_2500BASEX;
--
--	return PHY_INTERFACE_MODE_NA;
--}
--
- /* Support 10, 100, 200, 1000, 2500, 10000 Mbps (e.g. 88E6190X) */
- int mv88e6390x_port_set_speed_duplex(struct mv88e6xxx_chip *chip, int port,
- 				     int speed, int duplex)
-@@ -394,14 +378,6 @@ int mv88e6390x_port_set_speed_duplex(struct mv88e6xxx_chip *chip, int port,
- 					       duplex);
- }
- 
--phy_interface_t mv88e6390x_port_max_speed_mode(int port)
--{
--	if (port == 9 || port == 10)
--		return PHY_INTERFACE_MODE_XAUI;
--
--	return PHY_INTERFACE_MODE_NA;
--}
--
- /* Support 10, 100, 200, 1000, 2500, 5000, 10000 Mbps (e.g. 88E6393X)
-  * Function mv88e6xxx_port_set_speed_duplex() can't be used as the register
-  * values for speeds 2500 & 5000 conflict.
-@@ -491,14 +467,6 @@ int mv88e6393x_port_set_speed_duplex(struct mv88e6xxx_chip *chip, int port,
- 	return 0;
- }
- 
--phy_interface_t mv88e6393x_port_max_speed_mode(int port)
--{
--	if (port == 0 || port == 9 || port == 10)
--		return PHY_INTERFACE_MODE_10GBASER;
--
--	return PHY_INTERFACE_MODE_NA;
--}
--
- static int mv88e6xxx_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
- 				    phy_interface_t mode, bool force)
- {
-diff --git a/drivers/net/dsa/mv88e6xxx/port.h b/drivers/net/dsa/mv88e6xxx/port.h
-index cb04243f37c1..2a5741a44e97 100644
---- a/drivers/net/dsa/mv88e6xxx/port.h
-+++ b/drivers/net/dsa/mv88e6xxx/port.h
-@@ -357,11 +357,6 @@ int mv88e6390x_port_set_speed_duplex(struct mv88e6xxx_chip *chip, int port,
- int mv88e6393x_port_set_speed_duplex(struct mv88e6xxx_chip *chip, int port,
- 				     int speed, int duplex);
- 
--phy_interface_t mv88e6341_port_max_speed_mode(int port);
--phy_interface_t mv88e6390_port_max_speed_mode(int port);
--phy_interface_t mv88e6390x_port_max_speed_mode(int port);
--phy_interface_t mv88e6393x_port_max_speed_mode(int port);
--
- int mv88e6xxx_port_set_state(struct mv88e6xxx_chip *chip, int port, u8 state);
- 
- int mv88e6xxx_port_set_vlan_map(struct mv88e6xxx_chip *chip, int port, u16 map);
--- 
-2.30.2
-
+>
+>Thanks!
+>
+>
+>Tue, Jul 12, 2022 at 12:48:50PM CEST, jiri@resnulli.us wrote:
+>>From: Jiri Pirko <jiri@nvidia.com>
+>>
+>>Just a couple of trivial fixes I found on the way.
+>>
+>>Jiri Pirko (3):
+>>  net: devlink: make devlink_dpipe_headers_register() return void
+>>  net: devlink: fix a typo in function name devlink_port_new_notifiy()
+>>  net: devlink: fix return statement in devlink_port_new_notify()
+>>
+>> .../net/ethernet/mellanox/mlxsw/spectrum_dpipe.c |  6 ++----
+>> include/net/devlink.h                            |  2 +-
+>> net/core/devlink.c                               | 16 +++++++---------
+>> 3 files changed, 10 insertions(+), 14 deletions(-)
+>>
+>>-- 
+>>2.35.3
+>>
