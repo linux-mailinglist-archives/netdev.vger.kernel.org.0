@@ -2,148 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AC05572F9C
-	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 09:50:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 53406572FA5
+	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 09:52:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231168AbiGMHu1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jul 2022 03:50:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47000 "EHLO
+        id S230261AbiGMHwM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jul 2022 03:52:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229456AbiGMHu0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 03:50:26 -0400
-Received: from zju.edu.cn (spam.zju.edu.cn [61.164.42.155])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B460A25E87;
-        Wed, 13 Jul 2022 00:50:22 -0700 (PDT)
-Received: by ajax-webmail-mail-app3 (Coremail) ; Wed, 13 Jul 2022 15:50:06
- +0800 (GMT+08:00)
-X-Originating-IP: [10.190.69.130]
-Date:   Wed, 13 Jul 2022 15:50:06 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   duoming@zju.edu.cn
-To:     "Paolo Abeni" <pabeni@redhat.com>
-Cc:     linux-hams@vger.kernel.org, ralf@linux-mips.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net v6] net: rose: fix null-ptr-deref caused by
- rose_kill_by_neigh
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
- Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
-In-Reply-To: <daa2b799956c286b2cce898bee22fb2a043f5177.camel@redhat.com>
-References: <20220711013111.33183-1-duoming@zju.edu.cn>
- <daa2b799956c286b2cce898bee22fb2a043f5177.camel@redhat.com>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        with ESMTP id S229689AbiGMHwL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 03:52:11 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDFA1313A4
+        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 00:52:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657698730; x=1689234730;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=Bs0A0gwYjoIX5MVlA7mSCBBhrb0GLSFFVP1Pt4bJgNQ=;
+  b=GTLfaYZB1HnXENd2Wz48od43u7a6DAFcy4Lfx5EUQp/Pdz7K5qT6GFpU
+   Gi2D7xi1HuJW6o2jZg7AL1hSNh1A3aAJAf3ZojbuGfs4qRKbl1L8PkOF6
+   vc/aeMkXrkqcgKEVNQyNWVWq5JB5rbPIBMzGXVv0L82InG2G9jzxhDisR
+   frj+ZRQqpJlDUT80JRwDdkW2e2zPp9TaElXUHxCfrebomgrEW6b/Nwbc0
+   +RQWg/TGi8h8L5CxecCIVnRS1BVexlFxuyQom/cjNwex+Z8iO1sMj9Au7
+   TKp6w5DQlJQSVfwWb1NVxhtfmsDB9QeoBjg2gUyNtQMolhwyBcILGvQsJ
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10406"; a="346822855"
+X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
+   d="scan'208";a="346822855"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 00:52:10 -0700
+X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
+   d="scan'208";a="628207900"
+Received: from lingshan-mobl.ccr.corp.intel.com (HELO [10.254.208.157]) ([10.254.208.157])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 00:52:08 -0700
+Message-ID: <d7c1cc89-df6e-89ca-2da3-17fd8989e98d@intel.com>
+Date:   Wed, 13 Jul 2022 15:52:06 +0800
 MIME-Version: 1.0
-Message-ID: <540ab034.3f081.181f6895dba.Coremail.duoming@zju.edu.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: cC_KCgC3vQwuec5iSCdsAA--.7231W
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgQKAVZdtapPBQAFsW
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.11.0
+Subject: Re: [PATCH V3 1/6] vDPA/ifcvf: get_config_size should return a value
+ no greater than dev implementation
+Content-Language: en-US
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>, Parav Pandit <parav@nvidia.com>,
+        Yongji Xie <xieyongji@bytedance.com>,
+        "Dawar, Gautam" <gautam.dawar@amd.com>
+References: <20220701132826.8132-1-lingshan.zhu@intel.com>
+ <20220701132826.8132-2-lingshan.zhu@intel.com>
+ <CACGkMEvGo2urfPriS3f6dCxT+41KJ0E-KUd4-GvUrX81BVy8Og@mail.gmail.com>
+ <b2b2fb5e-c1c2-84b6-0315-a6eef121cdac@intel.com>
+ <20220713013141-mutt-send-email-mst@kernel.org>
+From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
+In-Reply-To: <20220713013141-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGVsbG8sCgpPbiBUdWUsIDEyIEp1bCAyMDIyIDEzOjAwOjQ5ICswMjAwIFBhb2xvIEFiZW5pIHdy
-b3RlOgoKPiBPbiBNb24sIDIwMjItMDctMTEgYXQgMDk6MzEgKzA4MDAsIER1b21pbmcgWmhvdSB3
-cm90ZToKPiA+IFdoZW4gdGhlIGxpbmsgbGF5ZXIgY29ubmVjdGlvbiBpcyBicm9rZW4sIHRoZSBy
-b3NlLT5uZWlnaGJvdXIgaXMKPiA+IHNldCB0byBudWxsLiBCdXQgcm9zZS0+bmVpZ2hib3VyIGNv
-dWxkIGJlIHVzZWQgYnkgcm9zZV9jb25uZWN0aW9uKCkKPiA+IGFuZCByb3NlX3JlbGVhc2UoKSBs
-YXRlciwgYmVjYXVzZSB0aGVyZSBpcyBubyBzeW5jaHJvbml6YXRpb24gYW1vbmcKPiA+IHRoZW0u
-IEFzIGEgcmVzdWx0LCB0aGUgbnVsbC1wdHItZGVyZWYgYnVncyB3aWxsIGhhcHBlbi4KPiA+IAo+
-ID4gT25lIG9mIHRoZSBudWxsLXB0ci1kZXJlZiBidWdzIGlzIHNob3duIGJlbG93Ogo+ID4gCj4g
-PiAgICAgKHRocmVhZCAxKSAgICAgICAgICAgICAgICAgIHwgICAgICAgICh0aHJlYWQgMikKPiA+
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgcm9zZV9jb25uZWN0Cj4gPiByb3Nl
-X2tpbGxfYnlfbmVpZ2ggICAgICAgICAgICAgIHwgICAgbG9ja19zb2NrKHNrKQo+ID4gICBzcGlu
-X2xvY2tfYmgoJnJvc2VfbGlzdF9sb2NrKSB8ICAgIGlmICghcm9zZS0+bmVpZ2hib3VyKQo+ID4g
-ICByb3NlLT5uZWlnaGJvdXIgPSBOVUxMOy8vKDEpICB8Cj4gPiAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgIHwgICAgcm9zZS0+bmVpZ2hib3VyLT51c2UrKzsvLygyKQo+ID4gCj4gPiBU
-aGUgcm9zZS0+bmVpZ2hib3VyIGlzIHNldCB0byBudWxsIGluIHBvc2l0aW9uICgxKSBhbmQgZGVy
-ZWZlcmVuY2VkCj4gPiBpbiBwb3NpdGlvbiAoMikuCj4gPiAKPiA+IFRoZSBLQVNBTiByZXBvcnQg
-dHJpZ2dlcmVkIGJ5IFBPQyBpcyBzaG93biBiZWxvdzoKPiA+IAo+ID4gS0FTQU46IG51bGwtcHRy
-LWRlcmVmIGluIHJhbmdlIFsweDAwMDAwMDAwMDAwMDAwMjgtMHgwMDAwMDAwMDAwMDAwMDJmXQo+
-ID4gLi4uCj4gPiBSSVA6IDAwMTA6cm9zZV9jb25uZWN0KzB4NmMyLzB4ZjMwCj4gPiBSU1A6IDAw
-MTg6ZmZmZjg4ODAwYWI0N2Q2MCBFRkxBR1M6IDAwMDAwMjA2Cj4gPiBSQVg6IDAwMDAwMDAwMDAw
-MDAwMDUgUkJYOiAwMDAwMDAwMDAwMDAwMDJhIFJDWDogMDAwMDAwMDAwMDAwMDAwMAo+ID4gUkRY
-OiBmZmZmODg4MDBhYjM4MDAwIFJTSTogZmZmZjg4ODAwYWI0N2U0OCBSREk6IGZmZmY4ODgwMGFi
-MzgzMDkKPiA+IFJCUDogZGZmZmZjMDAwMDAwMDAwMCBSMDg6IDAwMDAwMDAwMDAwMDAwMDAgUjA5
-OiBmZmZmZWQxMDAxNTY3MDYyCj4gPiBSMTA6IGRmZmZlOTEwMDE1NjcwNjMgUjExOiAxZmZmZjEx
-MDAxNTY3MDYxIFIxMjogMWZmZmYxMTAwMGQxN2NkMAo+ID4gUjEzOiBmZmZmODg4MDA2OGJlNjgw
-IFIxNDogMDAwMDAwMDAwMDAwMDAwMiBSMTU6IDFmZmZmMTEwMDBkMTdjZDAKPiA+IC4uLgo+ID4g
-Q2FsbCBUcmFjZToKPiA+ICAgPFRBU0s+Cj4gPiAgID8gX19sb2NhbF9iaF9lbmFibGVfaXArMHg1
-NC8weDgwCj4gPiAgID8gc2VsaW51eF9uZXRsYmxfc29ja2V0X2Nvbm5lY3QrMHgyNi8weDMwCj4g
-PiAgID8gcm9zZV9iaW5kKzB4NWIwLzB4NWIwCj4gPiAgIF9fc3lzX2Nvbm5lY3QrMHgyMTYvMHgy
-ODAKPiA+ICAgX194NjRfc3lzX2Nvbm5lY3QrMHg3MS8weDgwCj4gPiAgIGRvX3N5c2NhbGxfNjQr
-MHg0My8weDkwCj4gPiAgIGVudHJ5X1NZU0NBTExfNjRfYWZ0ZXJfaHdmcmFtZSsweDQ2LzB4YjAK
-PiA+IAo+ID4gVGhpcyBwYXRjaCBhZGRzIGxvY2tfc29jaygpIGluIHJvc2Vfa2lsbF9ieV9uZWln
-aCgpIGluIG9yZGVyIHRvCj4gPiBzeW5jaHJvbml6ZSB3aXRoIHJvc2VfY29ubmVjdCgpIGFuZCBy
-b3NlX3JlbGVhc2UoKS4gVGhlbiwgY2hhbmdpbmcKPiA+IHR5cGUgb2YgJ25laWdoYm91ci0+dXNl
-JyBmcm9tIHVuc2lnbmVkIHNob3J0IHRvIGF0b21pY190IGluIG9yZGVyIHRvCj4gPiBtaXRpZ2F0
-ZSByYWNlIGNvbmRpdGlvbnMgY2F1c2VkIGJ5IGhvbGRpbmcgZGlmZmVyZW50IHNvY2tldCBsb2Nr
-IHdoaWxlCj4gPiB1cGRhdGluZyAnbmVpZ2hib3VyLT51c2UnLgo+ID4gCj4gPiBNZWFud2hpbGUs
-IHRoaXMgcGF0Y2ggYWRkcyBzb2NrX2hvbGQoKSBwcm90ZWN0ZWQgYnkgcm9zZV9saXN0X2xvY2sK
-PiA+IHRoYXQgY291bGQgc3luY2hyb25pemUgd2l0aCByb3NlX3JlbW92ZV9zb2NrZXQoKSBpbiBv
-cmRlciB0byBtaXRpZ2F0ZQo+ID4gVUFGIGJ1ZyBjYXVzZWQgYnkgbG9ja19zb2NrKCkgd2UgYWRk
-Lgo+ID4gCj4gPiBXaGF0J3MgbW9yZSwgdGhlcmUgaXMgbm8gbmVlZCB1c2luZyByb3NlX25laWdo
-X2xpc3RfbG9jayB0byBwcm90ZWN0Cj4gPiByb3NlX2tpbGxfYnlfbmVpZ2goKS4gQmVjYXVzZSB3
-ZSBoYXZlIGFscmVhZHkgdXNlZCByb3NlX25laWdoX2xpc3RfbG9jawo+ID4gdG8gcHJvdGVjdCB0
-aGUgc3RhdGUgY2hhbmdlIG9mIHJvc2VfbmVpZ2ggaW4gcm9zZV9saW5rX2ZhaWxlZCgpLCB3aGlj
-aAo+ID4gaXMgd2VsbCBzeW5jaHJvbml6ZWQuCj4gPiAKPiA+IEZpeGVzOiAxZGExNzdlNGMzZjQg
-KCJMaW51eC0yLjYuMTItcmMyIikKPiA+IFNpZ25lZC1vZmYtYnk6IER1b21pbmcgWmhvdSA8ZHVv
-bWluZ0B6anUuZWR1LmNuPgo+ID4gLS0tCj4gPiBDaGFuZ2VzIGluIHY2Ogo+ID4gICAtIENoYW5n
-ZSBza19mb3JfZWFjaCgpIHRvIHNrX2Zvcl9lYWNoX3NhZmUoKS4KPiA+ICAgLSBDaGFuZ2UgdHlw
-ZSBvZiAnbmVpZ2hib3VyLT51c2UnIGZyb20gdW5zaWduZWQgc2hvcnQgdG8gYXRvbWljX3QuCj4g
-PiAKPiA+ICBpbmNsdWRlL25ldC9yb3NlLmggICAgfCAgMiArLQo+ID4gIG5ldC9yb3NlL2FmX3Jv
-c2UuYyAgICB8IDE5ICsrKysrKysrKysrKystLS0tLS0KPiA+ICBuZXQvcm9zZS9yb3NlX2luLmMg
-ICAgfCAxMiArKysrKystLS0tLS0KPiA+ICBuZXQvcm9zZS9yb3NlX3JvdXRlLmMgfCAyNCArKysr
-KysrKysrKystLS0tLS0tLS0tLS0KPiA+ICBuZXQvcm9zZS9yb3NlX3RpbWVyLmMgfCAgMiArLQo+
-ID4gIDUgZmlsZXMgY2hhbmdlZCwgMzMgaW5zZXJ0aW9ucygrKSwgMjYgZGVsZXRpb25zKC0pCj4g
-PiAKPiA+IGRpZmYgLS1naXQgYS9pbmNsdWRlL25ldC9yb3NlLmggYi9pbmNsdWRlL25ldC9yb3Nl
-LmgKPiA+IGluZGV4IDBmMGE0Y2UwZmVlLi5kNWRkZWJjNTU2ZCAxMDA2NDQKPiA+IC0tLSBhL2lu
-Y2x1ZGUvbmV0L3Jvc2UuaAo+ID4gKysrIGIvaW5jbHVkZS9uZXQvcm9zZS5oCj4gPiBAQCAtOTUs
-NyArOTUsNyBAQCBzdHJ1Y3Qgcm9zZV9uZWlnaCB7Cj4gPiAgCWF4MjVfY2IJCQkqYXgyNTsKPiA+
-ICAJc3RydWN0IG5ldF9kZXZpY2UJCSpkZXY7Cj4gPiAgCXVuc2lnbmVkIHNob3J0CQljb3VudDsK
-PiA+IC0JdW5zaWduZWQgc2hvcnQJCXVzZTsKPiA+ICsJYXRvbWljX3QJCXVzZTsKPiA+ICAJdW5z
-aWduZWQgaW50CQludW1iZXI7Cj4gPiAgCWNoYXIJCQlyZXN0YXJ0ZWQ7Cj4gPiAgCWNoYXIJCQlk
-Y2VfbW9kZTsKPiA+IGRpZmYgLS1naXQgYS9uZXQvcm9zZS9hZl9yb3NlLmMgYi9uZXQvcm9zZS9h
-Zl9yb3NlLmMKPiA+IGluZGV4IGJmMmQ5ODZhNmJjLi41NGU3Yjc2YzRmMyAxMDA2NDQKPiA+IC0t
-LSBhL25ldC9yb3NlL2FmX3Jvc2UuYwo+ID4gKysrIGIvbmV0L3Jvc2UvYWZfcm9zZS5jCj4gPiBA
-QCAtMTYzLDE2ICsxNjMsMjMgQEAgc3RhdGljIHZvaWQgcm9zZV9yZW1vdmVfc29ja2V0KHN0cnVj
-dCBzb2NrICpzaykKPiA+ICB2b2lkIHJvc2Vfa2lsbF9ieV9uZWlnaChzdHJ1Y3Qgcm9zZV9uZWln
-aCAqbmVpZ2gpCj4gPiAgewo+ID4gIAlzdHJ1Y3Qgc29jayAqczsKPiA+ICsJc3RydWN0IGhsaXN0
-X25vZGUgKnRtcDsKPiA+ICAKPiA+ICAJc3Bpbl9sb2NrX2JoKCZyb3NlX2xpc3RfbG9jayk7Cj4g
-PiAtCXNrX2Zvcl9lYWNoKHMsICZyb3NlX2xpc3QpIHsKPiA+ICsJc2tfZm9yX2VhY2hfc2FmZShz
-LCB0bXAsICZyb3NlX2xpc3QpIHsKPiA+ICAJCXN0cnVjdCByb3NlX3NvY2sgKnJvc2UgPSByb3Nl
-X3NrKHMpOwo+ID4gIAo+ID4gKwkJc29ja19ob2xkKHMpOwo+ID4gKwkJc3Bpbl91bmxvY2tfYmgo
-JnJvc2VfbGlzdF9sb2NrKTsKPiA+ICsJCWxvY2tfc29jayhzKTsKPiA+ICAJCWlmIChyb3NlLT5u
-ZWlnaGJvdXIgPT0gbmVpZ2gpIHsKPiA+ICAJCQlyb3NlX2Rpc2Nvbm5lY3QocywgRU5FVFVOUkVB
-Q0gsIFJPU0VfT1VUX09GX09SREVSLCAwKTsKPiA+IC0JCQlyb3NlLT5uZWlnaGJvdXItPnVzZS0t
-Owo+ID4gKwkJCWF0b21pY19kZWMoJnJvc2UtPm5laWdoYm91ci0+dXNlKTsKPiA+ICAJCQlyb3Nl
-LT5uZWlnaGJvdXIgPSBOVUxMOwo+ID4gIAkJfQo+ID4gKwkJcmVsZWFzZV9zb2NrKHMpOwo+ID4g
-KwkJc29ja19wdXQocyk7Cj4gCj4gSSdtIHNvcnJ5LCB0aGlzIGRvZXMgbm90IHdvcmsuIEF0IHRo
-aXMgcG9pbnQgYm90aCAncycgYW5kICd0bXAnIHNvY2tldHMKPiBjYW4gYmUgZnJlZWQgYW5kIHJl
-dXNlZC4gQm90aCBpdGVyYXRvcnMgYXJlIG5vdCB2YWxpZCBhbnltb3JlIHdoZW4geW91Cj4gYWNx
-dWlyZSB0aGUgJ3Jvc2VfbGlzdF9sb2NrJyBsYXRlci4KClRoYW5rIHlvdSBmb3IgeW91ciB0aW1l
-IGFuZCByZXBseSEgQnV0IEkgdGhpbmsgYm90aCAncycgYW5kICd0bXAnIGNhbiBub3QKYmUgZnJl
-ZWQgYW5kIHJldXNlZCBpbiByb3NlX2tpbGxfYnlfbmVpZ2goKS4gQmVjYXVzZSByb3NlX3JlbW92
-ZV9zb2NrZXQoKQpjYWxscyBza19kZWxfbm9kZV9pbml0KCkgd2hpY2ggaXMgcHJvdGVjdGVkIGJ5
-IHJvc2VfbGlzdF9sb2NrIHRvIGRlbGV0ZSB0aGUKc29ja2V0IG5vZGUgZnJvbSB0aGUgaGxpc3Qg
-YW5kIGlmIHNrLT5za19yZWZjbnQgZXF1YWxzIHRvIDEsIHRoZSBzb2NrZXQgd2lsbApiZSBkZWFs
-bG9jYXRlZC4KCnN0YXRpYyB2b2lkIHJvc2VfcmVtb3ZlX3NvY2tldChzdHJ1Y3Qgc29jayAqc2sp
-CnsKCXNwaW5fbG9ja19iaCgmcm9zZV9saXN0X2xvY2spOwoJc2tfZGVsX25vZGVfaW5pdChzayk7
-CglzcGluX3VubG9ja19iaCgmcm9zZV9saXN0X2xvY2spOwp9CgpodHRwczovL2VsaXhpci5ib290
-bGluLmNvbS9saW51eC92NS4xOS1yYzYvc291cmNlL25ldC9yb3NlL2FmX3Jvc2UuYyNMMTUyCgpC
-b3RoICdzJyBhbmQgJ3RtcCcgaW4gcm9zZV9raWxsX2J5X25laWdoKCkgaXMgYWxzbyBwcm90ZWN0
-ZWQgYnkgcm9zZV9saXN0X2xvY2suCgpJZiB0aGUgc29ja2V0IGlzIGRlbGV0ZWQgZnJvbSB0aGUg
-aGxpc3QsIHNrX2Zvcl9lYWNoX3NhZmUoKSBjb3VsZCBub3QgZmluZAp0aGUgc29ja2V0IGFuZCB0
-aGUgVUFGIGJ1ZyBjb3VsZCBiZSBwcmV2ZW50ZWQuIAoKSWYgdGhlIHNvY2tldCBjb3VsZCBiZSBm
-b3VuZCBieSBza19mb3JfZWFjaF9zYWZlKCksIHdlIHVzZSBzb2NrX2hvbGQocykKdG8gaW5jcmVh
-c2UgdGhlIHJlZmNvdW50IG9mIHRoZSBzb2NrZXQuIEFzIGEgcmVzdWx0LCB0aGUgVUFGIGJ1Z3Mg
-Y291bGQKYmUgcHJldmVudGVkLgoKQmVzdCByZWdhcmRzLApEdW9taW5nIFpob3UK
+
+
+On 7/13/2022 1:44 PM, Michael S. Tsirkin wrote:
+> On Fri, Jul 08, 2022 at 02:44:08PM +0800, Zhu, Lingshan wrote:
+>>
+>> On 7/4/2022 12:39 PM, Jason Wang wrote:
+>>> On Fri, Jul 1, 2022 at 9:36 PM Zhu Lingshan <lingshan.zhu@intel.com> wrote:
+>>>> ifcvf_get_config_size() should return a virtio device type specific value,
+>>>> however the ret_value should not be greater than the onboard size of
+>>>> the device implementation. E.g., for virtio_net, config_size should be
+>>>> the minimum value of sizeof(struct virtio_net_config) and the onboard
+>>>> cap size.
+>>> Rethink of this, I wonder what's the value of exposing device
+>>> implementation details to users? Anyhow the parent is in charge of
+>>> "emulating" config space accessing.
+>> This will not be exposed to the users, it is a ifcvf internal helper,
+>> to get the actual device config space size.
+>>
+>> For example, if ifcvf drives an Intel virtio-net device,
+>> if the device config space size is greater than sizeof(struct
+>> virtio_net_cfg),
+>> this means the device has something more than the spec, some private fields,
+>> we don't want to expose these extra private fields to the users, so in this
+>> case,
+>> we only return what the spec defines.
+> This is kind of already the case.
+>
+>> If the device config space size is less than sizeof(struct virtio_net_cfg),
+>> means the device didn't implement all fields the spec defined, like no RSS.
+>> In such cases, we only return what the device implemented.
+>> So these are defensive programming.
+> I think the issue you are describing is simply this.
+>
+>
+> Driver must not access BAR outside capability length. Current code
+> does not verify that it does not. Not the case for the current
+> devices but it's best to be safe against the case where
+> device does not implement some of the capability.
+>
+>
+>  From that POV I think the patch is good, just fix the log.
+sure, I will do
+
+Thanks,
+Zhu Lingshan
+>
+>
+>
+>>> If we do this, it's probably a blocker for cross vendor stuff.
+>>>
+>>> Thanks
+>>>
+>>>> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+>>>> ---
+>>>>    drivers/vdpa/ifcvf/ifcvf_base.c | 13 +++++++++++--
+>>>>    drivers/vdpa/ifcvf/ifcvf_base.h |  2 ++
+>>>>    2 files changed, 13 insertions(+), 2 deletions(-)
+>>>>
+>>>> diff --git a/drivers/vdpa/ifcvf/ifcvf_base.c b/drivers/vdpa/ifcvf/ifcvf_base.c
+>>>> index 48c4dadb0c7c..fb957b57941e 100644
+>>>> --- a/drivers/vdpa/ifcvf/ifcvf_base.c
+>>>> +++ b/drivers/vdpa/ifcvf/ifcvf_base.c
+>>>> @@ -128,6 +128,7 @@ int ifcvf_init_hw(struct ifcvf_hw *hw, struct pci_dev *pdev)
+>>>>                           break;
+>>>>                   case VIRTIO_PCI_CAP_DEVICE_CFG:
+>>>>                           hw->dev_cfg = get_cap_addr(hw, &cap);
+>>>> +                       hw->cap_dev_config_size = le32_to_cpu(cap.length);
+>>>>                           IFCVF_DBG(pdev, "hw->dev_cfg = %p\n", hw->dev_cfg);
+>>>>                           break;
+>>>>                   }
+>>>> @@ -233,15 +234,23 @@ int ifcvf_verify_min_features(struct ifcvf_hw *hw, u64 features)
+>>>>    u32 ifcvf_get_config_size(struct ifcvf_hw *hw)
+>>>>    {
+>>>>           struct ifcvf_adapter *adapter;
+>>>> +       u32 net_config_size = sizeof(struct virtio_net_config);
+>>>> +       u32 blk_config_size = sizeof(struct virtio_blk_config);
+>>>> +       u32 cap_size = hw->cap_dev_config_size;
+>>>>           u32 config_size;
+>>>>
+>>>>           adapter = vf_to_adapter(hw);
+>>>> +       /* If the onboard device config space size is greater than
+>>>> +        * the size of struct virtio_net/blk_config, only the spec
+>>>> +        * implementing contents size is returned, this is very
+>>>> +        * unlikely, defensive programming.
+>>>> +        */
+>>>>           switch (hw->dev_type) {
+>>>>           case VIRTIO_ID_NET:
+>>>> -               config_size = sizeof(struct virtio_net_config);
+>>>> +               config_size = cap_size >= net_config_size ? net_config_size : cap_size;
+>>>>                   break;
+>>>>           case VIRTIO_ID_BLOCK:
+>>>> -               config_size = sizeof(struct virtio_blk_config);
+>>>> +               config_size = cap_size >= blk_config_size ? blk_config_size : cap_size;
+>>>>                   break;
+>>>>           default:
+>>>>                   config_size = 0;
+>>>> diff --git a/drivers/vdpa/ifcvf/ifcvf_base.h b/drivers/vdpa/ifcvf/ifcvf_base.h
+>>>> index 115b61f4924b..f5563f665cc6 100644
+>>>> --- a/drivers/vdpa/ifcvf/ifcvf_base.h
+>>>> +++ b/drivers/vdpa/ifcvf/ifcvf_base.h
+>>>> @@ -87,6 +87,8 @@ struct ifcvf_hw {
+>>>>           int config_irq;
+>>>>           int vqs_reused_irq;
+>>>>           u16 nr_vring;
+>>>> +       /* VIRTIO_PCI_CAP_DEVICE_CFG size */
+>>>> +       u32 cap_dev_config_size;
+>>>>    };
+>>>>
+>>>>    struct ifcvf_adapter {
+>>>> --
+>>>> 2.31.1
+>>>>
+
