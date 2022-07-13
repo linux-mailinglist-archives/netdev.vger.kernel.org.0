@@ -2,46 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 34B63573D5A
-	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 21:49:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 90566573D5B
+	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 21:51:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231817AbiGMTtj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jul 2022 15:49:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59350 "EHLO
+        id S231809AbiGMTvd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jul 2022 15:51:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230331AbiGMTti (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 15:49:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8A7026565
-        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 12:49:34 -0700 (PDT)
+        with ESMTP id S230331AbiGMTvd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 15:51:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B28B26105;
+        Wed, 13 Jul 2022 12:51:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5A7B7B82124
-        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 19:49:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA1FBC34114;
-        Wed, 13 Jul 2022 19:49:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 18F6F61E18;
+        Wed, 13 Jul 2022 19:51:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 301C7C34114;
+        Wed, 13 Jul 2022 19:51:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657741772;
-        bh=68X9sHyEXu+W4MMXZ84ftqEVn/u1UgOgMuQdVpaxByQ=;
+        s=k20201202; t=1657741891;
+        bh=XQRCQm9cyUaJ0XXRMGwc40cPfbIYv4ZfRw+8YRgjIHQ=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=kIDg/Acvyj0qDALmZhwX3Zoehl8AbRGYlmSZRn9KPLCXmsShr86040VgcI7GkkxxN
-         B7C0SNn0EpyuVN/SOTnZvrgMXFREZDYCGGtQTeJUKXPWxAz2GW0gRgfBqsA3YN2Vyw
-         OabcrXvt1PnhSyhpqgMFmIw2iH6a0OP82mclX/MHwKHZFMrnF+fy1cgrOn2nvJWWRZ
-         myQHSoseONF1AiWCL47E9spp2oBtOjl/QQQxtQ1o0hbWX/rVgEhMEdEkeQB5TMI1hE
-         Bx/ZvF5ZmDs6YkPmiBIJF4+b5VkOO9cLyP9J3YsaHwGlFTn6aFvw+LcAaWHujX/Mfp
-         PYqEvo3bAfx7Q==
-Date:   Wed, 13 Jul 2022 12:49:30 -0700
+        b=DSelqltEw5O4kCzj2QnEDMKFD/hcDnPowWC5BzGiuPQX9b0wN6ni+JjLimS2pAvDM
+         f571p1A1X4WBPiAY9ZfJmMMIKEA3lP5yKGoWY3tW8DAHjh7xNN0mLH1LwWx+7+bZNv
+         zMjpGhu3HpbHeN8XL5bKvH309FaSY8jYU2CWcg6hatRQfeQxRbBArRSZqxe/oYBDEZ
+         SnTSIsf92Aw17cmAbYEeo5iTfKEbH5Rp3CEAqUybyBS9C842oK110wyL/GqsnDGHZO
+         ZB/TV7toY7VX9VHDCwBPdPt4v6D4sj0vgaVTcr7P8FDAhAP4JexJXuO7dGNr8egrZO
+         0WlEqk4iwCEMA==
+Date:   Wed, 13 Jul 2022 12:51:30 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, pabeni@redhat.com, edumazet@google.com,
-        Alan Brady <alan.brady@intel.com>, netdev@vger.kernel.org,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        Gurucharan <gurucharanx.g@intel.com>
-Subject: Re: [PATCH net-next 1/1] ping: fix ipv6 ping socket flow labels
-Message-ID: <20220713124930.6d58af50@kernel.org>
-In-Reply-To: <20220712165608.32790-1-anthony.l.nguyen@intel.com>
-References: <20220712165608.32790-1-anthony.l.nguyen@intel.com>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>, Jiri Pirko <jiri@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH v2] tracing: devlink: Use static array for string in
+ devlink_trap_report even
+Message-ID: <20220713125130.0a728bce@kernel.org>
+In-Reply-To: <20220712185820.002d9fb5@gandalf.local.home>
+References: <20220712185820.002d9fb5@gandalf.local.home>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -55,20 +56,21 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 12 Jul 2022 09:56:08 -0700 Tony Nguyen wrote:
-> From: Alan Brady <alan.brady@intel.com>
+On Tue, 12 Jul 2022 18:58:20 -0400 Steven Rostedt wrote:
+> From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
 > 
-> Ping sockets don't appear to make any attempt to preserve flow labels
-> created and set by userspace. Instead they are always clobbered by
-> autolabels (if enabled) or zero.
+> The trace event devlink_trap_report uses the __dynamic_array() macro to
+> determine the size of the input_dev_name field. This is because it needs
+> to test the dev field for NULL, and will use "NULL" if it is. But it also
+> has the size of the dynamic array as a fixed IFNAMSIZ bytes. This defeats
+> the purpose of the dynamic array, as this will reserve that amount of
+> bytes on the ring buffer, and to make matters worse, it will even save
+> that size in the event as the event expects it to be dynamic (for which it
+> is not).
 > 
-> This grabs the flowlabel out of the msghdr similar to how rawv6_sendmsg
-> does it and moves the memset up so we don't zero it.
+> Since IFNAMSIZ is just 16 bytes, just make it a static array and this will
+> remove the meta data from the event that records the size.
 > 
-> Signed-off-by: Alan Brady <alan.brady@intel.com>
-> Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
-> Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+> Cc: Jakub Kicinski <kuba@kernel.org>
 
-Thanks! Please add a selftest and s/fix/support/ in the subject
-otherwise  the stable ML bot will think this is a fix, and its more 
-of a missing feature.
+Acked-by: Jakub Kicinski <kuba@kernel.org>
