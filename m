@@ -2,294 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C9B6B572FDA
-	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 09:59:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA7AB572FDC
+	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 09:59:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234952AbiGMH7F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jul 2022 03:59:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57786 "EHLO
+        id S234979AbiGMH7V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jul 2022 03:59:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234777AbiGMH7D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 03:59:03 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2F33D861F
-        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 00:59:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657699142; x=1689235142;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=WleSXfzbSwLNhwgEyu2lvjPueIWHp3SzhxOySa5ZqT8=;
-  b=famBFo0pDyhrPfaryLWaTQbrfrvbhz56773/fjDEiyE+4lV3DSJI94Ys
-   Ed5Q7YxmJUXA6x7ZIZhuxh5isfwbRFSWFr5CCywvQlPme8AMZYOgEYIAH
-   Oj8A1w4Jc7tPoKoaaWiDUnEhvYGkE/lDWzzwxC2pqdPAtUjE0PXo+oRXn
-   eS+hbbDgYG3314cwBGsgzq1Q/Qp3+lrfbVb6RAwLb7UrGNxmBsYnU6m0H
-   d7obToOVmxmcHi3Is2OzHmKa9Wxb65NtwGrJoa87/Q6BTEujie2H3/AbO
-   obi75DeukxYXK7FBQRFgpnCROyLmNUYeiflCFzPiq/v3oyI93DTr13Lik
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10406"; a="268179807"
-X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
-   d="scan'208";a="268179807"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 00:59:02 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
-   d="scan'208";a="545748226"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by orsmga003.jf.intel.com with ESMTP; 13 Jul 2022 00:59:01 -0700
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Wed, 13 Jul 2022 00:59:01 -0700
-Received: from fmsmsx607.amr.corp.intel.com (10.18.126.87) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Wed, 13 Jul 2022 00:59:01 -0700
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx607.amr.corp.intel.com (10.18.126.87) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Wed, 13 Jul 2022 00:59:01 -0700
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.103)
- by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Wed, 13 Jul 2022 00:59:01 -0700
+        with ESMTP id S235019AbiGMH7O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 03:59:14 -0400
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2074.outbound.protection.outlook.com [40.107.21.74])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 329F9E5842;
+        Wed, 13 Jul 2022 00:59:13 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jni2MSh+c4p7ebYjDU4tC+3U7aKEt9KtLOTNIYw10ROcwI+MuaOjPD49D8+uw05nEk6wiJ1u9gEJhmCytqQ1u6l9VTR8FEjO2yfASq1PBZQkKteIGuGAddiPgMWI2Y/slQHISjHngaDnVbU+RhVjlAhc0w1X4o8CglDRKEVDyDxoTAmTtF7eFX7fYcQOzTL8fJwLMubps7QFaeoUOJlN3xNS70TYxNUs4FdBBCRnFSv/MOtsOKM2qxy+euNxDLxV2izfXXic/zB1H8QejqroTEbpqmwLQ9ZPFKj9fKkf7yRmkEimIyao2/hsCMAU+QKpK8MUwGUF8WlGIAYvNs141A==
+ b=iTBGE353DxjsJgC4ruYjqFdX9tzWrDCVhRDA0Ul5Eua1Xo5tD8rqcoLEMuFU6SsJyoDjop5xbPIp/vVcVt0+WgBvKYGPQwqKM0/gurW1Sn7qhLQKLXJq6PexbMa2c2F9H3CQ0Xo7+E8XMo2waxCfRgCeSi7tgN4xC+aevCusJWUWpEiIlboPp01iWQz5Iw3DArAz7wsFYLnoYfxGy+7K1kT+aJtYRJfTsbPetFUtSHc2e8ZNbPLo7i/LTjex1cTUV4rHc5PaM9kOg1KjDkuZpsmn2IKpm3HhOG+90yZA3oQnn0LFRkOAKHV67b8N5jypZdl6FBtvoyLlUN1nceHcYw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=peqbJ4GwIZy8aEpPKBnPQ+HuOXJ3XGI9UvlFq5LSlbo=;
- b=T+9ca6pQLIOwlubp6FVKI6KaL37G9ACpKlEHekIejayj4bKvPgg2Rnvm/2h7Y5qBuYOD+OC84FL76u80ELBIXlc0ID/k28hWUiaZJLXixp8TrRiKoN1gCvnF7hYd9j9gHbVvnXX41Rar4jwn8cQAW6LqcdhE2rBgj1ukSjNVazpXOz3ULyFqtM6Ps7ma5pFpoteQvzcVUHdU+vg7UvPqr6LvJURER2Y8wlg2EsByJ448DKfCHfDbwz/vfol+bf8358cIOYk+8o8wDANNnUX7E6DyGMuDfOhvr06mFq6easSrJEPJ+AMneYV1IpA1G6nhgQeAgYOq6tkNL4+berkStg==
+ bh=yLRAfDkq2S4VKeFcHHn+x8ndfKpQQsndJLbLjJfq3sI=;
+ b=WGFd+QhYOSvcTjFs8LxPtsXg+aNkWMj/59obr7SfV2tOjgqGP32OjROaln48ldSLmNvd2uxGLrplLQjC9ZpGsKZ18/RhKaxoZL6KGPQUkhlxfZcECaywXQ2VDAYBiUhnzls+xTGdk3vWB728aVRuihFjxclVj0F1YY5ZA6234l/f9tdu0eR31k2iA3QTNV/dvSO7unGb3xeksoBC7IATtUgjeZz5S1nd2HbdTEznOMZnrNqoK1Lei74tVB5m4FfwsYEBnGhu2xh0jgXADQJwhALyH+9FqL2+snFqNjS8s/o9h2kDjDk7+ajnVcEf4HShY262+8cQweMsgkZINZT1yA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from MW4PR11MB5776.namprd11.prod.outlook.com (2603:10b6:303:183::9)
- by DS7PR11MB6079.namprd11.prod.outlook.com (2603:10b6:8:85::13) with
+ smtp.mailfrom=suse.com; dmarc=pass action=none header.from=suse.com;
+ dkim=pass header.d=suse.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=yLRAfDkq2S4VKeFcHHn+x8ndfKpQQsndJLbLjJfq3sI=;
+ b=eKqDUiBI0G0HRyPZV30fevHT0Jke7ZPmNmVLQwUPfeydBtiyQgoS3o/KjCZWxv2uUkKb7pU+zJQBs1KBElwRfsHpGm7aIxOx8A/Cpw7x3nAQwWpuI2Ep4mlyvCPFmuQolx7OgjaIXvzPCgxxippDeRYnfdou3ZoPLEdLEk0VSYjSnZdA2h8fbk+zE+IgWpDe34kYOjX4S1dELJ+y7C30WttPLH3IoObkwt/AC20p9PteYvkuWFWCK7KFKMyPiwMTnj9q80kYExlaXO60a3xXB4QQlFAGYyqaj7kx3kPloEgx8fOvCuP+cVRwjXG2a7jz44Up81yD0Nx3qAS0UcvroA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=suse.com;
+Received: from VE1PR04MB6560.eurprd04.prod.outlook.com (2603:10a6:803:122::25)
+ by DB3PR0402MB3660.eurprd04.prod.outlook.com (2603:10a6:8:c::21) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.26; Wed, 13 Jul
- 2022 07:59:00 +0000
-Received: from MW4PR11MB5776.namprd11.prod.outlook.com
- ([fe80::9eb:1dcb:baf2:a46c]) by MW4PR11MB5776.namprd11.prod.outlook.com
- ([fe80::9eb:1dcb:baf2:a46c%3]) with mapi id 15.20.5417.026; Wed, 13 Jul 2022
- 07:58:59 +0000
-From:   "Drewek, Wojciech" <wojciech.drewek@intel.com>
-To:     Guillaume Nault <gnault@redhat.com>
-CC:     Marcin Szycik <marcin.szycik@linux.intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
-        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
-        "gustavoars@kernel.org" <gustavoars@kernel.org>,
-        "baowen.zheng@corigine.com" <baowen.zheng@corigine.com>,
-        "boris.sukholitko@broadcom.com" <boris.sukholitko@broadcom.com>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "jhs@mojatatu.com" <jhs@mojatatu.com>,
-        "jiri@resnulli.us" <jiri@resnulli.us>,
-        "kurt@linutronix.de" <kurt@linutronix.de>,
-        "pablo@netfilter.org" <pablo@netfilter.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "paulb@nvidia.com" <paulb@nvidia.com>,
-        "simon.horman@corigine.com" <simon.horman@corigine.com>,
-        "komachi.yoshiki@gmail.com" <komachi.yoshiki@gmail.com>,
-        "zhangkaiheb@126.com" <zhangkaiheb@126.com>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "michal.swiatkowski@linux.intel.com" 
-        <michal.swiatkowski@linux.intel.com>,
-        "Lobakin, Alexandr" <alexandr.lobakin@intel.com>,
-        "mostrows@earthlink.net" <mostrows@earthlink.net>,
-        "paulus@samba.org" <paulus@samba.org>
-Subject: RE: [RFC PATCH net-next v4 1/4] flow_dissector: Add PPPoE dissectors
-Thread-Topic: [RFC PATCH net-next v4 1/4] flow_dissector: Add PPPoE dissectors
-Thread-Index: AQHYksXA2PqqPPPZHUuJSl7+xdE+Xa101dMAgAQb8zCAAg//AIAA9U2A
-Date:   Wed, 13 Jul 2022 07:58:59 +0000
-Message-ID: <MW4PR11MB577640BD1BAC97D3BB27A339FD899@MW4PR11MB5776.namprd11.prod.outlook.com>
-References: <20220708122421.19309-1-marcin.szycik@linux.intel.com>
- <20220708122421.19309-2-marcin.szycik@linux.intel.com>
- <20220708190528.GB3166@debian.home>
- <MW4PR11MB57767AD317D175D260362539FD879@MW4PR11MB5776.namprd11.prod.outlook.com>
- <20220712172018.GA3794@localhost.localdomain>
-In-Reply-To: <20220712172018.GA3794@localhost.localdomain>
-Accept-Language: pl-PL, en-US
+ 2022 07:59:09 +0000
+Received: from VE1PR04MB6560.eurprd04.prod.outlook.com
+ ([fe80::60ad:4d78:a28a:7df4]) by VE1PR04MB6560.eurprd04.prod.outlook.com
+ ([fe80::60ad:4d78:a28a:7df4%4]) with mapi id 15.20.5417.025; Wed, 13 Jul 2022
+ 07:59:09 +0000
+Message-ID: <0e2772a3-3c3c-b447-ecb5-e2750959b527@suse.com>
+Date:   Wed, 13 Jul 2022 09:59:06 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] xen/netback: handle empty rx queue in
+ xenvif_rx_next_skb()
 Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-version: 11.6.500.17
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 5c251585-b8a3-4521-9a17-08da64a58b73
-x-ms-traffictypediagnostic: DS7PR11MB6079:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: QNQWP4qq/xTWu9ej4A7ec7+3pbtndGoCOrCkva92ccYBFsmzpjidbfV8Xlhg3G4IQnvjOrbyYrzud+Y9+qAcGNB6FkmN/jGm1KrXRcMvUAVG5l2BK2f65dW3d1HV22tyRKy6BMSBUpgEtqClnQAFYfESF7B/hM1Z96Mc5xjkGD28Dtm+BpSO3rstpJsowVsTwM+RD+U1dfUl1hQYQbUk344hH3NSwkz25aTsnRPFXr6zX7Rx1rnuMnBEJ14HahbIVsaxTnJrObH64nOv5tFGbSmhSmT6BfvTQYrjWuc3/T3rtoFRCUG7vpgNpt1rBvLgww1+LpsROm48PS2QugCMTub2T3BgCjSSgnQHwOH8f+8Aa7enSkbceB+vYange6SzD1L1ZqnmLw718fED/x1z57zB4idKbl7dlGfghnm441gWZXN6rL5Xd/Fbb31cViJG1413XDf1B3JlC7/imz7NlQGv2NFXBzBu/un5mxT3B2zjjIAochc57TGqkrm777tLUtw+sQiMyNWQglL7VHwfk1Rtg9deY3k0R9BpkvKZH7XoX8kg1tkA3+1YAaE2LU6k35h1tvsb3VXQnSOl+TBFxUVmg2l0DJzQK2IIwNp/if+p4xqZUshKybG966WC2U60LlkcYvNQkTbRCMlgWfkCOyUYZhTFxfXqXwzj4tRHd5rQV41VCQmeBVMUNes6fMWH13WnMcFq0o3mj3iPr+HFNZ/96+Bhm0w4FUlge1ibIyZ6rUKFZmRNhoQs9kEFlS+CxQyMVvFh+uNQGuO/qW5+iSJPP+DmV3IY3F68+vXOiKoUkfgw3x0rJVnyqmkycHZS
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW4PR11MB5776.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(346002)(366004)(39860400002)(136003)(376002)(396003)(38100700002)(186003)(122000001)(66946007)(7416002)(82960400001)(38070700005)(8676002)(66446008)(83380400001)(76116006)(5660300002)(8936002)(4326008)(64756008)(66556008)(52536014)(66476007)(2906002)(55016003)(9686003)(6506007)(54906003)(41300700001)(71200400001)(86362001)(53546011)(478600001)(316002)(7696005)(33656002)(6916009)(26005);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?4vOyJ8jUoDbvJCtZkQKZj5+K7dZlvtPUVKe4D2Yiud5pH1dlDACEWYRB30Pu?=
- =?us-ascii?Q?82sAyxJ2ijEkEgOtrmFhYRbglHVY23jJv9wr8k4j2jq8qNUfl0IeFm121LnT?=
- =?us-ascii?Q?ySoRvZXo9XJTAXKvoWiYskg3rzQLR2TAz2aZ0gPkj0y6S64gcKMXQXLegREb?=
- =?us-ascii?Q?y9Jy7c3waigyXdyFT6TZbVCFTxLpX4MkwQLVWPzk+Wb/lA7wRLCNK1N8nCnI?=
- =?us-ascii?Q?L9UDbIOrZ7gVGcBNclCGy/dT2P0IIQI47IrizCmgjhET4tWzcs9jQlR8Ju7d?=
- =?us-ascii?Q?8TO8OEzRw2FjmlUgrINZ1nKBgXqtifoOznL5Ah6Gxs6AxD0hiVeF0TdGPhZX?=
- =?us-ascii?Q?lanGfp0MXdBMhK50tgP5x33VDyDuRSOacIe67i2vEFfVsDK5Rb3ncpPLX56c?=
- =?us-ascii?Q?oILN2KZJEhsuXx4Rp0fyoU9w1yZCdrXD1DRWTSVPIgFNbtRLv+nkgMYWM4Rg?=
- =?us-ascii?Q?/Jic/IbRB0bA5eBNfwXTEo2TEOGIs3a2bK4IHegu/ue0KX+7Dax0F0KDejYW?=
- =?us-ascii?Q?ebnCZcIViBuBikWcm12/FyVxt6ZPbJuSigpcPQ2HNgQ0DBfsSQYvVXmbEVzd?=
- =?us-ascii?Q?8iOHLlXjJYrw06Wa7JMHzgs0Wg+f4z3QCXnGnWaTQcmsDJgcn/tU3P6dgh3Q?=
- =?us-ascii?Q?uC8JPOxYYtwWNBlE8GYgJ216A12a1KjZxKVRyb0VnTddxOun6aH1buAdmrbi?=
- =?us-ascii?Q?lZUpfC5I8z7630pYEnx0z6nMPJnAlHUuUTC9cTSK8uEY9SUjacvPNBMWltmD?=
- =?us-ascii?Q?2Ly8KKeJinBMS43gDLwuHRJ96BhMsVrNWx8GEp/S4a+LSXQA1tLQogJSx8pL?=
- =?us-ascii?Q?+4MxUL4aIkIhVX8uMXKAWK2p7umYBbulx61MhTRXuQUuuDU/uowAJz8dKNZP?=
- =?us-ascii?Q?noQUa+akSMrZ9Uyx1ZQWM/tnkD6g1/wltKTWjWcUEbf+tv08tceFtTgscclT?=
- =?us-ascii?Q?GlgSYkFFtwdqg+JV41ZxQRyLoEoBTiR1CIgABy1GNGd33Kceizb5oKx5VEt4?=
- =?us-ascii?Q?OphL+svHaUiuDBxQZ0087//yBLaBwuuebc8KRR8H6LLhnTkAoGASGHUoF7B9?=
- =?us-ascii?Q?xm2C91km+3Vqgf5NXuRZkEJGCL2ue2btsaZG6h63fJKXXeG5a76rQwLDbWN8?=
- =?us-ascii?Q?25QyzdUFeda1ek+mfR6olMeh3wgHUj52sIuTVSuBMxOe3zEDc1ZHzlsIk2sM?=
- =?us-ascii?Q?pGnoQ3M68U0/ksg4VgqXw5sWGjQyECr4Y1KYZbVAImQzFXZLBFiMrFg9tDT8?=
- =?us-ascii?Q?Ckuee0AfcAfkYQwaQHY6TyXGf/S0eLMyBbx6qhwz4PetlifF0o90upgZ7piN?=
- =?us-ascii?Q?dJ0pq/CAPExT/W33GCkcqCac80EcaKSKogHYWFgiyYUHmr4Ht3ujUV6ej9km?=
- =?us-ascii?Q?osWVxXgi3IOkJDSV0ARhPrJcQexQIuwsbbQ9g6z80RnQ8bUFAOfpoMTma886?=
- =?us-ascii?Q?xpJ3/XmWlBb6wzmRZPWIpRKGJEyHT43PBFS+30ZhFIzg56WOa5vUfX5y8apl?=
- =?us-ascii?Q?ECmLhLPXYOM+mHk/U5ePAfzMpaMfACizVcfTqd/eaFMn8A8HXiYrQUnkRkoL?=
- =?us-ascii?Q?zv/EtmwKsT0pBCRKCgE6QPFbKBO5RV0lSOoqWxSl?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+To:     Juergen Gross <jgross@suse.com>
+Cc:     Wei Liu <wei.liu@kernel.org>, Paul Durrant <paul@xen.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        xen-devel@lists.xenproject.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220713074823.5679-1-jgross@suse.com>
+From:   Jan Beulich <jbeulich@suse.com>
+In-Reply-To: <20220713074823.5679-1-jgross@suse.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: AM6PR01CA0068.eurprd01.prod.exchangelabs.com
+ (2603:10a6:20b:e0::45) To VE1PR04MB6560.eurprd04.prod.outlook.com
+ (2603:10a6:803:122::25)
 MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 4481ae8c-4e45-4ca1-3935-08da64a590e9
+X-MS-TrafficTypeDiagnostic: DB3PR0402MB3660:EE_
+X-LD-Processed: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba,ExtFwd
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: mV/AP4gTHcsGLmFmUdoq3xK1FTtV5CmMXNksfrJ6XEiwnXsAGIC77pnr19MYw5UpHO1hbkXtrq+d+Zxn4j/yMOS474nRXr8/4Tt+u3R05pkTF5sILba1vI4PtI4zzcqtJYcUJ2nBgvye4QRLqgH6JeQxsDQabBmM/pACEs8or4ZA4M/t79uH8hHwyagKmzs4slg1idbgxSGWX2RwNtgz6DFU5H35WKJPE2El7b89pVNPOz/EWFmyLSP5GHfix3FR10e7tJFtpeCFBplVS30ozfnTe5ZVxm6hMb5mSt1yRGEMFT1v50aPgnmYHTvAdHV73IpoATGi4tGuBuc46O5AzO6ffq697l5eqWUUGLKoDdBIQEtZ3Z1BFhBkz5C7tcTpPNHZ6Sc0iaqrAUPHkRrYDmlUe2pm3zWzp8EL/ycrewijpa7YhtHmFBXy8YTyc6n/2K2bX9eNxAXj6W5ZsSqFt/cC428NdkyYO/o+e6VCay/Cri4kjzeQ8iRCRvJxjHuxu+slIgVZHI+P+FNsj+P3DgahKtTBsjKxnWgyRnm6wK7A4eOFvFKeU+aEzVguxXw2PLpORYNyo7KJCZSBVIpJCoHBiZYJYtsAQudJaOZUCsiv6kuvob/CBF4B18iPlnoODg0XtdZjvOTyH6JWBmtI9YF/vLsWiwjIbR1zeq220PjHiceTIHlHfXcamP30A3GsEcxDxcvcrtMJdcLIu4+EDrEV6lB4FwelNkjAxEfHXoUPbBdzQT8k1qPKcQpCJawTzVm+v7sojj2G1mETMdS/GvVOwV+XXZyW4jLfA4Lb5XE8NweHZcpIniNxB493rQK5wdXYEutBL4EghDE4plp2xAasryumX22mEJIXE/+LyOM=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VE1PR04MB6560.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(346002)(366004)(136003)(39860400002)(396003)(376002)(8936002)(2616005)(4326008)(54906003)(38100700002)(8676002)(86362001)(5660300002)(316002)(186003)(31696002)(66556008)(6862004)(6506007)(6636002)(66946007)(6666004)(37006003)(26005)(53546011)(6512007)(41300700001)(66476007)(6486002)(31686004)(2906002)(478600001)(83380400001)(36756003)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?N3R3d1ErRDVubWpwa1J0SWtOWGowVllwTHRvWm9hcTJ3cmQxVWVUWEZnZ09r?=
+ =?utf-8?B?Zzl4Z3FjTTRqb1NFbVZqUHB0VTlNTXB2MWVNMTB6ZG5tS2NkQWRKUndMNEFk?=
+ =?utf-8?B?QW9rSHZobXFuc09pS3RVM21KZFJpT3BUeFFuVEFwU0hpS1J4TkZRc1AzNmFH?=
+ =?utf-8?B?OVdyRmJ3a1FTUklySC9Ca01TT1dZUzhpcVNuN2JGT3ZJWEtlYkp5SmpEZWJt?=
+ =?utf-8?B?UjFqK0pnVHFnK2U3ZTlvRWRYVzVGeC9nZG13b2d3TXpGeVdLZlJTYTN3b1BK?=
+ =?utf-8?B?VzcySkNVeVJ2blp6Tk9oRWtnZ0ZqZ0dzKzB2VGhVY2p3bWN4YVY5S1JBS0pJ?=
+ =?utf-8?B?em5aenJUNWtPSEdhanZQQTAwRU8vcTFEMTRvMUlUSnlrOXhRMEoyWWs0L01Q?=
+ =?utf-8?B?b3BoRmdZelVpNnAyKzE1T1BMNjRKK0dtUnNnS0FXRXNrUm42UVlYeFR6VTNm?=
+ =?utf-8?B?RUhmOUJkcGFqakdPbVlCTHFWcGtjSVVHZkVPSWpGdWh1ZlJTWExhWkdScDdZ?=
+ =?utf-8?B?eE1nWFo5ME1xY3lNQVJCOTJ5SEZLVEgvcWhWN2JmWklEUjdXK0M0Nkp1aHBV?=
+ =?utf-8?B?ZnQ5RDFyRlRCNHVINmxkbHFERkFvQnVKeThwUjgzU005WGw0anh4MjhWc3N6?=
+ =?utf-8?B?MEpQUjVqWlRVNEkzSm5SNHpaR2NJVzhLdEIvOXBWNnhIZVZLZlVHbStxdTZV?=
+ =?utf-8?B?bXJJRWxQbTE4dU1ZNGhaOFVMOThaRGhaK2lSZjE1bmwrK0tSbWVMOGNGb3JZ?=
+ =?utf-8?B?QnJPbFBQdkRwNklSdUxGejlaTXEzYjhrZDZuRHduMUhaRzRFS1NKUmVucnk2?=
+ =?utf-8?B?KzQ5UW9rTGhRRWJmQlZhcWNKcGIyNnBjRTBqWGVSZFh2dUsvd2lNN25YeUhQ?=
+ =?utf-8?B?dHVCRmlZS0ZuWmdoUHlUZGhZa0N2TFYySjBDbnpWcUdBalFSQnB6UmRCaXNk?=
+ =?utf-8?B?WVVZYTFzZWhQYUlvemliUFkrSk5jcXE0cGRPUGp4VFQ4d0xFL1RRb29kTnM5?=
+ =?utf-8?B?K25SWGVWQzdkMUhuQk9DNEllbFR1TXlTcWxaRnkwanJrN0g3dHVCcUFsLytV?=
+ =?utf-8?B?ZzlISHpkSlJOeDgxbmthUjdYTE5RQytISVAxbnBWMHYxdEUzNWpQUk1hcTMr?=
+ =?utf-8?B?Wklibm00dURkdWdST3RIVTVTRHRuYTg1cUtmL21MRTFsWlU5VHcrSXVNWEYz?=
+ =?utf-8?B?Q2RwaWMxcEhWNXQ3MzBHTnRIeXc5UU1ycWNYL3phNWNFU09pa256UnhITGZP?=
+ =?utf-8?B?aGw3M21neXR0K0VZUkk0L3ZDODRLVXpOblFyN3RXWWZtSEI0N3Nxc1QxdDlG?=
+ =?utf-8?B?cjdWZ3BKY2ZIcjhnTGFRRnE2bGtHdHJOdjF0MmJmQTl2MFcyWUM5L2tKQzdm?=
+ =?utf-8?B?Z0s1MW1EYmhsRTU5Q05jbEdsVE9iYnRYQUVDZDBxY1FwTnlvQVFzbnE3ekZQ?=
+ =?utf-8?B?L2dkK0ROMmlSUHZYQ3hpZktqM3pMcTY0bWtqVXJhSkw2cnNQVjBqTFFIeGp4?=
+ =?utf-8?B?K1oxMFlVcnZ3M1RIZHRFNXdrRE4ySHVFL1ZPRUVjZjBIb3k5emhlc0pRYVM3?=
+ =?utf-8?B?WGVoSDN5TWowOEJRMzg4SjROaGNtQUR5cEtMUXgvT0tRd0hKTXFrTFpGVUFq?=
+ =?utf-8?B?NkIya1RJWFRUL293QzlyUUxWdW1iN1Z0TUxUcDV5TnlCRUlURkhDRlh4aHJ0?=
+ =?utf-8?B?WDJTSUgxNUQ0dFhEb1Y5V0JDZ1hhcnUzaVhzeDlxMnZEL1BVbUcxdTZnNXlO?=
+ =?utf-8?B?cUhpNFFJUTFhRTNWTnU0cnRudFI4VEJjbm5IY0JXQTdReStveDV4elhQQVF5?=
+ =?utf-8?B?Y2tzc2hQNFF0TUY1QjYzN2pxZndMZjBGYnluV1lIVkVmUExoRzhMczU4QUVO?=
+ =?utf-8?B?MVI4U0pTMmxrcGFFNkR2VVRpZWwrTGZnTjNURDZuYit0eGhTd2xTUWFmSDd4?=
+ =?utf-8?B?Mk51V3Y0TzAwa2dQRjFWQTNrb2VxOFAvdGJiL05Vak5ONkZGN2pNdGIvaFJr?=
+ =?utf-8?B?UkIvSWNQOWN6NnNZeUM3dlc3QmMrZ3FYTk03TDgxeEpTOHg4NWs3NGNzejEz?=
+ =?utf-8?B?Z0VzSk4vVWp3OWVHcm56YVBvR2g0Wk1reTBxanVtcXZIa1ZGL29Xcm1sK3FO?=
+ =?utf-8?Q?NIuYEOKcAezD7jgzwYIpHlVCZ?=
+X-OriginatorOrg: suse.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4481ae8c-4e45-4ca1-3935-08da64a590e9
+X-MS-Exchange-CrossTenant-AuthSource: VE1PR04MB6560.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MW4PR11MB5776.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5c251585-b8a3-4521-9a17-08da64a58b73
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Jul 2022 07:58:59.7868
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jul 2022 07:59:09.1181
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: UY4Q52GkR4Z4+4hasmbOW94EsNJrr/3W3UpCQltApY/+WrxVNXXIBb4vzHyjpviSpsQj4d9wmDfaXlctyAje1EOXylxny4lvw1nzJKPXTG8=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR11MB6079
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: nMybfdWFkAqn2CFUjRHyxOozhGT7HZa7uuUKQgsuFuVhHsUPfAB307wtp6oGaE08QMo5WskflLlvE8K4OGwL6w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB3PR0402MB3660
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 13.07.2022 09:48, Juergen Gross wrote:
+> xenvif_rx_next_skb() is expecting the rx queue not being empty, but
+> in case the loop in xenvif_rx_action() is doing multiple iterations,
+> the availability of another skb in the rx queue is not being checked.
+> 
+> This can lead to crashes:
+> 
+> [40072.537261] BUG: unable to handle kernel NULL pointer dereference at 0000000000000080
+> [40072.537407] IP: xenvif_rx_skb+0x23/0x590 [xen_netback]
+> [40072.537534] PGD 0 P4D 0
+> [40072.537644] Oops: 0000 [#1] SMP NOPTI
+> [40072.537749] CPU: 0 PID: 12505 Comm: v1-c40247-q2-gu Not tainted 4.12.14-122.121-default #1 SLE12-SP5
+> [40072.537867] Hardware name: HP ProLiant DL580 Gen9/ProLiant DL580 Gen9, BIOS U17 11/23/2021
+> [40072.537999] task: ffff880433b38100 task.stack: ffffc90043d40000
+> [40072.538112] RIP: e030:xenvif_rx_skb+0x23/0x590 [xen_netback]
+> [40072.538217] RSP: e02b:ffffc90043d43de0 EFLAGS: 00010246
+> [40072.538319] RAX: 0000000000000000 RBX: ffffc90043cd7cd0 RCX: 00000000000000f7
+> [40072.538430] RDX: 0000000000000000 RSI: 0000000000000006 RDI: ffffc90043d43df8
+> [40072.538531] RBP: 000000000000003f R08: 000077ff80000000 R09: 0000000000000008
+> [40072.538644] R10: 0000000000007ff0 R11: 00000000000008f6 R12: ffffc90043ce2708
+> [40072.538745] R13: 0000000000000000 R14: ffffc90043d43ed0 R15: ffff88043ea748c0
+> [40072.538861] FS: 0000000000000000(0000) GS:ffff880484600000(0000) knlGS:0000000000000000
+> [40072.538988] CS: e033 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [40072.539088] CR2: 0000000000000080 CR3: 0000000407ac8000 CR4: 0000000000040660
+> [40072.539211] Call Trace:
+> [40072.539319] xenvif_rx_action+0x71/0x90 [xen_netback]
+> [40072.539429] xenvif_kthread_guest_rx+0x14a/0x29c [xen_netback]
+> 
+> Fix that by stopping the loop in case the rx queue becomes empty.
+> 
+> Signed-off-by: Juergen Gross <jgross@suse.com>
 
+Reviewed-by: Jan Beulich <jbeulich@suse.com>
 
-> -----Original Message-----
-> From: Guillaume Nault <gnault@redhat.com>
-> Sent: wtorek, 12 lipca 2022 19:20
-> To: Drewek, Wojciech <wojciech.drewek@intel.com>
-> Cc: Marcin Szycik <marcin.szycik@linux.intel.com>; netdev@vger.kernel.org=
-; Nguyen, Anthony L <anthony.l.nguyen@intel.com>;
-> davem@davemloft.net; xiyou.wangcong@gmail.com; Brandeburg, Jesse <jesse.b=
-randeburg@intel.com>; gustavoars@kernel.org;
-> baowen.zheng@corigine.com; boris.sukholitko@broadcom.com; edumazet@google=
-.com; kuba@kernel.org; jhs@mojatatu.com;
-> jiri@resnulli.us; kurt@linutronix.de; pablo@netfilter.org; pabeni@redhat.=
-com; paulb@nvidia.com; simon.horman@corigine.com;
-> komachi.yoshiki@gmail.com; zhangkaiheb@126.com; intel-wired-lan@lists.osu=
-osl.org; michal.swiatkowski@linux.intel.com; Lobakin,
-> Alexandr <alexandr.lobakin@intel.com>; mostrows@earthlink.net; paulus@sam=
-ba.org
-> Subject: Re: [RFC PATCH net-next v4 1/4] flow_dissector: Add PPPoE dissec=
-tors
->=20
-> On Mon, Jul 11, 2022 at 10:23:50AM +0000, Drewek, Wojciech wrote:
-> > > > diff --git a/include/net/flow_dissector.h b/include/net/flow_dissec=
-tor.h
-> > > > index a4c6057c7097..af0d429b9a26 100644
-> > > > --- a/include/net/flow_dissector.h
-> > > > +++ b/include/net/flow_dissector.h
-> > > > @@ -261,6 +261,18 @@ struct flow_dissector_key_num_of_vlans {
-> > > >  	u8 num_of_vlans;
-> > > >  };
-> > > >
-> > > > +/**
-> > > > + * struct flow_dissector_key_pppoe:
-> > > > + * @session_id: pppoe session id
-> > > > + * @ppp_proto: ppp protocol
-> > > > + * @type: pppoe eth type
-> > > > + */
-> > > > +struct flow_dissector_key_pppoe {
-> > > > +	__be16 session_id;
-> > > > +	__be16 ppp_proto;
-> > > > +	__be16 type;
-> > >
-> > > I don't understand the need for the new 'type' field.
-> >
-> > Let's say user want to add below filter with just protocol field:
-> > tc filter add dev ens6f0 ingress prio 1 protocol ppp_ses action drop
-> >
-> > cls_flower would set basic.n_proto to ETH_P_PPP_SES, then PPPoE packet
-> > arrives with ppp_proto =3D PPP_IP, which means that in  __skb_flow_diss=
-ect basic.n_proto is going to
-> > be set to ETH_P_IP. We have a mismatch here cls_flower set basic.n_prot=
-o to ETH_P_PPP_SES and
-> > flow_dissector set it to ETH_P_IP. That's why in such example basic.n_p=
-roto has to be set to 0 (it works the same
-> > with vlans) and key_pppoe::type has to be used. In other words basic.n_=
-proto can't be used for storing
-> > ETH_P_PPP_SES because it will store encapsulated protocol.
-> >
-> > We could also use it to match on ETH_P_PPP_DISC.
->=20
-> Thanks for the explanation. That makes sense.
->=20
-> > > > @@ -1214,26 +1250,60 @@ bool __skb_flow_dissect(const struct net *n=
-et,
-> > > >  			struct pppoe_hdr hdr;
-> > > >  			__be16 proto;
-> > > >  		} *hdr, _hdr;
-> > > > +		__be16 ppp_proto;
-> > > > +
-> > > >  		hdr =3D __skb_header_pointer(skb, nhoff, sizeof(_hdr), data, hle=
-n, &_hdr);
-> > > >  		if (!hdr) {
-> > > >  			fdret =3D FLOW_DISSECT_RET_OUT_BAD;
-> > > >  			break;
-> > > >  		}
-> > > >
-> > > > -		nhoff +=3D PPPOE_SES_HLEN;
-> > > > -		switch (hdr->proto) {
-> > > > -		case htons(PPP_IP):
-> > > > +		if (!is_pppoe_ses_hdr_valid(hdr->hdr)) {
-> > > > +			fdret =3D FLOW_DISSECT_RET_OUT_BAD;
-> > > > +			break;
-> > > > +		}
-> > > > +
-> > > > +		/* least significant bit of the first byte
-> > > > +		 * indicates if protocol field was compressed
-> > > > +		 */
-> > > > +		if (hdr->proto & 1) {
-> > > > +			ppp_proto =3D hdr->proto << 8;
-> > >
-> > > This is little endian specific code. We can't make such assumptions.
-> >
-> > Both ppp_proto and hdr->prot are stored in __be16 so left shift by 8 bi=
-ts
-> > should always be ok, am I right?
->=20
-> Sorry, I don't understand. How could the test and the bit shift
-> operation give the correct result on a big endian machine?
->=20
-> Let's say we handle an IPv4 packet and the PPP protocol field isn't
-> compressed. That is, protocol is 0x0021.
-> On a big endian machine 'hdr->proto & 1' is true and the bit shift sets
-> ppp_proto to 0x2100, while the code should have left the original value
-> untouched.
->=20
+Does this want a Fixes: tag and Cc: to stable@ (not the least since as per
+above the issue was noticed with 4.12.x)?
 
-Ok, I see now, we'll fix it in the next version.
+> --- a/drivers/net/xen-netback/rx.c
+> +++ b/drivers/net/xen-netback/rx.c
+> @@ -495,6 +495,7 @@ void xenvif_rx_action(struct xenvif_queue *queue)
+>  	queue->rx_copy.completed = &completed_skbs;
+>  
+>  	while (xenvif_rx_ring_slots_available(queue) &&
+> +	       !skb_queue_empty(&queue->rx_queue) &&
+>  	       work_done < RX_BATCH_SIZE) {
+>  		xenvif_rx_skb(queue);
+>  		work_done++;
 
-> > Should I use cpu_to_be16 on both 1 and 8. Is that what you mean?
->=20
-> I can't see how cpu_to_be16() could help here. I was thinking of simply
-> using ntohs(hdr->proto).
+I have to admit that I find the title a little misleading - you don't
+deal with the issue _in_ xenvif_rx_next_skb(); you instead avoid
+entering the function in such a case.
 
+Jan
