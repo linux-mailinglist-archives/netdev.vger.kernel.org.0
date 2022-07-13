@@ -2,58 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 44021572A2D
-	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 02:14:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0ED68572A3A
+	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 02:25:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229711AbiGMANy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jul 2022 20:13:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47520 "EHLO
+        id S230368AbiGMAZa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jul 2022 20:25:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229514AbiGMANx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 20:13:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 830741F63D
-        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 17:13:52 -0700 (PDT)
+        with ESMTP id S229711AbiGMAZ2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 20:25:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2835CD3DD;
+        Tue, 12 Jul 2022 17:25:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AA83B617AD
-        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 00:13:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C02F2C3411C;
-        Wed, 13 Jul 2022 00:13:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8E59FB81C21;
+        Wed, 13 Jul 2022 00:25:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0A4CC3411C;
+        Wed, 13 Jul 2022 00:25:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657671231;
-        bh=BSoel1d72yeMS1sc4Ks16RlXNKUWmB/81LfyT72LXTE=;
+        s=k20201202; t=1657671925;
+        bh=1YNcoWIS2y1EJK6xuFFvvK029UyYEWCxaYb0oiKwI/8=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=rQS/tya0CRv9mUwwPdQOJ6XGupnJVrezEpwHtftQ/kiZt4PP+IlV5FbaEjC1Z4YQB
-         sWjTYe3WHsInO1B2daAkU7DpAc8tgHjZm4r+byzfmJCAcJL1+KRs2HnhUQ/CqJ0GUS
-         N8FWdLRfUsO9q8/PVGSz3GWe0yeqwE95dN9+fEtlFX6mWZbmwaq/dZJ7XNvhOFzfGw
-         f3oWet8HrDbySrT4cWUi76+vC99OpRY43MqYB/j85yqUm2XEQ7iekC1E0IHk0Pyc7T
-         rfXd+m56cC3aUYiNs4Sdjz6BB90+7fotmz9Ua195ncQmPc9IQq0RCRJiKgW9me9MFo
-         I3/hwWOj9hhEQ==
-Date:   Tue, 12 Jul 2022 17:13:41 -0700
+        b=klxNbggvF4MOAuWRX4NIgpT9Ay/jnvrJ4elv2a0bMFOqyTbPqbEvOe0ttHeqyd1gM
+         /aOQwj+HFqo9vHCv5ob1Scq8AM5zI/qQitHQITiPT9Tx/ktAopL9dmnGtJb8mfa46d
+         W3TyllWUGmeKjcQtNN1Dp31p0911oO1DXvbMckXtObq+ueqF29YEmFPgYRfHYR8j0A
+         CRAA2Pbg7S9N+HzYC+J9qAwhJQhUgn1ATRpILZnMFrnVAYtpb/D4nyjpHifhonjjv3
+         22L6qwtZStcqNblkU7v+CtpWXPpQB+VQEkwpxbdZteB+eLpn1oLWL5mMrNPxmbD8m6
+         XDNYruS5hJDYA==
+Date:   Tue, 12 Jul 2022 17:25:15 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     Jiri Pirko <jiri@nvidia.com>, Dima Chumak <dchumak@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
+To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Simon Horman <horms@verge.net.au>,
-        Michal Wilczynski <michal.wilczynski@intel.com>
-Subject: Re: [PATCH net-next 0/5] devlink rate police limiter
-Message-ID: <20220712171341.29e2e91c@kernel.org>
-In-Reply-To: <Ys0OvOtwVz7Aden9@nanopsycho>
-References: <20220620152647.2498927-1-dchumak@nvidia.com>
-        <20220620130426.00818cbf@kernel.org>
-        <228ce203-b777-f21e-1f88-74447f2093ca@nvidia.com>
-        <20220630111327.3a951e3b@kernel.org>
-        <YsbBbBt+DNvBIU2E@nanopsycho>
-        <20220707131649.7302a997@kernel.org>
-        <YsfcUlF9KjFEGGVW@nanopsycho>
-        <20220708110535.63a2b8e9@kernel.org>
-        <YskOt0sbTI5DpFUu@nanopsycho>
-        <20220711102957.0b278c12@kernel.org>
-        <Ys0OvOtwVz7Aden9@nanopsycho>
+        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH net v2 2/2] selftests/net: test nexthop without gw
+Message-ID: <20220712172515.126dc119@kernel.org>
+In-Reply-To: <Ys1JefI+co1IFda4@kroah.com>
+References: <9fb5e3df069db50396799a250c4db761b1505dd3.camel@redhat.com>
+        <20220712095545.10947-1-nicolas.dichtel@6wind.com>
+        <20220712095545.10947-2-nicolas.dichtel@6wind.com>
+        <Ys1JefI+co1IFda4@kroah.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -67,19 +60,13 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 12 Jul 2022 08:03:40 +0200 Jiri Pirko wrote:
-> >AFAIU the problem is that you want to control endpoints which are not
-> >ndevs with this API. Is that the main or only reason? Can we agree that
-> >it's legitimate but will result in muddying the netdev model (which in
-> >itself is good and complete)?  
+On Tue, 12 Jul 2022 12:14:17 +0200 Greg KH wrote:
+> On Tue, Jul 12, 2022 at 11:55:45AM +0200, Nicolas Dichtel wrote:
+> > This test implement the scenario described in the previous patch.  
 > 
-> I don't think this has anything to do with netdev model. 
-> It is actually out of the scope of it, therefore there cannot be any mudding of it.
+> "previous patch" does not work well when things are committed to the
+> kernel tree.  Please be descriptive.
 
-You should have decided that rate limiting was out of scope for netdev
-before we added tc qdisc and tc police support. Now those offloads are
-there, used by people and it's too late.
-
-If you want to create a common way to rate limit functions you must
-provide plumbing for the existing methods (at least tc police,
-preferably legacy NDO as well) to automatically populate the new API.
+And please don't resend your patches in reply to the previous version.
+Add a lore link to the previous version in the commit message if you
+want. In-reply-to breaks the review ordering for us :/
