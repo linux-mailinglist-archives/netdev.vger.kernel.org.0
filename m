@@ -2,95 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 55CE5572B12
-	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 03:50:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D87A572B2F
+	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 04:07:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231889AbiGMBuO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jul 2022 21:50:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51606 "EHLO
+        id S231681AbiGMCHM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jul 2022 22:07:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230052AbiGMBuN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 21:50:13 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7331430F5F;
-        Tue, 12 Jul 2022 18:50:12 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LjL940v1GzhYp8;
-        Wed, 13 Jul 2022 09:47:36 +0800 (CST)
-Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
- (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 13 Jul
- 2022 09:50:10 +0800
-From:   Zhengchao Shao <shaozhengchao@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>
-CC:     <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>,
-        <shaozhengchao@huawei.com>
-Subject: [PATCH v3,net-next] net/sched: remove return value of unregister_tcf_proto_ops
-Date:   Wed, 13 Jul 2022 09:54:38 +0800
-Message-ID: <20220713015438.87005-1-shaozhengchao@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        with ESMTP id S229501AbiGMCHJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 22:07:09 -0400
+X-Greylist: delayed 496 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 12 Jul 2022 19:07:08 PDT
+Received: from mta02.start.ca (mta02.start.ca [162.250.196.96])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36AA4C1676;
+        Tue, 12 Jul 2022 19:07:08 -0700 (PDT)
+Received: from mta02.start.ca (localhost [127.0.0.1])
+        by mta02.start.ca (Postfix) with ESMTP id 9A5693FF60;
+        Tue, 12 Jul 2022 21:58:50 -0400 (EDT)
+Received: from localhost (dhcp-24-53-241-20.cable.user.start.ca [24.53.241.20])
+        by mta02.start.ca (Postfix) with ESMTPS id 7178C3FD48;
+        Tue, 12 Jul 2022 21:58:50 -0400 (EDT)
+From:   Nick Bowler <nbowler@draconx.ca>
+To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] net: sunhme: output link status with a single print.
+Date:   Tue, 12 Jul 2022 21:58:35 -0400
+Message-Id: <20220713015835.23580-1-nbowler@draconx.ca>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpeml500026.china.huawei.com (7.185.36.106)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: ClamAV using ClamSMTP
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Return value of unregister_tcf_proto_ops is unused, remove it.
+This driver currently prints the link status using four separate
+printk calls, which these days gets presented to the user as four
+distinct messages, not exactly ideal:
 
-Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+  [   32.582778] eth0: Link is up using
+  [   32.582828] internal
+  [   32.582837] transceiver at
+  [   32.582888] 100Mb/s, Full Duplex.
+
+Restructure the display_link_mode function to use a single netdev_info
+call to present all this information as a single message, which is much
+nicer:
+
+  [   33.640143] hme 0000:00:01.1 eth0: Link is up using internal transceiver at 100Mb/s, Full Duplex.
+
+The display_forced_link_mode function has a similar structure, so adjust
+it in a similar fashion.
+
+Signed-off-by: Nick Bowler <nbowler@draconx.ca>
 ---
- include/net/pkt_cls.h | 2 +-
- net/sched/cls_api.c   | 5 +++--
- 2 files changed, 4 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/sun/sunhme.c | 43 +++++++++----------------------
+ 1 file changed, 12 insertions(+), 31 deletions(-)
 
-diff --git a/include/net/pkt_cls.h b/include/net/pkt_cls.h
-index 8cf001aed858..d9d90e6925e1 100644
---- a/include/net/pkt_cls.h
-+++ b/include/net/pkt_cls.h
-@@ -23,7 +23,7 @@ struct tcf_walker {
- };
+diff --git a/drivers/net/ethernet/sun/sunhme.c b/drivers/net/ethernet/sun/sunhme.c
+index 77e5dffb558f..8594ee839628 100644
+--- a/drivers/net/ethernet/sun/sunhme.c
++++ b/drivers/net/ethernet/sun/sunhme.c
+@@ -545,43 +545,24 @@ static int try_next_permutation(struct happy_meal *hp, void __iomem *tregs)
  
- int register_tcf_proto_ops(struct tcf_proto_ops *ops);
--int unregister_tcf_proto_ops(struct tcf_proto_ops *ops);
-+void unregister_tcf_proto_ops(struct tcf_proto_ops *ops);
- 
- struct tcf_block_ext_info {
- 	enum flow_block_binder_type binder_type;
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index 9bb4d3dcc994..c7a240232b8d 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -194,7 +194,7 @@ EXPORT_SYMBOL(register_tcf_proto_ops);
- 
- static struct workqueue_struct *tc_filter_wq;
- 
--int unregister_tcf_proto_ops(struct tcf_proto_ops *ops)
-+void unregister_tcf_proto_ops(struct tcf_proto_ops *ops)
+ static void display_link_mode(struct happy_meal *hp, void __iomem *tregs)
  {
- 	struct tcf_proto_ops *t;
- 	int rc = -ENOENT;
-@@ -214,7 +214,8 @@ int unregister_tcf_proto_ops(struct tcf_proto_ops *ops)
- 		}
- 	}
- 	write_unlock(&cls_mod_lock);
--	return rc;
+-	printk(KERN_INFO "%s: Link is up using ", hp->dev->name);
+-	if (hp->tcvr_type == external)
+-		printk("external ");
+-	else
+-		printk("internal ");
+-	printk("transceiver at ");
+ 	hp->sw_lpa = happy_meal_tcvr_read(hp, tregs, MII_LPA);
+-	if (hp->sw_lpa & (LPA_100HALF | LPA_100FULL)) {
+-		if (hp->sw_lpa & LPA_100FULL)
+-			printk("100Mb/s, Full Duplex.\n");
+-		else
+-			printk("100Mb/s, Half Duplex.\n");
+-	} else {
+-		if (hp->sw_lpa & LPA_10FULL)
+-			printk("10Mb/s, Full Duplex.\n");
+-		else
+-			printk("10Mb/s, Half Duplex.\n");
+-	}
 +
-+	WARN(rc, "unregister tc filter kind(%s) failed %d\n", ops->kind, rc);
++	netdev_info(hp->dev,
++		    "Link is up using %s transceiver at %dMb/s, %s Duplex.\n",
++		    hp->tcvr_type == external ? "external" : "internal",
++		    hp->sw_lpa & (LPA_100HALF | LPA_100FULL) ? 100 : 10,
++		    hp->sw_lpa & (LPA_100FULL | LPA_10FULL) ? "Full" : "Half");
  }
- EXPORT_SYMBOL(unregister_tcf_proto_ops);
  
+ static void display_forced_link_mode(struct happy_meal *hp, void __iomem *tregs)
+ {
+-	printk(KERN_INFO "%s: Link has been forced up using ", hp->dev->name);
+-	if (hp->tcvr_type == external)
+-		printk("external ");
+-	else
+-		printk("internal ");
+-	printk("transceiver at ");
+ 	hp->sw_bmcr = happy_meal_tcvr_read(hp, tregs, MII_BMCR);
+-	if (hp->sw_bmcr & BMCR_SPEED100)
+-		printk("100Mb/s, ");
+-	else
+-		printk("10Mb/s, ");
+-	if (hp->sw_bmcr & BMCR_FULLDPLX)
+-		printk("Full Duplex.\n");
+-	else
+-		printk("Half Duplex.\n");
++
++	netdev_info(hp->dev,
++		    "Link has been forced up using %s transceiver at %dMb/s, %s Duplex.\n",
++		    hp->tcvr_type == external ? "external" : "internal",
++		    hp->sw_bmcr & BMCR_SPEED100 ? 100 : 10,
++		    hp->sw_bmcr & BMCR_FULLDPLX ? "Full" : "Half");
+ }
+ 
+ static int set_happy_link_modes(struct happy_meal *hp, void __iomem *tregs)
 -- 
-2.17.1
+2.35.1
 
