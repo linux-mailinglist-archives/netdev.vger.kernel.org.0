@@ -2,273 +2,310 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 908C0572C79
-	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 06:25:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E11F8572CA1
+	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 06:32:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232106AbiGMEZ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jul 2022 00:25:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57554 "EHLO
+        id S233906AbiGMEcv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jul 2022 00:32:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230013AbiGMEZz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 00:25:55 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 272AA4506E;
-        Tue, 12 Jul 2022 21:25:54 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id o31-20020a17090a0a2200b001ef7bd037bbso1678943pjo.0;
-        Tue, 12 Jul 2022 21:25:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=nMGzjqDUW6SdVGyuTZy6wI3JH0wU7GZTzrC52WE7cc0=;
-        b=ABfb0rNSZ2TR5dRBsJ0xrkkxMAwSh4EmmJtx205q+k9wcvQiq9H5D8qVacW42Z8vka
-         Za1l9DY7v8VSiU9o/K6H4DW5LoPWI+7Q5yi4LMJ7Ufq22dIUV4RWtW9C+7E8hA2BIAqt
-         u2MRX27wnScWVmlI9KyNah4SX5qBTYg5n4hili8eTXUJymco/6PRVPB3O07+8CFHUnG7
-         4QkfxQc2lyRsYJf9D//gvyo0Nem3uQlG7YNASr6iz4jPriA6RUYpQjlfDbEY/AZE2JVd
-         lP4Wit1ln6emmVBwFrOlRZno7whBDhFhY+FbK8mLyPX221eskMJ7coT5mz8PTV6U3Eyj
-         oZtA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=nMGzjqDUW6SdVGyuTZy6wI3JH0wU7GZTzrC52WE7cc0=;
-        b=vSXLpAAXZbH2xFI2coK0EGpFJqWkoiEjB6L/lGFAt4aTEGLjFf3aw1aMvs4shZiXgC
-         GMdjVuHFIN2Nr/4HYsSMezkwUDzSgax9VMpGtHj5a5S6kXbC+/bF6wOq7smdy5BbKHmr
-         a0scCLypXSCgZ0EgP6hmp01hAn+hvtZaqaS3r9ALNKcm6J6stWbBavtT/Q17627/vcsu
-         F/JsNdSs2ws4ceAbqcpn4ywDwsyiKK4XGh/Cz3CwtQV0RpGEsoGSIJhgwaCD/HUhixoQ
-         ItJXdIMYUhZnwHfWWTaZJzKv3YytYeE6xTVaOjVv1IvWQ3zzF5fJ7DDnA/FVS6CPe5Wg
-         W8nw==
-X-Gm-Message-State: AJIora/kbGCEHhJcOR7TtDiGUwWyqwSWIai6WXqVQe+Wh1sWNp7jL8Kl
-        g+hxc7WN1s9wdZTNR9kYiXw=
-X-Google-Smtp-Source: AGRyM1syYHQhPr7RhT9rFmN72PJ2fPdHbWvXbIqYCV2V7Z2PlYl6loSQ1/6Fo3O8xuydFUf85LKmKw==
-X-Received: by 2002:a17:90b:3890:b0:1f0:2abb:e7d1 with SMTP id mu16-20020a17090b389000b001f02abbe7d1mr8212824pjb.158.1657686353312;
-        Tue, 12 Jul 2022 21:25:53 -0700 (PDT)
-Received: from macbook-pro-3.dhcp.thefacebook.com ([2620:10d:c090:400::5:580c])
-        by smtp.gmail.com with ESMTPSA id h11-20020a170902680b00b0016a11750b50sm7640118plk.16.2022.07.12.21.25.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 21:25:52 -0700 (PDT)
-Date:   Tue, 12 Jul 2022 21:25:49 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     James Hilliard <james.hilliard1@gmail.com>
-Cc:     "Jose E. Marchesi" <jose.marchesi@oracle.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Yonghong Song <yhs@fb.com>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        llvm@lists.linux.dev
-Subject: Re: [PATCH v2] bpf/scripts: Generate GCC compatible helpers
-Message-ID: <20220713042549.uljgrp4lffianxyj@macbook-pro-3.dhcp.thefacebook.com>
-References: <a0bddf0b-e8c4-46ce-b7c6-a22809af1677@fb.com>
- <CADvTj4ovwExtM-bWUpJELy-OqsT=J9stmqbAXto8ds2n+G8mfw@mail.gmail.com>
- <CAEf4BzYwRyXG1zE5BK1ZXmxLh+ZPU0=yQhNhpqr0JmfNA30tdQ@mail.gmail.com>
- <87v8s260j1.fsf@oracle.com>
- <CAADnVQLQGHoj_gCOvdFFw2pRxgMubPSp+bRpFeCSa5zvcK2qRQ@mail.gmail.com>
- <CADvTj4qqxckZmxvL=97e-2W5M4DgCCMDV8RCFDg23+cY2URjTA@mail.gmail.com>
- <20220713011851.4a2tnqhdd5f5iwak@macbook-pro-3.dhcp.thefacebook.com>
- <CADvTj4o7z7J=4BOtKM9dthZyfFogV6hL5zKBwiBq7vs+bNhUHA@mail.gmail.com>
- <CAADnVQJAz7BcZjrBwu-8MjQprh86Z_UpWGMSQtFnowZTc4d6Vw@mail.gmail.com>
- <CADvTj4qtCfmsu=dMZx9LtaDMOSNsOxGVSa1g3USEWroA1AfTJA@mail.gmail.com>
+        with ESMTP id S231836AbiGMEcu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 00:32:50 -0400
+Received: from na01-obe.outbound.protection.outlook.com (mail-centralusazon11021020.outbound.protection.outlook.com [52.101.62.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 726412A9;
+        Tue, 12 Jul 2022 21:32:49 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ENiNipzqqg2HFrr3LVWt2+WfhhsmpW1Y4/G9bSexXSGrjfemWBpH1esfZjyRZx74l9jZz+AL1JwGAHnKvL24gk7Zm2TXDfDlSp4+iBsHiVerq34Y6xPvCZcAkuLsK7yklgvexAdwBJ2Eh419GcAM6M0DyxkpMdY15oVN+lsT4XMQhN/h7eZOPvM5AzmGwJQ4hMX+ibSASL3SFtXyVn+jdjubuezooOIUsRYGF530V2fK0MmvZiQLXzhMrrVYzMfNvyKTkJfWo69bBqfv4A8hd+JBgXO+FbSHt8Vxau8HEz2CjSyMb9Bz44oG5olbHEL2mi8+TWERQpxR6mExviXYoQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=mnvrqGolIKhkyFU/+1429pYZ3Ll6bZOZl/ay4Abj/8k=;
+ b=AFp1KR/KFmW6ZgWlTlURmBwQmfkHhXUYoSZPwb5JmDPWe9kg8SS6R4hdIYQ/zLiu7w8vvicZ2Oet95vU3euVHRxLPLUXzs41hLVG8o2NWmDMxJ5L8p7PzUqiqOAJsxGT2woi4I6IjqIxF2Zd55deRY9tFhE8Bhuz73HXvRgdO4aiF5oyZOhJPJCfj6UE8ad52xWzfd9Y6pxdOLk5DTsDWf2KKJhci/H4jm06YqE/sV/KjtX2cGfvKC4vqLO79fccAZ3TPWESyjfhwgfJitqeRW4EdAdHGrVLEBgjXL/RR9CgQjHgS3SxUeuBwTYQ7IDvsIelFgmUf/vvsg9vLTi2yw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=mnvrqGolIKhkyFU/+1429pYZ3Ll6bZOZl/ay4Abj/8k=;
+ b=KPT6AnSHSOOV0JjUc4uaoduyNIVYBX+dKYgqlkr93Dui2QNvhrGeFFiwz/XbP6TPWLzelL4G8EQzjx9q4/14PeDO7ybYydCgKKDDMhpP3YBOM+IE2y8BQwDAL88AxIWSKNUlYzmodI9S21ksFLU7bJdvJess3t5wCZ3t+rLTQdE=
+Received: from BL1PR21MB3283.namprd21.prod.outlook.com (2603:10b6:208:39b::8)
+ by SJ1PR21MB3696.namprd21.prod.outlook.com (2603:10b6:a03:454::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.3; Wed, 13 Jul
+ 2022 04:32:46 +0000
+Received: from BL1PR21MB3283.namprd21.prod.outlook.com
+ ([fe80::b1e4:5093:ad3b:fdcb]) by BL1PR21MB3283.namprd21.prod.outlook.com
+ ([fe80::b1e4:5093:ad3b:fdcb%5]) with mapi id 15.20.5458.005; Wed, 13 Jul 2022
+ 04:32:46 +0000
+From:   Ajay Sharma <sharmaajay@microsoft.com>
+To:     Dexuan Cui <decui@microsoft.com>, Long Li <longli@microsoft.com>,
+        KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Leon Romanovsky <leon@kernel.org>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "shiraz.saleem@intel.com" <shiraz.saleem@intel.com>
+CC:     "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        Ajay Sharma <sharmaajay@microsoft.com>
+Subject: RE: [Patch v4 12/12] RDMA/mana_ib: Add a driver for Microsoft Azure
+ Network Adapter
+Thread-Topic: [Patch v4 12/12] RDMA/mana_ib: Add a driver for Microsoft Azure
+ Network Adapter
+Thread-Index: AQHYlMeDfat4gFEZJUeMQjfeJ2W3ea17uHjg
+Date:   Wed, 13 Jul 2022 04:32:46 +0000
+Message-ID: <BL1PR21MB328334421DE2FB3B33176646D6899@BL1PR21MB3283.namprd21.prod.outlook.com>
+References: <1655345240-26411-1-git-send-email-longli@linuxonhyperv.com>
+ <1655345240-26411-13-git-send-email-longli@linuxonhyperv.com>
+ <SN6PR2101MB1327827B0EA68876717F0699BF879@SN6PR2101MB1327.namprd21.prod.outlook.com>
+In-Reply-To: <SN6PR2101MB1327827B0EA68876717F0699BF879@SN6PR2101MB1327.namprd21.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=37fbf502-6d30-442e-a817-37730b6e8ac6;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-07-11T01:33:17Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: afd89a92-eae6-4500-40ab-08da6488bc69
+x-ms-traffictypediagnostic: SJ1PR21MB3696:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 5gAX6L7QEbpHff5XG8tOgyzMXabkzor6ULCNP6gsOA54r2JGYCtkU9F5GZmHtg/BJypljR7yLOmLMzR4RITtV+j7wESVDS9NiQTsPvykygUXq/Meen64Xbop3GIQtq8Hnlqae1/PJ+0VJgzvtMhEeOhWSGxiL+jzrdG/tyOHohhseLm7qHrC6YPlS3r+iDds6EHH5uQp5+QIWhnISfDAOjglxm6qiV8JOMjQeULEaabIMO3UYpIX7YAXUXLop3RUE8ibXE+wiks1u0TjEuTMegJkOqU2XmYy9Hnx+Zmobj2U9kugAHg5NNizJKBFEQ3YiO4brewM8ZcE/LGlh26DLhsz6/pHa47cM1n74AJ+zgN9IVnqEmmCUuZfw/7uLUGKZ6ZKPSNNEi/xxZNEMMcDee3CZ93AWNT+so6Tl54M3NFNLpqYctidBbcjAlyZOgNp9WE68I+JrbD0zCPrMfo+W+dC4OMTSnBudGBti1JYuX+vGt3GMto3QwRQuvV/LpAyn5giNJ7G/i5GCvqGqRcbWUWvEEyEfRO1cg1/Ad7LeRaA+qw97ISozS1yq2ptFL0vq20ZjN6cBPipDNvhII+g6b+PScx7gkOAIGgFloaJ/+9+6wwfSiDU8CYg7GuFRk0afkRTPGpP3Qv5BLZ1VLU5l4MdOKgwzGFdyq0ALxvuu0LF27Bwr5Jb9eOOMIXex30yZ6CF4imR5ZiUO9OH05zeWqj06BJmU3WlLMX5qFvBtUMvktM1Etu7rWk+hOj/17AwaaxnN7FeiwfhanhkTA5zFcUM+/6mIBePsawCo/1VzF1PtQ+jArRTun44OXWBaWY1qmpAspKBHCiwChN3U94EJFuMTduWf+c6qMQArDWvFMJa/o5XhfshKHUiaN/0M4/X
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL1PR21MB3283.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(39860400002)(346002)(396003)(136003)(366004)(47530400004)(451199009)(55016003)(38070700005)(8676002)(66946007)(316002)(110136005)(64756008)(7696005)(82950400001)(76116006)(9686003)(4326008)(107886003)(8936002)(6506007)(54906003)(86362001)(38100700002)(66556008)(71200400001)(82960400001)(66476007)(41300700001)(10290500003)(186003)(66446008)(53546011)(5660300002)(921005)(122000001)(33656002)(2906002)(83380400001)(52536014)(8990500004)(7416002)(478600001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?ZkgXlnD3G+zv8SvqGHBLaDnJo3GL8byKlpvAg5l29UxhPF40QpkHV3gEmK4+?=
+ =?us-ascii?Q?vEplHLEvpkUHoN4NsKT1PHa8vIdfVHv/M4p1oebxszvOgOqlUdtFNRHLjqL8?=
+ =?us-ascii?Q?4hc/e8HNCJb/0sIt7pxzkMHS4XaNVkhOsgeDYYoS32gjcIcQarmxn1/xYGzV?=
+ =?us-ascii?Q?8b1lEbUf+UdKW4nZlROWWAjdbJISeyNvbi9Xhi2M7OaB4+scpzAjWH87laee?=
+ =?us-ascii?Q?b6LLYqu8smQLwZhKzDc8YEV9Lumixnxdi1QXRO1PRXzI2ofBl5913HvXrZuZ?=
+ =?us-ascii?Q?2P1OGAhY9gV76lr486JNE5swkzpJZIWVwGo7NSqVZof9x/Ksebbez6RTp780?=
+ =?us-ascii?Q?O0uVDc7CPts9ZI+gKv1irgd6jr6PG/AgUn6bI5DR1bgWa7dOIwZwnL1F3qFW?=
+ =?us-ascii?Q?QUQ7EkIKGCcFS0QnjLOTHO3NChNl0fEwLqDIl3D0Dl5dhejo7BEFAg5XpG8E?=
+ =?us-ascii?Q?ovFgAYivoOkQj4pFh9wnFclVt6SmwJtGx1k9Sea4mpFbx7tGmDvQRkTHA72T?=
+ =?us-ascii?Q?NDZb/xbga9d/aIoQW6X1RbMG5+knM5WqbouWhFOCqR2yiO2+LVNBsuNZfd6o?=
+ =?us-ascii?Q?cjeHBNalPNVXnO2E4MlqJB8+UvdGLqO645pG4YjOJrLjsI8nxmRpktVstyc3?=
+ =?us-ascii?Q?90MfZrx0gaCW+XNdsc6bJcNKZZFiuiXYM4D/vNpUEI5Hbn3QcOK2cxLyTXtM?=
+ =?us-ascii?Q?x1JUibnJEabvUF/FonBE55lHzkeB/52kiqPKTgS8tqpWkUv0xsARpqZhDv53?=
+ =?us-ascii?Q?usdgWDfC/4pFufyl7K3hoBJSo+eKDPl5xSGLWtBN6tJu/M7Z1oKKnv+Zxq0H?=
+ =?us-ascii?Q?/HE4rTZ29ZZuTsLtxASIi7IcaCpZJYvvtMcxCdLOkdjnz2KN3VO9iCGFgwjf?=
+ =?us-ascii?Q?rC7HEbLP6DonZCVghR6DDJvJ2tbSGHFgbsvfi8A60TWCN7hXg2Sfmte2P8Tt?=
+ =?us-ascii?Q?6qolJHpIXlL14bDKAHzOTq/AxnZ80rV8lmJptr/4MVIr55jj/u7p2GccaDeZ?=
+ =?us-ascii?Q?jZHNAHmwahcgUnCQDsHJs9SHNJbfWonqwS0BF6ostAkdpXhad4jingVNMuu+?=
+ =?us-ascii?Q?Dnnm+l2juayP7XrRzUjP1rBFmQoZhJ4ELpCZ5tRw0xFQVqijIi9JkBrJmvp3?=
+ =?us-ascii?Q?FhQaLla4HMULncrTR5LT8oxdyUuS1NDax7vmyec/xDkKM1FnYyDhFfyNkg7M?=
+ =?us-ascii?Q?T7/G71wYCrR9MUofZNBQZh2ULX+OBLMSQUyIAhrE2L2rSKePr1Q9ElT1BWI+?=
+ =?us-ascii?Q?hpAr6ddVx9jHQzwxmR897Aj97PlaBx3HXBt93xWXA30ueYc+9XnHYcYuUC1M?=
+ =?us-ascii?Q?oJUlSEIB76XT9RNT/AS8fJif/BWwBPD00kEndIPfkHbQR+5I+1wHuj5xtGHM?=
+ =?us-ascii?Q?EZ4ERl7C+eWqMwS7r39xuqBYE1q2r/7mpnoz1ZwsFp8u24J+HVmFSxC8PYsX?=
+ =?us-ascii?Q?jZYjqHw3chPbN1ontJhbGc9a3914q5/NZfD2G3X1efcgTmLskYudBgkg1ydU?=
+ =?us-ascii?Q?f8qR29IgVhYXqd0w+YEyPkHjguuyS+gkUaPMgutg/dMykt4zf3OI5FULoG07?=
+ =?us-ascii?Q?bN2SMVMRFWHJcDFPtteihOrmNnfA5on9vNg+w9Bv?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CADvTj4qtCfmsu=dMZx9LtaDMOSNsOxGVSa1g3USEWroA1AfTJA@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BL1PR21MB3283.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: afd89a92-eae6-4500-40ab-08da6488bc69
+X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Jul 2022 04:32:46.5065
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 2myIm9T5Izx1oeCmxBbFsa/3SiKpZe2bS2JuZt/Ck1GCJBrRtot69cvanLA3OE3+Ze7iNf9CpzGFw839QFwLb/JN7dQqPK9DjobeWmBSUBU=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ1PR21MB3696
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 12, 2022 at 08:56:35PM -0600, James Hilliard wrote:
-> On Tue, Jul 12, 2022 at 7:45 PM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
-> >
-> > On Tue, Jul 12, 2022 at 6:29 PM James Hilliard
-> > <james.hilliard1@gmail.com> wrote:
-> > >
-> > > On Tue, Jul 12, 2022 at 7:18 PM Alexei Starovoitov
-> > > <alexei.starovoitov@gmail.com> wrote:
-> > > >
-> > > > On Tue, Jul 12, 2022 at 07:10:27PM -0600, James Hilliard wrote:
-> > > > > On Tue, Jul 12, 2022 at 10:48 AM Alexei Starovoitov
-> > > > > <alexei.starovoitov@gmail.com> wrote:
-> > > > > >
-> > > > > > On Tue, Jul 12, 2022 at 4:20 AM Jose E. Marchesi
-> > > > > > <jose.marchesi@oracle.com> wrote:
-> > > > > > >
-> > > > > > >
-> > > > > > > > CC Quentin as well
-> > > > > > > >
-> > > > > > > > On Mon, Jul 11, 2022 at 5:11 PM James Hilliard
-> > > > > > > > <james.hilliard1@gmail.com> wrote:
-> > > > > > > >>
-> > > > > > > >> On Mon, Jul 11, 2022 at 5:36 PM Yonghong Song <yhs@fb.com> wrote:
-> > > > > > > >> >
-> > > > > > > >> >
-> > > > > > > >> >
-> > > > > > > >> > On 7/6/22 10:28 AM, James Hilliard wrote:
-> > > > > > > >> > > The current bpf_helper_defs.h helpers are llvm specific and don't work
-> > > > > > > >> > > correctly with gcc.
-> > > > > > > >> > >
-> > > > > > > >> > > GCC appears to required kernel helper funcs to have the following
-> > > > > > > >> > > attribute set: __attribute__((kernel_helper(NUM)))
-> > > > > > > >> > >
-> > > > > > > >> > > Generate gcc compatible headers based on the format in bpf-helpers.h.
-> > > > > > > >> > >
-> > > > > > > >> > > This adds conditional blocks for GCC while leaving clang codepaths
-> > > > > > > >> > > unchanged, for example:
-> > > > > > > >> > >       #if __GNUC__ && !__clang__
-> > > > > > > >> > >       void *bpf_map_lookup_elem(void *map, const void *key)
-> > > > > > > >> > > __attribute__((kernel_helper(1)));
-> > > > > > > >> > >       #else
-> > > > > > > >> > >       static void *(*bpf_map_lookup_elem)(void *map, const void *key) = (void *) 1;
-> > > > > > > >> > >       #endif
-> > > > > > > >> >
-> > > > > > > >> > It does look like that gcc kernel_helper attribute is better than
-> > > > > > > >> > '(void *) 1' style. The original clang uses '(void *) 1' style is
-> > > > > > > >> > just for simplicity.
-> > > > > > > >>
-> > > > > > > >> Isn't the original style going to be needed for backwards compatibility with
-> > > > > > > >> older clang versions for a while?
-> > > > > > > >
-> > > > > > > > I'm curious, is there any added benefit to having this special
-> > > > > > > > kernel_helper attribute vs what we did in Clang for a long time?
-> > > > > > > > Did GCC do it just to be different and require workarounds like this
-> > > > > > > > or there was some technical benefit to this?
-> > > > > > >
-> > > > > > > We did it that way so we could make trouble and piss you off.
-> > > > > > >
-> > > > > > > Nah :)
-> > > > > > >
-> > > > > > > We did it that way because technically speaking the clang construction
-> > > > > > > works relying on particular optimizations to happen to get correct
-> > > > > > > compiled programs, which is not guaranteed to happen and _may_ break in
-> > > > > > > the future.
-> > > > > > >
-> > > > > > > In fact, if you compile a call to such a function prototype with clang
-> > > > > > > with -O0 the compiler will try to load the function's address in a
-> > > > > > > register and then emit an invalid BPF instruction:
-> > > > > > >
-> > > > > > >   28:   8d 00 00 00 03 00 00 00         *unknown*
-> > > > > > >
-> > > > > > > On the other hand the kernel_helper attribute is bullet-proof: will work
-> > > > > > > with any optimization level, with any version of the compiler, and in
-> > > > > > > our opinion it is also more readable, more tidy and more correct.
-> > > > > > >
-> > > > > > > Note I'm not saying what you do in clang is not reasonable; it may be,
-> > > > > > > obviously it works well enough for you in practice.  Only that we have
-> > > > > > > good reasons for doing it differently in GCC.
-> > > > > >
-> > > > > > Not questioning the validity of the reasons, but they created
-> > > > > > the unnecessary difference between compilers.
-> > > > >
-> > > > > Sounds to me like clang is relying on an unreliable hack that may
-> > > > > be difficult to implement in GCC, so let's see what's the best option
-> > > > > moving forwards in terms of a migration path for both GCC and clang.
-> > > >
-> > > > The following is a valid C code:
-> > > > static long (*foo) (void) = (void *) 1234;
-> > > > foo();
-> > > >
-> > > > and GCC has to generate correct assembly assuming it runs at -O1 or higher.
-> > >
-> > > Providing -O1 or higher with gcc-bpf does not seem to work at the moment.
-> >
-> > Let's fix gcc first.
-> 
-> If the intention is to migrate to kernel_helper for clang as well it
-> seems kind of
-> redundant, is there a real world use case for supporting the '(void *)
-> 1' style in
-> GCC rather than just adding feature detection+kernel_helper support to libbpf?
-> 
-> My assumption is that kernel helpers are in practice always used via libbpf
-> which appears to be sufficient in terms of being able to provide a compatibility
-> layer via feature detection. Or is there some use case I'm missing here?
+Please see comments inline=20
 
-static long (*foo) (void) = (void *) 1234;
-is not about calling into "kernel helpers".
-There is no concept of "kernel" in BPF ISA.
-'call 1234' insn means call a function with that absolute address.
-The gcc named that attribute incorrectly.
-It should be renamed to something like __attribute__((fixed_address(1234))).
+-----Original Message-----
+From: Dexuan Cui <decui@microsoft.com>=20
+Sent: Sunday, July 10, 2022 8:43 PM
+To: Long Li <longli@microsoft.com>; KY Srinivasan <kys@microsoft.com>; Haiy=
+ang Zhang <haiyangz@microsoft.com>; Stephen Hemminger <sthemmin@microsoft.c=
+om>; Wei Liu <wei.liu@kernel.org>; David S. Miller <davem@davemloft.net>; J=
+akub Kicinski <kuba@kernel.org>; Paolo Abeni <pabeni@redhat.com>; Jason Gun=
+thorpe <jgg@ziepe.ca>; Leon Romanovsky <leon@kernel.org>; edumazet@google.c=
+om; shiraz.saleem@intel.com; Ajay Sharma <sharmaajay@microsoft.com>
+Cc: linux-hyperv@vger.kernel.org; netdev@vger.kernel.org; linux-kernel@vger=
+.kernel.org; linux-rdma@vger.kernel.org
+Subject: RE: [Patch v4 12/12] RDMA/mana_ib: Add a driver for Microsoft Azur=
+e Network Adapter
 
-It's a linux kernel abi choice to interpret 'call abs_addr' as a call to a kernel
-provided function at that address. 1,2,3,... are addresses of functions.
+> From: longli@linuxonhyperv.com <longli@linuxonhyperv.com>
+> Sent: Wednesday, June 15, 2022 7:07 PM ...
+> +int mana_ib_gd_create_dma_region(struct mana_ib_dev *dev, struct
+> ib_umem *umem,
+> +				 mana_handle_t *gdma_region, u64 page_sz) {  ...
+> +	err =3D mana_gd_send_request(gc, create_req_msg_size, create_req,
+> +				   sizeof(create_resp), &create_resp);
+> +	kfree(create_req);
+> +
+> +	if (err || create_resp.hdr.status) {
+> +		ibdev_err(&dev->ib_dev,
+> +			  "Failed to create DMA region: %d, 0x%x\n", err,
+> +			  create_resp.hdr.status);
 
-> >
-> > > > There is no indirect call insn defined in BPF ISA yet,
-> > > > so the -O0 behavior is undefined.
-> > >
-> > > Well GCC at least seems to be able to compile BPF programs with -O0 using
-> > > kernel_helper. I assume -O0 is probably just targeting the minimum BPF ISA
-> > > optimization level or something like that which avoids indirect calls.
-> >
-> > There are other reasons why -O0 compiled progs will
-> > fail in the verifier.
-> 
-> Why would -O0 generate code that isn't compatible with the selected
-> target BPF ISA?
+    if (!err)
+        err =3D -EPROTO;
 
-llvm has no issue producing valid BPF code with -O0.
-It's the kernel verifier that doesn't understand such code.
-For the following code:
-static long (*foo) (void) = (void *) 1234;
-long bar(void)
-{
-    return foo();
-}
+> +		goto error;
+> +	}
+> + ...
+> +			err =3D mana_gd_send_request(gc, add_req_msg_size,
+> +						   add_req, sizeof(add_resp),
+> +						   &add_resp);
+> +			if (!err || add_resp.hdr.status !=3D expected_status) {
+> +				ibdev_err(&dev->ib_dev,
+> +					  "Failed put DMA pages %u: %d,0x%x\n",
+> +					  i, err, add_resp.hdr.status);
+> +				err =3D -EPROTO;
 
-With -O[12] llvm will generate
-  call 1234
-  exit
-With -O0
-  r1 = foo ll
-  r1 = *(u64 *)(r1 + 0)
-  callx r1
-  exit
+Should we try to undo what has been done by calling GDMA_DESTROY_DMA_REGION=
+?
+Yes, I updated the patch.
 
-Both codes are valid and equivalent.
-'callx' here is a reserved insn. The kernel verifier doesn't know about it yet,
-but llvm was generting such code for 8+ years.
+> +				goto free_req;
+> +			}
+> +
+> +			num_pages_cur +=3D num_pages_to_handle;
+> +			num_pages_to_handle =3D
+> +				min_t(size_t, num_pages_total - num_pages_cur,
+> +				      max_pgs_add_cmd);
+> +			add_req_msg_size =3D sizeof(*add_req) +
+> +					   num_pages_to_handle * sizeof(u64);
+> +		}
+> +free_req:
+> +		kfree(add_req);
+> +	}
+> +
+> +error:
+> +	return err;
+> +}
+> + ...
+> +int mana_ib_gd_create_mr(struct mana_ib_dev *dev, struct mana_ib_mr
+> *mr,
+> +			 struct gdma_create_mr_params *mr_params) {
+> +	struct gdma_create_mr_response resp =3D {};
+> +	struct gdma_create_mr_request req =3D {};
+> +	struct gdma_dev *mdev =3D dev->gdma_dev;
+> +	struct gdma_context *gc;
+> +	int err;
+> +
+> +	gc =3D mdev->gdma_context;
+> +
+> +	mana_gd_init_req_hdr(&req.hdr, GDMA_CREATE_MR, sizeof(req),
+> +			     sizeof(resp));
+> +	req.pd_handle =3D mr_params->pd_handle;
+> +
+> +	switch (mr_params->mr_type) {
+> +	case GDMA_MR_TYPE_GVA:
+> +		req.mr_type =3D GDMA_MR_TYPE_GVA;
+> +		req.gva.dma_region_handle =3D mr_params->gva.dma_region_handle;
+> +		req.gva.virtual_address =3D mr_params->gva.virtual_address;
+> +		req.gva.access_flags =3D mr_params->gva.access_flags;
+> +		break;
+> +
+> +	case GDMA_MR_TYPE_GPA:
+> +		req.mr_type =3D GDMA_MR_TYPE_GPA;
+> +		req.gpa.access_flags =3D mr_params->gpa.access_flags;
+> +		break;
+> +
+> +	case GDMA_MR_TYPE_FMR:
+> +		req.mr_type =3D GDMA_MR_TYPE_FMR;
+> +		req.fmr.page_size =3D mr_params->fmr.page_size;
+> +		req.fmr.reserved_pte_count =3D mr_params->fmr.reserved_pte_count;
+> +		break;
+> +
+> +	default:
+> +		ibdev_dbg(&dev->ib_dev,
+> +			  "invalid param (GDMA_MR_TYPE) passed, type %d\n",
+> +			  req.mr_type);
 
-> > Assuming that kernel_helper attr is actually necessary
-> > we have to add its support to clang as well.
-> 
-> I mean, I'd argue there's a difference between something being arguably a better
-> alternative(optional) and actually being necessary(non-optional).
+Here req.mr_type is always 0.
+We should remove the 3 above lines of "req.mr_type =3D ...", and add a line=
+ "req.mr_type =3D mr_params->mr_type;" before the "switch" line..
 
-gcc's attribute is not better.
-It's just a different way to tell compiler about fixed function address.
+No, That's incorrect. The mr_type is being explicitly set here to control w=
+hat regions get exposed to the user and kernel. GPA and FMR are never expos=
+ed to user. So we cannot assign req.mr_type =3D mr_params->mr_type.
 
-> > gcc-bpf is a niche. If gcc devs want it to become a real
-> > alternative to clang they have to always aim for feature parity
-> > instead of inventing their own ways of doing things.
-> 
-> What's ultimately going to help the most in regards to helping gcc-bpf reach
-> feature parity with clang is getting it minimally usable in the real
-> world, because
-> that's how you're going to get more people testing+fixing bugs so that all these
-> differences/incompatibilities can be worked though/fixed.
+> +		err =3D -EINVAL;
+> +		goto error;
+> +	}
+> +
+> +	err =3D mana_gd_send_request(gc, sizeof(req), &req, sizeof(resp),=20
+> +&resp);
+> +
+> +	if (err || resp.hdr.status) {
+> +		ibdev_err(&dev->ib_dev, "Failed to create mr %d, %u", err,
+> +			  resp.hdr.status);
 
-Can gcc-bpf compile all of selftests/bpf ?
-How many of compiled programs will pass the verifier ?
+    if (!err)
+        err =3D -EPROTO;
 
-> If nobody can compile a real world BPF program with gcc-bpf it's likely going to
-> lag further behind.
+> +		goto error;
+> +	}
+> +
+> +	mr->ibmr.lkey =3D resp.lkey;
+> +	mr->ibmr.rkey =3D resp.rkey;
+> +	mr->mr_handle =3D resp.mr_handle;
+> +
+> +	return 0;
+> +error:
+> +	return err;
+> +}
+> + ...
+> +static int mana_ib_probe(struct auxiliary_device *adev,
+> +			 const struct auxiliary_device_id *id) {
+> +	struct mana_adev *madev =3D container_of(adev, struct mana_adev, adev);
+> +	struct gdma_dev *mdev =3D madev->mdev;
+> +	struct mana_context *mc;
+> +	struct mana_ib_dev *dev;
+> +	int ret =3D 0;
+No need to initialize 'ret' to 0.
+Agreed. Updated the patch.
 
-selftest/bpf is a first milestone that gcc-bpf has to pass before talking about
-'real world' bpf progs.
+> +int mana_ib_dereg_mr(struct ib_mr *ibmr, struct ib_udata *udata) {
+> +	struct mana_ib_mr *mr =3D container_of(ibmr, struct mana_ib_mr, ibmr);
+> +	struct ib_device *ibdev =3D ibmr->device;
+> +	struct mana_ib_dev *dev;
+> +	int err;
+> +
+> +	dev =3D container_of(ibdev, struct mana_ib_dev, ib_dev);
+> +
+> +	err =3D mana_ib_gd_destroy_mr(dev, mr->mr_handle);
+> +	if (err)
+
+Should we return here without calling ib_umem_release() and kfree(mr)?
+Yes, if the device fails to deallocate the resources and we release them ba=
+ck to kernel it will lead to unexpected results.
+
+> +		return err;
+
+> +
+> +	if (mr->umem)
+> +		ib_umem_release(mr->umem);
+> +
+> +	kfree(mr);
+> +
+> +	return 0;
+> +}
