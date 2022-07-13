@@ -2,109 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 06D355739CB
-	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 17:13:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CF265739EC
+	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 17:20:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231739AbiGMPND (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jul 2022 11:13:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49388 "EHLO
+        id S236884AbiGMPUS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jul 2022 11:20:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230284AbiGMPNC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 11:13:02 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E389D422DE;
-        Wed, 13 Jul 2022 08:13:01 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id a5so15935366wrx.12;
-        Wed, 13 Jul 2022 08:13:01 -0700 (PDT)
+        with ESMTP id S236861AbiGMPUP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 11:20:15 -0400
+Received: from mail-oa1-x31.google.com (mail-oa1-x31.google.com [IPv6:2001:4860:4864:20::31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 606DC45071
+        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 08:20:14 -0700 (PDT)
+Received: by mail-oa1-x31.google.com with SMTP id 586e51a60fabf-10c0430e27dso14428725fac.4
+        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 08:20:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=4vzuaiK89mNNh/nwqD4oUWzJWJJr65XkB3GW5Tnocj4=;
-        b=UA0PoymRNkksCuxZWYAv/ZRkiyikwrb59uXLO7ECaQLMB75pVwdcP2Uwhr1Co8/MnK
-         W5w97d5R8xPf3p8tzs6fSD8viPNDRAzsxFYoFd9YjkxqIhbRXPLbQ8b3WhcNChdzf4p3
-         pHEAXIJtgHtPainiVhY4g9c2vgyY05cnc6WxXkFKPIAn3qjtjBcG2ohku7ygBfyFpwFr
-         nQ72aRqjTyHvPCcltm8n4nZ5ZDaHiJ3pdrx9hVX7cAxSec6/SurU9YLyQ6CGsVTur1yy
-         mzwywtFzYg1mbtlwkiDlvmeD3RxhRF7/PvHYlBNHwpo+QgToy7VUhl3Yczi7ad/Dm8xX
-         7yMQ==
+        d=amarulasolutions.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=LKNJ81XHX1rVWPGtQSPsv7xkRycDjY6KgGLmlaN+gNY=;
+        b=UGv5W4X0AgNs0e90Jxbuk8yoqkf1YIvPuG32cxJaOFdhOKMYtLT3UzjNMyJo3NmCSB
+         h/K0iglgBA1TRNjZsaY3WPDnmRX23YpSMViygd9NRIhPlSo9yiPb+fbPadGOwbmeYz9x
+         0j6tumQO78ZJbjdyG1XX+ZjluB6BIV4JYujzA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4vzuaiK89mNNh/nwqD4oUWzJWJJr65XkB3GW5Tnocj4=;
-        b=8QPJQgVfRIFPzftclexpLKqDh4EGFWZg3ML3JZuPVbc3vPbMUGqcBINLskkZt35ZSH
-         FoaEfxW/sBWitGQmfOvPPKHcHGIytMeJxdmr/sQi7iop0djQoBS6MZIi+3ncGI+qqaA0
-         ENcSjqiE7t11XgUv5LN5jwpBKso4xgx37mxxLGQQWzRGS2x9kaCDYK2Tj8HcGyVo1okb
-         q4SqtnhBHZfLImsSJEOToGIcnHhepFYUQh5rsp2B3aml827AASlsUJzlFVXe3rcYl3GX
-         qySEl19Z5YrQSkCGbbHuEk3F6Zo4GxOKKtjDxCHGH3KCfTORkS8r+A+hC4Ycg4eglYY1
-         H+0Q==
-X-Gm-Message-State: AJIora8ItCB6B0eEVIZ2r6h7VAZrsWhZMqjotvlvkWUN0x9pK9K8cM3d
-        jkmghJkcxV1N1ODXKFLlKZTegicf5eKyyeNE1k8=
-X-Google-Smtp-Source: AGRyM1u1dYq++U5gRPxzwe9IKoYGV8+QeF4OBIj+0JqXO9OtXN3I1de0ITCObBR+9R6nUhHbJ0essZ0XTlKd+H3HHvg=
-X-Received: by 2002:a5d:5703:0:b0:21d:6c55:4986 with SMTP id
- a3-20020a5d5703000000b0021d6c554986mr3770543wrv.455.1657725180321; Wed, 13
- Jul 2022 08:13:00 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=LKNJ81XHX1rVWPGtQSPsv7xkRycDjY6KgGLmlaN+gNY=;
+        b=4rAcs4C4rZ3F/sPUblryeMTahmf2bymKPBYXHEZIJPp7FMHamIzyhYXHNqeyQ0c6Cj
+         cuDvikxterySF9TBQ/fdVkARaX/FloOhmPU7dgv7k0BY6IGAeoZdy8qEofCPloL3tJrL
+         PS8Fz6EhHKo25OgwbmL+LIC61BKuxk6fmQS17TEf1HwHz//qzg7xKbyso61/h05dUrF6
+         VgHyeL6nk6gfgvBLzTN7cC8v2xhPrpejunXkXV/EG4qgcXy9N93HdApLfoypV5HUECEZ
+         vjOMHljkMKfv8OhnROKyD2/jwWLW6g1BINZlAyjb+eGt7mUQsWymnXz0RtBnPne0fLhS
+         Sriw==
+X-Gm-Message-State: AJIora/9ogkSSdSnaTFQmlWZbNq6sQ1YnmC53hEoOlW/zapT6KtCZm0i
+        ZHoimr3LzXjVITFc9V8hORPzEw==
+X-Google-Smtp-Source: AGRyM1usHml13CDD+aHqFlxY8s5H+Eng7j9UX5kgdAqCwghIPyT60PRhwo1GRoZ8vA6nrb+/q/6Bdg==
+X-Received: by 2002:a05:6871:60c:b0:10b:ee7c:2e28 with SMTP id w12-20020a056871060c00b0010bee7c2e28mr4774059oan.21.1657725613728;
+        Wed, 13 Jul 2022 08:20:13 -0700 (PDT)
+Received: from dario-ThinkPad-T14s-Gen-2i.pdxnet.pdxeng.ch (host-80-182-13-224.pool80182.interbusiness.it. [80.182.13.224])
+        by smtp.gmail.com with ESMTPSA id x24-20020a4a3f58000000b00432ac97ad09sm4895477ooe.26.2022.07.13.08.20.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Jul 2022 08:20:12 -0700 (PDT)
+From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Richard Palethorpe <rpalethorpe@suse.de>,
+        Jeroen Hofstee <jhofstee@victronenergy.com>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        kernel test robot <oliver.sang@intel.com>, lkp@intel.com,
+        lkp@lists.01.org, ltp@lists.linux.it,
+        Dario Binacchi <dario.binacchi@amarulasolutions.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH] can: slcan: do not sleep with a spin lock held
+Date:   Wed, 13 Jul 2022 17:19:47 +0200
+Message-Id: <20220713151947.56379-1-dario.binacchi@amarulasolutions.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-References: <20220713150143.147537-1-mlombard@redhat.com>
-In-Reply-To: <20220713150143.147537-1-mlombard@redhat.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Wed, 13 Jul 2022 08:12:49 -0700
-Message-ID: <CAKgT0Uet==0v3bFV8KcnXLxB9BoC8qyMRkeH-X5sfWE7Bm7ikg@mail.gmail.com>
-Subject: Re: [PATCH V2] mm: prevent page_frag_alloc() from corrupting the memory
-To:     Maurizio Lombardi <mlombard@redhat.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-mm <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>, Chen Lin <chen45464546@163.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 13, 2022 at 8:01 AM Maurizio Lombardi <mlombard@redhat.com> wrote:
->
-> A number of drivers call page_frag_alloc() with a
-> fragment's size > PAGE_SIZE.
-> In low memory conditions, __page_frag_cache_refill() may fail the order 3
-> cache allocation and fall back to order 0;
-> In this case, the cache will be smaller than the fragment, causing
-> memory corruptions.
->
-> Prevent this from happening by checking if the newly allocated cache
-> is large enough for the fragment; if not, the allocation will fail
-> and page_frag_alloc() will return NULL.
->
-> V2: do not free the cache page because this could make memory pressure
-> even worse, just return NULL.
->
-> Signed-off-by: Maurizio Lombardi <mlombard@redhat.com>
-> ---
->  mm/page_alloc.c | 2 ++
->  1 file changed, 2 insertions(+)
->
-> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-> index e008a3df0485..b1407254a826 100644
-> --- a/mm/page_alloc.c
-> +++ b/mm/page_alloc.c
-> @@ -5617,6 +5617,8 @@ void *page_frag_alloc_align(struct page_frag_cache *nc,
->                 /* reset page count bias and offset to start of new frag */
->                 nc->pagecnt_bias = PAGE_FRAG_CACHE_MAX_SIZE + 1;
->                 offset = size - fragsz;
-> +               if (unlikely(offset < 0))
-> +                       return NULL;
->         }
->
->         nc->pagecnt_bias--;
+We can't call close_candev() with a spin lock held, so release the lock
+before calling it.
 
-This works for me. If I am not mistaken it should be only adding one
-conditional jump that isn't taken to the fast path based on a
-calculation we were already doing.
+Fixes: c4e54b063f42f ("can: slcan: use CAN network device driver API")
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Link: https://lore.kernel.org/linux-kernel/Ysrf1Yc5DaRGN1WE@xsang-OptiPlex-9020/
+Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
 
-Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
+---
+
+ drivers/net/can/slcan/slcan-core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/can/slcan/slcan-core.c b/drivers/net/can/slcan/slcan-core.c
+index 54d29a410ad5..6aaf2986effc 100644
+--- a/drivers/net/can/slcan/slcan-core.c
++++ b/drivers/net/can/slcan/slcan-core.c
+@@ -688,6 +688,7 @@ static int slc_close(struct net_device *dev)
+ 		/* TTY discipline is running. */
+ 		clear_bit(TTY_DO_WRITE_WAKEUP, &sl->tty->flags);
+ 	}
++	spin_unlock_bh(&sl->lock);
+ 	netif_stop_queue(dev);
+ 	close_candev(dev);
+ 	sl->can.state = CAN_STATE_STOPPED;
+@@ -696,7 +697,6 @@ static int slc_close(struct net_device *dev)
+ 
+ 	sl->rcount   = 0;
+ 	sl->xleft    = 0;
+-	spin_unlock_bh(&sl->lock);
+ 
+ 	return 0;
+ }
+-- 
+2.32.0
+
