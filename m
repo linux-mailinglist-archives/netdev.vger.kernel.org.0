@@ -2,79 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BB4F572D0C
-	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 07:27:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DAE8572D74
+	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 07:36:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230025AbiGMF1K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jul 2022 01:27:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40570 "EHLO
+        id S234315AbiGMFgg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jul 2022 01:36:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229487AbiGMF1J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 01:27:09 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BFC17DC19C
-        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 22:27:05 -0700 (PDT)
+        with ESMTP id S234429AbiGMFgB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 01:36:01 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E12FEE191E
+        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 22:31:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657690024;
+        s=mimecast20190719; t=1657690292;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=z/8AW1mLy0vS7+l6IodLYuxxHB7nmU0fVG4Vd5xB/EI=;
-        b=iWAkoXX3p0lB877eWyP25744R0+64kgPrzE4Rdxgo4GCGgseSc5T7JuL5V6XeoqQgM8gJf
-        fFikncLHm7NKB4uufG9ZAq3GXM9UUYvM7YpxSMeiRq68w4WJYm9RoTYLOT64SXWHVXt0dz
-        fHWj9ssmJAU+eFYfD/v5b3+ktsIVQpo=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=Jy/furYsDwrNodw4Nu9ZNCwDIYPw0par1/S1mi+rDBY=;
+        b=MwxfP2sGe33h4XcEDi1pfaRW6xRYIZstMeCLuvUTi7K8cLG68/y63evDG/CRVAs+6zjoQZ
+        tk7Ayl41HfEOV9yIQozzc+zSMJ9YEgQbrTmCITNo2wPkG7YWlYMiX/V1nGbkTmTgmvm9z7
+        hZweGlCPB2ncUXIG2jIHifvaV1eZ0zA=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-660-1oMIrmjcOI-yuEL-ZOwQQg-1; Wed, 13 Jul 2022 01:27:03 -0400
-X-MC-Unique: 1oMIrmjcOI-yuEL-ZOwQQg-1
-Received: by mail-wm1-f71.google.com with SMTP id k62-20020a1ca141000000b003a2e342a55bso4433954wme.1
-        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 22:27:03 -0700 (PDT)
+ us-mta-221-v2A7YML5OGSnMPohUmzyAw-1; Wed, 13 Jul 2022 01:31:31 -0400
+X-MC-Unique: v2A7YML5OGSnMPohUmzyAw-1
+Received: by mail-wr1-f70.google.com with SMTP id n7-20020adfc607000000b0021a37d8f93aso1808365wrg.21
+        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 22:31:30 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=z/8AW1mLy0vS7+l6IodLYuxxHB7nmU0fVG4Vd5xB/EI=;
-        b=MwH//tt7YgRNlOjrN0Buhd6hP8waDAPqwfe7OLV1Dtsf4z9so5Spv13L3VX/XQZjd0
-         rgDRSe+sQcz8XYRNIkAuT1MS5hr1p/CVeHGd3p6Hc279eSoiHLU9HMcZpqz+MyZJm7Du
-         LtsDmKF04oeOuN4lLyaQr/GcH2kODyfWA48lmeWAo3SDIECqRyNIgDutXtRD72SP0LtJ
-         fOTUyH4E+RHEwFvB+SXqYRPMxRc4+Rn7i1QgdoIdXZuhOuAW1NsMjijrzQP94HIw2ViJ
-         q0JDqAImUihA8FYYfAf/pezv5jYDqrOqsw6XvTaYVBPuwvqpYN3XJEBzXfgXCJD1JxYA
-         SiXg==
-X-Gm-Message-State: AJIora8PVecAiH6MSvgFJPoZqhDXt8hCl8OgwgprX0Iy8ZVNfJ6FJUoU
-        UppGKQDDEsXJAi4Ri8YmRxzPQd68V6jZT4eaV7TYtvTWbth6u2G4HPI9Atmq8w8BIQeNUEzYQ6V
-        2Yhx+9avEpjJUIIy7
-X-Received: by 2002:adf:ce81:0:b0:21d:6d21:9752 with SMTP id r1-20020adfce81000000b0021d6d219752mr1362244wrn.26.1657690022478;
-        Tue, 12 Jul 2022 22:27:02 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1uowWaNmX8XxlwA6SGk6pOQWK89++LFMozOdfKgz9YOkSHJGoX27WaK+yiZFiAfckDuwrGSMw==
-X-Received: by 2002:adf:ce81:0:b0:21d:6d21:9752 with SMTP id r1-20020adfce81000000b0021d6d219752mr1362232wrn.26.1657690022234;
-        Tue, 12 Jul 2022 22:27:02 -0700 (PDT)
+        bh=Jy/furYsDwrNodw4Nu9ZNCwDIYPw0par1/S1mi+rDBY=;
+        b=AHAvkLEV4PuIl18zW9aXiCQG1RuUcWCoWHfdejzBYb+mRVdJYyiYy98Kng9DP9qZxz
+         qGMwnoL94fsyZIiWrShdaY84FuEyvwhTlCj6WR5Dl/LmnCzWLq4ijCRArBgM9fylilkx
+         FhCeQH78cSBooltp0FRcVfWS2Aq4yxhr173H1usnkfXVRB7/APflzkTlRT/XopPnEFdK
+         F6/WiVhw4WZyA666vpqG4yUbfcojt0iS0v55DV1rAXaneM5bxtipJSgwN5oT/xR18bug
+         uLg1mExSpZrAX/AL7JDNnIdtAQl++nYJom3K9hViPPXJ7af2jT40m5D9FFoc0cN7p9lq
+         Q88A==
+X-Gm-Message-State: AJIora+EjxSq5l5DbgsllMkbfoAfo2Oc8CNs2yRguEDDUrDNaBdBr152
+        /4oe8uQtViWeAh/Botp7IlmNzaald4gZE2wX5MuU88br/IPjqLdUGCem3BbPhTNzTdvVVtPERVI
+        4z6UqlwVP8vz+G7lk
+X-Received: by 2002:a5d:5d88:0:b0:21d:9ba5:d2c5 with SMTP id ci8-20020a5d5d88000000b0021d9ba5d2c5mr1297540wrb.717.1657690289919;
+        Tue, 12 Jul 2022 22:31:29 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1vYcXqU7V7hxYQX03o3NQqUyIgbpwEqM9ueULOltT2Jq1yq1UPTP2N90oNm6slLYomX9gDv7w==
+X-Received: by 2002:a5d:5d88:0:b0:21d:9ba5:d2c5 with SMTP id ci8-20020a5d5d88000000b0021d9ba5d2c5mr1297524wrb.717.1657690289660;
+        Tue, 12 Jul 2022 22:31:29 -0700 (PDT)
 Received: from redhat.com ([2.52.24.42])
-        by smtp.gmail.com with ESMTPSA id m2-20020a05600c3b0200b0039ee391a024sm975273wms.14.2022.07.12.22.27.00
+        by smtp.gmail.com with ESMTPSA id r18-20020a05600c35d200b003a2d0f0ccaesm927840wmq.34.2022.07.12.22.31.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 22:27:01 -0700 (PDT)
-Date:   Wed, 13 Jul 2022 01:26:58 -0400
+        Tue, 12 Jul 2022 22:31:29 -0700 (PDT)
+Date:   Wed, 13 Jul 2022 01:31:26 -0400
 From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Parav Pandit <parav@nvidia.com>
-Cc:     Zhu Lingshan <lingshan.zhu@intel.com>,
-        "jasowang@redhat.com" <jasowang@redhat.com>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "xieyongji@bytedance.com" <xieyongji@bytedance.com>,
-        "gautam.dawar@amd.com" <gautam.dawar@amd.com>
-Subject: Re: [PATCH V3 5/6] vDPA: answer num of queue pairs = 1 to userspace
- when VIRTIO_NET_F_MQ == 0
-Message-ID: <20220713011631-mutt-send-email-mst@kernel.org>
+To:     Zhu Lingshan <lingshan.zhu@intel.com>
+Cc:     jasowang@redhat.com, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, parav@nvidia.com, xieyongji@bytedance.com,
+        gautam.dawar@amd.com
+Subject: Re: [PATCH V3 1/6] vDPA/ifcvf: get_config_size should return a value
+ no greater than dev implementation
+Message-ID: <20220713012944-mutt-send-email-mst@kernel.org>
 References: <20220701132826.8132-1-lingshan.zhu@intel.com>
- <20220701132826.8132-6-lingshan.zhu@intel.com>
- <PH0PR12MB548173B9511FD3941E2D5F64DCBD9@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20220701132826.8132-2-lingshan.zhu@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <PH0PR12MB548173B9511FD3941E2D5F64DCBD9@PH0PR12MB5481.namprd12.prod.outlook.com>
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+In-Reply-To: <20220701132826.8132-2-lingshan.zhu@intel.com>
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
         SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -83,41 +78,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 01, 2022 at 10:07:59PM +0000, Parav Pandit wrote:
+On Fri, Jul 01, 2022 at 09:28:21PM +0800, Zhu Lingshan wrote:
+> ifcvf_get_config_size() should return a virtio device type specific value,
+> however the ret_value should not be greater than the onboard size of
+> the device implementation. E.g., for virtio_net, config_size should be
+> the minimum value of sizeof(struct virtio_net_config) and the onboard
+> cap size.
 > 
+> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+> ---
+>  drivers/vdpa/ifcvf/ifcvf_base.c | 13 +++++++++++--
+>  drivers/vdpa/ifcvf/ifcvf_base.h |  2 ++
+>  2 files changed, 13 insertions(+), 2 deletions(-)
 > 
-> > From: Zhu Lingshan <lingshan.zhu@intel.com>
-> > Sent: Friday, July 1, 2022 9:28 AM
-> > If VIRTIO_NET_F_MQ == 0, the virtio device should have one queue pair, so
-> > when userspace querying queue pair numbers, it should return mq=1 than
-> > zero.
-> > 
-> > Function vdpa_dev_net_config_fill() fills the attributions of the vDPA
-> > devices, so that it should call vdpa_dev_net_mq_config_fill() so the
-> > parameter in vdpa_dev_net_mq_config_fill() should be feature_device than
-> > feature_driver for the vDPA devices themselves
-> > 
-> > Before this change, when MQ = 0, iproute2 output:
-> > $vdpa dev config show vdpa0
-> > vdpa0: mac 00:e8:ca:11:be:05 link up link_announce false max_vq_pairs 0
-> > mtu 1500
-> >
-> The fix belongs to user space.
-> When a feature bit _MQ is not negotiated, vdpa kernel space will not add attribute VDPA_ATTR_DEV_NET_CFG_MAX_VQP.
-> When such attribute is not returned by kernel, max_vq_pairs should not be shown by the iproute2.
-> 
-> We have many config space fields that depend on the feature bits and some of them do not have any defaults.
-> To keep consistency of existence of config space fields among all, we don't want to show default like below.
-> 
-> Please fix the iproute2 to not print max_vq_pairs when it is not returned by the kernel.
+> diff --git a/drivers/vdpa/ifcvf/ifcvf_base.c b/drivers/vdpa/ifcvf/ifcvf_base.c
+> index 48c4dadb0c7c..fb957b57941e 100644
+> --- a/drivers/vdpa/ifcvf/ifcvf_base.c
+> +++ b/drivers/vdpa/ifcvf/ifcvf_base.c
+> @@ -128,6 +128,7 @@ int ifcvf_init_hw(struct ifcvf_hw *hw, struct pci_dev *pdev)
+>  			break;
+>  		case VIRTIO_PCI_CAP_DEVICE_CFG:
+>  			hw->dev_cfg = get_cap_addr(hw, &cap);
+> +			hw->cap_dev_config_size = le32_to_cpu(cap.length);
+>  			IFCVF_DBG(pdev, "hw->dev_cfg = %p\n", hw->dev_cfg);
+>  			break;
+>  		}
+> @@ -233,15 +234,23 @@ int ifcvf_verify_min_features(struct ifcvf_hw *hw, u64 features)
+>  u32 ifcvf_get_config_size(struct ifcvf_hw *hw)
+>  {
+>  	struct ifcvf_adapter *adapter;
+> +	u32 net_config_size = sizeof(struct virtio_net_config);
+> +	u32 blk_config_size = sizeof(struct virtio_blk_config);
+> +	u32 cap_size = hw->cap_dev_config_size;
+>  	u32 config_size;
+>  
+>  	adapter = vf_to_adapter(hw);
+> +	/* If the onboard device config space size is greater than
+> +	 * the size of struct virtio_net/blk_config, only the spec
+> +	 * implementing contents size is returned, this is very
+> +	 * unlikely, defensive programming.
+> +	 */
+>  	switch (hw->dev_type) {
+>  	case VIRTIO_ID_NET:
+> -		config_size = sizeof(struct virtio_net_config);
+> +		config_size = cap_size >= net_config_size ? net_config_size : cap_size;
+>  		break;
+>  	case VIRTIO_ID_BLOCK:
+> -		config_size = sizeof(struct virtio_blk_config);
+> +		config_size = cap_size >= blk_config_size ? blk_config_size : cap_size;
+>  		break;
+>  	default:
+>  		config_size = 0;
 
-Parav I read the discussion and don't get your argument. From driver's POV
-_MQ with 1 VQ pair and !_MQ are exactly functionally equivalent.
+There's a min macro for this.
 
-It's true that iproute probably needs to be fixed too, to handle old
-kernels. But iproute is not the only userspace, why not make it's life
-easier by fixing the kernel?
-
--- 
-MST
+> diff --git a/drivers/vdpa/ifcvf/ifcvf_base.h b/drivers/vdpa/ifcvf/ifcvf_base.h
+> index 115b61f4924b..f5563f665cc6 100644
+> --- a/drivers/vdpa/ifcvf/ifcvf_base.h
+> +++ b/drivers/vdpa/ifcvf/ifcvf_base.h
+> @@ -87,6 +87,8 @@ struct ifcvf_hw {
+>  	int config_irq;
+>  	int vqs_reused_irq;
+>  	u16 nr_vring;
+> +	/* VIRTIO_PCI_CAP_DEVICE_CFG size */
+> +	u32 cap_dev_config_size;
+>  };
+>  
+>  struct ifcvf_adapter {
+> -- 
+> 2.31.1
 
