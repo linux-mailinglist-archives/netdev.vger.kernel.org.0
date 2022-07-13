@@ -2,93 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 21C87572BFA
-	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 05:36:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D5BF572BFD
+	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 05:40:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230300AbiGMDgS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jul 2022 23:36:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56650 "EHLO
+        id S230335AbiGMDkR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jul 2022 23:40:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229915AbiGMDgQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 23:36:16 -0400
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 340F4D7B98;
-        Tue, 12 Jul 2022 20:36:16 -0700 (PDT)
-Received: by mail-pg1-x52b.google.com with SMTP id o18so9322953pgu.9;
-        Tue, 12 Jul 2022 20:36:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=yVeFSkEmO64ENxp6OwJH9yQxRclVRPX/S8GoXnifoJs=;
-        b=Jp0EIuguvIfT6nTpvibnF455o2Z/zMNJF/YU9QGMqMtctxixq8+XSHucyOjWjqQB2n
-         +zECdCdWCb+zQZSX8jz+e/vw+FTo+VrqRYmVjVszWH2e5U++Uyc5tT/ddZHYvdX8yhI6
-         IPsonz+WmHSp0VL5xz2/J53mTXgp7AQtDuatWLTmNUTevQ8iIPaAvxceyqqHEraHqFYu
-         sdbODjltqC7KaZw0Y1ZMT8y1ouyEsFMX1Xp7mGCe/hHWxB66b1/HyoCR6P0TME1HMhOw
-         ReR/1DVExuDOruoz/R95CTcbQucfR5VY4zyn3ByTFzTMICA8F/+3yPnU04W2qOVPKPRb
-         UC2A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=yVeFSkEmO64ENxp6OwJH9yQxRclVRPX/S8GoXnifoJs=;
-        b=OC0LqYucS4iWe5bsrWc+mJl/So/kRhTk59i4gqa9m49ogXXi2KuKV5gCodZ1yAjYhZ
-         SKfiLMAyljUO+qd82/gThfod9ZT5KjFtvVoBkY+HOmVVA3UbdVfeL0wQD2JTqhqgx6Ar
-         ld90s9OTabV6CLa1en9oJcteIQU1hnoksOA4EJ1+WHunHQ5+Q9GhGed8KLY9JQuWuel7
-         cMS1Hm3hIkBkRAZ8lU3+jGRkPZZSMLvcRKrQdja/2c5g3ORliwP1MVTu5b/1TGQVcvHT
-         007icQ4djbLnr0X3EXH0jnI4u+JVG1PdEY1i2YV0a3Thynu5Jymuwp17jMHIWCL2BafE
-         LRkQ==
-X-Gm-Message-State: AJIora/Bnux7dMzIYvMZSYvFxpI9xro8WHcQCP0xpbdF1zv6wx9jbCBd
-        o7KZRRuA5Q5xchJ58x9pX3s=
-X-Google-Smtp-Source: AGRyM1vI+wluVcFYvR2WTFV2uiw4Hura3WhTgF/TWxJ+8Q2pOc6qb1PHNWWn2zoSTl80hHPro3mVwg==
-X-Received: by 2002:a63:d1e:0:b0:40d:379e:bff8 with SMTP id c30-20020a630d1e000000b0040d379ebff8mr1289986pgl.215.1657683375679;
-        Tue, 12 Jul 2022 20:36:15 -0700 (PDT)
-Received: from localhost.localdomain ([136.175.179.221])
-        by smtp.gmail.com with ESMTPSA id c5-20020a170902d48500b001638a171558sm7634084plg.202.2022.07.12.20.36.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 20:36:15 -0700 (PDT)
-From:   Hawkins Jiawei <yin31149@gmail.com>
-To:     dan.carpenter@oracle.com
-Cc:     18801353760@163.com, andrii@kernel.org, ast@kernel.org,
-        borisp@nvidia.com, bpf@vger.kernel.org, daniel@iogearbox.net,
-        davem@davemloft.net, dsahern@kernel.org, edumazet@google.com,
-        guwen@linux.alibaba.com, john.fastabend@gmail.com, kafai@fb.com,
-        kgraul@linux.ibm.com, kpsingh@kernel.org, kuba@kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        pabeni@redhat.com, paskripkin@gmail.com, skhan@linuxfoundation.org,
-        songliubraving@fb.com,
-        syzbot+5f26f85569bd179c18ce@syzkaller.appspotmail.com,
-        syzkaller-bugs@googlegroups.com, yhs@fb.com, yin31149@gmail.com,
-        yoshfuji@linux-ipv6.org
-Subject: Re: [PATCH] smc: fix refcount bug in sk_psock_get (2)
-Date:   Wed, 13 Jul 2022 11:35:51 +0800
-Message-Id: <20220713033551.59355-1-yin31149@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220712094745.GM2338@kadam>
-References: <20220712094745.GM2338@kadam>
+        with ESMTP id S229915AbiGMDkP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 23:40:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 584EFD8609
+        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 20:40:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E4DA061AF5
+        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 03:40:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 3C4DAC341C8;
+        Wed, 13 Jul 2022 03:40:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657683614;
+        bh=OhC4PYLHSbajqMcmbiKV4uxDrsTBolmU+gffwBp4Gsw=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=O+KAx284Hb30Qrc+EpSlTsf8mnOx/MFgcN0SEvvPJhbILreRh09NMrErUopY+DzDg
+         y9TEyy2b0tzH4gWgYheg3moyA4LfgfYZG4T/hjG+caJZenimuHYEqcb3Qiw2ZRYbxw
+         wOhdR760l4FhBwUfLERJlNzV5cKumTIbvXoWCh/8v8EHYrQLoIzw3wV2jxQEV7Qo+u
+         PmmVFbPEGvhZiBXWnu+xEtPGZE1WhrcLlenb6t0ZLdJ+KCXkpqiEPp/vys4QNtYKA4
+         YDN7T6SHW3UT/6ia7tFd64auBevrCXSM/9+zx8C9hnpnIAUei2F+uSESvsntHa6g84
+         J4O8oVOQhBD3g==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1CF18E4522F;
+        Wed, 13 Jul 2022 03:40:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Subject: Re: [PATCH net 0/5] bnxt_en: 5 Bug fixes
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165768361411.7782.8803187175389482103.git-patchwork-notify@kernel.org>
+Date:   Wed, 13 Jul 2022 03:40:14 +0000
+References: <1657592778-12730-1-git-send-email-michael.chan@broadcom.com>
+In-Reply-To: <1657592778-12730-1-git-send-email-michael.chan@broadcom.com>
+To:     Michael Chan <michael.chan@broadcom.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
+        gospo@broadcom.com
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 12 Jul 2022 at 17:48, Dan Carpenter <dan.carpenter@oracle.com> wrote:
->
-> On Sat, Jul 09, 2022 at 10:46:59AM +0800, Hawkins Jiawei wrote:
-> > From: hawk <18801353760@163.com>
->
-> Please use your legal name like you would for signing a legal document.
+Hello:
 
-Thanks, I will pay attention to it in the future.
+This series was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
->
-> regards,
-> dan carpenter
->
+On Mon, 11 Jul 2022 22:26:13 -0400 you wrote:
+> This patchset fixes various issues, including SRIOV error unwinding,
+> one error recovery path, live patch reporting, XDP transmit path,
+> and PHC clock reading.
+> 
+> Kashyap Desai (1):
+>   bnxt_en: reclaim max resources if sriov enable fails
+> 
+> [...]
+
+Here is the summary with links:
+  - [net,1/5] bnxt_en: reclaim max resources if sriov enable fails
+    https://git.kernel.org/netdev/net/c/c5b744d38c36
+  - [net,2/5] bnxt_en: Fix bnxt_reinit_after_abort() code path
+    https://git.kernel.org/netdev/net/c/4279414bff8a
+  - [net,3/5] bnxt_en: fix livepatch query
+    https://git.kernel.org/netdev/net/c/619b9b1622c2
+  - [net,4/5] bnxt_en: Fix and simplify XDP transmit path
+    https://git.kernel.org/netdev/net/c/53f8c2d37efb
+  - [net,5/5] bnxt_en: Fix bnxt_refclk_read()
+    https://git.kernel.org/netdev/net/c/ddde5412fdaa
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
