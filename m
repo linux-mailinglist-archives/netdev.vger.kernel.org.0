@@ -2,223 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FD7A573D8C
-	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 22:05:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7148D573DDC
+	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 22:38:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236539AbiGMUF1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jul 2022 16:05:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42176 "EHLO
+        id S236777AbiGMUii (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jul 2022 16:38:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229955AbiGMUF0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 16:05:26 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84C6722289;
-        Wed, 13 Jul 2022 13:05:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=EVrD+Zxoj2adqCGwdunLuG7a8ZSPZ0ojB0Z9EuSlbIM=; b=fKS5eDuj0bAXqk3uPCI0dKJyo6
-        3++Tg1JeX9/GR56QsYmJrdyHh39X3mXEjTHfKuJoh8PkvWnJjtVNHAwEv9O0/dA+IjMbmyFMMdAxC
-        LGCHiJT13smg15z9N3tu35ccifDeEcl3+FdClwjF6VK3WYCJp47+pjGmb1QnRML+V62F/0JJBbvIE
-        QaP/r5XwySCmxu8sJNR7YqgDA0uUZTZMSYNUgJUq+2uqAj1/875+PTi5jTUA8jYkiSRZBJj8lIMZU
-        UwJWk5aPogbRXKFa2JoT9+cSOOTstbu5wCtnq7NP7sCfxJUgFV/TxqwBCr1sY5mQ0589iTKm0jceq
-        E6We+ASg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33322)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1oBibq-0004zd-Pp; Wed, 13 Jul 2022 21:05:22 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1oBibp-0005vg-1F; Wed, 13 Jul 2022 21:05:21 +0100
-Date:   Wed, 13 Jul 2022 21:05:21 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Oleksandr Mazur <oleksandr.mazur@plvision.eu>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, yevhen.orlov@plvision.eu,
-        taras.chornyi@plvision.eu
-Subject: Re: [PATCH V2 net-next] net: marvell: prestera: add phylink support
-Message-ID: <Ys8lgQGBsvWAtXDZ@shell.armlinux.org.uk>
-References: <20220713172013.29531-1-oleksandr.mazur@plvision.eu>
+        with ESMTP id S236481AbiGMUig (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 16:38:36 -0400
+Received: from mx4.wp.pl (mx4.wp.pl [212.77.101.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6FD2261B
+        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 13:38:32 -0700 (PDT)
+Received: (wp-smtpd smtp.wp.pl 7578 invoked from network); 13 Jul 2022 22:38:29 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wp.pl; s=1024a;
+          t=1657744709; bh=+krRejcjJ8GRV1MoEXeN2f0MS3ELVlNB2yISMmLvhmc=;
+          h=Subject:To:Cc:From;
+          b=s7VyUtDJUT8tWkM4ih9yz5u73lQKgw4XBE485O5eOd8LZC0Hh85i9yw8STLCk/fmw
+           lWoNcRzIRcGH24TF302ng3BnBaDLiVAbQsGl7/T9Lds9cakxQUB7xrpfUSWG8rhv1H
+           GLISh+53P/WlDNF4pQonKMXaPls9DV1AGkTqErV4=
+Received: from ip-137-21.ds.pw.edu.pl (HELO [192.168.3.133]) (olek2@wp.pl@[194.29.137.21])
+          (envelope-sender <olek2@wp.pl>)
+          by smtp.wp.pl (WP-SMTPD) with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP
+          for <edumazet@google.com>; 13 Jul 2022 22:38:29 +0200
+Message-ID: <72d3a578-f321-41aa-858c-9f3a6978a277@wp.pl>
+Date:   Wed, 13 Jul 2022 22:38:37 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220713172013.29531-1-oleksandr.mazur@plvision.eu>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH net-next] net: lantiq_xrx200: use skb cache
+Content-Language: en-US
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     hauke@hauke-m.de, David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <20220712181456.3398-1-olek2@wp.pl>
+ <CANn89iLbFYaV9MhYMHAzZOKM=ZKaAPOAuuXec_t9G5s4ypnY6A@mail.gmail.com>
+From:   Aleksander Bajkowski <olek2@wp.pl>
+In-Reply-To: <CANn89iLbFYaV9MhYMHAzZOKM=ZKaAPOAuuXec_t9G5s4ypnY6A@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-WP-MailID: 34297892d757b274158439635bc78403
+X-WP-AV: skaner antywirusowy Poczty Wirtualnej Polski
+X-WP-SPAM: NO 000000B [oZPU]                               
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 13, 2022 at 08:20:13PM +0300, Oleksandr Mazur wrote:
-> For SFP port prestera driver will use kernel
-> phylink infrastucture to configure port mode based on
-> the module that has beed inserted
+Hi Eric,
+
+On 7/13/22 14:50, Eric Dumazet wrote:
+> On Tue, Jul 12, 2022 at 8:15 PM Aleksander Jan Bajkowski <olek2@wp.pl> wrote:
+>>
+>> napi_build_skb() reuses NAPI skbuff_head cache in order to save some
+>> cycles on freeing/allocating skbuff_heads on every new Rx or completed
+>> Tx.
+>> Use napi_consume_skb() to feed the cache with skbuff_heads of completed
+>> Tx. The budget parameter is added to indicate NAPI context, as a value
+>> of zero can be passed in the case of netpoll.
+>>
+>> NAT performance results on BT Home Hub 5A (kernel 5.15.45, mtu 1500):
+>>
+>> Fast path (Software Flow Offload):
+>>         Up      Down
+>> Before  702.4   719.3
+>> After   707.3   739.9
+>>
+>> Slow path:
+>>         Up      Down
+>> Before  91.8    184.1
+>> After   92.0    185.7
+>>
+>> Signed-off-by: Aleksander Jan Bajkowski <olek2@wp.pl>
+>> ---
+>>  drivers/net/ethernet/lantiq_xrx200.c | 4 ++--
+>>  1 file changed, 2 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/net/ethernet/lantiq_xrx200.c b/drivers/net/ethernet/lantiq_xrx200.c
+>> index 5edb68a8aab1..83e07404803f 100644
+>> --- a/drivers/net/ethernet/lantiq_xrx200.c
+>> +++ b/drivers/net/ethernet/lantiq_xrx200.c
+>> @@ -238,7 +238,7 @@ static int xrx200_hw_receive(struct xrx200_chan *ch)
+>>                 return ret;
+>>         }
+>>
+>> -       skb = build_skb(buf, priv->rx_skb_size);
+>> +       skb = napi_build_skb(buf, priv->rx_skb_size);
 > 
-> Co-developed-by: Yevhen Orlov <yevhen.orlov@plvision.eu>
-> Signed-off-by: Yevhen Orlov <yevhen.orlov@plvision.eu>
-> Co-developed-by: Taras Chornyi <taras.chornyi@plvision.eu>
-> Signed-off-by: Taras Chornyi <taras.chornyi@plvision.eu>
-> Signed-off-by: Oleksandr Mazur <oleksandr.mazur@plvision.eu>
+> If you are changing this code path, what about adding proper error recovery ?
 > 
-> PATCH V2:
->   - fix mistreat of bitfield values as if they were bools.
->   - remove phylink_config ifdefs.
->   - remove obsolete phylink pcs / mac callbacks;
->   - rework mac (/pcs) config to not look for speed / duplex
->     parameters while link is not yet set up.
->   - remove unused functions.
->   - add phylink select cfg to prestera Kconfig.
+> skb can be NULL at this point :/
+> 
 
-I would appreciate answers to my questions, rather than just another
-patch submission. So I'll repeat my question in the hope of an answer:
 
-First question which applies to everything in this patch is - why make
-phylink conditional for this driver?
+Good catch. I will try to test the fix on the device tomorrow and send the patch.
 
-The reason that this needs to be answered is that I would like an
-explanation why it's conditional, because it shouldn't be. By making it
-conditional, you will have multiple separate paths through the driver
-code trying to do the same thing, but differently, which means more time
-an effort maintaining the driver.
+>>         skb_reserve(skb, NET_SKB_PAD);
+>>         skb_put(skb, len);
+>>
+>> @@ -321,7 +321,7 @@ static int xrx200_tx_housekeeping(struct napi_struct *napi, int budget)
+>>                         pkts++;
+>>                         bytes += skb->len;
+>>                         ch->skb[ch->tx_free] = NULL;
+>> -                       consume_skb(skb);
+>> +                       napi_consume_skb(skb, budget);
+>>                         memset(&ch->dma.desc_base[ch->tx_free], 0,
+>>                                sizeof(struct ltq_dma_desc));
+>>                         ch->tx_free++;
+>> --
+>> 2.30.2
+>>
 
-> +static int prestera_pcs_config(struct phylink_pcs *pcs,
-> +			       unsigned int mode,
-> +			       phy_interface_t interface,
-> +			       const unsigned long *advertising,
-> +			       bool permit_pause_to_mac)
-> +{
-> +	struct prestera_port *port = port = prestera_pcs_to_port(pcs);
-> +	struct prestera_port_mac_config cfg_mac;
-> +	int err;
-> +
-> +	err = prestera_port_cfg_mac_read(port, &cfg_mac);
-> +	if (err)
-> +		return err;
-> +
-> +	cfg_mac.admin = true;
-> +	cfg_mac.fec = PRESTERA_PORT_FEC_OFF;
-> +
-> +	switch (interface) {
-> +	case PHY_INTERFACE_MODE_10GBASER:
-> +		cfg_mac.speed = SPEED_10000;
-> +		cfg_mac.inband = 0;
-> +		cfg_mac.mode = PRESTERA_MAC_MODE_SR_LR;
-> +		break;
-> +	case PHY_INTERFACE_MODE_2500BASEX:
-> +		cfg_mac.speed = SPEED_2500;
-> +		cfg_mac.duplex = DUPLEX_FULL;
-> +		cfg_mac.inband = test_bit(ETHTOOL_LINK_MODE_Autoneg_BIT,
-> +					  advertising);
-> +		cfg_mac.mode = PRESTERA_MAC_MODE_SGMII;
-> +		break;
-> +	case PHY_INTERFACE_MODE_SGMII:
-> +		cfg_mac.inband = test_bit(ETHTOOL_LINK_MODE_Autoneg_BIT,
-> +					  advertising);
-
-This looks wrong to me. In SGMII mode, it is normal for the advertising
-mask to indicate the media modes on the PHY to advertise, and whether to
-enable advertisements on the _media_. Whether media advertisements are
-enabled or not doesn't have any bearing on the PCS<->PHY link. If the
-interface is in in-band mode, then the SGMII control word exchange
-should always happen.
-
-> +		cfg_mac.mode = PRESTERA_MAC_MODE_SGMII;
-> +		break;
-> +	case PHY_INTERFACE_MODE_1000BASEX:
-> +	default:
-> +		cfg_mac.speed = SPEED_1000;
-> +		cfg_mac.duplex = DUPLEX_FULL;
-> +		cfg_mac.inband = test_bit(ETHTOOL_LINK_MODE_Autoneg_BIT,
-> +					  advertising);
-> +		cfg_mac.mode = PRESTERA_MAC_MODE_1000BASE_X;
-> +		break;
->  	}
->  
-> +	err = prestera_port_cfg_mac_write(port, &cfg_mac);
-> +	if (err)
-> +		return err;
-> +
-> +	return 0;
-> +}
-> +
-> +static void prestera_pcs_an_restart(struct phylink_pcs *pcs)
-> +{
-> +}
-
-No way to restart 1000base-X autoneg?
-
-> @@ -530,25 +777,48 @@ static int prestera_create_ports(struct prestera_switch *sw)
->  static void prestera_port_handle_event(struct prestera_switch *sw,
->  				       struct prestera_event *evt, void *arg)
->  {
-> +	struct prestera_port_mac_state smac;
-> +	struct prestera_port_event *pevt;
->  	struct delayed_work *caching_dw;
->  	struct prestera_port *port;
->  
-> -	port = prestera_find_port(sw, evt->port_evt.port_id);
-> -	if (!port || !port->dev)
-> -		return;
-> -
-> -	caching_dw = &port->cached_hw_stats.caching_dw;
-> -
-> -	prestera_ethtool_port_state_changed(port, &evt->port_evt);
-> -
->  	if (evt->id == PRESTERA_PORT_EVENT_MAC_STATE_CHANGED) {
-> +		pevt = &evt->port_evt;
-> +		port = prestera_find_port(sw, pevt->port_id);
-> +		if (!port || !port->dev)
-> +			return;
-> +
-> +		caching_dw = &port->cached_hw_stats.caching_dw;
-> +
-> +		if (port->phy_link) {
-> +			memset(&smac, 0, sizeof(smac));
-> +			smac.valid = true;
-> +			smac.oper = pevt->data.mac.oper;
-> +			if (smac.oper) {
-> +				smac.mode = pevt->data.mac.mode;
-> +				smac.speed = pevt->data.mac.speed;
-> +				smac.duplex = pevt->data.mac.duplex;
-> +				smac.fc = pevt->data.mac.fc;
-> +				smac.fec = pevt->data.mac.fec;
-> +			}
-> +			prestera_port_mac_state_cache_write(port, &smac);
-
-I think you should be calling phylink_mac_change() here, rather than
-below.
-
-> +		}
-> +
->  		if (port->state_mac.oper) {
-> -			netif_carrier_on(port->dev);
-> +			if (port->phy_link)
-> +				phylink_mac_change(port->phy_link, true);
-> +			else
-> +				netif_carrier_on(port->dev);
-> +
->  			if (!delayed_work_pending(caching_dw))
->  				queue_delayed_work(prestera_wq, caching_dw, 0);
->  		} else if (netif_running(port->dev) &&
->  			   netif_carrier_ok(port->dev)) {
-> -			netif_carrier_off(port->dev);
-> +			if (port->phy_link)
-> +				phylink_mac_change(port->phy_link, false);
-> +			else
-> +				netif_carrier_off(port->dev);
-> +
->  			if (delayed_work_pending(caching_dw))
->  				cancel_delayed_work(caching_dw);
->  		}
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Best regards,
+Aleksander
