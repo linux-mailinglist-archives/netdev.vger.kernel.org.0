@@ -2,135 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A38AE572BFF
-	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 05:46:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 33660572C05
+	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 05:50:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229877AbiGMDpy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jul 2022 23:45:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33214 "EHLO
+        id S231139AbiGMDuT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jul 2022 23:50:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229732AbiGMDpv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 23:45:51 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F18FC8EB0
-        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 20:45:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657683950; x=1689219950;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=9m85FpFvxFfg96BS04ekOv0HDHsrVJQ5AWVdlBqkuwM=;
-  b=Jvo9O5bYtuDeNvB/siaORqKXwTJ7L+lf2+1Rywok/hdQGVNRTW1aaxcX
-   xJY4oagSiySeAGiZq2lSu/WnUqxNBcaP66YK7KHhBxpGxrcI5uZVgMgc6
-   POlPqQCAQ4XVrmG9pH0Ila2pJdvbY23rnvzp+3oxNKBITPLTPQleYqj5S
-   /OIbhAzmZcmHJu6JIN/fLR5+eiBIahap6pnYNk+zxZzGtnYDHFMFSyLze
-   tNjSaPjB64V9Kr5QBsMOOZIRPTx2yuZboy6Q4elH7NK4xxTgC/PfmpriU
-   k8k7ELesA70BuKxsYwBTLTU9SWVchyaVVM/x1tToBUR3hHAOoeN7KKdB2
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10406"; a="310730402"
-X-IronPort-AV: E=Sophos;i="5.92,266,1650956400"; 
-   d="scan'208";a="310730402"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2022 20:45:50 -0700
-X-IronPort-AV: E=Sophos;i="5.92,266,1650956400"; 
-   d="scan'208";a="653188245"
-Received: from lingshan-mobl.ccr.corp.intel.com (HELO [10.254.215.171]) ([10.254.215.171])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2022 20:45:48 -0700
-Message-ID: <1246d2f1-2822-0edb-cd57-efc4015f05a2@intel.com>
-Date:   Wed, 13 Jul 2022 11:45:46 +0800
+        with ESMTP id S229732AbiGMDuQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jul 2022 23:50:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54B92D8630;
+        Tue, 12 Jul 2022 20:50:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0532AB81D04;
+        Wed, 13 Jul 2022 03:50:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 971C1C341C6;
+        Wed, 13 Jul 2022 03:50:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657684213;
+        bh=qiPoG7Jg2ZK8XLZzWI0T5Ch1pvGJVm45/AHHC01wVj8=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=fsvGACoKafuWPo/6GsT6Lwi1pi+9jjdLCSaAAgsu8Y/HNqg2y8gE4mAu8uffR0mY9
+         0ijETSgyBxMiTQo02uZpP88Sy+B8vGLONTAYN7DqNLbjjU1baNInvgOQ/z3UvG2plF
+         W79GOByaHslMV/YnDLH4TRPV3tw/o7HDLg9Nuhd1KOLxTvGS0qa1GurQJwXezbR+Lo
+         /KiF2aIKOXcUNFy4/AXqFgjn+Hn6wCorNfC1DNZ3LQBQc3RD3gvP+OHPtbZvQMMqAI
+         j9cblOMKR2M1GESS6t3fV0GkL6LWdNBhrxMR86XxrfV2eAqDosxlxvZ/ZYvOh3Cbib
+         T3hK8e8MDz63w==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7A703E45223;
+        Wed, 13 Jul 2022 03:50:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.11.0
-Subject: Re: [PATCH V3 5/6] vDPA: answer num of queue pairs = 1 to userspace
- when VIRTIO_NET_F_MQ == 0
-Content-Language: en-US
-To:     Parav Pandit <parav@nvidia.com>,
-        "jasowang@redhat.com" <jasowang@redhat.com>,
-        "mst@redhat.com" <mst@redhat.com>
-Cc:     "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "xieyongji@bytedance.com" <xieyongji@bytedance.com>,
-        "gautam.dawar@amd.com" <gautam.dawar@amd.com>
-References: <20220701132826.8132-1-lingshan.zhu@intel.com>
- <20220701132826.8132-6-lingshan.zhu@intel.com>
- <PH0PR12MB548173B9511FD3941E2D5F64DCBD9@PH0PR12MB5481.namprd12.prod.outlook.com>
- <ef1c42e8-2350-dd9c-c6c0-2e9bbe85adb4@intel.com>
- <PH0PR12MB5481FF0AE64F3BB24FF8A869DC829@PH0PR12MB5481.namprd12.prod.outlook.com>
- <00c1f5e8-e58d-5af7-cc6b-b29398e17c8b@intel.com>
- <PH0PR12MB54817863E7BA89D6BB5A5F8CDC869@PH0PR12MB5481.namprd12.prod.outlook.com>
- <c7c8f49c-484f-f5b3-39e6-0d17f396cca7@intel.com>
- <PH0PR12MB5481E65037E0B4F6F583193BDC899@PH0PR12MB5481.namprd12.prod.outlook.com>
-From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
-In-Reply-To: <PH0PR12MB5481E65037E0B4F6F583193BDC899@PH0PR12MB5481.namprd12.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 1/1] igb: add xdp frags support to ndo_xdp_xmit
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165768421349.12868.5124518960518905657.git-patchwork-notify@kernel.org>
+Date:   Wed, 13 Jul 2022 03:50:13 +0000
+References: <20220711230751.3124415-1-anthony.l.nguyen@intel.com>
+In-Reply-To: <20220711230751.3124415-1-anthony.l.nguyen@intel.com>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, maciej.fijalkowski@intel.com,
+        magnus.karlsson@intel.com, ast@kernel.org, daniel@iogearbox.net,
+        hawk@kernel.org, john.fastabend@gmail.com, bpf@vger.kernel.org,
+        lorenzo@kernel.org, netdev@vger.kernel.org, chandanx.rout@intel.com
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello:
 
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-On 7/13/2022 11:06 AM, Parav Pandit wrote:
->> From: Zhu, Lingshan <lingshan.zhu@intel.com>
->> Sent: Tuesday, July 12, 2022 11:03 PM
->>
->>
->> On 7/13/2022 12:48 AM, Parav Pandit wrote:
->>>> From: Zhu, Lingshan <lingshan.zhu@intel.com>
->>>> Sent: Sunday, July 10, 2022 10:30 PM
->>>>> Showing max_vq_pairs of 1 even when _MQ is not negotiated,
->>>>> incorrectly
->>>> says that max_vq_pairs is exposed to the guest, but it is not offered.
->>>>> So, please fix the iproute2 to not print max_vq_pairs when it is not
->>>> returned by the kernel.
->>>> iproute2 can report whether there is MQ feature in the device /
->>>> driver feature bits.
->>>> I think iproute2 only queries the number of max queues here.
->>>>
->>>> max_vq_pairs shows how many queue pairs there, this attribute's
->>>> existence does not depend on MQ, if no MQ, there are still one queue
->>>> pair, so just show one.
->>> This netlink attribute's existence is depending on the _MQ feature bit
->> existence.
->> why? If no MQ, then no queues?
->>> We can break that and report the value, but if we break that there are
->> many other config space bits who doesn’t have good default like
->> max_vq_pairs.
->> max_vq_paris may not have a default value, but we know if there is no MQ,
->> a virtio-net still have one queue pair to be functional.
->>> There is ambiguity for user space what to do with it and so in the kernel
->> space..
->>> Instead of dealing with them differently in kernel, at present we attach
->> each netlink attribute to a respective feature bit wherever applicable.
->>> And code in kernel and user space is uniform to handle them.
->> I get your point, but you see, by "max_vq_pairs", the user space tool is
->> asking how many queue pairs there, it is not asking whether the device have
->> MQ.
->> Even no _MQ, we still need to tell the users that there are one queue pair, or
->> it is not a functional virtio-net, we should detect this error earlier in the
->> device initialization.
-> It is not an error. :)
-I meant if no queues, it should be non-functional, which is an error.
->
-> When the user space which invokes netlink commands, detects that _MQ is not supported, hence it takes max_queue_pair = 1 by itself.
-I think the kernel module have all necessary information and it is the 
-only one which have precise information of a device, so it
-should answer precisely than let the user space guess. The kernel module 
-should be reliable than stay silent, leave the question
-to the user space tool.
->
->> I think it is still uniform, it there is _MQ, we return cfg.max_queue_pair, if no
->> _MQ, return 1, still by netlink.
-> Better to do that in user space because we cannot do same for other config fields.
-same as above
->
->> Thanks
+On Mon, 11 Jul 2022 16:07:51 -0700 you wrote:
+> From: Lorenzo Bianconi <lorenzo@kernel.org>
+> 
+> Add the capability to map non-linear xdp frames in XDP_TX and
+> ndo_xdp_xmit callback.
+> 
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> Tested-by: Chandan Kumar Rout <chandanx.rout@intel.com> (A Contingent worker at Intel)
+> Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next,1/1] igb: add xdp frags support to ndo_xdp_xmit
+    https://git.kernel.org/netdev/net-next/c/1aea9d87334d
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
