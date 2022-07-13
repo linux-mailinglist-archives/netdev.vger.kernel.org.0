@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B1D557391B
-	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 16:44:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CFD6757392A
+	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 16:49:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235455AbiGMOoP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jul 2022 10:44:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48860 "EHLO
+        id S236346AbiGMOs6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jul 2022 10:48:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231703AbiGMOoO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 10:44:14 -0400
+        with ESMTP id S236278AbiGMOs4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 10:48:56 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AACA1FCEC;
-        Wed, 13 Jul 2022 07:44:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1909B21BE;
+        Wed, 13 Jul 2022 07:48:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C02C8B82019;
-        Wed, 13 Jul 2022 14:44:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E29CCC34114;
-        Wed, 13 Jul 2022 14:44:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B11B6B82025;
+        Wed, 13 Jul 2022 14:48:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1BD0C3411E;
+        Wed, 13 Jul 2022 14:48:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657723450;
-        bh=kdDocy7vnAF0pK2neZSn+zS4deAonqbhNcqvkHl//20=;
+        s=k20201202; t=1657723733;
+        bh=uiCGtM0WRA+1HmoM7RCgdlbEQVWM+21G8RM3hI+jodo=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=rM39oAE/vEOQADYEyfPX1JKsL8IypB8czfwMeERi8h0ipUqLVvwJ7siZqNkTvteCG
-         dof+YPQeF8QRktlVF0OFNdkWnrySl4Bmau+5+wiDdYUJM3l9oqJgj1Mx7+hQhIoD9X
-         76JCGPB1YB16/f1/0GLlyZtRGdFhYlE7v1LV8FRrL07gLdHE2dW9YtI+q9iSjjiSVN
-         2kZuZLlNA9y/U+6newrgB/olYCHSaGJ+16b3YQaWr6jwylNEsSMKHzD519hh7anxVI
-         zBrz/U8qM9MLJ+zITSdfv2xp1cZBCa2ZFnrsVgvcI7sXFJs8LUqGNJe4DfphHuaBaz
-         e7hFMw/ScGSeA==
-Date:   Wed, 13 Jul 2022 16:44:00 +0200
+        b=n14om2g/olH34oG/VNNsfwN9mWzb60zP3Ir7cXiyGRsPMlL9ON7F4ZH0lKP0rs/vx
+         EGFILkFvsULfLaMCOMEhCk3tCylKzTVGUAAvu4fhd5vAreV0IqLrGQK992o53oQDKn
+         47gn5Gflda7kQX6CIX1W/0dQZjSooPf/LGM3V/iCE6wS1iY9Lz/xiLUKwY0cylBU86
+         hHplQAqHOnaNftEevZdcH/BDmCVKVl1bv+jn7Wr4u5sg5Xyknnocuhk+S47sGgHYwG
+         KZ+0Y/iTs1yEgDW3qdphfFTvbXIx6z4pSbwbkgZha2p0k+6xKezcrQtqG6EqJOai9/
+         B4cIsLXvk6Ndw==
+Date:   Wed, 13 Jul 2022 16:48:43 +0200
 From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
 To:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -64,12 +64,12 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Vladimir Oltean <olteanv@gmail.com>,
         Woojung Huh <woojung.huh@microchip.com>
-Subject: Re: [PATCH RFC net-next v2 1/6] net: phylink: split out and export
- interface to caps translation
-Message-ID: <20220713164400.11b777a2@thinkpad>
-In-Reply-To: <E1oBd1i-006UCk-Eo@rmk-PC.armlinux.org.uk>
+Subject: Re: [PATCH RFC net-next v2 5/6] net: dsa: create swnode fixed-link
+ if using default params
+Message-ID: <20220713164843.5dcb7235@thinkpad>
+In-Reply-To: <E1oBd23-006UD8-1d@rmk-PC.armlinux.org.uk>
 References: <Ys7RdzGgHbYiPyB1@shell.armlinux.org.uk>
-        <E1oBd1i-006UCk-Eo@rmk-PC.armlinux.org.uk>
+        <E1oBd23-006UD8-1d@rmk-PC.armlinux.org.uk>
 X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -84,17 +84,14 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 13 Jul 2022 15:07:42 +0100
+On Wed, 13 Jul 2022 15:08:03 +0100
 "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk> wrote:
 
-> phylink_get_linkmodes() translates the interface mode into a set of
-> speed and duplex capabilities which are masked with the MAC modes to
-> then derive the link modes that are available.
+> Create and use a swnode fixed-link specification for phylink if no
+> parameters are given in DT for a fixed-link. This allows phylink to
+> be used for "default" cases for DSA and CPU ports.
 >=20
-> Split out the initial transformation into a new function
-> phylink_interface_to_caps(), and export it, which will be useful when
-> setting the maximum fixed link speed in DSA code.
->=20
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 > Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
 Reviewed-by: Marek Beh=C3=BAn <kabel@kernel.org>
