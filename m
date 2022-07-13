@@ -2,151 +2,223 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 69751573D5E
-	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 21:53:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FD7A573D8C
+	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 22:05:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236545AbiGMTw6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jul 2022 15:52:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60890 "EHLO
+        id S236539AbiGMUF1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jul 2022 16:05:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230331AbiGMTw5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 15:52:57 -0400
-Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF45226567;
-        Wed, 13 Jul 2022 12:52:56 -0700 (PDT)
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26DICfXf024936;
-        Wed, 13 Jul 2022 12:52:41 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=8xwlN/aid2gPLz4D8UaeMK1Hv5lGVF1q6RJoDh+qJH8=;
- b=Q5D/qH9/VPaPWPx7yUO82F5r6IuvHwx7cZEzMcaY9Gw5U2vJDo9jd9N76h86bVXqv9tf
- hitXcc846EXFl6+Cmt59hGiVEfIQL0h+Xw4dLJyRXUO/0CS5zny+R1QcbclDngMWlhls
- +YBRH852IfpJu1TKKNeg1sEmgtxCx5JmsIE= 
-Received: from nam11-dm6-obe.outbound.protection.outlook.com (mail-dm6nam11lp2175.outbound.protection.outlook.com [104.47.57.175])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3h9h5feeeb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 13 Jul 2022 12:52:41 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=iw4lGXEO0y/a7aq1yO6tJfKbjCHz5E4jNddS5KtUuP7lEMGenayZrWoFZVYEZk1sOznE6iXcNChm3PynzUIGOrxJrB4wLVJD7YzqB7kqTUBqRWzK8Aj8VUjom+87JpoebJYBe0AOVsB4pAmXZtE7AiYAwzZPAZNn659LOvPqFX9aLn5lBsgohNbji49GwX9CZVfnyiCfR6tgzvNEHv86rv+fKcv1uB8wyfO0kbrUHoamyJOMEO1gq5Mdx3mYTQ+ZNG6FHXHxaTBQSuBBhSMy4d68/loEtKyTIXu/i2T1+61WVzCdASjvS10UQqTvO5yNMHylQqBBF1oqkxflfopaWA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8xwlN/aid2gPLz4D8UaeMK1Hv5lGVF1q6RJoDh+qJH8=;
- b=ks/w0o4DKqUxVaukyRIs9rz7crVUKb/fRgDWGn3COciLPhXRKzzxLkLyhf69RBzrm7bL96D1en2aDb5qe7S7OfiIo3gtTnAeOIwqvXJ67jOc4Ms7VzeFt3zGrTNSWlNrOnTvVxrymxxfW/U/DB6v6HPJHM1BKJPDQC+OZXZKdZLk0TE2fOPCEc8giCRpnGri7zGtJoXvqNrqEbna6tt03VdpdtwTmhWhlWRoNnaKixONey3DNi1vv6wcwZ8Ea5DTLo24oJGkYsj8FGuNQyAwpLUMknYwRz9FAp80rEcJL5J0xweLFLsCBS+c6CLRtvA/OUIdv1NF0f6XMllkqTBaHQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com (2603:10b6:805:d::27)
- by MWHPR15MB1742.namprd15.prod.outlook.com (2603:10b6:301:59::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.13; Wed, 13 Jul
- 2022 19:52:39 +0000
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::9568:e5d9:b8ab:bb23]) by SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::9568:e5d9:b8ab:bb23%6]) with mapi id 15.20.5417.026; Wed, 13 Jul 2022
- 19:52:38 +0000
-Message-ID: <f935d733-9bca-f396-301a-cd3a38fae7e7@fb.com>
-Date:   Wed, 13 Jul 2022 12:52:35 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.11.0
-Subject: Re: [PATCH bpf-next v4] bpf: Warn on non-preallocated case for
- BPF_PROG_TYPE_RAW_TRACEPOINT_WRITABLE
-Content-Language: en-US
-To:     Yafang Shao <laoar.shao@gmail.com>, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org
-References: <20220713160936.57488-1-laoar.shao@gmail.com>
-From:   Yonghong Song <yhs@fb.com>
-In-Reply-To: <20220713160936.57488-1-laoar.shao@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SJ0PR03CA0084.namprd03.prod.outlook.com
- (2603:10b6:a03:331::29) To SN6PR1501MB2064.namprd15.prod.outlook.com
- (2603:10b6:805:d::27)
+        with ESMTP id S229955AbiGMUF0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 16:05:26 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84C6722289;
+        Wed, 13 Jul 2022 13:05:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=EVrD+Zxoj2adqCGwdunLuG7a8ZSPZ0ojB0Z9EuSlbIM=; b=fKS5eDuj0bAXqk3uPCI0dKJyo6
+        3++Tg1JeX9/GR56QsYmJrdyHh39X3mXEjTHfKuJoh8PkvWnJjtVNHAwEv9O0/dA+IjMbmyFMMdAxC
+        LGCHiJT13smg15z9N3tu35ccifDeEcl3+FdClwjF6VK3WYCJp47+pjGmb1QnRML+V62F/0JJBbvIE
+        QaP/r5XwySCmxu8sJNR7YqgDA0uUZTZMSYNUgJUq+2uqAj1/875+PTi5jTUA8jYkiSRZBJj8lIMZU
+        UwJWk5aPogbRXKFa2JoT9+cSOOTstbu5wCtnq7NP7sCfxJUgFV/TxqwBCr1sY5mQ0589iTKm0jceq
+        E6We+ASg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33322)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1oBibq-0004zd-Pp; Wed, 13 Jul 2022 21:05:22 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1oBibp-0005vg-1F; Wed, 13 Jul 2022 21:05:21 +0100
+Date:   Wed, 13 Jul 2022 21:05:21 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Oleksandr Mazur <oleksandr.mazur@plvision.eu>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, yevhen.orlov@plvision.eu,
+        taras.chornyi@plvision.eu
+Subject: Re: [PATCH V2 net-next] net: marvell: prestera: add phylink support
+Message-ID: <Ys8lgQGBsvWAtXDZ@shell.armlinux.org.uk>
+References: <20220713172013.29531-1-oleksandr.mazur@plvision.eu>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 69fe0685-8fa3-464f-b88f-08da65093d6e
-X-MS-TrafficTypeDiagnostic: MWHPR15MB1742:EE_
-X-FB-Source: Internal
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 48nJrS4f3WmD8pH1nsDm/EzWdN8bAYENobqLpvN02QbTnxWCCaqSPGpH6jIwI/AVj1KI4xOgBLCztXqEEDlAqrUWX6MRLCTpZIKS894Z1E7geU+q3GWh8NQ9qGgYCY9lvqeDBs4HYyB0NJxQ1upTA2rJ1iopGrC4fYa7P84UayxyvKZ2K0djdMntytUIMUtoa/qvu9vVE1VIN70MKLiER5CJxrLwaDO4P7jePpw2Z5jB1fV7ZPSAKTeAInYxBua+b06dbnUcLOM/D98WyM1GNPobIZOXQGyn+7sAE16pLXRURc3fZuzzmzlVGNQtaYzwk+UglOiat0XpQQlHSaj3el+bysqWM/ranj2Gp9qMxnvgNUT9+2K8DTqXLqPs4RDa0jAu/E1eMFWB7ljG24WnbPAm/Qm0w16DuhJFTSr+DWv5wnTbL5026XzAfbkBFEIm8B4MpxQ86m0bxkwBQ2NkLm5DOV/rd5grz6FGtvRWrGuLPHxIGfqSwJMCPhWmL7OcaH+1GtYxnKXU0yt0WfJYHztkNpZFHfml8OckCz9OHOJ41blfnIfn0qrobj0V+cSDnihmOifqc5ylrSiJw7afI6pxZmE9BlsGz8nIPY1Rysx0wYGxL65812L9UlGgxB4T58zzpBKUfL+EqlvO1puo/Mms5Kp9G4RmiIN/HK/WM8AeAo2DTE8W07OV+NcdbsNQq4GkdmA5CMxVmYUZP1YD3/sRy6yeNaO2EswEHylzx2rr8V3FUR1aB2S4Pl22RzfaK5sYR1rvYsgU27UPuUPuRm7zrWux45X3gPnnnJE2onWb4hvROQF363g0ljT1Pb2ZMFBrmA2urXbSsWLw3Jqpuq2vIfbj/cGVXiQN0xwPj/Q=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR1501MB2064.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(366004)(346002)(396003)(39860400002)(136003)(8936002)(5660300002)(86362001)(31696002)(2906002)(36756003)(558084003)(38100700002)(6486002)(478600001)(66476007)(66946007)(66556008)(316002)(2616005)(186003)(8676002)(4326008)(6506007)(6666004)(41300700001)(53546011)(6512007)(31686004)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?N25RdkdtcFphdk9pdzVJQ01yMjJoQTdLVDFQZXJpbWwxUUhHb3d5TS8xemFI?=
- =?utf-8?B?S1dXR0hJTG5kVnMwMHFtRDhpTTVsWmJ3WEhJUTJiSTB5SU1VTWpzYy9lRERw?=
- =?utf-8?B?UENWRHoreU82TWhLQ2ZyK2Jnb0FpUG1ZWkJEME1MTG5QVnNreUU1b2IwNksz?=
- =?utf-8?B?YlA4TXEyZUNvRXpvSzErT0ozVUVHWHBYOHZhOHFTWHBlRmVjNWZHT3dnMWRl?=
- =?utf-8?B?TTI1Y0RtZWpGTlh4QTRYM2EzTS9WSWFKNzlQa0U4aGV2SmROblBhWGZtMXZs?=
- =?utf-8?B?SlkxNGhmWkhFZ1RORXZsdjhCS0Y2YmNVZWRtc0ZXL0psUml3R3RoK0szQ25P?=
- =?utf-8?B?Ykp4cEFyRndDQjBYYlliU2hrckNUTkxqSm82elNxelFkVmJ1SVNXUTlDZ0Vq?=
- =?utf-8?B?VU00Zk9hNFE0ZWFsMVV0R3dsamU4TFFSeDVFZytDOGJzcGZETnd6U2pQVElM?=
- =?utf-8?B?OEYyZ0lFQlN5dlg4cXFxQWxsSHUrTEhKeDdzNURnZGFVTm5RS0xvcnl0alJw?=
- =?utf-8?B?Z29MM3V5bktnNjNKL2l3ZW1EUFdiQjErWk5rdWZoT1dmNE9wZU5aSWJ4dnB3?=
- =?utf-8?B?M2hKdXcxeSt0aGdPR1BjL2N2cHBYdWhydzZrL2VDL3Nla0ovNW42RXYzcFNJ?=
- =?utf-8?B?WmxEaDBJSDl0NG0xSzBrWVVjM3puN3VIUnQ1ZzJHWEhGVUF2K1JwZnBRNE42?=
- =?utf-8?B?bmdzZ2tnTXBCaytLY0JtU3RrOFlnK3B1QzRuOWt5UE9TUU45Z2tvcDY3UzN4?=
- =?utf-8?B?dXQ5cUp3T1ArQXlOek5VSTc3ZGk3YnFYTGRRM0tOL2J1dHhPM1FURlpSajA3?=
- =?utf-8?B?TnhuMHpnN2lHOGJ6a3Q0SVVDYmR1Sm0weXVmeWFRTS9HWGRrMDBXR2pnSFZJ?=
- =?utf-8?B?VGpNcDhXR1NHWisvcmJhYTkvZHgvdkdGWHQzTGp1SnhhbUpPdlRkVlRLYWZB?=
- =?utf-8?B?RjZoYk5IaWE0QVJjWWdyNjd0dko3WkQvelhMeVQ1S2sySjI3ZjcyaU94Rmcr?=
- =?utf-8?B?UndsNkRoTVBCQ0hOdnZOVVk3NEVUSEhLYTFBVFQ0UUhhSU55aG1DMXRYNUlp?=
- =?utf-8?B?T1BKQ0p0R2phSGw1WUxzbTQrVlYrd1A4WEdWV3RiNldSNjgwY3JpZU5MbDNv?=
- =?utf-8?B?alkxbFI4eXNQRndWekpwZFAvUkhPOHh3RTV2bS9KN3NXYUFnUHBSWEpNSS9l?=
- =?utf-8?B?RU9NdHF4SGV6bnVPbHZNRVVlVjYyUUEzRzl2TVJnUG1oaGRCY0NlY0RMdWpK?=
- =?utf-8?B?cXhpV1lBcnJYd0RRMmZJNWpwZytZK1hXWUhicHBsMHFXSWZueXFHVDY2aWtQ?=
- =?utf-8?B?SzE2UGMvbGlXdzhsQ3FyeHRpNGVzK2ZlN3BJYURicUJOekdIU3hIaTFUV3VD?=
- =?utf-8?B?M21ZM0VmR2RTNStMS3UxU3dXOFFLd1RWN29nZlR0bFB6RDNUemk5YksvMit4?=
- =?utf-8?B?VE5MVWRmTE9vNWRxNVJCOFJWaytsRGJOaXBGNit0Z0dPMXJyczM3OGZLbmgy?=
- =?utf-8?B?SWRzcWpZR1g3dlJvM2RQQlh0b2YrWXgwRnh2TktxTU5ETXQ1K1lHUTBLVWZ2?=
- =?utf-8?B?cjhlNEJwM3FzdzhtYzVxZENIVEUvOGhKNzdSNGgxb2NwdmF0UERhRDBKL3BU?=
- =?utf-8?B?VlVDY2RGQWo2dVBFSy9hekxUdlJRNHdtdHN4ZTlveDZoeGV1bWkwMEFSR3Zh?=
- =?utf-8?B?UjBvQkp4aHRtU3RiUEoyZEdlcW0xWGZ4Z1hrdnhZVE5EZkxRa3NSbDdkV3Q3?=
- =?utf-8?B?b1QydktxVmFIVHdYZWhTWDFKV0EvTGcyOTFaRmozNjI3bXZ3TVpNTzVsdFl1?=
- =?utf-8?B?STd4Qk5RWElwWC9seTlyeDBINlJSMWJRenpLWTczcWczc3hrSW1ESHF5S2NP?=
- =?utf-8?B?ZXRoeHVFS1lHZEdNOGkwc3BzakErVnJFVkF3dHp3bVhBdEt0alpGMVJ1bDAw?=
- =?utf-8?B?ZTVzTHhROEVxT1k2TldLeTBoRXJxVVdRT0NPR3U2WWdRaDIxcVVFYklKd09u?=
- =?utf-8?B?VGpibmUrdTI3Q3RZWkVDM1B3bzNrMmNHQWhBVzY0OVJNNWZIQkNVL1B4R3B2?=
- =?utf-8?B?ZmJnNTFOR1hrV2NXSWtLQVFtRDZ1dFF4YzlwcjN0ODlrL2RKMzZpN3ZYUCto?=
- =?utf-8?Q?HjILDHdReQ9sdyTcC38D8y8UQ?=
-X-OriginatorOrg: fb.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 69fe0685-8fa3-464f-b88f-08da65093d6e
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR1501MB2064.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jul 2022 19:52:38.8155
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 3yx9wtehZNYMBRWE5waVQo6YoCvHqGUtAbFKOwRtlwExZ/DXlX10359civ02I0z2
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1742
-X-Proofpoint-GUID: BUsIxTVigP2RgydHGGt0xkbJQRmDZuxI
-X-Proofpoint-ORIG-GUID: BUsIxTVigP2RgydHGGt0xkbJQRmDZuxI
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-13_09,2022-07-13_03,2022-06-22_01
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220713172013.29531-1-oleksandr.mazur@plvision.eu>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 7/13/22 9:09 AM, Yafang Shao wrote:
-> BPF_PROG_TYPE_RAW_TRACEPOINT_WRITABLE is also tracing type, which may
-> cause unexpected memory allocation if we set BPF_F_NO_PREALLOC.
-> Let's also warn on it.
+On Wed, Jul 13, 2022 at 08:20:13PM +0300, Oleksandr Mazur wrote:
+> For SFP port prestera driver will use kernel
+> phylink infrastucture to configure port mode based on
+> the module that has beed inserted
 > 
-> Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
+> Co-developed-by: Yevhen Orlov <yevhen.orlov@plvision.eu>
+> Signed-off-by: Yevhen Orlov <yevhen.orlov@plvision.eu>
+> Co-developed-by: Taras Chornyi <taras.chornyi@plvision.eu>
+> Signed-off-by: Taras Chornyi <taras.chornyi@plvision.eu>
+> Signed-off-by: Oleksandr Mazur <oleksandr.mazur@plvision.eu>
+> 
+> PATCH V2:
+>   - fix mistreat of bitfield values as if they were bools.
+>   - remove phylink_config ifdefs.
+>   - remove obsolete phylink pcs / mac callbacks;
+>   - rework mac (/pcs) config to not look for speed / duplex
+>     parameters while link is not yet set up.
+>   - remove unused functions.
+>   - add phylink select cfg to prestera Kconfig.
 
-Acked-by: Yonghong Song <yhs@fb.com>
+I would appreciate answers to my questions, rather than just another
+patch submission. So I'll repeat my question in the hope of an answer:
+
+First question which applies to everything in this patch is - why make
+phylink conditional for this driver?
+
+The reason that this needs to be answered is that I would like an
+explanation why it's conditional, because it shouldn't be. By making it
+conditional, you will have multiple separate paths through the driver
+code trying to do the same thing, but differently, which means more time
+an effort maintaining the driver.
+
+> +static int prestera_pcs_config(struct phylink_pcs *pcs,
+> +			       unsigned int mode,
+> +			       phy_interface_t interface,
+> +			       const unsigned long *advertising,
+> +			       bool permit_pause_to_mac)
+> +{
+> +	struct prestera_port *port = port = prestera_pcs_to_port(pcs);
+> +	struct prestera_port_mac_config cfg_mac;
+> +	int err;
+> +
+> +	err = prestera_port_cfg_mac_read(port, &cfg_mac);
+> +	if (err)
+> +		return err;
+> +
+> +	cfg_mac.admin = true;
+> +	cfg_mac.fec = PRESTERA_PORT_FEC_OFF;
+> +
+> +	switch (interface) {
+> +	case PHY_INTERFACE_MODE_10GBASER:
+> +		cfg_mac.speed = SPEED_10000;
+> +		cfg_mac.inband = 0;
+> +		cfg_mac.mode = PRESTERA_MAC_MODE_SR_LR;
+> +		break;
+> +	case PHY_INTERFACE_MODE_2500BASEX:
+> +		cfg_mac.speed = SPEED_2500;
+> +		cfg_mac.duplex = DUPLEX_FULL;
+> +		cfg_mac.inband = test_bit(ETHTOOL_LINK_MODE_Autoneg_BIT,
+> +					  advertising);
+> +		cfg_mac.mode = PRESTERA_MAC_MODE_SGMII;
+> +		break;
+> +	case PHY_INTERFACE_MODE_SGMII:
+> +		cfg_mac.inband = test_bit(ETHTOOL_LINK_MODE_Autoneg_BIT,
+> +					  advertising);
+
+This looks wrong to me. In SGMII mode, it is normal for the advertising
+mask to indicate the media modes on the PHY to advertise, and whether to
+enable advertisements on the _media_. Whether media advertisements are
+enabled or not doesn't have any bearing on the PCS<->PHY link. If the
+interface is in in-band mode, then the SGMII control word exchange
+should always happen.
+
+> +		cfg_mac.mode = PRESTERA_MAC_MODE_SGMII;
+> +		break;
+> +	case PHY_INTERFACE_MODE_1000BASEX:
+> +	default:
+> +		cfg_mac.speed = SPEED_1000;
+> +		cfg_mac.duplex = DUPLEX_FULL;
+> +		cfg_mac.inband = test_bit(ETHTOOL_LINK_MODE_Autoneg_BIT,
+> +					  advertising);
+> +		cfg_mac.mode = PRESTERA_MAC_MODE_1000BASE_X;
+> +		break;
+>  	}
+>  
+> +	err = prestera_port_cfg_mac_write(port, &cfg_mac);
+> +	if (err)
+> +		return err;
+> +
+> +	return 0;
+> +}
+> +
+> +static void prestera_pcs_an_restart(struct phylink_pcs *pcs)
+> +{
+> +}
+
+No way to restart 1000base-X autoneg?
+
+> @@ -530,25 +777,48 @@ static int prestera_create_ports(struct prestera_switch *sw)
+>  static void prestera_port_handle_event(struct prestera_switch *sw,
+>  				       struct prestera_event *evt, void *arg)
+>  {
+> +	struct prestera_port_mac_state smac;
+> +	struct prestera_port_event *pevt;
+>  	struct delayed_work *caching_dw;
+>  	struct prestera_port *port;
+>  
+> -	port = prestera_find_port(sw, evt->port_evt.port_id);
+> -	if (!port || !port->dev)
+> -		return;
+> -
+> -	caching_dw = &port->cached_hw_stats.caching_dw;
+> -
+> -	prestera_ethtool_port_state_changed(port, &evt->port_evt);
+> -
+>  	if (evt->id == PRESTERA_PORT_EVENT_MAC_STATE_CHANGED) {
+> +		pevt = &evt->port_evt;
+> +		port = prestera_find_port(sw, pevt->port_id);
+> +		if (!port || !port->dev)
+> +			return;
+> +
+> +		caching_dw = &port->cached_hw_stats.caching_dw;
+> +
+> +		if (port->phy_link) {
+> +			memset(&smac, 0, sizeof(smac));
+> +			smac.valid = true;
+> +			smac.oper = pevt->data.mac.oper;
+> +			if (smac.oper) {
+> +				smac.mode = pevt->data.mac.mode;
+> +				smac.speed = pevt->data.mac.speed;
+> +				smac.duplex = pevt->data.mac.duplex;
+> +				smac.fc = pevt->data.mac.fc;
+> +				smac.fec = pevt->data.mac.fec;
+> +			}
+> +			prestera_port_mac_state_cache_write(port, &smac);
+
+I think you should be calling phylink_mac_change() here, rather than
+below.
+
+> +		}
+> +
+>  		if (port->state_mac.oper) {
+> -			netif_carrier_on(port->dev);
+> +			if (port->phy_link)
+> +				phylink_mac_change(port->phy_link, true);
+> +			else
+> +				netif_carrier_on(port->dev);
+> +
+>  			if (!delayed_work_pending(caching_dw))
+>  				queue_delayed_work(prestera_wq, caching_dw, 0);
+>  		} else if (netif_running(port->dev) &&
+>  			   netif_carrier_ok(port->dev)) {
+> -			netif_carrier_off(port->dev);
+> +			if (port->phy_link)
+> +				phylink_mac_change(port->phy_link, false);
+> +			else
+> +				netif_carrier_off(port->dev);
+> +
+>  			if (delayed_work_pending(caching_dw))
+>  				cancel_delayed_work(caching_dw);
+>  		}
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
