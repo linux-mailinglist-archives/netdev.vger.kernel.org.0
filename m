@@ -2,102 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AB873572CE1
-	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 07:04:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68301572CEA
+	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 07:17:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230372AbiGMFEM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jul 2022 01:04:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56680 "EHLO
+        id S232056AbiGMFQq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jul 2022 01:16:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230017AbiGMFEK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 01:04:10 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ED6AC8E8B
-        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 22:04:08 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id z12so13853253wrq.7
-        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 22:04:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=nlosUsqTGPWz0mUfYpKLZRwSb93KsVieCWkpmRDvpuM=;
-        b=JeSIshIhbKp5dPwJhTHlFTFRLH7m7aet9K7jwWExy8SbOK6HQddLAMiivhPWse2fCL
-         lPxtvI+P/MNx9VIRZ8pUx3aTr+FgnXXQTNFSgu0g48HvAzykzIL/wNz83rbRi/aL1vos
-         6zJqBBZCYKuzp5AsZkCMk7oWpxRS6Q5sWAD6nCUDOZ69P0N0Ylz3u+aRzzKiegk6Yx7X
-         F5R4IZoipnRenWO5fooDMWO43daAD/IaLoliOyO/2OV1IHGIvG/O2WZIaNfbDQHx9VDe
-         lOqCWIEutkokMRHTVIwPP/yb9VaXCG2tWsCBYfAGICHxmHtKVFEow+Upg6KCLbe9ovbg
-         hgPg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=nlosUsqTGPWz0mUfYpKLZRwSb93KsVieCWkpmRDvpuM=;
-        b=uv2cX09fny0V4t+p0hL5JxC1jVRMVCGX8TDCK2jl1428DmpM4hxUzrxsizNmQrgF3I
-         c/ZcKA1OBB3sreOM0vUGZBlX+9QW486ti5nZWmIIQgepmn5IjW2qYfwcInlcGrfLiu/r
-         q0p6UYTXzGLpLwkPtpSNmORBdCiIsImA/laclkJ8oLgXNK4ZEV6y3eTgQ+KL9ukW28Fd
-         sicI+pXWq5jmuIf5zPg6AZw6k+YCHU9nclAsmQCrdXbZ5ivBI27QEICPQsbXI+l7HWF4
-         JKM7wEQmqRP74elufLnRCFfMmh7ymi+1igN8NlW4BYecPL+8R2SGXRm2HPW58fPHqFYR
-         c2/Q==
-X-Gm-Message-State: AJIora/oLuqlrI0GRf58wdfkk9ttotxz1HchRabUmTHY15ZcikYLD1jV
-        oFCzEUJd1cZkagYmi7/isbrIMw==
-X-Google-Smtp-Source: AGRyM1uzcpopFP6jOJDkkQ0OKDviZGLpp3z8jDqyCbLjwQiyrYXsyV/LvKhJVc7Asg4eQUc7X1E2tA==
-X-Received: by 2002:adf:fb0e:0:b0:21a:34a2:5ca9 with SMTP id c14-20020adffb0e000000b0021a34a25ca9mr1293743wrr.472.1657688646828;
-        Tue, 12 Jul 2022 22:04:06 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id az29-20020a05600c601d00b003a03e63e428sm1045923wmb.36.2022.07.12.22.04.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 22:04:05 -0700 (PDT)
-Date:   Wed, 13 Jul 2022 07:04:04 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Jiri Pirko <jiri@nvidia.com>, Dima Chumak <dchumak@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S229770AbiGMFQo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 01:16:44 -0400
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2076.outbound.protection.outlook.com [40.107.223.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 611CED4BE1
+        for <netdev@vger.kernel.org>; Tue, 12 Jul 2022 22:16:42 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=J6f8ss2HNiWsb3q5OiXPoCqwCASDv5DIAF3bj55NB7NbesZlsTnHTRS2yEuTPUa+f3Hrhj2qYIPz37WlrYQodMZi2/qzra4JpuD1pMtd075fTKmi4y/0i3YqcIw/mNF2UBCDHBRorqrta4UV12G8zkkqq83XV5So/3xxrs8SDiA9Au/kvAT4n245kJbIp3FbV5eF5lAGGCe4SJkbMbcrt5/n+ko2iuhf2Dx29RlcZI0L63jv6bQa/c2AzuG7MTEu4JGX2p4Y1+A7Ve5GgRl5SD+h5Lo8VfjzxaMctHR56aRwRe8X5VRz+nxZd9gk2f5fmlsuZo+V/s/BwTBVtwfR9Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=79mJxXW6QMHsG/feyYRpSsORcwoCDyL0NFF/QmI+MkI=;
+ b=D8WYbyWdc5C2JBF4TTW2FJ8XiKyUKsX3to4dU7sHQfhOAlJMsgldsWyqobACbd+otkKnxp9Tz+3oqB+86iPU7yPFY2EMTN8bTYne3y78XEXFVMs76cL8+tWnKDU+ckDjFwgNMjVzxb2CJxBvkBzhy3nDXF/suwH+aHiARe31/KC23jrJvml/HAp/2SNEb5s++PZXZ4w8fW+JTnUqbr7jwODJEAu42TKpsWhyCX0rYvoPdfa7+GAoc9fySQi23QQPv9Of65XHPAoTf9+1MPhjmMQLqb7QsoTD2w5ExWi9BXhZfWzJPOcF/dDJf070Rywxe3ek3BSRf02RZ96PaDKzgQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.234) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=79mJxXW6QMHsG/feyYRpSsORcwoCDyL0NFF/QmI+MkI=;
+ b=MdSGuV6GDR6M4YFRUmIX0dydq69JZ8zlcmp7AjOb4kTBmXoWM4gs7O7zu08yVk7Hb6Ku+xiJZmq4xL2t+7I3x7FQ/bJXOUsfDIN/PMh0g5wYTuvyCgNjQDXz05E4rjAgupdnvzquNxFXMF5J2bnjvhGMfZ6iC1VQ58Od+29mAJU4EVXhy0XkwjWacg81X7JD5k0mvZcNHtKfeDEMiMrt4kDzQ250v7ya72ERgam8ZDMVaNszq7sQCmzpmz7OPi5tX/ELIgqRqLY1lGIMjc+eUwzKJDLrNRyWS0nbZl8hmYGaN5gdm3AP7HcgcRxb7/iuGQfXIaNW1t7kaI+3dtAtiw==
+Received: from DS7PR03CA0347.namprd03.prod.outlook.com (2603:10b6:8:55::6) by
+ MWHPR12MB1950.namprd12.prod.outlook.com (2603:10b6:300:110::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.16; Wed, 13 Jul
+ 2022 05:16:40 +0000
+Received: from DM6NAM11FT058.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:8:55:cafe::ab) by DS7PR03CA0347.outlook.office365.com
+ (2603:10b6:8:55::6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.26 via Frontend
+ Transport; Wed, 13 Jul 2022 05:16:40 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.234; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.234) by
+ DM6NAM11FT058.mail.protection.outlook.com (10.13.172.216) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5395.17 via Frontend Transport; Wed, 13 Jul 2022 05:16:40 +0000
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by DRHQMAIL101.nvidia.com
+ (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Wed, 13 Jul
+ 2022 05:16:39 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail203.nvidia.com
+ (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Tue, 12 Jul
+ 2022 22:16:37 -0700
+Received: from vdi.nvidia.com (10.127.8.14) by mail.nvidia.com (10.129.68.7)
+ with Microsoft SMTP Server id 15.2.986.26 via Frontend Transport; Tue, 12 Jul
+ 2022 22:16:35 -0700
+From:   Tariq Toukan <tariqt@nvidia.com>
+To:     Boris Pismenny <borisp@nvidia.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Simon Horman <horms@verge.net.au>,
-        Michal Wilczynski <michal.wilczynski@intel.com>
-Subject: Re: [PATCH net-next 0/5] devlink rate police limiter
-Message-ID: <Ys5SRCNwD8prZ0pL@nanopsycho>
-References: <228ce203-b777-f21e-1f88-74447f2093ca@nvidia.com>
- <20220630111327.3a951e3b@kernel.org>
- <YsbBbBt+DNvBIU2E@nanopsycho>
- <20220707131649.7302a997@kernel.org>
- <YsfcUlF9KjFEGGVW@nanopsycho>
- <20220708110535.63a2b8e9@kernel.org>
- <YskOt0sbTI5DpFUu@nanopsycho>
- <20220711102957.0b278c12@kernel.org>
- <Ys0OvOtwVz7Aden9@nanopsycho>
- <20220712171341.29e2e91c@kernel.org>
+        Paolo Abeni <pabeni@redhat.com>, <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Gal Pressman <galp@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>
+Subject: [PATCH net-next V2 0/6] mlx5e use TLS TX pool to improve connection rate
+Date:   Wed, 13 Jul 2022 08:15:57 +0300
+Message-ID: <20220713051603.14014-1-tariqt@nvidia.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220712171341.29e2e91c@kernel.org>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 191f2d36-625d-41ab-0cb9-08da648ede26
+X-MS-TrafficTypeDiagnostic: MWHPR12MB1950:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: yUcUsaeyCbRcWeRL50YMDkA5g9CgqSaEN8y68M8gOzDBtefD0NHJy7i7689T95K7u6GsKP3GUKKBKTjQSMNHh1m7Cs8ChPSN/ajpecq2KkmAybXvThALUA2V0QCOq5+MMn+DrnSvRHEAjGrOGUtsz0wwM+eNaNVi4QciJy8Xz9IYSbdo3zszHwouhOECyMLiQ2lCIZp2Udg6n24grnX4gHmLwCEnCtlsBulxxcXj08mrVoxL3LkJKHqJHDWkSbjRBhXVzKFf3h21+8Iks0+FOSfpc2aKxpRrSODMIQrSpDm6M0LAVKI5wpTIrCBCfeR+eAecNqH7breMyn848RcqZl4PVlSNUGY9tAQDqlDGwtSqStMEKHgXDs1UJNxzTCv7Xma6DRC2fgsbiIotlj5D0qBETcUHPUE0jIJZsoE+5UMdJ02+llzroNr+7bFIXp4w2vtzkHfLSlVfNcK8PD2nCU3ABqNpQcX7lVxDn2RGG5XtkOT1/YQ/UC35yGkVyXaxluw5dEo+6Bgb2ThB3fsTEvjg/hQQkHpcnWNklsWijC1A3TO2dpGfq0ZPeUtW6pN5roT1tqWQ5C5WDcdXlOxYOCt/UUzef8qb6np676g/BxcBTJ5GPFxLkbvddzQ4HOE9N/aa7vmFjljCZI4P6OQ+A4y6vxGHZq10V4fzWAvydqlgCwe3M0BI3/h43oENetwVNT4CM656ZeGKLLNQn8VOx41aeWsOMGsn9g1RA8JRMDjz6MmtmrP0nzE8ONGO36slOsuG0K1JR66hJ0lSjBpjPjtvnA1cbm3fdp3MUYeJAbskHgOHhpXQrYCYgVOsMQOblY0+anQ7iDekcjj7THZVbVJdb9cTh6GlC4T2o758NnFCvDTQj3zURfrMsMw5yIhtGeARigGkiRClXAjHpgqIdw==
+X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(346002)(136003)(39860400002)(376002)(396003)(36840700001)(46966006)(40470700004)(110136005)(54906003)(86362001)(4326008)(41300700001)(26005)(36756003)(8936002)(2906002)(8676002)(5660300002)(7696005)(6666004)(316002)(40480700001)(82310400005)(70206006)(186003)(82740400003)(336012)(1076003)(426003)(107886003)(47076005)(478600001)(81166007)(40460700003)(2616005)(70586007)(36860700001)(83380400001)(356005)(42413004)(32563001)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jul 2022 05:16:40.0265
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 191f2d36-625d-41ab-0cb9-08da648ede26
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT058.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR12MB1950
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Jul 13, 2022 at 02:13:41AM CEST, kuba@kernel.org wrote:
->On Tue, 12 Jul 2022 08:03:40 +0200 Jiri Pirko wrote:
->> >AFAIU the problem is that you want to control endpoints which are not
->> >ndevs with this API. Is that the main or only reason? Can we agree that
->> >it's legitimate but will result in muddying the netdev model (which in
->> >itself is good and complete)?  
->> 
->> I don't think this has anything to do with netdev model. 
->> It is actually out of the scope of it, therefore there cannot be any mudding of it.
->
->You should have decided that rate limiting was out of scope for netdev
->before we added tc qdisc and tc police support. Now those offloads are
->there, used by people and it's too late.
->
->If you want to create a common way to rate limit functions you must
->provide plumbing for the existing methods (at least tc police,
->preferably legacy NDO as well) to automatically populate the new API.
+To offload encryption operations, the mlx5 device maintains state and
+keeps track of every kTLS device-offloaded connection.  Two HW objects
+are used per TX context of a kTLS offloaded connection: a. Transport
+interface send (TIS) object, to reach the HW context.  b. Data Encryption
+Key (DEK) to perform the crypto operations.
 
-Even if there is no netdevice to hook it to, because it does not exist?
-I have to be missing something, sorry :/
+These two objects are created and destroyed per TLS TX context, via FW
+commands.  In total, 4 FW commands are issued per TLS TX context, which
+seriously limits the connection rate.
+
+In this series, we aim to save creation and destroy of TIS objects by
+recycling them.  Upon recycling of a TIS, the HW still needs to be
+notified for the re-mapping between a TIS and a context. This is done by
+posting WQEs via an SQ, significantly faster API than the FW command
+interface.
+
+A pool is used for recycling. The pool dynamically interacts to the load
+and connection rate, growing and shrinking accordingly.
+
+Saving the TIS FW commands per context increases connection rate by ~42%,
+from 11.6K to 16.5K connections per sec.
+
+Connection rate is still limited by FW bottleneck due to the remaining
+per context FW commands (DEK create/destroy). This will soon be addressed
+in a followup series.  By combining the two series, the FW bottleneck
+will be released, and a significantly higher (about 100K connections per
+sec) kTLS TX device-offloaded connection rate is reached.
+
+Regards,
+Tariq
+
+Tariq Toukan (6):
+  net/tls: Perform immediate device ctx cleanup when possible
+  net/tls: Multi-threaded calls to TX tls_dev_del
+  net/mlx5e: kTLS, Introduce TLS-specific create TIS
+  net/mlx5e: kTLS, Take stats out of OOO handler
+  net/mlx5e: kTLS, Recycle objects of device-offloaded TLS TX
+    connections
+  net/mlx5e: kTLS, Dynamically re-size TX recycling pool
+
+ .../mellanox/mlx5/core/en_accel/en_accel.h    |  10 +
+ .../mellanox/mlx5/core/en_accel/ktls.h        |  14 +
+ .../mellanox/mlx5/core/en_accel/ktls_stats.c  |   2 +
+ .../mellanox/mlx5/core/en_accel/ktls_tx.c     | 513 +++++++++++++++---
+ .../net/ethernet/mellanox/mlx5/core/en_main.c |   9 +
+ include/net/tls.h                             |   2 +
+ net/tls/tls.h                                 |   4 +-
+ net/tls/tls_device.c                          |  65 ++-
+ net/tls/tls_main.c                            |   7 +-
+ 9 files changed, 523 insertions(+), 103 deletions(-)
+
+-- 
+2.21.0
+
