@@ -2,90 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EAEC05735EC
-	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 14:00:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AFC2C5735FA
+	for <lists+netdev@lfdr.de>; Wed, 13 Jul 2022 14:07:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236312AbiGMMAY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jul 2022 08:00:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50950 "EHLO
+        id S236105AbiGMMHZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jul 2022 08:07:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236104AbiGMMAT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 08:00:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB12410400E;
-        Wed, 13 Jul 2022 05:00:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DB08FB81D07;
-        Wed, 13 Jul 2022 12:00:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 7EF60C3411E;
-        Wed, 13 Jul 2022 12:00:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657713614;
-        bh=7ZQv/4gcKwMxrWQ3R8K+5GmEoZGtx+9WTQW4h7AZojo=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=cNbCcC9IopFfBuw7A3T2mCSim7+evprYZO/9ddqN3WbI0UxVCBjsCRxcTmciyL1Ht
-         75f85sBaZ1xWAilvt6v9GzewmGAZ8+CkFL26gjUGzYABjPIuPvb7bLL4szRHTDliOl
-         T4ujPozUJcBPAe9J+XKiqlv9Kb9MHed+zRqtuzGzigq5Z23OZfc+bv/63m2w5XLg/G
-         kXJx6k8PQPAHWtPsGslzIEv+ojuTvjaCqF9eHJ1KfyFYS3MlVzqU/2A28fLvagje0k
-         +YiisZSVowUtJd7roVoEjOuHWvH1ZyfrVIY8CFHruawN6SpAqOE1bVvArF8z5vFKjp
-         j7jOKHvfjtF1Q==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 51DCBE45223;
-        Wed, 13 Jul 2022 12:00:14 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2 0/2] net: prestera: add support for port range
- filters
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165771361432.14728.4361651412076279677.git-patchwork-notify@kernel.org>
-Date:   Wed, 13 Jul 2022 12:00:14 +0000
-References: <20220711150908.1030650-1-maksym.glubokiy@plvision.eu>
-In-Reply-To: <20220711150908.1030650-1-maksym.glubokiy@plvision.eu>
-To:     Maksym Glubokiy <maksym.glubokiy@plvision.eu>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
-        jiri@resnulli.us, louis.peens@corigine.com, elic@nvidia.com,
-        simon.horman@corigine.com, baowen.zheng@corigine.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S231389AbiGMMHX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 08:07:23 -0400
+Received: from nautica.notk.org (ipv6.notk.org [IPv6:2001:41d0:1:7a93::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC3E41034F8;
+        Wed, 13 Jul 2022 05:07:22 -0700 (PDT)
+Received: by nautica.notk.org (Postfix, from userid 108)
+        id 8DE1AC022; Wed, 13 Jul 2022 14:07:20 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1657714040; bh=GRD1T0eSpe8mmrBIO5ShPSs/U27oLpkzr10zWXsJ+78=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=cTViMyUNpB9DifHbqKo2DtbVueNEeoRefSCzGlFBlgi5ty911CTceluyfPl2ZtDbW
+         +9lsc8qOYpg/Q7Qn5uPU63QakbFS9/UvNKwxeUmiNPyVcMCy94CV0uVAAQYSNVqyQM
+         99uTYtXl8oPM0jntkRFq2PUYJD+Hy8ORFkBpMl2LpSk8owd0eXLp87ZWs/APZ+QVPs
+         HaXCOMFkcNGc167UisDrgmTm/E0aJPIT/b3Qhc+yNuWpPb/3i4rgafKDAyG3xGYFTH
+         /+GI0OdNeuEtfc/jAZAau56pK+Q1VvGyPNSZfQggpJtpeJ5XLn9ViNqikFYAIvSMwH
+         R9/ccp+FilKNg==
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Received: from odin.codewreck.org (localhost [127.0.0.1])
+        by nautica.notk.org (Postfix) with ESMTPS id 92090C009;
+        Wed, 13 Jul 2022 14:07:13 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1657714039; bh=GRD1T0eSpe8mmrBIO5ShPSs/U27oLpkzr10zWXsJ+78=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=J7wBfXDU4LL6fkHO2Y/bKgOTIstCZYW3ar1SItDrbH0/DK7hZKUIfvYTP9/MmR6AN
+         vtr5C9qJgMl2BrLUJDpIa11+nGtpbKtYr3XCcNispy9DJzWMkfgHUmvFYG1QdrzhMu
+         t7VmQJ+zV4loHxBHDc70tAAhuJklntTIrDvTOuJciBd078C1GqQRgLUfK+/UzOcbIv
+         nW/WaWCDLNKt2vwpWYgotIY1J4qc4dABKjTpi7W5y3ecWwh354CTR53KvHllo5Q1gJ
+         w537AfmQBcXbyBmwzU4dEE4vrZjyWd7W6x1xX1poq4TU62h7gia1shFKOqIa6E2Sq8
+         E+ip89lsY422A==
+Received: from localhost (odin.codewreck.org [local])
+        by odin.codewreck.org (OpenSMTPD) with ESMTPA id 6ead7bcb;
+        Wed, 13 Jul 2022 12:07:08 +0000 (UTC)
+Date:   Wed, 13 Jul 2022 21:06:53 +0900
+From:   Dominique Martinet <asmadeus@codewreck.org>
+To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>,
+        Tero Kristo <tero.kristo@linux.intel.com>,
+        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org
+Subject: Re: [PATCH bpf-next v6 21/23] samples/bpf: add new hid_mouse example
+Message-ID: <Ys61XcZL4Fh/VQu1@codewreck.org>
+References: <20220712145850.599666-1-benjamin.tissoires@redhat.com>
+ <20220712145850.599666-22-benjamin.tissoires@redhat.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220712145850.599666-22-benjamin.tissoires@redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Benjamin Tissoires wrote on Tue, Jul 12, 2022 at 04:58:48PM +0200:
+> diff --git a/samples/bpf/hid_mouse.c b/samples/bpf/hid_mouse.c
+> new file mode 100644
+> index 000000000000..f6e5f09026eb
+> --- /dev/null
+> +++ b/samples/bpf/hid_mouse.c
+> @@ -0,0 +1,150 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/* Copyright (c) 2022 Benjamin Tissoires
+> + */
+> +
+> +/* not sure why but this doesn't get preoperly imported */
 
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+typo: properly
 
-On Mon, 11 Jul 2022 18:09:06 +0300 you wrote:
-> This adds support for port-range rules in Marvel Prestera driver:
-> 
->   $ tc qdisc add ... clsact
->   $ tc filter add ... flower ... src_port <PMIN>-<PMAX> ...
-> 
-> Maksym Glubokiy (2):
->   net: extract port range fields from fl_flow_key
->   net: prestera: add support for port range filters
-> 
-> [...]
+> +#define __must_check
 
-Here is the summary with links:
-  - [net-next,v2,1/2] net: extract port range fields from fl_flow_key
-    https://git.kernel.org/netdev/net-next/c/83d85bb06915
-  - [net-next,v2,2/2] net: prestera: add support for port range filters
-    https://git.kernel.org/netdev/net-next/c/551871bfc82c
+But more usefully, I don't think it should be needed -- we don't use
+__must_check at all in uapi includes; if this is needed that means some
+of the include here uses the kernel internal includes and that shouldn't
+be needed as they're not normally installed.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Didn't actually try to see but taking the compilation line that fails
+and running it with -E will probably show where that must_check comes
+from
 
-
+--
+Dominique Martinet | Asmadeus,
+just passing by
