@@ -2,220 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B42095745BE
-	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 09:15:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 980F25745D3
+	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 09:23:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237484AbiGNHPZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jul 2022 03:15:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51828 "EHLO
+        id S236955AbiGNHXR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jul 2022 03:23:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237121AbiGNHPA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 03:15:00 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEB19357E3;
-        Thu, 14 Jul 2022 00:14:47 -0700 (PDT)
+        with ESMTP id S236983AbiGNHXQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 03:23:16 -0400
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 520983057A
+        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 00:23:15 -0700 (PDT)
+Received: by mail-pf1-x431.google.com with SMTP id j3so1098834pfb.6
+        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 00:23:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1657782887; x=1689318887;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=35WuII/EC61wobzGDYsfz1aMrY82iRk2q8VNpEasuGg=;
-  b=TBYN9TIslQH37UpzSM8wNKp8es/ar1fHdvOKwBKFLPRZEAYUFfQG5Trv
-   8pmTI8de8FkaSSTEVgddv9FPCbV+wps0cGVJN0cTAbw0uBvYeLKJcOT8E
-   H1NhDsHrGKtrnBOHIZTC11eNy88ym5EADzgCTGbWcQkI4WjMpcaXHq+ii
-   0=;
-Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 14 Jul 2022 00:14:47 -0700
-X-QCInternal: smtphost
-Received: from unknown (HELO nasanex01a.na.qualcomm.com) ([10.52.223.231])
-  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2022 00:14:46 -0700
-Received: from zijuhu-gv.qualcomm.com (10.80.80.8) by
- nasanex01a.na.qualcomm.com (10.52.223.231) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 14 Jul 2022 00:14:44 -0700
-From:   Zijun Hu <quic_zijuhu@quicinc.com>
-To:     <marcel@holtmann.org>, <johan.hedberg@gmail.com>,
-        <luiz.dentz@gmail.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <luiz.von.dentz@intel.com>, <quic_zijuhu@quicinc.com>
-CC:     <linux-kernel@vger.kernel.org>, <linux-bluetooth@vger.kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <netdev@vger.kernel.org>
-Subject: [PATCH v1] Bluetooth: Fix cvsd sco setup failure
-Date:   Thu, 14 Jul 2022 15:14:40 +0800
-Message-ID: <1657782880-28234-1-git-send-email-quic_zijuhu@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        d=solid-run-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=1PbFPH/bob6x3njzTKefKAzMkU9a+m2VS58Z6RfGAZI=;
+        b=2KlOZOQF8U+jdVt/UUt3GApOgWqAlKUYFYoT9WLN7diBW0dTeHKn5BWCSU0ik53Psc
+         yVAAhjNQmUtRTw3TquE073RJtJ1MWgDZSSoRQ2I+sDzfUK/3GTl23lNKHb83CsmuwnJL
+         kZbs9y0jwogor6jLrrNoPVXI2QjPntjQx5XmsD0lmSOmfOEKefFvqakTtcxQsDJSpMSh
+         JwiJ3zvgfFvfBhT1gAYOztrSgPOuZQViIotMaY33aA07Oq5tg6fmtUL666l9BFkug7Kk
+         Gl7Oy4aYwoC+THE3+RMlZLYGhpQ5+IhyqqLWqXX926KfCe7M/z6tFphuorY4D3O/jym3
+         PWEA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1PbFPH/bob6x3njzTKefKAzMkU9a+m2VS58Z6RfGAZI=;
+        b=eqkI7FNpfTKhiTqU10Al0WCZ+Lr1QJA9T4YbLt6xIBfE/oXIll5NTX9TYukzYRvK8J
+         owGrav9bPJ8Lf9pKl+d3D1B3P7oLMc+GWV4dd0TGovooT9cskC1KPsMzZ69I4OD2pEAQ
+         BVofoUmFHyUMCQi6AERUYGqbiGBZnhwPbeVh2DiGlTX+WNsGni6H8p1vCwU8oJvIVIgu
+         UC1qIR/RZIU8zLavis2Uj8eJz2aT1ZIjMnhIoOAV6F61oA2GSVp7obQVgV8+mTJg91Kv
+         JjRCygFI+qBY8UEwFbh4rTC4VHNKrXZCKGS8lykQPYMc5NPpJuP5AmAZDmCXAYZ3bKFq
+         lxZQ==
+X-Gm-Message-State: AJIora83DA9pjsE74bJ5O1io6PJURoLvnnLjSZjN3RjZt6tSfO/ULRyy
+        AmNae28hE+KTkAWCrKOufgLQEWYsxhcjVTd+UJX35Q==
+X-Google-Smtp-Source: AGRyM1sy4YoEXG/43axQ2Da8FvUFsrNfbem9JIzxmKoK1lqlWU412ebtMdKyRXehm6lWgNja9bVFVhdIHC1VWxFuXqY=
+X-Received: by 2002:a63:f043:0:b0:412:b11f:c364 with SMTP id
+ s3-20020a63f043000000b00412b11fc364mr6208703pgj.289.1657783394816; Thu, 14
+ Jul 2022 00:23:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nasanex01a.na.qualcomm.com (10.52.223.231)
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+References: <20220712112210.2852777-1-alvaro.karsz@solid-run.com>
+ <20220713200203.4eb3a64e@kernel.org> <55c50d9a-1612-ed2c-55f4-58a5c545b662@redhat.com>
+ <CAJs=3_BNvrJo9JCkMhL3G2TBescrLbgeD7eOx=cs+T9YOLTwLg@mail.gmail.com> <CACGkMEtiC1PZTjno3sF8z-_cx=1cb8Kn1kqPvQuurDbKS+UktQ@mail.gmail.com>
+In-Reply-To: <CACGkMEtiC1PZTjno3sF8z-_cx=1cb8Kn1kqPvQuurDbKS+UktQ@mail.gmail.com>
+From:   Alvaro Karsz <alvaro.karsz@solid-run.com>
+Date:   Thu, 14 Jul 2022 10:22:39 +0300
+Message-ID: <CAJs=3_B74L0wf-3xbAqkQ=eypmO-8FBh--QraLrzF2wkw_1Zow@mail.gmail.com>
+Subject: Re: [PATCH v2] net: virtio_net: notifications coalescing support
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev <netdev@vger.kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A cvsd sco setup failure issue is reported as shown by
-below btmon log, it firstly tries to set up cvsd esco with
-S3/S2/S1 configs sequentially, but these attempts are all
-failed with error code "Unspecified Error (0x1f)", then it
-tries to set up cvsd sco with D1 config, unfortunately, it
-still fails to set up sco with error code
-"Invalid HCI Command Parameters (0x12)", this error code
-terminates attempt with remaining D0 config and marks overall
-sco/esco setup failure.
+> So we use sq->napi.weight as a hint to use tx interrupt or not.
+> We need a safe switching from tx interrupt and skb_orphan(). The
+> current code guarantees this by only allowing the switching when the
+> interface is down.
+> So what I meant for the above "Update NAPI" is, consider that users
+> want to switch from tx_max_coalesced_frames from 0 to 100. This needs
+> to be down when the interface is down, since the driver need to enable
+> tx interrupt mode, otherwise the coalescing is meaningless.
+> This would be much easier if we only have tx interrupt mode, but this
+> requires more work.
 
-It is wrong D1/D0 @retrans_effort 0x01 within @esco_param_cvsd
-that causes D1 config failure with error code
-"Invalid HCI Command Parameters (0x12)", D1/D0 sco @retrans_effort
-must not be 0x01 based on spec, so fix this issue by changing D1/D0
-@retrans_effort from 0x01 to 0xff as present @sco_param_cvsd.
 
-< HCI Command: Setup Synchrono.. (0x01|0x0028) plen 17  #3405 [hci0]
-        Handle: 3
-        Transmit bandwidth: 8000
-        Receive bandwidth: 8000
-        Max latency: 10
-        Setting: 0x0060
-          Input Coding: Linear
-          Input Data Format: 2's complement
-          Input Sample Size: 16-bit
-          # of bits padding at MSB: 0
-          Air Coding Format: CVSD
-        Retransmission effort: Optimize for power consumption (0x01)
-        Packet type: 0x0380
-          3-EV3 may not be used
-          2-EV5 may not be used
-          3-EV5 may not be used
-> HCI Event: Command Status (0x0f) plen 4               #3406 [hci0]
-      Setup Synchronous Connection (0x01|0x0028) ncmd 1
-        Status: Success (0x00)
-> HCI Event: Synchronous Connect Comp.. (0x2c) plen 17  #3408 [hci0]
-        Status: Unspecified Error (0x1f)
-        Handle: 4
-        Address: 14:3F:A6:47:56:15 (OUI 14-3F-A6)
-        Link type: eSCO (0x02)
-        Transmission interval: 0x00
-        Retransmission window: 0x00
-        RX packet length: 0
-        TX packet length: 0
-        Air mode: CVSD (0x02)
-< HCI Command: Setup Synchrono.. (0x01|0x0028) plen 17  #3409 [hci0]
-        Handle: 3
-        Transmit bandwidth: 8000
-        Receive bandwidth: 8000
-        Max latency: 7
-        Setting: 0x0060
-          Input Coding: Linear
-          Input Data Format: 2's complement
-          Input Sample Size: 16-bit
-          # of bits padding at MSB: 0
-          Air Coding Format: CVSD
-        Retransmission effort: Optimize for power consumption (0x01)
-        Packet type: 0x0380
-          3-EV3 may not be used
-          2-EV5 may not be used
-          3-EV5 may not be used
-> HCI Event: Command Status (0x0f) plen 4               #3410 [hci0]
-      Setup Synchronous Connection (0x01|0x0028) ncmd 1
-        Status: Success (0x00)
-> HCI Event: Synchronous Connect Comp.. (0x2c) plen 17  #3416 [hci0]
-        Status: Unspecified Error (0x1f)
-        Handle: 4
-        Address: 14:3F:A6:47:56:15 (OUI 14-3F-A6)
-        Link type: eSCO (0x02)
-        Transmission interval: 0x00
-        Retransmission window: 0x00
-        RX packet length: 0
-        TX packet length: 0
-        Air mode: CVSD (0x02)
-< HCI Command: Setup Synchrono.. (0x01|0x0028) plen 17  #3417 [hci0]
-        Handle: 3
-        Transmit bandwidth: 8000
-        Receive bandwidth: 8000
-        Max latency: 7
-        Setting: 0x0060
-          Input Coding: Linear
-          Input Data Format: 2's complement
-          Input Sample Size: 16-bit
-          # of bits padding at MSB: 0
-          Air Coding Format: CVSD
-        Retransmission effort: Optimize for power consumption (0x01)
-        Packet type: 0x03c8
-          EV3 may be used
-          2-EV3 may not be used
-          3-EV3 may not be used
-          2-EV5 may not be used
-          3-EV5 may not be used
-> HCI Event: Command Status (0x0f) plen 4               #3419 [hci0]
-      Setup Synchronous Connection (0x01|0x0028) ncmd 1
-        Status: Success (0x00)
-> HCI Event: Synchronous Connect Comp.. (0x2c) plen 17  #3426 [hci0]
-        Status: Unspecified Error (0x1f)
-        Handle: 4
-        Address: 14:3F:A6:47:56:15 (OUI 14-3F-A6)
-        Link type: eSCO (0x02)
-        Transmission interval: 0x00
-        Retransmission window: 0x00
-        RX packet length: 0
-        TX packet length: 0
-        Air mode: CVSD (0x02)
-< HCI Command: Setup Synchrono.. (0x01|0x0028) plen 17  #3427 [hci0]
-        Handle: 3
-        Transmit bandwidth: 8000
-        Receive bandwidth: 8000
-        Max latency: 65535
-        Setting: 0x0060
-          Input Coding: Linear
-          Input Data Format: 2's complement
-          Input Sample Size: 16-bit
-          # of bits padding at MSB: 0
-          Air Coding Format: CVSD
-        Retransmission effort: Optimize for power consumption (0x01)
-        Packet type: 0x03c4
-          HV3 may be used
-          2-EV3 may not be used
-          3-EV3 may not be used
-          2-EV5 may not be used
-          3-EV5 may not be used
-> HCI Event: Command Status (0x0f) plen 4               #3428 [hci0]
-      Setup Synchronous Connection (0x01|0x0028) ncmd 1
-        Status: Success (0x00)
-> HCI Event: Synchronous Connect Comp.. (0x2c) plen 17  #3429 [hci0]
-        Status: Invalid HCI Command Parameters (0x12)
-        Handle: 0
-        Address: 14:3F:A6:47:56:15 (OUI 14-3F-A6)
-        Link type: SCO (0x00)
-        Transmission interval: 0x00
-        Retransmission window: 0x00
-        RX packet length: 0
-        TX packet length: 0
-        Air mode: u-law log (0x00)
+So, If I understood correctly, you're suggesting to add the following
+part to the
+"interrupt coalescing is negotiated" case:
 
-Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
-Tested-by: Zijun Hu <quic_zijuhu@quicinc.com>
----
- net/bluetooth/hci_conn.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+napi_weight = ec->tx_max_coalesced_frames ? NAPI_POLL_WEIGHT : 0;
+if (napi_weight ^ vi->sq[0].napi.weight) {
+   if (dev->flags & IFF_UP)
+        return -EBUSY;
+    for (i = 0; i < vi->max_queue_pairs; i++)
+        vi->sq[i].napi.weight = napi_weight;
+}
 
-diff --git a/net/bluetooth/hci_conn.c b/net/bluetooth/hci_conn.c
-index 7829433d54c1..2627d5ac15d6 100644
---- a/net/bluetooth/hci_conn.c
-+++ b/net/bluetooth/hci_conn.c
-@@ -45,8 +45,8 @@ static const struct sco_param esco_param_cvsd[] = {
- 	{ EDR_ESCO_MASK & ~ESCO_2EV3, 0x000a,	0x01 }, /* S3 */
- 	{ EDR_ESCO_MASK & ~ESCO_2EV3, 0x0007,	0x01 }, /* S2 */
- 	{ EDR_ESCO_MASK | ESCO_EV3,   0x0007,	0x01 }, /* S1 */
--	{ EDR_ESCO_MASK | ESCO_HV3,   0xffff,	0x01 }, /* D1 */
--	{ EDR_ESCO_MASK | ESCO_HV1,   0xffff,	0x01 }, /* D0 */
-+	{ EDR_ESCO_MASK | ESCO_HV3,   0xffff,	0xff }, /* D1 */
-+	{ EDR_ESCO_MASK | ESCO_HV1,   0xffff,	0xff }, /* D0 */
- };
- 
- static const struct sco_param sco_param_cvsd[] = {
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum, a Linux Foundation Collaborative Project
-
+Before sending the control commands to the device.
+Is this right?
