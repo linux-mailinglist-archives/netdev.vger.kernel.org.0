@@ -2,64 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 905745744C0
-	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 08:00:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F00D5744C2
+	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 08:00:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233252AbiGNGA2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jul 2022 02:00:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58610 "EHLO
+        id S234497AbiGNGAc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jul 2022 02:00:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233060AbiGNGAX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 02:00:23 -0400
+        with ESMTP id S233500AbiGNGAZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 02:00:25 -0400
 Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7DCD2F001;
-        Wed, 13 Jul 2022 23:00:21 -0700 (PDT)
-X-UUID: 38d780fcad1d432babaf4905bbf1effd-20220714
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D29392FFEC;
+        Wed, 13 Jul 2022 23:00:24 -0700 (PDT)
+X-UUID: e0a12d6f1f274dc696ad5b71b35dac05-20220714
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.8,REQID:ef59268c-cf53-4920-9f4b-67217ab792ca,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Release_Ham,AC
-        TION:release,TS:100
-X-CID-INFO: VERSION:1.1.8,REQID:ef59268c-cf53-4920-9f4b-67217ab792ca,OB:0,LOB:
-        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Spam_GS981B3D,AC
-        TION:quarantine,TS:100
-X-CID-META: VersionHash:0f94e32,CLOUDID:20dd75d7-5d6d-4eaf-a635-828a3ee48b7c,C
-        OID:425824298e3e,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:0,File:nil,QS:nil,BEC:nil,COL:0
-X-UUID: 38d780fcad1d432babaf4905bbf1effd-20220714
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
+X-CID-O-INFO: VERSION:1.1.8,REQID:1b5ee9b4-4ffa-4438-9af1-975be275f56c,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:-5
+X-CID-META: VersionHash:0f94e32,CLOUDID:cc6ff332-b9e4-42b8-b28a-6364427c76bb,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
+        ,QS:nil,BEC:nil,COL:0
+X-UUID: e0a12d6f1f274dc696ad5b71b35dac05-20220714
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
         (envelope-from <biao.huang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 422873143; Thu, 14 Jul 2022 14:00:17 +0800
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 47755842; Thu, 14 Jul 2022 14:00:19 +0800
 Received: from mtkmbs11n1.mediatek.inc (172.21.101.185) by
- mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
- Thu, 14 Jul 2022 14:00:16 +0800
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Thu, 14 Jul 2022 14:00:18 +0800
 Received: from localhost.localdomain (10.17.3.154) by mtkmbs11n1.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
- Transport; Thu, 14 Jul 2022 14:00:16 +0800
+ Transport; Thu, 14 Jul 2022 14:00:17 +0800
 From:   Biao Huang <biao.huang@mediatek.com>
 To:     David Miller <davem@davemloft.net>,
         Matthias Brugger <matthias.bgg@gmail.com>
 CC:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
         Alexandre Torgue <alexandre.torgue@foss.st.com>,
         Jose Abreu <joabreu@synopsys.com>,
-        Eric Dumazet <edumazet@google.com>,
+        "Eric Dumazet" <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>,
-        Biao Huang <biao.huang@mediatek.com>, <netdev@vger.kernel.org>,
+        "Biao Huang" <biao.huang@mediatek.com>, <netdev@vger.kernel.org>,
         <linux-stm32@st-md-mailman.stormreply.com>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>,
         <linux-mediatek@lists.infradead.org>, <macpaul.lin@mediatek.com>,
-        Jisheng Zhang <jszhang@kernel.org>,
+        "Jisheng Zhang" <jszhang@kernel.org>,
         Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
-Subject: [PATCH net v5 0/3] stmmac: dwmac-mediatek: fix clock issue
-Date:   Thu, 14 Jul 2022 14:00:11 +0800
-Message-ID: <20220714060014.18958-1-biao.huang@mediatek.com>
+Subject: [PATCH net v5 1/3] stmmac: dwmac-mediatek: fix clock issue
+Date:   Thu, 14 Jul 2022 14:00:12 +0800
+Message-ID: <20220714060014.18958-2-biao.huang@mediatek.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220714060014.18958-1-biao.huang@mediatek.com>
+References: <20220714060014.18958-1-biao.huang@mediatek.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
@@ -73,40 +72,113 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-changes in v5:
-1. add reivewd-by as Matthias's comments.
-2. fix "warning: unused variable 'ret' [-Wunused-variable]" as Jakub's comments
+The pm_runtime takes care of the clock handling in current
+stmmac drivers, and dwmac-mediatek implement the
+mediatek_dwmac_clks_config() as the callback for pm_runtime.
 
-changes in v4:
-1. improve commit message and test ko insertion/remove as Matthias's comments.
-2. add patch "net: stmmac: fix pm runtime issue in stmmac_dvr_remove()" to
-   fix vlan filter deletion issue.
-3. add patch "net: stmmac: fix unbalanced ptp clock issue in suspend/resume flow"
-   to fix unbalanced ptp clock issue in suspend/resume flow.
+Then, stripping duplicated clocks handling in old init()/exit()
+to fix clock issue in suspend/resume test.
 
-changes in v3:
-1. delete mediatek_dwmac_exit() since there is no operation in it,
-as Matthias's comments.
+As to clocks in probe/remove, vendor need symmetric handling to
+ensure clocks balance.
 
-changes in v2:
-1. clock configuration is still needed in probe,
-and invoke mediatek_dwmac_clks_config() instead.
-2. update commit message.
+Test pass, including suspend/resume and ko insertion/remove.
 
-v1:
-remove duplicated clock configuration in init/exit.
-
-Biao Huang (3):
-  stmmac: dwmac-mediatek: fix clock issue
-  net: stmmac: fix pm runtime issue in stmmac_dvr_remove()
-  net: stmmac: fix unbalanced ptp clock issue in suspend/resume flow
-
+Fixes: 3186bdad97d5 ("stmmac: dwmac-mediatek: add platform level clocks management")
+Signed-off-by: Biao Huang <biao.huang@mediatek.com>
+Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+---
  .../ethernet/stmicro/stmmac/dwmac-mediatek.c  | 49 ++++++++-----------
- .../net/ethernet/stmicro/stmmac/stmmac_main.c | 22 ++++-----
- .../ethernet/stmicro/stmmac/stmmac_platform.c |  8 ++-
- 3 files changed, 39 insertions(+), 40 deletions(-)
+ 1 file changed, 21 insertions(+), 28 deletions(-)
 
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
+index 6ff88df58767..ca8ab290013c 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
+@@ -576,32 +576,7 @@ static int mediatek_dwmac_init(struct platform_device *pdev, void *priv)
+ 		}
+ 	}
+ 
+-	ret = clk_bulk_prepare_enable(variant->num_clks, plat->clks);
+-	if (ret) {
+-		dev_err(plat->dev, "failed to enable clks, err = %d\n", ret);
+-		return ret;
+-	}
+-
+-	ret = clk_prepare_enable(plat->rmii_internal_clk);
+-	if (ret) {
+-		dev_err(plat->dev, "failed to enable rmii internal clk, err = %d\n", ret);
+-		goto err_clk;
+-	}
+-
+ 	return 0;
+-
+-err_clk:
+-	clk_bulk_disable_unprepare(variant->num_clks, plat->clks);
+-	return ret;
+-}
+-
+-static void mediatek_dwmac_exit(struct platform_device *pdev, void *priv)
+-{
+-	struct mediatek_dwmac_plat_data *plat = priv;
+-	const struct mediatek_dwmac_variant *variant = plat->variant;
+-
+-	clk_disable_unprepare(plat->rmii_internal_clk);
+-	clk_bulk_disable_unprepare(variant->num_clks, plat->clks);
+ }
+ 
+ static int mediatek_dwmac_clks_config(void *priv, bool enabled)
+@@ -643,7 +618,6 @@ static int mediatek_dwmac_common_data(struct platform_device *pdev,
+ 	plat->addr64 = priv_plat->variant->dma_bit_mask;
+ 	plat->bsp_priv = priv_plat;
+ 	plat->init = mediatek_dwmac_init;
+-	plat->exit = mediatek_dwmac_exit;
+ 	plat->clks_config = mediatek_dwmac_clks_config;
+ 	if (priv_plat->variant->dwmac_fix_mac_speed)
+ 		plat->fix_mac_speed = priv_plat->variant->dwmac_fix_mac_speed;
+@@ -712,13 +686,32 @@ static int mediatek_dwmac_probe(struct platform_device *pdev)
+ 	mediatek_dwmac_common_data(pdev, plat_dat, priv_plat);
+ 	mediatek_dwmac_init(pdev, priv_plat);
+ 
++	ret = mediatek_dwmac_clks_config(priv_plat, true);
++	if (ret)
++		return ret;
++
+ 	ret = stmmac_dvr_probe(&pdev->dev, plat_dat, &stmmac_res);
+ 	if (ret) {
+ 		stmmac_remove_config_dt(pdev, plat_dat);
+-		return ret;
++		goto err_drv_probe;
+ 	}
+ 
+ 	return 0;
++
++err_drv_probe:
++	mediatek_dwmac_clks_config(priv_plat, false);
++	return ret;
++}
++
++static int mediatek_dwmac_remove(struct platform_device *pdev)
++{
++	struct mediatek_dwmac_plat_data *priv_plat = get_stmmac_bsp_priv(&pdev->dev);
++	int ret;
++
++	ret = stmmac_pltfr_remove(pdev);
++	mediatek_dwmac_clks_config(priv_plat, false);
++
++	return ret;
+ }
+ 
+ static const struct of_device_id mediatek_dwmac_match[] = {
+@@ -733,7 +726,7 @@ MODULE_DEVICE_TABLE(of, mediatek_dwmac_match);
+ 
+ static struct platform_driver mediatek_dwmac_driver = {
+ 	.probe  = mediatek_dwmac_probe,
+-	.remove = stmmac_pltfr_remove,
++	.remove = mediatek_dwmac_remove,
+ 	.driver = {
+ 		.name           = "dwmac-mediatek",
+ 		.pm		= &stmmac_pltfr_pm_ops,
 -- 
 2.25.1
-
 
