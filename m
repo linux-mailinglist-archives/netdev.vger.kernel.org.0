@@ -2,130 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EB382574B17
-	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 12:48:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B25D574B2A
+	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 12:51:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238481AbiGNKsX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jul 2022 06:48:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56476 "EHLO
+        id S238018AbiGNKvK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jul 2022 06:51:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237289AbiGNKsU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 06:48:20 -0400
-Received: from mail-wr1-x44a.google.com (mail-wr1-x44a.google.com [IPv6:2a00:1450:4864:20::44a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09A1C51406
-        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 03:48:19 -0700 (PDT)
-Received: by mail-wr1-x44a.google.com with SMTP id h29-20020adfaa9d000000b0021d67fc0b4aso459400wrc.9
-        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 03:48:18 -0700 (PDT)
+        with ESMTP id S231172AbiGNKvJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 06:51:09 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F2D9550AF
+        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 03:51:06 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id b26so2039870wrc.2
+        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 03:51:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=TcbL293klknuFRfZ1i01tinmhCgguD5yCB7g0kW+L6k=;
-        b=G5jbzXEoJg6vN8TMAZMcpCS0XRYpdmVmOPqNHtSHypAGXhz8VJoUqU2KRox7AiA3sM
-         S/NvzjYJK0dBsxN8zKdMRLKvQruCZIAPdLW7y/DfggEgFSv34G4aPSqJXomGxqG0Dua7
-         h1HdW9A8ErP4DhheRfut5PVo+APDi2/JlHiLgy9uR3pA5uCQQpsHLqzPi1zfqrtKqfzo
-         vO7fDKnOdgqE2jml88KtH6iEWhqQ5j7QcktLOgHd/zhX3ByHqhz5CcRI2lXW1HIuJh0o
-         Mfw4L9Z/QQ0n+YXx9w967uVqwXWjxijfPD3/yBrs9J1+9dNTEpZY6tvrlv4n4GOj87EG
-         HxHQ==
+        d=sifive.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/A1bl8uzP7IN65BrZb8dSWfE+1UFn2V6/tpFEMYxRTE=;
+        b=FHQ/h+WAITPqIb63PRPvbooq/4N1XSL5vd9v1suRKTvjdrqG0PJrj1MUu9CYM8FvvH
+         u3C6SneHoSYBObqd6oa84Z31DZSRffXLko2nnYVuodE1TJiM7mPEwiKdxR8WruBEb7SH
+         1/zWBu1Tz/B5HAp6TbqJORKJNPuWHRDI15A54jc+Ljd/hVBnzyBQtDT/gGNIJWmYcXOJ
+         a30mW5wield7hYWNpWbuSftg0Y46h/Ztm46fOes68bmzjfesGsLoZf54wcAMIFMzPNzb
+         M9GUuQBXp/hhRZQeccUZPLZNbyakn2FCBWhmezIFNAoT9jv4Dd0VwQVusOj4dJQ81jpD
+         n73w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=TcbL293klknuFRfZ1i01tinmhCgguD5yCB7g0kW+L6k=;
-        b=Uo2e2DTYSXw6VjFSd44OrEPjKHphr8fBQulG1fbL3LrLOWs8JUnYg+mjmp1UAYxjtX
-         fFCE/MZG/xZIy/rNggc7ndNfGKXQhT1hyHagq7dOBzzzWHDizSo6x3E2rXq153iZfoOW
-         MkfrN4q71Hvo9YiufzuNDt1Ev2j88GkOpC4TVXKC9K+uVV3bX9WmKkW6fL/2EVDkr1ie
-         gYq5tWZJzUc/3SYxriB3cfbG2QPzHX8UBbSkwRg0oXQzY5XocpTSEpWvC2DWX333/aqj
-         y8nRbk7Wxm4a9JQyQ5KQQS18ewzsEsUk7fiUEZIwu4ETrHFTI0SZfmxXJzVx60Zw8C+R
-         naSA==
-X-Gm-Message-State: AJIora/N6Xy4+v0QRqQZzyl/XgqOgS+iTxhSCajeMul19kSfQy+oMjlc
-        W0MhhXeEcAQA3vfkFxy2qVHwUnrakVs=
-X-Google-Smtp-Source: AGRyM1sbV0Yq2YAAjCOTbGhhzgSDovNLXEQNSglI0p/MoD9f0OPPIRDj1RhbV1yqEROnz6Hyhac9fEZ/eeo=
-X-Received: from rax.c.googlers.com ([fda3:e722:ac3:cc00:28:9cb1:c0a8:2a98])
- (user=poprdi job=sendgmr) by 2002:a05:600c:4f4d:b0:3a1:98de:abde with SMTP id
- m13-20020a05600c4f4d00b003a198deabdemr14697421wmq.36.1657795697567; Thu, 14
- Jul 2022 03:48:17 -0700 (PDT)
-Date:   Thu, 14 Jul 2022 10:48:14 +0000
-Message-Id: <20220714104814.1296858-1-poprdi@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.37.0.144.g8ac04bfd2-goog
-Subject: [PATCH v2] Bluetooth: Collect kcov coverage from hci_rx_work
-From:   Tamas Koczka <poprdi@google.com>
-To:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/A1bl8uzP7IN65BrZb8dSWfE+1UFn2V6/tpFEMYxRTE=;
+        b=4bpIFfeKOUO9+mMv0TBrvaTSVLLVAKWuNJpkwmFj6wKrIOnaOJwjvb4NLuxfmMc6D1
+         yKQIus8lvLLtFg2MZFIw0+X2YCvCBfWTzqSBGuxLQmdavGNApzqO0YBTl/cDZIK7Zqn2
+         xIUYadFGiXKsom+D8H7OkccUC7RNQfoK0ucdqQVFk9h7EDjrEjPvE8AZkEBG/gjYytGj
+         tGntT0o3Q4am2x6t25AvNk7Dzk5RvG90ivNjLRnvdpjMblBDSsquxixUMy0e2GQst2LJ
+         sJruPBuG+tzsLYbhqcX/H1rr4EJ1ney3kK7wrsjH5JRREi79FpoLs8aOb7gIVAx/FmQO
+         KN0g==
+X-Gm-Message-State: AJIora8+Ut/6iZqL8hSR+nmb2aTvl89w0R/op0CgoIed5xk+V8sdO+Ts
+        JlWOuzI4NhFINWsNyjmn2y3yfg==
+X-Google-Smtp-Source: AGRyM1tJ47E2CU5jfxrTgFJ3qkVdCVzrt0J23krS2bzOY2hDikHxOBpCmHjarXe6ZQxKpCFLW1+veA==
+X-Received: by 2002:adf:fe0d:0:b0:21d:81f3:854a with SMTP id n13-20020adffe0d000000b0021d81f3854amr7444549wrr.540.1657795864769;
+        Thu, 14 Jul 2022 03:51:04 -0700 (PDT)
+Received: from rainbowdash.office.codethink.co.uk ([167.98.27.226])
+        by smtp.gmail.com with ESMTPSA id q7-20020a05600c2e4700b003a03be171b1sm1363762wmf.43.2022.07.14.03.51.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Jul 2022 03:51:04 -0700 (PDT)
+From:   Ben Dooks <ben.dooks@sifive.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Sudip Mukherjee <sudip.mukherjee@sifive.com>,
+        Jude Onyenegecha <jude.onyenegecha@sifive.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, theflow@google.com,
-        Tamas Koczka <poprdi@google.com>,
-        Aleksandr Nogikh <nogikh@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        Ben Dooks <ben.dooks@sifive.com>
+Subject: [PATCH] bpf: add endian modifiers to fix endian warnings
+Date:   Thu, 14 Jul 2022 11:51:01 +0100
+Message-Id: <20220714105101.297304-1-ben.dooks@sifive.com>
+X-Mailer: git-send-email 2.35.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Annotate hci_rx_work() with kcov_remote_start() and kcov_remote_stop()
-calls, so remote KCOV coverage is collected while processing the rx_q
-queue which is the main incoming Bluetooth packet queue.
+A couple of the syscalls which load values (bpf_skb_load_helper_16
+and bpf_skb_load_helper_32) are using u16/u32 types which are
+triggering warnings as they are then converted from big-endian
+to cpu-endian. Fix these by making the types __be instead.
 
-Coverage is associated with the thread which created the packet skb.
+Fixes the following sparse warnings:
 
-The collected extra coverage helps kernel fuzzing efforts in finding
-vulnerabilities.
+net/core/filter.c:246:32: warning: cast to restricted __be16
+net/core/filter.c:246:32: warning: cast to restricted __be16
+net/core/filter.c:246:32: warning: cast to restricted __be16
+net/core/filter.c:246:32: warning: cast to restricted __be16
+net/core/filter.c:273:32: warning: cast to restricted __be32
+net/core/filter.c:273:32: warning: cast to restricted __be32
+net/core/filter.c:273:32: warning: cast to restricted __be32
+net/core/filter.c:273:32: warning: cast to restricted __be32
+net/core/filter.c:273:32: warning: cast to restricted __be32
+net/core/filter.c:273:32: warning: cast to restricted __be32
 
-This change only has effect if the kernel is compiled with CONFIG_KCOV,
-otherwise kcov_ functions don't do anything.
-
-Signed-off-by: Tamas Koczka <poprdi@google.com>
-Tested-by: Aleksandr Nogikh <nogikh@google.com>
-Reviewed-by: Dmitry Vyukov <dvyukov@google.com>
+Signed-off-by: Ben Dooks <ben.dooks@sifive.com>
 ---
-Changelog since v1:
- - add comment about why kcov_remote functions are called
+ net/core/filter.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-v1: https://lore.kernel.org/all/20220517094532.2729049-1-poprdi@google.com/
-
-Note: this is a resubmission of https://lore.kernel.org/netdev/CAPUC6bJbVMPn1FMLYnXg2GUX4ikesMSRjj=oPOOrS5H2DOx_bA@mail.gmail.com/T/
-
- net/bluetooth/hci_core.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
-
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index 45c2dd2e1590..0af43844c55a 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -29,6 +29,7 @@
- #include <linux/rfkill.h>
- #include <linux/debugfs.h>
- #include <linux/crypto.h>
-+#include <linux/kcov.h>
- #include <linux/property.h>
- #include <linux/suspend.h>
- #include <linux/wait.h>
-@@ -3780,7 +3781,14 @@ static void hci_rx_work(struct work_struct *work)
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 5d16d66727fc..c971dfaed74b 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -237,7 +237,7 @@ BPF_CALL_2(bpf_skb_load_helper_8_no_cache, const struct sk_buff *, skb,
+ BPF_CALL_4(bpf_skb_load_helper_16, const struct sk_buff *, skb, const void *,
+ 	   data, int, headlen, int, offset)
+ {
+-	u16 tmp, *ptr;
++	__be16 tmp, *ptr;
+ 	const int len = sizeof(tmp);
  
- 	BT_DBG("%s", hdev->name);
+ 	if (offset >= 0) {
+@@ -264,7 +264,7 @@ BPF_CALL_2(bpf_skb_load_helper_16_no_cache, const struct sk_buff *, skb,
+ BPF_CALL_4(bpf_skb_load_helper_32, const struct sk_buff *, skb, const void *,
+ 	   data, int, headlen, int, offset)
+ {
+-	u32 tmp, *ptr;
++	__be32 tmp, *ptr;
+ 	const int len = sizeof(tmp);
  
--	while ((skb = skb_dequeue(&hdev->rx_q))) {
-+	/* The kcov_remote functions used for collecting packet parsing
-+	 * coverage information from this background thread and associate
-+	 * the coverage with the syscall's thread which originally injected
-+	 * the packet. This helps fuzzing the kernel.
-+	 */
-+	for (; (skb = skb_dequeue(&hdev->rx_q)); kcov_remote_stop()) {
-+		kcov_remote_start_common(skb_get_kcov_handle(skb));
-+
- 		/* Send copy to monitor */
- 		hci_send_to_monitor(hdev, skb);
- 
+ 	if (likely(offset >= 0)) {
 -- 
-2.37.0.144.g8ac04bfd2-goog
+2.35.1
 
