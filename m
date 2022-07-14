@@ -2,241 +2,371 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 923DA574B0C
-	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 12:46:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 648E5574B12
+	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 12:47:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238448AbiGNKqV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jul 2022 06:46:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55206 "EHLO
+        id S238480AbiGNKrG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jul 2022 06:47:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238459AbiGNKqT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 06:46:19 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D29E053D16
-        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 03:46:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1657795578; x=1689331578;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-id:content-transfer-encoding:
-   mime-version;
-  bh=EuH53wVtjA8btxOCGXocuJaDDNQUOdLeqTcp7wlv7jg=;
-  b=tXZcJEiF31tT2gipmIiuyasXyCd84EKcSgvOPf7/Spe7W92PWzmwTC9w
-   aNtr8j9Wyd0mgejnX5NgOwl2mA1bMGae9B6M8qT6ac4epy9/CQFAzh+F7
-   WUqY0elREqc4w6lyAoBXU+M5V+ADa0n3v2RmfTV9Tjm71++q1NziMAaiT
-   /NNnERqURvUSXu1YKSN3IH4ACRCz69mJjmDRmnH4E5h6auTY5YYsoCMyh
-   58FTuMCkb5nryBrff4XtwpGSqWMjNSdztjZ1+YQ5sHNVKnICPZ+1+4mtU
-   OngXFawdmcvQ7kLbG8uoYDdgog5BQ2Qz/T7jrEL3f3+UJkiUZyQgqWU1a
-   w==;
-X-IronPort-AV: E=Sophos;i="5.92,271,1650956400"; 
-   d="scan'208";a="104439672"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Jul 2022 03:46:17 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 14 Jul 2022 03:46:16 -0700
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (10.10.215.89) by
- email.microchip.com (10.10.87.72) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.17 via Frontend
- Transport; Thu, 14 Jul 2022 03:46:16 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JeJcjZPDNeJisXpO9zcMOjTUqtMeU4BzLTiTb3ySTtoUrVjckoz691gvwjWHe87O7Wd3zh8hHQG6GXQp19W0p8qxVOLgVS/SIFLcPtDZX+UhpI84qxXx2CNWpbuKSEDLpplj/a5XwFVzVWUbriYDDUBmgc+2Au9nEpuY5SlxkSCSOGsz+Msl4GMWRL8XLx/lX+sB1dhqtKq2FPk09idL34brL6GRGeLLqpa4MHpJPe83d/kSHfb0/FZwGVMUKSO2qFvpGeUjTEydBpposLdYVuclm2Mf0N4OjZ86Qp8f8E0qvTBZXGLaUYNHAccl+O6aYgvIdt6thMGrQw7aQkCkvw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=EuH53wVtjA8btxOCGXocuJaDDNQUOdLeqTcp7wlv7jg=;
- b=QKj5hhawqByCeysVxxjmJ7WsKJKsA+auRytMPq39HAzXJZwA43/+0P9JZ+vpXzsvbfBJafVhw9RXJhh+LrKvjJGh5/Hzjf+cAaxcqCQYCOSXS2GEdYqidJDdy5sdpWW4EcIODN16KjouVfHiCLg6FL4LN2QKm+qkRGkfeloJkOWgAlU462ZGvDOQnIxRquTB2p2mRrAsL8ZrcEQRSiGnWEWPJrySp4SmznjcY/6ktTZOFL4xvfBdWX4SRIAWLqjofFEkCtMB4YoOt/7ntdZGB1AiVx9IK9wol9Gvzfh7939/ofAW0s8zHb0Jaj/wj+RVz3vR0iOx05YKaT5Xvw4Gxg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microchip.com; dmarc=pass action=none
- header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=microchiptechnology.onmicrosoft.com;
- s=selector2-microchiptechnology-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=EuH53wVtjA8btxOCGXocuJaDDNQUOdLeqTcp7wlv7jg=;
- b=K08pqQeM5GKR2S9NMnQUvmeLZBcM1/gMt00PxZUdw89/aV2m3pqmVfdGKNok1YEfVrnYZZjyKZLapsNuIGooBmJOJIi+yQDZmdNcU8VAR7T/81zAWkfSBQEC3T2Yoq04VqUrvZrrN/FZ05Ml9FwzqthSKqnomUejV8M6xojutm4=
-Received: from DM5PR11MB0076.namprd11.prod.outlook.com (2603:10b6:4:6b::28) by
- SJ1PR11MB6108.namprd11.prod.outlook.com (2603:10b6:a03:489::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.12; Thu, 14 Jul
- 2022 10:46:02 +0000
-Received: from DM5PR11MB0076.namprd11.prod.outlook.com
- ([fe80::a4d9:eecb:f93e:7df0]) by DM5PR11MB0076.namprd11.prod.outlook.com
- ([fe80::a4d9:eecb:f93e:7df0%6]) with mapi id 15.20.5438.014; Thu, 14 Jul 2022
- 10:46:02 +0000
-From:   <Arun.Ramadoss@microchip.com>
-To:     <martin.blumenstingl@googlemail.com>, <vladimir.oltean@nxp.com>
-CC:     <claudiu.manoil@nxp.com>, <alexandre.belloni@bootlin.com>,
-        <UNGLinuxDriver@microchip.com>, <andrew@lunn.ch>,
-        <vivien.didelot@gmail.com>, <petrm@nvidia.com>,
-        <idosch@nvidia.com>, <linux@rempel-privat.de>,
-        <f.fainelli@gmail.com>, <hauke@hauke-m.de>,
-        <xiaoliang.yang_1@nxp.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <edumazet@google.com>, <netdev@vger.kernel.org>,
-        <Woojung.Huh@microchip.com>, <davem@davemloft.net>
-Subject: Re: [RFC PATCH net-next 3/3] net: dsa: never skip VLAN configuration
-Thread-Topic: [RFC PATCH net-next 3/3] net: dsa: never skip VLAN configuration
-Thread-Index: AQHYkJVA+iLppAy/uE2cW1NrBQONVa1xiwcAgAADhICAADWVAIABvUGAgADAlICAACQggIAArH6AgAiqEgA=
-Date:   Thu, 14 Jul 2022 10:46:02 +0000
-Message-ID: <f19a09b67d503fa149bd5a607a7fc880a980dccb.camel@microchip.com>
-References: <20220705173114.2004386-1-vladimir.oltean@nxp.com>
-         <20220705173114.2004386-4-vladimir.oltean@nxp.com>
-         <CAFBinCC6qzJamGp=kNbvd8VBbMY2aqSj_uCEOLiUTdbnwxouxg@mail.gmail.com>
-         <20220706164552.odxhoyupwbmgvtv3@skbuf>
-         <CAFBinCBnYD59W3C+u_B6Y2GtLY1yS17711HAf049mstMF9_5eg@mail.gmail.com>
-         <20220707223116.xc2ua4sznjhe6yqz@skbuf>
-         <CAFBinCB74dYJOni8-vZ+hNH6Q6E4rmr5EHR_o5KQSGogJzBhFA@mail.gmail.com>
-         <20220708120950.54ga22nvy3ge5lio@skbuf>
-         <CAFBinCCnn-DTBYh-vBGpGBCfnsQ-kSGPM2brwpN3G4RZQKO-Ug@mail.gmail.com>
-In-Reply-To: <CAFBinCCnn-DTBYh-vBGpGBCfnsQ-kSGPM2brwpN3G4RZQKO-Ug@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microchip.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: f1f2a140-eb53-4a30-5bb2-08da65860ba0
-x-ms-traffictypediagnostic: SJ1PR11MB6108:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: UuDS/nV1QcW7rQ86u+ajOaHYG2EBKQzpULnJAnpTk3Cnoo65TVCRD0giELgISEGkAfX4ttpYzqw/gUYNwhFqho6kbd3sgdHaQNzp125yM82wfg/5Qv+ekAnOzHAjlxm/1AsXZPwkEEy3ANEuLgYjn3CB8sZk+hKxCqaUyVQtFwpHAt+uMREZLWxb7JD0mHbB62OcZsF7HtYb3M8ryUAgJIXD3wfkoxOBJ3RV87kbjqz6mCWpqBpKIKlSMN6H5cr0KyOPe+9/Nos5ijsRXo2HwlJ11uuQ4vdNj9Ny4JVJE0Y5/JgB83cwebzsTpq559oVCFBS1VWTkPL13nK52T9xzZfwIOPBlJQ22ZfB+c0vQ3jTywZGFzD8+ik73YOS2MBkihr8fzOKppYqPIwVNOSd0bqEoTUv4wKwfS6yI/8w3/GjWO23DvlaWXEtsTVLXzpe4dDayn0JMo1dzKP2dNG/u+DagNWiF6ImEXm1HfcaCm4WMAsB/3nmTn8b1h+84WiqFS25ZtOe01PYD8V9/dbgJO4f50/Qz44heiNrLLOroMMRIRCPeRgWgh2Y6iBiux0xYPUcmNSUAWjTUrduaAtVLrViHKFdrRhdkVMGtdHc7MaeBldNHh1ySvgexqWvAYoadnp9WwUOX2F//r4uQSQcnP87RW46maaJx72VIzHyazPYLHfKy6cYsoy5GAPlZtaPG6GHqA7sEAv7LFtnTgAPlc6VEVyKdT1I4Oc9tW8RgxwQe4h7rBRzuBfu03ZMMTMo+UHcOrr5GtFO3hO9aIEstFfHHPWAecrrGml7b+s0KnQlmkHUXVl4g/zqeJPehMZMPcyyfIZdKphHTYj3ePEPzQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR11MB0076.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(136003)(396003)(376002)(346002)(39860400002)(366004)(5660300002)(71200400001)(7416002)(478600001)(8936002)(8676002)(66556008)(76116006)(66476007)(41300700001)(91956017)(66946007)(6506007)(6512007)(6486002)(2906002)(26005)(66446008)(86362001)(4326008)(122000001)(64756008)(53546011)(54906003)(38100700002)(316002)(2616005)(110136005)(83380400001)(36756003)(38070700005)(186003)(99106002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?MzIzdzY5NXg4TkhleVM5cHloRnVFUmoxUHJKci9TdWNXcy8vcGMxcnpacDJX?=
- =?utf-8?B?OGZOTzdmaVYyOHdhYmNhNGpFalpnVXVpdGptdXR5QlNhYkZiZjR5aTV0Ukpw?=
- =?utf-8?B?QnY4NUNPZXpSemxsQWZYaGswcEl5azVyU2E5Q3lseVZoSnd0azR0Sm5wWUJa?=
- =?utf-8?B?VVBhak92c1FFVitnVnZ1K0lBQTVQQmtnMTkzUmJzVzBUVzluR0pDbXFvYTZy?=
- =?utf-8?B?NXRBWjVGT3NaTlNGaWQ5YURKR1JYTXoyU1RFbUFZNTdpT2grRDQrNlNJRFFs?=
- =?utf-8?B?SUEyUWpqb1MrMWppSDUxOUFZaHd0Vk4weTVITHFIYXJCTmU3VnBGL3hNZkRr?=
- =?utf-8?B?V1krdVVMZXViQjZWVWtUQ2VsS3UwbTZHRVpab0xFNnR1a3FQM0tMMXprUTl1?=
- =?utf-8?B?bUJBaXFZcGltZ0lnRkdNbUpyYWVZVzZ6dGhyU0hSNTRnbnJmdzFKOFVzVjgw?=
- =?utf-8?B?eExiNUZQU0pDNVZ2VmxhRDB2TFdCaG0wdGNUZ01jZUN4VGoxdHMvTWJoK1Vq?=
- =?utf-8?B?WDhoZlJUeDR3ZzZNSUllcFdNcVlkelpxYXVsYlVNNS90Y0ZaYkN0REN1RHdt?=
- =?utf-8?B?Tlc0QWcrYWlNTnd2eGRWdUxsVytBbDFTeVlvMG9QM0h3eXZ0WnNhZTdXVWY3?=
- =?utf-8?B?ZW5zZElFMjVtdm1JaU9vRjlVMTg3Vnk3Vy9zT2IybnEyTmk5K0FaVTdrMkNp?=
- =?utf-8?B?bldpU3JlVkROWVU3OThDck1jOWtla2tjd3BCazUvc2lkYzB6UExYVjRTWGpZ?=
- =?utf-8?B?UVlUeVdVNXJjc0hGNHZ2dHhMODdTNlFYWWFRcnhBTjJvMWtHOHlZK0VjYXdF?=
- =?utf-8?B?VUI3MTFaY0R1djNFVFlqajBPSHorTXFBOXArWERESjJkRXpZMEN4RG9NN25n?=
- =?utf-8?B?dWtFREZjS1pPNzFlODRaSk05T1c4a09Ldm8rV0JyeEtpMjFFcWcxeTkvdFZE?=
- =?utf-8?B?d1Z5aDhJNytYTW90TDdoSWdDaEhOUjRBeCtEeHlwSXVxOStvZE5DR0ZoeTNy?=
- =?utf-8?B?TDBtNzJnTCtLRDJNc3hNK3RKN1ZiOTg3YStnUnpSVDcrSTJHUTJmZDd6WU5a?=
- =?utf-8?B?RWFrdTNCWFg5UU5pODVmaXBkWEZrRmZtMU9Od0N1UW1EQlp3TE5vbGVFdW9p?=
- =?utf-8?B?ZXhEQnA1end2TTArWUk2MDBHQ1BudVlOTFloMi92V0FZRGUzbWVMaTE4NFdz?=
- =?utf-8?B?MXZNNXlOalN4bG9jQWtERnNOZE0rSCtmV3NBTUgzdnhjdVZJMFFrRDVpSEsz?=
- =?utf-8?B?TFJaZUEyMC9QWHF2ZGI4RmZlUUdDWGYrOUorZStTcGYyaGFndXY4RWMrb3Zs?=
- =?utf-8?B?eE5VTUZoR09CeGNBNy9sdVVGRTJXV0N3T3k2dVNmVFc4TDcyNTMxUnorL0ZC?=
- =?utf-8?B?aFV3UGx2MGdHdmt0cXJ4ZU5JN2pnUlVPdkYvN25QdXRETWVNdWlqK0hSY1hw?=
- =?utf-8?B?Z2R0YldWTmJZaEpvcUJWTGtXU1VvUHIrMjRPTFJ6cXJtdXh0Tlg1Vk5NU3ZX?=
- =?utf-8?B?UDJyOW1qVlc1MmdaUHpDd1dFSkJjaGZkdkR4cGNTOTgwY0NWTWFYNkgzQWps?=
- =?utf-8?B?b280TzV4dklyT2lQUEVTT083Mm5lQkRnRVdoSXhTb3I5SFEzQXJWSFpPQTI4?=
- =?utf-8?B?a1hFU2h0L253UytGM25YYjBzYlpybXN2RUxXbWtaVCtXMDNwRGhlTFAzVEtP?=
- =?utf-8?B?T3B3bWhwRVFQYmdLUTRnL1VaYURYcEg1aEtxVjk4UEkzSlF1bVJVYnhaVnJi?=
- =?utf-8?B?R1AwcmdwUDBqc3g3My9YcGtNWXBIbTN2YTJCV3RvM2FjV3lRUWZ6WldGdERk?=
- =?utf-8?B?c0ZSckN4OHo4R2hYWTdwMzVQak1wMmFLNFZ3RWN5VXZudUpUUmVkVXdrN2lX?=
- =?utf-8?B?Z1BuNmZZaXFubGFCbXo2eWhhZlQxUkg3TjlZcitTNmxBaENwL3oyV0hYZmFU?=
- =?utf-8?B?UTlaZmhpaFcxUE9jNGJnTWJzVnpNSS95VGVWUEFVVGU2UTNhRU1MNHNlQXlz?=
- =?utf-8?B?VkUwSXdzSVFITTNjL0N1ODZjY054cU1tS1Z4cjV4UVB3Y0lyMm9Fc1V5cHJJ?=
- =?utf-8?B?dzdVYmVzd2hZTDl3MEpwbFA0OXdzdzhUODVVTFpkVWpuZi9Vc1FvaTFic0Jt?=
- =?utf-8?B?NkRiMlN0YU9iMjN6eGVUbXNEMHlGWm8xa2s4ZzZseE1KMS9sRW02S2Z0T0sx?=
- =?utf-8?Q?Hiep0TfOFzpjSznwKIvqU5s=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <1FEDDF2DF8493446839A9CF84CFE3437@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        with ESMTP id S238459AbiGNKrB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 06:47:01 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ECC0253D16
+        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 03:46:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657795619;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=QDEpv/nd3ThZpP+3Vj5BLpAOoRGWUT5570LW5fkHEXA=;
+        b=iWVIErTUX3cSl7K+KLeBLet1llpsnv+C23v9fw2t98uRGxS7yn/Xrt1gfaINxkvW3+Di48
+        MqQBP4oU2KdXTByEa6oj88RUybcXRrOJF0jdDG/fTezyvunOLdYMrdTu/tt3M8TnAT6Sbx
+        6grj6mNjEHBCCjqmyk8s4CQn4v0HCFQ=
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
+ [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-460-av1nJ-3CNsi78gZmFN1daw-1; Thu, 14 Jul 2022 06:46:58 -0400
+X-MC-Unique: av1nJ-3CNsi78gZmFN1daw-1
+Received: by mail-ej1-f72.google.com with SMTP id qb28-20020a1709077e9c00b0072af6ccc1aeso611751ejc.6
+        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 03:46:57 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=QDEpv/nd3ThZpP+3Vj5BLpAOoRGWUT5570LW5fkHEXA=;
+        b=zDidagGlA6HlvskYmI6aZLjEpDWexFXNyG/aK0P8k6gZtCp+KHA6JwnrA1BnV6ybXp
+         8+kKxO3Z02pLkbOqGCg0gobyUNWjVDoC61kY5bmo4d+/rXzG6upG+I2bzo+Dwah5KzeN
+         iSwnjdnqRWsuy40R+GBxVCQYYR3L3mRDPKlIAi1sBiadiZEXhGwedKoNLpIqldpmreUS
+         kDGF/tskT8ayFO/bGO9CF+7JLxKROktVsbyIVtSYLvptZ2Q8pNx4f9LkkA0wFpO9UH9S
+         dvMbjrVhByhMkH81Pne0/4rAiXzTiIXrUnxoi3m6S+sNjPc6tCleNu85LVB4HeXRpkgy
+         ouJA==
+X-Gm-Message-State: AJIora9FgHeacYsZVikAhjNx+yOey+gt1McGlOK8z6xUF8yqBns6+xk0
+        xNk1VFOmFkC5Y5MM9XZkXqjI+EeLGGL+y9dvtgKzy3L+pVkXVyuxmZaGmieofiq3/d8/dJqcqrd
+        1/YTAcfTdX1/PbscS
+X-Received: by 2002:a17:907:7388:b0:72b:9be1:e32d with SMTP id er8-20020a170907738800b0072b9be1e32dmr7653018ejc.611.1657795616641;
+        Thu, 14 Jul 2022 03:46:56 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1u9OOcNIIJScRiVqXDGnhKuBd2gDS7vr7IcFGG82F4ntixmfV/Hg7CrJmh+ZCaByCBIIwjrEg==
+X-Received: by 2002:a17:907:7388:b0:72b:9be1:e32d with SMTP id er8-20020a170907738800b0072b9be1e32dmr7652979ejc.611.1657795616209;
+        Thu, 14 Jul 2022 03:46:56 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id sz20-20020a1709078b1400b0072b31307a79sm550672ejc.60.2022.07.14.03.46.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Jul 2022 03:46:55 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id AF6334D9B28; Thu, 14 Jul 2022 12:46:54 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Mykola Lysenko <mykolal@fb.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Freysteinn Alfredsson <freysteinn.alfredsson@kau.se>,
+        Cong Wang <xiyou.wangcong@gmail.com>
+Subject: Re: [RFC PATCH 00/17] xdp: Add packet queueing and scheduling
+ capabilities
+In-Reply-To: <CAKH8qBvODehxeGrqyY6+9TJPePe_KLb6vX9P1rKDgbQhuLpSSQ@mail.gmail.com>
+References: <20220713111430.134810-1-toke@redhat.com>
+ <CAKH8qBtdnku7StcQ-SamadvAF==DRuLLZO94yOR1WJ9Bg=uX1w@mail.gmail.com>
+ <877d4gpto8.fsf@toke.dk>
+ <CAKH8qBvODehxeGrqyY6+9TJPePe_KLb6vX9P1rKDgbQhuLpSSQ@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Thu, 14 Jul 2022 12:46:54 +0200
+Message-ID: <87v8s0nf8h.fsf@toke.dk>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM5PR11MB0076.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f1f2a140-eb53-4a30-5bb2-08da65860ba0
-X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Jul 2022 10:46:02.1115
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 4hnECrmNp01ZEXkl9toHKlu6hx8noV0sNzgNCsZx2sszDRzDhDYJM9ohL/Y12vlc189ib/DmWZF+I1lRwwPRyj6jXtNzVvtoKUTkM1Kl/SQ=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ1PR11MB6108
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgVmxhZGltaXIsDQpXZSBjb3VsZG4ndCBhYmxlIHRvIHNldHVwIHRoZSBzZWxmdGVzdHMgYW5k
-IGZhaWxlZCBkdXJpbmcgaW5zdGFsbGF0aW9uDQpvZiBwYWNrYWdlcy4gSW4gdGhlIG1lYW4gdGlt
-ZSwgV2UgdHJpZWQgdGhlIGZvbGxvd2luZyB0aGluZ3MNCg0KU2V0dXAgLSBIb3N0MSAtLT4gbGFu
-MSAtLT4gbGFuMiAtLT4gSG9zdDIuIFBhY2tldCB0cmFuc21pdHRlZCBmcm9tDQpIb3N0MSBhbmQg
-cmVjZWl2ZWQgYnkgSG9zdDIuDQoNClNjZW5hcmlvLTE6IFZsYW4gYXdhcmUgc3lzdGVtIGFuZCBi
-b3RoIGxhbjEgJiBsYW4yIGFyZSBpbiBzYW1lIHZpZA0KaXAgbGluayBzZXQgZGV2IGJyMCB0eXBl
-IGJyaWRnZSB2bGFuX2ZpbHRlcmluZyAxDQpicmlkZ2UgdmxhbiBhZGQgZGV2IGxhbjIgdmlkIDEw
-IHB2aWQgdW50YWdnZWQNCmJyaWRnZSB2bGFuIGFkZCBkZXYgbGFuMSB2aWQgMTAgcHZpZCB1bnRh
-Z2dlZA0KDQpQYWNrZXQgdHJhbnNtaXR0ZWQgZnJvbSBIb3N0MSB3aXRoIHZpZCAxMCBpcyByZWNl
-aXZlZCBieSB0aGUgSG9zdDIuDQpQYWNrZXQgdHJhbnNtaXR0ZWQgZnJvbSBIb3N0MSB3aXRoIHZp
-ZCA1IGlzIG5vdCByZWNlaXZlZCBieSB0aGUgSG9zdDIuDQoNClNjZW5hcmlvLTI6IFZsYW4gdW5h
-d2FyZSBzeXN0ZW0gDQppcCBsaW5rIHNldCBkZXYgYnIwIHR5cGUgYnJpZGdlIHZsYW5fZmlsdGVy
-aW5nIDANCg0KTm93LCBpcnJlc3BlY3RpdmUgb2YgdGhlIHZpZCwgdGhlIHBhY2tldHMgYXJlIHJl
-Y2VpdmVkIGJ5IEhvc3QyDQpQYWNrZXQgdHJhbnNtaXR0ZWQgZnJvbSBIb3N0MSB3aXRoIHZpZCAx
-MCBpcyByZWNlaXZlZCBieSB0aGUgSG9zdDIuDQpQYWNrZXQgdHJhbnNtaXR0ZWQgZnJvbSBIb3N0
-MSB3aXRoIHZpZCA1IGlzICByZWNlaXZlZCBieSB0aGUgSG9zdDIuDQoNCldoZXRoZXIgdGhlIGFi
-b3ZlIGFwcHJvYWNoIGlzIGNvcnJlY3Qgb3IgZG8gd2UgbmVlZCB0byB0ZXN0IGFueXRoaW5nDQpm
-dXJ0aGVyLg0KDQpUaGFua3MNCkFydW4gDQpPbiBTYXQsIDIwMjItMDctMDkgYXQgMDA6MjcgKzAy
-MDAsIE1hcnRpbiBCbHVtZW5zdGluZ2wgd3JvdGU6DQo+IEVYVEVSTkFMIEVNQUlMOiBEbyBub3Qg
-Y2xpY2sgbGlua3Mgb3Igb3BlbiBhdHRhY2htZW50cyB1bmxlc3MgeW91DQo+IGtub3cgdGhlIGNv
-bnRlbnQgaXMgc2FmZQ0KPiANCj4gSGkgVmxhZGltaXIsDQo+IA0KPiBPbiBGcmksIEp1bCA4LCAy
-MDIyIGF0IDI6MDkgUE0gVmxhZGltaXIgT2x0ZWFuIDwNCj4gdmxhZGltaXIub2x0ZWFuQG54cC5j
-b20+IHdyb3RlOg0KPiA+IA0KPiA+IE9uIEZyaSwgSnVsIDA4LCAyMDIyIGF0IDEyOjAwOjMzUE0g
-KzAyMDAsIE1hcnRpbiBCbHVtZW5zdGluZ2wNCj4gPiB3cm90ZToNCj4gPiA+IFRoYXQgbWFkZSBt
-ZSBsb29rIGF0IGFub3RoZXIgc2VsZnRlc3QgYW5kIGluZGVlZDogbW9zdCBvZiB0aGUNCj4gPiA+
-IGxvY2FsX3Rlcm1pbmF0aW9uLnNoIHRlc3RzIGFyZSBwYXNzaW5nIChhbGJlaXQgYWZ0ZXIgaGF2
-aW5nIHRvDQo+ID4gPiBtYWtlDQo+ID4gPiBzb21lIGNoYW5nZXMgdG8gdGhlIHNlbGZ0ZXN0IHNj
-cmlwdHMsIEknbGwgcHJvdmlkZSBwYXRjaGVzIGZvcg0KPiA+ID4gdGhlc2UNCj4gPiA+IHNvb24p
-DQo+ID4gPiANCj4gPiA+IE5vbmUgKHplcm8pIG9mIHRoZSB0ZXN0cyBmcm9tIGJyaWRnZV92bGFu
-X3VuYXdhcmUuc2ggYW5kIG9ubHkgYQ0KPiA+ID4gc2luZ2xlDQo+ID4gPiB0ZXN0IGZyb20gYnJp
-ZGdlX3ZsYW5fYXdhcmUuc2ggKCJFeHRlcm5hbGx5IGxlYXJuZWQgRkRCIGVudHJ5IC0NCj4gPiA+
-IGFnZWluZw0KPiA+ID4gJiByb2FtaW5nIikgYXJlIHBhc3NpbmcgZm9yIG1lIG9uIEdTV0lQLg0K
-PiA+ID4gQWxzbyBtb3N0IG9mIHRoZSBldGh0b29sLnNoIHRlc3RzIGFyZSBmYWlsaW5nIChwaW5n
-IGFsd2F5cw0KPiA+ID4gcmVwb3J0cw0KPiA+ID4gIkRlc3RpbmF0aW9uIEhvc3QgVW5yZWFjaGFi
-bGUiKS4NCj4gPiANCj4gPiBJIGRvbid0IHJlY2FsbCBoYXZpbmcgcnVuIGV0aHRvb2wuc2gsIHNv
-IEkgZG9uJ3Qga25vdyB3aGF0J3MgdGhlDQo+ID4gc3RhdHVzDQo+ID4gdGhlcmUuDQo+IA0KPiBP
-Sywgbm8gd29ycmllcyB0aGVyZQ0KPiANCj4gPiA+IEkgZ3Vlc3MgbW9zdCAob3IgYXQgbGVhc3Qg
-bW9yZSkgb2YgdGhlc2UgYXJlIHN1cHBvc2VkIHRvIHBhc3M/IERvDQo+ID4gPiB5b3UNCj4gPiA+
-IHdhbnQgbWUgdG8gb3BlbiBhbm90aGVyIHRocmVhZCBmb3IgdGhpcyBvciBpcyBpdCBmaW5lIHRv
-IHJlcGx5DQo+ID4gPiBoZXJlPw0KPiA+IA0KPiA+IFNvIHllcywgdGhlIGludGVudGlvbiBpcyBm
-b3IgdGhlIHNlbGZ0ZXN0cyB0byBwYXNzLCBidXQgSSB3b3VsZG4ndA0KPiA+IGJlDQo+ID4gc3Vy
-cHJpc2VkIGlmIHRoZXkgZG9uJ3QuIFRoZXkgZGlkbid0IHdoZW4gSSBzdGFydGVkIHRoaXMgZWZm
-b3J0IGZvcg0KPiA+IHRoZQ0KPiA+IG9jZWxvdC9mZWxpeCBEU0EgZHJpdmVyIGVpdGhlciwgaXQn
-cyBtb3N0IGxpa2VseSB0aGF0IGluZGl2aWR1YWwNCj4gPiBkcml2ZXJzDQo+ID4gd2lsbCBuZWVk
-IGNoYW5nZXMsIHRoYXQncyBraW5kIG9mIHRoZSB3aG9sZSBwb2ludCBvZiBoYXZpbmcNCj4gPiBz
-ZWxmdGVzdHMsDQo+ID4gdG8gaGF2ZSBpbXBsZW1lbnRhdGlvbnMgdGhhdCBhcmUgdW5pZm9ybSBp
-biB0ZXJtcyBvZiBiZWhhdmlvci4NCj4gPiBGb3IgdGhlIG9jZWxvdCBkcml2ZXIsIHRoZSB0ZXN0
-cyBzeW1saW5rZWQgaW4gdGhlIERTQSBmb2xkZXIgZG8NCj4gPiBwYXNzDQo+ID4gKHdpdGggdGhl
-IGV4Y2VwdGlvbiBvZiB0aGUgbG9ja2VkIHBvcnQgdGVzdCwgd2hpY2ggaXNuJ3QNCj4gPiBpbXBs
-ZW1lbnRlZCwNCj4gPiBhbmQgdGhlIGJyaWRnZSBsb2NhbF90ZXJtaW5hdGlvbi5zaCB0ZXN0cywg
-YnV0IHRoYXQncyBhIGJyaWRnZQ0KPiA+IHByb2JsZW0NCj4gPiBhbmQgbm90IGEgZHJpdmVyIHBy
-b2JsZW0pLiBJIHNob3VsZCBoYXZlIGEgcmVtb3RlIHNldHVwIGFuZCBJDQo+ID4gc2hvdWxkIGJl
-DQo+ID4gYWJsZSB0byByZXBlYXQgc29tZSB0ZXN0cyBpZiBuZWNlc3NhcnkuDQo+ID4gDQo+ID4g
-SSB0aGluayBpdCB3b3VsZCBiZSBhIGdvb2QgaWRlYSB0byBjcmVhdGUgYSBuZXcgZW1haWwgdGhy
-ZWFkIHdpdGgNCj4gPiB0aGUNCj4gPiByZWxldmFudCBEU0EgbWFpbnRhaW5lcnMgZm9yIHNlbGZ0
-ZXN0IHN0YXR1cyBvbiBHU1dJUC4gWW91J2xsIG5lZWQNCj4gPiB0bw0KPiA+IGdhdGhlciBzb21l
-IGluZm9ybWF0aW9uIG9uIHdoYXQgZXhhY3RseSBmYWlscyB3aGVuIHRoaW5ncyBmYWlsLg0KPiA+
-IFRoZSB3YXkgSSBwcmVmZXIgdG8gZG8gdGhpcyBpcyB0byBydW4gdGhlIHRlc3QgaXRzZWxmIHdp
-dGggImJhc2ggLXgNCj4gPiAuL2JyaWRnZV92bGFuX3VuYXdhcmUuc2ggc3dwMCBzd3AxIHN3cDIg
-c3dwMyIsIGFuYWx5emUgYSBiaXQgd2hlcmUNCj4gPiB0aGluZ3MgZ2V0IHN0dWNrLCB0aGVuIGVk
-aXQgdGhlIHNjcmlwdCwgcHV0IGEgImJhc2giIGNvbW1hbmQgYWZ0ZXINCj4gPiB0aGUNCj4gPiBm
-YWlsaW5nIHBvcnRpb24sIGFuZCBydW4gdGhlIHNlbGZ0ZXN0IGFnYWluOyB0aGlzIGdpdmVzIG1l
-IGENCj4gPiBzdWJzaGVsbA0KPiA+IHdpdGggYWxsIHRoZSBWUkZzIGNvbmZpZ3VyZWQgZnJvbSB3
-aGljaCBJIGhhdmUgbW9yZSBjb250cm9sIGFuZCBjYW4NCj4gPiByZS1ydW4gdGhlIGNvbW1hbmRz
-IHRoYXQganVzdCBmYWlsZWQgKEkgY29weSB0aGVtIGZyb20gcmlnaHQgYWJvdmUsDQo+ID4gdGhl
-eSdyZSB2aXNpYmxlIHdoZW4gcnVuIHdpdGggYmFzaCAteCkuIFRoZW4gSSB0cnkgdG8gbWFudWFs
-bHkNCj4gPiBjaGVjaw0KPiA+IGNvdW50ZXJzLCB0Y3BkdW1wLCB0aGluZ3MgbGlrZSB0aGF0Lg0K
-PiANCj4gSSBhbHJlYWR5IGZvdW5kICJiYXNoIC14IiBhbmQgdXNlZCBhIHNpbWlsYXIgdHJpY2sg
-KGxhdW5jaGluZyB0Y3BkdW1wDQo+IGJlZm9yZSB0aGUgZmFpbGluZyBwb3J0aW9uKS4gQnV0IGl0
-J3MgZ29vZCB0byBoYXZlIGl0IHdyaXR0ZW4gZG93biENCj4gVGhhbmtzIGEgbG90IGFnYWluIGZv
-ciBhbGwgeW91ciBkZXRhaWxlZCBleHBsYW5hdGlvbnMgYW5kIHRoZSB0aW1lDQo+IHlvdSd2ZSB0
-YWtlbiB0byBoZWxwIG1lIG91dCENCj4gSSdsbCBzdGFydCBhIG5ldyB0aHJlYWQgb24gdGhpcyBp
-biB0aGUgbmV4dCBmZXcgZGF5cy4NCj4gDQo+IA0KPiBCZXN0IHJlZ2FyZHMsDQo+IE1hcnRpbg0K
+Stanislav Fomichev <sdf@google.com> writes:
+
+> On Wed, Jul 13, 2022 at 2:52 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@re=
+dhat.com> wrote:
+>>
+>> Stanislav Fomichev <sdf@google.com> writes:
+>>
+>> > On Wed, Jul 13, 2022 at 4:14 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke=
+@redhat.com> wrote:
+>> >>
+>> >> Packet forwarding is an important use case for XDP, which offers
+>> >> significant performance improvements compared to forwarding using the
+>> >> regular networking stack. However, XDP currently offers no mechanism =
+to
+>> >> delay, queue or schedule packets, which limits the practical uses for
+>> >> XDP-based forwarding to those where the capacity of input and output =
+links
+>> >> always match each other (i.e., no rate transitions or many-to-one
+>> >> forwarding). It also prevents an XDP-based router from doing any kind=
+ of
+>> >> traffic shaping or reordering to enforce policy.
+>> >>
+>> >> This series represents a first RFC of our attempt to remedy this lack=
+. The
+>> >> code in these patches is functional, but needs additional testing and
+>> >> polishing before being considered for merging. I'm posting it here as=
+ an
+>> >> RFC to get some early feedback on the API and overall design of the
+>> >> feature.
+>> >>
+>> >> DESIGN
+>> >>
+>> >> The design consists of three components: A new map type for storing X=
+DP
+>> >> frames, a new 'dequeue' program type that will run in the TX softirq =
+to
+>> >> provide the stack with packets to transmit, and a set of helpers to d=
+equeue
+>> >> packets from the map, optionally drop them, and to schedule an interf=
+ace
+>> >> for transmission.
+>> >>
+>> >> The new map type is modelled on the PIFO data structure proposed in t=
+he
+>> >> literature[0][1]. It represents a priority queue where packets can be
+>> >> enqueued in any priority, but is always dequeued from the head. From =
+the
+>> >> XDP side, the map is simply used as a target for the bpf_redirect_map=
+()
+>> >> helper, where the target index is the desired priority.
+>> >
+>> > I have the same question I asked on the series from Cong:
+>> > Any considerations for existing carousel/edt-like models?
+>>
+>> Well, the reason for the addition in patch 5 (continuously increasing
+>> priorities) is exactly to be able to implement EDT-like behaviour, where
+>> the priority is used as time units to clock out packets.
+>
+> Ah, ok, I didn't read the patches closely enough. I saw some limits
+> for the ranges and assumed that it wasn't capable of efficiently
+> storing 64-bit timestamps..
+
+The goal is definitely to support full 64-bit priorities. Right now you
+have to start out at 0 but can go on for a full 64 bits, but that's a
+bit of an API wart that I'd like to get rid of eventually...
+
+>> > Can we make the map flexible enough to implement different qdisc
+>> > policies?
+>>
+>> That's one of the things we want to be absolutely sure about. We are
+>> starting out with the PIFO map type because the literature makes a good
+>> case that it is flexible enough to implement all conceivable policies.
+>> The goal of the test harness linked as note [4] is to actually examine
+>> this; Frey is our PhD student working on this bit.
+>>
+>> Thus far we haven't hit any limitations on this, but we'll need to add
+>> more policies before we are done with this. Another consideration is
+>> performance, of course, so we're also planning to do a comparison with a
+>> more traditional "bunch of FIFO queues" type data structure for at least
+>> a subset of the algorithms. Kartikeya also had an idea for an
+>> alternative way to implement a priority queue using (semi-)lockless
+>> skiplists, which may turn out to perform better.
+>>
+>> If there's any particular policy/algorithm you'd like to see included in
+>> this evaluation, please do let us know, BTW! :)
+>
+> I honestly am not sure what the bar for accepting this should be. But
+> on the Cong's series I mentioned Martin's CC bpf work as a great
+> example of what we should be trying to do for qdisc-like maps. Having
+> a bpf version of fq/fq_codel/whatever_other_complex_qdisc might be
+> very convincing :-)
+
+Just doing flow queueing is quite straight forward with PIFOs. We're
+working on fq_codel. Personally I also want to implement something that
+has feature parity with sch_cake (which includes every feature and the
+kitchen sink already) :)
+
+>> >> The dequeue program type is a new BPF program type that is attached t=
+o an
+>> >> interface; when an interface is scheduled for transmission, the stack=
+ will
+>> >> execute the attached dequeue program and, if it returns a packet to
+>> >> transmit, that packet will be transmitted using the existing ndo_xdp_=
+xmit()
+>> >> driver function.
+>> >>
+>> >> The dequeue program can obtain packets by pulling them out of a PIFO =
+map
+>> >> using the new bpf_packet_dequeue() helper. This returns a pointer to =
+an
+>> >> xdp_md structure, which can be dereferenced to obtain packet data and
+>> >> data_meta pointers like in an XDP program. The returned packets are a=
+lso
+>> >> reference counted, meaning the verifier enforces that the dequeue pro=
+gram
+>> >> either drops the packet (with the bpf_packet_drop() helper), or retur=
+ns it
+>> >> for transmission. Finally, a helper is added that can be used to actu=
+ally
+>> >> schedule an interface for transmission using the dequeue program type=
+; this
+>> >> helper can be called from both XDP and dequeue programs.
+>> >>
+>> >> PERFORMANCE
+>> >>
+>> >> Preliminary performance tests indicate about 50ns overhead of adding
+>> >> queueing to the xdp_fwd example (last patch), which translates to a 2=
+0% PPS
+>> >> overhead (but still 2x the forwarding performance of the netstack):
+>> >>
+>> >> xdp_fwd :     4.7 Mpps  (213 ns /pkt)
+>> >> xdp_fwd -Q:   3.8 Mpps  (263 ns /pkt)
+>> >> netstack:       2 Mpps  (500 ns /pkt)
+>> >>
+>> >> RELATION TO BPF QDISC
+>> >>
+>> >> Cong Wang's BPF qdisc patches[2] share some aspects of this series, in
+>> >> particular the use of a map to store packets. This is no accident, as=
+ we've
+>> >> had ongoing discussions for a while now. I have no great hope that we=
+ can
+>> >> completely converge the two efforts into a single BPF-based queueing
+>> >> API (as has been discussed before[3], consolidating the SKB and XDP p=
+aths
+>> >> is challenging). Rather, I'm hoping that we can converge the designs =
+enough
+>> >> that we can share BPF code between XDP and qdisc layers using common
+>> >> functions, like it's possible to do with XDP and TC-BPF today. This w=
+ould
+>> >> imply agreeing on the map type and API, and possibly on the set of he=
+lpers
+>> >> available to the BPF programs.
+>> >
+>> > What would be the big difference for the map wrt xdp_frame vs sk_buff
+>> > excluding all obvious stuff like locking/refcnt?
+>>
+>> I expect it would be quite straight-forward to just add a second subtype
+>> of the PIFO map in this series that holds skbs. In fact, I think that
+>> from the BPF side, the whole model implemented here would be possible to
+>> carry over to the qdisc layer more or less wholesale. Some other
+>> features of the qdisc layer, like locking, classes, and
+>> multi-CPU/multi-queue management may be trickier, but I'm not sure how
+>> much of that we should expose in a BPF qdisc anyway (as you may have
+>> noticed I commented on Cong's series to this effect regarding the
+>> classful qdiscs).
+>
+> Maybe a related question here: with the way you do
+> BPF_MAP_TYPE_PIFO_GENERIC vs BPF_MAP_TYPE_PIFO_XDP, how hard it would
+> be have support for storing xdp_frames/skb in any map? Let's say we
+> have generic BPF_MAP_TYPE_RBTREE, where the key is
+> priority/timestamp/whatever, can we, based on the value's btf_id,
+> figure out the rest? (that the value is kernel structure and needs
+> special care and more constraints - can't be looked up from user space
+> and so on)
+>
+> Seems like we really need to have two special cases: where we transfer
+> ownership of xdp_frame/skb to/from the map, any other big
+> complications?
+>
+> That way we can maybe untangle the series a bit: we can talk about
+> efficient data structures for storing frames/skbs independently of
+> some generic support for storing them in the maps. Any major
+> complications with that approach?
+
+I've had discussions with Kartikeya on this already (based on his 'kptr
+in map' work). That may well end up being feasible, which would be
+fantastic. The reason we didn't use it for this series is that there's
+still some work to do on the generic verifier/infrastructure support
+side of this (the PIFO map is the oldest part of this series), and I
+didn't want to hold up the rest of the queueing work until that landed.
+
+Now that we have a functional prototype I expect that iterating on the
+data structure will be the next step. One complication with XDP is that
+we probably want to keep using XDP_REDIRECT to place packets into the
+map because that gets us bulking which is important for performance;
+however, in general I like the idea of using BTF to designate the map
+value type, and if we can figure out a way to make it completely generic
+even for packets I'm all for that! :)
+
+>> >> PATCH STRUCTURE
+>> >>
+>> >> This series consists of a total of 17 patches, as follows:
+>> >>
+>> >> Patches 1-3 are smaller preparatory refactoring patches used by subse=
+quent
+>> >> patches.
+>> >
+>> > Seems like these can go separately without holding the rest?
+>>
+>> Yeah, guess so? They don't really provide much benefit without the users
+>> alter in the series, though, so not sure there's much point in sending
+>> them separately?
+>>
+>> >> Patches 4-5 introduce the PIFO map type, and patch 6 introduces the d=
+equeue
+>> >> program type.
+>> >
+>> > [...]
+>> >
+>> >> Patches 7-10 adds the dequeue helpers and the verifier features neede=
+d to
+>> >> recognise packet pointers, reference count them, and allow dereferenc=
+ing
+>> >> them to obtain packet data pointers.
+>> >
+>> > Have you considered using kfuncs for these instead of introducing new
+>> > hooks/contexts/etc?
+>>
+>> I did, but I'm not sure it's such a good fit? In particular, the way the
+>> direct packet access is implemented for dequeue programs (where you can
+>> get an xdp_md pointer and deref that to get data and data_end pointers)
+>> is done this way so programs can share utility functions between XDP and
+>> dequeue programs. And having a new program type for the dequeue progs
+>> seem like the obvious thing to do since they're doing something new?
+>>
+>> Maybe I'm missing something, though; could you elaborate on how you'd
+>> use kfuncs instead?
+>
+> I was thinking about the approach in general. In networking bpf, we've
+> been adding new program types, new contexts and new explicit hooks.
+> This all requires a ton of boiler plate (converting from uapi ctx to
+> the kernel, exposing hook points, etc, etc). And looking at Benjamin's
+> HID series, it's so much more elegant: there is no uapi, just kernel
+> function that allows it to be overridden and a bunch of kfuncs
+> exposed. No uapi, no helpers, no fake contexts.
+>
+> For networking and xdp the ship might have sailed, but I was wondering
+> whether we should be still stuck in that 'old' boilerplate world or we
+> have a chance to use new nice shiny things :-)
+>
+> (but it might be all moot if we'd like to have stable upis?)
+
+Right, I see what you mean. My immediate feeling is that having an
+explicit stable UAPI for XDP has served us well. We do all kinds of
+rewrite tricks behind the scenes (things like switching between xdp_buff
+and xdp_frame, bulking, direct packet access, reading ifindexes by
+pointer walking txq->dev, etc) which are important ways to improve
+performance without exposing too many nitty-gritty details into the API.
+
+There's also consistency to consider: I think the addition of queueing
+should work as a natural extension of the existing programming model for
+XDP. So I feel like this is more a case of "if we were starting from
+scratch today we might do things differently (like the HID series), but
+when extending things let's keep it consistent"?
+
+-Toke
+
