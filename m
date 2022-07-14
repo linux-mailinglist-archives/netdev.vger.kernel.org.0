@@ -2,75 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 997D4574A32
-	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 12:12:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 31949574A3B
+	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 12:13:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238154AbiGNKMo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jul 2022 06:12:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51306 "EHLO
+        id S238163AbiGNKN5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jul 2022 06:13:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237674AbiGNKMn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 06:12:43 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5958E51A29
-        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 03:12:39 -0700 (PDT)
+        with ESMTP id S237829AbiGNKNz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 06:13:55 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4AFA7F5A7
+        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 03:13:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657793558;
+        s=mimecast20190719; t=1657793628;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=vX+1vincHLczEvi40DdMkK3fKVGRof2YnPkJlU910Qw=;
-        b=YbSfrdI8gN9q219TBT366EasR3aXJh5uEeD/F/M1KT2qMtBX3ol3akVMVOxGsoQjCnVjaY
-        1CY10opKt06Irm2W/dmnXMioiZFC1I7wbmWp78f9FF/o5/TRmNrCV5+eHoXUChJom260JC
-        rEqjGy59Ki/YyrLlmrXeC/r2BYvV3q0=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=DsGwO9HWD4Cbhq+MSuSkc+2KenLUZr7HYDGzQyLBjVQ=;
+        b=QFf/Xg6YIBDHDDuDyalrCt70ciT6WYq3dIT0KhKnNy/Uc0MmkVpWmyYfQ0Fr2MeYFg0+33
+        +n505eHNXmIjAE/YSNuCjecqqhZziUyGDQp5Vwky4BmKTslt8zxD9a+p1Q347wV1K6zaMv
+        onCzSsEEvu5btdPR6koZfw3clsW4McQ=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-397-OjhTgkCcN2qU-wzvAmMJ7A-1; Thu, 14 Jul 2022 06:12:37 -0400
-X-MC-Unique: OjhTgkCcN2qU-wzvAmMJ7A-1
-Received: by mail-wm1-f70.google.com with SMTP id z11-20020a05600c0a0b00b003a043991610so545356wmp.8
-        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 03:12:37 -0700 (PDT)
+ us-mta-294-8jTZorkGO36i23G0HEP_Bw-1; Thu, 14 Jul 2022 06:13:47 -0400
+X-MC-Unique: 8jTZorkGO36i23G0HEP_Bw-1
+Received: by mail-ed1-f69.google.com with SMTP id c9-20020a05640227c900b0043ad14b1fa0so1234495ede.1
+        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 03:13:46 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=vX+1vincHLczEvi40DdMkK3fKVGRof2YnPkJlU910Qw=;
-        b=AnREC46ayA14XxfDMh2HDunxjRWh9WboxlgZ0pDFSkiIDgmH5gnTX7RxYZznjNcD5P
-         5kkrGBqzCeicLQu5zd83TjobS/HYRUu0eQk2XhxlzG4AnkUElkfIZY8nFz/VYIGfJc/S
-         GSTp34f9MIAP5WolkjV6iGvckP9rhhHtmwRloL5VZLZFRcrQ/qyDbioEJmh0wZ6bObv2
-         O6Gdo/BEVHD97M0mkd7bTeZZfwyVlLRLMiEpHc8oICavMu0PD3F21lK/3L/kwDobnhJ9
-         YkIsbcCG6EDKZvCFJ82K4wl96JfQB4dCwv7eP1w5qe4OVo27mpj5TdB/y5M5T2CLDdJk
-         bfyg==
-X-Gm-Message-State: AJIora/codIyfnXGcdOK85otoVtYe2AxWbdzk4dzMH1anAMtXcsiMmBg
-        O5y56b3bJHeR7fFxliD6eHkfXd+41wudRRF2EcS+eyieGwIoAMDlsFfIOPVMl10TZP66VVrU+2Z
-        nwpoE4GtdMkIonnE1
-X-Received: by 2002:adf:df89:0:b0:21d:7f20:7535 with SMTP id z9-20020adfdf89000000b0021d7f207535mr7694506wrl.714.1657793556226;
-        Thu, 14 Jul 2022 03:12:36 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1s5Ay9m3TGyddNecaSFCH1dv2eH/EJJeiQKALcplGL0A3r8vOuCAHhIFVGKFHWFiAnC1a3UzQ==
-X-Received: by 2002:adf:df89:0:b0:21d:7f20:7535 with SMTP id z9-20020adfdf89000000b0021d7f207535mr7694488wrl.714.1657793555976;
-        Thu, 14 Jul 2022 03:12:35 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-97-238.dyn.eolo.it. [146.241.97.238])
-        by smtp.gmail.com with ESMTPSA id i3-20020a1c5403000000b003a2e1883a27sm5917529wmb.18.2022.07.14.03.12.35
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=DsGwO9HWD4Cbhq+MSuSkc+2KenLUZr7HYDGzQyLBjVQ=;
+        b=BGiJU6fnH8TvPIX1MKp8/4l0809Fs6ULt4hl5eshIx4/BeTGTmrlc6/GwAke8fBjmh
+         fmbSW9MXYIlnTYgeLGbuAp8yEkMxBKZQ8OVpM2+rRoTZJ/yH09yuoxalSNJEko51mb1i
+         HGR+fpooQViSoF9a7Iqk0RGukChIaYEpTubG4FIUBse+LpCpyjCWqXioEIxUhbTL/8hI
+         yVnZYJCq1Q4hz9n0yubSYXNVlD1R0lkQ+Zv2b0hnWfNKJasD59oVDprer+IhCHc0UVdx
+         mLkJW/mVhbP/Y0dj8AiilFB3TJxqQi7fWGM3StXkCI1Dl6vPM7L0Dx6PWj58ImAuDeo+
+         /JFw==
+X-Gm-Message-State: AJIora/W1ABpJMI7BVHJe3UB7wv35m634A5AbcjvuFFJFN0OX6h5GjxV
+        u9Yb2ZTbEvZF3Ep6jNa9nXXZRxyPwbHpjf5PzQCD1gif10JY9k4swNxBIwJ9H+DdNhpiS0zCu/o
+        wRQCaRzeivBp36Oc+
+X-Received: by 2002:a17:907:d26:b0:72b:8311:a167 with SMTP id gn38-20020a1709070d2600b0072b8311a167mr7906420ejc.89.1657793625862;
+        Thu, 14 Jul 2022 03:13:45 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1vb+Oj04dmGnnVMDrCOQd21EmWUcvqli1zsK3U0RSfLzgvyUxFIuAa6i7QblpSW/cJ0hl5LGg==
+X-Received: by 2002:a17:907:d26:b0:72b:8311:a167 with SMTP id gn38-20020a1709070d2600b0072b8311a167mr7906371ejc.89.1657793625493;
+        Thu, 14 Jul 2022 03:13:45 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id eu18-20020a170907299200b006fe921fcb2dsm524228ejc.49.2022.07.14.03.13.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Jul 2022 03:12:35 -0700 (PDT)
-Message-ID: <267f466722ed63a2ba9abd74c31a9fab57965e4a.camel@redhat.com>
-Subject: Re: [PATCH 2/2] net: stmmac: remove duplicate dma queue channel
- macros
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Junxiao Chang <junxiao.chang@intel.com>, peppe.cavallaro@st.com,
-        alexandre.torgue@foss.st.com, joabreu@synopsys.com,
-        netdev@vger.kernel.org
-Date:   Thu, 14 Jul 2022 12:12:34 +0200
-In-Reply-To: <20220713084728.1311465-2-junxiao.chang@intel.com>
-References: <20220713084728.1311465-1-junxiao.chang@intel.com>
-         <20220713084728.1311465-2-junxiao.chang@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        Thu, 14 Jul 2022 03:13:44 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 205744D9B1B; Thu, 14 Jul 2022 12:13:43 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Andrii Nakryiko <andrii@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Freysteinn Alfredsson <freysteinn.alfredsson@kau.se>,
+        Cong Wang <xiyou.wangcong@gmail.com>
+Subject: Re: [RFC PATCH 14/17] libbpf: Add support for querying dequeue
+ programs
+In-Reply-To: <CAEf4BzZN2kBafJPQKaM4Pakf=PSYGiVzq53ED0NCRZ+DkaZHKA@mail.gmail.com>
+References: <20220713111430.134810-1-toke@redhat.com>
+ <20220713111430.134810-15-toke@redhat.com>
+ <CAEf4BzZN2kBafJPQKaM4Pakf=PSYGiVzq53ED0NCRZ+DkaZHKA@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Thu, 14 Jul 2022 12:13:43 +0200
+Message-ID: <871quoovc8.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -79,40 +96,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2022-07-13 at 16:47 +0800, Junxiao Chang wrote:
-> It doesn't need extra macros for queue 0 & 4. Same macro could
-> be used for all 8 queues.
-> 
-> Signed-off-by: Junxiao Chang <junxiao.chang@intel.com>
+Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
 
-This looks like a net-next cleanup for the previous patch, which
-instead looks like a proper -net candidate. Would you mind re-posting
-the two patch separatelly, waiting for the fix to land into net-next
-before posting the cleanup?
+> On Wed, Jul 13, 2022 at 4:15 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@re=
+dhat.com> wrote:
+>>
+>> Add support to libbpf for reading the dequeue program ID from netlink wh=
+en
+>> querying for installed XDP programs. No additional support is needed to
+>> install dequeue programs, as they are just using a new mode flag for the
+>> regular XDP program installation mechanism.
+>>
+>> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+>> ---
+>>  tools/lib/bpf/libbpf.h  | 1 +
+>>  tools/lib/bpf/netlink.c | 8 ++++++++
+>>  2 files changed, 9 insertions(+)
+>>
+>> diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
+>> index e4d5353f757b..b15ff90279cb 100644
+>> --- a/tools/lib/bpf/libbpf.h
+>> +++ b/tools/lib/bpf/libbpf.h
+>> @@ -906,6 +906,7 @@ struct bpf_xdp_query_opts {
+>>         __u32 drv_prog_id;      /* output */
+>>         __u32 hw_prog_id;       /* output */
+>>         __u32 skb_prog_id;      /* output */
+>> +       __u32 dequeue_prog_id;  /* output */
+>
+> can't do that, you have to put it after attach_mode to preserve
+> backwards/forward compat
 
-> ---
->  drivers/net/ethernet/stmicro/stmmac/dwmac4.h      |  4 +---
->  drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c | 11 ++++-------
->  2 files changed, 5 insertions(+), 10 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4.h b/drivers/net/ethernet/stmicro/stmmac/dwmac4.h
-> index 462ca7ed095a2..a7b725a7519bb 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/dwmac4.h
-> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4.h
-> @@ -330,9 +330,7 @@ enum power_event {
->  
->  #define MTL_RXQ_DMA_MAP0		0x00000c30 /* queue 0 to 3 */
->  #define MTL_RXQ_DMA_MAP1		0x00000c34 /* queue 4 to 7 */
-> -#define MTL_RXQ_DMA_Q04MDMACH_MASK	GENMASK(3, 0)
-> -#define MTL_RXQ_DMA_Q04MDMACH(x)	((x) << 0)
-> -#define MTL_RXQ_DMA_QXMDMACH_MASK(x)	GENMASK(11 + (8 * ((x) - 1)), 8 * (x))
-> +#define MTL_RXQ_DMA_QXMDMACH_MASK(x)	GENMASK(3 + (8 * (x)), 8 * (x))
->  #define MTL_RXQ_DMA_QXMDMACH(chan, q)	((chan) << (8 * (q)))
+Argh, yes, of course, total brainfart - thanks for pointing that out! :)
 
-if you here use ((x) & 0x3) instead of (x) and ((q) & 0x3) instead of
-(q), you can avoid the if statement below. 
->  
-cheers,
-
-Paolo
+-Toke
 
