@@ -2,79 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9139F575577
-	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 20:55:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9515557557A
+	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 20:56:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237959AbiGNSzQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jul 2022 14:55:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40124 "EHLO
+        id S240850AbiGNS4U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jul 2022 14:56:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232411AbiGNSyx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 14:54:53 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C000D4A824;
-        Thu, 14 Jul 2022 11:54:52 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id mf4so5053737ejc.3;
-        Thu, 14 Jul 2022 11:54:52 -0700 (PDT)
+        with ESMTP id S240858AbiGNS4L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 14:56:11 -0400
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67AFC52FDE;
+        Thu, 14 Jul 2022 11:56:10 -0700 (PDT)
+Received: by mail-wm1-x331.google.com with SMTP id be14-20020a05600c1e8e00b003a04a458c54so1747564wmb.3;
+        Thu, 14 Jul 2022 11:56:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=deTtm47MXsECJaZBIB67QDLBauF0Vt4wm5KsLb4SAgk=;
-        b=qvN2AOcLfChB5JEP4ANrN58jEyVcbsMB/01Epc7MIT0ywZG4Gc/wvpEVW4V8QFHRKQ
-         C3zYG+tnsqzC3IS9ZMhr0MA3uedWZ72okdF8kqtrIepzBQXp1+gPRWxLyoTLyz/95ybh
-         fz85Sow/8BT+L253EgvTwRzQ09z50up6RYzpcz3FAEwOGlVE9jx9o/SKXRQS18UJu+t9
-         MdMC0Q0xJxQEseH0Fbz3yGUbPPCeT/NtmD3jRDTFSqpUvIM+faaK0iyckdpmnalyHU+Z
-         OM8CHnVIDqwaEXtjJR/zrX4ZHFP50IV4zYrmq6ymcMv7OyVa7mIupkAekqnj+buPVkKT
-         Vq2w==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=RU9V2OgJ1oKx9BLdxLEkZw3yHrxXayfkCQ6BCQBuuFQ=;
+        b=Ql4BH0HotX5MrQ/iK68GYF2HflniYai/4SZcESyRt8XH+ZImo4NFhsTQFpZoert2co
+         JI4RXBOAYWBZNzaQmRHmOrvEh71Rce+C+sHHERcOGYh5BUVQa2ISVDhM145KO8yUeSeU
+         tAf7CHYkoqUnt1LuLjx+1ndh7S30jF5xImOhJ0HxdDEEcaF0hi2LYzvbma++2zP+plLp
+         4Nc8usF6qDbzbXm5h7QCD2wVjKdKBi4hUAU8sKkj/mERbu05DSCidfUWciP59Nyov9Dq
+         WwNqKSg6CzC9MYpiVFYbPQAVevHOyQAja+470K5p/ZTeBS5x0F3syTXzGYxw/wRenq0j
+         HoEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=deTtm47MXsECJaZBIB67QDLBauF0Vt4wm5KsLb4SAgk=;
-        b=QiqYn+yAnd7S06U0CI9p7WvsHL24P5vVXdGL6vxAlYOEIjqJPMRY9Tm3a5eGv3zGJt
-         ZYeoCO11iJQ0jLuS+Q8xWvRLPmQtNaFIaOv4jB2k207ubi0XRhbYyuoT9vf+rlKfjSXM
-         mt8CaRDQ73klWbTfWgRKuNSAB4eyV/7reJ5SdSBdeB0MqlZmxun9O4atl2qXsvzAJtV6
-         jwLmV2CBoIpG+1dTbiLmK3+nMLUI4+J/SC0ImwGRg9nUx81wYPXr3Yy9njne3YfzwfaX
-         t8bLHQGBCcvkHog42mawTBBcjpijLi6iJQzA+OENi6aTnRLvsjkX6jpA0+8D9o3WhYsh
-         f3lQ==
-X-Gm-Message-State: AJIora+vSL4hF9vTtAlbOl5bXWoOGr5lHeo+wYuNXchDRqJU9IGrgBzI
-        LAfnCnybMXzMG9af3x49kJjIrWgPJk0OFC0K9qg=
-X-Google-Smtp-Source: AGRyM1sm/L4yzm9IZYrbSeZxKhG8BeVp8VCzAgsq8aJ2D/l/5JisnnjLDovgH9CBLUwAAdIVqjql8baolBmXgIJ1XLE=
-X-Received: by 2002:a17:907:6e05:b0:72a:a141:962 with SMTP id
- sd5-20020a1709076e0500b0072aa1410962mr9969077ejc.545.1657824891349; Thu, 14
- Jul 2022 11:54:51 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=RU9V2OgJ1oKx9BLdxLEkZw3yHrxXayfkCQ6BCQBuuFQ=;
+        b=7TkNlVk9cwqHCCpbVOr7cDQPq6vOlhUMk1joJfSdrrdNX4oFkHJ6v/3mu2dRi734ph
+         j9iAcx1jTRGYVNkIG9jaNWoLrPh9q+fHOKlsFXDINK3zM8XigIxQX558XK0gKpbQjCSn
+         vuZPhyaTPN6kfGDlWOsDeynLpVGPnm7ZSkZfX+Kbi88e96klNnvgu/RsIYzBijFMaHn7
+         yxetXTc3RtoxWWBdnYJ9X4f26nREcxhBKk5s3DwhxJFOV635MXDVJ0riD8dSQOk2HnqW
+         AmEs59welN412bmxa4UqMCcVdFjsVBjBu+0Av6URTZitGEk9/ww1eNk0Vlc1kO3qryLU
+         gawQ==
+X-Gm-Message-State: AJIora9hjIvsKZje33GpbtcaChpiNdQe6bt9LB/+Tq50m+a+iPlDgYxk
+        7GLaZ45k+axdLIPyZYVQv/M=
+X-Google-Smtp-Source: AGRyM1stYIHHYPzAtR/QEj1Nohoiw7sHzHJsFkNZuEYIDCmhXdakpURNC4jOoTQY6oxeA9PHmVWPSw==
+X-Received: by 2002:a05:600c:4ba9:b0:3a2:daf6:44f6 with SMTP id e41-20020a05600c4ba900b003a2daf644f6mr16695840wmp.52.1657824968834;
+        Thu, 14 Jul 2022 11:56:08 -0700 (PDT)
+Received: from [192.168.1.192] ([78.142.213.233])
+        by smtp.gmail.com with ESMTPSA id j42-20020a05600c1c2a00b003a2e9bdfcf8sm6996104wms.5.2022.07.14.11.56.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 14 Jul 2022 11:56:08 -0700 (PDT)
+Message-ID: <bc48e2bb-37ee-5b7c-5a97-01e026de2ba4@gmail.com>
+Date:   Thu, 14 Jul 2022 19:55:07 +0100
 MIME-Version: 1.0
-References: <20220713111430.134810-1-toke@redhat.com> <20220713111430.134810-16-toke@redhat.com>
- <CAEf4BzYUbwqKit9QY6zyq8Pkxa8+8SOiejGzuTGARVyXr8KdcA@mail.gmail.com> <CAP01T760my2iTzM5qsYvsZb6wvJP02k7BGOEOP-pHPPHEbH5Rg@mail.gmail.com>
-In-Reply-To: <CAP01T760my2iTzM5qsYvsZb6wvJP02k7BGOEOP-pHPPHEbH5Rg@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 14 Jul 2022 11:54:39 -0700
-Message-ID: <CAEf4BzZJvr+vcO57TK94GM7B5=k2wPgAub4BBJf1Uz0xNpCPVg@mail.gmail.com>
-Subject: Re: [RFC PATCH 15/17] selftests/bpf: Add verifier tests for dequeue prog
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        Mykola Lysenko <mykolal@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH net-next v4 00/27] io_uring zerocopy send
+Content-Language: en-US
+To:     David Ahern <dsahern@kernel.org>, io-uring@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Freysteinn Alfredsson <freysteinn.alfredsson@kau.se>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Shuah Khan <shuah@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Jens Axboe <axboe@kernel.dk>, kernel-team@fb.com
+References: <cover.1657194434.git.asml.silence@gmail.com>
+ <2c49d634-bd8a-5a7f-0f66-65dba22bae0d@kernel.org>
+ <bd9960ab-c9d8-8e5d-c347-8049cdf5708a@gmail.com>
+ <0f54508f-e819-e367-84c2-7aa0d7767097@gmail.com>
+ <d10f20a9-851a-33be-2615-a57ab92aca90@kernel.org>
+From:   Pavel Begunkov <asml.silence@gmail.com>
+In-Reply-To: <d10f20a9-851a-33be-2615-a57ab92aca90@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -83,56 +81,136 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 13, 2022 at 11:45 PM Kumar Kartikeya Dwivedi
-<memxor@gmail.com> wrote:
->
-> On Thu, 14 Jul 2022 at 07:38, Andrii Nakryiko <andrii.nakryiko@gmail.com>=
- wrote:
-> >
-> > On Wed, Jul 13, 2022 at 4:15 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@=
-redhat.com> wrote:
-> > >
-> > > From: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> > >
-> > > Test various cases of direct packet access (proper range propagation,
-> > > comparison of packet pointers pointing into separate xdp_frames, and
-> > > correct invalidation on packet drop (so that multiple packet pointers
-> > > are usable safely in a dequeue program)).
-> > >
-> > > Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> > > Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-> > > ---
-> >
-> > Consider writing these tests as plain C BPF code and put them in
-> > test_progs, is there anything you can't express in C and thus requires
-> > test_verifier?
->
-> Not really, but in general I like test_verifier because it stays
-> immune to compiler shenanigans.
+On 7/14/22 00:45, David Ahern wrote:
+> On 7/11/22 5:56 AM, Pavel Begunkov wrote:
+>> On 7/8/22 15:26, Pavel Begunkov wrote:
+>>> On 7/8/22 05:10, David Ahern wrote:
+>>>> On 7/7/22 5:49 AM, Pavel Begunkov wrote:
+>>>>> NOTE: Not be picked directly. After getting necessary acks, I'll be
+>>>>> working
+>>>>>         out merging with Jakub and Jens.
+>>>>>
+>>>>> The patchset implements io_uring zerocopy send. It works with both
+>>>>> registered
+>>>>> and normal buffers, mixing is allowed but not recommended. Apart
+>>>>> from usual
+>>>>> request completions, just as with MSG_ZEROCOPY, io_uring separately
+>>>>> notifies
+>>>>> the userspace when buffers are freed and can be reused (see API
+>>>>> design below),
+>>>>> which is delivered into io_uring's Completion Queue. Those
+>>>>> "buffer-free"
+>>>>> notifications are not necessarily per request, but the userspace has
+>>>>> control
+>>>>> over it and should explicitly attaching a number of requests to a
+>>>>> single
+>>>>> notification. The series also adds some internal optimisations when
+>>>>> used with
+>>>>> registered buffers like removing page referencing.
+>>>>>
+>>>>>   From the kernel networking perspective there are two main changes.
+>>>>> The first
+>>>>> one is passing ubuf_info into the network layer from io_uring
+>>>>> (inside of an
+>>>>> in kernel struct msghdr). This allows extra optimisations, e.g.
+>>>>> ubuf_info
+>>>>> caching on the io_uring side, but also helps to avoid cross-referencing
+>>>>> and synchronisation problems. The second part is an optional
+>>>>> optimisation
+>>>>> removing page referencing for requests with registered buffers.
+>>>>>
+>>>>> Benchmarking with an optimised version of the selftest (see [1]),
+>>>>> which sends
+>>>>> a bunch of requests, waits for completions and repeats. "+ flush"
+>>>>> column posts
+>>>>> one additional "buffer-free" notification per request, and just "zc"
+>>>>> doesn't
+>>>>> post buffer notifications at all.
+>>>>>
+>>>>> NIC (requests / second):
+>>>>> IO size | non-zc    | zc             | zc + flush
+>>>>> 4000    | 495134    | 606420 (+22%)  | 558971 (+12%)
+>>>>> 1500    | 551808    | 577116 (+4.5%) | 565803 (+2.5%)
+>>>>> 1000    | 584677    | 592088 (+1.2%) | 560885 (-4%)
+>>>>> 600     | 596292    | 598550 (+0.4%) | 555366 (-6.7%)
+>>>>>
+>>>>> dummy (requests / second):
+>>>>> IO size | non-zc    | zc             | zc + flush
+>>>>> 8000    | 1299916   | 2396600 (+84%) | 2224219 (+71%)
+>>>>> 4000    | 1869230   | 2344146 (+25%) | 2170069 (+16%)
+>>>>> 1200    | 2071617   | 2361960 (+14%) | 2203052 (+6%)
+>>>>> 600     | 2106794   | 2381527 (+13%) | 2195295 (+4%)
+>>>>>
+>>>>> Previously it also brought a massive performance speedup compared to
+>>>>> the
+>>>>> msg_zerocopy tool (see [3]), which is probably not super interesting.
+>>>>>
+>>>>
+>>>> can you add a comment that the above results are for UDP.
+>>>
+>>> Oh, right, forgot to add it
+>>>
+>>>
+>>>> You dropped comments about TCP testing; any progress there? If not, can
+>>>> you relay any issues you are hitting?
+>>>
+>>> Not really a problem, but for me it's bottle necked at NIC bandwidth
+>>> (~3GB/s) for both zc and non-zc and doesn't even nearly saturate a CPU.
+>>> Was actually benchmarked by my colleague quite a while ago, but can't
+>>> find numbers. Probably need to at least add localhost numbers or grab
+>>> a better server.
+>>
+>> Testing localhost TCP with a hack (see below), it doesn't include
+>> refcounting optimisations I was testing UDP with and that will be
+>> sent afterwards. Numbers are in MB/s
+>>
+>> IO size | non-zc    | zc
+>> 1200    | 4174      | 4148
+>> 4096    | 7597      | 11228
+> 
+> I am surprised by the low numbers; you should be able to saturate a 100G
+> link with TCP and ZC TX API.
 
-In general I dislike them because they are almost incomprehensible. So
-unless there is a very particular sequence of low-level BPF assembly
-instructions one needs to test, I'd always opt for test_progs as more
-maintainable solution.
+It was a quick test with my laptop, not a super fast CPU, preemptible
+kernel, etc., and considering that the fact that it processes receives
+from in the same send syscall roughly doubles the overhead, 87Gb/s
+looks ok. It's not like MSG_ZEROCOPY would look much different, even
+more to that all sends here will be executed sequentially in io_uring,
+so no extra parallelism or so. As for 1200, I think 4GB/s is reasonable,
+it's just the kernel overhead per byte is too high, should be same with
+just send(2).
 
-Things like making sure that verifier rejects invalid use of
-particular objects or helpers doesn't seem to rely much on particular
-assembly sequence and can and should be expressed with plain C.
+>> Because it's localhost, we also spend cycles here for the recv side.
+>> Using a real NIC 1200 bytes, zc is worse than non-zc ~5-10%, maybe the
+>> omitted optimisations will somewhat help. I don't consider it to be a
+>> blocker. but would be interesting to poke into later. One thing helping
+>> non-zc is that it squeezes a number of requests into a single page
+>> whenever zerocopy adds a new frag for every request.
+>>
+>> Can't say anything new for larger payloads, I'm still NIC-bound but
+>> looking at CPU utilisation zc doesn't drain as much cycles as non-zc.
+>> Also, I don't remember if mentioned before, but another catch is that
+>> with TCP it expects users to not be flushing notifications too much,
+>> because it forces it to allocate a new skb and lose a good chunk of
+>> benefits from using TCP.
+> 
+> I had issues with TCP sockets and io_uring at the end of 2020:
+> https://www.spinics.net/lists/io-uring/msg05125.html
+> 
+> have not tried anything recent (from 2022).
 
+Haven't seen it back then. In general io_uring doesn't stop submitting
+requests if one request fails, at least because we're trying to execute
+requests asynchronously. And in general, requests can get executed
+out of order, so most probably submitting a bunch of requests to a single
+TCP sock without any ordering on io_uring side is likely a bug.
 
-> So going forward should test_verifier tests be avoided, and normal C
-> tests (using SEC("?...")) be preferred for these cases?
+You can link io_uring requests, i.e. IOSQE_IO_LINK, guaranteeing
+execution ordering. And if you meant links in the message, I agree
+that it was not the best decision to consider len < sqe->len not
+an error and not breaking links, but it was later added that
+MSG_WAITALL would also change the success condition to
+len==sqe->len. But all that is relevant if you was using linking.
 
-In my opinion, yes, unless absolutely requiring low-level assembly to
-express conditions which are otherwise hard to express reliably in C.
-
->
-> >
-> > >  tools/testing/selftests/bpf/test_verifier.c   |  29 +++-
-> > >  .../testing/selftests/bpf/verifier/dequeue.c  | 160 ++++++++++++++++=
-++
-> > >  2 files changed, 180 insertions(+), 9 deletions(-)
-> > >  create mode 100644 tools/testing/selftests/bpf/verifier/dequeue.c
-> > >
-> >
-> > [...]
+-- 
+Pavel Begunkov
