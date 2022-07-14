@@ -2,164 +2,231 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C07635750B3
-	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 16:24:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1F8C5750C5
+	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 16:27:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240115AbiGNOYs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jul 2022 10:24:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37170 "EHLO
+        id S240425AbiGNO1s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jul 2022 10:27:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239681AbiGNOYq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 10:24:46 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D50447BA4;
-        Thu, 14 Jul 2022 07:24:45 -0700 (PDT)
-Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26EDcpH3016420;
-        Thu, 14 Jul 2022 14:24:29 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : content-type : in-reply-to :
- mime-version; s=corp-2021-07-09;
- bh=QXQ8bh0G4w+1XfmROPvl03le1KKWFaxvPX7wo8NEgZs=;
- b=P5ywcX8OMIVHOZX/sz3cfWIUVnDqVRU6aWWvh6xFhruWtZf52rZ0kDLQeDWKzc6pnUw9
- drTLFTPDSq7x2AZ5PljKJxTVX43QQWFxjcyvfS3lO9g2vTK3pSySXoguc5Gw0hL542PL
- D5XRynUbsocDo/2VmdXvUE8kfXtODDBHk/G7n/rhtDoOaUgicBIuUD76i5EHbMVagbTa
- tZr3KbENjPwaFPP0AehXIoVRyBaScSnbPQz+PLBJmbp+cv+7mV+ejEjEb8v9fubDdH+8
- 0hCOZXdKSeRUhRelikgfpWMBZNdzBFAU0KAARSMTkqx51d87KF/IPrtDl3KZfiWzfq46 Jg== 
-Received: from phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta03.appoci.oracle.com [138.1.37.129])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3h727snr4e-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 14 Jul 2022 14:24:29 +0000
-Received: from pps.filterd (phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 26EEAH43030917;
-        Thu, 14 Jul 2022 14:24:28 GMT
-Received: from nam10-bn7-obe.outbound.protection.outlook.com (mail-bn7nam10lp2101.outbound.protection.outlook.com [104.47.70.101])
-        by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3h7046ase6-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 14 Jul 2022 14:24:28 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=f2iNGvO5EzfSFGePsAFKHZ8msrnYpnTq8+DDYEccuLnUjYCOpsGNqrHEH1JlJBdcRN99SJgbuU2lmetKjJ+Db30qI1TmY6oN17vPefAnlI7OY2Pdq+CcIIO+osQdPwe5Q1phcUPMUaBKcHkpRr1fA8Uequw8Ub0/8nYqj7OQJGc24767Ep+fzgw2A/Oa6hczOD0NIFaaYaaJbpTL/5gXZzJaQhh4stsGriiHa+r1tP55HFPzkOIxCG5/j777weAjofcwZHykPPjExHNUK5oOBP4IVK37tSyAxtdlgjU3VsfM1L7Gxq2xsWURVso7pfDYlfiMvimX+7shYSfjZrVIEw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=QXQ8bh0G4w+1XfmROPvl03le1KKWFaxvPX7wo8NEgZs=;
- b=JdSrRuyuoSB1Arh7GOyyTHri1O1p17t/XQP/D5sdS96RZ7EsIt5HmEA38dq7kTOPYEd7FH2nFLtVjQsC4fMhcoe8cpPEYz5LFQKr/tRWrS0hbJa4U5Hn84U4U6+7lkD/6w+u+Emc6WTZLC2gVGuS0FiCvA+HczH08ti7394BVsoUG0IJwMSTQHAe+3F6i9tmz9ImZuvrigIAW8y8hd22bKQFXhURyYy1HwmL+dvzVFXDJ2W5dS5i5POtaZu7l80pLJwqFBb7HWOWpeA1N6bW0jLpDOWlY+W9bKCa4eqcvY0u525fYV7fWv9Jmb1rGV2Aj4gEOEdd8nPAKjA3ugsE2Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QXQ8bh0G4w+1XfmROPvl03le1KKWFaxvPX7wo8NEgZs=;
- b=KS8MoXpdaVm+aSMjwqB5f0+6Xh/ym0M1TK2GlOdIdwR3JAvFiKT0pL4a0MIcUIZDoetx39IbLFDaQdc6R1lOzZbjFUzok57CFu6bHwAK9loG344cdWZx8J07o6maTAMHyOnbWngib//afCDc7JWKehRETw9WNIoL6xn6kMoDPfM=
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28) by DM6PR10MB3403.namprd10.prod.outlook.com
- (2603:10b6:5:1a3::11) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.14; Thu, 14 Jul
- 2022 14:24:19 +0000
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::5020:9b82:5917:40b]) by MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::5020:9b82:5917:40b%6]) with mapi id 15.20.5438.014; Thu, 14 Jul 2022
- 14:24:19 +0000
-Date:   Thu, 14 Jul 2022 17:23:57 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Bernard f6bvp <f6bvp@free.fr>
-Cc:     duoming@zju.edu.cn, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, linux-hams@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        pabeni@redhat.com, ralf@linux-mips.org
-Subject: Re: [PATCH net v6] net: rose: fix null-ptr-deref caused by
- rose_kill_by_neigh
-Message-ID: <20220714142357.GW2338@kadam>
-References: <26cdbcc8.3f44f.181f6cc848f.Coremail.duoming@zju.edu.cn>
- <4c604039-ffb8-bca3-90bb-d8014249c9a2@free.fr>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4c604039-ffb8-bca3-90bb-d8014249c9a2@free.fr>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: JNXP275CA0023.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:19::35)
- To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
+        with ESMTP id S240400AbiGNO1o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 10:27:44 -0400
+Received: from mail.hallyn.com (mail.hallyn.com [178.63.66.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD5B95F126;
+        Thu, 14 Jul 2022 07:27:42 -0700 (PDT)
+Received: by mail.hallyn.com (Postfix, from userid 1001)
+        id E128966C; Thu, 14 Jul 2022 09:27:40 -0500 (CDT)
+Date:   Thu, 14 Jul 2022 09:27:40 -0500
+From:   "Serge E. Hallyn" <serge@hallyn.com>
+To:     Casey Schaufler <casey@schaufler-ca.com>
+Cc:     Frederick Lawler <fred@cloudflare.com>,
+        Christian =?iso-8859-1?Q?G=F6ttsche?= <cgzones@googlemail.com>,
+        KP Singh <kpsingh@kernel.org>, revest@chromium.org,
+        jackmanb@chromium.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        James Morris <jmorris@namei.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        Paul Moore <paul@paul-moore.com>,
+        Stephen Smalley <stephen.smalley.work@gmail.com>,
+        Eric Paris <eparis@parisplace.org>, shuah@kernel.org,
+        Christian Brauner <brauner@kernel.org>,
+        "Eric W. Biederman" <ebiederm@xmission.com>, bpf@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        SElinux list <selinux@vger.kernel.org>,
+        linux-kselftest@vger.kernel.org,
+        Linux kernel mailing list <linux-kernel@vger.kernel.org>,
+        netdev@vger.kernel.org, kernel-team@cloudflare.com
+Subject: Re: [PATCH v2 0/4] Introduce security_create_user_ns()
+Message-ID: <20220714142740.GA10621@mail.hallyn.com>
+References: <20220707223228.1940249-1-fred@cloudflare.com>
+ <CAJ2a_DezgSpc28jvJuU_stT7V7et-gD7qjy409oy=ZFaUxJneg@mail.gmail.com>
+ <3dbd5b30-f869-b284-1383-309ca6994557@cloudflare.com>
+ <84fbd508-65da-1930-9ed3-f53f16679043@schaufler-ca.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: dd69834d-283c-4708-5db6-08da65a48a2c
-X-MS-TrafficTypeDiagnostic: DM6PR10MB3403:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: szJtCv9aKf0iVtF1lVZjZJDDXz1kU7H9gM93IPe78l2jFa6lPVRoxwcIrIRsDuAuNX1r7JFZpCxMND9HFnwgQIxbcuO0alf0h0/VPNcRC4Qde95QNYQhqpen3IuAVmO+INWhOkEM+Zo+AmAZ7BbgnjMHeHL2azdGCbJTk4FHSV61jyH7PXzfyKywF3P4XHJzFYw74BpWpqiG+OkPd7scaqetr3IR/eUBY5ftREfLDZPhXe0V/Mmfkv4gan32bSF/6v3N/MT+pCueBjPvlFdK5Pn8BplBYd6qfbc0BQL5poZtcXBMrzrlPTkdoy486POCBbcwsrfD+tNJyo4E7HzKJBvdGeeEgwdbYvfswAuSnYDEDBqUuwBWrdDp3Stgj7QG5suGC0ovnrJK0C2uRE/7zUeekA5DvKvH9YwE67YWwAlSPKuKgnXZhTUnKVGuZ7/adoLCmrLQ5vcvIITVSUCMP+9QbCcHqEhOiWDl6Gw1WVoEHkxNyOyTd+VrYpexdrhnd0laVX264xd0QfLZCODEfup4ntb/BMTs6BzGPEHuT0p9N4HFS6rkPP+0dvkwQPc76Fz3gsCtc44sGsz4G/Suc5kSJV7cNEA6hbicGoABV3pjsZGwubL5piKBLvV9jxhoKMie6ZPZt3gIq83ENxpTBF9zf9CN9cOHq3/q6+FEL+LoIX1rn3gFOi2HIs4TqDE78VfhHMv0DZ/zSAISgu+ANg6uvqJP2MDmnzUZ8s+K8S/gUMUATUXm7/ICKCETFQgUkJ3rSB1NrB9bw3qa8nb00O7feY+fM3tteTVzfiwIJoKtZAeJu4iU6mtvSIB00C/rAbTkYFMTyUyAq0sGha5TLeWH66BRssciNLgRrT7+2Exx9RSfvfcIrTwIZKgLuX4p
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(136003)(346002)(396003)(366004)(39860400002)(376002)(8676002)(9686003)(6486002)(26005)(6512007)(5660300002)(6666004)(52116002)(8936002)(966005)(6506007)(2906002)(7416002)(41300700001)(478600001)(33656002)(4744005)(44832011)(1076003)(38100700002)(38350700002)(86362001)(33716001)(316002)(186003)(6916009)(66476007)(66556008)(4326008)(66946007)(41080700001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?whNS4LyKrMBGkza+ymbgBXdyqDJiX3nLlXByerPUxN0rEl+0n04UmqoqCCoH?=
- =?us-ascii?Q?DXzJOmKfrNQSn7rtyKomKx4rNdavQPGfAvuG5gk/3nQjBPIBgtE01h65ArqL?=
- =?us-ascii?Q?gEA2xtCByX51kEPuHMMLxRQI8YnEhcf/CP1in9jDsbJ223SO5Bs/9bZ5GVSU?=
- =?us-ascii?Q?YdWo7Lx/996A/RQkITvV9qUWLdeThQ7rj3eoOtZHwvEX5h1IAzDv9rbYkdDE?=
- =?us-ascii?Q?GAwuC1H+jW7jgnpxSLfrccpm+C7nmaI2EgP1FOhZhgsz93bljxgkhBQPEx7G?=
- =?us-ascii?Q?WaIh8KZ8DJRQ69NRZc46eogkzG7UKvGlzEjIzylwgLMiB3BZFWeL6UHGQ98E?=
- =?us-ascii?Q?aQFhQ4cDwVqca8amSuGubXrnM6uKeu4MNgLX6Tdp52wT6CN+rNqw/6hg08sq?=
- =?us-ascii?Q?6Ozi6R+h0czTn76VcStYT5hMn6dFfTbmrh3J+RqXVxGGIWhmRTyDSVWmS1xV?=
- =?us-ascii?Q?69nzh21WJdHKoOVoOAsKowoite0/jqi2KpRziju8SlcwcZ1jtpEo3nnuaY99?=
- =?us-ascii?Q?X5jGKufJRsL4TVQ86grbgMrL+hqqMdDEHXhzLbJdTFuxYVOYJw7irIRGlXRd?=
- =?us-ascii?Q?wWf9XlNDno60vxD4GyL83oPQ7E8XcMLRFrOjxtembFizjnMGGqiRlBLwUa5x?=
- =?us-ascii?Q?WUr90/EbTxLCpQsvCc6YDuDz65Qw0LA8p9XqY4nvH/xk1HvXQoAUkKoBcxLu?=
- =?us-ascii?Q?kB+dk/GkR8kaMDm4gVR1GiyFByqtLEEVszIcun++hVlmriIFUo7/0stRO2WY?=
- =?us-ascii?Q?wjmjX757vNWP4hBUAJapkgqY6NYUeEcVjjsz4ZBQk2+yTr+i1L8KJFCxLXMa?=
- =?us-ascii?Q?5beIlxfNzc3/QjvMgVbJCh1d2Br8EEPTOSMsSXHltEGp89l24P63pxWjkhCr?=
- =?us-ascii?Q?Zzzj3GyvReqZcGsWwkRT8nwiTM4g1ODsUzoCFFTVt/H3h1L4fmdzJsAgdINV?=
- =?us-ascii?Q?sbYPq0/J+aaD4LH9zhvxCy3hUxVjbJPVVo5BfulUWlXS3PN7dtrI4wM9Cv3j?=
- =?us-ascii?Q?oba+jSsaUh37VxtDL7fhLJuTfRTr24mRBR9TFmkIix7rfom8QSKkGqd+B2hS?=
- =?us-ascii?Q?UJ9C42WmwvjNHMQdhYFRWSQMQ5ped6JgScLFvRYdmpAmQNbgQ2jAOEu0xolE?=
- =?us-ascii?Q?yVQrwn9dFz0h90tk6WKr6wICnuwsK5EP1HTP6wc0/hsunu5PlzNlG73k5Et/?=
- =?us-ascii?Q?tD6A+Tuw39zVRTn5IwjZ3nqCGxKMYmmktw5TMw75mNr4Bh3QVCWfdCYzoyuj?=
- =?us-ascii?Q?+U1kp6hBOO17Fe7CTbDEFOIOduVNi7pZPrxkXab1KzgRJ5+qrBmRM/6OhHz+?=
- =?us-ascii?Q?OnopdYl0kKxOnlRlgj1tanrw+x1vhmLCt9kx7etgO31eFC+IxjVczH/y2VSj?=
- =?us-ascii?Q?iyhOvD+zPWUkzYJA1zr5yICa4+lzpMZxXg9Hoiikn51m4x5PdLQvE2mNa7tJ?=
- =?us-ascii?Q?NL6XodTLML3OOJq0FXoxPmxoQQdn+/UE6PT+mONQDA+65FvQ5ciu2QQgbEcO?=
- =?us-ascii?Q?+ePTGHvSWi3UzJ2xlQbFMfIF2wZUzSee8DGgL6h+TUV9n4rMl0TlpEVqbpF0?=
- =?us-ascii?Q?CQLI/JEUXRda8bAVqNe74LDSHir3tISQX6WKINEYH8j6CeethRDvWQptXbTY?=
- =?us-ascii?Q?+g=3D=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: dd69834d-283c-4708-5db6-08da65a48a2c
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jul 2022 14:24:19.6676
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: pK4wX2u1Y+Qp6eqDkSmx6QWOb/yOcM5xKUQ0x7tI7LObBEv0+FXCt4nkqdioEZxSqL/g+8cgnuez/fxF2CdyHvUsbW/0Ro+c6xrgUQTuEfc=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR10MB3403
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.517,18.0.883
- definitions=2022-07-14_10:2022-07-14,2022-07-14 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 mlxlogscore=563
- malwarescore=0 suspectscore=0 mlxscore=0 spamscore=0 adultscore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2206140000 definitions=main-2207140061
-X-Proofpoint-ORIG-GUID: d6ZIYDOXZPZ-ax_9ntVbUqcIPM-oWSzf
-X-Proofpoint-GUID: d6ZIYDOXZPZ-ax_9ntVbUqcIPM-oWSzf
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <84fbd508-65da-1930-9ed3-f53f16679043@schaufler-ca.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 14, 2022 at 04:11:44PM +0200, Bernard f6bvp wrote:
-> Hi,
+On Fri, Jul 08, 2022 at 09:11:15AM -0700, Casey Schaufler wrote:
+> On 7/8/2022 7:01 AM, Frederick Lawler wrote:
+> > On 7/8/22 7:10 AM, Christian Göttsche wrote:
+> >> ,On Fri, 8 Jul 2022 at 00:32, Frederick Lawler <fred@cloudflare.com>
+> >> wrote:
+> >>>
+> >>> While creating a LSM BPF MAC policy to block user namespace
+> >>> creation, we
+> >>> used the LSM cred_prepare hook because that is the closest hook to
+> >>> prevent
+> >>> a call to create_user_ns().
+> >>>
+> >>> The calls look something like this:
+> >>>
+> >>>      cred = prepare_creds()
+> >>>          security_prepare_creds()
+> >>>              call_int_hook(cred_prepare, ...
+> >>>      if (cred)
+> >>>          create_user_ns(cred)
+> >>>
+> >>> We noticed that error codes were not propagated from this hook and
+> >>> introduced a patch [1] to propagate those errors.
+> >>>
+> >>> The discussion notes that security_prepare_creds()
+> >>> is not appropriate for MAC policies, and instead the hook is
+> >>> meant for LSM authors to prepare credentials for mutation. [2]
+> >>>
+> >>> Ultimately, we concluded that a better course of action is to introduce
+> >>> a new security hook for LSM authors. [3]
+> >>>
+> >>> This patch set first introduces a new security_create_user_ns()
+> >>> function
+> >>> and create_user_ns LSM hook, then marks the hook as sleepable in BPF.
+> >>
+> >> Some thoughts:
+> >>
+> >> I.
+> >>
+> >> Why not make the hook more generic, e.g. support all other existing
+> >> and potential future namespaces?
+> >
+> > The main issue with a generic hook is that different namespaces have
+> > different calling contexts. We decided in a previous discussion to
+> > opt-out of a generic hook for this reason. [1]
+> >
+> >> Also I think the naming scheme is <object>_<verb>.
+> >
+> > That's a good call out. I was originally hoping to keep the
+> > security_*() match with the hook name matched with the caller function
+> > to keep things all aligned. If no one objects to renaming the hook, I
+> > can rename the hook for v3.
+> >
+> >>
+> >>      LSM_HOOK(int, 0, namespace_create, const struct cred *cred,
+> >> unsigned int flags)
+> >>
+> >> where flags is a bitmap of CLONE flags from include/uapi/linux/sched.h
+> >> (like CLONE_NEWUSER).
+> >>
+> >> II.
+> >>
+> >> While adding policing for namespaces maybe also add a new hook for
+> >> setns(2)
+> >>
+> >>      LSM_HOOK(int, 0, namespace_join, const struct cred *subj,  const
+> >> struct cred *obj, unsigned int flags)
+> >>
+> >
+> > IIUC, setns() will create a new namespace for the other namespaces
+> > except for user namespace. If we add a security hook for the other
+> > create_*_ns() functions, then we can catch setns() at that point.
+> >
+> >> III.
+> >>
+> >> Maybe even attach a security context to namespaces so they can be
+> >> further governed?
 > 
-> I am an oldtimer FPAC / ROSE user and occasionnally debugger.
+> That would likely add confusion to the existing security module namespace
+> efforts. SELinux, Smack and AppArmor have all developed namespace models.
+> That, or it could replace the various independent efforts with a single,
+
+I feel like you're attaching more meaning to this than there needs to be.
+I *think* he's just talking about a user_namespace->u_security void*.
+So that for instance while deciding whether to allow some transition,
+selinux could check whether the caller's user namespace was created by
+a task in an selinux context authorized to create user namespaces.
+
+The "user namespaces are DAC and orthogonal to MAC" is of course true
+(where the LSM does not itself tie them together), except that we all
+know that a process running as root in a user namespace gains access to
+often-less-trustworthy code gated under CAP_SYS_ADMIN.
+
+> unified security module namespace effort. There's more work to that than
+> adding a context to a namespace. Treating namespaces as objects is almost,
+> but not quite, solidifying containers as a kernel construct. We know we
+> can't do that.
+
+What we "can't do" (imo) is to create a "full container" construct which
+ties together the various namespaces and other concepts in a restrictive
+way.
+
+> >> SELinux example:
+> >>
+> >>      type domainA_userns_t;
+> >>      type_transition domainA_t domainA_t : namespace domainA_userns_t
+> >> "user";
+> >>      allow domainA_t domainA_userns_t:namespace create;
+> >>
+> >>      # domainB calling setns(2) with domainA as target
+> >>      allow domainB_t domainA_userns_t:namespace join;
 > 
-> Let me take this opportunity to report a major issue present in rose module
-> since kernel 5.4.83 (5.5.10).
-
-Do you think you going do a git bisect to find the buggy patch?
-
-https://wiki.gentoo.org/wiki/Kernel_git-bisect
-
-We should probably start a new email thread for that issue.
-
-regards,
-dan carpenter
-
+> While I'm not an expert on SELinux policy, I'd bet a refreshing beverage
+> that there's already a way to achieve this with existing constructs.
+> Smack, which is subject+object MAC couldn't care less about the user
+> namespace configuration. User namespaces are DAC constructs.
+> 
+> >>
+> >
+> > Links:
+> > 1.
+> > https://lore.kernel.org/all/CAHC9VhSTkEMT90Tk+=iTyp3npWEm+3imrkFVX2qb=XsOPp9F=A@mail.gmail.com/
+> >
+> >>>
+> >>> Links:
+> >>> 1.
+> >>> https://lore.kernel.org/all/20220608150942.776446-1-fred@cloudflare.com/
+> >>>
+> >>> 2.
+> >>> https://lore.kernel.org/all/87y1xzyhub.fsf@email.froward.int.ebiederm.org/
+> >>> 3.
+> >>> https://lore.kernel.org/all/9fe9cd9f-1ded-a179-8ded-5fde8960a586@cloudflare.com/
+> >>>
+> >>> Changes since v1:
+> >>> - Add selftests/bpf: Add tests verifying bpf lsm create_user_ns hook
+> >>> patch
+> >>> - Add selinux: Implement create_user_ns hook patch
+> >>> - Change function signature of security_create_user_ns() to only take
+> >>>    struct cred
+> >>> - Move security_create_user_ns() call after id mapping check in
+> >>>    create_user_ns()
+> >>> - Update documentation to reflect changes
+> >>>
+> >>> Frederick Lawler (4):
+> >>>    security, lsm: Introduce security_create_user_ns()
+> >>>    bpf-lsm: Make bpf_lsm_create_user_ns() sleepable
+> >>>    selftests/bpf: Add tests verifying bpf lsm create_user_ns hook
+> >>>    selinux: Implement create_user_ns hook
+> >>>
+> >>>   include/linux/lsm_hook_defs.h                 |  1 +
+> >>>   include/linux/lsm_hooks.h                     |  4 +
+> >>>   include/linux/security.h                      |  6 ++
+> >>>   kernel/bpf/bpf_lsm.c                          |  1 +
+> >>>   kernel/user_namespace.c                       |  5 ++
+> >>>   security/security.c                           |  5 ++
+> >>>   security/selinux/hooks.c                      |  9 ++
+> >>>   security/selinux/include/classmap.h           |  2 +
+> >>>   .../selftests/bpf/prog_tests/deny_namespace.c | 88
+> >>> +++++++++++++++++++
+> >>>   .../selftests/bpf/progs/test_deny_namespace.c | 39 ++++++++
+> >>>   10 files changed, 160 insertions(+)
+> >>>   create mode 100644
+> >>> tools/testing/selftests/bpf/prog_tests/deny_namespace.c
+> >>>   create mode 100644
+> >>> tools/testing/selftests/bpf/progs/test_deny_namespace.c
+> >>>
+> >>> -- 
+> >>> 2.30.2
+> >>>
+> >
