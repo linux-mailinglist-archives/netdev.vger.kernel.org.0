@@ -2,64 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DE0E574665
-	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 10:14:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 222B1574667
+	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 10:14:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230431AbiGNIOO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jul 2022 04:14:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38458 "EHLO
+        id S231220AbiGNIOS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jul 2022 04:14:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230384AbiGNIOL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 04:14:11 -0400
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2041.outbound.protection.outlook.com [40.107.244.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE54B15FE5;
-        Thu, 14 Jul 2022 01:14:10 -0700 (PDT)
+        with ESMTP id S231131AbiGNIOQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 04:14:16 -0400
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2061e.outbound.protection.outlook.com [IPv6:2a01:111:f400:7e8b::61e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6862A140B8;
+        Thu, 14 Jul 2022 01:14:15 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=B+CCRmwP2Ld8p7gazf1JCqvUVVfuKPlsMRDwmyuUqdMC+KDpGVGOZ9mAFI01Ru49kEWPCxNZV1tGCTWiAhJXueuU3znRUH1XK7Zl8P9W0XisygdZZClMsMLvw/BMmsXC1P79ieaV9xQPhcW55Ah7ekz6btvwlsFinrk2+YHBo1hZO+36iPQ6eo9IpCkcV/e/rIfa3qAfdz1BncmLmj17oSfdZ7H+tkrwPL5n1yuJJARR7aFI9+H9u6NUABQ24ODHbtPx/R0wF7h3VA+wPwaL3YOadvV7mhiW6TKwK7u3iVOfTJwH2avprS5N8ySa5F8qzIPdIgU86IFzebl/CuhYVQ==
+ b=Ei6/9DFYCgeGpbm5F9so8AOBnGG+8A3QDErvCPBnruLuwvLtrq7FA9ta079C8Yl0cQkR0qOzxgy6sRWtOqGjliFJFdZ1DxAT+Gp+uKal45gkekduFR1GMaxmFhYJB9PDivmyjghpLaDGJA9BXkTIyck9rhbUhe+g62sVe7tdG74qKiPrswwllUDGmj0dgMz98Mj6lRJh/EqNzWc2V4t+vQbOShQ2UJthNPkXIiHlEwPtma4x93weLTfySQ2RD39R9vTXFvPw0O/i+6deMREXgiKBEfRxDCjB2Lqi6tpJqrg9GXemTCT6nhHfU6MTC/3S1No9INtWMm8lWmIHgj83Uw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4JdbKu0MzhBJ0sGh2SqiweMMesCWP51YM9yxxylbHxg=;
- b=nK5L/4UW2I7tDpayiCmj1b5YVClKrkhnTM+CvrmNi5veKn0HcgRo3RErkAblXMSoLRZyVK5tdn1YmUFKpAtWikuB6yuoePZzGuIbm3ydppXskvhqa8wPvBhDOjMcfQm8pPmHRGBQrHdcusiDZpI9aVgBhHkDYkZmL5tGyB8wkIPN70RyC48on1JMYJKEDJPVXYvf0OLcnLyf0Hf1dq+ZYJxhOhjeAAYAtDUt7UDlSYjx3Kzm6aJkV9WkGFMXj9/8G+Sj8vO3wg7XAwfrpKXP6SllC2NAepiiAubHZIKAjoW9v0SseCJb20MsVA7OMiOcwsPhaygpGt3sM8dQrJgeiA==
+ bh=1IF1CK6d5+J7F2DHDnfClHruppP4hP5qBD/+lM40s54=;
+ b=Kzx2WiGDl++gQDmX016U4cPfMMmaFFRay9XtrMXJod1aO6+6hZXlx/RfglxFKsrh/5AntlnHYBtJcf75mKB0p/HzalrVrPFCdOmO/O/1wzDfQJFaYcdmuIYmZCaKcfsZE6Qri6Oqink0h73Hqm2ORg3ReYoqqCC70If6ooswZ34IvljS3FHAgk7PcgAvc62Hd9/7nDG0qJhUM/JWYFVx4fUXPd4Xu3qjGTmWKIVYrLpQrfaNNPhsP7RLhiF7y/2Z17l0Elx3KfgWMNr+WPpTtwO00XLdbvZjZEY0CFL1jOVWvP1tWq/Cke9cXbmbcpMg8y1XZtP6KeWE2llYc6DgOQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.238) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com; dmarc=pass
+ 12.22.5.236) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com; dmarc=pass
  (p=reject sp=reject pct=100) action=none header.from=nvidia.com; dkim=none
  (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4JdbKu0MzhBJ0sGh2SqiweMMesCWP51YM9yxxylbHxg=;
- b=tCH7dJOQVAhaV051v8JtTTmpIaPzVq0lyWAuY3XHc4hYX1IyOOjUYTilDfO2KZAjjnRqABgrN+ByOwa6aeNFtTzCJY2AtLNvUMy3BEKyF2t/7UrZLPZda3ke3dyJkWzsM4+liDj375KBPSV6zYUxrUuLwK0AbOt1Y6giB/somOOyJfkyIAah9h/48glzYTEMItwtMVKstOUS0YN8Zw8Y7urL9rTGgfg2Ebyi5gPhYtRGCSlmaU/ii9mTLigJMmyrYBJTJmEwB1yHoGz6RoimGDdtb+ReDiTY5VOla/zmo/Rz0ZjiiS/PAjoOvZSobcaXihw0ndllXkWO1bplvJpgwQ==
-Received: from MW4PR04CA0254.namprd04.prod.outlook.com (2603:10b6:303:88::19)
- by BL0PR12MB2515.namprd12.prod.outlook.com (2603:10b6:207:40::30) with
+ bh=1IF1CK6d5+J7F2DHDnfClHruppP4hP5qBD/+lM40s54=;
+ b=GczKefV8WfBwGOtCGBGARMaJ3VMkYjSLeuYzNC+Dik9QqdjmebXpTwzEzMXxt5P7A+YeaVVf0ERZcMEQO3YPwSaHRecAohiFkUtxhoAmL6/OzV6IzDRPKUp3T6QtpSxl9wk2a/hl9WwCobD53TmYEt5RbyJoEwpCssR8h7FQKNkIUqESTTxmJGAidEBUsKaA53VjhzZ6RyXrJ2vXIYTJmidq/7/88nyS18OzfWDzxenlzdkJ7nrcZTy8RE6PscBKoliwEwBdoTSLIjShBfeNzwpNAa8byqfqOa5DvI8Z2+lbIQnElBCo2RfA6SchrbWmzVJqtD8riBIt53zEECnMJw==
+Received: from MW4PR03CA0259.namprd03.prod.outlook.com (2603:10b6:303:b4::24)
+ by DM5PR1201MB0140.namprd12.prod.outlook.com (2603:10b6:4:57::14) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.14; Thu, 14 Jul
- 2022 08:14:08 +0000
-Received: from CO1NAM11FT057.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:88:cafe::4) by MW4PR04CA0254.outlook.office365.com
- (2603:10b6:303:88::19) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.26 via Frontend
- Transport; Thu, 14 Jul 2022 08:14:08 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.20; Thu, 14 Jul
+ 2022 08:14:13 +0000
+Received: from CO1NAM11FT053.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:b4:cafe::d0) by MW4PR03CA0259.outlook.office365.com
+ (2603:10b6:303:b4::24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.21 via Frontend
+ Transport; Thu, 14 Jul 2022 08:14:13 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.238; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.238) by
- CO1NAM11FT057.mail.protection.outlook.com (10.13.174.205) with Microsoft SMTP
+ 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.236; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.236) by
+ CO1NAM11FT053.mail.protection.outlook.com (10.13.175.63) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5438.12 via Frontend Transport; Thu, 14 Jul 2022 08:14:08 +0000
+ 15.20.5438.12 via Frontend Transport; Thu, 14 Jul 2022 08:14:12 +0000
 Received: from drhqmail203.nvidia.com (10.126.190.182) by
- DRHQMAIL105.nvidia.com (10.27.9.14) with Microsoft SMTP Server (TLS) id
- 15.0.1497.32; Thu, 14 Jul 2022 08:14:07 +0000
+ DRHQMAIL109.nvidia.com (10.27.9.19) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.32; Thu, 14 Jul 2022 08:14:12 +0000
 Received: from drhqmail202.nvidia.com (10.126.190.181) by
  drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.26; Thu, 14 Jul 2022 01:14:06 -0700
+ 15.2.986.26; Thu, 14 Jul 2022 01:14:11 -0700
 Received: from vdi.nvidia.com (10.127.8.10) by mail.nvidia.com
  (10.126.190.181) with Microsoft SMTP Server id 15.2.986.26 via Frontend
- Transport; Thu, 14 Jul 2022 01:14:03 -0700
+ Transport; Thu, 14 Jul 2022 01:14:07 -0700
 From:   Yishai Hadas <yishaih@nvidia.com>
 To:     <alex.williamson@redhat.com>, <jgg@nvidia.com>
 CC:     <saeedm@nvidia.com>, <kvm@vger.kernel.org>,
@@ -67,171 +67,156 @@ CC:     <saeedm@nvidia.com>, <kvm@vger.kernel.org>,
         <kevin.tian@intel.com>, <joao.m.martins@oracle.com>,
         <leonro@nvidia.com>, <yishaih@nvidia.com>, <maorg@nvidia.com>,
         <cohuck@redhat.com>
-Subject: [PATCH V2 vfio 00/11] Add device DMA logging support for mlx5 driver
-Date:   Thu, 14 Jul 2022 11:12:40 +0300
-Message-ID: <20220714081251.240584-1-yishaih@nvidia.com>
+Subject: [PATCH V2 vfio 01/11] net/mlx5: Introduce ifc bits for page tracker
+Date:   Thu, 14 Jul 2022 11:12:41 +0300
+Message-ID: <20220714081251.240584-2-yishaih@nvidia.com>
 X-Mailer: git-send-email 2.21.0
+In-Reply-To: <20220714081251.240584-1-yishaih@nvidia.com>
+References: <20220714081251.240584-1-yishaih@nvidia.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 33cd4560-4b0a-4dbe-84f2-08da6570d356
-X-MS-TrafficTypeDiagnostic: BL0PR12MB2515:EE_
+X-MS-Office365-Filtering-Correlation-Id: 54b6ff66-2d2f-4a02-43a3-08da6570d617
+X-MS-TrafficTypeDiagnostic: DM5PR1201MB0140:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?foKXhngkeGPUHGQfsGZheFOlX7Et47RLZcxIWU8vRNc2nt3RfpW35D1Qa5q4?=
- =?us-ascii?Q?sw0byZ5CP1Xi6xmlE/U1KRv9HWSROeH/VOF+cAGw0yRYseefpW7DXOLkwAQx?=
- =?us-ascii?Q?D/8yT+JWXnvZg/M0FzfFmoIA2Y9CemOnvvVr8EEPCGOoOCED5wdNWsMuk26z?=
- =?us-ascii?Q?BRXXzfGISvkuf6Dyn3LygyXhRttonJjkxQR+NYISXKa+VYSV6BiNXzL4aFzC?=
- =?us-ascii?Q?cd0SxhWUQRPA6RfuWxOMoWQDyGFNYJwtt/2ZKMxC7G01DDvfIOlGk2vZzq5Y?=
- =?us-ascii?Q?9gFGTj+Kk3M2hHJWBWznFr+aN4mFk4hBusXVpMIdZHc81+0akrGC4wj6Pzvm?=
- =?us-ascii?Q?DDuzMwDsUUjs6/80At1XZ/Vxihj4u/urj4WrRsHnsqcOSrkrV2bacH172I5L?=
- =?us-ascii?Q?S632onwvLlFWuWDA6rXF3hUnJcpgsjxcw+sz0okwsS8zYUuMHu+/hj1vpo6g?=
- =?us-ascii?Q?9n/j31DBYhacXVZe7EYV3S+mnJWBOWtPcelZcwL8HGjh6KGtUvngsLtKobsH?=
- =?us-ascii?Q?nNf1PVxa7UWRJOV930RoQ1CD792E105/0LEEzJhJ6xTkPE1BJcIa+PyVFRpc?=
- =?us-ascii?Q?Dx77XA8EJ2Nda5aeVA0DQ8U+giYw4KHZfXsOiIOrnp8WPITqcDKYeYcCrrhQ?=
- =?us-ascii?Q?QPnnM09dT3vHLiifLiCLfOUOYu+fSVr8GN/PVQX8LQi4OdSz5RMXhA7cLAbK?=
- =?us-ascii?Q?Jqv84euKIV2zGwf2ZhBJTEv/f1bZWgdZrPTeqYDYrBlZzvKCgH9/2+7TngAu?=
- =?us-ascii?Q?6Z4z0PXYb8e3beH4uresx60Emm6NI9GyLG8ZVdSsuGJg+XDYk3houSDyZtz9?=
- =?us-ascii?Q?vGLlZXLsqK0Wfsop3vReM2U9qisBGiGROOSB7AVmISV7E3DV4sglwj+fC1jn?=
- =?us-ascii?Q?AkhC4O040cV8DupYz4K+MmoScOZbMcFMVM8zxUVFXNEpJfnUX7xb6QBLwwBf?=
- =?us-ascii?Q?bjJGm5OjtF+Hsm1LGuynSC6JGoVOyj3ev/AKFmGvf9o=3D?=
-X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(376002)(346002)(39860400002)(136003)(396003)(46966006)(40470700004)(36840700001)(86362001)(8936002)(5660300002)(1076003)(478600001)(2616005)(966005)(40480700001)(83380400001)(6666004)(7696005)(40460700003)(41300700001)(2906002)(26005)(186003)(336012)(47076005)(36756003)(4326008)(81166007)(8676002)(356005)(82310400005)(70586007)(6636002)(70206006)(426003)(82740400003)(110136005)(54906003)(316002)(36860700001)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: hRLUHcJWx+aroMEEn6/5wdh5K+I6rYv6r4Ga81EJMI54JEj0BsbEUzQzW6nwHFxD1+TomfqsM26lNI7Q5kDu4NGC2MgabctYT38pdaBc1jQoo4vztVr+6RGl7CAFA8thHquIuumaHo113+QGFMpgWvWVR2hOn+SETe4wcGI5nzPPcMH2NNhL/RjTlNjgMrnE1Se7FhYUPDBwRZSGy7yBIg2oQmOjAGx8vS8Ne2SOOKtmUmYVKniHkc8RuwERN7Adijz0XJXrBo4VXghdtxI7KoPNX1eZyCXs9WNhuytoMdXZ3sK4FurUsZtEP66Ww5fJt/B9U7Rn7Mrn5Xhu/C+FPAyVUm3kpwmqWdZgnE3HliaOpgC6GTdcbUCrt//8BkLaZIUo8qkIRzU/qhwZrjveKYzKNmM6Pu6Lq/0BM65EJ2+/cLGKyQ7/ECd5GTRvuEGya90SH2Hha3mjFDNidEBTnq0CbD1FG3f5eq4owNMgoywy2Csr8XrTnotMSnoPD4LwVZyPTmWxO0JOQaUn2jXEPqcP3cFQ5LAZVeb5EbquTeQ5KmCBAlPzEdrSUvslr/f+nOWbUryPoLcu3CnmxnVNvisE/i2uQDre1AbVo4mGc30t9ZbMCQb51+S9Jl+6lTyxMvRYehqLNYkvQKjhqc6Ijz9dPBBXht8rbF+pnz2JPagFJetcX6HFqy/7ePdjHXAGpK31G2WIIS6NlP+bU3TFnriaET2T2acovonch1Nsv0WwoeN2/wM9t19W8dqBlc8adxNM0u+Xz6xIejnovRMk/QMYG0TmtxoVejBdNRs1iTC3UVROI0p3ZDTHG6xmBiFBhaAtGxMYQELXx6Xn7OMoKCxzl0BThEZVv+uKWdpjiVA=
+X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(396003)(376002)(39860400002)(346002)(136003)(46966006)(40470700004)(36840700001)(2906002)(478600001)(81166007)(1076003)(83380400001)(86362001)(54906003)(36756003)(40460700003)(6666004)(6636002)(36860700001)(5660300002)(186003)(110136005)(82310400005)(2616005)(4326008)(426003)(7696005)(40480700001)(47076005)(336012)(8936002)(70586007)(316002)(70206006)(356005)(41300700001)(8676002)(82740400003)(26005)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jul 2022 08:14:08.1658
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jul 2022 08:14:12.8000
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 33cd4560-4b0a-4dbe-84f2-08da6570d356
+X-MS-Exchange-CrossTenant-Network-Message-Id: 54b6ff66-2d2f-4a02-43a3-08da6570d617
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT057.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT053.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB2515
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR1201MB0140
 X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series adds device DMA logging uAPIs and their implementation as
-part of mlx5 driver.
+Introduce ifc related stuff to enable using page tracker.
 
-DMA logging allows a device to internally record what DMAs the device is
-initiating and report them back to userspace. It is part of the VFIO
-migration infrastructure that allows implementing dirty page tracking
-during the pre copy phase of live migration. Only DMA WRITEs are logged,
-and this API is not connected to VFIO_DEVICE_FEATURE_MIG_DEVICE_STATE.
+A page tracker is a dirty page tracking object used by the device to
+report the tracking log.
 
-The uAPIs are based on the FEATURE ioctl as were introduced earlier by
-the below RFC [1] and follows the notes that were discussed in the
-mailing list.
+Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
+---
+ include/linux/mlx5/mlx5_ifc.h | 79 ++++++++++++++++++++++++++++++++++-
+ 1 file changed, 78 insertions(+), 1 deletion(-)
 
-It includes:
-- A PROBE option to detect if the device supports DMA logging.
-- A SET option to start device DMA logging in given IOVAs ranges.
-- A GET option to read back and clear the device DMA log.
-- A SET option to stop device DMA logging that was previously started.
-
-Extra details exist as part of relevant patches in the series.
-
-In addition, the series adds some infrastructure support for managing an
-IOVA bitmap done by Joao Martins.
-
-It abstracts how an IOVA range is represented in a bitmap that is
-granulated by a given page_size. So it translates all the lifting of
-dealing with user pointers into its corresponding kernel addresses
-backing said user memory into doing finally the bitmap ops to change
-various bits.
-
-This functionality will be used as part of IOMMUFD series for the system
-IOMMU tracking.
-
-Finally, we come with mlx5 implementation based on its device
-specification for the DMA logging APIs.
-
-The matching qemu changes can be previewed here [2].
-They come on top of the v2 migration protocol patches that were sent
-already to the mailing list.
-
-Few notes:
-- The first 2 patches were sent already separately, as the series relies
-  on add them here as well.
-
-- As this series touched mlx5_core parts we may need to send the
-  net/mlx5 patches as a pull request format to VFIO to avoid conflicts
-  before acceptance.
-
-[1] https://lore.kernel.org/all/20220501123301.127279-1-yishaih@nvidia.com/T/
-[2] https://github.com/avihai1122/qemu/commits/device_dirty_tracking
-
-Changes from V1: https://lore.kernel.org/netdev/202207052209.x00Iykkp-lkp@intel.com/T/
-
-- Patch #6: Fix a note given by krobot, select INTERVAL_TREE for VFIO.
-
-Changes from V0: https://lore.kernel.org/netdev/202207011231.1oPQhSzo-lkp@intel.com/T/
-
-- Drop the first 2 patches that Alex merged already.
-- Fix a note given by krobot, based on Jason's suggestion.
-- Some improvements from Joao for his IOVA bitmap patch to be
-  cleaner/simpler. It includes the below:
-    * Rename iova_bitmap_array_length to iova_bitmap_iova_to_index.
-    * Rename iova_bitmap_index_to_length to iova_bitmap_index_to_iova.
-    * Change iova_bitmap_iova_to_index to take an iova_bitmap_iter
-      as an argument to pair with iova_bitmap_index_to_length.
-    * Make iova_bitmap_iter_done() use >= instead of
-      substraction+comparison. This fixes iova_bitmap_iter_done()
-      return as it was previously returning when !done.
-    * Remove iova_bitmap_iter_length().
-    * Simplify iova_bitmap_length() overcomplicated trailing end check
-    * Convert all sizeof(u64) into sizeof(*iter->data).
-    * Use u64 __user for ::data instead of void in both struct and
-      initialization of iova_bitmap.
-
-Yishai
-
-Jason Gunthorpe (1):
-  vfio: Move vfio.c to vfio_main.c
-
-Joao Martins (1):
-  vfio: Add an IOVA bitmap support
-
-Yishai Hadas (9):
-  net/mlx5: Introduce ifc bits for page tracker
-  net/mlx5: Query ADV_VIRTUALIZATION capabilities
-  vfio: Introduce DMA logging uAPIs
-  vfio: Introduce the DMA logging feature support
-  vfio/mlx5: Init QP based resources for dirty tracking
-  vfio/mlx5: Create and destroy page tracker object
-  vfio/mlx5: Report dirty pages from tracker
-  vfio/mlx5: Manage error scenarios on tracker
-  vfio/mlx5: Set the driver DMA logging callbacks
-
- drivers/net/ethernet/mellanox/mlx5/core/fw.c  |   6 +
- .../net/ethernet/mellanox/mlx5/core/main.c    |   1 +
- drivers/vfio/Kconfig                          |   1 +
- drivers/vfio/Makefile                         |   4 +
- drivers/vfio/iova_bitmap.c                    | 164 +++
- drivers/vfio/pci/mlx5/cmd.c                   | 995 +++++++++++++++++-
- drivers/vfio/pci/mlx5/cmd.h                   |  63 +-
- drivers/vfio/pci/mlx5/main.c                  |   9 +-
- drivers/vfio/pci/vfio_pci_core.c              |   5 +
- drivers/vfio/{vfio.c => vfio_main.c}          | 161 +++
- include/linux/iova_bitmap.h                   |  46 +
- include/linux/mlx5/device.h                   |   9 +
- include/linux/mlx5/mlx5_ifc.h                 |  79 +-
- include/linux/vfio.h                          |  21 +-
- include/uapi/linux/vfio.h                     |  79 ++
- 15 files changed, 1625 insertions(+), 18 deletions(-)
- create mode 100644 drivers/vfio/iova_bitmap.c
- rename drivers/vfio/{vfio.c => vfio_main.c} (93%)
- create mode 100644 include/linux/iova_bitmap.h
-
+diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
+index fd7d083a34d3..b2d56fea6a09 100644
+--- a/include/linux/mlx5/mlx5_ifc.h
++++ b/include/linux/mlx5/mlx5_ifc.h
+@@ -89,6 +89,7 @@ enum {
+ 	MLX5_OBJ_TYPE_VIRTIO_NET_Q = 0x000d,
+ 	MLX5_OBJ_TYPE_VIRTIO_Q_COUNTERS = 0x001c,
+ 	MLX5_OBJ_TYPE_MATCH_DEFINER = 0x0018,
++	MLX5_OBJ_TYPE_PAGE_TRACK = 0x46,
+ 	MLX5_OBJ_TYPE_MKEY = 0xff01,
+ 	MLX5_OBJ_TYPE_QP = 0xff02,
+ 	MLX5_OBJ_TYPE_PSV = 0xff03,
+@@ -1711,7 +1712,9 @@ struct mlx5_ifc_cmd_hca_cap_bits {
+ 	u8         max_geneve_tlv_options[0x8];
+ 	u8         reserved_at_568[0x3];
+ 	u8         max_geneve_tlv_option_data_len[0x5];
+-	u8         reserved_at_570[0x10];
++	u8         reserved_at_570[0x9];
++	u8         adv_virtualization[0x1];
++	u8         reserved_at_57a[0x6];
+ 
+ 	u8	   reserved_at_580[0xb];
+ 	u8	   log_max_dci_stream_channels[0x5];
+@@ -11668,4 +11671,78 @@ struct mlx5_ifc_load_vhca_state_out_bits {
+ 	u8         reserved_at_40[0x40];
+ };
+ 
++struct mlx5_ifc_adv_virtualization_cap_bits {
++	u8         reserved_at_0[0x3];
++	u8         pg_track_log_max_num[0x5];
++	u8         pg_track_max_num_range[0x8];
++	u8         pg_track_log_min_addr_space[0x8];
++	u8         pg_track_log_max_addr_space[0x8];
++
++	u8         reserved_at_20[0x3];
++	u8         pg_track_log_min_msg_size[0x5];
++	u8         pg_track_log_max_msg_size[0x8];
++	u8         pg_track_log_min_page_size[0x8];
++	u8         pg_track_log_max_page_size[0x8];
++
++	u8         reserved_at_40[0x7c0];
++};
++
++struct mlx5_ifc_page_track_report_entry_bits {
++	u8         dirty_address_high[0x20];
++
++	u8         dirty_address_low[0x20];
++};
++
++enum {
++	MLX5_PAGE_TRACK_STATE_TRACKING,
++	MLX5_PAGE_TRACK_STATE_REPORTING,
++	MLX5_PAGE_TRACK_STATE_ERROR,
++};
++
++struct mlx5_ifc_page_track_range_bits {
++	u8         start_address[0x40];
++
++	u8         length[0x40];
++};
++
++struct mlx5_ifc_page_track_bits {
++	u8         modify_field_select[0x40];
++
++	u8         reserved_at_40[0x10];
++	u8         vhca_id[0x10];
++
++	u8         reserved_at_60[0x20];
++
++	u8         state[0x4];
++	u8         track_type[0x4];
++	u8         log_addr_space_size[0x8];
++	u8         reserved_at_90[0x3];
++	u8         log_page_size[0x5];
++	u8         reserved_at_98[0x3];
++	u8         log_msg_size[0x5];
++
++	u8         reserved_at_a0[0x8];
++	u8         reporting_qpn[0x18];
++
++	u8         reserved_at_c0[0x18];
++	u8         num_ranges[0x8];
++
++	u8         reserved_at_e0[0x20];
++
++	u8         range_start_address[0x40];
++
++	u8         length[0x40];
++
++	struct     mlx5_ifc_page_track_range_bits track_range[0];
++};
++
++struct mlx5_ifc_create_page_track_obj_in_bits {
++	struct mlx5_ifc_general_obj_in_cmd_hdr_bits general_obj_in_cmd_hdr;
++	struct mlx5_ifc_page_track_bits obj_context;
++};
++
++struct mlx5_ifc_modify_page_track_obj_in_bits {
++	struct mlx5_ifc_general_obj_in_cmd_hdr_bits general_obj_in_cmd_hdr;
++	struct mlx5_ifc_page_track_bits obj_context;
++};
+ #endif /* MLX5_IFC_H */
 -- 
 2.18.1
 
