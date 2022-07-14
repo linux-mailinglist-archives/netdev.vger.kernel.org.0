@@ -2,89 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 33957575192
-	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 17:19:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9920C5751AF
+	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 17:21:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234130AbiGNPTP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jul 2022 11:19:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54726 "EHLO
+        id S232328AbiGNPVr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jul 2022 11:21:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231937AbiGNPTO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 11:19:14 -0400
-Received: from m1524.mail.126.com (m1524.mail.126.com [220.181.15.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 80FF2286FC
-        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 08:19:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=bNRMq
-        AZ+JM5hhhLnX5Q88y+w7jDi5D6crsny0SwDvCY=; b=CojRpur9+A339WbrPvktZ
-        eAsyhqiiMnyUFOEFji0RuSYn4YUSM0s5K184zP1OCvR8QlSmtVDxPRT0mPng2+Cv
-        vXcbNnEoRo9BOngUtZmfWJCwA+4IPxH0xfr5+6LWmtyCbTzwfHI9tOZiyMafFbvv
-        gSgbmEJhWdUf/DXOq/Eitg=
-Received: from windhl$126.com ( [123.112.71.157] ) by ajax-webmail-wmsvr24
- (Coremail) ; Thu, 14 Jul 2022 23:18:53 +0800 (CST)
-X-Originating-IP: [123.112.71.157]
-Date:   Thu, 14 Jul 2022 23:18:53 +0800 (CST)
-From:   "Liang He" <windhl@126.com>
-To:     "Vladimir Oltean" <olteanv@gmail.com>
-Cc:     woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
-        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        netdev@vger.kernel.org
-Subject: Re:Re: [PATCH] net: dsa: microchip: ksz_common: Fix refcount leak
- bug
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20220113(9671e152)
- Copyright (c) 2002-2022 www.mailtech.cn 126com
-In-Reply-To: <20220714145956.pnq5yulgete4xc2g@skbuf>
-References: <20220713115428.367840-1-windhl@126.com>
- <20220714145956.pnq5yulgete4xc2g@skbuf>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=GBK
+        with ESMTP id S235095AbiGNPVq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 11:21:46 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA87A57E05
+        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 08:21:44 -0700 (PDT)
+Received: from ptz.office.stw.pengutronix.de ([2a0a:edc0:0:900:1d::77] helo=[127.0.0.1])
+        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
+        (envelope-from <a.fatoum@pengutronix.de>)
+        id 1oC0ef-0004Q5-Lq; Thu, 14 Jul 2022 17:21:29 +0200
+Message-ID: <1ba2b493-2ee2-e4b9-b11f-4fbb48473531@pengutronix.de>
+Date:   Thu, 14 Jul 2022 17:21:25 +0200
 MIME-Version: 1.0
-Message-ID: <771aac42.76b6.181fd4a97fc.Coremail.windhl@126.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: GMqowAD3_ibeM9BipXFIAA--.19830W
-X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbi2h4+F1uwMZ1zXAAAsF
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_INVALID,
-        DKIM_SIGNED,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH 1/2] dt-bindings: bcm4329-fmac: add optional
+ brcm,ccode-map-trivial
+Content-Language: en-US
+To:     =?UTF-8?Q?Alvin_=c5=a0ipraga?= <alvin@pqrs.dk>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        van Spriel <arend@broadcom.com>
+Cc:     =?UTF-8?Q?Alvin_=c5=a0ipraga?= <alsi@bang-olufsen.dk>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com,
+        Pengutronix Kernel Team <kernel@pengutronix.de>
+References: <20220711123005.3055300-1-alvin@pqrs.dk>
+ <20220711123005.3055300-2-alvin@pqrs.dk>
+From:   Ahmad Fatoum <a.fatoum@pengutronix.de>
+In-Reply-To: <20220711123005.3055300-2-alvin@pqrs.dk>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:900:1d::77
+X-SA-Exim-Mail-From: a.fatoum@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-CgoKCgoKCgpBdCAyMDIyLTA3LTE0IDIyOjU5OjU2LCAiVmxhZGltaXIgT2x0ZWFuIiA8b2x0ZWFu
-dkBnbWFpbC5jb20+IHdyb3RlOgo+T24gV2VkLCBKdWwgMTMsIDIwMjIgYXQgMDc6NTQ6MjhQTSAr
-MDgwMCwgTGlhbmcgSGUgd3JvdGU6Cj4+IEluIGtzel9zd2l0Y2hfcmVnaXN0ZXIoKSwgd2Ugc2hv
-dWxkIGNhbGwgb2Zfbm9kZV9wdXQoKSBmb3IgdGhlCj4+IHJlZmVyZW5jZSByZXR1cm5lZCBieSBv
-Zl9nZXRfY2hpbGRfYnlfbmFtZSgpIHdoaWNoIGhhcyBpbmNyZWFzZWQKPj4gdGhlIHJlZmNvdW50
-Lgo+PiAKPj4gRml4ZXM6IDQ0ZTUzYzg4ODI4ZiAoIm5ldDogZHNhOiBtaWNyb2NoaXA6IHN1cHBv
-cnQgZm9yICJldGhlcm5ldC1wb3J0cyIgbm9kZSIpCj4KPkkgZGlzYWdyZWUgd2l0aCB0aGUgZ2l0
-IGJsYW1lIHJlc29sdXRpb24sIGl0IHNob3VsZCBiZToKPgo+Rml4ZXM6IDkxMmFhZTI3YzZhZiAo
-Im5ldDogZHNhOiBtaWNyb2NoaXA6IHJlYWxseSBsb29rIGZvciBwaHktbW9kZSBpbiBwb3J0IG5v
-ZGVzIikKPgo+UGxlYXNlIHJlc2VuZCB3aXRoIHRoYXQgbGluZSBjaGFuZ2VkLgoKPgpUaGFua3Ms
-IAoKCkkgd2lsbCByZXNlbmQgd2l0aCBjb3JyZWN0IGZpeCB0YWcgc29vbiEKCgpMaWFuZwoKPj4g
-U2lnbmVkLW9mZi1ieTogTGlhbmcgSGUgPHdpbmRobEAxMjYuY29tPgo+PiAtLS0KPj4gIAo+PiAg
-ZHJpdmVycy9uZXQvZHNhL21pY3JvY2hpcC9rc3pfY29tbW9uLmMgfCA1ICsrKystCj4+ICAxIGZp
-bGUgY2hhbmdlZCwgNCBpbnNlcnRpb25zKCspLCAxIGRlbGV0aW9uKC0pCj4+IAo+PiBkaWZmIC0t
-Z2l0IGEvZHJpdmVycy9uZXQvZHNhL21pY3JvY2hpcC9rc3pfY29tbW9uLmMgYi9kcml2ZXJzL25l
-dC9kc2EvbWljcm9jaGlwL2tzel9jb21tb24uYwo+PiBpbmRleCA5Y2E4YzhkNzc0MGYuLjkyYTUw
-MGUxY2NkMiAxMDA2NDQKPj4gLS0tIGEvZHJpdmVycy9uZXQvZHNhL21pY3JvY2hpcC9rc3pfY29t
-bW9uLmMKPj4gKysrIGIvZHJpdmVycy9uZXQvZHNhL21pY3JvY2hpcC9rc3pfY29tbW9uLmMKPj4g
-QEAgLTEwMzgsMTggKzEwMzgsMjEgQEAgaW50IGtzel9zd2l0Y2hfcmVnaXN0ZXIoc3RydWN0IGtz
-el9kZXZpY2UgKmRldiwKPj4gIAkJcG9ydHMgPSBvZl9nZXRfY2hpbGRfYnlfbmFtZShkZXYtPmRl
-di0+b2Zfbm9kZSwgImV0aGVybmV0LXBvcnRzIik7Cj4+ICAJCWlmICghcG9ydHMpCj4+ICAJCQlw
-b3J0cyA9IG9mX2dldF9jaGlsZF9ieV9uYW1lKGRldi0+ZGV2LT5vZl9ub2RlLCAicG9ydHMiKTsK
-Pj4gLQkJaWYgKHBvcnRzKQo+PiArCQlpZiAocG9ydHMpIHsKPj4gIAkJCWZvcl9lYWNoX2F2YWls
-YWJsZV9jaGlsZF9vZl9ub2RlKHBvcnRzLCBwb3J0KSB7Cj4+ICAJCQkJaWYgKG9mX3Byb3BlcnR5
-X3JlYWRfdTMyKHBvcnQsICJyZWciLAo+PiAgCQkJCQkJCSAmcG9ydF9udW0pKQo+PiAgCQkJCQlj
-b250aW51ZTsKPj4gIAkJCQlpZiAoIShkZXYtPnBvcnRfbWFzayAmIEJJVChwb3J0X251bSkpKSB7
-Cj4+ICAJCQkJCW9mX25vZGVfcHV0KHBvcnQpOwo+PiArCQkJCQlvZl9ub2RlX3B1dChwb3J0cyk7
-Cj4+ICAJCQkJCXJldHVybiAtRUlOVkFMOwo+PiAgCQkJCX0KPj4gIAkJCQlvZl9nZXRfcGh5X21v
-ZGUocG9ydCwKPj4gIAkJCQkJCSZkZXYtPnBvcnRzW3BvcnRfbnVtXS5pbnRlcmZhY2UpOwo+PiAg
-CQkJfQo+PiArCQkJb2Zfbm9kZV9wdXQocG9ydHMpOwo+PiArCQl9Cj4+ICAJCWRldi0+c3luY2xr
-b18xMjUgPSBvZl9wcm9wZXJ0eV9yZWFkX2Jvb2woZGV2LT5kZXYtPm9mX25vZGUsCj4+ICAJCQkJ
-CQkJICJtaWNyb2NoaXAsc3luY2xrby0xMjUiKTsKPj4gIAkJZGV2LT5zeW5jbGtvX2Rpc2FibGUg
-PSBvZl9wcm9wZXJ0eV9yZWFkX2Jvb2woZGV2LT5kZXYtPm9mX25vZGUsCj4+IC0tIAo+PiAyLjI1
-LjEKPj4gCg==
+On 11.07.22 14:30, Alvin Šipraga wrote:
+> From: Alvin Šipraga <alsi@bang-olufsen.dk>
+> 
+> The bindings already offer a brcm,ccode-map property to describe the
+> mapping between the kernel's ISO3166 alpha 2 country code string and the
+> firmware's country code string and revision number. This is a
+> board-specific property and determined by the CLM blob firmware provided
+> by the hardware vendor.
+> 
+> However, in some cases the firmware will also use ISO3166 country codes
+> internally, and the revision will always be zero. This implies a trivial
+> mapping: cc -> { cc, 0 }.
+> 
+> For such cases, add an optional property brcm,ccode-map-trivial which
+> obviates the need to describe every trivial country code mapping in the
+> device tree with the existing brcm,ccode-map property. The new property
+> is subordinate to the more explicit brcm,ccode-map property.
+> 
+> Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
+
+Reviewed-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
+
+> ---
+>  .../bindings/net/wireless/brcm,bcm4329-fmac.yaml       | 10 ++++++++++
+>  1 file changed, 10 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/wireless/brcm,bcm4329-fmac.yaml b/Documentation/devicetree/bindings/net/wireless/brcm,bcm4329-fmac.yaml
+> index c11f23b20c4c..53b4153d9bfc 100644
+> --- a/Documentation/devicetree/bindings/net/wireless/brcm,bcm4329-fmac.yaml
+> +++ b/Documentation/devicetree/bindings/net/wireless/brcm,bcm4329-fmac.yaml
+> @@ -75,6 +75,16 @@ properties:
+>      items:
+>        pattern: '^[A-Z][A-Z]-[A-Z][0-9A-Z]-[0-9]+$'
+>  
+> +  brcm,ccode-map-trivial:
+> +    description: |
+> +      Use a trivial mapping of ISO3166 country codes to brcmfmac firmware
+> +      country code and revision: cc -> { cc, 0 }. In other words, assume that
+> +      the CLM blob firmware uses ISO3166 country codes as well, and that all
+> +      revisions are zero. This property is mutually exclusive with
+> +      brcm,ccode-map. If both properties are specified, then brcm,ccode-map
+> +      takes precedence.
+> +    type: boolean
+> +
+>  required:
+>    - compatible
+>    - reg
+
+
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
