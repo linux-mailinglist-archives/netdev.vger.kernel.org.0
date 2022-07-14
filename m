@@ -2,123 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D30F9575600
-	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 21:49:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CDBC575611
+	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 22:00:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240758AbiGNTtt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jul 2022 15:49:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49702 "EHLO
+        id S240641AbiGNUAQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jul 2022 16:00:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240729AbiGNTts (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 15:49:48 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF86F101D1
-        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 12:49:45 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id y4so3770178edc.4
-        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 12:49:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/jNeMx3p2bq8iOjtc1prT9uw6kQU6kEL+D5PYhdBgeU=;
-        b=iyx7LJkvTMnh0wjcxXWCL5Vn3fIyTAYtVfVQ4TKcaKx7XkNZTe6J6aDYOlvur/brpm
-         6OgEmU4hx9gaMuCn3nd/ZjLTQaw06YQ0sl7Ha3xvfvw4lcfzktclCJRT5YFFOV+GYALM
-         jSklOwJ81vnuHbCdac4fvzuUJ1JabjCG4//uILRcAknau55pC3Zw+JXI0sVKbFs/E69w
-         dkkz+k4L3ldgaYxBFFvhGEkRsae/4gXGLNhVThTP2icDTm8m9dyJWcIdCxygQ2vuygD6
-         VCKNmYBF+UlCjGr3VvxKSpZ40kzV9lnqulAFRFhm8artlo9llAPVaR4eE/EZ7563Uywx
-         CBaQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/jNeMx3p2bq8iOjtc1prT9uw6kQU6kEL+D5PYhdBgeU=;
-        b=bHLnRgy12BQ/xs83eROpbrb1kxGQlAZGU7u6Rv13ii75L7AjtTm9wClptm2kO8Ll5T
-         27hYqP57+I/RC2Q8RYGo0pbR3CrSUDhmw2mq+FNFhNGp3Zcu3Se4BWrgmAh8HtpHH78W
-         nDuohmEcRXqQoRJ8X0IeUAr/mVp3WUc18FY5tkJ5/WxCr8ml6gts+QcO2YwWvxEuetyF
-         QXE64YyaXFD0GkQ44qq29Gk2S+nkw+G6RWzzMUdjukUlvecs+QvK/pf5r/YJIBMwcXlr
-         gs0F1GU1jXfok+PANCfO/3UvHTRowJP1qFv7Cl+B5s15lS9jrmgHaitukyZ7FMXr/SkU
-         Ie2A==
-X-Gm-Message-State: AJIora9Cug0DHPbF98aTk8dk1QtJbwpR3FgfdTdAYX9L72SvOcUJN0Dq
-        p+BiaUn3ZZbkcT7Lv6dAP8ZETzIsRw9GFvJsO3E=
-X-Google-Smtp-Source: AGRyM1uXPn1rYGETl86rp/eS+fuWIwsrZCW6UHhyMKGbdbc/Mmeq5QBY8n1fEgc3L/uCKClPdhIXWnQoGGz4jfCJ+Rg=
-X-Received: by 2002:a05:6402:28c4:b0:43a:cdde:e047 with SMTP id
- ef4-20020a05640228c400b0043acddee047mr2818337edb.368.1657828184526; Thu, 14
- Jul 2022 12:49:44 -0700 (PDT)
+        with ESMTP id S231150AbiGNUAP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 16:00:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B43805F133;
+        Thu, 14 Jul 2022 13:00:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4A33E62212;
+        Thu, 14 Jul 2022 20:00:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 9AED6C34115;
+        Thu, 14 Jul 2022 20:00:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657828813;
+        bh=L/q2C7SYQkUyZD3IgdzL4euZ9WCMW35Xm7pctMA5yWk=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=F7B+bhr2/Wh5CLzfVW6kAWH/a0jSA4pZ87cPvI1/KIQV3bHq6kG3PCl5AWoZxpMp3
+         c7yacAmCbyL/tdrp7gPo39COozWsil/m6t9iHnSbs2LbWeZFs2/UgjRGf1sMf67Ikp
+         35rvTB4eI+rCV3wvlSGbLbJmbpGkAkzQkaYNyngrdxFz1NqvP4OibCx/mx82cOwlG+
+         yCk/IaOaJE/Vicib09WsuXARZ1aI63ydK5FhJz99UUIkE1RM1WXPC3iFVMrvvNOrBq
+         ZRMZsRVlrtQn9sRkuEF6KXDdsGpMcF29VauZN9QxOnMER6W+NVUFcwRmquwKu+hNto
+         rsipy3kX//+sw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7D46EE45227;
+        Thu, 14 Jul 2022 20:00:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20220712235310.1935121-1-joannelkoong@gmail.com>
- <20220712235310.1935121-4-joannelkoong@gmail.com> <e2d28352a6c00db7c3b31d0b9aeca3ee5b196247.camel@redhat.com>
-In-Reply-To: <e2d28352a6c00db7c3b31d0b9aeca3ee5b196247.camel@redhat.com>
-From:   Joanne Koong <joannelkoong@gmail.com>
-Date:   Thu, 14 Jul 2022 12:49:33 -0700
-Message-ID: <CAJnrk1a68UtQs7gsAGPk5NfGcXPKonHZCscrvjsFOBz5g6+cBg@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 3/3] selftests/net: Add sk_bind_sendto_listen test
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2] Bluetooth: Collect kcov coverage from hci_rx_work
+From:   patchwork-bot+bluetooth@kernel.org
+Message-Id: <165782881350.24437.8150730211077461222.git-patchwork-notify@kernel.org>
+Date:   Thu, 14 Jul 2022 20:00:13 +0000
+References: <20220714104814.1296858-1-poprdi@google.com>
+In-Reply-To: <20220714104814.1296858-1-poprdi@google.com>
+To:     Tamas Koczka <poprdi@google.com>
+Cc:     marcel@holtmann.org, johan.hedberg@gmail.com, luiz.dentz@gmail.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, linux-bluetooth@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        theflow@google.com, nogikh@google.com, dvyukov@google.com
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 14, 2022 at 2:19 AM Paolo Abeni <pabeni@redhat.com> wrote:
->
-> On Tue, 2022-07-12 at 16:53 -0700, Joanne Koong wrote:
-> > This patch adds a new test called sk_bind_sendto_listen.
-> >
-> > This test exercises the path where a socket's rcv saddr changes after it
-> > has been added to the binding tables, and then a listen() on the socket
-> > is invoked. The listen() should succeed.
-> >
-> > This test is copied over from one of syzbot's tests:
-> > https://syzkaller.appspot.com/x/repro.c?x=1673a38df00000
-> >
-> > Signed-off-by: Joanne Koong <joannelkoong@gmail.com>
-> > ---
-> >  tools/testing/selftests/net/.gitignore        |  1 +
-> >  tools/testing/selftests/net/Makefile          |  1 +
-> >  .../selftests/net/sk_bind_sendto_listen.c     | 80 +++++++++++++++++++
-> >  3 files changed, 82 insertions(+)
-> >  create mode 100644 tools/testing/selftests/net/sk_bind_sendto_listen.c
-> >
-> > diff --git a/tools/testing/selftests/net/.gitignore b/tools/testing/selftests/net/.gitignore
-> > index 5b1adf6e29ae..5fd74a1162cc 100644
-> > --- a/tools/testing/selftests/net/.gitignore
-> > +++ b/tools/testing/selftests/net/.gitignore
-> > @@ -39,3 +39,4 @@ toeplitz
-> >  cmsg_sender
-> >  unix_connect
-> >  bind_bhash
-> > +sk_bind_sendto_listen
-> > diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
-> > index e678fc3030a2..ffcc472d50d5 100644
-> > --- a/tools/testing/selftests/net/Makefile
-> > +++ b/tools/testing/selftests/net/Makefile
-> > @@ -61,6 +61,7 @@ TEST_GEN_FILES += cmsg_sender
-> >  TEST_GEN_FILES += stress_reuseport_listen
-> >  TEST_PROGS += test_vxlan_vnifiltering.sh
-> >  TEST_GEN_FILES += bind_bhash
-> > +TEST_GEN_FILES += sk_bind_sendto_listen
->
-> It looks like this is never invoked by the self-tests ?!? you should
-> likely update bind_bhash.sh to run the new program.
+Hello:
 
-Oh, I see. I didn't realize the net selftests should get invoked
-automatically. Sorry about that.
-I will add a "TEST_GEN_PROGS += sk_bind_sendto_listen" line to the
-Makefile instead of adding it to bind_bhash.sh since the bhash setup
-is not required for running ./sk_bind_sendto_listen. Thanks!
+This patch was applied to bluetooth/bluetooth-next.git (master)
+by Luiz Augusto von Dentz <luiz.von.dentz@intel.com>:
 
->
-> Thanks!
->
-> Paolo
->
+On Thu, 14 Jul 2022 10:48:14 +0000 you wrote:
+> Annotate hci_rx_work() with kcov_remote_start() and kcov_remote_stop()
+> calls, so remote KCOV coverage is collected while processing the rx_q
+> queue which is the main incoming Bluetooth packet queue.
+> 
+> Coverage is associated with the thread which created the packet skb.
+> 
+> The collected extra coverage helps kernel fuzzing efforts in finding
+> vulnerabilities.
+> 
+> [...]
+
+Here is the summary with links:
+  - [v2] Bluetooth: Collect kcov coverage from hci_rx_work
+    https://git.kernel.org/bluetooth/bluetooth-next/c/b28a31ebc74f
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
