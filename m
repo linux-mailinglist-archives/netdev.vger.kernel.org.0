@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A50C3575801
-	for <lists+netdev@lfdr.de>; Fri, 15 Jul 2022 01:23:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 36474575813
+	for <lists+netdev@lfdr.de>; Fri, 15 Jul 2022 01:29:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240983AbiGNXX6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jul 2022 19:23:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45630 "EHLO
+        id S232389AbiGNX31 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jul 2022 19:29:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232546AbiGNXX5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 19:23:57 -0400
+        with ESMTP id S229556AbiGNX3Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 19:29:25 -0400
 Received: from novek.ru (unknown [213.148.174.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EEA1FD34;
-        Thu, 14 Jul 2022 16:23:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6BE42CCAA;
+        Thu, 14 Jul 2022 16:29:22 -0700 (PDT)
 Received: from [192.168.0.18] (unknown [37.228.234.7])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by novek.ru (Postfix) with ESMTPSA id 4E8A05005CD;
-        Fri, 15 Jul 2022 02:21:54 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru 4E8A05005CD
+        by novek.ru (Postfix) with ESMTPSA id 9247E5005CD;
+        Fri, 15 Jul 2022 02:27:25 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru 9247E5005CD
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
-        t=1657840917; bh=V+C4gr9CbiPEj9A3ITjBgPtVbOKHC75ezm7u6Ioo5lo=;
+        t=1657841248; bh=K4qmP/AFNB/H9gDgFkX+YqSbzNJF2Avz9QsUbwC1QK4=;
         h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=g6A+7Iv7VJCX3oekrjGWKzQ2OX/uUCPjzOa98B8QatzUMBzuSOKc0ZOgISy1Y9HWP
-         XAtK2mguDC/qH32gQ5MZod/p/irXmvc+6wTuKDod/XAPTOdN+r6ltZwjEQsJAsVUbr
-         50CpmCHZyzLHvi/8Gsto+oN1J9iy9jZsMNTvPCQ8=
-Message-ID: <46554eb0-e7ff-09e5-6a39-5d7545387677@novek.ru>
-Date:   Fri, 15 Jul 2022 00:23:46 +0100
+        b=hk8sqsxOXZITpOm5/sqrvdDCpuJ5zdjGWv8tacknNJknLpgPFWCjH6Pe1P8hTeeXf
+         H/Le0dOPyATmxcHV+ZgZcHFmjmhc57cXq7+UxQCysdY8qneHzm2RWcN5q9dyC+ccB0
+         upOza14aCCTOcHICH3exXHYX8fZ+x3944eBj0NXs=
+Message-ID: <715d8f47-d246-6b4a-b22d-82672e8f11d8@novek.ru>
+Date:   Fri, 15 Jul 2022 00:29:18 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.9.1
-Subject: Re: [RFC PATCH v2 1/3] dpll: Add DPLL framework base functions
+Subject: Re: [RFC PATCH v2 2/3] dpll: add netlink events
 Content-Language: en-US
 To:     "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -42,10 +42,10 @@ Cc:     Vadim Fedorenko <vadfed@fb.com>, Aya Levin <ayal@nvidia.com>,
         <linux-arm-kernel@lists.infradead.org>,
         "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>
 References: <20220626192444.29321-1-vfedorenko@novek.ru>
- <20220626192444.29321-2-vfedorenko@novek.ru>
- <DM6PR11MB4657460B855863E76EBB6BCD9B879@DM6PR11MB4657.namprd11.prod.outlook.com>
+ <20220626192444.29321-3-vfedorenko@novek.ru>
+ <DM6PR11MB46573FA8D51D40DAD2AC060B9B879@DM6PR11MB4657.namprd11.prod.outlook.com>
 From:   Vadim Fedorenko <vfedorenko@novek.ru>
-In-Reply-To: <DM6PR11MB4657460B855863E76EBB6BCD9B879@DM6PR11MB4657.namprd11.prod.outlook.com>
+In-Reply-To: <DM6PR11MB46573FA8D51D40DAD2AC060B9B879@DM6PR11MB4657.namprd11.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -58,151 +58,249 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11.07.2022 10:01, Kubalewski, Arkadiusz wrote:
+On 11.07.2022 10:02, Kubalewski, Arkadiusz wrote:
 > -----Original Message-----
 > From: Vadim Fedorenko <vfedorenko@novek.ru>
 > Sent: Sunday, June 26, 2022 9:25 PM
 >>
 >> From: Vadim Fedorenko <vadfed@fb.com>
 >>
->> DPLL framework is used to represent and configure DPLL devices
->> in systems. Each device that has DPLL and can configure sources
->> and outputs can use this framework.
+>> Add netlink interface to enable notification of users about
+>> events in DPLL framework. Part of this interface should be
+>> used by drivers directly, i.e. lock status changes.
 >>
 >> Signed-off-by: Vadim Fedorenko <vadfed@fb.com>
-> 
-> Hi Vadim,
-> I've been trying to implement usage of this code in our driver.
-> Any chance for some testing/example app?
-> 
-
-Hi Arkadiusz,
-Sorry, but I don't have any working app yet, this subsystem is
-treated as experimental and as we now have different interface
-for configuring features we need, app implementation is postponed
-a bit. After some conversation with Jakub I'm thinking about library
-to provide easy interface to this subsystem, but stil no code yet.
-
->> +struct dpll_device *dpll_device_alloc(struct dpll_device_ops *ops, int sources_count,
->> +					 int outputs_count, void *priv)
-> 
-> Aren't there some alignment issues around function definitions?
->
-
-Yeah, I know about some style issues, trying to fix them for the next round.
-
->> +{
->> +	struct dpll_device *dpll;
->> +	int ret;
->> +
->> +	dpll = kzalloc(sizeof(*dpll), GFP_KERNEL);
->> +	if (!dpll)
->> +		return ERR_PTR(-ENOMEM);
->> +
->> +	mutex_init(&dpll->lock);
->> +	dpll->ops = ops;
->> +	dpll->dev.class = &dpll_class;
->> +	dpll->sources_count = sources_count;
->> +	dpll->outputs_count = outputs_count;
->> +
->> +	mutex_lock(&dpll_device_xa_lock);
->> +	ret = xa_alloc(&dpll_device_xa, &dpll->id, dpll, xa_limit_16b, GFP_KERNEL);
->> +	if (ret)
->> +		goto error;
->> +	dev_set_name(&dpll->dev, "dpll%d", dpll->id);
-> 
-> Not sure if I mentioned it before, the user must be able to identify the
-> purpose and origin of dpll. Right now, if 2 dplls register in the system, it is
-> not possible to determine where they belong or what do they do. I would say,
-> easiest to let caller of dpll_device_alloc assign some name or description.
->
-
-Maybe driver can export information about dpll device name after registering it?
-But at the same time looks like it's easy enough to implement custom naming. The
-only problem is to control that names are unique.
-
->> +	mutex_unlock(&dpll_device_xa_lock);
->> +	dpll->priv = priv;
->> +
->> +	return dpll;
->> +
->> +error:
->> +	mutex_unlock(&dpll_device_xa_lock);
->> +	kfree(dpll);
->> +	return ERR_PTR(ret);
->> +}
->> +EXPORT_SYMBOL_GPL(dpll_device_alloc);
->> +
->> +void dpll_device_free(struct dpll_device *dpll)
->> +{
->> +	if (!dpll)
->> +		return;
->> +
->> +	mutex_destroy(&dpll->lock);
->> +	kfree(dpll);
->> +}
-> 
-> dpll_device_free() is defined in header, shouldn't it be exported?
-> 
-
-yeah, definitely. Already changed in new draft.
-
->> +
->> +void dpll_device_register(struct dpll_device *dpll)
->> +{
->> +	ASSERT_DPLL_NOT_REGISTERED(dpll);
->> +
->> +	mutex_lock(&dpll_device_xa_lock);
->> +	xa_set_mark(&dpll_device_xa, dpll->id, DPLL_REGISTERED);
+>> ---
+>> drivers/dpll/dpll_core.c    |   2 +
+>> drivers/dpll/dpll_netlink.c | 141 ++++++++++++++++++++++++++++++++++++
+>> drivers/dpll/dpll_netlink.h |   7 ++
+>> 3 files changed, 150 insertions(+)
+>>
+>> diff --git a/drivers/dpll/dpll_core.c b/drivers/dpll/dpll_core.c
+>> index dc0330e3687d..387644aa910e 100644
+>> --- a/drivers/dpll/dpll_core.c
+>> +++ b/drivers/dpll/dpll_core.c
+>> @@ -97,6 +97,8 @@ struct dpll_device *dpll_device_alloc(struct dpll_device_ops *ops, int sources_c
+>> 	mutex_unlock(&dpll_device_xa_lock);
+>> 	dpll->priv = priv;
+>>
 >> +	dpll_notify_device_create(dpll->id, dev_name(&dpll->dev));
-> 
-> dpll_notify_device_create is not yet defined, this is part of patch 2/3?
-> Also in patch 2/3 similar call was added in dpll_device_alloc().
->
-
-Ah. Yes, there was some mess with patches, looks like I missed this thing, thank
-you for pointing it.
-
-
->> +static const struct genl_ops dpll_genl_ops[] = {
->> +	{
->> +		.cmd	= DPLL_CMD_DEVICE_GET,
->> +		.start	= dpll_genl_cmd_start,
->> +		.dumpit	= dpll_genl_cmd_dumpit,
->> +		.doit	= dpll_genl_cmd_doit,
->> +		.policy	= dpll_genl_get_policy,
->> +		.maxattr = ARRAY_SIZE(dpll_genl_get_policy) - 1,
->> +	},
-> 
-> I wouldn't leave non-privileged user with possibility to call any HW requests.
->
-
-Yep, definitely. Didn't thought about security restrictions yet.
-
-
->> +/* Commands supported by the dpll_genl_family */
->> +enum dpll_genl_cmd {
->> +	DPLL_CMD_UNSPEC,
->> +	DPLL_CMD_DEVICE_GET,	/* List of DPLL devices id */
->> +	DPLL_CMD_SET_SOURCE_TYPE,	/* Set the DPLL device source type */
->> +	DPLL_CMD_SET_OUTPUT_TYPE,	/* Set the DPLL device output type */
-> 
-> This week, I am going to prepare the patch for DPLL mode and input priority list
-> we have discussed on the previous patch series.
->
-
-Great! Do you have this work somewhere in public git? If not I will try to 
-publish this branch somewhere to make collaboration easier.
-
-> Thank you!
-> Arkadiusz
-> 
 >> +
->> +	__DPLL_CMD_MAX,
+>> 	return dpll;
+>>
+>> error:
+>> diff --git a/drivers/dpll/dpll_netlink.c b/drivers/dpll/dpll_netlink.c
+>> index e15106f30377..4b1684fcf41e 100644
+>> --- a/drivers/dpll/dpll_netlink.c
+>> +++ b/drivers/dpll/dpll_netlink.c
+>> @@ -48,6 +48,8 @@ struct param {
+>> 	int dpll_source_type;
+>> 	int dpll_output_id;
+>> 	int dpll_output_type;
+>> +	int dpll_status;
+>> +	const char *dpll_name;
+>> };
+>>
+>> struct dpll_dump_ctx {
+>> @@ -239,6 +241,8 @@ static int dpll_genl_cmd_set_source(struct param *p)
+>> 	ret = dpll->ops->set_source_type(dpll, src_id, type);
+>> 	mutex_unlock(&dpll->lock);
+>>
+>> +	dpll_notify_source_change(dpll->id, src_id, type);
+>> +
+>> 	return ret;
+>> }
+>>
+>> @@ -262,6 +266,8 @@ static int dpll_genl_cmd_set_output(struct param *p)
+>> 	ret = dpll->ops->set_source_type(dpll, out_id, type);
+>> 	mutex_unlock(&dpll->lock);
+>>
+>> +	dpll_notify_source_change(dpll->id, out_id, type);
+>> +
+>> 	return ret;
+>> }
+>>
+>> @@ -438,6 +444,141 @@ static struct genl_family dpll_gnl_family __ro_after_init = {
+>> 	.pre_doit	= dpll_pre_doit,
+>> };
+>>
+>> +static int dpll_event_device_create(struct param *p)
+>> +{
+>> +	if (nla_put_u32(p->msg, DPLLA_DEVICE_ID, p->dpll_id) ||
+>> +	    nla_put_string(p->msg, DPLLA_DEVICE_NAME, p->dpll_name))
+>> +		return -EMSGSIZE;
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static int dpll_event_device_delete(struct param *p)
+>> +{
+>> +	if (nla_put_u32(p->msg, DPLLA_DEVICE_ID, p->dpll_id))
+>> +		return -EMSGSIZE;
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static int dpll_event_status(struct param *p)
+>> +{
+>> +	if (nla_put_u32(p->msg, DPLLA_DEVICE_ID, p->dpll_id) ||
+>> +		nla_put_u32(p->msg, DPLLA_LOCK_STATUS, p->dpll_status))
+>> +		return -EMSGSIZE;
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static int dpll_event_source_change(struct param *p)
+>> +{
+>> +	if (nla_put_u32(p->msg, DPLLA_DEVICE_ID, p->dpll_id) ||
+>> +	    nla_put_u32(p->msg, DPLLA_SOURCE_ID, p->dpll_source_id) ||
+>> +		nla_put_u32(p->msg, DPLLA_SOURCE_TYPE, p->dpll_source_type))
+>> +		return -EMSGSIZE;
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static int dpll_event_output_change(struct param *p)
+>> +{
+>> +	if (nla_put_u32(p->msg, DPLLA_DEVICE_ID, p->dpll_id) ||
+>> +	    nla_put_u32(p->msg, DPLLA_OUTPUT_ID, p->dpll_output_id) ||
+>> +		nla_put_u32(p->msg, DPLLA_OUTPUT_TYPE, p->dpll_output_type))
+>> +		return -EMSGSIZE;
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static cb_t event_cb[] = {
+>> +	[DPLL_EVENT_DEVICE_CREATE]	= dpll_event_device_create,
+>> +	[DPLL_EVENT_DEVICE_DELETE]	= dpll_event_device_delete,
+>> +	[DPLL_EVENT_STATUS_LOCKED]	= dpll_event_status,
+>> +	[DPLL_EVENT_STATUS_UNLOCKED]	= dpll_event_status,
+>> +	[DPLL_EVENT_SOURCE_CHANGE]	= dpll_event_source_change,
+>> +	[DPLL_EVENT_OUTPUT_CHANGE]	= dpll_event_output_change,
 >> +};
->> +#define DPLL_CMD_MAX (__DPLL_CMD_MAX - 1)
+>> +/*
+>> + * Generic netlink DPLL event encoding
+>> + */
+>> +static int dpll_send_event(enum dpll_genl_event event,
+>> +				   struct param *p)
+>> +{
+>> +	struct sk_buff *msg;
+>> +	int ret = -EMSGSIZE;
+>> +	void *hdr;
 >> +
->> +#endif /* _UAPI_LINUX_DPLL_H */
+>> +	msg = genlmsg_new(NLMSG_GOODSIZE, GFP_KERNEL);
+>> +	if (!msg)
+>> +		return -ENOMEM;
+>> +	p->msg = msg;
+>> +
+>> +	hdr = genlmsg_put(msg, 0, 0, &dpll_gnl_family, 0, event);
+>> +	if (!hdr)
+>> +		goto out_free_msg;
+>> +
+>> +	ret = event_cb[event](p);
+>> +	if (ret)
+>> +		goto out_cancel_msg;
+>> +
+>> +	genlmsg_end(msg, hdr);
+>> +
+>> +	genlmsg_multicast(&dpll_gnl_family, msg, 0, 1, GFP_KERNEL);
+> 
+> All multicasts are send only for group "1" (DPLL_CONFIG_SOURCE_GROUP_NAME),
+> but 4 groups were defined.
+>
+
+Yes, you are right! Will update it in the next round.
+
+>> +
+>> +	return 0;
+>> +
+>> +out_cancel_msg:
+>> +	genlmsg_cancel(msg, hdr);
+>> +out_free_msg:
+>> +	nlmsg_free(msg);
+>> +
+>> +	return ret;
+>> +}
+>> +
+>> +int dpll_notify_device_create(int dpll_id, const char *name)
+>> +{
+>> +	struct param p = { .dpll_id = dpll_id, .dpll_name = name };
+>> +
+>> +	return dpll_send_event(DPLL_EVENT_DEVICE_CREATE, &p);
+>> +}
+>> +
+>> +int dpll_notify_device_delete(int dpll_id)
+>> +{
+>> +	struct param p = { .dpll_id = dpll_id };
+>> +
+>> +	return dpll_send_event(DPLL_EVENT_DEVICE_DELETE, &p);
+>> +}
+>> +
+>> +int dpll_notify_status_locked(int dpll_id)
+>> +{
+>> +	struct param p = { .dpll_id = dpll_id, .dpll_status = 1 };
+>> +
+>> +	return dpll_send_event(DPLL_EVENT_STATUS_LOCKED, &p);
+>> +}
+>> +
+>> +int dpll_notify_status_unlocked(int dpll_id)
+>> +{
+>> +	struct param p = { .dpll_id = dpll_id, .dpll_status = 0 };
+>> +
+>> +	return dpll_send_event(DPLL_EVENT_STATUS_UNLOCKED, &p);
+>> +}
+>> +
+>> +int dpll_notify_source_change(int dpll_id, int source_id, int source_type)
+>> +{
+>> +	struct param p =  { .dpll_id = dpll_id, .dpll_source_id = source_id,
+>> +						.dpll_source_type = source_type };
+>> +
+>> +	return dpll_send_event(DPLL_EVENT_SOURCE_CHANGE, &p);
+>> +}
+>> +
+>> +int dpll_notify_output_change(int dpll_id, int output_id, int output_type)
+>> +{
+>> +	struct param p =  { .dpll_id = dpll_id, .dpll_output_id = output_id,
+>> +						.dpll_output_type = output_type };
+>> +
+>> +	return dpll_send_event(DPLL_EVENT_OUTPUT_CHANGE, &p);
+>> +}
+>> +
+>> int __init dpll_netlink_init(void)
+>> {
+>> 	return genl_register_family(&dpll_gnl_family);
+>> diff --git a/drivers/dpll/dpll_netlink.h b/drivers/dpll/dpll_netlink.h
+>> index e2d100f59dd6..0dc81320f982 100644
+>> --- a/drivers/dpll/dpll_netlink.h
+>> +++ b/drivers/dpll/dpll_netlink.h
+>> @@ -3,5 +3,12 @@
+>>   *  Copyright (c) 2021 Meta Platforms, Inc. and affiliates
+>>   */
+>>
+>> +int dpll_notify_device_create(int dpll_id, const char *name);
+>> +int dpll_notify_device_delete(int dpll_id);
+>> +int dpll_notify_status_locked(int dpll_id);
+>> +int dpll_notify_status_unlocked(int dpll_id);
+>> +int dpll_notify_source_change(int dpll_id, int source_id, int source_type);
+>> +int dpll_notify_output_change(int dpll_id, int output_id, int output_type);
+> 
+> Only dpll_notify_device_create is actually used, rest is not.
+> I am getting confused a bit, who should call those "notify" functions?
+> It is straightforward for create/delete, dpll subsystem shall do it, but what
+> about the rest?
+> I would say notifications about status or source/output change shall originate
+> in the driver implementing dpll interface, thus they shall be exported and
+> defined in the header included by the driver.
+> 
+
+I was thinking about driver too, because device can have different interfaces to 
+configure source/output, and different notifications to update status. I will 
+update ptp_ocp driver to implement this logic. And it will also cover question 
+of exporting these functions and their definitions.
+
+>> +
+>> int __init dpll_netlink_init(void);
+>> void dpll_netlink_finish(void);
 >> -- 
 >> 2.27.0
 >>
