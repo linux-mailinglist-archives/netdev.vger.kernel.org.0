@@ -2,114 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F66A5751DA
-	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 17:34:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B0215751DD
+	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 17:35:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240049AbiGNPeQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jul 2022 11:34:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39486 "EHLO
+        id S239376AbiGNPfK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jul 2022 11:35:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240131AbiGNPeI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 11:34:08 -0400
-Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D415F2724
-        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 08:34:06 -0700 (PDT)
-Received: by mail-oi1-x232.google.com with SMTP id p132so2779681oif.9
-        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 08:34:06 -0700 (PDT)
+        with ESMTP id S231987AbiGNPfI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 11:35:08 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BBB9474C9
+        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 08:35:07 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id l23so4106305ejr.5
+        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 08:35:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=l1s02NmT06ZtbH7uKtLSfhho+IMosk3J9PhK8LUL6jE=;
-        b=vnrHsVvSxYoC3+qZ9wCruM/9Y5ABTDHR/mh3vIs2pjkLObQh2+4Afr2DW9Q2/akUb5
-         VogVH4yZAmCnW0VgLQZYi5ZQF7Y0lan2QdXDGenPmsCc6wQvg/U568dNjygGFAQIv/JL
-         GjdIOiBJG0LCR4bfWHx0kG4snLdU7/vyZgwWnO+DhaPenyIzJQgU++6fpBNMco0TViCP
-         A0cYeGRBItYoomx625QyuBETc+HyO55GcxxQRHcwfs6rs2Vuvr5aQU6Xmxwf3+pN2r1L
-         CsIzgwfxDKrHVMhzgzp9QvkoYKff+U5L5geHfd51FCoubR/5JKaPlfYWu6dCDA8pkdl3
-         1pFg==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=/AQRuSAnohAK753u3pXAMITpPrUHDOravLzbWrRgYfI=;
+        b=bpJXIKZgHvN0u0JC2Au2IiX+3DR6pmvyf1Avj2tku5jwdb492841+hoPzWYx+YpCO+
+         zQSJup0oVowAV6YnSD1g/gzaicfKu3TowK57bstdjNRCYsl4/QBCENInIO8Q2lPyoWUs
+         Ch99165b8C6neQh6bhLy2OGDBTr14TaQD8er+Gq6Td6B4MeF5kZsY/StCLNAdxL8RPcm
+         BCR/yAmolt0/2RdMdv2cwsR79TnLUW6ugxRfrTQPine05/YlnlNel8ZEy5MHMUO4r4cc
+         DuLHk85Tk29Gs3PQD+TeHU9QabL9vXRg7d0gwQD+AWrZ5oI6pW+Bp31dFeMgqePK8+6l
+         Aepw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=l1s02NmT06ZtbH7uKtLSfhho+IMosk3J9PhK8LUL6jE=;
-        b=kH3j7kCkIKkTpegw1vUeEijMi9L2sWmPlk/zLbywhAmAcWBaGyhlFrAL4zhiG5Uk5n
-         ppQcXJ2ydCTzS0ZcPoY/Pv88BNS45Vb7qUQIsAKFSEsDnIxRqJoSikuYjzlbWY7ow8dq
-         bUrgqz+zPh0Ji7ll4zGTYPg/QXFL3D4Gl9d66/8n19UCG6zo0Z6vXsi+Dn2BvPIQMgUN
-         bEB6MtIUud2G2u2ArGNeSB39PMIYiF7d0GzPWzGODxLp/Df16eqUUzq1E5ktVrr5kKq9
-         s2vkWcEJ/FzJ0ZlOEVeCV7GnS7MSmVXVCM5FO4yPkfvYAeh8ElAlhDZygr98D9Ovk9YB
-         SfqQ==
-X-Gm-Message-State: AJIora9Y4SCGTs8r9NXUy9yBupHzx35bSc9QyQBi9ovz6JvGz80T/VNO
-        eoCq/7UuTqZxxIi3g4dKuHuLW35I0dnObrGDm2vPYA==
-X-Google-Smtp-Source: AGRyM1uRUv5nQZEv6jykoozOiPFmebzZNmQuoTPC+AlLy8MD2AQ9HOD8s1HFJf1EOBj78Wo84FMoC9oRWB96R9gxDhA=
-X-Received: by 2002:a54:4618:0:b0:326:9f6e:edc6 with SMTP id
- p24-20020a544618000000b003269f6eedc6mr4474919oip.2.1657812846279; Thu, 14 Jul
- 2022 08:34:06 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=/AQRuSAnohAK753u3pXAMITpPrUHDOravLzbWrRgYfI=;
+        b=ltinbJYz6XjCnVYDJmCvZSdiuS2QfgC7YYI2rFFGNWo2khhGHpRIHZuvQWt+IiMsUh
+         qOh92rimmgl+w+hQpkUPuaYpUaDwNrKvUANb9ibXJk1263AHqm67SVNuOQvKt8kmD6Xb
+         S9MFLTC84YWRjPWoDet1kQNtlTrTdx0R2BR7O7IRnHQj8uwXtmnJKTfLbxHdDUfUB4/B
+         w355QitE3OOUFJv58c4rRRdat1bQar0ZX0EBN4CQsDbTqZe5qNd7LlfFHz61iV2aKWo0
+         9NzxL3verHQezP0jRuykmFnPpEDQSuQcQXh1izDvPQTcmBRDMgo9aOhHFas332ZTAes+
+         tN6g==
+X-Gm-Message-State: AJIora/fEuwJyk1Zs9Zq6tJegf08QUIggy9zzGDQ1e1S8lStJh5KXDFe
+        yRhXipKlIczV9szXoZ4QWQk=
+X-Google-Smtp-Source: AGRyM1ticUgO49zYFzqdxH65+Ehp9XYUAgeU6HueP/+mnyrjDvgM0IddHokBGp8ApuBLfsC1UmPexw==
+X-Received: by 2002:a17:906:974c:b0:72b:8cea:95c2 with SMTP id o12-20020a170906974c00b0072b8cea95c2mr9322190ejy.65.1657812906075;
+        Thu, 14 Jul 2022 08:35:06 -0700 (PDT)
+Received: from skbuf ([188.25.231.115])
+        by smtp.gmail.com with ESMTPSA id gr19-20020a170906e2d300b0070abf371274sm819757ejb.136.2022.07.14.08.35.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Jul 2022 08:35:05 -0700 (PDT)
+Date:   Thu, 14 Jul 2022 18:35:03 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Liang He <windhl@126.com>
+Cc:     woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
+        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v2] net: dsa: microchip: ksz_common: Fix refcount leak bug
+Message-ID: <20220714153503.qxopsztagc6yb72o@skbuf>
+References: <20220714153138.375919-1-windhl@126.com>
+ <20220714153138.375919-1-windhl@126.com>
 MIME-Version: 1.0
-References: <20220713111430.134810-1-toke@redhat.com> <CAM0EoM=Pz_EWHsWzVZkZfojoRyUgLPVhGRHq6aGVhdcLC2YvHw@mail.gmail.com>
- <CAA93jw7SsxOqOE8YJOLikkzSsNQuBqdkGLreoD-DDgQM4n-9sg@mail.gmail.com>
-In-Reply-To: <CAA93jw7SsxOqOE8YJOLikkzSsNQuBqdkGLreoD-DDgQM4n-9sg@mail.gmail.com>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Date:   Thu, 14 Jul 2022 11:33:55 -0400
-Message-ID: <CAM0EoMmHi=R2bwGQC9aUh+xjpCHWGu3oXhE_1BVvcZbOfx7bSA@mail.gmail.com>
-Subject: Re: [RFC PATCH 00/17] xdp: Add packet queueing and scheduling capabilities
-To:     Dave Taht <dave.taht@gmail.com>
-Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Mykola Lysenko <mykolal@fb.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        Freysteinn Alfredsson <freysteinn.alfredsson@kau.se>,
-        Cong Wang <xiyou.wangcong@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220714153138.375919-1-windhl@126.com>
+ <20220714153138.375919-1-windhl@126.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 14, 2022 at 10:56 AM Dave Taht <dave.taht@gmail.com> wrote:
->
-> In general I feel a programmable packet pacing approach is the right
-> way forward for the internet as a whole.
->
-> It lends itself more easily and accurately to offloading in an age
-> where it is difficult to do anything sane within a ms on the host
-> cpu, especially in virtualized environments, in the enormous dynamic
-> range of kbits/ms to gbits/ms between host an potential recipient [1]
->
-> So considerations about what is easier to offload moving forward vs
-> central cpu costs should be in this conversation.
->
+On Thu, Jul 14, 2022 at 11:31:38PM +0800, Liang He wrote:
+> In ksz_switch_register(), we should call of_node_put() for the
+> reference returned by of_get_child_by_name() which has increased
+> the refcount.
+> 
+> Fixes: 912aae27c6af ("net: dsa: microchip: really look for phy-mode in port nodes")
+> Signed-off-by: Liang He <windhl@126.com>
+> ---
 
-If you know your hardware can offload - there is a lot less to worry about.
-You can let the synchronization be handled by hardware. For example,
-if your hardware can do strict priority scheduling/queueing you really
-should bypass the kernel layer, set appropriate metadata (skb prio)
-and let the hw handle it. See the HTB offload from Nvidia.
-OTOH, EDT based approaches are the best for some lightweight
-approach which takes advantage of simple hardware
-features (like timestamps, etc).
-
-cheers,
-jamal
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
