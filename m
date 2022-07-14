@@ -2,56 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DC7CC5749AF
-	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 11:52:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 313D8574A29
+	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 12:10:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237459AbiGNJwa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jul 2022 05:52:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60326 "EHLO
+        id S238080AbiGNKK2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jul 2022 06:10:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237906AbiGNJwQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 05:52:16 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3961E1CFEC
-        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 02:52:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1657792334; x=1689328334;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=3WFFj5ZaEbfwQe99l8OLu6bnQMMxdBTZWjfWCuMG0ts=;
-  b=1TMFtNfzvpK/70kALfOISwPTAlEmV6lzYgiy5FAV/EleGRccsrrHpxFs
-   9ay+GVkhMVSoFhnH/WoO3rOnRks8Z+WlxjChNGtD9FewK7KPoounBGUFS
-   Nbb5stbmAsOfTuUnahPWC2qJbR7r0M9hVge5oEWVnRC7IEGf2T/hIgNFP
-   3whtCchT49a7hpZG39ZIZxAggZKY58QBxOCPTRAo+o8czzcDcS/tZThjn
-   3nXCe3r+Sk6bxxWje/UJLE6tytddpT94JJW6OpUdDmfn3P3VreXnXqsxv
-   QgioWhNsfho1ah9Y8P1eys0Q0K1mqraydTxpeUmjvqvBNCBYbXvnDUekA
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.92,269,1650956400"; 
-   d="scan'208";a="104432966"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Jul 2022 02:52:13 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 14 Jul 2022 02:52:12 -0700
-Received: from localhost.localdomain (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Thu, 14 Jul 2022 02:52:10 -0700
-From:   Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
-To:     <netdev@vger.kernel.org>
-CC:     <davem@davemloft.net>, <mkubecek@suse.cz>,
-        <UNGLinuxDriver@microchip.com>
-Subject: [PATCH ethtool] ethtool: add register dump support for lan743x chiptes
-Date:   Thu, 14 Jul 2022 15:22:06 +0530
-Message-ID: <20220714095206.168187-1-Raju.Lakkaraju@microchip.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S231163AbiGNKK1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 06:10:27 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 77AE54E85F
+        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 03:10:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657793425;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=g7jS+6/ePhfbGrbrEFBGQoeAmsGK2zeWD9uz663dq4I=;
+        b=Lfc7zZwyGHti9uGZboBCRwLkcIfJdVHp3GyZvXAov5/D3p+SxKDJ1ZPi3RNUGMV5r/wR5h
+        kudZ+2/p2uGvNGEuCVUG+kBR7QzpFbKbDr2Yydn6ZqywG8oMmSa0+nljKeLe8gzsOmc43K
+        Z+sM0718VB3RuQ+Bs/y0q0NkhuJlick=
+Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
+ [209.85.167.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-609-iY2Sg7JkMoWo_xnDG_dNUQ-1; Thu, 14 Jul 2022 06:10:24 -0400
+X-MC-Unique: iY2Sg7JkMoWo_xnDG_dNUQ-1
+Received: by mail-lf1-f71.google.com with SMTP id k25-20020a195619000000b00489e6a6527eso571576lfb.8
+        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 03:10:23 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=g7jS+6/ePhfbGrbrEFBGQoeAmsGK2zeWD9uz663dq4I=;
+        b=vv7404M8lDwnlvASjHPZbY5237YPoZED84K246fPsHHQQG4SEY/IdybwwxdwgxfwvW
+         ZNu6/Dup6844Ftwqvzum/G7JJGjzBMvi1/0F9vyXsiAHRaBuIlzf0y5kvEOctM7l1nGZ
+         lWkPvFeUbAKyUnDNY8mtagKknWlEH+PaAAHMPR8R71JoltZB7tFg/yBcsGk1YyMsJy5A
+         xyJbfz+kDA1asxwIfbj+rvWHRZazhQwaMHfALvQ7oCAAG+MAQrLosA16lv4QpEYxVz6e
+         kz4PfmI7bbUgmRuUb/U+sRQ0SGoF00rtjtba/EP/GMiT0uJRbXnJaocAebr89ka4N+M4
+         7rQw==
+X-Gm-Message-State: AJIora/H9ptmjWTPH2VwP1Nwzb2e1xA3SBruKV+TXoddT/1eYYW36KD/
+        lPSS/wZLFKkBHNBhmqXdErqemhdBwf19Ps8x/WWwbRfVW1ONsUxkf7A09CAVFc12Ut3VJp2xGWX
+        8dIhZ6YQho5iRe4P+bYoTGRemmL6x4TbB
+X-Received: by 2002:a05:6512:3c95:b0:48a:3d1:9df with SMTP id h21-20020a0565123c9500b0048a03d109dfmr4880414lfv.641.1657793422221;
+        Thu, 14 Jul 2022 03:10:22 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1vOzQrWbN1I0pe1k48wduzgwFqRCgCxPc/EFrheZX3LgJneoo7JoEpDZZddGGxrWxL4pC/WtuW6739MvbeGvH8=
+X-Received: by 2002:a05:6512:3c95:b0:48a:3d1:9df with SMTP id
+ h21-20020a0565123c9500b0048a03d109dfmr4880402lfv.641.1657793422054; Thu, 14
+ Jul 2022 03:10:22 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+References: <20220712112210.2852777-1-alvaro.karsz@solid-run.com>
+ <20220713200203.4eb3a64e@kernel.org> <55c50d9a-1612-ed2c-55f4-58a5c545b662@redhat.com>
+ <CAJs=3_BNvrJo9JCkMhL3G2TBescrLbgeD7eOx=cs+T9YOLTwLg@mail.gmail.com>
+ <CACGkMEtiC1PZTjno3sF8z-_cx=1cb8Kn1kqPvQuurDbKS+UktQ@mail.gmail.com> <CAJs=3_B74L0wf-3xbAqkQ=eypmO-8FBh--QraLrzF2wkw_1Zow@mail.gmail.com>
+In-Reply-To: <CAJs=3_B74L0wf-3xbAqkQ=eypmO-8FBh--QraLrzF2wkw_1Zow@mail.gmail.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Thu, 14 Jul 2022 18:10:11 +0800
+Message-ID: <CACGkMEt-KpkKHbnSdDRSSCFgK3qvWvPWRFViWUM2mggiBv0CBg@mail.gmail.com>
+Subject: Re: [PATCH v2] net: virtio_net: notifications coalescing support
+To:     Alvaro Karsz <alvaro.karsz@solid-run.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev <netdev@vger.kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -59,133 +77,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add LAN743x register dump
+On Thu, Jul 14, 2022 at 3:23 PM Alvaro Karsz <alvaro.karsz@solid-run.com> wrote:
+>
+> > So we use sq->napi.weight as a hint to use tx interrupt or not.
+> > We need a safe switching from tx interrupt and skb_orphan(). The
+> > current code guarantees this by only allowing the switching when the
+> > interface is down.
+> > So what I meant for the above "Update NAPI" is, consider that users
+> > want to switch from tx_max_coalesced_frames from 0 to 100. This needs
+> > to be down when the interface is down, since the driver need to enable
+> > tx interrupt mode, otherwise the coalescing is meaningless.
+> > This would be much easier if we only have tx interrupt mode, but this
+> > requires more work.
+>
+>
+> So, If I understood correctly, you're suggesting to add the following
+> part to the
+> "interrupt coalescing is negotiated" case:
+>
+> napi_weight = ec->tx_max_coalesced_frames ? NAPI_POLL_WEIGHT : 0;
+> if (napi_weight ^ vi->sq[0].napi.weight) {
+>    if (dev->flags & IFF_UP)
+>         return -EBUSY;
+>     for (i = 0; i < vi->max_queue_pairs; i++)
+>         vi->sq[i].napi.weight = napi_weight;
+> }
+>
+> Before sending the control commands to the device.
+> Is this right?
 
-Signed-off-by: Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
----
- Makefile.am |  2 +-
- ethtool.c   |  1 +
- internal.h  |  3 +++
- lan743x.c   | 73 +++++++++++++++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 78 insertions(+), 1 deletion(-)
- create mode 100644 lan743x.c
+I think it should be after the control commands were sent. Other looks fine.
 
-diff --git a/Makefile.am b/Makefile.am
-index dc5fbec..b90bb9b 100644
---- a/Makefile.am
-+++ b/Makefile.am
-@@ -18,7 +18,7 @@ ethtool_SOURCES += \
- 		  smsc911x.c at76c50x-usb.c sfc.c stmmac.c	\
- 		  sff-common.c sff-common.h sfpid.c sfpdiag.c	\
- 		  ixgbevf.c tse.c vmxnet3.c qsfp.c qsfp.h fjes.c lan78xx.c \
--		  igc.c cmis.c cmis.h bnxt.c
-+		  igc.c cmis.c cmis.h bnxt.c lan743x.c
- endif
- 
- if ENABLE_BASH_COMPLETION
-diff --git a/ethtool.c b/ethtool.c
-index 911f26b..0eff9da 100644
---- a/ethtool.c
-+++ b/ethtool.c
-@@ -1129,6 +1129,7 @@ static const struct {
- 	{ "fec", fec_dump_regs },
- 	{ "igc", igc_dump_regs },
- 	{ "bnxt_en", bnxt_dump_regs },
-+	{ "lan743x", lan743x_dump_regs },
- };
- #endif
- 
-diff --git a/internal.h b/internal.h
-index 0d9d816..54ae4c6 100644
---- a/internal.h
-+++ b/internal.h
-@@ -412,4 +412,7 @@ int igc_dump_regs(struct ethtool_drvinfo *info, struct ethtool_regs *regs);
- /* Broadcom Ethernet Controller */
- int bnxt_dump_regs(struct ethtool_drvinfo *info, struct ethtool_regs *regs);
- 
-+/* Microchip Ethernet Controller */
-+int lan743x_dump_regs(struct ethtool_drvinfo *info, struct ethtool_regs *regs);
-+
- #endif /* ETHTOOL_INTERNAL_H__ */
-diff --git a/lan743x.c b/lan743x.c
-new file mode 100644
-index 0000000..f430ee8
---- /dev/null
-+++ b/lan743x.c
-@@ -0,0 +1,73 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+/* Copyright (c) 2022 Microchip Technology Inc. and its subsidiaries. */
-+
-+#include <stdio.h>
-+#include <string.h>
-+#include "internal.h"
-+
-+#define LAN743X_ETH_REG_VERSION		1
-+
-+enum {
-+	ETH_PRIV_FLAGS,
-+	ETH_ID_REV,
-+	ETH_FPGA_REV,
-+	ETH_STRAP_READ,
-+	ETH_INT_STS,
-+	ETH_HW_CFG,
-+	ETH_PMT_CTL,
-+	ETH_E2P_CMD,
-+	ETH_E2P_DATA,
-+	ETH_MAC_CR,
-+	ETH_MAC_RX,
-+	ETH_MAC_TX,
-+	ETH_FLOW,
-+	ETH_MII_ACC,
-+	ETH_MII_DATA,
-+	ETH_EEE_TX_LPI_REQ_DLY,
-+	ETH_WUCSR,
-+	ETH_WK_SRC,
-+
-+	/* Add new registers above */
-+	MAX_LAN743X_ETH_REGS
-+};
-+
-+void lan743x_comm_dump_regs(struct ethtool_drvinfo *info __maybe_unused,
-+			    struct ethtool_regs *regs)
-+{
-+	u32 *lan743x_reg = (u32 *)regs->data;
-+
-+	fprintf(stdout, "LAN743x Registers:\n");
-+	fprintf(stdout, "------------------\n");
-+	fprintf(stdout, "CHIP_ID_REV  = 0x%08X\n", lan743x_reg[ETH_ID_REV]);
-+	fprintf(stdout, "FPGA_REV     = 0x%08X\n", lan743x_reg[ETH_FPGA_REV]);
-+	fprintf(stdout, "STRAP_READ   = 0x%08X\n", lan743x_reg[ETH_STRAP_READ]);
-+	fprintf(stdout, "INT_STS      = 0x%08X\n", lan743x_reg[ETH_INT_STS]);
-+	fprintf(stdout, "HW_CFG       = 0x%08X\n", lan743x_reg[ETH_HW_CFG]);
-+	fprintf(stdout, "PMT_CTRL     = 0x%08X\n", lan743x_reg[ETH_PMT_CTL]);
-+	fprintf(stdout, "E2P_CMD      = 0x%08X\n", lan743x_reg[ETH_E2P_CMD]);
-+	fprintf(stdout, "E2P_DATA     = 0x%08X\n", lan743x_reg[ETH_E2P_DATA]);
-+	fprintf(stdout, "\n");
-+
-+	fprintf(stdout, "MAC Registers:\n");
-+	fprintf(stdout, "--------------\n");
-+	fprintf(stdout, "MAC_CR       = 0x%08X\n", lan743x_reg[ETH_MAC_CR]);
-+	fprintf(stdout, "MAC_RX       = 0x%08X\n", lan743x_reg[ETH_MAC_RX]);
-+	fprintf(stdout, "MAC_TX       = 0x%08X\n", lan743x_reg[ETH_MAC_TX]);
-+	fprintf(stdout, "FLOW         = 0x%08X\n", lan743x_reg[ETH_FLOW]);
-+	fprintf(stdout, "MII_ACC      = 0x%08X\n", lan743x_reg[ETH_MII_ACC]);
-+	fprintf(stdout, "MII_DATA     = 0x%08X\n", lan743x_reg[ETH_MII_DATA]);
-+	fprintf(stdout, "WUCSR        = 0x%08X\n", lan743x_reg[ETH_WUCSR]);
-+	fprintf(stdout, "WK_SRC       = 0x%08X\n", lan743x_reg[ETH_WK_SRC]);
-+	fprintf(stdout, "EEE_TX_LPI_REQ_DLY = 0x%08X\n",
-+					lan743x_reg[ETH_EEE_TX_LPI_REQ_DLY]);
-+	fprintf(stdout, "\n");
-+}
-+
-+int lan743x_dump_regs(struct ethtool_drvinfo *info __maybe_unused,
-+		      struct ethtool_regs *regs)
-+{
-+
-+	lan743x_comm_dump_regs(info, regs);
-+
-+	return 0;
-+}
--- 
-2.25.1
+Thanks
+
+>
 
