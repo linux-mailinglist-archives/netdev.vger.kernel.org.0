@@ -2,169 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 868595755E4
-	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 21:37:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B6C3B5755FA
+	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 21:44:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240615AbiGNTh0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jul 2022 15:37:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37300 "EHLO
+        id S240683AbiGNTot (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jul 2022 15:44:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240579AbiGNThH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 15:37:07 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C63E15B7BC;
-        Thu, 14 Jul 2022 12:37:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1657827426; x=1689363426;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=SRkeUA7nUyp6MBOLYZsbd9fe58Z7+F2FRtQJMWV8HOU=;
-  b=Fnll+vtKGwtodPfpxBzpJ8GmkYY78B7wB1jLlSTmp1WQew9IVUAuaWYG
-   lZkHhdpCk+0onNsRWeDBTTFkcR+CdumX5eV37mUBNk5IKyWRRc6dTX+DJ
-   MAffZWYWsNwHbiItBRUx0pMZdoapoAt26k1StereYt9xEZveL0WVBu1wV
-   za0ecWKIdp/hAOWTkwBHRMJHuioZ83RF6ODJRQ5CPmO6el+AdtmUf331T
-   qhiikOA8/QC/N3hecpx91NZef9hM7CsccM3VM8ggWbumgN8mwFB6I9GHm
-   shffgg+RwQGjmgSTG4BozrkBHqlqYb5799IZGk9IGow1dpHVXLgMpXTls
-   g==;
-X-IronPort-AV: E=Sophos;i="5.92,272,1650956400"; 
-   d="scan'208";a="167895581"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Jul 2022 12:37:06 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 14 Jul 2022 12:37:05 -0700
-Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Thu, 14 Jul 2022 12:37:03 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <UNGLinuxDriver@microchip.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <vladimir.oltean@nxp.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net 5/5] net: lan966x: Fix usage of lan966x->mac_lock when used by FDB
-Date:   Thu, 14 Jul 2022 21:40:40 +0200
-Message-ID: <20220714194040.231651-6-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220714194040.231651-1-horatiu.vultur@microchip.com>
-References: <20220714194040.231651-1-horatiu.vultur@microchip.com>
+        with ESMTP id S232580AbiGNTos (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 15:44:48 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E88066BC27;
+        Thu, 14 Jul 2022 12:44:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=juqdfawgY+mSOy4Q9xQHkJDUGz0LPzuu1htfB/1lskw=; b=nefOM4zVvJVlye2X2eOBPrTjOF
+        M+tA7bm/BSfK8k3HugWHtepejg31y/x7X3Xv4igOK1f23iFTQb71LqJuZQ5pkAxiKlJCjP8dGOvEe
+        yIrHeKA/ub+CP1rWS6VdjyPtFsi1GSDfCPb+un1VdGovhK59h0pKNQXagJQCv0dittjgzXB7A0EPF
+        S/gyOybpAiHfo+a7IAwHL2O01YoDV/Z0Rs+HnsNjaVf+FxXaXJH4AagMpd2qA2R32Jw8cXVurCseK
+        cZjBuDLr2ONA2lFMmxV7AZfxr7aiQ6DgDSGbr7QU30CibtI3jDhDigKR9DW2APaL+tPJGx7DSEIBs
+        N7Hn3m3g==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33344)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1oC4lN-0006G0-ED; Thu, 14 Jul 2022 20:44:41 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1oC4lK-0006qv-Ou; Thu, 14 Jul 2022 20:44:38 +0100
+Date:   Thu, 14 Jul 2022 20:44:38 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Marcin Wojtas <mw@semihalf.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Grzegorz Jaszczyk <jaz@semihalf.com>,
+        Tomasz Nowicki <tn@semihalf.com>
+Subject: Re: [net-next: PATCH] net: dsa: mv88e6xxx: fix speed setting for
+ CPU/DSA ports
+Message-ID: <YtByJhYpo5BzX4GV@shell.armlinux.org.uk>
+References: <20220714010021.1786616-1-mw@semihalf.com>
+ <YtAMw7Sp06Kiv9PK@shell.armlinux.org.uk>
+ <CAPv3WKcxH=b01ikuUESczWeX8SJjc2fg3GjSCp7Q8p72uSt_og@mail.gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <CAPv3WKcxH=b01ikuUESczWeX8SJjc2fg3GjSCp7Q8p72uSt_og@mail.gmail.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the SW bridge was trying to add/remove entries to/from HW, the
-access to HW was not protected by any lock. In this way, it was
-possible to have race conditions.
-Fix this by using the lan966x->mac_lock to protect parallel access to HW
-for this cases.
+On Thu, Jul 14, 2022 at 07:18:57PM +0200, Marcin Wojtas wrote:
+> Hi Russell,
+> 
+> czw., 14 lip 2022 o 14:32 Russell King (Oracle)
+> <linux@armlinux.org.uk> napisał(a):
+> >
+> > On Thu, Jul 14, 2022 at 03:00:21AM +0200, Marcin Wojtas wrote:
+> > > Commit 3c783b83bd0f ("net: dsa: mv88e6xxx: get rid of SPEED_MAX setting")
+> > > stopped relying on SPEED_MAX constant and hardcoded speed settings
+> > > for the switch ports and rely on phylink configuration.
+> > >
+> > > It turned out, however, that when the relevant code is called,
+> > > the mac_capabilites of CPU/DSA port remain unset.
+> > > mv88e6xxx_setup_port() is called via mv88e6xxx_setup() in
+> > > dsa_tree_setup_switches(), which precedes setting the caps in
+> > > phylink_get_caps down in the chain of dsa_tree_setup_ports().
+> > >
+> > > As a result the mac_capabilites are 0 and the default speed for CPU/DSA
+> > > port is 10M at the start. To fix that execute phylink_get_caps() callback
+> > > which fills port's mac_capabilities before they are processed.
+> > >
+> > > Fixes: 3c783b83bd0f ("net: dsa: mv88e6xxx: get rid of SPEED_MAX setting")
+> > > Signed-off-by: Marcin Wojtas <mw@semihalf.com>
+> >
+> > Please don't merge this - the plan is to submit the RFC series I sent on
+> > Wednesday which deletes this code, and I'd rather not re-spin the series
+> > and go through the testing again because someone else changed the code.
+> 
+> Thank for the heads-up. Are you planning to resend the series or
+> willing to get it merged as-is? I have perhaps one comment, but I can
+> apply it later as a part of fwnode_/device_ migration.
+> 
+> >
+> > Marcin - please can you test with my RFC series, which can be found at:
+> >
+> > https://lore.kernel.org/all/Ys7RdzGgHbYiPyB1@shell.armlinux.org.uk/
+> >
+> 
+> The thing is my v2 of DSA fwnode_/device_ migration is tested and
+> ready to send. There will be conflicts (rather easy) with your
+> patchset - I volunteer to resolve it this way or another, depending on
+> what lands first. I have 2 platforms to test it with + also ACPI case
+> locally.
+> 
+> I'd like to make things as smooth as possible and make it before the
+> upcoming merge window - please share your thoughts on this.
 
-Fixes: 25ee9561ec622 ("net: lan966x: More MAC table functionality")
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
----
- .../ethernet/microchip/lan966x/lan966x_mac.c  | 34 +++++++++++++------
- 1 file changed, 23 insertions(+), 11 deletions(-)
+I've also been trying to get the mv88e6xxx PCS conversion in, but
+it's been held up because there's a fundamental problem in DSA that
+this series is addressing.
 
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c b/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c
-index 69e343b7f4af..5893770bfd94 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c
-@@ -201,7 +201,6 @@ static struct lan966x_mac_entry *lan966x_mac_find_entry(struct lan966x *lan966x,
- 	struct lan966x_mac_entry *res = NULL;
- 	struct lan966x_mac_entry *mac_entry;
- 
--	spin_lock(&lan966x->mac_lock);
- 	list_for_each_entry(mac_entry, &lan966x->mac_entries, list) {
- 		if (mac_entry->vid == vid &&
- 		    ether_addr_equal(mac, mac_entry->mac) &&
-@@ -210,7 +209,6 @@ static struct lan966x_mac_entry *lan966x_mac_find_entry(struct lan966x *lan966x,
- 			break;
- 		}
- 	}
--	spin_unlock(&lan966x->mac_lock);
- 
- 	return res;
- }
-@@ -253,8 +251,11 @@ int lan966x_mac_add_entry(struct lan966x *lan966x, struct lan966x_port *port,
- {
- 	struct lan966x_mac_entry *mac_entry;
- 
--	if (lan966x_mac_lookup(lan966x, addr, vid, ENTRYTYPE_NORMAL))
-+	spin_lock(&lan966x->mac_lock);
-+	if (lan966x_mac_lookup(lan966x, addr, vid, ENTRYTYPE_NORMAL)) {
-+		spin_unlock(&lan966x->mac_lock);
- 		return 0;
-+	}
- 
- 	/* In case the entry already exists, don't add it again to SW,
- 	 * just update HW, but we need to look in the actual HW because
-@@ -263,21 +264,25 @@ int lan966x_mac_add_entry(struct lan966x *lan966x, struct lan966x_port *port,
- 	 * add the entry but without the extern_learn flag.
- 	 */
- 	mac_entry = lan966x_mac_find_entry(lan966x, addr, vid, port->chip_port);
--	if (mac_entry)
--		return lan966x_mac_learn(lan966x, port->chip_port,
--					 addr, vid, ENTRYTYPE_LOCKED);
-+	if (mac_entry) {
-+		spin_unlock(&lan966x->mac_lock);
-+		goto mac_learn;
-+	}
- 
- 	mac_entry = lan966x_mac_alloc_entry(addr, vid, port->chip_port);
--	if (!mac_entry)
-+	if (!mac_entry) {
-+		spin_unlock(&lan966x->mac_lock);
- 		return -ENOMEM;
-+	}
- 
--	spin_lock(&lan966x->mac_lock);
- 	list_add_tail(&mac_entry->list, &lan966x->mac_entries);
- 	spin_unlock(&lan966x->mac_lock);
- 
--	lan966x_mac_learn(lan966x, port->chip_port, addr, vid, ENTRYTYPE_LOCKED);
- 	lan966x_fdb_call_notifiers(SWITCHDEV_FDB_OFFLOADED, addr, vid, port->dev);
- 
-+mac_learn:
-+	lan966x_mac_learn(lan966x, port->chip_port, addr, vid, ENTRYTYPE_LOCKED);
-+
- 	return 0;
- }
- 
-@@ -291,8 +296,9 @@ int lan966x_mac_del_entry(struct lan966x *lan966x, const unsigned char *addr,
- 				 list) {
- 		if (mac_entry->vid == vid &&
- 		    ether_addr_equal(addr, mac_entry->mac)) {
--			lan966x_mac_forget(lan966x, mac_entry->mac, mac_entry->vid,
--					   ENTRYTYPE_LOCKED);
-+			lan966x_mac_forget_locked(lan966x, mac_entry->mac,
-+						  mac_entry->vid,
-+						  ENTRYTYPE_LOCKED);
- 
- 			list_del(&mac_entry->list);
- 			kfree(mac_entry);
-@@ -428,6 +434,12 @@ static void lan966x_mac_irq_process(struct lan966x *lan966x, u32 row,
- 			continue;
- 
- 		spin_lock(&lan966x->mac_lock);
-+		mac_entry = lan966x_mac_find_entry(lan966x, mac, vid, dest_idx);
-+		if (mac_entry) {
-+			spin_unlock(&lan966x->mac_lock);
-+			continue;
-+		}
-+
- 		mac_entry = lan966x_mac_alloc_entry(mac, vid, dest_idx);
- 		if (!mac_entry) {
- 			spin_unlock(&lan966x->mac_lock);
+This series is addressing a faux pas on my part, where I had forgotten
+that phylink doesn't get used in DSA unless firmware specifies a
+fixed-link (or a PHY) - in other words when the firmware lacks a
+description of the link.
+
+So, what do we do...
+
 -- 
-2.33.0
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
