@@ -2,54 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C8EA9574AE9
-	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 12:40:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC781574B0A
+	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 12:46:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231559AbiGNKkT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jul 2022 06:40:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49294 "EHLO
+        id S238456AbiGNKqB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jul 2022 06:46:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230053AbiGNKkR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 06:40:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF36529CB1
-        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 03:40:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7F1BFB8248F
-        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 10:40:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 156B9C34115;
-        Thu, 14 Jul 2022 10:40:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657795214;
-        bh=Ooz89c2I2B1VTAZ2/C/Wt525paEje7ftISA5Of5DqxA=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=CJfxU8cIVWihxpp7021m42vgK2Ei/0zSEQole+TY1e8PG9PGGBXGl7Hcrq9Lzh4UF
-         yBEuU+1Vuw2ixt2yr8vibBI8KKpOfZjcvYYpYbv4rse/SJvPbDev2FsVydHRJTcBYM
-         quoke4L0MtCfQsQVjNSecZEFfTuffUEQw93vCVQeBl6J8N1DzsWS3rM1BXiWo3uXLh
-         9FPJRj9f2lvKorZXb06gOHS3sXe9WAKSBW8VZKFHKutNDNPCJgxo+BmmWo5ua198DZ
-         ATujL9ZgwnSa6aHmmp2kmPlNN73gMetSwua21imuZWyORO1J1rxiVri971b9EGPXE9
-         G1dS7RhwStHVQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E7C31E45228;
-        Thu, 14 Jul 2022 10:40:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S238449AbiGNKqA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 06:46:00 -0400
+Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2647453D16
+        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 03:45:59 -0700 (PDT)
+Received: by mail-lj1-x231.google.com with SMTP id bn33so1651835ljb.13
+        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 03:45:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=xKqR0FW84/9+NW1iMNlSYSBMe00t6GL0Fr0lVNN1QJg=;
+        b=RRzW+U2SyCxJYMSQpmw0Ceda3JSDmQG0VnKypfT2/CnW65baSsZ5BJB0f6/6vuIOeB
+         x3rG1OG+f4f1LrcbkVeYtfNKRuZDhFWJhhPCZSutTDuR6n9G3XuO8i9/OMy+KZk6xvQO
+         iSdJfmqvsB+eh3CoNGNGXGNXKgQP4ncePzhp7jlfMhrzPvdF+Zfl38FIkCEkOXUx+F7i
+         9zhhXKreZ8ku0RERbzdiyiOA/z5uzZV13xvuJvel/+xMlab6eJfVIivddi27qlRN5xkh
+         WO0AeTFoSHtGwYSczB3uBQYWpYnmJE7U3HGXdsQK5UvicBcyDqOJOFW3We9OyjSCEOE+
+         kPZg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=xKqR0FW84/9+NW1iMNlSYSBMe00t6GL0Fr0lVNN1QJg=;
+        b=ust2uLyFxZ4YVhF7D/54vdMEfOTZcrCmK33sx842btDccg15SHu0DpjkqvYgpD8crU
+         Bip1n6yj39ttbTyJiruoLkRCf8I5Tkfc/m26zVEMv72rU9Aaepnk+Vila/w7C3FUZuta
+         Zr9aXMv3Gx0t2tz4ntxzKZ/IRxkBHMo3dZutZlMbdQO9TMziBcH4jeMrd/XWY7icc64c
+         LlnCH+evyUXhS/Bu69gbWYHu6my4CeZAzFJK7MYsO/jE6VXVjYTdtYN9TRSoYPIZ0NUr
+         VmMY0u68RuAdeix0A23L1IA14En0K6nnS9In1xsr5Dps70zDKl4P3RSDTb+0c1KsYEt+
+         Ggkw==
+X-Gm-Message-State: AJIora/WaVwPdQTumt7EZMpmJVV95u3afkfmS0Y5ON5lSHB0b4Vo0Miu
+        MkhpX0hbwghoaymuAHgoUrXcnz34fhgeNg==
+X-Google-Smtp-Source: AGRyM1vvbcUEPvueAQS7ThaZipg6klecM8/8S5oPfzvcfSzlfkSt7U7OZ3hrAd+Z3nRXH0ypBljh5w==
+X-Received: by 2002:a2e:b165:0:b0:25d:8663:4dc8 with SMTP id a5-20020a2eb165000000b0025d86634dc8mr4208649ljm.87.1657795557533;
+        Thu, 14 Jul 2022 03:45:57 -0700 (PDT)
+Received: from [10.0.0.8] (fwa5da9-171.bb.online.no. [88.93.169.171])
+        by smtp.gmail.com with ESMTPSA id 27-20020ac25f5b000000b0047255d210e4sm295643lfz.19.2022.07.14.03.45.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 14 Jul 2022 03:45:57 -0700 (PDT)
+Message-ID: <f2a29c57-be8c-88c2-1c75-f6e5d1164b8f@linaro.org>
+Date:   Thu, 14 Jul 2022 12:45:54 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/2] xen-netfront: XSA-403 follow-on
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165779521394.17700.1175257223306226603.git-patchwork-notify@kernel.org>
-Date:   Thu, 14 Jul 2022 10:40:13 +0000
-References: <7fca0e44-43b5-8448-3653-249d117dc084@suse.com>
-In-Reply-To: <7fca0e44-43b5-8448-3653-249d117dc084@suse.com>
-To:     Jan Beulich <JBeulich@suse.com>
-Cc:     netdev@vger.kernel.org, xen-devel@lists.xenproject.org,
-        jgross@suse.com, stefano@stabellini.net,
-        oleksandr_tyshchenko@epam.com
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [RFC PATCH net-next 2/9] dt-bindings: net: Expand pcs-handle to
+ an array
+Content-Language: en-US
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Sean Anderson <sean.anderson@seco.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        Madalin Bucur <madalin.bucur@nxp.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        linux-kernel@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
+References: <20220711160519.741990-1-sean.anderson@seco.com>
+ <20220711160519.741990-3-sean.anderson@seco.com>
+ <ecaf9d0f-6ddb-5842-790e-3d5ee80e2a77@linaro.org>
+ <fdd34075-4e5e-a617-696d-15c5ac6e9bfe@seco.com>
+ <d84899e7-06f7-1a20-964f-90b6f0ff96fd@linaro.org>
+ <Ys2aeRBGGv6ajMZ5@shell.armlinux.org.uk>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <Ys2aeRBGGv6ajMZ5@shell.armlinux.org.uk>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,29 +88,19 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
-
-On Wed, 13 Jul 2022 11:18:03 +0200 you wrote:
-> While investigating the XSA, I did notice a few more things. The two
-> patches aren't really dependent on one another.
+On 12/07/2022 17:59, Russell King (Oracle) wrote:
+>> However before implementing this, please wait for more feedback. Maybe
+>> Rob or net folks will have different opinions.
 > 
-> 1: remove leftover call to xennet_tx_buf_gc()
-> 2: re-order error checks in xennet_get_responses()
+> We decided on "pcs-handle" for PCS for several drivers, to be consistent
+> with the situation for network PHYs (which are "phy-handle", settled on
+> after we also had "phy" and "phy-device" and decided to deprecate these
+> two.
 > 
-> Jan
+> Surely we should have consistency within the net code - so either "phy"
+> and "pcs" or "phy-handle" and "pcs-handle" but not a mixture of both?
 
-Here is the summary with links:
-  - [net-next,1/2] xen-netfront: remove leftover call to xennet_tx_buf_gc()
-    https://git.kernel.org/netdev/net-next/c/ad39bafda736
-  - [net-next,2/2] xen-netfront: re-order error checks in xennet_get_responses()
-    (no matching commit)
+True. Then the new property should be "pcs-handle-names"?
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Best regards,
+Krzysztof
