@@ -2,78 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BDDD7574F0E
-	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 15:23:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51FC5574F14
+	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 15:23:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239246AbiGNNXE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jul 2022 09:23:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48144 "EHLO
+        id S239794AbiGNNXJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jul 2022 09:23:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238494AbiGNNWp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 09:22:45 -0400
-Received: from smtp-relay-canonical-1.canonical.com (smtp-relay-canonical-1.canonical.com [185.125.188.121])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F0BC5D5A4;
-        Thu, 14 Jul 2022 06:22:09 -0700 (PDT)
-Received: from quatroqueijos.. (unknown [177.9.88.15])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        with ESMTP id S239760AbiGNNWs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 09:22:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0840C61D5E;
+        Thu, 14 Jul 2022 06:22:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 9761D3F3A9;
-        Thu, 14 Jul 2022 13:22:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1657804927;
-        bh=36Vgpi0nCGl0u3pmcD8xjyNPutMygLK4GXtVa3Et0BU=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-        b=i2J362YfjhMBlccJitl6AaA2T+I1hQ9PYpLi8quPGbMXmZUC5VEMnKjcsCIPQTZV9
-         1uv0K1S6rDV28z1R+Oz1o1woJTpEEPQrkwIp/mGPGeggd86Wc9LcIcuxdpOSuih3kO
-         CJHJ9mvsn/BsmFIKL0hOKC+aPuouVajYzfcDBLMAc5dNCSegQeH+q54kQglhkFkGH1
-         Pfyk4NOBOmlsDfXMEwTZhta/e+ajfENPcZbaofONW/DBHHViufQ3GYyhmymaUyrjBd
-         3EqFcqYElkfdRuV0mRYv0jX+qKwoDKepvCXYUK79vdUkBv+vbzp25zL3fzUj4aSyNi
-         Fiy7eApVrd8ew==
-From:   Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-To:     netdev@vger.kernel.org
-Cc:     linux-usb@vger.kernel.org, oneukum@suse.com, grundler@chromium.org,
-        pabeni@redhat.com, kuba@kernel.org, edumazet@google.com,
-        davem@davemloft.net,
-        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH] sr9700: improve packet length sanity check
-Date:   Thu, 14 Jul 2022 10:21:34 -0300
-Message-Id: <20220714132134.426621-1-cascardo@canonical.com>
-X-Mailer: git-send-email 2.34.1
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 30D8362063;
+        Thu, 14 Jul 2022 13:22:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74BF2C34114;
+        Thu, 14 Jul 2022 13:22:17 +0000 (UTC)
+Date:   Thu, 14 Jul 2022 09:22:15 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Song Liu <songliubraving@fb.com>
+Cc:     Song Liu <song@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "andrii@kernel.org" <andrii@kernel.org>,
+        Kernel Team <Kernel-team@fb.com>,
+        "jolsa@kernel.org" <jolsa@kernel.org>,
+        "mhiramat@kernel.org" <mhiramat@kernel.org>
+Subject: Re: [PATCH v2 bpf-next 1/5] ftrace: allow customized flags for
+ ftrace_direct_multi ftrace_ops
+Message-ID: <20220714092215.149d4823@gandalf.local.home>
+In-Reply-To: <BDED3B27-B42F-44AD-904E-010752462A67@fb.com>
+References: <20220602193706.2607681-1-song@kernel.org>
+        <20220602193706.2607681-2-song@kernel.org>
+        <20220713191846.18b05b43@gandalf.local.home>
+        <0029EF24-6508-4011-B365-3E2175F9FEAB@fb.com>
+        <20220713203841.76d66245@rorschach.local.home>
+        <C2FCCC9B-5F7D-4BBF-8410-67EA79166909@fb.com>
+        <20220713225511.70d03fc6@gandalf.local.home>
+        <BDED3B27-B42F-44AD-904E-010752462A67@fb.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The packet format includes a 3 byte headers and a 4 byte CRC. Account for
-that when checking the given length is not larger than the skb length.
+On Thu, 14 Jul 2022 04:37:43 +0000
+Song Liu <songliubraving@fb.com> wrote:
 
-Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Fixes: e9da0b56fe27 ("sr9700: sanity check for packet length")
----
- drivers/net/usb/sr9700.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> >   
+> >> 
+> >> non-direct ops without IPMODIFY can already share with IPMODIFY ops.  
+> > 
+> > It can? ftrace sets IPMODIFY for all DIRECT callers to prevent that. Except
+> > for this patch that removes that restriction (which I believe is broken).  
+> 
+> I mean "non-direct" ftrace ops, not direct ftrace ops. 
 
-diff --git a/drivers/net/usb/sr9700.c b/drivers/net/usb/sr9700.c
-index 5a53e63d33a6..09bb40ac6e09 100644
---- a/drivers/net/usb/sr9700.c
-+++ b/drivers/net/usb/sr9700.c
-@@ -413,7 +413,7 @@ static int sr9700_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
- 		/* ignore the CRC length */
- 		len = (skb->data[1] | (skb->data[2] << 8)) - 4;
- 
--		if (len > ETH_FRAME_LEN || len > skb->len)
-+		if (len > ETH_FRAME_LEN || len + SR_RX_OVERHEAD > skb->len)
- 			return 0;
- 
- 		/* the last packet of current skb */
--- 
-2.34.1
+Ah, sorry misunderstood that.
 
+
+> > Let me start from the beginning.  
+> 
+> I got your point now. We replace the flag on direct trampoline with a 
+> callback check. So yes, this works. 
+
+I'm glad we are on the same page :-)
+
+
+> > 9. ftrace sees the lkp IPMODIFY ops has SHARED_IPMODIFY on it, and knows
+> >   that there's a direct call here too. It removes the IPMODIFY ops, and
+> >   then calls the direct ops->ops_func(STOP_SHARE_WITH_IPMODIFY) to let the
+> >   direct code know that it is no longer sharing with an IPMODIFY such that
+> >   it can change to call the function directly and not use the stack.  
+> 
+> I wonder whether we still need this flag. Alternatively, we can always
+> find direct calls on the function and calls ops_func(STOP_SHARE_WITH_IPMODIFY). 
+
+Actually we don't need the new flag and we don't need to always search. When
+a direct is attached to the function then the rec->flags will have
+FTRACE_FL_DIRECT attached to it.
+
+Then if an IPMODIFY is being removed and the rec->flags has
+FTRACE_FL_DIRECT set, then we know to search the ops for the one that has a
+DIRECT flag attached and we can call the ops_func() on that one.
+
+We should also add a FTRACE_WARN_ON() if a direct is not found but the flag
+was set.
+
+> 
+> What do you think about this? 
+>
+
+I think this works.
+
+Also, on the patch that implements this in the next version, please add to
+the change log:
+
+Link: https://lore.kernel.org/all/20220602193706.2607681-2-song@kernel.org/
+
+so that we have a link to this discussion.
+
+Thanks,
+
+-- Steve
