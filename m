@@ -2,135 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 53A59574713
-	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 10:37:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D7AE0574744
+	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 10:38:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237387AbiGNIhQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jul 2022 04:37:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60958 "EHLO
+        id S236411AbiGNIiu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jul 2022 04:38:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236882AbiGNIhC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 04:37:02 -0400
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2095.outbound.protection.outlook.com [40.107.93.95])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9B5E3ED4A
-        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 01:37:00 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FpO4VPZoPEjlF7/wGTz3Zto10GeScqpkhfBu7EpQv6NyUkx3ssMsrFY7Iqr/LXgZeKXEcrFnWvp8ESrWHnFCYyGaVbVDy6JMnFmEXEosagSBvC/CAO9vSCc9OvlrMs994scTDcA8OVGu2DNhIF/hFs9SpKaLwa+/1JhDeqLmH4zNpkNz5PEY09f9JAxpiGfWphXfD8neLgWhoMQDmaIt6LCV56F4rkMqB8oUATxX8MBv566/drnmA9ud3kyou+Cz6ThnPuoZRfxH4tlmNdRIa/uGf2CmOV/v6F4uBrBfzjilTZ8Vd4hQMQbMaQ2gRgxOjO9t0LvddTgYaqG+hzaNxQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=jGkxoFOjole82Ss962m5URwBWpiTkm2Vq6qZJ/06dkM=;
- b=ENfXlQ8uJDw6OqnmL0WPJ1tKvrIJY304/oAeUHHQu5BJDBJ9Ot5tWRrKsGbptMnrFM4ZCfHqIu1U0mOYEFIWf3LvGlVd19nIHR2T0J45Q1uczQOB9DCvdIycb+RoWZYTF/O538ulwyyGT6moXfqzYgOwV/IRQJQyFuJJttgfYzS5T/El7HwZO3CGMwIj58MjH3wYJ+8Ji9E13TJ2UYv3GuKL7BWauA5/O/OfmJV3i8lGoWeLGEKnehgpOCmQl+XwN0xvxCRmVJOOhiFz92pfejMTEIyi8mT91yOLJBXWq2G2GXLylOzRWabxY0/x3ExwFEQQ8yB1mTyv2ZUTYZKMsg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
+        with ESMTP id S237483AbiGNIiS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 04:38:18 -0400
+Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CC8B3FA3F
+        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 01:38:00 -0700 (PDT)
+Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-31c8a1e9e33so9925337b3.5
+        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 01:38:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jGkxoFOjole82Ss962m5URwBWpiTkm2Vq6qZJ/06dkM=;
- b=OVDYHFMe1yhXoYY7Akdv3SZdU4u7NohSFMHzM8ccbiYzW3V/5yd5RoUMAvwbKedV7iPuqR9/8FyP1Ri1FHV9LrVUNpAmyzRKM6a23z31Rm0IsjmyFqXy9N6Ccn4rWSqscYGHV7cFHPOtoAKjgB7c4we8xYUC4jGqHREriFb9eoM=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by BN6PR13MB1346.namprd13.prod.outlook.com (2603:10b6:404:6d::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.14; Thu, 14 Jul
- 2022 08:36:59 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::bd99:64d1:83ec:1b2]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::bd99:64d1:83ec:1b2%9]) with mapi id 15.20.5438.011; Thu, 14 Jul 2022
- 08:36:58 +0000
-Date:   Thu, 14 Jul 2022 10:36:53 +0200
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Miller <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        oss-drivers@corigine.com
-Subject: Re: [PATCH net] nfp: flower: configure tunnel neighbour on cmsg rx
-Message-ID: <Ys/VpbZtrJ2JU7eg@corigine.com>
-References: <20220713085620.102550-1-simon.horman@corigine.com>
- <20220713204100.6fd9b277@kernel.org>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220713204100.6fd9b277@kernel.org>
-X-ClientProxiedBy: AM0PR07CA0029.eurprd07.prod.outlook.com
- (2603:10a6:208:ac::42) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=OijWc6/zN7+oJw44OKbMxP70Rr2Fy33fyFndj1YTp2w=;
+        b=eAVrmrs4YJUffyfHBU4akJYJp//HiI6yxd7W+aBm4OkaBxQbZPO3Y4GdKPe//6MSrP
+         iM/l9jAkioiiNkThmgO2ubJ7kZZR09wFG4F9b5wS0UA/b3Ljam02GqAnlFK5JNDyXMed
+         /7XHPP9QjlNyfCpuSXVV8j9RHaed78VG5nNev1JJK+nZk4WXoRVdENKz6anLwI9DJ0p6
+         ZipbvZfMt9zERy8ljTtY6vZJF9qVp1QzgHTmVjD8rFHRrCihsZMdAj5Nry0gGWTKaCG5
+         ntoDQeYKA+ihPIdZXaXafgoB0xTpMs6h6rnOje8FzIAr7TvqCacuO4nMIl9oaGf7ZwgJ
+         /DdA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=OijWc6/zN7+oJw44OKbMxP70Rr2Fy33fyFndj1YTp2w=;
+        b=pdjFXXI1/DQTiVxXGSxQM5Vj2pDu/BXi8Ac3BIFshol+tjDzv631Fjt2mej4jSqLof
+         VJI0SMFzZQhATmilj5JG5gr3VOV6FyPvRAcKx2IQ865/QilqGwvGnWuWTQlUKjDCWAQj
+         9K2JiS/Wf/YShnB4oB+DxWUdPdbnlELDYyauzK4Y/wudBBSPlrytuUN/xzHP/5k4VHI5
+         Xqk9sUNaoRdmWHDZLkqiUyaJ8RLAY10iBmnOW3w5PQ4sQ/ndsJ/c5pzADUmUdHOPp3Ud
+         Hu3zKLhtMyTE25ViBS/n99nIBzjJAw/pxPZ8CAk9ghPJOPIMm7q7Idun+XW+r3Yph+RW
+         T7Qw==
+X-Gm-Message-State: AJIora+KisLT9Agk1tVGN210RAakIs6SE52S/XTn0Agh+umtNVpkfH1V
+        n4eE23NM4YuLmeiqTVXMxGOH35Y9opift6xZJ81hcw==
+X-Google-Smtp-Source: AGRyM1sd2jEWh+VjyUEuIyeyBE2cFo3QVD7rPln4nwnP0s0LxVlNjBhuQ3ZR1urywd+ATP3o33bc2OHkkuxdZsDvU5A=
+X-Received: by 2002:a0d:dbc3:0:b0:31d:f1e:7e8e with SMTP id
+ d186-20020a0ddbc3000000b0031d0f1e7e8emr8530544ywe.180.1657787879527; Thu, 14
+ Jul 2022 01:37:59 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 914eff90-347b-4b9b-2a61-08da6574042c
-X-MS-TrafficTypeDiagnostic: BN6PR13MB1346:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: B+7pAGoTRYAV60+jf/Ok2nmCzs4REko8dib+R4U+zo2VBEbU83ZPOkXssov9W9oRfjot4s+vWoby3javKqtxhNirl5AdzeZEzlykCE6YpumR028+OcHNm+SdFaTkk2JbCBb75WOt7Lql2FL+m70uhY3gPZKWQkN5yCRun6NzTxvHS002mWrWbUO/UnBDfV9nEHBO4FQiflY/JnmEBkG+KAnaAcybnVpMvy0LhFuyOJuYpuatJ+7VE5pnv3Ot17MJL80ScZgqWULxJRR9RPgBPqQ/q3kT7diQueClUQUGh7W4rGofnDZukZs0AU8Mf7dvKcn6xfYPJavYNryl++CKXnVvr+LWZv9SfePtQ6SgFc7C4LTkpsSTqoCtKF8hXPnbsNg+emBSFL3bQU/POg7FKVkXro+5vCAFd7/of/6rrRD2dQBnYJJvP/JQkXY7jJCg4ZOituFD36ktYB7zrbSah9SkPveVq2r5CtTPuz3sUkXjGJZ3anvsjco6yLyeHHalCv/LzO8IsVJdnpYPlAGkh2zSlI9/FjPqgOz2jh8IcU3gMK5fRhpbkNAfDlhbMRH0zSWfqHFq6+NHjkVgfXq0d0xkBfCIdhfegks2ujH3MlYxiHqEhqFsTQaBqUiOWnHHipGcIxORSdm1Hi6zz/HOTGi5TipJfZr7QiO8ZHx91vidE0cwWVor75TRrHCWqy31KBqzv2Db6khGt4JrU/OhQtnWDpe1hhZnSt79ea0AxiiET63uTMdkyGQY+O+LKMI04HO1OXtGsY0iORLq0guCkCiDavj7Hq/KgagdGihDO8YYBdyFuslL0GKQpnXacf+oABaH7Nx3so5dA20L41INzQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(136003)(39830400003)(346002)(376002)(396003)(8936002)(4744005)(44832011)(38100700002)(316002)(5660300002)(54906003)(6916009)(6512007)(107886003)(478600001)(6486002)(2616005)(52116002)(966005)(41300700001)(66476007)(186003)(6666004)(66556008)(8676002)(4326008)(66946007)(36756003)(2906002)(86362001)(6506007)(83323001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?028cihftcKa4Q/Xm5lD7GwcXxLKqQrEt5YeSQqTXKrMBNnt+I2O4hckrMcwK?=
- =?us-ascii?Q?Qes4e4OW+Sc61k/Pwn2lnUJRquvDbTPOOib5zIxvZRL2FDscYqWEjlVUS3TS?=
- =?us-ascii?Q?0gY9KYf1Ioe0eO0I15WDSB3k9lndDSUUVEs+ITUnlLtvB7Jf2YnlMGVfqhp2?=
- =?us-ascii?Q?MahPR9pVvEoExJaPZKwzip99WKEazhqQbgJb443eOHUGG3npze9jO7ReiPQ2?=
- =?us-ascii?Q?nLUgG+kMafwqYak6SroyA4y4fUyALzQg4YzEh7DBH7d0nCiW3DJn2WOuZVtV?=
- =?us-ascii?Q?MY+bwQdVGFkW7tVDopMhqkd2MjtmksJsfNI1wE3/6Cx6FrOhJPHJVdzMKsvJ?=
- =?us-ascii?Q?9CCpkBvXPG2UR9IdKIx08cmY6OJp3gOT/bGzmChaFbNlYa1gmwDRGhxLKdYh?=
- =?us-ascii?Q?5u02xUJGP4SAVkE90sRCoEBnm+t3KcregNX1bjggdtQHXwXHR3xqmaSoLKIg?=
- =?us-ascii?Q?/WfqHgdAzmSfvBEEeGZNef2nHVLVZMKwjykieoOBjwOjEGzZTWaE1qHZPFT7?=
- =?us-ascii?Q?eQH3BxGqmRyHOxPYOODx7vwrxwjB5MnrutpAKtI+OeGeaekUlxTHjrlCQkzW?=
- =?us-ascii?Q?i6OdFT46BwYz2sE7ECcrlm5o6cwmFgTrASVZUO3kJoW/CK9ugUlatqKFzGKx?=
- =?us-ascii?Q?NdluWlfxe3VOKnw2+vJ1HJN81R+4QHG62Y/QmPkE7P/JmRhrGcn2WLwYYzA4?=
- =?us-ascii?Q?a0vQy+gZFaEFsqaLCgGRN5pUkpA/kMqHZbUQfH6ZgF7FNRxFBDeEhaXT/vw5?=
- =?us-ascii?Q?zYKa2neU/2zEwKzdgOCUCMaTLPBbmX08RJJEnNUrl8Bc6E9Z52ZeUVl5bxBb?=
- =?us-ascii?Q?h/bLPYIaGmjD0ez6ILonftoCEhoJ8BTVF2S8laKEaXcZHg1UFqco0raZy7LE?=
- =?us-ascii?Q?6aWK08bfPJStN5b5aocN6eLe39/unlTdZxr0Fm17bir41kcYP9NsuEAMiMVw?=
- =?us-ascii?Q?wlDqbnHf9MVlvXQfscTQC4P2F2mOtoXLPAyNWMFDvgrYDJd2/CxJGB1AOnxe?=
- =?us-ascii?Q?mf2td+/wrdNKdS8T9WGXlSiwsj+/ZZt1lWEhpO74sCBhUSKsvleKmhQq8rH8?=
- =?us-ascii?Q?qCNSLkazS2KD2pzeWT90NA+ZFM0Q65bEHtAuV/5kOn4F8ms2cscSA/EVxGnY?=
- =?us-ascii?Q?XG/SuwhxZsw/GhJ5dMySrYw5IHHJN/bfC/qYpnRJdtzim18acK//2pjP1WnE?=
- =?us-ascii?Q?mZ1KWbsDugSmFMaasEybd6OB2KuA6P8KZB6/tL8wRY21KR35QVlwIUO4I2uI?=
- =?us-ascii?Q?1EMLzgoPUfODkMFBJlhqQkq2iCY0bgSWx0TsIB/qypY1KoZbeGbMJAAOnF7W?=
- =?us-ascii?Q?e4Kmkd0TmTF/72uM0j/jNZuVTZjPVoV3Qdlj0rvkGqioEhg7WUw/zyx0e0aB?=
- =?us-ascii?Q?jueqPhvrbQSejmtLIoyFOTKBb8ryntvFdwA0LZAxhAQ7oFc48+nIUVuidSMN?=
- =?us-ascii?Q?g4W/VQGBsh6lcIBklVxRy+CeoD3i51HOz0AXZ9Wh98tv/4Ti3DD/YUvEnLiq?=
- =?us-ascii?Q?KylhBFJUtenHzSfX0h4BiglWSM2IqqBBHHJEQD95jF9gZ2k+z5j3ESm5nbnB?=
- =?us-ascii?Q?l3Q+J2e0S3s65jnfuMTCzlDNqp15tsixkENZtRv+v4YYW6EX3vrG7oW/efI9?=
- =?us-ascii?Q?K8QjhSIcvB/H779g4GSh7Wvxyxm544YLW9PWjR14unf6Qeu48JSxFxE39Dhp?=
- =?us-ascii?Q?beNBjw=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 914eff90-347b-4b9b-2a61-08da6574042c
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jul 2022 08:36:58.9304
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: nHnZBqs5e3BhsWA40VYuWwlGK9VGmf6RYF2HYp8HMyfNVXMIQjHyzM5lxiysXM7ic/8gUV36xVu6yD+XT7mkY0VrC89YzH5tOAz1Vgxt7og=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR13MB1346
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220704084354.3556326-1-jeongik@google.com>
+In-Reply-To: <20220704084354.3556326-1-jeongik@google.com>
+From:   Jeongik Cha <jeongik@google.com>
+Date:   Thu, 14 Jul 2022 17:37:48 +0900
+Message-ID: <CAE7E4g=BGzup31AD5zAuZpoR2gMswJhuo67B7cV8=wHOY=Y+qA@mail.gmail.com>
+Subject: Re: [PATCH v1] wifi: mac80211_hwsim: fix race condition in pending packet
+To:     Johannes Berg <johannes@sipsolutions.net>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     adelva@google.com, kernel-team@android.com, jaeman@google.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 13, 2022 at 08:41:00PM -0700, Jakub Kicinski wrote:
-> On Wed, 13 Jul 2022 10:56:20 +0200 Simon Horman wrote:
-> > From: Tianyu Yuan <tianyu.yuan@corigine.com>
-> > 
-> > nfp_tun_write_neigh() function will configure a tunnel neighbour when
-> > calling nfp_tun_neigh_event_handler() or nfp_flower_cmsg_process_one_rx()
-> > (with no tunnel neighbour type) from firmware.
-> > 
-> > When configuring IP on physical port as a tunnel endpoint, no operation
-> > will be performed after receiving the cmsg mentioned above.
-> > 
-> > Therefore, add a progress to configure tunnel neighbour in this case.
-> > 
-> > Fixes: f1df7956c11f("nfp: flower: rework tunnel neighbour configuration")
-> 
-> Missing space between the hash and the subject.
+On Mon, Jul 4, 2022 at 5:44 PM Jeongik Cha <jeongik@google.com> wrote:
+>
+> A pending packet uses a cookie as an unique key, but it can be duplicated
+> because it didn't use atomic operators.
+>
+> And also, a pending packet can be null in hwsim_tx_info_frame_received_nl
+> due to race condition with mac80211_hwsim_stop.
+>
+> For this,
+>  * Use an atomic type and operator for a cookie
+>  * Add a lock around the loop for pending packets
+>
+> Signed-off-by: Jeongik Cha <jeongik@google.com>
+> ---
+>  drivers/net/wireless/mac80211_hwsim.c | 14 ++++++++------
+>  1 file changed, 8 insertions(+), 6 deletions(-)
+>
+> diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wireless/mac80211_hwsim.c
+> index c5bb97b381cf..ea006248ffcd 100644
+> --- a/drivers/net/wireless/mac80211_hwsim.c
+> +++ b/drivers/net/wireless/mac80211_hwsim.c
+> @@ -687,7 +687,7 @@ struct mac80211_hwsim_data {
+>         bool ps_poll_pending;
+>         struct dentry *debugfs;
+>
+> -       uintptr_t pending_cookie;
+> +       atomic64_t pending_cookie;
+>         struct sk_buff_head pending;    /* packets pending */
+>         /*
+>          * Only radios in the same group can communicate together (the
+> @@ -1358,7 +1358,7 @@ static void mac80211_hwsim_tx_frame_nl(struct ieee80211_hw *hw,
+>         int i;
+>         struct hwsim_tx_rate tx_attempts[IEEE80211_TX_MAX_RATES];
+>         struct hwsim_tx_rate_flag tx_attempts_flags[IEEE80211_TX_MAX_RATES];
+> -       uintptr_t cookie;
+> +       u64 cookie;
+>
+>         if (data->ps != PS_DISABLED)
+>                 hdr->frame_control |= cpu_to_le16(IEEE80211_FCTL_PM);
+> @@ -1427,8 +1427,7 @@ static void mac80211_hwsim_tx_frame_nl(struct ieee80211_hw *hw,
+>                 goto nla_put_failure;
+>
+>         /* We create a cookie to identify this skb */
+> -       data->pending_cookie++;
+> -       cookie = data->pending_cookie;
+> +       cookie = (u64)atomic64_inc_return(&data->pending_cookie);
+>         info->rate_driver_data[0] = (void *)cookie;
+>         if (nla_put_u64_64bit(skb, HWSIM_ATTR_COOKIE, cookie, HWSIM_ATTR_PAD))
+>                 goto nla_put_failure;
+> @@ -4178,6 +4177,7 @@ static int hwsim_tx_info_frame_received_nl(struct sk_buff *skb_2,
+>         const u8 *src;
+>         unsigned int hwsim_flags;
+>         int i;
+> +       unsigned long flags;
+>         bool found = false;
+>
+>         if (!info->attrs[HWSIM_ATTR_ADDR_TRANSMITTER] ||
+> @@ -4205,18 +4205,20 @@ static int hwsim_tx_info_frame_received_nl(struct sk_buff *skb_2,
+>         }
+>
+>         /* look for the skb matching the cookie passed back from user */
+> +       spin_lock_irqsave(&data2->pending.lock, flags);
+>         skb_queue_walk_safe(&data2->pending, skb, tmp) {
+>                 u64 skb_cookie;
+>
+>                 txi = IEEE80211_SKB_CB(skb);
+> -               skb_cookie = (u64)(uintptr_t)txi->rate_driver_data[0];
+> +               skb_cookie = (u64)txi->rate_driver_data[0];
+>
+>                 if (skb_cookie == ret_skb_cookie) {
+> -                       skb_unlink(skb, &data2->pending);
+> +                       __skb_unlink(skb, &data2->pending);
+>                         found = true;
+>                         break;
+>                 }
+>         }
+> +       spin_unlock_irqrestore(&data2->pending.lock, flags);
+>
+>         /* not found */
+>         if (!found)
+> --
+> 2.37.0.rc0.161.g10f37bed90-goog
+>
 
-Thanks, fixed in v2.
-- https://lore.kernel.org/netdev/20220714081915.148378-1-simon.horman@corigine.com/
+Hello Johannes!
+
+It fixes kernel panics during a long test which uses mac80211_hwsim
+driver. So I think it would be beneficial if we could merge this into
+LTS branches. Could you share your opinion?
+
+Thanks
+Jeongik
