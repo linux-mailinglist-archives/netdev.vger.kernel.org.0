@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E08CD5741E5
-	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 05:33:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CDCB5741E9
+	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 05:33:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232934AbiGNDdX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jul 2022 23:33:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50066 "EHLO
+        id S232969AbiGNDd0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jul 2022 23:33:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231966AbiGNDdU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 23:33:20 -0400
+        with ESMTP id S232297AbiGNDdV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 23:33:21 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AB3225EA0
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76F1525E90
         for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 20:33:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9780361E29
-        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 03:33:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A654CC341CF;
-        Thu, 14 Jul 2022 03:33:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1322E61E2D
+        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 03:33:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2663DC341D0;
+        Thu, 14 Jul 2022 03:33:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1657769599;
-        bh=IbMjb3lRE6PXcU8FS4J/TgPYLQb6KEgXIusxOGc8KpQ=;
+        bh=+0eGBYHz3XmsMTZwfo82NB8MTZIXH/4ULyT9hwp4m4M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BEWnXbhf4FnlRDapeXVZ+Ck2+bJ0PDSMoU9Vgn0ANCG3i1MjcB+j3NbC5J9RwjbfK
-         XH30k/286LP9idMbtLeDJ8ui5vQ9+g98yQh/fgMsjuW+5oyv7UBmIZGFFU+UeDx3ta
-         KA0TdV5A6Fz52GahRaJlrQJxwsIJ3zW3vYIt6aRGeDh7cOTe2LssxWnTQrjC0BwX0p
-         WgU2tza2K7twmDiHAnDMH24eDPh/HSzEwCU8A1gUJ1YQ268I+zBMfyCaOH0RoZaEj4
-         dmrNvld07pnyK9Aj3qu6kMAeDC+iJzBFcam0FSzkJHUeLoqaNVd4yKjq2dkH1sBAYL
-         u5kV9IUkoRucw==
+        b=Q/Y1vLLYG2lj4Alg33ToqZhaUQTuE6whC91U26TV9jHQ/Uxz9G+BuxKN3O9IljRPX
+         weKcXimn+QlivEVUM4StgEEXfbJf7jGjHBLZTOlNmxlyboCaYI5qASURgUKi5HY+ip
+         fwG8CKmL0m3suB9PCu/lSEOzxCwSQMuTOktRj7lfUIos+bJLu7BX2ceeOFNq1eGXiE
+         xJ5pDafjoJ4hesZHAAQiAsdaUvkSwuvdpF4nYnS5rWg1k2Q1ve7Qo2zx+hyfQ0gtwQ
+         65fml9ZtZs0l5blDWOO+4KxXErs4/NeWSq/bMQpOGHtno0uODLSB9DvCJBObPRczwg
+         JGwHHk3c6srrA==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
         borisp@nvidia.com, john.fastabend@gmail.com, maximmi@nvidia.com,
         tariqt@nvidia.com, vfedorenko@novek.ru,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 04/11] tls: rx: remove the message decrypted tracking
-Date:   Wed, 13 Jul 2022 20:33:03 -0700
-Message-Id: <20220714033310.1273288-5-kuba@kernel.org>
+Subject: [PATCH net-next 05/11] tls: rx: factor out device darg update
+Date:   Wed, 13 Jul 2022 20:33:04 -0700
+Message-Id: <20220714033310.1273288-6-kuba@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220714033310.1273288-1-kuba@kernel.org>
 References: <20220714033310.1273288-1-kuba@kernel.org>
@@ -55,70 +55,118 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We no longer allow a decrypted skb to remain linked to ctx->recv_pkt.
-Anything on the list is decrypted, anything on ctx->recv_pkt needs
-to be decrypted.
+I already forgot to transform darg from input to output
+semantics once on the NIC inline crypto fastpath. To
+avoid this happening again create a device equivalent
+of decrypt_internal(). A function responsible for decryption
+and transforming darg.
+
+While at it rename decrypt_internal() to a hopefully slightly
+more meaningful name.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- include/net/strparser.h |  1 -
- net/tls/tls_sw.c        | 10 ----------
- 2 files changed, 11 deletions(-)
+ net/tls/tls_sw.c | 60 +++++++++++++++++++++++++++++++++---------------
+ 1 file changed, 41 insertions(+), 19 deletions(-)
 
-diff --git a/include/net/strparser.h b/include/net/strparser.h
-index 88900b05443e..41e2ce9e9e10 100644
---- a/include/net/strparser.h
-+++ b/include/net/strparser.h
-@@ -72,7 +72,6 @@ struct sk_skb_cb {
- 	/* strp users' data follows */
- 	struct tls_msg {
- 		u8 control;
--		u8 decrypted;
- 	} tls;
- 	/* temp_reg is a temporary register used for bpf_convert_data_end_access
- 	 * when dst_reg == src_reg.
 diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
-index f5f06d1ba024..49cfaa8119c6 100644
+index 49cfaa8119c6..5ef78e75c463 100644
 --- a/net/tls/tls_sw.c
 +++ b/net/tls/tls_sw.c
-@@ -1563,21 +1563,13 @@ static int decrypt_skb_update(struct sock *sk, struct sk_buff *skb,
+@@ -1404,18 +1404,27 @@ static int tls_setup_from_iter(struct iov_iter *from,
+ 	return rc;
+ }
+ 
++/* Decrypt handlers
++ *
++ * tls_decrypt_sg() and tls_decrypt_device() are decrypt handlers.
++ * They must transform the darg in/out argument are as follows:
++ *       |          Input            |         Output
++ * -------------------------------------------------------------------
++ *    zc | Zero-copy decrypt allowed | Zero-copy performed
++ * async | Async decrypt allowed     | Async crypto used / in progress
++ */
++
+ /* This function decrypts the input skb into either out_iov or in out_sg
+- * or in skb buffers itself. The input parameter 'zc' indicates if
++ * or in skb buffers itself. The input parameter 'darg->zc' indicates if
+  * zero-copy mode needs to be tried or not. With zero-copy mode, either
+  * out_iov or out_sg must be non-NULL. In case both out_iov and out_sg are
+  * NULL, then the decryption happens inside skb buffers itself, i.e.
+- * zero-copy gets disabled and 'zc' is updated.
++ * zero-copy gets disabled and 'darg->zc' is updated.
+  */
+-
+-static int decrypt_internal(struct sock *sk, struct sk_buff *skb,
+-			    struct iov_iter *out_iov,
+-			    struct scatterlist *out_sg,
+-			    struct tls_decrypt_arg *darg)
++static int tls_decrypt_sg(struct sock *sk, struct sk_buff *skb,
++			  struct iov_iter *out_iov,
++			  struct scatterlist *out_sg,
++			  struct tls_decrypt_arg *darg)
+ {
  	struct tls_context *tls_ctx = tls_get_ctx(sk);
- 	struct tls_prot_info *prot = &tls_ctx->prot_info;
+ 	struct tls_sw_context_rx *ctx = tls_sw_ctx_rx(tls_ctx);
+@@ -1556,6 +1565,24 @@ static int decrypt_internal(struct sock *sk, struct sk_buff *skb,
+ 	return err;
+ }
+ 
++static int
++tls_decrypt_device(struct sock *sk, struct tls_context *tls_ctx,
++		   struct sk_buff *skb, struct tls_decrypt_arg *darg)
++{
++	int err;
++
++	if (tls_ctx->rx_conf != TLS_HW)
++		return 0;
++
++	err = tls_device_decrypted(sk, tls_ctx, skb, strp_msg(skb));
++	if (err <= 0)
++		return err;
++
++	darg->zc = false;
++	darg->async = false;
++	return 1;
++}
++
+ static int decrypt_skb_update(struct sock *sk, struct sk_buff *skb,
+ 			      struct iov_iter *dest,
+ 			      struct tls_decrypt_arg *darg)
+@@ -1565,18 +1592,13 @@ static int decrypt_skb_update(struct sock *sk, struct sk_buff *skb,
  	struct strp_msg *rxm = strp_msg(skb);
--	struct tls_msg *tlm = tls_msg(skb);
  	int pad, err;
  
--	if (tlm->decrypted) {
--		darg->zc = false;
--		darg->async = false;
--		return 0;
+-	if (tls_ctx->rx_conf == TLS_HW) {
+-		err = tls_device_decrypted(sk, tls_ctx, skb, rxm);
+-		if (err < 0)
+-			return err;
+-		if (err > 0) {
+-			darg->zc = false;
+-			darg->async = false;
+-			goto decrypt_done;
+-		}
 -	}
--
- 	if (tls_ctx->rx_conf == TLS_HW) {
- 		err = tls_device_decrypted(sk, tls_ctx, skb, rxm);
- 		if (err < 0)
- 			return err;
- 		if (err > 0) {
--			tlm->decrypted = 1;
- 			darg->zc = false;
- 			darg->async = false;
- 			goto decrypt_done;
-@@ -1610,7 +1602,6 @@ static int decrypt_skb_update(struct sock *sk, struct sk_buff *skb,
- 	rxm->full_len -= pad;
- 	rxm->offset += prot->prepend_size;
- 	rxm->full_len -= prot->overhead_size;
--	tlm->decrypted = 1;
- decrypt_next:
- 	tls_advance_record_sn(sk, prot, &tls_ctx->rx);
++	err = tls_decrypt_device(sk, tls_ctx, skb, darg);
++	if (err < 0)
++		return err;
++	if (err)
++		goto decrypt_done;
  
-@@ -2130,7 +2121,6 @@ static int tls_read_size(struct strparser *strp, struct sk_buff *skb)
- 	if (ret < 0)
- 		goto read_failure;
+-	err = decrypt_internal(sk, skb, dest, NULL, darg);
++	err = tls_decrypt_sg(sk, skb, dest, NULL, darg);
+ 	if (err < 0) {
+ 		if (err == -EBADMSG)
+ 			TLS_INC_STATS(sock_net(sk), LINUX_MIB_TLSDECRYPTERROR);
+@@ -1613,7 +1635,7 @@ int decrypt_skb(struct sock *sk, struct sk_buff *skb,
+ {
+ 	struct tls_decrypt_arg darg = { .zc = true, };
  
--	tlm->decrypted = 0;
- 	tlm->control = header[0];
+-	return decrypt_internal(sk, skb, NULL, sgout, &darg);
++	return tls_decrypt_sg(sk, skb, NULL, sgout, &darg);
+ }
  
- 	data_len = ((header[4] & 0xFF) | (header[3] << 8));
+ static int tls_record_content_type(struct msghdr *msg, struct tls_msg *tlm,
 -- 
 2.36.1
 
