@@ -2,170 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2996C57518D
-	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 17:17:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 33957575192
+	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 17:19:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239628AbiGNPRD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jul 2022 11:17:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52370 "EHLO
+        id S234130AbiGNPTP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jul 2022 11:19:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232135AbiGNPRD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 11:17:03 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 080AD459AB;
-        Thu, 14 Jul 2022 08:17:02 -0700 (PDT)
-Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26EEwjhX024972;
-        Thu, 14 Jul 2022 15:16:53 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=TDDaVybad1eJo1tWjqcymnOExAMwp7CwDFh/L9Wn1BQ=;
- b=jin5vosk7ImIaOrvpEQqxbt00lvhGVDMxAYLfRqPCZfJyRk+sK8pUtP2VqAQPo3GGz6m
- 1t75Y6Jvlmh/F3i0M/nnlawz7B/E1i/PtIXrBDnSaJv2uJG8DLCjioLzvHN3UE62G1TX
- igsKOv+K8s/HnnI/GH2H8QBBMmoUW/9UeM3s4zsbKf4G1pAYi9leUaUS8EcEUH7JNh5+
- zE1KYAqTRu53HusSv8qCjfqNmDFm0LTsaknhLcPXMN3U0SbjIsNKH5M8uD3KJuuJQ9Y4
- sXNRtnxFsUMv+QxTKMkbKnJb8266x+d/umf7toclSTw4OSLqhhyyPOCeps9M3XYKeB6X qg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hancrrgvw-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 14 Jul 2022 15:16:53 +0000
-Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 26EF0X2t003854;
-        Thu, 14 Jul 2022 15:16:52 GMT
-Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.11])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hancrrgv3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 14 Jul 2022 15:16:52 +0000
-Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
-        by ppma03dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 26EF92A5019475;
-        Thu, 14 Jul 2022 15:16:51 GMT
-Received: from b03cxnp08028.gho.boulder.ibm.com (b03cxnp08028.gho.boulder.ibm.com [9.17.130.20])
-        by ppma03dal.us.ibm.com with ESMTP id 3ha4qxxe39-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 14 Jul 2022 15:16:51 +0000
-Received: from b03ledav001.gho.boulder.ibm.com (b03ledav001.gho.boulder.ibm.com [9.17.130.232])
-        by b03cxnp08028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 26EFGoa213763000
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 14 Jul 2022 15:16:50 GMT
-Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 57BA46E056;
-        Thu, 14 Jul 2022 15:16:50 +0000 (GMT)
-Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A37F76E052;
-        Thu, 14 Jul 2022 15:16:48 +0000 (GMT)
-Received: from [9.211.37.111] (unknown [9.211.37.111])
-        by b03ledav001.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Thu, 14 Jul 2022 15:16:48 +0000 (GMT)
-Message-ID: <345053d6-5ecb-066d-8eeb-7637da1d7370@linux.ibm.com>
-Date:   Thu, 14 Jul 2022 17:16:47 +0200
+        with ESMTP id S231937AbiGNPTO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 11:19:14 -0400
+Received: from m1524.mail.126.com (m1524.mail.126.com [220.181.15.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 80FF2286FC
+        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 08:19:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=bNRMq
+        AZ+JM5hhhLnX5Q88y+w7jDi5D6crsny0SwDvCY=; b=CojRpur9+A339WbrPvktZ
+        eAsyhqiiMnyUFOEFji0RuSYn4YUSM0s5K184zP1OCvR8QlSmtVDxPRT0mPng2+Cv
+        vXcbNnEoRo9BOngUtZmfWJCwA+4IPxH0xfr5+6LWmtyCbTzwfHI9tOZiyMafFbvv
+        gSgbmEJhWdUf/DXOq/Eitg=
+Received: from windhl$126.com ( [123.112.71.157] ) by ajax-webmail-wmsvr24
+ (Coremail) ; Thu, 14 Jul 2022 23:18:53 +0800 (CST)
+X-Originating-IP: [123.112.71.157]
+Date:   Thu, 14 Jul 2022 23:18:53 +0800 (CST)
+From:   "Liang He" <windhl@126.com>
+To:     "Vladimir Oltean" <olteanv@gmail.com>
+Cc:     woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
+        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        netdev@vger.kernel.org
+Subject: Re:Re: [PATCH] net: dsa: microchip: ksz_common: Fix refcount leak
+ bug
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20220113(9671e152)
+ Copyright (c) 2002-2022 www.mailtech.cn 126com
+In-Reply-To: <20220714145956.pnq5yulgete4xc2g@skbuf>
+References: <20220713115428.367840-1-windhl@126.com>
+ <20220714145956.pnq5yulgete4xc2g@skbuf>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=GBK
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.11.0
-Subject: Re: [PATCH net-next v2 0/6] net/smc: Introduce virtually contiguous
- buffers for SMC-R
-To:     Wen Gu <guwen@linux.alibaba.com>, kgraul@linux.ibm.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <1657791845-1060-1-git-send-email-guwen@linux.alibaba.com>
-From:   Wenjia Zhang <wenjia@linux.ibm.com>
-In-Reply-To: <1657791845-1060-1-git-send-email-guwen@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: V8MbGJOGymfT2_3iVq_skHNTMXq6T7QS
-X-Proofpoint-ORIG-GUID: ctNzSyokK4q1EpdssQNna2VWjldMnz66
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-14_11,2022-07-14_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011 malwarescore=0
- phishscore=0 impostorscore=0 adultscore=0 lowpriorityscore=0 bulkscore=0
- suspectscore=0 spamscore=0 mlxlogscore=999 priorityscore=1501 mlxscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2206140000
- definitions=main-2207140065
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Message-ID: <771aac42.76b6.181fd4a97fc.Coremail.windhl@126.com>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: GMqowAD3_ibeM9BipXFIAA--.19830W
+X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbi2h4+F1uwMZ1zXAAAsF
+X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_INVALID,
+        DKIM_SIGNED,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 14.07.22 11:43, Wen Gu wrote:
-> On long-running enterprise production servers, high-order contiguous
-> memory pages are usually very rare and in most cases we can only get
-> fragmented pages.
-> 
-> When replacing TCP with SMC-R in such production scenarios, attempting
-> to allocate high-order physically contiguous sndbufs and RMBs may result
-> in frequent memory compaction, which will cause unexpected hung issue
-> and further stability risks.
-> 
-> So this patch set is aimed to allow SMC-R link group to use virtually
-> contiguous sndbufs and RMBs to avoid potential issues mentioned above.
-> Whether to use physically or virtually contiguous buffers can be set
-> by sysctl smcr_buf_type.
-> 
-> Note that using virtually contiguous buffers will bring an acceptable
-> performance regression, which can be mainly divided into two parts:
-> 
-> 1) regression in data path, which is brought by additional address
->     translation of sndbuf by RNIC in Tx. But in general, translating
->     address through MTT is fast. According to qperf test, this part
->     regression is basically less than 10% in latency and bandwidth.
->     (see patch 5/6 for details)
-> 
-> 2) regression in buffer initialization and destruction path, which is
->     brought by additional MR operations of sndbufs. But thanks to link
->     group buffer reuse mechanism, the impact of this kind of regression
->     decreases as times of buffer reuse increases.
-> 
-> Patch set overview:
-> - Patch 1/6 and 2/6 mainly about simplifying and optimizing DMA sync
->    operation, which will reduce overhead on the data path, especially
->    when using virtually contiguous buffers;
-> - Patch 3/6 and 4/6 introduce a sysctl smcr_buf_type to set the type
->    of buffers in new created link group;
-> - Patch 5/6 allows SMC-R to use virtually contiguous sndbufs and RMBs,
->    including buffer creation, destruction, MR operation and access;
-> - patch 6/6 extends netlink attribute for buffer type of SMC-R link group;
-> 
-> v1->v2:
-> - Patch 5/6 fixes build issue on 32bit;
-> - Patch 3/6 adds description of new sysctl in smc-sysctl.rst;
-> 
-> Guangguan Wang (2):
->    net/smc: remove redundant dma sync ops
->    net/smc: optimize for smc_sndbuf_sync_sg_for_device and
->      smc_rmb_sync_sg_for_cpu
-> 
-> Wen Gu (4):
->    net/smc: Introduce a sysctl for setting SMC-R buffer type
->    net/smc: Use sysctl-specified types of buffers in new link group
->    net/smc: Allow virtually contiguous sndbufs or RMBs for SMC-R
->    net/smc: Extend SMC-R link group netlink attribute
-> 
->   Documentation/networking/smc-sysctl.rst |  13 ++
->   include/net/netns/smc.h                 |   1 +
->   include/uapi/linux/smc.h                |   1 +
->   net/smc/af_smc.c                        |  68 +++++++--
->   net/smc/smc_clc.c                       |   8 +-
->   net/smc/smc_clc.h                       |   2 +-
->   net/smc/smc_core.c                      | 246 +++++++++++++++++++++-----------
->   net/smc/smc_core.h                      |  20 ++-
->   net/smc/smc_ib.c                        |  44 +++++-
->   net/smc/smc_ib.h                        |   2 +
->   net/smc/smc_llc.c                       |  33 +++--
->   net/smc/smc_rx.c                        |  92 +++++++++---
->   net/smc/smc_sysctl.c                    |  11 ++
->   net/smc/smc_tx.c                        |  10 +-
->   14 files changed, 404 insertions(+), 147 deletions(-)
-> 
-This idea is very cool! Thank you for your effort! But we still need to 
-verify if this solution can run well on our system. I'll come to you soon.
+CgoKCgoKCgpBdCAyMDIyLTA3LTE0IDIyOjU5OjU2LCAiVmxhZGltaXIgT2x0ZWFuIiA8b2x0ZWFu
+dkBnbWFpbC5jb20+IHdyb3RlOgo+T24gV2VkLCBKdWwgMTMsIDIwMjIgYXQgMDc6NTQ6MjhQTSAr
+MDgwMCwgTGlhbmcgSGUgd3JvdGU6Cj4+IEluIGtzel9zd2l0Y2hfcmVnaXN0ZXIoKSwgd2Ugc2hv
+dWxkIGNhbGwgb2Zfbm9kZV9wdXQoKSBmb3IgdGhlCj4+IHJlZmVyZW5jZSByZXR1cm5lZCBieSBv
+Zl9nZXRfY2hpbGRfYnlfbmFtZSgpIHdoaWNoIGhhcyBpbmNyZWFzZWQKPj4gdGhlIHJlZmNvdW50
+Lgo+PiAKPj4gRml4ZXM6IDQ0ZTUzYzg4ODI4ZiAoIm5ldDogZHNhOiBtaWNyb2NoaXA6IHN1cHBv
+cnQgZm9yICJldGhlcm5ldC1wb3J0cyIgbm9kZSIpCj4KPkkgZGlzYWdyZWUgd2l0aCB0aGUgZ2l0
+IGJsYW1lIHJlc29sdXRpb24sIGl0IHNob3VsZCBiZToKPgo+Rml4ZXM6IDkxMmFhZTI3YzZhZiAo
+Im5ldDogZHNhOiBtaWNyb2NoaXA6IHJlYWxseSBsb29rIGZvciBwaHktbW9kZSBpbiBwb3J0IG5v
+ZGVzIikKPgo+UGxlYXNlIHJlc2VuZCB3aXRoIHRoYXQgbGluZSBjaGFuZ2VkLgoKPgpUaGFua3Ms
+IAoKCkkgd2lsbCByZXNlbmQgd2l0aCBjb3JyZWN0IGZpeCB0YWcgc29vbiEKCgpMaWFuZwoKPj4g
+U2lnbmVkLW9mZi1ieTogTGlhbmcgSGUgPHdpbmRobEAxMjYuY29tPgo+PiAtLS0KPj4gIAo+PiAg
+ZHJpdmVycy9uZXQvZHNhL21pY3JvY2hpcC9rc3pfY29tbW9uLmMgfCA1ICsrKystCj4+ICAxIGZp
+bGUgY2hhbmdlZCwgNCBpbnNlcnRpb25zKCspLCAxIGRlbGV0aW9uKC0pCj4+IAo+PiBkaWZmIC0t
+Z2l0IGEvZHJpdmVycy9uZXQvZHNhL21pY3JvY2hpcC9rc3pfY29tbW9uLmMgYi9kcml2ZXJzL25l
+dC9kc2EvbWljcm9jaGlwL2tzel9jb21tb24uYwo+PiBpbmRleCA5Y2E4YzhkNzc0MGYuLjkyYTUw
+MGUxY2NkMiAxMDA2NDQKPj4gLS0tIGEvZHJpdmVycy9uZXQvZHNhL21pY3JvY2hpcC9rc3pfY29t
+bW9uLmMKPj4gKysrIGIvZHJpdmVycy9uZXQvZHNhL21pY3JvY2hpcC9rc3pfY29tbW9uLmMKPj4g
+QEAgLTEwMzgsMTggKzEwMzgsMjEgQEAgaW50IGtzel9zd2l0Y2hfcmVnaXN0ZXIoc3RydWN0IGtz
+el9kZXZpY2UgKmRldiwKPj4gIAkJcG9ydHMgPSBvZl9nZXRfY2hpbGRfYnlfbmFtZShkZXYtPmRl
+di0+b2Zfbm9kZSwgImV0aGVybmV0LXBvcnRzIik7Cj4+ICAJCWlmICghcG9ydHMpCj4+ICAJCQlw
+b3J0cyA9IG9mX2dldF9jaGlsZF9ieV9uYW1lKGRldi0+ZGV2LT5vZl9ub2RlLCAicG9ydHMiKTsK
+Pj4gLQkJaWYgKHBvcnRzKQo+PiArCQlpZiAocG9ydHMpIHsKPj4gIAkJCWZvcl9lYWNoX2F2YWls
+YWJsZV9jaGlsZF9vZl9ub2RlKHBvcnRzLCBwb3J0KSB7Cj4+ICAJCQkJaWYgKG9mX3Byb3BlcnR5
+X3JlYWRfdTMyKHBvcnQsICJyZWciLAo+PiAgCQkJCQkJCSAmcG9ydF9udW0pKQo+PiAgCQkJCQlj
+b250aW51ZTsKPj4gIAkJCQlpZiAoIShkZXYtPnBvcnRfbWFzayAmIEJJVChwb3J0X251bSkpKSB7
+Cj4+ICAJCQkJCW9mX25vZGVfcHV0KHBvcnQpOwo+PiArCQkJCQlvZl9ub2RlX3B1dChwb3J0cyk7
+Cj4+ICAJCQkJCXJldHVybiAtRUlOVkFMOwo+PiAgCQkJCX0KPj4gIAkJCQlvZl9nZXRfcGh5X21v
+ZGUocG9ydCwKPj4gIAkJCQkJCSZkZXYtPnBvcnRzW3BvcnRfbnVtXS5pbnRlcmZhY2UpOwo+PiAg
+CQkJfQo+PiArCQkJb2Zfbm9kZV9wdXQocG9ydHMpOwo+PiArCQl9Cj4+ICAJCWRldi0+c3luY2xr
+b18xMjUgPSBvZl9wcm9wZXJ0eV9yZWFkX2Jvb2woZGV2LT5kZXYtPm9mX25vZGUsCj4+ICAJCQkJ
+CQkJICJtaWNyb2NoaXAsc3luY2xrby0xMjUiKTsKPj4gIAkJZGV2LT5zeW5jbGtvX2Rpc2FibGUg
+PSBvZl9wcm9wZXJ0eV9yZWFkX2Jvb2woZGV2LT5kZXYtPm9mX25vZGUsCj4+IC0tIAo+PiAyLjI1
+LjEKPj4gCg==
