@@ -2,50 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CE234575457
-	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 20:02:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B830B57545A
+	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 20:02:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239107AbiGNSCL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jul 2022 14:02:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49030 "EHLO
+        id S239180AbiGNSCN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jul 2022 14:02:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238688AbiGNSCK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 14:02:10 -0400
+        with ESMTP id S239055AbiGNSCL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 14:02:11 -0400
 Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A73F8675B6
-        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 11:02:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7780467C83
+        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 11:02:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657821729; x=1689357729;
+  t=1657821730; x=1689357730;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Tr97oGc8LslVNwWKhzcTGDh/fyEzrC7fLyJ5Szw2KZ8=;
-  b=MeMsmLXmotw4ABMx1zAs3c1U8cwXJm1Q5kp/ZguyVhOLlkazUvm0slkk
-   Tnv1K1O0z3SpYahIC6K6P3aPJZ5XLjxDxJnrcXoGC+GDJMo41hu0Lq1ft
-   bBydXighqc0KecYq2NIW2z8h0de1KTTK0bslE+IZ1jDJwhvn5hYUqwRIa
-   nba3UglKQ5x4zKU+0fQK05RtQJ99e8A6PSE0JDxrN9I7+zLqhuWktlyqM
-   ISdheVitfRy7fwQrPjmBDhpy+PWkQ+J3VDNyagD1FwtzTD650qlIhatxQ
-   Z3kGhRqMjic30uUkGNMtigqeMLDu++VnunmTc74+fCWvj/2obz5vf0SBO
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10408"; a="283151249"
+  bh=LQAZslm867twwTmK6CdAmA4kHwSfZikjbqBWQ6R8pkI=;
+  b=MeSA0mHvgdR46zihiUYhYdWSNkB3SkXye9P+z938bT4lnEIBlv8tgghi
+   DsGvrdZcBQAIHHSL/SYNNymmbqjP/hV1PYr8PtQJOg3fGDE3dJT84RZq4
+   otq8U+keLKPY4VLa3sVbYZR4vWSTxpeaasTK1D5zLwbFAN1Isy6PYYzON
+   D68L11bfB7M6qEzoADyhKs/Wqma98f2j5jQljf2iGenzBwgBKW9/1Znbf
+   QL4ubae8HXptGO0ZyMZdOOw9f5sDY+Zcn0J+75UL1ASwnj6naSqOqPWIP
+   I86itD1tPWn09hkb5YpWcXrcGZXTKJKKPro2m0kewjdHg9yMD6bKoikhX
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10408"; a="283151252"
 X-IronPort-AV: E=Sophos;i="5.92,272,1650956400"; 
-   d="scan'208";a="283151249"
+   d="scan'208";a="283151252"
 Received: from fmsmga006.fm.intel.com ([10.253.24.20])
   by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2022 11:01:57 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,272,1650956400"; 
-   d="scan'208";a="842235649"
+   d="scan'208";a="842235652"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by fmsmga006.fm.intel.com with ESMTP; 14 Jul 2022 11:01:56 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com
-Cc:     Sasha Neftin <sasha.neftin@intel.com>, netdev@vger.kernel.org,
-        anthony.l.nguyen@intel.com,
+Cc:     Lennert Buytenhek <buytenh@wantstofly.org>, netdev@vger.kernel.org,
+        anthony.l.nguyen@intel.com, sasha.neftin@intel.com,
+        Lennert Buytenhek <buytenh@arista.com>,
         Naama Meir <naamax.meir@linux.intel.com>
-Subject: [PATCH net 2/3] Revert "e1000e: Fix possible HW unit hang after an s0ix exit"
-Date:   Thu, 14 Jul 2022 10:58:56 -0700
-Message-Id: <20220714175857.933537-3-anthony.l.nguyen@intel.com>
+Subject: [PATCH net 3/3] igc: Reinstate IGC_REMOVED logic and implement it properly
+Date:   Thu, 14 Jul 2022 10:58:57 -0700
+Message-Id: <20220714175857.933537-4-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220714175857.933537-1-anthony.l.nguyen@intel.com>
 References: <20220714175857.933537-1-anthony.l.nguyen@intel.com>
@@ -61,119 +62,114 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sasha Neftin <sasha.neftin@intel.com>
+From: Lennert Buytenhek <buytenh@wantstofly.org>
 
-This reverts commit 1866aa0d0d6492bc2f8d22d0df49abaccf50cddd.
+The initially merged version of the igc driver code (via commit
+146740f9abc4, "igc: Add support for PF") contained the following
+IGC_REMOVED checks in the igc_rd32/wr32() MMIO accessors:
 
-Commit 1866aa0d0d64 ("e1000e: Fix possible HW unit hang after an s0ix
-exit") was a workaround for CSME problem to handle messages comes via H2ME
-mailbox. This problem has been fixed by patch "e1000e: Enable the GPT
-clock before sending message to the CSME".
+	u32 igc_rd32(struct igc_hw *hw, u32 reg)
+	{
+		u8 __iomem *hw_addr = READ_ONCE(hw->hw_addr);
+		u32 value = 0;
 
-Fixes: 3e55d231716e ("e1000e: Add handshake with the CSME to support S0ix")
-Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=214821
-Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
+		if (IGC_REMOVED(hw_addr))
+			return ~value;
+
+		value = readl(&hw_addr[reg]);
+
+		/* reads should not return all F's */
+		if (!(~value) && (!reg || !(~readl(hw_addr))))
+			hw->hw_addr = NULL;
+
+		return value;
+	}
+
+And:
+
+	#define wr32(reg, val) \
+	do { \
+		u8 __iomem *hw_addr = READ_ONCE((hw)->hw_addr); \
+		if (!IGC_REMOVED(hw_addr)) \
+			writel((val), &hw_addr[(reg)]); \
+	} while (0)
+
+E.g. igb has similar checks in its MMIO accessors, and has a similar
+macro E1000_REMOVED, which is implemented as follows:
+
+	#define E1000_REMOVED(h) unlikely(!(h))
+
+These checks serve to detect and take note of an 0xffffffff MMIO read
+return from the device, which can be caused by a PCIe link flap or some
+other kind of PCI bus error, and to avoid performing MMIO reads and
+writes from that point onwards.
+
+However, the IGC_REMOVED macro was not originally implemented:
+
+	#ifndef IGC_REMOVED
+	#define IGC_REMOVED(a) (0)
+	#endif /* IGC_REMOVED */
+
+This led to the IGC_REMOVED logic to be removed entirely in a
+subsequent commit (commit 3c215fb18e70, "igc: remove IGC_REMOVED
+function"), with the rationale that such checks matter only for
+virtualization and that igc does not support virtualization -- but a
+PCIe device can become detached even without virtualization being in
+use, and without proper checks, a PCIe bus error affecting an igc
+adapter will lead to various NULL pointer dereferences, as the first
+access after the error will set hw->hw_addr to NULL, and subsequent
+accesses will blindly dereference this now-NULL pointer.
+
+This patch reinstates the IGC_REMOVED checks in igc_rd32/wr32(), and
+implements IGC_REMOVED the way it is done for igb, by checking for the
+unlikely() case of hw_addr being NULL.  This change prevents the oopses
+seen when a PCIe link flap occurs on an igc adapter.
+
+Fixes: 146740f9abc4 ("igc: Add support for PF")
+Signed-off-by: Lennert Buytenhek <buytenh@arista.com>
 Tested-by: Naama Meir <naamax.meir@linux.intel.com>
+Acked-by: Sasha Neftin <sasha.neftin@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/e1000e/hw.h      |  1 -
- drivers/net/ethernet/intel/e1000e/ich8lan.c |  4 ----
- drivers/net/ethernet/intel/e1000e/ich8lan.h |  1 -
- drivers/net/ethernet/intel/e1000e/netdev.c  | 26 ---------------------
- 4 files changed, 32 deletions(-)
+ drivers/net/ethernet/intel/igc/igc_main.c | 3 +++
+ drivers/net/ethernet/intel/igc/igc_regs.h | 5 ++++-
+ 2 files changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/e1000e/hw.h b/drivers/net/ethernet/intel/e1000e/hw.h
-index 13382df2f2ef..bcf680e83811 100644
---- a/drivers/net/ethernet/intel/e1000e/hw.h
-+++ b/drivers/net/ethernet/intel/e1000e/hw.h
-@@ -630,7 +630,6 @@ struct e1000_phy_info {
- 	bool disable_polarity_correction;
- 	bool is_mdix;
- 	bool polarity_correction;
--	bool reset_disable;
- 	bool speed_downgraded;
- 	bool autoneg_wait_to_complete;
- };
-diff --git a/drivers/net/ethernet/intel/e1000e/ich8lan.c b/drivers/net/ethernet/intel/e1000e/ich8lan.c
-index e6c8e6d5234f..9466f65a6da7 100644
---- a/drivers/net/ethernet/intel/e1000e/ich8lan.c
-+++ b/drivers/net/ethernet/intel/e1000e/ich8lan.c
-@@ -2050,10 +2050,6 @@ static s32 e1000_check_reset_block_ich8lan(struct e1000_hw *hw)
- 	bool blocked = false;
- 	int i = 0;
+diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
+index ae17af44fe02..a5ebee7df4a8 100644
+--- a/drivers/net/ethernet/intel/igc/igc_main.c
++++ b/drivers/net/ethernet/intel/igc/igc_main.c
+@@ -6171,6 +6171,9 @@ u32 igc_rd32(struct igc_hw *hw, u32 reg)
+ 	u8 __iomem *hw_addr = READ_ONCE(hw->hw_addr);
+ 	u32 value = 0;
  
--	/* Check the PHY (LCD) reset flag */
--	if (hw->phy.reset_disable)
--		return true;
--
- 	while ((blocked = !(er32(FWSM) & E1000_ICH_FWSM_RSPCIPHY)) &&
- 	       (i++ < 30))
- 		usleep_range(10000, 11000);
-diff --git a/drivers/net/ethernet/intel/e1000e/ich8lan.h b/drivers/net/ethernet/intel/e1000e/ich8lan.h
-index 638a3ddd7ada..2504b11c3169 100644
---- a/drivers/net/ethernet/intel/e1000e/ich8lan.h
-+++ b/drivers/net/ethernet/intel/e1000e/ich8lan.h
-@@ -271,7 +271,6 @@
- #define I217_CGFREG_ENABLE_MTA_RESET	0x0002
- #define I217_MEMPWR			PHY_REG(772, 26)
- #define I217_MEMPWR_DISABLE_SMB_RELEASE	0x0010
--#define I217_MEMPWR_MOEM		0x1000
++	if (IGC_REMOVED(hw_addr))
++		return ~value;
++
+ 	value = readl(&hw_addr[reg]);
  
- /* Receive Address Initial CRC Calculation */
- #define E1000_PCH_RAICC(_n)	(0x05F50 + ((_n) * 4))
-diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
-index c64102b29862..f1729940e46c 100644
---- a/drivers/net/ethernet/intel/e1000e/netdev.c
-+++ b/drivers/net/ethernet/intel/e1000e/netdev.c
-@@ -6991,21 +6991,8 @@ static __maybe_unused int e1000e_pm_suspend(struct device *dev)
- 	struct net_device *netdev = pci_get_drvdata(to_pci_dev(dev));
- 	struct e1000_adapter *adapter = netdev_priv(netdev);
- 	struct pci_dev *pdev = to_pci_dev(dev);
--	struct e1000_hw *hw = &adapter->hw;
--	u16 phy_data;
- 	int rc;
+ 	/* reads should not return all F's */
+diff --git a/drivers/net/ethernet/intel/igc/igc_regs.h b/drivers/net/ethernet/intel/igc/igc_regs.h
+index e197a33d93a0..026c3b65fc37 100644
+--- a/drivers/net/ethernet/intel/igc/igc_regs.h
++++ b/drivers/net/ethernet/intel/igc/igc_regs.h
+@@ -306,7 +306,8 @@ u32 igc_rd32(struct igc_hw *hw, u32 reg);
+ #define wr32(reg, val) \
+ do { \
+ 	u8 __iomem *hw_addr = READ_ONCE((hw)->hw_addr); \
+-	writel((val), &hw_addr[(reg)]); \
++	if (!IGC_REMOVED(hw_addr)) \
++		writel((val), &hw_addr[(reg)]); \
+ } while (0)
  
--	if (er32(FWSM) & E1000_ICH_FWSM_FW_VALID &&
--	    hw->mac.type >= e1000_pch_adp) {
--		/* Mask OEM Bits / Gig Disable / Restart AN (772_26[12] = 1) */
--		e1e_rphy(hw, I217_MEMPWR, &phy_data);
--		phy_data |= I217_MEMPWR_MOEM;
--		e1e_wphy(hw, I217_MEMPWR, phy_data);
--
--		/* Disable LCD reset */
--		hw->phy.reset_disable = true;
--	}
--
- 	e1000e_flush_lpic(pdev);
+ #define rd32(reg) (igc_rd32(hw, reg))
+@@ -318,4 +319,6 @@ do { \
  
- 	e1000e_pm_freeze(dev);
-@@ -7027,8 +7014,6 @@ static __maybe_unused int e1000e_pm_resume(struct device *dev)
- 	struct net_device *netdev = pci_get_drvdata(to_pci_dev(dev));
- 	struct e1000_adapter *adapter = netdev_priv(netdev);
- 	struct pci_dev *pdev = to_pci_dev(dev);
--	struct e1000_hw *hw = &adapter->hw;
--	u16 phy_data;
- 	int rc;
+ #define array_rd32(reg, offset) (igc_rd32(hw, (reg) + ((offset) << 2)))
  
- 	/* Introduce S0ix implementation */
-@@ -7039,17 +7024,6 @@ static __maybe_unused int e1000e_pm_resume(struct device *dev)
- 	if (rc)
- 		return rc;
- 
--	if (er32(FWSM) & E1000_ICH_FWSM_FW_VALID &&
--	    hw->mac.type >= e1000_pch_adp) {
--		/* Unmask OEM Bits / Gig Disable / Restart AN 772_26[12] = 0 */
--		e1e_rphy(hw, I217_MEMPWR, &phy_data);
--		phy_data &= ~I217_MEMPWR_MOEM;
--		e1e_wphy(hw, I217_MEMPWR, phy_data);
--
--		/* Enable LCD reset */
--		hw->phy.reset_disable = false;
--	}
--
- 	return e1000e_pm_thaw(dev);
- }
- 
++#define IGC_REMOVED(h) unlikely(!(h))
++
+ #endif
 -- 
 2.35.1
 
