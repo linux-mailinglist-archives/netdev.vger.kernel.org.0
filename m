@@ -2,152 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 72A4F57479E
-	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 10:56:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A9E3D5747C8
+	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 11:08:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237477AbiGNI4b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jul 2022 04:56:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49850 "EHLO
+        id S233386AbiGNJIl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jul 2022 05:08:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229555AbiGNI4b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 04:56:31 -0400
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2090.outbound.protection.outlook.com [40.107.22.90])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3103E40BC0;
-        Thu, 14 Jul 2022 01:56:30 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XEf9vEt4NWsOua2Ank4Gc4/HlMia/S67//HX878MoJ3YGlJ4J7+LHuELieRtPNw6bX9xtm5npT20cp+8tvzAFNdlsRyWWJp8Ii+OIw06h02gbHSgOuM+m7sV4/IxbgVsDbK5vFBd9ZOv/N6cS2f0tx959I/uFEneRZxl9mT5Atsb3u+In6l3M82Er+MXjfD2ggXcIo7p+vVJpFBmfKFtv8xQPW17iXrXqcz557aEvm1tSCAlle2rl8PcaT5Y3Hzda5PC9Op0Sxx9id9CcYwi5SPRc3Lp+B2NozgAoA9/5yk0g88mPFNfk7bi89eC/8q3836pEISAmot3cUfB/RAfUA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=a00DWVyga604T49/a0NXD7TOvkTOqNUQhbX/MnIlqD0=;
- b=i3MzuvjsWk6NelT6wtkTVhBczS2K5tp0iGUNYnTqDkHrCwWCNppz8Icr1Mxm/ZIuw3D7dlrt9Qw/BUllDDonJyRXweloY+ZBUm9I3867P/ZcUyKcUWvP9wXwZOwl3/kyKlS5CUUr5HJUCnWJZfiHQM291O53VtX2UisJOZhiUk9N3HLc2fZlOPANlj+XZVZoI07gBXLYPS4zvNAOOdCtzDIRTAs73HeOoJxWR4WWQz8oyRGWfsrvWOdYsKHcEL7T7yhKbl57j/78tz/Yjdd/OFpa0W6UTBhq7v6DBOboc5DcjkVXygcTxXCicFTmqJn2ckP/lg3geZPC9LiEXkAdTA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
- dkim=pass header.d=plvision.eu; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=a00DWVyga604T49/a0NXD7TOvkTOqNUQhbX/MnIlqD0=;
- b=WMOzOXzbXBy1aVcoL6EU2gtC5pnWGfjBi9Sw+NVzyWvge23q4PWusX6W7Dvq9msLFEvsoFmDlMI56mYtvhTz2sIX/PVOxA4ZmYFrhvrvJRujEYXaYkGwq+8XgS0cURIbsEFcEOlHUN9u0PzBtHCU84m6xyHUgaMl90+oBJtihY0=
-Received: from GV1P190MB2019.EURP190.PROD.OUTLOOK.COM (2603:10a6:150:5b::20)
- by PA4P190MB1168.EURP190.PROD.OUTLOOK.COM (2603:10a6:102:be::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.14; Thu, 14 Jul
- 2022 08:56:26 +0000
-Received: from GV1P190MB2019.EURP190.PROD.OUTLOOK.COM
- ([fe80::25a3:3edc:9320:f35e]) by GV1P190MB2019.EURP190.PROD.OUTLOOK.COM
- ([fe80::25a3:3edc:9320:f35e%3]) with mapi id 15.20.5417.023; Thu, 14 Jul 2022
- 08:56:26 +0000
-From:   Oleksandr Mazur <oleksandr.mazur@plvision.eu>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        "Russell King (Oracle)" <linux@armlinux.org.uk>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        Yevhen Orlov <yevhen.orlov@plvision.eu>,
-        Taras Chornyi <taras.chornyi@plvision.eu>
-Subject: Re: [PATCH V2 net-next] net: marvell: prestera: add phylink support
-Thread-Topic: [PATCH V2 net-next] net: marvell: prestera: add phylink support
-Thread-Index: AQHYltzgx1x7mtWY70C8ofiTDPrM6618ugmAgAAd/YCAALk4SA==
-Date:   Thu, 14 Jul 2022 08:56:26 +0000
-Message-ID: <GV1P190MB2019C2CFF4AB6934E8752A32E4889@GV1P190MB2019.EURP190.PROD.OUTLOOK.COM>
-References: <20220713172013.29531-1-oleksandr.mazur@plvision.eu>
- <Ys8lgQGBsvWAtXDZ@shell.armlinux.org.uk> <Ys8+qT6ED4dty+3i@lunn.ch>
-In-Reply-To: <Ys8+qT6ED4dty+3i@lunn.ch>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-suggested_attachment_session_id: 2c0156a6-7033-8cce-c250-eebdb192d472
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=plvision.eu;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: a7e2754f-e3b8-4b4e-b7b4-08da6576bc61
-x-ms-traffictypediagnostic: PA4P190MB1168:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: MK07YH9xn0Xfyk40LZwnLH9XDBRntabQb0zFrA+31XYDpvWulwXkZMoxsbtDpIIdnbKhiRBxt4tomcmInGqjn7gKLFix5ckzviZSAnuHcuflrLAQPLFmg2mdD6GRFgOb9RJfxc5sLH5UumsD4+zXdXE/JhfdYH3u265GusHlJt735MqkvPhetvhT29MgMYqPqz6Re0I8K5Z8oKZXlW838aT46zozze+ArHQb2nJ5Y2kqaEu/UK4OM4y6inH7M4O2Sk5u9NYik6ErDUWoYty8fnLyxloYjA1i7kFuisNOgvhTDqKOhln1JuyhNgaujjtLq0EYj3uevGyWu48KX6a7V2uuefikZaDdh2G2ZIQH2abNYaz3fytxHt7VSTp1Tp2vER0+Hacv9b6ZLnBuAqt0CGEjm8MEmAVW4nxWHnvyas2SH3hE0h9p9gf01LPZ3SdxTIesCZ4y8AhChkPKV7s7AXRhqbKLRuedU+WypzWIrz0d7H+D7nlg3HWVLqVpkqpuZx4+n/80rAKz5e0FDgeY9GiWLg4ABmltICxtb76dbxb5w36EOzY4WZQQ4g/16HsT9j0vKLkFNe4jxWAAwNiONBZDKHvCVR+YexNERMdne7Rga2oTy+D1H4BT2EmSVS2o9B+SQQ/1fipwtz7k2XzuoKTF8pyRgheVRaWcPuRPmbB0TvX67/e6XCGBGrqjf4AGREn9lZUw3Dr5bNp4hlI13fKKB4QdkcFzFZCdutA7XrJWN5sx9xSLYLFAyUQM72tTiEQoiKRm1hFMbwpseI0WGuJkvbuNAm9TEVqsz1qV4O45hpjwWt3hfNf/bwWMYVc3
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:GV1P190MB2019.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(346002)(136003)(376002)(396003)(39830400003)(9686003)(26005)(107886003)(186003)(41300700001)(55016003)(38100700002)(6506007)(2906002)(7696005)(38070700005)(44832011)(110136005)(122000001)(54906003)(4744005)(8936002)(5660300002)(52536014)(478600001)(76116006)(71200400001)(66446008)(8676002)(4326008)(64756008)(66556008)(66476007)(66946007)(33656002)(316002)(86362001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?vsMlqcXw+KjMHRHUmzXvghVE8cnIm4lWg6QHNSfIG668xBKb5s08FyB0Qs?=
- =?iso-8859-1?Q?X45k6fGlMen70fxvvn58Ujb64a2A/Z3FgTs26WhC8S2lEzIb0afsRgOH/f?=
- =?iso-8859-1?Q?bxu+IOx2xaCHMjaz+SLl8VidRLnb5CzIkXcvv+zLZ9tbiVJtBfps47XhHV?=
- =?iso-8859-1?Q?7jQ2xOAV8h+/JltJSCtAlGEhBTJgH6BDXBpbIKrlpXnLKqcKiFTkoF1AHq?=
- =?iso-8859-1?Q?yntxRHAo6V0vncDiR2+4aJn+5d5vMtD6o5cNtfNhT9BFaVU6x7MHi2KXYY?=
- =?iso-8859-1?Q?zQ72C9/T67msyhJND7a/b81elY/q8bZ8ItyRrr4LRjHX42hNHTvux+E6se?=
- =?iso-8859-1?Q?6W74MGvaHEM4gyBem4DXfGs5nQtZOu7V6jbysUoz/83R6bmSzt1U2/pT94?=
- =?iso-8859-1?Q?HqioKQRnnwwwpCLLhw0vGTJJSqeg2B5qn+tjhQdAC8Rj1CXj1dN+3Qp/Mf?=
- =?iso-8859-1?Q?F7OGY18kPennXBI44aTzUVfXO9kts1pu71bdD4P28biKJS/lEWaee6w7J/?=
- =?iso-8859-1?Q?EKhH0UuUZcZh1tFEIagN6xWA5jqyWV4cTnDsyTG4QG8tGZYAtloniFycYj?=
- =?iso-8859-1?Q?EHK+dF9ERrUU6lK1fctTvE/l3VqF4elYyi2ca0i7abe+PQFaBOY1kaCrEi?=
- =?iso-8859-1?Q?wBphiYsaLdgA0A6HwQcUiyO35d8ahXt2KrfXW25IhTGFvHRB3VFbbPtFxn?=
- =?iso-8859-1?Q?wYYoLkYX4lIn/Ivp+gM1lEkujuMjd0m7MQSfnBiSkE/7gC1ItY+23B79VJ?=
- =?iso-8859-1?Q?yJjCUsbL3yrj7Vlv1izloCevPUn0i6u1KK+plzS9a2eVVgmeaNoqDRrz0z?=
- =?iso-8859-1?Q?LXIkg2qUUH3I5t6+9WJRmku71GqsaFSOvNq31Ox9o9KCgjs5yzvvupnEb5?=
- =?iso-8859-1?Q?dy15Zz+OlhCThqAxTT3RCY+Tz8aVgKfl7nMyhnp4GF0rRG/6YK1Nby1I3V?=
- =?iso-8859-1?Q?gw1sNBJU9a4vxrvBXADtN8RsMRTKIiVlr/+qS8z9jz/1BWTLhdU4lP1rWi?=
- =?iso-8859-1?Q?OLshMt+nXHZO6eZOXkc7eaPOadldnN206Fpq6/9Ye3f9bek4YkaU8qRwFa?=
- =?iso-8859-1?Q?W1oR0WT5VmQTgp2dZy3xOcXtvpVW4rLZRza0l9G4mnWUWSwMtgG8rach+c?=
- =?iso-8859-1?Q?0Qt+4txB59K81TsHUWA55QdBl3zqJy2Vr+vR/hEQDVzPep+FPwy3n9VGKT?=
- =?iso-8859-1?Q?nyxVthdbEylXS0oT9v9601ZRCOOVVNqFyRX1XwbR95OaNe2inqP5uqKtID?=
- =?iso-8859-1?Q?LYcOaCpw2KhacBVFblTL9g22/s34czDs1bdLJQ3Tt2h6Xo4SzY9+Zhuamp?=
- =?iso-8859-1?Q?rjjZjGPXPI2qFo/iHT8403pVpgzY1E53Th7oHbbxsx3EqwPTVYw287YK6a?=
- =?iso-8859-1?Q?/LAngkAVyPrLDMRh0hViwYQVi/FNDeQHmNoZbmBcR18AZV0TK0Ixelngg3?=
- =?iso-8859-1?Q?LVQjU+wuuwE9a7nf3kFgpoFdM9+PiTqEZZL2HKjPcg9cD0H5N8DQgmUk2i?=
- =?iso-8859-1?Q?uhiQzWynJaDC2B/9cE0dAkHgh4kHP1j49kWLUyXXWO+e3SMIMLlsaX0FoA?=
- =?iso-8859-1?Q?g/2j2wj7omGY6aIim+eJaLqebB+EpEfIF4Ywo7v8PQcjDH1wz8lBGn+PGh?=
- =?iso-8859-1?Q?JTRhZDSsPhE6B7XSIRU+NjsGJNPsUzhGA5GnaWzf4soU/BujtOpQJhOg?=
- =?iso-8859-1?Q?=3D=3D?=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S230512AbiGNJIj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 05:08:39 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 59288BC3
+        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 02:08:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657789713;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=vhoR2c2F66vIfN0BMmScdzEC1Hh+n4DXeB74Xk6woyY=;
+        b=HZa9SCNjco1oYwGTv3bdk3HmfGJAVutxZDUAhzXMwvrYoMn9MmJOl48g2W1mKDmYqKKIdn
+        qPO7kejAmwquzFqaF19Q42YKkAzDFNCNGZlxyBvSDp3CPiujhx9IfBdRb6Af4+sQDi63KR
+        QsMCsLaX3LMaI/RL9CO9AHu/Bg5+lXo=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-574-AkPh8iWRMJefy1Ga4ll_3w-1; Thu, 14 Jul 2022 05:08:32 -0400
+X-MC-Unique: AkPh8iWRMJefy1Ga4ll_3w-1
+Received: by mail-wm1-f70.google.com with SMTP id m20-20020a05600c4f5400b003a03aad6bdfso375807wmq.6
+        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 02:08:31 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=vhoR2c2F66vIfN0BMmScdzEC1Hh+n4DXeB74Xk6woyY=;
+        b=ipQAqR44sQsDPyS30q4Hk/LDFTTuCnMhg15LMCYMd/YPyAB2wlL+rNVxbeMp2oTfEa
+         wdtcyt7+1+N+SMuWyHiQJnPqGvSbOwBlonmDM9VTj20W2pt7qEQiknCAewYtzmxj3IvX
+         bT483cdeqFcJVDrnyNsJjIoKN/XUlfAeq22dun1Q4jqr4qmJEApDH47cU+z+wX3+KyaH
+         Vuhb2vpKzJCTYj8kXsRGiF54S8MAya1siyJr3iSq5eZuAoti03H+ZIEd/KTk0cLYcNdi
+         gs6BGvvQtJCvFPqzZf8TllZBprpsCQKBEJRb5ocBuWYksTN48f81LJDSeqLg2R1aWj/x
+         wvCQ==
+X-Gm-Message-State: AJIora+rZt8Y7j6e5VuSF/X/WRqH+LerGAbiO/lLkVThtFnjvkE1H8mI
+        ren5klbI1FVTA4z+yBA7JI4uH47A1GQLBFgLovjPcn4j3jrQxrm2ptsXNSMZvLg00aDzKx/++Dz
+        Wb07+t3ioXswQA987
+X-Received: by 2002:a5d:4145:0:b0:21d:68ab:3bf with SMTP id c5-20020a5d4145000000b0021d68ab03bfmr7210250wrq.641.1657789710868;
+        Thu, 14 Jul 2022 02:08:30 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1tiLqD1Odk8IcLsFFg4YJDp3Doh2g6ZxQUdzjZoTORdLMIOMPUHGdvD+evdB/LIrDB618h0SQ==
+X-Received: by 2002:a5d:4145:0:b0:21d:68ab:3bf with SMTP id c5-20020a5d4145000000b0021d68ab03bfmr7210227wrq.641.1657789710634;
+        Thu, 14 Jul 2022 02:08:30 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-97-238.dyn.eolo.it. [146.241.97.238])
+        by smtp.gmail.com with ESMTPSA id e9-20020adfef09000000b0021b89f8662esm974426wro.13.2022.07.14.02.08.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Jul 2022 02:08:30 -0700 (PDT)
+Message-ID: <2a43287c8ec57119b9dcab46bd6fe7317b9f1f69.camel@redhat.com>
+Subject: Re: [PATCH net-next v2 1/3] net: Add a bhash2 table hashed by port
+ + address
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Joanne Koong <joannelkoong@gmail.com>, netdev@vger.kernel.org
+Cc:     edumazet@google.com, kafai@fb.com, kuba@kernel.org,
+        davem@davemloft.net
+Date:   Thu, 14 Jul 2022 11:08:29 +0200
+In-Reply-To: <20220712235310.1935121-2-joannelkoong@gmail.com>
+References: <20220712235310.1935121-1-joannelkoong@gmail.com>
+         <20220712235310.1935121-2-joannelkoong@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-X-OriginatorOrg: plvision.eu
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: GV1P190MB2019.EURP190.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: a7e2754f-e3b8-4b4e-b7b4-08da6576bc61
-X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Jul 2022 08:56:26.6944
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: SUYv9lm9Fe1CCI7A8RuvFbzPrQMDs9jC3NMseXAPE95OJVFLHWnwI9L1l5hnOp7IA99/YnzLwB80rT4wEmbL3NuYo+rqT/IHbmZdlKptCYM=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA4P190MB1168
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Andrew, Russel,=0A=
-Thanks for the input and sorry for the inconviniences.=0A=
-=0A=
->First question which applies to everything in this patch is - why make=0A=
->phylink conditional for this driver?=0A=
-=0A=
-1. As for the phylink ifdefs:=0A=
-The original idea was to support mac config on devices (DB boards) that don=
-'t have full sfp support on board, however we scrapped out=0A=
-this idea as we could simply use fixed-link DTS configs; also due to this s=
-olution being non-upstream-friendly.=0A=
-Please note that V2 holds no phylink ifdefs;=0A=
-=0A=
->In SGMII mode, it is normal for the advertising=0A=
->mask to indicate the media modes on the PHY to advertise=0A=
-2. As for the SGMII mode, yes, Russel, you're right; V3 will hold a fix for=
- this, and keep the inband enabled for SGMII.=0A=
-=0A=
->No way to restart 1000base-X autoneg?=0A=
-3. As for AN restart, no, it's not yet supported by our FW as of now.=0A=
-=0A=
->I think you should be calling phylink_mac_change() here, rather than=0A=
->below.=0A=
-=0A=
-4. V3 is gonna fix this, thanks for the input.=
+On Tue, 2022-07-12 at 16:53 -0700, Joanne Koong wrote:
+> @@ -238,12 +331,23 @@ inet_csk_find_open_port(struct sock *sk, struct inet_bind_bucket **tb_ret, int *
+>  			continue;
+>  		head = &hinfo->bhash[inet_bhashfn(net, port,
+>  						  hinfo->bhash_size)];
+> +		head2 = inet_bhashfn_portaddr(hinfo, sk, net, port);
+> +
+>  		spin_lock_bh(&head->lock);
+> +
+> +		if (inet_use_bhash2_on_bind(sk)) {
+> +			if (inet_bhash2_addr_any_conflict(sk, port, l3mdev, relax, false))
+> +				goto next_port;
+> +		}
+> +
+> +		spin_lock(&head2->lock);
+
+Minor nit: it looks like you can compute hash2 but not use it if the
+inet_bhash2_addr_any_conflict() call above is unsuccesful. You can move
+the inet_bhashfn_portaddr() down. 
+
+
+[...]
+
+> @@ -675,6 +785,112 @@ void inet_unhash(struct sock *sk)
+>  }
+>  EXPORT_SYMBOL_GPL(inet_unhash);
+>  
+> +static bool inet_bind2_bucket_match(const struct inet_bind2_bucket *tb,
+> +				    const struct net *net, unsigned short port,
+> +				    int l3mdev, const struct sock *sk)
+> +{
+> +#if IS_ENABLED(CONFIG_IPV6)
+> +	if (sk->sk_family == AF_INET6)
+> +		return net_eq(ib2_net(tb), net) && tb->port == port &&
+> +			tb->l3mdev == l3mdev &&
+> +			ipv6_addr_equal(&tb->v6_rcv_saddr, &sk->sk_v6_rcv_saddr);
+> +	else
+> +#endif
+> +		return net_eq(ib2_net(tb), net) && tb->port == port &&
+> +			tb->l3mdev == l3mdev && tb->rcv_saddr == sk->sk_rcv_saddr;
+> +}
+> +
+> +bool inet_bind2_bucket_match_addr_any(const struct inet_bind2_bucket *tb, const struct net *net,
+> +				      unsigned short port, int l3mdev, const struct sock *sk)
+> +{
+> +#if IS_ENABLED(CONFIG_IPV6)
+> +	struct in6_addr addr_any = {};
+> +
+> +	if (sk->sk_family == AF_INET6)
+> +		return net_eq(ib2_net(tb), net) && tb->port == port &&
+> +			tb->l3mdev == l3mdev &&
+> +			ipv6_addr_equal(&tb->v6_rcv_saddr, &addr_any);
+> +	else
+> +#endif
+> +		return net_eq(ib2_net(tb), net) && tb->port == port &&
+> +			tb->l3mdev == l3mdev && tb->rcv_saddr == 0;
+> +}
+> +
+> +/* The socket's bhash2 hashbucket spinlock must be held when this is called */
+> +struct inet_bind2_bucket *
+> +inet_bind2_bucket_find(const struct inet_bind_hashbucket *head, const struct net *net,
+> +		       unsigned short port, int l3mdev, const struct sock *sk)
+> +{
+> +	struct inet_bind2_bucket *bhash2 = NULL;
+> +
+> +	inet_bind_bucket_for_each(bhash2, &head->chain)
+> +		if (inet_bind2_bucket_match(bhash2, net, port, l3mdev, sk))
+> +			break;
+> +
+> +	return bhash2;
+> +}
+> +
+> +struct inet_bind_hashbucket *
+> +inet_bhash2_addr_any_hashbucket(const struct sock *sk, const struct net *net, int port)
+> +{
+> +	struct inet_hashinfo *hinfo = sk->sk_prot->h.hashinfo;
+> +	u32 hash;
+> +#if IS_ENABLED(CONFIG_IPV6)
+> +	struct in6_addr addr_any = {};
+> +
+> +	if (sk->sk_family == AF_INET6)
+> +		hash = ipv6_portaddr_hash(net, &addr_any, port);
+> +	else
+> +#endif
+> +		hash = ipv4_portaddr_hash(net, 0, port);
+> +
+> +	return &hinfo->bhash2[hash & (hinfo->bhash_size - 1)];
+> +}
+> +
+> +int inet_bhash2_update_saddr(struct inet_bind_hashbucket *prev_saddr, struct sock *sk)
+> +{
+> +	struct inet_hashinfo *hinfo = sk->sk_prot->h.hashinfo;
+> +	struct inet_bind_hashbucket *head, *head2;
+> +	struct inet_bind2_bucket *tb2, *new_tb2;
+> +	int l3mdev = inet_sk_bound_l3mdev(sk);
+> +	int port = inet_sk(sk)->inet_num;
+> +	struct net *net = sock_net(sk);
+> +
+> +	/* Allocate a bind2 bucket ahead of time to avoid permanently putting
+> +	 * the bhash2 table in an inconsistent state if a new tb2 bucket
+> +	 * allocation fails.
+> +	 */
+> +	new_tb2 = kmem_cache_alloc(hinfo->bind2_bucket_cachep, GFP_ATOMIC);
+> +	if (!new_tb2)
+> +		return -ENOMEM;
+> +
+> +	head = &hinfo->bhash[inet_bhashfn(net, port,
+> +					  hinfo->bhash_size)];
+
+Here 'head' is unused, you can avoid computing the related hash.
+
+
+Cheers,
+
+Paolo
+
