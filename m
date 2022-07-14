@@ -2,111 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 20DD4574E78
-	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 14:58:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD52F574EA6
+	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 15:07:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239646AbiGNM64 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jul 2022 08:58:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54634 "EHLO
+        id S239242AbiGNNHI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jul 2022 09:07:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230117AbiGNM6y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 08:58:54 -0400
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB25D1ADAF;
-        Thu, 14 Jul 2022 05:58:53 -0700 (PDT)
-Received: by mail-pf1-x42c.google.com with SMTP id d10so1759933pfd.9;
-        Thu, 14 Jul 2022 05:58:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=a2nkN9l+/fF2fL+xTF7Ln71n6qkHaZWp85p/BTS2OiE=;
-        b=E+fq1rDSFR/EJVpBLT10sLjCMULqsvwacBLqEqnBuBD6v7VmFsEzoo8PSssv84oWQN
-         lwdNan2XVO9K6lhOlmS/F7HpU1eSdb8TEAHeTne+i7mnOiBOEtg8HXwXqo1bvCxA6LJQ
-         AfplOkMDW1L0BYMn4wYhWl0kp/CN/R9NH8NfCg02EUnsdLSNb3vyopmuDNgyQeQPNvrH
-         gq+QnYqyfIKMgfTXDMyF6t2tPkwUbVbohgYGYKx5LSBwJ81NyLKsNcLmDJP/p8yuHb7l
-         gDEkj7hVUPdjzS0SdIYOADx1ML1DS0QDOl8SVUkm2H78eNhR+RI4PPhkRBNwSNKQQPW0
-         tjBQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=a2nkN9l+/fF2fL+xTF7Ln71n6qkHaZWp85p/BTS2OiE=;
-        b=1pqxYNw0NzHPsTTovfWMyHEiAClLnaUUvoti4nLV3K2vP61MV58If6lfNCJi21bwbI
-         O5G4A4uhHB+buk+6jabrwBHbbwBNC7dZzceYqthnCZIAqgA3DlU6ePVPwxL6rLyxyBDc
-         rWMxx5TPPFSJbnjAxoIwDIBZ7It3PJvoUt2iMEeaeOkTtaG4pIO8d126wxsguOEDUnKd
-         xrehGXDwBRgbbwkf0knE2z947hHbz5zzeEqtz3zX775h1FV15wRNO3ZIUkCX7i3T0Q9u
-         och3GN8v5vqafQkZpIR49CkyvQ8Nmmn8RzIoHapEbCmVlv0VmP5QYk03QhNeHfKuKDYo
-         Pe7g==
-X-Gm-Message-State: AJIora9H8JiGzuveNIN+FK+5Ah71hSmzH1MkNzQHk5f6zu5Ib1Tv88Ne
-        iNVS/of8wuiifb6K7jXuBXo=
-X-Google-Smtp-Source: AGRyM1tlayBJTQ7cQPVSU45NNDmsAmBm9Qj5+P+ch52kxN2A9a/e85Vbah5TX9K3w2AQijnf7k9zAQ==
-X-Received: by 2002:a65:4c0b:0:b0:415:d3a4:44d1 with SMTP id u11-20020a654c0b000000b00415d3a444d1mr7650725pgq.191.1657803533233;
-        Thu, 14 Jul 2022 05:58:53 -0700 (PDT)
-Received: from [10.176.68.61] ([192.19.148.250])
-        by smtp.gmail.com with ESMTPSA id x14-20020aa79ace000000b0052ad49292f0sm1575195pfp.48.2022.07.14.05.58.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 14 Jul 2022 05:58:52 -0700 (PDT)
-Message-ID: <4790ba0a-d09d-2f12-a1e0-eb807fb9ec34@gmail.com>
-Date:   Thu, 14 Jul 2022 14:58:48 +0200
+        with ESMTP id S239257AbiGNNHF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 09:07:05 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 227E95A450;
+        Thu, 14 Jul 2022 06:07:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=muk3dIHelVPAgQTm/sXT9cnXJeu6KyPqOGP4GYK8ICA=; b=aOlh6MOtK6Ygg3+oAK6/BmgxJA
+        xDj3aMxagV6io4m47qnHJYy3cm20wP4wVMrMv7yTmZs4zsqi3+i+49Mn7M+EIlAr67SGXrA3txkIf
+        26lA+qY9Bl7yiqN9yOBIR+onzaLNfmbhyZT07ZyFHq0IUrdYHUNZrXSLcvuA3ZMDOz0g=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oByYV-00AHim-O8; Thu, 14 Jul 2022 15:06:59 +0200
+Date:   Thu, 14 Jul 2022 15:06:59 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        Yevhen Orlov <yevhen.orlov@plvision.eu>,
+        Taras Chornyi <taras.chornyi@plvision.eu>
+Subject: Re: [PATCH V2 net-next] net: marvell: prestera: add phylink support
+Message-ID: <YtAU89nwoDDA0+dj@lunn.ch>
+References: <20220713172013.29531-1-oleksandr.mazur@plvision.eu>
+ <Ys8lgQGBsvWAtXDZ@shell.armlinux.org.uk>
+ <Ys8+qT6ED4dty+3i@lunn.ch>
+ <GV1P190MB2019C2CFF4AB6934E8752A32E4889@GV1P190MB2019.EURP190.PROD.OUTLOOK.COM>
+ <YtAOZGLR1a74FnoQ@shell.armlinux.org.uk>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] p54: add missing parentheses in p54_flush()
-Content-Language: en-US
-To:     Johannes Berg <johannes@sipsolutions.net>,
-        Rustam Subkhankulov <subkhankulov@ispras.ru>,
-        Christian Lamparter <chunkeey@googlemail.com>
-Cc:     Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Alexey Khoroshilov <khoroshilov@ispras.ru>,
-        ldv-project@linuxtesting.org
-References: <20220714091741.90747-1-subkhankulov@ispras.ru>
- <7cebf20083d2464e5f1467a406cda583ae2750a0.camel@sipsolutions.net>
-From:   Arend Van Spriel <aspriel@gmail.com>
-In-Reply-To: <7cebf20083d2464e5f1467a406cda583ae2750a0.camel@sipsolutions.net>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YtAOZGLR1a74FnoQ@shell.armlinux.org.uk>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/14/2022 11:45 AM, Johannes Berg wrote:
-> On Thu, 2022-07-14 at 12:17 +0300, Rustam Subkhankulov wrote:
->> The assignment of the value to the variable total in the loop
->> condition must be enclosed in additional parentheses, since otherwise,
->> in accordance with the precedence of the operators, the conjunction
->> will be performed first, and only then the assignment.
->>
->> Due to this error, a warning later in the function after the loop may
->> not occur in the situation when it should.
->>
->> Found by Linux Verification Center (linuxtesting.org) with SVACE.
->>
->> Signed-off-by: Rustam Subkhankulov <subkhankulov@ispras.ru>
->> Fixes: d3466830c165 ("p54: move under intersil vendor directory")
->>
+> > >No way to restart 1000base-X autoneg?
+> > 3. As for AN restart, no, it's not yet supported by our FW as of now.
 > 
-> That fixes can't be right, it just moved the code.
+> Maybe put a comment in the code to that effect?
 
-commit 0d4171e2153b70957fe67867420a1a24d5e4cd82
-Author: Christian Lamparter <chunkeey@googlemail.com>
-Date:   Wed Feb 16 19:43:06 2011 +0100
+And also think about forward/backward compatibility. At some point
+your FW will support it. Do you need to do anything now in order to
+smoothly add support for it in the future?
 
-     p54: implement flush callback
-
-     Signed-off-by: Christian Lamparter <chunkeey@googlemail.com>
-     Signed-off-by: John W. Linville <linville@tuxdriver.com>
-
+	 Andrew
