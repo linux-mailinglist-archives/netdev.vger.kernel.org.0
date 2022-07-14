@@ -2,97 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 83AD65746E7
-	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 10:36:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 53A59574713
+	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 10:37:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235064AbiGNIgo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jul 2022 04:36:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60278 "EHLO
+        id S237387AbiGNIhQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jul 2022 04:37:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235704AbiGNIgm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 04:36:42 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E6BF3DBFF
-        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 01:36:40 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id bp17so1650301lfb.3
-        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 01:36:40 -0700 (PDT)
+        with ESMTP id S236882AbiGNIhC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 04:37:02 -0400
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2095.outbound.protection.outlook.com [40.107.93.95])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9B5E3ED4A
+        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 01:37:00 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=FpO4VPZoPEjlF7/wGTz3Zto10GeScqpkhfBu7EpQv6NyUkx3ssMsrFY7Iqr/LXgZeKXEcrFnWvp8ESrWHnFCYyGaVbVDy6JMnFmEXEosagSBvC/CAO9vSCc9OvlrMs994scTDcA8OVGu2DNhIF/hFs9SpKaLwa+/1JhDeqLmH4zNpkNz5PEY09f9JAxpiGfWphXfD8neLgWhoMQDmaIt6LCV56F4rkMqB8oUATxX8MBv566/drnmA9ud3kyou+Cz6ThnPuoZRfxH4tlmNdRIa/uGf2CmOV/v6F4uBrBfzjilTZ8Vd4hQMQbMaQ2gRgxOjO9t0LvddTgYaqG+hzaNxQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=jGkxoFOjole82Ss962m5URwBWpiTkm2Vq6qZJ/06dkM=;
+ b=ENfXlQ8uJDw6OqnmL0WPJ1tKvrIJY304/oAeUHHQu5BJDBJ9Ot5tWRrKsGbptMnrFM4ZCfHqIu1U0mOYEFIWf3LvGlVd19nIHR2T0J45Q1uczQOB9DCvdIycb+RoWZYTF/O538ulwyyGT6moXfqzYgOwV/IRQJQyFuJJttgfYzS5T/El7HwZO3CGMwIj58MjH3wYJ+8Ji9E13TJ2UYv3GuKL7BWauA5/O/OfmJV3i8lGoWeLGEKnehgpOCmQl+XwN0xvxCRmVJOOhiFz92pfejMTEIyi8mT91yOLJBXWq2G2GXLylOzRWabxY0/x3ExwFEQQ8yB1mTyv2ZUTYZKMsg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=H3bGT1ZyGPu3PRQJlJHyQI9TvTjBPuNSyHjFOzNfiP0=;
-        b=nfF93HFABydKtKUN6hm08YjvNRh2G4i7biDP0iGWKm0CJI/6tO/7ASVGiMVbrFcvre
-         dFe7LS0o6XmnC1olR6EZQT61Pk5CcDXk8EOCE/ZUPQPC2WOF08wHjQNTI98f51BXkTW7
-         5dyslKzFlMJ1FAFUBcS5XSZMuJJQc0mVGS8sJL1EcuApFLh9MbSY3DeHMChVpm6lylO2
-         ZiD2YD5TYnCnW1RYesj2zabgr2TZokupGOdRW5Wg1Wsic5Yzi6a7GNVAIH/aFq924Tv4
-         l/BLkapdJUQdDh1nnfELCxBLwNTsd2zSHh12MGEWr6e9uOYA2kL+ohlW7KhzBK2CbHvs
-         dAHg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=H3bGT1ZyGPu3PRQJlJHyQI9TvTjBPuNSyHjFOzNfiP0=;
-        b=36HcMPwMCxFkJqRznXvj+lb6UmHd5Aw0cawAieeziIM5dfAfu6g38xkm0tMZzPFu6P
-         objA73rlbt0v2UcGpqXD4DbJyhM+cL/XV4pIdUmCRhhcTgmvwoUKw+GZjdF8nqKWfLyU
-         bkJWLtevV47aA7UHAERsGZDhFlcUngEV5TxZeosHkAOlstW8zFd/K2002Njh5yMQh75X
-         mRxLn4eXpH9KRvs2wBU+IHxmN49r8xRB997n8aEwL+G2V14J6atCu26M4wAOlNUMXnQ5
-         OXpDxTTTd+2I+AXfcrnU/U94panenZXBXObEriUcXSF9pA8rBMcfuMBpMr2X+PJ+pe5U
-         uJPA==
-X-Gm-Message-State: AJIora+yqYXs1IFl+BrBM5JLovamTmrefPo84Trduyz+ydDhVxFdFGTo
-        OgAFDxk8PBkbZiJhAOWXaFrZ7/tzJq9WWqYAaFg=
-X-Google-Smtp-Source: AGRyM1sBAY02anFyAAkYvB61573ohyB+lIVHvdune1I2St249pttaSZdeqZISv5rckThyg5u7Q/retQg6yCpkFrJ9YI=
-X-Received: by 2002:a05:6512:1307:b0:47f:baa4:52c5 with SMTP id
- x7-20020a056512130700b0047fbaa452c5mr4350443lfu.103.1657787798421; Thu, 14
- Jul 2022 01:36:38 -0700 (PDT)
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jGkxoFOjole82Ss962m5URwBWpiTkm2Vq6qZJ/06dkM=;
+ b=OVDYHFMe1yhXoYY7Akdv3SZdU4u7NohSFMHzM8ccbiYzW3V/5yd5RoUMAvwbKedV7iPuqR9/8FyP1Ri1FHV9LrVUNpAmyzRKM6a23z31Rm0IsjmyFqXy9N6Ccn4rWSqscYGHV7cFHPOtoAKjgB7c4we8xYUC4jGqHREriFb9eoM=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by BN6PR13MB1346.namprd13.prod.outlook.com (2603:10b6:404:6d::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.14; Thu, 14 Jul
+ 2022 08:36:59 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::bd99:64d1:83ec:1b2]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::bd99:64d1:83ec:1b2%9]) with mapi id 15.20.5438.011; Thu, 14 Jul 2022
+ 08:36:58 +0000
+Date:   Thu, 14 Jul 2022 10:36:53 +0200
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     David Miller <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        oss-drivers@corigine.com
+Subject: Re: [PATCH net] nfp: flower: configure tunnel neighbour on cmsg rx
+Message-ID: <Ys/VpbZtrJ2JU7eg@corigine.com>
+References: <20220713085620.102550-1-simon.horman@corigine.com>
+ <20220713204100.6fd9b277@kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220713204100.6fd9b277@kernel.org>
+X-ClientProxiedBy: AM0PR07CA0029.eurprd07.prod.outlook.com
+ (2603:10a6:208:ac::42) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 MIME-Version: 1.0
-Received: by 2002:a2e:9041:0:0:0:0:0 with HTTP; Thu, 14 Jul 2022 01:36:37
- -0700 (PDT)
-Reply-To: abdwabbomaddahm@gmail.com
-From:   Abdwabbo Maddah <abdwabbomaddah746@gmail.com>
-Date:   Thu, 14 Jul 2022 09:36:37 +0100
-Message-ID: <CAFC-3idDfFB0Mmtq-N-n6z5Ly7T-KDCJtvbc0UgtirMnTLYTCg@mail.gmail.com>
-Subject: Get back to me... URGENT
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: Yes, score=5.0 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,UNDISC_FREEM autolearn=no
-        autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2a00:1450:4864:20:0:0:0:133 listed in]
-        [list.dnswl.org]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.4999]
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [abdwabbomaddah746[at]gmail.com]
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [abdwabbomaddah746[at]gmail.com]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  3.2 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-X-Spam-Level: *****
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 914eff90-347b-4b9b-2a61-08da6574042c
+X-MS-TrafficTypeDiagnostic: BN6PR13MB1346:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: B+7pAGoTRYAV60+jf/Ok2nmCzs4REko8dib+R4U+zo2VBEbU83ZPOkXssov9W9oRfjot4s+vWoby3javKqtxhNirl5AdzeZEzlykCE6YpumR028+OcHNm+SdFaTkk2JbCBb75WOt7Lql2FL+m70uhY3gPZKWQkN5yCRun6NzTxvHS002mWrWbUO/UnBDfV9nEHBO4FQiflY/JnmEBkG+KAnaAcybnVpMvy0LhFuyOJuYpuatJ+7VE5pnv3Ot17MJL80ScZgqWULxJRR9RPgBPqQ/q3kT7diQueClUQUGh7W4rGofnDZukZs0AU8Mf7dvKcn6xfYPJavYNryl++CKXnVvr+LWZv9SfePtQ6SgFc7C4LTkpsSTqoCtKF8hXPnbsNg+emBSFL3bQU/POg7FKVkXro+5vCAFd7/of/6rrRD2dQBnYJJvP/JQkXY7jJCg4ZOituFD36ktYB7zrbSah9SkPveVq2r5CtTPuz3sUkXjGJZ3anvsjco6yLyeHHalCv/LzO8IsVJdnpYPlAGkh2zSlI9/FjPqgOz2jh8IcU3gMK5fRhpbkNAfDlhbMRH0zSWfqHFq6+NHjkVgfXq0d0xkBfCIdhfegks2ujH3MlYxiHqEhqFsTQaBqUiOWnHHipGcIxORSdm1Hi6zz/HOTGi5TipJfZr7QiO8ZHx91vidE0cwWVor75TRrHCWqy31KBqzv2Db6khGt4JrU/OhQtnWDpe1hhZnSt79ea0AxiiET63uTMdkyGQY+O+LKMI04HO1OXtGsY0iORLq0guCkCiDavj7Hq/KgagdGihDO8YYBdyFuslL0GKQpnXacf+oABaH7Nx3so5dA20L41INzQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(136003)(39830400003)(346002)(376002)(396003)(8936002)(4744005)(44832011)(38100700002)(316002)(5660300002)(54906003)(6916009)(6512007)(107886003)(478600001)(6486002)(2616005)(52116002)(966005)(41300700001)(66476007)(186003)(6666004)(66556008)(8676002)(4326008)(66946007)(36756003)(2906002)(86362001)(6506007)(83323001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?028cihftcKa4Q/Xm5lD7GwcXxLKqQrEt5YeSQqTXKrMBNnt+I2O4hckrMcwK?=
+ =?us-ascii?Q?Qes4e4OW+Sc61k/Pwn2lnUJRquvDbTPOOib5zIxvZRL2FDscYqWEjlVUS3TS?=
+ =?us-ascii?Q?0gY9KYf1Ioe0eO0I15WDSB3k9lndDSUUVEs+ITUnlLtvB7Jf2YnlMGVfqhp2?=
+ =?us-ascii?Q?MahPR9pVvEoExJaPZKwzip99WKEazhqQbgJb443eOHUGG3npze9jO7ReiPQ2?=
+ =?us-ascii?Q?nLUgG+kMafwqYak6SroyA4y4fUyALzQg4YzEh7DBH7d0nCiW3DJn2WOuZVtV?=
+ =?us-ascii?Q?MY+bwQdVGFkW7tVDopMhqkd2MjtmksJsfNI1wE3/6Cx6FrOhJPHJVdzMKsvJ?=
+ =?us-ascii?Q?9CCpkBvXPG2UR9IdKIx08cmY6OJp3gOT/bGzmChaFbNlYa1gmwDRGhxLKdYh?=
+ =?us-ascii?Q?5u02xUJGP4SAVkE90sRCoEBnm+t3KcregNX1bjggdtQHXwXHR3xqmaSoLKIg?=
+ =?us-ascii?Q?/WfqHgdAzmSfvBEEeGZNef2nHVLVZMKwjykieoOBjwOjEGzZTWaE1qHZPFT7?=
+ =?us-ascii?Q?eQH3BxGqmRyHOxPYOODx7vwrxwjB5MnrutpAKtI+OeGeaekUlxTHjrlCQkzW?=
+ =?us-ascii?Q?i6OdFT46BwYz2sE7ECcrlm5o6cwmFgTrASVZUO3kJoW/CK9ugUlatqKFzGKx?=
+ =?us-ascii?Q?NdluWlfxe3VOKnw2+vJ1HJN81R+4QHG62Y/QmPkE7P/JmRhrGcn2WLwYYzA4?=
+ =?us-ascii?Q?a0vQy+gZFaEFsqaLCgGRN5pUkpA/kMqHZbUQfH6ZgF7FNRxFBDeEhaXT/vw5?=
+ =?us-ascii?Q?zYKa2neU/2zEwKzdgOCUCMaTLPBbmX08RJJEnNUrl8Bc6E9Z52ZeUVl5bxBb?=
+ =?us-ascii?Q?h/bLPYIaGmjD0ez6ILonftoCEhoJ8BTVF2S8laKEaXcZHg1UFqco0raZy7LE?=
+ =?us-ascii?Q?6aWK08bfPJStN5b5aocN6eLe39/unlTdZxr0Fm17bir41kcYP9NsuEAMiMVw?=
+ =?us-ascii?Q?wlDqbnHf9MVlvXQfscTQC4P2F2mOtoXLPAyNWMFDvgrYDJd2/CxJGB1AOnxe?=
+ =?us-ascii?Q?mf2td+/wrdNKdS8T9WGXlSiwsj+/ZZt1lWEhpO74sCBhUSKsvleKmhQq8rH8?=
+ =?us-ascii?Q?qCNSLkazS2KD2pzeWT90NA+ZFM0Q65bEHtAuV/5kOn4F8ms2cscSA/EVxGnY?=
+ =?us-ascii?Q?XG/SuwhxZsw/GhJ5dMySrYw5IHHJN/bfC/qYpnRJdtzim18acK//2pjP1WnE?=
+ =?us-ascii?Q?mZ1KWbsDugSmFMaasEybd6OB2KuA6P8KZB6/tL8wRY21KR35QVlwIUO4I2uI?=
+ =?us-ascii?Q?1EMLzgoPUfODkMFBJlhqQkq2iCY0bgSWx0TsIB/qypY1KoZbeGbMJAAOnF7W?=
+ =?us-ascii?Q?e4Kmkd0TmTF/72uM0j/jNZuVTZjPVoV3Qdlj0rvkGqioEhg7WUw/zyx0e0aB?=
+ =?us-ascii?Q?jueqPhvrbQSejmtLIoyFOTKBb8ryntvFdwA0LZAxhAQ7oFc48+nIUVuidSMN?=
+ =?us-ascii?Q?g4W/VQGBsh6lcIBklVxRy+CeoD3i51HOz0AXZ9Wh98tv/4Ti3DD/YUvEnLiq?=
+ =?us-ascii?Q?KylhBFJUtenHzSfX0h4BiglWSM2IqqBBHHJEQD95jF9gZ2k+z5j3ESm5nbnB?=
+ =?us-ascii?Q?l3Q+J2e0S3s65jnfuMTCzlDNqp15tsixkENZtRv+v4YYW6EX3vrG7oW/efI9?=
+ =?us-ascii?Q?K8QjhSIcvB/H779g4GSh7Wvxyxm544YLW9PWjR14unf6Qeu48JSxFxE39Dhp?=
+ =?us-ascii?Q?beNBjw=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 914eff90-347b-4b9b-2a61-08da6574042c
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jul 2022 08:36:58.9304
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: nHnZBqs5e3BhsWA40VYuWwlGK9VGmf6RYF2HYp8HMyfNVXMIQjHyzM5lxiysXM7ic/8gUV36xVu6yD+XT7mkY0VrC89YzH5tOAz1Vgxt7og=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR13MB1346
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
-Dear,
-I had sent you a mail but i don't think you received it that's why am
-writing you again.It is important you get back to me as soon as you
-can.
-Abd-Wabbo Maddah
+On Wed, Jul 13, 2022 at 08:41:00PM -0700, Jakub Kicinski wrote:
+> On Wed, 13 Jul 2022 10:56:20 +0200 Simon Horman wrote:
+> > From: Tianyu Yuan <tianyu.yuan@corigine.com>
+> > 
+> > nfp_tun_write_neigh() function will configure a tunnel neighbour when
+> > calling nfp_tun_neigh_event_handler() or nfp_flower_cmsg_process_one_rx()
+> > (with no tunnel neighbour type) from firmware.
+> > 
+> > When configuring IP on physical port as a tunnel endpoint, no operation
+> > will be performed after receiving the cmsg mentioned above.
+> > 
+> > Therefore, add a progress to configure tunnel neighbour in this case.
+> > 
+> > Fixes: f1df7956c11f("nfp: flower: rework tunnel neighbour configuration")
+> 
+> Missing space between the hash and the subject.
+
+Thanks, fixed in v2.
+- https://lore.kernel.org/netdev/20220714081915.148378-1-simon.horman@corigine.com/
