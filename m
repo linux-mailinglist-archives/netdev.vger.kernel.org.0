@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 017035741EB
-	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 05:33:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7E785741E7
+	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 05:33:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233049AbiGNDdd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jul 2022 23:33:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50110 "EHLO
+        id S232924AbiGNDdf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jul 2022 23:33:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232917AbiGNDdW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 23:33:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B736325EA0
-        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 20:33:21 -0700 (PDT)
+        with ESMTP id S232983AbiGNDdZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 23:33:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D192A25EBB
+        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 20:33:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9869261E2D
-        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 03:33:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AC6CC341C0;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6DC58B822A5
+        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 03:33:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F6B5C3411E;
         Thu, 14 Jul 2022 03:33:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1657769601;
-        bh=Uz8CEFsc3ynPqGQWwN5Lhdya4vcXIBhzYxWrKP0vZMM=;
+        bh=C6g0nb8pKpXNjnN4NaMrrpfNEleAaFeHY2IzK/RCOo8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OpNbMywNbQdl8WggeLFGLpnK0HJuqvBURr6sWYPYaKWH1ytmeQUFiwY8PfAg4TzE/
-         lPUKTSVdr6HJ61bfEPjziP4dtINivImqkAUHaWicIb+EEB/YsBkgTd0LihypbFuF9x
-         q3+5qlUpxInrI9eQUd74yBG08K08/1rynRo82dr1nPwhv3HY5Ie23yb3kZA6RQbm4B
-         k0hbKcVmFOABYpoKR2Y7UiMvr+4I+LA2xNitPvl6839hlVV2T1wFyBRT8nQz3uhmjN
-         mM0V1RFtFHhZpOD1n4Ws/v8d+MpmGtyvC6GLFvRD4ythuaH/kSJJ+GkPai8dnOduIG
-         SYq9vjYxTfvHg==
+        b=WM+XmwEGHmkhr94VhHEArIUnFwBiafo2HhtPrKPiQFMEVtR49rM8XwATmwlQPYjSa
+         4mylApCXrEDHqYpIDiAqO5sX5j/OZzJMQ8kA/rKEW7PWU6YcmFu93mosS2xg9ctyAs
+         Q75qS6ZpzpDAdCnxIMgcArlfa+gE3wjH/5gFAl66C1VRHJzalsC44+g2dM9JFo4tVx
+         gnGyLwoS+eorHHPbBcdc+N8RcGh8j4mxTmRs2xZO7fa/ppZmK0jJgpZbfAD/qj6+oV
+         +bCfR26/I9mLPtNPQ5j7P0VaTf6Lmoj70kHkN8uyp6uPrFnb1066wmoL0tnMuVZivV
+         6kYk5J1NBKlSQ==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
         borisp@nvidia.com, john.fastabend@gmail.com, maximmi@nvidia.com,
         tariqt@nvidia.com, vfedorenko@novek.ru,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 09/11] tls: rx: async: hold onto the input skb
-Date:   Wed, 13 Jul 2022 20:33:08 -0700
-Message-Id: <20220714033310.1273288-10-kuba@kernel.org>
+Subject: [PATCH net-next 10/11] tls: rx: async: don't put async zc on the list
+Date:   Wed, 13 Jul 2022 20:33:09 -0700
+Message-Id: <20220714033310.1273288-11-kuba@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220714033310.1273288-1-kuba@kernel.org>
 References: <20220714033310.1273288-1-kuba@kernel.org>
@@ -55,133 +55,114 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Async crypto currently benefits from the fact that we decrypt
-in place. When we allow input and output to be different skbs
-we will have to hang onto the input while we move to the next
-record. Clone the inputs and keep them on a list.
+The "zero-copy" path in SW TLS will engage either for no skbs or
+for all but last. If the recvmsg parameters are right and the
+socket can do ZC we'll ZC until the iterator can't fit a full
+record at which point we'll decrypt one more record and copy
+over the necessary bits to fill up the request.
+
+The only reason we hold onto the ZC skbs which went thru the async
+path until the end of recvmsg() is to count bytes. We need an accurate
+count of zc'ed bytes so that we can calculate how much of the non-zc'd
+data to copy. To allow freeing input skbs on the ZC path count only
+how much of the list we'll need to consume.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- include/net/tls.h  |  1 +
- net/tls/Makefile   |  2 +-
- net/tls/tls.h      |  3 +++
- net/tls/tls_strp.c | 17 +++++++++++++++++
- net/tls/tls_sw.c   | 26 +++++++++++++++++---------
- 5 files changed, 39 insertions(+), 10 deletions(-)
- create mode 100644 net/tls/tls_strp.c
+ net/tls/tls_sw.c | 40 +++++++++++++++++++---------------------
+ 1 file changed, 19 insertions(+), 21 deletions(-)
 
-diff --git a/include/net/tls.h b/include/net/tls.h
-index e8935cfe0cd6..181c496b01b8 100644
---- a/include/net/tls.h
-+++ b/include/net/tls.h
-@@ -123,6 +123,7 @@ struct tls_sw_context_rx {
- 	atomic_t decrypt_pending;
- 	/* protect crypto_wait with decrypt_pending*/
- 	spinlock_t decrypt_compl_lock;
-+	struct sk_buff_head async_hold;
- 	struct wait_queue_head wq;
- };
- 
-diff --git a/net/tls/Makefile b/net/tls/Makefile
-index f1ffbfe8968d..e41c800489ac 100644
---- a/net/tls/Makefile
-+++ b/net/tls/Makefile
-@@ -7,7 +7,7 @@ CFLAGS_trace.o := -I$(src)
- 
- obj-$(CONFIG_TLS) += tls.o
- 
--tls-y := tls_main.o tls_sw.o tls_proc.o trace.o
-+tls-y := tls_main.o tls_sw.o tls_proc.o trace.o tls_strp.o
- 
- tls-$(CONFIG_TLS_TOE) += tls_toe.o
- tls-$(CONFIG_TLS_DEVICE) += tls_device.o tls_device_fallback.o
-diff --git a/net/tls/tls.h b/net/tls/tls.h
-index 9fa6827cde38..6373308f6ff3 100644
---- a/net/tls/tls.h
-+++ b/net/tls/tls.h
-@@ -124,6 +124,9 @@ int tls_sw_fallback_init(struct sock *sk,
- 			 struct tls_offload_context_tx *offload_ctx,
- 			 struct tls_crypto_info *crypto_info);
- 
-+int tls_strp_msg_hold(struct sock *sk, struct sk_buff *skb,
-+		      struct sk_buff_head *dst);
-+
- static inline struct tls_msg *tls_msg(struct sk_buff *skb)
- {
- 	struct sk_skb_cb *scb = (struct sk_skb_cb *)skb->cb;
-diff --git a/net/tls/tls_strp.c b/net/tls/tls_strp.c
-new file mode 100644
-index 000000000000..9ccab79a6e1e
---- /dev/null
-+++ b/net/tls/tls_strp.c
-@@ -0,0 +1,17 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+
-+#include <linux/skbuff.h>
-+
-+#include "tls.h"
-+
-+int tls_strp_msg_hold(struct sock *sk, struct sk_buff *skb,
-+		      struct sk_buff_head *dst)
-+{
-+	struct sk_buff *clone;
-+
-+	clone = skb_clone(skb, sk->sk_allocation);
-+	if (!clone)
-+		return -ENOMEM;
-+	__skb_queue_tail(dst, clone);
-+	return 0;
-+}
 diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
-index 09fe2cfff51a..f767501e178d 100644
+index f767501e178d..1c9a0705ee63 100644
 --- a/net/tls/tls_sw.c
 +++ b/net/tls/tls_sw.c
-@@ -1535,8 +1535,13 @@ static int tls_decrypt_sg(struct sock *sk, struct iov_iter *out_iov,
- 		goto exit_free_pages;
+@@ -1675,7 +1675,6 @@ static int process_rx_list(struct tls_sw_context_rx *ctx,
+ 			   u8 *control,
+ 			   size_t skip,
+ 			   size_t len,
+-			   bool zc,
+ 			   bool is_peek)
+ {
+ 	struct sk_buff *skb = skb_peek(&ctx->rx_list);
+@@ -1709,12 +1708,10 @@ static int process_rx_list(struct tls_sw_context_rx *ctx,
+ 		if (err <= 0)
+ 			goto out;
  
- 	darg->skb = tls_strp_msg(ctx);
--	if (darg->async)
--		return 0;
+-		if (!zc || (rxm->full_len - skip) > len) {
+-			err = skb_copy_datagram_msg(skb, rxm->offset + skip,
+-						    msg, chunk);
+-			if (err < 0)
+-				goto out;
+-		}
++		err = skb_copy_datagram_msg(skb, rxm->offset + skip,
++					    msg, chunk);
++		if (err < 0)
++			goto out;
+ 
+ 		len = len - chunk;
+ 		copied = copied + chunk;
+@@ -1824,9 +1821,9 @@ int tls_sw_recvmsg(struct sock *sk,
+ 	struct tls_context *tls_ctx = tls_get_ctx(sk);
+ 	struct tls_sw_context_rx *ctx = tls_sw_ctx_rx(tls_ctx);
+ 	struct tls_prot_info *prot = &tls_ctx->prot_info;
++	ssize_t decrypted = 0, async_copy_bytes = 0;
+ 	struct sk_psock *psock;
+ 	unsigned char control = 0;
+-	ssize_t decrypted = 0;
+ 	size_t flushed_at = 0;
+ 	struct strp_msg *rxm;
+ 	struct tls_msg *tlm;
+@@ -1855,7 +1852,7 @@ int tls_sw_recvmsg(struct sock *sk,
+ 		goto end;
+ 
+ 	/* Process pending decrypted records. It must be non-zero-copy */
+-	err = process_rx_list(ctx, msg, &control, 0, len, false, is_peek);
++	err = process_rx_list(ctx, msg, &control, 0, len, is_peek);
+ 	if (err < 0)
+ 		goto end;
+ 
+@@ -1939,19 +1936,20 @@ int tls_sw_recvmsg(struct sock *sk,
+ 		chunk = rxm->full_len;
+ 		tls_rx_rec_done(ctx);
+ 
+-		if (async) {
+-			/* TLS 1.2-only, to_decrypt must be text length */
+-			chunk = min_t(int, to_decrypt, len);
+-put_on_rx_list:
+-			decrypted += chunk;
+-			len -= chunk;
+-			__skb_queue_tail(&ctx->rx_list, skb);
+-			continue;
+-		}
+-
+ 		if (!darg.zc) {
+ 			bool partially_consumed = chunk > len;
+ 
++			if (async) {
++				/* TLS 1.2-only, to_decrypt must be text len */
++				chunk = min_t(int, to_decrypt, len);
++				async_copy_bytes += chunk;
++put_on_rx_list:
++				decrypted += chunk;
++				len -= chunk;
++				__skb_queue_tail(&ctx->rx_list, skb);
++				continue;
++			}
 +
-+	if (unlikely(darg->async)) {
-+		err = tls_strp_msg_hold(sk, skb, &ctx->async_hold);
-+		if (err)
-+			__skb_queue_tail(&ctx->async_hold, darg->skb);
-+		return err;
-+	}
- 
- 	if (prot->tail_size)
- 		darg->tail = dctx->tail;
-@@ -1998,14 +2003,16 @@ int tls_sw_recvmsg(struct sock *sk,
- 		reinit_completion(&ctx->async_wait.completion);
- 		pending = atomic_read(&ctx->decrypt_pending);
- 		spin_unlock_bh(&ctx->decrypt_compl_lock);
--		if (pending) {
-+		ret = 0;
-+		if (pending)
- 			ret = crypto_wait_req(-EINPROGRESS, &ctx->async_wait);
--			if (ret) {
--				if (err >= 0 || err == -EINPROGRESS)
--					err = ret;
--				decrypted = 0;
--				goto end;
--			}
-+		__skb_queue_purge(&ctx->async_hold);
-+
-+		if (ret) {
-+			if (err >= 0 || err == -EINPROGRESS)
-+				err = ret;
-+			decrypted = 0;
-+			goto end;
- 		}
- 
+ 			if (bpf_strp_enabled) {
+ 				err = sk_psock_tls_strp_read(psock, skb);
+ 				if (err != __SK_PASS) {
+@@ -2018,10 +2016,10 @@ int tls_sw_recvmsg(struct sock *sk,
  		/* Drain records from the rx_list & copy if required */
-@@ -2440,6 +2447,7 @@ int tls_set_sw_offload(struct sock *sk, struct tls_context *ctx, int tx)
- 		crypto_info = &ctx->crypto_recv.info;
- 		cctx = &ctx->rx;
- 		skb_queue_head_init(&sw_ctx_rx->rx_list);
-+		skb_queue_head_init(&sw_ctx_rx->async_hold);
- 		aead = &sw_ctx_rx->aead_recv;
+ 		if (is_peek || is_kvec)
+ 			err = process_rx_list(ctx, msg, &control, copied,
+-					      decrypted, false, is_peek);
++					      decrypted, is_peek);
+ 		else
+ 			err = process_rx_list(ctx, msg, &control, 0,
+-					      decrypted, true, is_peek);
++					      async_copy_bytes, is_peek);
+ 		decrypted = max(err, 0);
  	}
  
 -- 
