@@ -2,147 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2183857405E
-	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 02:12:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB50357408D
+	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 02:33:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230238AbiGNAMS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jul 2022 20:12:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41068 "EHLO
+        id S232086AbiGNAdt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jul 2022 20:33:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231956AbiGNAMB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 20:12:01 -0400
-Received: from mx0b-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 769DE6582;
-        Wed, 13 Jul 2022 17:11:57 -0700 (PDT)
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26DICiYi017630;
-        Wed, 13 Jul 2022 17:11:56 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=v5UNIvnA0bXP9kFSiDTNE8urwV4xU7O+B0721hOEqWQ=;
- b=hzrrkRxp7SCoMd2G91AVLy8rQkHY6hWJeHyJqaCLoQmTq+kXbtAOaCpnkLybsDX9m8Gc
- qFo52irxFbnn94bOeFMJFHS0FLlSfWvoY9v7nO1Z62POABA/km5SKtNFLftqejJbZrWe
- cqqd3kULGdJx9QrLmsIgoqVXV9K1X9z/xRc= 
-Received: from nam11-dm6-obe.outbound.protection.outlook.com (mail-dm6nam11lp2176.outbound.protection.outlook.com [104.47.57.176])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3h9h5hqvc6-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 13 Jul 2022 17:11:56 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Y5Hc0lnjAePS9OTwYKI1/b5FLwyx4o7+cQHtRxrO7ofo1IA9/bC8nBr/XDWb/wC5jWjd7Yf05ouBJS9ObCK27l+ufQa1/mf2mhATXo3P5uXawXbT7nd3W9b0iTbSPeDvpgh4J/nVN3RL4wGH3K4lNCX13Kvj3e0uThSmOgTV/hq5HlqqbDPbOB98+29jcz4ed4CAQidJmtYfK3lLKx9UAHnmniI//XupQkjvfBIqwKmfmAlrdzDXxbuZ3lCyFDRAKfbJRsMIuyH6Mggxn1f5sF86O86AKGYoNzrRHur92/ZnTvTbd/1ndOQ3kfDUOHOeMJMTFDy2msdh8MAeEPHXgw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=v5UNIvnA0bXP9kFSiDTNE8urwV4xU7O+B0721hOEqWQ=;
- b=eyCWyqK+aPhXtrZudbvsHU3ufsm37wtCOEg9QrzqLKrlZFO39Kra5yXdBSOsmOU/EDTLLWW4E/KnIk+ZaTQcQqWrfJNiAJq2MaJfIwjHAT20V3nfSfq38tqNzJmAR/putCS2GSAFsTpEufzQ3FD2bwjYS+ywnCIhjwQcC8hIoX5VnUVkU01smeAai30sPY9dfsyDfNs/Wo4eszhThle8VNBHm43iZYmCGGPK+QCmAQTm+f8NykTnesyPAIL9afeWOn1C72Qy2RtIpMywfjsbCkIzVr4dn6jkbNHkL8IK3VFMPLGig2TmrGOd+U5XL44wakrM0EMtRngbaggwHi/jGw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Received: from SA1PR15MB5109.namprd15.prod.outlook.com (2603:10b6:806:1dc::10)
- by MWHPR15MB1279.namprd15.prod.outlook.com (2603:10b6:320:27::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.12; Thu, 14 Jul
- 2022 00:11:54 +0000
-Received: from SA1PR15MB5109.namprd15.prod.outlook.com
- ([fe80::5de3:3999:66df:42d1]) by SA1PR15MB5109.namprd15.prod.outlook.com
- ([fe80::5de3:3999:66df:42d1%4]) with mapi id 15.20.5438.012; Thu, 14 Jul 2022
- 00:11:54 +0000
-From:   Song Liu <songliubraving@fb.com>
-To:     Steven Rostedt <rostedt@goodmis.org>
-CC:     Song Liu <song@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "andrii@kernel.org" <andrii@kernel.org>,
-        Kernel Team <Kernel-team@fb.com>,
-        "jolsa@kernel.org" <jolsa@kernel.org>,
-        "mhiramat@kernel.org" <mhiramat@kernel.org>
-Subject: Re: [PATCH v2 bpf-next 1/5] ftrace: allow customized flags for
- ftrace_direct_multi ftrace_ops
-Thread-Topic: [PATCH v2 bpf-next 1/5] ftrace: allow customized flags for
- ftrace_direct_multi ftrace_ops
-Thread-Index: AQHYdriN/yOd0MaY7kCCLNeAHt/+qa19MFsAgAAO2fE=
-Date:   Thu, 14 Jul 2022 00:11:53 +0000
-Message-ID: <0029EF24-6508-4011-B365-3E2175F9FEAB@fb.com>
+        with ESMTP id S231955AbiGNAds (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 20:33:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F4C3101C6;
+        Wed, 13 Jul 2022 17:33:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3DFA061AD5;
+        Thu, 14 Jul 2022 00:33:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1ABB0C341C0;
+        Thu, 14 Jul 2022 00:33:44 +0000 (UTC)
+Date:   Wed, 13 Jul 2022 20:33:43 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Song Liu <song@kernel.org>
+Cc:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <ast@kernel.org>,
+        <daniel@iogearbox.net>, <andrii@kernel.org>, <kernel-team@fb.com>,
+        <jolsa@kernel.org>, <mhiramat@kernel.org>
+Subject: Re: [PATCH v2 bpf-next 3/5] ftrace: introduce
+ FTRACE_OPS_FL_SHARE_IPMODIFY
+Message-ID: <20220713203343.4997eb71@rorschach.local.home>
+In-Reply-To: <20220602193706.2607681-4-song@kernel.org>
 References: <20220602193706.2607681-1-song@kernel.org>
-        <20220602193706.2607681-2-song@kernel.org>
- <20220713191846.18b05b43@gandalf.local.home>
-In-Reply-To: <20220713191846.18b05b43@gandalf.local.home>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 3e007781-cb47-4ef3-af8d-08da652d7527
-x-ms-traffictypediagnostic: MWHPR15MB1279:EE_
-x-fb-source: Internal
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: frIFmG4kWm6WYoMDkEhZx2lLWwr73uAt11UuiTppKZB02b0Kd8xU9s7vEcEQNKNKOFvQJAS0VMq3+gwEMeOO5cr1UhNbtSmzj5ybg/cQey9tpLhRk35b17rxGUPVMLw9G4hOpbaxSi0is6dmKRMfwfe6NsMm3kzOyY9AK47p4tAwDEAlHGesIAZPfPJ9xZ/81o3+B2TAN6x0jPNiEU807OR6aDPwhf4mmP9VSWhIA4uPPngfdLhY2HaPNIOHh0gA0cuXGGqoZIyqXhLBuJaSg2b8neFCcBwGaeZXDxb07asrciHB0c6sZuE3ZqwaEvUt8DcTdfjpRuPEWv2TsEfXpNm1q6IQBOMQlUVPl9znnC0x38kWrMewUehG6vvBni48RdVrklDIX3SWbOMOwAPch9b7wNXYtpWxPcAdXifANj+2VquOQQmIhnZJHlD96WoNmyA6ipV3OarVFtdliDtBxt+VY/92Ve6wSBZPmZdUGKpWcvTAjACV3t8YOu3iylzvuj0q2uCT4dRF+koqAP80q82zi4tAfGswnx2q+S5w765QCqk8c7uI76U4OIujZOCW1FspGhGsqNnHSAxEHjCgLoqye8vvK3JmTxx+VKqOS/QapVBcpXw38jlt2X79bfOIqHkAPmwODKSFc+1lCNbpvjH6/sO5uVHU3YuQdf/PZ8LCAgB2L3htJHjD67mVcskFZqDkTVRJkbFr/8Lp3WGkK2BCLM+a4k1kufUOA8oHA0uPNJSmAlXAZSYlGz+lypvBvM+5zGeJ9dJrfuANZZXzTsSMRh9m9DnslNEyPydXndLTtF5C6v7cbXVuUjXVCsBF9iaTOgQD2UskF9EEAXoeV+uu6e3JsDPUMfN8o1m5sZk=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR15MB5109.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(346002)(136003)(396003)(366004)(376002)(64756008)(53546011)(6506007)(66946007)(6916009)(66476007)(6512007)(86362001)(41300700001)(76116006)(66446008)(5660300002)(66556008)(6486002)(478600001)(54906003)(91956017)(316002)(71200400001)(122000001)(38100700002)(36756003)(38070700005)(83380400001)(2616005)(8676002)(8936002)(33656002)(2906002)(186003)(7416002)(4326008)(45980500001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?SEJqN1drSFY2b1NXT3lRbjNtR3hWYlpmay9Jby9Wa0NGWG90dVFBU1RZd05M?=
- =?utf-8?B?NWJNMVNlYjQ0QTJPQllaYWJMcmtnK3o5dnJ3T2JaMWlhSmFVa1paZlBmNU9w?=
- =?utf-8?B?SzZPNU03UUFrNi9RUSs1NWJBQXE2dS9PRFFGb3k2Y2ZKbDU4eVh0b0s3WmxZ?=
- =?utf-8?B?NjFOVG1ydkJjb1QwYWV5UmJzdWJKL2xXVmJjbnFGM09PVmo0bnh4MHo2V0Vr?=
- =?utf-8?B?WmdnMUZldGVnZkdJaVNyQnlaSWFHNUdlMVVKL0xhcjk5YVF0QnhXbzhQTnU0?=
- =?utf-8?B?S0VZcExRTEc4K3dVc0NmM29iakE3YUhRTVlXV3g5NXJyd2I0QW45TDRBbG1H?=
- =?utf-8?B?U2I2ZFhMeWxhNk8yTzN2MEVDMFg5dVZGby9DQ2p1NGEySWdyZllxTDB0RGNm?=
- =?utf-8?B?VzB5MGtFTElWVlozd08zRFZORnpZQWVsVkFWSU4zZDNlSGN1Vkp5RHBWTlh4?=
- =?utf-8?B?M1JXSVMyb0JNTDdFRkZlSSsvbVlIaWhZR2VGcGd5Zkk1VitPdFA1bVJ1bWxN?=
- =?utf-8?B?RzhRVHZJQWw1d25lV0pRMnhENWt0dldmeVZDWXRvdFFMSEZta3BTV1VZRE5r?=
- =?utf-8?B?cDk3aG9GRnFLSVZ6ZjM0dDJ2UVp4QmNXYVhVU1dySHJ1bGNaQ1hoT3ZISXBD?=
- =?utf-8?B?VThhYUFCSmxSRm1pLzdPVzY1eDRwZi8zME5Rc2Ryb2RvaVVseUdXLzArWDk1?=
- =?utf-8?B?OElxRXNnUVpKendJZk9SaUNCcHA4em5WNkJGSkFLV05veFlRYVk4MmpjNFN0?=
- =?utf-8?B?ZTg1ZzNubGsrdXNhRjVVUEcveDF5R0t1VVVMYnFEY2h5Ny9YemJ4a0c0a3ZZ?=
- =?utf-8?B?VXVHMEVsNUJKMUJDbjJjNWd1cmppYkZTaEhldzM5NmFGUHM0Tk94dWRadmZy?=
- =?utf-8?B?SkRQQnlieXBiVVc1eUtqRENjUlNYc2JtWDI4N3oxY2RJRGlONEQ0bVFvSmJa?=
- =?utf-8?B?eUpEYjJVMHJSU3cyYnIyNWxHbStiVnFJUnRibjFEYzdsbTFsRnVNV2pPRmlX?=
- =?utf-8?B?cE1UaVlHOEZ0UmlqNzFndU5SSUVlcW1SN1oybGNKV2hQNGg0SWpxOC9BckhS?=
- =?utf-8?B?TUlQZ0EyUHJJemhBQ0pHaWdYNkVnZHBTWGhPNHV4cGd5R0R0SWVBRmVaN1h6?=
- =?utf-8?B?RGorUHNwZEhTejNzOWtQeUNZS3pNV25sM3VwRHFidFJHRDhyM1hzS25SSHdh?=
- =?utf-8?B?dVBpWWZPclNLckJEbkJobWJLT3h3eW9hbGI2SWZOSzNscFVyVEdSSkx0NzlS?=
- =?utf-8?B?Qm44cjJCREo0MzVYazkvamhXM2RzenE3aFRXbU0ySDZFTlJrbVBRQVk1b29r?=
- =?utf-8?B?c0lCVmZJK1JjN2tRTTU2a3BXNmE3VmtDRmtZaC9aT0VuTThid2RKMDBmSU9W?=
- =?utf-8?B?bVZ5N2d2Mi8vWU1MTHRiRi9vSVg4aExCakpENTVURG13ci9GVDI4QUJmVjlP?=
- =?utf-8?B?VW1DeHljeXhPcVBDaVJSNWNWdklVVDZJVEl5ZzlyZXNNMFpJWHl6R0QvbEl4?=
- =?utf-8?B?U1hLRFd1TU15L0ZwMmlUc3d3alltOHN2YWxxRFlCR2V5dk50V2NNREhzNXpC?=
- =?utf-8?B?aUhKczEwK2VjS2d1bmlkTkFpcVJrU29mc1dTU2ZNNE1UQmtydXlRUjJ0WFhY?=
- =?utf-8?B?TDI5SVNLVDBzSWJqV1RIcWQ5SWpWa0RyOG1wV3RWc2J2WjFDY1QvWTJuWFRV?=
- =?utf-8?B?K1JEZTFtVkdoRnpMMHBWZDZsQUhjejhhYmJhVEIrclUzdE5nWk1MUGkyZTkz?=
- =?utf-8?B?TFB0WVZoQStnUjA0TzVaWHVSWUJBdmFOaXZzSTA3eE5rMkpQMVU0ZlVLbUEx?=
- =?utf-8?B?MUFFMDF4NzhJZDNydEx6bFp5QlNFdXlwVXArbkFOSmNWY0thNjBuV2ErUXI4?=
- =?utf-8?B?UURldkxpUFM2V2lsN1ZpaWtZV0REWlpXaVBnTG43WVY1UHpFb3IvRE01NDdw?=
- =?utf-8?B?U2drdzJNUlhEY3VYSU9JZUNoTUtwaFhhWDc0Y2hoMDNrRi9zeWFFNkdubWds?=
- =?utf-8?B?dWVOZE1JUkdnNXBLc0FIU245bC9BY2poOXltZ2NvODhydERNUjY2MHlJRk0w?=
- =?utf-8?B?Mk5TdTRsWWJ5eTFYQjRWZ24xRFI3NXRITDdncWlFYW03ZjNqSThEaHBrQWFJ?=
- =?utf-8?B?QWIwWmkrc3lmdW41WkVSYjNDdzF5OVdKdTNCaXl6d3Z4dlkrcldYMCtNelMw?=
- =?utf-8?Q?m6lU1l3CbAi8wDK9yIhij+jLNDGcCsw2iQtWSRa5kR4u?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <20220602193706.2607681-4-song@kernel.org>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-X-OriginatorOrg: fb.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SA1PR15MB5109.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3e007781-cb47-4ef3-af8d-08da652d7527
-X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Jul 2022 00:11:53.9346
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: tIgAMV26LePiBjJInNdzkUvkABZeFXjbxOsQNBdaQ37TdQzAPYK+ML/lzIjMP5OyVVNeVNkQEnMWigfYKS2KJw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1279
-X-Proofpoint-ORIG-GUID: qg0o5K149KWhqFX4l73s2dqpwWSrYEtd
-X-Proofpoint-GUID: qg0o5K149KWhqFX4l73s2dqpwWSrYEtd
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-13_13,2022-07-13_03,2022-06-22_01
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -150,35 +47,309 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCj4gT24gSnVsIDEzLCAyMDIyLCBhdCA0OjE4IFBNLCBTdGV2ZW4gUm9zdGVkdCA8cm9zdGVk
-dEBnb29kbWlzLm9yZz4gd3JvdGU6DQo+IA0KPiDvu79PbiBUaHUsIDIgSnVuIDIwMjIgMTI6Mzc6
-MDIgLTA3MDANCj4gU29uZyBMaXUgPHNvbmdAa2VybmVsLm9yZz4gd3JvdGU6DQo+IA0KPj4gVGhp
-cyBlbmFibGVzIHVzZXJzIG9mIGZ0cmFjZV9kaXJlY3RfbXVsdGkgdG8gc3BlY2lmeSB0aGUgZmxh
-Z3MgYmFzZWQgb24NCj4+IHRoZSBhY3R1YWwgdXNlIGNhc2UuIEZvciBleGFtcGxlLCBzb21lIHVz
-ZXJzIG1heSBub3Qgc2V0IGZsYWcgSVBNT0RJRlkuDQo+IA0KPiBJZiB3ZSBhcHBseSB0aGlzIHBh
-dGNoIHdpdGhvdXQgYW55IG9mIHRoZSBvdGhlcnMsIHRoZW4gd2UgYXJlIHJlbHlpbmcgb24NCj4g
-dGhlIGNhbGxlciB0byBnZXQgaXQgcmlnaHQ/DQo+IA0KPiBUaGF0IGlzLCBjYW4gd2UgcmVnaXN0
-ZXIgYSBkaXJlY3QgZnVuY3Rpb24gd2l0aCB0aGlzIGZ1bmN0aW9uIGFuZCBwaWNrIGENCj4gZnVu
-Y3Rpb24gd2l0aCBJUE1PRElGWSBhbHJlYWR5IGF0dGFjaGVkPw0KDQpZZXMsIGlmIHRoZSBkaXJl
-Y3QgZnVuY3Rpb24gZm9sbG93cyByZWdzLT5pcCwgaXQgd29ya3MuIA0KDQpGb3IgZXhhbXBsZSwg
-QlBGIHRyYW1wb2xpbmUgd2l0aCBvbmx5IGZlbnRyeSBjYWxscyB3aWxsIGp1c3Qgd29yayB3aXRo
-IG9ubHkgdGhpcyBwYXRjaC4NCg0KVGhhbmtzLA0KU29uZw0KDQo+IA0KPiAtLSBTdGV2ZQ0KPiAN
-Cj4gDQo+PiANCj4+IFNpZ25lZC1vZmYtYnk6IFNvbmcgTGl1IDxzb25nQGtlcm5lbC5vcmc+DQo+
-PiAtLS0NCj4+IGtlcm5lbC90cmFjZS9mdHJhY2UuYyB8IDUgKystLS0NCj4+IDEgZmlsZSBjaGFu
-Z2VkLCAyIGluc2VydGlvbnMoKyksIDMgZGVsZXRpb25zKC0pDQo+PiANCj4+IGRpZmYgLS1naXQg
-YS9rZXJuZWwvdHJhY2UvZnRyYWNlLmMgYi9rZXJuZWwvdHJhY2UvZnRyYWNlLmMNCj4+IGluZGV4
-IDJmY2QxNzg1N2ZmNi4uYWZlNzgyYWUyOGQzIDEwMDY0NA0KPj4gLS0tIGEva2VybmVsL3RyYWNl
-L2Z0cmFjZS5jDQo+PiArKysgYi9rZXJuZWwvdHJhY2UvZnRyYWNlLmMNCj4+IEBAIC01NDU2LDgg
-KzU0NTYsNyBAQCBpbnQgbW9kaWZ5X2Z0cmFjZV9kaXJlY3QodW5zaWduZWQgbG9uZyBpcCwNCj4+
-IH0NCj4+IEVYUE9SVF9TWU1CT0xfR1BMKG1vZGlmeV9mdHJhY2VfZGlyZWN0KTsNCj4+IA0KPj4g
-LSNkZWZpbmUgTVVMVElfRkxBR1MgKEZUUkFDRV9PUFNfRkxfSVBNT0RJRlkgfCBGVFJBQ0VfT1BT
-X0ZMX0RJUkVDVCB8IFwNCj4+IC0gICAgICAgICAgICAgRlRSQUNFX09QU19GTF9TQVZFX1JFR1Mp
-DQo+PiArI2RlZmluZSBNVUxUSV9GTEFHUyAoRlRSQUNFX09QU19GTF9ESVJFQ1QgfCBGVFJBQ0Vf
-T1BTX0ZMX1NBVkVfUkVHUykNCj4+IA0KPj4gc3RhdGljIGludCBjaGVja19kaXJlY3RfbXVsdGko
-c3RydWN0IGZ0cmFjZV9vcHMgKm9wcykNCj4+IHsNCj4+IEBAIC01NTQ3LDcgKzU1NDYsNyBAQCBp
-bnQgcmVnaXN0ZXJfZnRyYWNlX2RpcmVjdF9tdWx0aShzdHJ1Y3QgZnRyYWNlX29wcyAqb3BzLCB1
-bnNpZ25lZCBsb25nIGFkZHIpDQo+PiAgICB9DQo+PiANCj4+ICAgIG9wcy0+ZnVuYyA9IGNhbGxf
-ZGlyZWN0X2Z1bmNzOw0KPj4gLSAgICBvcHMtPmZsYWdzID0gTVVMVElfRkxBR1M7DQo+PiArICAg
-IG9wcy0+ZmxhZ3MgfD0gTVVMVElfRkxBR1M7DQo+PiAgICBvcHMtPnRyYW1wb2xpbmUgPSBGVFJB
-Q0VfUkVHU19BRERSOw0KPj4gDQo+PiAgICBlcnIgPSByZWdpc3Rlcl9mdHJhY2VfZnVuY3Rpb24o
-b3BzKTsNCj4gDQo=
+On Thu, 2 Jun 2022 12:37:04 -0700
+Song Liu <song@kernel.org> wrote:
+
+> live patch and BPF trampoline (kfunc/kretfunc in bpftrace) are important
+> features for modern systems. Currently, it is not possible to use live
+> patch and BPF trampoline on the same kernel function at the same time.
+> This is because of the resitriction that only one ftrace_ops with flag
+> FTRACE_OPS_FL_IPMODIFY on the same kernel function.
+> 
+> BPF trampoline uses direct ftrace_ops, which assumes IPMODIFY. However,
+> not all direct ftrace_ops would overwrite the actual function. This means
+> it is possible to have a non-IPMODIFY direct ftrace_ops to share the same
+> kernel function with an IPMODIFY ftrace_ops.
+> 
+> Introduce FTRACE_OPS_FL_SHARE_IPMODIFY, which allows the direct ftrace_ops
+> to share with IPMODIFY ftrace_ops. With FTRACE_OPS_FL_SHARE_IPMODIFY flag
+> set, the direct ftrace_ops would call the target function picked by the
+> IPMODIFY ftrace_ops.
+> 
+> Comment "IPMODIFY, DIRECT, and SHARE_IPMODIFY" in include/linux/ftrace.h
+> contains more information about how SHARE_IPMODIFY interacts with IPMODIFY
+> and DIRECT flags.
+> 
+> Signed-off-by: Song Liu <song@kernel.org>
+> ---
+>  include/linux/ftrace.h |  74 +++++++++++++++++
+>  kernel/trace/ftrace.c  | 179 ++++++++++++++++++++++++++++++++++++++---
+>  2 files changed, 242 insertions(+), 11 deletions(-)
+> 
+> diff --git a/include/linux/ftrace.h b/include/linux/ftrace.h
+> index 9023bf69f675..bfacf608de9c 100644
+> --- a/include/linux/ftrace.h
+> +++ b/include/linux/ftrace.h
+> @@ -98,6 +98,18 @@ static inline int ftrace_mod_get_kallsym(unsigned int symnum, unsigned long *val
+>  }
+>  #endif
+>  
+> +/*
+> + * FTRACE_OPS_CMD_* commands allow the ftrace core logic to request changes
+> + * to a ftrace_ops.
+> + *
+> + * ENABLE_SHARE_IPMODIFY - enable FTRACE_OPS_FL_SHARE_IPMODIFY.
+> + * DISABLE_SHARE_IPMODIFY - disable FTRACE_OPS_FL_SHARE_IPMODIFY.
+
+The above comment is basically:
+
+	/* Set x to 1 */
+	x = 1;
+
+Probably something like this:
+
+ * FTRACE_OPS_CMD_* commands allow the ftrace core logic to request
+   changes
+ * to a ftrace_ops. Note, the requests may fail.
+ *
+ *	ENABLE_SHARE_IPMODIFY - Request setting the ftrace ops
+ *				SHARE_IPMODIFY flag.
+ *	DISABLE_SHARE_IPMODIFY - Request disabling the ftrace ops
+ *				SHARE_IPMODIFY flag.
+
+
+> + */
+> +enum ftrace_ops_cmd {
+> +	FTRACE_OPS_CMD_ENABLE_SHARE_IPMODIFY,
+> +	FTRACE_OPS_CMD_DISABLE_SHARE_IPMODIFY,
+> +};
+> +
+>  #ifdef CONFIG_FUNCTION_TRACER
+>  
+>  extern int ftrace_enabled;
+> @@ -189,6 +201,9 @@ ftrace_func_t ftrace_ops_get_func(struct ftrace_ops *ops);
+>   *             ftrace_enabled.
+>   * DIRECT - Used by the direct ftrace_ops helper for direct functions
+>   *            (internal ftrace only, should not be used by others)
+> + * SHARE_IPMODIFY - For direct ftrace_ops only. Set when the direct function
+> + *            is ready to share same kernel function with IPMODIFY function
+> + *            (live patch, etc.).
+>   */
+>  enum {
+>  	FTRACE_OPS_FL_ENABLED			= BIT(0),
+> @@ -209,8 +224,66 @@ enum {
+>  	FTRACE_OPS_FL_TRACE_ARRAY		= BIT(15),
+>  	FTRACE_OPS_FL_PERMANENT                 = BIT(16),
+>  	FTRACE_OPS_FL_DIRECT			= BIT(17),
+> +	FTRACE_OPS_FL_SHARE_IPMODIFY		= BIT(18),
+>  };
+>  
+> +/*
+> + * IPMODIFY, DIRECT, and SHARE_IPMODIFY.
+> + *
+> + * ftrace provides IPMODIFY flag for users to replace existing kernel
+> + * function with a different version. This is achieved by setting regs->ip.
+> + * The top user of IPMODIFY is live patch.
+> + *
+> + * DIRECT allows user to load custom trampoline on top of ftrace. DIRECT
+> + * ftrace does not overwrite regs->ip. Instead, the custom trampoline is
+
+No need to state if DIRECT modifies regs->ip or not. ftrace must assume
+that it does (more below).
+
+> + * saved separately (for example, orig_ax on x86). The top user of DIRECT
+> + * is bpf trampoline.
+> + *
+> + * It is not super rare to have both live patch and bpf trampoline on the
+> + * same kernel function. Therefore, it is necessary to allow the two work
+
+					"the two to work"
+
+> + * with each other. Given that IPMODIFY and DIRECT target addressese are
+
+						"addresses"
+
+> + * saved separately, this is feasible, but we need to be careful.
+> + *
+> + * The policy between IPMODIFY and DIRECT is:
+> + *
+> + *  1. Each kernel function can only have one IPMODIFY ftrace_ops;
+> + *  2. Each kernel function can only have one DIRECT ftrace_ops;
+> + *  3. DIRECT ftrace_ops may have IPMODIFY or not;
+
+I was thinking about this more, and I think by default we should
+consider all DIRECT ftrace_ops as the same as IPMODIFY. So perhaps the
+first patch is to just remove the IPMODIFY from direct (as you did) but
+then make all checks for multiple IPMODIFY also check DIRECT as well.
+
+That is because there's no way that ftrace can verify that a direct
+trampoline modifies the IP or not. Thus, it must assume that all do.
+
+> + *  4. Each kernel function may have one non-DIRECT IPMODIFY ftrace_ops,
+> + *     and one non-IPMODIFY DIRECT ftrace_ops at the same time. This
+> + *     requires support from the DIRECT ftrace_ops. Specifically, the
+> + *     DIRECT trampoline should call the kernel function at regs->ip.
+> + *     If the DIRECT ftrace_ops supports sharing a function with ftrace_ops
+> + *     with IPMODIFY, it should set flag SHARE_IPMODIFY.
+> + *
+> + * Some DIRECT ftrace_ops has an option to enable SHARE_IPMODIFY or not.
+> + * Usually, the non-SHARE_IPMODIFY option gives better performance. To take
+> + * advantage of this performance benefit, is necessary to only enable
+
+The performance part of this comment should not be in ftrace. It's an
+implementation detail of the direct trampoline and may not even be
+accurate with other implementations.
+
+> + * SHARE_IPMODIFY only when it is on the same function as an IPMODIFY
+> + * ftrace_ops. There are two cases to consider:
+> + *
+> + *  1. IPMODIFY ftrace_ops is registered first. When the (non-IPMODIFY, and
+> + *     non-SHARE_IPMODIFY) DIRECT ftrace_ops is registered later,
+> + *     register_ftrace_direct_multi() returns -EAGAIN. If the user of
+> + *     the DIRECT ftrace_ops can support SHARE_IPMODIFY, it should enable
+> + *     SHARE_IPMODIFY and retry.
+
+If this ftrace_ops being registered can support SHARE_IPMODIFY, then it
+should have the ops_func defined, in which case, why not have it just
+call that instead of having to return -EAGAIN?
+
+
+> + *  2. (non-IPMODIFY, and non-SHARE_IPMODIFY) DIRECT ftrace_ops is
+> + *     registered first. When the IPMODIFY ftrace_ops is registered later,
+> + *     it is necessary to ask the direct ftrace_ops to enable
+> + *     SHARE_IPMODIFY support. This is achieved via ftrace_ops->ops_func
+> + *     cmd=FTRACE_OPS_CMD_ENABLE_SHARE_IPMODIFY. For more details on this
+> + *     condition, check out prepare_direct_functions_for_ipmodify().
+> + */
+> +
+> +/*
+> + * For most ftrace_ops_cmd,
+> + * Returns:
+> + *        0 - Success.
+> + *        -EBUSY - The operation cannot process
+> + *        -EAGAIN - The operation cannot process tempoorarily.
+> + */
+> +typedef int (*ftrace_ops_func_t)(struct ftrace_ops *op, enum ftrace_ops_cmd cmd);
+> +
+>  #ifdef CONFIG_DYNAMIC_FTRACE
+>  /* The hash used to know what functions callbacks trace */
+>  struct ftrace_ops_hash {
+> @@ -253,6 +326,7 @@ struct ftrace_ops {
+>  	unsigned long			trampoline;
+>  	unsigned long			trampoline_size;
+>  	struct list_head		list;
+> +	ftrace_ops_func_t		ops_func;
+>  #endif
+>  };
+>  
+> diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
+> index 6a419f6bbbf0..868bbc753803 100644
+> --- a/kernel/trace/ftrace.c
+> +++ b/kernel/trace/ftrace.c
+> @@ -1865,7 +1865,8 @@ static void ftrace_hash_rec_enable_modify(struct ftrace_ops *ops,
+>  /*
+>   * Try to update IPMODIFY flag on each ftrace_rec. Return 0 if it is OK
+>   * or no-needed to update, -EBUSY if it detects a conflict of the flag
+> - * on a ftrace_rec, and -EINVAL if the new_hash tries to trace all recs.
+> + * on a ftrace_rec, -EINVAL if the new_hash tries to trace all recs, and
+> + * -EAGAIN if the ftrace_ops need to enable SHARE_IPMODIFY.
+
+It should just call the ftrace_ops() with the command to set it. If you
+want, we could add another CMD enum that can be passed for this case.
+
+>   * Note that old_hash and new_hash has below meanings
+>   *  - If the hash is NULL, it hits all recs (if IPMODIFY is set, this is rejected)
+>   *  - If the hash is EMPTY_HASH, it hits nothing
+> @@ -1875,6 +1876,7 @@ static int __ftrace_hash_update_ipmodify(struct ftrace_ops *ops,
+>  					 struct ftrace_hash *old_hash,
+>  					 struct ftrace_hash *new_hash)
+>  {
+> +	bool is_ipmodify, is_direct, share_ipmodify;
+>  	struct ftrace_page *pg;
+>  	struct dyn_ftrace *rec, *end = NULL;
+>  	int in_old, in_new;
+> @@ -1883,7 +1885,24 @@ static int __ftrace_hash_update_ipmodify(struct ftrace_ops *ops,
+>  	if (!(ops->flags & FTRACE_OPS_FL_ENABLED))
+>  		return 0;
+>  
+> -	if (!(ops->flags & FTRACE_OPS_FL_IPMODIFY))
+> +	/*
+> +	 * The following are all the valid combinations of is_ipmodify,
+> +	 * is_direct, and share_ipmodify
+> +	 *
+> +	 *             is_ipmodify     is_direct     share_ipmodify
+> +	 *  #1              0               0                0
+> +	 *  #2              1               0                0
+> +	 *  #3              1               1                0
+
+I still think that DIRECT should automatically be considered IPMODIFY
+(at least in the view of ftrace, whether or not the direct function
+modifies the IP).
+
+> +	 *  #4              0               1                0
+> +	 *  #5              0               1                1
+> +	 */
+> +
+> +
+> +	is_ipmodify = ops->flags & FTRACE_OPS_FL_IPMODIFY;
+> +	is_direct = ops->flags & FTRACE_OPS_FL_DIRECT;
+> +
+> +	/* either ipmodify nor direct, skip */
+> +	if (!is_ipmodify && !is_direct)   /* combinations #1 */
+>  		return 0;
+>  
+>  	/*
+> @@ -1893,6 +1912,30 @@ static int __ftrace_hash_update_ipmodify(struct ftrace_ops *ops,
+>  	if (!new_hash || !old_hash)
+>  		return -EINVAL;
+>  
+> +	share_ipmodify = ops->flags & FTRACE_OPS_FL_SHARE_IPMODIFY;
+> +
+> +	/*
+> +	 * This ops itself doesn't do ip_modify and it can share a fentry
+> +	 * with other ops with ipmodify, nothing to do.
+> +	 */
+> +	if (!is_ipmodify && share_ipmodify)   /* combinations #5 */
+> +		return 0;
+> +
+
+Really, if connecting to a function that already has IPMODIFY, then the
+ops_func() needs to be called, and if the ops supports SHARED_IPMODIFY
+then it should get set and then continue. 
+
+Make sense?
+
+-- Steve
+
+> +	/*
+> +	 * Only three combinations of is_ipmodify, is_direct, and
+> +	 * share_ipmodify for the logic below:
+> +	 * #2 live patch
+> +	 * #3 direct with ipmodify
+> +	 * #4 direct without ipmodify
+> +	 *
+> +	 *             is_ipmodify     is_direct     share_ipmodify
+> +	 *  #2              1               0                0
+> +	 *  #3              1               1                0
+> +	 *  #4              0               1                0
+> +	 *
+> +	 * Only update/rollback rec->flags for is_ipmodify == 1 (#2 and #3)
+> +	 */
+> +
+>  	/* Update rec->flags */
+>  	do_for_each_ftrace_rec(pg, rec) {
+>  
+> @@ -1906,12 +1949,18 @@ static int __ftrace_hash_update_ipmodify(struct ftrace_ops *ops,
+>  			continue;
+>  
+>  		if (in_new) {
+> -			/* New entries must ensure no others are using it */
+> -			if (rec->flags & FTRACE_FL_IPMODIFY)
+> -				goto rollback;
+> -			rec->flags |= FTRACE_FL_IPMODIFY;
+> -		} else /* Removed entry */
+> +			if (rec->flags & FTRACE_FL_IPMODIFY) {
+> +				/* cannot have two ipmodify on same rec */
+> +				if (is_ipmodify)  /* combination #2 and #3 */
+> +					goto rollback;
+> +				/* let user enable share_ipmodify and retry */
+> +				return  -EAGAIN;  /* combination #4 */
+> +			} else if (is_ipmodify) {
+> +				rec->flags |= FTRACE_FL_IPMODIFY;
+> +			}
+> +		} else if (is_ipmodify) {/* Removed entry */
+>  			rec->flags &= ~FTRACE_FL_IPMODIFY;
+> +		}
+>  	} while_for_each_ftrace_rec();
+>  
+>  	return 0;
