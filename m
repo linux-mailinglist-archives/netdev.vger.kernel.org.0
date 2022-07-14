@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A958B5741EA
-	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 05:33:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45EA55741E3
+	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 05:33:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233034AbiGNDd3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jul 2022 23:33:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50090 "EHLO
+        id S232498AbiGNDdV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jul 2022 23:33:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232903AbiGNDdV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 23:33:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 964A325E98
-        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 20:33:20 -0700 (PDT)
+        with ESMTP id S229524AbiGNDdT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 23:33:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BD9A25E90
+        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 20:33:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 396AFB822A3
-        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 03:33:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50923C3411E;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A52E261E27
+        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 03:33:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE412C341CA;
         Thu, 14 Jul 2022 03:33:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657769597;
-        bh=SdkzJGJJm8cgaqgvkiup30RMYGPWm15GcbHJBLoyXhU=;
+        s=k20201202; t=1657769598;
+        bh=94QZRYo3EF3vDayeSGDrOHWCvKXA6TtzmN7HIivrV9Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VYv+77U0xwTNJFwS2RNl9+USiD5cmx9zU5pWgwKO4NZU01aAYg9VyjUpCHMyNhEYI
-         tpMEEeCyFEILmGXt7qn64wuE7HRoJA+xf0n1JlGrWkHUVl4mY/yc0TnOML08NvzMTU
-         ET3deVZOUXh4nJ+YddPwuu7wrOtg35SAgcUf3+x64qc1NiveJo0ac7OjxLHXrWJQpm
-         SjfU3OjAErVXxP/d2aShhiuOW1gP7AUTGNYEUD+fG3TSVLFB6CiQYSMWC4TH+jxG1b
-         hEI+bI/LCUTUngkPSxQhTmVwj7+9sYPdgDlZon5EHKMo8h2FaKt4fSDpclkpwj0LQv
-         K1Aa7/etpKrsw==
+        b=YAor0Pc+j4E50ss1hNK9Zm6R0eaYSmazgMvppq6WAXiyWYmOm5bzV7BBaFb4L/8ql
+         Z+5VitXuzUOI0/axZ+7qLoitwgaXTdf2yssI2JtyF8iEJ3slNwP1LyarFdGcyxjvKB
+         OU2iJD+UZBOVx1hJXdtuvA4D4792oCivG3i6nX+oUbgZviLojq7mCxJGvwNd7246rD
+         5fxx/Er4iNq6NlMT0KpiKF6clPt4WDnAPmva/AlpJQgewlvmzVleV++MRzcIzOrM31
+         AwUk97PRhwWaYkpo+RCqKhX6pJOMUBPHyS2oamn2/fgO/BZJ2WmLuIihhCrGO2fdcw
+         VzCur724t1LRg==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
         borisp@nvidia.com, john.fastabend@gmail.com, maximmi@nvidia.com,
         tariqt@nvidia.com, vfedorenko@novek.ru,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 01/11] tls: rx: allow only one reader at a time
-Date:   Wed, 13 Jul 2022 20:33:00 -0700
-Message-Id: <20220714033310.1273288-2-kuba@kernel.org>
+Subject: [PATCH net-next 02/11] tls: rx: don't try to keep the skbs always on the list
+Date:   Wed, 13 Jul 2022 20:33:01 -0700
+Message-Id: <20220714033310.1273288-3-kuba@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220714033310.1273288-1-kuba@kernel.org>
 References: <20220714033310.1273288-1-kuba@kernel.org>
@@ -55,163 +55,100 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-recvmsg() in TLS gets data from the skb list (rx_list) or fresh
-skbs we read from TCP via strparser. The former holds skbs which were
-already decrypted for peek or decrypted and partially consumed.
+I thought that having the skb either always on the ctx->rx_list
+or ctx->recv_pkt will simplify the handling, as we would not
+have to remember to flip it from one to the other on exit paths.
 
-tls_wait_data() only notices appearance of fresh skbs coming out
-of TCP (or psock). It is possible, if there is a concurrent call
-to peek() and recv() that the peek() will move the data from input
-to rx_list without recv() noticing. recv() will then read data out
-of order or never wake up.
-
-This is not a practical use case/concern, but it makes the self
-tests less reliable. This patch solves the problem by allowing
-only one reader in.
-
-Because having multiple processes calling read()/peek() is not
-normal avoid adding a lock and try to fast-path the single reader
-case.
+This became a little harder to justify with the fix for BPF
+sockmaps. Subsequent changes will make the situation even worse.
+Queue the skbs only when really needed.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- include/net/tls.h |  3 +++
- net/tls/tls_sw.c  | 61 +++++++++++++++++++++++++++++++++++++++++------
- 2 files changed, 57 insertions(+), 7 deletions(-)
+ net/tls/tls_sw.c | 23 ++++++++++++-----------
+ 1 file changed, 12 insertions(+), 11 deletions(-)
 
-diff --git a/include/net/tls.h b/include/net/tls.h
-index 8742e13bc362..e8935cfe0cd6 100644
---- a/include/net/tls.h
-+++ b/include/net/tls.h
-@@ -116,11 +116,14 @@ struct tls_sw_context_rx {
- 	void (*saved_data_ready)(struct sock *sk);
- 
- 	struct sk_buff *recv_pkt;
-+	u8 reader_present;
- 	u8 async_capable:1;
- 	u8 zc_capable:1;
-+	u8 reader_contended:1;
- 	atomic_t decrypt_pending;
- 	/* protect crypto_wait with decrypt_pending*/
- 	spinlock_t decrypt_compl_lock;
-+	struct wait_queue_head wq;
- };
- 
- struct tls_record_info {
 diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
-index 68d79ee48a56..761a63751616 100644
+index 761a63751616..acf65992aaca 100644
 --- a/net/tls/tls_sw.c
 +++ b/net/tls/tls_sw.c
-@@ -1753,6 +1753,51 @@ tls_read_flush_backlog(struct sock *sk, struct tls_prot_info *prot,
- 	sk_flush_backlog(sk);
- }
+@@ -1861,8 +1861,11 @@ int tls_sw_recvmsg(struct sock *sk,
+ 			if (psock) {
+ 				chunk = sk_msg_recvmsg(sk, psock, msg, len,
+ 						       flags);
+-				if (chunk > 0)
+-					goto leave_on_list;
++				if (chunk > 0) {
++					decrypted += chunk;
++					len -= chunk;
++					continue;
++				}
+ 			}
+ 			goto recv_end;
+ 		}
+@@ -1908,14 +1911,14 @@ int tls_sw_recvmsg(struct sock *sk,
  
-+static long tls_rx_reader_lock(struct sock *sk, struct tls_sw_context_rx *ctx,
-+			       bool nonblock)
-+{
-+	long timeo;
-+
-+	lock_sock(sk);
-+
-+	timeo = sock_rcvtimeo(sk, nonblock);
-+
-+	while (unlikely(ctx->reader_present)) {
-+		DEFINE_WAIT_FUNC(wait, woken_wake_function);
-+
-+		ctx->reader_contended = 1;
-+
-+		add_wait_queue(&ctx->wq, &wait);
-+		sk_wait_event(sk, &timeo,
-+			      !READ_ONCE(ctx->reader_present), &wait);
-+		remove_wait_queue(&ctx->wq, &wait);
-+
-+		if (!timeo)
-+			return -EAGAIN;
-+		if (signal_pending(current))
-+			return sock_intr_errno(timeo);
-+	}
-+
-+	WRITE_ONCE(ctx->reader_present, 1);
-+
-+	return timeo;
-+}
-+
-+static void tls_rx_reader_unlock(struct sock *sk, struct tls_sw_context_rx *ctx)
-+{
-+	if (unlikely(ctx->reader_contended)) {
-+		if (wq_has_sleeper(&ctx->wq))
-+			wake_up(&ctx->wq);
-+		else
-+			ctx->reader_contended = 0;
-+
-+		WARN_ON_ONCE(!ctx->reader_present);
-+	}
-+
-+	WRITE_ONCE(ctx->reader_present, 0);
-+	release_sock(sk);
-+}
-+
- int tls_sw_recvmsg(struct sock *sk,
- 		   struct msghdr *msg,
- 		   size_t len,
-@@ -1782,7 +1827,9 @@ int tls_sw_recvmsg(struct sock *sk,
- 		return sock_recv_errqueue(sk, msg, len, SOL_IP, IP_RECVERR);
+ 		ctx->recv_pkt = NULL;
+ 		__strp_unpause(&ctx->strp);
+-		__skb_queue_tail(&ctx->rx_list, skb);
  
- 	psock = sk_psock_get(sk);
--	lock_sock(sk);
-+	timeo = tls_rx_reader_lock(sk, ctx, flags & MSG_DONTWAIT);
-+	if (timeo < 0)
-+		return timeo;
- 	bpf_strp_enabled = sk_psock_strp_enabled(psock);
+ 		if (async) {
+ 			/* TLS 1.2-only, to_decrypt must be text length */
+ 			chunk = min_t(int, to_decrypt, len);
+-leave_on_list:
++put_on_rx_list:
+ 			decrypted += chunk;
+ 			len -= chunk;
++			__skb_queue_tail(&ctx->rx_list, skb);
+ 			continue;
+ 		}
+ 		/* TLS 1.3 may have updated the length by more than overhead */
+@@ -1925,8 +1928,6 @@ int tls_sw_recvmsg(struct sock *sk,
+ 			bool partially_consumed = chunk > len;
  
- 	/* If crypto failed the connection is broken */
-@@ -1801,7 +1848,6 @@ int tls_sw_recvmsg(struct sock *sk,
+ 			if (bpf_strp_enabled) {
+-				/* BPF may try to queue the skb */
+-				__skb_unlink(skb, &ctx->rx_list);
+ 				err = sk_psock_tls_strp_read(psock, skb);
+ 				if (err != __SK_PASS) {
+ 					rxm->offset = rxm->offset + rxm->full_len;
+@@ -1935,7 +1936,6 @@ int tls_sw_recvmsg(struct sock *sk,
+ 						consume_skb(skb);
+ 					continue;
+ 				}
+-				__skb_queue_tail(&ctx->rx_list, skb);
+ 			}
  
- 	target = sock_rcvlowat(sk, flags & MSG_WAITALL, len);
- 	len = len - copied;
--	timeo = sock_rcvtimeo(sk, flags & MSG_DONTWAIT);
+ 			if (partially_consumed)
+@@ -1943,23 +1943,24 @@ int tls_sw_recvmsg(struct sock *sk,
  
- 	zc_capable = !bpf_strp_enabled && !is_kvec && !is_peek &&
- 		ctx->zc_capable;
-@@ -1956,7 +2002,7 @@ int tls_sw_recvmsg(struct sock *sk,
- 	copied += decrypted;
+ 			err = skb_copy_datagram_msg(skb, rxm->offset,
+ 						    msg, chunk);
+-			if (err < 0)
++			if (err < 0) {
++				__skb_queue_tail(&ctx->rx_list, skb);
+ 				goto recv_end;
++			}
  
- end:
--	release_sock(sk);
-+	tls_rx_reader_unlock(sk, ctx);
- 	if (psock)
- 		sk_psock_put(sk, psock);
- 	return copied ? : err;
-@@ -1978,9 +2024,9 @@ ssize_t tls_sw_splice_read(struct socket *sock,  loff_t *ppos,
- 	long timeo;
- 	int chunk;
+ 			if (is_peek)
+-				goto leave_on_list;
++				goto put_on_rx_list;
  
--	lock_sock(sk);
--
--	timeo = sock_rcvtimeo(sk, flags & SPLICE_F_NONBLOCK);
-+	timeo = tls_rx_reader_lock(sk, ctx, flags & SPLICE_F_NONBLOCK);
-+	if (timeo < 0)
-+		return timeo;
+ 			if (partially_consumed) {
+ 				rxm->offset += chunk;
+ 				rxm->full_len -= chunk;
+-				goto leave_on_list;
++				goto put_on_rx_list;
+ 			}
+ 		}
  
- 	from_queue = !skb_queue_empty(&ctx->rx_list);
- 	if (from_queue) {
-@@ -2029,7 +2075,7 @@ ssize_t tls_sw_splice_read(struct socket *sock,  loff_t *ppos,
- 	}
+ 		decrypted += chunk;
+ 		len -= chunk;
  
- splice_read_end:
--	release_sock(sk);
-+	tls_rx_reader_unlock(sk, ctx);
- 	return copied ? : err;
- }
+-		__skb_unlink(skb, &ctx->rx_list);
+ 		consume_skb(skb);
  
-@@ -2371,6 +2417,7 @@ int tls_set_sw_offload(struct sock *sk, struct tls_context *ctx, int tx)
- 	} else {
- 		crypto_init_wait(&sw_ctx_rx->async_wait);
- 		spin_lock_init(&sw_ctx_rx->decrypt_compl_lock);
-+		init_waitqueue_head(&sw_ctx_rx->wq);
- 		crypto_info = &ctx->crypto_recv.info;
- 		cctx = &ctx->rx;
- 		skb_queue_head_init(&sw_ctx_rx->rx_list);
+ 		/* Return full control message to userspace before trying
 -- 
 2.36.1
 
