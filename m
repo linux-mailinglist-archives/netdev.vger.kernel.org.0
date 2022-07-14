@@ -2,54 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DFD5574DA6
-	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 14:32:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C3BC574DDC
+	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 14:39:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238762AbiGNMcV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jul 2022 08:32:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45944 "EHLO
+        id S238477AbiGNMjV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jul 2022 08:39:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239105AbiGNMcM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 08:32:12 -0400
+        with ESMTP id S239253AbiGNMjF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 08:39:05 -0400
 Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0056E3CBCE;
-        Thu, 14 Jul 2022 05:32:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5277205CC;
+        Thu, 14 Jul 2022 05:39:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
         MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
         Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
         Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
         List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=CSm2gLf4QcOqQlzgrJqL/4ORE9QT/t9M29vo0z4hgk4=; b=0GXELlLUnCCO9kXFpy1+MwJ7J0
-        Dz6QP7w4ncBpRiGBEJlBDtAWU9aywNwObKeofzSfJjk+JYzzoPslYhCYSnBaKvKpJf6ucwaW+G1fC
-        Ml9uY6ENoO5yfYlnKdCDsQymYrAYOCOZDvncWSZ+cR5ffla44Y8umY0nfqi2SWUZ/f2y/DbI6QepN
-        02N2yZwy2S3ts1dBMX8m5zEHf3K1aBWZuJicB/QNvSDwaB69KXivWNldnJH5/cr6csCYPZjwj9M3u
-        H49T9Yv2+GFVWcIRxARh7Mp1sXSU2eyh/d1tLMsCGc/wwt53trDIgi+Y1GQsJ5bY1a6yqkD57NJhl
-        zUDwgPUg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33334)
+        bh=Xkzo1+jLdTW3x5JYk91+0YIKJPcQat2K2Pu8MNHVjIk=; b=fm00aGxYAWOz/V5wq0e/7M+CSX
+        cxK+ClAkV4i4c57CkoufhpM9hvmKH5SpHaP+F48llBMpZpUCbGd32M2EbpBXyunIjx4MEbM0GtDOu
+        vCFQG2kyGoXzC0MfaxLc4xvyFfZJfoj/C+7wTyxmfyU9BKc+cupqhomFTwczXTkAYjFYehq9qZ+2m
+        6Kx12pm9bELbHJEyHbyAt7DOqeaUnWoa7Z1JqULzAMT/Oy6VBZPHOmV7lJIoI25rbJ/+hHeC1/V98
+        w6hvIyZ7LoeXztI5bQZ9s/yRuWeaAE9P2oStSMqxKaX6m41638joLshSNTn6FwwDYtk9e0gM05suP
+        iXa8RPMA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33338)
         by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <linux@armlinux.org.uk>)
-        id 1oBy0k-0005li-H5; Thu, 14 Jul 2022 13:32:06 +0100
+        id 1oBy7S-0005nL-4f; Thu, 14 Jul 2022 13:39:02 +0100
 Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
         (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1oBy0h-0006bb-VK; Thu, 14 Jul 2022 13:32:03 +0100
-Date:   Thu, 14 Jul 2022 13:32:03 +0100
+        id 1oBy7Q-0006bs-CC; Thu, 14 Jul 2022 13:39:00 +0100
+Date:   Thu, 14 Jul 2022 13:39:00 +0100
 From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Marcin Wojtas <mw@semihalf.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        olteanv@gmail.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, jaz@semihalf.com,
-        tn@semihalf.com
-Subject: Re: [net-next: PATCH] net: dsa: mv88e6xxx: fix speed setting for
- CPU/DSA ports
-Message-ID: <YtAMw7Sp06Kiv9PK@shell.armlinux.org.uk>
-References: <20220714010021.1786616-1-mw@semihalf.com>
+To:     Oleksandr Mazur <oleksandr.mazur@plvision.eu>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        Yevhen Orlov <yevhen.orlov@plvision.eu>,
+        Taras Chornyi <taras.chornyi@plvision.eu>
+Subject: Re: [PATCH V2 net-next] net: marvell: prestera: add phylink support
+Message-ID: <YtAOZGLR1a74FnoQ@shell.armlinux.org.uk>
+References: <20220713172013.29531-1-oleksandr.mazur@plvision.eu>
+ <Ys8lgQGBsvWAtXDZ@shell.armlinux.org.uk>
+ <Ys8+qT6ED4dty+3i@lunn.ch>
+ <GV1P190MB2019C2CFF4AB6934E8752A32E4889@GV1P190MB2019.EURP190.PROD.OUTLOOK.COM>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220714010021.1786616-1-mw@semihalf.com>
+In-Reply-To: <GV1P190MB2019C2CFF4AB6934E8752A32E4889@GV1P190MB2019.EURP190.PROD.OUTLOOK.COM>
 Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
@@ -60,31 +66,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 14, 2022 at 03:00:21AM +0200, Marcin Wojtas wrote:
-> Commit 3c783b83bd0f ("net: dsa: mv88e6xxx: get rid of SPEED_MAX setting")
-> stopped relying on SPEED_MAX constant and hardcoded speed settings
-> for the switch ports and rely on phylink configuration.
+On Thu, Jul 14, 2022 at 08:56:26AM +0000, Oleksandr Mazur wrote:
+> Hello Andrew, Russel,
+> Thanks for the input and sorry for the inconviniences.
 > 
-> It turned out, however, that when the relevant code is called,
-> the mac_capabilites of CPU/DSA port remain unset.
-> mv88e6xxx_setup_port() is called via mv88e6xxx_setup() in
-> dsa_tree_setup_switches(), which precedes setting the caps in
-> phylink_get_caps down in the chain of dsa_tree_setup_ports().
+> >First question which applies to everything in this patch is - why make
+> >phylink conditional for this driver?
 > 
-> As a result the mac_capabilites are 0 and the default speed for CPU/DSA
-> port is 10M at the start. To fix that execute phylink_get_caps() callback
-> which fills port's mac_capabilities before they are processed.
+> 1. As for the phylink ifdefs:
+> The original idea was to support mac config on devices (DB boards) that don't have full sfp support on board, however we scrapped out
+> this idea as we could simply use fixed-link DTS configs; also due to this solution being non-upstream-friendly.
+> Please note that V2 holds no phylink ifdefs;
+
+I didn't specifically ask about the ifdefs - I asked the general
+question about "why make phylink conditional for this driver".
+Yes, v1 had ifdefs. v2 does not, but phylink is _still_ conditional.
+You are introduing lots of this pattern of code:
+
+	if (blah->phy_link)
+		do something phylink related
+	else
+		do something else
+
+And I want to know why.
+
+> >In SGMII mode, it is normal for the advertising
+> >mask to indicate the media modes on the PHY to advertise
+> 2. As for the SGMII mode, yes, Russel, you're right; V3 will hold a fix for this, and keep the inband enabled for SGMII.
 > 
-> Fixes: 3c783b83bd0f ("net: dsa: mv88e6xxx: get rid of SPEED_MAX setting")
-> Signed-off-by: Marcin Wojtas <mw@semihalf.com>
+> >No way to restart 1000base-X autoneg?
+> 3. As for AN restart, no, it's not yet supported by our FW as of now.
 
-Please don't merge this - the plan is to submit the RFC series I sent on
-Wednesday which deletes this code, and I'd rather not re-spin the series
-and go through the testing again because someone else changed the code.
+Maybe put a comment in the code to that effect?
 
-Marcin - please can you test with my RFC series, which can be found at:
-
-https://lore.kernel.org/all/Ys7RdzGgHbYiPyB1@shell.armlinux.org.uk/
+> >I think you should be calling phylink_mac_change() here, rather than
+> >below.
+> 
+> 4. V3 is gonna fix this, thanks for the input.
 
 Thanks.
 
