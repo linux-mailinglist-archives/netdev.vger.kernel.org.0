@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DB71E57415F
-	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 04:15:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80009574164
+	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 04:16:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230465AbiGNCPw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jul 2022 22:15:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60686 "EHLO
+        id S231980AbiGNCQL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jul 2022 22:16:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229441AbiGNCPv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 22:15:51 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A01481DA6A;
-        Wed, 13 Jul 2022 19:15:49 -0700 (PDT)
-Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.54])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Ljyh81jWPz1L8wT;
-        Thu, 14 Jul 2022 10:13:12 +0800 (CST)
+        with ESMTP id S231311AbiGNCQI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 22:16:08 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71F1F1E3F5;
+        Wed, 13 Jul 2022 19:16:06 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.53])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LjykN2DFgzFq1x;
+        Thu, 14 Jul 2022 10:15:08 +0800 (CST)
 Received: from dggpemm500019.china.huawei.com (7.185.36.180) by
- dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.2375.24; Thu, 14 Jul 2022 10:15:47 +0800
 Received: from k04.huawei.com (10.67.174.115) by
@@ -38,9 +38,9 @@ CC:     Alexei Starovoitov <ast@kernel.org>,
         KP Singh <kpsingh@kernel.org>,
         "Jean-Philippe Brucker" <jean-philippe@linaro.org>,
         Pu Lehui <pulehui@huawei.com>
-Subject: [PATCH bpf-next v2 1/3] samples: bpf: Fix cross-compiling error by using bootstrap bpftool
-Date:   Thu, 14 Jul 2022 10:46:10 +0800
-Message-ID: <20220714024612.944071-2-pulehui@huawei.com>
+Subject: [PATCH bpf-next v2 2/3] tools: runqslower: build and use lightweight bootstrap version of bpftool
+Date:   Thu, 14 Jul 2022 10:46:11 +0800
+Message-ID: <20220714024612.944071-3-pulehui@huawei.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220714024612.944071-1-pulehui@huawei.com>
 References: <20220714024612.944071-1-pulehui@huawei.com>
@@ -60,39 +60,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, when cross compiling bpf samples, the host side cannot
-use arch-specific bpftool to generate vmlinux.h or skeleton. Since
-samples/bpf use bpftool for vmlinux.h, skeleton, and static linking
-only, we can use lightweight bootstrap version of bpftool to handle
-these, and it's always host-native.
+tools/runqslower use bpftool for vmlinux.h, skeleton, and static linking
+only. So we can use lightweight bootstrap version of bpftool to handle
+these, and it will be faster.
 
 Signed-off-by: Pu Lehui <pulehui@huawei.com>
 Suggested-by: Andrii Nakryiko <andrii@kernel.org>
 ---
- samples/bpf/Makefile | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+ tools/bpf/runqslower/Makefile | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
-index 5002a5b9a7da..727da3c5879b 100644
---- a/samples/bpf/Makefile
-+++ b/samples/bpf/Makefile
-@@ -282,12 +282,10 @@ $(LIBBPF): $(wildcard $(LIBBPF_SRC)/*.[ch] $(LIBBPF_SRC)/Makefile) | $(LIBBPF_OU
+diff --git a/tools/bpf/runqslower/Makefile b/tools/bpf/runqslower/Makefile
+index da6de16a3dfb..8b3d87b82b7a 100644
+--- a/tools/bpf/runqslower/Makefile
++++ b/tools/bpf/runqslower/Makefile
+@@ -4,7 +4,7 @@ include ../../scripts/Makefile.include
+ OUTPUT ?= $(abspath .output)/
  
- BPFTOOLDIR := $(TOOLS_PATH)/bpf/bpftool
- BPFTOOL_OUTPUT := $(abspath $(BPF_SAMPLES_PATH))/bpftool
--BPFTOOL := $(BPFTOOL_OUTPUT)/bpftool
--$(BPFTOOL): $(LIBBPF) $(wildcard $(BPFTOOLDIR)/*.[ch] $(BPFTOOLDIR)/Makefile) | $(BPFTOOL_OUTPUT)
--	    $(MAKE) -C $(BPFTOOLDIR) srctree=$(BPF_SAMPLES_PATH)/../../ \
--		OUTPUT=$(BPFTOOL_OUTPUT)/ \
--		LIBBPF_OUTPUT=$(LIBBPF_OUTPUT)/ \
--		LIBBPF_DESTDIR=$(LIBBPF_DESTDIR)/
-+BPFTOOL := $(BPFTOOL_OUTPUT)/bootstrap/bpftool
-+$(BPFTOOL): $(wildcard $(BPFTOOLDIR)/*.[ch] $(BPFTOOLDIR)/Makefile) | $(BPFTOOL_OUTPUT)
-+	$(MAKE) -C $(BPFTOOLDIR) srctree=$(BPF_SAMPLES_PATH)/../../ 		\
-+		OUTPUT=$(BPFTOOL_OUTPUT)/ bootstrap
+ BPFTOOL_OUTPUT := $(OUTPUT)bpftool/
+-DEFAULT_BPFTOOL := $(BPFTOOL_OUTPUT)bpftool
++DEFAULT_BPFTOOL := $(BPFTOOL_OUTPUT)bootstrap/bpftool
+ BPFTOOL ?= $(DEFAULT_BPFTOOL)
+ LIBBPF_SRC := $(abspath ../../lib/bpf)
+ BPFOBJ_OUTPUT := $(OUTPUT)libbpf/
+@@ -86,6 +86,5 @@ $(BPFOBJ): $(wildcard $(LIBBPF_SRC)/*.[ch] $(LIBBPF_SRC)/Makefile) | $(BPFOBJ_OU
+ 	$(Q)$(MAKE) $(submake_extras) -C $(LIBBPF_SRC) OUTPUT=$(BPFOBJ_OUTPUT) \
+ 		    DESTDIR=$(BPFOBJ_OUTPUT) prefix= $(abspath $@) install_headers
  
- $(LIBBPF_OUTPUT) $(BPFTOOL_OUTPUT):
- 	$(call msg,MKDIR,$@)
+-$(DEFAULT_BPFTOOL): $(BPFOBJ) | $(BPFTOOL_OUTPUT)
+-	$(Q)$(MAKE) $(submake_extras) -C ../bpftool OUTPUT=$(BPFTOOL_OUTPUT)   \
+-		    ARCH= CROSS_COMPILE= CC=$(HOSTCC) LD=$(HOSTLD)
++$(DEFAULT_BPFTOOL): | $(BPFTOOL_OUTPUT)
++	$(Q)$(MAKE) $(submake_extras) -C ../bpftool OUTPUT=$(BPFTOOL_OUTPUT) bootstrap
 -- 
 2.25.1
 
