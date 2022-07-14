@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 107775741E8
-	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 05:33:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DD5A5741EC
+	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 05:33:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233039AbiGNDda (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jul 2022 23:33:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50108 "EHLO
+        id S229914AbiGNDdd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jul 2022 23:33:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232912AbiGNDdW (ORCPT
+        with ESMTP id S232924AbiGNDdW (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 23:33:22 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42A5E25EA7
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB11825E90
         for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 20:33:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 14E3761E28
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8815361E3A
         for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 03:33:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 249CBC341CD;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A096C341C6;
         Thu, 14 Jul 2022 03:33:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1657769600;
-        bh=Q7qhf6HLe6IvzvFmtRuSS/427z0Ba5AY9s2LHiX7bKs=;
+        bh=/6+j9lctc9xCnm4U33xN+etCtEwtQtLD9X7ObhC+yoU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fsFb9zbUUqVWsBWagXlFat6LMGz5xzoZcD73vEEiPggdVPHbYP5WkeXLgIxK/LFFZ
-         JEpnRs1R5/pEVKMpRJZ5GsycuYTS6rWIlW1VN9vkqDCwJkllWZKxnCepEQwW40M7YT
-         OHMNuVIuVZ9JQ2AavWTQll+hr2IXgPRN2GqpcEg54ijPQbIadVnNIy/Lcd8WoMH4rE
-         fqS1ZbGpt180gixVL9NWx0+SxaY7XIvv1ep/ATO9dVLx7IlHhgqpfdVo0rqIy3VVv7
-         C4keo9Ud6Ir/OtTmjFYMLk0OM2+5ROV3zfnY7aQERwkx95/rJDjlwdKSNqyGSB6VxQ
-         hRbkvpioPPPoA==
+        b=F5xHM/idZX9dL7oDeglx4BSjYyg2ZU6aCYYWItbI1tHxRa9HSsjQOfawCUBl6QwXz
+         g1IIKnjjG8M1ISrzox0OoufXdsoP0cBppwetob4nBez9sZa/RAegHgJ7XEJwmxrQ1B
+         9tC62Ct6r4++t76Pj+07xofE2UbMDLWdwuGP4A4UPUPrCDk1jorWHNqIYftarQeC6x
+         lbeqZTHI58QJSBMVNl1jijFigJbpi9v88yk03j5nEaaEPp3YlLrD5ent1TDuufVMit
+         MzdnujNwPL0twDfpCD4T5/r1dp9Tbu5GGL49RX3UWuVYiS9BljHcWc3o9cvdWSbaCp
+         w2yMJo/E8fGkg==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
         borisp@nvidia.com, john.fastabend@gmail.com, maximmi@nvidia.com,
         tariqt@nvidia.com, vfedorenko@novek.ru,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 07/11] tls: rx: return the decrypted skb via darg
-Date:   Wed, 13 Jul 2022 20:33:06 -0700
-Message-Id: <20220714033310.1273288-8-kuba@kernel.org>
+Subject: [PATCH net-next 08/11] tls: rx: async: adjust record geometry immediately
+Date:   Wed, 13 Jul 2022 20:33:07 -0700
+Message-Id: <20220714033310.1273288-9-kuba@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220714033310.1273288-1-kuba@kernel.org>
 References: <20220714033310.1273288-1-kuba@kernel.org>
@@ -55,184 +55,138 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Instead of using ctx->recv_pkt after decryption read the skb
-from darg.skb. This moves the decision of what the "output skb"
-is to the decrypt handlers. For now after decrypt handler returns
-successfully ctx->recv_pkt is simply moved to darg.skb, but it
-will change soon.
+Async crypto TLS Rx currently waits for crypto to be done
+in order to strip the TLS header and tailer. Simplify
+the code by moving the pointers immediately, since only
+TLS 1.2 is supported here there is no message padding.
 
-Note that tls_decrypt_sg() cannot clear the ctx->recv_pkt
-because it gets called to re-encrypt (i.e. by the device offload).
-So we need an awkward temporary if() in tls_rx_one_record().
+This simplifies the decryption into a new skb in the next
+patch as we don't have to worry about input vs output
+skb in the decrypt_done() handler any more.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- net/tls/tls_sw.c | 49 ++++++++++++++++++++++++++++++++++++++----------
- 1 file changed, 39 insertions(+), 10 deletions(-)
+ net/tls/tls_sw.c | 49 ++++++++++--------------------------------------
+ 1 file changed, 10 insertions(+), 39 deletions(-)
 
 diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
-index 6205ad1a84c7..6a9875456f84 100644
+index 6a9875456f84..09fe2cfff51a 100644
 --- a/net/tls/tls_sw.c
 +++ b/net/tls/tls_sw.c
-@@ -47,9 +47,13 @@
- #include "tls.h"
+@@ -184,39 +184,22 @@ static void tls_decrypt_done(struct crypto_async_request *req, int err)
+ 	struct scatterlist *sgin = aead_req->src;
+ 	struct tls_sw_context_rx *ctx;
+ 	struct tls_context *tls_ctx;
+-	struct tls_prot_info *prot;
+ 	struct scatterlist *sg;
+-	struct sk_buff *skb;
+ 	unsigned int pages;
++	struct sock *sk;
  
- struct tls_decrypt_arg {
-+	struct_group(inargs,
- 	bool zc;
- 	bool async;
- 	u8 tail;
-+	);
-+
-+	struct sk_buff *skb;
- };
+-	skb = (struct sk_buff *)req->data;
+-	tls_ctx = tls_get_ctx(skb->sk);
++	sk = (struct sock *)req->data;
++	tls_ctx = tls_get_ctx(sk);
+ 	ctx = tls_sw_ctx_rx(tls_ctx);
+-	prot = &tls_ctx->prot_info;
  
- struct tls_decrypt_ctx {
-@@ -1412,6 +1416,7 @@ static int tls_setup_from_iter(struct iov_iter *from,
-  * -------------------------------------------------------------------
-  *    zc | Zero-copy decrypt allowed | Zero-copy performed
-  * async | Async decrypt allowed     | Async crypto used / in progress
-+ *   skb |            *              | Output skb
-  */
+ 	/* Propagate if there was an err */
+ 	if (err) {
+ 		if (err == -EBADMSG)
+-			TLS_INC_STATS(sock_net(skb->sk),
+-				      LINUX_MIB_TLSDECRYPTERROR);
++			TLS_INC_STATS(sock_net(sk), LINUX_MIB_TLSDECRYPTERROR);
+ 		ctx->async_wait.err = err;
+-		tls_err_abort(skb->sk, err);
+-	} else {
+-		struct strp_msg *rxm = strp_msg(skb);
+-
+-		/* No TLS 1.3 support with async crypto */
+-		WARN_ON(prot->tail_size);
+-
+-		rxm->offset += prot->prepend_size;
+-		rxm->full_len -= prot->overhead_size;
++		tls_err_abort(sk, err);
+ 	}
  
- /* This function decrypts the input skb into either out_iov or in out_sg
-@@ -1551,12 +1556,17 @@ static int tls_decrypt_sg(struct sock *sk, struct iov_iter *out_iov,
- 	/* Prepare and submit AEAD request */
- 	err = tls_do_decryption(sk, skb, sgin, sgout, dctx->iv,
- 				data_len + prot->tail_size, aead_req, darg);
-+	if (err)
-+		goto exit_free_pages;
-+
-+	darg->skb = tls_strp_msg(ctx);
- 	if (darg->async)
- 		return 0;
- 
- 	if (prot->tail_size)
- 		darg->tail = dctx->tail;
- 
-+exit_free_pages:
- 	/* Release the pages in case iov was mapped to pages */
- 	for (; pages > 0; pages--)
- 		put_page(sg_page(&sgout[pages]));
-@@ -1569,6 +1579,7 @@ static int
- tls_decrypt_device(struct sock *sk, struct tls_context *tls_ctx,
- 		   struct tls_decrypt_arg *darg)
- {
-+	struct tls_sw_context_rx *ctx = tls_sw_ctx_rx(tls_ctx);
- 	int err;
- 
- 	if (tls_ctx->rx_conf != TLS_HW)
-@@ -1580,6 +1591,8 @@ tls_decrypt_device(struct sock *sk, struct tls_context *tls_ctx,
- 
- 	darg->zc = false;
- 	darg->async = false;
-+	darg->skb = tls_strp_msg(ctx);
-+	ctx->recv_pkt = NULL;
- 	return 1;
+-	/* After using skb->sk to propagate sk through crypto async callback
+-	 * we need to NULL it again.
+-	 */
+-	skb->sk = NULL;
+-
+-
+ 	/* Free the destination pages if skb was not decrypted inplace */
+ 	if (sgout != sgin) {
+ 		/* Skip the first S/G entry as it points to AAD */
+@@ -236,7 +219,6 @@ static void tls_decrypt_done(struct crypto_async_request *req, int err)
  }
  
-@@ -1604,8 +1617,11 @@ static int tls_rx_one_record(struct sock *sk, struct iov_iter *dest,
+ static int tls_do_decryption(struct sock *sk,
+-			     struct sk_buff *skb,
+ 			     struct scatterlist *sgin,
+ 			     struct scatterlist *sgout,
+ 			     char *iv_recv,
+@@ -256,16 +238,9 @@ static int tls_do_decryption(struct sock *sk,
+ 			       (u8 *)iv_recv);
+ 
+ 	if (darg->async) {
+-		/* Using skb->sk to push sk through to crypto async callback
+-		 * handler. This allows propagating errors up to the socket
+-		 * if needed. It _must_ be cleared in the async handler
+-		 * before consume_skb is called. We _know_ skb->sk is NULL
+-		 * because it is a clone from strparser.
+-		 */
+-		skb->sk = sk;
+ 		aead_request_set_callback(aead_req,
+ 					  CRYPTO_TFM_REQ_MAY_BACKLOG,
+-					  tls_decrypt_done, skb);
++					  tls_decrypt_done, sk);
+ 		atomic_inc(&ctx->decrypt_pending);
+ 	} else {
+ 		aead_request_set_callback(aead_req,
+@@ -1554,7 +1529,7 @@ static int tls_decrypt_sg(struct sock *sk, struct iov_iter *out_iov,
+ 	}
+ 
+ 	/* Prepare and submit AEAD request */
+-	err = tls_do_decryption(sk, skb, sgin, sgout, dctx->iv,
++	err = tls_do_decryption(sk, sgin, sgout, dctx->iv,
+ 				data_len + prot->tail_size, aead_req, darg);
+ 	if (err)
+ 		goto exit_free_pages;
+@@ -1617,11 +1592,8 @@ static int tls_rx_one_record(struct sock *sk, struct iov_iter *dest,
  			TLS_INC_STATS(sock_net(sk), LINUX_MIB_TLSDECRYPTERROR);
  		return err;
  	}
--	if (darg->async)
-+	if (darg->async) {
-+		if (darg->skb == ctx->recv_pkt)
-+			ctx->recv_pkt = NULL;
- 		goto decrypt_next;
-+	}
+-	if (darg->async) {
+-		if (darg->skb == ctx->recv_pkt)
+-			ctx->recv_pkt = NULL;
+-		goto decrypt_next;
+-	}
++	if (darg->async)
++		goto decrypt_done;
  	/* If opportunistic TLS 1.3 ZC failed retry without ZC */
  	if (unlikely(darg->zc && prot->version == TLS_1_3_VERSION &&
  		     darg->tail != TLS_RECORD_TYPE_DATA)) {
-@@ -1616,12 +1632,17 @@ static int tls_rx_one_record(struct sock *sk, struct iov_iter *dest,
+@@ -1632,10 +1604,10 @@ static int tls_rx_one_record(struct sock *sk, struct iov_iter *dest,
  		return tls_rx_one_record(sk, dest, darg);
  	}
  
-+	if (darg->skb == ctx->recv_pkt)
-+		ctx->recv_pkt = NULL;
-+
- decrypt_done:
--	pad = tls_padding_length(prot, ctx->recv_pkt, darg);
--	if (pad < 0)
-+	pad = tls_padding_length(prot, darg->skb, darg);
-+	if (pad < 0) {
-+		consume_skb(darg->skb);
- 		return pad;
-+	}
++decrypt_done:
+ 	if (darg->skb == ctx->recv_pkt)
+ 		ctx->recv_pkt = NULL;
  
--	rxm = strp_msg(ctx->recv_pkt);
-+	rxm = strp_msg(darg->skb);
+-decrypt_done:
+ 	pad = tls_padding_length(prot, darg->skb, darg);
+ 	if (pad < 0) {
+ 		consume_skb(darg->skb);
+@@ -1646,7 +1618,6 @@ static int tls_rx_one_record(struct sock *sk, struct iov_iter *dest,
  	rxm->full_len -= pad;
  	rxm->offset += prot->prepend_size;
  	rxm->full_len -= prot->overhead_size;
-@@ -1663,6 +1684,7 @@ static int tls_record_content_type(struct msghdr *msg, struct tls_msg *tlm,
+-decrypt_next:
+ 	tls_advance_record_sn(sk, prot, &tls_ctx->rx);
  
- static void tls_rx_rec_done(struct tls_sw_context_rx *ctx)
- {
-+	consume_skb(ctx->recv_pkt);
- 	ctx->recv_pkt = NULL;
- 	__strp_unpause(&ctx->strp);
- }
-@@ -1872,7 +1894,7 @@ int tls_sw_recvmsg(struct sock *sk,
- 		ctx->zc_capable;
- 	decrypted = 0;
- 	while (len && (decrypted + copied < target || ctx->recv_pkt)) {
--		struct tls_decrypt_arg darg = {};
-+		struct tls_decrypt_arg darg;
- 		int to_decrypt, chunk;
- 
- 		err = tls_rx_rec_wait(sk, psock, flags & MSG_DONTWAIT, timeo);
-@@ -1889,9 +1911,10 @@ int tls_sw_recvmsg(struct sock *sk,
- 			goto recv_end;
- 		}
- 
--		skb = ctx->recv_pkt;
--		rxm = strp_msg(skb);
--		tlm = tls_msg(skb);
-+		memset(&darg.inargs, 0, sizeof(darg.inargs));
-+
-+		rxm = strp_msg(ctx->recv_pkt);
-+		tlm = tls_msg(ctx->recv_pkt);
- 
- 		to_decrypt = rxm->full_len - prot->overhead_size;
- 
-@@ -1911,6 +1934,10 @@ int tls_sw_recvmsg(struct sock *sk,
- 			goto recv_end;
- 		}
- 
-+		skb = darg.skb;
-+		rxm = strp_msg(skb);
-+		tlm = tls_msg(skb);
-+
- 		async |= darg.async;
- 
- 		/* If the type of records being processed is not known yet,
-@@ -2051,21 +2078,23 @@ ssize_t tls_sw_splice_read(struct socket *sock,  loff_t *ppos,
- 	if (!skb_queue_empty(&ctx->rx_list)) {
- 		skb = __skb_dequeue(&ctx->rx_list);
- 	} else {
--		struct tls_decrypt_arg darg = {};
-+		struct tls_decrypt_arg darg;
- 
- 		err = tls_rx_rec_wait(sk, NULL, flags & SPLICE_F_NONBLOCK,
- 				      timeo);
- 		if (err <= 0)
- 			goto splice_read_end;
- 
-+		memset(&darg.inargs, 0, sizeof(darg.inargs));
-+
- 		err = tls_rx_one_record(sk, NULL, &darg);
- 		if (err < 0) {
- 			tls_err_abort(sk, -EBADMSG);
- 			goto splice_read_end;
- 		}
- 
--		skb = ctx->recv_pkt;
- 		tls_rx_rec_done(ctx);
-+		skb = darg.skb;
- 	}
- 
- 	rxm = strp_msg(skb);
+ 	return 0;
 -- 
 2.36.1
 
