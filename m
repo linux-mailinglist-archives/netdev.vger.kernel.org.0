@@ -2,56 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 51FC5574F14
-	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 15:23:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 609D3574F19
+	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 15:24:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239794AbiGNNXJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jul 2022 09:23:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49274 "EHLO
+        id S238800AbiGNNYt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jul 2022 09:24:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239760AbiGNNWs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 09:22:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0840C61D5E;
-        Thu, 14 Jul 2022 06:22:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 30D8362063;
-        Thu, 14 Jul 2022 13:22:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74BF2C34114;
-        Thu, 14 Jul 2022 13:22:17 +0000 (UTC)
-Date:   Thu, 14 Jul 2022 09:22:15 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Song Liu <songliubraving@fb.com>
-Cc:     Song Liu <song@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "andrii@kernel.org" <andrii@kernel.org>,
-        Kernel Team <Kernel-team@fb.com>,
-        "jolsa@kernel.org" <jolsa@kernel.org>,
-        "mhiramat@kernel.org" <mhiramat@kernel.org>
-Subject: Re: [PATCH v2 bpf-next 1/5] ftrace: allow customized flags for
- ftrace_direct_multi ftrace_ops
-Message-ID: <20220714092215.149d4823@gandalf.local.home>
-In-Reply-To: <BDED3B27-B42F-44AD-904E-010752462A67@fb.com>
-References: <20220602193706.2607681-1-song@kernel.org>
-        <20220602193706.2607681-2-song@kernel.org>
-        <20220713191846.18b05b43@gandalf.local.home>
-        <0029EF24-6508-4011-B365-3E2175F9FEAB@fb.com>
-        <20220713203841.76d66245@rorschach.local.home>
-        <C2FCCC9B-5F7D-4BBF-8410-67EA79166909@fb.com>
-        <20220713225511.70d03fc6@gandalf.local.home>
-        <BDED3B27-B42F-44AD-904E-010752462A67@fb.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,
+        with ESMTP id S239612AbiGNNYd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 09:24:33 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CA861EC46
+        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 06:23:56 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id f2so2553057wrr.6
+        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 06:23:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-powerpc-org.20210112.gappssmtp.com; s=20210112;
+        h=from:to:subject:date:message-id;
+        bh=SiUSVLAnvVeI5u+hwMpEBXSKNBAd6XuAgwmDbQkb2+k=;
+        b=MF2P7I0Ginwmsdxmmi/Yd69qIq3iwQ35n847hudt5AGKrtK+E7zvcbs5QeELkSebfw
+         /4N3ALBc53D6x3I9pDT30B9WDBZBCkvFgB1wxzoPtsnWF8KWVu63iTYNanQutQEuduOs
+         QmouK3JqmrVxm1ArjivOlUhkLmJ3RNsasoIATEbzOCXnp5oPRfH34ISEYwuIv235wAVC
+         x3WOrQf5EkhIXVJNzNosx0IPX0QMLpHoek/W6jdJitQjhHaxDLGP3QDBTJGy5StEdttZ
+         97kEZoEQW4NhUbbCs2ZqDTXqKYhDj6Vp+1ovnfNDxQaU7kaDbmDHbLlervsws6b5zzg8
+         BM3w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id;
+        bh=SiUSVLAnvVeI5u+hwMpEBXSKNBAd6XuAgwmDbQkb2+k=;
+        b=5TAoLGfxF8ZBg6Z+GnnmAm9FcS0Em+82b+YQEEAhnc44LSCOVdoQePmzm8IzbDQfyB
+         tP8fkMjq/rG9Wdkl7yEoHAk769y4yl4SE6WPttZntcO9ZUL75wBo1nyWzeeR+aKhYs8E
+         mAdIPUsD9XMEx/IKGhjOtDdlUZbKBgavxVD/FZVdBFo/3XZ+PJCe9UMjydhYguQjiyou
+         hJc3aBvb75sCKSkoXg6MrHd2LTWKRJ1Q0qB8YTPZFUsg1cXdFfRBQCU4zjKZL7Bq8OQa
+         LtkX0UlUDNP1wOm2ZzVslsP2FcsD3ipQzBdY4suM//e5dTe+dyDxlSwtp9VEYR5JQOkC
+         nwCA==
+X-Gm-Message-State: AJIora9bzQA4EfNHZKj1JEx39bCj/0uQtta5+gJAQO/3LpP/gDdXDRaA
+        CBB9u+exCh9Y+WtthuMg5GF5KRVffVMoDmLDD0g=
+X-Google-Smtp-Source: AGRyM1tAEl/NXP6JN1bElUNcQcbAbQ0hU7fg2/J8KaRXncBRyXFqZbF8C9wtN1vIBdPsC24CQ90/Ew==
+X-Received: by 2002:a05:6000:1085:b0:21d:7afc:1424 with SMTP id y5-20020a056000108500b0021d7afc1424mr8281387wrw.553.1657805034611;
+        Thu, 14 Jul 2022 06:23:54 -0700 (PDT)
+Received: from localhost.localdomain ([5.35.12.50])
+        by smtp.gmail.com with ESMTPSA id j27-20020a05600c1c1b00b0039c4ba160absm12229783wms.2.2022.07.14.06.23.54
+        for <netdev@vger.kernel.org>
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 14 Jul 2022 06:23:54 -0700 (PDT)
+From:   Denis Kirjanov <kda@linux-powerpc.org>
+To:     netdev@vger.kernel.org
+Subject: [PATCH] net: altera: Handle dma_set_coherent_mask error codes
+Date:   Thu, 14 Jul 2022 16:23:42 +0300
+Message-Id: <20220714132342.13051-1-kda@linux-powerpc.org>
+X-Mailer: git-send-email 2.16.4
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -59,62 +61,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 14 Jul 2022 04:37:43 +0000
-Song Liu <songliubraving@fb.com> wrote:
+handle the error in the case that DMA mask is not supportyed
 
-> >   
-> >> 
-> >> non-direct ops without IPMODIFY can already share with IPMODIFY ops.  
-> > 
-> > It can? ftrace sets IPMODIFY for all DIRECT callers to prevent that. Except
-> > for this patch that removes that restriction (which I believe is broken).  
-> 
-> I mean "non-direct" ftrace ops, not direct ftrace ops. 
+Fixes: bbd2190ce96d ("Altera TSE: Add main and header file for Altera Ethernet Driver")
+Signed-off-by: Denis Kirjanov <kda@linux-powerpc.org>
+---
+ drivers/net/ethernet/altera/altera_tse_main.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-Ah, sorry misunderstood that.
+diff --git a/drivers/net/ethernet/altera/altera_tse_main.c b/drivers/net/ethernet/altera/altera_tse_main.c
+index 8c5828582c21..7773d978321a 100644
+--- a/drivers/net/ethernet/altera/altera_tse_main.c
++++ b/drivers/net/ethernet/altera/altera_tse_main.c
+@@ -1439,10 +1439,14 @@ static int altera_tse_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	if (!dma_set_mask(priv->device, DMA_BIT_MASK(priv->dmaops->dmamask))) {
+-		dma_set_coherent_mask(priv->device,
++		ret = dma_set_coherent_mask(priv->device,
+ 				      DMA_BIT_MASK(priv->dmaops->dmamask));
++		if (ret)
++			goto err_free_netdev;
+ 	} else if (!dma_set_mask(priv->device, DMA_BIT_MASK(32))) {
+-		dma_set_coherent_mask(priv->device, DMA_BIT_MASK(32));
++		ret = dma_set_coherent_mask(priv->device, DMA_BIT_MASK(32));
++		if (ret)
++			goto err_free_netdev;
+ 	} else {
+ 		ret = -EIO;
+ 		goto err_free_netdev;
+-- 
+2.16.4
 
-
-> > Let me start from the beginning.  
-> 
-> I got your point now. We replace the flag on direct trampoline with a 
-> callback check. So yes, this works. 
-
-I'm glad we are on the same page :-)
-
-
-> > 9. ftrace sees the lkp IPMODIFY ops has SHARED_IPMODIFY on it, and knows
-> >   that there's a direct call here too. It removes the IPMODIFY ops, and
-> >   then calls the direct ops->ops_func(STOP_SHARE_WITH_IPMODIFY) to let the
-> >   direct code know that it is no longer sharing with an IPMODIFY such that
-> >   it can change to call the function directly and not use the stack.  
-> 
-> I wonder whether we still need this flag. Alternatively, we can always
-> find direct calls on the function and calls ops_func(STOP_SHARE_WITH_IPMODIFY). 
-
-Actually we don't need the new flag and we don't need to always search. When
-a direct is attached to the function then the rec->flags will have
-FTRACE_FL_DIRECT attached to it.
-
-Then if an IPMODIFY is being removed and the rec->flags has
-FTRACE_FL_DIRECT set, then we know to search the ops for the one that has a
-DIRECT flag attached and we can call the ops_func() on that one.
-
-We should also add a FTRACE_WARN_ON() if a direct is not found but the flag
-was set.
-
-> 
-> What do you think about this? 
->
-
-I think this works.
-
-Also, on the patch that implements this in the next version, please add to
-the change log:
-
-Link: https://lore.kernel.org/all/20220602193706.2607681-2-song@kernel.org/
-
-so that we have a link to this discussion.
-
-Thanks,
-
--- Steve
