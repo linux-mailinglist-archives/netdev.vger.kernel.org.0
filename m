@@ -2,61 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F5045741F9
-	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 05:39:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 141E95741FB
+	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 05:41:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233034AbiGNDjP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jul 2022 23:39:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55726 "EHLO
+        id S231377AbiGNDlF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jul 2022 23:41:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232130AbiGNDjO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 23:39:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8557F13FA1;
-        Wed, 13 Jul 2022 20:39:13 -0700 (PDT)
+        with ESMTP id S229606AbiGNDlD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 23:41:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 937BD13FA1
+        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 20:41:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E43561E3A;
-        Thu, 14 Jul 2022 03:39:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA429C34114;
-        Thu, 14 Jul 2022 03:39:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2FD7361E19
+        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 03:41:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 607B9C34114;
+        Thu, 14 Jul 2022 03:41:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657769952;
-        bh=zopjln99q1rxFvM6ak58aizazSshf28UHBqgM18CFvY=;
+        s=k20201202; t=1657770061;
+        bh=frE/IVU0aw4awEWRr7WTSnJ37ka5+JeZfsQPkK6jkSo=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=O17AZt/AeHkPn061iiEgqkpCxr/6kBkYFumRDxFpzpRDC0oakyZZ3XRGmfmEY6Ei9
-         3ywnUmTLEXIsHlVvHMGqzUgTIpER87EFYeXOUR4n/d6QlwlK/L0Qmk8IRQ32aEqWdO
-         +TRWuSukauk6OJIVXPhjRbYzN8zLn+pXZ1FOgs/Md9SffssjYPWH+RzvTOOR3XEm+K
-         7vnP1QnI8vnpRqzgkdhK1tFUJDN0trTKm+UI85RlhJTRLnmpf6th0iuPXZsZGNsfNr
-         KrJuGiYy2WyUx3ImBk01c8POD00qj2MivZaDPDLEOrZHOJZ1icPv4DjGAl3WhPv/OR
-         ppqEbKU1SP4kA==
-Date:   Wed, 13 Jul 2022 20:39:10 -0700
+        b=FW0C3nIocN761YJeujV8TcpGx7K9AN9psk9SrXE/V7bvWKwEk+U5qfFwtcGgGwTGh
+         GmaNdtxONGJi1t/HZZl7Lx5/qzrqLdyXTyngGQHpxGdlehkXmoKry14ceEVQJnDJf3
+         v7owsI8YFrsvYRjidmYqK/TD2lINV0k3VVxZ6fRMLWvPTM03QeOw7bgyyBylfnk+/i
+         YVhhSmpDLBaAdMIpcgzgziPd6cveJnJcKHJ/M4iTiSjtuoA7Mg0wNSt1se7iT3bEuz
+         fRhPq7NRsAPboEGidrqG6RhRgTWYiFIx9REiyqc8GuYTSWZZNQZqWEfunwj0xkt0Qd
+         ZrSnApPIyyNJQ==
+Date:   Wed, 13 Jul 2022 20:41:00 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Biao Huang <biao.huang@mediatek.com>
+To:     Simon Horman <simon.horman@corigine.com>
 Cc:     David Miller <davem@davemloft.net>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        <netdev@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>, <macpaul.lin@mediatek.com>,
-        Jisheng Zhang <jszhang@kernel.org>,
-        Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
-Subject: Re: [PATCH net v4 3/3] net: stmmac: fix unbalanced ptp clock issue
- in suspend/resume flow
-Message-ID: <20220713203910.74d36732@kernel.org>
-In-Reply-To: <20220713101002.10970-4-biao.huang@mediatek.com>
-References: <20220713101002.10970-1-biao.huang@mediatek.com>
-        <20220713101002.10970-4-biao.huang@mediatek.com>
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        oss-drivers@corigine.com
+Subject: Re: [PATCH net] nfp: flower: configure tunnel neighbour on cmsg rx
+Message-ID: <20220713204100.6fd9b277@kernel.org>
+In-Reply-To: <20220713085620.102550-1-simon.horman@corigine.com>
+References: <20220713085620.102550-1-simon.horman@corigine.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -70,28 +54,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 13 Jul 2022 18:10:02 +0800 Biao Huang wrote:
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> index 197fac587ad5..c230b8b9aab1 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> @@ -839,14 +839,6 @@ int stmmac_init_tstamp_counter(struct stmmac_priv *priv, u32 systime_flags)
->  	if (!(priv->dma_cap.time_stamp || priv->dma_cap.atime_stamp))
->  		return -EOPNOTSUPP;
->  
-> -	ret = clk_prepare_enable(priv->plat->clk_ptp_ref);
-> -	if (ret < 0) {
-> -		netdev_warn(priv->dev,
-> -			    "failed to enable PTP reference clock: %pe\n",
-> -			    ERR_PTR(ret));
-> -		return ret;
-> -	}
-> -
->  	stmmac_config_hw_tstamping(priv, priv->ptpaddr, systime_flags);
->  	priv->systime_flags = systime_flags;
->  
+On Wed, 13 Jul 2022 10:56:20 +0200 Simon Horman wrote:
+> From: Tianyu Yuan <tianyu.yuan@corigine.com>
+> 
+> nfp_tun_write_neigh() function will configure a tunnel neighbour when
+> calling nfp_tun_neigh_event_handler() or nfp_flower_cmsg_process_one_rx()
+> (with no tunnel neighbour type) from firmware.
+> 
+> When configuring IP on physical port as a tunnel endpoint, no operation
+> will be performed after receiving the cmsg mentioned above.
+> 
+> Therefore, add a progress to configure tunnel neighbour in this case.
+> 
+> Fixes: f1df7956c11f("nfp: flower: rework tunnel neighbour configuration")
 
-
-drivers/net/ethernet/stmicro/stmmac/stmmac_main.c:837:6: warning: unused variable 'ret' [-Wunused-variable]
-        int ret;
-            ^
+Missing space between the hash and the subject.
