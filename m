@@ -2,58 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 76DD95741BE
-	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 05:11:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B91385741D6
+	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 05:24:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230479AbiGNDK4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jul 2022 23:10:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36680 "EHLO
+        id S231357AbiGNDYq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jul 2022 23:24:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229925AbiGNDKz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 23:10:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BD59252A6
-        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 20:10:54 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CC2B8B82271
-        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 03:10:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2E19C34114;
-        Thu, 14 Jul 2022 03:10:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657768251;
-        bh=EDEGOZ9ujGMKXTygHaFXLu2WFBnUa7gj7ZwWDQgOqck=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=OfAT/Mw3IudvyKVbZGhF3RB46VacqEgpknCP0eexQbdVebU5zb8br2dfFhR+Ti5lo
-         aRuKEMEMRk4Nba418j3ybsedB01Gjb8Y4eLnzM1DRaVsYSqO2R04GRSiJYjjyQ/BqH
-         e9sUglNPqDDOF0V5l7yrYU9faKNFf05uD3jo08UQr5PAOFAVt3/04Vfdv6LJOqiTx2
-         j8p54VSYooD5wjw+NRTf9JLu7lZCmQG/8K3VYvuuARD1iPP27RBiYlbuNiXSNqlgZc
-         E/AvI0GfjcjtHIR9sJJX972KPVo0cKJFcAuMSTn//j5KFT7w6MM7E6QqxMJw7vEVmJ
-         JVMdsCKul6f5Q==
-Date:   Wed, 13 Jul 2022 20:10:50 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Tariq Toukan <tariqt@nvidia.com>
-Cc:     Boris Pismenny <borisp@nvidia.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, <netdev@vger.kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Gal Pressman <galp@nvidia.com>,
-        Maxim Mikityanskiy <maximmi@nvidia.com>
-Subject: Re: [PATCH net-next V2 2/6] net/tls: Multi-threaded calls to TX
- tls_dev_del
-Message-ID: <20220713201050.3aab0cb8@kernel.org>
-In-Reply-To: <20220713051603.14014-3-tariqt@nvidia.com>
-References: <20220713051603.14014-1-tariqt@nvidia.com>
-        <20220713051603.14014-3-tariqt@nvidia.com>
+        with ESMTP id S229925AbiGNDYp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 23:24:45 -0400
+Received: from chinatelecom.cn (prt-mail.chinatelecom.cn [42.123.76.228])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3007E25C58
+        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 20:24:42 -0700 (PDT)
+HMM_SOURCE_IP: 172.18.0.218:36728.1615793929
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-110.86.5.94 (unknown [172.18.0.218])
+        by chinatelecom.cn (HERMES) with SMTP id 04C9E2800DC;
+        Thu, 14 Jul 2022 11:24:32 +0800 (CST)
+X-189-SAVE-TO-SEND: liyonglong@chinatelecom.cn
+Received: from  ([172.18.0.218])
+        by app0025 with ESMTP id 8fccc205476547e4a2fdbfbcafe8463a for alexanderduyck@fb.com;
+        Thu, 14 Jul 2022 11:24:35 CST
+X-Transaction-ID: 8fccc205476547e4a2fdbfbcafe8463a
+X-Real-From: liyonglong@chinatelecom.cn
+X-Receive-IP: 172.18.0.218
+X-MEDUSA-Status: 0
+Sender: liyonglong@chinatelecom.cn
+Subject: Re: [PATCH] net: sort queues in xps maps
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        pabeni@redhat.com, alexanderduyck@fb.com
+References: <1657679096-38572-1-git-send-email-liyonglong@chinatelecom.cn>
+ <20220713190748.323cf866@kernel.org>
+From:   Yonglong Li <liyonglong@chinatelecom.cn>
+Message-ID: <bf741f12-0587-5870-2c59-a52c36a1d2d6@chinatelecom.cn>
+Date:   Thu, 14 Jul 2022 11:24:31 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20220713190748.323cf866@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -61,76 +54,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 13 Jul 2022 08:15:59 +0300 Tariq Toukan wrote:
-> @@ -99,21 +85,17 @@ static void tls_device_queue_ctx_destruction(struct tls_context *ctx)
->  	bool async_cleanup;
->  
->  	spin_lock_irqsave(&tls_device_lock, flags);
-> +	list_del(&ctx->list); /* Remove from tls_device_list / tls_device_down_list */
-> +	spin_unlock_irqrestore(&tls_device_lock, flags);
-> +
->  	async_cleanup = ctx->netdev && ctx->tx_conf == TLS_HW;
->  	if (async_cleanup) {
-> -		list_move_tail(&ctx->list, &tls_device_gc_list);
-> +		struct tls_offload_context_tx *offload_ctx = tls_offload_ctx_tx(ctx);
->  
-> -		/* schedule_work inside the spinlock
-> -		 * to make sure tls_device_down waits for that work.
-> -		 */
-> -		schedule_work(&tls_device_gc_work);
-> +		queue_work(destruct_wq, &offload_ctx->destruct_work);
+Hi Jakub,
 
-Doesn't queue_work() need to be under the tls_device_lock?
-Otherwise I think there's a race between removing the context from 
-the list and the netdev down notifier searching that list and flushing
-the wq.
+Thanks for your feedback.
 
->  	} else {
-> -		list_del(&ctx->list);
-> -	}
-> -	spin_unlock_irqrestore(&tls_device_lock, flags);
-> -
-> -	if (!async_cleanup)
->  		tls_device_free_ctx(ctx);
-> +	}
->  }
->  
->  /* We assume that the socket is already connected */
-> @@ -1150,6 +1132,9 @@ int tls_set_device_offload(struct sock *sk, struct tls_context *ctx)
->  	start_marker_record->len = 0;
->  	start_marker_record->num_frags = 0;
->  
-> +	INIT_WORK(&offload_ctx->destruct_work, tls_device_tx_del_task);
-> +	offload_ctx->ctx = ctx;
-> +
->  	INIT_LIST_HEAD(&offload_ctx->records_list);
->  	list_add_tail(&start_marker_record->list, &offload_ctx->records_list);
->  	spin_lock_init(&offload_ctx->lock);
-> @@ -1389,7 +1374,7 @@ static int tls_device_down(struct net_device *netdev)
->  
->  	up_write(&device_offload_lock);
->  
-> -	flush_work(&tls_device_gc_work);
-> +	flush_workqueue(destruct_wq);
->  
->  	return NOTIFY_DONE;
->  }
-> @@ -1428,14 +1413,20 @@ static struct notifier_block tls_dev_notifier = {
->  	.notifier_call	= tls_dev_event,
->  };
->  
-> -void __init tls_device_init(void)
-> +int __init tls_device_init(void)
->  {
-> +	destruct_wq = alloc_workqueue("ktls_device_destruct", 0, 0);
-> +	if (!destruct_wq)
-> +		return -ENOMEM;
-> +
->  	register_netdevice_notifier(&tls_dev_notifier);
+On 7/14/2022 10:07 AM, Jakub Kicinski wrote:
+> On Wed, 13 Jul 2022 10:24:56 +0800 Yonglong Li wrote:
+>> in the following case that set xps of each tx-queue with same cpu mask,
+>> packets in the same tcp stream may be hash to different tx queue. Because
+>> the order of queues in each xps map is not the same.
+>>
+>> first set each tx-queue with different cpu mask
+>> echo 0 > /sys/class/net/eth0/queues/tx-0
+>> echo 1 > /sys/class/net/eth0/queues/tx-1
+>> echo 2 > /sys/class/net/eth0/queues/tx-2
+>> echo 4 > /sys/class/net/eth0/queues/tx-3
+>> and then set each tx-queue with same cpu mask
+>> echo f > /sys/class/net/eth0/queues/tx-0
+>> echo f > /sys/class/net/eth0/queues/tx-1
+>> echo f > /sys/class/net/eth0/queues/tx-2
+>> echo f > /sys/class/net/eth0/queues/tx-3
+> 
+> These commands look truncated.
 
-For a future cleanup - we should probably check for errors here.
-Or perhaps we should take the fix via net? If you spin a quick
-patch it can still make tomorrows net -> net-next merge.
+I will refill the commands.
 
-> +	return 0;
->  }
+> 
+>> at this point the order of each map queues is differnet, It will cause
+>> packets in the same stream be hashed to diffetent tx queue:
+>> attr_map[0].queues = [0,1,2,3]
+>> attr_map[1].queues = [1,0,2,3]
+>> attr_map[2].queues = [2,0,1,3]
+>> attr_map[3].queues = [3,0,1,2]
+>>
+>> It is more reasonable that pacekts in the same stream be hashed to the same
+>> tx queue when all tx queue bind with the same CPUs.
+>>
+>> Fixes: 537c00de1c9b ("net: Add functions netif_reset_xps_queue and netif_set_xps_queue")
+> 
+> I'd suggest treating this as a general improvement rather than fix,
+> the kernel always behaved this way - it seems logical that sorted is
+> better but whether it's a bug not to sort is not as clear cut.
+> 
+agree, will remove Fixes:tag in next version.
+
+>> @@ -2654,6 +2660,13 @@ int __netif_set_xps_queue(struct net_device *dev, const unsigned long *mask,
+>>  					  skip_tc);
+>>  	}
+>>  
+>> +	for (j = -1; j = netif_attrmask_next_and(j, online_mask, mask, nr_ids),
+>> +	     j < nr_ids;) {
+>> +		tci = j * num_tc + tc;
+>> +		map = xmap_dereference(new_dev_maps->attr_map[tci]);
+>> +		sort(map->queues, map->len, sizeof(u16), cmp_u16, NULL);
+>> +	}
+>> +
+> 
+> Can we instead make sure that expand_xps_map() maintains order?
+> 
+expand_xps_map() only alloc new_map and copy old map's queue to new_map.
+I think it is not suitable to do it in expand_xps_map().
+WDYT?
+
+-- 
+Li YongLong
