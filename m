@@ -2,197 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B608574CB5
-	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 14:02:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2E3E574D1E
+	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 14:10:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238281AbiGNMCm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jul 2022 08:02:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44530 "EHLO
+        id S239054AbiGNMKG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jul 2022 08:10:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230073AbiGNMCk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 08:02:40 -0400
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2047.outbound.protection.outlook.com [40.107.93.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 957065B7A8;
-        Thu, 14 Jul 2022 05:02:39 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZmV3B2cWwCA+GiaU+5P/6ngrJacg0wJk5n7MmWqtK12rlPirabDxnPQq2F0BOvmO/T4xqCDYM50MEXqNM6iDB4oQORinsGSojxMIEyCsLlZqK7F49AHeVe63xzLtjAnvmuku368PJc55umyr7LfhN556mBT5Gj5atnfpFsJoP5lvQa4E+3U0PDVQDbf6QNyp8QT1LZqxKe7lu9MkQmvEPj1YxBfwt3o1oYoUeJ2uSO6tvR9qtUorjZevRNKKDimyxLLjJH72ZMga/JQFN6QbKSXlds2vN/zBPf4vmkHE1FjkppiI0R7No9ztt4FgmqGSafrT4ID6u5BH2/ZhPeL4Lw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/jj0IMuqd/2MlflydqPd1Io2VhHfqWlTaHZA5efbPWw=;
- b=OFDMJGtK33pxhNeIXVes+z+Tkh86xlehG8tRKWu862UzVBfY15iWH3igGswA6fq18zzap2tkvD3pUi9DzQk7Xa7T5rncI8M/VKLexPsdyFA7Vk9/L6L+q2fam+0MF1XRKn9NHx2qZosJIWXSxvNO7QIazFKXUFV4fi40bZ3Cr26WV4cyRQjj5p1j4fEIs6zohM1pxFsDk8rFsNxBqlLNHAV3SWyHr7SipVBNEJKYRD36RCVuQjecO1uYKBVl8b9+CAoI07E2PTbwWOqCZNZpK7WmfFv/RAeSucOWLSyAmOfp7qvcT/5ODreM9BwXAcbXFGH0/STZuY+ItHlRxlxapQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=synaptics.com; dmarc=pass action=none
- header.from=synaptics.com; dkim=pass header.d=synaptics.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=Synaptics.onmicrosoft.com; s=selector2-Synaptics-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/jj0IMuqd/2MlflydqPd1Io2VhHfqWlTaHZA5efbPWw=;
- b=JlkltQOC4qWMCfw08NIpBZAvnnt+adVci3q1GERraU/2i/0M1IVQMHBv/gPttgJepLEtsa7HlPZcROAkrdJsNvpv6fL3vvjFoosaz767yJp5/JBYQkMzg1wQGSnYEHrk99n/7S3peF85pvez0zktoxnpekWuG+M2ItKiquxF7Ic=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=synaptics.com;
-Received: from SJ0PR03MB6533.namprd03.prod.outlook.com (2603:10b6:a03:386::12)
- by BN8PR03MB4915.namprd03.prod.outlook.com (2603:10b6:408:dc::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.12; Thu, 14 Jul
- 2022 12:02:37 +0000
-Received: from SJ0PR03MB6533.namprd03.prod.outlook.com
- ([fe80::d52:5cb7:8c3b:f666]) by SJ0PR03MB6533.namprd03.prod.outlook.com
- ([fe80::d52:5cb7:8c3b:f666%6]) with mapi id 15.20.5417.026; Thu, 14 Jul 2022
- 12:02:37 +0000
-From:   =?UTF-8?q?=C5=81ukasz=20Spintzyk?= <lukasz.spintzyk@synaptics.com>
-To:     netdev@vger.kernel.org
-Cc:     linux-usb@vger.kernel.org, oliver@neukum.org, kuba@kernel.org,
-        ppd-posix@synaptics.com
-Subject: [PATCH v2 2/2] net/cdc_ncm: Increase NTB max RX/TX values to 64kb
-Date:   Thu, 14 Jul 2022 14:02:17 +0200
-Message-Id: <20220714120217.18635-2-lukasz.spintzyk@synaptics.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220714120217.18635-1-lukasz.spintzyk@synaptics.com>
-References: <20220714120217.18635-1-lukasz.spintzyk@synaptics.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: BE1P281CA0071.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:b10:26::16) To SJ0PR03MB6533.namprd03.prod.outlook.com
- (2603:10b6:a03:386::12)
+        with ESMTP id S230220AbiGNMJv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 08:09:51 -0400
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F1993F329
+        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 05:08:48 -0700 (PDT)
+Received: by mail-il1-f197.google.com with SMTP id h28-20020a056e021d9c00b002dc15a95f9cso990755ila.2
+        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 05:08:48 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=xFnPnpP/G7u2XnAw40xBSXDR4IKqMm4aVVQnDeJHz1g=;
+        b=YDLMsBlYukVpjIXFIvFTKDMal2t6fBLkwmgbWXkaLZ/z3JTXn7XiW6JVXeqoOGJbR/
+         CLBFgxjVL3E/C/lCBZX6i3khJaQLNbFkCKleltpjDD27y0ckSRno4iIKC2g3/xSGSUMo
+         K/gnWUpi8oYu+wNj2SYUmhO7ToKUqKiH9K84dHiqehFpkSIsQ25B1CLrLI6Zb4aZdTHd
+         tuypinJHqeta3kqsulRwnBZN9pwRvbnRPHzCBPKu5qhmvtoVtr6ZaZ0Q6537ed7yTdb4
+         Sb9HVVriRM1OJho8mW9oyMtSB0WX8w1sknSs3cSXVLb7BGiJFlD3zbpyGAPs/yXdBf5U
+         7ktQ==
+X-Gm-Message-State: AJIora+yp/xfE9X5nl0VCkA7CupGizNPyKbcC+zp1eHi6Sflf3JuKvwy
+        IpQn7ESVsu8G/1ssVDwXVGVyjtORQKbUXOOnsMIA2t51HJeR
+X-Google-Smtp-Source: AGRyM1uHruF+JtwFguHVwlc4HWMQAzNuNdkMKcgYVJZ8aL9xJ0irTHvP+9dNr1/xZ7pAJFVuv5qMVFYjMIkQdt+beiCDmmI/JfFW
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ce38c537-bc5d-4adc-3b9f-08da6590be92
-X-MS-TrafficTypeDiagnostic: BN8PR03MB4915:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: uU8mZIjWxj0F7kPmM7SGKnzc+TlScc88sf9ETJVoXsqbxMS6Op8TOT92g6J/uOPBXNq5pdkSrL1r/PZFmatLmxWYSjy9B8Y1f0fpI07MbytFN+8LZHO06umBPOvcINI5LBjreWHgwyHTrDMKloJ5PsP3ekILQd3LywulYCxqqM5mBDQ0X37+TPmTqrTPEd6JuxQOgqKB3XvMNMDe1gGiSGmeOznxHj2p3bujt8e6VeUHOAsw7jiHEJC9aB5O8SVjLh0j6lp5f79INR7id+bw1omUhsGJH99I3hiomrooeTeeDvj5bbrHmTLv/2xipMyEzgNDoq246Df11OOEzzvJAp0qg1fE9pzblznOnyO/051wFjolTw5qtz1s4Uirlrbjl2xt55DoZRsedPSiRQKAQgyXF9Z+0yHxy8KKdib4b/Sl8NLyb4vXb+V0aUXKUXtiWWhICxsltotSn0O5s9TsYsSCfMhyK1gl5+6rikKAIwy9vx/HqTrMmEkR3lEZnsHHW277hSfIGoAA5M2xCfiOLF5ftYNfnx2DV2pucqFjgrPA3Owie5Tjmez6EMTJtrRE/uLFxjy5FJYWi5mCxq9k4U+VACU9MpgDXvuAziGmfBJoQKSiJFOkXx7sX/raqKEE80Gk7zOhAMb1gLsr698AZE14c7Ga3Mhz1PYcMp1cTK/BIXg7VZxlGFKKkzRrdLziRr5dWhK9j7v+H8AyA6F9FgPN0Wp/gnP+03P80EMvqPWxbK5CT3JevNu1GfnweXaLGcFwRdeiaLWzqQtUDoEYNiXC8F8bYZPg2O+3tEFbnSbJ+mqkRha3gwWk+1y+40Wjmyr/MdH2WFW+SC4XYL9xvw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR03MB6533.namprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(136003)(366004)(39850400004)(396003)(376002)(346002)(6916009)(6666004)(1076003)(6512007)(66476007)(41300700001)(316002)(2906002)(36756003)(8676002)(6486002)(66946007)(26005)(5660300002)(186003)(83380400001)(8936002)(478600001)(52116002)(107886003)(86362001)(2616005)(38350700002)(4326008)(6506007)(66556008)(966005)(38100700002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?MjNFRytsR2Vsc3p5TjBEdnB6aWZyMmY4UVlQK2xZUWI5cnpJQ3pUblMwemYy?=
- =?utf-8?B?RnloclUxRnhCT2JYcElsMjI2QnptSlY2WWQyU0YzR0tJdWhGWWNkVjNiNFBT?=
- =?utf-8?B?RFZ5Z04zajFhQlNQWlR0Zmtib3VvQzZJaDQvZzNkRTlPWkhMSUxuQzI2VnBH?=
- =?utf-8?B?ZTZabG42eGprczFRWXE1Tit3dUVUQnZOZlNjRDJyL1BaSHR3QlFDTHVLd1hL?=
- =?utf-8?B?bFJZWXgxQzdjT2JDNDZZMVBhQTROS2hwZGUwNnBteHdpdW5LS3dWWGMyaXpL?=
- =?utf-8?B?QWJaZUZQekp5cHdsR0tCSFlzcjU4T3M5Z3FaWTZmendQdEhmREdnZmk5Z3RC?=
- =?utf-8?B?SllRd1NHSUtsNyszY09vZjlqK1M5em54azVxM200cGUrdjBjVmpIR2NMSjJH?=
- =?utf-8?B?OUtnK3hPSFg3c2lURnpwSzR1ZVVIalhlZkhMeHJ4Tmg3dnlBOU14R0N2NnJ3?=
- =?utf-8?B?K3ZxeHBuRTROdWxhbFlpQnIxR05iRzlhb1Qxd3FyUVZmaEJleW9mckM3KytY?=
- =?utf-8?B?d1grclBNY2ZwUU5FNitOMWFaQ3NqbFRzeGNpT25xbWg1RERCZFkyekZTWTNi?=
- =?utf-8?B?ZkY3SlJ3RUZiRm12UEcra2RQR3ZxZkFGTDRTNjlYOERaMFMxUDd2T0xwQ1cv?=
- =?utf-8?B?d1dpSGdUSGtaN0x4SExvUXdNUW1LWGUyZk9sQ1BUblVYTEJONGp5REpBZU82?=
- =?utf-8?B?c3hXNENXZ216VzZLRUEwZmY5dEhvNnF6NDA0U1I3eHBRNTIyNDN5Tk5EMGxx?=
- =?utf-8?B?UDF5RmUvVVE3dGMrNFhQcDM1bVdHczJMOGZ6bVVxT1N6SnJIRG1LdXlDK081?=
- =?utf-8?B?VVBBSmdod3RvdDVCLzNvZjExTmVDTldZSTF2WjZxVVhTMFJOYzl5YjZZVDdR?=
- =?utf-8?B?NEVsTUxoMk5zWHRNdWlLUWNSUjFNWGtJL3pHWWZ1T1RkcG9SUS96Y0ZMRHRa?=
- =?utf-8?B?dS9vYVRvcndRZ255UmVqQjlGckgvaEw2S2FkVUF0QzNPdS9naU1sakU2aGRa?=
- =?utf-8?B?eVEwZEVYMEFXYW1sclUvMTVlVjFldk5vNnhCU3VYQ05Eb0xCMExvSXZkbk1m?=
- =?utf-8?B?WU9NVzNINlZ2WDd5TFluWUk0eW9DTE92TEdBOXpLR0xPZU44SUlneHovVDZ6?=
- =?utf-8?B?VXJxTUZYM1pLL29BcWoxYVhaYjVUY2FqWk9iblhHQVNqcjN6ZHVDeFJ6OUMy?=
- =?utf-8?B?QUoxUEhZUkFIU2ZoU2g2bXo3M0JpdkdqeFI2eDU1WFRvZVJ5WFRuY2l4TmVU?=
- =?utf-8?B?SFFyVC8rTHNEYVAreFBmYkV3MXhPcjlka2xHcHIwaVBhbnVYU3drbG02RDll?=
- =?utf-8?B?NU01SGE4QmROQ0FoZjQ2ZTZHVVdkRVRqVjNoajZOZ1pGa0lqQmo5ZHhqeUd4?=
- =?utf-8?B?L0Fxeml1bzBkcW8vVlo2dmpCeWZmNDRZQ3k0WU5ubWlwckw5WjBJL3kva3g1?=
- =?utf-8?B?emNBcFVubjJrTGZnamtpSk94MHJrUmgyTVRFWkFJK0pVQ3dXYnJXY2ZmK3R4?=
- =?utf-8?B?K3UrQk9EbEJHelZraDMyU05ubHRtcEV5OEduTExNeGU3aXBDQWREaGpRV3JB?=
- =?utf-8?B?UFlkeFNpQjAzdlF2TDZYRXNLUFBITGpXL29kM3F1V0dic0FoUHB5dG55b1BF?=
- =?utf-8?B?SFUvSFBLTHdKd2dvZlhlS2gwM1p1MnRmcmQxMEo1aHpyUTBoVGg0Z2lHSnJJ?=
- =?utf-8?B?L2JCRHE2TURCQ2E4bzlxcURJYisvSzBYMEZWQ0V3UEJxaFlKVVFtSjJsVjB0?=
- =?utf-8?B?U1prMlFNTWN6THJVdVJGSDdIUzV6MTdGMTRsbEpLN3JYMDZJbW0rd3c4ZkMy?=
- =?utf-8?B?TFo2RWRrYWlWQjFYSWZRYlJtM2M0NlNwZUpZSnJ3aXZEY093bm9HSHBvQ0hu?=
- =?utf-8?B?SFBncW1pUXpvNklWa1hSUmlCaitERVZuSUFveUxGeEs2cGdRQ2xDMnpYZ3g1?=
- =?utf-8?B?NDcvNmJFb3FOT2plS1ZHYWYwT0VrVG9PZ1M1cjhRWm5Bc2c4K1RjY0pYZzNt?=
- =?utf-8?B?elp2a3lMTklna0ljaW5mNlMreDBCbjYzSjllUTQwU0NYWnlGdDJYdmc5VnI5?=
- =?utf-8?B?czhQSVgxQ3l5RVdKeTBlVzdnZTV5MWx2d0hnZjVaZ2E4bnlPcXhUQ1MwSkpr?=
- =?utf-8?Q?++i+IfJbeGeaEknb8GKFAJqTm?=
-X-OriginatorOrg: synaptics.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ce38c537-bc5d-4adc-3b9f-08da6590be92
-X-MS-Exchange-CrossTenant-AuthSource: SJ0PR03MB6533.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jul 2022 12:02:37.4546
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 335d1fbc-2124-4173-9863-17e7051a2a0e
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: CUMTOkouYtZWlVkWMwnRzDYmb6rkGwmww4evyrwZsFBdse997ts/85KnglgPnrMlpdjZjV85Yjc3yd713KjY8A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR03MB4915
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Received: by 2002:a05:6602:2c4e:b0:657:4115:d9e4 with SMTP id
+ x14-20020a0566022c4e00b006574115d9e4mr4164255iov.91.1657800505735; Thu, 14
+ Jul 2022 05:08:25 -0700 (PDT)
+Date:   Thu, 14 Jul 2022 05:08:25 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000040bd4905e3c2c237@google.com>
+Subject: [syzbot] INFO: trying to register non-static key in ieee80211_do_stop
+From:   syzbot <syzbot+eceab52db7c4b961e9d6@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, edumazet@google.com,
+        johannes@sipsolutions.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DisplayLink ethernet devices require NTB buffers larger then 32kb
-in order to run with highest performance.
+Hello,
 
-This patch is changing upper limit of the rx and tx buffers.
-Those buffers are initialized with CDC_NCM_NTB_DEF_SIZE_RX and
-CDC_NCM_NTB_DEF_SIZE_TX which is 16kb so by default no device is
-affected by increased limit.
+syzbot found the following issue on:
 
-Rx and tx buffer is increased under two conditions:
- - Device need to advertise that it supports higher buffer size in
-   dwNtbMaxInMaxSize and dwNtbMaxOutMaxSize.
- - cdc_ncm/rx_max and cdc_ncm/tx_max driver parameters must be adjusted
-   with udev rule or ethtool.
+HEAD commit:    b11e5f6a3a5c net: sunhme: output link status with a single..
+git tree:       net
+console+strace: https://syzkaller.appspot.com/x/log.txt?x=108ed862080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=fa95f12403a2e0d2
+dashboard link: https://syzkaller.appspot.com/bug?extid=eceab52db7c4b961e9d6
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=173a7c78080000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1102749a080000
 
-Summary of testing and performance results:
-Tests were performed on following devices:
- - DisplayLink DL-3xxx family device
- - DisplayLink DL-6xxx family device
- - ASUS USB-C2500 2.5G USB3 ethernet adapter
- - Plugable USB3 1G USB3 ethernet adapter
- - EDIMAX EU-4307 USB-C ethernet adapter
- - Dell DBQBCBC064 USB-C ethernet adapter
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+eceab52db7c4b961e9d6@syzkaller.appspotmail.com
 
-Performance measurements were done with:
- - iperf3 between two linux boxes
- - http://openspeedtest.com/ instance running on local test machine
+INFO: trying to register non-static key.
+The code is fine but needs lockdep annotation, or maybe
+you didn't initialize this object before use?
+turning off the locking correctness validator.
+CPU: 0 PID: 3615 Comm: syz-executor630 Not tainted 5.19.0-rc5-syzkaller-00263-gb11e5f6a3a5c #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 06/29/2022
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ assign_lock_key kernel/locking/lockdep.c:979 [inline]
+ register_lock_class+0xf30/0x1130 kernel/locking/lockdep.c:1292
+ __lock_acquire+0x10a/0x5660 kernel/locking/lockdep.c:4932
+ lock_acquire kernel/locking/lockdep.c:5665 [inline]
+ lock_acquire+0x1ab/0x570 kernel/locking/lockdep.c:5630
+ __raw_spin_lock_bh include/linux/spinlock_api_smp.h:126 [inline]
+ _raw_spin_lock_bh+0x2f/0x40 kernel/locking/spinlock.c:178
+ spin_lock_bh include/linux/spinlock.h:354 [inline]
+ ieee80211_do_stop+0xc3/0x1ff0 net/mac80211/iface.c:380
+ ieee80211_runtime_change_iftype net/mac80211/iface.c:1789 [inline]
+ ieee80211_if_change_type+0x383/0x840 net/mac80211/iface.c:1827
+ ieee80211_change_iface+0x57/0x3f0 net/mac80211/cfg.c:190
+ rdev_change_virtual_intf net/wireless/rdev-ops.h:69 [inline]
+ cfg80211_change_iface+0x5e1/0xf10 net/wireless/util.c:1078
+ nl80211_set_interface+0x64f/0x8c0 net/wireless/nl80211.c:4041
+ genl_family_rcv_msg_doit+0x228/0x320 net/netlink/genetlink.c:731
+ genl_family_rcv_msg net/netlink/genetlink.c:775 [inline]
+ genl_rcv_msg+0x328/0x580 net/netlink/genetlink.c:792
+ netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2501
+ genl_rcv+0x24/0x40 net/netlink/genetlink.c:803
+ netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+ netlink_unicast+0x543/0x7f0 net/netlink/af_netlink.c:1345
+ netlink_sendmsg+0x917/0xe10 net/netlink/af_netlink.c:1921
+ sock_sendmsg_nosec net/socket.c:714 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:734
+ ____sys_sendmsg+0x6eb/0x810 net/socket.c:2488
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2542
+ __sys_sendmsg net/socket.c:2571 [inline]
+ __do_sys_sendmsg net/socket.c:2580 [inline]
+ __se_sys_sendmsg net/socket.c:2578 [inline]
+ __x64_sys_sendmsg+0x132/0x220 net/socket.c:2578
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
+RIP: 0033:0x7f5bf1b37b89
+Code: 28 c3 e8 5a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffd682b8a38 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
 
-Insights from tests results:
- - All except one from third party usb adapters were not affected by
-   increased buffer size to their advertised dwNtbOutMaxSize and
-   dwNtbInMaxSize.
-   Devices were generally reaching 912-940Mbps both download and upload.
 
-   Only EDIMAX adapter experienced decreased download size from
-   929Mbps to 827Mbps with iper3, with openspeedtest decrease was from
-   968Mbps to 886Mbps.
-
- - DisplayLink DL-3xxx family devices experienced performance increase
-   with iperf3 download from 300Mbps to 870Mbps and
-   upload from 782Mbps to 844Mbps.
-   With openspeedtest download increased from 556Mbps to 873Mbps
-   and upload from 727Mbps to 973Mbps
-
- - DiplayLink DL-6xxx family devices are not affected by
-   increased buffer size.
-
-Signed-off-by: Łukasz Spintzyk <lukasz.spintzyk@synaptics.com>
 ---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-v2:
- - Information how to change tx,rx buffer size
- - Added performance tests results to the commit description.
-
-
- include/linux/usb/cdc_ncm.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/include/linux/usb/cdc_ncm.h b/include/linux/usb/cdc_ncm.h
-index f7cb3ddce7fb..2d207cb4837d 100644
---- a/include/linux/usb/cdc_ncm.h
-+++ b/include/linux/usb/cdc_ncm.h
-@@ -53,8 +53,8 @@
- #define USB_CDC_NCM_NDP32_LENGTH_MIN		0x20
- 
- /* Maximum NTB length */
--#define	CDC_NCM_NTB_MAX_SIZE_TX			32768	/* bytes */
--#define	CDC_NCM_NTB_MAX_SIZE_RX			32768	/* bytes */
-+#define	CDC_NCM_NTB_MAX_SIZE_TX			65536	/* bytes */
-+#define	CDC_NCM_NTB_MAX_SIZE_RX			65536	/* bytes */
- 
- /* Initial NTB length */
- #define	CDC_NCM_NTB_DEF_SIZE_TX			16384	/* bytes */
--- 
-2.36.1
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
