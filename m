@@ -2,122 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 647C35754D8
-	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 20:23:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E501C57552B
+	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 20:40:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240602AbiGNSWg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jul 2022 14:22:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38640 "EHLO
+        id S240107AbiGNSks (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jul 2022 14:40:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232482AbiGNSWd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 14:22:33 -0400
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECA0E691D1
-        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 11:22:31 -0700 (PDT)
-Received: by mail-pg1-x531.google.com with SMTP id o18so2301455pgu.9
-        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 11:22:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5zPRWQ1A3HhjiHH3r95abd4aE/ZbONHHNX3GXYIirVo=;
-        b=APDVKU6bfSUHJjV5BEp6HqxSVjmCoxgT1bxWYDDWducYmhZp8+T7ej/Vm2zsL3LsS3
-         m7a8CkFrBhJI+T4YqANO/L2rJWu7Ik2GIR1/aXd6+/V3P9aDBPkFXhciUAfqQH3hL181
-         SO/otGibcY9hrJvMTbBQNyDTk3ncy1KwxfH93v9pLGUv9t3ph2MzYn+aLHZ8H/S3KH3I
-         Vc6+O4rtoz6LSlEhsIxLUyDIRSI21QnMUpPHZKZYNGqnSEV/p8NXVFD4j+aDz0hmiey/
-         uo3VwNjg9IHqxooQVo6h5GsB6S3zaU59jCilN5lrbneKJuKX+N4tnjf8pH/M9wO3nsMl
-         drkw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5zPRWQ1A3HhjiHH3r95abd4aE/ZbONHHNX3GXYIirVo=;
-        b=hukLVrfrP9dvSRPqFOQa5jdrRzsMbK2HlDoAdDvpsfdYAjSREplTU0RDSrksnv7RxG
-         1ibuMC1yquOcDDZJWp4onpaWeMjebMrVIKk2l+R2Y/0m8CuUmQ6DEGO4SGeJJoq65eWT
-         EQn1AtgYmXXGgyV+fYlAk1luS+139CtOUbI5bHQAwCTNaFcgB+xQSfGr8nL2F9ZSbGbE
-         BbVDTwPrRfOzLrFv0hz9igweO5JN7553/n0fr1zXIelfuFPRaTenhvWWqoM6En9bXELr
-         qQvtF9L7ssj0kUYV5wuGV1uKfExVN8O/e1Ey+kW0ES8+kHHjsPfqN8hNzjR/uP6p6ikQ
-         lXuw==
-X-Gm-Message-State: AJIora9l4R9aNelexpNyrpZyH8xGuhKNHmL9wtNtAOlsa+X/ZTKjmFJN
-        dY21HptFxmVm9FGH2qonxRO4IZeNCKRZFVIpRSdVHw==
-X-Google-Smtp-Source: AGRyM1ubCAbKNQQNejRE37scb5N4g9UCmG2711DuCHlweThIxvaS406NX5VL4fAk3zfPnsbRFIqaVUSOxjoV6taZPz4=
-X-Received: by 2002:a63:85c6:0:b0:412:a94c:16d0 with SMTP id
- u189-20020a6385c6000000b00412a94c16d0mr8834610pgd.253.1657822951249; Thu, 14
- Jul 2022 11:22:31 -0700 (PDT)
+        with ESMTP id S232538AbiGNSkr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 14:40:47 -0400
+Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C7D357E15;
+        Thu, 14 Jul 2022 11:40:47 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.west.internal (Postfix) with ESMTP id 9667F320091E;
+        Thu, 14 Jul 2022 14:40:45 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute5.internal (MEProxy); Thu, 14 Jul 2022 14:40:46 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm3; t=1657824045; x=1657910445; bh=cfh5Vbt0d0CpHZj8hmg30dluCeWX
+        m83Q5tUEhlXXfjA=; b=NIsJT87TzT6dcAX1hLo/v8joJpm9ycU1GQ7wSl/SPX2F
+        m5PZVjpsK/l6hwc8KWiD2K5G9lnyau33Q8LGi5WPsrKgzVfz6QdLZQEbtnT9fNmY
+        zkE6iIGyWJFIbz7qFOh+znWQ8pamekNw/c30wCISsEuhJMG4BGIL8XpwSCuD6lwj
+        lZpQD1+s0QwaWHZJeBWCBiHkCaq/5k8Mt3n8xUfsIPFtxQ1nF8pZBUDsM2S/odt9
+        +1PSDSLS9Vz7YCf0e2e+gbMM1dVcPxSez4FnGzysk6Kn/dfll5IV/R7T1mYj5B/a
+        VhLzO9jZtlCgt/gZgY/kzAZGmzprpPrGaNb9LE6hVQ==
+X-ME-Sender: <xms:LGPQYnLwmdh3CwTzIWMz7YrzmmxORq9JK-_zfOHohZsGgEhkVzUt-Q>
+    <xme:LGPQYrLon1Tlyu1Iytp_RKaWCS7S89w64YSin8L_G-6QjNJAYvUhrP0zLpO5PMbuU
+    NIGPadJKwzOUiw>
+X-ME-Received: <xmr:LGPQYvtXnor8p8zZSnfOvAyZ4mctjlmTKL9OtDrqlybAgAgheIuoilSLujzHJti9bUXUq1aOvBMaLQarkdk2nTLoD3SmLQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudejledgudeftdcutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkugho
+    ucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrg
+    htthgvrhhnpeehhfdtjedviefffeduuddvffegteeiieeguefgudffvdfftdefheeijedt
+    hfejkeenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivg
+    eptdenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhr
+    gh
+X-ME-Proxy: <xmx:LGPQYgZkvlKo1CkJw56GB2UUZSSo7Uat0kkx_h-TbeZIP7xoTvEu6w>
+    <xmx:LGPQYua-ue4hKZsHYJJGXa_37l72-7ytAb36PbxMnBekTgDWNqY7iQ>
+    <xmx:LGPQYkCIh3eJ_LxQ8hweM41AtJIKf2ZJ_Tl7tHR0bJo0fYhtkhZHUA>
+    <xmx:LWPQYkM1T6SxUOsnEPAI2o5jnc1fF2dbzZocedGotRbZZaD6yDD6Fg>
+Feedback-ID: i494840e7:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 14 Jul 2022 14:40:43 -0400 (EDT)
+Date:   Thu, 14 Jul 2022 21:40:40 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     linux-kernel@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Leon Romanovsky <leon@kernel.org>,
+        Jiri Pirko <jiri@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [for-next][PATCH 03/23] tracing: devlink: Use static array for
+ string in devlink_trap_report even
+Message-ID: <YtBjKLsoB4e+hSB5@shredder>
+References: <20220714164256.403842845@goodmis.org>
+ <20220714164328.461963902@goodmis.org>
 MIME-Version: 1.0
-References: <20220714060959.25232-1-shaozhengchao@huawei.com>
-In-Reply-To: <20220714060959.25232-1-shaozhengchao@huawei.com>
-From:   Stanislav Fomichev <sdf@google.com>
-Date:   Thu, 14 Jul 2022 11:22:20 -0700
-Message-ID: <CAKH8qBtxJOCWoON6QXygOTD7AqjF+k=-4JWPHXEAQh-TO+W54A@mail.gmail.com>
-Subject: Re: [PATCH v2,bpf-next] bpf: Don't redirect packets with invalid pkt_len
-To:     Zhengchao Shao <shaozhengchao@huawei.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        hawk@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
-        yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org,
-        weiyongjun1@huawei.com, yuehaibing@huawei.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220714164328.461963902@goodmis.org>
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 13, 2022 at 11:05 PM Zhengchao Shao
-<shaozhengchao@huawei.com> wrote:
->
-> Syzbot found an issue [1]: fq_codel_drop() try to drop a flow whitout any
-> skbs, that is, the flow->head is null.
-> The root cause, as the [2] says, is because that bpf_prog_test_run_skb()
-> run a bpf prog which redirects empty skbs.
-> So we should determine whether the length of the packet modified by bpf
-> prog is valid before forwarding it directly.
->
-> LINK: [1] https://syzkaller.appspot.com/bug?id=0b84da80c2917757915afa89f7738a9d16ec96c5
-> LINK: [2] https://www.spinics.net/lists/netdev/msg777503.html
->
-> Reported-by: syzbot+7a12909485b94426aceb@syzkaller.appspotmail.com
-> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+On Thu, Jul 14, 2022 at 12:42:59PM -0400, Steven Rostedt wrote:
+> From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
+> 
+> The trace event devlink_trap_report uses the __dynamic_array() macro to
+> determine the size of the input_dev_name field. This is because it needs
+> to test the dev field for NULL, and will use "NULL" if it is. But it also
+> has the size of the dynamic array as a fixed IFNAMSIZ bytes. This defeats
+> the purpose of the dynamic array, as this will reserve that amount of
+> bytes on the ring buffer, and to make matters worse, it will even save
+> that size in the event as the event expects it to be dynamic (for which it
+> is not).
+> 
+> Since IFNAMSIZ is just 16 bytes, just make it a static array and this will
+> remove the meta data from the event that records the size.
+> 
+> Link: https://lkml.kernel.org/r/20220712185820.002d9fb5@gandalf.local.home
+> 
+> Cc: Leon Romanovsky <leon@kernel.org>
+> Cc: Jiri Pirko <jiri@nvidia.com>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Eric Dumazet <edumazet@google.com>
+> Cc: Paolo Abeni <pabeni@redhat.com>
+> Cc: netdev@vger.kernel.org
+> Acked-by: Jakub Kicinski <kuba@kernel.org>
+> Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 
-Reviewed-by: Stanislav Fomichev <sdf@google.com>
+On the off chance that my tags weren't omitted on purpose:
 
-Daniel, do you see any issues with this approach?
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+Tested-by: Ido Schimmel <idosch@nvidia.com>
 
-I wonder if we might also want to add some WARN_ON to the
-__bpf_redirect_common routine gated by #ifdef CONFIG_DEBUG_NET ?
-In case syscaller manages to hit similar issues elsewhere..
-
-> ---
-> v1: should not check len in fast path
->
->  net/bpf/test_run.c | 6 ++++++
->  1 file changed, 6 insertions(+)
->
-> diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-> index 2ca96acbc50a..750d7d173a20 100644
-> --- a/net/bpf/test_run.c
-> +++ b/net/bpf/test_run.c
-> @@ -1152,6 +1152,12 @@ int bpf_prog_test_run_skb(struct bpf_prog *prog, const union bpf_attr *kattr,
->         ret = convert___skb_to_skb(skb, ctx);
->         if (ret)
->                 goto out;
-> +
-> +       if (skb->len == 0) {
-> +               ret = -EINVAL;
-> +               goto out;
-> +       }
-> +
->         ret = bpf_test_run(prog, skb, repeat, &retval, &duration, false);
->         if (ret)
->                 goto out;
-> --
-> 2.17.1
->
+s/even/event/ in subject
