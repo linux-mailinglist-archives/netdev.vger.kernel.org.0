@@ -2,131 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B6C3B5755FA
-	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 21:44:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D30F9575600
+	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 21:49:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240683AbiGNTot (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jul 2022 15:44:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46144 "EHLO
+        id S240758AbiGNTtt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jul 2022 15:49:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232580AbiGNTos (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 15:44:48 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E88066BC27;
-        Thu, 14 Jul 2022 12:44:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=juqdfawgY+mSOy4Q9xQHkJDUGz0LPzuu1htfB/1lskw=; b=nefOM4zVvJVlye2X2eOBPrTjOF
-        M+tA7bm/BSfK8k3HugWHtepejg31y/x7X3Xv4igOK1f23iFTQb71LqJuZQ5pkAxiKlJCjP8dGOvEe
-        yIrHeKA/ub+CP1rWS6VdjyPtFsi1GSDfCPb+un1VdGovhK59h0pKNQXagJQCv0dittjgzXB7A0EPF
-        S/gyOybpAiHfo+a7IAwHL2O01YoDV/Z0Rs+HnsNjaVf+FxXaXJH4AagMpd2qA2R32Jw8cXVurCseK
-        cZjBuDLr2ONA2lFMmxV7AZfxr7aiQ6DgDSGbr7QU30CibtI3jDhDigKR9DW2APaL+tPJGx7DSEIBs
-        N7Hn3m3g==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33344)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1oC4lN-0006G0-ED; Thu, 14 Jul 2022 20:44:41 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1oC4lK-0006qv-Ou; Thu, 14 Jul 2022 20:44:38 +0100
-Date:   Thu, 14 Jul 2022 20:44:38 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Marcin Wojtas <mw@semihalf.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Grzegorz Jaszczyk <jaz@semihalf.com>,
-        Tomasz Nowicki <tn@semihalf.com>
-Subject: Re: [net-next: PATCH] net: dsa: mv88e6xxx: fix speed setting for
- CPU/DSA ports
-Message-ID: <YtByJhYpo5BzX4GV@shell.armlinux.org.uk>
-References: <20220714010021.1786616-1-mw@semihalf.com>
- <YtAMw7Sp06Kiv9PK@shell.armlinux.org.uk>
- <CAPv3WKcxH=b01ikuUESczWeX8SJjc2fg3GjSCp7Q8p72uSt_og@mail.gmail.com>
+        with ESMTP id S240729AbiGNTts (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 15:49:48 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF86F101D1
+        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 12:49:45 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id y4so3770178edc.4
+        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 12:49:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/jNeMx3p2bq8iOjtc1prT9uw6kQU6kEL+D5PYhdBgeU=;
+        b=iyx7LJkvTMnh0wjcxXWCL5Vn3fIyTAYtVfVQ4TKcaKx7XkNZTe6J6aDYOlvur/brpm
+         6OgEmU4hx9gaMuCn3nd/ZjLTQaw06YQ0sl7Ha3xvfvw4lcfzktclCJRT5YFFOV+GYALM
+         jSklOwJ81vnuHbCdac4fvzuUJ1JabjCG4//uILRcAknau55pC3Zw+JXI0sVKbFs/E69w
+         dkkz+k4L3ldgaYxBFFvhGEkRsae/4gXGLNhVThTP2icDTm8m9dyJWcIdCxygQ2vuygD6
+         VCKNmYBF+UlCjGr3VvxKSpZ40kzV9lnqulAFRFhm8artlo9llAPVaR4eE/EZ7563Uywx
+         CBaQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/jNeMx3p2bq8iOjtc1prT9uw6kQU6kEL+D5PYhdBgeU=;
+        b=bHLnRgy12BQ/xs83eROpbrb1kxGQlAZGU7u6Rv13ii75L7AjtTm9wClptm2kO8Ll5T
+         27hYqP57+I/RC2Q8RYGo0pbR3CrSUDhmw2mq+FNFhNGp3Zcu3Se4BWrgmAh8HtpHH78W
+         nDuohmEcRXqQoRJ8X0IeUAr/mVp3WUc18FY5tkJ5/WxCr8ml6gts+QcO2YwWvxEuetyF
+         QXE64YyaXFD0GkQ44qq29Gk2S+nkw+G6RWzzMUdjukUlvecs+QvK/pf5r/YJIBMwcXlr
+         gs0F1GU1jXfok+PANCfO/3UvHTRowJP1qFv7Cl+B5s15lS9jrmgHaitukyZ7FMXr/SkU
+         Ie2A==
+X-Gm-Message-State: AJIora9Cug0DHPbF98aTk8dk1QtJbwpR3FgfdTdAYX9L72SvOcUJN0Dq
+        p+BiaUn3ZZbkcT7Lv6dAP8ZETzIsRw9GFvJsO3E=
+X-Google-Smtp-Source: AGRyM1uXPn1rYGETl86rp/eS+fuWIwsrZCW6UHhyMKGbdbc/Mmeq5QBY8n1fEgc3L/uCKClPdhIXWnQoGGz4jfCJ+Rg=
+X-Received: by 2002:a05:6402:28c4:b0:43a:cdde:e047 with SMTP id
+ ef4-20020a05640228c400b0043acddee047mr2818337edb.368.1657828184526; Thu, 14
+ Jul 2022 12:49:44 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAPv3WKcxH=b01ikuUESczWeX8SJjc2fg3GjSCp7Q8p72uSt_og@mail.gmail.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+References: <20220712235310.1935121-1-joannelkoong@gmail.com>
+ <20220712235310.1935121-4-joannelkoong@gmail.com> <e2d28352a6c00db7c3b31d0b9aeca3ee5b196247.camel@redhat.com>
+In-Reply-To: <e2d28352a6c00db7c3b31d0b9aeca3ee5b196247.camel@redhat.com>
+From:   Joanne Koong <joannelkoong@gmail.com>
+Date:   Thu, 14 Jul 2022 12:49:33 -0700
+Message-ID: <CAJnrk1a68UtQs7gsAGPk5NfGcXPKonHZCscrvjsFOBz5g6+cBg@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 3/3] selftests/net: Add sk_bind_sendto_listen test
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 14, 2022 at 07:18:57PM +0200, Marcin Wojtas wrote:
-> Hi Russell,
-> 
-> czw., 14 lip 2022 o 14:32 Russell King (Oracle)
-> <linux@armlinux.org.uk> napisał(a):
+On Thu, Jul 14, 2022 at 2:19 AM Paolo Abeni <pabeni@redhat.com> wrote:
+>
+> On Tue, 2022-07-12 at 16:53 -0700, Joanne Koong wrote:
+> > This patch adds a new test called sk_bind_sendto_listen.
 > >
-> > On Thu, Jul 14, 2022 at 03:00:21AM +0200, Marcin Wojtas wrote:
-> > > Commit 3c783b83bd0f ("net: dsa: mv88e6xxx: get rid of SPEED_MAX setting")
-> > > stopped relying on SPEED_MAX constant and hardcoded speed settings
-> > > for the switch ports and rely on phylink configuration.
-> > >
-> > > It turned out, however, that when the relevant code is called,
-> > > the mac_capabilites of CPU/DSA port remain unset.
-> > > mv88e6xxx_setup_port() is called via mv88e6xxx_setup() in
-> > > dsa_tree_setup_switches(), which precedes setting the caps in
-> > > phylink_get_caps down in the chain of dsa_tree_setup_ports().
-> > >
-> > > As a result the mac_capabilites are 0 and the default speed for CPU/DSA
-> > > port is 10M at the start. To fix that execute phylink_get_caps() callback
-> > > which fills port's mac_capabilities before they are processed.
-> > >
-> > > Fixes: 3c783b83bd0f ("net: dsa: mv88e6xxx: get rid of SPEED_MAX setting")
-> > > Signed-off-by: Marcin Wojtas <mw@semihalf.com>
+> > This test exercises the path where a socket's rcv saddr changes after it
+> > has been added to the binding tables, and then a listen() on the socket
+> > is invoked. The listen() should succeed.
 > >
-> > Please don't merge this - the plan is to submit the RFC series I sent on
-> > Wednesday which deletes this code, and I'd rather not re-spin the series
-> > and go through the testing again because someone else changed the code.
-> 
-> Thank for the heads-up. Are you planning to resend the series or
-> willing to get it merged as-is? I have perhaps one comment, but I can
-> apply it later as a part of fwnode_/device_ migration.
-> 
+> > This test is copied over from one of syzbot's tests:
+> > https://syzkaller.appspot.com/x/repro.c?x=1673a38df00000
 > >
-> > Marcin - please can you test with my RFC series, which can be found at:
+> > Signed-off-by: Joanne Koong <joannelkoong@gmail.com>
+> > ---
+> >  tools/testing/selftests/net/.gitignore        |  1 +
+> >  tools/testing/selftests/net/Makefile          |  1 +
+> >  .../selftests/net/sk_bind_sendto_listen.c     | 80 +++++++++++++++++++
+> >  3 files changed, 82 insertions(+)
+> >  create mode 100644 tools/testing/selftests/net/sk_bind_sendto_listen.c
 > >
-> > https://lore.kernel.org/all/Ys7RdzGgHbYiPyB1@shell.armlinux.org.uk/
-> >
-> 
-> The thing is my v2 of DSA fwnode_/device_ migration is tested and
-> ready to send. There will be conflicts (rather easy) with your
-> patchset - I volunteer to resolve it this way or another, depending on
-> what lands first. I have 2 platforms to test it with + also ACPI case
-> locally.
-> 
-> I'd like to make things as smooth as possible and make it before the
-> upcoming merge window - please share your thoughts on this.
+> > diff --git a/tools/testing/selftests/net/.gitignore b/tools/testing/selftests/net/.gitignore
+> > index 5b1adf6e29ae..5fd74a1162cc 100644
+> > --- a/tools/testing/selftests/net/.gitignore
+> > +++ b/tools/testing/selftests/net/.gitignore
+> > @@ -39,3 +39,4 @@ toeplitz
+> >  cmsg_sender
+> >  unix_connect
+> >  bind_bhash
+> > +sk_bind_sendto_listen
+> > diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
+> > index e678fc3030a2..ffcc472d50d5 100644
+> > --- a/tools/testing/selftests/net/Makefile
+> > +++ b/tools/testing/selftests/net/Makefile
+> > @@ -61,6 +61,7 @@ TEST_GEN_FILES += cmsg_sender
+> >  TEST_GEN_FILES += stress_reuseport_listen
+> >  TEST_PROGS += test_vxlan_vnifiltering.sh
+> >  TEST_GEN_FILES += bind_bhash
+> > +TEST_GEN_FILES += sk_bind_sendto_listen
+>
+> It looks like this is never invoked by the self-tests ?!? you should
+> likely update bind_bhash.sh to run the new program.
 
-I've also been trying to get the mv88e6xxx PCS conversion in, but
-it's been held up because there's a fundamental problem in DSA that
-this series is addressing.
+Oh, I see. I didn't realize the net selftests should get invoked
+automatically. Sorry about that.
+I will add a "TEST_GEN_PROGS += sk_bind_sendto_listen" line to the
+Makefile instead of adding it to bind_bhash.sh since the bhash setup
+is not required for running ./sk_bind_sendto_listen. Thanks!
 
-This series is addressing a faux pas on my part, where I had forgotten
-that phylink doesn't get used in DSA unless firmware specifies a
-fixed-link (or a PHY) - in other words when the firmware lacks a
-description of the link.
-
-So, what do we do...
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+>
+> Thanks!
+>
+> Paolo
+>
