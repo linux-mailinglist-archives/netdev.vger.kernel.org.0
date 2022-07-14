@@ -2,167 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CE14C57566C
-	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 22:39:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EE51575676
+	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 22:42:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240490AbiGNUjn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jul 2022 16:39:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51798 "EHLO
+        id S240875AbiGNUmh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jul 2022 16:42:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240299AbiGNUjm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 16:39:42 -0400
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EFC53B95C;
-        Thu, 14 Jul 2022 13:39:41 -0700 (PDT)
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1oC5cT-000CPV-G6; Thu, 14 Jul 2022 22:39:34 +0200
-Received: from [85.1.206.226] (helo=linux-3.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1oC5cT-0000C8-0g; Thu, 14 Jul 2022 22:39:33 +0200
-Subject: Re: [PATCH v2,bpf-next] bpf: Don't redirect packets with invalid
- pkt_len
-To:     Stanislav Fomichev <sdf@google.com>,
-        Zhengchao Shao <shaozhengchao@huawei.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        hawk@kernel.org, ast@kernel.org, andrii@kernel.org,
-        martin.lau@linux.dev, song@kernel.org, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        weiyongjun1@huawei.com, yuehaibing@huawei.com
-References: <20220714060959.25232-1-shaozhengchao@huawei.com>
- <CAKH8qBtxJOCWoON6QXygOTD7AqjF+k=-4JWPHXEAQh-TO+W54A@mail.gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <7b333bcc-c8ed-f1f8-8331-58cba7897637@iogearbox.net>
-Date:   Thu, 14 Jul 2022 22:39:32 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
-MIME-Version: 1.0
-In-Reply-To: <CAKH8qBtxJOCWoON6QXygOTD7AqjF+k=-4JWPHXEAQh-TO+W54A@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.6/26601/Thu Jul 14 09:57:26 2022)
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S240594AbiGNUmf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 16:42:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0A834E628;
+        Thu, 14 Jul 2022 13:42:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 581D3B8258C;
+        Thu, 14 Jul 2022 20:42:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id DBCB6C34115;
+        Thu, 14 Jul 2022 20:42:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657831351;
+        bh=P+iE1Jlewq2iEBtk32EbfXSF4igTE90gdXVoMeUyBmQ=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=X6iUE+ODclSq2kCQ1AklRuKRM/eBtamZEHfS6dGnI2Gkx251bXeClNcxR8q/hdP4t
+         /LXPub+fUVOg5YWYreCNsDajFDiM9wrlpnVT0gH4EErW/vBD7c0RVoMKnIkWuZPbWk
+         1dmZrIc96ZWBJuVwO5lFywkR3pGaRnRUZeYpkVEOcNP9cVlQ0CoZnuRewfGLRDC919
+         BVrFM9+QqNC7L4G9KSV0Tmgzag7z1g+zY6E8ESvdGOKvmW9K0TwclND0E4R29ULCVe
+         EPAjfhZPaKJeub8EAYlOW9y+i5vjQQkHreyzMAsPKvXdNP1T4spO9wxPzN/gv/l1ZV
+         TImdkg3eyExmg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id CA0AFE45224;
+        Thu, 14 Jul 2022 20:42:31 +0000 (UTC)
+Subject: Re: [PULL] Networking for 5.19-rc7
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20220714190451.2808151-1-kuba@kernel.org>
+References: <20220714190451.2808151-1-kuba@kernel.org>
+X-PR-Tracked-List-Id: <netdev.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20220714190451.2808151-1-kuba@kernel.org>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.19-rc7
+X-PR-Tracked-Commit-Id: 656bd03a2cd853e7c7c4e08968ad8c0ea993737d
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 9bd572ec7a66b56e1aed896217ff311d981cf575
+Message-Id: <165783135182.13350.1137665657471618634.pr-tracker-bot@kernel.org>
+Date:   Thu, 14 Jul 2022 20:42:31 +0000
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     torvalds@linux-foundation.org, kuba@kernel.org,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/14/22 8:22 PM, Stanislav Fomichev wrote:
-> On Wed, Jul 13, 2022 at 11:05 PM Zhengchao Shao
-> <shaozhengchao@huawei.com> wrote:
->>
->> Syzbot found an issue [1]: fq_codel_drop() try to drop a flow whitout any
->> skbs, that is, the flow->head is null.
->> The root cause, as the [2] says, is because that bpf_prog_test_run_skb()
->> run a bpf prog which redirects empty skbs.
->> So we should determine whether the length of the packet modified by bpf
->> prog is valid before forwarding it directly.
->>
->> LINK: [1] https://syzkaller.appspot.com/bug?id=0b84da80c2917757915afa89f7738a9d16ec96c5
->> LINK: [2] https://www.spinics.net/lists/netdev/msg777503.html
->>
->> Reported-by: syzbot+7a12909485b94426aceb@syzkaller.appspotmail.com
->> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
-> 
-> Reviewed-by: Stanislav Fomichev <sdf@google.com>
-> 
-> Daniel, do you see any issues with this approach?
+The pull request you sent on Thu, 14 Jul 2022 12:04:51 -0700:
 
-I think it's fine, maybe this could be folded into:
+> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.19-rc7
 
-diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-index 750d7d173a20..256cd18cfe22 100644
---- a/net/bpf/test_run.c
-+++ b/net/bpf/test_run.c
-@@ -957,6 +957,8 @@ static int convert___skb_to_skb(struct sk_buff *skb, struct __sk_buff *__skb)
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/9bd572ec7a66b56e1aed896217ff311d981cf575
 
-         if (!__skb)
-                 return 0;
-+       if (!skb->len)
-+               return -EINVAL;
+Thank you!
 
-         /* make sure the fields we don't use are zeroed */
-         if (!range_is_zero(__skb, 0, offsetof(struct __sk_buff, mark)))
-
-> I wonder if we might also want to add some WARN_ON to the
-> __bpf_redirect_common routine gated by #ifdef CONFIG_DEBUG_NET ?
-> In case syscaller manages to hit similar issues elsewhere..
-
-Assuming the issue is generic (and CONFIG_DEBUG_NET only enabled by things like
-syzkaller), couldn't we do something like the below?
-
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index f6a27ab19202..c9988a785294 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -2459,6 +2459,17 @@ static inline void skb_set_tail_pointer(struct sk_buff *skb, const int offset)
-
-  #endif /* NET_SKBUFF_DATA_USES_OFFSET */
-
-+static inline void skb_assert_len(struct sk_buff *skb)
-+{
-+#ifdef CONFIG_DEBUG_NET
-+       if (unlikey(!skb->len)) {
-+               pr_err("%s\n", __func__);
-+               skb_dump(KERN_ERR, skb, false);
-+               WARN_ON_ONCE(1);
-+       }
-+#endif /* CONFIG_DEBUG_NET */
-+}
-+
-  /*
-   *     Add data to an sk_buff
-   */
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 978ed0622d8f..53c4b9fd22c0 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -4168,7 +4168,7 @@ int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
-         bool again = false;
-
-         skb_reset_mac_header(skb);
--
-+       skb_assert_len(skb);
-         if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_SCHED_TSTAMP))
-                 __skb_tstamp_tx(skb, NULL, NULL, skb->sk, SCM_TSTAMP_SCHED);
-
-
-
->> ---
->> v1: should not check len in fast path
->>
->>   net/bpf/test_run.c | 6 ++++++
->>   1 file changed, 6 insertions(+)
->>
->> diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
->> index 2ca96acbc50a..750d7d173a20 100644
->> --- a/net/bpf/test_run.c
->> +++ b/net/bpf/test_run.c
->> @@ -1152,6 +1152,12 @@ int bpf_prog_test_run_skb(struct bpf_prog *prog, const union bpf_attr *kattr,
->>          ret = convert___skb_to_skb(skb, ctx);
->>          if (ret)
->>                  goto out;
->> +
->> +       if (skb->len == 0) {
->> +               ret = -EINVAL;
->> +               goto out;
->> +       }
->> +
->>          ret = bpf_test_run(prog, skb, repeat, &retval, &duration, false);
->>          if (ret)
->>                  goto out;
->> --
->> 2.17.1
->>
-
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
