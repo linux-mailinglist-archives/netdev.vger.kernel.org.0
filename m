@@ -2,49 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E11B5741E2
-	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 05:32:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39D385741E6
+	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 05:33:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231757AbiGNDcH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jul 2022 23:32:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49634 "EHLO
+        id S232967AbiGNDdZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jul 2022 23:33:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229524AbiGNDcG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 23:32:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B38AA25E86
-        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 20:32:05 -0700 (PDT)
+        with ESMTP id S232253AbiGNDdU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jul 2022 23:33:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2039625EA1
+        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 20:33:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 33AE761E28
-        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 03:32:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61CF5C34114;
-        Thu, 14 Jul 2022 03:32:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AED5CB82282
+        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 03:33:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0D57C34114;
+        Thu, 14 Jul 2022 03:33:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657769524;
-        bh=T6J0LjVt+sJUzFsG23ZJLRPEkIwsv5eceulJ9pVHBMU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=XQsPQo2AJqmiRJLpKi0b92A428ZKFqEftu5+4lO81e8ECtsJxBKSl5ffd/aNtuGLY
-         0xJ6doM4AfYQ0yAghg7JMNWWY9jbxW+qpww/ZUdLj41Uj/32IP2p+10PNbVu5F004W
-         CGX1iK+7dX/znaRUrlv42OrBdnwmTBDAj8P2eQiwCCYPIZw0Nwi9iTMWyr7bo9KLjC
-         /2AoGMFaH+iWhor9cuv7y/gdOmQUtPUn5fQIGxd02w6UhqHtuxVrTD9K5uHTM6QKr2
-         tIve2O90mpPpZAjd0Jwkx0vDtlG+nuriBzLK7bbfYxxu/jd6+H8f+/01vOCUVLQ9QC
-         tslMinkWKtqjw==
-Date:   Wed, 13 Jul 2022 20:32:03 -0700
+        s=k20201202; t=1657769597;
+        bh=HgTKT6Ffu0cTjGo++aJRX2GO+H409VPtzq7LAfilhA4=;
+        h=From:To:Cc:Subject:Date:From;
+        b=rY2vtwt1xtKSVlU0K0em7edURePTZwTlwu5wTrD/hA8FhDEUFBL5Jkp/UvUjHU1Ss
+         W2583lwJveZl3o/CWWVgFXpmwL4BLhcXMfidyio/mcTLMo5BnDXuoDHpm13K3/3hA+
+         pYTWcyB5Bh3eQ88XRWc314RufRQ4/4Tg5Tijxvf9+CM2yUa85qWn18UTcgLFZZF1Cn
+         hyZgY5Ty+Ew79OrNe6jWj/PB51EQWOKi18gkSqkVgx9mr5jwtjxxYY1lyisr4RyYS5
+         VzwhxTynJMMAgtFXgYX5ZfQEtzAZkYKqi4IoTEqjrjECw/T7iPXalAetdGJFKixJIv
+         OiyqmtlY0Nu0w==
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Yonglong Li <liyonglong@chinatelecom.cn>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        pabeni@redhat.com, alexanderduyck@fb.com
-Subject: Re: [PATCH] net: sort queues in xps maps
-Message-ID: <20220713203203.19662c5f@kernel.org>
-In-Reply-To: <bf741f12-0587-5870-2c59-a52c36a1d2d6@chinatelecom.cn>
-References: <1657679096-38572-1-git-send-email-liyonglong@chinatelecom.cn>
-        <20220713190748.323cf866@kernel.org>
-        <bf741f12-0587-5870-2c59-a52c36a1d2d6@chinatelecom.cn>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
+        borisp@nvidia.com, john.fastabend@gmail.com, maximmi@nvidia.com,
+        tariqt@nvidia.com, vfedorenko@novek.ru,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next 00/11] tls: rx: avoid skb_cow_data()
+Date:   Wed, 13 Jul 2022 20:32:59 -0700
+Message-Id: <20220714033310.1273288-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -55,30 +53,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 14 Jul 2022 11:24:31 +0800 Yonglong Li wrote:
-> >> @@ -2654,6 +2660,13 @@ int __netif_set_xps_queue(struct net_device *dev, const unsigned long *mask,
-> >>  					  skip_tc);
-> >>  	}
-> >>  
-> >> +	for (j = -1; j = netif_attrmask_next_and(j, online_mask, mask, nr_ids),
-> >> +	     j < nr_ids;) {
-> >> +		tci = j * num_tc + tc;
-> >> +		map = xmap_dereference(new_dev_maps->attr_map[tci]);
-> >> +		sort(map->queues, map->len, sizeof(u16), cmp_u16, NULL);
-> >> +	}
-> >> +  
-> > 
-> > Can we instead make sure that expand_xps_map() maintains order?
-> >   
-> expand_xps_map() only alloc new_map and copy old map's queue to new_map.
-> I think it is not suitable to do it in expand_xps_map().
-> WDYT?
+TLS calls skb_cow_data() on the skb it received from strparser
+whenever it needs to hold onto the skb with the decrypted data.
+(The alternative being decrypting directly to a user space buffer
+in whic case the input skb doesn't get modified or used after.)
+TLS needs the decrypted skb:
+ - almost always with TLS 1.3 (unless the new NoPad is enabled);
+ - when user space buffer is too small to fit the record;
+ - when BPF sockmap is enabled.
 
-Oh, right, sorry for the confusion, I assumed since it reallocates that
-it also fills the entry. It probably doesn't to make sure that all
-allocations succeed before making any modifications.
+Most of the time the skb we get out of strparser is a clone of
+a 64kB data unit coalsced by GRO. To make things worse skb_cow_data()
+tries to output a linear skb and allocates it with GFP_ATOMIC.
+This occasionally fails even under moderate memory pressure.
 
-Can we factor out the inside of the next loop - starting from the 
-"add tx-queue to CPU/rx-queue maps" comment into a helper? My worry is
-that __netif_set_xps_queue() is already pretty long and complicated we
-should try to move some code out rather than make it longer.
+This patch set rejigs the TLS Rx so that we don't expect decryption
+in place. The decryption handlers return an skb which may or may not
+be the skb from strparser. For TLS 1.3 this results in a 20-30%
+performance improvement without NoPad enabled.
+
+Jakub Kicinski (11):
+  tls: rx: allow only one reader at a time
+  tls: rx: don't try to keep the skbs always on the list
+  tls: rx: don't keep decrypted skbs on ctx->recv_pkt
+  tls: rx: remove the message decrypted tracking
+  tls: rx: factor out device darg update
+  tls: rx: read the input skb from ctx->recv_pkt
+  tls: rx: return the decrypted skb via darg
+  tls: rx: async: adjust record geometry immediately
+  tls: rx: async: hold onto the input skb
+  tls: rx: async: don't put async zc on the list
+  tls: rx: decrypt into a fresh skb
+
+ include/net/strparser.h |   1 -
+ include/net/tls.h       |   4 +
+ net/tls/Makefile        |   2 +-
+ net/tls/tls.h           |  20 +-
+ net/tls/tls_device.c    |  25 ++-
+ net/tls/tls_strp.c      |  17 ++
+ net/tls/tls_sw.c        | 458 ++++++++++++++++++++++++----------------
+ 7 files changed, 333 insertions(+), 194 deletions(-)
+ create mode 100644 net/tls/tls_strp.c
+
+-- 
+2.36.1
+
