@@ -2,62 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2160157460B
-	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 09:47:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E33EF574659
+	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 10:10:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233783AbiGNHr1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jul 2022 03:47:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43288 "EHLO
+        id S229904AbiGNIKC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jul 2022 04:10:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237500AbiGNHrI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 03:47:08 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26F1A3A480;
-        Thu, 14 Jul 2022 00:47:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657784827; x=1689320827;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=IgQIW9OcSiZMlvIj+aZi0OP3kMeCavrUReS+btvbQv4=;
-  b=O383c6BWR7ftm5asE6M0eRgr+PEUlrAfSnYPHrzhNGHGJwNPfwzi+/rc
-   81toUOCRH5sDpxEPGfK2p69ngdDLeS+MhroakXneOlxleWK7Xv7imjl1B
-   gy7OgliSu/Rwcb93AjU9vO7odbe3si3tPzy91T15cvvzWD1p7cDzEPFFA
-   lZf3lvq1pGT7BFNZYrw2CSzIlZ3aVilza4jBe8jC9yPa/rqeFKVSaK0YK
-   ujYpzqSc4cgxtizh4Dcm7FxZI3jlVHvkzPYf6/LQ6Hjt1tDO1txCm9FKw
-   8uV/zda8Hx7U81ZO2/hi2yj4RcskFBZxA1eZLMyGGU58F4DGAnH7e2I+E
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10407"; a="286584196"
-X-IronPort-AV: E=Sophos;i="5.92,269,1650956400"; 
-   d="scan'208";a="286584196"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2022 00:47:06 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,269,1650956400"; 
-   d="scan'208";a="546174593"
-Received: from linux.intel.com ([10.54.29.200])
-  by orsmga003.jf.intel.com with ESMTP; 14 Jul 2022 00:47:06 -0700
-Received: from P12HL01TMIN.png.intel.com (P12HL01TMIN.png.intel.com [10.158.65.216])
-        by linux.intel.com (Postfix) with ESMTP id E1DCC580BE0;
-        Thu, 14 Jul 2022 00:47:03 -0700 (PDT)
-From:   Wong Vee Khee <vee.khee.wong@linux.intel.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Richard Cochran <richardcochran@gmail.com>
-Subject: [PATCH 1/1] net: stmmac: switch to use interrupt for hw crosstimestamping
-Date:   Thu, 14 Jul 2022 15:54:27 +0800
-Message-Id: <20220714075428.1060984-1-vee.khee.wong@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S229834AbiGNIKA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 04:10:00 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 05B162B18E
+        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 01:09:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657786198;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=QbwUGpjbW7JbQyUNjUb2fa5Xyr2Kx7SLSsmZRBY7x/M=;
+        b=gQw9FwFp1WzMWZqS1zLu2ppjqjPya1y0Q41wEw2qpYAF6yu1y8f+d+RhJ38aUlMY9WBRsd
+        VJ1vxUN7zShht6sKpwgaroQ3avbcKYvZL/LkiwJITOr3v5148H1wBV8epEVWXD9p4NHNCk
+        KOCpx1RRtcLvSETrVr3/eyPmVGdUgRI=
+Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
+ [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-28-yMErnwzcOgSM1qNq3YTiXA-1; Thu, 14 Jul 2022 04:09:57 -0400
+X-MC-Unique: yMErnwzcOgSM1qNq3YTiXA-1
+Received: by mail-qv1-f71.google.com with SMTP id d18-20020a0cfe92000000b0047342562073so806064qvs.1
+        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 01:09:56 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=QbwUGpjbW7JbQyUNjUb2fa5Xyr2Kx7SLSsmZRBY7x/M=;
+        b=Ju0c8ewZAiCvTBAOuQYMToOWRfQm+4D/V77c/QxIWWvDZzIMuHF1x7Eo3+9Pb63T04
+         Yk9uQJv4TtS76K08hkmpZc/MAR6q8qhJW71oqREUdu0uoXVXiOjg6J7Phslu101/ov0V
+         qJ1cQkXlgOabOk1b4sibUMfsSklZtk6p8q4zq6joZbMBCHm8BQJyAUm2YoZEv8CgYDq8
+         L4bhlSWqilAbRcoDos7U05w2EtX1RMTHxcT5+FZyn2BTMkXRt8Ug1scZPOUg4FIZ66Io
+         JCnnNYF6eSYrbdRdb1Vbiw+r2hGlAMvdfWLQvsOJshNNP+gmJstu4BHcl5BjPTZag427
+         VYIA==
+X-Gm-Message-State: AJIora8DxWfOByM807P9+W0mR+uY2dL7Z58quhTxSQMg5QQ7htkQg3eG
+        5x55QG6R3D/0/4n4X8zK89ynAmAmbywV5q6e2/a+2Y1X1NtIjKFesva+0etCDxRE/AI67h8yNKJ
+        tryfnWBQ66qF4QeSR
+X-Received: by 2002:a05:620a:1410:b0:6b5:ae3a:8cb2 with SMTP id d16-20020a05620a141000b006b5ae3a8cb2mr5103193qkj.381.1657786196477;
+        Thu, 14 Jul 2022 01:09:56 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1sn7eS9DSJAwKhEQSsG9Venj41m/tkOEx8h6WwGJGineMWqhmM+BgcslRhYvh2VgH4+LLCGAQ==
+X-Received: by 2002:a05:620a:1410:b0:6b5:ae3a:8cb2 with SMTP id d16-20020a05620a141000b006b5ae3a8cb2mr5103181qkj.381.1657786196088;
+        Thu, 14 Jul 2022 01:09:56 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-97-238.dyn.eolo.it. [146.241.97.238])
+        by smtp.gmail.com with ESMTPSA id w3-20020a05620a444300b006a37eb728cfsm867680qkp.1.2022.07.14.01.09.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Jul 2022 01:09:55 -0700 (PDT)
+Message-ID: <bdea7caaaa84adb7c75c19438a7cea43b2391ffc.camel@redhat.com>
+Subject: Re: [PATCH net 1/8] amt: use workqueue for gateway side message
+ handling
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Taehee Yoo <ap420073@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org, edumazet@google.com, netdev@vger.kernel.org
+Date:   Thu, 14 Jul 2022 10:09:51 +0200
+In-Reply-To: <20220712105714.12282-2-ap420073@gmail.com>
+References: <20220712105714.12282-1-ap420073@gmail.com>
+         <20220712105714.12282-2-ap420073@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=AC_FROM_MANY_DOTS,BAYES_00,
-        DKIMWL_WL_HIGH,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -66,215 +78,374 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Using current implementation of polling mode, there is high chances we
-will hit into timeout error when running phc2sys. Hence, update the
-implementation of hardware crosstimestamping to use the MAC interrupt
-service routine instead of polling for TSIS bit in the MAC Timestamp
-Interrupt Status register to be set.
+On Tue, 2022-07-12 at 10:57 +0000, Taehee Yoo wrote:
+> There are some synchronization issues(amt->status, amt->req_cnt, etc)
+> if the interface is in gateway mode because gateway message handlers
+> are processed concurrently.
+> This applies a work queue for processing these messages instead of
+> expanding the locking context.
+> 
+> So, the purposes of this patch are to fix exist race conditions and to make
+> gateway to be able to validate a gateway status more correctly.
+> 
+> When the AMT gateway interface is created, it tries to establish to relay.
+> The establishment step looks stateless, but it should be managed well.
+> In order to handle messages in the gateway, it saves the current
+> status(i.e. AMT_STATUS_XXX).
+> This patch makes gateway code to be worked with a single thread.
+> 
+> Now, all messages except the multicast are triggered(received or
+> delay expired), and these messages will be stored in the event
+> queue(amt->events).
+> Then, the single worker processes stored messages asynchronously one
+> by one.
+> The multicast data message type will be still processed immediately.
+> 
+> Now, amt->lock is only needed to access the event queue(amt->events)
+> if an interface is the gateway mode.
+> 
+> Fixes: cbc21dc1cfe9 ("amt: add data plane of amt interface")
+> Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+> ---
+>  drivers/net/amt.c | 158 +++++++++++++++++++++++++++++++++++++++++-----
+>  include/net/amt.h |  20 ++++++
+>  2 files changed, 163 insertions(+), 15 deletions(-)
+> 
+> diff --git a/drivers/net/amt.c b/drivers/net/amt.c
+> index be2719a3ba70..032c2934e466 100644
+> --- a/drivers/net/amt.c
+> +++ b/drivers/net/amt.c
+> @@ -900,6 +900,28 @@ static void amt_send_mld_gq(struct amt_dev *amt, struct amt_tunnel_list *tunnel)
+>  }
+>  #endif
+>  
+> +static bool amt_queue_events(struct amt_dev *amt, enum amt_event event,
+> +			     struct sk_buff *skb)
+> +{
+> +	int index;
+> +
+> +	spin_lock_bh(&amt->lock);
+> +	if (amt->nr_events >= AMT_MAX_EVENTS) {
+> +		spin_unlock_bh(&amt->lock);
+> +		return 1;
+> +	}
+> +
+> +	index = (amt->event_idx + amt->nr_events) % AMT_MAX_EVENTS;
+> +	amt->events[index].event = event;
+> +	amt->events[index].skb = skb;
+> +	amt->nr_events++;
+> +	amt->event_idx %= AMT_MAX_EVENTS;
+> +	queue_work(amt_wq, &amt->event_wq);
+> +	spin_unlock_bh(&amt->lock);
+> +
+> +	return 0;
+> +}
+> +
+>  static void amt_secret_work(struct work_struct *work)
+>  {
+>  	struct amt_dev *amt = container_of(to_delayed_work(work),
+> @@ -913,12 +935,8 @@ static void amt_secret_work(struct work_struct *work)
+>  			 msecs_to_jiffies(AMT_SECRET_TIMEOUT));
+>  }
+>  
+> -static void amt_discovery_work(struct work_struct *work)
+> +static void amt_event_send_discovery(struct amt_dev *amt)
+>  {
+> -	struct amt_dev *amt = container_of(to_delayed_work(work),
+> -					   struct amt_dev,
+> -					   discovery_wq);
+> -
+>  	spin_lock_bh(&amt->lock);
+>  	if (amt->status > AMT_STATUS_SENT_DISCOVERY)
+>  		goto out;
+> @@ -933,11 +951,19 @@ static void amt_discovery_work(struct work_struct *work)
+>  	spin_unlock_bh(&amt->lock);
+>  }
+>  
+> -static void amt_req_work(struct work_struct *work)
+> +static void amt_discovery_work(struct work_struct *work)
+>  {
+>  	struct amt_dev *amt = container_of(to_delayed_work(work),
+>  					   struct amt_dev,
+> -					   req_wq);
+> +					   discovery_wq);
+> +
+> +	if (amt_queue_events(amt, AMT_EVENT_SEND_DISCOVERY, NULL))
+> +		mod_delayed_work(amt_wq, &amt->discovery_wq,
+> +				 msecs_to_jiffies(AMT_DISCOVERY_TIMEOUT));
+> +}
+> +
+> +static void amt_event_send_request(struct amt_dev *amt)
+> +{
+>  	u32 exp;
+>  
+>  	spin_lock_bh(&amt->lock);
+> @@ -967,6 +993,17 @@ static void amt_req_work(struct work_struct *work)
+>  	spin_unlock_bh(&amt->lock);
+>  }
+>  
+> +static void amt_req_work(struct work_struct *work)
+> +{
+> +	struct amt_dev *amt = container_of(to_delayed_work(work),
+> +					   struct amt_dev,
+> +					   req_wq);
+> +
+> +	if (amt_queue_events(amt, AMT_EVENT_SEND_REQUEST, NULL))
+> +		mod_delayed_work(amt_wq, &amt->req_wq,
+> +				 msecs_to_jiffies(100));
+> +}
+> +
+>  static bool amt_send_membership_update(struct amt_dev *amt,
+>  				       struct sk_buff *skb,
+>  				       bool v6)
+> @@ -2392,12 +2429,14 @@ static bool amt_membership_query_handler(struct amt_dev *amt,
+>  	skb->pkt_type = PACKET_MULTICAST;
+>  	skb->ip_summed = CHECKSUM_NONE;
+>  	len = skb->len;
+> +	rcu_read_lock_bh();
 
-Cc: Richard Cochran <richardcochran@gmail.com>
-Signed-off-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
----
- .../net/ethernet/stmicro/stmmac/dwmac-intel.c | 25 ++++++++++++-------
- drivers/net/ethernet/stmicro/stmmac/dwmac4.h  |  3 ++-
- .../net/ethernet/stmicro/stmmac/dwmac4_core.c |  4 +++
- drivers/net/ethernet/stmicro/stmmac/stmmac.h  |  1 +
- .../ethernet/stmicro/stmmac/stmmac_hwtstamp.c |  5 ++++
- .../net/ethernet/stmicro/stmmac/stmmac_ptp.c  | 12 +--------
- include/linux/stmmac.h                        |  1 +
- 7 files changed, 30 insertions(+), 21 deletions(-)
+Here you only need local_bh_disable(), the RCU part is confusing as
+Jakub noted, and not needed.
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-index 38fe77d1035e..3fe720c5dc9f 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-@@ -298,6 +298,11 @@ static void get_arttime(struct mii_bus *mii, int intel_adhoc_addr,
- 	*art_time = ns;
- }
- 
-+static int stmmac_cross_ts_isr(struct stmmac_priv *priv)
-+{
-+	return (readl(priv->ioaddr + GMAC_INT_STATUS) & GMAC_INT_TSIE);
-+}
-+
- static int intel_crosststamp(ktime_t *device,
- 			     struct system_counterval_t *system,
- 			     void *ctx)
-@@ -313,8 +318,6 @@ static int intel_crosststamp(ktime_t *device,
- 	u32 num_snapshot;
- 	u32 gpio_value;
- 	u32 acr_value;
--	int ret;
--	u32 v;
- 	int i;
- 
- 	if (!boot_cpu_has(X86_FEATURE_ART))
-@@ -328,6 +331,8 @@ static int intel_crosststamp(ktime_t *device,
- 	if (priv->plat->ext_snapshot_en)
- 		return -EBUSY;
- 
-+	priv->plat->int_snapshot_en = 1;
-+
- 	mutex_lock(&priv->aux_ts_lock);
- 	/* Enable Internal snapshot trigger */
- 	acr_value = readl(ptpaddr + PTP_ACR);
-@@ -347,6 +352,7 @@ static int intel_crosststamp(ktime_t *device,
- 		break;
- 	default:
- 		mutex_unlock(&priv->aux_ts_lock);
-+		priv->plat->int_snapshot_en = 0;
- 		return -EINVAL;
- 	}
- 	writel(acr_value, ptpaddr + PTP_ACR);
-@@ -368,13 +374,12 @@ static int intel_crosststamp(ktime_t *device,
- 	gpio_value |= GMAC_GPO1;
- 	writel(gpio_value, ioaddr + GMAC_GPIO_STATUS);
- 
--	/* Poll for time sync operation done */
--	ret = readl_poll_timeout(priv->ioaddr + GMAC_INT_STATUS, v,
--				 (v & GMAC_INT_TSIE), 100, 10000);
--
--	if (ret == -ETIMEDOUT) {
--		pr_err("%s: Wait for time sync operation timeout\n", __func__);
--		return ret;
-+	/* Time sync done Indication - Interrupt method */
-+	if (!wait_event_interruptible_timeout(priv->tstamp_busy_wait,
-+					      stmmac_cross_ts_isr(priv),
-+					      HZ / 100)) {
-+		priv->plat->int_snapshot_en = 0;
-+		return -ETIMEDOUT;
- 	}
- 
- 	num_snapshot = (readl(ioaddr + GMAC_TIMESTAMP_STATUS) &
-@@ -392,6 +397,7 @@ static int intel_crosststamp(ktime_t *device,
- 	}
- 
- 	system->cycles *= intel_priv->crossts_adj;
-+	priv->plat->int_snapshot_en = 0;
- 
- 	return 0;
- }
-@@ -576,6 +582,7 @@ static int intel_mgbe_common_data(struct pci_dev *pdev,
- 
- 	plat->has_crossts = true;
- 	plat->crosststamp = intel_crosststamp;
-+	plat->int_snapshot_en = 0;
- 
- 	/* Setup MSI vector offset specific to Intel mGbE controller */
- 	plat->msi_mac_vec = 29;
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4.h b/drivers/net/ethernet/stmicro/stmmac/dwmac4.h
-index 462ca7ed095a..71dad409f78b 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac4.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4.h
-@@ -150,7 +150,8 @@
- #define	GMAC_PCS_IRQ_DEFAULT	(GMAC_INT_RGSMIIS | GMAC_INT_PCS_LINK |	\
- 				 GMAC_INT_PCS_ANE)
- 
--#define	GMAC_INT_DEFAULT_ENABLE	(GMAC_INT_PMT_EN | GMAC_INT_LPI_EN)
-+#define	GMAC_INT_DEFAULT_ENABLE	(GMAC_INT_PMT_EN | GMAC_INT_LPI_EN | \
-+				 GMAC_INT_TSIE)
- 
- enum dwmac4_irq_status {
- 	time_stamp_irq = 0x00001000,
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-index fd41db65fe1d..d5299dd13e85 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-@@ -23,6 +23,7 @@
- static void dwmac4_core_init(struct mac_device_info *hw,
- 			     struct net_device *dev)
- {
-+	struct stmmac_priv *priv = netdev_priv(dev);
- 	void __iomem *ioaddr = hw->pcsr;
- 	u32 value = readl(ioaddr + GMAC_CONFIG);
- 
-@@ -58,6 +59,9 @@ static void dwmac4_core_init(struct mac_device_info *hw,
- 		value |= GMAC_INT_FPE_EN;
- 
- 	writel(value, ioaddr + GMAC_INT_EN);
-+
-+	if (GMAC_INT_DEFAULT_ENABLE & GMAC_INT_TSIE)
-+		init_waitqueue_head(&priv->tstamp_busy_wait);
- }
- 
- static void dwmac4_rx_queue_enable(struct mac_device_info *hw,
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac.h b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-index 57970ae2178d..f9e83964aa7e 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-@@ -266,6 +266,7 @@ struct stmmac_priv {
- 	rwlock_t ptp_lock;
- 	/* Protects auxiliary snapshot registers from concurrent access. */
- 	struct mutex aux_ts_lock;
-+	wait_queue_head_t tstamp_busy_wait;
- 
- 	void __iomem *mmcaddr;
- 	void __iomem *ptpaddr;
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c
-index 92d32940aff0..764832f4dae1 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c
-@@ -179,6 +179,11 @@ static void timestamp_interrupt(struct stmmac_priv *priv)
- 	u64 ptp_time;
- 	int i;
- 
-+	if (priv->plat->int_snapshot_en) {
-+		wake_up(&priv->tstamp_busy_wait);
-+		return;
-+	}
-+
- 	tsync_int = readl(priv->ioaddr + GMAC_INT_STATUS) & GMAC_INT_TSIE;
- 
- 	if (!tsync_int)
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c
-index e45fb191d8e6..4d11980dcd64 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c
-@@ -175,11 +175,10 @@ static int stmmac_enable(struct ptp_clock_info *ptp,
- 	struct stmmac_priv *priv =
- 	    container_of(ptp, struct stmmac_priv, ptp_clock_ops);
- 	void __iomem *ptpaddr = priv->ptpaddr;
--	void __iomem *ioaddr = priv->hw->pcsr;
- 	struct stmmac_pps_cfg *cfg;
--	u32 intr_value, acr_value;
- 	int ret = -EOPNOTSUPP;
- 	unsigned long flags;
-+	u32 acr_value;
- 
- 	switch (rq->type) {
- 	case PTP_CLK_REQ_PEROUT:
-@@ -213,19 +212,10 @@ static int stmmac_enable(struct ptp_clock_info *ptp,
- 			netdev_dbg(priv->dev, "Auxiliary Snapshot %d enabled.\n",
- 				   priv->plat->ext_snapshot_num >>
- 				   PTP_ACR_ATSEN_SHIFT);
--			/* Enable Timestamp Interrupt */
--			intr_value = readl(ioaddr + GMAC_INT_EN);
--			intr_value |= GMAC_INT_TSIE;
--			writel(intr_value, ioaddr + GMAC_INT_EN);
--
- 		} else {
- 			netdev_dbg(priv->dev, "Auxiliary Snapshot %d disabled.\n",
- 				   priv->plat->ext_snapshot_num >>
- 				   PTP_ACR_ATSEN_SHIFT);
--			/* Disable Timestamp Interrupt */
--			intr_value = readl(ioaddr + GMAC_INT_EN);
--			intr_value &= ~GMAC_INT_TSIE;
--			writel(intr_value, ioaddr + GMAC_INT_EN);
- 		}
- 		writel(acr_value, ptpaddr + PTP_ACR);
- 		mutex_unlock(&priv->aux_ts_lock);
-diff --git a/include/linux/stmmac.h b/include/linux/stmmac.h
-index 29917850f079..8df475db88c0 100644
---- a/include/linux/stmmac.h
-+++ b/include/linux/stmmac.h
-@@ -260,6 +260,7 @@ struct plat_stmmacenet_data {
- 	bool has_crossts;
- 	int int_snapshot_num;
- 	int ext_snapshot_num;
-+	bool int_snapshot_en;
- 	bool ext_snapshot_en;
- 	bool multi_msi_en;
- 	int msi_mac_vec;
--- 
-2.25.1
+>  	if (__netif_rx(skb) == NET_RX_SUCCESS) {
+>  		amt_update_gw_status(amt, AMT_STATUS_RECEIVED_QUERY, true);
+>  		dev_sw_netstats_rx_add(amt->dev, len);
+>  	} else {
+>  		amt->dev->stats.rx_dropped++;
+>  	}
+> +	rcu_read_unlock_bh();
+>  
+>  	return false;
+>  }
+> @@ -2688,6 +2727,38 @@ static bool amt_request_handler(struct amt_dev *amt, struct sk_buff *skb)
+>  	return false;
+>  }
+>  
+> +static void amt_gw_rcv(struct amt_dev *amt, struct sk_buff *skb)
+> +{
+> +	int type = amt_parse_type(skb);
+> +	int err = 1;
+> +
+> +	if (type == -1)
+> +		goto drop;
+> +
+> +	if (amt->mode == AMT_MODE_GATEWAY) {
+> +		switch (type) {
+> +		case AMT_MSG_ADVERTISEMENT:
+> +			err = amt_advertisement_handler(amt, skb);
+> +			break;
+> +		case AMT_MSG_MEMBERSHIP_QUERY:
+> +			err = amt_membership_query_handler(amt, skb);
+> +			if (!err)
+> +				return;
+> +			break;
+> +		default:
+> +			netdev_dbg(amt->dev, "Invalid type of Gateway\n");
+> +			break;
+> +		}
+> +	}
+> +drop:
+> +	if (err) {
+> +		amt->dev->stats.rx_dropped++;
+> +		kfree_skb(skb);
+> +	} else {
+> +		consume_skb(skb);
+> +	}
+> +}
+> +
+>  static int amt_rcv(struct sock *sk, struct sk_buff *skb)
+>  {
+>  	struct amt_dev *amt;
+> @@ -2719,8 +2790,12 @@ static int amt_rcv(struct sock *sk, struct sk_buff *skb)
+>  				err = true;
+>  				goto drop;
+>  			}
+> -			err = amt_advertisement_handler(amt, skb);
+> -			break;
+> +			if (amt_queue_events(amt, AMT_EVENT_RECEIVE, skb)) {
+> +				netdev_dbg(amt->dev, "AMT Event queue full\n");
+> +				err = true;
+> +				goto drop;
+> +			}
+> +			goto out;
+>  		case AMT_MSG_MULTICAST_DATA:
+>  			if (iph->saddr != amt->remote_ip) {
+>  				netdev_dbg(amt->dev, "Invalid Relay IP\n");
+> @@ -2738,11 +2813,12 @@ static int amt_rcv(struct sock *sk, struct sk_buff *skb)
+>  				err = true;
+>  				goto drop;
+>  			}
+> -			err = amt_membership_query_handler(amt, skb);
+> -			if (err)
+> +			if (amt_queue_events(amt, AMT_EVENT_RECEIVE, skb)) {
+> +				netdev_dbg(amt->dev, "AMT Event queue full\n");
+> +				err = true;
+>  				goto drop;
+> -			else
+> -				goto out;
+> +			}
+> +			goto out;
+>  		default:
+>  			err = true;
+>  			netdev_dbg(amt->dev, "Invalid type of Gateway\n");
+> @@ -2780,6 +2856,45 @@ static int amt_rcv(struct sock *sk, struct sk_buff *skb)
+>  	return 0;
+>  }
+>  
+> +static void amt_event_work(struct work_struct *work)
+> +{
+> +	struct amt_dev *amt = container_of(work, struct amt_dev, event_wq);
+> +	struct sk_buff *skb;
+> +	u8 event;
+> +
+> +	while (1) {
+> +		spin_lock(&amt->lock);
+
+This is called in process context, amd amt->lock can be acquired from
+BH context, you need spin_lock_bh() here.
+
+Lockdep should help finding this kind of issue.
+
+> +		if (amt->nr_events == 0) {
+> +			spin_unlock(&amt->lock);
+> +			return;
+> +		}
+> +		event = amt->events[amt->event_idx].event;
+> +		skb = amt->events[amt->event_idx].skb;
+> +		amt->events[amt->event_idx].event = AMT_EVENT_NONE;
+> +		amt->events[amt->event_idx].skb = NULL;
+> +		amt->nr_events--;
+> +		amt->event_idx++;
+> +		amt->event_idx %= AMT_MAX_EVENTS;
+> +		spin_unlock(&amt->lock);
+> +
+> +		switch (event) {
+> +		case AMT_EVENT_RECEIVE:
+> +			amt_gw_rcv(amt, skb);
+> +			break;
+> +		case AMT_EVENT_SEND_DISCOVERY:
+> +			amt_event_send_discovery(amt);
+> +			break;
+> +		case AMT_EVENT_SEND_REQUEST:
+> +			amt_event_send_request(amt);
+> +			break;
+> +		default:
+> +			if (skb)
+> +				kfree_skb(skb);
+> +			break;
+> +		}
+
+This loops is unbound. If the socket keep adding events, it can keep
+running forever. You need either to add cond_schedule() or even better
+break it after a low max number of iterations - pending event will be
+served when the work struct is dequeued next
+
+> +	}
+> +}
+> +
+>  static int amt_err_lookup(struct sock *sk, struct sk_buff *skb)
+>  {
+>  	struct amt_dev *amt;
+> @@ -2892,10 +3007,21 @@ static int amt_dev_stop(struct net_device *dev)
+>  	struct amt_dev *amt = netdev_priv(dev);
+>  	struct amt_tunnel_list *tunnel, *tmp;
+>  	struct socket *sock;
+> +	struct sk_buff *skb;
+> +	int i;
+>  
+>  	cancel_delayed_work_sync(&amt->req_wq);
+>  	cancel_delayed_work_sync(&amt->discovery_wq);
+>  	cancel_delayed_work_sync(&amt->secret_wq);
+> +	cancel_work_sync(&amt->event_wq);
+> +
+> +	for (i = 0; i < AMT_MAX_EVENTS; i++) {
+> +		skb = amt->events[i].skb;
+> +		if (skb)
+> +			kfree_skb(skb);
+> +		amt->events[i].event = AMT_EVENT_NONE;
+> +		amt->events[i].skb = NULL;
+> +	}
+>  
+>  	/* shutdown */
+>  	sock = rtnl_dereference(amt->sock);
+> @@ -3051,6 +3177,8 @@ static int amt_newlink(struct net *net, struct net_device *dev,
+>  		amt->max_tunnels = AMT_MAX_TUNNELS;
+>  
+>  	spin_lock_init(&amt->lock);
+> +	amt->event_idx = 0;
+> +	amt->nr_events = 0;
+>  	amt->max_groups = AMT_MAX_GROUP;
+>  	amt->max_sources = AMT_MAX_SOURCE;
+>  	amt->hash_buckets = AMT_HSIZE;
+> @@ -3146,8 +3274,8 @@ static int amt_newlink(struct net *net, struct net_device *dev,
+>  	INIT_DELAYED_WORK(&amt->discovery_wq, amt_discovery_work);
+>  	INIT_DELAYED_WORK(&amt->req_wq, amt_req_work);
+>  	INIT_DELAYED_WORK(&amt->secret_wq, amt_secret_work);
+> +	INIT_WORK(&amt->event_wq, amt_event_work);
+>  	INIT_LIST_HEAD(&amt->tunnel_list);
+> -
+>  	return 0;
+>  err:
+>  	dev_put(amt->stream_dev);
+> @@ -3280,7 +3408,7 @@ static int __init amt_init(void)
+>  	if (err < 0)
+>  		goto unregister_notifier;
+>  
+> -	amt_wq = alloc_workqueue("amt", WQ_UNBOUND, 1);
+> +	amt_wq = alloc_workqueue("amt", WQ_UNBOUND, 0);
+>  	if (!amt_wq) {
+>  		err = -ENOMEM;
+>  		goto rtnl_unregister;
+> diff --git a/include/net/amt.h b/include/net/amt.h
+> index 0e40c3d64fcf..08fc30cf2f34 100644
+> --- a/include/net/amt.h
+> +++ b/include/net/amt.h
+> @@ -78,6 +78,15 @@ enum amt_status {
+>  
+>  #define AMT_STATUS_MAX (__AMT_STATUS_MAX - 1)
+>  
+> +/* Gateway events only */
+> +enum amt_event {
+> +	AMT_EVENT_NONE,
+> +	AMT_EVENT_RECEIVE,
+> +	AMT_EVENT_SEND_DISCOVERY,
+> +	AMT_EVENT_SEND_REQUEST,
+> +	__AMT_EVENT_MAX,
+> +};
+> +
+>  struct amt_header {
+>  #if defined(__LITTLE_ENDIAN_BITFIELD)
+>  	u8 type:4,
+> @@ -292,6 +301,12 @@ struct amt_group_node {
+>  	struct hlist_head	sources[];
+>  };
+>  
+> +#define AMT_MAX_EVENTS	16
+> +struct amt_events {
+> +	enum amt_event event;
+> +	struct sk_buff *skb;
+> +};
+> +
+>  struct amt_dev {
+>  	struct net_device       *dev;
+>  	struct net_device       *stream_dev;
+> @@ -308,6 +323,7 @@ struct amt_dev {
+>  	struct delayed_work     req_wq;
+>  	/* Protected by RTNL */
+>  	struct delayed_work     secret_wq;
+> +	struct work_struct	event_wq;
+>  	/* AMT status */
+>  	enum amt_status		status;
+>  	/* Generated key */
+> @@ -345,6 +361,10 @@ struct amt_dev {
+>  	/* Used only in gateway mode */
+>  	u64			mac:48,
+>  				reserved:16;
+> +	/* AMT gateway side message handler queue */
+> +	struct amt_events	events[AMT_MAX_EVENTS];
+> +	u8			event_idx;
+> +	u8			nr_events;
+>  };
+>  
+>  #define AMT_TOS			0xc0
 
