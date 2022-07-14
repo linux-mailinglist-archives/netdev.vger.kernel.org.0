@@ -2,450 +2,236 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E33EF574659
-	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 10:10:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DE0E574665
+	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 10:14:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229904AbiGNIKC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jul 2022 04:10:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35626 "EHLO
+        id S230431AbiGNIOO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jul 2022 04:14:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229834AbiGNIKA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 04:10:00 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 05B162B18E
-        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 01:09:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657786198;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=QbwUGpjbW7JbQyUNjUb2fa5Xyr2Kx7SLSsmZRBY7x/M=;
-        b=gQw9FwFp1WzMWZqS1zLu2ppjqjPya1y0Q41wEw2qpYAF6yu1y8f+d+RhJ38aUlMY9WBRsd
-        VJ1vxUN7zShht6sKpwgaroQ3avbcKYvZL/LkiwJITOr3v5148H1wBV8epEVWXD9p4NHNCk
-        KOCpx1RRtcLvSETrVr3/eyPmVGdUgRI=
-Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
- [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-28-yMErnwzcOgSM1qNq3YTiXA-1; Thu, 14 Jul 2022 04:09:57 -0400
-X-MC-Unique: yMErnwzcOgSM1qNq3YTiXA-1
-Received: by mail-qv1-f71.google.com with SMTP id d18-20020a0cfe92000000b0047342562073so806064qvs.1
-        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 01:09:56 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=QbwUGpjbW7JbQyUNjUb2fa5Xyr2Kx7SLSsmZRBY7x/M=;
-        b=Ju0c8ewZAiCvTBAOuQYMToOWRfQm+4D/V77c/QxIWWvDZzIMuHF1x7Eo3+9Pb63T04
-         Yk9uQJv4TtS76K08hkmpZc/MAR6q8qhJW71oqREUdu0uoXVXiOjg6J7Phslu101/ov0V
-         qJ1cQkXlgOabOk1b4sibUMfsSklZtk6p8q4zq6joZbMBCHm8BQJyAUm2YoZEv8CgYDq8
-         L4bhlSWqilAbRcoDos7U05w2EtX1RMTHxcT5+FZyn2BTMkXRt8Ug1scZPOUg4FIZ66Io
-         JCnnNYF6eSYrbdRdb1Vbiw+r2hGlAMvdfWLQvsOJshNNP+gmJstu4BHcl5BjPTZag427
-         VYIA==
-X-Gm-Message-State: AJIora8DxWfOByM807P9+W0mR+uY2dL7Z58quhTxSQMg5QQ7htkQg3eG
-        5x55QG6R3D/0/4n4X8zK89ynAmAmbywV5q6e2/a+2Y1X1NtIjKFesva+0etCDxRE/AI67h8yNKJ
-        tryfnWBQ66qF4QeSR
-X-Received: by 2002:a05:620a:1410:b0:6b5:ae3a:8cb2 with SMTP id d16-20020a05620a141000b006b5ae3a8cb2mr5103193qkj.381.1657786196477;
-        Thu, 14 Jul 2022 01:09:56 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1sn7eS9DSJAwKhEQSsG9Venj41m/tkOEx8h6WwGJGineMWqhmM+BgcslRhYvh2VgH4+LLCGAQ==
-X-Received: by 2002:a05:620a:1410:b0:6b5:ae3a:8cb2 with SMTP id d16-20020a05620a141000b006b5ae3a8cb2mr5103181qkj.381.1657786196088;
-        Thu, 14 Jul 2022 01:09:56 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-97-238.dyn.eolo.it. [146.241.97.238])
-        by smtp.gmail.com with ESMTPSA id w3-20020a05620a444300b006a37eb728cfsm867680qkp.1.2022.07.14.01.09.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Jul 2022 01:09:55 -0700 (PDT)
-Message-ID: <bdea7caaaa84adb7c75c19438a7cea43b2391ffc.camel@redhat.com>
-Subject: Re: [PATCH net 1/8] amt: use workqueue for gateway side message
- handling
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Taehee Yoo <ap420073@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, edumazet@google.com, netdev@vger.kernel.org
-Date:   Thu, 14 Jul 2022 10:09:51 +0200
-In-Reply-To: <20220712105714.12282-2-ap420073@gmail.com>
-References: <20220712105714.12282-1-ap420073@gmail.com>
-         <20220712105714.12282-2-ap420073@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        with ESMTP id S230384AbiGNIOL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 04:14:11 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2041.outbound.protection.outlook.com [40.107.244.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE54B15FE5;
+        Thu, 14 Jul 2022 01:14:10 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=B+CCRmwP2Ld8p7gazf1JCqvUVVfuKPlsMRDwmyuUqdMC+KDpGVGOZ9mAFI01Ru49kEWPCxNZV1tGCTWiAhJXueuU3znRUH1XK7Zl8P9W0XisygdZZClMsMLvw/BMmsXC1P79ieaV9xQPhcW55Ah7ekz6btvwlsFinrk2+YHBo1hZO+36iPQ6eo9IpCkcV/e/rIfa3qAfdz1BncmLmj17oSfdZ7H+tkrwPL5n1yuJJARR7aFI9+H9u6NUABQ24ODHbtPx/R0wF7h3VA+wPwaL3YOadvV7mhiW6TKwK7u3iVOfTJwH2avprS5N8ySa5F8qzIPdIgU86IFzebl/CuhYVQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=4JdbKu0MzhBJ0sGh2SqiweMMesCWP51YM9yxxylbHxg=;
+ b=nK5L/4UW2I7tDpayiCmj1b5YVClKrkhnTM+CvrmNi5veKn0HcgRo3RErkAblXMSoLRZyVK5tdn1YmUFKpAtWikuB6yuoePZzGuIbm3ydppXskvhqa8wPvBhDOjMcfQm8pPmHRGBQrHdcusiDZpI9aVgBhHkDYkZmL5tGyB8wkIPN70RyC48on1JMYJKEDJPVXYvf0OLcnLyf0Hf1dq+ZYJxhOhjeAAYAtDUt7UDlSYjx3Kzm6aJkV9WkGFMXj9/8G+Sj8vO3wg7XAwfrpKXP6SllC2NAepiiAubHZIKAjoW9v0SseCJb20MsVA7OMiOcwsPhaygpGt3sM8dQrJgeiA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.238) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com; dmarc=pass
+ (p=reject sp=reject pct=100) action=none header.from=nvidia.com; dkim=none
+ (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4JdbKu0MzhBJ0sGh2SqiweMMesCWP51YM9yxxylbHxg=;
+ b=tCH7dJOQVAhaV051v8JtTTmpIaPzVq0lyWAuY3XHc4hYX1IyOOjUYTilDfO2KZAjjnRqABgrN+ByOwa6aeNFtTzCJY2AtLNvUMy3BEKyF2t/7UrZLPZda3ke3dyJkWzsM4+liDj375KBPSV6zYUxrUuLwK0AbOt1Y6giB/somOOyJfkyIAah9h/48glzYTEMItwtMVKstOUS0YN8Zw8Y7urL9rTGgfg2Ebyi5gPhYtRGCSlmaU/ii9mTLigJMmyrYBJTJmEwB1yHoGz6RoimGDdtb+ReDiTY5VOla/zmo/Rz0ZjiiS/PAjoOvZSobcaXihw0ndllXkWO1bplvJpgwQ==
+Received: from MW4PR04CA0254.namprd04.prod.outlook.com (2603:10b6:303:88::19)
+ by BL0PR12MB2515.namprd12.prod.outlook.com (2603:10b6:207:40::30) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.14; Thu, 14 Jul
+ 2022 08:14:08 +0000
+Received: from CO1NAM11FT057.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:88:cafe::4) by MW4PR04CA0254.outlook.office365.com
+ (2603:10b6:303:88::19) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.26 via Frontend
+ Transport; Thu, 14 Jul 2022 08:14:08 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.238; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.238) by
+ CO1NAM11FT057.mail.protection.outlook.com (10.13.174.205) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5438.12 via Frontend Transport; Thu, 14 Jul 2022 08:14:08 +0000
+Received: from drhqmail203.nvidia.com (10.126.190.182) by
+ DRHQMAIL105.nvidia.com (10.27.9.14) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.32; Thu, 14 Jul 2022 08:14:07 +0000
+Received: from drhqmail202.nvidia.com (10.126.190.181) by
+ drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.26; Thu, 14 Jul 2022 01:14:06 -0700
+Received: from vdi.nvidia.com (10.127.8.10) by mail.nvidia.com
+ (10.126.190.181) with Microsoft SMTP Server id 15.2.986.26 via Frontend
+ Transport; Thu, 14 Jul 2022 01:14:03 -0700
+From:   Yishai Hadas <yishaih@nvidia.com>
+To:     <alex.williamson@redhat.com>, <jgg@nvidia.com>
+CC:     <saeedm@nvidia.com>, <kvm@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <kuba@kernel.org>,
+        <kevin.tian@intel.com>, <joao.m.martins@oracle.com>,
+        <leonro@nvidia.com>, <yishaih@nvidia.com>, <maorg@nvidia.com>,
+        <cohuck@redhat.com>
+Subject: [PATCH V2 vfio 00/11] Add device DMA logging support for mlx5 driver
+Date:   Thu, 14 Jul 2022 11:12:40 +0300
+Message-ID: <20220714081251.240584-1-yishaih@nvidia.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 33cd4560-4b0a-4dbe-84f2-08da6570d356
+X-MS-TrafficTypeDiagnostic: BL0PR12MB2515:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?foKXhngkeGPUHGQfsGZheFOlX7Et47RLZcxIWU8vRNc2nt3RfpW35D1Qa5q4?=
+ =?us-ascii?Q?sw0byZ5CP1Xi6xmlE/U1KRv9HWSROeH/VOF+cAGw0yRYseefpW7DXOLkwAQx?=
+ =?us-ascii?Q?D/8yT+JWXnvZg/M0FzfFmoIA2Y9CemOnvvVr8EEPCGOoOCED5wdNWsMuk26z?=
+ =?us-ascii?Q?BRXXzfGISvkuf6Dyn3LygyXhRttonJjkxQR+NYISXKa+VYSV6BiNXzL4aFzC?=
+ =?us-ascii?Q?cd0SxhWUQRPA6RfuWxOMoWQDyGFNYJwtt/2ZKMxC7G01DDvfIOlGk2vZzq5Y?=
+ =?us-ascii?Q?9gFGTj+Kk3M2hHJWBWznFr+aN4mFk4hBusXVpMIdZHc81+0akrGC4wj6Pzvm?=
+ =?us-ascii?Q?DDuzMwDsUUjs6/80At1XZ/Vxihj4u/urj4WrRsHnsqcOSrkrV2bacH172I5L?=
+ =?us-ascii?Q?S632onwvLlFWuWDA6rXF3hUnJcpgsjxcw+sz0okwsS8zYUuMHu+/hj1vpo6g?=
+ =?us-ascii?Q?9n/j31DBYhacXVZe7EYV3S+mnJWBOWtPcelZcwL8HGjh6KGtUvngsLtKobsH?=
+ =?us-ascii?Q?nNf1PVxa7UWRJOV930RoQ1CD792E105/0LEEzJhJ6xTkPE1BJcIa+PyVFRpc?=
+ =?us-ascii?Q?Dx77XA8EJ2Nda5aeVA0DQ8U+giYw4KHZfXsOiIOrnp8WPITqcDKYeYcCrrhQ?=
+ =?us-ascii?Q?QPnnM09dT3vHLiifLiCLfOUOYu+fSVr8GN/PVQX8LQi4OdSz5RMXhA7cLAbK?=
+ =?us-ascii?Q?Jqv84euKIV2zGwf2ZhBJTEv/f1bZWgdZrPTeqYDYrBlZzvKCgH9/2+7TngAu?=
+ =?us-ascii?Q?6Z4z0PXYb8e3beH4uresx60Emm6NI9GyLG8ZVdSsuGJg+XDYk3houSDyZtz9?=
+ =?us-ascii?Q?vGLlZXLsqK0Wfsop3vReM2U9qisBGiGROOSB7AVmISV7E3DV4sglwj+fC1jn?=
+ =?us-ascii?Q?AkhC4O040cV8DupYz4K+MmoScOZbMcFMVM8zxUVFXNEpJfnUX7xb6QBLwwBf?=
+ =?us-ascii?Q?bjJGm5OjtF+Hsm1LGuynSC6JGoVOyj3ev/AKFmGvf9o=3D?=
+X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(376002)(346002)(39860400002)(136003)(396003)(46966006)(40470700004)(36840700001)(86362001)(8936002)(5660300002)(1076003)(478600001)(2616005)(966005)(40480700001)(83380400001)(6666004)(7696005)(40460700003)(41300700001)(2906002)(26005)(186003)(336012)(47076005)(36756003)(4326008)(81166007)(8676002)(356005)(82310400005)(70586007)(6636002)(70206006)(426003)(82740400003)(110136005)(54906003)(316002)(36860700001)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jul 2022 08:14:08.1658
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 33cd4560-4b0a-4dbe-84f2-08da6570d356
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT057.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB2515
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2022-07-12 at 10:57 +0000, Taehee Yoo wrote:
-> There are some synchronization issues(amt->status, amt->req_cnt, etc)
-> if the interface is in gateway mode because gateway message handlers
-> are processed concurrently.
-> This applies a work queue for processing these messages instead of
-> expanding the locking context.
-> 
-> So, the purposes of this patch are to fix exist race conditions and to make
-> gateway to be able to validate a gateway status more correctly.
-> 
-> When the AMT gateway interface is created, it tries to establish to relay.
-> The establishment step looks stateless, but it should be managed well.
-> In order to handle messages in the gateway, it saves the current
-> status(i.e. AMT_STATUS_XXX).
-> This patch makes gateway code to be worked with a single thread.
-> 
-> Now, all messages except the multicast are triggered(received or
-> delay expired), and these messages will be stored in the event
-> queue(amt->events).
-> Then, the single worker processes stored messages asynchronously one
-> by one.
-> The multicast data message type will be still processed immediately.
-> 
-> Now, amt->lock is only needed to access the event queue(amt->events)
-> if an interface is the gateway mode.
-> 
-> Fixes: cbc21dc1cfe9 ("amt: add data plane of amt interface")
-> Signed-off-by: Taehee Yoo <ap420073@gmail.com>
-> ---
->  drivers/net/amt.c | 158 +++++++++++++++++++++++++++++++++++++++++-----
->  include/net/amt.h |  20 ++++++
->  2 files changed, 163 insertions(+), 15 deletions(-)
-> 
-> diff --git a/drivers/net/amt.c b/drivers/net/amt.c
-> index be2719a3ba70..032c2934e466 100644
-> --- a/drivers/net/amt.c
-> +++ b/drivers/net/amt.c
-> @@ -900,6 +900,28 @@ static void amt_send_mld_gq(struct amt_dev *amt, struct amt_tunnel_list *tunnel)
->  }
->  #endif
->  
-> +static bool amt_queue_events(struct amt_dev *amt, enum amt_event event,
-> +			     struct sk_buff *skb)
-> +{
-> +	int index;
-> +
-> +	spin_lock_bh(&amt->lock);
-> +	if (amt->nr_events >= AMT_MAX_EVENTS) {
-> +		spin_unlock_bh(&amt->lock);
-> +		return 1;
-> +	}
-> +
-> +	index = (amt->event_idx + amt->nr_events) % AMT_MAX_EVENTS;
-> +	amt->events[index].event = event;
-> +	amt->events[index].skb = skb;
-> +	amt->nr_events++;
-> +	amt->event_idx %= AMT_MAX_EVENTS;
-> +	queue_work(amt_wq, &amt->event_wq);
-> +	spin_unlock_bh(&amt->lock);
-> +
-> +	return 0;
-> +}
-> +
->  static void amt_secret_work(struct work_struct *work)
->  {
->  	struct amt_dev *amt = container_of(to_delayed_work(work),
-> @@ -913,12 +935,8 @@ static void amt_secret_work(struct work_struct *work)
->  			 msecs_to_jiffies(AMT_SECRET_TIMEOUT));
->  }
->  
-> -static void amt_discovery_work(struct work_struct *work)
-> +static void amt_event_send_discovery(struct amt_dev *amt)
->  {
-> -	struct amt_dev *amt = container_of(to_delayed_work(work),
-> -					   struct amt_dev,
-> -					   discovery_wq);
-> -
->  	spin_lock_bh(&amt->lock);
->  	if (amt->status > AMT_STATUS_SENT_DISCOVERY)
->  		goto out;
-> @@ -933,11 +951,19 @@ static void amt_discovery_work(struct work_struct *work)
->  	spin_unlock_bh(&amt->lock);
->  }
->  
-> -static void amt_req_work(struct work_struct *work)
-> +static void amt_discovery_work(struct work_struct *work)
->  {
->  	struct amt_dev *amt = container_of(to_delayed_work(work),
->  					   struct amt_dev,
-> -					   req_wq);
-> +					   discovery_wq);
-> +
-> +	if (amt_queue_events(amt, AMT_EVENT_SEND_DISCOVERY, NULL))
-> +		mod_delayed_work(amt_wq, &amt->discovery_wq,
-> +				 msecs_to_jiffies(AMT_DISCOVERY_TIMEOUT));
-> +}
-> +
-> +static void amt_event_send_request(struct amt_dev *amt)
-> +{
->  	u32 exp;
->  
->  	spin_lock_bh(&amt->lock);
-> @@ -967,6 +993,17 @@ static void amt_req_work(struct work_struct *work)
->  	spin_unlock_bh(&amt->lock);
->  }
->  
-> +static void amt_req_work(struct work_struct *work)
-> +{
-> +	struct amt_dev *amt = container_of(to_delayed_work(work),
-> +					   struct amt_dev,
-> +					   req_wq);
-> +
-> +	if (amt_queue_events(amt, AMT_EVENT_SEND_REQUEST, NULL))
-> +		mod_delayed_work(amt_wq, &amt->req_wq,
-> +				 msecs_to_jiffies(100));
-> +}
-> +
->  static bool amt_send_membership_update(struct amt_dev *amt,
->  				       struct sk_buff *skb,
->  				       bool v6)
-> @@ -2392,12 +2429,14 @@ static bool amt_membership_query_handler(struct amt_dev *amt,
->  	skb->pkt_type = PACKET_MULTICAST;
->  	skb->ip_summed = CHECKSUM_NONE;
->  	len = skb->len;
-> +	rcu_read_lock_bh();
+This series adds device DMA logging uAPIs and their implementation as
+part of mlx5 driver.
 
-Here you only need local_bh_disable(), the RCU part is confusing as
-Jakub noted, and not needed.
+DMA logging allows a device to internally record what DMAs the device is
+initiating and report them back to userspace. It is part of the VFIO
+migration infrastructure that allows implementing dirty page tracking
+during the pre copy phase of live migration. Only DMA WRITEs are logged,
+and this API is not connected to VFIO_DEVICE_FEATURE_MIG_DEVICE_STATE.
 
->  	if (__netif_rx(skb) == NET_RX_SUCCESS) {
->  		amt_update_gw_status(amt, AMT_STATUS_RECEIVED_QUERY, true);
->  		dev_sw_netstats_rx_add(amt->dev, len);
->  	} else {
->  		amt->dev->stats.rx_dropped++;
->  	}
-> +	rcu_read_unlock_bh();
->  
->  	return false;
->  }
-> @@ -2688,6 +2727,38 @@ static bool amt_request_handler(struct amt_dev *amt, struct sk_buff *skb)
->  	return false;
->  }
->  
-> +static void amt_gw_rcv(struct amt_dev *amt, struct sk_buff *skb)
-> +{
-> +	int type = amt_parse_type(skb);
-> +	int err = 1;
-> +
-> +	if (type == -1)
-> +		goto drop;
-> +
-> +	if (amt->mode == AMT_MODE_GATEWAY) {
-> +		switch (type) {
-> +		case AMT_MSG_ADVERTISEMENT:
-> +			err = amt_advertisement_handler(amt, skb);
-> +			break;
-> +		case AMT_MSG_MEMBERSHIP_QUERY:
-> +			err = amt_membership_query_handler(amt, skb);
-> +			if (!err)
-> +				return;
-> +			break;
-> +		default:
-> +			netdev_dbg(amt->dev, "Invalid type of Gateway\n");
-> +			break;
-> +		}
-> +	}
-> +drop:
-> +	if (err) {
-> +		amt->dev->stats.rx_dropped++;
-> +		kfree_skb(skb);
-> +	} else {
-> +		consume_skb(skb);
-> +	}
-> +}
-> +
->  static int amt_rcv(struct sock *sk, struct sk_buff *skb)
->  {
->  	struct amt_dev *amt;
-> @@ -2719,8 +2790,12 @@ static int amt_rcv(struct sock *sk, struct sk_buff *skb)
->  				err = true;
->  				goto drop;
->  			}
-> -			err = amt_advertisement_handler(amt, skb);
-> -			break;
-> +			if (amt_queue_events(amt, AMT_EVENT_RECEIVE, skb)) {
-> +				netdev_dbg(amt->dev, "AMT Event queue full\n");
-> +				err = true;
-> +				goto drop;
-> +			}
-> +			goto out;
->  		case AMT_MSG_MULTICAST_DATA:
->  			if (iph->saddr != amt->remote_ip) {
->  				netdev_dbg(amt->dev, "Invalid Relay IP\n");
-> @@ -2738,11 +2813,12 @@ static int amt_rcv(struct sock *sk, struct sk_buff *skb)
->  				err = true;
->  				goto drop;
->  			}
-> -			err = amt_membership_query_handler(amt, skb);
-> -			if (err)
-> +			if (amt_queue_events(amt, AMT_EVENT_RECEIVE, skb)) {
-> +				netdev_dbg(amt->dev, "AMT Event queue full\n");
-> +				err = true;
->  				goto drop;
-> -			else
-> -				goto out;
-> +			}
-> +			goto out;
->  		default:
->  			err = true;
->  			netdev_dbg(amt->dev, "Invalid type of Gateway\n");
-> @@ -2780,6 +2856,45 @@ static int amt_rcv(struct sock *sk, struct sk_buff *skb)
->  	return 0;
->  }
->  
-> +static void amt_event_work(struct work_struct *work)
-> +{
-> +	struct amt_dev *amt = container_of(work, struct amt_dev, event_wq);
-> +	struct sk_buff *skb;
-> +	u8 event;
-> +
-> +	while (1) {
-> +		spin_lock(&amt->lock);
+The uAPIs are based on the FEATURE ioctl as were introduced earlier by
+the below RFC [1] and follows the notes that were discussed in the
+mailing list.
 
-This is called in process context, amd amt->lock can be acquired from
-BH context, you need spin_lock_bh() here.
+It includes:
+- A PROBE option to detect if the device supports DMA logging.
+- A SET option to start device DMA logging in given IOVAs ranges.
+- A GET option to read back and clear the device DMA log.
+- A SET option to stop device DMA logging that was previously started.
 
-Lockdep should help finding this kind of issue.
+Extra details exist as part of relevant patches in the series.
 
-> +		if (amt->nr_events == 0) {
-> +			spin_unlock(&amt->lock);
-> +			return;
-> +		}
-> +		event = amt->events[amt->event_idx].event;
-> +		skb = amt->events[amt->event_idx].skb;
-> +		amt->events[amt->event_idx].event = AMT_EVENT_NONE;
-> +		amt->events[amt->event_idx].skb = NULL;
-> +		amt->nr_events--;
-> +		amt->event_idx++;
-> +		amt->event_idx %= AMT_MAX_EVENTS;
-> +		spin_unlock(&amt->lock);
-> +
-> +		switch (event) {
-> +		case AMT_EVENT_RECEIVE:
-> +			amt_gw_rcv(amt, skb);
-> +			break;
-> +		case AMT_EVENT_SEND_DISCOVERY:
-> +			amt_event_send_discovery(amt);
-> +			break;
-> +		case AMT_EVENT_SEND_REQUEST:
-> +			amt_event_send_request(amt);
-> +			break;
-> +		default:
-> +			if (skb)
-> +				kfree_skb(skb);
-> +			break;
-> +		}
+In addition, the series adds some infrastructure support for managing an
+IOVA bitmap done by Joao Martins.
 
-This loops is unbound. If the socket keep adding events, it can keep
-running forever. You need either to add cond_schedule() or even better
-break it after a low max number of iterations - pending event will be
-served when the work struct is dequeued next
+It abstracts how an IOVA range is represented in a bitmap that is
+granulated by a given page_size. So it translates all the lifting of
+dealing with user pointers into its corresponding kernel addresses
+backing said user memory into doing finally the bitmap ops to change
+various bits.
 
-> +	}
-> +}
-> +
->  static int amt_err_lookup(struct sock *sk, struct sk_buff *skb)
->  {
->  	struct amt_dev *amt;
-> @@ -2892,10 +3007,21 @@ static int amt_dev_stop(struct net_device *dev)
->  	struct amt_dev *amt = netdev_priv(dev);
->  	struct amt_tunnel_list *tunnel, *tmp;
->  	struct socket *sock;
-> +	struct sk_buff *skb;
-> +	int i;
->  
->  	cancel_delayed_work_sync(&amt->req_wq);
->  	cancel_delayed_work_sync(&amt->discovery_wq);
->  	cancel_delayed_work_sync(&amt->secret_wq);
-> +	cancel_work_sync(&amt->event_wq);
-> +
-> +	for (i = 0; i < AMT_MAX_EVENTS; i++) {
-> +		skb = amt->events[i].skb;
-> +		if (skb)
-> +			kfree_skb(skb);
-> +		amt->events[i].event = AMT_EVENT_NONE;
-> +		amt->events[i].skb = NULL;
-> +	}
->  
->  	/* shutdown */
->  	sock = rtnl_dereference(amt->sock);
-> @@ -3051,6 +3177,8 @@ static int amt_newlink(struct net *net, struct net_device *dev,
->  		amt->max_tunnels = AMT_MAX_TUNNELS;
->  
->  	spin_lock_init(&amt->lock);
-> +	amt->event_idx = 0;
-> +	amt->nr_events = 0;
->  	amt->max_groups = AMT_MAX_GROUP;
->  	amt->max_sources = AMT_MAX_SOURCE;
->  	amt->hash_buckets = AMT_HSIZE;
-> @@ -3146,8 +3274,8 @@ static int amt_newlink(struct net *net, struct net_device *dev,
->  	INIT_DELAYED_WORK(&amt->discovery_wq, amt_discovery_work);
->  	INIT_DELAYED_WORK(&amt->req_wq, amt_req_work);
->  	INIT_DELAYED_WORK(&amt->secret_wq, amt_secret_work);
-> +	INIT_WORK(&amt->event_wq, amt_event_work);
->  	INIT_LIST_HEAD(&amt->tunnel_list);
-> -
->  	return 0;
->  err:
->  	dev_put(amt->stream_dev);
-> @@ -3280,7 +3408,7 @@ static int __init amt_init(void)
->  	if (err < 0)
->  		goto unregister_notifier;
->  
-> -	amt_wq = alloc_workqueue("amt", WQ_UNBOUND, 1);
-> +	amt_wq = alloc_workqueue("amt", WQ_UNBOUND, 0);
->  	if (!amt_wq) {
->  		err = -ENOMEM;
->  		goto rtnl_unregister;
-> diff --git a/include/net/amt.h b/include/net/amt.h
-> index 0e40c3d64fcf..08fc30cf2f34 100644
-> --- a/include/net/amt.h
-> +++ b/include/net/amt.h
-> @@ -78,6 +78,15 @@ enum amt_status {
->  
->  #define AMT_STATUS_MAX (__AMT_STATUS_MAX - 1)
->  
-> +/* Gateway events only */
-> +enum amt_event {
-> +	AMT_EVENT_NONE,
-> +	AMT_EVENT_RECEIVE,
-> +	AMT_EVENT_SEND_DISCOVERY,
-> +	AMT_EVENT_SEND_REQUEST,
-> +	__AMT_EVENT_MAX,
-> +};
-> +
->  struct amt_header {
->  #if defined(__LITTLE_ENDIAN_BITFIELD)
->  	u8 type:4,
-> @@ -292,6 +301,12 @@ struct amt_group_node {
->  	struct hlist_head	sources[];
->  };
->  
-> +#define AMT_MAX_EVENTS	16
-> +struct amt_events {
-> +	enum amt_event event;
-> +	struct sk_buff *skb;
-> +};
-> +
->  struct amt_dev {
->  	struct net_device       *dev;
->  	struct net_device       *stream_dev;
-> @@ -308,6 +323,7 @@ struct amt_dev {
->  	struct delayed_work     req_wq;
->  	/* Protected by RTNL */
->  	struct delayed_work     secret_wq;
-> +	struct work_struct	event_wq;
->  	/* AMT status */
->  	enum amt_status		status;
->  	/* Generated key */
-> @@ -345,6 +361,10 @@ struct amt_dev {
->  	/* Used only in gateway mode */
->  	u64			mac:48,
->  				reserved:16;
-> +	/* AMT gateway side message handler queue */
-> +	struct amt_events	events[AMT_MAX_EVENTS];
-> +	u8			event_idx;
-> +	u8			nr_events;
->  };
->  
->  #define AMT_TOS			0xc0
+This functionality will be used as part of IOMMUFD series for the system
+IOMMU tracking.
+
+Finally, we come with mlx5 implementation based on its device
+specification for the DMA logging APIs.
+
+The matching qemu changes can be previewed here [2].
+They come on top of the v2 migration protocol patches that were sent
+already to the mailing list.
+
+Few notes:
+- The first 2 patches were sent already separately, as the series relies
+  on add them here as well.
+
+- As this series touched mlx5_core parts we may need to send the
+  net/mlx5 patches as a pull request format to VFIO to avoid conflicts
+  before acceptance.
+
+[1] https://lore.kernel.org/all/20220501123301.127279-1-yishaih@nvidia.com/T/
+[2] https://github.com/avihai1122/qemu/commits/device_dirty_tracking
+
+Changes from V1: https://lore.kernel.org/netdev/202207052209.x00Iykkp-lkp@intel.com/T/
+
+- Patch #6: Fix a note given by krobot, select INTERVAL_TREE for VFIO.
+
+Changes from V0: https://lore.kernel.org/netdev/202207011231.1oPQhSzo-lkp@intel.com/T/
+
+- Drop the first 2 patches that Alex merged already.
+- Fix a note given by krobot, based on Jason's suggestion.
+- Some improvements from Joao for his IOVA bitmap patch to be
+  cleaner/simpler. It includes the below:
+    * Rename iova_bitmap_array_length to iova_bitmap_iova_to_index.
+    * Rename iova_bitmap_index_to_length to iova_bitmap_index_to_iova.
+    * Change iova_bitmap_iova_to_index to take an iova_bitmap_iter
+      as an argument to pair with iova_bitmap_index_to_length.
+    * Make iova_bitmap_iter_done() use >= instead of
+      substraction+comparison. This fixes iova_bitmap_iter_done()
+      return as it was previously returning when !done.
+    * Remove iova_bitmap_iter_length().
+    * Simplify iova_bitmap_length() overcomplicated trailing end check
+    * Convert all sizeof(u64) into sizeof(*iter->data).
+    * Use u64 __user for ::data instead of void in both struct and
+      initialization of iova_bitmap.
+
+Yishai
+
+Jason Gunthorpe (1):
+  vfio: Move vfio.c to vfio_main.c
+
+Joao Martins (1):
+  vfio: Add an IOVA bitmap support
+
+Yishai Hadas (9):
+  net/mlx5: Introduce ifc bits for page tracker
+  net/mlx5: Query ADV_VIRTUALIZATION capabilities
+  vfio: Introduce DMA logging uAPIs
+  vfio: Introduce the DMA logging feature support
+  vfio/mlx5: Init QP based resources for dirty tracking
+  vfio/mlx5: Create and destroy page tracker object
+  vfio/mlx5: Report dirty pages from tracker
+  vfio/mlx5: Manage error scenarios on tracker
+  vfio/mlx5: Set the driver DMA logging callbacks
+
+ drivers/net/ethernet/mellanox/mlx5/core/fw.c  |   6 +
+ .../net/ethernet/mellanox/mlx5/core/main.c    |   1 +
+ drivers/vfio/Kconfig                          |   1 +
+ drivers/vfio/Makefile                         |   4 +
+ drivers/vfio/iova_bitmap.c                    | 164 +++
+ drivers/vfio/pci/mlx5/cmd.c                   | 995 +++++++++++++++++-
+ drivers/vfio/pci/mlx5/cmd.h                   |  63 +-
+ drivers/vfio/pci/mlx5/main.c                  |   9 +-
+ drivers/vfio/pci/vfio_pci_core.c              |   5 +
+ drivers/vfio/{vfio.c => vfio_main.c}          | 161 +++
+ include/linux/iova_bitmap.h                   |  46 +
+ include/linux/mlx5/device.h                   |   9 +
+ include/linux/mlx5/mlx5_ifc.h                 |  79 +-
+ include/linux/vfio.h                          |  21 +-
+ include/uapi/linux/vfio.h                     |  79 ++
+ 15 files changed, 1625 insertions(+), 18 deletions(-)
+ create mode 100644 drivers/vfio/iova_bitmap.c
+ rename drivers/vfio/{vfio.c => vfio_main.c} (93%)
+ create mode 100644 include/linux/iova_bitmap.h
+
+-- 
+2.18.1
 
