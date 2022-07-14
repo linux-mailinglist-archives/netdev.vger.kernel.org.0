@@ -2,150 +2,308 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EE4EE57447C
-	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 07:27:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 946B657448C
+	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 07:36:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231418AbiGNF1g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jul 2022 01:27:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37762 "EHLO
+        id S231980AbiGNFgN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jul 2022 01:36:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231173AbiGNF1f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 01:27:35 -0400
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2048.outbound.protection.outlook.com [40.107.243.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A004720BCD
-        for <netdev@vger.kernel.org>; Wed, 13 Jul 2022 22:27:33 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KKpNIUqG1eokvsBTHilUl6+RTbvf2Um3J0RfaPFctHcGLXqOTN92QlRBvbS3/3nZoUD/kNguAYVW/pcQaaAxle02lJ8yf1aQ8upd5chs8JegFO2RRRcYxg9Mrw/yn9S0Y/0SvXvodj6U1d+Mc3jXtinvQ48VVCDHLoajLA5/cHxkbwoksqks18+NHoU3FJr/pXHf3mXr0LXVo2LJfqG7hYJ+Go4M9wO+uzz+hXRgYgB9wXFEZsJCp+VsCVBMJpsiSwvdnG6N6D+2v2sEpSWX6pnu5ZClXbresDMXC4mpAk68TAXAvmxDiERslmauHIZQf9CsmErMMlKfD26InMYHOA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=AYI+2DJnTjohT9I/Ec3te2PZFFPDjfy2BW5AucINMfg=;
- b=AsRLWrRNVIxwQ0usUpuHm99BZ1kPpnJWDXyLlSmSdIiU4Hy9JCMDLROu0jIDfa+KHrMEx4pLV7kqZKNWt4oXOg1ybu7Z+zlhvBsqQoxehdEI7E8jx/kVpZl/Wigf4ZB7PR8NQR4b5ElyC28PjWt3X2R9IqSHRYQWhnT6WFpojn0efU6Jk7qCWLaTPaCS695JaMu6WPbQWiVp4IxtNtQfHVat28bM49DwQWJrDagiNmsPvIltm7py4do4RUFCEIq+WgbydZ3Gvki9FAGbaT88lCefrHOavbsH2hPzlq5Www1Aq7eC8ed7rPx+FOcMbUoab3Zn1mcJGUHXEETshNfP8Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=AYI+2DJnTjohT9I/Ec3te2PZFFPDjfy2BW5AucINMfg=;
- b=ZdCsZK1nUd42qpGjTTfAHq8On+cJexaAZ5meitHiL8jPZhcpUq544VohyO5GcKyYGjsNYy9yU1DEZlZ5nYqSt7XMi98Gg9jD3+Kpg345VClvoSRLdlIJpVi0di8WuSFcrWVlYIgC6h5HZ1ei2/LvIGraRpqlBSwd+b6ykPUOdECP177Lw2/s5CEdVR7r0ONX34S2Mke2C2W2PIBbIS8oeccrlA/KymjjlGfbGKHOzPpf4M4IJJgNMOHhp6kn7EL+CS6JoyQ3pKFOIbNPXEm55bGor8IYjxEty5LsDgigqYDUrqWwOyR0uVrm7U0bMumOIl/VedQ9mJQ/PEqDufiYBw==
-Received: from DM8PR12MB5400.namprd12.prod.outlook.com (2603:10b6:8:3b::12) by
- LV2PR12MB5797.namprd12.prod.outlook.com (2603:10b6:408:17b::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.13; Thu, 14 Jul
- 2022 05:27:32 +0000
-Received: from DM8PR12MB5400.namprd12.prod.outlook.com
- ([fe80::fd63:3074:ae57:c82f]) by DM8PR12MB5400.namprd12.prod.outlook.com
- ([fe80::fd63:3074:ae57:c82f%9]) with mapi id 15.20.5438.014; Thu, 14 Jul 2022
- 05:27:32 +0000
-From:   Eli Cohen <elic@nvidia.com>
-To:     David Ahern <dsahern@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "jasowang@redhat.com" <jasowang@redhat.com>,
-        "si-wei.liu@oracle.com" <si-wei.liu@oracle.com>,
-        "mst@redhat.com" <mst@redhat.com>
-Subject: RE: [PATCH v1] vdpa: Add support for reading vdpa device statistics
-Thread-Topic: [PATCH v1] vdpa: Add support for reading vdpa device statistics
-Thread-Index: AQHYgGp9IbpSHDHW6EuvFbzMKlhYba13PVcQgAXhPQCAAGQ6QA==
-Date:   Thu, 14 Jul 2022 05:27:31 +0000
-Message-ID: <DM8PR12MB54000C4398D6AB15A6C56627AB889@DM8PR12MB5400.namprd12.prod.outlook.com>
-References: <20220615034616.16474-1-elic@nvidia.com>
- <DM8PR12MB54007939BDF9777A237A4981AB849@DM8PR12MB5400.namprd12.prod.outlook.com>
- <faaafd40-48c0-1e03-3e7d-549d73ca1df0@kernel.org>
-In-Reply-To: <faaafd40-48c0-1e03-3e7d-549d73ca1df0@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 5f3cd8de-2c9f-477c-210c-08da65598cfc
-x-ms-traffictypediagnostic: LV2PR12MB5797:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: oIhlMNFTfZ1hvsBy4MfgUFHpsjEcosUG6GAwyMmWSJvTKXbTap5PynuWQZe1Ob5D2OXEtO5WwOfF0XGPOMOxkjGeZ3BMmgeKM9eTpm024PjPo7QAFijNGuL12mgsBskFGO4axI1QlNvwwJeS33DbozsW+b+3uY2O1Ts+mNCQS1VPBS5vaj/Ma0zBHnz92H1rdp7nmaGQ7qGSrlG8JF/fsXipUpyOPEtOI2XSOEM35MlYwMh/FYI6L598ow8enM2RFrcrkQHpI3UoNOU+NWFUahbFNrblIGJUH64mwwJnGgeYZEGFc0+jHlDo6sBxMs//F8nI2ZBr5hOGvTGioI2Xlmm5kwVH52+MDKhwYDUrSKHrS2hf8XSw8l+G4zQVuCJ+X5l5hmeaIU92E9R70jqujlaaao8M5SxxrnRK72i4/xBDinUzvVVtmv7BQZp5VP/RbhRCWRQmaO2VyqOCmDYAgHsLru5lnSNlmuyzWhx7AfYZ2PXD8AKiYXgDWtVwPcOGeNXBjGvyjZT5e3+uDpkU1IQN8VDhD1RZd0J5+26vqzH1AGSvsC7AC5dX9yoH9+dqS5ncYeFRLCTmw6pnQkgX1U39P+SJsGShIv0LPtyO1JIWn5ihDda3/PxC5X1J5IZIufxXQH/VUjVctCQxvl51rndr3Q9Sl1xYiJfV4N+rXtcAmeR5+7YXIGUvRd+kZopPFUlnyDL2VSX4Ca2daM9oHsXhSRnC2B/g8s7Q+6ALhPADxuaBPPhnu40ktXy8CrXIYfSjcD6k8BUmkT0c1HO6meVtrL+ruFGfbH83EKrg6ulsitJ6XifF08/MVIJQb/ox9g4XBhxe/AArmmsURTsCIKYyyp6OdkOvrVOB6QoUsVm26lXbme4Z9j1lyi351+51jAuhdLo4fwbkXlJgP76WCw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM8PR12MB5400.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(366004)(376002)(396003)(136003)(39860400002)(53546011)(41300700001)(6506007)(66946007)(64756008)(26005)(9686003)(7696005)(52536014)(5660300002)(76116006)(966005)(66476007)(66446008)(66556008)(110136005)(86362001)(478600001)(316002)(71200400001)(122000001)(38100700002)(38070700005)(83380400001)(8676002)(8936002)(2906002)(186003)(55016003)(33656002)(4744005);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?cFV4bVdQOWg2TGI4eXdOY2pxN0RMRy9HM2MveDBCajRrTEpQcWRDeFUxNVd3?=
- =?utf-8?B?azM0Z0pyUmFzTWI4OUgyaGtQUTJaUkdOOVVVU0UvU3JQelhUcFd5ZWkxWTVn?=
- =?utf-8?B?TVh0b3pUdTJ5bUZrY1ZYUmVxYnVISEw3amM0MmhrU29MNzU2TUduQmgxWnZY?=
- =?utf-8?B?a01zSEV5UlN4ZDlpU242V1BWa243dmRRMXpPbDU4emFwdEtmMmg0dVdjdG9Q?=
- =?utf-8?B?ZjBoWk1tdy9YVVR1SG9jY3dpK1l3ZlZ2MEs1TE0zRUY4QmVnZ1dZczBJbXJs?=
- =?utf-8?B?Q2hiNUlNWnExV1JkdVVZemM3a3l4akxFUlBDa2RrL0NFd3dabFh3QjBXRldo?=
- =?utf-8?B?V1dUYW4rNXc3Y2Q2VTBoRFhYSlR4ZEFmWVJrbWdoSFRYRThZUVNZTERRM1BR?=
- =?utf-8?B?dnVDdmFnUTNPT2ZUMUV6RDU3WU5hdDc2VVpSUU10bGZuK3I2ZDdtbTN2WDk3?=
- =?utf-8?B?eVlyOUVmdWxYTFVhcmphYzdrdEhua0F4ZHg2ZWZvVEFGbHF3c3ZWZ2ZQdUdt?=
- =?utf-8?B?bmh1WjY1Wmt5RjNvOUl5bGJuZjV4OXlieU5QbjRMYmFDZGd0UXB3SWRyMUNh?=
- =?utf-8?B?a09OaDVFaEM0a202ZUc1RGhZNzljejdYZjcvd1ZaQk5Ya0xMbG4ybGVrNG53?=
- =?utf-8?B?K2dSZmVsNXZhaHFZQmhycWlmSHhqZHJvRGNHbHFHTll3S1hDZTRNVzY1dmdt?=
- =?utf-8?B?em5nT3NmUHBsZVd0aGhmYk9hQVEwWldaOGFnNlgvZENOQ1pVUWdMcDNZdjcv?=
- =?utf-8?B?MVVzbXR2R0dxYk5UNmpPYkRLdjNPenhPRko2bkVXQU9ncU0zdmVRSElNeFhF?=
- =?utf-8?B?WTFwbXUzcmpXWEtpTlZick1BckNiV1kxRTFEWFBUYlFaMGRPaEg2Vzl0eDQ4?=
- =?utf-8?B?eGRaZXltQXhELzBYampFOGUzaGpCVFYrYkQ1Y2toZWF6Z3MwM0xMQ2txbjRm?=
- =?utf-8?B?Y2JJOVZwWnloR3RLZGJqR0gvTFV5bkNRZEZ0WU5GQ01YWTZuRWNYTEVLR3JR?=
- =?utf-8?B?MjgvYzBxRGhCOEZPTUhSenkxNm5FMHVNaXZ1eEFlaThvYUJ1REhwWjlyNVJV?=
- =?utf-8?B?VGFOQ2t5UGVlMDloZ3IwV0RFT2pRMTdmandoaFlCeHdVZ1hScS9FS0k3YjYz?=
- =?utf-8?B?R2hFSDZRZVV0cnBvbExSZDFDNmpycWZjK0MzdGdPNlJrRHNERkRxMDlFS0Zz?=
- =?utf-8?B?Uk9nWCtPMk43OFRpTzg1VjJYMmh3V241SVVxbDhuWUVxREtQcVJ5ekhKdXcw?=
- =?utf-8?B?OXZHVHJ2aCtDZUgvT0dYdkprYkpvT3NmeTB1ZGZ4LzBzSE5Zb1lSZDQzM1BK?=
- =?utf-8?B?bk9VZUVERXpmaHcvZEZudDB0OWdKU09jYkZVMm9nMldDajh0M2dGcGczTnRz?=
- =?utf-8?B?VVdRTzZ4OXlvRUtlTEZ0ZFJCWTlMR3J5WW8vVVIwb1pRMHAvQ3FvY2dPMXhT?=
- =?utf-8?B?UWhLaWltOElkdHZFTXZOOGxsMVhpTTRtNjVURlp3cGM5YUtoOFRZTUdSTWNp?=
- =?utf-8?B?bDIvbGtmbU1mYVZMY0tGV0ZnZHQ2elcrM2VWaCtsMy9wM0lVczBDYlQrQ1c2?=
- =?utf-8?B?MWpkL1plaEFndExIRWQvditkMG1hbUZTZGkvdDJuY0tGbGxkV1p2KzdiMzJE?=
- =?utf-8?B?UDJoOGViOGdLNWFLZHZtL0VHU3dQaGthZ1ZsYnk4NzlkS0I2cmVVdTJsZHlx?=
- =?utf-8?B?RUZXY2poSVVFUndJVGUxUS9HbEpKN2dXZFRvaXFNaDYrSkwzRFFnU3V4Q29H?=
- =?utf-8?B?NCsyaThPSEVibk9YTUVidnJ2OENJNlA0K3BUQ0JVa2x6bHlsMHZ2QnBHSUZ0?=
- =?utf-8?B?MGZ6ZE9IODJHUG0wQVF2WFRUQXcrS3FiOWFES2dJRmpFZ1NiSVN6M2t5SjI1?=
- =?utf-8?B?MEdyVC83Nm0yRUJFT0U2ZFY0SlBoUXY3cFlZaXBnSGNKNC9pWnZsaldIUHB5?=
- =?utf-8?B?c0hHSWFLdU9jQURlSGV6OVZCMjZBaTlBYzR1T0dBeXA2aXFRdExxMEhZS3JE?=
- =?utf-8?B?aWFBdDF3eEN3YzJxbUp4ZVZPaFU1aGZMY0JYUEZtdnAyRFdYTFpXbnV3M0Fy?=
- =?utf-8?B?c0tRMXUrVGNoV0RvWExMWjhVK0lrSTZGL1VOZ2VjbzVFdUZzYStJU3MrNWk2?=
- =?utf-8?Q?5Iq0=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        with ESMTP id S229576AbiGNFgM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 01:36:12 -0400
+Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3EC722B08;
+        Wed, 13 Jul 2022 22:36:10 -0700 (PDT)
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26E4P0GN025737;
+        Wed, 13 Jul 2022 22:36:04 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=+f2VZ9+imA8Wz7n72Rrn25RH8jgq0IemxV7O0PNAxVE=;
+ b=LUYYg+2uxVjLHNs8X3Mehjv5NkLkn8vZqX3GLJd0au2pvqzGNJfInnJ0NG+bLEJ+CyDV
+ jkPO57C5KsxaQbxmwHFxkMfgC7FW/++HlrXK6P4l/18bRQe+MFOu5LJ8bPic+OiJDeBN
+ NxRh1WXTUJ+/eAjH8KxTKTTY4zCkyhkRhRBuzgEO78WzJgbnagNJZnybWP66opy5ncb8
+ JPOZ/DRJmeA1v6AavM4sZxwOHrdi64DnoRDkSWY6VTDgOF6BiX8o85pFaSyXY1+K1gMR
+ qxXUWJvj5bFd/N7x1iKFAPeApftCqoEE5aT31HhqIld/5dWvBBFdrBaTl7SFDMMgCXzN 4Q== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3h9udu3rjs-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Wed, 13 Jul 2022 22:36:04 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 13 Jul
+ 2022 22:36:01 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 13 Jul 2022 22:36:01 -0700
+Received: from hyd1soter3.marvell.com (unknown [10.29.37.12])
+        by maili.marvell.com (Postfix) with ESMTP id 346713F704D;
+        Wed, 13 Jul 2022 22:35:58 -0700 (PDT)
+From:   Geetha sowjanya <gakula@marvell.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <edumazet@google.com>,
+        <pabeni@redhat.com>, <sgoutham@marvell.com>,
+        Nithin Dabilpuram <ndabilpuram@marvell.com>,
+        Geetha Sowjanya <gakula@marvell.com>
+Subject: [net-next PATCH] octeontx2-af: Set NIX link credits based on max LMAC
+Date:   Thu, 14 Jul 2022 11:05:55 +0530
+Message-ID: <20220714053555.5119-1-gakula@marvell.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM8PR12MB5400.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5f3cd8de-2c9f-477c-210c-08da65598cfc
-X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Jul 2022 05:27:31.7706
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: wmBmcJZ/ZfCo6DxrohNlIdb2vEZOjgQ2Q+Am2Q/3sZRqarg9RWls3PMTuW/c4HRv
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV2PR12MB5797
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Proofpoint-GUID: X23R9p1WcZ0rDTH8sjAJ-3QNGboj3TyH
+X-Proofpoint-ORIG-GUID: X23R9p1WcZ0rDTH8sjAJ-3QNGboj3TyH
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-14_04,2022-07-13_03,2022-06-22_01
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiBGcm9tOiBEYXZpZCBBaGVybiA8ZHNhaGVybkBrZXJuZWwub3JnPg0KPiBTZW50OiBUaHVyc2Rh
-eSwgSnVseSAxNCwgMjAyMiAyOjI1IEFNDQo+IFRvOiBFbGkgQ29oZW4gPGVsaWNAbnZpZGlhLmNv
-bT47IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc7IHZpcnR1YWxpemF0aW9uQGxpc3RzLmxpbnV4LWZv
-dW5kYXRpb24ub3JnOyBqYXNvd2FuZ0ByZWRoYXQuY29tOyBzaS0NCj4gd2VpLmxpdUBvcmFjbGUu
-Y29tOyBtc3RAcmVkaGF0LmNvbQ0KPiBTdWJqZWN0OiBSZTogW1BBVENIIHYxXSB2ZHBhOiBBZGQg
-c3VwcG9ydCBmb3IgcmVhZGluZyB2ZHBhIGRldmljZSBzdGF0aXN0aWNzDQo+IA0KPiBPbiA3Lzkv
-MjIgMTA6NDAgUE0sIEVsaSBDb2hlbiB3cm90ZToNCj4gPiBIZWxsbyBEYXZpZC4NCj4gPiBJIGhh
-dmVuJ3Qgc2VlbiBhbnkgY29tbWVudHMgZnJvbSB5b3Ugbm9yIGhhcyBpdCBiZWVuIG1lcmdlZC4N
-Cj4gPg0KPiA+IElzIHRoZXJlIGFueXRoaW5nIGVsc2UgbmVlZGVkIHRvIGhhdmUgdGhpcyBtZXJn
-ZWQ/DQo+ID4NCj4gDQo+IEkgc2VlIGl0IGluIGlwcm91dGUyLW5leHQ6DQo+IA0KPiBjb21taXQg
-NmY5N2U5YzkzMzdiOWMwODNlYTA3MTliNjMzNjIyYmNmZWY1ZDc3Yg0KPiBBdXRob3I6IEVsaSBD
-b2hlbiA8ZWxpY0BudmlkaWEuY29tPg0KPiBEYXRlOiAgIFdlZCBKdW4gMTUgMDY6NDY6MTYgMjAy
-MiArMDMwMA0KPiANCj4gICAgIHZkcGE6IEFkZCBzdXBwb3J0IGZvciByZWFkaW5nIHZkcGEgZGV2
-aWNlIHN0YXRpc3RpY3MNCg0KVGhhbmtzLg0KDQpJIHdhcyB1c2luZyB0aGlzIHRyZWU6IGh0dHBz
-Oi8vZ2l0Lmtlcm5lbC5vcmcvcHViL3NjbS9uZXR3b3JrL2lwcm91dGUyL2lwcm91dGUyLmdpdA0K
-QW5kIGl0IGlzIG5vdCB0aGVyZS4NCg0KTm93IEkgZm91bmQgaXQgaGVyZTogZ2l0Oi8vZ2l0Lmtl
-cm5lbC5vcmcvcHViL3NjbS9uZXR3b3JrL2lwcm91dGUyL2lwcm91dGUyLW5leHQuZ2l0IG9uIHRo
-ZSAibWFpbiIgYnJhbmNoLg0KDQpTbyBzaG91bGQgSSBzZW5kIHBhdGNoZXMgYWdhaW5zdCB0aGUg
-bGF0ZXI/DQo=
+From: Sunil Goutham <sgoutham@marvell.com>
+
+When number of LMACs active on a CGX/RPM are 3, then
+current NIX link credit config based on per lmac fifo
+length which inturn  is calculated as
+'lmac_fifo_len = total_fifo_len / 3', is incorrect. In HW
+one of the LMAC gets half of the FIFO and rest gets 1/4th.
+
+Signed-off-by: Nithin Dabilpuram <ndabilpuram@marvell.com>
+Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
+Signed-off-by: Geetha Sowjanya <gakula@marvell.com>
+---
+ .../net/ethernet/marvell/octeontx2/af/cgx.c   | 27 +++++++++++++++
+ .../marvell/octeontx2/af/lmac_common.h        |  1 +
+ .../net/ethernet/marvell/octeontx2/af/rpm.c   | 30 ++++++++++++++++
+ .../net/ethernet/marvell/octeontx2/af/rpm.h   |  1 +
+ .../net/ethernet/marvell/octeontx2/af/rvu.h   |  2 +-
+ .../ethernet/marvell/octeontx2/af/rvu_cgx.c   | 16 +++++++++
+ .../ethernet/marvell/octeontx2/af/rvu_nix.c   | 34 ++++++++++++++-----
+ 7 files changed, 102 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
+index 618b9d167fa6..0d31efb31b54 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
+@@ -498,6 +498,32 @@ static u8 cgx_get_lmac_type(void *cgxd, int lmac_id)
+ 	return (cfg >> CGX_LMAC_TYPE_SHIFT) & CGX_LMAC_TYPE_MASK;
+ }
+ 
++static u32 cgx_get_lmac_fifo_len(void *cgxd, int lmac_id)
++{
++	struct cgx *cgx = cgxd;
++	u8 num_lmacs;
++	u32 fifo_len;
++
++	fifo_len = cgx->mac_ops->fifo_len;
++	num_lmacs = cgx->mac_ops->get_nr_lmacs(cgx);
++
++	switch (num_lmacs) {
++	case 1:
++		return fifo_len;
++	case 2:
++		return fifo_len / 2;
++	case 3:
++		/* LMAC0 gets half of the FIFO, reset 1/4th */
++		if (lmac_id == 0)
++			return fifo_len / 2;
++		return fifo_len / 4;
++	case 4:
++	default:
++		return fifo_len / 4;
++	}
++	return 0;
++}
++
+ /* Configure CGX LMAC in internal loopback mode */
+ int cgx_lmac_internal_loopback(void *cgxd, int lmac_id, bool enable)
+ {
+@@ -1704,6 +1730,7 @@ static struct mac_ops	cgx_mac_ops    = {
+ 	.tx_stats_cnt   =       18,
+ 	.get_nr_lmacs	=	cgx_get_nr_lmacs,
+ 	.get_lmac_type  =       cgx_get_lmac_type,
++	.lmac_fifo_len	=	cgx_get_lmac_fifo_len,
+ 	.mac_lmac_intl_lbk =    cgx_lmac_internal_loopback,
+ 	.mac_get_rx_stats  =	cgx_get_rx_stats,
+ 	.mac_get_tx_stats  =	cgx_get_tx_stats,
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/lmac_common.h b/drivers/net/ethernet/marvell/octeontx2/af/lmac_common.h
+index f30581bf0688..52b6016789fa 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/lmac_common.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/lmac_common.h
+@@ -80,6 +80,7 @@ struct mac_ops {
+ 	 */
+ 	int			(*get_nr_lmacs)(void *cgx);
+ 	u8                      (*get_lmac_type)(void *cgx, int lmac_id);
++	u32                     (*lmac_fifo_len)(void *cgx, int lmac_id);
+ 	int                     (*mac_lmac_intl_lbk)(void *cgx, int lmac_id,
+ 						     bool enable);
+ 	/* Register Stats related functions */
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rpm.c b/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
+index 05666922a45b..abeb3986e36a 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
+@@ -22,6 +22,7 @@ static struct mac_ops	rpm_mac_ops   = {
+ 	.tx_stats_cnt   =       34,
+ 	.get_nr_lmacs	=	rpm_get_nr_lmacs,
+ 	.get_lmac_type  =       rpm_get_lmac_type,
++	.lmac_fifo_len	=	rpm_get_lmac_fifo_len,
+ 	.mac_lmac_intl_lbk =    rpm_lmac_internal_loopback,
+ 	.mac_get_rx_stats  =	rpm_get_rx_stats,
+ 	.mac_get_tx_stats  =	rpm_get_tx_stats,
+@@ -347,6 +348,35 @@ u8 rpm_get_lmac_type(void *rpmd, int lmac_id)
+ 	return err;
+ }
+ 
++u32 rpm_get_lmac_fifo_len(void *rpmd, int lmac_id)
++{
++	rpm_t *rpm = rpmd;
++	u64 hi_perf_lmac;
++	u8 num_lmacs;
++	u32 fifo_len;
++
++	fifo_len = rpm->mac_ops->fifo_len;
++	num_lmacs = rpm->mac_ops->get_nr_lmacs(rpm);
++
++	switch (num_lmacs) {
++	case 1:
++		return fifo_len;
++	case 2:
++		return fifo_len / 2;
++	case 3:
++		/* LMAC marked as hi_perf gets half of the FIFO and rest 1/4th */
++		hi_perf_lmac = rpm_read(rpm, 0, CGXX_CMRX_RX_LMACS);
++		hi_perf_lmac = (hi_perf_lmac >> 4) & 0x3ULL;
++		if (lmac_id == hi_perf_lmac)
++			return fifo_len / 2;
++		return fifo_len / 4;
++	case 4:
++	default:
++		return fifo_len / 4;
++	}
++	return 0;
++}
++
+ int rpm_lmac_internal_loopback(void *rpmd, int lmac_id, bool enable)
+ {
+ 	rpm_t *rpm = rpmd;
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rpm.h b/drivers/net/ethernet/marvell/octeontx2/af/rpm.h
+index 8205f2626f61..805b1657856c 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rpm.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rpm.h
+@@ -74,6 +74,7 @@
+ /* Function Declarations */
+ int rpm_get_nr_lmacs(void *rpmd);
+ u8 rpm_get_lmac_type(void *rpmd, int lmac_id);
++u32 rpm_get_lmac_fifo_len(void *rpmd, int lmac_id);
+ int rpm_lmac_internal_loopback(void *rpmd, int lmac_id, bool enable);
+ void rpm_lmac_enadis_rx_pause_fwding(void *rpmd, int lmac_id, bool enable);
+ int rpm_lmac_get_pause_frm_status(void *cgxd, int lmac_id, u8 *tx_pause,
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
+index e5fdb7b62651..d15bc443335d 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
+@@ -827,7 +827,7 @@ int rvu_cgx_config_tx(void *cgxd, int lmac_id, bool enable);
+ int rvu_cgx_prio_flow_ctrl_cfg(struct rvu *rvu, u16 pcifunc, u8 tx_pause, u8 rx_pause,
+ 			       u16 pfc_en);
+ int rvu_cgx_cfg_pause_frm(struct rvu *rvu, u16 pcifunc, u8 tx_pause, u8 rx_pause);
+-
++u32 rvu_cgx_get_lmac_fifolen(struct rvu *rvu, int cgx, int lmac);
+ int npc_get_nixlf_mcam_index(struct npc_mcam *mcam, u16 pcifunc, int nixlf,
+ 			     int type);
+ bool is_mcam_entry_enabled(struct rvu *rvu, struct npc_mcam *mcam, int blkaddr,
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
+index 5090ddcc7e8a..e9989982fbbd 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
+@@ -861,6 +861,22 @@ u32 rvu_cgx_get_fifolen(struct rvu *rvu)
+ 	return fifo_len;
+ }
+ 
++u32 rvu_cgx_get_lmac_fifolen(struct rvu *rvu, int cgx, int lmac)
++{
++	struct mac_ops *mac_ops;
++	void *cgxd;
++
++	cgxd = rvu_cgx_pdata(cgx, rvu);
++	if (!cgxd)
++		return 0;
++
++	mac_ops = get_mac_ops(cgxd);
++	if (!mac_ops->lmac_fifo_len)
++		return 0;
++
++	return mac_ops->lmac_fifo_len(cgxd, lmac);
++}
++
+ static int rvu_cgx_config_intlbk(struct rvu *rvu, u16 pcifunc, bool en)
+ {
+ 	int pf = rvu_get_pf(pcifunc);
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
+index 1d3323da6930..0879a48411f3 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
+@@ -4010,9 +4010,13 @@ int rvu_mbox_handler_nix_set_hw_frs(struct rvu *rvu, struct nix_frs_cfg *req,
+ 		return 0;
+ 
+ 	/* Update transmit credits for CGX links */
+-	lmac_fifo_len =
+-		rvu_cgx_get_fifolen(rvu) /
+-		cgx_get_lmac_cnt(rvu_cgx_pdata(cgx, rvu));
++	lmac_fifo_len = rvu_cgx_get_lmac_fifolen(rvu, cgx, lmac);
++	if (!lmac_fifo_len) {
++		dev_err(rvu->dev,
++			"%s: Failed to get CGX/RPM%d:LMAC%d FIFO size\n",
++			__func__, cgx, lmac);
++		return 0;
++	}
+ 	return nix_config_link_credits(rvu, blkaddr, link, pcifunc,
+ 				       (lmac_fifo_len - req->maxlen) / 16);
+ }
+@@ -4064,7 +4068,10 @@ static void nix_link_config(struct rvu *rvu, int blkaddr,
+ 	struct rvu_hwinfo *hw = rvu->hw;
+ 	int cgx, lmac_cnt, slink, link;
+ 	u16 lbk_max_frs, lmac_max_frs;
++	unsigned long lmac_bmap;
+ 	u64 tx_credits, cfg;
++	u64 lmac_fifo_len;
++	int iter;
+ 
+ 	rvu_get_lbk_link_max_frs(rvu, &lbk_max_frs);
+ 	rvu_get_lmac_link_max_frs(rvu, &lmac_max_frs);
+@@ -4098,12 +4105,23 @@ static void nix_link_config(struct rvu *rvu, int blkaddr,
+ 		/* Skip when cgx is not available or lmac cnt is zero */
+ 		if (lmac_cnt <= 0)
+ 			continue;
+-		tx_credits = ((rvu_cgx_get_fifolen(rvu) / lmac_cnt) -
+-			       lmac_max_frs) / 16;
+-		/* Enable credits and set credit pkt count to max allowed */
+-		cfg =  (tx_credits << 12) | (0x1FF << 2) | BIT_ULL(1);
+ 		slink = cgx * hw->lmac_per_cgx;
+-		for (link = slink; link < (slink + lmac_cnt); link++) {
++
++		/* Get LMAC id's from bitmap */
++		lmac_bmap = cgx_get_lmac_bmap(rvu_cgx_pdata(cgx, rvu));
++		for_each_set_bit(iter, &lmac_bmap, MAX_LMAC_PER_CGX) {
++			lmac_fifo_len = rvu_cgx_get_lmac_fifolen(rvu, cgx, iter);
++			if (!lmac_fifo_len) {
++				dev_err(rvu->dev,
++					"%s: Failed to get CGX/RPM%d:LMAC%d FIFO size\n",
++					__func__, cgx, iter);
++				continue;
++			}
++			tx_credits = (lmac_fifo_len - lmac_max_frs) / 16;
++			/* Enable credits and set credit pkt count to max allowed */
++			cfg =  (tx_credits << 12) | (0x1FF << 2) | BIT_ULL(1);
++
++			link = iter + slink;
+ 			nix_hw->tx_credits[link] = tx_credits;
+ 			rvu_write64(rvu, blkaddr,
+ 				    NIX_AF_TX_LINKX_NORM_CREDIT(link), cfg);
+-- 
+2.17.1
+
