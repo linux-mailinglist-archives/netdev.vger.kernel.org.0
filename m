@@ -2,77 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 236A7575716
-	for <lists+netdev@lfdr.de>; Thu, 14 Jul 2022 23:39:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E7454575769
+	for <lists+netdev@lfdr.de>; Fri, 15 Jul 2022 00:11:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240986AbiGNVj0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jul 2022 17:39:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38742 "EHLO
+        id S240922AbiGNWLZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jul 2022 18:11:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240995AbiGNVjR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 17:39:17 -0400
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9F341573D;
-        Thu, 14 Jul 2022 14:39:16 -0700 (PDT)
-Received: by mail-pg1-x52a.google.com with SMTP id s27so2708732pga.13;
-        Thu, 14 Jul 2022 14:39:16 -0700 (PDT)
+        with ESMTP id S232684AbiGNWLY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jul 2022 18:11:24 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C37C570985
+        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 15:11:23 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id z25so5054402lfr.2
+        for <netdev@vger.kernel.org>; Thu, 14 Jul 2022 15:11:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=DgW9kAXC6VaNn9rU3wnHWjSpTrZ8/AEf3hlkouGTzLM=;
-        b=c8mWRbXSajF588i3rM9y0yyoGZfg0NbyGk3jlGOuAtgVjzANWV6yySZGTzenPaeJqz
-         Lr+Z+hmrpiXr84CYm/40hhnRLEn4MHNCK/RFAquVz5gVQZiZw+yyhlIf/4LnKYhylRfn
-         GKYYF+mE08XAFgo709pRl5qxWjI4qzD1LnNHp18EH9lp8bMCpKrdOekGdDKLFJ9Evhn3
-         oBc0R6SLnmZPDvldLIlZFx/9T07rIP/mKbzeWj4y/nWJn9kVolBIrTaG8RWDs6hOf46U
-         Qd7KMF3lpTGOxcxW3nMB1eBy+aPugcSMQhRm0/gtMQWZeyhd0T1UmjnN6XBZugfMMvrs
-         P4yw==
+        h=mime-version:from:date:message-id:subject:to;
+        bh=ouoO0HNdkV7+wxLmrSr9jjdwanqIiW8o9XNJUhNKzVk=;
+        b=jrz9Yom+sYAH9lrmAHlHOk/D7F9amtLcjc007nbeuwhnO9+x+wD/A70E6R/2TqTYyT
+         rwzotx3vHuITPhYaJ+Lv1Z7bjIJYQrbwQ9sjOTAUfRdmX7yCUxb/sntrTU9ithEgvERF
+         CH1F0JkwVxrsxSQeWJh4d9DAtxanxpLJWRCWv0tM/UU2DdVjIq91VQURMnZ3Ggxq6OMq
+         4Ce2aIU7d9FhSOgpzZ/WDS2FSqiC6KtKIqFmU0Hqd6lDlf60nd3nhPe5amp1hExRDYAH
+         gOifGRf4q5ZDiYPtfCMpepeydmgr58DtBLDyml15NdXs9JEGPs4hoZoHUrwcdZyIcVxO
+         dhcw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=DgW9kAXC6VaNn9rU3wnHWjSpTrZ8/AEf3hlkouGTzLM=;
-        b=ElNKoEb1FkH6wRwiex5RX5kxQcjy2ymSZJ5ECiTNp8pqkvHO8Gw4MolXQ7NqtG2mN/
-         ucH+trAtSFWdTZyMEm5PvZYjDbdgO/nSXIIgE+A9VWnUlBnQV/hUaL+izim2GP0z1+Ou
-         faDM9kbbRQJFbtdFsxSZwGmSt1Qn1PDexJqUYzJISHhJ6vXtsmqoopRka2ETElVSwBCU
-         ilTSxBJV9srdlFkDoHoLtJSjmYmK5t99wkvqY6KYWRUwznLx/uldtFuXp7tPP3e/Vyb1
-         lzhaH5YbspamEapbVaaOT03+tEjVAOeFm1D2Lj/BZSIWlN9hKDijZuJ9qVLKRe06kcWP
-         jRGQ==
-X-Gm-Message-State: AJIora+6GySdmHr4X/mq7d8tmpl5pN8Va8EBPTfOKGOZZ7/lF9DwTQQ8
-        RgGdM2VscMdQLB5Q2KeTiYo=
-X-Google-Smtp-Source: AGRyM1sY/NZRxlCCjWjo5j61Gv+szsCKgzp7/Bjo7JYU8bEO3/CBMFYME2TsUz3zfoxhbUOdAfyDbw==
-X-Received: by 2002:a62:864f:0:b0:52a:be82:6b60 with SMTP id x76-20020a62864f000000b0052abe826b60mr10342092pfd.48.1657834756198;
-        Thu, 14 Jul 2022 14:39:16 -0700 (PDT)
-Received: from MacBook-Pro-3.local ([2620:10d:c090:500::1:697a])
-        by smtp.gmail.com with ESMTPSA id g204-20020a6252d5000000b0052aca106b20sm2165289pfb.202.2022.07.14.14.39.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Jul 2022 14:39:15 -0700 (PDT)
-Date:   Thu, 14 Jul 2022 14:39:12 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>,
-        Tero Kristo <tero.kristo@linux.intel.com>,
-        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org,
-        memxor@gmail.com
-Subject: Re: [PATCH bpf-next v6 00/23] Introduce eBPF support for HID devices
-Message-ID: <20220714213912.zrotlequhpgxzdl4@MacBook-Pro-3.local>
-References: <20220712145850.599666-1-benjamin.tissoires@redhat.com>
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=ouoO0HNdkV7+wxLmrSr9jjdwanqIiW8o9XNJUhNKzVk=;
+        b=w7jpAmxe8rGOBibXuTNN4Xw1wUHF0ylAFxghTp2QO9KwVBQ7Bsq9yZ1zli3VhwfZwS
+         MMzUTNr+lc35X0ES6CH0dwBC1oIvePx0KmaAVM/Uis9vmwEHQ+1uKrqwJ45Fk1RV58Uf
+         EirU9PaN9HRuEdikGth6us1o78CAG31sTWV18QZCSFsNpf4txbQIZb+DgPKSGHXjSx0v
+         GHCeMKS1AtnUsJo0I0AVU8Ylu7pXoGol0wUfEHddlqVnYzyrECqGOLeeZPKd7mopuXkh
+         Kcw5FXSkrSuStr4bnw6Obd7I09T3a+9YL1Sx16fgpeb4ymwmVf4cVGnLLh+o3Oy9Wbjs
+         wTgQ==
+X-Gm-Message-State: AJIora8Ccx6ijIqF9uo4Er3cHt8zJRaeURZ+oyhesHn9gpm6gK2e81IQ
+        gaFlRCdQbkqTxPuleXrK1InPkH/q014m59FhIOdfo6tsBeSuzQ==
+X-Google-Smtp-Source: AGRyM1uonTmWaxL0Kwx6co2L6jOXGFaYLq2HKmJajpe73SeP4P/bam4QbQLXyC27CZnyQuDiOJe7sxO+YA/+CM1vA+U=
+X-Received: by 2002:a05:6512:3e08:b0:489:d3c3:e901 with SMTP id
+ i8-20020a0565123e0800b00489d3c3e901mr5961960lfv.125.1657836681948; Thu, 14
+ Jul 2022 15:11:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220712145850.599666-1-benjamin.tissoires@redhat.com>
+From:   Alexander Babayants <babayants.alexander@gmail.com>
+Date:   Fri, 15 Jul 2022 01:11:12 +0300
+Message-ID: <CAB92dJZM9K+Z3URB0F+S0B2yEHNSyjG1G9kTvCiWKYigh5FdpA@mail.gmail.com>
+Subject: recvmmsg() behaviour with MSG_PEEK flag
+To:     netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -83,27 +59,21 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 12, 2022 at 04:58:27PM +0200, Benjamin Tissoires wrote:
-> Hi,
-> 
-> and after a little bit of time, here comes the v6 of the HID-BPF series.
-> 
-> Again, for a full explanation of HID-BPF, please refer to the last patch
-> in this series (23/23).
-> 
-> This version sees some improvements compared to v5 on top of the
-> usual addressing of the previous comments:
-> - now I think every eBPF core change has a matching selftest added
-> - the kfuncs declared in syscall can now actually access the memory of
->   the context
-> - the code to retrieve the BTF ID of the various HID hooks is much
->   simpler (just a plain use of the BTF_ID() API instead of
->   loading/unloading of a tracing program)
-> - I also added my HID Surface Dial example that I use locally to provide
->   a fuller example to users
+(sorry in advance - I'm not sure it is the right mailing list for the
+question, if it is not, feel free to redirect me)
 
-Looking great.
-Before another respin to address bits in patch 12 let's land the first ~8 patches,
-since they're generic useful improvements.
+The behaviour of recvmmsg() with MSG_PEEK flag confuses me. I'd expect
+it to peek multiple messages at once, but it seems to peek only the
+first one, filling each of the provided struct msghdr with a copy of
+the first message. I do not see if it is documented anywhere, is it a
+bug or intended design?
 
-Kumar, could you please help review the verifier bits?
+What I want to achieve is to first peek into the socket, get the size
+of each message, then allocate appropriate buffers and read the
+messages with the second recvmmsg() call. This seems to be a
+relatively common pattern for reading single messages via recvmsg(),
+and I naively expected it to work with recvmmsg() too.
+
+-- 
+Regards,
+Alexander Babayants.
